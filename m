@@ -1,41 +1,44 @@
-From: "Oliver Pitzeier" <o.pitzeier@uptime.at>
-Subject: RE: compiling kernel for an alphaserver (VERY OLD ONE)
-Date: Sun, 27 Apr 2003 02:18:35 +0200
+From: steelgate <steelgate@alpha1.infor.org>
+Subject: kernel 2.5.70 oops on alpha
+Date: Wed, 28 May 2003 16:54:06 +0800
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <001101c30c52$8ead4ec0$1011a8c0@roadrunner>
-References: <20030426205148.GZ19139@lug-owl.de>
+Message-ID: <20030528085406.GA2314@alpha1.infor.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20030426205148.GZ19139@lug-owl.de>
+Content-Disposition: inline
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: 'Jan-Benedict Glaw' <jbglaw@lug-owl.de>, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: linux-alpha@vger.kernel.org
 
-Jan-Benedict Glaw wrote:
-> > > Well. On kernel.org, in the main page there is a link to THAT
-> > > kernel... I could searcho for the full ~.19 version... but... 
-> > > how big is it??? cause my /boot partition is about 12 MB.. 
-> > > the Image will be smalller than that... won't it???
-> > 
-> > wget http://kernel.org/pub/linux/kernel/v2.4/patch-2.4.19.bz2
->                                                ^^^^^^^^^^^^^^^^
-> > tar xfvj linux-2.4.19.tar.bz2; \
->            ^^^^^^^^^^^^^^^^^^^^
-> > cd linux-2.4.19; \
-> > make menuconfig; \
-> > make dep; make; \
-> > make modules;
-> > 
-> > Maybe that helps?
-> 
-> Maybe a little, but there's an obvious bug:)
+When booting kernel 2.5.70, I've got following messages:
+(Running on a Compaq DS20(Tsunami with 8 D chips)
+ with 2 Alpha EV6 CPUs@500MHz,
+ configured with alpha system type: DP264, SMP enabled;
+ compiled with gcc-3.2.3
+ The same kernel configuration runs fine on 2.5.68)
 
-Sure there is... I shouldn't work 32 hours in a row. :-)
-
-Sleep well, folks!
-
-Best regards,
- Oliver
-
-
+task migrationcache decay timeout: 0 msecs.
+SMP starting up secondaries.              
+Starting migration thread for cpu 0
+Briniging up 1                     
+Unable to handle paging request at virtual address 0000000000000000
+CPU 0 swapper(1): Oops 0                                           
+pc = [<fffffc00012d1c04>] ra = [<fffffc00012ce690>] ps = 0007        Not tained
+v0 = 0000000000000000 t0 = 0000000000000000 t1 = 0000000000000001              
+t2 = 0000000000000000 t3 = fffffc000132e080 t4 = fffffc000132e080
+t5 = fffffc000132f3c0 t6 = fffffc000138bfc0 t7 = fffffc00034b8000
+s0 = fffffc000138bfc0 s1 = 0000000000000001 s2 = fffffc00012f0db8
+s3 = fffffc00013e1458 s4 = fffffc00013e0558 s5 = 0000000000000001
+s6 = fffffc00034bba50                                            
+a0 = 0000000000000007 a1 = 0000000000000001 a2 = 0000000000000000
+a3 = 0000000000000000 a4 = fffffc003ff52618 a5 = fffffc00034bb970
+t8 = 0000000000000000 t9 = fffffc000138c1e0 t10 = 0000000000000000
+t11 = 0000000000000000 pv = fffffc00012d1b40 at = 0000000000000000
+gp = fffffc00013e0db8 sp = fffffc00034bba50                       
+Trace:fffffc00010101d0 fffffc00102d858 fffffc00010100a4 fffffc0001012eb0 fffffc
+000102d9ac fffffc000102d9ac fffffc000102d858 fffffc0010100a4 fffffc0001010150 f
+ffffc001013250                                                                 
+Code: 2042ffff b4450008 a4270000 402055a1 f4200038 a4670048 <a0230000> 2021
+ffff                                                                       
+Kernel panic: Attemped to kill init!
