@@ -1,81 +1,25 @@
-From: Manik Raina <manik@cisco.com>
-Subject: [PATCH]: 2.5.30 : __builtin_expect() cleanups in alpha code (rwsem.h)
-Date: Mon, 5 Aug 2002 15:43:39 +0530 (IST)
+From: SA <bullet.train@ntlworld.com>
+Subject: Mounting Tru64 disks
+Date: Fri, 9 Aug 2002 09:39:37 +0100
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <Pine.GSO.4.44.0208051542170.21895-100000@cbin2-view1.cisco.com>
+Message-ID: <200208090939.37617.bullet.train@ntlworld.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-alpha-owner@vger.kernel.org>
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org, torvalds@transmeta.com
-Cc: linux-kernel@vger.kernel.org
-
-Resending with diffs inline ... please apply ..
-diffs are straightforward. Should patch with "patch -p1"
+Content-Type: text/plain; charset="us-ascii"
+To: linux-alpha@vger.kernel.org
 
 
+Dear list,
 
---- linux-2.5.30/include/asm-alpha/rwsem.h~	Fri Aug  2 02:46:35 2002
-+++ linux-2.5.30/include/asm-alpha/rwsem.h	Mon Aug  5 15:34:59 2002
-@@ -80,13 +80,13 @@
- 	".subsection 2\n"
- 	"2:	br	1b\n"
- 	".previous"
- 	:"=&r" (oldcount), "=m" (sem->count), "=&r" (temp)
- 	:"Ir" (RWSEM_ACTIVE_READ_BIAS), "m" (sem->count) : "memory");
- #endif
--	if (__builtin_expect(oldcount < 0, 0))
-+	if (unlikely(oldcount < 0))
- 		rwsem_down_read_failed(sem);
- }
+Sorry if this is a really dumb question-
 
- static inline void __down_write(struct rw_semaphore *sem)
- {
- 	long oldcount;
-@@ -104,13 +104,13 @@
- 	".subsection 2\n"
- 	"2:	br	1b\n"
- 	".previous"
- 	:"=&r" (oldcount), "=m" (sem->count), "=&r" (temp)
- 	:"Ir" (RWSEM_ACTIVE_WRITE_BIAS), "m" (sem->count) : "memory");
- #endif
--	if (__builtin_expect(oldcount, 0))
-+	if (unlikely(oldcount))
- 		rwsem_down_write_failed(sem);
- }
+I have a couple of alphas I and converting from tru64 and digital unix to 
+linux-alpha.  I want to mount large data disks with what I think are UFS
+partitions on them.  Is this possible? How do I do it?
 
- static inline void __up_read(struct rw_semaphore *sem)
- {
- 	long oldcount;
-@@ -128,13 +128,13 @@
- 	".subsection 2\n"
- 	"2:	br	1b\n"
- 	".previous"
- 	:"=&r" (oldcount), "=m" (sem->count), "=&r" (temp)
- 	:"Ir" (RWSEM_ACTIVE_READ_BIAS), "m" (sem->count) : "memory");
- #endif
--	if (__builtin_expect(oldcount < 0, 0))
-+	if (unlikely(oldcount < 0))
- 		if ((int)oldcount - RWSEM_ACTIVE_READ_BIAS == 0)
- 			rwsem_wake(sem);
- }
+mount /dev/sdb1 -t auto (or ufs etc) /temp_place fails, I haven't found any 
+definitive information for this anywhere (what happen to linuxalpha.org btw?)
 
- static inline void __up_write(struct rw_semaphore *sem)
- {
-@@ -154,13 +154,13 @@
- 	".subsection 2\n"
- 	"2:	br	1b\n"
- 	".previous"
- 	:"=&r" (count), "=m" (sem->count), "=&r" (temp)
- 	:"Ir" (RWSEM_ACTIVE_WRITE_BIAS), "m" (sem->count) : "memory");
- #endif
--	if (__builtin_expect(count, 0))
-+	if (unlikely(count))
- 		if ((int)count == 0)
- 			rwsem_wake(sem);
- }
-
- static inline void rwsem_atomic_add(long val, struct rw_semaphore *sem)
- {
-
+Thanks matt
