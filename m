@@ -1,54 +1,98 @@
 From: Thomas Steudten <alpha@steudten.com>
-Subject: Re: Relocation overflow vs section  kernel-2.6.1 for alpha
-Date: Sun, 11 Jan 2004 12:45:17 +0100
-Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <4001374D.5010402@steudten.com>
-References: <3FB92938.8040906@steudten.com>	<87r806d6n6.fsf@student.uni-tuebingen.de>	<3FB93EF6.807@steudten.com>	<87islid5tq.fsf@student.uni-tuebingen.de>	<20031118021922.A7816@den.park.msu.ru>	<3FBA8F20.3050701@steudten.com>	<40002F69.9020302@steudten.com> <20040110143409.0e591596.akpm@osdl.org>
+Subject: Problems with kernel 2.6.1 on alpha (scsi, modules, unaligned trap)
+Date: Sun, 11 Jan 2004 13:09:05 +0100
+Sender: linux-scsi-owner@vger.kernel.org
+Message-ID: <40013CE1.6070305@steudten.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20040110143409.0e591596.akpm@osdl.org>
+Return-path: <linux-scsi-owner@vger.kernel.org>
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
-Cc: Andrew Morton <akpm@osdl.org>, ink@jurassic.park.msu.ru, rth@twiddle.net
+To: linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, linux-alpha@vger.kernel.org
 
 Hello
 
-I run in this problem too on my alpha sx164 and the patch fix this, so
-i can load all the modules without problems.
+After some trouble to port my linux kernel on alpha sx614 from kernel
+2.4.21 to 2.6.1 i collect here my problems found. Sure, on some alpha
+systems this problems aren=B4t there.
 
-Please add the patch to the kernel 2.6.x alpha mainline.
+Kernel 2.6.1:
+1. BUG: "unaligned trap" in kernel mode (patch there, but not in the 2.=
+6.1=20
+mainline)
+2. BUG: "Relocation overflow vs section" by trying to load some modules=
+=20
+with modprobe or insmod (patch there, but not in the 2.6.1 mainline)
+3. Kernel boot message "***WARNING*** No MII transceivers found" after
+soft reboot (no power off/on).
+4. Kernel boot message "Unable to reserve mem region #2:1000@a051000 fo=
+r=20
+device 0000:00:07.0" "aic7xxx: I/O ports already in use, ignoring."
+5. Some modules (floppy, lp, loop..) won=B4t be autoloaded any more sin=
+ce=20
+2.4.21. There=B4s no block-major aso. request in the kernel-ring buffer=
+=2E
+I have /etc/modules.conf and /etc/modprobe.conf with modutils-2.4.21-23=
+=2E1
+and depmod -V: module-init-tools 3.0-pre5. How i can track this down?
 
-Regards
+Else no major problems with this kernel until know.
+(I think the ipt_unclean from netfilter and the kerneld (or whatever) a=
+re
+gone in 2.6.x) Sorry, if i miss something to read.
+
+---------------8<----8<--------------
+
+To 3)
+00:09.0 Ethernet controller: 3Com Corporation 3c905B 100BaseTX [Cyclone=
+]=20
+(rev 30)
+         Subsystem: 3Com Corporation 3C905B Fast Etherlink XL 10/100
+         Flags: bus master, medium devsel, latency 32, IRQ 24
+         I/O ports at 8800 [size=3D128]
+         Memory at 000000000a053000 (32-bit, non-prefetchable) [size=3D=
+128]
+         Expansion ROM at 000000000a020000 [disabled] [size=3D128K]
+         Capabilities: [dc] Power Management version 1
+
+To 4)
+scsi0:A:2:0: Tagged Queuing enabled.  Depth 128
+(scsi0:A:3): 40.000MB/s transfers (20.000MHz, offset 8, 16bit)
+   Vendor: IBM       Model: DDYS-T18350N      Rev: SA2A
+   Type:   Direct-Access                      ANSI SCSI revision: 03
+scsi0:A:3:0: Tagged Queuing enabled.  Depth 128
+PCI: Unable to reserve mem region #2:1000@a051000 for device 0000:00:07=
+=2E0
+PCI: Unable to reserve mem region #2:1000@a051000 for device 0000:00:07=
+=2E0
+aic7xxx: <Adaptec AHA-294X Ultra SCSI host adapter> at PCI 0/7/0
+aic7xxx: I/O ports already in use, ignoring.
+SCSI device sda: 71687340 512-byte hdwr sectors (36704 MB)
+SCSI device sda: drive cache: write back
+
+00:07.0 SCSI storage controller: Adaptec AHA-2940U/UW/D / AIC-7881U (re=
+v 01)
+         Subsystem: Adaptec AHA-2940UW SCSI Host Adapter
+         Flags: bus master, medium devsel, latency 32, IRQ 26
+         I/O ports at 8400 [size=3D256]
+         Memory at 000000000a051000 (32-bit, non-prefetchable) [size=3D=
+4K]
+         Expansion ROM at 000000000a040000 [disabled] [size=3D64K]
+         Capabilities: [dc] Power Management version 1
+ From /proc/ioports:
+8400-84ff : 0000:00:07.0
+
+--=20
 Tom
 
-On Mon, Jan 05, 2004 at 02:21:37AM +0100, M=E5ns Rullg=E5rd wrote:
- > I compiled Linux 2.6.0 for Alpha, and it mostly works, except the
- > somewhat large modules. They fail to load with the message
- > "Relocation overflow vs section 17", or some other section number.
+LINUX user since kernel 0.99.x 1994.
+RPM Alpha packages at http://alpha.steudten.com/packages
+Want to know what S.u.S.E 1995 cdrom-set contains?
 
-This failure happens with GPRELHIGH relocation, which is *signed*
-short, but relocation overflow check in module.c doesn't take into
-account the sign extension.
-Appended patch should help.
 
-Ivan.
-
---- 2.6/arch/alpha/kernel/module.c Wed May 28 01:05:20 2003
-+++ linux/arch/alpha/kernel/module.c Mon Aug 11 23:23:02 2003
-@@ -259,7 +259,7 @@ apply_relocate_add(Elf64_Shdr *sechdrs,
-*(u64 *)location =3D value;
-break;
-case R_ALPHA_GPRELHIGH:
-- value =3D (value - gp + 0x8000) >> 16;
-+ value =3D (long)(value - gp + 0x8000) >> 16;
-if ((short) value !=3D value)
-goto reloc_overflow;
-*(u16 *)location =3D value;
 
 -
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
+To unsubscribe from this list: send the line "unsubscribe linux-scsi" i=
+n
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
