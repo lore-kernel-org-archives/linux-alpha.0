@@ -1,57 +1,33 @@
 From: Balint Cristian <rezso@rdsor.ro>
-Subject: Re: Compiling latest 2.6 bk snapshot on Alpha
-Date: Wed, 3 Sep 2003 18:44:43 -0400
-Sender: linux-kernel-owner@vger.kernel.org
-Message-ID: <200309031844.43208.rezso@rdsor.ro>
+Subject: Miata 500 is alphaev6 ? (segfault while configure glibc with --target=alphaev6)
+Date: Tue, 9 Sep 2003 14:12:35 +0300
+Sender: libc-alpha-owner@sources.redhat.com
+Message-ID: <200309091412.35341.rezso@rdsor.ro>
 References: <20030903143157.GA17699@localhost> <20030903150024.GA18306@localhost> <20030903151532.GH14376@lug-owl.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+linux-kernel=40quimby.gnus.org@vger.kernel.org>
+Return-path: <libc-alpha-return-13376-glibc-alpha=m.gmane.org@sources.redhat.com>
+List-Unsubscribe: <mailto:libc-alpha-unsubscribe-glibc-alpha=m.gmane.org@sources.redhat.com>
+List-Subscribe: <mailto:libc-alpha-subscribe@sources.redhat.com>
+List-Archive: <http://sources.redhat.com/ml/libc-alpha/>
+List-Post: <mailto:libc-alpha@sources.redhat.com>
+List-Help: <mailto:libc-alpha-help@sources.redhat.com>, <http://sources.redhat.com/ml/#faqs>
 In-Reply-To: <20030903151532.GH14376@lug-owl.de>
 Content-Disposition: inline
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Jan-Benedict Glaw <jbglaw@lug-owl.de>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-alpha@vger.kernel.org
+Cc: libc-alpha@sources.redhat.com
 
-If using RedHat-7.2 based thing on alpha or older you can use my own maintained RH rawhide for alpha:
+Is subj true ? 
+	I get seg fault compiling glibc with --target=alphaev6 some error that segfault at 
+the test binary while "cheking long long" 
 
-ftp.rdsor.ro/pub/Linux/Distributions/AlphaLinux
+Is something wrong with gcc or glibc ? Or is not alphaev6, not support alphaev6 instruction set and segfault.
 
-There can find very latest gcc/binutils/glibc shaga, it must fit OK with any redhat for alphas.
+Packages installed:
 
-I have no problem compiling latest kernel with tham.
+glibc-2.3.2-78
+gcc-3.3.2-3
+binutils-2.14.90.0.5-7
 
-
-Cristian
-
-
-On Wednesday 03 September 2003 11:15, Jan-Benedict Glaw wrote:
-> On Wed, 2003-09-03 11:00:24 -0400, Mathieu Chouquet-Stringer
-> <mchouque@online.fr>
->
-> wrote in message <20030903150024.GA18306@localhost>:
-> > On Wed, Sep 03, 2003 at 04:40:31PM +0200, Marc Zyngier wrote:
-> > > Please check your binutils version. Here is the one I use, with great
-> > > success :
-> > >
-> > > maz@panther:/mnt/i386/linux-2.5$ alpha-linux-ld --version
-> > > GNU ld version 2.13.90.0.18 20030121
-> >
-> > Mine is: GNU ld version 2.14.90.0.5 20030722 Debian GNU/Linux
->
-> I've just started a compile run with exactly this ld and gcc-3.3.2
-> 20030812. This may take a while (it's a 166MHz NoName...).
->
-> Maybe you've simply created a too large kernel image. Have you compiled
-> many features into the kernel (where modules would have worked also...)?
->
-> MfG, JBG
-
--- 
-Life in itself has no meaning. 
-Life is an opportunity to create meaning.
-
-              \|/ ____ \|/ 
-              "@'/ .. \`@" 
-              /_| \__/ |_\ 
-                 \__U_/ 
