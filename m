@@ -1,41 +1,24 @@
-From: mru@users.sourceforge.net (=?iso-8859-1?q?M=E5ns_Rullg=E5rd?=)
-Subject: Re: which distro?
-Date: 12 Jun 2003 17:43:57 +0200
+From: "Oliver Pitzeier" <o.pitzeier@uptime.at>
+Subject: RE: kernel 2.5.70 oops on alpha
+Date: Wed, 23 Jul 2003 22:24:38 +0200
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <yw1xfzmfz4g2.fsf@zaphod.guide>
-References: <20030528085406.GA2314@alpha1.infor.org>
-	<1055405454.9576.17.camel@Gandalf>
+Message-ID: <001601c35158$7578aa80$1311a8c0@pitzeier.priv.at>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1055405454.9576.17.camel@Gandalf>
+In-Reply-To: 
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: 333101@personal.net.py
-Cc: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: 'steelgate' <steelgate@alpha1.infor.org>, linux-alpha@vger.kernel.org
 
-Alan Bort <333101@personal.net.py> writes:
+> When booting kernel 2.5.70, I've got following messages: 
+> (Running on a Compaq DS20(Tsunami with 8 D chips)  with 2 
+> Alpha EV6 CPUs@500MHz,  configured with alpha system type: 
+> DP264, SMP enabled;  compiled with gcc-3.2.3  The same kernel 
+> configuration runs fine on 2.5.68)
 
-> Like my subject explains, I want to ask wich distro you consider bett=
-er
-> (so I download and Install). About the daemons... well, you know I'll
-> get the later versions of everyone (latest stable) and the kernel is =
-a
-> big HUGE issue here... I want a good and new kernel... but If I try t=
-o
-> install the 2.5 I'm sure I'll break my instalation, at least once or
-> twice...
+I had the same problem... But try 2.6.0-test1, it runs stable for me!
 
-Debian seems to be most up to date for Alpha at the moment.  As for
-the kernel version, don't use 2.4.20.  Apart from that anything should
-be fine.  The recent 2.5 kernels run pretty well, but some things
-might be broken.  Go for 2.4.19, if you want a stable version.
+Best regards,
+ Oliver
 
---=20
-M=E5ns Rullg=E5rd
-mru@users.sf.net
--
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
