@@ -1,59 +1,88 @@
 From: Norbert Preining <preining@logic.at>
-Subject: Re: 2.4.27, alpha arch, make bootimage and make bootpfile fails
-Date: Fri, 15 Oct 2004 12:39:14 +0200
-Message-ID: <20041015103914.GA24800@gamma.logic.tuwien.ac.at>
-References: <20041012173344.GA21846@gamma.logic.tuwien.ac.at> <20041013233247.A11663@jurassic.park.msu.ru> <20041014130035.GA4152@gamma.logic.tuwien.ac.at> <yw1xis9d8b9b.fsf@ford.guide>
+Subject: howto boot alpha via SRM without supported SCSI controller
+Date: Fri, 15 Oct 2004 13:06:35 +0200
+Sender: linux-alpha-owner@vger.kernel.org
+Message-ID: <20041015110635.GB24800@gamma.logic.tuwien.ac.at>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <yw1xis9d8b9b.fsf@ford.guide>
-Resent-Message-ID: <sjoV6B.A.YNG.fj6bBB@murphy>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: <http://lists.debian.org/debian-alpha/>
 Content-Type: text/plain; charset="iso-8859-1"
-To: =?iso-8859-15?Q?M=E5ns_Rullg=E5rd?= <mru@mru.ath.cx>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-kernel@vger.kernel.org, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org
 
-On Don, 14 Okt 2004, M=E5ns Rullg=E5rd wrote:
-> > Loading the kernel...'root=3D/dev/sda1'
-> >
-> > Halted CPU 0
-> >
-> > halt code =3D 2
-> > kernel stack not valid halt
-> > PC =3D 200000000
-> > boot failure
->=20
-> Try building more things as modules instead of builtin, if possible.
+Hi all!
 
-I have reduced the whole kernel zo more or less nothing included,
-besides the SCSI drivers, and the same still happens.=20
+I am looking for a method to boot our alpha after we have upgraded to a
+new SCSI controller, which isn't supported by the SRM console (Adaptec)=
+=2E
+(our alpha is CONFIG_PC164)
+
+Up to now I have collected the followng options:
+
+aboot:
+=3D=3D=3D=3D=3D=3D
+- Put aboot and kernel on a floppy, boot from floppy
+	this is working, but I am not a big friend of it.
+
+network:
+=3D=3D=3D=3D=3D=3D=3D=3D
+- Boot via network/bootp
+	this doesn't work up to now, OTOH I want the alpha to be
+	not dependent on another machine
+
+milo:
+=3D=3D=3D=3D=3D
+- Put milo on a flopy disk and boot SRM -> milo
+	i haven't succeeded with this up to now, only once with a=20
+	very old milo.dd, but then I need a second floppy for the kernel
+	and this is not feasible
+- put mile (if it is running once) into the flash
+	hmm, that would be nice ...
+
+
+So now my questions:
+- How do I make a milo bootable floppy?
+	I want to take the milo images from http://milo.core-systems.de/
+	(Stefan Reinauer), but there is no milo.dd. I found a
+	description how to accomplish this:
+		objstrip -v -p milo-image mboot
+		cat mboot milo-image > milo.dd
+	I dd this milo.dd onto a floppy, booted from it, but the process
+	stuck at
+		Jumping to PALcode
+	(or something similar)
+
+- Now assume I can get milo to boot. Is it possible to write milo into
+  the flash as described in the MILO HOWTO?
+	Our machine is a PC164 board (Booting on EB164 variation PC164
+	using machine vector PC164 from SRM, CONFIG_PC164).
+
+- Finally, are there any other options to boot this alpha
+	. without the need for another machine (boot server)
+	. without floppy
+=09
+
+Thanks a lot for any suggestions!
 
 Best wishes
 
 Norbert
 
--------------------------------------------------------------------------=
-------
-Norbert Preining <preining AT logic DOT at>         Technische Universit=E4=
-t Wien
-gpg DSA: 0x09C5B094      fp: 14DF 2E6C 0307 BE6D AD76  A9C0 D2BF 4AA3 09C=
-5 B094
--------------------------------------------------------------------------=
-------
-LOCHRANZA (n.)
-The long unaccomplished wail in the middle of a Scottish folk song
-where the pipes nip around the corner for a couple of drinks.
+-----------------------------------------------------------------------=
+--------
+Norbert Preining <preining AT logic DOT at>         Technische Universi=
+t=E4t Wien
+gpg DSA: 0x09C5B094      fp: 14DF 2E6C 0307 BE6D AD76  A9C0 D2BF 4AA3 0=
+9C5 B094
+-----------------------------------------------------------------------=
+--------
+PODE HOLE (n.)
+A hole drilled in chipboard lavatory walls by homosexuals for any one
+of a number of purposes.
 			--- Douglas Adams, The Meaning of Liff
-
-
---=20
-To UNSUBSCRIBE, email to debian-alpha-REQUEST@lists.debian.org
-with a subject of "unsubscribe". Trouble? Contact listmaster@lists.debian=
-.org
-
+-
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
