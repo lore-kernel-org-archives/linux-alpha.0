@@ -1,25 +1,47 @@
-From: Kelledin <kelledin+LKAXP@skarpsey.dyndns.org>
-Subject: Re: Miata 500 is alphaev6 ? (segfault while configure glibc with --target=alphaev6)
-Date: Tue, 9 Sep 2003 07:24:57 -0500
+From: Paolo Dovera <pdovera@bmind.it>
+Subject: linux-2.6.0-test6 error during linking
+Date: Sun, 28 Sep 2003 21:55:09 +0200
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <200309090724.57504.kelledin+LKAXP@skarpsey.dyndns.org>
-References: <20030903143157.GA17699@localhost> <20030903151532.GH14376@lug-owl.de> <200309091412.35341.rezso@rdsor.ro>
+Message-ID: <3F773C9D.3080009@bmind.it>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <200309091412.35341.rezso@rdsor.ro>
-Content-Disposition: inline
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
 To: linux-alpha@vger.kernel.org
 
-On Tuesday 09 September 2003 06:12 am, Balint Cristian wrote:
-> Is subj true ?
+Hello,
+   I successfully compiled all linux-2.6.0-testx before test6 on RH7.2 
+Alpha APX platform
 
-Nope.  Miata is an EV5x--yours is probably an EV56.
+Applied patch-2.6.0-test6 I receive the following error:
 
--- 
-Kelledin
-"If a server crashes in a server farm and no one pings it, does 
-it still cost four figures to fix?"
+[root@alpha linux-2.6.0-test6]# make
+make[1]: `arch/alpha/kernel/asm-offsets.s' is up to date.
+ CHK     include/linux/compile.h
+ GEN     .version
+ CHK     include/linux/compile.h
+ UPD     include/linux/compile.h
+ CC      init/version.o
+ LD      init/built-in.o
+ LD      .tmp_vmlinux1
+kernel/built-in.o(.text+0x480): In function `try_to_wake_up':
+: undefined reference to `sched_clock'
+kernel/built-in.o(.text+0x484): In function `try_to_wake_up':
+: undefined reference to `sched_clock'
+kernel/built-in.o(.text+0x140c): In function `schedule':
+: undefined reference to `sched_clock'
+kernel/built-in.o(.text+0x1410): In function `schedule':
+: undefined reference to `sched_clock'
+kernel/built-in.o(.text+0x5068): In function `copy_process':
+: undefined reference to `sched_clock'
+kernel/built-in.o(.text+0x506c): more undefined references to 
+`sched_clock' follow
+make: *** [.tmp_vmlinux1] Error 1
+
+
+Do you have some suggestions?
+
+Bye
+
 
