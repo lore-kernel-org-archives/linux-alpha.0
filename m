@@ -1,69 +1,81 @@
 From: Manik Raina <manik@cisco.com>
 Subject: [PATCH]: 2.5.30 : __builtin_expect() cleanups in alpha code (rwsem.h)
-Date: Mon, 5 Aug 2002 15:36:51 +0530 (IST)
+Date: Mon, 5 Aug 2002 15:43:39 +0530 (IST)
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <Pine.GSO.4.44.0208051536030.3149-200000@cbin2-view1.cisco.com>
+Message-ID: <Pine.GSO.4.44.0208051542170.21895-100000@cbin2-view1.cisco.com>
 Mime-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="-559023410-851401618-1028542011=:3149"
 Return-path: <linux-alpha-owner@vger.kernel.org>
 List-Id: <linux-alpha.vger.kernel.org>
+Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org, torvalds@transmeta.com
 Cc: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-  Send mail to mime@docserver.cac.washington.edu for more info.
-
----559023410-851401618-1028542011=:3149
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Resending with diffs inline ... please apply ..
+diffs are straightforward. Should patch with "patch -p1"
 
 
-Please apply patch
 
----559023410-851401618-1028542011=:3149
-Content-Type: TEXT/PLAIN; charset=US-ASCII; name=alpha
-Content-Transfer-Encoding: BASE64
-Content-ID: <Pine.GSO.4.44.0208051536510.3149@cbin2-view1.cisco.com>
-Content-Description: 
-Content-Disposition: attachment; filename=alpha
+--- linux-2.5.30/include/asm-alpha/rwsem.h~	Fri Aug  2 02:46:35 2002
++++ linux-2.5.30/include/asm-alpha/rwsem.h	Mon Aug  5 15:34:59 2002
+@@ -80,13 +80,13 @@
+ 	".subsection 2\n"
+ 	"2:	br	1b\n"
+ 	".previous"
+ 	:"=&r" (oldcount), "=m" (sem->count), "=&r" (temp)
+ 	:"Ir" (RWSEM_ACTIVE_READ_BIAS), "m" (sem->count) : "memory");
+ #endif
+-	if (__builtin_expect(oldcount < 0, 0))
++	if (unlikely(oldcount < 0))
+ 		rwsem_down_read_failed(sem);
+ }
 
-LS0tIGxpbnV4LTIuNS4zMC9pbmNsdWRlL2FzbS1hbHBoYS9yd3NlbS5ofglG
-cmkgQXVnICAyIDAyOjQ2OjM1IDIwMDINCisrKyBsaW51eC0yLjUuMzAvaW5j
-bHVkZS9hc20tYWxwaGEvcndzZW0uaAlNb24gQXVnICA1IDE1OjM0OjU5IDIw
-MDINCkBAIC04MCwxMyArODAsMTMgQEANCiAJIi5zdWJzZWN0aW9uIDJcbiIN
-CiAJIjI6CWJyCTFiXG4iDQogCSIucHJldmlvdXMiDQogCToiPSZyIiAob2xk
-Y291bnQpLCAiPW0iIChzZW0tPmNvdW50KSwgIj0mciIgKHRlbXApDQogCToi
-SXIiIChSV1NFTV9BQ1RJVkVfUkVBRF9CSUFTKSwgIm0iIChzZW0tPmNvdW50
-KSA6ICJtZW1vcnkiKTsNCiAjZW5kaWYNCi0JaWYgKF9fYnVpbHRpbl9leHBl
-Y3Qob2xkY291bnQgPCAwLCAwKSkNCisJaWYgKHVubGlrZWx5KG9sZGNvdW50
-IDwgMCkpDQogCQlyd3NlbV9kb3duX3JlYWRfZmFpbGVkKHNlbSk7DQogfQ0K
-IA0KIHN0YXRpYyBpbmxpbmUgdm9pZCBfX2Rvd25fd3JpdGUoc3RydWN0IHJ3
-X3NlbWFwaG9yZSAqc2VtKQ0KIHsNCiAJbG9uZyBvbGRjb3VudDsNCkBAIC0x
-MDQsMTMgKzEwNCwxMyBAQA0KIAkiLnN1YnNlY3Rpb24gMlxuIg0KIAkiMjoJ
-YnIJMWJcbiINCiAJIi5wcmV2aW91cyINCiAJOiI9JnIiIChvbGRjb3VudCks
-ICI9bSIgKHNlbS0+Y291bnQpLCAiPSZyIiAodGVtcCkNCiAJOiJJciIgKFJX
-U0VNX0FDVElWRV9XUklURV9CSUFTKSwgIm0iIChzZW0tPmNvdW50KSA6ICJt
-ZW1vcnkiKTsNCiAjZW5kaWYNCi0JaWYgKF9fYnVpbHRpbl9leHBlY3Qob2xk
-Y291bnQsIDApKQ0KKwlpZiAodW5saWtlbHkob2xkY291bnQpKQ0KIAkJcndz
-ZW1fZG93bl93cml0ZV9mYWlsZWQoc2VtKTsNCiB9DQogDQogc3RhdGljIGlu
-bGluZSB2b2lkIF9fdXBfcmVhZChzdHJ1Y3Qgcndfc2VtYXBob3JlICpzZW0p
-DQogew0KIAlsb25nIG9sZGNvdW50Ow0KQEAgLTEyOCwxMyArMTI4LDEzIEBA
-DQogCSIuc3Vic2VjdGlvbiAyXG4iDQogCSIyOglicgkxYlxuIg0KIAkiLnBy
-ZXZpb3VzIg0KIAk6Ij0mciIgKG9sZGNvdW50KSwgIj1tIiAoc2VtLT5jb3Vu
-dCksICI9JnIiICh0ZW1wKQ0KIAk6IklyIiAoUldTRU1fQUNUSVZFX1JFQURf
-QklBUyksICJtIiAoc2VtLT5jb3VudCkgOiAibWVtb3J5Iik7DQogI2VuZGlm
-DQotCWlmIChfX2J1aWx0aW5fZXhwZWN0KG9sZGNvdW50IDwgMCwgMCkpIA0K
-KwlpZiAodW5saWtlbHkob2xkY291bnQgPCAwKSkgDQogCQlpZiAoKGludClv
-bGRjb3VudCAtIFJXU0VNX0FDVElWRV9SRUFEX0JJQVMgPT0gMCkNCiAJCQly
-d3NlbV93YWtlKHNlbSk7DQogfQ0KIA0KIHN0YXRpYyBpbmxpbmUgdm9pZCBf
-X3VwX3dyaXRlKHN0cnVjdCByd19zZW1hcGhvcmUgKnNlbSkNCiB7DQpAQCAt
-MTU0LDEzICsxNTQsMTMgQEANCiAJIi5zdWJzZWN0aW9uIDJcbiINCiAJIjI6
-CWJyCTFiXG4iDQogCSIucHJldmlvdXMiDQogCToiPSZyIiAoY291bnQpLCAi
-PW0iIChzZW0tPmNvdW50KSwgIj0mciIgKHRlbXApDQogCToiSXIiIChSV1NF
-TV9BQ1RJVkVfV1JJVEVfQklBUyksICJtIiAoc2VtLT5jb3VudCkgOiAibWVt
-b3J5Iik7DQogI2VuZGlmDQotCWlmIChfX2J1aWx0aW5fZXhwZWN0KGNvdW50
-LCAwKSkNCisJaWYgKHVubGlrZWx5KGNvdW50KSkNCiAJCWlmICgoaW50KWNv
-dW50ID09IDApDQogCQkJcndzZW1fd2FrZShzZW0pOw0KIH0NCiANCiBzdGF0
-aWMgaW5saW5lIHZvaWQgcndzZW1fYXRvbWljX2FkZChsb25nIHZhbCwgc3Ry
-dWN0IHJ3X3NlbWFwaG9yZSAqc2VtKQ0KIHsNCg==
----559023410-851401618-1028542011=:3149--
+ static inline void __down_write(struct rw_semaphore *sem)
+ {
+ 	long oldcount;
+@@ -104,13 +104,13 @@
+ 	".subsection 2\n"
+ 	"2:	br	1b\n"
+ 	".previous"
+ 	:"=&r" (oldcount), "=m" (sem->count), "=&r" (temp)
+ 	:"Ir" (RWSEM_ACTIVE_WRITE_BIAS), "m" (sem->count) : "memory");
+ #endif
+-	if (__builtin_expect(oldcount, 0))
++	if (unlikely(oldcount))
+ 		rwsem_down_write_failed(sem);
+ }
+
+ static inline void __up_read(struct rw_semaphore *sem)
+ {
+ 	long oldcount;
+@@ -128,13 +128,13 @@
+ 	".subsection 2\n"
+ 	"2:	br	1b\n"
+ 	".previous"
+ 	:"=&r" (oldcount), "=m" (sem->count), "=&r" (temp)
+ 	:"Ir" (RWSEM_ACTIVE_READ_BIAS), "m" (sem->count) : "memory");
+ #endif
+-	if (__builtin_expect(oldcount < 0, 0))
++	if (unlikely(oldcount < 0))
+ 		if ((int)oldcount - RWSEM_ACTIVE_READ_BIAS == 0)
+ 			rwsem_wake(sem);
+ }
+
+ static inline void __up_write(struct rw_semaphore *sem)
+ {
+@@ -154,13 +154,13 @@
+ 	".subsection 2\n"
+ 	"2:	br	1b\n"
+ 	".previous"
+ 	:"=&r" (count), "=m" (sem->count), "=&r" (temp)
+ 	:"Ir" (RWSEM_ACTIVE_WRITE_BIAS), "m" (sem->count) : "memory");
+ #endif
+-	if (__builtin_expect(count, 0))
++	if (unlikely(count))
+ 		if ((int)count == 0)
+ 			rwsem_wake(sem);
+ }
+
+ static inline void rwsem_atomic_add(long val, struct rw_semaphore *sem)
+ {
+
