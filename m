@@ -1,20 +1,23 @@
-From: Herbert Poetzl <herbert@13thfloor.at>
+From: mikado@4vn.org
 Subject: Re: Kernel crash/ oops >= 2.6.5 with gcc 3.4.0 on alpha
-Date: Fri, 28 May 2004 14:37:58 +0200
+Date: Fri, 28 May 2004 07:46:55 -0600
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <20040528123758.GE19544@MAIL.13thfloor.at>
+Message-ID: <1085752015.40b742cfc3dc6@webmail.4vn.org>
 References: <40B726C0.5030400@steudten.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
 In-Reply-To: <40B726C0.5030400@steudten.com>
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 To: Thomas Steudten <alpha@steudten.com>
 Cc: linux-admin@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Fri, May 28, 2004 at 01:47:12PM +0200, Thomas Steudten wrote:
+I also have this problem. compiling kernel process failed with gcc-3.4.0. i'm
+using gcc-3.3.3. Any idea???
+
+Quoting Thomas Steudten <alpha@steudten.com>:
+
 > Hi
 > 
 > Sorry, maybe I miss some message before.
@@ -29,26 +32,20 @@ On Fri, May 28, 2004 at 01:47:12PM +0200, Thomas Steudten wrote:
 > 
 > No other application seems to fail with gcc-3.4.0 so I think
 > this problem is in context to the relocation, modules and gcc-3.4.0.
-
-hmm, did you update the binutils too?
-(if not, I'd try that)
-
-best,
-Herbert
-
+> 
 > make modules
 > make[1]: `arch/alpha/kernel/asm-offsets.s' is up to date.
->   CC [M]  fs/binfmt_em86.o
+>    CC [M]  fs/binfmt_em86.o
 > {standard input}: Assembler messages:
 > {standard input}:7: Warning: setting incorrect section attributes for .got
->   CC [M]  fs/quota_v2.o
+>    CC [M]  fs/quota_v2.o
 > {standard input}: Assembler messages:
 > {standard input}:7: Warning: setting incorrect section attributes for .got
->   CC [M]  fs/autofs/dirhash.o
->   CC [M]  fs/autofs/init.o
+>    CC [M]  fs/autofs/dirhash.o
+>    CC [M]  fs/autofs/init.o
 > {standard input}: Assembler messages:
 > {standard input}:7: Warning: setting incorrect section attributes for .got
->   CC [M]  fs/autofs/inode.o
+>    CC [M]  fs/autofs/inode.o
 > 
 > 
 > On x86 everything works without problems.
@@ -64,7 +61,11 @@ Herbert
 > 
 > 
 > -
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> To unsubscribe from this list: send the line "unsubscribe linux-admin" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+> 
+
+
+
+
