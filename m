@@ -1,137 +1,95 @@
-From: Kurt Garloff <garloff@suse.de>
-Subject: Re: AS600/333 kernel problem
-Date: Thu, 13 Jun 2002 23:49:38 +0200
+From: Tom Rini <trini@kernel.crashing.org>
+Subject: [PATCH 2.4.19-rc1] Make sure drivers/input/Config.in goes before drivers/char/Config.in
+Date: Mon, 1 Jul 2002 08:29:10 -0700
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <20020613214938.GC6899@gum01m.etpnet.phys.tue.nl>
-References: <wrpvg8s5jyd.fsf@hina.wild-wind.fr.eu.org> <20020612000820.GF11833@gum01m.etpnet.phys.tue.nl> <3D081625.1000408@kc8apf.net>
+Message-ID: <20020701152910.GD20920@opus.bloom.county>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="hoZxPH4CaxYzWscb"
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <3D081625.1000408@kc8apf.net>
 List-Id: <linux-alpha.vger.kernel.org>
-To: Rick Altherr <kc8apf@kc8apf.net>
-Cc: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Marcelo Tosatti <marcelo@conectiva.com.br>
+Cc: linux-kernel@vger.kernel.org, linux-mips@oss.sgi.com, linux-alpha@vger.kernel.org
 
+This makes drivers/input/Config.in always comes before drivers/char/Config.in.
 
---hoZxPH4CaxYzWscb
-Content-Type: multipart/mixed; boundary="iFRdW5/EC4oqxDHL"
-Content-Disposition: inline
+Currently, alpha, mips and mips64 source drivers/input/Config.in after
+drivers/char/Config.in.  But as noted in most of the other arches
+config.in, drivers/input/Config.in must come before
+drivers/char/Config.in for all depenancies to be worked out.  This adds
+that comments to these arches as well as fixing the dependancy.
 
+On the off chance that this is intentional, linux-mips and linux-alpha
+are CC'ed as well.
 
---iFRdW5/EC4oqxDHL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+-- 
+Tom Rini (TR1265)
+http://gate.crashing.org/~trini/
 
-Hi Rick,
-
-On Wed, Jun 12, 2002 at 11:48:53PM -0400, Rick Altherr wrote:
-> I'm rather new to Linux on Alphas.  I have Debian installed on my AS600=
-=20
-> and it works fine, but I needed some kernel options and tried to build a=
-=20
-> new one.  The build completes fine and aboot begins to boot, but after=20
-> it detects my QLogic ISP1020 SCSI controllers it dumps what appears to=20
-> be the CPU registers and halts.  I've been trying 2.4.17.  Is this a=20
-> known issue?  Any ideas?
-
-Here is the patch from Jay (that Marc Zyngier forwarded to me), that helped
-my AS500/266 to finally like the ISP1020 again ...
-
-If I only could get the floppy to work with 2.4, everything would be perfec=
-t.
-
-Regards,
---=20
-Kurt Garloff  <garloff@suse.de>                          Eindhoven, NL
-GPG key: See mail header, key servers         Linux kernel development
-SuSE Linux AG, Nuernberg, DE                            SCSI, Security
-
---iFRdW5/EC4oqxDHL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename=patch-cia-jay
-Content-Transfer-Encoding: quoted-printable
-
-diff -ur old/arch/alpha/kernel/core_cia.c new/arch/alpha/kernel/core_cia.c
---- old/arch/alpha/kernel/core_cia.c	Sun Oct 21 13:30:58 2001
-+++ new/arch/alpha/kernel/core_cia.c	Tue May 28 15:02:42 2002
-@@ -370,7 +370,7 @@
- }
-=20
- static inline void
--cia_prepare_tbia_workaround(void)
-+cia_prepare_tbia_workaround(int cia_rev, int is_pyxis)
- {
- 	unsigned long *ppte, pte;
- 	long i;
-@@ -382,10 +382,20 @@
- 	for (i =3D 0; i < CIA_BROKEN_TBIA_SIZE / sizeof(unsigned long); ++i)
- 		ppte[i] =3D pte;
-=20
--	*(vip)CIA_IOC_PCI_W1_BASE =3D CIA_BROKEN_TBIA_BASE | 3;
--	*(vip)CIA_IOC_PCI_W1_MASK =3D (CIA_BROKEN_TBIA_SIZE*1024 - 1)
--				    & 0xfff00000;
--	*(vip)CIA_IOC_PCI_T1_BASE =3D virt_to_phys(ppte) >> 2;
-+	if (is_pyxis || cia_rev !=3D 1) {
-+		/* We can use W1 for SG on PYXIS/CIA rev 2. */
-+		*(vip)CIA_IOC_PCI_W1_BASE =3D CIA_BROKEN_TBIA_BASE | 3;
-+		*(vip)CIA_IOC_PCI_W1_MASK =3D (CIA_BROKEN_TBIA_SIZE*1024 - 1)
-+					    & 0xfff00000;
-+		*(vip)CIA_IOC_PCI_T1_BASE =3D virt_to_phys(ppte) >> 2;
-+	} else {
-+		/* CIA rev 1 can't use W1 or W2 for SG, apparently,
-+		   so use W3, which we made sure is not used for DAC. */
-+		*(vip)CIA_IOC_PCI_W3_BASE =3D CIA_BROKEN_TBIA_BASE | 3;
-+		*(vip)CIA_IOC_PCI_W3_MASK =3D (CIA_BROKEN_TBIA_SIZE*1024 - 1)
-+					    & 0xfff00000;
-+		*(vip)CIA_IOC_PCI_T3_BASE =3D virt_to_phys(ppte) >> 2;
-+	}
- }
-=20
- static void __init
-@@ -715,8 +725,14 @@
- 	   are compared against W_DAC.  We can, however, directly map 4GB,
- 	   which is better than before.  However, due to assumptions made
- 	   elsewhere, we should not claim that we support DAC unless that
--	   4GB covers all of physical memory.  */
--	if (is_pyxis || max_low_pfn > (0x100000000 >> PAGE_SHIFT)) {
-+	   4GB covers all of physical memory.
-+
-+	   Also, don't do DAC on CIA rev 1, it has other problems and is
-+	   unlikely to have more than 2GB of memory anyway, so direct is
-+	   fine.
-+	*/
-+	if (cia_rev =3D=3D 1 || is_pyxis ||
-+	    max_low_pfn > (0x100000000 >> PAGE_SHIFT)) {
- 		*(vip)CIA_IOC_PCI_W3_BASE =3D 0;
- 	} else {
- 		*(vip)CIA_IOC_PCI_W3_BASE =3D 0x00000000 | 1 | 8;
-@@ -728,7 +744,7 @@
- 	}
-=20
- 	/* Prepare workaround for apparently broken tbia. */
--	cia_prepare_tbia_workaround();
-+	cia_prepare_tbia_workaround(cia_rev, is_pyxis);
- }
-=20
- void __init
-
-
-
---iFRdW5/EC4oqxDHL--
-
---hoZxPH4CaxYzWscb
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.0.7 (GNU/Linux)
-
-iD8DBQE9CRNxxmLh6hyYd04RAju1AJ9tXa5RZPx0uuMrZfHVoLEWTJz6hQCgy/qo
-YCj7oH6FCNBS8CLP+cM9kQ0=
-=1IKf
------END PGP SIGNATURE-----
-
---hoZxPH4CaxYzWscb--
+===== arch/alpha/config.in 1.15 vs edited =====
+--- 1.15/arch/alpha/config.in	Sat May 25 19:37:06 2002
++++ edited/arch/alpha/config.in	Mon Jul  1 07:16:45 2002
+@@ -362,6 +362,10 @@
+ fi
+ endmenu
+ 
++#
++# input before char - char/joystick depends on it. As does USB.
++#
++source drivers/input/Config.in
+ source drivers/char/Config.in
+ 
+ #source drivers/misc/Config.in
+@@ -397,7 +401,6 @@
+ endmenu
+ 
+ source drivers/usb/Config.in
+-source drivers/input/Config.in
+ 
+ source net/bluetooth/Config.in
+ 
+===== arch/mips/config.in 1.6 vs edited =====
+--- 1.6/arch/mips/config.in	Thu Feb 28 06:57:19 2002
++++ edited/arch/mips/config.in	Mon Jul  1 07:17:22 2002
+@@ -563,6 +563,10 @@
+ fi
+ endmenu
+ 
++#
++# input before char - char/joystick depends on it. As does USB.
++#
++source drivers/input/Config.in
+ source drivers/char/Config.in
+ 
+ source drivers/media/Config.in
+@@ -628,7 +632,6 @@
+ fi
+ 
+ source drivers/usb/Config.in
+-source drivers/input/Config.in
+ 
+ mainmenu_option next_comment
+ comment 'Kernel hacking'
+===== arch/mips64/config.in 1.6 vs edited =====
+--- 1.6/arch/mips64/config.in	Thu Feb 28 06:57:19 2002
++++ edited/arch/mips64/config.in	Mon Jul  1 07:17:38 2002
+@@ -284,6 +284,10 @@
+ fi
+ endmenu
+ 
++#
++# input before char - char/joystick depends on it. As does USB.
++#
++source drivers/input/Config.in
+ source drivers/char/Config.in
+ 
+ #source drivers/misc/Config.in
+@@ -325,7 +329,6 @@
+ fi
+ 
+ source drivers/usb/Config.in
+-source drivers/input/Config.in
+ 
+ mainmenu_option next_comment
+ comment 'Kernel hacking'
