@@ -1,46 +1,33 @@
-From: Mathieu Chouquet-Stringer <mchouque@online.fr>
-Subject: Compiling latest 2.6 bk snapshot on Alpha
-Date: Wed, 3 Sep 2003 10:31:57 -0400
+From: Marc Zyngier <mzyngier@freesurf.fr>
+Subject: Re: Compiling latest 2.6 bk snapshot on Alpha
+Date: Wed, 03 Sep 2003 16:40:31 +0200
 Sender: linux-kernel-owner@vger.kernel.org
-Message-ID: <20030903143157.GA17699@localhost>
+Message-ID: <wrpznhm3pgg.fsf@hina.wild-wind.fr.eu.org>
+References: <20030903143157.GA17699@localhost>
+Reply-To: mzyngier@freesurf.fr
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner+linux-kernel=40quimby.gnus.org@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <20030903143157.GA17699@localhost> (Mathieu Chouquet-Stringer's
+ message of "Wed, 3 Sep 2003 10:31:57 -0400")
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Mathieu Chouquet-Stringer <mchouque@online.fr>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-	  Hi all,
+>>>>> "Mathieu" == Mathieu Chouquet-Stringer <mchouque@online.fr> writes:
 
-I've been hitting the same error every time I try to compile bk current on
-alpha, namely the linker can't do its job on .tmp_vmlinux1.
-My compiler is "gcc version 3.2.3 (Debian)" (but I also tried with 3.3 and
-2.95), same problem.
+Mathieu> I've been hitting the same error every time I try to compile
+Mathieu> bk current on alpha, namely the linker can't do its job on
+Mathieu> .tmp_vmlinux1.  My compiler is "gcc version 3.2.3 (Debian)"
+Mathieu> (but I also tried with 3.3 and 2.95), same problem.
 
-Here is the output:
-  LD      .tmp_vmlinux1
-init/built-in.o(.text+0x12a8): In function `inflate_codes':
-: relocation truncated to fit: BRADDR .init.text
-init/built-in.o(.text+0x137c): In function `inflate_codes':
-: relocation truncated to fit: BRADDR .init.text
-init/built-in.o(.text+0x15bc): In function `inflate_stored':
-: relocation truncated to fit: BRADDR .init.text
-init/built-in.o(.text+0x2158): In function `inflate':
-: relocation truncated to fit: BRADDR .init.text
-init/built-in.o(.text+0x2170): In function `inflate':
-: relocation truncated to fit: BRADDR .init.text
-init/built-in.o(.text+0x21b4): In function `inflate':
-: relocation truncated to fit: BRADDR .init.text
-init/built-in.o(.text+0x21d4): In function `inflate':
-: relocation truncated to fit: BRADDR .init.text
-make: *** [.tmp_vmlinux1] Error 1
+Please check your binutils version. Here is the one I use, with great
+success :
 
-Am I missing something? Is there a bk tree for Alpha (Jeff Garzik, in his
-bk doc talks about one but it seems to be dead)?
+maz@panther:/mnt/i386/linux-2.5$ alpha-linux-ld --version
+GNU ld version 2.13.90.0.18 20030121
 
+	M.
 -- 
-Mathieu Chouquet-Stringer              E-Mail : mchouque@online.fr
-       Never attribute to malice that which can be adequately
-                    explained by stupidity.
-                     -- Hanlon's Razor --
+Places change, faces change. Life is so very strange.
