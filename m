@@ -1,95 +1,69 @@
-From: Tom Rini <trini@kernel.crashing.org>
-Subject: [PATCH 2.4.19-rc1] Make sure drivers/input/Config.in goes before drivers/char/Config.in
-Date: Mon, 1 Jul 2002 08:29:10 -0700
+From: Manik Raina <manik@cisco.com>
+Subject: [PATCH]: 2.5.30 : __builtin_expect() cleanups in alpha code (rwsem.h)
+Date: Mon, 5 Aug 2002 15:36:51 +0530 (IST)
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <20020701152910.GD20920@opus.bloom.county>
+Message-ID: <Pine.GSO.4.44.0208051536030.3149-200000@cbin2-view1.cisco.com>
 Mime-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="-559023410-851401618-1028542011=:3149"
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Marcelo Tosatti <marcelo@conectiva.com.br>
-Cc: linux-kernel@vger.kernel.org, linux-mips@oss.sgi.com, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org, torvalds@transmeta.com
+Cc: linux-kernel@vger.kernel.org
 
-This makes drivers/input/Config.in always comes before drivers/char/Config.in.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+  Send mail to mime@docserver.cac.washington.edu for more info.
 
-Currently, alpha, mips and mips64 source drivers/input/Config.in after
-drivers/char/Config.in.  But as noted in most of the other arches
-config.in, drivers/input/Config.in must come before
-drivers/char/Config.in for all depenancies to be worked out.  This adds
-that comments to these arches as well as fixing the dependancy.
+---559023410-851401618-1028542011=:3149
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 
-On the off chance that this is intentional, linux-mips and linux-alpha
-are CC'ed as well.
 
--- 
-Tom Rini (TR1265)
-http://gate.crashing.org/~trini/
+Please apply patch
 
-===== arch/alpha/config.in 1.15 vs edited =====
---- 1.15/arch/alpha/config.in	Sat May 25 19:37:06 2002
-+++ edited/arch/alpha/config.in	Mon Jul  1 07:16:45 2002
-@@ -362,6 +362,10 @@
- fi
- endmenu
- 
-+#
-+# input before char - char/joystick depends on it. As does USB.
-+#
-+source drivers/input/Config.in
- source drivers/char/Config.in
- 
- #source drivers/misc/Config.in
-@@ -397,7 +401,6 @@
- endmenu
- 
- source drivers/usb/Config.in
--source drivers/input/Config.in
- 
- source net/bluetooth/Config.in
- 
-===== arch/mips/config.in 1.6 vs edited =====
---- 1.6/arch/mips/config.in	Thu Feb 28 06:57:19 2002
-+++ edited/arch/mips/config.in	Mon Jul  1 07:17:22 2002
-@@ -563,6 +563,10 @@
- fi
- endmenu
- 
-+#
-+# input before char - char/joystick depends on it. As does USB.
-+#
-+source drivers/input/Config.in
- source drivers/char/Config.in
- 
- source drivers/media/Config.in
-@@ -628,7 +632,6 @@
- fi
- 
- source drivers/usb/Config.in
--source drivers/input/Config.in
- 
- mainmenu_option next_comment
- comment 'Kernel hacking'
-===== arch/mips64/config.in 1.6 vs edited =====
---- 1.6/arch/mips64/config.in	Thu Feb 28 06:57:19 2002
-+++ edited/arch/mips64/config.in	Mon Jul  1 07:17:38 2002
-@@ -284,6 +284,10 @@
- fi
- endmenu
- 
-+#
-+# input before char - char/joystick depends on it. As does USB.
-+#
-+source drivers/input/Config.in
- source drivers/char/Config.in
- 
- #source drivers/misc/Config.in
-@@ -325,7 +329,6 @@
- fi
- 
- source drivers/usb/Config.in
--source drivers/input/Config.in
- 
- mainmenu_option next_comment
- comment 'Kernel hacking'
+---559023410-851401618-1028542011=:3149
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name=alpha
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.GSO.4.44.0208051536510.3149@cbin2-view1.cisco.com>
+Content-Description: 
+Content-Disposition: attachment; filename=alpha
+
+LS0tIGxpbnV4LTIuNS4zMC9pbmNsdWRlL2FzbS1hbHBoYS9yd3NlbS5ofglG
+cmkgQXVnICAyIDAyOjQ2OjM1IDIwMDINCisrKyBsaW51eC0yLjUuMzAvaW5j
+bHVkZS9hc20tYWxwaGEvcndzZW0uaAlNb24gQXVnICA1IDE1OjM0OjU5IDIw
+MDINCkBAIC04MCwxMyArODAsMTMgQEANCiAJIi5zdWJzZWN0aW9uIDJcbiIN
+CiAJIjI6CWJyCTFiXG4iDQogCSIucHJldmlvdXMiDQogCToiPSZyIiAob2xk
+Y291bnQpLCAiPW0iIChzZW0tPmNvdW50KSwgIj0mciIgKHRlbXApDQogCToi
+SXIiIChSV1NFTV9BQ1RJVkVfUkVBRF9CSUFTKSwgIm0iIChzZW0tPmNvdW50
+KSA6ICJtZW1vcnkiKTsNCiAjZW5kaWYNCi0JaWYgKF9fYnVpbHRpbl9leHBl
+Y3Qob2xkY291bnQgPCAwLCAwKSkNCisJaWYgKHVubGlrZWx5KG9sZGNvdW50
+IDwgMCkpDQogCQlyd3NlbV9kb3duX3JlYWRfZmFpbGVkKHNlbSk7DQogfQ0K
+IA0KIHN0YXRpYyBpbmxpbmUgdm9pZCBfX2Rvd25fd3JpdGUoc3RydWN0IHJ3
+X3NlbWFwaG9yZSAqc2VtKQ0KIHsNCiAJbG9uZyBvbGRjb3VudDsNCkBAIC0x
+MDQsMTMgKzEwNCwxMyBAQA0KIAkiLnN1YnNlY3Rpb24gMlxuIg0KIAkiMjoJ
+YnIJMWJcbiINCiAJIi5wcmV2aW91cyINCiAJOiI9JnIiIChvbGRjb3VudCks
+ICI9bSIgKHNlbS0+Y291bnQpLCAiPSZyIiAodGVtcCkNCiAJOiJJciIgKFJX
+U0VNX0FDVElWRV9XUklURV9CSUFTKSwgIm0iIChzZW0tPmNvdW50KSA6ICJt
+ZW1vcnkiKTsNCiAjZW5kaWYNCi0JaWYgKF9fYnVpbHRpbl9leHBlY3Qob2xk
+Y291bnQsIDApKQ0KKwlpZiAodW5saWtlbHkob2xkY291bnQpKQ0KIAkJcndz
+ZW1fZG93bl93cml0ZV9mYWlsZWQoc2VtKTsNCiB9DQogDQogc3RhdGljIGlu
+bGluZSB2b2lkIF9fdXBfcmVhZChzdHJ1Y3Qgcndfc2VtYXBob3JlICpzZW0p
+DQogew0KIAlsb25nIG9sZGNvdW50Ow0KQEAgLTEyOCwxMyArMTI4LDEzIEBA
+DQogCSIuc3Vic2VjdGlvbiAyXG4iDQogCSIyOglicgkxYlxuIg0KIAkiLnBy
+ZXZpb3VzIg0KIAk6Ij0mciIgKG9sZGNvdW50KSwgIj1tIiAoc2VtLT5jb3Vu
+dCksICI9JnIiICh0ZW1wKQ0KIAk6IklyIiAoUldTRU1fQUNUSVZFX1JFQURf
+QklBUyksICJtIiAoc2VtLT5jb3VudCkgOiAibWVtb3J5Iik7DQogI2VuZGlm
+DQotCWlmIChfX2J1aWx0aW5fZXhwZWN0KG9sZGNvdW50IDwgMCwgMCkpIA0K
+KwlpZiAodW5saWtlbHkob2xkY291bnQgPCAwKSkgDQogCQlpZiAoKGludClv
+bGRjb3VudCAtIFJXU0VNX0FDVElWRV9SRUFEX0JJQVMgPT0gMCkNCiAJCQly
+d3NlbV93YWtlKHNlbSk7DQogfQ0KIA0KIHN0YXRpYyBpbmxpbmUgdm9pZCBf
+X3VwX3dyaXRlKHN0cnVjdCByd19zZW1hcGhvcmUgKnNlbSkNCiB7DQpAQCAt
+MTU0LDEzICsxNTQsMTMgQEANCiAJIi5zdWJzZWN0aW9uIDJcbiINCiAJIjI6
+CWJyCTFiXG4iDQogCSIucHJldmlvdXMiDQogCToiPSZyIiAoY291bnQpLCAi
+PW0iIChzZW0tPmNvdW50KSwgIj0mciIgKHRlbXApDQogCToiSXIiIChSV1NF
+TV9BQ1RJVkVfV1JJVEVfQklBUyksICJtIiAoc2VtLT5jb3VudCkgOiAibWVt
+b3J5Iik7DQogI2VuZGlmDQotCWlmIChfX2J1aWx0aW5fZXhwZWN0KGNvdW50
+LCAwKSkNCisJaWYgKHVubGlrZWx5KGNvdW50KSkNCiAJCWlmICgoaW50KWNv
+dW50ID09IDApDQogCQkJcndzZW1fd2FrZShzZW0pOw0KIH0NCiANCiBzdGF0
+aWMgaW5saW5lIHZvaWQgcndzZW1fYXRvbWljX2FkZChsb25nIHZhbCwgc3Ry
+dWN0IHJ3X3NlbWFwaG9yZSAqc2VtKQ0KIHsNCg==
+---559023410-851401618-1028542011=:3149--
