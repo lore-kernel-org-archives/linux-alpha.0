@@ -1,27 +1,44 @@
-From: "Oliver Pitzeier" <o.pitzeier@uptime.at>
-Subject: RE: Root filesystem ext3
-Date: Mon, 29 Sep 2003 17:54:41 +0200
+From: "Carl C." <cc@carlc.com>
+Subject: Can't build 2.6.0-test(anything)
+Date: Mon, 29 Sep 2003 13:17:58 -0400
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <001901c386a2$010f7500$020b10ac@pitzeier.priv.at>
-References: <oprv9p0odnluaogu@mail.NairnConsulting.ca>
+Message-ID: <005301c386ad$a13539b0$13942c0a@fhpmfg.com>
+References: <001701c386a0$bffc2cd0$020b10ac@pitzeier.priv.at>
+Reply-To: "Carl C." <cc@carlc.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <oprv9p0odnluaogu@mail.NairnConsulting.ca>
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: 'Richard Nairn' <Richard@nairnconsulting.ca>, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org
 
-> ext3 gets loaded as a module, maybe it hasn't loaded it 
-> before it gets to mounting root?  I will try compiling a
-> newer kernel and use initrd...
+I've been trying to build 2.6.0-test(any-version) on my alphas. I've seen
+this problem listed before, I have the following:
 
-Don't use initrd, I makes headaches! :)
+sv4:/home/tmp# gcc --version
+3.0.4
+sv4:/home/tmp# ld --version
+GNU ld version 2.14 20030612
 
-> Does the kernel compile with ccc?
+But when I do a build of the kernel, I always get this:
 
-I'm not sure, but it's worth a try I would say. :)
+sv4:/usr/src/linux# make
+make[1]: `arch/alpha/kernel/asm-offsets.s' is up to date.
+  CHK     include/linux/compile.h
+  GEN     .version
+  CHK     include/linux/compile.h
+  UPD     include/linux/compile.h
+  CC      init/version.o
+  LD      init/built-in.o
+  LD      .tmp_vmlinux1
+make: *** [.tmp_vmlinux1] Error 139
 
-Best,
- Oliver
+This happens on both my Debian and RedHat based AXP servers...
 
+Any suggestions?
+Carl
+
+====================
+http://www.carlc.com/
+
+      "Price, Performance, Quality. Choose any two you like."
