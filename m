@@ -1,44 +1,43 @@
-From: steelgate <steelgate@alpha1.infor.org>
-Subject: kernel 2.5.70 oops on alpha
-Date: Wed, 28 May 2003 16:54:06 +0800
+From: Alan Bort <333101@personal.net.py>
+Subject: which distro?
+Date: 12 Jun 2003 11:10:55 +0300
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <20030528085406.GA2314@alpha1.infor.org>
+Message-ID: <1055405454.9576.17.camel@Gandalf>
+References: <20030528085406.GA2314@alpha1.infor.org>
+Reply-To: 333101@personal.net.py
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <20030528085406.GA2314@alpha1.infor.org>
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org
 
-When booting kernel 2.5.70, I've got following messages:
-(Running on a Compaq DS20(Tsunami with 8 D chips)
- with 2 Alpha EV6 CPUs@500MHz,
- configured with alpha system type: DP264, SMP enabled;
- compiled with gcc-3.2.3
- The same kernel configuration runs fine on 2.5.68)
+Hi, I'm newbie to alpha architecture (so newbie I don't even know hot to
+spell it ;-) and for the last six months I've had RedHat 7 installed on
+my alphaserver 300. YES, it's really old... but it works very good...
+and it's certainly usefull where I have it.
 
-task migrationcache decay timeout: 0 msecs.
-SMP starting up secondaries.              
-Starting migration thread for cpu 0
-Briniging up 1                     
-Unable to handle paging request at virtual address 0000000000000000
-CPU 0 swapper(1): Oops 0                                           
-pc = [<fffffc00012d1c04>] ra = [<fffffc00012ce690>] ps = 0007        Not tained
-v0 = 0000000000000000 t0 = 0000000000000000 t1 = 0000000000000001              
-t2 = 0000000000000000 t3 = fffffc000132e080 t4 = fffffc000132e080
-t5 = fffffc000132f3c0 t6 = fffffc000138bfc0 t7 = fffffc00034b8000
-s0 = fffffc000138bfc0 s1 = 0000000000000001 s2 = fffffc00012f0db8
-s3 = fffffc00013e1458 s4 = fffffc00013e0558 s5 = 0000000000000001
-s6 = fffffc00034bba50                                            
-a0 = 0000000000000007 a1 = 0000000000000001 a2 = 0000000000000000
-a3 = 0000000000000000 a4 = fffffc003ff52618 a5 = fffffc00034bb970
-t8 = 0000000000000000 t9 = fffffc000138c1e0 t10 = 0000000000000000
-t11 = 0000000000000000 pv = fffffc00012d1b40 at = 0000000000000000
-gp = fffffc00013e0db8 sp = fffffc00034bba50                       
-Trace:fffffc00010101d0 fffffc00102d858 fffffc00010100a4 fffffc0001012eb0 fffffc
-000102d9ac fffffc000102d9ac fffffc000102d858 fffffc0010100a4 fffffc0001010150 f
-ffffc001013250                                                                 
-Code: 2042ffff b4450008 a4270000 402055a1 f4200038 a4670048 <a0230000> 2021
-ffff                                                                       
-Kernel panic: Attemped to kill init!
+I was willing to do a system update (you know, installing new kernel,
+new GUI, new daemosn like apache, samba, sendmail, php, bugzilla,
+gforge, etc) But I oticed that my current installation is REALLY broken.
+The gui won't come up (don't know why... I'm trying to figure it out),
+samba hangs up every time I try to connect with my windows machine and
+apache does not start at the startup (even though I put the proper lines
+in the rc script)
+
+Like my subject explains, I want to ask wich distro you consider better
+(so I download and Install). About the daemons... well, you know I'll
+get the later versions of everyone (latest stable) and the kernel is a
+big HUGE issue here... I want a good and new kernel... but If I try to
+install the 2.5 I'm sure I'll break my instalation, at least once or
+twice...
+
+Thanks a lot.
+-- 
+Alan Bort
+Linux Registered User 298277 -Country Manager- [http://counter.li.org]
+[ http://www.linuxquestions.org ] Username: Ciccio
+[ http://es.tldp.org ]
+Ciccio.-
+
