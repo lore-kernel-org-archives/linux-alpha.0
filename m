@@ -1,59 +1,51 @@
-From: SA <no_spam@ntlworld.com>
-Subject: Fwd: kernel compile problems (tulip / tulip_old) + more
-Date: Tue, 20 Aug 2002 10:11:18 +0100
+From: Kurt Garloff <garloff@suse.de>
+Subject: Re: kernel compile problems (tulip / tulip_old) + more
+Date: Tue, 20 Aug 2002 14:23:48 +0200
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <200208201011.18972.no_spam@ntlworld.com>
+Message-ID: <20020820122348.GC26667@nbkurt.etpnet.phys.tue.nl>
+References: <200208201009.28318.bullet.train@ntlworld.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7BIT
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="i7F3eY7HS/tUJxUd"
 Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <200208201009.28318.bullet.train@ntlworld.com>
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org
+To: SA <bullet.train@ntlworld.com>
+Cc: linux-alpha@vger.kernel.org
 
 
+--i7F3eY7HS/tUJxUd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Aug 20, 2002 at 10:09:28AM +0100, SA wrote:
+> I need to recompile the kernel to include osf partition support, however
+> it fails to compile because of a conflict between the tulip driver and the
+> tulip_old driver - (some errors below) - in the config menus I can only f=
+ind=20
+> an option relating to the tulip driver (I have a tulip network card). Any
+> ideas ?=20
 
-Dear list,
+Compile one or both of them as modules.
 
-I need to recompile the kernel to include osf partition support, however
-it fails to compile because of a conflict between the tulip driver and the
-tulip_old driver - (some errors below) - in the config menus I can only find
-an option relating to the tulip driver (I have a tulip network card). Any
-ideas ?
+Regards,
+--=20
+Kurt Garloff  <garloff@suse.de>                          Eindhoven, NL
+GPG key: See mail header, key servers         Linux kernel development
+SuSE Linux AG, Nuernberg, DE                            SCSI, Security
 
-thanks SA
+--i7F3eY7HS/tUJxUd
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-Also, I have an alpha machine that had its PROM trashed by a firmware update
-(update firmware (y/n) y / erasing PROM / updating PROM / Failed....) now the
-computer is dead and won't even perform the hardware jumpered "failsafe
-booot from floppy" -  has anyone had any experience with this?, Is it
- possible to get a new PROM?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.0.7 (GNU/Linux)
 
-thanks SA
+iD8DBQE9YjTTxmLh6hyYd04RAkTEAJ9jKhRHLvvy6uV7t/yQvbrdw5CMPQCcC3TM
+rTCZGS8KJKD+Uxcp5y6EiIA=
+=d/RX
+-----END PGP SIGNATURE-----
 
-
-
-
-
-
-
-
------
-
-some errors
-
-tulip_old/tulip_old.o(.data+0x0): multiple definition of `tulip_tbl'
-tulip/tulip.o(.data+0x0): first defined here
-tulip_old/tulip_old.o: In function `mxic_timer':
-tulip_old/tulip_old.o(.text+0x2f70): multiple definition of `mxic_timer'
-tulip/tulip.o(.text+0x2ff0): first defined here
-make[3]: *** [net.o] Error 1
-make[3]: Leaving directory `/usr/src/linux-2.4.9-32.5/drivers/net'
-make[2]: *** [first_rule] Error 2
-make[2]: Leaving directory `/usr/src/linux-2.4.9-32.5/drivers/net'
-make[1]: *** [_subdir_net] Error 2
-make[1]: Leaving directory `/usr/src/linux-2.4.9-32.5/drivers'
-make: *** [_dir_drivers] Error 2
-
--------------------------------------------------------
-
+--i7F3eY7HS/tUJxUd--
