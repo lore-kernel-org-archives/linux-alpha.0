@@ -1,87 +1,26 @@
-From: Balint Cristian <rezso@rdsor.ro>
-Subject: Re: Mounting UFS disks under linux-alpha
-Date: Thu, 29 Aug 2002 15:21:44 -0400
+From: David Brodbeck <dbrodbeck@ameritech.net>
+Subject: Newbie question: How do I flash SRM console onto a 164LX?
+Date: Thu, 10 Apr 2003 19:28:16 -0400
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <200208291521.44807.rezso@rdsor.ro>
-References: <Pine.SOL.4.03.10208150929230.22467-100000@norton>
+Message-ID: <3E95FE10.5030509@ameritech.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7BIT
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <Pine.SOL.4.03.10208150929230.22467-100000@norton>
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: "IOS Group, Nottingham" <ios@eee.nottingham.ac.uk>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: linux-alpha@vger.kernel.org
 
-  I dont think UFS under linux is so stable (even if it is mountable), 
-recomand you to migrate to ext2,3 or reiserfs.
-  Is possible to exist multiple version of UFS and yours to be unrecognizable
-i dont know.
+I just bought a used AlphaPC 164LX system.  (Well, actually, a 
+motherboard and some cards in a case...calling it a system yet would be 
+a bit deceptive. ;) )  It's currently got AlphaBIOS 5.6, and I want to 
+switch it over to SRM.  I can't seem to do this, and I'm not sure what 
+I'm doing wrong.  DEC's instructions make it sound so easy. ;)
 
+I downloaded LX164SRM.ROM and put it on a FAT format floppy.  But when I 
+choose the "AlphaBIOS Update" option in the AlphaBIOS Setup screen, it 
+just prompts me to insert the disk containing the firmware update 
+utility.  I tried putting in a disk with fwupdate.exe, instead, and got 
+that to load, but it isn't clear to me how I get it to install my ROM file.
 
-On Thursday 15 August 2002 04:38, IOS Group, Nottingham wrote:
-> Dear List,
->
-> I want to mount some tru64 disks on alphas I have
-> migrated from tru64 to linux-alpha but I find that
-> it is not straight forward.
->
-> On one machine the format is ADFS which I don't think
-> is supported under linux - is this correct?
->
-> On another the format is definitely UFS but I am still
-> unable to mount the disk.  (I have got the ufs module
-> compiled and loaded into the system).
->
-> ---under linux
->
-> >> lsmod
->
-> Module                  Size  Used by    Not tainted
-> ufs                    85600   0  (unused)
-> ide-cd                 38688   0  (autoclean)
-> cdrom                  39032   0  (autoclean) [ide-cd]
-> .......
-> ---
->
-> --- under tru64
->
-> >> cat /etc/fstab
->
-> /dev/rz6a        /              ufs rw 1 1
-> /proc            /proc  procfs rw 0 0
-> /dev/rz6g        /usr   ufs rw 1 2
-> /dev/rz6h        /opt   ufs rw 1 2
-> etc etc
-> ---
->
-> When I try to mount any of the ufs partitions I get
->
-> mount -v -t ufs /dev/sdb1 /tmp_mnt
-> mount: wrong fs type, bad option, bad superblock on /dev/sdb1,
->        or too many mounted file systems
->
->
-> Any hints? Is there any way to probe a disk to find out what
-> partitions are on it, do I have to load anyhting apart from
-> the ufs.o module (do I have to compile it into the kernel
-> instead).
->
-> Sorry about the lameness of these questions but it is driving
-> me mad and I can't find a simple definitive working answer
-> in the docs.
->
->
-> Thanks SA
->
->
->
->
-> ----------------------------------------------------
-> 	   No Spam under any circumstances
-> ----------------------------------------------------
->
-> -
-> To unsubscribe from this list: send the line "unsubscribe linux-alpha" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Any help would be much appreciated.
 
