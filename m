@@ -1,71 +1,25 @@
-From: Kurt Garloff <kurt@garloff.de>
-Subject: Re: AS500/266 trouble
-Date: Wed, 12 Jun 2002 02:08:20 +0200
+From: Rick Altherr <kc8apf@kc8apf.net>
+Subject: AS600/333 kernel problem
+Date: Wed, 12 Jun 2002 23:48:53 -0400
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <20020612000820.GF11833@gum01m.etpnet.phys.tue.nl>
-References: <wrpvg8s5jyd.fsf@hina.wild-wind.fr.eu.org>
+Message-ID: <3D081625.1000408@kc8apf.net>
+References: <wrpvg8s5jyd.fsf@hina.wild-wind.fr.eu.org> <20020612000820.GF11833@gum01m.etpnet.phys.tue.nl>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="zhtSGe8h3+lMyY1M"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <wrpvg8s5jyd.fsf@hina.wild-wind.fr.eu.org>
 List-Id: <linux-alpha.vger.kernel.org>
-To: Marc Zyngier <mzyngier@freesurf.fr>
-Cc: Linux Alpha list <linux-alpha@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: linux-alpha@vger.kernel.org
 
+I'm rather new to Linux on Alphas.  I have Debian installed on my AS600 
+and it works fine, but I needed some kernel options and tried to build a 
+new one.  The build completes fine and aboot begins to boot, but after 
+it detects my QLogic ISP1020 SCSI controllers it dumps what appears to 
+be the CPU registers and halts.  I've been trying 2.4.17.  Is this a 
+known issue?  Any ideas?
+-- 
+Thanks and 73s,
+Rick Altherr
+KC8APF
+kc8apf@kc8apf.net
 
---zhtSGe8h3+lMyY1M
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi Marc,
-
-On Sun, Jun 09, 2002 at 09:30:02PM +0200, Marc Zyngier wrote:
-> I just bought myself an AS500/333,
-
-I had gotten mine for free :-)
-
-> and suffered from the problems you
-> described in your email to linux-alpha on 4/15/2002.
->=20
-> Did you finally solve this problem ?
-
-No.
-
-> If not, could you give this
-> simple patch a spin ? It solved all PCI problems on my system.
-
-Indeed, with your patch, the machine happily boots, i.e. the QLogic
-ISP 1020 finally works again.
-THANKS!
-
-But ...
-
-> Also, if you compile your kernel for Alcor, do you manage to get any
-> ISA interrupt ? I can only get them if I compile for generic...
-
-=2E.. I did not get the floppy driver to work. Not with an Alcor SRM kernel
-nor with generic.
-
-Regards,
---=20
-Kurt Garloff                   <kurt@garloff.de>         [Eindhoven, NL]
-Physics: Plasma simulations    <K.Garloff@TUE.NL>     [TU Eindhoven, NL]
-Linux: SCSI, Security          <garloff@suse.de>    [SuSE Nuernberg, DE]
- (See mail header or public key servers for PGP2 and GPG public keys.)
-
---zhtSGe8h3+lMyY1M
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.0.7 (GNU/Linux)
-
-iD8DBQE9BpDyxmLh6hyYd04RAo1rAKCvsarJhtIs7dLOyIhnpgvC8aZx+ACgoPjv
-MSbQKVfLTTIlOf1+O6x8HB0=
-=T0K5
------END PGP SIGNATURE-----
-
---zhtSGe8h3+lMyY1M--
