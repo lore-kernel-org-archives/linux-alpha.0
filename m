@@ -1,27 +1,26 @@
-From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Subject: Re: Kernel crash/ oops >= 2.6.5 with gcc 3.4.0 on alpha
-Date: Fri, 28 May 2004 19:16:01 +0400
+From: Alan Bort <333101@personal.net.py>
+Subject: What distro is best?
+Date: Fri, 28 May 2004 15:43:13 -0400
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <20040528191601.B1117@jurassic.park.msu.ru>
-References: <40B726C0.5030400@steudten.com> <20040528123758.GE19544@MAIL.13thfloor.at> <40B74779.40406@steudten.com> <200405281719.20593.rezso@rdsor.ro>
+Message-ID: <40B79651.10602@personal.net.py>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <200405281719.20593.rezso@rdsor.ro>; from rezso@rdsor.ro on Fri, May 28, 2004 at 05:19:20PM -0400
-List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Balint Cristian <rezso@rdsor.ro>
-Cc: Herbert Poetzl <herbert@13thfloor.at>, linux-admin@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: linux-alpha@vger.kernel.org
 
-On Fri, May 28, 2004 at 05:19:20PM -0400, Balint Cristian wrote:
-> > {standard input}: Assembler messages:
-> > {standard input}:7: Warning: setting incorrect section attributes for .got
-> >
-> Hi  !
-> 
-> I got same error with 2.6.7-rc1 !
+Hi, I have an alphaserver 300 wit 256 RAM and 7 GB HDD (I think)
 
-It's not an error, just a warning, and it's unrelated to reported oops.
+I currently have RedHat Linux 7.3 installed, however I need to reinstall 
+it and I thought to install a newer distro. Which one do you recomend?
 
-Ivan.
+I use it as a gateway, http, pop3, smtp, dns, nis, ftp server. Those are 
+basic stuff, so I guess they will run just the same in any distro. I 
+can't use Tru64 because I can't pay for it. So, which distro do you 
+recomend, I only need  it to have a rather new kernel (2.4 or 2.6 if 
+possible) and I need it to have gcc. I'll update all other packages if 
+available.
+
+Thank you very much.
+Alan Bort.-
