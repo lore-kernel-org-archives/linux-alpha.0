@@ -1,41 +1,44 @@
-From: Stefan Wanner <stefan.wanner@postmail.ch>
-Subject: 2.6.5-rc3: traps.c does not compile anymore
-Date: Sat, 3 Apr 2004 10:53:11 +0200
+From: Thomas Steudten <alpha@steudten.com>
+Subject: Re: SCSI generic support: Badness in kobject_get
+Date: Sat, 03 Apr 2004 11:50:47 +0200
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <55DC60D2-854C-11D8-8FED-000393C43976@postmail.ch>
-Mime-Version: 1.0 (Apple Message framework v613)
+Message-ID: <406E88F7.9090601@steudten.com>
+References: <7CA30FDE-84F1-11D8-8FED-000393C43976@postmail.ch> <20040402223550.GA12467@kroah.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <20040402223550.GA12467@kroah.com>
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: linux-alpha@vger.kernel.org, rth@kanga.twiddle.home
+To: Greg KH <greg@kroah.com>
+Cc: Stefan Wanner <stefan.wanner@postmail.ch>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello
+Not on my alpha 2.6.4, as I post this message a few weeks ago.
 
-Upgrading from 2.6.4 to 2.6.5-rc3, arch/alpha/kernel/traps.c does not 
-compile anymore. What's wrong?
+Greg KH wrote:
 
-alpha:~/src/linux-2.6.5-rc3# make
-make[1]: `arch/alpha/kernel/asm-offsets.s' is up to date.
-   CHK     include/asm-alpha/asm_offsets.h
-   CHK     include/linux/compile.h
-   CC      arch/alpha/kernel/traps.o
-arch/alpha/kernel/traps.c: In function `opDEC_check':
-arch/alpha/kernel/traps.c:55: parse error before `['
-make[1]: *** [arch/alpha/kernel/traps.o] Error 1
-make: *** [arch/alpha/kernel] Error 2
-alpha:~/src/linux-2.6.5-rc3#
+> On Sat, Apr 03, 2004 at 12:02:52AM +0200, Stefan Wanner wrote:
+> 
+>>Hi
+>>
+>>I have an Alpha AS400 with Debian Linux 3.0 and Kernel 2.6.3
+> 
+> 
+> Please use a newer kernel, this bug has been fixed in 2.6.4.
+> 
+> thanks,
+> 
+> greg k-h
+> -
+> To unsubscribe from this list: send the line "unsubscribe linux-alpha" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
+-- 
+Tom
 
+LINUX user since kernel 0.99.x 1994.
+RPM Alpha packages at http://alpha.steudten.com/packages
+Want to know what S.u.S.E 1995 cdrom-set contains?
 
-Regards
-Stefan
-
-
-
-alpha:~# gcc -v
-Reading specs from /usr/lib/gcc-lib/alpha-linux/2.95.4/specs
-gcc version 2.95.4 20011002 (Debian prerelease)
-alpha:~# ld -v
-GNU ld version 2.14.90.0.7 20031029 Debian GNU/Linux
 
