@@ -1,54 +1,64 @@
-From: Thorsten Kranzkowski <dl8bcu@dl8bcu.de>
+From: Ryan Kirkpatrick <linux@rkirkpat.net>
 Subject: Re: XLT366 Memory Compatiblity...
-Date: Wed, 9 Jun 2004 00:29:34 +0000
+Date: Wed, 9 Jun 2004 05:28:09 -0600 (MDT)
 Sender: linux-alpha-owner@vger.kernel.org
-Message-ID: <20040609002933.A32050@Marvin.DL8BCU.ampr.org>
-References: <Pine.LNX.4.21.0406080536550.13212-100000@magellan.rkirkpat.net> <20040608125250.GD20632@lug-owl.de> <20040608175612.B31492@Marvin.DL8BCU.ampr.org> <20040608180335.GJ20632@lug-owl.de> <20040608193237.A31694@Marvin.DL8BCU.ampr.org> <20040608202629.GM20632@lug-owl.de>
-Reply-To: dl8bcu@dl8bcu.de
+Message-ID: <Pine.LNX.4.21.0406090520130.19030-100000@magellan.rkirkpat.net>
+References: <20040608175612.B31492@Marvin.DL8BCU.ampr.org>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20040608202629.GM20632@lug-owl.de>; from jbglaw@lug-owl.de on Tue, Jun 08, 2004 at 10:26:29PM +0200
+In-Reply-To: <20040608175612.B31492@Marvin.DL8BCU.ampr.org>
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+To: Thorsten Kranzkowski <dl8bcu@dl8bcu.de>
 Cc: linux-alpha@vger.kernel.org
 
-On Tue, Jun 08, 2004 at 10:26:29PM +0200, Jan-Benedict Glaw wrote:
-> On Tue, 2004-06-08 19:32:37 +0000, Thorsten Kranzkowski <dl8bcu@dl8bcu.de>
-> wrote in message <20040608193237.A31694@Marvin.DL8BCU.ampr.org>:
-> > I assume Ryans memory is bog-standard 72Pin-PS/2 (currently googling to 
-> > find a proof) and also with that it's definitely 4bits/32bit. Quoting
-> > from ref_memory.txt that describes my noname-board:
-> 
-> IIRC NoName (aka. AXPpci33) only uses parity, not ECC. Or am I wrong?
+On Tue, 8 Jun 2004, Thorsten Kranzkowski wrote:
 
-unfortunately you are :)
+> have you tried to find a set of 8 (or 4) that work together? maybe there 
+> are 'just' 2 bad sticks out of 16.
+> can you see a pattern in your endless stream of ECC errors? e.g. always the
+> same faulty bit? does this change when you swap them 2 sticks at a time? 
 
-From Digital AXPpci33 OEM Design Guide, chapter 1, table 1 on page 2:
+Both good questions, I will not have time to test until this weekend, but
+I will do so then and let you know the results. 
 
-External Cache		Configurable for 0, 256KB, or 1MB
-			(64 data and ECC protection (8) bits, 20ns or 
-			15ns access)
+> Does AlphaBIOS have an option to enable/disable ECC use? maybe it's running
+> with ECC off as long there's no OS loaded. Have you tried SRM?
 
-Memory Bus Width	64 data bits plus 8 ECC bits
+I don't think AlphaBIOS has such an option, but I will look. Unfortunetly
+SRM does not support XLTs as far as I know. I would dearly love to get rid
+of AlphaBIOS. :)
 
+> You didn't write whether your XLT366 are ok with other (smaller) RAM?
 
+Yea, they run fine with their current memory, and have for a few
+years. One had 8x32MB SIMMs, and the other had 8x16MB SIMMs, though after
+the failure to get this new RAM to work, I balenced them with 4x32MB +
+4x16MB SIMMs each. These working SIMMs each have 18 chips, and not Digital
+branded memory.
 
-> > Now I'm curious what kind of RAM-Sticks _you_ found in your black-box?
-> > are all (10,20) chips of the same size and type? Any stickers that
-> > suggest a clue?
-> 
-> These were spare sticks which were initially ripped off some RS/6000,
+> Apart from the different memory sockets, are your boards identical? It's
+> unlikely but are the memory slots numbered a different way b/c of board
+> revisions?
 
-Do you know which model?
+That's the funny thing. I was not able to find any difference in the board
+revision labels. The stickers had identical numbers, same for one that
+looked like a serial number, and even then only the last digit or two was
+a bit different. But yes, other than the memory sockets, the boards are
+completely identical.
 
-> IIRC. But I'd probably look into my PSW500au tomorrow...
+> ok, these are more questions than answers :) I hope they help you finding
+> the cause of your trouble.
 
-Bye,
-Thorsten
+Thanks for the help. I will do a bit more complete testing of SIMM
+combinations this weekend. Though I am beginning to suspect that system
+just does not care for 36 chip SIMMs, maybe too many chips to drive? TTYL.
 
--- 
-| Thorsten Kranzkowski        Internet: dl8bcu@dl8bcu.de                      |
-| Mobile: ++49 170 1876134       Snail: Kiebitzstr. 14, 49324 Melle, Germany  |
-| Ampr: dl8bcu@db0lj.#rpl.deu.eu, dl8bcu@marvin.dl8bcu.ampr.org [44.130.8.19] |
+---------------------------------------------------------------------------
+|   "For to me to live is Christ, and to die is gain."                    |
+|                                            --- Philippians 1:21 (KJV)   |
+---------------------------------------------------------------------------
+|   Ryan Kirkpatrick  |  Boulder, Colorado  |  http://www.rkirkpat.net/   |
+---------------------------------------------------------------------------
+
