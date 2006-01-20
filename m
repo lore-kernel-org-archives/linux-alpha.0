@@ -1,7 +1,7 @@
 From: "alpha @ steudten Engineering" <alpha@steudten.com>
-Subject: Kernel crash on alpha cpu 2.6.13-2.6.15
-Date: Tue, 17 Jan 2006 19:22:57 +0100
-Message-ID: <43CD3601.5060505@steudten.org>
+Subject: Kernel panic on alpha cpu 2.6.13-2.6.15 not in 2.6.10
+Date: Fri, 20 Jan 2006 13:58:43 +0100
+Message-ID: <43D0DE83.6000009@steudten.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
@@ -9,6 +9,17 @@ Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: LinuxAlpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, becker@scyld.com
+
+Was: "Kernel crash on alpha cpu 2.6.13-2.6.15"
+
+Part 2: The system has crashed again today with "kernel panic - not syncing: Aiee, killing interrupt handler!"
+After 3 days uptime!
+
+Is there any way with do_exit() to find out, which interrupt or kernel code this is?
+Is it possible to print out a kernel stack trace in do_exit()?
+The Magic Keys don't work in the normal way for the alpha.
+
+Original Mail:
 
 Hello
 
@@ -55,3 +66,4 @@ A diff between 2.6.10 and 2.6.15 3c59x.c shows a lot of lines changed, and the i
 
 Regards
 Thomas
+
