@@ -1,69 +1,84 @@
-From: "alpha @ steudten Engineering" <alpha@steudten.com>
-Subject: Kernel panic on alpha cpu 2.6.13-2.6.15 not in 2.6.10
-Date: Fri, 20 Jan 2006 13:58:43 +0100
-Message-ID: <43D0DE83.6000009@steudten.org>
+From: Steve Langasek <vorlon@debian.org>
+Subject: [patch] __cmpxchg() must really always be inlined on alpha
+Date: Thu, 2 Feb 2006 05:21:55 -0800
+Message-ID: <20060202132155.GC18093@tennyson.dodds.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="4jXrM3lyYWu4nBt5"
 Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: LinuxAlpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, becker@scyld.com
+To: linux-alpha@vger.kernel.org, stable@kernel.org
+Cc: nobse@debian.org
 
-Was: "Kernel crash on alpha cpu 2.6.13-2.6.15"
 
-Part 2: The system has crashed again today with "kernel panic - not syncing: Aiee, killing interrupt handler!"
-After 3 days uptime!
+--4jXrM3lyYWu4nBt5
+Content-Type: multipart/mixed; boundary="gj572EiMnwbLXET9"
+Content-Disposition: inline
 
-Is there any way with do_exit() to find out, which interrupt or kernel code this is?
-Is it possible to print out a kernel stack trace in do_exit()?
-The Magic Keys don't work in the normal way for the alpha.
 
-Original Mail:
+--gj572EiMnwbLXET9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hello
+Hi folks,
 
-Summary:
-alpha cpu 64 Bit
-kernel-2.6.10: ok
-kernel-2.6.13-2.6.15: problem
-eth0: 3Com Corporation 3C905B Fast Etherlink XL 10/100
-Kernel crash, reboot problem due to kernel-log-buffer flooted with message.
-No problem on x86 with same network card.
-Kernel not stable on alpha cpu!
-With hardreset (power-off) everything is ok, until the next time.
+With the latest 2.6.15 kernel builds for alpha on Debian, we ran into a
+problem with undefined references to __cmpxchg_called_with_bad_pointer() in
+a couple of kernel modules (xfs.ko and drm.ko; see
+http://bugs.debian.org/347556).  It looks like people have been trying to
+out-clever each other wrt the definition of "inline" on this architecture
+:), with the result that __cmpxchg(), which must be inlined so the compiler
+can see its argument is const, is not guaranteed to be inlined.  Indeed, it
+was not being inlined when building with -Os.
 
-Detail:
-kernel-2.6.15: Kernel crashs after 5-15days, no message is logged in syslog (klogd -2 -p -c 3).
-Autoreboot after crash is active and when the kernel boots again, the syslog
-is flooted with the messages:
-kernel: eth0: Host error, FIFO diagnostic register 0000.
-kernel: eth0: PCI bus error, bus status 40000020
-kernel: eth0: Host error, FIFO diagnostic register 0000.
-kernel: eth0: PCI bus error, bus status 40000020
-kernel: eth0: Host error, FIFO diagnostic register 0000.
-kernel: eth0: PCI bus error, bus status 40000020
-kernel: eth0: Host error, FIFO diagnostic register 0000.
-kernel: eth0: PCI bus error, bus status 40000020
-kernel: eth0: Host error, FIFO diagnostic register 0000.
-[..]
+I was asked to forward the attached patch to these two lists, which fixes
+the issue by adding an __attribute__((always_inline)) explicitly to the
+definition of __cmpxchg() instead of relying on redefines of "inline"
+elsewhere to make this happen.  Please let me know if I should be submitting
+the patch in a different format.
 
-About 20 lines per second! -> BTW: Why this is not catched from klogd/syslogd to one entry per second?
+Thanks,
+--=20
+Steve Langasek                   Give me a lever long enough and a Free OS
+Debian Developer                   to set it on, and I can move the world.
+vorlon@debian.org                                   http://www.debian.org/
 
-The text is in "drivers/net/3c59x.c line 2149 (2.6.15):
-3c59x.c:2149:           printk(KERN_ERR "%s: Host error, FIFO diagnostic register %4.4x.\n",
+--gj572EiMnwbLXET9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="alpha-cmpxchg-inline.patch"
+Content-Transfer-Encoding: quoted-printable
 
-A diff between 2.6.10 and 2.6.15 3c59x.c shows a lot of lines changed, and the i/o calls like "inw" changed to
-"ioread16" aso - maybe this is a probem.
+--- linux-2.6.15/include/asm-alpha/system.h.orig	2006-01-26 02:57:09.000000=
+000 -0800
++++ linux-2.6.15/include/asm-alpha/system.h	2006-01-26 02:58:13.000000000 -=
+0800
+@@ -562,7 +562,7 @@
+    if something tries to do an invalid cmpxchg().  */
+ extern void __cmpxchg_called_with_bad_pointer(void);
+=20
+-static inline unsigned long
++static inline __attribute__((always_inline)) unsigned long
+ __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int si=
+ze)
+ {
+ 	switch (size) {
 
-00:09.0 Ethernet controller: 3Com Corporation 3c905B 100BaseTX [Cyclone] (rev 30)
-        Subsystem: 3Com Corporation 3C905B Fast Etherlink XL 10/100
-        Flags: bus master, medium devsel, latency 32, IRQ 24
-        I/O ports at 8c00 [size=128]
-        Memory at 000000000a064000 (32-bit, non-prefetchable) [size=128]
-        Expansion ROM at 000000000a020000 [disabled] [size=128K]
-        Capabilities: [dc] Power Management version 1
+--gj572EiMnwbLXET9--
 
-Regards
-Thomas
+--4jXrM3lyYWu4nBt5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.1 (GNU/Linux)
+
+iD8DBQFD4gdzKN6ufymYLloRApQEAJ9cFXtIIAaD1b9tBzFr4yDa/gpv0ACcDbbV
+qcC7pEfoVL5jLTqJDYCcJkg=
+=IAuH
+-----END PGP SIGNATURE-----
+
+--4jXrM3lyYWu4nBt5--
