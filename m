@@ -1,84 +1,106 @@
-From: Steve Langasek <vorlon@debian.org>
-Subject: [patch] __cmpxchg() must really always be inlined on alpha
-Date: Thu, 2 Feb 2006 05:21:55 -0800
-Message-ID: <20060202132155.GC18093@tennyson.dodds.net>
+From: Mathieu Chouquet-Stringer <mchouque@free.fr>
+Subject: Problem on Alpha with "convert to generic irq framework"
+Date: Sat, 4 Mar 2006 12:12:19 +0100
+Message-ID: <20060304111219.GA10532@localhost>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4jXrM3lyYWu4nBt5"
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
-To: linux-alpha@vger.kernel.org, stable@kernel.org
-Cc: nobse@debian.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: linux-alpha@vger.kernel.org, ink@jurassic.park.msu.ru, Christoph Hellwig <hch@lst.de>, Richard Henderson <rth@twiddle.net>, Andrew Morton <akpm@osdl.org>
+
+	Hello Ivan,
+
+Few weeks ago, I stopped using the latest git snapshot on my alpha (an
+EV56 on a EB164/LX164 motherboard [1]) because I was experiecing nasty
+crashes when doing fairly heavy IOs (like checksumming ISO files) over a
+MD Raid 0 device built against 3 scsi disks connected to a pci Adaptec
+(2940U2W [2]) SCSI card.
+
+I can trigger the bug almost instantly and I get, more or less randomly,
+the following panic messages (without traces):
+
+Aiee, killing interrupt handler!
+Attempted to kill the idle task!
+Unable to handle kernel paging request at virtual address
 
 
---4jXrM3lyYWu4nBt5
-Content-Type: multipart/mixed; boundary="gj572EiMnwbLXET9"
-Content-Disposition: inline
+Using git, I started bisecting using 2.6.15 as the "good" release
+(because the box is rock solid with 2.6.15) and after countless hours
+(boy that thing isn't the fastest box around) and countless kernel
+compiles, I ended up with this first bad commit:
 
 
---gj572EiMnwbLXET9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+0595bf3bca9d9932a05b06dd438f40f01d27cd33 is first bad commit
+diff-tree 0595bf3bca9d9932a05b06dd438f40f01d27cd33 (from eee45269b0f5979c70bc151c6c2f4e5f4f5ababe)
+Author: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Date:   Fri Jan 6 00:12:22 2006 -0800
 
-Hi folks,
+    [PATCH] Alpha: convert to generic irq framework (alpha part)
+    
+    Kconfig tweaks and tons of deletions.
+    
+    Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+    Cc: Christoph Hellwig <hch@lst.de>
+    Cc: Richard Henderson <rth@twiddle.net>
+    Signed-off-by: Andrew Morton <akpm@osdl.org>
+    Signed-off-by: Linus Torvalds <torvalds@osdl.org>
 
-With the latest 2.6.15 kernel builds for alpha on Debian, we ran into a
-problem with undefined references to __cmpxchg_called_with_bad_pointer() in
-a couple of kernel modules (xfs.ko and drm.ko; see
-http://bugs.debian.org/347556).  It looks like people have been trying to
-out-clever each other wrt the definition of "inline" on this architecture
-:), with the result that __cmpxchg(), which must be inlined so the compiler
-can see its argument is const, is not guaranteed to be inlined.  Indeed, it
-was not being inlined when building with -Os.
+:040000 040000 ac127f16325bb65941bd38208325ab7821877f52 15d7d4d17a7c8cfb8fe53c29ded31ff9cf287534 M      arch
+:040000 040000 287f73cdf371b2b33cc48f1d876005aab29ff3de 29263093ae33ceccd6346b987870367bc8329f0a M      include
 
-I was asked to forward the attached patch to these two lists, which fixes
-the issue by adding an __attribute__((always_inline)) explicitly to the
-definition of __cmpxchg() instead of relying on redefines of "inline"
-elsewhere to make this happen.  Please let me know if I should be submitting
-the patch in a different format.
 
-Thanks,
---=20
-Steve Langasek                   Give me a lever long enough and a Free OS
-Debian Developer                   to set it on, and I can move the world.
-vorlon@debian.org                                   http://www.debian.org/
+I've scanned the patch quickly but I didn't see anything obvious... ;-(
 
---gj572EiMnwbLXET9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="alpha-cmpxchg-inline.patch"
-Content-Transfer-Encoding: quoted-printable
+Reverting this commit using:
+git revert 0595bf3bca9d9932a05b06dd438f40f01d27cd33
 
---- linux-2.6.15/include/asm-alpha/system.h.orig	2006-01-26 02:57:09.000000=
-000 -0800
-+++ linux-2.6.15/include/asm-alpha/system.h	2006-01-26 02:58:13.000000000 -=
-0800
-@@ -562,7 +562,7 @@
-    if something tries to do an invalid cmpxchg().  */
- extern void __cmpxchg_called_with_bad_pointer(void);
-=20
--static inline unsigned long
-+static inline __attribute__((always_inline)) unsigned long
- __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int si=
-ze)
- {
- 	switch (size) {
+against c499ec24c31edf270e777a868ffd0daddcfe7ebd (the latest HEAD as of
+right now) made my system usable again.
 
---gj572EiMnwbLXET9--
+As this code will make it into mainline 2.6.16, I wonder if I'm the
+online one experiencing this problem (any Alpha owners/testers
+around?)...
 
---4jXrM3lyYWu4nBt5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
+I'll go over the patch again to learn more about the irq framework and
+I'm available to try any patches you can throw at me the goal being to
+make 2.6.16 (or latter stable version) usable (at least to me).
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.1 (GNU/Linux)
+Cheers,
 
-iD8DBQFD4gdzKN6ufymYLloRApQEAJ9cFXtIIAaD1b9tBzFr4yDa/gpv0ACcDbbV
-qcC7pEfoVL5jLTqJDYCcJkg=
-=IAuH
------END PGP SIGNATURE-----
 
---4jXrM3lyYWu4nBt5--
+[1]
+/proc/cpuinfo:
+cpu                     : Alpha
+cpu model               : EV56
+cpu variation           : 0
+cpu revision            : 0
+cpu serial number       : Linux_is_Great!
+system type             : EB164
+system variation        : LX164
+system revision         : 0
+system serial number    : MILO-2.2-18
+cycle frequency [Hz]    : 533333333 
+timer frequency [Hz]    : 1024.00
+page size [bytes]       : 8192
+phys. address bits      : 40
+max. addr. space #      : 127
+BogoMIPS                : 1059.80
+kernel unaligned acc    : 0 (pc=0,va=0)
+user unaligned acc      : 0 (pc=0,va=0)
+platform string         : N/A
+cpus detected           : 0
+L1 Icache               : 8K, 1-way, 32b line
+L1 Dcache               : 8K, 1-way, 32b line
+L2 cache                : 96K, 3-way, 64b line
+L3 cache                : 1024K, 1-way, 64b line
+
+[2]
+01:01.0 SCSI storage controller: Adaptec AHA-2940U2/U2W
+
+-- 
+Mathieu Chouquet-Stringer
+
