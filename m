@@ -1,106 +1,35 @@
-From: Mathieu Chouquet-Stringer <mchouque@free.fr>
-Subject: Problem on Alpha with "convert to generic irq framework"
-Date: Sat, 4 Mar 2006 12:12:19 +0100
-Message-ID: <20060304111219.GA10532@localhost>
+From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Subject: Re: Problem on Alpha with "convert to generic irq framework"
+Date: Mon, 6 Mar 2006 15:51:14 +0300
+Message-ID: <20060306155114.A8425@jurassic.park.msu.ru>
+References: <20060304111219.GA10532@localhost>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <20060304111219.GA10532@localhost>; from mchouque@free.fr on Sat, Mar 04, 2006 at 12:12:19PM +0100
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org, ink@jurassic.park.msu.ru, Christoph Hellwig <hch@lst.de>, Richard Henderson <rth@twiddle.net>, Andrew Morton <akpm@osdl.org>
+To: Mathieu Chouquet-Stringer <mchouque@free.fr>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Richard Henderson <rth@twiddle.net>, Andrew Morton <akpm@osdl.org>
+Cc: Linus Torvalds <torvalds@osdl.org>
 
-	Hello Ivan,
+On Sat, Mar 04, 2006 at 12:12:19PM +0100, Mathieu Chouquet-Stringer wrote:
+> I can trigger the bug almost instantly and I get, more or less randomly,
+> the following panic messages (without traces):
+> 
+> Aiee, killing interrupt handler!
+> Attempted to kill the idle task!
+> Unable to handle kernel paging request at virtual address
 
-Few weeks ago, I stopped using the latest git snapshot on my alpha (an
-EV56 on a EB164/LX164 motherboard [1]) because I was experiecing nasty
-crashes when doing fairly heavy IOs (like checksumming ISO files) over a
-MD Raid 0 device built against 3 scsi disks connected to a pci Adaptec
-(2940U2W [2]) SCSI card.
+I cannot reproduce that, but all my machines use SRM, so interrupt
+handling is quite different from AlphaBIOS systems.
 
-I can trigger the bug almost instantly and I get, more or less randomly,
-the following panic messages (without traces):
+> system type             : EB164
+> system variation        : LX164
+> system revision         : 0
+> system serial number    : MILO-2.2-18
 
-Aiee, killing interrupt handler!
-Attempted to kill the idle task!
-Unable to handle kernel paging request at virtual address
+I'll try to install AlphaBIOS/MILO on my lx164 to see what happens.
 
-
-Using git, I started bisecting using 2.6.15 as the "good" release
-(because the box is rock solid with 2.6.15) and after countless hours
-(boy that thing isn't the fastest box around) and countless kernel
-compiles, I ended up with this first bad commit:
-
-
-0595bf3bca9d9932a05b06dd438f40f01d27cd33 is first bad commit
-diff-tree 0595bf3bca9d9932a05b06dd438f40f01d27cd33 (from eee45269b0f5979c70bc151c6c2f4e5f4f5ababe)
-Author: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Date:   Fri Jan 6 00:12:22 2006 -0800
-
-    [PATCH] Alpha: convert to generic irq framework (alpha part)
-    
-    Kconfig tweaks and tons of deletions.
-    
-    Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-    Cc: Christoph Hellwig <hch@lst.de>
-    Cc: Richard Henderson <rth@twiddle.net>
-    Signed-off-by: Andrew Morton <akpm@osdl.org>
-    Signed-off-by: Linus Torvalds <torvalds@osdl.org>
-
-:040000 040000 ac127f16325bb65941bd38208325ab7821877f52 15d7d4d17a7c8cfb8fe53c29ded31ff9cf287534 M      arch
-:040000 040000 287f73cdf371b2b33cc48f1d876005aab29ff3de 29263093ae33ceccd6346b987870367bc8329f0a M      include
-
-
-I've scanned the patch quickly but I didn't see anything obvious... ;-(
-
-Reverting this commit using:
-git revert 0595bf3bca9d9932a05b06dd438f40f01d27cd33
-
-against c499ec24c31edf270e777a868ffd0daddcfe7ebd (the latest HEAD as of
-right now) made my system usable again.
-
-As this code will make it into mainline 2.6.16, I wonder if I'm the
-online one experiencing this problem (any Alpha owners/testers
-around?)...
-
-I'll go over the patch again to learn more about the irq framework and
-I'm available to try any patches you can throw at me the goal being to
-make 2.6.16 (or latter stable version) usable (at least to me).
-
-Cheers,
-
-
-[1]
-/proc/cpuinfo:
-cpu                     : Alpha
-cpu model               : EV56
-cpu variation           : 0
-cpu revision            : 0
-cpu serial number       : Linux_is_Great!
-system type             : EB164
-system variation        : LX164
-system revision         : 0
-system serial number    : MILO-2.2-18
-cycle frequency [Hz]    : 533333333 
-timer frequency [Hz]    : 1024.00
-page size [bytes]       : 8192
-phys. address bits      : 40
-max. addr. space #      : 127
-BogoMIPS                : 1059.80
-kernel unaligned acc    : 0 (pc=0,va=0)
-user unaligned acc      : 0 (pc=0,va=0)
-platform string         : N/A
-cpus detected           : 0
-L1 Icache               : 8K, 1-way, 32b line
-L1 Dcache               : 8K, 1-way, 32b line
-L2 cache                : 96K, 3-way, 64b line
-L3 cache                : 1024K, 1-way, 64b line
-
-[2]
-01:01.0 SCSI storage controller: Adaptec AHA-2940U2/U2W
-
--- 
-Mathieu Chouquet-Stringer
-
+Ivan.
