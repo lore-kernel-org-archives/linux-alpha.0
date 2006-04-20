@@ -1,17 +1,22 @@
 From: Mathieu Chouquet-Stringer <mchouque@free.fr>
-Subject: Re: class_device_add error in SCSI with 2.6.17-rc2-g52824b6b
-Date: Thu, 20 Apr 2006 12:57:09 +0200
-Message-ID: <20060420105709.GA21067@localhost>
+Subject: strncpy (maybe others) broken on Alpha
+Date: Thu, 20 Apr 2006 19:11:02 +0200
+Message-ID: <20060420171102.GA7272@localhost>
 References: <20060419213129.GA9148@localhost> <20060419215803.6DE5BDBA1@gherkin.frus.com> <20060420101448.GA20087@localhost>
 Mime-Version: 1.0
-Return-path: <linux-scsi-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <20060420101448.GA20087@localhost>
-Sender: linux-scsi-owner@vger.kernel.org
+Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bob Tracy <rct@gherkin.frus.com>, linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, James.Bottomley@SteelEye.com, linux-alpha@vger.kernel.org
+To: Bob Tracy <rct@gherkin.frus.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+
+[ some background here: this started as a kobject_add error from the
+scsi subsystem, now it appears the strncpy routine on Alpha is broken
+see http://lkml.org/lkml/fancy/2006/4/19/305 or
+msgid 20060419213129.GA9148@localhost ]
 
 On Thu, Apr 20, 2006 at 12:14:48PM +0200, Mathieu Chouquet-Stringer wrote:
 > So I guess the strncpy routine on alpha is fscked up or gcc is doing
