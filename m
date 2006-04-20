@@ -1,34 +1,25 @@
-From: rct@gherkin.frus.com (Bob Tracy)
+From: Mathieu Chouquet-Stringer <mchouque@free.fr>
 Subject: Re: strncpy (maybe others) broken on Alpha
-Date: Thu, 20 Apr 2006 16:40:48 -0500 (CDT)
-Message-ID: <20060420214049.0575EDBA1@gherkin.frus.com>
-References: <20060421012417.B16574@jurassic.park.msu.ru>
+Date: Thu, 20 Apr 2006 23:57:23 +0200
+Message-ID: <20060420215723.GA3949@bigip.bigip.mine.nu>
+References: <20060419213129.GA9148@localhost> <20060419215803.6DE5BDBA1@gherkin.frus.com> <20060420101448.GA20087@localhost> <20060420171102.GA7272@localhost> <20060420205555.GA11502@bigip.bigip.mine.nu> <20060421012417.B16574@jurassic.park.msu.ru>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20060421012417.B16574@jurassic.park.msu.ru> "from Ivan Kokshaysky
- at Apr 21, 2006 01:24:17 am"
+Content-Disposition: inline
+In-Reply-To: <20060421012417.B16574@jurassic.park.msu.ru>
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Mathieu Chouquet-Stringer <mchouque@free.fr>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net
+Cc: Bob Tracy <rct@gherkin.frus.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net
 
-Ivan Kokshaysky wrote:
-> On Thu, Apr 20, 2006 at 10:55:55PM +0200, Mathieu Chouquet-Stringer wrote:
-> > Same code compiled with 2.95.3 fails too (I'll be trying 4.1.0 just for
-> > the kick of it, if it cross-compiles ok but I don't expect it to work
-> > either).
-> 
+On Fri, Apr 21, 2006 at 01:24:17AM +0400, Ivan Kokshaysky wrote:
 > Broken binutils, maybe?
 
-Possible...  On my Debian system, the installed binutils package *was*
-binutils_2.15-6.  I just upgraded to binutils_2.16.1cvs20060117-1 with
-the related gcc and cpp packages for default 4.0 compilation, and we'll
-see if that makes any difference.
+Stop the press, it's definitely a binutils issue. 2.16.1 doesn't trigger
+the error.
 
 -- 
------------------------------------------------------------------------
-Bob Tracy                   WTO + WIPO = DMCA? http://www.anti-dmca.org
-rct@frus.com
------------------------------------------------------------------------
+Mathieu Chouquet-Stringer                           mchouque@free.fr
+
