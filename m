@@ -1,29 +1,69 @@
-From: Mathieu Chouquet-Stringer <ml2news@free.fr>
-Subject: Re: Problem on Alpha with "convert to generic irq framework"
-Date: 09 Mar 2006 13:34:56 +0100
-Message-ID: <m3d5gvn6dr.fsf@localhost.localdomain>
-References: <20060304111219.GA10532@localhost>
-	<20060306155114.A8425@jurassic.park.msu.ru>
-	<20060306135434.GA12829@localhost>
-	<20060306191324.A1502@jurassic.park.msu.ru>
-	<20060306163142.GA19833@localhost>
-	<20060308142857.A4851@jurassic.park.msu.ru>
+From: Mathieu Chouquet-Stringer <mchouque@free.fr>
+Subject: Re: class_device_add error in SCSI with 2.6.17-rc2-g52824b6b
+Date: Thu, 20 Apr 2006 12:14:48 +0200
+Message-ID: <20060420101448.GA20087@localhost>
+References: <20060419213129.GA9148@localhost> <20060419215803.6DE5BDBA1@gherkin.frus.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20060308142857.A4851@jurassic.park.msu.ru>
+Content-Disposition: inline
+In-Reply-To: <20060419215803.6DE5BDBA1@gherkin.frus.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Richard Henderson <rth@twiddle.net>, Andrew Morton <akpm@osdl.org>, Linus Torvalds <torvalds@osdl.org>
+Content-Type: text/plain; charset="iso-8859-1"
+To: Bob Tracy <rct@gherkin.frus.com>
+Cc: linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, James.Bottomley@SteelEye.com, linux-alpha@vger.kernel.org
 
-ink@jurassic.park.msu.ru (Ivan Kokshaysky) writes:
-> Well, the problem with the new interrupt code is that it does
-> local_irq_enable() before return from interrupt.
-> [...]
+On Wed, Apr 19, 2006 at 04:58:03PM -0500, Bob Tracy wrote:
+> Similar error previously reported by me for 2.6.17-rc1, except sda go=
+t
+> added fine: error occurred when attempting to add/register sdb.=20
+> Thankfully, you were able to append a trace...
 
-Your patch works wonder, thanks Ivan.
+In my case, I was able to solve the problem by replacing this call at
+line 1648 in drivers/scsi/sd.c (patch attached):
+strncpy(sdkp->cdev.class_id, sdp->sdev_gendev.bus_id, BUS_ID_SIZE);
 
--- 
-Mathieu Chouquet-Stringer
+by
+
+snprintf(sdkp->cdev.class_id, BUS_ID_SIZE, "%s", sdp->sdev_gendev.bus_i=
+d);
+
+Then it works.
+
+While debugging the whole thing, I was printk'ing the value of
+sdkp->cdev.class_id right after the strncpy call and here's what I
+getting (basically only the first 4 chars + final \0):=20
+"0:0:"
+
+So I guess the strncpy routine on alpha is fscked up or gcc is doing
+something crazy. The function is under arch/alpha/lib/strncpy.S, time t=
+o
+learn assembly.
+
+
+--- linux-2.6/drivers/scsi/sd.c	2006-03-28 13:28:24.000000000 +0200
++++ linux-2.6-mat/drivers/scsi/sd.c	2006-04-20 12:12:36.000000000 +0200
+@@ -1645,7 +1645,8 @@
+ 	class_device_initialize(&sdkp->cdev);
+ 	sdkp->cdev.dev =3D &sdp->sdev_gendev;
+ 	sdkp->cdev.class =3D &sd_disk_class;
+-	strncpy(sdkp->cdev.class_id, sdp->sdev_gendev.bus_id, BUS_ID_SIZE);
++	snprintf(sdkp->cdev.class_id, BUS_ID_SIZE, "%s",
++		sdp->sdev_gendev.bus_id);
+=20
+ 	if (class_device_add(&sdkp->cdev))
+ 		goto out_put;
+
+
+--=20
+Mathieu Chouquet-Stringer                           mchouque@free.fr
+    "Le disparu, si l'on v=E9n=E8re sa m=E9moire, est plus pr=E9sent et
+                 plus puissant que le vivant".
+           -- Antoine de Saint-Exup=E9ry, Citadelle --
+
+-
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
