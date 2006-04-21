@@ -1,53 +1,45 @@
-From: rct@gherkin.frus.com (Bob Tracy)
+From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 Subject: Re: strncpy (maybe others) broken on Alpha
-Date: Fri, 21 Apr 2006 14:37:59 -0500 (CDT)
-Message-ID: <20060421193759.55D55DBA1@gherkin.frus.com>
-References: <20060421182223.C19738@jurassic.park.msu.ru>
+Date: Sat, 22 Apr 2006 01:12:05 +0400
+Message-ID: <20060422011205.A1270@jurassic.park.msu.ru>
+References: <20060421182223.C19738@jurassic.park.msu.ru> <20060421193759.55D55DBA1@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20060421182223.C19738@jurassic.park.msu.ru> "from Ivan Kokshaysky
- at Apr 21, 2006 06:22:23 pm"
+Content-Disposition: inline
+In-Reply-To: <20060421193759.55D55DBA1@gherkin.frus.com>; from rct@gherkin.frus.com on Fri, Apr 21, 2006 at 02:37:59PM -0500
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Content-Transfer-Encoding: 7bit
+To: Bob Tracy <rct@gherkin.frus.com>
 Cc: Mathieu Chouquet-Stringer <mchouque@free.fr>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net
 
-Ivan Kokshaysky wrote:
-> On Fri, Apr 21, 2006 at 01:55:56PM +0200, Mathieu Chouquet-Stringer wrote:
-> > I've attached to this email a tarball of what I use to test the
-> > compiler/binutils.  It's faster than recompiling the whole kernel on
-> > these slow machines!
-> 
-> Oops. I was using a wrong copy of strncpy.S (remained from previous
-> __stxncpy() debugging). What's why I wasn't able to reproduce that...
-> 
-> It seems that the registers $24 and $27 are mixed up in strncpy().
-> This fixes your test case, please check if it fixes kernel problem
-> as well.
+On Fri, Apr 21, 2006 at 02:37:59PM -0500, Bob Tracy wrote:
+> WITHOUT the patch, and everything else the same, gcc-4.0 and gcc-4.1
+> appear to work, but the gcc-3.3 build produces the bad behavior we've
+> been seeing.
 
-With this patch applied, the test suite appears to work correctly with
-ALL versions of gcc on the Alpha to which I have access.  The binutils
-package is currently the 2.16.1cvs20060413-1 version from Debian's
-"unstable" tree.
+Actually the bug doesn't show up with gcc-4 *only* because it tends
+to pack the data more tightly, so that both src[] and dest[] have different
+alignment vs. gcc-3 compiled foo.c:
+src 0x11ffff8f4, dest 0x11ffff926 - gcc-4
+src 0x11ffff8c0, dest 0x11ffff900 - gcc-3
 
-WITHOUT the patch, and everything else the same, gcc-4.0 and gcc-4.1
-appear to work, but the gcc-3.3 build produces the bad behavior we've
-been seeing.
+If you add __attribute__((aligned(8))) to both src and dest declarations
+in Mathieu's foo.c, you'll see the bug is still here.
 
-I'm currently building a 2.6.17-rc2 kernel with gcc-4.1, the binutils
-package mentioned above, and Ivan's patch.  Report to follow later.
+> Pending a knowledgable peer review of Ivan's patch (no insult intended:
+> I'm not qualified), I'd say we're close to putting this to rest.  If it
+> turns out the patch is the correct fix, I'm genuinely concerned about
+> how long this bug went undetected :-(.  The modification date of
+> arch/alpha/lib/strncpy.S is 28 Jul 2003 in my tree.  The stxncpy.S file
+> is not quite a year newer: 10 May 2004.
 
-Pending a knowledgable peer review of Ivan's patch (no insult intended:
-I'm not qualified), I'd say we're close to putting this to rest.  If it
-turns out the patch is the correct fix, I'm genuinely concerned about
-how long this bug went undetected :-(.  The modification date of
-arch/alpha/lib/strncpy.S is 28 Jul 2003 in my tree.  The stxncpy.S file
-is not quite a year newer: 10 May 2004.
+Well, these things happen. I think it's not quite surprising.
+First, the kernel is not overloaded with strncpy calls. ;-)
+Second, strncpy was mostly used in drivers that are rarely (if at all)
+used on alpha.
+Third, to discover this bug you need some special combination of source
+and destination alignment, source string length and byte count.
 
--- 
------------------------------------------------------------------------
-Bob Tracy                   WTO + WIPO = DMCA? http://www.anti-dmca.org
-rct@frus.com
------------------------------------------------------------------------
+Ivan.
