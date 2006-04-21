@@ -1,53 +1,53 @@
-From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+From: rct@gherkin.frus.com (Bob Tracy)
 Subject: Re: strncpy (maybe others) broken on Alpha
-Date: Fri, 21 Apr 2006 18:22:23 +0400
-Message-ID: <20060421182223.C19738@jurassic.park.msu.ru>
-References: <20060421095028.GA8818@bigip.bigip.mine.nu> <20060421114149.24F5EDBA1@gherkin.frus.com> <20060421115556.GA14178@bigip.bigip.mine.nu>
+Date: Fri, 21 Apr 2006 14:37:59 -0500 (CDT)
+Message-ID: <20060421193759.55D55DBA1@gherkin.frus.com>
+References: <20060421182223.C19738@jurassic.park.msu.ru>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20060421115556.GA14178@bigip.bigip.mine.nu>; from mchouque@free.fr on Fri, Apr 21, 2006 at 01:55:56PM +0200
+In-Reply-To: <20060421182223.C19738@jurassic.park.msu.ru> "from Ivan Kokshaysky
+ at Apr 21, 2006 06:22:23 pm"
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Mathieu Chouquet-Stringer <mchouque@free.fr>, Bob Tracy <rct@gherkin.frus.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net
+To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Mathieu Chouquet-Stringer <mchouque@free.fr>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net
 
-On Fri, Apr 21, 2006 at 01:55:56PM +0200, Mathieu Chouquet-Stringer wrote:
-> I've attached to this email a tarball of what I use to test the
-> compiler/binutils.  It's faster than recompiling the whole kernel on
-> these slow machines!
+Ivan Kokshaysky wrote:
+> On Fri, Apr 21, 2006 at 01:55:56PM +0200, Mathieu Chouquet-Stringer wrote:
+> > I've attached to this email a tarball of what I use to test the
+> > compiler/binutils.  It's faster than recompiling the whole kernel on
+> > these slow machines!
+> 
+> Oops. I was using a wrong copy of strncpy.S (remained from previous
+> __stxncpy() debugging). What's why I wasn't able to reproduce that...
+> 
+> It seems that the registers $24 and $27 are mixed up in strncpy().
+> This fixes your test case, please check if it fixes kernel problem
+> as well.
 
-Oops. I was using a wrong copy of strncpy.S (remained from previous
-__stxncpy() debugging). What's why I wasn't able to reproduce that...
+With this patch applied, the test suite appears to work correctly with
+ALL versions of gcc on the Alpha to which I have access.  The binutils
+package is currently the 2.16.1cvs20060413-1 version from Debian's
+"unstable" tree.
 
-It seems that the registers $24 and $27 are mixed up in strncpy().
-This fixes your test case, please check if it fixes kernel problem
-as well.
+WITHOUT the patch, and everything else the same, gcc-4.0 and gcc-4.1
+appear to work, but the gcc-3.3 build produces the bad behavior we've
+been seeing.
 
-Ivan.
+I'm currently building a 2.6.17-rc2 kernel with gcc-4.1, the binutils
+package mentioned above, and Ivan's patch.  Report to follow later.
 
---- strncpy_debug/strncpy.S	Thu Apr 20 14:18:05 2006
-+++ strncpy.S	Fri Apr 21 17:52:04 2006
-@@ -43,8 +43,8 @@
- 
- 	.align	4
- $multiword:
--	subq	$24, 1, $2	# clear the final bits in the prev word
--	or	$2, $24, $2
-+	subq	$27, 1, $2	# clear the final bits in the prev word
-+	or	$2, $27, $2
- 	zapnot	$1, $2, $1
- 	subq	$18, 1, $18
- 
-@@ -70,8 +70,8 @@
- 	bne	$18, 0b
- 
- 1:	ldq_u	$1, 0($16)	# clear the leading bits in the final word
--	subq	$27, 1, $2
--	or	$2, $27, $2
-+	subq	$24, 1, $2
-+	or	$2, $24, $2
- 
- 	zap	$1, $2, $1
- 	stq_u	$1, 0($16)
+Pending a knowledgable peer review of Ivan's patch (no insult intended:
+I'm not qualified), I'd say we're close to putting this to rest.  If it
+turns out the patch is the correct fix, I'm genuinely concerned about
+how long this bug went undetected :-(.  The modification date of
+arch/alpha/lib/strncpy.S is 28 Jul 2003 in my tree.  The stxncpy.S file
+is not quite a year newer: 10 May 2004.
+
+-- 
+-----------------------------------------------------------------------
+Bob Tracy                   WTO + WIPO = DMCA? http://www.anti-dmca.org
+rct@frus.com
+-----------------------------------------------------------------------
