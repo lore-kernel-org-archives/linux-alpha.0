@@ -1,42 +1,42 @@
-From: rct@gherkin.frus.com (Bob Tracy)
+From: Bryan =?utf8?Q?=C3=98stergaard?= <kloeri@gentoo.org>
 Subject: Re: strncpy (maybe others) broken on Alpha
-Date: Fri, 21 Apr 2006 17:49:17 -0500 (CDT)
-Message-ID: <20060421224917.34BE5DBA1@gherkin.frus.com>
-References: <20060422011205.A1270@jurassic.park.msu.ru>
+Date: Sat, 22 Apr 2006 12:39:08 +0200
+Message-ID: <20060422103907.GA7693@mail.fl.dk>
+References: <20060420215723.GA3949@bigip.bigip.mine.nu> <20060421024304.2D851DBA1@gherkin.frus.com> <20060421081500.GA3767@bigip.bigip.mine.nu> <20060421092127.GA7382@bigip.bigip.mine.nu> <20060421095028.GA8818@bigip.bigip.mine.nu>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20060422011205.A1270@jurassic.park.msu.ru> "from Ivan Kokshaysky
- at Apr 22, 2006 01:12:05 am"
+Content-Disposition: inline
+In-Reply-To: <20060421095028.GA8818@bigip.bigip.mine.nu>
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Mathieu Chouquet-Stringer <mchouque@free.fr>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net
+Content-Type: text/plain; charset="windows-1252"
+To: Mathieu Chouquet-Stringer <mchouque@free.fr>, Bob Tracy <rct@gherkin.frus.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net
 
-Ivan Kokshaysky wrote:
-> Well, these things happen. I think it's not quite surprising.
-> First, the kernel is not overloaded with strncpy calls. ;-)
+On Fri, Apr 21, 2006 at 11:50:28AM +0200, Mathieu Chouquet-Stringer wro=
+te:
+> On Fri, Apr 21, 2006 at 11:21:27AM +0200, Mathieu Chouquet-Stringer w=
+rote:
+> > The bad news is my test case, compiled with a native gcc version 3.=
+4.4
+> > and binutils version 2.16.1 doesn't work as expected.  So maybe it'=
+s
+> > combination of gcc/binutils?  I'm booting the new kernel just to co=
+nfirm
+> > that 3.4.4 and 2.16.1 do not work.
+>=20
+> A native gcc 3.4.4 and binutils 2.16.1 do not work...  What should we
+> try next?
+>=20
+=46or what it's worth, I've found gcc 3.4.4 to be bad on gentoo. If I
+compile any binutils-2.16.[01] versions with 3.4.4 ld segfaults when
+trying to compile gmp. I don't know of any binutils related problems
+when using gcc 3.4.6 currently.
 
-As I mentioned in an earlier private message, I hope I can be forgiven
-for assuming otherwise, particularly since someone went to the trouble
-of writing an architecture-specific optimized version of that function.
-
-> Second, strncpy was mostly used in drivers that are rarely (if at all)
-> used on alpha.
-
-Which was evidently the case, since this problem didn't surface until
-the strncpy() call was added to sd.c.
-
-> Third, to discover this bug you need some special combination of source
-> and destination alignment, source string length and byte count.
-
-I'm happy to report my Alpha is now up and running on 2.6.17-rc2, so
-the fix works for me.  Thanks to discussion participants for their time
-and trouble!
-
--- 
------------------------------------------------------------------------
-Bob Tracy                   WTO + WIPO = DMCA? http://www.anti-dmca.org
-rct@frus.com
------------------------------------------------------------------------
+Regards,
+Bryan =C3=98stergaard
+-
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
