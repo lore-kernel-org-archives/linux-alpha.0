@@ -1,31 +1,101 @@
-From: Wakko Warner <wakko@animx.eu.org>
-Subject: Compiling for generic vs other system types
-Date: Sat, 7 Oct 2006 19:12:52 -0400
-Message-ID: <20061007231252.GA30237@animx.eu.org>
+From: "alpha @ steudten Engineering" <NWQ3MzhlY2QwZDAzODVhN@steudten.com>
+Subject: INFO alpha CPU: Locking API testsuite: Results kernel 2.6.18.1
+Date: Sat, 04 Nov 2006 15:27:01 +0100
+Message-ID: <454CA335.609@steudten.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org
+To: LinuxAlpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
 
-I am not on this list, always keep me in the CC.
+kernel-2.6.18.1 ALPHA SX164
+No "failed" on x86.
+------------------------
+| Locking API testsuite:
+----------------------------------------------------------------------------
+                                 | spin |wlock |rlock |mutex | wsem | rsem |
+  --------------------------------------------------------------------------
+                     A-A deadlock:failed|failed|  ok  |failed|failed|failed|
+                 A-B-B-A deadlock:failed|failed|  ok  |failed|failed|failed|
+             A-B-B-C-C-A deadlock:failed|failed|  ok  |failed|failed|failed|
+             A-B-C-A-B-C deadlock:failed|failed|  ok  |failed|failed|failed|
+         A-B-B-C-C-D-D-A deadlock:failed|failed|  ok  |failed|failed|failed|
+         A-B-C-D-B-D-D-A deadlock:failed|failed|  ok  |failed|failed|failed|
+         A-B-C-D-B-C-D-A deadlock:failed|failed|  ok  |failed|failed|failed|
+                    double unlock:  ok  |  ok  |failed|failed|failed|failed|
+                  initialize held:failed|failed|failed|failed|failed|failed|
+                 bad unlock order:  ok  |  ok  |  ok  |  ok  |  ok  |  ok  |
+  --------------------------------------------------------------------------
+              recursive read-lock:             |  ok  |             |failed|
+           recursive read-lock #2:             |  ok  |             |failed|
+            mixed read-write-lock:             |failed|             |failed|
+            mixed write-read-lock:             |failed|             |failed|
+  --------------------------------------------------------------------------
+     hard-irqs-on + irq-safe-A/12:failed|failed|  ok  |
+     soft-irqs-on + irq-safe-A/12:failed|failed|  ok  |
+     hard-irqs-on + irq-safe-A/21:failed|failed|  ok  |
+     soft-irqs-on + irq-safe-A/21:failed|failed|  ok  |
+       sirq-safe-A => hirqs-on/12:failed|failed|  ok  |
+       sirq-safe-A => hirqs-on/21:failed|failed|  ok  |
+         hard-safe-A + irqs-on/12:failed|failed|  ok  |
+         soft-safe-A + irqs-on/12:failed|failed|  ok  |
+         hard-safe-A + irqs-on/21:failed|failed|  ok  |
+         soft-safe-A + irqs-on/21:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #1/123:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #1/123:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #1/132:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #1/132:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #1/213:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #1/213:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #1/231:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #1/231:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #1/312:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #1/312:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #1/321:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #1/321:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #2/123:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #2/123:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #2/132:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #2/132:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #2/213:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #2/213:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #2/231:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #2/231:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #2/312:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #2/312:failed|failed|  ok  |
+    hard-safe-A + unsafe-B #2/321:failed|failed|  ok  |
+    soft-safe-A + unsafe-B #2/321:failed|failed|  ok  |
+      hard-irq lock-inversion/123:failed|failed|  ok  |
+      soft-irq lock-inversion/123:failed|failed|  ok  |
+      hard-irq lock-inversion/132:failed|failed|  ok  |
+      soft-irq lock-inversion/132:failed|failed|  ok  |
+      hard-irq lock-inversion/213:failed|failed|  ok  |
+      soft-irq lock-inversion/213:failed|failed|  ok  |
+      hard-irq lock-inversion/231:failed|failed|  ok  |
+      soft-irq lock-inversion/231:failed|failed|  ok  |
+      hard-irq lock-inversion/312:failed|failed|  ok  |
+      soft-irq lock-inversion/312:failed|failed|  ok  |
+      hard-irq lock-inversion/321:failed|failed|  ok  |
+      soft-irq lock-inversion/321:failed|failed|  ok  |
+      hard-irq read-recursion/123:  ok  |
+      soft-irq read-recursion/123:  ok  |
+      hard-irq read-recursion/132:  ok  |
+      soft-irq read-recursion/132:  ok  |
+      hard-irq read-recursion/213:  ok  |
+      soft-irq read-recursion/213:  ok  |
+      hard-irq read-recursion/231:  ok  |
+      soft-irq read-recursion/231:  ok  |
+      hard-irq read-recursion/312:  ok  |
+      soft-irq read-recursion/312:  ok  |
+      hard-irq read-recursion/321:  ok  |
+      soft-irq read-recursion/321:  ok  |
+--------------------------------------------------------
+143 out of 218 testcases failed, as expected. |
+----------------------------------------------------
 
-I tried searching for this, but couldn't find anything.  The config options
-seems to indicate that the kernel would be smaller and the system would run
-faster if I select the system type that my alpha system is.  (In my case,
-noritake)
+---
+Steudten Engineering
+http://alpha.steudten.com
 
-I have a debian 2.6.8-3-generic (apparently a generic system type) kernel
-installed as well as a 2.6.18 that I compiled (system type noritake).  The
-2.6.18 spews some garbage just before I see ISAPNP (I should have disabled
-that).
-
-Can any one tell me the real difference between compiling for a generic
-system and a specific system (specifically noritake)?
-
--- 
- Lab tests show that use of micro$oft causes cancer in lab animals
- Got Gas???
