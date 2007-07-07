@@ -1,41 +1,101 @@
-From: "alpha @ steudten Engineering" <NWQ3MzhlY2QwZDAzODVhN@steudten.com>
-Subject: Re: INFO alpha CPU: Locking API testsuite: Results kernel 2.6.18.1
-Date: Wed, 08 Nov 2006 12:08:46 +0100
-Message-ID: <4551BABE.1060307@steudten.com>
-References: <20061108093201.GA2489@ff.dom.local>
+From: "Michal Piotrowski" <michal.k.k.piotrowski@gmail.com>
+Subject: Re: 2.6.22-rc6 bad page error
+Date: Sat, 7 Jul 2007 15:48:36 +0200
+Message-ID: <6bffcb0e0707070648v4d4af21i7c77ac931bfaaed7@mail.gmail.com>
+References: <20070705195835.AAB19DBA1@gherkin.frus.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20061108093201.GA2489@ff.dom.local>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1755663AbXGGNsy@vger.kernel.org>
+DKIM-Signature: a=rsa-sha1; c=relaxed/relaxed;
+        d=gmail.com; s=beta;
+        h=domainkey-signature:received:received:message-id:date:from:to:subject:cc:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
+        b=bbS4rnJ0KRlk5Q1SSZaspn6TwhZPAWgriVGTXda3vFLBxwtL6iN2cvtnHEfZfcsDcdmI5KZRETY97cQpQJMSyTM3kyBVJ5ikqeMgS2TUNPbu7EU0lnCmr34eivFiuHa0U1+VXZSEXlf2ANh3GW8KRxGnpIp/tjNCKanhm89GOiA=
+In-Reply-To: <20070705195835.AAB19DBA1@gherkin.frus.com>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Bob Tracy <rct@gherkin.frus.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-CONFIG_PROVE_LOCKING=y ?
+Hi Bob,
 
-It't not there/set! It depends on:
-config PROVE_LOCKING
-        bool "Lock debugging: prove locking correctness"
-        depends on DEBUG_KERNEL && TRACE_IRQFLAGS_SUPPORT && STACKTRACE_SUPPORT && LOCKDEP_SUPPORT
-        select LOCKDEP
-so it looks like only DEBUG_KERNEL is set for alpha.
-Maybe some dependencies are missing.. I'll check this.
+On 05/07/07, Bob Tracy <rct@gherkin.frus.com> wrote:
+> This happened on an Alpha computer (433au) running 2.6.22-rc6.
 
-Jarek Poplawski wrote:
-> On 04-11-2006 15:27, alpha @ steudten Engineering wrote:
->> kernel-2.6.18.1 ALPHA SX164
->> No "failed" on x86.
->> ------------------------
->> | Locking API testsuite:
->> ----------------------------------------------------------------------------
->>                                  | spin |wlock |rlock |mutex | wsem | rsem |
->>   --------------------------------------------------------------------------
->>                      A-A deadlock:failed|failed|  ok  |failed|failed|failed|
-> ...
->> --------------------------------------------------------
->> 143 out of 218 testcases failed, as expected. |
->> ----------------------------------------------------
-> 
-> CONFIG_PROVE_LOCKING=y ?
+Can you reproduce this bug on 2.6.22-rc7-git6?
 
+>  The
+> error was triggered when I started up a NX KDE session, which I've
+> done successfully on all occasions prior to this one.  In other words,
+> I wasn't doing anything out of the ordinary...  The machine is still up
+> and running as I type this, and can't/won't be rebooted for a few hours
+> if there's any other troubleshooting information I need to retrieve that
+> might be helpful.
+>
+> >Bad page state in process 'gnome-terminal'
+> >page:fffffc0000a407f0 flags:0x000000000000000c mapping:0000000000000000 mapcount:1 count:1
+> >Trying to fix it up, but a reboot is needed
+> >Backtrace:
+> >fffffc000960bc00 0000000000000000 0000000000000001 0000000000000001
+> >       fffffc0000356e40 fffffc0000a407f0 fffffc0000356ee8 fffffc002399b0a0
+> >       fffffc000f784a68 00000000000280d2 0000000000000000 000000012029a3c8
+> >       fffffc00006fb6c0 fffffc001b0667a0 0000000000000000 0000000000000000
+> >       fffffc00006fb6c8 00000000000280d2 0000000000000000 0000000000000044
+> >       fffffc00006fb1f0 0000000000000000 0000000000000000 0000000000000001
+> >Trace:
+> >[<fffffc0000356e40>] get_page_from_freelist+0x420/0x430
+> >[<fffffc0000356ee8>] __alloc_pages+0x98/0x3b0
+> >[<fffffc00003638fc>] __handle_mm_fault+0x65c/0xb50
+> >[<fffffc0000353554>] filemap_nopage+0x1a4/0x3d0
+> >[<fffffc0000363534>] __handle_mm_fault+0x294/0xb50
+> >[<fffffc000031e904>] do_page_fault+0x2d4/0x490
+> >[<fffffc0000310bdc>] entMM+0x9c/0xc0
+> >[<fffffc000032b0c0>] __do_softirq+0x90/0x120
+> >[<fffffc000032b1b4>] do_softirq+0x64/0x70
+> >[<fffffc000032b1b4>] do_softirq+0x64/0x70
+> >[<fffffc0000315d94>] handle_irq+0x74/0xc0
+> >
+> >Bad page state in process 'syslogd'
+> >page:fffffc0000a40828 flags:0x000000000000000c mapping:0000000000000000 mapcount:1 count:1
+> >Trying to fix it up, but a reboot is needed
+> >Backtrace:
+> >fffffc002242fa98 0000000000000000 0000000000000001 0000000000000001
+> >       fffffc0000356e40 fffffc0000a40828 fffffc0000356ee8 fffffc0023f6e0c0
+> >       0000000000000003 00000000000000d0 0000000000000000 00000000000000d0
+> >       fffffc00006fb6c0 0000000000000020 0000000000000000 0000000000000000
+> >       fffffc00006fb6c8 00000000000200d0 0000000000000000 0000000000000044
+> >       fffffc00006fb1f0 0000000000000000 0000000000000000 0000000000000001
+> >Trace:
+> >[<fffffc0000356e40>] get_page_from_freelist+0x420/0x430
+> >[<fffffc0000356ee8>] __alloc_pages+0x98/0x3b0
+> >[<fffffc0000375b30>] cache_alloc_refill+0x390/0x690
+> >[<fffffc0000387018>] __link_path_walk+0x8a8/0x10b0
+> >[<fffffc0000387374>] __link_path_walk+0xc04/0x10b0
+> >[<fffffc0000375798>] kmem_cache_alloc+0x78/0x80
+> >[<fffffc0000322e04>] copy_process+0xb4/0x11a0
+> >[<fffffc0000323f88>] do_fork+0x98/0x330
+> >[<fffffc0000323f40>] do_fork+0x50/0x330
+> >[<fffffc0000313340>] alpha_clone+0x40/0x60
+> >[<fffffc0000388f5c>] open_namei+0xbc/0x820
+> >[<fffffc0000311480>] sys_clone+0x10/0x20
+> >[<fffffc0000310f84>] entSys+0xa4/0xc0
+>
+> --
+> -----------------------------------------------------------------------
+> Bob Tracy               | "Eagles may soar, but weasels don't get
+> rct@frus.com            |  sucked into jet engines."       --Anon
+> -----------------------------------------------------------------------
+> -
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+>
+
+Regards,
+Michal
+
+-- 
+LOG
+http://www.stardust.webpages.pl/log/
