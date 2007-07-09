@@ -1,14 +1,14 @@
 From: rct@gherkin.frus.com (Bob Tracy)
 Subject: Re: 2.6.22-rc6 bad page error
-Date: Sun, 8 Jul 2007 16:05:12 -0500 (CDT)
-Message-ID: <20070708210512.7EE80DBA1@gherkin.frus.com>
+Date: Mon, 9 Jul 2007 13:53:24 -0500 (CDT)
+Message-ID: <20070709185324.387ACDBA1@gherkin.frus.com>
 References: <Pine.LNX.4.64.0707071852240.12481@blonde.wat.veritas.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1760265AbXGISxq@vger.kernel.org>
 In-Reply-To: <Pine.LNX.4.64.0707071852240.12481@blonde.wat.veritas.com>
  "from Hugh Dickins at Jul 7, 2007 07:38:58 pm"
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Hugh Dickins <hugh@veritas.com>
@@ -17,16 +17,28 @@ Cc: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>, Ivan Kokshaysky <ink@ju
 Hugh Dickins wrote:
 > (...) I'm expecting this to be a regression we introduced in
 > 2.6.15, rather than recently in 2.6.22 (now, that's better isn't it ;-?)
+> (...)
+> I think sound/isa/es18xx.c's
+> 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
+> will take it to sound/core/memalloc.c's
+> 	res = dma_alloc_coherent(dev, PAGE_SIZE << pg, dma, gfp_flags);
+> where we've carefully included __GFP_COMP in gfp_flags to avoid this
+> kind of problem (replacing the pre-2.6.15 use of PageReserved).
+> (...)
+> Blame me or Nick for removing the
+> special PageReserved usage, or Alpha for ignoring our gfp_flags:
+> 
+>   #define dma_alloc_coherent(dev, size, addr, gfp)	\
+> 		pci_alloc_consistent(alpha_gendev_to_pci(dev), size, addr)
+> 
+> When you get a chance, please would you try patch below?
+> 
+> --- 2.6.22-rc7/arch/alpha/kernel/pci_iommu.c	2007-06-05 06:19:19.000000000 +0100
+> +++ linux/arch/alpha/kernel/pci_iommu.c	2007-07-07 15:00:04.000000000 +0100
 
-I was reasonably certain this wasn't a recent regression.  I share a set
-of speakers between two machines, and I hadn't used sound on the Alpha
-in quite a while.
-
-> Thanks for reporting: please let us all know whether this
-> patch does fix your problem: I may be guessing wrong.
-
-ACK.  I'll build the kernel today, and fire up the test fixture
-tomorrow.
+That seems to have done the trick.  Normally, I get the "bad page"
+errors on the second NX session, but I'm on the third session of the
+day (thus far), and everything seems to be ok as far as I can tell.
 
 -- 
 -----------------------------------------------------------------------
