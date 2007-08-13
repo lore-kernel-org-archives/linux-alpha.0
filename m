@@ -1,19 +1,21 @@
 From: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>
-Subject: [1/4] 2.6.23-rc3: known regressions
-Date: Mon, 13 Aug 2007 19:59:06 +0200
-Message-ID: <46C09BEA.7010007@googlemail.com>
+Subject: Re: [4/4] 2.6.23-rc3: known regressions
+Date: Mon, 13 Aug 2007 19:59:45 +0200
+Message-ID: <46C09C11.3070105__36755.9795071886$1187028175$gmane$org@googlemail.com>
+References: <46C098FD.1030601@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: a=rsa-sha1; c=relaxed/relaxed;
         d=gmail.com; s=beta;
-        h=domainkey-signature:received:received:message-id:date:user-agent:mime-version:to:cc:subject:x-enigmail-version:content-type:content-transfer-encoding:from;
-        b=Ksh0TF0/IzG2v4tpuCwY9zFGTmLIvR/eQado9MziCgQ7lkwudug7JUYNLo/Af9+n0FElBLikcqa/VAipAUlSnHQ/gpldvFsNKvTz6cpLyEOTkS7VQaOHfV+lI7PG0vDzbnT+SeQAA+fqWMerLd1+PBv7vdIpwjknHWzslG2sFdM=
+        h=domainkey-signature:received:received:message-id:date:user-agent:mime-version:to:cc:subject:references:in-reply-to:x-enigmail-version:content-type:content-transfer-encoding:from;
+        b=KTH17JAFMxQYOiccHTQgiAs/+E3p2D1fuCrrn6a4bBVI7Ympy9PVgPZIuvl2ZPeAhucaE2uB7ZFfQe6HOdT65crjrYDAomOtGsmfJdgsJZk+95vnpK4dz1dVJumrfn5IVeS8eQ9FbC2/C2pi7J6hT0hVo9WrmB3clKBaKPQXODc=
+In-Reply-To: <46C098FD.1030601@googlemail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>, Jeff Chua <jeff.chua.linux@gmail.com>, "Antonino A. Daplas" <adaplas@gmail.com>, Jan Dittmer <jdi@l4x.org>, Christian Zankel <chris@zankel.net>, linux-alpha@vger.kernel.org, linux-pm@lists.linux-foundation.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Pavel Machek <pavel@ucw.cz>, Arkadiusz Miskiewicz <arekm@maven.pl>, Thomas Voegtle <tv@lio96.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, linux-usb-devel@lists.sourceforge.net, Greg KH <gregkh@suse.de>, Alan Stern <stern@rowland.harvard.edu>, Oliver Neukum <oliver@neukum.org>, Tino Keitel <tino.keitel@gmx.de>, "Stuart_Hayes@Dell.com" <Stuart_Hayes@Dell.com>, Daniel Exner <dex@dragonslave.de>, kvm-devel@lists.sourceforge.net, Avi Kivity <avi@qumranet.com>, Paolo Ornati <ornati@fastwebnet.it>, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Oliver Falk <oliver@linux-kernel.at>, linux-fsdevel@vger.kernel.org, nfs@lists.sourceforge.net, Trond Myklebust <Trond.Myklebust@netapp.com>, Andrew Clayton <andrew@digital-domain.net>
 
 Hi all,
 
@@ -36,54 +38,61 @@ Tejun Heo                              3
 
 
 
-Unclassified
+FS
 
-Subject         : 2.6.23-rc2 cross compile regressions (alpha,xtensa)
-References      : http://lkml.org/lkml/2007/8/6/43
-Last known good : alpha: 2.6.22-git8
-                  xtensa: 2.6.22-git6
-Submitter       : Jan Dittmer <jdi@l4x.org>
-Caused-By       : ?
-Handled-By      : xtensa: Christian Zankel <chris@zankel.net>
-Status          : unknown
-
-Subject         : console is messed up after resume from s2ram or switching to console from X
-References      : http://lkml.org/lkml/2007/8/4/6
+Subject         : [NFSD OOPS] 2.6.23-rc1-git10
+References      : http://lkml.org/lkml/2007/8/2/462
 Last known good : ?
-Submitter       : Jeff Chua <jeff.chua.linux@gmail.com>
-Caused-By       : ?
-Handled-By      : H. Peter Anvin <hpa@zytor.com>
-                  Antonino A. Daplas <adaplas@gmail.com>
-Workaround      : "s2ram --force --acpi_sleep 1 --vbe_mode"
-Status          : problem is being debugged
-
-Subject         : konqueror suddenly vanishing, "konqueror: Fatal IO error: client killed"
-References      : http://lkml.org/lkml/2007/7/22/86
-Last known good : ?
-Submitter       : Markus <lists4me@web.de>
-Caused-By       : ?
-Handled-By      : Ingo Molnar <mingo@elte.hu>
-Status          : problem is being debugged
-
-
-
-Power management
-
-Subject         : 2.6.23-rc2 swsusp, suddenly increased uptime
-References      : http://lkml.org/lkml/2007/8/12/249
-Last known good : ?
-Submitter       : Thomas Voegtle <tv@lio96.de>
+Submitter       : Andrew Clayton <andrew@digital-domain.net>
 Caused-By       : ?
 Handled-By      : ?
 Status          : unknown
 
-Subject         : resume from ram much slower
-References      : http://lkml.org/lkml/2007/8/10/275
-Last known good : 2.6.23-rc1 ?
-Submitter       : Arkadiusz Miskiewicz <arekm@maven.pl>
+
+
+USB
+
+Subject         : EHCI Regression in 2.6.23-rc2
+References      : http://lkml.org/lkml/2007/8/10/81
+Last known good : ?
+Submitter       : Daniel Exner <dex@dragonslave.de>
+Caused-By       : Stuart_Hayes@Dell.com <Stuart_Hayes@Dell.com>
+                  commit 196705c9bbc03540429b0f7cf9ee35c2f928a534
+Handled-By      : ?
+Status          : unknown
+
+Subject         : 2.6.23-rc1: USB hard disk broken
+References      : http://lkml.org/lkml/2007/7/25/62
+Last known good : ?
+Submitter       : Tino Keitel <tino.keitel@gmx.de>
 Caused-By       : ?
-Handled-By      : Rafael J. Wysocki <rjw@sisk.pl>
+Handled-By      : Oliver Neukum <oliver@neukum.org>
+Status          : unknown
+
+
+
+Virtualization
+
+Subject         : WARNING: at arch/x86_64/kernel/smp.c:379 smp_call_function_single()
+References      : http://lkml.org/lkml/2007/8/10/117
+Last known good : ?
+Submitter       : Paolo Ornati <ornati@fastwebnet.it>
+Caused-By       : Avi Kivity <avi@qumranet.com>
+                  commit cec9ad279b66793bee0b5009b7ca311060061efd
+Handled-By      : Avi Kivity <avi@qumranet.com>
 Status          : problem is being debugged
+
+
+
+Alpha
+
+Subject         : -Werror compilation problem - make[1]: *** [arch/alpha/kernel/sys_titan.o] Error 1
+References      : http://lkml.org/lkml/2007/8/6/137
+Last known good : ?
+Submitter       : Oliver Falk <oliver@linux-kernel.at>
+Caused-By       : ?
+Handled-By      : ?
+Status          : unknown
 
 
 
