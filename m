@@ -1,17 +1,17 @@
 From: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>
 Subject: Re: [4/4] 2.6.23-rc3: known regressions
 Date: Mon, 13 Aug 2007 19:59:45 +0200
-Message-ID: <46C09C11.3070105__36755.9795071886$1187028175$gmane$org@googlemail.com>
+Message-ID: <46C09C11.3070105__3447.12308510697$1187029187$gmane$org@googlemail.com>
 References: <46C098FD.1030601@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S939594AbXHMSTY@vger.kernel.org>
 DKIM-Signature: a=rsa-sha1; c=relaxed/relaxed;
         d=gmail.com; s=beta;
         h=domainkey-signature:received:received:message-id:date:user-agent:mime-version:to:cc:subject:references:in-reply-to:x-enigmail-version:content-type:content-transfer-encoding:from;
         b=KTH17JAFMxQYOiccHTQgiAs/+E3p2D1fuCrrn6a4bBVI7Ympy9PVgPZIuvl2ZPeAhucaE2uB7ZFfQe6HOdT65crjrYDAomOtGsmfJdgsJZk+95vnpK4dz1dVJumrfn5IVeS8eQ9FbC2/C2pi7J6hT0hVo9WrmB3clKBaKPQXODc=
 In-Reply-To: <46C098FD.1030601@googlemail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Linus Torvalds <torvalds@linux-foundation.org>
