@@ -1,19 +1,21 @@
 From: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>
-Subject: [1/4] 2.6.23-rc3: known regressions v3
-Date: Fri, 24 Aug 2007 19:38:03 +0200
-Message-ID: <46CF177B.4090608@googlemail.com>
+Subject: Re: [4/4] 2.6.23-rc3: known regressions v3
+Date: Fri, 24 Aug 2007 19:38:40 +0200
+Message-ID: <46CF17A0.2060503@googlemail.com>
+References: <46CF0DEF.5040107@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: a=rsa-sha1; c=relaxed/relaxed;
         d=gmail.com; s=beta;
-        h=domainkey-signature:received:received:message-id:date:user-agent:mime-version:to:cc:subject:x-enigmail-version:content-type:content-transfer-encoding:from;
-        b=PYUgv6Dhx1RwO+ykCruA+iJfa3gzyQBlWZOYoECSpNoT7gyD1GIFLCORccYAJgjfCWXU6rx4IwevVmsLvbucjcnHZ3skiycQ0OvfofGKkOHVuOgC0L/5IbCt8Y080BVw5fvx3le53VtXXl5c/Ykz0k0gz3TzWPbnqcLycgRC8QY=
+        h=domainkey-signature:received:received:message-id:date:user-agent:mime-version:to:cc:subject:references:in-reply-to:x-enigmail-version:content-type:content-transfer-encoding:from;
+        b=IFAC+xlPi1Y3Q4jRvEsXh+sANsftEPzu7UVhFHHOKxon+gsv4Hw1WbSf9o3C28W8VtngvmzgopufJ3geijdpPaY6pC5AIQ+hBK0IRkZbmKmuUt6QkhkPKgjzW94+ho36h+6mVL/L1dic7SqzfS9ZpN61RsvKxWPkKplCPXac7r0=
+In-Reply-To: <46CF0DEF.5040107@googlemail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>, Markus <lists4me@web.de>, Jeff Chua <jeff.chua.linux@gmail.com>, "Antonino A. Daplas" <adaplas@gmail.com>, Jan Dittmer <jdi@l4x.org>, Christian Zankel <chris@zankel.net>, linux-alpha@vger.kernel.org, Stefan Becker <Stefan.Becker@nokia.com>, alsa-devel@alsa-project.org, Jaroslav Kysela <perex@suse.cz>, Takashi Iwai <tiwai@suse.de>, "Ivan N. Zlatev" <contact@i-nz.net>, Thomas Meyer <thomas@m3y3r.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, linux-usb-devel@lists.sourceforge.net, Greg KH <gregkh@suse.de>, Alan Stern <stern@rowland.harvard.edu>, Oliver Neukum <oliver@neukum.org>, Tino Keitel <tino.keitel@gmx.de>, Parag Warudkar <parag.warudkar@gmail.com>, Zachary Amsden <zach@vmware.com>, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Oliver Falk <oliver@linux-kernel.at>
 
 Hi all,
 
@@ -37,53 +39,37 @@ Tejun Heo                              3
 
 
 
-Unclassified
+USB
 
-Subject         : 2.6.23-rc3-git1 crash/stuck on VIA CN700 system
-References      : http://lkml.org/lkml/2007/8/20/174
+Subject         : 2.6.23-rc1: USB hard disk broken
+References      : http://lkml.org/lkml/2007/7/25/62
 Last known good : ?
-Submitter       : Stefan Becker <Stefan.Becker@nokia.com>
+Submitter       : Tino Keitel <tino.keitel@gmx.de>
 Caused-By       : ?
-Handled-By      : ?
+Handled-By      : Oliver Neukum <oliver@neukum.org>
 Status          : unknown
 
-Subject         : 2.6.23-rc2 cross compile regressions (alpha,xtensa)
-References      : http://lkml.org/lkml/2007/8/6/43
-Last known good : alpha: 2.6.22-git8
-                  xtensa: 2.6.22-git6
-Submitter       : Jan Dittmer <jdi@l4x.org>
-Caused-By       : ?
-Handled-By      : xtensa: Christian Zankel <chris@zankel.net>
-Status          : unknown
 
-Subject         : console is messed up after resume from s2ram or switching to console from X
-References      : http://lkml.org/lkml/2007/8/4/6
-Last known good : ?
-Submitter       : Jeff Chua <jeff.chua.linux@gmail.com>
-Caused-By       : ?
-Handled-By      : H. Peter Anvin <hpa@zytor.com>
-                  Antonino A. Daplas <adaplas@gmail.com>
-Workaround      : "s2ram --force --acpi_sleep 1 --vbe_mode"
-Status          : problem is being debugged
 
-Subject         : konqueror suddenly vanishing, "konqueror: Fatal IO error: client killed"
-References      : http://lkml.org/lkml/2007/7/22/86
+Virtualization
+
+Subject         : CONFIG_VMI broken
+References      : http://lkml.org/lkml/2007/8/14/203
 Last known good : ?
-Submitter       : Markus <lists4me@web.de>
+Submitter       : Parag Warudkar <parag.warudkar@gmail.com>
 Caused-By       : ?
-Handled-By      : Ingo Molnar <mingo@elte.hu>
+Handled-By      : Zachary Amsden <zach@vmware.com>
 Status          : problem is being debugged
 
 
 
-ALSA
+Alpha
 
-Subject         : Master volume control broken
-References      : http://lkml.org/lkml/2007/8/18/46
+Subject         : -Werror compilation problem - make[1]: *** [arch/alpha/kernel/sys_titan.o] Error 1
+References      : http://lkml.org/lkml/2007/8/6/137
 Last known good : ?
-Submitter       : Thomas Meyer <thomas@m3y3r.de>
-Caused-By       : Ivan N. Zlatev <contact@i-nz.net>
-                  commit 5d5d3bc3eddf2ad97b2cb090b92580e7fed6cee1
+Submitter       : Oliver Falk <oliver@linux-kernel.at>
+Caused-By       : ?
 Handled-By      : ?
 Status          : unknown
 
