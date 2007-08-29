@@ -1,89 +1,82 @@
-From: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>
-Subject: [1/4] 2.6.23-rc4: known regressions
-Date: Wed, 29 Aug 2007 17:26:36 +0200
-Message-ID: <46D5902C.1040905@googlemail.com>
+From: Jan Dittmer <jdi@l4x.org>
+Subject: Re: [1/4] 2.6.23-rc4: known regressions
+Date: Wed, 29 Aug 2007 20:04:52 +0200
+Message-ID: <46D5B544.4030708@l4x.org>
+References: <46D5902C.1040905@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: a=rsa-sha1; c=relaxed/relaxed;
-        d=gmail.com; s=beta;
-        h=domainkey-signature:received:received:message-id:date:user-agent:mime-version:to:cc:subject:x-enigmail-version:content-type:content-transfer-encoding:from;
-        b=CZPqcoydhSn+2T1jm1UZ3EZhTwxD/QGRyj4daWx1LOy6U5l6BJ55u85SK7xtrBO3K02DhpgEqePc1R/RHwhCQE1u4vKyxbFdDvA7/EkBOpkuVnVSOSywyaUKlsWiLcuSyUTPD261FU8QRryIOVyQ/R0hTvjbc1DQEodxttvKAcg=
+In-Reply-To: <46D5902C.1040905@googlemail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>, Markus <lists4me@web.de>, Jeff Chua <jeff.chua.linux@gmail.com>, "Antonino A. Daplas" <adaplas@gmail.com>, Jan Dittmer <jdi@l4x.org>, Christian Zankel <chris@zankel.net>, linux-alpha@vger.kernel.org, Stefan Becker <Stefan.Becker@nokia.com>, Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>
+To: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Christian Zankel <chris@zankel.net>, linux-alpha@vger.kernel.org
 
-Hi all,
+Michal Piotrowski wrote:
+> Subject         : 2.6.23-rc2 cross compile regressions (alpha,xtensa)
+> References      : http://lkml.org/lkml/2007/8/6/43 
+> Last known good : alpha: 2.6.22-git8 xtensa: 2.6.22-git6
+> Submitter       : Jan Dittmer <jdi@l4x.org>
+> Caused-By       : ?
+> Handled-By      : xtensa: Christian Zankel <chris@zankel.net>
+> Status          : unknown
 
-Here is a list of some known regressions in 2.6.23-rc4.
+Status: Unfixed
 
-Feel free to add new regressions/remove fixed etc.
-http://kernelnewbies.org/known_regressions
+alpha:  http://l4x.org/k/?d=33700
+  CC      init/version.o
+  LD      init/built-in.o
+  LD      .tmp_vmlinux1
+arch/alpha/kernel/built-in.o(.text+0xaaa8): In function `pdev_save_srm_config':
+include/linux/slub_def.h:154: undefined reference to `__kmalloc_size_too_large'
+arch/alpha/kernel/built-in.o(.text+0xaaac):include/linux/slub_def.h:154: undefined reference to `__kmalloc_size_too_large'
+arch/alpha/kernel/built-in.o(.text+0xd0a8): In function `module_frob_arch_sections':
+include/linux/slub_def.h:154: undefined reference to `__kmalloc_size_too_large'
+arch/alpha/kernel/built-in.o(.text+0xd0ac):include/linux/slub_def.h:154: undefined reference to `__kmalloc_size_too_large'
+arch/alpha/kernel/built-in.o(.text+0x19388): In function `srmcons_get_private_struct':
+include/linux/slub_def.h:154: undefined reference to `__kmalloc_size_too_large'
+arch/alpha/kernel/built-in.o(.text+0x1938c):include/linux/slub_def.h:154: more undefined references to `__kmalloc_size_too_large' follow
+make[1]: *** [.tmp_vmlinux1] Error 1
+make: *** [_all] Error 2
 
-List of Aces
 
-Name                    Regressions fixed since 21-Jun-2007
-Adrian Bunk                            9
-Andi Kleen                             5
-Linus Torvalds                         5
-Andrew Morton                          4
-Hugh Dickins                           4
-Al Viro                                3
-Alan Stern                             3
-Cornelia Huck                          3
-Jens Axboe                             3
-Tejun Heo                              3
+xtensa: http://l4x.org/k/?d=33728
+  CC      arch/xtensa/kernel/process.o
+arch/xtensa/kernel/process.c:50: error: `INR_OPEN' undeclared here (not in a function)
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[7].rlim_cur')
+arch/xtensa/kernel/process.c:50: error: `INR_OPEN' undeclared here (not in a function)
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[7].rlim_max')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[7]')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[8]')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[9]')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[10]')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[11]')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[12]')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[13]')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim[14]')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.rlim')
+arch/xtensa/kernel/process.c:50: error: initializer element is not constant
+arch/xtensa/kernel/process.c:50: error: (near initialization for `init_signals.<anonymous>')
+arch/xtensa/kernel/process.c: In function `xtensa_execve':
+arch/xtensa/kernel/process.c:449: error: implicit declaration of function `getname'
+arch/xtensa/kernel/process.c:449: warning: assignment makes pointer from integer without a cast
+arch/xtensa/kernel/process.c:460: error: implicit declaration of function `putname'
+make[2]: *** [arch/xtensa/kernel/process.o] Error 1
+make[1]: *** [arch/xtensa/kernel] Error 2
+make: *** [_all] Error 2
 
-Unclassified
 
-Subject         : cpu hotplug support broken in 2.6.23-rc3
-References      : http://lkml.org/lkml/2007/8/27/58
-Last known good : ?
-Submitter       : Pavel Machek <pavel@ucw.cz>
-Caused-By       : ?
-Handled-By      : ?
-Status          : problem is being debugged
+Jan
 
-Subject         : 2.6.23-rc3-git1 crash/stuck on VIA CN700 system
-References      : http://lkml.org/lkml/2007/8/20/174
-Last known good : ?
-Submitter       : Stefan Becker <Stefan.Becker@nokia.com>
-Caused-By       : ?
-Handled-By      : ?
-Status          : unknown
-
-Subject         : 2.6.23-rc2 cross compile regressions (alpha,xtensa)
-References      : http://lkml.org/lkml/2007/8/6/43
-Last known good : alpha: 2.6.22-git8
-                  xtensa: 2.6.22-git6
-Submitter       : Jan Dittmer <jdi@l4x.org>
-Caused-By       : ?
-Handled-By      : xtensa: Christian Zankel <chris@zankel.net>
-Status          : unknown
-
-Subject         : console is messed up after resume from s2ram or switching to console from X
-References      : http://lkml.org/lkml/2007/8/4/6
-Last known good : ?
-Submitter       : Jeff Chua <jeff.chua.linux@gmail.com>
-Caused-By       : ?
-Handled-By      : H. Peter Anvin <hpa@zytor.com>
-                  Antonino A. Daplas <adaplas@gmail.com>
-Workaround      : "s2ram --force --acpi_sleep 1 --vbe_mode"
-Status          : problem is being debugged
-
-Subject         : konqueror suddenly vanishing, "konqueror: Fatal IO error: client killed"
-References      : http://lkml.org/lkml/2007/7/22/86
-Last known good : ?
-Submitter       : Markus <lists4me@web.de>
-Caused-By       : ?
-Handled-By      : Ingo Molnar <mingo@elte.hu>
-Status          : problem is being debugged
-
-Regards,
-Michal
-
--- 
-LOG
-http://www.stardust.webpages.pl/log/
