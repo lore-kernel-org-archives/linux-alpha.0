@@ -1,57 +1,111 @@
-From: "Michal Piotrowski" <michal.k.k.piotrowski@gmail.com>
-Subject: Re: [1/4] 2.6.23-rc5: known regressions
-Date: Mon, 3 Sep 2007 12:36:09 +0200
-Message-ID: <6bffcb0e0709030336g8d9fa1ao92b9d793fb18c66a@mail.gmail.com>
-References: <46DBDD6E.9020007@googlemail.com> <46DBDDF0.3090203@l4x.org>
-	 <6bffcb0e0709030314t28c0102dr41f3c7b75b134cfa@mail.gmail.com>
-	 <20070903102347.GQ16016@stusta.de>
+From: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>
+Subject: [1/4] 2.6.23-rc5: known regressions v2
+Date: Sat, 08 Sep 2007 13:10:59 +0200
+Message-ID: <46E28343.1030002@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: a=rsa-sha1; c=relaxed/relaxed;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=beta;
-        h=domainkey-signature:received:received:message-id:date:from:to:subject:cc:in-reply-to:mime-version:content-type:content-transfer-encoding:content-disposition:references;
-        b=Rzxjv2ZgRGFXKTRONkBd0kVrOszLknN+e08/AXqSIGz7YaNNSUQWhyB4vxriyvxwLHN0v6eYsZGe4uWhuxsnOHU8B1oaxNJQq0Env6Qv5F0JiSVIHo5BSXcuHjzFvDDEfscbeUdewJv3oxm8ksLiUYg7KshCkUi3ER/mWSmTXbw=
-In-Reply-To: <20070903102347.GQ16016@stusta.de>
-Content-Disposition: inline
+        h=domainkey-signature:received:received:message-id:date:user-agent:mime-version:to:cc:subject:x-enigmail-version:content-type:content-transfer-encoding:from;
+        bh=GFhndoo5kdX3QHecLk4xEwQRZKe5uXPMsFUT2Yi3tws=;
+        b=LHEpMB9Pb+AkfNOZ0WglHD5rebBMHtRN7+EfsMBdpzJ2mJquLUdrTMlH8dTk+DweCOx+kIbIAUlMH+mOK4NC5cg4TZqQVzWEXoyzX5jFB1ZvZ/HogRVIDz8pisuHMDTQrVpojbMvPaM00Hg68aGUc98eBnYmOfw/yGwVMVAhqOg=
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Adrian Bunk <bunk@kernel.org>
-Cc: Jan Dittmer <jdi@l4x.org>, LKML <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>, Markus <lists4me@web.de>, Jeff Chua <jeff.chua.linux@gmail.com>, "Antonino A. Daplas" <adaplas@gmail.com>, linux-alpha@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Stefan Becker <Stefan.Becker@nokia.com>, Andi Kleen <ak@suse.de>, Dave Jones <davej@redhat.com>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, tglx@linutronix.de, Jakub Jelinek <jakub@redhat.com>, Jeff Dike <jdike@linux.intel.com>, user-mode-linux-devel@lists.sourceforge.net, Adrian Bunk <bunk@kernel.org>
 
-On 03/09/07, Adrian Bunk <bunk@kernel.org> wrote:
-> On Mon, Sep 03, 2007 at 12:14:05PM +0200, Michal Piotrowski wrote:
-> > On 03/09/07, Jan Dittmer <jdi@l4x.org> wrote:
-> > > Michal Piotrowski wrote:
-> > > > Subject         : 2.6.23-rc2 cross compile regressions (alpha,xtensa)
-> > > > References      : http://lkml.org/lkml/2007/8/6/43
-> > > > Last known good : alpha: 2.6.22-git8
-> > > >                   xtensa: 2.6.22-git6
-> > > > Submitter       : Jan Dittmer <jdi@l4x.org>
-> > > > Caused-By       : ?
-> > > > Handled-By      : xtensa: Christian Zankel <chris@zankel.net>
-> > > > Status          : unknown
-> > >
-> > > Both are fixed as of -rc5
-> >
-> > Thanks. I will try to figure out who fixed these bugs.
->
-> alpha was commit aa137f9d29d30592774c727ec5cfcf9891e576fa
-> xtensa was commit b5f281a62761887e7cb5f60fa81f7cd052fec5cb
+Hi all,
 
-Thanks!
+Here is a list of some known regressions in 2.6.23-rc5.
 
->
-> > Regards,
-> > Michal
->
-> cu
-> Adrian
+Feel free to add new regressions/remove fixed etc.
+http://kernelnewbies.org/known_regressions
+
+List of Aces
+
+Name                    Regressions fixed since 21-Jun-2007
+Adrian Bunk                            10
+Linus Torvalds                         6
+Andi Kleen                             5
+Hugh Dickins                           5
+Trond Myklebust                        5
+Andrew Morton                          4
+Al Viro                                3
+Alan Stern                             3
+Alexey Starikovskiy                    3
+Cornelia Huck                          3
+David S. Miller                        3
+Jens Axboe                             3
+Stephen Hemminger                      3
+Tejun Heo                              3
+
+
+
+Unclassified
+
+Subject         : x86_64 vdso patch is broken somehow?
+References      : http://lkml.org/lkml/2007/8/29/136
+Last known good : ?
+Submitter       : Chuck Ebbert <cebbert@redhat.com>
+Caused-By       : Andi Kleen <ak@suse.de>
+                  commit 2aae950b21e4bc789d1fc6668faf67e8748300b7
+Handled-By      : ?
+Status          : unknown
+
+Subject         : cpu hotplug support broken in 2.6.23-rc3/highres timers break cpu hotplug in 2.6.23-rc5
+References      : http://lkml.org/lkml/2007/8/27/58
+                  http://lkml.org/lkml/2007/9/3/65
+Last known good : ?
+Submitter       : Pavel Machek <pavel@ucw.cz>
+Caused-By       : ?
+Handled-By      : ?
+Status          : problem is being debugged
+
+Subject         : 2.6.23-rc3-git1 crash/stuck on VIA CN700 system
+References      : http://lkml.org/lkml/2007/8/20/174
+Last known good : ?
+Submitter       : Stefan Becker <Stefan.Becker@nokia.com>
+Caused-By       : Andi Kleen <ak@suse.de>
+                  commit 19d36ccdc34f5ed444f8a6af0cbfdb6790eb1177
+Handled-By      : Andi Kleen <ak@suse.de>
+                  Dave Jones <davej@redhat.com>
+Workaround      : http://lkml.org/lkml/2007/9/5/221
+Status          : problem is being debugged
+
+Subject         : console is messed up after resume from s2ram or switching to console from X
+References      : http://lkml.org/lkml/2007/8/4/6
+Last known good : ?
+Submitter       : Jeff Chua <jeff.chua.linux@gmail.com>
+Caused-By       : ?
+Handled-By      : H. Peter Anvin <hpa@zytor.com>
+                  Antonino A. Daplas <adaplas@gmail.com>
+Workaround      : "s2ram --force --acpi_sleep 1 --vbe_mode"
+Status          : problem is being debugged
+
+Subject         : konqueror suddenly vanishing, "konqueror: Fatal IO error: client killed"
+References      : http://lkml.org/lkml/2007/7/22/86
+Last known good : ?
+Submitter       : Markus <lists4me@web.de>
+Caused-By       : ?
+Handled-By      : Ingo Molnar <mingo@elte.hu>
+Status          : problem is being debugged
+
+Subject         : uml on x86_64 compile error
+References      : http://lkml.org/lkml/2007/9/3/86
+Last known good : ?
+Submitter       : Adrian Bunk <bunk@kernel.org>
+Caused-By       : Jeff Dike <jdike@linux.intel.com>
+                  commit d1254b12c93e1e586137a2ffef71fd33cf273f35
+Handled-By      : ?
+Status          : unknown
+
+
 
 Regards,
 Michal
 
--- 
+--
 LOG
 http://www.stardust.webpages.pl/log/
