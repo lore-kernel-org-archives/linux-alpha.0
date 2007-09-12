@@ -1,24 +1,24 @@
 From: Michal Piotrowski <michal.k.k.piotrowski@gmail.com>
-Subject: [1/4] 2.6.23-rc5: known regressions v2
-Date: Sat, 08 Sep 2007 13:10:59 +0200
-Message-ID: <46E28343.1030002@googlemail.com>
+Subject: [1/4] 2.6.23-rc6: known regressions
+Date: Wed, 12 Sep 2007 18:58:46 +0200
+Message-ID: <46E81AC6.3000306@googlemail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=beta;
         h=domainkey-signature:received:received:message-id:date:user-agent:mime-version:to:cc:subject:x-enigmail-version:content-type:content-transfer-encoding:from;
-        bh=GFhndoo5kdX3QHecLk4xEwQRZKe5uXPMsFUT2Yi3tws=;
-        b=LHEpMB9Pb+AkfNOZ0WglHD5rebBMHtRN7+EfsMBdpzJ2mJquLUdrTMlH8dTk+DweCOx+kIbIAUlMH+mOK4NC5cg4TZqQVzWEXoyzX5jFB1ZvZ/HogRVIDz8pisuHMDTQrVpojbMvPaM00Hg68aGUc98eBnYmOfw/yGwVMVAhqOg=
+        bh=IieTdUa/u6OPBrtrvAEtNiNzoZHcfbCeoYf7cRypWkQ=;
+        b=OGbyRTWTo7vEslNYpHXvqZRu/LIG+XJu55mGxutSqJiqDEAjph5dhL4NGNjI7iReqXaxYp5Z0jciMzumEmqgQ7RDgAOyWsaeWHMKvhD87ygAOD6FcMbz9UoDgt8F8QDf0qqnEaR0ZkMacXBPcxhDvDf8yf50EQj9I1sXf5yk/0I=
 Sender: linux-alpha-owner@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>, Markus <lists4me@web.de>, Jeff Chua <jeff.chua.linux@gmail.com>, "Antonino A. Daplas" <adaplas@gmail.com>, linux-alpha@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Stefan Becker <Stefan.Becker@nokia.com>, Andi Kleen <ak@suse.de>, Dave Jones <davej@redhat.com>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, tglx@linutronix.de, Jakub Jelinek <jakub@redhat.com>, Jeff Dike <jdike@linux.intel.com>, user-mode-linux-devel@lists.sourceforge.net, Adrian Bunk <bunk@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>, Markus <lists4me@web.de>, Jeff Chua <jeff.chua.linux@gmail.com>, "Antonino A. Daplas" <adaplas@gmail.com>, linux-alpha@vger.kernel.org, Stefan Becker <Stefan.Becker@nokia.com>, Andi Kleen <ak@suse.de>, Dave Jones <davej@redhat.com>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, Thomas Gleixner <tglx@linutronix.de>, Jakub Jelinek <jakub@redhat.com>, Jeff Dike <jdike@linux.intel.com>, user-mode-linux-devel@lists.sourceforge.net, "Adrian Bunk \"\"" <bunk@kernel.org>
 
 Hi all,
 
-Here is a list of some known regressions in 2.6.23-rc5.
+Here is a list of some known regressions in 2.6.23-rc6.
 
 Feel free to add new regressions/remove fixed etc.
 http://kernelnewbies.org/known_regressions
@@ -28,12 +28,12 @@ List of Aces
 Name                    Regressions fixed since 21-Jun-2007
 Adrian Bunk                            10
 Linus Torvalds                         6
+Alan Stern                             5
 Andi Kleen                             5
 Hugh Dickins                           5
 Trond Myklebust                        5
 Andrew Morton                          4
 Al Viro                                3
-Alan Stern                             3
 Alexey Starikovskiy                    3
 Cornelia Huck                          3
 David S. Miller                        3
