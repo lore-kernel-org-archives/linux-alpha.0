@@ -1,23 +1,20 @@
-From: FUJITA Tomonori <tomof@acm.org>
+From: rct@frus.com (Bob Tracy)
 Subject: Re: [regression]2.6.25-rc4: boot panic on alpha
-Date: Sat, 8 Mar 2008 01:45:42 +0900
-Message-ID: <20080308014543E.tomof@acm.org>
-References: <20080307141439.GB23178@elte.hu>
-	<20080307235616T.tomof@acm.org>
-	<20080307162116.GA18563@jurassic.park.msu.ru>
+Date: Fri, 7 Mar 2008 13:06:10 -0600 (CST)
+Message-ID: <20080307190610.2B4E2DBA2@gherkin.frus.com>
+References: <20080307162116.GA18563@jurassic.park.msu.ru>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20080307162116.GA18563@jurassic.park.msu.ru>
+In-Reply-To: <20080307162116.GA18563@jurassic.park.msu.ru> "from Ivan Kokshaysky
+ at Mar 7, 2008 07:21:16 pm"
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: Text/Plain; charset="us-ascii"
-To: ink@jurassic.park.msu.ru
-Cc: tomof@acm.org, rct@frus.com, mingo@elte.hu, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, fujita.tomonori@lab.ntt.co.jp, akpm@linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: FUJITA Tomonori <tomof@acm.org>, rct@frus.com, mingo@elte.hu, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, fujita.tomonori@lab.ntt.co.jp, akpm@linux-foundation.org
 
-On Fri, 7 Mar 2008 19:21:16 +0300
-Ivan Kokshaysky <ink@jurassic.park.msu.ru> wrote:
-
+Ivan Kokshaysky wrote:
 > On Fri, Mar 07, 2008 at 11:56:40PM +0900, FUJITA Tomonori wrote:
 > > Very sorry, I probably broke the IOMMU. I don't have the hardware so
 > > I've not tested the patches.
@@ -26,70 +23,29 @@ Ivan Kokshaysky <ink@jurassic.park.msu.ru> wrote:
 > alpha with iommmu and scsi is disassembled at the moment, thanks to
 > dead CPU fan...
 > 
-> > -	BUG_ON(arena->dma_base & ~PAGE_MASK);
-> > +	if (arena->dma_base & ~PAGE_MASK)
-> > +		printk("%s %d: %lx\n", __FUNCTION__, __LINE__, arena->dma_base);
-> 
-> arena->dma_base is always properly aligned - it's pretty fundamental thing.
-
-Thanks, I see.
-
-
-> >  	base = arena->dma_base >> PAGE_SHIFT;
-> >  	if (dev)
-> >  		boundary_size = ALIGN(dma_get_max_seg_size(dev) + 1, PAGE_SIZE)
-> 				      ^^^^^^^^^^^^^^^^^^^^^^^^^
-> Must be dma_get_seg_boundary(dev). Hopefully it's the only typo ;-)
-
-Ah, a stupid typo...
-
-
-> > @@ -152,7 +155,8 @@ iommu_arena_find_pages(struct device *dev, struct pci_iommu_arena *arena,
-> >  	else
-> >  		boundary_size = ALIGN(1UL << 32, PAGE_SIZE) >> PAGE_SHIFT;
-> 
-> A bit of abuse of ALIGN() macro, to my taste ;-)
-> 
-> > -	BUG_ON(!is_power_of_2(boundary_size));
-> > +	if (!is_power_of_2(boundary_size))
-> > +		printk("%s %d: %lx\n", __FUNCTION__, __LINE__, boundary_size);
+> (...)
 > 
 > Perhaps it was that, if the scsi driver set max_seg_size to something
 > other than default 65536 (and not a power of two)...
-
-Yeah, probably (and hopefully) it was.
-
-
-> Bob, can you give it a try?
 > 
-> Ivan.
+> Bob, can you give it a try?
 > 
 > diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
 > index be6fa10..e07a23f 100644
 > --- a/arch/alpha/kernel/pci_iommu.c
 > +++ b/arch/alpha/kernel/pci_iommu.c
-> @@ -144,15 +144,14 @@ iommu_arena_find_pages(struct device *dev, struct pci_iommu_arena *arena,
->  	unsigned long base;
->  	unsigned long boundary_size;
->  
-> -	BUG_ON(arena->dma_base & ~PAGE_MASK);
->  	base = arena->dma_base >> PAGE_SHIFT;
-> -	if (dev)
-> -		boundary_size = ALIGN(dma_get_max_seg_size(dev) + 1, PAGE_SIZE)
-> -			>> PAGE_SHIFT;
-> -	else
-> -		boundary_size = ALIGN(1UL << 32, PAGE_SIZE) >> PAGE_SHIFT;
-> -
-> -	BUG_ON(!is_power_of_2(boundary_size));
-> +	if (dev) {
-> +		boundary_size = dma_get_seg_boundary(dev) + 1;
-> +		BUG_ON(!is_power_of_2(boundary_size));
-> +		boundary_size >>= PAGE_SHIFT;
-> +	} else {
-> +		boundary_size = 1UL << (32 - PAGE_SHIFT);
-> +	}
->  
->  	/* Search forward for the first mask-aligned sequence of N free ptes */
->  	ptes = arena->ptes;
+> (...)
 
-Thanks!
+In the interest of efficiency, I'll try Ivan's patch against -rc4 before
+I do anything else (although I *do* have my git tree updated and ready
+for abuse if it comes to that :-)).  New kernel is building: I'll be able
+to test it in about five hours (when I can get back to where the machine
+is).
+
+As usual, thanks to everyone for the quick responses.
+
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "I was a beta tester for dirt.  They never did
+rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
+------------------------------------------------------------------------
