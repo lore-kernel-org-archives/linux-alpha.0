@@ -1,47 +1,39 @@
-From: Mark Lord <lkml@rtr.ca>
-Subject: Re: [1/4] 2.6.23-rc6: known regressions
-Date: Thu, 13 Sep 2007 09:21:35 -0400
-Message-ID: <46E9395F.2090300@rtr.ca>
-References: <46E81AC6.3000306@googlemail.com> <46E8A572.7050209@rtr.ca> <20070913093651.GA5077@suse.de>
+From: rct@frus.com (Bob Tracy)
+Subject: [regression]2.6.25-rc4: boot panic on alpha
+Date: Thu, 6 Mar 2008 21:41:55 -0600 (CST)
+Message-ID: <20080307034155.A8C6EDBA2@gherkin.frus.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1757869AbXIMNVr@vger.kernel.org>
-In-Reply-To: <20070913093651.GA5077@suse.de>
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S932643AbYCGDmU@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-List-Id: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Greg KH <gregkh@suse.de>
-Cc: Alan Stern <stern@rowland.harvard.edu>, Oliver Neukum <oneukum@suse.de>, Michal Piotrowski <michal.k.k.piotrowski@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>, Markus <lists4me@web.de>, Jeff Chua <jeff.chua.linux@gmail.com>, "Antonino A. Daplas" <adaplas@gmail.com>, linux-alpha@vger.kernel.org, Stefan Becker <Stefan.Becker@nokia.com>, Andi Kleen <ak@suse.de>, Dave Jones <davej@redhat.com>, Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>, Thomas Gleixner <tglx@linutronix.de>, Jakub Jelinek <jakub@redhat.com>, Jeff Dike <jdike@linux.intel.com>, user-mode-linux-devel@lists.sourceforge.net, Adrian Bunk <bunk@kernel.org>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org
+Cc: linux-alpha@vger.kernel.org
 
-Greg KH wrote:
-> On Wed, Sep 12, 2007 at 10:50:26PM -0400, Mark Lord wrote:
->> Michal Piotrowski wrote:
->>> Hi all,
->>> Here is a list of some known regressions in 2.6.23-rc6.
->> ...
->>
->> Missing from the list:
->>
->> USB "autosuspend" feature (new in 2.6.23) breaks *lots* of devices.
->> Many have since been blacklisted in one-at-a-time discovery patches,
->> but that's really just the tip of the iceberg.
->>
->> This "feature" breaks a TON of user-visible things,
->> mostly USB storage devices (USB drives/pens, digicams, etc..).
->>
->> The functionality is broken for just too much stuff,
->> and needs to either be reverted or defaulted to "off" rather than "on".
-> 
-> Ok, after conferring with Oliver this morning, I think the best solution
-> here is to both revert the usb-storage suspend patch as it has some
-> basic problems that can cause data loss, _and_ add the change to the
-> kernel that by default disables autosuspend on all USB devices except
-> hubs.
+The regression is relative to 2.6.25-rc1 + timer fixes (added when
+I reported the problems with 2.6.25-rc1 relative to 2.6.24).  I haven't
+tried -rc2 or -rc3.
 
-Sounds like a sane approach.
+Might be related to similar reports I've seen, but wanted to add the
+Alpha platform to the list.  The -rc4 kernel boots, but at some point
+following initialization of the SCSI layer, there's a panic with enough
+diagnostic output that a 50-line screen can't hold it all.  Unfortunately,
+the system logging isn't active, so nothing gets captured.
 
-Hopefully the kinks can be worked out in time for a reattempt in 2.6.24.
-I understand how important this stuff is for battery powered devices,
-but it just doesn't appear to be ready yet.
+The panic is completely reproducible.  The "Code" line at the bottom
+of the panic output is
 
-Cheers
+44220001 4821f621 4821b681 4821f62b f420004f 00000081 <0000009b> 0066c012
+
+The first line of the "Trace" section is
+
+ [<fffffc000031a41f>] iommu_arena_alloc+0x64/0xe0
+
+Platform is an Alpha PWS 433au.  gcc is version 4.1.2 (Debian 4.1.1-21).
+
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "I was a beta tester for dirt.  They never did
+rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
+------------------------------------------------------------------------
