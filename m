@@ -1,34 +1,46 @@
-From: FUJITA Tomonori <tomof@acm.org>
-Subject: Re: [regression]2.6.25-rc4: boot panic on alpha
-Date: Sun, 9 Mar 2008 22:29:54 +0900
-Message-ID: <20080309222953K.tomof@acm.org>
-References: <20080308012440.39177DBA2@gherkin.frus.com>
-	<20080309191950P.tomof@acm.org>
-	<20080309132256.GA757@jurassic.park.msu.ru>
+From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
+Date: Sun, 9 Mar 2008 18:34:25 +0300
+Message-ID: <20080309153425.GA1391@jurassic.park.msu.ru>
+References: <20080308035828.E9403DBA2@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20080309132256.GA757@jurassic.park.msu.ru>
+Content-Disposition: inline
+In-Reply-To: <20080308035828.E9403DBA2@gherkin.frus.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: Text/Plain; charset="us-ascii"
-To: ink@jurassic.park.msu.ru
-Cc: tomof@acm.org, rct@frus.com, mingo@elte.hu, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, fujita.tomonori@lab.ntt.co.jp, akpm@linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Bob Tracy <rct@frus.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Sun, 9 Mar 2008 16:22:56 +0300
-Ivan Kokshaysky <ink@jurassic.park.msu.ru> wrote:
-
-> On Sun, Mar 09, 2008 at 07:20:20PM +0900, FUJITA Tomonori wrote:
-> > Ivan, can you resend the patch with a description and signed-off-by?
+On Fri, Mar 07, 2008 at 09:58:28PM -0600, Bob Tracy wrote:
+> (1) Using the sox-based "play" command to play a short ".wav" file
+>     results in the file being played approx. 1.5 times, i.e., it plays
+>     all the way through, then restarts from the beginning and quits
+>     somewhere in the middle of the second playback.  At least the
+>     sound doesn't seem distorted...
 > 
-> I was going to do that, but since Andrew has picked up that patch
-> I thought it wasn't necessary...
+> (2) Using "mpg123" results in silence at first, then after about 30
+>     seconds, a tight loop of random repeating sound (doesn't sound like
+>     part of the mp3 file, but it's probably derived from it :-)) until
+>     the process is forcibly killed.
 
-Maybe, but the -mm commit mail was not sent to linux-kernel or
-Linus. I just wanted to make sure that the patch will be applied to
-mainline shortly.
+Sounds like a DMA screwup. However, I'm pretty sure that it's not a
+generic ALSA problem with ISA DMA, as my good old GUS MAX still works
+perfectly on lx164 (machine that is very similar to your miata) as
+I checked yesterday with patched 2.6.25-rc4. :-)
 
+> I have to hit <ctrl>C twice to interrupt playback.
+> 
+> /proc/asound/cards looks normal:
+> 
+>  0 [ES1888         ]: ES1888 - ESS AudioDrive ES1888
+>                       ESS AudioDrive ES1888 at 0x220, irq 5, dma1 1, dma2 5
 
-> Anyway, resending shouldn't hurt. I assume that I can add your Acked-by.
+I wonder if it still works on x86 - perhaps you ought to ask ALSA folks.
+I'll search my machine room next week - I recall that there were a dozen
+of old ISA soundcards, maybe there is some es18xx stuff, but chances
+are slim...
 
-Thanks! Of course, you can add my Acked-by.
+Ivan.
