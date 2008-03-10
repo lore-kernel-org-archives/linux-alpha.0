@@ -1,45 +1,96 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Mon, 10 Mar 2008 20:34:24 +1300
-Message-ID: <47D4E480.3090309@orcon.net.nz>
-References: <20080309235800.17D26DBA2@gherkin.frus.com>
+From: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
+Subject: [PATCH -mm] alpha: use iommu_is_span_boundary helper function
+Date: Mon, 10 Mar 2008 23:34:53 +0900
+Message-ID: <20080310231010H.tomof@acm.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20080309235800.17D26DBA2@gherkin.frus.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Bob Tracy <rct@frus.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Type: Text/Plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Cc: akpm@linux-foundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, tomof@acm.org
 
-Bob Tracy wrote:
-> Supposedly with the ES1888, dma1 is for capture, dma2 is for 
-> playback. dma2 == 5 is a 16-bit channel, yes?  That could explain 
-> much...
-> 
-> As for the values "chosen" for dma1 and dma2, they are the ones that
->  keep showing up in the Alpha sound "howto" postings/documents.
+This is against the current git.
 
-Running 'show config' in SRM on my Alphas (PWS500au and XP1000) reveals
-the settings (except possibly for mpu_port) for the ESS1888 sound chip.
-I recall that they are as reported in Alpha sound howtos.
+=
+From: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
+Subject: [PATCH -mm] alpha: use iommu_is_span_boundary helper function
 
-I hadn't been using the ESS1888 for awhile, but have just tried it out
-since you reported problems.  I am running kernel 2.6.24.3 and Debian
-testing on the XP1000.  I tried playing a number of wav files with
-alsa's aplay, sox's play and with mocp.  I found that aplay and mocp
-worked reliably through the ESS1888.  Sox's play on some files did play
-back a small extra segment of the file - particularly on short files and
-usually some section near the end of the file - once it had completed
-playing the file once; maybe this is what you are also observing.   More
-onerously, my testing eventually ended in a complete system lock up!
-I ran play (or was it aplay - sorry can't remember now) and the system
-locked up. Got a response with ping across the network but couldn't log
-in via ssh.  Have been playing mplayer through the ESS1888 for the last
-couple of days (don't like it though - the sound quality of the ESS1888
-is not good enough for my ears) and haven't had another one of those
-lockups since.
+iommu_is_span_boundary in lib/iommu-helper.c was exported for PARISC
+IOMMUs (commit 3715863aa142c4f4c5208f5f3e5e9bac06006d2f). Alpha's
+IOMMU can use it.
 
-Cheerz
-Michael.
+This removes the check on the boundary size alignment because
+iommu_is_span_boundary does.
+
+Signed-off-by: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+---
+ arch/alpha/Kconfig            |    3 +++
+ arch/alpha/kernel/pci_iommu.c |   12 ++----------
+ 2 files changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 002703b..729cdbd 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -330,6 +330,9 @@ config PCI_DOMAINS
+ config PCI_SYSCALL
+ 	def_bool PCI
+ 
++config IOMMU_HELPER
++	def_bool PCI
++
+ config ALPHA_CORE_AGP
+ 	bool
+ 	depends on ALPHA_GENERIC || ALPHA_TITAN || ALPHA_MARVEL
+diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+index e07a23f..4e1c086 100644
+--- a/arch/alpha/kernel/pci_iommu.c
++++ b/arch/alpha/kernel/pci_iommu.c
+@@ -10,6 +10,7 @@
+ #include <linux/scatterlist.h>
+ #include <linux/log2.h>
+ #include <linux/dma-mapping.h>
++#include <linux/iommu-helper.h>
+ 
+ #include <asm/io.h>
+ #include <asm/hwrpb.h>
+@@ -125,14 +126,6 @@ iommu_arena_new(struct pci_controller *hose, dma_addr_t base,
+ 	return iommu_arena_new_node(0, hose, base, window_size, align);
+ }
+ 
+-static inline int is_span_boundary(unsigned int index, unsigned int nr,
+-				   unsigned long shift,
+-				   unsigned long boundary_size)
+-{
+-	shift = (shift + index) & (boundary_size - 1);
+-	return shift + nr > boundary_size;
+-}
+-
+ /* Must be called with the arena lock held */
+ static long
+ iommu_arena_find_pages(struct device *dev, struct pci_iommu_arena *arena,
+@@ -147,7 +140,6 @@ iommu_arena_find_pages(struct device *dev, struct pci_iommu_arena *arena,
+ 	base = arena->dma_base >> PAGE_SHIFT;
+ 	if (dev) {
+ 		boundary_size = dma_get_seg_boundary(dev) + 1;
+-		BUG_ON(!is_power_of_2(boundary_size));
+ 		boundary_size >>= PAGE_SHIFT;
+ 	} else {
+ 		boundary_size = 1UL << (32 - PAGE_SHIFT);
+@@ -161,7 +153,7 @@ iommu_arena_find_pages(struct device *dev, struct pci_iommu_arena *arena,
+ 
+ again:
+ 	while (i < n && p+i < nent) {
+-		if (!i && is_span_boundary(p, n, base, boundary_size)) {
++		if (!i && iommu_is_span_boundary(p, n, base, boundary_size)) {
+ 			p = ALIGN(p + 1, mask + 1);
+ 			goto again;
+ 		}
+-- 
+1.5.3.7
+
