@@ -1,13 +1,14 @@
-From: Rene Herman <rene.herman@keyaccess.nl>
+From: rct@frus.com (Bob Tracy)
 Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Mon, 10 Mar 2008 23:33:37 +0100
-Message-ID: <47D5B741.6010702@keyaccess.nl>
-References: <20080310222211.2A0BEDBA2@gherkin.frus.com>
+Date: Tue, 11 Mar 2008 00:36:50 -0500 (CDT)
+Message-ID: <20080311053650.C6BF8DBA2@gherkin.frus.com>
+References: <47D56851.2000509@keyaccess.nl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <alsa-devel-bounces@alsa-project.org>
-In-Reply-To: <20080310222211.2A0BEDBA2@gherkin.frus.com>
+In-Reply-To: <47D56851.2000509@keyaccess.nl> "from Rene Herman at Mar 10, 2008
+	05:56:49 pm"
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
 	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
@@ -18,23 +19,34 @@ List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
 	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
 Sender: alsa-devel-bounces@alsa-project.org
 Errors-To: alsa-devel-bounces@alsa-project.org
-To: Bob Tracy <rct@frus.com>
-Cc: ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Takashi Iwai <tiwai@suse.de>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
+To: Rene Herman <rene.herman@keyaccess.nl>
+Cc: ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Takashi Iwai <tiwai@suse.de>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Bob Tracy <rct@frus.com>
 
-On 10-03-08 23:22, Bob Tracy wrote:
-
-> Rene Herman wrote:
-
->> Bob? How short are "short" wav files by the way?
+Rene Herman wrote:
+> You seem to have sox installed, so try
 > 
-> The one I was using for testing is 50,272 bytes. A slightly longer file 
-> that exhibits "more exotic" looping behavior is 97,898 bytes (just a bit 
-> over 6 seconds of audio). I'll send you the shorter file under separate 
-> cover.
+> $ sox foo.wav -t alsa default
 
-Thanks. No problems here, using either the ALSA or OSS interfaces. Have been 
-busy switching cards -- I have no hardware that can use anything other than 
-DMA 0, 1 or 3. First test is to see if it's ALSA or just the OSS emulation 
-though...
+Playback results in infinite loop over the first quarter second or so
+of audio.  Using "aplay" results in same looping behavior over a longer
+segment of audio -- maybe a half second.
 
-Rene.
+> and
+> 
+> $ sox foo.wav -t ossdsp /dev/dsp
+
+Identical results to using "play" (as expected): for the 50K ".wav"
+file, I hear the entire file approx. 1.8 times.
+
+I tried a few rmmod/insmod cycles with different values for dma2.
+Results as follows:
+
+(a) dma2=1 (== dma1): no change
+(b) dma2 option omitted : no change
+(c) dma2=-1 : probe failed
+
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "I was a beta tester for dirt.  They never did
+rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
+------------------------------------------------------------------------
