@@ -1,104 +1,71 @@
-From: Rene Herman <rene.herman@keyaccess.nl>
-Subject: Re: [alsa-devel] [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Tue, 11 Mar 2008 16:17:32 +0100
-Message-ID: <47D6A28C.4060804@keyaccess.nl>
-References: <20080311140718.8B3ABDBA2@gherkin.frus.com>
+From: rct@frus.com (Bob Tracy)
+Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
+Date: Tue, 11 Mar 2008 13:08:31 -0500 (CDT)
+Message-ID: <20080311180831.8CE90DBA3@gherkin.frus.com>
+References: <47D6A28C.4060804@keyaccess.nl>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------020605050705070702050506"
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20080311140718.8B3ABDBA2@gherkin.frus.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-To: Bob Tracy <rct@frus.com>
-Cc: Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Krzysztof Helt <krzysztof.h1@wp.pl>
-
-This is a multi-part message in MIME format.
---------------020605050705070702050506
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+In-Reply-To: <47D6A28C.4060804@keyaccess.nl> "from Rene Herman at Mar 11, 2008
+	04:17:32 pm"
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Sender: alsa-devel-bounces@alsa-project.org
+Errors-To: alsa-devel-bounces@alsa-project.org
+To: Rene Herman <rene.herman@keyaccess.nl>
+Cc: ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, Takashi Iwai <tiwai@suse.de>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Bob Tracy <rct@frus.com>
 
-On 11-03-08 15:07, Bob Tracy wrote:
+Rene Herman wrote:
+> This is behaviour consistent with the IRQ being dead ...
+>
+> I suppose it used to work and I suppose the behaviour 
+> you are describing above is 100% repeatable?
 
-> Both native ALSA and emulated OSS playback are broken based on last 
-> night's testing.  Just to rule out sound hardware issues, this morning I
-> built a 2.6.25-rc4 kernel with OSS (sb driver), and that seems to be 
-> working fine.
+I can't tell you exactly *when* it used to work, or even *if* it did
+with 2.6 kernels.  I'll try to explain...
 
-Okay... From your testing report:
+Sometime back in the 2.6.14 to 2.6.16 timeframe there was an issue with
+the ALSA driver not recognizing interrupts (causing looping).  Tyson
+Whitehead had put together a patch for the interrupt problem that worked
+for him, but not for me or Michael.  One workaround back then was using
+the snd-sb8 driver that supports only one DMA channel (half-duplex
+operation) anyway: that was a reliable workaround, and may be what I'm
+remembering for the "it used to work" case.  I can't find any reliable
+evidence that I've *ever* been able to use the ES1888 with its proper
+driver under ALSA with 2.6 kernels.  As far as Tyson's patch, I know
+he reported it upstream to the ALSA developers, but I saw no followup
+communication from either Tyson or the developers.
 
->> $ sox foo.wav -t alsa default
-> 
-> Playback results in infinite loop over the first quarter second or so
-> of audio.  Using "aplay" results in same looping behavior over a longer
-> segment of audio -- maybe a half second.
+> Given that you can use aplay -- probably no difference with "aplay -M" ?
 
-This is behaviour consistent with the IRQ being dead ...
+I'll give it a shot.
 
->> > $ sox foo.wav -t ossdsp /dev/dsp
-> 
-> Identical results to using "play" (as expected): for the 50K ".wav"
-> file, I hear the entire file approx. 1.8 times.
+> To get to the bottom of this we might need to get a specific failed version 
+> (for readers, it's not been verified that this is a regression since 2.6.24) 
+> but we can try to get lucky first.
 
-... and this isn't. Worse yet, we have a conflicting report from Michael 
-where things are fine while using aplay and I'm seeing nothing particularly 
-suspicious recently. I suppose it used to work and I suppose the behaviour 
-you are describing above is 100% repeatable?
+I'm beginning to think this is *not* a regression, but merely a long-
+standing ALSA issue that was never addressed.  I would be fine with
+reclassifying this as an ALSA bug and dropping linux-kernel from the
+discussion.
 
-Given that you can use aplay -- probably no difference with "aplay -M" ?
+> Okay. (tests) seem to at least confirm it's not the 16-bit DMA.
 
-To get to the bottom of this we might need to get a specific failed version 
-(for readers, it's not been verified that this is a regression since 2.6.24) 
-but we can try to get lucky first.
+As far as how to proceed from here, I'm certain things were broken in
+2.6.1[4-6].  I could try various later releases between .16 and .24 to
+see if snd-es18xx worked for any of those, but I think the answer will
+be "no."  I think a useful test would be to see if "snd-sb8" works in
+2.6.25-rcX, which would at least narrow things down a bit.
 
-The most recent change to sound/isa/es18xx.c that's not utterly impossible 
-to have made a difference is 1bc9eed379399484d3f5d5a0834674983969bc1, 
-"es18xx: Enable wavetable input from ESS chips". I don't know if you're a 
-GIT user. If you are, you can revert it simply with
-
-$ git revert 1bc9eed3
-
-If you're not a GIT user, applying the attached should work. Unlikely, but 
-as said, we can try.
-
-> I tried a few rmmod/insmod cycles with different values for dma2.
-> Results as follows:
-> 
-> (a) dma2=1 (== dma1): no change
-> (b) dma2 option omitted : no change
-> (c) dma2=-1 : probe failed
-
-Okay. A and B seem to at least confirm it's not the 16-bit DMA.
-
-Rene.
-
---------------020605050705070702050506
-Content-Type: text/plain;
- name="es18xx_revert_wavetable_input.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="es18xx_revert_wavetable_input.diff"
-
-commit 8fa1de6349913b63d8ebfb27003b7045eeb9f12a
-Author: Rene Herman <rene.herman@gmail.com>
-Date:   Tue Mar 11 15:52:36 2008 +0100
-
-    Revert "[ALSA] es18xx: Enable wavetable input from ESS chips"
-    
-    This reverts commit 1bc9eed379399484d3f5d5a0834674983969bc1e.
-
-diff --git a/sound/isa/es18xx.c b/sound/isa/es18xx.c
-index 90498e4..865ab1d 100644
---- a/sound/isa/es18xx.c
-+++ b/sound/isa/es18xx.c
-@@ -1441,8 +1441,6 @@ static int __devinit snd_es18xx_initialize(struct snd_es18xx *chip)
- 		snd_es18xx_write(chip, 0xB2, 0x50);
- 		/* Enable MPU and hardware volume interrupt */
- 		snd_es18xx_mixer_write(chip, 0x64, 0x42);
--		/* Enable ESS wavetable input */
--		snd_es18xx_mixer_bits(chip, 0x48, 0x10, 0x10);
- 	}
- 	else {
- 		int irqmask, dma1mask, dma2mask;
-
---------------020605050705070702050506--
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "I was a beta tester for dirt.  They never did
+rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
+------------------------------------------------------------------------
