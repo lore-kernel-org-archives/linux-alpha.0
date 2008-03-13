@@ -1,29 +1,41 @@
-From: "Rafael J. Wysocki" <rjw@sisk.pl>
-Subject: Re: [alsa-devel] [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Wed, 12 Mar 2008 23:48:14 +0100
-Message-ID: <200803122348.15543.rjw@sisk.pl>
-References: <20080312144021.3FE57DBA2@gherkin.frus.com> <47D8304C.3090005@keyaccess.nl>
+From: rct@frus.com (Bob Tracy)
+Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
+Date: Wed, 12 Mar 2008 23:24:02 -0500 (CDT)
+Message-ID: <20080313042402.CE3D7DBA2@gherkin.frus.com>
+References: <47D8473A.3060806@keyaccess.nl>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <47D8304C.3090005@keyaccess.nl>
-Content-Disposition: inline
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+In-Reply-To: <47D8473A.3060806@keyaccess.nl> "from Rene Herman at Mar 12, 2008
+	10:12:26 pm"
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Sender: alsa-devel-bounces@alsa-project.org
+Errors-To: alsa-devel-bounces@alsa-project.org
 To: Rene Herman <rene.herman@keyaccess.nl>
-Cc: Bob Tracy <rct@frus.com>, Michael Cree <mcree@orcon.net.nz>, Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Krzysztof Helt <krzysztof.h1@wp.pl>
+Cc: ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, Takashi Iwai <tiwai@suse.de>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Bob Tracy <rct@frus.com>
 
-On Wednesday, 12 of March 2008, Rene Herman wrote:
-> On 12-03-08 15:40, Bob Tracy wrote:
-> 
-> > Well, I built a 2.6.22 kernel last night, and in tests this morning
-> > there's no difference relative to the ALSA behavior seen in 2.6.25-rc4.
-> 
-> Okay. If someone is tracking this as a 2.6.25 regresion, it can be stricken 
-> of that list.
+Rene Herman wrote:
+> Okay, and applying the attached just makes your sound completely dead in the 
+> water?
+> (patch to delete es1888_init function)
 
-Done.
+Oddly enough, the patch had no effect whatsoever (at least with the
+ALSA drivers: I didn't try building a kernel with the OSS "sb" driver).
+Just to make sure I wasn't "benefiting" from initialization inherited
+from a prior boot, I even powered-down the machine for 30 seconds
+before booting on the new kernel.  snd-sb8 still works, and snd-es18xx
+is still broken (in exactly the same way as before).
 
-Thanks,
-Rafael
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "I was a beta tester for dirt.  They never did
+rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
+------------------------------------------------------------------------
