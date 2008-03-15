@@ -1,40 +1,85 @@
-From: rct@frus.com (Bob Tracy)
-Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Fri, 14 Mar 2008 18:33:57 -0500 (CDT)
-Message-ID: <20080314233357.5223BDBA2@gherkin.frus.com>
+From: Tyson Whitehead <twhitehe@uwo.ca>
+Subject: Re: [alsa-devel] [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
+Date: Fri, 14 Mar 2008 21:18:19 -0400
+Message-ID: <200803142118.31974.twhitehe@uwo.ca>
+References: <20080314131344.62A59DBA2@gherkin.frus.com>
+Reply-To: twhitehe@uwo.ca
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; boundary=nextPart2542964.ZgGiLW4jjC;
+ protocol="application/pgp-signature"; micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
-Return-path: <alsa-devel-bounces@alsa-project.org>
-In-Reply-To: "from (env: rct) at Mar 14, 2008 08:13:44 am"
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
-	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
-List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
-List-Post: <mailto:alsa-devel@alsa-project.org>
-List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
-List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
-	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
-Sender: alsa-devel-bounces@alsa-project.org
-Errors-To: alsa-devel-bounces@alsa-project.org
-To: twhitehe@uwo.ca
-Cc: ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, Takashi Iwai <tiwai@suse.de>, Rene Herman <rene.herman@keyaccess.nl>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Bob Tracy <rct@frus.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-reply-to: <20080314131344.62A59DBA2@gherkin.frus.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Bob Tracy <rct@frus.com>
+Cc: Rene Herman <rene.herman@keyaccess.nl>, Michael Cree <mcree@orcon.net.nz>, Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Krzysztof Helt <krzysztof.h1@wp.pl>
 
-rct wrote:
-> Rene Herman wrote:
-> > Okay, and applying the attached just makes your sound completely dead in the 
-> > water?
-> > (patch to remove es1888_init from a Miata build omitted)
-> 
+--nextPart2542964.ZgGiLW4jjC
+Content-Type: text/plain;
+  charset="ansi_x3.4-1968"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+On Fri March 14 2008, Bob Tracy wrote:
+> A quick followup...  Since we're in agreement this isn't a regression,
+> I've updated my working source tree to 2.6.25-rc5.  Built the new
+> kernel with the patch to omit es1888_init(), and as near as I can tell,
+> that function does nothing useful on the Miata platform.  At the very
+> least, not having it makes no difference to any of the ALSA drivers I've
+> tried: snd-sb8 still works great, and snd-es18xx is still broken in the
+> same way originally described at the beginning of this long thread.
+>
 > I'll try a build with the old OSS "sb" driver, and if that works ok, we
 > may be able to do away with es1888_init() on the Miata.  Tyson -- I
 > think you have a Miata if I'm remembering correctly: can you confirm
 > these observations?
 
-Quick followup: OSS "sb" driver works fine without es1888_init().
+I actually ran into some problems with my Alpha, and I haven't managed to g=
+et=20
+get it full operational again yet.  I replaced the CPU fan, installed the n=
+ew=20
+aboot, and left it trying to recover the filesystems.  It was an unhappy=20
+story all around -- damn that CMD646 chipset, I was under the impression th=
+at=20
+driver had acquired some recent fixups.  Anyway, if this succeeds, I'll try=
+=20
+and compile up a new kernel with the patch when I get a chance.
 
--- 
-------------------------------------------------------------------------
-Bob Tracy          |  "I was a beta tester for dirt.  They never did
-rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
-------------------------------------------------------------------------
+With regard to the sound driver, the es18xx does endless looping on the fir=
+st=20
+second or so of sound on my box (a PWS500au) unless I apply my patch, which=
+=20
+just enables the alternative interupt detection code in the driver.  Even=20
+then, though, I believe it still only works in 8bit mode.
+
+The sb8 driver also works for me.  For this reason, I basically decided to=
+=20
+forget about my es18xx patch.  It doesn't get me anything the sb8 driver=20
+doesn't give me, and it forces me to keep compiling my own kernels.
+
+Cheers!  -Tyson
+
+PS:  The Debian 2.6.24 kernel actually panicked on me (instead of infinitel=
+y=20
+looping on the first second of sound) when I tried the stock es18xx driver.
+
+=2D-=20
+ Tyson Whitehead  (-twhitehe at uwo.ca -- MC-)
+ Computer Engineer                          Dept. of Applied Mathematics,
+ Graduate Student- Applied Mathematics      University of Western Ontario,
+ GnuPG Key ID# 0xF7666BFF                   London, Ontario, Canada
+
+--nextPart2542964.ZgGiLW4jjC
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+
+iD8DBQBH2yPnp7ZNUfdma/8RAhURAJ9H1CSLXfNwdTd8Wi4anYTMRq30VACeNCPy
+033KxyqAy11R6wHW5yCPTRM=
+=LRpj
+-----END PGP SIGNATURE-----
+
+--nextPart2542964.ZgGiLW4jjC--
