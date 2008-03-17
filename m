@@ -1,85 +1,125 @@
-From: Tyson Whitehead <twhitehe@uwo.ca>
-Subject: Re: [alsa-devel] [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Fri, 14 Mar 2008 21:18:19 -0400
-Message-ID: <200803142118.31974.twhitehe@uwo.ca>
-References: <20080314131344.62A59DBA2@gherkin.frus.com>
-Reply-To: twhitehe@uwo.ca
+From: Rene Herman <rene.herman@keyaccess.nl>
+Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
+Date: Mon, 17 Mar 2008 23:00:41 +0100
+Message-ID: <47DEEA09.9000108@keyaccess.nl>
+References: <20080313042402.CE3D7DBA2@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary=nextPart2542964.ZgGiLW4jjC;
- protocol="application/pgp-signature"; micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-reply-to: <20080314131344.62A59DBA2@gherkin.frus.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: multipart/mixed; boundary="------------050005060905050709030305"
+Return-path: <alsa-devel-bounces@alsa-project.org>
+In-Reply-To: <20080313042402.CE3D7DBA2@gherkin.frus.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Sender: alsa-devel-bounces@alsa-project.org
+Errors-To: alsa-devel-bounces@alsa-project.org
 To: Bob Tracy <rct@frus.com>
-Cc: Rene Herman <rene.herman@keyaccess.nl>, Michael Cree <mcree@orcon.net.nz>, Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Krzysztof Helt <krzysztof.h1@wp.pl>
+Cc: ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, Takashi Iwai <tiwai@suse.de>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
 
---nextPart2542964.ZgGiLW4jjC
+This is a multi-part message in MIME format.
+--------------050005060905050709030305
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+
+On 13-03-08 05:24, Bob Tracy wrote:
+
+> Rene Herman wrote:
+>> Okay, and applying the attached just makes your sound completely dead in the 
+>> water?
+>> (patch to delete es1888_init function)
+> 
+> Oddly enough, the patch had no effect whatsoever (at least with the
+> ALSA drivers: I didn't try building a kernel with the OSS "sb" driver).
+> Just to make sure I wasn't "benefiting" from initialization inherited
+> from a prior boot, I even powered-down the machine for 30 seconds
+> before booting on the new kernel.  snd-sb8 still works, and snd-es18xx
+> is still broken (in exactly the same way as before).
+
+Okay, thought I'd stare at this thing a bit -- there's no specific 1888 
+documentation available it seems but I did notice something in the 1878 
+datasheet which might mean something. The docs says that bits 0-1 are don't 
+care for DMA but don't for IRQ, so could it possibly be as simple as the 
+attached?
+
+1878 sheet doesn't document register 0x7f, it seems...
+
+Assuming it's not just this, this thing is going to require quite a bit of 
+trial and error and without the hardware this will be troublesome. I expect 
+this is not it, since the arch init code also doesn't care about bit 0 when 
+setting that same register for IRQ 5.
+
+If this is not it -- I'd try s/0x50/0x10/ in that line, even completely 
+commenting out the IRQ setting line (with the arch code built in) and just 
+generally frolic around 'till something blows up...
+
+Rene.
+
+
+--------------050005060905050709030305
 Content-Type: text/plain;
-  charset="ansi_x3.4-1968"
-Content-Transfer-Encoding: quoted-printable
+ name="es18xx_trial_and_error.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="es18xx_trial_and_error.diff"
+
+diff --git a/sound/isa/es18xx.c b/sound/isa/es18xx.c
+index 90498e4..71d1b96 100644
+--- a/sound/isa/es18xx.c
++++ b/sound/isa/es18xx.c
+@@ -1449,16 +1449,16 @@ static int __devinit snd_es18xx_initialize(struct snd_es18xx *chip)
+ 		switch (chip->irq) {
+ 		case 2:
+ 		case 9:
+-			irqmask = 0;
++			irqmask = 0x0;
+ 			break;
+ 		case 5:
+-			irqmask = 1;
++			irqmask = 0x5;
+ 			break;
+ 		case 7:
+-			irqmask = 2;
++			irqmask = 0xa;
+ 			break;
+ 		case 10:
+-			irqmask = 3;
++			irqmask = 0xf;
+ 			break;
+ 		default:
+ 			snd_printk(KERN_ERR "invalid irq %d\n", chip->irq);
+@@ -1497,7 +1497,7 @@ static int __devinit snd_es18xx_initialize(struct snd_es18xx *chip)
+ 		}
+ 
+ 		/* Enable and set Audio 1 IRQ */
+-		snd_es18xx_write(chip, 0xB1, 0x50 | (irqmask << 2));
++		snd_es18xx_write(chip, 0xB1, 0x50 | irqmask);
+ 		/* Enable and set Audio 1 DMA */
+ 		snd_es18xx_write(chip, 0xB2, 0x50 | (dma1mask << 2));
+ 		/* Set Audio 2 DMA */
+@@ -1513,7 +1513,9 @@ static int __devinit snd_es18xx_initialize(struct snd_es18xx *chip)
+ 			   FM enabled */
+ 			snd_es18xx_mixer_write(chip, 0x40, 0x43 | (chip->mpu_port & 0xf0) >> 1);
+ 		}
++#if 0
+ 		snd_es18xx_mixer_write(chip, 0x7f, ((irqmask + 1) << 1) | 0x01);
++#endif
+ 	}
+ 	if (chip->caps & ES18XX_NEW_RATE) {
+ 		/* Change behaviour of register A1
+
+--------------050005060905050709030305
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-On Fri March 14 2008, Bob Tracy wrote:
-> A quick followup...  Since we're in agreement this isn't a regression,
-> I've updated my working source tree to 2.6.25-rc5.  Built the new
-> kernel with the patch to omit es1888_init(), and as near as I can tell,
-> that function does nothing useful on the Miata platform.  At the very
-> least, not having it makes no difference to any of the ALSA drivers I've
-> tried: snd-sb8 still works great, and snd-es18xx is still broken in the
-> same way originally described at the beginning of this long thread.
->
-> I'll try a build with the old OSS "sb" driver, and if that works ok, we
-> may be able to do away with es1888_init() on the Miata.  Tyson -- I
-> think you have a Miata if I'm remembering correctly: can you confirm
-> these observations?
+_______________________________________________
+Alsa-devel mailing list
+Alsa-devel@alsa-project.org
+http://mailman.alsa-project.org/mailman/listinfo/alsa-devel
 
-I actually ran into some problems with my Alpha, and I haven't managed to g=
-et=20
-get it full operational again yet.  I replaced the CPU fan, installed the n=
-ew=20
-aboot, and left it trying to recover the filesystems.  It was an unhappy=20
-story all around -- damn that CMD646 chipset, I was under the impression th=
-at=20
-driver had acquired some recent fixups.  Anyway, if this succeeds, I'll try=
-=20
-and compile up a new kernel with the patch when I get a chance.
-
-With regard to the sound driver, the es18xx does endless looping on the fir=
-st=20
-second or so of sound on my box (a PWS500au) unless I apply my patch, which=
-=20
-just enables the alternative interupt detection code in the driver.  Even=20
-then, though, I believe it still only works in 8bit mode.
-
-The sb8 driver also works for me.  For this reason, I basically decided to=
-=20
-forget about my es18xx patch.  It doesn't get me anything the sb8 driver=20
-doesn't give me, and it forces me to keep compiling my own kernels.
-
-Cheers!  -Tyson
-
-PS:  The Debian 2.6.24 kernel actually panicked on me (instead of infinitel=
-y=20
-looping on the first second of sound) when I tried the stock es18xx driver.
-
-=2D-=20
- Tyson Whitehead  (-twhitehe at uwo.ca -- MC-)
- Computer Engineer                          Dept. of Applied Mathematics,
- Graduate Student- Applied Mathematics      University of Western Ontario,
- GnuPG Key ID# 0xF7666BFF                   London, Ontario, Canada
-
---nextPart2542964.ZgGiLW4jjC
-Content-Type: application/pgp-signature; name=signature.asc 
-Content-Description: This is a digitally signed message part.
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-
-iD8DBQBH2yPnp7ZNUfdma/8RAhURAJ9H1CSLXfNwdTd8Wi4anYTMRq30VACeNCPy
-033KxyqAy11R6wHW5yCPTRM=
-=LRpj
------END PGP SIGNATURE-----
-
---nextPart2542964.ZgGiLW4jjC--
+--------------050005060905050709030305--
