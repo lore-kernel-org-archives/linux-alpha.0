@@ -1,94 +1,63 @@
-From: Rene Herman <rene.herman@keyaccess.nl>
+From: Michael Cree <mcree@orcon.net.nz>
 Subject: Re: [alsa-devel] [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Tue, 25 Mar 2008 01:29:18 +0100
-Message-ID: <47E8475E.4080705@keyaccess.nl>
-References: <20080318032427.298BCDBA2@gherkin.frus.com> <546A47FE-F98E-49E2-A250-41F65C2D482B@orcon.net.nz> <47E6338E.8030001@orcon.net.nz> <47E7EFDF.2070706@keyaccess.nl> <47E83F94.8010409@orcon.net.nz>
+Date: Tue, 25 Mar 2008 14:22:58 +1300
+Message-ID: <47E853F2.7020608@orcon.net.nz>
+References: <20080318032427.298BCDBA2@gherkin.frus.com> <546A47FE-F98E-49E2-A250-41F65C2D482B@orcon.net.nz> <47E6338E.8030001@orcon.net.nz> <47E7EFDF.2070706@keyaccess.nl> <47E83F94.8010409@orcon.net.nz> <47E8475E.4080705@keyaccess.nl>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------040105040203000403010201"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <47E83F94.8010409@orcon.net.nz>
+In-Reply-To: <47E8475E.4080705@keyaccess.nl>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Michael Cree <mcree@orcon.net.nz>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Rene Herman <rene.herman@keyaccess.nl>
 Cc: Bob Tracy <rct@frus.com>, Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Krzysztof Helt <krzysztof.h1@wp.pl>
 
-This is a multi-part message in MIME format.
---------------040105040203000403010201
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Rene Herman wrote:
 
-On 25-03-08 00:56, Michael Cree wrote:
-
-> I have applied the patch to the PWS600au.  Sound now works.  I can play 
-> 8bit and 16bit sound files through the es1887 and the C-Media CM8738. 
-> They are both working fine.
-
-Thanks much for the quick reply. That's good to hear. As indicated, Bob 
-seemed to be experiencing something else but this is pretty fundamental so 
-I'll not try to comment on his case any further until he's had a chance to 
-test this as well.
-
-Takashi -- over to you for Michael's issue? His PWS600AU (MIATA) system 
-soils itself badly when using SNDRV_PCM_INFO_MMAP. His XP1000 works fine and 
-I haven't the faintest clue if switching on CONFIG_ALPHA_MIATA is the proper 
-switch, nor if outright disabling mmap is the correct approach. The patch 
-that works for him is attached again for reference.
-
-The way this does the disabling also implies disabling SNDRV_PCM_INFO_IOMEM 
-by the way...
-
-> I managed to get a 32bit sound file to play through the M-Audio
-> Revolution too. (Though another 32bit sound file just produces silence
-> through the M-Audio Rev. Haven't been able to establish why - the file
-> looks fine to me.)  Repeated playing of files doesn't cause any problems.
+>> I can't get sox's play to work (reports no mmap support, which is, of 
+>> course, quite true).  I don't know how to tell sox to use the equivalent
+>> of alsa's hw device.  So I can't do the test on short files that Bob was
+>> performing.
 > 
-> I can't get sox's play to work (reports no mmap support, which is, of 
-> course, quite true).  I don't know how to tell sox to use the equivalent
-> of alsa's hw device.  So I can't do the test on short files that Bob was
-> performing.
+> $ sox foo.wav -t alsa hw
 
-$ sox foo.wav -t alsa hw
+Hmmm :-/  So obvious now that you mention it.
 
-should do it. Here's a file Bob passed me as a problematic one. 8-bit, 
-11025, mono:
+> 
+> should do it. Here's a file Bob passed me as a problematic one. 8-bit, 
+> 11025, mono:
+> 
+> http://members.home.nl/rene.herman/asskickd.wav
 
-http://members.home.nl/rene.herman/asskickd.wav
+Right, got that.  On the PWS600au it shows the same problems that Bob 
+describes!  When I play it with aplay (through the es1887) I get the 
+last "pal" repeated at the end.  When I play it with sox (also through 
+the es1887) I get the words "current event" repeated at the end.
 
-> At this stage I've run out of time to test the M-Audio Rev in the XP1000 
-> and see if the MMAP disable patch help there.
+Playing through the CM8738 also repeats the words "current event" at the 
+end when playing with sox.  But using aplay through the CM8738 only 
+results in silence and aplay hangs.  A ctrl-c successfully breaks it.
 
-Given that it fixes es18xx and cmipci on the PWS600au and that those worked 
-without trouble on the XP1000, you'd _expect_ not, but the OOPs you posted 
-before seemed to indicate that it stands a fair chance afer all.
+I suspect you are right - the symptoms I have observed (complete system 
+crashes) are separate from what Bob observes.  One question I have is 
+what is different about Bob's set up that enables the sound to work with 
+mmap?
 
-Rene.
+On the XP1000 (which has an unmodified kernel 2.6.24.3) I managed to 
+play the sound file once with aplay through the es1887 (and it repeated 
+"pal" at the end).  Then I tried using sox and complete silence 
+resulted.   No,  it's just playing back at the wrong rate - everything 
+is sounding slow and extremely flat - the silence is just the artefact 
+of a little bit of silence at the start of the file being played at far 
+too a slow sample rate.  Even other client programs are affected - mocp 
+is playing back music at a horrendously slow sample rate. Yuk. 
+Hopefully a rmmod es1887 might fix that - but I can't test it to I send 
+this message and shut down X.
 
---------------040105040203000403010201
-Content-Type: text/plain;
- name="miata_no_mmap.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="miata_no_mmap.diff"
+Anyway I really must start marking that pile of assignments I told the 
+students that I would have done by tomorrow.  Further testing will have 
+to wait to later this week.
 
-diff --git a/include/sound/asound.h b/include/sound/asound.h
-index 3eaf155..e3b9c2d 100644
---- a/include/sound/asound.h
-+++ b/include/sound/asound.h
-@@ -241,8 +241,14 @@ typedef int __bitwise snd_pcm_subformat_t;
- #define	SNDRV_PCM_SUBFORMAT_STD		((__force snd_pcm_subformat_t) 0)
- #define	SNDRV_PCM_SUBFORMAT_LAST	SNDRV_PCM_SUBFORMAT_STD
- 
-+#ifdef CONFIG_ALPHA_MIATA
-+#define SNDRV_PCM_INFO_MMAP		0		/* the useful comment goes here */
-+#define SNDRV_PCM_INFO_MMAP_VALID	0
-+#else
- #define SNDRV_PCM_INFO_MMAP		0x00000001	/* hardware supports mmap */
- #define SNDRV_PCM_INFO_MMAP_VALID	0x00000002	/* period data are valid during transfer */
-+#endif
-+
- #define SNDRV_PCM_INFO_DOUBLE		0x00000004	/* Double buffering needed for PCM start/stop */
- #define SNDRV_PCM_INFO_BATCH		0x00000010	/* double buffering */
- #define SNDRV_PCM_INFO_INTERLEAVED	0x00000100	/* channels are interleaved */
+Michael.
 
---------------040105040203000403010201--
