@@ -1,69 +1,71 @@
-From: Rene Herman <rene.herman@keyaccess.nl>
-Subject: Re: [alsa-devel] [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Tue, 25 Mar 2008 03:46:03 +0100
-Message-ID: <47E8676B.7010700@keyaccess.nl>
-References: <20080318032427.298BCDBA2@gherkin.frus.com> <546A47FE-F98E-49E2-A250-41F65C2D482B@orcon.net.nz> <47E6338E.8030001@orcon.net.nz> <47E7EFDF.2070706@keyaccess.nl> <47E83F94.8010409@orcon.net.nz> <47E8475E.4080705@keyaccess.nl>
+From: rct@frus.com (Bob Tracy)
+Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
+Date: Sat, 29 Mar 2008 01:42:27 -0500 (CDT)
+Message-ID: <20080329064227.58074DBA2@gherkin.frus.com>
+References: <47DFCEDA.2020307@uwo.ca>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------040704010104050006030304"
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <47E8475E.4080705@keyaccess.nl>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: Bob Tracy <rct@frus.com>, Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Krzysztof Helt <krzysztof.h1@wp.pl>
-
-This is a multi-part message in MIME format.
---------------040704010104050006030304
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+In-Reply-To: <47DFCEDA.2020307@uwo.ca> "from Tyson Whitehead at Mar 18, 2008
+	10:16:58 am"
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Sender: alsa-devel-bounces@alsa-project.org
+Errors-To: alsa-devel-bounces@alsa-project.org
+To: Tyson Whitehead <twhitehe@uwo.ca>
+Cc: ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, Takashi Iwai <tiwai@suse.de>, Rene Herman <rene.herman@keyaccess.nl>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
 
-On 25-03-08 01:29, Rene Herman wrote:
+Ok...  I'm back.  Replies to the long queue of messages will be sent as
+I have time to try the various patches.
 
-> On 25-03-08 00:56, Michael Cree wrote:
-
+Tyson Whitehead wrote:
+> Takashi Iwai wrote:
+> > ---
+> > 
+> > diff -r 82e6201fc907 sound/isa/es18xx.c
+> > --- a/sound/isa/es18xx.c	Mon Mar 17 14:36:24 2008 +0100
+> > +++ b/sound/isa/es18xx.c	Mon Mar 17 17:32:59 2008 +0100
+> > @@ -765,9 +765,10 @@ static irqreturn_t snd_es18xx_interrupt(
+> >  		/* Read Interrupt status */
+> >  		status = snd_es18xx_mixer_read(chip, 0x7f) >> 4;
+> >  	}
+> > -#if 0
+> > -	else {
+> > -		status = 0;
+> > +
+> > +#ifdef CONFIG_ALPHA
+> > +	if (!(status & (AUDIO1_IRQ | AUDIO2_IRQ))) {
+> > +		/* status = 0; */
+> >  		if (inb(chip->port + 0x0C) & 0x01)
+> >  			status |= AUDIO1_IRQ;
+> >  		if (snd_es18xx_mixer_read(chip, 0x7A) & 0x80)
+> > @@ -777,7 +778,6 @@ static irqreturn_t snd_es18xx_interrupt(
+> >  			status |= HWV_IRQ;
+> >  	}
+> >  #endif
+> > -
+> >  	/* Audio 1 & Audio 2 */
+> >          if (status & AUDIO2_IRQ) {
+> >                  if (chip->active & DAC2)
 > 
->> At this stage I've run out of time to test the M-Audio Rev in the 
->> XP1000 and see if the MMAP disable patch help there.
-> 
-> Given that it fixes es18xx and cmipci on the PWS600au and that those 
-> worked without trouble on the XP1000, you'd _expect_ not, but the OOPs 
-> you posted before seemed to indicate that it stands a fair chance afer all.
+> This looks like it should accomplish the same thing (assuming not bits 
+> get set in status on the initial attempt to read it), without affecting 
+> other platforms and possible the alpha if anyone has a card that just 
+> works for whatever reason.  A better patch all around.  : )
 
-Oh, by the way, note that it only disabled mmap for CONFIG_ALPHA_MIATA due 
-to your report of es18xx working fine on the XP1000, so you'll have to 
-change that to CONFIG_ALPHA_DP264 for the XP1000 to actually test it there:
+Unfortunately, this does nothing to fix the ES1888 on my system.  Same
+broken behavior as described previously.  I'll try something else in
+the queue later today after I get some sleep...
 
-(or just delete SNDRV_PCM_INFO_MMAP from the info structures in the driver 
-as Takashi earlier instructed)
-
-Rene.
-
---------------040704010104050006030304
-Content-Type: text/plain;
- name="dp264_no_mmap.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="dp264_no_mmap.diff"
-
-diff --git a/include/sound/asound.h b/include/sound/asound.h
-index 3eaf155..e3b9c2d 100644
---- a/include/sound/asound.h
-+++ b/include/sound/asound.h
-@@ -241,8 +241,14 @@ typedef int __bitwise snd_pcm_subformat_t;
- #define	SNDRV_PCM_SUBFORMAT_STD		((__force snd_pcm_subformat_t) 0)
- #define	SNDRV_PCM_SUBFORMAT_LAST	SNDRV_PCM_SUBFORMAT_STD
- 
-+#ifdef CONFIG_ALPHA_DP264
-+#define SNDRV_PCM_INFO_MMAP		0		/* the useful comment goes here */
-+#define SNDRV_PCM_INFO_MMAP_VALID	0
-+#else
- #define SNDRV_PCM_INFO_MMAP		0x00000001	/* hardware supports mmap */
- #define SNDRV_PCM_INFO_MMAP_VALID	0x00000002	/* period data are valid during transfer */
-+#endif
-+
- #define SNDRV_PCM_INFO_DOUBLE		0x00000004	/* Double buffering needed for PCM start/stop */
- #define SNDRV_PCM_INFO_BATCH		0x00000010	/* double buffering */
- #define SNDRV_PCM_INFO_INTERLEAVED	0x00000100	/* channels are interleaved */
-
---------------040704010104050006030304--
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "I was a beta tester for dirt.  They never did
+rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
+------------------------------------------------------------------------
