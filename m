@@ -1,102 +1,92 @@
-From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+From: rct@frus.com (Bob Tracy)
 Subject: Re: [alsa-devel] [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Sun, 30 Mar 2008 20:14:00 +0400
-Message-ID: <20080330161400.GA24443@jurassic.park.msu.ru>
-References: <20080329064227.58074DBA2@gherkin.frus.com> <47EE317E.9030807@keyaccess.nl>
+Date: Sun, 30 Mar 2008 15:24:04 -0500 (CDT)
+Message-ID: <20080330202404.AB288DBA2@gherkin.frus.com>
+References: <47EE317E.9030807@keyaccess.nl>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <47EE317E.9030807@keyaccess.nl>
+In-Reply-To: <47EE317E.9030807@keyaccess.nl> "from Rene Herman at Mar 29, 2008
+ 01:09:34 pm"
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>, Rene Herman <rene.herman@keyaccess.nl>
-Cc: Bob Tracy <rct@frus.com>, Tyson Whitehead <twhitehe@uwo.ca>, Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+To: Rene Herman <rene.herman@keyaccess.nl>
+Cc: Bob Tracy <rct@frus.com>, Tyson Whitehead <twhitehe@uwo.ca>, Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
 
-On Sat, Mar 29, 2008 at 01:09:34PM +0100, Rene Herman wrote:
+Rene Herman wrote:
 > Okay. The thing that "fixed" Tyson was disabling mmap from the driver:
->
+> 
 > http://mailman.alsa-project.org/pipermail/alsa-devel/2008-March/006911.html
 
-Weird - I was sure the mmap problem has been fixed, but obviously
-the patch didn't go in...
+I'll be trying that just a little later today, as in, sometime in the
+next half hour or so.
 
-Andrew, could you please queue this up for 2.6.26?
+> It landed him in the same situation as you though, where that "asskickd.wav" 
+> mono, 8-bit 11025 file you sent me shows the same behaviour you reported. 
+> This might imply you weren't using mmap to begin with. You have no horribly 
+> obsolete alsa userland, nor an /etc/asound.conf or ~/.asoundrc?
 
-Ivan.
+I don't have either of the two files mentioned above.  As far as the alsa
+userland, I would think it's all "reasonably" current.  I'm running Debian
+"Etch" fully patched/updated.  I'll normally refrain from running things
+in the "unstable" or "experimental" categories unless something is broken
+in the "stable" tree that isn't getting fixed (e.g., a libc problem).
+Beyond that, I also tend to run the latest kernels to make sure we (the
+community) get an early warning if there are problems with kernel
+updates/changes on the Alpha architecture.  Because it's a reasonably
+small list, here is the relevant "dpkg -l" output for alsa packages:
 
---
-alpha: fix ALSA DMA mmap crash
+Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Installed/Config-files/Unpacked/Failed-config/Half-installed
+|/ Err?=(none)/Hold/Reinst-required/X=both-problems (Status,Err: uppercase=bad)
+||/ Name                               Version                              Description
++++-==================================-====================================-================================================================
+ii  alsa-base                          1.0.13-5etch1                        ALSA driver configuration files
+ii  alsa-oss                           1.0.12-1                             ALSA wrapper for OSS applications
+ii  alsa-utils                         1.0.13-2                             ALSA utilities
+ii  alsaplayer-alsa                    0.99.76-9                            PCM player designed for ALSA (ALSA output module)
+ii  alsaplayer-common                  0.99.76-9                            PCM player designed for ALSA (common files)
+ii  alsaplayer-esd                     0.99.76-9                            PCM player designed for ALSA (EsounD output module)
+ii  alsaplayer-gtk                     0.99.76-9                            PCM player designed for ALSA (GTK version)
+ii  gstreamer0.10-alsa                 0.10.10-4                            GStreamer plugin for ALSA
+ii  libasound2                         1.0.13-2                             ALSA library
+ii  linux-sound-base                   1.0.13-5etch1                        base package for ALSA and OSS sound systems
 
-Make dma_alloc_coherent respect gfp flags (__GFP_COMP is one that
-matters).
+> No change with "aplay -M"?
+> (and)
+> This one needs answer so as to possibly pin things down to format:
+> 
+> http://mailman.alsa-project.org/pipermail/alsa-devel/2008-March/006914.html
 
-Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
----
- arch/alpha/kernel/pci_iommu.c   |    8 +++++---
- include/asm-alpha/dma-mapping.h |    2 +-
- include/asm-alpha/pci.h         |    8 +++++++-
- 3 files changed, 13 insertions(+), 5 deletions(-)
+Reported on the results of the various "sox" tests in that article last
+night.
 
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index 4e1c086..dd6e334 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -424,11 +424,13 @@ EXPORT_SYMBOL(pci_unmap_page);
-    else DMA_ADDRP is undefined.  */
- 
- void *
--pci_alloc_consistent(struct pci_dev *pdev, size_t size, dma_addr_t *dma_addrp)
-+__pci_alloc_consistent(struct pci_dev *pdev, size_t size,
-+		       dma_addr_t *dma_addrp, gfp_t gfp)
- {
- 	void *cpu_addr;
- 	long order = get_order(size);
--	gfp_t gfp = GFP_ATOMIC;
-+
-+	gfp &= ~GFP_DMA;
- 
- try_again:
- 	cpu_addr = (void *)__get_free_pages(gfp, order);
-@@ -458,7 +460,7 @@ try_again:
- 
- 	return cpu_addr;
- }
--EXPORT_SYMBOL(pci_alloc_consistent);
-+EXPORT_SYMBOL(__pci_alloc_consistent);
- 
- /* Free and unmap a consistent DMA buffer.  CPU_ADDR and DMA_ADDR must
-    be values that were returned from pci_alloc_consistent.  SIZE must
-diff --git a/include/asm-alpha/dma-mapping.h b/include/asm-alpha/dma-mapping.h
-index 75a1aff..db351d1 100644
---- a/include/asm-alpha/dma-mapping.h
-+++ b/include/asm-alpha/dma-mapping.h
-@@ -11,7 +11,7 @@
- #define dma_unmap_single(dev, addr, size, dir)		\
- 		pci_unmap_single(alpha_gendev_to_pci(dev), addr, size, dir)
- #define dma_alloc_coherent(dev, size, addr, gfp)	\
--		pci_alloc_consistent(alpha_gendev_to_pci(dev), size, addr)
-+	      __pci_alloc_consistent(alpha_gendev_to_pci(dev), size, addr, gfp)
- #define dma_free_coherent(dev, size, va, addr)		\
- 		pci_free_consistent(alpha_gendev_to_pci(dev), size, va, addr)
- #define dma_map_page(dev, page, off, size, dir)		\
-diff --git a/include/asm-alpha/pci.h b/include/asm-alpha/pci.h
-index d5b10ef..d31fd49 100644
---- a/include/asm-alpha/pci.h
-+++ b/include/asm-alpha/pci.h
-@@ -76,7 +76,13 @@ extern inline void pcibios_penalize_isa_irq(int irq, int active)
-    successful and sets *DMA_ADDRP to the pci side dma address as well,
-    else DMA_ADDRP is undefined.  */
- 
--extern void *pci_alloc_consistent(struct pci_dev *, size_t, dma_addr_t *);
-+extern void *__pci_alloc_consistent(struct pci_dev *, size_t,
-+				    dma_addr_t *, gfp_t);
-+static inline void *
-+pci_alloc_consistent(struct pci_dev *dev, size_t size, dma_addr_t *dma)
-+{
-+	return __pci_alloc_consistent(dev, size, dma, GFP_ATOMIC);
-+}
- 
- /* Free and unmap a consistent DMA buffer.  CPU_ADDR and DMA_ADDR must
-    be values that were returned from pci_alloc_consistent.  SIZE must
+For all of the above, I need to mention I am/was running an unpatched
+2.6.25-rc7 kernel.  "cat /proc/interrupts" shows absolutely no interrupt
+activity for the ES1888.  Here's the current and complete output for an
+uptime of 1 day, 14:14:
+
+  1:      10718          XT-PIC   i8042
+  2:          0          XT-PIC   cascade
+  4:          1          XT-PIC   serial
+  5:          0          XT-PIC  +ES18xx
+  8:  140919958             RTC  +timer
+ 12:      13965          XT-PIC   i8042
+ 14:    1231903          XT-PIC   ide0
+ 18:          0           PYXIS   halt-switch
+ 22:          0           PYXIS   timer-cascade
+ 23:          0           PYXIS   isa-cascade
+ 24:     116344           PYXIS   eth0
+ 32:   14938196           PYXIS   radeon@pci:0000:00:0c.0
+ 40:     417084           PYXIS   qla1280
+ERR:          0
+
+Ok.  Let me boot on the kernel with the "miata_no_mmap" patch and give
+that a spin.  I'll report back shortly.
+
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "I was a beta tester for dirt.  They never did
+rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
+------------------------------------------------------------------------
