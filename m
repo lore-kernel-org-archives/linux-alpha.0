@@ -1,44 +1,68 @@
-From: Rene Herman <rene.herman@keyaccess.nl>
-Subject: Re: [alsa-devel] [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
-Date: Sat, 29 Mar 2008 13:09:34 +0100
-Message-ID: <47EE317E.9030807@keyaccess.nl>
-References: <20080329064227.58074DBA2@gherkin.frus.com>
+From: rct@frus.com (Bob Tracy)
+Subject: Re: [regression] 2.6.25-rc4 snd-es18xx broken on Alpha
+Date: Sat, 29 Mar 2008 23:24:13 -0500 (CDT)
+Message-ID: <20080330042413.BB1A3DBA2@gherkin.frus.com>
+References: <47E7EFDF.2070706@keyaccess.nl>
 Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20080329064227.58074DBA2@gherkin.frus.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Bob Tracy <rct@frus.com>
-Cc: Tyson Whitehead <twhitehe@uwo.ca>, Takashi Iwai <tiwai@suse.de>, ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
+Return-path: <alsa-devel-bounces@alsa-project.org>
+In-Reply-To: <47E7EFDF.2070706@keyaccess.nl> "from Rene Herman at Mar 24, 2008
+	07:15:59 pm"
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+	<mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Sender: alsa-devel-bounces@alsa-project.org
+Errors-To: alsa-devel-bounces@alsa-project.org
+To: Rene Herman <rene.herman@keyaccess.nl>
+Cc: ALSA devel <alsa-devel@alsa-project.org>, Michael Cree <mcree@orcon.net.nz>, Krzysztof Helt <krzysztof.h1@wp.pl>, Takashi Iwai <tiwai@suse.de>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Bob Tracy <rct@frus.com>
 
-On 29-03-08 07:42, Bob Tracy wrote:
+Rene Herman wrote:
+> There's a patch attached that disables mmap on MIATA. You and Bob seem to be 
+> experiencing problems of a different nature (or severity at the least) but 
+> for both of you it would be good to hear what applying this and then playing 
+> using "aplay -D hw foo.wav" (on the miata systems, ofcourse) brings.
+> 
+> (...)
+> 
+> The mmap thing is sort of the last hickup to be expected from me -- having 
+> no Alpha machines and with trouble not isolated to a specific driver nor 
+> Alpha model, this would at that point ideally want someone with some more 
+> specific Alpha insights to step in.
+> 
+> (...)
+> 
+> diff --git a/include/sound/asound.h b/include/sound/asound.h
+> index 3eaf155..e3b9c2d 100644
+> --- a/include/sound/asound.h
+> +++ b/include/sound/asound.h
+> @@ -241,8 +241,14 @@ typedef int __bitwise snd_pcm_subformat_t;
+>  #define	SNDRV_PCM_SUBFORMAT_STD		((__force snd_pcm_subformat_t) 0)
+>  #define	SNDRV_PCM_SUBFORMAT_LAST	SNDRV_PCM_SUBFORMAT_STD
+>  
+> +#ifdef CONFIG_ALPHA_MIATA
+> +#define SNDRV_PCM_INFO_MMAP		0		/* the useful comment goes here */
+> +#define SNDRV_PCM_INFO_MMAP_VALID	0
+> +#else
+>  #define SNDRV_PCM_INFO_MMAP		0x00000001	/* hardware supports mmap */
+>  #define SNDRV_PCM_INFO_MMAP_VALID	0x00000002	/* period data are valid during transfer */
+> +#endif
+> +
+>  #define SNDRV_PCM_INFO_DOUBLE		0x00000004	/* Double buffering needed for PCM start/stop */
+>  #define SNDRV_PCM_INFO_BATCH		0x00000010	/* double buffering */
+>  #define SNDRV_PCM_INFO_INTERLEAVED	0x00000100	/* channels are interleaved */
 
->>> +#ifdef CONFIG_ALPHA
->>> +	if (!(status & (AUDIO1_IRQ | AUDIO2_IRQ))) {
->>> +		/* status = 0; */
+Late this evening I starting building a kernel with the above patch
+applied.  It should be ready for testing sometime tomorrow.  Sorry for
+the delay.
 
-> Unfortunately, this does nothing to fix the ES1888 on my system.  Same
-> broken behavior as described previously.  I'll try something else in
-> the queue later today after I get some sleep...
-
-Okay. The thing that "fixed" Tyson was disabling mmap from the driver:
-
-http://mailman.alsa-project.org/pipermail/alsa-devel/2008-March/006911.html
-
-It landed him in the same situation as you though, where that "asskickd.wav" 
-mono, 8-bit 11025 file you sent me shows the same behaviour you reported. 
-This might imply you weren't using mmap to begin with. You have no horribly 
-obsolete alsa userland, nor an /etc/asound.conf or ~/.asoundrc?
-
-No change with "aplay -M"? If there is a change, you'd expect it to be 
-Tyson's old behaviour which means blowing up the machine on subsequent 
-plays, so be a bit careful...
-
-This one needs answer so as to possibly pin things down to format:
-
-http://mailman.alsa-project.org/pipermail/alsa-devel/2008-March/006914.html
-
-Rene.
-
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "I was a beta tester for dirt.  They never did
+rct@frus.com       |   get all the bugs out." - Steve McGrew on /.
+------------------------------------------------------------------------
