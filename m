@@ -1,49 +1,51 @@
-From: =?UTF-8?B?UmHDumwgUG9yY2Vs?= <armin76@gentoo.org>
-Subject: Re: [ALPHA] 2.6.28-rc fails to compile
-Date: Sun, 16 Nov 2008 12:59:56 +0100
-Message-ID: <49200B3C.7020203@gentoo.org>
-References: <49083361.5060907@gentoo.org> <20081029100356.GA28224@cs181140183.pp.htv.fi> <20081029062741.7400e330@infradead.org> <20081029134553.GA9108@cs181140183.pp.htv.fi> <20081029065935.7a5930f9@infradead.org> <20081029141909.GC9108@cs181140183.pp.htv.fi>
+From: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
+Subject: [RESEND] [PATCH] alpha: remove dead BIO_VMERGE_BOUNDARY
+Date: Fri, 12 Dec 2008 17:47:49 +0900
+Message-ID: <20081212174824M.fujita.tomonori@lab.ntt.co.jp>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20081029141909.GC9108@cs181140183.pp.htv.fi>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Adrian Bunk <bunk@kernel.org>
-Cc: Arjan van de Ven <arjan@infradead.org>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, klausman@gentoo.org, Jesse Barnes <jbarnes@virtuousgeek.org>, Andrew Morton <akpm@linux-foundation.org>, rth@twiddle.net
+Content-Type: Text/Plain; charset="us-ascii"
+To: jens.axboe@oracle.com
+Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-Adrian Bunk wrote:
-> On Wed, Oct 29, 2008 at 06:59:35AM -0700, Arjan van de Ven wrote:
->> On Wed, 29 Oct 2008 15:45:53 +0200
->> Adrian Bunk <bunk@kernel.org> wrote:
->>
->>> On Wed, Oct 29, 2008 at 06:27:41AM -0700, Arjan van de Ven wrote:
->>>> Andrew has a patch for this in his tree for a while... I was
->>>> assuming he'd do a patchdump to Linus late in -rc1 but it seems not
->>>> to have happened..
->>> The basic problem for the Alpha build errors are circular #include's 
->>> (that are anyway a pretty bad thing), and I'm currently attacking
->>> that problem (it seems to be surprisingly easy).
->>>
->>> That's IMHO better than the patch in -mm that uninlines 
->>> pci_ioremap_bar().
->> and in my opinion the uninline is nicer ;)
->> Because that means we can add more checks to it over time without
->> bloating the kernel.
-> 
-> My usage of the word "better" was wrong.
-> 
-> For fixing the compile error I do consider the patch I'm currently 
-> testing as better, since this could otherwise beat us again in the 
-> future.
-> 
-> But the patches are completely orthogonal, and there's no reason against 
-> including both.
-> 
-> cu
-> Adrian
-> 
+This is a resend of:
 
-Any news? Something i could test?
-rc5 still fails, just FYI :)
+http://marc.info/?l=linux-kernel&m=122482703716610&w=2
+
+Jens, can you merge this via your tree? There is no tree for Alpha.
+
+=
+From: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
+Subject: [PATCH] alpha: remove dead BIO_VMERGE_BOUNDARY
+
+The block layer dropped the virtual merge feature
+(b8b3e16cfe6435d961f6aaebcfd52a1ff2a988c5). BIO_VMERGE_BOUNDARY
+definition is meaningless now.
+
+Signed-off-by: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+---
+ arch/alpha/include/asm/io.h |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
+
+diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+index e971ab0..eda9b90 100644
+--- a/arch/alpha/include/asm/io.h
++++ b/arch/alpha/include/asm/io.h
+@@ -96,9 +96,6 @@ static inline dma_addr_t __deprecated isa_page_to_bus(struct page *page)
+ 	return page_to_phys(page);
+ }
+ 
+-/* This depends on working iommu.  */
+-#define BIO_VMERGE_BOUNDARY	(alpha_mv.mv_pci_tbi ? PAGE_SIZE : 0)
+-
+ /* Maximum PIO space address supported?  */
+ #define IO_SPACE_LIMIT 0xffff
+ 
+-- 
+1.5.6.5
+
