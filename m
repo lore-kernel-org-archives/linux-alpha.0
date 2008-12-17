@@ -1,67 +1,45 @@
-From: Jens Axboe <jens.axboe@oracle.com>
-Subject: Re: [RESEND] [PATCH] alpha: remove dead BIO_VMERGE_BOUNDARY
-Date: Fri, 12 Dec 2008 09:50:42 +0100
-Message-ID: <20081212085042.GK23742@kernel.dk>
-References: <20081212174824M.fujita.tomonori@lab.ntt.co.jp>
+From: "Matt Turner" <mattst88@gmail.com>
+Subject: Questions about possible Alpha futex implementation
+Date: Tue, 16 Dec 2008 20:59:54 -0500
+Message-ID: <b4198de60812161759l5f2d69d9r8f538a935b5a5872@mail.gmail.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:message-id:date:from:to
+         :subject:mime-version:content-type:content-transfer-encoding
+         :content-disposition;
+        bh=cTHN/T/tqyomaqAZzbvs5XNOTtXmbMSDleXq9hgLDg8=;
+        b=bYrxGVnRbWPbCC0+0Y/PlNzG4PsBA3SaglxlP1XsAMMO5ltljqpMLoi4ocqQ2Y7/Ht
+         H0xKrw6fUtBjakaMSu7PYEcEzqYvPS5zdEIBrOtjmF1h/7oN0YX99qMNNUHyRVgB4vl3
+         gUe4H+7MVK56Xs2YfciomvIP1+0Zf4j+WSFes=
 Content-Disposition: inline
-In-Reply-To: <20081212174824M.fujita.tomonori@lab.ntt.co.jp>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
-Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org
 
-On Fri, Dec 12 2008, FUJITA Tomonori wrote:
-> This is a resend of:
-> 
-> http://marc.info/?l=linux-kernel&m=122482703716610&w=2
-> 
-> Jens, can you merge this via your tree? There is no tree for Alpha.
+Hi,
 
-Sure, I'll put it in the 2.6.29 pile.
+Alpha uses a generic futex implementation, which causes some problems [1].
 
-> 
-> =
-> From: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
-> Subject: [PATCH] alpha: remove dead BIO_VMERGE_BOUNDARY
-> 
-> The block layer dropped the virtual merge feature
-> (b8b3e16cfe6435d961f6aaebcfd52a1ff2a988c5). BIO_VMERGE_BOUNDARY
-> definition is meaningless now.
-> 
-> Signed-off-by: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
-> Cc: Richard Henderson <rth@twiddle.net>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> ---
->  arch/alpha/include/asm/io.h |    3 ---
->  1 files changed, 0 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-> index e971ab0..eda9b90 100644
-> --- a/arch/alpha/include/asm/io.h
-> +++ b/arch/alpha/include/asm/io.h
-> @@ -96,9 +96,6 @@ static inline dma_addr_t __deprecated isa_page_to_bus(struct page *page)
->  	return page_to_phys(page);
->  }
->  
-> -/* This depends on working iommu.  */
-> -#define BIO_VMERGE_BOUNDARY	(alpha_mv.mv_pci_tbi ? PAGE_SIZE : 0)
-> -
->  /* Maximum PIO space address supported?  */
->  #define IO_SPACE_LIMIT 0xffff
->  
-> -- 
-> 1.5.6.5
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+I've read through the code, and it appears as if the implementation
+could be done by using the ldq_l/stq_c instructions, relatively easy I
+might add.
 
--- 
-Jens Axboe
+I have only a few questions.
 
+1) What are the benefits of a native futex implementation, other than
+fixing the glibc test failures?
+2) Is there a technical reason it hasn't been implemented on Alpha?
+3) Am in correct that it could be done with ldq_l/stq_c instructions?
+
+I'm not experienced with kernel development, but I'd like to learn, so
+please bear with me.
+
+Thanks,
+
+Matt Turner
+
+[1] http://bugs.gentoo.org/show_bug.cgi?id=205099
