@@ -1,18 +1,18 @@
 From: Cheng Renquan <crquan@gmail.com>
 Subject: [PATCH] do_pipe cleanup: drop its last user in arch/alpha/
-Date: Wed, 14 Jan 2009 17:01:33 +0800
-Message-ID: <1231923693-17968-1-git-send-email-crquan@gmail.com>
-References: <91b13c310901122126p346aa905g8233ed55ab18f902@mail.gmail.com>
+Date: Wed, 14 Jan 2009 17:09:45 +0800
+Message-ID: <1231924185-18018-1-git-send-email-crquan@gmail.com>
+References: <1231923693-17968-1-git-send-email-crquan@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=owhNKFALnmfu+Ff+//N5VZiAC/ndxOQ3jwfsIFAM3pY=;
-        b=GtGRWNf6/VgABQF7xf58m6ZJ+tIRJJDAGC+WL8UFTpFUHyjE0AA/HwkcLnmouyZKmd
-         0NJg9kdMJDaVNVzV07f6tFM/WEUYJHN+aqmTI3n7dkqJBBRiQypAXvutqAEGqSRGF8gM
-         HgH3v8aqLjwzbraspGIxivI5juvlnx+ZX8w6w=
-In-Reply-To: <91b13c310901122126p346aa905g8233ed55ab18f902@mail.gmail.com>
+        bh=bOEyVXYkworHAB+DeCFo8eVtr+yn8FwNtERIwpANO00=;
+        b=x6szwfGsFQSnCcFhgIffATwutVdpeSv68i3zfMvbIVry/oU7lMrx1fLSD/ZxinXEvt
+         O4VODGWjbOD9+6FhP3yfYjGh1fG1ZTDbeOov014ft8pnIvKs11S3ONUlTxylyamqHPvh
+         y32WKmfm5mUQe6jmS0wySL78cj9OzkVo/GBoQ=
+In-Reply-To: <1231923693-17968-1-git-send-email-crquan@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -27,10 +27,10 @@ do_pipe_flags, the do_pipe can be totally dropped.
 Signed-off-by: Cheng Renquan <crquan@gmail.com>
 ---
  arch/alpha/kernel/entry.S   |    3 ++-
- arch/alpha/kernel/osf_sys.c |    2 --
+ arch/alpha/kernel/osf_sys.c |    2 +-
  fs/pipe.c                   |    5 -----
  include/linux/fs.h          |    1 -
- 4 files changed, 2 insertions(+), 9 deletions(-)
+ 4 files changed, 3 insertions(+), 8 deletions(-)
 
 diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
 index f77345b..192b624 100644
@@ -48,18 +48,18 @@ index f77345b..192b624 100644
  	ldq	$26, 0($sp)
  	bne	$0, 1f
 diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index 18a3ea1..e18e135 100644
+index 18a3ea1..5c1678e 100644
 --- a/arch/alpha/kernel/osf_sys.c
 +++ b/arch/alpha/kernel/osf_sys.c
-@@ -46,8 +46,6 @@
+@@ -46,7 +46,7 @@
  #include <asm/hwrpb.h>
  #include <asm/processor.h>
  
 -extern int do_pipe(int *);
--
++extern int do_pipe_flags(int *, int);
+ 
  /*
   * Brk needs to return an error.  Still support Linux's brk(0) query idiom,
-  * which OSF programs just shouldn't be doing.  We're still not quite
 diff --git a/fs/pipe.c b/fs/pipe.c
 index 8916971..6b6ad78 100644
 --- a/fs/pipe.c
