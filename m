@@ -1,77 +1,41 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] do_pipe cleanup: drop its last user in arch/alpha/
-Date: Mon, 2 Feb 2009 12:48:22 -0800
-Message-ID: <20090202124822.ed2deb84.akpm@linux-foundation.org>
-References: <1232772231-6523-1-git-send-email-crquan@gmail.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Need help fixing DRM locking on Alpha
+Date: Mon, 9 Feb 2009 16:43:12 -0500
+Message-ID: <b4198de60902091343p2aa76a27vf3bc077b6d55c78e@mail.gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1232772231-6523-1-git-send-email-crquan@gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:mime-version:received:date:message-id:subject
+         :from:to:cc:content-type:content-transfer-encoding;
+        bh=h8usxeUos1PzgxQxoT6By0yY8x9Nj7yKCCAGwMmjVSY=;
+        b=EPrHYQhxwYowumGhQGmMvE5x0Hm7dchSkO4lyhS+Idd9jtSM/PY5KnzMn5vi9XRkyU
+         4uEQfa2LAJpYTrrT0BekPmp2pbTVGmJsTR1a0PXEwRW12NaRrW6hJ4HS/ZisZ5lVqY5r
+         yRJglXK0la2sLSQjNuTGfqnLMjnsdkLySOOH0=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Cheng Renquan <crquan@gmail.com>
-Cc: rth@twiddle.net, linux-alpha@vger.kernel.org, ink@jurassic.park.msu.ru, viro@zeniv.linux.org.uk, cr_quan@163.com, linux-kernel@vger.kernel.org
+To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: linux-alpha@vger.kernel.org
 
-On Sat, 24 Jan 2009 12:43:50 +0800
-Cheng Renquan <crquan@gmail.com> wrote:
+Hi,
 
-> --- a/arch/alpha/kernel/osf_sys.c
-> +++ b/arch/alpha/kernel/osf_sys.c
-> @@ -46,7 +46,7 @@
->  #include <asm/hwrpb.h>
->  #include <asm/processor.h>
->  
-> -extern int do_pipe(int *);
-> +extern int do_pipe_flags(int *, int);
+Lately, I've spent time debugging a problem with the DRM locking code on Alpha.
 
+http://bugs.freedesktop.org/show_bug.cgi?id=16549
 
-From: Andrew Morton <akpm@linux-foundation.org>
+After searching through the userspace components (libdrm, mesa,
+xserver) and not finding any relevant changes, I think the problem
+must be located in the kernel.
 
-WARNING: externs should be avoided in .c files
-#42: FILE: arch/alpha/kernel/osf_sys.c:49:
-+extern int do_pipe_flags(int *, int);
+David Airlie pointed me to possibly relevant commits to alpha's
+system.h which contains cmpxchg.
 
-total: 0 errors, 1 warnings, 36 lines checked
+http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=history;f=include/asm-alpha/system.h;h=afe20fa58c990927fd10c5e94d41fe4d8d9eee8a;hb=HEAD
 
-./patches/do_pipe-drop-its-last-user-in-arch-alpha.patch has style problems, please review.  If any of these errors
-are false positives report them to the maintainer, see
-CHECKPATCH in MAINTAINERS.
+Can anyone see where the bug is located?
 
-Please run checkpatch prior to sending patches
+Thanks,
 
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Cheng Renquan <crquan@gmail.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Jens Axboe <jens.axboe@oracle.com>
-Cc: Richard Henderson <rth@twiddle.net>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- arch/alpha/kernel/osf_sys.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff -puN arch/alpha/kernel/osf_sys.c~do_pipe-drop-its-last-user-in-arch-alpha-checkpatch-fixes arch/alpha/kernel/osf_sys.c
---- a/arch/alpha/kernel/osf_sys.c~do_pipe-drop-its-last-user-in-arch-alpha-checkpatch-fixes
-+++ a/arch/alpha/kernel/osf_sys.c
-@@ -14,6 +14,7 @@
- #include <linux/sched.h>
- #include <linux/kernel.h>
- #include <linux/mm.h>
-+#include <linux/fs.h>
- #include <linux/smp.h>
- #include <linux/smp_lock.h>
- #include <linux/stddef.h>
-@@ -46,8 +47,6 @@
- #include <asm/hwrpb.h>
- #include <asm/processor.h>
- 
--extern int do_pipe_flags(int *, int);
--
- /*
-  * Brk needs to return an error.  Still support Linux's brk(0) query idiom,
-  * which OSF programs just shouldn't be doing.  We're still not quite
-_
-
-
-OK?
+Matt Turner
