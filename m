@@ -1,40 +1,39 @@
-From: Ingo Molnar <mingo@elte.hu>
-Subject: Re: [git pull] preempt-count: force hardirq-count to max of 10
-Date: Fri, 13 Feb 2009 12:58:51 +0100
-Message-ID: <20090213115851.GK15679@elte.hu>
-References: <alpine.DEB.1.10.0902121139230.15469@gandalf.stny.rr.com>
-Mime-Version: 1.0
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: Need help fixing DRM locking on Alpha
+Date: Tue, 17 Feb 2009 09:37:51 +1300
+Message-ID: <611416E1-0C62-40A1-9176-31AE4961495E@orcon.net.nz>
+References: <b4198de60902091343p2aa76a27vf3bc077b6d55c78e@mail.gmail.com> <20090210154355.GA27697@jurassic.park.msu.ru> <b4198de60902101518m6402171bx9142ca8c8f1f785@mail.gmail.com> <20090211154829.GA27268@jurassic.park.msu.ru> <b4198de60902121415s4b52e2ber5d814997cb4b21e4@mail.gmail.com>
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.1.10.0902121139230.15469@gandalf.stny.rr.com>
+In-Reply-To: <b4198de60902121415s4b52e2ber5d814997cb4b21e4@mail.gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-m68k@vger.kernel.org, linux-ia64@vger.kernel.org, kernel@avr32linux.org, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, =?iso-8859-1?Q?Fr=E9d=E9ric?= Weisbecker <fweisbec@gmail.com>, Kenji Kaneshige <kaneshige.kenji@jp.fujitsu.com>, Tony Luck <tony.luck@intel.com>, Mike Travis <travis@sgi.com>, isimatu.yasuaki@jp.fujitsu.com
+Content-Type: text/plain; charset="us-ascii"; format="flowed"; delsp="yes"
+To: Matt Turner <mattst88@gmail.com>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, klausman@schwarzvogel.de
 
+On 13/02/2009, at 11:15 AM, Matt Turner wrote:
+> It would be great to get others to test as well. To do so,
+>
+> 1) patch libdrm using this patch.
+> 2) rebuild libdrm, and at least mesa-7.2, xorg-server-1.5.3
+> 3) patch your kernel (-29_rc series preferably) with patch in
+> http://bugzilla.kernel.org/show_bug.cgi?id=10893
+> 4) startx
 
-* Steven Rostedt <rostedt@goodmis.org> wrote:
+Done. Applied the kernel patch and the DRM patch and installed mesa  
+7.3 and xserver 1.5.3.
 
-> Ingo,
-> 
-> Please pull the latest tip/tracing/core tree, which can be found at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-2.6-trace.git
-> tip/tracing/core
-> 
-> 
-> Steven Rostedt (1):
->       preempt-count: force hardirq-count to max of 10
-> 
-> ----
->  arch/alpha/include/asm/hardirq.h |   13 ----------
->  arch/avr32/include/asm/hardirq.h |   11 --------
->  arch/ia64/include/asm/hardirq.h  |   10 --------
->  include/linux/hardirq.h          |   48 +++++++++++++++++++-------------------
->  4 files changed, 24 insertions(+), 58 deletions(-)
+Had the xserver up and going with gnome desktop on my ev67 alpha.   
+Seems to be working fine.
 
-Pulled, thanks Steve.
+Nice to see glxinfo return lots of info, and glxgears actually run  
+without locking up.  But I only got 200 whatevers per second with  
+glxgears.  I recall that it use to do 400.  Makes me wonder if I am  
+really getting hardware acceleration.  This is with a Radeon 9200  
+(RV280) graphics card.
 
-	Ingo
+Cheers
+Michael.
+
