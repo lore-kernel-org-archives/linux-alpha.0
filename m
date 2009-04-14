@@ -1,35 +1,159 @@
-From: Segher Boessenkool <segher@kernel.crashing.org>
-Subject: Re: alpha: half done futex implementation
-Date: Tue, 14 Apr 2009 11:45:04 +0200
-Message-ID: <F29CA01F-869A-4C5C-9A3C-4F6B6ABEE901@kernel.crashing.org>
-References: <b4198de60904111755u5c2078c7xcc689dbd78aeb957@mail.gmail.com>
-	<49E39F3D.4060501@twiddle.net>
-	<AE456C27-B568-4835-8843-F2A2E2D8FC32@kernel.crashing.org>
-Mime-Version: 1.0 (Apple Message framework v753.1)
+From: Matt Turner <mattst88@gmail.com>
+Subject: Radeon kernel-modesetting on Alpha. Problem reading PCI ROM
+Date: Tue, 14 Apr 2009 16:15:57 -0400
+Message-ID: <b4198de60904141315x14d898e5x89fc334dd977b7a1@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary=00151750e184b1e2c10467897f61
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:mime-version:received:date:message-id:subject
+         :from:to:cc:content-type;
+        bh=kzdWdzMD/4QHoOaHVZxnwbaY0lRnB2JbFuv0cBlUu/8=;
+        b=BDgtE0bxNiqZtccmlKaRJ8cB4nGwcrrscILPpSe9uf/mVHmkE3GM9Xt2+GXGvAjpFr
+         DE2xSlSourkVyeH23bKxcCBESk8aGdCmR8ymQBGIho3zzd/f9fwOnDyZYOgaMQNbjfFW
+         mqgFH7+0MUx6884KKPXDAmcZcFk4rcP+kJrQo=
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, dri-devel@lists.sourceforge.net
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@hp.com>, Oliver Falk <oliver@linux-kernel.at>, glisse@freedesktop.org
+
+--00151750e184b1e2c10467897f61
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@ozlabs.org>
-In-Reply-To: <AE456C27-B568-4835-8843-F2A2E2D8FC32@kernel.crashing.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://ozlabs.org/mailman/options/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=unsubscribe>
-List-Archive: <http://ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@ozlabs.org?subject=help>
-List-Subscribe: <https://ozlabs.org/mailman/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@ozlabs.org?subject=subscribe>
-Sender: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@ozlabs.org
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@ozlabs.org
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Segher Boessenkool <segher@kernel.crashing.org>
-Cc: Oliver Falk <oliver@linux-kernel.at>, linux-kernel@vger.kernel.org, linuxppc-dev@ozlabs.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Matt Turner <mattst88@gmail.com>, Jay Estabrook <jay.estabrook@hp.com>, Richard Henderson <rth@twiddle.net>
 
-> If either the lwarx or the stwcx. faults, the routine returns -EFAULT
-> and doesn't retry (label "3" is the end of the asm).
->
-> If the stwcx. fails because the CPU lost the reservation, %1 isn't
-> clobbered as far as I see?
+Hi,
 
-Oh, "insn" writes to %1, never mind.
+I'm testing Jerome Glisse's drm-next-radeon branch which provides
+Radeon Kernel-modesetting support on a Samsung UP1500 with a PCI
+Radeon X1550.
 
+See http://cgit.freedesktop.org/~glisse/drm-next/log/?h=drm-next-radeon
 
-Segher
+While doing so, I've hit a few snags, and placed DRM_INFOs and printks
+throughout code in question. On Alpha, it hangs after calling
+fb_notifier_call_chain in register_framebuffer.
+
+Jerome and I think that the hang may be caused by being unable to read
+the PCI ROM.
+
+The radeon_read_bios function makes use of pci_map_rom, which calls
+pci_get_rom_size. In pci_get_rom_size, readb(image) doesn't return
+0x55. It falls back to read_disabled functions which appear to
+succeed.
+
+Why would the ROM not be able to be read by readb? Is this a general
+problem, or Alpha-specific?
+
+Attached are relevant dmesg logs and printk patches (against commit
+7582b4332602dcf03bb0c79f17e0cf89eeec6623) to give context.
+
+Thanks,
+
+Matt Turner
+
+--00151750e184b1e2c10467897f61
+Content-Type: application/octet-stream; name="radeon-kms.log"
+Content-Disposition: attachment; filename="radeon-kms.log"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_ftj0wyfk0
+
+W2RybV0gSW5pdGlhbGl6ZWQgZHJtIDEuMS4wIDIwMDYwODEwCltkcm1dIHJhZGVvbiBrZXJuZWwg
+bW9kZXNldHRpbmcgZW5hYmxlZC4KUENJOiBTZXR0aW5nIGxhdGVuY3kgdGltZXIgb2YgZGV2aWNl
+IDAwMDA6MDI6MDAuMCB0byA2NApbZHJtXSByYWRlb246IEluaXRpYWxpemluZyBrZXJuZWwgbW9k
+ZXNldHRpbmcuCltkcm1dIHJlZ2lzdGVyIG1taW8gYmFzZTogMHhFNDAwMDAwMApbZHJtXSByZWdp
+c3RlciBtbWlvIHNpemU6IDY1NTM2Cltkcm1dIHJhZGVvbjogMSBwaXBlKHMpCltkcm1dIHJhZGVv
+bl9yZWFkX2Jpb3M6IGNhbGxpbmcgcGNpX21hcF9yb20KcGNpX21hcF9yb206IGlvcmVtYXAgcmV0
+dXJuZWQgIT0gTlVMTApwY2lfZ2V0X3JvbV9zaXplOiBzaXplIGFzIHBhc3NlZCB0aHJvdWdoIGFy
+Z3VtZW50IGxpc3QgPSAxMzEwNzIKcGNpX2dldF9yb21fc2l6ZTogcm9tIGFzIHBhc3NlZCB0aHJv
+dWdoIGFyZ3VtZW50IGxpc3QgPSAwWEU4MDAwMDAwCnBjaV9nZXRfcm9tX3NpemU6IGltYWdlID0g
+MFhFODAwMDAwMApwY2lfZ2V0X3JvbV9zaXplOiByZWFkYiByZXR1cm5lZCAwWDAKcmFkZW9uIDAw
+MDA6MDI6MDAuMDogSW52YWxpZCBST00gY29udGVudHMKKGltYWdlIC0gcm9tKSA9IDAsIHNpemUg
+PSAxMzEwNzIKW2RybV0gcmFkZW9uX3JlYWRfYmlvczogcGNpX21hcF9yb20gcmV0dXJuICE9IE5V
+TEwKW2RybV0gcmFkZW9uX3JlYWRfYmlvczogc2l6ZSA9IDAsIGJpb3NbMF0gPSAwWDAsIGJpb3Nb
+MV0gPSAwWDAKW2RybV0gcmFkZW9uX2dldF9iaW9zOiByYWRlb25fcmVhZF9iaW9zIHJldHVybmVk
+IGZhbHNlCltkcm1dIHJhZGVvbl9yZWFkX2Rpc2FibGVkX2Jpb3M6IHVzaW5nIGF2aXZvX3JlYWRf
+ZGlzYWJsZWRfYmlvcwpbZHJtXSByYWRlb25fcmVhZF9iaW9zOiBjYWxsaW5nIHBjaV9tYXBfcm9t
+CnBjaV9tYXBfcm9tOiBpb3JlbWFwIHJldHVybmVkICE9IE5VTEwKcGNpX2dldF9yb21fc2l6ZTog
+c2l6ZSBhcyBwYXNzZWQgdGhyb3VnaCBhcmd1bWVudCBsaXN0ID0gMTMxMDcyCnBjaV9nZXRfcm9t
+X3NpemU6IHJvbSBhcyBwYXNzZWQgdGhyb3VnaCBhcmd1bWVudCBsaXN0ID0gMFhFODAwMDAwMApw
+Y2lfZ2V0X3JvbV9zaXplOiBpbWFnZSA9IDBYRTgwMDAwMDAKcGNpX2dldF9yb21fc2l6ZTogMFg1
+NQooaW1hZ2UgLSByb20pID0gNjI0NjQsIHNpemUgPSAxMzEwNzIKW2RybV0gcmFkZW9uX3JlYWRf
+YmlvczogcGNpX21hcF9yb20gcmV0dXJuICE9IE5VTEwKW2RybV0gcmFkZW9uX3JlYWRfYmlvczog
+c2l6ZSA9IDYyNDY0LCBiaW9zWzBdID0gMFg1NSwgYmlvc1sxXSA9IDBYQUEKW2RybV0gcmFkZW9u
+X3JlYWRfYmlvczoga21hbGxvYyByZXR1cm4gIT0gTlVMTApbZHJtXSByYWRlb25fZ2V0X2Jpb3M6
+IHJhZGVvbl9yZWFkX2Rpc2FibGVkX2Jpb3MgcmV0dXJuZWQgdHJ1ZQpbZHJtXSByZGV2LT5iaW9z
+ICE9IE5VTEwKW2RybV0gcmFkZW9uX2dldF9iaW9zOiByZGV2LT5iaW9zWzBdID09IDBYNTUKW2Ry
+bV0gQVRPTUJJT1MgZGV0ZWN0ZWQKQVRPTSBCSU9TOiBETS0KW2RybV0gR1BVIHJlc2V0IHN1Y2Nl
+ZWQgKFJCQk1fU1RBVFVTPTB4MTAwMDAxNDApCltkcm1dIERldGVjdGVkIFZSQU0gUkFNPTI1Nk0s
+IEJBUj0yNTZNCltkcm1dIFJBTSB3aWR0aCA2NGJpdHMgRERSCltkcm1dIHJhZGVvbjogVlJBTSAy
+NTZNCltkcm1dIHJhZGVvbjogVlJBTSBmcm9tIDB4MDAwMDAwMDAgdG8gMHgwRkZGRkZGRgpbZHJt
+XSByYWRlb246IEdUVCAzMk0KW2RybV0gcmFkZW9uOiBHVFQgZnJvbSAweDEwMDAwMDAwIHRvIDB4
+MTFGRkZGRkYKW2RybV0gR0FSVDogbnVtIGNwdSBwYWdlcyA0MDk2LCBudW0gZ3B1IHBhZ2VzIDgx
+OTIKW2RybV0gQ2xvY2tzIGluaXRpYWxpemVkICEKW2RybV0gcmFkZW9uOiBpcnEgaW5pdGlhbGl6
+ZWQuClRUTSBhdmFpbGFibGUgZ3JhcGhpY3MgbWVtb3J5OiAxODAyIE1pQgpUVE0gYXZhaWxhYmxl
+IG9iamVjdCBtZW1vcnk6IDE4MDIgTWlCCltkcm1dIHJhZGVvbjogMjU2TSBvZiBWUkFNIG1lbW9y
+eSByZWFkeQpbZHJtXSByYWRlb246IDMyTSBvZiBHVFQgbWVtb3J5IHJlYWR5LgpbZHJtXSBQQ0lF
+IEdBUlQgb2YgMzJNIGVuYWJsZWQgKHRhYmxlIGF0IDB4MDAwNDAwMDApLgpbZHJtXSByYWRlb246
+IGNwIGlkbGUgKDB4MTAwMDBDMDMpCltkcm1dIExvYWRpbmcgUjUwMCBNaWNyb2NvZGUKW2RybV0g
+cmFkZW9uOiByaW5nIGF0IDB4MDAwMDAwMDAxMDAwMDAwMApbZHJtXSByaW5nIHRlc3Qgc3VjY2Vl
+ZGVkIGluIDEgdXNlY3MKW2RybV0gcmFkZW9uOiBpYiBwb29sIHJlYWR5LgpbZHJtXSBpYiB0ZXN0
+IHN1Y2NlZWRlZCBpbiAwIHVzZWNzCmkyYy1hZGFwdGVyIGkyYy0xOiB1bmFibGUgdG8gcmVhZCBF
+RElEIGJsb2NrLgpyYWRlb24gMDAwMDowMjowMC4wOiBWR0EtMTogbm8gRURJRCBkYXRhCltkcm1d
+IGZiIG1hcHBhYmxlIGF0IDB4RjAwNDgwMDAKW2RybV0gdnJhbSBhcHBlciBhdCAweEYwMDAwMDAw
+Cltkcm1dIHNpemUgNTI0Mjg4MApbZHJtXSBmYiBkZXB0aCBpcyAyNApbZHJtXSAgICBwaXRjaCBp
+cyA1MTIwCnJlZ2lzdGVyX2ZyYW1lYnVmZmVyOiBhYm91dCB0byBjYWxsIGZiX25vdGlmaWVyX2Nh
+bGxfY2hhaW4K
+--00151750e184b1e2c10467897f61
+Content-Type: application/octet-stream; name="radeon-kms-debugging.patch"
+Content-Disposition: attachment; filename="radeon-kms-debugging.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_ftj0x4vz1
+
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9yYWRlb24vcmFkZW9uX2Jpb3MuYyBiL2RyaXZl
+cnMvZ3B1L2RybS9yYWRlb24vcmFkZW9uX2Jpb3MuYwppbmRleCAxZjE5MmViLi5mMzVmMGM3IDEw
+MDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbl9iaW9zLmMKKysrIGIvZHJp
+dmVycy9ncHUvZHJtL3JhZGVvbi9yYWRlb25fYmlvcy5jCkBAIC0zOSwxNiArMzksMjAgQEAgc3Rh
+dGljIGJvb2wgcmFkZW9uX3JlYWRfYmlvcyhzdHJ1Y3QgcmFkZW9uX2RldmljZSAqcmRldikKIAlz
+aXplX3Qgc2l6ZTsKIAogCXJkZXYtPmJpb3MgPSBOVUxMOworCURSTV9JTkZPKCJyYWRlb25fcmVh
+ZF9iaW9zOiBjYWxsaW5nIHBjaV9tYXBfcm9tXG4iKTsKIAliaW9zID0gcGNpX21hcF9yb20ocmRl
+di0+cGRldiwgJnNpemUpOworCURSTV9JTkZPKCJyYWRlb25fcmVhZF9iaW9zOiBwY2lfbWFwX3Jv
+bSByZXR1cm4gJWM9IE5VTExcbiIsIGJpb3MgPT0gTlVMTCA/ICc9JyA6ICchJyk7CiAJaWYgKCFi
+aW9zKSB7CiAJCXJldHVybiBmYWxzZTsKIAl9CiAKKwlEUk1fSU5GTygicmFkZW9uX3JlYWRfYmlv
+czogc2l6ZSA9ICVsdSwgYmlvc1swXSA9ICUjWCwgYmlvc1sxXSA9ICUjWFxuIiwgc2l6ZSwgYmlv
+c1swXSwgYmlvc1sxXSk7CiAJaWYgKHNpemUgPT0gMCB8fCBiaW9zWzBdICE9IDB4NTUgfHwgYmlv
+c1sxXSAhPSAweGFhKSB7CiAJCXBjaV91bm1hcF9yb20ocmRldi0+cGRldiwgYmlvcyk7CiAJCXJl
+dHVybiBmYWxzZTsKIAl9CiAJcmRldi0+YmlvcyA9IGttYWxsb2Moc2l6ZSwgR0ZQX0tFUk5FTCk7
+CisJRFJNX0lORk8oInJhZGVvbl9yZWFkX2Jpb3M6IGttYWxsb2MgcmV0dXJuICVjPSBOVUxMXG4i
+LCByZGV2LT5iaW9zID09IE5VTEwgPyAnPScgOiAnIScpOwogCWlmIChyZGV2LT5iaW9zID09IE5V
+TEwpIHsKIAkJcGNpX3VubWFwX3JvbShyZGV2LT5wZGV2LCBiaW9zKTsKIAkJcmV0dXJuIGZhbHNl
+OwpAQCAtMjczLDEwICsyNzcsMTMgQEAgc3RhdGljIGJvb2wgbGVnYWN5X3JlYWRfZGlzYWJsZWRf
+YmlvcyhzdHJ1Y3QgcmFkZW9uX2RldmljZSAqcmRldikKIHN0YXRpYyBib29sIHJhZGVvbl9yZWFk
+X2Rpc2FibGVkX2Jpb3Moc3RydWN0IHJhZGVvbl9kZXZpY2UgKnJkZXYpCiB7CiAJaWYgKHJkZXYt
+PmZhbWlseSA+PSBDSElQX1I2MDApIHsKKwkJRFJNX0lORk8oInJhZGVvbl9yZWFkX2Rpc2FibGVk
+X2Jpb3M6IHVzaW5nIHI2MDBfcmVhZF9kaXNhYmxlZF9iaW9zXG4iKTsKIAkJcmV0dXJuIHI2MDBf
+cmVhZF9kaXNhYmxlZF9iaW9zKHJkZXYpOwogCX0gZWxzZSBpZiAocmRldi0+ZmFtaWx5ID49IENI
+SVBfUlM2MDApIHsKKwkJRFJNX0lORk8oInJhZGVvbl9yZWFkX2Rpc2FibGVkX2Jpb3M6IHVzaW5n
+IGF2aXZvX3JlYWRfZGlzYWJsZWRfYmlvc1xuIik7CiAJCXJldHVybiBhdml2b19yZWFkX2Rpc2Fi
+bGVkX2Jpb3MocmRldik7CiAJfQorCURSTV9JTkZPKCJyYWRlb25fcmVhZF9kaXNhYmxlZF9iaW9z
+OiB1c2luZyBsZWdhY3lfcmVhZF9kaXNhYmxlZF9iaW9zXG4iKTsKIAlyZXR1cm4gbGVnYWN5X3Jl
+YWRfZGlzYWJsZWRfYmlvcyhyZGV2KTsKIH0KIApAQCAtMjg2LDEzICsyOTMsMTcgQEAgYm9vbCBy
+YWRlb25fZ2V0X2Jpb3Moc3RydWN0IHJhZGVvbl9kZXZpY2UgKnJkZXYpCiAJdWludDE2X3QgdG1w
+OwogCiAJciA9IHJhZGVvbl9yZWFkX2Jpb3MocmRldik7CisJRFJNX0lORk8oInJhZGVvbl9nZXRf
+YmlvczogcmFkZW9uX3JlYWRfYmlvcyByZXR1cm5lZCAlc1xuIiwgciA/ICJ0cnVlIiA6ICJmYWxz
+ZSIpOwogCWlmIChyID09IGZhbHNlKSB7CiAJCXIgPSByYWRlb25fcmVhZF9kaXNhYmxlZF9iaW9z
+KHJkZXYpOworCQlEUk1fSU5GTygicmFkZW9uX2dldF9iaW9zOiByYWRlb25fcmVhZF9kaXNhYmxl
+ZF9iaW9zIHJldHVybmVkICVzXG4iLCByID8gInRydWUiIDogImZhbHNlIik7CiAJfQorCURSTV9J
+TkZPKCJyZGV2LT5iaW9zICVjPSBOVUxMXG4iLCByZGV2LT5iaW9zID09IE5VTEwgPyAnPScgOiAn
+IScpOwogCWlmIChyID09IGZhbHNlIHx8IHJkZXYtPmJpb3MgPT0gTlVMTCkgewotCQlEUk1fRVJS
+T1IoIlVuYWJsZSB0byBsb2NhdGUgYSBCSU9TIFJPTVxuIik7CisJCURSTV9FUlJPUigicmFkZW9u
+X2dldF9iaW9zOiBVbmFibGUgdG8gbG9jYXRlIGEgQklPUyBST01cbiIpOwogCQlyZXR1cm4gZmFs
+c2U7CiAJfQorCURSTV9JTkZPKCJyYWRlb25fZ2V0X2Jpb3M6IHJkZXYtPmJpb3NbMF0gPT0gJSNY
+XG4iLCByZGV2LT5iaW9zWzBdKTsKIAlpZiAocmRldi0+Ymlvc1swXSAhPSAweDU1IHx8IHJkZXYt
+PmJpb3NbMV0gIT0gMHhhYSkgewogCQlnb3RvIGZyZWVfYmlvczsKIAl9CkBAIC0zMDksNyArMzIw
+LDcgQEAgYm9vbCByYWRlb25fZ2V0X2Jpb3Moc3RydWN0IHJhZGVvbl9kZXZpY2UgKnJkZXYpCiAJ
+CXJkZXYtPmlzX2F0b21fYmlvcyA9IGZhbHNlOwogCX0KIAotCURSTV9ERUJVRygiJXNCSU9TIGRl
+dGVjdGVkXG4iLCByZGV2LT5pc19hdG9tX2Jpb3MgPyAiQVRPTSIgOiAiQ09NIik7CisJRFJNX0lO
+Rk8oIiVzQklPUyBkZXRlY3RlZFxuIiwgcmRldi0+aXNfYXRvbV9iaW9zID8gIkFUT00iIDogIkNP
+TSIpOwogCXJldHVybiB0cnVlOwogZnJlZV9iaW9zOgogCWtmcmVlKHJkZXYtPmJpb3MpOwo=
+--00151750e184b1e2c10467897f61--
