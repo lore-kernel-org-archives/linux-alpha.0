@@ -1,46 +1,121 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: Radeon kernel-modesetting on Alpha. Problem reading PCI ROM
-Date: Wed, 15 Apr 2009 09:29:59 +1200
-Message-ID: <1CAA6FF2-8C1C-4E6D-812A-5677E8313539@orcon.net.nz>
-References: <b4198de60904141315x14d898e5x89fc334dd977b7a1@mail.gmail.com>
-Mime-Version: 1.0 (Apple Message framework v930.3)
-Content-Transfer-Encoding: 7bit
+From: Tobias Klausmann <klausman@schwarzvogel.de>
+Subject: BOOTP image build broken?
+Date: Mon, 20 Apr 2009 19:17:40 +0200
+Message-ID: <20090420171740.GA10844@eric.schwarzvogel.de>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <b4198de60904141315x14d898e5x89fc334dd977b7a1@mail.gmail.com>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"; delsp="yes"
-To: Matt Turner <mattst88@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, dri-devel@lists.sourceforge.net, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@hp.com>, Oliver Falk <oliver@linux-kernel.at>, glisse@freedesktop.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: linux-alpha@vger.kernel.org
 
-Hi Matt
+Hi! 
 
-> Jerome and I think that the hang may be caused by being unable to read
-> the PCI ROM.
+Apparently, with recent kernels (I tested .28, .29 and 30rc2),
+the bootpfile make target is broken:
 
-I have been taking a little bit of a look at reading the PCI ROM on a  
-radeon video card to try to get the radeonhd xserver video driver  
-going on Alpha.  On one of my Alphas the SRM can't post the card so  
-xserver/radeonhd have to do all the dirty work.  I discovered that the  
-r[567]xx radeon cards need quite a bit of setting up to enable the PCI  
-ROM.  In short, writing to the enable and rom files in the PCI card's  
-sysfs directory in the prescribed manner isn't sufficient to enable  
-the ROM.
+# make bootpfile
+  CHK     include/linux/version.h
+  CHK     include/linux/utsrelease.h
+  SYMLINK include/asm -> include/asm-alpha
+  CALL    scripts/checksyscalls.sh
+<stdin>:1377:2: warning: #warning syscall timerfd_create not implemented
+<stdin>:1385:2: warning: #warning syscall fallocate not implemented
+<stdin>:1389:2: warning: #warning syscall timerfd_settime not implemented
+<stdin>:1393:2: warning: #warning syscall timerfd_gettime not implemented
+<stdin>:1397:2: warning: #warning syscall signalfd4 not implemented
+<stdin>:1401:2: warning: #warning syscall eventfd2 not implemented
+<stdin>:1405:2: warning: #warning syscall epoll_create1 not implemented
+<stdin>:1409:2: warning: #warning syscall dup3 not implemented
+<stdin>:1413:2: warning: #warning syscall pipe2 not implemented
+<stdin>:1417:2: warning: #warning syscall inotify_init1 not implemented
+  CHK     include/linux/compile.h
+  AS      arch/alpha/boot/head.o
+  HOSTCC  arch/alpha/boot/tools/objstrip
+arch/alpha/boot/tools/objstrip.c: In function 'main':
+arch/alpha/boot/tools/objstrip.c:153: warning: implicit declaration of function 'elf_check_arch'
+/tmp/ccHLFEcL.o: In function `main':
+(.text+0x72c): undefined reference to `elf_check_arch'
+/tmp/ccHLFEcL.o: In function `main':
+(.text+0x730): undefined reference to `elf_check_arch'
+collect2: ld returned 1 exit status
+make[1]: *** [arch/alpha/boot/tools/objstrip] Error 1
+make: *** [bootpfile] Error 2
 
-I wrote a patch to the rhd_dump and rhd_conntest utils of the radeonhd  
-project, so that they would use libpciaccess to access the registers  
-and PCI ROM of the radeon r[567]xx cards.  Unfortunately my patches  
-got mangled in posting to the radeonhd list, and I have been  
-travelling for the last couple of weeks, so they didn't make the  
-release of radeonhd last week.
+# make bootpfile V=1
+[...]
+make -f scripts/Makefile.build obj=arch/alpha/boot arch/alpha/boot/bootpfile
+  gcc -Wp,-MD,arch/alpha/boot/.head.o.d  -nostdinc -isystem /usr/lib/gcc/alpha-unknown-linux-gnu/4.3.3/include -D__KERNEL__ -Iinclude  -I/usr/src/linux-2.6.28/arch/alpha/include -include include/linux/autoconf.h -D__ASSEMBLY__     -c -o arch/alpha/boot/head.o arch/alpha/boot/head.S
+  gcc -Wp,-MD,arch/alpha/boot/tools/.objstrip.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer     -o arch/alpha/boot/tools/objstrip arch/alpha/boot/tools/objstrip.c  
+arch/alpha/boot/tools/objstrip.c: In function 'main':
+arch/alpha/boot/tools/objstrip.c:153: warning: implicit declaration of function 'elf_check_arch'
+/tmp/cc3g1zC5.o: In function `main':
+(.text+0x72c): undefined reference to `elf_check_arch'
+/tmp/cc3g1zC5.o: In function `main':
+(.text+0x730): undefined reference to `elf_check_arch'
+collect2: ld returned 1 exit status
+make[1]: *** [arch/alpha/boot/tools/objstrip] Error 1
+make: *** [bootpfile] Error 2
+#
 
-The upshot is that I can read the PCI ROM of a Radeon HD2400 card with  
-my patches applied to rhd_conntest, and I have had Xserver 1.5.3 up  
-and running with the HD2400 card on a PWS600au.
+After digging around a bit I copied over this from
+arch/alpha/include/asm/elf.h in the hopes it was just a missing
+include:
 
-I can send you the patches to rhd_dump and rhd_conntest if you would  
-like to try them out.
+#define elf_check_arch(x) ((x)->e_machine == EM_ALPHA)
 
-Cheers
-Michael.
+But that didn't help much, either:
 
+# make bootpfile
+  HOSTCC  arch/alpha/boot/tools/objstrip
+  OBJSTRIP arch/alpha/boot/vmlinux.nh
+arch/alpha/boot/tools/objstrip: 2 program headers (forgot to link with -N?)
+arch/alpha/boot/tools/objstrip: extracting 0xfffffc0000310000-0xfffffc000076fe44 (at 100)
+arch/alpha/boot/tools/objstrip: copying 4587076 byte from vmlinux
+arch/alpha/boot/tools/objstrip: zero-filling bss and aligning to 0 with 357980 bytes
+echo "#define KERNEL_SIZE `ls -l arch/alpha/boot/vmlinux.nh | awk '{print $5}'`" > arch/alpha/boot/ksize.hT
+cmp -s arch/alpha/boot/ksize.hT arch/alpha/boot/ksize.h || mv -f arch/alpha/boot/ksize.hT arch/alpha/boot/ksize.h
+rm -f arch/alpha/boot/ksize.hT
+  CC      arch/alpha/boot/bootp.o
+  LD      arch/alpha/boot/bootpheader
+lib/lib.a(vsprintf.o): In function `vsnprintf':
+(.text+0x1b70): undefined reference to `sprint_symbol'
+lib/lib.a(vsprintf.o): In function `vsnprintf':
+(.text+0x1b84): undefined reference to `sprint_symbol'
+lib/lib.a(vsprintf.o): In function `vsnprintf':
+(.text+0x1ccc): undefined reference to `warn_on_slowpath'
+lib/lib.a(vsprintf.o): In function `vsnprintf':
+(.text+0x1cdc): undefined reference to `warn_on_slowpath'
+make[1]: *** [arch/alpha/boot/bootpheader] Error 1
+make: *** [bootpfile] Error 2
+
+# make bootpfile V=1
+[...]
+make -f scripts/Makefile.build obj=arch/alpha/boot arch/alpha/boot/bootpfile
+  gcc -Wp,-MD,arch/alpha/boot/.head.o.d  -nostdinc -isystem /usr/lib/gcc/alpha-unknown-linux-gnu/4.3.3/include -D__KERNEL__ -Iinclude  -I/usr/src/linux-2.6.28/arch/alpha/include -include include/linux/autoconf.h -D__ASSEMBLY__     -c -o arch/alpha/boot/head.o arch/alpha/boot/head.S
+echo "#define KERNEL_SIZE `ls -l arch/alpha/boot/vmlinux.nh | awk '{print $5}'`" > arch/alpha/boot/ksize.hT
+cmp -s arch/alpha/boot/ksize.hT arch/alpha/boot/ksize.h || mv -f arch/alpha/boot/ksize.hT arch/alpha/boot/ksize.h
+rm -f arch/alpha/boot/ksize.hT
+  gcc -Wp,-MD,arch/alpha/boot/.bootp.o.d  -nostdinc -isystem /usr/lib/gcc/alpha-unknown-linux-gnu/4.3.3/include -D__KERNEL__ -Iinclude  -I/usr/src/linux-2.6.28/arch/alpha/include -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -O2 -pipe -mno-fp-regs -ffixed-8 -msmall-data -fno-jump-tables -mcpu=ev67 -Wa,-mev6 -fno-stack-protector -fomit-frame-pointer -Wdeclaration-after-statement -Wno-pointer-sign  -D"KBUILD_STR(s)=#s" -D"KBUILD_BASENAME=KBUILD_STR(bootp)"  -D"KBUILD_MODNAME=KBUILD_STR(bootp)"  -c -o arch/alpha/boot/bootp.o arch/alpha/boot/bootp.c
+  ld    -static -uvsprintf -T   arch/alpha/boot/bootloader.lds arch/alpha/boot/head.o arch/alpha/boot/bootp.o lib/lib.a arch/alpha/lib/lib.a -o arch/alpha/boot/bootpheader 
+lib/lib.a(vsprintf.o): In function `vsnprintf':
+(.text+0x1b70): undefined reference to `sprint_symbol'
+lib/lib.a(vsprintf.o): In function `vsnprintf':
+(.text+0x1b84): undefined reference to `sprint_symbol'
+lib/lib.a(vsprintf.o): In function `vsnprintf':
+(.text+0x1ccc): undefined reference to `warn_on_slowpath'
+lib/lib.a(vsprintf.o): In function `vsnprintf':
+(.text+0x1cdc): undefined reference to `warn_on_slowpath'
+make[1]: *** [arch/alpha/boot/bootpheader] Error 1
+make: *** [bootpfile] Error 2
+
+Any suggestions? 
+
+Regards,
+Tobias
+
+-- 
+prom_printf("No VAC. Get some bucks and buy a real computer.");
+	linux-2.6.19/arch/sparc/mm/sun4c.c
