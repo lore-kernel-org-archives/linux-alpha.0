@@ -1,28 +1,48 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: BOOTP image build broken?
-Date: Mon, 20 Apr 2009 14:57:23 -0400
-Message-ID: <b4198de60904201157n6237343fw8b1eb7351e2d6482@mail.gmail.com>
-References: <20090420171740.GA10844@eric.schwarzvogel.de>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:in-reply-to:references
-         :date:message-id:subject:from:to:content-type
-         :content-transfer-encoding;
-        bh=0//KBGPvptv7BIY74dJMWVK/BCYlTpB3WosLJrziKkU=;
-        b=x0CKia8neWns7bUIqjpXAwYU6busBoSpBnMS93ZbB+dpLtt1LKf2/qZ4t+5unS+YZn
-         NJrrBt1uRtR3T/hYWz3ZWo4Tdhe9CwS5INpFOKfyjqbiNabYJv8ylqgsoQPYSRFM0eIg
-         +r8umoJ97oJsPb7tyz3l7i+aZf3NO6Isn8aak=
-In-Reply-To: <20090420171740.GA10844@eric.schwarzvogel.de>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+From: Tim Abbott <tabbott@MIT.EDU>
+Subject: [PATCH 6/6] Add support for __read_mostly to linux/cache.h
+Date: Thu, 30 Apr 2009 15:32:36 -0400
+Message-ID: <1241119956-31453-7-git-send-email-tabbott@mit.edu>
+References: <1241119956-31453-1-git-send-email-tabbott@mit.edu>
+ <1241119956-31453-2-git-send-email-tabbott@mit.edu>
+ <1241119956-31453-3-git-send-email-tabbott@mit.edu>
+ <1241119956-31453-4-git-send-email-tabbott@mit.edu>
+ <1241119956-31453-5-git-send-email-tabbott@mit.edu>
+ <1241119956-31453-6-git-send-email-tabbott@mit.edu>
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <1241119956-31453-6-git-send-email-tabbott@mit.edu>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-Id: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Sam Ravnborg <sam@ravnborg.org>
+Cc: Anders Kaseorg <andersk@mit.edu>, Waseem Daher <wdaher@mit.edu>, Denys Vlasenko <vda.linux@googlemail.com>, Jeff Arnold <jbarnold@mit.edu>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Bryan Wu <cooloney@kernel.org>, Chris Zankel <chris@zankel.net>, Cyrill Gorcunov <gorcunov@openvz.org>, David Howells <dhowells@redhat.com>, "David S. Miller" <davem@davemloft.net>, dev-etrax@axis.com, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@uclinux.org>, Haavard Skinnemoen <hskinnemoen@atmel.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Helge Deller <deller@gmx.de>, Hirokazu Takata <takata@linux-m32r.org>, "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>, Jeff Dike <jdike@addtoit.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Kyle McMartin <kyle@mcmartin.ca>, Linus Torvalds <torvalds@linux-foundation.org>, linux-alpha@vger.kernel.org
 
-Hi,
+Signed-off-by: Tim Abbott <tabbott@mit.edu>
+---
+ include/linux/cache.h |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
 
-This looks like it's been reported as kernel bug #8685.
+diff --git a/include/linux/cache.h b/include/linux/cache.h
+index 97e2488..99d8a6f 100644
+--- a/include/linux/cache.h
++++ b/include/linux/cache.h
+@@ -13,7 +13,13 @@
+ #endif
+ 
+ #ifndef __read_mostly
++#ifdef CONFIG_HAVE_READ_MOSTLY_DATA
++#define __read_mostly __attribute__((__section__(".data.read_mostly")))
++#define __READ_MOSTLY .section ".data.read_mostly", "aw"
++#else
+ #define __read_mostly
++#define __READ_MOSTLY
++#endif /* CONFIG_HAVE_READ_MOSTLY_DATA */
+ #endif
+ 
+ #ifndef ____cacheline_aligned
+-- 
+1.6.2.1
 
-Matt Turner
+
