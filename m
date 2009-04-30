@@ -1,68 +1,54 @@
 From: Tim Abbott <tabbott@MIT.EDU>
-Subject: [PATCH v2 0/6] macros for section name cleanup
-Date: Thu, 30 Apr 2009 15:54:07 -0400
-Message-ID: <1241121253-32341-1-git-send-email-tabbott@mit.edu>
-Return-path: <linux-mips-bounce@linux-mips.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-Id: <linux-alpha.vger.kernel.org>
+Subject: [PATCH 1/4] alpha: Use macros for .data.page_aligned.
+Date: Thu, 30 Apr 2009 19:00:13 -0400
+Message-ID: <1241132416-7055-2-git-send-email-tabbott@mit.edu>
+References: <1241132416-7055-1-git-send-email-tabbott@mit.edu>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1241132416-7055-1-git-send-email-tabbott@mit.edu>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Sam Ravnborg <sam@ravnborg.org>
-Cc: Linux kernel mailing list <linux-kernel@vger.kernel.org>, Anders Kaseorg <andersk@mit.edu>, Waseem Daher <wdaher@mit.edu>, Denys Vlasenko <vda.linux@googlemail.com>, Jeff Arnold <jbarnold@mit.edu>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Bryan Wu <cooloney@kernel.org>, Chris Zankel <chris@zankel.net>, Cyrill Gorcunov <gorcunov@openvz.org>, David Howells <dhowells@redhat.com>, "David S. Miller" <davem@davemloft.net>, dev-etrax@axis.com, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@uclinux.org>, Haavard Skinnemoen <hskinnemoen@atmel.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Helge Deller <deller@gmx.de>, Hirokazu Takata <takata@linux-m32r.org>, "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>, Jeff Dike <jdike@addtoit.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Kyle McMartin <kyle@mcmartin.ca>, Linus Torvalds <>
+Cc: Linux kernel mailing list <linux-kernel@vger.kernel.org>, Anders Kaseorg <andersk@mit.edu>, Waseem Daher <wdaher@mit.edu>, Denys Vlasenko <vda.linux@googlemail.com>, Jeff Arnold <jbarnold@mit.edu>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Tim Abbott <tabbott@mit.edu>
 
-(this patch series differs from v1 only in the CC list; some of the
-architecture lists I sent the previous one to are moderated against
-non-members; all replies should go to this version).
+.data.page_aligned should not need a separate output section, so as
+part of this cleanup I moved into the .data output section in the
+linker scripts in order to eliminate unnecessary references to the
+section name.
 
-Here are the architecture-independent macro definitions needed for
-to clean up the kernel's section names.  The overall diffstat from
-this section name cleanup project is:
+Signed-off-by: Tim Abbott <tabbott@mit.edu>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: linux-alpha@vger.kernel.org
+---
+ arch/alpha/kernel/vmlinux.lds.S |    6 +-----
+ 1 files changed, 1 insertions(+), 5 deletions(-)
 
- 96 files changed, 261 insertions(+), 503 deletions(-)
-
-The decrease results from removing a lot of redundancy in the linker
-scripts.
-
-The long-term goal here is to add support for building the kernel with
--ffunction-sections -fdata-sections.  This requires renaming all the
-magic section names in the kernel of the form .text.foo, .data.foo,
-.bss.foo, and .rodata.foo to not have collisions with sections
-generated for code like:
-
-static int nosave = 0; /* -fdata-sections places in .data.nosave */
-static void head(); /* -ffunction-sections places in .text.head */
-
-Sam Ravnborg proposed that rather than just renaming all the sections
-outright, we should start by first getting more control over the
-section names used in the kernel so that we can later rename sections
-without touching too many files.  These patch series implement that
-cleanup.  Later, there will be another patch series to actually rename
-the sections.
-
-I'm hoping we can get just these macro definitions into 2.6.30 so that
-the arch maintainers don't have to grab the macro definitions for
-their trees while reviewing the patches for 2.6.31.
-
-Shortly, I'm going to send one patch series for each of the
-architectures updating those architectures to use these new macros
-(and otherwise cleaning up section names on those architectures).
-
-	-Tim Abbott
-
-Tim Abbott (6):
-  Add new macros for page-aligned data and bss sections.
-  Add new NOSAVE_DATA linker script macro.
-  Add new CACHELINE_ALIGNED_DATA linker script macro.
-  Add new INIT_TASK_DATA() linker script macro.
-  Add new READ_MOSTLY_DATA(align) linker script macro.
-  Add support for __read_mostly to linux/cache.h
-
- include/asm-generic/vmlinux.lds.h |   27 +++++++++++++++++++++++++++
- include/linux/cache.h             |    6 ++++++
- include/linux/init_task.h         |    3 +++
- include/linux/linkage.h           |    9 +++++++++
- 4 files changed, 45 insertions(+), 0 deletions(-)
-
+diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
+index b9d6568..2f33cf9 100644
+--- a/arch/alpha/kernel/vmlinux.lds.S
++++ b/arch/alpha/kernel/vmlinux.lds.S
+@@ -97,11 +97,6 @@ SECTIONS
+ 		*(.data.init_thread)
+ 	}
+ 
+-	. = ALIGN(PAGE_SIZE);
+-	.data.page_aligned : {
+-		*(.data.page_aligned)
+-	}
+-
+ 	. = ALIGN(64);
+ 	.data.cacheline_aligned : {
+ 		*(.data.cacheline_aligned)
+@@ -110,6 +105,7 @@ SECTIONS
+ 	_data = .;
+ 	/* Data */
+ 	.data : {
++		PAGE_ALIGNED_DATA
+ 		DATA_DATA
+ 		CONSTRUCTORS
+ 	}
+-- 
+1.6.2.1
 
