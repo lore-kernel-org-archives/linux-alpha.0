@@ -1,11 +1,12 @@
 From: Tim Abbott <tabbott@MIT.EDU>
-Subject: [PATCH 2/4] alpha: use new macro for .data.cacheline_aligned section.
-Date: Thu, 30 Apr 2009 19:00:14 -0400
-Message-ID: <1241132416-7055-3-git-send-email-tabbott@mit.edu>
+Subject: [PATCH 3/4] alpha: make THREAD_SIZE available to assembly files.
+Date: Thu, 30 Apr 2009 19:00:15 -0400
+Message-ID: <1241132416-7055-4-git-send-email-tabbott@mit.edu>
 References: <1241132416-7055-1-git-send-email-tabbott@mit.edu>
  <1241132416-7055-2-git-send-email-tabbott@mit.edu>
+ <1241132416-7055-3-git-send-email-tabbott@mit.edu>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1241132416-7055-2-git-send-email-tabbott@mit.edu>
+In-Reply-To: <1241132416-7055-3-git-send-email-tabbott@mit.edu>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -14,37 +15,34 @@ Content-Transfer-Encoding: 7bit
 To: Sam Ravnborg <sam@ravnborg.org>
 Cc: Linux kernel mailing list <linux-kernel@vger.kernel.org>, Anders Kaseorg <andersk@mit.edu>, Waseem Daher <wdaher@mit.edu>, Denys Vlasenko <vda.linux@googlemail.com>, Jeff Arnold <jbarnold@mit.edu>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Tim Abbott <tabbott@mit.edu>
 
-.data.cacheline_aligned should not need a separate output section;
-this change moves it into the .data section.
+This allows THREAD_SIZE to be used in the linker script.
 
 Signed-off-by: Tim Abbott <tabbott@mit.edu>
 Cc: Richard Henderson <rth@twiddle.net>
 Cc: linux-alpha@vger.kernel.org
 ---
- arch/alpha/kernel/vmlinux.lds.S |    6 +-----
- 1 files changed, 1 insertions(+), 5 deletions(-)
+ arch/alpha/include/asm/thread_info.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
-index 2f33cf9..7acd1eb 100644
---- a/arch/alpha/kernel/vmlinux.lds.S
-+++ b/arch/alpha/kernel/vmlinux.lds.S
-@@ -97,15 +97,11 @@ SECTIONS
- 		*(.data.init_thread)
- 	}
+diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
+index d069526..a64d74d 100644
+--- a/arch/alpha/include/asm/thread_info.h
++++ b/arch/alpha/include/asm/thread_info.h
+@@ -49,12 +49,12 @@ struct thread_info {
+ register struct thread_info *__current_thread_info __asm__("$8");
+ #define current_thread_info()  __current_thread_info
  
--	. = ALIGN(64);
--	.data.cacheline_aligned : {
--		*(.data.cacheline_aligned)
--	}
++#endif /* __ASSEMBLY__ */
++
+ /* Thread information allocation.  */
+ #define THREAD_SIZE_ORDER 1
+ #define THREAD_SIZE (2*PAGE_SIZE)
+ 
+-#endif /* __ASSEMBLY__ */
 -
- 	_data = .;
- 	/* Data */
- 	.data : {
- 		PAGE_ALIGNED_DATA
-+		CACHELINE_ALIGNED_DATA(64)
- 		DATA_DATA
- 		CONSTRUCTORS
- 	}
+ #define PREEMPT_ACTIVE		0x40000000
+ 
+ /*
 -- 
 1.6.2.1
 
