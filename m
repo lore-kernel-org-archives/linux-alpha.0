@@ -1,12 +1,8 @@
 From: Tim Abbott <tabbott@MIT.EDU>
-Subject: [PATCH 3/4] alpha: make THREAD_SIZE available to assembly files.
-Date: Thu, 30 Apr 2009 19:00:15 -0400
-Message-ID: <1241132416-7055-4-git-send-email-tabbott@mit.edu>
-References: <1241132416-7055-1-git-send-email-tabbott@mit.edu>
- <1241132416-7055-2-git-send-email-tabbott@mit.edu>
- <1241132416-7055-3-git-send-email-tabbott@mit.edu>
+Subject: [PATCH 0/4] section name cleanup for alpha
+Date: Thu, 30 Apr 2009 19:00:12 -0400
+Message-ID: <1241132416-7055-1-git-send-email-tabbott@mit.edu>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1241132416-7055-3-git-send-email-tabbott@mit.edu>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -15,34 +11,35 @@ Content-Transfer-Encoding: 7bit
 To: Sam Ravnborg <sam@ravnborg.org>
 Cc: Linux kernel mailing list <linux-kernel@vger.kernel.org>, Anders Kaseorg <andersk@mit.edu>, Waseem Daher <wdaher@mit.edu>, Denys Vlasenko <vda.linux@googlemail.com>, Jeff Arnold <jbarnold@mit.edu>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Tim Abbott <tabbott@mit.edu>
 
-This allows THREAD_SIZE to be used in the linker script.
+This patch series cleans up the section names on the alpha
+architecture.  It requires the architecture-independent macro
+definitions from this patch series:
 
-Signed-off-by: Tim Abbott <tabbott@mit.edu>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: linux-alpha@vger.kernel.org
----
+<http://www.spinics.net/lists/mips/msg33499.html>
+
+The long-term goal here is to add support for building the kernel with
+-ffunction-sections -fdata-sections.  This requires renaming all the
+magic section names in the kernel of the form .text.foo, .data.foo,
+.bss.foo, and .rodata.foo to not have collisions with sections
+generated for code like:
+
+static int nosave = 0; /* -fdata-sections places in .data.nosave */
+static void head(); /* -ffunction-sections places in .text.head */
+
+Note that these patches have not been boot-tested (aside from testing
+the analogous changes on x86), since I don't have access to the
+appropriate hardware.
+
+	-Tim Abbott
+
+Tim Abbott (4):
+  alpha: Use macros for .data.page_aligned.
+  alpha: use new macro for .data.cacheline_aligned section.
+  alpha: make THREAD_SIZE available to assembly files.
+  alpha: use .data.init_task instead of .data.init_thread
+
  arch/alpha/include/asm/thread_info.h |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
-index d069526..a64d74d 100644
---- a/arch/alpha/include/asm/thread_info.h
-+++ b/arch/alpha/include/asm/thread_info.h
-@@ -49,12 +49,12 @@ struct thread_info {
- register struct thread_info *__current_thread_info __asm__("$8");
- #define current_thread_info()  __current_thread_info
- 
-+#endif /* __ASSEMBLY__ */
-+
- /* Thread information allocation.  */
- #define THREAD_SIZE_ORDER 1
- #define THREAD_SIZE (2*PAGE_SIZE)
- 
--#endif /* __ASSEMBLY__ */
--
- #define PREEMPT_ACTIVE		0x40000000
- 
- /*
--- 
-1.6.2.1
+ arch/alpha/kernel/init_task.c        |    5 ++---
+ arch/alpha/kernel/vmlinux.lds.S      |   19 ++++---------------
+ 3 files changed, 8 insertions(+), 20 deletions(-)
 
