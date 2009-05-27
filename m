@@ -1,13 +1,13 @@
 From: Amerigo Wang <amwang@redhat.com>
 Subject: Re: [Patch 4/4] module: trim exception table in module_free()
-Date: Wed, 27 May 2009 13:48:12 +0800
-Message-ID: <4A1CD41C.1000008@redhat.com>
+Date: Wed, 27 May 2009 15:46:11 +0800
+Message-ID: <4A1CEFC3.2010309@redhat.com>
 References: <20090526083717.5050.32719.sendpatchset@localhost.localdomain> <200905271151.28045.rusty@rustcorp.com.au> <4A1CAF44.7000002@redhat.com> <200905271453.51914.rusty@rustcorp.com.au>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 In-Reply-To: <200905271453.51914.rusty@rustcorp.com.au>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"; format="flowed"
 To: Rusty Russell <rusty@rustcorp.com.au>
@@ -27,14 +27,13 @@ Rusty Russell wrote:
 > may be first or last.
 >   
 
-Hmm, I understand now. The problem is that we don't know which entries
-are for __init, and which are not...
+Hmm, how about the following? :-)
 
-> (You can see here why we haven't fixed this: exceptions in __init in modules 
-> are rare, perhaps non-existent).
->   
-Agreed.
-Is it possible to put extable for __init in a separate section?
+struct exception_table_entry *p = mod->extable;
 
-Thanks for your explanation!
+for (;p <= mod->extable+mod->num_exentries; p++ )
+         if (with_in_module_init(p->insn, mod))
+                   trim_it(p);
+
+
 
