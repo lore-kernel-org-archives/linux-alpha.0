@@ -1,160 +1,181 @@
-From: john stultz <johnstul@us.ibm.com>
-Subject: [PATCH] Convert alpha to use arch_gettimeoffset()
-Date: Thu, 11 Jun 2009 15:10:10 -0700
-Message-ID: <1244758210.7192.5.camel@localhost.localdomain>
+From: "Dialup Jon Norstog" <thursday@allidaho.com>
+Subject: Re: [PATCH] Convert alpha to use arch_gettimeoffset()
+Date: Thu, 11 Jun 2009 16:21:51 -0600
+Message-ID: <20090611222122.M49967@allidaho.com>
+References: <1244758210.7192.5.camel@localhost.localdomain>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1244758210.7192.5.camel@localhost.localdomain>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru
+Content-Transfer-Encoding: 7bit
+To: john stultz <johnstul@us.ibm.com>, rth@twiddle.net, ink@jurassic.park.msu.ru
 Cc: lkml <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org
 
-This patch converts alpha to use GENERIC_TIME via the arch_getoffset()
-infrastructure, reducing the amount of arch specific code we need to
-maintain.
+John,
 
-I suspect the alpha arch could even be further improved to provide and
-rpcc() based clocksource, but not having the hardware, I don't feel
-comfortable attempting the more complicated conversion (but I'd be glad
-to help if anyone else is interested).
+Thank you so much!
 
-This patch applies on top of Linus' current -git tree (pre 2.6.31-rc1).
 
-I've taken my best swing at converting this, but I'm not 100% confident
-I got it right. It does cross compile, so that's hopefully a good sign.
-Any assistance from arch maintainers or testers to get this merged would
-be great.
+jn
 
-thanks
--john
+---------- Original Message -----------
+From: john stultz <johnstul@us.ibm.com>
+To: rth@twiddle.net, ink@jurassic.park.msu.ru
+Cc: lkml <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org
+Sent: Thu, 11 Jun 2009 15:10:10 -0700
+Subject: [PATCH] Convert alpha to use arch_gettimeoffset()
 
-Signed-off-by: John Stultz <johnstul@us.ibm.com>
----
-
- Kconfig       |    8 ++++++
- kernel/time.c |   72 +++-------------------------------------------------------
- 2 files changed, 12 insertions(+), 68 deletions(-)
-
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 9fb8aae..4434481 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -45,6 +45,14 @@ config GENERIC_CALIBRATE_DELAY
- 	bool
- 	default y
- 
-+config GENERIC_TIME
-+	bool
-+	default y
-+
-+config ARCH_USES_GETTIMEOFFSET
-+	bool
-+	default y
-+
- config ZONE_DMA
- 	bool
- 	default y
-diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
-index b04e2cb..8f7eb6d 100644
---- a/arch/alpha/kernel/time.c
-+++ b/arch/alpha/kernel/time.c
-@@ -408,28 +408,17 @@ time_init(void)
-  * part.  So we can't do the "find absolute time in terms of cycles" thing
-  * that the other ports do.
-  */
--void
--do_gettimeofday(struct timeval *tv)
-+u32 arch_gettimeoffset(void)
- {
--	unsigned long flags;
--	unsigned long sec, usec, seq;
- 	unsigned long delta_cycles, delta_usec, partial_tick;
- 
--	do {
--		seq = read_seqbegin_irqsave(&xtime_lock, flags);
--
--		delta_cycles = rpcc() - state.last_time;
--		sec = xtime.tv_sec;
--		usec = (xtime.tv_nsec / 1000);
--		partial_tick = state.partial_tick;
--
--	} while (read_seqretry_irqrestore(&xtime_lock, seq, flags));
--
- #ifdef CONFIG_SMP
- 	/* Until and unless we figure out how to get cpu cycle counters
- 	   in sync and keep them there, we can't use the rpcc tricks.  */
- 	delta_usec = 0;
- #else
-+	delta_cycles = rpcc() - state.last_time;
-+	partial_tick = state.partial_tick;
- 	/*
- 	 * usec = cycles * ticks_per_cycle * 2**48 * 1e6 / (2**48 * ticks)
- 	 *	= cycles * (s_t_p_c) * 1e6 / (2**48 * ticks)
-@@ -448,62 +437,9 @@ do_gettimeofday(struct timeval *tv)
- 	delta_usec = ((delta_usec / ((1UL << (FIX_SHIFT-6-1)) * HZ)) + 1) / 2;
- #endif
- 
--	usec += delta_usec;
--	if (usec >= 1000000) {
--		sec += 1;
--		usec -= 1000000;
--	}
--
--	tv->tv_sec = sec;
--	tv->tv_usec = usec;
--}
--
--EXPORT_SYMBOL(do_gettimeofday);
--
--int
--do_settimeofday(struct timespec *tv)
--{
--	time_t wtm_sec, sec = tv->tv_sec;
--	long wtm_nsec, nsec = tv->tv_nsec;
--	unsigned long delta_nsec;
--
--	if ((unsigned long)tv->tv_nsec >= NSEC_PER_SEC)
--		return -EINVAL;
--
--	write_seqlock_irq(&xtime_lock);
--
--	/* The offset that is added into time in do_gettimeofday above
--	   must be subtracted out here to keep a coherent view of the
--	   time.  Without this, a full-tick error is possible.  */
--
--#ifdef CONFIG_SMP
--	delta_nsec = 0;
--#else
--	delta_nsec = rpcc() - state.last_time;
--	delta_nsec = (delta_nsec * state.scaled_ticks_per_cycle 
--		      + state.partial_tick) * 15625;
--	delta_nsec = ((delta_nsec / ((1UL << (FIX_SHIFT-6-1)) * HZ)) + 1) / 2;
--	delta_nsec *= 1000;
--#endif
--
--	nsec -= delta_nsec;
--
--	wtm_sec  = wall_to_monotonic.tv_sec + (xtime.tv_sec - sec);
--	wtm_nsec = wall_to_monotonic.tv_nsec + (xtime.tv_nsec - nsec);
--
--	set_normalized_timespec(&xtime, sec, nsec);
--	set_normalized_timespec(&wall_to_monotonic, wtm_sec, wtm_nsec);
--
--	ntp_clear();
--
--	write_sequnlock_irq(&xtime_lock);
--	clock_was_set();
--	return 0;
-+	return delta_usec * 1000;
- }
- 
--EXPORT_SYMBOL(do_settimeofday);
--
--
- /*
-  * In order to set the CMOS clock precisely, set_rtc_mmss has to be
-  * called 500 ms after the second nowtime has started, because when
-
+> This patch converts alpha to use GENERIC_TIME via the 
+> arch_getoffset() infrastructure, reducing the amount of arch 
+> specific code we need to maintain.
+> 
+> I suspect the alpha arch could even be further improved to provide 
+> and rpcc() based clocksource, but not having the hardware, I don't feel
+> comfortable attempting the more complicated conversion (but I'd be glad
+> to help if anyone else is interested).
+> 
+> This patch applies on top of Linus' current -git tree (pre 2.6.31-
+> rc1).
+> 
+> I've taken my best swing at converting this, but I'm not 100% confident
+> I got it right. It does cross compile, so that's hopefully a good sign.
+> Any assistance from arch maintainers or testers to get this merged would
+> be great.
+> 
+> thanks
+> -john
+> 
+> Signed-off-by: John Stultz <johnstul@us.ibm.com>
+> ---
+> 
+>  Kconfig       |    8 ++++++
+>  kernel/time.c |   72 +++--------------------------------------------
+> ----------- 2 files changed, 12 insertions(+), 68 deletions(-)
+> 
+> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+> index 9fb8aae..4434481 100644
+> --- a/arch/alpha/Kconfig
+> +++ b/arch/alpha/Kconfig
+> @@ -45,6 +45,14 @@ config GENERIC_CALIBRATE_DELAY
+>  	bool
+>  	default y
+> 
+> +config GENERIC_TIME
+> +	bool
+> +	default y
+> +
+> +config ARCH_USES_GETTIMEOFFSET
+> +	bool
+> +	default y
+> +
+>  config ZONE_DMA
+>  	bool
+>  	default y
+> diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
+> index b04e2cb..8f7eb6d 100644
+> --- a/arch/alpha/kernel/time.c
+> +++ b/arch/alpha/kernel/time.c
+> @@ -408,28 +408,17 @@ time_init(void)
+>   * part.  So we can't do the "find absolute time in terms of 
+> cycles" thing  * that the other ports do.  */ -void -
+> do_gettimeofday(struct timeval *tv) +u32 arch_gettimeoffset(void) { -
+> 	unsigned long flags; -	unsigned long sec, usec, seq; 	unsigned long 
+> delta_cycles, delta_usec, partial_tick;
+> 
+> -	do {
+> -		seq = read_seqbegin_irqsave(&xtime_lock, flags);
+> -
+> -		delta_cycles = rpcc() - state.last_time;
+> -		sec = xtime.tv_sec;
+> -		usec = (xtime.tv_nsec / 1000);
+> -		partial_tick = state.partial_tick;
+> -
+> -	} while (read_seqretry_irqrestore(&xtime_lock, seq, flags));
+> -
+>  #ifdef CONFIG_SMP
+>  	/* Until and unless we figure out how to get cpu cycle counters
+>  	   in sync and keep them there, we can't use the rpcc tricks.  */
+>  	delta_usec = 0;
+>  #else
+> +	delta_cycles = rpcc() - state.last_time;
+> +	partial_tick = state.partial_tick;
+>  	/*
+>  	 * usec = cycles * ticks_per_cycle * 2**48 * 1e6 / (2**48 * ticks)
+>  	 *	= cycles * (s_t_p_c) * 1e6 / (2**48 * ticks)
+> @@ -448,62 +437,9 @@ do_gettimeofday(struct timeval *tv)
+>  	delta_usec = ((delta_usec / ((1UL << (FIX_SHIFT-6-1)) * HZ)) + 1)
+>  / 2; #endif
+> 
+> -	usec += delta_usec;
+> -	if (usec >= 1000000) {
+> -		sec += 1;
+> -		usec -= 1000000;
+> -	}
+> -
+> -	tv->tv_sec = sec;
+> -	tv->tv_usec = usec;
+> -}
+> -
+> -EXPORT_SYMBOL(do_gettimeofday);
+> -
+> -int
+> -do_settimeofday(struct timespec *tv)
+> -{
+> -	time_t wtm_sec, sec = tv->tv_sec;
+> -	long wtm_nsec, nsec = tv->tv_nsec;
+> -	unsigned long delta_nsec;
+> -
+> -	if ((unsigned long)tv->tv_nsec >= NSEC_PER_SEC)
+> -		return -EINVAL;
+> -
+> -	write_seqlock_irq(&xtime_lock);
+> -
+> -	/* The offset that is added into time in do_gettimeofday above
+> -	   must be subtracted out here to keep a coherent view of the
+> -	   time.  Without this, a full-tick error is possible.  */
+> -
+> -#ifdef CONFIG_SMP
+> -	delta_nsec = 0;
+> -#else
+> -	delta_nsec = rpcc() - state.last_time;
+> -	delta_nsec = (delta_nsec * state.scaled_ticks_per_cycle 
+> -		      + state.partial_tick) * 15625;
+> -	delta_nsec = ((delta_nsec / ((1UL << (FIX_SHIFT-6-1)) * HZ)) + 1)
+>  / 2; -	delta_nsec *= 1000; -#endif
+> -
+> -	nsec -= delta_nsec;
+> -
+> -	wtm_sec  = wall_to_monotonic.tv_sec + (xtime.tv_sec - sec);
+> -	wtm_nsec = wall_to_monotonic.tv_nsec + (xtime.tv_nsec - nsec);
+> -
+> -	set_normalized_timespec(&xtime, sec, nsec);
+> -	set_normalized_timespec(&wall_to_monotonic, wtm_sec, wtm_nsec);
+> -
+> -	ntp_clear();
+> -
+> -	write_sequnlock_irq(&xtime_lock);
+> -	clock_was_set();
+> -	return 0;
+> +	return delta_usec * 1000;
+>  }
+> 
+> -EXPORT_SYMBOL(do_settimeofday);
+> -
+> -
+>  /*
+>   * In order to set the CMOS clock precisely, set_rtc_mmss has to be
+>   * called 500 ms after the second nowtime has started, because when
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-
+> alpha" in the body of a message to majordomo@vger.kernel.org More 
+> majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> -- 
+> This message has been scanned for viruses and
+> dangerous content by MailScanner, and is
+> believed to be clean.
+------- End of Original Message -------
 
