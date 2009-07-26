@@ -1,97 +1,97 @@
-From: "Dialup Jon Norstog" <thursday@allidaho.com>
-Subject: Re: Kernel 2.6.30.1 Oops on Alpha Architecture when starting Xserver
-Date: Sat, 25 Jul 2009 19:26:32 -0600
-Message-ID: <20090726012112.M10928@allidaho.com>
-References: <4A5DB243.2000100@orcon.net.nz>	 <21d7e9970907152016u3b213beet9090ee3b34f6d8b1@mail.gmail.com>	 <4A6ACE7C.9090409@orcon.net.nz> <21d7e9970907251554m18e4fca5p69b758e36fddc7d9@mail.gmail.com> <4A6B9DCB.1090001@orcon.net.nz>
+From: Aurelien Jarno <aurelien@aurel32.net>
+Subject: Re: Help on memchr() EGLIBC assembly code
+Date: Mon, 27 Jul 2009 01:45:06 +0200
+Message-ID: <20090726234506.GB13723@volta.aurel32.net>
+References: <20090713173104.GA13883@hall.aurel32.net> <119aab440907131124r3fd333d3n967cdde2cf3c2e1b@mail.gmail.com> <20090713211723.GE10110@hall.aurel32.net> <b4198de60907131516t384446e6na6cf15e7ebb1fc83@mail.gmail.com> <4A5E3272.4040904@gmail.com> <20090719142933.GO18682@hall.aurel32.net>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4A6B9DCB.1090001@orcon.net.nz>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <bounce-debian-glibc=debian-glibc=m.gmane.org@lists.debian.org>
+Content-Disposition: inline
+In-Reply-To: <20090719142933.GO18682@hall.aurel32.net>
+Resent-Message-ID: <LKAc741oNtP.A.3rG.XqObKB@liszt>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Post: <mailto:debian-glibc@lists.debian.org>
+List-Help: <mailto:debian-glibc-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-glibc-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-glibc-request@lists.debian.org?subject=unsubscribe>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>, Dave Airlie <airlied@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, xorg@lists.freedesktop.org
+To: Richard Henderson <rth7680@gmail.com>
+Cc: Matt Turner <mattst88@gmail.com>, Carlos O'Donell <carlos@systemhalted.org>, debian-alpha@lists.debian.org, debian-glibc@lists.debian.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
 
-My experience:
-
-I have loaded linux on a number of Alphamachines, including the PWS series,
-XP100 and UP2000/+.  Sometimes the X-erver doesn't work.  And it trashes the
-whole install. Once that happens, you can chaNGE graphics cards but the
-X-serve will not recover, maybe because the kernel is implicated in the whole
-train wreck.
-
-I usually just wipe everything clean and re-install with a known good graphics
-card.
-
-It wasn't a problem back when Compaq was paying Red Hat to put together the
-7.1 and 7.2 distros.  There just aren't enough people working on Linux Alpha,
-and the whole thing has gotten rickety.  IMHO
-
-jn
-
-
----------- Original Message -----------
-From: Michael Cree <mcree@orcon.net.nz>
-To: Dave Airlie <airlied@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-xorg@lists.freedesktop.org
-Sent: Sun, 26 Jul 2009 12:05:31 +1200
-Subject: Re: Kernel 2.6.30.1 Oops on Alpha Architecture when starting Xserver
-
-> Dave Airlie wrote:
-> >>>> The kernel oops is:
-> >>>>
-> >>>>         
-> >>> So its a machine check,
-> >>>
-> >>>       
-> >> So, does this indicate a software fault (e.g. inconsistencies in kernel data
-> >> structures) or does it imply a hardware fault?
-> >>
-> >>     
-> >>> Well X is trying to post the graphics card you have installed, and the
-> >>> machine
-> >>> is falling over when it does it.
-> >>>
-> >>>       
-> >> SRM (the equivalent of a BIOS) cannot post the card on startup.  But I have
-> >> had the card (radeon rv610) post correctly and working in the past when I
-> >> compiled the complete 1.5.3 Xserver myself.  I had it working with both the
-> >> radeon and radeonhd drivers and a 2.6.29.x kernel patched to support
-> >> libpciaccess.
-> >>     
+On Sun, Jul 19, 2009 at 04:29:33PM +0200, Aurelien Jarno wrote:
+> On Wed, Jul 15, 2009 at 12:48:02PM -0700, Richard Henderson wrote:
+> > On 07/13/2009 03:16 PM, Matt Turner forwarded:
+> >>>>> The problem is that the memchr() function on alpha uses prefetch, which
+> >>>>> can cause a page boundary to be crossed, while the standards (POSIX and
+> >>>>> C99) says it should stop when a match is found.
 > >
-> > There is no -ati card in that machine, its got some SiS card which is
-> > completely
-> > different, maybe its some onboard card or something.
-> >
+> > That's not supposed to matter -- faults from prefetch are supposed to be  
+> > ignored; see do_page_fault:
 > 
-> No, you have misunderstood.   I removed that Radeon rv610 card (that 
-> caused the kernel oops) from the machine and replaced it with an old 
-> SiS card I have.  The behaviour changed: now the Xserver locks up on 
-> initialisation and consumes 100% CPU.  The backtrace I provided is 
-> with the SiS card only.  I thought it might be helpful to locate the 
-> problem 
-> (assuming that we are seeing a different symptom of the same 
-> underlying problem).
+> The problem is that the "prefech" is not done with $31, but using $1 and
+> $3. It is called "prefetch" in the code, but it is more like "read a value
+> in advance".
 > 
-> BTW, my attempt to CC the xorg mailing list failed.  It would seem 
-> that they are too exclusive to allow posting to their email list 
-> without subscription.  Putting up such barriers means they won't get 
-> bug reports from such people as myself.  Their loss.
-> 
-> Cheers
-> Michael
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-
-> alpha" in the body of a message to majordomo@vger.kernel.org More 
-> majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> -- 
-> This message has been scanned for viruses and
-> dangerous content by MailScanner, and is
-> believed to be clean.
-------- End of Original Message -------
+
+Knowing that $31 could be used for prefetch, I have modified the
+assembly code from memchr.S to use it. It passes all the testsuite.
+
+Comments are welcome. Then I'll do the alphaev6 version.
+
+diff --git a/sysdeps/alpha/memchr.S b/sysdeps/alpha/memchr.S
+index 5d713d5..87c7fb1 100644
+--- a/sysdeps/alpha/memchr.S
++++ b/sysdeps/alpha/memchr.S
+@@ -119,7 +119,7 @@ $first_quad:
+ 
+ 	# At least one byte left to process.
+ 
+-	ldq	t0, 8(v0)	# e0	:
++	ldq	zero, 8(v0)	# e0	: prefetch next quad
+ 	subq	t4, 1, a2	# .. e1 :
+ 	addq	v0, 8, v0	#-e0	:
+ 
+@@ -138,19 +138,19 @@ $first_quad:
+ 
+ 	# At least three quads remain to be accessed
+ 
+-	mov	t0, t3		# e0	: move prefetched value to correct reg
+-
+ 	.align	4
+ $unrolled_loop:
+-	ldq	t0, 8(v0)	#-e0	: prefetch t0
+-	xor	a1, t3, t1	# .. e1 :
+-	cmpbge	zero, t1, t1	# e0	:
+-	bne	t1, $found_it	# .. e1 :
++	ldq	t0, 0(v0)	# e0	: load quad
++	xor	a1, t0, t1	# .. e1 :
++	ldq	zero, 8(v0)	# e0	: prefetch next quad
++	cmpbge	zero, t1, t1	# .. e1:
++	bne	t1, $found_it	# e0    :
+ 
+-	addq	v0, 8, v0	#-e0	:
++	addq	v0, 8, v0	#    e1	:
+ $odd_quad_count:
++	ldq	t0, 0(v0)	# e0	: load quad
+ 	xor	a1, t0, t1	# .. e1 :
+-	ldq	t3, 8(v0)	# e0	: prefetch t3
++	ldq	zero, 8(v0)	# e0	: prefetch next quad
+ 	cmpbge	zero, t1, t1	# .. e1 :
+ 	addq	v0, 8, t5	#-e0	:
+ 	bne	t1, $found_it	# .. e1	:
+@@ -159,8 +159,8 @@ $odd_quad_count:
+ 	addq	v0, 8, v0	# .. e1 :
+ 	bne	t5, $unrolled_loop #-e1 :
+ 
+-	mov	t3, t0		# e0	: move prefetched value into t0
+-$final:	subq	t4, v0, a2	# .. e1	: a2 <- number of bytes left to do
++$final:	ldq	t0, 0(v0)	# e0	: load last quad
++	subq	t4, v0, a2	# .. e1	: a2 <- number of bytes left to do
+ 	bne	a2, $last_quad	# e1	:
+ 
+ $not_found:
+
+-- 
+Aurelien Jarno                          GPG: 1024D/F1BCDB73
+aurelien@aurel32.net                 http://www.aurel32.net
 
