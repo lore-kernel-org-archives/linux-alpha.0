@@ -1,13 +1,13 @@
 From: Tim Abbott <tabbott@ksplice.com>
 Subject: Re: [PATCH 1/2] alpha: use .data.init_task instead of
  .data.init_thread.
-Date: Fri, 31 Jul 2009 19:44:17 -0400 (EDT)
-Message-ID: <alpine.DEB.1.10.0907311746020.2539@vinegar-pot.mit.edu>
-References: <1249073786-29788-1-git-send-email-tabbott@ksplice.com> <4A7360C3.2060507@twiddle.net> <4A736460.5070509@twiddle.net>
+Date: Fri, 31 Jul 2009 19:56:34 -0400 (EDT)
+Message-ID: <alpine.DEB.1.10.0907311933360.2539@vinegar-pot.mit.edu>
+References: <1249073786-29788-1-git-send-email-tabbott@ksplice.com> <4A7360C3.2060507@twiddle.net> <alpine.DEB.1.10.0907311739040.2539@vinegar-pot.mit.edu> <4A737EB1.1000602@twiddle.net>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4A736460.5070509@twiddle.net>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1752009AbZGaX5D@vger.kernel.org>
+In-Reply-To: <4A737EB1.1000602@twiddle.net>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,56 +16,167 @@ Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Sam Ravnborg <sam@
 
 On Fri, 31 Jul 2009, Richard Henderson wrote:
 
-> On 07/31/2009 02:23 PM, Richard Henderson wrote:
-> > Similarly it is *not* a bug that the page_aligned sections were before
-> > data, because we already knew we had 2 page alignment from the end of
-> > init + 2 pages of init_thread.
+> On 07/31/2009 03:02 PM, Tim Abbott wrote:
+> > 
+> > This change:
+> > 
+> > -	. = ALIGN(2 * PAGE_SIZE);
+> > +	. = ALIGN(PAGE_SIZE);
+> >   	__init_end = .;
+> > 
+> > removes the now-unnecessary (2 * PAGE_SIZE) alignment for __init_end
+> > caused by moving .data.init_task (it should have been in the first patch).
 > 
-> Indeed, I'll go further and say that the common definition of RW_DATA_SECTION
-> is buggy.
-[...]
-> Given that we align the entire .data section why have interior padding to
-> re-align for page-aligned data?  Surely a better ordering would be
-[...]
+> While it's technically unnecessary, it's also very much desired.
+> 
+> Think about it.  Suppose we have 9 pages of init, followed by the
+> two-page-aligned INIT_TASK_DATA.  So we get a page worth of padding
+> added.  It's better to have the two-page-alignment within the init
+> section so as to get 10 pages of init followed by no padding.  In
+> this way the page of padding gets freed with the rest of init.
+> 
+> Are you following me at all here?
 
-Agreed.  I actually commented on this issue in one of the drafts of 
-RW_DATA_SECTION, but forgot to check again whether Sam had addressed it 
-when reviewing the final version.  Fortunately we're talking about a small 
-inefficiency, not something more serious.  Below is your proposed change 
-in patch form; I hope Sam will take a look at it.
+Yeah, okay, that makes total sense (nice optimization).  New version of 
+the patch below, with the alignment changed to THREAD_SIZE (and I added a 
+comment explaining why).
 
 	-Tim Abbott
 
-Optimize the ordering of sections in RW_DATA_SECTION.
+From: Geoffrey Thomas <geofft@ksplice.com>
 
-The current RW_DATA_SECTION macro doesn't place the various 
-PAGE_SIZE-aligned sections next to each other.  This could result in up to 
-a page of memory being wasted realigning to PAGE_SIZE twice.
+alpha: Clean up linker script using new linker script macros.
 
+Note that .data.page_aligned and .data.cacheline_aligned are now after
+_data; it was probably a bug that they were before it.
+
+Also, some explicit ALIGN(8)'s between various initcall sections were
+removed; this should be harmless as the implicit alignment of
+initcall_t was already 8.
+
+Signed-off-by: Geoffrey Thomas <geofft@ksplice.com>
 Signed-off-by: Tim Abbott <tabbott@ksplice.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Sam Ravnborg <sam@ravnborg.org>
 ---
- include/asm-generic/vmlinux.lds.h |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ arch/alpha/kernel/vmlinux.lds.S |   90 ++++-----------------------------------
+ 1 files changed, 9 insertions(+), 81 deletions(-)
 
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index 6ad76bf..146815d 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -706,12 +706,12 @@
- 	. = ALIGN(PAGE_SIZE);						\
- 	.data : AT(ADDR(.data) - LOAD_OFFSET) {				\
- 		INIT_TASK_DATA(inittask)				\
-+		NOSAVE_DATA						\
-+		PAGE_ALIGNED_DATA(pagealigned)				\
- 		CACHELINE_ALIGNED_DATA(cacheline)			\
- 		READ_MOSTLY_DATA(cacheline)				\
- 		DATA_DATA						\
- 		CONSTRUCTORS						\
--		NOSAVE_DATA						\
--		PAGE_ALIGNED_DATA(pagealigned)				\
- 	}
+diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
+index a4bb75e..a4f9001 100644
+--- a/arch/alpha/kernel/vmlinux.lds.S
++++ b/arch/alpha/kernel/vmlinux.lds.S
+@@ -32,84 +32,21 @@ SECTIONS
+ 	} :kernel
  
- #define INIT_TEXT_SECTION(inittext_align)				\
+ 	RODATA
+-
+-	/* Exception table */
+-	. = ALIGN(16);
+-	__ex_table : {
+-		__start___ex_table = .;
+-		*(__ex_table)
+-		__stop___ex_table = .;
+-	}
++	EXCEPTION_TABLE(16)
+ 
+ 	/* Will be freed after init */
+-	. = ALIGN(PAGE_SIZE);
+-	/* Init code and data */
+-	__init_begin = .;
+-	.init.text : {
+-		_sinittext = .;
+-		INIT_TEXT
+-		_einittext = .;
+-	}
+-	.init.data : {
+-		INIT_DATA
+-	}
+-
+-	. = ALIGN(16);
+-	.init.setup : {
+-		__setup_start = .;
+-		*(.init.setup)
+-		__setup_end = .;
+-	}
+-
+-	. = ALIGN(8);
+-	.initcall.init : {
+-		__initcall_start = .;
+-		INITCALLS
+-		__initcall_end = .;
+-	}
+-
+-#ifdef CONFIG_BLK_DEV_INITRD
+-	. = ALIGN(PAGE_SIZE);
+-	.init.ramfs : {
+-		__initramfs_start = .;
+-		*(.init.ramfs)
+-		__initramfs_end = .;
+-	}
+-#endif
+-
+-	. = ALIGN(8);
+-	.con_initcall.init : {
+-		__con_initcall_start = .;
+-		*(.con_initcall.init)
+-		__con_initcall_end = .;
+-	}
+-
+-	. = ALIGN(8);
+-	SECURITY_INIT
+-
++	__init_begin = ALIGN(PAGE_SIZE);
++	INIT_TEXT_SECTION(PAGE_SIZE)
++	INIT_DATA_SECTION(16)
+ 	PERCPU(PAGE_SIZE)
+-
+-	. = ALIGN(2 * PAGE_SIZE);
++	/* Align to THREAD_SIZE rather than PAGE_SIZE here so any padding page
++	   needed for the THREAD_SIZE aligned init_task gets freed after init */
++	. = ALIGN(THREAD_SIZE);
+ 	__init_end = .;
+ 	/* Freed after init ends here */
+ 
+-	. = ALIGN(PAGE_SIZE);
+-	.data.page_aligned : {
+-		*(.data.page_aligned)
+-	}
+-
+-	. = ALIGN(64);
+-	.data.cacheline_aligned : {
+-		*(.data.cacheline_aligned)
+-	}
+-
+ 	_data = .;
+-	/* Data */
+-	.data : {
+-		INIT_TASK_DATA(THREAD_SIZE)
+-		DATA_DATA
+-		CONSTRUCTORS
+-	}
++	RW_DATA_SECTION(64, PAGE_SIZE, THREAD_SIZE)
+ 
+ 	.got : {
+ 		*(.got)
+@@ -119,16 +56,7 @@ SECTIONS
+ 	}
+ 	_edata = .;	/* End of data section */
+ 
+-	__bss_start = .;
+-	.sbss : {
+-		*(.sbss)
+-		*(.scommon)
+-	}
+-	.bss : {
+-		*(.bss)
+-		*(COMMON)
+-	}
+-	__bss_stop = .;
++	BSS_SECTION(0, 0, 0)
+ 	_end = .;
+ 
+ 	/* Sections to be discarded */
 -- 
 1.6.3.3
-
