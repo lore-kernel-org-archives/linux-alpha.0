@@ -1,75 +1,34 @@
-From: Tim Abbott <tabbott@ksplice.com>
-Subject: [PATCH 1/2] alpha: use .data.init_task instead of .data.init_thread.
-Date: Fri, 31 Jul 2009 16:56:25 -0400
-Message-ID: <1249073786-29788-1-git-send-email-tabbott@ksplice.com>
+From: Richard Henderson <rth@twiddle.net>
+Subject: Re: [PATCH 1/2] alpha: use .data.init_task instead of .data.init_thread.
+Date: Fri, 31 Jul 2009 14:23:15 -0700
+Message-ID: <4A7360C3.2060507@twiddle.net>
+References: <1249073786-29788-1-git-send-email-tabbott@ksplice.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1249073786-29788-1-git-send-email-tabbott@ksplice.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc: Sam Ravnborg <sam@ravnborg.org>, Anders Kaseorg <andersk@ksplice.com>, Nelson Elhage <nelhage@ksplice.com>, Tim Abbott <tabbott@ksplice.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Tim Abbott <tabbott@ksplice.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Sam Ravnborg <sam@ravnborg.org>, Anders Kaseorg <andersk@ksplice.com>, Nelson Elhage <nelhage@ksplice.com>, linux-alpha@vger.kernel.org
 
-alpha is the only architecture that uses the section name
-.data.init_thread instead of .data.init_task.  So convert alpha to use
-.data.init_task like everything else.
+On 07/31/2009 01:56 PM, Tim Abbott wrote:
+> -	/* Note 2 page alignment above.  */
+> -	.data.init_thread : {
+> -		*(.data.init_thread)
+> -	}
 
-.data.init_task does not need a separate output section; this change
-also moves it into the .data output section.
+NACK.
 
-Signed-off-by: Tim Abbott <tabbott@ksplice.com>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: linux-alpha@vger.kernel.org
----
- arch/alpha/kernel/init_task.c   |    5 ++---
- arch/alpha/kernel/vmlinux.lds.S |    7 ++-----
- 2 files changed, 4 insertions(+), 8 deletions(-)
+You can change the section name, sure, but you cannot remove the 2 page 
+alignment that we had via the alignment at the end of the init sections. 
+  You'll break current_thread_info which is always computed as 
+(kernel-stack-pointer & -(2*PAGE_SIZE)).
 
-diff --git a/arch/alpha/kernel/init_task.c b/arch/alpha/kernel/init_task.c
-index 19b8632..6f80ca4 100644
---- a/arch/alpha/kernel/init_task.c
-+++ b/arch/alpha/kernel/init_task.c
-@@ -13,6 +13,5 @@ static struct sighand_struct init_sighand = INIT_SIGHAND(init_sighand);
- struct task_struct init_task = INIT_TASK(init_task);
- EXPORT_SYMBOL(init_task);
- 
--union thread_union init_thread_union
--	__attribute__((section(".data.init_thread")))
--	= { INIT_THREAD_INFO(init_task) };
-+union thread_union init_thread_union __init_task_data =
-+	{ INIT_THREAD_INFO(init_task) };
-diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
-index b9d6568..a4bb75e 100644
---- a/arch/alpha/kernel/vmlinux.lds.S
-+++ b/arch/alpha/kernel/vmlinux.lds.S
-@@ -1,5 +1,6 @@
- #include <asm-generic/vmlinux.lds.h>
- #include <asm/page.h>
-+#include <asm/thread_info.h>
- 
- OUTPUT_FORMAT("elf64-alpha")
- OUTPUT_ARCH(alpha)
-@@ -92,11 +93,6 @@ SECTIONS
- 	__init_end = .;
- 	/* Freed after init ends here */
- 
--	/* Note 2 page alignment above.  */
--	.data.init_thread : {
--		*(.data.init_thread)
--	}
--
- 	. = ALIGN(PAGE_SIZE);
- 	.data.page_aligned : {
- 		*(.data.page_aligned)
-@@ -110,6 +106,7 @@ SECTIONS
- 	_data = .;
- 	/* Data */
- 	.data : {
-+		INIT_TASK_DATA(THREAD_SIZE)
- 		DATA_DATA
- 		CONSTRUCTORS
- 	}
--- 
-1.6.3.3
+Similarly it is *not* a bug that the page_aligned sections were before 
+data, because we already knew we had 2 page alignment from the end of 
+init + 2 pages of init_thread.
 
+
+r~
