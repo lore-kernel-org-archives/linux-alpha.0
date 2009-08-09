@@ -1,60 +1,52 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: Bad Code generated from __{get,put}_unaligned functions
-Date: Sun, 09 Aug 2009 10:27:48 +1200
-Message-ID: <4A7DFBE4.6060101@orcon.net.nz>
-References: <b4198de60908061056m2b27402cjd25f94b6bbed0707@mail.gmail.com> <20090806183941.GA6854@minet.uni-jena.de>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: Marcin Slusarz <marcin.slusarz@gmail.com>
+Subject: [PATCH 01/14] alpha: use printk_once
+Date: Sun,  9 Aug 2009 21:53:56 +0200
+Message-ID: <1249847649-11631-2-git-send-email-marcin.slusarz@gmail.com>
+References: <1249847649-11631-1-git-send-email-marcin.slusarz@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20090806183941.GA6854@minet.uni-jena.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:received:from:to:cc:subject
+         :date:message-id:x-mailer:in-reply-to:references;
+        bh=4l7gbJOsGDy7r59CUBiI9iis2hYE/QHAzV4L/9uFPYs=;
+        b=Pql6udRUdUxdIdir3tkbpbzpZpKEdL6IZhmIMmaMFXZc8fgwct0anzskcCIWEsr9oS
+         2QHhULlvKk8paNY+ECgRJhuc38+Xw+0+JEnzmfGyMyNYOZBja1/GqTbJf35cZDVzKEB9
+         OInrGJ+THJnBNq46nrB4We/5lrqxfuvC18h3A=
+In-Reply-To: <1249847649-11631-1-git-send-email-marcin.slusarz@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Falk Hueffner <falk@debian.org>
-Cc: Matt Turner <mattst88@gmail.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: LKML <linux-kernel@vger.kernel.org>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org
 
-Falk Hueffner wrote:
-> On Thu, Aug 06, 2009 at 01:56:12PM -0400, Matt Turner wrote:
->   
->> I was researching different ways of writing unaligned load/store
->> macros, so I checked how the kernel did it -- the most general way
->> possible. See include/linux/unaligned.h. As such, very bad code is
->> generated, for example on alpha with BWX, we can implement all these
->> functions with a single instruction, whereas we get stuff like this
->> generated from the generic functions.
->>
->> __get_unaligned_le32:
->>     .frame $30,0,$26,0
->>     .prologue 0
->>     ldbu $0,1($16)
->>     ldbu $1,2($16)
->>     ldbu $2,3($16)
->>     ldbu $3,0($16)
->>     sll $1,16,$1
->>     sll $0,8,$0
->>     bis $0,$1,$0
->>     sll $2,24,$2
->>     bis $0,$3,$0
->>     bis $0,$2,$0
->>     addl $31,$0,$0
->>     ret $31,($26),1
->>
->> 4 load byte instructions, shift, shift, or, shift, or, or, sign extend
->> -- or ldl_u instruction. The code is more than doubly-bad for le64.
->>
->> Do we use the generic functions for a reason I don't see? It appears
->> that it would be easy enough to add architecture-specific unaligned
->> get/put functions in arch/*/include/asm/unaligned.h
->>     
->
-> There should be no need for architecture specific code for Alpha. GCC
-> can generate the optimal code sequence for reads from unaligned struct
-> members as in linux/unaligned/packed_struct.h, and this code should be
-> used. So you should try to find out why it isn't.
->   
+Signed-off-by: Marcin Slusarz <marcin.slusarz@gmail.com>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org
+---
+ arch/alpha/kernel/pci_iommu.c |    6 +-----
+ 1 files changed, 1 insertions(+), 5 deletions(-)
 
-Indeed, the above code looks like what one would expect from the 
-routines in linux/unaligned/le_byteshift.h rather than packed_struct.h
-
-Michael.
+diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+index bfb880a..d15aedf 100644
+--- a/arch/alpha/kernel/pci_iommu.c
++++ b/arch/alpha/kernel/pci_iommu.c
+@@ -268,11 +268,7 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
+ 	   assume it doesn't support sg mapping, and, since we tried to
+ 	   use direct_map above, it now must be considered an error. */
+ 	if (! alpha_mv.mv_pci_tbi) {
+-		static int been_here = 0; /* Only print the message once. */
+-		if (!been_here) {
+-		    printk(KERN_WARNING "pci_map_single: no HW sg\n");
+-		    been_here = 1;
+-		}
++		printk_once(KERN_WARNING "pci_map_single: no HW sg\n");
+ 		return 0;
+ 	}
+ 
+-- 
+1.6.3.3
 
