@@ -1,52 +1,40 @@
-From: Marcin Slusarz <marcin.slusarz@gmail.com>
-Subject: [PATCH 01/14] alpha: use printk_once
-Date: Sun,  9 Aug 2009 21:53:56 +0200
-Message-ID: <1249847649-11631-2-git-send-email-marcin.slusarz@gmail.com>
-References: <1249847649-11631-1-git-send-email-marcin.slusarz@gmail.com>
+From: Roel Kluin <roel.kluin@gmail.com>
+Subject: [PATCH] alpha: kmalloc failure ignored in process_reloc_for_got()
+Date: Wed, 09 Sep 2009 01:40:10 +0200
+Message-ID: <4AA6EB5A.5090309@gmail.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:received:received:received:from:to:cc:subject
-         :date:message-id:x-mailer:in-reply-to:references;
-        bh=4l7gbJOsGDy7r59CUBiI9iis2hYE/QHAzV4L/9uFPYs=;
-        b=Pql6udRUdUxdIdir3tkbpbzpZpKEdL6IZhmIMmaMFXZc8fgwct0anzskcCIWEsr9oS
-         2QHhULlvKk8paNY+ECgRJhuc38+Xw+0+JEnzmfGyMyNYOZBja1/GqTbJf35cZDVzKEB9
-         OInrGJ+THJnBNq46nrB4We/5lrqxfuvC18h3A=
-In-Reply-To: <1249847649-11631-1-git-send-email-marcin.slusarz@gmail.com>
+        h=domainkey-signature:received:received:message-id:date:from
+         :user-agent:mime-version:to:subject:content-type
+         :content-transfer-encoding;
+        bh=W6cFaIi4SzmF0oQbMn7TasFVMyZhuMaXlBYBLe+1GqA=;
+        b=iXL22RfrRjJcn4zQ1zPibGHQLU/rW+4753vGWgxfHqlGKe0CzhoufhCOxsyAQ1lhDb
+         Mu5tEW43zinnTF73rOjceo9J09CCrVzg7QBjuVKBLkc3tLesNK49KR/vwt1KK7pT0tqZ
+         vlOLn29wSJsLZrd0CCaXs3APvyi3MphqkfXRs=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: LKML <linux-kernel@vger.kernel.org>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org
+To: Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
 
-Signed-off-by: Marcin Slusarz <marcin.slusarz@gmail.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org
+Prevent NULL dereference if kmalloc() fails.
+
+Signed-off-by: Roel Kluin <roel.kluin@gmail.com>
 ---
- arch/alpha/kernel/pci_iommu.c |    6 +-----
- 1 files changed, 1 insertions(+), 5 deletions(-)
+Found with sed: http://kernelnewbies.org/roelkluin
 
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index bfb880a..d15aedf 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -268,11 +268,7 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
- 	   assume it doesn't support sg mapping, and, since we tried to
- 	   use direct_map above, it now must be considered an error. */
- 	if (! alpha_mv.mv_pci_tbi) {
--		static int been_here = 0; /* Only print the message once. */
--		if (!been_here) {
--		    printk(KERN_WARNING "pci_map_single: no HW sg\n");
--		    been_here = 1;
--		}
-+		printk_once(KERN_WARNING "pci_map_single: no HW sg\n");
- 		return 0;
- 	}
+diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
+index ebc3c89..8ceec20 100644
+--- a/arch/alpha/kernel/module.c
++++ b/arch/alpha/kernel/module.c
+@@ -73,6 +73,8 @@ process_reloc_for_got(Elf64_Rela *rela,
+ 		}
  
--- 
-1.6.3.3
-
+ 	g = kmalloc (sizeof (*g), GFP_KERNEL);
++	if (g == NULL)
++		return;
+ 	g->next = chains[r_sym].next;
+ 	g->r_addend = r_addend;
+ 	g->got_offset = *poffset;
