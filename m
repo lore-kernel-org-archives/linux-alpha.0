@@ -1,46 +1,64 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] alpha: kmalloc failure ignored in
- process_reloc_for_got()
-Date: Wed, 9 Sep 2009 15:18:48 -0700
-Message-ID: <20090909151848.45db437f.akpm@linux-foundation.org>
-References: <4AA6EB5A.5090309@gmail.com>
+From: David Daney <ddaney@caviumnetworks.com>
+Subject: [PATCH 00/10] Add support for GCC's __builtin_unreachable() and use
+ it in BUG.
+Date: Thu, 10 Sep 2009 16:54:41 -0700
+Message-ID: <4AA991C1.1050800@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4AA6EB5A.5090309@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Roel Kluin <roel.kluin@gmail.com>
-Cc: rth@twiddle.net, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, ralf@linux-mips.org, linux-mips@linux-mips.org, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux390@de.ibm.com, linux-s390@vger.kernel.org, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, linux-am33-list@redhat.com, Kyle McMartin <kyle@mcmartin.ca>, Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@ozlabs.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Haavard Skinnemoen <hskinnemoen@atmel.com>, Mike Frysinger <vapier@gentoo.org>, uclinux-dist-devel@blackfin.uclinux.org
 
-On Wed, 09 Sep 2009 01:40:10 +0200
-Roel Kluin <roel.kluin@gmail.com> wrote:
+Starting with version 4.5, GCC has a new built-in function called
+__builtin_unreachable().  The function tells the compiler that control
+flow will never reach that point.  Currently we trick the compiler by
+putting in for(;;); but this has the disadvantage that extra code is
+emitted for an endless loop.  For an i386 kernel using
+__builtin_unreachable() results in an allyesconfig that is nearly 4000
+bytes smaller.
 
-> Prevent NULL dereference if kmalloc() fails.
-> 
-> Signed-off-by: Roel Kluin <roel.kluin@gmail.com>
-> ---
-> Found with sed: http://kernelnewbies.org/roelkluin
-> 
-> diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
-> index ebc3c89..8ceec20 100644
-> --- a/arch/alpha/kernel/module.c
-> +++ b/arch/alpha/kernel/module.c
-> @@ -73,6 +73,8 @@ process_reloc_for_got(Elf64_Rela *rela,
->  		}
->  
->  	g = kmalloc (sizeof (*g), GFP_KERNEL);
-> +	if (g == NULL)
-> +		return;
->  	g->next = chains[r_sym].next;
->  	g->r_addend = r_addend;
->  	g->got_offset = *poffset;
+This patch set adds support to compiler.h creating a
+new macro usable in the kernel called unreachable().  If the compiler
+lacks __builtin_unreachable(), it just expands to for(;;).
 
-I don't know if that's an improvement.  afacit the kernel will now
-blunder along and do something wrong.  An oops might well be
-preferable behaviour.
+The x86 and MIPS patches I actually tested with a GCC-4.5 snapshot.
+Lacking the ability to test the rest of the architectures, I just did
+what seemed right without even trying to compile the kernel.
 
-IOW, we should handle this failure properly - back out, clean
-everything up, return -ENOMEM to userspace
+01/10 adds the compiler.h support, the rest of the patches retrofit
+the various architecture BUG macros to use it instead of for(;;) or
+while(1) loops.
+
+I will reply with the 10 patches.
+
+The architecture specific patches I will send to a smaller set of
+people.
+
+David Daney (10):
+   Add support for GCC-4.5's __builtin_unreachable() to compiler.h
+   x86: Convert BUG() to use unreachable()
+   MIPS: Convert BUG() to use unreachable()
+   s390: Convert BUG() to use unreachable()
+   mn10300: Convert BUG() to use unreachable()
+   parisc: Convert BUG() to use unreachable()
+   powerpc: Convert BUG() to use unreachable()
+   alpha: Convert BUG() to use unreachable()
+   avr32: Convert BUG() to use unreachable()
+   blackfin: Convert BUG() to use unreachable()
+
+  arch/alpha/include/asm/bug.h    |    2 +-
+  arch/avr32/include/asm/bug.h    |    2 +-
+  arch/blackfin/include/asm/bug.h |    2 +-
+  arch/mips/include/asm/bug.h     |    4 +---
+  arch/mn10300/include/asm/bug.h  |    3 ++-
+  arch/parisc/include/asm/bug.h   |    4 ++--
+  arch/powerpc/include/asm/bug.h  |    2 +-
+  arch/s390/include/asm/bug.h     |    2 +-
+  arch/x86/include/asm/bug.h      |    4 ++--
+  include/linux/compiler-gcc4.h   |   14 ++++++++++++++
+  include/linux/compiler.h        |    5 +++++
+  11 files changed, 31 insertions(+), 13 deletions(-)
 
