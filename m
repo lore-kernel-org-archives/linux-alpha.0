@@ -1,81 +1,41 @@
 From: David Daney <ddaney@caviumnetworks.com>
-Subject: [PATCH 00/11] Add support for GCC's __builtin_unreachable() and use
- it in BUG (v2).
-Date: Mon, 14 Sep 2009 14:50:58 -0700
-Message-ID: <4AAEBAC2.1050905@caviumnetworks.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+Subject: [PATCH 08/11] alpha: Convert BUG() to use unreachable()
+Date: Mon, 14 Sep 2009 14:55:37 -0700
+Message-ID: <1252965340-31735-8-git-send-email-ddaney@caviumnetworks.com>
+References: <4AAEBAC2.1050905@caviumnetworks.com>
+Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S932352AbZINV4M@vger.kernel.org>
+In-Reply-To: <4AAEBAC2.1050905@caviumnetworks.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, ralf@linux-mips.org, linux-mips@linux-mips.org, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux390@de.ibm.com, linux-s390@vger.kernel.org, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, linux-am33-list@redhat.com, Kyle McMartin <kyle@mcmartin.ca>, Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@ozlabs.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Haavard Skinnemoen <hskinnemoen@atmel.com>, Mike Frysinger <vapier@gentoo.org>, uclinux-dist-devel@blackfin.uclinux.org, Linux
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: torvalds@linux-foundation.org, akpm@linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, David Daney <ddaney@caviumnetworks.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
 
-When I sent the first version, I had not realized that Roland McGrath
-had only a day or two earlier submitted a very similar patch (although
-one that only fixed up the x86 case).
+Use the new unreachable() macro instead of for(;;);
 
-I have been working on this quite a while now, starting with adding
-the required support to GCC, so with an eye towards finishing it up I
-have this new version.
+Signed-off-by: David Daney <ddaney@caviumnetworks.com>
+CC: Richard Henderson <rth@twiddle.net>
+CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+CC: linux-alpha@vger.kernel.org
+---
+ arch/alpha/include/asm/bug.h |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
- From the announcement of the first version:
-
-Starting with version 4.5, GCC has a new built-in function called
-__builtin_unreachable().  The function tells the compiler that control
-flow will never reach that point.  Currently we trick the compiler by
-putting in for(;;); but this has the disadvantage that extra code is
-emitted for an endless loop.  For an i386 kernel using
-__builtin_unreachable() results in an defaultconfig that is nearly 4000
-bytes smaller.
-
-This patch set adds support to compiler.h creating a
-new macro usable in the kernel called unreachable().  If the compiler
-lacks __builtin_unreachable(), it just expands to for(;;).
-
-The x86 and MIPS patches I actually tested with a GCC-4.5 snapshot.
-Lacking the ability to test the rest of the architectures, I just did
-what seemed right without even trying to compile the kernel.
-
-For version 2:
-
-I fixed a couple of checkpatch issues, and simplified the
-unreachable() macro for the pre-GCC-4.5 case (as suggested by Richard
-Henderson).  Also several Acked-by: were added.
-
-New in this version (as suggested by Ingo Molnar) I added 11/11 which
-uses unreachable() in asm-generic/bug.h for !CONFIG_BUG case.  This
-one may be a little controversial as it will end up making code
-slightly larger when !CONFIG_BUG and you are using a pre-GCC-4.5
-compiler.
-
-I will reply with the 11 patches.
-
-David Daney (11):
-   Add support for GCC-4.5's __builtin_unreachable() to compiler.h (v2)
-   x86: Convert BUG() to use unreachable()
-   MIPS: Convert BUG() to use unreachable()
-   s390: Convert BUG() to use unreachable()
-   mn10300: Convert BUG() to use unreachable()
-   parisc: Convert BUG() to use unreachable()
-   powerpc: Convert BUG() to use unreachable()
-   alpha: Convert BUG() to use unreachable()
-   avr32: Convert BUG() to use unreachable()
-   blackfin: Convert BUG() to use unreachable()
-   Use unreachable() in asm-generic/bug.h for !CONFIG_BUG case.
-
-  arch/alpha/include/asm/bug.h    |    3 ++-
-  arch/avr32/include/asm/bug.h    |    2 +-
-  arch/blackfin/include/asm/bug.h |    2 +-
-  arch/mips/include/asm/bug.h     |    4 +---
-  arch/mn10300/include/asm/bug.h  |    3 ++-
-  arch/parisc/include/asm/bug.h   |    4 ++--
-  arch/powerpc/include/asm/bug.h  |    2 +-
-  arch/s390/include/asm/bug.h     |    2 +-
-  arch/x86/include/asm/bug.h      |    4 ++--
-  include/asm-generic/bug.h       |    4 ++--
-  include/linux/compiler-gcc4.h   |   14 ++++++++++++++
-  include/linux/compiler.h        |    5 +++++
-  12 files changed, 34 insertions(+), 15 deletions(-)
-
+diff --git a/arch/alpha/include/asm/bug.h b/arch/alpha/include/asm/bug.h
+index 1720c8a..f091682 100644
+--- a/arch/alpha/include/asm/bug.h
++++ b/arch/alpha/include/asm/bug.h
+@@ -13,7 +13,8 @@
+ 		"call_pal %0  # bugchk\n\t"				\
+ 		".long %1\n\t.8byte %2"					\
+ 		: : "i"(PAL_bugchk), "i"(__LINE__), "i"(__FILE__));	\
+-	for ( ; ; ); } while (0)
++	unreachable();							\
++  } while (0)
+ 
+ #define HAVE_ARCH_BUG
+ #endif
+-- 
+1.6.2.5
