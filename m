@@ -1,41 +1,151 @@
-From: David Daney <ddaney@caviumnetworks.com>
-Subject: [PATCH 08/11] alpha: Convert BUG() to use unreachable()
-Date: Mon, 14 Sep 2009 14:55:37 -0700
-Message-ID: <1252965340-31735-8-git-send-email-ddaney@caviumnetworks.com>
-References: <4AAEBAC2.1050905@caviumnetworks.com>
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S932352AbZINV4M@vger.kernel.org>
-In-Reply-To: <4AAEBAC2.1050905@caviumnetworks.com>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Tim Abbott <tabbott@ksplice.com>
+Subject: [PATCH v2 2/3] alpha: Clean up linker script using new linker script macros.
+Date: Wed, 16 Sep 2009 12:38:38 -0400
+Message-ID: <1253119119-18956-3-git-send-email-tabbott@ksplice.com>
+References: <1253119119-18956-1-git-send-email-tabbott@ksplice.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1253119119-18956-1-git-send-email-tabbott@ksplice.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: torvalds@linux-foundation.org, akpm@linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, David Daney <ddaney@caviumnetworks.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>, Geoffrey Thomas <geofft@ksplice.com>, Tim Abbott <tabbott@ksplice.com>
 
-Use the new unreachable() macro instead of for(;;);
+From: Geoffrey Thomas <geofft@ksplice.com>
 
-Signed-off-by: David Daney <ddaney@caviumnetworks.com>
-CC: Richard Henderson <rth@twiddle.net>
-CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-CC: linux-alpha@vger.kernel.org
+Note that .data.page_aligned and .data.cacheline_aligned are now after
+_data; it was probably a bug that they were before it.
+
+Also, some explicit ALIGN(8)'s between various initcall sections were
+removed; this should be harmless as the implicit alignment of
+initcall_t was already 8.
+
+Signed-off-by: Geoffrey Thomas <geofft@ksplice.com>
+Signed-off-by: Tim Abbott <tabbott@ksplice.com>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Richard Henderson <rth@twiddle.net>
 ---
- arch/alpha/include/asm/bug.h |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ arch/alpha/kernel/vmlinux.lds.S |   90 ++++-----------------------------------
+ 1 files changed, 9 insertions(+), 81 deletions(-)
 
-diff --git a/arch/alpha/include/asm/bug.h b/arch/alpha/include/asm/bug.h
-index 1720c8a..f091682 100644
---- a/arch/alpha/include/asm/bug.h
-+++ b/arch/alpha/include/asm/bug.h
-@@ -13,7 +13,8 @@
- 		"call_pal %0  # bugchk\n\t"				\
- 		".long %1\n\t.8byte %2"					\
- 		: : "i"(PAL_bugchk), "i"(__LINE__), "i"(__FILE__));	\
--	for ( ; ; ); } while (0)
-+	unreachable();							\
-+  } while (0)
+diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
+index 82803df..2906665 100644
+--- a/arch/alpha/kernel/vmlinux.lds.S
++++ b/arch/alpha/kernel/vmlinux.lds.S
+@@ -32,84 +32,21 @@ SECTIONS
+ 	} :kernel
  
- #define HAVE_ARCH_BUG
- #endif
+ 	RODATA
+-
+-	/* Exception table */
+-	. = ALIGN(16);
+-	__ex_table : {
+-		__start___ex_table = .;
+-		*(__ex_table)
+-		__stop___ex_table = .;
+-	}
++	EXCEPTION_TABLE(16)
+ 
+ 	/* Will be freed after init */
+-	. = ALIGN(PAGE_SIZE);
+-	/* Init code and data */
+-	__init_begin = .;
+-	.init.text : {
+-		_sinittext = .;
+-		INIT_TEXT
+-		_einittext = .;
+-	}
+-	.init.data : {
+-		INIT_DATA
+-	}
+-
+-	. = ALIGN(16);
+-	.init.setup : {
+-		__setup_start = .;
+-		*(.init.setup)
+-		__setup_end = .;
+-	}
+-
+-	. = ALIGN(8);
+-	.initcall.init : {
+-		__initcall_start = .;
+-		INITCALLS
+-		__initcall_end = .;
+-	}
+-
+-#ifdef CONFIG_BLK_DEV_INITRD
+-	. = ALIGN(PAGE_SIZE);
+-	.init.ramfs : {
+-		__initramfs_start = .;
+-		*(.init.ramfs)
+-		__initramfs_end = .;
+-	}
+-#endif
+-
+-	. = ALIGN(8);
+-	.con_initcall.init : {
+-		__con_initcall_start = .;
+-		*(.con_initcall.init)
+-		__con_initcall_end = .;
+-	}
+-
+-	. = ALIGN(8);
+-	SECURITY_INIT
+-
++	__init_begin = ALIGN(PAGE_SIZE);
++	INIT_TEXT_SECTION(PAGE_SIZE)
++	INIT_DATA_SECTION(16)
+ 	PERCPU(PAGE_SIZE)
+-
+-	. = ALIGN(2 * PAGE_SIZE);
++	/* Align to THREAD_SIZE rather than PAGE_SIZE here so any padding page
++	   needed for the THREAD_SIZE aligned init_task gets freed after init */
++	. = ALIGN(THREAD_SIZE);
+ 	__init_end = .;
+ 	/* Freed after init ends here */
+ 
+-	. = ALIGN(PAGE_SIZE);
+-	.data.page_aligned : {
+-		*(.data.page_aligned)
+-	}
+-
+-	. = ALIGN(64);
+-	.data.cacheline_aligned : {
+-		*(.data.cacheline_aligned)
+-	}
+-
+ 	_data = .;
+-	/* Data */
+-	.data : {
+-		INIT_TASK_DATA(THREAD_SIZE)
+-		DATA_DATA
+-		CONSTRUCTORS
+-	}
++	RW_DATA_SECTION(64, PAGE_SIZE, THREAD_SIZE)
+ 
+ 	.got : {
+ 		*(.got)
+@@ -119,16 +56,7 @@ SECTIONS
+ 	}
+ 	_edata = .;	/* End of data section */
+ 
+-	__bss_start = .;
+-	.sbss : {
+-		*(.sbss)
+-		*(.scommon)
+-	}
+-	.bss : {
+-		*(.bss)
+-		*(COMMON)
+-	}
+-	__bss_stop = .;
++	BSS_SECTION(0, 0, 0)
+ 	_end = .;
+ 
+ 	.mdebug 0 : {
 -- 
-1.6.2.5
+1.6.3.3
+
