@@ -1,108 +1,49 @@
-From: Roel Kluin <roel.kluin@gmail.com>
-Subject: Re: [PATCH] alpha: kmalloc failure ignored in process_reloc_for_got()
-Date: Fri, 18 Sep 2009 23:14:01 +0200
-Message-ID: <4AB3F819.5020709@gmail.com>
-References: <4AA6EB5A.5090309@gmail.com> <20090909151848.45db437f.akpm@linux-foundation.org>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Need help fixing Alpha/DRM out of memory failure
+Date: Tue, 22 Sep 2009 14:58:00 -0400
+Message-ID: <b4198de60909221158o4b5cfb3ej2df8becda8381b82@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:received:received:message-id:date:from
-         :user-agent:mime-version:to:cc:subject:references:in-reply-to
-         :content-type:content-transfer-encoding;
-        bh=KTpuz8qv1g/kD0K3ceMdoRVcm2+Jpk77APDRS8a7pIc=;
-        b=mcXwDIZetzGaokuP+0c3uIUKI/nAutG7uAD8up5jhw1aaNJ3xGfYjm+xpZUUL/Buvq
-         2YfCDbOtg4I2jeIv4EXLrt176+EkMPDfM2KOAqwRtwMFAocfvpmSQJT4K3KEVOF18ZVl
-         PKRvX0YrwTHUywKGRM+JDeLdIheAAJfEwVmHU=
-In-Reply-To: <20090909151848.45db437f.akpm@linux-foundation.org>
+        h=domainkey-signature:mime-version:received:date:message-id:subject
+         :from:to:cc:content-type;
+        bh=CEPHCnEXTTx9EyEmZfHDRcsqG/xcNuZ3EXzdS9C/oUs=;
+        b=gIbsoBh5bBrcXRj8Efr/rlMk/YkdilZL5DmomYTnK9uHaUjP3IcI8arE5sG8kbmFTK
+         zYAGsFH/4If1VoMjGs6AC9l6B7KHs3eyoAJ0KqOc/8MfVEhMqQhFSYRNQjOynvliCFsw
+         I3YMQstIBHPclcGUU8z1AA0Cs3TFdu2wN/XrQ=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: rth@twiddle.net, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@hp.com>
+Cc: linux-alpha@vger.kernel.org
 
-Prevent NULL dereference if kmalloc() fails.
+I'm seeing a DRM-related out of memory failure. I've filed a bug at
+freedesktop.org [0], but no luck. Xserver-1.7 is near, and I'd like to
+get this fixed before they make a major release.
 
-Signed-off-by: Roel Kluin <roel.kluin@gmail.com>
----
-> we should handle this failure properly - back out, clean
-> everything up, return -ENOMEM to userspace
+When starting up X with a Radeon graphics card, X dies with an out of
+memory error. See attached dmesg in bug report and small excerpt.
 
-Is this better? I have to admit I didn't build test it,
-I may be able to do that later.
+Trace:
+[<fffffc0000384158>] __vmalloc_area_node+0xb8/0x1b0
+[<fffffc00005248a0>] drm_sg_alloc+0x1c0/0x340
+[<fffffc000051d7ac>] drm_ioctl+0x18c/0x3f0
+[<fffffc0000524a20>] drm_sg_alloc_ioctl+0x0/0x20
+[<fffffc00003a093c>] vfs_ioctl+0x6c/0x90
+[<fffffc00003435e0>] autoremove_wake_function+0x0/0x60
+[<fffffc00003a0b14>] do_vfs_ioctl+0xb4/0x6b0
+[<fffffc00003a1214>] SyS_ioctl+0x104/0x110
+[<fffffc000038f588>] SyS_write+0x68/0xe0
+[<fffffc00003a117c>] SyS_ioctl+0x6c/0x110
+[<fffffc0000310d14>] entSys+0xa4/0xc0
 
-diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
-index ebc3c89..5132d98 100644
---- a/arch/alpha/kernel/module.c
-+++ b/arch/alpha/kernel/module.c
-@@ -51,7 +51,7 @@ struct got_entry {
- 	int got_offset;
- };
- 
--static inline void
-+static inline int
- process_reloc_for_got(Elf64_Rela *rela,
- 		      struct got_entry *chains, Elf64_Xword *poffset)
- {
-@@ -61,7 +61,7 @@ process_reloc_for_got(Elf64_Rela *rela,
- 	struct got_entry *g;
- 
- 	if (r_type != R_ALPHA_LITERAL)
--		return;
-+		return 0;
- 
- 	for (g = chains + r_sym; g ; g = g->next)
- 		if (g->r_addend == r_addend) {
-@@ -73,6 +73,8 @@ process_reloc_for_got(Elf64_Rela *rela,
- 		}
- 
- 	g = kmalloc (sizeof (*g), GFP_KERNEL);
-+	if (g == NULL)
-+		return -ENOMEM;
- 	g->next = chains[r_sym].next;
- 	g->r_addend = r_addend;
- 	g->got_offset = *poffset;
-@@ -84,6 +86,7 @@ process_reloc_for_got(Elf64_Rela *rela,
- 	   42 valid relocation types, and a 32-bit field.  Co-opt the
- 	   bits above 256 to store the got offset for this reloc.  */
- 	rela->r_info |= g->got_offset << 8;
-+	return 0;
- }
- 
- int
-@@ -94,6 +97,7 @@ module_frob_arch_sections(Elf64_Ehdr *hdr, Elf64_Shdr *sechdrs,
- 	Elf64_Rela *rela;
- 	Elf64_Shdr *esechdrs, *symtab, *s, *got;
- 	unsigned long nsyms, nrela, i;
-+	int ret = 0;
- 
- 	esechdrs = sechdrs + hdr->e_shnum;
- 	symtab = got = NULL;
-@@ -137,9 +141,12 @@ module_frob_arch_sections(Elf64_Ehdr *hdr, Elf64_Shdr *sechdrs,
- 		if (s->sh_type == SHT_RELA) {
- 			nrela = s->sh_size / sizeof(Elf64_Rela);
- 			rela = (void *)hdr + s->sh_offset;
--			for (i = 0; i < nrela; ++i)
--				process_reloc_for_got(rela+i, chains,
-+			for (i = 0; i < nrela; ++i) {
-+				ret = process_reloc_for_got(rela+i, chains,
- 						      &got->sh_size);
-+				if (ret != 0)
-+					goto out;
-+			}
- 		}
- 
- 	/* Free the memory we allocated.  */
-@@ -150,9 +157,10 @@ module_frob_arch_sections(Elf64_Ehdr *hdr, Elf64_Shdr *sechdrs,
- 			kfree(g);
- 		}
- 	}
-+out:
- 	kfree(chains);
- 
--	return 0;
-+	return ret;
- }
- 
- int
+Using Option "DRI" "false" works around the problem.
+
+I'd really appreciate any help.
+
+Thanks,
+Matt Turner
+
+[0] http://bugs.freedesktop.org/show_bug.cgi?id=23671
