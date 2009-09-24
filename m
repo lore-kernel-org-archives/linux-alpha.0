@@ -1,68 +1,36 @@
-From: Jay Estabrook <Jay.Estabrook@hp.com>
-Subject: Re: Need help fixing Alpha/DRM out of memory failure
-Date: Tue, 22 Sep 2009 22:35:45 -0400
-Message-ID: <4AB98981.1020201@hp.com>
-References: <b4198de60909221158o4b5cfb3ej2df8becda8381b82@mail.gmail.com>
+From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Subject: Re: [PATCH 00/10] Add support for GCC's __builtin_unreachable()
+	and use it in BUG.
+Date: Thu, 24 Sep 2009 13:37:13 +1000
+Message-ID: <1253763433.7103.391.camel@pasglop>
+References: <4AA991C1.1050800@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <b4198de60909221158o4b5cfb3ej2df8becda8381b82@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Matt Turner <mattst88@gmail.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <4AA991C1.1050800@caviumnetworks.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Sender: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org
+Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org
+To: David Daney <ddaney@caviumnetworks.com>
+Cc: linux-mips@linux-mips.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linuxppc-dev@ozlabs.org, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, linux-s390@vger.kernel.org, linux-am33-list@redhat.com, Helge Deller <deller@gmx.de>, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, Mike Frysinger <vapier@gentoo.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, uclinux-dist-devel@blackfin.uclinux.org, Thomas Gleixner <tglx@linutronix.de>, Richard Henderson <rth@twiddle.net>, Haavard Skinnemoen <hskinnemoen@atmel.com>, linux-parisc@vger.kernel.org, ralf@linux-mips.org, Kyle McMartin <kyle@mcmartin.ca>, linux-alpha@vger.kernel.org, Martin Schwidefsky <schwidefsky@de.ibm.com>, linux390@de.ibm.com, Andrew Morton <akpm@linux-foundation.org>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Linus Torvalds <torvalds@linux-foundation.org>
 
-Hi, Matt,
+On Thu, 2009-09-10 at 16:54 -0700, David Daney wrote:
+> Starting with version 4.5, GCC has a new built-in function called
+> __builtin_unreachable().  The function tells the compiler that control
+> flow will never reach that point.  Currently we trick the compiler by
+> putting in for(;;); but this has the disadvantage that extra code is
+> emitted for an endless loop.  For an i386 kernel using
+> __builtin_unreachable() results in an allyesconfig that is nearly 4000
+> bytes smaller.
 
-Looks like you're running out of DMA memory for some reason.
+For the powerpc part:
 
-On Nautilus, the DMA "zone" is configured to be 16MB
-(see arch/alpha/include/asm/dma.h), since there's not the usual
-scatter/gather support in the Irongate core logic, AFAICT.
-
-If somethings have taken a big chunk of that, say mapping regs or fbmem
-or some such, there may not be much left for others, even if it's only
-a single DMA-able page (where the "page allocation failure" message
-came from).
-
-I'm really unfamiliar with the code in those files (sys_nautilus.c
-and core_irongate.c), so I hope you can find someone more knowledgeable.
-
-Sorry.
-
-Good luck.
-
---Jay++
-
-Matt Turner wrote:
-> I'm seeing a DRM-related out of memory failure. I've filed a bug at
-> freedesktop.org [0], but no luck. Xserver-1.7 is near, and I'd like to
-> get this fixed before they make a major release.
-> 
-> When starting up X with a Radeon graphics card, X dies with an out of
-> memory error. See attached dmesg in bug report and small excerpt.
-> 
-> Trace:
-> [<fffffc0000384158>] __vmalloc_area_node+0xb8/0x1b0
-> [<fffffc00005248a0>] drm_sg_alloc+0x1c0/0x340
-> [<fffffc000051d7ac>] drm_ioctl+0x18c/0x3f0
-> [<fffffc0000524a20>] drm_sg_alloc_ioctl+0x0/0x20
-> [<fffffc00003a093c>] vfs_ioctl+0x6c/0x90
-> [<fffffc00003435e0>] autoremove_wake_function+0x0/0x60
-> [<fffffc00003a0b14>] do_vfs_ioctl+0xb4/0x6b0
-> [<fffffc00003a1214>] SyS_ioctl+0x104/0x110
-> [<fffffc000038f588>] SyS_write+0x68/0xe0
-> [<fffffc00003a117c>] SyS_ioctl+0x6c/0x110
-> [<fffffc0000310d14>] entSys+0xa4/0xc0
-> 
-> Using Option "DRI" "false" works around the problem.
-> 
-> I'd really appreciate any help.
-> 
-> Thanks,
-> Matt Turner
-> 
-> [0] http://bugs.freedesktop.org/show_bug.cgi?id=23671
-> 
-
+Acked-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
