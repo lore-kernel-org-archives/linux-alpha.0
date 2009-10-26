@@ -1,135 +1,72 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: [PATCH] [alpha] Add minimal support for software performance events.
-Date: Mon, 26 Oct 2009 21:32:06 +1300
-Message-ID: <1256545926-6972-1-git-send-email-mcree@orcon.net.nz>
+From: Ingo Molnar <mingo@elte.hu>
+Subject: Re: [PATCH] [alpha] Add minimal support for software performance
+	events.
+Date: Mon, 26 Oct 2009 09:48:54 +0100
+Message-ID: <20091026084854.GA26990@elte.hu>
+References: <1256545926-6972-1-git-send-email-mcree@orcon.net.nz>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1256545926-6972-1-git-send-email-mcree@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
-Cc: Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Paul Mackerras <paulus@samba.org>, Ingo Molnar <mingo@elte.hu>
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Paul Mackerras <paulus@samba.org>, Andrew Morton <akpm@linux-foundation.org>
 
-In the kernel the patch enables configuration of the perf event
-option, adds the perf_event_open syscall, and includes a minimal
-architecture specific asm/perf_event.h header file.
 
-For the perf tool the patch implements an Alpha specific section
-in the perf.h header file and adjusts options used in the
-Makefile to allow compilation on Alpha.  The -Wcast-align gives
-a "cast increases required alignment of target type" warning for
-the list_for_each_entry() macro. The -fstack-protector-all
-option generates a "not supported for this target" warning which
-with -Werror causes the compiler to abort.
+* Michael Cree <mcree@orcon.net.nz> wrote:
 
-Signed-off-by: Michael Cree <mcree@orcon.net.nz>
----
- arch/alpha/Kconfig                  |    1 +
- arch/alpha/include/asm/perf_event.h |    9 +++++++++
- arch/alpha/include/asm/unistd.h     |    3 ++-
- arch/alpha/kernel/systbls.S         |    1 +
- tools/perf/Makefile                 |    5 ++---
- tools/perf/perf.h                   |    6 ++++++
- 6 files changed, 21 insertions(+), 4 deletions(-)
- create mode 100644 arch/alpha/include/asm/perf_event.h
+> In the kernel the patch enables configuration of the perf event 
+> option, adds the perf_event_open syscall, and includes a minimal 
+> architecture specific asm/perf_event.h header file.
+> 
+> For the perf tool the patch implements an Alpha specific section
+> in the perf.h header file and adjusts options used in the
+> Makefile to allow compilation on Alpha.  The -Wcast-align gives
+> a "cast increases required alignment of target type" warning for
+> the list_for_each_entry() macro. The -fstack-protector-all
+> option generates a "not supported for this target" warning which
+> with -Werror causes the compiler to abort.
+> 
+> Signed-off-by: Michael Cree <mcree@orcon.net.nz>
+> ---
+>  arch/alpha/Kconfig                  |    1 +
+>  arch/alpha/include/asm/perf_event.h |    9 +++++++++
+>  arch/alpha/include/asm/unistd.h     |    3 ++-
+>  arch/alpha/kernel/systbls.S         |    1 +
+>  tools/perf/Makefile                 |    5 ++---
+>  tools/perf/perf.h                   |    6 ++++++
+>  6 files changed, 21 insertions(+), 4 deletions(-)
+>  create mode 100644 arch/alpha/include/asm/perf_event.h
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 4434481..bd7261e 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -9,6 +9,7 @@ config ALPHA
- 	select HAVE_IDE
- 	select HAVE_OPROFILE
- 	select HAVE_SYSCALL_WRAPPERS
-+	select HAVE_PERF_EVENTS
- 	help
- 	  The Alpha is a 64-bit general-purpose processor designed and
- 	  marketed by the Digital Equipment Corporation of blessed memory,
-diff --git a/arch/alpha/include/asm/perf_event.h b/arch/alpha/include/asm/perf_event.h
-new file mode 100644
-index 0000000..3bef852
---- /dev/null
-+++ b/arch/alpha/include/asm/perf_event.h
-@@ -0,0 +1,9 @@
-+#ifndef __ASM_ALPHA_PERF_EVENT_H
-+#define __ASM_ALPHA_PERF_EVENT_H
-+
-+/* Alpha only supports software events through this interface. */
-+static inline void set_perf_event_pending(void) { }
-+
-+#define PERF_EVENT_INDEX_OFFSET 0
-+
-+#endif /* __ASM_ALPHA_PERF_EVENT_H */
-diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
-index 17f72b7..414de17 100644
---- a/arch/alpha/include/asm/unistd.h
-+++ b/arch/alpha/include/asm/unistd.h
-@@ -447,10 +447,11 @@
- #define __NR_preadv			489
- #define __NR_pwritev			490
- #define __NR_rt_tgsigqueueinfo		491
-+#define __NR_perf_event_open		492
- 
- #ifdef __KERNEL__
- 
--#define NR_SYSCALLS			492
-+#define NR_SYSCALLS			493
- 
- #define __ARCH_WANT_IPC_PARSE_VERSION
- #define __ARCH_WANT_OLD_READDIR
-diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 78199b9..63c78e4 100644
---- a/arch/alpha/kernel/systbls.S
-+++ b/arch/alpha/kernel/systbls.S
-@@ -510,6 +510,7 @@ sys_call_table:
- 	.quad sys_preadv
- 	.quad sys_pwritev			/* 490 */
- 	.quad sys_rt_tgsigqueueinfo
-+	.quad sys_perf_event_open
- 
- 	.size sys_call_table, . - sys_call_table
- 	.type sys_call_table, @object
-diff --git a/tools/perf/Makefile b/tools/perf/Makefile
-index 742a32e..7940d66 100644
---- a/tools/perf/Makefile
-+++ b/tools/perf/Makefile
-@@ -177,8 +177,7 @@ endif
- # Include saner warnings here, which can catch bugs:
- #
- 
--EXTRA_WARNINGS := -Wcast-align
--EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wformat
-+EXTRA_WARNINGS := -Wformat
- EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wformat-security
- EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wformat-y2k
- EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wshadow
-@@ -201,7 +200,7 @@ EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wold-style-definition
- EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wstrict-prototypes
- EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wdeclaration-after-statement
- 
--CFLAGS = $(MBITS) -ggdb3 -Wall -Wextra -std=gnu99 -Werror -O6 -fstack-protector-all -D_FORTIFY_SOURCE=2 $(EXTRA_WARNINGS)
-+CFLAGS = $(MBITS) -ggdb3 -Wall -Wextra -std=gnu99 -Werror -O6 -D_FORTIFY_SOURCE=2 $(EXTRA_WARNINGS)
- LDFLAGS = -lpthread -lrt -lelf -lm
- ALL_CFLAGS = $(CFLAGS)
- ALL_LDFLAGS = $(LDFLAGS)
-diff --git a/tools/perf/perf.h b/tools/perf/perf.h
-index 8cc4623..216bdb2 100644
---- a/tools/perf/perf.h
-+++ b/tools/perf/perf.h
-@@ -47,6 +47,12 @@
- #define cpu_relax()	asm volatile("":::"memory")
- #endif
- 
-+#ifdef __alpha__
-+#include "../../arch/alpha/include/asm/unistd.h"
-+#define rmb()		asm volatile("mb" ::: "memory")
-+#define cpu_relax()	asm volatile("" ::: "memory")
-+#endif
-+
- #include <time.h>
- #include <unistd.h>
- #include <sys/types.h>
--- 
-1.6.3.3
+Nice!
 
+I've picked up the perf.h bit in an independent commit. Is there a tree 
+for Alpha bits?
+
+This portion:
+
+> --- a/tools/perf/Makefile
+> +++ b/tools/perf/Makefile
+> @@ -201,7 +200,7 @@ EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wold-style-definition
+>  EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wstrict-prototypes
+>  EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wdeclaration-after-statement
+>  
+> -CFLAGS = $(MBITS) -ggdb3 -Wall -Wextra -std=gnu99 -Werror -O6 -fstack-protector-all -D_FORTIFY_SOURCE=2 $(EXTRA_WARNINGS)
+> +CFLAGS = $(MBITS) -ggdb3 -Wall -Wextra -std=gnu99 -Werror -O6 -D_FORTIFY_SOURCE=2 $(EXTRA_WARNINGS)
+>  LDFLAGS = -lpthread -lrt -lelf -lm
+>  ALL_CFLAGS = $(CFLAGS)
+>  ALL_LDFLAGS = $(LDFLAGS)
+
+Should be done not by removing the stack-protector build unconditionally 
+- but by auto-testing whether stackprotector is supported by GCC and 
+using it if yes.
+
+Examples can be found n arch/x86/Makefile's use of 
+scripts/gcc-*-has-stack-protector.sh.
+
+Thanks,
+
+	Ingo
