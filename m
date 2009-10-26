@@ -1,87 +1,135 @@
-From: Daniele Calore <orkaan@orkaan.org>
-Subject: [PATCH] alpha: Wire up missing/new syscalls
-Date: Wed, 21 Oct 2009 16:44:31 +0200
-Message-ID: <20091021164431.6193d96b@buddha>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: [PATCH] [alpha] Add minimal support for software performance events.
+Date: Mon, 26 Oct 2009 21:32:06 +1300
+Message-ID: <1256545926-6972-1-git-send-email-mcree@orcon.net.nz>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: orkaan@orkaan.org
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Cc: Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Paul Mackerras <paulus@samba.org>, Ingo Molnar <mingo@elte.hu>
 
-This wire up the: fallocate, timerfd_create, timerfd_settime, timerfd_gettime
-signalfd4, eventfd2, epoll_create1, dup3, pipe2, inotify_init1, preadv,
-pwritev and rt_tgsigqueueinfo syscalls for the alpha port.
+In the kernel the patch enables configuration of the perf event
+option, adds the perf_event_open syscall, and includes a minimal
+architecture specific asm/perf_event.h header file.
 
-For umount2, alpha have an "old" and "new" version called: oldumount and umount;
-so ignore umount2.
+For the perf tool the patch implements an Alpha specific section
+in the perf.h header file and adjusts options used in the
+Makefile to allow compilation on Alpha.  The -Wcast-align gives
+a "cast increases required alignment of target type" warning for
+the list_for_each_entry() macro. The -fstack-protector-all
+option generates a "not supported for this target" warning which
+with -Werror causes the compiler to abort.
 
-Signed-off-by: Daniele Calore <orkaan@orkaan.org>
-    
+Signed-off-by: Michael Cree <mcree@orcon.net.nz>
 ---
+ arch/alpha/Kconfig                  |    1 +
+ arch/alpha/include/asm/perf_event.h |    9 +++++++++
+ arch/alpha/include/asm/unistd.h     |    3 ++-
+ arch/alpha/kernel/systbls.S         |    1 +
+ tools/perf/Makefile                 |    5 ++---
+ tools/perf/perf.h                   |    6 ++++++
+ 6 files changed, 21 insertions(+), 4 deletions(-)
+ create mode 100644 arch/alpha/include/asm/perf_event.h
+
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 4434481..bd7261e 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -9,6 +9,7 @@ config ALPHA
+ 	select HAVE_IDE
+ 	select HAVE_OPROFILE
+ 	select HAVE_SYSCALL_WRAPPERS
++	select HAVE_PERF_EVENTS
+ 	help
+ 	  The Alpha is a 64-bit general-purpose processor designed and
+ 	  marketed by the Digital Equipment Corporation of blessed memory,
+diff --git a/arch/alpha/include/asm/perf_event.h b/arch/alpha/include/asm/perf_event.h
+new file mode 100644
+index 0000000..3bef852
+--- /dev/null
++++ b/arch/alpha/include/asm/perf_event.h
+@@ -0,0 +1,9 @@
++#ifndef __ASM_ALPHA_PERF_EVENT_H
++#define __ASM_ALPHA_PERF_EVENT_H
++
++/* Alpha only supports software events through this interface. */
++static inline void set_perf_event_pending(void) { }
++
++#define PERF_EVENT_INDEX_OFFSET 0
++
++#endif /* __ASM_ALPHA_PERF_EVENT_H */
 diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
-index 5b5c174..17f72b7 100644
+index 17f72b7..414de17 100644
 --- a/arch/alpha/include/asm/unistd.h
 +++ b/arch/alpha/include/asm/unistd.h
-@@ -247,6 +247,7 @@
- #define __IGNORE_pause
- #define __IGNORE_time
- #define __IGNORE_utime
-+#define __IGNORE_umount2
- 
- /*
-  * Linux-specific system calls begin at 300
-@@ -433,10 +434,23 @@
- #define __NR_signalfd			476
- #define __NR_timerfd			477
- #define __NR_eventfd			478
-+#define __NR_fallocate			479
-+#define __NR_timerfd_create		480
-+#define __NR_timerfd_settime		481
-+#define __NR_timerfd_gettime		482
-+#define __NR_signalfd4			483
-+#define __NR_eventfd2			484
-+#define __NR_epoll_create1		485
-+#define __NR_dup3			486
-+#define __NR_pipe2			487
-+#define __NR_inotify_init1		488
-+#define __NR_preadv			489
-+#define __NR_pwritev			490
-+#define __NR_rt_tgsigqueueinfo		491
+@@ -447,10 +447,11 @@
+ #define __NR_preadv			489
+ #define __NR_pwritev			490
+ #define __NR_rt_tgsigqueueinfo		491
++#define __NR_perf_event_open		492
  
  #ifdef __KERNEL__
  
--#define NR_SYSCALLS			479
-+#define NR_SYSCALLS			492
+-#define NR_SYSCALLS			492
++#define NR_SYSCALLS			493
  
  #define __ARCH_WANT_IPC_PARSE_VERSION
  #define __ARCH_WANT_OLD_READDIR
 diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 95c9aef..78199b9 100644
+index 78199b9..63c78e4 100644
 --- a/arch/alpha/kernel/systbls.S
 +++ b/arch/alpha/kernel/systbls.S
-@@ -495,8 +495,21 @@ sys_call_table:
- 	.quad sys_epoll_pwait
- 	.quad sys_utimensat			/* 475 */
- 	.quad sys_signalfd
--	.quad sys_ni_syscall
-+	.quad sys_ni_syscall			/* sys_timerfd */
- 	.quad sys_eventfd
-+	.quad sys_fallocate
-+	.quad sys_timerfd_create		/* 480 */
-+	.quad sys_timerfd_settime
-+	.quad sys_timerfd_gettime
-+	.quad sys_signalfd4
-+	.quad sys_eventfd2
-+	.quad sys_epoll_create1			/* 485 */
-+	.quad sys_dup3
-+	.quad sys_pipe2
-+	.quad sys_inotify_init1
-+	.quad sys_preadv
-+	.quad sys_pwritev			/* 490 */
-+	.quad sys_rt_tgsigqueueinfo
+@@ -510,6 +510,7 @@ sys_call_table:
+ 	.quad sys_preadv
+ 	.quad sys_pwritev			/* 490 */
+ 	.quad sys_rt_tgsigqueueinfo
++	.quad sys_perf_event_open
  
  	.size sys_call_table, . - sys_call_table
  	.type sys_call_table, @object
+diff --git a/tools/perf/Makefile b/tools/perf/Makefile
+index 742a32e..7940d66 100644
+--- a/tools/perf/Makefile
++++ b/tools/perf/Makefile
+@@ -177,8 +177,7 @@ endif
+ # Include saner warnings here, which can catch bugs:
+ #
+ 
+-EXTRA_WARNINGS := -Wcast-align
+-EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wformat
++EXTRA_WARNINGS := -Wformat
+ EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wformat-security
+ EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wformat-y2k
+ EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wshadow
+@@ -201,7 +200,7 @@ EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wold-style-definition
+ EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wstrict-prototypes
+ EXTRA_WARNINGS := $(EXTRA_WARNINGS) -Wdeclaration-after-statement
+ 
+-CFLAGS = $(MBITS) -ggdb3 -Wall -Wextra -std=gnu99 -Werror -O6 -fstack-protector-all -D_FORTIFY_SOURCE=2 $(EXTRA_WARNINGS)
++CFLAGS = $(MBITS) -ggdb3 -Wall -Wextra -std=gnu99 -Werror -O6 -D_FORTIFY_SOURCE=2 $(EXTRA_WARNINGS)
+ LDFLAGS = -lpthread -lrt -lelf -lm
+ ALL_CFLAGS = $(CFLAGS)
+ ALL_LDFLAGS = $(LDFLAGS)
+diff --git a/tools/perf/perf.h b/tools/perf/perf.h
+index 8cc4623..216bdb2 100644
+--- a/tools/perf/perf.h
++++ b/tools/perf/perf.h
+@@ -47,6 +47,12 @@
+ #define cpu_relax()	asm volatile("":::"memory")
+ #endif
+ 
++#ifdef __alpha__
++#include "../../arch/alpha/include/asm/unistd.h"
++#define rmb()		asm volatile("mb" ::: "memory")
++#define cpu_relax()	asm volatile("" ::: "memory")
++#endif
++
+ #include <time.h>
+ #include <unistd.h>
+ #include <sys/types.h>
+-- 
+1.6.3.3
+
