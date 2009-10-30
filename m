@@ -1,30 +1,32 @@
-From: Richard Henderson <rth@twiddle.net>
+From: David Howells <dhowells@redhat.com>
 Subject: Re: Alpha: suspicious compiler warning in entry.S
-Date: Wed, 28 Oct 2009 16:13:09 -0700
-Message-ID: <4AE8D005.1030302@twiddle.net>
+Date: Fri, 30 Oct 2009 13:16:59 +0000
+Message-ID: <5962.1256908619@redhat.com>
 References: <4AE7ECC2.8050202@orcon.net.nz>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 In-Reply-To: <4AE7ECC2.8050202@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Michael Cree <mcree@orcon.net.nz>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru, David Howells <dhowells@redhat.com>
+Cc: dhowells@redhat.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru
 
-On 10/28/2009 12:03 AM, Michael Cree wrote:
-> I am wondering whether it might be better
-> to rearrange the bits in the thread information flags so that
-> _TIF_WORK_MASK
+Michael Cree <mcree@orcon.net.nz> wrote:
+
+> On the assumption that it is important to include the TIF_NOTIFY_RESUME bit
+> one might be tempted to modify the code to:
+> 
+>    lda    $2, _TIF_WORK_MASK
+>    and    $5, $2, $2
+> 
+> but this is time critical code.  I am wondering whether it might be better
+> to rearrange the bits in the thread information flags so that _TIF_WORK_MASK
 > has a value less than 255 and the single instruction to perform an and
 > operation can be maintained.
 
-It would be better to rearrange TIF_NODIFY_RESUME down to 3.
+Unless the LDA can be interleaved around some memory accesses, then yes,
+compressing _TIF_WORK_MASK would be good.
 
-In fact, you might as well rearrange the ones currently occupying
-3-7 up to 8 and leave a hole for _TIF_WORK_MASK expansion, and
-add a nice comment there at the same time.
-
-
-r~
+David
