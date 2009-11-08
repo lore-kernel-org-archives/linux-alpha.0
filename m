@@ -1,39 +1,43 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: [patch 11/16] alpha: Replace old style lock initializer
-Date: Fri, 06 Nov 2009 22:41:56 -0000
-Message-ID: <20091106223806.852003848@linutronix.de>
-References: <20091106223547.784916750@linutronix.de>
+From: Ingo Molnar <mingo@elte.hu>
+Subject: Re: [PATCH] [alpha] Add minimal support for software performance
+ events.
+Date: Sun, 8 Nov 2009 13:22:26 +0100
+Message-ID: <20091108122226.GC11372@elte.hu>
+References: <1256545926-6972-1-git-send-email-mcree@orcon.net.nz>
+ <20091026084854.GA26990@elte.hu>
+ <4AE6AAD3.3000102@orcon.net.nz>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline; filename=alpha-replace-old-style-lock-init.patch
+Content-Disposition: inline
+In-Reply-To: <4AE6AAD3.3000102@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: LKML <linux-kernel@vger.kernel.org>
-Cc: Ingo Molnar <mingo@elte.hu>, Peter Zijlstra <peterz@infradead.org>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
-
-SPIN_LOCK_UNLOCKED is deprecated. Use __SPIN_LOCK_UNLOCKED instead.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: linux-alpha@vger.kernel.org
----
- arch/alpha/include/asm/rwsem.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Index: linux-2.6/arch/alpha/include/asm/rwsem.h
-===================================================================
---- linux-2.6.orig/arch/alpha/include/asm/rwsem.h
-+++ linux-2.6/arch/alpha/include/asm/rwsem.h
-@@ -39,7 +39,7 @@ struct rw_semaphore {
- };
- 
- #define __RWSEM_INITIALIZER(name) \
--	{ RWSEM_UNLOCKED_VALUE, SPIN_LOCK_UNLOCKED, \
-+	{ RWSEM_UNLOCKED_VALUE, __SPIN_LOCK_UNLOCKED((name).wait_lock),	\
- 	LIST_HEAD_INIT((name).wait_list) }
- 
- #define DECLARE_RWSEM(name) \
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Paul Mackerras <paulus@samba.org>, Andrew Morton <akpm@linux-foundation.org>
 
 
+* Michael Cree <mcree@orcon.net.nz> wrote:
+
+> > Should be done not by removing the stack-protector build 
+> > unconditionally - but by auto-testing whether stackprotector is 
+> > supported by GCC and using it if yes.
+> 
+> Revised patch attached.  It includes a test that the compiler doesn't 
+> bomb out with -fstack-protector-all and only adds the option to CFLAGS 
+> if ok.  But I have had to put the test below the definition of the 
+> macro CC.  This has the side effect of separating the addition of 
+> -fstack-protector-all from the main definitions of CFLAGS and 
+> ALL_CFLAGS, and is not ideal in my opinion.  The patch also removes 
+> -Wcast-align (I forgot to say that in the commit message of the 
+> patch).
+
+Nice, i'll queue this up for Linus.
+
+Your S-O-B line was missing from this second patch - i presume you 
+intended it to be included, right?
+
+Thanks,
+
+	Ingo
