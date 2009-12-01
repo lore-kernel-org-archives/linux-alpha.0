@@ -1,9 +1,8 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH] Alpha: Rearrange thread info flags fixing two regressions
-Date: Mon, 30 Nov 2009 23:06:52 -0500
-Message-ID: <b4198de60911302006u43f52bd5xe198615971352696@mail.gmail.com>
-References: <4AE8D005.1030302@twiddle.net>
-	 <1256956383-2652-1-git-send-email-mcree@orcon.net.nz>
+Subject: Re: [PATCH] alpha: Wire up missing/new syscalls
+Date: Mon, 30 Nov 2009 23:08:51 -0500
+Message-ID: <b4198de60911302008g5c25c9f3id36fe3748ad7d666@mail.gmail.com>
+References: <20091021164431.6193d96b@buddha>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
@@ -12,123 +11,103 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         h=domainkey-signature:mime-version:received:in-reply-to:references
          :date:message-id:subject:from:to:cc:content-type
          :content-transfer-encoding;
-        bh=73ibCpEZYWXscQ6BAirFS9DzOh9c8CC+HaO3v1wLO1Y=;
-        b=EzHmlH6by1S16yr3xYL5HZBk29EjVFUqn6JBLF1h/4+i83TgOEyeAsn0pmGfo8gl8i
-         3ruALhR3lOiE3o+D0bzSz/eN6gjaDhw9U6fy5yM8Rp74vQi1JuvMZZr1jF5qP8YAY3IX
-         MB/KLv82aOvLlbAjS9MnOJuNONrJ3jpspBz20=
-In-Reply-To: <1256956383-2652-1-git-send-email-mcree@orcon.net.nz>
+        bh=IWn/6rakBpmVaxzA1GCNE0ZhpmAuseXoKOQFRQzW00Y=;
+        b=m63YgZkYyG/cwWJUn6QMbQ6aZpvgjg8W4TbZAujseuDjUCQUGwAGOW62K4eQ/2YPfi
+         eQ4kpDigSV1WzW1o3P8P5FCxjxb84aRR68Ultgn3/hbgyqKpmLjd3p0RVT0zSfzdgR+y
+         dWHiNNs1RxYBi23IEAAvr4/vMCqz+cqcwhBdI=
+In-Reply-To: <20091021164431.6193d96b@buddha>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru, David Howells <dhowells@redhat.com>
+To: Daniele Calore <orkaan@orkaan.org>
+Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, Oct 30, 2009 at 9:33 PM, Michael Cree <mcree@orcon.net.nz> wrot=
-e:
-> The removal of the TIF_NOTIFY_RESUME flag, commit a583f1b54249b
-> "remove unused TIF_NOTIFY_RESUME flag," resulted in incorrect
-> setting of the unaligned access control flags by the prctl syscall.
+On Wed, Oct 21, 2009 at 9:44 AM, Daniele Calore <orkaan@orkaan.org> wro=
+te:
+> This wire up the: fallocate, timerfd_create, timerfd_settime, timerfd=
+_gettime
+> signalfd4, eventfd2, epoll_create1, dup3, pipe2, inotify_init1, pread=
+v,
+> pwritev and rt_tgsigqueueinfo syscalls for the alpha port.
 >
-> The re-addition of the TIF_NOTIFY_RESUME flag, commit d0420c83f39f
-> "KEYS: Extend TIF_NOTIFY_RESUME to (almost) all architectures [try #6=
-]"
-> further caused problems, namely incorrect operands to assembler code
-> as evidenced by:
+> For umount2, alpha have an "old" and "new" version called: oldumount =
+and umount;
+> so ignore umount2.
 >
-> AS =A0 =A0 =A0arch/alpha/kernel/entry.o
-> arch/alpha/kernel/entry.S: Assembler messages:
-> arch/alpha/kernel/entry.S:326: Warning: operand out of range (0x00000=
-00000000406 is not between 0x0000000000000000 and 0x00000000000000ff)
+> Signed-off-by: Daniele Calore <orkaan@orkaan.org>
 >
-> Both regressions fixed by (1) rearranging TIF_NOTIFY_RESUME flag to b=
-e
-> in lower 8 bits of the thread info flags, and (2) making sure that
-> ALPHA_UAC_SHIFT matches the rearrangement of the thread info flags.
->
-> Signed-off-by: Michael Cree <mcree@orcon.net.nz>
 > ---
-> =A0arch/alpha/include/asm/thread_info.h | =A0 27 +++++++++++++++-----=
--------
-> =A01 files changed, 15 insertions(+), 12 deletions(-)
+> diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm=
+/unistd.h
+> index 5b5c174..17f72b7 100644
+> --- a/arch/alpha/include/asm/unistd.h
+> +++ b/arch/alpha/include/asm/unistd.h
+> @@ -247,6 +247,7 @@
+> =A0#define __IGNORE_pause
+> =A0#define __IGNORE_time
+> =A0#define __IGNORE_utime
+> +#define __IGNORE_umount2
 >
-> diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/includ=
-e/asm/thread_info.h
-> index e7a07f6..3ba4ded 100644
-> --- a/arch/alpha/include/asm/thread_info.h
-> +++ b/arch/alpha/include/asm/thread_info.h
-> @@ -61,21 +61,24 @@ register struct thread_info *__current_thread_inf=
-o __asm__("$8");
 > =A0/*
-> =A0* Thread information flags:
-> =A0* - these are process state flags and used from assembly
-> - * - pending work-to-be-done flags come first to fit in and immediat=
-e operand.
-> + * - pending work-to-be-done flags come first and must be assigned t=
-o be
-> + * =A0 within bits 0 to 7 to fit in and immediate operand.
-> + * - ALPHA_UAC_SHIFT below must be kept consistent with the unaligne=
-d
-> + * =A0 control flags.
-> =A0*
-> =A0* TIF_SYSCALL_TRACE is known to be 0 via blbs.
-> =A0*/
-> =A0#define TIF_SYSCALL_TRACE =A0 =A0 =A00 =A0 =A0 =A0 /* syscall trac=
-e active */
-> -#define TIF_SIGPENDING =A0 =A0 =A0 =A0 1 =A0 =A0 =A0 /* signal pendi=
-ng */
-> -#define TIF_NEED_RESCHED =A0 =A0 =A0 2 =A0 =A0 =A0 /* rescheduling n=
-ecessary */
-> -#define TIF_POLLING_NRFLAG =A0 =A0 3 =A0 =A0 =A0 /* poll_idle is pol=
-ling NEED_RESCHED */
-> -#define TIF_DIE_IF_KERNEL =A0 =A0 =A04 =A0 =A0 =A0 /* dik recursion =
-lock */
-> -#define TIF_UAC_NOPRINT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A05 =A0 =A0 =A0=
- /* see sysinfo.h */
-> -#define TIF_UAC_NOFIX =A0 =A0 =A0 =A0 =A06
-> -#define TIF_UAC_SIGBUS =A0 =A0 =A0 =A0 7
-> -#define TIF_MEMDIE =A0 =A0 =A0 =A0 =A0 =A0 8
-> -#define TIF_RESTORE_SIGMASK =A0 =A09 =A0 =A0 =A0 /* restore signal m=
-ask in do_signal */
-> -#define TIF_NOTIFY_RESUME =A0 =A0 =A010 =A0 =A0 =A0/* callback befor=
-e returning to user */
-> +#define TIF_NOTIFY_RESUME =A0 =A0 =A01 =A0 =A0 =A0 /* callback befor=
-e returning to user */
-> +#define TIF_SIGPENDING =A0 =A0 =A0 =A0 2 =A0 =A0 =A0 /* signal pendi=
-ng */
-> +#define TIF_NEED_RESCHED =A0 =A0 =A0 3 =A0 =A0 =A0 /* rescheduling n=
-ecessary */
-> +#define TIF_POLLING_NRFLAG =A0 =A0 8 =A0 =A0 =A0 /* poll_idle is pol=
-ling NEED_RESCHED */
-> +#define TIF_DIE_IF_KERNEL =A0 =A0 =A09 =A0 =A0 =A0 /* dik recursion =
-lock */
-> +#define TIF_UAC_NOPRINT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A010 =A0 =A0 =A0=
-/* see sysinfo.h */
-> +#define TIF_UAC_NOFIX =A0 =A0 =A0 =A0 =A011
-> +#define TIF_UAC_SIGBUS =A0 =A0 =A0 =A0 12
-> +#define TIF_MEMDIE =A0 =A0 =A0 =A0 =A0 =A0 13
-> +#define TIF_RESTORE_SIGMASK =A0 =A014 =A0 =A0 =A0/* restore signal m=
-ask in do_signal */
-> =A0#define TIF_FREEZE =A0 =A0 =A0 =A0 =A0 =A0 16 =A0 =A0 =A0/* is fre=
-ezing for suspend */
+> =A0* Linux-specific system calls begin at 300
+> @@ -433,10 +434,23 @@
+> =A0#define __NR_signalfd =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0476
+> =A0#define __NR_timerfd =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 477
+> =A0#define __NR_eventfd =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 478
+> +#define __NR_fallocate =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 479
+> +#define __NR_timerfd_create =A0 =A0 =A0 =A0 =A0 =A0480
+> +#define __NR_timerfd_settime =A0 =A0 =A0 =A0 =A0 481
+> +#define __NR_timerfd_gettime =A0 =A0 =A0 =A0 =A0 482
+> +#define __NR_signalfd4 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 483
+> +#define __NR_eventfd2 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0484
+> +#define __NR_epoll_create1 =A0 =A0 =A0 =A0 =A0 =A0 485
+> +#define __NR_dup3 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0486
+> +#define __NR_pipe2 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 487
+> +#define __NR_inotify_init1 =A0 =A0 =A0 =A0 =A0 =A0 488
+> +#define __NR_preadv =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0489
+> +#define __NR_pwritev =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 490
+> +#define __NR_rt_tgsigqueueinfo =A0 =A0 =A0 =A0 491
 >
-> =A0#define _TIF_SYSCALL_TRACE =A0 =A0 (1<<TIF_SYSCALL_TRACE)
-> @@ -94,7 +97,7 @@ register struct thread_info *__current_thread_info =
-__asm__("$8");
-> =A0#define _TIF_ALLWORK_MASK =A0 =A0 =A0(_TIF_WORK_MASK =A0 =A0 =A0 =A0=
- \
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 | _TI=
-=46_SYSCALL_TRACE)
+> =A0#ifdef __KERNEL__
 >
-> -#define ALPHA_UAC_SHIFT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A06
-> +#define ALPHA_UAC_SHIFT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A010
-> =A0#define ALPHA_UAC_MASK =A0 =A0 =A0 =A0 (1 << TIF_UAC_NOPRINT | 1 <=
-< TIF_UAC_NOFIX | \
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 1 << =
-TIF_UAC_SIGBUS)
+> -#define NR_SYSCALLS =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0479
+> +#define NR_SYSCALLS =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0492
 >
-> --
-> 1.6.3.3
+> =A0#define __ARCH_WANT_IPC_PARSE_VERSION
+> =A0#define __ARCH_WANT_OLD_READDIR
+> diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.=
+S
+> index 95c9aef..78199b9 100644
+> --- a/arch/alpha/kernel/systbls.S
+> +++ b/arch/alpha/kernel/systbls.S
+> @@ -495,8 +495,21 @@ sys_call_table:
+> =A0 =A0 =A0 =A0.quad sys_epoll_pwait
+> =A0 =A0 =A0 =A0.quad sys_utimensat =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 /* 475 */
+> =A0 =A0 =A0 =A0.quad sys_signalfd
+> - =A0 =A0 =A0 .quad sys_ni_syscall
+> + =A0 =A0 =A0 .quad sys_ni_syscall =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0/* sys_timerfd */
+> =A0 =A0 =A0 =A0.quad sys_eventfd
+> + =A0 =A0 =A0 .quad sys_fallocate
+> + =A0 =A0 =A0 .quad sys_timerfd_create =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+/* 480 */
+> + =A0 =A0 =A0 .quad sys_timerfd_settime
+> + =A0 =A0 =A0 .quad sys_timerfd_gettime
+> + =A0 =A0 =A0 .quad sys_signalfd4
+> + =A0 =A0 =A0 .quad sys_eventfd2
+> + =A0 =A0 =A0 .quad sys_epoll_create1 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ /* 485 */
+> + =A0 =A0 =A0 .quad sys_dup3
+> + =A0 =A0 =A0 .quad sys_pipe2
+> + =A0 =A0 =A0 .quad sys_inotify_init1
+> + =A0 =A0 =A0 .quad sys_preadv
+> + =A0 =A0 =A0 .quad sys_pwritev =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 /* 490 */
+> + =A0 =A0 =A0 .quad sys_rt_tgsigqueueinfo
 >
+> =A0 =A0 =A0 =A0.size sys_call_table, . - sys_call_table
+> =A0 =A0 =A0 =A0.type sys_call_table, @object
 > --
 
 Applied to alpha-2.6.git. Thanks!
