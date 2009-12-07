@@ -1,150 +1,57 @@
-From: Matt Turner <mattst88@gmail.com>
+From: =?ISO-8859-1?Q?Ra=FAl_Porcel?= <armin76@gentoo.org>
 Subject: Re: kernel fails to build without CONFIG_ALPHA_LEGACY_START_ADDRESS
-Date: Sat, 5 Dec 2009 14:13:13 -0500
-Message-ID: <b4198de60912051113s55ac98fbj658d19f989221855@mail.gmail.com>
-References: <4B1AA5FD.6050601@gentoo.org>
+Date: Mon, 07 Dec 2009 20:53:00 +0100
+Message-ID: <4B1D5D1C.9040501@gentoo.org>
+References: <4B1AA5FD.6050601@gentoo.org> <b4198de60912051113s55ac98fbj658d19f989221855@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=000e0cd5a30013d6ab047a0004e7
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:in-reply-to:references
-         :date:message-id:subject:from:to:cc:content-type;
-        bh=PZYpw6HUpSdjmTxLJtFYhsLr31DAgn/H799fVKVoHoo=;
-        b=A1ul3T2N4h5EgfFTu2ODd5xxQgohHYyoW+UAbX4xi7VRMy1h0AlYR6zCDHvyylRYLg
-         oOEQdj0GN+bPW7GWlOYVbJofqjUubNDYbUnbeh7Qre7LyciWx2Dq80gATdVpj3cbr3nH
-         kRr2GYRMdGbIM31ChlJz+YkXgPddTJvjoZ1zs=
-In-Reply-To: <4B1AA5FD.6050601@gentoo.org>
+In-Reply-To: <b4198de60912051113s55ac98fbj658d19f989221855@mail.gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: =?ISO-8859-1?Q?Ra=FAl_Porcel?= <armin76@gentoo.org>
+Content-Type: text/plain; charset="iso-8859-1"
+To: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org
 
---000e0cd5a30013d6ab047a0004e7
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Matt Turner wrote:
+> On Sat, Dec 5, 2009 at 1:27 PM, Ra=FAl Porcel <armin76@gentoo.org> wr=
+ote:
+>> If CONFIG_ALPHA_LEGACY_START_ADDRESS is not set, which is needed to =
+be
+>> unset if the machine is Marvel/Titan/Wildfire, it fails to build:
+>>
+>>  CC      arch/alpha/kernel/err_marvel.o
+>> cc1: warnings being treated as errors
+>> arch/alpha/kernel/err_marvel.c: In function 'marvel_print_err_cyc':
+>> arch/alpha/kernel/err_marvel.c:119: error: format '%ld' expects type
+>> 'long int', but argument 6 has type 'u64'
+>> arch/alpha/kernel/err_marvel.c: In function 'marvel_print_po7_ugbge_=
+sym':
+>> arch/alpha/kernel/err_marvel.c:321: error: format '%ld' expects type
+>> 'long int', but argument 4 has type 'u64'
+>> arch/alpha/kernel/err_marvel.c:321: error: format '%ld' expects type
+>> 'long int', but argument 5 has type 'u64'
+>> arch/alpha/kernel/err_marvel.c: In function 'marvel_print_pox_spl_cm=
+plt':
+>> arch/alpha/kernel/err_marvel.c:560: error: format '%ld' expects type
+>> 'long int', but argument 4 has type 'long long unsigned int'
+>> arch/alpha/kernel/err_marvel.c:560: error: format '%ld' expects type
+>> 'long int', but argument 5 has type 'long long unsigned int'
+>> arch/alpha/kernel/err_marvel.c:560: error: format '%ld' expects type
+>> 'long int', but argument 6 has type 'long long unsigned int'
+>> make[1]: *** [arch/alpha/kernel/err_marvel.o] Error 1
+>> make: *** [arch/alpha/kernel] Error 2
+>=20
+> Attached is a completely untested patch. It just tries to get rid of
+> u64 by replacing them with unsigned long.
+>=20
+> Matt
 
-On Sat, Dec 5, 2009 at 1:27 PM, Ra=FAl Porcel <armin76@gentoo.org> wrote:
-> If CONFIG_ALPHA_LEGACY_START_ADDRESS is not set, which is needed to be
-> unset if the machine is Marvel/Titan/Wildfire, it fails to build:
->
-> =A0CC =A0 =A0 =A0arch/alpha/kernel/err_marvel.o
-> cc1: warnings being treated as errors
-> arch/alpha/kernel/err_marvel.c: In function 'marvel_print_err_cyc':
-> arch/alpha/kernel/err_marvel.c:119: error: format '%ld' expects type
-> 'long int', but argument 6 has type 'u64'
-> arch/alpha/kernel/err_marvel.c: In function 'marvel_print_po7_ugbge_sym':
-> arch/alpha/kernel/err_marvel.c:321: error: format '%ld' expects type
-> 'long int', but argument 4 has type 'u64'
-> arch/alpha/kernel/err_marvel.c:321: error: format '%ld' expects type
-> 'long int', but argument 5 has type 'u64'
-> arch/alpha/kernel/err_marvel.c: In function 'marvel_print_pox_spl_cmplt':
-> arch/alpha/kernel/err_marvel.c:560: error: format '%ld' expects type
-> 'long int', but argument 4 has type 'long long unsigned int'
-> arch/alpha/kernel/err_marvel.c:560: error: format '%ld' expects type
-> 'long int', but argument 5 has type 'long long unsigned int'
-> arch/alpha/kernel/err_marvel.c:560: error: format '%ld' expects type
-> 'long int', but argument 6 has type 'long long unsigned int'
-> make[1]: *** [arch/alpha/kernel/err_marvel.o] Error 1
-> make: *** [arch/alpha/kernel] Error 2
 
-Attached is a completely untested patch. It just tries to get rid of
-u64 by replacing them with unsigned long.
-
-Matt
-
---000e0cd5a30013d6ab047a0004e7
-Content-Type: application/octet-stream; name="fix-up-err_marvel.c.patch"
-Content-Disposition: attachment; filename="fix-up-err_marvel.c.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_g2urgh5s0
-
-ZGlmZiAtLWdpdCBhL2FyY2gvYWxwaGEva2VybmVsL2Vycl9tYXJ2ZWwuYyBiL2FyY2gvYWxwaGEv
-a2VybmVsL2Vycl9tYXJ2ZWwuYwppbmRleCA1MmE3OWRmLi5lZGY2ZjFhIDEwMDY0NAotLS0gYS9h
-cmNoL2FscGhhL2tlcm5lbC9lcnJfbWFydmVsLmMKKysrIGIvYXJjaC9hbHBoYS9rZXJuZWwvZXJy
-X21hcnZlbC5jCkBAIC04Niw3ICs4Niw3IEBAIG1hcnZlbF9wcm9jZXNzXzY4MF9mcmFtZShzdHJ1
-Y3QgZXY3X2xmX3N1YnBhY2tldHMgKmxmX3N1YnBhY2tldHMsIGludCBwcmludCkKICNpZmRlZiBD
-T05GSUdfVkVSQk9TRV9NQ0hFQ0sKIAogc3RhdGljIHZvaWQKLW1hcnZlbF9wcmludF9lcnJfY3lj
-KHU2NCBlcnJfY3ljKQorbWFydmVsX3ByaW50X2Vycl9jeWModW5zaWduZWQgbG9uZyBlcnJfY3lj
-KQogewogCXN0YXRpYyBjaGFyICpwYWNrZXRfZGVzY1tdID0gewogCQkiTm8gRXJyb3IiLApAQCAt
-MTIwLDcgKzEyMCw3IEBAIG1hcnZlbF9wcmludF9lcnJfY3ljKHU2NCBlcnJfY3ljKQogfQogCiBz
-dGF0aWMgdm9pZAotbWFydmVsX3ByaW50X3BvN19jcnJjdF9zeW0odTY0IGNycmN0X3N5bSkKK21h
-cnZlbF9wcmludF9wbzdfY3JyY3Rfc3ltKHVuc2lnbmVkIGxvbmcgY3JyY3Rfc3ltKQogewogI2Rl
-ZmluZSBJTzdfX1BPN19DUlJDVF9TWU1fX1NZTl9fUwkoMCkKICNkZWZpbmUgSU83X19QTzdfQ1JS
-Q1RfU1lNX19TWU5fX00JKDB4N2YpCkBAIC0xMjksMTQgKzEyOSwxNCBAQCBtYXJ2ZWxfcHJpbnRf
-cG83X2NycmN0X3N5bSh1NjQgY3JyY3Rfc3ltKQogCiAKIAlwcmludGsoIiVzICAgICAgQ29ycmVj
-dGFibGUgRXJyb3IgU3ltcHRvbXM6XG4iCi0JICAgICAgICIlcyAgICAgICAgU3luZHJvbWU6IDB4
-JWxseFxuIiwKKwkgICAgICAgIiVzICAgICAgICBTeW5kcm9tZTogMHglbHhcbiIsCiAJICAgICAg
-IGVycl9wcmludF9wcmVmaXgsCiAJICAgICAgIGVycl9wcmludF9wcmVmaXgsIEVYVFJBQ1QoY3Jy
-Y3Rfc3ltLCBJTzdfX1BPN19DUlJDVF9TWU1fX1NZTikpOwogCW1hcnZlbF9wcmludF9lcnJfY3lj
-KEVYVFJBQ1QoY3JyY3Rfc3ltLCBJTzdfX1BPN19DUlJDVF9TWU1fX0VSUl9DWUMpKTsKIH0KIAog
-c3RhdGljIHZvaWQKLW1hcnZlbF9wcmludF9wbzdfdW5jcnJfc3ltKHU2NCB1bmNycl9zeW0sIHU2
-NCB2YWxpZF9tYXNrKQorbWFydmVsX3ByaW50X3BvN191bmNycl9zeW0odW5zaWduZWQgbG9uZyB1
-bmNycl9zeW0sIHVuc2lnbmVkIGxvbmcgdmFsaWRfbWFzaykKIHsKIAlzdGF0aWMgY2hhciAqY2xr
-X25hbWVzW10gPSB7ICJfaFswXSIsICJfaFsxXSIsICJfblswXSIsICJfblsxXSIgfTsKIAlzdGF0
-aWMgY2hhciAqY2xrX2RlY29kZVtdID0gewpAQCAtMTg2LDcgKzE4Niw3IEBAIG1hcnZlbF9wcmlu
-dF9wbzdfdW5jcnJfc3ltKHU2NCB1bmNycl9zeW0sIHU2NCB2YWxpZF9tYXNrKQogCXVuY3JyX3N5
-bSAmPSB2YWxpZF9tYXNrOwogCiAJaWYgKEVYVFJBQ1QodmFsaWRfbWFzaywgSU83X19QTzdfVU5D
-UlJfU1lNX19TWU4pKQotCQlwcmludGsoIiVzICAgICAgICBTeW5kcm9tZTogMHglbGx4XG4iLAor
-CQlwcmludGsoIiVzICAgICAgICBTeW5kcm9tZTogMHglbHhcbiIsCiAJCSAgICAgICBlcnJfcHJp
-bnRfcHJlZml4LCAKIAkJICAgICAgIEVYVFJBQ1QodW5jcnJfc3ltLCBJTzdfX1BPN19VTkNSUl9T
-WU1fX1NZTikpOwogCkBAIC0yNzMsNyArMjczLDcgQEAgbWFydmVsX3ByaW50X3BvN191bmNycl9z
-eW0odTY0IHVuY3JyX3N5bSwgdTY0IHZhbGlkX21hc2spCiB9CiAKIHN0YXRpYyB2b2lkCi1tYXJ2
-ZWxfcHJpbnRfcG83X3VnYmdlX3N5bSh1NjQgdWdiZ2Vfc3ltKQorbWFydmVsX3ByaW50X3BvN191
-Z2JnZV9zeW0odW5zaWduZWQgbG9uZyB1Z2JnZV9zeW0pCiB7CiAJY2hhciBvcGNvZGVfc3RyWzEw
-XTsKIApAQCAtMzA3LDcgKzMwNyw3IEBAIG1hcnZlbF9wcmludF9wbzdfdWdiZ2Vfc3ltKHU2NCB1
-Z2JnZV9zeW0pCiAJCXNwcmludGYob3Bjb2RlX3N0ciwgIkJsa0lPIik7CiAJCWJyZWFrOwogCWRl
-ZmF1bHQ6Ci0JCXNwcmludGYob3Bjb2RlX3N0ciwgIjB4JWxseFxuIiwKKwkJc3ByaW50ZihvcGNv
-ZGVfc3RyLCAiMHglbHhcbiIsCiAJCQlFWFRSQUNUKHVnYmdlX3N5bSwgSU83X19QTzdfVUdCR0Vf
-U1lNX19VUEhfT1BDT0RFKSk7CiAJCWJyZWFrOwogCX0KQEAgLTMyMSw3ICszMjEsNyBAQCBtYXJ2
-ZWxfcHJpbnRfcG83X3VnYmdlX3N5bSh1NjQgdWdiZ2Vfc3ltKQogCSAgICAgICBvcGNvZGVfc3Ry
-KTsKIAogCWlmICgweEM1ICE9IEVYVFJBQ1QodWdiZ2Vfc3ltLCBJTzdfX1BPN19VR0JHRV9TWU1f
-X1VQSF9PUENPREUpKQotCQlwcmludGsoIiVzICAgICAgICBQYWNrZXQgT2Zmc2V0IDB4JTA4bGx4
-XG4iLAorCQlwcmludGsoIiVzICAgICAgICBQYWNrZXQgT2Zmc2V0IDB4JTA4bHhcbiIsCiAJCSAg
-ICAgICBlcnJfcHJpbnRfcHJlZml4LAogCQkgICAgICAgRVhUUkFDVCh1Z2JnZV9zeW0sIElPN19f
-UE83X1VHQkdFX1NZTV9fVVBIX1BLVF9PRkYpKTsKIH0KQEAgLTMyOSw3ICszMjksNyBAQCBtYXJ2
-ZWxfcHJpbnRfcG83X3VnYmdlX3N5bSh1NjQgdWdiZ2Vfc3ltKQogc3RhdGljIHZvaWQKIG1hcnZl
-bF9wcmludF9wbzdfZXJyX3N1bShzdHJ1Y3QgZXY3X3BhbF9pb19zdWJwYWNrZXQgKmlvKQogewot
-CXU2NAl1bmNycl9zeW1fdmFsaWQgPSAwOworCXVuc2lnbmVkIGxvbmcgdW5jcnJfc3ltX3ZhbGlk
-ID0gMDsKIAogI2RlZmluZSBJTzdfX1BPN19FUlJTVU1fX0NSX1NCRQkJKDFVTCA8PCAzMikKICNk
-ZWZpbmUgSU83X19QTzdfRVJSU1VNX19DUl9TQkUyCSgxVUwgPDwgMzMpCkBAIC00OTUsNyArNDk1
-LDcgQEAgY2hlY2tfdW5jcnJfc3ltOgogfQogCiBzdGF0aWMgdm9pZAotbWFydmVsX3ByaW50X3Bv
-eF90bGJfZXJyKHU2NCB0bGJfZXJyKQorbWFydmVsX3ByaW50X3BveF90bGJfZXJyKHVuc2lnbmVk
-IGxvbmcgdGxiX2VycikKIHsKIAlzdGF0aWMgY2hhciAqdGxiX2Vycm9yc1tdID0gewogCQkiTm8g
-RXJyb3IiLApAQCAtNTE1LDkgKzUxNSw5IEBAIG1hcnZlbF9wcmludF9wb3hfdGxiX2Vycih1NjQg
-dGxiX2VycikKIAlpZiAoISh0bGJfZXJyICYgSU83X19QT1hfVExCRVJSX19FUlJfVkFMSUQpKQog
-CQlyZXR1cm47CiAKLQlwcmludGsoIiVzICAgICAgVExCIEVycm9yIG9uIGluZGV4IDB4JWxseDpc
-biIKKwlwcmludGsoIiVzICAgICAgVExCIEVycm9yIG9uIGluZGV4IDB4JWx4OlxuIgogCSAgICAg
-ICAiJXMgICAgICAgIC0gJXNcbiIKLQkgICAgICAgIiVzICAgICAgICAtIEFkZHI6IDB4JTAxNmxs
-eFxuIiwKKwkgICAgICAgIiVzICAgICAgICAtIEFkZHI6IDB4JTAxNmx4XG4iLAogCSAgICAgICBl
-cnJfcHJpbnRfcHJlZml4LAogCSAgICAgICBFWFRSQUNUKHRsYl9lcnIsIElPN19fUE9YX1RMQkVS
-Ul9fRVJSX1RMQl9QVFIpLAogCSAgICAgICBlcnJfcHJpbnRfcHJlZml4LApAQCAtNTI3LDcgKzUy
-Nyw3IEBAIG1hcnZlbF9wcmludF9wb3hfdGxiX2Vycih1NjQgdGxiX2VycikKIH0KIAogc3RhdGlj
-ICB2b2lkCi1tYXJ2ZWxfcHJpbnRfcG94X3NwbF9jbXBsdCh1NjQgc3BsX2NtcGx0KQorbWFydmVs
-X3ByaW50X3BveF9zcGxfY21wbHQodW5zaWduZWQgbG9uZyBzcGxfY21wbHQpCiB7CiAJY2hhciBt
-ZXNzYWdlWzgwXTsKIApAQCAtNTc5LDcgKzU3OSw3IEBAIG1hcnZlbF9wcmludF9wb3hfc3BsX2Nt
-cGx0KHU2NCBzcGxfY21wbHQpCiAJCXNwcmludGYobWVzc2FnZSwgIlVuY29ycmVjdGFibGUgU3Bs
-aXQgV3JpdGUgRGF0YSBFcnJvciIpOwogCQlicmVhazsKIAlkZWZhdWx0OgotCQlzcHJpbnRmKG1l
-c3NhZ2UsICIlMDhsbHhcbiIsCisJCXNwcmludGYobWVzc2FnZSwgIiUwOGx4XG4iLAogCQkJRVhU
-UkFDVChzcGxfY21wbHQsIElPN19fUE9YX1NQTENNUExUX19NRVNTQUdFKSk7CiAJCWJyZWFrOwog
-CX0KQEAgLTU4Nyw3ICs1ODcsNyBAQCBtYXJ2ZWxfcHJpbnRfcG94X3NwbF9jbXBsdCh1NjQgc3Bs
-X2NtcGx0KQogfQogCiBzdGF0aWMgdm9pZAotbWFydmVsX3ByaW50X3BveF90cmFuc19zdW0odTY0
-IHRyYW5zX3N1bSkKK21hcnZlbF9wcmludF9wb3hfdHJhbnNfc3VtKHVuc2lnbmVkIGxvbmcgdHJh
-bnNfc3VtKQogewogCWNoYXIgKnBjaXhfY21kW10gPSB7ICJJbnRlcnJ1cHQgQWNrbm93bGVkZ2Ui
-LAogCQkJICAgICAiU3BlY2lhbCBDeWNsZSIsCkBAIC02MjAsOSArNjIwLDkgQEAgbWFydmVsX3By
-aW50X3BveF90cmFuc19zdW0odTY0IHRyYW5zX3N1bSkKIAkJcmV0dXJuOwogCiAJcHJpbnRrKCIl
-cyAgICAgIFRyYW5zYWN0aW9uIFN1bW1hcnk6XG4iCi0JICAgICAgICIlcyAgICAgICAgQ29tbWFu
-ZDogMHglbGx4IC0gJXNcbiIKLQkgICAgICAgIiVzICAgICAgICBBZGRyZXNzOiAweCUwMTZsbHgl
-c1xuIgotCSAgICAgICAiJXMgICAgICAgIFBDSS1YIE1hc3RlciBTbG90OiAweCVsbHhcbiIsCisJ
-ICAgICAgICIlcyAgICAgICAgQ29tbWFuZDogMHglbHggLSAlc1xuIgorCSAgICAgICAiJXMgICAg
-ICAgIEFkZHJlc3M6IDB4JTAxNmx4JXNcbiIKKwkgICAgICAgIiVzICAgICAgICBQQ0ktWCBNYXN0
-ZXIgU2xvdDogMHglbHhcbiIsCiAJICAgICAgIGVycl9wcmludF9wcmVmaXgsIAogCSAgICAgICBl
-cnJfcHJpbnRfcHJlZml4LCAKIAkgICAgICAgRVhUUkFDVCh0cmFuc19zdW0sIElPN19fUE9YX1RS
-QU5TVU1fX1BDSVhfQ01EKSwKQEAgLTYzNSw3ICs2MzUsNyBAQCBtYXJ2ZWxfcHJpbnRfcG94X3Ry
-YW5zX3N1bSh1NjQgdHJhbnNfc3VtKQogfQogCiBzdGF0aWMgdm9pZAotbWFydmVsX3ByaW50X3Bv
-eF9lcnIodTY0IGVycl9zdW0sIHN0cnVjdCBldjdfcGFsX2lvX29uZV9wb3J0ICpwb3J0KQorbWFy
-dmVsX3ByaW50X3BveF9lcnIodW5zaWduZWQgbG9uZyBlcnJfc3VtLCBzdHJ1Y3QgZXY3X3BhbF9p
-b19vbmVfcG9ydCAqcG9ydCkKIHsKICNkZWZpbmUgSU83X19QT1hfRVJSU1VNX19BR1BfUkVRUV9P
-VkZMICAgICgxVUwgPDwgIDQpCiAjZGVmaW5lIElPN19fUE9YX0VSUlNVTV9fQUdQX1NZTkNfRVJS
-ICAgICAoMVVMIDw8ICA1KQo=
---000e0cd5a30013d6ab047a0004e7--
+Patch made it compile. Unfortunately its not tested as the DS15 machine
+where it was needed its not a Marvel but a Titan.
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
