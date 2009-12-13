@@ -1,63 +1,36 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH 4/5] alpha: Convert BUG() to use unreachable()
-Date: Thu, 10 Dec 2009 19:42:59 -0500
-Message-ID: <b4198de60912101642u147f4592r9337dd9b7d7c604b@mail.gmail.com>
-References: <4B212EEC.3060808@caviumnetworks.com>
-	 <1260466101-17545-4-git-send-email-ddaney@caviumnetworks.com>
+From: =?ISO-8859-1?Q?Ra=FAl_Porcel?= <armin76@gentoo.org>
+Subject: Fails to build if CONFIG_ALPHA_MARVEL=y && CONFIG_SMP
+Date: Sun, 13 Dec 2009 22:33:30 +0100
+Message-ID: <4B255DAA.1090902@gentoo.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:in-reply-to:references
-         :date:message-id:subject:from:to:cc:content-type
-         :content-transfer-encoding;
-        bh=BDgv9XqKoboEISUVpvuxrTRL+FjFLYhZSTKoX/hVFCs=;
-        b=gd0mfsR7WRXPbysx4Yra7jU3C8h8y7U4hFiNT6wlMu7+Jh6Yf/64DoE9XKLRV0zNp5
-         T+pNGp85ZTM20xQWQVOZGvPD7f6AmfB0I1hDFwxkTHaqMFjMDLek9aAskClSQbnPP6sZ
-         GQJDE66BG5iQVOuDflb/9vL4lwB0pLYVLPa0Y=
-In-Reply-To: <1260466101-17545-4-git-send-email-ddaney@caviumnetworks.com>
-Sender: linux-arch-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: David Daney <ddaney@caviumnetworks.com>
-Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, akpm@linux-foundation.org, torvalds@linux-foundation.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: linux-alpha@vger.kernel.org
 
-On Thu, Dec 10, 2009 at 12:28 PM, David Daney <ddaney@caviumnetworks.co=
-m> wrote:
-> Use the new unreachable() macro instead of for(;;);
->
-> Signed-off-by: David Daney <ddaney@caviumnetworks.com>
-> CC: Richard Henderson <rth@twiddle.net>
-> CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> CC: Matt Turner <mattst88@gmail.com>
-> CC: linux-alpha@vger.kernel.org
-> ---
-> =A0arch/alpha/include/asm/bug.h | =A0 =A03 ++-
-> =A01 files changed, 2 insertions(+), 1 deletions(-)
->
-> diff --git a/arch/alpha/include/asm/bug.h b/arch/alpha/include/asm/bu=
-g.h
-> index 1720c8a..f091682 100644
-> --- a/arch/alpha/include/asm/bug.h
-> +++ b/arch/alpha/include/asm/bug.h
-> @@ -13,7 +13,8 @@
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0"call_pal %0 =A0# bugchk\n\t" =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 \
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0".long %1\n\t.8byte %2" =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 \
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0: : "i"(PAL_bugchk), "i"(__LINE__), "i=
-"(__FILE__)); =A0 =A0 \
-> - =A0 =A0 =A0 for ( ; ; ); } while (0)
-> + =A0 =A0 =A0 unreachable(); =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0\
-> + =A0} while (0)
->
-> =A0#define HAVE_ARCH_BUG
-> =A0#endif
-> --
-> 1.6.2.5
+make -f scripts/Makefile.build obj=arch/alpha/kernel
+  gcc -Wp,-MD,arch/alpha/kernel/.time.o.d  -nostdinc -isystem
+/usr/lib/gcc/alpha-unknown-linux-gnu/4.3.4/include -Iinclude
+-I/home/armin/tmp/linux-2.6.32/arch/alpha/include -include
+include/linux/autoconf.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes
+-Wno-trigraphs -fno-strict-aliasing -fno-common
+-Werror-implicit-function-declaration -Wno-format-security
+-fno-delete-null-pointer-checks -O2 -pipe -mno-fp-regs -ffixed-8
+-msmall-data -fno-jump-tables -mcpu=ev67 -Wa,-mev6 -fno-stack-protector
+-fomit-frame-pointer -Wdeclaration-after-statement -Wno-pointer-sign
+-fno-strict-overflow -Werror -Wno-sign-compare   -D"KBUILD_STR(s)=#s"
+-D"KBUILD_BASENAME=KBUILD_STR(time)"
+-D"KBUILD_MODNAME=KBUILD_STR(time)"  -c -o arch/alpha/kernel/.tmp_time.o
+arch/alpha/kernel/time.c
+In file included from
+/home/armin/tmp/linux-2.6.32/arch/alpha/include/asm/rtc.h:14,
+                 from arch/alpha/kernel/time.c:49:
+include/asm-generic/rtc.h: In function 'get_rtc_ss':
+include/asm-generic/rtc.h:205: error: implicit declaration of function
+'marvel_get_rtc_time'
+make[1]: *** [arch/alpha/kernel/time.o] Error 1
+make: *** [arch/alpha/kernel] Error 2
 
-Thanks David. I've pushed this into my tree.
-
-Matt
+On kernel 2.6.32
