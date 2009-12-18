@@ -1,20 +1,57 @@
-From: =?ISO-8859-1?Q?Ra=FAl_Porcel?= <armin76@gentoo.org>
-Subject: Fails to build if CONFIG_VGA_CONSOLE is not set and CONFIG_ALPHA_MARVEL/CONFIG_ALPHA_TITAN/CONFIG_ALPHA_DP264
- is set
-Date: Tue, 15 Dec 2009 19:39:10 +0100
-Message-ID: <4B27D7CE.7070508@gentoo.org>
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PULL] alpha-2.6
+Date: Fri, 18 Dec 2009 02:15:09 -0500
+Message-ID: <b4198de60912172315w73223eh996d32c89ac807fd@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:mime-version:received:date:message-id:subject
+         :from:to:cc:content-type;
+        bh=VpdJiW7SB6UNeBBUeYJIyXNvmhIWwrcMkYKUWFatmOo=;
+        b=vV6hoOJJsaH14MCI8++Q95ja84O++j8qkqH4KodD6DqucE8kMEGi5qba57Dx5Dv/lR
+         n56WnNsFCHbUSLoyCF8+UaIxENiydsupVy17v43EACaTq0qJMexccXtZKnGwRdTTb8bg
+         zjrWRIxx5fdujlz/UnENDYMMar8eCh0wEIJH0=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-  LD      .tmp_vmlinux1
-arch/alpha/kernel/built-in.o: In function `locate_and_init_vga':
-/home/armin/tmp/linux-2.6.32/arch/alpha/kernel/console.c:54: undefined
-reference to `vga_con'
-/home/armin/tmp/linux-2.6.32/arch/alpha/kernel/console.c:64: undefined
-reference to `vga_con'
-make: *** [.tmp_vmlinux1] Error 1
+Hi Linus,
+
+Please pull the 'for-linus' branch from
+ssh://master.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.git
+for-linus
+
+It contains some catch-up work, adding missing syscalls and perf
+support, along with the new unreachable() stuff.
+
+Thanks,
+Matt Turner
+
+The following changes since commit 55639353a0035052d9ea6cfe4dde0ac7fcbb2c9f:
+  Linus Torvalds (1):
+        Linux 2.6.33-rc1
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.git for-linus
+
+Daniele Calore (1):
+      alpha: Wire up missing/new syscalls
+
+David Daney (1):
+      alpha: Convert BUG() to use unreachable()
+
+Michael Cree (1):
+      alpha: Add minimal support for software performance events
+
+ arch/alpha/Kconfig                  |    1 +
+ arch/alpha/include/asm/bug.h        |    3 ++-
+ arch/alpha/include/asm/perf_event.h |    9 +++++++++
+ arch/alpha/include/asm/unistd.h     |   17 ++++++++++++++++-
+ arch/alpha/kernel/systbls.S         |   16 +++++++++++++++-
+ 5 files changed, 43 insertions(+), 3 deletions(-)
+ create mode 100644 arch/alpha/include/asm/perf_event.h
