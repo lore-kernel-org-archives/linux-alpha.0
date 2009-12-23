@@ -1,80 +1,50 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PULL] alpha-2.6
-Date: Sat, 19 Dec 2009 15:03:45 -0500
-Message-ID: <b4198de60912191203s2fa8d0cfpe0db59c8c8f42fa5@mail.gmail.com>
-References: <b4198de60912172315w73223eh996d32c89ac807fd@mail.gmail.com>
+From: john stultz <johnstul@us.ibm.com>
+Subject: [RFC][PATCH 0/14] Convert remaining arches to
+ read/update_persistent_clock
+Date: Tue, 22 Dec 2009 19:59:22 -0800
+Message-ID: <1261540762.3508.61.camel@localhost.localdomain>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:in-reply-to:references
-         :date:message-id:subject:from:to:cc:content-type
-         :content-transfer-encoding;
-        bh=UBzUnsPRcXdpyzKD54+P1paes6kRej6aRtu7RcJuVgs=;
-        b=GG9crDO4NOCRxaH/3LtAFjFjHmMLo999RmGzBun06THHTqz/f/jaIFUmmtMUcrSiWz
-         GGBewWcuktrZtdjWU4wdr0C7XnOVjOfqBYotRvsrGO+KnBNPnsxGs+Dy3bcx9QwUNzvq
-         /DdowaCe2R4742a7s+NMlXWtT0WWr8ASaYg9k=
-In-Reply-To: <b4198de60912172315w73223eh996d32c89ac807fd@mail.gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: lkml <linux-kernel@vger.kernel.org>
+Cc: Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Haavard Skinnemoen <hskinnemoen@atmel.com>, Mike Frysinger <vapier@gentoo.org>, Mikael Starvik <starvik@axis.com>, David Howells <dhowells@redhat.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Tony Luck <tony.luck@intel.com>, Hirokazu Takata <takata@linux-m32r.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Kyle McMartin <kyle@mcmartin.ca>, Paul Mundt <lethal@linux-sh.org>, "David S. Miller" <davem@davemloft.net>
 
-On Fri, Dec 18, 2009 at 2:15 AM, Matt Turner <mattst88@gmail.com> wrote=
-:
-> Hi Linus,
->
-> Please pull the 'for-linus' branch from
-> ssh://master.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.g=
-it
-> for-linus
->
-> It contains some catch-up work, adding missing syscalls and perf
-> support, along with the new unreachable() stuff.
+So as the timekeeping system has become more and more generic, folks
+have been careful to allow a slow and steady evolution without breaking
+all the arches at once, allowing each arch maintainer to convert over to
+generic code when they're ready.
 
-Ping?
+However, this slow conversion has forced us to keep multiple methods for
+various functionality around, cluttering up the code and making
+maintenance more difficult. Further, there's no central road-map or
+notification to maintainers on when these new generic functions appear,
+so its likely folks wouldn't notice until the old interfaces were
+removed.
 
-I read your -rc1 announcement and assumed this pull request was one of
-the ones you were talking about.
+In this case the generic read_persistent_clock() and
+update_persistent_clock() methods have been provided to allow the
+generic timekeeping code to initialize xtime and set the persistent
+clock when NTP is synced. However many arches haven't converted, so the
+generic code has to handle the case where the arch is doing this
+management itself.
 
-The changes are very basic, but are nonetheless pretty important.
-(latest udev doesn't run without the added inotify_init1 syscall).
+This patch series tries to convert the following 14 architectures over
+to use read_persistent_clock() and update_persistent_clock() as
+applicable, killing off about 200 lines of arch specific code.
 
-> Thanks,
-> Matt Turner
->
-> The following changes since commit 55639353a0035052d9ea6cfe4dde0ac7fc=
-bb2c9f:
-> =A0Linus Torvalds (1):
-> =A0 =A0 =A0 =A0Linux 2.6.33-rc1
->
-> are available in the git repository at:
->
-> =A0git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.g=
-it for-linus
->
-> Daniele Calore (1):
-> =A0 =A0 =A0alpha: Wire up missing/new syscalls
->
-> David Daney (1):
-> =A0 =A0 =A0alpha: Convert BUG() to use unreachable()
->
-> Michael Cree (1):
-> =A0 =A0 =A0alpha: Add minimal support for software performance events
->
-> =A0arch/alpha/Kconfig =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0| =A0 =A01 +
-> =A0arch/alpha/include/asm/bug.h =A0 =A0 =A0 =A0| =A0 =A03 ++-
-> =A0arch/alpha/include/asm/perf_event.h | =A0 =A09 +++++++++
-> =A0arch/alpha/include/asm/unistd.h =A0 =A0 | =A0 17 ++++++++++++++++-
-> =A0arch/alpha/kernel/systbls.S =A0 =A0 =A0 =A0 | =A0 16 +++++++++++++=
-++-
-> =A05 files changed, 43 insertions(+), 3 deletions(-)
-> =A0create mode 100644 arch/alpha/include/asm/perf_event.h
->
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I'm posting this tonight in somewhat rough form (none of the code has
+been compiled or tested) so I can get feedback tomorrow before I'm off
+on vacation until the new year. I'd like to get these changes into
+2.6.34 so further generic cleanups can be made.
+
+Let me know what you think.
+
+thanks
+-john
+
+
+
+
