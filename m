@@ -1,36 +1,51 @@
-From: Paul Mundt <lethal@linux-sh.org>
-Subject: Re: [RFC][PATCH 0/14] Convert remaining arches to read/update_persistent_clock
-Date: Thu, 24 Dec 2009 14:10:21 +0900
-Message-ID: <20091224051021.GA28878@linux-sh.org>
-References: <1261540762.3508.61.camel@localhost.localdomain> <20091223050810.GA25791@linux-sh.org> <20091223.205415.232734959.davem@davemloft.net>
-Mime-Version: 1.0
-Return-path: <linux-kernel-owner+glk-linux-kernel-3=40m.gmane.org-S1752868AbZLXFKp@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20091223.205415.232734959.davem@davemloft.net>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Anton Blanchard <anton@samba.org>
+Subject: [patch 2/6] alpha: cpumask_of_node() should handle -1 as a node
+Date: Wed, 06 Jan 2010 15:55:11 +1100
+Message-ID: <20100106045524.959942683@samba.org>
+References: <20100106045509.245662398@samba.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: David Miller <davem@davemloft.net>
-Cc: johnstul@us.ibm.com, linux-kernel@vger.kernel.org, rth@twiddle.net, linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org, linux@arm.linux.org.uk, hskinnemoen@atmel.com, vapier@gentoo.org, starvik@axis.com, dhowells@redhat.com, ysato@users.sourceforge.jp, tony.luck@intel.com, takata@linux-m32r.org, geert@linux-m68k.org, yasutake.koichi@jp.panasonic.com, kyle@mcmartin.ca
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Rusty Russell <rusty@rustcorp.com.au>, Andrew Morton <akpm@linux-foundation.org>
 
-On Wed, Dec 23, 2009 at 08:54:15PM -0800, David Miller wrote:
-> From: Paul Mundt <lethal@linux-sh.org>
-> Date: Wed, 23 Dec 2009 14:08:10 +0900
-> 
-> > In any event, I wonder if it might make more sense to take something like
-> > the SPARC implementation that is simply a wrapper around the RTC, move
-> > that out in to a more generic place, and permit architectures to select
-> > an RTC class backed persistent clock instead (it seems to be only
-> > platforms that haven't caught up yet in terms of generic time and RTC
-> > migration that would want to define this interface on their own at all at
-> > this point)?
-> 
-> This sounds nice but don't we have a slew of RTC types that need
-> to be accessed over I2C and thus you can't touch them without
-> sleeping?
+pcibus_to_node can return -1 if we cannot determine which node a pci bus
+is on. If passed -1, cpumask_of_node will negatively index the lookup array
+and pull in random data:
 
-Yes, and SPI and so on. We do however have plenty of available room for
-adding a valid-for-persistent-clock flag to permit drivers to opt-in, so
-we can certainly still do better than the status quo. I'll hack something
-up and see how it goes.
+# cat /sys/devices/pci0000:00/0000:00:01.0/local_cpus
+00000000,00000003,00000000,00000000
+# cat /sys/devices/pci0000:00/0000:00:01.0/local_cpulist
+64-65
+
+Change cpumask_of_node to check for -1 and return cpu_all_mask in this
+case:
+
+# cat /sys/devices/pci0000:00/0000:00:01.0/local_cpus
+ffffffff,ffffffff,ffffffff,ffffffff
+# cat /sys/devices/pci0000:00/0000:00:01.0/local_cpulist
+0-127
+
+Signed-off-by: Anton Blanchard <anton@samba.org>
+---
+
+Index: linux-cpumask/arch/alpha/include/asm/topology.h
+===================================================================
+--- linux-cpumask.orig/arch/alpha/include/asm/topology.h	2010-01-06 15:20:22.952583839 +1100
++++ linux-cpumask/arch/alpha/include/asm/topology.h	2010-01-06 15:20:46.610083557 +1100
+@@ -28,6 +28,9 @@ static const struct cpumask *cpumask_of_
+ {
+ 	int cpu;
+ 
++	if (node == -1)
++		return cpu_all_mask;
++
+ 	cpumask_clear(&node_to_cpumask_map[node]);
+ 
+ 	for_each_online_cpu(cpu) {
+
+-- 
+
