@@ -1,51 +1,45 @@
-From: Anton Blanchard <anton@samba.org>
-Subject: [patch 2/6] alpha: cpumask_of_node() should handle -1 as a node
-Date: Wed, 06 Jan 2010 15:55:11 +1100
-Message-ID: <20100106045524.959942683@samba.org>
-References: <20100106045509.245662398@samba.org>
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PATCH] alpha: add myself to maintainer's list
+Date: Tue, 12 Jan 2010 16:50:20 -0500
+Message-ID: <1263333020-9050-1-git-send-email-mattst88@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:received:from:to:cc:subject
+         :date:message-id:x-mailer;
+        bh=QlxyBUKmsHoMnYNfx2wwtQkVZJ4bVLtY1BgaXHsZOQ4=;
+        b=jRc2olo1PIOGS9UTJJ+fZFBd00i24uYkuxUB2EMj8ZlhxLEGGHc/oxoEBCltBdbIJ+
+         pvfLg8G+5h92+7ZKa6mQb8XPkDi1Nx/C7QVR4lPMdkhsoaZN/S5j2SODiQUNA2g/vvNb
+         +V+EH3PKu/b5kS9dfR6dqoDHQ569RKVjImLJ0=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Rusty Russell <rusty@rustcorp.com.au>, Andrew Morton <akpm@linux-foundation.org>
+To: linux-alpha@vger.kernel.org
+Cc: Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
-pcibus_to_node can return -1 if we cannot determine which node a pci bus
-is on. If passed -1, cpumask_of_node will negatively index the lookup array
-and pull in random data:
-
-# cat /sys/devices/pci0000:00/0000:00:01.0/local_cpus
-00000000,00000003,00000000,00000000
-# cat /sys/devices/pci0000:00/0000:00:01.0/local_cpulist
-64-65
-
-Change cpumask_of_node to check for -1 and return cpu_all_mask in this
-case:
-
-# cat /sys/devices/pci0000:00/0000:00:01.0/local_cpus
-ffffffff,ffffffff,ffffffff,ffffffff
-# cat /sys/devices/pci0000:00/0000:00:01.0/local_cpulist
-0-127
-
-Signed-off-by: Anton Blanchard <anton@samba.org>
+CC: Richard Henderson <rth@twiddle.net>
+CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+CC: linux-alpha@vger.kernel.org
+Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
+ MAINTAINERS |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
 
-Index: linux-cpumask/arch/alpha/include/asm/topology.h
-===================================================================
---- linux-cpumask.orig/arch/alpha/include/asm/topology.h	2010-01-06 15:20:22.952583839 +1100
-+++ linux-cpumask/arch/alpha/include/asm/topology.h	2010-01-06 15:20:46.610083557 +1100
-@@ -28,6 +28,9 @@ static const struct cpumask *cpumask_of_
- {
- 	int cpu;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c824b4d..69dc9fa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -406,6 +406,8 @@ M:	Richard Henderson <rth@twiddle.net>
+ S:	Odd Fixes for 2.4; Maintained for 2.6.
+ M:	Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+ S:	Maintained for 2.4; PCI support for 2.6.
++M:	Matt Turner <mattst88@gmail.com>
++S:	Patch collector for 2.6.3x+.
+ L:	linux-alpha@vger.kernel.org
+ F:	arch/alpha/
  
-+	if (node == -1)
-+		return cpu_all_mask;
-+
- 	cpumask_clear(&node_to_cpumask_map[node]);
- 
- 	for_each_online_cpu(cpu) {
-
 -- 
+1.6.4.4
 
