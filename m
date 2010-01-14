@@ -1,9 +1,9 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH] alpha: add myself to maintainer's list
-Date: Wed, 13 Jan 2010 10:24:53 -0500
-Message-ID: <b4198de61001130724x24e20901sea667f5a00b59b2f@mail.gmail.com>
-References: <1263333020-9050-1-git-send-email-mattst88@gmail.com>
-	 <20100113121116.GA16918@jurassic.park.msu.ru>
+Subject: Re: [patch 2/6] alpha: cpumask_of_node() should handle -1 as a node
+Date: Thu, 14 Jan 2010 13:24:15 -0500
+Message-ID: <b4198de61001141024p4d21bbb6i6e24aa55c1876239@mail.gmail.com>
+References: <20100106045509.245662398@samba.org>
+	 <20100106045524.959942683@samba.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
@@ -12,53 +12,64 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         h=domainkey-signature:mime-version:received:in-reply-to:references
          :date:message-id:subject:from:to:cc:content-type
          :content-transfer-encoding;
-        bh=DlvBGtvIgUimrv1e9QCUovyZqfj14Uy/NPGWAzQNyK4=;
-        b=rZZzeVlFvLHtuJ7oEGvxvEWwY5I3zKPb2CNEYQSD51UPhmPiNcLy/puAjwfkBC9XAs
-         CUjOWTfo1vAgg6fFxiGKLOQjn+ttFF4GgAPsIJENcgjeX+KDsLyM/+02urH9LskqeeL+
-         xK6huLpip5Se4KxyTEez/MIuUHeWy0vx3sWPs=
-In-Reply-To: <20100113121116.GA16918@jurassic.park.msu.ru>
+        bh=VcAwLdvopfhP7v/171JhOg6WGe8VBo3p+6ASpLbFbNA=;
+        b=hJNol+7AATqFgeU2auE2AJ0DwO1b8aGmCrfPqJyuzdPwAiy+eHkouOKwNSX2hiV4cW
+         k3vxg6AUmeAtfnXpnHbtJ3xcRtiXoIB96aiEj37zDtfzOi1UG8Ai0JYAA9tgMcTJNtt3
+         QZ1oXEzmzm/8v2GZrjHd8GuuTjjqk+21CrrkY=
+In-Reply-To: <20100106045524.959942683@samba.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>
+To: Anton Blanchard <anton@samba.org>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Rusty Russell <rusty@rustcorp.com.au>, Andrew Morton <akpm@linux-foundation.org>
 
-On Wed, Jan 13, 2010 at 7:11 AM, Ivan Kokshaysky
-<ink@jurassic.park.msu.ru> wrote:
-> On Tue, Jan 12, 2010 at 04:50:20PM -0500, Matt Turner wrote:
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index c824b4d..69dc9fa 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -406,6 +406,8 @@ M: =A0 =A0 =A0 =A0Richard Henderson <rth@twiddle=
-=2Enet>
->> =A0S: =A0 Odd Fixes for 2.4; Maintained for 2.6.
->> =A0M: =A0 Ivan Kokshaysky <ink@jurassic.park.msu.ru>
->> =A0S: =A0 Maintained for 2.4; PCI support for 2.6.
->> +M: =A0 Matt Turner <mattst88@gmail.com>
->> +S: =A0 Patch collector for 2.6.3x+.
->> =A0L: =A0 linux-alpha@vger.kernel.org
->> =A0F: =A0 arch/alpha/
+On Tue, Jan 5, 2010 at 11:55 PM, Anton Blanchard <anton@samba.org> wrot=
+e:
+> pcibus_to_node can return -1 if we cannot determine which node a pci =
+bus
+> is on. If passed -1, cpumask_of_node will negatively index the lookup=
+ array
+> and pull in random data:
 >
-> You're welcome.
+> # cat /sys/devices/pci0000:00/0000:00:01.0/local_cpus
+> 00000000,00000003,00000000,00000000
+> # cat /sys/devices/pci0000:00/0000:00:01.0/local_cpulist
+> 64-65
 >
-> But while we are here, I'd like to drop these odd mentions of 2.4 whi=
-ch
-> are just misleading these days...
+> Change cpumask_of_node to check for -1 and return cpu_all_mask in thi=
+s
+> case:
 >
-> What about
+> # cat /sys/devices/pci0000:00/0000:00:01.0/local_cpus
+> ffffffff,ffffffff,ffffffff,ffffffff
+> # cat /sys/devices/pci0000:00/0000:00:01.0/local_cpulist
+> 0-127
 >
-> ALPHA PORT
-> M: =A0 =A0 =A0Richard Henderson <rth@twiddle.net>
-> M: =A0 =A0 =A0Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> M: =A0 =A0 =A0Matt Turner <mattst88@gmail.com>
-> L: =A0 =A0 =A0linux-alpha@vger.kernel.org
-> S: =A0 =A0 =A0Maintained
-> F: =A0 =A0 =A0arch/alpha/
+> Signed-off-by: Anton Blanchard <anton@samba.org>
+> ---
 >
-> Ivan.
+> Index: linux-cpumask/arch/alpha/include/asm/topology.h
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- linux-cpumask.orig/arch/alpha/include/asm/topology.h =A0 =A0 =A0 =
+=A02010-01-06 15:20:22.952583839 +1100
+> +++ linux-cpumask/arch/alpha/include/asm/topology.h =A0 =A0 2010-01-0=
+6 15:20:46.610083557 +1100
+> @@ -28,6 +28,9 @@ static const struct cpumask *cpumask_of_
+> =A0{
+> =A0 =A0 =A0 =A0int cpu;
+>
+> + =A0 =A0 =A0 if (node =3D=3D -1)
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 return cpu_all_mask;
+> +
+> =A0 =A0 =A0 =A0cpumask_clear(&node_to_cpumask_map[node]);
+>
+> =A0 =A0 =A0 =A0for_each_online_cpu(cpu) {
+>
+> --
 
-Sure, I'll make that change when I commit it.
+Thanks! I've added this to alpha-2.6.
 
 Matt
 --
