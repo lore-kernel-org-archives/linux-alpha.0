@@ -1,47 +1,51 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: [PULL] alpha-2.6
-Date: Thu, 14 Jan 2010 18:21:31 -0500
-Message-ID: <b4198de61001141521t7fe8dfb9wb955f72450ca34aa@mail.gmail.com>
+From: Roel Kluin <roel.kluin@gmail.com>
+Subject: [PATCH] alpha: PTR_ERR overwrites -EINVAL in syscall osf_mount
+Date: Wed, 03 Feb 2010 16:49:26 +0100
+Message-ID: <4B699B06.2040202@gmail.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:date:message-id:subject
-         :from:to:cc:content-type;
-        bh=DDhPlfHC++h294uPngSgLhYCJEOlr/sw7T7eH6/Vs7k=;
-        b=k4YM8M3Q2u2/n9EJiTRD0qLS5cQWIMMKXCC9vsGGJDMZFrx5K7nAvmIUUqhjTF25tD
-         w+pLnpyuL0qIgpTRJyGwadJVOXQ3aRHOVAHYNT1Cl6sFpZbD2p6prWvHoxXb8hPuWjbs
-         HX/MqpObM3CA4JQCGfxv1Qj7Yjv0J3idSySLI=
+        h=domainkey-signature:received:received:message-id:date:from
+         :user-agent:mime-version:to:subject:content-type
+         :content-transfer-encoding;
+        bh=TYt2GTiOYfaUu2dswM5ViEOwlfehLNxB+cs6l7R5ZU0=;
+        b=XANu7Tce+o6vNO+BmuxuzpMfb8Y736di1jjqewftqqxLFfA6ygbCld66WkeTpGpYAh
+         XLUJzpetNw70L4ACdSewqmrZsc7/OB3hgkz/adfVZqZYM12k8bqgik563nqg6WLxYvw4
+         nozFxKuuYLHlLDA7rKoky3M8GjDGCJHxYiYyw=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.or>
 
-Hi Linus,
+The initial -EINVAL value is overwritten by `retval = PTR_ERR(name)'.
+If this isn't an error pointer and typenr is not 1, 6 or 9, then
+this retval, a pointer cast to a long, is returned.
 
-Please pull the 'for-linus' branch from my tree. It contains the
-cpumask_of_node() -1 fix and adds me as a maintainer so patches don't
-miss me.
+Signed-off-by: Roel Kluin <roel.kluin@gmail.com>
+---
+Was this intended? Not sure whether this can occur, found by code
+analysis.
 
-Thanks,
-Matt Turner
-
-The following changes since commit 61c39bb354a1f791ba6f562b766a72e508a036ee:
-  Linus Torvalds (1):
-        Merge branch 'for-linus' of git://git390.marist.edu/pub/scm/linux-2.6
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.git for-linus
-
-Anton Blanchard (1):
-      alpha: cpumask_of_node() should handle -1 as a node
-
-Matt Turner (1):
-      alpha: add myself as a maintainer, and drop mention of 2.4
-
- MAINTAINERS                       |    3 +--
- arch/alpha/include/asm/topology.h |    3 +++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 62619f2..53c213f 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -361,7 +361,7 @@ osf_procfs_mount(char *dirname, struct procfs_args __user *args, int flags)
+ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, char __user *, path,
+ 		int, flag, void __user *, data)
+ {
+-	int retval = -EINVAL;
++	int retval;
+ 	char *name;
+ 
+ 	name = getname(path);
+@@ -379,6 +379,7 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, char __user *, path,
+ 		retval = osf_procfs_mount(name, data, flag);
+ 		break;
+ 	default:
++		retval = -EINVAL;
+ 		printk("osf_mount(%ld, %x)\n", typenr, flag);
+ 	}
+ 	putname(name);
