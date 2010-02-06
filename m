@@ -1,49 +1,50 @@
 From: Frans Pop <elendil@planet.nl>
-Subject: [PATCH 00/16] remove trailing spaces in messages
-Date: Sat, 6 Feb 2010 18:44:36 +0100
-Message-ID: <201002061844.45212.elendil@planet.nl>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-Id: <linux-alpha.vger.kernel.org>
+Subject: [PATCH 01/16] alpha: remove trailing spaces in messages
+Date: Sat,  6 Feb 2010 18:47:08 +0100
+Message-ID: <1265478443-31072-1-git-send-email-elendil@planet.nl>
+References: <201002061844.45212.elendil@planet.nl>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <201002061844.45212.elendil@planet.nl>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, "David S. Miller" <davem@davemloft.net>, Fenghua Yu <fenghua.yu@intel.com>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@elte.hu>, Jeff Dike <jdike@addtoit.com>, Jiri Kosina <trivial@kernel.org>, Kyle McMartin <kyle@mcmartin.ca>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-cris-kernel@axis.com, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-pm@lists.linux-foundation.org, linuxppc-dev@ozlabs.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, microblaze-uclinux@itee.uq.edu.au, Mike Frysinger <vapier@gentoo.org>, Paul Mackerras <paulus@samba.org>, "Rafael J. Wysocki" <rjw@sisk.pl>, Ralf
+Cc: Frans Pop <elendil@planet.nl>, linux-alpha@vger.kernel.org
 
-This is a first series of patches to remove trailing spaces in messages. 
-Patches cover arch-specific code plus one fix for PM and one in 
-Documentation. Depending on how this series is received I'll continue
-with other parts of the kernel.
+Signed-off-by: Frans Pop <elendil@planet.nl>
+Cc: linux-alpha@vger.kernel.org
+---
+ arch/alpha/kernel/sys_dp264.c |    2 +-
+ arch/alpha/kernel/sys_titan.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Benefits are:
-- general cleanup and consistency
-- minor reduction in kernel size and user's log file size
-- reduced annoyance for people writing logcheck rules
-
-The patch for m68k has been rebased against linux-next; all other
-patches apply against both mainline and -next (as of 5-2).
-
-Shortstat:
- 74 files changed, 135 insertions(+), 136 deletions(-)
-
-Frans Pop (16):
-      alpha: remove trailing spaces in messages
-      arm: remove trailing spaces in messages
-      ia64: remove trailing space in messages
-      m68k: remove trailing space in messages
-      microblaze: remove trailing space in messages
-      mips: remove trailing space in messages
-      parisc: remove trailing space in messages
-      s390: remove trailing space in messages
-      sparc: remove trailing space in messages
-      x86: remove trailing space in messages
-      blackfin: remove trailing space in messages
-      cris/trivial: remove trailing space in message
-      powerpc: remove trailing space in messages
-      um: remove trailing space in messages
-      PM: remove trailing space in message
-      trivial: remove trailing space in spidev test program
-
+diff --git a/arch/alpha/kernel/sys_dp264.c b/arch/alpha/kernel/sys_dp264.c
+index d64e1e4..4026502 100644
+--- a/arch/alpha/kernel/sys_dp264.c
++++ b/arch/alpha/kernel/sys_dp264.c
+@@ -224,7 +224,7 @@ static void
+ dp264_device_interrupt(unsigned long vector)
+ {
+ #if 1
+-	printk("dp264_device_interrupt: NOT IMPLEMENTED YET!! \n");
++	printk("dp264_device_interrupt: NOT IMPLEMENTED YET!!\n");
+ #else
+ 	unsigned long pld;
+ 	unsigned int i;
+diff --git a/arch/alpha/kernel/sys_titan.c b/arch/alpha/kernel/sys_titan.c
+index 2880533..9008d0f 100644
+--- a/arch/alpha/kernel/sys_titan.c
++++ b/arch/alpha/kernel/sys_titan.c
+@@ -171,7 +171,7 @@ titan_set_irq_affinity(unsigned int irq, const struct cpumask *affinity)
+ static void
+ titan_device_interrupt(unsigned long vector)
+ {
+-	printk("titan_device_interrupt: NOT IMPLEMENTED YET!! \n");
++	printk("titan_device_interrupt: NOT IMPLEMENTED YET!!\n");
+ }
+ 
+ static void 
+-- 
+1.6.6.1
