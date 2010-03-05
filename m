@@ -1,81 +1,143 @@
-From: Mike Frysinger <vapier.adi@gmail.com>
-Subject: Re: Unimplemented syscalls on Alpha
-Date: Thu, 4 Mar 2010 12:51:49 -0500
-Message-ID: <8bd0f97a1003040951x52b0a2e5m8b724245ab773436@mail.gmail.com>
-References: <1255939868-5050-1-git-send-email-mcree@orcon.net.nz> 
-	<b4198de60910190853k54267f9flcf6453d6e23f6da3@mail.gmail.com>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: HW perf. events arch implementation
+Date: Fri, 05 Mar 2010 23:20:57 +0100
+Message-ID: <1267827657.4997.51.camel@laptop>
+References: <1EE1A83F-EB50-40F3-A6A0-5D8DE0B38446@orcon.net.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:in-reply-to:references
-         :from:date:message-id:subject:to:cc:content-type
-         :content-transfer-encoding;
-        bh=getlYymtorFlXcIddZ7CzuG35i4vTqWnGyMaNecvWQ4=;
-        b=b7EnNnldtyApp75QajVI55/Glt5OmkSOTVzlDtVMtiZQ54NMsoHdSdAP4/7pAnRVoo
-         cCtYXxxNhNbSe7XEH/fF5sSETSkY5fAj9FXEEq7rZAVRhgP6Oi5PvMzYJWIN9DtOx+/w
-         FeIzhRNpFm+0nPZdez60Pv/xp5xmRoQQ/O0oM=
-In-Reply-To: <b4198de60910190853k54267f9flcf6453d6e23f6da3@mail.gmail.com>
+In-Reply-To: <1EE1A83F-EB50-40F3-A6A0-5D8DE0B38446@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Matt Turner <mattst88@gmail.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Ingo Molnar <mingo@elte.hu>
 
-On Mon, Oct 19, 2009 at 10:53, Matt Turner wrote:
-> On Mon, Oct 19, 2009 at 4:11 AM, Michael Cree wrote:
->> I couldn't but help notice the increasing number of unimplemented sy=
-scalls
->> on the Alpha architecture. =C2=A0I thought I might poke around to se=
-e what might
->> be required to get these implemented and got a pleasant surprise whe=
-n it
->> seems some only need an entry in the syscall table. =C2=A0Indeed, th=
-e patch in
->> reply to this message gets preadv and pwritev going -- tested with t=
-he
->> sample program at http://lkml.org/lkml/2009/4/6/535.
->
-> Cool. I was looking into doing this, but I didn't know how to test th=
-e syscalls.
->
-> I tried to keep a list of missing syscalls here,
-> http://alphalinux.org/wiki/index.php/TODO_List but as you can see it'=
-s
-> already out of date.
->
->> I am happy to write patches to wire up more of the syscalls, but I a=
-m
->> wondering which ones are as straightforward as the preadv/pwritev ca=
-se?
->> That is, do any require extra programming other than the syscall tab=
-le? =C2=A0Do
->> I need to get the entries in the syscall table in the same order as =
-other
->> architectures?
->
-> I'm curious and unsure about this too. Patches would be great. I thin=
-k
-> we should figure out who we need to CC to get patches into the kernel=
-,
-> as neither of our maintainers have any sort of Alpha tree. I've
-> noticed a few patches submitted to this list have never made it into
-> the kernel, as well, maybe we should start an alpha tree?
+On Wed, 2010-02-24 at 14:35 +1300, Michael Cree wrote:
+> I am trying to implement arch specific code on the Alpha for hardware  
+> performance events (yeah, I'm probably a little bit loopy and unsound  
+> of mind pursuing this on an end-of-line platform, but it's a way in to  
+> learn a little bit of kernel programming and it scratches an itch).
+> 
+> I have taken a look at the code in the x86, sparc and ppc  
+> implementations and tried to drum up an Alpha implementation for the  
+> EV67/7/79 cpus, but it ain't working and is producing obviously  
+> erroneous counts.  Part of the problem is that I don't understand  
+> under what conditions, and with what assumptions, the performance  
+> event subsystem is calling into the architecture specific code.  Is  
+> there any documentation available that describes the architecture  
+> specific interface?
+> 
+> The Alpha CPUs of interest have two 20-bit performance monitoring  
+> counters that can count cycles, instructions, Bcache misses and Mbox  
+> replays (but not all combinations of those).  For round numbers  
+> consider a 1GHz CPU, with a theoretical maximal sustained throughput  
+> of four instructions per cycle, then a single performance counter  
+> could potentially generate 4000 interrupts per second to signal  
+> counter overflow when counting instructions.
+> 
+> The x86, sparc and PPC implementations seem to me to assume that calls  
+> to read back the counters occur more frequently than performance  
+> counter overflow interrupts, and that the highest bit of the counter  
+> can safely be used to detect overflow.  (Am I correct?)  That is  
+> likely not to be true of the Alpha because of the small width of the  
+> counter.  Is there someone who would be happy to give me, a kernel  
+> newbie who probably doesn't even make the grade of neophyte, a bit of  
+> direction on this?
 
-typically if the sys_xxx entry is in common code, you dont need to
-implement arch-specific stuff.  just hook them up in the system call
-table.  afaik, preadv/pwritev fall into this category.
+Right, so the architecture interface is 2 fold, a struct pmu, and a
+bunch of weak hw_perf_*() functions.
 
-> The entries do not need to be in the same order of have the same
-> number as other architectures, just once you set the number you canno=
-t
-> change it (without breaking the ABI).
+I'm trying to move away from the hw_perf*() functions, but for now
+they're there and are useful for a number of things.
 
-correct ... and breaking the ABI is unacceptable
--mike
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+We have:
+
+  hw_perf_event_init();
+  hw_perf_disable();
+  hw_perf_enable();
+  hw_perf_group_sched_in();
+
+hw_perf_event_init() is called when we are creating a counter of type
+PERF_TYPE_RAW, PERF_TYPE_HARDWARE or PERF_TYPE_HW_CACHE, it will return
+a struct pmu for that event.
+
+hw_perf_disable()/hw_perf_enable() are like
+local_irq_disable()/local_irq_enable() but for the Performance Monitor
+Interrupt (PMI), which might be a NMI, so we need to disable it in some
+arch specific way -- these basically freeze/unfreeze the PMU.
+
+hw_perf_group_sched_in() is a bit of a nightmare and a source of bugs
+and I really should get around to killing it off, but this is used
+optimize multiple pmu->enable() calls.
+
+Then we have struct pmu, it has the following members:
+
+  enable()
+  disable()
+  start()
+  stop()
+  read()
+  unthrottle()
+
+
+->enable() will try to program the event onto the hardware and return 0
+on success, if however it cannot, due to there not being a suitable
+counter available, it shall return an error.
+
+->disable() will remove the event from the hardware and release all
+resources that were acquired by ->enable().
+
+->start() will undo ->stop().
+
+->stop() will stop the counter but not release any resources that might
+have been acquired by ->enable().
+
+->read() will read the hardware counter and fold the delta into
+event->count.
+
+->unthrottle(), when present, will undo whatever is done to stop the PMI
+from triggering after perf_event_overflow() returns !0. That is, we have
+sysctl_perf_event_sample_rate and we try to ensure the PMI doesn't
+exceed that, if it does perf_event_overflow() will return !0 and the
+arch code is supposed to inhibit it from firing again until
+->unthrottle() is called. This avoid users from accidentally
+live-locking the system by requesting a PMI on every completed
+instruction ;-)
+
+[ ->start/->stop are a way to reprogram the hardware without releasing
+  constraint reservations, this is useful when you change the 
+
+
+As to your counter width, if you have a special overflow bit in a
+separate register then you can possibly use that, but otherwise you need
+it to keep your count straight. The PMI will happen _after_ the
+overflow, at which point you need to fold back the counter delta into
+your event->count, if it just overflowed that's bound to be a very small
+delta -- I guess you can always add the max value on PMI, but it might
+racy, esp. in the presence of ->read() calls.
+
+Also, if you have multiple registers sharing a PMI you need to be able
+to tell which register overflowed and caused the PMI.
+
+> Also, the Alpha CPUs have an interesting mode whereby one programmes  
+> up one counter with a specified (or random) value that specifies a  
+> future instruction to profile.  The CPU runs for that number of  
+> instructions/cycles, then a short monitoring window (of a few cycles)  
+> is opened about the profiled instruction and when completed an  
+> interrupt is generated.  One can then read back a whole lot of  
+> information about the pipeline at the time of the profiled  
+> instruction.  This can be used for statistical sampling.  Does the  
+> performance events subsystem support monitoring with such a mode?
+
+That sounds like AMD IBS, which I've been told is based on the Alpha
+PMU. We currently do no have AMD IBS supported.
+
+AMD has two IBS counters, one does instructions and one does fetches, I
+think Robert was going to support these by modeling them as fixed
+purpose counters and provide the extra information through
+PERF_SAMPLE_RAW until we can come up with a saner model.
+
+A potential saner model is adding non sampling counters into its group
+which are used to represent these other aspects of the unit.
+
