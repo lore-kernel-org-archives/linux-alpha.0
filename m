@@ -1,98 +1,28 @@
 From: "Will L Givens" <wlgivens@gmail.com>
 Subject: RE: Will's kernel compilation error
-Date: Mon, 15 Mar 2010 18:21:41 -0500
-Message-ID: <001601cac496$4651e0b0$d2f5a210$@com>
+Date: Mon, 15 Mar 2010 21:34:55 -0500
+Message-ID: <001d01cac4b1$44711e80$cd535b80$@com>
 References: <b4198de61003151609je8a94ceyf6dd39acfd1a5876@mail.gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:received:received:from:to:cc:references
+        h=domainkey-signature:received:received:from:cc:references
          :in-reply-to:subject:date:message-id:mime-version:content-type
          :content-transfer-encoding:x-mailer:thread-index:content-language;
-        bh=8+CnYgwL6w6aoN6MUm1Vq3VeFg1Kvbx1z02yqzhAqT4=;
-        b=LJTprwyEsEk+X4N1d78pDiXEG/9XykqwENTssYgD10PfHWLStUIXZlcD4vtWlc8joY
-         JDBv+AkeGW5zRy5vPiPtqY87IiAPRzibb+jKrGmCQRpeQq2wPMxec16vbOvrUDXYTo2j
-         sH8jqzD1cJSWm+UTlq1GfNCztKViRdGeJKLmY=
+        bh=i+a39n/mPLRz7moQN7qEB9F5Q4qYLr6MoE65ygRMTaw=;
+        b=WV/iJY5hT4+dk+A/Yjk+X1bAcd5YBV3W+8hUdaLfSU0LEB7tw62mujU2MMDU0zTkCd
+         mR+PIoaO8alMvx8qG6IQUGk361VI0zxtLA9xSvz00w+6GK1awqA5n84bCNTWH49qY+ti
+         bVdD4iRUNoB6swVwNw/9NcpyHuW7SCGGu529I=
 In-Reply-To: <b4198de61003151609je8a94ceyf6dd39acfd1a5876@mail.gmail.com>
 Content-Language: en-us
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-To: 'Matt Turner' <mattst88@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+To: 
 Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-snip
-
-> >
-> > [root@jericho linux]# gcc-3.4.3 -v
-> > Reading specs from /usr/lib/gcc/alphaev5-alpha-linux/3.4.3/specs
-> > Configured with: ../gcc-3.4.3/configure --prefix=3D/usr --
-> sysconfdir=3D/etc
-> > --mandir=3D/usr/share/man --infodir=3D/usr/share/info
-> > --build=3Dalphaev5-alpha-linux --host=3Dalphaev5-alpha-linux
-> > --target=3Dalphaev5-alpha-linux --program-suffix=3D-3.4.3 --enable-
-> languages=3Dall
-> >
-
-snip
-
-> >
-> > gcc-3.4.3 -Wp,-MD,arch/alpha/lib/.__remqu.o.d =A0-nostdinc -isystem
-> > /usr/lib/gcc/alphaev5-alpha-linux/3.4.3/include
-> > -I/usr/src/linux-2.6.34-rc1/arch/alpha/include -Iinclude =A0-includ=
-e
-> > include/generated/autoconf.h -D__KERNEL__ -D__ASSEMBLY__ =A0 =A0-Wa=
-ll -
-> Wundef
-> > -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common
-> > -Werror-implicit-function-declaration -Wno-format-security
-> > -fno-delete-null-pointer-checks -pipe -Os -pipe -mno-fp-regs -ffixe=
-d-
-> 8
-> > -msmall-data =A0-mcpu=3Dev67 -Wa,-mev6 =A0 -fomit-frame-pointer
-> > -Wdeclaration-after-statement =A0 =A0 -DREM =A0-c -o
-> arch/alpha/lib/__remqu.o
-> > arch/alpha/lib/ev6-divide.S
->=20
-> Why is your CHOST alphaev5-alpha-linux but you're compiling for EV67?
-
-
-Well actually that=92s the --build option that was set when building gc=
-c
-itself. I have several different gcc versions for both EV5 and EV67. I =
-was
-thinking rolling my own Fedora releases, one for myself and possibly
-something more general (EV5) for Oliver.
-
->=20
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/callback_srm.o
-> > =A0CC =A0 =A0 =A0arch/alpha/lib/checksum.o
-> > =A0CC =A0 =A0 =A0arch/alpha/lib/csum_partial_copy.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-clear_page.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-clear_user.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-copy_page.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-copy_user.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-csum_ipv6_magic.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-memchr.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-memcpy.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-memset.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-strncpy_from_user.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-stxcpy.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev6-stxncpy.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev67-strcat.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev67-strchr.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev67-strlen.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev67-strlen_user.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev67-strncat.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/ev67-strrchr.o
-> > =A0CC =A0 =A0 =A0arch/alpha/lib/fls.o
-> > =A0CC =A0 =A0 =A0arch/alpha/lib/fpreg.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/memmove.o
-> > =A0CC =A0 =A0 =A0arch/alpha/lib/srm_printk.o
-> > =A0CC =A0 =A0 =A0arch/alpha/lib/srm_puts.o
-> > =A0AS =A0 =A0 =A0arch/alpha/lib/strcpy.o
 > > =A0AS =A0 =A0 =A0arch/alpha/lib/strncpy.o
 > > =A0CC =A0 =A0 =A0arch/alpha/lib/udelay.o
 > > =A0AR =A0 =A0 =A0arch/alpha/lib/lib.a
@@ -114,8 +44,37 @@ l
 > > kernel/built-in.o: In function `check_cpu_itimer':
 > > (.text+0x21784): relocation truncated to fit: GPREL16 against `.sbs=
 s'
+> > kernel/built-in.o: In function `check_cpu_itimer':
+> > (.text+0x2179c): relocation truncated to fit: GPREL16 against `.sbs=
+s'
+> > kernel/built-in.o: In function `free_nsproxy':
+> > (.text+0x23064): relocation truncated to fit: GPREL16 against `.sbs=
+s'
+> > kernel/built-in.o: In function `create_new_namespaces':
+> > (.text+0x230a4): relocation truncated to fit: GPREL16 against `.sbs=
+s'
+> > kernel/built-in.o: In function `create_new_namespaces':
+> > (.text+0x23254): relocation truncated to fit: GPREL16 against `.sbs=
+s'
 
-snip
+=46ound a patch for the 'section mismatch'... the GPREL16 error still r=
+emains
+though.
+
+[root@jericho linux]# cat ../kernels/linux-2.6.x-PCI_REGISER_SET_VGA.pa=
+tch
+---
+a/drivers/pci/pci.c~pci-kill-off-pci_register_set_vga_state-symbol-expo=
+rt
++++ a/drivers/pci/pci.c
+@@ -3023,7 +3023,6 @@  EXPORT_SYMBOL(pcim_pin_device);
+ EXPORT_SYMBOL(pci_disable_device);
+ EXPORT_SYMBOL(pci_find_capability);
+ EXPORT_SYMBOL(pci_bus_find_capability);
+-EXPORT_SYMBOL(pci_register_set_vga_state);
+ EXPORT_SYMBOL(pci_release_regions);
+ EXPORT_SYMBOL(pci_request_regions);
+ EXPORT_SYMBOL(pci_request_regions_exclusive);
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
