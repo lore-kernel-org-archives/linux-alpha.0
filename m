@@ -1,135 +1,156 @@
-From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: Re: Will's kernel compilation error
-Date: Wed, 17 Mar 2010 02:13:53 -0700
-Message-ID: <4BA09D51.90306@gmail.com>
-References: <b4198de61003151609je8a94ceyf6dd39acfd1a5876@mail.gmail.com> <4B9FDD4E.8080607@gentoo.org> <4BA085EE.3060700@orcon.net.nz> <009501cac5af$a757d3a0$f6077ae0$@com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: Build Error with GLIBC-2.11.1
+Date: Wed, 17 Mar 2010 11:17:29 -0400
+Message-ID: <b4198de61003170817p4065900dw6454208fe3a91f93@mail.gmail.com>
+References: <008801cac592$72bff400$583fdc00$@com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:received:received:message-id:date:from
-         :user-agent:mime-version:to:cc:subject:references:in-reply-to
-         :content-type:content-transfer-encoding;
-        bh=vCZdIJlvQzpAnL0n3o6g+Io3/UXVvEsa0Fhx1VNXxlo=;
-        b=lTnYCVcYI0iYdn3pMJ+IlNW3g2XyC2K3QD+3c53GQvD53+Z85IxL0I19Q6dVnnBtnA
-         R2fD7vkkb5/g3lBWxxLMzl/lxrVEeOsU1mn1JO0R6pphVdoGaKILEKVwLgFuagjWuLqw
-         DkOH+I9zTC39RzuwItgqVEj0Rz5w8JHer0dTM=
-In-Reply-To: <009501cac5af$a757d3a0$f6077ae0$@com>
+        h=domainkey-signature:mime-version:received:in-reply-to:references
+         :date:message-id:subject:from:to:cc:content-type
+         :content-transfer-encoding;
+        bh=BgJFDFe56OyXIWsPhimS7d7RBsHUEI+qdqv60CXBhfw=;
+        b=cz4gidhFwF0gv6552VOE+Yq1LcMi50E2UMfkfkafgP1d8PsaRVKEleKkOabij4Uivq
+         AimQNzK9mF+0hl4lQHeYD7lm8SJd6GcHahr8VViqiWmta/nNmom/NNxgOm+Y2kpDSFX2
+         o9KlvYBOJn6FpTVxzuxbXSa6nraqs7y0IYJW0=
+In-Reply-To: <008801cac592$72bff400$583fdc00$@com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Type: text/plain; charset="iso-8859-1"
 To: Will L Givens <wlgivens@gmail.com>
-Cc: 'Michael Cree' <mcree@orcon.net.nz>, =?ISO-8859-1?Q?=27Ra=FAl_Porce?= =?ISO-8859-1?Q?l=27?= <armin76@gentoo.org>, 'Matt Turner' <mattst88@gmail.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Cc: libc-ports@sourceware.org, linux-alpha@vger.kernel.org
 
-On 03/17/2010 01:55 AM, Will L Givens wrote:
+On Wed, Mar 17, 2010 at 1:26 AM, Will L Givens <wlgivens@gmail.com> wro=
+te:
+> This error was obtained using GCC-3.4.3 and Binutils-2.20.1...
+>
+> mkdir -p ../glibc-2.11.1-build
+> cd ../glibc-2.11.1-build
 >
 >
->> -----Original Message-----
->> From: Michael Cree [mailto:mcree@orcon.net.nz]
->> Sent: Wednesday, March 17, 2010 02:34
->> To: Ra=FAl Porcel
->> Cc: Matt Turner; Will L Givens; linux-kernel@vger.kernel.org; linux-
->> alpha@vger.kernel.org
->> Subject: Re: Will's kernel compilation error
->>
->> On 17/03/10 08:34, Ra=FAl Porcel wrote:
->>> Have one.
->>>
->>> My error is as follows:
->>>
->>> net/built-in.o: In function `svc_auth_unregister':
->>> (.text+0xb822c): relocation truncated to fit: GPREL16 against `.sbs=
-s'
->>
->> Right, I've confirmed that with the supplied config.  What's happeni=
-ng
->> is that the small data area (where certain static data are stored) h=
-as
->> exceeded 64kB which is the limit under the small data model.  As not=
-ed
->> elsewhere on this thread it can be solved by compiling with the larg=
-e
->> data model, but that incurs extra CPU instructions whenever the data
->> area is accessed.
->>
->> A better solution, in my view, is to concert some drivers to modules=
-=2E
->> I
->> note that the config has a large number of devices to be built (some=
- of
->> which are denoted as having been tested on x86/x86_64/ia64 only).  I
->> converted a few drivers, and most of the selected filesystems (do yo=
-u
->> really need them all at boot time?) into modules.  The kernel then
->> builds correctly.
->>
->> But if people insist on being able to build impractical monolithic
->> kernels on Alpha I will post my patch to add a kernel option for the
->> large data model.
->>
->> Cheers
->> Michael.
+> CC=3Dgcc-3.4.3 CXX=3Dg++-3.4.3 CPP=3D/usr/bin/cpp-3.4.3 \
+> =A0CFLAGS=3D"-O2 -mtune=3Dev67 -mieee -finline-limit=3D2000 \
+> =A0-fno-strict-aliasing -D__ASSUME_F_GETOWN_EX" \
+> =A0../glibc-2.11.1/configure \
+> =A0--prefix=3D/usr \
+> =A0--build=3Dalphaev67-alpha-linux \
+> =A0--bindir=3D/usr/bin \
+> =A0--sbindir=3D/sbin \
+> =A0--sysconfdir=3D/etc \
+> =A0--datadir=3D/usr/share \
+> =A0--includedir=3D/usr/share/include \
+> =A0--libdir=3D/usr/lib \
+> =A0--libexecdir=3D/usr/libexec \
+> =A0--localstatedir=3D/var \
+> =A0--sharedstatedir=3D/var/com \
+> =A0--mandir=3D/usr/share/man \
+> =A0--infodir=3D/usr/share/info \
+> =A0--enable-shared \
+> =A0--enable-kernel=3D2.6 =A0# --with-headers=3D/usr/src/linux\
+> =A0--enable-add-ons=3Dports,nptl \
+> =A0--disable-sanity-checks \
+> =A0--disable-profile \
+> =A0--without-selinux \
+> =A0libc_cv_forced_unwind=3Dyes libc_cv_c_cleanup=3Dyes
 >
-> Well a monolithic kernel, which mine isn't, actually runs faster than=
- a
-> modular one despite being larger... that's been proven several times =
-over
-> the years. In the past I used to roll monolithic kernels simply for
-> emergency boot situations and because kernel modules were notorious f=
-or not
-> compiling properly with all kinds of undefined symbols... rolling the=
-m into
-> the kernel was a quick fix. Do you honestly believe all those differe=
-nt
-> modules, written by a slew of different people, will build properly l=
-et
-> alone function properly? Kernel-2.6.34-rc1 is the FIRST one that I've=
- seen
-> where the netfilter modules all compiled!
+> make -j2
 >
-> Another thing, some components 'have' to be built into the kernel bec=
-ause
-> they won't automatically load or the kernel config makes it mandatory=
-=2E The
-> auto load function of past kernels has been pretty iffy at best and g=
-ranted
-> I've yet to actually load this release, I do have my doubts. So impor=
-tant
-> things such as my aic7xxx drivers, ali drivers, 751 chipset, etc. I r=
-oll
-> into the kernel itself.
->
-> The things that you've stated I can understand but on when you get ri=
-ght
-> down to it, it's not a major issue. My 'monolithic' kernel is only 1.=
-9MB @
-> 89MB/s. Personally I feel they should make small-data an patch addon,=
- it
-> would save a lot of people a some grief. Some ppl will select them (m=
-odules)
-> either intentionally or by accident and the majority of folks are not
-> running AT HDD's on a flaky IDE controller. Sincerely Will L G
->
-> PS Whatever you guys decide please make it obvious... the aboot/kerne=
-l
-> change a few years ago, caused a lot of Alpha Linux users to bug out.=
-=2E.
-> About the only ppl aware of the change was Ivan and a handful of Debi=
-an
-> folks.
->
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kerne=
-l" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
->
-can you bisect this?
+> ) | gcc-3.4.3 -c =A0-I../include -I/usr/src/redhat/BUILD/glibc-2.11.1=
+-build/io
+> -I/usr/src/redhat/BUILD/glibc-2.11.1-build -I../ports/sysdeps/alpha/e=
+lf
+> -I../ports/sysdeps/unix/sysv/linux/alpha/alphaev67/fpu
+> -I../ports/sysdeps/alpha/alphaev67/fpu -I../ports/sysdeps/alpha/alpha=
+ev6/fpu
+> -I../ports/sysdeps/unix/sysv/linux/alpha/alphaev67
+> -I../ports/sysdeps/unix/sysv/linux/alpha/fpu -I../ports/sysdeps/alpha=
+/fpu
+> -I../ports/sysdeps/unix/sysv/linux/alpha/nptl
+> -I../ports/sysdeps/unix/sysv/linux/alpha
+> -I../sysdeps/unix/sysv/linux/wordsize-64 -I../sysdeps/ieee754/ldbl-64=
+-128
+> -I../sysdeps/ieee754/ldbl-opt -I../nptl/sysdeps/unix/sysv/linux
+> -I../nptl/sysdeps/pthread -I../sysdeps/pthread
+> -I../ports/sysdeps/unix/sysv/linux -I../sysdeps/unix/sysv/linux
+> -I../sysdeps/gnu -I../sysdeps/unix/common -I../sysdeps/unix/mman
+> -I../sysdeps/unix/inet -I../nptl/sysdeps/unix/sysv
+> -I../ports/sysdeps/unix/sysv -I../sysdeps/unix/sysv
+> -I../ports/sysdeps/unix/alpha -I../nptl/sysdeps/unix -I../ports/sysde=
+ps/unix
+> -I../sysdeps/unix -I../sysdeps/posix -I../ports/sysdeps/alpha/alphaev=
+67
+> -I../ports/sysdeps/alpha/alphaev6 -I../ports/sysdeps/alpha/alphaev5
+> -I../ports/sysdeps/alpha/nptl -I../ports/sysdeps/alpha
+> -I../sysdeps/wordsize-64 -I../sysdeps/ieee754/ldbl-128
+> -I../sysdeps/ieee754/dbl-64 -I../sysdeps/ieee754/flt-32
+> -I../ports/sysdeps/alpha/soft-fp -I../sysdeps/ieee754
+> -I../sysdeps/generic/elf -I../sysdeps/generic -I../nptl -I../ports =A0=
+-I..
+> -I../libio -I. =A0-D_LIBC_REENTRANT -include ../include/libc-symbols.=
+h
+> -DASSEMBLER =A0 -Wa,--noexecstack =A0 -o
+> /usr/src/redhat/BUILD/glibc-2.11.1-build/io/flock.o -x assembler-with=
+-cpp -
+> -MD -MP -MF /usr/src/redhat/BUILD/glibc-2.11.1-build/io/flock.o.dt -M=
+T
+> /usr/src/redhat/BUILD/glibc-2.11.1-build/io/flock.o
+> ../sysdeps/unix/sysv/linux/fcntl.c: In function `do_fcntl':
+> ../sysdeps/unix/sysv/linux/fcntl.c:43: error: storage size of 'fex' i=
+sn't
+> known
+> ../sysdeps/unix/sysv/linux/fcntl.c:44: error: `F_GETOWN_EX' undeclare=
+d
+> (first use in this function)
+> ../sysdeps/unix/sysv/linux/fcntl.c:44: error: (Each undeclared identi=
+fier is
+> reported only once
+> ../sysdeps/unix/sysv/linux/fcntl.c:44: error: for each function it ap=
+pears
+> in.)
+> ../sysdeps/unix/sysv/linux/fcntl.c:46: error: `F_OWNER_GID' undeclare=
+d
+> (first use in this function)
+> ../sysdeps/unix/sysv/linux/fcntl.c:43: warning: unused variable `fex'
+> make[2]: *** [/usr/src/redhat/BUILD/glibc-2.11.1-build/io/fcntl.o] Er=
+ror 1
+> make[2]: *** Waiting for unfinished jobs....
+> make[2]: Leaving directory `/usr/src/redhat/BUILD/glibc-2.11.1/io'
+> make[1]: *** [io/subdir_lib] Error 2
+> make[1]: Leaving directory `/usr/src/redhat/BUILD/glibc-2.11.1'
+> make: *** [all] Error 2
+> [root@jericho glibc-2.11.1]# pico -w +43
+> ../glibc-2.11.1/sysdeps/unix/sysv/linux/fcntl.c
+> [root@jericho glibc-2.11.1]# pico -w +43
+> ../glibc-2.11.1/ports/sysdeps/unix/sysv/linux/alpha/bits/fcntl.h
+> [root@jericho glibc-2.11.1]# pico -w +43
+> ../glibc-2.11.1/sysdeps/unix/sysv/linux/fcntl.c
+> [root@jericho glibc-2.11.1]# pico -w +43
+> ../glibc-2.11/sysdeps/unix/sysv/linux/fcntl.c
+> glibc-2.11.1/ =A0 =A0 =A0 =A0 glibc-2.11.1.tar.bz2 =A0glibc-2.11-buil=
+d/
+> glibc-2.11.1-build/ =A0 glibc-2.11.90/
+> [root@jericho glibc-2.11.1]# pico -w +43
+> ../glibc-2.11.90/sysdeps/unix/sysv/linux/fcntl.c
+> [root@jericho glibc-2.11.1]# pico -w +43
+> ../glibc-2.11.1/sysdeps/unix/sysv/linux/fcntl.c
+> [root@jericho glibc-2.11.1]#
 
-Justin P.Mattock
+Alpha related glibc questions go to libc-ports@.
+
+What's available in the glibc.git and glibc-ports.git trees won't
+build correctly on alpha without patches. These patches are available
+in Gentoo and are why sane people use Gentoo on their Alphas.
+
+I've wasted a bunch of time in the last week trying to help someone
+who's too stubborn for his own good to build glibc manually. He never
+succeeded. There's absolutely no point in trying to help you with
+this. Sorry.
+
+You know the solution.
+
+Matt
 --
 To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
 in
