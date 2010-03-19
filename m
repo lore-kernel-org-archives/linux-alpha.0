@@ -1,57 +1,68 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: [PULL] alpha-2.6
-Date: Fri, 19 Mar 2010 00:57:50 -0400
-Message-ID: <b4198de61003182157wd019926o4bc1cff1faf898ce@mail.gmail.com>
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: Re: Build Error with GLIBC-2.11.1
+Date: Fri, 19 Mar 2010 13:12:02 -0400
+Message-ID: <201003191312.03866.vapier@gentoo.org>
+References: <008801cac592$72bff400$583fdc00$@com> <201003171914.00585.vapier@gentoo.org> <00d501cac62a$6d8cf1c0$48a6d540$@com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:date:message-id:subject
-         :from:to:cc:content-type;
-        bh=aQuNyNtJu0poggBENt1Bdj7JGyWV2tnONS1eOTKmOBw=;
-        b=ACcdsgj49q4rFU3glIEKmB72U3i+HVJGflF1e1i6jlUMGOaIZRvEYzJciy7Pn1unkF
-         tK0fAZ0LmevdEhEnyl2r5H3fnQ5pbMg2BkgXKaFf1BO3kdbRN0/qwaS7B77V2sw4+8ij
-         mef3WM6VqsriK6cE02PDooB2dlPFvI40YpMlE=
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed;
+  boundary="nextPart1625454.dJFvgbguoB";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <00d501cac62a$6d8cf1c0$48a6d540$@com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Will L Givens <wlgivens@gmail.com>
+Cc: 'Matt Turner' <mattst88@gmail.com>, libc-ports@sourceware.org, linux-alpha@vger.kernel.org
 
-Hi Linus,
+--nextPart1625454.dJFvgbguoB
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Please pull the 'for-linus' branch from
-ssh://master.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.git
-for-linus
+On Wednesday 17 March 2010 19:34:44 Will L Givens wrote:
+> 		> It's a free world
+>=20
+> 		you're right ... and in this free world, you're free to do
+> the work yourself
+> 		-mike
+>=20
+> 		* Mike Frysinger <vapier@gentoo.org>
+> 		* 0xE837F581 - Unverified
+>=20
+> And NOT use Gentoo ;-) Wish you two the best, you deserve one another *lo=
+l*
 
-It contains a couple trivial changes and a build fix for a recent regression.
+i never said you had to use Gentoo.  if you want to make another distro wor=
+k=20
+on alpha, then you're free to review the work that's already been done in=20
+Gentoo to bootstrap yourself up.  Matt is already taking on quite a lot in=
+=20
+getting alpha up-to-snuff across the board ... asking him to assist with=20
+another distro is unfair to him.
+=2Dmike
 
-Thanks,
-Matt Turner
+--nextPart1625454.dJFvgbguoB
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
 
-The following changes since commit 39710479303fd3affb3e204e9a7a75cc676977b5:
-  Linus Torvalds (1):
-        Merge branch 'for-linus' of git://git.kernel.org/.../vapier/blackfin
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.14 (GNU/Linux)
 
-are available in the git repository at:
+iQIcBAABAgAGBQJLo7BjAAoJEEFjO5/oN/WBAucP/1ZDWYapndm2q7N9rySZkHPS
+2bnkRK4AHto9S2R4os1C/i4+kvCz4urUb8p38rnTnxPIcFzPrm2YbpAo7PP6Yfon
+hFNIshFrmaTCTfYYPOecgg8z63/hZQ52R8Rj2aoRROjopvcnh00Q6kGUeQCErFeF
+JJYHiT8DHLDV2Dsk/rIKLlCXGFzxikDXX9VmzlAs+c+xg9s78eyWGGVkyYZjCEfy
+8OV92Obf/0zDlpPjHFRwvuNlwuesPALAs+x1RfmLHPQXy8WPRteClSEzeujN6pAu
+GQ2MMuoHtLfKjUOZofwVGJipWbqFU+MpRpLbQfXF118reYPDV+yFCLXasvLvTFSC
+3QzaDvQcyo3UUHgGkOIfNKUfWfoSs6sk75AiOn0b/mMyybl0caaJr+BHgjDCX1Wm
+HI3lM3nHgEBUOUWCUosD+3yGm+P6J/SeT/WCX/eBgfwlPZmFjjSRmU/qSjTB7TO3
+BILL9aWxWT0YP/Pr6fKvnPKs8WsVgHB/uxplgOfeg2YXJnpyRCrHMihSmMhuUDON
+Jv3zhulc49JgoYGJgg+yhmLTnlxWsItCBDNvCixiuOqpJTESLi03Al8wV2+zA76F
+TOf8n38DIjf1oHhQKi6t1pdHYrspvK3f+TFyfMDyvAdEMmF1mcCOfxGEYIc13wFU
+yY8ajOJT+ewWLqyMZocg
+=wViw
+-----END PGP SIGNATURE-----
 
-git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.git  for-linus
-
-Akinobu Mita (1):
-      alpha: use __ratelimit
-
-FUJITA Tomonori (1):
-      alpha: fix compile errors in dma-mapping-common.h
-
-Frans Pop (1):
-      alpha: remove trailing spaces in messages
-
- arch/alpha/include/asm/core_marvel.h  |    1 -
- arch/alpha/include/asm/core_mcpcia.h  |    1 -
- arch/alpha/include/asm/core_titan.h   |    1 -
- arch/alpha/include/asm/core_tsunami.h |    1 -
- arch/alpha/kernel/sys_dp264.c         |    2 +-
- arch/alpha/kernel/sys_titan.c         |    2 +-
- arch/alpha/kernel/traps.c             |   10 +++-------
- 7 files changed, 5 insertions(+), 13 deletions(-)
+--nextPart1625454.dJFvgbguoB--
