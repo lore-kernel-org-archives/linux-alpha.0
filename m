@@ -1,85 +1,75 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Continuing UP2000+ problems
-Date: Sat, 20 Mar 2010 17:57:41 -0400
-Message-ID: <b4198de61003201457g55c00160m6f87e442aff98b0@mail.gmail.com>
-Mime-Version: 1.0
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: HW perf. events arch implementation
+Date: Wed, 24 Mar 2010 09:16:59 +1300
+Message-ID: <F08667D7-387E-420A-A983-6537991DBDA7@orcon.net.nz>
+References: <1EE1A83F-EB50-40F3-A6A0-5D8DE0B38446@orcon.net.nz> <1267827657.4997.51.camel@laptop>
+Mime-Version: 1.0 (Apple Message framework v936)
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:date:message-id:subject
-         :from:to:cc:content-type;
-        bh=MmSpuN6W3LyaT33nX+oYffvLloDDbG3Yf3WRBUpCVKc=;
-        b=CC6BSepcLjmn+sjrNJfwygUv3g4S6ehI4pbN9Kdc1I74OxX98rQgcQoDvAcr1a2iWT
-         bSobpdpgRs7zCgnauPp8jFFCtuaQQxKb95nQn69DhH+FqJlqesN2PlEpLXkvSkvDPLNH
-         oAqKwCT5F2VQA2kg1ijvfQ9G6T8DOM54fKwD0=
+In-Reply-To: <1267827657.4997.51.camel@laptop>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Peter Petrakis <peter.petrakis@gmail.com>
-Cc: Linux on Alpha processors <axp-list@redhat.com>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"; delsp="yes"
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Ingo Molnar <mingo@elte.hu>
 
-Hi Peter and list,
+On 6/03/2010, at 11:20 AM, Peter Zijlstra wrote:
+> On Wed, 2010-02-24 at 14:35 +1300, Michael Cree wrote:
+>> I am trying to implement arch specific code on the Alpha for hardware
+>> performance events
+> Right, so the architecture interface is 2 fold, a struct pmu, and a
+> bunch of weak hw_perf_*() functions.
 
-** Firstly: Please Reply-All, since I've cross-posted. **
+Thanks for the description of the hw perf arch interface.
 
-I've been working on my UP2000+ again. [1]
+I have now identified why my code on the Alpha didn't work.  I had  
+borrowed the code for reading the hw counters and calculating deltas  
+from the sparc/x86 code, but I now realise that code is based on the  
+assumption that the hw counters are read frequently enough that the  
+counter cannot count more than half of its maximum period between  
+updates.  That assumption is violated on the Alpha (which has 20 bit  
+counters) and I was occasionally getting negative deltas.
 
-I've got
- - a known working SROM chip
- - known working processors
- - known working RAM (tested in DS20L) and another set known working
-(tested in XP1000)
+Your comment following is relevant:
 
-the UP2000+ starts and prints this over the SROM console
+> As to your counter width, if you have a special overflow bit in a
+> separate register then you can possibly use that, but otherwise you  
+> need
+> it to keep your count straight.
 
-UP2000/UP2000+...X00080901.01.00005757ec60018.02.000004b0.03.0373bef8c1.05.04..06.80000000.14#0000000000000204#.15.3f
+On the Alpha which counter caused the overflow is passed to the  
+interrupt routine so I have used that to keep the count straight.
 
-   which apparently shows that after "Loading uncompressed firmware
-into memory" it hits a fatal error.
+It is also appears that the interrupt routine, when it calls  
+perf_event_overflow() can incur quite a bit of execution so I disable  
+the hw counters for the duration of the interrupt routine.
 
-I installed Windows NT on my 164UX to be able to use the xload.exe
-program in the ebsdk [2]. I can successfully transfer images to the
-UP2000+ with xload. I've tried
+I therefore will complete the coding for measuring cycles,  
+instructions, cache misses and mbox replays (the last one I presume  
+will have to be coded as a RAW event) on the EV67 CPUs and later.  At  
+this stage I will probably keep it simple and implement counting one  
+hw event at a time only.  Might be able to submit something for review  
+within the week; but it could be three or four weeks in coming since I  
+go on holiday for 12 days about Easter.
 
- - dp264dbm.cmp (as shown in the example in the SROM guide [3])
- - dp264dbm.img
- - dp264fsb.cmp
- - dp264fsb.img
- - dhryV1
+I have no plans to implement hw perf events on Alpha CPUs older than  
+the EV67 unless someone jumps up and down and says they really need it!
 
-Aside, the manual shows `xload dp264dbm.cmp 300000 com1 fast`, but I
-had to run `xload dp264dbm.cmp 300000 com1 9600` else I would get
+>> Also, the Alpha CPUs have an interesting mode whereby one programmes
+>> up one counter with a specified (or random) value that specifies a
+>> future instruction to profile.  The CPU runs for that number of
+>> instructions/cycles, then a short monitoring window (of a few cycles)
+>> is opened about the profiled instruction and when completed an
+>> interrupt is generated.  One can then read back a whole lot of
+>> information about the pipeline at the time of the profiled
+>> instruction.  This can be used for statistical sampling.  Does the
+>> performance events subsystem support monitoring with such a mode?
+>
+> That sounds like AMD IBS, which I've been told is based on the Alpha
+> PMU. We currently do no have AMD IBS supported.
 
-> Syncing with remote terminal...
-> Timed out in ReadSerialPort
+I will therefore leave implementing that mode for the future.
 
-Once transferred, as shown in the SROM guide, I reconnect with
-HyperTerminal and successfully get the SROM> prompt. From here, I
-execute `xb` (or `st` followed by A> 300000) and it prints '.06' and
-hangs. Nothing else is printed to SROM. Nothing is ever printed to
-COM1 (The second serial port on the UX is listening).
+Cheers
+Michael.
 
-A code of 06 in the UP2000+ manual [4], page 67, means "L2 cache and
-memory ready." I thought maybe this signifies a problem with L2 cache
-or memory, so I've jumpered pins 11-12 of J29 to disable L2 cache, and
-have tried two sets of known working RAM. Separately, 06 could mean
-"no memory found or bad memory" (as seen under error code 3F). Again,
-I've tried two sets of known working RAM, each taken from an EV67+
-Alpha.
-
-I've also tried putting the CPU in the second slot, no change.
-
-So I'm stuck. I need ideas.
-
-Alternatively, I need some MMJ cables and a MMJ->DB9 adapter to see
-how a PC164 behaves with this stuff. Does anyone have any they'd like
-to send me?
-
-Thanks,
-Matt Turner
-
-[1] http://www.redhat.com/archives/axp-list/2009-May/thread.html
-[2] http://www.alphalinux.org/firmware/ebsdk/
-[3] http://h18006.www1.hp.com/cpq-alphaserver/technology/literature/srommini.pdf
-[4] http://alphalinux.org/firmware/api/UP2000plus/UP2000plus_user_manual.pdf
