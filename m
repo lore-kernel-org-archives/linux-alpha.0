@@ -1,56 +1,43 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: Discrepancy between comments for sched_find_first_bit
-Date: Mon, 29 Mar 2010 12:25:02 +0200
-Message-ID: <1269858302.12097.272.camel@laptop>
-References: <b4198de61003282037p502e9fbfi62123088b9d73923@mail.gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: Matt Turner <mattst88@gmail.com>
+Subject: [RFC] alpha: hack objstrip.c to make it compile.
+Date: Mon, 29 Mar 2010 21:49:55 -0400
+Message-ID: <1269913795-1852-1-git-send-email-mattst88@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <b4198de61003282037p502e9fbfi62123088b9d73923@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:received:from:to:cc:subject
+         :date:message-id:x-mailer;
+        bh=1YP9kMikDg4DqqquFB6Q883ttnoI1KwSd7kj/9rbWXc=;
+        b=b5vCBPHgEr2W3DRiR6tUNth1SEkVP1A9WSyYgaOhS4+lavIFbt/4/zoc5/UCapVswM
+         4XJXIm3oDlQdxHbaAtiYi0GdIS42g7ZSXra97lTtOe7+fP/jWTrK577pBcWY5KfdUpFv
+         cagZmGWE54jEMaSQoJI+OmhEgnpXlbMkBOjEg=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Matt Turner <mattst88@gmail.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org, Ingo Molnar <mingo@elte.hu>
+Content-Transfer-Encoding: 7bit
+To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, ang@brigante.org, Matt Turner <mattst88@gmail.com>
 
-On Sun, 2010-03-28 at 23:37 -0400, Matt Turner wrote:
-> include/asm-generic/bitops/sched.h says
-> /*
->  * Every architecture must define this function. It's the fastest
->  * way of searching a 100-bit bitmap.  It's guaranteed that at least
->  * one of the 100 bits is cleared.
->  */
-> 
-> arch/alpha/include/asm/bitops.h says
-> /*
->  * Every architecture must define this function. It's the fastest
->  * way of searching a 140-bit bitmap where the first 100 bits are
->  * unlikely to be set. It's guaranteed that at least one of the 140
->  * bits is set.
->  */
-> 
-> Is the guarantee that one of the first 100-bits set (and that the last
-> 40 are useless?), or 140-bits? If it's just the first 100 bits we care
-> about, then the alpha version needs to be fixed.
-> 
-> I'm just checking this out, because gcc produces horrendous code for
-> sched_find_first_bit on alpha. I rewrote it in assembly and it's
-> better than 4 times faster.
-> 
-> Also, is it even worth optimizing that function? It looks like it's
-> only used in kernel/sched_rt.c.
+I don't think this is the appropriate fix. What should I do to fix this?
+---
+ arch/alpha/boot/tools/objstrip.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-(might help if you CC the scheduler people on scheduler functions :-)
-
-Right, so it used to be 140 bits with the old O(1) scheduler, currently
-(as you noted) sched_rt is the only user left and will therefore only
-care about the first 100 bits.
-
-As it stands I think it might still make sense to optimize this as for
-rt loads it still on a hot path.
-
-As to the 100 vs 140 length, would it really make much of difference to
-shorten the implementation to 100? If not I'd leave it at 140.
-
-Ingo, any comments?
+diff --git a/arch/alpha/boot/tools/objstrip.c b/arch/alpha/boot/tools/objstrip.c
+index 367d53d..54fa1ef 100644
+--- a/arch/alpha/boot/tools/objstrip.c
++++ b/arch/alpha/boot/tools/objstrip.c
+@@ -27,6 +27,9 @@
+ #include <linux/param.h>
+ #ifdef __ELF__
+ # include <linux/elf.h>
++# define elfhdr	elf64_hdr
++# define elf_phdr	elf64_phdr
++# define elf_check_arch(x) ((x)->e_machine == EM_ALPHA)
+ #endif
+ 
+ /* bootfile size must be multiple of BLOCK_SIZE: */
+-- 
+1.6.4.4
 
