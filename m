@@ -1,84 +1,83 @@
-From: Ingo Molnar <mingo@elte.hu>
-Subject: Re: Discrepancy between comments for sched_find_first_bit
-Date: Fri, 2 Apr 2010 23:25:15 +0200
-Message-ID: <20100402212515.GC17041@elte.hu>
-References: <b4198de61003282037p502e9fbfi62123088b9d73923@mail.gmail.com>
- <1269858302.12097.272.camel@laptop>
- <20100402201648.GA15498@elte.hu>
- <g2rb4198de61004021350tf509b5c3k22dfa8f2e24fedc8@mail.gmail.com>
-Mime-Version: 1.0
+From: mattst88@gmail.com
+Subject: [PATCH] alpha: simplify and optimize sched_find_first_bit
+Date: Thu,  8 Apr 2010 14:34:16 -0400
+Message-ID: <1270751656-5614-1-git-send-email-mattst88@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <g2rb4198de61004021350tf509b5c3k22dfa8f2e24fedc8@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:received:from:to:cc:subject
+         :date:message-id:x-mailer;
+        bh=KAaoep8rLyvnR4ur71bw/0AHMlwqSi68Z6yRu6rUVpE=;
+        b=EaZb3lYet1ZQHOg9WoO9vazjKYpErjXjXG5YUCWt++m4+1jA97MH1cNVaVdr6Ju9LZ
+         whxfKbnsudJEhWDRN6stDMIkfJPdUj1o53Pv3tNXDVLCBv2rRWHR/kpYhQJRa0NI163G
+         D1IMMjlgQW5fwKyEWitt2dxoYjay6RSATPTJg=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, LKML <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org
+Cc: Matt Turner <mattst88@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@elte.hu>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
+From: Matt Turner <mattst88@gmail.com>
 
-* Matt Turner <mattst88@gmail.com> wrote:
+Search only the first 100 bits instead of 140, saving a couple
+instructions. Also use inline assembly to use cmov instructions instead
+of letting gcc emit multiple branches. The resulting code is about 6x
+faster.
 
-> On Fri, Apr 2, 2010 at 4:16 PM, Ingo Molnar <mingo@elte.hu> wrote:
-> >
-> > * Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> >> On Sun, 2010-03-28 at 23:37 -0400, Matt Turner wrote:
-> >> > include/asm-generic/bitops/sched.h says
-> >> > /*
-> >> > ?* Every architecture must define this function. It's the fastest
-> >> > ?* way of searching a 100-bit bitmap. ?It's guaranteed that at least
-> >> > ?* one of the 100 bits is cleared.
-> >> > ?*/
-> >> >
-> >> > arch/alpha/include/asm/bitops.h says
-> >> > /*
-> >> > ?* Every architecture must define this function. It's the fastest
-> >> > ?* way of searching a 140-bit bitmap where the first 100 bits are
-> >> > ?* unlikely to be set. It's guaranteed that at least one of the 140
-> >> > ?* bits is set.
-> >> > ?*/
-> >> >
-> >> > Is the guarantee that one of the first 100-bits set (and that the last
-> >> > 40 are useless?), or 140-bits? If it's just the first 100 bits we care
-> >> > about, then the alpha version needs to be fixed.
-> >> >
-> >> > I'm just checking this out, because gcc produces horrendous code for
-> >> > sched_find_first_bit on alpha. I rewrote it in assembly and it's
-> >> > better than 4 times faster.
-> >> >
-> >> > Also, is it even worth optimizing that function? It looks like it's
-> >> > only used in kernel/sched_rt.c.
-> >>
-> >> (might help if you CC the scheduler people on scheduler functions :-)
-> >>
-> >> Right, so it used to be 140 bits with the old O(1) scheduler, currently
-> >> (as you noted) sched_rt is the only user left and will therefore only
-> >> care about the first 100 bits.
-> >>
-> >> As it stands I think it might still make sense to optimize this as for
-> >> rt loads it still on a hot path.
-> >>
-> >> As to the 100 vs 140 length, would it really make much of difference to
-> >> shorten the implementation to 100? If not I'd leave it at 140.
-> >>
-> >> Ingo, any comments?
-> >
-> > I guess getting below the 128 bits boundary would shave an instruction and a
-> > branch off or so?
-> >
-> > ? ? ? ?Ingo
-> >
-> 
-> That's right. I should be able to get rid of a cmov, which kind of
-> counts as two instructions in EV6 scheduling.
-> 
-> So I should send a patch to reduce this to the first 100 (128) bits?
+Thanks to Zack Weinberg and Uros Bizjak (GCC Bug 43691) for helping me
+identify problems with the inline assembly.
 
-Sure, why not, every instruction counts :-)
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@elte.hu>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+---
+ arch/alpha/include/asm/bitops.h |   24 ++++++++++++------------
+ 1 files changed, 12 insertions(+), 12 deletions(-)
 
-Note, if you do it then please also include a disassembly of the area that 
-changed, so that we document the effect.
+diff --git a/arch/alpha/include/asm/bitops.h b/arch/alpha/include/asm/bitops.h
+index 15f3ae2..cfa7526 100644
+--- a/arch/alpha/include/asm/bitops.h
++++ b/arch/alpha/include/asm/bitops.h
+@@ -436,22 +436,22 @@ static inline unsigned int hweight8(unsigned int w)
+ 
+ /*
+  * Every architecture must define this function. It's the fastest
+- * way of searching a 140-bit bitmap where the first 100 bits are
+- * unlikely to be set. It's guaranteed that at least one of the 140
+- * bits is set.
++ * way of searching a 100-bit bitmap.  It's guaranteed that at least
++ * one of the 100 bits is cleared.
+  */
+ static inline unsigned long
+-sched_find_first_bit(unsigned long b[3])
++sched_find_first_bit(const unsigned long b[2])
+ {
+-	unsigned long b0 = b[0], b1 = b[1], b2 = b[2];
+ 	unsigned long ofs;
+-
+-	ofs = (b1 ? 64 : 128);
+-	b1 = (b1 ? b1 : b2);
+-	ofs = (b0 ? 0 : ofs);
+-	b0 = (b0 ? b0 : b1);
+-
+-	return __ffs(b0) + ofs;
++	unsigned long output;
++	asm(
++		"cmoveq %0,64,%1        # ofs = (b[0] ? ofs : 64);\n"
++		"cmoveq %0,%2,%0        # temp = (b[0] ? b[0] : b[1]);\n"
++		"cttz   %0,%0           # output = cttz(temp);\n "
++		: "=r" (output), "=r" (ofs)
++		: "r" (b[1]), "0" (b[0]), "1" (0)
++	);
++	return output + ofs;
+ }
+ 
+ #include <asm-generic/bitops/ext2-non-atomic.h>
+-- 
+1.6.4.4
 
-	Ingo
