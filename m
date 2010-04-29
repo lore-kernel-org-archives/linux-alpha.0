@@ -1,296 +1,74 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH] alpha: simplify and optimize sched_find_first_bit
-Date: Wed, 28 Apr 2010 22:08:54 -0400
-Message-ID: <m2rb4198de61004281908waadceca9k49c9e175bdf0d367@mail.gmail.com>
-References: <1270751656-5614-1-git-send-email-mattst88@gmail.com>
-	 <4BBE2B5C.6020802@twiddle.net>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=000e0cd70a78cae82d0485569b20
+Subject: [PATCH] alpha: simplify and optimize sched_find_first_bit
+Date: Wed, 28 Apr 2010 23:37:56 -0400
+Message-ID: <1272512276-25975-1-git-send-email-mattst88@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:received:in-reply-to
-         :references:date:message-id:subject:from:to:cc:content-type;
-        bh=8SeiJkT0/zTlPOxqmjXFoxb9+uxF1yikCnvcGBh/kas=;
-        b=v2+MoxV06N7/8opkT6F6B+4SY7bQpGEfm3aCEMD2rrXEqbbtawGkFVgtrH7M6q2H56
-         iDNFq0qaSMb31tXAc9uuNlHtJ7hacxVzlelUYeHog14CYfmNIce4Lht0JggxLSfIeL17
-         PoWnQ841C/5/y2ek4OTCuTv63LefBfJopaACc=
-In-Reply-To: <4BBE2B5C.6020802@twiddle.net>
+        h=domainkey-signature:received:received:received:from:to:cc:subject
+         :date:message-id:x-mailer;
+        bh=K71bzdcSg6LumOGxfezbpPEf7+ZZLYnd6z5lEGJJpLI=;
+        b=MelpjchdNYJUG1AwtL16o/Pi7nEOqNbhxVYKPNOkDg691X6VKX9jHO0yXI5I8rwATz
+         B5oCjQJClOEyvRu5moq95UQfiCPReplNzl3MziTtg36kDUTrdeU0hIGDAugbW5I0hJCw
+         q02rRVW+1M3FT5HNTv8ZMeAhGGqzoIUhvdnqc=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Richard Henderson <rth@twiddle.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: linux-alpha@vger.kernel.org
+Cc: Matt Turner <mattst88@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@elte.hu>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+
+Search only the first 100 bits instead of 140, saving a couple
+instructions. The resulting code is about 1/3 faster (40K ticks/1000
+iterations down to 30K ticks/1000 iterations).
+
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@elte.hu>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+---
+ arch/alpha/include/asm/bitops.h |   20 +++++++++-----------
+ 1 files changed, 9 insertions(+), 11 deletions(-)
 
---000e0cd70a78cae82d0485569b20
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+diff --git a/arch/alpha/include/asm/bitops.h b/arch/alpha/include/asm/bitops.h
+index 15f3ae2..2e49c1f 100644
+--- a/arch/alpha/include/asm/bitops.h
++++ b/arch/alpha/include/asm/bitops.h
+@@ -436,22 +436,20 @@ static inline unsigned int hweight8(unsigned int w)
+ 
+ /*
+  * Every architecture must define this function. It's the fastest
+- * way of searching a 140-bit bitmap where the first 100 bits are
+- * unlikely to be set. It's guaranteed that at least one of the 140
+- * bits is set.
++ * way of searching a 100-bit bitmap.  It's guaranteed that at least
++ * one of the 100 bits is cleared.
+  */
+ static inline unsigned long
+-sched_find_first_bit(unsigned long b[3])
++sched_find_first_bit(const unsigned long b[2])
+ {
+-	unsigned long b0 = b[0], b1 = b[1], b2 = b[2];
+-	unsigned long ofs;
++	unsigned long b0, b1, ofs, tmp;
+ 
+-	ofs = (b1 ? 64 : 128);
+-	b1 = (b1 ? b1 : b2);
+-	ofs = (b0 ? 0 : ofs);
+-	b0 = (b0 ? b0 : b1);
++	b0 = b[0];
++	b1 = b[1];
++	ofs = (b0 ? 0 : 64);
++	tmp = (b0 ? b0 : b1);
+ 
+-	return __ffs(b0) + ofs;
++	return __ffs(tmp) + ofs;
+ }
+ 
+ #include <asm-generic/bitops/ext2-non-atomic.h>
+-- 
+1.6.5.3
 
-On Thu, Apr 8, 2010 at 3:15 PM, Richard Henderson <rth@twiddle.net> wrote:
-> On 04/08/2010 11:34 AM, mattst88@gmail.com wrote:
->> + =A0 =A0 asm(
->> + =A0 =A0 =A0 =A0 =A0 =A0 "cmoveq %0,64,%1 =A0 =A0 =A0 =A0# ofs =3D (b[0=
-] ? ofs : 64);\n"
->> + =A0 =A0 =A0 =A0 =A0 =A0 "cmoveq %0,%2,%0 =A0 =A0 =A0 =A0# temp =3D (b[=
-0] ? b[0] : b[1]);\n"
->> + =A0 =A0 =A0 =A0 =A0 =A0 "cttz =A0 %0,%0 =A0 =A0 =A0 =A0 =A0 # output =
-=3D cttz(temp);\n "
->> + =A0 =A0 =A0 =A0 =A0 =A0 : "=3Dr" (output), "=3Dr" (ofs)
->> + =A0 =A0 =A0 =A0 =A0 =A0 : "r" (b[1]), "0" (b[0]), "1" (0)
->
-> I must say I'd also prefer a comment like
->
-> =A0 =A0 =A0 =A0/* This is equivalent to
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0ofs =3D (b[0] ? 0 : 64);
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0tmp =3D (b[0] ? b[0] : b[1]);
-> =A0 =A0 =A0 =A0 =A0 but is a bit faster than what GCC would produce on it=
-s own. =A0*/
-> =A0 =A0 =A0 =A0asm("cmoveq %0,64,%1\n\tcmoveq %0,%2,%0"
-> =A0 =A0 =A0 =A0 =A0 =A0: "=3Dr"(output), "=3Dr"(ofs)
-> =A0 =A0 =A0 =A0 =A0 =A0: "r"(b[1]), "0"(b[0]), "1"(0));
->
-> ... except that I can't see that it is, at least for mainline gcc.
->
-> [anchor:~] cat z.c
-> long foo(const unsigned long *b)
-> {
-> =A0unsigned long b0, b1, ofs, tmp;
->
-> =A0b0 =3D b[0];
-> =A0b1 =3D b[1];
-> =A0ofs =3D (b0 ? 0 : 64);
-> =A0tmp =3D (b0 ? b0 : b1);
->
-> =A0/* tmp =3D __ffs(tmp); -- elided for clarity wrt ev5 vs ev67 */
-> =A0return tmp + ofs;
-> }
->
-> -mcpu=3Dev5 -Os (to avoid nop padding):
-> =A0 =A0 =A0 =A0ldq $2,0($16)
-> =A0 =A0 =A0 =A0ldq $1,8($16)
-> =A0 =A0 =A0 =A0lda $0,64($31)
-> =A0 =A0 =A0 =A0cmovne $2,0,$0
-> =A0 =A0 =A0 =A0cmovne $2,$2,$1
-> =A0 =A0 =A0 =A0addq $0,$1,$0
->
-> -mcpu=3Dev6 -Os:
-> =A0 =A0 =A0 =A0ldq $0,0($16)
-> =A0 =A0 =A0 =A0ldq $1,8($16)
-> =A0 =A0 =A0 =A0cmovne $0,$0,$1
-> =A0 =A0 =A0 =A0cmpeq $0,0,$0
-> =A0 =A0 =A0 =A0sll $0,6,$0
-> =A0 =A0 =A0 =A0addq $0,$1,$0
->
-> I seem to recall that cmov is slightly more expensive on ev6,
-> so gcc doesn't prefer it and came up with an equivalent using
-> cmpeq+sll.
->
-> If some previous version of gcc isn't so smart, I'm ok with
-> continuing to use the asm.
->
->
-> r~
->
-
-So with your test program, the code generation results are:
-
-4.3.4 -Os: good
-4.3.4 -O1: bad
-4.3.4 -O2: good
-4.3.4 -O3: good
-
-4.4.3 -Os: bad
-4.4.3 -O1: bad
-4.4.3 -O2: bad
-4.4.3 -O3: good
-
-4.5.0 -Os: good
-4.5.0 -O1: bad
-4.5.0 -O2: good
-4.5.0 -O3: good
-
- o -O3 is produces good code in all versions.
- o -O1 is bad in all versions.
- o -Os and -O2 regressed from 4.3.4 to 4.4.3,
-   but are back to 4.3.4 quality as of 4.5.0.
-
-All produced cmov instructions just as you said.
-
-My patch doesn't help any of the bad cases and even causes some that
-were good to produce worse code, so it's not useful. Does any of this
-look like it should warrant a gcc bug report, Richard?
-
-I'll send a patch just to update sched_find_first_bit to search just
-the first 100-bits.
-
-Thanks!
-Matt
-
---000e0cd70a78cae82d0485569b20
-Content-Type: application/octet-stream; name=test
-Content-Disposition: attachment; filename=test
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_g8kxsvhj0
-
-VGVzdCBQcm9ncmFtCiMgIGRlZmluZSBfX2tlcm5lbF9jdHR6KHgpICAgICAgX19idWlsdGluX2N0
-emwoeCkKdW5zaWduZWQgbG9uZyBfX2Zmcyh1bnNpZ25lZCBsb25nIHdvcmQpCnsKIC8qIFdoZWUu
-ICBFVjY3IGNhbiBjYWxjdWxhdGUgaXQgZGlyZWN0bHkuICAqLwogcmV0dXJuIF9fa2VybmVsX2N0
-dHood29yZCk7Cn0KCmxvbmcgZm9vKGNvbnN0IHVuc2lnbmVkIGxvbmcgKmIpCnsKIHVuc2lnbmVk
-IGxvbmcgYjAsIGIxLCBvZnMsIHRtcDsKCiBiMCA9IGJbMF07CiBiMSA9IGJbMV07CiBvZnMgPSAo
-YjAgPyAwIDogNjQpOwogdG1wID0gKGIwID8gYjAgOiBiMSk7CgogdG1wID0gX19mZnModG1wKTsK
-IHJldHVybiB0bXAgKyBvZnM7Cn0KCiMgZ2NjLTQuMy40IC1PcyAtbWNwdT1ldjY3IC1jIHouYyAm
-JiBvYmpkdW1wIC1kIHoubwoKei5vOiAgICAgZmlsZSBmb3JtYXQgZWxmNjQtYWxwaGEKCkRpc2Fz
-c2VtYmx5IG9mIHNlY3Rpb24gLnRleHQ6CgowMDAwMDAwMDAwMDAwMDAwIDxfX2Zmcz46CiAgIDA6
-ICAgNjAgMDYgZjAgNzMgICAgIGN0dHogICAgYTAsdjAKICAgNDogICAwMSA4MCBmYSA2YiAgICAg
-cmV0CgowMDAwMDAwMDAwMDAwMDA4IDxmb28+OgogICA4OiAgIDAwIDAwIDEwIGE0ICAgICBsZHEg
-ICAgIHYwLDAoYTApCiAgIGM6ICAgMDggMDAgMzAgYTQgICAgIGxkcSAgICAgdDAsOChhMCkKICAx
-MDogICBjMSAwNCAwMCA0NCAgICAgY21vdm5lICB2MCx2MCx0MAogIDE0OiAgIGEwIDE1IDAwIDQw
-ICAgICBjbXBlcSAgIHYwLDAsdjAKICAxODogICAyMCBkNyAwMCA0OCAgICAgc2xsICAgICB2MCww
-eDYsdjAKICAxYzogICA2MSAwNiBlMSA3MyAgICAgY3R0eiAgICB0MCx0MAogIDIwOiAgIDAwIDA0
-IDAxIDQwICAgICBhZGRxICAgIHYwLHQwLHYwCiAgMjQ6ICAgMDEgODAgZmEgNmIgICAgIHJldAoK
-IyBnY2MtNC4zLjQgLU8xIC1tY3B1PWV2NjcgLWMgei5jICYmIG9iamR1bXAgLWQgei5vCgp6Lm86
-ICAgICBmaWxlIGZvcm1hdCBlbGY2NC1hbHBoYQoKRGlzYXNzZW1ibHkgb2Ygc2VjdGlvbiAudGV4
-dDoKCjAwMDAwMDAwMDAwMDAwMDAgPF9fZmZzPjoKICAgMDogICA2MCAwNiBmMCA3MyAgICAgY3R0
-eiAgICBhMCx2MAogICA0OiAgIDAxIDgwIGZhIDZiICAgICByZXQKCjAwMDAwMDAwMDAwMDAwMDgg
-PGZvbz46CiAgIDg6ICAgMDAgMDAgYmIgMjcgICAgIGxkYWggICAgZ3AsMCh0MTIpCiAgIGM6ICAg
-MDAgMDAgYmQgMjMgICAgIGxkYSAgICAgZ3AsMChncCkKICAxMDogICBmMCBmZiBkZSAyMyAgICAg
-bGRhICAgICBzcCwtMTYoc3ApCiAgMTQ6ICAgMDAgMDAgNWUgYjcgICAgIHN0cSAgICAgcmEsMChz
-cCkKICAxODogICAwOCAwMCAzZSBiNSAgICAgc3RxICAgICBzMCw4KHNwKQogIDFjOiAgIDAxIDA0
-IGYwIDQ3ICAgICBtb3YgICAgIGEwLHQwCiAgMjA6ICAgMDAgMDAgMTAgYTYgICAgIGxkcSAgICAg
-YTAsMChhMCkKICAyNDogICAwOCAwMCAyMSBhNCAgICAgbGRxICAgICB0MCw4KHQwKQogIDI4OiAg
-IGE5IDE1IDAwIDQyICAgICBjbXBlcSAgIGEwLDAsczAKICAyYzogICAyOSBkNyAyMCA0OSAgICAg
-c2xsICAgICBzMCwweDYsczAKICAzMDogICA5MCAwNCAwMSA0NiAgICAgY21vdmVxICBhMCx0MCxh
-MAogIDM0OiAgIDAwIDAwIDQwIGQzICAgICBic3IgICAgIHJhLDM4IDxmb28rMHgzMD4KICAzODog
-ICAwMCAwNCAyMCA0MSAgICAgYWRkcSAgICBzMCx2MCx2MAogIDNjOiAgIDAwIDAwIDVlIGE3ICAg
-ICBsZHEgICAgIHJhLDAoc3ApCiAgNDA6ICAgMDggMDAgM2UgYTUgICAgIGxkcSAgICAgczAsOChz
-cCkKICA0NDogICAxMCAwMCBkZSAyMyAgICAgbGRhICAgICBzcCwxNihzcCkKICA0ODogICAwMSA4
-MCBmYSA2YiAgICAgcmV0CgojIGdjYy00LjMuNCAtTzIgLW1jcHU9ZXY2NyAtYyB6LmMgJiYgb2Jq
-ZHVtcCAtZCB6Lm8KCnoubzogICAgIGZpbGUgZm9ybWF0IGVsZjY0LWFscGhhCgpEaXNhc3NlbWJs
-eSBvZiBzZWN0aW9uIC50ZXh0OgoKMDAwMDAwMDAwMDAwMDAwMCA8X19mZnM+OgogICAwOiAgIDYw
-IDA2IGYwIDczICAgICBjdHR6ICAgIGEwLHYwCiAgIDQ6ICAgMDEgODAgZmEgNmIgICAgIHJldAog
-ICA4OiAgIDFmIDA0IGZmIDQ3ICAgICBub3AKICAgYzogICAwMCAwMCBmZSAyZiAgICAgdW5vcAoK
-MDAwMDAwMDAwMDAwMDAxMCA8Zm9vPjoKICAxMDogICAwMCAwMCAxMCBhNCAgICAgbGRxICAgICB2
-MCwwKGEwKQogIDE0OiAgIDA4IDAwIDMwIGE0ICAgICBsZHEgICAgIHQwLDgoYTApCiAgMTg6ICAg
-YzEgMDQgMDAgNDQgICAgIGNtb3ZuZSAgdjAsdjAsdDAKICAxYzogICBhMCAxNSAwMCA0MCAgICAg
-Y21wZXEgICB2MCwwLHYwCiAgMjA6ICAgMjAgZDcgMDAgNDggICAgIHNsbCAgICAgdjAsMHg2LHYw
-CiAgMjQ6ICAgNjEgMDYgZTEgNzMgICAgIGN0dHogICAgdDAsdDAKICAyODogICAwMCAwNCAwMSA0
-MCAgICAgYWRkcSAgICB2MCx0MCx2MAogIDJjOiAgIDAxIDgwIGZhIDZiICAgICByZXQKCiMgZ2Nj
-LTQuMy40IC1PMyAtbWNwdT1ldjY3IC1jIHouYyAmJiBvYmpkdW1wIC1kIHoubwoKei5vOiAgICAg
-ZmlsZSBmb3JtYXQgZWxmNjQtYWxwaGEKCkRpc2Fzc2VtYmx5IG9mIHNlY3Rpb24gLnRleHQ6Cgow
-MDAwMDAwMDAwMDAwMDAwIDxfX2Zmcz46CiAgIDA6ICAgNjAgMDYgZjAgNzMgICAgIGN0dHogICAg
-YTAsdjAKICAgNDogICAwMSA4MCBmYSA2YiAgICAgcmV0CiAgIDg6ICAgMWYgMDQgZmYgNDcgICAg
-IG5vcAogICBjOiAgIDAwIDAwIGZlIDJmICAgICB1bm9wCgowMDAwMDAwMDAwMDAwMDEwIDxmb28+
-OgogIDEwOiAgIDAwIDAwIDEwIGE0ICAgICBsZHEgICAgIHYwLDAoYTApCiAgMTQ6ICAgMDggMDAg
-MzAgYTQgICAgIGxkcSAgICAgdDAsOChhMCkKICAxODogICBjMSAwNCAwMCA0NCAgICAgY21vdm5l
-ICB2MCx2MCx0MAogIDFjOiAgIGEwIDE1IDAwIDQwICAgICBjbXBlcSAgIHYwLDAsdjAKICAyMDog
-ICAyMCBkNyAwMCA0OCAgICAgc2xsICAgICB2MCwweDYsdjAKICAyNDogICA2MSAwNiBlMSA3MyAg
-ICAgY3R0eiAgICB0MCx0MAogIDI4OiAgIDAwIDA0IDAxIDQwICAgICBhZGRxICAgIHYwLHQwLHYw
-CiAgMmM6ICAgMDEgODAgZmEgNmIgICAgIHJldAoKIyBnY2MtNC40LjMgLU9zIC1tY3B1PWV2Njcg
-LWMgei5jICYmIG9iamR1bXAgLWQgei5vCgp6Lm86ICAgICBmaWxlIGZvcm1hdCBlbGY2NC1hbHBo
-YQoKRGlzYXNzZW1ibHkgb2Ygc2VjdGlvbiAudGV4dDoKCjAwMDAwMDAwMDAwMDAwMDAgPF9fZmZz
-PjoKICAgMDogICA2MCAwNiBmMCA3MyAgICAgY3R0eiAgICBhMCx2MAogICA0OiAgIDAxIDgwIGZh
-IDZiICAgICByZXQKCjAwMDAwMDAwMDAwMDAwMDggPGZvbz46CiAgIDg6ICAgMDAgMDAgYmIgMjcg
-ICAgIGxkYWggICAgZ3AsMCh0MTIpCiAgIGM6ICAgMDAgMDAgYmQgMjMgICAgIGxkYSAgICAgZ3As
-MChncCkKICAxMDogICBmMCBmZiBkZSAyMyAgICAgbGRhICAgICBzcCwtMTYoc3ApCiAgMTQ6ICAg
-MDggMDAgMzAgYTQgICAgIGxkcSAgICAgdDAsOChhMCkKICAxODogICAwOCAwMCAzZSBiNSAgICAg
-c3RxICAgICBzMCw4KHNwKQogIDFjOiAgIDAwIDAwIDMwIGE1ICAgICBsZHEgICAgIHMwLDAoYTAp
-CiAgMjA6ICAgMDAgMDAgNWUgYjcgICAgIHN0cSAgICAgcmEsMChzcCkKICAyNDogICAxMCAwNCBl
-MSA0NyAgICAgbW92ICAgICB0MCxhMAogIDI4OiAgIGQwIDA0IDI5IDQ1ICAgICBjbW92bmUgIHMw
-LHMwLGEwCiAgMmM6ICAgYTkgMTUgMjAgNDEgICAgIGNtcGVxICAgczAsMCxzMAogIDMwOiAgIDI5
-IGQ3IDIwIDQ5ICAgICBzbGwgICAgIHMwLDB4NixzMAogIDM0OiAgIDAwIDAwIDQwIGQzICAgICBi
-c3IgICAgIHJhLDM4IDxmb28rMHgzMD4KICAzODogICAwMCAwNCAyMCA0MSAgICAgYWRkcSAgICBz
-MCx2MCx2MAogIDNjOiAgIDAwIDAwIDVlIGE3ICAgICBsZHEgICAgIHJhLDAoc3ApCiAgNDA6ICAg
-MDggMDAgM2UgYTUgICAgIGxkcSAgICAgczAsOChzcCkKICA0NDogICAxMCAwMCBkZSAyMyAgICAg
-bGRhICAgICBzcCwxNihzcCkKICA0ODogICAwMSA4MCBmYSA2YiAgICAgcmV0CgojIGdjYy00LjQu
-MyAtTzEgLW1jcHU9ZXY2NyAtYyB6LmMgJiYgb2JqZHVtcCAtZCB6Lm8KCnoubzogICAgIGZpbGUg
-Zm9ybWF0IGVsZjY0LWFscGhhCgpEaXNhc3NlbWJseSBvZiBzZWN0aW9uIC50ZXh0OgoKMDAwMDAw
-MDAwMDAwMDAwMCA8X19mZnM+OgogICAwOiAgIDYwIDA2IGYwIDczICAgICBjdHR6ICAgIGEwLHYw
-CiAgIDQ6ICAgMDEgODAgZmEgNmIgICAgIHJldAoKMDAwMDAwMDAwMDAwMDAwOCA8Zm9vPjoKICAg
-ODogICAwMCAwMCBiYiAyNyAgICAgbGRhaCAgICBncCwwKHQxMikKICAgYzogICAwMCAwMCBiZCAy
-MyAgICAgbGRhICAgICBncCwwKGdwKQogIDEwOiAgIGYwIGZmIGRlIDIzICAgICBsZGEgICAgIHNw
-LC0xNihzcCkKICAxNDogICAwMCAwMCA1ZSBiNyAgICAgc3RxICAgICByYSwwKHNwKQogIDE4OiAg
-IDA4IDAwIDNlIGI1ICAgICBzdHEgICAgIHMwLDgoc3ApCiAgMWM6ICAgMDAgMDAgMzAgYTQgICAg
-IGxkcSAgICAgdDAsMChhMCkKICAyMDogICAwOCAwMCAxMCBhNiAgICAgbGRxICAgICBhMCw4KGEw
-KQogIDI0OiAgIGE5IDE1IDIwIDQwICAgICBjbXBlcSAgIHQwLDAsczAKICAyODogICAyOSBkNyAy
-MCA0OSAgICAgc2xsICAgICBzMCwweDYsczAKICAyYzogICBkMCAwNCAyMSA0NCAgICAgY21vdm5l
-ICB0MCx0MCxhMAogIDMwOiAgIDAwIDAwIDQwIGQzICAgICBic3IgICAgIHJhLDM0IDxmb28rMHgy
-Yz4KICAzNDogICAwMCAwNCAyMCA0MSAgICAgYWRkcSAgICBzMCx2MCx2MAogIDM4OiAgIDAwIDAw
-IDVlIGE3ICAgICBsZHEgICAgIHJhLDAoc3ApCiAgM2M6ICAgMDggMDAgM2UgYTUgICAgIGxkcSAg
-ICAgczAsOChzcCkKICA0MDogICAxMCAwMCBkZSAyMyAgICAgbGRhICAgICBzcCwxNihzcCkKICA0
-NDogICAwMSA4MCBmYSA2YiAgICAgcmV0CgojIGdjYy00LjQuMyAtTzIgLW1jcHU9ZXY2NyAtYyB6
-LmMgJiYgb2JqZHVtcCAtZCB6Lm8KCnoubzogICAgIGZpbGUgZm9ybWF0IGVsZjY0LWFscGhhCgpE
-aXNhc3NlbWJseSBvZiBzZWN0aW9uIC50ZXh0OgoKMDAwMDAwMDAwMDAwMDAwMCA8X19mZnM+Ogog
-ICAwOiAgIDYwIDA2IGYwIDczICAgICBjdHR6ICAgIGEwLHYwCiAgIDQ6ICAgMDEgODAgZmEgNmIg
-ICAgIHJldAogICA4OiAgIDFmIDA0IGZmIDQ3ICAgICBub3AKICAgYzogICAwMCAwMCBmZSAyZiAg
-ICAgdW5vcAoKMDAwMDAwMDAwMDAwMDAxMCA8Zm9vPjoKICAxMDogICAwMCAwMCBiYiAyNyAgICAg
-bGRhaCAgICBncCwwKHQxMikKICAxNDogICAwMCAwMCBiZCAyMyAgICAgbGRhICAgICBncCwwKGdw
-KQogIDE4OiAgIGYwIGZmIGRlIDIzICAgICBsZGEgICAgIHNwLC0xNihzcCkKICAxYzogICAwOCAw
-MCAzMCBhNCAgICAgbGRxICAgICB0MCw4KGEwKQogIDIwOiAgIDA4IDAwIDNlIGI1ICAgICBzdHEg
-ICAgIHMwLDgoc3ApCiAgMjQ6ICAgMDAgMDAgMzAgYTUgICAgIGxkcSAgICAgczAsMChhMCkKICAy
-ODogICAwMCAwMCA1ZSBiNyAgICAgc3RxICAgICByYSwwKHNwKQogIDJjOiAgIDEwIDA0IGUxIDQ3
-ICAgICBtb3YgICAgIHQwLGEwCiAgMzA6ICAgZDAgMDQgMjkgNDUgICAgIGNtb3ZuZSAgczAsczAs
-YTAKICAzNDogICBhOSAxNSAyMCA0MSAgICAgY21wZXEgICBzMCwwLHMwCiAgMzg6ICAgMjkgZDcg
-MjAgNDkgICAgIHNsbCAgICAgczAsMHg2LHMwCiAgM2M6ICAgMDAgMDAgNDAgZDMgICAgIGJzciAg
-ICAgcmEsNDAgPGZvbysweDMwPgogIDQwOiAgIDAwIDA0IDIwIDQxICAgICBhZGRxICAgIHMwLHYw
-LHYwCiAgNDQ6ICAgMDAgMDAgNWUgYTcgICAgIGxkcSAgICAgcmEsMChzcCkKICA0ODogICAwOCAw
-MCAzZSBhNSAgICAgbGRxICAgICBzMCw4KHNwKQogIDRjOiAgIDEwIDAwIGRlIDIzICAgICBsZGEg
-ICAgIHNwLDE2KHNwKQogIDUwOiAgIDAxIDgwIGZhIDZiICAgICByZXQKICA1NDogICAwMCAwMCBm
-ZSAyZiAgICAgdW5vcAogIDU4OiAgIDFmIDA0IGZmIDQ3ICAgICBub3AKICA1YzogICAwMCAwMCBm
-ZSAyZiAgICAgdW5vcAoKIyBnY2MtNC40LjMgLU8zIC1tY3B1PWV2NjcgLWMgei5jICYmIG9iamR1
-bXAgLWQgei5vCgp6Lm86ICAgICBmaWxlIGZvcm1hdCBlbGY2NC1hbHBoYQoKRGlzYXNzZW1ibHkg
-b2Ygc2VjdGlvbiAudGV4dDoKCjAwMDAwMDAwMDAwMDAwMDAgPF9fZmZzPjoKICAgMDogICA2MCAw
-NiBmMCA3MyAgICAgY3R0eiAgICBhMCx2MAogICA0OiAgIDAxIDgwIGZhIDZiICAgICByZXQKICAg
-ODogICAxZiAwNCBmZiA0NyAgICAgbm9wCiAgIGM6ICAgMDAgMDAgZmUgMmYgICAgIHVub3AKCjAw
-MDAwMDAwMDAwMDAwMTAgPGZvbz46CiAgMTA6ICAgMDAgMDAgMzAgYTQgICAgIGxkcSAgICAgdDAs
-MChhMCkKICAxNDogICAwOCAwMCAxMCBhNCAgICAgbGRxICAgICB2MCw4KGEwKQogIDE4OiAgIGMw
-IDA0IDIxIDQ0ICAgICBjbW92bmUgIHQwLHQwLHYwCiAgMWM6ICAgYTEgMTUgMjAgNDAgICAgIGNt
-cGVxICAgdDAsMCx0MAogIDIwOiAgIDIxIGQ3IDIwIDQ4ICAgICBzbGwgICAgIHQwLDB4Nix0MAog
-IDI0OiAgIDYwIDA2IGUwIDczICAgICBjdHR6ICAgIHYwLHYwCiAgMjg6ICAgMDAgMDQgMDEgNDAg
-ICAgIGFkZHEgICAgdjAsdDAsdjAKICAyYzogICAwMSA4MCBmYSA2YiAgICAgcmV0CgojIGdjYy00
-LjUuMCAtT3MgLW1jcHU9ZXY2NyAtYyB6LmMgJiYgb2JqZHVtcCAtZCB6Lm8KCnoubzogICAgIGZp
-bGUgZm9ybWF0IGVsZjY0LWFscGhhCgpEaXNhc3NlbWJseSBvZiBzZWN0aW9uIC50ZXh0OgoKMDAw
-MDAwMDAwMDAwMDAwMCA8X19mZnM+OgogICAwOiAgIDYwIDA2IGYwIDczICAgICBjdHR6ICAgIGEw
-LHYwCiAgIDQ6ICAgMDEgODAgZmEgNmIgICAgIHJldAoKMDAwMDAwMDAwMDAwMDAwOCA8Zm9vPjoK
-ICAgODogICAwMCAwMCAzMCBhNCAgICAgbGRxICAgICB0MCwwKGEwKQogICBjOiAgIDA4IDAwIDEw
-IGE0ICAgICBsZHEgICAgIHYwLDgoYTApCiAgMTA6ICAgYzAgMDQgMjEgNDQgICAgIGNtb3ZuZSAg
-dDAsdDAsdjAKICAxNDogICBhMSAxNSAyMCA0MCAgICAgY21wZXEgICB0MCwwLHQwCiAgMTg6ICAg
-MjEgZDcgMjAgNDggICAgIHNsbCAgICAgdDAsMHg2LHQwCiAgMWM6ICAgNjAgMDYgZTAgNzMgICAg
-IGN0dHogICAgdjAsdjAKICAyMDogICAwMCAwNCAwMSA0MCAgICAgYWRkcSAgICB2MCx0MCx2MAog
-IDI0OiAgIDAxIDgwIGZhIDZiICAgICByZXQKCiMgZ2NjLTQuNS4wIC1PMSAtbWNwdT1ldjY3IC1j
-IHouYyAmJiBvYmpkdW1wIC1kIHoubwoKei5vOiAgICAgZmlsZSBmb3JtYXQgZWxmNjQtYWxwaGEK
-CkRpc2Fzc2VtYmx5IG9mIHNlY3Rpb24gLnRleHQ6CgowMDAwMDAwMDAwMDAwMDAwIDxfX2Zmcz46
-CiAgIDA6ICAgNjAgMDYgZjAgNzMgICAgIGN0dHogICAgYTAsdjAKICAgNDogICAwMSA4MCBmYSA2
-YiAgICAgcmV0CgowMDAwMDAwMDAwMDAwMDA4IDxmb28+OgogICA4OiAgIDAwIDAwIGJiIDI3ICAg
-ICBsZGFoICAgIGdwLDAodDEyKQogICBjOiAgIDAwIDAwIGJkIDIzICAgICBsZGEgICAgIGdwLDAo
-Z3ApCiAgMTA6ICAgZjAgZmYgZGUgMjMgICAgIGxkYSAgICAgc3AsLTE2KHNwKQogIDE0OiAgIDAw
-IDAwIDVlIGI3ICAgICBzdHEgICAgIHJhLDAoc3ApCiAgMTg6ICAgMDggMDAgM2UgYjUgICAgIHN0
-cSAgICAgczAsOChzcCkKICAxYzogICAwMCAwMCAzMCBhNCAgICAgbGRxICAgICB0MCwwKGEwKQog
-IDIwOiAgIDA4IDAwIDEwIGE2ICAgICBsZHEgICAgIGEwLDgoYTApCiAgMjQ6ICAgYTkgMTUgMjAg
-NDAgICAgIGNtcGVxICAgdDAsMCxzMAogIDI4OiAgIDI5IGQ3IDIwIDQ5ICAgICBzbGwgICAgIHMw
-LDB4NixzMAogIDJjOiAgIGQwIDA0IDIxIDQ0ICAgICBjbW92bmUgIHQwLHQwLGEwCiAgMzA6ICAg
-MDAgMDAgNDAgZDMgICAgIGJzciAgICAgcmEsMzQgPGZvbysweDJjPgogIDM0OiAgIDAwIDA0IDIw
-IDQxICAgICBhZGRxICAgIHMwLHYwLHYwCiAgMzg6ICAgMDAgMDAgNWUgYTcgICAgIGxkcSAgICAg
-cmEsMChzcCkKICAzYzogICAwOCAwMCAzZSBhNSAgICAgbGRxICAgICBzMCw4KHNwKQogIDQwOiAg
-IDEwIDAwIGRlIDIzICAgICBsZGEgICAgIHNwLDE2KHNwKQogIDQ0OiAgIDAxIDgwIGZhIDZiICAg
-ICByZXQKCiMgZ2NjLTQuNS4wIC1PMiAtbWNwdT1ldjY3IC1jIHouYyAmJiBvYmpkdW1wIC1kIHou
-bwoKei5vOiAgICAgZmlsZSBmb3JtYXQgZWxmNjQtYWxwaGEKCkRpc2Fzc2VtYmx5IG9mIHNlY3Rp
-b24gLnRleHQ6CgowMDAwMDAwMDAwMDAwMDAwIDxfX2Zmcz46CiAgIDA6ICAgNjAgMDYgZjAgNzMg
-ICAgIGN0dHogICAgYTAsdjAKICAgNDogICAwMSA4MCBmYSA2YiAgICAgcmV0CiAgIDg6ICAgMWYg
-MDQgZmYgNDcgICAgIG5vcAogICBjOiAgIDAwIDAwIGZlIDJmICAgICB1bm9wCgowMDAwMDAwMDAw
-MDAwMDEwIDxmb28+OgogIDEwOiAgIDAwIDAwIDMwIGE0ICAgICBsZHEgICAgIHQwLDAoYTApCiAg
-MTQ6ICAgMDggMDAgMTAgYTQgICAgIGxkcSAgICAgdjAsOChhMCkKICAxODogICBjMCAwNCAyMSA0
-NCAgICAgY21vdm5lICB0MCx0MCx2MAogIDFjOiAgIGExIDE1IDIwIDQwICAgICBjbXBlcSAgIHQw
-LDAsdDAKICAyMDogICAyMSBkNyAyMCA0OCAgICAgc2xsICAgICB0MCwweDYsdDAKICAyNDogICA2
-MCAwNiBlMCA3MyAgICAgY3R0eiAgICB2MCx2MAogIDI4OiAgIDAwIDA0IDAxIDQwICAgICBhZGRx
-ICAgIHYwLHQwLHYwCiAgMmM6ICAgMDEgODAgZmEgNmIgICAgIHJldAoKIyBnY2MtNC41LjAgLU8z
-IC1tY3B1PWV2NjcgLWMgei5jICYmIG9iamR1bXAgLWQgei5vCgp6Lm86ICAgICBmaWxlIGZvcm1h
-dCBlbGY2NC1hbHBoYQoKRGlzYXNzZW1ibHkgb2Ygc2VjdGlvbiAudGV4dDoKCjAwMDAwMDAwMDAw
-MDAwMDAgPF9fZmZzPjoKICAgMDogICA2MCAwNiBmMCA3MyAgICAgY3R0eiAgICBhMCx2MAogICA0
-OiAgIDAxIDgwIGZhIDZiICAgICByZXQKICAgODogICAxZiAwNCBmZiA0NyAgICAgbm9wCiAgIGM6
-ICAgMDAgMDAgZmUgMmYgICAgIHVub3AKCjAwMDAwMDAwMDAwMDAwMTAgPGZvbz46CiAgMTA6ICAg
-MDAgMDAgMzAgYTQgICAgIGxkcSAgICAgdDAsMChhMCkKICAxNDogICAwOCAwMCAxMCBhNCAgICAg
-bGRxICAgICB2MCw4KGEwKQogIDE4OiAgIGMwIDA0IDIxIDQ0ICAgICBjbW92bmUgIHQwLHQwLHYw
-CiAgMWM6ICAgYTEgMTUgMjAgNDAgICAgIGNtcGVxICAgdDAsMCx0MAogIDIwOiAgIDIxIGQ3IDIw
-IDQ4ICAgICBzbGwgICAgIHQwLDB4Nix0MAogIDI0OiAgIDYwIDA2IGUwIDczICAgICBjdHR6ICAg
-IHYwLHYwCiAgMjg6ICAgMDAgMDQgMDEgNDAgICAgIGFkZHEgICAgdjAsdDAsdjAKICAyYzogICAw
-MSA4MCBmYSA2YiAgICAgcmV0Cg==
---000e0cd70a78cae82d0485569b20--
