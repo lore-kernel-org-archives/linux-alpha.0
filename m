@@ -1,13 +1,22 @@
-From: Michael Ellerman <michael@ellerman.id.au>
-Subject: Re: Config Items appearing twice in same Kconfig file?
-Date: Thu, 13 May 2010 11:08:49 +1000
-Message-ID: <1273712929.25436.5.camel@concordia>
-References: <20100512143445.GA32559@faui48a.informatik.uni-erlangen.de>
+From: Mike Frysinger <vapier.adi@gmail.com>
+Subject: Re: [Uclinux-dist-devel] Config Items appearing twice in same Kconfig
+	file?
+Date: Mon, 17 May 2010 01:13:23 -0400
+Message-ID: <AANLkTinCRYpqKuJ8NM2sk2hvrgFiqvo9mvXLApun0myA@mail.gmail.com>
+References: <20100512143445.GA32559@faui48a.informatik.uni-erlangen.de> 
 	<20100512144017.GA722@faui48a.informatik.uni-erlangen.de>
-Reply-To: michael@ellerman.id.au
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============9149217305822838533=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=gamma;
+	h=domainkey-signature:received:mime-version:received:in-reply-to
+	:references:from:date:message-id:subject:to:cc:content-type
+	:content-transfer-encoding;
+	bh=O8W6yf9jQdmKFhSLcW4/Kfa08jF3J5k2hFLdP19J1F4=;
+	b=ISx3I63ZhGiwoNLJ9ZqxgmbHZhIEdBPW/E0Mnf1B3sYSk6C2a2bWnXOEo+tpqHIpQl
+	pz9yd4aHpAZnqnpWy9CB69jGFbtdIBcEbcTEgAF3k7qBYejQC/2tkKzgsd/FUCDoUk3a
+	9WvA1krPYZfjo6uXGUSB7ZAUAhjNfMhVDGvqU=
 In-Reply-To: <20100512144017.GA722@faui48a.informatik.uni-erlangen.de>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
@@ -22,67 +31,9 @@ Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozla
 To: Christoph Egger <siccegge@cs.fau.de>
 Cc: linux-ia64@vger.kernel.org, vamos@i4.informatik.uni-erlangen.de, Jesse Barnes <jbarnes@virtuousgeek.org>, Timo Teras <timo.teras@iki.fi>, Chen Liqin <liqin.chen@sunplusct.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, Lennox Wu <lennox.wu@gmail.com>, Jesper Nilsson <jesper.nilsson@axis.com>, "Pekka Savola (ipv6)" <pekkas@netcore.fi>, x86@kernel.org, James Morris <jmorris@namei.org>, Ingo Molnar <mingo@redhat.com>, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Mike Frysinger <vapier@gentoo.org>, Arnd Bergmann <arnd@arndb.de>, Graf Yang <graf.yang@analog.com>, Mikael Starvik <starvik@axis.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, Arjan van de Ven <arjan@linux.intel.com>, Richard Henderson <rth@twiddle.net>, Karsten Keil <isdn@linux-pi>
 
-
---===============9149217305822838533==
-Content-Type: multipart/signed; micalg="pgp-sha1"; protocol="application/pgp-signature"; boundary="=-h/kN6/EO2DvGfQAWWQqy"
-
-
---=-h/kN6/EO2DvGfQAWWQqy
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, 2010-05-12 at 16:40 +0200, Christoph Egger wrote:
-> Just noticed it might have been worth adding the output so everyone
-> out there doesn't ned to grep through his tree for reference:
->=20
-> % grep  ^config **/Kconfig* | sort | uniq -dc                            =
-  =20
-
-That didn't actually work for me?
-
->       2 arch/powerpc/Kconfig:config KERNEL_START
->       2 arch/powerpc/Kconfig:config PAGE_OFFSET
->       2 arch/powerpc/Kconfig:config PHYSICAL_START
->       2 arch/powerpc/Kconfig:config RELOCATABLE
-
-The duplication of these is caused by the second definitions being
-inside an "if PPC64" block.
-
-For PAGE_OFFSET and KERNEL_START we want the 2nd definitions, the
-default value is different between 32 & 64 bit.
-
-For RELOCATABLE it's a little weird, but we want the 2nd definition
-because the depends condition is different between 32 & 64bit - though
-they could probably be merged.
-
-I don't really see why we need two versions of PHYSICAL_START.
-
-cheers
-
---=-h/kN6/EO2DvGfQAWWQqy
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iEYEABECAAYFAkvrUR0ACgkQdSjSd0sB4dJ7HwCgmCXXhb0zeKo4q5rwizaQsc1u
-qnUAoKwiE9Qk0disa6OQAd42Mv7OowT2
-=UXV0
------END PGP SIGNATURE-----
-
---=-h/kN6/EO2DvGfQAWWQqy--
-
-
---===============9149217305822838533==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Linuxppc-dev mailing list
-Linuxppc-dev@lists.ozlabs.org
-https://lists.ozlabs.org/listinfo/linuxppc-dev
---===============9149217305822838533==--
-
+T24gV2VkLCBNYXkgMTIsIDIwMTAgYXQgMTA6NDAsIENocmlzdG9waCBFZ2dlciB3cm90ZToKPiDC
+oCDCoCDCoDIgYXJjaC9ibGFja2Zpbi9LY29uZmlnOmNvbmZpZyBNRU1fTVQ0OExDMzJNOEEyXzc1
+Cgp0aGFua3MsIGknbGwgZ2V0IHRoaXMgc2ltcGxlIGJ1ZyBmaXhlZAotbWlrZQpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGlu
+ZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJz
+Lm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
