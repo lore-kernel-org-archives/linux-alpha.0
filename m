@@ -1,39 +1,188 @@
-From: Mike Frysinger <vapier.adi@gmail.com>
-Subject: Re: [Uclinux-dist-devel] Config Items appearing twice in same Kconfig
-	file?
-Date: Mon, 17 May 2010 01:13:23 -0400
-Message-ID: <AANLkTinCRYpqKuJ8NM2sk2hvrgFiqvo9mvXLApun0myA@mail.gmail.com>
-References: <20100512143445.GA32559@faui48a.informatik.uni-erlangen.de> 
-	<20100512144017.GA722@faui48a.informatik.uni-erlangen.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=gamma;
-	h=domainkey-signature:received:mime-version:received:in-reply-to
-	:references:from:date:message-id:subject:to:cc:content-type
-	:content-transfer-encoding;
-	bh=O8W6yf9jQdmKFhSLcW4/Kfa08jF3J5k2hFLdP19J1F4=;
-	b=ISx3I63ZhGiwoNLJ9ZqxgmbHZhIEdBPW/E0Mnf1B3sYSk6C2a2bWnXOEo+tpqHIpQl
-	pz9yd4aHpAZnqnpWy9CB69jGFbtdIBcEbcTEgAF3k7qBYejQC/2tkKzgsd/FUCDoUk3a
-	9WvA1krPYZfjo6uXGUSB7ZAUAhjNfMhVDGvqU=
-In-Reply-To: <20100512144017.GA722@faui48a.informatik.uni-erlangen.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
-	<mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Sender: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-To: Christoph Egger <siccegge@cs.fau.de>
-Cc: linux-ia64@vger.kernel.org, vamos@i4.informatik.uni-erlangen.de, Jesse Barnes <jbarnes@virtuousgeek.org>, Timo Teras <timo.teras@iki.fi>, Chen Liqin <liqin.chen@sunplusct.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, Lennox Wu <lennox.wu@gmail.com>, Jesper Nilsson <jesper.nilsson@axis.com>, "Pekka Savola (ipv6)" <pekkas@netcore.fi>, x86@kernel.org, James Morris <jmorris@namei.org>, Ingo Molnar <mingo@redhat.com>, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Mike Frysinger <vapier@gentoo.org>, Arnd Bergmann <arnd@arndb.de>, Graf Yang <graf.yang@analog.com>, Mikael Starvik <starvik@axis.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, Arjan van de Ven <arjan@linux.intel.com>, Richard Henderson <rth@twiddle.net>, Karsten Keil <isdn@linux-pi>
+From: Andrea Gelmini <andrea.gelmini@gelma.net>
+Subject: [PATCH 021/199] arch/alpha/kernel/io.c: Checkpatch cleanup
+Date: Sun, 23 May 2010 21:54:05 +0200
+Message-ID: <1274644466-24577-3-git-send-email-andrea.gelmini@gelma.net>
+References: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:sender:from:to:cc:subject
+         :date:message-id:x-mailer:in-reply-to:references;
+        bh=bh3Txv8w6X31zzolAlzsdR8OeikFg+7FEjOw1jukT90=;
+        b=w77UPFye5x2K/Fr4vpRqjK+e1FQNdICntUWP5cgQaprzhfCX2dLF/ELTo30esdtHuh
+         tsLWPV8lcKDrrpPxfVOuyVhiwY4LgVc//lEZyaq+adjNznVGfDATYZG6jnQm6VpLsuCf
+         TN79dh/rDs/WTKdJzIAauN7j5UPwi1v70LWAw=
+In-Reply-To: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: andrea.gelmini@gelma.net
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-T24gV2VkLCBNYXkgMTIsIDIwMTAgYXQgMTA6NDAsIENocmlzdG9waCBFZ2dlciB3cm90ZToKPiDC
-oCDCoCDCoDIgYXJjaC9ibGFja2Zpbi9LY29uZmlnOmNvbmZpZyBNRU1fTVQ0OExDMzJNOEEyXzc1
-Cgp0aGFua3MsIGknbGwgZ2V0IHRoaXMgc2ltcGxlIGJ1ZyBmaXhlZAotbWlrZQpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGlu
-ZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJz
-Lm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
+arch/alpha/kernel/io.c:11: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:18: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:25: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:32: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:39: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:45: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:51: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:101: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:106: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:111: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:116: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:121: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:126: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:131: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:136: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/kernel/io.c:139: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:140: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:141: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:142: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:143: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:144: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:145: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:146: ERROR: trailing whitespace
+arch/alpha/kernel/io.c:277: ERROR: "(foo*)" should be "(foo *)"
+arch/alpha/kernel/io.c:370: WARNING: braces {} are not necessary for single statement blocks
+arch/alpha/kernel/io.c:578: WARNING: braces {} are not necessary for single statement blocks
+arch/alpha/kernel/io.c:608: ERROR: else should follow close brace '}'
+arch/alpha/kernel/io.c:622: ERROR: space required after that ',' (ctx:VxV)
+
+Signed-off-by: Andrea Gelmini <andrea.gelmini@gelma.net>
+---
+ arch/alpha/kernel/io.c |   47 ++++++++++++++++++++++-------------------------
+ 1 files changed, 22 insertions(+), 25 deletions(-)
+
+diff --git a/arch/alpha/kernel/io.c b/arch/alpha/kernel/io.c
+index 19c5875..612443c 100644
+--- a/arch/alpha/kernel/io.c
++++ b/arch/alpha/kernel/io.c
+@@ -8,7 +8,7 @@
+ #include <linux/module.h>
+ #include <asm/io.h>
+ 
+-/* Out-of-line versions of the i/o routines that redirect into the 
++/* Out-of-line versions of the i/o routines that redirect into the
+    platform-specific version.  Note that "platform-specific" may mean
+    "generic", which bumps through the machine vector.  */
+ 
+@@ -42,13 +42,13 @@ void iowrite8(u8 b, void __iomem *addr)
+ 
+ void iowrite16(u16 b, void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
++	IO_CONCAT(__IO_PREFIX, iowrite16)(b, addr);
+ 	mb();
+ }
+ 
+ void iowrite32(u32 b, void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
++	IO_CONCAT(__IO_PREFIX, iowrite32)(b, addr);
+ 	mb();
+ }
+ 
+@@ -108,42 +108,42 @@ u16 __raw_readw(const volatile void __iomem *addr)
+ 
+ u32 __raw_readl(const volatile void __iomem *addr)
+ {
+-	return IO_CONCAT(__IO_PREFIX,readl)(addr);
++	return IO_CONCAT(__IO_PREFIX, readl)(addr);
+ }
+ 
+ u64 __raw_readq(const volatile void __iomem *addr)
+ {
+-	return IO_CONCAT(__IO_PREFIX,readq)(addr);
++	return IO_CONCAT(__IO_PREFIX, readq)(addr);
+ }
+ 
+ void __raw_writeb(u8 b, volatile void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,writeb)(b, addr);
++	IO_CONCAT(__IO_PREFIX, writeb)(b, addr);
+ }
+ 
+ void __raw_writew(u16 b, volatile void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,writew)(b, addr);
++	IO_CONCAT(__IO_PREFIX, writew)(b, addr);
+ }
+ 
+ void __raw_writel(u32 b, volatile void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,writel)(b, addr);
++	IO_CONCAT(__IO_PREFIX, writel)(b, addr);
+ }
+ 
+ void __raw_writeq(u64 b, volatile void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,writeq)(b, addr);
++	IO_CONCAT(__IO_PREFIX, writeq)(b, addr);
+ }
+ 
+-EXPORT_SYMBOL(__raw_readb); 
+-EXPORT_SYMBOL(__raw_readw); 
+-EXPORT_SYMBOL(__raw_readl); 
+-EXPORT_SYMBOL(__raw_readq); 
+-EXPORT_SYMBOL(__raw_writeb); 
+-EXPORT_SYMBOL(__raw_writew); 
+-EXPORT_SYMBOL(__raw_writel); 
+-EXPORT_SYMBOL(__raw_writeq); 
++EXPORT_SYMBOL(__raw_readb);
++EXPORT_SYMBOL(__raw_readw);
++EXPORT_SYMBOL(__raw_readl);
++EXPORT_SYMBOL(__raw_readq);
++EXPORT_SYMBOL(__raw_writeb);
++EXPORT_SYMBOL(__raw_writew);
++EXPORT_SYMBOL(__raw_writel);
++EXPORT_SYMBOL(__raw_writeq);
+ 
+ u8 readb(const volatile void __iomem *addr)
+ {
+@@ -273,9 +273,8 @@ void ioread16_rep(void __iomem *port, void *dst, unsigned long count)
+ 		dst += 4;
+ 	}
+ 
+-	if (count) {
+-		*(unsigned short*)dst = ioread16(port);
+-	}
++	if (count)
++		*(unsigned short *)dst = ioread16(port);
+ }
+ 
+ void insw(unsigned long port, void *dst, unsigned long count)
+@@ -575,9 +574,8 @@ void _memset_c_io(volatile void __iomem *to, unsigned long c, long count)
+ 	}
+ 
+ 	/* And finally, one last byte.. */
+-	if (count) {
++	if (count)
+ 		__raw_writeb(c, to);
+-	}
+ 	mb();
+ }
+ 
+@@ -604,8 +602,7 @@ scr_memcpyw(u16 *d, const u16 *s, unsigned int count)
+ 				u16 tmp = __raw_readw(ios++);
+ 				__raw_writew(tmp, iod++);
+ 			}
+-		}
+-		else
++		} else
+ 			memcpy_fromio(d, ios, count);
+ 	} else {
+ 		if (d_isio)
+@@ -619,7 +616,7 @@ EXPORT_SYMBOL(scr_memcpyw);
+ 
+ void __iomem *ioport_map(unsigned long port, unsigned int size)
+ {
+-	return IO_CONCAT(__IO_PREFIX,ioportmap) (port);
++	return IO_CONCAT(__IO_PREFIX, ioportmap) (port);
+ }
+ 
+ void ioport_unmap(void __iomem *addr)
+-- 
+1.7.1.251.gf80a2
+
