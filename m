@@ -1,17 +1,17 @@
 From: Andrea Gelmini <andrea.gelmini@gelma.net>
-Subject: [PATCH 023/199] arch/alpha/lib/divide.S: Checkpatch cleanup
-Date: Sun, 23 May 2010 21:54:07 +0200
-Message-ID: <1274644466-24577-5-git-send-email-andrea.gelmini@gelma.net>
+Subject: [PATCH 114/199] arch/alpha/lib/ev6-clear_user.S: Checkpatch cleanup
+Date: Sun, 23 May 2010 21:54:08 +0200
+Message-ID: <1274644466-24577-6-git-send-email-andrea.gelmini@gelma.net>
 References: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:sender:from:to:cc:subject
          :date:message-id:x-mailer:in-reply-to:references;
-        bh=F/C51J2MIIxuhqGoXg4AcoaLmHAeZle4YDQbLNo/sA0=;
-        b=Wvw5vtuZTAYhKbvSGvfEMMFdEmO8FMJJpxRKWZb9dswz7Ji9BntrFjDYheDIo18NUO
-         Qp7I4bLvklSbX5pTPlAz6rddR1h5fIybqtd2jHcZKym0eUWW2j1/0a1UQ9BeSBj4Ng9+
-         bKclPdhgcU7dd7JFH0Vq6wTWVHY95n/4e5DuM=
+        bh=VxmVRoUQVgYQ5cGrPbt0swW9v8B3JH6S4N0GjpzAINY=;
+        b=lBJp0gVcYFZ+MMv8Xo0IpB5Q9lnMG9kW3BZz6G0ugFtBsdiXd6A+9vJocJPre8tOHq
+         IYnQuB61oEWzAVHs+3qJkHPox876VavK59S08ys1HoGP+M34GeqyvQ3RtCnOU1cHxLhZ
+         qi1dSGEnPlC7W0q4zaPDXWTkkYqehvU9glp7M=
 In-Reply-To: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -21,26 +21,26 @@ Content-Transfer-Encoding: 7bit
 To: andrea.gelmini@gelma.net
 Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-arch/alpha/lib/divide.S:22: ERROR: trailing whitespace
+arch/alpha/lib/ev6-clear_user.S:185: ERROR: trailing whitespace
 
 Signed-off-by: Andrea Gelmini <andrea.gelmini@gelma.net>
 ---
- arch/alpha/lib/divide.S |    2 +-
+ arch/alpha/lib/ev6-clear_user.S |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/alpha/lib/divide.S b/arch/alpha/lib/divide.S
-index 2d1a048..355438a 100644
---- a/arch/alpha/lib/divide.S
-+++ b/arch/alpha/lib/divide.S
-@@ -19,7 +19,7 @@
-  * These are not normal C functions: instead of the normal
-  * calling sequence, these expect their arguments in registers
-  * $24 and $25, and return the result in $27. Register $28 may
-- * be clobbered (assembly temporary), anything else must be saved. 
-+ * be clobbered (assembly temporary), anything else must be saved.
-  *
-  * In short: painful.
-  *
+diff --git a/arch/alpha/lib/ev6-clear_user.S b/arch/alpha/lib/ev6-clear_user.S
+index 4f42a16..52574c2 100644
+--- a/arch/alpha/lib/ev6-clear_user.S
++++ b/arch/alpha/lib/ev6-clear_user.S
+@@ -182,7 +182,7 @@ $do_wh64:
+ $trailquad:
+ 	# zero to 16 quadwords left to store, plus any trailing bytes
+ 	# $1 is the number of quadwords left to go.
+-	# 
++	#
+ 	nop			# .. .. .. E
+ 	nop			# .. .. E  ..
+ 	nop			# .. E  .. ..
 -- 
 1.7.1.251.gf80a2
 
