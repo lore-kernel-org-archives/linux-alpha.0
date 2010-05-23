@@ -1,123 +1,46 @@
 From: Andrea Gelmini <andrea.gelmini@gelma.net>
-Subject: [PATCH 016/199] arch/alpha/boot/bootp.c: Checkpatch cleanup
-Date: Sun, 23 May 2010 21:54:03 +0200
-Message-ID: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
+Subject: [PATCH 022/199] arch/alpha/lib/copy_user.S: Checkpatch cleanup
+Date: Sun, 23 May 2010 21:54:06 +0200
+Message-ID: <1274644466-24577-4-git-send-email-andrea.gelmini@gelma.net>
+References: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:sender:from:to:cc:subject
-         :date:message-id:x-mailer;
-        bh=CmeMoCnSKx+WEezUE67RCImEhkOiKYpFJsLQQCwvplo=;
-        b=Y2ah7V+92/pMckJbl5Ib5M7rCRlBclIXnqsNA0tbOLbS41Yl+yvgh9/GKerRFOZYRD
-         iX48K5xuSVTZWhhvDl3nE2cfyv98oFxyjkpnGoVrUaXv8HNltgdC8ipN4l+EjeXFnTy5
-         Ci3rYMzlKJ78ZssJWNeS8aSCZxi2TTNrh8A1k=
+         :date:message-id:x-mailer:in-reply-to:references;
+        bh=SA/KFSNcrWSpKt8kPoISlBaPWGacjC/WNPCQt+pTPOk=;
+        b=lOc/0Qvcly15RhzDyOwPesnSntrgXO7o2Q5+OoILYgDVPV6AJ1MSl3OJvN4KBH+v3X
+         OtGtGXFGnA0500SLRdjYUp9SmbE0WTTFuQA9R5+g4ULTTCpJTMFsZO8yBAX6GC0Bj4XW
+         aXmHlWQdZ0cKOSPLLGyh6CrBXdUQPCyro2dfI=
+In-Reply-To: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: andrea.gelmini@gelma.net
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tejun Heo <tj@kernel.org>, Michal Marek <mmarek@suse.cz>, Christoph Lameter <cl@linux-foundation.org>, Sam Ravnborg <sam@ravnborg.org>, linux-alpha@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-arch/alpha/boot/bootp.c:25: WARNING: externs should be avoided in .c files
-arch/alpha/boot/bootp.c:26: ERROR: "foo * bar" should be "foo *bar"
-arch/alpha/boot/bootp.c:29: WARNING: externs should be avoided in .c files
-arch/alpha/boot/bootp.c:51: ERROR: trailing whitespace
-arch/alpha/boot/bootp.c:71: ERROR: "foo * bar" should be "foo *bar"
-arch/alpha/boot/bootp.c:72: ERROR: "foo * bar" should be "foo *bar"
-arch/alpha/boot/bootp.c:103: CHECK: multiple assignments should be avoided
-arch/alpha/boot/bootp.c:129: WARNING: externs should be avoided in .c files
-arch/alpha/boot/bootp.c:155: ERROR: code indent should use tabs where possible
-arch/alpha/boot/bootp.c:165: ERROR: trailing whitespace
-arch/alpha/boot/bootp.c:180: WARNING: braces {} are not necessary for single statement blocks
-arch/alpha/boot/bootp.c:203: ERROR: code indent should use tabs where possible
-arch/alpha/boot/bootp.c:204: ERROR: code indent should use tabs where possible
-arch/alpha/boot/bootp.c:206: ERROR: "(foo*)" should be "(foo *)"
-arch/alpha/boot/bootp.c:207: ERROR: "(foo*)" should be "(foo *)"
+arch/alpha/lib/copy_user.S:132: ERROR: trailing whitespace
 
 Signed-off-by: Andrea Gelmini <andrea.gelmini@gelma.net>
 ---
- arch/alpha/boot/bootp.c |   23 +++++++++++------------
- 1 files changed, 11 insertions(+), 12 deletions(-)
+ arch/alpha/lib/copy_user.S |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/alpha/boot/bootp.c b/arch/alpha/boot/bootp.c
-index 3c8d1b2..a85041a 100644
---- a/arch/alpha/boot/bootp.c
-+++ b/arch/alpha/boot/bootp.c
-@@ -23,7 +23,7 @@
- #include "ksize.h"
+diff --git a/arch/alpha/lib/copy_user.S b/arch/alpha/lib/copy_user.S
+index 6f3fab9..8965993 100644
+--- a/arch/alpha/lib/copy_user.S
++++ b/arch/alpha/lib/copy_user.S
+@@ -129,7 +129,7 @@ $exitout:
  
- extern unsigned long switch_to_osf_pal(unsigned long nr,
--	struct pcb_struct * pcb_va, struct pcb_struct * pcb_pa,
-+	struct pcb_struct *pcb_va, struct pcb_struct *pcb_pa,
- 	unsigned long *vptb);
+ $exitin:
+ 	/* A stupid byte-by-byte zeroing of the rest of the output
+-	   buffer.  This cures security holes by never leaving 
++	   buffer.  This cures security holes by never leaving
+ 	   random kernel data around to be copied elsewhere.  */
  
- extern void move_stack(unsigned long new_stack);
-@@ -48,7 +48,7 @@ find_pa(unsigned long *vptb, void *ptr)
- 	result <<= 13;
- 	result |= address & 0x1fff;
- 	return (void *) result;
--}	
-+}
- 
- /*
-  * This function moves into OSF/1 pal-code, and has a temporary
-@@ -68,8 +68,8 @@ void
- pal_init(void)
- {
- 	unsigned long i, rev;
--	struct percpu_struct * percpu;
--	struct pcb_struct * pcb_pa;
-+	struct percpu_struct *percpu;
-+	struct pcb_struct *pcb_pa;
- 
- 	/* Create the dummy PCB.  */
- 	pcb_va->ksp = 0;
-@@ -152,7 +152,7 @@ start_kernel(void)
- 	srm_printk("Linux/AXP bootp loader for Linux " UTS_RELEASE "\n");
- 	if (INIT_HWRPB->pagesize != 8192) {
- 		srm_printk("Expected 8kB pages, got %ldkB\n",
--		           INIT_HWRPB->pagesize >> 10);
-+					INIT_HWRPB->pagesize >> 10);
- 		return;
- 	}
- 	if (INIT_HWRPB->vptb != (unsigned long) VPTB) {
-@@ -162,7 +162,7 @@ start_kernel(void)
- 	}
- 	pal_init();
- 
--	/* The initrd must be page-aligned.  See below for the 
-+	/* The initrd must be page-aligned.  See below for the
- 	   cause of the magic number 5.  */
- 	initrd_start = ((START_ADDR + 5*KERNEL_SIZE + PAGE_SIZE) |
- 			(PAGE_SIZE-1)) + 1;
-@@ -177,9 +177,8 @@ start_kernel(void)
- 	move_stack(initrd_start - PAGE_SIZE);
- 
- 	nbytes = callback_getenv(ENV_BOOTED_OSFLAGS, envval, sizeof(envval));
--	if (nbytes < 0 || nbytes >= sizeof(envval)) {
-+	if (nbytes < 0 || nbytes >= sizeof(envval))
- 		nbytes = 0;
--	}
- 	envval[nbytes] = '\0';
- 	srm_printk("Loading the kernel...'%s'\n", envval);
- 
-@@ -200,11 +199,11 @@ start_kernel(void)
- #ifdef INITRD_IMAGE_SIZE
- 	load(initrd_start, KERNEL_ORIGIN+KERNEL_SIZE, INITRD_IMAGE_SIZE);
- #endif
--        load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
--        load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
-+	load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
-+	load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
- 
--	memset((char*)ZERO_PGE, 0, PAGE_SIZE);
--	strcpy((char*)ZERO_PGE, envval);
-+	memset((char *)ZERO_PGE, 0, PAGE_SIZE);
-+	strcpy((char *)ZERO_PGE, envval);
- #ifdef INITRD_IMAGE_SIZE
- 	((long *)(ZERO_PGE+256))[0] = initrd_start;
- 	((long *)(ZERO_PGE+256))[1] = INITRD_IMAGE_SIZE;
+ 	mov $0,$1
 -- 
 1.7.1.251.gf80a2
 
