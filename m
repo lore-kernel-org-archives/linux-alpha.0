@@ -1,188 +1,123 @@
 From: Andrea Gelmini <andrea.gelmini@gelma.net>
-Subject: [PATCH 021/199] arch/alpha/kernel/io.c: Checkpatch cleanup
-Date: Sun, 23 May 2010 21:54:05 +0200
-Message-ID: <1274644466-24577-3-git-send-email-andrea.gelmini@gelma.net>
-References: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
+Subject: [PATCH 016/199] arch/alpha/boot/bootp.c: Checkpatch cleanup
+Date: Sun, 23 May 2010 21:54:03 +0200
+Message-ID: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:sender:from:to:cc:subject
-         :date:message-id:x-mailer:in-reply-to:references;
-        bh=bh3Txv8w6X31zzolAlzsdR8OeikFg+7FEjOw1jukT90=;
-        b=w77UPFye5x2K/Fr4vpRqjK+e1FQNdICntUWP5cgQaprzhfCX2dLF/ELTo30esdtHuh
-         tsLWPV8lcKDrrpPxfVOuyVhiwY4LgVc//lEZyaq+adjNznVGfDATYZG6jnQm6VpLsuCf
-         TN79dh/rDs/WTKdJzIAauN7j5UPwi1v70LWAw=
-In-Reply-To: <1274644466-24577-1-git-send-email-andrea.gelmini@gelma.net>
+         :date:message-id:x-mailer;
+        bh=CmeMoCnSKx+WEezUE67RCImEhkOiKYpFJsLQQCwvplo=;
+        b=Y2ah7V+92/pMckJbl5Ib5M7rCRlBclIXnqsNA0tbOLbS41Yl+yvgh9/GKerRFOZYRD
+         iX48K5xuSVTZWhhvDl3nE2cfyv98oFxyjkpnGoVrUaXv8HNltgdC8ipN4l+EjeXFnTy5
+         Ci3rYMzlKJ78ZssJWNeS8aSCZxi2TTNrh8A1k=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: andrea.gelmini@gelma.net
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tejun Heo <tj@kernel.org>, Michal Marek <mmarek@suse.cz>, Christoph Lameter <cl@linux-foundation.org>, Sam Ravnborg <sam@ravnborg.org>, linux-alpha@vger.kernel.org
 
-arch/alpha/kernel/io.c:11: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:18: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:25: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:32: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:39: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:45: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:51: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:101: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:106: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:111: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:116: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:121: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:126: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:131: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:136: ERROR: space required after that ',' (ctx:VxV)
-arch/alpha/kernel/io.c:139: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:140: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:141: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:142: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:143: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:144: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:145: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:146: ERROR: trailing whitespace
-arch/alpha/kernel/io.c:277: ERROR: "(foo*)" should be "(foo *)"
-arch/alpha/kernel/io.c:370: WARNING: braces {} are not necessary for single statement blocks
-arch/alpha/kernel/io.c:578: WARNING: braces {} are not necessary for single statement blocks
-arch/alpha/kernel/io.c:608: ERROR: else should follow close brace '}'
-arch/alpha/kernel/io.c:622: ERROR: space required after that ',' (ctx:VxV)
+arch/alpha/boot/bootp.c:25: WARNING: externs should be avoided in .c files
+arch/alpha/boot/bootp.c:26: ERROR: "foo * bar" should be "foo *bar"
+arch/alpha/boot/bootp.c:29: WARNING: externs should be avoided in .c files
+arch/alpha/boot/bootp.c:51: ERROR: trailing whitespace
+arch/alpha/boot/bootp.c:71: ERROR: "foo * bar" should be "foo *bar"
+arch/alpha/boot/bootp.c:72: ERROR: "foo * bar" should be "foo *bar"
+arch/alpha/boot/bootp.c:103: CHECK: multiple assignments should be avoided
+arch/alpha/boot/bootp.c:129: WARNING: externs should be avoided in .c files
+arch/alpha/boot/bootp.c:155: ERROR: code indent should use tabs where possible
+arch/alpha/boot/bootp.c:165: ERROR: trailing whitespace
+arch/alpha/boot/bootp.c:180: WARNING: braces {} are not necessary for single statement blocks
+arch/alpha/boot/bootp.c:203: ERROR: code indent should use tabs where possible
+arch/alpha/boot/bootp.c:204: ERROR: code indent should use tabs where possible
+arch/alpha/boot/bootp.c:206: ERROR: "(foo*)" should be "(foo *)"
+arch/alpha/boot/bootp.c:207: ERROR: "(foo*)" should be "(foo *)"
 
 Signed-off-by: Andrea Gelmini <andrea.gelmini@gelma.net>
 ---
- arch/alpha/kernel/io.c |   47 ++++++++++++++++++++++-------------------------
- 1 files changed, 22 insertions(+), 25 deletions(-)
+ arch/alpha/boot/bootp.c |   23 +++++++++++------------
+ 1 files changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/arch/alpha/kernel/io.c b/arch/alpha/kernel/io.c
-index 19c5875..612443c 100644
---- a/arch/alpha/kernel/io.c
-+++ b/arch/alpha/kernel/io.c
-@@ -8,7 +8,7 @@
- #include <linux/module.h>
- #include <asm/io.h>
+diff --git a/arch/alpha/boot/bootp.c b/arch/alpha/boot/bootp.c
+index 3c8d1b2..a85041a 100644
+--- a/arch/alpha/boot/bootp.c
++++ b/arch/alpha/boot/bootp.c
+@@ -23,7 +23,7 @@
+ #include "ksize.h"
  
--/* Out-of-line versions of the i/o routines that redirect into the 
-+/* Out-of-line versions of the i/o routines that redirect into the
-    platform-specific version.  Note that "platform-specific" may mean
-    "generic", which bumps through the machine vector.  */
+ extern unsigned long switch_to_osf_pal(unsigned long nr,
+-	struct pcb_struct * pcb_va, struct pcb_struct * pcb_pa,
++	struct pcb_struct *pcb_va, struct pcb_struct *pcb_pa,
+ 	unsigned long *vptb);
  
-@@ -42,13 +42,13 @@ void iowrite8(u8 b, void __iomem *addr)
+ extern void move_stack(unsigned long new_stack);
+@@ -48,7 +48,7 @@ find_pa(unsigned long *vptb, void *ptr)
+ 	result <<= 13;
+ 	result |= address & 0x1fff;
+ 	return (void *) result;
+-}	
++}
  
- void iowrite16(u16 b, void __iomem *addr)
+ /*
+  * This function moves into OSF/1 pal-code, and has a temporary
+@@ -68,8 +68,8 @@ void
+ pal_init(void)
  {
--	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
-+	IO_CONCAT(__IO_PREFIX, iowrite16)(b, addr);
- 	mb();
- }
+ 	unsigned long i, rev;
+-	struct percpu_struct * percpu;
+-	struct pcb_struct * pcb_pa;
++	struct percpu_struct *percpu;
++	struct pcb_struct *pcb_pa;
  
- void iowrite32(u32 b, void __iomem *addr)
- {
--	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
-+	IO_CONCAT(__IO_PREFIX, iowrite32)(b, addr);
- 	mb();
- }
- 
-@@ -108,42 +108,42 @@ u16 __raw_readw(const volatile void __iomem *addr)
- 
- u32 __raw_readl(const volatile void __iomem *addr)
- {
--	return IO_CONCAT(__IO_PREFIX,readl)(addr);
-+	return IO_CONCAT(__IO_PREFIX, readl)(addr);
- }
- 
- u64 __raw_readq(const volatile void __iomem *addr)
- {
--	return IO_CONCAT(__IO_PREFIX,readq)(addr);
-+	return IO_CONCAT(__IO_PREFIX, readq)(addr);
- }
- 
- void __raw_writeb(u8 b, volatile void __iomem *addr)
- {
--	IO_CONCAT(__IO_PREFIX,writeb)(b, addr);
-+	IO_CONCAT(__IO_PREFIX, writeb)(b, addr);
- }
- 
- void __raw_writew(u16 b, volatile void __iomem *addr)
- {
--	IO_CONCAT(__IO_PREFIX,writew)(b, addr);
-+	IO_CONCAT(__IO_PREFIX, writew)(b, addr);
- }
- 
- void __raw_writel(u32 b, volatile void __iomem *addr)
- {
--	IO_CONCAT(__IO_PREFIX,writel)(b, addr);
-+	IO_CONCAT(__IO_PREFIX, writel)(b, addr);
- }
- 
- void __raw_writeq(u64 b, volatile void __iomem *addr)
- {
--	IO_CONCAT(__IO_PREFIX,writeq)(b, addr);
-+	IO_CONCAT(__IO_PREFIX, writeq)(b, addr);
- }
- 
--EXPORT_SYMBOL(__raw_readb); 
--EXPORT_SYMBOL(__raw_readw); 
--EXPORT_SYMBOL(__raw_readl); 
--EXPORT_SYMBOL(__raw_readq); 
--EXPORT_SYMBOL(__raw_writeb); 
--EXPORT_SYMBOL(__raw_writew); 
--EXPORT_SYMBOL(__raw_writel); 
--EXPORT_SYMBOL(__raw_writeq); 
-+EXPORT_SYMBOL(__raw_readb);
-+EXPORT_SYMBOL(__raw_readw);
-+EXPORT_SYMBOL(__raw_readl);
-+EXPORT_SYMBOL(__raw_readq);
-+EXPORT_SYMBOL(__raw_writeb);
-+EXPORT_SYMBOL(__raw_writew);
-+EXPORT_SYMBOL(__raw_writel);
-+EXPORT_SYMBOL(__raw_writeq);
- 
- u8 readb(const volatile void __iomem *addr)
- {
-@@ -273,9 +273,8 @@ void ioread16_rep(void __iomem *port, void *dst, unsigned long count)
- 		dst += 4;
+ 	/* Create the dummy PCB.  */
+ 	pcb_va->ksp = 0;
+@@ -152,7 +152,7 @@ start_kernel(void)
+ 	srm_printk("Linux/AXP bootp loader for Linux " UTS_RELEASE "\n");
+ 	if (INIT_HWRPB->pagesize != 8192) {
+ 		srm_printk("Expected 8kB pages, got %ldkB\n",
+-		           INIT_HWRPB->pagesize >> 10);
++					INIT_HWRPB->pagesize >> 10);
+ 		return;
  	}
- 
--	if (count) {
--		*(unsigned short*)dst = ioread16(port);
--	}
-+	if (count)
-+		*(unsigned short *)dst = ioread16(port);
- }
- 
- void insw(unsigned long port, void *dst, unsigned long count)
-@@ -575,9 +574,8 @@ void _memset_c_io(volatile void __iomem *to, unsigned long c, long count)
+ 	if (INIT_HWRPB->vptb != (unsigned long) VPTB) {
+@@ -162,7 +162,7 @@ start_kernel(void)
  	}
+ 	pal_init();
  
- 	/* And finally, one last byte.. */
--	if (count) {
-+	if (count)
- 		__raw_writeb(c, to);
+-	/* The initrd must be page-aligned.  See below for the 
++	/* The initrd must be page-aligned.  See below for the
+ 	   cause of the magic number 5.  */
+ 	initrd_start = ((START_ADDR + 5*KERNEL_SIZE + PAGE_SIZE) |
+ 			(PAGE_SIZE-1)) + 1;
+@@ -177,9 +177,8 @@ start_kernel(void)
+ 	move_stack(initrd_start - PAGE_SIZE);
+ 
+ 	nbytes = callback_getenv(ENV_BOOTED_OSFLAGS, envval, sizeof(envval));
+-	if (nbytes < 0 || nbytes >= sizeof(envval)) {
++	if (nbytes < 0 || nbytes >= sizeof(envval))
+ 		nbytes = 0;
 -	}
- 	mb();
- }
+ 	envval[nbytes] = '\0';
+ 	srm_printk("Loading the kernel...'%s'\n", envval);
  
-@@ -604,8 +602,7 @@ scr_memcpyw(u16 *d, const u16 *s, unsigned int count)
- 				u16 tmp = __raw_readw(ios++);
- 				__raw_writew(tmp, iod++);
- 			}
--		}
--		else
-+		} else
- 			memcpy_fromio(d, ios, count);
- 	} else {
- 		if (d_isio)
-@@ -619,7 +616,7 @@ EXPORT_SYMBOL(scr_memcpyw);
+@@ -200,11 +199,11 @@ start_kernel(void)
+ #ifdef INITRD_IMAGE_SIZE
+ 	load(initrd_start, KERNEL_ORIGIN+KERNEL_SIZE, INITRD_IMAGE_SIZE);
+ #endif
+-        load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
+-        load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
++	load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
++	load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
  
- void __iomem *ioport_map(unsigned long port, unsigned int size)
- {
--	return IO_CONCAT(__IO_PREFIX,ioportmap) (port);
-+	return IO_CONCAT(__IO_PREFIX, ioportmap) (port);
- }
- 
- void ioport_unmap(void __iomem *addr)
+-	memset((char*)ZERO_PGE, 0, PAGE_SIZE);
+-	strcpy((char*)ZERO_PGE, envval);
++	memset((char *)ZERO_PGE, 0, PAGE_SIZE);
++	strcpy((char *)ZERO_PGE, envval);
+ #ifdef INITRD_IMAGE_SIZE
+ 	((long *)(ZERO_PGE+256))[0] = initrd_start;
+ 	((long *)(ZERO_PGE+256))[1] = INITRD_IMAGE_SIZE;
 -- 
 1.7.1.251.gf80a2
 
