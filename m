@@ -1,61 +1,50 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: [PATCH 3/3] alpha: Implement HW performance events on the EV67 and later CPUs.
-Date: Tue, 25 May 2010 09:58:05 +1200
-Message-ID: <E02DFBB5-4841-4C6F-8142-0E7D0F1D4A30@orcon.net.nz>
-References: <cover.1272668360.git.mcree@orcon.net.nz> <8e86ca502b675b3730bd58be391e0239e87e176d.1272668361.git.mcree@orcon.net.nz> <1272958808.5605.126.camel@twins>
-Mime-Version: 1.0 (Apple Message framework v936)
-Content-Transfer-Encoding: 7bit
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PULL] alpha-2.6.git
+Date: Tue, 25 May 2010 19:45:24 -0400
+Message-ID: <AANLkTim3NbMpA4S_kLa--0SO6QEY3qlhQW0iF9tO9Dei@mail.gmail.com>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1272958808.5605.126.camel@twins>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:mime-version:received:received:date:message-id
+         :subject:from:to:cc:content-type;
+        bh=9kLVtI6Xm2J+SUdCJcmDzdUOzzbpVfs9HWRP3Xg+czc=;
+        b=qTDeZps6dDgkdBggyGhhzkwDAsrgsq4jRkS2nhuU7gFKdOsCMKxCDAq5uEzhhokr6E
+         aK61dKmj+fCfy18kJAaXvLFUWq9y4/vfC53Faqg9KttwOYPSa0IayCL3rwK/nzRg8UEb
+         NROh34WNBXR1hJObJKA4x/F480RncX+0FO5lo=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"; delsp="yes"
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: linux-kernel@vger.kernel.org, Paul Mackerras <paulus@samba.org>, Ingo Molnar <mingo@elte.hu>, Arnaldo Carvalho de Melo <acme@redhat.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org
 
-On 4/05/2010, at 7:40 PM, Peter Zijlstra wrote:
-> On Sat, 2010-05-01 at 11:55 +1200, Michael Cree wrote:
->> +/* I wonder what this is for ??? */
->> +void set_perf_event_pending(void)
->> +{
->> +}
->
-> If the PMU Interrupt comes in as an NMI we cannot take locks and such
-> from its handler. So what we do is queue that work to be ran later.  
-> The
-> kernel has a fallback to run this stuff from the timer hardirq, but if
-> the PMI is IRQ context (like ARM) you can simply call
-> perf_event_do_pending() at its tail.
+Hi Linus,
+Please pull from alpha-2.6.git.
 
-My understanding from the Alpha HW Ref. Man. and a brief look at the  
-kernel code is that the PMI comes in through the normal IRQ entry  
-point on the Alpha.  It is a high priority interrupt and only a  
-machine check (i.e. detected hardware failure) can interrupt the PMU  
-interrupt handler.  I don't know whether that is an issue for taking  
-locks or not and need advice on that.
+Thanks!
+Matt Turner
 
-I originally based the Alpha implementation on the Sparc  
-implementation and would've copied the set_perf_event_pending()  
-definition from the Sparc code, but I now see that newer Sparc code  
-does not have that definition nor does it call perf_event_do_pending()  
-in the interrupt handler.
+The following changes since commit ec96e2fe954c23a54bfdf2673437a39e193a1822:
+  Linus Torvalds (1):
+        Merge branch 'devel' of master.kernel.org:/home/rmk/linux-2.6-arm
 
-So I need advice on whether to:
+are available in the git repository at:
 
-1) Just remove the set_perf_event_pending() definition so we are like  
-the Sparc code,
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.git
+alpha-next
 
-2) Add perf_event_do_pending() to the tail of the IRQ handler so we  
-are like the ARM code, or
+John Stultz (1):
+      Convert alpha to use clocksources instead of arch_gettimeoffset
 
-3) Implement the following suggestion:
+Matt Turner (1):
+      alpha: simplify and optimize sched_find_first_bit
 
-> Alternatively you can self-IPI like x86 does and run
-> perf_event_do_pending() from there.
+Nick Piggin (1):
+      alpha: invoke oom-killer from page fault
 
-Another question is what are the observeable symptoms if an incorrect  
-option above is implemented?
-
-Regards
-Michael.
-
+ arch/alpha/Kconfig              |    4 --
+ arch/alpha/include/asm/bitops.h |   20 +++++------
+ arch/alpha/kernel/time.c        |   69 +++++++++++++++++---------------------
+ arch/alpha/mm/fault.c           |   11 +-----
+ 4 files changed, 42 insertions(+), 62 deletions(-)
