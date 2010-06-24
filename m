@@ -1,365 +1,146 @@
 From: Matt Turner <mattst88@gmail.com>
 Subject: Re: Problems with alpha/pci + radeon/ttm
-Date: Thu, 24 Jun 2010 10:53:52 -0400
-Message-ID: <AANLkTimTOTM8Tt5A7eBVbxcYaGQVn_Q6-9hL8B1B4bjY@mail.gmail.com>
+Date: Thu, 24 Jun 2010 11:02:56 -0400
+Message-ID: <AANLkTilhX0f90twPYjBzD1RQ84Zu6V0TW6Zulh56AZza@mail.gmail.com>
 References: <AANLkTinG-5iKW5cigIQHPHRZuAMtG_xY-74XLL6vE5kb@mail.gmail.com>
 	<20100622145805R.fujita.tomonori@lab.ntt.co.jp>
+	<AANLkTilMfDfy7BPiuAh9u-tR3kw1Vt_SebMziLUtLM6S@mail.gmail.com>
+	<4C232AAC.2010200@orcon.net.nz>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary=0016e64bb790b3b7730489c7d24f
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:mime-version:received:received:in-reply-to
-         :references:date:message-id:subject:from:to:cc:content-type;
-        bh=gvjAchjL1fzUk+WDLhnQZO/HccDRffz8fA3YVdj4pgk=;
-        b=QL0PGFFE3Oz/kF2m1Vdrfim6YBqlGHYa/oyxaKIMIP2omewE4qSWvN9nQQvNcugB8c
-         IU0AlPksGJQMP17jOMUCor0iKRSoeLT7idGttXy9UHtLfbDsutBmrXKdoipbUB/IV8WB
-         tcB78VNoCDNxU2/Orny1OgDId7gnqdLIkkG2g=
-In-Reply-To: <20100622145805R.fujita.tomonori@lab.ntt.co.jp>
-Sender: linux-pci-owner@vger.kernel.org
+         :references:date:message-id:subject:from:to:cc:content-type
+         :content-transfer-encoding;
+        bh=R/DO8dpTm0wD1IVcxVdJ/ja1G78QLv6v6Usn5BexTqw=;
+        b=AKL7eIBukWkWO3cAbXp3QpzNI72PDq7RdJp9FdOiwg78x/XM2HG+g7lpCsxI8RJW55
+         V1uERl3FDpFp/6UuN1O4kg5tKV7rLH3FSzgB0vR03MQquaJIHBnnhWfplAHidIx1qdmL
+         eAPZf7wuOKOh512Q/EkXlQCy1GuDaNCmhchvU=
+In-Reply-To: <4C232AAC.2010200@orcon.net.nz>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mcree@orcon.net.nz, jbarnes@virtuousgeek.org, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, airlied@gmail.com, alexdeucher@gmail.com, jglisse@redhat.com
+Content-Type: text/plain; charset="iso-8859-1"
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: Dave Airlie <airlied@gmail.com>, FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, jbarnes@virtuousgeek.org, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, alexdeucher@gmail.com, jglisse@redhat.com
 
---0016e64bb790b3b7730489c7d24f
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Jun 22, 2010 at 1:59 AM, FUJITA Tomonori
-<fujita.tomonori@lab.ntt.co.jp> wrote:
-> On Mon, 21 Jun 2010 17:19:43 -0400
-> Matt Turner <mattst88@gmail.com> wrote:
->
->> Michael Cree and I have been debugging FDO bug 26403 [1]. I tried
->> booting with `radeon.test=3D1` and found this, which I think is related:
+On Thu, Jun 24, 2010 at 5:51 AM, Michael Cree <mcree@orcon.net.nz> wrot=
+e:
+> On 22/06/10 20:32, Dave Airlie wrote:
 >>
->> > [drm] Tested GTT->VRAM and VRAM->GTT copy for GTT offset 0x202000
->> > [drm] Tested GTT->VRAM and VRAM->GTT copy for GTT offset 0x302000
->> [snip]
->> > [drm] Tested GTT->VRAM and VRAM->GTT copy for GTT offset 0xfd02000
->> > [drm] Tested GTT->VRAM and VRAM->GTT copy for GTT offset 0xfe02000
->> > pci_map_single failed: could not allocate dma page tables
->> > [drm:radeon_ttm_backend_bind] *ERROR* failed to bind 128 pages at 0x0F=
-F02000
->> > [TTM] Couldn't bind backend.
->> > radeon 0000:00:07.0: object_init failed for (1048576, 0x00000002)
->> > [drm:radeon_test_moves] *ERROR* Failed to create GTT object 253
->> > Error while testing BO move.
+>> On Tue, Jun 22, 2010 at 3:59 PM, FUJITA Tomonori
+>> <fujita.tomonori@lab.ntt.co.jp> =A0wrote:
+>>>
+>>> On Mon, 21 Jun 2010 17:19:43 -0400
+>>> Matt Turner<mattst88@gmail.com> =A0wrote:
+>>>
+>>>> Michael Cree and I have been debugging FDO bug 26403 [1]. I tried
+>>>> booting with `radeon.test=3D1` and found this, which I think is re=
+lated:
+>
+> Note that my radeon card is PCI whereas I think Matt may be using an =
+AGP
+> card.
+
+Actually, I'm using a plain Radeon 9100 PCI.
+
+> My logs are very similar to Matt's except I don't see the following l=
+ine:
+>
+>>>>> pci_map_single failed: could not allocate dma page tables
+>
+>
+>>> This happens in the latest git, right?
+>
+> Indeed, testing 2.6.35-rc3 (plus a couple or so extra patches to fix
+> unrelated compile errors).
+>
+>>> Is this a regression (what kernel version worked)?
+>>>
+>>> Seems that the IOMMU can't find 128 pages. It's likely due to:
+>>>
+>>> - out of the IOMMU space (possibly someone doesn't free the IOMMU
+>>> =A0space).
+>>>
+>>> or
+>>>
+>>> - the mapping parameters (such as align) aren't appropriate so the
+>>> =A0IOMMU can't find space.
 >>
->> From what I can see, the call chain is
->> radeon_test_moves
->> =A0(radeon_ttm_backend_bind called through callback function)
->> =A0- radeon_ttm.c:radeon_ttm_backend_bind calls radeon_gart_bind
->> =A0 - radeon_gart.c:radeon_gart_bind calls pci_map_page
->> =A0 =A0- pci_map_page is alpha_pci_map_page, which calls...
->> =A0 =A0 - alpha_pci_map_page calls pci_iommu.c:pci_map_single_1
->> =A0 =A0 =A0- pci_map_single_1 calls iommu_arena_alloc
->> =A0 =A0 =A0 - iommu_arena_alloc calls iommu_arena_find_pages
->> =A0 =A0 =A0 =A0- iommu_arena_find_pages returns non-0
->> =A0 =A0 =A0 - iommu_arena_alloc returns non-0
->> =A0 =A0 =A0- pci_map_single_1 returns 0 after printing
->> =A0 =A0 =A0 =A0"could not allocate dma page tables" error
->> =A0 =A0 - alpha_pci_map_page returns 0 from pci_map_single_1
->> =A0 - radeon_gart_bind returns non-0, error path prints
->> =A0 =A0 "*ERROR* failed to bind 128 pages at 0x0FF02000"
+>> I don't think KMS drivers have ever worked on alpha so its not a
+>> regression, they are working fine on x86 + powerpc and sparc has bee=
+n
+>> run at least once.
 >
-> This happens in the latest git, right?
+> KMS on the console boot up has worked since about 2.6.32, but startin=
+g up
+> the X server has always failed and, in my case, the system becomes un=
+stable
+> and eventually OOPs.
+>
+>> I suspect we are simply hitting the limits of the iommu, how big an
+>> address space does it handle? since generally graphics drivers try t=
+o
+>> bind a lot of things to the GART.
+>
+> No idea on the address space limit. =A0I applied the patch of Fujita =
+that logs
+> all IOMMU allocations, and also inserted some extra printks in the tt=
+m
+> kernel code so that I could see which routines failed and the error c=
+ode
+> returned. =A0Running the radeon test on boot exhibits the following:
+>
+> [ =A0238.712768] [drm] Tested GTT->VRAM and VRAM->GTT copy for GTT of=
+fset
+> 0x1a312000
+> [ =A0239.281127] [drm] Tested GTT->VRAM and VRAM->GTT copy for GTT of=
+fset
+> 0x1a412000
+> [ =A0239.281127] ttm_tt_bind belched -12
+> [ =A0239.282104] ttm_bo_handle_move_mem belched -12
+> [ =A0239.282104] ttm_bo_move_buffer belched -12
+> [ =A0239.282104] ttm_bo_validate belched -12
+> [ =A0239.282104] radeon 0000:01:00.0: object_init failed for (1048576=
+,
+> 0x00000002) err=3D-12
+> [ =A0239.282104] [drm:radeon_test_moves] *ERROR* Failed to create GTT=
+ object
+> 419
+> [ =A0239.399291] Error while testing BO move.
+>
+> Note that no IOMMU allocations are printed while radeon_test_moves is
+> running so iommu_arena_alloc doesn't appear to be called. =A0Also the=
+ error
+> code returned up to radeon_test_moves is -12 which is ENOMEM. =A0So d=
+oes
+> appear to be some memory limit.
 
-I'm using 2.6.35-rc2, but I could try rc3 if you think it would make a
-difference.
+I confirm that we're getting -ENOMEM. I don't know if it's coming from
+radeon_gart_bind(), but if it is there's an interesting comment
+immediately after the call to pci_map_page:
 
-> Is this a regression (what kernel version worked)?
+if (pci_dma_mapping_error(rdev->pdev, rdev->gart.pages_addr[p])) {
+            /* FIXME: failed to map page (return -ENOMEM?) */
+            radeon_gart_unbind(rdev, offset, pages);
+            return -ENOMEM;
+}
 
-The framebuffer console has always worked, but I've never known X on
-KMS to work. The radeon.test parameter hasn't existed the entire time,
-but I could try still previous kernels.
+>> It might be worth limiting the PCIGART in radeon to 32MB to see if t=
+he
+>> lower limit helps.
+>
+> So, how does one do that?
 
-> Seems that the IOMMU can't find 128 pages. It's likely due to:
->
-> - out of the IOMMU space (possibly someone doesn't free the IOMMU
-> =A0space).
->
-> or
->
-> - the mapping parameters (such as align) aren't appropriate so the
-> =A0IOMMU can't find space.
->
->
->> Is this the cause of the bug we're seeing in the report [1]?
->>
->> Anyone know what's going wrong here?
->
->
-> I've attached a patch to print the debug info about the mapping
-> parameters.
->
->
-> diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.=
-c
-> index d1dbd9a..17cf0d8 100644
-> --- a/arch/alpha/kernel/pci_iommu.c
-> +++ b/arch/alpha/kernel/pci_iommu.c
-> @@ -187,6 +187,10 @@ iommu_arena_alloc(struct device *dev, struct pci_iom=
-mu_arena *arena, long n,
-> =A0 =A0 =A0 =A0/* Search for N empty ptes */
-> =A0 =A0 =A0 =A0ptes =3D arena->ptes;
-> =A0 =A0 =A0 =A0mask =3D max(align, arena->align_entry) - 1;
-> +
-> + =A0 =A0 =A0 printk("%s: %p, %p, %d, %ld, %lx, %u\n", __func__, dev, are=
-na, arena->size,
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0n, mask, align);
-> +
-> =A0 =A0 =A0 =A0p =3D iommu_arena_find_pages(dev, arena, n, mask);
-> =A0 =A0 =A0 =A0if (p < 0) {
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0spin_unlock_irqrestore(&arena->lock, flags=
-);
+Boot with `radeon.test=3D1 radeon.gartsize=3D<size in MB>`.
+> Cheers
+> Michael.
 
-Using this patch, I log the attached output.
-
-Thanks for your help so far. :)
-
+Thanks,
 Matt
-
---0016e64bb790b3b7730489c7d24f
-Content-Type: application/x-gzip; name="screenlog.0.gz"
-Content-Disposition: attachment; filename="screenlog.0.gz"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gatpplpw0
-
-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
-D8Pb4Ww/jCf9+WGbnuBWTQOVzlrfP3zWCY9Ppp+M0yhu1T/NVi7Ment+Gh6P0uGdDtuTM+BmOrXf
-vPFwUtfzwmyUTo79dKxPmm8fp4vOePKuE1qbq6/DIE3y+cLq1/5e/lVaq9fUWrmm2+v8sBsdHacL
-3KPD+QX2q3qUrgS98MN+nfahx/PLbTWdX1HTDjddPjqoZumCe7g8v3AvLhut5bmx+Hj9TgprV2ht
-XqG1cU1PomfrePPRk0fpRiPdiDSpdGgvbW6Ebjo3pXPNzWu8P+db69d077uu2+u6vlZ8lefx63rd
-Y/12+8RVXtuv8spyldZVbvurHNdVPo5Xeb6/rncI1/Vuw7Xj97Htr3K/v67Pma5yn/iP7Pd/+j9f
-XbNNdl0vH/+R3eKbcTWPGJYPht3lSW/5KsfZW/x04/Lr+t1hddQkgCGEPz1vHf7p+Ur7sHmd5Sp3
-yt37p/b6YVxaX4p/eh4Pm5d8puc/zng6xerhV/VoNh43r0Qd/xRuVQdH+9XtZob5KOdTXeWWaNb3
-L/PxzL9hNrzKE07z4B1Nxr0/Pf97WFpaunmVNxfXbbe9rofTf+TQDM/D+HV4ce0GeF0fhOt6q36V
-twZXeUt8XbfXdb1l+SNYf4Rbz+tqXdcL0nXdXizWR/f78+cZF++7m3vl6bvp6a3y+S3Wxyfv128+
-P/n5O6akyfufn/7p+Oj4oDpbwOI19vqn4eI9gE5euGzecGV8/Go/HNdv0rOVLxj1D9VwDjR50clM
-83dkqpvcpvl5pvoLxvazVV8++uxyz5507b/tNa3n6Y+KhUb7fx9sqXo2x0/igsUcx/Mfop7t12G/
-mvTfpj3g5AvPv9u7/+J0+TdvfGZRJ8O7ON14Ohs1b4zzJUM6mzhtsu+ettZivGTJs3pyWDfvMdTM
-8TmxmXg4qg7C2RxphR7e3bxslS6Hv3SVPpxu8UY1008/GtvHs/HirWxCPHlrm1vT9Dz47xel9FD1
-Zgfh09L98WgwfHU8f3+ek5rj/AfgL1ndy9EPV2MwvfAwf3Th+3XvdbPktFOkrX1eoEzDJYu+lJzv
-7E0E00m7Xl2N0qlkfSvG9vJKe6N5l7EFmj7baq+tbMTl1korbqUT0Enf/Pkhf7hq82bmc6u2Wx+e
-Ho/z6S+EOU1cs/y2yR8vWcnL8Ut2k1nV/ewgvjvqn5ys6llvuZnlkiVeLn24xPljNF+pTyzx7CT0
-wSN6yZIvFz9c8vGkGvXHh59e17P3sppv8sUMJxHuqyY0qWbjyWX789vq6LPbcbs3G75ZbMn59Ccn
-+ku4y4f64SqlkX3+nPugqcOahZ5O3bwV3ezdpYflpavx4XKbpuJwOO19+rBs3i9vflWcpq3X/EDA
-KO20vfGkf9miL1+VL130Lx1ic6zP9+w31WR5cjy6ZGBXusAfhkfzxc0O08M//1Hj8eRdxkIX31v9
-zGn+9Hp0ltQ2Bd8nrkUn37gdjE+OqE+iJxOH+dTPT94JZfOn1vpl8qieLR2MP3OY3GuuIiffsD1v
-kA/G712XLl/1X7iJTr8PniYOJ295OQ3Pj6eXrcSXLnj67iRHetCsxPx8cjw6SPdlB81Pil+YsN+U
-/p87eZzdY+7cvffds9MbqMN0V1e9qhPwka1dz/Zbv2BrN7O9t71PtPjLtPiedvk6X3K/08SsX7xt
-vj69f9zuTmeTqtf8OGb4pnrXvClilS6llx3fn1yv1skSQpi/gWjnvZUK/XF9kuA2d+//zha7II+m
-x2nIs/1qFt6Nj9NN8JvTdxic3xSnM2ZzojirZBdvQdjc5L9r3ify9J75ZwtvfdnCT1bqbNrzt3Gd
-v2rSkOfidLr/8YfiPbFXjeY/X9AoYT5jNT1fzNuzN6a9ZDFpqgsX839jMWczfuGivvAACekZ5lLz
-X6v1xcfYJVfqL1vUdr+/uNc7ns1vDH4BEc7ejurNsDobe8bQmx9zObxwX/DpQ/Bk6kuWd7nzpYf8
-R+4kv/jUMJ/6Y3ePH19a89/e/nD+w2OLZ4Xh1uJVw/mLhqG9tL60snZ30mv/39uhtdVZi521tWam
-k4nntz2d8P8BwVdY9nlyIQA=
---0016e64bb790b3b7730489c7d24f--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
