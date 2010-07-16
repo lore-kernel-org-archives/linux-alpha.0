@@ -1,61 +1,56 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: Problems with alpha/pci + radeon/ttm
-Date: Wed, 30 Jun 2010 14:43:57 -0400
-Message-ID: <20100630184357.GE16488@phenom.dumpdata.com>
-References: <AANLkTinG-5iKW5cigIQHPHRZuAMtG_xY-74XLL6vE5kb@mail.gmail.com>
- <20100622145805R.fujita.tomonori@lab.ntt.co.jp>
- <AANLkTimTOTM8Tt5A7eBVbxcYaGQVn_Q6-9hL8B1B4bjY@mail.gmail.com>
- <20100627130717M.fujita.tomonori@lab.ntt.co.jp>
- <AANLkTim0JbmNLY1yG5MIWhcjM34h4HHVjS58jEobmPO0@mail.gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <AANLkTim0JbmNLY1yG5MIWhcjM34h4HHVjS58jEobmPO0@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Kulikov Vasiliy <segooon@gmail.com>
+Subject: [PATCH 01/15] alpha: srmcons: localize spin_lock section
+Date: Fri, 16 Jul 2010 20:12:27 +0400
+Message-ID: <1279296747-24783-1-git-send-email-segooon@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:received:from:to:cc:subject:date
+         :message-id:x-mailer;
+        bh=Q7D8qx7kjCUGr3dQGcgeqaWRlWs3uSbxkt92RGduNF8=;
+        b=WsaJcjgvW1lBJPZ71Y2V9/K4w3rJMhLbccEdpyVC/NdarNWtOsFiq2jwaJj+hungU/
+         ErQpHtG9PaIev8O0Vfaog11KAyWPsUWDQv9hPKG/KN0iqT7cIol+wbcKOpLf3rstSf2s
+         XIa2rQbNFDOXYxTrgPi0tOb/xpPAd0mXVsAyA=
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Matt Turner <mattst88@gmail.com>
-Cc: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mcree@orcon.net.nz, jbarnes@virtuousgeek.org, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, airlied@gmail.com, alexdeucher@gmail.com, jglisse@redhat.com
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: kernel-janitors@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Sun, Jun 27, 2010 at 12:58:07AM -0400, Matt Turner wrote:
-> On Sun, Jun 27, 2010 at 12:20 AM, FUJITA Tomonori
-> <fujita.tomonori@lab.ntt.co.jp> wrote:
-> > On Thu, 24 Jun 2010 10:53:52 -0400
-> > Matt Turner <mattst88@gmail.com> wrote:
-> >
-> >> > Seems that the IOMMU can't find 128 pages. It's likely due to:
-> >> >
-> >> > - out of the IOMMU space (possibly someone doesn't free the IOMM=
-U
-> >> > =A0space).
-> >> >
-> >> > or
-> >> >
-> >> > - the mapping parameters (such as align) aren't appropriate so t=
-he
-> >> > =A0IOMMU can't find space.
-> >> >
-> >> >
-> >> >> Is this the cause of the bug we're seeing in the report [1]?
+Scale down spin_lock_irqsave/spin_unlock_irqrestore exactly to area
+where it is needed. Also it makes static checkers happy as code checks
+kmalloc() result value exactly after call.
 
-=46or the fun I did:
- cat /tmp/screenlog.0 | grep iommu_arena | wc
-  28509  199588 2167164
+Signed-off-by: Kulikov Vasiliy <segooon@gmail.com>
+---
+ arch/alpha/kernel/srmcons.c |    6 ++----
+ 1 files changed, 2 insertions(+), 4 deletions(-)
 
-Which is to say 28509 * 4096 =3D 116736000. That looks to be about 111M=
-B.
-
-That does not look right when you are trying to allocate 128 pages. You
-are sure it is 128 pages? Can you make the ttm_ code print out the tota=
-l
-of pages it is trying to PCI map ? It might also be interesting to see
-how many pages the pci_iommu.c has already set aside for other devices.
-
-The BAR is 128MB, but that would have been an ioremap call - and done
-much earlier I think.
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+index 783f4e5..6b04005 100644
+--- a/arch/alpha/kernel/srmcons.c
++++ b/arch/alpha/kernel/srmcons.c
+@@ -165,17 +165,15 @@ srmcons_get_private_struct(struct srmcons_private **ps)
+ 
+ 	if (srmconsp == NULL) {
+ 		srmconsp = kmalloc(sizeof(*srmconsp), GFP_KERNEL);
+-		spin_lock_irqsave(&srmconsp_lock, flags);
+-
+ 		if (srmconsp == NULL)
+ 			retval = -ENOMEM;
+ 		else {
++			spin_lock_irqsave(&srmconsp_lock, flags);
+ 			srmconsp->tty = NULL;
+ 			spin_lock_init(&srmconsp->lock);
+ 			init_timer(&srmconsp->timer);
++			spin_unlock_irqrestore(&srmconsp_lock, flags);
+ 		}
+-
+-		spin_unlock_irqrestore(&srmconsp_lock, flags);
+ 	}
+ 
+ 	*ps = srmconsp;
+-- 
+1.7.0.4
