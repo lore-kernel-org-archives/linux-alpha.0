@@ -1,54 +1,107 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: alpha defconfig build broken in 2.6.35-rc6
-Date: Thu, 29 Jul 2010 12:56:54 -0400
-Message-ID: <AANLkTi=zaf-hGOuNX05Qq+dw3Wq_xYxT5EvKTS_dRV0s@mail.gmail.com>
-References: <1280422122.17322.14.camel@groeck-laptop>
-Mime-Version: 1.0
+From: Morten Holst Larsen <m-larsen@post6.tele.dk>
+Subject: [PATCH] Fix call to replaced SuperIO functions
+Date: Sat, 31 Jul 2010 14:40:41 +0200
+Message-ID: <E1OfBMn-00058R-O4@mhlnet.dk>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:received:mime-version:received:in-reply-to
-         :references:from:date:message-id:subject:to:cc:content-type;
-        bh=WKsH8uOln66vH6ZlWLEhyQJCbUvLovvkH6NmhhC3ePQ=;
-        b=tJoy0dIQiGEq3Y+1J4PdZNvpb/jYzqJcdPKPhuL19pfQ135IxzKF0I78Io/jVUL4KH
-         8IKsYhWoyj4fLrgG6W1jy30RZozTupXpj+eXizQ2QIKaVTYpb2M8u49mu77ZJk9Whcui
-         GIwNSI41JWuU+pQikxbQTgqzn7C39GKb/umlQ=
-In-Reply-To: <1280422122.17322.14.camel@groeck-laptop>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: guenter.roeck@ericsson.com
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, "Morten H. Larsen" <m-larsen@post6.tele.dk>, Richard Henderson <rth@twiddle.net>
+To: linux-alpha@vger.kernel.org
 
-On Thu, Jul 29, 2010 at 12:48 PM, Guenter Roeck
-<guenter.roeck@ericsson.com> wrote:
-> During unrelated testing, I noticed that the alpha defconfig build is
-> broken in 2.6.35-rc6. I get the following error message.
->
-> arch/alpha/kernel/built-in.o: In function `cia_cab_init_pci':
-> /opt/scratch/groeck/linux-2.6/arch/alpha/kernel/sys_cabriolet.c:249:
-> undefined reference to `ns87312_enable_ide'
-> /opt/scratch/groeck/linux-2.6/arch/alpha/kernel/sys_cabriolet.c:249:
-> undefined reference to `ns87312_enable_ide'
-> arch/alpha/kernel/built-in.o: In function `cabriolet_init_pci':
-> /opt/scratch/groeck/linux-2.6/arch/alpha/kernel/sys_cabriolet.c:242:
-> undefined reference to `ns87312_enable_ide'
-> /opt/scratch/groeck/linux-2.6/arch/alpha/kernel/sys_cabriolet.c:242:
-> undefined reference to `ns87312_enable_ide'
-> arch/alpha/kernel/built-in.o: In function `takara_init_pci':
-> /opt/scratch/groeck/linux-2.6/arch/alpha/kernel/sys_takara.c:267:
-> undefined reference to `ns87312_enable_ide'
-> arch/alpha/kernel/built-in.o:/opt/scratch/groeck/linux-2.6/arch/alpha/kernel/sys_takara.c:267: more undefined references to `ns87312_enable_ide' follow
->
-> Not surprising since ns87312.c and thus ns87312_enable_ide() no longer
-> exist. The problem was introduced with commit
-> 932e0c201d28a728e25d3b641aa95bd28ceb08b4 (alpha: Detect Super IO chip,
-> no IDE on Avanti, enable EPP19).
->
-> Guenter
+Fix call to replaced SuperIO functions
 
-Ah, thanks for the report. Either I or Morten will knock this out quickly.
+This patch fixes the failure to compile Alpha Generic because of 
+previously overlooked calls to ns87312_enable_ide(). The function has 
+been replaced by newer SuperIO code.
 
-Thanks,
-Matt
+Signed-off-by: Morten H. Larsen <m-larsen@post6.tele.dk>
+----
+diff -uNr a/arch/alpha/kernel/proto.h b/arch/alpha/kernel/proto.h
+--- a/arch/alpha/kernel/proto.h	2010-07-22 21:13:38.000000000 +0200
++++ b/arch/alpha/kernel/proto.h	2010-07-30 10:02:42.000000000 +0200
+@@ -156,9 +156,6 @@
+ /* es1888.c */
+ extern void es1888_init(void);
+ 
+-/* ns87312.c */
+-extern void ns87312_enable_ide(long ide_base);
+-
+ /* ../lib/fpreg.c */
+ extern void alpha_write_fp_reg (unsigned long reg, unsigned long val);
+ extern unsigned long alpha_read_fp_reg (unsigned long reg);
+diff -uNr a/arch/alpha/kernel/sys_cabriolet.c b/arch/alpha/kernel/sys_cabriolet.c
+--- a/arch/alpha/kernel/sys_cabriolet.c	2010-07-22 21:13:38.000000000 +0200
++++ b/arch/alpha/kernel/sys_cabriolet.c	2010-07-30 10:31:36.000000000 +0200
+@@ -33,7 +33,7 @@
+ #include "irq_impl.h"
+ #include "pci_impl.h"
+ #include "machvec_impl.h"
+-
++#include "pc873xx.h"
+ 
+ /* Note mask bit is true for DISABLED irqs.  */
+ static unsigned long cached_irq_mask = ~0UL;
+@@ -236,17 +236,30 @@
+ }
+ 
+ static inline void __init
++cabriolet_enable_ide(void)
++{
++	if (pc873xx_probe() == -1) {
++		printk(KERN_ERR "Probing for PC873xx Super IO chip failed.\n");
++	 } else {
++		printk(KERN_INFO "Found %s Super IO chip at 0x%x\n",
++			pc873xx_get_model(), pc873xx_get_base());
++
++		pc873xx_enable_ide();
++	}
++}
++
++static inline void __init
+ cabriolet_init_pci(void)
+ {
+ 	common_init_pci();
+-	ns87312_enable_ide(0x398);
++	cabriolet_enable_ide();
+ }
+ 
+ static inline void __init
+ cia_cab_init_pci(void)
+ {
+ 	cia_init_pci();
+-	ns87312_enable_ide(0x398);
++	cabriolet_enable_ide();
+ }
+ 
+ /*
+diff -uNr a/arch/alpha/kernel/sys_takara.c b/arch/alpha/kernel/sys_takara.c
+--- a/arch/alpha/kernel/sys_takara.c	2010-07-22 21:13:38.000000000 +0200
++++ b/arch/alpha/kernel/sys_takara.c	2010-07-30 10:32:16.000000000 +0200
+@@ -29,7 +29,7 @@
+ #include "irq_impl.h"
+ #include "pci_impl.h"
+ #include "machvec_impl.h"
+-
++#include "pc873xx.h"
+ 
+ /* Note mask bit is true for DISABLED irqs.  */
+ static unsigned long cached_irq_mask[2] = { -1, -1 };
+@@ -264,7 +264,14 @@
+ 		alpha_mv.pci_map_irq = takara_map_irq_srm;
+ 
+ 	cia_init_pci();
+-	ns87312_enable_ide(0x26e);
++
++	if (pc873xx_probe() == -1) {
++		printk(KERN_ERR "Probing for PC873xx Super IO chip failed.\n");
++	} else {
++		printk(KERN_INFO "Found %s Super IO chip at 0x%x\n",
++			pc873xx_get_model(), pc873xx_get_base());
++		pc873xx_enable_ide();
++	}
+ }
+ 
+ 
+
