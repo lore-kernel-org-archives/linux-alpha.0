@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 07/91] arch/arm/common/icst.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:06:38 -0700
-Message-ID: <1283461606-7803-8-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 13/91] arch/arm/nwfpe/milieu.h Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:06:44 -0700
+Message-ID: <1283461606-7803-14-git-send-email-justinmattock@gmail.com>
 References: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=Zx7pIVJLxb9iW7oKA2rLUvf+0LD/xqheyk3FQqv84UM=;
-        b=SZLZjkQ5msQcaBWdwsXG15IFk5UFYnF/TuOSoZWLxx6ZG8hwUtofzkyBaVuh5ye78v
-         r2emJfHe2K8AQCXhgBtHbJ3/L91uK2cMtTCSls9/CqZPLJlWmc3ee31nCXX3XtdqNeXO
-         4nRzARXyBoGGZZ9CHjzOZ4hbdY2+APTg088OQ=
+        bh=ley0PqV3cb+d8GGXug0P5Zl7UXZgkifEb2cBKBx2E7M=;
+        b=scaw/8q3cgISttDHvpMYtlwS6yMYiX8rJUfNQZ2IBbGZi8GaGzYiyUrZgiP/VRNKHw
+         4YhZF0BesDREvCrDUnwNv071l0/et0hKI9uAn6yzLNRj2B+mng6w+K7bLuRTwacQ5pF8
+         DK1jQaYLMO9vQSZnV+qL64ss0qFym3u4FX8TI=
 In-Reply-To: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,21 +29,23 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/arm/common/icst.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ arch/arm/nwfpe/milieu.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/common/icst.c b/arch/arm/common/icst.c
-index 9a7f09c..2dc6da70 100644
---- a/arch/arm/common/icst.c
-+++ b/arch/arm/common/icst.c
-@@ -8,7 +8,7 @@
-  * published by the Free Software Foundation.
-  *
-  *  Support functions for calculating clocks/divisors for the ICST307
-- *  clock generators.  See http://www.icst.com/ for more information
-+ *  clock generators.  See http://www.idt.com/ for more information
-  *  on these devices.
-  *
-  *  This is an almost identical implementation to the ICST525 clock generator.
+diff --git a/arch/arm/nwfpe/milieu.h b/arch/arm/nwfpe/milieu.h
+index a3892ab..4b2cf7a 100644
+--- a/arch/arm/nwfpe/milieu.h
++++ b/arch/arm/nwfpe/milieu.h
+@@ -12,8 +12,8 @@ National Science Foundation under grant MIP-9311980.  The original version
+ of this code was written as part of a project to build a fixed-point vector
+ processor in collaboration with the University of California at Berkeley,
+ overseen by Profs. Nelson Morgan and John Wawrzynek.  More information
+-is available through the Web page `http://HTTP.CS.Berkeley.EDU/~jhauser/
+-arithmetic/softfloat.html'.
++is available through the Web page `http://www.jhauser.us/arithmetic/
++SoftFloat-2b/SoftFloat-source.txt'.
+ 
+ THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort
+ has been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT
 -- 
 1.7.2.1
