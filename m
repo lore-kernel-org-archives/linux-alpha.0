@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 72/91] arch/mips/math-emu/sp_sqrt.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:12:28 -0700
-Message-ID: <1283461951-7988-12-git-send-email-justinmattock@gmail.com>
-References: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Subject: [PATCH 88/91] arch/x86/kernel/cpu/amd.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:13:39 -0700
+Message-ID: <1283462022-8024-13-git-send-email-justinmattock@gmail.com>
+References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=2qRm1uLIJfDdmOzNwIJ7g+Vj/q76GuJT2uwJpfSF0sI=;
-        b=g9E6PgxqSRD+ArfNrul7+Pfl5xy0OoD6mq88AaedRgYy1wEbQGeqU6eGyyqrHpL652
-         B1URcEU/Lqitgh5bFLjDEx2j360q1oxtwUV4rqaPNNExlI4RZwzLztecru+BASRSEHxa
-         4mwLvzueawbBStlqb5226dT25BEQZHZYZYKKk=
-In-Reply-To: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+        bh=azXM8qbgBB+axMMhUEWKFrpyo00Jg/jDcDqb3CNEjK0=;
+        b=GKGUmuQLKBNao3G7RSaBwmJ0X0x988PE6hbMOz7vr7fGsAlQLbxElToUvfC3i73nuJ
+         3N2e1r+pnnQZdWQ2ms6+PLsWaH6uVIqVvauAn0GshVd+SSulSaE+yUCHRnmgLKPF99Vy
+         1MYlrw3g6slC9okorlBKhhYQzi7fhCcHb+M90=
+In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,22 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/sp_sqrt.c |    2 +-
+ arch/x86/kernel/cpu/amd.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/sp_sqrt.c b/arch/mips/math-emu/sp_sqrt.c
-index 8a934b9..d638915 100644
---- a/arch/mips/math-emu/sp_sqrt.c
-+++ b/arch/mips/math-emu/sp_sqrt.c
-@@ -4,7 +4,7 @@
- /*
-  * MIPS floating point support
-  * Copyright (C) 1994-2000 Algorithmics Ltd.
-- * http://www.algor.co.uk
-+ * http://www.mips.com/ 
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index ba5f62f..8c03911 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -23,7 +23,7 @@
+  *	contact AMD for precise details and a CPU swap.
   *
-  * ########################################################################
+  *	See	http://www.multimania.com/poulot/k6bug.html
+- *		http://www.amd.com/K6/k6docs/revgd.html
++ *		http://web.archive.org/web/*/http://www.amd.com/K6/k6docs/revgd.html	
   *
+  *	The following test is erm.. interesting. AMD neglected to up
+  *	the chip setting when fixing the bug but they also tweaked some
 -- 
 1.7.2.1
-
