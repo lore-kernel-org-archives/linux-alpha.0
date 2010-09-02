@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 15/91] arch/arm/mach-at91/Kconfig Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:06:46 -0700
-Message-ID: <1283461606-7803-16-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 09/91] arch/arm/nwfpe/softfloat-specialize Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:06:40 -0700
+Message-ID: <1283461606-7803-10-git-send-email-justinmattock@gmail.com>
 References: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=VJPPlaM99QVNP4q8FzdEpJpSGH/L3wQ51olk6KYV1Do=;
-        b=QumEm8RyAwf9hYaLm2zLgW//IUcNjzrNnU/TwqfNzcshN429ZcFGX54MnS/+W6yZ7R
-         iZNlqA43czdafFhkqPlTpt12lTz/j3BUpUii+KQnlhLw6Lp+1EUmqpnJirPlMyqe+V5c
-         zNPs+N7kd1+6vj3EUo5HUp47+tee6B+nCmhaE=
+        bh=Xh+pZ0UEKi7tjqOJn1CkXRDtmUEf0ZfL9p8EkL574WE=;
+        b=DB0aFXxSn+UGWMkcBKiaQdRP5VfNJfvlv0aXIkSRrHOExcOm+XG5MdnOHhM3FFUPX0
+         l2i+J9PF84VT92UNtkYO+OpVEXeeDxMUEBhzjAVZEzNLktNh8MLpKSUMh1WHSZ6uxKBm
+         DEE+vvbEKavZ76dgvveDEEqLsPSnhBxBK9yTw=
 In-Reply-To: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,40 +29,23 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/arm/mach-at91/Kconfig |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/nwfpe/softfloat-specialize |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-at91/Kconfig b/arch/arm/mach-at91/Kconfig
-index 939bccd..c0bcfb8 100644
---- a/arch/arm/mach-at91/Kconfig
-+++ b/arch/arm/mach-at91/Kconfig
-@@ -105,7 +105,7 @@ config MACH_ONEARM
- 	bool "Ajeco 1ARM Single Board Computer"
- 	help
- 	  Select this if you are using Ajeco's 1ARM Single Board Computer.
--	  <http://www.ajeco.fi/products.htm>
-+	  <http://www.ajeco.fi/index.php?language=fin>
+diff --git a/arch/arm/nwfpe/softfloat-specialize b/arch/arm/nwfpe/softfloat-specialize
+index d4a4c8e..89cc56e 100644
+--- a/arch/arm/nwfpe/softfloat-specialize
++++ b/arch/arm/nwfpe/softfloat-specialize
+@@ -12,8 +12,8 @@ National Science Foundation under grant MIP-9311980.  The original version
+ of this code was written as part of a project to build a fixed-point vector
+ processor in collaboration with the University of California at Berkeley,
+ overseen by Profs. Nelson Morgan and John Wawrzynek.  More information
+-is available through the Web page `http://HTTP.CS.Berkeley.EDU/~jhauser/
+-arithmetic/softfloat.html'.
++is available through the Web page `http://www.jhauser.us/arithmetic/
++SoftFloat-2b/SoftFloat-source.txt'.
  
- config ARCH_AT91RM9200DK
- 	bool "Atmel AT91RM9200-DK Development board"
-@@ -137,7 +137,7 @@ config MACH_CARMEVA
- 	bool "Conitec ARM&EVA"
- 	help
- 	  Select this if you are using Conitec's AT91RM9200-MCU-Module.
--	  <http://www.conitec.net/english/linuxboard.htm>
-+	  <http://www.conitec.net/english/linuxboard.php>
- 
- config MACH_ATEB9200
- 	bool "Embest ATEB9200"
-@@ -149,7 +149,7 @@ config MACH_KB9200
- 	bool "KwikByte KB920x"
- 	help
- 	  Select this if you are using KwikByte's KB920x board.
--	  <http://kwikbyte.com/KB9202_description_new.htm>
-+	  <http://www.kwikbyte.com/KB9202.html>
- 
- config MACH_PICOTUX2XX
- 	bool "picotux 200"
+ THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort
+ has been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT
 -- 
 1.7.2.1
-
