@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 08/91] arch/arm/Kconfig Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:06:39 -0700
-Message-ID: <1283461606-7803-9-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 05/91] arch/arm/mach-sa1100/Kconfig Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:06:36 -0700
+Message-ID: <1283461606-7803-6-git-send-email-justinmattock@gmail.com>
 References: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=iqmAX5Uo25wLswvvETI9PXFxvRTMJ2BZx9s3SjKexj0=;
-        b=hf1nUCxe+9mtWGFnReoPbzRbUbc2UZU0OWvnqznOe6Ed/eLWkJvFEo03S9+DnTA6jE
-         9HLxP3r6VTlTJlDXrKZ8oAHS/IRUt/3zJ/xWhsa12awiyPtYKpl0Kea2+roOYHpsq7VW
-         ECQb4cgFyxRVt1SrJF1Od1G+AY0j2mspfSt+o=
+        bh=ip5GAEgEq4WJLd1tcgTWHCNPRWgMWbZIBn93jbSYZYY=;
+        b=QBIaPffVFZJFDUu8UR70KUiO0m/bxTeCqaNurgHEWzclqxI4vv1d1RpNMHomUDWWsU
+         AvpvD+aeGXrvq7FVwEGw7xuusrAGwi8NnWEJpg4jnBL0CGiypPNTEaIKWVJK906HGc3J
+         jlOzWNAURtgmZpvFwwYe2A8c6ydARj0TtJlJ4=
 In-Reply-To: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -25,36 +25,44 @@ The below patch updates a broken web address that is no longer
 working due to company buyout, and/or change of location.
 (Please have a look through, and let me know if any of them
 need to be changed, and I'll resend an updated patch).
-Note: the model originally is:EB110ITX but searching on the web site
-EB110ATX is all thats listed.
 
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/arm/Kconfig |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-sa1100/Kconfig |    7 ++++---
+ 1 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index a7ed21f..5823f9d 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -647,7 +647,7 @@ config ARCH_S3C2410
- 	select HAVE_S3C2410_I2C
+diff --git a/arch/arm/mach-sa1100/Kconfig b/arch/arm/mach-sa1100/Kconfig
+index fd4c52b..264ee98 100644
+--- a/arch/arm/mach-sa1100/Kconfig
++++ b/arch/arm/mach-sa1100/Kconfig
+@@ -90,7 +90,8 @@ config SA1100_JORNADA720
+ 	# FIXME: select CPU_FREQ_SA11x0
  	help
- 	  Samsung S3C2410X CPU based systems, such as the Simtec Electronics
--	  BAST (<http://www.simtec.co.uk/products/EB110ITX/>), the IPAQ 1940 or
-+	  BAST (<http://www.simtec.co.uk/products/EB110ATX/>), the IPAQ 1940 or
- 	  the Samsung SMDK2410 development board (and derivatives).
+ 	  Say Y here if you want to build a kernel for the HP Jornada 720
+-	  handheld computer.  See <http://www.hp.com/jornada/products/720>
++	  handheld computer.  See <http://h10025.www1.hp.com/ewfrf/wc/
++	  product?product=61677&cc=us&lc=en&dlc=en&product=61677#>
+ 	  for details.
  
- 	  Note, the S3C2416 and the S3C2450 are so close that they even share
-@@ -1162,7 +1162,7 @@ config SMP
+ config SA1100_JORNADA720_SSP
+@@ -108,7 +109,7 @@ config SA1100_HACKKIT
+ 	select CPU_FREQ_SA1100
+ 	help
+ 	  Say Y here to support the HackKit Core CPU Board
+-	  <http://hackkit.eletztrick.de>;
++	  <http://web.archive.org/web/*/http://hackkit.eletztrick.de>;
  
- 	  See also <file:Documentation/i386/IO-APIC.txt>,
- 	  <file:Documentation/nmi_watchdog.txt> and the SMP-HOWTO available at
--	  <http://www.linuxdoc.org/docs.html#howto>.
-+	  <http://tldp.org/HOWTO/SMP-HOWTO.html>.
+ config SA1100_LART
+ 	bool "LART"
+@@ -145,7 +146,7 @@ config SA1100_SIMPAD
+ 	  FLASH. The SL4 version got 64 MB RAM and 32 MB FLASH and a
+ 	  PCMCIA-Slot. The version for the Germany Telecom (DTAG) is the same
+ 	  like CL4 in additional it has a PCMCIA-Slot. For more information
+-	  visit <http://www.my-siemens.com/> or <http://www.siemens.ch/>.
++	  visit <http://www.siemens.ch/>.
  
- 	  If you don't know what to do here, say N.
- 
+ config SA1100_SSP
+ 	tristate "Generic PIO SSP"
 -- 
 1.7.2.1
