@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 18/91] arch/arm/mach-pxa/am300epd.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:07:47 -0700
-Message-ID: <1283461679-7851-3-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 21/91] arch/arm/include/asm/hardware/icst.h Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:07:50 -0700
+Message-ID: <1283461679-7851-6-git-send-email-justinmattock@gmail.com>
 References: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=rev1lGlo9GDNGjwzpEsUNxLb6qBRRUs/fRGP+rfXegQ=;
-        b=sA4CNnJM+Y1UROlHivZKW/EzV+lbJe6BoJxLH5HM+YbKvSUBwPyE2YTaXEZdfhPGV8
-         9TKxXLLDT9D1+aM+M96cZzqlJjdHUqmeKxkfrj3hrqXtGO1PTvo5g+/RfzMA7GyISFcR
-         F8qqNm13GwH4XmZoZW8NXenZLE7aOVvVi6Ugo=
+        bh=pGitz4/IkxnNLT3peT+qyGMPuffEU4iJxUkYdYX2uj8=;
+        b=uV0eDg59nvXrnq7Z+l2d83W29yQ2keNivc4f4sjsp4wX1708jCWr3YKtUYgxCBwlcX
+         UXpHOxKXPevBB6MRvu1T9BiKs0aYmVdyJy0lS0DEqdIsyi+P2ZSCrEfrsJgQ7298TeKL
+         cx2UkvU4ByBGquiT+vnAsjacGjBsPctnXTIcI=
 In-Reply-To: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,22 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/arm/mach-pxa/am300epd.c |    2 +-
+ arch/arm/include/asm/hardware/icst.h |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/arm/mach-pxa/am300epd.c b/arch/arm/mach-pxa/am300epd.c
-index 993d75e..01aa021 100644
---- a/arch/arm/mach-pxa/am300epd.c
-+++ b/arch/arm/mach-pxa/am300epd.c
+diff --git a/arch/arm/include/asm/hardware/icst.h b/arch/arm/include/asm/hardware/icst.h
+index 10382a3..794220b 100644
+--- a/arch/arm/include/asm/hardware/icst.h
++++ b/arch/arm/include/asm/hardware/icst.h
 @@ -8,7 +8,7 @@
-  * more details.
+  * published by the Free Software Foundation.
   *
-  * This work was made possible by help and equipment support from E-Ink
-- * Corporation. http://support.eink.com/community
-+ * Corporation. http://www.support.eink.com/
-  *
-  * This driver is written to be used with the Broadsheet display controller.
-  * on the AM300 EPD prototype kit/development kit with an E-Ink 800x600
+  *  Support functions for calculating clocks/divisors for the ICST
+- *  clock generators.  See http://www.icst.com/ for more information
++ *  clock generators.  See http://www.idt.com/ for more information
+  *  on these devices.
+  */
+ #ifndef ASMARM_HARDWARE_ICST_H
 -- 
 1.7.2.1
-
