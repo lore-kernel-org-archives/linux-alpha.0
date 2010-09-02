@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 21/91] arch/arm/include/asm/hardware/icst.h Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:07:50 -0700
-Message-ID: <1283461679-7851-6-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 17/91] arch/arm/mach-pxa/idp.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:07:46 -0700
+Message-ID: <1283461679-7851-2-git-send-email-justinmattock@gmail.com>
 References: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=pGitz4/IkxnNLT3peT+qyGMPuffEU4iJxUkYdYX2uj8=;
-        b=uV0eDg59nvXrnq7Z+l2d83W29yQ2keNivc4f4sjsp4wX1708jCWr3YKtUYgxCBwlcX
-         UXpHOxKXPevBB6MRvu1T9BiKs0aYmVdyJy0lS0DEqdIsyi+P2ZSCrEfrsJgQ7298TeKL
-         cx2UkvU4ByBGquiT+vnAsjacGjBsPctnXTIcI=
+        bh=RerMMcqfsKBc1t9aUnQ+bU/JWKypqqxBZa210Iy6jsA=;
+        b=fxE3iZ4brcnP5dVXJWKzWN923BFlMG6uPkISOQQ2XmC7MFglkA8sYNcCL11Gi/5O4F
+         9b7HQ11YqN/ucRtElidkV/0zQRFKIlDVBHiUCI7Tymgjq0UzOQ4+hGRVAR2ZUaNlKguD
+         pXbbImT8VgC/tbHvxSznOB/qAYudN4uFfhTBo=
 In-Reply-To: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,21 +29,24 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/arm/include/asm/hardware/icst.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ arch/arm/mach-pxa/idp.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/include/asm/hardware/icst.h b/arch/arm/include/asm/hardware/icst.h
-index 10382a3..794220b 100644
---- a/arch/arm/include/asm/hardware/icst.h
-+++ b/arch/arm/include/asm/hardware/icst.h
-@@ -8,7 +8,7 @@
-  * published by the Free Software Foundation.
+diff --git a/arch/arm/mach-pxa/idp.c b/arch/arm/mach-pxa/idp.c
+index bc78c4d..25864d8 100644
+--- a/arch/arm/mach-pxa/idp.c
++++ b/arch/arm/mach-pxa/idp.c
+@@ -11,8 +11,8 @@
+  *              Initial code
   *
-  *  Support functions for calculating clocks/divisors for the ICST
-- *  clock generators.  See http://www.icst.com/ for more information
-+ *  clock generators.  See http://www.idt.com/ for more information
-  *  on these devices.
+  *  2005-02-15: Cliff Brake <cliff.brake@gmail.com>
+- *  		<http://www.vibren.com> <http://bec-systems.com>
+- *              Updated for 2.6 kernel
++ *  		<http://web.archive.org/web/*/http://www.vibren.com> 
++ *             <http://bec-systems.com> Updated for 2.6 kernel
+  *
   */
- #ifndef ASMARM_HARDWARE_ICST_H
+ 
 -- 
 1.7.2.1
+
