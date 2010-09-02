@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 33/91] arch/ia64/include/asm/machvec_sn2.h Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:08:54 -0700
-Message-ID: <1283461746-7905-3-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 39/91] arch/mips/math-emu/dp_frexp.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:09:00 -0700
+Message-ID: <1283461746-7905-9-git-send-email-justinmattock@gmail.com>
 References: <1283461746-7905-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=hoXk4z2fhwffi9WBVcIlSr1RDk8Z1pgEbHzALSKD6rk=;
-        b=XNTOwEvizS/ftWiSrvFb9JAS5fPEShZD0ra7hcW0bQ5NWfmtvnnRVzEgvxvBO5gj2E
-         I+Mgz8GTKvSNau8u4bNiWEMBhq4Ih6SVepBCdLsshzddMWf3K8x1qlNvL6JhPH5IgJ4e
-         aaNkU4I4u9mp2B7CJ1VskdDDqOD9DJyd2E6V8=
+        bh=4mZHGwBD0Mg/ohM95tXvhpNfSjh2UECiAYAfSfiNSes=;
+        b=sa52odUX/cVrrdF5Dw6b6W+nrE0yg2b2Azaa1znunKjpHCioNx/QgaVoC5VE5MH+92
+         Nj2ifAZ1qOvjmJyQ19VHMiCePzI8KwUS0W2nANrTyFC4sLVH7KbyV7naxdWC3EHXX4R1
+         mP6BhW6xNSjSN9JI3s4cP2KDwYhAHgh7/1VsQ=
 In-Reply-To: <1283461746-7905-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,21 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/ia64/include/asm/machvec_sn2.h |    2 +-
+ arch/mips/math-emu/dp_frexp.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/ia64/include/asm/machvec_sn2.h b/arch/ia64/include/asm/machvec_sn2.h
-index f061a30..e9d032e 100644
---- a/arch/ia64/include/asm/machvec_sn2.h
-+++ b/arch/ia64/include/asm/machvec_sn2.h
-@@ -22,7 +22,7 @@
-  * 
-  * For further information regarding this notice, see: 
-  * 
-- * http://oss.sgi.com/projects/GenInfo/NoticeExplan
-+ * http://oss.sgi.com/
-  */
- 
- #ifndef _ASM_IA64_MACHVEC_SN2_H
+diff --git a/arch/mips/math-emu/dp_frexp.c b/arch/mips/math-emu/dp_frexp.c
+index e650cb1..bc4b3d6 100644
+--- a/arch/mips/math-emu/dp_frexp.c
++++ b/arch/mips/math-emu/dp_frexp.c
+@@ -4,7 +4,7 @@
+ /*
+  * MIPS floating point support
+  * Copyright (C) 1994-2000 Algorithmics Ltd.
+- * http://www.algor.co.uk
++ * http://www.mips.com/ 
+  *
+  * ########################################################################
+  *
 -- 
 1.7.2.1
