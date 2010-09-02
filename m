@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 53/91] arch/mips/math-emu/sp_cmp.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:10:17 -0700
-Message-ID: <1283461824-7943-8-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 48/91] arch/mips/math-emu/dp_cmp.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:10:12 -0700
+Message-ID: <1283461824-7943-3-git-send-email-justinmattock@gmail.com>
 References: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=crU28d4PBY14zCqwP5skkh7nEI2cmTxwZOq5mYDA3u8=;
-        b=P/I/LrkT7n87houTRBRrBy4qc3ouWQLQGV2mVVxmwFBF0qrDGVL3zo6YXvRJvplLYg
-         jQuCRA5KUpyYpZGYKv/MtM6QdAci72PfcdkOb7kh61RwhR4eu7EtpJuvACv8YksQV/Uc
-         dhJsTf1fecFx7tVy1whw28+hLIZZtRBa08Fl8=
+        bh=bbrx1Tgru6R25ZVRRbjHRVxbJFGIxtmaXgNi8Zehbj0=;
+        b=qa125q81YEb631AbDdfJqLT0NS8EFnt3Ih/jYsjCvnMFISLXgV4f1Z8u0oVirqkcWw
+         aYbwfSovlTbAWlDijXjaTsXNGkNLiPmn/6gQdXQ8CRUIrwUXYIjl1MSPrJ3aMcgCSWtU
+         Avfqm0sJhwsbR1ZBidklKLi1MyknLYj/DlKAk=
 In-Reply-To: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,13 +29,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/sp_cmp.c |    2 +-
+ arch/mips/math-emu/dp_cmp.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/sp_cmp.c b/arch/mips/math-emu/sp_cmp.c
-index d3eff6b..0ba0aaf 100644
---- a/arch/mips/math-emu/sp_cmp.c
-+++ b/arch/mips/math-emu/sp_cmp.c
+diff --git a/arch/mips/math-emu/dp_cmp.c b/arch/mips/math-emu/dp_cmp.c
+index 8ab4f32..0e9f91a 100644
+--- a/arch/mips/math-emu/dp_cmp.c
++++ b/arch/mips/math-emu/dp_cmp.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
@@ -47,4 +47,3 @@ index d3eff6b..0ba0aaf 100644
   *
 -- 
 1.7.2.1
-
