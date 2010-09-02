@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 25/91] arch/h8300/Kconfig.cpu Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:07:54 -0700
-Message-ID: <1283461679-7851-10-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 22/91] arch/arm/mm/proc-xscale.S Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:07:51 -0700
+Message-ID: <1283461679-7851-7-git-send-email-justinmattock@gmail.com>
 References: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=qG8kFP5KZ0/0GbTVZqUgExQAaWz7vkSGcUAPEPLAMXU=;
-        b=XXtn0hrBa8TIh8ubHHQl8kQ/MIGKTwjDjS3LPi7xNTMbThN0GTx0NIJdra67IT48hU
-         AUqJL73qRXqScnBCn90TMD7b5snW6JmkswkNGSKQTNfxFTp2lc5DsZLL9dT5RGOWqt6K
-         DbbdLXFNIcz6ygqQoco1S7h7MGZ1orF8xsc5E=
+        bh=LJAE/Ewd3mkWX6jrVvIgy6xcva4vacdzxTVbOe6MrZ8=;
+        b=jje+847sTM5GFQ9+AKUODrggJgDZZrUjpKTCVEAXitjmRAE2PX1C7CDXCNECkQ5o55
+         IFhv+H/r0Bg/Hwtz4IJdPZcItIrjbk2hFiQ7Za4vibYg+YjHtLC5ONCCmHEGmWj+g3Xj
+         WZtXIbOwze7Lc5CW12fYRHIGLOAzqIYsv2gxc=
 In-Reply-To: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,63 +29,22 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/h8300/Kconfig.cpu |   14 +++++++-------
- 1 files changed, 7 insertions(+), 7 deletions(-)
+ arch/arm/mm/proc-xscale.S |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/h8300/Kconfig.cpu b/arch/h8300/Kconfig.cpu
-index 6e2ecff..d69fc26 100644
---- a/arch/h8300/Kconfig.cpu
-+++ b/arch/h8300/Kconfig.cpu
-@@ -17,10 +17,10 @@ config H8300H_AKI3068NET
- 	help
- 	  AKI-H8/3068F / AKI-H8/3069F Flashmicom LAN Board Support
- 	  More Information. (Japanese Only)
--	  <http://akizukidensi.com/catalog/h8.html>
-+	  <http://akizukidenshi.com/catalog/default.aspx>
- 	  AE-3068/69 Evaluation Board Support
- 	  More Information.
--	  <http://www.microtronique.com/ae3069lan.htm>
-+	  <http://www.microtronique.com/>
- 
- config H8300H_H8MAX
- 	bool "H8MAX"
-@@ -28,7 +28,7 @@ config H8300H_H8MAX
- 	help
- 	  H8MAX Evaluation Board Support
- 	  More Information. (Japanese Only)
--	  <http://strawberry-linux.com/h8/index.html>
-+	  <http://strawberry-linux.com/h8/>
- 
- config H8300H_SIM
- 	bool "H8/300H Simulator"
-@@ -36,7 +36,7 @@ config H8300H_SIM
- 	help
- 	  GDB Simulator Support
- 	  More Information.
--	  arch/h8300/Doc/simulator.txt
-+	  <http://www.gnu.org/software/gdb/> 
- 
- config H8S_GENERIC
- 	bool "H8S Generic"
-@@ -49,15 +49,15 @@ config H8S_EDOSK2674
- 	help
- 	  Renesas EDOSK-2674 Evaluation Board Support
- 	  More Information.
--	  <http://www.azpower.com/H8-uClinux/index.html>
-- 	  <http://www.eu.renesas.com/tools/edk/support/edosk2674.html>
-+	  <http://h8-uclinux.sourceforge.net/>
-+ 	  <http://www.renesas.eu/>
- 
- config H8S_SIM
- 	bool "H8S Simulator"
- 	help
- 	  GDB Simulator Support
- 	  More Information.
--	  arch/h8300/Doc/simulator.txt
-+	  http://www.gnu.org/software/gdb/ 
- 
- endchoice
- 
+diff --git a/arch/arm/mm/proc-xscale.S b/arch/arm/mm/proc-xscale.S
+index 1407597..887975f 100644
+--- a/arch/arm/mm/proc-xscale.S
++++ b/arch/arm/mm/proc-xscale.S
+@@ -418,7 +418,7 @@ ENTRY(xscale_cache_fns)
+  *
+  * See erratum #25 of "Intel 80200 Processor Specification Update",
+  * revision January 22, 2003, available at:
+- *     http://www.intel.com/design/iio/specupdt/273415.htm
++ *     http://www.intel.com/design/
+  */
+ ENTRY(xscale_80200_A0_A1_cache_fns)
+ 	.long	xscale_flush_kern_cache_all
 -- 
 1.7.2.1
 
