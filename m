@@ -1,18 +1,18 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 81/91] arch/mips/math-emu/sp_fdp.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:32 -0700
-Message-ID: <1283462022-8024-6-git-send-email-justinmattock@gmail.com>
-References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 69/91] arch/mips/math-emu/ieee754sp.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:12:25 -0700
+Message-ID: <1283461951-7988-9-git-send-email-justinmattock@gmail.com>
+References: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=GFPdHfqu+hkIaXXzSFVU8PxrDFb97oRljY7Y5uEGwdI=;
-        b=C0XjQq74R6wGA1p3jgqdTLE2AeuRozqz2ktCNTucs6vcgdA0nl0kXolUJUP2KwAyaq
-         GBgBoCNmXJ4J/WPqQVc+oteNLKV4Plpdyhzhu4dB48udtMg9lCU/5DGACffgl9JSkLo4
-         h2QFUYkauJx6BzUQr30QuEWogXzihjhC889E8=
-In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+        bh=DqX90G1Vh0VuqB5reZCD0ZmQKQzc1QlkzXN9CIvYf3k=;
+        b=m8/VLqTcbhGiH4QquRhxxtAdy3CJKwK1m53quO4ecGiDWeUkizcw0UmOE0109oUFCF
+         jiMPwg9xAmUBISiT/YNUQ0m+LZmmVQR2lugM117meeVi0Cn6rgbZLFNysZaJlkEZF/z/
+         aAH04FTYkmaKg+PE4+eHFVF25Ph2RpQNjZJQs=
+In-Reply-To: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -29,13 +29,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/sp_fdp.c |    2 +-
+ arch/mips/math-emu/ieee754sp.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/sp_fdp.c b/arch/mips/math-emu/sp_fdp.c
-index 4093723..9d44208 100644
---- a/arch/mips/math-emu/sp_fdp.c
-+++ b/arch/mips/math-emu/sp_fdp.c
+diff --git a/arch/mips/math-emu/ieee754sp.c b/arch/mips/math-emu/ieee754sp.c
+index a19b721..60b8aea 100644
+--- a/arch/mips/math-emu/ieee754sp.c
++++ b/arch/mips/math-emu/ieee754sp.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
