@@ -1,18 +1,16 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 45/91] arch/mips/math-emu/dp_fsp.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:09:06 -0700
-Message-ID: <1283461746-7905-15-git-send-email-justinmattock@gmail.com>
-References: <1283461746-7905-1-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 46/91] arch/mips/math-emu/sp_tint.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:10:10 -0700
+Message-ID: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
-         :message-id:x-mailer:in-reply-to:references;
-        bh=xSCbnVtWuOHSudZiyQX0Hh2tqOubZnFiZymLHyh7IQ0=;
-        b=pjVPzK6waMg0+2mgQH+FM8vUlDgZPCi9szdoBGvYNI7tVA6To70N4Ndy5kIkQtqWyq
-         +CfnQGifmmqvv++r7vBwhfSnAjvzHEPFDP55O/mNG7JlUdpGCvRN2eCfVKlJZq2cSQAH
-         ykkPG6Jnv8egLFjr0dJljxovgNlZgSHWbppkE=
-In-Reply-To: <1283461746-7905-1-git-send-email-justinmattock@gmail.com>
+         :message-id:x-mailer;
+        bh=8toCfyE6cyIpuTlYlkmUc4H7U3kL/bZmhoJFuxcKlgw=;
+        b=iyb3Jfrud6yStMaJB0B+6/EhwsxsU2CaRIMpt2qH6aiC/InE1yGz3phxUI6MpmH/u9
+         bk8fn2QPaOM2k2xDr4Ml1XwxJa62TuZzrBrV8Ii9XZidiL7L9Ij3SUFX+v10jF8oteOl
+         Fnp2UyiLuiaBTJUiU5fFLM0IZAMe1Wupk7ksU=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -29,13 +27,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/dp_fsp.c |    2 +-
+ arch/mips/math-emu/sp_tint.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/dp_fsp.c b/arch/mips/math-emu/dp_fsp.c
-index 494d19a..3c2ef64 100644
---- a/arch/mips/math-emu/dp_fsp.c
-+++ b/arch/mips/math-emu/dp_fsp.c
+diff --git a/arch/mips/math-emu/sp_tint.c b/arch/mips/math-emu/sp_tint.c
+index 352dc3a..5268743 100644
+--- a/arch/mips/math-emu/sp_tint.c
++++ b/arch/mips/math-emu/sp_tint.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
