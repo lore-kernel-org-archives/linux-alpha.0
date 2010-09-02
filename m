@@ -1,18 +1,18 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 77/91] arch/mips/math-emu/dp_logb.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:28 -0700
-Message-ID: <1283462022-8024-2-git-send-email-justinmattock@gmail.com>
-References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 71/91] arch/mips/math-emu/ieee754int.h Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:12:27 -0700
+Message-ID: <1283461951-7988-11-git-send-email-justinmattock@gmail.com>
+References: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=gzRUFJU6nx7hkFPrLuUR0EfAo+iBEfPGLsUUVZ8+V/o=;
-        b=mR/lbpAREbgACoKeAnlU+VQDD8jorzTRG4es1+18r2keyKY7DeOMwuehJn2HfsCqXo
-         n7ul8bNWpZN+l0tzq8KM1IFamXU3rsiNnBqKqa//+lTWYSAzAF5F8zniG9bO9DjwF/TQ
-         jK9sW27AqNqcYtLJQawnCBlTmtS8v0PLQ+yTU=
-In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+        bh=nx53eUOcOYOSV1hzc+Ak8h2SBCJObGCX9JgzDIWBG+8=;
+        b=UCgQWkX9Mk5yQpM/8Y+jH73oIkD+Ne+2jtuokD/fBmx5A3MwxCILK5A+4zi8G77sY5
+         M40hKY4z5ZOiGbbVR8X+TK2s58Wp43MtcNhCQKPu+rzp6VJHTcX9eJZHxD7HcuTyIxL4
+         i24CDTlmO630Npo6ByfJsLmYNQgkizjvX35NU=
+In-Reply-To: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -29,14 +29,14 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/dp_logb.c |    2 +-
+ arch/mips/math-emu/ieee754int.h |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/dp_logb.c b/arch/mips/math-emu/dp_logb.c
-index 6033886..e1de666 100644
---- a/arch/mips/math-emu/dp_logb.c
-+++ b/arch/mips/math-emu/dp_logb.c
-@@ -4,7 +4,7 @@
+diff --git a/arch/mips/math-emu/ieee754int.h b/arch/mips/math-emu/ieee754int.h
+index 1a846c5..91eb7d2 100644
+--- a/arch/mips/math-emu/ieee754int.h
++++ b/arch/mips/math-emu/ieee754int.h
+@@ -5,7 +5,7 @@
  /*
   * MIPS floating point support
   * Copyright (C) 1994-2000 Algorithmics Ltd.
