@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 48/91] arch/mips/math-emu/dp_cmp.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:10:12 -0700
-Message-ID: <1283461824-7943-3-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 52/91] arch/mips/math-emu/sp_mul.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:10:16 -0700
+Message-ID: <1283461824-7943-7-git-send-email-justinmattock@gmail.com>
 References: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=bbrx1Tgru6R25ZVRRbjHRVxbJFGIxtmaXgNi8Zehbj0=;
-        b=qa125q81YEb631AbDdfJqLT0NS8EFnt3Ih/jYsjCvnMFISLXgV4f1Z8u0oVirqkcWw
-         aYbwfSovlTbAWlDijXjaTsXNGkNLiPmn/6gQdXQ8CRUIrwUXYIjl1MSPrJ3aMcgCSWtU
-         Avfqm0sJhwsbR1ZBidklKLi1MyknLYj/DlKAk=
+        bh=aT2UJDsxcB5exFxUaziWYkqSZDzYdDRrImRHWyAMYpU=;
+        b=P4ym13CGh6cVgAasINWPKYeDrYJ1BUlw2ZvMGFR6XTfoQ2N7MxbqT8bJ1q2wkFTzII
+         FCHDtDG2UzON6yt9M/9a6q7JoH1ecAzn2IK+E+cuxAp4PYOkLs2P2AZeP0aKFgjGYCwT
+         9hgX/OmoWhvVMW34eHpvxOnYjwxz4h3GfBPAU=
 In-Reply-To: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,13 +29,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/dp_cmp.c |    2 +-
+ arch/mips/math-emu/sp_mul.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/dp_cmp.c b/arch/mips/math-emu/dp_cmp.c
-index 8ab4f32..0e9f91a 100644
---- a/arch/mips/math-emu/dp_cmp.c
-+++ b/arch/mips/math-emu/dp_cmp.c
+diff --git a/arch/mips/math-emu/sp_mul.c b/arch/mips/math-emu/sp_mul.c
+index 3f070f8..e31f04b 100644
+--- a/arch/mips/math-emu/sp_mul.c
++++ b/arch/mips/math-emu/sp_mul.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
