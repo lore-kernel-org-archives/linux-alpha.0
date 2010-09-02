@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 84/91] arch/sh/cchips/Kconfig Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:35 -0700
-Message-ID: <1283462022-8024-9-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 85/91] arch/um/os-Linux/start_up.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:13:36 -0700
+Message-ID: <1283462022-8024-10-git-send-email-justinmattock@gmail.com>
 References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=ILzPuKoVDCoDe9v9uJ/w3cYRXmA0nvcD2eBj2Q9EOJw=;
-        b=MzFN64fiyDR36rFgEWL5lxPBByRmhWRAvz91PXKNkkY5JwxE1BmpwCCKpzBLH6fAJR
-         DNs5KrIkEMTPc5YqE3aWIeFolLKgCxTOi3x3QiaQdt22F6qYa8IIXN9hOdCaJUtxYVWY
-         nKy2M+Ez0C16J+vlVZiKBNJRKgiySZNWUUk9o=
+        bh=NPOqLM8EedGTFZv3QKD+hjxRn3vQUricGEv7rk/iGHY=;
+        b=xoy0fBVsNfjKhjggZv+u8adC+Aw6s/QUQtQyxl2lF9ZWanwh/cLOILM8fwC3nONUGM
+         3BMIUv1id8BU0MIc3wkXcBkI+i/zhZ4vVs0Ftp8qpq2s7yHbrPiU48hUAYSg7n7Bs43d
+         4yPVev6FRe2q34C1JSmmQtEIyJiz1kXuOU1ds=
 In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,22 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/sh/cchips/Kconfig |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ arch/um/os-Linux/start_up.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/sh/cchips/Kconfig b/arch/sh/cchips/Kconfig
-index a5ab2ec..a7b70ff 100644
---- a/arch/sh/cchips/Kconfig
-+++ b/arch/sh/cchips/Kconfig
-@@ -17,7 +17,8 @@ config HD64461
- 	  PCMCIA controller supporting 2 slots.
+diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
+index 02ee9ad..48bbefa 100644
+--- a/arch/um/os-Linux/start_up.c
++++ b/arch/um/os-Linux/start_up.c
+@@ -195,7 +195,7 @@ __uml_setup("nosysemu", nosysemu_cmd_param,
+ "    SYSEMU is a performance-patch introduced by Laurent Vivier. It changes\n"
+ "    behaviour of ptrace() and helps reducing host context switch rate.\n"
+ "    To make it working, you need a kernel patch for your host, too.\n"
+-"    See http://perso.wanadoo.fr/laurent.vivier/UML/ for further \n"
++"    See http://web.archive.org/web/*/http://perso.wanadoo.fr/laurent.vivier/UML/ for further \n"
+ "    information.\n\n");
  
- 	  More information is available at
--	  <http://semiconductor.hitachi.com/windowsce/superh/sld013.htm>.
-+	  <http://web.archive.org/web/*/http://semiconductor.hitachi.com
-+	  /windowsce/superh/sld013.htm>.
- 
- 	  Say Y if you want support for the HD64461.
- 	  Otherwise, say N.
+ static void __init check_sysemu(void)
 -- 
 1.7.2.1
