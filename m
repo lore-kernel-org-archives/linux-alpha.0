@@ -1,18 +1,18 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 75/91] arch/mips/math-emu/dp_mul.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:12:31 -0700
-Message-ID: <1283461951-7988-15-git-send-email-justinmattock@gmail.com>
-References: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 79/91] arch/mips/math-emu/dp_flong.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:13:30 -0700
+Message-ID: <1283462022-8024-4-git-send-email-justinmattock@gmail.com>
+References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=1lyjWRrf4sjHnqXpGZDdPXBuLDAZFOX2qUWosUlt0Z0=;
-        b=bmlK6rH+33OPACyij8Yul7b+jlLmtbgyZdrWBInfrgwKK7dYpMyVMk5gBigN1KqYNu
-         8tzgYLW5AbRztobUmkp1tBF684mYbPcNp9ngCKNtfTznjOUaxzlAHz9aV86Tk+XgrLP6
-         VnxIIrus95mMg2r4g3VooX2hwYwOLuO9OKKds=
-In-Reply-To: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
+        bh=8QrCtsK1Z/HAVWXeE7b+zVSDgojRpdaKNY75GuKcTSI=;
+        b=eTEHAv9NfF2JcqxGlD0JxgFXLamoX0tsWDE31ZyrC+5WkQ1H4lA+Z8y87Ld0B6Zyjr
+         msR2Vkol3WtF0TevrMjayBUWYP/wDHcaPjAJ5I5vmmH40SIcIsh6J0++AZwjnZ/9bMea
+         XI68saJ9hDaZlfZHzsNcuGBFMkJDrwNJPwg/Q=
+In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -29,13 +29,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/dp_mul.c |    2 +-
+ arch/mips/math-emu/dp_flong.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/dp_mul.c b/arch/mips/math-emu/dp_mul.c
-index 48908a8..366e2c6 100644
---- a/arch/mips/math-emu/dp_mul.c
-+++ b/arch/mips/math-emu/dp_mul.c
+diff --git a/arch/mips/math-emu/dp_flong.c b/arch/mips/math-emu/dp_flong.c
+index f08f223..c335384 100644
+--- a/arch/mips/math-emu/dp_flong.c
++++ b/arch/mips/math-emu/dp_flong.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
