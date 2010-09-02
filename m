@@ -1,18 +1,18 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 78/91] arch/mips/math-emu/sp_tlong.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:29 -0700
-Message-ID: <1283462022-8024-3-git-send-email-justinmattock@gmail.com>
-References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 74/91] arch/mips/math-emu/sp_logb.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:12:30 -0700
+Message-ID: <1283461951-7988-14-git-send-email-justinmattock@gmail.com>
+References: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=aCVYEQgoKCTbeoDp5gd8YEZoArNJ3nMY+tzi/Fi8nmI=;
-        b=FX/8z2wiOI7lNw3s6lMJt0Xz1GsF32C57iLFkxYFdww+kzWt4BhxXuqbbF1+eRJMHp
-         /D0mejFOB46JarfchJv6ppNCLPHSP5pVcpntQkjJrQD/1yMCIeWXHo5MR9+N4Gq9dGAI
-         zQ1pNrwkNePoltS26EEZck+KWRzaCP2iDpn/4=
-In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+        bh=BvdsNx1qbvaBULYUuV+O+HXAVbZGU55NEOZ2gEJ/pdg=;
+        b=CzfATh1+qhqrRI6SpgZ2lOsqEmAjnWOioBOgbHyOszbtqElbzjb8BnXpIjsuq9J5iA
+         4eNi82yBlUe5xKg9fsPUzO1z4ejKWCjZ2AprU5HRjNJpNkmPeR5+ehK/HUDvnO6GwhAG
+         x42TXiGBaWHfPUdkiwxZSlEy5SD1NWjkQzBWc=
+In-Reply-To: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -29,13 +29,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/sp_tlong.c |    2 +-
+ arch/mips/math-emu/sp_logb.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/sp_tlong.c b/arch/mips/math-emu/sp_tlong.c
-index 92cd9c5..7acf15b 100644
---- a/arch/mips/math-emu/sp_tlong.c
-+++ b/arch/mips/math-emu/sp_tlong.c
+diff --git a/arch/mips/math-emu/sp_logb.c b/arch/mips/math-emu/sp_logb.c
+index 3c33721..69520c5 100644
+--- a/arch/mips/math-emu/sp_logb.c
++++ b/arch/mips/math-emu/sp_logb.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
