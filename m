@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 63/91] arch/mips/math-emu/dp_fint.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:12:19 -0700
-Message-ID: <1283461951-7988-3-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 65/91] arch/mips/math-emu/sp_scalb.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:12:21 -0700
+Message-ID: <1283461951-7988-5-git-send-email-justinmattock@gmail.com>
 References: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=V+dcuH7ShQlUIOBOnE94pb+TNk8dos14GgfxqvRWiwY=;
-        b=McW/yB5ErAvv7eU7OAkwWW6VpqKaE8y5kz+KIFdXAbR77ny0ie1hf9eSMgwm97ujN0
-         O1Gjhxm93RU7Px5bbO5JQ26av+V1yJ0KLsqza8YXfA7w9KsbG+sR46WagIhbc8FJPt9Y
-         OooUNk1+wZUv/uMK627ZF6OWxgKtUty/tFsmU=
+        bh=ujnEMJj7g0bFH9Yf2zR8JZu732cuQlOafKbCUGt042o=;
+        b=KYt9R4g0efJM1kn6nJvPXh/ziJ54/4j/nN7Jq9y9VSiui+GsUE5IifNbyjE/vmlr0J
+         SraTdT97jDw/spnhzlj4/89XkZGX1leWcdxR8ko9sGrxgnTSDprky6UwTpU30pQr+q7/
+         VANvA5EMMh7Mh/KqdxqSCXD3+HOq0J0YGswh4=
 In-Reply-To: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,13 +29,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/dp_fint.c |    2 +-
+ arch/mips/math-emu/sp_scalb.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/dp_fint.c b/arch/mips/math-emu/dp_fint.c
-index 39a71de1..bb1e85e 100644
---- a/arch/mips/math-emu/dp_fint.c
-+++ b/arch/mips/math-emu/dp_fint.c
+diff --git a/arch/mips/math-emu/sp_scalb.c b/arch/mips/math-emu/sp_scalb.c
+index 44ceb87..1b88cf3 100644
+--- a/arch/mips/math-emu/sp_scalb.c
++++ b/arch/mips/math-emu/sp_scalb.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
