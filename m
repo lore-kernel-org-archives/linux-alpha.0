@@ -1,50 +1,61 @@
-From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 57/91] arch/mips/math-emu/dp_sqrt.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:10:21 -0700
-Message-ID: <1283461824-7943-12-git-send-email-justinmattock@gmail.com>
-References: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:received:received:from:to:cc:subject:date
-         :message-id:x-mailer:in-reply-to:references;
-        bh=5189pGKgLZuTuU+J1JUGpCve8yaC6+2joMQZjLnamys=;
-        b=IEP3G5yYVVMK2ADKD0lvPb/NPS1STkt3Ys8WPaAGkPHBGBRDhZ0f3lp+yd/ba1zcil
-         CVaJasq6779RTqaohAPxKhIfWL2aIz+EPd/BcDouajfYoTCiOPpFhhMVfMQthloWp+MI
-         hkfXt49HqWJkdXxcdrB+Y4sMF6hF7QIkImzak=
-In-Reply-To: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Randy Dunlap <rdunlap@xenotime.net>
+Subject: Re: [PATCH 02/91] arch/alpha/Kconfig Update broken web addresses in
+ the arch directory.
+Date: Thu, 2 Sep 2010 14:10:12 -0700
+Message-ID: <20100902141012.9769b977.rdunlap@xenotime.net>
+References: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
+	<1283461606-7803-3-git-send-email-justinmattock@gmail.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: trivial@kernel.org
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, jkosina@suse.cz, "Justin P. Mattock" <justinmattock@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1283461606-7803-3-git-send-email-justinmattock@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: "Justin P. Mattock" <justinmattock@gmail.com>
+Cc: trivial@kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, jkosina@suse.cz
 
-The below patch updates a broken web address that is no longer
-working due to company buyout, and/or change of location.
-(Please have a look through, and let me know if any of them
-need to be changed, and I'll resend an updated patch).
+On Thu,  2 Sep 2010 14:06:33 -0700 Justin P. Mattock wrote:
 
-Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
+> The below patch updates a broken web address that is no longer
+> working due to company buyout, and/or change of location.
+> (Please have a look through, and let me know if any of them
+> need to be changed, and I'll resend an updated patch).
+> 
+> Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
+> 
+> ---
+>  arch/alpha/Kconfig |    6 ++++--
+>  1 files changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+> index b9647bb..16ae162 100644
+> --- a/arch/alpha/Kconfig
+> +++ b/arch/alpha/Kconfig
+> @@ -219,7 +219,8 @@ config ALPHA_LX164
+>  	bool "LX164"
+>  	help
+>  	  A technical overview of this board is available at
+> -	  <http://www.unix-ag.org/Linux-Alpha/Architectures/LX164.html>.
+> +	  <http://web.archive.org/web/*/http://www.unix-ag.org/
+> +	  Linux-Alpha/Architectures/LX164.html>.
+>  
+>  config ALPHA_LYNX
+>  	bool "Lynx"
+> @@ -483,7 +484,8 @@ config ALPHA_AVANTI
+>  	help
+>  	  Avanti AS 200, AS 205, AS 250, AS 255, AS 300, and AS 400-based
+>  	  Alphas. Info at
+> -	  <http://www.unix-ag.org/Linux-Alpha/Architectures/Avanti.html>.
+> +	  <http://web.archive.org/web/*/http://www.unix-ag.org/Linux-Alpha/
+> +	  Architectures/Avanti.html>.
+>  
+>  config ALPHA_BROKEN_IRQ_MASK
+>  	bool
+> -- 
+
+I wouldn't split long URLs, regardless of any column limit _guidelines_.
 
 ---
- arch/mips/math-emu/dp_sqrt.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/arch/mips/math-emu/dp_sqrt.c b/arch/mips/math-emu/dp_sqrt.c
-index 032328c..3c87408 100644
---- a/arch/mips/math-emu/dp_sqrt.c
-+++ b/arch/mips/math-emu/dp_sqrt.c
-@@ -4,7 +4,7 @@
- /*
-  * MIPS floating point support
-  * Copyright (C) 1994-2000 Algorithmics Ltd.
-- * http://www.algor.co.uk
-+ * http://www.mips.com/ 
-  *
-  * ########################################################################
-  *
--- 
-1.7.2.1
-
+~Randy
+*** Remember to use Documentation/SubmitChecklist when testing your code ***
