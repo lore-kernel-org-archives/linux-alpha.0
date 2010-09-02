@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 55/91] arch/mips/math-emu/sp_div.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:10:19 -0700
-Message-ID: <1283461824-7943-10-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 54/91] arch/mips/math-emu/ieee754d.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:10:18 -0700
+Message-ID: <1283461824-7943-9-git-send-email-justinmattock@gmail.com>
 References: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=PGauiT/7CxWYGB/M1s9lcaxVLPliUnxFrhcHbP6HFf4=;
-        b=CPsgtxKO1u9mvRpJC/xiK4SzdHNqd9u7FVATMitNQ5Gs53zzcwpHhaQyhpf6COg1Qn
-         SsnjtolTufZdQaQ9pQT5dk5VOrFztCbx3/N2cnXBAthjT6X+aJfp9M+HEDRvAvznmH0z
-         FrLziT9BuGwD4sUflLtsq20AM/q6JVzZNXo6Y=
+        bh=2vvIpozEhdyYQsEDaA9ZwHAQcBxS7UNm6ngEVRrcKeU=;
+        b=VDl+G50uIYA1C2XZmwsDMI6tXyT2BSisqJ4FG44sbzaLu/RAhL4X1ZpgtuTyXE7jwu
+         Sp4YDGAblfnUBNNPa/nCPnGEvUGl/WGZUMtD9Bipk3RHbFPYzOZ7V0oc/yUrRnDHrv+N
+         ZwrX5rKwajVkvw29khol02McWnCMtOszLs4VQ=
 In-Reply-To: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,22 +29,22 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/sp_div.c |    2 +-
+ arch/mips/math-emu/ieee754d.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/sp_div.c b/arch/mips/math-emu/sp_div.c
-index 2b437fc..94a835c 100644
---- a/arch/mips/math-emu/sp_div.c
-+++ b/arch/mips/math-emu/sp_div.c
+diff --git a/arch/mips/math-emu/ieee754d.c b/arch/mips/math-emu/ieee754d.c
+index a032533..9ac53d7 100644
+--- a/arch/mips/math-emu/ieee754d.c
++++ b/arch/mips/math-emu/ieee754d.c
 @@ -4,7 +4,7 @@
- /*
   * MIPS floating point support
+  *
   * Copyright (C) 1994-2000 Algorithmics Ltd.
 - * http://www.algor.co.uk
 + * http://www.mips.com/ 
   *
-  * ########################################################################
-  *
+  *  This program is free software; you can distribute it and/or modify it
+  *  under the terms of the GNU General Public License (Version 2) as
 -- 
 1.7.2.1
 
