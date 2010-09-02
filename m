@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 38/91] arch/m68k/Kconfig Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:08:59 -0700
-Message-ID: <1283461746-7905-8-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 33/91] arch/ia64/include/asm/machvec_sn2.h Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:08:54 -0700
+Message-ID: <1283461746-7905-3-git-send-email-justinmattock@gmail.com>
 References: <1283461746-7905-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=b6zpJotRzi1eN85v7X5VtQlArluCgIGufiwfI0v2vF8=;
-        b=NmWdQn0fexXgyWESVsrQOI8IiVBQyd0Ww89AaZwb8DJsZoMbvXtc2mDyZ6PGFOpYpJ
-         NVdM7GTJQtoKFawDqhzSF5o3cIMk27Mz9KllL5HiyD113QTSTSVpjpkCQcqqYbCbtsCs
-         PfPLmpwRD4P2KAcZyF6xf8tcQCvp6V6umBOrM=
+        bh=hoXk4z2fhwffi9WBVcIlSr1RDk8Z1pgEbHzALSKD6rk=;
+        b=XNTOwEvizS/ftWiSrvFb9JAS5fPEShZD0ra7hcW0bQ5NWfmtvnnRVzEgvxvBO5gj2E
+         I+Mgz8GTKvSNau8u4bNiWEMBhq4Ih6SVepBCdLsshzddMWf3K8x1qlNvL6JhPH5IgJ4e
+         aaNkU4I4u9mp2B7CJ1VskdDDqOD9DJyd2E6V8=
 In-Reply-To: <1283461746-7905-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,21 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/m68k/Kconfig |    2 +-
+ arch/ia64/include/asm/machvec_sn2.h |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
-index 8030e24..b092426 100644
---- a/arch/m68k/Kconfig
-+++ b/arch/m68k/Kconfig
-@@ -221,7 +221,7 @@ config SUN3X
- 	  Be warned that this support is very experimental.
- 	  Note that Sun 3x kernels are not compatible with Sun 3 hardware.
- 	  General Linux information on the Sun 3x series (now discontinued)
--	  is at <http://www.angelfire.com/ca2/tech68k/sun3.html>.
-+	  is at <http://web.archive.org/web/*/angelfire.com/ca2/tech68k/sun3.html>.
+diff --git a/arch/ia64/include/asm/machvec_sn2.h b/arch/ia64/include/asm/machvec_sn2.h
+index f061a30..e9d032e 100644
+--- a/arch/ia64/include/asm/machvec_sn2.h
++++ b/arch/ia64/include/asm/machvec_sn2.h
+@@ -22,7 +22,7 @@
+  * 
+  * For further information regarding this notice, see: 
+  * 
+- * http://oss.sgi.com/projects/GenInfo/NoticeExplan
++ * http://oss.sgi.com/
+  */
  
- 	  If you don't want to compile a kernel for a Sun 3x, say N.
- 
+ #ifndef _ASM_IA64_MACHVEC_SN2_H
 -- 
 1.7.2.1
