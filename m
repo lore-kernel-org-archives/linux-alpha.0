@@ -1,18 +1,18 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 79/91] arch/mips/math-emu/dp_flong.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:30 -0700
-Message-ID: <1283462022-8024-4-git-send-email-justinmattock@gmail.com>
-References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 60/91] arch/mips/math-emu/sp_fint.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:10:24 -0700
+Message-ID: <1283461824-7943-15-git-send-email-justinmattock@gmail.com>
+References: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=8QrCtsK1Z/HAVWXeE7b+zVSDgojRpdaKNY75GuKcTSI=;
-        b=eTEHAv9NfF2JcqxGlD0JxgFXLamoX0tsWDE31ZyrC+5WkQ1H4lA+Z8y87Ld0B6Zyjr
-         msR2Vkol3WtF0TevrMjayBUWYP/wDHcaPjAJ5I5vmmH40SIcIsh6J0++AZwjnZ/9bMea
-         XI68saJ9hDaZlfZHzsNcuGBFMkJDrwNJPwg/Q=
-In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+        bh=VcAbZH/oVFOu0uA65sRvqVCnGnb830+1uiqYT5fHMzs=;
+        b=j/h65picKcoLC6jr5g+BeleouMcCBN9Czi1WFCbXrSna79CX7zDhn52wDy4sUdMJGk
+         4IEbB8pOa3J8ypgZJLLLgBx4kHjDx2PkupUVRPqdgOix/gw5cgvtIq61j4jOYFxeV+Np
+         7vfFzsk8g/83EQEnZKphHRhDG71vjwG/e0sJ4=
+In-Reply-To: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -29,13 +29,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/dp_flong.c |    2 +-
+ arch/mips/math-emu/sp_fint.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/dp_flong.c b/arch/mips/math-emu/dp_flong.c
-index f08f223..c335384 100644
---- a/arch/mips/math-emu/dp_flong.c
-+++ b/arch/mips/math-emu/dp_flong.c
+diff --git a/arch/mips/math-emu/sp_fint.c b/arch/mips/math-emu/sp_fint.c
+index e88e125..9d7f2e7 100644
+--- a/arch/mips/math-emu/sp_fint.c
++++ b/arch/mips/math-emu/sp_fint.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
