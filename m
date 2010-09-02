@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 29/91] arch/ia64/lib/idiv32.S Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:07:58 -0700
-Message-ID: <1283461679-7851-14-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 19/91] arch/arm/mach-pxa/am200epd.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:07:48 -0700
+Message-ID: <1283461679-7851-4-git-send-email-justinmattock@gmail.com>
 References: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=lGc8TOiRqId29ztHZwDpDYd1swNwe97pkIBV5E4HEX8=;
-        b=d828q8fNypicvUgG0lu9OMW+hz/p9tzyHdgQuOo64R0c6wYptySG5MtrDx/rKMuZAN
-         wOC4wb0TGLPUN/CQ1Yzk8Glql4GKsbLggLsOVkxuHzuzevzD3noE8rLSvSRxcQnKek21
-         9u9aQgbRxh3HDmwvJREjjsZebR7UvCrDIkAdQ=
+        bh=WORdVyN+v5jj8KpTjAwu8UaecRSH0dw8FaCLzuOVYsI=;
+        b=BA6p/QcCouq4/H4/kRvVy5TkxmPpPjluOrg9evD5yhu4fjI+voEapXyMhcuGllP1FN
+         lopW0fuB0+EhCce2C0eY9Ji07d4rYrPaplQMoAj5Yv8tsiJcaOgWOTp5L3hmRIPSxXtT
+         0xUDMsq9XnELTE52b08QsmOIJP4Vk17tikxvU=
 In-Reply-To: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,23 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/ia64/lib/idiv32.S |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ arch/arm/mach-pxa/am200epd.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/ia64/lib/idiv32.S b/arch/ia64/lib/idiv32.S
-index 2ac28bf..dad1949 100644
---- a/arch/ia64/lib/idiv32.S
-+++ b/arch/ia64/lib/idiv32.S
-@@ -7,7 +7,8 @@
-  * This code is based on the application note entitled "Divide, Square Root
-  * and Remainder Algorithms for the IA-64 Architecture".  This document
-  * is available as Intel document number 248725-002 or via the web at
-- * http://developer.intel.com/software/opensource/numerics/
-+ * http://web.archive.org/web/20020611073250/developer.intel.com/
-+ * software/products/opensource/libraries/num.htm 
+diff --git a/arch/arm/mach-pxa/am200epd.c b/arch/arm/mach-pxa/am200epd.c
+index 3499fad..0fd6a08 100644
+--- a/arch/arm/mach-pxa/am200epd.c
++++ b/arch/arm/mach-pxa/am200epd.c
+@@ -10,7 +10,7 @@
+  * Layout is based on skeletonfb.c by James Simmons and Geert Uytterhoeven.
   *
-  * For more details on the theory behind these algorithms, see "IA-64
-  * and Elementary Functions" by Peter Markstein; HP Professional Books
+  * This work was made possible by help and equipment support from E-Ink
+- * Corporation. http://support.eink.com/community
++ * Corporation. http://www.support.eink.com/
+  *
+  * This driver is written to be used with the Metronome display controller.
+  * on the AM200 EPD prototype kit/development kit with an E-Ink 800x600
 -- 
 1.7.2.1
-
