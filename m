@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 80/91] arch/mips/math-emu/ieee754dp.h Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:31 -0700
-Message-ID: <1283462022-8024-5-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 84/91] arch/sh/cchips/Kconfig Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:13:35 -0700
+Message-ID: <1283462022-8024-9-git-send-email-justinmattock@gmail.com>
 References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=ESxEfEyW+ENGFpIYUTlsISmOsh0nK0A9ix84D5sNLrk=;
-        b=Zc6wjAo2epNuqigKxf6Udjm73rHO6gDHwbSTvANwEsTzh2YPbQfgjsVvg2k+WS2AHZ
-         OJluFfj4jHdWTD9QCN5qMhmCZtWU7O6P6t2VPoMqMRr/Ndd1ABzIx0ZNjVQWOmoeDp1F
-         7vYB/N3ZC+DNk2VSS9CBHk4oOui320mRpKptU=
+        bh=ILzPuKoVDCoDe9v9uJ/w3cYRXmA0nvcD2eBj2Q9EOJw=;
+        b=MzFN64fiyDR36rFgEWL5lxPBByRmhWRAvz91PXKNkkY5JwxE1BmpwCCKpzBLH6fAJR
+         DNs5KrIkEMTPc5YqE3aWIeFolLKgCxTOi3x3QiaQdt22F6qYa8IIXN9hOdCaJUtxYVWY
+         nKy2M+Ez0C16J+vlVZiKBNJRKgiySZNWUUk9o=
 In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,22 +29,22 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/ieee754dp.h |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ arch/sh/cchips/Kconfig |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/ieee754dp.h b/arch/mips/math-emu/ieee754dp.h
-index 7627865..b90bd7a 100644
---- a/arch/mips/math-emu/ieee754dp.h
-+++ b/arch/mips/math-emu/ieee754dp.h
-@@ -5,7 +5,7 @@
- /*
-  * MIPS floating point support
-  * Copyright (C) 1994-2000 Algorithmics Ltd.
-- * http://www.algor.co.uk
-+ * http://www.mips.com/ 
-  *
-  * ########################################################################
-  *
+diff --git a/arch/sh/cchips/Kconfig b/arch/sh/cchips/Kconfig
+index a5ab2ec..a7b70ff 100644
+--- a/arch/sh/cchips/Kconfig
++++ b/arch/sh/cchips/Kconfig
+@@ -17,7 +17,8 @@ config HD64461
+ 	  PCMCIA controller supporting 2 slots.
+ 
+ 	  More information is available at
+-	  <http://semiconductor.hitachi.com/windowsce/superh/sld013.htm>.
++	  <http://web.archive.org/web/*/http://semiconductor.hitachi.com
++	  /windowsce/superh/sld013.htm>.
+ 
+ 	  Say Y if you want support for the HD64461.
+ 	  Otherwise, say N.
 -- 
 1.7.2.1
-
