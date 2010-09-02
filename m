@@ -1,23 +1,24 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 88/91] arch/x86/kernel/cpu/amd.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:39 -0700
-Message-ID: <1283462022-8024-13-git-send-email-justinmattock@gmail.com>
+Subject: =?UTF-8?q?=5BPATCH=2083/91=5D=20arch/powerpc/include/asm/hydra=2Eh=20Update=20broken=20web=20addresses=20in=20the=20arch=20directory=2E?=
+Date: Thu,  2 Sep 2010 14:13:34 -0700
+Message-ID: <1283462022-8024-8-git-send-email-justinmattock@gmail.com>
 References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
-         :message-id:x-mailer:in-reply-to:references;
-        bh=azXM8qbgBB+axMMhUEWKFrpyo00Jg/jDcDqb3CNEjK0=;
-        b=GKGUmuQLKBNao3G7RSaBwmJ0X0x988PE6hbMOz7vr7fGsAlQLbxElToUvfC3i73nuJ
-         3N2e1r+pnnQZdWQ2ms6+PLsWaH6uVIqVvauAn0GshVd+SSulSaE+yUCHRnmgLKPF99Vy
-         1MYlrw3g6slC9okorlBKhhYQzi7fhCcHb+M90=
+         :message-id:x-mailer:in-reply-to:references:mime-version
+         :content-type:content-transfer-encoding;
+        bh=/wJJoiyK5d7lLZXDIykcqswwAkqo8QAfW5VwjspF7uY=;
+        b=og4Z0rF+YLuKJZYp+W0D59JHnVs2JS/QdbX83Gov9tgr940U4ozyNQXHpy1xKRQ6+J
+         BWU1/r+3KxdklDC4Yum8UP3z2V3Y+3ya3fA6D3siXCI59Ke1JEQ9sASM91PaardKVonH
+         8WoYoZNxo3Hiiv7aCcUaYivwlEUqydYRylvo4=
 In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
 To: trivial@kernel.org
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, jkosina@suse.cz, "Justin P. Mattock" <justinmattock@gmail.com>
 
@@ -29,21 +30,25 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/x86/kernel/cpu/amd.c |    2 +-
+ arch/powerpc/include/asm/hydra.h |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
-index ba5f62f..8c03911 100644
---- a/arch/x86/kernel/cpu/amd.c
-+++ b/arch/x86/kernel/cpu/amd.c
-@@ -23,7 +23,7 @@
-  *	contact AMD for precise details and a CPU swap.
+diff --git a/arch/powerpc/include/asm/hydra.h b/arch/powerpc/include/as=
+m/hydra.h
+index 1ad4eed..d529a2c 100644
+--- a/arch/powerpc/include/asm/hydra.h
++++ b/arch/powerpc/include/asm/hydra.h
+@@ -10,7 +10,7 @@
   *
-  *	See	http://www.multimania.com/poulot/k6bug.html
-- *		http://www.amd.com/K6/k6docs/revgd.html
-+ *		http://web.archive.org/web/*/http://www.amd.com/K6/k6docs/revgd.html	
+  *	=C2=A9 Copyright 1995 Apple Computer, Inc. All rights reserved.
   *
-  *	The following test is erm.. interesting. AMD neglected to up
-  *	the chip setting when fixing the bug but they also tweaked some
--- 
+- *  It's available online from http://chrp.apple.com/MacTech.pdf.
++ *  It's available online from http://www.cpu.lu/~mlan/ftp/MacTech.pdf=
+=2E
+  *  You can obtain paper copies of this book from computer bookstores =
+or by
+  *  writing Morgan Kaufmann Publishers, Inc., 340 Pine Street, Sixth F=
+loor, San
+  *  Francisco, CA 94104. Reference ISBN 1-55860-393-X.
+--=20
 1.7.2.1
