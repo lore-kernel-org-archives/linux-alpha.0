@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 89/91] arch/x86/kernel/apm_32.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:40 -0700
-Message-ID: <1283462022-8024-14-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 86/91] arch/x86/kernel/microcode_core.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:13:37 -0700
+Message-ID: <1283462022-8024-11-git-send-email-justinmattock@gmail.com>
 References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=cEUaOCWz0NNLLYICK/VnsUGBjzvherbrdraDZs/GKE4=;
-        b=fCVYEQGBhhDaPJLm3D4GSOdxy1OfIG4eUBLpBisLXXiG0yePrNiTKE50+zpLfNroqB
-         0CvAoqU+iE6hfaM1jEvDwefFmA8mMbrYqy9p8d+UAgvz52til19QW2nVD1NHwb9WPEHV
-         6JKp0s71wqXfvPZ/S84T2/aSVJPc6umR7MjEc=
+        bh=Jv2ZIKs6OlGnBj65Wp3FWyWUyhqlqKiaAIlTXswVfEI=;
+        b=HjRdZVeukGzr7Wp0+o+pTVOWXRCRARPzH6AXFRC3itYTBNFR5Gk1fmx3sFh2CHQ6F3
+         X9foabgmqGj1rJD/0FduO/D1RI1aIsiTEFJOxbyPaQj84e38KgFNwbOm87D8kE+OGfJo
+         HsR2yajJxRQglMT2+pPp3poaqS3EQ1+rYoMCo=
 In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,22 +29,22 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/x86/kernel/apm_32.c |    2 +-
+ arch/x86/kernel/microcode_core.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/x86/kernel/apm_32.c b/arch/x86/kernel/apm_32.c
-index 4c9c67b..ef07a46 100644
---- a/arch/x86/kernel/apm_32.c
-+++ b/arch/x86/kernel/apm_32.c
-@@ -190,7 +190,7 @@
+diff --git a/arch/x86/kernel/microcode_core.c b/arch/x86/kernel/microcode_core.c
+index fa6551d..b9c5c54 100644
+--- a/arch/x86/kernel/microcode_core.c
++++ b/arch/x86/kernel/microcode_core.c
+@@ -12,7 +12,7 @@
+  *	Software Developer's Manual
+  *	Order Number 253668 or free download from:
   *
-  * [This document is available free from Intel by calling 800.628.8686 (fax
-  * 916.356.6100) or 800.548.4725; or via anonymous ftp from
-- * ftp://ftp.intel.com/pub/IAL/software_specs/apmv11.doc.  It is also
-+ * ftp://ftp.intel.com/pub/.  It is also
-  * available from Microsoft by calling 206.882.8080.]
+- *	http://developer.intel.com/design/pentium4/manuals/253668.htm
++ *	http://developer.intel.com/Assets/PDF/manual/253668.pdf	
   *
-  * APM 1.2 Reference:
+  *	For more information, go to http://www.urbanmyth.org/microcode
+  *
 -- 
 1.7.2.1
 
