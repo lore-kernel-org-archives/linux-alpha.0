@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 20/91] arch/arm/mach-pxa/include/mach/idp.h Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:07:49 -0700
-Message-ID: <1283461679-7851-5-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 24/91] arch/avr32/Kconfig Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:07:53 -0700
+Message-ID: <1283461679-7851-9-git-send-email-justinmattock@gmail.com>
 References: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=gNoRF68UpYXC2zd7bqLgiXzTcvrwdDFxk/Z4+rSKzek=;
-        b=r+VznqlFA+RjtX/crYFA7S3hDzNuU7cpmajVBPNgTG3VvDcnZBl5FYxEg4PGomNB59
-         a3jGmh/0etovC6bdm6cUP6CafhDQssxnqMsU+T6hnC0VpNZrkuRZb1McA+StJO6gll+s
-         rcjGY6mr12FWQmDt10+UDss0JDCxWNfxy4IG8=
+        bh=PCx6N9EFqqDhkjUJdmQMUhdmuxn3iF+5RusizB/mEqU=;
+        b=erKIOyMklIDy4ITpZBN9v7EIVmxOwBq3MT1vL/fMnRl2QlBCAhwRnNI+Gz7GWrRebl
+         H1nV+g6JhCdfVrGl4PoyG6YN/Wj4oVP8pLBxezFTyPTwvbB/1Spptz1anFK/eRrxSg+6
+         0/GHG4tC037nzgnLba28hN31Q9h91eP1Y3jwU=
 In-Reply-To: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,23 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/arm/mach-pxa/include/mach/idp.h |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ arch/avr32/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/arm/mach-pxa/include/mach/idp.h b/arch/arm/mach-pxa/include/mach/idp.h
-index 5eff96f..8c38479 100644
---- a/arch/arm/mach-pxa/include/mach/idp.h
-+++ b/arch/arm/mach-pxa/include/mach/idp.h
-@@ -11,8 +11,8 @@
-  *             Initial code
-  *
-  * 2005-02-15: Cliff Brake <cliff.brake@gmail.com>
-- *             <http://www.vibren.com> <http://bec-systems.com>
-- *             Changes for 2.6 kernel.
-+ *             <http://web.archive.org/web/*/http://www.vibren.com> 
-+ *             <http://bec-systems.com> Changes for 2.6 kernel.
-  */
+diff --git a/arch/avr32/Kconfig b/arch/avr32/Kconfig
+index f515727..787dcba 100644
+--- a/arch/avr32/Kconfig
++++ b/arch/avr32/Kconfig
+@@ -145,7 +145,7 @@ config BOARD_HAMMERHEAD
+ 	  will cover even the most exceptional need of memory bandwidth. Together with the onboard
+ 	  video decoder the board is ready for video processing.
  
+-	  For more information see: http://www.miromico.com/hammerhead
++	  For more information see: http://www.hammerhead.ch/index.php/getting-started.html 
  
+ config BOARD_FAVR_32
+ 	bool "Favr-32 LCD-board"
 -- 
 1.7.2.1
