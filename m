@@ -1,18 +1,16 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 82/91] arch/mips/Kconfig Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:13:33 -0700
-Message-ID: <1283462022-8024-7-git-send-email-justinmattock@gmail.com>
-References: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 61/91] arch/mips/math-emu/ieee754xcpt.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:12:17 -0700
+Message-ID: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
-         :message-id:x-mailer:in-reply-to:references;
-        bh=QzkYdc2z+/pfvBqueJtSUNHzU4v4Rj9JzTE0HN2qJrA=;
-        b=h6iQTwWbI98b5rDcA0fV58SA+SZGiqFJYzxtePt8pa+3nmgEUOyyGkHi7p3qQAwqKU
-         V5u4KnleZ7C4dN+OxIEULtxHcwBfMDXrcgQqxP6hjUEVefvWpGv+TSxnndaFW+lwEcME
-         HwyVP6kbJmJng/TRhkk5nSkSZzmnC2UAPq2N8=
-In-Reply-To: <1283462022-8024-1-git-send-email-justinmattock@gmail.com>
+         :message-id:x-mailer;
+        bh=fbMxzstKNNNYeh8fK8s7yAE9Edlxmixvpjv9IxP07PM=;
+        b=oVVNqxMmx6ZZowXcwZEkdUr0rOjhhkaZcpbUYX7lCcpMdSm32BqGviM1O87k+i0iOV
+         Uj9fgZE03M9+VTqkrzQvNg7Jg6T8OUck4/1tylKYWqFprodd7rcoXVlwDM2rvBpK10Ku
+         VJQqAZ0cX53JdoPVoI6ii3kpHZSd5M31AEiBA=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -29,22 +27,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/Kconfig |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ arch/mips/math-emu/ieee754xcpt.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 3ad59dd..984b14e 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -2178,7 +2178,8 @@ config TC
- 	  TurboChannel is a DEC (now Compaq (now HP)) bus for Alpha and MIPS
- 	  processors.  Documentation on writing device drivers for TurboChannel
- 	  is available at:
--	  <http://www.cs.arizona.edu/computer.help/policy/DIGITAL_unix/AA-PS3HD-TET1_html/TITLE.html>.
-+	  <http://web.archive.org/web/*/http://www.cs.arizona.edu/computer.help/
-+	  policy/DIGITAL_unix/AA-PS3HD-TET1_html/TITLE.html>.
- 
- #config ACCESSBUS
- #	bool "Access.Bus support"
+diff --git a/arch/mips/math-emu/ieee754xcpt.c b/arch/mips/math-emu/ieee754xcpt.c
+index e02423a..2399e44 100644
+--- a/arch/mips/math-emu/ieee754xcpt.c
++++ b/arch/mips/math-emu/ieee754xcpt.c
+@@ -1,7 +1,7 @@
+ /*
+  * MIPS floating point support
+  * Copyright (C) 1994-2000 Algorithmics Ltd.
+- * http://www.algor.co.uk
++ * http://www.mips.com/ 
+  *
+  * ########################################################################
+  *
 -- 
 1.7.2.1
