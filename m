@@ -1,18 +1,16 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 09/91] arch/arm/nwfpe/softfloat-specialize Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:06:40 -0700
-Message-ID: <1283461606-7803-10-git-send-email-justinmattock@gmail.com>
-References: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 16/91] arch/arm/mach-footbridge/Kconfig Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:07:45 -0700
+Message-ID: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
-         :message-id:x-mailer:in-reply-to:references;
-        bh=Xh+pZ0UEKi7tjqOJn1CkXRDtmUEf0ZfL9p8EkL574WE=;
-        b=DB0aFXxSn+UGWMkcBKiaQdRP5VfNJfvlv0aXIkSRrHOExcOm+XG5MdnOHhM3FFUPX0
-         l2i+J9PF84VT92UNtkYO+OpVEXeeDxMUEBhzjAVZEzNLktNh8MLpKSUMh1WHSZ6uxKBm
-         DEE+vvbEKavZ76dgvveDEEqLsPSnhBxBK9yTw=
-In-Reply-To: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
+         :message-id:x-mailer;
+        bh=8Dr0ctCoF69M6LmlxuSSmTJQr8UPa+mYoC04iNA/R/I=;
+        b=qGJaoLqbSp0SCfHvV7L7V5DBHIpHD6oPGIF/2WjAFcYPHcKmeM1/fo+LKgXN2fCf1y
+         cM34RHiKcsMrdF4X8gDaOyoegqlKhGOqMDVNEcvDTbqbHcuiLHeOC9yDg/hqw+XQtQ7f
+         eoETkKZD+bWIDlPBmt1+1Usm4ApaYfxkWw0yg=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -29,23 +27,22 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/arm/nwfpe/softfloat-specialize |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-footbridge/Kconfig |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-diff --git a/arch/arm/nwfpe/softfloat-specialize b/arch/arm/nwfpe/softfloat-specialize
-index d4a4c8e..89cc56e 100644
---- a/arch/arm/nwfpe/softfloat-specialize
-+++ b/arch/arm/nwfpe/softfloat-specialize
-@@ -12,8 +12,8 @@ National Science Foundation under grant MIP-9311980.  The original version
- of this code was written as part of a project to build a fixed-point vector
- processor in collaboration with the University of California at Berkeley,
- overseen by Profs. Nelson Morgan and John Wawrzynek.  More information
--is available through the Web page `http://HTTP.CS.Berkeley.EDU/~jhauser/
--arithmetic/softfloat.html'.
-+is available through the Web page `http://www.jhauser.us/arithmetic/
-+SoftFloat-2b/SoftFloat-source.txt'.
+diff --git a/arch/arm/mach-footbridge/Kconfig b/arch/arm/mach-footbridge/Kconfig
+index bdd2579..81d66fb 100644
+--- a/arch/arm/mach-footbridge/Kconfig
++++ b/arch/arm/mach-footbridge/Kconfig
+@@ -29,7 +29,8 @@ config ARCH_PERSONAL_SERVER
+ 	  There are no product plans beyond the current research
+ 	  prototypes at this time.  Information is available at:
  
- THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort
- has been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT
+-	  <http://www.crl.hpl.hp.com/projects/personalserver/>
++	  <http://web.archive.org/web/*/http://www.crl.hpl.hp.com
++	  /projects/personalserver/>
+ 
+ 	  If you have any questions or comments about the  Compaq Personal
+ 	  Server, send e-mail to <skiff@crl.dec.com>.
 -- 
 1.7.2.1
