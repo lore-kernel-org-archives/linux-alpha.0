@@ -1,17 +1,17 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 13/91] arch/arm/nwfpe/milieu.h Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:06:44 -0700
-Message-ID: <1283461606-7803-14-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 14/91] arch/arm/mach-s3c2440/mach-at2440evb.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:06:45 -0700
+Message-ID: <1283461606-7803-15-git-send-email-justinmattock@gmail.com>
 References: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=ley0PqV3cb+d8GGXug0P5Zl7UXZgkifEb2cBKBx2E7M=;
-        b=scaw/8q3cgISttDHvpMYtlwS6yMYiX8rJUfNQZ2IBbGZi8GaGzYiyUrZgiP/VRNKHw
-         4YhZF0BesDREvCrDUnwNv071l0/et0hKI9uAn6yzLNRj2B+mng6w+K7bLuRTwacQ5pF8
-         DK1jQaYLMO9vQSZnV+qL64ss0qFym3u4FX8TI=
+        bh=XZ17fT6TQBmgNCnkXWAMdTpx5uNBAi9eRDa7zHBetuU=;
+        b=iGs7lRsTXuWL0vAzERAWDjHF+aBvk5PgwLohwaAjqes/vSpVKqFvsDYuKwqwE9uCyq
+         G7Ak90LI0/kHXiqovNNEoJ+d5X2ZQSgpdSsO3P4nz+jcAo+1ZWV4p8HQR64C00Jchq9k
+         BVGFVLK9QYcjluIOiBkaFD7bkxskJ0VgBDgbo=
 In-Reply-To: <1283461606-7803-1-git-send-email-justinmattock@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -29,23 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/arm/nwfpe/milieu.h |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-s3c2440/mach-at2440evb.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/arm/nwfpe/milieu.h b/arch/arm/nwfpe/milieu.h
-index a3892ab..4b2cf7a 100644
---- a/arch/arm/nwfpe/milieu.h
-+++ b/arch/arm/nwfpe/milieu.h
-@@ -12,8 +12,8 @@ National Science Foundation under grant MIP-9311980.  The original version
- of this code was written as part of a project to build a fixed-point vector
- processor in collaboration with the University of California at Berkeley,
- overseen by Profs. Nelson Morgan and John Wawrzynek.  More information
--is available through the Web page `http://HTTP.CS.Berkeley.EDU/~jhauser/
--arithmetic/softfloat.html'.
-+is available through the Web page `http://www.jhauser.us/arithmetic/
-+SoftFloat-2b/SoftFloat-source.txt'.
- 
- THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort
- has been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT
+diff --git a/arch/arm/mach-s3c2440/mach-at2440evb.c b/arch/arm/mach-s3c2440/mach-at2440evb.c
+index 8472579..67b6ba0 100644
+--- a/arch/arm/mach-s3c2440/mach-at2440evb.c
++++ b/arch/arm/mach-s3c2440/mach-at2440evb.c
+@@ -5,7 +5,7 @@
+  *      and modifications by SBZ <sbz@spgui.org> and
+  *      Weibing <http://weibing.blogbus.com>
+  *
+- * For product information, visit http://www.arm9e.com/
++ * For product information, visit http://www.arm.com/
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
 -- 
 1.7.2.1
