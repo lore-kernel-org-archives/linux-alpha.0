@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 30/91] arch/ia64/sn/kernel/sn2/timer_interrupt.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:07:59 -0700
-Message-ID: <1283461679-7851-15-git-send-email-justinmattock@gmail.com>
+Subject: [PATCH 23/91] arch/arm/mm/Kconfig Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:07:52 -0700
+Message-ID: <1283461679-7851-8-git-send-email-justinmattock@gmail.com>
 References: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=el3+jfM3+RGSa3I36mBkAK3AdD0QTuEj/ZAE1aORyrc=;
-        b=sOhSez/uHRCu31rkOu+arZMU/OZ9eY3/CIOlI4zn5slSPLhrzSTmnF1UeT/1o8qlXV
-         aXVHfmhgxYIFxQMMal2dkNEI8YVxlwn7kGfwSJF7Ox8bymGHo+PGOVGlN05FgKuo6WL0
-         SfPTV2fCJmJaJbWvAfFEfeS65KyJdL/fbfJ0s=
+        bh=rY8O/7bWyQE1EPzQj5q/CdQSM/9ZjUP6rutyN6zDk+Y=;
+        b=ovXNgPV9vDROgGlQ8vhyH3ToylM+9IehwwU1wUyw3AijaYam/YfsnmoOj9O7UG0dV8
+         5b/qUZRNwN/zYh8rKU+cbUsf+q5RoNejOUhspKb31lCV5Rx1fz4tJB8wlyZ73KgLJZJH
+         IvbtniPPqaS/w3ZxU6rTZW3/IPKOD00e6kHRY=
 In-Reply-To: <1283461679-7851-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,29 +29,21 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/ia64/sn/kernel/sn2/timer_interrupt.c |    4 +---
- 1 files changed, 1 insertions(+), 3 deletions(-)
+ arch/arm/mm/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/ia64/sn/kernel/sn2/timer_interrupt.c b/arch/ia64/sn/kernel/sn2/timer_interrupt.c
-index 103d6ea..9f9d5f2 100644
---- a/arch/ia64/sn/kernel/sn2/timer_interrupt.c
-+++ b/arch/ia64/sn/kernel/sn2/timer_interrupt.c
-@@ -1,6 +1,4 @@
- /*
-- *
-- *
-  * Copyright (c) 2005, 2006 Silicon Graphics, Inc.  All Rights Reserved.
-  * 
-  * This program is free software; you can redistribute it and/or modify it 
-@@ -24,7 +22,7 @@
-  * 
-  * For further information regarding this notice, see: 
-  * 
-- * http://oss.sgi.com/projects/GenInfo/NoticeExplan
-+ * http://oss.sgi.com/
-  */
+diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
+index 33c3f57..9516aaf 100644
+--- a/arch/arm/mm/Kconfig
++++ b/arch/arm/mm/Kconfig
+@@ -314,7 +314,7 @@ config CPU_SA110
+ 	  The Intel StrongARM(R) SA-110 is a 32-bit microprocessor and
+ 	  is available at five speeds ranging from 100 MHz to 233 MHz.
+ 	  More information is available at
+-	  <http://developer.intel.com/design/strong/sa110.htm>.
++	  <http://developer.intel.com/design/>.
  
- #include <linux/interrupt.h>
+ 	  Say Y if you want support for the SA-110 processor.
+ 	  Otherwise, say N.
 -- 
 1.7.2.1
-
