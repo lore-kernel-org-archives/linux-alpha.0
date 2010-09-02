@@ -1,19 +1,19 @@
 From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: [PATCH 70/91] arch/mips/math-emu/dp_simple.c Update broken web addresses in the arch directory.
-Date: Thu,  2 Sep 2010 14:12:26 -0700
-Message-ID: <1283461951-7988-10-git-send-email-justinmattock@gmail.com>
-References: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Subject: [PATCH 50/91] arch/mips/math-emu/dp_div.c Update broken web addresses in the arch directory.
+Date: Thu,  2 Sep 2010 14:10:14 -0700
+Message-ID: <1283461824-7943-5-git-send-email-justinmattock@gmail.com>
+References: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:received:received:from:to:cc:subject:date
          :message-id:x-mailer:in-reply-to:references;
-        bh=OCSzW7PYRP/+o7S2h9aVYGW3XIX2hPl2SZH3S6PtmNg=;
-        b=NfKd21mENPRwh2aA/AtvxEgkoXPer6w4sGXYOZxGF8YGLDzufxouP/ZroUwOffIOti
-         jOnX/Zc64bs/SeSLtFGUqVJF0lpXVn02fO3DXQOJej6uvUKFtA8zlO3Mml328/MCTw8l
-         TZsayc+T8N3h1WUmJZehCFS8XvUuIWjeF5Jc4=
-In-Reply-To: <1283461951-7988-1-git-send-email-justinmattock@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+        bh=stVj8Iu7Q5MyImZeRMci379i3RSezJwCTFXeAI32I30=;
+        b=C4QZNW/6q3W6lPNFDt3dv4Zcz4NZO9Bd25fGBDutyJhb0JyWdhE0ESYtCrBsfKRtGe
+         qZLYpXeA//z3xnpPCjwEnZhsBJmQJ9qwnvPBw27IV3NIgGmOx/ddtuGtJLytg0p4zpNk
+         1cGLucSuPcKWwQQ5+WgsSqnPh8scV4YrSflFI=
+In-Reply-To: <1283461824-7943-1-git-send-email-justinmattock@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -29,13 +29,13 @@ need to be changed, and I'll resend an updated patch).
 Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
 
 ---
- arch/mips/math-emu/dp_simple.c |    2 +-
+ arch/mips/math-emu/dp_div.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/arch/mips/math-emu/dp_simple.c b/arch/mips/math-emu/dp_simple.c
-index b909742..8336418 100644
---- a/arch/mips/math-emu/dp_simple.c
-+++ b/arch/mips/math-emu/dp_simple.c
+diff --git a/arch/mips/math-emu/dp_div.c b/arch/mips/math-emu/dp_div.c
+index 6acedce..e6aeaea 100644
+--- a/arch/mips/math-emu/dp_div.c
++++ b/arch/mips/math-emu/dp_div.c
 @@ -4,7 +4,7 @@
  /*
   * MIPS floating point support
@@ -47,4 +47,3 @@ index b909742..8336418 100644
   *
 -- 
 1.7.2.1
-
