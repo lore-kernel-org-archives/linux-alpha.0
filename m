@@ -1,41 +1,101 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: Looking for two pairs of DS10L rails
-Date: Sun, 12 Sep 2010 23:47:20 -0400
-Message-ID: <AANLkTi=vbAMaGPRxZUWUc=TmtUJoDD0-L1u3mR8SckPt@mail.gmail.com>
-References: <AANLkTimGjywvW0ZREsYA2YVmCNpEOCAicMwRN5TkS3Jm@mail.gmail.com> <AANLkTi=-z7ByuRD6UU2fkvUWbhdUSpC03SNYyytk5KHx@mail.gmail.com>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [tip:perf/core] perf: Rework the PMU methods
+Date: Mon, 13 Sep 2010 14:15:53 +0200
+Message-ID: <1284380153.2275.261.camel@laptop>
+References: <new-submission>
+	 <tip-a4eaf7f14675cb512d69f0c928055e73d0c6d252@git.kernel.org>
+	 <4C8B3AD3.5050309@orcon.net.nz> <1284198035.2251.29.camel@laptop>
+	 <4C8C6611.20206@orcon.net.nz>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:received:mime-version:received:in-reply-to
-         :references:from:date:message-id:subject:to:cc:content-type;
-        bh=WYHgEtzOS4fJhb074Fl+TAslNmzL4ed4wYEJeMPN2qA=;
-        b=BP682M+ozvuTunKHKHxpxpczYfiJP7QZmN3l8HPkDklheqV+TfVcs7I6J9fTCPfceq
-         7tT0i8nosyR2GwsMeWDJGQG9SRC3LW+4aWR/xL/OhkqH4v8dTzUiGozox9iHKsJnNqXT
-         aEDVRjUQvJoOo5rNzMTSEZPBWsx7CUfDV+KqU=
-In-Reply-To: <AANLkTi=-z7ByuRD6UU2fkvUWbhdUSpC03SNYyytk5KHx@mail.gmail.com>
+In-Reply-To: <4C8C6611.20206@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Carl Lowenstein <carl.lowenstein@gmail.com>
-Cc: Linux on Alpha processors <axp-list@redhat.com>, linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org, gentoo-alpha@lists.gentoo.org
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: mingo@redhat.com, dengcheng.zhu@gmail.com, yanmin_zhang@linux.intel.com, gorcunov@gmail.com, fweisbec@gmail.com, robert.richter@amd.com, ming.m.lin@intel.com, tglx@linutronix.de, hpa@zytor.com, paulus@samba.org, linux-kernel@vger.kernel.org, eranian@googlemail.com, will.deacon@arm.com, lethal@linux-sh.org, davem@davemloft.net, mingo@elte.hu, linux-alpha@vger.kernel.org
 
-On Sun, Sep 12, 2010 at 11:38 PM, Carl Lowenstein
-<carl.lowenstein@gmail.com> wrote:
-> On Sun, Sep 12, 2010 at 5:39 PM, Matt Turner <mattst88@gmail.com> wrote:
->> Hi,
->> I've got two DS10Ls sitting at OSUOSL [1] idle because they won't rack
->> them without rails.
->>
->> They're going to be set up to help with Alpha development things. I'd
->> be great to get some rails if someone has any.
->
-> Are DS10L rails distinctly different from generic rails for arbitrary
-> 1U computers?
+On Sun, 2010-09-12 at 17:33 +1200, Michael Cree wrote:
 
-According to one DS10L owner I asked, yes. But I'd be thrilled to find
-out otherwise.
+> Yes, done.  I also took the liberty to fix an undefined variable and 
+> multiple defined variable errors that were exposed by compilation.  Will 
+> reply to this with the patch.
 
-Thanks,
-Matt
+Thanks, and sorry for messing up Alpha that bad.. I have an alpha
+compiler and I really through I compile tested it :/
+
+> I've also tested it on a UP alpha.  It worked well for a little while 
+> but after running 'perf top' for a number of seconds I got the following 
+> warning:
+
+<snip warn>
+
+> which is from the line in alpha_pmu_start() that checks that 
+> PERF_HES_STOPPED is set.
+> 
+> I see that the backtrace is from the Alpha timer_interrupt() code which 
+> goes something like this:
+> 
+> [do some stuff updating timer deltas then...]
+> 
+> #ifndef CONFIG_SMP
+>          while (nticks--)
+>                  update_process_times(user_mode(get_irq_regs()));
+> #endif
+> 
+>          if (test_perf_event_pending()) {
+>                  clear_perf_event_pending();
+>                  perf_event_do_pending();
+>          }
+> 
+>          return IRQ_HANDLED;
+> }
+> 
+> 
+> When I added the code for handle pending events to the timer interrupt I 
+> hadn't realised that update_process_times() could call back into the 
+> perf code.  I'm speculating here, but could it be that there is pending 
+> work to stop the HW counter, but the call to re-start it is beating the 
+> call to stop it?
+
+Right, so the ->start() call came from perf_ctx_adjust_freq(), which
+depending on whether perf_adjust_period() gets inlined, can have two
+such calls.
+
+Assuming it didn't inline (there's two callsites, which should defeat
+the inline static functions with a single callsite heuristic), you hit
+the unthrottle() call.
+
+Ahh, the alpha throttle call should be using the fancy new stop function
+too (will fold into your earlier patch if it indeed works):
+
+As to the point you raised above, yes, I think it would be prudent to
+call perf_event_do_pending() before update_process_times().
+
+
+Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+---
+Index: linux-2.6/arch/alpha/kernel/perf_event.c
+===================================================================
+--- linux-2.6.orig/arch/alpha/kernel/perf_event.c
++++ linux-2.6/arch/alpha/kernel/perf_event.c
+@@ -825,14 +825,14 @@ static void alpha_perf_event_irq_handler
+ 			break;
+ 	}
+ 
++	event = cpuc->event[j];
++
+ 	if (unlikely(j == cpuc->n_events)) {
+ 		/* This can occur if the event is disabled right on a PMC overflow. */
+-		wrperfmon(PERFMON_CMD_ENABLE, cpuc->idx_mask);
++		alpha_pmu_stop(event, 0);
+ 		return;
+ 	}
+ 
+-	event = cpuc->event[j];
+-
+ 	if (unlikely(!event)) {
+ 		/* This should never occur! */
+ 		irq_err_count++;
+
