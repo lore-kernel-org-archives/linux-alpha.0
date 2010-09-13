@@ -1,54 +1,36 @@
-From: "Tom Linden" <tom@kednos.com>
-Subject: RE: Looking for two pairs of DS10L rails
-Date: Sun, 12 Sep 2010 19:02:34 -0700
-Message-ID: <96D4F223FD3D4FA59BFC151DA2109F15@murphus>
-References: <AANLkTimGjywvW0ZREsYA2YVmCNpEOCAicMwRN5TkS3Jm@mail.gmail.com>
-Reply-To: Linux on Alpha processors <axp-list@redhat.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: Looking for two pairs of DS10L rails
+Date: Sun, 12 Sep 2010 22:08:29 -0400
+Message-ID: <AANLkTinOvm+Zf4ryo5ew+2xJMO_s2CHMEc--0qhyRQjk@mail.gmail.com>
+References: <AANLkTimGjywvW0ZREsYA2YVmCNpEOCAicMwRN5TkS3Jm@mail.gmail.com> <96D4F223FD3D4FA59BFC151DA2109F15@murphus>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:received:mime-version:received:in-reply-to
+         :references:from:date:message-id:subject:to:cc:content-type;
+        bh=pMAo8g97zpfzWCo2htq7IrRGMe/COP3qOX1NxBbhsCs=;
+        b=k7zjyjSTcMs65z+yxRUnJyTpRRzatdujtxcB1+d5GqjM4ml6BXSRVywQ8pdUVrYlNx
+         S04cNxN7x22Nk6cHOx/t2hfamVUsv1bmkGisFDcQVhHZEfQ/ifcIcbsAYh76QYwAAYZr
+         LElXDLzlDJ5iQiBgZFpQgdmodd2Kkrb32LOyc=
+In-Reply-To: <96D4F223FD3D4FA59BFC151DA2109F15@murphus>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <axp-list-bounces@redhat.com>
-In-Reply-To: <AANLkTimGjywvW0ZREsYA2YVmCNpEOCAicMwRN5TkS3Jm@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://www.redhat.com/mailman/options/axp-list>,
-	<mailto:axp-list-request@redhat.com?subject=unsubscribe>
-List-Archive: <https://www.redhat.com/archives/axp-list>
-List-Post: <mailto:axp-list@redhat.com>
-List-Help: <mailto:axp-list-request@redhat.com?subject=help>
-List-Subscribe: <https://www.redhat.com/mailman/listinfo/axp-list>,
-	<mailto:axp-list-request@redhat.com?subject=subscribe>
-Sender: axp-list-bounces@redhat.com
-Errors-To: axp-list-bounces@redhat.com
-To: 'Linux on Alpha processors' <axp-list@redhat.com>, linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org, gentoo-alpha@lists.gentoo.org
+To: Linux on Alpha processors <axp-list@redhat.com>
+Cc: linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org, gentoo-alpha@lists.gentoo.org
 
-Try Puget Sound Data Systems 
+On Sun, Sep 12, 2010 at 10:02 PM, Tom Linden <tom@kednos.com> wrote:
+> Try Puget Sound Data Systems
 
-> -----Original Message-----
-> From: axp-list-bounces@redhat.com 
-> [mailto:axp-list-bounces@redhat.com] On Behalf Of Matt Turner
-> Sent: Sunday, September 12, 2010 5:39 PM
-> To: linux-alpha@vger.kernel.org; 
-> debian-alpha@lists.debian.org; gentoo-alpha@lists.gentoo.org; 
-> Linux on Alpha processors
-> Subject: Looking for two pairs of DS10L rails
-> 
-> Hi,
-> I've got two DS10Ls sitting at OSUOSL [1] idle because they 
-> won't rack them without rails.
-> 
-> They're going to be set up to help with Alpha development 
-> things. I'd be great to get some rails if someone has any.
-> 
-> Let me know if you've got some.
-> 
-> Thanks,
-> Matt
-> 
-> [1] http://osuosl.org/
-> 
-> _______________________________________________
-> axp-list mailing list
-> axp-list@redhat.com
-> https://www.redhat.com/mailman/listinfo/axp-list
-> 
-> 
+Thanks for the email. I guess these are the same people selling Alpha
+CPUs for $650 on eBay [1]?
+
+I'm more looking more for donations, rather than paying more for a set
+of rails than I could get a whole other DS10L. Is it worth me emailing
+them?
+
+Matt
+
+[1] http://cgi.ebay.com/UP2000-API-UP2000-667-MHz-/350245437728
