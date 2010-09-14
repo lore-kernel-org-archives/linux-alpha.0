@@ -1,80 +1,175 @@
 From: Joe Perches <joe@perches.com>
-Subject: [PATCH next 00/16] treewide: Use static const char * const where
-	possible
-Date: Mon, 13 Sep 2010 21:23:46 -0700
-Message-ID: <cover.1284435709.git.joe@perches.com>
-Mime-Version: 1.0
+Subject: [PATCH next 01/16] arch/alpha: Use static const char * const where possible
+Date: Mon, 13 Sep 2010 21:23:47 -0700
+Message-ID: <3b211935182d8ac989fbdfde01fbdc25077151a9.1284435709.git.joe@perches.com>
+References: <cover.1284435709.git.joe@perches.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <cover.1284435709.git.joe@perches.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devel-bounces@linuxdriverproject.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/devel>,
-	<mailto:devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/devel>
-List-Post: <mailto:devel@linuxdriverproject.org>
-List-Help: <mailto:devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/devel>,
-	<mailto:devel-request@linuxdriverproject.org?subject=subscribe>
-Sender: devel-bounces@linuxdriverproject.org
-Errors-To: devel-bounces@linuxdriverproject.org
 To: linux-kernel@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, alsa-devel@alsa-project.org, linux-usb@vger.kernel.org, linux-ia64@vger.kernel.org, linux-scsi@vger.kernel.org, kvm@vger.kernel.org, microblaze-uclinux@itee.uq.edu.au, linux-alpha@vger.kernel.org, linux-wireless@vger.kernel.org, users@rt2x00.serialmonkey.com, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-watchdog@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Convert the uses that should be const of
-	char *foo[] = {"bar", "baz"};
-to
-	const char * const foo[] = {"bar", "baz"};
-or
-	static const char * const foo[] = {"bar", "baz"};
+Signed-off-by: Joe Perches <joe@perches.com>
+---
+ arch/alpha/kernel/err_ev6.c    |   12 +++++++-----
+ arch/alpha/kernel/err_marvel.c |   33 +++++++++++++++++----------------
+ arch/alpha/kernel/err_titan.c  |   35 ++++++++++++++++++++---------------
+ arch/alpha/kernel/osf_sys.c    |    4 ++--
+ 4 files changed, 46 insertions(+), 38 deletions(-)
 
-Joe Perches (16):
-  arch/alpha: Use static const char * const where possible
-  arch/ia64: Use static const char * const where possible
-  arch/microblaze: Use static const char * const where possible
-  arch/x86: Use static const char * const where possible
-  drivers/gpu: Use static const char * const where possible
-  drivers/isdn: Use static const char * const where possible
-  drivers/net: Use static const char * const where possible
-  drivers/net/pcmcia: Use static const char * const where possible
-  drivers/net/wireless: Use static const char * const where possible
-  drivers/scsi: Use static const char * const where possible
-  drivers/staging: Use static const char * const where possible
-  drivers/usb: Use static const char * const where possible
-  drivers/watchdog: Use static const char * const where possible
-  fs: Use static const char * const where possible
-  net/irda: Use static const char * const where possible
-  sound: Use static const char * const where possible
-
- arch/alpha/kernel/err_ev6.c                  |   12 +++++---
- arch/alpha/kernel/err_marvel.c               |   33 ++++++++++++------------
- arch/alpha/kernel/err_titan.c                |   35 ++++++++++++++-----------
- arch/alpha/kernel/osf_sys.c                  |    4 +-
- arch/ia64/kernel/palinfo.c                   |    2 +-
- arch/microblaze/kernel/heartbeat.c           |   10 +++---
- arch/microblaze/kernel/timer.c               |   12 ++++----
- arch/x86/kernel/smpboot.c                    |    2 +-
- arch/x86/kvm/mmu.c                           |    2 +-
- drivers/gpu/drm/ttm/ttm_page_alloc.c         |    4 ++-
- drivers/isdn/pcbit/edss1.c                   |    2 +-
- drivers/isdn/pcbit/edss1.h                   |    2 +-
- drivers/net/3c515.c                          |    4 ++-
- drivers/net/eth16i.c                         |    4 ++-
- drivers/net/pcmcia/3c589_cs.c                |    2 +-
- drivers/net/wireless/rt2x00/rt2x00debug.c    |    2 +-
- drivers/scsi/bfa/rport.c                     |    4 ++-
- drivers/scsi/pcmcia/nsp_debug.c              |    2 +-
- drivers/scsi/qla2xxx/qla_nx.c                |    4 +-
- drivers/scsi/qla4xxx/ql4_nx.c                |    2 +-
- drivers/staging/ath6kl/os/linux/ar6000_drv.c |   14 +++++-----
- drivers/staging/bcm/Debug.c                  |    5 ++-
- drivers/usb/host/oxu210hp-hcd.c              |    2 +-
- drivers/watchdog/machzwd.c                   |    2 +-
- fs/binfmt_flat.c                             |    4 ++-
- include/net/irda/irlan_event.h               |    2 +-
- net/irda/irlan/irlan_event.c                 |    2 +-
- sound/core/misc.c                            |    5 +---
- sound/core/pcm_native.c                      |    2 +-
- 29 files changed, 99 insertions(+), 83 deletions(-)
-
+diff --git a/arch/alpha/kernel/err_ev6.c b/arch/alpha/kernel/err_ev6.c
+index 8ca6345..253cf1a 100644
+--- a/arch/alpha/kernel/err_ev6.c
++++ b/arch/alpha/kernel/err_ev6.c
+@@ -90,11 +90,13 @@ static int
+ ev6_parse_cbox(u64 c_addr, u64 c1_syn, u64 c2_syn, 
+ 	       u64 c_stat, u64 c_sts, int print)
+ {
+-	char *sourcename[] = { "UNKNOWN", "UNKNOWN", "UNKNOWN",
+-			       "MEMORY", "BCACHE", "DCACHE", 
+-			       "BCACHE PROBE", "BCACHE PROBE" };
+-	char *streamname[] = { "D", "I" };
+-	char *bitsname[] = { "SINGLE", "DOUBLE" };
++	static const char * const sourcename[] = {
++		"UNKNOWN", "UNKNOWN", "UNKNOWN",
++		"MEMORY", "BCACHE", "DCACHE",
++		"BCACHE PROBE", "BCACHE PROBE"
++	};
++	static const char * const streamname[] = { "D", "I" };
++	static const char * const bitsname[] = { "SINGLE", "DOUBLE" };
+ 	int status = MCHK_DISPOSITION_REPORT;
+ 	int source = -1, stream = -1, bits = -1;
+ 
+diff --git a/arch/alpha/kernel/err_marvel.c b/arch/alpha/kernel/err_marvel.c
+index 5c905aa..648ae88 100644
+--- a/arch/alpha/kernel/err_marvel.c
++++ b/arch/alpha/kernel/err_marvel.c
+@@ -589,22 +589,23 @@ marvel_print_pox_spl_cmplt(u64 spl_cmplt)
+ static void
+ marvel_print_pox_trans_sum(u64 trans_sum)
+ {
+-	char *pcix_cmd[] = { "Interrupt Acknowledge",
+-			     "Special Cycle",
+-			     "I/O Read",
+-			     "I/O Write",
+-			     "Reserved",
+-			     "Reserved / Device ID Message",
+-			     "Memory Read",
+-			     "Memory Write",
+-			     "Reserved / Alias to Memory Read Block",
+-			     "Reserved / Alias to Memory Write Block",
+-			     "Configuration Read",
+-			     "Configuration Write",
+-			     "Memory Read Multiple / Split Completion",
+-			     "Dual Address Cycle",
+-			     "Memory Read Line / Memory Read Block",
+-			     "Memory Write and Invalidate / Memory Write Block"
++	static const char * const pcix_cmd[] = {
++		"Interrupt Acknowledge",
++		"Special Cycle",
++		"I/O Read",
++		"I/O Write",
++		"Reserved",
++		"Reserved / Device ID Message",
++		"Memory Read",
++		"Memory Write",
++		"Reserved / Alias to Memory Read Block",
++		"Reserved / Alias to Memory Write Block",
++		"Configuration Read",
++		"Configuration Write",
++		"Memory Read Multiple / Split Completion",
++		"Dual Address Cycle",
++		"Memory Read Line / Memory Read Block",
++		"Memory Write and Invalidate / Memory Write Block"
+ 	};
+ 
+ #define IO7__POX_TRANSUM__PCI_ADDR__S		(0)
+diff --git a/arch/alpha/kernel/err_titan.c b/arch/alpha/kernel/err_titan.c
+index f7ed97c..c3b3781 100644
+--- a/arch/alpha/kernel/err_titan.c
++++ b/arch/alpha/kernel/err_titan.c
+@@ -75,8 +75,12 @@ titan_parse_p_serror(int which, u64 serror, int print)
+ 	int status = MCHK_DISPOSITION_REPORT;
+ 
+ #ifdef CONFIG_VERBOSE_MCHECK
+-	char *serror_src[] = {"GPCI", "APCI", "AGP HP", "AGP LP"};
+-	char *serror_cmd[] = {"DMA Read", "DMA RMW", "SGTE Read", "Reserved"};
++	static const char * const serror_src[] = {
++		"GPCI", "APCI", "AGP HP", "AGP LP"
++	};
++	static const char * const serror_cmd[] = {
++		"DMA Read", "DMA RMW", "SGTE Read", "Reserved"
++	};
+ #endif /* CONFIG_VERBOSE_MCHECK */
+ 
+ #define TITAN__PCHIP_SERROR__LOST_UECC	(1UL << 0)
+@@ -140,14 +144,15 @@ titan_parse_p_perror(int which, int port, u64 perror, int print)
+ 	int status = MCHK_DISPOSITION_REPORT;
+ 
+ #ifdef CONFIG_VERBOSE_MCHECK
+-	char *perror_cmd[] = { "Interrupt Acknowledge", "Special Cycle",
+-			       "I/O Read",	       	"I/O Write",
+-			       "Reserved",	       	"Reserved",
+-			       "Memory Read",		"Memory Write",
+-			       "Reserved",		"Reserved",
+-			       "Configuration Read",	"Configuration Write",
+-			       "Memory Read Multiple",	"Dual Address Cycle",
+-			       "Memory Read Line","Memory Write and Invalidate"
++	static const char * const perror_cmd[] = {
++		"Interrupt Acknowledge", "Special Cycle",
++		"I/O Read",		"I/O Write",
++		"Reserved",		"Reserved",
++		"Memory Read",		"Memory Write",
++		"Reserved",		"Reserved",
++		"Configuration Read",	"Configuration Write",
++		"Memory Read Multiple",	"Dual Address Cycle",
++		"Memory Read Line",	"Memory Write and Invalidate"
+ 	};
+ #endif /* CONFIG_VERBOSE_MCHECK */
+ 
+@@ -273,11 +278,11 @@ titan_parse_p_agperror(int which, u64 agperror, int print)
+ 	int cmd, len;
+ 	unsigned long addr;
+ 
+-	char *agperror_cmd[] = { "Read (low-priority)",	"Read (high-priority)",
+-				 "Write (low-priority)",
+-				 "Write (high-priority)",
+-				 "Reserved",		"Reserved",
+-				 "Flush",		"Fence"
++	static const char * const agperror_cmd[] = {
++		"Read (low-priority)",	"Read (high-priority)",
++		"Write (low-priority)",	"Write (high-priority)",
++		"Reserved",		"Reserved",
++		"Flush",		"Fence"
+ 	};
+ #endif /* CONFIG_VERBOSE_MCHECK */
+ 
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 5d1e6d6..16bc1f5 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -594,7 +594,7 @@ SYSCALL_DEFINE2(osf_sigstack, struct sigstack __user *, uss,
+ 
+ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
+ {
+-	char *sysinfo_table[] = {
++	const char *sysinfo_table[] = {
+ 		utsname()->sysname,
+ 		utsname()->nodename,
+ 		utsname()->release,
+@@ -606,7 +606,7 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
+ 		"dummy",	/* secure RPC domain */
+ 	};
+ 	unsigned long offset;
+-	char *res;
++	const char *res;
+ 	long len, err = -EINVAL;
+ 
+ 	offset = command-1;
 -- 
 1.7.3.rc1
+
