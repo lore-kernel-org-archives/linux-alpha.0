@@ -1,96 +1,80 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [tip:perf/core] perf: Rework the PMU methods
-Date: Mon, 13 Sep 2010 15:18:47 +0200
-Message-ID: <1284383927.2275.284.camel@laptop>
-References: <new-submission>
-	 <tip-a4eaf7f14675cb512d69f0c928055e73d0c6d252@git.kernel.org>
-	 <4C8B3AD3.5050309@orcon.net.nz> <1284198035.2251.29.camel@laptop>
-	 <4C8C6611.20206@orcon.net.nz>  <1284380153.2275.261.camel@laptop>
+From: Joe Perches <joe@perches.com>
+Subject: [PATCH next 00/16] treewide: Use static const char * const where
+	possible
+Date: Mon, 13 Sep 2010 21:23:46 -0700
+Message-ID: <cover.1284435709.git.joe@perches.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1284380153.2275.261.camel@laptop>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: mingo@redhat.com, dengcheng.zhu@gmail.com, yanmin_zhang@linux.intel.com, gorcunov@gmail.com, fweisbec@gmail.com, robert.richter@amd.com, ming.m.lin@intel.com, tglx@linutronix.de, hpa@zytor.com, paulus@samba.org, linux-kernel@vger.kernel.org, eranian@googlemail.com, will.deacon@arm.com, lethal@linux-sh.org, davem@davemloft.net, mingo@elte.hu, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <devel-bounces@linuxdriverproject.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/devel>,
+	<mailto:devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/devel>
+List-Post: <mailto:devel@linuxdriverproject.org>
+List-Help: <mailto:devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/devel>,
+	<mailto:devel-request@linuxdriverproject.org?subject=subscribe>
+Sender: devel-bounces@linuxdriverproject.org
+Errors-To: devel-bounces@linuxdriverproject.org
+To: linux-kernel@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, alsa-devel@alsa-project.org, linux-usb@vger.kernel.org, linux-ia64@vger.kernel.org, linux-scsi@vger.kernel.org, kvm@vger.kernel.org, microblaze-uclinux@itee.uq.edu.au, linux-alpha@vger.kernel.org, linux-wireless@vger.kernel.org, users@rt2x00.serialmonkey.com, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-watchdog@vger.kernel.org
 
-On Mon, 2010-09-13 at 14:15 +0200, Peter Zijlstra wrote:
-> On Sun, 2010-09-12 at 17:33 +1200, Michael Cree wrote:
-> 
-> > Yes, done.  I also took the liberty to fix an undefined variable and 
-> > multiple defined variable errors that were exposed by compilation.  Will 
-> > reply to this with the patch.
-> 
-> Thanks, and sorry for messing up Alpha that bad.. I have an alpha
-> compiler and I really through I compile tested it :/
-> 
-> > I've also tested it on a UP alpha.  It worked well for a little while 
-> > but after running 'perf top' for a number of seconds I got the following 
-> > warning:
-> 
-> <snip warn>
-> 
-> > which is from the line in alpha_pmu_start() that checks that 
-> > PERF_HES_STOPPED is set.
-> > 
-> > I see that the backtrace is from the Alpha timer_interrupt() code which 
-> > goes something like this:
-> > 
-> > [do some stuff updating timer deltas then...]
-> > 
-> > #ifndef CONFIG_SMP
-> >          while (nticks--)
-> >                  update_process_times(user_mode(get_irq_regs()));
-> > #endif
-> > 
-> >          if (test_perf_event_pending()) {
-> >                  clear_perf_event_pending();
-> >                  perf_event_do_pending();
-> >          }
-> > 
-> >          return IRQ_HANDLED;
-> > }
-> > 
-> > 
-> > When I added the code for handle pending events to the timer interrupt I 
-> > hadn't realised that update_process_times() could call back into the 
-> > perf code.  I'm speculating here, but could it be that there is pending 
-> > work to stop the HW counter, but the call to re-start it is beating the 
-> > call to stop it?
-> 
-> Right, so the ->start() call came from perf_ctx_adjust_freq(), which
-> depending on whether perf_adjust_period() gets inlined, can have two
-> such calls.
-> 
-> Assuming it didn't inline (there's two callsites, which should defeat
-> the inline static functions with a single callsite heuristic), you hit
-> the unthrottle() call.
-> 
-> Ahh, the alpha throttle call should be using the fancy new stop function
-> too (will fold into your earlier patch if it indeed works):
-> 
-> As to the point you raised above, yes, I think it would be prudent to
-> call perf_event_do_pending() before update_process_times().
-> 
-> 
-> Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Convert the uses that should be const of
+	char *foo[] = {"bar", "baz"};
+to
+	const char * const foo[] = {"bar", "baz"};
+or
+	static const char * const foo[] = {"bar", "baz"};
 
-Damn I suck.. Please try this one.
+Joe Perches (16):
+  arch/alpha: Use static const char * const where possible
+  arch/ia64: Use static const char * const where possible
+  arch/microblaze: Use static const char * const where possible
+  arch/x86: Use static const char * const where possible
+  drivers/gpu: Use static const char * const where possible
+  drivers/isdn: Use static const char * const where possible
+  drivers/net: Use static const char * const where possible
+  drivers/net/pcmcia: Use static const char * const where possible
+  drivers/net/wireless: Use static const char * const where possible
+  drivers/scsi: Use static const char * const where possible
+  drivers/staging: Use static const char * const where possible
+  drivers/usb: Use static const char * const where possible
+  drivers/watchdog: Use static const char * const where possible
+  fs: Use static const char * const where possible
+  net/irda: Use static const char * const where possible
+  sound: Use static const char * const where possible
 
----
-Index: linux-2.6/arch/alpha/kernel/perf_event.c
-===================================================================
---- linux-2.6.orig/arch/alpha/kernel/perf_event.c
-+++ linux-2.6/arch/alpha/kernel/perf_event.c
-@@ -850,7 +850,7 @@ static void alpha_perf_event_irq_handler
- 			/* Interrupts coming too quickly; "throttle" the
- 			 * counter, i.e., disable it for a little while.
- 			 */
--			cpuc->idx_mask &= ~(1UL<<idx);
-+			alpha_pmu_stop(event, 0);
- 		}
- 	}
- 	wrperfmon(PERFMON_CMD_ENABLE, cpuc->idx_mask);
+ arch/alpha/kernel/err_ev6.c                  |   12 +++++---
+ arch/alpha/kernel/err_marvel.c               |   33 ++++++++++++------------
+ arch/alpha/kernel/err_titan.c                |   35 ++++++++++++++-----------
+ arch/alpha/kernel/osf_sys.c                  |    4 +-
+ arch/ia64/kernel/palinfo.c                   |    2 +-
+ arch/microblaze/kernel/heartbeat.c           |   10 +++---
+ arch/microblaze/kernel/timer.c               |   12 ++++----
+ arch/x86/kernel/smpboot.c                    |    2 +-
+ arch/x86/kvm/mmu.c                           |    2 +-
+ drivers/gpu/drm/ttm/ttm_page_alloc.c         |    4 ++-
+ drivers/isdn/pcbit/edss1.c                   |    2 +-
+ drivers/isdn/pcbit/edss1.h                   |    2 +-
+ drivers/net/3c515.c                          |    4 ++-
+ drivers/net/eth16i.c                         |    4 ++-
+ drivers/net/pcmcia/3c589_cs.c                |    2 +-
+ drivers/net/wireless/rt2x00/rt2x00debug.c    |    2 +-
+ drivers/scsi/bfa/rport.c                     |    4 ++-
+ drivers/scsi/pcmcia/nsp_debug.c              |    2 +-
+ drivers/scsi/qla2xxx/qla_nx.c                |    4 +-
+ drivers/scsi/qla4xxx/ql4_nx.c                |    2 +-
+ drivers/staging/ath6kl/os/linux/ar6000_drv.c |   14 +++++-----
+ drivers/staging/bcm/Debug.c                  |    5 ++-
+ drivers/usb/host/oxu210hp-hcd.c              |    2 +-
+ drivers/watchdog/machzwd.c                   |    2 +-
+ fs/binfmt_flat.c                             |    4 ++-
+ include/net/irda/irlan_event.h               |    2 +-
+ net/irda/irlan/irlan_event.c                 |    2 +-
+ sound/core/misc.c                            |    5 +---
+ sound/core/pcm_native.c                      |    2 +-
+ 29 files changed, 99 insertions(+), 83 deletions(-)
 
+-- 
+1.7.3.rc1
