@@ -1,40 +1,54 @@
-From: Tejun Heo <tj@kernel.org>
-Subject: [PATCH] alpha: fix build breakage in asm/cacheflush.h
-Date: Tue, 14 Sep 2010 11:00:22 +0200
-Message-ID: <4C8F39A6.10504@kernel.org>
-References: <20100914002132.bf17c19e.sfr@canb.auug.org.au>
+From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Subject: Re: [PATCH 2/4] alpha: remove cast from void*
+Date: Tue, 14 Sep 2010 11:20:02 +0200
+Message-ID: <20100914092002.GF19227@lug-owl.de>
+References: <1284442059-11641-1-git-send-email-mfm@muteddisk.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <20100914002132.bf17c19e.sfr@canb.auug.org.au>
-Sender: linux-next-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="IbVRjBtIbJdbeK1C"
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1284442059-11641-1-git-send-email-mfm@muteddisk.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Rusty Russell <rusty@rustcorp.com.au>, Christoph Lameter <cl@linux-foundation.org>, Ingo Molnar <mingo@elte.hu>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
+To: matt mooney <mfm@muteddisk.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Alexey Dobriyan <adobriyan@gmail.com>, linux-alpha@vger.kernel.org, kernel-janitors@vger.kernel.org
 
-Alpha SMP flush_icache_user_range() is implemented as an inline
-function inside include/asm/cacheflush.h.  It dereferences @current
-but doesn't include linux/sched.h and thus causes build failure if
-linux/sched.h wasn't included previously.  Fix it by including the
-needed header file explicitly.
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- arch/alpha/include/asm/cacheflush.h |    2 ++
- 1 file changed, 2 insertions(+)
+--IbVRjBtIbJdbeK1C
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/alpha/include/asm/cacheflush.h b/arch/alpha/include/asm/cacheflush.h
-index 01d71e1..012f124 100644
---- a/arch/alpha/include/asm/cacheflush.h
-+++ b/arch/alpha/include/asm/cacheflush.h
-@@ -43,6 +43,8 @@ extern void smp_imb(void);
- /* ??? Ought to use this in arch/alpha/kernel/signal.c too.  */
+On Mon, 2010-09-13 22:27:39 -0700, matt mooney <mfm@muteddisk.com> wrote:
+> Unnecessary cast from void* in assignment.
+>=20
+> Signed-off-by: matt mooney <mfm@muteddisk.com>
 
- #ifndef CONFIG_SMP
-+#include <linux/sched.h>
-+
- extern void __load_new_mm_context(struct mm_struct *);
- static inline void
- flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
+The second part (regarding srm-env) is
+
+ACKed-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+
+MfG, JBG
+
+--=20
+      Jan-Benedict Glaw      jbglaw@lug-owl.de              +49-172-7608481
+  Signature of:                        Lauf nicht vor Deinem Gl=C3=BCck dav=
+on:
+  the second  :                             Es k=C3=B6nnte hinter Dir stehe=
+n!
+
+--IbVRjBtIbJdbeK1C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAkyPPkIACgkQHb1edYOZ4bvWLgCeMXGArlhIwYGTmk7Wo9INY8m9
+n9gAn3YMLhWUPJS7S0/pyv6npp04tRK+
+=oENJ
+-----END PGP SIGNATURE-----
+
+--IbVRjBtIbJdbeK1C--
