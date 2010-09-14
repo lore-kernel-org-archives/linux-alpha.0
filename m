@@ -1,54 +1,103 @@
-From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
-Subject: Re: [PATCH 2/4] alpha: remove cast from void*
-Date: Tue, 14 Sep 2010 11:20:02 +0200
-Message-ID: <20100914092002.GF19227@lug-owl.de>
-References: <1284442059-11641-1-git-send-email-mfm@muteddisk.com>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: [tip:perf/core] perf: Rework the PMU methods
+Date: Tue, 14 Sep 2010 22:11:10 +1200
+Message-ID: <4C8F4A3E.5070603@orcon.net.nz>
+References: <new-submission>	 <tip-a4eaf7f14675cb512d69f0c928055e73d0c6d252@git.kernel.org>	 <4C8B3AD3.5050309@orcon.net.nz> <1284198035.2251.29.camel@laptop>	 <4C8C6611.20206@orcon.net.nz>  <1284380153.2275.261.camel@laptop> <1284383927.2275.284.camel@laptop>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IbVRjBtIbJdbeK1C"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1284442059-11641-1-git-send-email-mfm@muteddisk.com>
+In-Reply-To: <1284383927.2275.284.camel@laptop>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: matt mooney <mfm@muteddisk.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Alexey Dobriyan <adobriyan@gmail.com>, linux-alpha@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: mingo@redhat.com, dengcheng.zhu@gmail.com, yanmin_zhang@linux.intel.com, gorcunov@gmail.com, fweisbec@gmail.com, robert.richter@amd.com, ming.m.lin@intel.com, tglx@linutronix.de, hpa@zytor.com, paulus@samba.org, linux-kernel@vger.kernel.org, eranian@googlemail.com, will.deacon@arm.com, lethal@linux-sh.org, davem@davemloft.net, mingo@elte.hu, linux-alpha@vger.kernel.org
 
+On 14/09/10 01:18, Peter Zijlstra wrote:
+> On Mon, 2010-09-13 at 14:15 +0200, Peter Zijlstra wrote:
+>> On Sun, 2010-09-12 at 17:33 +1200, Michael Cree wrote:
+>>
+>>> I've also tested it on a UP alpha.  It worked well for a little while
+>>> but after running 'perf top' for a number of seconds I got the following
+>>> warning:
 
---IbVRjBtIbJdbeK1C
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>> Ahh, the alpha throttle call should be using the fancy new stop function
+>> too (will fold into your earlier patch if it indeed works):
+>>
+>> As to the point you raised above, yes, I think it would be prudent to
+>> call perf_event_do_pending() before update_process_times().
+>>
+>>
+>> Signed-off-by: Peter Zijlstra<a.p.zijlstra@chello.nl>
+>
+> Damn I suck.. Please try this one.
+>
+> ---
+> Index: linux-2.6/arch/alpha/kernel/perf_event.c
+> ===================================================================
+> --- linux-2.6.orig/arch/alpha/kernel/perf_event.c
+> +++ linux-2.6/arch/alpha/kernel/perf_event.c
+> @@ -850,7 +850,7 @@ static void alpha_perf_event_irq_handler
+>   			/* Interrupts coming too quickly; "throttle" the
+>   			 * counter, i.e., disable it for a little while.
+>   			 */
+> -			cpuc->idx_mask&= ~(1UL<<idx);
+> +			alpha_pmu_stop(event, 0);
+>   		}
+>   	}
+>   	wrperfmon(PERFMON_CMD_ENABLE, cpuc->idx_mask);
 
-On Mon, 2010-09-13 22:27:39 -0700, matt mooney <mfm@muteddisk.com> wrote:
-> Unnecessary cast from void* in assignment.
->=20
-> Signed-off-by: matt mooney <mfm@muteddisk.com>
+Thanks, that does the trick.  I have had it running for a while without 
+any problems... Well, except for a new problem which I describe below. 
+Anyway the above patch has fixed the original problem so can be rolled 
+into my earlier one as you suggest.
 
-The second part (regarding srm-env) is
+I haven't shifted perf_event_do_pending() before update_process_times() 
+in the timer interrupt yet.  When I get around to it I'll send a patch 
+through the Alpha maintainer as this is independent of the work on the 
+core perf event code.
 
-ACKed-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Now to the new problem I saw:  I accidently reran 'perf top' while it 
+was already running, and the second instance of 'perf top' seg-faulted 
+and the kernel OOPSed with the following:
 
-MfG, JBG
+[  818.575752] Unable to handle kernel paging request at virtual address 
+0000000000000060
+[  818.575752] perf(4935): Oops 0
+[  818.575752] pc = [<fffffc000036b8b8>]  ra = [<fffffc000036ba3c>]  ps 
+= 0000    Not tainted
+[  818.575752] pc is at put_ctx+0x18/0xb0
+[  818.575752] ra is at free_event+0xec/0x220
+[  818.575752] v0 = 0000000000000000  t0 = 0000000000000000  t1 = 
+0000000000000002
+[  818.575752] t2 = 0000000000000000  t3 = 0000000000000000  t4 = 
+fffffc000063e4b0
+[  818.575752] t5 = fffffc0034837000  t6 = fffffc0034837000  t7 = 
+fffffc003abe0000
+[  818.575752] s0 = 0000000000000000  s1 = 0000000000000000  s2 = 
+0000000000000000
+[  818.575752] s3 = ffffffffffffffff  s4 = 0000000000000000  s5 = 
+0000000000000053
+[  818.575752] s6 = fffffc0034836c00
+[  818.575752] a0 = 0000000000000000  a1 = fffffc00311a6980  a2 = 
+0000000000000000
+[  818.575752] a3 = 0000000000000001  a4 = fffffc0000797110  a5 = 
+00000001200055f8
+[  818.575752] t8 = 0000000000000001  t9 = 00000001200396f4  t10= 
+0000000000000000
+[  818.575752] t11= 000000000000000a  pv = fffffc000031d650  at = 
+fffffc000036f8bc
+[  818.575752] gp = fffffc00007d6e40  sp = fffffc003abe3e18
+[  818.575752] Disabling lock debugging due to kernel taint
+[  818.575752] Trace:
+[  818.575752] [<fffffc000036ba3c>] free_event+0xec/0x220
+[  818.575752] [<fffffc000036fa24>] SyS_perf_event_open+0x2a4/0x6f0
+[  818.575752] [<fffffc0000310c24>] entSys+0xa4/0xc0
+[  818.575752]
+[  818.575752] Code: 27bb0047  23bdb5a0  23defff0  b53e0008  b75e0000 
+47f00409 <a8500060> 40403121
 
---=20
-      Jan-Benedict Glaw      jbglaw@lug-owl.de              +49-172-7608481
-  Signature of:                        Lauf nicht vor Deinem Gl=C3=BCck dav=
-on:
-  the second  :                             Es k=C3=B6nnte hinter Dir stehe=
-n!
+The first instance of 'perf top' kept running happily.
 
---IbVRjBtIbJdbeK1C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
-
-iEYEARECAAYFAkyPPkIACgkQHb1edYOZ4bvWLgCeMXGArlhIwYGTmk7Wo9INY8m9
-n9gAn3YMLhWUPJS7S0/pyv6npp04tRK+
-=oENJ
------END PGP SIGNATURE-----
-
---IbVRjBtIbJdbeK1C--
+Cheers
+Michael.
