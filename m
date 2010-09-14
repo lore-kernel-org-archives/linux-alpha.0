@@ -1,90 +1,29 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [tip:perf/core] perf: Rework the PMU methods
-Date: Tue, 14 Sep 2010 16:07:53 +0200
-Message-ID: <1284473273.2275.514.camel@laptop>
-References: <new-submission>
-	 <tip-a4eaf7f14675cb512d69f0c928055e73d0c6d252@git.kernel.org>
-	 <4C8B3AD3.5050309@orcon.net.nz> <1284198035.2251.29.camel@laptop>
-	 <4C8C6611.20206@orcon.net.nz>  <1284380153.2275.261.camel@laptop>
-	 <1284383927.2275.284.camel@laptop>  <4C8F4A3E.5070603@orcon.net.nz>
+From: Richard Henderson <rth@twiddle.net>
+Subject: Re: [PATCH next 01/16] arch/alpha: Use static const char * const
+ where possible
+Date: Tue, 14 Sep 2010 08:37:31 -0700
+Message-ID: <4C8F96BB.2040609@twiddle.net>
+References: <cover.1284435709.git.joe@perches.com> <3b211935182d8ac989fbdfde01fbdc25077151a9.1284435709.git.joe@perches.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4C8F4A3E.5070603@orcon.net.nz>
+In-Reply-To: <3b211935182d8ac989fbdfde01fbdc25077151a9.1284435709.git.joe@perches.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: mingo@redhat.com, dengcheng.zhu@gmail.com, yanmin_zhang@linux.intel.com, gorcunov@gmail.com, fweisbec@gmail.com, robert.richter@amd.com, ming.m.lin@intel.com, tglx@linutronix.de, hpa@zytor.com, paulus@samba.org, linux-kernel@vger.kernel.org, eranian@googlemail.com, will.deacon@arm.com, lethal@linux-sh.org, davem@davemloft.net, mingo@elte.hu, linux-alpha@vger.kernel.org
+To: Joe Perches <joe@perches.com>
+Cc: linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Tue, 2010-09-14 at 22:11 +1200, Michael Cree wrote:
-> 
-> [  818.575752] Unable to handle kernel paging request at virtual address 
-> 0000000000000060
-> [  818.575752] perf(4935): Oops 0
-> [  818.575752] pc = [<fffffc000036b8b8>]  ra = [<fffffc000036ba3c>]  ps 
-> = 0000    Not tainted
-> [  818.575752] pc is at put_ctx+0x18/0xb0
-> [  818.575752] ra is at free_event+0xec/0x220
-> [  818.575752] v0 = 0000000000000000  t0 = 0000000000000000  t1 = 
-> 0000000000000002
-> [  818.575752] t2 = 0000000000000000  t3 = 0000000000000000  t4 = 
-> fffffc000063e4b0
-> [  818.575752] t5 = fffffc0034837000  t6 = fffffc0034837000  t7 = 
-> fffffc003abe0000
-> [  818.575752] s0 = 0000000000000000  s1 = 0000000000000000  s2 = 
-> 0000000000000000
-> [  818.575752] s3 = ffffffffffffffff  s4 = 0000000000000000  s5 = 
-> 0000000000000053
-> [  818.575752] s6 = fffffc0034836c00
-> [  818.575752] a0 = 0000000000000000  a1 = fffffc00311a6980  a2 = 
-> 0000000000000000
-> [  818.575752] a3 = 0000000000000001  a4 = fffffc0000797110  a5 = 
-> 00000001200055f8
-> [  818.575752] t8 = 0000000000000001  t9 = 00000001200396f4  t10= 
-> 0000000000000000
-> [  818.575752] t11= 000000000000000a  pv = fffffc000031d650  at = 
-> fffffc000036f8bc
-> [  818.575752] gp = fffffc00007d6e40  sp = fffffc003abe3e18
-> [  818.575752] Disabling lock debugging due to kernel taint
-> [  818.575752] Trace:
-> [  818.575752] [<fffffc000036ba3c>] free_event+0xec/0x220
-> [  818.575752] [<fffffc000036fa24>] SyS_perf_event_open+0x2a4/0x6f0
-> [  818.575752] [<fffffc0000310c24>] entSys+0xa4/0xc0
-> [  818.575752]
-> [  818.575752] Code: 27bb0047  23bdb5a0  23defff0  b53e0008  b75e0000 
-> 47f00409 <a8500060> 40403121 
+On 09/13/2010 09:23 PM, Joe Perches wrote:
+> Signed-off-by: Joe Perches <joe@perches.com>
+> ---
+>  arch/alpha/kernel/err_ev6.c    |   12 +++++++-----
+>  arch/alpha/kernel/err_marvel.c |   33 +++++++++++++++++----------------
+>  arch/alpha/kernel/err_titan.c  |   35 ++++++++++++++++++++---------------
+>  arch/alpha/kernel/osf_sys.c    |    4 ++--
+>  4 files changed, 46 insertions(+), 38 deletions(-)
 
-Does the below cure that?
+Acked-by: Richard Henderson  <rth@twiddle.net>
 
----
-commit 0c67b40872326a5340cab51d79a192a5fbaeb484
-Author: Peter Zijlstra <a.p.zijlstra@chello.nl>
-Date:   Mon Sep 13 11:15:58 2010 +0200
 
-    perf: Fix free_event()
-    
-    With the context rework stuff we can actually end up freeing an event
-    before it gets attached to a context.
-    
-    Reported-by: Cyrill Gorcunov <gorcunov@gmail.com>
-    Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
-    LKML-Reference: <new-submission>
-    Signed-off-by: Ingo Molnar <mingo@elte.hu>
-
-diff --git a/kernel/perf_event.c b/kernel/perf_event.c
-index bc46bff..440f9ca 100644
---- a/kernel/perf_event.c
-+++ b/kernel/perf_event.c
-@@ -2150,7 +2150,9 @@ static void free_event(struct perf_event *event)
- 	if (event->destroy)
- 		event->destroy(event);
- 
--	put_ctx(event->ctx);
-+	if (event->ctx)
-+		put_ctx(event->ctx);
-+
- 	call_rcu(&event->rcu_head, free_event_rcu);
- }
- 
-
+r~
