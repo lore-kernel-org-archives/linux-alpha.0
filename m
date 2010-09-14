@@ -1,50 +1,40 @@
-From: matt mooney <mfm@muteddisk.com>
-Subject: [PATCH 2/4] alpha: remove cast from void*
-Date: Mon, 13 Sep 2010 22:27:39 -0700
-Message-ID: <1284442059-11641-1-git-send-email-mfm@muteddisk.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Tejun Heo <tj@kernel.org>
+Subject: [PATCH] alpha: fix build breakage in asm/cacheflush.h
+Date: Tue, 14 Sep 2010 11:00:22 +0200
+Message-ID: <4C8F39A6.10504@kernel.org>
+References: <20100914002132.bf17c19e.sfr@canb.auug.org.au>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux-foundation.org>, Jan-Benedict Glaw <jbglaw@lug-owl.de>, Andrew Morton <akpm@linux-foundation.org>, Alexey Dobriyan <adobriyan@gmail.com>, linux-alpha@vger.kernel.org, kernel-janitors@vger.kernel.org
+Return-path: <linux-next-owner@vger.kernel.org>
+In-Reply-To: <20100914002132.bf17c19e.sfr@canb.auug.org.au>
+Sender: linux-next-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Rusty Russell <rusty@rustcorp.com.au>, Christoph Lameter <cl@linux-foundation.org>, Ingo Molnar <mingo@elte.hu>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Unnecessary cast from void* in assignment.
+Alpha SMP flush_icache_user_range() is implemented as an inline
+function inside include/asm/cacheflush.h.  It dereferences @current
+but doesn't include linux/sched.h and thus causes build failure if
+linux/sched.h wasn't included previously.  Fix it by including the
+needed header file explicitly.
 
-Signed-off-by: matt mooney <mfm@muteddisk.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
- arch/alpha/kernel/pci-sysfs.c |    2 +-
- arch/alpha/kernel/srm_env.c   |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/alpha/include/asm/cacheflush.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/alpha/kernel/pci-sysfs.c b/arch/alpha/kernel/pci-sysfs.c
-index 738fc82..b899e95 100644
---- a/arch/alpha/kernel/pci-sysfs.c
-+++ b/arch/alpha/kernel/pci-sysfs.c
-@@ -66,7 +66,7 @@ static int pci_mmap_resource(struct kobject *kobj,
- {
- 	struct pci_dev *pdev = to_pci_dev(container_of(kobj,
- 						       struct device, kobj));
--	struct resource *res = (struct resource *)attr->private;
-+	struct resource *res = attr->private;
- 	enum pci_mmap_state mmap_type;
- 	struct pci_bus_region bar;
- 	int i;
-diff --git a/arch/alpha/kernel/srm_env.c b/arch/alpha/kernel/srm_env.c
-index 4afc1a1..f0df3fb 100644
---- a/arch/alpha/kernel/srm_env.c
-+++ b/arch/alpha/kernel/srm_env.c
-@@ -87,7 +87,7 @@ static int srm_env_proc_show(struct seq_file *m, void *v)
- 	srm_env_t	*entry;
- 	char		*page;
- 
--	entry = (srm_env_t *)m->private;
-+	entry = m->private;
- 	page = (char *)__get_free_page(GFP_USER);
- 	if (!page)
- 		return -ENOMEM;
--- 
-1.7.2.1
+diff --git a/arch/alpha/include/asm/cacheflush.h b/arch/alpha/include/asm/cacheflush.h
+index 01d71e1..012f124 100644
+--- a/arch/alpha/include/asm/cacheflush.h
++++ b/arch/alpha/include/asm/cacheflush.h
+@@ -43,6 +43,8 @@ extern void smp_imb(void);
+ /* ??? Ought to use this in arch/alpha/kernel/signal.c too.  */
 
+ #ifndef CONFIG_SMP
++#include <linux/sched.h>
++
+ extern void __load_new_mm_context(struct mm_struct *);
+ static inline void
+ flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
