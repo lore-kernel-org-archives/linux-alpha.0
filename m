@@ -1,41 +1,36 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH 05/18] alpha: kill big kernel lock
-Date: Tue, 14 Sep 2010 16:12:20 -0400
-Message-ID: <AANLkTikAfnT8kdcaB8-FSb95UX7hbD3KY81D42-f9w2p@mail.gmail.com>
-References: <1284492909-7147-1-git-send-email-arnd@arndb.de>
- <1284492909-7147-6-git-send-email-arnd@arndb.de> <AANLkTi=XfNe8=u3c4BiOOSzKw0f7Kh7tcS7njrwFDD3B@mail.gmail.com>
- <201009142207.47272.arnd@arndb.de>
-Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:received:mime-version:received:in-reply-to
-         :references:from:date:message-id:subject:to:cc:content-type
-         :content-transfer-encoding;
-        bh=W3I1fnLBiZ4ydwrLdVmRE1P2gd8lZJQgjPtNhk75vzk=;
-        b=AligWttILeT41LE0vXg2o9A6eyp0TZ6TOBI/C4A6fJd6VwyLhuJWO1i/W9Ey9mlHCw
-         w8KrQbck9gffFqPn6qgIa9VVjzRl4AiVkaX1S1K7nIGEgqFcgujnUWD+TbBnMosBTfxA
-         kwRCdWXmXIjtl1ZgbfnGvr1+Q/XGfr1q1K5ZQ=
-In-Reply-To: <201009142207.47272.arnd@arndb.de>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: [tip:perf/core] perf: Rework the PMU methods
+Date: Thu, 16 Sep 2010 08:25:34 +1200
+Message-ID: <90A4CF1B-01EC-47B2-BAEC-F35385C76593@orcon.net.nz>
+References: <new-submission> <tip-a4eaf7f14675cb512d69f0c928055e73d0c6d252@git.kernel.org> <4C8B3AD3.5050309@orcon.net.nz> <1284198035.2251.29.camel@laptop> <4C8C6611.20206@orcon.net.nz>  <1284380153.2275.261.camel@laptop> <1284383927.2275.284.camel@laptop>  <4C8F4A3E.5070603@orcon.net.nz> <1284473273.2275.514.camel@laptop>
+Mime-Version: 1.0 (Apple Message framework v936)
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1284473273.2275.514.camel@laptop>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"; delsp="yes"
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: mingo@redhat.com, dengcheng.zhu@gmail.com, yanmin_zhang@linux.intel.com, gorcunov@gmail.com, fweisbec@gmail.com, robert.richter@amd.com, ming.m.lin@intel.com, tglx@linutronix.de, hpa@zytor.com, paulus@samba.org, linux-kernel@vger.kernel.org, eranian@googlemail.com, will.deacon@arm.com, lethal@linux-sh.org, davem@davemloft.net, mingo@elte.hu, linux-alpha@vger.kernel.org
 
-On Tue, Sep 14, 2010 at 4:07 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Tuesday 14 September 2010 21:41:01 Matt Turner wrote:
->> I can apply this without any other patches in the series, since the
->> usage is bogus, right?
+On 15/09/2010, at 2:07 AM, Peter Zijlstra wrote:
+> On Tue, 2010-09-14 at 22:11 +1200, Michael Cree wrote:
+>>
+>> [  818.575752] Unable to handle kernel paging request at virtual  
+>> address
+>> 0000000000000060
+>> [  818.575752] perf(4935): Oops 0
 >
-> Yes, definitely.
+> Does the below cure that?
 >
-> =A0 =A0 =A0 =A0Arnd
+> ---
+> commit 0c67b40872326a5340cab51d79a192a5fbaeb484
+> Author: Peter Zijlstra <a.p.zijlstra@chello.nl>
+> Date:   Mon Sep 13 11:15:58 2010 +0200
+>
+>    perf: Fix free_event()
 
-Will do so then. Thanks for the patch!
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Yes, thanks, that's fixed it.
+
+Cheers
+Michael.
