@@ -1,36 +1,55 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: [tip:perf/core] perf: Rework the PMU methods
-Date: Thu, 16 Sep 2010 08:25:34 +1200
-Message-ID: <90A4CF1B-01EC-47B2-BAEC-F35385C76593@orcon.net.nz>
-References: <new-submission> <tip-a4eaf7f14675cb512d69f0c928055e73d0c6d252@git.kernel.org> <4C8B3AD3.5050309@orcon.net.nz> <1284198035.2251.29.camel@laptop> <4C8C6611.20206@orcon.net.nz>  <1284380153.2275.261.camel@laptop> <1284383927.2275.284.camel@laptop>  <4C8F4A3E.5070603@orcon.net.nz> <1284473273.2275.514.camel@laptop>
-Mime-Version: 1.0 (Apple Message framework v936)
+From: Mikael Pettersson <mikpe@it.uu.se>
+Subject: [PATCH] wire up fanotify and prlimit64 syscalls on Alpha
+Date: Thu, 16 Sep 2010 16:12:55 +0200
+Message-ID: <19602.9703.537889.99030@pilspetsen.it.uu.se>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1284473273.2275.514.camel@laptop>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"; delsp="yes"
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: mingo@redhat.com, dengcheng.zhu@gmail.com, yanmin_zhang@linux.intel.com, gorcunov@gmail.com, fweisbec@gmail.com, robert.richter@amd.com, ming.m.lin@intel.com, tglx@linutronix.de, hpa@zytor.com, paulus@samba.org, linux-kernel@vger.kernel.org, eranian@googlemail.com, will.deacon@arm.com, lethal@linux-sh.org, davem@davemloft.net, mingo@elte.hu, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: linux-alpha@vger.kernel.org
 
-On 15/09/2010, at 2:07 AM, Peter Zijlstra wrote:
-> On Tue, 2010-09-14 at 22:11 +1200, Michael Cree wrote:
->>
->> [  818.575752] Unable to handle kernel paging request at virtual  
->> address
->> 0000000000000060
->> [  818.575752] perf(4935): Oops 0
->
-> Does the below cure that?
->
-> ---
-> commit 0c67b40872326a5340cab51d79a192a5fbaeb484
-> Author: Peter Zijlstra <a.p.zijlstra@chello.nl>
-> Date:   Mon Sep 13 11:15:58 2010 +0200
->
->    perf: Fix free_event()
+The 2.6.36-rc kernel added three new system calls:
+fanotify_init, fanotify_mark, and prlimit64.  This
+patch wires them up on Alpha.
 
-Yes, thanks, that's fixed it.
+Built and booted on an XP900.  Untested beyond that.
 
-Cheers
-Michael.
+Signed-off-by: Mikael Pettersson <mikpe@it.uu.se>
+---
+ arch/alpha/include/asm/unistd.h |    5 ++++-
+ arch/alpha/kernel/systbls.S     |    3 +++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff -rupN linux-2.6.36-rc4/arch/alpha/include/asm/unistd.h linux-2.6.36-rc4.alpha-fanotify+prlimit64-syscalls/arch/alpha/include/asm/unistd.h
+--- linux-2.6.36-rc4/arch/alpha/include/asm/unistd.h	2010-02-25 14:45:00.000000000 +0100
++++ linux-2.6.36-rc4.alpha-fanotify+prlimit64-syscalls/arch/alpha/include/asm/unistd.h	2010-09-16 15:50:45.000000000 +0200
+@@ -449,10 +449,13 @@
+ #define __NR_pwritev			491
+ #define __NR_rt_tgsigqueueinfo		492
+ #define __NR_perf_event_open		493
++#define __NR_fanotify_init		494
++#define __NR_fanotify_mark		495
++#define __NR_prlimit64			496
+ 
+ #ifdef __KERNEL__
+ 
+-#define NR_SYSCALLS			494
++#define NR_SYSCALLS			497
+ 
+ #define __ARCH_WANT_IPC_PARSE_VERSION
+ #define __ARCH_WANT_OLD_READDIR
+diff -rupN linux-2.6.36-rc4/arch/alpha/kernel/systbls.S linux-2.6.36-rc4.alpha-fanotify+prlimit64-syscalls/arch/alpha/kernel/systbls.S
+--- linux-2.6.36-rc4/arch/alpha/kernel/systbls.S	2010-02-25 14:45:00.000000000 +0100
++++ linux-2.6.36-rc4.alpha-fanotify+prlimit64-syscalls/arch/alpha/kernel/systbls.S	2010-09-16 15:50:45.000000000 +0200
+@@ -512,6 +512,9 @@ sys_call_table:
+ 	.quad sys_pwritev
+ 	.quad sys_rt_tgsigqueueinfo
+ 	.quad sys_perf_event_open
++	.quad sys_fanotify_init
++	.quad sys_fanotify_mark				/* 495 */
++	.quad sys_prlimit64
+ 
+ 	.size sys_call_table, . - sys_call_table
+ 	.type sys_call_table, @object
