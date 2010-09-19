@@ -1,8 +1,8 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH] alpha: fix build breakage in asm/cacheflush.h
-Date: Sun, 19 Sep 2010 00:52:19 -0400
-Message-ID: <AANLkTimsf03FvWeTV0mC=dX7vsH=6yihiXa5MH_raAw+@mail.gmail.com>
-References: <20100914002132.bf17c19e.sfr@canb.auug.org.au> <4C8F39A6.10504@kernel.org>
+Subject: Re: [PATCH 2/4] alpha: remove cast from void*
+Date: Sun, 19 Sep 2010 00:52:50 -0400
+Message-ID: <AANLkTim4ieLZQEw11vNLzw2UCgruCWRy960eab2cn+74@mail.gmail.com>
+References: <1284442059-11641-1-git-send-email-mfm@muteddisk.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
@@ -11,47 +11,61 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         h=domainkey-signature:received:mime-version:received:in-reply-to
          :references:from:date:message-id:subject:to:cc:content-type
          :content-transfer-encoding;
-        bh=mBc4511Q+/2mEOOX+ZUT3ox+PEtzafHAeLB19/r+kbc=;
-        b=w1ZXx7fRDVh2HszjAbPaElj+YZJIkob9RzqVpCQLVgsYWVTADp/PU6eAWtusOjQNKL
-         b6UnR9Kvg1HwJq0S6TtFfje0R2NFm/z1yPKFupZpYZmGJSgUumyhCeURYkedJK8l26f5
-         84+ND1GfyBG5R2pISC1IVlqc2+2TCuo1LMNvs=
-In-Reply-To: <4C8F39A6.10504@kernel.org>
+        bh=yt2moce94MkGoUXDulu2FUr5vsjskVnMJuJZKDzE4aA=;
+        b=aSBiVrkXtKH+QqvHNjyTr/Hj5+qUofzu+DsSPmBmKYogEEMBh8CnESe6IPshYCelZm
+         pkzZfAeFDXkQ26/ntdPjYBZvnD+6KsBOJ0ChwSMZHvAvgcxw/IP7hwP23R7KpQF3sjdC
+         kFN1cLzsCQse01W1o8sm6rYPaSYhoI8IN4yU8=
+In-Reply-To: <1284442059-11641-1-git-send-email-mfm@muteddisk.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Tejun Heo <tj@kernel.org>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>, Rusty Russell <rusty@rustcorp.com.au>, Christoph Lameter <cl@linux-foundation.org>, Ingo Molnar <mingo@elte.hu>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
+To: matt mooney <mfm@muteddisk.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux-foundation.org>, Jan-Benedict Glaw <jbglaw@lug-owl.de>, Andrew Morton <akpm@linux-foundation.org>, Alexey Dobriyan <adobriyan@gmail.com>, linux-alpha@vger.kernel.org, kernel-janitors@vger.kernel.org
 
-On Tue, Sep 14, 2010 at 5:00 AM, Tejun Heo <tj@kernel.org> wrote:
-> Alpha SMP flush_icache_user_range() is implemented as an inline
-> function inside include/asm/cacheflush.h. =A0It dereferences @current
-> but doesn't include linux/sched.h and thus causes build failure if
-> linux/sched.h wasn't included previously. =A0Fix it by including the
-> needed header file explicitly.
+On Tue, Sep 14, 2010 at 1:27 AM, matt mooney <mfm@muteddisk.com> wrote:
+> Unnecessary cast from void* in assignment.
 >
-> Signed-off-by: Tejun Heo <tj@kernel.org>
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: matt mooney <mfm@muteddisk.com>
 > ---
-> =A0arch/alpha/include/asm/cacheflush.h | =A0 =A02 ++
-> =A01 file changed, 2 insertions(+)
+> =A0arch/alpha/kernel/pci-sysfs.c | =A0 =A02 +-
+> =A0arch/alpha/kernel/srm_env.c =A0 | =A0 =A02 +-
+> =A02 files changed, 2 insertions(+), 2 deletions(-)
 >
-> diff --git a/arch/alpha/include/asm/cacheflush.h b/arch/alpha/include=
-/asm/cacheflush.h
-> index 01d71e1..012f124 100644
-> --- a/arch/alpha/include/asm/cacheflush.h
-> +++ b/arch/alpha/include/asm/cacheflush.h
-> @@ -43,6 +43,8 @@ extern void smp_imb(void);
-> =A0/* ??? Ought to use this in arch/alpha/kernel/signal.c too. =A0*/
+> diff --git a/arch/alpha/kernel/pci-sysfs.c b/arch/alpha/kernel/pci-sy=
+sfs.c
+> index 738fc82..b899e95 100644
+> --- a/arch/alpha/kernel/pci-sysfs.c
+> +++ b/arch/alpha/kernel/pci-sysfs.c
+> @@ -66,7 +66,7 @@ static int pci_mmap_resource(struct kobject *kobj,
+> =A0{
+> =A0 =A0 =A0 =A0struct pci_dev *pdev =3D to_pci_dev(container_of(kobj,
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 struct device, kobj));
+> - =A0 =A0 =A0 struct resource *res =3D (struct resource *)attr->priva=
+te;
+> + =A0 =A0 =A0 struct resource *res =3D attr->private;
+> =A0 =A0 =A0 =A0enum pci_mmap_state mmap_type;
+> =A0 =A0 =A0 =A0struct pci_bus_region bar;
+> =A0 =A0 =A0 =A0int i;
+> diff --git a/arch/alpha/kernel/srm_env.c b/arch/alpha/kernel/srm_env.=
+c
+> index 4afc1a1..f0df3fb 100644
+> --- a/arch/alpha/kernel/srm_env.c
+> +++ b/arch/alpha/kernel/srm_env.c
+> @@ -87,7 +87,7 @@ static int srm_env_proc_show(struct seq_file *m, vo=
+id *v)
+> =A0 =A0 =A0 =A0srm_env_t =A0 =A0 =A0 *entry;
+> =A0 =A0 =A0 =A0char =A0 =A0 =A0 =A0 =A0 =A0*page;
 >
-> =A0#ifndef CONFIG_SMP
-> +#include <linux/sched.h>
-> +
-> =A0extern void __load_new_mm_context(struct mm_struct *);
-> =A0static inline void
-> =A0flush_icache_user_range(struct vm_area_struct *vma, struct page *p=
-age,
+> - =A0 =A0 =A0 entry =3D (srm_env_t *)m->private;
+> + =A0 =A0 =A0 entry =3D m->private;
+> =A0 =A0 =A0 =A0page =3D (char *)__get_free_page(GFP_USER);
+> =A0 =A0 =A0 =A0if (!page)
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return -ENOMEM;
+> --
+> 1.7.2.1
 
-Thanks! Applied this to my tree and sent it to Linus.
+Thanks! Applied.
 --
 To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
 in
