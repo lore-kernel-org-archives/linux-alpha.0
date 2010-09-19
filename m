@@ -1,52 +1,27 @@
 From: Michael Cree <mcree@orcon.net.nz>
-Subject: [PATCH] alpha: Shift perf event pending work earlier in timer interrupt
-Date: Sun, 19 Sep 2010 14:05:40 +1200
-Message-ID: <1284861940-6571-1-git-send-email-mcree@orcon.net.nz>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Subject: Re: [PATCH 1/4] alpha: belated ERESTART_RESTARTBLOCK race fix
+Date: Sun, 19 Sep 2010 14:46:57 +1200
+Message-ID: <4C9579A1.5030009@orcon.net.nz>
+References: <20100918083846.GA31363@ZenIV.linux.org.uk>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: mattst88@gmail.com
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, mingo@redhat.com, a.p.zijlstra@chello.nl, linux-alpha@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <20100918083846.GA31363@ZenIV.linux.org.uk>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Al Viro <viro@ZenIV.linux.org.uk>
+Cc: linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Linus Torvalds <torvalds@linux-foundation.org>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, mattst88@gmail.com
 
-Pending work from the performance event subsystem is executed in
-the timer interrupt.  This patch shifts the call to
-perf_event_do_pending() before the call to update_process_times()
-as the latter may call back into the perf event subsystem and it
-is prudent to have the pending work executed first.
+On 18/09/10 20:38, Al Viro wrote:
+> same thing as had been done on other targets back in 2003 -
+> move setting ->restart_block.fn into {rt_,}sigreturn().
+>
+> Signed-off-by: Al Viro<viro@zeniv.linux.org.uk>
 
-Signed-off-by: Michael Cree <mcree@orcon.net.nz>
----
- arch/alpha/kernel/time.c |   10 +++++-----
- 1 files changed, 5 insertions(+), 5 deletions(-)
+For the patch series:
 
-diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
-index eacceb2..396af17 100644
---- a/arch/alpha/kernel/time.c
-+++ b/arch/alpha/kernel/time.c
-@@ -191,16 +191,16 @@ irqreturn_t timer_interrupt(int irq, void *dev)
- 
- 	write_sequnlock(&xtime_lock);
- 
--#ifndef CONFIG_SMP
--	while (nticks--)
--		update_process_times(user_mode(get_irq_regs()));
--#endif
--
- 	if (test_perf_event_pending()) {
- 		clear_perf_event_pending();
- 		perf_event_do_pending();
- 	}
- 
-+#ifndef CONFIG_SMP
-+	while (nticks--)
-+		update_process_times(user_mode(get_irq_regs()));
-+#endif
-+
- 	return IRQ_HANDLED;
- }
- 
--- 
-1.7.1
+Tested-by: Michael Cree <mcree@orcon.net.nz>
+
+Cheers
+Michael.
