@@ -1,79 +1,42 @@
-From: "Justin P. Mattock" <justinmattock@gmail.com>
-Subject: Re: [PATCH 02/91] arch/alpha/Kconfig Update broken web addresses
- in the arch directory.
-Date: Mon, 20 Sep 2010 12:30:26 -0700
-Message-ID: <4C97B652.50707@gmail.com>
-References: <1283461606-7803-1-git-send-email-justinmattock@gmail.com> <1283461606-7803-3-git-send-email-justinmattock@gmail.com> <AANLkTikDUUoWSWZhtgGyi3QH6uHJz1Op-inH6_V+e21K@mail.gmail.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: Looking for two pairs of DS10L rails
+Date: Tue, 21 Sep 2010 16:11:32 -0400
+Message-ID: <AANLkTi=P5QymnXdstKM_MGCDZOy7+VqNHcx-8sd1PynR@mail.gmail.com>
+References: <AANLkTimGjywvW0ZREsYA2YVmCNpEOCAicMwRN5TkS3Jm@mail.gmail.com>
+ <96D4F223FD3D4FA59BFC151DA2109F15@murphus> <AANLkTinOvm+Zf4ryo5ew+2xJMO_s2CHMEc--0qhyRQjk@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:received:received:message-id:date:from
-         :user-agent:mime-version:to:cc:subject:references:in-reply-to
-         :content-type:content-transfer-encoding;
-        bh=2+xWXJLhwyb7b/f1RL94iHQifIcKwhp8pI+Cj8woeRw=;
-        b=HhWD1Z3hC3gZiJHsPLIfYuHpwAHe/PSmuvyLs4Bi6pgCqyBgCtIiuh72nTAm9P280V
-         VXGu1zNMuguEkqCs7/2wqm5BzdtzUMn77R++XJq4zk1bnwUjYsnItn0d/1iaRVeMndrT
-         DabM3/krpPTGI1wqr3zTgMBgByVmnck1UfKe0=
-In-Reply-To: <AANLkTikDUUoWSWZhtgGyi3QH6uHJz1Op-inH6_V+e21K@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+        h=domainkey-signature:received:mime-version:received:in-reply-to
+         :references:from:date:message-id:subject:to:cc:content-type;
+        bh=oeGdK8KTFr1ePtmnlWEtDbc5nNQlkLvYQwIPQdZUedU=;
+        b=VVjhE3/FBQVyRJYb8JDL83sCr/sgU5AqLZOGSO6UuWCOgFoVMbNCdVX+bHWE/0cnWC
+         8S8UdQyq6C9GF60QFimc3rRbeZ9Rcyi7jioQgpgT6sky32Xd2l9JhpqNuTJVzqskacpj
+         5n0d+uxv2Y4lirZI6wO9CXzNcnER7ffzqbMwE=
+In-Reply-To: <AANLkTinOvm+Zf4ryo5ew+2xJMO_s2CHMEc--0qhyRQjk@mail.gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Matt Turner <mattst88@gmail.com>
-Cc: trivial@kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Linux on Alpha processors <axp-list@redhat.com>
+Cc: linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org, gentoo-alpha@lists.gentoo.org
 
-On 09/02/2010 02:49 PM, Matt Turner wrote:
-> On Thu, Sep 2, 2010 at 5:06 PM, Justin P. Mattock
-> <justinmattock@gmail.com>  wrote:
->> The below patch updates a broken web address that is no longer
->> working due to company buyout, and/or change of location.
->> (Please have a look through, and let me know if any of them
->> need to be changed, and I'll resend an updated patch).
->>
->> Signed-off-by: Justin P. Mattock<justinmattock@gmail.com>
->>
->> ---
->>   arch/alpha/Kconfig |    6 ++++--
->>   1 files changed, 4 insertions(+), 2 deletions(-)
->>
->> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
->> index b9647bb..16ae162 100644
->> --- a/arch/alpha/Kconfig
->> +++ b/arch/alpha/Kconfig
->> @@ -219,7 +219,8 @@ config ALPHA_LX164
->>         bool "LX164"
->>         help
->>           A technical overview of this board is available at
->> -<http://www.unix-ag.org/Linux-Alpha/Architectures/LX164.html>.
->> +<http://web.archive.org/web/*/http://www.unix-ag.org/
->> +         Linux-Alpha/Architectures/LX164.html>.
->>
->>   config ALPHA_LYNX
->>         bool "Lynx"
->> @@ -483,7 +484,8 @@ config ALPHA_AVANTI
->>         help
->>           Avanti AS 200, AS 205, AS 250, AS 255, AS 300, and AS 400-based
->>           Alphas. Info at
->> -<http://www.unix-ag.org/Linux-Alpha/Architectures/Avanti.html>.
->> +<http://web.archive.org/web/*/http://www.unix-ag.org/Linux-Alpha/
->> +         Architectures/Avanti.html>.
->>
->>   config ALPHA_BROKEN_IRQ_MASK
->>         bool
->> --
->> 1.7.2.1
+On Sun, Sep 12, 2010 at 10:08 PM, Matt Turner <mattst88@gmail.com> wrote:
+> On Sun, Sep 12, 2010 at 10:02 PM, Tom Linden <tom@kednos.com> wrote:
+>> Try Puget Sound Data Systems
 >
-> Hi Justin,
-> These two links are pretty useless. I think we'd do better to remove
-> them until we write proper articles for the AlphaLinux.Org Wiki.
+> Thanks for the email. I guess these are the same people selling Alpha
+> CPUs for $650 on eBay [1]?
+>
+> I'm more looking more for donations, rather than paying more for a set
+> of rails than I could get a whole other DS10L. Is it worth me emailing
+> them?
 >
 > Matt
 >
+> [1] http://cgi.ebay.com/UP2000-API-UP2000-667-MHz-/350245437728
 
+$195 for a pair of rails. :(
 
-with these two urls, instead of removing the whole thing should I just 
-use: http://www.alphalinux.org/
-this way theirs at-least something there
-
-Justin P. Mattock
+As I thought...
