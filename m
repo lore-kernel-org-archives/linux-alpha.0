@@ -1,63 +1,23 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [stable] [PATCH 1/3] Fix call to replaced SuperIO functions
-Date: Thu, 23 Sep 2010 15:24:46 -0400
-Message-ID: <AANLkTimowDKQL_6y2ZxVSJSoye2B8rfgyRbKOMcoyPWp@mail.gmail.com>
-References: <1284005311-15698-1-git-send-email-mattst88@gmail.com> <20100923183907.GT23040@kroah.com>
+From: Roland McGrath <roland@redhat.com>
+Subject: Re: [BISECTED] 164UX Regression, 2.6.22->2.6.23
+Date: Thu, 23 Sep 2010 13:42:29 -0700 (PDT)
+Message-ID: <20100923204229.1249840614@magilla.sf.frob.com>
+References: <20100923003811.GA17384@Sempron.nc.rr.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:received:mime-version:received:in-reply-to
-         :references:from:date:message-id:subject:to:cc:content-type
-         :content-transfer-encoding;
-        bh=Hw875fVKaETet3dPEnqwPhQhtoLHvkguxx+sTtuADbE=;
-        b=ZaXx+rFQBBn90lXwhPvu0dDMJ/RnvQEPdOTBQ4PJVvHUUbi+7xze9jxFEwbeec23ed
-         WRJjUQ+xMgI1B9mamB5tG/YpNkoW8yILU4p2RI+usMyeRLU/o0BcXKPjUEusgtA+qn3H
-         ZQxcZQkFMNXbrofwKbWujwkpBmjtGhsKH02Uw=
-In-Reply-To: <20100923183907.GT23040@kroah.com>
+In-Reply-To: Matt Turner's message of  Wednesday, 22 September 2010 20:38:11 -0400 <20100923003811.GA17384@Sempron.nc.rr.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Greg KH <greg@kroah.com>
-Cc: stable@kernel.org, "Morten H. Larsen" <m-larsen@post6.tele.dk>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Ian Las <ialas@yahoo.com>
 
-On Thu, Sep 23, 2010 at 2:39 PM, Greg KH <greg@kroah.com> wrote:
-> On Thu, Sep 09, 2010 at 12:08:31AM -0400, Matt Turner wrote:
->> From: Morten H. Larsen <m-larsen@post6.tele.dk>
->>
->> This patch fixes the failure to compile Alpha Generic because of
->> previously overlooked calls to ns87312_enable_ide(). The function ha=
-s
->> been replaced by newer SuperIO code.
->>
->> Tested-by: Michael Cree <mcree@orcon.net.nz>
->> Signed-off-by: Morten H. Larsen <m-larsen@post6.tele.dk>
->> Signed-off-by: Matt Turner <mattst88@gmail.com>
->> ---
->> This is a build fix for a regression introduced by 932e0c201d28a728e=
-25d3b64.
->> It therefore only applies to 2.6.35-stable.
->
-> Why isn't it also relevant to Linus's tree for .36 and beyond?
->
-> Or is this the same as 59b25ed91400ace98d6cf0d59b1cb6928ad5cd37 in
-> Linus's tree? =A0If so, please let me know that, it's important. =A0I=
-'ve
-> gone and applied that commit, if that is incorrect, please let me kno=
-w.
->
-> thanks,
->
-> greg k-h
->
+Best would be someone who thoroughly understands that boot loader's
+expectations examining the vmlinux image to see what's wrong.  I'm
+not that someone, but if you send me the images made before and after
+that patch, I can examine them and speculate what the problem might be.
 
-Yes, it's the same as 59b25ed91400ace98d6cf0d59b1cb6 in Linus' tree.
 
-Thanks Greg!
-Matt
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
+Roland
