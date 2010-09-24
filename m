@@ -1,19 +1,20 @@
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Christoph Hellwig <hch@infradead.org>
 Subject: Re: Tomoyo compile failure on alpha: sys_get[p]pid undefined
-Date: Fri, 24 Sep 2010 15:21:36 +0900
-Message-ID: <201009241521.BFC95867.LOQFFHMOFVOJtS@I-love.SAKURA.ne.jp>
+Date: Fri, 24 Sep 2010 03:51:17 -0400
+Message-ID: <20100924075116.GA2303@infradead.org>
 References: <alpine.SOC.1.00.1009240906200.9058@math.ut.ee>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <alpine.SOC.1.00.1009240906200.9058@math.ut.ee>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: mroos@linux.ee
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, takedakn@nttdata.co.jp, akpm@linux-foundation.org, jmorris@namei.org
+To: Meelis Roos <mroos@linux.ee>
+Cc: Linux Kernel list <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org, Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, Kentaro Takeda <takedakn@nttdata.co.jp>
 
-Meelis Roos wrote:
+On Fri, Sep 24, 2010 at 09:10:37AM +0300, Meelis Roos wrote:
 > 2.6.36-rc5+git as of yesterday:
 > 
 >   LD      .tmp_vmlinux1
@@ -25,9 +26,6 @@ Meelis Roos wrote:
 > Seems alpha has different mechanisms for using these syscalls from 
 > inside the kernel?
 
-Thank you for reporting.
-I forwarded it to linux-alpha ML and waiting for response now.
+The real problem is that kernel code should never call system calls.
+The correct fix is to get rid of this abuse.
 
-http://marc.info/?l=linux-alpha&m=128530336613660&w=2
-
-Regards.
