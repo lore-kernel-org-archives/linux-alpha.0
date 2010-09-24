@@ -1,31 +1,72 @@
-From: Greg KH <greg@kroah.com>
-Subject: Re: [stable] [PATCH 1/3] Fix call to replaced SuperIO functions
-Date: Thu, 23 Sep 2010 16:12:06 -0700
-Message-ID: <20100923231206.GB15236@kroah.com>
-References: <1284005311-15698-1-git-send-email-mattst88@gmail.com>
- <20100923183907.GT23040@kroah.com>
- <409546BE-5A3D-4736-8751-F01F5C313194@orcon.net.nz>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Subject: How can I use getpid() and getppid() from kernel?
+Date: Fri, 24 Sep 2010 13:42:38 +0900
+Message-ID: <201009241342.AGI43783.OQMJFOtFVFOSHL@I-love.SAKURA.ne.jp>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <409546BE-5A3D-4736-8751-F01F5C313194@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: Matt Turner <mattst88@gmail.com>, stable@kernel.org, "Morten H. Larsen" <m-larsen@post6.tele.dk>, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org
 
-On Fri, Sep 24, 2010 at 08:56:31AM +1200, Michael Cree wrote:
-> Greg,
-> 
-> In addition to the patch below could we also get:
-> 
-> 3e073367a57d41e506f20aebb98e308387ce3090 alpha: Fix printk format errors
-> 
-> added to the 2.6.35 stable queue.  It fixes a compile error when
-> compiling a generic Alpha kernel without the legacy boot option.
+Hello.
 
-Now applied, thanks.
+Quoting from linux-2.6.36-rc5/security/tomoyo/common.c
 
-greg k-h
+static char *tomoyo_print_header(struct tomoyo_request_info *r)
+{
+	struct timeval tv;
+	const pid_t gpid = task_pid_nr(current);
+	static const int tomoyo_buffer_len = 4096;
+	char *buffer = kmalloc(tomoyo_buffer_len, GFP_NOFS);
+	if (!buffer)
+		return NULL;
+	do_gettimeofday(&tv);
+	snprintf(buffer, tomoyo_buffer_len - 1,
+        	 "#timestamp=%lu profile=%u mode=%s (global-pid=%u)"
+		 " task={ pid=%u ppid=%u uid=%u gid=%u euid=%u"
+		 " egid=%u suid=%u sgid=%u fsuid=%u fsgid=%u }",
+		 tv.tv_sec, r->profile, tomoyo_mode[r->mode], gpid,
+		 (pid_t) sys_getpid(), (pid_t) sys_getppid(),
+		 current_uid(), current_gid(), current_euid(),
+		 current_egid(), current_suid(), current_sgid(),
+		 current_fsuid(), current_fsgid());
+	return buffer;
+}
+
+But alpha does not have sys_getppid() and sys_getpid() defined, and
+is causing build failure for "make allmodconfig" case.
+
+arch/alpha/kernel/entry.S defines getxpid as an assembly function.
+
+        .align  4
+        .globl  sys_getxpid
+        .ent    sys_getxpid
+sys_getxpid:
+        .prologue 0
+        ldq     $2, TI_TASK($8)
+
+        /* See linux/kernel/timer.c sys_getppid for discussion
+           about this loop.  */
+        ldq     $3, TASK_GROUP_LEADER($2)
+        ldq     $4, TASK_REAL_PARENT($3)
+        ldl     $0, TASK_TGID($2)
+1:      ldl     $1, TASK_TGID($4)
+#ifdef CONFIG_SMP
+        mov     $4, $5
+        mb
+        ldq     $3, TASK_GROUP_LEADER($2)
+        ldq     $4, TASK_REAL_PARENT($3)
+        cmpeq   $4, $5, $5
+        beq     $5, 1b
+#endif
+        stq     $1, 80($sp)
+        ret
+.end sys_getxpid
+
+But I don't know how to call it from tomoyo_print_header().
+
+How can I get PID and PPID?
+
+Regards.
