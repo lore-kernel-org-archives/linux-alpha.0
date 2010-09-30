@@ -1,90 +1,62 @@
-From: Kyle McMartin <kyle@mcmartin.ca>
-Subject: Re: [RFC trollpatch 1/1] genirq: Remove the fits all and nothing
- __do_IRQ() code
-Date: Wed, 29 Sep 2010 22:41:03 -0400
-Message-ID: <20100930024103.GB2604@bombadil.infradead.org>
-References: <20100908152036.643594727@linutronix.de>
- <20100930012641.GA2604@bombadil.infradead.org>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: [PATCH 1/2] alpha: switch osf_sigprocmask() to use of sigprocmask()
+Date: Thu, 30 Sep 2010 20:39:01 +1300
+Message-ID: <4CA43E95.5040301@orcon.net.nz>
+References: <E1OzvxM-0002ng-B5@ZenIV.linux.org.uk> <4CA1B7DF.10202@orcon.net.nz> <20100929010738.GJ19804@ZenIV.linux.org.uk>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20100930012641.GA2604@bombadil.infradead.org>
+In-Reply-To: <20100929010738.GJ19804@ZenIV.linux.org.uk>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Kyle McMartin <kyle@mcmartin.ca>
-Cc: Thomas Gleixner <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Ingo Molnar <mingo@elte.hu>, Peter Zijlstra <peterz@infradead.org>, Christoph Hellwig <hch@infradead.org>, linux-alpha@vger.kernel.org, linux-cris-kernel@axis.com, Haavard Skinnemoen <hskinnemoen@atmel.com>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Hirokazu Takata <takata@linux-m32r.org>, Greg Ungerer <gerg@uclinux.org>, Jeff Dike <jdike@addtoit.com>, linux-parisc@vger.kernel.org, Chris Zankel <chris@zankel.net>, linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Al Viro <viro@ZenIV.linux.org.uk>
+Cc: Al Viro <viro@ftp.linux.org.uk>, linux-kernel@vger.kernel.org, mattst88@gmail.com, torvalds@linux-foundation.org, linux-alpha@vger.kernel.org
 
-On Wed, Sep 29, 2010 at 09:26:41PM -0400, Kyle McMartin wrote:
-> I'd appreciate a second pair of eyes, and if it's ok, I'll clean it up
-> and submit it.
-> 
+On 29/09/10 14:07, Al Viro wrote:
+> On Tue, Sep 28, 2010 at 10:39:43PM +1300, Michael Cree wrote:
+>> On 27/09/10 07:28, Al Viro wrote:
+>>>
+>>> get rid of a useless wrapper, while we are at it
+>>>
+>>> Signed-off-by: Al Viro<viro@zeniv.linux.org.uk>
+>>
+>> Compiling this leads to the following errors:
+ >
+> Grrrr....   My apologies - cherry-pick from the wrong branch ;-/
+>
+> Al "nothing like seeing the errors one has fixed show up in what's sent" Viro
 
-Let's do h8300 while we're at it, since that also /looks/ trivial...
-(probably famous last words.)
+It appears to be worse than that.  It introduces a regression.  On boot 
+up on a Compaq Alpha XP1000 the system appears to freeze at the point of 
+mounting swap.  It eventually resumes after almost three minutes and 
+continues to boot.  A bisection returned this very commit as the first 
+bad commit.  With a kernel without this commit the (truncated) bootup 
+log is:
 
-No idea if it's edge or level or what, but given the handlers that would
-be called in the __do_IRQ patch, handle_edge_irq seems most sensible.
+[   19.904286] ftdi_sio: v1.6.0:USB FTDI Serial Converters Driver
+[   20.133778] PCI: Setting latency timer of device 0000:01:00.1 to 64
+[   20.900379] ieee1394: Host added: ID:BUS[0-00:1023] 
+GUID[0000303c0009c6d0]
+[   23.142566] hda-intel: azx_get_response timeout, switching to polling 
+mode: last cmd=0x000f0001
+[   24.162097] Adding 1999992k swap on /dev/sda2.  Priority:-1 extents:1 
+across:1999992k
+[   24.495104] EXT3-fs (sda4): using internal journal
 
-Executive summary: kill implied .ack = NULL, rename enable to unmask,
-kill empty .end since dummy_irq_chip.end will suit us fine. Kill some
-unneeded irq_desc initializers that are also implicit...
+With the commit the log becomes:
 
-Again, if someone could build/boot/whatever test this, that would be
-fantastic, and I'll add their Tested-by and submit.
+[   19.970692] ftdi_sio: v1.6.0:USB FTDI Serial Converters Driver
+[   20.207020] PCI: Setting latency timer of device 0000:01:00.1 to 64
+[   21.052723] ieee1394: Host added: ID:BUS[0-00:1023] 
+GUID[0000303c0009c6d0]
+[   23.215808] hda-intel: azx_get_response timeout, switching to polling 
+mode: last cmd=0x000f0001
+[  189.828027] Adding 1999992k swap on /dev/sda2.  Priority:-1 extents:1 
+across:1999992k
+[  190.162012] EXT3-fs (sda4): using internal journal
 
---kyle
+Otherwise the system seems to come up okay.
 
----
- irq.c |   16 ++++------------
- 1 file changed, 4 insertions(+), 12 deletions(-)
-
-diff --git a/arch/h8300/kernel/irq.c b/arch/h8300/kernel/irq.c
-index c25dc2c..acdbc07 100644
---- a/arch/h8300/kernel/irq.c
-+++ b/arch/h8300/kernel/irq.c
-@@ -50,10 +50,6 @@ static void h8300_disable_irq(unsigned int irq)
- 		IER_REGS &= ~(1 << (irq - EXT_IRQ0));
- }
- 
--static void h8300_end_irq(unsigned int irq)
--{
--}
--
- static unsigned int h8300_startup_irq(unsigned int irq)
- {
- 	if (is_ext_irq(irq))
-@@ -75,10 +71,9 @@ struct irq_chip h8300irq_chip = {
- 	.name		= "H8300-INTC",
- 	.startup	= h8300_startup_irq,
- 	.shutdown	= h8300_shutdown_irq,
--	.enable		= h8300_enable_irq,
-+	.unmask		= h8300_enable_irq,
-+	.mask		= h8300_disable_irq,
- 	.disable	= h8300_disable_irq,
--	.ack		= NULL,
--	.end		= h8300_end_irq,
- };
- 
- #if defined(CONFIG_RAMKERNEL)
-@@ -161,17 +156,14 @@ void __init init_IRQ(void)
- 	setup_vector();
- 
- 	for (c = 0; c < NR_IRQS; c++) {
--		irq_desc[c].status = IRQ_DISABLED;
--		irq_desc[c].action = NULL;
--		irq_desc[c].depth = 1;
--		irq_desc[c].chip = &h8300irq_chip;
-+		set_irq_chip_and_handler(c, &h8300_irq_chip, handle_edge_irq);
- 	}
- }
- 
- asmlinkage void do_IRQ(int irq)
- {
- 	irq_enter();
--	__do_IRQ(irq);
-+	generic_handle_irq(irq);
- 	irq_exit();
- }
- 
+Cheers
+Michael.
