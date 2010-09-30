@@ -1,62 +1,40 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: [PATCH 1/2] alpha: switch osf_sigprocmask() to use of sigprocmask()
-Date: Thu, 30 Sep 2010 20:39:01 +1300
-Message-ID: <4CA43E95.5040301@orcon.net.nz>
-References: <E1OzvxM-0002ng-B5@ZenIV.linux.org.uk> <4CA1B7DF.10202@orcon.net.nz> <20100929010738.GJ19804@ZenIV.linux.org.uk>
+From: Al Viro <viro@ZenIV.linux.org.uk>
+Subject: Re: [PATCH 1/2] alpha: switch osf_sigprocmask() to use of
+ sigprocmask()
+Date: Thu, 30 Sep 2010 12:50:30 +0100
+Message-ID: <20100930115030.GL19804@ZenIV.linux.org.uk>
+References: <E1OzvxM-0002ng-B5@ZenIV.linux.org.uk>
+ <4CA1B7DF.10202@orcon.net.nz>
+ <20100929010738.GJ19804@ZenIV.linux.org.uk>
+ <4CA43E95.5040301@orcon.net.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20100929010738.GJ19804@ZenIV.linux.org.uk>
+Content-Disposition: inline
+In-Reply-To: <4CA43E95.5040301@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Al Viro <viro@ZenIV.linux.org.uk>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Michael Cree <mcree@orcon.net.nz>
 Cc: Al Viro <viro@ftp.linux.org.uk>, linux-kernel@vger.kernel.org, mattst88@gmail.com, torvalds@linux-foundation.org, linux-alpha@vger.kernel.org
 
-On 29/09/10 14:07, Al Viro wrote:
-> On Tue, Sep 28, 2010 at 10:39:43PM +1300, Michael Cree wrote:
->> On 27/09/10 07:28, Al Viro wrote:
->>>
->>> get rid of a useless wrapper, while we are at it
->>>
->>> Signed-off-by: Al Viro<viro@zeniv.linux.org.uk>
->>
->> Compiling this leads to the following errors:
- >
-> Grrrr....   My apologies - cherry-pick from the wrong branch ;-/
->
-> Al "nothing like seeing the errors one has fixed show up in what's sent" Viro
+On Thu, Sep 30, 2010 at 08:39:01PM +1300, Michael Cree wrote:
+> It appears to be worse than that.  It introduces a regression.  On
+> boot up on a Compaq Alpha XP1000 the system appears to freeze at the
+> point of mounting swap.  It eventually resumes after almost three
+> minutes and continues to boot.
 
-It appears to be worse than that.  It introduces a regression.  On boot 
-up on a Compaq Alpha XP1000 the system appears to freeze at the point of 
-mounting swap.  It eventually resumes after almost three minutes and 
-continues to boot.  A bisection returned this very commit as the first 
-bad commit.  With a kernel without this commit the (truncated) bootup 
-log is:
 
-[   19.904286] ftdi_sio: v1.6.0:USB FTDI Serial Converters Driver
-[   20.133778] PCI: Setting latency timer of device 0000:01:00.1 to 64
-[   20.900379] ieee1394: Host added: ID:BUS[0-00:1023] 
-GUID[0000303c0009c6d0]
-[   23.142566] hda-intel: azx_get_response timeout, switching to polling 
-mode: last cmd=0x000f0001
-[   24.162097] Adding 1999992k swap on /dev/sda2.  Priority:-1 extents:1 
-across:1999992k
-[   24.495104] EXT3-fs (sda4): using internal journal
-
-With the commit the log becomes:
-
-[   19.970692] ftdi_sio: v1.6.0:USB FTDI Serial Converters Driver
-[   20.207020] PCI: Setting latency timer of device 0000:01:00.1 to 64
-[   21.052723] ieee1394: Host added: ID:BUS[0-00:1023] 
-GUID[0000303c0009c6d0]
-[   23.215808] hda-intel: azx_get_response timeout, switching to polling 
-mode: last cmd=0x000f0001
-[  189.828027] Adding 1999992k swap on /dev/sda2.  Priority:-1 extents:1 
-across:1999992k
-[  190.162012] EXT3-fs (sda4): using internal journal
-
-Otherwise the system seems to come up okay.
-
-Cheers
-Michael.
+diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
+index 779780a..f7f054d 100644
+--- a/arch/alpha/kernel/signal.c
++++ b/arch/alpha/kernel/signal.c
+@@ -48,7 +48,7 @@ SYSCALL_DEFINE2(osf_sigprocmask, int, how, unsigned long, newmask)
+ 	sigset_t mask;
+ 	unsigned long res;
+ 
+-	siginitset(&mask, newmask & ~_BLOCKABLE);
++	siginitset(&mask, newmask & _BLOCKABLE);
+ 	res = siprocmask(how, &mask, &oldmask);
+ 	if (!res) {
+ 		force_successful_syscall_return();
