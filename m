@@ -1,48 +1,29 @@
-From: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
-Subject: [PATCH -mm 3/4] alpha: remove dma64_addr_t usage
-Date: Tue, 12 Oct 2010 12:13:14 +0900
-Message-ID: <1286853195-32202-4-git-send-email-fujita.tomonori@lab.ntt.co.jp>
-References: <1286853195-32202-1-git-send-email-fujita.tomonori@lab.ntt.co.jp>
+From: Kyle McMartin <kyle@mcmartin.ca>
+Subject: [PATCH 0/3] alpha: __do_IRQ just say no
+Date: Thu, 14 Oct 2010 18:28:06 -0400
+Message-ID: <20101014222805.GA8332@bombadil.infradead.org>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1286853195-32202-1-git-send-email-fujita.tomonori@lab.ntt.co.jp>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: akpm@linux-foundation.org
-Cc: fujita.tomonori@lab.ntt.co.jp, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, kyle@mcmartin.ca
 
-dma_addr_t is always 64 bit on alpha. So let's use dma_addr_t instead.
+Hi folks,
 
-Signed-off-by: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
-Cc: linux-alpha@vger.kernel.org
----
- arch/alpha/kernel/pci_iommu.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+Please test and review the following changes which convert alpha away
+from calling __do_IRQ, which is deprecated and will be nuked at some
+point in the future.
 
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index d1dbd9a..022c274 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -223,7 +223,7 @@ iommu_arena_free(struct pci_iommu_arena *arena, long ofs, long n)
-  */
- static int pci_dac_dma_supported(struct pci_dev *dev, u64 mask)
- {
--	dma64_addr_t dac_offset = alpha_mv.pci_dac_offset;
-+	dma_addr_t dac_offset = alpha_mv.pci_dac_offset;
- 	int ok = 1;
- 
- 	/* If this is not set, the machine doesn't support DAC at all.  */
-@@ -756,7 +756,7 @@ static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
- 	spin_lock_irqsave(&arena->lock, flags);
- 
- 	for (end = sg + nents; sg < end; ++sg) {
--		dma64_addr_t addr;
-+		dma_addr_t addr;
- 		size_t size;
- 		long npages, ofs;
- 		dma_addr_t tend;
--- 
-1.7.1
+It's been cross compiled, and should be bisectable, I've put a bit of
+effort into ensuring that each patch stands on its own, so if there are
+any issues, debugging them should be fairly trivial.
 
+(In most cases, it's literally just a renaming + using handlers, the
+ generated code is almost byte-for-byte identical.)
+
+Thanks!
+ Kyle
