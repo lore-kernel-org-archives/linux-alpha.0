@@ -1,39 +1,45 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: df9ee29270 breaks the build on alpha
-Date: Fri, 29 Oct 2010 12:15:33 -0400
-Message-ID: <AANLkTi=p+5Tey=bwBSdGBmyMA13xmxhSZyg26Hk9=a8G@mail.gmail.com>
-Mime-Version: 1.0
+Subject: [PATCH] alpha: add GENERIC_HARDIRQS_NO__DO_IRQ to Kconfig
+Date: Fri, 29 Oct 2010 12:22:08 -0400
+Message-ID: <1288369328-7281-1-git-send-email-mattst88@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:received:mime-version:received:from:date
-         :message-id:subject:to:cc:content-type;
-        bh=dLr/I6uCRyZdA3Qote+HUVaIBDipnzChYck9v9zbVNc=;
-        b=I9I4opeDiHOW5yGP9PCB4FgRfHQbAqcz57FgCaxJj2GKmrc+7j0XzpI9I7PCr2uQCl
-         jGUrxEZwD3gcz2F968J/LKWoMfODKiRWwzTPW0le7fAELgu94Di8ePTT6E6z/FMQTzb8
-         hqH0U1jTpPkRoFalK7XB2P0E5vG8JzoIueucw=
+        h=domainkey-signature:received:received:received:from:to:cc:subject
+         :date:message-id:x-mailer;
+        bh=JKlmg1JmAjnSVeNL6SmqHQ6NQRf8ehu1OUH2VvFDg14=;
+        b=GNi99UiIXnMR6mOQJ1hPK+t+WkyDbZDUFfhpVu+wgmTiVz1foSQAAg75jxh8kw+CuO
+         iZyvCof3DdvDicjWUKujA52FbStDPOsBrbJ8JAlhStrCk1aXOuw+K9HnQaQXV2f0evkK
+         z1QXCqxBfJUQAjs0OCQlHMyXgXjklWXS6VBvM=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: David Howells <dhowells@redhat.com>, linux-alpha@vger.kernel.org
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+To: linux-alpha@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Michael Cree <mcree@orcon.net.nz>, Kyle McMartin <kyle@redhat.com>, Matt Turner <mattst88@gmail.com>
 
-  CC      init/main.o
-In file included from /space/mattst88/alpha-2.6/arch/alpha/include/asm/dma.h:22,
-                 from include/linux/bootmem.h:8,
-                 from init/main.c:25:
-/space/mattst88/alpha-2.6/arch/alpha/include/asm/io.h: In function '__set_hae':
-/space/mattst88/alpha-2.6/arch/alpha/include/asm/io.h:41: error:
-'arch_local_irq_save' is static but used in inline function
-'__set_hae' which is not static
-/space/mattst88/alpha-2.6/arch/alpha/include/asm/io.h:49: error:
-'arch_local_irq_restore' is static but used in inline function
-'__set_hae' which is not static
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+---
+This is a follow-on to Kyle's __do_IRQ removal.
 
-arch/alpha/include/asm/io.h:__set_hae(), which is marked extern
-inline, is called from arch/alpha/include/asm/io.h:set_hae() and also
-called in arch/alpha/kernel/setup.c. What can we do to fix this?
+ arch/alpha/Kconfig |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
 
-Thanks!
-Matt
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 943fe69..fc95ee1 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -68,6 +68,9 @@ config GENERIC_IOMAP
+ 	bool
+ 	default n
+ 
++config GENERIC_HARDIRQS_NO__DO_IRQ
++	def_bool y
++
+ config GENERIC_HARDIRQS
+ 	bool
+ 	default y
+-- 
+1.7.2.2
+
