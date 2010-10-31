@@ -1,64 +1,74 @@
-From: Joe Perches <joe@perches.com>
+From: Michael Cree <mcree@orcon.net.nz>
 Subject: Re: [PATCH 02/39] arch/alpha: Update WARN uses
-Date: Sat, 30 Oct 2010 14:28:07 -0700
-Message-ID: <1288474087.366.145.camel@Joe-Laptop>
-References: <cover.1288471897.git.joe@perches.com>
-	 <517a3d5c620dd4843a35a05c9a1c123b4b936cd9.1288471898.git.joe@perches.com>
-	 <AANLkTi=Po5RaY-mL62trrVm+kuK=0JV7z2oQcDJek4kE@mail.gmail.com>
+Date: Sun, 31 Oct 2010 14:11:00 +1300
+Message-ID: <4CCCC224.50007@orcon.net.nz>
+References: <cover.1288471897.git.joe@perches.com>	 <517a3d5c620dd4843a35a05c9a1c123b4b936cd9.1288471898.git.joe@perches.com>	 <AANLkTi=Po5RaY-mL62trrVm+kuK=0JV7z2oQcDJek4kE@mail.gmail.com> <1288474087.366.145.camel@Joe-Laptop>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <AANLkTi=Po5RaY-mL62trrVm+kuK=0JV7z2oQcDJek4kE@mail.gmail.com>
+In-Reply-To: <1288474087.366.145.camel@Joe-Laptop>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Matt Turner <mattst88@gmail.com>
-Cc: Jiri Kosina <trivial@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Joe Perches <joe@perches.com>
+Cc: Matt Turner <mattst88@gmail.com>, Jiri Kosina <trivial@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Sat, 2010-10-30 at 17:17 -0400, Matt Turner wrote:
-> On Sat, Oct 30, 2010 at 5:08 PM, Joe Perches <joe@perches.com> wrote:
-> > Coalesce long formats.
-> > Align arguments.
-> > Signed-off-by: Joe Perches <joe@perches.com>
-> >  arch/alpha/kernel/pci-sysfs.c |   14 ++++++--------
-> >  1 files changed, 6 insertions(+), 8 deletions(-)
-> > diff --git a/arch/alpha/kernel/pci-sysfs.c b/arch/alpha/kernel/pci-sysfs.c
-> > @@ -44,10 +44,9 @@ static int __pci_mmap_fits(struct pci_dev *pdev, int num,
-> > -       WARN(1, "process \"%s\" tried to map%s 0x%08lx-0x%08lx on %s BAR %d "
-> > -               "(size 0x%08lx)\n",
-> > -               current->comm, sparse ? " sparse" : "", start, start + nr,
-> > -               pci_name(pdev), num, size);
-> > +       WARN(1, "process \"%s\" tried to map%s 0x%08lx-0x%08lx on %s BAR %d (size 0x%08lx)\n",
-> > +            current->comm, sparse ? " sparse" : "", start, start + nr,
-> > +            pci_name(pdev), num, size);
-> > @@ -261,10 +260,9 @@ static int __legacy_mmap_fits(struct pci_controller *hose,
-> > -       WARN(1, "process \"%s\" tried to map%s 0x%08lx-0x%08lx on hose %d "
-> > -               "(size 0x%08lx)\n",
-> > -               current->comm, sparse ? " sparse" : "", start, start + nr,
-> > -               hose->index, size);
-> > +       WARN(1, "process \"%s\" tried to map%s 0x%08lx-0x%08lx on hose %d (size 0x%08lx)\n",
-> > +            current->comm, sparse ? " sparse" : "", start, start + nr,
-> > +            hose->index, size);
-> What's accomplished here? It looks like you joined two strings (which
-> were separated as to not overflow the 80-char limit) and spaced a
-> couple lines over.
-> 
-> I don't see how this makes anything clearer.
+On 31/10/10 10:28, Joe Perches wrote:
+> On Sat, 2010-10-30 at 17:17 -0400, Matt Turner wrote:
+>> On Sat, Oct 30, 2010 at 5:08 PM, Joe Perches<joe@perches.com>  wrote:
+>>> Coalesce long formats.
+>>> Align arguments.
+>>> Signed-off-by: Joe Perches<joe@perches.com>
+>>>   arch/alpha/kernel/pci-sysfs.c |   14 ++++++--------
+>>>   1 files changed, 6 insertions(+), 8 deletions(-)
+>>> diff --git a/arch/alpha/kernel/pci-sysfs.c b/arch/alpha/kernel/pci-sysfs.c
+>>> @@ -44,10 +44,9 @@ static int __pci_mmap_fits(struct pci_dev *pdev, int num,
+>>> -       WARN(1, "process \"%s\" tried to map%s 0x%08lx-0x%08lx on %s BAR %d "
+>>> -               "(size 0x%08lx)\n",
+>>> -               current->comm, sparse ? " sparse" : "", start, start + nr,
+>>> -               pci_name(pdev), num, size);
+>>> +       WARN(1, "process \"%s\" tried to map%s 0x%08lx-0x%08lx on %s BAR %d (size 0x%08lx)\n",
+>>> +            current->comm, sparse ? " sparse" : "", start, start + nr,
+>>> +            pci_name(pdev), num, size);
+>>> @@ -261,10 +260,9 @@ static int __legacy_mmap_fits(struct pci_controller *hose,
+>>> -       WARN(1, "process \"%s\" tried to map%s 0x%08lx-0x%08lx on hose %d "
+>>> -               "(size 0x%08lx)\n",
+>>> -               current->comm, sparse ? " sparse" : "", start, start + nr,
+>>> -               hose->index, size);
+>>> +       WARN(1, "process \"%s\" tried to map%s 0x%08lx-0x%08lx on hose %d (size 0x%08lx)\n",
+>>> +            current->comm, sparse ? " sparse" : "", start, start + nr,
+>>> +            hose->index, size);
+>> What's accomplished here? It looks like you joined two strings (which
+>> were separated as to not overflow the 80-char limit) and spaced a
+>> couple lines over.
+>>
+>> I don't see how this makes anything clearer.
+>
+> This one is just a whitespace cleanup.
+> Ignore it or nack it if you want.
 
-Hi Matt.
+I prefer the original indenting as it clearly stands the `1' on its own 
+thus emphasising that the warning will be printed everytime the WARN() 
+statement is executed.  I surmise that the original programmer thought 
+it important to emphasise this as it might not be considered the 
+"normal" usage of WARN().
 
-This one is just a whitespace cleanup.
-Ignore it or nack it if you want.
+I agree that, in general, coalesced strings aid grepping but this broken 
+string isn't one that will benefit.
 
-The patch was generated mostly by script to standardize
-the WARN uses.
+I recall the story that when someone pointed out parallel fifths (an 
+absolute no-no according to the rules of classical harmony) in a 
+composition of Beethoven's to Beethoven himself, Beethoven was so 
+indignant that he proceeded to compose a set of variations on a theme 
+where in each variation he extensively violated one of the rules of 
+classical harmony, and wrote down the bottom of each variation "You Ass" 
+to the authority who had made the rule.
 
-Long formats are generally preferred for grep.
-In this case, there's no particular value in the format
-coalescing because the output isn't going to be found
-with a grep.
+The moral here is that when a _competent_ programmer breaks the "style 
+guide" they are most likely doing so for a very good reason.  Thus, 
+those who would submit whitespace fix patches should take time to ask 
+themselves why the original programmer has laid out the code in such a 
+fashion and learn from it, before submitting so-called "fixes".
 
-There were other patches that are actual defect fixes.
-
-cheers, Joe
-
+Cheers
+Michael.
