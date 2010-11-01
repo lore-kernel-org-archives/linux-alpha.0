@@ -1,66 +1,44 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH 02/39] arch/alpha: Update WARN uses
-Date: Sat, 30 Oct 2010 18:38:59 -0700
-Message-ID: <1288489139.366.169.camel@Joe-Laptop>
-References: <cover.1288471897.git.joe@perches.com>
-	 <517a3d5c620dd4843a35a05c9a1c123b4b936cd9.1288471898.git.joe@perches.com>
-	 <AANLkTi=Po5RaY-mL62trrVm+kuK=0JV7z2oQcDJek4kE@mail.gmail.com>
-	 <1288474087.366.145.camel@Joe-Laptop>  <4CCCC224.50007@orcon.net.nz>
+From: "Morten Holst Larsen" <mhl@mhlnet.dk>
+Subject: Matts tree, IRQ related warning
+Date: Mon, 1 Nov 2010 06:58:21 +0100
+Message-ID: <EAE0CA1B516144649F164BBDA1D1EECD@morten>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4CCCC224.50007@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: Matt Turner <mattst88@gmail.com>, Jiri Kosina <trivial@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; format="flowed"; charset="us-ascii"; reply-type="original"
+To: linux-alpha@vger.kernel.org
 
-On Sun, 2010-10-31 at 14:11 +1300, Michael Cree wrote:
-> On 31/10/10 10:28, Joe Perches wrote:
-> > On Sat, 2010-10-30 at 17:17 -0400, Matt Turner wrote:
-> >> On Sat, Oct 30, 2010 at 5:08 PM, Joe Perches<joe@perches.com>  wrote:
-> >>> Coalesce long formats.
-> >>> Align arguments.
-> >> What's accomplished here? It looks like you joined two strings (which
-> >> were separated as to not overflow the 80-char limit) and spaced a
-> >> couple lines over.
-> > This one is just a whitespace cleanup.
-> > Ignore it or nack it if you want.
-> I prefer the original indenting as it clearly stands the `1' on its own 
-> thus emphasising that the warning will be printed everytime the WARN() 
-> statement is executed.  I surmise that the original programmer thought 
-> it important to emphasise this as it might not be considered the 
-> "normal" usage of WARN().
+Hi,
 
-Actually, WARN(1, foo) is by far the most common use of WARN.
-More than half of all uses.
+When I build and run a kernel for my DS15 from Matts tree, I get a warning.
+Regardless of the warning everything seems to work ok.
 
-$ grep -rP --include=*.[ch] -oh "\bWARN\s*\(" * | wc -l
-286
-$ grep -rP --include=*.[ch] -oh "\bWARN\s*\(\w+" * | \
-	sort | uniq -c | sort -rn | head -5
-    173 WARN(1
-      8 WARN(IS_ERR
-      4 WARN(ret
-      4 WARN(priv
-      4 WARN(local
+/Morten
 
-> The moral here is that when a _competent_ programmer breaks the "style 
-> guide" they are most likely doing so for a very good reason.  Thus, 
-> those who would submit whitespace fix patches should take time to ask 
-> themselves why the original programmer has laid out the code in such a 
-> fashion and learn from it, before submitting so-called "fixes".
-
-Code is decidedly not music.
-
-This stuff is mostly craft not art and consistency in
-craft has value.
-
-You might also note I didn't call it a fix, I called it
-a whitespace cleanup.
-
-And again, I don't much care if it's applied to
-arch/alpha or not.  I haven't had an alpha since I gave
-away my AlphaStation a decade ago.
+Linux version 2.6.36+ (root@ds15) (gcc version 4.2.4 (Debian 4.2.4-6)) #4 
+Sun Oct 31 12:12:07 CET 2010
+Booting on Titan variation DEFAULT using machine vector TITAN from SRM
+Major Options: EV67 MAGIC_SYSRQ
+** SNIP **
+Trying to install interrupt handler for IRQ8
+------------[ cut here ]------------
+WARNING: at kernel/softirq.c:138 __local_bh_enable+0xac/0xc0()
+Modules linked in:
+fffffc0001677d60 fffffc000167ceb8 fffffc000103506c 0000000000000200
+0000000000000008 fffffc0001677e00 0000000001234567 0000000000000000
+fffffc00010354e8 fffffc000169aed0 fffffc00010154a8 fffffc000169aed0
+fffffc00010158a4 fffffc0001686a20 0000000000000000 fffffc0001677e18
+fffffc0001010d70 fffffc0001668e0c fffffc000166ad78 fffffc0001695260
+0000000000000007 0000000000000000 0000000000000440 0000000000000200
+Trace:
+[<fffffc000103506c>] __local_bh_enable+0xac/0xc0
+[<fffffc00010354e8>] irq_enter+0x68/0x80
+[<fffffc00010154a8>] handle_irq+0x58/0x110
+[<fffffc00010158a4>] do_entInt+0xc4/0x1d0
+[<fffffc0001010d70>] ret_from_sys_call+0x0/0x10
+[<fffffc000106d860>] irq_to_desc+0x0/0x30
+[<fffffc000101001c>] _stext+0x1c/0x20
+---[ end trace 4eaa2a86a8e2da22 ]--- 
 
