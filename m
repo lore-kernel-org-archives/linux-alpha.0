@@ -1,51 +1,30 @@
-From: Jean Delvare <khali@linux-fr.org>
-Subject: Re: [PATCH] i2c-i801: Include <linux/slab.h>
-Date: Sun, 12 Dec 2010 09:25:59 +0100
-Message-ID: <20101212092559.10f6883e@endymion.delvare>
-References: <1292100331.3136.47.camel@localhost>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: Re: [BUG] 2.6.37-rc8 build failure on Alpha
+Date: Mon, 3 Jan 2011 16:51:40 -0600
+Message-ID: <20110103225140.GA24829@gherkin.frus.com>
+References: <20110103205705.GA24522@gherkin.frus.com> <60180.121.72.232.114.1294094426.squirrel@mail.orcon.net.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1292100331.3136.47.camel@localhost>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <60180.121.72.232.114.1294094426.squirrel@mail.orcon.net.nz>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Ben Hutchings <ben@decadent.org.uk>
-Cc: linux-i2c@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-Hi Ben,
-
-On Sat, 11 Dec 2010 20:45:31 +0000, Ben Hutchings wrote:
-> Commit 5a0e3ad6af8660be21ca98a971cd00f331318c05 added direct inclusion
-> of <linux/slab.h> to those source files that appeared to need it, but
-> somehow missed this.
-
-Most probably because the i2c-i801 driver didn't do any memory
-allocation until this recent change:
-http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=0cd96eb0a74791cacb27ace902b991cfd0e72abe
-
-> On most architectures <linux/slab.h> is still
-> indirectly included, but there are exceptions such as alpha.
+On Tue, Jan 04, 2011 at 11:40:26AM +1300, Michael Cree wrote:
+> On Tue, January 4, 2011 9:57 am, Bob Tracy wrote:
+> > (...)
+> > The 2.6.37-rc8 kernel build on alpha fails as follows:
+> > (...)
 > 
-> Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-> ---
->  drivers/i2c/busses/i2c-i801.c |    1 +
->  1 files changed, 1 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-> index 02835ce..7979aef 100644
-> --- a/drivers/i2c/busses/i2c-i801.c
-> +++ b/drivers/i2c/busses/i2c-i801.c
-> @@ -72,6 +72,7 @@
->  #include <linux/acpi.h>
->  #include <linux/io.h>
->  #include <linux/dmi.h>
-> +#include <linux/slab.h>
->  
->  /* I801 SMBus address offsets */
->  #define SMBHSTSTS(p)	(0 + (p)->smba)
+> A patch that fixes this was posted to linux-alpha some time ago (see
+> http://www.spinics.net/linux/lists/linux-alpha/msg00710.html).  I am not
+> sure why it hasn't made it through to Linus as yet.
 
-Applied, thanks.
+Thanks, Michael.  I figured I probably missed that particular needle
+whilst perusing the haystack :-).
 
--- 
-Jean Delvare
+--Bob
