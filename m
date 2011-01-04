@@ -1,50 +1,72 @@
-From: Pekka Enberg <penberg@kernel.org>
-Subject: Re: [BUG] implicit declaration of kfree/kzalloc in i2c-i801.c on Alpha
-Date: Tue, 4 Jan 2011 09:15:49 +0200
-Message-ID: <AANLkTimMmOugdHFnsO6qvd8U_USmcgz7GDXMQED1GEOE@mail.gmail.com>
-References: <20110104061821.GA25886@gherkin.frus.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [BUG] 2.6.37-rc8 build failure on Alpha
+Date: Tue, 4 Jan 2011 14:34:00 -0500
+Message-ID: <AANLkTi=9xXBk6fgucRCLUdxUaY2PmqANyn8-rw5_Rv7A@mail.gmail.com>
+References: <20110103205705.GA24522@gherkin.frus.com> <60180.121.72.232.114.1294094426.squirrel@mail.orcon.net.nz>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:received:sender:received
-         :in-reply-to:references:date:x-google-sender-auth:message-id:subject
-         :from:to:cc:content-type:content-transfer-encoding;
-        bh=ZOZWUR0B8gteHgcxpnjUxNG3m8rMyLHbwUjbqlck2y8=;
-        b=R7qXR3b73jYOdXWL1pAeRFPOTgTB3+ZthmcBnhXI2wltlNrv36hvLENWeMhoVsonFb
-         eTq0YcuqyVHUCoVBmdH2KvZpUgDw1GoAnkZ/sXcBxfUsa3P3sjF8iQrfk9bUuDDFRNpC
-         vhWd9y+yVYkW9moj7sHesBsIct+goCg9O7mMg=
-In-Reply-To: <20110104061821.GA25886@gherkin.frus.com>
+        h=domainkey-signature:received:mime-version:received:in-reply-to
+         :references:from:date:message-id:subject:to:cc:content-type
+         :content-transfer-encoding;
+        bh=6qSfuPyR16CNSrFNC7yFO5vP8oa8joH2CFOVMWWakKE=;
+        b=ikLQG3ArlHQGUeF8wTSwSXWjT0MmH7ghz3ur3uMUhTPz/DGA3xl77ojarCX80xZMDX
+         4LXNWpJKRptx8XPWJmrDcDba+uIE8RhEx3BBCCTpK2RMkA5ewNyCWDp9BfRRK+a9anl/
+         eBgr1b/jgXcxomoxm9eK+IV7iBqqn1K/zET6M=
+In-Reply-To: <60180.121.72.232.114.1294094426.squirrel@mail.orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Bob Tracy <rct@gherkin.frus.com>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, mcree@orcon.net.nz
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: Bob Tracy <rct@gherkin.frus.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
-On Tue, Jan 4, 2011 at 8:18 AM, Bob Tracy <rct@gherkin.frus.com> wrote:
-> Another 2.6.37-rc8 build failure on alpha:
+On Mon, Jan 3, 2011 at 5:40 PM, Michael Cree <mcree@orcon.net.nz> wrote=
+:
+> On Tue, January 4, 2011 9:57 am, Bob Tracy wrote:
+>> This probably happened before -rc8, but was not an issue for 2.6.36.
+>>
+>> The 2.6.37-rc8 kernel build on alpha fails as follows:
+>>
+>> (...)
+>> =A0 LD =A0 =A0 =A0usr/built-in.o
+>> =A0 AS =A0 =A0 =A0arch/alpha/kernel/entry.o
+>> =A0 CC =A0 =A0 =A0arch/alpha/kernel/traps.o
+>> cc1: warnings being treated as errors
+>> In file included from
+>> /usr/src/linux-2.6/arch/alpha/include/asm/mmu_context.h:22,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0from arch/alpha/kernel/traps.c:26=
+:
+>> /usr/src/linux-2.6/arch/alpha/include/asm/io.h: In function '__set_h=
+ae':
+>> /usr/src/linux-2.6/arch/alpha/include/asm/io.h:41: error:
+>> 'arch_local_irq_save' is static but used in inline function '__set_h=
+ae'
+>> which is not static
+>> /usr/src/linux-2.6/arch/alpha/include/asm/io.h:49: error:
+>> 'arch_local_irq_restore' is static but used in inline function '__se=
+t_hae'
+>> which is not static
 >
-> (...)
-> =A0CC [M] =A0drivers/i2c/busses/i2c-i801.o
-> drivers/i2c/busses/i2c-i801.c: In function 'i801_probe':
-> drivers/i2c/busses/i2c-i801.c:737: error: implicit declaration of fun=
-ction 'kzalloc'
-> drivers/i2c/busses/i2c-i801.c:737: warning: assignment makes pointer =
-from integer without a cast
-> drivers/i2c/busses/i2c-i801.c:855: error: implicit declaration of fun=
-ction 'kfree'
-> make[3]: *** [drivers/i2c/busses/i2c-i801.o] Error 1
-> make[2]: *** [drivers/i2c/busses] Error 2
-> make[1]: *** [drivers/i2c] Error 2
-> make: *** [drivers] Error 2
+> A patch that fixes this was posted to linux-alpha some time ago (see
+> http://www.spinics.net/linux/lists/linux-alpha/msg00710.html). =A0I a=
+m not
+> sure why it hasn't made it through to Linus as yet.
+>
+> Cheers
+> Michael.
 
-Adding a
+I haven't had much time for alpha things, so I haven't been keeping up
+with patches lately. I'll send everything in my patch queue to Linus
+for the .38 merge window.
 
-  #include <linux/slab.h>
+Please send Ivan's patch to Linus directly, and CC Ivan so he can give
+his Signed-off-by tag.
 
-in drivers/i2c/busses/i2c-i801.c should help. Care to send a tested
-patch to do that?
+Thanks Michael and Bob.
+
+Matt
 --
 To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
 in
