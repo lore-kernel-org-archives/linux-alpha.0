@@ -1,64 +1,82 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH] alpha: fix WARN_ON in __local_bh_enable()
-Date: Mon, 17 Jan 2011 04:39:19 +0000
-Message-ID: <AANLkTinxLaGqkh_JoCeQk=0AE7GBKdBKirG9Tc=SVD+K@mail.gmail.com>
-References: <AANLkTinLCqS+E8CXmAfs51sWuPS1JtNguA2VcoKK4g4f@mail.gmail.com> <20110112220224.GB18643@jurassic.park.msu.ru>
+Subject: [PULL] alpha-2.6
+Date: Mon, 17 Jan 2011 05:09:45 +0000
+Message-ID: <AANLkTi=JwYsgC7LhpRBGJ5E2roxfMGunfWg3VbBGva4h@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc:content-type:content-transfer-encoding;
-        bh=eIpW66E5A1GPQl7462BJYa+8r28KPd7lcM9pIJQI28Y=;
-        b=vR3CkklfdQZ8IWtmelqJMr4BLeIhVn3VzbEJw/N3wVIAMUGraoCIaSTG6B31gEHDuh
-         wb/VgH5bRnPkXO/XtZGJ+u1xIMUzi043822NGqgrvNw6yZ2vmpnMBQvYAZI/o4Wjq6VN
-         qNAU9gz4jzASg1f6L+kIVxv9U7Xn31QiMqZAI=
-In-Reply-To: <20110112220224.GB18643@jurassic.park.msu.ru>
+        h=domainkey-signature:mime-version:from:date:message-id:subject:to:cc
+         :content-type;
+        bh=Xp1+SWZGE4hoMYAXYzpeCyaCteRkF/RNrA5jeWb2Bis=;
+        b=TTD7XeUJQJtkg5XqOaT5P/acriNVWgBoDB0nopiqUskuwCXOD/0z6C0XpyzXp2Gz1a
+         jVftOcDrQXGHFj9ZIyej3zR2d5hmpSudwoLJdju2nczBaZKCdHSwKmpYsa3NmcB61JGm
+         pkGcZ/GZTJPSt5OGZatTKzyB4SpVcwTHhM9/E=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: linux-alpha@vger.kernel.org, Kyle McMartin <kyle@redhat.com>, Michael Cree <mcree@orcon.net.nz>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org
 
-On Wed, Jan 12, 2011 at 10:02 PM, Ivan Kokshaysky
-<ink@jurassic.park.msu.ru> wrote:
-> Interrupts ought to be disabled _before_ irq_enter().
->
-> Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
->
-> diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
-> index 5912900..9ab234f 100644
-> --- a/arch/alpha/kernel/irq.c
-> +++ b/arch/alpha/kernel/irq.c
-> @@ -160,15 +160,14 @@ handle_irq(int irq)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return;
-> =A0 =A0 =A0 =A0}
->
-> - =A0 =A0 =A0 irq_enter();
-> =A0 =A0 =A0 =A0/*
-> - =A0 =A0 =A0 =A0* handle_irq() must be called with IPL_MAX. Note tha=
-t we do not
-> + =A0 =A0 =A0 =A0* From here we must proceed with IPL_MAX. Note that =
-we do not
-> =A0 =A0 =A0 =A0 * explicitly enable interrupts afterwards - some MILO=
- PALcode
-> =A0 =A0 =A0 =A0 * (namely LX164 one) seems to have severe problems wi=
-th RTI
-> =A0 =A0 =A0 =A0 * at IPL 0.
-> =A0 =A0 =A0 =A0 */
-> =A0 =A0 =A0 =A0local_irq_disable();
-> + =A0 =A0 =A0 irq_enter();
-> =A0 =A0 =A0 =A0generic_handle_irq_desc(irq, desc);
-> =A0 =A0 =A0 =A0irq_exit();
-> =A0}
-> -
+Hi Linus,
+Please pull my alpha-2.6 tree. Big thanks goes to Kyle McMartin for
+getting rid of do_IRQ and Ivan for some timely build fixes.
 
-Thanks! Applied.
-
+Thanks,
 Matt
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+The following changes since commit e78bf5e6cbe837daa6ab628a5f679548742994d3:
+
+  drivers/nfc/pn544.c: fix min_t warnings (2011-01-16 17:28:21 -0800)
+
+are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.git for-linus
+
+Ivan Kokshaysky (2):
+      alpha: fix breakage caused by df9ee29270
+      alpha: fix WARN_ON in __local_bh_enable()
+
+Kyle McMartin (3):
+      alpha: use set_irq_chip and push down __do_IRQ to the machine types
+      alpha: irq clean up
+      alpha: kill off alpha_do_IRQ
+
+Matt Turner (1):
+      alpha: add GENERIC_HARDIRQS_NO__DO_IRQ to Kconfig
+
+Namhyung Kim (1):
+      alpha/osf_sys: remove unused MAX_SELECT_SECONDS
+
+matt mooney (1):
+      alpha: change to new Makefile flag variables
+
+ arch/alpha/Kconfig                |    3 ++
+ arch/alpha/include/asm/io.h       |    8 +++--
+ arch/alpha/kernel/Makefile        |    4 +-
+ arch/alpha/kernel/irq.c           |   31 +++++++++++++-------
+ arch/alpha/kernel/irq_alpha.c     |   24 +++++-----------
+ arch/alpha/kernel/irq_i8259.c     |   26 +++---------------
+ arch/alpha/kernel/irq_pyxis.c     |   27 +++---------------
+ arch/alpha/kernel/irq_srm.c       |   27 +++---------------
+ arch/alpha/kernel/osf_sys.c       |    3 --
+ arch/alpha/kernel/sys_alcor.c     |   27 +++---------------
+ arch/alpha/kernel/sys_cabriolet.c |   28 ++++---------------
+ arch/alpha/kernel/sys_dp264.c     |   50 +++++----------------------------
+ arch/alpha/kernel/sys_eb64p.c     |   27 +++---------------
+ arch/alpha/kernel/sys_eiger.c     |   27 +++---------------
+ arch/alpha/kernel/sys_jensen.c    |   55 +++++++------------------------------
+ arch/alpha/kernel/sys_marvel.c    |   50 +++++++++-------------------------
+ arch/alpha/kernel/sys_mikasa.c    |   27 +++---------------
+ arch/alpha/kernel/sys_noritake.c  |   27 +++---------------
+ arch/alpha/kernel/sys_rawhide.c   |   27 +++---------------
+ arch/alpha/kernel/sys_rx164.c     |   27 +++---------------
+ arch/alpha/kernel/sys_sable.c     |   28 ++++---------------
+ arch/alpha/kernel/sys_takara.c    |   27 +++---------------
+ arch/alpha/kernel/sys_titan.c     |   31 +++++----------------
+ arch/alpha/kernel/sys_wildfire.c  |   42 ++++++++--------------------
+ arch/alpha/lib/Makefile           |    4 +-
+ arch/alpha/math-emu/Makefile      |    2 +-
+ arch/alpha/mm/Makefile            |    2 +-
+ arch/alpha/oprofile/Makefile      |    2 +-
+ 28 files changed, 159 insertions(+), 504 deletions(-)
