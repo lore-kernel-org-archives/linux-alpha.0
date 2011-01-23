@@ -1,7 +1,7 @@
 From: "Morten Holst Larsen" <m-larsen@post6.tele.dk>
-Subject: [PATCH] Fix typo in call to irq_to_desc()
-Date: Sun, 23 Jan 2011 13:40:47 +0100
-Message-ID: <F49BAFD32B8946B3B60EB150F23CE224@morten>
+Subject: [PATCH] Remove unused function marvel_irq_noop_return()
+Date: Sun, 23 Jan 2011 13:44:25 +0100
+Message-ID: <38683FAC43C6446A93B96668D2228010@morten>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
@@ -11,23 +11,26 @@ Content-Type: text/plain; format="flowed"; charset="us-ascii"; reply-type="origi
 To: linux-alpha@vger.kernel.org
 Cc: Matt Turner <mattst88@gmail.com>
 
-Fix typo in call to irq_to_desc()
+Remove unused function marvel_irq_noop_return()
 
 Signed-off-by: Morten H. Larsen <m-larsen@post6.tele.dk>
 
-diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
-index 9ab234f..d3e20c7 100644
---- a/arch/alpha/kernel/irq.c
-+++ b/arch/alpha/kernel/irq.c
-@@ -44,7 +44,7 @@ static char irq_user_affinity[NR_IRQS];
+index 2bfc9f1..5514dad 100644
+--- a/arch/alpha/kernel/sys_marvel.c
++++ b/arch/alpha/kernel/sys_marvel.c
+@@ -149,12 +149,6 @@ marvel_irq_noop(unsigned int irq)
+        return;
+ }
 
- int irq_select_affinity(unsigned int irq)
- {
--       struct irq_desc *desc = irq_to_desc[irq];
-+       struct irq_desc *desc = irq_to_desc(irq);
-        static int last_cpu;
-        int cpu = last_cpu + 1;
-
+-static unsigned int
+-marvel_irq_noop_return(unsigned int irq)
+-{
+-       return 0;
+-}
+-
+ static struct irq_chip marvel_legacy_irq_type = {
+        .name           = "LEGACY",
+        .mask           = marvel_irq_noop,
 --
 1.7.1
 
