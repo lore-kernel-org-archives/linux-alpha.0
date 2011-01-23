@@ -1,8 +1,8 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [patch 1/9] alpha: Replace deprecated spinlock initialization
-Date: Sun, 23 Jan 2011 17:07:28 +0000
-Message-ID: <AANLkTin1ct3NfBP8kiaEweA6ZEPTvKfCqgN-nVdJ0n0g@mail.gmail.com>
-References: <20110123143631.392446736@linutronix.de> <20110123143836.940494132@linutronix.de>
+Subject: Re: [PATCH] Fix typo in call to irq_to_desc()
+Date: Sun, 23 Jan 2011 17:07:54 +0000
+Message-ID: <AANLkTingvwnDPzzTAcKfx4A97_DzQfhaZR1TkEhoF1Qe@mail.gmail.com>
+References: <F49BAFD32B8946B3B60EB150F23CE224@morten>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
@@ -10,48 +10,38 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:mime-version:in-reply-to:references:from:date
          :message-id:subject:to:cc:content-type:content-transfer-encoding;
-        bh=lkVu0gkKZpaEp8fieXLhxTEyeDMeDUvSmSBkeG+pXN4=;
-        b=TZhbAiNumNGmjZFYgRhOmmwzDm4VgLWU+pM3j/nbN+xxjpay/1nLBrR7Am2w0xJZl6
-         4gWHSfDzOvPH7ymK3NeNaIHPLuSlXkVSWNjGbhDI18HPmcwCPrJkfYprOHTkY+E4+i+d
-         P/9LROQeV7ifk054ZcbxaDxx1SFZ63A1OUgWs=
-In-Reply-To: <20110123143836.940494132@linutronix.de>
+        bh=3WGc7AFC0hNTzcRo9lDoPl5ccYRGdjSzO/Umr7YKVAc=;
+        b=KD1suJXTjcor/xo13JzynyTaN6aMhJ+x8z4NtfuOzHBv6nwOa/vDwJHDy++QXXGHBZ
+         Edjt/UZqUbXg3PlgoowFa0pauJ4TT+QQ6OePjxclPzL8WWTr7KIoPxU3RQOFJ8KYLOaR
+         sSnw4gYQD5aUj9sOs4TZUHPH8KaUwXECz1VwM=
+In-Reply-To: <F49BAFD32B8946B3B60EB150F23CE224@morten>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>, Peter Zijlstra <peterz@infradead.org>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
+To: Morten Holst Larsen <m-larsen@post6.tele.dk>
+Cc: linux-alpha@vger.kernel.org
 
-On Sun, Jan 23, 2011 at 3:16 PM, Thomas Gleixner <tglx@linutronix.de> w=
-rote:
-> SPIN_LOCK_UNLOCK is deprecated. Use the lockdep capable variant
-> instead.
+On Sun, Jan 23, 2011 at 12:40 PM, Morten Holst Larsen
+<m-larsen@post6.tele.dk> wrote:
+> Fix typo in call to irq_to_desc()
 >
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Richard Henderson <rth@twiddle.net>
-> Cc: linux-alpha@vger.kernel.org
-> ---
-> =A0arch/alpha/include/asm/rwsem.h | =A0 =A02 +-
-> =A01 file changed, 1 insertion(+), 1 deletion(-)
+> Signed-off-by: Morten H. Larsen <m-larsen@post6.tele.dk>
 >
-> Index: linux-2.6/arch/alpha/include/asm/rwsem.h
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- linux-2.6.orig/arch/alpha/include/asm/rwsem.h
-> +++ linux-2.6/arch/alpha/include/asm/rwsem.h
-> @@ -39,7 +39,7 @@ struct rw_semaphore {
-> =A0};
+> diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
+> index 9ab234f..d3e20c7 100644
+> --- a/arch/alpha/kernel/irq.c
+> +++ b/arch/alpha/kernel/irq.c
+> @@ -44,7 +44,7 @@ static char irq_user_affinity[NR_IRQS];
 >
-> =A0#define __RWSEM_INITIALIZER(name) \
-> - =A0 =A0 =A0 { RWSEM_UNLOCKED_VALUE, SPIN_LOCK_UNLOCKED, \
-> + =A0 =A0 =A0 { RWSEM_UNLOCKED_VALUE, __SPIN_LOCK_UNLOCKED((name).wai=
-t_lock), \
-> =A0 =A0 =A0 =A0LIST_HEAD_INIT((name).wait_list) }
->
-> =A0#define DECLARE_RWSEM(name) \
->
+> int irq_select_affinity(unsigned int irq)
+> {
+> - =A0 =A0 =A0 struct irq_desc *desc =3D irq_to_desc[irq];
+> + =A0 =A0 =A0 struct irq_desc *desc =3D irq_to_desc(irq);
+> =A0 =A0 =A0 static int last_cpu;
+> =A0 =A0 =A0 int cpu =3D last_cpu + 1;
 >
 > --
+> 1.7.1
 
 Thanks! I'll apply this.
 
