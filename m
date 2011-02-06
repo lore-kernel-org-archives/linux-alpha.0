@@ -1,11 +1,10 @@
 From: Thomas Gleixner <tglx@linutronix.de>
-Subject: [patch 17/19] alpha: irq: Remove pointless irq status manipulation
-Date: Sun, 06 Feb 2011 14:32:58 -0000
-Message-ID: <20110206143149.517422918@linutronix.de>
+Subject: [patch 19/19] alpha: Enable GENERIC_HARDIRQS_NO_DEPRECATED
+Date: Sun, 06 Feb 2011 14:33:02 -0000
+Message-ID: <20110206143149.710554951@linutronix.de>
 References: <20110206143037.124533892@linutronix.de>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline;
-	filename=alpha-remove-redundant-irq-flags-fiddling.patch
+Content-Disposition: inline; filename=alpha-enable-no-deprecated.patch
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -14,35 +13,24 @@ Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org
 Cc: Kyle McMartin <kyle@redhat.com>, Matt Turner <mattst88@gmail.com>
 
-The irq descriptors are initialized IRQ_DISABLED in the generic
-code. No need to fiddle with them.
+All interrupt chips are converted. Mark it clean.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/alpha/kernel/irq_alpha.c |   11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ arch/alpha/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
-Index: linux-next/arch/alpha/kernel/irq_alpha.c
+Index: linux-next/arch/alpha/Kconfig
 ===================================================================
---- linux-next.orig/arch/alpha/kernel/irq_alpha.c
-+++ linux-next/arch/alpha/kernel/irq_alpha.c
-@@ -228,14 +228,9 @@ struct irqaction timer_irqaction = {
- void __init
- init_rtc_irq(void)
- {
--	struct irq_desc *desc = irq_to_desc(RTC_IRQ);
--
--	if (desc) {
--		desc->status |= IRQ_DISABLED;
--		set_irq_chip_and_handler_name(RTC_IRQ, &no_irq_chip,
--			handle_simple_irq, "RTC");
--		setup_irq(RTC_IRQ, &timer_irqaction);
--	}
-+	set_irq_chip_and_handler_name(RTC_IRQ, &no_irq_chip,
-+				      handle_simple_irq, "RTC");
-+	setup_irq(RTC_IRQ, &timer_irqaction);
- }
- 
- /* Dummy irqactions.  */
+--- linux-next.orig/arch/alpha/Kconfig
++++ linux-next/arch/alpha/Kconfig
+@@ -11,6 +11,7 @@ config ALPHA
+ 	select HAVE_GENERIC_HARDIRQS
+ 	select GENERIC_IRQ_PROBE
+ 	select AUTO_IRQ_AFFINITY if SMP
++	select GENERIC_HARDIRQS_NO_DEPRECATED
+ 	help
+ 	  The Alpha is a 64-bit general-purpose processor designed and
+ 	  marketed by the Digital Equipment Corporation of blessed memory,
 
 
