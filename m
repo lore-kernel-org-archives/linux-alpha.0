@@ -1,10 +1,10 @@
 From: Thomas Gleixner <tglx@linutronix.de>
-Subject: [patch 03/19] alpha: srm: Convert irq_chip functions
-Date: Sun, 06 Feb 2011 14:32:26 -0000
-Message-ID: <20110206143148.156371836@linutronix.de>
+Subject: [patch 02/19] alpha: Pyxis convert irq_chip functions
+Date: Sun, 06 Feb 2011 14:32:23 -0000
+Message-ID: <20110206143148.057423100@linutronix.de>
 References: <20110206143037.124533892@linutronix.de>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline; filename=alpha-srm-convert-irqchip.patch
+Content-Disposition: inline; filename=alpha-pyxis-convert-irqchip.patch
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -15,56 +15,62 @@ Cc: Kyle McMartin <kyle@redhat.com>, Matt Turner <mattst88@gmail.com>
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/alpha/kernel/irq_srm.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ arch/alpha/kernel/irq_pyxis.c |   20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-Index: linux-next/arch/alpha/kernel/irq_srm.c
+Index: linux-next/arch/alpha/kernel/irq_pyxis.c
 ===================================================================
---- linux-next.orig/arch/alpha/kernel/irq_srm.c
-+++ linux-next/arch/alpha/kernel/irq_srm.c
-@@ -18,27 +18,27 @@
- DEFINE_SPINLOCK(srm_irq_lock);
+--- linux-next.orig/arch/alpha/kernel/irq_pyxis.c
++++ linux-next/arch/alpha/kernel/irq_pyxis.c
+@@ -29,21 +29,21 @@ pyxis_update_irq_hw(unsigned long mask)
+ }
  
  static inline void
--srm_enable_irq(unsigned int irq)
-+srm_enable_irq(struct irq_data *d)
+-pyxis_enable_irq(unsigned int irq)
++pyxis_enable_irq(struct irq_data *d)
  {
- 	spin_lock(&srm_irq_lock);
--	cserve_ena(irq - 16);
-+	cserve_ena(d->irq - 16);
- 	spin_unlock(&srm_irq_lock);
+-	pyxis_update_irq_hw(cached_irq_mask |= 1UL << (irq - 16));
++	pyxis_update_irq_hw(cached_irq_mask |= 1UL << (d->irq - 16));
  }
  
  static void
--srm_disable_irq(unsigned int irq)
-+srm_disable_irq(struct irq_data *d)
+-pyxis_disable_irq(unsigned int irq)
++pyxis_disable_irq(struct irq_data *d)
  {
- 	spin_lock(&srm_irq_lock);
--	cserve_dis(irq - 16);
-+	cserve_dis(d->irq - 16);
- 	spin_unlock(&srm_irq_lock);
+-	pyxis_update_irq_hw(cached_irq_mask &= ~(1UL << (irq - 16)));
++	pyxis_update_irq_hw(cached_irq_mask &= ~(1UL << (d->irq - 16)));
  }
  
- /* Handle interrupts from the SRM, assuming no additional weirdness.  */
- static struct irq_chip srm_irq_type = {
- 	.name		= "SRM",
--	.unmask		= srm_enable_irq,
--	.mask		= srm_disable_irq,
--	.mask_ack	= srm_disable_irq,
-+	.irq_unmask	= srm_enable_irq,
-+	.irq_mask	= srm_disable_irq,
-+	.irq_mask_ack	= srm_disable_irq,
+ static void
+-pyxis_mask_and_ack_irq(unsigned int irq)
++pyxis_mask_and_ack_irq(struct irq_data *d)
+ {
+-	unsigned long bit = 1UL << (irq - 16);
++	unsigned long bit = 1UL << (d->irq - 16);
+ 	unsigned long mask = cached_irq_mask &= ~bit;
+ 
+ 	/* Disable the interrupt.  */
+@@ -58,9 +58,9 @@ pyxis_mask_and_ack_irq(unsigned int irq)
+ 
+ static struct irq_chip pyxis_irq_type = {
+ 	.name		= "PYXIS",
+-	.mask_ack	= pyxis_mask_and_ack_irq,
+-	.mask		= pyxis_disable_irq,
+-	.unmask		= pyxis_enable_irq,
++	.irq_mask_ack	= pyxis_mask_and_ack_irq,
++	.irq_mask	= pyxis_disable_irq,
++	.irq_unmask	= pyxis_enable_irq,
  };
  
- void __init
-@@ -52,7 +52,7 @@ init_srm_irqs(long max, unsigned long ig
- 		if (i < 64 && ((ignore_mask >> i) & 1))
+ void 
+@@ -103,7 +103,7 @@ init_pyxis_irqs(unsigned long ignore_mas
+ 		if ((ignore_mask >> i) & 1)
  			continue;
- 		set_irq_chip_and_handler(i, &srm_irq_type, handle_level_irq);
+ 		set_irq_chip_and_handler(i, &pyxis_irq_type, handle_level_irq);
 -		irq_to_desc(i)->status |= IRQ_LEVEL;
 +		irq_set_status_flags(i, IRQ_LEVEL);
  	}
- }
  
+ 	setup_irq(16+7, &isa_cascade_irqaction);
 
 
