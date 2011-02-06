@@ -1,10 +1,10 @@
 From: Thomas Gleixner <tglx@linutronix.de>
-Subject: [patch 05/19] alpha: cabriolet: Convert irq_chip functions
-Date: Sun, 06 Feb 2011 14:32:30 -0000
-Message-ID: <20110206143148.352717817@linutronix.de>
+Subject: [patch 07/19] alpha: eb64p: Convert irq_chip functions
+Date: Sun, 06 Feb 2011 14:32:35 -0000
+Message-ID: <20110206143148.548226828@linutronix.de>
 References: <20110206143037.124533892@linutronix.de>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline; filename=alpha-cabriolet-convert-irq-chip.patch
+Content-Disposition: inline; filename=alpha-convert-eb64p.patch
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -15,51 +15,54 @@ Cc: Kyle McMartin <kyle@redhat.com>, Matt Turner <mattst88@gmail.com>
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/alpha/kernel/sys_cabriolet.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ arch/alpha/kernel/sys_eb64p.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-Index: linux-next/arch/alpha/kernel/sys_cabriolet.c
+Index: linux-next/arch/alpha/kernel/sys_eb64p.c
 ===================================================================
---- linux-next.orig/arch/alpha/kernel/sys_cabriolet.c
-+++ linux-next/arch/alpha/kernel/sys_cabriolet.c
-@@ -46,22 +46,22 @@ cabriolet_update_irq_hw(unsigned int irq
+--- linux-next.orig/arch/alpha/kernel/sys_eb64p.c
++++ linux-next/arch/alpha/kernel/sys_eb64p.c
+@@ -44,22 +44,22 @@ eb64p_update_irq_hw(unsigned int irq, un
  }
  
  static inline void
--cabriolet_enable_irq(unsigned int irq)
-+cabriolet_enable_irq(struct irq_data *d)
+-eb64p_enable_irq(unsigned int irq)
++eb64p_enable_irq(struct irq_data *d)
  {
--	cabriolet_update_irq_hw(irq, cached_irq_mask &= ~(1UL << irq));
-+	cabriolet_update_irq_hw(d->irq, cached_irq_mask &= ~(1UL << d->irq));
+-	eb64p_update_irq_hw(irq, cached_irq_mask &= ~(1 << irq));
++	eb64p_update_irq_hw(d->irq, cached_irq_mask &= ~(1 << d->irq));
  }
  
  static void
--cabriolet_disable_irq(unsigned int irq)
-+cabriolet_disable_irq(struct irq_data *d)
+-eb64p_disable_irq(unsigned int irq)
++eb64p_disable_irq(struct irq_data *d)
  {
--	cabriolet_update_irq_hw(irq, cached_irq_mask |= 1UL << irq);
-+	cabriolet_update_irq_hw(d->irq, cached_irq_mask |= 1UL << d->irq);
+-	eb64p_update_irq_hw(irq, cached_irq_mask |= 1 << irq);
++	eb64p_update_irq_hw(d->irq, cached_irq_mask |= 1 << d->irq);
  }
  
- static struct irq_chip cabriolet_irq_type = {
- 	.name		= "CABRIOLET",
--	.unmask		= cabriolet_enable_irq,
--	.mask		= cabriolet_disable_irq,
--	.mask_ack	= cabriolet_disable_irq,
-+	.irq_unmask	= cabriolet_enable_irq,
-+	.irq_mask	= cabriolet_disable_irq,
-+	.irq_mask_ack	= cabriolet_disable_irq,
+ static struct irq_chip eb64p_irq_type = {
+ 	.name		= "EB64P",
+-	.unmask		= eb64p_enable_irq,
+-	.mask		= eb64p_disable_irq,
+-	.mask_ack	= eb64p_disable_irq,
++	.irq_unmask	= eb64p_enable_irq,
++	.irq_mask	= eb64p_disable_irq,
++	.irq_mask_ack	= eb64p_disable_irq,
  };
  
  static void 
-@@ -107,7 +107,7 @@ common_init_irq(void (*srm_dev_int)(unsi
- 		for (i = 16; i < 35; ++i) {
- 			set_irq_chip_and_handler(i, &cabriolet_irq_type,
- 				handle_level_irq);
--			irq_to_desc(i)->status |= IRQ_LEVEL;
-+			irq_set_status_flags(i, IRQ_LEVEL);
- 		}
- 	}
+@@ -118,9 +118,9 @@ eb64p_init_irq(void)
+ 	init_i8259a_irqs();
  
+ 	for (i = 16; i < 32; ++i) {
+-		irq_to_desc(i)->status |= IRQ_LEVEL;
+ 		set_irq_chip_and_handler(i, &eb64p_irq_type, handle_level_irq);
+-	}		
++		irq_set_status_flags(i, IRQ_LEVEL);
++	}
+ 
+ 	common_init_isa_dma();
+ 	setup_irq(16+5, &isa_cascade_irqaction);
 
 
