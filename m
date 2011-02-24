@@ -1,68 +1,106 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: recent udev upgrade failure on alpha
-Date: Thu, 24 Feb 2011 22:54:27 +1300
-Message-ID: <4D662AD3.5000700@orcon.net.nz>
-References: <20110224070203.GA28419@gherkin.frus.com>
+From: "Uwe Schindler" <uwe@thetaphi.de>
+Subject: RE: recent udev upgrade failure on alpha
+Date: Thu, 24 Feb 2011 11:09:55 +0100
+Message-ID: <002101cbd40a$fcb4a610$f61df230$@thetaphi.de>
+References: <20110224070203.GA28419@gherkin.frus.com> <20110224075149.GA28779@gherkin.frus.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-In-Reply-To: <20110224070203.GA28419@gherkin.frus.com>
-Resent-Message-ID: <30eIS8QbDLN.A.vY.v8iZNB@liszt>
+In-Reply-To: <20110224075149.GA28779@gherkin.frus.com>
+Content-Language: de
+Resent-Message-ID: <YJWlTeKO8XH.A.gEB.pBjZNB@liszt>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:debian-alpha@lists.debian.org>
 List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
 List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
 List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: debian-alpha@lists.debian.org
-Cc: rct@gherkin.frus.com, mattst88@gmail.com, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: 'Bob Tracy' <rct@gherkin.frus.com>, debian-alpha@lists.debian.org
+Cc: linux-alpha@vger.kernel.org, mattst88@gmail.com, mcree@orcon.net.nz
 
-On 24/02/11 20:02, Bob Tracy wrote:
-> Well...  Yes, "sid" is cantankerous and known to occasionally break
-> working systems, but this is the first time the thermonuclear software
-> upgrade option has been used effectively on my poor Alpha :-(.
->
-> Specifically, I've got about 50 installed but unconfigured packages and
-> an almost unbootable (single-user mode only) machine because udev 166-1
-> absolutely requires inotify support,
+Hi Bob,
 
-Oops, sorry, I should've sent a message to the list to warn people of this!
+I downgraded udev on this unstable machine by downloading and archiving the
+old source package (which is still on the servers for "stable"). This works
+for now.
 
-As you have identified the problem is that the syscall inotify_init1() 
-is not implemented in the Debian supplied kernel.  It did not make it 
-into the kernel until version 2.6.33. I did submit a bug report and a 
-patch to update the kernel to the Debian bugzilla but I was too late and 
-the Squeeze freeze beat me to it and it didn't get included.
+My bigger problem is that recent kernels (even the stable one no longer work
+for me). On mounting my root  xfs filesystem it produces a message about a
+wrong relocation format / some other linking problem when loading the XFS
+.ko (the exact message is not known, its somewhere in the screen buffer of
+the already rebooted with older kernel machine, I can only remember what the
+problem was - next time I try I will take a pen and write down the message
+on console). This happens with the last stable kernel version, did not test
+2.7.37-1 until now. 
+The last kernel that works for me is 2.6.31-1-alpha-generic. Does anybody
+knows what the problem loading the XFS module is?
 
-So unless you are prepared to:
+Unstable is else still running fine!
 
-1) Download a new kernel and compile and install it yourself,
+Uwe
 
-2) run "make headers_install" in the kernel and copy the file 
-usr/include/asm/unistd.h header from the kernel sources to the system 
-/usr/include/asm/unistd.h,
+-----
+Uwe Schindler
+H.-H.-Meier-Allee 63, D-28213 Bremen
+http://www.thetaphi.de
+eMail: uwe@thetaphi.de
 
-3) and rebuild libc6.1 from source (which is a time consuming build) and 
-install it
 
-don't upgrade to Sid!!!  I think a new kernel may have appeared in Sid 
-in the last day or two so the first two steps above may no longer be 
-needed, but the third step is needed until a new libc6.1 package comes 
-through.
+> -----Original Message-----
+> From: Bob Tracy [mailto:rct@gherkin.frus.com]
+> Sent: Thursday, February 24, 2011 8:52 AM
+> To: debian-alpha@lists.debian.org
+> Cc: linux-alpha@vger.kernel.org; mattst88@gmail.com; mcree@orcon.net.nz
+> Subject: Re: recent udev upgrade failure on alpha
+> 
+> On Thu, Feb 24, 2011 at 01:02:03AM -0600, Bob Tracy wrote:
+> > Running "dpkg --configure udev" gives me the following:
+> >
+> > udevd[pid]: inotify_init failed: Function not implemented
+> > udevd[pid]: error initializing inotify
+> >
+> > and the post-installation script fails.
+> >
+> > So...  What's missing or unimplemented on Alpha?  Prior versions of
+> > "udev" worked just fine.
+> 
+> Found it.  inotify_init1() is a stub function on Alpha.  A heated
+discussion
+> *somewhere* produced a udev patch that *may* work:
+> 
+> --- a/udev/udev-watch.c
+> +++ b/udev/udev-watch.c
+> @@ -38,8 +38,10 @@ static int inotify_fd = -1;
+>   */
+>  int udev_watch_init(struct udev *udev)
+>  {
+> -       inotify_fd = inotify_init1(IN_CLOEXEC);
+> -       if (inotify_fd < 0)
+> +       inotify_fd = inotify_init();
+> +       if (inotify_fd >= 0)
+> +               util_set_fd_cloexec(inotify_fd);
+> +       else
+>                 err(udev, "inotify_init failed: %m\n");
+>         return inotify_fd;
+>  }
+> 
+> (Formatting of the above is probably bogus due to conversion from a
+> formatted html presentation, but the gist of the fix should be apparent).
+> 
+> Time to retrieve the source package and rebuild it...
+> 
+> --
+> ------------------------------------------------------------------------
+> Bob Tracy          |  "Every normal man must be tempted at times to spit
+> rct@frus.com       |   upon his hands, hoist the black flag, and begin
+>                    |   slitting throats."	-- H.L. Mencken
+> ------------------------------------------------------------------------
+> 
+> 
+> --
+> To UNSUBSCRIBE, email to debian-alpha-REQUEST@lists.debian.org
+> with a subject of "unsubscribe". Trouble? Contact
+listmaster@lists.debian.org
+> Archive: http://lists.debian.org/20110224075149.GA28779@gherkin.frus.com
 
-And if you have upgraded to Sid in the last week (or so) and hit the 
-unconfigured udev problem don't switch off or reboot your machine until 
-you have done all the above steps else you may find your Alpha unbootable.
-
-And the other problem I have hit is that the upgraded apt and apt-utils 
-packages are broken and it leaves one unable to upgrade their system! So 
-make sure you have copies of the deb files for apt and apt-utils for the 
-latest version that made it into Squeeze on hand.  I think I have placed 
-a hold on apt and apt-utils at version 0.8.10.3.   I hadn't made a bug 
-report at the time I encountered this problem as there were other bug 
-reports already made that looked a little similar.  But the apt that I 
-got a couple of days ago was still borked.
-
-Cheers
-Michael.
 
