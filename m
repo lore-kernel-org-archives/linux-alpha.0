@@ -1,43 +1,46 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch 16/19] alpha: titan: Convert irq_chip functions
-Date: Wed, 23 Feb 2011 23:03:49 +0100 (CET)
-Message-ID: <alpine.LFD.2.00.1102232303170.2701@localhost6.localdomain6>
-References: <20110206143037.124533892@linutronix.de> <20110206143149.420669286@linutronix.de> <AANLkTinUGRXoa_wS-DGEuugXaJe_Zku8NrmLF4LF5WWX@mail.gmail.com>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: recent udev upgrade failure on alpha
+Date: Thu, 24 Feb 2011 01:02:03 -0600
+Message-ID: <20110224070203.GA28419@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="-1463795968-381648636-1298498630=:2701"
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <AANLkTinUGRXoa_wS-DGEuugXaJe_Zku8NrmLF4LF5WWX@mail.gmail.com>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, Kyle McMartin <kyle@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: debian-alpha@lists.debian.org
+Cc: linux-alpha@vger.kernel.org, mattst88@gmail.com, mcree@orcon.net.nz
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Well...  Yes, "sid" is cantankerous and known to occasionally break
+working systems, but this is the first time the thermonuclear software
+upgrade option has been used effectively on my poor Alpha :-(.
 
----1463795968-381648636-1298498630=:2701
-Content-Type: TEXT/PLAIN; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Specifically, I've got about 50 installed but unconfigured packages and
+an almost unbootable (single-user mode only) machine because udev 166-1
+absolutely requires inotify support, and it doesn't seems to be present
+in spite of "CONFIG_INOTIFY_USER=y" being set in all the kernels I've
+got installed on my system.
 
-On Wed, 23 Feb 2011, Matt Turner wrote:
-> On Sun, Feb 6, 2011 at 2:32 PM, Thomas Gleixner <tglx@linutronix.de> wrot=
-e:
-> > =A0static inline void
-> > -titan_disable_irq(unsigned int irq)
-> > +titan_disable_irq(struct irq_data *d)
-> > =A0{
-> > =A0 =A0 =A0 =A0spin_lock(&titan_irq_lock);
-> > =A0 =A0 =A0 =A0titan_cached_irq_mask &=3D ~(1UL << (irq - 16));
->=20
-> These hunks are missing a
-> +       unsigned int irq =3D d->irq;
+Running "dpkg --configure udev" gives me the following:
 
-OOps.
-=20
-> I can fix that up myself though.
+udevd[pid]: inotify_init failed: Function not implemented
+udevd[pid]: error initializing inotify
 
-That'd be great. Thanks,
+and the post-installation script fails.
 
-       tglx
+So...  What's missing or unimplemented on Alpha?  Prior versions of
+"udev" worked just fine.
 
----1463795968-381648636-1298498630=:2701--
+As far as recovery options, I'm open to suggestions including selective
+downgrading of packages, but "dependency hell" may make that option
+unworkable from a practical standpoint.  I'd rather go forward.  Current
+system state: running in single-user mode with a static /dev, and I *do*
+have network connectivity for transferring stuff in/out as needed.
+
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "Every normal man must be tempted at times to spit
+rct@frus.com       |   upon his hands, hoist the black flag, and begin
+                   |   slitting throats."	-- H.L. Mencken
+------------------------------------------------------------------------
