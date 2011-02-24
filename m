@@ -1,53 +1,59 @@
-From: Bob Tracy <rct@gherkin.frus.com>
+From: Matt Turner <mattst88@gmail.com>
 Subject: Re: recent udev upgrade failure on alpha
-Date: Thu, 24 Feb 2011 04:25:47 -0600
-Message-ID: <20110224102547.GA29330@gherkin.frus.com>
-References: <20110224070203.GA28419@gherkin.frus.com> <4D662AD3.5000700@orcon.net.nz>
+Date: Thu, 24 Feb 2011 15:11:48 +0000
+Message-ID: <AANLkTi=3mY=dUkhCRjFE_1-iPOMV8OHsGwqc1OF9zp9V@mail.gmail.com>
+References: <20110224070203.GA28419@gherkin.frus.com> <20110224075149.GA28779@gherkin.frus.com>
+ <002101cbd40a$fcb4a610$f61df230$@thetaphi.de>
 Mime-Version: 1.0
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4D662AD3.5000700@orcon.net.nz>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc:content-type:content-transfer-encoding;
+        bh=zhibfkhzYKw81NUWJ4NJlaTfc4hz38hMuTYG7MtQebc=;
+        b=HI+jzMFM2ndcWcRrTAxlimD4BWh1qjaHYKdGc4stT5uUoESgnf3aOWfwAQ12hpDZQq
+         s8O8HmbNE6JAxt/8dtwweBOrhzPOiLCgzUYlzZLRygFgbcsh4YPCedM6y9c2l7yPLczT
+         X1JRReGr1L/oEjAw45gqzHzqSCoWG44QWyGks=
+In-Reply-To: <002101cbd40a$fcb4a610$f61df230$@thetaphi.de>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: debian-alpha@lists.debian.org, mattst88@gmail.com, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+To: Uwe Schindler <uwe@thetaphi.de>
+Cc: Bob Tracy <rct@gherkin.frus.com>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org, mcree@orcon.net.nz
 
-On Thu, Feb 24, 2011 at 10:54:27PM +1300, Michael Cree wrote:
-> Oops, sorry, I should've sent a message to the list to warn people of this!
+On Thu, Feb 24, 2011 at 10:09 AM, Uwe Schindler <uwe@thetaphi.de> wrote=
+:
+> My bigger problem is that recent kernels (even the stable one no long=
+er work
+> for me). On mounting my root =A0xfs filesystem it produces a message =
+about a
+> wrong relocation format / some other linking problem when loading the=
+ XFS
+> .ko (the exact message is not known, its somewhere in the screen buff=
+er of
+> the already rebooted with older kernel machine, I can only remember w=
+hat the
+> problem was - next time I try I will take a pen and write down the me=
+ssage
+> on console). This happens with the last stable kernel version, did no=
+t test
+> 2.7.37-1 until now.
+> The last kernel that works for me is 2.6.31-1-alpha-generic. Does any=
+body
+> knows what the problem loading the XFS module is?
+>
+> Unstable is else still running fine!
 
-Not your job to protect us from ourselves :-).  Besides...  What better
-way to see who's still actively (in some sense) involved in the Alpha
-community, eh?
+This is the first I've heard of XFS not working (though, I've never
+used it myself). Have you reported this anywhere?
 
-> As you have identified the problem is that the syscall inotify_init1() 
-> is not implemented in the Debian supplied kernel.  It did not make it 
-> into the kernel until version 2.6.33. I did submit a bug report and a 
-> patch to update the kernel to the Debian bugzilla but I was too late and 
-> the Squeeze freeze beat me to it and it didn't get included.
+Please mail linux-alpha@vger.kernel.org and the appropriate XFS
+mailing list to try to get this fixed.
 
-Actually, I've been running "sid" for a long time...  The risk of a
-broken system has always been there, but needless to say I've been
-lucky.  Besides, that's the only way to get current packages on the
-Alpha from Debian these days.  That's a roundabout way of saying I'm
-running late enough kernels (both Debian-supplied and built from
-kernel.org source) that inotify_init1() was definitely present in the
-running kernel when I did the upgrade.  As you point out later in your
-reply, libc6.1 hasn't caught up on Alpha: I noticed the stubbed-out
-function.
-
-As I type this, I'm back up and running with a patched udev_166-1.  It
-was easier and faster to patch/build "udev" than do a libc6.1 build.
-When the smoke cleared, I simply copied in the new version of
-"/sbin/udevd" and was finally able to configure the installed package
-(as well as the other 49-or-so packages).  That's more excitement than I
-wanted this evening: local time is now 0424 and I've been up since 0700
-yesterday :-(.
-
--- 
-------------------------------------------------------------------------
-Bob Tracy          |  "Every normal man must be tempted at times to spit
-rct@frus.com       |   upon his hands, hoist the black flag, and begin
-                   |   slitting throats."	-- H.L. Mencken
-------------------------------------------------------------------------
+Matt
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
