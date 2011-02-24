@@ -1,106 +1,53 @@
-From: "Uwe Schindler" <uwe@thetaphi.de>
-Subject: RE: recent udev upgrade failure on alpha
-Date: Thu, 24 Feb 2011 11:09:55 +0100
-Message-ID: <002101cbd40a$fcb4a610$f61df230$@thetaphi.de>
-References: <20110224070203.GA28419@gherkin.frus.com> <20110224075149.GA28779@gherkin.frus.com>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: Re: recent udev upgrade failure on alpha
+Date: Thu, 24 Feb 2011 04:25:47 -0600
+Message-ID: <20110224102547.GA29330@gherkin.frus.com>
+References: <20110224070203.GA28419@gherkin.frus.com> <4D662AD3.5000700@orcon.net.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-In-Reply-To: <20110224075149.GA28779@gherkin.frus.com>
-Content-Language: de
-Resent-Message-ID: <YJWlTeKO8XH.A.gEB.pBjZNB@liszt>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <4D662AD3.5000700@orcon.net.nz>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: 'Bob Tracy' <rct@gherkin.frus.com>, debian-alpha@lists.debian.org
-Cc: linux-alpha@vger.kernel.org, mattst88@gmail.com, mcree@orcon.net.nz
+Content-Transfer-Encoding: 7bit
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: debian-alpha@lists.debian.org, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-Hi Bob,
+On Thu, Feb 24, 2011 at 10:54:27PM +1300, Michael Cree wrote:
+> Oops, sorry, I should've sent a message to the list to warn people of this!
 
-I downgraded udev on this unstable machine by downloading and archiving the
-old source package (which is still on the servers for "stable"). This works
-for now.
+Not your job to protect us from ourselves :-).  Besides...  What better
+way to see who's still actively (in some sense) involved in the Alpha
+community, eh?
 
-My bigger problem is that recent kernels (even the stable one no longer work
-for me). On mounting my root  xfs filesystem it produces a message about a
-wrong relocation format / some other linking problem when loading the XFS
-.ko (the exact message is not known, its somewhere in the screen buffer of
-the already rebooted with older kernel machine, I can only remember what the
-problem was - next time I try I will take a pen and write down the message
-on console). This happens with the last stable kernel version, did not test
-2.7.37-1 until now. 
-The last kernel that works for me is 2.6.31-1-alpha-generic. Does anybody
-knows what the problem loading the XFS module is?
+> As you have identified the problem is that the syscall inotify_init1() 
+> is not implemented in the Debian supplied kernel.  It did not make it 
+> into the kernel until version 2.6.33. I did submit a bug report and a 
+> patch to update the kernel to the Debian bugzilla but I was too late and 
+> the Squeeze freeze beat me to it and it didn't get included.
 
-Unstable is else still running fine!
+Actually, I've been running "sid" for a long time...  The risk of a
+broken system has always been there, but needless to say I've been
+lucky.  Besides, that's the only way to get current packages on the
+Alpha from Debian these days.  That's a roundabout way of saying I'm
+running late enough kernels (both Debian-supplied and built from
+kernel.org source) that inotify_init1() was definitely present in the
+running kernel when I did the upgrade.  As you point out later in your
+reply, libc6.1 hasn't caught up on Alpha: I noticed the stubbed-out
+function.
 
-Uwe
+As I type this, I'm back up and running with a patched udev_166-1.  It
+was easier and faster to patch/build "udev" than do a libc6.1 build.
+When the smoke cleared, I simply copied in the new version of
+"/sbin/udevd" and was finally able to configure the installed package
+(as well as the other 49-or-so packages).  That's more excitement than I
+wanted this evening: local time is now 0424 and I've been up since 0700
+yesterday :-(.
 
------
-Uwe Schindler
-H.-H.-Meier-Allee 63, D-28213 Bremen
-http://www.thetaphi.de
-eMail: uwe@thetaphi.de
-
-
-> -----Original Message-----
-> From: Bob Tracy [mailto:rct@gherkin.frus.com]
-> Sent: Thursday, February 24, 2011 8:52 AM
-> To: debian-alpha@lists.debian.org
-> Cc: linux-alpha@vger.kernel.org; mattst88@gmail.com; mcree@orcon.net.nz
-> Subject: Re: recent udev upgrade failure on alpha
-> 
-> On Thu, Feb 24, 2011 at 01:02:03AM -0600, Bob Tracy wrote:
-> > Running "dpkg --configure udev" gives me the following:
-> >
-> > udevd[pid]: inotify_init failed: Function not implemented
-> > udevd[pid]: error initializing inotify
-> >
-> > and the post-installation script fails.
-> >
-> > So...  What's missing or unimplemented on Alpha?  Prior versions of
-> > "udev" worked just fine.
-> 
-> Found it.  inotify_init1() is a stub function on Alpha.  A heated
-discussion
-> *somewhere* produced a udev patch that *may* work:
-> 
-> --- a/udev/udev-watch.c
-> +++ b/udev/udev-watch.c
-> @@ -38,8 +38,10 @@ static int inotify_fd = -1;
->   */
->  int udev_watch_init(struct udev *udev)
->  {
-> -       inotify_fd = inotify_init1(IN_CLOEXEC);
-> -       if (inotify_fd < 0)
-> +       inotify_fd = inotify_init();
-> +       if (inotify_fd >= 0)
-> +               util_set_fd_cloexec(inotify_fd);
-> +       else
->                 err(udev, "inotify_init failed: %m\n");
->         return inotify_fd;
->  }
-> 
-> (Formatting of the above is probably bogus due to conversion from a
-> formatted html presentation, but the gist of the fix should be apparent).
-> 
-> Time to retrieve the source package and rebuild it...
-> 
-> --
-> ------------------------------------------------------------------------
-> Bob Tracy          |  "Every normal man must be tempted at times to spit
-> rct@frus.com       |   upon his hands, hoist the black flag, and begin
->                    |   slitting throats."	-- H.L. Mencken
-> ------------------------------------------------------------------------
-> 
-> 
-> --
-> To UNSUBSCRIBE, email to debian-alpha-REQUEST@lists.debian.org
-> with a subject of "unsubscribe". Trouble? Contact
-listmaster@lists.debian.org
-> Archive: http://lists.debian.org/20110224075149.GA28779@gherkin.frus.com
-
-
+-- 
+------------------------------------------------------------------------
+Bob Tracy          |  "Every normal man must be tempted at times to spit
+rct@frus.com       |   upon his hands, hoist the black flag, and begin
+                   |   slitting throats."	-- H.L. Mencken
+------------------------------------------------------------------------
