@@ -1,10 +1,12 @@
 From: Bob Tracy <rct@gherkin.frus.com>
-Subject: recent udev upgrade failure on alpha
-Date: Thu, 24 Feb 2011 01:02:03 -0600
-Message-ID: <20110224070203.GA28419@gherkin.frus.com>
+Subject: Re: recent udev upgrade failure on alpha
+Date: Thu, 24 Feb 2011 01:51:49 -0600
+Message-ID: <20110224075149.GA28779@gherkin.frus.com>
+References: <20110224070203.GA28419@gherkin.frus.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <20110224070203.GA28419@gherkin.frus.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -12,31 +14,40 @@ Content-Transfer-Encoding: 7bit
 To: debian-alpha@lists.debian.org
 Cc: linux-alpha@vger.kernel.org, mattst88@gmail.com, mcree@orcon.net.nz
 
-Well...  Yes, "sid" is cantankerous and known to occasionally break
-working systems, but this is the first time the thermonuclear software
-upgrade option has been used effectively on my poor Alpha :-(.
+On Thu, Feb 24, 2011 at 01:02:03AM -0600, Bob Tracy wrote:
+> Running "dpkg --configure udev" gives me the following:
+> 
+> udevd[pid]: inotify_init failed: Function not implemented
+> udevd[pid]: error initializing inotify
+> 
+> and the post-installation script fails.
+> 
+> So...  What's missing or unimplemented on Alpha?  Prior versions of
+> "udev" worked just fine.
 
-Specifically, I've got about 50 installed but unconfigured packages and
-an almost unbootable (single-user mode only) machine because udev 166-1
-absolutely requires inotify support, and it doesn't seems to be present
-in spite of "CONFIG_INOTIFY_USER=y" being set in all the kernels I've
-got installed on my system.
+Found it.  inotify_init1() is a stub function on Alpha.  A heated
+discussion *somewhere* produced a udev patch that *may* work:
 
-Running "dpkg --configure udev" gives me the following:
+--- a/udev/udev-watch.c
++++ b/udev/udev-watch.c
+@@ -38,8 +38,10 @@ static int inotify_fd = -1;
+  */
+ int udev_watch_init(struct udev *udev)
+ {
+-       inotify_fd = inotify_init1(IN_CLOEXEC);
+-       if (inotify_fd < 0)
++       inotify_fd = inotify_init();
++       if (inotify_fd >= 0)
++               util_set_fd_cloexec(inotify_fd);
++       else
+                err(udev, "inotify_init failed: %m\n");
+        return inotify_fd;
+ }
 
-udevd[pid]: inotify_init failed: Function not implemented
-udevd[pid]: error initializing inotify
+(Formatting of the above is probably bogus due to conversion from a
+formatted html presentation, but the gist of the fix should be apparent).
 
-and the post-installation script fails.
-
-So...  What's missing or unimplemented on Alpha?  Prior versions of
-"udev" worked just fine.
-
-As far as recovery options, I'm open to suggestions including selective
-downgrading of packages, but "dependency hell" may make that option
-unworkable from a practical standpoint.  I'd rather go forward.  Current
-system state: running in single-user mode with a static /dev, and I *do*
-have network connectivity for transferring stuff in/out as needed.
+Time to retrieve the source package and rebuild it...
 
 -- 
 ------------------------------------------------------------------------
