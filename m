@@ -1,55 +1,43 @@
-From: "Uwe Schindler" <uwe@thetaphi.de>
-Subject: RE: recent udev upgrade failure on alpha
-Date: Thu, 24 Feb 2011 19:55:12 +0100
-Message-ID: <008301cbd454$5df093a0$19d1bae0$@thetaphi.de>
-References: <20110224070203.GA28419@gherkin.frus.com> <20110224075149.GA28779@gherkin.frus.com> <002101cbd40a$fcb4a610$f61df230$@thetaphi.de> <AANLkTi=3mY=dUkhCRjFE_1-iPOMV8OHsGwqc1OF9zp9V@mail.gmail.com>
+From: Oliver Falk <oliver@linux-kernel.at>
+Subject: [patch 1/1] alpha: Fix use of irq_to_desc in irq.c
+Date: Mon, 28 Feb 2011 13:49:47 +0100
+Message-ID: <4D6B99EB.1040803@linux-kernel.at>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <AANLkTi=3mY=dUkhCRjFE_1-iPOMV8OHsGwqc1OF9zp9V@mail.gmail.com>
-Content-Language: de
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+To: linux-alpha@vger.kernel.org, kyle@redhat.com, Matt Turner <mattst88@gmail.com>
 
-From: Matt Turner [mailto:mattst88@gmail.com]
-> On Thu, Feb 24, 2011 at 10:09 AM, Uwe Schindler <uwe@thetaphi.de>
-> wrote:
-> > My bigger problem is that recent kernels (even the stable one no 
-> > longer work for me). On mounting my root  xfs filesystem it produces 
-> > a message about a wrong relocation format / some other linking 
-> > problem when loading the XFS .ko (the exact message is not known, 
-> > its somewhere in the screen buffer of the already rebooted with 
-> > older kernel machine, I can only remember what the problem was - 
-> > next time I try I will take a pen and write down the message on 
-> > console). This happens with the last stable kernel version, did not 
-> > test
-> > 2.7.37-1 until now.
-> > The last kernel that works for me is 2.6.31-1-alpha-generic. Does 
-> > anybody knows what the problem loading the XFS module is?
-> >
-> > Unstable is else still running fine!
-> 
-> This is the first I've heard of XFS not working (though, I've never 
-> used it myself). Have you reported this anywhere?
-> 
-> Please mail linux-alpha@vger.kernel.org and the appropriate XFS 
-> mailing list to try to get this fixed.
+=46ixes:
+arch/alpha/kernel/irq.c: In function =E2=80=98irq_select_affinity=E2=80=
+=99:
+arch/alpha/kernel/irq.c:47: error: subscripted value is neither array=20
+nor pointer
+make[1]: *** [arch/alpha/kernel/irq.o] Error 1
 
-This mail thread is already going to these mailing lists
-(linux-alpha@vger.kernel.org).
 
-I will try 2.6.27-1-alpha-generic ASAP and report if it is maybe solved,
-else I will post the exact error message XFS kernel module is presenting (at
-least it's not a problem of my installation, because 2.6.31 and previous
-works fine with XFS since years on an 128 Gig disk). Is the UDEV problem
-gone with 2.6.37 kernel, too? I think it's 2.6.33 that fixed it (from your
-previous mail on this thread). 
+--- arch/alpha/kernel/irq.c.orig	2011-02-28 11:34:05.000000000 +0100
++++ arch/alpha/kernel/irq.c	2011-02-28 11:32:24.000000000 +0100
+@@ -44,7 +44,7 @@
 
-Finally I still have to tell that Debian Unstable is still running very well
-with this AlphaStation 500 with EV56! So I never understood why there was no
-Debian release for Alpha anymore :(
+  int irq_select_affinity(unsigned int irq)
+  {
+-	struct irq_desc *desc =3D irq_to_desc[irq];
++	struct irq_desc *desc =3D irq_to_desc(irq);
+  	static int last_cpu;
+  	int cpu =3D last_cpu + 1;
 
-Uwe
 
+Seems to be a typo from here:
+
+<http://git.kernel.org/?p=3Dlinux/kernel/git/torvalds/linux-2.6.git;a=3D=
+commitdiff;h=3Da891b393dd7f6ed84ecee98c0eac4a808ff2cbbc>
+
+-of
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
