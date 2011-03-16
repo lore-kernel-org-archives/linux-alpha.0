@@ -1,54 +1,74 @@
-From: Michael Cree <mcree@orcon.net.nz>
+From: "Dialup Jon Norstog" <thursday@allidaho.com>
 Subject: Re: Alpha no longer recognises certain partition tables (v2.6.38)
-Date: Wed, 16 Mar 2011 14:23:43 +1300
-Message-ID: <E0782A6F-B851-4A11-B740-446EF7941B7C@orcon.net.nz>
-References: <4D7F2C11.907@orcon.net.nz> <AANLkTimRDH4S1QMN6f4AfKOe6ipPK6jm+g91nuBJYQJa@mail.gmail.com>
-Mime-Version: 1.0 (Apple Message framework v936)
-Content-Transfer-Encoding: 7bit
+Date: Tue, 15 Mar 2011 21:09:57 -0700
+Message-ID: <20110316040630.M24051@allidaho.com>
+References: <4D7F2C11.907@orcon.net.nz> <AANLkTimRDH4S1QMN6f4AfKOe6ipPK6jm+g91nuBJYQJa@mail.gmail.com> <E0782A6F-B851-4A11-B740-446EF7941B7C@orcon.net.nz>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <AANLkTimRDH4S1QMN6f4AfKOe6ipPK6jm+g91nuBJYQJa@mail.gmail.com>
+In-Reply-To: <E0782A6F-B851-4A11-B740-446EF7941B7C@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"; delsp="yes"
-To: Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Michael Cree <mcree@orcon.net.nz>, Linus Torvalds <torvalds@linux-foundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, warns@pre-sense.de
 
-On 16/03/2011, at 4:10 AM, Linus Torvalds wrote:
-> On Tue, Mar 15, 2011 at 2:06 AM, Michael Cree <mcree@orcon.net.nz>  
-> wrote:
->> v2.6.38 boot reports it can't recognise the partition table on the  
->> system
->> disk on my Alpha and panics when it can't find the root device.
->>
->> It worked at v2.6.38-rc7.
->>
->> While I haven't done a bisect to fully verify I nevertheless  
->> suggest the
->> following patch as the likely cause:
->>
->> 1eafbfe Fix corrupted OSF partition table parsing
->
-> That sounds likely. What does something like the attached do? In
-> particular, what's the printed-out value of the OSF npartitions thing?
->
-> Also, it's quite possible that we should raise the value of
-> MAX_OSF_PARTITIONS. If I checked it right, the d_partitions[] array
-> starts at byte offset 148 in the sector, and it's 16 bytes in size, so
-> there _could_ be up to 22 partitions there. The fact that we had
-> defined the 'struct disklabel' to only contain 8 partitions is I think
-> from documentation, not a technical "there can be only eight".
+To the lists:
 
-I am not able to run the patch until much later today but I think the  
-number of partitions is the issue.  I have three disks, all with bsd  
-type partition tables, and the kernel sees the partition tables of two  
-of them (they both have fewer than five partitions) but the system  
-disk has about nine (or it might be ten) partitions.  I didn't know  
-the limit when creating them some time ago and assumed fdisk would  
-flag an error if the number of permitted partitions was exceeded!   
-What's more it worked with recent kernels until now.
+Pardon me for a userland-type question, but is this going to be a problem if I
+want to mount advfs disks? Or even some old OSF1 disks (that have some quite
+valuable GIS covers on them)?  Just curious.
 
-I'll give the patch a whirl later (my) today.
+jn
 
-Cheers
-Michael.
+
+On Wed, 16 Mar 2011 14:23:43 +1300, Michael Cree wrote
+> On 16/03/2011, at 4:10 AM, Linus Torvalds wrote:
+> > On Tue, Mar 15, 2011 at 2:06 AM, Michael Cree <mcree@orcon.net.nz>  
+> > wrote:
+> >> v2.6.38 boot reports it can't recognise the partition table on the  
+> >> system
+> >> disk on my Alpha and panics when it can't find the root device.
+> >>
+> >> It worked at v2.6.38-rc7.
+> >>
+> >> While I haven't done a bisect to fully verify I nevertheless  
+> >> suggest the
+> >> following patch as the likely cause:
+> >>
+> >> 1eafbfe Fix corrupted OSF partition table parsing
+> >
+> > That sounds likely. What does something like the attached do? In
+> > particular, what's the printed-out value of the OSF npartitions thing?
+> >
+> > Also, it's quite possible that we should raise the value of
+> > MAX_OSF_PARTITIONS. If I checked it right, the d_partitions[] array
+> > starts at byte offset 148 in the sector, and it's 16 bytes in size, so
+> > there _could_ be up to 22 partitions there. The fact that we had
+> > defined the 'struct disklabel' to only contain 8 partitions is I think
+> > from documentation, not a technical "there can be only eight".
+> 
+> I am not able to run the patch until much later today but I think 
+> the  number of partitions is the issue.  I have three disks, all 
+> with bsd  type partition tables, and the kernel sees the partition 
+> tables of two  of them (they both have fewer than five partitions) 
+> but the system  disk has about nine (or it might be ten) partitions. 
+>  I didn't know  the limit when creating them some time ago and 
+> assumed fdisk would  flag an error if the number of permitted 
+> partitions was exceeded!   What's more it worked with recent kernels 
+> until now.
+> 
+> I'll give the patch a whirl later (my) today.
+> 
+> Cheers
+> Michael.
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-
+> alpha" in the body of a message to majordomo@vger.kernel.org More 
+> majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+
+--
+Open WebMail Project (http://openwebmail.org)
 
