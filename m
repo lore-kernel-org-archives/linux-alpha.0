@@ -1,55 +1,58 @@
-From: Michael Cree <mcree@orcon.net.nz>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 Subject: Re: Alpha no longer recognises certain partition tables (v2.6.38)
-Date: Wed, 16 Mar 2011 20:40:13 +1300
-Message-ID: <4D80695D.8080903@orcon.net.nz>
-References: <4D7F2C11.907@orcon.net.nz> <AANLkTimRDH4S1QMN6f4AfKOe6ipPK6jm+g91nuBJYQJa@mail.gmail.com> <AANLkTi=yev46gYosVdSfVvmf7MnB2oVriyvDT+pu1FnC@mail.gmail.com>
+Date: Wed, 16 Mar 2011 08:03:42 -0700
+Message-ID: <AANLkTinvRJNZGrKT0pbFBcHoe2LOeSVMd2CEBaKdbU2u@mail.gmail.com>
+References: <4D7F2C11.907@orcon.net.nz> <AANLkTimRDH4S1QMN6f4AfKOe6ipPK6jm+g91nuBJYQJa@mail.gmail.com>
+ <AANLkTi=yev46gYosVdSfVvmf7MnB2oVriyvDT+pu1FnC@mail.gmail.com> <4D80695D.8080903@orcon.net.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <AANLkTi=yev46gYosVdSfVvmf7MnB2oVriyvDT+pu1FnC@mail.gmail.com>
+In-Reply-To: <4D80695D.8080903@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="iso-8859-1"
+To: Michael Cree <mcree@orcon.net.nz>
 Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, warns@pre-sense.de
 
-On 16/03/11 05:17, Linus Torvalds wrote:
-> On Tue, Mar 15, 2011 at 8:10 AM, Linus Torvalds <torvalds@linux-foundation.org>  wrote:
->>
->> Also, it's quite possible that we should raise the value of
->> MAX_OSF_PARTITIONS. If I checked it right, the d_partitions[] array
->> starts at byte offset 148 in the sector, and it's 16 bytes in size, so
->> there _could_ be up to 22 partitions there.
+On Wed, Mar 16, 2011 at 12:40 AM, Michael Cree <mcree@orcon.net.nz> wro=
+te:
 >
-> Actually, I think it's byte offset 148 in the structure, but the
-> structure is at offset 64 in the partition sector, so I think that
-> leaves room for just 18 partitions in one 512-byte sector.
+> OK, I've fallen for that and created too many partitions on my system=
+ disk.
+> =A0When using your patch dmesg reports:
 >
-> Of course, we do end up reading a whole page, so historically we've
-> been able to see even more when the sector is aligned right (and it
-> is, it's the first sector). So by mistake we could have accepted many
-> more partitions and it just "worked" because we never actually checked
-> any limits.
+> [ =A0 =A07.511714] sd 1:0:0:0: [sdb] 2930277168 512-byte logical bloc=
+ks: (1.50
+> TB/1.36 TiB)
+> [ =A0 =A07.551753] sd 1:0:0:0: [sdb] Write Protect is off
+> [ =A0 =A07.572261] sd 1:0:0:0: [sdb] Mode Sense: 00 3a 00 00
+> [ =A0 =A07.591792] sd 1:0:0:0: [sdb] Write cache: enabled, read cache=
+: enabled,
+> doesn't support DPO or FUA
+> [ =A0 =A07.633785] OSF: 10 partitions
+> [ =A0 =A07.654292] =A0sdb: sdb1 sdb2 sdb3 sdb4 sdb5 sdb6 sdb7 sdb8
+> [ =A0 =A07.675777] sd 1:0:0:0: [sdb] Attached SCSI disk
 
-OK, I've fallen for that and created too many partitions on my system 
-disk.  When using your patch dmesg reports:
+Ok, no problem.
 
-[    7.511714] sd 1:0:0:0: [sdb] 2930277168 512-byte logical blocks: 
-(1.50 TB/1.36 TiB)
-[    7.551753] sd 1:0:0:0: [sdb] Write Protect is off
-[    7.572261] sd 1:0:0:0: [sdb] Mode Sense: 00 3a 00 00
-[    7.591792] sd 1:0:0:0: [sdb] Write cache: enabled, read cache: 
-enabled, doesn't support DPO or FUA
-[    7.633785] OSF: 10 partitions
-[    7.654292]  sdb: sdb1 sdb2 sdb3 sdb4 sdb5 sdb6 sdb7 sdb8
-[    7.675777] sd 1:0:0:0: [sdb] Attached SCSI disk
+I'll increase the value of OSF_MAX_PARTITIONS to 18 (which is what
+fits in a 512 byte sector), and mark it for back-porting into stable
+too.
 
-I could get it back to eight partitions but it will require copying the 
-largest partition to another disk and back again as that partition does 
-not meet the conditions for resizing.  Part of the reason for so many 
-partitions was a brilliant scheme (or so it seemed at the time) when I 
-repartitioned the disk in a manner that enabled me to do an efficient 
-"in-place" repartitioning of an already well used disk.
+Thanks for testing.
 
-Cheers
-Michael.
+> I could get it back to eight partitions but it will require copying t=
+he
+> largest partition to another disk and back again as that partition do=
+es not
+> meet the conditions for resizing.
+
+Oh, no need for that. There really isn't any real technical limit for
+the "limit to 8 partitions", and we don't cause regressions.
+
+                              Linus
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
