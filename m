@@ -1,85 +1,88 @@
 From: Prasad Joshi <prasadjoshi124@gmail.com>
-Subject: [RFC][PATCH v3 00/22] __vmalloc: Propagating GFP allocation flag
- inside __vmalloc()
-Date: Fri, 18 Mar 2011 19:41:35 +0000
-Message-ID: <20110318194135.GA4746@prasad-kvm>
+Subject: Re: [RFC][PATCH v3 22/22] mm, alpha: add gfp flags variant of pmd
+ and pte allocations
+Date: Fri, 18 Mar 2011 20:10:21 +0000
+Message-ID: <20110318201021.GW4746@prasad-kvm>
+References: <20110318200045.GM4746@prasad-kvm>
+ <20110318200150.GN4746@prasad-kvm>
+ <20110318200254.GO4746@prasad-kvm>
+ <20110318200401.GP4746@prasad-kvm>
+ <20110318200452.GQ4746@prasad-kvm>
+ <20110318200547.GR4746@prasad-kvm>
+ <20110318200638.GS4746@prasad-kvm>
+ <20110318200731.GT4746@prasad-kvm>
+ <20110318200825.GU4746@prasad-kvm>
+ <20110318200922.GV4746@prasad-kvm>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:date:from:to:cc:subject:message-id:mime-version
-         :content-type:content-disposition:user-agent;
-        bh=t+EZQ33GnU0mzuiO2W6Fak62ci1GZvb1nEqpNjyR4C8=;
-        b=BsefUBUA7uCzUFxH56D7gAfHtRBlicXZFP6WDLFaEkGkQRomcyHDB88OKORvtrWKk3
-         Jb/NcinvAhnThdAphtKS3gbKF0EZ2QcBhNJETOFAGYRR6KjJtnYelPcwF6tqtzrFdYXI
-         QXAoneRSe6iCcDi3LqrJEKbL/r0KrDfXI+VAQ=
+        h=domainkey-signature:date:from:to:subject:message-id:references
+         :mime-version:content-type:content-disposition:in-reply-to
+         :user-agent;
+        bh=8pd0eUsZzfcTnTUN6EIrZXXONYamyU+Sw148gK6q0Lg=;
+        b=fAXz+uh43yM+A0ezUVwKyA5Q08OXo0uole5c/MGhuu3ZjZVqp3PeHwTXBUpm5OcZzg
+         KYto/2n/GEXMJ7XCrl0IFGIgo/kZluPfHncmNQ1AS+HTzKTMO1nqhAwuSZzkBgD1TRgW
+         jO+vC3VBmt44DZb4TyZHcATw5LUyiwi+Oa7b8=
 Content-Disposition: inline
-Sender: linux-parisc-owner@vger.kernel.org
+In-Reply-To: <20110318200922.GV4746@prasad-kvm>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: akpm@linux-foundation.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, prasadjoshi124@gmail.com, mitra@kqinfotech.com
-Cc: chris@zankel.net, x86@kernel.org, jdike@addtoit.com, tj@kernel.org, cmetcalf@tilera.com, linux-sh@vger.kernel.org, liqin.chen@sunplusct.com, lennox.wu@gmail.com, schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com, linux390@de.ibm.com, benh@kernel.crashing.org, paulus@samba.org, linuxppc-dev@lists.ozlabs.org, kyle@mcmartin.ca, deller@gmx.de, jejb@parisc-linux.org, linux-parisc@vger.kernel.org, dhowells@redhat.com, yasutake.koichi@jp.panasonic.com, linux-am33-list@redhat.com, ralf@linux-mips.org, linux-mips@linux-mips.org, monstr@monstr.eu, microblaze-uclinux@itee.uq.edu.au, geert@linux-m68k.org, zippel@linux-m68k.org, sammy@sammy.net, linux-m68k@lists.linux-m68k.org, takata@linux-m32r.org, linux-m32r@ml.linux-m32r.org, tony.luck@intel.com, fenghua.yu@intel.com, linux-ia64@vger.kernel.org, starvik@axis.com, jesper.nilsson@axis.com, linux-cris-kernel@axis.com, hans-christ
+To: rth@twiddle.net, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, prasadjoshi124@gmail.com, mitra@kqinfotech.com
 
-A filesystem might run into a problem while calling __vmalloc(GFP_NOFS)
-inside a lock.
 
-It is expected than __vmalloc when called with GFP_NOFS should not
-callback the filesystem code even incase of the increased memory
-pressure. But the problem is that even if we pass this flag, __vmalloc
-itself allocates memory with GFP_KERNEL.
+ - Added __pmd_alloc_one, __pte_alloc_one_kernel to allocate pages using specified GFP flag
+ - changed pmd_alloc_one, pte_alloc_one_kernel to call these newly added function using GFP_KERNEL
+ - helps in fixing the Bug 30702
 
-Using GFP_KERNEL allocations may go into the memory reclaim path and try
-to free memory by calling file system evict_inode function. Which might
-lead into deadlock.
+Signed-off-by: Prasad Joshi <prasadjoshi124@gmail.com>
+Signed-off-by: Anand Mitra <mitra@kqinfotech.com>
+---
+ arch/alpha/include/asm/pgalloc.h |   18 ++++++++++++++----
+ 1 files changed, 14 insertions(+), 4 deletions(-)
 
-For further details
-http://marc.info/?l=linux-mm&m=128942194520631&w=4
-https://bugzilla.kernel.org/show_bug.cgi?id=30702
-
-The patch passes the gfp allocation flag all the way down to those
-allocating functions.
-
- arch/arm/include/asm/pgalloc.h           |   11 +++++-
- arch/avr32/include/asm/pgalloc.h         |    8 ++++-
- arch/cris/include/asm/pgalloc.h          |   10 ++++-
- arch/frv/include/asm/pgalloc.h           |    3 ++
- arch/frv/include/asm/pgtable.h           |    1 +
- arch/frv/mm/pgalloc.c                    |    9 ++++-
- arch/ia64/include/asm/pgalloc.h          |   24 +++++++++++--
- arch/m32r/include/asm/pgalloc.h          |   11 ++++--
- arch/m68k/include/asm/motorola_pgalloc.h |   20 +++++++++--
- arch/m68k/include/asm/sun3_pgalloc.h     |   14 ++++++--
- arch/m68k/mm/memory.c                    |    9 ++++-
- arch/microblaze/include/asm/pgalloc.h    |    3 ++
- arch/microblaze/mm/pgtable.c             |   13 +++++--
- arch/mips/include/asm/pgalloc.h          |   22 ++++++++----
- arch/mn10300/include/asm/pgalloc.h       |    2 +
- arch/mn10300/mm/pgtable.c                |   10 ++++-
- arch/parisc/include/asm/pgalloc.h        |   21 ++++++++---
- arch/powerpc/include/asm/pgalloc-32.h    |    2 +
- arch/powerpc/include/asm/pgalloc-64.h    |   27 +++++++++++---
- arch/powerpc/mm/pgtable_32.c             |   10 ++++-
- arch/s390/include/asm/pgalloc.h          |   30 +++++++++++++---
- arch/s390/mm/pgtable.c                   |   22 +++++++++---
- arch/score/include/asm/pgalloc.h         |   13 ++++---
- arch/sh/include/asm/pgalloc.h            |    8 ++++-
- arch/sh/mm/pgtable.c                     |    8 ++++-
- arch/sparc/include/asm/pgalloc_32.h      |    5 +++
- arch/sparc/include/asm/pgalloc_64.h      |   17 ++++++++-
- arch/tile/include/asm/pgalloc.h          |   13 ++++++-
- arch/tile/mm/pgtable.c                   |   10 ++++-
- arch/um/include/asm/pgalloc.h            |    1 +
- arch/um/kernel/mem.c                     |   21 ++++++++---
- arch/x86/include/asm/pgalloc.h           |   17 ++++++++-
- arch/x86/mm/pgtable.c                    |    8 ++++-
- arch/xtensa/include/asm/pgalloc.h        |    9 ++++-
- arch/xtensa/mm/pgtable.c                 |   11 +++++-
- include/asm-generic/4level-fixup.h       |    8 +++-
- include/asm-generic/pgtable-nopmd.h      |    3 +-
- include/asm-generic/pgtable-nopud.h      |    1 +
- include/linux/mm.h                       |   40 ++++++++++++++++-----
- mm/memory.c                              |   14 ++++---
- mm/vmalloc.c                             |   57 ++++++++++++++++++++----------
- 41 files changed, 427 insertions(+), 119 deletions(-)
+diff --git a/arch/alpha/include/asm/pgalloc.h b/arch/alpha/include/asm/pgalloc.h
+index bc2a0da..81281ac 100644
+--- a/arch/alpha/include/asm/pgalloc.h
++++ b/arch/alpha/include/asm/pgalloc.h
+@@ -38,10 +38,15 @@ pgd_free(struct mm_struct *mm, pgd_t *pgd)
+ }
+ 
+ static inline pmd_t *
++__pmd_alloc_one(struct mm_struct *mm, unsigned long address, gfp_t gfp_mask)
++{
++	return (pmd_t *)__get_free_page(gfp_mask | __GFP_ZERO);
++}
++
++static inline pmd_t *
+ pmd_alloc_one(struct mm_struct *mm, unsigned long address)
+ {
+-	pmd_t *ret = (pmd_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
+-	return ret;
++	return __pmd_alloc_one(mm, address, GFP_KERNEL | __GFP_REPEAT);
+ }
+ 
+ static inline void
+@@ -51,10 +56,15 @@ pmd_free(struct mm_struct *mm, pmd_t *pmd)
+ }
+ 
+ static inline pte_t *
++__pte_alloc_one_kernel(struct mm_struct *mm, unsigned long address, gfp_t gfp_mask)
++{
++	return (pte_t *)__get_free_page(gfp_mask | __GFP_ZERO);
++}
++
++static inline pte_t *
+ pte_alloc_one_kernel(struct mm_struct *mm, unsigned long address)
+ {
+-	pte_t *pte = (pte_t *)__get_free_page(GFP_KERNEL|__GFP_REPEAT|__GFP_ZERO);
+-	return pte;
++	return __pte_alloc_one_kernel(mm, address, GFP_KERNEL | __GFP_REPEAT);
+ }
+ 
+ static inline void
+-- 
+1.7.0.4
 
