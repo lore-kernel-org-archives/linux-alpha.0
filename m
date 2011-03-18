@@ -1,58 +1,85 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: Alpha no longer recognises certain partition tables (v2.6.38)
-Date: Wed, 16 Mar 2011 08:03:42 -0700
-Message-ID: <AANLkTinvRJNZGrKT0pbFBcHoe2LOeSVMd2CEBaKdbU2u@mail.gmail.com>
-References: <4D7F2C11.907@orcon.net.nz> <AANLkTimRDH4S1QMN6f4AfKOe6ipPK6jm+g91nuBJYQJa@mail.gmail.com>
- <AANLkTi=yev46gYosVdSfVvmf7MnB2oVriyvDT+pu1FnC@mail.gmail.com> <4D80695D.8080903@orcon.net.nz>
+From: Prasad Joshi <prasadjoshi124@gmail.com>
+Subject: [RFC][PATCH v3 00/22] __vmalloc: Propagating GFP allocation flag
+ inside __vmalloc()
+Date: Fri, 18 Mar 2011 19:41:35 +0000
+Message-ID: <20110318194135.GA4746@prasad-kvm>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4D80695D.8080903@orcon.net.nz>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:date:from:to:cc:subject:message-id:mime-version
+         :content-type:content-disposition:user-agent;
+        bh=t+EZQ33GnU0mzuiO2W6Fak62ci1GZvb1nEqpNjyR4C8=;
+        b=BsefUBUA7uCzUFxH56D7gAfHtRBlicXZFP6WDLFaEkGkQRomcyHDB88OKORvtrWKk3
+         Jb/NcinvAhnThdAphtKS3gbKF0EZ2QcBhNJETOFAGYRR6KjJtnYelPcwF6tqtzrFdYXI
+         QXAoneRSe6iCcDi3LqrJEKbL/r0KrDfXI+VAQ=
+Content-Disposition: inline
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, warns@pre-sense.de
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: akpm@linux-foundation.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, prasadjoshi124@gmail.com, mitra@kqinfotech.com
+Cc: chris@zankel.net, x86@kernel.org, jdike@addtoit.com, tj@kernel.org, cmetcalf@tilera.com, linux-sh@vger.kernel.org, liqin.chen@sunplusct.com, lennox.wu@gmail.com, schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com, linux390@de.ibm.com, benh@kernel.crashing.org, paulus@samba.org, linuxppc-dev@lists.ozlabs.org, kyle@mcmartin.ca, deller@gmx.de, jejb@parisc-linux.org, linux-parisc@vger.kernel.org, dhowells@redhat.com, yasutake.koichi@jp.panasonic.com, linux-am33-list@redhat.com, ralf@linux-mips.org, linux-mips@linux-mips.org, monstr@monstr.eu, microblaze-uclinux@itee.uq.edu.au, geert@linux-m68k.org, zippel@linux-m68k.org, sammy@sammy.net, linux-m68k@lists.linux-m68k.org, takata@linux-m32r.org, linux-m32r@ml.linux-m32r.org, tony.luck@intel.com, fenghua.yu@intel.com, linux-ia64@vger.kernel.org, starvik@axis.com, jesper.nilsson@axis.com, linux-cris-kernel@axis.com, hans-christ
 
-On Wed, Mar 16, 2011 at 12:40 AM, Michael Cree <mcree@orcon.net.nz> wro=
-te:
->
-> OK, I've fallen for that and created too many partitions on my system=
- disk.
-> =A0When using your patch dmesg reports:
->
-> [ =A0 =A07.511714] sd 1:0:0:0: [sdb] 2930277168 512-byte logical bloc=
-ks: (1.50
-> TB/1.36 TiB)
-> [ =A0 =A07.551753] sd 1:0:0:0: [sdb] Write Protect is off
-> [ =A0 =A07.572261] sd 1:0:0:0: [sdb] Mode Sense: 00 3a 00 00
-> [ =A0 =A07.591792] sd 1:0:0:0: [sdb] Write cache: enabled, read cache=
-: enabled,
-> doesn't support DPO or FUA
-> [ =A0 =A07.633785] OSF: 10 partitions
-> [ =A0 =A07.654292] =A0sdb: sdb1 sdb2 sdb3 sdb4 sdb5 sdb6 sdb7 sdb8
-> [ =A0 =A07.675777] sd 1:0:0:0: [sdb] Attached SCSI disk
+A filesystem might run into a problem while calling __vmalloc(GFP_NOFS)
+inside a lock.
 
-Ok, no problem.
+It is expected than __vmalloc when called with GFP_NOFS should not
+callback the filesystem code even incase of the increased memory
+pressure. But the problem is that even if we pass this flag, __vmalloc
+itself allocates memory with GFP_KERNEL.
 
-I'll increase the value of OSF_MAX_PARTITIONS to 18 (which is what
-fits in a 512 byte sector), and mark it for back-porting into stable
-too.
+Using GFP_KERNEL allocations may go into the memory reclaim path and try
+to free memory by calling file system evict_inode function. Which might
+lead into deadlock.
 
-Thanks for testing.
+For further details
+http://marc.info/?l=linux-mm&m=128942194520631&w=4
+https://bugzilla.kernel.org/show_bug.cgi?id=30702
 
-> I could get it back to eight partitions but it will require copying t=
-he
-> largest partition to another disk and back again as that partition do=
-es not
-> meet the conditions for resizing.
+The patch passes the gfp allocation flag all the way down to those
+allocating functions.
 
-Oh, no need for that. There really isn't any real technical limit for
-the "limit to 8 partitions", and we don't cause regressions.
+ arch/arm/include/asm/pgalloc.h           |   11 +++++-
+ arch/avr32/include/asm/pgalloc.h         |    8 ++++-
+ arch/cris/include/asm/pgalloc.h          |   10 ++++-
+ arch/frv/include/asm/pgalloc.h           |    3 ++
+ arch/frv/include/asm/pgtable.h           |    1 +
+ arch/frv/mm/pgalloc.c                    |    9 ++++-
+ arch/ia64/include/asm/pgalloc.h          |   24 +++++++++++--
+ arch/m32r/include/asm/pgalloc.h          |   11 ++++--
+ arch/m68k/include/asm/motorola_pgalloc.h |   20 +++++++++--
+ arch/m68k/include/asm/sun3_pgalloc.h     |   14 ++++++--
+ arch/m68k/mm/memory.c                    |    9 ++++-
+ arch/microblaze/include/asm/pgalloc.h    |    3 ++
+ arch/microblaze/mm/pgtable.c             |   13 +++++--
+ arch/mips/include/asm/pgalloc.h          |   22 ++++++++----
+ arch/mn10300/include/asm/pgalloc.h       |    2 +
+ arch/mn10300/mm/pgtable.c                |   10 ++++-
+ arch/parisc/include/asm/pgalloc.h        |   21 ++++++++---
+ arch/powerpc/include/asm/pgalloc-32.h    |    2 +
+ arch/powerpc/include/asm/pgalloc-64.h    |   27 +++++++++++---
+ arch/powerpc/mm/pgtable_32.c             |   10 ++++-
+ arch/s390/include/asm/pgalloc.h          |   30 +++++++++++++---
+ arch/s390/mm/pgtable.c                   |   22 +++++++++---
+ arch/score/include/asm/pgalloc.h         |   13 ++++---
+ arch/sh/include/asm/pgalloc.h            |    8 ++++-
+ arch/sh/mm/pgtable.c                     |    8 ++++-
+ arch/sparc/include/asm/pgalloc_32.h      |    5 +++
+ arch/sparc/include/asm/pgalloc_64.h      |   17 ++++++++-
+ arch/tile/include/asm/pgalloc.h          |   13 ++++++-
+ arch/tile/mm/pgtable.c                   |   10 ++++-
+ arch/um/include/asm/pgalloc.h            |    1 +
+ arch/um/kernel/mem.c                     |   21 ++++++++---
+ arch/x86/include/asm/pgalloc.h           |   17 ++++++++-
+ arch/x86/mm/pgtable.c                    |    8 ++++-
+ arch/xtensa/include/asm/pgalloc.h        |    9 ++++-
+ arch/xtensa/mm/pgtable.c                 |   11 +++++-
+ include/asm-generic/4level-fixup.h       |    8 +++-
+ include/asm-generic/pgtable-nopmd.h      |    3 +-
+ include/asm-generic/pgtable-nopud.h      |    1 +
+ include/linux/mm.h                       |   40 ++++++++++++++++-----
+ mm/memory.c                              |   14 ++++---
+ mm/vmalloc.c                             |   57 ++++++++++++++++++++----------
+ 41 files changed, 427 insertions(+), 119 deletions(-)
 
-                              Linus
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
