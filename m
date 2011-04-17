@@ -1,48 +1,47 @@
-From: Mikael Pettersson <mikpe@it.uu.se>
-Subject: Re: [bug] 2.6.39-rc3 fails to boot on Alpha
-Date: Sun, 17 Apr 2011 21:20:48 +0200
-Message-ID: <19883.15760.364246.501142@pilspetsen.it.uu.se>
-References: <19883.912.266127.538215@pilspetsen.it.uu.se>
-	<4DAB36D0.8080503@gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: Richard Henderson <rth@twiddle.net>
+Subject: [PATCH 1/4] alpha: Don't force -Werror.
+Date: Sun, 17 Apr 2011 13:05:23 -0700
+Message-ID: <1303070726-32155-2-git-send-email-rth@twiddle.net>
+References: <1303070726-32155-1-git-send-email-rth@twiddle.net>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4DAB36D0.8080503@gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:sender:from:to:cc:subject:date:message-id
+         :x-mailer:in-reply-to:references;
+        bh=RVQM24jaufL3IZDqh2EQIcBTnqtlxq8wYvmfVrXH0BE=;
+        b=TmYwQVdNgflPFzgAZPJ4jlgjNaWZdgvpjHomowO4KMMWFKHNX0LbUyUV6ZmTmLkrgT
+         n9NxbmWgjwEdrPa4t901almfcDnLvSO6jCenMqNyCPzLz+C0yPtwf2Db+xihVgyAdkSg
+         RCVN0EECrxot57LI82hpzzOSZ3YSP2P7u6qiU=
+In-Reply-To: <1303070726-32155-1-git-send-email-rth@twiddle.net>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Jay Estabrook <jay.estabrook@gmail.com>
-Cc: Mikael Pettersson <mikpe@it.uu.se>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: torvalds@linux-foundation.org, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-Jay Estabrook writes:
- > Try replacing the reference to "no_irq_chip" with "dummy_irq_chip"
- > in arch/alpha/irq_alpha.c: int_rtc_irq().
+There are outstanding gcc 4.6 warnings that need to be cleaned up
+in the subdirectory.  No sense forcing the issue immediately.
 
-2.6.39-rc3 booted fine with that change.
+Signed-off-by: Richard Henderson <rth@twiddle.net>
+---
+ arch/alpha/kernel/Makefile |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-Thanks,
+diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
+index 9bb7b85..7a6d908 100644
+--- a/arch/alpha/kernel/Makefile
++++ b/arch/alpha/kernel/Makefile
+@@ -4,7 +4,7 @@
+ 
+ extra-y		:= head.o vmlinux.lds
+ asflags-y	:= $(KBUILD_CFLAGS)
+-ccflags-y	:= -Werror -Wno-sign-compare
++ccflags-y	:= -Wno-sign-compare
+ 
+ obj-y    := entry.o traps.o process.o init_task.o osf_sys.o irq.o \
+ 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
+-- 
+1.7.4.2
 
-/Mikael
-
- >
- > For me, it was dying in the first RTC interrupt taken.
- > 
- > Jay
- > 
- > On 04/17/2011 11:13 AM, Mikael Pettersson wrote:
- > > 2.6.39-rc3 doesn't boot on my Alpha (XP900).  As soon as aboot has loaded
- > > and started the kernel I get:
- > > 
- > > halted CPU 0
- > > 
- > > halt code = 4
- > > invalid PTBR
- > > PC = fffffc00003130d0
- > > 
- > > (that PC value points to an "lda" instruction in sys_osf_proplist_syscall)
- > > 
- > > There's no other output except this, so I don't think the kernel got very far.
- > > 
- > > Haven't checked 2.6.39-rc[12] or bisected anything yet, but 2.6.38 works fine.
- > > 
- > > /Mikael
