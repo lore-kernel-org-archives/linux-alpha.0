@@ -1,48 +1,52 @@
-From: Stratos Psomadakis <psomas@ece.ntua.gr>
-Subject: Re: [BUG] DMA_ERROR_CODE undefined in radeon_gart.c
-Date: Tue, 19 Apr 2011 23:07:06 +0300
-Message-ID: <4DADEB6A.20506@ece.ntua.gr>
-References: <20110419194222.GA23953@gherkin.frus.com> <4DADEAD8.4090203@ece.ntua.gr>
+From: David Rientjes <rientjes@google.com>
+Subject: [patch] alpha, mm: set all online nodes in N_NORMAL_MEMORY
+Date: Thu, 21 Apr 2011 15:00:19 -0700 (PDT)
+Message-ID: <alpine.DEB.2.00.1104211458580.20201@chino.kir.corp.google.com>
+References: <1303317178.2587.30.camel@mulgrave.site> <alpine.DEB.2.00.1104201410350.31768@chino.kir.corp.google.com> <20110421220351.9180.A69D9226@jp.fujitsu.com> <alpine.DEB.2.00.1104211237250.5829@chino.kir.corp.google.com> <alpine.DEB.2.00.1104211500170.5741@router.home>
+ <alpine.DEB.2.00.1104211411540.20201@chino.kir.corp.google.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4DADEAD8.4090203@ece.ntua.gr>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=google.com; s=beta;
+	t=1303423224; bh=QnDoRYKEDTeonYv9mmQz2QIaXWE=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type;
+	b=uGVa6r5gT5kNrnJyH3CSiUb13lPGufZcOqRGhjqBYSivoyoYfj5Y/UHp/LQYNjlZf
+	 cyzBWJFtOAcSBpDHlzflA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=beta;
+        h=domainkey-signature:date:from:x-x-sender:to:cc:subject:in-reply-to
+         :message-id:references:user-agent:mime-version:content-type;
+        bh=YneJL+JLPsCNl0a11RB8Fw8vhDYhkGI6huosZuTdRmo=;
+        b=w9p/PAHHWb7lxXiwVMJqRf/abLUZYRkDsU8vbZjX2ej/goOjVu4t/O4WSF02rgzv8L
+         ZKwLZ8X+0B1Uhv7dhikg==
+In-Reply-To: <alpine.DEB.2.00.1104211411540.20201@chino.kir.corp.google.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Bob Tracy <rct@gherkin.frus.com>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Andrew Morton <akpm@linux-foundation.org>, Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 19/04/2011 11:04 =CE=BC=CE=BC, Stratos Psomadakis wrote:
-> On 19/04/2011 10:42 =CE=BC=CE=BC, Bob Tracy wrote:
->> Attempted to build 2.6.39-rc4 on an Alpha and got the following erro=
-r:
->>
->>   CC [M]  drivers/gpu/drm/radeon/radeon_gart.o
->> drivers/gpu/drm/radeon/radeon_gart.c: In function 'radeon_gart_bind'=
-:
->> drivers/gpu/drm/radeon/radeon_gart.c:186: error: 'DMA_ERROR_CODE' un=
-declared (first use in this function)
->> drivers/gpu/drm/radeon/radeon_gart.c:186: error: (Each undeclared id=
-entifier is reported only once
->> drivers/gpu/drm/radeon/radeon_gart.c:186: error: for each function i=
-t appears in.)
->> make[4]: *** [drivers/gpu/drm/radeon/radeon_gart.o] Error 1
->> make[3]: *** [drivers/gpu/drm/radeon] Error 2
->> make[2]: *** [drivers/gpu/drm] Error 2
->> make[1]: *** [drivers/gpu] Error 2
->> make: *** [drivers] Error 2
->>
->> It appears that "DMA_ERROR_CODE" is currently defined for several
->> architectures in "arch/*/include/asm/dma-mapping.h", but not for "al=
-pha"
-> Similar issue in this discussion [1].
-> They solved it by replacing DMA_ERROR_CODE with dma_mapping_error(). =
-[2]
-> Probably this can work here too
-[1] http://lkml.org/lkml/2010/3/11/261
-[2] http://git.infradead.org/mtd-2.6.git/commitdiff/0c82d3ce
+For alpha, N_NORMAL_MEMORY represents all nodes that have present memory 
+since it does not support HIGHMEM.  This patch sets the bit at the time 
+the node is initialized.
 
---=20
-Stratos Psomadakis
-<psomas@ece.ntua.gr>
+If N_NORMAL_MEMORY is not accurate, slub may encounter errors since it 
+uses this nodemask to setup per-cache kmem_cache_node data structures.
+
+Signed-off-by: David Rientjes <rientjes@google.com>
+---
+ arch/alpha/mm/numa.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
+--- a/arch/alpha/mm/numa.c
++++ b/arch/alpha/mm/numa.c
+@@ -313,6 +313,7 @@ void __init paging_init(void)
+ 			zones_size[ZONE_DMA] = dma_local_pfn;
+ 			zones_size[ZONE_NORMAL] = (end_pfn - start_pfn) - dma_local_pfn;
+ 		}
++		node_set_state(nid, N_NORMAL_MEMORY);
+ 		free_area_init_node(nid, zones_size, start_pfn, NULL);
+ 	}
+ 
