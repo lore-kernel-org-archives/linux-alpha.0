@@ -1,86 +1,68 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: [PATCH] alpha: Wire up syscalls new to 2.6.39
-Date: Wed,  4 May 2011 20:14:50 +1200
-Message-ID: <1304496890-7725-1-git-send-email-mcree@orcon.net.nz>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Sven Eckelmann <sven@narfation.org>
+Subject: Re: [PATCH] atomic: add *_dec_not_zero
+Date: Wed, 4 May 2011 10:21:16 +0200
+Message-ID: <201105041021.22082.sven@narfation.org>
+References: <AE90C24D6B3A694183C094C60CF0A2F6D8AD0D@saturn3.aculab.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed;
+  boundary="nextPart2868987.P04i5ibDgT";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha512
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Return-path: <linux-sh-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=narfation.org; s=mail;
+	t=1304497298; bh=8KC/VAUU532yNdFbGxPYeuJANlG8AfOjjawVUtjP0rs=;
+	h=From:To:Subject:Date:Cc:References:In-Reply-To:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:Message-Id;
+	b=NsSunp2Mfpofv5VUKaQUK7rWXK3J92ip8xpFeDvZbhcyptSDVpa+doQoWFVdCUqrM
+	 gscCgcXf7UIpcMmBaiE0nUxvcPMaD8/vRWL942MKxyy8XS27AAj55C0Wc4Mnl9lh9r
+	 ZPv82XsaqDx+84OOvGT/o1M5WBCwKapSJgkfx0gE=
+In-Reply-To: <AE90C24D6B3A694183C094C60CF0A2F6D8AD0D@saturn3.aculab.com>
+Sender: linux-sh-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: David Laight <David.Laight@aculab.com>
+Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-m32r@ml.linux-m32r.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, x86@kernel.org, Chris Metcalf <cmetcalf@tilera.com>, David Howells <dhowells@redhat.com>, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-Wire up the syscalls:
-   name_to_handle_at
-   open_by_handle_at
-   clock_adjtime
-   syncfs
-and adjust some whitespace in the neighbourhood to align commments.
+--nextPart2868987.P04i5ibDgT
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Michael Cree <mcree@orcon.net.nz>
----
- arch/alpha/include/asm/unistd.h |    6 +++++-
- arch/alpha/kernel/systbls.S     |   14 +++++++++-----
- 2 files changed, 14 insertions(+), 6 deletions(-)
+On Wednesday 04 May 2011 10:05:53 David Laight wrote:
+> > Introduce an *_dec_not_zero operation.  Make this a special case of
+> > *_add_unless because batman-adv uses atomic_dec_not_zero in different
+> > places like re-broadcast queue or aggregation queue management. There
+> > are other non-final patches which may also want to use this macro.
+>=20
+> Isn't there a place where a default definition of this can be
+> defined? Instead of adding it separately to every architecture.
 
-diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
-index 058937b..b183416 100644
---- a/arch/alpha/include/asm/unistd.h
-+++ b/arch/alpha/include/asm/unistd.h
-@@ -452,10 +452,14 @@
- #define __NR_fanotify_init		494
- #define __NR_fanotify_mark		495
- #define __NR_prlimit64			496
-+#define __NR_name_to_handle_at		497
-+#define __NR_open_by_handle_at		498
-+#define __NR_clock_adjtime		499
-+#define __NR_syncfs			500
- 
- #ifdef __KERNEL__
- 
--#define NR_SYSCALLS			497
-+#define NR_SYSCALLS			501
- 
- #define __ARCH_WANT_IPC_PARSE_VERSION
- #define __ARCH_WANT_OLD_READDIR
-diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index a6a1de9..c77a8fc 100644
---- a/arch/alpha/kernel/systbls.S
-+++ b/arch/alpha/kernel/systbls.S
-@@ -498,24 +498,28 @@ sys_call_table:
- 	.quad sys_ni_syscall			/* sys_timerfd */
- 	.quad sys_eventfd
- 	.quad sys_recvmmsg
--	.quad sys_fallocate				/* 480 */
-+	.quad sys_fallocate			/* 480 */
- 	.quad sys_timerfd_create
- 	.quad sys_timerfd_settime
- 	.quad sys_timerfd_gettime
- 	.quad sys_signalfd4
--	.quad sys_eventfd2				/* 485 */
-+	.quad sys_eventfd2			/* 485 */
- 	.quad sys_epoll_create1
- 	.quad sys_dup3
- 	.quad sys_pipe2
- 	.quad sys_inotify_init1
--	.quad sys_preadv				/* 490 */
-+	.quad sys_preadv			/* 490 */
- 	.quad sys_pwritev
- 	.quad sys_rt_tgsigqueueinfo
- 	.quad sys_perf_event_open
- 	.quad sys_fanotify_init
--	.quad sys_fanotify_mark				/* 495 */
-+	.quad sys_fanotify_mark			/* 495 */
- 	.quad sys_prlimit64
--
-+	.quad sys_name_to_handle_at
-+	.quad sys_open_by_handle_at
-+	.quad sys_clock_adjtime
-+	.quad sys_syncfs			/* 500 */
-+	
- 	.size sys_call_table, . - sys_call_table
- 	.type sys_call_table, @object
- 
--- 
-1.7.4.3
+Not that I would know about such a place - and all other atomic* macro=20
+definitions also suggest that there is no such place.
+
+Kind regards,
+	Sven
+
+--nextPart2868987.P04i5ibDgT
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iQIcBAABCgAGBQJNwQx+AAoJEF2HCgfBJntGRUwQAKpZ3vas4MhN1cUHPC7peYuT
+VyMmy/osbr9OqHAvxVB80ZjA8lwG2OjOeB5RbJFfHIcfdC/VLAyWF0o1i8jYBYLf
+qlkDuM1jRBLK7NJSmHBoTIm+zKVjQJm1cJW1qjhWqDr+tmbeHReJxmHX7uewO6bH
+98rXwt2tqdZk621b1Z6pZCbLZZODQwLTejS10FDs5rT4wZztimpXGQRSjdoc0ENP
+k4TX9Y8Uwac6yLA9jlgXhHzAe0iu+x9l89x1euq6Uerkax2HB0Y6YpdH97/SfxpD
+eHSIgOFN8+o6WWblKOSTbDJqz0kjdvi/Wcj5mfs2YpScxE1UbEhK04Q918TWScyG
+ysiycLfHrmBl+zQ6hTGveXd96M85XNlYkSIQZR48e2vSHUycF8Busv7UUTF0xnmW
+2hl1svdX6p3IXMEUtYDBX7iSlEtmDe+V8bG0Ftw1nJ4cqNn4Xbp3WUSQn1qUwo1H
+FwbQfFOTkzy02nWJvYpARHgTKnztbgGvC2XKWY4AtAF2WRBxmBbUTtzau9VqACzH
+5I/9X63DnNo+V/yTIKps03+CyXIys/QdrsN2NaP/iEUEwz/8wVyRT4HgdYQO1nTs
+e7amjs4tEW+oduDnRsPbnczSwy0lOHkVPuwiPgEA8S+WRbU5miS56u+nLDB+y/kh
+u3hzuBSc64RKiJMEccmv
+=JUtM
+-----END PGP SIGNATURE-----
+
+--nextPart2868987.P04i5ibDgT--
