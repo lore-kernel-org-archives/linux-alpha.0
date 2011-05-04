@@ -1,28 +1,38 @@
-From: "David Laight" <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH] atomic: add *_dec_not_zero
-Date: Wed, 4 May 2011 09:05:53 +0100
-Message-ID: <AE90C24D6B3A694183C094C60CF0A2F6D8AD0D@saturn3.aculab.com>
-References: <1304458235-28473-1-git-send-email-sven@narfation.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-ia64-owner@vger.kernel.org>
-Content-class: urn:content-classes:message
-In-Reply-To: <1304458235-28473-1-git-send-email-sven@narfation.org>
-Sender: linux-ia64-owner@vger.kernel.org
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: [PATCH] alpha: Add DMA_ERROR_CODE defn to avert compiler error in drm
+Date: Wed,  4 May 2011 20:13:37 +1200
+Message-ID: <1304496817-7646-1-git-send-email-mcree@orcon.net.nz>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Sven Eckelmann <sven@narfation.org>, linux-kernel@vger.kernel.org
-Cc: linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-m32r@ml.linux-m32r.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, x86@kernel.org, Chris Metcalf <cmetcalf@tilera.com>, David Howells <dhowells@redhat.com>, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
+The radeon drm code now relies on DMA_ERROR_CODE.  This defines
+it in alpha dma-mapping header to at least enable me to compile
+radeon drm/kms into kernel.
+
+Signed-off-by: Michael Cree <mcree@orcon.net.nz>
+---
+ arch/alpha/include/asm/dma-mapping.h |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/arch/alpha/include/asm/dma-mapping.h b/arch/alpha/include/asm/dma-mapping.h
+index 4567aca..644d9c3 100644
+--- a/arch/alpha/include/asm/dma-mapping.h
++++ b/arch/alpha/include/asm/dma-mapping.h
+@@ -3,6 +3,8 @@
  
-> Introduce an *_dec_not_zero operation.  Make this a special case of
-> *_add_unless because batman-adv uses atomic_dec_not_zero in different
-> places like re-broadcast queue or aggregation queue management. There
-> are other non-final patches which may also want to use this macro.
-
-Isn't there a place where a default definition of this can be
-defined? Instead of adding it separately to every architecture.
-
-	David
-
+ #include <linux/dma-attrs.h>
+ 
++#define DMA_ERROR_CODE 0
++
+ extern struct dma_map_ops *dma_ops;
+ 
+ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+-- 
+1.7.4.3
 
