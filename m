@@ -1,67 +1,72 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH] atomic: add *_dec_not_zero
-Date: Wed, 4 May 2011 14:13:29 -0400
-Message-ID: <BANLkTinWa9E1_iLWyqAF+G8Qag=YK2T98A@mail.gmail.com>
-References: <1304458235-28473-1-git-send-email-sven@narfation.org>
+Subject: Re: [PATCH] alpha: Add DMA_ERROR_CODE defn to avert compiler error in drm
+Date: Wed, 4 May 2011 17:59:29 -0400
+Message-ID: <BANLkTiknKa8xq5UQYTWKZnGDqVyAjGhVmw@mail.gmail.com>
+References: <1304496817-7646-1-git-send-email-mcree@orcon.net.nz>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-arch-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=domainkey-signature:mime-version:in-reply-to:references:from:date
          :message-id:subject:to:cc:content-type:content-transfer-encoding;
-        bh=iV5A6Hdagp0QOu9qzGkatnLVdEWa9xEERC805YIbK2g=;
-        b=ARiNNEFBeZg9hyzUoHdP0qpgjkYWjaSWQMaIpSuOEU7Ng4l7K4+UNxbRFpz5xVYmlr
-         SS1GzoNEMgMriacfqq/3Y7eYm3yx1wMs1NrgDno6vwKjioE9NL7TwgOkTHH9ioGNTZjm
-         axP5fVnpgOk5HzPbAQCD/IPxh8/fyojzipjxA=
-In-Reply-To: <1304458235-28473-1-git-send-email-sven@narfation.org>
-Sender: linux-arch-owner@vger.kernel.org
+        bh=bceqMTYRiIQA5feXvn/cXfKNt6R+w52knm6A3y6rloA=;
+        b=I/t4RkXNxebf05yMP2oW/OjPDDiTnAUOfHgUrxD/95+T+HLQ2ZPfaeHMC+r5iiRqgD
+         OwB9SrQAt+WGBmLEZXd50upCLSnXDn4A1/BPm89z38TOMvWL4CGMPeX+v8+KIp/9ivoA
+         IRPsaJ4jG6rQrzge7ZFD8Lo9VekkAeLXZVGYs=
+In-Reply-To: <1304496817-7646-1-git-send-email-mcree@orcon.net.nz>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Sven Eckelmann <sven@narfation.org>
-Cc: linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>, Chris Metcalf <cmetcalf@tilera.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, uclinux-dist-devel@blackfin.uclinux.org, linux-cris-kernel@axis.com, linux-ia64@vger.kernel.org, linux-m32r@ml.linux-m32r.org, linux-m68k@lists.linux-m68k.org, linux-mips@linux-mips.org, linux-am33-list@redhat.com, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
-On Tue, May 3, 2011 at 5:30 PM, Sven Eckelmann <sven@narfation.org> wro=
-te:
-> diff --git a/arch/alpha/include/asm/atomic.h b/arch/alpha/include/asm=
-/atomic.h
-> index e756d04..7e9434e 100644
-> --- a/arch/alpha/include/asm/atomic.h
-> +++ b/arch/alpha/include/asm/atomic.h
-> @@ -200,6 +200,7 @@ static __inline__ int atomic_add_unless(atomic_t =
-*v, int a, int u)
-> =A0}
+On Wed, May 4, 2011 at 4:13 AM, Michael Cree <mcree@orcon.net.nz> wrote=
+:
+> The radeon drm code now relies on DMA_ERROR_CODE. =A0This defines
+> it in alpha dma-mapping header to at least enable me to compile
+> radeon drm/kms into kernel.
 >
-> =A0#define atomic_inc_not_zero(v) atomic_add_unless((v), 1, 0)
-> +#define atomic_dec_not_zero(v) atomic_add_unless((v), -1, 0)
+> Signed-off-by: Michael Cree <mcree@orcon.net.nz>
+> ---
+> =A0arch/alpha/include/asm/dma-mapping.h | =A0 =A02 ++
+> =A01 files changed, 2 insertions(+), 0 deletions(-)
 >
-> =A0/**
-> =A0* atomic64_add_unless - add unless the number is a given value
-> @@ -226,6 +227,7 @@ static __inline__ int atomic64_add_unless(atomic6=
-4_t *v, long a, long u)
-> =A0}
+> diff --git a/arch/alpha/include/asm/dma-mapping.h b/arch/alpha/includ=
+e/asm/dma-mapping.h
+> index 4567aca..644d9c3 100644
+> --- a/arch/alpha/include/asm/dma-mapping.h
+> +++ b/arch/alpha/include/asm/dma-mapping.h
+> @@ -3,6 +3,8 @@
 >
-> =A0#define atomic64_inc_not_zero(v) atomic64_add_unless((v), 1, 0)
-> +#define atomic64_dec_not_zero(v) atomic64_add_unless((v), -1, 0)
+> =A0#include <linux/dma-attrs.h>
 >
-> =A0#define atomic_add_negative(a, v) (atomic_add_return((a), (v)) < 0=
-)
-> =A0#define atomic64_add_negative(a, v) (atomic64_add_return((a), (v))=
- < 0)
-> diff --git a/arch/alpha/include/asm/local.h b/arch/alpha/include/asm/=
-local.h
-> index b9e3e33..09fb327 100644
-> --- a/arch/alpha/include/asm/local.h
-> +++ b/arch/alpha/include/asm/local.h
-> @@ -79,6 +79,7 @@ static __inline__ long local_sub_return(long i, loc=
-al_t * l)
-> =A0 =A0 =A0 =A0c !=3D (u); =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 \
-> =A0})
-> =A0#define local_inc_not_zero(l) local_add_unless((l), 1, 0)
-> +#define local_dec_not_zero(l) local_add_unless((l), -1, 0)
+> +#define DMA_ERROR_CODE 0
+> +
+> =A0extern struct dma_map_ops *dma_ops;
 >
-> =A0#define local_add_negative(a, l) (local_add_return((a), (l)) < 0)
+> =A0static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+> --
+> 1.7.4.3
+>
 >
 
-Acked-by: Matt Turner <mattst88@gmail.com> [alpha]
+Other architectures define this differently.
+
+arch/ia64/include/asm/dma-mapping.h:#define DMA_ERROR_CODE 0
+arch/microblaze/include/asm/dma-mapping.h:#define DMA_ERROR_CODE
+         (~(dma_addr_t)0x0)
+arch/powerpc/include/asm/dma-mapping.h:#define DMA_ERROR_CODE
+ (~(dma_addr_t)0x0)
+arch/sparc/include/asm/dma-mapping.h:#define DMA_ERROR_CODE
+(~(dma_addr_t)0x0)
+arch/x86/include/asm/dma-mapping.h:#define DMA_ERROR_CODE       0
+
+Any idea what the reason is?
+
+Matt
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
