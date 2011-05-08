@@ -1,53 +1,48 @@
-From: FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>
-Subject: Re: [PATCH] alpha: Add DMA_ERROR_CODE defn to avert compiler error
- in drm
-Date: Sun, 8 May 2011 08:21:40 +0900
-Message-ID: <20110507175442N.fujita.tomonori@lab.ntt.co.jp>
-References: <20110506134925.GB5500@dumpdata.com>
-	<20110507090257L.fujita.tomonori@lab.ntt.co.jp>
-	<20110507030803.GA18069@dumpdata.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] atomic: add *_dec_not_zero
+Date: Sun, 8 May 2011 10:24:03 +0100
+Message-ID: <20110508092403.GB27807@n2100.arm.linux.org.uk>
+References: <1304458235-28473-1-git-send-email-sven@narfation.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20110507030803.GA18069@dumpdata.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=arm.linux.org.uk; s=caramon;
+	h=Sender:In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=IUndsoD6xAL7Vws6YsrpZkfoP8BKP4c8hIlYddhG+5o=;
+	b=LNjmFi8a8Cnz3iX1r1c8ceb0fiYeeOh6q2cwTc2mTQ/TpE0cVao3K6bVV9AigxrObkIds47KJCnHwr0zwKUOTefUbN2s8UsSIkqcJQ8qiihsYGXoiuBYocoRwC5RdpOA/BplZKNzhivy2Eee9IQXXfCLDD2vaXVB35WHb4Hbfhw=;
+Content-Disposition: inline
+In-Reply-To: <1304458235-28473-1-git-send-email-sven@narfation.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: Text/Plain; charset="us-ascii"
-To: konrad.wilk@oracle.com
-Cc: fujita.tomonori@lab.ntt.co.jp, mcree@orcon.net.nz, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, mattst88@gmail.com, rth@twiddle.net, ink@jurassic.park.msu.ru
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Sven Eckelmann <sven@narfation.org>
+Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-m32r@ml.linux-m32r.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, x86@kernel.org, Chris Metcalf <cmetcalf@tilera.com>, David Howells <dhowells@redhat.com>, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-On Fri, 6 May 2011 23:08:03 -0400
-Konrad Rzeszutek Wilk <konrad.wilk@oracle.com> wrote:
+On Tue, May 03, 2011 at 11:30:35PM +0200, Sven Eckelmann wrote:
+> Introduce an *_dec_not_zero operation.  Make this a special case of
+> *_add_unless because batman-adv uses atomic_dec_not_zero in different
+> places like re-broadcast queue or aggregation queue management. There
+> are other non-final patches which may also want to use this macro.
+...
+> diff --git a/arch/arm/include/asm/atomic.h b/arch/arm/include/asm/atomic.h
+> index 7e79503..a005265 100644
+> --- a/arch/arm/include/asm/atomic.h
+> +++ b/arch/arm/include/asm/atomic.h
+> @@ -218,6 +218,7 @@ static inline int atomic_add_unless(atomic_t *v, int a, int u)
+>  	return c != u;
+>  }
+>  #define atomic_inc_not_zero(v) atomic_add_unless((v), 1, 0)
+> +#define atomic_dec_not_zero(v) atomic_add_unless((v), -1, 0)
+>  
+>  #define atomic_inc(v)		atomic_add(1, v)
+>  #define atomic_dec(v)		atomic_sub(1, v)
+> @@ -459,6 +460,7 @@ static inline int atomic64_add_unless(atomic64_t *v, u64 a, u64 u)
+>  #define atomic64_dec_return(v)		atomic64_sub_return(1LL, (v))
+>  #define atomic64_dec_and_test(v)	(atomic64_dec_return((v)) == 0)
+>  #define atomic64_inc_not_zero(v)	atomic64_add_unless((v), 1LL, 0LL)
+> +#define atomic64_dec_not_zero(v)	atomic64_add_unless((v), -1LL, 0LL)
+>  
+>  #else /* !CONFIG_GENERIC_ATOMIC64 */
+>  #include <asm-generic/atomic64.h>
 
-> On Sat, May 07, 2011 at 09:05:50AM +0900, FUJITA Tomonori wrote:
-> > On Fri, 6 May 2011 09:49:25 -0400
-> > Konrad Rzeszutek Wilk <konrad.wilk@oracle.com> wrote:
-> > 
-> > > On Fri, May 06, 2011 at 09:30:03PM +0900, FUJITA Tomonori wrote:
-> > > > On Wed,  4 May 2011 20:13:37 +1200
-> > > > Michael Cree <mcree@orcon.net.nz> wrote:
-> > > > 
-> > > > > The radeon drm code now relies on DMA_ERROR_CODE.  This defines
-> > > > > it in alpha dma-mapping header to at least enable me to compile
-> > > > > radeon drm/kms into kernel.
-> > > > > 
-> > > > > Signed-off-by: Michael Cree <mcree@orcon.net.nz>
-> > > > > ---
-> > > > >  arch/alpha/include/asm/dma-mapping.h |    2 ++
-> > > > >  1 files changed, 2 insertions(+), 0 deletions(-)
-> > > > 
-> > > > This isn't correct. The drivers should not use DMA_ERROR_CODE directly
-> > > > (some architecture specific drivers use it though). Fix rademon
-> > > > drm/kms instead.
-> > > 
-> > > What would be a proper value for non-existent bus addresses? As in the value
-> > > had not been set? 0?
-> > 
-> > Zero is a valid DMA address for some devices.
-> 
-> Ok, so what is an invalid DMA address?
-
-You are looking for a DMA address that is invalid for any device?
-
-If so, there is no such thing because as I wrote, it depends on how a
-device does DMA.
+Do we need atomic_dec_not_zero() et.al. in every arch header - is there no
+generic header which it could be added to?
