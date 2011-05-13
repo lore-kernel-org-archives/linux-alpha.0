@@ -1,55 +1,47 @@
-From: Mike Frysinger <vapier.adi@gmail.com>
-Subject: Re: [PATCH] atomic: add *_dec_not_zero
-Date: Sun, 8 May 2011 22:38:43 -0400
-Message-ID: <BANLkTim+z0mv7oXZHr0YnoxtfnoDZTEr9Q@mail.gmail.com>
-References: <1304458235-28473-1-git-send-email-sven@narfation.org>
- <20110508092403.GB27807@n2100.arm.linux.org.uk> <201105081133.50824.sven@narfation.org>
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PULL] alpha-2.6.git
+Date: Fri, 13 May 2011 19:42:58 -0400
+Message-ID: <BANLkTimc+QU5G1-QsnP7z_RFQp_mHVcxBw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc:content-type:content-transfer-encoding;
-        bh=mOuq4v7R023AdXjNGMJ4biLjdHg3N+1rr0eqQVDw27c=;
-        b=LhH/RU1r++uhruCrWPjpkFruq6qfOTQ62YDVEVNHUZijEwKgyBZjQHFj8pz7/JSykX
-         RdrsEKS2AiM+gH6+9O/CdczqT4eJDetQuB0zWwB60FreGB0mpukuQtpZ+1r0jpAN90Yj
-         pm/AzprmZxShOMdRafk07SJ6a1KC1lK5M0wbc=
-In-Reply-To: <201105081133.50824.sven@narfation.org>
+        h=domainkey-signature:mime-version:from:date:message-id:subject:to:cc
+         :content-type;
+        bh=VYSQ7gUWQK+3NWluS5tnbJhu04x647zFKeLrYY0QsT0=;
+        b=n0KwCDxFKtIqz1+LP92JKf8U4R03f+YuGbJrxSIXRzrhoSilduPf3Gzi5rKAeZQSVS
+         Ao9VqVx3IdIpLhbM7hDoHl0PpO8z5cta+WD4dgpNOj0PfyLdMbk8jNx8E/HZ2WqeLyU+
+         jbQksfuqfwDu291X7/THyXCqWhuGBwQd9UfFo=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Sven Eckelmann <sven@narfation.org>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-m32r@ml.linux-m32r.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, x86@kernel.org, Chris Metcalf <cmetcalf@tilera.com>, David Howells <dhowells@redhat.com>, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, uclinux-dist-devel@blackfin.uclinux.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org
 
-On Sun, May 8, 2011 at 05:33, Sven Eckelmann wrote:
-> Russell King - ARM Linux wrote:
-> [...]
->> Do we need atomic_dec_not_zero() et.al. in every arch header - is th=
-ere no
->> generic header which it could be added to?
->
-> Mike Frysinger already tried to answer it in
-> <BANLkTimctgbto3dsnJ3d3r7NggS0KF9_Sw@mail.gmail.com>:
->> that's what asm-generic is for. =C2=A0if the arch isnt using it, it'=
-s
->> either because the arch needs to convert to it, or they're using SMP
->> and asm-generic doesnt yet support that for atomic.h.
->>
->> for example, the Blackfin port only needed updating for the SMP case=
-=2E
->> in the non-SMP case, we're getting the def from asm-generic/atomic.h=
-=2E
->
-> Feel free to change that but I just followed the style used by all ot=
-her
-> macros and will not redesign the complete atomic*.h idea.
+Hi Linus,
+Please pull a pair of changes from my tree.
 
-what you're doing is currently correct.  i think merging SMP support
-into asm-generic for atomic* will take a bit of pondering first.
--mike
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks,
+Matt
+
+The following changes since commit 446cc6345d3de6571bdd0840f48aca441488a28d:
+
+  Merge branch 'for-linus' of
+git://git.kernel.org/pub/scm/linux/kernel/git/ericvh/v9fs (2011-05-12
+18:00:09 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha-2.6.git for-linus
+
+John Stultz (1):
+      alpha: convert to clocksource_register_hz
+
+Michael Cree (1):
+      alpha: Wire up syscalls new to 2.6.39
+
+ arch/alpha/include/asm/unistd.h |    6 +++++-
+ arch/alpha/kernel/systbls.S     |   12 ++++++++----
+ arch/alpha/kernel/time.c        |    3 +--
+ 3 files changed, 14 insertions(+), 7 deletions(-)
