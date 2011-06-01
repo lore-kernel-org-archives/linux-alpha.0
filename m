@@ -1,94 +1,54 @@
 From: ralf@linux-mips.org
-Subject: [patch 00/14] Sort out i8253 and PC speaker locking and headers
-Date: Wed, 01 Jun 2011 19:04:56 +0100
-Message-ID: <20110601180456.801265664@duck.linux-mips.net>
+Subject: [patch 08/14] i8253: Alpha: Cleanup remaining users of i8253pit.h
+Date: Wed, 01 Jun 2011 19:05:04 +0100
+Message-ID: <20110601180610.608083130@duck.linux-mips.net>
+References: <20110601180456.801265664@duck.linux-mips.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline; filename=i8253-cleanup-remaining-alpha-users-of-8253pit.h.patch
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org
+To: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-No longer terribly relevant these days but still broken and just an eyesore
-mess of neglience just as I've already raised it a few days ago.  Time to
-sort this.
+The Alpha <asm/i8253pit.h> header is empty so this inclusion can just be
+removed.
 
-drivers/input/misc/pcspkr.c:
+Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
+To: linux-kernel@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
 
-#if defined(CONFIG_MIPS) || defined(CONFIG_X86)
-/* Use the global PIT lock ! */
-#include <asm/i8253.h>
-#else
-#include <asm/8253pit.h>
-static DEFINE_RAW_SPINLOCK(i8253_lock);
-#endif
+ arch/alpha/kernel/sys_ruffian.c |    1 -
+ arch/alpha/kernel/time.c        |    1 -
+ 2 files changed, 2 deletions(-)
 
-sound/drivers/pcsp/pcsp.h:
+Index: linux-mips/arch/alpha/kernel/sys_ruffian.c
+===================================================================
+--- linux-mips.orig/arch/alpha/kernel/sys_ruffian.c
++++ linux-mips/arch/alpha/kernel/sys_ruffian.c
+@@ -26,7 +26,6 @@
+ #include <asm/pgtable.h>
+ #include <asm/core_cia.h>
+ #include <asm/tlbflush.h>
+-#include <asm/8253pit.h>
+ 
+ #include "proto.h"
+ #include "irq_impl.h"
+Index: linux-mips/arch/alpha/kernel/time.c
+===================================================================
+--- linux-mips.orig/arch/alpha/kernel/time.c
++++ linux-mips/arch/alpha/kernel/time.c
+@@ -46,7 +46,6 @@
+ #include <asm/uaccess.h>
+ #include <asm/io.h>
+ #include <asm/hwrpb.h>
+-#include <asm/8253pit.h>
+ #include <asm/rtc.h>
+ 
+ #include <linux/mc146818rtc.h>
 
-#if defined(CONFIG_MIPS) || defined(CONFIG_X86)
-/* Use the global PIT lock ! */
-#include <asm/i8253.h>
-#else
-#include <asm/8253pit.h>
-static DEFINE_RAW_SPINLOCK(i8253_lock);
-
-$ git grep -F pcsp.h sound/drivers/pcsp
-sound/drivers/pcsp/pcsp.c:#include "pcsp.h"
-sound/drivers/pcsp/pcsp_input.c:#include "pcsp.h"
-sound/drivers/pcsp/pcsp_lib.c:#include "pcsp.h"
-sound/drivers/pcsp/pcsp_mixer.c:#include "pcsp.h"
-$ git grep -w i8253_lock sound/drivers/pcsp/
-sound/drivers/pcsp/pcsp.h:static DEFINE_RAW_SPINLOCK(i8253_lock);
-sound/drivers/pcsp/pcsp_input.c:        raw_spin_lock_irqsave(&i8253_lock, flags
-sound/drivers/pcsp/pcsp_input.c:        raw_spin_unlock_irqrestore(&i8253_lock, 
-sound/drivers/pcsp/pcsp_lib.c:          raw_spin_lock_irqsave(&i8253_lock, flags
-sound/drivers/pcsp/pcsp_lib.c:          raw_spin_unlock_irqrestore(&i8253_lock, 
-sound/drivers/pcsp/pcsp_lib.c:  raw_spin_lock(&i8253_lock);
-sound/drivers/pcsp/pcsp_lib.c:  raw_spin_unlock(&i8253_lock);
-sound/drivers/pcsp/pcsp_lib.c:  raw_spin_lock(&i8253_lock);
-sound/drivers/pcsp/pcsp_lib.c:  raw_spin_unlock(&i8253_lock);
-
-Locks are great, everybody should have their own lock!
-
-$ find . -name 8253pit.h
-./arch/powerpc/include/asm/8253pit.h
-./arch/alpha/include/asm/8253pit.h
-$ cat arch/*/include/asm/8253pit.h
-/*
- * 8253/8254 Programmable Interval Timer
- */
-/*
- * 8253/8254 Programmable Interval Timer
- */
-$
-
-Eh...
-
-$ git grep -w PCSPKR_PLATFORM 
-arch/mips/Kconfig:      select PCSPKR_PLATFORM
-arch/mips/Kconfig:      select PCSPKR_PLATFORM
-arch/mips/Kconfig:      select PCSPKR_PLATFORM
-arch/powerpc/platforms/amigaone/Kconfig:        select PCSPKR_PLATFORM
-drivers/input/misc/Kconfig:     depends on PCSPKR_PLATFORM
-init/Kconfig:config PCSPKR_PLATFORM
-sound/drivers/Kconfig:  depends on PCSPKR_PLATFORM && X86 && HIGH_RES_TIMERS
-
-So the status is:
-
- Alpha:		There is no PCSPKR_PLATFORM so while a platform device is
-		being installed no drivers will be built.  I don't know
-		which Alpha platforms or even if all of Alpha should be
-		doing a PCSPKR_PLATFORM so I haven't even tried to sort
-		this.
- ARM:		No PC speaker supported, yeah :)
- PowerPC:	Should compile but the locking is wrong but only the AmigaOne
-   		platforms should be affected.
- MIPS:		Ok.
- x86:		Ok.
- All others:	No PC speaker supported
-
-Also only the plain old IBM PC XT was using a i8253; every later system
-had i8254.  So maybe this is the time for renaming the support code?
-
-  Ralf
