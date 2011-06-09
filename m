@@ -1,42 +1,64 @@
-From: Jay Estabrook <jay.estabrook@gmail.com>
-Subject: [PATCH 0/3] alpha, drm: Update Alpha DRM support
-Date: Thu, 9 Jun 2011 18:06:04 -0400
-Message-ID: <20110609180604.7cac8b5a.jay.estabrook_gmail.com@gmail.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [PATCH 0/3] alpha, drm: Update Alpha DRM support
+Date: Thu, 9 Jun 2011 19:07:54 -0400
+Message-ID: <BANLkTimZ02p83xpsLDXJz3Wv7zQQz6=Kig@mail.gmail.com>
+References: <20110609180604.7cac8b5a.jay.estabrook_gmail.com@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:date:from:to:cc:subject:message-id:x-mailer
-         :mime-version:content-type:content-transfer-encoding;
-        bh=gfqnm59ZaDkoFxvbAA4aMRcz6zUAWOybFmbO3IF7rIY=;
-        b=TSn8xKwrbNWWZuIV1stS2lTOg08TvbXI3zuhWBr3+ExXQArlBPveYXX0PUzh006g19
-         GJkHI1ivJN9ODswaEhNFGNaAZMNddXKlSoHSegaSsE+bZoX687XBe/mdzxh9RFRz3x+B
-         m373ac9bml0qOwUizSv1unWJiuI71609/tUgk=
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha <linux-alpha@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>
-Cc: Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@gmail.com>, airlied@linux.ie
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <dri-devel-bounces+sf-dri-devel=m.gmane.org@lists.freedesktop.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=gamma;
+	h=domainkey-signature:mime-version:in-reply-to:references:from:date
+	:message-id:subject:to:cc:content-type:content-transfer-encoding;
+	bh=5rMDPFXwxpqSXE+PZkwYj8/UHF78X6ofm0Mp7TQj1MA=;
+	b=YVX0Z89ccaQz25y5kScKFEwmPwbD5U8t6SKXBbpg2CiQrUxGWflUOJa6NRQUxxiUDz
+	8IXBoFmHXm+OQtlOrGuQCIL+FYJVvw3lAg0wZ/+rwUADZ3ljEnqMJiQKVLOIDssNseL2
+	AfiRVenp52ojFs2pqOb4o/fuZOr5VNijRoRUQ=
+In-Reply-To: <20110609180604.7cac8b5a.jay.estabrook_gmail.com@gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+	<mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+	<mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Sender: dri-devel-bounces+sf-dri-devel=m.gmane.org@lists.freedesktop.org
+Errors-To: dri-devel-bounces+sf-dri-devel=m.gmane.org@lists.freedesktop.org
+To: Jay Estabrook <jay.estabrook@gmail.com>
+Cc: =?ISO-8859-1?Q?Michel_D=E4nzer?= <michel@daenzer.net>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>
 
+On Thu, Jun 9, 2011 at 6:06 PM, Jay Estabrook <jay.estabrook@gmail.com> wro=
+te:
+>
+> This patch set fixes Alpha-specific support in the DRM code,
+> allowing Radeon KMS and the MGA driver to work properly on
+> Alpha-based machines.
+>
+> Jay
+>
+> Jay Estabrook (3):
+> =A0alpha, drm: Update Alpha DRM support
+> =A0alpha, drm: Cleanup Alpha support in DRM generic code
+> =A0alpha, drm: Remove obsolete Alpha support in MGA DRM code
+> =A0alpha, drm: Add Alpha support to Radeon DRM code
+>
+> =A0drivers/gpu/drm/drm_bufs.c =A0 =A0 =A0 =A0 =A0| =A0 =A03 ---
+> =A0drivers/gpu/drm/drm_vm.c =A0 =A0 =A0 =A0 =A0 =A0| =A0 =A02 +-
+> =A0drivers/gpu/drm/mga/mga_drv.h =A0 =A0 =A0 | =A0 19 -------------------
+> =A0drivers/gpu/drm/radeon/radeon_ttm.c | =A0 23 +++++++++++++++++++++++
+> =A04 files changed, 24 insertions(+), 23 deletions(-)
 
-This patch set fixes Alpha-specific support in the DRM code,
-allowing Radeon KMS and the MGA driver to work properly on
-Alpha-based machines.
+Patches 1 and 3 are
 
-Jay
+Tested-by: Matt Turner <mattst88@gmail.com>
 
-Jay Estabrook (3):
-  alpha, drm: Update Alpha DRM support
-  alpha, drm: Cleanup Alpha support in DRM generic code
-  alpha, drm: Remove obsolete Alpha support in MGA DRM code
-  alpha, drm: Add Alpha support to Radeon DRM code
+They also fix
 
- drivers/gpu/drm/drm_bufs.c          |    3 ---
- drivers/gpu/drm/drm_vm.c            |    2 +-
- drivers/gpu/drm/mga/mga_drv.h       |   19 -------------------
- drivers/gpu/drm/radeon/radeon_ttm.c |   23 +++++++++++++++++++++++
- 4 files changed, 24 insertions(+), 23 deletions(-)
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=3D23227
 
----
+In that report, Michel Danzer had some comments about the patch, so
+I'm CC'ing him.
 
+Thanks!
+Matt
