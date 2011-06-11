@@ -1,70 +1,91 @@
-From: Michael Cree <cree@waikato.ac.nz>
-Subject: 2.6.39.1 Regression: testsuite failures in eglibc on Alpha
-Date: Sat, 11 Jun 2011 12:31:11 +1200
-Message-ID: <4DF2B74F.50700@waikato.ac.nz>
+From: Dan Rosenberg <drosenberg@vsecurity.com>
+Subject: [PATCH] alpha: fix several security issues
+Date: Sat, 11 Jun 2011 14:52:05 -0400
+Message-ID: <1307818325.1906.14.camel@dan>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: linux-kernel@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Cc: security@kernel.org
 
-While building eglibc (Debian version 2.13-5) test suite failures are
-reported when running under the 2.6.39.1 kernel, but not when running
-under the 2.6.38.6 kernel on the Alpha arch.  The failures are:
+Fix several security issues in Alpha-specific syscalls.  Untested, but
+mostly trivial.
 
-tst-mutexpi4.out, Error 1
-tst-mutexpi7.out, Error 1
-tst-mutexpi7a.out, Error 1
-tst-robust1.out, Error 1
-tst-robust3.out, Error 1
-tst-robust4.out, Error 1
-tst-robust6.out, Error 1
-tst-robust7.out, Error 1
-tst-robust8.out, Error 1
-tst-robust9.out, Error 1
-tst-robustpi1.out, Error 1
-tst-robustpi3.out, Error 1
-tst-robustpi4.out, Error 1
-tst-robustpi6.out, Error 1
-tst-robustpi7.out, Error 1
-tst-robustpi8.out, Error 1
+1. Signedness issue in osf_getdomainname allows copying out-of-bounds
+kernel memory to userland.
 
-Some of the above tests time out, for example:
+2. Signedness issue in osf_sysinfo allows copying large amounts of
+kernel memory to userland.
 
-GCONV_PATH=3D/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-libc/iconvdat=
-a
-LC_ALL=3DC     /=ABBUILDDIR=BB/eglibc-2
-=2E13/build-tree/alpha-libc/elf/ld-linux.so.2 --library-path
-/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-
-libc:/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-libc/math:/=ABBUILDDI=
-R=BB/eglibc-2.13/build-tree/alpha-lib
-c/elf:/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-libc/dlfcn:/=ABBUILD=
-DIR=BB/eglibc-2.13/build-tree/alpha-l
-ibc/nss:/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-libc/nis:/=ABBUILD=
-DIR=BB/eglibc-2.13/build-tree/alpha-l
-ibc/rt:/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-libc/resolv:/=ABBUI=
-LDDIR=BB/eglibc-2.13/build-tree/alpha
--libc/crypt:/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-libc/nptl
-/=ABBUILDDIR=BB/eglibc-2.13/build-tree/al
-pha-libc/nptl/tst-mutexpi7  >
-/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-libc/nptl/tst-mutexpi7.out
-Timed out: killed the child process
-make[3]: ***
-[/=ABBUILDDIR=BB/eglibc-2.13/build-tree/alpha-libc/nptl/tst-mutexpi7.ou=
-t]
-Error 1
+3. Typo (?) in osf_getsysinfo bounds minimum instead of maximum copy
+size, allowing copying large amounts of kernel memory to userland.
 
-Since no problems are seen with the 2.6.38 kernel series this appears t=
-o
-be a 2.6.39[.1] regression.
+4. Usage of user pointer in osf_wait4 while under KERNEL_DS allows
+privilege escalation via writing return value of sys_wait4 to kernel
+memory.
 
-Cheers
-Michael.
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Dan Rosenberg <drosenberg@vsecurity.com>
+---
+ arch/alpha/kernel/osf_sys.c |   11 +++++++----
+ 1 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 376f221..98fb16d 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -409,7 +409,7 @@ SYSCALL_DEFINE2(osf_getdomainname, char __user *, name, int, namelen)
+ 		return -EFAULT;
+ 
+ 	len = namelen;
+-	if (namelen > 32)
++	if (len > 32)
+ 		len = 32;
+ 
+ 	down_read(&uts_sem);
+@@ -594,7 +594,7 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
+ 	down_read(&uts_sem);
+ 	res = sysinfo_table[offset];
+ 	len = strlen(res)+1;
+-	if (len > count)
++	if ((unsigned long)len > (unsigned long)count)
+ 		len = count;
+ 	if (copy_to_user(buf, res, len))
+ 		err = -EFAULT;
+@@ -649,7 +649,7 @@ SYSCALL_DEFINE5(osf_getsysinfo, unsigned long, op, void __user *, buffer,
+ 		return 1;
+ 
+ 	case GSI_GET_HWRPB:
+-		if (nbytes < sizeof(*hwrpb))
++		if (nbytes > sizeof(*hwrpb))
+ 			return -EINVAL;
+ 		if (copy_to_user(buffer, hwrpb, nbytes) != 0)
+ 			return -EFAULT;
+@@ -1008,6 +1008,7 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
+ {
+ 	struct rusage r;
+ 	long ret, err;
++	unsigned int status = 0;
+ 	mm_segment_t old_fs;
+ 
+ 	if (!ur)
+@@ -1016,13 +1017,15 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
+ 	old_fs = get_fs();
+ 		
+ 	set_fs (KERNEL_DS);
+-	ret = sys_wait4(pid, ustatus, options, (struct rusage __user *) &r);
++	ret = sys_wait4(pid, (unsigned int __user *) &status, options,
++			(struct rusage __user *) &r);
+ 	set_fs (old_fs);
+ 
+ 	if (!access_ok(VERIFY_WRITE, ur, sizeof(*ur)))
+ 		return -EFAULT;
+ 
+ 	err = 0;
++	err |= put_user(status, ustatus);
+ 	err |= __put_user(r.ru_utime.tv_sec, &ur->ru_utime.tv_sec);
+ 	err |= __put_user(r.ru_utime.tv_usec, &ur->ru_utime.tv_usec);
+ 	err |= __put_user(r.ru_stime.tv_sec, &ur->ru_stime.tv_sec);
+
