@@ -1,91 +1,32 @@
-From: Dan Rosenberg <drosenberg@vsecurity.com>
-Subject: [PATCH] alpha: fix several security issues
-Date: Sat, 11 Jun 2011 14:52:05 -0400
-Message-ID: <1307818325.1906.14.camel@dan>
+From: David Miller <davem@davemloft.net>
+Subject: Re: [PATCH] PCI: Make the struct pci_dev * argument of
+ pci_fixup_irqs const.
+Date: Sat, 11 Jun 2011 16:01:19 -0700 (PDT)
+Message-ID: <20110611.160119.176399204911265689.davem@davemloft.net>
+References: <20110610143021.GA26043@linux-mips.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: security@kernel.org
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <20110610143021.GA26043@linux-mips.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-Id: <linux-alpha.vger.kernel.org>
+Content-Type: Text/Plain; charset="us-ascii"
+To: ralf@linux-mips.org
+Cc: jbarnes@virtuousgeek.org, linux-pci@vger.kernel.org, avorontsov@mvista.com, cmetcalf@tilera.com, ccross@android.com, eric.y.miao@gmail.com, konkers@android.com, gxt@mprc.pku.edu.cn, hpa@zytor.com, kaloz@openwrt.org, mingo@redhat.com, ink@jurassic.park.msu.ru, khc@pm.waw.pl, kernel@wantstofly.org, mattst88@gmail.com, nico@fluxnic.net, olof@lixom.net, lethal@linux-sh.org, rth@twiddle.net, linux@arm.linux.org.uk, tglx@linutronix.de, akpm@linux-foundation.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, linux-tegra@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org
 
-Fix several security issues in Alpha-specific syscalls.  Untested, but
-mostly trivial.
+From: Ralf Baechle <ralf@linux-mips.org>
+Date: Fri, 10 Jun 2011 15:30:21 +0100
 
-1. Signedness issue in osf_getdomainname allows copying out-of-bounds
-kernel memory to userland.
+> Aside of the usual motivation for constification,  this function has a
+> history of being abused a hook for interrupt and other fixups so I turned
+> this function const ages ago in the MIPS code but it should be done
+> treewide.
+> 
+> Due to function pointer passing in varous places a few other functions
+> had to be constified as well.
+> 
+> Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
 
-2. Signedness issue in osf_sysinfo allows copying large amounts of
-kernel memory to userland.
-
-3. Typo (?) in osf_getsysinfo bounds minimum instead of maximum copy
-size, allowing copying large amounts of kernel memory to userland.
-
-4. Usage of user pointer in osf_wait4 while under KERNEL_DS allows
-privilege escalation via writing return value of sys_wait4 to kernel
-memory.
-
-Signed-off-by: Dan Rosenberg <drosenberg@vsecurity.com>
----
- arch/alpha/kernel/osf_sys.c |   11 +++++++----
- 1 files changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index 376f221..98fb16d 100644
---- a/arch/alpha/kernel/osf_sys.c
-+++ b/arch/alpha/kernel/osf_sys.c
-@@ -409,7 +409,7 @@ SYSCALL_DEFINE2(osf_getdomainname, char __user *, name, int, namelen)
- 		return -EFAULT;
- 
- 	len = namelen;
--	if (namelen > 32)
-+	if (len > 32)
- 		len = 32;
- 
- 	down_read(&uts_sem);
-@@ -594,7 +594,7 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
- 	down_read(&uts_sem);
- 	res = sysinfo_table[offset];
- 	len = strlen(res)+1;
--	if (len > count)
-+	if ((unsigned long)len > (unsigned long)count)
- 		len = count;
- 	if (copy_to_user(buf, res, len))
- 		err = -EFAULT;
-@@ -649,7 +649,7 @@ SYSCALL_DEFINE5(osf_getsysinfo, unsigned long, op, void __user *, buffer,
- 		return 1;
- 
- 	case GSI_GET_HWRPB:
--		if (nbytes < sizeof(*hwrpb))
-+		if (nbytes > sizeof(*hwrpb))
- 			return -EINVAL;
- 		if (copy_to_user(buffer, hwrpb, nbytes) != 0)
- 			return -EFAULT;
-@@ -1008,6 +1008,7 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
- {
- 	struct rusage r;
- 	long ret, err;
-+	unsigned int status = 0;
- 	mm_segment_t old_fs;
- 
- 	if (!ur)
-@@ -1016,13 +1017,15 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
- 	old_fs = get_fs();
- 		
- 	set_fs (KERNEL_DS);
--	ret = sys_wait4(pid, ustatus, options, (struct rusage __user *) &r);
-+	ret = sys_wait4(pid, (unsigned int __user *) &status, options,
-+			(struct rusage __user *) &r);
- 	set_fs (old_fs);
- 
- 	if (!access_ok(VERIFY_WRITE, ur, sizeof(*ur)))
- 		return -EFAULT;
- 
- 	err = 0;
-+	err |= put_user(status, ustatus);
- 	err |= __put_user(r.ru_utime.tv_sec, &ur->ru_utime.tv_sec);
- 	err |= __put_user(r.ru_utime.tv_usec, &ur->ru_utime.tv_usec);
- 	err |= __put_user(r.ru_stime.tv_sec, &ur->ru_stime.tv_sec);
+Acked-by: David S. Miller <davem@davemloft.net>
 
