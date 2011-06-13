@@ -1,65 +1,42 @@
-From: Guan Xuetao <gxt@mprc.pku.edu.cn>
-Subject: Re: [PATCH] PCI: Make the struct pci_dev * argument of
- pci_fixup_irqs const.
-Date: Mon, 13 Jun 2011 17:00:44 +0800
-Message-ID: <1307955644.1878.5.camel@epip-laptop>
-References: <20110610143021.GA26043@linux-mips.org>
-Reply-To: gxt@mprc.pku.edu.cn
+From: Dave Airlie <airlied@gmail.com>
+Subject: Re: [PATCH 3/3] alpha, drm: Add Alpha support to Radeon DRM code
+Date: Tue, 14 Jun 2011 09:35:30 +1000
+Message-ID: <BANLkTinvXFV1bObeaym6A4VEcxv0jN+zXQ@mail.gmail.com>
+References: <20110609182021.73726ea3.jay.estabrook_gmail.com@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20110610143021.GA26043@linux-mips.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-Id: <linux-alpha.vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:mime-version:in-reply-to:references:date
+         :message-id:subject:from:to:cc:content-type;
+        bh=ugCHr44KrrPqDEatZoSammXvpntjmxvhj7yxssYHZQM=;
+        b=eLDa2+tapmjclpBAln0wgntnZCA3JGaAS8+MjtjvN/4/rkPxaVwHpB2eN1pIXx7LsV
+         l2pPsjQ6ZCxMIbLRQ+4LwTMW140FEC0xDuNCr2Y2w6JCUCDDTPeyKAbYqMT5J6sN9PDt
+         4Ch1/06H/RVVtcH/TTNlQ94zgHPw3J3WBnsbs=
+In-Reply-To: <20110609182021.73726ea3.jay.estabrook_gmail.com@gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: Jesse Barnes <jbarnes@virtuousgeek.org>, linux-pci@vger.kernel.org, Anton Vorontsov <avorontsov@mvista.com>, Chris Metcalf <cmetcalf@tilera.com>, Colin Cross <ccross@android.com>, "David S. Miller" <davem@davemloft.net>, Eric Miao <eric.y.miao@gmail.com>, Erik Gilling <konkers@android.com>, "H. Peter Anvin" <hpa@zytor.com>, Imre Kaloz <kaloz@openwrt.org>, Ingo Molnar <mingo@redhat.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Krzysztof Halasa <khc@pm.waw.pl>, Lennert Buytenhek <kernel@wantstofly.org>, Matt Turner <mattst88@gmail.com>, Nicolas Pitre <nico@fluxnic.net>, Olof Johansson <olof@lixom.net>, Paul Mundt <lethal@linux-sh.org>, Richard Henderson <rth@twiddle.net>, Russell King <linux@arm.linux.org.uk>, Thomas Gleixner <tglx@linutron>
+Content-Transfer-Encoding: 7bit
+To: Jay Estabrook <jay.estabrook@gmail.com>
+Cc: linux-alpha <linux-alpha@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, airlied@linux.ie
 
-On Fri, 2011-06-10 at 15:30 +0100, Ralf Baechle wrote:
-> Aside of the usual motivation for constification,  this function has a
-> history of being abused a hook for interrupt and other fixups so I turned
-> this function const ages ago in the MIPS code but it should be done
-> treewide.
-> 
-> Due to function pointer passing in varous places a few other functions
-> had to be constified as well.
-> 
-> Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
-> To: Anton Vorontsov <avorontsov@mvista.com>
-> To: Chris Metcalf <cmetcalf@tilera.com>
-> To: Colin Cross <ccross@android.com>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: Eric Miao <eric.y.miao@gmail.com>
-> To: Erik Gilling <konkers@android.com>
-> To: Guan Xuetao <gxt@mprc.pku.edu.cn>
-> To: "H. Peter Anvin" <hpa@zytor.com>
-> To: Imre Kaloz <kaloz@openwrt.org>
-> To: Ingo Molnar <mingo@redhat.com>
-> To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> To: Jesse Barnes <jbarnes@virtuousgeek.org>
-> To: Krzysztof Halasa <khc@pm.waw.pl>
-> To: Lennert Buytenhek <kernel@wantstofly.org>
-> To: Matt Turner <mattst88@gmail.com>
-> To: Nicolas Pitre <nico@fluxnic.net>
-> To: Olof Johansson <olof@lixom.net>
-> To: Paul Mundt <lethal@linux-sh.org>
-> To: Richard Henderson <rth@twiddle.net>
-> To: Russell King <linux@arm.linux.org.uk>
-> To: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: linux-alpha@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-mips@linux-mips.org
-> Cc: linux-pci@vger.kernel.org
-> Cc: linux-sh@vger.kernel.org
-> Cc: linux-tegra@vger.kernel.org
-> Cc: sparclinux@vger.kernel.org
-> Cc: x86@kernel.org
-> ---
-For UniCore32 related codes:
-Acked-by: Guan Xuetao <gxt@mprc.pku.edu.cn>
+On Fri, Jun 10, 2011 at 8:20 AM, Jay Estabrook <jay.estabrook@gmail.com> wrote:
+>
+> Alpha needs to have the system bus address for the device's local
+> memory available, so that it can be returned to user-level, where
+> it may be used in an mmap(). So, we make bus.addr hold the ioremap()
+> return for kernel use, and then we can modify bus.base appropriately.
+>
 
+I don't get this. why is mmap passing in an address? we don't do that anymore.
 
+When you mmap the device node it passes back a hashed offset in the
+table, that the
+kernel then translates into a proper address and sets up the page tables.
 
+So I really don't get what this patch is doing, either the
+explaination of what it is doing is wrong
+or it is wrong.
+
+Dave.
