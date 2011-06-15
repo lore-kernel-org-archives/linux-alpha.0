@@ -1,63 +1,66 @@
-From: Guan Xuetao <gxt@mprc.pku.edu.cn>
-Subject: Re: [RFC,PATCH] Cleanup PC parallel port Kconfig
-Date: Wed, 15 Jun 2011 09:24:06 +0800
-Message-ID: <1308101046.4727.10.camel@epip-laptop>
-References: <20110614190850.GA13526@linux-mips.org>
-Reply-To: gxt@mprc.pku.edu.cn
+From: Jay Estabrook <jay.estabrook@gmail.com>
+Subject: Re: [PATCH 3/3] alpha, drm: Add Alpha support to Radeon DRM code
+Date: Tue, 14 Jun 2011 22:38:10 -0400
+Message-ID: <4DF81B12.2040800@gmail.com>
+References: <20110609182021.73726ea3.jay.estabrook_gmail.com@gmail.com> <BANLkTinvXFV1bObeaym6A4VEcxv0jN+zXQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20110614190850.GA13526@linux-mips.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-Id: <linux-alpha.vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:message-id:date:from:user-agent:mime-version:to
+         :cc:subject:references:in-reply-to:content-type
+         :content-transfer-encoding;
+        bh=G6jnsdWCsBppd70TXsA2CeOYfmyKsxXA6fdo+EwhoS0=;
+        b=QMtR+5Ifsbw4zy4sHPgHQHx/NuBrMfmIHg+KaEFDupQLe3lsUL8ACh/Rc4gYgcyKl9
+         ywssKXmWFdqUqFPAbUsgcg3PmfDUOIhlWLQ10q1GypaBUjNXfWGmnE4pV6hJ8773LfzD
+         ZFpr/m9b6XsdLQNGvt8EQPbR/mPvyrzezHeKQ=
+In-Reply-To: <BANLkTinvXFV1bObeaym6A4VEcxv0jN+zXQ@mail.gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: linux-arch@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Chen Liqin <liqin.chen@sunplusct.com>, Chris Metcalf <cmetcalf@tilera.com>, Chris Zankel <chris@zankel.net>, "David S. Miller" <davem@davemloft.net>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Helge Deller <deller@gmx.de>, "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Jesper Nilsson <jesper.nilsson@axis.com>, Kyle McMartin <kyle@mcmartin.ca>, Lennox Wu <lennox.wu@gmail.com>, Matt Turner <mattst88@gmail.com>, Michal Simek <monstr@monstr.eu>, Mikael Starvik <starvik@axis.com>, Paul Mackerras <paulus@samba.org>, Pau
+To: Dave Airlie <airlied@gmail.com>
+Cc: linux-alpha <linux-alpha@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, airlied@linux.ie
 
-On Tue, 2011-06-14 at 20:08 +0100, Ralf Baechle wrote:
-> The PC parallel port Kconfig as acquired one of those messy terms to
-> describe it's architecture dependencies:
+Hi, Dave,
+
+It is the explanation that is inaccurate; I was still thinking about mmap when
+the new paradigm is to do the mapping when the VM faults.
+
+I believe the code that requires this patch is: ttm/ttm_bo_vm.c: ttm_bo_vm_fault(),
+specifically:
+
+    for (i = 0; i < TTM_BO_VM_NUM_PREFAULT; ++i) {
+        if (bo->mem.bus.is_iomem)
+            pfn = ((bo->mem.bus.base + bo->mem.bus.offset) >> PAGE_SHIFT) + page_offset;
+        else {
+
+The "pfn" needs to reflect the correct system bus address to get to the VRAM
+on the graphics card.
+
+I will rework the commentary and resend.
+
+Thanks for the feedback.
+
+Jay
+
+
+On 06/13/2011 07:35 PM, Dave Airlie wrote:
+> On Fri, Jun 10, 2011 at 8:20 AM, Jay Estabrook <jay.estabrook@gmail.com> wrote:
+>> Alpha needs to have the system bus address for the device's local
+>> memory available, so that it can be returned to user-level, where
+>> it may be used in an mmap(). So, we make bus.addr hold the ioremap()
+>> return for kernel use, and then we can modify bus.base appropriately.
+>>
 > 
->        depends on (!SPARC64 || PCI) && !SPARC32 && !M32R && !FRV && \
->                (!M68K || ISA) && !MN10300 && !AVR32 && !BLACKFIN
+> I don't get this. why is mmap passing in an address? we don't do that anymore.
 > 
-> This isn't just ugly - it also almost certainly describes the dependencies
-> too coarse grainedly.  This is an attempt at cleaing the mess up.
+> When you mmap the device node it passes back a hashed offset in the
+> table, that the
+> kernel then translates into a proper address and sets up the page tables.
 > 
-> I tried to faithfully aproximate the old behaviour but the existing
-> behaviour seems inacurate if not wrong for some architectures or platforms.
-> To improve on this I rely on comments from other arch and platforms
-> maintainers.  Any system that can take PCI multi-IO card or has a PC-style
-> parallel port on the mainboard should probably should now do a
-> select HAVE_PC_PARPORT.  And some arch Kconfig files should further
-> restrict the use of HAVE_PC_PARPORT to only those platforms that actually
-> need it.
+> So I really don't get what this patch is doing, either the
+> explaination of what it is doing is wrong
+> or it is wrong.
 > 
-> Thanks,
-> 
->   Ralf
-
-> diff --git a/arch/unicore32/Kconfig b/arch/unicore32/Kconfig
-> index e57dcce..3832e7e 100644
-> --- a/arch/unicore32/Kconfig
-> +++ b/arch/unicore32/Kconfig
-> @@ -8,6 +8,7 @@ config UNICORE32
->  	select HAVE_KERNEL_BZIP2
->  	select HAVE_KERNEL_LZO
->  	select HAVE_KERNEL_LZMA
-> +	select HAVE_PC_PARPORT
->  	select GENERIC_FIND_FIRST_BIT
->  	select GENERIC_IRQ_PROBE
->  	select GENERIC_IRQ_SHOW
-In UniCore32, only some debug-boards need to support parport.
-So I'd like to add HAVE_PC_PARPORT and related configs to certian
-*_defconfig, but not in Kconfig.
-
-Thanks Ralf.
-
-Guan Xuetao
-
-
-
-
+> Dave.
