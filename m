@@ -1,65 +1,66 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [RFC,PATCH] Cleanup PC parallel port Kconfig
-Date: Wed, 15 Jun 2011 16:21:44 +0100
-Message-ID: <20110615152144.GE28989@n2100.arm.linux.org.uk>
-References: <20110614190850.GA13526@linux-mips.org>
-	<4DF7C3CA.9050902@zytor.com> <201106142333.16203.arnd@arndb.de>
-	<4DF83577.6040903@zytor.com>
-	<20110615074749.GB28989@n2100.arm.linux.org.uk>
-	<4DF8CAD5.1090902@zytor.com>
+From: Jay Estabrook <jay.estabrook@gmail.com>
+Subject: [PATCH 3/3 REPOST] alpha, drm: Add Alpha support to Radeon DRM code
+Date: Mon, 20 Jun 2011 14:20:59 -0400
+Message-ID: <20110620142059.04c3b912.jay.estabrook_gmail.com@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=arm.linux.org.uk; s=caramon; 
-	h=Sender:In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date;
-	bh=Hs9ffxwPNuzFlKAsDVltuhGb26YVWeq3rynswaUUHuw=; 
-	b=o2C4AmDaw4GqMh9JeMW9JL7Q0AeHC1td9DdfByGSR9JWwIAiNBoa6tfwn0LHutRV/OUoy7atTYQj6m7phxAXcywgQT0Qt0Jep0M3+VzSgZr7DDmHd60EZoorXIxdTqWc9VbM+ItozajUwKnGxell7Ig1hYCNfqRgNW1LxslEfXY=;
-Content-Disposition: inline
-In-Reply-To: <4DF8CAD5.1090902@zytor.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: "H. Peter Anvin" <hpa@zytor.com>
-Cc: linux-mips@linux-mips.org, linux-m68k@vger.kernel.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Chen Liqin <liqin.chen@sunplusct.com>, Paul Mackerras <paulus@samba.org>, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Lennox Wu <lennox.wu@gmail.com>, linux-arch@vger.kernel.org, Jesper Nilsson <jesper.nilsson@axis.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Arnd Bergmann <arnd@arndb.de>, microblaze-uclinux@itee.uq.edu.au, Chris Metcalf <cmetcalf@tilera.com>, Mikael Starvik <starvik@axis.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=domainkey-signature:date:from:to:cc:subject:message-id:x-mailer
+         :mime-version:content-type:content-transfer-encoding;
+        bh=eXFbBroscKzesZCbvUOExDuKqcsBGOtC0C3pNfVuZ7g=;
+        b=jM8AnpDZPY5AEgxEy/iaNlSI0jbmPYQIHD0/I9BHQe8EfNtjKoQkNet5UtSNdiUI9k
+         EFAEefjSxVTTv8YHH9+JOTDynD4JPAa55Dmulff5WQPQ/FRyfmuJfVMLTIv+MrUnyohZ
+         KVJkqiEgSuulz0xE+B6ApN1ZwDNrBk0pespUg=
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: airlied@linux.ie, linux-kernel <linux-kernel@vger.kernel.org>, linux-alpha <linux-alpha@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>
+Cc: Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@gmail.com>
 
-On Wed, Jun 15, 2011 at 08:08:05AM -0700, H. Peter Anvin wrote:
-> On 06/15/2011 12:47 AM, Russell King - ARM Linux wrote:
-> >>
-> >> OK, serial-8250 is clearly just plain wrong, since the 8250 series UARTs
-> >> are ubiquitous across just about every platform.
-> >>
-> >> Floppy is special (in the short bus sense), since it is closely tied to
-> >> ISA DMA.  Conditionalizing this on ISA DMA makes total sense.
-> > 
-> > No it doesn't.  It depends on the ISA DMA API, not that the machine has
-> > ISA DMA.
-> > 
-> > I have a platform which has no ISA DMA but uses the floppy driver.  Please
-> > don't break it.
-> 
-> OK, even more case in point, then.
 
-It's already been solved - ARCH_MAY_HAVE_PC_FDC is supposed to be
-defined to y in the cases where architectures have support for it.
+Alpha needs to have available the system bus address for the Radeon's
+local memory, so that it can be used in ttm_bo_vm_fault(), when building
+the PTEs for accessing that VRAM.  So, we make bus.addr hold the ioremap()
+return, and then we can modify bus.base appropriately for use during page
+fault processing.
 
-What we do on ARM for example is:
+Signed-off-by: Jay Estabrook <jay.estabrook@gmail.com>
+---
+ drivers/gpu/drm/radeon/radeon_ttm.c |   23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-config ARCH_MAY_HAVE_PC_FDC
-        bool
-
-and then select that symbol for our platforms which can have the
-floppy driver.
-
-And in any case we already have definitions for the presence of the
-ISA DMA API vs the common ISA DMA helpers in kernel/.  The presence
-of the ISA DMA API is given by CONFIG_ISA_DMA_API, while the
-ISA DMA helper CONFIG_GENERIC_ISA_DMA.
+diff -Naurp a/drivers/gpu/drm/radeon/radeon_ttm.c b/drivers/gpu/drm/radeon/radeon_ttm.c
+--- a/drivers/gpu/drm/radeon/radeon_ttm.c	2011-04-26 23:48:50.000000000 -0400
++++ b/drivers/gpu/drm/radeon/radeon_ttm.c	2011-05-03 18:24:27.000000000 -0400
+@@ -450,6 +450,29 @@ static int radeon_ttm_io_mem_reserve(str
+ 			return -EINVAL;
+ 		mem->bus.base = rdev->mc.aper_base;
+ 		mem->bus.is_iomem = true;
++#ifdef __alpha__
++		/*
++		 * Alpha: use bus.addr to hold the ioremap() return,
++		 * so we can modify bus.base below.
++		 */
++		if (mem->placement & TTM_PL_FLAG_WC)
++			mem->bus.addr =
++				ioremap_wc(mem->bus.base + mem->bus.offset,
++					   mem->bus.size);
++		else
++			mem->bus.addr =
++				ioremap_nocache(mem->bus.base + mem->bus.offset,
++						mem->bus.size);
++
++		/*
++		 * Alpha: Take just the bus offset and
++		 * add the hose/domain memory base.
++		 * Then, bus.base can be returned
++		 * for use in an mmap() call.
++		 */
++		mem->bus.base = (mem->bus.base & 0x0ffffffffUL) +
++			rdev->ddev->hose->dense_mem_base;
++#endif
+ 		break;
+ 	default:
+ 		return -EINVAL;
