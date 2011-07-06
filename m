@@ -1,18 +1,19 @@
 From: Jay Estabrook <jay.estabrook@gmail.com>
-Subject: [PATCH 3/3 REPOST] alpha, drm: Add Alpha support to Radeon DRM code
-Date: Mon, 20 Jun 2011 14:20:59 -0400
-Message-ID: <20110620142059.04c3b912.jay.estabrook_gmail.com@gmail.com>
+Subject: [PATCH 3/3 REPOST #2] alpha, drm: Add Alpha support to Radeon DRM
+ code
+Date: Wed, 6 Jul 2011 19:57:13 -0400
+Message-ID: <20110706195713.48fe25fe.jay.estabrook_gmail.com@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
-        h=domainkey-signature:date:from:to:cc:subject:message-id:x-mailer
-         :mime-version:content-type:content-transfer-encoding;
-        bh=eXFbBroscKzesZCbvUOExDuKqcsBGOtC0C3pNfVuZ7g=;
-        b=jM8AnpDZPY5AEgxEy/iaNlSI0jbmPYQIHD0/I9BHQe8EfNtjKoQkNet5UtSNdiUI9k
-         EFAEefjSxVTTv8YHH9+JOTDynD4JPAa55Dmulff5WQPQ/FRyfmuJfVMLTIv+MrUnyohZ
-         KVJkqiEgSuulz0xE+B6ApN1ZwDNrBk0pespUg=
+        h=date:from:to:cc:subject:message-id:x-mailer:mime-version
+         :content-type:content-transfer-encoding;
+        bh=kP0ENFpz/O8rf4qXps/m1OxLVZ8E6SWB1UGUMqrjF0g=;
+        b=G7CQH2OkyTzWI4Ra8ugC5hLngL4lvfj/xfJY+0QiQpViq9lB5RzqHcT7JnYAFUDzpj
+         ccDnbuZSE7bD77bbrXe8jhfPxxdn9IHEJ6g15ppuFdMDeY0k9y/ef+8ngel1d6/Npcvc
+         gm0fvJIHTwUVMC/Xl6tKlT46flCn2KY110VOk=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -53,10 +54,10 @@ diff -Naurp a/drivers/gpu/drm/radeon/radeon_ttm.c b/drivers/gpu/drm/radeon/radeo
 +						mem->bus.size);
 +
 +		/*
-+		 * Alpha: Take just the bus offset and
-+		 * add the hose/domain memory base.
-+		 * Then, bus.base can be returned
-+		 * for use in an mmap() call.
++		 * Alpha: Use just the bus offset plus
++		 * the hose/domain memory base for bus.base.
++		 * It then can be used to build PTEs for VRAM
++		 * access, as done in ttm_bo_vm_fault().
 +		 */
 +		mem->bus.base = (mem->bus.base & 0x0ffffffffUL) +
 +			rdev->ddev->hose->dense_mem_base;
