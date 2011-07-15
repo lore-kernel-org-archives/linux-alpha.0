@@ -1,67 +1,87 @@
-From: Jay Estabrook <jay.estabrook@gmail.com>
-Subject: [PATCH 3/3 REPOST #2] alpha, drm: Add Alpha support to Radeon DRM
- code
-Date: Wed, 6 Jul 2011 19:57:13 -0400
-Message-ID: <20110706195713.48fe25fe.jay.estabrook_gmail.com@gmail.com>
+From: "Uwe Schindler" <uwe@thetaphi.de>
+Subject: RE: recent udev upgrade failure on alpha
+Date: Fri, 15 Jul 2011 16:04:00 +0200
+Message-ID: <00af01cc42f8$0c691e40$253b5ac0$@thetaphi.de>
+References: <20110224070203.GA28419@gherkin.frus.com> <20110224075149.GA28779@gherkin.frus.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=date:from:to:cc:subject:message-id:x-mailer:mime-version
-         :content-type:content-transfer-encoding;
-        bh=kP0ENFpz/O8rf4qXps/m1OxLVZ8E6SWB1UGUMqrjF0g=;
-        b=G7CQH2OkyTzWI4Ra8ugC5hLngL4lvfj/xfJY+0QiQpViq9lB5RzqHcT7JnYAFUDzpj
-         ccDnbuZSE7bD77bbrXe8jhfPxxdn9IHEJ6g15ppuFdMDeY0k9y/ef+8ngel1d6/Npcvc
-         gm0fvJIHTwUVMC/Xl6tKlT46flCn2KY110VOk=
+In-Reply-To: <20110224075149.GA28779@gherkin.frus.com>
+Content-Language: de
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: airlied@linux.ie, linux-kernel <linux-kernel@vger.kernel.org>, linux-alpha <linux-alpha@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>
-Cc: Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@gmail.com>
+To: 'Bob Tracy' <rct@gherkin.frus.com>, debian-alpha@lists.debian.org
+Cc: linux-alpha@vger.kernel.org, mattst88@gmail.com, mcree@orcon.net.nz
 
+Hi,
 
-Alpha needs to have available the system bus address for the Radeon's
-local memory, so that it can be used in ttm_bo_vm_fault(), when building
-the PTEs for accessing that VRAM.  So, we make bus.addr hold the ioremap()
-return, and then we can modify bus.base appropriately for use during page
-fault processing.
+today I had some time to get my machine out of the XFS relocation failure on
+booting, it now boots with EXT4 as root file system (was hard word, see
+below). I have now linux-image-2.6.38-2-alpha-generic running (installed
+from debian-ports) and system runs fine for now.
 
-Signed-off-by: Jay Estabrook <jay.estabrook@gmail.com>
----
- drivers/gpu/drm/radeon/radeon_ttm.c |   23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+I tried then to upgrade the package "udev" (was on hold, to prevent me from
+making system unbootable), with the hope that the inotify is working with
+this debian kernel. Unfortunately that's not the case, UDEV complains about
+missing inotify.
 
-diff -Naurp a/drivers/gpu/drm/radeon/radeon_ttm.c b/drivers/gpu/drm/radeon/radeon_ttm.c
---- a/drivers/gpu/drm/radeon/radeon_ttm.c	2011-04-26 23:48:50.000000000 -0400
-+++ b/drivers/gpu/drm/radeon/radeon_ttm.c	2011-05-03 18:24:27.000000000 -0400
-@@ -450,6 +450,29 @@ static int radeon_ttm_io_mem_reserve(str
- 			return -EINVAL;
- 		mem->bus.base = rdev->mc.aper_base;
- 		mem->bus.is_iomem = true;
-+#ifdef __alpha__
-+		/*
-+		 * Alpha: use bus.addr to hold the ioremap() return,
-+		 * so we can modify bus.base below.
-+		 */
-+		if (mem->placement & TTM_PL_FLAG_WC)
-+			mem->bus.addr =
-+				ioremap_wc(mem->bus.base + mem->bus.offset,
-+					   mem->bus.size);
-+		else
-+			mem->bus.addr =
-+				ioremap_nocache(mem->bus.base + mem->bus.offset,
-+						mem->bus.size);
-+
-+		/*
-+		 * Alpha: Use just the bus offset plus
-+		 * the hose/domain memory base for bus.base.
-+		 * It then can be used to build PTEs for VRAM
-+		 * access, as done in ttm_bo_vm_fault().
-+		 */
-+		mem->bus.base = (mem->bus.base & 0x0ffffffffUL) +
-+			rdev->ddev->hose->dense_mem_base;
-+#endif
- 		break;
- 	default:
- 		return -EINVAL;
+So is the patch below already included in some kernel images available? Or
+does somebody have a recent udev version as .deb packages?
+
+> On Thu, Feb 24, 2011 at 01:02:03AM -0600, Bob Tracy wrote:
+> > Running "dpkg --configure udev" gives me the following:
+> >
+> > udevd[pid]: inotify_init failed: Function not implemented
+> > udevd[pid]: error initializing inotify
+> >
+> > and the post-installation script fails.
+> >
+> > So...  What's missing or unimplemented on Alpha?  Prior versions of
+> > "udev" worked just fine.
+> 
+> Found it.  inotify_init1() is a stub function on Alpha.  A heated
+discussion
+> *somewhere* produced a udev patch that *may* work:
+> 
+> --- a/udev/udev-watch.c
+> +++ b/udev/udev-watch.c
+> @@ -38,8 +38,10 @@ static int inotify_fd = -1;
+>   */
+>  int udev_watch_init(struct udev *udev)
+>  {
+> -       inotify_fd = inotify_init1(IN_CLOEXEC);
+> -       if (inotify_fd < 0)
+> +       inotify_fd = inotify_init();
+> +       if (inotify_fd >= 0)
+> +               util_set_fd_cloexec(inotify_fd);
+> +       else
+>                 err(udev, "inotify_init failed: %m\n");
+>         return inotify_fd;
+>  }
+
+Uwe
+
+P.S.: It was hard work to get my root file system converted, as the CD-ROM
+drive is broken and I had no success setting up netboot. Finally this is
+what I did to get rid of XFS:
+- In aboot type in the kernel boot line by hand, but remove the root=/....
+parameter. Tis makes initrd fail on mounting the root file system (this is
+what I wanted to achieve). It falls to a shell, yipee
+- Unfortunately the shell has no tools at all, so I created /mnt and /mnt2,
+mounted my root filesystem to /mnt using busybox, also a USB2.0 harddisk as
+backup to second /mnt2 point
+- tarred the whole root file system to USB's /mnt2 (using busybox tar)
+- copied /mnt/lib and /mnt/sbin to / (just to have it available after
+unmounting everything again)
+- unmount mounted root
+- produce symlink in rootfs's /etc/mtab to /proc/mounts (to make ext2-tools
+happy)
+- recreate filesystem as EXT4 using the copied tools
+- mount disk again to /mnt
+- untar from USB HDD to /mnt
+- flush and unmounts everything from busybox shell
+- reboot and it was working with ext4 :-)
+(so its possible without a boot disk, only with the default initramfs to fix
+and create your root filesystem - phantastic)
+
