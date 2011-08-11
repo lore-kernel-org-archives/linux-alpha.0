@@ -1,31 +1,63 @@
-From: Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: [PATCHv4 01/11] atomic: add *_dec_not_zero
-Date: Tue, 2 Aug 2011 10:58:14 +0100
-Message-ID: <20110802095814.GA22947@linux-mips.org>
-References: <1311760070-21532-1-git-send-email-sven@narfation.org>
-Mime-Version: 1.0
+From: slyich@gmail.com
+Subject: [PATCH] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS, [SSIN_UACPROC, UAC_SIGBUS])
+Date: Thu, 11 Aug 2011 18:25:14 +0300
+Message-ID: <1313076314-6111-1-git-send-email-slyich@gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1311760070-21532-1-git-send-email-sven@narfation.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
-	<mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sven Eckelmann <sven@narfation.org>
-Cc: linux-m32r-ja@ml.linux-m32r.org, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, "H. Peter Anvin" <hpa@zytor.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Randy Dunlap <rdunlap@xenotime.net>, Paul Mackerras <paulus@samba.org>, Helge Deller <deller@gmx.de>, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, user-mode-linux-devel@lists.sourceforge.net, Richard Weinberger <richard@nod.at>, Hirokazu Takata <takata@linux-m32r.org>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Arnd Bergmann <arnd@arndb.de>, Jeff Dike <jdike@addtoit.com>, Chris Metcalf <cmetcalf@tilera.com>, linux-m32r@ml.linux-m32r
+To: linux-alpha@vger.kernel.org
 
-On Wed, Jul 27, 2011 at 11:47:40AM +0200, Sven Eckelmann wrote:
+From: Sergei Trofimovich <slyfox@gentoo.org>
 
-For MIPS:
+Update 'UAC_SHIFT' to match 'ALPHA_UAC_SHIFT'.
 
-Acked-by: Ralf Baechle <ralf@linux-mips.org>
+I don't know why kernel maintains 2 copies of the same constant.
+One (UAC_SHIFT) is used to shift bits in syscall definition, and
+another is in trap handler (ALPHA_UAC_SHIFT).
 
-  Ralf
+Was broken by
+> commit 745dd2405e281d96c0a449103bdf6a895048f28c
+> Author: Michael Cree <mcree@orcon.net.nz>
+> Date:   Mon Nov 30 22:44:40 2009 -0500
+>
+>    Alpha: Rearrange thread info flags fixing two regressions
+>
+>    Both regressions fixed by (1) rearranging TIF_NOTIFY_RESUME flag to be
+>    in lower 8 bits of the thread info flags, and (2) making sure that
+>    ALPHA_UAC_SHIFT matches the rearrangement of the thread info flags.
+>
+>    Signed-off-by: Michael Cree <mcree@orcon.net.nz>
+>    Cc: Richard Henderson <rth@twiddle.net>
+>    Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+>    Cc: David Howells <dhowells@redhat.com>,
+>    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+Cc: Michael Cree <mcree@orcon.net.nz>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: David Howells <dhowells@redhat.com>,
+Cc: Matt Turner <mattst88@gmail.com>
+---
+ arch/alpha/include/asm/sysinfo.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/arch/alpha/include/asm/sysinfo.h b/arch/alpha/include/asm/sysinfo.h
+index 086aba2..42b3edc 100644
+--- a/arch/alpha/include/asm/sysinfo.h
++++ b/arch/alpha/include/asm/sysinfo.h
+@@ -32,7 +32,7 @@
+ 
+ /* This is the shift that is applied to the UAC bits as stored in the
+    per-thread flags.  See thread_info.h.  */
+-#define UAC_SHIFT			6
++#define UAC_SHIFT			10
+ 
+ #endif
+ 
+-- 
+1.7.3.4
+
