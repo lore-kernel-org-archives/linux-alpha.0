@@ -1,61 +1,138 @@
-From: Sergei Trofimovich <slyich@gmail.com>
-Subject: Re: [PATCH] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS,
- [SSIN_UACPROC, UAC_SIGBUS])
-Date: Fri, 12 Aug 2011 12:59:03 +0300
-Message-ID: <20110812125903.01e7bdf0@sf.home>
-References: <1313076314-6111-1-git-send-email-slyich@gmail.com>
-	<4E44D46A.1070007@orcon.net.nz>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=PGP-SHA1;
- boundary="Sig_/.d.sIlLhOKWmhzpsCq9YWSJ"; protocol="application/pgp-signature"
+From: Sergei Trofimovich <slyfox@gentoo.org>
+Subject: [PATCH v2] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS, [SSIN_UACPROC, UAC_SIGBUS])
+Date: Sat, 13 Aug 2011 00:01:21 +0300
+Message-ID: <1313182881-21266-1-git-send-email-slyfox@gentoo.org>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references:x-mailer
-         :mime-version:content-type;
-        bh=Pd5vs5TqXgdL29g5AiP7bNubRlLq07eKqGURLAiqgpA=;
-        b=O+Z7RAIfysPX8/RwpM81vnUNi+SrPMcuUem4lPjp9FeUx1Qii8R0x29bQHH7Yl5anj
-         59w2KGID6ycD8tpCaZapbaa0uUHk/tZNTIuEHDUVhJd1m5RVojmCR0Xpj6KbFQDgkvIg
-         B9q29OnNaYDbm4Rbb1os6G+GqWhATXamAjIL0=
-In-Reply-To: <4E44D46A.1070007@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: Sergei Trofimovich <slyfox@gentoo.org>, linux-alpha@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
---Sig_/.d.sIlLhOKWmhzpsCq9YWSJ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The bug was accidentally found by the following program:
+    #include <asm/sysinfo.h>
+    #include <asm/unistd.h>
+    #include <sys/syscall.h>
+    static int setsysinfo(unsigned long op, void *buffer, unsigned long size,
+                          int *start, void *arg, unsigned long flag) {
+        return syscall(__NR_osf_setsysinfo, op, buffer, size, start, arg, flag);
+    }
 
-> > Was broken by
-> >> commit 745dd2405e281d96c0a449103bdf6a895048f28c
-> >> Author: Michael Cree <mcree@orcon.net.nz>
->=20
-> Bollocks.
+    int main(int argc, char **argv) {
+        short x[10];
+        unsigned int buf[2] = { SSIN_UACPROC, UAC_SIGBUS, };
+        setsysinfo(SSI_NVPAIRS, buf, 1, 0, 0, 0);
 
-Ugh, my apologies! Didn't intend to insult you.
-I failed to read your changelog (and patch) properly.
-Now I see The a583f1b54249b was the first in flag skew.
+        int  *y = (int*) (x+1);
+        *y = 0;
+        return 0;
+    }
 
-I'll build alpha toolchain / qemu root and will try to cook
-nicer patch with compile-time safety checks.
+The program shoud fail on SIGBUS, but didn't.
 
-Sorry.
+The patch is a second part of userspace flag fix:
+> commit 745dd2405e281d96c0a449103bdf6a895048f28c
+> Author: Michael Cree <mcree@orcon.net.nz>
+> Date:   Mon Nov 30 22:44:40 2009 -0500
+>
+>    Alpha: Rearrange thread info flags fixing two regressions
+>
+>    Both regressions fixed by (1) rearranging TIF_NOTIFY_RESUME flag to be
+>    in lower 8 bits of the thread info flags, and (2) making sure that
+>    ALPHA_UAC_SHIFT matches the rearrangement of the thread info flags.
 
---=20
+Deleted outdated out-of-sync 'UAC_SHIFT' (the cause of bug) in favour of 'ALPHA_UAC_SHIFT'.
 
-  Sergei
+Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+Cc: linux-alpha@vger.kernel.org
+Cc: Michael Cree <mcree@orcon.net.nz>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+---
+ arch/alpha/include/asm/sysinfo.h     |    9 ---------
+ arch/alpha/include/asm/thread_info.h |    8 ++++----
+ arch/alpha/kernel/osf_sys.c          |    7 ++++---
+ 3 files changed, 8 insertions(+), 16 deletions(-)
 
---Sig_/.d.sIlLhOKWmhzpsCq9YWSJ
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Disposition: attachment; filename=signature.asc
+diff --git a/arch/alpha/include/asm/sysinfo.h b/arch/alpha/include/asm/sysinfo.h
+index 086aba2..e77d77c 100644
+--- a/arch/alpha/include/asm/sysinfo.h
++++ b/arch/alpha/include/asm/sysinfo.h
+@@ -27,13 +27,4 @@
+ #define UAC_NOFIX			2
+ #define UAC_SIGBUS			4
+ 
+-
+-#ifdef __KERNEL__
+-
+-/* This is the shift that is applied to the UAC bits as stored in the
+-   per-thread flags.  See thread_info.h.  */
+-#define UAC_SHIFT			6
+-
+-#endif
+-
+ #endif /* __ASM_ALPHA_SYSINFO_H */
+diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
+index 6f32f9c..ff73db0 100644
+--- a/arch/alpha/include/asm/thread_info.h
++++ b/arch/alpha/include/asm/thread_info.h
+@@ -74,9 +74,9 @@ register struct thread_info *__current_thread_info __asm__("$8");
+ #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
+ #define TIF_POLLING_NRFLAG	8	/* poll_idle is polling NEED_RESCHED */
+ #define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
+-#define TIF_UAC_NOPRINT		10	/* see sysinfo.h */
+-#define TIF_UAC_NOFIX		11
+-#define TIF_UAC_SIGBUS		12
++#define TIF_UAC_NOPRINT		10	/* ! Preserve sequence of following */
++#define TIF_UAC_NOFIX		11	/* ! flags as they match            */
++#define TIF_UAC_SIGBUS		12	/* ! userspace part of 'osf_sysinfo' */
+ #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
+ #define TIF_RESTORE_SIGMASK	14	/* restore signal mask in do_signal */
+ #define TIF_FREEZE		16	/* is freezing for suspend */
+@@ -97,7 +97,7 @@ register struct thread_info *__current_thread_info __asm__("$8");
+ #define _TIF_ALLWORK_MASK	(_TIF_WORK_MASK		\
+ 				 | _TIF_SYSCALL_TRACE)
+ 
+-#define ALPHA_UAC_SHIFT		10
++#define ALPHA_UAC_SHIFT		TIF_UAC_NOPRINT
+ #define ALPHA_UAC_MASK		(1 << TIF_UAC_NOPRINT | 1 << TIF_UAC_NOFIX | \
+ 				 1 << TIF_UAC_SIGBUS)
+ 
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 326f0a2..2032f67 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -42,6 +42,7 @@
+ #include <asm/uaccess.h>
+ #include <asm/system.h>
+ #include <asm/sysinfo.h>
++#include <asm/thread_info.h>
+ #include <asm/hwrpb.h>
+ #include <asm/processor.h>
+ 
+@@ -633,7 +634,7 @@ SYSCALL_DEFINE5(osf_getsysinfo, unsigned long, op, void __user *, buffer,
+  	case GSI_UACPROC:
+ 		if (nbytes < sizeof(unsigned int))
+ 			return -EINVAL;
+- 		w = (current_thread_info()->flags >> UAC_SHIFT) & UAC_BITMASK;
++ 		w = (current_thread_info()->flags >> ALPHA_UAC_SHIFT) & UAC_BITMASK;
+  		if (put_user(w, (unsigned int __user *)buffer))
+  			return -EFAULT;
+  		return 1;
+@@ -756,8 +757,8 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
+  			case SSIN_UACPROC:
+ 			again:
+ 				old = current_thread_info()->flags;
+-				new = old & ~(UAC_BITMASK << UAC_SHIFT);
+-				new = new | (w & UAC_BITMASK) << UAC_SHIFT;
++				new = old & ~(UAC_BITMASK << ALPHA_UAC_SHIFT);
++				new = new | (w & UAC_BITMASK) << ALPHA_UAC_SHIFT;
+ 				if (cmpxchg(&current_thread_info()->flags,
+ 					    old, new) != old)
+ 					goto again;
+-- 
+1.7.3.4
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.17 (GNU/Linux)
-
-iEYEARECAAYFAk5E+XIACgkQcaHudmEf86oSewCfX86rS5atV1T0nODe02cqWX9v
-NHkAn28dSWCBtAt1hjIhcQwCbOVPdOX9
-=+IoH
------END PGP SIGNATURE-----
-
---Sig_/.d.sIlLhOKWmhzpsCq9YWSJ--
