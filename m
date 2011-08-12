@@ -1,69 +1,74 @@
 From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: [PATCH v2] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS, [SSIN_UACPROC,
+Subject: Re: [PATCH] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS, [SSIN_UACPROC,
  UAC_SIGBUS])
-Date: Sat, 13 Aug 2011 09:55:55 +1200
-Message-ID: <4E45A16B.9060007@orcon.net.nz>
-References: <1313182881-21266-1-git-send-email-slyfox@gentoo.org>
+Date: Sat, 13 Aug 2011 11:34:58 +1200
+Message-ID: <4E45B8A2.3060806@orcon.net.nz>
+References: <1313076314-6111-1-git-send-email-slyich@gmail.com>	<4E44D46A.1070007@orcon.net.nz>	<20110812125903.01e7bdf0@sf.home> <20110813005128.7644d5e4@sf.home>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1313182881-21266-1-git-send-email-slyfox@gentoo.org>
+In-Reply-To: <20110813005128.7644d5e4@sf.home>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Sergei Trofimovich <slyfox@gentoo.org>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+To: Sergei Trofimovich <slyich@gmail.com>
+Cc: linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
 
-On 13/08/11 09:01, Sergei Trofimovich wrote:
-> The bug was accidentally found by the following program:
->     #include <asm/sysinfo.h>
->     #include <asm/unistd.h>
->     #include <sys/syscall.h>
->     static int setsysinfo(unsigned long op, void *buffer, unsigned long size,
->                           int *start, void *arg, unsigned long flag) {
->         return syscall(__NR_osf_setsysinfo, op, buffer, size, start, arg, flag);
->     }
+On 13/08/11 09:51, Sergei Trofimovich wrote:
+>> I'll build alpha toolchain / qemu root and will try to cook
+>> nicer patch with compile-time safety checks.
 > 
->     int main(int argc, char **argv) {
->         short x[10];
->         unsigned int buf[2] = { SSIN_UACPROC, UAC_SIGBUS, };
->         setsysinfo(SSI_NVPAIRS, buf, 1, 0, 0, 0);
+> Sent reworked patch: http://marc.info/?l=linux-alpha&m=131318270531656&w=2
 > 
->         int  *y = (int*) (x+1);
->         *y = 0;
->         return 0;
->     }
+> Yelling at the header I've found minor nit:
+> ...
+> #define SET_UNALIGN_CTL(task,value)     ({                                   \
+>         task_thread_info(task)->flags = ((task_thread_info(task)->flags &    \
+>                 ~ALPHA_UAC_MASK)
+>                 | (((value) << ALPHA_UAC_SHIFT)       & (1<<TIF_UAC_NOPRINT))\
+>                 | (((value) << (ALPHA_UAC_SHIFT + 1)) & (1<<TIF_UAC_SIGBUS)) \
+>                 | (((value) << (ALPHA_UAC_SHIFT - 1)) & (1<<TIF_UAC_NOFIX)));\
+>         0; })
 > 
-> The program shoud fail on SIGBUS, but didn't.
+> #define GET_UNALIGN_CTL(task,value)     ({                              \
+>         put_user((task_thread_info(task)->flags & (1 << TIF_UAC_NOPRINT))\
+>                   >> ALPHA_UAC_SHIFT                                    \
+>                  | (task_thread_info(task)->flags & (1 << TIF_UAC_SIGBUS))\
+>                  >> (ALPHA_UAC_SHIFT + 1)                               \
+>                  | (task_thread_info(task)->flags & (1 << TIF_UAC_NOFIX))\
+>                  >> (ALPHA_UAC_SHIFT - 1),                              \
+>                  (int __user *)(value));                                \
+>         })
 > 
-> The patch is a second part of userspace flag fix:
->> commit 745dd2405e281d96c0a449103bdf6a895048f28c
->> Author: Michael Cree <mcree@orcon.net.nz>
->> Date:   Mon Nov 30 22:44:40 2009 -0500
->>
->>    Alpha: Rearrange thread info flags fixing two regressions
->>
->>    Both regressions fixed by (1) rearranging TIF_NOTIFY_RESUME flag to be
->>    in lower 8 bits of the thread info flags, and (2) making sure that
->>    ALPHA_UAC_SHIFT matches the rearrangement of the thread info flags.
+> The macros SET_UNALIGN_CTL/GET_UNALIGN_CTL are used
+> only in kernel/sys.c:prctl syscall.
 > 
-> Deleted outdated out-of-sync 'UAC_SHIFT' (the cause of bug) in favour of 'ALPHA_UAC_SHIFT'.
+>> | (((value) << ALPHA_UAC_SHIFT)       & (1<<TIF_UAC_NOPRINT))
+> prctl.h: # define PR_UNALIGN_NOPRINT     1
 > 
-> Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
-> Cc: linux-alpha@vger.kernel.org
-> Cc: Michael Cree <mcree@orcon.net.nz>
-> Cc: Richard Henderson <rth@twiddle.net>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> ---
->  arch/alpha/include/asm/sysinfo.h     |    9 ---------
->  arch/alpha/include/asm/thread_info.h |    8 ++++----
->  arch/alpha/kernel/osf_sys.c          |    7 ++++---
->  3 files changed, 8 insertions(+), 16 deletions(-)
+>> |  (((value) << (ALPHA_UAC_SHIFT + 1)) & (1<<TIF_UAC_SIGBUS))
+> prctl.h: # define PR_UNALIGN_SIGBUS      2
+> 
+>> | (((value) << (ALPHA_UAC_SHIFT - 1)) & (1<<TIF_UAC_NOFIX)));
+> 
+> prctl.h: no '4' value
+> 
+> Do you think it's worth adding to userspace interface
+> or should one just remove it from handled by prctl flags [ABI change]?
 
-Looks good to me.
+My understanding is that user-space ABI changes/removals are
+unacceptable.  It has been there for some time thus must remain.
 
-Acked-by: Michael Cree <mcree@orcon.net.nz>
+But I do note that the NOFIX option is not documented in the prctl
+syscall man page or in the prctl application man page, so only someone
+acquainted with the kernel code would know it exists.
 
-Thanks
+My feeling is that it should stay the way it is.  I'm not aware of a use
+for the NOFIX option, and I have no idea why it was originally
+implemented -- its implementation predates git history.
+
+But others more familiar with early development of Alpha arch code may
+disagree with me.
+
+Cheers
 Michael.
