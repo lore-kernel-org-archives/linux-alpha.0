@@ -1,65 +1,61 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: [PATCH] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS, [SSIN_UACPROC,
- UAC_SIGBUS])
-Date: Fri, 12 Aug 2011 19:21:14 +1200
-Message-ID: <4E44D46A.1070007@orcon.net.nz>
+From: Sergei Trofimovich <slyich@gmail.com>
+Subject: Re: [PATCH] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS,
+ [SSIN_UACPROC, UAC_SIGBUS])
+Date: Fri, 12 Aug 2011 12:59:03 +0300
+Message-ID: <20110812125903.01e7bdf0@sf.home>
 References: <1313076314-6111-1-git-send-email-slyich@gmail.com>
+	<4E44D46A.1070007@orcon.net.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=PGP-SHA1;
+ boundary="Sig_/.d.sIlLhOKWmhzpsCq9YWSJ"; protocol="application/pgp-signature"
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1313076314-6111-1-git-send-email-slyich@gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references:x-mailer
+         :mime-version:content-type;
+        bh=Pd5vs5TqXgdL29g5AiP7bNubRlLq07eKqGURLAiqgpA=;
+        b=O+Z7RAIfysPX8/RwpM81vnUNi+SrPMcuUem4lPjp9FeUx1Qii8R0x29bQHH7Yl5anj
+         59w2KGID6ycD8tpCaZapbaa0uUHk/tZNTIuEHDUVhJd1m5RVojmCR0Xpj6KbFQDgkvIg
+         B9q29OnNaYDbm4Rbb1os6G+GqWhATXamAjIL0=
+In-Reply-To: <4E44D46A.1070007@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: slyich@gmail.com
+To: Michael Cree <mcree@orcon.net.nz>
 Cc: linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
 
-On 12/08/11 03:25, slyich@gmail.com wrote:
-> From: Sergei Trofimovich <slyfox@gentoo.org>
-> 
-> Update 'UAC_SHIFT' to match 'ALPHA_UAC_SHIFT'.
-> 
-> I don't know why kernel maintains 2 copies of the same constant.
-> One (UAC_SHIFT) is used to shift bits in syscall definition, and
-> another is in trap handler (ALPHA_UAC_SHIFT).
-> 
-> Was broken by
->> commit 745dd2405e281d96c0a449103bdf6a895048f28c
->> Author: Michael Cree <mcree@orcon.net.nz>
+--Sig_/.d.sIlLhOKWmhzpsCq9YWSJ
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Bollocks.
+> > Was broken by
+> >> commit 745dd2405e281d96c0a449103bdf6a895048f28c
+> >> Author: Michael Cree <mcree@orcon.net.nz>
+>=20
+> Bollocks.
 
-The shift for the UAC flags was well and truly broken before that commit
-as the TIF_UAC_NOPRINT, etc., flags did not match the definition of
-either the UAC_ALPHA_SHIFT or the UAC_SHIFT flag.  I fixed
-UAC_ALPHA_SHIFT to match the actual UAC flag definitions.
+Ugh, my apologies! Didn't intend to insult you.
+I failed to read your changelog (and patch) properly.
+Now I see The a583f1b54249b was the first in flag skew.
 
-What I didn't realise was that UAC_SHIFT was also defined and used
-elsewhere in the Alpha architecture code (so UAC_SHIFT _remained_ broken).
+I'll build alpha toolchain / qemu root and will try to cook
+nicer patch with compile-time safety checks.
 
-> diff --git a/arch/alpha/include/asm/sysinfo.h b/arch/alpha/include/asm/sysinfo.h
-> index 086aba2..42b3edc 100644
-> --- a/arch/alpha/include/asm/sysinfo.h
-> +++ b/arch/alpha/include/asm/sysinfo.h
-> @@ -32,7 +32,7 @@
->  
->  /* This is the shift that is applied to the UAC bits as stored in the
->     per-thread flags.  See thread_info.h.  */
-> -#define UAC_SHIFT			6
-> +#define UAC_SHIFT			10
+Sorry.
 
-But you haven't really fixed it.  If indeed UAC_SHIFT is exactly the
-same as UAC_ALPHA_SHIFT then two definitions remain and that leaves the
-possibility of someone changing one thereby screwing up the other.
+--=20
 
-Surely it would be better to unify UAC_ALPHA_SHIFT and UAC_SHIFT and use
-one macro in all relevant places.
+  Sergei
 
-I am happy for you to reference my commit but I would prefer the commit
-message saying something more along the line that it left part of the
-fix undone which you are now completing.
+--Sig_/.d.sIlLhOKWmhzpsCq9YWSJ
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Disposition: attachment; filename=signature.asc
 
-With the above changes I will be happy to give my acknowledgement.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.17 (GNU/Linux)
 
-Thanks
-Michael.
+iEYEARECAAYFAk5E+XIACgkQcaHudmEf86oSewCfX86rS5atV1T0nODe02cqWX9v
+NHkAn28dSWCBtAt1hjIhcQwCbOVPdOX9
+=+IoH
+-----END PGP SIGNATURE-----
+
+--Sig_/.d.sIlLhOKWmhzpsCq9YWSJ--
