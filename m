@@ -1,112 +1,69 @@
-From: Sergei Trofimovich <slyich@gmail.com>
-Subject: Re: [PATCH] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS,
- [SSIN_UACPROC, UAC_SIGBUS])
-Date: Sat, 13 Aug 2011 00:51:28 +0300
-Message-ID: <20110813005128.7644d5e4@sf.home>
-References: <1313076314-6111-1-git-send-email-slyich@gmail.com>
-	<4E44D46A.1070007@orcon.net.nz>
-	<20110812125903.01e7bdf0@sf.home>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: [PATCH v2] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS, [SSIN_UACPROC,
+ UAC_SIGBUS])
+Date: Sat, 13 Aug 2011 09:55:55 +1200
+Message-ID: <4E45A16B.9060007@orcon.net.nz>
+References: <1313182881-21266-1-git-send-email-slyfox@gentoo.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=PGP-SHA1;
- boundary="Sig_/X_riaHexkkHLuWTgdyNLQe1"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references:x-mailer
-         :mime-version:content-type;
-        bh=GG3C62FNTnaTNinAlM9I1ztGrPYM5vZFAN7FNA3We6w=;
-        b=EiRLicavLovw2gE6AWTvVjApkEAOVFcyavzJjk/uCq/+fj9a0QPUNbm21hh+Z9GX8x
-         hWOTDtdot7UxtcuU+lTsIqWWRpHSMp1xh/mwdXvZ3VvfkshTF9k/ZzlsDF/uNnU5LGln
-         nV2clT0YeDQk87vYk0kLMlYDeXwRHglQkH4+I=
-In-Reply-To: <20110812125903.01e7bdf0@sf.home>
+In-Reply-To: <1313182881-21266-1-git-send-email-slyfox@gentoo.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: linux-alpha@vger.kernel.org
-Cc: Michael Cree <mcree@orcon.net.nz>, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Content-Type: text/plain; charset="us-ascii"
+To: Sergei Trofimovich <slyfox@gentoo.org>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
---Sig_/X_riaHexkkHLuWTgdyNLQe1
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 13/08/11 09:01, Sergei Trofimovich wrote:
+> The bug was accidentally found by the following program:
+>     #include <asm/sysinfo.h>
+>     #include <asm/unistd.h>
+>     #include <sys/syscall.h>
+>     static int setsysinfo(unsigned long op, void *buffer, unsigned long size,
+>                           int *start, void *arg, unsigned long flag) {
+>         return syscall(__NR_osf_setsysinfo, op, buffer, size, start, arg, flag);
+>     }
+> 
+>     int main(int argc, char **argv) {
+>         short x[10];
+>         unsigned int buf[2] = { SSIN_UACPROC, UAC_SIGBUS, };
+>         setsysinfo(SSI_NVPAIRS, buf, 1, 0, 0, 0);
+> 
+>         int  *y = (int*) (x+1);
+>         *y = 0;
+>         return 0;
+>     }
+> 
+> The program shoud fail on SIGBUS, but didn't.
+> 
+> The patch is a second part of userspace flag fix:
+>> commit 745dd2405e281d96c0a449103bdf6a895048f28c
+>> Author: Michael Cree <mcree@orcon.net.nz>
+>> Date:   Mon Nov 30 22:44:40 2009 -0500
+>>
+>>    Alpha: Rearrange thread info flags fixing two regressions
+>>
+>>    Both regressions fixed by (1) rearranging TIF_NOTIFY_RESUME flag to be
+>>    in lower 8 bits of the thread info flags, and (2) making sure that
+>>    ALPHA_UAC_SHIFT matches the rearrangement of the thread info flags.
+> 
+> Deleted outdated out-of-sync 'UAC_SHIFT' (the cause of bug) in favour of 'ALPHA_UAC_SHIFT'.
+> 
+> Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+> Cc: linux-alpha@vger.kernel.org
+> Cc: Michael Cree <mcree@orcon.net.nz>
+> Cc: Richard Henderson <rth@twiddle.net>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> ---
+>  arch/alpha/include/asm/sysinfo.h     |    9 ---------
+>  arch/alpha/include/asm/thread_info.h |    8 ++++----
+>  arch/alpha/kernel/osf_sys.c          |    7 ++++---
+>  3 files changed, 8 insertions(+), 16 deletions(-)
 
-> I'll build alpha toolchain / qemu root and will try to cook
-> nicer patch with compile-time safety checks.
+Looks good to me.
 
-Sent reworked patch: http://marc.info/?l=3Dlinux-alpha&m=3D131318270531656&=
-w=3D2
+Acked-by: Michael Cree <mcree@orcon.net.nz>
 
-Yelling at the header I've found minor nit:
-...
-#define SET_UNALIGN_CTL(task,value)     ({                                 =
-  \
-        task_thread_info(task)->flags =3D ((task_thread_info(task)->flags &=
-    \
-                ~ALPHA_UAC_MASK)
-                | (((value) << ALPHA_UAC_SHIFT)       & (1<<TIF_UAC_NOPRINT=
-))\
-                | (((value) << (ALPHA_UAC_SHIFT + 1)) & (1<<TIF_UAC_SIGBUS)=
-) \
-                | (((value) << (ALPHA_UAC_SHIFT - 1)) & (1<<TIF_UAC_NOFIX))=
-);\
-        0; })
-
-#define GET_UNALIGN_CTL(task,value)     ({                              \
-        put_user((task_thread_info(task)->flags & (1 << TIF_UAC_NOPRINT))\
-                  >> ALPHA_UAC_SHIFT                                    \
-                 | (task_thread_info(task)->flags & (1 << TIF_UAC_SIGBUS))\
-                 >> (ALPHA_UAC_SHIFT + 1)                               \
-                 | (task_thread_info(task)->flags & (1 << TIF_UAC_NOFIX))\
-                 >> (ALPHA_UAC_SHIFT - 1),                              \
-                 (int __user *)(value));                                \
-        })
-
-The macros SET_UNALIGN_CTL/GET_UNALIGN_CTL are used
-only in kernel/sys.c:prctl syscall.
-
-> | (((value) << ALPHA_UAC_SHIFT)       & (1<<TIF_UAC_NOPRINT))
-prctl.h: # define PR_UNALIGN_NOPRINT     1
-
-> |  (((value) << (ALPHA_UAC_SHIFT + 1)) & (1<<TIF_UAC_SIGBUS))
-prctl.h: # define PR_UNALIGN_SIGBUS      2
-
-> | (((value) << (ALPHA_UAC_SHIFT - 1)) & (1<<TIF_UAC_NOFIX)));
-
-prctl.h: no '4' value
-
-Do you think it's worth adding to userspace interface
-or should one just remove it from handled by prctl flags [ABI change]?
-
-Thanks!
-
-diff --git a/include/linux/prctl.h b/include/linux/prctl.h
-index a3baeb2..f66539a 100644
---- a/include/linux/prctl.h
-+++ b/include/linux/prctl.h
-@@ -15,6 +15,7 @@
- #define PR_SET_UNALIGN   6
- # define PR_UNALIGN_NOPRINT    1       /* silently fix up unaligned user a=
-ccesses */
- # define PR_UNALIGN_SIGBUS     2       /* generate SIGBUS on unaligned use=
-r access */
-+# define PR_UNALIGN_NOFIX      4       /* skip offending instruction and d=
-o nothing */
-
- /* Get/set whether or not to drop capabilities on setuid() away from
-  * uid 0 (as per security/commoncap.c) */
-
---=20
-
-  Sergei
-
---Sig_/X_riaHexkkHLuWTgdyNLQe1
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Disposition: attachment; filename=signature.asc
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.17 (GNU/Linux)
-
-iEYEARECAAYFAk5FoGYACgkQcaHudmEf86prDgCfQ4Afuvvj9CSu2MsJwUVWz/UV
-LZkAnieCN8j/WNDouTfEe8onQ2MsCKd8
-=RFF/
------END PGP SIGNATURE-----
-
---Sig_/X_riaHexkkHLuWTgdyNLQe1--
+Thanks
+Michael.
