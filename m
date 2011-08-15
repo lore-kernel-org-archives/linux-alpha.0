@@ -1,200 +1,96 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH v2] Alpha: unbreak osf_setsysinfo(SSI_NVPAIRS,
- [SSIN_UACPROC, UAC_SIGBUS])
-Date: Sun, 14 Aug 2011 20:32:48 -0400
-Message-ID: <CAEdQ38EjVZcjDVf=0SwdmMb7+TQETvPtFwGr1CPG4oZVckShtA@mail.gmail.com>
-References: <1313182881-21266-1-git-send-email-slyfox@gentoo.org>
+From: "Uwe Schindler" <uwe@thetaphi.de>
+Subject: RE: recent udev upgrade failure on alpha
+Date: Mon, 15 Aug 2011 19:09:04 +0200
+Message-ID: <007701cc5b6e$092c7360$1b855a20$@thetaphi.de>
+References: <20110224070203.GA28419@gherkin.frus.com> <20110224075149.GA28779@gherkin.frus.com> <00af01cc42f8$0c691e40$253b5ac0$@thetaphi.de> <20110715151706.GA9506@gherkin.frus.com> <00cd01cc4306$6269fe00$273dfa00$@thetaphi.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc:content-type:content-transfer-encoding;
-        bh=+UXh7SdAUR7scWzAe/vODvO3CcgpA1d46O8HJxrrFgs=;
-        b=EWqk0uKn2OKRMhBZiXC8dOXmtYKS4R65jjb1iQJaIEQbj8SmLflnSXrdBw6pOcKNxY
-         MVfjmn0RTrAuwDej8UHieVOdMUu2acBQTws8JlQ4sfSIF8NC/dKJAQ2E/Yo3J4QRuWxo
-         4D0suzxbIvyv9r1s2UEq2SvJuTJwOPYVnZTJI=
-In-Reply-To: <1313182881-21266-1-git-send-email-slyfox@gentoo.org>
+In-Reply-To: <00cd01cc4306$6269fe00$273dfa00$@thetaphi.de>
+Content-Language: de
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Sergei Trofimovich <slyfox@gentoo.org>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Content-Type: text/plain; charset="us-ascii"
+To: 'Bob Tracy' <rct@gherkin.frus.com>
+Cc: debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org, mattst88@gmail.com, mcree@orcon.net.nz
 
-On Fri, Aug 12, 2011 at 5:01 PM, Sergei Trofimovich <slyfox@gentoo.org>=
- wrote:
-> The bug was accidentally found by the following program:
-> =A0 =A0#include <asm/sysinfo.h>
-> =A0 =A0#include <asm/unistd.h>
-> =A0 =A0#include <sys/syscall.h>
-> =A0 =A0static int setsysinfo(unsigned long op, void *buffer, unsigned=
- long size,
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0int *start, void *=
-arg, unsigned long flag) {
-> =A0 =A0 =A0 =A0return syscall(__NR_osf_setsysinfo, op, buffer, size, =
-start, arg, flag);
-> =A0 =A0}
->
-> =A0 =A0int main(int argc, char **argv) {
-> =A0 =A0 =A0 =A0short x[10];
-> =A0 =A0 =A0 =A0unsigned int buf[2] =3D { SSIN_UACPROC, UAC_SIGBUS, };
-> =A0 =A0 =A0 =A0setsysinfo(SSI_NVPAIRS, buf, 1, 0, 0, 0);
->
-> =A0 =A0 =A0 =A0int =A0*y =3D (int*) (x+1);
-> =A0 =A0 =A0 =A0*y =3D 0;
-> =A0 =A0 =A0 =A0return 0;
-> =A0 =A0}
->
-> The program shoud fail on SIGBUS, but didn't.
->
-> The patch is a second part of userspace flag fix:
->> commit 745dd2405e281d96c0a449103bdf6a895048f28c
->> Author: Michael Cree <mcree@orcon.net.nz>
->> Date: =A0 Mon Nov 30 22:44:40 2009 -0500
->>
->> =A0 =A0Alpha: Rearrange thread info flags fixing two regressions
->>
->> =A0 =A0Both regressions fixed by (1) rearranging TIF_NOTIFY_RESUME f=
-lag to be
->> =A0 =A0in lower 8 bits of the thread info flags, and (2) making sure=
- that
->> =A0 =A0ALPHA_UAC_SHIFT matches the rearrangement of the thread info =
-flags.
->
-> Deleted outdated out-of-sync 'UAC_SHIFT' (the cause of bug) in favour=
- of 'ALPHA_UAC_SHIFT'.
->
-> Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
-> Cc: linux-alpha@vger.kernel.org
-> Cc: Michael Cree <mcree@orcon.net.nz>
-> Cc: Richard Henderson <rth@twiddle.net>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> ---
-> =A0arch/alpha/include/asm/sysinfo.h =A0 =A0 | =A0 =A09 ---------
-> =A0arch/alpha/include/asm/thread_info.h | =A0 =A08 ++++----
-> =A0arch/alpha/kernel/osf_sys.c =A0 =A0 =A0 =A0 =A0| =A0 =A07 ++++---
-> =A03 files changed, 8 insertions(+), 16 deletions(-)
->
-> diff --git a/arch/alpha/include/asm/sysinfo.h b/arch/alpha/include/as=
-m/sysinfo.h
-> index 086aba2..e77d77c 100644
-> --- a/arch/alpha/include/asm/sysinfo.h
-> +++ b/arch/alpha/include/asm/sysinfo.h
-> @@ -27,13 +27,4 @@
-> =A0#define UAC_NOFIX =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A02
-> =A0#define UAC_SIGBUS =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 4
->
-> -
-> -#ifdef __KERNEL__
-> -
-> -/* This is the shift that is applied to the UAC bits as stored in th=
-e
-> - =A0 per-thread flags. =A0See thread_info.h. =A0*/
-> -#define UAC_SHIFT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A06
-> -
-> -#endif
-> -
-> =A0#endif /* __ASM_ALPHA_SYSINFO_H */
-> diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/includ=
-e/asm/thread_info.h
-> index 6f32f9c..ff73db0 100644
-> --- a/arch/alpha/include/asm/thread_info.h
-> +++ b/arch/alpha/include/asm/thread_info.h
-> @@ -74,9 +74,9 @@ register struct thread_info *__current_thread_info =
-__asm__("$8");
-> =A0#define TIF_NEED_RESCHED =A0 =A0 =A0 3 =A0 =A0 =A0 /* rescheduling=
- necessary */
-> =A0#define TIF_POLLING_NRFLAG =A0 =A0 8 =A0 =A0 =A0 /* poll_idle is p=
-olling NEED_RESCHED */
-> =A0#define TIF_DIE_IF_KERNEL =A0 =A0 =A09 =A0 =A0 =A0 /* dik recursio=
-n lock */
-> -#define TIF_UAC_NOPRINT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A010 =A0 =A0 =A0=
-/* see sysinfo.h */
-> -#define TIF_UAC_NOFIX =A0 =A0 =A0 =A0 =A011
-> -#define TIF_UAC_SIGBUS =A0 =A0 =A0 =A0 12
-> +#define TIF_UAC_NOPRINT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A010 =A0 =A0 =A0=
-/* ! Preserve sequence of following */
-> +#define TIF_UAC_NOFIX =A0 =A0 =A0 =A0 =A011 =A0 =A0 =A0/* ! flags as=
- they match =A0 =A0 =A0 =A0 =A0 =A0*/
-> +#define TIF_UAC_SIGBUS =A0 =A0 =A0 =A0 12 =A0 =A0 =A0/* ! userspace =
-part of 'osf_sysinfo' */
-> =A0#define TIF_MEMDIE =A0 =A0 =A0 =A0 =A0 =A0 13 =A0 =A0 =A0/* is ter=
-minating due to OOM killer */
-> =A0#define TIF_RESTORE_SIGMASK =A0 =A014 =A0 =A0 =A0/* restore signal=
- mask in do_signal */
-> =A0#define TIF_FREEZE =A0 =A0 =A0 =A0 =A0 =A0 16 =A0 =A0 =A0/* is fre=
-ezing for suspend */
-> @@ -97,7 +97,7 @@ register struct thread_info *__current_thread_info =
-__asm__("$8");
-> =A0#define _TIF_ALLWORK_MASK =A0 =A0 =A0(_TIF_WORK_MASK =A0 =A0 =A0 =A0=
- \
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 | _TI=
-=46_SYSCALL_TRACE)
->
-> -#define ALPHA_UAC_SHIFT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A010
-> +#define ALPHA_UAC_SHIFT =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0TIF_UAC_NOPRI=
-NT
-> =A0#define ALPHA_UAC_MASK =A0 =A0 =A0 =A0 (1 << TIF_UAC_NOPRINT | 1 <=
-< TIF_UAC_NOFIX | \
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 1 << =
-TIF_UAC_SIGBUS)
->
-> diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.=
-c
-> index 326f0a2..2032f67 100644
-> --- a/arch/alpha/kernel/osf_sys.c
-> +++ b/arch/alpha/kernel/osf_sys.c
-> @@ -42,6 +42,7 @@
-> =A0#include <asm/uaccess.h>
-> =A0#include <asm/system.h>
-> =A0#include <asm/sysinfo.h>
-> +#include <asm/thread_info.h>
-> =A0#include <asm/hwrpb.h>
-> =A0#include <asm/processor.h>
->
-> @@ -633,7 +634,7 @@ SYSCALL_DEFINE5(osf_getsysinfo, unsigned long, op=
-, void __user *, buffer,
-> =A0 =A0 =A0 =A0case GSI_UACPROC:
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0if (nbytes < sizeof(unsigned int))
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return -EINVAL;
-> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 w =3D (current_thread_info()->flags >> =
-UAC_SHIFT) & UAC_BITMASK;
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 w =3D (current_thread_info()->flags >> =
-ALPHA_UAC_SHIFT) & UAC_BITMASK;
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0if (put_user(w, (unsigned int __user *=
-)buffer))
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return -EFAULT;
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0return 1;
-> @@ -756,8 +757,8 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op=
-, void __user *, buffer,
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0case SSIN_UACPROC:
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0again:
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0old =3D=
- current_thread_info()->flags;
-> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 new =3D=
- old & ~(UAC_BITMASK << UAC_SHIFT);
-> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 new =3D=
- new | (w & UAC_BITMASK) << UAC_SHIFT;
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 new =3D=
- old & ~(UAC_BITMASK << ALPHA_UAC_SHIFT);
-> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 new =3D=
- new | (w & UAC_BITMASK) << ALPHA_UAC_SHIFT;
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0if (cm=
-pxchg(&current_thread_info()->flags,
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0old, new) !=3D old)
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0goto again;
+Today, my alpha installed Debian libc6.1-2.13-11, I will try to revert udev
+to the original and remove the package hold here.
+
+I will tell if it works!
+
+Uwe
+
+-----
+Uwe Schindler
+H.-H.-Meier-Allee 63, D-28213 Bremen
+http://www.thetaphi.de
+eMail: uwe@thetaphi.de
+
+
+> -----Original Message-----
+> From: Uwe Schindler [mailto:uwe@thetaphi.de]
+> Sent: Friday, July 15, 2011 5:47 PM
+> To: 'Bob Tracy'
+> Cc: debian-alpha@lists.debian.org; linux-alpha@vger.kernel.org;
+> mattst88@gmail.com; mcree@orcon.net.nz
+> Subject: RE: recent udev upgrade failure on alpha
+> 
+> Hi Bob,
+> 
+> > > (...)
+> > > I tried then to upgrade the package "udev" (was on hold, to prevent
+> > > me from making system unbootable), with the hope that the inotify is
+> > > working with this debian kernel. Unfortunately that's not the case,
+> > > UDEV complains about missing inotify.
+> > >
+> > > So is the patch below already included in some kernel images
+> > > available? Or does somebody have a recent udev version as .deb
+> > packages?
+> >
+> > I still have (and am using) my modified "udev" package
+> > (udev_166-1_alpha.deb: includes the patch you quoted in your original
+> > message).  I can send it your way if you wish.  In truth, the only
+> > thing
+> you
+> > need is "/sbin/udevd" from that package to be operational, and I can
+> > send you just that piece if you prefer.  Just let me know.
+> 
+> A patch for udev would be the best (do you have it available as a patch),
+then I
+> can build a custom udev whenever an update occurs. Do you have it
+> somewhere on the web/dropbox whatever? But /sbin/udev is also a good
+> choice for now. Maybe send both as attachment to my private mail. THANKS!
+> 
+> >From http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=614099 it seems
+> >that
+> this is fixed in glibc 2.13-1, unfortunately on debian-ports is only
+2.11.2-13. So
+> we have to wait until buildds are working :( Maybe I try to compile the
+libc
+> package (hours of waiting included...)
+> 
+> > The underlying problem isn't anything missing in the kernel (at least
+> > when built from the mainline kernel.org source): inotify_init1() is
+> > definitely
+> there.
+> > The problem is the userspace call to inotify_init1() in the current
+> > Alpha version of libc6.1 is a stub function.  I elected to rebuild the
+"udev"
+> package
+> > with a valid workaround rather than risk modifying and having to debug
+> "libc"
+> > :-).
+> 
+> I was confused about the whole discussion, thanks for making it clear.
+> 
+> Uwe
+> 
+> 
 > --
-> 1.7.3.4
+> To UNSUBSCRIBE, email to debian-alpha-REQUEST@lists.debian.org
+> with a subject of "unsubscribe". Trouble? Contact
+listmaster@lists.debian.org
+> Archive:
+> http://lists.debian.org/00cd01cc4306$6269fe00$273dfa00$@thetaphi.de
 
-Thanks for finding and fixing this bug. I've added it to my tree.
-
-Matt
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
