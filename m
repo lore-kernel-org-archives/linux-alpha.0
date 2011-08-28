@@ -1,32 +1,45 @@
-From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-Subject: Re: [PATCH] alpha: implement setsysinfo(SSI_LMF) as a no-op
-Date: Fri, 26 Aug 2011 19:10:16 +0100
-Message-ID: <yw1x1uw8hwmv.fsf@unicorn.mansr.com>
-References: <1314381134-1406-1-git-send-email-mans@mansr.com>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH] alpha, gpio: GENERIC_GPIO default must be n
+Date: Sun, 28 Aug 2011 21:57:00 +0100
+Message-ID: <1314565020.9176.60.camel@deadeye>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: Michael Cree <mcree@orcon.net.nz>, 638696@bugs.debian.org, Mark Brown <broonie@opensource.wolfsonmicro.com>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org
 
-mru@mansr.com writes:
+Since GPIOLIB is optional on alpha, GENERIC_GPIO must not be
+selected by default.  If GPIOLIB is enabled, it will select
+GENERIC_GPIO.
 
-> This allows running software using the Tru64 license manager.
-> For simplicity, no check for a valid license is done.  This
-> should not be seen as encouraging software piracy.
->
-> Signed-off-by: Mans Rullgard <mans@mansr.com>
+Reported-by: Michael Cree <mcree@orcon.net.nz>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+---
+See <http://bugs.debian.org/638696> for an example of what 'def_bool y'
+breaks.
 
-Something ate the From line on this mail...
+Ben.
 
---=20
-M=E5ns Rullg=E5rd
-mans@mansr.com
+ arch/alpha/Kconfig |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 60cde53..8bb9362 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -51,7 +51,7 @@ config GENERIC_CMOS_UPDATE
+         def_bool y
+ 
+ config GENERIC_GPIO
+-	def_bool y
++	bool
+ 
+ config ZONE_DMA
+ 	bool
+-- 
+1.7.5.4
+
+
