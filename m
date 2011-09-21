@@ -1,45 +1,101 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH] alpha, gpio: GENERIC_GPIO default must be n
-Date: Sun, 28 Aug 2011 21:57:00 +0100
-Message-ID: <1314565020.9176.60.camel@deadeye>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Yong Zhang <yong.zhang0@gmail.com>
+Subject: [PATCH 02/57] alpha: irq: Remove IRQF_DISABLED
+Date: Wed, 21 Sep 2011 17:28:03 +0800
+Message-ID: <1316597339-29861-3-git-send-email-yong.zhang0@gmail.com>
+References: <1316597339-29861-1-git-send-email-yong.zhang0@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=from:to:cc:subject:date:message-id:x-mailer:in-reply-to:references;
+        bh=2+IrDvIGoCsBd7E6eA6ZFGoTSC0uv2t+yg/MNITLA/s=;
+        b=kkzrw/acBJHKcE8sVnSYtBKkLHxrRrvW++HfiDSSiSD8VWO2x4AV/R5snN9yomqdZH
+         l05YEvtjcPfKoMaIofpcxO1dDUbr2W1cw7lwUgxY2WWU+EHFLKZx/snkQid3he4FyOh1
+         Owk1PVssJHcA5SeFRLlq6mYOkm8X1wZB74kmU=
+In-Reply-To: <1316597339-29861-1-git-send-email-yong.zhang0@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, 638696@bugs.debian.org, Mark Brown <broonie@opensource.wolfsonmicro.com>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: tglx@linutronix.de, yong.zhang0@gmail.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Jiri Kosina <jkosina@suse.cz>, Phil Carmody <ext-phil.2.carmody@nokia.com>, Kyle McMartin <kyle@redhat.com>, Will Deacon <will.deacon@arm.com>, Paul Mundt <lethal@linux-sh.org>, Andrew Morton <akpm@linux-foundation.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org
 
-Since GPIOLIB is optional on alpha, GENERIC_GPIO must not be
-selected by default.  If GPIOLIB is enabled, it will select
-GENERIC_GPIO.
+Since commit [c58543c8: genirq: Run irq handlers with interrupts disabled],
+We run all interrupt handlers with interrupts disabled
+and we even check and yell when an interrupt handler
+returns with interrupts enabled (see commit [b738a50a:
+genirq: Warn when handler enables interrupts]).
 
-Reported-by: Michael Cree <mcree@orcon.net.nz>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+So now this flag is a NOOP and can be removed.
+
+Signed-off-by: Yong Zhang <yong.zhang0@gmail.com>
 ---
-See <http://bugs.debian.org/638696> for an example of what 'def_bool y'
-breaks.
+ arch/alpha/include/asm/floppy.h |    2 +-
+ arch/alpha/kernel/irq_alpha.c   |    1 -
+ arch/alpha/kernel/sys_titan.c   |   14 +++++++-------
+ 3 files changed, 8 insertions(+), 9 deletions(-)
 
-Ben.
-
- arch/alpha/Kconfig |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 60cde53..8bb9362 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -51,7 +51,7 @@ config GENERIC_CMOS_UPDATE
-         def_bool y
+diff --git a/arch/alpha/include/asm/floppy.h b/arch/alpha/include/asm/floppy.h
+index 46cefbd..bae97eb 100644
+--- a/arch/alpha/include/asm/floppy.h
++++ b/arch/alpha/include/asm/floppy.h
+@@ -26,7 +26,7 @@
+ #define fd_disable_irq()        disable_irq(FLOPPY_IRQ)
+ #define fd_cacheflush(addr,size) /* nothing */
+ #define fd_request_irq()        request_irq(FLOPPY_IRQ, floppy_interrupt,\
+-					    IRQF_DISABLED, "floppy", NULL)
++					    0, "floppy", NULL)
+ #define fd_free_irq()           free_irq(FLOPPY_IRQ, NULL)
  
- config GENERIC_GPIO
--	def_bool y
-+	bool
+ #ifdef CONFIG_PCI
+diff --git a/arch/alpha/kernel/irq_alpha.c b/arch/alpha/kernel/irq_alpha.c
+index 51b7fbd..e0312e8 100644
+--- a/arch/alpha/kernel/irq_alpha.c
++++ b/arch/alpha/kernel/irq_alpha.c
+@@ -221,7 +221,6 @@ process_mcheck_info(unsigned long vector, unsigned long la_ptr,
  
- config ZONE_DMA
- 	bool
+ struct irqaction timer_irqaction = {
+ 	.handler	= timer_interrupt,
+-	.flags		= IRQF_DISABLED,
+ 	.name		= "timer",
+ };
+ 
+diff --git a/arch/alpha/kernel/sys_titan.c b/arch/alpha/kernel/sys_titan.c
+index f47b30a..f96dc81 100644
+--- a/arch/alpha/kernel/sys_titan.c
++++ b/arch/alpha/kernel/sys_titan.c
+@@ -281,15 +281,15 @@ titan_late_init(void)
+ 	 * all reported to the kernel as machine checks, so the handler
+ 	 * is a nop so it can be called to count the individual events.
+ 	 */
+-	titan_request_irq(63+16, titan_intr_nop, IRQF_DISABLED,
++	titan_request_irq(63+16, titan_intr_nop, 0,
+ 		    "CChip Error", NULL);
+-	titan_request_irq(62+16, titan_intr_nop, IRQF_DISABLED,
++	titan_request_irq(62+16, titan_intr_nop, 0,
+ 		    "PChip 0 H_Error", NULL);
+-	titan_request_irq(61+16, titan_intr_nop, IRQF_DISABLED,
++	titan_request_irq(61+16, titan_intr_nop, 0,
+ 		    "PChip 1 H_Error", NULL);
+-	titan_request_irq(60+16, titan_intr_nop, IRQF_DISABLED,
++	titan_request_irq(60+16, titan_intr_nop, 0,
+ 		    "PChip 0 C_Error", NULL);
+-	titan_request_irq(59+16, titan_intr_nop, IRQF_DISABLED,
++	titan_request_irq(59+16, titan_intr_nop, 0,
+ 		    "PChip 1 C_Error", NULL);
+ 
+ 	/* 
+@@ -348,9 +348,9 @@ privateer_init_pci(void)
+ 	 * Hook a couple of extra err interrupts that the
+ 	 * common titan code won't.
+ 	 */
+-	titan_request_irq(53+16, titan_intr_nop, IRQF_DISABLED,
++	titan_request_irq(53+16, titan_intr_nop, 0,
+ 		    "NMI", NULL);
+-	titan_request_irq(50+16, titan_intr_nop, IRQF_DISABLED,
++	titan_request_irq(50+16, titan_intr_nop, 0,
+ 		    "Temperature Warning", NULL);
+ 
+ 	/*
 -- 
-1.7.5.4
-
-
+1.7.4.1
