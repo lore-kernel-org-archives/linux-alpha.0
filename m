@@ -1,26 +1,26 @@
 From: Yong Zhang <yong.zhang0@gmail.com>
-Subject: [PATCH 02/57] alpha: irq: Remove IRQF_DISABLED
-Date: Wed, 21 Sep 2011 17:28:03 +0800
-Message-ID: <1316597339-29861-3-git-send-email-yong.zhang0@gmail.com>
-References: <1316597339-29861-1-git-send-email-yong.zhang0@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Subject: [PATCH 02/55] alpha: irq: Remove IRQF_DISABLED
+Date: Thu, 22 Sep 2011 16:58:29 +0800
+Message-ID: <1316681962-8217-3-git-send-email-yong.zhang0@gmail.com>
+References: <1316681962-8217-1-git-send-email-yong.zhang0@gmail.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=gamma;
         h=from:to:cc:subject:date:message-id:x-mailer:in-reply-to:references;
-        bh=2+IrDvIGoCsBd7E6eA6ZFGoTSC0uv2t+yg/MNITLA/s=;
-        b=kkzrw/acBJHKcE8sVnSYtBKkLHxrRrvW++HfiDSSiSD8VWO2x4AV/R5snN9yomqdZH
-         l05YEvtjcPfKoMaIofpcxO1dDUbr2W1cw7lwUgxY2WWU+EHFLKZx/snkQid3he4FyOh1
-         Owk1PVssJHcA5SeFRLlq6mYOkm8X1wZB74kmU=
-In-Reply-To: <1316597339-29861-1-git-send-email-yong.zhang0@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+        bh=vJab9RL835tf1+aTailbV+q2lJpfVJCiA8UET3Uo5eY=;
+        b=HATLeA4f+9LbkEY4n3WRRu1ask/NpKnpX0ZiDenrlR1ri2Xpt1dhnfxkTSsTTvLqO3
+         iyZdDO6tKGCQwwFZTRb+HuuqAzRda8PIyukZeWLfSeol8bGVaL1omy49muoK77lXI1hg
+         bW0xFOywfBA/A3QJrUa1LwLAleNXdSszsL6lA=
+In-Reply-To: <1316681962-8217-1-git-send-email-yong.zhang0@gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
 Cc: tglx@linutronix.de, yong.zhang0@gmail.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Jiri Kosina <jkosina@suse.cz>, Phil Carmody <ext-phil.2.carmody@nokia.com>, Kyle McMartin <kyle@redhat.com>, Will Deacon <will.deacon@arm.com>, Paul Mundt <lethal@linux-sh.org>, Andrew Morton <akpm@linux-foundation.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org
 
-Since commit [c58543c8: genirq: Run irq handlers with interrupts disabled],
+Since commit [e58aa3d2: genirq: Run irq handlers with interrupts disabled],
 We run all interrupt handlers with interrupts disabled
 and we even check and yell when an interrupt handler
 returns with interrupts enabled (see commit [b738a50a:
