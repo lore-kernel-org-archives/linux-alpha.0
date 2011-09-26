@@ -1,101 +1,41 @@
-From: Yong Zhang <yong.zhang0@gmail.com>
-Subject: [PATCH 02/55] alpha: irq: Remove IRQF_DISABLED
-Date: Thu, 22 Sep 2011 16:58:29 +0800
-Message-ID: <1316681962-8217-3-git-send-email-yong.zhang0@gmail.com>
-References: <1316681962-8217-1-git-send-email-yong.zhang0@gmail.com>
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=from:to:cc:subject:date:message-id:x-mailer:in-reply-to:references;
-        bh=vJab9RL835tf1+aTailbV+q2lJpfVJCiA8UET3Uo5eY=;
-        b=HATLeA4f+9LbkEY4n3WRRu1ask/NpKnpX0ZiDenrlR1ri2Xpt1dhnfxkTSsTTvLqO3
-         iyZdDO6tKGCQwwFZTRb+HuuqAzRda8PIyukZeWLfSeol8bGVaL1omy49muoK77lXI1hg
-         bW0xFOywfBA/A3QJrUa1LwLAleNXdSszsL6lA=
-In-Reply-To: <1316681962-8217-1-git-send-email-yong.zhang0@gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: [PATCH 0/2] alpha: implement missing syscalls
+Date: Mon, 26 Sep 2011 22:20:47 +1300
+Message-ID: <1317028849-13198-1-git-send-email-mcree@orcon.net.nz>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
-Cc: tglx@linutronix.de, yong.zhang0@gmail.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Jiri Kosina <jkosina@suse.cz>, Phil Carmody <ext-phil.2.carmody@nokia.com>, Kyle McMartin <kyle@redhat.com>, Will Deacon <will.deacon@arm.com>, Paul Mundt <lethal@linux-sh.org>, Andrew Morton <akpm@linux-foundation.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
-Since commit [e58aa3d2: genirq: Run irq handlers with interrupts disabled],
-We run all interrupt handlers with interrupts disabled
-and we even check and yell when an interrupt handler
-returns with interrupts enabled (see commit [b738a50a:
-genirq: Warn when handler enables interrupts]).
+Andrew,
 
-So now this flag is a NOOP and can be removed.
+Patches to implement missing syscalls on Alpha follow.  I am sending to you
+as the first one (the accept4 syscall) is really urgent and I am assuming
+that Matt's alpha-next repository is out of action at the moment.  If
+acceptable please forward to Linus.
 
-Signed-off-by: Yong Zhang <yong.zhang0@gmail.com>
----
- arch/alpha/include/asm/floppy.h |    2 +-
- arch/alpha/kernel/irq_alpha.c   |    1 -
- arch/alpha/kernel/sys_titan.c   |   14 +++++++-------
- 3 files changed, 8 insertions(+), 9 deletions(-)
+I have tested the accept4 syscall with the test code in commit
+de11defebf0000.
 
-diff --git a/arch/alpha/include/asm/floppy.h b/arch/alpha/include/asm/floppy.h
-index 46cefbd..bae97eb 100644
---- a/arch/alpha/include/asm/floppy.h
-+++ b/arch/alpha/include/asm/floppy.h
-@@ -26,7 +26,7 @@
- #define fd_disable_irq()        disable_irq(FLOPPY_IRQ)
- #define fd_cacheflush(addr,size) /* nothing */
- #define fd_request_irq()        request_irq(FLOPPY_IRQ, floppy_interrupt,\
--					    IRQF_DISABLED, "floppy", NULL)
-+					    0, "floppy", NULL)
- #define fd_free_irq()           free_irq(FLOPPY_IRQ, NULL)
- 
- #ifdef CONFIG_PCI
-diff --git a/arch/alpha/kernel/irq_alpha.c b/arch/alpha/kernel/irq_alpha.c
-index 51b7fbd..e0312e8 100644
---- a/arch/alpha/kernel/irq_alpha.c
-+++ b/arch/alpha/kernel/irq_alpha.c
-@@ -221,7 +221,6 @@ process_mcheck_info(unsigned long vector, unsigned long la_ptr,
- 
- struct irqaction timer_irqaction = {
- 	.handler	= timer_interrupt,
--	.flags		= IRQF_DISABLED,
- 	.name		= "timer",
- };
- 
-diff --git a/arch/alpha/kernel/sys_titan.c b/arch/alpha/kernel/sys_titan.c
-index f47b30a..f96dc81 100644
---- a/arch/alpha/kernel/sys_titan.c
-+++ b/arch/alpha/kernel/sys_titan.c
-@@ -281,15 +281,15 @@ titan_late_init(void)
- 	 * all reported to the kernel as machine checks, so the handler
- 	 * is a nop so it can be called to count the individual events.
- 	 */
--	titan_request_irq(63+16, titan_intr_nop, IRQF_DISABLED,
-+	titan_request_irq(63+16, titan_intr_nop, 0,
- 		    "CChip Error", NULL);
--	titan_request_irq(62+16, titan_intr_nop, IRQF_DISABLED,
-+	titan_request_irq(62+16, titan_intr_nop, 0,
- 		    "PChip 0 H_Error", NULL);
--	titan_request_irq(61+16, titan_intr_nop, IRQF_DISABLED,
-+	titan_request_irq(61+16, titan_intr_nop, 0,
- 		    "PChip 1 H_Error", NULL);
--	titan_request_irq(60+16, titan_intr_nop, IRQF_DISABLED,
-+	titan_request_irq(60+16, titan_intr_nop, 0,
- 		    "PChip 0 C_Error", NULL);
--	titan_request_irq(59+16, titan_intr_nop, IRQF_DISABLED,
-+	titan_request_irq(59+16, titan_intr_nop, 0,
- 		    "PChip 1 C_Error", NULL);
- 
- 	/* 
-@@ -348,9 +348,9 @@ privateer_init_pci(void)
- 	 * Hook a couple of extra err interrupts that the
- 	 * common titan code won't.
- 	 */
--	titan_request_irq(53+16, titan_intr_nop, IRQF_DISABLED,
-+	titan_request_irq(53+16, titan_intr_nop, 0,
- 		    "NMI", NULL);
--	titan_request_irq(50+16, titan_intr_nop, IRQF_DISABLED,
-+	titan_request_irq(50+16, titan_intr_nop, 0,
- 		    "Temperature Warning", NULL);
- 
- 	/*
+The accept4 patch should also be sent to the stable queue. It would be good
+to get that into 3.0.x as that is the kernel currently in Debian Unstable
+where the missing accept4 syscall is starting to cause havoc.
+
+Cheers
+Michael.
+
+Michael Cree (2):
+  alpha: Wire up accept4 syscall.
+  alpha: Wire up sendmmsg syscall
+
+ arch/alpha/include/asm/unistd.h |    4 +++-
+ arch/alpha/kernel/systbls.S     |    2 ++
+ 2 files changed, 5 insertions(+), 1 deletions(-)
+
 -- 
-1.7.4.1
+1.7.4.3
+
