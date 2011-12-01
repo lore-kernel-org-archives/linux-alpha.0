@@ -1,45 +1,86 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: [PATCH] alpha: add io{read,write}{16,32}be functions
-Date: Wed, 30 Nov 2011 21:01:40 +1300
-Message-ID: <1322640100-14534-1-git-send-email-mcree@orcon.net.nz>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH-RFC] alpha: drop pci_iomap/pci_iounmap from pci-noop.c
+Date: Thu, 1 Dec 2011 14:42:10 +0200
+Message-ID: <20111201124210.GA13258@redhat.com>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-kernel@vger.kernel.org, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 649468@bugs.debian.org, Ben Hutchings <ben@decadent.org.uk>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-These functions are used in some PCI drivers with big-endian
-MMIO space.
+I notice that io.h on alpha pulls in asm-generic/iomap.h.
+This header includes these bits:
 
-Admittedly it is almost certain that no one this side of the
-Moon would use such a card in an Alpha but it does get us
-closer to being able to build allyesconfig or allmodconfig,
-and it enables the Debian default generic config to build.
+#ifdef CONFIG_PCI
+/* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
+struct pci_dev;
+extern void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned
+ong max);
+extern void pci_iounmap(struct pci_dev *dev, void __iomem *);
+#else
+struct pci_dev;
+static inline void __iomem *pci_iomap(struct pci_dev *dev, int bar,
+nsigned long max)
+{
+       return NULL;
+}
+static inline void pci_iounmap(struct pci_dev *dev, void __iomem *addr)
+{ }
+#endif
 
-Signed-off-by: Michael Cree <mcree@orcon.net.nz>
+#endif
+
+
+Thus if PCI is not selected we get pci_iomap and pci_iounmap
+stubbed out with inline functions. However, on the Jenkins architecture,
+arch/alpha/kernel/pci-noop.c is compiled, which includes
+offline versions of same stubs. Since Jenkins disables PCI,
+I wonder how does this compile - won't the two definitions
+conflict?
+
+It's possible that the ones in arch/alpha/kernel/pci-noop.c
+can just be removed, and that the conflict is avoided by luck
+and the offline functions are never used.
+If true, would the following (untested) patch be the right thing to do?
+
+Feedback from someone who has the tools to build the Jenkins
+config would also be appreciated.
+
+Thanks!
+
+-->
+alpha: drop pci_iomap/pci_iounmap from pci-noop.c
+
+Jenkins disables PCI so asm-generic provides inline
+stubs for these, we don't need offline stubs as well.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
 ---
- arch/alpha/include/asm/io.h |    5 +++++
- 1 files changed, 5 insertions(+), 0 deletions(-)
 
-diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-index 56ff965..6365ef2 100644
---- a/arch/alpha/include/asm/io.h
-+++ b/arch/alpha/include/asm/io.h
-@@ -490,6 +490,11 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
- }
- #endif
+diff --git a/arch/alpha/kernel/pci-noop.c b/arch/alpha/kernel/pci-noop.c
+index 246100e..04eea48 100644
+--- a/arch/alpha/kernel/pci-noop.c
++++ b/arch/alpha/kernel/pci-noop.c
+@@ -185,15 +185,3 @@ struct dma_map_ops alpha_noop_ops = {
  
-+#define ioread16be(p) be16_to_cpu(ioread16(p))
-+#define ioread32be(p) be32_to_cpu(ioread32(p))
-+#define iowrite16be(v,p) iowrite16(cpu_to_be16(v), (p))
-+#define iowrite32be(v,p) iowrite32(cpu_to_be32(v), (p))
-+
- #define inb_p		inb
- #define inw_p		inw
- #define inl_p		inl
--- 
-1.7.4.3
+ struct dma_map_ops *dma_ops = &alpha_noop_ops;
+ EXPORT_SYMBOL(dma_ops);
+-
+-void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long maxlen)
+-{
+-	return NULL;
+-}
+-
+-void pci_iounmap(struct pci_dev *dev, void __iomem * addr)
+-{
+-}
+-
+-EXPORT_SYMBOL(pci_iomap);
+-EXPORT_SYMBOL(pci_iounmap);
 
+-- 
+MST
