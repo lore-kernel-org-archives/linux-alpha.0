@@ -1,38 +1,26 @@
 From: =?ISO-8859-1?Q?Ra=FAl_Porcel?= <armin76@gentoo.org>
-Subject: Re: [PATCH-RFC 03/10] alpha: switch to GENERIC_PCI_IOMAP
-Date: Tue, 06 Dec 2011 17:45:15 +0100
-Message-ID: <4EDE469B.1090108@gentoo.org>
-References: <cover.1322163031.git.mst@redhat.com> <4245e7d8f484de6512fd4a9e4cba5b90cc111899.1322163031.git.mst@redhat.com>
+Subject: Re: problem compiling kernel ld error relocation truncated to fit:
+ GPREL16 against symbol
+Date: Tue, 06 Dec 2011 17:46:30 +0100
+Message-ID: <4EDE46E6.4000000@gentoo.org>
+References: <CAHEkXCQ5HeiSmSkFSh5bLvo-VO225bKugDXYVFp34-zbb3uriA@mail.gmail.com> <4EBF12B2.1070504@orcon.net.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4245e7d8f484de6512fd4a9e4cba5b90cc111899.1322163031.git.mst@redhat.com>
+In-Reply-To: <4EBF12B2.1070504@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: carl hansen <carlhansen1234@gmail.com>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org, Uros Bizjak <ubizjak@gmail.com>
 
-On 11/24/2011 09:17 PM, Michael S. Tsirkin wrote:
-> alpha copied pci_iomap from generic code to avoid
-> pulling the rest of iomap.c in.  Since that's in
-> a separate file now, we can reuse the common implementation.
->=20
-> The only difference is handling of nocache flag,
-> that turns out to be done correctly by the
-> generic code since arch/alpha/include/asm/io.h
-> defines ioremap_nocache same as ioremap.
->=20
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+On 11/13/2011 01:43 AM, Michael Cree wrote:
 [snip]
+> 
+> Is there anyone more knowledgeable than I about gcc who can give us
+> guidance as to why gcc-4.6 should be enlarging the data segment so much
+> that the small data model cannot be used?  Or is there a fix required in
+> the kernel code?
 
-WFM on my DS20E using 3.2.0-rc4-00231-g958c6c2
+Guess Uros can help here...
 
-so,
-
-Tested-by: Ra=FAl Porcel <armin76@gentoo.org>
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
