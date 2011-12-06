@@ -1,25 +1,32 @@
 From: =?ISO-8859-1?Q?Ra=FAl_Porcel?= <armin76@gentoo.org>
-Subject: Re: [PATCH-RFC] alpha: drop pci_iomap/pci_iounmap from pci-noop.c
-Date: Tue, 06 Dec 2011 17:39:20 +0100
-Message-ID: <4EDE4538.7090908@gentoo.org>
-References: <20111201124210.GA13258@redhat.com>
+Subject: Re: [PATCH-RFC 03/10] alpha: switch to GENERIC_PCI_IOMAP
+Date: Tue, 06 Dec 2011 17:45:15 +0100
+Message-ID: <4EDE469B.1090108@gentoo.org>
+References: <cover.1322163031.git.mst@redhat.com> <4245e7d8f484de6512fd4a9e4cba5b90cc111899.1322163031.git.mst@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20111201124210.GA13258@redhat.com>
+In-Reply-To: <4245e7d8f484de6512fd4a9e4cba5b90cc111899.1322163031.git.mst@redhat.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
 To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On 12/01/2011 01:42 PM, Michael S. Tsirkin wrote:
-> I notice that io.h on alpha pulls in asm-generic/iomap.h.
-> This header includes these bits:
+On 11/24/2011 09:17 PM, Michael S. Tsirkin wrote:
+> alpha copied pci_iomap from generic code to avoid
+> pulling the rest of iomap.c in.  Since that's in
+> a separate file now, we can reuse the common implementation.
+>=20
+> The only difference is handling of nocache flag,
+> that turns out to be done correctly by the
+> generic code since arch/alpha/include/asm/io.h
+> defines ioremap_nocache same as ioremap.
+>=20
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 [snip]
 
-WFM on my DS20E with the "[PATCH-RFC 03/10] alpha: switch to
-GENERIC_PCI_IOMAP" patch series using 3.2.0-rc4-00231-g958c6c2
+WFM on my DS20E using 3.2.0-rc4-00231-g958c6c2
 
 so,
 
