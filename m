@@ -1,44 +1,31 @@
-From: "David Laight" <David.Laight@ACULAB.COM>
-Subject: RE: Re: [PATCHv5] atomic: add *_dec_not_zero
-Date: Mon, 5 Dec 2011 11:44:10 -0000
-Message-ID: <AE90C24D6B3A694183C094C60CF0A2F6D8AEFE@saturn3.aculab.com>
-References: <20111204221850.GC14542@n2100.arm.linux.org.uk>
+From: =?ISO-8859-1?Q?Ra=FAl_Porcel?= <armin76@gentoo.org>
+Subject: Re: [PATCH-RFC] alpha: drop pci_iomap/pci_iounmap from pci-noop.c
+Date: Tue, 06 Dec 2011 17:39:20 +0100
+Message-ID: <4EDE4538.7090908@gentoo.org>
+References: <20111201124210.GA13258@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-Content-class: urn:content-classes:message
-In-Reply-To: <20111204221850.GC14542@n2100.arm.linux.org.uk>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Sven Eckelmann <sven@narfation.org>
-Cc: linux-m32r-ja@ml.linux-m32r.org, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Randy Dunlap <rdunlap@xenotime.net>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, user-mode-linux-devel@lists.sourceforge.net, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Arnd Bergma nn <arnd@arndb.de>, Jeff Dike <jdike@addtoit.com>, linux-alpha@vger.kernel.org, Chris Metcalf <cmetcalf@tilera.com>, Tony Luck <tony.luck@intel.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@li
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <20111201124210.GA13258@redhat.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Looking at this:
+On 12/01/2011 01:42 PM, Michael S. Tsirkin wrote:
+> I notice that io.h on alpha pulls in asm-generic/iomap.h.
+> This header includes these bits:
+[snip]
 
-> #ifndef atomic_inc_unless_negative
-> static inline int atomic_inc_unless_negative(atomic_t *p)
-> {
->         int v, v1;
->         for (v = 0; v >= 0; v = v1) {
->                 v1 = atomic_cmpxchg(p, v, v + 1);
->                 if (likely(v1 == v))
->                         return 1;
->         }
->         return 0;
-> }
-> #endif
+WFM on my DS20E with the "[PATCH-RFC 03/10] alpha: switch to
+GENERIC_PCI_IOMAP" patch series using 3.2.0-rc4-00231-g958c6c2
 
-why is it optimised for '*p' being zero??
-I'd have though the initial assignment to 'v' should
-be made by reading '*p' without any memory barriers (etc).
+so,
 
-	David
+Tested-by: Ra=FAl Porcel <armin76@gentoo.org>
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
