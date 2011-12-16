@@ -1,77 +1,191 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: rcu_sched_state detected stalls on Alpha with generic config
-Date: Wed, 7 Dec 2011 17:16:50 -0800
-Message-ID: <20111208011650.GH2367@linux.vnet.ibm.com>
-References: <4EDF0CEB.80904@orcon.net.nz>
-Reply-To: paulmck@linux.vnet.ibm.com
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v3 08/34] alpha/PCI: convert to pci_scan_root_bus() for
+ correct root bus resources
+Date: Fri, 16 Dec 2011 14:24:01 -0700
+Message-ID: <CAErSpo7WHixAQL2=ptHj+JUsE8W6PTG0ZEM1T0fYQAixqjm=pQ@mail.gmail.com>
+References: <20111028222432.30729.8431.stgit@bhelgaas.mtv.corp.google.com> <20111028222611.30729.46284.stgit@bhelgaas.mtv.corp.google.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4EDF0CEB.80904@orcon.net.nz>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary=00151747548883e99d04b43c39d5
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=beta;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:x-system-of-record:content-type;
+        bh=vD9IK9A2ktYH+jIjFaRVl2PCV3wCNQZFpp+fP4RQqZ0=;
+        b=s+5nC2Ng4CowFo9z6mbHU3xer9q1TRVK3NRK+DCTmWrvo/wBDUngaF1p47s3nXWIvA
+         qPQFeP5uGhkn3Ru3+M2A==
+In-Reply-To: <20111028222611.30729.46284.stgit@bhelgaas.mtv.corp.google.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Shaohua Li <shaohua.li@intel.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+To: linux-pci@vger.kernel.org, Jesse Barnes <jbarnes@virtuousgeek.org>
+Cc: linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Wed, Dec 07, 2011 at 07:51:23PM +1300, Michael Cree wrote:
-> I am seeing "rcu_sched_state detected stall on CPU" messages on Alpha
-> architecture with a generic SMP config.  Interactive tasks are seen to
-> lock up, with "INFO: task X blocked for more than 120 seconds" in the
-> kernel logs, and eventual kernel oops and panic, on latest 3.2-rc4 and
-> traceable back to 3.0.  Bisection between 2.6.39 and 3.0 leads to commit:
-> 
-> 09223371deac67d08ca0b70bd18787920284c967
-> rcu: Use softirq to address performance regression
-> 
-> as the first bad commit.
-> 
-> Tested on an Alpha ES45 (Titan) with three 1.25 GHz CPUs and 4 GByte
-> memory.  Testing procedure is to build git software and run its test
-> suite with -j4 in the make command argument.
-> 
-> The CPU stall messages and eventually system lockup is only seen with a
-> generic Alpha config, never with a Titan machine specific config.
-> 
-> An example of kernel logs is (this one probably produced when I tried to
-> shutdown the system when it is falling over):
-> 
-> [45360.930876] INFO: rcu_sched_state detected stall on CPU 1 (t=798848
-> jiffies)
-> [45360.931853] INFO: rcu_sched_state detected stalls on CPUs/tasks: { 1}
-> (detected by 0, t=798850 jiffies)
-> [45489.080225] INFO: task umount:17371 blocked for more than 120 seconds.
-> [45489.158350] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
-> disables this message.
-> [45489.252100] umount          D fffffc00013461ac     0 17371  17368
-> 0x00000000
-> [45489.336084] fffffc00fdd53db8 fffffc00fdd97bb8 fffffc000108ca1c
-> fffffc00dcc9e800
-> [45489.422998]        fffffc00dcc9e810 fffffc00013b3a5d fffffc000106289c
-> fffffc00ff0dfda8
-> [45489.519678]        0000000000000000 fffffc000108c81c fffffc0001cd73f0
-> 0000000000000001
-> [45489.615381]        fffffc00010627f0 0000000000000000 fffffc00dcc9e920
-> fffffc00ff0bf780
-> [45489.712060]        fffffc00010111b8 fffffc00ff0dfda8 fffffc00ff0dfde8
-> fffffc0001cdaa58
-> [45489.808740]        0000000000000000 0000000000000000 fffffc0000000000
-> fffffc0000000000
-> [45489.907373] Trace:
-> [45489.930810] [<fffffc000108ca1c>] watchdog+0x200/0x27c
-> [45489.991357] [<fffffc000106289c>] kthread+0xac/0xc4
-> [45490.048974] [<fffffc000108c81c>] watchdog+0x0/0x27c
-> [45490.107568] [<fffffc00010627f0>] kthread+0x0/0xc4
-> [45490.164209] [<fffffc00010111b8>] kernel_thread+0x28/0x90
-> [45490.227685]
-> 
-> Let me know if any other information is needed to narrow down the problem.
+--00151747548883e99d04b43c39d5
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Are there any specific differences between the Titan config and the
-generic Alpha config that might help me work out what is going on?
-Odd -- it looks like the watchdog is complaining at the time of the hang.
-Is it possible to use sysrq to get the state of the other tasks?
+On Fri, Oct 28, 2011 at 4:26 PM, Bjorn Helgaas <bhelgaas@google.com> wrote:
+> Convert from pci_scan_bus() to pci_scan_root_bus() and remove root bus
+> resource fixups. =A0This fixes the problem of "early" and "header" quirks
+> seeing incorrect root bus resources.
+>
+> CC: linux-alpha@vger.kernel.org
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+> =A0arch/alpha/kernel/pci.c | =A0 37 ++++++++++++++++++++-----------------
+> =A01 files changed, 20 insertions(+), 17 deletions(-)
+>
+> diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+> index c9ab94e..e9e78a2 100644
+> --- a/arch/alpha/kernel/pci.c
+> +++ b/arch/alpha/kernel/pci.c
+> @@ -286,22 +286,7 @@ pcibios_fixup_bus(struct pci_bus *bus)
+> =A0 =A0 =A0 =A0struct pci_controller *hose =3D bus->sysdata;
+> =A0 =A0 =A0 =A0struct pci_dev *dev =3D bus->self;
+>
+> - =A0 =A0 =A0 if (!dev) {
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* Root bus. */
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 pci_mem_end;
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 sg_base =3D hose->sg_pci ? hose->sg_pci=
+->dma_base : ~0;
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned long end;
+> -
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 bus->resource[0] =3D hose->io_space;
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 bus->resource[1] =3D hose->mem_space;
+> -
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* Adjust hose mem_space limit to prevent P=
+CI allocations
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0in the iommu windows. */
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 pci_mem_end =3D min((u32)__direct_map_base,=
+ sg_base) - 1;
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 end =3D hose->mem_space->start + pci_mem_en=
+d;
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (hose->mem_space->end > end)
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 hose->mem_space->end =3D en=
+d;
+> - =A0 =A0 =A0 } else if (pci_probe_only &&
+> + =A0 =A0 =A0 if (pci_probe_only && dev &&
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 (dev->class >> 8) =3D=3D PCI_CLASS_BR=
+IDGE_PCI) {
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0pci_read_bridge_bases(bus);
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0pcibios_fixup_device_resources(dev, bus);
+> @@ -414,13 +399,31 @@ void __init
+> =A0common_init_pci(void)
+> =A0{
+> =A0 =A0 =A0 =A0struct pci_controller *hose;
+> + =A0 =A0 =A0 struct list_head resources;
+> =A0 =A0 =A0 =A0struct pci_bus *bus;
+> =A0 =A0 =A0 =A0int next_busno;
+> =A0 =A0 =A0 =A0int need_domain_info =3D 0;
+> + =A0 =A0 =A0 u32 pci_mem_end;
+> + =A0 =A0 =A0 u32 sg_base;
+> + =A0 =A0 =A0 unsigned long end;
+>
+> =A0 =A0 =A0 =A0/* Scan all of the recorded PCI controllers. =A0*/
+> =A0 =A0 =A0 =A0for (next_busno =3D 0, hose =3D hose_head; hose; hose =3D =
+hose->next) {
+> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 bus =3D pci_scan_bus(next_busno, alpha_mv.p=
+ci_ops, hose);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 sg_base =3D hose->sg_pci ? hose->sg_pci->dm=
+a_base : ~0;
+> +
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* Adjust hose mem_space limit to prevent P=
+CI allocations
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0in the iommu windows. */
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 pci_mem_end =3D min((u32)__direct_map_base,=
+ sg_base) - 1;
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 end =3D hose->mem_space->start + pci_mem_en=
+d;
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (hose->mem_space->end > end)
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 hose->mem_space->end =3D en=
+d;
+> +
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 INIT_LIST_HEAD(&resources);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 pci_add_resource(&resources, &hose->io_spac=
+e);
+> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 pci_add_resource(&resources, &hose->mem_spa=
+ce);
 
-							Thanx, Paul
+These two lines are errors: hose->io_space is already a struct
+resource pointer, so we shouldn't take the pointer's address.  Updated
+patch and incremental patch attached.
 
+Bjorn
+
+--00151747548883e99d04b43c39d5
+Content-Type: application/octet-stream; 
+	name="patch.alpha-pci-convert-to-pci_scan_root_bus"
+Content-Disposition: attachment; 
+	filename="patch.alpha-pci-convert-to-pci_scan_root_bus"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gw9pgkgb0
+
+Y29tbWl0IDRjZWJhMmZiZmQ3MmYzMzFhMjBjNjYzOGM5ZGI5MjZiOTVkYTczYjEKQXV0aG9yOiBC
+am9ybiBIZWxnYWFzIDxiaGVsZ2Fhc0Bnb29nbGUuY29tPgpEYXRlOiAgIFR1ZSBPY3QgMTEgMTc6
+MDc6NDggMjAxMSAtMDYwMAoKICAgIGFscGhhL1BDSTogY29udmVydCB0byBwY2lfc2Nhbl9yb290
+X2J1cygpIGZvciBjb3JyZWN0IHJvb3QgYnVzIHJlc291cmNlcwogICAgCiAgICBDb252ZXJ0IGZy
+b20gcGNpX3NjYW5fYnVzKCkgdG8gcGNpX3NjYW5fcm9vdF9idXMoKSBhbmQgcmVtb3ZlIHJvb3Qg
+YnVzCiAgICByZXNvdXJjZSBmaXh1cHMuICBUaGlzIGZpeGVzIHRoZSBwcm9ibGVtIG9mICJlYXJs
+eSIgYW5kICJoZWFkZXIiIHF1aXJrcwogICAgc2VlaW5nIGluY29ycmVjdCByb290IGJ1cyByZXNv
+dXJjZXMuCiAgICAKICAgIENDOiBsaW51eC1hbHBoYUB2Z2VyLmtlcm5lbC5vcmcKICAgIFNpZ25l
+ZC1vZmYtYnk6IEJqb3JuIEhlbGdhYXMgPGJoZWxnYWFzQGdvb2dsZS5jb20+CgpkaWZmIC0tZ2l0
+IGEvYXJjaC9hbHBoYS9rZXJuZWwvcGNpLmMgYi9hcmNoL2FscGhhL2tlcm5lbC9wY2kuYwppbmRl
+eCBjOWFiOTRlLi5mY2I0YjkxIDEwMDY0NAotLS0gYS9hcmNoL2FscGhhL2tlcm5lbC9wY2kuYwor
+KysgYi9hcmNoL2FscGhhL2tlcm5lbC9wY2kuYwpAQCAtMjgxLDI3ICsyODEsOSBAQCBwY2liaW9z
+X2ZpeHVwX2RldmljZV9yZXNvdXJjZXMoc3RydWN0IHBjaV9kZXYgKmRldiwgc3RydWN0IHBjaV9i
+dXMgKmJ1cykKIHZvaWQgX19kZXZpbml0CiBwY2liaW9zX2ZpeHVwX2J1cyhzdHJ1Y3QgcGNpX2J1
+cyAqYnVzKQogewotCS8qIFByb3BhZ2F0ZSBob3NlIGluZm8gaW50byB0aGUgc3Vib3JkaW5hdGUg
+ZGV2aWNlcy4gICovCi0KLQlzdHJ1Y3QgcGNpX2NvbnRyb2xsZXIgKmhvc2UgPSBidXMtPnN5c2Rh
+dGE7CiAJc3RydWN0IHBjaV9kZXYgKmRldiA9IGJ1cy0+c2VsZjsKIAotCWlmICghZGV2KSB7Ci0J
+CS8qIFJvb3QgYnVzLiAqLwotCQl1MzIgcGNpX21lbV9lbmQ7Ci0JCXUzMiBzZ19iYXNlID0gaG9z
+ZS0+c2dfcGNpID8gaG9zZS0+c2dfcGNpLT5kbWFfYmFzZSA6IH4wOwotCQl1bnNpZ25lZCBsb25n
+IGVuZDsKLQotCQlidXMtPnJlc291cmNlWzBdID0gaG9zZS0+aW9fc3BhY2U7Ci0JCWJ1cy0+cmVz
+b3VyY2VbMV0gPSBob3NlLT5tZW1fc3BhY2U7Ci0KLQkJLyogQWRqdXN0IGhvc2UgbWVtX3NwYWNl
+IGxpbWl0IHRvIHByZXZlbnQgUENJIGFsbG9jYXRpb25zCi0JCSAgIGluIHRoZSBpb21tdSB3aW5k
+b3dzLiAqLwotCQlwY2lfbWVtX2VuZCA9IG1pbigodTMyKV9fZGlyZWN0X21hcF9iYXNlLCBzZ19i
+YXNlKSAtIDE7Ci0JCWVuZCA9IGhvc2UtPm1lbV9zcGFjZS0+c3RhcnQgKyBwY2lfbWVtX2VuZDsK
+LQkJaWYgKGhvc2UtPm1lbV9zcGFjZS0+ZW5kID4gZW5kKQotCQkJaG9zZS0+bWVtX3NwYWNlLT5l
+bmQgPSBlbmQ7Ci0gCX0gZWxzZSBpZiAocGNpX3Byb2JlX29ubHkgJiYKKwlpZiAocGNpX3Byb2Jl
+X29ubHkgJiYgZGV2ICYmCiAgCQkgICAoZGV2LT5jbGFzcyA+PiA4KSA9PSBQQ0lfQ0xBU1NfQlJJ
+REdFX1BDSSkgewogIAkJcGNpX3JlYWRfYnJpZGdlX2Jhc2VzKGJ1cyk7CiAgCQlwY2liaW9zX2Zp
+eHVwX2RldmljZV9yZXNvdXJjZXMoZGV2LCBidXMpOwpAQCAtNDE0LDEzICszOTYsMzEgQEAgdm9p
+ZCBfX2luaXQKIGNvbW1vbl9pbml0X3BjaSh2b2lkKQogewogCXN0cnVjdCBwY2lfY29udHJvbGxl
+ciAqaG9zZTsKKwlzdHJ1Y3QgbGlzdF9oZWFkIHJlc291cmNlczsKIAlzdHJ1Y3QgcGNpX2J1cyAq
+YnVzOwogCWludCBuZXh0X2J1c25vOwogCWludCBuZWVkX2RvbWFpbl9pbmZvID0gMDsKKwl1MzIg
+cGNpX21lbV9lbmQ7CisJdTMyIHNnX2Jhc2U7CisJdW5zaWduZWQgbG9uZyBlbmQ7CiAKIAkvKiBT
+Y2FuIGFsbCBvZiB0aGUgcmVjb3JkZWQgUENJIGNvbnRyb2xsZXJzLiAgKi8KIAlmb3IgKG5leHRf
+YnVzbm8gPSAwLCBob3NlID0gaG9zZV9oZWFkOyBob3NlOyBob3NlID0gaG9zZS0+bmV4dCkgewot
+CQlidXMgPSBwY2lfc2Nhbl9idXMobmV4dF9idXNubywgYWxwaGFfbXYucGNpX29wcywgaG9zZSk7
+CisJCXNnX2Jhc2UgPSBob3NlLT5zZ19wY2kgPyBob3NlLT5zZ19wY2ktPmRtYV9iYXNlIDogfjA7
+CisKKwkJLyogQWRqdXN0IGhvc2UgbWVtX3NwYWNlIGxpbWl0IHRvIHByZXZlbnQgUENJIGFsbG9j
+YXRpb25zCisJCSAgIGluIHRoZSBpb21tdSB3aW5kb3dzLiAqLworCQlwY2lfbWVtX2VuZCA9IG1p
+bigodTMyKV9fZGlyZWN0X21hcF9iYXNlLCBzZ19iYXNlKSAtIDE7CisJCWVuZCA9IGhvc2UtPm1l
+bV9zcGFjZS0+c3RhcnQgKyBwY2lfbWVtX2VuZDsKKwkJaWYgKGhvc2UtPm1lbV9zcGFjZS0+ZW5k
+ID4gZW5kKQorCQkJaG9zZS0+bWVtX3NwYWNlLT5lbmQgPSBlbmQ7CisKKwkJSU5JVF9MSVNUX0hF
+QUQoJnJlc291cmNlcyk7CisJCXBjaV9hZGRfcmVzb3VyY2UoJnJlc291cmNlcywgaG9zZS0+aW9f
+c3BhY2UpOworCQlwY2lfYWRkX3Jlc291cmNlKCZyZXNvdXJjZXMsIGhvc2UtPm1lbV9zcGFjZSk7
+CisKKwkJYnVzID0gcGNpX3NjYW5fcm9vdF9idXMoTlVMTCwgbmV4dF9idXNubywgYWxwaGFfbXYu
+cGNpX29wcywKKwkJCQkJaG9zZSwgJnJlc291cmNlcyk7CiAJCWhvc2UtPmJ1cyA9IGJ1czsKIAkJ
+aG9zZS0+bmVlZF9kb21haW5faW5mbyA9IG5lZWRfZG9tYWluX2luZm87CiAJCW5leHRfYnVzbm8g
+PSBidXMtPnN1Ym9yZGluYXRlICsgMTsK
+--00151747548883e99d04b43c39d5
+Content-Type: application/octet-stream; name="patch.alpha-incremental"
+Content-Disposition: attachment; filename="patch.alpha-incremental"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gw9pgqbw1
+
+djI6IGZpeCByZXNvdXJjZSBwb2ludGVyIGVycm9yCgpkaWZmIC11IGIvYXJjaC9hbHBoYS9rZXJu
+ZWwvcGNpLmMgYi9hcmNoL2FscGhhL2tlcm5lbC9wY2kuYwotLS0gYi9hcmNoL2FscGhhL2tlcm5l
+bC9wY2kuYworKysgYi9hcmNoL2FscGhhL2tlcm5lbC9wY2kuYwpAQCAtMjgxLDkgKzI4MSw2IEBA
+CiB2b2lkIF9fZGV2aW5pdAogcGNpYmlvc19maXh1cF9idXMoc3RydWN0IHBjaV9idXMgKmJ1cykK
+IHsKLQkvKiBQcm9wYWdhdGUgaG9zZSBpbmZvIGludG8gdGhlIHN1Ym9yZGluYXRlIGRldmljZXMu
+ICAqLwotCi0Jc3RydWN0IHBjaV9jb250cm9sbGVyICpob3NlID0gYnVzLT5zeXNkYXRhOwogCXN0
+cnVjdCBwY2lfZGV2ICpkZXYgPSBidXMtPnNlbGY7CiAKIAlpZiAocGNpX3Byb2JlX29ubHkgJiYg
+ZGV2ICYmCkBAIC00MTksOCArNDE2LDggQEAKIAkJCWhvc2UtPm1lbV9zcGFjZS0+ZW5kID0gZW5k
+OwogCiAJCUlOSVRfTElTVF9IRUFEKCZyZXNvdXJjZXMpOwotCQlwY2lfYWRkX3Jlc291cmNlKCZy
+ZXNvdXJjZXMsICZob3NlLT5pb19zcGFjZSk7Ci0JCXBjaV9hZGRfcmVzb3VyY2UoJnJlc291cmNl
+cywgJmhvc2UtPm1lbV9zcGFjZSk7CisJCXBjaV9hZGRfcmVzb3VyY2UoJnJlc291cmNlcywgaG9z
+ZS0+aW9fc3BhY2UpOworCQlwY2lfYWRkX3Jlc291cmNlKCZyZXNvdXJjZXMsIGhvc2UtPm1lbV9z
+cGFjZSk7CiAKIAkJYnVzID0gcGNpX3NjYW5fcm9vdF9idXMoTlVMTCwgbmV4dF9idXNubywgYWxw
+aGFfbXYucGNpX29wcywKIAkJCQkJaG9zZSwgJnJlc291cmNlcyk7Cg==
+--00151747548883e99d04b43c39d5--
