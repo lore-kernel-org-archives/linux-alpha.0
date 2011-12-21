@@ -1,7 +1,7 @@
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCHv2 RFC (repost) 06/16] mips: switch to GENERIC_PCI_IOMAP
-Date: Wed, 21 Dec 2011 18:29:41 +0200
-Message-ID: <3e376f539a52e7fa7507fd1bbe6523c4a140ed48.1324484752.git.mst@redhat.com>
+Subject: [PATCHv2 RFC (repost) 02/16] lib: add GENERIC_PCI_IOMAP
+Date: Wed, 21 Dec 2011 18:29:15 +0200
+Message-ID: <0307eb8f73817f22e5af5671daaacc4123ae9c0e.1324484752.git.mst@redhat.com>
 References: <cover.1324484752.git.mst@redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -13,39 +13,156 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-mips copied pci_iomap from generic code, probably to avoid
-pulling the rest of iomap.c in.  Since that's in
-a separate file now, we can reuse the common implementation.
+Many architectures want a generic pci_iomap but
+not the rest of iomap.c. Split that to a separate .c
+file and add a new config symbol. select automatically
+by GENERIC_IOMAP.
 
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/mips/Kconfig         |    1 +
- arch/mips/lib/iomap-pci.c |   26 --------------------------
- 2 files changed, 1 insertions(+), 26 deletions(-)
+ include/asm-generic/io.h        |    4 +-
+ include/asm-generic/iomap.h     |    9 ++-----
+ include/asm-generic/pci_iomap.h |   25 ++++++++++++++++++++
+ lib/Kconfig                     |    4 +++
+ lib/Makefile                    |    1 +
+ lib/iomap.c                     |   38 +-----------------------------
+ lib/pci_iomap.c                 |   48 +++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 85 insertions(+), 44 deletions(-)
+ create mode 100644 include/asm-generic/pci_iomap.h
+ create mode 100644 lib/pci_iomap.c
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index d46f1da..b70c96f 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -2317,6 +2317,7 @@ config PCI
- 	bool "Support for PCI controller"
- 	depends on HW_HAS_PCI
- 	select PCI_DOMAINS
-+	select GENERIC_PCI_IOMAP
- 	help
- 	  Find out whether you have a PCI motherboard. PCI is the name of a
- 	  bus system, i.e. the way the CPU talks to the other stuff inside
-diff --git a/arch/mips/lib/iomap-pci.c b/arch/mips/lib/iomap-pci.c
-index 2ab899c..2635b1a 100644
---- a/arch/mips/lib/iomap-pci.c
-+++ b/arch/mips/lib/iomap-pci.c
-@@ -40,32 +40,6 @@ static void __iomem *ioport_map_pci(struct pci_dev *dev,
- 	return (void __iomem *) (ctrl->io_map_base + port);
- }
+diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+index 9120887..dddc61d 100644
+--- a/include/asm-generic/io.h
++++ b/include/asm-generic/io.h
+@@ -19,6 +19,8 @@
+ #include <asm-generic/iomap.h>
+ #endif
  
--/*
-- * Create a virtual mapping cookie for a PCI BAR (memory or IO)
-- */
++#include <asm-generic/pci_iomap.h>
++
+ #ifndef mmiowb
+ #define mmiowb() do {} while (0)
+ #endif
+@@ -283,9 +285,7 @@ static inline void writesb(const void __iomem *addr, const void *buf, int len)
+ #define __io_virt(x) ((void __force *) (x))
+ 
+ #ifndef CONFIG_GENERIC_IOMAP
+-/* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
+ struct pci_dev;
+-extern void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max);
+ static inline void pci_iounmap(struct pci_dev *dev, void __iomem *p)
+ {
+ }
+diff --git a/include/asm-generic/iomap.h b/include/asm-generic/iomap.h
+index 98dcd76..8a3d4fd 100644
+--- a/include/asm-generic/iomap.h
++++ b/include/asm-generic/iomap.h
+@@ -67,18 +67,15 @@ extern void ioport_unmap(void __iomem *);
+ #endif
+ 
+ #ifdef CONFIG_PCI
+-/* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
++/* Destroy a virtual mapping cookie for a PCI BAR (memory or IO) */
+ struct pci_dev;
+-extern void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max);
+ extern void pci_iounmap(struct pci_dev *dev, void __iomem *);
+ #else
+ struct pci_dev;
+-static inline void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max)
+-{
+-	return NULL;
+-}
+ static inline void pci_iounmap(struct pci_dev *dev, void __iomem *addr)
+ { }
+ #endif
+ 
++#include <asm-generic/pci_iomap.h>
++
+ #endif
+diff --git a/include/asm-generic/pci_iomap.h b/include/asm-generic/pci_iomap.h
+new file mode 100644
+index 0000000..8de4b73
+--- /dev/null
++++ b/include/asm-generic/pci_iomap.h
+@@ -0,0 +1,25 @@
++/* Generic I/O port emulation, based on MN10300 code
++ *
++ * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
++ * Written by David Howells (dhowells@redhat.com)
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public Licence
++ * as published by the Free Software Foundation; either version
++ * 2 of the Licence, or (at your option) any later version.
++ */
++#ifndef __ASM_GENERIC_PCI_IOMAP_H
++#define __ASM_GENERIC_PCI_IOMAP_H
++
++struct pci_dev;
++#ifdef CONFIG_PCI
++/* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
++extern void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max);
++#else
++static inline void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max)
++{
++	return NULL;
++}
++#endif
++
++#endif /* __ASM_GENERIC_IO_H */
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 0058927..36884b4 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -19,8 +19,12 @@ config RATIONAL
+ config GENERIC_FIND_FIRST_BIT
+ 	bool
+ 
++config GENERIC_PCI_IOMAP
++	bool
++
+ config GENERIC_IOMAP
+ 	bool
++	select GENERIC_PCI_IOMAP
+ 
+ config CRC_CCITT
+ 	tristate "CRC-CCITT functions"
+diff --git a/lib/Makefile b/lib/Makefile
+index a4da283..609b2adc 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -33,6 +33,7 @@ endif
+ 
+ lib-$(CONFIG_HOTPLUG) += kobject_uevent.o
+ obj-$(CONFIG_GENERIC_IOMAP) += iomap.o
++obj-$(CONFIG_GENERIC_PCI_IOMAP) += pci_iomap.o
+ obj-$(CONFIG_HAS_IOMEM) += iomap_copy.o devres.o
+ obj-$(CONFIG_CHECK_SIGNATURE) += check_signature.o
+ obj-$(CONFIG_DEBUG_LOCKING_API_SELFTESTS) += locking-selftest.o
+diff --git a/lib/iomap.c b/lib/iomap.c
+index 5dbcb4b..ada922a 100644
+--- a/lib/iomap.c
++++ b/lib/iomap.c
+@@ -242,45 +242,11 @@ EXPORT_SYMBOL(ioport_unmap);
+ #endif /* CONFIG_HAS_IOPORT */
+ 
+ #ifdef CONFIG_PCI
+-/**
+- * pci_iomap - create a virtual mapping cookie for a PCI BAR
+- * @dev: PCI device that owns the BAR
+- * @bar: BAR number
+- * @maxlen: length of the memory to map
+- *
+- * Using this function you will get a __iomem address to your device BAR.
+- * You can access it using ioread*() and iowrite*(). These functions hide
+- * the details if this is a MMIO or PIO address space and will just do what
+- * you expect from them in the correct way.
+- *
+- * @maxlen specifies the maximum length to map. If you want to get access to
+- * the complete BAR without checking for its length first, pass %0 here.
+- * */
 -void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long maxlen)
 -{
 -	resource_size_t start = pci_resource_start(dev, bar);
@@ -57,7 +174,7 @@ index 2ab899c..2635b1a 100644
 -	if (maxlen && len > maxlen)
 -		len = maxlen;
 -	if (flags & IORESOURCE_IO)
--		return ioport_map_pci(dev, start, len);
+-		return ioport_map(start, len);
 -	if (flags & IORESOURCE_MEM) {
 -		if (flags & IORESOURCE_CACHEABLE)
 -			return ioremap(start, len);
@@ -67,10 +184,68 @@ index 2ab899c..2635b1a 100644
 -	return NULL;
 -}
 -
--EXPORT_SYMBOL(pci_iomap);
--
++/* Hide the details if this is a MMIO or PIO address space and just do what
++ * you expect in the correct way. */
  void pci_iounmap(struct pci_dev *dev, void __iomem * addr)
  {
- 	iounmap(addr);
+ 	IO_COND(addr, /* nothing */, iounmap(addr));
+ }
+-EXPORT_SYMBOL(pci_iomap);
+ EXPORT_SYMBOL(pci_iounmap);
+ #endif /* CONFIG_PCI */
+diff --git a/lib/pci_iomap.c b/lib/pci_iomap.c
+new file mode 100644
+index 0000000..4b0fdc2
+--- /dev/null
++++ b/lib/pci_iomap.c
+@@ -0,0 +1,48 @@
++/*
++ * Implement the default iomap interfaces
++ *
++ * (C) Copyright 2004 Linus Torvalds
++ */
++#include <linux/pci.h>
++#include <linux/io.h>
++
++#include <linux/export.h>
++
++#ifdef CONFIG_PCI
++/**
++ * pci_iomap - create a virtual mapping cookie for a PCI BAR
++ * @dev: PCI device that owns the BAR
++ * @bar: BAR number
++ * @maxlen: length of the memory to map
++ *
++ * Using this function you will get a __iomem address to your device BAR.
++ * You can access it using ioread*() and iowrite*(). These functions hide
++ * the details if this is a MMIO or PIO address space and will just do what
++ * you expect from them in the correct way.
++ *
++ * @maxlen specifies the maximum length to map. If you want to get access to
++ * the complete BAR without checking for its length first, pass %0 here.
++ * */
++void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long maxlen)
++{
++	resource_size_t start = pci_resource_start(dev, bar);
++	resource_size_t len = pci_resource_len(dev, bar);
++	unsigned long flags = pci_resource_flags(dev, bar);
++
++	if (!len || !start)
++		return NULL;
++	if (maxlen && len > maxlen)
++		len = maxlen;
++	if (flags & IORESOURCE_IO)
++		return ioport_map(start, len);
++	if (flags & IORESOURCE_MEM) {
++		if (flags & IORESOURCE_CACHEABLE)
++			return ioremap(start, len);
++		return ioremap_nocache(start, len);
++	}
++	/* What? */
++	return NULL;
++}
++
++EXPORT_SYMBOL(pci_iomap);
++#endif /* CONFIG_PCI */
 -- 
 1.7.8.382.g3daff
