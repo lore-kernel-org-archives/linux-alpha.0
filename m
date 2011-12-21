@@ -1,7 +1,7 @@
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCHv2 RFC (repost) 07/16] parisc: switch to GENERIC_PCI_IOMAP
-Date: Wed, 21 Dec 2011 18:29:55 +0200
-Message-ID: <cc7ac97aaa52fa5184ec9e17e7b7b86e3aab219d.1324484752.git.mst@redhat.com>
+Subject: [PATCHv2 RFC (repost) 10/16] sparc: switch to GENERIC_PCI_IOMAP
+Date: Wed, 21 Dec 2011 18:29:51 +0200
+Message-ID: <8eae6aac2016df44117feea0497aa8f9e52271cc.1324484752.git.mst@redhat.com>
 References: <cover.1324484752.git.mst@redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -13,35 +13,78 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-parisc copied pci_iomap from generic code, probably to avoid
+sparc copied pci_iomap from generic code, probably to avoid
 pulling the rest of iomap.c in.  Since that's in
 a separate file now, we can reuse the common implementation.
 
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: David S. Miller <davem@davemloft.net>
 ---
- arch/parisc/Kconfig     |    1 +
- arch/parisc/lib/iomap.c |   23 -----------------------
- 2 files changed, 1 insertions(+), 23 deletions(-)
+ arch/sparc/Kconfig             |    1 +
+ arch/sparc/include/asm/io_32.h |    2 +-
+ arch/sparc/include/asm/io_64.h |    2 +-
+ arch/sparc/lib/iomap.c         |   23 -----------------------
+ 4 files changed, 3 insertions(+), 25 deletions(-)
 
-diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-index fdfd8be..242a1b7 100644
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -14,6 +14,7 @@ config PARISC
- 	select GENERIC_ATOMIC64 if !64BIT
+diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
+index f92602e..a4644f5 100644
+--- a/arch/sparc/Kconfig
++++ b/arch/sparc/Kconfig
+@@ -28,6 +28,7 @@ config SPARC
  	select HAVE_GENERIC_HARDIRQS
- 	select GENERIC_IRQ_PROBE
+ 	select GENERIC_IRQ_SHOW
+ 	select USE_GENERIC_SMP_HELPERS if SMP
 +	select GENERIC_PCI_IOMAP
- 	select IRQ_PER_CPU
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
  
-diff --git a/arch/parisc/lib/iomap.c b/arch/parisc/lib/iomap.c
-index 8f470c9..fb8e10a 100644
---- a/arch/parisc/lib/iomap.c
-+++ b/arch/parisc/lib/iomap.c
-@@ -436,28 +436,6 @@ void ioport_unmap(void __iomem *addr)
- 	}
- }
+ config SPARC32
+ 	def_bool !64BIT
+diff --git a/arch/sparc/include/asm/io_32.h b/arch/sparc/include/asm/io_32.h
+index c2ced21..2006e5d 100644
+--- a/arch/sparc/include/asm/io_32.h
++++ b/arch/sparc/include/asm/io_32.h
+@@ -7,6 +7,7 @@
+ 
+ #include <asm/page.h>      /* IO address mapping routines need this */
+ #include <asm/system.h>
++#include <asm-generic/pci_iomap.h>
+ 
+ #define page_to_phys(page)	(page_to_pfn(page) << PAGE_SHIFT)
+ 
+@@ -324,7 +325,6 @@ extern void ioport_unmap(void __iomem *);
+ 
+ /* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
+ struct pci_dev;
+-extern void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max);
+ extern void pci_iounmap(struct pci_dev *dev, void __iomem *);
+ 
+ /*
+diff --git a/arch/sparc/include/asm/io_64.h b/arch/sparc/include/asm/io_64.h
+index 9c89654..9481e5a 100644
+--- a/arch/sparc/include/asm/io_64.h
++++ b/arch/sparc/include/asm/io_64.h
+@@ -8,6 +8,7 @@
+ #include <asm/page.h>      /* IO address mapping routines need this */
+ #include <asm/system.h>
+ #include <asm/asi.h>
++#include <asm-generic/pci_iomap.h>
+ 
+ /* PC crapola... */
+ #define __SLOW_DOWN_IO	do { } while (0)
+@@ -514,7 +515,6 @@ extern void ioport_unmap(void __iomem *);
+ 
+ /* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
+ struct pci_dev;
+-extern void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max);
+ extern void pci_iounmap(struct pci_dev *dev, void __iomem *);
+ 
+ static inline int sbus_can_dma_64bit(void)
+diff --git a/arch/sparc/lib/iomap.c b/arch/sparc/lib/iomap.c
+index 9ef37e1..c4d42a5 100644
+--- a/arch/sparc/lib/iomap.c
++++ b/arch/sparc/lib/iomap.c
+@@ -18,31 +18,8 @@ void ioport_unmap(void __iomem *addr)
+ EXPORT_SYMBOL(ioport_map);
+ EXPORT_SYMBOL(ioport_unmap);
  
 -/* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
 -void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long maxlen)
@@ -67,11 +110,8 @@ index 8f470c9..fb8e10a 100644
 -
  void pci_iounmap(struct pci_dev *dev, void __iomem * addr)
  {
- 	if (!INDIRECT_ADDR(addr)) {
-@@ -483,5 +461,4 @@ EXPORT_SYMBOL(iowrite16_rep);
- EXPORT_SYMBOL(iowrite32_rep);
- EXPORT_SYMBOL(ioport_map);
- EXPORT_SYMBOL(ioport_unmap);
+ 	/* nothing to do */
+ }
 -EXPORT_SYMBOL(pci_iomap);
  EXPORT_SYMBOL(pci_iounmap);
 -- 
