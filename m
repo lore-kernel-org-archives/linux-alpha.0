@@ -1,7 +1,7 @@
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCHv2 RFC (repost) 11/16] tile: don't panic on iomap
-Date: Wed, 21 Dec 2011 18:30:02 +0200
-Message-ID: <aa4256d1c1644875fd69c7024193c7ac317ee7c6.1324484752.git.mst@redhat.com>
+Subject: [PATCHv2 RFC (repost) 14/16] mn10300: add missing __iomap markers
+Date: Wed, 21 Dec 2011 18:30:22 +0200
+Message-ID: <1937e158e890d52d2097360d3270f270bd7e5001.1324484752.git.mst@redhat.com>
 References: <cover.1324484752.git.mst@redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -13,29 +13,56 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-I think panic on iomap is there just for debugging.
-If we return NULL instead, the generic pci_iomap will
-DTRT so we don't need to roll our own.
+MN10300's *ioremap*() collection lacks __iomem markers.
+Fix that.
 
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Chris Metcalf <cmetcalf@tilera.com>
 ---
- arch/tile/include/asm/io.h |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ arch/mn10300/include/asm/io.h |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/arch/tile/include/asm/io.h b/arch/tile/include/asm/io.h
-index c9ea165..d2152de 100644
---- a/arch/tile/include/asm/io.h
-+++ b/arch/tile/include/asm/io.h
-@@ -204,7 +204,8 @@ static inline long ioport_panic(void)
- 
- static inline void __iomem *ioport_map(unsigned long port, unsigned int len)
+diff --git a/arch/mn10300/include/asm/io.h b/arch/mn10300/include/asm/io.h
+index 787255d..0d6d54f 100644
+--- a/arch/mn10300/include/asm/io.h
++++ b/arch/mn10300/include/asm/io.h
+@@ -251,15 +251,15 @@ static inline void *phys_to_virt(unsigned long address)
+ /*
+  * Change "struct page" to physical address.
+  */
+-static inline void *__ioremap(unsigned long offset, unsigned long size,
+-			      unsigned long flags)
++static inline void __iomem *__ioremap(unsigned long offset, unsigned long size,
++				      unsigned long flags)
  {
--	return (void __iomem *) ioport_panic();
-+	pr_info("ioport_map: mapping IO resources is unsupported on tile.\n");
-+	return NULL;
+-	return (void *) offset;
++	return (void __iomem *) offset;
  }
  
- static inline void ioport_unmap(void __iomem *addr)
+-static inline void *ioremap(unsigned long offset, unsigned long size)
++static inline void __iomem *ioremap(unsigned long offset, unsigned long size)
+ {
+-	return (void *) offset;
++	return (void __iomem *) offset;
+ }
+ 
+ /*
+@@ -267,14 +267,14 @@ static inline void *ioremap(unsigned long offset, unsigned long size)
+  * area.  it's useful if some control registers are in such an area and write
+  * combining or read caching is not desirable:
+  */
+-static inline void *ioremap_nocache(unsigned long offset, unsigned long size)
++static inline void __iomem *ioremap_nocache(unsigned long offset, unsigned long size)
+ {
+-	return (void *) (offset | 0x20000000);
++	return (void __iomem *) (offset | 0x20000000);
+ }
+ 
+ #define ioremap_wc ioremap_nocache
+ 
+-static inline void iounmap(void *addr)
++static inline void iounmap(void __iomem *addr)
+ {
+ }
+ 
 -- 
 1.7.8.382.g3daff
