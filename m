@@ -1,96 +1,78 @@
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCHv2 RFC (repost) 12/16] tile: switch to GENERIC_PCI_IOMAP
-Date: Wed, 21 Dec 2011 18:30:07 +0200
-Message-ID: <e1640e60e2762b7171a1523698745a0d4a91ab0c.1324484752.git.mst@redhat.com>
+Subject: [PATCHv2 RFC (repost) 07/16] parisc: switch to GENERIC_PCI_IOMAP
+Date: Wed, 21 Dec 2011 18:29:55 +0200
+Message-ID: <cc7ac97aaa52fa5184ec9e17e7b7b86e3aab219d.1324484752.git.mst@redhat.com>
 References: <cover.1324484752.git.mst@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <cover.1324484752.git.mst@redhat.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-tile now has working stubs for ioport_map and ioremap
-such that the generic pci_iomap will DTRT: cast to
-pointer on memory and return NULL and log message on IO map.
-
-Switch it over to GENERIC_PCI_IOMAP.
+parisc copied pci_iomap from generic code, probably to avoid
+pulling the rest of iomap.c in.  Since that's in
+a separate file now, we can reuse the common implementation.
 
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Chris Metcalf <cmetcalf@tilera.com>
 ---
- arch/tile/Kconfig           |    1 +
- arch/tile/include/asm/pci.h |    2 +-
- arch/tile/kernel/pci.c      |   21 ---------------------
- 3 files changed, 2 insertions(+), 22 deletions(-)
+ arch/parisc/Kconfig     |    1 +
+ arch/parisc/lib/iomap.c |   23 -----------------------
+ 2 files changed, 1 insertions(+), 23 deletions(-)
 
-diff --git a/arch/tile/Kconfig b/arch/tile/Kconfig
-index 70a0de4..11270ca 100644
---- a/arch/tile/Kconfig
-+++ b/arch/tile/Kconfig
-@@ -321,6 +321,7 @@ config PCI
- 	bool "PCI support"
- 	default y
- 	select PCI_DOMAINS
+diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
+index fdfd8be..242a1b7 100644
+--- a/arch/parisc/Kconfig
++++ b/arch/parisc/Kconfig
+@@ -14,6 +14,7 @@ config PARISC
+ 	select GENERIC_ATOMIC64 if !64BIT
+ 	select HAVE_GENERIC_HARDIRQS
+ 	select GENERIC_IRQ_PROBE
 +	select GENERIC_PCI_IOMAP
- 	---help---
- 	  Enable PCI root complex support, so PCIe endpoint devices can
- 	  be attached to the Tile chip.  Many, but not all, PCI devices
-diff --git a/arch/tile/include/asm/pci.h b/arch/tile/include/asm/pci.h
-index 7f03cef..1d25fea 100644
---- a/arch/tile/include/asm/pci.h
-+++ b/arch/tile/include/asm/pci.h
-@@ -16,6 +16,7 @@
- #define _ASM_TILE_PCI_H
+ 	select IRQ_PER_CPU
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
  
- #include <linux/pci.h>
-+#include <asm-generic/pci_iomap.h>
- 
- /*
-  * Structure of a PCI controller (host bridge)
-@@ -49,7 +50,6 @@ struct pci_controller {
- int __devinit tile_pci_init(void);
- int __devinit pcibios_init(void);
- 
--void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max);
- static inline void pci_iounmap(struct pci_dev *dev, void __iomem *addr) {}
- 
- void __devinit pcibios_fixup_bus(struct pci_bus *bus);
-diff --git a/arch/tile/kernel/pci.c b/arch/tile/kernel/pci.c
-index 9d610d3..2556793 100644
---- a/arch/tile/kernel/pci.c
-+++ b/arch/tile/kernel/pci.c
-@@ -466,27 +466,6 @@ int pcibios_enable_device(struct pci_dev *dev, int mask)
- 	return 0;
+diff --git a/arch/parisc/lib/iomap.c b/arch/parisc/lib/iomap.c
+index 8f470c9..fb8e10a 100644
+--- a/arch/parisc/lib/iomap.c
++++ b/arch/parisc/lib/iomap.c
+@@ -436,28 +436,6 @@ void ioport_unmap(void __iomem *addr)
+ 	}
  }
  
--void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max)
+-/* Create a virtual mapping cookie for a PCI BAR (memory or IO) */
+-void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long maxlen)
 -{
--	unsigned long start = pci_resource_start(dev, bar);
--	unsigned long len = pci_resource_len(dev, bar);
+-	resource_size_t start = pci_resource_start(dev, bar);
+-	resource_size_t len = pci_resource_len(dev, bar);
 -	unsigned long flags = pci_resource_flags(dev, bar);
 -
--	if (!len)
+-	if (!len || !start)
 -		return NULL;
--	if (max && len > max)
--		len = max;
--
--	if (!(flags & IORESOURCE_MEM)) {
--		pr_info("PCI: Trying to map invalid resource %#lx\n", flags);
--		start = 0;
+-	if (maxlen && len > maxlen)
+-		len = maxlen;
+-	if (flags & IORESOURCE_IO)
+-		return ioport_map(start, len);
+-	if (flags & IORESOURCE_MEM) {
+-		if (flags & IORESOURCE_CACHEABLE)
+-			return ioremap(start, len);
+-		return ioremap_nocache(start, len);
 -	}
--
--	return (void __iomem *)start;
+-	/* What? */
+-	return NULL;
 -}
+-
+ void pci_iounmap(struct pci_dev *dev, void __iomem * addr)
+ {
+ 	if (!INDIRECT_ADDR(addr)) {
+@@ -483,5 +461,4 @@ EXPORT_SYMBOL(iowrite16_rep);
+ EXPORT_SYMBOL(iowrite32_rep);
+ EXPORT_SYMBOL(ioport_map);
+ EXPORT_SYMBOL(ioport_unmap);
 -EXPORT_SYMBOL(pci_iomap);
--
--
- /****************************************************************
-  *
-  * Tile PCI config space read/write routines
+ EXPORT_SYMBOL(pci_iounmap);
 -- 
 1.7.8.382.g3daff
-
