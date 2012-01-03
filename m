@@ -1,56 +1,63 @@
-From: Gilad Ben-Yossef <gilad@benyossef.com>
-Subject: [RFC PATCH 4/9] alpha: avoid using on_each_cpu hard coded ret value
-Date: Tue,  3 Jan 2012 16:19:08 +0200
-Message-ID: <1325600353-10895-5-git-send-email-gilad@benyossef.com>
+From: "Michal Nazarewicz" <mina86@mina86.com>
+Subject: Re: [RFC PATCH 0/9] Remove useless on_each_cpu return value
+Date: Tue, 03 Jan 2012 15:25:49 +0100
+Message-ID: <op.v7iidbwz3l0zgt@mpn-glaptop>
 References: <1325600353-10895-1-git-send-email-gilad@benyossef.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-ia64-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=sender:content-type:to:cc:subject:references:date:mime-version
+         :content-transfer-encoding:from:message-id:in-reply-to:user-agent;
+        bh=iXjOwD0RP/NUQ4V9lQu17XuFX+WofZC/8A5xzflR1lk=;
+        b=TL0zMTZAG/+I+yvR6z8YhRQj5tTnQJOewWy4yDTfGhKvOieSy/C7crfZGADyiD2jFC
+         jpBXID14z+weNfFxunMo3jJZ+J/gddmdq7rVV+V2a72fzJtT6f0CDcoUw7Qc18keRT9L
+         MTTSw317QFeMHy0ujG238+mRJP8UIObAK2X9w=
 In-Reply-To: <1325600353-10895-1-git-send-email-gilad@benyossef.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org
-Cc: Gilad Ben-Yossef <gilad@benyossef.com>, Michal Nazarewicz <mina86@mina86.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; format="flowed	delsp=yes"
+To: linux-kernel@vger.kernel.org, Gilad Ben-Yossef <gilad@benyossef.com>
+Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, linuxppc-dev@lists.ozlabs.org, devicetree-discuss@lists.ozlabs.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Arnaldo Carvalho de Melo <acme@ghostprotocols.net>, Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@li
 
-on_each_cpu always returns a hard coded return code of zero.
+On Tue, 03 Jan 2012 15:19:04 +0100, Gilad Ben-Yossef <gilad@benyossef.c=
+om> wrote:
+> on_each_cpu() returns as its own return value the return value of
+> smp_call_function(). smp_call_function() in turn returns a hard
+> coded value of zero.
+>
+> Some callers to on_each_cpu() waste cycles and bloat code space
+> by checking the return value to on_each_cpu(), probably for
+> historical reasons.
+>
+> This patch set refactors callers to not test on_each_cpu()
+> (fixed) return value and then refactors on_each_cpu to
+> return void to avoid confusing future users.
+>
+> In other words, this patch aims to delete 18 source code lines
+> while not changing any functionality :-)
+>
+> I tested as best as I could the x86 changes and compiled some
+> of the others, but I don't have access to all the needed hardware
+> for testing. Reviewers and testers welcome!
 
-Removing all tests based on this return value saves run time
-cycles for compares and code bloat for branches.
+Other then the lack of Signed-off-by in the patches, looks good to me,
+even though personally I'd choose a bottom-up approach, ie. make
+smp_call_function() return void and from that conclude that
+on_each_cpu() can return void.  With those patches, we have a situation=
+,
+where smp_call_function() has a return value which is then lost for no
+immediately apparent reason lost in on_each_cpu().
 
-CC: Michal Nazarewicz <mina86@mina86.com>
-CC: Richard Henderson <rth@twiddle.net>
-CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-CC: Matt Turner <mattst88@gmail.com>
-CC: linux-alpha@vger.kernel.org
----
- arch/alpha/kernel/smp.c |    7 ++-----
- 1 files changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index 4087a56..97707e9 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -659,8 +659,7 @@ void
- smp_imb(void)
- {
- 	/* Must wait other processors to flush their icache before continue. */
--	if (on_each_cpu(ipi_imb, NULL, 1))
--		printk(KERN_CRIT "smp_imb: timed out\n");
-+	on_each_cpu(ipi_imb, NULL, 1);
- }
- EXPORT_SYMBOL(smp_imb);
- 
-@@ -675,9 +674,7 @@ flush_tlb_all(void)
- {
- 	/* Although we don't have any data to pass, we do want to
- 	   synchronize with the other processors.  */
--	if (on_each_cpu(ipi_flush_tlb_all, NULL, 1)) {
--		printk(KERN_CRIT "flush_tlb_all: timed out\n");
--	}
-+	on_each_cpu(ipi_flush_tlb_all, NULL, 1);
- }
- 
- #define asn_locked() (cpu_data[smp_processor_id()].asn_lock)
--- 
-1.7.0.4
+--=20
+Best regards,                                         _     _
+=2Eo. | Liege of Serenely Enlightened Majesty of      o' \,=3D./ `o
+=2E.o | Computer Science,  Micha=C5=82 =E2=80=9Cmina86=E2=80=9D Nazarew=
+icz    (o o)
+ooo +----<email/xmpp: mpn@google.com>--------------ooO--(_)--Ooo--
+--
+To unsubscribe from this list: send the line "unsubscribe linux-ia64" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
