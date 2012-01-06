@@ -1,145 +1,42 @@
-From: Jesse Barnes <jbarnes@virtuousgeek.org>
-Subject: Re: [PATCH v3 08/34] alpha/PCI: convert to pci_scan_root_bus() for
- correct root bus resources
-Date: Wed, 4 Jan 2012 09:38:34 -0800
-Message-ID: <20120104093834.39614a85@jbarnes-desktop>
-References: <20111028222432.30729.8431.stgit@bhelgaas.mtv.corp.google.com>
-	<20111028222611.30729.46284.stgit@bhelgaas.mtv.corp.google.com>
-	<CAErSpo7WHixAQL2=ptHj+JUsE8W6PTG0ZEM1T0fYQAixqjm=pQ@mail.gmail.com>
+From: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Subject: Re: [RFC PATCH 0/9] Remove useless on_each_cpu return value
+Date: Fri, 06 Jan 2012 14:03:01 +0100
+Message-ID: <1325854981.2442.25.camel@twins>
+References: <1325600353-10895-1-git-send-email-gilad@benyossef.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=PGP-SHA1;
- boundary="Sig_/uNKaQfjkhe.5DZ+.7SP5mGx"; protocol="application/pgp-signature"
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=virtuousgeek.org; s=default;
-	h=Content-Type:Mime-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date; bh=9rMy8zrT7/7TUUQQpMsFg+j4eGgxRzygJ8tgLjyesPo=;
-	b=INJO/o6URfNTf7pHEa+S+o95SzEbXjtvUMqa3f9/KEYaGWzFcVh0YuF6YJ2z4qMiNBCwErGoPFg9pudqq49+Bk3OBEuDdETR8212trOaW7NDdqN616Ejbw+kloy2xzTk;
-In-Reply-To: <CAErSpo7WHixAQL2=ptHj+JUsE8W6PTG0ZEM1T0fYQAixqjm=pQ@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1325600353-10895-1-git-send-email-gilad@benyossef.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: linux-arm-kernel-bounces@lists.infradead.org
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Gilad Ben-Yossef <gilad@benyossef.com>
+Cc: linux-ia64@vger.kernel.org, David Airlie <airlied@linux.ie>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org, Grant Likely <grant.likely@secretlab.ca>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@ghostprotocols.net>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, devicetree-discuss@lists.ozlabs.org, Michal Nazarewicz <mina86@mina86.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Rob Herring <rob.herring@calxeda.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.o
 
---Sig_/uNKaQfjkhe.5DZ+.7SP5mGx
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Tue, 2012-01-03 at 16:19 +0200, Gilad Ben-Yossef wrote:
+> on_each_cpu() returns as its own return value the return value of 
+> smp_call_function(). smp_call_function() in turn returns a hard 
+> coded value of zero.
+> 
+> Some callers to on_each_cpu() waste cycles and bloat code space
+> by checking the return value to on_each_cpu(), probably for 
+> historical reasons.
 
-On Fri, 16 Dec 2011 14:24:01 -0700
-Bjorn Helgaas <bhelgaas@google.com> wrote:
+hysterical raisins,, yumm! :-)
 
-> On Fri, Oct 28, 2011 at 4:26 PM, Bjorn Helgaas <bhelgaas@google.com> wrot=
-e:
-> > Convert from pci_scan_bus() to pci_scan_root_bus() and remove root bus
-> > resource fixups. =A0This fixes the problem of "early" and "header" quir=
-ks
-> > seeing incorrect root bus resources.
-> >
-> > CC: linux-alpha@vger.kernel.org
-> > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> > ---
-> > =A0arch/alpha/kernel/pci.c | =A0 37 ++++++++++++++++++++---------------=
---
-> > =A01 files changed, 20 insertions(+), 17 deletions(-)
-> >
-> > diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
-> > index c9ab94e..e9e78a2 100644
-> > --- a/arch/alpha/kernel/pci.c
-> > +++ b/arch/alpha/kernel/pci.c
-> > @@ -286,22 +286,7 @@ pcibios_fixup_bus(struct pci_bus *bus)
-> > =A0 =A0 =A0 =A0struct pci_controller *hose =3D bus->sysdata;
-> > =A0 =A0 =A0 =A0struct pci_dev *dev =3D bus->self;
-> >
-> > - =A0 =A0 =A0 if (!dev) {
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* Root bus. */
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 pci_mem_end;
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 u32 sg_base =3D hose->sg_pci ? hose->sg_p=
-ci->dma_base : ~0;
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 unsigned long end;
-> > -
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 bus->resource[0] =3D hose->io_space;
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 bus->resource[1] =3D hose->mem_space;
-> > -
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* Adjust hose mem_space limit to prevent=
- PCI allocations
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0in the iommu windows. */
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 pci_mem_end =3D min((u32)__direct_map_bas=
-e, sg_base) - 1;
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 end =3D hose->mem_space->start + pci_mem_=
-end;
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (hose->mem_space->end > end)
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 hose->mem_space->end =3D =
-end;
-> > - =A0 =A0 =A0 } else if (pci_probe_only &&
-> > + =A0 =A0 =A0 if (pci_probe_only && dev &&
-> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 (dev->class >> 8) =3D=3D PCI_CLASS_=
-BRIDGE_PCI) {
-> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0pci_read_bridge_bases(bus);
-> > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0pcibios_fixup_device_resources(dev, bus);
-> > @@ -414,13 +399,31 @@ void __init
-> > =A0common_init_pci(void)
-> > =A0{
-> > =A0 =A0 =A0 =A0struct pci_controller *hose;
-> > + =A0 =A0 =A0 struct list_head resources;
-> > =A0 =A0 =A0 =A0struct pci_bus *bus;
-> > =A0 =A0 =A0 =A0int next_busno;
-> > =A0 =A0 =A0 =A0int need_domain_info =3D 0;
-> > + =A0 =A0 =A0 u32 pci_mem_end;
-> > + =A0 =A0 =A0 u32 sg_base;
-> > + =A0 =A0 =A0 unsigned long end;
-> >
-> > =A0 =A0 =A0 =A0/* Scan all of the recorded PCI controllers. =A0*/
-> > =A0 =A0 =A0 =A0for (next_busno =3D 0, hose =3D hose_head; hose; hose =
-=3D hose->next) {
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 bus =3D pci_scan_bus(next_busno, alpha_mv=
-.pci_ops, hose);
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 sg_base =3D hose->sg_pci ? hose->sg_pci->=
-dma_base : ~0;
-> > +
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 /* Adjust hose mem_space limit to prevent=
- PCI allocations
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0in the iommu windows. */
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 pci_mem_end =3D min((u32)__direct_map_bas=
-e, sg_base) - 1;
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 end =3D hose->mem_space->start + pci_mem_=
-end;
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 if (hose->mem_space->end > end)
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 hose->mem_space->end =3D =
-end;
-> > +
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 INIT_LIST_HEAD(&resources);
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 pci_add_resource(&resources, &hose->io_sp=
-ace);
-> > + =A0 =A0 =A0 =A0 =A0 =A0 =A0 pci_add_resource(&resources, &hose->mem_s=
-pace);
->=20
-> These two lines are errors: hose->io_space is already a struct
-> resource pointer, so we shouldn't take the pointer's address.  Updated
-> patch and incremental patch attached.
+> This patch set refactors callers to not test on_each_cpu()
+> (fixed) return value and then refactors on_each_cpu to
+> return void to avoid confusing future users.
+> 
 
-Squashed into the original alpha patch, thanks.
+Seems sane enough, fwiw:
 
---=20
-Jesse Barnes, Intel Open Source Technology Center
-
---Sig_/uNKaQfjkhe.5DZ+.7SP5mGx
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Disposition: attachment; filename=signature.asc
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-
-iQIcBAEBAgAGBQJPBI6bAAoJEIEoDkX4Qk9h8gAP/R98tLfsl/POjIu2JE0HpjnL
-RTIXhiLRH2LBswS8P5lSCLptWDEbqwPz6H+suKGkzvFoKYaBw4gZ9bc58+SmNEEJ
-bavF1kpNOmOwkXbrTe2QSytkOjjE30e8s52gi8hqz1V7AIDgQwZWFyq9kJeyLOIN
-szPqXdKbtidb+51zc1HxNywymT8zDwC5iDW9LYBfSOYR4L8n17o2wEkRVPeaxGq/
-Wa7gR5vPaMcHV096Ev4ORjQBZrueDHbPqin+34yc4H5BgTQPOec/Ro64VC+bEWyx
-nHmSXO3oQviK+X4sgDEkSlOcx8I2M+lgc6JXgYrO0Z/l8ND7iPgIO8fnKxrYxHe7
-514w8eh/Ue/3QjwK3gQ6svLl74CZXOWu91Cthufz/mVvYSjJqdhPcvDUgfS4P6dl
-Wy0TnT9G9bcRo5vVJt9R2SmtN+USWLbYqO8O8lftNlmpr7ysuFJ99MR4WhPZfbkg
-eSnGSAJqsm1nB5uWqo9z/EeE4jcYtdwNWXPETeRaLyim9zBNbVRqUD3n1+g+KFDv
-58TCokw0EmbhJwu/6x1CsTisWu+MlwqT/E5Svsm+3qGOfVfXy7ZoBW7z01CPo50Z
-SngwDts0CqMLNdDiXsMPu/MqVPWFMZN2phEsVXc7QmBYQoN+yEKOTEmbMVhqPypt
-gIIYBBdljVj22va+5gga
-=egEV
------END PGP SIGNATURE-----
-
---Sig_/uNKaQfjkhe.5DZ+.7SP5mGx--
+Acked-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
