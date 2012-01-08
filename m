@@ -1,54 +1,61 @@
-From: Gilad Ben-Yossef <gilad@benyossef.com>
-Subject: Re: [RFC PATCH 0/9] Remove useless on_each_cpu return value
-Date: Sun, 8 Jan 2012 18:10:09 +0200
-Message-ID: <CAOtvUMe0pXKTrJGhkc=OFvqYS1R_PXU9qbSAP8Ld5U7NhFvCSw@mail.gmail.com>
-References: <1325600353-10895-1-git-send-email-gilad@benyossef.com>
-	<1325854981.2442.25.camel@twins>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [RFC PATCH v2 8/9] smp: refactor on_each_cpu to void returning
+	func
+Date: Sun, 8 Jan 2012 16:14:01 +0000
+Message-ID: <20120108161401.GE21765@n2100.arm.linux.org.uk>
+References: <1326029549-2794-1-git-send-email-gilad@benyossef.com> <1326029549-2794-9-git-send-email-gilad@benyossef.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <1325854981.2442.25.camel@twins>
-Sender: linux-ia64-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=arm.linux.org.uk; s=caramon;
+	h=Sender:In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=DHpN8qwyJrMZweRGxH4/C+xW8yeTIkL5r3cTvg/A8ac=;
+	b=XJv/iLvpmS488vBlR0lgKBZDVN5w7nBGIyMG6TS0qVOiKWalr55F7T1Lnx9IvAAaUXLWxypS3jh5WBUF9LhfTUclbzqSZFSvhnO0bopDS61ngTzR8LHYzy0ueToe1BawGu5LuhIBe9d7FkpXVTZbFAD6FTs6nyJYKfE+gsxiBsg=;
+Content-Disposition: inline
+In-Reply-To: <1326029549-2794-9-git-send-email-gilad@benyossef.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Peter Zijlstra <a.p.zijlstra@chello.nl>
-Cc: linux-kernel@vger.kernel.org, Michal Nazarewicz <mina86@mina86.com>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, linuxppc-dev@lists.ozlabs.org, devicetree-discuss@lists.ozlabs.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Arnaldo Carvalho de Melo <acme@ghostprotocols.net>, Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lis
+To: Gilad Ben-Yossef <gilad@benyossef.com>
+Cc: linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <rob.herring@calxeda.com>, linuxppc-dev@lists.ozlabs.org, devicetree-discuss@lists.ozlabs.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Arnaldo Carvalho de Melo <acme@ghostprotocols.net>, linux-arm-kernel@lists.infradead.org
 
-On Fri, Jan 6, 2012 at 3:03 PM, Peter Zijlstra <a.p.zijlstra@chello.nl> wrote:
-> On Tue, 2012-01-03 at 16:19 +0200, Gilad Ben-Yossef wrote:
->> on_each_cpu() returns as its own return value the return value of
->> smp_call_function(). smp_call_function() in turn returns a hard
->> coded value of zero.
->>
->> Some callers to on_each_cpu() waste cycles and bloat code space
->> by checking the return value to on_each_cpu(), probably for
->> historical reasons.
->
-> hysterical raisins,, yumm! :-)
->
->> This patch set refactors callers to not test on_each_cpu()
->> (fixed) return value and then refactors on_each_cpu to
->> return void to avoid confusing future users.
->>
->
-> Seems sane enough, fwiw:
->
+On Sun, Jan 08, 2012 at 03:32:28PM +0200, Gilad Ben-Yossef wrote:
+> on_each_cpu returns the retunr value of smp_call_function
+> which is hard coded to 0.
+> 
+> Refactor on_each_cpu to a void function and the few callers
+> that check the return value to save compares and branches.
+> 
+> Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
 > Acked-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+> Reviewed-by: Michal Nazarewicz <mina86@mina86.com>
+> CC: David Airlie <airlied@linux.ie>
+> CC: dri-devel@lists.freedesktop.org
+> CC: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> CC: Paul Mackerras <paulus@samba.org>
+> CC: Grant Likely <grant.likely@secretlab.ca>
+> CC: Rob Herring <rob.herring@calxeda.com>
+> CC: linuxppc-dev@lists.ozlabs.org
+> CC: devicetree-discuss@lists.ozlabs.org
+> CC: Richard Henderson <rth@twiddle.net>
+> CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> CC: Matt Turner <mattst88@gmail.com>
+> CC: linux-alpha@vger.kernel.org
+> CC: Thomas Gleixner <tglx@linutronix.de>
+> CC: Ingo Molnar <mingo@redhat.com>
+> CC: "H. Peter Anvin" <hpa@zytor.com>
+> CC: x86@kernel.org
+> CC: Tony Luck <tony.luck@intel.com>
+> CC: Fenghua Yu <fenghua.yu@intel.com>
+> CC: linux-ia64@vger.kernel.org
+> CC: Will Deacon <will.deacon@arm.com>
+> CC: Peter Zijlstra <a.p.zijlstra@chello.nl>
+> CC: Arnaldo Carvalho de Melo <acme@ghostprotocols.net>
+> CC: Russell King <linux@arm.linux.org.uk>
 
-Thanks for the review :-)
+As there's only one place in the ARM code where we look at the return
+value, and you've patched that away in patch 1, this looks fine.  I've
+not checked for users outside of arch/arm, so:
 
-I just sent out a V2. No changes except I've added the needed signed-off-by.
+Acked-by: Russell King <rmk+kernel@arm.linux.org.uk>
 
-Gilad
-
-
--- 
-Gilad Ben-Yossef
-Chief Coffee Drinker
-gilad@benyossef.com
-Israel Cell: +972-52-8260388
-US Cell: +1-973-8260388
-http://benyossef.com
-
-"Unfortunately, cache misses are an equal opportunity pain provider."
--- Mike Galbraith, LKML
+Thanks.
