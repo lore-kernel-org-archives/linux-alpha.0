@@ -1,114 +1,78 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: rcu_sched_state detected stalls on Alpha with generic config
-Date: Thu, 19 Jan 2012 15:39:27 -0800
-Message-ID: <20120119233927.GH2373@linux.vnet.ibm.com>
-References: <4EDF0CEB.80904@orcon.net.nz>
- <20111208011650.GH2367@linux.vnet.ibm.com>
- <458655D9-91A7-4E1B-8E3A-5C86D87887F7@orcon.net.nz>
-Reply-To: paulmck@linux.vnet.ibm.com
+From: Kevin Cernekee <cernekee@gmail.com>
+Subject: Re: [PATCH-RFC 06/10] mips: switch to GENERIC_PCI_IOMAP
+Date: Sat, 28 Jan 2012 14:38:10 -0800
+Message-ID: <CAJiQ=7BPzhWWzU3_nDv3j=ZB4f=iOzeyLyd2L0_3UFaMiLujpw@mail.gmail.com>
+References: <cover.1322163031.git.mst@redhat.com>
+        <66457f7750d7d14229fcf8d0b011aba63185a75d.1322163031.git.mst@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <458655D9-91A7-4E1B-8E3A-5C86D87887F7@orcon.net.nz>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Shaohua Li <shaohua.li@intel.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-mips-bounce@linux-mips.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=gamma;
+        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
+         :cc:content-type:content-transfer-encoding;
+        bh=0i+RjziX8xr1fw1XyWqYc3ttsNXRW/8Z5EzgKlkyr40=;
+        b=RRJfoJqnNF3aaXzqz6P4SPT+/fOKX7TKmuGc4tTb16k5q9ZHS6qRasvkrVsGrVvy85
+         GE1jbJ9UAIE1XF3cwBfw5jyTAJzMvx5RG76lei4vvcTAGl5OVTjHBMfPk+y+iH3ob7XL
+         2LvRJZW1zIzucIThSKdOqPh7Szlw+dufKDVTM=
+In-Reply-To: <66457f7750d7d14229fcf8d0b011aba63185a75d.1322163031.git.mst@redhat.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-Id: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+To: Ralf Baechle <ralf@linux-mips.org>, "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@arm.linux.org.uk>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Jonas Bonn <jonas@southpole.se>, Kyle McMartin <kyle@mcmartin.ca>, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Chen Liqin <liqin.chen@sunplusct.com>, Lennox Wu <lennox.wu@gmail.com>, Paul Mundt <lethal@linux-sh.org>
 
-On Fri, Jan 20, 2012 at 12:15:18PM +1300, Michael Cree wrote:
-> On 8/12/2011, at 2:16 PM, Paul E. McKenney wrote:
-> >On Wed, Dec 07, 2011 at 07:51:23PM +1300, Michael Cree wrote:
-> >>I am seeing "rcu_sched_state detected stall on CPU" messages on Alpha
-> >>architecture with a generic SMP config.  Interactive tasks are
-> >>seen to
-> >>lock up, with "INFO: task X blocked for more than 120 seconds" in the
-> >>kernel logs, and eventual kernel oops and panic, on latest
-> >>3.2-rc4 and
-> >>traceable back to 3.0.  Bisection between 2.6.39 and 3.0 leads
-> >>to commit:
-> >>
-> >>09223371deac67d08ca0b70bd18787920284c967
-> >>rcu: Use softirq to address performance regression
-> >>
-> >>as the first bad commit.
-> >>
-> >>Tested on an Alpha ES45 (Titan) with three 1.25 GHz CPUs and 4 GByte
-> >>memory.  Testing procedure is to build git software and run its test
-> >>suite with -j4 in the make command argument.
-> >>
-> >>The CPU stall messages and eventually system lockup is only seen
-> >>with a
-> >>generic Alpha config, never with a Titan machine specific config.
-> >>
-> >>An example of kernel logs is (this one probably produced when I
-> >>tried to
-> >>shutdown the system when it is falling over):
-> >>
-> >>[45360.930876] INFO: rcu_sched_state detected stall on CPU 1
-> >>(t=798848
-> >>jiffies)
-> >>[45360.931853] INFO: rcu_sched_state detected stalls on
-> >>CPUs/tasks: { 1}
-> >>(detected by 0, t=798850 jiffies)
-> >>[45489.080225] INFO: task umount:17371 blocked for more than 120
-> >>seconds.
-> >>[45489.158350] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs"
-> >>disables this message.
-> >>[45489.252100] umount          D fffffc00013461ac     0 17371  17368
-> >>0x00000000
-> >>[45489.336084] fffffc00fdd53db8 fffffc00fdd97bb8 fffffc000108ca1c
-> >>fffffc00dcc9e800
-> >>[45489.422998]        fffffc00dcc9e810 fffffc00013b3a5d
-> >>fffffc000106289c
-> >>fffffc00ff0dfda8
-> >>[45489.519678]        0000000000000000 fffffc000108c81c
-> >>fffffc0001cd73f0
-> >>0000000000000001
-> >>[45489.615381]        fffffc00010627f0 0000000000000000
-> >>fffffc00dcc9e920
-> >>fffffc00ff0bf780
-> >>[45489.712060]        fffffc00010111b8 fffffc00ff0dfda8
-> >>fffffc00ff0dfde8
-> >>fffffc0001cdaa58
-> >>[45489.808740]        0000000000000000 0000000000000000
-> >>fffffc0000000000
-> >>fffffc0000000000
-> >>[45489.907373] Trace:
-> >>[45489.930810] [<fffffc000108ca1c>] watchdog+0x200/0x27c
-> >>[45489.991357] [<fffffc000106289c>] kthread+0xac/0xc4
-> >>[45490.048974] [<fffffc000108c81c>] watchdog+0x0/0x27c
-> >>[45490.107568] [<fffffc00010627f0>] kthread+0x0/0xc4
-> >>[45490.164209] [<fffffc00010111b8>] kernel_thread+0x28/0x90
-> >>[45490.227685]
-> >>
-> >>Let me know if any other information is needed to narrow down
-> >>the problem.
-> >
-> >Are there any specific differences between the Titan config and the
-> >generic Alpha config that might help me work out what is going on?
-> >Odd -- it looks like the watchdog is complaining at the time of
-> >the hang.
-> >Is it possible to use sysrq to get the state of the other tasks?
-> 
-> Been rather busy or on holiday in the meantime, but just got back to
-> looking at this problem.
-> 
-> It looks like it is a faulty compiler, not a problem in the kernel
-> source.
-> 
-> The problems described above are seen when compiling with gcc-4.4
-> and we now realise that gcc-4.4 has an optimisation problem on Alpha
-> and is the cause of reported problems/crashes in software other than
-> the kernel.  These problems are fixed when compiling with gcc-4.5.
-> 
-> I have now compiled a "bad" kernel with gcc-4.5 and I no longer can
-> trigger the failure --- the kernel worked for a couple of hours (and
-> a bad one compiled with gcc-4.4 has never lasted that long without
-> crashing!).
+On Thu, Nov 24, 2011 at 12:18 PM, Michael S. Tsirkin <mst@redhat.com> w=
+rote:
+> mips copied pci_iomap from generic code, probably to avoid
+> pulling the rest of iomap.c in. =C2=A0Since that's in
+> a separate file now, we can reuse the common implementation.
 
-Thank you for letting me know -- always glad to blame the compiler.  ;-)
+[snip]
 
-							Thanx, Paul
+> - =C2=A0 =C2=A0 =C2=A0 if (flags & IORESOURCE_IO)
+> - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return ioport_map_=
+pci(dev, start, len);
+
+While investigating a new warning on the 3.3-rc1 MIPS build (unused
+static function ioport_map_pci()), I noticed that this patch has shown
+up in Linus' tree as commit eab90291d35438bcebf7c3dc85be66d0f24e3002.
+
+I am not completely clear on the implications it has on mapping PCI I/O=
+ regions:
+
+Prior to this change, the MIPS version of pci_iomap() called a
+MIPS-specific function, ioport_map_pci(), which tried to use the PCI
+controller's io_map_base field to determine the base address of the
+PCI I/O space.  It also had a fallback mechanism to deal with the case
+where io_map_base is unset.
+
+Now, in 3.3-rc1, the generic version of pci_iomap() is used instead.
+This code just calls arch/mips/lib/iomap.c:ioport_map() on these
+regions.  ioport_map() falls through to ioport_map_legacy(), which
+always uses mips_io_port_base (not the PCI controller's io_map_base)
+as the base address.  But on MIPS, it is still permissible to use
+different I/O port bases for PCI devices and for legacy (ISA?)
+devices.
+
+Is this new behavior desirable, or are there any supported platforms
+on which adverse effects might be seen?
+
+As for my part, I don't use PCI I/O regions at all - just memory
+regions.  I'm more worried about making sure my tree builds with 0
+warnings.
+
+If we do want to move ahead with the switch to GENERIC_PCI_IOMAP now,
+I have patches to scrap iomap-pci.c entirely and squash the unused
+function warning.
+
+If we still want to support the case where io_map_base !=3D
+mips_io_port_base, maybe it would be better to revert commit eab90291
+for 3.3.
+
+Might also want to take a look at SH since it also appears to have an
+orphaned ioport_map_pci() function.
+
+What are your thoughts?
 
