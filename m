@@ -1,58 +1,157 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH-RFC 06/10] mips: switch to GENERIC_PCI_IOMAP
-Date: Mon, 30 Jan 2012 00:45:07 +0200
-Message-ID: <20120129223339.GA22666@redhat.com>
-References: <cover.1322163031.git.mst@redhat.com>
-	<66457f7750d7d14229fcf8d0b011aba63185a75d.1322163031.git.mst@redhat.com>
-	<CAJiQ=7BPzhWWzU3_nDv3j=ZB4f=iOzeyLyd2L0_3UFaMiLujpw@mail.gmail.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: [RFC PATCH v1 06/18] alpha/PCI: get rid of device resource fixups
+Date: Mon, 30 Jan 2012 09:57:39 -0700
+Message-ID: <20120130165739.3231.90160.stgit@bhelgaas.mtv.corp.google.com>
+References: <20120130165430.3231.97740.stgit@bhelgaas.mtv.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-bounces@lists.openrisc.net>
-Content-Disposition: inline
-In-Reply-To: <CAJiQ=7BPzhWWzU3_nDv3j=ZB4f=iOzeyLyd2L0_3UFaMiLujpw@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.openrisc.net/options/linux>,
-	<mailto:linux-request@lists.openrisc.net?subject=unsubscribe>
-List-Archive: <http://lists.openrisc.net/pipermail/linux>
-List-Post: <mailto:linux@lists.openrisc.net>
-List-Help: <mailto:linux-request@lists.openrisc.net?subject=help>
-List-Subscribe: <http://lists.openrisc.net/listinfo/linux>,
-	<mailto:linux-request@lists.openrisc.net?subject=subscribe>
-Sender: linux-bounces@lists.openrisc.net
-Errors-To: linux-bounces@lists.openrisc.net
-To: Kevin Cernekee <cernekee@gmail.com>
-Cc: Nicolas Pitre <nicolas.pitre@linaro.org>, linux-mips@linux-mips.org, linux-m68k@vger.kernel.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linux@openrisc.net, linux-pci@vger.kernel.org, Jesse Barnes <jbarnes@virtuousgeek.org>, Kumar Gala <galak@kernel.crashing.org>, Chen Liqin <liqin.chen@sunplusct.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Lennox Wu <lennox.wu@gmail.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Russell King <linux@arm.linux.org.uk>, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-arch@vger.kernel.org, Arend van Spriel <arend@broadcom.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=gamma;
+        h=subject:to:from:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-type:content-transfer-encoding;
+        bh=LbOs3yL+srm8GL0NKYZQpunVRNtJK0dI/F2zGEmB+s4=;
+        b=VNuSIvHW4TqFHJOV3iCKEF6dqnb2S5i7DC6aEFTg1DfZmtahniF3QJXWyIuITxtlSA
+         0ynAvXTS4TB6Ghkh1eboJscsQCnZHTmL8UopJryRJmFb5W7lTeMubtbTyJTB4Gvahwae
+         ecZdkl1dlgETpvB7EvnFSHWpEeBMBvHAr7+/A=
+In-Reply-To: <20120130165430.3231.97740.stgit@bhelgaas.mtv.corp.google.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-pci@vger.kernel.org
+Cc: linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Sat, Jan 28, 2012 at 02:38:10PM -0800, Kevin Cernekee wrote:
-> On Thu, Nov 24, 2011 at 12:18 PM, Michael S. Tsirkin <mst@redhat.com> wro=
-te:
-> > mips copied pci_iomap from generic code, probably to avoid
-> > pulling the rest of iomap.c in. =A0Since that's in
-> > a separate file now, we can reuse the common implementation.
-> =
+Tell the PCI core about host bridge address translation so it can take
+care of bus-to-resource conversion for us.
 
-> [snip]
-> =
+CC: linux-alpha@vger.kernel.org
+---
+ arch/alpha/include/asm/pci.h |    6 +---
+ arch/alpha/kernel/pci.c      |   71 ++----------------------------------------
+ 2 files changed, 5 insertions(+), 72 deletions(-)
 
-> > - =A0 =A0 =A0 if (flags & IORESOURCE_IO)
-> > - =A0 =A0 =A0 =A0 =A0 =A0 =A0 return ioport_map_pci(dev, start, len);
-> =
+diff --git a/arch/alpha/include/asm/pci.h b/arch/alpha/include/asm/pci.h
+index 28d0497..dace435 100644
+--- a/arch/alpha/include/asm/pci.h
++++ b/arch/alpha/include/asm/pci.h
+@@ -99,11 +99,7 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
+ 	return channel ? 15 : 14;
+ }
+ 
+-extern void pcibios_resource_to_bus(struct pci_dev *, struct pci_bus_region *,
+-				    struct resource *);
+-
+-extern void pcibios_bus_to_resource(struct pci_dev *dev, struct resource *res,
+-				    struct pci_bus_region *region);
++#define ARCH_HAS_GENERIC_PCI_OFFSETS
+ 
+ #define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
+ 
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index 8c723c1..ee74503 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -253,32 +253,6 @@ pci_restore_srm_config(void)
+ #endif
+ 
+ void __devinit
+-pcibios_fixup_resource(struct resource *res, struct resource *root)
+-{
+-	res->start += root->start;
+-	res->end += root->start;
+-}
+-
+-void __devinit
+-pcibios_fixup_device_resources(struct pci_dev *dev, struct pci_bus *bus)
+-{
+-	/* Update device resources.  */
+-	struct pci_controller *hose = (struct pci_controller *)bus->sysdata;
+-	int i;
+-
+-	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+-		if (!dev->resource[i].start)
+-			continue;
+-		if (dev->resource[i].flags & IORESOURCE_IO)
+-			pcibios_fixup_resource(&dev->resource[i],
+-					       hose->io_space);
+-		else if (dev->resource[i].flags & IORESOURCE_MEM)
+-			pcibios_fixup_resource(&dev->resource[i],
+-					       hose->mem_space);
+-	}
+-}
+-
+-void __devinit
+ pcibios_fixup_bus(struct pci_bus *bus)
+ {
+ 	struct pci_dev *dev = bus->self;
+@@ -286,13 +260,10 @@ pcibios_fixup_bus(struct pci_bus *bus)
+ 	if (pci_probe_only && dev &&
+  		   (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
+  		pci_read_bridge_bases(bus);
+- 		pcibios_fixup_device_resources(dev, bus);
+ 	} 
+ 
+ 	list_for_each_entry(dev, &bus->devices, bus_list) {
+ 		pdev_save_srm_config(dev);
+-		if ((dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
+-			pcibios_fixup_device_resources(dev, bus);
+ 	}
+ }
+ 
+@@ -302,42 +273,6 @@ pcibios_update_irq(struct pci_dev *dev, int irq)
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+ }
+ 
+-void
+-pcibios_resource_to_bus(struct pci_dev *dev, struct pci_bus_region *region,
+-			 struct resource *res)
+-{
+-	struct pci_controller *hose = (struct pci_controller *)dev->sysdata;
+-	unsigned long offset = 0;
+-
+-	if (res->flags & IORESOURCE_IO)
+-		offset = hose->io_space->start;
+-	else if (res->flags & IORESOURCE_MEM)
+-		offset = hose->mem_space->start;
+-
+-	region->start = res->start - offset;
+-	region->end = res->end - offset;
+-}
+-
+-void pcibios_bus_to_resource(struct pci_dev *dev, struct resource *res,
+-			     struct pci_bus_region *region)
+-{
+-	struct pci_controller *hose = (struct pci_controller *)dev->sysdata;
+-	unsigned long offset = 0;
+-
+-	if (res->flags & IORESOURCE_IO)
+-		offset = hose->io_space->start;
+-	else if (res->flags & IORESOURCE_MEM)
+-		offset = hose->mem_space->start;
+-
+-	res->start = region->start + offset;
+-	res->end = region->end + offset;
+-}
+-
+-#ifdef CONFIG_HOTPLUG
+-EXPORT_SYMBOL(pcibios_resource_to_bus);
+-EXPORT_SYMBOL(pcibios_bus_to_resource);
+-#endif
+-
+ int
+ pcibios_enable_device(struct pci_dev *dev, int mask)
+ {
+@@ -416,8 +351,10 @@ common_init_pci(void)
+ 			hose->mem_space->end = end;
+ 
+ 		INIT_LIST_HEAD(&resources);
+-		pci_add_resource(&resources, hose->io_space);
+-		pci_add_resource(&resources, hose->mem_space);
++		pci_add_resource_offset(&resources, hose->io_space,
++					hose->io_space->start);
++		pci_add_resource_offset(&resources, hose->mem_space,
++					hose->mem_space->start);
+ 
+ 		bus = pci_scan_root_bus(NULL, next_busno, alpha_mv.pci_ops,
+ 					hose, &resources);
 
-> While investigating a new warning on the 3.3-rc1 MIPS build (unused
-> static function ioport_map_pci()), I noticed that this patch has shown
-> up in Linus' tree as commit eab90291d35438bcebf7c3dc85be66d0f24e3002.
-> =
-
-> I am not completely clear on the implications it has on mapping PCI I/O r=
-egions:
-
-Yes, my bad, I missed the difference between ioport_map_pci
-and ioport_map for both MIPS and SH.
-I'll post a patch to fix this, which is probably preferable
-to reintroducing the code duplication where it might
-trip us up again.
-
--- =
-
-MST
