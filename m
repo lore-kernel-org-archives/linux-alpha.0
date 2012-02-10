@@ -1,21 +1,21 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [RFC PATCH v1 06/18] alpha/PCI: get rid of device resource fixups
-Date: Mon, 30 Jan 2012 09:57:39 -0700
-Message-ID: <20120130165739.3231.90160.stgit@bhelgaas.mtv.corp.google.com>
-References: <20120130165430.3231.97740.stgit@bhelgaas.mtv.corp.google.com>
+Subject: [PATCH v2 06/18] alpha/PCI: get rid of device resource fixups
+Date: Thu, 09 Feb 2012 19:36:51 -0700
+Message-ID: <20120210023651.10311.6437.stgit@bhelgaas.mtv.corp.google.com>
+References: <20120210023424.10311.82445.stgit@bhelgaas.mtv.corp.google.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=gamma;
         h=subject:to:from:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-type:content-transfer-encoding;
-        bh=LbOs3yL+srm8GL0NKYZQpunVRNtJK0dI/F2zGEmB+s4=;
-        b=VNuSIvHW4TqFHJOV3iCKEF6dqnb2S5i7DC6aEFTg1DfZmtahniF3QJXWyIuITxtlSA
-         0ynAvXTS4TB6Ghkh1eboJscsQCnZHTmL8UopJryRJmFb5W7lTeMubtbTyJTB4Gvahwae
-         ecZdkl1dlgETpvB7EvnFSHWpEeBMBvHAr7+/A=
-In-Reply-To: <20120130165430.3231.97740.stgit@bhelgaas.mtv.corp.google.com>
-Sender: linux-alpha-owner@vger.kernel.org
+        bh=v/4t5nwToeF/7DPNEpWfRUTVeFtFt0jD9nFGt8sVlNI=;
+        b=XRbFqf4u4dIMwxCzbBfN8/mMfQu91h2uHd2czJGgYfqz45dpHqCUhYVUV/B3nXXu9Y
+         Ld92hJuSudnptAxJPKfLBisG+HcXpYQkt7V1eTQQxYpd2QaVKroxV8raJ7PHXn85p23/
+         s/Q/3vM1h/hQUFm7K2Df6zSdAH5Ic6mVIH+5M=
+In-Reply-To: <20120210023424.10311.82445.stgit@bhelgaas.mtv.corp.google.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-pci@vger.kernel.org
@@ -25,6 +25,7 @@ Tell the PCI core about host bridge address translation so it can take
 care of bus-to-resource conversion for us.
 
 CC: linux-alpha@vger.kernel.org
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
  arch/alpha/include/asm/pci.h |    6 +---
  arch/alpha/kernel/pci.c      |   71 ++----------------------------------------
@@ -154,4 +155,3 @@ index 8c723c1..ee74503 100644
  
  		bus = pci_scan_root_bus(NULL, next_busno, alpha_mv.pci_ops,
  					hose, &resources);
-
