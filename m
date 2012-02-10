@@ -1,157 +1,101 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v2 06/18] alpha/PCI: get rid of device resource fixups
-Date: Thu, 09 Feb 2012 19:36:51 -0700
-Message-ID: <20120210023651.10311.6437.stgit@bhelgaas.mtv.corp.google.com>
-References: <20120210023424.10311.82445.stgit@bhelgaas.mtv.corp.google.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PULL REQUEST] DMA-mapping framework redesign preparation patches
+Date: Fri, 10 Feb 2012 19:32:17 +0100
+Message-ID: <1328898737-15854-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=gamma;
-        h=subject:to:from:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-type:content-transfer-encoding;
-        bh=v/4t5nwToeF/7DPNEpWfRUTVeFtFt0jD9nFGt8sVlNI=;
-        b=XRbFqf4u4dIMwxCzbBfN8/mMfQu91h2uHd2czJGgYfqz45dpHqCUhYVUV/B3nXXu9Y
-         Ld92hJuSudnptAxJPKfLBisG+HcXpYQkt7V1eTQQxYpd2QaVKroxV8raJ7PHXn85p23/
-         s/Q/3vM1h/hQUFm7K2Df6zSdAH5Ic6mVIH+5M=
-In-Reply-To: <20120210023424.10311.82445.stgit@bhelgaas.mtv.corp.google.com>
-Sender: linux-arch-owner@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-pci@vger.kernel.org
-Cc: linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset="us-ascii"
+To: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, Jonathan Corbet <corbet@lwn.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>
 
-Tell the PCI core about host bridge address translation so it can take
-care of bus-to-resource conversion for us.
+Hi Stephen,
 
-CC: linux-alpha@vger.kernel.org
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
- arch/alpha/include/asm/pci.h |    6 +---
- arch/alpha/kernel/pci.c      |   71 ++----------------------------------------
- 2 files changed, 5 insertions(+), 72 deletions(-)
+Our patches with DMA-mapping framework redesign proposal have been
+hanging for over a month with just a few comments. We would like to go
+further in the development, but first I would like to ask You to give
+them a try in the linux-next kernel.
 
-diff --git a/arch/alpha/include/asm/pci.h b/arch/alpha/include/asm/pci.h
-index 28d0497..dace435 100644
---- a/arch/alpha/include/asm/pci.h
-+++ b/arch/alpha/include/asm/pci.h
-@@ -99,11 +99,7 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
- 	return channel ? 15 : 14;
- }
- 
--extern void pcibios_resource_to_bus(struct pci_dev *, struct pci_bus_region *,
--				    struct resource *);
--
--extern void pcibios_bus_to_resource(struct pci_dev *dev, struct resource *res,
--				    struct pci_bus_region *region);
-+#define ARCH_HAS_GENERIC_PCI_OFFSETS
- 
- #define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
- 
-diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
-index 8c723c1..ee74503 100644
---- a/arch/alpha/kernel/pci.c
-+++ b/arch/alpha/kernel/pci.c
-@@ -253,32 +253,6 @@ pci_restore_srm_config(void)
- #endif
- 
- void __devinit
--pcibios_fixup_resource(struct resource *res, struct resource *root)
--{
--	res->start += root->start;
--	res->end += root->start;
--}
--
--void __devinit
--pcibios_fixup_device_resources(struct pci_dev *dev, struct pci_bus *bus)
--{
--	/* Update device resources.  */
--	struct pci_controller *hose = (struct pci_controller *)bus->sysdata;
--	int i;
--
--	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
--		if (!dev->resource[i].start)
--			continue;
--		if (dev->resource[i].flags & IORESOURCE_IO)
--			pcibios_fixup_resource(&dev->resource[i],
--					       hose->io_space);
--		else if (dev->resource[i].flags & IORESOURCE_MEM)
--			pcibios_fixup_resource(&dev->resource[i],
--					       hose->mem_space);
--	}
--}
--
--void __devinit
- pcibios_fixup_bus(struct pci_bus *bus)
- {
- 	struct pci_dev *dev = bus->self;
-@@ -286,13 +260,10 @@ pcibios_fixup_bus(struct pci_bus *bus)
- 	if (pci_probe_only && dev &&
-  		   (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
-  		pci_read_bridge_bases(bus);
-- 		pcibios_fixup_device_resources(dev, bus);
- 	} 
- 
- 	list_for_each_entry(dev, &bus->devices, bus_list) {
- 		pdev_save_srm_config(dev);
--		if ((dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
--			pcibios_fixup_device_resources(dev, bus);
- 	}
- }
- 
-@@ -302,42 +273,6 @@ pcibios_update_irq(struct pci_dev *dev, int irq)
- 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
- }
- 
--void
--pcibios_resource_to_bus(struct pci_dev *dev, struct pci_bus_region *region,
--			 struct resource *res)
--{
--	struct pci_controller *hose = (struct pci_controller *)dev->sysdata;
--	unsigned long offset = 0;
--
--	if (res->flags & IORESOURCE_IO)
--		offset = hose->io_space->start;
--	else if (res->flags & IORESOURCE_MEM)
--		offset = hose->mem_space->start;
--
--	region->start = res->start - offset;
--	region->end = res->end - offset;
--}
--
--void pcibios_bus_to_resource(struct pci_dev *dev, struct resource *res,
--			     struct pci_bus_region *region)
--{
--	struct pci_controller *hose = (struct pci_controller *)dev->sysdata;
--	unsigned long offset = 0;
--
--	if (res->flags & IORESOURCE_IO)
--		offset = hose->io_space->start;
--	else if (res->flags & IORESOURCE_MEM)
--		offset = hose->mem_space->start;
--
--	res->start = region->start + offset;
--	res->end = region->end + offset;
--}
--
--#ifdef CONFIG_HOTPLUG
--EXPORT_SYMBOL(pcibios_resource_to_bus);
--EXPORT_SYMBOL(pcibios_bus_to_resource);
--#endif
--
- int
- pcibios_enable_device(struct pci_dev *dev, int mask)
- {
-@@ -416,8 +351,10 @@ common_init_pci(void)
- 			hose->mem_space->end = end;
- 
- 		INIT_LIST_HEAD(&resources);
--		pci_add_resource(&resources, hose->io_space);
--		pci_add_resource(&resources, hose->mem_space);
-+		pci_add_resource_offset(&resources, hose->io_space,
-+					hose->io_space->start);
-+		pci_add_resource_offset(&resources, hose->mem_space,
-+					hose->mem_space->start);
- 
- 		bus = pci_scan_root_bus(NULL, next_busno, alpha_mv.pci_ops,
- 					hose, &resources);
+For everyone interested in this patch series, here is the relevant
+thread: https://lkml.org/lkml/2011/12/23/97
+
+If there are any problems with our git tree, please contact Marek 
+Szyprowski <m.szyprowski@samsung.com> or alternatively Kyungmin Park
+<kyungmin.park@samsung.com>.
+
+The following changes since commit 62aa2b537c6f5957afd98e29f96897419ed5ebab:
+
+  Linux 3.3-rc2 (2012-01-31 13:31:54 -0800)
+
+are available in the git repository at:
+  git://git.infradead.org/users/kmpark/linux-samsung dma-mapping-next
+
+Andrzej Pietrasiewicz (9):
+      X86: adapt for dma_map_ops changes
+      MIPS: adapt for dma_map_ops changes
+      PowerPC: adapt for dma_map_ops changes
+      IA64: adapt for dma_map_ops changes
+      SPARC: adapt for dma_map_ops changes
+      Alpha: adapt for dma_map_ops changes
+      SH: adapt for dma_map_ops changes
+      Microblaze: adapt for dma_map_ops changes
+      Unicore32: adapt for dma_map_ops changes
+
+Marek Szyprowski (5):
+      common: dma-mapping: introduce alloc_attrs and free_attrs methods
+      common: dma-mapping: remove old alloc_coherent and free_coherent methods
+      common: dma-mapping: introduce mmap method
+      common: DMA-mapping: add WRITE_COMBINE attribute
+      common: DMA-mapping: add NON-CONSISTENT attribute
+
+ Documentation/DMA-attributes.txt          |   19 +++++++++++++++++++
+ arch/alpha/include/asm/dma-mapping.h      |   18 ++++++++++++------
+ arch/alpha/kernel/pci-noop.c              |   10 ++++++----
+ arch/alpha/kernel/pci_iommu.c             |   10 ++++++----
+ arch/ia64/hp/common/sba_iommu.c           |   11 ++++++-----
+ arch/ia64/include/asm/dma-mapping.h       |   18 ++++++++++++------
+ arch/ia64/kernel/pci-swiotlb.c            |    9 +++++----
+ arch/ia64/sn/pci/pci_dma.c                |    9 +++++----
+ arch/microblaze/include/asm/dma-mapping.h |   18 ++++++++++++------
+ arch/microblaze/kernel/dma.c              |   10 ++++++----
+ arch/mips/include/asm/dma-mapping.h       |   18 ++++++++++++------
+ arch/mips/mm/dma-default.c                |    8 ++++----
+ arch/powerpc/include/asm/dma-mapping.h    |   24 ++++++++++++++++--------
+ arch/powerpc/kernel/dma-iommu.c           |   10 ++++++----
+ arch/powerpc/kernel/dma-swiotlb.c         |    4 ++--
+ arch/powerpc/kernel/dma.c                 |   10 ++++++----
+ arch/powerpc/kernel/ibmebus.c             |   10 ++++++----
+ arch/powerpc/platforms/cell/iommu.c       |   16 +++++++++-------
+ arch/powerpc/platforms/ps3/system-bus.c   |   13 +++++++------
+ arch/sh/include/asm/dma-mapping.h         |   28 ++++++++++++++++++----------
+ arch/sh/kernel/dma-nommu.c                |    4 ++--
+ arch/sh/mm/consistent.c                   |    6 ++++--
+ arch/sparc/include/asm/dma-mapping.h      |   18 ++++++++++++------
+ arch/sparc/kernel/iommu.c                 |   10 ++++++----
+ arch/sparc/kernel/ioport.c                |   18 ++++++++++--------
+ arch/sparc/kernel/pci_sun4v.c             |    9 +++++----
+ arch/unicore32/include/asm/dma-mapping.h  |   18 ++++++++++++------
+ arch/unicore32/mm/dma-swiotlb.c           |    4 ++--
+ arch/x86/include/asm/dma-mapping.h        |   26 ++++++++++++++++----------
+ arch/x86/kernel/amd_gart_64.c             |   11 ++++++-----
+ arch/x86/kernel/pci-calgary_64.c          |    9 +++++----
+ arch/x86/kernel/pci-dma.c                 |    3 ++-
+ arch/x86/kernel/pci-nommu.c               |    6 +++---
+ arch/x86/kernel/pci-swiotlb.c             |   12 +++++++-----
+ arch/x86/xen/pci-swiotlb-xen.c            |    4 ++--
+ drivers/iommu/amd_iommu.c                 |   10 ++++++----
+ drivers/iommu/intel-iommu.c               |    9 +++++----
+ drivers/xen/swiotlb-xen.c                 |    5 +++--
+ include/linux/dma-attrs.h                 |    2 ++
+ include/linux/dma-mapping.h               |   13 +++++++++----
+ include/linux/swiotlb.h                   |    6 ++++--
+ include/xen/swiotlb-xen.h                 |    6 ++++--
+ lib/swiotlb.c                             |    5 +++--
+ 43 files changed, 305 insertions(+), 182 deletions(-)
+
+Best regards
+Marek Szyprowski
+Samsung Poland R&D Center
+
