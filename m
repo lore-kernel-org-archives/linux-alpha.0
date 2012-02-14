@@ -1,170 +1,106 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 03/14 v3] MIPS: adapt for dma_map_ops changes
-Date: Mon, 13 Feb 2012 13:41:55 +0100
-Message-ID: <1329136915-24824-1-git-send-email-m.szyprowski@samsung.com>
-References: <4F38E8E1.3070004@mvista.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-reply-to: <4F38E8E1.3070004@mvista.com>
-Sender: linux-sh-owner@vger.kernel.org
+From: Matt Fleming <matt@console-pimps.org>
+Subject: [PATCH 01/40] alpha: Use set_current_blocked() and block_sigmask()
+Date: Tue, 14 Feb 2012 11:40:34 +0000
+Message-ID: <1329219673-28711-2-git-send-email-matt@console-pimps.org>
+References: <1329219673-28711-1-git-send-email-matt@console-pimps.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1329219673-28711-1-git-send-email-matt@console-pimps.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Stephen Rothwell <sfr@canb.auug.org.au>, FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, Jonathan Corbet <corbet@lwn.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: linux-arch@vger.kernel.org
+Cc: Oleg Nesterov <oleg@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, Matt Fleming <matt.fleming@intel.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org
 
-From: Andrzej Pietrasiewicz <andrzej.p@samsung.com>
+From: Matt Fleming <matt.fleming@intel.com>
 
-Adapt core MIPS architecture code for dma_map_ops changes: replace
-alloc/free_coherent with generic alloc/free methods.
+As described in e6fa16ab ("signal: sigprocmask() should do
+retarget_shared_pending()") the modification of current->blocked is
+incorrect as we need to check for shared signals we're about to block.
 
-Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@samsung.com>
-[added missing changes to arch/mips/cavium-octeon/dma-octeon.c,
- fixed attrs argument in dma-mapping.h]
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+Also, use the new helper function introduced in commit 5e6292c0f28f
+("signal: add block_sigmask() for adding sigmask to current->blocked")
+which centralises the code for updating current->blocked after
+successfully delivering a signal and reduces the amount of duplicate
+code across architectures. In the past some architectures got this
+code wrong, so using this helper function should stop that from
+happening again.
+
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Matt Fleming <matt.fleming@intel.com>
 ---
- arch/mips/cavium-octeon/dma-octeon.c |   16 ++++++++--------
- arch/mips/include/asm/dma-mapping.h  |   18 ++++++++++++------
- arch/mips/mm/dma-default.c           |    8 ++++----
- 3 files changed, 24 insertions(+), 18 deletions(-)
+ arch/alpha/kernel/signal.c |   31 ++++++++++---------------------
+ 1 files changed, 10 insertions(+), 21 deletions(-)
 
-diff --git a/arch/mips/cavium-octeon/dma-octeon.c b/arch/mips/cavium-octeon/dma-octeon.c
-index b6bb92c..df70600 100644
---- a/arch/mips/cavium-octeon/dma-octeon.c
-+++ b/arch/mips/cavium-octeon/dma-octeon.c
-@@ -157,7 +157,7 @@ static void octeon_dma_sync_sg_for_device(struct device *dev,
- }
- 
- static void *octeon_dma_alloc_coherent(struct device *dev, size_t size,
--	dma_addr_t *dma_handle, gfp_t gfp)
-+	dma_addr_t *dma_handle, gfp_t gfp, struct dma_attrs *attrs)
+diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
+index 6f7feb5..35f2ef4 100644
+--- a/arch/alpha/kernel/signal.c
++++ b/arch/alpha/kernel/signal.c
+@@ -120,12 +120,13 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig, const struct sigaction __user *, act,
+  */
+ SYSCALL_DEFINE1(sigsuspend, old_sigset_t, mask)
  {
- 	void *ret;
- 
-@@ -184,7 +184,7 @@ static void *octeon_dma_alloc_coherent(struct device *dev, size_t size,
- 	/* Don't invoke OOM killer */
- 	gfp |= __GFP_NORETRY;
- 
--	ret = swiotlb_alloc_coherent(dev, size, dma_handle, gfp);
-+	ret = swiotlb_alloc_coherent(dev, size, dma_handle, gfp, attrs);
- 
- 	mb();
- 
-@@ -192,14 +192,14 @@ static void *octeon_dma_alloc_coherent(struct device *dev, size_t size,
- }
- 
- static void octeon_dma_free_coherent(struct device *dev, size_t size,
--	void *vaddr, dma_addr_t dma_handle)
-+	void *vaddr, dma_addr_t dma_handle, struct dma_attrs *attrs)
- {
- 	int order = get_order(size);
- 
- 	if (dma_release_from_coherent(dev, order, vaddr))
- 		return;
- 
--	swiotlb_free_coherent(dev, size, vaddr, dma_handle);
-+	swiotlb_free_coherent(dev, size, vaddr, dma_handle, attrs);
- }
- 
- static dma_addr_t octeon_unity_phys_to_dma(struct device *dev, phys_addr_t paddr)
-@@ -240,8 +240,8 @@ EXPORT_SYMBOL(dma_to_phys);
- 
- static struct octeon_dma_map_ops octeon_linear_dma_map_ops = {
- 	.dma_map_ops = {
--		.alloc_coherent = octeon_dma_alloc_coherent,
--		.free_coherent = octeon_dma_free_coherent,
-+		.alloc = octeon_dma_alloc_coherent,
-+		.free = octeon_dma_free_coherent,
- 		.map_page = octeon_dma_map_page,
- 		.unmap_page = swiotlb_unmap_page,
- 		.map_sg = octeon_dma_map_sg,
-@@ -325,8 +325,8 @@ void __init plat_swiotlb_setup(void)
- #ifdef CONFIG_PCI
- static struct octeon_dma_map_ops _octeon_pci_dma_map_ops = {
- 	.dma_map_ops = {
--		.alloc_coherent = octeon_dma_alloc_coherent,
--		.free_coherent = octeon_dma_free_coherent,
-+		.alloc = octeon_dma_alloc_coherent,
-+		.free = octeon_dma_free_coherent,
- 		.map_page = octeon_dma_map_page,
- 		.unmap_page = swiotlb_unmap_page,
- 		.map_sg = octeon_dma_map_sg,
-diff --git a/arch/mips/include/asm/dma-mapping.h b/arch/mips/include/asm/dma-mapping.h
-index 7aa37dd..be39a12 100644
---- a/arch/mips/include/asm/dma-mapping.h
-+++ b/arch/mips/include/asm/dma-mapping.h
-@@ -57,25 +57,31 @@ dma_set_mask(struct device *dev, u64 mask)
- extern void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- 	       enum dma_data_direction direction);
- 
--static inline void *dma_alloc_coherent(struct device *dev, size_t size,
--				       dma_addr_t *dma_handle, gfp_t gfp)
-+#define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
+-	mask &= _BLOCKABLE;
+-	spin_lock_irq(&current->sighand->siglock);
++	sigset_t blocked;
 +
-+static inline void *dma_alloc_attrs(struct device *dev, size_t size,
-+				    dma_addr_t *dma_handle, gfp_t gfp,
-+				    struct dma_attrs *attrs)
- {
- 	void *ret;
- 	struct dma_map_ops *ops = get_dma_ops(dev);
+ 	current->saved_sigmask = current->blocked;
+-	siginitset(&current->blocked, mask);
+-	recalc_sigpending();
+-	spin_unlock_irq(&current->sighand->siglock);
++
++	mask &= _BLOCKABLE;
++	siginitset(&blocked, mask);
++	set_current_blocked(&blocked);
  
--	ret = ops->alloc_coherent(dev, size, dma_handle, gfp);
-+	ret = ops->alloc(dev, size, dma_handle, gfp, attrs);
+ 	current->state = TASK_INTERRUPTIBLE;
+ 	schedule();
+@@ -238,10 +239,7 @@ do_sigreturn(struct sigcontext __user *sc, struct pt_regs *regs,
+ 		goto give_sigsegv;
  
- 	debug_dma_alloc_coherent(dev, size, *dma_handle, ret);
+ 	sigdelsetmask(&set, ~_BLOCKABLE);
+-	spin_lock_irq(&current->sighand->siglock);
+-	current->blocked = set;
+-	recalc_sigpending();
+-	spin_unlock_irq(&current->sighand->siglock);
++	set_current_blocked(&set);
+ 
+ 	if (restore_sigcontext(sc, regs, sw))
+ 		goto give_sigsegv;
+@@ -276,10 +274,7 @@ do_rt_sigreturn(struct rt_sigframe __user *frame, struct pt_regs *regs,
+ 		goto give_sigsegv;
+ 
+ 	sigdelsetmask(&set, ~_BLOCKABLE);
+-	spin_lock_irq(&current->sighand->siglock);
+-	current->blocked = set;
+-	recalc_sigpending();
+-	spin_unlock_irq(&current->sighand->siglock);
++	set_current_blocked(&set);
+ 
+ 	if (restore_sigcontext(&frame->uc.uc_mcontext, regs, sw))
+ 		goto give_sigsegv;
+@@ -501,14 +496,8 @@ handle_signal(int sig, struct k_sigaction *ka, siginfo_t *info,
+ 	else
+ 		ret = setup_frame(sig, ka, oldset, regs, sw);
+ 
+-	if (ret == 0) {
+-		spin_lock_irq(&current->sighand->siglock);
+-		sigorsets(&current->blocked,&current->blocked,&ka->sa.sa_mask);
+-		if (!(ka->sa.sa_flags & SA_NODEFER)) 
+-			sigaddset(&current->blocked,sig);
+-		recalc_sigpending();
+-		spin_unlock_irq(&current->sighand->siglock);
+-	}
++	if (ret == 0)
++		block_sigmask(ka, sig);
  
  	return ret;
  }
- 
--static inline void dma_free_coherent(struct device *dev, size_t size,
--				     void *vaddr, dma_addr_t dma_handle)
-+#define dma_free_coherent(d,s,c,h) dma_free_attrs(d,s,c,h,NULL)
-+
-+static inline void dma_free_attrs(struct device *dev, size_t size,
-+				  void *vaddr, dma_addr_t dma_handle,
-+				  struct dma_attrs *attrs)
- {
- 	struct dma_map_ops *ops = get_dma_ops(dev);
- 
--	ops->free_coherent(dev, size, vaddr, dma_handle);
-+	ops->free(dev, size, vaddr, dma_handle, attrs);
- 
- 	debug_dma_free_coherent(dev, size, vaddr, dma_handle);
- }
-diff --git a/arch/mips/mm/dma-default.c b/arch/mips/mm/dma-default.c
-index 4608491..3fab204 100644
---- a/arch/mips/mm/dma-default.c
-+++ b/arch/mips/mm/dma-default.c
-@@ -98,7 +98,7 @@ void *dma_alloc_noncoherent(struct device *dev, size_t size,
- EXPORT_SYMBOL(dma_alloc_noncoherent);
- 
- static void *mips_dma_alloc_coherent(struct device *dev, size_t size,
--	dma_addr_t * dma_handle, gfp_t gfp)
-+	dma_addr_t * dma_handle, gfp_t gfp, struct dma_attrs *attrs)
- {
- 	void *ret;
- 
-@@ -132,7 +132,7 @@ void dma_free_noncoherent(struct device *dev, size_t size, void *vaddr,
- EXPORT_SYMBOL(dma_free_noncoherent);
- 
- static void mips_dma_free_coherent(struct device *dev, size_t size, void *vaddr,
--	dma_addr_t dma_handle)
-+	dma_addr_t dma_handle, struct dma_attrs *attrs)
- {
- 	unsigned long addr = (unsigned long) vaddr;
- 	int order = get_order(size);
-@@ -323,8 +323,8 @@ void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- EXPORT_SYMBOL(dma_cache_sync);
- 
- static struct dma_map_ops mips_default_dma_map_ops = {
--	.alloc_coherent = mips_dma_alloc_coherent,
--	.free_coherent = mips_dma_free_coherent,
-+	.alloc = mips_dma_alloc_coherent,
-+	.free = mips_dma_free_coherent,
- 	.map_page = mips_dma_map_page,
- 	.unmap_page = mips_dma_unmap_page,
- 	.map_sg = mips_dma_map_sg,
 -- 
-1.7.1.569.g6f426
-
+1.7.4.4
