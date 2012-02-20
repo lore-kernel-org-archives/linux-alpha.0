@@ -1,29 +1,39 @@
-From: Jim Faulkner <jfaulkne@ccs.neu.edu>
-Subject: Re: [PATCH] fix modpost when CONFIG_ALPHA_TSUNAMI=y
-Date: Sat, 18 Feb 2012 17:39:57 -0500
-Message-ID: <20120218223957.GB28758@alumni-linux.ccs.neu.edu>
-References: <20120109003504.GA19756@alumni-linux.ccs.neu.edu> <20120218212431.GA25058@alumni-linux.ccs.neu.edu> <4F40264E.6050602@orcon.net.nz>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: alpha: futex regression bisected
+Date: Mon, 20 Feb 2012 21:20:38 +1300
+Message-ID: <4F420256.2090600@orcon.net.nz>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4F40264E.6050602@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, gregkh@linuxfoundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, torvalds@linux-foundation.org, jay.estabrook@gmail.com
+To: Michel Lespinasse <walken@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 
-On Sun, Feb 19, 2012 at 11:29:34AM +1300, Michael Cree wrote:
-> >  
-> > +#include <linux/module.h>
-> 
-> Wouldn't <linux/exports.h> be better?  I seem to recall that this was a
-> problem with EXPORT_SYMBOL not being defined and I see my own personal
-> fix (which I had completely forgotten to send upstream) was to include
-> <linux/exports.h>
+I have noticed some user space problems (pulseaudio crashes in pthread
+code, glibc/nptl test suite failures, java compiler freezes on SMP alpha
+systems) that arise when using a 2.6.39 or later kernel on Alpha.
+Bisecting between 2.6.38 and 2.6.39 (using glibc/nptl test suite as
+criterion for good/bad kernel) eventually leads to:
 
-core_marvel.c and core_titan.c both include <linux/module.h> in the
-mainline kernel, which is why I thought it was the appropriate fix for
-core_tsunami.c.
+8d7718aa082aaf30a0b4989e1f04858952f941bc is the first bad commit
+commit 8d7718aa082aaf30a0b4989e1f04858952f941bc
+Author: Michel Lespinasse <walken@google.com>
+Date:   Thu Mar 10 18:50:58 2011 -0800
 
+    futex: Sanitize futex ops argument types
+
+    Change futex_atomic_op_inuser and futex_atomic_cmpxchg_inatomic
+    prototypes to use u32 types for the futex as this is the data type the
+    futex core code uses all over the place.
+
+Looking at the commit I see there is a change of the uaddr argument in
+the Alpha architecture specific code for futexes from int to u32, but I
+don't see why this should cause a problem.
+
+I am hoping someone better than I at Alpha assembly (Richard?, Ivan?)
+might be able to look at the commit and propose a fix!
+
+Cheers
+Michael.
