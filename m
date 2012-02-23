@@ -1,21 +1,21 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v1 03/11] alpha/PCI: replace pci_probe_only with pci_flags
-Date: Wed, 22 Feb 2012 11:19:17 -0700
-Message-ID: <20120222181917.27513.44072.stgit@bhelgaas.mtv.corp.google.com>
-References: <20120222181556.27513.9413.stgit@bhelgaas.mtv.corp.google.com>
+Subject: [PATCH v2 03/12] alpha/PCI: replace pci_probe_only with pci_flags
+Date: Thu, 23 Feb 2012 12:43:17 -0700
+Message-ID: <20120223194317.20708.1404.stgit@bhelgaas.mtv.corp.google.com>
+References: <20120223194209.20708.54480.stgit@bhelgaas.mtv.corp.google.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=gamma;
         h=subject:to:from:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-type:content-transfer-encoding;
         bh=z9ytGqFO1JVknJx9D9/Nn4pIrKTQYkxn8dy3FdnbQHk=;
-        b=lqYQYUcUyWz2fWLwdwlF84cbVkGnMVIDBvLgw4kFn2q/RzwxWT5+8pmpodpJMrYIUx
-         4336FBXs3HYmzRiVW7ilMULGdsH865YPEWmXj6O57oq9Emdwk3GR+HmATMxKkll00by9
-         WyXPf1xeIpeY4KvrMcglc+lx+UJ84rE5w/ykw=
-In-Reply-To: <20120222181556.27513.9413.stgit@bhelgaas.mtv.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
+        b=EC2h5ov+FfeVIpmGS9e9H+aHB74+PNLVwBRUFthvVhe1dmC+YJ41nvITv9Ya07be+H
+         j/sWodIHSua46yOqk7ayec62tbChDqVYO4XxeBc999Xi7C2xtAKc0t/So3qUeF+SPl3l
+         MQuwis3k0IhiZ/ExCwzou9jRJroOsa0/kMQqE=
+In-Reply-To: <20120223194209.20708.54480.stgit@bhelgaas.mtv.corp.google.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-pci@vger.kernel.org
