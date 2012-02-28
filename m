@@ -1,63 +1,41 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: alpha: futex regression bisected
-Date: Mon, 27 Feb 2012 19:48:28 +1300
-Message-ID: <4F4B273C.9080506@orcon.net.nz>
-References: <4F420256.2090600@orcon.net.nz> <4F4282CA.5010502@twiddle.net>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4F4282CA.5010502@twiddle.net>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Joe Perches <joe@perches.com>
+Subject: [PATCH trivial next 0/9] treewide: Use vsprintf extention %pf
+Date: Tue, 28 Feb 2012 10:49:29 -0800
+Message-ID: <cover.1330454853.git.joe@perches.com>
+Return-path: <linux-parisc-owner@vger.kernel.org>
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Richard Henderson <rth@twiddle.net>
-Cc: Michel Lespinasse <walken@google.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Matt Turner <mattst88@gmail.com>, Phil Carmody <ext-phil.2.carmody@nokia.com>
+Content-Transfer-Encoding: 7bit
+To: linux-parisc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, microblaze-uclinux@itee.uq.edu.au, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, devel@driverdev.osuosl.org
 
-On 21/02/12 06:28, Richard Henderson wrote:
-> On 02/20/12 00:20, Michael Cree wrote:
->> I have noticed some user space problems (pulseaudio crashes in pthread
->> code, glibc/nptl test suite failures, java compiler freezes on SMP alpha
->> systems) that arise when using a 2.6.39 or later kernel on Alpha.
->> Bisecting between 2.6.38 and 2.6.39 (using glibc/nptl test suite as
->> criterion for good/bad kernel) eventually leads to:
->>
->> 8d7718aa082aaf30a0b4989e1f04858952f941bc is the first bad commit
->> commit 8d7718aa082aaf30a0b4989e1f04858952f941bc
->> Author: Michel Lespinasse <walken@google.com>
->> Date:   Thu Mar 10 18:50:58 2011 -0800
->>
->>     futex: Sanitize futex ops argument types
->>
->>     Change futex_atomic_op_inuser and futex_atomic_cmpxchg_inatomic
->>     prototypes to use u32 types for the futex as this is the data type the
->>     futex core code uses all over the place.
-> 
-> 
-> futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
->                               u32 oldval, u32 newval)
-> ...
->         :       "r"(uaddr), "r"((long)oldval), "r"(newval)
-> 
-> 
-> There is no 32-bit compare instruction.  These are implemented by
-> consistently extending the values to a 64-bit type.  Since the
-> load instruction sign-extends, we want to sign-extend the other
-> quantity as well (despite the fact it's logically unsigned).
-> 
-> So:
-> 
-> -        :       "r"(uaddr), "r"((long)oldval), "r"(newval)
-> +        :       "r"(uaddr), "r"((long)(int)oldval), "r"(newval)
-> 
-> should do the trick.
+Emit the actual function name when possible
 
-Thanks, that fixes it.  Will you formally submit a patch with commit
-message or should I?
+Joe Perches (9):
+  sparc: Use vsprintf extention %pf with builtin_return_address
+  alpha: Use vsprintf extention %pf with builtin_return_address
+  arm: Use vsprintf extention %pf with builtin_return_address
+  microblaze: Use vsprintf extention %pf with builtin_return_address
+  powerpc: Use vsprintf extention %pf with builtin_return_address
+  parisc: Use vsprintf extention %pf with builtin_return_address
+  scsi: Use vsprintf extention %pf with builtin_return_address
+  staging: ramster: Use vsprintf extention %pf with builtin_return_address
+  gadget: Use vsprintf extention %pf with builtin_return_address
 
-You can have at least a Reviewed-by, or even an
-Acked-by: Phil Carmody <ext-phil.2.carmody@nokia.com>
-who correctly analysed the problem in response to when I suggested the
-fix on the debian-alpha email list without explanation.
+ arch/alpha/kernel/pci_iommu.c               |   20 ++++++++++----------
+ arch/arm/nwfpe/fpmodule.c                   |    2 +-
+ arch/microblaze/mm/pgtable.c                |    2 +-
+ arch/powerpc/mm/pgtable_32.c                |    2 +-
+ arch/sparc/kernel/ds.c                      |    2 +-
+ arch/sparc/mm/srmmu.c                       |    2 +-
+ drivers/parisc/superio.c                    |    2 +-
+ drivers/scsi/esp_scsi.c                     |    2 +-
+ drivers/staging/ramster/cluster/heartbeat.c |    4 ++--
+ drivers/usb/gadget/u_serial.c               |    2 +-
+ 10 files changed, 20 insertions(+), 20 deletions(-)
 
-Cheers
-Michael.
+-- 
+1.7.8.111.gad25c.dirty
+
