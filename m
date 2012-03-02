@@ -1,116 +1,54 @@
-From: Andrew Morton <akpm@linux-foundation.org>
+From: Michael Cree <mcree@orcon.net.nz>
 Subject: Re: alpha: futex regression bisected
-Date: Fri, 2 Mar 2012 14:36:15 -0800
-Message-ID: <20120302143615.2a272976.akpm@linux-foundation.org>
-References: <4F420256.2090600@orcon.net.nz>
-	<4F4282CA.5010502@twiddle.net>
-	<4F4B273C.9080506@orcon.net.nz>
+Date: Sat, 03 Mar 2012 12:40:24 +1300
+Message-ID: <4F515A68.7040602@orcon.net.nz>
+References: <4F420256.2090600@orcon.net.nz>	<4F4282CA.5010502@twiddle.net>	<4F4B273C.9080506@orcon.net.nz> <20120302143615.2a272976.akpm@linux-foundation.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <4F4B273C.9080506@orcon.net.nz>
+In-Reply-To: <20120302143615.2a272976.akpm@linux-foundation.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Michael Cree <mcree@orcon.net.nz>
+To: Andrew Morton <akpm@linux-foundation.org>
 Cc: Richard Henderson <rth@twiddle.net>, Michel Lespinasse <walken@google.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Matt Turner <mattst88@gmail.com>, Phil Carmody <ext-phil.2.carmody@nokia.com>
 
-On Mon, 27 Feb 2012 19:48:28 +1300
-Michael Cree <mcree@orcon.net.nz> wrote:
-
-> > There is no 32-bit compare instruction.  These are implemented by
-> > consistently extending the values to a 64-bit type.  Since the
-> > load instruction sign-extends, we want to sign-extend the other
-> > quantity as well (despite the fact it's logically unsigned).
-> > 
-> > So:
-> > 
-> > -        :       "r"(uaddr), "r"((long)oldval), "r"(newval)
-> > +        :       "r"(uaddr), "r"((long)(int)oldval), "r"(newval)
-> > 
-> > should do the trick.
+On 03/03/12 11:36, Andrew Morton wrote:
+> On Mon, 27 Feb 2012 19:48:28 +1300
+> Michael Cree <mcree@orcon.net.nz> wrote:
 > 
-> Thanks, that fixes it.  Will you formally submit a patch with commit
-> message or should I?
+>>> There is no 32-bit compare instruction.  These are implemented by
+>>> consistently extending the values to a 64-bit type.  Since the
+>>> load instruction sign-extends, we want to sign-extend the other
+>>> quantity as well (despite the fact it's logically unsigned).
+>>>
+>>> So:
+>>>
+>>> -        :       "r"(uaddr), "r"((long)oldval), "r"(newval)
+>>> +        :       "r"(uaddr), "r"((long)(int)oldval), "r"(newval)
+>>>
+>>> should do the trick.
+>>
+>> Thanks, that fixes it.  Will you formally submit a patch with commit
+>> message or should I?
+>>
+>> You can have at least a Reviewed-by, or even an
+>> Acked-by: Phil Carmody <ext-phil.2.carmody@nokia.com>
+>> who correctly analysed the problem in response to when I suggested the
+>> fix on the debian-alpha email list without explanation.
 > 
-> You can have at least a Reviewed-by, or even an
-> Acked-by: Phil Carmody <ext-phil.2.carmody@nokia.com>
-> who correctly analysed the problem in response to when I suggested the
-> fix on the debian-alpha email list without explanation.
+> Seems that I am an alpha hacker!  This?
+> 
+> From: Andrew Morton <akpm@linux-foundation.org>
+> Subject: alpha: fix 32/64-bit bug in futex support
 
-Seems that I am an alpha hacker!  This?
+Thanks for attending to this!  Matt advises that he is still working on
+getting his alpha-next queue back into action since the big kernel.org
+hack so you picking it up is just the ticket.
 
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: alpha: fix 32/64-bit bug in futex support
+Just to note that the futex fix fixes the glibc test suite failures and
+the pulseaudio related crashes, but it does not fix the java compiiler
+lockups that I was (and are still) observing. That is some other problem.
 
-Michael Cree said:
-
-: : I have noticed some user space problems (pulseaudio crashes in pthread
-: : code, glibc/nptl test suite failures, java compiler freezes on SMP alpha
-: : systems) that arise when using a 2.6.39 or later kernel on Alpha.
-: : Bisecting between 2.6.38 and 2.6.39 (using glibc/nptl test suite as
-: : criterion for good/bad kernel) eventually leads to:
-: : 
-: : 8d7718aa082aaf30a0b4989e1f04858952f941bc is the first bad commit
-: : commit 8d7718aa082aaf30a0b4989e1f04858952f941bc
-: : Author: Michel Lespinasse <walken@google.com>
-: : Date:   Thu Mar 10 18:50:58 2011 -0800
-: : 
-: :     futex: Sanitize futex ops argument types
-: : 
-: :     Change futex_atomic_op_inuser and futex_atomic_cmpxchg_inatomic
-: :     prototypes to use u32 types for the futex as this is the data type the
-: :     futex core code uses all over the place.
-: : 
-: : Looking at the commit I see there is a change of the uaddr argument in
-: : the Alpha architecture specific code for futexes from int to u32, but I
-: : don't see why this should cause a problem.
-
-Richard Henderson said:
-
-: futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
-:                               u32 oldval, u32 newval)
-: ...
-:         :       "r"(uaddr), "r"((long)oldval), "r"(newval)
-: 
-: 
-: There is no 32-bit compare instruction.  These are implemented by
-: consistently extending the values to a 64-bit type.  Since the
-: load instruction sign-extends, we want to sign-extend the other
-: quantity as well (despite the fact it's logically unsigned).
-: 
-: So:
-: 
-: -        :       "r"(uaddr), "r"((long)oldval), "r"(newval)
-: +        :       "r"(uaddr), "r"((long)(int)oldval), "r"(newval)
-: 
-: should do the trick.
-
-Reported-by: Michael Cree <mcree@orcon.net.nz>
-Tested-by: Michael Cree <mcree@orcon.net.nz>
-Acked-by: Phil Carmody <ext-phil.2.carmody@nokia.com>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Michel Lespinasse <walken@google.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- arch/alpha/include/asm/futex.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff -puN arch/alpha/include/asm/futex.h~alpha-fix-32-64-bit-bug-in-futex-support arch/alpha/include/asm/futex.h
---- a/arch/alpha/include/asm/futex.h~alpha-fix-32-64-bit-bug-in-futex-support
-+++ a/arch/alpha/include/asm/futex.h
-@@ -108,7 +108,7 @@ futex_atomic_cmpxchg_inatomic(u32 *uval,
- 	"	lda	$31,3b-2b(%0)\n"
- 	"	.previous\n"
- 	:	"+r"(ret), "=&r"(prev), "=&r"(cmp)
--	:	"r"(uaddr), "r"((long)oldval), "r"(newval)
-+	:	"r"(uaddr), "r"((long)(int)oldval), "r"(newval)
- 	:	"memory");
- 
- 	*uval = prev;
-_
-
+Cheers
+Michael.
