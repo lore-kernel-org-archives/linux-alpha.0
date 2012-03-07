@@ -1,7 +1,7 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v3 03/34] alpha/PCI: replace pci_probe_only with pci_flags
-Date: Wed, 07 Mar 2012 15:32:19 -0700
-Message-ID: <20120307223219.25669.83793.stgit@bhelgaas.mtv.corp.google.com>
+Subject: [PATCH v3 19/34] alpha/PCI: get rid of device resource fixups
+Date: Wed, 07 Mar 2012 15:33:41 -0700
+Message-ID: <20120307223341.25669.45002.stgit@bhelgaas.mtv.corp.google.com>
 References: <20120307222436.25669.52282.stgit@bhelgaas.mtv.corp.google.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -10,13 +10,13 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20120113;
         h=subject:to:from:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-type:content-transfer-encoding;
-        bh=z9ytGqFO1JVknJx9D9/Nn4pIrKTQYkxn8dy3FdnbQHk=;
-        b=YEqnLTZ5tR/UAMCiLmgg0B/mT37VUYis0P3k2KTguSKTLh223vVKRFUZZRLRoc566v
-         XpmtxNkDRLXnEAfCBbzaU4qcDBF4tqdkL25Y3igGt0M3UmcLziTLKzpAGOASWecBEOmz
-         nTlpD0+TDBAlVtSYeKgsBsURgQ9MipBA2we/UrPC6WkFqK6epSs18fDetXGHqTOJn8MF
-         MWAyHiyAbFnRWUjhH+Yl7WuY7D1incuT4wdb9nY9oLwyz3dn/tKCLu0hggfzdno3m9zW
-         bFzhdZH4umpzJv1dSq6aIOPy6ZR+BxgGSQWHKsrZaR3rFaY1Ct1Lu1lNnoER1GUMiGVp
-         jbmw==
+        bh=WcAodLNoJyC/YIKHloclE37TxymHqvIpF7GoefmlI1Q=;
+        b=V+uMPiMEnr1kVQ1fxG0ksY0dolwwtA7lr0bx7KLEEtelmsBtu89FT0dHh/A0d7rw2z
+         f1l5mdJeCPBQaZXjEztv2J3MBc9csodvwfMUgOJ+Qis/G8/YvoLyQI1PWqgpVVty4yN0
+         PJJRAAZvoys4QiSjfcM79x0Uusmk26SanAhFw+7FNsKMCCBAuTVVkzaNEpsiXOTgDAAS
+         M4kuCsrX5FstST8WKSZSX7XdlDTytNoaKFKD3Bm9iz3Bvk0/VIM9zjGmYV9ZvOJ2Gt+7
+         P8XOdTJqF9Uvl+KO9yFBNZdN/BLosXPjJN9L53ZL2ZWwfy4Sxx+dhvYx4iFW8s0QvXki
+         w0XA==
 In-Reply-To: <20120307222436.25669.52282.stgit@bhelgaas.mtv.corp.google.com>
 Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,128 +24,137 @@ Content-Type: text/plain; charset="us-ascii"
 To: Jesse Barnes <jbarnes@virtuousgeek.org>
 Cc: linux-arch@vger.kernel.org, linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org
 
-Some architectures (alpha, mips, powerpc) have an arch-specific
-"pci_probe_only" flag.  Others use PCI_PROBE_ONLY in pci_flags for
-the same purpose.  This moves alpha to the pci_flags approach so
-generic code can use the same test across all architectures.
+Tell the PCI core about host bridge address translation so it can take
+care of bus-to-resource conversion for us.
 
 CC: linux-alpha@vger.kernel.org
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- arch/alpha/include/asm/pci.h   |    1 +
- arch/alpha/kernel/pci.c        |   15 +++++++--------
- arch/alpha/kernel/pci_impl.h   |    3 ---
- arch/alpha/kernel/sys_marvel.c |    3 ++-
- arch/alpha/kernel/sys_titan.c  |    3 ++-
- 5 files changed, 12 insertions(+), 13 deletions(-)
+ arch/alpha/include/asm/pci.h |    6 +---
+ arch/alpha/kernel/pci.c      |   71 ++----------------------------------------
+ 2 files changed, 5 insertions(+), 72 deletions(-)
 
 diff --git a/arch/alpha/include/asm/pci.h b/arch/alpha/include/asm/pci.h
-index 28d0497..6a3fe07 100644
+index 6a3fe07..121c797 100644
 --- a/arch/alpha/include/asm/pci.h
 +++ b/arch/alpha/include/asm/pci.h
-@@ -7,6 +7,7 @@
- #include <linux/dma-mapping.h>
- #include <asm/scatterlist.h>
- #include <asm/machvec.h>
-+#include <asm-generic/pci-bridge.h>
+@@ -100,11 +100,7 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
+ 	return channel ? 15 : 14;
+ }
  
- /*
-  * The following structure is used to manage multiple PCI busses.
+-extern void pcibios_resource_to_bus(struct pci_dev *, struct pci_bus_region *,
+-				    struct resource *);
+-
+-extern void pcibios_bus_to_resource(struct pci_dev *dev, struct resource *res,
+-				    struct pci_bus_region *region);
++#define ARCH_HAS_GENERIC_PCI_OFFSETS
+ 
+ #define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
+ 
 diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
-index 8c723c1..3a5cdf2 100644
+index 3a5cdf2..1a62963 100644
 --- a/arch/alpha/kernel/pci.c
 +++ b/arch/alpha/kernel/pci.c
-@@ -43,12 +43,10 @@ const char *const pci_mem_names[] = {
+@@ -251,32 +251,6 @@ pci_restore_srm_config(void)
+ #endif
  
- const char pci_hae0_name[] = "HAE0";
- 
--/* Indicate whether we respect the PCI setup left by console. */
- /*
-- * Make this long-lived  so that we know when shutting down
-- * whether we probed only or not.
-+ * If PCI_PROBE_ONLY in pci_flags is set, we don't change any PCI resource
-+ * assignments.
-  */
--int pci_probe_only;
- 
- /*
-  * The PCI controller list.
-@@ -215,7 +213,7 @@ pdev_save_srm_config(struct pci_dev *dev)
- 	struct pdev_srm_saved_conf *tmp;
- 	static int printed = 0;
- 
--	if (!alpha_using_srm || pci_probe_only)
-+	if (!alpha_using_srm || pci_has_flag(PCI_PROBE_ONLY))
- 		return;
- 
- 	if (!printed) {
-@@ -242,7 +240,7 @@ pci_restore_srm_config(void)
- 	struct pdev_srm_saved_conf *tmp;
- 
- 	/* No need to restore if probed only. */
--	if (pci_probe_only)
-+	if (pci_has_flag(PCI_PROBE_ONLY))
- 		return;
- 
- 	/* Restore SRM config. */
-@@ -283,7 +281,7 @@ pcibios_fixup_bus(struct pci_bus *bus)
+ void __devinit
+-pcibios_fixup_resource(struct resource *res, struct resource *root)
+-{
+-	res->start += root->start;
+-	res->end += root->start;
+-}
+-
+-void __devinit
+-pcibios_fixup_device_resources(struct pci_dev *dev, struct pci_bus *bus)
+-{
+-	/* Update device resources.  */
+-	struct pci_controller *hose = (struct pci_controller *)bus->sysdata;
+-	int i;
+-
+-	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+-		if (!dev->resource[i].start)
+-			continue;
+-		if (dev->resource[i].flags & IORESOURCE_IO)
+-			pcibios_fixup_resource(&dev->resource[i],
+-					       hose->io_space);
+-		else if (dev->resource[i].flags & IORESOURCE_MEM)
+-			pcibios_fixup_resource(&dev->resource[i],
+-					       hose->mem_space);
+-	}
+-}
+-
+-void __devinit
+ pcibios_fixup_bus(struct pci_bus *bus)
  {
  	struct pci_dev *dev = bus->self;
- 
--	if (pci_probe_only && dev &&
-+	if (pci_has_flag(PCI_PROBE_ONLY) && dev &&
+@@ -284,13 +258,10 @@ pcibios_fixup_bus(struct pci_bus *bus)
+ 	if (pci_has_flag(PCI_PROBE_ONLY) && dev &&
   		   (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
   		pci_read_bridge_bases(bus);
-  		pcibios_fixup_device_resources(dev, bus);
-@@ -374,7 +372,8 @@ pcibios_claim_one_bus(struct pci_bus *b)
+- 		pcibios_fixup_device_resources(dev, bus);
+ 	} 
  
- 			if (r->parent || !r->start || !r->flags)
- 				continue;
--			if (pci_probe_only || (r->flags & IORESOURCE_PCI_FIXED))
-+			if (pci_has_flag(PCI_PROBE_ONLY) ||
-+			    (r->flags & IORESOURCE_PCI_FIXED))
- 				pci_claim_resource(dev, i);
- 		}
+ 	list_for_each_entry(dev, &bus->devices, bus_list) {
+ 		pdev_save_srm_config(dev);
+-		if ((dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
+-			pcibios_fixup_device_resources(dev, bus);
  	}
-diff --git a/arch/alpha/kernel/pci_impl.h b/arch/alpha/kernel/pci_impl.h
-index 85457b2..2b0ac42 100644
---- a/arch/alpha/kernel/pci_impl.h
-+++ b/arch/alpha/kernel/pci_impl.h
-@@ -173,9 +173,6 @@ extern void pci_restore_srm_config(void);
- extern struct pci_controller *hose_head, **hose_tail;
- extern struct pci_controller *pci_isa_hose;
+ }
  
--/* Indicate that we trust the console to configure things properly.  */
--extern int pci_probe_only;
+@@ -300,42 +271,6 @@ pcibios_update_irq(struct pci_dev *dev, int irq)
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+ }
+ 
+-void
+-pcibios_resource_to_bus(struct pci_dev *dev, struct pci_bus_region *region,
+-			 struct resource *res)
+-{
+-	struct pci_controller *hose = (struct pci_controller *)dev->sysdata;
+-	unsigned long offset = 0;
 -
- extern unsigned long alpha_agpgart_size;
+-	if (res->flags & IORESOURCE_IO)
+-		offset = hose->io_space->start;
+-	else if (res->flags & IORESOURCE_MEM)
+-		offset = hose->mem_space->start;
+-
+-	region->start = res->start - offset;
+-	region->end = res->end - offset;
+-}
+-
+-void pcibios_bus_to_resource(struct pci_dev *dev, struct resource *res,
+-			     struct pci_bus_region *region)
+-{
+-	struct pci_controller *hose = (struct pci_controller *)dev->sysdata;
+-	unsigned long offset = 0;
+-
+-	if (res->flags & IORESOURCE_IO)
+-		offset = hose->io_space->start;
+-	else if (res->flags & IORESOURCE_MEM)
+-		offset = hose->mem_space->start;
+-
+-	res->start = region->start + offset;
+-	res->end = region->end + offset;
+-}
+-
+-#ifdef CONFIG_HOTPLUG
+-EXPORT_SYMBOL(pcibios_resource_to_bus);
+-EXPORT_SYMBOL(pcibios_bus_to_resource);
+-#endif
+-
+ int
+ pcibios_enable_device(struct pci_dev *dev, int mask)
+ {
+@@ -415,8 +350,10 @@ common_init_pci(void)
+ 			hose->mem_space->end = end;
  
- extern void common_init_pci(void);
-diff --git a/arch/alpha/kernel/sys_marvel.c b/arch/alpha/kernel/sys_marvel.c
-index 95cfc83..fc8b125 100644
---- a/arch/alpha/kernel/sys_marvel.c
-+++ b/arch/alpha/kernel/sys_marvel.c
-@@ -384,7 +384,8 @@ marvel_init_pci(void)
+ 		INIT_LIST_HEAD(&resources);
+-		pci_add_resource(&resources, hose->io_space);
+-		pci_add_resource(&resources, hose->mem_space);
++		pci_add_resource_offset(&resources, hose->io_space,
++					hose->io_space->start);
++		pci_add_resource_offset(&resources, hose->mem_space,
++					hose->mem_space->start);
  
- 	marvel_register_error_handlers();
- 
--	pci_probe_only = 1;
-+	/* Indicate that we trust the console to configure things properly */
-+	pci_set_flags(PCI_PROBE_ONLY);
- 	common_init_pci();
- 	locate_and_init_vga(NULL);
- 
-diff --git a/arch/alpha/kernel/sys_titan.c b/arch/alpha/kernel/sys_titan.c
-index f47b30a..b8eafa0 100644
---- a/arch/alpha/kernel/sys_titan.c
-+++ b/arch/alpha/kernel/sys_titan.c
-@@ -331,7 +331,8 @@ titan_init_pci(void)
-  	 */
-  	titan_late_init();
-  
--	pci_probe_only = 1;
-+	/* Indicate that we trust the console to configure things properly */
-+	pci_set_flags(PCI_PROBE_ONLY);
- 	common_init_pci();
- 	SMC669_Init(0);
- 	locate_and_init_vga(NULL);
+ 		bus = pci_scan_root_bus(NULL, next_busno, alpha_mv.pci_ops,
+ 					hose, &resources);
