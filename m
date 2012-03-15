@@ -1,17 +1,17 @@
 From: David Howells <dhowells@redhat.com>
-Subject: [PATCH 02/35] Disintegrate asm/system.h for Alpha [ver #2]
-Date: Mon, 12 Mar 2012 23:36:24 +0000
-Message-ID: <20120312233624.13888.28148.stgit@warthog.procyon.org.uk>
-References: <20120312233602.13888.27659.stgit@warthog.procyon.org.uk>
+Subject: [PATCH 03/38] Disintegrate asm/system.h for Alpha [ver #3]
+Date: Thu, 15 Mar 2012 20:55:43 +0000
+Message-ID: <20120315205543.28759.68109.stgit@warthog.procyon.org.uk>
+References: <20120315205514.28759.58969.stgit@warthog.procyon.org.uk>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20120312233602.13888.27659.stgit@warthog.procyon.org.uk>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120315205514.28759.58969.stgit@warthog.procyon.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: paul.gortmaker@windriver.com, hpa@zytor.com
-Cc: torvalds@linux-foundation.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, arnd@arndb.de, David Howells <dhowells@redhat.com>, linux-alpha@vger.kernel.org
+To: paul.gortmaker@windriver.com
+Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, arnd@arndb.de, David Howells <dhowells@redhat.com>, linux-alpha@vger.kernel.org
 
 Disintegrate asm/system.h for Alpha.
 
@@ -1592,4 +1592,3 @@ index 5b9d178..34a57a1 100644
  
  #include "op_impl.h"
  
-
