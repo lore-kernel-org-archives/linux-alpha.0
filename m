@@ -1,49 +1,72 @@
-From: richard -rw- weinberger <richard.weinberger@gmail.com>
-Subject: Re: [PATCH 0/20] mmu: arch/mm: Port OOM changes to arch page fault handlers.
-Date: Tue, 20 Mar 2012 14:36:06 +0100
-Message-ID: <CAFLxGvyVbDndbu_2ZbUBwbrJCq+d4rRZW0ROxTpQxAvetRm=0w@mail.gmail.com>
-References: <CAFPAmTQs9dOpQTaXU=6Or66YU+my_CnPw33TE4h++YArBNa38g@mail.gmail.com>
-	<CAFLxGvwW2XcYSoidZZ0XF_a-pH3SwONqS+hCnpGUecQ__DLa_g@mail.gmail.com>
-	<CAFPAmTSzV9mrkbP68p4PA-0i0o2Hz7JiBY=0A0V_myJEzWubjQ@mail.gmail.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: RE: [GIT PULL] DMA-mapping framework updates for 3.4
+Date: Wed, 21 Mar 2012 14:43:46 +0100
+Message-ID: <079801cd0768$a3623d10$ea26b730$%szyprowski@samsung.com>
+References: <1332228283-29077-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Return-path: <owner-linux-mm@kvack.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
-         :cc:content-type;
-        bh=z8vsK81CygBIuHX16jyNJHAJj27uKl4lPGrdmm5sdCc=;
-        b=Un0MNinOAKV7X1eDc/Osjv1V4bvQULSASOrucHPQuSNXckMJDmLUc9OAZDnX2JtepB
-         tRLcQh2wiwCQ6EUZy6hToHExuu5QEV8A+rR5o87jRqlRjGJHeNncM9A/SpNsZ6H/3BDP
-         OWJxJEj0vFXQND6mMN1GoUlTjIWPK8238QgKZpsanOaphnLZebUVgCOSS1F4K09epa7T
-         vPJyekeVu8fr1jWiaGfonnXUGbIv7mw1mYa+n8Oy8ytgS6h4HAIroqSGkEs+g13xDXN4
-         wxR9VYXfIq11oa8Lb608XgV97bOeORf18J9RfZgHJeijIZ80Gp+KIZqfb4bWeUHpWkwD
-         wqfg==
-In-Reply-To: <CAFPAmTSzV9mrkbP68p4PA-0i0o2Hz7JiBY=0A0V_myJEzWubjQ@mail.gmail.com>
-Sender: owner-linux-mm@kvack.org
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-reply-to: <1332228283-29077-1-git-send-email-m.szyprowski@samsung.com>
+Content-language: pl
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Kautuk Consul <consul.kautuk@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux@lists.openrisc.net, linux-am33-list@redhat.com, microblaze-uclinux@itee.uq.edu.au, linux-m68k@lists.linux-m68k.org, linux-m32r-ja@ml.linux-m32r.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-cris-kernel@axis.com, linux-sh@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-mm@kvack.org, linux-kernel@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, 'Linus Torvalds' <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Thomas Gleixner' <tglx@linutronix.de>, 'Andrew Morton' <akpm@linux-foundation.org>, 'Arnd Bergmann' <arnd@arndb.de>, 'FUJITA Tomonori' <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, 'Jonathan Corbet' <corbet@lwn.net>, 'Kyungmin Park' <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>
 
-On Tue, Mar 20, 2012 at 2:34 PM, Kautuk Consul <consul.kautuk@gmail.com> wrote:
->>
->> What about arch/um/?
->> Does UML not need this change?
->
-> Oh yes, extremely sorry I accidentally missed that one out.
-> Mind if I send it separately ?
+Hello,
 
-No problem.
-handle_page_fault() is the function you want to patch. :)
+On Tuesday, March 20, 2012 8:25 AM Marek Szyprowski wrote:
 
+> Hi Linus,
+> 
+> Please pull the dma-mapping framework updates for v3.4 since commit
+> c16fa4f2ad19908a47c63d8fa436a1178438c7e7:
+> 
+>   Linux 3.3
+> 
+> with the top-most commit e749a9f707f1102735e02338fa564be86be3bb69
+> 
+>   common: DMA-mapping: add NON-CONSISTENT attribute
+> 
+> from the git repository at:
+> 
+>   git://git.infradead.org/users/kmpark/linux-samsung dma-mapping-next
+> 
+> Those patches introduce a new alloc method (with support for memory
+> attributes) in dma_map_ops structure, which will later replace
+> dma_alloc_coherent and dma_alloc_writecombine functions.
+ 
+I've been pointed out that this summary is quite short and misses the main
+rationale for the proposed changes.
+
+A few limitations have been identified in the current dma-mapping design and 
+its implementations for various architectures. There exist more than one function
+for allocating and freeing the buffers: currently these 3 are used dma_{alloc,
+free}_coherent, dma_{alloc,free}_writecombine, dma_{alloc,free}_noncoherent.
+
+For most of the systems these calls are almost equivalent and can be interchanged.
+For others, especially the truly non-coherent ones (like ARM), the difference can
+be easily noticed in overall driver performance. Sadly not all architectures 
+provide implementations for all of them, so the drivers might need to be adapted 
+and cannot be easily shared between different architectures. The provided patches
+unify all these functions and hide the differences under the already existing
+dma attributes concept. The thread with more references is available here: 
+http://www.spinics.net/lists/linux-sh/msg09777.html
+
+These patches are also a prerequisite for unifying DMA-mapping implementation
+on ARM architecture with the common one provided by dma_map_ops structure and 
+extending it with IOMMU support. More information is available in the following 
+thread: http://thread.gmane.org/gmane.linux.kernel.cross-arch/12819
+
+More works on dma-mapping framework are planned, especially in the area of buffer
+sharing and managing the shared mappings (together with the recently introduced 
+dma_buf interface: commit d15bd7ee445d0702ad801fdaece348fdb79e6581 "dma-buf: 
+Introduce dma buffer sharing mechanism" ).
+
+Best regards
 -- 
-Thanks,
-//richard
+Marek Szyprowski
+Samsung Poland R&D Center
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+
