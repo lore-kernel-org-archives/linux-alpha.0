@@ -1,72 +1,51 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: RE: [GIT PULL] DMA-mapping framework updates for 3.4
-Date: Wed, 21 Mar 2012 14:43:46 +0100
-Message-ID: <079801cd0768$a3623d10$ea26b730$%szyprowski@samsung.com>
-References: <1332228283-29077-1-git-send-email-m.szyprowski@samsung.com>
+From: Kautuk Consul <consul.kautuk@gmail.com>
+Subject: Re: [PATCH 02/20] alpha/mm/fault.c: Port OOM changes to do_page_fault
+Date: Fri, 23 Mar 2012 12:47:38 -0400
+Message-ID: <CAFPAmTTwzhW-jFKhJ4_wXxb33c-MxCBGYgCTog4zasd2_G2i-w@mail.gmail.com>
+References: <1332249538-2610-1-git-send-email-consul.kautuk@gmail.com>
+	<CAFPAmTTSrDkDLHoh0NQ8iAG-=vBXW3UwhWAXKfBa_Nk0gj07Xw@mail.gmail.com>
+	<CAEdQ38G5VVoPKr1ayMZrQ2ba7xa9ofnY+TK4SUqOb8kr5fBsMQ@mail.gmail.com>
+	<CAFPAmTQfbNv3A-j9OCRswj-VtB79ZLCSDdMC1KqBQdrVO6K54A@mail.gmail.com>
+	<CAEdQ38GOZi7t5BraBMhETuf=cDBVW7txkDH6guC0kZVXyqG04A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7BIT
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-reply-to: <1332228283-29077-1-git-send-email-m.szyprowski@samsung.com>
-Content-language: pl
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
+         :cc:content-type;
+        bh=KonA/EVu9AWSXKbO7Xb2LCjIwHSU/NYE3/4seSP+Trc=;
+        b=qCnztfQVryQXyK3oTRz6LNjZ9C4jg5uhquJhgiU7Tfc7fg1YK0E2/WgJklygwhcYpR
+         HctUCqkZ5U1+v7N+32hWrCoEoudUYnS6zwZpZ6NA9OaGOMGinEDJ0FlaSJftVU7IEUvA
+         YXhzw+e2uwFY7JP4tEiChb2zsZQHFMVKHwPWVQMBi3Ga9/wa5/h+cJxC8A1kJ3EXRJme
+         QWeRVebtNAqtKwUzPeHKT9QhiPq6QQi7RCYcLFLGzUo2fQAz4UbJ7iokZAySz3Va/wi7
+         BZHZHBreoy2cY5MtrsdEnp3EzGvqGwEthSYQtPMHQDmYsizZqj5SzyJglXVAh/uneavf
+         k2xg==
+In-Reply-To: <CAEdQ38GOZi7t5BraBMhETuf=cDBVW7txkDH6guC0kZVXyqG04A@mail.gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Marek Szyprowski <m.szyprowski@samsung.com>, 'Linus Torvalds' <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Thomas Gleixner' <tglx@linutronix.de>, 'Andrew Morton' <akpm@linux-foundation.org>, 'Arnd Bergmann' <arnd@arndb.de>, 'FUJITA Tomonori' <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, 'Jonathan Corbet' <corbet@lwn.net>, 'Kyungmin Park' <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>
+Content-Transfer-Encoding: 7bit
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Kautuk Consul <consul.kautuk@gmail.com>, "Mohd. Faris" <mohdfarisq2010@gmail.com>
 
-Hello,
-
-On Tuesday, March 20, 2012 8:25 AM Marek Szyprowski wrote:
-
-> Hi Linus,
-> 
-> Please pull the dma-mapping framework updates for v3.4 since commit
-> c16fa4f2ad19908a47c63d8fa436a1178438c7e7:
-> 
->   Linux 3.3
-> 
-> with the top-most commit e749a9f707f1102735e02338fa564be86be3bb69
-> 
->   common: DMA-mapping: add NON-CONSISTENT attribute
-> 
-> from the git repository at:
-> 
->   git://git.infradead.org/users/kmpark/linux-samsung dma-mapping-next
-> 
-> Those patches introduce a new alloc method (with support for memory
-> attributes) in dma_map_ops structure, which will later replace
-> dma_alloc_coherent and dma_alloc_writecombine functions.
- 
-I've been pointed out that this summary is quite short and misses the main
-rationale for the proposed changes.
-
-A few limitations have been identified in the current dma-mapping design and 
-its implementations for various architectures. There exist more than one function
-for allocating and freeing the buffers: currently these 3 are used dma_{alloc,
-free}_coherent, dma_{alloc,free}_writecombine, dma_{alloc,free}_noncoherent.
-
-For most of the systems these calls are almost equivalent and can be interchanged.
-For others, especially the truly non-coherent ones (like ARM), the difference can
-be easily noticed in overall driver performance. Sadly not all architectures 
-provide implementations for all of them, so the drivers might need to be adapted 
-and cannot be easily shared between different architectures. The provided patches
-unify all these functions and hide the differences under the already existing
-dma attributes concept. The thread with more references is available here: 
-http://www.spinics.net/lists/linux-sh/msg09777.html
-
-These patches are also a prerequisite for unifying DMA-mapping implementation
-on ARM architecture with the common one provided by dma_map_ops structure and 
-extending it with IOMMU support. More information is available in the following 
-thread: http://thread.gmane.org/gmane.linux.kernel.cross-arch/12819
-
-More works on dma-mapping framework are planned, especially in the area of buffer
-sharing and managing the shared mappings (together with the recently introduced 
-dma_buf interface: commit d15bd7ee445d0702ad801fdaece348fdb79e6581 "dma-buf: 
-Introduce dma buffer sharing mechanism" ).
-
-Best regards
--- 
-Marek Szyprowski
-Samsung Poland R&D Center
+Hi Andrew,
 
 
+On Fri, Mar 23, 2012 at 12:40 PM, Matt Turner <mattst88@gmail.com> wrote:
+> On Fri, Mar 23, 2012 at 12:33 PM, Kautuk Consul <consul.kautuk@gmail.com> wrote:
+>>>> Can I improve this patch in any way ?
+>>>
+>>> Sorry, I just don't have time. I imagine that all these patches are
+>>> going upstream through the same tree, so feel free to commit this
+>>> patch with the rest. If there's a problem, we'll notice it later.
+>>>
+>>
+>> Sorry, I'm quite new to this.
+>> What do you mean by : "feel free to commit this patch with the rest" ?
+>>
+>> Does this mean I request someone on the list (like akpm) to include
+>> this patch ?
+>
+> Yes, exactly. :)
+
+Can you please include this patch into linux-next whenever it is OK with you ?
