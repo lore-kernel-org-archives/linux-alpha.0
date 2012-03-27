@@ -1,98 +1,56 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: RE: [GIT PULL] DMA-mapping framework updates for 3.4
-Date: Tue, 27 Mar 2012 11:59:34 +0200
-Message-ID: <007101cd0c00$4ff08af0$efd1a0d0$%szyprowski@samsung.com>
-References: <1332228283-29077-1-git-send-email-m.szyprowski@samsung.com>
- <CA+55aFy9oxMrfm-+deMqV=XnFOa98aKXqW+8PR-P-zOARtC2BQ@mail.gmail.com>
+Subject: [PATCHv2 01/14] common: dma-mapping: introduce alloc_attrs and
+ free_attrs methods
+Date: Tue, 27 Mar 2012 15:42:35 +0200
+Message-ID: <1332855768-32583-2-git-send-email-m.szyprowski@samsung.com>
+References: <1332855768-32583-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
 Return-path: <owner-linux-mm@kvack.org>
-In-reply-to: <CA+55aFy9oxMrfm-+deMqV=XnFOa98aKXqW+8PR-P-zOARtC2BQ@mail.gmail.com>
-Content-language: pl
+In-reply-to: <1332855768-32583-1-git-send-email-m.szyprowski@samsung.com>
 Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: 'Linus Torvalds' <torvalds@linux-foundation.org>, 'Dave Airlie' <airlied@linux.ie>
-Cc: linux-kernel@vger.kernel.org, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Thomas Gleixner' <tglx@linutronix.de>, 'Andrew Morton' <akpm@linux-foundation.org>, 'Arnd Bergmann' <arnd@arndb.de>, 'FUJITA Tomonori' <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, 'Jonathan Corbet' <corbet@lwn.net>, 'Kyungmin Park' <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>
+Content-Type: TEXT/PLAIN; charset="us-ascii"
+To: linux-kernel@vger.kernel.org
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Stephen Rothwell <sfr@canb.auug.org.au>, FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, Jonathan Corbet <corbet@lwn.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Kevin Cernekee <cernekee@gmail.com>, Dezhong Diao <dediao@cisco.com>, Richard Kuo <rkuo@codeaurora.or>
 
-Hi Linus,
+Introduce new generic alloc and free methods with attributes argument.
 
-On Friday, March 23, 2012 10:36 PM Linus Torvalds wrote:
+Existing alloc_coherent and free_coherent can be implemented on top of the
+new calls with NULL attributes argument. Later also dma_alloc_non_coherent
+can be implemented using DMA_ATTR_NONCOHERENT attribute as well as
+dma_alloc_writecombine with separate DMA_ATTR_WRITECOMBINE attribute.
 
-> On Tue, Mar 20, 2012 at 12:24 AM, Marek Szyprowski
-> <m.szyprowski@samsung.com> wrote:
-> >
-> > =A0git://git.infradead.org/users/kmpark/linux-samsung =
-dma-mapping-next
-> >
-> > Those patches introduce a new alloc method (with support for memory
-> > attributes) in dma_map_ops structure, which will later replace
-> > dma_alloc_coherent and dma_alloc_writecombine functions.
->=20
-> So I'm quite unhappy with these patches.
->=20
-> Here's just the few problems I saw from some *very* quick look-through
-> of the git tree:
->=20
->  - I'm not seeing ack's from the architecture maintainers for the
-> patches that change some architecture.
+This way the drivers will get more generic, platform independent way of
+allocating dma buffers with specific parameters.
 
-Ok, I've asked personally each respective maintainer for an ack or=20
-comments. Before I've sent my pull request there were only a few =
-comments
-on the mailing lists, but this topic have been discussed at ELC-E in =
-Prague
-and Linaro Memory-management summit in Budapest (May 2011).
-=20
->  - Even more importantly, what I really want is acks and comments from
-> the people who are expected to *use* this.
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+Reviewed-by: David Gibson <david@gibson.dropbear.ud.au>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+---
+ include/linux/dma-mapping.h |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
 
-The plan is to use it as a base for further cleanup in the dma-mapping=20
-implementations, especially on ARM architecture. The changes are =
-designed
-in such a way to keep compatibility with the existing users of the API.=20
-ARM will be the first architecture which will use the new attributes.=20
-The main clients for this new API will be mainly multimedia drivers =
-(v4l2,
-drm) and dma_buf buffer sharing. The advantage of this approach is the=20
-fact that the same drivers can be used on other architectures without =
-any
-changes in the dma calls. The attributes which are not supported by the
-architecture will be simply ignored.
-
->  - it looks like patches break compilation half-way through the
-> series. Just one example I noticed: the "x86 adaptation" patch changes
-> the functions in lib/swiotlb.c, but afaik ia64 *also* uses those. So
-> now ia64 is broken until a couple of patches later. I suspect there
-> are other examples like that.
-
-Ok, I missed this and I will fix this issue asap.
-
->  - the sign-off chains are odd. What happened there? Several patches
-> are signed off by Kyungmin Park, but he doesn't seem to be "in the
-> chain" at all. Whazzup? (*)
-
-That was caused by our internal flow of the patches, but I see that it=20
-made only a lot of confusion. I got my own git repository at=20
-git.linaro.org and I will resolve these sign-off issues correctly there.
-
->  - Finally, how/why are "dma attributes" different from the per-device
-> dma limits ("device_dma_parameters")
-
-Device dma parameters are global for all dma mapping operations for the=20
-specified device, while dma attributes can be set for each allocation or
-mapping call. Dma attributes are mainly used to provide some hints to =
-the
-dma mapping core, which might improve speed/performance/throughput for
-some particular sw&hw architectures. Unsupported attributes are ignored,
-so the in the worst case a driver gets coherent mapping.
-
-Best regards
---=20
-Marek Szyprowski
-Samsung Poland R&D Center
-
-
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index e13117c..8cc7f95 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -13,6 +13,12 @@ struct dma_map_ops {
+ 				dma_addr_t *dma_handle, gfp_t gfp);
+ 	void (*free_coherent)(struct device *dev, size_t size,
+ 			      void *vaddr, dma_addr_t dma_handle);
++	void* (*alloc)(struct device *dev, size_t size,
++				dma_addr_t *dma_handle, gfp_t gfp,
++				struct dma_attrs *attrs);
++	void (*free)(struct device *dev, size_t size,
++			      void *vaddr, dma_addr_t dma_handle,
++			      struct dma_attrs *attrs);
+ 	dma_addr_t (*map_page)(struct device *dev, struct page *page,
+ 			       unsigned long offset, size_t size,
+ 			       enum dma_data_direction dir,
+-- 
+1.7.1.569.g6f426
 
 --
 To unsubscribe, send a message with 'unsubscribe linux-mm' in
