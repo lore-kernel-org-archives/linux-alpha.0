@@ -1,54 +1,42 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: RE: [PATCHv2 01/14] common: dma-mapping: introduce alloc_attrs and
- free_attrs methods
-Date: Wed, 28 Mar 2012 16:38:40 +0200
-Message-ID: <016001cd0cf0$7807bdb0$68173910$%szyprowski@samsung.com>
-References: <1332855768-32583-1-git-send-email-m.szyprowski@samsung.com>
- <1332855768-32583-2-git-send-email-m.szyprowski@samsung.com>
- <4F72F603.2000803@mvista.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCHv2 02/14] X86 & IA64: adapt for dma_map_ops changes
+Date: Thu, 29 Mar 2012 15:51:36 +0200 (CEST)
+Message-ID: <alpine.LFD.2.02.1203291545520.2542@ionos>
+References: <1332855768-32583-1-git-send-email-m.szyprowski@samsung.com> <1332855768-32583-3-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7BIT
 Return-path: <owner-linux-mm@kvack.org>
-In-reply-to: <4F72F603.2000803@mvista.com>
-Content-language: pl
+In-Reply-To: <1332855768-32583-3-git-send-email-m.szyprowski@samsung.com>
 Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: 'Sergei Shtylyov' <sshtylyov@mvista.com>
-Cc: linux-kernel@vger.kernel.org, 'Benjamin Herrenschmidt' <benh@kernel.crashing.org>, 'Thomas Gleixner' <tglx@linutronix.de>, 'Andrew Morton' <akpm@linux-foundation.org>, 'Arnd Bergmann' <arnd@arndb.de>, 'Stephen Rothwell' <sfr@canb.auug.org.au>, 'FUJITA Tomonori' <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, 'Jonathan Corbet' <corbet@lwn.net>, 'Kyungmin Park' <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, 'Kevin Cernekee' <cernekee@gmail.com>, 'Dezhong Diao' <dediao@cisco.com>, 'Richard Kuo' <rkuo@codeau>
+Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-kernel@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Stephen Rothwell <sfr@canb.auug.org.au>, FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, Jonathan Corbet <corbet@lwn.net>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Kevin Cernekee <cernekee@gmail.com>, Dezhong Diao <dediao@cisco.com>, Richard Kuo <rkuo@codeau>
 
-Hi Sergei,
+On Tue, 27 Mar 2012, Marek Szyprowski wrote:
+> From: Andrzej Pietrasiewicz <andrzej.p@samsung.com>
+> -static inline void *dma_alloc_coherent(struct device *dev, size_t size,
+> -				       dma_addr_t *daddr, gfp_t gfp)
+> +#define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
 
-On Wednesday, March 28, 2012 1:29 PM Sergei Shtylyov wrote:
+Please make this an inline function.
 
-> On 27-03-2012 17:42, Marek Szyprowski wrote:
-> 
-> > Introduce new generic alloc and free methods with attributes argument.
-> 
->     The method names don't match the ones in the subject.
+>  
+> +#define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
 
-Right, I will reword the subject to "common: dma-mapping: introduce generic alloc()
-and free() methods".
+Inline please.
 
-> > Existing alloc_coherent and free_coherent can be implemented on top of the
-> > new calls with NULL attributes argument. Later also dma_alloc_non_coherent
-> > can be implemented using DMA_ATTR_NONCOHERENT attribute as well as
-> > dma_alloc_writecombine with separate DMA_ATTR_WRITECOMBINE attribute.
-> 
-> > This way the drivers will get more generic, platform independent way of
-> > allocating dma buffers with specific parameters.
-> 
-> > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> > Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
-> > Reviewed-by: David Gibson <david@gibson.dropbear.ud.au>
-> > Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> 
+> -static inline void dma_free_coherent(struct device *dev, size_t size,
+> -				     void *vaddr, dma_addr_t bus)
+> +#define dma_free_coherent(d,s,c,h) dma_free_attrs(d,s,c,h,NULL)
 
-Best regards
--- 
-Marek Szyprowski
-Samsung Poland R&D Center
+Ditto
 
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+
+Thanks,
+
+	tglx
 
 --
 To unsubscribe, send a message with 'unsubscribe linux-mm' in
