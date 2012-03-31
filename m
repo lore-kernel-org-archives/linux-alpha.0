@@ -1,127 +1,116 @@
 From: Kautuk Consul <consul.kautuk@gmail.com>
-Subject: [PATCH 02/19 v2] alpha/mm/fault.c: Port OOM changes to do_page_fault
-Date: Sat, 31 Mar 2012 07:59:26 -0400
-Message-ID: <1333195166-4978-1-git-send-email-consul.kautuk@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Subject: Re: [PATCH 0/19 v2] mmu: arch/mm: Port OOM changes to arch page fault handlers.
+Date: Sat, 31 Mar 2012 08:15:53 -0400
+Message-ID: <CAFPAmTSkDyJUX1dCyAwUht72Kc7pkT1Uh3q9Grynb_fS7oOhAA@mail.gmail.com>
+References: <CAFPAmTQs9dOpQTaXU=6Or66YU+my_CnPw33TE4h++YArBNa38g@mail.gmail.com>
+	<CAFPAmTT19hFymnFftLkV1jQjYmJgyk3y4b-kTXO3VP1YCR-_fQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary=20cf30050bf029880304bc88eb62
+Return-path: <owner-linux-mm@kvack.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id:x-mailer;
-        bh=38Y37cTwrK+R74kxLLzQDDlmBGRTuk0HUGA4K0IuhnI=;
-        b=FkZbOLRRYGzVjoYG5MGwsN/jBaxwXkdYYXTMM5dzlz/FtQyrcZNASPq/od+GHrw16d
-         54Kl+W3JEKjNCii6TMLDk2WlNbWWJzs4Fatabja+HOLwGcM8BsCjj6yIqnLd9K0iODkI
-         /IE7eKRHztn41Wwii1pd34748pVHY9YWr+2Xd+JOjVRwa1WKWkCABnezEB6SJRz5ASdQ
-         Hq+X/kNg2t0gLZUs7p+O0Vy9i5qi0z6HA45j8wCWblLbE5Xu0ZwNM7wyjWHI6/SS+Ay6
-         I65Ly4pcsdSc98rvRm+9gx3ni9LDUtaIw/lvIphPq4mhqNHxYwzdYX4j+6qdOS9smwKS
-         nW5w==
-Sender: linux-alpha-owner@vger.kernel.org
+        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
+         :cc:content-type;
+        bh=0Oi3wZ5LJ+Efkzs1R7kL//FlZactCdtPjlZJZK0DkLU=;
+        b=0+KllyNWu2j2lnBHVW8J9jaBSCneWhyez6OhJVfKEWGFQxMERXkLXe+xDF6bkqxtgY
+         hpZJqwcxe2o7g6+zbvQoVRiue6frXc21pgqt9N8+86VRmd9gGdFyHWsvYB5pUvC6UFCE
+         EWTSHIBpkW7YqwipyRnSHLAWhNDrrwQrdga1xueHSwKuKSJMKBXbQX89rA0dQCEVBPUL
+         D79c9QHV2w36TC3NDBx4yE6ovqsXF27qjmzt3J3/0ZYFcVhZtlluKNUlkQunG0iZ6Xo+
+         0F/PoSky3GOl+9wSq3m1BKjRdlnJ6+ya61PP9+pjO5LAER0AxO61Ij3g7/oTxOfCqmaZ
+         +biA==
+In-Reply-To: <CAFPAmTT19hFymnFftLkV1jQjYmJgyk3y4b-kTXO3VP1YCR-_fQ@mail.gmail.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Kautuk Consul <consul.kautuk@gmail.com>, "Mohd. Faris" <mohdfarisq2010@gmail.com>
+To: linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux@lists.openrisc.net, linux-am33-list@redhat.com, microblaze-uclinux@itee.uq.edu.au, linux-m68k@lists.linux-m68k.org, linux-m32r-ja@ml.linux-m32r.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-cris-kernel@axis.com, linux-sh@vger.kernel.org, linux-parisc@vger.kernel.org, linux-mm@kvack.org, linux-arch@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-Commit d065bd810b6deb67d4897a14bfe21f8eb526ba99
-(mm: retry page fault when blocking on disk transfer) and
-commit 37b23e0525d393d48a7d59f870b3bc061a30ccdb
-(x86,mm: make pagefault killable)
+--20cf30050bf029880304bc88eb62
+Content-Type: text/plain; charset=ISO-8859-1
 
-The above commits introduced changes into the x86 pagefault handler
-for making the page fault handler retryable as well as killable.
+Ugh, sorry I forgot to attach the stress_32k.c test-case to this email.
 
-These changes reduce the mmap_sem hold time, which is crucial
-during OOM killer invocation.
+Please find it attached to this one.
 
-Port these changes to ALPHA.
+--20cf30050bf029880304bc88eb62
+Content-Type: text/x-csrc; charset=US-ASCII; name="stress_32k.c"
+Content-Disposition: attachment; filename="stress_32k.c"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_h0gmk8do0
 
-Signed-off-by: Mohd. Faris <mohdfarisq2010@gmail.com>
-Signed-off-by: Kautuk Consul <consul.kautuk@gmail.com>
-Acked-by: Matt Turner <mattst88@gmail.com>
----
- arch/alpha/mm/fault.c |   36 ++++++++++++++++++++++++++++++------
- 1 files changed, 30 insertions(+), 6 deletions(-)
+I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzdGRsaWIuaD4KI2luY2x1ZGUgPHN0cmluZy5o
+PgojaW5jbHVkZSA8cHRocmVhZC5oPgojaW5jbHVkZSA8dW5pc3RkLmg+CgojZGVmaW5lIEFMTE9D
+X0JZVEUgNTEyKjEwMjQKI2RlZmluZSBDT1VOVCA1MAoKdm9pZCAqYWxsb2NfZnVuY3Rpb25fb25l
+KCB2b2lkICpwdHIgKTsKdm9pZCAqYWxsb2NfZnVuY3Rpb25fdHdvKCB2b2lkICpwdHIgKTsKdm9p
+ZCAqYWxsb2NfZnVuY3Rpb25fdGhyZWUoIHZvaWQgKnB0ciApOwp2b2lkICphbGxvY19mdW5jdGlv
+bl9mb3VyKCB2b2lkICpwdHIgKTsKdm9pZCAqYWxsb2NfZnVuY3Rpb25fZml2ZSggdm9pZCAqcHRy
+ICk7CnZvaWQgKmVuYWJsZV9mdW5jdGlvbiggdm9pZCAqcHRyICk7CgoKaW50IG1haW4oaW50IGFy
+Z2MsIGNoYXIgKmFyZ3ZbXSkKewoJcHRocmVhZF90IHRocmVhZDEsIHRocmVhZDIsIHRocmVhZDMs
+IHRocmVhZDQsIHRocmVhZDU7CgljaGFyICptZXNzYWdlMSA9ICJUaHJlYWQgMSI7CgljaGFyICpt
+ZXNzYWdlMiA9ICJUaHJlYWQgMiI7CgljaGFyICptZXNzYWdlMyA9ICJUaHJlYWQgMyI7CgljaGFy
+ICptZXNzYWdlNCA9ICJUaHJlYWQgNCI7CgljaGFyICptZXNzYWdlNSA9ICJUaHJlYWQgNSI7Cglp
+bnQgaXJldDEgPSAtMTsKCWludCBpcmV0MiA9IC0xOwoJaW50IGlyZXQzID0gLTE7CglpbnQgaXJl
+dDQgPSAtMTsKCWludCBpcmV0NSA9IC0xOwoJZm9yaygpOwoJaXJldDEgPSBwdGhyZWFkX2NyZWF0
+ZSggJnRocmVhZDEsIE5VTEwsIGFsbG9jX2Z1bmN0aW9uX29uZSwgKHZvaWQqKSBtZXNzYWdlMSk7
+CglpcmV0MiA9IHB0aHJlYWRfY3JlYXRlKCAmdGhyZWFkMiwgTlVMTCwgYWxsb2NfZnVuY3Rpb25f
+dHdvLCAodm9pZCopIG1lc3NhZ2UyKTsKCWlyZXQyID0gcHRocmVhZF9jcmVhdGUoICZ0aHJlYWQz
+LCBOVUxMLCBhbGxvY19mdW5jdGlvbl90aHJlZSwgKHZvaWQqKSBtZXNzYWdlMik7CglpcmV0MiA9
+IHB0aHJlYWRfY3JlYXRlKCAmdGhyZWFkNCwgTlVMTCwgYWxsb2NfZnVuY3Rpb25fZm91ciwgKHZv
+aWQqKSBtZXNzYWdlMik7CglpcmV0MiA9IHB0aHJlYWRfY3JlYXRlKCAmdGhyZWFkNSwgTlVMTCwg
+YWxsb2NfZnVuY3Rpb25fZml2ZSwgKHZvaWQqKSBtZXNzYWdlMik7CgoJcHRocmVhZF9qb2luKCB0
+aHJlYWQxLCBOVUxMKTsKCXB0aHJlYWRfam9pbiggdGhyZWFkMiwgTlVMTCk7CglwdGhyZWFkX2pv
+aW4oIHRocmVhZDMsIE5VTEwpOwoJcHRocmVhZF9qb2luKCB0aHJlYWQ0LCBOVUxMKTsKCXB0aHJl
+YWRfam9pbiggdGhyZWFkNSwgTlVMTCk7CgoJcHJpbnRmKCJUaHJlYWQgMSByZXR1cm5zOiAlZFxu
+IixpcmV0MSk7CglwcmludGYoIlRocmVhZCAyIHJldHVybnM6ICVkXG4iLGlyZXQyKTsKCXByaW50
+ZigiVGhyZWFkIDMgcmV0dXJuczogJWRcbiIsaXJldDMpOwoJcHJpbnRmKCJUaHJlYWQgNCByZXR1
+cm5zOiAlZFxuIixpcmV0NCk7CglwcmludGYoIlRocmVhZCA1IHJldHVybnM6ICVkXG4iLGlyZXQ1
+KTsKCWV4aXQoMCk7Cn0KCnZvaWQgKmFsbG9jX2Z1bmN0aW9uX3R3byggdm9pZCAqcHRyICkKewoJ
+Y2hhciAqbWVzc2FnZTsKCW1lc3NhZ2UgPSAoY2hhciAqKSBwdHI7Cgl2b2lkICpteWJsb2NrW0NP
+VU5UXTsKCWludCBpPSAwLGo9MDsKCWludCBmcmVlZD0wOwoJcHJpbnRmKCJtZXNzYWdlX2FsbG9j
+ICBcbiIpOwoJd2hpbGUoMSkKCXsKCQltZW1zZXQobXlibG9jaywwLHNpemVvZihteWJsb2NrKSk7
+CgkJcHJpbnRmKCJtZXNzYWdlX2FsbG9jICVzIFxuIixtZXNzYWdlKTsKCQlmb3IoaT0wO2k8IENP
+VU5UIDtpKyspCgkJewoJCQlteWJsb2NrW2ldID0gKHZvaWQgKikgbWFsbG9jKEFMTE9DX0JZVEUp
+OwoJCQltZW1zZXQobXlibG9ja1tpXSwxLCBBTExPQ19CWVRFKTsKCQl9Cgl9Cn0KCgp2b2lkICph
+bGxvY19mdW5jdGlvbl9vbmUoIHZvaWQgKnB0ciApCnsKCWNoYXIgKm1lc3NhZ2U7CgltZXNzYWdl
+ID0gKGNoYXIgKikgcHRyOwoJdm9pZCAqbXlibG9ja1tDT1VOVF07CglpbnQgaT0gMCxqPTA7Cglp
+bnQgZnJlZWQ9MDsKCXByaW50ZigibWVzc2FnZV9hbGxvYyAgXG4iKTsKCXdoaWxlKDEpCgl7CgkJ
+bWVtc2V0KG15YmxvY2ssMCxzaXplb2YobXlibG9jaykpOwoJCXByaW50ZigibWVzc2FnZV9hbGxv
+YyAlcyBcbiIsbWVzc2FnZSk7CgkJZm9yKGk9MDtpPCBDT1VOVCA7aSsrKQoJCXsKCQkJbXlibG9j
+a1tpXSA9ICh2b2lkICopIG1hbGxvYyhBTExPQ19CWVRFKTsKCQkJbWVtc2V0KG15YmxvY2tbaV0s
+MSwgQUxMT0NfQllURSk7CgkJfQoJfQp9Cgp2b2lkICphbGxvY19mdW5jdGlvbl90aHJlZSggdm9p
+ZCAqcHRyICkKewogICAgICAgY2hhciAqbWVzc2FnZTsKICAgICAgICBtZXNzYWdlID0gKGNoYXIg
+KikgcHRyOwogICAgICAgIHZvaWQgKm15YmxvY2tbQ09VTlRdOwogICAgICAgIGludCBpPSAwLGo9
+MDsKICAgICAgICBpbnQgZnJlZWQ9MDsKICAgICAgICBwcmludGYoIm1lc3NhZ2VfYWxsb2MgIFxu
+Iik7CiAgICAgICAgd2hpbGUoMSkKICAgICAgICB7CiAgICAgICAgICAgICAgICBtZW1zZXQobXli
+bG9jaywwLHNpemVvZihteWJsb2NrKSk7CiAgICAgICAgICAgICAgICBwcmludGYoIm1lc3NhZ2Vf
+YWxsb2MgJXMgXG4iLG1lc3NhZ2UpOwogICAgICAgICAgICAgICAgZm9yKGk9MDtpPCBDT1VOVCA7
+aSsrKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICBteWJsb2NrW2ld
+ID0gKHZvaWQgKikgbWFsbG9jKEFMTE9DX0JZVEUpOwogICAgICAgICAgICAgICAgICAgICAgICBt
+ZW1zZXQobXlibG9ja1tpXSwxLCBBTExPQ19CWVRFKTsKICAgICAgICAgICAgICAgIH0KICAgICAg
+ICB9Cn0Kdm9pZCAqYWxsb2NfZnVuY3Rpb25fZm91ciggdm9pZCAqcHRyICkKewogICAgICAgY2hh
+ciAqbWVzc2FnZTsKICAgICAgICBtZXNzYWdlID0gKGNoYXIgKikgcHRyOwogICAgICAgIHZvaWQg
+Km15YmxvY2tbQ09VTlRdOwogICAgICAgIGludCBpPSAwLGo9MDsKICAgICAgICBpbnQgZnJlZWQ9
+MDsKICAgICAgICBwcmludGYoIm1lc3NhZ2VfYWxsb2MgIFxuIik7CiAgICAgICAgd2hpbGUoMSkK
+ICAgICAgICB7CiAgICAgICAgICAgICAgICBtZW1zZXQobXlibG9jaywwLHNpemVvZihteWJsb2Nr
+KSk7CiAgICAgICAgICAgICAgICBwcmludGYoIm1lc3NhZ2VfYWxsb2MgJXMgXG4iLG1lc3NhZ2Up
+OwogICAgICAgICAgICAgICAgZm9yKGk9MDtpPCBDT1VOVCA7aSsrKQogICAgICAgICAgICAgICAg
+ewogICAgICAgICAgICAgICAgICAgICAgICBteWJsb2NrW2ldID0gKHZvaWQgKikgbWFsbG9jKEFM
+TE9DX0JZVEUpOwogICAgICAgICAgICAgICAgICAgICAgICBtZW1zZXQobXlibG9ja1tpXSwxLCBB
+TExPQ19CWVRFKTsKICAgICAgICAgICAgICAgIH0KICAgICAgICB9Cn0Kdm9pZCAqYWxsb2NfZnVu
+Y3Rpb25fZml2ZSggdm9pZCAqcHRyICkKewogICAgICAgY2hhciAqbWVzc2FnZTsKICAgICAgICBt
+ZXNzYWdlID0gKGNoYXIgKikgcHRyOwogICAgICAgIHZvaWQgKm15YmxvY2tbQ09VTlRdOwogICAg
+ICAgIGludCBpPSAwLGo9MDsKICAgICAgICBpbnQgZnJlZWQ9MDsKICAgICAgICBwcmludGYoIm1l
+c3NhZ2VfYWxsb2MgIFxuIik7CiAgICAgICAgd2hpbGUoMSkKICAgICAgICB7CiAgICAgICAgICAg
+ICAgICBtZW1zZXQobXlibG9jaywwLHNpemVvZihteWJsb2NrKSk7CiAgICAgICAgICAgICAgICBw
+cmludGYoIm1lc3NhZ2VfYWxsb2MgJXMgXG4iLG1lc3NhZ2UpOwogICAgICAgICAgICAgICAgZm9y
+KGk9MDtpPCBDT1VOVCA7aSsrKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAg
+ICAgICBteWJsb2NrW2ldID0gKHZvaWQgKikgbWFsbG9jKEFMTE9DX0JZVEUpOwogICAgICAgICAg
+ICAgICAgICAgICAgICBtZW1zZXQobXlibG9ja1tpXSwxLCBBTExPQ19CWVRFKTsKICAgICAgICAg
+ICAgICAgIH0KICAgICAgICB9Cn0K
+--20cf30050bf029880304bc88eb62--
 
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 5eecab1..0c4132d 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -89,6 +89,8 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 	const struct exception_table_entry *fixup;
- 	int fault, si_code = SEGV_MAPERR;
- 	siginfo_t info;
-+	unsigned int flags = (FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE |
-+			      (cause > 0 ? FAULT_FLAG_WRITE : 0));
- 
- 	/* As of EV6, a load into $31/$f31 is a prefetch, and never faults
- 	   (or is suppressed by the PALcode).  Support that for older CPUs
-@@ -114,6 +116,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 		goto vmalloc_fault;
- #endif
- 
-+retry:
- 	down_read(&mm->mmap_sem);
- 	vma = find_vma(mm, address);
- 	if (!vma)
-@@ -144,8 +147,11 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 	/* If for any reason at all we couldn't handle the fault,
- 	   make sure we exit gracefully rather than endlessly redo
- 	   the fault.  */
--	fault = handle_mm_fault(mm, vma, address, cause > 0 ? FAULT_FLAG_WRITE : 0);
--	up_read(&mm->mmap_sem);
-+	fault = handle_mm_fault(mm, vma, address, flags);
-+
-+	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
-+		return;
-+
- 	if (unlikely(fault & VM_FAULT_ERROR)) {
- 		if (fault & VM_FAULT_OOM)
- 			goto out_of_memory;
-@@ -153,10 +159,26 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 			goto do_sigbus;
- 		BUG();
- 	}
--	if (fault & VM_FAULT_MAJOR)
--		current->maj_flt++;
--	else
--		current->min_flt++;
-+
-+	if (flags & FAULT_FLAG_ALLOW_RETRY) {
-+		if (fault & VM_FAULT_MAJOR)
-+			current->maj_flt++;
-+		else
-+			current->min_flt++;
-+		if (fault & VM_FAULT_RETRY) {
-+			flags &= ~FAULT_FLAG_ALLOW_RETRY;
-+
-+			 /* No need to up_read(&mm->mmap_sem) as we would
-+			 * have already released it in __lock_page_or_retry
-+			 * in mm/filemap.c.
-+			 */
-+
-+			goto retry;
-+		}
-+	}
-+
-+	up_read(&mm->mmap_sem);
-+
- 	return;
- 
- 	/* Something tried to access memory that isn't in our memory map.
-@@ -186,12 +208,14 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 	/* We ran out of memory, or some other thing happened to us that
- 	   made us unable to handle the page fault gracefully.  */
-  out_of_memory:
-+	up_read(&mm->mmap_sem);
- 	if (!user_mode(regs))
- 		goto no_context;
- 	pagefault_out_of_memory();
- 	return;
- 
-  do_sigbus:
-+	up_read(&mm->mmap_sem);
- 	/* Send a sigbus, regardless of whether we were in kernel
- 	   or user mode.  */
- 	info.si_signo = SIGBUS;
--- 
-1.7.5.4
-
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
