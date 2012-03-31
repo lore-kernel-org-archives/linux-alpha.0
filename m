@@ -1,46 +1,67 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCHv2 02/14] X86 & IA64: adapt for dma_map_ops changes
-Date: Thu, 29 Mar 2012 15:51:36 +0200 (CEST)
-Message-ID: <alpine.LFD.2.02.1203291545520.2542@ionos>
-References: <1332855768-32583-1-git-send-email-m.szyprowski@samsung.com> <1332855768-32583-3-git-send-email-m.szyprowski@samsung.com>
+From: Kautuk Consul <consul.kautuk@gmail.com>
+Subject: [PATCH 0/19 v2] mmu: arch/mm: Port OOM changes to arch page fault handlers.
+Date: Sat, 31 Mar 2012 07:58:04 -0400
+Message-ID: <CAFPAmTT19hFymnFftLkV1jQjYmJgyk3y4b-kTXO3VP1YCR-_fQ@mail.gmail.com>
+References: <CAFPAmTQs9dOpQTaXU=6Or66YU+my_CnPw33TE4h++YArBNa38g@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <1332855768-32583-3-git-send-email-m.szyprowski@samsung.com>
-Sender: owner-linux-mm@kvack.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
+         :cc:content-type;
+        bh=oudsvfZO9ETL3UihnWaI8rM0Wvpu5zYKBsSsSewgKw8=;
+        b=wHJkM/g/YcWX/BiDqlFGIQh1LZ9NXqVpX2Ra+8cPYARa9MIQa5lHNxOb3o9iBfEa6u
+         Ly10UvsAKyH0HvLCOKu5YXgkxRNyyWpAsSHagEaR/799Cbvhgg9TY/qKmKIK0pkHVGUp
+         eE31Px3jxQrp+AFZ52AtHJyLx9W1Oq/2JZ/uXUFbZMvUd4lE5H1bEzTxybdQ0rI1GZeT
+         /cUqK4NwfuM2Q8VL7egvldF7FJH4KKacmbS1bPB68eGjpNS75fZEg1lbDGB6wSyBPEqL
+         2U9dAy//MQyB/hRK+EFhrl23ACHAHijbBaoTu1XB/tx5I8LIn5wZgmpwOa+2Y0ZQ4nS3
+         Qd7w==
+In-Reply-To: <CAFPAmTQs9dOpQTaXU=6Or66YU+my_CnPw33TE4h++YArBNa38g@mail.gmail.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linux-kernel@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Stephen Rothwell <sfr@canb.auug.org.au>, FUJITA Tomonori <fujita.tomonori@lab.ntt.co.jp>, microblaze-uclinux@itee.uq.edu.au, linux-arch@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@linux-mips.org, discuss@x86-64.org, linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org, linaro-mm-sig@lists.linaro.org, Jonathan Corbet <corbet@lwn.net>, Kyungmin Park <kyungmin.park@samsung.com>, Andrzej Pietrasiewicz <andrzej.p@samsung.com>, Kevin Cernekee <cernekee@gmail.com>, Dezhong Diao <dediao@cisco.com>, Richard Kuo <rkuo@codeau>
+To: linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux@lists.openrisc.net, linux-am33-list@redhat.com, microblaze-uclinux@itee.uq.edu.au, linux-m68k@lists.linux-m68k.org, linux-m32r-ja@ml.linux-m32r.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-cris-kernel@axis.com, linux-sh@vger.kernel.org, linux-parisc@vger.kernel.org, linux-mm@kvack.org, linux-arch@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-On Tue, 27 Mar 2012, Marek Szyprowski wrote:
-> From: Andrzej Pietrasiewicz <andrzej.p@samsung.com>
-> -static inline void *dma_alloc_coherent(struct device *dev, size_t size,
-> -				       dma_addr_t *daddr, gfp_t gfp)
-> +#define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
+Commit d065bd810b6deb67d4897a14bfe21f8eb526ba99
+(mm: retry page fault when blocking on disk transfer) and
+commit 37b23e0525d393d48a7d59f870b3bc061a30ccdb
+(x86,mm: make pagefault killable)
 
-Please make this an inline function.
+The above commits introduced changes into the x86 pagefault handler
+for making the page fault handler retryable as well as killable.
 
->  
-> +#define dma_alloc_coherent(d,s,h,f)	dma_alloc_attrs(d,s,h,f,NULL)
+These changes reduce the mmap_sem hold time, which is crucial
+during OOM killer invocation.
 
-Inline please.
+I was facing hang and livelock problems on my ARM and MIPS boards when
+I invoked OOM by running the stress_32k.c test-case attached to this email.
 
-> -static inline void dma_free_coherent(struct device *dev, size_t size,
-> -				     void *vaddr, dma_addr_t bus)
-> +#define dma_free_coherent(d,s,c,h) dma_free_attrs(d,s,c,h,NULL)
+Since both the ARM and MIPS porting changes were accepted, me and my
+co-worker decided to take the initiative to port these changes to all other
+MMU based architectures.
 
-Ditto
+This is v2 of this patch set as there were some problems with the v1 of this
+patchset:
+- Whitespace issues as reported by David Miller and Joe Perches
+- In 2 of the patches, the write(or equivalent) local variable has
+been removed from the
+  page fault handler because it is not really needed anymore with the
+advent of the "flags"
+  local variable. Thanks to Geert Uytterhoeven for that.
+- The powerpc patch for this has been removed as this has already been
+done by someone
+  else for powerpc.
 
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+At the moment, 8 of these patches have Acked these patches as valid.
+I have included their ACKed-By headers for them in their respective
+arch patches.
 
-Thanks,
+And thanks to Guan Xuetao for actually testing this out on unicore32.
 
-	tglx
+Rest of the arch owners: Please review these patches.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Fight unfair telecom internet charges in Canada: sign http://stopthemeter.ca/
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Signed-off-by: Mohd. Faris <mohdfarisq2010@gmail.com>
+Signed-off-by: Kautuk Consul <consul.kautuk@gmail.com>
+---
