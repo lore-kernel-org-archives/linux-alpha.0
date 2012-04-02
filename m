@@ -1,51 +1,217 @@
-From: Jan Seiffert <kaffeemonster@googlemail.com>
-Subject: Re: [PATCH V1 1/1] NET: add a bpf jit for Alpha
-Date: Mon, 2 Apr 2012 23:04:52 +0200
-Message-ID: <4F7A1474.20503@googlemail.com>
-References: <4F75CA89.4010709@googlemail.com> <4F7A033D.4040901@googlemail.com> <CAEdQ38FnZXLiPM4CtOhT5X9qj9jLt84x=NhcSSbGO1agSNc24w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <CAEdQ38FnZXLiPM4CtOhT5X9qj9jLt84x=NhcSSbGO1agSNc24w@mail.gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH] alpha: fix build failures from system.h dismemberment
+Date: Mon,  2 Apr 2012 17:21:14 -0400
+Message-ID: <1333401674-26007-1-git-send-email-paul.gortmaker@windriver.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Matt Turner <mattst88@gmail.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Matt Evans <matt@ozlabs.org>, Eric Dumazet <eric.dumazet@gmail.com>, "David S. Miller" <davem@davemloft.net>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, rth@redhat.com
+Content-Transfer-Encoding: 7bit
+To: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, David Howells <dhowells@redhat.com>
 
-Matt Turner schrieb:
-> On Mon, Apr 2, 2012 at 3:51 PM, Jan Seiffert
-> <kaffeemonster@googlemail.com> wrote:
->> The weekend was cold and windy, so i wrote a bpf jit for the Alpha architecture.
->>
->> Signed-off-by: Jan Seiffert <kaffeemonster@googlemail.com>
->>
->> ---
->>
->> Patch is against net-next and needs Patch 1 of my "Fix negative offsets" Series
->> (to get bpf_internal_load_pointer_neg_helper)
->>
->> The Problem is: i don't have any Alpha machine nor do i really have any clue about
->> the arch.
->> So this is only compile tested.
->> I could really need some Alpha asm guru to give some advice and review this.
->> Are the calls done right, are the asm load helper ok, all the conditional and
->> sign handling is a little brittle in my mind, etc.
-> 
-> Very cool. I'll try to find some time soon to test this.
-> 
+commit ec2212088c42ff7d1362629ec26dda4f3e8bdad3
 
-That would be great.
-But make sure to fasten your seat belts, it will prop. crash hard ;)
-Here is a link to the Patch 1 you also need:
-<http://marc.info/?l=linux-kernel&m=133312658915220&w=2>
+    "Disintegrate asm/system.h for Alpha"
 
-> Thanks a lot!
-> Matt
-> 
+combined with commit b4816afa3986704d1404fc48e931da5135820472
 
-Greetings
-	Jan
+    "Move the asm-generic/system.h xchg() implementation to asm-generic/cmpxchg.h"
 
+introduced the concept of asm/cmpxchg.h but the alpha arch
+never got one.  Fork the cmpxchg content out of the asm/atomic.h
+file to create one.
+
+Some minor whitespace fixups were done on the block of code that
+created the new file.
+
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: David Howells <dhowells@redhat.com>
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+
+diff --git a/arch/alpha/include/asm/atomic.h b/arch/alpha/include/asm/atomic.h
+index f62251e..3bb7ffe 100644
+--- a/arch/alpha/include/asm/atomic.h
++++ b/arch/alpha/include/asm/atomic.h
+@@ -3,6 +3,7 @@
+ 
+ #include <linux/types.h>
+ #include <asm/barrier.h>
++#include <asm/cmpxchg.h>
+ 
+ /*
+  * Atomic operations that C can't guarantee us.  Useful for
+@@ -168,73 +169,6 @@ static __inline__ long atomic64_sub_return(long i, atomic64_t * v)
+ 	return result;
+ }
+ 
+-/*
+- * Atomic exchange routines.
+- */
+-
+-#define __ASM__MB
+-#define ____xchg(type, args...)		__xchg ## type ## _local(args)
+-#define ____cmpxchg(type, args...)	__cmpxchg ## type ## _local(args)
+-#include <asm/xchg.h>
+-
+-#define xchg_local(ptr,x)						\
+-  ({									\
+-     __typeof__(*(ptr)) _x_ = (x);					\
+-     (__typeof__(*(ptr))) __xchg_local((ptr), (unsigned long)_x_,	\
+-				       sizeof(*(ptr)));			\
+-  })
+-
+-#define cmpxchg_local(ptr, o, n)					\
+-  ({									\
+-     __typeof__(*(ptr)) _o_ = (o);					\
+-     __typeof__(*(ptr)) _n_ = (n);					\
+-     (__typeof__(*(ptr))) __cmpxchg_local((ptr), (unsigned long)_o_,	\
+-					  (unsigned long)_n_,		\
+-					  sizeof(*(ptr)));		\
+-  })
+-
+-#define cmpxchg64_local(ptr, o, n)					\
+-  ({									\
+-	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
+-	cmpxchg_local((ptr), (o), (n));					\
+-  })
+-
+-#ifdef CONFIG_SMP
+-#undef __ASM__MB
+-#define __ASM__MB	"\tmb\n"
+-#endif
+-#undef ____xchg
+-#undef ____cmpxchg
+-#define ____xchg(type, args...)		__xchg ##type(args)
+-#define ____cmpxchg(type, args...)	__cmpxchg ##type(args)
+-#include <asm/xchg.h>
+-
+-#define xchg(ptr,x)							\
+-  ({									\
+-     __typeof__(*(ptr)) _x_ = (x);					\
+-     (__typeof__(*(ptr))) __xchg((ptr), (unsigned long)_x_,		\
+-				 sizeof(*(ptr)));			\
+-  })
+-
+-#define cmpxchg(ptr, o, n)						\
+-  ({									\
+-     __typeof__(*(ptr)) _o_ = (o);					\
+-     __typeof__(*(ptr)) _n_ = (n);					\
+-     (__typeof__(*(ptr))) __cmpxchg((ptr), (unsigned long)_o_,		\
+-				    (unsigned long)_n_,	sizeof(*(ptr)));\
+-  })
+-
+-#define cmpxchg64(ptr, o, n)						\
+-  ({									\
+-	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
+-	cmpxchg((ptr), (o), (n));					\
+-  })
+-
+-#undef __ASM__MB
+-#undef ____cmpxchg
+-
+-#define __HAVE_ARCH_CMPXCHG 1
+-
+ #define atomic64_cmpxchg(v, old, new) (cmpxchg(&((v)->counter), old, new))
+ #define atomic64_xchg(v, new) (xchg(&((v)->counter), new))
+ 
+diff --git a/arch/alpha/include/asm/cmpxchg.h b/arch/alpha/include/asm/cmpxchg.h
+new file mode 100644
+index 0000000..429e8cd
+--- /dev/null
++++ b/arch/alpha/include/asm/cmpxchg.h
+@@ -0,0 +1,71 @@
++#ifndef _ALPHA_CMPXCHG_H
++#define _ALPHA_CMPXCHG_H
++
++/*
++ * Atomic exchange routines.
++ */
++
++#define __ASM__MB
++#define ____xchg(type, args...)		__xchg ## type ## _local(args)
++#define ____cmpxchg(type, args...)	__cmpxchg ## type ## _local(args)
++#include <asm/xchg.h>
++
++#define xchg_local(ptr, x)						\
++({									\
++	__typeof__(*(ptr)) _x_ = (x);					\
++	(__typeof__(*(ptr))) __xchg_local((ptr), (unsigned long)_x_,	\
++				       sizeof(*(ptr)));			\
++})
++
++#define cmpxchg_local(ptr, o, n)					\
++({									\
++	__typeof__(*(ptr)) _o_ = (o);					\
++	__typeof__(*(ptr)) _n_ = (n);					\
++	(__typeof__(*(ptr))) __cmpxchg_local((ptr), (unsigned long)_o_,	\
++					  (unsigned long)_n_,		\
++					  sizeof(*(ptr)));		\
++})
++
++#define cmpxchg64_local(ptr, o, n)					\
++({									\
++	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
++	cmpxchg_local((ptr), (o), (n));					\
++})
++
++#ifdef CONFIG_SMP
++#undef __ASM__MB
++#define __ASM__MB	"\tmb\n"
++#endif
++#undef ____xchg
++#undef ____cmpxchg
++#define ____xchg(type, args...)		__xchg ##type(args)
++#define ____cmpxchg(type, args...)	__cmpxchg ##type(args)
++#include <asm/xchg.h>
++
++#define xchg(ptr, x)							\
++({									\
++	__typeof__(*(ptr)) _x_ = (x);					\
++	(__typeof__(*(ptr))) __xchg((ptr), (unsigned long)_x_,		\
++				 sizeof(*(ptr)));			\
++})
++
++#define cmpxchg(ptr, o, n)						\
++({									\
++	__typeof__(*(ptr)) _o_ = (o);					\
++	__typeof__(*(ptr)) _n_ = (n);					\
++	(__typeof__(*(ptr))) __cmpxchg((ptr), (unsigned long)_o_,	\
++				    (unsigned long)_n_,	sizeof(*(ptr)));\
++})
++
++#define cmpxchg64(ptr, o, n)						\
++({									\
++	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
++	cmpxchg((ptr), (o), (n));					\
++})
++
++#undef __ASM__MB
++#undef ____cmpxchg
++
++#define __HAVE_ARCH_CMPXCHG 1
++
++#endif /* _ALPHA_CMPXCHG_H */
+diff --git a/arch/alpha/include/asm/xchg.h b/arch/alpha/include/asm/xchg.h
+index 1d1b436..0ca9724 100644
+--- a/arch/alpha/include/asm/xchg.h
++++ b/arch/alpha/include/asm/xchg.h
+@@ -1,10 +1,10 @@
+-#ifndef _ALPHA_ATOMIC_H
++#ifndef _ALPHA_CMPXCHG_H
+ #error Do not include xchg.h directly!
+ #else
+ /*
+  * xchg/xchg_local and cmpxchg/cmpxchg_local share the same code
+  * except that local version do not have the expensive memory barrier.
+- * So this file is included twice from asm/system.h.
++ * So this file is included twice from asm/cmpxchg.h.
+  */
+ 
+ /*
 -- 
-Wherever I lay my .vimrc, there's my $HOME.
+1.7.9.1
+
