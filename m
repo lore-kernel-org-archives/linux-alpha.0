@@ -1,42 +1,58 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] gpiolib/arches: Centralise bolierplate
-	asm/gpio.h
-Date: Mon, 16 Apr 2012 10:26:02 +0200
-Message-ID: <CACRpkdb8q4bKSBctBV0V5KrbS-r-P_b_+N75UV58ryxK+jz+8A@mail.gmail.com>
-References: <1334483574-3997-1-git-send-email-broonie@opensource.wolfsonmicro.com>
-	<CACRpkdZ8yH1ZSG-nQ9dLm0TipHS-jZDuxwqohUC=LGH9V-5q4w@mail.gmail.com>
-	<20120416081532.GA3238@opensource.wolfsonmicro.com>
+From: Jonathan Nieder <jrnieder@gmail.com>
+Subject: Re: [PATCH] alpha: add io{read,write}{16,32}be functions
+Date: Tue, 24 Apr 2012 00:51:23 -0500
+Message-ID: <20120424055123.GA7140@burratino>
+References: <1322640100-14534-1-git-send-email-mcree@orcon.net.nz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-bounces@lists.openrisc.net>
-In-Reply-To: <20120416081532.GA3238@opensource.wolfsonmicro.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.openrisc.net/options/linux>,
-	<mailto:linux-request@lists.openrisc.net?subject=unsubscribe>
-List-Archive: <http://lists.openrisc.net/pipermail/linux>
-List-Post: <mailto:linux@lists.openrisc.net>
-List-Help: <mailto:linux-request@lists.openrisc.net?subject=help>
-List-Subscribe: <http://lists.openrisc.net/listinfo/linux>,
-	<mailto:linux-request@lists.openrisc.net?subject=subscribe>
-Sender: linux-bounces@lists.openrisc.net
-Errors-To: linux-bounces@lists.openrisc.net
-To: Mark Brown <broonie@opensource.wolfsonmicro.com>
-Cc: linux-arch@vger.kernel.org, Grant Likely <grant@secretlab.ca>, linux-ia64@vger.kernel.org, Linus Walleij <linus.walleij@stericsson.com>, Chris Zankel <chris@zankel.net>, microblaze-uclinux@itee.uq.edu.au, linux@lists.openrisc.net, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, "linuxppc-dev@lists.ozlabs.org list" <linuxppc-dev@lists.ozlabs.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-type:content-disposition:in-reply-to:user-agent;
+        bh=RD1DcTSX63GKnE3TZr56fG85jDrBet78L6DioXJY7nE=;
+        b=xfPUmeUHL8kblXtXuRLpDPQpF1bAWTD5YCxZQxXhA8Qtr10x8enMRZja27rn+/Kchk
+         ApoiP/FPTqxnHKpd7Ba5+EiPQIgYGe3k5E8QqB/bmxvW2xY3vU1IR1NUvWrXfpLY3y4p
+         rQerMwGo1vYJsXTR94p8lLVSwcYHO0Ged4sIwlrBmQsKwGDuPa9j1FZ0aaR7d/s/bIVB
+         m9qH+FryG0wrul8otEmPG00phJG0q8WOk6jI+5Lzt2fSLKJClPCXr9g+O+C9XhR8Wwg5
+         BceJiBfAeqM5P0yRIQHPq1WWhgx6OlWoBuGtSkXEEFlPqczpFVHvtE0/ghn4U2+ZMzYG
+         3r4g==
+Content-Disposition: inline
+In-Reply-To: <1322640100-14534-1-git-send-email-mcree@orcon.net.nz>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Ben Hutchings <ben@decadent.org.uk>, =?utf-8?B?UmHDumw=?= Porcel <armin76@gentoo.org>
 
-On Mon, Apr 16, 2012 at 10:15 AM, Mark Brown
-<broonie@opensource.wolfsonmicro.com> wrote:
-> On Mon, Apr 16, 2012 at 09:21:58AM +0200, Linus Walleij wrote:
+Hi Matt et al,
+
+Michael Cree wrote:
+
+> These functions are used in some PCI drivers with big-endian
+> MMIO space.
 >
->> This looks good but I think we need to page the alpha, ia64, m68k, micro=
-blaze,
->> openrisc etc subarch maintainers on this patch so they have their say.
->
-> That's why I CCed linux-arch, to get all the architecture maintainers
-> included. =A0vger would get upset if I CCed everyone individually.
+> Admittedly it is almost certain that no one this side of the
+> Moon would use such a card in an Alpha but it does get us
+> closer to being able to build allyesconfig or allmodconfig,
+[...]
+> --- a/arch/alpha/include/asm/io.h
+> +++ b/arch/alpha/include/asm/io.h
+> @@ -490,6 +490,11 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
+>  }
+>  #endif
+>  
+> +#define ioread16be(p) be16_to_cpu(ioread16(p))
+> +#define ioread32be(p) be32_to_cpu(ioread32(p))
+> +#define iowrite16be(v,p) iowrite16(cpu_to_be16(v), (p))
+> +#define iowrite32be(v,p) iowrite32(cpu_to_be32(v), (p))
+> +
+>  #define inb_p		inb
 
-Oh I missed it. I looped in a few maintainers and arch lists anyway.
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+This patch has been in use in Debian's development branch since
+January.  Does it look sensible to you?  (If so, I'd like to see it in
+mainline eventually so we can more easily share bugfixes depending on
+it in the future.)
 
-Thanks!
-Linus Walleij
+Thanks,
+Jonathan
