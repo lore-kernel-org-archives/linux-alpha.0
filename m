@@ -1,35 +1,59 @@
-From: Jonathan Nieder <jrnieder@gmail.com>
-Subject: Re: [PATCH] alpha: add io{read,write}{16,32}be functions
-Date: Tue, 24 Apr 2012 21:11:24 -0500
-Message-ID: <20120425021124.GA3017@burratino>
-References: <1322640100-14534-1-git-send-email-mcree@orcon.net.nz>
- <20120424055123.GA7140@burratino>
- <CAEdQ38HE70B-4w3t71rn_S-eX7BMnc6f=dD49guuBim+dQnPzA@mail.gmail.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH] Move most arches to asm-generic/current.h
+Date: Mon, 30 Apr 2012 10:07:53 -0700
+Message-ID: <4F9EC6E9.9000102@codeaurora.org>
+References: <1335237509-17113-1-git-send-email-sboyd@codeaurora.org> <201204301415.56690.arnd@arndb.de> <4F9EBF3E.8060401@codeaurora.org> <201204301638.29398.arnd@arndb.de>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-type:content-disposition:in-reply-to:user-agent;
-        bh=a99S2hyglQDzEKL9xlyMS+UwVngFXuyc0St7RlBwKiM=;
-        b=ZK2uQZIWcUE+Us0lMNYj+5bPwpARqHtiL2r/FELOK/7HC1LPOY/pcRyr2e8sisjmME
-         8wjRcyEO99TIk0A1HU2FhIZPIcwE36PdEH9J8pCDEoFJ8gZG0x3bS1FlxuB9ldVc/mQN
-         ZhD3fkUVaYTqruD9bD5bb9NEpFNQhrvyTeHJhzxxQ8Y+ukCbKD8h/d734ScqRTU/LDdo
-         obKwVosUIXP3qI/Rvw8mVq/+F0fv9TYG0E+08ytikv6zz53pxG0oTXgDNOeTYu6BjVQS
-         AnK3sTswNvqwf4r7lxMtrRiMLrfpfBy6IcorI6Yz9ondO+dNC0GTF8H/9an6IMj7uA4j
-         wvag==
-Content-Disposition: inline
-In-Reply-To: <CAEdQ38HE70B-4w3t71rn_S-eX7BMnc6f=dD49guuBim+dQnPzA@mail.gmail.com>
+In-Reply-To: <201204301638.29398.arnd@arndb.de>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Ben Hutchings <ben@decadent.org.uk>, =?utf-8?B?UmHDumw=?= Porcel <armin76@gentoo.org>
+To: linux-alpha@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-Matt Turner wrote:
+On 04/30/12 09:38, Arnd Bergmann wrote:
 
-> I recently got my kernel.org tree set up again, so I just applied
-> this.
+> On Monday 30 April 2012, Stephen Boyd wrote:
+>> I admit I haven't compile tested this on all the affected architectures.
+>> Looking at the architectures that are migrated here I don't see any that
+>> are defining get_current() as a macro except for alpha. Should I drop
+>> alpha from the patch? Or would it be easier if someone threw this into
+>> linux-next and see if it blows up?
+>>
+>> In the meantime I can scrounge around for those kernel.org
+>> cross-compilers and see if I can compile alpha.
+> I'd say either get an Ack from the Alpha maintainers or drop that
+> hunk from your patch.
+>
 
-Thanks!  Glad to see more DEC syscalls flowing in.
+Ok. Alpha maintainers, do you see any problem with a static inline
+function for get_current() instead of the current macro? My compile of
+alpha with the kernel.org 4.6.3 compilers doesn't show any new build
+failures than what is already there:
+
+  LD      .tmp_vmlinux1
+drivers/built-in.o: In function `ide_set_disk_chs':
+drivers/ide/ide.c:269:(.text+0x732a8): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/ide/ide.c:269:(.text+0x732b0): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/ide/ide.c:267:(.text+0x73310): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/ide/ide.c:267:(.text+0x73318): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/built-in.o: In function `ide_dev_apply_params':
+drivers/ide/ide.c:299:(.text+0x73714): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/ide/ide.c:303:(.text+0x73724): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/ide/ide.c:308:(.text+0x73734): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/ide/ide.c:315:(.text+0x73744): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/built-in.o: In function `unexpected_intr':
+drivers/ide/ide-io.c:734:(.text+0x74dfc): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/ide/ide-io.c:736:(.text+0x74e00): relocation truncated to fit: GPREL16 against `.sbss'
+drivers/ide/ide-io.c:734:(.text+0x74e10): additional relocation overflows omitted from the output
+make[1]: *** [.tmp_vmlinux1] Error 1
+make: *** [sub-make] Error 2
+
+
+
+-- 
+Sent by an employee of the Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum.
+
