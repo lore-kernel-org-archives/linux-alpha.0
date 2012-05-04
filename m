@@ -1,7 +1,7 @@
 From: Camm Maguire <camm@maguirefamily.org>
 Subject: Re: clear_cache on Alpha architecture not implemented?
-Date: Fri, 04 May 2012 09:39:54 -0400
-Message-ID: <87zk9ohxp1.fsf@maguirefamily.org>
+Date: Fri, 04 May 2012 09:55:50 -0400
+Message-ID: <87vckchwyh.fsf@maguirefamily.org>
 References: <87y5pct1hv.fsf@maguirefamily.org>
 	<20120501154228.GI26837@smp.if.uj.edu.pl>
 	<87397jiur8.fsf@maguirefamily.org>
@@ -24,13 +24,28 @@ Content-Transfer-Encoding: 7bit
 To: Richard Henderson <rth@redhat.com>
 Cc: Witold Baryluk <baryluk@smp.if.uj.edu.pl>, gcc@gcc.gnu.org, linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org, gcl-devel@gnu.org
 
-Greetings, and thanks for this very helpful synopsis.
+Greetings!  As a followup, I should note that sh4 and hppa are also
+broken.  I currently have this in configure.in
 
-I'm wondering if there is a simple configure time test to detect when
-this has been fixed.  If I just aborted using __builtin___clear_cache if
-it is in fact a noop on alpha, ppc, ppc64, and ia64, would this suffice?
+case $use in
+     sh4*) ;; #FIXME
+     hppa*) ;; #FIXME
+     *) 
+     AC_MSG_CHECKING(__builtin___clear_cache)
+     		AC_TRY_COMPILE([],
+			       [void *v,*ve;
+			        __builtin___clear_cache(v,ve);
+				],
+				[AC_DEFINE(HAVE_BUILTIN_CLEAR_CACHE)
+				 AC_MSG_RESULT(yes)],
+				 AC_MSG_RESULT(no));;
+esac
+
+Perhaps I should just add alpha, powerpc, ppc64, and ia64 to the
+exception list and deal with this in the future if memory serves.
 
 Take care,
+
 
 Richard Henderson <rth@redhat.com> writes:
 
@@ -58,6 +73,13 @@ Richard Henderson <rth@redhat.com> writes:
 > arbitrary targets for any gcc version up to 4.7.  Feel free to submit an
 > enhancement request via bugzilla so that we can remember to address this
 > for gcc 4.8.
+>
+>
+>
+> r~
+>
+>
+>
 >
 
 -- 
