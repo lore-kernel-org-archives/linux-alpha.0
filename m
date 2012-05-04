@@ -1,7 +1,7 @@
 From: Camm Maguire <camm@maguirefamily.org>
 Subject: Re: clear_cache on Alpha architecture not implemented?
-Date: Fri, 04 May 2012 09:55:50 -0400
-Message-ID: <87vckchwyh.fsf@maguirefamily.org>
+Date: Fri, 04 May 2012 10:07:23 -0400
+Message-ID: <87r4v0hwf8.fsf@maguirefamily.org>
 References: <87y5pct1hv.fsf@maguirefamily.org>
 	<20120501154228.GI26837@smp.if.uj.edu.pl>
 	<87397jiur8.fsf@maguirefamily.org>
@@ -24,28 +24,54 @@ Content-Transfer-Encoding: 7bit
 To: Richard Henderson <rth@redhat.com>
 Cc: Witold Baryluk <baryluk@smp.if.uj.edu.pl>, gcc@gcc.gnu.org, linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org, gcl-devel@gnu.org
 
-Greetings!  As a followup, I should note that sh4 and hppa are also
-broken.  I currently have this in configure.in
+Greetings!  Last followup:
 
-case $use in
-     sh4*) ;; #FIXME
-     hppa*) ;; #FIXME
-     *) 
-     AC_MSG_CHECKING(__builtin___clear_cache)
-     		AC_TRY_COMPILE([],
-			       [void *v,*ve;
-			        __builtin___clear_cache(v,ve);
-				],
-				[AC_DEFINE(HAVE_BUILTIN_CLEAR_CACHE)
-				 AC_MSG_RESULT(yes)],
-				 AC_MSG_RESULT(no));;
-esac
+Nothing here should affect any kfreebsd_amd64 machine, right?  My
+understanding is that these do not require cache flushing.  Thus the
+failure:
 
-Perhaps I should just add alpha, powerpc, ppc64, and ia64 to the
-exception list and deal with this in the future if memory serves.
+https://buildd.debian.org/status/fetch.php?pkg=acl2&arch=kfreebsd-amd64&ver=4.3-1&stamp=1326315213
 
-Take care,
+mv *saved_acl2.gcl saved_acl2
+/usr/bin/make mini-proveall
+make[1]: Entering directory `/build/buildd-acl2_4.3-1-kfreebsd-amd64-SScGlk/acl2-4.3'
+Aborted
+make[1]: *** [mini-proveall] Error 134
+make[1]: Leaving directory `/build/buildd-acl2_4.3-1-kfreebsd-amd64-SScGlk/acl2-4.3'
+make: *** [debian/mini-proveall.out] Error 2
 
+which has shown up on
+
+  * Host name:fasch.debian.org
+  * Architecture:kfreebsd-amd64
+  * Distribution:Debian GNU/Linux
+  * Sponsor:
+      + Greek Research and Technology Network (GRNET) (hosting)
+      + Nordic Gaming (hardware)
+  * Processor:PowerEdge 1855
+
+and 
+
+  * Host name:fano.debian.org
+  * Architecture:kfreebsd-amd64
+  * Distribution:Debian GNU/kFreeBSD
+  * Sponsor:
+      + University of British Columbia - Department of Electrical and Computer Engineering (hosting)
+      + Hewlett-Packard (hardware)
+
+
+but is not reproducible on
+
+  * Host name:asdfasdf.debian.net
+  * Architecture:kfreebsd-amd64
+  * Distribution:Debian GNU/kFreeBSD
+  * Sponsor:
+      + ETH Zurich - Department of Physics (hosting+hw)
+  * Processor:AMD Sempron 3000+ 1600 MHz
+
+is not related?
+
+Thanks so much!
 
 Richard Henderson <rth@redhat.com> writes:
 
