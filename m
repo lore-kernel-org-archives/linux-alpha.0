@@ -1,55 +1,31 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: [PULL] alpha.git
-Date: Sat, 5 May 2012 15:14:14 -0400
-Message-ID: <CAEdQ38H2PfswYMJZXduxK6og0oSxKHGRjoXkbKCgnt1r_13Ppw@mail.gmail.com>
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:from:date:message-id:subject:to:cc:content-type;
-        bh=tNTdw34RIE49GsLWaDTNiiE2uZlUSFytRd0jTFj4YGk=;
-        b=e8BVsw1T7ITNbEWNpip+6WvBEzLNT5NtpGgV4w+djND7Fy08GhzNCUnD4nul87INuI
-         JX47TGaylVq75MRi+SmeUIvyFI3uKbTu/JgJw2izZVzRY7jRKK9CcIuzwQmsbc4m0PVy
-         GHuYwrtl4qLfBcvLVdLK3jUf5DYOHd/YS9L+QbYJZKL0TlSRgcRH8bwPKgDEnNFA+I+C
-         ZhgNKvn+Kj3T9hvW8wHdNgCizymvi/VYCDqOmoZOmW8qANe0Zr7iTEzZBYZ191IwWEqf
-         1QSZhA05GOO5KVdP4L4DrCAWAjkm81Ltb9hIUw0GajnTI/RGGKTGZ9CaAoGIAsIe/TE4
-         HcDg==
-Sender: linux-alpha-owner@vger.kernel.org
+From: Grant Likely <grant.likely@secretlab.ca>
+Subject: Re: [PATCH] gpiolib/arches: Centralise bolierplate asm/gpio.h
+Date: Fri, 11 May 2012 18:08:53 -0600
+Message-ID: <20120512000853.A96353E0791@localhost>
+References: <1334483574-3997-1-git-send-email-broonie@opensource.wolfsonmicro.com> <CACRpkdZ8yH1ZSG-nQ9dLm0TipHS-jZDuxwqohUC=LGH9V-5q4w@mail.gmail.com> <20120416081532.GA3238@opensource.wolfsonmicro.com>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20120416081532.GA3238@opensource.wolfsonmicro.com>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha <linux-alpha@vger.kernel.org>
+To: Mark Brown <broonie@opensource.wolfsonmicro.com>, Linus Walleij <linus.walleij@linaro.org>
+Cc: Grant Likely <grant@secretlab.ca>, Linus Walleij <linus.walleij@stericsson.com>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, microblaze-uclinux@itee.uq.edu.au, linux@lists.openrisc.net, "linuxppc-dev@lists.ozlabs.org list" <linuxppc-dev@lists.ozlabs.org>, sparclinux@vger.kernel.org, Chris Zankel <chris@zankel.net>
 
-Hi Linus,
-My alpha tree is back up (after taking quite some time to get my GPG
-key signed). It contains just some simple fixes.
+On Mon, 16 Apr 2012 09:15:32 +0100, Mark Brown <broonie@opensource.wolfsonmicro.com> wrote:
+> On Mon, Apr 16, 2012 at 09:21:58AM +0200, Linus Walleij wrote:
+> 
+> > This looks good but I think we need to page the alpha, ia64, m68k, microblaze,
+> > openrisc etc subarch maintainers on this patch so they have their say.
+> 
+> That's why I CCed linux-arch, to get all the architecture maintainers
+> included.  vger would get upset if I CCed everyone individually.
 
-Please pull.
+Meh; it's been long enough.  I'll build the major ones and then throw it into linux-next.
 
-Thanks,
-Matt
+g.
 
-The following changes since commit 529acf58981440eefeaf1451387e2a0aa4825c12:
-
-  Merge tag 'nfs-for-3.4-4' of
-git://git.linux-nfs.org/projects/trondmy/linux-nfs (2012-05-02
-08:17:57 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
-
-Jim Faulkner (1):
-      alpha: include module.h to fix modpost on Tsunami
-
-Matt Turner (3):
-      alpha: VGA_HOSE depends on VGA_CONSOLE
-      alpha: properly define get/set_rtc_time on Marvel/SMP
-      alpha: silence 'const' warning in sys_marvel.c
-
- arch/alpha/Kconfig               |    2 +-
- arch/alpha/include/asm/rtc.h     |    8 ++------
- arch/alpha/kernel/core_tsunami.c |    1 +
- arch/alpha/kernel/sys_marvel.c   |    2 +-
- 4 files changed, 5 insertions(+), 8 deletions(-)
+-- 
+Grant Likely, B.Sc, P.Eng.
+Secret Lab Technologies, Ltd.
