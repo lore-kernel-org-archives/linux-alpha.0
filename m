@@ -1,38 +1,43 @@
-From: Norbert Preining <preining@logic.at>
-Subject: Re: Binutils bug with -Wl,--relax
-Date: Fri, 25 May 2012 11:17:10 +0900
-Message-ID: <20120525021710.GA24052@gamma.logic.tuwien.ac.at>
-References: <CAEdQ38FNECGvsADRH-_6qzv660er6-Y5b1xhYk9tJ85KL2raBQ@mail.gmail.com>
-Mime-Version: 1.0
+From: Mike Frysinger <vapier@gentoo.org>
+Subject: [PATCH] alpha: fix fpu.h usage in userspace
+Date: Fri, 25 May 2012 01:42:11 -0400
+Message-ID: <1337924531-9617-1-git-send-email-vapier@gentoo.org>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAEdQ38FNECGvsADRH-_6qzv660er6-Y5b1xhYk9tJ85KL2raBQ@mail.gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-alpha <linux-alpha@vger.kernel.org>
+To: linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: stable@vger.kernel.org
 
-On Do, 24 Mai 2012, Matt Turner wrote:
-> I began testing gcc-4.7.0 today on alpha and remembered that >=gcc-4.6
-> cannot build itself on alpha without passing -Wl,--no-relax.
+After commit ec2212088c42ff7d1362629ec26dda4f3e8bdad3, the fpu.h header
+which we install for userland started depending on special_insns.h which
+is not installed.  However, fpu.h only uses that for __KERNEL__ code, so
+protect the inclusion the same way to avoid build breakage in glibc:
+/usr/include/asm/fpu.h:4:31: fatal error: asm/special_insns.h: No such file or directory
 
-I think not only gcc 4.6, but all gcc from 4 on have a similar problme
-as far as I remember. I hit this bug (if it is the same) every time
-I build TeX Live on alpha-linux when compiling texk/web2c/pdftexdir/writezip.c.
-The same args make it work.
+Cc: stable@vger.kernel.org
+Reported-by: Matt Turner <mattst88@gentoo.org>
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ arch/alpha/include/asm/fpu.h |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
 
-Best wishes
+diff --git a/arch/alpha/include/asm/fpu.h b/arch/alpha/include/asm/fpu.h
+index db00f78..e477bcd 100644
+--- a/arch/alpha/include/asm/fpu.h
++++ b/arch/alpha/include/asm/fpu.h
+@@ -1,7 +1,9 @@
+ #ifndef __ASM_ALPHA_FPU_H
+ #define __ASM_ALPHA_FPU_H
+ 
++#ifdef __KERNEL__
+ #include <asm/special_insns.h>
++#endif
+ 
+ /*
+  * Alpha floating-point control register defines:
+-- 
+1.7.8.6
 
-Norbert
-------------------------------------------------------------------------
-Norbert Preining            preining@{jaist.ac.jp, logic.at, debian.org}
-JAIST, Japan                                 TeX Live & Debian Developer
-DSA: 0x09C5B094   fp: 14DF 2E6C 0307 BE6D AD76  A9C0 D2BF 4AA3 09C5 B094
-------------------------------------------------------------------------
-Ford grabbed him by the lapels of his dressing gown and
-spoke to him as slowly and distinctly and patiently as if
-he were somebody from a telephone company accounts
-department.
-                 --- Ford trying to rectify that situation.
-                 --- Douglas Adams, The Hitchhikers Guide to the Galaxy
