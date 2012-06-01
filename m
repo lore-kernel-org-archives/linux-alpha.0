@@ -1,139 +1,106 @@
-From: Al Viro <viro@ZenIV.linux.org.uk>
-Subject: Re: getxpid() parent lookup is broken
-Date: Tue, 29 May 2012 15:18:39 +0100
-Message-ID: <20120529141839.GA23641@ZenIV.linux.org.uk>
-References: <1285475695.2697.202.camel@localhost>
- <CAEdQ38Ht3bVH1C=xngKtKxHAu2ZJo2n223zQu+Oo=khwm6NdeQ@mail.gmail.com>
- <20120529140943.GS11775@ZenIV.linux.org.uk>
+From: "Srivatsa S. Bhat" <srivatsa.bhat@linux.vnet.ibm.com>
+Subject: [PATCH 27/27] alpha, smpboot: Use generic SMP booting infrastructure
+Date: Fri, 01 Jun 2012 14:46:30 +0530
+Message-ID: <20120601091625.31979.49911.stgit@srivatsabhat.in.ibm.com>
+References: <20120601090952.31979.24799.stgit@srivatsabhat.in.ibm.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120529140943.GS11775@ZenIV.linux.org.uk>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20120601090952.31979.24799.stgit@srivatsabhat.in.ibm.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Ben Hutchings <ben@decadent.org.uk>, linux-alpha@vger.kernel.org, Tobias Klausmann <klausman@gentoo.org>, Michael Cree <mcree@orcon.net.nz>
+To: tglx@linutronix.de, peterz@infradead.org, paulmck@linux.vnet.ibm.com
+Cc: rusty@rustcorp.com.au, mingo@kernel.org, yong.zhang0@gmail.com, akpm@linux-foundation.org, vatsa@linux.vnet.ibm.com, rjw@sisk.pl, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, srivatsa.bhat@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet <eric.dumazet@gmail.com>, Rusty Russell <rusty@rustcorp.com.au>, Mike Frysinger <vapier@gentoo.org>, linux-alpha@vger.kernel.org
 
-On Tue, May 29, 2012 at 03:09:43PM +0100, Al Viro wrote:
-> On Tue, May 29, 2012 at 12:55:10AM -0400, Matt Turner wrote:
-> 
-> > I recently looked at this gentoo bug --
-> > https://bugs.gentoo.org/show_bug.cgi?id=405829 and then came across
-> > this email and the two patches. They seem possibly related.
-> > 
-> > It looks like Al said he thought he had a better way of fixing the
-> > problem, but then I'm not sure if his patches surfaced or not.
-> > 
-> > Also possibly related, Tobias and Michael have seen some RCU stalls
-> > with recent kernels. Looks like getxpid needs an update?
-> 
-> Umm...  Let me see if I can find it...  Here:
-[snip]
+Convert alpha to use the generic framework to boot secondary CPUs.
 
-BTW, there's another completely untested patch bouncing around in the local
-tree - takes kernel_execve() out of entry.S
+Notes:
+1. The secondary cpu was being set in the cpu_online_mask way too early.
+Postpone it.
 
-diff --git a/arch/alpha/kernel/alpha_ksyms.c b/arch/alpha/kernel/alpha_ksyms.c
-index d96e742..b77b813 100644
---- a/arch/alpha/kernel/alpha_ksyms.c
-+++ b/arch/alpha/kernel/alpha_ksyms.c
-@@ -52,7 +52,6 @@ EXPORT_SYMBOL(alpha_write_fp_reg_s);
+2. The original code was enabling interrupts before calling
+wait_boot_cpu_to_stop(). Instead postpone the enabling of interrupts
+to after the cpu_online_mask is set.
+
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: Rusty Russell <rusty@rustcorp.com.au>
+Cc: Mike Frysinger <vapier@gentoo.org>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
+---
+
+ arch/alpha/kernel/smp.c |   27 +++++++++++++++------------
+ 1 files changed, 15 insertions(+), 12 deletions(-)
+
+diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
+index 35ddc02..2547431 100644
+--- a/arch/alpha/kernel/smp.c
++++ b/arch/alpha/kernel/smp.c
+@@ -28,6 +28,7 @@
+ #include <linux/profile.h>
+ #include <linux/bitops.h>
+ #include <linux/cpu.h>
++#include <linux/smpboot.h>
  
- /* entry.S */
- EXPORT_SYMBOL(kernel_thread);
--EXPORT_SYMBOL(kernel_execve);
- 
- /* Networking helper routines. */
- EXPORT_SYMBOL(csum_tcpudp_magic);
-diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-index 4074645..a8c9db8 100644
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -663,58 +663,6 @@ kernel_thread:
- 	br	ret_to_kernel
- .end kernel_thread
- 
--/*
-- * kernel_execve(path, argv, envp)
-- */
--	.align	4
--	.globl	kernel_execve
--	.ent	kernel_execve
--kernel_execve:
--	/* We can be called from a module.  */
--	ldgp	$gp, 0($27)
--	lda	$sp, -(32+SIZEOF_PT_REGS+8)($sp)
--	.frame	$sp, 32+SIZEOF_PT_REGS+8, $26, 0
--	stq	$26, 0($sp)
--	stq	$16, 8($sp)
--	stq	$17, 16($sp)
--	stq	$18, 24($sp)
--	.prologue 1
--
--	lda	$16, 32($sp)
--	lda	$17, 0
--	lda	$18, SIZEOF_PT_REGS
--	bsr	$26, memset		!samegp
--
--	/* Avoid the HAE being gratuitously wrong, which would cause us
--	   to do the whole turn off interrupts thing and restore it.  */
--	ldq	$2, alpha_mv+HAE_CACHE
--	stq	$2, 152+32($sp)
--
--	ldq	$16, 8($sp)
--	ldq	$17, 16($sp)
--	ldq	$18, 24($sp)
--	lda	$19, 32($sp)
--	bsr	$26, do_execve		!samegp
--
--	ldq	$26, 0($sp)
--	bne	$0, 1f			/* error! */
--
--	/* Move the temporary pt_regs struct from its current location
--	   to the top of the kernel stack frame.  See copy_thread for
--	   details for a normal process.  */
--	lda	$16, 0x4000 - SIZEOF_PT_REGS($8)
--	lda	$17, 32($sp)
--	lda	$18, SIZEOF_PT_REGS
--	bsr	$26, memmove		!samegp
--
--	/* Take that over as our new stack frame and visit userland!  */
--	lda	$sp, 0x4000 - SIZEOF_PT_REGS($8)
--	br	$31, ret_from_sys_call
--
--1:	lda	$sp, 32+SIZEOF_PT_REGS+8($sp)
--	ret
--.end kernel_execve
--
- 
- /*
-  * Special system calls.  Most of these are special in that they either
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index 153d3fc..d6fde98 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -455,3 +455,22 @@ get_wchan(struct task_struct *p)
- 	}
- 	return pc;
- }
-+
-+int kernel_execve(const char *path, const char *const argv[], const char *const envp[])
-+{
-+	/* Avoid the HAE being gratuitously wrong, which would cause us
-+	   to do the whole turn off interrupts thing and restore it.  */
-+	struct pt_regs regs = {.hae = alpha_mv.hae_cache};
-+	int err = do_execve(path, argv, envp, &regs);
-+	if (!err) {
-+		struct pt_regs *p = current_pt_regs();
-+		/* copy regs to normal position and off to userland we go... */
-+		*p = regs;
-+		__asm__ __volatile__ (
-+			"mov	%0, $sp;"
-+			"br	$31, ret_from_sys_call"
-+			: : "r"(p));
-+	}
-+	return err;
+ #include <asm/hwrpb.h>
+ #include <asm/ptrace.h>
+@@ -119,13 +120,17 @@ wait_boot_cpu_to_stop(int cpuid)
+ void __cpuinit
+ smp_callin(void)
+ {
+-	int cpuid = hard_smp_processor_id();
++	smpboot_start_secondary(NULL);
 +}
-+EXPORT_SYMBOL(kernel_execve);
++
++void __cpuinit __cpu_pre_starting(void *unused)
++{
++	unsigned int cpuid = hard_smp_processor_id();
+ 
+ 	if (cpu_online(cpuid)) {
+ 		printk("??, cpu 0x%x already present??\n", cpuid);
+ 		BUG();
+ 	}
+-	set_cpu_online(cpuid, true);
+ 
+ 	/* Turn on machine checks.  */
+ 	wrmces(7);
+@@ -145,15 +150,16 @@ smp_callin(void)
+ 	/* All kernel threads share the same mm context.  */
+ 	atomic_inc(&init_mm.mm_count);
+ 	current->active_mm = &init_mm;
++}
+ 
+-	/* inform the notifiers about the new cpu */
+-	notify_cpu_starting(cpuid);
+-
+-	/* Must have completely accurate bogos.  */
+-	local_irq_enable();
++void __cpuinit __cpu_pre_online(void *unused)
++{
++	unsigned int cpuid = hard_smp_processor_id();
+ 
+-	/* Wait boot CPU to stop with irq enabled before running
+-	   calibrate_delay. */
++	/*
++	 * Wait boot CPU to stop with irq disabled before running
++	 * calibrate_delay.
++	 */
+ 	wait_boot_cpu_to_stop(cpuid);
+ 	mb();
+ 	calibrate_delay();
+@@ -165,9 +171,6 @@ smp_callin(void)
+ 
+ 	DBGS(("smp_callin: commencing CPU %d current %p active_mm %p\n",
+ 	      cpuid, current, current->active_mm));
+-
+-	/* Do nothing.  */
+-	cpu_idle();
+ }
+ 
+ /* Wait until hwrpb->txrdy is clear for cpu.  Return -1 on timeout.  */
