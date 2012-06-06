@@ -1,106 +1,48 @@
-From: "Srivatsa S. Bhat" <srivatsa.bhat@linux.vnet.ibm.com>
-Subject: [PATCH 27/27] alpha, smpboot: Use generic SMP booting infrastructure
-Date: Fri, 01 Jun 2012 14:46:30 +0530
-Message-ID: <20120601091625.31979.49911.stgit@srivatsabhat.in.ibm.com>
-References: <20120601090952.31979.24799.stgit@srivatsabhat.in.ibm.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20120601090952.31979.24799.stgit@srivatsabhat.in.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Alex Shi <alex.shi@intel.com>
+Subject: [RFC PATCH] sched/numa: do load balance between remote nodes
+Date: Wed,  6 Jun 2012 14:52:51 +0800
+Message-ID: <1338965571-9812-1-git-send-email-alex.shi@intel.com>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: tglx@linutronix.de, peterz@infradead.org, paulmck@linux.vnet.ibm.com
-Cc: rusty@rustcorp.com.au, mingo@kernel.org, yong.zhang0@gmail.com, akpm@linux-foundation.org, vatsa@linux.vnet.ibm.com, rjw@sisk.pl, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, srivatsa.bhat@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, Eric Dumazet <eric.dumazet@gmail.com>, Rusty Russell <rusty@rustcorp.com.au>, Mike Frysinger <vapier@gentoo.org>, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: a.p.zijlstra@chello.nl
+Cc: anton@samba.org, benh@kernel.crashing.org, cmetcalf@tilera.com, dhowells@redhat.com, davem@davemloft.net, fenghua.yu@intel.com, hpa@zytor.com, ink@jurassic.park.msu.ru, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, mattst88@gmail.com, paulus@samba.org, lethal@linux-sh.org, ralf@linux-mips.org, rth@twiddle.net, sparclinux@vger.kernel.org, tony.luck@intel.com, x86@kernel.org, sivanich@sgi.com, greg.pearson@hp.com, kamezawa.hiroyu@jp.fujitsu.com, bob.picco@oracle.com, chris.mason@oracle.com, torvalds@linux-foundation.org, akpm@linux-foundation.org, mingo@kernel.org, pjt@google.com, tglx@linutronix.de, seto.hidetoshi@jp.fujitsu.com, ak@linux.intel.com, arjan.van.de.ven@intel.com
 
-Convert alpha to use the generic framework to boot secondary CPUs.
+commit cb83b629b remove the NODE sched domain and check if the node
+distance in SLIT table is farther than REMOTE_DISTANCE, if so, it will
+lose the load balance chance at exec/fork/wake_affine points.
 
-Notes:
-1. The secondary cpu was being set in the cpu_online_mask way too early.
-Postpone it.
+But actually, even the node distance is farther than REMOTE_DISTANCE,
+Modern CPUs also has QPI like connections, that make memory access is
+not too slow between nodes. So above losing on NUMA machine make a
+huge performance regression on benchmark: hackbench, tbench, netperf
+and oltp etc.
 
-2. The original code was enabling interrupts before calling
-wait_boot_cpu_to_stop(). Instead postpone the enabling of interrupts
-to after the cpu_online_mask is set.
+This patch will recover the scheduler behavior to old mode on all my
+Intel platforms: NHM EP/EX, WSM EP, SNB EP/EP4S, and so remove the
+perfromance regressions. (all of them just has 2 kinds distance, 10 21)
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Rusty Russell <rusty@rustcorp.com.au>
-Cc: Mike Frysinger <vapier@gentoo.org>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
+Signed-off-by: Alex Shi <alex.shi@intel.com>
 ---
+ kernel/sched/core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
- arch/alpha/kernel/smp.c |   27 +++++++++++++++------------
- 1 files changed, 15 insertions(+), 12 deletions(-)
-
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index 35ddc02..2547431 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -28,6 +28,7 @@
- #include <linux/profile.h>
- #include <linux/bitops.h>
- #include <linux/cpu.h>
-+#include <linux/smpboot.h>
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 39eb601..b2ee41a 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6286,7 +6286,7 @@ static int sched_domains_curr_level;
  
- #include <asm/hwrpb.h>
- #include <asm/ptrace.h>
-@@ -119,13 +120,17 @@ wait_boot_cpu_to_stop(int cpuid)
- void __cpuinit
- smp_callin(void)
+ static inline int sd_local_flags(int level)
  {
--	int cpuid = hard_smp_processor_id();
-+	smpboot_start_secondary(NULL);
-+}
-+
-+void __cpuinit __cpu_pre_starting(void *unused)
-+{
-+	unsigned int cpuid = hard_smp_processor_id();
+-	if (sched_domains_numa_distance[level] > REMOTE_DISTANCE)
++	if (sched_domains_numa_distance[level] > RECLAIM_DISTANCE)
+ 		return 0;
  
- 	if (cpu_online(cpuid)) {
- 		printk("??, cpu 0x%x already present??\n", cpuid);
- 		BUG();
- 	}
--	set_cpu_online(cpuid, true);
- 
- 	/* Turn on machine checks.  */
- 	wrmces(7);
-@@ -145,15 +150,16 @@ smp_callin(void)
- 	/* All kernel threads share the same mm context.  */
- 	atomic_inc(&init_mm.mm_count);
- 	current->active_mm = &init_mm;
-+}
- 
--	/* inform the notifiers about the new cpu */
--	notify_cpu_starting(cpuid);
--
--	/* Must have completely accurate bogos.  */
--	local_irq_enable();
-+void __cpuinit __cpu_pre_online(void *unused)
-+{
-+	unsigned int cpuid = hard_smp_processor_id();
- 
--	/* Wait boot CPU to stop with irq enabled before running
--	   calibrate_delay. */
-+	/*
-+	 * Wait boot CPU to stop with irq disabled before running
-+	 * calibrate_delay.
-+	 */
- 	wait_boot_cpu_to_stop(cpuid);
- 	mb();
- 	calibrate_delay();
-@@ -165,9 +171,6 @@ smp_callin(void)
- 
- 	DBGS(("smp_callin: commencing CPU %d current %p active_mm %p\n",
- 	      cpuid, current, current->active_mm));
--
--	/* Do nothing.  */
--	cpu_idle();
- }
- 
- /* Wait until hwrpb->txrdy is clear for cpu.  Return -1 on timeout.  */
+ 	return SD_BALANCE_EXEC | SD_BALANCE_FORK | SD_WAKE_AFFINE;
+-- 
+1.7.5.4
+
