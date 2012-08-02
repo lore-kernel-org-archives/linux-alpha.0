@@ -1,55 +1,84 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: [PATCH] alpha: remove mysterious if zero-ed out includes
-Date: Sat, 30 Jun 2012 12:42:33 +0200
-Message-ID: <1341052953.1911.67.camel@x61.thuisdomein>
+From: Fengguang Wu <fengguang.wu@intel.com>
+Subject: Re: [next:akpm 129/309] net/core/sock.c:274:36: error: initializer
+ element is not constant
+Date: Thu, 2 Aug 2012 23:02:09 +0800
+Message-ID: <20120802150209.GA26601@localhost>
+References: <20120722163058.GB13376@localhost>
+ <20120723111619.GT9222@suse.de>
+ <1343042420.3027.11.camel@dabdike.int.hansenpartnership.com>
+ <20120723114258.GV9222@suse.de>
+ <20120723122905.GA22476@localhost>
+ <BLU0-SMTP2254F8872DDE5FA6035CDE97DD0@phx.gbl>
+ <20120724074844.GA9519@localhost>
+ <BLU0-SMTP6C7CFCFF734FE10A39B6E97DC0@phx.gbl>
+ <1343193053.3139.6.camel@dabdike>
+ <CA+8MBbJkGN+zGBdD5Hg26wW_6E9L_ufoutn7wj+Y+nhtW7WKWg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CA+8MBbJkGN+zGBdD5Hg26wW_6E9L_ufoutn7wj+Y+nhtW7WKWg@mail.gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: linux-alpha@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tony Luck <tony.luck@gmail.com>, James Bottomley <James.Bottomley@hansenpartnership.com>, John David Anglin <dave.anglin@bell.net>, Mel Gorman <mgorman@suse.de>, kernel-janitors@vger.kernel.org, Kyle McMartin <kyle@parisc-linux.org>, Andrew Morton <akpm@linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Parisc List <linux-parisc@vger.kernel.org>
 
-There's a small group of odd looking includes in smc37c669.c. These
-includes appear to be if zero-ed out ever since they were added to the
-tree (in v2.1.89). Their purpose is unclear to me. Perhaps they were
-used in someones build system. Whatever their purpose was, nothing else
-uses something comparable. This entire if zero-ed out block might as
-well be removed.
+On Thu, Jul 26, 2012 at 10:06:41AM -0700, Tony Luck wrote:
+> On Tue, Jul 24, 2012 at 10:10 PM, James Bottomley
+> <James.Bottomley@hansenpartnership.com> wrote:
+> >> Here is the line in sock.i:
+> >>
+> >> struct static_key memalloc_socks = ((struct static_key) { .enabled =
+> >> ((atomic_t) { (0) }) });
+> >
+> > The above line contains two compound literals.  It also uses a designated
+> > initializer to initialize the field enabled.  A compound literal is not a
+> > constant expression.
+> 
+> Seeing the same thing on ia64 building next-20120726.  Same fix works
+> for me ... so I'll steal this whole changelog and attributes.
 
-Signed-off-by: Paul Bolle <pebolle@tiscali.nl>
+I got the same error for alpha, the same fix applies.
 ---
-0) Untested. I do not have the toolchain needed at hand.
+From: Mel Gorman <mgorman@suse.de>
+Subject: [PATCH] [ALPHA] Redefine ATOMIC_INIT and ATOMIC64_INIT to drop the casts
 
-1) I only care about these few lines because they show up (as false
-positives) when grepping the tree for includes.
+The following build error occurred during an alpha build:
 
- arch/alpha/kernel/smc37c669.c |   12 ------------
- 1 files changed, 0 insertions(+), 12 deletions(-)
+net/core/sock.c:274:36: error: initializer element is not constant
 
-diff --git a/arch/alpha/kernel/smc37c669.c b/arch/alpha/kernel/smc37c669.c
-index 0435921d..c803fc7 100644
---- a/arch/alpha/kernel/smc37c669.c
-+++ b/arch/alpha/kernel/smc37c669.c
-@@ -933,18 +933,6 @@ void SMC37c669_display_device_info(
-  *
-  *--
+Dave Anglin says:
+> Here is the line in sock.i:
+>
+> struct static_key memalloc_socks = ((struct static_key) { .enabled =
+> ((atomic_t) { (0) }) });
+
+The above line contains two compound literals.  It also uses a designated
+initializer to initialize the field enabled.  A compound literal is not a
+constant expression.
+
+The location of the above statement isn't fully clear, but if a compound
+literal occurs outside the body of a function, the initializer list must
+consist of constant expressions.
+
+Reported-by: Fengguang Wu <fengguang.wu@intel.com>
+Signed-off-by: Mel Gorman <mgorman@suse.de>
+Cc: <stable@vger.kernel.org>
+---
+ arch/alpha/include/asm/atomic.h |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- linux.orig/arch/alpha/include/asm/atomic.h	2012-05-24 19:03:06.000000000 +0800
++++ linux/arch/alpha/include/asm/atomic.h	2012-08-02 23:01:02.243224220 +0800
+@@ -14,8 +14,8 @@
   */
--#if 0
--/* $INCLUDE_OPTIONS$ */
--#include    "cp$inc:platform_io.h"
--/* $INCLUDE_OPTIONS_END$ */
--#include    "cp$src:common.h"
--#include    "cp$inc:prototypes.h"
--#include    "cp$src:kernel_def.h"
--#include    "cp$src:msg_def.h"
--#include    "cp$src:smcc669_def.h"
--/* Platform-specific includes */
--#include    "cp$src:platform.h"
--#endif
  
- #ifndef TRUE
- #define TRUE 1
--- 
-1.7.7.6
+ 
+-#define ATOMIC_INIT(i)		( (atomic_t) { (i) } )
+-#define ATOMIC64_INIT(i)	( (atomic64_t) { (i) } )
++#define ATOMIC_INIT(i)		( { (i) } )
++#define ATOMIC64_INIT(i)	( { (i) } )
+ 
+ #define atomic_read(v)		(*(volatile int *)&(v)->counter)
+ #define atomic64_read(v)	(*(volatile long *)&(v)->counter)
