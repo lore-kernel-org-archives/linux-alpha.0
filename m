@@ -1,54 +1,35 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] [ALPHA] Redefine ATOMIC_INIT and ATOMIC64_INIT to drop
- the casts
-Date: Wed, 15 Aug 2012 15:03:28 -0700
-Message-ID: <20120815150328.e1fb3676.akpm@linux-foundation.org>
-References: <1343042420.3027.11.camel@dabdike.int.hansenpartnership.com>
-	<20120723114258.GV9222@suse.de>
-	<20120723122905.GA22476@localhost>
-	<BLU0-SMTP2254F8872DDE5FA6035CDE97DD0@phx.gbl>
-	<20120724074844.GA9519@localhost>
-	<BLU0-SMTP6C7CFCFF734FE10A39B6E97DC0@phx.gbl>
-	<1343193053.3139.6.camel@dabdike>
-	<CA+8MBbJkGN+zGBdD5Hg26wW_6E9L_ufoutn7wj+Y+nhtW7WKWg@mail.gmail.com>
-	<20120802150209.GA26601@localhost>
-	<502707D5.7020602@orcon.net.nz>
-	<20120812021405.GB8442@localhost>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: [BUG] net/core/sock.c won't compile on alpha
+Date: Wed, 22 Aug 2012 07:14:07 -0500
+Message-ID: <20120822121407.GA6257@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <20120812021405.GB8442@localhost>
-Sender: linux-parisc-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Fengguang Wu <fengguang.wu@intel.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tony Luck <tony.luck@gmail.com>, James Bottomley <James.Bottomley@hansenpartnership.com>, John David Anglin <dave.anglin@bell.net>, Mel Gorman <mgorman@suse.de>, kernel-janitors@vger.kernel.org, Kyle McMartin <kyle@parisc-linux.org>, LKML <linux-kernel@vger.kernel.org>, Parisc List <linux-parisc@vger.kernel.org>, David Miller <davem@davemloft.net>
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: linux-alpha@vger.kernel.org, mcree@orcon.net.nz
 
-On Sun, 12 Aug 2012 10:14:05 +0800
-Fengguang Wu <fengguang.wu@intel.com> wrote:
+Kernel version 3.6.0-rc2, and probably -rc1 as well.  I get the
+following compile-time error on alpha architecture:
 
-> From: Mel Gorman <mgorman@suse.de>
-> 
-> The following build error occurred during an alpha build:
-> 
-> net/core/sock.c:274:36: error: initializer element is not constant
-> 
-> Dave Anglin says:
-> > Here is the line in sock.i:
-> >
-> > struct static_key memalloc_socks = ((struct static_key) { .enabled =
-> > ((atomic_t) { (0) }) });
-> 
-> The above line contains two compound literals.  It also uses a designated
-> initializer to initialize the field enabled.  A compound literal is not a
-> constant expression.
-> 
-> The location of the above statement isn't fully clear, but if a compound
-> literal occurs outside the body of a function, the initializer list must
-> consist of constant expressions.
-> 
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Mel Gorman <mgorman@suse.de>
-> Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
+(...)
+  CC      net/core/sock.o
+net/core/sock.c:274:36: error: initializer element is not constant
+net/core/sock.c:274:36: error: (near initialization for "memalloc_socks")
+net/core/sock.c:274:36: error: initializer element is not constant
+make[2]: *** [net/core/sock.o] Error 1
+make[1]: *** [net/core] Error 2
+make: *** [net] Error 2
 
-I'll remvoe the Cc:stable from this one - the regression is post-3.5.
+Compiler is gcc-4.6.3.
+
+Line 274 of net/core/sock.c is
+
+struct static_key memalloc_socks = STATIC_KEY_INIT_FALSE;
+
+which made its first appearance in 3.6.0-rc1.
+
+--Bob
