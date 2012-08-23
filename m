@@ -1,31 +1,40 @@
-From: Bob Tracy <rct@gherkin.frus.com>
-Subject: Re: [BUG] net/core/sock.c won't compile on alpha
-Date: Thu, 23 Aug 2012 00:20:10 -0500
-Message-ID: <20120823052010.GA8134@gherkin.frus.com>
-References: <20120822121407.GA6257@gherkin.frus.com> <C17EFEEA-F810-4BC7-A6A0-9F992535F741@orcon.net.nz>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: [PATCH 01/10] alpha: Add missing RCU idle APIs on idle loop
+Date: Thu, 23 Aug 2012 21:32:18 +1200
+Message-ID: <5035F8A2.1070702@orcon.net.nz>
+References: <1345652628-15060-1-git-send-email-fweisbec@gmail.com> <1345652628-15060-2-git-send-email-fweisbec@gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <C17EFEEA-F810-4BC7-A6A0-9F992535F741@orcon.net.nz>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1345652628-15060-2-git-send-email-fweisbec@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+To: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, "3.2.x.." <stable@kernel.org>
 
-On Thu, Aug 23, 2012 at 09:16:53AM +1200, Michael Cree wrote:
-> On 23/08/2012, at 12:14 AM, Bob Tracy wrote:
-> >Kernel version 3.6.0-rc2, and probably -rc1 as well.  I get the
-> >following compile-time error on alpha architecture:
-> >
-> >(...)
-> > CC      net/core/sock.o
-> >net/core/sock.c:274:36: error: initializer element is not constant
-> 
-> Try v3.6-rc3.  It should be fixed now.
+On 23/08/12 04:23, Frederic Weisbecker wrote:
+> In the old times, the whole idle task was considered
+> as an RCU quiescent state. But as RCU became more and
+> more successful overtime, some RCU read side critical
+> section have been added even in the code of some
+> architectures idle tasks, for tracing for example.
 
-That got it.  Finally saw the discussion on the bug (from about a month
-ago -- thanks, Simon).
+Fantastic!  It fixes RCU CPU stalls that we were seeing on the SMP
+kernel when built for generic Alpha.
 
---Bob
+A build of glibc and running its test suite reliably triggers RCU CPU
+stalls when running a kernel built for generic Alpha.  I have just built
+glibc and ran its test suite twice with no RCU CPU stalls with this
+patch against a 3.5.2 kernel!  Nice.  Very nice.
+
+I see the stable queue is CCed but I note the patch does not apply
+cleanly to the 3.2.y kernel.  It would be nice to have a backport of the
+patches for the 3.2 stable kernel.
+
+So feel free to add:
+
+Tested-by:  Michael Cree <mcree@orcon.net.nz>
+
+Cheers
+Michael.
