@@ -1,7 +1,7 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+From: Tobias Klausmann <klausman@schwarzvogel.de>
 Subject: Re: [PATCH 00/11] rcu: Add missing RCU idle APIs on idle loop v2
-Date: Sat, 25 Aug 2012 17:12:33 -0700
-Message-ID: <20120826001233.GH3436@linux.vnet.ibm.com>
+Date: Sun, 26 Aug 2012 11:21:37 +0200
+Message-ID: <20120826092137.GA50543@kaini.schwarzvogel.de>
 References: <1345733915-20040-1-git-send-email-fweisbec@gmail.com>
  <20120824212647.GU2472@linux.vnet.ibm.com>
  <1345857554.4840.43.camel@deadeye.wl.decadent.org.uk>
@@ -9,84 +9,39 @@ References: <1345733915-20040-1-git-send-email-fweisbec@gmail.com>
  <20120825131647.GA1994@somewhere>
  <20120825161806.GD3436@linux.vnet.ibm.com>
  <5039406F.9040604@orcon.net.nz>
-Reply-To: paulmck@linux.vnet.ibm.com
+ <20120826001233.GH3436@linux.vnet.ibm.com>
 Mime-Version: 1.0
 Return-path: <linux-parisc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5039406F.9040604@orcon.net.nz>
+In-Reply-To: <20120826001233.GH3436@linux.vnet.ibm.com>
 Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: Frederic Weisbecker <fweisbec@gmail.com>, Ben Hutchings <ben@decadent.org.uk>, LKML <linux-kernel@vger.kernel.org>, Chris Zankel <chris@zankel.net>, "3.2.x.." <stable@vger.kernel.org>, Chen Liqin <liqin.chen@sunplusct.com>, Lennox Wu <lennox.wu@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Parisc <linux-parisc@vger.kernel.org>, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Geert Uytterhoeven <geert@linux-m68k.org>, m68k <linux-m68k@lists.linux-m68k.org>, Hirokazu Takata <takata@linux-m32r.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Cris <linux-cris-kernel@axis.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-al>
+To: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Cc: Michael Cree <mcree@orcon.net.nz>, Frederic Weisbecker <fweisbec@gmail.com>, Ben Hutchings <ben@decadent.org.uk>, LKML <linux-kernel@vger.kernel.org>, Chris Zankel <chris@zankel.net>, "3.2.x.." <stable@vger.kernel.org>, Chen Liqin <liqin.chen@sunplusct.com>, Lennox Wu <lennox.wu@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Parisc <linux-parisc@vger.kernel.org>, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Geert Uytterhoeven <geert@linux-m68k.org>, m68k <linux-m68k@lists.linux-m68k.org>, Hirokazu Takata <takata@linux-m32r.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Cris <linux-cris-kernel@axis.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <m>
 
-On Sun, Aug 26, 2012 at 09:15:27AM +1200, Michael Cree wrote:
-> On 26/08/12 04:18, Paul E. McKenney wrote:
-> > On Sat, Aug 25, 2012 at 03:16:49PM +0200, Frederic Weisbecker wrote:
-> >> On Fri, Aug 24, 2012 at 08:50:47PM -0700, Paul E. McKenney wrote:
-> >>> On Sat, Aug 25, 2012 at 02:19:14AM +0100, Ben Hutchings wrote:
-> >>>> On Fri, 2012-08-24 at 14:26 -0700, Paul E. McKenney wrote:
-> >>>>> On Thu, Aug 23, 2012 at 04:58:24PM +0200, Frederic Weisbecker wrote:
-> >>>>>> Hi,
-> >>>>>>
-> >>>>>> Changes since v1:
-> >>>>>>
-> >>>>>> - Fixed preempt handling in alpha idle loop
-> >>>>>> - added ack from Geert
-> >>>>>> - fixed stable email address, sorry :-/
-> >>>>>>
-> >>>>>> This time I built tested everywhere but: h8300 (compiler internal error),
-> >>>>>> and mn10300, parisc, score (cross compilers not available in
-> >>>>>> ftp://ftp.kernel.org/pub/tools/crosstool/files/bin/x86_64/4.6.3/)
-> >>>>>>
-> >>>>>> For testing, you can pull from:
-> >>>>>>
-> >>>>>> git://github.com/fweisbec/linux-dynticks.git
-> >>>>>> 	rcu/idle-fix-v2 
-> >>>>>>
-> >>>>>> Thanks.
-> >>>>>
-> >>>>> I have queued these on -rcu branch rcu/idle:
-> >>>>>
-> >>>>> 	git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
-> >>>>>
-> >>>>> This problem has been in place since 3.3, so it is hard to argue that
-> >>>>> it is a regression for this merge window.  I have therefore queued it
-> >>>>> for 3.7.
-> >>>>
-> >>>> I don't follow that; I would expect any serious bug fix (serious enough
-> >>>> for a stable update) to be acceptable for 3.6 at this point.
-> >>>
-> >>> OK, if any of the arch maintainers wishes to submit the patch to 3.6,
-> >>> they are free to do so -- just let me know and I will drop the patch from
-> >>> my tree.
-> >>>
-> >>> That said, all this does is cause spurious warnings to be printed, so
-> >>> not sure it really qualifies as serious.  But I am happy to leave that
-> >>> decision with the individual arch maintainers -- it is their arch,
-> >>> after all, so their decision.
-> >>
-> >> Couldn't that cause hung tasks due to long lasting synchronize_rcu() ?
-> > 
-> > In theory, definitely.  In practice, they haven't been running into it,
-> > or they would be reporting hangs.
-> 
-> I am hereby reporting that RCU CPU stall warnings and hung tasks are
-> being experienced on SMP kernels built for generic Alpha. This problem
-> dates back quite a few kernel releases. The discussed patches appear to
-> fix the problem.
+Hi! 
 
-OK, fair enough.
+On Sat, 25 Aug 2012, Paul E. McKenney wrote:
+> Both Alpha patches should apply as-is back to 3.3, and should also fix
+> the problem.  Could you please check this on the versions of interest?
 
-> A backport to the 3.2 kernel, of at least the Alpha patches, would be
-> very much appreciated! :-)
+I just now tried them on top of 3.3.8 from linux-stable.git.
+While they apply cleanly, I get a compile failure:
 
-Both Alpha patches should apply as-is back to 3.3, and should also fix
-the problem.  Could you please check this on the versions of interest?
+  CC      arch/alpha/kernel/process.o
+arch/alpha/kernel/process.c: In function 'cpu_idle':
+arch/alpha/kernel/process.c:64: error: implicit declaration of function 'schedule_preempt_disabled'
+make[1]: *** [arch/alpha/kernel/process.o] Error 1
+make: *** [arch/alpha/kernel] Error 2
 
-If you are seeing something like this on 3.2 or earlier, you have some
-other problem that needs to be tracked down separately.
+AFAICT, schedule_preempt_disabled() was only introduced in 3.4
+and thus needs to be backported for 3.3.
 
-							Thanx, Paul
+Regards,
+Tobias
 
+-- 
+panic("%s: CORRUPTED BTREE OR SOMETHING", __FUNCTION__);
+        linux-2.6.6/fs/xfs/xfs_bmap.c
