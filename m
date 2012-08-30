@@ -1,47 +1,68 @@
-From: Tobias Klausmann <klausman@schwarzvogel.de>
-Subject: Re: [PATCH 00/11] rcu: Add missing RCU idle APIs on idle loop v2
-Date: Sun, 26 Aug 2012 11:21:37 +0200
-Message-ID: <20120826092137.GA50543@kaini.schwarzvogel.de>
-References: <1345733915-20040-1-git-send-email-fweisbec@gmail.com>
- <20120824212647.GU2472@linux.vnet.ibm.com>
- <1345857554.4840.43.camel@deadeye.wl.decadent.org.uk>
- <20120825035047.GB3436@linux.vnet.ibm.com>
- <20120825131647.GA1994@somewhere>
- <20120825161806.GD3436@linux.vnet.ibm.com>
- <5039406F.9040604@orcon.net.nz>
- <20120826001233.GH3436@linux.vnet.ibm.com>
-Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120826001233.GH3436@linux.vnet.ibm.com>
-Sender: linux-parisc-owner@vger.kernel.org
+From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Subject: [PATCH tip/core/rcu 15/26] alpha: Fix preemption handling in idle loop
+Date: Thu, 30 Aug 2012 14:05:32 -0700
+Message-ID: <1346360743-3628-15-git-send-email-paulmck@linux.vnet.ibm.com>
+References: <20120830210520.GA2824@linux.vnet.ibm.com>
+ <1346360743-3628-1-git-send-email-paulmck@linux.vnet.ibm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1346360743-3628-1-git-send-email-paulmck@linux.vnet.ibm.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, Frederic Weisbecker <fweisbec@gmail.com>, Ben Hutchings <ben@decadent.org.uk>, LKML <linux-kernel@vger.kernel.org>, Chris Zankel <chris@zankel.net>, "3.2.x.." <stable@vger.kernel.org>, Chen Liqin <liqin.chen@sunplusct.com>, Lennox Wu <lennox.wu@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Parisc <linux-parisc@vger.kernel.org>, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Geert Uytterhoeven <geert@linux-m68k.org>, m68k <linux-m68k@lists.linux-m68k.org>, Hirokazu Takata <takata@linux-m32r.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Cris <linux-cris-kernel@axis.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <m>
+To: linux-kernel@vger.kernel.org
+Cc: mingo@elte.hu, laijs@cn.fujitsu.com, dipankar@in.ibm.com, akpm@linux-foundation.org, mathieu.desnoyers@polymtl.ca, josh@joshtriplett.org, niv@us.ibm.com, tglx@linutronix.de, peterz@infradead.org, rostedt@goodmis.org, Valdis.Kletnieks@vt.edu, dhowells@redhat.com, eric.dumazet@gmail.com, darren@dvhart.com, fweisbec@gmail.com, sbw@mit.edu, patches@linaro.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Michael Cree <mcree@orcon.net.nz>
 
-Hi! 
+From: Frederic Weisbecker <fweisbec@gmail.com>
 
-On Sat, 25 Aug 2012, Paul E. McKenney wrote:
-> Both Alpha patches should apply as-is back to 3.3, and should also fix
-> the problem.  Could you please check this on the versions of interest?
+cpu_idle() is called on the boot CPU by the init code with
+preemption disabled. But the cpu_idle() function in alpha
+doesn't handle this when it calls schedule() directly.
 
-I just now tried them on top of 3.3.8 from linux-stable.git.
-While they apply cleanly, I get a compile failure:
+Fix it by converting it into schedule_preempt_disabled().
 
-  CC      arch/alpha/kernel/process.o
-arch/alpha/kernel/process.c: In function 'cpu_idle':
-arch/alpha/kernel/process.c:64: error: implicit declaration of function 'schedule_preempt_disabled'
-make[1]: *** [arch/alpha/kernel/process.o] Error 1
-make: *** [arch/alpha/kernel] Error 2
+Also disable preemption before calling cpu_idle() from
+secondary CPU entry code to stay consistent with this
+state.
 
-AFAICT, schedule_preempt_disabled() was only introduced in 3.4
-and thus needs to be backported for 3.3.
+Signed-off-by: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: alpha <linux-alpha@vger.kernel.org>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Michael Cree <mcree@orcon.net.nz>
+---
+ arch/alpha/kernel/process.c |    3 ++-
+ arch/alpha/kernel/smp.c     |    1 +
+ 2 files changed, 3 insertions(+), 1 deletions(-)
 
-Regards,
-Tobias
-
+diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
+index 153d3fc..eac5e01 100644
+--- a/arch/alpha/kernel/process.c
++++ b/arch/alpha/kernel/process.c
+@@ -56,7 +56,8 @@ cpu_idle(void)
+ 
+ 		while (!need_resched())
+ 			cpu_relax();
+-		schedule();
++
++		schedule_preempt_disabled();
+ 	}
+ }
+ 
+diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
+index 35ddc02..a41ad90 100644
+--- a/arch/alpha/kernel/smp.c
++++ b/arch/alpha/kernel/smp.c
+@@ -166,6 +166,7 @@ smp_callin(void)
+ 	DBGS(("smp_callin: commencing CPU %d current %p active_mm %p\n",
+ 	      cpuid, current, current->active_mm));
+ 
++	preempt_disable();
+ 	/* Do nothing.  */
+ 	cpu_idle();
+ }
 -- 
-panic("%s: CORRUPTED BTREE OR SOMETHING", __FUNCTION__);
-        linux-2.6.6/fs/xfs/xfs_bmap.c
+1.7.8
