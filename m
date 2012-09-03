@@ -1,81 +1,68 @@
-From: Josh Triplett <josh@joshtriplett.org>
-Subject: Re: [PATCH tip/core/rcu 16/26] alpha: Add missing RCU idle APIs on
- idle loop
-Date: Fri, 31 Aug 2012 17:00:56 -0700
-Message-ID: <20120901000055.GN11771@jtriplet-mobl1>
-References: <20120830210520.GA2824@linux.vnet.ibm.com>
- <1346360743-3628-1-git-send-email-paulmck@linux.vnet.ibm.com>
- <1346360743-3628-16-git-send-email-paulmck@linux.vnet.ibm.com>
+From: Al Viro <viro@ZenIV.linux.org.uk>
+Subject: Re: [RFC] semantics of singlestepping vs. tracer exiting
+Date: Mon, 3 Sep 2012 18:31:08 +0100
+Message-ID: <20120903173108.GH23464@ZenIV.linux.org.uk>
+References: <20120903001436.GG23464@ZenIV.linux.org.uk>
+ <20120903160538.GA10114@redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1346360743-3628-16-git-send-email-paulmck@linux.vnet.ibm.com>
+In-Reply-To: <20120903160538.GA10114@redhat.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Cc: linux-kernel@vger.kernel.org, mingo@elte.hu, laijs@cn.fujitsu.com, dipankar@in.ibm.com, akpm@linux-foundation.org, mathieu.desnoyers@polymtl.ca, niv@us.ibm.com, tglx@linutronix.de, peterz@infradead.org, rostedt@goodmis.org, Valdis.Kletnieks@vt.edu, dhowells@redhat.com, eric.dumazet@gmail.com, darren@dvhart.com, fweisbec@gmail.com, sbw@mit.edu, patches@linaro.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Michael Cree <mcree@orcon.net.nz>, "3.2.x.." <stable@vger.kernel.org>
+To: Oleg Nesterov <oleg@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Thu, Aug 30, 2012 at 02:05:33PM -0700, Paul E. McKenney wrote:
-> From: Frederic Weisbecker <fweisbec@gmail.com>
-> 
-> In the old times, the whole idle task was considered
-> as an RCU quiescent state. But as RCU became more and
-> more successful overtime, some RCU read side critical
-> section have been added even in the code of some
-> architectures idle tasks, for tracing for example.
-> 
-> So nowadays, rcu_idle_enter() and rcu_idle_exit() must
-> be called by the architecture to tell RCU about the part
-> in the idle loop that doesn't make use of rcu read side
-> critical sections, typically the part that puts the CPU
-> in low power mode.
-> 
-> This is necessary for RCU to find the quiescent states in
-> idle in order to complete grace periods.
-> 
-> Add this missing pair of calls in the Alpha's idle loop.
-> 
-> Reported-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> Signed-off-by: Frederic Weisbecker <fweisbec@gmail.com>
-> Cc: Richard Henderson <rth@twiddle.net>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Cc: alpha <linux-alpha@vger.kernel.org>
-> Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> Cc: Michael Cree <mcree@orcon.net.nz>
-> Cc: 3.2.x.. <stable@vger.kernel.org>
+On Mon, Sep 03, 2012 at 06:05:38PM +0200, Oleg Nesterov wrote:
 
-Reviewed-by: Josh Triplett <josh@joshtriplett.org>
+> This is not easy to fix. ptrace_disable() and user_disable_single_step()
+> is arch dependant, but at least on x86 it assumes that the tracee is not
+> running, so exit_ptrace() can't do this.
 
->  arch/alpha/kernel/process.c |    3 +++
->  1 files changed, 3 insertions(+), 0 deletions(-)
+True (IOW, proposed fix is hopeless - we definitely want the detachees to be
+in kernel space, and not only on x86).
+
+> This is another reason to move enable/disable step into ptrace_stop().
+> And in fact I had the patches a loong ago, but we need to cleanup
+> the usage of PT_SINGLESTEP/PT_BLOCKSTEP first. The tracer should
+> simply set/clear these PT_ flags and resume the tracee which should
+> check them and do user_*_single_step() in response.
+
+> > 	Related question: should execve(2) clear (ptrace-inflicted)
+> > singlestepping?
 > 
-> diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-> index eac5e01..eb9558c 100644
-> --- a/arch/alpha/kernel/process.c
-> +++ b/arch/alpha/kernel/process.c
-> @@ -28,6 +28,7 @@
->  #include <linux/tty.h>
->  #include <linux/console.h>
->  #include <linux/slab.h>
-> +#include <linux/rcupdate.h>
->  
->  #include <asm/reg.h>
->  #include <asm/uaccess.h>
-> @@ -54,9 +55,11 @@ cpu_idle(void)
->  		/* FIXME -- EV6 and LCA45 know how to power down
->  		   the CPU.  */
->  
-> +		rcu_idle_enter();
->  		while (!need_resched())
->  			cpu_relax();
->  
-> +		rcu_idle_exit();
->  		schedule_preempt_disabled();
->  	}
->  }
-> -- 
-> 1.7.8
+> Perhaps, but
 > 
+> > Tracer
+> > exit(), however, does *not* do that right now, so the state after
+> > execve(2) is theoretically observable.
+> 
+> ... why execve() is special?
+
+Because that behaviour had been changed over the history, for one thing:
+commit e1f287735c1e58c653b516931b5d3dd899edcb77
+Author: Roland McGrath <roland@redhat.com>
+Date:   Wed Jan 30 13:30:50 2008 +0100
+
+    x86 single_step: TIF_FORCED_TF
+had done that for x86, unless I'm misreading something.  BTW, now that
+I've looked at that, alpha seems to have a really unpleasant bug with
+single-stepping through execve() - it *must* reset ->bpt_nsaved to 0
+in start_thread(), simply because the address space the breakpoints used
+to be in is gone at that point.  I don't see any place where that would
+be done; suppose we single-step right into callsys insn and do PTRACE_CONT
+when stopped on the way out.  Won't that end up with ptrace_cancel_bpt()
+done in *new* address space, silently buggering new .text contents?
+
+BTW, speaking of alpha, what about PTRACE_SINGLESTEP when the task is stopped
+on syscall entry/exit after previous PTRACE_SYSCALL, BTW?  Looks like it will
+be like PTRACE_CONT until we hit the first signal, at which point it converts
+to singlesteping mode; unless I'm seriously misreading that code, we rely
+on ptrace_set_bpt() done shortly after returning from get_signal_to_deliver()
+if we found that we'd been singlestepping.  Fine, but in this case we
+had been resumed *not* in get_signal_to_deliver()...
+
+Cc'd linux-alpha, in hopes to hear "you don't understand how single-stepping
+works on alpha, you idiot, everything's fine because of $REASONS"...
