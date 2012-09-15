@@ -1,74 +1,60 @@
-From: Thierry Reding <thierry.reding@avionic-design.de>
-Subject: Re: [PATCH 1/2] PCI: Annotate pci_fixup_irqs with __devinit
-Date: Sat, 15 Sep 2012 09:57:37 +0200
-Message-ID: <20120915075737.GA31258@avionic-0098.mockup.avionic-design.de>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH 2/2] PCI: Provide a default pcibios_update_irq()
+Date: Sat, 15 Sep 2012 16:22:11 -0600
+Message-ID: <CAErSpo7q9fvtjatfKqtb8SP3UOJdEXpbvFC_qMBTc6mAoRTQuA@mail.gmail.com>
 References: <1347655456-2542-1-git-send-email-thierry.reding@avionic-design.de>
- <CAErSpo6BqPUEpMmh2+FuEi-mHFK0U1XCmdCpJfo6V2XcNxzMNg@mail.gmail.com>
- <20120914223531.GA8771@kroah.com>
+ <1347655456-2542-2-git-send-email-thierry.reding@avionic-design.de>
+ <CAMuHMdWuR_tdMw9iVkaQ3D9p1HVU_L05ap=MzBuo1jLD6YdHHw@mail.gmail.com> <20120915075301.GA31044@avionic-0098.mockup.avionic-design.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+QahgC5+KEYLbs62"
-Return-path: <linux-ia64-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20120914223531.GA8771@kroah.com>
-Sender: linux-ia64-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@arm.linux.org.uk>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Mundt <lethal@linux-sh.org>, "David S. Miller" <davem@davemloft.net>, Chris Metcalf <cmetcalf@tilera.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Chris Zankel <chris@zankel.net>, Greg Ungerer <gerg@uclinux.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@linux-mips.org, linux-sh@vger.kernel
+Return-path: <linux-mips-bounce@linux-mips.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20120113;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-type:x-system-of-record;
+        bh=5Wt5qkgo+oOBcu3h8EKDod3tPReHpckJ7yb6KaH2bgU=;
+        b=JH7+btohi/2TyfzE5GKoDZF0YVfcFBB2RpB3XPn3CtutcjQnFTCIhYoMw2QgPcEYmU
+         uHi2yIVa3Pzr6M0BZU8tpg9tBs4Slywcvy/LVCyHi2VmODhZW1hvaBJ1oWH0xyRkAELj
+         HPRtdqZdCRyPTgo3znsEnOnavedOc6yzfESLyKTt/MKH0q3eo4m6bqbsVzRgYeinkUjH
+         HrER5rBXWi01UJOqP1/6SiwIzpXTMPsXeHCmjckFVxP1HE18gMsVc1Q9IcjI9fmlVBiB
+         yZf3Hff8M9qtSSMZC7l3zHs3YegSGqh/7JIEAjnjdC7/Okj0BUzWnwfQstuJz7PehNDD
+         ZsZQ==
+In-Reply-To: <20120915075301.GA31044@avionic-0098.mockup.avionic-design.de>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Thierry Reding <thierry.reding@avionic-design.de>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@arm.linux.org.uk>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Mundt <lethal@linux-sh.org>, "David S. Miller" <davem@davemloft.net>, Chris Metcalf <cmetcalf@tilera.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Chris Zankel <chris@zankel.net>, Greg Ungerer <gerg@uclinux.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kerne
 
+On Sat, Sep 15, 2012 at 1:53 AM, Thierry Reding
+<thierry.reding@avionic-design.de> wrote:
+> On Sat, Sep 15, 2012 at 09:32:10AM +0200, Geert Uytterhoeven wrote:
+>> On Fri, Sep 14, 2012 at 10:44 PM, Thierry Reding
+>> <thierry.reding@avionic-design.de> wrote:
+>> > --- a/drivers/pci/setup-irq.c
+>> > +++ b/drivers/pci/setup-irq.c
+>> > @@ -17,6 +17,14 @@
+>> >  #include <linux/ioport.h>
+>> >  #include <linux/cache.h>
+>> >
+>> > +void __devinit __weak pcibios_update_irq(struct pci_dev *dev, int irq)
+>> > +{
+>> > +#ifdef CONFIG_PCI_DEBUG
+>> > +       printk(KERN_DEBUG "PCI: Assigning IRQ %02d to %s\n", irq,
+>> > +              pci_name(dev));
+>>
+>> pr_debug()?
+>> Or even better, dev_dbg()?
+>
+> The problem with pr_debug() and dev_dbg() is that they will be compiled
+> out if DEBUG is not defined. Perhaps we should pass -DDEBUG if PCI_DEBUG
+> is configured and make this dev_dbg()?
 
---+QahgC5+KEYLbs62
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Sep 14, 2012 at 03:35:31PM -0700, Greg Kroah-Hartman wrote:
-> On Fri, Sep 14, 2012 at 02:53:11PM -0600, Bjorn Helgaas wrote:
-> > +cc Greg KH
-> >=20
-> > On Fri, Sep 14, 2012 at 2:44 PM, Thierry Reding
-> > <thierry.reding@avionic-design.de> wrote:
-> > > In order to keep pci_fixup_irqs() around after init (e.g. for hotplug=
-),
-> > > mark it __devinit instead of __init. This requires the same change for
-> > > the implementation of the pcibios_update_irq() function on all
-> > > architectures.
-> > >
-> > > Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
-> > > ---
-> > > Note: Ideally these annotations should go away completely in order to
-> > > be independent of the HOTPLUG symbol. However, there is work underway
-> > > to get rid of HOTPLUG altogether, so I've kept the __devinit for now.
->=20
-> No, just take away the __init marking completly.  For 3.7,
-> CONFIG_HOTPLUG will always be enabled, making it be the same thing.
-> That way this saves me the time and energy from deleting the __devinit
-> markings when I get to that point in the patch series :)
-
-Done. I'll give other people some time to comment before sending the
-updated series.
-
-Thierry
-
---+QahgC5+KEYLbs62
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQVDTxAAoJEN0jrNd/PrOhY84P/1V6CjM7bTnYamaHDOKyZQUc
-IyLN3mZRN6AbMMO8awcN6B4BDXuB6ua8nN7ozdlqRnFSUgSXVwWwrezZnrpc+Sws
-yO4Axr8IOBxpG2IDX+d2bGWRV5W34kzty5WsZhlPEJxOBSQH0MiNJCgTojSIIf5n
-9a6+7fF5qsSamGnmtWKwe01nwvlAsJg0i3sxyguWlFuBqd1IyQMCptCWsSBzMQVc
-1EeCDtWdLTKzxNHhkl97rWcQYi3ov8LTK76zUutTSDlpc2+HhX0nu73Tz34fLs9m
-k4Z1mw2VLHRUorvFCptwhvB72LR2hssTZxGDt3xbPLERUECtV3wwpFTDT8J4jZj0
-bzHCpbfj11K1Y7/Ku/1FBWBXjFPh1+YS0lA39V00WnHBx9Xv2DX6Ytm8FwGCtqEN
-wfV+VGyR+tvIWI6oA8vIgc/1xuMuDlrK4Ldn2uwZBHZfq28ghCiKFHasHA5RW+D/
-kTA2p4Yvuujuvh6PbsvJv2h4A9Sudko6rzwlclnv7OGxsxCa624yF8YN+rqLVU9C
-7Sq/vSCmpj1E3AQ9TKcnYyFYP1sUsc9BnslLNEHNly+MFRJoAMOAx3M6s/30vRJp
-FKyDyeWTzkjnlCYDiH/ebSQRk1tO9h6HJXnzrAAU55iJYHDxCGQ15I2emj8v/bqT
-3iUVzezeZpRhZ0IPIxbq
-=Q8MZ
------END PGP SIGNATURE-----
-
---+QahgC5+KEYLbs62--
