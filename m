@@ -1,114 +1,206 @@
 From: Thierry Reding <thierry.reding@avionic-design.de>
-Subject: Re: [PATCH 2/2] PCI: Provide a default pcibios_update_irq()
-Date: Sun, 16 Sep 2012 08:50:38 +0200
-Message-ID: <20120916065038.GB11030@avionic-0098.mockup.avionic-design.de>
-References: <1347655456-2542-1-git-send-email-thierry.reding@avionic-design.de>
- <1347655456-2542-2-git-send-email-thierry.reding@avionic-design.de>
- <CAMuHMdWuR_tdMw9iVkaQ3D9p1HVU_L05ap=MzBuo1jLD6YdHHw@mail.gmail.com>
- <20120915075301.GA31044@avionic-0098.mockup.avionic-design.de>
- <CAErSpo6WaFv=CXtiWeDDvThjZRBRJKfJMgovuMjjZRpQGK-WJA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5987370660395443103=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAErSpo6WaFv=CXtiWeDDvThjZRBRJKfJMgovuMjjZRpQGK-WJA@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: linux-arm-kernel-bounces@lists.infradead.org
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, linux-pci@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Greg Ungerer <gerg@uclinux.org>, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Chris Metcalf <cmetcalf@tilera.com>, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Chris Zankel <chris@zankel.net>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, Paul Mundt <lethal@linux-sh.org>, linux-alpha@vger.kernel.org, "David S. Miller" <davem>
-
-
---===============5987370660395443103==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8GpibOaaTibBMecb"
-Content-Disposition: inline
-
-
---8GpibOaaTibBMecb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, Sep 15, 2012 at 04:23:33PM -0600, Bjorn Helgaas wrote:
-> On Sat, Sep 15, 2012 at 1:53 AM, Thierry Reding
-> <thierry.reding@avionic-design.de> wrote:
-> > On Sat, Sep 15, 2012 at 09:32:10AM +0200, Geert Uytterhoeven wrote:
-> >> On Fri, Sep 14, 2012 at 10:44 PM, Thierry Reding
-> >> <thierry.reding@avionic-design.de> wrote:
-> >> > --- a/drivers/pci/setup-irq.c
-> >> > +++ b/drivers/pci/setup-irq.c
-> >> > @@ -17,6 +17,14 @@
-> >> >  #include <linux/ioport.h>
-> >> >  #include <linux/cache.h>
-> >> >
-> >> > +void __devinit __weak pcibios_update_irq(struct pci_dev *dev, int i=
-rq)
-> >> > +{
-> >> > +#ifdef CONFIG_PCI_DEBUG
-> >> > +       printk(KERN_DEBUG "PCI: Assigning IRQ %02d to %s\n", irq,
-> >> > +              pci_name(dev));
-> >>
-> >> pr_debug()?
-> >> Or even better, dev_dbg()?
-> >
-> > The problem with pr_debug() and dev_dbg() is that they will be compiled
-> > out if DEBUG is not defined. Perhaps we should pass -DDEBUG if PCI_DEBUG
-> > is configured and make this dev_dbg()?
->=20
-> Sorry, fat-fingered the previous empty response.
->=20
-> We already have this in drivers/pci/Makefile:
->=20
->     ccflags-$(CONFIG_PCI_DEBUG) :=3D -DDEBUG
->=20
-> so dev_dbg() should be perfect.
-
-Yeah, this occurred to me as well and I was just about to look it up
-when I read your response. I'll make it dev_dbg() then.
-
-Thierry
-
---8GpibOaaTibBMecb
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-
-iQIcBAEBAgAGBQJQVXa+AAoJEN0jrNd/PrOh00IQAJSTG1Ukqu3ay8m7AznzjD2Y
-eRN6wDO0Pd37qkHr46rMO2UVPCavDFnoS6gsGhuTzdQgIOnVO9NKGUPm71xAhBnt
-Yq+rYhg8i2cHNjZVKy8Kn5EY0Ly8k0yunH1KFMEodzeS2ZU/wrHSJZmkyKIUzMdN
-AdMoFV81Q7So+JEdG1zIaM1hsDl3t18gt+9SlRSJZ6T4kXlv0j1pD9Jy2d0OC7bx
-Yu8DDnNI33FIcZQnHsO50okCU0o4SqZHFmL/xm4Aa3JiQ5H4gMKiCYNXvFQ5M/gr
-jU+cj0P1WdIPQVof9uie8TCiPCtNEJMbUQsgbhQuFf6eEefuUIbqkfETjmY8rNk9
-NoNp1anLNxxxp2L17e8dN9VTJgNUi+lrpvcG6gqVBs7rE9ruo/6NVnFHwUUHd3Q3
-o9ivpbuYPfJCRSW1r+TbE74iVQdg7jKO+p1cIZjMQOcv9B88M8KJaS60wpgxn9S+
-f/eLoMlUK2wIbP3Zj4MR3DIorUOTyi7f14+J448Y5D9Ci86QU/+4bmMexqEVxsRS
-Un+iARiZQlrWnmVjva4iG8g2mOxcmDPzHSlcE9+uIIdNdPCUWusrt81PAyIjTlUX
-xo2R3G3LIVA4lfOiUSdQB2RYPmQHAXW/Tul5aBvXk11jsl0BN1Hbk2qO4641Puej
-LLzcEjPu0384yupX0hSL
-=/+fm
------END PGP SIGNATURE-----
-
---8GpibOaaTibBMecb--
-
-
---===============5987370660395443103==
-Content-Type: text/plain; charset="us-ascii"
+Subject: [PATCH v2 1/2] PCI: Keep pci_fixup_irqs() around after init
+Date: Mon, 17 Sep 2012 13:22:53 +0200
+Message-ID: <1347880974-13615-1-git-send-email-thierry.reding@avionic-design.de>
+Return-path: <sparclinux-owner@vger.kernel.org>
+Sender: sparclinux-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@arm.linux.org.uk>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Mundt <lethal@linux-sh.org>, "David S. Miller" <davem@davemloft.net>, Chris Metcalf <cmetcalf@tilera.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Chris Zankel <chris@zankel.net>, Greg Ungerer <gerg@uclinux.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@linux-mips.org, linux-s
 
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Remove the __init annotations in order to keep pci_fixup_irqs() around
+after init (e.g. for hotplug). This requires the same change for the
+implementation of pcibios_update_irq() on all architectures. While at
+it, all __devinit annotations are removed as well, since they will be
+useless now that HOTPLUG is always on.
 
---===============5987370660395443103==--
+Signed-off-by: Thierry Reding <thierry.reding@avionic-design.de>
+---
+Changes in v2:
+- remove __init and __devinit annotations altogether
+
+ arch/alpha/kernel/pci.c      | 2 +-
+ arch/arm/kernel/bios32.c     | 2 +-
+ arch/ia64/pci/pci.c          | 2 +-
+ arch/mips/pci/pci.c          | 2 +-
+ arch/sh/drivers/pci/pci.c    | 2 +-
+ arch/sparc/kernel/leon_pci.c | 2 +-
+ arch/tile/kernel/pci.c       | 2 +-
+ arch/tile/kernel/pci_gx.c    | 2 +-
+ arch/unicore32/kernel/pci.c  | 2 +-
+ arch/x86/pci/visws.c         | 2 +-
+ arch/xtensa/kernel/pci.c     | 2 +-
+ drivers/pci/setup-irq.c      | 4 ++--
+ 12 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index 9816d5a..920392f 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -256,7 +256,7 @@ pcibios_fixup_bus(struct pci_bus *bus)
+ 	}
+ }
+ 
+-void __init
++void
+ pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+diff --git a/arch/arm/kernel/bios32.c b/arch/arm/kernel/bios32.c
+index 2b2f25e..0174fe6 100644
+--- a/arch/arm/kernel/bios32.c
++++ b/arch/arm/kernel/bios32.c
+@@ -272,7 +272,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ITE, PCI_DEVICE_ID_ITE_8152, pci_fixup_it
+ 
+ 
+ 
+-void __devinit pcibios_update_irq(struct pci_dev *dev, int irq)
++void pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	if (debug_pci)
+ 		printk("PCI: Assigning IRQ %02d to %s\n", irq, pci_name(dev));
+diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
+index 81acc7a..27db6a8 100644
+--- a/arch/ia64/pci/pci.c
++++ b/arch/ia64/pci/pci.c
+@@ -461,7 +461,7 @@ void pcibios_set_master (struct pci_dev *dev)
+ 	/* No special bus mastering setup handling */
+ }
+ 
+-void __devinit
++void
+ pcibios_update_irq (struct pci_dev *dev, int irq)
+ {
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+diff --git a/arch/mips/pci/pci.c b/arch/mips/pci/pci.c
+index 6903568..64f0419 100644
+--- a/arch/mips/pci/pci.c
++++ b/arch/mips/pci/pci.c
+@@ -313,7 +313,7 @@ void __devinit pcibios_fixup_bus(struct pci_bus *bus)
+ 	}
+ }
+ 
+-void __init
++void
+ pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+diff --git a/arch/sh/drivers/pci/pci.c b/arch/sh/drivers/pci/pci.c
+index 40db2d0..1bd3e08 100644
+--- a/arch/sh/drivers/pci/pci.c
++++ b/arch/sh/drivers/pci/pci.c
+@@ -192,7 +192,7 @@ int pcibios_enable_device(struct pci_dev *dev, int mask)
+ 	return pci_enable_resources(dev, mask);
+ }
+ 
+-void __init pcibios_update_irq(struct pci_dev *dev, int irq)
++void pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+ }
+diff --git a/arch/sparc/kernel/leon_pci.c b/arch/sparc/kernel/leon_pci.c
+index 21dcda7..404621b 100644
+--- a/arch/sparc/kernel/leon_pci.c
++++ b/arch/sparc/kernel/leon_pci.c
+@@ -102,7 +102,7 @@ int pcibios_enable_device(struct pci_dev *dev, int mask)
+ 	return pci_enable_resources(dev, mask);
+ }
+ 
+-void __devinit pcibios_update_irq(struct pci_dev *dev, int irq)
++void pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ #ifdef CONFIG_PCI_DEBUG
+ 	printk(KERN_DEBUG "LEONPCI: Assigning IRQ %02d to %s\n", irq,
+diff --git a/arch/tile/kernel/pci.c b/arch/tile/kernel/pci.c
+index 33c1086..6245bba 100644
+--- a/arch/tile/kernel/pci.c
++++ b/arch/tile/kernel/pci.c
+@@ -406,7 +406,7 @@ void pcibios_set_master(struct pci_dev *dev)
+ /*
+  * This is called from the generic Linux layer.
+  */
+-void __devinit pcibios_update_irq(struct pci_dev *dev, int irq)
++void pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+ }
+diff --git a/arch/tile/kernel/pci_gx.c b/arch/tile/kernel/pci_gx.c
+index 0e213e3..5faad0b 100644
+--- a/arch/tile/kernel/pci_gx.c
++++ b/arch/tile/kernel/pci_gx.c
+@@ -1036,7 +1036,7 @@ char __devinit *pcibios_setup(char *str)
+ /*
+  * This is called from the generic Linux layer.
+  */
+-void __devinit pcibios_update_irq(struct pci_dev *dev, int irq)
++void pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+ }
+diff --git a/arch/unicore32/kernel/pci.c b/arch/unicore32/kernel/pci.c
+index 46cb6c9..c07ecc5 100644
+--- a/arch/unicore32/kernel/pci.c
++++ b/arch/unicore32/kernel/pci.c
+@@ -154,7 +154,7 @@ void __init puv3_pci_adjust_zones(unsigned long *zone_size,
+ 	zhole_size[0] = 0;
+ }
+ 
+-void __devinit pcibios_update_irq(struct pci_dev *dev, int irq)
++void pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	if (debug_pci)
+ 		printk(KERN_DEBUG "PCI: Assigning IRQ %02d to %s\n",
+diff --git a/arch/x86/pci/visws.c b/arch/x86/pci/visws.c
+index 6f2f8ee..9d736e7 100644
+--- a/arch/x86/pci/visws.c
++++ b/arch/x86/pci/visws.c
+@@ -62,7 +62,7 @@ out:
+ 	return irq;
+ }
+ 
+-void __init pcibios_update_irq(struct pci_dev *dev, int irq)
++void pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+ }
+diff --git a/arch/xtensa/kernel/pci.c b/arch/xtensa/kernel/pci.c
+index 69759e9..6f9b40c 100644
+--- a/arch/xtensa/kernel/pci.c
++++ b/arch/xtensa/kernel/pci.c
+@@ -212,7 +212,7 @@ void pcibios_set_master(struct pci_dev *dev)
+ 
+ /* the next one is stolen from the alpha port... */
+ 
+-void __init
++void
+ pcibios_update_irq(struct pci_dev *dev, int irq)
+ {
+ 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+diff --git a/drivers/pci/setup-irq.c b/drivers/pci/setup-irq.c
+index eb219a1..270ae7b 100644
+--- a/drivers/pci/setup-irq.c
++++ b/drivers/pci/setup-irq.c
+@@ -18,7 +18,7 @@
+ #include <linux/cache.h>
+ 
+ 
+-static void __init
++static void
+ pdev_fixup_irq(struct pci_dev *dev,
+ 	       u8 (*swizzle)(struct pci_dev *, u8 *),
+ 	       int (*map_irq)(const struct pci_dev *, u8, u8))
+@@ -54,7 +54,7 @@ pdev_fixup_irq(struct pci_dev *dev,
+ 	pcibios_update_irq(dev, irq);
+ }
+ 
+-void __init
++void
+ pci_fixup_irqs(u8 (*swizzle)(struct pci_dev *, u8 *),
+ 	       int (*map_irq)(const struct pci_dev *, u8, u8))
+ {
+-- 
+1.7.12
 
