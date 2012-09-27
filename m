@@ -1,45 +1,77 @@
-From: Yinghai Lu <yinghai@kernel.org>
-Subject: [PATCH 22/29] PCI, alpha: kill pci_root_buses
-Date: Tue, 25 Sep 2012 01:26:23 -0700
-Message-ID: <1348561590-28067-23-git-send-email-yinghai@kernel.org>
-References: <1348561590-28067-1-git-send-email-yinghai@kernel.org>
+From: tip-bot for Frederic Weisbecker <fweisbec@gmail.com>
+Subject: [tip:core/rcu] alpha: Fix preemption handling in idle loop
+Date: Wed, 26 Sep 2012 22:15:03 -0700
+Message-ID: <tip-6a6c0272f17cc80a8286d915f2ddf31557c2d559@git.kernel.org>
+Reply-To: linux-kernel@vger.kernel.org, mingo@kernel.org, hpa@zytor.com,
+	  paulmck@linux.vnet.ibm.com, fweisbec@gmail.com,
+	  linux-alpha@vger.kernel.org, mattst88@gmail.com,
+	  ink@jurassic.park.msu.ru, josh@joshtriplett.org,
+	  tglx@linutronix.de, rth@twiddle.net, mcree@orcon.net.nz
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1348561590-28067-1-git-send-email-yinghai@kernel.org>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <bhelgaas@google.com>, Len Brown <lenb@kernel.org>
-Cc: linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: linux-tip-commits@vger.kernel.org
+Cc: hpa@zytor.com, mingo@kernel.org, paulmck@linux.vnet.ibm.com, fweisbec@gmail.com, linux-alpha@vger.kernel.org, mattst88@gmail.com, ink@jurassic.park.msu.ru, josh@joshtriplett.org, tglx@linutronix.de, rth@twiddle.net, mcree@orcon.net.nz
 
-Signed-off-by: Yinghai Lu <yinghai@kernel.org>
+Commit-ID:  6a6c0272f17cc80a8286d915f2ddf31557c2d559
+Gitweb:     http://git.kernel.org/tip/6a6c0272f17cc80a8286d915f2ddf31557c2d559
+Author:     Frederic Weisbecker <fweisbec@gmail.com>
+AuthorDate: Thu, 23 Aug 2012 14:11:25 +0200
+Committer:  Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+CommitDate: Sun, 23 Sep 2012 07:44:42 -0700
+
+alpha: Fix preemption handling in idle loop
+
+cpu_idle() is called on the boot CPU by the init code with
+preemption disabled. But the cpu_idle() function in alpha
+doesn't handle this when it calls schedule() directly.
+
+Fix it by converting it into schedule_preempt_disabled().
+
+Also disable preemption before calling cpu_idle() from
+secondary CPU entry code to stay consistent with this
+state.
+
+Signed-off-by: Frederic Weisbecker <fweisbec@gmail.com>
+Tested-by: Michael Cree <mcree@orcon.net.nz>
 Cc: Richard Henderson <rth@twiddle.net>
 Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
+Cc: alpha <linux-alpha@vger.kernel.org>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Reviewed-by: Josh Triplett <josh@joshtriplett.org>
 ---
- arch/alpha/kernel/pci.c |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ arch/alpha/kernel/process.c |    3 ++-
+ arch/alpha/kernel/smp.c     |    1 +
+ 2 files changed, 3 insertions(+), 1 deletions(-)
 
-diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
-index ef75714..aea6ddc 100644
---- a/arch/alpha/kernel/pci.c
-+++ b/arch/alpha/kernel/pci.c
-@@ -305,10 +305,10 @@ pcibios_claim_one_bus(struct pci_bus *b)
- static void __init
- pcibios_claim_console_setup(void)
- {
--	struct pci_bus *b;
-+	struct pci_host_bridge *host_bridge = NULL;
+diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
+index d6fde98..db56f31 100644
+--- a/arch/alpha/kernel/process.c
++++ b/arch/alpha/kernel/process.c
+@@ -56,7 +56,8 @@ cpu_idle(void)
  
--	list_for_each_entry(b, &pci_root_buses, node)
--		pcibios_claim_one_bus(b);
-+	for_each_pci_host_bridge(host_bridge)
-+		pcibios_claim_one_bus(bridge->bus);
+ 		while (!need_resched())
+ 			cpu_relax();
+-		schedule();
++
++		schedule_preempt_disabled();
+ 	}
  }
  
- void __init
--- 
-1.7.7
-
+diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
+index 35ddc02..a41ad90 100644
+--- a/arch/alpha/kernel/smp.c
++++ b/arch/alpha/kernel/smp.c
+@@ -166,6 +166,7 @@ smp_callin(void)
+ 	DBGS(("smp_callin: commencing CPU %d current %p active_mm %p\n",
+ 	      cpuid, current, current->active_mm));
+ 
++	preempt_disable();
+ 	/* Do nothing.  */
+ 	cpu_idle();
+ }
