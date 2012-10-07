@@ -1,68 +1,43 @@
-From: Thorsten Kranzkowski <dl8bcu@dl8bcu.de>
+From: Oleg Nesterov <oleg@redhat.com>
 Subject: Re: [regression] boot failure on alpha, bisected
-Date: Sun, 7 Oct 2012 18:04:20 +0000
-Message-ID: <20121007180420.GA900@ds20.borg.net>
-References: <20121006204736.GA1830@ds20.borg.net>
- <20121007165534.GA8024@redhat.com>
- <20121007171300.GA10942@redhat.com>
-Reply-To: dl8bcu@dl8bcu.de
+Date: Sun, 7 Oct 2012 21:16:27 +0200
+Message-ID: <20121007191627.GA19278@redhat.com>
+References: <20121006204736.GA1830@ds20.borg.net> <20121007165534.GA8024@redhat.com> <20121007171300.GA10942@redhat.com> <20121007180420.GA900@ds20.borg.net>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20121007171300.GA10942@redhat.com>
+In-Reply-To: <20121007180420.GA900@ds20.borg.net>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Oleg Nesterov <oleg@redhat.com>
-Cc: peterz@infradead.org, mingo@kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+To: dl8bcu@dl8bcu.de, peterz@infradead.org, mingo@kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Al Viro <viro@ZenIV.linux.org.uk>
 
-On Sun, Oct 07, 2012 at 07:13:00PM +0200, Oleg Nesterov wrote:
-> On 10/07, Oleg Nesterov wrote:
+On 10/07, Thorsten Kranzkowski wrote:
+>
+> On Sun, Oct 07, 2012 at 07:13:00PM +0200, Oleg Nesterov wrote:
+> > On 10/07, Oleg Nesterov wrote:
+> > >
+> > > Hmm. I know nothing about arch/alpha and I can't understand its entry.S.
+> > > But _it seems_ to me that do_notify_resume() is called with irqs disabled.
+> > > If this is true, then imho arch/alpha should be fixed.
+> > >
+> > > Before this commit task_work_run() enabled irqs, but this was the "side
+> > > effect" of spin_lock_irq/spin_unlock_irq, we should not rely on this.
 > >
-> > Hmm. I know nothing about arch/alpha and I can't understand its entry.S.
-> > But _it seems_ to me that do_notify_resume() is called with irqs disabled.
-> > If this is true, then imho arch/alpha should be fixed.
-> >
-> > Before this commit task_work_run() enabled irqs, but this was the "side
-> > effect" of spin_lock_irq/spin_unlock_irq, we should not rely on this.
-> 
-> Could you please test the debugging patch below?
+> > Could you please test the debugging patch below?
+>
+> Of course. With that patch applied the kernel (ac3d0da) boots again. The trace line
+> is printed about once a second, with values '2' and '4'.
 
-Of course. With that patch applied the kernel (ac3d0da) boots again. The trace line
-is printed about once a second, with values '2' and '4'.
+Thanks a lot Thorsten!
 
-Thorsten
+So I'll probably send the patch which enables interrupts in
+task_work_run(). I guess this needs "if (irqs_disabled())"
+for lockdep.
 
-> 
-> Oleg.
-> 
-> 
-> --- x/arch/alpha/kernel/signal.c
-> +++ x/arch/alpha/kernel/signal.c
-> @@ -567,11 +567,19 @@ do_signal(struct pt_regs * regs, struct 
->  		ptrace_set_bpt(current);	/* re-set breakpoint */
->  }
->  
-> +#include <linux/ratelimit.h>
-> +
->  void
->  do_notify_resume(struct pt_regs *regs, struct switch_stack *sw,
->  		 unsigned long thread_info_flags,
->  		 unsigned long r0, unsigned long r19)
->  {
-> +	if (irqs_disabled()) {
-> +		printk_ratelimited(KERN_WARNING
-> +			"NOTIFY with irqs_disabled:%lx\n", thread_info_flags);
-> +		local_irq_enable();
-> +	}
-> +
->  	if (thread_info_flags & _TIF_SIGPENDING)
->  		do_signal(regs, sw, r0, r19);
->  
-> 
+The question is, should I add the warning to remind that this
+arch needs a fix?
 
--- 
-| Thorsten Kranzkowski        Internet: dl8bcu@dl8bcu.de                      |
-| Mobile: ++49 170 1876134       Snail: Kiebitzstr. 14, 49324 Melle, Germany  |
-| Ampr: dl8bcu@db0lj.#rpl.deu.eu, dl8bcu@marvin.dl8bcu.ampr.org [44.130.8.19] |
+Oleg.
+
