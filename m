@@ -1,62 +1,70 @@
-From: Oleg Nesterov <oleg@redhat.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [regression] boot failure on alpha, bisected
-Date: Mon, 8 Oct 2012 20:59:51 +0200
-Message-ID: <20121008185951.GA9717@redhat.com>
-References: <20121006204736.GA1830@ds20.borg.net> <20121007165534.GA8024@redhat.com> <20121007170850.GJ2616@ZenIV.linux.org.uk> <20121007173336.GA14804@redhat.com> <20121007193909.GK2616@ZenIV.linux.org.uk>
+Date: Mon, 8 Oct 2012 20:59:10 +0200
+Message-ID: <CAMuHMdUjqogJ5Db1wCZz4v6OEutDPbcF0a=zc=ZCJS7-8rYDqw@mail.gmail.com>
+References: <20121006204736.GA1830@ds20.borg.net>
+	<20121007165534.GA8024@redhat.com>
+	<20121007171300.GA10942@redhat.com>
+	<20121007180420.GA900@ds20.borg.net>
+	<20121007191627.GA19278@redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20121007193909.GK2616@ZenIV.linux.org.uk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:sender:in-reply-to:references:date
+         :x-google-sender-auth:message-id:subject:from:to:cc:content-type;
+        bh=uaNJKy+JvSsu3jsZ5EpSk9QV8Nj+NsrdsK6v92oT4Dw=;
+        b=SDyU8+lD/PtRJ10c6ErFrvr8GarlMZjXKIfm6JXxH8KxjI//yyzNxmxnDcbHyHw1eS
+         U5BJwJgI0xzl5Ohxz6e0UtLB8ymQcAbhBwbFX0yUTDKY9zrXSzwwq+LCtzqF/RmYJBeF
+         6GBo6PUBZ14bxidhGPFD+ENH3+7/oSZ4tRuYa4Phd1wzQLynZgSKKWXg18YtxLX/Fkdz
+         XNG8SJPkxfVsCuUJ3p4bRud3vCLTjsW7Snky/uMLVmrTLRqIgQMH+raNW6P8icmjqtvf
+         tpk1G1vMkCZl1/Zc9WyYd5NlNr0SCUw9PQrQEsdBHngvSkfyS4W1ZsvXZ9yM4xktBYZ7
+         gwKA==
+In-Reply-To: <20121007191627.GA19278@redhat.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Al Viro <viro@ZenIV.linux.org.uk>
-Cc: dl8bcu@dl8bcu.de, peterz@infradead.org, mingo@kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+To: Oleg Nesterov <oleg@redhat.com>
+Cc: dl8bcu@dl8bcu.de, peterz@infradead.org, mingo@kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Al Viro <viro@zeniv.linux.org.uk>
 
-On 10/07, Al Viro wrote:
+On Sun, Oct 7, 2012 at 9:16 PM, Oleg Nesterov <oleg@redhat.com> wrote:
+> On 10/07, Thorsten Kranzkowski wrote:
+>> On Sun, Oct 07, 2012 at 07:13:00PM +0200, Oleg Nesterov wrote:
+>> > On 10/07, Oleg Nesterov wrote:
+>> > > Hmm. I know nothing about arch/alpha and I can't understand its entry.S.
+>> > > But _it seems_ to me that do_notify_resume() is called with irqs disabled.
+>> > > If this is true, then imho arch/alpha should be fixed.
+>> > >
+>> > > Before this commit task_work_run() enabled irqs, but this was the "side
+>> > > effect" of spin_lock_irq/spin_unlock_irq, we should not rely on this.
+>> >
+>> > Could you please test the debugging patch below?
+>>
+>> Of course. With that patch applied the kernel (ac3d0da) boots again. The trace line
+>> is printed about once a second, with values '2' and '4'.
 >
-> On Sun, Oct 07, 2012 at 07:33:36PM +0200, Oleg Nesterov wrote:
+> Thanks a lot Thorsten!
 >
-> > > Um...  There's a bunch of architectures that are in the same situation.
-> > > grep for do_notify_resume() and you'll see...
-> >
-> > And every do_notify_resume() should be changed anyway, do_signal() and
-> > tracehook_notify_resume() should be re-ordered.
+> So I'll probably send the patch which enables interrupts in
+> task_work_run(). I guess this needs "if (irqs_disabled())"
+> for lockdep.
 >
-> There's a bit more to it.
-> [...big snip...]
+> The question is, should I add the warning to remind that this
+> arch needs a fix?
 
-Thanks Al. I need to read your email carefully.
+Just wondering. As this is on an SMP system, perhaps the
+read_barrier_depends() vs. smp_read_barrier_depends() matters
+here?
+http://lkml.indiana.edu/hypermail/linux/kernel/1209.3/00555.html
 
-But what do you think we should do right now to fix this particular
-bug?
+Gr{oetje,eeting}s,
 
-So far I am going to send the patch below. This was always wrong,
-even before task_works were added. key_replace_session_keyring()
-was might_sleep() too but it also did lock_irq/unlock_irq, so this
-was not noticed before.
+                        Geert
 
-Or do you think we should add local_irq_enable() into
-arch/alpha/kernel/signal.c:do_notify_resume() before
-tracehook_notify_resume and wait for other similar report?
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Oleg.
----
-
-diff --git a/kernel/task_work.c b/kernel/task_work.c
-index 65bd3c9..fd18bd7 100644
---- a/kernel/task_work.c
-+++ b/kernel/task_work.c
-@@ -51,6 +51,10 @@ void task_work_run(void)
- 	struct task_struct *task = current;
- 	struct callback_head *work, *head, *next;
- 
-+	if (WARN_ONCE(irqs_disabled(),
-+		      "do_notify_resume() with irqs disabled, fix this arch."))
-+		local_irq_enable();
-+
- 	for (;;) {
- 		/*
- 		 * work->func() can do task_work_add(), do not set
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
