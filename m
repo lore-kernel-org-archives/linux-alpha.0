@@ -1,7 +1,7 @@
 From: <gregkh@linuxfoundation.org>
-Subject: Patch "alpha: Add missing RCU idle APIs on idle loop" has been added to the 3.6-stable tree
-Date: Wed, 10 Oct 2012 09:24:41 +0900
-Message-ID: <13498286813293@kroah.org>
+Subject: Patch "alpha: Add missing RCU idle APIs on idle loop" has been added to the 3.4-stable tree
+Date: Wed, 10 Oct 2012 09:24:59 +0900
+Message-ID: <13498286993248@kroah.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
@@ -16,12 +16,12 @@ This is a note to let you know that I've just added the patch titled
 
     alpha: Add missing RCU idle APIs on idle loop
 
-to the 3.6-stable tree which can be found at:
+to the 3.4-stable tree which can be found at:
     http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
 
 The filename of the patch is:
      alpha-add-missing-rcu-idle-apis-on-idle-loop.patch
-and it can be found in the queue-3.6 subdirectory.
+and it can be found in the queue-3.4 subdirectory.
 
 If you, or anyone else, feels it should not be added to the stable tree,
 please let <stable@vger.kernel.org> know about it.
@@ -65,8 +65,8 @@ Reviewed-by: Josh Triplett <josh@joshtriplett.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 ---
- arch/alpha/kernel/process.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/alpha/kernel/process.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
 --- a/arch/alpha/kernel/process.c
 +++ b/arch/alpha/kernel/process.c
@@ -78,13 +78,14 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  
  #include <asm/reg.h>
  #include <asm/uaccess.h>
-@@ -54,8 +55,10 @@ cpu_idle(void)
+@@ -54,8 +55,11 @@ cpu_idle(void)
  		/* FIXME -- EV6 and LCA45 know how to power down
  		   the CPU.  */
  
 +		rcu_idle_enter();
  		while (!need_resched())
  			cpu_relax();
++
 +		rcu_idle_exit();
  		schedule();
  	}
@@ -93,13 +94,13 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 Patches currently in stable-queue which might be from fweisbec@gmail.com are
 
-queue-3.6/frv-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/cris-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/m68k-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/alpha-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/h8300-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/parisc-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/m32r-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/score-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/mn10300-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.6/xtensa-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/frv-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/cris-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/m68k-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/alpha-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/h8300-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/parisc-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/m32r-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/score-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/mn10300-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.4/xtensa-add-missing-rcu-idle-apis-on-idle-loop.patch
