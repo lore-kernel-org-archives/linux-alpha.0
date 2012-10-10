@@ -1,36 +1,27 @@
-From: <gregkh@linuxfoundation.org>
-Subject: Patch "alpha: Add missing RCU idle APIs on idle loop" has been added to the 3.5-stable tree
-Date: Wed, 10 Oct 2012 09:25:11 +0900
-Message-ID: <13498287103238@kroah.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [ 094/122] alpha: Add missing RCU idle APIs on idle loop
+Date: Thu, 11 Oct 2012 07:54:20 +0900
+Message-ID: <20121010225354.969129613@linuxfoundation.org>
+References: <20121010225337.989799482@linuxfoundation.org>
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=
+	messagingengine.com; h=from:to:cc:subject:date:message-id
+	:in-reply-to:references; s=smtpout; bh=lepkfwiLQ86TApPklaWxUcLgF
+	bY=; b=TWJ7Md+6ES3mzp2vNj/N6Okyw+DMmL4ppshaBWCBSEQOeYgkJ6xjv9ash
+	MRTw1pSJxGN5Aaz2a/jDbgqxDphoKt2z7HLH2t6NooAPM3xwhfjtzkTiC8STW0sp
+	fnC6+EZI3ahPWi1Uv3CkhqIcD1xH0ri9MJJh8UKoxCPykYKEFQ=
+In-Reply-To: <20121010225337.989799482@linuxfoundation.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: fweisbec@gmail.com, gregkh@linuxfoundation.org, ink@jurassic.park.msu.ru, josh@joshtriplett.org, linux-alpha@vger.kernel.org, mattst88@gmail.com, mcree@orcon.net.nz, paulmck@linux.vnet.ibm.com, rth@twiddle.net
-Cc: stable@vger.kernel.org, stable-commits@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alan@lxorguk.ukuu.org.uk, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Frederic Weisbecker <fweisbec@gmail.com>, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Josh Triplett <josh@joshtriplett.org>
 
+3.6-stable review patch.  If anyone has any objections, please let me know.
 
-This is a note to let you know that I've just added the patch titled
-
-    alpha: Add missing RCU idle APIs on idle loop
-
-to the 3.5-stable tree which can be found at:
-    http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
-
-The filename of the patch is:
-     alpha-add-missing-rcu-idle-apis-on-idle-loop.patch
-and it can be found in the queue-3.5 subdirectory.
-
-If you, or anyone else, feels it should not be added to the stable tree,
-please let <stable@vger.kernel.org> know about it.
-
-
-From 4c94cada48f7c660eca582be6032427a5e367117 Mon Sep 17 00:00:00 2001
-From: Frederic Weisbecker <fweisbec@gmail.com>
-Date: Wed, 22 Aug 2012 17:27:34 +0200
-Subject: alpha: Add missing RCU idle APIs on idle loop
+------------------
 
 From: Frederic Weisbecker <fweisbec@gmail.com>
 
@@ -91,15 +82,3 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  }
 
 
-Patches currently in stable-queue which might be from fweisbec@gmail.com are
-
-queue-3.5/frv-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/cris-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/m68k-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/alpha-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/h8300-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/parisc-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/m32r-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/score-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/mn10300-add-missing-rcu-idle-apis-on-idle-loop.patch
-queue-3.5/xtensa-add-missing-rcu-idle-apis-on-idle-loop.patch
