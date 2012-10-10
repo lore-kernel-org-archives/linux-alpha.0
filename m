@@ -1,16 +1,16 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [ 094/122] alpha: Add missing RCU idle APIs on idle loop
-Date: Thu, 11 Oct 2012 07:54:20 +0900
-Message-ID: <20121010225354.969129613@linuxfoundation.org>
-References: <20121010225337.989799482@linuxfoundation.org>
+Subject: [ 107/133] alpha: Add missing RCU idle APIs on idle loop
+Date: Thu, 11 Oct 2012 07:52:13 +0900
+Message-ID: <20121010224913.798777370@linuxfoundation.org>
+References: <20121010224854.313159132@linuxfoundation.org>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=
 	messagingengine.com; h=from:to:cc:subject:date:message-id
-	:in-reply-to:references; s=smtpout; bh=lepkfwiLQ86TApPklaWxUcLgF
-	bY=; b=TWJ7Md+6ES3mzp2vNj/N6Okyw+DMmL4ppshaBWCBSEQOeYgkJ6xjv9ash
-	MRTw1pSJxGN5Aaz2a/jDbgqxDphoKt2z7HLH2t6NooAPM3xwhfjtzkTiC8STW0sp
-	fnC6+EZI3ahPWi1Uv3CkhqIcD1xH0ri9MJJh8UKoxCPykYKEFQ=
-In-Reply-To: <20121010225337.989799482@linuxfoundation.org>
+	:in-reply-to:references; s=smtpout; bh=IHSaM7TDtH4IIGlftoAWOTeRS
+	DA=; b=Bh8z4Md3wTpMLwt40NbKNaR5WhAxOBKWu3106X52UV55icMNdnpnNCOxQ
+	64cl9lDe2QNnkSIx1ruot3j5k3woyjM1yBqoK4i3WZIrGazKujAilXIXQGPwQK0K
+	LyoMiEKTxcR41rgRaJuc64xrMVm3siALYKW+y3L/OYl8IxLE2M=
+In-Reply-To: <20121010224854.313159132@linuxfoundation.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -19,7 +19,7 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alan@lxorguk.ukuu.org.uk, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Frederic Weisbecker <fweisbec@gmail.com>, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Josh Triplett <josh@joshtriplett.org>
 
-3.6-stable review patch.  If anyone has any objections, please let me know.
+3.5-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
