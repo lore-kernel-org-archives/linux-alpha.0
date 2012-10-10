@@ -1,140 +1,105 @@
-From: David Howells <dhowells@redhat.com>
-Subject: [GIT PULL] Disintegrate UAPI for alpha [ver #2]
-Date: Tue, 09 Oct 2012 10:15:08 +0100
-Message-ID: <21103.1349774108@warthog.procyon.org.uk>
+From: <gregkh@linuxfoundation.org>
+Subject: Patch "alpha: Add missing RCU idle APIs on idle loop" has been added to the 3.6-stable tree
+Date: Wed, 10 Oct 2012 09:24:41 +0900
+Message-ID: <13498286813293@kroah.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net
-Cc: dhowells@redhat.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-
-Can you merge the following branch into the alpha tree please.
-
-This is to complete part of the UAPI disintegration for which the preparatory
-patches were pulled recently.
-
-Now that the fixups and the asm-generic chunk have been merged, I've
-regenerated the patches to get rid of those dependencies and to take account of
-any changes made so far in the merge window.  If you have already pulled the
-older version of the branch aimed at you, then please feel free to ignore this
-request.
-
-The following changes since commit 9e2d8656f5e8aa214e66b462680cf86b210b74a8:
-
-  Merge branch 'akpm' (Andrew's patch-bomb) (2012-10-09 16:23:15 +0900)
-
-are available in the git repository at:
+To: fweisbec@gmail.com, gregkh@linuxfoundation.org, ink@jurassic.park.msu.ru, josh@joshtriplett.org, linux-alpha@vger.kernel.org, mattst88@gmail.com, mcree@orcon.net.nz, paulmck@linux.vnet.ibm.com, rth@twiddle.net
+Cc: stable@vger.kernel.org, stable-commits@vger.kernel.org
 
 
-  git://git.infradead.org/users/dhowells/linux-headers.git tags/disintegrate-alpha-20121009
+This is a note to let you know that I've just added the patch titled
 
-for you to fetch changes up to 55492254705f10d67f4225a0840156f856971519:
+    alpha: Add missing RCU idle APIs on idle loop
 
-  UAPI: (Scripted) Disintegrate arch/alpha/include/asm (2012-10-09 09:46:29 +0100)
+to the 3.6-stable tree which can be found at:
+    http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
 
-----------------------------------------------------------------
-UAPI Disintegration 2012-10-09
+The filename of the patch is:
+     alpha-add-missing-rcu-idle-apis-on-idle-loop.patch
+and it can be found in the queue-3.6 subdirectory.
 
-----------------------------------------------------------------
-David Howells (1):
-      UAPI: (Scripted) Disintegrate arch/alpha/include/asm
+If you, or anyone else, feels it should not be added to the stable tree,
+please let <stable@vger.kernel.org> know about it.
 
- arch/alpha/include/asm/Kbuild                   |  10 -
- arch/alpha/include/asm/a.out.h                  |  89 +----
- arch/alpha/include/asm/compiler.h               | 115 +-----
- arch/alpha/include/asm/console.h                |  48 +--
- arch/alpha/include/asm/fpu.h                    | 124 +------
- arch/alpha/include/asm/pal.h                    |  50 +--
- arch/alpha/include/asm/param.h                  |  20 +-
- arch/alpha/include/asm/ptrace.h                 |  68 +---
- arch/alpha/include/asm/signal.h                 | 135 +------
- arch/alpha/include/asm/socket.h                 |  78 +---
- arch/alpha/include/asm/termios.h                |  68 +---
- arch/alpha/include/asm/types.h                  |  13 +-
- arch/alpha/include/asm/unistd.h                 | 469 +----------------------
- arch/alpha/include/uapi/asm/Kbuild              |  40 ++
- arch/alpha/include/uapi/asm/a.out.h             |  91 +++++
- arch/alpha/include/{ => uapi}/asm/auxvec.h      |   0
- arch/alpha/include/{ => uapi}/asm/bitsperlong.h |   0
- arch/alpha/include/{ => uapi}/asm/byteorder.h   |   0
- arch/alpha/include/uapi/asm/compiler.h          | 117 ++++++
- arch/alpha/include/uapi/asm/console.h           |  50 +++
- arch/alpha/include/{ => uapi}/asm/errno.h       |   0
- arch/alpha/include/{ => uapi}/asm/fcntl.h       |   0
- arch/alpha/include/uapi/asm/fpu.h               | 123 +++++++
- arch/alpha/include/{ => uapi}/asm/gentrap.h     |   0
- arch/alpha/include/{ => uapi}/asm/ioctl.h       |   0
- arch/alpha/include/{ => uapi}/asm/ioctls.h      |   0
- arch/alpha/include/{ => uapi}/asm/ipcbuf.h      |   0
- arch/alpha/include/{ => uapi}/asm/kvm_para.h    |   0
- arch/alpha/include/{ => uapi}/asm/mman.h        |   0
- arch/alpha/include/{ => uapi}/asm/msgbuf.h      |   0
- arch/alpha/include/uapi/asm/pal.h               |  52 +++
- arch/alpha/include/uapi/asm/param.h             |  21 ++
- arch/alpha/include/{ => uapi}/asm/poll.h        |   0
- arch/alpha/include/{ => uapi}/asm/posix_types.h |   0
- arch/alpha/include/uapi/asm/ptrace.h            |  70 ++++
- arch/alpha/include/{ => uapi}/asm/reg.h         |   0
- arch/alpha/include/{ => uapi}/asm/regdef.h      |   0
- arch/alpha/include/{ => uapi}/asm/resource.h    |   0
- arch/alpha/include/{ => uapi}/asm/sembuf.h      |   0
- arch/alpha/include/{ => uapi}/asm/setup.h       |   0
- arch/alpha/include/{ => uapi}/asm/shmbuf.h      |   0
- arch/alpha/include/{ => uapi}/asm/sigcontext.h  |   0
- arch/alpha/include/{ => uapi}/asm/siginfo.h     |   0
- arch/alpha/include/uapi/asm/signal.h            | 135 +++++++
- arch/alpha/include/uapi/asm/socket.h            |  80 ++++
- arch/alpha/include/{ => uapi}/asm/sockios.h     |   0
- arch/alpha/include/{ => uapi}/asm/stat.h        |   0
- arch/alpha/include/{ => uapi}/asm/statfs.h      |   0
- arch/alpha/include/{ => uapi}/asm/swab.h        |   0
- arch/alpha/include/{ => uapi}/asm/sysinfo.h     |   0
- arch/alpha/include/{ => uapi}/asm/termbits.h    |   0
- arch/alpha/include/uapi/asm/termios.h           |  70 ++++
- arch/alpha/include/uapi/asm/types.h             |  16 +
- arch/alpha/include/uapi/asm/unistd.h            | 471 ++++++++++++++++++++++++
- 54 files changed, 1348 insertions(+), 1275 deletions(-)
- create mode 100644 arch/alpha/include/uapi/asm/a.out.h
- rename arch/alpha/include/{ => uapi}/asm/auxvec.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/bitsperlong.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/byteorder.h (100%)
- create mode 100644 arch/alpha/include/uapi/asm/compiler.h
- create mode 100644 arch/alpha/include/uapi/asm/console.h
- rename arch/alpha/include/{ => uapi}/asm/errno.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/fcntl.h (100%)
- create mode 100644 arch/alpha/include/uapi/asm/fpu.h
- rename arch/alpha/include/{ => uapi}/asm/gentrap.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/ioctl.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/ioctls.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/ipcbuf.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/kvm_para.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/mman.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/msgbuf.h (100%)
- create mode 100644 arch/alpha/include/uapi/asm/pal.h
- create mode 100644 arch/alpha/include/uapi/asm/param.h
- rename arch/alpha/include/{ => uapi}/asm/poll.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/posix_types.h (100%)
- create mode 100644 arch/alpha/include/uapi/asm/ptrace.h
- rename arch/alpha/include/{ => uapi}/asm/reg.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/regdef.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/resource.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/sembuf.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/setup.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/shmbuf.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/sigcontext.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/siginfo.h (100%)
- create mode 100644 arch/alpha/include/uapi/asm/signal.h
- create mode 100644 arch/alpha/include/uapi/asm/socket.h
- rename arch/alpha/include/{ => uapi}/asm/sockios.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/stat.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/statfs.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/swab.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/sysinfo.h (100%)
- rename arch/alpha/include/{ => uapi}/asm/termbits.h (100%)
- create mode 100644 arch/alpha/include/uapi/asm/termios.h
- create mode 100644 arch/alpha/include/uapi/asm/types.h
- create mode 100644 arch/alpha/include/uapi/asm/unistd.h
-.
+
+From 4c94cada48f7c660eca582be6032427a5e367117 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <fweisbec@gmail.com>
+Date: Wed, 22 Aug 2012 17:27:34 +0200
+Subject: alpha: Add missing RCU idle APIs on idle loop
+
+From: Frederic Weisbecker <fweisbec@gmail.com>
+
+commit 4c94cada48f7c660eca582be6032427a5e367117 upstream.
+
+In the old times, the whole idle task was considered
+as an RCU quiescent state. But as RCU became more and
+more successful overtime, some RCU read side critical
+section have been added even in the code of some
+architectures idle tasks, for tracing for example.
+
+So nowadays, rcu_idle_enter() and rcu_idle_exit() must
+be called by the architecture to tell RCU about the part
+in the idle loop that doesn't make use of rcu read side
+critical sections, typically the part that puts the CPU
+in low power mode.
+
+This is necessary for RCU to find the quiescent states in
+idle in order to complete grace periods.
+
+Add this missing pair of calls in the Alpha's idle loop.
+
+Reported-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Signed-off-by: Frederic Weisbecker <fweisbec@gmail.com>
+Tested-by: Michael Cree <mcree@orcon.net.nz>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: alpha <linux-alpha@vger.kernel.org>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Reviewed-by: Josh Triplett <josh@joshtriplett.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/alpha/kernel/process.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/arch/alpha/kernel/process.c
++++ b/arch/alpha/kernel/process.c
+@@ -28,6 +28,7 @@
+ #include <linux/tty.h>
+ #include <linux/console.h>
+ #include <linux/slab.h>
++#include <linux/rcupdate.h>
+ 
+ #include <asm/reg.h>
+ #include <asm/uaccess.h>
+@@ -54,8 +55,10 @@ cpu_idle(void)
+ 		/* FIXME -- EV6 and LCA45 know how to power down
+ 		   the CPU.  */
+ 
++		rcu_idle_enter();
+ 		while (!need_resched())
+ 			cpu_relax();
++		rcu_idle_exit();
+ 		schedule();
+ 	}
+ }
+
+
+Patches currently in stable-queue which might be from fweisbec@gmail.com are
+
+queue-3.6/frv-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/cris-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/m68k-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/alpha-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/h8300-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/parisc-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/m32r-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/score-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/mn10300-add-missing-rcu-idle-apis-on-idle-loop.patch
+queue-3.6/xtensa-add-missing-rcu-idle-apis-on-idle-loop.patch
