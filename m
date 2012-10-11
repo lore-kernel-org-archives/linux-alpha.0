@@ -1,17 +1,17 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [ 107/133] alpha: Add missing RCU idle APIs on idle loop
-Date: Thu, 11 Oct 2012 07:52:13 +0900
-Message-ID: <20121010224913.798777370@linuxfoundation.org>
-References: <20121010224854.313159132@linuxfoundation.org>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Subject: [ 093/120] alpha: Add missing RCU idle APIs on idle loop
+Date: Thu, 11 Oct 2012 10:00:45 +0900
+Message-ID: <20121011005843.929066826@linuxfoundation.org>
+References: <20121011005825.364610894@linuxfoundation.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=
 	messagingengine.com; h=from:to:cc:subject:date:message-id
-	:in-reply-to:references; s=smtpout; bh=IHSaM7TDtH4IIGlftoAWOTeRS
-	DA=; b=Bh8z4Md3wTpMLwt40NbKNaR5WhAxOBKWu3106X52UV55icMNdnpnNCOxQ
-	64cl9lDe2QNnkSIx1ruot3j5k3woyjM1yBqoK4i3WZIrGazKujAilXIXQGPwQK0K
-	LyoMiEKTxcR41rgRaJuc64xrMVm3siALYKW+y3L/OYl8IxLE2M=
-In-Reply-To: <20121010224854.313159132@linuxfoundation.org>
-Sender: linux-alpha-owner@vger.kernel.org
+	:in-reply-to:references; s=smtpout; bh=9cJ1GzAZ53pd0eTitCSTNqtLn
+	5M=; b=PB3H2qGUy8E3Bmr18UfznteQc4/sHk6HLGQPTnIsa0Ufp8Qflt3i7h5t8
+	nQFxALdd5127bJtDSYrP2AYiv7HhM032DGQhqqZVDxyFNufv1ZUxJurcOhzgjzis
+	5DDI8Ip57kyrHkQQttBz2g/Ebiqpz6VxHSWXpM5ZOOL/G9ojL4=
+In-Reply-To: <20121011005825.364610894@linuxfoundation.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,7 +19,7 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alan@lxorguk.ukuu.org.uk, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Frederic Weisbecker <fweisbec@gmail.com>, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Josh Triplett <josh@joshtriplett.org>
 
-3.5-stable review patch.  If anyone has any objections, please let me know.
+3.4-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -56,8 +56,8 @@ Reviewed-by: Josh Triplett <josh@joshtriplett.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 ---
- arch/alpha/kernel/process.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/alpha/kernel/process.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
 --- a/arch/alpha/kernel/process.c
 +++ b/arch/alpha/kernel/process.c
@@ -69,16 +69,16 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  
  #include <asm/reg.h>
  #include <asm/uaccess.h>
-@@ -54,8 +55,10 @@ cpu_idle(void)
+@@ -54,8 +55,11 @@ cpu_idle(void)
  		/* FIXME -- EV6 and LCA45 know how to power down
  		   the CPU.  */
  
 +		rcu_idle_enter();
  		while (!need_resched())
  			cpu_relax();
++
 +		rcu_idle_exit();
  		schedule();
  	}
  }
-
 
