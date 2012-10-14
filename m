@@ -1,46 +1,91 @@
-From: Al Viro <viro@ZenIV.linux.org.uk>
-Subject: Re: [PATCH 1/1] task_work: Add local_irq_enable() into
- task_work_run()
-Date: Sat, 13 Oct 2012 16:39:00 +0100
-Message-ID: <20121013153900.GR2616@ZenIV.linux.org.uk>
-References: <20121006204736.GA1830@ds20.borg.net>
- <20121012160359.GB30881@redhat.com>
- <CA+55aFwXiu1znTkksgSyxa7v1-3cPWZL5dvth_8hQygSKE1utw@mail.gmail.com>
- <201210132259.25791.mcree@orcon.net.nz>
+From: Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [PATCH 0/1] (Was: [regression] boot failure on alpha, bisected)
+Date: Sun, 14 Oct 2012 20:35:39 +0200
+Message-ID: <20121014183539.GA16804@redhat.com>
+References: <20121006204736.GA1830@ds20.borg.net> <20121012160337.GA30881@redhat.com> <20121012221843.GJ2616@ZenIV.linux.org.uk>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <201210132259.25791.mcree@orcon.net.nz>
+In-Reply-To: <20121012221843.GJ2616@ZenIV.linux.org.uk>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Oleg Nesterov <oleg@redhat.com>, dl8bcu@dl8bcu.de, peterz@infradead.org, mingo@kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+To: Al Viro <viro@ZenIV.linux.org.uk>
+Cc: dl8bcu@dl8bcu.de, peterz@infradead.org, mingo@kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>
 
-On Sat, Oct 13, 2012 at 10:59:25PM +1300, Michael Cree wrote:
+On 10/12, Al Viro wrote:
+>
+> On Fri, Oct 12, 2012 at 06:03:37PM +0200, Oleg Nesterov wrote:
+> > On 10/06, Thorsten Kranzkowski wrote:
+> > >
+> > > After upgrading from v3.5-rc7 to current git my system oopses and locks up
+> > > early in the boot sequence.
+> >
+> > OK, I am sending the patch which I already showed.
+> >
+> > Perhaps we should only add the warning and local_irq_enable()
+> > should go into arch/alpha/kernel/signal.c:do_notify_resume().
+> >
+> > In any case arch/alpha/ should be fixed imho.
+>
+> Oleg, could you check current signal.git#for-next?  alpha patches in
+> there ought to deal with the do_notify_resume() mess on alpha
+> for good, AFAICS.
 
-> Any chance that we could have the fixes backported to the stable queue, in 
-> particular to the 3,2 kernel?  We should then be able to run the Debian built 
-> SMP kernel on the autobuilders at Debian-Ports rather than having to run a 
-> specially built kernel or a UP kernel.
-> 
-> BTW, the WARNING: at kernel/softirq.c:139 __local_bh_enable+0xe8/0x110() still 
-> occurs when bringing up the CPUs.  Actually it happens twice now.  I've 
-> attached my dmesg dump should you wish to check.
+Yes, thanks Al!
 
-The obvious fix is to add local_irq_disable() into do_entInt(), just before
-calling handle_ipi().  But I'm not sure if we wouldn't be better off just
-doing it right in the beginning of do_entInt().  Take a look at that switch
-in there: case 0 - we want local_irq_disable() done before handle_ipi().
-case 1 - we do local_irq_disable() right there on SMP and do it almost
-instantly in case of UP, since handle_irq() will do it a few insns after
-entry anyway.  case 3 - ->device_interrupt() calls handle_irq() very soon
-on all subarchitectures.  That leaves machine checks and perf_irq.  I have
-no idea how hot those paths really are; do we spend enough time in there
-to make blanket local_disable_irq() on those painful?  If not, we'd probably
-be better off just lifting local_disable_irq() to the beginning of
-do_entInt() and killing it in handle_irq() - that sucker is always called
-from do_entInt(), directly or via ->device_interrupt().
+6972d6f25d21e3da58ff1309256c787078405c7f makes my patch unnecessary.
+Although, as you pointed out, other architectures can have the same
+problem so perhaps at least WARN_ONCE() in task_wrok_run() makes
+sense.
 
-Comments?
+But I am just curious,
+
+	+do_work_pending(struct pt_regs *regs, struct switch_stack *sw,
+	+		 unsigned long thread_flags,
+			 unsigned long r0, unsigned long r19)
+	 {
+	-	if (thread_info_flags & _TIF_SIGPENDING)
+	-		do_signal(regs, sw, r0, r19);
+	-
+	-	if (thread_info_flags & _TIF_NOTIFY_RESUME) {
+	-		clear_thread_flag(TIF_NOTIFY_RESUME);
+	-		tracehook_notify_resume(regs);
+	-	}
+	+	do {
+	+		if (thread_flags & _TIF_NEED_RESCHED) {
+	+			schedule();
+	+		} else {
+	+			local_irq_enable();
+
+I think this is fine, schedule() can be called with irqs disabled.
+And since this is ret-to-user path we can't have the problems with
+sched_submit_work().
+
+Still, any particular reason why this patch doesn't do irq_enable()
+at the start of the loop?
+
+	+			if (thread_flags & _TIF_SIGPENDING) {
+	+				do_signal(regs, sw, r0, r19);
+	+				r0 = 0;
+	+			} else {
+	+				clear_thread_flag(TIF_NOTIFY_RESUME);
+	+				tracehook_notify_resume(regs);
+
+Again, this is fine. But why "else" ? It seems that
+
+			if (thread_flags & _TIF_SIGPENDING) {
+				do_signal(regs, r0, r19);
+				r0 = 0;
+			}
+
+			if (thread_flags & _TIF_NOTIFY_RESUME) {
+				clear_thread_flag(TIF_NOTIFY_RESUME);
+				tracehook_notify_resume(regs);
+			}
+
+makes a bit more sense?
+
+Oleg.
+
