@@ -1,35 +1,40 @@
-From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: [PATCH 1/1] alpha: Remove duplicate inclusion of asm/xchg.h
-Date: Mon, 19 Nov 2012 16:41:39 +0530
-Message-ID: <1353323499-8638-1-git-send-email-sachin.kamat@linaro.org>
+From: Bill Pemberton <wfp5p@virginia.edu>
+Subject: [PATCH 339/493] alpha: remove use of __devinitdata
+Date: Mon, 19 Nov 2012 13:24:48 -0500
+Message-ID: <1353349642-3677-339-git-send-email-wfp5p@virginia.edu>
+References: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
 Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org
-Cc: paul.gortmaker@windriver.com, rth@twiddle.net, mattst88@gmail.com, sachin.kamat@linaro.org, patches@linaro.org
+To: gregkh@linuxfoundation.org
+Cc: linux-alpha@vger.kernel.org
 
-asm/xchg.h was included twice.
+CONFIG_HOTPLUG is going away as an option so __devinitdata is no
+longer needed.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+Signed-off-by: Bill Pemberton <wfp5p@virginia.edu>
+Cc: linux-alpha@vger.kernel.org 
 ---
- arch/alpha/include/asm/cmpxchg.h |    1 -
- 1 files changed, 0 insertions(+), 1 deletions(-)
+ arch/alpha/kernel/smp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/include/asm/cmpxchg.h b/arch/alpha/include/asm/cmpxchg.h
-index 429e8cd..8df1674 100644
---- a/arch/alpha/include/asm/cmpxchg.h
-+++ b/arch/alpha/include/asm/cmpxchg.h
-@@ -40,7 +40,6 @@
- #undef ____cmpxchg
- #define ____xchg(type, args...)		__xchg ##type(args)
- #define ____cmpxchg(type, args...)	__cmpxchg ##type(args)
--#include <asm/xchg.h>
+diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
+index 33d46b2..6594064 100644
+--- a/arch/alpha/kernel/smp.c
++++ b/arch/alpha/kernel/smp.c
+@@ -68,7 +68,7 @@ enum ipi_message_type {
+ };
  
- #define xchg(ptr, x)							\
- ({									\
+ /* Set to a secondary's cpuid when it comes online.  */
+-static int smp_secondary_alive __devinitdata = 0;
++static int smp_secondary_alive = 0;
+ 
+ int smp_num_probed;		/* Internal processor count */
+ int smp_num_cpus = 1;		/* Number that came online.  */
 -- 
-1.7.4.1
+1.8.0
 
