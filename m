@@ -1,40 +1,40 @@
-From: Bill Pemberton <wfp5p@virginia.edu>
-Subject: [PATCH 339/493] alpha: remove use of __devinitdata
-Date: Mon, 19 Nov 2012 13:24:48 -0500
-Message-ID: <1353349642-3677-339-git-send-email-wfp5p@virginia.edu>
-References: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: [PATCH 1/1] alpha: Remove duplicate inclusion of asm/xchg.h
+Date: Tue, 20 Nov 2012 07:30:15 +1300
+Message-ID: <20121119183015.GA2325@omega>
+References: <1353323499-8638-1-git-send-email-sachin.kamat@linaro.org>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1353349642-3677-1-git-send-email-wfp5p@virginia.edu>
+Content-Disposition: inline
+In-Reply-To: <1353323499-8638-1-git-send-email-sachin.kamat@linaro.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: gregkh@linuxfoundation.org
-Cc: linux-alpha@vger.kernel.org
+To: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: linux-alpha@vger.kernel.org, paul.gortmaker@windriver.com, rth@twiddle.net, mattst88@gmail.com, patches@linaro.org
 
-CONFIG_HOTPLUG is going away as an option so __devinitdata is no
-longer needed.
+On Mon, Nov 19, 2012 at 04:41:39PM +0530, Sachin Kamat wrote:
+> asm/xchg.h was included twice.
+> 
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> ---
+>  arch/alpha/include/asm/cmpxchg.h |    1 -
+>  1 files changed, 0 insertions(+), 1 deletions(-)
+> 
+> diff --git a/arch/alpha/include/asm/cmpxchg.h b/arch/alpha/include/asm/cmpxchg.h
+> index 429e8cd..8df1674 100644
+> --- a/arch/alpha/include/asm/cmpxchg.h
+> +++ b/arch/alpha/include/asm/cmpxchg.h
+> @@ -40,7 +40,6 @@
+>  #undef ____cmpxchg
+>  #define ____xchg(type, args...)		__xchg ##type(args)
+>  #define ____cmpxchg(type, args...)	__cmpxchg ##type(args)
+> -#include <asm/xchg.h>
 
-Signed-off-by: Bill Pemberton <wfp5p@virginia.edu>
-Cc: linux-alpha@vger.kernel.org 
----
- arch/alpha/kernel/smp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+asm/xchg.h is intended to be included twice.  Your patch will break 
+compilation.
 
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index 33d46b2..6594064 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -68,7 +68,7 @@ enum ipi_message_type {
- };
- 
- /* Set to a secondary's cpuid when it comes online.  */
--static int smp_secondary_alive __devinitdata = 0;
-+static int smp_secondary_alive = 0;
- 
- int smp_num_probed;		/* Internal processor count */
- int smp_num_cpus = 1;		/* Number that came online.  */
--- 
-1.8.0
+Cheers
+Michael.
 
