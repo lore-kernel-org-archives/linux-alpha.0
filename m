@@ -1,25 +1,25 @@
 From: Matt Turner <mattst88@gmail.com>
 Subject: [PATCH] alpha: Add irongate_io to to PCI bus resources
-Date: Tue, 20 Nov 2012 20:59:33 -0800
-Message-ID: <1353473973-30908-1-git-send-email-mattst88@gmail.com>
+Date: Tue, 20 Nov 2012 20:59:41 -0800
+Message-ID: <1353473981-30945-1-git-send-email-mattst88@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=from:to:cc:subject:date:message-id:x-mailer;
         bh=AwnW+cKZVOtC8SI0sdOG5zPIM5XOJnGTkyqcQqtxaE4=;
-        b=sCMciBDTNX/6VozGwY2LT062ECa7YG95KPKVLthpW7F+OHrhf84k4Znaimj7dxuGAB
-         yStniIW5QlK73tMW+hDkIfUN18hfdH/lcosiTqy3s4I9TJOJX/cenwwYXs1ndXXTvqAH
-         ZLH9Vj2Aa8bxa2I8FkVB+FGgtvrDwsnGk+GeKAQMOtnKJCA8GP8QXnvnkxcRs8gxrudK
-         S/Z0sS21TsoD4wx2xYBjWwI1DBue1L+I3Zn4lod1Lp7UjxyZXWbvU92/X2cF/OM8QSZ6
-         aUwCP3kRYlofeaB8JX2NduHgIBiPlBgn573YolXaGrtujjOVIWHcXtCmnxtiEhb/xSRN
-         D49g==
+        b=rlmJXwtDsUbg2dZJYNe92nS+zjbuh/m7HJHLAEP2DlZPLgBA2ntUkysHFJygWutqle
+         OzpKTMyq52JGi7IRerWPX0QSD2H/CERnGrve+P/qvIjxCxSZMdTSBRwaSLO0Fvh38fYm
+         HAI4ZyTGBF7HiDUR3ht1eodccm+Ez0rYgmcDDMmIU10+1XfUX4m0yeivyN1nQGpFGEMb
+         19UJ6iAH3imVjjaQuE/cykL98bVoY2cSPHqxDDCK3FUsSkJShYRcmIzBTE4raGJWT8uG
+         XcRkQMUk5H5+ApRmKHGv4g6HE/hWZootZtzV+99WRVrG4RyNYRJujVkESS8Cg2vLZOog
+         +YTA==
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Michael Cree <mcree@orcon.net.nz>
-Cc: linux-alpha@vger.kernel.org, Jay Estabrook <jay.estabrook@gmail.com>, stable@vger.kernel.org, Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, Jay Estabrook <jay.estabrook@gmail.com>, Matt Turner <mattst88@gmail.com>
 
 From: Jay Estabrook <jay.estabrook@gmail.com>
 
