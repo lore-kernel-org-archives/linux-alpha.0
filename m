@@ -1,44 +1,50 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [GIT PULL] Disintegrate UAPI for alpha [ver #2]
-Date: Sun, 2 Dec 2012 02:48:03 -0800
-Message-ID: <CAEdQ38ERo_2AjLRZTAo-aPNvRybhJaO-dMSmFn8y9_i8=aM7hA@mail.gmail.com>
-References: <21103.1349774108@warthog.procyon.org.uk> <20121202030055.GA4687@omega>
-Mime-Version: 1.0
+From: "Raphael S.Carvalho" <raphael.scarv@gmail.com>
+Subject: [PATCH 1/1] arch/alpha/include/asm: Comment fixed.
+Date: Mon, 10 Dec 2012 22:11:12 -0200
+Message-ID: <1355184672-22268-1-git-send-email-raphael.scarv@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :content-type;
-        bh=uA9HeNmD2rDYzWMhnXzTPxGdyBbJsZ7g2asjFEfUOn8=;
-        b=Iti8Y27z4Hxy3q2Mu/Usv3rx7fKV3Ahup3rObziNcBhAk0zpY86PXKRUTgmKIzebeT
-         iQTotMrcbWA5dMz7SddOOpmSrE31yYW2rVtcwlGOut3QPnTVFc9jiL3hLguvq5g+6THM
-         QPuF0EcXjxTvRynv2ceUPWYLTuWgB/SRTZclwDi/pZfQgUSjiR8uGJU8DhDFjk6LpJ0V
-         Ocn69fAcj+RzqsGQUWUK9lE9gb6VzUJQG1KZnA9mAJX0hnQj4sxE+XDpmL8DUNaPC9LI
-         arQgRlqiagwmuiti6hoENOuohLxGeeRO0jhMyzPBSl0Haz+V1Efdb5qXH8EG0e6OTGR0
-         HVvw==
-In-Reply-To: <20121202030055.GA4687@omega>
+        h=from:to:cc:subject:date:message-id:x-mailer;
+        bh=rqxRA9o0NZnseDmBbf6fFJpE3o4D0H+yPR2eCW0SWRc=;
+        b=eZ4ELY0AVBJYvmTV33adTkBgDReynwFU8662qhVoWdjF4QwFqNw4IAAGG1dywJALeU
+         R/GsDC3BaB+xCDaWG2gTg1Hbf2zPwN0G8y5R+tv1uLfsqHcMi3wPq7Z7JC0XdLvUvgth
+         udJhcLvNOf9cnfer59XL+ln4AUglrXn3ndbhbfY+9DFmxk4eZQ9j+pl8aB9nYzdVD3tX
+         yIWtzMklJ1GHLaSe019CZWZMJTvm5RtFLXNJXD8HuHylDx/IicUiE5/UjCYG2fQDhS+J
+         oIq+47D2zGinLjqzetjKiDx/omj/Tfc1SUVErEUl0sxojEDR08Cbmt79RTFK0yeEI14U
+         XbPg==
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>, David Howells <dhowells@redhat.com>, rth@twiddle.net, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, mattst88@gmail.com
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Michael Cree <mcree@orcon.net.nz>, Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Raphael S Carvalho <raphael.scarv@gmail.com>
 
-On Sat, Dec 1, 2012 at 7:00 PM, Michael Cree <mcree@orcon.net.nz> wrote:
-> On Tue, Oct 09, 2012 at 10:15:08AM +0100, David Howells wrote:
->> Can you merge the following branch into the alpha tree please.
->>
->> This is to complete part of the UAPI disintegration for which the preparatory
->> patches were pulled recently.
->
-> I think the alpha-next tree is currently inactive so nothing has happened
-> regarding your merge request.
->
-> Any chance you could send it directly to Linus?
->
-> (A conflict has arisen in arch/alpha/include/asm/Kbuild against Linus'
-> tree but that is easily resolved.)
->
-> FWIW you can have my Acked-By but it would be better if one of the
-> official Alpha maintainers acknowledged it.
+From: Raphael S Carvalho <raphael.scarv@gmail.com>
 
-Acked-by: Matt Turner <mattst88@gmail.com>
+I know how much this patch is insignificant, though its
+purpose is to teach me how to send patches properly.
+
+Signed-off-by: Raphael S Carvalho <raphael.scarv@gmail.com>
+---
+ arch/alpha/include/asm/ptrace.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/alpha/include/asm/ptrace.h b/arch/alpha/include/asm/ptrace.h
+index b87755a..34b88ae 100644
+--- a/arch/alpha/include/asm/ptrace.h
++++ b/arch/alpha/include/asm/ptrace.h
+@@ -7,8 +7,8 @@
+  * kernel stack during a system call or other kernel entry
+  *
+  * NOTE! I want to minimize the overhead of system calls, so this
+- * struct has as little information as possible.  I does not have
+- *
++ * struct has as little information as possible.
++ * It does not have:
+  *  - floating point regs: the kernel doesn't change those
+  *  - r9-15: saved by the C compiler
+  *
+-- 
+1.7.2.5
