@@ -1,50 +1,107 @@
-From: "Raphael S.Carvalho" <raphael.scarv@gmail.com>
-Subject: [PATCH 1/1] arch/alpha/include/asm: Comment fixed.
-Date: Mon, 10 Dec 2012 22:11:12 -0200
-Message-ID: <1355184672-22268-1-git-send-email-raphael.scarv@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id:x-mailer;
-        bh=rqxRA9o0NZnseDmBbf6fFJpE3o4D0H+yPR2eCW0SWRc=;
-        b=eZ4ELY0AVBJYvmTV33adTkBgDReynwFU8662qhVoWdjF4QwFqNw4IAAGG1dywJALeU
-         R/GsDC3BaB+xCDaWG2gTg1Hbf2zPwN0G8y5R+tv1uLfsqHcMi3wPq7Z7JC0XdLvUvgth
-         udJhcLvNOf9cnfer59XL+ln4AUglrXn3ndbhbfY+9DFmxk4eZQ9j+pl8aB9nYzdVD3tX
-         yIWtzMklJ1GHLaSe019CZWZMJTvm5RtFLXNJXD8HuHylDx/IicUiE5/UjCYG2fQDhS+J
-         oIq+47D2zGinLjqzetjKiDx/omj/Tfc1SUVErEUl0sxojEDR08Cbmt79RTFK0yeEI14U
-         XbPg==
-Sender: linux-kernel-owner@vger.kernel.org
+From: Joe Perches <joe@perches.com>
+Subject: [TRIVIAL PATCH 00/26] treewide: Add and use vsprintf extension %pSR
+Date: Wed, 12 Dec 2012 10:18:49 -0800
+Message-ID: <cover.1355335227.git.joe@perches.com>
+Return-path: <owner-linux-mm@kvack.org>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Michael Cree <mcree@orcon.net.nz>, Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Raphael S Carvalho <raphael.scarv@gmail.com>
+To: Jiri Kosina <trivial@kernel.org>, linux-doc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, cbe-oss-dev@lists.ozlabs.org, linux-edac@vger.kernel.org, user-mode-linux-devel@lists.sourceforge.net, user-mode-linux-user@lists.sourceforge.net, cluster-devel@redhat.com, linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org, linux-kernel@zh-kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linux-m32r@ml.linux-m32r.org, linux-m32r-ja@ml.linux-m32r.org, linux-am33-list@redhat.com, linux@lists.openrisc.net, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org
 
-From: Raphael S Carvalho <raphael.scarv@gmail.com>
+Remove the somewhat awkward uses of print_symbol and convert all the
+existing uses to a new vsprintf pointer type of %pSR.
 
-I know how much this patch is insignificant, though its
-purpose is to teach me how to send patches properly.
+print_symbol can be interleaved when it is used in a sequence like:
 
-Signed-off-by: Raphael S Carvalho <raphael.scarv@gmail.com>
----
- arch/alpha/include/asm/ptrace.h |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+	printk("something: ...");
+	print_symbol("%s", addr);
+	printk("\n");
 
-diff --git a/arch/alpha/include/asm/ptrace.h b/arch/alpha/include/asm/ptrace.h
-index b87755a..34b88ae 100644
---- a/arch/alpha/include/asm/ptrace.h
-+++ b/arch/alpha/include/asm/ptrace.h
-@@ -7,8 +7,8 @@
-  * kernel stack during a system call or other kernel entry
-  *
-  * NOTE! I want to minimize the overhead of system calls, so this
-- * struct has as little information as possible.  I does not have
-- *
-+ * struct has as little information as possible.
-+ * It does not have:
-  *  - floating point regs: the kernel doesn't change those
-  *  - r9-15: saved by the C compiler
-  *
+Instead use:
+
+	printk("something: %pSR\n", (void *)addr);
+
+Add a new %p[SsFf]R vsprintf extension that can perform the same
+symbol function/address/offset formatting as print_symbol to
+reduce the number and styles of message logging functions.
+
+print_symbol used __builtin_extract_return_addr for those architectures
+like S/390 and SPARC that have offset or masked addressing.
+%p[FfSs]R uses the same gcc __builtin
+
+Joe Perches (26):
+  vsprintf: Add extension %pSR - print_symbol replacement
+  alpha: Convert print_symbol to %pSR
+  arm: Convert print_symbol to %pSR
+  arm64: Convert print_symbol to %pSR
+  avr32: Convert print_symbol to %pSR
+  c6x: Convert print_symbol to %pSR
+  ia64: Convert print_symbol to %pSR
+  m32r: Convert print_symbol to %pSR
+  mn10300: Convert print_symbol to %pSR
+  openrisc: Convert print_symbol to %pSR
+  powerpc: Convert print_symbol to %pSR
+  s390: Convert print_symbol to %pSR
+  sh: Convert print_symbol to %pSR
+  um: Convert print_symbol to %pSR
+  unicore32: Convert print_symbol to %pSR
+  x86: Convert print_symbol to %pSR
+  xtensa: Convert print_symbol to %pSR
+  drivers: base: Convert print_symbol to %pSR
+  gfs2: Convert print_symbol to %pSR
+  sysfs: Convert print_symbol to %pSR
+  irq: Convert print_symbol to %pSR
+  smp_processor_id: Convert print_symbol to %pSR
+  mm: Convert print_symbol to %pSR
+  xtensa: Convert print_symbol to %pSR
+  x86: head_64.S: Use vsprintf extension %pSR not print_symbol
+  kallsyms: Remove print_symbol
+
+ Documentation/filesystems/sysfs.txt         |    4 +-
+ Documentation/printk-formats.txt            |    2 +
+ Documentation/zh_CN/filesystems/sysfs.txt   |    4 +-
+ arch/alpha/kernel/traps.c                   |    8 ++----
+ arch/arm/kernel/process.c                   |    4 +-
+ arch/arm64/kernel/process.c                 |    4 +-
+ arch/avr32/kernel/process.c                 |   25 ++++++-----------------
+ arch/c6x/kernel/traps.c                     |    3 +-
+ arch/ia64/kernel/process.c                  |   13 ++++-------
+ arch/m32r/kernel/traps.c                    |    6 +---
+ arch/mn10300/kernel/traps.c                 |    8 +++---
+ arch/openrisc/kernel/traps.c                |    7 +----
+ arch/powerpc/platforms/cell/spu_callbacks.c |   12 ++++------
+ arch/s390/kernel/traps.c                    |   28 +++++++++++++++-----------
+ arch/sh/kernel/process_32.c                 |    4 +-
+ arch/um/kernel/sysrq.c                      |    6 +---
+ arch/unicore32/kernel/process.c             |    5 ++-
+ arch/x86/kernel/cpu/mcheck/mce.c            |   13 ++++++-----
+ arch/x86/kernel/dumpstack.c                 |    5 +--
+ arch/x86/kernel/head_64.S                   |    4 +-
+ arch/x86/kernel/process_32.c                |    2 +-
+ arch/x86/mm/mmio-mod.c                      |    4 +-
+ arch/x86/um/sysrq_32.c                      |    9 ++-----
+ arch/xtensa/kernel/traps.c                  |    6 +---
+ drivers/base/core.c                         |    4 +-
+ fs/gfs2/glock.c                             |    4 +-
+ fs/gfs2/trans.c                             |    3 +-
+ fs/sysfs/file.c                             |    4 +-
+ include/linux/kallsyms.h                    |   18 -----------------
+ kernel/irq/debug.h                          |   15 ++++++-------
+ kernel/kallsyms.c                           |   11 ----------
+ lib/smp_processor_id.c                      |    2 +-
+ lib/vsprintf.c                              |   18 ++++++++++++----
+ mm/memory.c                                 |    8 +++---
+ mm/slab.c                                   |    8 ++----
+ 35 files changed, 117 insertions(+), 164 deletions(-)
+
 -- 
-1.7.2.5
+1.7.8.112.g3fd21
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
