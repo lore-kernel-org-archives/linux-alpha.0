@@ -1,51 +1,136 @@
-From: Joe Perches <joe@perches.com>
-Subject: [TRIVIAL PATCH 02/26] alpha: Convert print_symbol to %pSR
-Date: Wed, 12 Dec 2012 10:18:51 -0800
-Message-ID: <0cb31d5042d32b88cc756414dc8099fe4beb75f8.1355335227.git.joe@perches.com>
-References: <cover.1355335227.git.joe@perches.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1355335227.git.joe@perches.com>
-Sender: linux-kernel-owner@vger.kernel.org
+From: David Howells <dhowells@redhat.com>
+Subject: [GIT PULL] UAPI disintegration for Alpha
+Date: Mon, 17 Dec 2012 14:15:21 +0000
+Message-ID: <5672.1355753721@warthog.procyon.org.uk>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Jiri Kosina <trivial@kernel.org>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: torvalds@linux-foundation.org
+Cc: dhowells@redhat.com, Matt Turner <mattst88@gmail.com>, Michael Cree <mcree@orcon.net.nz>, rth@twiddle.net, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Use the new vsprintf extension to avoid any possible
-message interleaving.
 
-Signed-off-by: Joe Perches <joe@perches.com>
+Hi Linus,
+
+I've been asked to send the Alpha UAPI disintegration to you directly.  If
+you'd prefer it to come later in the merge window, I can regenerate it later
+and push it again.  The acks I have been given have been added into the patch.
+
+David
 ---
- arch/alpha/kernel/traps.c |    8 +++-----
- 1 files changed, 3 insertions(+), 5 deletions(-)
+The following changes since commit a4f1de176614f634c367e5994a7bcc428c940df0:
 
-diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index 272666d..9ac7318 100644
---- a/arch/alpha/kernel/traps.c
-+++ b/arch/alpha/kernel/traps.c
-@@ -66,8 +66,8 @@ dik_show_regs(struct pt_regs *regs, unsigned long *r9_15)
- {
- 	printk("pc = [<%016lx>]  ra = [<%016lx>]  ps = %04lx    %s\n",
- 	       regs->pc, regs->r26, regs->ps, print_tainted());
--	print_symbol("pc is at %s\n", regs->pc);
--	print_symbol("ra is at %s\n", regs->r26 );
-+	printk("pc is at %pSR\n", (void *)regs->pc);
-+	printk("ra is at %pSR\n", (void *)regs->r26);
- 	printk("v0 = %016lx  t0 = %016lx  t1 = %016lx\n",
- 	       regs->r0, regs->r1, regs->r2);
- 	printk("t2 = %016lx  t3 = %016lx  t4 = %016lx\n",
-@@ -132,9 +132,7 @@ dik_show_trace(unsigned long *sp)
- 			continue;
- 		if (tmp >= (unsigned long) &_etext)
- 			continue;
--		printk("[<%lx>]", tmp);
--		print_symbol(" %s", tmp);
--		printk("\n");
-+		printk("[<%lx>] %pSR\n", tmp, (void *)tmp);
- 		if (i > 40) {
- 			printk(" ...");
- 			break;
--- 
-1.7.8.112.g3fd21
+  mm: fix kernel BUG at huge_memory.c:1474! (2012-12-16 19:02:38 -0800)
+
+are available in the git repository at:
+
+  git://git.infradead.org/users/dhowells/linux-headers.git tags/disintegrate-alpha-20121217
+
+for you to fetch changes up to 96433f6ee49032d7a8bda76de2b05cfde2914354:
+
+  UAPI: (Scripted) Disintegrate arch/alpha/include/asm (2012-12-17 14:12:19 +0000)
+
+----------------------------------------------------------------
+UAPI disintegration 2012-12-17
+
+----------------------------------------------------------------
+David Howells (1):
+      UAPI: (Scripted) Disintegrate arch/alpha/include/asm
+
+ arch/alpha/include/asm/Kbuild                   |   9 -
+ arch/alpha/include/asm/a.out.h                  |  89 +----
+ arch/alpha/include/asm/compiler.h               | 115 +-----
+ arch/alpha/include/asm/console.h                |  48 +--
+ arch/alpha/include/asm/fpu.h                    | 124 +------
+ arch/alpha/include/asm/pal.h                    |  50 +--
+ arch/alpha/include/asm/param.h                  |  20 +-
+ arch/alpha/include/asm/ptrace.h                 |  68 +---
+ arch/alpha/include/asm/signal.h                 | 135 +------
+ arch/alpha/include/asm/socket.h                 |  79 +---
+ arch/alpha/include/asm/termios.h                |  68 +---
+ arch/alpha/include/asm/types.h                  |  13 +-
+ arch/alpha/include/asm/unistd.h                 | 469 +----------------------
+ arch/alpha/include/uapi/asm/Kbuild              |  40 ++
+ arch/alpha/include/uapi/asm/a.out.h             |  91 +++++
+ arch/alpha/include/{ => uapi}/asm/auxvec.h      |   0
+ arch/alpha/include/{ => uapi}/asm/bitsperlong.h |   0
+ arch/alpha/include/{ => uapi}/asm/byteorder.h   |   0
+ arch/alpha/include/uapi/asm/compiler.h          | 117 ++++++
+ arch/alpha/include/uapi/asm/console.h           |  50 +++
+ arch/alpha/include/{ => uapi}/asm/errno.h       |   0
+ arch/alpha/include/{ => uapi}/asm/fcntl.h       |   0
+ arch/alpha/include/uapi/asm/fpu.h               | 123 +++++++
+ arch/alpha/include/{ => uapi}/asm/gentrap.h     |   0
+ arch/alpha/include/{ => uapi}/asm/ioctl.h       |   0
+ arch/alpha/include/{ => uapi}/asm/ioctls.h      |   0
+ arch/alpha/include/{ => uapi}/asm/ipcbuf.h      |   0
+ arch/alpha/include/{ => uapi}/asm/kvm_para.h    |   0
+ arch/alpha/include/{ => uapi}/asm/mman.h        |   0
+ arch/alpha/include/{ => uapi}/asm/msgbuf.h      |   0
+ arch/alpha/include/uapi/asm/pal.h               |  52 +++
+ arch/alpha/include/uapi/asm/param.h             |  21 ++
+ arch/alpha/include/{ => uapi}/asm/poll.h        |   0
+ arch/alpha/include/{ => uapi}/asm/posix_types.h |   0
+ arch/alpha/include/uapi/asm/ptrace.h            |  70 ++++
+ arch/alpha/include/{ => uapi}/asm/reg.h         |   0
+ arch/alpha/include/{ => uapi}/asm/regdef.h      |   0
+ arch/alpha/include/{ => uapi}/asm/resource.h    |   0
+ arch/alpha/include/{ => uapi}/asm/sembuf.h      |   0
+ arch/alpha/include/{ => uapi}/asm/setup.h       |   0
+ arch/alpha/include/{ => uapi}/asm/shmbuf.h      |   0
+ arch/alpha/include/{ => uapi}/asm/sigcontext.h  |   0
+ arch/alpha/include/{ => uapi}/asm/siginfo.h     |   0
+ arch/alpha/include/uapi/asm/signal.h            | 135 +++++++
+ arch/alpha/include/uapi/asm/socket.h            |  81 ++++
+ arch/alpha/include/{ => uapi}/asm/sockios.h     |   0
+ arch/alpha/include/{ => uapi}/asm/stat.h        |   0
+ arch/alpha/include/{ => uapi}/asm/statfs.h      |   0
+ arch/alpha/include/{ => uapi}/asm/swab.h        |   0
+ arch/alpha/include/{ => uapi}/asm/sysinfo.h     |   0
+ arch/alpha/include/{ => uapi}/asm/termbits.h    |   0
+ arch/alpha/include/uapi/asm/termios.h           |  70 ++++
+ arch/alpha/include/uapi/asm/types.h             |  16 +
+ arch/alpha/include/uapi/asm/unistd.h            | 471 ++++++++++++++++++++++++
+ 54 files changed, 1349 insertions(+), 1275 deletions(-)
+ create mode 100644 arch/alpha/include/uapi/asm/a.out.h
+ rename arch/alpha/include/{ => uapi}/asm/auxvec.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/bitsperlong.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/byteorder.h (100%)
+ create mode 100644 arch/alpha/include/uapi/asm/compiler.h
+ create mode 100644 arch/alpha/include/uapi/asm/console.h
+ rename arch/alpha/include/{ => uapi}/asm/errno.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/fcntl.h (100%)
+ create mode 100644 arch/alpha/include/uapi/asm/fpu.h
+ rename arch/alpha/include/{ => uapi}/asm/gentrap.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/ioctl.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/ioctls.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/ipcbuf.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/kvm_para.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/mman.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/msgbuf.h (100%)
+ create mode 100644 arch/alpha/include/uapi/asm/pal.h
+ create mode 100644 arch/alpha/include/uapi/asm/param.h
+ rename arch/alpha/include/{ => uapi}/asm/poll.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/posix_types.h (100%)
+ create mode 100644 arch/alpha/include/uapi/asm/ptrace.h
+ rename arch/alpha/include/{ => uapi}/asm/reg.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/regdef.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/resource.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/sembuf.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/setup.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/shmbuf.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/sigcontext.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/siginfo.h (100%)
+ create mode 100644 arch/alpha/include/uapi/asm/signal.h
+ create mode 100644 arch/alpha/include/uapi/asm/socket.h
+ rename arch/alpha/include/{ => uapi}/asm/sockios.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/stat.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/statfs.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/swab.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/sysinfo.h (100%)
+ rename arch/alpha/include/{ => uapi}/asm/termbits.h (100%)
+ create mode 100644 arch/alpha/include/uapi/asm/termios.h
+ create mode 100644 arch/alpha/include/uapi/asm/types.h
+ create mode 100644 arch/alpha/include/uapi/asm/unistd.h
