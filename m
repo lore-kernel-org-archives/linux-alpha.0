@@ -1,46 +1,83 @@
-From: Masanari Iida <standby24x7@gmail.com>
-Subject: [PATCH] alpha: Fix compile error "unused variable 'settls'
-Date: Tue, 25 Dec 2012 22:24:46 +0900
-Message-ID: <1356441886-8475-1-git-send-email-standby24x7@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+From: Michel Lespinasse <walken@google.com>
+Subject: [PATCH 0/8] vm_unmapped_area: finish the mission
+Date: Tue,  8 Jan 2013 17:28:07 -0800
+Message-ID: <1357694895-520-1-git-send-email-walken@google.com>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
+        d=google.com; s=20120113;
         h=x-received:from:to:cc:subject:date:message-id:x-mailer;
-        bh=ZIn1jIbkonzkxFWLo3cGCwdcZ2OYIBolQ9k44AJmrro=;
-        b=Sfgb76OGSwmA7p/SETPTmoR2gS2qEsKHVVVdYwWKYZ0lbvvb+c8TYURmwiWLncBx0m
-         fYD8Cbwz7B8GlQPk5VdH+bJipv4kC6AVhemfWiGOS0QXX0srFENai6MGZ5PyF8+wSEKm
-         tOPpqMLmAmGVZz+qq1SlnB6Ph4TMfUxKIJA5N39pDUB4avbjho/rWHY1ja+4XcKUfjs2
-         Z8aWNUtkXYuAA5mJNbpTZZJEUuOWyVhWM3hp9ab0tiMKpTOViFM88WxdmvsbE9OT3gc2
-         IM0wR3bp6qieJ35QDMYY7S88nVBCNLsiTc6lTzgl6ffNbwASpI0p3Cv7J2Vd1Rca9Kcj
-         ZANg==
-Sender: linux-alpha-owner@vger.kernel.org
+        bh=HnEH38C4nm2uDd7l1XXv9RMWewuhRVj7d+PhsZLWs68=;
+        b=pBvqFXc+WLMTfCAQl8hOAw0oMgVKQTxAVmDS6G1b0JRj6VHUw7odynU2SpD51MP/+g
+         loFE82xZHQhruUQn/meMBRF1MTl6A/bsW5rQ00SoqC3BsJ/XJCbCFOHLLJhvc8Jkvip9
+         ZdsJPKA+wZ8QVbXs8N1AbZEzqCx8tIZ57E3mPXdF0T5OJJ/OTmcw8EByg789cIT1e27w
+         CAa9eB66CmzkP7b7FQ6L/kar9+xNhEvq3Z7+TeaSmxd+WMOmee6skrqQC2SCt324UB6P
+         eCZVy0hir6XHGSN5rEGktlX/Gnk+IiuDrWngjC3QWuKG5Sjc3E80l82BANRSgLG9E5bZ
+         VCAw==
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
-Cc: Masanari Iida <standby24x7@gmail.com>
+To: Rik van Riel <riel@redhat.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Matt Turner <mattst88@gmail.com>, David Howells <dhowells@redhat.com>, Tony Luck <tony.luck@intel.com>
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org
 
-Fix following compile error.
-+ arch/alpha/kernel/process.c: warning: unused variable 'settls': => 253
+These patches, which apply on top of v3.8-rc kernels, are to complete the
+VMA gap finding code I introduced (following Rik's initial proposal) in
+v3.8-rc1.
 
-Signed-off-by: Masanari Iida <standby24x7@gmail.com>
----
- arch/alpha/kernel/process.c | 1 -
- 1 file changed, 1 deletion(-)
+First 5 patches introduce the use of vm_unmapped_area() to replace brute
+force searches on parisc, alpha, frv and ia64 architectures (all relatively
+trivial uses of the vm_unmapped_area() infrastructure)
 
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index a4dc79ba..f8d8f3b 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -275,7 +275,6 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
- 	struct pt_regs *childregs = task_pt_regs(p);
- 	struct pt_regs *regs = current_pt_regs();
- 	struct switch_stack *childstack, *stack;
--	unsigned long settls;
- 
- 	childstack = ((struct switch_stack *) childregs) - 1;
- 	childti->pcb.ksp = (unsigned long) childstack;
+Next 2 patches do the same as above for the powerpc architecture. This
+change is not as trivial as for the other architectures, because we
+need to account for each address space slice potentially having a
+different page size.
+
+The last patch removes the free_area_cache, which was used by all the
+brute force searches before they got converted to the
+vm_unmapped_area() infrastructure.
+
+I did some basic testing on x86 and powerpc; however the first 5 (simpler)
+patches for parisc, alpha, frv and ia64 architectures are untested.
+
+Michel Lespinasse (8):
+  mm: use vm_unmapped_area() on parisc architecture
+  mm: use vm_unmapped_area() on alpha architecture
+  mm: use vm_unmapped_area() on frv architecture
+  mm: use vm_unmapped_area() on ia64 architecture
+  mm: use vm_unmapped_area() in hugetlbfs on ia64 architecture
+  mm: remove free_area_cache use in powerpc architecture
+  mm: use vm_unmapped_area() on powerpc architecture
+  mm: remove free_area_cache
+
+ arch/alpha/kernel/osf_sys.c              |   20 ++--
+ arch/arm/mm/mmap.c                       |    2 -
+ arch/arm64/mm/mmap.c                     |    2 -
+ arch/frv/mm/elf-fdpic.c                  |   49 +++----
+ arch/ia64/kernel/sys_ia64.c              |   37 ++----
+ arch/ia64/mm/hugetlbpage.c               |   20 ++--
+ arch/mips/mm/mmap.c                      |    2 -
+ arch/parisc/kernel/sys_parisc.c          |   46 +++----
+ arch/powerpc/include/asm/page_64.h       |    3 +-
+ arch/powerpc/mm/hugetlbpage.c            |    2 +-
+ arch/powerpc/mm/mmap_64.c                |    2 -
+ arch/powerpc/mm/slice.c                  |  228 +++++++++++++-----------------
+ arch/powerpc/platforms/cell/spufs/file.c |    2 +-
+ arch/s390/mm/mmap.c                      |    4 -
+ arch/sparc/kernel/sys_sparc_64.c         |    2 -
+ arch/tile/mm/mmap.c                      |    2 -
+ arch/x86/ia32/ia32_aout.c                |    2 -
+ arch/x86/mm/mmap.c                       |    2 -
+ fs/binfmt_aout.c                         |    2 -
+ fs/binfmt_elf.c                          |    2 -
+ include/linux/mm_types.h                 |    3 -
+ include/linux/sched.h                    |    2 -
+ kernel/fork.c                            |    4 -
+ mm/mmap.c                                |   28 ----
+ mm/nommu.c                               |    4 -
+ mm/util.c                                |    1 -
+ 26 files changed, 163 insertions(+), 310 deletions(-)
+
 -- 
-1.8.1.rc2.38.gb10c4ad
-
+1.7.7.3
