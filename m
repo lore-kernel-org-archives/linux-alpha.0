@@ -1,33 +1,48 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: [PATCH 2/8] mm: use vm_unmapped_area() on alpha architecture
-Date: Fri, 25 Jan 2013 16:49:58 +1300
-Message-ID: <43E02291-8F84-40CD-B429-847E7533EA18@orcon.net.nz>
-References: <1357694895-520-1-git-send-email-walken@google.com> <1357694895-520-3-git-send-email-walken@google.com>
-Mime-Version: 1.0 (Apple Message framework v936)
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <1357694895-520-3-git-send-email-walken@google.com>
-Sender: owner-linux-mm@kvack.org
+From: Yinghai Lu <yinghai@kernel.org>
+Subject: [PATCH v2 15/22] PCI, alpha: Kill pci_root_buses
+Date: Sat, 26 Jan 2013 21:36:36 -0800
+Message-ID: <1359265003-16166-16-git-send-email-yinghai@kernel.org>
+References: <CAE9FiQUhrVPNKcdWbiqHLa5PzH7Dg-uduVc9BP-OjM-eCqSXdw@mail.gmail.com>
+ <1359265003-16166-1-git-send-email-yinghai@kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1359265003-16166-1-git-send-email-yinghai@kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Michel Lespinasse <walken@google.com>
-Cc: Rik van Riel <riel@redhat.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Matt Turner <mattst88@gmail.com>, David Howells <dhowells@redhat.com>, Tony Luck <tony.luck@intel.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@huawei.com>, "Rafael J. Wysocki" <rjw@sisk.pl>, Taku Izumi <izumi.taku@jp.fujitsu.com>
+Cc: linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On 9/01/2013, at 2:28 PM, Michel Lespinasse wrote:
-> Update the alpha arch_get_unmapped_area function to make use of
-> vm_unmapped_area() instead of implementing a brute force search.
->
-> Signed-off-by: Michel Lespinasse <walken@google.com>
+-v2: Fix typo that is found by Fengguang
 
-'Tis running fine on my alpha.
+Signed-off-by: Yinghai Lu <yinghai@kernel.org>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+---
+ arch/alpha/kernel/pci.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Tested-by: Michael Cree <mcree@orcon.net.nz>
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index ef75714..6c55e16 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -305,10 +305,10 @@ pcibios_claim_one_bus(struct pci_bus *b)
+ static void __init
+ pcibios_claim_console_setup(void)
+ {
+-	struct pci_bus *b;
++	struct pci_host_bridge *host_bridge = NULL;
+ 
+-	list_for_each_entry(b, &pci_root_buses, node)
+-		pcibios_claim_one_bus(b);
++	for_each_pci_host_bridge(host_bridge)
++		pcibios_claim_one_bus(host_bridge->bus);
+ }
+ 
+ void __init
+-- 
+1.7.10.4
 
-Cheers
-Michael.
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
