@@ -1,18 +1,20 @@
 From: Yinghai Lu <yinghai@kernel.org>
-Subject: [PATCH v2 15/22] PCI, alpha: Kill pci_root_buses
-Date: Sat, 26 Jan 2013 21:36:36 -0800
-Message-ID: <1359265003-16166-16-git-send-email-yinghai@kernel.org>
-References: <CAE9FiQUhrVPNKcdWbiqHLa5PzH7Dg-uduVc9BP-OjM-eCqSXdw@mail.gmail.com>
- <1359265003-16166-1-git-send-email-yinghai@kernel.org>
+Subject: [PATCH v3 15/22] PCI, alpha: Kill pci_root_buses
+Date: Sun, 27 Jan 2013 11:23:42 -0800
+Message-ID: <1359314629-18651-16-git-send-email-yinghai@kernel.org>
+References: <CAE9FiQXHG01NjnYNDbC-KEpbcvY-q4pBe97CxTOGS7W4vZQBYQ@mail.gmail.com>
+ <1359314629-18651-1-git-send-email-yinghai@kernel.org>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1359265003-16166-1-git-send-email-yinghai@kernel.org>
+In-Reply-To: <1359314629-18651-1-git-send-email-yinghai@kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@huawei.com>, "Rafael J. Wysocki" <rjw@sisk.pl>, Taku Izumi <izumi.taku@jp.fujitsu.com>
-Cc: linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@huawei.com>, "Rafael J. Wysocki" <rjw@sisk.pl>, Taku Izumi <izumi.taku@jp.fujitsu.com>, Toshi Kani <toshi.kani@hp.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+
+Replace that with hotplug-safe version iteration.
 
 -v2: Fix typo that is found by Fengguang
 
