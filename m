@@ -1,57 +1,153 @@
-From: Thorsten Kranzkowski <dl8bcu@dl8bcu.de>
-Subject: Re: [PATCH] alpha: makefile: don't enforce small data model for
- kernel builds
-Date: Mon, 18 Mar 2013 18:18:58 +0000
-Message-ID: <20130318181858.GB899@ds20.borg.net>
-References: <1363556926-21097-1-git-send-email-will.deacon@arm.com>
-Reply-To: dl8bcu@dl8bcu.de
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1363556926-21097-1-git-send-email-will.deacon@arm.com>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Jiang Liu <liuj97@gmail.com>
+Subject: [RFC PATCH v2, part4 09/39] mm/alpha: prepare for removing num_physpages and simplify mem_init()
+Date: Sun, 24 Mar 2013 15:24:35 +0800
+Message-ID: <1364109934-7851-10-git-send-email-jiang.liu@huawei.com>
+References: <1364109934-7851-1-git-send-email-jiang.liu@huawei.com>
+Return-path: <owner-linux-mm@kvack.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=x-received:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
+         :references;
+        bh=2mso016No1A+5fkSQ7HjyS7SmfqgjpHOr5ffMIwzIMc=;
+        b=E+o0O3ARURZ+Y1d/T7bfU942Zda5SEORLj3UTc/YzD0NZUNSNTpVgOVVPLfe9YAysN
+         HQwIoOBb0CUK/oDK7HQXHa2LbgIeGnQ9AHiInzBzdtrFShb6PF5azIiR8lXfJ9ET7ib7
+         9aP94VxkUNcTQO1uu2wTFimb77G+97YlY3RGjWrWfaCA7dhCF9oxoBAqRGQ+BYe88yRL
+         dpRF22c1Pcw1rk3CAApxGsro6mCD/ik44f3ic2cjmz20yLbA8nD7E3hmW1YayqcL2/Ok
+         P5odXxpPDAyUMwqhv4jewkb+DeKU8wQn/WxlJr8r5jxv3RazOF5EIq79k1Xgfr21UNjP
+         PpqA==
+In-Reply-To: <1364109934-7851-1-git-send-email-jiang.liu@huawei.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Will Deacon <will.deacon@arm.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+To: Andrew Morton <akpm@linux-foundation.org>, David Rientjes <rientjes@google.com>
+Cc: Jiang Liu <jiang.liu@huawei.com>, Wen Congyang <wency@cn.fujitsu.com>, Mel Gorman <mgorman@suse.de>, Minchan Kim <minchan@kernel.org>, KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>, Michal Hocko <mhocko@suse.cz>, Jianguo Wu <wujianguo@huawei.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, David Howells <dhowells@redhat.com>, linux-alpha@vger.kernel.org
 
-On Sun, Mar 17, 2013 at 09:48:46PM +0000, Will Deacon wrote:
-> Due to all of the goodness being packed into today's kernels, the
-> resulting image isn't as slim as it once was.
-> 
-> In light of this, don't pass -msmall-data to the tools, which results in
-> link failures due to impossible relocations when compiling anything but
-> the most trivial configurations.
+Prepare for removing num_physpages and simplify mem_init().
 
-I use the same patch locally for quite some time, so
+Signed-off-by: Jiang Liu <jiang.liu@huawei.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ arch/alpha/mm/init.c |   32 ++------------------------------
+ arch/alpha/mm/numa.c |   34 +++++-----------------------------
+ 2 files changed, 7 insertions(+), 59 deletions(-)
 
-Tested-by: Thorsten Kranzkowski <dl8bcu@dl8bcu.de>
-
-> 
-> Cc: Richard Henderson <rth@twiddle.net>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Signed-off-by: Will Deacon <will.deacon@arm.com>
-> ---
->  arch/alpha/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/alpha/Makefile b/arch/alpha/Makefile
-> index 4759fe7..2cc3cc5 100644
-> --- a/arch/alpha/Makefile
-> +++ b/arch/alpha/Makefile
-> @@ -12,7 +12,7 @@ NM := $(NM) -B
->  
->  LDFLAGS_vmlinux	:= -static -N #-relax
->  CHECKFLAGS	+= -D__alpha__ -m64
-> -cflags-y	:= -pipe -mno-fp-regs -ffixed-8 -msmall-data
-> +cflags-y	:= -pipe -mno-fp-regs -ffixed-8
->  cflags-y	+= $(call cc-option, -fno-jump-tables)
->  
->  cpuflags-$(CONFIG_ALPHA_EV4)		:= -mcpu=ev4
-
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index ca07a97..04c933c 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -277,42 +277,14 @@ srm_paging_stop (void)
+ #endif
+ 
+ #ifndef CONFIG_DISCONTIGMEM
+-static void __init
+-printk_memory_info(void)
+-{
+-	unsigned long codesize, reservedpages, datasize, initsize, tmp;
+-	extern int page_is_ram(unsigned long) __init;
+-
+-	/* printk all informations */
+-	reservedpages = 0;
+-	for (tmp = 0; tmp < max_low_pfn; tmp++)
+-		/*
+-		 * Only count reserved RAM pages
+-		 */
+-		if (page_is_ram(tmp) && PageReserved(mem_map+tmp))
+-			reservedpages++;
+-
+-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
+-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
+-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+-
+-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, %luk data, %luk init)\n",
+-	       nr_free_pages() << (PAGE_SHIFT-10),
+-	       max_mapnr << (PAGE_SHIFT-10),
+-	       codesize >> 10,
+-	       reservedpages << (PAGE_SHIFT-10),
+-	       datasize >> 10,
+-	       initsize >> 10);
+-}
+-
+ void __init
+ mem_init(void)
+ {
+-	max_mapnr = num_physpages = max_low_pfn;
++	max_mapnr = max_low_pfn;
+ 	free_all_bootmem();
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+ 
+-	printk_memory_info();
++	mem_init_print_info(NULL);
+ }
+ #endif /* CONFIG_DISCONTIGMEM */
+ 
+diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
+index 857452c..e5086fc 100644
+--- a/arch/alpha/mm/numa.c
++++ b/arch/alpha/mm/numa.c
+@@ -129,8 +129,6 @@ setup_memory_node(int nid, void *kernel_end)
+ 	if (node_max_pfn > max_low_pfn)
+ 		max_pfn = max_low_pfn = node_max_pfn;
+ 
+-	num_physpages += node_max_pfn - node_min_pfn;
+-
+ #if 0 /* we'll try this one again in a little while */
+ 	/* Cute trick to make sure our local node data is on local memory */
+ 	node_data[nid] = (pg_data_t *)(__va(node_min_pfn << PAGE_SHIFT));
+@@ -324,37 +322,15 @@ void __init paging_init(void)
+ 
+ void __init mem_init(void)
+ {
+-	unsigned long codesize, reservedpages, datasize, initsize, pfn;
+-	extern int page_is_ram(unsigned long) __init;
+-	unsigned long nid, i;
++	unsigned long nid;
++
+ 	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
+ 
+-	reservedpages = 0;
+-	for_each_online_node(nid) {
+-		/*
+-		 * This will free up the bootmem, ie, slot 0 memory
+-		 */
++	/* This will free up the bootmem, ie, slot 0 memory */
++	for_each_online_node(nid)
+ 		free_all_bootmem_node(NODE_DATA(nid));
+ 
+-		pfn = NODE_DATA(nid)->node_start_pfn;
+-		for (i = 0; i < node_spanned_pages(nid); i++, pfn++)
+-			if (page_is_ram(pfn) &&
+-			    PageReserved(nid_page_nr(nid, i)))
+-				reservedpages++;
+-	}
+-
+-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
+-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
+-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+-
+-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, "
+-	       "%luk data, %luk init)\n",
+-	       nr_free_pages() << (PAGE_SHIFT-10),
+-	       num_physpages << (PAGE_SHIFT-10),
+-	       codesize >> 10,
+-	       reservedpages << (PAGE_SHIFT-10),
+-	       datasize >> 10,
+-	       initsize >> 10);
++	mem_init_print_info(NULL);
+ #if 0
+ 	mem_stress();
+ #endif
 -- 
-| Thorsten Kranzkowski        Internet: dl8bcu@dl8bcu.de                      |
-| Mobile: ++49 170 1876134       Snail: Kiebitzstr. 14, 49324 Melle, Germany  |
-| Ampr: dl8bcu@db0lj.#rpl.deu.eu, dl8bcu@marvin.dl8bcu.ampr.org [44.130.8.19] |
+1.7.9.5
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
