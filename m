@@ -1,7 +1,7 @@
 From: Jiang Liu <liuj97@gmail.com>
-Subject: [RFC PATCH v2, part4 09/39] mm/alpha: prepare for removing num_physpages and simplify mem_init()
-Date: Sun, 24 Mar 2013 15:24:35 +0800
-Message-ID: <1364109934-7851-10-git-send-email-jiang.liu@huawei.com>
+Subject: [RFC PATCH v2, part4 10/39] mm/alpha: prepare for removing num_physpages and simplify mem_init()
+Date: Sun, 24 Mar 2013 15:24:37 +0800
+Message-ID: <1364109934-7851-12-git-send-email-jiang.liu@huawei.com>
 References: <1364109934-7851-1-git-send-email-jiang.liu@huawei.com>
 Return-path: <owner-linux-mm@kvack.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
@@ -9,12 +9,12 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         h=x-received:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
          :references;
         bh=2mso016No1A+5fkSQ7HjyS7SmfqgjpHOr5ffMIwzIMc=;
-        b=E+o0O3ARURZ+Y1d/T7bfU942Zda5SEORLj3UTc/YzD0NZUNSNTpVgOVVPLfe9YAysN
-         HQwIoOBb0CUK/oDK7HQXHa2LbgIeGnQ9AHiInzBzdtrFShb6PF5azIiR8lXfJ9ET7ib7
-         9aP94VxkUNcTQO1uu2wTFimb77G+97YlY3RGjWrWfaCA7dhCF9oxoBAqRGQ+BYe88yRL
-         dpRF22c1Pcw1rk3CAApxGsro6mCD/ik44f3ic2cjmz20yLbA8nD7E3hmW1YayqcL2/Ok
-         P5odXxpPDAyUMwqhv4jewkb+DeKU8wQn/WxlJr8r5jxv3RazOF5EIq79k1Xgfr21UNjP
-         PpqA==
+        b=gx0gFrsj6AVN6GtYfW+bKXJIv9fHaZxP56EoRkArYlP8kkLf8XCQ9f6Aq8ZtMOA0so
+         5XM5yDtubb+D+DZFX2bi5P+mu64V9Yh+x9vs/zbYi5PCKvDob68orqOP8G/L0+rnR0NG
+         UESpR5z4li0RgJ6nGNCiR+vQjlC3os2OH8Za1GiY6keuLNX1LQXkqD/fAiv8LZWlptrt
+         uJRqSaKD5Kae0QropVk3xyIMAELP70ITUAxHGAHDY2GuhjIqSu5P9aMh5Y5W7VfFJ2Vg
+         MjOiupPERwNZUwPems9O+0fMRQRrJId6MB+JTTw6qYOE/iwQBPQGwH0NL1HN3oS2U4ps
+         /21A==
 In-Reply-To: <1364109934-7851-1-git-send-email-jiang.liu@huawei.com>
 Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
