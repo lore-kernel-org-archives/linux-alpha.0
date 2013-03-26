@@ -1,60 +1,162 @@
-From: Rob Landley <rob@landley.net>
-Subject: Re: [PATCH] alpha: makefile: don't enforce small data model for
- kernel builds
-Date: Mon, 25 Mar 2013 20:52:40 -0500
-Message-ID: <1364262760.15703.75@driftwood>
-References: <1363556926-21097-1-git-send-email-will.deacon@arm.com>
-	<BFB01C0A-95E5-4C2B-8AF2-A06BE1FF74E0@orcon.net.nz>
-	<20130325133710.GD14280@mudshark.cambridge.arm.com>
-	<20130325150958.GA13894@skade.schwarzvogel.de>
-	<D7731577-A2C0-4FC5-A7E3-62F251A18798@orcon.net.nz>
-	<CAEdQ38Hx0fbFW615XhhNwv0Spg4pyeqo7BhiOTV-9CrPenPwNQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <CAEdQ38Hx0fbFW615XhhNwv0Spg4pyeqo7BhiOTV-9CrPenPwNQ@mail.gmail.com>
-	(from mattst88@gmail.com on Mon Mar 25 15:55:28 2013)
-Content-Disposition: inline
-Sender: linux-alpha-owner@vger.kernel.org
+From: Jiang Liu <liuj97@gmail.com>
+Subject: [PATCH v3, part4 10/39] mm/alpha: prepare for removing num_physpages and simplify mem_init()
+Date: Tue, 26 Mar 2013 23:54:29 +0800
+Message-ID: <1364313298-17336-11-git-send-email-jiang.liu@huawei.com>
+References: <1364313298-17336-1-git-send-email-jiang.liu@huawei.com>
+Return-path: <owner-linux-mm@kvack.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=x-received:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
+         :references;
+        bh=2Fx/cQPuKMnC3bMUhNIHzR0BvE1hZ0k7CxJghrqw6HA=;
+        b=jcUhaukppmPP0tWDwI42Mq9vFV1SKkLEd5sZDAmVnwpYKA18bghvuXcyBFd9Adznsz
+         8rit+25mZzxSGVMTJkZ3NXJU9/UEMWfGOuSXp4RSvceX6i6swbP3EcDNstO2+9YZDKyW
+         IRTo4oqEDOuZyWWUPOJpib4rcgOMdOUsBVrvHJOLb+2AOpS69dwOr9UcLTCLo//ikCNY
+         niZFfBmC+gdoEVXJv87tILmi6jKnpIM34jieemJgd5LTR7F9wkG8s7E0y1iuinEQ/EGs
+         XoNprtN+lkWUDF4xfSEuSx5qTV4hFhx2ADz6jPQn9UKCt5KY6H904S6NiALfDRVlNJwO
+         JubA==
+In-Reply-To: <1364313298-17336-1-git-send-email-jiang.liu@huawei.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; delsp="Yes"; format="Flowed"
-To: Matt Turner <mattst88@gmail.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, Tobias Klausmann <klausman@schwarzvogel.de>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Andrew Morton <akpm@linux-foundation.org>, David Rientjes <rientjes@google.com>
+Cc: Jiang Liu <jiang.liu@huawei.com>, Wen Congyang <wency@cn.fujitsu.com>, Mel Gorman <mgorman@suse.de>, Minchan Kim <minchan@kernel.org>, KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>, Michal Hocko <mhocko@suse.cz>, James Bottomley <James.Bottomley@HansenPartnership.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, David Howells <dhowells@redhat.com>, Mark Salter <msalter@redhat.com>, Jianguo Wu <wujianguo@huawei.com>, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On 03/25/2013 03:55:28 PM, Matt Turner wrote:
-> On Mon, Mar 25, 2013 at 1:06 PM, Michael Cree <mcree@orcon.net.nz>  
-> wrote:
-> > On 26/03/2013, at 4:09 AM, Tobias Klausmann wrote:
-> >>
-> >> On Mon, 25 Mar 2013, Will Deacon wrote:
-> >>>
-> >>> Any news on these? I've included an updated version of the first  
-> patch,
-> >>> with
-> >>> the Tested-by-tag and a tweaked commit message below.
-> >>
-> >>
-> >> As a data point, I tried vanilla 3.8.4 on the weekend. With my
-> >> usual config on a UP1500, it will fail at build time with
-> >> relocation errors. If I remove -msmall-data (or replace it with
-> >> ~big~), the machine hangs hard immediatly after aboot telling me
-> >> it's starting it.
-> >
-> >
-> > You probably want the "alpha: Add irongate_io to to PCI bus  
-> resources" patch
-> > posted by Matt Turner in the linux-alpha forum.  Looks like it has  
-> not been
-> > sent to Linus.
-> >
-> > If Matt does not respond in the next day or two I'll collect  
-> patches and
-> > send them on to Linus.
-> 
-> Yes, please do. I haven't powered on an alpha in a few months.
+Prepare for removing num_physpages and simplify mem_init().
 
-What would it take to add Alpha system support to qemu? (It's got  
-userspace, but not the system management mode instructions, mmu, or a  
-board emulation.)
+Signed-off-by: Jiang Liu <jiang.liu@huawei.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+Hi all,
+	Sorry for my mistake that my previous patch series has been screwed up.
+So I regenerate a third version and also set up a git tree at:
+	git://github.com/jiangliu/linux.git mem_init
+	Any help to review and test are welcomed!
 
-Rob
+	Regards!
+	Gerry
+---
+ arch/alpha/mm/init.c |   32 ++------------------------------
+ arch/alpha/mm/numa.c |   34 +++++-----------------------------
+ 2 files changed, 7 insertions(+), 59 deletions(-)
+
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index ca07a97..04c933c 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -277,42 +277,14 @@ srm_paging_stop (void)
+ #endif
+ 
+ #ifndef CONFIG_DISCONTIGMEM
+-static void __init
+-printk_memory_info(void)
+-{
+-	unsigned long codesize, reservedpages, datasize, initsize, tmp;
+-	extern int page_is_ram(unsigned long) __init;
+-
+-	/* printk all informations */
+-	reservedpages = 0;
+-	for (tmp = 0; tmp < max_low_pfn; tmp++)
+-		/*
+-		 * Only count reserved RAM pages
+-		 */
+-		if (page_is_ram(tmp) && PageReserved(mem_map+tmp))
+-			reservedpages++;
+-
+-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
+-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
+-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+-
+-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, %luk data, %luk init)\n",
+-	       nr_free_pages() << (PAGE_SHIFT-10),
+-	       max_mapnr << (PAGE_SHIFT-10),
+-	       codesize >> 10,
+-	       reservedpages << (PAGE_SHIFT-10),
+-	       datasize >> 10,
+-	       initsize >> 10);
+-}
+-
+ void __init
+ mem_init(void)
+ {
+-	max_mapnr = num_physpages = max_low_pfn;
++	max_mapnr = max_low_pfn;
+ 	free_all_bootmem();
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+ 
+-	printk_memory_info();
++	mem_init_print_info(NULL);
+ }
+ #endif /* CONFIG_DISCONTIGMEM */
+ 
+diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
+index 857452c..e5086fc 100644
+--- a/arch/alpha/mm/numa.c
++++ b/arch/alpha/mm/numa.c
+@@ -129,8 +129,6 @@ setup_memory_node(int nid, void *kernel_end)
+ 	if (node_max_pfn > max_low_pfn)
+ 		max_pfn = max_low_pfn = node_max_pfn;
+ 
+-	num_physpages += node_max_pfn - node_min_pfn;
+-
+ #if 0 /* we'll try this one again in a little while */
+ 	/* Cute trick to make sure our local node data is on local memory */
+ 	node_data[nid] = (pg_data_t *)(__va(node_min_pfn << PAGE_SHIFT));
+@@ -324,37 +322,15 @@ void __init paging_init(void)
+ 
+ void __init mem_init(void)
+ {
+-	unsigned long codesize, reservedpages, datasize, initsize, pfn;
+-	extern int page_is_ram(unsigned long) __init;
+-	unsigned long nid, i;
++	unsigned long nid;
++
+ 	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
+ 
+-	reservedpages = 0;
+-	for_each_online_node(nid) {
+-		/*
+-		 * This will free up the bootmem, ie, slot 0 memory
+-		 */
++	/* This will free up the bootmem, ie, slot 0 memory */
++	for_each_online_node(nid)
+ 		free_all_bootmem_node(NODE_DATA(nid));
+ 
+-		pfn = NODE_DATA(nid)->node_start_pfn;
+-		for (i = 0; i < node_spanned_pages(nid); i++, pfn++)
+-			if (page_is_ram(pfn) &&
+-			    PageReserved(nid_page_nr(nid, i)))
+-				reservedpages++;
+-	}
+-
+-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
+-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
+-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+-
+-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, "
+-	       "%luk data, %luk init)\n",
+-	       nr_free_pages() << (PAGE_SHIFT-10),
+-	       num_physpages << (PAGE_SHIFT-10),
+-	       codesize >> 10,
+-	       reservedpages << (PAGE_SHIFT-10),
+-	       datasize >> 10,
+-	       initsize >> 10);
++	mem_init_print_info(NULL);
+ #if 0
+ 	mem_stress();
+ #endif
+-- 
+1.7.9.5
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
