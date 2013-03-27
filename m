@@ -1,72 +1,74 @@
-From: Shuah Khan <shuah.khan@hp.com>
-Subject: Re: [PATCH RFT linux-next] alpha: dma-mapping: support
- debug_dma_mapping_error
-Date: Wed, 27 Mar 2013 10:18:17 -0600
-Message-ID: <1364401097.3465.8.camel@lorien2>
-References: <1351269163.4013.27.camel@lorien2>
-	 <1353001768.2532.31.camel@lorien2> <20130327065948.GO5042@omega>
-	 <51531410.90706@samsung.com>
-Reply-To: shuah.khan@hp.com
+From: Tobias Klausmann <klausman@schwarzvogel.de>
+Subject: Re: [PATCH] alpha: makefile: don't enforce small data model for
+ kernel builds
+Date: Wed, 27 Mar 2013 18:56:31 +0100
+Message-ID: <20130327175631.GA99121@skade.schwarzvogel.de>
+References: <1363556926-21097-1-git-send-email-will.deacon@arm.com>
+ <BFB01C0A-95E5-4C2B-8AF2-A06BE1FF74E0@orcon.net.nz>
+ <20130325133710.GD14280@mudshark.cambridge.arm.com>
+ <20130325150958.GA13894@skade.schwarzvogel.de>
+ <D7731577-A2C0-4FC5-A7E3-62F251A18798@orcon.net.nz>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <51531410.90706@samsung.com>
+Content-Disposition: inline
+In-Reply-To: <D7731577-A2C0-4FC5-A7E3-62F251A18798@orcon.net.nz>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, kyungmin.park@samsung.com, arnd@arndb.de, andrzej.p@samsung.com, linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Shuah Khan <shuah.khan@hp.com>
+Content-Transfer-Encoding: 7bit
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On Wed, 2013-03-27 at 16:45 +0100, Marek Szyprowski wrote:
-> Hello,
-> 
-> On 3/27/2013 7:59 AM, Michael Cree wrote:
-> > On Thu, Nov 15, 2012 at 10:49:28AM -0700, Shuah Khan wrote:
-> > > On Fri, 2012-10-26 at 10:32 -0600, Shuah Khan wrote:
-> > > > Add support for debug_dma_mapping_error() call to avoid warning from
-> > > > debug_dma_unmap() interface when it checks for mapping error checked
-> > > > status. Without this patch, device driver failed to check map error
-> > > > warning is generated.
-> > > >
-> > > > Signed-off-by: Shuah Khan <shuah.khan@hp.com>
-> > > > ---
-> > > >  arch/alpha/include/asm/dma-mapping.h |    1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > >
-> > > > diff --git a/arch/alpha/include/asm/dma-mapping.h b/arch/alpha/include/asm/dma-mapping.h
-> > > > index dfa32f0..b4d483b 100644
-> > > > --- a/arch/alpha/include/asm/dma-mapping.h
-> > > > +++ b/arch/alpha/include/asm/dma-mapping.h
-> > > > @@ -32,6 +32,7 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
-> > > >
-> > > >  static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
-> > > >  {
-> > > > +	debug_dma_mapping_error(dev, dma_addr);
-> > > >  	return get_dma_ops(dev)->mapping_error(dev, dma_addr);
-> > > >  }
-> > > >
-> > >
-> > > Marek,
-> > >
-> > > This is for alpha to go through your tree.
+Hi! 
+
+On Tue, 26 Mar 2013, Michael Cree wrote:
+
+> On 26/03/2013, at 4:09 AM, Tobias Klausmann wrote:
+> > On Mon, 25 Mar 2013, Will Deacon wrote:
+> >> Any news on these? I've included an updated version of the first  
+> >> patch, with
+> >> the Tested-by-tag and a tweaked commit message below.
 > >
-> > Given that this does not appear to be upstream yet I'll take it through
-> > the Alpha tree.
+> > As a data point, I tried vanilla 3.8.4 on the weekend. With my
+> > usual config on a UP1500, it will fail at build time with
+> > relocation errors. If I remove -msmall-data (or replace it with
+> > ~big~), the machine hangs hard immediatly after aboot telling me
+> > it's starting it.
 > 
-> Those patches in the end went via IOMMU tree. I looks that the patch for 
-> Alpha has
-> been missed. It looks that this patch should be merged to v3.9-rcX asap 
-> to fix the
-> broken dma-mapping api calls.
-> 
+> You probably want the "alpha: Add irongate_io to to PCI bus resources"  
+> patch posted by Matt Turner in the linux-alpha forum.  Looks like it  
+> has not been sent to Linus.
 
-The reason it didn't get pulled into iommu tree was that alpha Kconfig
-doesn't support HAVE_DMA_API_DEBUG and DMA_API_DEBUG. I don't see it in
-arch/alpha/Kconfig. That said, this patch is needed on alpha, if these
-two config options get enabled. I will leave it up to the alpha
-maintainers to decide if this patch is needed or not.
+Tried that, same effect. Interestingly, rebooting without a full
+init cycle crashes differently:
 
-thanks,
--- Shuah
+aboot: loading uncompressed vmlinuz-3.8.4...
+aboot: loading compressed vmlinuz-3.8.4...  
+aboot: PHDR 0 vaddr 0xfffffc0000310000 offset 0x100 size 0x59e4ac
+aboot: bss at 0xfffffc00008ae4ac, size 0x1814dc                  
+aboot: zero-filling 1578204 bytes at 0xfffffc00008ae4ac
+aboot: starting kernel vmlinuz-3.8.4 with arguments root=/dev/md0 console=tty1 console=ttyS0 rootfstype=ext4
+                            
+halted CPU 0
+            
+halt code = 5
+HALT instruction executed
+PC = fffffc00008b4e40    
+IrqVectorSet 60      
+Adding Vector ffffffe0 b
+impure halt code 5      
+>>>
+
+Without the irongate patch, the same (HALT on soft reboot, hard
+crash on full init) happens. 
+
+Any hints on making the whole thing more debuggable are
+appreciated.
+
+Regards,
+Tobias
 
 
+-- 
+One of the main causes of the fall of the roman empire was that, lacking zero,
+they had no way to indicate successful termination of their C programs.
