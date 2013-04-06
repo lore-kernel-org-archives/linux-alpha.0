@@ -1,56 +1,145 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH] alpha: makefile: don't enforce small data model for
- kernel builds
-Date: Wed, 3 Apr 2013 19:02:18 +0100
-Message-ID: <20130403180218.GA21167@mudshark.cambridge.arm.com>
-References: <1363556926-21097-1-git-send-email-will.deacon@arm.com>
- <BFB01C0A-95E5-4C2B-8AF2-A06BE1FF74E0@orcon.net.nz>
-Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <BFB01C0A-95E5-4C2B-8AF2-A06BE1FF74E0@orcon.net.nz>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Jiang Liu <liuj97@gmail.com>
+Subject: [PATCH v4, part3 11/41] mm/alpha: prepare for removing num_physpages and simplify mem_init()
+Date: Sat,  6 Apr 2013 22:32:10 +0800
+Message-ID: <1365258760-30821-12-git-send-email-jiang.liu@huawei.com>
+References: <1365258760-30821-1-git-send-email-jiang.liu@huawei.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=x-received:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
+         :references;
+        bh=l1bWEGMa5exRsga/BsVdBdKXr1BaWsClNX94qTn60wY=;
+        b=xAgzFpmcIKdXwIiPxDySMyyk5Q9jCrQ0SoIHTPGF8DmEqoS5Hy7ObcXag4svJ80xmC
+         aRsi8o1qUfIETJgdrvL/QTWN0wJJ8ZZSymH7FBQMuGUl/+xT/+jzrg5HVrEyzjs/LZAJ
+         dXiiH2tFwsP2k88LzvmCdhIo2QwM32VBvDpvU1KN3kz/X4A7rjc1GVxBNeDr4oWYUbji
+         EhSlijtGp+H761sopTqZwP7pw4Jisf9fhqmQMKRweutRW4hNwhnP2wl5GhYqAFuiaq0W
+         lNrh6q5/t7Ogv1d5C0jNxpmgoONv0/CLfiMf5HiSHDJQo+/U74pTgHi5+CSSfyNMqmJ0
+         ConA==
+In-Reply-To: <1365258760-30821-1-git-send-email-jiang.liu@huawei.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Jiang Liu <jiang.liu@huawei.com>, David Rientjes <rientjes@google.com>, Wen Congyang <wency@cn.fujitsu.com>, Mel Gorman <mgorman@suse.de>, Minchan Kim <minchan@kernel.org>, KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>, Michal Hocko <mhocko@suse.cz>, James Bottomley <James.Bottomley@HansenPartnership.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, David Howells <dhowells@redhat.com>, Mark Salter <msalter@redhat.com>, Jianguo Wu <wujianguo@huawei.com>, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Hi guys,
+Prepare for removing num_physpages and simplify mem_init().
 
-On Mon, Mar 18, 2013 at 04:11:15AM +0000, Michael Cree wrote:
-> On 18/03/2013, at 10:48 AM, Will Deacon wrote:
-> > Due to all of the goodness being packed into today's kernels, the
-> > resulting image isn't as slim as it once was.
-> >
-> > In light of this, don't pass -msmall-data to the tools, which  
-> > results in
-> > link failures due to impossible relocations when compiling anything  
-> > but
-> > the most trivial configurations.
-> 
-> I think many of us have been using -mlarge-data when compiling with  
-> gcc-4.6 or later so maybe it is time to get the change upstream.
-> 
-> The interesting thing is that the kernel still compiles fine with  
-> gcc-4.5 and the relocation errors only appear if compiling with  
-> gcc-4.6 or later.  I had asked before on this forum what had changed  
-> with gcc-4.6 that results in the extra usage of the small data area  
-> but never got an answer.  I am still curious to know.
-> 
-> BTW, the phrase "to the tools" in the commit message makes me think  
-> immediately of the tools directory (containing perf, etc.) which is  
-> not what is intended.
-> 
-> Matt:  Are you able to collect up this and the other patches of Will  
-> and get them sent to Linus?
+Signed-off-by: Jiang Liu <jiang.liu@huawei.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ arch/alpha/mm/init.c |   32 ++------------------------------
+ arch/alpha/mm/numa.c |   34 ++--------------------------------
+ 2 files changed, 4 insertions(+), 62 deletions(-)
 
-I noticed Matt agreed to this, but I was dropped from CC:
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index ca07a97..04c933c 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -277,42 +277,14 @@ srm_paging_stop (void)
+ #endif
+ 
+ #ifndef CONFIG_DISCONTIGMEM
+-static void __init
+-printk_memory_info(void)
+-{
+-	unsigned long codesize, reservedpages, datasize, initsize, tmp;
+-	extern int page_is_ram(unsigned long) __init;
+-
+-	/* printk all informations */
+-	reservedpages = 0;
+-	for (tmp = 0; tmp < max_low_pfn; tmp++)
+-		/*
+-		 * Only count reserved RAM pages
+-		 */
+-		if (page_is_ram(tmp) && PageReserved(mem_map+tmp))
+-			reservedpages++;
+-
+-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
+-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
+-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+-
+-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, %luk data, %luk init)\n",
+-	       nr_free_pages() << (PAGE_SHIFT-10),
+-	       max_mapnr << (PAGE_SHIFT-10),
+-	       codesize >> 10,
+-	       reservedpages << (PAGE_SHIFT-10),
+-	       datasize >> 10,
+-	       initsize >> 10);
+-}
+-
+ void __init
+ mem_init(void)
+ {
+-	max_mapnr = num_physpages = max_low_pfn;
++	max_mapnr = max_low_pfn;
+ 	free_all_bootmem();
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+ 
+-	printk_memory_info();
++	mem_init_print_info(NULL);
+ }
+ #endif /* CONFIG_DISCONTIGMEM */
+ 
+diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
+index 857452c..0894b3a8 100644
+--- a/arch/alpha/mm/numa.c
++++ b/arch/alpha/mm/numa.c
+@@ -129,8 +129,6 @@ setup_memory_node(int nid, void *kernel_end)
+ 	if (node_max_pfn > max_low_pfn)
+ 		max_pfn = max_low_pfn = node_max_pfn;
+ 
+-	num_physpages += node_max_pfn - node_min_pfn;
+-
+ #if 0 /* we'll try this one again in a little while */
+ 	/* Cute trick to make sure our local node data is on local memory */
+ 	node_data[nid] = (pg_data_t *)(__va(node_min_pfn << PAGE_SHIFT));
+@@ -324,37 +322,9 @@ void __init paging_init(void)
+ 
+ void __init mem_init(void)
+ {
+-	unsigned long codesize, reservedpages, datasize, initsize, pfn;
+-	extern int page_is_ram(unsigned long) __init;
+-	unsigned long nid, i;
+ 	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
+-
+-	reservedpages = 0;
+-	for_each_online_node(nid) {
+-		/*
+-		 * This will free up the bootmem, ie, slot 0 memory
+-		 */
+-		free_all_bootmem_node(NODE_DATA(nid));
+-
+-		pfn = NODE_DATA(nid)->node_start_pfn;
+-		for (i = 0; i < node_spanned_pages(nid); i++, pfn++)
+-			if (page_is_ram(pfn) &&
+-			    PageReserved(nid_page_nr(nid, i)))
+-				reservedpages++;
+-	}
+-
+-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
+-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
+-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+-
+-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, "
+-	       "%luk data, %luk init)\n",
+-	       nr_free_pages() << (PAGE_SHIFT-10),
+-	       num_physpages << (PAGE_SHIFT-10),
+-	       codesize >> 10,
+-	       reservedpages << (PAGE_SHIFT-10),
+-	       datasize >> 10,
+-	       initsize >> 10);
++	free_all_bootmem();
++	mem_init_print_info(NULL);
+ #if 0
+ 	mem_stress();
+ #endif
+-- 
+1.7.9.5
 
-  https://lkml.org/lkml/2013/3/25/486
-
-Any chance you could send the patches on please?
-
-Thanks,
-
-Will
