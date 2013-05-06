@@ -1,64 +1,56 @@
-From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-Subject: Re: [PATCH] alpha: spinlock: don't perform memory access in locked critical section
-Date: Mon, 06 May 2013 22:28:38 +0100
-Message-ID: <yw1xmws74x2x.fsf@unicorn.mansr.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH] alpha: spinlock: don't perform memory access in locked
+ critical section
+Date: Mon, 6 May 2013 23:11:52 +0100
+Message-ID: <20130506221152.GA24639@mudshark.cambridge.arm.com>
 References: <1367870465-23948-1-git-send-email-will.deacon@arm.com>
-	<CAEdQ38HnWbUB=ZNCZeYz8GZH3U4bv_Uag8WL2zT0D=GMcoT+2A@mail.gmail.com>
-	<20130506205329.GO25399@ZenIV.linux.org.uk>
-	<20130506211238.GA24282@mudshark.cambridge.arm.com>
+ <CAEdQ38HnWbUB=ZNCZeYz8GZH3U4bv_Uag8WL2zT0D=GMcoT+2A@mail.gmail.com>
+ <20130506205329.GO25399@ZenIV.linux.org.uk>
+ <20130506211238.GA24282@mudshark.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20130506211238.GA24282@mudshark.cambridge.arm.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: linux-kernel@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"
+To: Al Viro <viro@ZenIV.linux.org.uk>
+Cc: Matt Turner <mattst88@gmail.com>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
-Will Deacon <will.deacon@arm.com> writes:
+On Mon, May 06, 2013 at 10:12:38PM +0100, Will Deacon wrote:
+> The other (hopefully also wrong) worry that I had was when the manual
+> states that:
+>=20
+> `If the virtual and physical addresses for a LDx_L and STx_C sequence=
+ are
+>  not within the same naturally aligned 16-byte sections of virtual an=
+d
+>  physical memory, that sequence may always fail, or may succeed despi=
+te
+>  another processor=E2=80=99s store to the lock range; hence, no usefu=
+l program
+>  should do this'
+>=20
+> This seems like it might have a curious interaction with CoW paging i=
+f
+> userspace is trying to use these instructions for a lock, since the
+> physical address for the conditional store might differ from the one =
+which
+> was passed to the load due to CoW triggered by a different thread. An=
+yway,
+> I was still thinking about that one and haven't got as far as TLB
+> invalidation yet :)
 
-> Hi Al, Matt,
->
-> On Mon, May 06, 2013 at 09:53:30PM +0100, Al Viro wrote:
->> On Mon, May 06, 2013 at 01:19:51PM -0700, Matt Turner wrote:
->>=20
->> > I'm not sure of the interpretation that LDA counts as a memory acc=
-ess.
->> >=20
->> > The manual says it's Ra <- Rbv + SEXT(disp).
->> >=20
->> > It's not touching memory that I can see.
->>=20
->> More to the point, the same manual gives explicit list of instructio=
-ns
->> that shouldn't occur between LDx_L and STx_C, and LDA does not belon=
-g to any
->> of those.  I suspect that Will has misparsed the notations in there =
-- LDx is
->> present in the list, but it's _not_ "all instructions with mnemonics=
- starting
->> with LD", just the 4 "load integer from memory" ones.  FWIW, instruc=
-tions
->> with that encoding (x01xxx<a:5><b:5><offs:16>) are grouped so:
->> 	LDAx - LDA, LDAH; load address
->> 	LDx -  LDL, LDQ, LDBU, LDWU; load memory data into integer register
->> 	LDQ_U; load unaligned
->> 	LDx_L - LDL_L, LDQ_L; load locked
->> 	STx_C - STL_C, STQ_C; store conditional
->> 	STx - STL, STQ, STB, STW; store
->> 	STQ_U; store unaligned
->
-> Your suspicions are right! I did assume that LDA fell under the LDx c=
-lass,
-> so apologies for the false alarm. I suspect I should try and get out =
-more,
-> rather than ponder over this reference manual.
+In case anybody is interested, the software broadcasting of TLB mainten=
+ance
+solves this problem because the PAL_rti on the ret_to_user path will cl=
+ear
+the lock flag.
 
-LDA uses the address generation circuitry from the load/store unit, but
-it does not actually access memory.  It is merely a convenient way of
-performing certain arithmetic operations, be it for scheduling reasons
-or for the different range of immediate values available.
-
---=20
-M=E5ns Rullg=E5rd
-mans@mansr.com
+Will
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
