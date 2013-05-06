@@ -1,90 +1,76 @@
-From: Jiang Liu <liuj97@gmail.com>
-Subject: [RFC PATCH v1 18/19] mm/alpha: unify mem_init() for both UMA and NUMA architectures
-Date: Sat, 13 Apr 2013 23:36:38 +0800
-Message-ID: <1365867399-21323-19-git-send-email-jiang.liu@huawei.com>
-References: <1365867399-21323-1-git-send-email-jiang.liu@huawei.com>
-Return-path: <owner-linux-mm@kvack.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=x-received:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
-         :references;
-        bh=rM3Y40ACKJGr0yshOzxyq/BK+67QoXo3ddtslCKqZ7Q=;
-        b=gAmzdK4ipsU3TqThHA/ywZOcidHkaZIzpCBUtsd+jtC20L7jtVUPKV43B2iZn+mUTU
-         RtgVEOA151Xwq31xwEVaj0rdiKCEMYhmDOfSYg5rPvXUyoBcI3I4yDueRvO98tgCtUQi
-         imn4GWU+xC1DHedzYv7gZugFrbnzCkLvTWXnIFBxGhZMlWv2SK8zx9nQ1HcnoCsSWFW1
-         LbFgklbQq7zgbevSID8ViRPjSF0VjsBGMSUoCxLHGg58Zl0ONfD+feiiWd4pu9UeWLwW
-         0xHy/VpycUJOYNx8XmgVoHnzSsnIuynotBGIv6oEqrJ1RKOEaEJ2ULcTWy1n2zVR2IUJ
-         HDRw==
-In-Reply-To: <1365867399-21323-1-git-send-email-jiang.liu@huawei.com>
-Sender: owner-linux-mm@kvack.org
+From: Will Deacon <will.deacon@arm.com>
+Subject: [PATCH] alpha: spinlock: don't perform memory access in locked critical section
+Date: Mon,  6 May 2013 21:01:05 +0100
+Message-ID: <1367870465-23948-1-git-send-email-will.deacon@arm.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>, Yinghai Lu <yinghai@kernel.org>
-Cc: Jiang Liu <jiang.liu@huawei.com>, David Rientjes <rientjes@google.com>, Wen Congyang <wency@cn.fujitsu.com>, Mel Gorman <mgorman@suse.de>, Minchan Kim <minchan@kernel.org>, KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>, Michal Hocko <mhocko@suse.cz>, David Howells <dhowells@redhat.com>, Mark Salter <msalter@redhat.com>, Jianguo Wu <wujianguo@huawei.com>, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-Now mem_init() for both Alpha UMA and Alpha NUMA are the same,
-so unify it to reduce duplicated code.
+The Alpha Architecture Reference Manual states that any memory access
+performed between an LD_xL and a STx_C instruction may cause the
+store-conditional to fail unconditionally and, as such, `no useful
+program should do this'.
 
-Signed-off-by: Jiang Liu <jiang.liu@huawei.com>
+Linux is a useful program, so fix up the Alpha spinlock implementation
+to use logical operations rather than load-address instructions for
+generating immediates.
+
 Cc: Richard Henderson <rth@twiddle.net>
 Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Will Deacon <will.deacon@arm.com>
 ---
- arch/alpha/mm/init.c |    7 ++-----
- arch/alpha/mm/numa.c |   10 ----------
- 2 files changed, 2 insertions(+), 15 deletions(-)
+ arch/alpha/include/asm/spinlock.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
-index 04c933c..39de408 100644
---- a/arch/alpha/mm/init.c
-+++ b/arch/alpha/mm/init.c
-@@ -276,17 +276,14 @@ srm_paging_stop (void)
- }
- #endif
+diff --git a/arch/alpha/include/asm/spinlock.h b/arch/alpha/include/asm/spinlock.h
+index 3bba21e..0c357cd 100644
+--- a/arch/alpha/include/asm/spinlock.h
++++ b/arch/alpha/include/asm/spinlock.h
+@@ -29,7 +29,7 @@ static inline void arch_spin_lock(arch_spinlock_t * lock)
+ 	__asm__ __volatile__(
+ 	"1:	ldl_l	%0,%1\n"
+ 	"	bne	%0,2f\n"
+-	"	lda	%0,1\n"
++	"	mov	1,%0\n"
+ 	"	stl_c	%0,%1\n"
+ 	"	beq	%0,2f\n"
+ 	"	mb\n"
+@@ -86,7 +86,7 @@ static inline void arch_write_lock(arch_rwlock_t *lock)
+ 	__asm__ __volatile__(
+ 	"1:	ldl_l	%1,%0\n"
+ 	"	bne	%1,6f\n"
+-	"	lda	%1,1\n"
++	"	mov	1,%1\n"
+ 	"	stl_c	%1,%0\n"
+ 	"	beq	%1,6f\n"
+ 	"	mb\n"
+@@ -106,7 +106,7 @@ static inline int arch_read_trylock(arch_rwlock_t * lock)
  
--#ifndef CONFIG_DISCONTIGMEM
- void __init
- mem_init(void)
- {
--	max_mapnr = max_low_pfn;
--	free_all_bootmem();
-+	set_max_mapnr(max_low_pfn);
- 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
--
-+	free_all_bootmem();
- 	mem_init_print_info(NULL);
- }
--#endif /* CONFIG_DISCONTIGMEM */
+ 	__asm__ __volatile__(
+ 	"1:	ldl_l	%1,%0\n"
+-	"	lda	%2,0\n"
++	"	mov	0,%2\n"
+ 	"	blbs	%1,2f\n"
+ 	"	subl	%1,2,%2\n"
+ 	"	stl_c	%2,%0\n"
+@@ -128,9 +128,9 @@ static inline int arch_write_trylock(arch_rwlock_t * lock)
  
- void
- free_initmem(void)
-diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
-index 0894b3a8..d543d71 100644
---- a/arch/alpha/mm/numa.c
-+++ b/arch/alpha/mm/numa.c
-@@ -319,13 +319,3 @@ void __init paging_init(void)
- 	/* Initialize the kernel's ZERO_PGE. */
- 	memset((void *)ZERO_PGE, 0, PAGE_SIZE);
- }
--
--void __init mem_init(void)
--{
--	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
--	free_all_bootmem();
--	mem_init_print_info(NULL);
--#if 0
--	mem_stress();
--#endif
--}
+ 	__asm__ __volatile__(
+ 	"1:	ldl_l	%1,%0\n"
+-	"	lda	%2,0\n"
++	"	mov	0,%2\n"
+ 	"	bne	%1,2f\n"
+-	"	lda	%2,1\n"
++	"	mov	1,%2\n"
+ 	"	stl_c	%2,%0\n"
+ 	"	beq	%2,6f\n"
+ 	"2:	mb\n"
 -- 
-1.7.9.5
+1.8.2.2
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
