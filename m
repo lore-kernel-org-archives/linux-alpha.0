@@ -1,42 +1,55 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: [PATCH] arch: alpha: kernel: sprintf(), the minimal buffer length
- is 20 for "0xffffffffffffffff\n"
-Date: Sun, 26 May 2013 18:09:07 +0800
-Message-ID: <51A1DF43.5090503@asianux.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Jiang Liu <liuj97@gmail.com>
+Subject: [PATCH v3, part2 05/20] PCI, Alpha: use hotplug-safe iterators to walk PCI buses
+Date: Sun, 26 May 2013 23:53:02 +0800
+Message-ID: <1369583597-3801-6-git-send-email-jiang.liu@huawei.com>
+References: <1369583597-3801-1-git-send-email-jiang.liu@huawei.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:to:cc:subject:date:message-id:x-mailer:in-reply-to:references;
+        bh=h1I31wETswUoXtWIyRRpXgTWsJnaPFJtEiqitC2LKDU=;
+        b=oOx/GsnpGcwtb4suHT53rZjFkkVJlHi3MZpk0ZnUKxvN4AjLNr8ZwgGPGyqWVJ8pil
+         /8PQljzct5zm/O7Hoz2HYKEEDKm/pKoWT+El7EJpm1evEc4D/HPQI3T4KkrVw7d5Zbhq
+         DjoCNJMkh7DpuBSN/zZ+/zsZ4qtL0JmuwnzGcnOov6TkXPQx4BRjCaGh5cnNMMJcyTBk
+         EYBnNkVoaJncnQ5nGzKzUUaxZg1qZ1wLdYHRD0fUsnv/CatT80EIStut97sa7vvs93FN
+         844IIdqOEeEWQuNUkfRhv2q5pOVz1qdwcuwUu8W+o3naLDUjyV/xV0IZ4DtKnAiuV+OO
+         6X7Q==
+In-Reply-To: <1369583597-3801-1-git-send-email-jiang.liu@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+To: Bjorn Helgaas <bhelgaas@google.com>, Yinghai Lu <yinghai@kernel.org>
+Cc: Jiang Liu <jiang.liu@huawei.com>, "Rafael J . Wysocki" <rjw@sisk.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Gu Zheng <guz.fnst@cn.fujitsu.com>, Toshi Kani <toshi.kani@hp.com>, Myron Stowe <myron.stowe@redhat.com>, Yijing Wang <wangyijing@huawei.com>, Jiang Liu <liuj97@gmail.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thierry Reding <thierry.reding@avionic-design.de>, linux-alpha@vger.kernel.org
 
+Enhance Alpha architecture specific code to use hotplug-safe iterators
+to walk PCI buses.
 
-For 'opcode_str' in sprintf(), the maximize length of format "0x%llx\n"
-is 20 ("0xffffffffffffffff\n"), so need define 'opcode_str' at least 20
-length.
-
-Or the big number comes, it will cause issue.
-
-
-Signed-off-by: Chen Gang <gang.chen@asianux.com>
+Signed-off-by: Jiang Liu <jiang.liu@huawei.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Thierry Reding <thierry.reding@avionic-design.de>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 ---
- arch/alpha/kernel/err_marvel.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ arch/alpha/kernel/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/err_marvel.c b/arch/alpha/kernel/err_marvel.c
-index ae54ad9..2310082 100644
---- a/arch/alpha/kernel/err_marvel.c
-+++ b/arch/alpha/kernel/err_marvel.c
-@@ -275,7 +275,7 @@ marvel_print_po7_uncrr_sym(u64 uncrr_sym, u64 valid_mask)
- static void
- marvel_print_po7_ugbge_sym(u64 ugbge_sym)
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index edb4e00..094cd58 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -305,7 +305,7 @@ pcibios_claim_console_setup(void)
  {
--	char opcode_str[10];
-+	char opcode_str[20];
+ 	struct pci_bus *b;
  
- #define IO7__PO7_UGBGE_SYM__UPH_PKT_OFF__S	(6)
- #define IO7__PO7_UGBGE_SYM__UPH_PKT_OFF__M	(0xfffffffful)
+-	list_for_each_entry(b, &pci_root_buses, node)
++	for_each_pci_root_bus(b)
+ 		pcibios_claim_one_bus(b);
+ }
+ 
 -- 
-1.7.7.6
+1.8.1.2
