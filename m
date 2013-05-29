@@ -1,50 +1,149 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: [PATCH] arch: alpha: kernel: typo issue, using '1' instead of '11'
-Date: Wed, 29 May 2013 19:04:09 +0800
-Message-ID: <51A5E0A9.70605@asianux.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Jiang Liu <liuj97@gmail.com>
+Subject: [PATCH v6, part4 11/41] mm/alpha: prepare for removing num_physpages and simplify mem_init()
+Date: Wed, 29 May 2013 21:57:29 +0800
+Message-ID: <1369835879-23553-12-git-send-email-jiang.liu@huawei.com>
+References: <1369835879-23553-1-git-send-email-jiang.liu@huawei.com>
+Return-path: <owner-linux-mm@kvack.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:to:cc:subject:date:message-id:x-mailer:in-reply-to:references;
+        bh=mWhmiAyTbXFV5TuUvP7yhMnPeGZOfObwPp4EMchz5Tc=;
+        b=qnh6K9K7rcA2mIJtdreAHSEjolqV7tUVD50siqxRUqiAg+dK8cK1hIA6/9Eb/ZybPs
+         1EKKWqUT4KZAl5KgGjTf6cNHKKKY21GSpw4BXuM+rFJvNZfgDKnrcKRnf14QNTb5aNDf
+         vHyDUcplqjy5EF3r127aqubLR/rHEvZpzlkYBqjIWyM+uhJ+CSojMshhWJS0g2wtw7fN
+         dbP35nGB/ytVX1GBfCM8QdQ0EbSfLLvkSIS+gKqzRDVBUzOoGkzw2KLnFuriXBIhDCUL
+         89x8oI7ieBvOT0MZcyVwnoCun2mtlO8+pbbM+iwUc/Cenarg8tO1nq/XhjsD+Ux/TE5+
+         C+dA==
+In-Reply-To: <1369835879-23553-1-git-send-email-jiang.liu@huawei.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, Thomas Gleixner <tglx@linutronix.de>, Frederic Weisbecker <fweisbec@gmail.com>, josh@joshtriplett.org, srivatsa.bhat@linux.vnet.ibm.com
-Cc: Greg KH <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Jiang Liu <jiang.liu@huawei.com>, David Rientjes <rientjes@google.com>, Wen Congyang <wency@cn.fujitsu.com>, Mel Gorman <mgorman@suse.de>, Minchan Kim <minchan@kernel.org>, KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>, Michal Hocko <mhocko@suse.cz>, James Bottomley <James.Bottomley@HansenPartnership.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, David Howells <dhowells@redhat.com>, Mark Salter <msalter@redhat.com>, Jianguo Wu <wujianguo@huawei.com>, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
+Prepare for removing num_physpages and simplify mem_init().
 
-For sending message:
-
-        *(unsigned int *)&cpu->ipc_buffer[0] = len;
-        cp1 = (char *) &cpu->ipc_buffer[1];
-
-But for receive message:
-
-                cnt = cpu->ipc_buffer[0] >> 32;
-                ...
-                       cp1 = (char *) &cpu->ipc_buffer[11];
-
-They are not pairs, it is typo issue of the redundency '1'.
-
-So need use '1' instead of '11'.
-
-
-Signed-off-by: Chen Gang <gang.chen@asianux.com>
+Signed-off-by: Jiang Liu <jiang.liu@huawei.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 ---
- arch/alpha/kernel/smp.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ arch/alpha/mm/init.c | 32 ++------------------------------
+ arch/alpha/mm/numa.c | 34 ++--------------------------------
+ 2 files changed, 4 insertions(+), 62 deletions(-)
 
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index 7b60834..8beb6b2 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -264,7 +264,7 @@ recv_secondary_console_msg(void)
- 		if (cnt <= 0 || cnt >= 80)
- 			strcpy(buf, "<<< BOGUS MSG >>>");
- 		else {
--			cp1 = (char *) &cpu->ipc_buffer[11];
-+			cp1 = (char *) &cpu->ipc_buffer[1];
- 			cp2 = buf;
- 			strcpy(cp2, cp1);
- 			
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index eee47a4..af91010 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -277,42 +277,14 @@ srm_paging_stop (void)
+ #endif
+ 
+ #ifndef CONFIG_DISCONTIGMEM
+-static void __init
+-printk_memory_info(void)
+-{
+-	unsigned long codesize, reservedpages, datasize, initsize, tmp;
+-	extern int page_is_ram(unsigned long) __init;
+-
+-	/* printk all informations */
+-	reservedpages = 0;
+-	for (tmp = 0; tmp < max_low_pfn; tmp++)
+-		/*
+-		 * Only count reserved RAM pages
+-		 */
+-		if (page_is_ram(tmp) && PageReserved(mem_map+tmp))
+-			reservedpages++;
+-
+-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
+-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
+-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+-
+-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, %luk data, %luk init)\n",
+-	       nr_free_pages() << (PAGE_SHIFT-10),
+-	       max_mapnr << (PAGE_SHIFT-10),
+-	       codesize >> 10,
+-	       reservedpages << (PAGE_SHIFT-10),
+-	       datasize >> 10,
+-	       initsize >> 10);
+-}
+-
+ void __init
+ mem_init(void)
+ {
+-	max_mapnr = num_physpages = max_low_pfn;
++	max_mapnr = max_low_pfn;
+ 	free_all_bootmem();
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+ 
+-	printk_memory_info();
++	mem_init_print_info(NULL);
+ }
+ #endif /* CONFIG_DISCONTIGMEM */
+ 
+diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
+index 857452c..0894b3a8 100644
+--- a/arch/alpha/mm/numa.c
++++ b/arch/alpha/mm/numa.c
+@@ -129,8 +129,6 @@ setup_memory_node(int nid, void *kernel_end)
+ 	if (node_max_pfn > max_low_pfn)
+ 		max_pfn = max_low_pfn = node_max_pfn;
+ 
+-	num_physpages += node_max_pfn - node_min_pfn;
+-
+ #if 0 /* we'll try this one again in a little while */
+ 	/* Cute trick to make sure our local node data is on local memory */
+ 	node_data[nid] = (pg_data_t *)(__va(node_min_pfn << PAGE_SHIFT));
+@@ -324,37 +322,9 @@ void __init paging_init(void)
+ 
+ void __init mem_init(void)
+ {
+-	unsigned long codesize, reservedpages, datasize, initsize, pfn;
+-	extern int page_is_ram(unsigned long) __init;
+-	unsigned long nid, i;
+ 	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
+-
+-	reservedpages = 0;
+-	for_each_online_node(nid) {
+-		/*
+-		 * This will free up the bootmem, ie, slot 0 memory
+-		 */
+-		free_all_bootmem_node(NODE_DATA(nid));
+-
+-		pfn = NODE_DATA(nid)->node_start_pfn;
+-		for (i = 0; i < node_spanned_pages(nid); i++, pfn++)
+-			if (page_is_ram(pfn) &&
+-			    PageReserved(nid_page_nr(nid, i)))
+-				reservedpages++;
+-	}
+-
+-	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
+-	datasize =  (unsigned long) &_edata - (unsigned long) &_data;
+-	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+-
+-	printk("Memory: %luk/%luk available (%luk kernel code, %luk reserved, "
+-	       "%luk data, %luk init)\n",
+-	       nr_free_pages() << (PAGE_SHIFT-10),
+-	       num_physpages << (PAGE_SHIFT-10),
+-	       codesize >> 10,
+-	       reservedpages << (PAGE_SHIFT-10),
+-	       datasize >> 10,
+-	       initsize >> 10);
++	free_all_bootmem();
++	mem_init_print_info(NULL);
+ #if 0
+ 	mem_stress();
+ #endif
 -- 
-1.7.7.6
+1.8.1.2
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
