@@ -1,84 +1,55 @@
 From: Jiang Liu <liuj97@gmail.com>
-Subject: [PATCH, v2 12/13] mm/alpha: unify mem_init() for both UMA and NUMA architectures
-Date: Wed, 29 May 2013 22:44:51 +0800
-Message-ID: <1369838692-26860-13-git-send-email-jiang.liu@huawei.com>
-References: <1369838692-26860-1-git-send-email-jiang.liu@huawei.com>
+Subject: [PATCH, v2 1/5] mm/ALPHA: clean up unused VALID_PAGE()
+Date: Wed, 29 May 2013 23:08:52 +0800
+Message-ID: <1369840136-1491-2-git-send-email-jiang.liu@huawei.com>
+References: <1369840136-1491-1-git-send-email-jiang.liu@huawei.com>
 Return-path: <owner-linux-mm@kvack.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=from:to:cc:subject:date:message-id:x-mailer:in-reply-to:references;
-        bh=3As4Pi9ccRrHDbODvAp03k5sEUNZJ6bjA6PFHPDY3GI=;
-        b=yH6ALdjWoh78MlZwWYSOb1uPE6HrxuiVft/rtcQJexQqXIv5MgPt2+Ir/KmX9CKOxX
-         szwB8OGfZ41dNjav8jixk1DMqwUBK/+qqM/znJYvpYKKmOkU3fGzH6fMkcn6g7w6dJoF
-         qHnNCeRiCe9v5b8X/C6DHMoedXZA8MFaTwqhuooKBuWCL4dJVQVVUxUbH/YfnC9Tt5KP
-         +prRqv0m2PWV7PT0rpDmnXnjUqqHj0h+pZPq3HbinwlusXQ4744XmbEFk2Et3y4be3n/
-         Tb2gDyVXRLRcx+UzbluPFC8YiJS0XGxUcN8Swzfi6RlSJfLvaMu02HkPjnOEaQCKtZYA
-         X5Hw==
-In-Reply-To: <1369838692-26860-1-git-send-email-jiang.liu@huawei.com>
+        bh=Sx8kN98T2n/egfUPpYSQcNHUInyKVRrQ+tuWRxzY+PQ=;
+        b=rcMI4rTl6VZwKA/ja4jX91apAceG1IfnqfnGdzpHXySIwkQLq+TUNnHKGBPXOLiHam
+         Av0rtbePWZ6jRjE4ROtE5t256nhETEXkapGVm2ZwyClYAvGvzsQ4Us0eIxVuLhm7JsNs
+         h5JGkFZmpkff3QaSEVigW8+mJwJEXOcbgRjeEEzjXrvMDsYOb8CB3U4oTa31UJ+j9xUE
+         38qCFfquxMUuGseHqF0wLxv1pN3hFJIsHny7phrrufd0VIAIE8r2HtGp/hBucO9HEBft
+         TJe6w1dGhhhiZExFRzgVCX9J35BeWU1cR3gnSgUAV4a+vYIW+lFeLCqPJLOwbxW1Q0dZ
+         s0pw==
+In-Reply-To: <1369840136-1491-1-git-send-email-jiang.liu@huawei.com>
 Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Jiang Liu <jiang.liu@huawei.com>, David Rientjes <rientjes@google.com>, Wen Congyang <wency@cn.fujitsu.com>, Mel Gorman <mgorman@suse.de>, Minchan Kim <minchan@kernel.org>, KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>, Michal Hocko <mhocko@suse.cz>, James Bottomley <James.Bottomley@HansenPartnership.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, David Howells <dhowells@redhat.com>, Mark Salter <msalter@redhat.com>, Jianguo Wu <wujianguo@huawei.com>, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: Jiang Liu <jiang.liu@huawei.com>, David Rientjes <rientjes@google.com>, Wen Congyang <wency@cn.fujitsu.com>, Mel Gorman <mgorman@suse.de>, Minchan Kim <minchan@kernel.org>, KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>, Michal Hocko <mhocko@suse.cz>, James Bottomley <James.Bottomley@HansenPartnership.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, David Howells <dhowells@redhat.com>, Mark Salter <msalter@redhat.com>, Jianguo Wu <wujianguo@huawei.com>, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Nadia Yvette Chambers <nyc@holomorphy.com>, Jiri Kosina <jkosina@suse.cz>, linux-alpha@vger.kernel.org
 
-Now mem_init() for both Alpha UMA and Alpha NUMA are the same,
-so unify it to reduce duplicated code.
+VALID_PAGE() has been removed from kernel long time ago, so clean up it.
 
 Signed-off-by: Jiang Liu <jiang.liu@huawei.com>
 Cc: Richard Henderson <rth@twiddle.net>
 Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 Cc: Matt Turner <mattst88@gmail.com>
+Cc: Nadia Yvette Chambers <nyc@holomorphy.com>
+Cc: Jiri Kosina <jkosina@suse.cz>
 Cc: linux-alpha@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- arch/alpha/mm/init.c |  7 ++-----
- arch/alpha/mm/numa.c | 10 ----------
- 2 files changed, 2 insertions(+), 15 deletions(-)
+ arch/alpha/include/asm/mmzone.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
-index af91010..a1bea91 100644
---- a/arch/alpha/mm/init.c
-+++ b/arch/alpha/mm/init.c
-@@ -276,17 +276,14 @@ srm_paging_stop (void)
- }
- #endif
+diff --git a/arch/alpha/include/asm/mmzone.h b/arch/alpha/include/asm/mmzone.h
+index c5b5d6b..14ce27b 100644
+--- a/arch/alpha/include/asm/mmzone.h
++++ b/arch/alpha/include/asm/mmzone.h
+@@ -71,8 +71,6 @@ PLAT_NODE_DATA_LOCALNR(unsigned long p, int n)
  
--#ifndef CONFIG_DISCONTIGMEM
- void __init
- mem_init(void)
- {
--	max_mapnr = max_low_pfn;
--	free_all_bootmem();
-+	set_max_mapnr(max_low_pfn);
- 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
--
-+	free_all_bootmem();
- 	mem_init_print_info(NULL);
- }
--#endif /* CONFIG_DISCONTIGMEM */
+ #define virt_to_page(kaddr)	pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)
  
- void
- free_initmem(void)
-diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
-index 0894b3a8..d543d71 100644
---- a/arch/alpha/mm/numa.c
-+++ b/arch/alpha/mm/numa.c
-@@ -319,13 +319,3 @@ void __init paging_init(void)
- 	/* Initialize the kernel's ZERO_PGE. */
- 	memset((void *)ZERO_PGE, 0, PAGE_SIZE);
- }
+-#define VALID_PAGE(page)	(((page) - mem_map) < max_mapnr)
 -
--void __init mem_init(void)
--{
--	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
--	free_all_bootmem();
--	mem_init_print_info(NULL);
--#if 0
--	mem_stress();
--#endif
--}
+ #define pmd_page(pmd)		(pfn_to_page(pmd_val(pmd) >> 32))
+ #define pgd_page(pgd)		(pfn_to_page(pgd_val(pgd) >> 32))
+ #define pte_pfn(pte)		(pte_val(pte) >> 32)
 -- 
 1.8.1.2
 
