@@ -1,60 +1,61 @@
-From: Jiang Liu <liuj97@gmail.com>
-Subject: [PATCH, v2 1/5] mm/ALPHA: clean up unused VALID_PAGE()
-Date: Wed, 29 May 2013 23:08:52 +0800
-Message-ID: <1369840136-1491-2-git-send-email-jiang.liu@huawei.com>
-References: <1369840136-1491-1-git-send-email-jiang.liu@huawei.com>
-Return-path: <owner-linux-mm@kvack.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id:x-mailer:in-reply-to:references;
-        bh=Sx8kN98T2n/egfUPpYSQcNHUInyKVRrQ+tuWRxzY+PQ=;
-        b=rcMI4rTl6VZwKA/ja4jX91apAceG1IfnqfnGdzpHXySIwkQLq+TUNnHKGBPXOLiHam
-         Av0rtbePWZ6jRjE4ROtE5t256nhETEXkapGVm2ZwyClYAvGvzsQ4Us0eIxVuLhm7JsNs
-         h5JGkFZmpkff3QaSEVigW8+mJwJEXOcbgRjeEEzjXrvMDsYOb8CB3U4oTa31UJ+j9xUE
-         38qCFfquxMUuGseHqF0wLxv1pN3hFJIsHny7phrrufd0VIAIE8r2HtGp/hBucO9HEBft
-         TJe6w1dGhhhiZExFRzgVCX9J35BeWU1cR3gnSgUAV4a+vYIW+lFeLCqPJLOwbxW1Q0dZ
-         s0pw==
-In-Reply-To: <1369840136-1491-1-git-send-email-jiang.liu@huawei.com>
-Sender: owner-linux-mm@kvack.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Chen Gang <gang.chen@asianux.com>
+Subject: [Suggestion] arch/*/include/asm/bitops.h: about __set_bit() API.
+Date: Sat, 08 Jun 2013 18:08:05 +0800
+Message-ID: <51B30285.6020503@asianux.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Jiang Liu <jiang.liu@huawei.com>, David Rientjes <rientjes@google.com>, Wen Congyang <wency@cn.fujitsu.com>, Mel Gorman <mgorman@suse.de>, Minchan Kim <minchan@kernel.org>, KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>, Michal Hocko <mhocko@suse.cz>, James Bottomley <James.Bottomley@HansenPartnership.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, David Howells <dhowells@redhat.com>, Mark Salter <msalter@redhat.com>, Jianguo Wu <wujianguo@huawei.com>, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Nadia Yvette Chambers <nyc@holomorphy.com>, Jiri Kosina <jkosina@suse.cz>, linux-alpha@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, "dhowells@redhat.com" <dhowells@redhat.com>, tony.luck@intel.com, fenghua.yu@intel.com, yasutake.koichi@jp.panasonic.com
+Cc: linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-ia64@vger.kernel.org, linux-am33-list@redhat.com, Linux-Arch <linux-arch@vger.kernel.org>
 
-VALID_PAGE() has been removed from kernel long time ago, so clean up it.
+Hello Maintainers:
 
-Signed-off-by: Jiang Liu <jiang.liu@huawei.com>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Nadia Yvette Chambers <nyc@holomorphy.com>
-Cc: Jiri Kosina <jkosina@suse.cz>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- arch/alpha/include/asm/mmzone.h | 2 --
- 1 file changed, 2 deletions(-)
 
-diff --git a/arch/alpha/include/asm/mmzone.h b/arch/alpha/include/asm/mmzone.h
-index c5b5d6b..14ce27b 100644
---- a/arch/alpha/include/asm/mmzone.h
-+++ b/arch/alpha/include/asm/mmzone.h
-@@ -71,8 +71,6 @@ PLAT_NODE_DATA_LOCALNR(unsigned long p, int n)
- 
- #define virt_to_page(kaddr)	pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)
- 
--#define VALID_PAGE(page)	(((page) - mem_map) < max_mapnr)
--
- #define pmd_page(pmd)		(pfn_to_page(pmd_val(pmd) >> 32))
- #define pgd_page(pgd)		(pfn_to_page(pgd_val(pgd) >> 32))
- #define pte_pfn(pte)		(pte_val(pte) >> 32)
+Several architectures have different __set_bit() API to others, in
+standard API, 2nd param of __set_bit() is 'unsigned long *', but:
+
+  in 'min10300', it is 'unsigned char *',
+  in 'ia64' and 'alpha', they are 'int' or 'unsigned int'.
+
+If another sub-systems did not notice it, it may lead them to make
+mistakes.
+
+It seems related maintainer intended to implement it like that.
+
+So could related maintainers provide the reason for it, so more guys
+(e.g. me) can learn about it (at least can avoid related mistakes).
+
+
+The related information in arch sub-system:
+
+using 'unsigned char *':
+  ./mn10300/include/asm/bitops.h:28:#define __set_bit(nr, addr)					\
+
+using 'unsigned int *', implicitly: 
+  ./ia64/include/asm/bitops.h:63:__set_bit (int nr, volatile void *addr)
+
+using 'int *', implicitly: (need use 'unsigned', at least)
+  ./alpha/include/asm/bitops.h:49:__set_bit(unsigned long nr, volatile void * addr)
+
+using 'unsigned long *' implicitly:
+  ./frv/include/asm/bitops.h:164:static inline void __set_bit(unsigned long nr, volatile void *addr)
+  
+standard API:  
+  ./h8300/include/asm/bitops.h:74:#define __set_bit(nr,addr)    set_bit((nr),(addr))
+  ./m68k/include/asm/bitops.h:67:#define __set_bit(nr, vaddr)	set_bit(nr, vaddr)
+  ./arc/include/asm/bitops.h:293:static inline void __set_bit(unsigned long nr, volatile unsigned long *m)
+  ./sh/include/asm/bitops-op32.h:20:static inline void __set_bit(int nr, volatile unsigned long *addr)
+  ./hexagon/include/asm/bitops.h:151:static inline void __set_bit(int nr, volatile unsigned long *addr)
+  ./s390/include/asm/bitops.h:212:static inline void __set_bit(unsigned long nr, volatile unsigned long *ptr)
+  ./x86/include/asm/bitops.h:84:static inline void __set_bit(int nr, volatile unsigned long *addr)
+  (others use 'generic')
+
+
+Thanks.
 -- 
-1.8.1.2
+Chen Gang
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Asianux Corporation
