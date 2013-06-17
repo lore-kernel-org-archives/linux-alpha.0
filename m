@@ -1,51 +1,108 @@
-From: Chen Gang <gang.chen@asianux.com>
-Subject: Re: [Suggestion] arch/*/include/asm/bitops.h: about __set_bit() API.
-Date: Thu, 13 Jun 2013 10:43:51 +0800
-Message-ID: <51B931E7.5050406@asianux.com>
-References: <51B30285.6020503@asianux.com> <CA+8MBbK_nfOhZGsd5wU-hyiwh3pHS5c42eiBfxLpCjDgBKUqJg@mail.gmail.com> <CAMuHMdWVx79L=ErRkNMide6xNqQt1RQr0psN8nqoADeV0h768A@mail.gmail.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH] alpha: delete __cpuinit usage from all users
+Date: Mon, 17 Jun 2013 16:41:01 -0400
+Message-ID: <1371501661-22592-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdWVx79L=ErRkNMide6xNqQt1RQr0psN8nqoADeV0h768A@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Tony Luck <tony.luck@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "dhowells@redhat.com" <dhowells@redhat.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, alpha <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-am33-list@redhat.com, Linux-Arch <linux-arch@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>
 
-On 06/11/2013 03:32 PM, Geert Uytterhoeven wrote:
-> On Tue, Jun 11, 2013 at 12:26 AM, Tony Luck <tony.luck@gmail.com> wrote:
->> > On Sat, Jun 8, 2013 at 3:08 AM, Chen Gang <gang.chen@asianux.com> wrote:
->>> >> using 'unsigned int *', implicitly:
->>> >>   ./ia64/include/asm/bitops.h:63:__set_bit (int nr, volatile void *addr)
->> >
->> > There is some downside on ia64 to your suggestion.  If "addr" is properly
->> > aligned for an "int", but misaligned for a long ... i.e. addr%8 == 4, then I'll
->> > take an unaligned reference trap if I work with long* where the current code
->> > working with int* does not.
->> >
->> > Now perhaps all the callers do guarantee long* alignment?  But I don't know.
->> >
->> > Apart from uniformity, there doesn't see to be any upside to changing this.
-> The address pointers have been supposed to be "long *" for a very long time.
-> Probably alpha (the second official Linux platform) did it
-> differently, and never
-> standardized to "long *".
+The __cpuinit type of throwaway sections might have made sense
+some time ago when RAM was more constrained, but now the savings
+do not offset the cost and complications.  For example, the fix in
+commit 5e427ec2d0 ("x86: Fix bit corruption at CPU resume time")
+is a good example of the nasty type of bugs that can be created
+with improper use of the various __init prefixes.
 
-Excuse me, I am not quite familiar with the details, but I guess, it is
-about functional feature issues, not (or not only) about bug issues.
+After a discussion on LKML[1] it was decided that cpuinit should go
+the way of devinit and be phased out.  Once all the users are gone,
+we can then finally remove the macros themselves from linux/init.h.
 
-For the architectures which can fully support 64-bit OS, excluding ia64
-and alpha, all of them can support setting 64 bits (from 0 to 63) under
-64-bit machine.
+This removes all the alpha uses of the __cpuinit macros.
 
-I am not quite sure whether any sub-systems have already set higher bit
-(> 31) under 64-bit machine, but in the future, it seems they could (at
-least our API supposed so).
+[1] https://lkml.org/lkml/2013/5/20/589
 
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+---
+ arch/alpha/kernel/smp.c   | 10 +++++-----
+ arch/alpha/kernel/traps.c |  4 ++--
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-Thanks.
+diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
+index 7b60834..53b18a6 100644
+--- a/arch/alpha/kernel/smp.c
++++ b/arch/alpha/kernel/smp.c
+@@ -116,7 +116,7 @@ wait_boot_cpu_to_stop(int cpuid)
+ /*
+  * Where secondaries begin a life of C.
+  */
+-void __cpuinit
++void
+ smp_callin(void)
+ {
+ 	int cpuid = hard_smp_processor_id();
+@@ -194,7 +194,7 @@ wait_for_txrdy (unsigned long cpumask)
+  * Send a message to a secondary's console.  "START" is one such
+  * interesting message.  ;-)
+  */
+-static void __cpuinit
++static void
+ send_secondary_console_msg(char *str, int cpuid)
+ {
+ 	struct percpu_struct *cpu;
+@@ -285,7 +285,7 @@ recv_secondary_console_msg(void)
+ /*
+  * Convince the console to have a secondary cpu begin execution.
+  */
+-static int __cpuinit
++static int
+ secondary_cpu_start(int cpuid, struct task_struct *idle)
+ {
+ 	struct percpu_struct *cpu;
+@@ -356,7 +356,7 @@ secondary_cpu_start(int cpuid, struct task_struct *idle)
+ /*
+  * Bring one cpu online.
+  */
+-static int __cpuinit
++static int
+ smp_boot_one_cpu(int cpuid, struct task_struct *idle)
+ {
+ 	unsigned long timeout;
+@@ -472,7 +472,7 @@ smp_prepare_boot_cpu(void)
+ {
+ }
+ 
+-int __cpuinit
++int
+ __cpu_up(unsigned int cpu, struct task_struct *tidle)
+ {
+ 	smp_boot_one_cpu(cpu, tidle);
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index affccb9..be1fba3 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -32,7 +32,7 @@
+ 
+ static int opDEC_fix;
+ 
+-static void __cpuinit
++static void
+ opDEC_check(void)
+ {
+ 	__asm__ __volatile__ (
+@@ -1059,7 +1059,7 @@ give_sigbus:
+ 	return;
+ }
+ 
+-void __cpuinit
++void
+ trap_init(void)
+ {
+ 	/* Tell PAL-code what global pointer we want in the kernel.  */
 -- 
-Chen Gang
+1.8.1.2
 
-Asianux Corporation
