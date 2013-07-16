@@ -1,22 +1,22 @@
 From: Richard Henderson <rth@twiddle.net>
-Subject: [RFC PATCH 08/10] alpha: Always enable the rpcc clocksource for single processor
-Date: Tue, 16 Jul 2013 10:34:16 -0700
-Message-ID: <1373996058-13399-9-git-send-email-rth@twiddle.net>
+Subject: [RFC PATCH 07/10] alpha: Add an rtc driver for the qemu wallclock PALcall
+Date: Tue, 16 Jul 2013 10:34:15 -0700
+Message-ID: <1373996058-13399-8-git-send-email-rth@twiddle.net>
 References: <1373996058-13399-1-git-send-email-rth@twiddle.net>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=sender:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
          :references;
-        bh=MNHM4zhzC+vn3jvlvUClccAieEM7IuYesM12AG+F1mE=;
-        b=fPM2dJbRH77+jF5EbnvJWaKVSWNV0QGEbv4KXze4WSkU7669sMXTZplrQAoSdIkNq2
-         UjdpY3Wr+UvIMU+R+rTewzPDypSa45CDvLdEFqyZCf4c1Vr+qWMcRJzU6va+ULz50StG
-         vb6hOI9WWYZzVKXg9gyLOzJtEoWP/cDc1c6t0zlUy3jtq53NQuzVRC7nzq0CxB76onKO
-         mHLtcGWqD+izP7X82rmxRTxRRobUFIYYZiTdtlVc9wZCbz/q7PpQD77/llskzGbxtpNP
-         7w06XQmYunwWrhZJtB292v6dtsX2yXJh2BBwmV/KdcNuetvmh05VCoFB3UKfkHw6i6w4
-         6iHg==
+        bh=tcK4ka8mi1B/p/DkTsJJwxDRyEg2VqOO1GRlYRd+r+8=;
+        b=CqT9LBgGlq7AFT7+ufcXRCqrxgx52K0h/uNrq6iql20yifELbwsBvSAi3Ga0KN93mw
+         vh+qSWfUrsdb1hLzxMTRsaaR/S1uwyf/YE74epEzKV8CwbpZzqylTcWoDH9Oqt6O5Ldr
+         CmsewF8J+8y5tH61qgfcM9+qNG5KZHONayrRorP9deQtm9IHlG3VFVRVnaFN5s0U5uzK
+         Z7j6776JyX/gWp9sreqQGAA+JX4fBZnPHx6x96MnOc34zwikiTpmZrjhDVNfAMYf0LUV
+         qkpWEiKcQJyya1itaqeL3zHlTYYeF4afoX2AvFt1MEzUoUkBh4NGOQ0v9o7Q0hJ2iHkz
+         sfPg==
 In-Reply-To: <1373996058-13399-1-git-send-email-rth@twiddle.net>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,109 +24,226 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-Don't depend on SMP, just check the number of processors online.
-This allows a single distribution kernel to use the clocksource
-when run on a single processor machine.
+In the normal case, one wants the guest to follow the host time.
+QEMU has a cserve call that retrieves the wall clock.
 
 Signed-off-by: Richard Henderson <rth@twiddle.net>
 ---
- arch/alpha/kernel/time.c | 58 +++++++++++++++++++++++-------------------------
- 1 file changed, 28 insertions(+), 30 deletions(-)
+ arch/alpha/include/asm/pal.h | 56 ++++++++++++++++++++++++++++++++++++++
+ arch/alpha/kernel/Makefile   |  3 +-
+ arch/alpha/kernel/rtc.c      | 65 +++++++++++++++++++++++++++++++++++++++-----
+ drivers/rtc/Kconfig          |  7 +++++
+ 4 files changed, 122 insertions(+), 9 deletions(-)
 
-diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
-index dbd56ec..cadb82b 100644
---- a/arch/alpha/kernel/time.c
-+++ b/arch/alpha/kernel/time.c
-@@ -186,6 +186,31 @@ common_init_rtc(void)
- 	init_rtc_irq();
- }
+diff --git a/arch/alpha/include/asm/pal.h b/arch/alpha/include/asm/pal.h
+index e78ec9b..ccaa49a 100644
+--- a/arch/alpha/include/asm/pal.h
++++ b/arch/alpha/include/asm/pal.h
+@@ -112,5 +112,61 @@ __CALL_PAL_RW1(wtint, unsigned long, unsigned long);
+ #define tbiap()		__tbi(-1, /* no second argument */)
+ #define tbia()		__tbi(-2, /* no second argument */)
  
-+
 +/*
-+ * The RPCC as a clocksource primitive.
-+ *
-+ * While we have free-running timecounters running on all CPUs, and we make
-+ * a half-hearted attempt in init_rtc_rpcc_info to sync the timecounter
-+ * with the wall clock, that initialization isn't kept up-to-date across
-+ * different time counters in SMP mode.  Therefore we can only use this
-+ * method when there's only one CPU enabled.
++ * QEMU Cserv routines..
 + */
 +
-+static cycle_t read_rpcc(struct clocksource *cs)
++static inline unsigned long
++qemu_get_walltime(void)
 +{
-+	return rpcc();
++	register unsigned long v0 __asm__("$0");
++	register unsigned long a0 __asm__("$16") = 3;
++
++	asm("call_pal %2 # cserve get_time"
++	    : "=r"(v0), "+r"(a0)
++	    : "i"(PAL_cserve)
++	    : "$17", "$18", "$19", "$20", "$21");
++
++	return v0;
 +}
 +
-+static struct clocksource clocksource_rpcc = {
-+	.name                   = "rpcc",
-+	.rating                 = 300,
-+	.read                   = read_rpcc,
-+	.mask                   = CLOCKSOURCE_MASK(32),
-+	.flags                  = CLOCK_SOURCE_IS_CONTINUOUS
++static inline unsigned long
++qemu_get_alarm(void)
++{
++	register unsigned long v0 __asm__("$0");
++	register unsigned long a0 __asm__("$16") = 4;
++
++	asm("call_pal %2 # cserve get_alarm"
++	    : "=r"(v0), "+r"(a0)
++	    : "i"(PAL_cserve)
++	    : "$17", "$18", "$19", "$20", "$21");
++
++	return v0;
++}
++
++static inline void
++qemu_set_alarm_rel(unsigned long expire)
++{
++	register unsigned long a0 __asm__("$16") = 5;
++	register unsigned long a1 __asm__("$17") = expire;
++
++	asm volatile("call_pal %2 # cserve set_alarm_rel"
++		     : "+r"(a0), "+r"(a1)
++		     : "i"(PAL_cserve)
++		     : "$0", "$18", "$19", "$20", "$21");
++}
++
++static inline void
++qemu_set_alarm_abs(unsigned long expire)
++{
++	register unsigned long a0 __asm__("$16") = 6;
++	register unsigned long a1 __asm__("$17") = expire;
++
++	asm volatile("call_pal %2 # cserve set_alarm_abs"
++		     : "+r"(a0), "+r"(a1)
++		     : "i"(PAL_cserve)
++		     : "$0", "$18", "$19", "$20", "$21");
++}
++
+ #endif /* !__ASSEMBLY__ */
+ #endif /* __ALPHA_PAL_H */
+diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
+index 0d54650..bf04ee8 100644
+--- a/arch/alpha/kernel/Makefile
++++ b/arch/alpha/kernel/Makefile
+@@ -8,7 +8,7 @@ ccflags-y	:= -Wno-sign-compare
+ 
+ obj-y    := entry.o traps.o process.o osf_sys.o irq.o \
+ 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
+-	    alpha_ksyms.o systbls.o err_common.o io.o
++	    alpha_ksyms.o systbls.o err_common.o io.o rtc.o
+ 
+ obj-$(CONFIG_VGA_HOSE)	+= console.o
+ obj-$(CONFIG_SMP)	+= smp.o
+@@ -16,7 +16,6 @@ obj-$(CONFIG_PCI)	+= pci.o pci_iommu.o pci-sysfs.o
+ obj-$(CONFIG_SRM_ENV)	+= srm_env.o
+ obj-$(CONFIG_MODULES)	+= module.o
+ obj-$(CONFIG_PERF_EVENTS) += perf_event.o
+-obj-$(CONFIG_RTC_DRV_ALPHA) += rtc.o
+ 
+ ifdef CONFIG_ALPHA_GENERIC
+ 
+diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
+index c8d284d..fd910ff 100644
+--- a/arch/alpha/kernel/rtc.c
++++ b/arch/alpha/kernel/rtc.c
+@@ -16,10 +16,12 @@
+ #include <linux/platform_device.h>
+ 
+ #include <asm/rtc.h>
++#include <asm/pal.h>
+ 
+ #include "proto.h"
+ 
+ 
++#ifdef CONFIG_RTC_DRV_ALPHA
+ /*
+  * Support for the RTC device.
+  *
+@@ -293,20 +295,68 @@ static const struct rtc_class_ops remote_rtc_ops = {
+ 	.set_mmss = remote_set_mmss,
+ 	.ioctl = alpha_rtc_ioctl,
+ };
+-#endif
++#endif /* HAVE_REMOTE_RTC */
++#endif /* CONFIG_RTC_DRV_ALPHA */
++
++#ifdef CONFIG_RTC_DRV_ALPHA_QEMU
++/*
++ * Support for the QEMU wall clock as an RTC device.
++ */
++
++static int
++qemu_rtc_read_time(struct device *dev, struct rtc_time *tm)
++{
++	unsigned long nsec = qemu_get_walltime();
++	unsigned long sec = nsec / NSEC_PER_SEC;
+ 
++	rtc_time_to_tm(sec, tm);
++	return 0;
++}
++
++static int
++qemu_rtc_set_time(struct device *dev, struct rtc_time *tm)
++{
++	return -EOPNOTSUPP;
++}
++
++static int
++qemu_rtc_set_mmss(struct device *dev, unsigned long sec)
++{
++	return -EOPNOTSUPP;
++}
++
++static const struct rtc_class_ops qemu_rtc_ops = {
++	.read_time = qemu_rtc_read_time,
++	.set_time = qemu_rtc_set_time,
++	.set_mmss = qemu_rtc_set_mmss,
 +};
++#endif /* CONFIG_RTC_DRV_ALPHA_QEMU */
 +
-+
- /* Validate a computed cycle counter result against the known bounds for
-    the given processor core.  There's too much brokenness in the way of
-    timing hardware for any one method to work everywhere.  :-(
-@@ -296,33 +321,6 @@ rpcc_after_update_in_progress(void)
- 	return rpcc();
- }
- 
--#ifndef CONFIG_SMP
--/* Until and unless we figure out how to get cpu cycle counters
--   in sync and keep them there, we can't use the rpcc.  */
--static cycle_t read_rpcc(struct clocksource *cs)
--{
--	cycle_t ret = (cycle_t)rpcc();
--	return ret;
--}
--
--static struct clocksource clocksource_rpcc = {
--	.name                   = "rpcc",
--	.rating                 = 300,
--	.read                   = read_rpcc,
--	.mask                   = CLOCKSOURCE_MASK(32),
--	.flags                  = CLOCK_SOURCE_IS_CONTINUOUS
--};
--
--static inline void register_rpcc_clocksource(long cycle_freq)
--{
--	clocksource_register_hz(&clocksource_rpcc, cycle_freq);
--}
--#else /* !CONFIG_SMP */
--static inline void register_rpcc_clocksource(long cycle_freq)
--{
--}
--#endif /* !CONFIG_SMP */
--
- void __init
- time_init(void)
++#if defined(CONFIG_RTC_DRV_ALPHA) || defined(CONFIG_RTC_DRV_ALPHA_QEMU)
+ static int __init
+-alpha_rtc_init(void)
++rtc_init(void)
  {
-@@ -364,20 +362,20 @@ time_init(void)
- 		       "and unable to estimate a proper value!\n");
- 	}
+ 	const struct rtc_class_ops *ops;
+ 	struct platform_device *pdev;
+ 	struct rtc_device *rtc;
+ 	const char *name;
  
-+	if (hwrpb->nr_processors == 1)
-+		clocksource_register_hz(&clocksource_rpcc, cycle_freq);
++#ifdef CONFIG_RTC_DRV_ALPHA_QEMU
++	if (alpha_using_qemu) {
++		name = "rtc-qemu";
++		ops = &qemu_rtc_ops;
 +
- 	/* From John Bowman <bowman@math.ualberta.ca>: allow the values
- 	   to settle, as the Update-In-Progress bit going low isn't good
- 	   enough on some hardware.  2ms is our guess; we haven't found 
- 	   bogomips yet, but this is close on a 500Mhz box.  */
- 	__delay(1000000);
- 
++		pdev = platform_device_register_simple(name, -1, NULL, 0);
++		rtc = devm_rtc_device_register(&pdev->dev, name, ops, NULL);
++		if (!IS_ERR(rtc))
++			platform_set_drvdata(pdev, rtc);
++	}
++#endif /* ALPHA_QEMU */
++
++#ifdef CONFIG_RTC_DRV_ALPHA
+ 	init_rtc_epoch();
+ 	name = "rtc-alpha";
+ 	ops = &alpha_rtc_ops;
 -
- 	if (HZ > (1<<16)) {
- 		extern void __you_loose (void);
- 		__you_loose();
- 	}
+ #ifdef HAVE_REMOTE_RTC
+ 	if (alpha_mv.rtc_boot_cpu_only)
+ 		ops = &remote_rtc_ops;
+@@ -314,10 +364,11 @@ alpha_rtc_init(void)
  
--	register_rpcc_clocksource(cycle_freq);
--
- 	state.last_time = cc1;
- 	state.scaled_ticks_per_cycle
- 		= ((unsigned long) HZ << FIX_SHIFT) / cycle_freq;
+ 	pdev = platform_device_register_simple(name, -1, NULL, 0);
+ 	rtc = devm_rtc_device_register(&pdev->dev, name, ops, THIS_MODULE);
+-	if (IS_ERR(rtc))
+-		return PTR_ERR(rtc);
++	if (!IS_ERR(rtc))
++		platform_set_drvdata(pdev, rtc);
++#endif /* ALPHA */
+ 
+-	platform_set_drvdata(pdev, rtc);
+ 	return 0;
+ }
+-device_initcall(alpha_rtc_init);
++device_initcall(rtc_init);
++#endif
+diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
+index a4d3f9a..1884ca4 100644
+--- a/drivers/rtc/Kconfig
++++ b/drivers/rtc/Kconfig
+@@ -631,6 +631,13 @@ config RTC_DRV_ALPHA
+ 	  Direct support for the real-time clock found on every Alpha
+ 	  system, specifically MC146818 compatibles.  If in doubt, say Y.
+ 
++config RTC_DRV_ALPHA_QEMU
++	bool "Alpha QEMU paravirtual RTC"
++	depends on ALPHA
++	default y if ALPHA_QEMU
++	help
++	  Support for the paravirtual real-time clock found in QEMU.
++
+ config RTC_DRV_VRTC
+ 	tristate "Virtual RTC for Intel MID platforms"
+ 	depends on X86_INTEL_MID
 -- 
 1.8.1.4
-
