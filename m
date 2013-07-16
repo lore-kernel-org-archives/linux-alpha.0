@@ -1,20 +1,20 @@
 From: Richard Henderson <rth@twiddle.net>
-Subject: [RFC PATCH 03/10] alpha: Force the user-visible HZ to a constant 1024.
-Date: Tue, 16 Jul 2013 10:34:11 -0700
-Message-ID: <1373996058-13399-4-git-send-email-rth@twiddle.net>
+Subject: [RFC PATCH 01/10] alpha: Don't if-out dp264_device_interrupt.
+Date: Tue, 16 Jul 2013 10:34:09 -0700
+Message-ID: <1373996058-13399-2-git-send-email-rth@twiddle.net>
 References: <1373996058-13399-1-git-send-email-rth@twiddle.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=sender:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
          :references;
-        bh=5DBecqtabwU1RIVDRH0PBls7M7ezMHdrHYF3OMYY7yU=;
-        b=EEmp7Tll7pUDugfjbbFgfk9EbkiEK3lFAn5hTRvObg+6SChfMIw32Q6Y37+Pu2P85a
-         0tKUdVbUwL2F26BMyauCKPsQimLLCvPT1a/sPYGyqDw+RGI6CiUAXj5YAXa1RUpK95zI
-         O0WHWCiGQK0sJTajEwS96L5nDOUMZeAuGNxa8MQT/8c8Xd/LYmf0agmaZ/Ql1hb8z9Z5
-         l5dGOK6xjPcVlWk8wVJKE5RT/pgncvTJsW/9/JxjtootgoDwBozHQGxckzO4NOhRIDEw
-         57R14v+aXIuHP3p+7eo7o96YzC1+DrvoKBVH5JvTPQA0J+v9pvSs7zB7c7hYHVHkPmPI
-         ppKA==
+        bh=xrHML8hEiuj1ViyDIgvIozERnTkH5z718WFYo620Wmw=;
+        b=WsjYsY56yZFQkvYxpqlnYIkz0ZXonFob2rSoZfCO2LDezWVBEIe6RIbGuSdToY3QXj
+         W1nCviIkBb+HDDVyAy8uPhoqUoqxQarX2f633wJEo4FLWSFfWi9K0sTx+q3gsw/0xvkS
+         VZkCmTRSwrT+77t4/6/9G6ZNyjkYWwce2ArB+4y8h/r5W1Pv3IFPotaC+dXUgUaVa+WR
+         5eFFrrashT/EqtamzKU72irSx2fO49VfWCyqhz4K85oKdK8P0cwbzuzDD5QTMde03VVs
+         l+GtVpCn/QVXaCYUOQfvpfpnXvYRqHmX3QhozV3y/mXqss+mNC21VU0N6WqgQYM6OzBs
+         eMlw==
 In-Reply-To: <1373996058-13399-1-git-send-email-rth@twiddle.net>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,54 +24,39 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-This kernel/user split was done long ago for other architectures.
+The code as written is correct, and will be used by QEMU emulation.
 
 Signed-off-by: Richard Henderson <rth@twiddle.net>
 ---
- arch/alpha/include/asm/param.h      | 8 +++++---
- arch/alpha/include/uapi/asm/param.h | 7 -------
- 2 files changed, 5 insertions(+), 10 deletions(-)
+ arch/alpha/kernel/sys_dp264.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/arch/alpha/include/asm/param.h b/arch/alpha/include/asm/param.h
-index bf46af5..a5b68b2 100644
---- a/arch/alpha/include/asm/param.h
-+++ b/arch/alpha/include/asm/param.h
-@@ -3,7 +3,9 @@
+diff --git a/arch/alpha/kernel/sys_dp264.c b/arch/alpha/kernel/sys_dp264.c
+index 5bf401f..6c35159 100644
+--- a/arch/alpha/kernel/sys_dp264.c
++++ b/arch/alpha/kernel/sys_dp264.c
+@@ -190,9 +190,6 @@ static struct irq_chip clipper_irq_type = {
+ static void
+ dp264_device_interrupt(unsigned long vector)
+ {
+-#if 1
+-	printk("dp264_device_interrupt: NOT IMPLEMENTED YET!!\n");
+-#else
+ 	unsigned long pld;
+ 	unsigned int i;
  
- #include <uapi/asm/param.h>
- 
--#define HZ		CONFIG_HZ
--#define USER_HZ		HZ
--# define CLOCKS_PER_SEC	HZ	/* frequency at which times() counts */
-+# undef HZ
-+# define HZ		CONFIG_HZ
-+# define USER_HZ	1024
-+# define CLOCKS_PER_SEC	USER_HZ	/* frequency at which times() counts */
-+
- #endif /* _ASM_ALPHA_PARAM_H */
-diff --git a/arch/alpha/include/uapi/asm/param.h b/arch/alpha/include/uapi/asm/param.h
-index 29daed8..dbcd983 100644
---- a/arch/alpha/include/uapi/asm/param.h
-+++ b/arch/alpha/include/uapi/asm/param.h
-@@ -1,13 +1,7 @@
- #ifndef _UAPI_ASM_ALPHA_PARAM_H
- #define _UAPI_ASM_ALPHA_PARAM_H
- 
--/* ??? Gross.  I don't want to parameterize this, and supposedly the
--   hardware ignores reprogramming.  We also need userland buy-in to the 
--   change in HZ, since this is visible in the wait4 resources etc.  */
--
--#ifndef __KERNEL__
- #define HZ		1024
+@@ -210,12 +207,7 @@ dp264_device_interrupt(unsigned long vector)
+ 			isa_device_interrupt(vector);
+ 		else
+ 			handle_irq(16 + i);
+-#if 0
+-		TSUNAMI_cchip->dir0.csr = 1UL << i; mb();
+-		tmp = TSUNAMI_cchip->dir0.csr;
 -#endif
+ 	}
+-#endif
+ }
  
- #define EXEC_PAGESIZE	8192
- 
-@@ -17,5 +11,4 @@
- 
- #define MAXHOSTNAMELEN	64	/* max length of hostname */
- 
--
- #endif /* _UAPI_ASM_ALPHA_PARAM_H */
+ static void 
 -- 
 1.8.1.4
