@@ -1,58 +1,159 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH 3/7] alpha: Modernize lib/mpi/longlong.h
-Date: Tue, 16 Jul 2013 10:19:19 -0700
-Message-ID: <1373995159.1949.8.camel@joe-AO722>
-References: <1373994280-12047-1-git-send-email-rth@twiddle.net>
-	 <1373994280-12047-4-git-send-email-rth@twiddle.net>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1373994280-12047-4-git-send-email-rth@twiddle.net>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Richard Henderson <rth@twiddle.net>
+Subject: [RFC PATCH 04/10] alpha: Allow HZ to be configured
+Date: Tue, 16 Jul 2013 10:34:12 -0700
+Message-ID: <1373996058-13399-5-git-send-email-rth@twiddle.net>
+References: <1373996058-13399-1-git-send-email-rth@twiddle.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=sender:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
+         :references;
+        bh=XfA2RKIw6TpZmYFW0I3Woez4V1Lzzv8z1n620lfXzng=;
+        b=pO5mxaOih3gSq/QHeKIESeN9IC2TRkou0HKA9mp/qjACwAFYW5IzI+Lu8RqYZh416x
+         vayqGTSaE3SBNoBM9KffaspQQshC6ock7m6uBIKSDyeboMqtaNvEYhgQV5amPRaCBkya
+         lhOARAG/Go1SXX/LDi1IlQZZDXgcqFj3lf+Tuaxt/NsI6HmKrZkLikd2f1kO1jULT2fc
+         pEpoVBd2NBvMj3mAWvWo4rn7CWB+ffn2vKoJCsiCUKP9PMI1aiIi01nKwicodwdwXjcc
+         Je/0Ke6q/x+s9OFKXYeagOBkcpiyfftDUQdOa4C0pddqkopEQ05UGiJnL0kmfGLnnJoy
+         KKZw==
+In-Reply-To: <1373996058-13399-1-git-send-email-rth@twiddle.net>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Richard Henderson <rth@twiddle.net>
-Cc: linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-On Tue, 2013-07-16 at 10:04 -0700, Richard Henderson wrote:
-> Remove the compile warning for __udiv_qrnnd not having a prototype.
-> Use the __builtin_alpha_umulh introduced in gcc 4.0.
+With the 1024Hz default, we spend 50% of QEMU emulation
+processing timer interrupts.
 
-Isn't gcc 3.x still a supported compiler?
+Signed-off-by: Richard Henderson <rth@twiddle.net>
+---
+ arch/alpha/Kconfig        | 36 ++++++++++++++++++++++++++++++++++--
+ arch/alpha/kernel/setup.c | 10 ++++++++--
+ arch/alpha/kernel/time.c  | 24 +++++++++++++++++-------
+ 3 files changed, 59 insertions(+), 11 deletions(-)
 
-> diff --git a/lib/mpi/longlong.h b/lib/mpi/longlong.h
-[]
-> @@ -151,15 +151,12 @@ do { \
->  #endif /* __a29k__ */
->  
->  #if defined(__alpha) && W_TYPE_SIZE == 64
-> -#define umul_ppmm(ph, pl, m0, m1) \
-> -do { \
-> -		UDItype __m0 = (m0), __m1 = (m1); \
-> -		__asm__ ("umulh %r1,%2,%0" \
-> -		: "=r" ((UDItype) ph) \
-> -		: "%rJ" (__m0), \
-> -			"rI" (__m1)); \
-> -		(pl) = __m0 * __m1; \
-> -	} while (0)
-> +#define umul_ppmm(ph, pl, m0, m1)			\
-> +do {							\
-> +	UDItype __m0 = (m0), __m1 = (m1);		\
-> +	(ph) = __builtin_alpha_umulh(__m0, __m1);	\
-> +	(pl) = __m0 * __m1;                             \
-> +} while (0)
->  #define UMUL_TIME 46
->  #ifndef LONGLONG_STANDALONE
->  #define udiv_qrnnd(q, r, n1, n0, d) \
-> @@ -167,7 +164,7 @@ do { UDItype __r; \
->  	(q) = __udiv_qrnnd(&__r, (n1), (n0), (d)); \
->  	(r) = __r; \
->  } while (0)
-> -extern UDItype __udiv_qrnnd();
-> +extern UDItype __udiv_qrnnd(UDItype *, UDItype, UDItype, UDItype);
->  #define UDIV_TIME 220
->  #endif /* LONGLONG_STANDALONE */
->  #endif /* __alpha */
-
-
-
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 2053f215..5991a99 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -628,9 +628,41 @@ config VERBOSE_MCHECK_ON
+ 
+ 	  Take the default (1) unless you want more control or more info.
+ 
++choice
++	prompt "Timer interrupt frequency (HZ)?"
++	default HZ_128 if ALPHA_QEMU
++	default HZ_1200 if ALPHA_RAWHIDE
++	default HZ_1024
++	---help---
++	  The frequency at which timer interrupts occur.  A high frequency
++	  minimizes latency, whereas a low frequency minimizes overhead of
++	  process accounting.  The later effect is especially significant
++	  when being run under QEMU.
++
++	  Note that some Alpha hardware cannot change the interrupt frequency
++	  of the timer.  If unsure, say 1024 (or 1200 for Rawhide).
++
++	config HZ_32
++		bool "32 Hz"
++	config HZ_64
++		bool "64 Hz"
++	config HZ_128
++		bool "128 Hz"
++	config HZ_256
++		bool "256 Hz"
++	config HZ_1024
++		bool "1024 Hz"
++	config HZ_1200
++		bool "1200 Hz"
++endchoice
++
+ config HZ
+-	int
+-	default 1200 if ALPHA_RAWHIDE
++	int 
++	default 32 if HZ_32
++	default 64 if HZ_64
++	default 128 if HZ_128
++	default 256 if HZ_256
++	default 1200 if HZ_1200
+ 	default 1024
+ 
+ source "drivers/pci/Kconfig"
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index c38d6a1..b20af76 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -1218,6 +1218,7 @@ show_cpuinfo(struct seq_file *f, void *slot)
+ 	char *systype_name;
+ 	char *sysvariation_name;
+ 	int nr_processors;
++	unsigned long timer_freq;
+ 
+ 	cpu_index = (unsigned) (cpu->type - 1);
+ 	cpu_name = "Unknown";
+@@ -1229,6 +1230,12 @@ show_cpuinfo(struct seq_file *f, void *slot)
+ 
+ 	nr_processors = get_nr_processors(cpu, hwrpb->nr_processors);
+ 
++#if CONFIG_HZ == 1024 || CONFIG_HZ == 1200
++	timer_freq = (100UL * hwrpb->intr_freq) / 4096;
++#else
++	timer_freq = 100UL * CONFIG_HZ;
++#endif
++
+ 	seq_printf(f, "cpu\t\t\t: Alpha\n"
+ 		      "cpu model\t\t: %s\n"
+ 		      "cpu variation\t\t: %ld\n"
+@@ -1254,8 +1261,7 @@ show_cpuinfo(struct seq_file *f, void *slot)
+ 		       (char*)hwrpb->ssn,
+ 		       est_cycle_freq ? : hwrpb->cycle_freq,
+ 		       est_cycle_freq ? "est." : "",
+-		       hwrpb->intr_freq / 4096,
+-		       (100 * hwrpb->intr_freq / 4096) % 100,
++		       timer_freq / 100, timer_freq % 100,
+ 		       hwrpb->pagesize,
+ 		       hwrpb->pa_bits,
+ 		       hwrpb->max_asn,
+diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
+index e336694..7938bf9 100644
+--- a/arch/alpha/kernel/time.c
++++ b/arch/alpha/kernel/time.c
+@@ -203,16 +203,26 @@ irqreturn_t timer_interrupt(int irq, void *dev)
+ void __init
+ common_init_rtc(void)
+ {
+-	unsigned char x;
++	unsigned char x, sel = 0;
+ 
+ 	/* Reset periodic interrupt frequency.  */
+-	x = CMOS_READ(RTC_FREQ_SELECT) & 0x3f;
+-        /* Test includes known working values on various platforms
+-           where 0x26 is wrong; we refuse to change those. */
+-	if (x != 0x26 && x != 0x25 && x != 0x19 && x != 0x06) {
+-		printk("Setting RTC_FREQ to 1024 Hz (%x)\n", x);
+-		CMOS_WRITE(0x26, RTC_FREQ_SELECT);
++#if CONFIG_HZ == 1024 || CONFIG_HZ == 1200
++ 	x = CMOS_READ(RTC_FREQ_SELECT) & 0x3f;
++	/* Test includes known working values on various platforms
++	   where 0x26 is wrong; we refuse to change those. */
++ 	if (x != 0x26 && x != 0x25 && x != 0x19 && x != 0x06) {
++		sel = RTC_REF_CLCK_32KHZ + 6;
+ 	}
++#elif CONFIG_HZ == 256 || CONFIG_HZ == 128 || CONFIG_HZ == 64 || CONFIG_HZ == 32
++	sel = RTC_REF_CLCK_32KHZ + __builtin_ffs(32768 / CONFIG_HZ);
++#else
++# error "Unknown HZ from arch/alpha/Kconfig"
++#endif
++	if (sel) {
++		printk(KERN_INFO "Setting RTC_FREQ to %d Hz (%x)\n",
++		       CONFIG_HZ, sel);
++		CMOS_WRITE(sel, RTC_FREQ_SELECT);
++ 	}
+ 
+ 	/* Turn on periodic interrupts.  */
+ 	x = CMOS_READ(RTC_CONTROL);
+-- 
+1.8.1.4
