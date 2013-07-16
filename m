@@ -1,20 +1,20 @@
 From: Richard Henderson <rth@twiddle.net>
-Subject: [RFC PATCH 07/10] alpha: Add an rtc driver for the qemu wallclock PALcall
-Date: Tue, 16 Jul 2013 10:34:15 -0700
-Message-ID: <1373996058-13399-8-git-send-email-rth@twiddle.net>
+Subject: [RFC PATCH 05/10] alpha: Primitive support for CPU power down.
+Date: Tue, 16 Jul 2013 10:34:13 -0700
+Message-ID: <1373996058-13399-6-git-send-email-rth@twiddle.net>
 References: <1373996058-13399-1-git-send-email-rth@twiddle.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=sender:from:to:cc:subject:date:message-id:x-mailer:in-reply-to
          :references;
-        bh=tcK4ka8mi1B/p/DkTsJJwxDRyEg2VqOO1GRlYRd+r+8=;
-        b=CqT9LBgGlq7AFT7+ufcXRCqrxgx52K0h/uNrq6iql20yifELbwsBvSAi3Ga0KN93mw
-         vh+qSWfUrsdb1hLzxMTRsaaR/S1uwyf/YE74epEzKV8CwbpZzqylTcWoDH9Oqt6O5Ldr
-         CmsewF8J+8y5tH61qgfcM9+qNG5KZHONayrRorP9deQtm9IHlG3VFVRVnaFN5s0U5uzK
-         Z7j6776JyX/gWp9sreqQGAA+JX4fBZnPHx6x96MnOc34zwikiTpmZrjhDVNfAMYf0LUV
-         qkpWEiKcQJyya1itaqeL3zHlTYYeF4afoX2AvFt1MEzUoUkBh4NGOQ0v9o7Q0hJ2iHkz
-         sfPg==
+        bh=hYuSMSjUJg/wytVwAto+H2662FSZfLbPuExPQvdAtXQ=;
+        b=jav/ONkfbyzHGg7h+/KlHmdCb+l9032xAy+ZqrqIH8uEKlh492hs3FNGFdVlPQc4QA
+         B75f76ma3MpKieLpqd1vTIzUBzwiubihS+v7YSbfT1DLn9JI4e19EkcCiAoaYyfsIobL
+         Waw/ucZeUomQqR80e6vzfBGOH0cUpw1viaieDYfM86tG8CUcykB2bMBcs8VNhWRr3c9H
+         TiZwKY8J1a8iuFxgjDCT41NwHGD4IVg5CtHOT4a/5QuaxMQqC8n45xwinEGNSzlBqQoi
+         nOiKZ5svdDzEBZn4yERZfHbNBFvHNrpm88XChaKxdZ580eVDEypSeJaBDoTcpCfhVIQJ
+         0/8A==
 In-Reply-To: <1373996058-13399-1-git-send-email-rth@twiddle.net>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,226 +24,91 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-In the normal case, one wants the guest to follow the host time.
-QEMU has a cserve call that retrieves the wall clock.
+Use WTINT to wait for the next interrupt.  Squash the WTINT call
+if the PALcode doesn't support it (e.g. MILO).  No attempt is yet
+made to skip clock ticks during normal scheduling in order to stay
+in power down mode longer.
 
 Signed-off-by: Richard Henderson <rth@twiddle.net>
 ---
- arch/alpha/include/asm/pal.h | 56 ++++++++++++++++++++++++++++++++++++++
- arch/alpha/kernel/Makefile   |  3 +-
- arch/alpha/kernel/rtc.c      | 65 +++++++++++++++++++++++++++++++++++++++-----
- drivers/rtc/Kconfig          |  7 +++++
- 4 files changed, 122 insertions(+), 9 deletions(-)
+ arch/alpha/include/asm/pal.h      |  1 +
+ arch/alpha/include/uapi/asm/pal.h |  1 +
+ arch/alpha/kernel/process.c       | 15 +++++++++++++++
+ arch/alpha/kernel/traps.c         | 12 ++++++++++++
+ 4 files changed, 29 insertions(+)
 
 diff --git a/arch/alpha/include/asm/pal.h b/arch/alpha/include/asm/pal.h
-index e78ec9b..ccaa49a 100644
+index 6fcd2b5..e78ec9b 100644
 --- a/arch/alpha/include/asm/pal.h
 +++ b/arch/alpha/include/asm/pal.h
-@@ -112,5 +112,61 @@ __CALL_PAL_RW1(wtint, unsigned long, unsigned long);
- #define tbiap()		__tbi(-1, /* no second argument */)
- #define tbia()		__tbi(-2, /* no second argument */)
+@@ -89,6 +89,7 @@ __CALL_PAL_W1(wrmces, unsigned long);
+ __CALL_PAL_RW2(wrperfmon, unsigned long, unsigned long, unsigned long);
+ __CALL_PAL_W1(wrusp, unsigned long);
+ __CALL_PAL_W1(wrvptptr, unsigned long);
++__CALL_PAL_RW1(wtint, unsigned long, unsigned long);
  
-+/*
-+ * QEMU Cserv routines..
-+ */
-+
-+static inline unsigned long
-+qemu_get_walltime(void)
-+{
-+	register unsigned long v0 __asm__("$0");
-+	register unsigned long a0 __asm__("$16") = 3;
-+
-+	asm("call_pal %2 # cserve get_time"
-+	    : "=r"(v0), "+r"(a0)
-+	    : "i"(PAL_cserve)
-+	    : "$17", "$18", "$19", "$20", "$21");
-+
-+	return v0;
-+}
-+
-+static inline unsigned long
-+qemu_get_alarm(void)
-+{
-+	register unsigned long v0 __asm__("$0");
-+	register unsigned long a0 __asm__("$16") = 4;
-+
-+	asm("call_pal %2 # cserve get_alarm"
-+	    : "=r"(v0), "+r"(a0)
-+	    : "i"(PAL_cserve)
-+	    : "$17", "$18", "$19", "$20", "$21");
-+
-+	return v0;
-+}
-+
-+static inline void
-+qemu_set_alarm_rel(unsigned long expire)
-+{
-+	register unsigned long a0 __asm__("$16") = 5;
-+	register unsigned long a1 __asm__("$17") = expire;
-+
-+	asm volatile("call_pal %2 # cserve set_alarm_rel"
-+		     : "+r"(a0), "+r"(a1)
-+		     : "i"(PAL_cserve)
-+		     : "$0", "$18", "$19", "$20", "$21");
-+}
-+
-+static inline void
-+qemu_set_alarm_abs(unsigned long expire)
-+{
-+	register unsigned long a0 __asm__("$16") = 6;
-+	register unsigned long a1 __asm__("$17") = expire;
-+
-+	asm volatile("call_pal %2 # cserve set_alarm_abs"
-+		     : "+r"(a0), "+r"(a1)
-+		     : "i"(PAL_cserve)
-+		     : "$0", "$18", "$19", "$20", "$21");
-+}
-+
- #endif /* !__ASSEMBLY__ */
- #endif /* __ALPHA_PAL_H */
-diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-index 0d54650..bf04ee8 100644
---- a/arch/alpha/kernel/Makefile
-+++ b/arch/alpha/kernel/Makefile
-@@ -8,7 +8,7 @@ ccflags-y	:= -Wno-sign-compare
- 
- obj-y    := entry.o traps.o process.o osf_sys.o irq.o \
- 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
--	    alpha_ksyms.o systbls.o err_common.o io.o
-+	    alpha_ksyms.o systbls.o err_common.o io.o rtc.o
- 
- obj-$(CONFIG_VGA_HOSE)	+= console.o
- obj-$(CONFIG_SMP)	+= smp.o
-@@ -16,7 +16,6 @@ obj-$(CONFIG_PCI)	+= pci.o pci_iommu.o pci-sysfs.o
- obj-$(CONFIG_SRM_ENV)	+= srm_env.o
- obj-$(CONFIG_MODULES)	+= module.o
- obj-$(CONFIG_PERF_EVENTS) += perf_event.o
--obj-$(CONFIG_RTC_DRV_ALPHA) += rtc.o
- 
- ifdef CONFIG_ALPHA_GENERIC
- 
-diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
-index c8d284d..fd910ff 100644
---- a/arch/alpha/kernel/rtc.c
-+++ b/arch/alpha/kernel/rtc.c
-@@ -16,10 +16,12 @@
- #include <linux/platform_device.h>
- 
- #include <asm/rtc.h>
-+#include <asm/pal.h>
- 
- #include "proto.h"
- 
- 
-+#ifdef CONFIG_RTC_DRV_ALPHA
  /*
-  * Support for the RTC device.
-  *
-@@ -293,20 +295,68 @@ static const struct rtc_class_ops remote_rtc_ops = {
- 	.set_mmss = remote_set_mmss,
- 	.ioctl = alpha_rtc_ioctl,
- };
--#endif
-+#endif /* HAVE_REMOTE_RTC */
-+#endif /* CONFIG_RTC_DRV_ALPHA */
-+
-+#ifdef CONFIG_RTC_DRV_ALPHA_QEMU
+  * TB routines..
+diff --git a/arch/alpha/include/uapi/asm/pal.h b/arch/alpha/include/uapi/asm/pal.h
+index 3c0ce08..dfc8140 100644
+--- a/arch/alpha/include/uapi/asm/pal.h
++++ b/arch/alpha/include/uapi/asm/pal.h
+@@ -46,6 +46,7 @@
+ #define PAL_rdusp	58
+ #define PAL_whami	60
+ #define PAL_retsys	61
++#define PAL_wtint	62
+ #define PAL_rti		63
+ 
+ 
+diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
+index f2360a7..3130f13 100644
+--- a/arch/alpha/kernel/process.c
++++ b/arch/alpha/kernel/process.c
+@@ -46,6 +46,21 @@
+ void (*pm_power_off)(void) = machine_power_off;
+ EXPORT_SYMBOL(pm_power_off);
+ 
 +/*
-+ * Support for the QEMU wall clock as an RTC device.
++ * Sleep the CPU.
++ * EV6, LCA45 and QEMU know how to power down, skipping N timer interrupts.
 + */
-+
-+static int
-+qemu_rtc_read_time(struct device *dev, struct rtc_time *tm)
++void arch_cpu_idle(void)
 +{
-+	unsigned long nsec = qemu_get_walltime();
-+	unsigned long sec = nsec / NSEC_PER_SEC;
- 
-+	rtc_time_to_tm(sec, tm);
-+	return 0;
++	wtint(0);
++	local_irq_enable();
 +}
 +
-+static int
-+qemu_rtc_set_time(struct device *dev, struct rtc_time *tm)
++void arch_cpu_idle_dead(void)
 +{
-+	return -EOPNOTSUPP;
++	wtint(INT_MAX);
 +}
 +
-+static int
-+qemu_rtc_set_mmss(struct device *dev, unsigned long sec)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static const struct rtc_class_ops qemu_rtc_ops = {
-+	.read_time = qemu_rtc_read_time,
-+	.set_time = qemu_rtc_set_time,
-+	.set_mmss = qemu_rtc_set_mmss,
-+};
-+#endif /* CONFIG_RTC_DRV_ALPHA_QEMU */
-+
-+#if defined(CONFIG_RTC_DRV_ALPHA) || defined(CONFIG_RTC_DRV_ALPHA_QEMU)
- static int __init
--alpha_rtc_init(void)
-+rtc_init(void)
- {
- 	const struct rtc_class_ops *ops;
- 	struct platform_device *pdev;
- 	struct rtc_device *rtc;
- 	const char *name;
- 
-+#ifdef CONFIG_RTC_DRV_ALPHA_QEMU
-+	if (alpha_using_qemu) {
-+		name = "rtc-qemu";
-+		ops = &qemu_rtc_ops;
-+
-+		pdev = platform_device_register_simple(name, -1, NULL, 0);
-+		rtc = devm_rtc_device_register(&pdev->dev, name, ops, NULL);
-+		if (!IS_ERR(rtc))
-+			platform_set_drvdata(pdev, rtc);
-+	}
-+#endif /* ALPHA_QEMU */
-+
-+#ifdef CONFIG_RTC_DRV_ALPHA
- 	init_rtc_epoch();
- 	name = "rtc-alpha";
- 	ops = &alpha_rtc_ops;
--
- #ifdef HAVE_REMOTE_RTC
- 	if (alpha_mv.rtc_boot_cpu_only)
- 		ops = &remote_rtc_ops;
-@@ -314,10 +364,11 @@ alpha_rtc_init(void)
- 
- 	pdev = platform_device_register_simple(name, -1, NULL, 0);
- 	rtc = devm_rtc_device_register(&pdev->dev, name, ops, THIS_MODULE);
--	if (IS_ERR(rtc))
--		return PTR_ERR(rtc);
-+	if (!IS_ERR(rtc))
-+		platform_set_drvdata(pdev, rtc);
-+#endif /* ALPHA */
- 
--	platform_set_drvdata(pdev, rtc);
- 	return 0;
- }
--device_initcall(alpha_rtc_init);
-+device_initcall(rtc_init);
-+#endif
-diff --git a/drivers/rtc/Kconfig b/drivers/rtc/Kconfig
-index a4d3f9a..1884ca4 100644
---- a/drivers/rtc/Kconfig
-+++ b/drivers/rtc/Kconfig
-@@ -631,6 +631,13 @@ config RTC_DRV_ALPHA
- 	  Direct support for the real-time clock found on every Alpha
- 	  system, specifically MC146818 compatibles.  If in doubt, say Y.
- 
-+config RTC_DRV_ALPHA_QEMU
-+	bool "Alpha QEMU paravirtual RTC"
-+	depends on ALPHA
-+	default y if ALPHA_QEMU
-+	help
-+	  Support for the paravirtual real-time clock found in QEMU.
-+
- config RTC_DRV_VRTC
- 	tristate "Virtual RTC for Intel MID platforms"
- 	depends on X86_INTEL_MID
+ struct halt_info {
+ 	int mode;
+ 	char *restart_cmd;
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index affccb9..991f6c3 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -243,6 +243,18 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+ 			       (const char *)(data[1] | (long)data[2] << 32), 
+ 			       data[0]);
+ 		}
++		if (type == 4) {
++			/* If CALL_PAL WTINT is not supported by the PALcode,
++			   "emulate" it by overwriting the insn.  */
++			unsigned int *pinsn
++			  = (unsigned int *) regs->pc - 1;
++			if (*pinsn == PAL_wtint) {
++				*pinsn = 0x47e01400; /* mov 0,$0 */
++				imb();
++				regs->r0 = 0;
++				return;
++			}
++		}
+ 		die_if_kernel((type == 1 ? "Kernel Bug" : "Instruction fault"),
+ 			      regs, type, NULL);
+ 	}
 -- 
 1.8.1.4
