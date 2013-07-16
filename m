@@ -1,125 +1,64 @@
-From: "Srivatsa S. Bhat" <srivatsa.bhat@linux.vnet.ibm.com>
-Subject: [PATCH v3 31/45] alpha/smp: Use get/put_online_cpus_atomic() to
- prevent CPU offline
-Date: Fri, 28 Jun 2013 01:27:47 +0530
-Message-ID: <20130627195747.29830.13668.stgit@srivatsabhat.in.ibm.com>
-References: <20130627195136.29830.10445.stgit@srivatsabhat.in.ibm.com>
+From: Richard Henderson <rth@twiddle.net>
+Subject: [PATCH 0/7] Minor Alpha updates for 3.11
+Date: Tue, 16 Jul 2013 10:04:33 -0700
+Message-ID: <1373994280-12047-1-git-send-email-rth@twiddle.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20130627195136.29830.10445.stgit@srivatsabhat.in.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=sender:from:to:cc:subject:date:message-id:x-mailer:mime-version
+         :content-type:content-transfer-encoding;
+        bh=R3WUhrBaca1SPNwG1T8lM1YoX75q6l5fGs8+N1AgcF4=;
+        b=e1wQoa64rxoYgdUigX2u0Ar8ysNSFiLibxgdPS8Z/2q+59CQ6B0EphqYgjSfmOHGKH
+         P+5W/seKpVd31nwhbcvI5voigtfKElnUigrHthGCbHTbgi1XklAwqZwAlA+S/EUzh6gZ
+         AchNAOe9EALStj2AGNVoR0gLTuBc13Z0ABcrc8kxADoUmyOXL8gkJIvPESiusBvWzut9
+         kR8ia9SzsH2jUc4ADP8byd/VzeUHQd+XtTcbqa9UucVLa8uXBjI5SCNw/9BqRQ/K910t
+         IkpTUc3qjNF2EicPTGk2+k/8t5OW4lnguZTO6GYgbSNFUa7w8zfFt1zzCXkz8xk4CvZP
+         bhsw==
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: tglx@linutronix.de, peterz@infradead.org, tj@kernel.org, oleg@redhat.com, paulmck@linux.vnet.ibm.com, rusty@rustcorp.com.au, mingo@kernel.org, akpm@linux-foundation.org, namhyung@kernel.org, walken@google.com, vincent.guittot@linaro.org, laijs@cn.fujitsu.com, David.Laight@aculab.com
-Cc: rostedt@goodmis.org, wangyun@linux.vnet.ibm.com, xiaoguangrong@linux.vnet.ibm.com, sbw@mit.edu, fweisbec@gmail.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, srivatsa.bhat@linux.vnet.ibm.com, linux-pm@vger.kernel.org, linux-arch@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org, "Srivatsa S. Bhat" <srivatsa.bhat@linux.vnet.ibm.com>
+To: linux-kernel@vger.kernel.org
+Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-Once stop_machine() is gone from the CPU offline path, we won't be able
-to depend on disabling preemption to prevent CPUs from going offline
-from under us.
+Here's a set of minor updates for arch/alpha that should not
+be controversial.
 
-Use the get/put_online_cpus_atomic() APIs to prevent CPUs from going
-offline, while invoking from atomic context.
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
----
+r~
 
- arch/alpha/kernel/smp.c |   19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index 7b60834..e147268 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -497,7 +497,6 @@ smp_cpus_done(unsigned int max_cpus)
- 	       ((bogosum + 2500) / (5000/HZ)) % 100);
- }
- 
--
- void
- smp_percpu_timer_interrupt(struct pt_regs *regs)
- {
-@@ -681,7 +680,7 @@ ipi_flush_tlb_mm(void *x)
- void
- flush_tlb_mm(struct mm_struct *mm)
- {
--	preempt_disable();
-+	get_online_cpus_atomic();
- 
- 	if (mm == current->active_mm) {
- 		flush_tlb_current(mm);
-@@ -693,7 +692,7 @@ flush_tlb_mm(struct mm_struct *mm)
- 				if (mm->context[cpu])
- 					mm->context[cpu] = 0;
- 			}
--			preempt_enable();
-+			put_online_cpus_atomic();
- 			return;
- 		}
- 	}
-@@ -702,7 +701,7 @@ flush_tlb_mm(struct mm_struct *mm)
- 		printk(KERN_CRIT "flush_tlb_mm: timed out\n");
- 	}
- 
--	preempt_enable();
-+	put_online_cpus_atomic();
- }
- EXPORT_SYMBOL(flush_tlb_mm);
- 
-@@ -730,7 +729,7 @@ flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
- 	struct flush_tlb_page_struct data;
- 	struct mm_struct *mm = vma->vm_mm;
- 
--	preempt_disable();
-+	get_online_cpus_atomic();
- 
- 	if (mm == current->active_mm) {
- 		flush_tlb_current_page(mm, vma, addr);
-@@ -742,7 +741,7 @@ flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
- 				if (mm->context[cpu])
- 					mm->context[cpu] = 0;
- 			}
--			preempt_enable();
-+			put_online_cpus_atomic();
- 			return;
- 		}
- 	}
-@@ -755,7 +754,7 @@ flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
- 		printk(KERN_CRIT "flush_tlb_page: timed out\n");
- 	}
- 
--	preempt_enable();
-+	put_online_cpus_atomic();
- }
- EXPORT_SYMBOL(flush_tlb_page);
- 
-@@ -786,7 +785,7 @@ flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
- 	if ((vma->vm_flags & VM_EXEC) == 0)
- 		return;
- 
--	preempt_disable();
-+	get_online_cpus_atomic();
- 
- 	if (mm == current->active_mm) {
- 		__load_new_mm_context(mm);
-@@ -798,7 +797,7 @@ flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
- 				if (mm->context[cpu])
- 					mm->context[cpu] = 0;
- 			}
--			preempt_enable();
-+			put_online_cpus_atomic();
- 			return;
- 		}
- 	}
-@@ -807,5 +806,5 @@ flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
- 		printk(KERN_CRIT "flush_icache_page: timed out\n");
- 	}
- 
--	preempt_enable();
-+	put_online_cpus_atomic();
- }
+The following changes since commit 47188d39b5deeebf41f87a02af1b3935866364cf:
+
+  Merge tag 'ext4_for_linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4 (2013-07-14 21:47:51 -0700)
+
+are available in the git repository at:
+
+
+  git://github.com/rth7680/linux.git axp-next
+
+for you to fetch changes up to fd60fe7052eceab1b1e7c8691263ec2b2634ace0:
+
+  alpha: Fix type compatibility warning for marvel_map_irq (2013-07-16 09:55:06 -0700)
+
+----------------------------------------------------------------
+Richard Henderson (7):
+      alpha: Add kcmp and finit_module syscalls
+      alpha: Eliminate compiler warning from memset macro
+      alpha: Modernize lib/mpi/longlong.h
+      alpha: Improve atomic_add_unless
+      alpha: Implement atomic64_dec_if_positive
+      alpha: Generate dwarf2 unwind info for various kernel entry points.
+      alpha: Fix type compatibility warning for marvel_map_irq
+
+ arch/alpha/Kconfig                   |   1 +
+ arch/alpha/include/asm/atomic.h      |  88 ++++++--
+ arch/alpha/include/asm/string.h      |  18 +-
+ arch/alpha/include/asm/unistd.h      |   3 +-
+ arch/alpha/include/uapi/asm/unistd.h |   2 +
+ arch/alpha/kernel/entry.S            | 399 +++++++++++++++++++++++++----------
+ arch/alpha/kernel/sys_marvel.c       |   3 +-
+ arch/alpha/kernel/systbls.S          |   2 +
+ lib/mpi/longlong.h                   |  17 +-
+ 9 files changed, 380 insertions(+), 153 deletions(-)
