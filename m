@@ -1,37 +1,44 @@
-From: Michael Cree <cree@waikato.ac.nz>
+From: Matt Turner <mattst88@gmail.com>
 Subject: Re: [PATCH 0/7] Minor Alpha updates for 3.11
-Date: Wed, 17 Jul 2013 12:03:47 +1200
-Message-ID: <20130717000347.GB2483@stolen.phys.waikato.ac.nz>
+Date: Tue, 16 Jul 2013 21:29:12 -0700
+Message-ID: <CAEdQ38HUezMg+xdUFjjHHs5wSyN0Bw1Hcou7yDsPBc07sLyGnA@mail.gmail.com>
 References: <1373994280-12047-1-git-send-email-rth@twiddle.net>
- <1374017707.3719.11@driftwood>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1374017707.3719.11@driftwood>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-type;
+        bh=FSgY/3UaFM15gVV5UGutx2UNR1aEhMorcx1qyb+5z8Y=;
+        b=X71KtqWHxpazvz7UaHRO4/usxTA/gZK9DLeGJ3qZ7ny+hl5hI0JrYW29KQDwDnbUQ6
+         BMUlkKJZ4L1nstA1di2K8IyQBA9gfKgHczEWKIlIAWVu/4bnkX/PCDtxbtfRYBM1qOOf
+         uW2CbmegI9j0za5cTDCb/o51Ho2jB6qTwSWoCdTF6g8U9yV6Um5i/+WFAKXgeMGl/5DW
+         bl8KTAt1s4K2YYewS90Z8viR6D7/fZOZDR6eRMAushoEqrf4vBxOy8msWzPcYbpzOqw1
+         I9onq/14rBEMl5ZZ95/yyXvkezAe8KgfDe9wHnwApcbu+qI6oXRmdD7++gSfZPaGq8xu
+         NRGQ==
+In-Reply-To: <1373994280-12047-1-git-send-email-rth@twiddle.net>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Rob Landley <rob@landley.net>
-Cc: Richard Henderson <rth@twiddle.net>, linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
+To: Richard Henderson <rth@twiddle.net>
+Cc: linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru, linux-alpha@vger.kernel.org
 
-On Tue, Jul 16, 2013 at 06:35:07PM -0500, Rob Landley wrote:
-> On 07/16/2013 12:04:33 PM, Richard Henderson wrote:
-> >Here's a set of minor updates for arch/alpha that should not
-> >be controversial.
-> 
-> I also note that I had to do this to get busybox to build against
-> uClibc:
-> -#define __NR_umount		 22
-> +#define __NR_umount2		 22
-> -#define __NR_oldumount		321
-> +#define __NR_umount		321
+On Tue, Jul 16, 2013 at 10:04 AM, Richard Henderson <rth@twiddle.net> wrote:
+> Here's a set of minor updates for arch/alpha that should not
+> be controversial.
 
-I anticipate that this will likely break userspace.
+Patches 1-5 and 7 (with the typo fixed) are
 
-busybox should be fixed to test for __NR_oldumount and then call the
-correct functions, namely oldumount and umount if __NR_oldumount is defined
-and umount and umount2 if it is not defined.
+Reviewed-and-Tested-by: Matt Turner <mattst88@gmail.com>
 
-Cheers
-Michael.
+I don't know enough patch 6 to make any kind of meaningful review, so it's
+
+Acked-by: Matt Turner <mattst88@gmail.com>
+
+I've got five patches in a for-linus branch on kernel.org that I was
+planning to send a pull request for soon. Would you like me to add
+these to that branch?
+
+Thanks!
+Matt
