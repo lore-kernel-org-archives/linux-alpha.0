@@ -1,73 +1,42 @@
-From: Michael Cree <cree@waikato.ac.nz>
+From: Richard Henderson <rth@twiddle.net>
 Subject: Re: [PATCH 0/7] Minor Alpha updates for 3.11
-Date: Tue, 23 Jul 2013 15:25:11 +1200
-Message-ID: <20130723032511.GA18086@stolen.phys.waikato.ac.nz>
-References: <20130717000347.GB2483@stolen.phys.waikato.ac.nz>
- <1374546701.3719.33@driftwood>
+Date: Tue, 23 Jul 2013 07:20:22 -0800
+Message-ID: <51EE9F36.7050402@twiddle.net>
+References: <20130717000347.GB2483@stolen.phys.waikato.ac.nz> <1374546701.3719.33@driftwood> <20130723032511.GA18086@stolen.phys.waikato.ac.nz>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1374546701.3719.33@driftwood>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=sender:message-id:date:from:user-agent:mime-version:to:cc:subject
+         :references:in-reply-to:content-type:content-transfer-encoding;
+        bh=z05+BxZZBmsyQjWw/zyV6zLUesi91WhaJhy9pDs9/nc=;
+        b=JWLAcwDAdwkpu05tf0vaSSvV7h9xFBiqY40dRuPA7fccRQ5B6LkT68GKqppAYEyn8k
+         AiPFLoZRn1cGQ/0zTsc4hjd3JgfzfdIeUGDGaFPXNpXxJYg85BgV2qIox4lC36eVcRmN
+         ZlcJOlB+q5qZTqFzKAT41jA4oCLeFf5Ww+WLtvbFyt+fUJfnStyTJZ4KKBwehRazu4Re
+         qNEjX/asgm4t31UxxQ/K/WU5O0jNDHOIsbeVMECW6WYQhqFy4M6lHh4yTDQIGE3h55F+
+         de12gK+enYrvf2dDpqOk3zEgxhmslwYXBlHDitJbaEfvXTqS+soBVf58IDNDYiK7rNHz
+         cGig==
+In-Reply-To: <20130723032511.GA18086@stolen.phys.waikato.ac.nz>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Rob Landley <rob@landley.net>
-Cc: Richard Henderson <rth@twiddle.net>, linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
+To: Michael Cree <cree@waikato.ac.nz>
+Cc: Rob Landley <rob@landley.net>, linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-On Mon, Jul 22, 2013 at 09:31:41PM -0500, Rob Landley wrote:
-> On 07/16/2013 07:03:47 PM, Michael Cree wrote:
-> >On Tue, Jul 16, 2013 at 06:35:07PM -0500, Rob Landley wrote:
-> >> On 07/16/2013 12:04:33 PM, Richard Henderson wrote:
-> >> >Here's a set of minor updates for arch/alpha that should not
-> >> >be controversial.
-> >>
-> >> I also note that I had to do this to get busybox to build against
-> >> uClibc:
-> >> -#define __NR_umount		 22
-> >> +#define __NR_umount2		 22
-> >> -#define __NR_oldumount		321
-> >> +#define __NR_umount		321
-> >
-> >I anticipate that this will likely break userspace.
-> 
-> Haven't seen it so far. It's the same semantics all the other
-> targets have. Haven't built the whole of linux from scratch against
-> it yet though. (Most of my package builds are native and I'm still
-> tweaking my build environment to get a native toolchain built.)
+On 07/22/2013 07:25 PM, Michael Cree wrote:
+> I wondered if your proposal will break glibc as glibc checks for
+> __NR_oldumount and does different things based on that.  But maybe your
+> fix will not adversely affect glibc (I did not look particularly closely
+> to see if so), but even so, there is no guarantee that other software does
+> not directly access the oldumount syscall when compiled on Alpha, and your
+> change would likely break any such software.
 
-[snip]
+It won't break glibc.  While there are conditionals for oldumount,
+they do pretty much exactly the umount/umount2 dance you'd expect.
 
-> I.E. nobody's tried to build busybox umount for Alpha (except me)
-> for thirteen years.
+I'm for the patch, because anything that makes us match x86 more
+closely has got to be a good thing from a portability standpoint.
 
-That appears false to me.  Busybox builds OK on Debian-Ports [1], and it looks
-like in the build log that umount is built.  A search in Debian busybox
-sources does not return any hits for __NR_umount or __NR_umount2, but does
-for umount2 which are library calls (admittedly ones that are just wrappers
-for the kernel syscall). I also don't see any Debian patches in busybox that
-change behaviour of busybox specifically for Alpha.  But IIRC Debian links
-against glibc even for the installer where busybox is used.
 
-So maybe the problem is in uClibc?  Yes, a quick look at the source shows
-that uClibc does not test __NR_oldumount so presumably does not compile
-correct umount and umount2 library calls on Alpha.
-
-Maybe it's the case noone has compiled uClibc on Alpha until now?
-
-> There are waaaaay more busybox installations out there than even
-> _emulated_ alpha systems, and this is trivial to fix with a local
-> patch to the kernel. So I'll just do that. Your idea of the
-> "correct" thing to do to "fix" this seems entirely backwards to me.
-
-I wondered if your proposal will break glibc as glibc checks for
-__NR_oldumount and does different things based on that.  But maybe your
-fix will not adversely affect glibc (I did not look particularly closely
-to see if so), but even so, there is no guarantee that other software does
-not directly access the oldumount syscall when compiled on Alpha, and your
-change would likely break any such software.
-
-Cheers
-Michael
-
-[1] http://buildd.debian-ports.org/status/package.php?p=busybox
+r~
