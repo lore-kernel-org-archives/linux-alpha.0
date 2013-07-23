@@ -1,116 +1,86 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: [PULL] alpha.git
-Date: Mon, 22 Jul 2013 10:11:46 -0700
-Message-ID: <20130722171146.GA5106@work-Thinkpad.ak.intel.com>
+From: Rob Landley <rob@landley.net>
+Subject: Re: [PATCH 0/7] Minor Alpha updates for 3.11
+Date: Mon, 22 Jul 2013 21:31:41 -0500
+Message-ID: <1374546701.3719.33@driftwood>
+References: <20130717000347.GB2483@stolen.phys.waikato.ac.nz>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="MGYHOYXEY6WxJCY8"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:mime-version:content-type
-         :content-disposition:user-agent;
-        bh=uB2NhuTz3q99luxzDRa7vQSu31N4njvUGKDqJC0fkXQ=;
-        b=seEPXitOhJFvajdmUO2H5gY21V4o1/MggIm72JsNXMVrUpPRGmG63DZxE6pEwawEdP
-         dA87g5ET/lYtn8SbaYSu4Hcim8jjwY1I8kElKXrPs6QuEb8A+ONn36jTqrtf+RDMEazT
-         x0XgspE9lNzca+hYU8PsfQQ4iv5PTOB0ooT0zh1T8euzObo7LHuvJKpq3v9dPejBkluK
-         j0ImvpJ84etoxwwa1v/zCvY6LtGLF3CUNQDbuUq2/5T3mi7HSo1/Kg7r73rFrlGNDWbr
-         fXbIOOeiLOTNdQoDpal64nr3VZ5486eymzfY8kH6PCslaEpdVXDY/oO9hGbMKAJH0JIq
-         bAaA==
+In-Reply-To: <20130717000347.GB2483@stolen.phys.waikato.ac.nz> (from
+	cree@waikato.ac.nz on Tue Jul 16 19:03:47 2013)
 Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org, Joe Perches <joe@perches.com>, Chen Gang <gang.chen@asianux.com>, Will Deacon <will.deacon@arm.com>, Richard Henderson <rth@twiddle.net>
+Content-Type: text/plain; charset="us-ascii"; delsp="Yes"; format="Flowed"
+To: Michael Cree <cree@waikato.ac.nz>
+Cc: Richard Henderson <rth@twiddle.net>, linux-kernel@vger.kernel.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
+On 07/16/2013 07:03:47 PM, Michael Cree wrote:
+> On Tue, Jul 16, 2013 at 06:35:07PM -0500, Rob Landley wrote:
+> > On 07/16/2013 12:04:33 PM, Richard Henderson wrote:
+> > >Here's a set of minor updates for arch/alpha that should not
+> > >be controversial.
+> >
+> > I also note that I had to do this to get busybox to build against
+> > uClibc:
+> > -#define __NR_umount		 22
+> > +#define __NR_umount2		 22
+> > -#define __NR_oldumount		321
+> > +#define __NR_umount		321
+> 
+> I anticipate that this will likely break userspace.
 
---MGYHOYXEY6WxJCY8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Haven't seen it so far. It's the same semantics all the other targets  
+have. Haven't built the whole of linux from scratch against it yet  
+though. (Most of my package builds are native and I'm still tweaking my  
+build environment to get a native toolchain built.)
 
-Hi Linus,
+> busybox should be fixed to test for __NR_oldumount and then call the
+> correct functions, namely oldumount and umount if __NR_oldumount is  
+> defined
+> and umount and umount2 if it is not defined.
 
-Please pull my alpha git tree. It contains mostly clean ups and
-fixes but also an atomic64_dec_if_positive implementation and a
-pair of new syscalls.
+The man page for umount and umount2 doesn't mention "oldumount":
 
-Thanks,
-Matt
+$ man 2 umount | grep old
+$
 
-The following changes since commit b8a33fc7258f9e6e42b15571d0284b7c0ef0d0a9:
+Only three kernel targets mention it, alpha, powerpc, and x86:
 
-  Merge tag 'for-linus' of git://git.kernel.org/pub/scm/virt/kvm/kvm (2013-07-19 10:17:12 -0700)
+$ find arch/*/include -type f | xargs grep oldumount
+arch/alpha/include/uapi/asm/unistd.h:#define __NR_oldumount		 
+321
+arch/powerpc/include/asm/systbl.h:SYSX(sys_ni_syscall,sys_oldumount,sys_oldumount)
+arch/x86/include/generated/asm/syscalls_32.h:__SYSCALL_I386(22,  
+sys_oldumount, sys_oldumount)
 
-are available in the git repository at:
+And the other two export umount2:
 
+$ find arch/*/include -type f | xargs grep umount2 | egrep "powerpc|x86"
+arch/powerpc/include/uapi/asm/unistd.h:#define  
+__NR_umount2		 52
+arch/x86/include/generated/asm/unistd_32_ia32.h:#define  
+__NR_ia32_umount2 52
+arch/x86/include/generated/uapi/asm/unistd_x32.h:#define __NR_umount2  
+(__X32_SYSCALL_BIT + 166)
+arch/x86/include/generated/uapi/asm/unistd_32.h:#define __NR_umount2 52
+arch/x86/include/generated/uapi/asm/unistd_64.h:#define __NR_umount2 166
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+So really what you're saying is busybox should #ifdef alpha/workaround  
+target-specific breakage/#unifdef, and what this says to _me_ is that  
+nobody's tried to build busybox on Alpha since it started using  
+umount2(). How long ago was that?
 
-for you to fetch changes up to dff64649e757870e9351e7d85917ae681d20ee54:
+   commit 6c5f2c602174c7fe0830a1fc4fe5b3dde5ed7068
+   Author: Erik Andersen <andersen@codepoet.org>
+   Date:   Fri May 5 19:49:33 2000 +0000
 
-  alpha: Use handle_percpu_irq for the timer interrupt (2013-07-19 13:54:26 -0700)
+I.E. nobody's tried to build busybox umount for Alpha (except me) for  
+thirteen years.
 
-----------------------------------------------------------------
-Chen Gang (2):
-      alpha: kernel: using memcpy() instead of strcpy()
-      alpha: kernel: typo issue, using '1' instead of '11'
+There are waaaaay more busybox installations out there than even  
+_emulated_ alpha systems, and this is trivial to fix with a local patch  
+to the kernel. So I'll just do that. Your idea of the "correct" thing  
+to do to "fix" this seems entirely backwards to me.
 
-Joe Perches (1):
-      alpha: Convert print_symbol to %pSR
-
-Richard Henderson (10):
-      alpha: Add kcmp and finit_module syscalls
-      alpha: Modernize lib/mpi/longlong.h
-      alpha: Improve atomic_add_unless
-      alpha: Implement atomic64_dec_if_positive
-      alpha: Generate dwarf2 unwind info for various kernel entry points.
-      alpha: Fix type compatibility warning for marvel_map_irq
-      alpha: Use __builtin_alpha_rpcc
-      alpha: Don't if-out dp264_device_interrupt.
-      alpha: Force the user-visible HZ to a constant 1024.
-      alpha: Use handle_percpu_irq for the timer interrupt
-
-Will Deacon (1):
-      alpha: locks: remove unused arch_*_relax operations
-
- arch/alpha/Kconfig                   |   1 +
- arch/alpha/include/asm/atomic.h      |  88 +++++++++++++++++++++++++++----------
- arch/alpha/include/asm/param.h       |   8 ++--
- arch/alpha/include/asm/spinlock.h    |   4 --
- arch/alpha/include/asm/unistd.h      |   3 +-
- arch/alpha/include/uapi/asm/param.h  |   7 ---
- arch/alpha/include/uapi/asm/unistd.h |   2 +
- arch/alpha/kernel/entry.S            | 399 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------------------------------
- arch/alpha/kernel/irq_alpha.c        |   2 +-
- arch/alpha/kernel/smp.c              |   5 ++-
- arch/alpha/kernel/sys_dp264.c        |   8 ----
- arch/alpha/kernel/sys_marvel.c       |   3 +-
- arch/alpha/kernel/systbls.S          |   2 +
- arch/alpha/kernel/time.c             |   4 +-
- arch/alpha/kernel/traps.c            |   8 ++--
- lib/mpi/longlong.h                   |  17 +++-----
- 16 files changed, 381 insertions(+), 180 deletions(-)
-
---MGYHOYXEY6WxJCY8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJR7WfSAAoJEA/daC2XTKcqQQYQAINZVnmeD/uZffU9Hx7EoIR5
-P38C0LeV9xKB2pNIVa2j9E5SKeA5ddb1RZsu+E4Z8PSILuIorrbk+8qts1k9DyJx
-fYVW7QA0P8e8A08ot+ZLvHggEJQeUpj13WW9hFhRUKb5MVXUqMN9RXSptaQQYV+U
-6MGFXvYDilHtIl/5+3cYA3xsYZWvLmLkY4QxuramyExSYWe2W/UaQnD15fPJkJmA
-d+plspuY64TW/gmNsGxLbjOXBuBVq0da1zH3RmW8yKV1nN5Y4ufnh/lsXIc8pmJY
-ks2QKciqS+qJj8Z/HkmXEe15d+6HHJ1vQXqJHrg/9228o8tiCA6Ui53D2k5O7OKp
-jrGDgkD2aoDf/rISIeY00zbMlPQ9E++uErhrrfXnHSVkF4KDM+5Z9L5pNN99CHH1
-QVRETSq23afHWEQ/6cboJxHcFUbZYHt2JuCNbZ8bYzMXP+vEfPejN0+QyGsX4M+T
-TACQD963SIhaREm2yTYT5+PMgpUyuXVVrbszTRKVi57uG+5qZK48t85kB9bpEhCB
-k+VQ+4lbNQPr6E3OQjtrk6vQk8Sro8HmwTQK+ZkoE4elMzeGBAPaZQPJNmh4k6mf
-ayMQaThC4iPnubc9B3dAJDiPY7zcGybYp4vAmf+/abWU5mm7wgItgj1XCxRqPB4+
-XF4cdwwWiPkPUnoGFv3Z
-=fa7L
------END PGP SIGNATURE-----
-
---MGYHOYXEY6WxJCY8--
+Rob
