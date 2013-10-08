@@ -1,29 +1,40 @@
-From: Bob Tracy <rct@gherkin.frus.com>
-Subject: fs/btrfs/ioctl.c: implicit declaration of function
- __put_user_unaligned
-Date: Sat, 21 Sep 2013 10:04:28 -0500
-Message-ID: <20130921150428.GA19343@gherkin.frus.com>
-Mime-Version: 1.0
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-Content-Disposition: inline
-Resent-Message-ID: <RyceA5EEoKN.A.KKG.bWbPSB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <http://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+From: Mark Salter <msalter@redhat.com>
+Subject: [PATCH v2 01/14] alpha: select ARCH_MAY_HAVE_PC_PARPORT
+Date: Tue,  8 Oct 2013 01:10:17 -0400
+Message-ID: <1381209030-351-2-git-send-email-msalter@redhat.com>
+References: <1381209030-351-1-git-send-email-msalter@redhat.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1381209030-351-1-git-send-email-msalter@redhat.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: mcree@orcon.net.nz
-Cc: debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Mark Salter <msalter@redhat.com>, linux-alpha@vger.kernel.org
 
-Seeing this on alpha also.  Kernel version 3.12.0-rc1.
+Architectures which support CONFIG_PARPORT_PC should select
+ARCH_MAY_HAVE_PC_PARPORT.
 
-Is a fix similar to what Geert submitted for m68k appropriate here?
+Signed-off-by: Mark Salter <msalter@redhat.com>
+Acked-by: Richard Henderson <rth@twiddle.net>
+CC: linux-alpha@vger.kernel.org
+---
+ arch/alpha/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-See http://marc.info/?l=linux-arch&m=137820065929216&w=2 for the
-details.
-
---Bob
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 35a300d..626949c 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -1,6 +1,7 @@
+ config ALPHA
+ 	bool
+ 	default y
++	select ARCH_MAY_HAVE_PC_PARPORT
+ 	select HAVE_AOUT
+ 	select HAVE_IDE
+ 	select HAVE_OPROFILE
+-- 
+1.8.3.1
 
