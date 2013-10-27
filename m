@@ -1,31 +1,60 @@
-From: Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: [PATCH v2 14/14] Kconfig cleanup (PARPORT_PC dependencies)
-Date: Tue, 8 Oct 2013 09:00:54 +0200
-Message-ID: <20131008070054.GE1615@linux-mips.org>
-References: <1381209030-351-1-git-send-email-msalter@redhat.com>
- <1381209030-351-15-git-send-email-msalter@redhat.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH] alpha: perf: fix out-of-bounds array access triggered
+ from raw event
+Date: Sun, 27 Oct 2013 14:39:03 +0000
+Message-ID: <20131027143903.GA17732@mudshark.cambridge.arm.com>
+References: <1378807092-28674-1-git-send-email-will.deacon@arm.com>
+ <20130910101944.GA13664@omega>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1381209030-351-15-git-send-email-msalter@redhat.com>
-Sender: linux-ia64-owner@vger.kernel.org
+In-Reply-To: <20130910101944.GA13664@omega>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mark Salter <msalter@redhat.com>
-Cc: linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@vger.kernel.org, Michal Simek <monstr@monstr.eu>, microblaze-uclinux@itee.uq.edu.au, linux-mips@linux-mips.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org, Paul Mundt <lethal@linux-sh.org>, linux-sh@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Thomas Gleixner <tgl>
+To: Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Peter Zijlstra <a.p.zijlstra@chello.nl>, Matt Turner <mattst88@gmail.com>
 
-On Tue, Oct 08, 2013 at 01:10:30AM -0400, Mark Salter wrote:
+Matt,
 
-> Remove messy dependencies from PARPORT_PC by having it depend on one
-> Kconfig symbol (ARCH_MAY_HAVE_PC_PARPORT) and having architectures
-> which need it, select ARCH_MAY_HAVE_PC_PARPORT in arch/*/Kconfig.
-> New architectures are unlikely to need PARPORT_PC, so this avoids
-> having an ever growing list of architectures to exclude. Those
-> architectures which do select ARCH_MAY_HAVE_PC_PARPORT in this
-> patch are the ones which have an asm/parport.h (or use the generic
-> version).
+On Tue, Sep 10, 2013 at 11:19:44AM +0100, Michael Cree wrote:
+> On Tue, Sep 10, 2013 at 10:58:12AM +0100, Will Deacon wrote:
+> > Vince's perf fuzzer uncovered the following issue on Alpha:
+> > 
+> > Unable to handle kernel paging request at virtual address fffffbfe4e46a0e8
+> > CPU 0 perf_fuzzer(1278): Oops 0
+> > pc = [<fffffc000031fbc0>]  ra = [<fffffc000031ff54>]  ps = 0007    Not tainted
+> > pc is at alpha_perf_event_set_period+0x60/0xf0
+> > ra is at alpha_pmu_enable+0x1a4/0x1c0
+> > v0 = 0000000000000000  t0 = 00000000000fffff  t1 = fffffc007b3f5800
+> > t2 = fffffbff275faa94  t3 = ffffffffc9b9bd89  t4 = fffffbfe4e46a098
+> > t5 = 0000000000000020  t6 = fffffbfe4e46a0b8  t7 = fffffc007f4c8000
+> > s0 = 0000000000000000  s1 = fffffc0001b0c018  s2 = fffffc0001b0c020
+> > s3 = fffffc007b3f5800  s4 = 0000000000000001  s5 = ffffffffc9b9bd85
+> > s6 = 0000000000000001
+> > a0 = 0000000000000006  a1 = fffffc007b3f5908  a2 = fffffbfe4e46a098
+> > a3 = 00000005000108c0  a4 = 0000000000000000  a5 = 0000000000000000
+> > t8 = 0000000000000001  t9 = 0000000000000001  t10= 0000000027829f6f
+> > t11= 0000000000000020  pv = fffffc000031fb60  at = fffffc0000950900
+> > gp = fffffc0000940900  sp = fffffc007f4cbca8
 
-Acked-by: Ralf Baechle <ralf@linux-mips.org>
+[...]
 
-  Ralf
+> > This patch adds a new callback to alpha_pmu_t for validating the raw
+> > event encoding with the Linux event types for the PMU, preventing the
+> > out-of-bounds array access.
+> > 
+> > Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
+> > Cc: Michael Cree <mcree@orcon.net.nz>
+> > Cc: Matt Turner <mattst88@gmail.com>
+> > Signed-off-by: Will Deacon <will.deacon@arm.com>
+> 
+> Acked-by: Michael Cree <mcree@orcon.net.nz>
+
+I just remembered about this patch whilst cleaning up some old git branches.
+Please could you include it in the Alpha tree with a CC stable? Without it,
+it's trivial to panic a perf-enabled Alpha kernel from userspace.
+
+Cheers,
+
+Will
