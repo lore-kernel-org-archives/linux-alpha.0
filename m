@@ -1,122 +1,224 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: [PULL] alpha.git
-Date: Wed, 20 Nov 2013 11:26:18 -0800
-Message-ID: <20131120192618.GA10362@sandybridge>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="45Z9DzgjV8m4Oswq"
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:mime-version:content-type
-         :content-disposition:user-agent;
-        bh=yrRWwbVPpL0XaTS4C/3CP/8jBlnZ+/l0IaLwEbI4/wE=;
-        b=K+4x+14s/NTVNCKLYTRVX8GAlADe7J6RgnBYHKoAunO5T4s2RrVcuQtFiT8D2Tclyj
-         EXZo5q+1u/HTKi9r+YehYmd+XlLAtu1he9HK23uf/P0qqyq6ClM9wkG96q7BrdJNVJ7J
-         pseN0rcM77VeLbbSsgu6xWxf2cMKiPxTbKsS63Gktr+HXbdMsuJ5Hh1Say0uR2DcXpB+
-         GtGTDn9C/PHOVzmp35sVSm0KM1BMuTdap1kD1wY5D7M3W8urZ6kl626Y00ZpHMLqu4kC
-         aqnSJhec9R39nrxojTaExNmQvlMsaovDOAMyHebGGRQBI37Gxif8EbCPnDtxv6AnDYy1
-         rn4w==
-Content-Disposition: inline
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jay Estabrook <jay.estabrook@gmail.com>, Will Deacon <will.deacon@arm.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH 24/24] asm-generic: Rename int-ll64.h to types.h
+Date: Mon, 25 Nov 2013 09:55:34 +0100
+Message-ID: <1385369734-24893-25-git-send-email-geert@linux-m68k.org>
+References: <1385369734-24893-1-git-send-email-geert@linux-m68k.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <1385369734-24893-1-git-send-email-geert@linux-m68k.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-kbuild@vger.kernel.org
+
+Since kernelspace always uses "(unsigned) long long" for 64-bit integer
+values ("u64" and "s64"), rename include/asm-generic/int-ll64.h to
+include/asm-generic/types.h, as suggested by Arnd Bergmann.
+
+Userspace still has both include/uapi/asm-generic/int-l64.h and
+include/uapi/asm-generic/int-ll64.h, as int-l64.h may still be used for
+userspace on existing 64-bit platforms (alpha, ia64, mips, and powerpc).
+
+Note: While arch/alpha/include/asm/types.h just includes
+asm-generic/types.h, don't be tempted to use Kbuild logic to provide it!
+arch/*/include/asm/Kbuild applies to both arch/*/include/asm and
+arch/*/include/uapi/asm, while alpha has its own <uapi/asm/types.h>.
+
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-ia64@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-s390@vger.kernel.org
+Cc: linux-sh@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: linux-kbuild@vger.kernel.org
+---
+Question: Is the arch/*/include/asm/Kbuild behavior intentional?
+
+ arch/alpha/include/asm/types.h              |    2 +-
+ arch/arm/include/asm/types.h                |    2 +-
+ arch/ia64/include/asm/types.h               |    2 +-
+ arch/mips/include/asm/types.h               |    2 +-
+ arch/powerpc/include/asm/types.h            |    2 +-
+ arch/s390/include/asm/types.h               |    2 +-
+ arch/sh/include/asm/types.h                 |    2 +-
+ arch/xtensa/include/asm/types.h             |    2 +-
+ include/asm-generic/io-64-nonatomic-hi-lo.h |    2 +-
+ include/asm-generic/io-64-nonatomic-lo-hi.h |    2 +-
+ include/asm-generic/{int-ll64.h => types.h} |    8 ++++----
+ 11 files changed, 14 insertions(+), 14 deletions(-)
+ rename include/asm-generic/{int-ll64.h => types.h} (85%)
+
+diff --git a/arch/alpha/include/asm/types.h b/arch/alpha/include/asm/types.h
+index 4cb4b6d3452c..b86fb65c5b10 100644
+--- a/arch/alpha/include/asm/types.h
++++ b/arch/alpha/include/asm/types.h
+@@ -1,6 +1,6 @@
+ #ifndef _ALPHA_TYPES_H
+ #define _ALPHA_TYPES_H
+ 
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ 
+ #endif /* _ALPHA_TYPES_H */
+diff --git a/arch/arm/include/asm/types.h b/arch/arm/include/asm/types.h
+index a53cdb8f068c..09e15a8a40b1 100644
+--- a/arch/arm/include/asm/types.h
++++ b/arch/arm/include/asm/types.h
+@@ -1,7 +1,7 @@
+ #ifndef _ASM_TYPES_H
+ #define _ASM_TYPES_H
+ 
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ 
+ /*
+  * The C99 types uintXX_t that are usually defined in 'stdint.h' are not as
+diff --git a/arch/ia64/include/asm/types.h b/arch/ia64/include/asm/types.h
+index 4c351b169da2..6bc2e8acadd7 100644
+--- a/arch/ia64/include/asm/types.h
++++ b/arch/ia64/include/asm/types.h
+@@ -13,7 +13,7 @@
+ #ifndef _ASM_IA64_TYPES_H
+ #define _ASM_IA64_TYPES_H
+ 
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ #include <uapi/asm/types.h>
+ 
+ #ifdef __ASSEMBLY__
+diff --git a/arch/mips/include/asm/types.h b/arch/mips/include/asm/types.h
+index 4d5ce4c9c924..0d6729329a6a 100644
+--- a/arch/mips/include/asm/types.h
++++ b/arch/mips/include/asm/types.h
+@@ -11,7 +11,7 @@
+ #ifndef _ASM_TYPES_H
+ #define _ASM_TYPES_H
+ 
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ 
+ /*
+  * These aren't exported outside the kernel to avoid name space clashes
+diff --git a/arch/powerpc/include/asm/types.h b/arch/powerpc/include/asm/types.h
+index 4b9c3530bb12..69d42a918e0e 100644
+--- a/arch/powerpc/include/asm/types.h
++++ b/arch/powerpc/include/asm/types.h
+@@ -13,7 +13,7 @@
+ #ifndef _ASM_POWERPC_TYPES_H
+ #define _ASM_POWERPC_TYPES_H
+ 
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ #include <uapi/asm/types.h>
+ 
+ #ifndef __ASSEMBLY__
+diff --git a/arch/s390/include/asm/types.h b/arch/s390/include/asm/types.h
+index a5c7e829dbc3..abb93c7f0125 100644
+--- a/arch/s390/include/asm/types.h
++++ b/arch/s390/include/asm/types.h
+@@ -6,7 +6,7 @@
+ #ifndef _S390_TYPES_H
+ #define _S390_TYPES_H
+ 
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ #include <uapi/asm/types.h>
+ 
+ /*
+diff --git a/arch/sh/include/asm/types.h b/arch/sh/include/asm/types.h
+index 062324be5cd6..ef745dcfd926 100644
+--- a/arch/sh/include/asm/types.h
++++ b/arch/sh/include/asm/types.h
+@@ -1,7 +1,7 @@
+ #ifndef __ASM_SH_TYPES_H
+ #define __ASM_SH_TYPES_H
+ 
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ 
+ /*
+  * These aren't exported outside the kernel to avoid name space clashes
+diff --git a/arch/xtensa/include/asm/types.h b/arch/xtensa/include/asm/types.h
+index d873cb17d944..20ffdf440e4f 100644
+--- a/arch/xtensa/include/asm/types.h
++++ b/arch/xtensa/include/asm/types.h
+@@ -10,7 +10,7 @@
+ #ifndef _XTENSA_TYPES_H
+ #define _XTENSA_TYPES_H
+ 
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ #include <uapi/asm/types.h>
+ 
+ #endif	/* _XTENSA_TYPES_H */
+diff --git a/include/asm-generic/io-64-nonatomic-hi-lo.h b/include/asm-generic/io-64-nonatomic-hi-lo.h
+index a6806a94250d..414d2c49d53c 100644
+--- a/include/asm-generic/io-64-nonatomic-hi-lo.h
++++ b/include/asm-generic/io-64-nonatomic-hi-lo.h
+@@ -2,7 +2,7 @@
+ #define _ASM_IO_64_NONATOMIC_HI_LO_H_
+ 
+ #include <linux/io.h>
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ 
+ #ifndef readq
+ static inline __u64 readq(const volatile void __iomem *addr)
+diff --git a/include/asm-generic/io-64-nonatomic-lo-hi.h b/include/asm-generic/io-64-nonatomic-lo-hi.h
+index ca546b1ff8b5..9bc5a3393ca1 100644
+--- a/include/asm-generic/io-64-nonatomic-lo-hi.h
++++ b/include/asm-generic/io-64-nonatomic-lo-hi.h
+@@ -2,7 +2,7 @@
+ #define _ASM_IO_64_NONATOMIC_LO_HI_H_
+ 
+ #include <linux/io.h>
+-#include <asm-generic/int-ll64.h>
++#include <asm-generic/types.h>
+ 
+ #ifndef readq
+ static inline __u64 readq(const volatile void __iomem *addr)
+diff --git a/include/asm-generic/int-ll64.h b/include/asm-generic/types.h
+similarity index 85%
+rename from include/asm-generic/int-ll64.h
+rename to include/asm-generic/types.h
+index 4cd84855cb46..b9542bb3d991 100644
+--- a/include/asm-generic/int-ll64.h
++++ b/include/asm-generic/types.h
+@@ -1,11 +1,11 @@
+ /*
+- * asm-generic/int-ll64.h
++ * asm-generic/types.h
+  *
+  * Integer declarations for architectures which use "long long"
+  * for 64-bit types.
+  */
+-#ifndef _ASM_GENERIC_INT_LL64_H
+-#define _ASM_GENERIC_INT_LL64_H
++#ifndef _ASM_GENERIC_TYPES_H
++#define _ASM_GENERIC_TYPES_H
+ 
+ #include <uapi/asm-generic/int-ll64.h>
+ 
+@@ -46,4 +46,4 @@ typedef unsigned long long u64;
+ 
+ #endif /* __ASSEMBLY__ */
+ 
+-#endif /* _ASM_GENERIC_INT_LL64_H */
++#endif /* _ASM_GENERIC_TYPES_H */
+-- 
+1.7.9.5
 
 
---45Z9DzgjV8m4Oswq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi Linus,
-
-Please pull my alpha git tree. It contains a few fixes and some work
-=66rom Richard to make alpha emulation under QEMU much more usable.
-
-Thanks,
-Matt
-
-The following changes since commit 673fdfe3f0630b03f3854d0361b1232f2e5ef7fb:
-
-  Merge tag 'nfs-for-3.13-2' of git://git.linux-nfs.org/projects/trondmy/li=
-nux-nfs (2013-11-16 13:14:56 -0800)
-
-are available in the git repository at:
-
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
-
-for you to fetch changes up to 5cfe8f1ba5eebe6f4b6e5858cdb1a5be4f3272a6:
-
-  alpha: Prevent a NULL ptr dereference in csum_partial_copy. (2013-11-16 1=
-6:48:42 -0800)
-
-----------------------------------------------------------------
-Jay Estabrook (1):
-      alpha: Prevent a NULL ptr dereference in csum_partial_copy.
-
-Richard Henderson (8):
-      alpha: Eliminate compiler warning from memset macro
-      alpha: Notice if we're being run under QEMU
-      alpha: Allow HZ to be configured
-      alpha: Primitive support for CPU power down.
-      alpha: Reorganize rtc handling
-      alpha: Enable the rpcc clocksource for single processor
-      alpha: Switch to GENERIC_CLOCKEVENTS
-      alpha: Use qemu+cserve provided high-res clock and alarm.
-
-Will Deacon (1):
-      alpha: perf: fix out-of-bounds array access triggered from raw event
-
- arch/alpha/Kconfig                 |  76 ++++++-
- arch/alpha/include/asm/machvec.h   |  22 +-
- arch/alpha/include/asm/pal.h       |  71 +++++++
- arch/alpha/include/asm/rtc.h       |  11 -
- arch/alpha/include/asm/string.h    |  24 ++-
- arch/alpha/include/uapi/asm/pal.h  |   1 +
- arch/alpha/kernel/Makefile         |   1 +
- arch/alpha/kernel/alpha_ksyms.c    |   1 +
- arch/alpha/kernel/irq_alpha.c      |  16 +-
- arch/alpha/kernel/machvec_impl.h   |   5 +-
- arch/alpha/kernel/perf_event.c     |  15 +-
- arch/alpha/kernel/process.c        |  17 ++
- arch/alpha/kernel/proto.h          |   6 +-
- arch/alpha/kernel/rtc.c            | 323 +++++++++++++++++++++++++++++
- arch/alpha/kernel/setup.c          |  23 ++-
- arch/alpha/kernel/smp.c            |  33 +--
- arch/alpha/kernel/sys_jensen.c     |   2 -
- arch/alpha/kernel/sys_marvel.c     |  55 +----
- arch/alpha/kernel/time.c           | 405 ++++++++++++++++-----------------=
-----
- arch/alpha/kernel/traps.c          |  15 ++
- arch/alpha/lib/csum_partial_copy.c |  10 +-
- arch/alpha/lib/ev6-memset.S        |  12 +-
- arch/alpha/lib/memset.S            |  11 +-
- drivers/rtc/Kconfig                |  10 +-
- 24 files changed, 777 insertions(+), 388 deletions(-)
- create mode 100644 arch/alpha/kernel/rtc.c
-
---45Z9DzgjV8m4Oswq
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSjQzZAAoJEA/daC2XTKcqsoMP/1WiP9kg0EbPiJip8GH+zRy2
-QDH0+THbxSyI+rlbIIShiNVhJMYL/vYTpF9kqXzKvgcL2WLG0sEaKyqSi2LlFkNw
-yoKsG19E7R6geql1Unh5tU9EkpFBWhgrvkFQrq0UmKLC+8dr9/o2ZHTDNFYOGNwr
-pNTm38pijLAh3w62jrwyYjDk/JnpA6eVdYlo8S+WVah8BsAoCKH/swMhXflwwFL3
-JoBrEec/PoWP0gpPgK/LtfPIWI6wqSYwFkoTyX48p8aaa3ZOPOf91sde4mTYNfKD
-6TCE9HtSZcKZ6o4OdwkAsNjwvkozfhX2CLsMP8FHvzosZHLgVhw09h+rbbyCEUgu
-fRGgNk9LfajtpRaXDEWAdfOeTKBLT6m+3wu57hOijfc2XCTlB23gsLmnsntpgTAC
-X8gInIXXCryopYmKR16LiSPUpFItVmjp2SqTMG1yOmd/Vb9eXZGPo8oPIBsRAcVM
-WSH/gOiXa5cyAdct7Y3IYkuz81dCtxTuKavOprt9cnPxPL8PlXafE/nOW4zA0uNX
-Ng7ySHSE3Zb/pdcme1HV479B1TnsYqkGcZE7X2qwsMpl7aQuJp+7NguUGwzWvQJX
-5YtCFpo7zAPIWtDgx6NuZKJbLAwAmdW1meaYPW2L/rYVIsNjDw5cByBSL0X8v/PG
-+aopnKywnopUgljqOBdo
-=q92j
------END PGP SIGNATURE-----
-
---45Z9DzgjV8m4Oswq--
