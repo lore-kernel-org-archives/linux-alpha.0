@@ -1,83 +1,156 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH 1/9] PCI: Use dev_is_pci() to check whether it is pci
- device
-Date: Mon, 9 Dec 2013 17:01:54 -0700
-Message-ID: <20131210000154.GE4699@google.com>
-References: <1386244373-35796-1-git-send-email-wangyijing@huawei.com>
+From: =?gb2312?Q?=B2=CC=D5=FD=C1=FA?= <zhenglong.cai@cs2c.com.cn>
+Subject: [alpha PATCH]  enable syscall audit function at alpha architecture
+Date: Tue, 10 Dec 2013 10:24:25 +0800
+Message-ID: <1386642265.6996.9.camel@localhost.localdomain>
+Reply-To: zhenglong.cai@cs2c.com.cn
 Mime-Version: 1.0
-Return-path: <sparclinux-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-type:content-disposition:in-reply-to:user-agent;
-        bh=AT9O+6O10RIzbgBUY4JFYxuDnQQ8jqNi9vqyAzZlgck=;
-        b=S1x7ka24oSLxoUq2S7QPM7Pfxwl5IhmpNl0ypQp9bQzxrgbT25zCJNCDPmnUanYuCL
-         7eFm2Hb+bHwZgSHO+/zYzKTUXmw9gKG1tkW6CqLc/SvgU/lg14C+rQmg5kXapb+c3eDz
-         LDpbbl0yeouOdF1UXVTTTC/cA/Z/hNR2Jyw5JA/QPvHr5gRzQmIq2prRlkPs1TJeCHpi
-         2Uz1wOEJ4DxBR9PP8C1k6+B6jlfbGhO4BxBKMlcxxBBNfsnDB3/Fa3GbyW504+lvIXwT
-         rguyAxigsKWXSKW+3LnfseYMgE/6AD9a4aHA1LbhQkaMwkPxwKQsCqtqlWW4uE8qhkn1
-         9csg==
-Content-Disposition: inline
-In-Reply-To: <1386244373-35796-1-git-send-email-wangyijing@huawei.com>
-Sender: sparclinux-owner@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Yijing Wang <wangyijing@huawei.com>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Hanjun Guo <guohanjun@huawei.com>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org
+Content-Type: text/plain; charset="gb2312"
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-[+cc arch lists]
+Enable system-call auditing support at alpha architecture
 
-On Thu, Dec 05, 2013 at 07:52:53PM +0800, Yijing Wang wrote:
-> Use dev_is_pci() instead of directly compare
-> pci_bus_type to check whether it is pci device.
-> 
-> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+Signed-off-by: Zhenglong.cai <zhenglong.cai@cs2c.com.cn>
 
-I applied all these to my pci/yijing-dev_is_pci branch for v3.14, thanks!
+ arch/alpha/Kconfig                   |    3 +++
+ arch/alpha/include/asm/ptrace.h      |    5 +++++
+ arch/alpha/include/asm/thread_info.h |    2 ++
+ arch/alpha/kernel/Makefile           |    1 +
+ arch/alpha/kernel/entry.S            |    6 +++++-
+ arch/alpha/kernel/ptrace.c           |    4 ++++
+ 6 files changed, 20 insertions(+), 1 deletions(-)
 
-Browse them here: http://git.kernel.org/cgit/linux/kernel/git/helgaas/pci.git/log/?h=pci/yijing-dev_is_pci
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index d39dc9b..f23ab8b 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -16,6 +16,7 @@ config ALPHA
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+ 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
++	select AUDIT_ARCH
+ 	select GENERIC_CLOCKEVENTS
+ 	select GENERIC_SMP_IDLE_THREAD
+ 	select GENERIC_STRNCPY_FROM_USER
+@@ -76,6 +77,8 @@ config GENERIC_ISA_DMA
+ source "init/Kconfig"
+ source "kernel/Kconfig.freezer"
+=20
++config AUDIT_ARCH
++	bool
+=20
+ menu "System setup"
+=20
+diff --git a/arch/alpha/include/asm/ptrace.h
+b/arch/alpha/include/asm/ptrace.h
+index 2112850..9047c2f 100644
+--- a/arch/alpha/include/asm/ptrace.h
++++ b/arch/alpha/include/asm/ptrace.h
+@@ -19,4 +19,9 @@
+=20
+ #define force_successful_syscall_return() (current_pt_regs()->r0 =3D 0=
+)
+=20
++static inline unsigned long regs_return_value(struct pt_regs *regs)
++{
++	return regs->r0;
++}
++
+ #endif
+diff --git a/arch/alpha/include/asm/thread_info.h
+b/arch/alpha/include/asm/thread_info.h
+index 453597b..3d6ce6d 100644
+--- a/arch/alpha/include/asm/thread_info.h
++++ b/arch/alpha/include/asm/thread_info.h
+@@ -70,6 +70,7 @@ register struct thread_info *__current_thread_info
+__asm__("$8");
+ #define TIF_NOTIFY_RESUME	1	/* callback before returning to user */
+ #define TIF_SIGPENDING		2	/* signal pending */
+ #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
++#define TIF_SYSCALL_AUDIT	4	/* syscall audit active */
+ #define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
+ #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
+=20
+@@ -77,6 +78,7 @@ register struct thread_info *__current_thread_info
+__asm__("$8");
+ #define _TIF_SIGPENDING		(1<<TIF_SIGPENDING)
+ #define _TIF_NEED_RESCHED	(1<<TIF_NEED_RESCHED)
+ #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
++#define _TIF_SYSCALL_AUDIT	(1<<TIF_SYSCALL_AUDIT)
+=20
+ /* Work to do on interrupt/exception return.  */
+ #define _TIF_WORK_MASK		(_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
+diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
+index 0d54650..3ecac01 100644
+--- a/arch/alpha/kernel/Makefile
++++ b/arch/alpha/kernel/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_SRM_ENV)	+=3D srm_env.o
+ obj-$(CONFIG_MODULES)	+=3D module.o
+ obj-$(CONFIG_PERF_EVENTS) +=3D perf_event.o
+ obj-$(CONFIG_RTC_DRV_ALPHA) +=3D rtc.o
++obj-$(CONFIG_AUDIT)	+=3D audit.o
+=20
+ ifdef CONFIG_ALPHA_GENERIC
+=20
+diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
+index a969b95..98703d9 100644
+--- a/arch/alpha/kernel/entry.S
++++ b/arch/alpha/kernel/entry.S
+@@ -465,7 +465,11 @@ entSys:
+ 	.cfi_rel_offset	$16, SP_OFF+24
+ 	.cfi_rel_offset	$17, SP_OFF+32
+ 	.cfi_rel_offset	$18, SP_OFF+40
+-	blbs	$3, strace
++#ifdef CONFIG_AUDITSYSCALL
++	lda     $6, _TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT
++	and     $3, $6, $3
++#endif
++	bne     $3, strace
+ 	beq	$4, 1f
+ 	ldq	$27, 0($5)
+ 1:	jsr	$26, ($27), alpha_ni_syscall
+diff --git a/arch/alpha/kernel/ptrace.c b/arch/alpha/kernel/ptrace.c
+index 2a4a80f..86d8351 100644
+--- a/arch/alpha/kernel/ptrace.c
++++ b/arch/alpha/kernel/ptrace.c
+@@ -14,6 +14,7 @@
+ #include <linux/security.h>
+ #include <linux/signal.h>
+ #include <linux/tracehook.h>
++#include <linux/audit.h>
+=20
+ #include <asm/uaccess.h>
+ #include <asm/pgtable.h>
+@@ -316,15 +317,18 @@ long arch_ptrace(struct task_struct *child, long
+request,
+ asmlinkage unsigned long syscall_trace_enter(void)
+ {
+ 	unsigned long ret =3D 0;
++	struct pt_regs *regs =3D current_pt_regs();
+ 	if (test_thread_flag(TIF_SYSCALL_TRACE) &&
+ 	    tracehook_report_syscall_entry(current_pt_regs()))
+ 		ret =3D -1UL;
++	audit_syscall_entry(AUDIT_ARCH_ALPHA, regs->r0, regs->r16, regs->r17,
+regs->r18, regs->r19);
+ 	return ret ?: current_pt_regs()->r0;
+ }
+=20
+ asmlinkage void
+ syscall_trace_leave(void)
+ {
++	audit_syscall_exit(current_pt_regs());
+ 	if (test_thread_flag(TIF_SYSCALL_TRACE))
+ 		tracehook_report_syscall_exit(current_pt_regs(), 0);
+ }
+--=20
+=B9=AB=CB=BE=A3=BA=D6=D0=B1=EA=C8=ED=BC=FE=D3=D0=CF=DE=B9=AB=CB=BE=20
+=D0=D5=C3=FB=A3=BA=B2=CC=D5=FD=C1=FA
+=B5=D8=D6=B7=A3=BA=C9=CF=BA=A3=CA=D0=D5=A2=B1=B1=C7=F8=BD=AD=B3=A1=C8=FD=
+=C2=B726=A1=A228=BA=C5 12=BA=C5=C2=A5 2=C2=A5
+=B5=E7=BB=B0=A3=BA021=A3=AD51060868-8120
+=D3=CA=B1=E0=A3=BA200436
+Email: zhenglong.cai@cs2c.com.cn
 
-This should be no functional change.
-
- arch/alpha/kernel/pci_iommu.c        |    2 +-
- arch/arm/common/it8152.c             |    4 ++--
- arch/arm/mach-ixp4xx/common-pci.c    |    6 +++---
- arch/ia64/hp/common/sba_iommu.c      |    2 +-
- arch/ia64/sn/pci/pci_dma.c           |   24 ++++++++++++------------
- arch/parisc/kernel/drivers.c         |   22 +++++-----------------
- arch/powerpc/sysdev/fsl_pci.c        |    2 +-
- arch/sparc/include/asm/dma-mapping.h |   10 ++++------
- arch/sparc/kernel/iommu.c            |    2 +-
- arch/sparc/kernel/ioport.c           |    4 +---
- arch/x86/kernel/acpi/boot.c          |    4 +---
- drivers/pci/pci-acpi.c               |    2 +-
- 12 files changed, 33 insertions(+), 51 deletions(-)
-
-Bjorn
-
-> ---
->  drivers/pci/pci-acpi.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
-> 
-> diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> index 577074e..e0431f1 100644
-> --- a/drivers/pci/pci-acpi.c
-> +++ b/drivers/pci/pci-acpi.c
-> @@ -358,7 +358,7 @@ static void pci_acpi_cleanup(struct device *dev)
->  
->  static bool pci_acpi_bus_match(struct device *dev)
->  {
-> -	return dev->bus == &pci_bus_type;
-> +	return dev_is_pci(dev);
->  }
->  
->  static struct acpi_bus_type acpi_pci_bus = {
-> -- 
-> 1.7.1
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
