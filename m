@@ -1,44 +1,88 @@
-From: Mark Salter <msalter@redhat.com>
-Subject: Re: [PATCH 10/10] Kconfig: cleanup SERIO_I8042 dependencies
-Date: Sun, 15 Dec 2013 10:50:26 -0500
-Message-ID: <1387122626.1979.136.camel@deneb.redhat.com>
-References: <1387040376-26906-1-git-send-email-msalter@redhat.com>
-         <1387040376-26906-11-git-send-email-msalter@redhat.com>
-         <52ACA43F.2040402@zytor.com>
-         <20131215103657.GB20197@core.coreip.homeip.net>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20131215103657.GB20197@core.coreip.homeip.net>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+From: Jiang Liu <liuj97@gmail.com>
+Subject: [PATCH v3 [resend] 03/18] smp, alpha: kill SMP single function call interrupt
+Date: Mon, 16 Dec 2013 00:36:25 +0800
+Message-ID: <1387125400-28849-4-git-send-email-liuj97@gmail.com>
+References: <1387125400-28849-1-git-send-email-liuj97@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=3tv+TEu3PvaEt4IngtbVcr9kjD1W46ZP8DACa2QJQbU=;
+        b=OEIPyRyYoCbiJ51UOPuMezsw4JGrYG5VROHMxhv26dWTomSIglaAMOOmLIrEMTidhJ
+         cRupIBc3eEJUdGuha8+li0QMezP/AeMcGPoPszCar8RaUUGnn7JsbuBkxB/5jMN7XlZN
+         EstbfAVShZfAfRmsmvc2XbLlp8pXThKRzU01aksCY/f8POIKRjNlQhm8fP02ti9X/Nvq
+         yi7eMRvudbnd0qM4LcmMWk97UKJcXtxDd6DmhnXCZTKFKarfWvW8sHKOqvQExbJOW2BA
+         IlA860Q0bmhUSOW6HZ5+vy6nirZqkT1m4ZO/96S3PfmSIdydUFYd0aVoQ64+GFruMYXg
+         E9Og==
+In-Reply-To: <1387125400-28849-1-git-send-email-liuj97@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org, Paul Mundt <lethal@linux-sh.org>, linux-sh@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org
+Content-Transfer-Encoding: 7bit
+To: Andrew Morton <akpm@linux-foundation.org>, Shaohua Li <shli@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Chen Gang <gang.chen@asianux.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Jiang Liu <liuj97@gmail.com>, Ingo Molnar <mingo@elte.hu>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Steven Rostedt <rostedt@goodmis.org>, Jiri Kosina <trivial@kernel.org>, Wang YanQing <udknight@gmail.com>, linux-arch@vger.kernel.org
 
-On Sun, 2013-12-15 at 02:36 -0800, Dmitry Torokhov wrote:
-> On Sat, Dec 14, 2013 at 10:32:31AM -0800, H. Peter Anvin wrote:
-> > On 12/14/2013 08:59 AM, Mark Salter wrote:
-> > > Remove messy dependencies from SERIO_I8042 by having it depend on one
-> > > Kconfig symbol (ARCH_MIGHT_HAVE_PC_SERIO) and having architectures
-> > > which need it select ARCH_MIGHT_HAVE_PC_SERIO in arch/*/Kconfig.
-> > > New architectures are unlikely to need SERIO_I8042, so this avoids
-> > > having an ever growing list of architectures to exclude.
+Commit 9a46ad6d6df3b54 "smp: make smp_call_function_many() use logic
+similar to smp_call_function_single()" has unified the way to handle
+single and multiple cross-CPU function calls. Now only one interrupt
+is needed for architecture specific code to support generic SMP function
+call interfaces, so kill the redundant single function call interrupt.
 
-> How are we going to merge this? In bulk through input tree or peacemeal
-> through all arches first?
-> 
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Shaohua Li <shli@kernel.org>
+Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Cc: Ingo Molnar <mingo@elte.hu>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Jiri Kosina <trivial@kernel.org>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Jiang Liu <liuj97@gmail.com>
+---
+ arch/alpha/kernel/smp.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-They should all go together to eliminate the chance of bisect breakage.
-Either the input tree or maybe akpm tree.
-
-
-
+diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
+index 99ac36d..2f24447 100644
+--- a/arch/alpha/kernel/smp.c
++++ b/arch/alpha/kernel/smp.c
+@@ -63,7 +63,6 @@ static struct {
+ enum ipi_message_type {
+ 	IPI_RESCHEDULE,
+ 	IPI_CALL_FUNC,
+-	IPI_CALL_FUNC_SINGLE,
+ 	IPI_CPU_STOP,
+ };
+ 
+@@ -506,7 +505,6 @@ setup_profiling_timer(unsigned int multiplier)
+ 	return -EINVAL;
+ }
+ 
+-
+ static void
+ send_ipi_message(const struct cpumask *to_whom, enum ipi_message_type operation)
+ {
+@@ -552,10 +550,6 @@ handle_ipi(struct pt_regs *regs)
+ 			generic_smp_call_function_interrupt();
+ 			break;
+ 
+-		case IPI_CALL_FUNC_SINGLE:
+-			generic_smp_call_function_single_interrupt();
+-			break;
+-
+ 		case IPI_CPU_STOP:
+ 			halt();
+ 
+@@ -606,7 +600,7 @@ void arch_send_call_function_ipi_mask(const struct cpumask *mask)
+ 
+ void arch_send_call_function_single_ipi(int cpu)
+ {
+-	send_ipi_message(cpumask_of(cpu), IPI_CALL_FUNC_SINGLE);
++	send_ipi_message(cpumask_of(cpu), IPI_CALL_FUNC);
+ }
+ 
+ static void
+-- 
+1.8.1.2
