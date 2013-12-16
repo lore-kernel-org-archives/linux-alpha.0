@@ -1,48 +1,39 @@
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Ralf Baechle <ralf@linux-mips.org>
 Subject: Re: [PATCH 10/10] Kconfig: cleanup SERIO_I8042 dependencies
-Date: Sun, 15 Dec 2013 20:59:00 -0800
-Message-ID: <20131216045859.GA4322@core.coreip.homeip.net>
-References: <52ACA43F.2040402@zytor.com>
- <20131215103657.GB20197@core.coreip.homeip.net>
- <1387122626.1979.136.camel@deneb.redhat.com>
- <20131215.202725.1549146673897801643.davem@davemloft.net>
+Date: Mon, 16 Dec 2013 17:23:47 +0100
+Message-ID: <20131216162346.GA19285@linux-mips.org>
+References: <1387040376-26906-1-git-send-email-msalter@redhat.com>
+ <1387040376-26906-11-git-send-email-msalter@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-type:content-disposition:in-reply-to:user-agent;
-        bh=nfz6J5u37pGmWidZHZ4/p+aN+HOQYnA35hSo2JiOFEo=;
-        b=mPbjwf1GKHr0kv0GWOL8w10oXhW45xUXP/tQ/jzVaJ4E1MkYksgsg0BA7YY4QOxvoJ
-         fj+GTJeHLwtA28w93g3WL4fyn8L8jZDnzfzuZY/Xg/JljvZYMndnZyoJRbQJ04VVbYZs
-         tLLXLViRFM0eVzvoTAV59G/wrNo0+yJVNdbs9S4rRoqkcrR9Vw9x7Hyj5gr/I8erwn8L
-         ybKOJoxvCrdrF1pucgdRsS1udFqfRI9xclYr8gw8Lh323njF62BEbZIMJ7X4rlxyj6Ix
-         NQ5gd4daXt1ieOUZyT9MargKzGdiWr44jIClcHvL+hUaB50m5YNQvz//xbKMRl6wRkuy
-         EgOQ==
+Return-path: <linux-mips-bounce@linux-mips.org>
 Content-Disposition: inline
-In-Reply-To: <20131215.202725.1549146673897801643.davem@davemloft.net>
-Sender: linux-ia64-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+In-Reply-To: <1387040376-26906-11-git-send-email-msalter@redhat.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: David Miller <davem@davemloft.net>
-Cc: msalter@redhat.com, hpa@zytor.com, linux-kernel@vger.kernel.org, rth@twiddle.net, linux-alpha@vger.kernel.org, linux@arm.linux.org.uk, linux-arm-kernel@lists.infradead.org, tony.luck@intel.com, fenghua.yu@intel.com, linux-ia64@vger.kernel.org, ralf@linux-mips.org, linux-mips@linux-mips.org, benh@kernel.crashing.org, paulus@samba.org, linuxppc-dev@lists.ozlabs.org, lethal@linux-sh.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, gxt@mprc.pku.edu.cn, mingo@redhat.com, tglx@linutronix.de, x86@kernel.org
+To: Mark Salter <msalter@redhat.com>
+Cc: linux-kernel@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org, Paul Mundt <lethal@linux-sh.org>, linux-sh@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org
 
-On Sun, Dec 15, 2013 at 08:27:25PM -0500, David Miller wrote:
-> From: Mark Salter <msalter@redhat.com>
-> Date: Sun, 15 Dec 2013 10:50:26 -0500
-> 
-> > On Sun, 2013-12-15 at 02:36 -0800, Dmitry Torokhov wrote:
-> >> How are we going to merge this? In bulk through input tree or peacemeal
-> >> through all arches first?
-> >
-> > They should all go together to eliminate the chance of bisect breakage.
-> > Either the input tree or maybe akpm tree.
-> 
-> This sounds good to me.
+On Sat, Dec 14, 2013 at 11:59:36AM -0500, Mark Salter wrote:
 
-OK, then I'll pick it up once I collect more acks from the arch
-maintainers.
+> -	depends on !PARISC && (!ARM || FOOTBRIDGE_HOST) && \
+> -		   (!SUPERH || SH_CAYMAN) && !M68K && !BLACKFIN && !S390 && \
+> -		   !ARC
+> +	depends on ARCH_MIGHT_HAVE_PC_SERIO
 
--- 
-Dmitry
+Most dependencies on an architecture's kconfig symbol outside arch/
+should probably be treated as a bug.
+
+Acked-by: Ralf Baechle <ralf@linux-mips.org>
+
+  Ralf
+
