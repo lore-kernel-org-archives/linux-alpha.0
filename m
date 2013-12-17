@@ -1,39 +1,40 @@
-From: Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: [PATCH 10/10] Kconfig: cleanup SERIO_I8042 dependencies
-Date: Mon, 16 Dec 2013 17:23:47 +0100
-Message-ID: <20131216162346.GA19285@linux-mips.org>
-References: <1387040376-26906-1-git-send-email-msalter@redhat.com>
- <1387040376-26906-11-git-send-email-msalter@redhat.com>
-Mime-Version: 1.0
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <1387040376-26906-11-git-send-email-msalter@redhat.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+From: Mark Salter <msalter@redhat.com>
+Subject: [PATCH v2 01/10] alpha: select ARCH_MIGHT_HAVE_PC_SERIO
+Date: Tue, 17 Dec 2013 10:48:44 -0500
+Message-ID: <1387295333-24684-2-git-send-email-msalter@redhat.com>
+References: <1387295333-24684-1-git-send-email-msalter@redhat.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1387295333-24684-1-git-send-email-msalter@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mark Salter <msalter@redhat.com>
-Cc: linux-kernel@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org, Paul Mundt <lethal@linux-sh.org>, linux-sh@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Mark Salter <msalter@redhat.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
 
-On Sat, Dec 14, 2013 at 11:59:36AM -0500, Mark Salter wrote:
+Architectures which might use an i8042 for serial IO to keyboard,
+mouse, etc should select ARCH_MIGHT_HAVE_PC_SERIO.
 
-> -	depends on !PARISC && (!ARM || FOOTBRIDGE_HOST) && \
-> -		   (!SUPERH || SH_CAYMAN) && !M68K && !BLACKFIN && !S390 && \
-> -		   !ARC
-> +	depends on ARCH_MIGHT_HAVE_PC_SERIO
+Signed-off-by: Mark Salter <msalter@redhat.com>
+Acked-by: Matt Turner <mattst88@gmail.com>
+CC: Richard Henderson <rth@twiddle.net>
+CC: linux-alpha@vger.kernel.org
+---
+ arch/alpha/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Most dependencies on an architecture's kconfig symbol outside arch/
-should probably be treated as a bug.
-
-Acked-by: Ralf Baechle <ralf@linux-mips.org>
-
-  Ralf
-
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index d39dc9b..7ce5ce5 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -2,6 +2,7 @@ config ALPHA
+ 	bool
+ 	default y
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
++	select ARCH_MIGHT_HAVE_PC_SERIO
+ 	select HAVE_AOUT
+ 	select HAVE_IDE
+ 	select HAVE_OPROFILE
+-- 
+1.8.3.1
