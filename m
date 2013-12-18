@@ -1,85 +1,23 @@
-From: Mark Salter <msalter@redhat.com>
-Subject: [PATCH v2 10/10] Kconfig: cleanup SERIO_I8042 dependencies
-Date: Tue, 17 Dec 2013 10:48:53 -0500
-Message-ID: <1387295333-24684-11-git-send-email-msalter@redhat.com>
+From: "Luck, Tony" <tony.luck@intel.com>
+Subject: RE: [PATCH v2 00/10] Kconfig: cleanup SERIO_I8042 dependencies
+Date: Wed, 18 Dec 2013 21:59:49 +0000
+Message-ID: <3908561D78D1C84285E8C5FCA982C28F31D8CDD5@ORSMSX106.amr.corp.intel.com>
 References: <1387295333-24684-1-git-send-email-msalter@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1387295333-24684-1-git-send-email-msalter@redhat.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-kernel@vger.kernel.org
-Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, Paul Mundt <lethal@linux-sh.org>, Paul Mackerras <paulus@samba.org>, Mark Salter <msalter@redhat.com>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Mark Salter <msalter@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, Richard Henderson <rth@twiddle.net>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "Yu, Fenghua" <fenghua.yu@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, Paul Mackerras <paulus@samba.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Paul Mundt <lethal@linux-sh.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "x86@kernel.org" <x86@kernel.org>
 
-Remove messy dependencies from SERIO_I8042 by having it depend on one
-Kconfig symbol (ARCH_MIGHT_HAVE_PC_SERIO) and having architectures
-which need it select ARCH_MIGHT_HAVE_PC_SERIO in arch/*/Kconfig.
-New architectures are unlikely to need SERIO_I8042, so this avoids
-having an ever growing list of architectures to exclude.
+> This is v2 of the patch series. Changes from version 1:
+>
+>  o Added acks. arm, ia64, and sh are only ones without acks.
 
-Signed-off-by: Mark Salter <msalter@redhat.com>
-Acked-by: "H. Peter Anvin" <hpa@zytor.com>
-Acked-by: Ralf Baechle <ralf@linux-mips.org>
-Acked-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-CC: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Richard Henderson <rth@twiddle.net>
-CC: linux-alpha@vger.kernel.org
-CC: Russell King <linux@arm.linux.org.uk>
-CC: linux-arm-kernel@lists.infradead.org
-CC: Tony Luck <tony.luck@intel.com>
-CC: Fenghua Yu <fenghua.yu@intel.com>
-CC: linux-ia64@vger.kernel.org
-CC: linux-mips@linux-mips.org
-CC: Paul Mackerras <paulus@samba.org>
-CC: linuxppc-dev@lists.ozlabs.org
-CC: Paul Mundt <lethal@linux-sh.org>
-CC: linux-sh@vger.kernel.org
-CC: "David S. Miller" <davem@davemloft.net>
-CC: sparclinux@vger.kernel.org
-CC: Guan Xuetao <gxt@mprc.pku.edu.cn>
-CC: Ingo Molnar <mingo@redhat.com>
-CC: Thomas Gleixner <tglx@linutronix.de>
-CC: x86@kernel.org
----
- drivers/input/serio/Kconfig | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ia64 bits look OK
 
-diff --git a/drivers/input/serio/Kconfig b/drivers/input/serio/Kconfig
-index 8541f94..1f5cec2 100644
---- a/drivers/input/serio/Kconfig
-+++ b/drivers/input/serio/Kconfig
-@@ -16,14 +16,19 @@ config SERIO
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called serio.
- 
-+config ARCH_MIGHT_HAVE_PC_SERIO
-+	bool
-+	help
-+	  Select this config option from the architecture Kconfig if
-+	  the architecture might use a PC serio device (i8042) to
-+          communicate with keyboard, mouse, etc.
-+
- if SERIO
- 
- config SERIO_I8042
- 	tristate "i8042 PC Keyboard controller"
- 	default y
--	depends on !PARISC && (!ARM || FOOTBRIDGE_HOST) && \
--		   (!SUPERH || SH_CAYMAN) && !M68K && !BLACKFIN && !S390 && \
--		   !ARC
-+	depends on ARCH_MIGHT_HAVE_PC_SERIO
- 	help
- 	  i8042 is the chip over which the standard AT keyboard and PS/2
- 	  mouse are connected to the computer. If you use these devices,
--- 
-1.8.3.1
+Acked-by: Tony Luck <tony.luck@intel.com>
