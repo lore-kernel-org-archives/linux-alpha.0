@@ -1,234 +1,184 @@
-From: =?gb2312?Q?=B2=CC=D5=FD=C1=FA?= <zhenglong.cai@cs2c.com.cn>
-Subject: [alpha PATCH v2]  enable syscall audit function at alpha
- architecture
-Date: Fri, 20 Dec 2013 10:04:10 +0800
-Message-ID: <1387505050.2603.22.camel@localhost.localdomain>
-Reply-To: zhenglong.cai@cs2c.com.cn
+From: Psychedelic Squid <psquid@psquid.net>
+Subject: [PATCH] Slightly outdated CONFIG_SMP documentation fix
+Date: Sun, 22 Dec 2013 19:33:04 +0000
+Message-ID: <20131222193302.GA25512@sylph>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Disposition: inline
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Matt Turner <mattst88@gmail.com>
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@arm.linux.org.uk>, Hirokazu Takata <takata@linux-m32r.org>, Ralf Baechle <ralf@linux-mips.org>, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux390@de.ibm.com, Paul Mundt <lethal@linux-sh.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Al Viro <viro@zeniv.linux.org.uk>, Andrew Morton <akpm>
 
-Enable system-call auditing support at alpha architecture
-v2: add missing audit.c
+I've removed a reference to "most personal computers" being singleprocessor
+machines in multiple arches' config help, and also brought the arch/arm spacing
+for "singleprocessor" (vs. "single processor" used there originally) in line
+with other arches that had that text.
 
-Signed-off-by: Zhenglong.cai <zhenglong.cai@cs2c.com.cn>
+The diff is included below, and cleanly applies and builds on my system. I have
+not tested on other systems yet since a documentation fix shouldn't fail to
+build inconsistently, but if that's no excuse, I'll be happy to test further
+when I can.
 
- arch/alpha/Kconfig                   |    3 ++
- arch/alpha/include/asm/ptrace.h      |    5 +++
- arch/alpha/include/asm/thread_info.h |    2 +
- arch/alpha/kernel/Makefile           |    1 +
- arch/alpha/kernel/audit.c            |   60
-++++++++++++++++++++++++++++++++++
- arch/alpha/kernel/entry.S            |    6 +++-
- arch/alpha/kernel/ptrace.c           |    4 ++
- init/Kconfig                         |    2 +-
- 8 files changed, 81 insertions(+), 2 deletions(-)
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index d39dc9b..f23ab8b 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -16,6 +16,7 @@ config ALPHA
- 	select ARCH_WANT_IPC_PARSE_VERSION
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
- 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
-+	select AUDIT_ARCH
- 	select GENERIC_CLOCKEVENTS
- 	select GENERIC_SMP_IDLE_THREAD
- 	select GENERIC_STRNCPY_FROM_USER
-@@ -76,6 +77,8 @@ config GENERIC_ISA_DMA
- source "init/Kconfig"
- source "kernel/Kconfig.freezer"
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/alpha/Kconfig linux/arch/alpha/Kconfig
+--- linux-vanilla/arch/alpha/Kconfig	2013-12-22 18:03:11.881499508 +0000
++++ linux/arch/alpha/Kconfig	2013-12-22 17:58:31.448505765 +0000
+@@ -539,8 +539,8 @@ config SMP
+ 	depends on ALPHA_SABLE || ALPHA_LYNX || ALPHA_RAWHIDE || ALPHA_DP264 || ALPHA_WILDFIRE || ALPHA_TITAN || ALPHA_GENERIC || ALPHA_SHARK || ALPHA_MARVEL
+ 	---help---
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
  
-+config AUDIT_ARCH
-+	bool
- 
- menu "System setup"
- 
-diff --git a/arch/alpha/include/asm/ptrace.h
-b/arch/alpha/include/asm/ptrace.h
-index 2112850..9047c2f 100644
---- a/arch/alpha/include/asm/ptrace.h
-+++ b/arch/alpha/include/asm/ptrace.h
-@@ -19,4 +19,9 @@
- 
- #define force_successful_syscall_return() (current_pt_regs()->r0 = 0)
- 
-+static inline unsigned long regs_return_value(struct pt_regs *regs)
-+{
-+	return regs->r0;
-+}
-+
- #endif
-diff --git a/arch/alpha/include/asm/thread_info.h
-b/arch/alpha/include/asm/thread_info.h
-index 453597b..3d6ce6d 100644
---- a/arch/alpha/include/asm/thread_info.h
-+++ b/arch/alpha/include/asm/thread_info.h
-@@ -70,6 +70,7 @@ register struct thread_info *__current_thread_info
-__asm__("$8");
- #define TIF_NOTIFY_RESUME	1	/* callback before returning to user */
- #define TIF_SIGPENDING		2	/* signal pending */
- #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
-+#define TIF_SYSCALL_AUDIT	4	/* syscall audit active */
- #define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
- #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
- 
-@@ -77,6 +78,7 @@ register struct thread_info *__current_thread_info
-__asm__("$8");
- #define _TIF_SIGPENDING		(1<<TIF_SIGPENDING)
- #define _TIF_NEED_RESCHED	(1<<TIF_NEED_RESCHED)
- #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
-+#define _TIF_SYSCALL_AUDIT	(1<<TIF_SYSCALL_AUDIT)
- 
- /* Work to do on interrupt/exception return.  */
- #define _TIF_WORK_MASK		(_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
-diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-index 0d54650..3ecac01 100644
---- a/arch/alpha/kernel/Makefile
-+++ b/arch/alpha/kernel/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_SRM_ENV)	+= srm_env.o
- obj-$(CONFIG_MODULES)	+= module.o
- obj-$(CONFIG_PERF_EVENTS) += perf_event.o
- obj-$(CONFIG_RTC_DRV_ALPHA) += rtc.o
-+obj-$(CONFIG_AUDIT)	+= audit.o
- 
- ifdef CONFIG_ALPHA_GENERIC
- 
-diff --git a/arch/alpha/kernel/audit.c b/arch/alpha/kernel/audit.c
-new file mode 100644
-index 0000000..96a9d18
---- /dev/null
-+++ b/arch/alpha/kernel/audit.c
-@@ -0,0 +1,60 @@
-+#include <linux/init.h>
-+#include <linux/types.h>
-+#include <linux/audit.h>
-+#include <asm/unistd.h>
-+
-+static unsigned dir_class[] = {
-+#include <asm-generic/audit_dir_write.h>
-+~0U
-+};
-+
-+static unsigned read_class[] = {
-+#include <asm-generic/audit_read.h>
-+~0U
-+};
-+
-+static unsigned write_class[] = {
-+#include <asm-generic/audit_write.h>
-+~0U
-+};
-+
-+static unsigned chattr_class[] = {
-+#include <asm-generic/audit_change_attr.h>
-+~0U
-+};
-+
-+static unsigned signal_class[] = {
-+#include <asm-generic/audit_signal.h>
-+~0U
-+};
-+
-+int audit_classify_arch(int arch)
-+{
-+	return 0;
-+}
-+
-+int audit_classify_syscall(int abi, unsigned syscall)
-+{
-+	switch(syscall) {
-+	case __NR_open:
-+		return 2;
-+	case __NR_openat:
-+		return 3;
-+	case __NR_execve:
-+		return 5;
-+	default:
-+		return 0;
-+	}
-+}
-+
-+static int __init audit_classes_init(void)
-+{
-+	audit_register_class(AUDIT_CLASS_WRITE, write_class);
-+	audit_register_class(AUDIT_CLASS_READ, read_class);
-+	audit_register_class(AUDIT_CLASS_DIR_WRITE, dir_class);
-+	audit_register_class(AUDIT_CLASS_CHATTR, chattr_class);
-+	audit_register_class(AUDIT_CLASS_SIGNAL, signal_class);
-+	return 0;
-+}
-+
-+__initcall(audit_classes_init);
-diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-index a969b95..98703d9 100644
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -465,7 +465,11 @@ entSys:
- 	.cfi_rel_offset	$16, SP_OFF+24
- 	.cfi_rel_offset	$17, SP_OFF+32
- 	.cfi_rel_offset	$18, SP_OFF+40
--	blbs	$3, strace
-+#ifdef CONFIG_AUDITSYSCALL
-+	lda     $6, _TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT
-+	and     $3, $6, $3
-+#endif
-+	bne     $3, strace
- 	beq	$4, 1f
- 	ldq	$27, 0($5)
- 1:	jsr	$26, ($27), alpha_ni_syscall
-diff --git a/arch/alpha/kernel/ptrace.c b/arch/alpha/kernel/ptrace.c
-index 2a4a80f..86d8351 100644
---- a/arch/alpha/kernel/ptrace.c
-+++ b/arch/alpha/kernel/ptrace.c
-@@ -14,6 +14,7 @@
- #include <linux/security.h>
- #include <linux/signal.h>
- #include <linux/tracehook.h>
-+#include <linux/audit.h>
- 
- #include <asm/uaccess.h>
- #include <asm/pgtable.h>
-@@ -316,15 +317,18 @@ long arch_ptrace(struct task_struct *child, long
-request,
- asmlinkage unsigned long syscall_trace_enter(void)
- {
- 	unsigned long ret = 0;
-+	struct pt_regs *regs = current_pt_regs();
- 	if (test_thread_flag(TIF_SYSCALL_TRACE) &&
- 	    tracehook_report_syscall_entry(current_pt_regs()))
- 		ret = -1UL;
-+	audit_syscall_entry(AUDIT_ARCH_ALPHA, regs->r0, regs->r16, regs->r17,
-regs->r18, regs->r19);
- 	return ret ?: current_pt_regs()->r0;
- }
- 
- asmlinkage void
- syscall_trace_leave(void)
- {
-+	audit_syscall_exit(current_pt_regs());
- 	if (test_thread_flag(TIF_SYSCALL_TRACE))
- 		tracehook_report_syscall_exit(current_pt_regs(), 0);
- }
-diff --git a/init/Kconfig b/init/Kconfig
-index 79383d3..e58a6d8 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -284,7 +284,7 @@ config AUDIT
- 
- config AUDITSYSCALL
- 	bool "Enable system-call auditing support"
--	depends on AUDIT && (X86 || PARISC || PPC || S390 || IA64 || UML ||
-SPARC64 || SUPERH || (ARM && AEABI && !OABI_COMPAT))
-+	depends on AUDIT && (X86 || PARISC || PPC || S390 || IA64 || UML ||
-SPARC64 || SUPERH || (ARM && AEABI && !OABI_COMPAT) || ALPHA)
- 	default y if SECURITY_SELINUX
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/arc/Kconfig linux/arch/arc/Kconfig
+--- linux-vanilla/arch/arc/Kconfig	2013-12-22 18:03:11.933499507 +0000
++++ linux/arch/arc/Kconfig	2013-12-22 17:58:24.412505922 +0000
+@@ -128,8 +128,8 @@ config SMP
+ 	default n
  	help
- 	  Enable low-overhead system-call auditing infrastructure that
-
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ if SMP
+ 
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/arm/Kconfig linux/arch/arm/Kconfig
+--- linux-vanilla/arch/arm/Kconfig	2013-12-22 18:03:11.956499506 +0000
++++ linux/arch/arm/Kconfig	2013-12-22 17:56:31.187508449 +0000
+@@ -1435,14 +1435,14 @@ config SMP
+ 	depends on MMU || ARM_MPU
+ 	help
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+-	  you say Y here, the kernel will run on many, but not all, single
+-	  processor machines. On a single processor machine, the kernel will
+-	  run faster if you say N here.
++	  you say Y here, the kernel will run on many, but not all,
++	  singleprocessor machines. On a singleprocessor machine, the kernel
++	  will run faster if you say N here.
+ 
+ 	  See also <file:Documentation/x86/i386/IO-APIC.txt>,
+ 	  <file:Documentation/nmi_watchdog.txt> and the SMP-HOWTO available at
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/m32r/Kconfig linux/arch/m32r/Kconfig
+--- linux-vanilla/arch/m32r/Kconfig	2013-12-22 18:03:13.100499481 +0000
++++ linux/arch/m32r/Kconfig	2013-12-22 17:58:27.485505854 +0000
+@@ -277,8 +277,8 @@ config SMP
+ 	bool "Symmetric multi-processing support"
+ 	---help---
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/mips/Kconfig linux/arch/mips/Kconfig
+--- linux-vanilla/arch/mips/Kconfig	2013-12-22 18:03:13.290499477 +0000
++++ linux/arch/mips/Kconfig	2013-12-22 17:58:28.576505829 +0000
+@@ -2128,8 +2128,8 @@ config SMP
+ 	depends on SYS_SUPPORTS_SMP
+ 	help
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/mn10300/Kconfig linux/arch/mn10300/Kconfig
+--- linux-vanilla/arch/mn10300/Kconfig	2013-12-22 18:03:13.598499470 +0000
++++ linux/arch/mn10300/Kconfig	2013-12-22 17:58:26.460505877 +0000
+@@ -184,8 +184,8 @@ config SMP
+ 	depends on MN10300_PROC_MN2WS0038 || MN10300_PROC_MN2WS0050
+ 	---help---
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/parisc/Kconfig linux/arch/parisc/Kconfig
+--- linux-vanilla/arch/parisc/Kconfig	2013-12-22 18:03:13.682499468 +0000
++++ linux/arch/parisc/Kconfig	2013-12-22 17:57:38.097506956 +0000
+@@ -229,8 +229,8 @@ config SMP
+ 	bool "Symmetric multi-processing support"
+ 	---help---
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/s390/Kconfig linux/arch/s390/Kconfig
+--- linux-vanilla/arch/s390/Kconfig	2013-12-22 18:03:14.077499459 +0000
++++ linux/arch/s390/Kconfig	2013-12-22 17:58:29.631505806 +0000
+@@ -332,8 +332,8 @@ config SMP
+ 	prompt "Symmetric multi-processing support"
+ 	---help---
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/sh/Kconfig linux/arch/sh/Kconfig
+--- linux-vanilla/arch/sh/Kconfig	2013-12-22 18:03:14.188499457 +0000
++++ linux/arch/sh/Kconfig	2013-12-22 17:58:25.470505899 +0000
+@@ -714,8 +714,8 @@ config SMP
+ 	depends on SYS_SUPPORTS_SMP
+ 	---help---
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/x86/Kconfig linux/arch/x86/Kconfig
+--- linux-vanilla/arch/x86/Kconfig	2013-12-22 18:03:14.584499448 +0000
++++ linux/arch/x86/Kconfig	2013-12-22 17:58:30.711505782 +0000
+@@ -278,8 +278,8 @@ config SMP
+ 	bool "Symmetric multi-processing support"
+ 	---help---
+ 	  This enables support for systems with more than one CPU. If you have
+-	  a system with only one CPU, like most personal computers, say N. If
+-	  you have a system with more than one CPU, say Y.
++	  a system with only one CPU, say N. If you have a system with more
++	  than one CPU, say Y.
+ 
+ 	  If you say N here, the kernel will run on single and multiprocessor
+ 	  machines, but will use only one CPU of a multiprocessor machine. If
+Signed-off-by: Robert Graffham <psquid@psquid.net>
 
