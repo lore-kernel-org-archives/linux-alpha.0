@@ -1,7 +1,7 @@
-From: Psychedelic Squid <psquid@psquid.net>
+From: Robert Graffham <psquid@psquid.net>
 Subject: [PATCH] Slightly outdated CONFIG_SMP documentation fix
-Date: Sun, 22 Dec 2013 19:33:04 +0000
-Message-ID: <20131222193302.GA25512@sylph>
+Date: Tue, 31 Dec 2013 22:59:22 +0000
+Message-ID: <20131231225921.GA1624@sylph>
 Mime-Version: 1.0
 Return-path: <linux-mips-bounce@linux-mips.org>
 Content-Disposition: inline
