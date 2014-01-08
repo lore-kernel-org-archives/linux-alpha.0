@@ -1,257 +1,121 @@
-From: Robert Graffham <psquid@psquid.net>
-Subject: Re: [PATCH] Slightly outdated CONFIG_SMP documentation fix
-Date: Fri, 3 Jan 2014 00:36:11 +0000
-Message-ID: <20140103003610.GA21711@sylph>
-References: <20131231225921.GA1624@sylph>
- <23596.1388674589@warthog.procyon.org.uk>
- <20140102150219.3df32a23cf7dbe9618ea118e@linux-foundation.org>
- <CAAJfVc7vK9W9Zy0LvGWSTWMSEb_JEx7FbLECy44QEwj+CWgSGg@mail.gmail.com>
- <20140102151547.fde4aa5855cc75e91fea95e5@linux-foundation.org>
+From: Andrew Gaylard <ag@computer.org>
+Subject: IDE problems with Cypress CY82C693 on Miata box
+Date: Wed, 8 Jan 2014 14:16:32 +0000 (UTC)
+Message-ID: <loom.20140108T144856-793@post.gmane.org>
 Mime-Version: 1.0
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <20140102151547.fde4aa5855cc75e91fea95e5@linux-foundation.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Ralf Baechle <ralf@linux-mips.org>, x86@kernel.org, Richard Henderson <rth@twiddle.net>, Ingo Molnar <mingo@redhat.com>, linux-mips@linux-mips.org, Hirokazu Takata <takata@linux-m32r.org>, Al Viro <viro@zeniv.linux.org.uk>, linux-am33-list@redhat.com, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Heiko Carstens <heiko.carstens@de.ibm.com>, "H. Peter Anvin" <hpa@zytor.com>, Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org, Martin Schwidefsky <schwidefsky@de.ibm.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, linux-m32r@ml.linux-m32r.org, Thomas Gleixner <tglx@linutronix.de>, linux-par
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-alpha@vger.kernel.org
 
-As requested, I've modified "singleprocessor" to "uniprocessor" in my tree, and
-the revised patch is included below (with the Signed-off-by at the right end
-this time - thanks Andrew).
+Hi Linux Alpha people,
 
-To re-summarize given the new revision, this patch now removes an outdated
-reference to "most personal computers" having only one CPU, and changes the use
-of "singleprocessor" and "single processor" in CONFIG_SMP's documentation to
-"uniprocessor" across all arches where that documentation is present.
+For some time now, my Miata box (PWS 433au) has been complaining at boot-time:
+--------------------------------------------------------------------------------
+[    6.999996] ata1.00: ATA-6: ST3200822A, 3.01, max UDMA/100
+[    6.999996] ata1.00: 390721968 sectors, multi 0: LBA48 
+[    7.000972] ata1.01: ATAPI: DVDRW   16X16X5X, MTS1, max UDMA/66
+[    7.000972] ata1.00: failed to set xfermode (err_mask=0x2)
+[    7.119136] input: AT Raw Set 2 keyboard as
+/devices/platform/i8042/serio0/input/input0
+[    7.136715] atkbd serio1: keyboard reset failed on isa0060/serio1
+[   12.358392] ata1.00: failed to set xfermode (err_mask=0x2)
+[   12.359368] ata1.00: limiting speed to MWDMA2:PIO3
+[   17.724600] ata1.00: configured for MWDMA2
+[   17.840811] ata1.01: both IDENTIFYs aborted, assuming NODEV
+[   17.840811] ata1.01: revalidation failed (errno=-2)
+[   28.034165] ata1.01: qc timeout (cmd 0xa1)
+[   28.034165] ata1.01: failed to IDENTIFY (I/O error, err_mask=0x4)
+[   28.041001] ata1.01: revalidation failed (errno=-5)
+[   33.061506] ata1: link is slow to respond, please be patient (ready=0)
+[   38.082011] ata1: device not ready (errno=-16), forcing hardreset
+[   38.489238] ata1.00: configured for MWDMA2
+[   38.605448] ata1.01: both IDENTIFYs aborted, assuming NODEV
+[   38.605448] ata1.01: revalidation failed (errno=-2)
+[   38.605448] ata1.01: disabled
+[   38.613261] ata1.00: configured for MWDMA2
+[   38.614238] scsi 1:0:0:0: Direct-Access     ATA      ST3200822A      
+3.01 PQ: 0 ANSI: 5
+[   38.616191] sd 1:0:0:0: [sdc] 390721968 512-byte logical blocks: (200
+GB/186 GiB)
+[   38.617167] sd 1:0:0:0: [sdc] Write Protect is off
+[   38.617167] sd 1:0:0:0: [sdc] Mode Sense: 00 3a 00 00
+[   38.617167] sd 1:0:0:0: [sdc] Write cache: enabled, read cache: enabled,
+doesn't support DPO or FUA
+[   38.621073] sd 1:0:0:0: Attached scsi generic sg3 type 0
+[   38.635722]  sdc: sdc1 sdc2
+[   38.639628] sd 1:0:0:0: [sdc] Attached SCSI disk
 
-Signed-off-by: Robert Graffham <psquid@psquid.net>
+--------------------------------------------------------------------------------
 
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/alpha/Kconfig linux/arch/alpha/Kconfig
---- linux-vanilla/arch/alpha/Kconfig	2013-12-22 18:03:11.881499508 +0000
-+++ linux/arch/alpha/Kconfig	2014-01-03 00:20:04.660530554 +0000
-@@ -539,13 +539,13 @@ config SMP
- 	depends on ALPHA_SABLE || ALPHA_LYNX || ALPHA_RAWHIDE || ALPHA_DP264 || ALPHA_WILDFIRE || ALPHA_TITAN || ALPHA_GENERIC || ALPHA_SHARK || ALPHA_MARVEL
- 	---help---
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  See also the SMP-HOWTO available at
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/arc/Kconfig linux/arch/arc/Kconfig
---- linux-vanilla/arch/arc/Kconfig	2013-12-22 18:03:11.933499507 +0000
-+++ linux/arch/arc/Kconfig	2013-12-22 17:58:24.412505922 +0000
-@@ -128,8 +128,8 @@ config SMP
- 	default n
- 	help
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
- if SMP
- 
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/arm/Kconfig linux/arch/arm/Kconfig
---- linux-vanilla/arch/arm/Kconfig	2013-12-22 18:03:11.956499506 +0000
-+++ linux/arch/arm/Kconfig	2014-01-03 00:18:04.776533229 +0000
-@@ -1435,14 +1435,14 @@ config SMP
- 	depends on MMU || ARM_MPU
- 	help
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
--	  you say Y here, the kernel will run on many, but not all, single
--	  processor machines. On a single processor machine, the kernel will
--	  run faster if you say N here.
-+	  you say Y here, the kernel will run on many, but not all,
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
-+	  will run faster if you say N here.
- 
- 	  See also <file:Documentation/x86/i386/IO-APIC.txt>,
- 	  <file:Documentation/nmi_watchdog.txt> and the SMP-HOWTO available at
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/m32r/Kconfig linux/arch/m32r/Kconfig
---- linux-vanilla/arch/m32r/Kconfig	2013-12-22 18:03:13.100499481 +0000
-+++ linux/arch/m32r/Kconfig	2014-01-03 00:19:05.746531868 +0000
-@@ -277,13 +277,13 @@ config SMP
- 	bool "Symmetric multi-processing support"
- 	---help---
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  People using multiprocessor machines who say Y here should also say
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/mips/Kconfig linux/arch/mips/Kconfig
---- linux-vanilla/arch/mips/Kconfig	2013-12-22 18:03:13.290499477 +0000
-+++ linux/arch/mips/Kconfig	2014-01-03 00:19:16.904531619 +0000
-@@ -2128,13 +2128,13 @@ config SMP
- 	depends on SYS_SUPPORTS_SMP
- 	help
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  People using multiprocessor machines who say Y here should also say
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/mn10300/Kconfig linux/arch/mn10300/Kconfig
---- linux-vanilla/arch/mn10300/Kconfig	2013-12-22 18:03:13.598499470 +0000
-+++ linux/arch/mn10300/Kconfig	2014-01-03 00:19:02.061531951 +0000
-@@ -184,13 +184,13 @@ config SMP
- 	depends on MN10300_PROC_MN2WS0038 || MN10300_PROC_MN2WS0050
- 	---help---
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  See also <file:Documentation/x86/i386/IO-APIC.txt>,
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/parisc/Kconfig linux/arch/parisc/Kconfig
---- linux-vanilla/arch/parisc/Kconfig	2013-12-22 18:03:13.682499468 +0000
-+++ linux/arch/parisc/Kconfig	2014-01-03 00:18:38.464532477 +0000
-@@ -229,13 +229,13 @@ config SMP
- 	bool "Symmetric multi-processing support"
- 	---help---
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  See also <file:Documentation/nmi_watchdog.txt> and the SMP-HOWTO
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/s390/Kconfig linux/arch/s390/Kconfig
---- linux-vanilla/arch/s390/Kconfig	2014-01-03 00:09:20.086544936 +0000
-+++ linux/arch/s390/Kconfig	2014-01-03 00:19:59.831530662 +0000
-@@ -334,10 +334,10 @@ config SMP
- 	  a system with only one CPU, say N. If you have a system with more
- 	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  See also the SMP-HOWTO available at
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/sh/Kconfig linux/arch/sh/Kconfig
---- linux-vanilla/arch/sh/Kconfig	2013-12-22 18:03:14.188499457 +0000
-+++ linux/arch/sh/Kconfig	2014-01-03 00:18:58.090532039 +0000
-@@ -714,13 +714,13 @@ config SMP
- 	depends on SYS_SUPPORTS_SMP
- 	---help---
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  People using multiprocessor machines who say Y here should also say
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/sparc/Kconfig linux/arch/sparc/Kconfig
---- linux-vanilla/arch/sparc/Kconfig	2013-12-22 18:03:14.368499453 +0000
-+++ linux/arch/sparc/Kconfig	2014-01-03 00:19:50.073530879 +0000
-@@ -152,10 +152,10 @@ config SMP
- 	  a system with only one CPU, say N. If you have a system with more
- 	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  People using multiprocessor machines who say Y here should also say
-diff -uprN -X linux-vanilla/Documentation/dontdiff linux-vanilla/arch/x86/Kconfig linux/arch/x86/Kconfig
---- linux-vanilla/arch/x86/Kconfig	2013-12-22 18:03:14.584499448 +0000
-+++ linux/arch/x86/Kconfig	2014-01-03 00:20:02.957530592 +0000
-@@ -278,13 +278,13 @@ config SMP
- 	bool "Symmetric multi-processing support"
- 	---help---
- 	  This enables support for systems with more than one CPU. If you have
--	  a system with only one CPU, like most personal computers, say N. If
--	  you have a system with more than one CPU, say Y.
-+	  a system with only one CPU, say N. If you have a system with more
-+	  than one CPU, say Y.
- 
--	  If you say N here, the kernel will run on single and multiprocessor
-+	  If you say N here, the kernel will run on uni- and multiprocessor
- 	  machines, but will use only one CPU of a multiprocessor machine. If
- 	  you say Y here, the kernel will run on many, but not all,
--	  singleprocessor machines. On a singleprocessor machine, the kernel
-+	  uniprocessor machines. On a uniprocessor machine, the kernel
- 	  will run faster if you say N here.
- 
- 	  Note that if you say Y here and choose architecture "586" or
+It's clear from the timestamps that the kernel's busy resetting the IDE bus
+for over half a minute, and when it's finished, it still fails to see my
+DVD drive.
+
+Fiddling about with drivers/ata/pata_cypress, I found this change fixes the
+problem:
+
+--- drivers/ata/pata_cypress.c.orig     2014-01-07 21:57:02.507778689 +0200
++++ drivers/ata/pata_cypress.c  2014-01-08 15:31:14.015467547 +0200
+@@ -125,9 +125,9 @@
+ static int cy82c693_init_one(struct pci_dev *pdev, const struct
+pci_device_id *id)
+ {
+        static const struct ata_port_info info = {
+                .flags = ATA_FLAG_SLAVE_POSS,
+-               .pio_mask = ATA_PIO4,
++               .pio_mask = ATA_PIO3,
+                .mwdma_mask = ATA_MWDMA2,
+                .port_ops = &cy82c693_port_ops
+        };
+        const struct ata_port_info *ppi[] = { &info, &ata_dummy_port_info };
+
+
+The boot process is much smoother, and the DVD drive is detected (and works):
+--------------------------------------------------------------------------------
+[    6.950191] ata1.00: ATA-6: ST3200822A, 3.01, max UDMA/100
+[    6.950191] ata1.00: 390721968 sectors, multi 0: LBA48 
+[    6.951168] ata1.01: ATAPI: DVDRW   16X16X5X, MTS1, max UDMA/66
+[    6.958980] ata1.00: configured for MWDMA2
+[    6.983394] ata1.01: configured for MWDMA2
+[    6.985347] scsi 1:0:0:0: Direct-Access     ATA      ST3200822A      
+3.01 PQ: 0 ANSI: 5
+[    6.987301] sd 1:0:0:0: [sdc] 390721968 512-byte logical blocks: (200
+GB/186 GiB)
+[    6.988277] sd 1:0:0:0: [sdc] Write Protect is off
+[    6.988277] sd 1:0:0:0: [sdc] Mode Sense: 00 3a 00 00
+[    6.988277] sd 1:0:0:0: [sdc] Write cache: enabled, read cache: enabled,
+doesn't support DPO or FUA
+[    6.992183] sd 1:0:0:0: Attached scsi generic sg3 type 0
+[    7.009762]  sdc: sdc1 sdc2
+[    7.016597] scsi 1:0:1:0: CD-ROM            DVDRW    16X16X5X        
+MTS1 PQ: 0 ANSI: 5
+[    7.021480] sr0: scsi3-mmc drive: 48x/48x writer dvd-ram cd/rw xa/form2
+cdda tray
+[    7.021480] cdrom: Uniform CD-ROM driver Revision: 3.20
+[    7.023433] sd 1:0:0:0: [sdc] Attached SCSI disk
+[    7.024410] sr 1:0:1:0: Attached scsi CD-ROM sr0
+[    7.025387] sr 1:0:1:0: Attached scsi generic sg4 type 5
+
+--------------------------------------------------------------------------------
+
+It's not clear to me why PIO4 doesn't work; indeed the CY82C693 
+datasheet claims it should work:
+
+"The CY82C693 contains an integrated, dual-channel PCI to
+IDE bridge. The IDE controller conforms to ANSI modes 0, 1,
+2, 3, and 4 for PIO (Programmed I/O) transfers."
+
+Anyway, hopefully this'll be of use to someone.  I for one
+am glad to be able to use (PATA) IDE devices on my Alpha;
+SCSI disks are hard to find, and expensive when you do.
+
+BTW: this patch was made against the Gentoo sources (3.10.7-gentoo-r1).
+I've checked the current kernel sources (3.12.6), and the file's the
+same. So the patch should apply as-is.
+
+--
+Andrew
 
