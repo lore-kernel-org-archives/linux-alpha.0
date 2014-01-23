@@ -1,77 +1,55 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH RFC 00/73] tree-wide: clean up some no longer required
- #include <linux/init.h>
-Date: Wed, 22 Jan 2014 19:38:39 -0500
-Message-ID: <20140123003838.GA10182@windriver.com>
-References: <1390339396-3479-1-git-send-email-paul.gortmaker@windriver.com>
- <20140122180023.dd90d34cba38d9f9ac516349@canb.auug.org.au>
+From: Mikulas Patocka <mpatocka@redhat.com>
+Subject: [PATCH] alpha: fix broken network checksum
+Date: Wed, 22 Jan 2014 23:04:33 -0500 (EST)
+Message-ID: <alpine.LRH.2.02.1401222255470.18715@file01.intranet.prod.int.rdu2.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <20140122180023.dd90d34cba38d9f9ac516349@canb.auug.org.au>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org, netdev@vger.kernel.org, kvm@vger.kernel.org, rusty@rustcorp.com.au, gregkh@linuxfoundation.org, akpm@linux-foundation.org, torvalds@linux-foundation.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: David Miller <davem@davemloft.net>, Oleg Nesterov <oleg@redhat.com>, Jay Estabrook <jay.estabrook@gmail.com>, Michael Cree <mcree@orcon.net.nz>, Jens Axboe <axboe@kernel.dk>
 
-[Re: [PATCH RFC 00/73] tree-wide: clean up some no longer required #include <linux/init.h>] On 22/01/2014 (Wed 18:00) Stephen Rothwell wrote:
+The patch 3ddc5b46a8e90f3c9251338b60191d0a804b0d92 breaks networking on
+alpha (there is a follow-up fix 5cfe8f1ba5eebe6f4b6e5858cdb1a5be4f3272a6,
+but networking is still broken even with the second patch).
 
-> Hi Paul,
-> 
-> On Tue, 21 Jan 2014 16:22:03 -0500 Paul Gortmaker <paul.gortmaker@windriver.com> wrote:
-> >
-> > Where: This work exists as a queue of patches that I apply to
-> > linux-next; since the changes are fixing some things that currently
-> > can only be found there.  The patch series can be found at:
-> > 
-> >    http://git.kernel.org/cgit/linux/kernel/git/paulg/init.git
-> >    git://git.kernel.org/pub/scm/linux/kernel/git/paulg/init.git
-> > 
-> > I've avoided annoying Stephen with another queue of patches for
-> > linux-next while the development content was in flux, but now that
-> > the merge window has opened, and new additions are fewer, perhaps he
-> > wouldn't mind tacking it on the end...  Stephen?
-> 
-> OK, I have added this to the end of linux-next today - we will see how we
-> go.  It is called "init".
+The patch 3ddc5b46a8e90f3c9251338b60191d0a804b0d92 makes 
+csum_partial_copy_from_user check the pointer with access_ok. However, 
+csum_partial_copy_from_user is called also from csum_partial_copy_nocheck 
+and csum_partial_copy_nocheck is called on kernel pointers and it is 
+supposed not to check pointer validity.
 
-Thanks, it was a great help as it uncovered a few issues in fringe arch
-that I didn't have toolchains for, and I've fixed all of those up.
+This bug results in ssh session hangs if the system is loaded and bulk
+data are printed to ssh terminal.
 
-I've noticed that powerpc has been un-buildable for a while now; I have
-used this hack patch locally so I could run the ppc defconfigs to check
-that I didn't break anything.  Maybe useful for linux-next in the
-interim?  It is a hack patch -- Not-Signed-off-by: Paul Gortmaker.  :)
+This patch fixes csum_partial_copy_nocheck to call set_fs(KERNEL_DS), so
+that access_ok in csum_partial_copy_from_user accepts kernel-space
+addresses.
 
-Paul.
---
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Cc: stable@vger.kernel.org
 
-diff --git a/arch/powerpc/include/asm/pgtable-ppc64.h b/arch/powerpc/include/asm/pgtable-ppc64.h
-index d27960c89a71..d0f070a2b395 100644
---- a/arch/powerpc/include/asm/pgtable-ppc64.h
-+++ b/arch/powerpc/include/asm/pgtable-ppc64.h
-@@ -560,9 +560,9 @@ extern void pmdp_invalidate(struct vm_area_struct *vma, unsigned long address,
- 			    pmd_t *pmdp);
- 
- #define pmd_move_must_withdraw pmd_move_must_withdraw
--typedef struct spinlock spinlock_t;
--static inline int pmd_move_must_withdraw(spinlock_t *new_pmd_ptl,
--					 spinlock_t *old_pmd_ptl)
-+struct spinlock;
-+static inline int pmd_move_must_withdraw(struct spinlock *new_pmd_ptl,
-+					 struct spinlock *old_pmd_ptl)
+---
+ arch/alpha/lib/csum_partial_copy.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+Index: linux-2.6-alpha/arch/alpha/lib/csum_partial_copy.c
+===================================================================
+--- linux-2.6-alpha.orig/arch/alpha/lib/csum_partial_copy.c	2014-01-23 04:44:34.000000000 +0100
++++ linux-2.6-alpha/arch/alpha/lib/csum_partial_copy.c	2014-01-23 04:45:43.000000000 +0100
+@@ -378,6 +378,11 @@ csum_partial_copy_from_user(const void _
+ __wsum
+ csum_partial_copy_nocheck(const void *src, void *dst, int len, __wsum sum)
  {
- 	/*
- 	 * Archs like ppc64 use pgtable to store per pmd
-
-
+-	return csum_partial_copy_from_user((__force const void __user *)src,
+-			dst, len, sum, NULL);
++	__wsum checksum;
++	mm_segment_t oldfs = get_fs();
++	set_fs(KERNEL_DS);
++	checksum = csum_partial_copy_from_user((__force const void __user *)src,
++						dst, len, sum, NULL);
++	set_fs(oldfs);
++	return checksum;
+ }
