@@ -1,68 +1,72 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Re: [PATCH] alpha: fix broken network checksum
-Date: Thu, 23 Jan 2014 12:13:36 -0500 (EST)
-Message-ID: <alpine.LRH.2.02.1401231157480.6842@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.1401222255470.18715@file01.intranet.prod.int.rdu2.redhat.com> <101611139.11912.1390487970286.JavaMail.zimbra@efficios.com>
+From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Subject: Re: [PATCH RFC 00/73] tree-wide: clean up some no longer required
+ #include <linux/init.h>
+Date: Tue, 28 Jan 2014 14:13:03 +1100
+Message-ID: <1390878783.3872.63.camel@pasglop>
+References: <1390339396-3479-1-git-send-email-paul.gortmaker@windriver.com>
+         <20140122180023.dd90d34cba38d9f9ac516349@canb.auug.org.au>
+         <20140123003838.GA10182@windriver.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <101611139.11912.1390487970286.JavaMail.zimbra@efficios.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, David Miller <davem@davemloft.net>, Oleg Nesterov <oleg@redhat.com>, Jay Estabrook <jay.estabrook@gmail.com>, Michael Cree <mcree@orcon.net.nz>, Jens Axboe <axboe@kernel.dk>
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <20140123003838.GA10182@windriver.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+Content-Type: text/plain; charset="us-ascii"
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-m68k@vger.kernel.org, rusty@rustcorp.com.au, linux-ia64@vger.kernel.org, kvm@vger.kernel.org, linux-s390@vger.kernel.org, netdev@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, torvalds@linux-foundation.org, gregkh@linuxfoundation.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, akpm@linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
+On Wed, 2014-01-22 at 19:38 -0500, Paul Gortmaker wrote:
 
-
-On Thu, 23 Jan 2014, Mathieu Desnoyers wrote:
-
-> ----- Original Message -----
-> > From: "Mikulas Patocka" <mpatocka@redhat.com>
-> > To: "Mathieu Desnoyers" <mathieu.desnoyers@efficios.com>, "Richard Henderson" <rth@twiddle.net>, "Ivan Kokshaysky"
-> > <ink@jurassic.park.msu.ru>, "Matt Turner" <mattst88@gmail.com>, linux-alpha@vger.kernel.org
-> > Cc: "David Miller" <davem@davemloft.net>, "Oleg Nesterov" <oleg@redhat.com>, "Jay Estabrook"
-> > <jay.estabrook@gmail.com>, "Michael Cree" <mcree@orcon.net.nz>, "Jens Axboe" <axboe@kernel.dk>
-> > Sent: Wednesday, January 22, 2014 11:04:33 PM
-> > Subject: [PATCH] alpha: fix broken network checksum
-> > 
-> > The patch 3ddc5b46a8e90f3c9251338b60191d0a804b0d92 breaks networking on
-> > alpha (there is a follow-up fix 5cfe8f1ba5eebe6f4b6e5858cdb1a5be4f3272a6,
-> > but networking is still broken even with the second patch).
-> > 
-> > The patch 3ddc5b46a8e90f3c9251338b60191d0a804b0d92 makes
-> > csum_partial_copy_from_user check the pointer with access_ok. However,
-> > csum_partial_copy_from_user is called also from csum_partial_copy_nocheck
-> > and csum_partial_copy_nocheck is called on kernel pointers and it is
-> > supposed not to check pointer validity.
-> > 
-> > This bug results in ssh session hangs if the system is loaded and bulk
-> > data are printed to ssh terminal.
-> > 
-> > This patch fixes csum_partial_copy_nocheck to call set_fs(KERNEL_DS), so
-> > that access_ok in csum_partial_copy_from_user accepts kernel-space
-> > addresses.
+> Thanks, it was a great help as it uncovered a few issues in fringe arch
+> that I didn't have toolchains for, and I've fixed all of those up.
 > 
-> I see that most architectures implement a csum_partial_copy_generic()
-> called from csum_partial_copy_nocheck() for this purpose rather than
-> re-using csum_partial_copy_from_user().
+> I've noticed that powerpc has been un-buildable for a while now; I have
+> used this hack patch locally so I could run the ppc defconfigs to check
+> that I didn't break anything.  Maybe useful for linux-next in the
+> interim?  It is a hack patch -- Not-Signed-off-by: Paul Gortmaker.  :)
+
+Can you and/or Aneesh submit that as a proper patch (with S-O-B
+etc...) ?
+
+Thanks !
+
+Cheers,
+Ben.
+
+> Paul.
+> --
 > 
-> I understand that this fix is the minimal change needed to get things to
-> work, so I think it's important to pull it in, but it might be a good
-> thing to consider implementing a csum_partial_copy_generic() for alpha
-> eventually if performance matters.
+> diff --git a/arch/powerpc/include/asm/pgtable-ppc64.h b/arch/powerpc/include/asm/pgtable-ppc64.h
+> index d27960c89a71..d0f070a2b395 100644
+> --- a/arch/powerpc/include/asm/pgtable-ppc64.h
+> +++ b/arch/powerpc/include/asm/pgtable-ppc64.h
+> @@ -560,9 +560,9 @@ extern void pmdp_invalidate(struct vm_area_struct *vma, unsigned long address,
+>  			    pmd_t *pmdp);
+>  
+>  #define pmd_move_must_withdraw pmd_move_must_withdraw
+> -typedef struct spinlock spinlock_t;
+> -static inline int pmd_move_must_withdraw(spinlock_t *new_pmd_ptl,
+> -					 spinlock_t *old_pmd_ptl)
+> +struct spinlock;
+> +static inline int pmd_move_must_withdraw(struct spinlock *new_pmd_ptl,
+> +					 struct spinlock *old_pmd_ptl)
+>  {
+>  	/*
+>  	 * Archs like ppc64 use pgtable to store per pmd
 > 
-> Thanks!
-> 
-> Mathieu
+> _______________________________________________
+> Linuxppc-dev mailing list
+> Linuxppc-dev@lists.ozlabs.org
+> https://lists.ozlabs.org/listinfo/linuxppc-dev
 
-You could move the common code without the access_ok check to another 
-function.
 
-But csum_partial_copy_from_user is called much more often than 
-csum_partial_copy_nocheck, so the current code has smaller i-cache 
-footprint.
 
-BTW. the ia-64 version of csum_partial_copy_from_user lacks access_ok too.
-
-Mikulas
