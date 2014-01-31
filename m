@@ -1,79 +1,97 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [PATCH RFC 00/73] tree-wide: clean up some no longer required
- #include <linux/init.h>
-Date: Tue, 28 Jan 2014 11:21:44 -0500
-Message-ID: <52E7D918.5020704@windriver.com>
-References: <1390339396-3479-1-git-send-email-paul.gortmaker@windriver.com>      <20140122180023.dd90d34cba38d9f9ac516349@canb.auug.org.au>      <20140123003838.GA10182@windriver.com> <1390878783.3872.63.camel@pasglop>
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PULL] alpha.git
+Date: Fri, 31 Jan 2014 09:26:36 -0800
+Message-ID: <20140131172636.GA32760@ivybridge>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <1390878783.3872.63.camel@pasglop>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-Content-Type: text/plain; charset="us-ascii"
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-m68k@vger.kernel.org, rusty@rustcorp.com.au, linux-ia64@vger.kernel.org, kvm@vger.kernel.org, linux-s390@vger.kernel.org, netdev@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, torvalds@linux-foundation.org, gregkh@linuxfoundation.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, akpm@linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="qDbXVdCdHGoSgWSk"
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=date:from:to:cc:subject:message-id:mime-version:content-type
+         :content-disposition:user-agent;
+        bh=2i8eVmApj99b/RRPtEH4gYZhH70wmF9JcFvJ2RcqVnw=;
+        b=UPeoYkd4zgVN1hwikvw7XJ1ZKQqYWSctL7u0S+l8L7Mm6jlPjtJ6ouEZxkaP9PdsFF
+         37Zpwkig8Q01Wk3XD6Vw7/4v9hMvjo0LjPNjVM3mgHUjpxe2rvofz9pSDGEmrAm4JOCm
+         NCq/HljsrH4PX9LoLOfsUkL9bTjy/Zej0g4A67WfLadCUbQBN0nB1Q+jOMlQ58caNdCa
+         1A9GtjlU377n9wB7yAAk1QNpWQPL3Wx3zrYQEt7ELn9JvH3+nQscLun2pwKRwhWY+I/c
+         alSQv1bOxXVWdXc0xSQFErjfh9vrtWcbkGv34dNUQr1PYnjHnV/cmMOSVZfKCjzXWxOM
+         EOGQ==
+Content-Disposition: inline
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>, "Zhenglong.cai" <zhenglong.cai@cs2c.com.cn>
 
-On 14-01-27 10:13 PM, Benjamin Herrenschmidt wrote:
-> On Wed, 2014-01-22 at 19:38 -0500, Paul Gortmaker wrote:
-> 
->> Thanks, it was a great help as it uncovered a few issues in fringe arch
->> that I didn't have toolchains for, and I've fixed all of those up.
->>
->> I've noticed that powerpc has been un-buildable for a while now; I have
->> used this hack patch locally so I could run the ppc defconfigs to check
->> that I didn't break anything.  Maybe useful for linux-next in the
->> interim?  It is a hack patch -- Not-Signed-off-by: Paul Gortmaker.  :)
-> 
-> Can you and/or Aneesh submit that as a proper patch (with S-O-B
-> etc...) ?
 
-I'd updated toolchains and didn't realize it was still broken.  Patch sent.
+--qDbXVdCdHGoSgWSk
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-http://patchwork.ozlabs.org/patch/314749/
+Hi Linus,
 
-Paul.
---
+Please pull a pair of changes for alpha. One fixes a networking
+regression, and the second adds audit syscall support which will
+help in supporting systemd.
 
-> 
-> Thanks !
-> 
-> Cheers,
-> Ben.
-> 
->> Paul.
->> --
->>
->> diff --git a/arch/powerpc/include/asm/pgtable-ppc64.h b/arch/powerpc/include/asm/pgtable-ppc64.h
->> index d27960c89a71..d0f070a2b395 100644
->> --- a/arch/powerpc/include/asm/pgtable-ppc64.h
->> +++ b/arch/powerpc/include/asm/pgtable-ppc64.h
->> @@ -560,9 +560,9 @@ extern void pmdp_invalidate(struct vm_area_struct *vma, unsigned long address,
->>  			    pmd_t *pmdp);
->>  
->>  #define pmd_move_must_withdraw pmd_move_must_withdraw
->> -typedef struct spinlock spinlock_t;
->> -static inline int pmd_move_must_withdraw(spinlock_t *new_pmd_ptl,
->> -					 spinlock_t *old_pmd_ptl)
->> +struct spinlock;
->> +static inline int pmd_move_must_withdraw(struct spinlock *new_pmd_ptl,
->> +					 struct spinlock *old_pmd_ptl)
->>  {
->>  	/*
->>  	 * Archs like ppc64 use pgtable to store per pmd
->>
->> _______________________________________________
->> Linuxppc-dev mailing list
->> Linuxppc-dev@lists.ozlabs.org
->> https://lists.ozlabs.org/listinfo/linuxppc-dev
-> 
-> 
+Thanks,
+Matt
 
+The following changes since commit e7651b819e90da924991d727d3c007200a18670d:
+
+  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git=
+/mason/linux-btrfs (2014-01-30 20:08:20 -0800)
+
+are available in the git repository at:
+
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+
+for you to fetch changes up to 0ef38d70d4118b2ce1a538d14357be5ff9dc2bbd:
+
+  alpha: fix broken network checksum (2014-01-31 09:21:55 -0800)
+
+----------------------------------------------------------------
+Mikulas Patocka (1):
+      alpha: fix broken network checksum
+
+=E8=94=A1=E6=AD=A3=E9=BE=99 (1):
+      alpha: Enable system-call auditing support.
+
+ arch/alpha/Kconfig                   |  3 ++
+ arch/alpha/include/asm/ptrace.h      |  5 +++
+ arch/alpha/include/asm/thread_info.h |  2 ++
+ arch/alpha/kernel/Makefile           |  1 +
+ arch/alpha/kernel/audit.c            | 60 ++++++++++++++++++++++++++++++++=
+++++
+ arch/alpha/kernel/entry.S            |  6 +++-
+ arch/alpha/kernel/ptrace.c           |  4 +++
+ arch/alpha/lib/csum_partial_copy.c   |  9 ++++--
+ init/Kconfig                         |  2 +-
+ 9 files changed, 88 insertions(+), 4 deletions(-)
+ create mode 100644 arch/alpha/kernel/audit.c
+
+--qDbXVdCdHGoSgWSk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJS69zMAAoJEA/daC2XTKcqTSQP/jQ4yVBrdEFCgrBJ8GaxR1vf
+bA/b4L1XgjoqVbaWCg+ndcxNoSki+hyKtp9edFylhzrMyZbtapq4YYK1j3fi/4g2
+1j0IGJHszEqDzBFvjTuYMlCekFP1KqSHRcFBv2K8wCcBOfaqdhaujt0TgGRWyAH/
+BI3omLOXhLkjuRwlDwiJOI45FMlv2wDqctvcc7cQ0HkMtV7UR8sQrDgrEsNUbmFx
+U98KgMJ7uY3r+VgLQIovufACxy6EIDmTzoC0XnZq+hm3hsr4W/NbNu+tVVHfcnme
+j/85jROE1b5B5PKaiUR9VGEQfNAmTq1Er9cOHfyxhmmnLFVCjdVTY1ssT1yHnjcT
+3DvPzM+QWcfe+QSKVmb8jz7CoRfqFLP1wccdo1I2EaxSyah5WR/IWR1H21thmQ7S
+fWmlIflZUMvTr1W4C6OuasD2YGSzNC8MYInYouNiH+I0z3D0TdCWtpZLXht2OhHO
+G0eG38GqbIsuW4mGNDG0DdUKrPadhGtgQ9+PdfSoh2BumomXEPzPpB0thmLDBHOP
+d4/7QVtZmxMmyunWi6ea1zUFvn98vvzI6awJyB6pxJJquFiiHXHAQzvsXAkAB4pS
+/PJ5VrRwn6qqjPboSu+UScKNh8kRLU3BUIBmEZhNyO0m8kjxjJ5XSaV04At7pDTg
+h6+oMpPhv2h8w1Z2oP/T
+=IFDf
+-----END PGP SIGNATURE-----
+
+--qDbXVdCdHGoSgWSk--
