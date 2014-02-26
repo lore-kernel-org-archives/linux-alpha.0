@@ -1,46 +1,52 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH v2 1/1] audit: Add CONFIG_HAVE_ARCH_AUDITSYSCALL
-Date: Wed, 26 Feb 2014 23:31:36 +1100
-Message-ID: <1393417896.17341.2.camel@concordia>
-References: <1391407232-4623-1-git-send-email-takahiro.akashi@linaro.org>
-	 <1393319784-2758-1-git-send-email-takahiro.akashi@linaro.org>
-	 <1393319784-2758-2-git-send-email-takahiro.akashi@linaro.org>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 2/7] alpha/PCI: Use default pcibios_enable_device()
+Date: Wed, 26 Feb 2014 16:41:42 -0700
+Message-ID: <20140226234142.18970.8692.stgit@bhelgaas-glaptop.roam.corp.google.com>
+References: <20140226233541.18970.83328.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <1393319784-2758-2-git-send-email-takahiro.akashi@linaro.org>
-Sender: linux-ia64-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20120113;
+        h=subject:to:from:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-type:content-transfer-encoding;
+        bh=+GV0ywF6Fnayr7AWeDHvni7n/8dp+2019xLuZzNIaDc=;
+        b=NsbWiKsZamNOKiHLVE//l2zz7/ZQDz8XEVcQ9Dpjg9HyJe+rUaHBCFMTFnNFRx03Ia
+         Cik33QGAP2LB6KTQvtavh+s/deNG2HJaagr2LvR1EhwclOD3EUMO1jkEOgv1ZU//TVRy
+         N4Fg1qJlGLinzQvsKG7VgZ94Drg887H/SZcYaGUHXVQHwl7jYybtFVFixwb5yn90nQUI
+         tRvDU66wesn9jA9t+a+fpfLWPqxomoT+mrbUqdNRxTaTGt99T6YzjmMB3zHojufImBlt
+         rSrB3YSuelGgHzZEX1MeypAamxHaKcSMKKUywaPiqWFYD7eui5JG4h7c8MLXqgfROTCV
+         sF7A==
+In-Reply-To: <20140226233541.18970.83328.stgit@bhelgaas-glaptop.roam.corp.google.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: AKASHI Takahiro <takahiro.akashi@linaro.org>
-Cc: viro@zeniv.linux.org.uk, eparis@redhat.com, rgb@redhat.com, arndb@arndb.de, linux-s390@vger.kernel.org, linaro-kernel@lists.linaro.org, linux-ia64@vger.kernel.org, user-mode-linux-devel@lists.sourceforge.net, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, catalin.marinas@arm.com, x86@kernel.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, dsaxena@linaro.org, user-mode-linux-user@lists.sourceforge.net, linux-audit@redhat.com, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+To: linux-pci@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Tue, 2014-02-25 at 18:16 +0900, AKASHI Takahiro wrote:
-> Currently AUDITSYSCALL has a long list of architecture depencency:
->        depends on AUDIT && (X86 || PARISC || PPC || S390 || IA64 || UML ||
-> 		SPARC64 || SUPERH || (ARM && AEABI && !OABI_COMPAT) || ALPHA)
-> The purpose of this patch is to replace it with HAVE_ARCH_AUDITSYSCALL
-> for simplicity.
-> 
-> Signed-off-by: AKASHI Takahiro <takahiro.akashi@linaro.org>
->
-> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-> index 957bf34..7b3b8fe 100644
-> --- a/arch/powerpc/Kconfig
-> +++ b/arch/powerpc/Kconfig
-> @@ -141,6 +141,7 @@ config PPC
->  	select HAVE_DEBUG_STACKOVERFLOW
->  	select HAVE_IRQ_EXIT_ON_IRQ_STACK
->  	select ARCH_USE_CMPXCHG_LOCKREF if PPC64
-> +	select HAVE_ARCH_AUDITSYSCALL
->  
->  config GENERIC_CSUM
->  	def_bool CPU_LITTLE_ENDIAN
+We don't need anything arch-specific in pcibios_enable_device(), so drop
+the arch implementation and use the default generic one.
 
-Looks good for powerpc.
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+CC: linux-alpha@vger.kernel.org
+---
+ arch/alpha/kernel/pci.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
-
-cheers
-
-
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index edb4e0097b75..076c35cd6cde 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -254,12 +254,6 @@ void pcibios_fixup_bus(struct pci_bus *bus)
+ 	}
+ }
+ 
+-int
+-pcibios_enable_device(struct pci_dev *dev, int mask)
+-{
+-	return pci_enable_resources(dev, mask);
+-}
+-
+ /*
+  *  If we set up a device for bus mastering, we need to check the latency
+  *  timer as certain firmware forgets to set it properly, as seen
