@@ -1,52 +1,217 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 2/7] alpha/PCI: Use default pcibios_enable_device()
-Date: Wed, 26 Feb 2014 16:41:42 -0700
-Message-ID: <20140226234142.18970.8692.stgit@bhelgaas-glaptop.roam.corp.google.com>
-References: <20140226233541.18970.83328.stgit@bhelgaas-glaptop.roam.corp.google.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20120113;
-        h=subject:to:from:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-type:content-transfer-encoding;
-        bh=+GV0ywF6Fnayr7AWeDHvni7n/8dp+2019xLuZzNIaDc=;
-        b=NsbWiKsZamNOKiHLVE//l2zz7/ZQDz8XEVcQ9Dpjg9HyJe+rUaHBCFMTFnNFRx03Ia
-         Cik33QGAP2LB6KTQvtavh+s/deNG2HJaagr2LvR1EhwclOD3EUMO1jkEOgv1ZU//TVRy
-         N4Fg1qJlGLinzQvsKG7VgZ94Drg887H/SZcYaGUHXVQHwl7jYybtFVFixwb5yn90nQUI
-         tRvDU66wesn9jA9t+a+fpfLWPqxomoT+mrbUqdNRxTaTGt99T6YzjmMB3zHojufImBlt
-         rSrB3YSuelGgHzZEX1MeypAamxHaKcSMKKUywaPiqWFYD7eui5JG4h7c8MLXqgfROTCV
-         sF7A==
-In-Reply-To: <20140226233541.18970.83328.stgit@bhelgaas-glaptop.roam.corp.google.com>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Laura Abbott <lauraa@codeaurora.org>
+Subject: [PATCH 2/2] Cleanup useless architecture versions of scatterlist.h
+Date: Fri, 14 Mar 2014 15:58:50 -0700
+Message-ID: <1394837930-27731-2-git-send-email-lauraa@codeaurora.org>
+References: <1394837930-27731-1-git-send-email-lauraa@codeaurora.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1394837930-27731-1-git-send-email-lauraa@codeaurora.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: linux-pci@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Hirokazu Takata <takata@linux-m32r.org>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Andrew Morton <akpm@linux-foundation.org>, David Howells <dhowells@redhat.com>, Michal Simek <monstr@monstr.eu>, Chen Liqin <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>
+Cc: Laura Abbott <lauraa@codeaurora.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, linux-m32r@ml.linux-m32r.org, microblaze-uclinux@itee.uq.edu.au, linux-am33-list@redhat.com
 
-We don't need anything arch-specific in pcibios_enable_device(), so drop
-the arch implementation and use the default generic one.
+There's no need to have an architecture version of scatterlist.h
+if the only thing the file does is include asm-generic/scatterlist.h.
+Switch to the asm-generic versions directly.
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-CC: linux-alpha@vger.kernel.org
+Cc: Mikael Starvik <starvik@axis.com>
+Cc: Jesper Nilsson <jesper.nilsson@axis.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Hirokazu Takata <takata@linux-m32r.org>,
+Cc: Michal Simek <monstr@monstr.eu>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Koichi Yasutake <yasutake.koichi@jp.panasonic.com>
+Cc: Chen Liqin <liqin.linux@gmail.com>,
+Cc: Lennox Wu <lennox.wu@gmail.com>
+Signed-off-by: Laura Abbott <lauraa@codeaurora.org>
 ---
- arch/alpha/kernel/pci.c |    6 ------
- 1 file changed, 6 deletions(-)
+ arch/alpha/include/asm/Kbuild             |  1 +
+ arch/alpha/include/asm/scatterlist.h      |  6 ------
+ arch/cris/include/asm/Kbuild              |  1 +
+ arch/cris/include/asm/scatterlist.h       |  6 ------
+ arch/frv/include/asm/Kbuild               |  1 +
+ arch/frv/include/asm/scatterlist.h        |  6 ------
+ arch/m32r/include/asm/Kbuild              |  1 +
+ arch/m32r/include/asm/scatterlist.h       |  6 ------
+ arch/microblaze/include/asm/Kbuild        |  1 +
+ arch/microblaze/include/asm/scatterlist.h |  1 -
+ arch/mn10300/include/asm/Kbuild           |  1 +
+ arch/mn10300/include/asm/scatterlist.h    | 16 ----------------
+ arch/score/include/asm/Kbuild             |  2 +-
+ arch/score/include/asm/scatterlist.h      |  6 ------
+ 14 files changed, 7 insertions(+), 48 deletions(-)
+ delete mode 100644 arch/alpha/include/asm/scatterlist.h
+ delete mode 100644 arch/cris/include/asm/scatterlist.h
+ delete mode 100644 arch/frv/include/asm/scatterlist.h
+ delete mode 100644 arch/m32r/include/asm/scatterlist.h
+ delete mode 100644 arch/microblaze/include/asm/scatterlist.h
+ delete mode 100644 arch/mn10300/include/asm/scatterlist.h
+ delete mode 100644 arch/score/include/asm/scatterlist.h
 
-diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
-index edb4e0097b75..076c35cd6cde 100644
---- a/arch/alpha/kernel/pci.c
-+++ b/arch/alpha/kernel/pci.c
-@@ -254,12 +254,6 @@ void pcibios_fixup_bus(struct pci_bus *bus)
- 	}
- }
- 
--int
--pcibios_enable_device(struct pci_dev *dev, int mask)
--{
--	return pci_enable_resources(dev, mask);
--}
+diff --git a/arch/alpha/include/asm/Kbuild b/arch/alpha/include/asm/Kbuild
+index a73a8e2..2eeb6f2 100644
+--- a/arch/alpha/include/asm/Kbuild
++++ b/arch/alpha/include/asm/Kbuild
+@@ -5,3 +5,4 @@ generic-y += exec.h
+ generic-y += trace_clock.h
+ generic-y += preempt.h
+ generic-y += hash.h
++generic-y += scatterlist.h
+diff --git a/arch/alpha/include/asm/scatterlist.h b/arch/alpha/include/asm/scatterlist.h
+deleted file mode 100644
+index 017d747..0000000
+--- a/arch/alpha/include/asm/scatterlist.h
++++ /dev/null
+@@ -1,6 +0,0 @@
+-#ifndef _ALPHA_SCATTERLIST_H
+-#define _ALPHA_SCATTERLIST_H
 -
- /*
-  *  If we set up a device for bus mastering, we need to check the latency
-  *  timer as certain firmware forgets to set it properly, as seen
+-#include <asm-generic/scatterlist.h>
+-
+-#endif /* !(_ALPHA_SCATTERLIST_H) */
+diff --git a/arch/cris/include/asm/Kbuild b/arch/cris/include/asm/Kbuild
+index f3fd876..d9e86c7 100644
+--- a/arch/cris/include/asm/Kbuild
++++ b/arch/cris/include/asm/Kbuild
+@@ -14,3 +14,4 @@ generic-y += trace_clock.h
+ generic-y += vga.h
+ generic-y += xor.h
+ generic-y += preempt.h
++generic-y += scatterlist.h
+diff --git a/arch/cris/include/asm/scatterlist.h b/arch/cris/include/asm/scatterlist.h
+deleted file mode 100644
+index f11f8f4..0000000
+--- a/arch/cris/include/asm/scatterlist.h
++++ /dev/null
+@@ -1,6 +0,0 @@
+-#ifndef __ASM_CRIS_SCATTERLIST_H
+-#define __ASM_CRIS_SCATTERLIST_H
+-
+-#include <asm-generic/scatterlist.h>
+-
+-#endif /* !(__ASM_CRIS_SCATTERLIST_H) */
+diff --git a/arch/frv/include/asm/Kbuild b/arch/frv/include/asm/Kbuild
+index bc42f14..5ccdc46 100644
+--- a/arch/frv/include/asm/Kbuild
++++ b/arch/frv/include/asm/Kbuild
+@@ -4,3 +4,4 @@ generic-y += exec.h
+ generic-y += trace_clock.h
+ generic-y += preempt.h
+ generic-y += hash.h
++generic-y += scatterlist.h
+diff --git a/arch/frv/include/asm/scatterlist.h b/arch/frv/include/asm/scatterlist.h
+deleted file mode 100644
+index 0e5eb30..0000000
+--- a/arch/frv/include/asm/scatterlist.h
++++ /dev/null
+@@ -1,6 +0,0 @@
+-#ifndef _ASM_SCATTERLIST_H
+-#define _ASM_SCATTERLIST_H
+-
+-#include <asm-generic/scatterlist.h>
+-
+-#endif /* !_ASM_SCATTERLIST_H */
+diff --git a/arch/m32r/include/asm/Kbuild b/arch/m32r/include/asm/Kbuild
+index 932435a..8672b27 100644
+--- a/arch/m32r/include/asm/Kbuild
++++ b/arch/m32r/include/asm/Kbuild
+@@ -2,6 +2,7 @@
+ generic-y += clkdev.h
+ generic-y += exec.h
+ generic-y += module.h
++generic-y += scatterlist.h
+ generic-y += trace_clock.h
+ generic-y += preempt.h
+ generic-y += hash.h
+diff --git a/arch/m32r/include/asm/scatterlist.h b/arch/m32r/include/asm/scatterlist.h
+deleted file mode 100644
+index 7370b8b..0000000
+--- a/arch/m32r/include/asm/scatterlist.h
++++ /dev/null
+@@ -1,6 +0,0 @@
+-#ifndef _ASM_M32R_SCATTERLIST_H
+-#define _ASM_M32R_SCATTERLIST_H
+-
+-#include <asm-generic/scatterlist.h>
+-
+-#endif /* _ASM_M32R_SCATTERLIST_H */
+diff --git a/arch/microblaze/include/asm/Kbuild b/arch/microblaze/include/asm/Kbuild
+index 2b98bc7..9270f69 100644
+--- a/arch/microblaze/include/asm/Kbuild
++++ b/arch/microblaze/include/asm/Kbuild
+@@ -4,5 +4,6 @@ generic-y += clkdev.h
+ generic-y += exec.h
+ generic-y += hash.h
+ generic-y += trace_clock.h
++generic-y += scatterlist.h
+ generic-y += syscalls.h
+ generic-y += preempt.h
+diff --git a/arch/microblaze/include/asm/scatterlist.h b/arch/microblaze/include/asm/scatterlist.h
+deleted file mode 100644
+index 35d786f..0000000
+--- a/arch/microblaze/include/asm/scatterlist.h
++++ /dev/null
+@@ -1 +0,0 @@
+-#include <asm-generic/scatterlist.h>
+diff --git a/arch/mn10300/include/asm/Kbuild b/arch/mn10300/include/asm/Kbuild
+index 992e989..3045ffe 100644
+--- a/arch/mn10300/include/asm/Kbuild
++++ b/arch/mn10300/include/asm/Kbuild
+@@ -3,5 +3,6 @@ generic-y += barrier.h
+ generic-y += clkdev.h
+ generic-y += exec.h
+ generic-y += hash.h
++generic-y += scatterlist.h
+ generic-y += trace_clock.h
+ generic-y += preempt.h
+diff --git a/arch/mn10300/include/asm/scatterlist.h b/arch/mn10300/include/asm/scatterlist.h
+deleted file mode 100644
+index 7baa400..0000000
+--- a/arch/mn10300/include/asm/scatterlist.h
++++ /dev/null
+@@ -1,16 +0,0 @@
+-/* MN10300 Scatterlist definitions
+- *
+- * Copyright (C) 2007 Matsushita Electric Industrial Co., Ltd.
+- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public Licence
+- * as published by the Free Software Foundation; either version
+- * 2 of the Licence, or (at your option) any later version.
+- */
+-#ifndef _ASM_SCATTERLIST_H
+-#define _ASM_SCATTERLIST_H
+-
+-#include <asm-generic/scatterlist.h>
+-
+-#endif /* _ASM_SCATTERLIST_H */
+diff --git a/arch/score/include/asm/Kbuild b/arch/score/include/asm/Kbuild
+index 146b9d5..62d35f1 100644
+--- a/arch/score/include/asm/Kbuild
++++ b/arch/score/include/asm/Kbuild
+@@ -7,4 +7,4 @@ generic-y += hash.h
+ generic-y += trace_clock.h
+ generic-y += xor.h
+ generic-y += preempt.h
+-
++generic-y += scatterlist.h
+diff --git a/arch/score/include/asm/scatterlist.h b/arch/score/include/asm/scatterlist.h
+deleted file mode 100644
+index 9f533b8..0000000
+--- a/arch/score/include/asm/scatterlist.h
++++ /dev/null
+@@ -1,6 +0,0 @@
+-#ifndef _ASM_SCORE_SCATTERLIST_H
+-#define _ASM_SCORE_SCATTERLIST_H
+-
+-#include <asm-generic/scatterlist.h>
+-
+-#endif /* _ASM_SCORE_SCATTERLIST_H */
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+hosted by The Linux Foundation
+
