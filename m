@@ -1,216 +1,43 @@
-From: Laura Abbott <lauraa@codeaurora.org>
-Subject: [RESEND][PATCH 2/2] Cleanup useless architecture versions of scatterlist.h
-Date: Sat, 22 Mar 2014 11:13:52 -0700
-Message-ID: <1395512032-20575-3-git-send-email-lauraa@codeaurora.org>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [RESEND][PATCH 0/2] Cleanup asm/scatterlist.h
+Date: Fri, 28 Mar 2014 15:14:12 -0700
+Message-ID: <20140328151412.9d3ce44ee4c5ad3b1c75751d@linux-foundation.org>
 References: <1395512032-20575-1-git-send-email-lauraa@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <1395512032-20575-1-git-send-email-lauraa@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Hirokazu Takata <takata@linux-m32r.org>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Andrew Morton <akpm@linux-foundation.org>, David Howells <dhowells@redhat.com>, Michal Simek <monstr@monstr.eu>, Chen Liqin <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>
-Cc: Laura Abbott <lauraa@codeaurora.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-cris-kernel@axis.com, linux-m32r@ml.linux-m32r.org, microblaze-uclinux@itee.uq.edu.au, linux-am33-list@redhat.com
+To: Laura Abbott <lauraa@codeaurora.org>
+Cc: linux-ia64@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, David Howells <dhowells@redhat.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Lennox Wu <lennox.wu@gmail.com>, Chen Liqin <liqin.linux@gmail.com>, Jesper Nilsson <jesper.nilsson@axis.com>, linux-am33-list@redhat.com, Russell King <linux@arm.linux.org.uk>, linux-scsi@vger.kernel.org, Hirokazu Takata <takata@linux-m32r.org>, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-s390@vger.kernel.org, microblaze-uclinux@itee.uq.edu.au, Mikael Starvik <starvik@axis.com>, linux-m32r@ml.linux-m32r.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, Tony Luck <tony.luck@intel.com>, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, James E.J. Bottoml
 
-There's no need to have an architecture version of scatterlist.h
-if the only thing the file does is include asm-generic/scatterlist.h.
-Switch to the asm-generic versions directly.
-
-Cc: Mikael Starvik <starvik@axis.com>
-Cc: Hirokazu Takata <takata@linux-m32r.org>,
-Cc: Michal Simek <monstr@monstr.eu>
-Cc: David Howells <dhowells@redhat.com>
-Cc: Koichi Yasutake <yasutake.koichi@jp.panasonic.com>
-Cc: Chen Liqin <liqin.linux@gmail.com>,
-Cc: Lennox Wu <lennox.wu@gmail.com>
-Acked-by: Jesper Nilsson <jesper.nilsson@axis.com>
-Acked-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Laura Abbott <lauraa@codeaurora.org>
----
- arch/alpha/include/asm/Kbuild             |  1 +
- arch/alpha/include/asm/scatterlist.h      |  6 ------
- arch/cris/include/asm/Kbuild              |  1 +
- arch/cris/include/asm/scatterlist.h       |  6 ------
- arch/frv/include/asm/Kbuild               |  1 +
- arch/frv/include/asm/scatterlist.h        |  6 ------
- arch/m32r/include/asm/Kbuild              |  1 +
- arch/m32r/include/asm/scatterlist.h       |  6 ------
- arch/microblaze/include/asm/Kbuild        |  1 +
- arch/microblaze/include/asm/scatterlist.h |  1 -
- arch/mn10300/include/asm/Kbuild           |  1 +
- arch/mn10300/include/asm/scatterlist.h    | 16 ----------------
- arch/score/include/asm/Kbuild             |  2 +-
- arch/score/include/asm/scatterlist.h      |  6 ------
- 14 files changed, 7 insertions(+), 48 deletions(-)
- delete mode 100644 arch/alpha/include/asm/scatterlist.h
- delete mode 100644 arch/cris/include/asm/scatterlist.h
- delete mode 100644 arch/frv/include/asm/scatterlist.h
- delete mode 100644 arch/m32r/include/asm/scatterlist.h
- delete mode 100644 arch/microblaze/include/asm/scatterlist.h
- delete mode 100644 arch/mn10300/include/asm/scatterlist.h
- delete mode 100644 arch/score/include/asm/scatterlist.h
-
-diff --git a/arch/alpha/include/asm/Kbuild b/arch/alpha/include/asm/Kbuild
-index a73a8e2..2eeb6f2 100644
---- a/arch/alpha/include/asm/Kbuild
-+++ b/arch/alpha/include/asm/Kbuild
-@@ -5,3 +5,4 @@ generic-y += exec.h
- generic-y += trace_clock.h
- generic-y += preempt.h
- generic-y += hash.h
-+generic-y += scatterlist.h
-diff --git a/arch/alpha/include/asm/scatterlist.h b/arch/alpha/include/asm/scatterlist.h
-deleted file mode 100644
-index 017d747..0000000
---- a/arch/alpha/include/asm/scatterlist.h
-+++ /dev/null
-@@ -1,6 +0,0 @@
--#ifndef _ALPHA_SCATTERLIST_H
--#define _ALPHA_SCATTERLIST_H
--
--#include <asm-generic/scatterlist.h>
--
--#endif /* !(_ALPHA_SCATTERLIST_H) */
-diff --git a/arch/cris/include/asm/Kbuild b/arch/cris/include/asm/Kbuild
-index f3fd876..d9e86c7 100644
---- a/arch/cris/include/asm/Kbuild
-+++ b/arch/cris/include/asm/Kbuild
-@@ -14,3 +14,4 @@ generic-y += trace_clock.h
- generic-y += vga.h
- generic-y += xor.h
- generic-y += preempt.h
-+generic-y += scatterlist.h
-diff --git a/arch/cris/include/asm/scatterlist.h b/arch/cris/include/asm/scatterlist.h
-deleted file mode 100644
-index f11f8f4..0000000
---- a/arch/cris/include/asm/scatterlist.h
-+++ /dev/null
-@@ -1,6 +0,0 @@
--#ifndef __ASM_CRIS_SCATTERLIST_H
--#define __ASM_CRIS_SCATTERLIST_H
--
--#include <asm-generic/scatterlist.h>
--
--#endif /* !(__ASM_CRIS_SCATTERLIST_H) */
-diff --git a/arch/frv/include/asm/Kbuild b/arch/frv/include/asm/Kbuild
-index bc42f14..5ccdc46 100644
---- a/arch/frv/include/asm/Kbuild
-+++ b/arch/frv/include/asm/Kbuild
-@@ -4,3 +4,4 @@ generic-y += exec.h
- generic-y += trace_clock.h
- generic-y += preempt.h
- generic-y += hash.h
-+generic-y += scatterlist.h
-diff --git a/arch/frv/include/asm/scatterlist.h b/arch/frv/include/asm/scatterlist.h
-deleted file mode 100644
-index 0e5eb30..0000000
---- a/arch/frv/include/asm/scatterlist.h
-+++ /dev/null
-@@ -1,6 +0,0 @@
--#ifndef _ASM_SCATTERLIST_H
--#define _ASM_SCATTERLIST_H
--
--#include <asm-generic/scatterlist.h>
--
--#endif /* !_ASM_SCATTERLIST_H */
-diff --git a/arch/m32r/include/asm/Kbuild b/arch/m32r/include/asm/Kbuild
-index 932435a..8672b27 100644
---- a/arch/m32r/include/asm/Kbuild
-+++ b/arch/m32r/include/asm/Kbuild
-@@ -2,6 +2,7 @@
- generic-y += clkdev.h
- generic-y += exec.h
- generic-y += module.h
-+generic-y += scatterlist.h
- generic-y += trace_clock.h
- generic-y += preempt.h
- generic-y += hash.h
-diff --git a/arch/m32r/include/asm/scatterlist.h b/arch/m32r/include/asm/scatterlist.h
-deleted file mode 100644
-index 7370b8b..0000000
---- a/arch/m32r/include/asm/scatterlist.h
-+++ /dev/null
-@@ -1,6 +0,0 @@
--#ifndef _ASM_M32R_SCATTERLIST_H
--#define _ASM_M32R_SCATTERLIST_H
--
--#include <asm-generic/scatterlist.h>
--
--#endif /* _ASM_M32R_SCATTERLIST_H */
-diff --git a/arch/microblaze/include/asm/Kbuild b/arch/microblaze/include/asm/Kbuild
-index 2b98bc7..9270f69 100644
---- a/arch/microblaze/include/asm/Kbuild
-+++ b/arch/microblaze/include/asm/Kbuild
-@@ -4,5 +4,6 @@ generic-y += clkdev.h
- generic-y += exec.h
- generic-y += hash.h
- generic-y += trace_clock.h
-+generic-y += scatterlist.h
- generic-y += syscalls.h
- generic-y += preempt.h
-diff --git a/arch/microblaze/include/asm/scatterlist.h b/arch/microblaze/include/asm/scatterlist.h
-deleted file mode 100644
-index 35d786f..0000000
---- a/arch/microblaze/include/asm/scatterlist.h
-+++ /dev/null
-@@ -1 +0,0 @@
--#include <asm-generic/scatterlist.h>
-diff --git a/arch/mn10300/include/asm/Kbuild b/arch/mn10300/include/asm/Kbuild
-index 992e989..3045ffe 100644
---- a/arch/mn10300/include/asm/Kbuild
-+++ b/arch/mn10300/include/asm/Kbuild
-@@ -3,5 +3,6 @@ generic-y += barrier.h
- generic-y += clkdev.h
- generic-y += exec.h
- generic-y += hash.h
-+generic-y += scatterlist.h
- generic-y += trace_clock.h
- generic-y += preempt.h
-diff --git a/arch/mn10300/include/asm/scatterlist.h b/arch/mn10300/include/asm/scatterlist.h
-deleted file mode 100644
-index 7baa400..0000000
---- a/arch/mn10300/include/asm/scatterlist.h
-+++ /dev/null
-@@ -1,16 +0,0 @@
--/* MN10300 Scatterlist definitions
-- *
-- * Copyright (C) 2007 Matsushita Electric Industrial Co., Ltd.
-- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
-- *
-- * This program is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU General Public Licence
-- * as published by the Free Software Foundation; either version
-- * 2 of the Licence, or (at your option) any later version.
-- */
--#ifndef _ASM_SCATTERLIST_H
--#define _ASM_SCATTERLIST_H
--
--#include <asm-generic/scatterlist.h>
--
--#endif /* _ASM_SCATTERLIST_H */
-diff --git a/arch/score/include/asm/Kbuild b/arch/score/include/asm/Kbuild
-index 146b9d5..62d35f1 100644
---- a/arch/score/include/asm/Kbuild
-+++ b/arch/score/include/asm/Kbuild
-@@ -7,4 +7,4 @@ generic-y += hash.h
- generic-y += trace_clock.h
- generic-y += xor.h
- generic-y += preempt.h
--
-+generic-y += scatterlist.h
-diff --git a/arch/score/include/asm/scatterlist.h b/arch/score/include/asm/scatterlist.h
-deleted file mode 100644
-index 9f533b8..0000000
---- a/arch/score/include/asm/scatterlist.h
-+++ /dev/null
-@@ -1,6 +0,0 @@
--#ifndef _ASM_SCORE_SCATTERLIST_H
--#define _ASM_SCORE_SCATTERLIST_H
--
--#include <asm-generic/scatterlist.h>
--
--#endif /* _ASM_SCORE_SCATTERLIST_H */
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-hosted by The Linux Foundation
+T24gU2F0LCAyMiBNYXIgMjAxNCAxMToxMzo1MCAtMDcwMCBMYXVyYSBBYmJvdHQgPGxhdXJhYUBj
+b2RlYXVyb3JhLm9yZz4gd3JvdGU6Cgo+IEkgaGF2ZW4ndCBnb3R0ZW4gbWFueSByZXNwb25zZXMg
+c28gSSdtIGdvaW5nIHRvIHRyeSBzZW5kaW5nIGFnYWluCj4gKHRoaXMgdGltZSB3aXRoIGEgY292
+ZXIgbGV0dGVyIHdoaWNoIEkgcHJvYmFibHkgc2hvdWxkIGhhdmUgZG9uZSBpbgo+IHRoZSBmaXJz
+dCBwbGFjZS4uLikKPiAKPiBBUkNIX0hBU19TR19DSEFJTiBpcyBjdXJyZW50bHkgZGVmaW5lZCBh
+cyBuZWVkZWQgaW4gYXNtL3NjYXR0ZXJsaXN0LmguCj4gSXQgd2FzIHN1Z2dlc3RlZFsxXSB0aGF0
+IHRoaXMgc2hvdWxkIHByb2JhYmx5IGJlIGEgcHJvcGVyIEtjb25maWcuCj4gQXQgdGhlIHNhbWUg
+dGltZSwgd2UgY2FuIGNsZWFuIHVwIG1vc3Qgb2YgdGhlIGFzbS9zY2F0dGVybGlzdC5oIGZpbGVz
+Cj4gdG8gcmVkdWNlIHJlZHVuZGFuY3kuIFRoaXMgbWFrZXMgcGFyaXNjIHRoZSBvbmx5IGFyY2hp
+dGVjdHVyZSB0aGF0IHN0aWxsCj4gaGFzIGFuIGFzbS9zY2F0dGVybGlzdC5oIGZpbGUgZHVlIHRv
+IHRoZSAjZGVmaW5lIHNnX3ZpcnRfYWRkciAod2hpY2gKPiBjb3VsZCBwcm9iYWJseSBiZSBjbGVh
+bmVkIHVwIGZ1cnRoZXIgc3RpbGwpCj4gCj4gQW5kcmV3LCBvbmNlIHdlIGdldCBhIGZldyBtb3Jl
+IEFja2VkLWJ5cyBjYW4gd2UgdGFrZSB0aGlzIHRocm91Z2ggeW91ciB0cmVlCj4gYXMgc3VnZ2Vz
+dGVkIGJ5IFdpbGw/CgpHcmFiYmVkLiAgSXQncyBzdXBlciBsYXRlIGZvciAzLjE1LXJjMSBhbmQg
+SSdtIHRoaW5raW5nIG9mIG1lcmdpbmcgdGhpcwppbiAzLjE2LXJjMS4gIE9yIEkgY2FuIG1heWJl
+IHNxdWVlemUgaXQgaW50byAzLjE1LXJjMiBpcyB0aGVyZSdzIGFuCmltbWVkaWF0aXNoIG5lZWQg
+Zm9yIGl0PwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpM
+aW51eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0
+dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
