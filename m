@@ -1,43 +1,222 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [RESEND][PATCH 0/2] Cleanup asm/scatterlist.h
-Date: Fri, 28 Mar 2014 15:14:12 -0700
-Message-ID: <20140328151412.9d3ce44ee4c5ad3b1c75751d@linux-foundation.org>
-References: <1395512032-20575-1-git-send-email-lauraa@codeaurora.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <1395512032-20575-1-git-send-email-lauraa@codeaurora.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Laura Abbott <lauraa@codeaurora.org>
-Cc: linux-ia64@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, David Howells <dhowells@redhat.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Lennox Wu <lennox.wu@gmail.com>, Chen Liqin <liqin.linux@gmail.com>, Jesper Nilsson <jesper.nilsson@axis.com>, linux-am33-list@redhat.com, Russell King <linux@arm.linux.org.uk>, linux-scsi@vger.kernel.org, Hirokazu Takata <takata@linux-m32r.org>, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-s390@vger.kernel.org, microblaze-uclinux@itee.uq.edu.au, Mikael Starvik <starvik@axis.com>, linux-m32r@ml.linux-m32r.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, Tony Luck <tony.luck@intel.com>, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, James E.J. Bottoml
+From: Christoph Lameter <cl@linux.com>
+Subject: alpha: Replace __get_cpu_var
+Date: Thu, 1 May 2014 15:39:28 -0500 (CDT)
+Message-ID: <alpine.DEB.2.10.1405011537360.21035@gentwo.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=comcast.net;
+	s=q20140121; t=1398976772;
+	bh=cl3E2ByM4vW4UndyGatA8k/oQaAPfVLQP9GKAkdHxUc=;
+	h=Received:Received:Received:Received:Date:From:To:Subject:
+	 Message-ID:Content-Type;
+	b=tSiUr3ZzqON0BIq8AiK3W31X+Y/uiig4jsvQv5t+5ngCfm3JL44gPWLK28XFLpv/r
+	 QOtYtQg6uaIUDcayKMEhlCmpKOcdCBaIPdPNFjM/ED3xYaRKXfiD/KFEKICEF/50Xo
+	 z06eTyu1M3v3iCIWYEy5tDmmCpq5eoZ1yI7Y2lt4vKeykJpE6274x1kwtWpWafIhxq
+	 Y0RwtZXeJSj2q9sn5Gg2SZ/F7vqs2g1QjXMjoZ+E/Zl2HB++qOpZg6/kjNiUP0LnQx
+	 YZO0uYkEVqfHyqnaNlsBVDOCAgGdDKz9o8p8nHfll1VIRDqAnEkJbcgTrRB06QyC0a
+	 TqOCvmFBhEttg==
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>
+Cc: linux-alpha@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-T24gU2F0LCAyMiBNYXIgMjAxNCAxMToxMzo1MCAtMDcwMCBMYXVyYSBBYmJvdHQgPGxhdXJhYUBj
-b2RlYXVyb3JhLm9yZz4gd3JvdGU6Cgo+IEkgaGF2ZW4ndCBnb3R0ZW4gbWFueSByZXNwb25zZXMg
-c28gSSdtIGdvaW5nIHRvIHRyeSBzZW5kaW5nIGFnYWluCj4gKHRoaXMgdGltZSB3aXRoIGEgY292
-ZXIgbGV0dGVyIHdoaWNoIEkgcHJvYmFibHkgc2hvdWxkIGhhdmUgZG9uZSBpbgo+IHRoZSBmaXJz
-dCBwbGFjZS4uLikKPiAKPiBBUkNIX0hBU19TR19DSEFJTiBpcyBjdXJyZW50bHkgZGVmaW5lZCBh
-cyBuZWVkZWQgaW4gYXNtL3NjYXR0ZXJsaXN0LmguCj4gSXQgd2FzIHN1Z2dlc3RlZFsxXSB0aGF0
-IHRoaXMgc2hvdWxkIHByb2JhYmx5IGJlIGEgcHJvcGVyIEtjb25maWcuCj4gQXQgdGhlIHNhbWUg
-dGltZSwgd2UgY2FuIGNsZWFuIHVwIG1vc3Qgb2YgdGhlIGFzbS9zY2F0dGVybGlzdC5oIGZpbGVz
-Cj4gdG8gcmVkdWNlIHJlZHVuZGFuY3kuIFRoaXMgbWFrZXMgcGFyaXNjIHRoZSBvbmx5IGFyY2hp
-dGVjdHVyZSB0aGF0IHN0aWxsCj4gaGFzIGFuIGFzbS9zY2F0dGVybGlzdC5oIGZpbGUgZHVlIHRv
-IHRoZSAjZGVmaW5lIHNnX3ZpcnRfYWRkciAod2hpY2gKPiBjb3VsZCBwcm9iYWJseSBiZSBjbGVh
-bmVkIHVwIGZ1cnRoZXIgc3RpbGwpCj4gCj4gQW5kcmV3LCBvbmNlIHdlIGdldCBhIGZldyBtb3Jl
-IEFja2VkLWJ5cyBjYW4gd2UgdGFrZSB0aGlzIHRocm91Z2ggeW91ciB0cmVlCj4gYXMgc3VnZ2Vz
-dGVkIGJ5IFdpbGw/CgpHcmFiYmVkLiAgSXQncyBzdXBlciBsYXRlIGZvciAzLjE1LXJjMSBhbmQg
-SSdtIHRoaW5raW5nIG9mIG1lcmdpbmcgdGhpcwppbiAzLjE2LXJjMS4gIE9yIEkgY2FuIG1heWJl
-IHNxdWVlemUgaXQgaW50byAzLjE1LXJjMiBpcyB0aGVyZSdzIGFuCmltbWVkaWF0aXNoIG5lZWQg
-Zm9yIGl0PwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpM
-aW51eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0
-dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
+Sorry I have not compiled this code. Could you see if this works?
+
+
+
+
+__get_cpu_var() is used for multiple purposes in the kernel source. One of
+them is address calculation via the form &__get_cpu_var(x).  This calculates
+the address for the instance of the percpu variable of the current processor
+based on an offset.
+
+Other use cases are for storing and retrieving data from the current
+processors percpu area.  __get_cpu_var() can be used as an lvalue when
+writing data or on the right side of an assignment.
+
+__get_cpu_var() is defined as :
+
+
+#define __get_cpu_var(var) (*this_cpu_ptr(&(var)))
+
+
+
+__get_cpu_var() always only does an address determination. However, store
+and retrieve operations could use a segment prefix (or global register on
+other platforms) to avoid the address calculation.
+
+this_cpu_write() and this_cpu_read() can directly take an offset into a
+percpu area and use optimized assembly code to read and write per cpu
+variables.
+
+
+This patch converts __get_cpu_var into either an explicit address
+calculation using this_cpu_ptr() or into a use of this_cpu operations that
+use the offset.  Thereby address calculations are avoided and less registers
+are used when code is generated.
+
+At the end of the patch set all uses of __get_cpu_var have been removed so
+the macro is removed too.
+
+The patch set includes passes over all arches as well. Once these operations
+are used throughout then specialized macros can be defined in non -x86
+arches as well in order to optimize per cpu access by f.e.  using a global
+register that may be set to the per cpu base.
+
+
+
+
+Transformations done to __get_cpu_var()
+
+
+1. Determine the address of the percpu instance of the current processor.
+
+	DEFINE_PER_CPU(int, y);
+	int *x = &__get_cpu_var(y);
+
+    Converts to
+
+	int *x = this_cpu_ptr(&y);
+
+
+2. Same as #1 but this time an array structure is involved.
+
+	DEFINE_PER_CPU(int, y[20]);
+	int *x = __get_cpu_var(y);
+
+    Converts to
+
+	int *x = this_cpu_ptr(y);
+
+
+3. Retrieve the content of the current processors instance of a per cpu
+variable.
+
+	DEFINE_PER_CPU(int, y);
+	int x = __get_cpu_var(y)
+
+   Converts to
+
+	int x = __this_cpu_read(y);
+
+
+4. Retrieve the content of a percpu struct
+
+	DEFINE_PER_CPU(struct mystruct, y);
+	struct mystruct x = __get_cpu_var(y);
+
+   Converts to
+
+	memcpy(&x, this_cpu_ptr(&y), sizeof(x));
+
+
+5. Assignment to a per cpu variable
+
+	DEFINE_PER_CPU(int, y)
+	__get_cpu_var(y) = x;
+
+   Converts to
+
+	__this_cpu_write(y, x);
+
+
+6. Increment/Decrement etc of a per cpu variable
+
+	DEFINE_PER_CPU(int, y);
+	__get_cpu_var(y)++
+
+   Converts to
+
+	__this_cpu_inc(y)
+
+CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Acked-by: Richard Henderson <rth@twiddle.net>
+Signed-off-by: Christoph Lameter <cl@linux.com>
+
+Index: linux/arch/alpha/kernel/perf_event.c
+===================================================================
+--- linux.orig/arch/alpha/kernel/perf_event.c	2014-02-25 13:26:10.830735566 -0600
++++ linux/arch/alpha/kernel/perf_event.c	2014-02-25 13:26:10.830735566 -0600
+@@ -431,7 +431,7 @@
+  */
+ static int alpha_pmu_add(struct perf_event *event, int flags)
+ {
+-	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
++	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	int n0;
+ 	int ret;
+@@ -483,7 +483,7 @@
+  */
+ static void alpha_pmu_del(struct perf_event *event, int flags)
+ {
+-	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
++	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	unsigned long irq_flags;
+ 	int j;
+@@ -531,7 +531,7 @@
+ static void alpha_pmu_stop(struct perf_event *event, int flags)
+ {
+ 	struct hw_perf_event *hwc = &event->hw;
+-	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
++	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+
+ 	if (!(hwc->state & PERF_HES_STOPPED)) {
+ 		cpuc->idx_mask &= ~(1UL<<hwc->idx);
+@@ -551,7 +551,7 @@
+ static void alpha_pmu_start(struct perf_event *event, int flags)
+ {
+ 	struct hw_perf_event *hwc = &event->hw;
+-	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
++	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+
+ 	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
+ 		return;
+@@ -724,7 +724,7 @@
+  */
+ static void alpha_pmu_enable(struct pmu *pmu)
+ {
+-	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
++	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+
+ 	if (cpuc->enabled)
+ 		return;
+@@ -750,7 +750,7 @@
+
+ static void alpha_pmu_disable(struct pmu *pmu)
+ {
+-	struct cpu_hw_events *cpuc = &__get_cpu_var(cpu_hw_events);
++	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+
+ 	if (!cpuc->enabled)
+ 		return;
+@@ -815,7 +815,7 @@
+ 	int idx, j;
+
+ 	__this_cpu_inc(irq_pmi_count);
+-	cpuc = &__get_cpu_var(cpu_hw_events);
++	cpuc = this_cpu_ptr(&cpu_hw_events);
+
+ 	/* Completely counting through the PMC's period to trigger a new PMC
+ 	 * overflow interrupt while in this interrupt routine is utterly
+Index: linux/arch/alpha/kernel/time.c
+===================================================================
+--- linux.orig/arch/alpha/kernel/time.c	2014-02-25 13:26:10.830735566 -0600
++++ linux/arch/alpha/kernel/time.c	2014-02-25 13:26:10.830735566 -0600
+@@ -56,9 +56,9 @@
+
+ DEFINE_PER_CPU(u8, irq_work_pending);
+
+-#define set_irq_work_pending_flag()  __get_cpu_var(irq_work_pending) = 1
+-#define test_irq_work_pending()      __get_cpu_var(irq_work_pending)
+-#define clear_irq_work_pending()     __get_cpu_var(irq_work_pending) = 0
++#define set_irq_work_pending_flag()  __this_cpu_write(irq_work_pending, 1)
++#define test_irq_work_pending()      __this_cpu_read(irq_work_pending)
++#define clear_irq_work_pending()     __this_cpu_writeirq_work_pending, 0)
+
+ void arch_irq_work_raise(void)
+ {
