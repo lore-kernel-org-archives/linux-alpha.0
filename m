@@ -1,40 +1,38 @@
-From: Christoph Lameter <cl@linux.com>
-Subject: Re: alpha: Replace __get_cpu_var
-Date: Mon, 5 May 2014 10:51:32 -0500 (CDT)
-Message-ID: <alpine.DEB.2.10.1405051051190.27655@gentwo.org>
-References: <alpine.DEB.2.10.1405011537360.21035@gentwo.org> <20140502081844.GA6891@omega> <alpine.DEB.2.10.1405021007150.30890@gentwo.org> <alpine.DEB.2.10.1405021010290.31444@gentwo.org> <20140504084613.GA13864@omega>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20140504084613.GA13864@omega>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=comcast.net;
-	s=q20140121; t=1399305095;
-	bh=JOLLcALDwpUO7IAUs4InAlKeC57lMPHe3+ViuxiTLFM=;
-	h=Received:Received:Received:Received:Date:From:To:Subject:
-	 Message-ID:Content-Type;
-	b=lwGuUdivo30bSu9HBe8uOqR95wd+NCoWR0oFZS2REN+5eSHq0+ynQfcNamvO8GreS
-	 7h+rThupJhBbGQ4dcx55GOQ0dyi3ezkuVTFAieeVF2kFc5utS5kd1f9eF53C3Ljuz1
-	 kqAdrRyxpw6xyrrwzxcUCR+MO28DJethE6eBYXxNDsq2ff7MYEflx5rUpPqgdsy76r
-	 Qdx2XyeSZhvX5tILjbEhCW7ByqDWVkqfEaTGxYwWLTC/msegaqUNei8PPCaSGqVf4+
-	 g+wWUQUIqgPI95RSxyae++Gvb+EbZABz7t1vuwWtTWJG7OnI1m96Ra7vvgUaJ46PNN
-	 5btwJD5SkiqEQ==
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset="us-ascii"
+From: Rik van Riel <riel@redhat.com>
+Subject: Re: [PATCH 04/27] alpha: Use generic tlb.h
+Date: Wed, 14 May 2014 15:05:37 -0400
+Message-ID: <5373BE81.90208@redhat.com>
+References: <1400093999-18703-1-git-send-email-richard@nod.at> <1400093999-18703-5-git-send-email-richard@nod.at>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1400093999-18703-5-git-send-email-richard@nod.at>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Richard Weinberger <richard@nod.at>, linux-arch@vger.kernel.org, arnd@arndb.de, linux-kernel@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>, Tim Chen <tim.c.chen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, Frederic Weisbecker <fweisbec@gmail.com>, linux-alpha@vger.kernel.org
 
-On Sun, 4 May 2014, Michael Cree wrote:
+On 05/14/2014 02:59 PM, Richard Weinberger wrote:
+> As everything we need is now in generic tlb.h
+> we can drop our own one.
+> 
+> Cc: Richard Henderson <rth@twiddle.net>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Ingo Molnar <mingo@kernel.org>
+> Cc: Tim Chen <tim.c.chen@linux.intel.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Rik van Riel <riel@redhat.com>
+> Cc: Frederic Weisbecker <fweisbec@gmail.com>
+> Cc: Richard Weinberger <richard@nod.at>
+> Cc: linux-alpha@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Richard Weinberger <richard@nod.at>
 
-> On Fri, May 02, 2014 at 10:11:10AM -0500, Christoph Lameter wrote:
-> > v2 rediffed aginst Linus tree and fixed the macro def in time.c
-> >
-> > Subject: alpha: Replace __get_cpu_var
->
-> Yes, that compiles and performance events is still working okay with
-> the built kernel.
->
-> Tested-by: Michael Cree <mcree@orcon.net.nz>
+Acked-by: Rik van Riel <riel@redhat.com>
 
-Could you merge the patch through your tree?
 
+-- 
+All rights reversed
