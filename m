@@ -1,71 +1,41 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH 04/27] alpha: Use generic tlb.h
-Date: Wed, 14 May 2014 20:59:36 +0200
-Message-ID: <1400093999-18703-5-git-send-email-richard@nod.at>
-References: <1400093999-18703-1-git-send-email-richard@nod.at>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: alpha: Replace __get_cpu_var
+Date: Mon, 26 May 2014 08:01:11 +1200
+Message-ID: <20140525200111.GA3546@omega>
+References: <alpine.DEB.2.10.1405011537360.21035@gentwo.org>
+ <20140502081844.GA6891@omega>
+ <alpine.DEB.2.10.1405021007150.30890@gentwo.org>
+ <alpine.DEB.2.10.1405021010290.31444@gentwo.org>
+ <20140504084613.GA13864@omega>
+ <alpine.DEB.2.10.1405051051190.27655@gentwo.org>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1400093999-18703-1-git-send-email-richard@nod.at>
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.10.1405051051190.27655@gentwo.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-arch@vger.kernel.org, arnd@arndb.de, linux-kernel@vger.kernel.org
-Cc: Richard Weinberger <richard@nod.at>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>, Tim Chen <tim.c.chen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, Rik van Riel <riel@redhat.com>, Frederic Weisbecker <fweisbec@gmail.com>, linux-alpha@vger.kernel.org
+To: Christoph Lameter <cl@linux.com>
+Cc: Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-As everything we need is now in generic tlb.h
-we can drop our own one.
+On Mon, May 05, 2014 at 10:51:32AM -0500, Christoph Lameter wrote:
+> On Sun, 4 May 2014, Michael Cree wrote:
+> 
+> > On Fri, May 02, 2014 at 10:11:10AM -0500, Christoph Lameter wrote:
+> > > v2 rediffed aginst Linus tree and fixed the macro def in time.c
+> > >
+> > > Subject: alpha: Replace __get_cpu_var
+> >
+> > Yes, that compiles and performance events is still working okay with
+> > the built kernel.
+> >
+> > Tested-by: Michael Cree <mcree@orcon.net.nz>
+> 
+> Could you merge the patch through your tree?
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Tim Chen <tim.c.chen@linux.intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Rik van Riel <riel@redhat.com>
-Cc: Frederic Weisbecker <fweisbec@gmail.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- arch/alpha/include/asm/Kbuild |  1 +
- arch/alpha/include/asm/tlb.h  | 15 ---------------
- 2 files changed, 1 insertion(+), 15 deletions(-)
- delete mode 100644 arch/alpha/include/asm/tlb.h
+Matt, will you look after this?  And also the patches I sent to add
+the missing syscalls?
 
-diff --git a/arch/alpha/include/asm/Kbuild b/arch/alpha/include/asm/Kbuild
-index 96e54be..459aa4c 100644
---- a/arch/alpha/include/asm/Kbuild
-+++ b/arch/alpha/include/asm/Kbuild
-@@ -6,4 +6,5 @@ generic-y += exec.h
- generic-y += hash.h
- generic-y += mcs_spinlock.h
- generic-y += preempt.h
-+generic-y += tlb.h
- generic-y += trace_clock.h
-diff --git a/arch/alpha/include/asm/tlb.h b/arch/alpha/include/asm/tlb.h
-deleted file mode 100644
-index 4286675..0000000
---- a/arch/alpha/include/asm/tlb.h
-+++ /dev/null
-@@ -1,15 +0,0 @@
--#ifndef _ALPHA_TLB_H
--#define _ALPHA_TLB_H
--
--#define tlb_start_vma(tlb, vma)			do { } while (0)
--#define tlb_end_vma(tlb, vma)			do { } while (0)
--#define __tlb_remove_tlb_entry(tlb, pte, addr)	do { } while (0)
--
--#define tlb_flush(tlb)				flush_tlb_mm((tlb)->mm)
--
--#include <asm-generic/tlb.h>
--
--#define __pte_free_tlb(tlb, pte, address)		pte_free((tlb)->mm, pte)
--#define __pmd_free_tlb(tlb, pmd, address)		pmd_free((tlb)->mm, pmd)
-- 
--#endif
--- 
-1.8.4.2
-
+Cheers
+Michael.
