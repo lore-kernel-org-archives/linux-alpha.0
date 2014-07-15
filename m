@@ -1,21 +1,21 @@
 From: Nicholas Krause <xerofoify@gmail.com>
-Subject: [PATCH 4/5] alpha: Fix if statment in bootp.c
-Date: Mon, 14 Jul 2014 23:46:39 -0400
-Message-ID: <1405396000-4917-4-git-send-email-xerofoify@gmail.com>
+Subject: [PATCH 5/5] alpha: Cleanpatch Remove Errors
+Date: Mon, 14 Jul 2014 23:46:40 -0400
+Message-ID: <1405396000-4917-5-git-send-email-xerofoify@gmail.com>
 References: <1405396000-4917-1-git-send-email-xerofoify@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=02GLp18oukEhJEGDfyBYfItveCGNt4KUatNrH+gqSUQ=;
-        b=wJkuwGloHGvclg+nOoZZzyVCwdn9YbnkAHAXgei4yezfl97WNgDGAdwTkJL00P7VZg
-         oORzDS7lkBy4Ewa7QarA8+JtU4eQGMnhSLRUK55a+zdaBykv8ft9K7IE8qLgx1GQgMiQ
-         bUhGzb6rSmCNxjM+/1kb6nVaZ5gg67XeEuyv/PJK3hEIpe/zuAlwYpeZy4Ug9cDwNsiy
-         88gm4VVl65j4D3GmpECkeZ4X16cXy3gqEj3P5npuL6CgvxFB2YPFu6CTJkUZtaBuX8YZ
-         VGmzTm9JsXzMQHkT6WYImmUWhVeKmODT8X17FJfI0uh+QCx9JbhTVeCVS4JNeu0aJnAK
-         ttcQ==
+        bh=XUzjf8q3LjKbEW1M+9d9Fcpj5a+pCLZz1Oo/ROiTH9M=;
+        b=GCSzjJ4l+sa/DbX/t6ujXIrt+opSdjLPo89iPhg0qhilfdFbndryi+1Cqejicp8ynD
+         YOkoOKMPVLS+3nVMFK6cu0RLha1hj/YDV/IFzXtL37SO0Vz7UOfz3+VhjM8TNQLIa5xW
+         UpW4DBtaE+Nw7qBJq2LdX7uTOWU20YPhJ+pselmeQNP/AnzESXiBTd/4H0Q7ZphWz6LD
+         JuxScRl6yjT+U5q0fgvUSnhCdYUhyDXD6BDuwc99N7n7zOrIZVTS/dcM6RbFmABqIs2X
+         49+vdTflt3WYO9NzCJN5y2FpOb+dtw/6dx9pgfzwjvZF1U/59opLtl7chAUeM7qZDp3s
+         rs7w==
 In-Reply-To: <1405396000-4917-1-git-send-email-xerofoify@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,26 +23,27 @@ Content-Transfer-Encoding: 7bit
 To: rth@twiddle.net
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This patch fixes the if statement on line 180 to be changed to having
-no brackets as defined by kernel coding style for one line if statements.
+This patch removes errors on lines 205,206 to fit kernel coding
+style.
 ---
- arch/alpha/boot/bootp.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/alpha/boot/bootp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/alpha/boot/bootp.c b/arch/alpha/boot/bootp.c
-index 6227e4f..47e33cb 100644
+index 47e33cb..ac0351d 100644
 --- a/arch/alpha/boot/bootp.c
 +++ b/arch/alpha/boot/bootp.c
-@@ -177,9 +177,8 @@ start_kernel(void)
- 	move_stack(initrd_start - PAGE_SIZE);
+@@ -202,8 +202,8 @@ start_kernel(void)
+ 	load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
+ 	load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
  
- 	nbytes = callback_getenv(ENV_BOOTED_OSFLAGS, envval, sizeof(envval));
--	if (nbytes < 0 || nbytes >= sizeof(envval)) {
-+	if (nbytes < 0 || nbytes >= sizeof(envval))
- 		nbytes = 0;
--	}
- 	envval[nbytes] = '\0';
- 	srm_printk("Loading the kernel...'%s'\n", envval);
- 
+-	memset((char*)ZERO_PGE, 0, PAGE_SIZE);
+-	strcpy((char*)ZERO_PGE, envval);
++	memset((char *)ZERO_PGE, 0, PAGE_SIZE);
++	strcpy((char *)ZERO_PGE, envval);
+ #ifdef INITRD_IMAGE_SIZE
+ 	((long *)(ZERO_PGE+256))[0] = initrd_start;
+ 	((long *)(ZERO_PGE+256))[1] = INITRD_IMAGE_SIZE;
 -- 
 1.9.1
+
