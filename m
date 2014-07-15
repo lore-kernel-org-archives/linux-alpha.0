@@ -1,19 +1,21 @@
 From: Nicholas Krause <xerofoify@gmail.com>
-Subject: [PATCH 1/5] alpha: checkpatch whitespace errors in misc.c
-Date: Tue, 15 Jul 2014 15:18:06 -0400
-Message-ID: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Subject: [PATCH 4/5] alpha: Fix complex marco definitions
+Date: Tue, 15 Jul 2014 15:18:09 -0400
+Message-ID: <1405451890-6057-4-git-send-email-xerofoify@gmail.com>
+References: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id;
-        bh=ZHJkc9oBVArgpgJVXSHDlSfXQdxxya9B09CPN/X8B+A=;
-        b=zSlywUpWhSq8U4LrzGIfLl2ASNNvmgPHmd/Sb6TDMkdLUNjmouIjrvDni4Wz7RWZUs
-         H8+5zueNZ1R5fEZM9AQ1YGBBhXxjjPANrcpAadpuXQZQHozHGGdfmUBC5Up4mB3r1+2f
-         rFHC1SVYCMTwDv0ZxT7RLzIYa8W3v8jRCio4frtOPQs97aq9L/7mCZwQbwIYZZd58DAi
-         oomNLeX+6m0EhJZoAxolhP34zyxTwPND9QKbsUoE7HGq/tROXKoDYnaXntw2rE9e7FiI
-         gNAUr4lApV6YLlpHquV4yuJI+Eg5F9cYmCzIIv0h+2f9c/tMipSKxj0ALDDv4tEpxRjm
-         TtpQ==
-Sender: linux-alpha-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=j1/E/PEik8+MiiNwOvB86kDSiGY7Jqx6ypF8t+7YXVg=;
+        b=XF14hFDvyPu0CHnrqEq6ry7J5m6tHL6ZJTKrwuJgR7NuVI7r7auRVVc2ICF4IBGqZa
+         2iw93DLe6UaNphM5f+WB7mUjRyE6q+n0CLpUnsuB79iYjS8ar6wTfUJkLVDloGFzTl+S
+         9JBnimjbdF8SlS0ouNMNAQe+NacBZTps9Ee9Bu3IRomrO4QyFWjSy/+poL2SGU1unh/7
+         s67GYq9eZH9QAU23axVtJYlneLhQATMaNN/UDMEE0UN/MFAnkPS7ZciCIL3Gf2ZvwPMN
+         5eFtS78/pZ2/q7DkmoNdiW6tervlqmX0IGk4GFi9TO3j+WbApCsL4UCyDjZZpQ46kU4l
+         URQQ==
+In-Reply-To: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,35 +23,35 @@ Content-Transfer-Encoding: 7bit
 To: rth@twiddle.net
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This patch runs cleanfile against this file in order to remove all
-outstanding whitespace errors caught when I ran checkpatch on it.
+This patch fixes all macro defintions that need parthesises as stated
+by checkpatch when run against this file.
 ---
  arch/alpha/boot/misc.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/arch/alpha/boot/misc.c b/arch/alpha/boot/misc.c
-index 3ff9a95..3f86c3e 100644
+index 174b7c6..886e469 100644
 --- a/arch/alpha/boot/misc.c
 +++ b/arch/alpha/boot/misc.c
-@@ -1,7 +1,7 @@
- /*
-  * misc.c
-- * 
-- * This is a collection of several routines from gzip-1.0.3 
-+ *
-+ * This is a collection of several routines from gzip-1.0.3
-  * adapted for Linux.
-  *
-  * malloc by Hannu Savolainen 1993 and Matthias Urlichs 1994
-@@ -10,7 +10,7 @@
-  *
-  * Nicolas Pitre <nico@visuaide.com>  1999/04/14 :
-  *  For this code to run directly from Flash, all constant variables must
-- *  be marked with 'const' and all other variables initialized at run-time 
-+ *  be marked with 'const' and all other variables initialized at run-time
-  *  only.  This way all non constant variables will end up in the bss segment,
-  *  which should point to addresses in RAM and cleared to 0 on start.
-  *  This allows for a much quicker boot time.
+@@ -23,7 +23,7 @@
+ 
+ #include <asm/uaccess.h>
+ 
+-#define memzero (s, n)	memset((s), 0 , (n))
++#define memzero { (s, n)	memset((s), 0 , (n)) }
+ #define puts		srm_printk
+ extern long srm_printk(const char *, ...)
+ 	__attribute__ ((format (printf, 1, 2)));
+@@ -61,8 +61,8 @@ static unsigned outcnt;		/* bytes in output buffer */
+ 
+ /* Diagnostic functions */
+ #ifdef DEBUG
+-#  define Assert (cond, msg) {if (!(cond)) error(msg) ; }
+-#  define Trace(x) fprintf x
++#  define Assert { (cond, msg) {if (!(cond)) error(msg) ; } }
++#  define Trace { (x) fprintf x }
+ #  define Tracev(x) {if (verbose) fprintf x ; }
+ #  define Tracevv(x) {if (verbose > 1) fprintf x ; }
+ #  define Tracec(c, x) {if (verbose && (c)) fprintf x ; }
 -- 
 1.9.1
-
