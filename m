@@ -1,19 +1,21 @@
 From: Nicholas Krause <xerofoify@gmail.com>
-Subject: [PATCH 1/5] alpha: checkpatch  gives errors and warnings in bootp.c
-Date: Mon, 14 Jul 2014 23:46:36 -0400
-Message-ID: <1405396000-4917-1-git-send-email-xerofoify@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Subject: [PATCH 3/5] alpha: Remove whitespace issues and turn spaces into tabs
+Date: Mon, 14 Jul 2014 23:46:38 -0400
+Message-ID: <1405396000-4917-3-git-send-email-xerofoify@gmail.com>
+References: <1405396000-4917-1-git-send-email-xerofoify@gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id;
-        bh=r+OX3xO37BNM5IWy08fy77BrHf9ZcHFo+pvwsneti2s=;
-        b=rQCghgIeUNAd0CawGf90suZXiQbM0CVYCW7u91vl7hBgYLwyrTgmnscZhvS2j9b639
-         yt493+KefslKsyVRI0O0QyEmYQwmHErLlQ6tET+x1dT9lvw/jhVdoqaWQPNC6Z5sGyiU
-         ClaIYDAxbAr3afGe+Qkpwhh7Qchy7k5JTU7h1T42atwiIhpdNWAH6mT/4JPKxJoLtrIW
-         YH6nSNTjfPx6pb4+GKSPAUeTiDuHLy2L6WWfN3CiKSPDz8T5yV6R5tOc9P2Wkn0cQInp
-         rDhkOpR9pvFe6G/yadH86rPO5hToM0P+5jiskRAb8u7X2NzcCFRjiDu0jTdhLsmKCBB6
-         7Y3Q==
-Sender: linux-kernel-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=p+yOpL60cumql1sZPJGM0oHu85zOolZ8IyshSEW+Bmk=;
+        b=G57TyStPtiEsDpAR0lPYvIiHdMADYgTFL2XjcmJK2Rq9I0RTUNcAPaLWA6Zn5UKVXI
+         7c8zLihN7X6ddartSMDVFoCR5Zhtnxs/c6MWeaAd7s5McIMZCJQxpWHJ40gYLOVMujCk
+         mJaWEUyZvcW864bJt+7uSdUM2YvTwAJ1cV7docvcCqu10NRRLVn1XApKIPwZAe1nvWxv
+         EVNDrRhh+VSJPDx6IxSPT+ymurP0Gqd8OpFDDj6qe+hhh53aJ5kG/0Fsr2jTryKKzxVc
+         +TOpKn/70+Y4hedRpwGJkvi6lyeZqdP6p6TI0vYhRyAEztIDV7uEvI8u6pNt0KSSLX/u
+         4qaA==
+In-Reply-To: <1405396000-4917-1-git-send-email-xerofoify@gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,24 +23,54 @@ Content-Transfer-Encoding: 7bit
 To: rth@twiddle.net
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-When running checkpatch on this file I get lots of warnings and even a few
-errors. This patch cleans up the coding style warning I get on line 26.
+This patch removes all the whitespace an tab issues that this file
+has when running checkpatch
 ---
- arch/alpha/boot/bootp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/alpha/boot/bootp.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/arch/alpha/boot/bootp.c b/arch/alpha/boot/bootp.c
-index 2a542a5..8eb821e 100644
+index 3ee529d..6227e4f 100644
 --- a/arch/alpha/boot/bootp.c
 +++ b/arch/alpha/boot/bootp.c
-@@ -23,7 +23,7 @@
- #include "ksize.h"
+@@ -48,7 +48,7 @@ find_pa(unsigned long *vptb, void *ptr)
+ 	result <<= 13;
+ 	result |= address & 0x1fff;
+ 	return (void *) result;
+-}	
++}
  
- extern unsigned long switch_to_osf_pal(unsigned long nr,
--	struct pcb_struct * pcb_va, struct pcb_struct * pcb_pa,
-+	struct pcb_struct *pcb_va, struct pcb_struct *pcb_pa,
- 	unsigned long *vptb);
+ /*
+  * This function moves into OSF/1 pal-code, and has a temporary
+@@ -152,7 +152,7 @@ start_kernel(void)
+ 	srm_printk("Linux/AXP bootp loader for Linux " UTS_RELEASE "\n");
+ 	if (INIT_HWRPB->pagesize != 8192) {
+ 		srm_printk("Expected 8kB pages, got %ldkB\n",
+-		           INIT_HWRPB->pagesize >> 10);
++	INIT_HWRPB->pagesize >> 10);
+ 		return;
+ 	}
+ 	if (INIT_HWRPB->vptb != (unsigned long) VPTB) {
+@@ -162,7 +162,7 @@ start_kernel(void)
+ 	}
+ 	pal_init();
  
- extern void move_stack(unsigned long new_stack);
+-	/* The initrd must be page-aligned.  See below for the 
++	/* The initrd must be page-aligned.  See below for the
+ 	   cause of the magic number 5.  */
+ 	initrd_start = ((START_ADDR + 5*KERNEL_SIZE + PAGE_SIZE) |
+ 			(PAGE_SIZE-1)) + 1;
+@@ -200,8 +200,8 @@ start_kernel(void)
+ #ifdef INITRD_IMAGE_SIZE
+ 	load(initrd_start, KERNEL_ORIGIN+KERNEL_SIZE, INITRD_IMAGE_SIZE);
+ #endif
+-        load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
+-        load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
++	load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
++	load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
+ 
+ 	memset((char*)ZERO_PGE, 0, PAGE_SIZE);
+ 	strcpy((char*)ZERO_PGE, envval);
 -- 
 1.9.1
+
