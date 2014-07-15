@@ -1,19 +1,19 @@
 From: Nicholas Krause <xerofoify@gmail.com>
-Subject: [PATCH 6/6] alpha: Join lines 90 and 91
-Date: Tue, 15 Jul 2014 14:18:24 -0400
-Message-ID: <1405448304-3724-6-git-send-email-xerofoify@gmail.com>
+Subject: [PATCH 2/6] alpha: Fix spaces to tabs
+Date: Tue, 15 Jul 2014 14:18:20 -0400
+Message-ID: <1405448304-3724-2-git-send-email-xerofoify@gmail.com>
 References: <1405448304-3724-1-git-send-email-xerofoify@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=m92WpkYi2s7McdH4nSV8fSDBANQBBt9O4gsfDInkcgg=;
-        b=yrXt5aZGQxurod8bBcrqWpRfCJZ51F7u46cwj7lyxRl1b8drqNkcrQzZ+BC/otfsFd
-         u4qvvQWyfuRbCW4W7Vyk8qpSK7jX96H84H6Lt67vpg/i/UEDVOSOu3HQgxuneXbykYq+
-         du0Yf6EGLHmyy5VPBAEwS89C+GO8zzRx6/zg7KQjxPSyOtrwqNy/8cy6v+caJXVL/h+m
-         V84rrT8/NC2H8T69boP+1k4JdcY7mGp7JnXdFS0SZJt/Qd1KCUvgq/VL0qGhtaJ9Tcp+
-         VsFWN80+c9ZaoVKeCZTKdIW03VTKmxSqu65gAPoHNQN9GdYK3UeyAmTnlBamJxdXB//H
-         WgcQ==
+        bh=vCeHwlueJQYrbqfPfbZ80p6o4UzCmlIyyc1Lh/g0VG8=;
+        b=UKZAzcDQTE9opDg5uS0NBcoCRsD79p6BnycLuO3G8HaaMZJ+MuPJJRUPEnT6O1km/G
+         waInoHscxjacvG4d10qsb5XCBbhRaycDGzfW+W3Q+73+kNScYSMjRmpNjdqTNtjk8NKe
+         udfG0Q+/nlWvLmjlHqGkoyVmphv6KrCE94oAO18CVHtPiWCHbplpkkb2df9JAfoez7d2
+         m0RJwm0bi67cUYhEqvR/uJyAoq6/dcWTn7KsFp1O+NKB68P9tVYJNaZX7AeJhGx1Rb6Y
+         RIN7A0DoUk0wE5kCovEAF5sFodIspDSE3uW/SkdCtDmA6z2EvqBcX/lgv8sp/8qBI7Bq
+         Z51A==
 In-Reply-To: <1405448304-3724-1-git-send-email-xerofoify@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -23,25 +23,39 @@ Content-Transfer-Encoding: 7bit
 To: rth@twiddle.net
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This fixes the checkpatch error I get in this file relating to a
-quoted string needed to be joined to the line above it.
+This patch fixes all errors for this file related to using spaces
+instead of tabs.
 ---
- arch/alpha/boot/bootpz.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/alpha/boot/bootpz.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
-index 6fc840d..a9e127b 100644
+index 64a0da6..15c16fe 100644
 --- a/arch/alpha/boot/bootpz.c
 +++ b/arch/alpha/boot/bootpz.c
-@@ -87,8 +87,7 @@ check_range(unsigned long vstart, unsigned long vend,
- 		kaddr = (find_pa(vaddr) | PAGE_OFFSET);
- 		if (kaddr >= kstart && kaddr <= kend) {
- #ifdef DEBUG_CHECK_RANGE
--			srm_printk("OVERLAP: vaddr 0x%lx kaddr 0x%lx"
--				   " [0x%lx:0x%lx]\n",
-+			srm_printk("OVERLAP: vaddr 0x%lx kaddr 0x%lx" " [0x%lx:0x%lx]\n",
- 				   vaddr, kaddr, kstart, kend);
+@@ -252,11 +252,11 @@ extern char _end;
+ #define K_COPY_IMAGE_START	NEXT_PAGE(K_KERNEL_IMAGE_END)
+ /* Reserve one page below INITRD for the new stack. */
+ #define K_INITRD_START \
+-    NEXT_PAGE(K_COPY_IMAGE_START + KERNEL_SIZE + PAGE_SIZE)
++	NEXT_PAGE(K_COPY_IMAGE_START + KERNEL_SIZE + PAGE_SIZE)
+ #define K_COPY_IMAGE_END \
+-    (K_INITRD_START + REAL_INITRD_SIZE + MALLOC_AREA_SIZE)
++	(K_INITRD_START + REAL_INITRD_SIZE + MALLOC_AREA_SIZE)
+ #define K_COPY_IMAGE_SIZE \
+-    NEXT_PAGE(K_COPY_IMAGE_END - K_COPY_IMAGE_START)
++	NEXT_PAGE(K_COPY_IMAGE_END - K_COPY_IMAGE_START)
+ 
+ void
+ start_kernel(void)
+@@ -400,7 +400,7 @@ start_kernel(void)
+ 		   uncompressed_image_start,
+ 		   KERNEL_SIZE);
  #endif
- 			return 1;
+-        decompress_kernel((void *)uncompressed_image_start,
++	decompress_kernel((void *)uncompressed_image_start,
+ 			  (void *)V_DATA_START,
+ 			  KERNEL_SIZE, KERNEL_Z_SIZE);
+ 
 -- 
 1.9.1
