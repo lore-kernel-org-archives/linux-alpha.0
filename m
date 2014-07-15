@@ -1,19 +1,19 @@
 From: Nicholas Krause <xerofoify@gmail.com>
-Subject: [PATCH 3/5] alpha: Remove whitespace issues and turn spaces into tabs
-Date: Mon, 14 Jul 2014 23:46:38 -0400
-Message-ID: <1405396000-4917-3-git-send-email-xerofoify@gmail.com>
+Subject: [PATCH 2/5] alpha: Checkpatch warnings on lines 71 and 72
+Date: Mon, 14 Jul 2014 23:46:37 -0400
+Message-ID: <1405396000-4917-2-git-send-email-xerofoify@gmail.com>
 References: <1405396000-4917-1-git-send-email-xerofoify@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=p+yOpL60cumql1sZPJGM0oHu85zOolZ8IyshSEW+Bmk=;
-        b=G57TyStPtiEsDpAR0lPYvIiHdMADYgTFL2XjcmJK2Rq9I0RTUNcAPaLWA6Zn5UKVXI
-         7c8zLihN7X6ddartSMDVFoCR5Zhtnxs/c6MWeaAd7s5McIMZCJQxpWHJ40gYLOVMujCk
-         mJaWEUyZvcW864bJt+7uSdUM2YvTwAJ1cV7docvcCqu10NRRLVn1XApKIPwZAe1nvWxv
-         EVNDrRhh+VSJPDx6IxSPT+ymurP0Gqd8OpFDDj6qe+hhh53aJ5kG/0Fsr2jTryKKzxVc
-         +TOpKn/70+Y4hedRpwGJkvi6lyeZqdP6p6TI0vYhRyAEztIDV7uEvI8u6pNt0KSSLX/u
-         4qaA==
+        bh=xUxIqzBTjmWDAAq7kqRdXBYGMA3lMXmFtdVoq1VtH4M=;
+        b=gG5IEwo/xq4ufmTtoyCH2JAk+NDnO2TBBhlkeSDThrOhNVX4gR/VTy282crXfOuqIY
+         fhfEKNfT2G57lubXFtIqo96WFcSR09Ig6uD4o9OT5rqutFcsj0d+2IMQB7dL4oH4S5+4
+         DngdmapjbDzQSGC7eunqH9cn+ks1sd0j0pdnSjADX3tz4znpwDg5W9Ss5Ommj4vW6qIg
+         ZYOZmhAMOiEYI3W4YjcOsNcfb2/i/ImnyoLwsydzSK5ibjUreW68VVl+PZPNIMYoNiAb
+         22QFiqtIUB1n1TFNnT96PwAreHwCBdKgb7XHe6bkO3oX/FMXFOBRtQotBk7ucDfDdTIV
+         itVg==
 In-Reply-To: <1405396000-4917-1-git-send-email-xerofoify@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -23,54 +23,27 @@ Content-Transfer-Encoding: 7bit
 To: rth@twiddle.net
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This patch removes all the whitespace an tab issues that this file
-has when running checkpatch
+In bootp.c I am hitting lots of warnings this fixes two on lines 71,72
+in order to pass checkpatch and follow kernel coding style.
 ---
- arch/alpha/boot/bootp.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/alpha/boot/bootp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/alpha/boot/bootp.c b/arch/alpha/boot/bootp.c
-index 3ee529d..6227e4f 100644
+index 8eb821e..3ee529d 100644
 --- a/arch/alpha/boot/bootp.c
 +++ b/arch/alpha/boot/bootp.c
-@@ -48,7 +48,7 @@ find_pa(unsigned long *vptb, void *ptr)
- 	result <<= 13;
- 	result |= address & 0x1fff;
- 	return (void *) result;
--}	
-+}
+@@ -68,8 +68,8 @@ void
+ pal_init(void)
+ {
+ 	unsigned long i, rev;
+-	struct percpu_struct * percpu;
+-	struct pcb_struct * pcb_pa;
++	struct percpu_struct *percpu;
++	struct pcb_struct *pcb_pa;
  
- /*
-  * This function moves into OSF/1 pal-code, and has a temporary
-@@ -152,7 +152,7 @@ start_kernel(void)
- 	srm_printk("Linux/AXP bootp loader for Linux " UTS_RELEASE "\n");
- 	if (INIT_HWRPB->pagesize != 8192) {
- 		srm_printk("Expected 8kB pages, got %ldkB\n",
--		           INIT_HWRPB->pagesize >> 10);
-+	INIT_HWRPB->pagesize >> 10);
- 		return;
- 	}
- 	if (INIT_HWRPB->vptb != (unsigned long) VPTB) {
-@@ -162,7 +162,7 @@ start_kernel(void)
- 	}
- 	pal_init();
- 
--	/* The initrd must be page-aligned.  See below for the 
-+	/* The initrd must be page-aligned.  See below for the
- 	   cause of the magic number 5.  */
- 	initrd_start = ((START_ADDR + 5*KERNEL_SIZE + PAGE_SIZE) |
- 			(PAGE_SIZE-1)) + 1;
-@@ -200,8 +200,8 @@ start_kernel(void)
- #ifdef INITRD_IMAGE_SIZE
- 	load(initrd_start, KERNEL_ORIGIN+KERNEL_SIZE, INITRD_IMAGE_SIZE);
- #endif
--        load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
--        load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
-+	load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
-+	load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
- 
- 	memset((char*)ZERO_PGE, 0, PAGE_SIZE);
- 	strcpy((char*)ZERO_PGE, envval);
+ 	/* Create the dummy PCB.  */
+ 	pcb_va->ksp = 0;
 -- 
 1.9.1
 
