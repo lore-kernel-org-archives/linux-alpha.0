@@ -1,50 +1,55 @@
-From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-Subject: Re: [PATCH 6/6] alpha: Join lines 90 and 91
-Date: Tue, 15 Jul 2014 19:54:59 +0100
-Message-ID: <yw1xzjgaa1vg.fsf@unicorn.mansr.com>
-References: <1405448304-3724-1-git-send-email-xerofoify@gmail.com>
-	<1405448304-3724-6-git-send-email-xerofoify@gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Nicholas Krause <xerofoify@gmail.com>
+Subject: [PATCH 1/5] alpha: checkpatch whitespace errors in misc.c
+Date: Tue, 15 Jul 2014 15:18:06 -0400
+Message-ID: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1405448304-3724-6-git-send-email-xerofoify@gmail.com> (Nicholas
-	Krause's message of "Tue, 15 Jul 2014 14:18:24 -0400")
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:to:cc:subject:date:message-id;
+        bh=ZHJkc9oBVArgpgJVXSHDlSfXQdxxya9B09CPN/X8B+A=;
+        b=zSlywUpWhSq8U4LrzGIfLl2ASNNvmgPHmd/Sb6TDMkdLUNjmouIjrvDni4Wz7RWZUs
+         H8+5zueNZ1R5fEZM9AQ1YGBBhXxjjPANrcpAadpuXQZQHozHGGdfmUBC5Up4mB3r1+2f
+         rFHC1SVYCMTwDv0ZxT7RLzIYa8W3v8jRCio4frtOPQs97aq9L/7mCZwQbwIYZZd58DAi
+         oomNLeX+6m0EhJZoAxolhP34zyxTwPND9QKbsUoE7HGq/tROXKoDYnaXntw2rE9e7FiI
+         gNAUr4lApV6YLlpHquV4yuJI+Eg5F9cYmCzIIv0h+2f9c/tMipSKxj0ALDDv4tEpxRjm
+         TtpQ==
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Nicholas Krause <xerofoify@gmail.com>
-Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: rth@twiddle.net
+Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Nicholas Krause <xerofoify@gmail.com> writes:
+This patch runs cleanfile against this file in order to remove all
+outstanding whitespace errors caught when I ran checkpatch on it.
+---
+ arch/alpha/boot/misc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> This fixes the checkpatch error I get in this file relating to a
-> quoted string needed to be joined to the line above it.
-> ---
->  arch/alpha/boot/bootpz.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
-> index 6fc840d..a9e127b 100644
-> --- a/arch/alpha/boot/bootpz.c
-> +++ b/arch/alpha/boot/bootpz.c
-> @@ -87,8 +87,7 @@ check_range(unsigned long vstart, unsigned long ven=
-d,
->  		kaddr =3D (find_pa(vaddr) | PAGE_OFFSET);
->  		if (kaddr >=3D kstart && kaddr <=3D kend) {
->  #ifdef DEBUG_CHECK_RANGE
-> -			srm_printk("OVERLAP: vaddr 0x%lx kaddr 0x%lx"
-> -				   " [0x%lx:0x%lx]\n",
-> +			srm_printk("OVERLAP: vaddr 0x%lx kaddr 0x%lx" " [0x%lx:0x%lx]\n",
->  				   vaddr, kaddr, kstart, kend);
->  #endif
+diff --git a/arch/alpha/boot/misc.c b/arch/alpha/boot/misc.c
+index 3ff9a95..3f86c3e 100644
+--- a/arch/alpha/boot/misc.c
++++ b/arch/alpha/boot/misc.c
+@@ -1,7 +1,7 @@
+ /*
+  * misc.c
+- * 
+- * This is a collection of several routines from gzip-1.0.3 
++ *
++ * This is a collection of several routines from gzip-1.0.3
+  * adapted for Linux.
+  *
+  * malloc by Hannu Savolainen 1993 and Matthias Urlichs 1994
+@@ -10,7 +10,7 @@
+  *
+  * Nicolas Pitre <nico@visuaide.com>  1999/04/14 :
+  *  For this code to run directly from Flash, all constant variables must
+- *  be marked with 'const' and all other variables initialized at run-time 
++ *  be marked with 'const' and all other variables initialized at run-time
+  *  only.  This way all non constant variables will end up in the bss segment,
+  *  which should point to addresses in RAM and cleared to 0 on start.
+  *  This allows for a much quicker boot time.
+-- 
+1.9.1
 
-If you're doing this, you should merge the strings too.
-
---=20
-M=E5ns Rullg=E5rd
-mans@mansr.com
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
