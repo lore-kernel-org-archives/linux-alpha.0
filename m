@@ -1,21 +1,21 @@
 From: Nicholas Krause <xerofoify@gmail.com>
-Subject: [PATCH 5/5] alpha: Fix while statement
-Date: Tue, 15 Jul 2014 15:18:10 -0400
-Message-ID: <1405451890-6057-5-git-send-email-xerofoify@gmail.com>
+Subject: [PATCH 3/5] alpha: Remove whitespace errors that cleanfile missed
+Date: Tue, 15 Jul 2014 15:18:08 -0400
+Message-ID: <1405451890-6057-3-git-send-email-xerofoify@gmail.com>
 References: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=gaD2hwCBsvqARGKC9ctVyExc5CPym2bXcUeP4nb78pw=;
-        b=V+hphfS2GU6I17Zvl6uSLNe301SeTWujDjlEe3ORWG8Kdzbo8Wv9L6AY3cN+GqPlOL
-         ZmG8Dp6as3sNQ7nKhahZEjX4FqQl9ms9BYojpj0/3qpeEcmfqmSGOfaxj53z2Ig9Zy+L
-         gUXrEuZwWIXOFBqtRCIisnBnn+cAHZRo2yJNPsy/BFnynJf4ZT4lFPsT3qA5u/ifhzdq
-         xXvqpDGkDISBusQ8wK2whRjtl1XqY5rVOEkIJj9TrhHzYpc5GVDixEs4OdXi+mPemyEl
-         /dGqc4qFsc7hrXaHYk4jozSDmKerkRAGg+sf7mfM9CMPsQtKL2ne/MqqaivKNm0/pzDP
-         RuIw==
+        bh=03C4zdBLyqNITMSJ02aF1qVp+pP1tl/C/gSc5j4Yql8=;
+        b=V6/7y7eU2NNwD9LbM8W6BydOo5ENMXi3Z11DT1UyaOhv3K5pQbqZWw99muD9Fhdf8K
+         CO0kGKYJYayiITmJ9niBnea1hltDjxkl3lvW8x0xiW+7Dzc0soYeSMlNqFF9/6R5l/q5
+         iWRMiForv47f2buIgf0YXG6Smn9LMSTdvGIGGaneBpQ8Ood1f+8MvmK3sbojr//2s1SL
+         ovxiAhsvJ0EIdhWewj/gwg9mqu99c5gJ4PWuPuOXONbfgw0TiV3Vm5Vn7fr+KAYkuSM6
+         DEjl2xYgsCn1KNVW1vrNwCZwF8DTaCw4YorOyraRpRAsZAyaMAkWjtcU7dGJc73xT6to
+         8UTw==
 In-Reply-To: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,24 +23,25 @@ Content-Transfer-Encoding: 7bit
 To: rth@twiddle.net
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This fixes the if statement on line 147 of misc.c to have parthesises
-around itself removing a checkpatch error on this line.
+This patch removes the whitespace error that cleanfile missed when
+I ran it on this file.
 ---
  arch/alpha/boot/misc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/alpha/boot/misc.c b/arch/alpha/boot/misc.c
-index 886e469..56c3325 100644
+index 119d500..174b7c6 100644
 --- a/arch/alpha/boot/misc.c
 +++ b/arch/alpha/boot/misc.c
 @@ -144,7 +144,7 @@ static void error(char *x)
  	puts(x);
  	puts("\n\n -- System halted");
  
--	while (1);
-+	while{ (1); }
+-	while (1);	
++	while (1);
  	/* Halt */
  }
  
 -- 
 1.9.1
+
