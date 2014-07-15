@@ -1,73 +1,88 @@
-From: Nick Krause <xerofoify@gmail.com>
-Subject: Re: [PATCH 6/6] alpha: Join lines 90 and 91
-Date: Tue, 15 Jul 2014 15:20:21 -0400
-Message-ID: <CAPDOMVhHmJegeAmMYO9dnd6Um3o8uodmfFViQohsz3eyGG2+zg@mail.gmail.com>
-References: <1405448304-3724-1-git-send-email-xerofoify@gmail.com>
-	<1405448304-3724-6-git-send-email-xerofoify@gmail.com>
-	<yw1xzjgaa1vg.fsf@unicorn.mansr.com>
-	<CAPDOMVgJN5wC0yUQrRi8p7dyBz711_ZLFS+op78HsUaCj2U8eA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-alpha-owner@vger.kernel.org>
+From: Nicholas Krause <xerofoify@gmail.com>
+Subject: [PATCH 2/5] alpha: Fix spacing in misc.c
+Date: Tue, 15 Jul 2014 15:18:07 -0400
+Message-ID: <1405451890-6057-2-git-send-email-xerofoify@gmail.com>
+References: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
-         :cc:content-type:content-transfer-encoding;
-        bh=KlgD7KzcOjq8GUD0vm8cCKNjLnToeHmX21+2JtvTYbw=;
-        b=HOx5NOZe+s/fRdnK0/EW8UXhZ82nXUudi78ArxlGR6oVeqL9R0AcuApwUyzKGKV/qp
-         a3QEVbxtWKhNAPquk3dlfWrxk5k1YCugknviZcqjJnd01U4CJsY0AmYlR+LxPgd9Jnxr
-         OqXgkowudI3s/q9SpksSYBqVBOz1Df0DGPzB9VgjsAx3tBLE4hgSILiIiVfYtnKuVh0u
-         eJUPIKGA5RmiwZL2wmwUCG6FgjNcq8rvCN1kQWmkwsYzWbc4NsjkTQhk30RE1G3UmiXi
-         4VF1JFRfDiE4s/xeh86jReHrmEh+bxLGjk+95iTJGgM+F/z2FYuXwHoHdaG0AROqMFcR
-         +cMw==
-In-Reply-To: <CAPDOMVgJN5wC0yUQrRi8p7dyBz711_ZLFS+op78HsUaCj2U8eA@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=m4G2drf1oCrFxWlgKee5QbICw2Z43D02yPQpjjVfu4w=;
+        b=iNaDHLiFGLbBdeg1xa1Wd3x/Go62JnJaFi6gbGVEIl4ziYgmtjP/4wxXzl14cBQhBw
+         V3jKfzZSgF3OJ9XZsQfu74EOgYuNxqeQ/V4TBS2967AQVQ4H4ZOj0T69v0UCq2PHOAQ+
+         1Qg4qcvbGiuaw/mp/wNkLoKMKjHMm+to1bKMIHnQpWc23SmR2pcjdCpCgORtOg+qaJTu
+         7d9YEMPl3cuis2LEuFTA1pNyXgCCMPiYtnanB4k7Cm8laGAo0zAowAbB0Ei/V76LoRqV
+         ThVfWZsjikVeljH9lChTTPD7vOXUJcmHibuLMLBLWdMTAPl/3/LwMFlagK5HvNENmI2f
+         wDbg==
+In-Reply-To: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="euc-kr"
-To: =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
-Cc: Richard Henderson <rth@twiddle.net>, ink@jurassic.park.msu.ru, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: rth@twiddle.net
+Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Jul 15, 2014 at 3:19 PM, Nick Krause <xerofoify@gmail.com> wrot=
-e:
-> On Tue, Jul 15, 2014 at 2:54 PM, M=C3=A5ns Rullg=C3=A5rd <mans@mansr.=
-com> wrote:
->> Nicholas Krause <xerofoify@gmail.com> writes:
->>
->>> This fixes the checkpatch error I get in this file relating to a
->>> quoted string needed to be joined to the line above it.
->>> ---
->>>  arch/alpha/boot/bootpz.c | 3 +--
->>>  1 file changed, 1 insertion(+), 2 deletions(-)
->>>
->>> diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
->>> index 6fc840d..a9e127b 100644
->>> --- a/arch/alpha/boot/bootpz.c
->>> +++ b/arch/alpha/boot/bootpz.c
->>> @@ -87,8 +87,7 @@ check_range(unsigned long vstart, unsigned long v=
-end,
->>>               kaddr =3D (find_pa(vaddr) | PAGE_OFFSET);
->>>               if (kaddr >=3D kstart && kaddr <=3D kend) {
->>>  #ifdef DEBUG_CHECK_RANGE
->>> -                     srm_printk("OVERLAP: vaddr 0x%lx kaddr 0x%lx"
->>> -                                " [0x%lx:0x%lx]\n",
->>> +                     srm_printk("OVERLAP: vaddr 0x%lx kaddr 0x%lx"=
- " [0x%lx:0x%lx]\n",
->>>                                  vaddr, kaddr, kstart, kend);
->>>  #endif
->>
->> If you're doing this, you should merge the strings too.
->>
->> --
->> M=C3=A5ns Rullg=C3=A5rd
->> mans@mansr.com
->
-> Very well,
-> I will merge the strings for this statement.
-> Nick
-Our my other patches Ok through? Please let me know.
-Thanks Nick
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Due to errors with checkpatch in this file I am checking certain defintions
+spacing to pass checkpatch for spacing issues.
+---
+ arch/alpha/boot/misc.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/arch/alpha/boot/misc.c b/arch/alpha/boot/misc.c
+index 3f86c3e..119d500 100644
+--- a/arch/alpha/boot/misc.c
++++ b/arch/alpha/boot/misc.c
+@@ -23,10 +23,10 @@
+ 
+ #include <asm/uaccess.h>
+ 
+-#define memzero(s,n)	memset ((s),0,(n))
++#define memzero (s, n)	memset((s), 0 , (n))
+ #define puts		srm_printk
+ extern long srm_printk(const char *, ...)
+-     __attribute__ ((format (printf, 1, 2)));
++	__attribute__ ((format (printf, 1, 2)));
+ 
+ /*
+  * gzip delarations
+@@ -61,19 +61,19 @@ static unsigned outcnt;		/* bytes in output buffer */
+ 
+ /* Diagnostic functions */
+ #ifdef DEBUG
+-#  define Assert(cond,msg) {if(!(cond)) error(msg);}
++#  define Assert (cond, msg) {if (!(cond)) error(msg) ; }
+ #  define Trace(x) fprintf x
+-#  define Tracev(x) {if (verbose) fprintf x ;}
+-#  define Tracevv(x) {if (verbose>1) fprintf x ;}
+-#  define Tracec(c,x) {if (verbose && (c)) fprintf x ;}
+-#  define Tracecv(c,x) {if (verbose>1 && (c)) fprintf x ;}
++#  define Tracev(x) {if (verbose) fprintf x ; }
++#  define Tracevv(x) {if (verbose > 1) fprintf x ; }
++#  define Tracec(c, x) {if (verbose && (c)) fprintf x ; }
++#  define Tracecv(c, x) {if (verbose > 1 && (c)) fprintf x ; }
+ #else
+-#  define Assert(cond,msg)
++#  define Assert(cond, msg)
+ #  define Trace(x)
+ #  define Tracev(x)
+ #  define Tracevv(x)
+-#  define Tracec(c,x)
+-#  define Tracecv(c,x)
++#  define Tracec(c, x)
++#  define Tracecv(c, x)
+ #endif
+ 
+ static int  fill_inbuf(void);
+@@ -144,7 +144,8 @@ static void error(char *x)
+ 	puts(x);
+ 	puts("\n\n -- System halted");
+ 
+-	while(1);	/* Halt */
++	while (1);	
++	/* Halt */
+ }
+ 
+ unsigned int
+-- 
+1.9.1
