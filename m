@@ -1,47 +1,68 @@
-From: Nicholas Krause <xerofoify@gmail.com>
-Subject: [PATCH 3/5] alpha: Remove whitespace errors that cleanfile missed
-Date: Tue, 15 Jul 2014 15:18:08 -0400
-Message-ID: <1405451890-6057-3-git-send-email-xerofoify@gmail.com>
-References: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
+From: Nick Krause <xerofoify@gmail.com>
+Subject: Re: [PATCH 6/6] alpha: Join lines 90 and 91
+Date: Tue, 15 Jul 2014 15:19:42 -0400
+Message-ID: <CAPDOMVgJN5wC0yUQrRi8p7dyBz711_ZLFS+op78HsUaCj2U8eA@mail.gmail.com>
+References: <1405448304-3724-1-git-send-email-xerofoify@gmail.com>
+	<1405448304-3724-6-git-send-email-xerofoify@gmail.com>
+	<yw1xzjgaa1vg.fsf@unicorn.mansr.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=03C4zdBLyqNITMSJ02aF1qVp+pP1tl/C/gSc5j4Yql8=;
-        b=V6/7y7eU2NNwD9LbM8W6BydOo5ENMXi3Z11DT1UyaOhv3K5pQbqZWw99muD9Fhdf8K
-         CO0kGKYJYayiITmJ9niBnea1hltDjxkl3lvW8x0xiW+7Dzc0soYeSMlNqFF9/6R5l/q5
-         iWRMiForv47f2buIgf0YXG6Smn9LMSTdvGIGGaneBpQ8Ood1f+8MvmK3sbojr//2s1SL
-         ovxiAhsvJ0EIdhWewj/gwg9mqu99c5gJ4PWuPuOXONbfgw0TiV3Vm5Vn7fr+KAYkuSM6
-         DEjl2xYgsCn1KNVW1vrNwCZwF8DTaCw4YorOyraRpRAsZAyaMAkWjtcU7dGJc73xT6to
-         8UTw==
-In-Reply-To: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
+        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
+         :cc:content-type:content-transfer-encoding;
+        bh=EodY/Bny/nXjwn6heZihe3cVzJzdUyNI6qWewBhssKQ=;
+        b=ub/SZn6rsiMUgbkk5NK5NIfLs3y37qNCo44LeKdKLsamK5FLRXBf8KgsBgNEwYcrmE
+         SwHdO/LSswsTJ+aO2bHy+czG13DIBLBuK765921WbI9BCy8vIhJdTN2aLjqTqGoQr7cm
+         l2GM3n+kLkV+NLXEdLKYJTcETRP9hbKg/GO8QjTw0pCT3LkpfrnQXEBeOrZ6+KikKFES
+         htWNLbhZHgmNkiYO1UBHYNCkJvajwE2q/gznYqRA65QvMn5ZaCUSagv0NQQRulFps8Xh
+         +HRUyQcM1TfRJO1VyGNX5tW4GRSXWWyf+QxgSKKHiMmVwwgQeS82CzhDHZ39yH6TolAB
+         Kbvg==
+In-Reply-To: <yw1xzjgaa1vg.fsf@unicorn.mansr.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net
-Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="euc-kr"
+To: =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
+Cc: Richard Henderson <rth@twiddle.net>, ink@jurassic.park.msu.ru, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-This patch removes the whitespace error that cleanfile missed when
-I ran it on this file.
----
- arch/alpha/boot/misc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, Jul 15, 2014 at 2:54 PM, M=C3=A5ns Rullg=C3=A5rd <mans@mansr.co=
+m> wrote:
+> Nicholas Krause <xerofoify@gmail.com> writes:
+>
+>> This fixes the checkpatch error I get in this file relating to a
+>> quoted string needed to be joined to the line above it.
+>> ---
+>>  arch/alpha/boot/bootpz.c | 3 +--
+>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
+>> index 6fc840d..a9e127b 100644
+>> --- a/arch/alpha/boot/bootpz.c
+>> +++ b/arch/alpha/boot/bootpz.c
+>> @@ -87,8 +87,7 @@ check_range(unsigned long vstart, unsigned long ve=
+nd,
+>>               kaddr =3D (find_pa(vaddr) | PAGE_OFFSET);
+>>               if (kaddr >=3D kstart && kaddr <=3D kend) {
+>>  #ifdef DEBUG_CHECK_RANGE
+>> -                     srm_printk("OVERLAP: vaddr 0x%lx kaddr 0x%lx"
+>> -                                " [0x%lx:0x%lx]\n",
+>> +                     srm_printk("OVERLAP: vaddr 0x%lx kaddr 0x%lx" =
+" [0x%lx:0x%lx]\n",
+>>                                  vaddr, kaddr, kstart, kend);
+>>  #endif
+>
+> If you're doing this, you should merge the strings too.
+>
+> --
+> M=C3=A5ns Rullg=C3=A5rd
+> mans@mansr.com
 
-diff --git a/arch/alpha/boot/misc.c b/arch/alpha/boot/misc.c
-index 119d500..174b7c6 100644
---- a/arch/alpha/boot/misc.c
-+++ b/arch/alpha/boot/misc.c
-@@ -144,7 +144,7 @@ static void error(char *x)
- 	puts(x);
- 	puts("\n\n -- System halted");
- 
--	while (1);	
-+	while (1);
- 	/* Halt */
- }
- 
--- 
-1.9.1
-
+Very well,
+I will merge the strings for this statement.
+Nick
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
