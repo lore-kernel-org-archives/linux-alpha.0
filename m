@@ -1,19 +1,19 @@
 From: Nicholas Krause <xerofoify@gmail.com>
-Subject: [PATCH 4/5] alpha: Fix complex marco definitions
-Date: Tue, 15 Jul 2014 15:18:09 -0400
-Message-ID: <1405451890-6057-4-git-send-email-xerofoify@gmail.com>
+Subject: [PATCH 5/5] alpha: Fix while statement
+Date: Tue, 15 Jul 2014 15:18:10 -0400
+Message-ID: <1405451890-6057-5-git-send-email-xerofoify@gmail.com>
 References: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=j1/E/PEik8+MiiNwOvB86kDSiGY7Jqx6ypF8t+7YXVg=;
-        b=XF14hFDvyPu0CHnrqEq6ry7J5m6tHL6ZJTKrwuJgR7NuVI7r7auRVVc2ICF4IBGqZa
-         2iw93DLe6UaNphM5f+WB7mUjRyE6q+n0CLpUnsuB79iYjS8ar6wTfUJkLVDloGFzTl+S
-         9JBnimjbdF8SlS0ouNMNAQe+NacBZTps9Ee9Bu3IRomrO4QyFWjSy/+poL2SGU1unh/7
-         s67GYq9eZH9QAU23axVtJYlneLhQATMaNN/UDMEE0UN/MFAnkPS7ZciCIL3Gf2ZvwPMN
-         5eFtS78/pZ2/q7DkmoNdiW6tervlqmX0IGk4GFi9TO3j+WbApCsL4UCyDjZZpQ46kU4l
-         URQQ==
+        bh=gaD2hwCBsvqARGKC9ctVyExc5CPym2bXcUeP4nb78pw=;
+        b=V+hphfS2GU6I17Zvl6uSLNe301SeTWujDjlEe3ORWG8Kdzbo8Wv9L6AY3cN+GqPlOL
+         ZmG8Dp6as3sNQ7nKhahZEjX4FqQl9ms9BYojpj0/3qpeEcmfqmSGOfaxj53z2Ig9Zy+L
+         gUXrEuZwWIXOFBqtRCIisnBnn+cAHZRo2yJNPsy/BFnynJf4ZT4lFPsT3qA5u/ifhzdq
+         xXvqpDGkDISBusQ8wK2whRjtl1XqY5rVOEkIJj9TrhHzYpc5GVDixEs4OdXi+mPemyEl
+         /dGqc4qFsc7hrXaHYk4jozSDmKerkRAGg+sf7mfM9CMPsQtKL2ne/MqqaivKNm0/pzDP
+         RuIw==
 In-Reply-To: <1405451890-6057-1-git-send-email-xerofoify@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -23,35 +23,24 @@ Content-Transfer-Encoding: 7bit
 To: rth@twiddle.net
 Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This patch fixes all macro defintions that need parthesises as stated
-by checkpatch when run against this file.
+This fixes the if statement on line 147 of misc.c to have parthesises
+around itself removing a checkpatch error on this line.
 ---
- arch/alpha/boot/misc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/alpha/boot/misc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/alpha/boot/misc.c b/arch/alpha/boot/misc.c
-index 174b7c6..886e469 100644
+index 886e469..56c3325 100644
 --- a/arch/alpha/boot/misc.c
 +++ b/arch/alpha/boot/misc.c
-@@ -23,7 +23,7 @@
+@@ -144,7 +144,7 @@ static void error(char *x)
+ 	puts(x);
+ 	puts("\n\n -- System halted");
  
- #include <asm/uaccess.h>
+-	while (1);
++	while{ (1); }
+ 	/* Halt */
+ }
  
--#define memzero (s, n)	memset((s), 0 , (n))
-+#define memzero { (s, n)	memset((s), 0 , (n)) }
- #define puts		srm_printk
- extern long srm_printk(const char *, ...)
- 	__attribute__ ((format (printf, 1, 2)));
-@@ -61,8 +61,8 @@ static unsigned outcnt;		/* bytes in output buffer */
- 
- /* Diagnostic functions */
- #ifdef DEBUG
--#  define Assert (cond, msg) {if (!(cond)) error(msg) ; }
--#  define Trace(x) fprintf x
-+#  define Assert { (cond, msg) {if (!(cond)) error(msg) ; } }
-+#  define Trace { (x) fprintf x }
- #  define Tracev(x) {if (verbose) fprintf x ; }
- #  define Tracevv(x) {if (verbose > 1) fprintf x ; }
- #  define Tracec(c, x) {if (verbose && (c)) fprintf x ; }
 -- 
 1.9.1
