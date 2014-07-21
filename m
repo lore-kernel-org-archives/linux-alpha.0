@@ -1,31 +1,32 @@
-From: Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: Alpha Checkpatch Errors
-Date: Fri, 18 Jul 2014 13:50:30 -0400
-Message-ID: <20140718135030.6f6ea09e@gandalf.local.home>
-References: <CAPDOMVgJx4NTSDXyS4k9jfWzSw_vJ=TFDBPdCUgxa-Xato1bYA@mail.gmail.com>
-	<alpine.DEB.2.10.1407180013260.24854@nanos>
-	<CAPDOMViHhE22ndcjez+vfZWGprsx_Cw0Rn-FpaoNsi63cRnr9g@mail.gmail.com>
-	<1405653693.21735.9.camel@buesod1.americas.hpqcorp.net>
-	<CAPDOMVh-gtvTP6OY_fM31NcM_ez==f1fBNgV_YaoSXuQcUtiRQ@mail.gmail.com>
-	<20140718115847.GA23985@home.goodmis.org>
-	<CAPDOMVjj_v6eLiweiGHOCV61hxbpRoYLeKJVHCR35-1kJoM-wA@mail.gmail.com>
-	<20140718133139.5fcc69cd@gandalf.local.home>
-	<CAPDOMVikNzjLSwTGTWNpnNe+zwUYmKrs4+CzN__NVz3TAaNx5g@mail.gmail.com>
+From: Jakestevens <jakestevensloanfirm@gmail.com>
+Subject: Jakestevens hitel =?utf-8?b?Y8OpZw==?= =?utf-8?b?a29ybMOhdG96w7NkaWs=?= a jegyzett =?utf-8?b?dMWRa2Uu?=
+Date: Mon, 21 Jul 2014 20:41:07 +0000 (UTC)
+Message-ID: <loom.20140721T223909-429@post.gmane.org>
+References: <4D7F2C11.907@orcon.net.nz> <AANLkTimRDH4S1QMN6f4AfKOe6ipPK6jm+g91nuBJYQJa@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <CAPDOMVikNzjLSwTGTWNpnNe+zwUYmKrs4+CzN__NVz3TAaNx5g@mail.gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Nick Krause <xerofoify@gmail.com>
-Cc: Davidlohr Bueso <davidlohr@hp.com>, Thomas Gleixner <tglx@linutronix.de>, Richard Henderson <rth@twiddle.net>, ink@jurassic.park.msu.ru, Matt Turner <mattst88@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, Ingo Molnar <mingo@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Joe Perches <joe@perches.com>, Theodore Ts'o <tytso@mit.edu>
+Content-Type: text/plain; charset="utf-8"
+To: linux-alpha@vger.kernel.org
 
-On Fri, 18 Jul 2014 13:35:48 -0400
-Nick Krause <xerofoify@gmail.com> wrote:
-> 
-> Why are you even asking this?
+Jakestevens hitel c=C3=A9g korl=C3=A1toz=C3=B3dik a jegyzett t=C5=91ke.=
+ K=C3=ADn=C3=A1lunk hitelek =C3=A9s a
+p=C3=A9nz=C3=BCgyi
+szolg=C3=A1ltat=C3=A1sok mindenf=C3=A9le. A hitel v=C3=A1ltoz=C3=B3 =C3=
+=BCzleti szem=C3=A9lyes hossz=C3=BA vagy
+r=C3=B6vid t=C3=A1von. Felt=C3=A9telek kedvez=C5=91 kamatoz=C3=A1s=C3=BA=
+ (2%). A hitel folyamat
+nagyon gyors =C3=A9s megb=C3=ADzhat=C3=B3 garanci=C3=A1kkal. Tov=C3=A1b=
+bi inform=C3=A1ci=C3=B3 a
+szolg=C3=A1ltat=C3=A1sok, az =C3=BCzenet sz=C3=A1munkra a hitel=C3=B6ss=
+zeg kell a k=C3=B6vetkez=C5=91 e-mail c=C3=ADm=C3=A9t.
 
-What do you think?
+jakestevensloanfirm@gmail.com
 
--- Steve
+--
+To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
+in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
