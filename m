@@ -1,32 +1,43 @@
-From: Jakestevens <jakestevensloanfirm@gmail.com>
-Subject: Jakestevens hitel =?utf-8?b?Y8OpZw==?= =?utf-8?b?a29ybMOhdG96w7NkaWs=?= a jegyzett =?utf-8?b?dMWRa2Uu?=
-Date: Mon, 21 Jul 2014 20:41:07 +0000 (UTC)
-Message-ID: <loom.20140721T223909-429@post.gmane.org>
-References: <4D7F2C11.907@orcon.net.nz> <AANLkTimRDH4S1QMN6f4AfKOe6ipPK6jm+g91nuBJYQJa@mail.gmail.com>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Bug: retry of clone() on Alpha can result in zeroed process thread
+ pointer
+Date: Wed, 23 Jul 2014 20:52:44 +1200
+Message-ID: <20140723085244.GB4799@omega>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>
 
-Jakestevens hitel c=C3=A9g korl=C3=A1toz=C3=B3dik a jegyzett t=C5=91ke.=
- K=C3=ADn=C3=A1lunk hitelek =C3=A9s a
-p=C3=A9nz=C3=BCgyi
-szolg=C3=A1ltat=C3=A1sok mindenf=C3=A9le. A hitel v=C3=A1ltoz=C3=B3 =C3=
-=BCzleti szem=C3=A9lyes hossz=C3=BA vagy
-r=C3=B6vid t=C3=A1von. Felt=C3=A9telek kedvez=C5=91 kamatoz=C3=A1s=C3=BA=
- (2%). A hitel folyamat
-nagyon gyors =C3=A9s megb=C3=ADzhat=C3=B3 garanci=C3=A1kkal. Tov=C3=A1b=
-bi inform=C3=A1ci=C3=B3 a
-szolg=C3=A1ltat=C3=A1sok, az =C3=BCzenet sz=C3=A1munkra a hitel=C3=B6ss=
-zeg kell a k=C3=B6vetkez=C5=91 e-mail c=C3=ADm=C3=A9t.
+I am seeing a bug in clone() on the Alpha architecture.  Reported to
+Debian as https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=755397
 
-jakestevensloanfirm@gmail.com
+The test suite of glibc sometimes fails in the nptl/tst-eintr3 test
+with a segmentation fault.  I have tracked it down to the thread
+pointer returned by the rduniq PALcall is occasionally zero when
+it should point to the TLS.  I have only ever seen this occur when
+running a SMP kernel.
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Running strace on nptl/tst-eintr3 reveals that the clone() syscall
+is retried by the kernel if an ERESTARTNOINTR error occurs.  At
+$syscall_error in arch/alpha/kernel/entry.S the kernel handles the
+error and in doing that it writes to 72(sp) which is where the value
+of the a3 CPU register on entry to the kernel is stored.  Then the
+kernel retries the clone() function.  But the alpha specific code
+for copy_thread() in arch/alpha/kernel/process.c does not use the
+passed a3 cpu register (the argument tls), instead it goes to the
+saved stack to get the value of the a3 register, which on the
+second call to clone() has been modified to no longer be the value
+of the a3 cpu register on entry to the kernel.  And a latent bomb
+is laid for userspace in the form of an incorrect process unique
+value (which is the thread pointer) in the PCB.
+
+Am I correct in my analysis and, if so, can we get a fix for this
+please.
+
+Cheers
+Michael.
