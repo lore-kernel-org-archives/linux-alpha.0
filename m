@@ -1,19 +1,19 @@
 From: Richard Henderson <rth@twiddle.net>
-Subject: [PATCH 1/2] alpha: Remove "strange" OSF/1 fork semantics
-Date: Wed, 30 Jul 2014 11:42:31 -1000
-Message-ID: <1406756552-23864-2-git-send-email-rth@twiddle.net>
+Subject: [PATCH 2/2] alpha: Add sched_set/getattr and renameat2 syscalls
+Date: Wed, 30 Jul 2014 11:42:32 -1000
+Message-ID: <1406756552-23864-3-git-send-email-rth@twiddle.net>
 References: <1406756552-23864-1-git-send-email-rth@twiddle.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+0Md5wFe8FW5Ju5iJzHHs4lwlUrWGKJsV3RflFHiLf4=;
-        b=KLiuT9YQHEIwkog2g53bhB3cYBMRVD7kVb7BBrWQk1gbcmbmEFiAioxVMDhLVPXlVe
-         0aEiUihwLB6j19330zvc6P4GWxzuKHIKdroy+D7ypGok+aOBgnClHyA+Yfle9or+jJUO
-         Z5EkNUEDM4fQDU6y77rJilbjwXcmKrenOsD3d2stn/SZRnJTOa+BT27yYza62NU4CQy7
-         56ZNSI2mquWe+XG2UcOv3AaeuWJigsyGtWS2OIcd3Jb57OjDZpYnzgMD99J2Xe5lSlj0
-         TX8Ru3rLdMZZxB7MEA/LyoFcG9yfhFs/GqRq7QNzeGadM2tzmKn+8wuu/pRS2DiQjla0
-         E/NQ==
+        bh=NPkB3qW8UVCXt9qw4WfxMVGG9+iuHyuimz9tp4LHn5Q=;
+        b=OOIu0Cl3wdjjDRg1Z9LSSeTszUayDdOYsESgVhefxHSQ7W5iOwnYh2C+DNWHe1qIHc
+         dpMWinruOQD826s9y9Gw/Vr3rC+Ea/nx9K/aMPcU2d3XRqPTo7+Tikx7Iw4q26zkanWn
+         +acFwANpDIkvwJOq8Ch8hP8q4fv1u2xhtc3CRC+ryIJx2s/xqZ+0H4juRuzyMkAvPXK9
+         BrJXvDnvjx0PSQljHEmYqVc6/b4kKQ/6g1ddZKyUWQZRS6PP8c+jCPVCx0OwT8xt8Q4x
+         xTlw8RQMyE6m09vD7j4bMHT4N2qGYL7vx0LTK8sL28o5V9+fGjizoigtmfSjbZM/nwyu
+         oQ0w==
 In-Reply-To: <1406756552-23864-1-git-send-email-rth@twiddle.net>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -23,35 +23,52 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: mcree@orcon.net.nz, linux-alpha@vger.kernel.org
 
-The assignment to regs->r20 kills the original tls_val input
-to the clone syscall, which means that clone can no longer be
-restarted with the original inputs.
-
-We could, perhaps, retain this result for true fork, but OSF/1
-compatibility is no longer important.  Note that glibc has never
-used the r20 result value, instead always testing r0 vs 0 to
-determine the child/parent status.
-
-This failure can be seen in the glibc nptl/tst-eintr* tests.
-
-Reported-by: Michael Cree <mcree@orcon.net.nz>
 Signed-off-by: Richard Henderson <rth@twiddle.net>
 ---
- arch/alpha/kernel/process.c | 2 --
- 1 file changed, 2 deletions(-)
+ arch/alpha/include/asm/unistd.h      | 2 +-
+ arch/alpha/include/uapi/asm/unistd.h | 3 +++
+ arch/alpha/kernel/systbls.S          | 3 +++
+ 3 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index 1941a07..77028d7 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -278,8 +278,6 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
- 	*childregs = *regs;
- 	childregs->r0 = 0;
- 	childregs->r19 = 0;
--	childregs->r20 = 1;	/* OSF/1 has some strange fork() semantics.  */
--	regs->r20 = 0;
- 	stack = ((struct switch_stack *) regs) - 1;
- 	*childstack = *stack;
- 	childstack->r26 = (unsigned long) ret_from_fork;
+diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
+index f2c9440..c509d30 100644
+--- a/arch/alpha/include/asm/unistd.h
++++ b/arch/alpha/include/asm/unistd.h
+@@ -3,7 +3,7 @@
+ 
+ #include <uapi/asm/unistd.h>
+ 
+-#define NR_SYSCALLS			508
++#define NR_SYSCALLS			511
+ 
+ #define __ARCH_WANT_OLD_READDIR
+ #define __ARCH_WANT_STAT64
+diff --git a/arch/alpha/include/uapi/asm/unistd.h b/arch/alpha/include/uapi/asm/unistd.h
+index 53ae7bb..d214a035 100644
+--- a/arch/alpha/include/uapi/asm/unistd.h
++++ b/arch/alpha/include/uapi/asm/unistd.h
+@@ -469,5 +469,8 @@
+ #define __NR_process_vm_writev		505
+ #define __NR_kcmp			506
+ #define __NR_finit_module		507
++#define __NR_sched_setattr		508
++#define __NR_sched_getattr		509
++#define __NR_renameat2			510
+ 
+ #endif /* _UAPI_ALPHA_UNISTD_H */
+diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+index dca9b3f..2478971 100644
+--- a/arch/alpha/kernel/systbls.S
++++ b/arch/alpha/kernel/systbls.S
+@@ -526,6 +526,9 @@ sys_call_table:
+ 	.quad sys_process_vm_writev		/* 505 */
+ 	.quad sys_kcmp
+ 	.quad sys_finit_module
++	.quad sys_sched_setattr
++	.quad sys_sched_getattr
++	.quad sys_renameat2			/* 510 */
+ 
+ 	.size sys_call_table, . - sys_call_table
+ 	.type sys_call_table, @object
 -- 
 1.9.3
