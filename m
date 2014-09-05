@@ -1,104 +1,66 @@
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-Subject: Re: [PATCH v3] arch: Kconfig: Let all architectures set endian explicitly
-Date: Mon, 25 Aug 2014 20:26:31 +0800
-Message-ID: <53FB2B77.8070606@gmail.com>
-References: <53ECE9DD.80004@gmail.com> <20140814180418.GA20777@linux-mips.org> <53ED34CE.3040001@gmail.com> <53EDCC60.5040608@gmail.com> <53F9A48F.3020803@gmail.com>
+From: Peter Hurley <peter@hurleysoftware.com>
+Subject: Re: bit fields && data tearing
+Date: Thu, 04 Sep 2014 20:59:32 -0400
+Message-ID: <54090AF4.7060406@hurleysoftware.com>
+References: <20140712181328.GA8738@redhat.com>	 <54079B70.4050200@hurleysoftware.com> <1409785893.30640.118.camel@pasglop>	 <063D6719AE5E284EB5DD2968C1650D6D17487172@AcuExch.aculab.com> <1409824374.4246.62.camel@pasglop> <5408E458.3@zytor.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=message-id:date:from:user-agent:mime-version:to:cc:subject
-         :references:in-reply-to:content-type:content-transfer-encoding;
-        bh=GQ5QHWpAfHOi1hi/YgRiyZDF/ALDEuRpuJ84ukra6RQ=;
-        b=V+hgbNP2nsfJDrU4AXMNY7fQZtxVX5KK29Us+7dzpNhyHfivVktMG7PJC6cJyIppim
-         nPzu9z5YatcwWJvfPb1iphd+TXld/aIMsbi0/WTMg/0mFeu9D8G3tp7P+XBYFHvhW3dE
-         K9eJhA8h3K+0C5Fuhy2M/5jC2L/N4mwdZEGusMbP+qtOAxbz28JLKt9azOvXd2u75U+g
-         7BKqJo52CJPu5iDRbMOXAhi5C1b1JakiX2qAbJW0kQBgpqdKICHWPIQ/pqO12mP7fTA0
-         iwZWzLl8P0CqiFDH3zSFAMyKxTwDrmV4w0St89bZNTOU89EC/pM8TtY+ss8tcbudpM3S
-         Hjdw==
-In-Reply-To: <53F9A48F.3020803@gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <5408E458.3@zytor.com>
+Sender: linux-ia64-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Ralf Baechle <ralf@linux-mips.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, akpm@linux-foundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@synopsys.com, Geert Uytterhoeven <geert@linux-m68k.org>, Jean Delvare <jdelvare@suse.de>, linux@arm.linux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, hskinnemoen@gmail.com, egtvedt@samfundet.no, realmz6@gmail.com, msalter@redhat.com, a-jacquiot@ti.com, starvik@axis.com, jesper.nilsson@axis.com, dhowells@redhat.com, rkuo@codeaurora.org, tony.luck@intel.com, fenghua.yu@intel.com, takata@linux-m32r.org, james.hogan@imgtec.com, Michal Simek <monstr@monstr.eu>, yasutake.koichi@jp.panasonic.com, jonas@southpole.se, jejb@parisc-linux.org, deller@gmx.de, Benjamin Herrenschmidt <benh@kernel.crashing.org>, paulus@samba.org, mpe@ellerman.id.au, Mart
+To: "H. Peter Anvin" <hpa@zytor.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Laight <David.Laight@ACULAB.COM>
+Cc: Jakub Jelinek <jakub@redhat.com>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Oleg Nesterov <oleg@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Paul Mackerras <paulus@samba.org>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Miroslav Franc <mfranc@redhat.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
 
-Hello all:
+[ +cc linux-alpha ]
 
-It seems no any additional rejections for it. I guess, I need split the
-'big' patch into pieces, and each send to its' related mailing list, so
-let it not like a spam. And the schedule may like:
-
- - Firstly, send patch for "init/Kconfig" to add CPU_*_ENDIAN. If pass
-   checking (hope it can be passed checking), then
-
- - Send each related patch to each related architectures which already
-   knew their ENDIAN attributes in config time (24 patches, I guess),
-   then
-
- - Make patch for Kbuild to support __BUILDING_TIME_BIG_ENDIAN__, and
-   pass checking (hope I can finish), then
-
- - Finish left architectures which need __BUILDING_TIME_BIG_ENDIAN__
-   (4 patches, I guess).
-
-Welcome any ideas, suggestions, or completions. And if no additional
-reply, I shall not send any additional information any more to avoid
-spam to other members.
-
-
-Thanks.
-
-On 08/24/2014 04:38 PM, Chen Gang wrote:
-> Hello Maintainers:
-> 
-> Is this patch OK? If it pass basic checking, please let me know, and I
-> shall try to make another related patch for KBuild (I can do nothing
-> related with Kbuild, before get confirmation for this patch).
-> 
-> Thanks.
-> 
-> On 8/15/14 17:01, Chen Gang wrote:
+On 09/04/2014 06:14 PM, H. Peter Anvin wrote:
+> On 09/04/2014 02:52 AM, Benjamin Herrenschmidt wrote:
 >>
->>
->> On 8/15/14 6:14, Chen Gang wrote:
->>> On 08/15/2014 02:04 AM, Ralf Baechle wrote:
->>>>
->>>
->>> OK, thanks, I assumes when support both endian, the default choice is
->>> CPU_BIG_ENDIAN, although no default value for choice (originally, I did
->>> worry about it).
->>>
->>>> So I think you can just drop the MIPS segment from your patch.
->>>>
->>>
->>> If what I assumes is correct, what you said sounds reasonable to me.
->>>
->>>
->>
->> So for me, it is harmless to add CPU_*_ENDIAN explicitly, and can let
->> other members don't need think of.
->>
->> By the way, for sh, it is almost the same case, except it contents the
->> default value, for me, it is clear enough, so I skip sh architecture in
->> this patch.
->>
->>
->> Thanks
+>> Yeah correct, alpha and bytes right ? Is there any other ? That's why I
+>> suggested int.
 >>
 > 
+> Even for Alpha it is only the 21064 AFAIK.
 
--- 
-Chen Gang
+For -mcpu=ev5 (21164) and the following test
 
-Open, share, and attitude like air, water, and life which God blessed
+struct x {
+	long a;
+	char b;
+	char c;
+	char d;
+	char e;
+};
+
+void store_b(struct x *p) {
+	p->b = 1;
+}
+
+gcc generates:
+
+void store_b(struct x *p) {
+   0:	08 00 30 a0 	ldl	t0,8(a0)
+   4:	01 f1 3f 44 	andnot	t0,0xff,t0
+   8:	01 34 20 44 	or	t0,0x1,t0
+   c:	08 00 30 b0 	stl	t0,8(a0)
+  10:	01 80 fa 6b 	ret
+
+IOW, rmw on 3 adjacent bytes, which is bad :)
+For -mcpu=ev56 (21164A), the generated code is:
+
+void store_b(struct x *p) {
+   0:	01 00 3f 20 	lda	t0,1
+   4:	08 00 30 38 	stb	t0,8(a0)
+   8:	01 80 fa 6b 	ret
+
+which is ok.
+I have no idea how prevalent the ev56 is compared to the ev5.
+Still we're talking about a chip that came out in 1996.
+
+I still hate split caches though.
+
+Regards,
+Peter Hurley
 
