@@ -1,7 +1,7 @@
-From: Rob Landley <rob@landley.net>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
 Subject: Re: bit fields && data tearing
-Date: Wed, 10 Sep 2014 16:10:56 -0500
-Message-ID: <CAOS_Y6SA_TZUgr7nHiA_0EUuL9J9rTMboRTMBCfcoiHGONXYhw@mail.gmail.com>
+Date: Thu, 11 Sep 2014 11:04:11 +0100
+Message-ID: <20140911110411.2de01944@alan.etchedpixels.co.uk>
 References: <20140712181328.GA8738@redhat.com>
 	<54079B70.4050200@hurleysoftware.com>
 	<1409785893.30640.118.camel@pasglop>
@@ -13,67 +13,46 @@ References: <20140712181328.GA8738@redhat.com>
 	<5409D76D.2070203@hurleysoftware.com>
 	<5409D9C0.7030403@zytor.com>
 	<20140908185240.21f52ca0@alan.etchedpixels.co.uk>
-	<5410B1FE.9090504@zytor.com>
+	<540DEE6C.2060904@zytor.com>
+	<540E3207.7090007@hurleysoftware.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <5410B1FE.9090504@zytor.com>
+In-Reply-To: <540E3207.7090007@hurleysoftware.com>
 Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "H. Peter Anvin" <hpa@zytor.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Peter Hurley <peter@hurleysoftware.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Laight <David.Laight@aculab.com>, Jakub Jelinek <jakub@redhat.com>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Oleg Nesterov <oleg@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Paul Mackerras <paulus@samba.org>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Miroslav Franc <mfranc@redhat.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
+To: Peter Hurley <peter@hurleysoftware.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>, David Laight <David.Laight@ACULAB.COM>, Jakub Jelinek <jakub@redhat.com>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Oleg Nesterov <oleg@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Paul Mackerras <paulus@samba.org>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Miroslav Franc <mfranc@redhat.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
 
-On Wed, Sep 10, 2014 at 3:18 PM, H. Peter Anvin <hpa@zytor.com> wrote:
-> On 09/08/2014 10:52 AM, One Thousand Gnomes wrote:
->>
->> I think the whole "removing Alpha EV5" support is basically bonkers. Just
->> use set_bit in the tty layer. Alpha will continue to work as well as it
->> always has done and you won't design out support for any future processor
->> that turns out not to do byte aligned stores.
->>
->
-> I think it's pretty safe to say such a processor is unlikely to ever be
-> created, for the same reason there weren't any 48-bit computers when
-> 32-bit computers ran out of steam: it caused more problems than it
-> solved, and Alpha pretty much proved that.  The engineering advantages
-> would have to be so overwhelmingly in favor for someone to want to walk
-> down that road again.
->
->         -hpa
+> > Is *that* what we are talking about?  I was added to this conversation
+> > in the middle where it had already generalized, so I had no idea.
+> 
+> No, this is just what brought this craziness to my attention.
 
-I note for the record I'm trying to get basic Alpha support working in
-http://landley.net/aboriginal/about.html now that qemu at least offers
-a qemu-system-alpha, and if I do get it working I may take a stab at
-adding alpha support to musl-libc.
+None of it is craziness. It's the real world leaking into the crazy
+delusional world of sequential programming. Machines are going to get
+more not less parallel.
 
-It's not just that I want to get cross platform testing of package
-builds working on a convenient/reproducible/portable way on as many
-different targets as I can. My project is designed the way it is
-because I think losing the ability to reproduce things from first
-principles (and thus understand why it was done that way in the first
-place) is a _bad_idea_. And an increasingly real-world problem, see
-http://wrttn.in/04af1a for example. (And the way NASA lost the plans
-for the Saturn V rocket... In fact scientists' general disinclination
-to reproduce old experimental results to see if they were actually
-true or not comes up on a regular basis, most recent I saw was
-http://www.theglobeandmail.com/life/health-and-fitness/health/the-curious-case-of-the-cyclists-unshaved-legs/article20370814/
-)
+> For example, byte- and short-sized circular buffers could not possibly
+> be safe either, when the head nears the tail.
+> 
+> Who has audited global storage and ensured that _every_ byte-sized write
+> doesn't happen to be adjacent to some other storage that may not happen
+> to be protected by the same (or any) lock?
 
-Of course Peter has consistently dismissed my concerns as "academic":
+Thats a meaningless question. Have you audited it all for correctness of
+any other form. Have you mathematically verified the functionality as a
+set of formal proofs ? If you can't prove its formally mathematically
+functionally correct why are you worried about this ?
 
-http://lkml.iu.edu/hypermail/linux/kernel/0802.1/4400.html
+Alpha works, maybe it has a near theoretical race on that point. It's not
+any worse than it was 15 years ago and nobody has really hit a problem
+with it. So from that you can usefully infer that those buffer cases are
+not proving a real problem.
 
-Personally, I hope the projects I work on _do_ outlive me, an try to
-make it easy for newbies to recapitulate phylogeny. That's why I
-thought requiring perl dependencies to build was a bad idea, and why I
-thought removing 386 support entirely (instead of restricting it to
-UP) was a bad idea. The idea that Linux no longer needs to build on
-the original machine Linus designed it for, and now it no longer needs
-to work on the machine the "arch" directory was created for (and the
-first 64 bit machine)... These positions would appear to have a single
-consistent proponent, with whom I disagree.
+The tty locks together on the other hand are asking to hit it, and the
+problem you were trying to fix were the ones that need set_bit() to make
+the guarantees.
 
-Oh well, just wanted to get that out there,
-
-Rob
+Alan
