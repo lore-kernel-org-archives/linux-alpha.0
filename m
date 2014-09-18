@@ -1,51 +1,50 @@
-From: Seunghun Lee <waydi1@gmail.com>
-Subject: Re: [PATCH] vfs: move getname() from callers to do_mount()
-Date: Mon, 15 Sep 2014 14:26:44 +0900
-Message-ID: <80cfae67-803f-4e94-b3d4-ac189e4c70f5@email.android.com>
-References: <1410537212-3153-1-git-send-email-waydi1@gmail.com> <1410700510-15408-1-git-send-email-waydi1@gmail.com> <20140914181259.GQ7996@ZenIV.linux.org.uk> <CA+LGb9aaMpiotK7-NUv4hKcJHbuWQE=DC=p=90ZguWqn44qcTQ@mail.gmail.com> <20140915051850.GT7996@ZenIV.linux.org.uk>
-Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Subject: [PATCH] asm/uapi: Add definition of TIOC[SG]RS485
+Date: Thu, 18 Sep 2014 08:45:45 +0200
+Message-ID: <1411022745-6198-1-git-send-email-ricardo.ribalda@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=user-agent:in-reply-to:references:mime-version
-         :content-transfer-encoding:content-type:subject:from:date:to:cc
-         :message-id;
-        bh=Bjn6vALTXtIoyDy/xB4lotCYZO9xoe7X3UD1wa9HgLE=;
-        b=vCsVF8PMqjX5p1mons1Tm0zeBK6Sw1LIPSiFC5hmUOd+gRvYcPr34a/gDeSYauQx5g
-         gjp9+8nH94OVn0kPEdrRDKC298+x2BZXf/UkM4lje7ib1PKVIEGX48EfFGGfUoXg6J9X
-         At5u/FANG00eZpBZQOyxMUTTxCc9yjcHgG5mju7SsxvZ60QS8wB43aekT9QZatkaGf4Q
-         2Xs5obd4o/IMsH7QTvVyPigS2J7Yh8fjIzU8vmQ1AeA6jX/Kv6Ny8Yb9txqoLWlTd4d7
-         TlF9kstDgEsSgn6LdhlGg9xRfdiykMx03I7PoCMbBq6axiZbqyxSaCTaCny6rXU8iZVA
-         Rglw==
-In-Reply-To: <20140915051850.GT7996@ZenIV.linux.org.uk>
+        h=from:to:cc:subject:date:message-id;
+        bh=lsp0Hs0q3aS1BGfu7iaZub+fOrG/+/i4R/Mq+pVLZ6M=;
+        b=FrJUJWB5IT8u177e4rlOI54oRObbEAfYg0E0YSBn6rbqvuIT5oLqGIAGabe9gtKc0C
+         XiB3xdE7OjP1wejJ/fb+LbQl+cddhm+qk1tqw0EuWdGI99bJRN7FoBmjKlUpaJ1B0VWX
+         NgQGDOKOhpX7B5sA7do5zEC/vq4ICMBPrMq2rNkqsCk68g7Elf2leE55+Umz8yedS0KE
+         QQKjM740t9LyJDmkdjyJeJbx21zWpVtq3/+Q4DKfZzLOz4xAaVGlpkNRebu1A0YL6gMj
+         qsbES+BlaBEmLgMS1aTYtdUbGVPo26aQtO7qtMeYFCgvwby5KfM71AA+erH4xQYPjeEp
+         aChg==
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Al Viro <viro@ZenIV.linux.org.uk>
-Cc: Bruce Fields <bfields@fieldses.org>, ink@jurassic.park.msu.ru, jlayton@poochiereds.net, linux-fsdevel@vger.kernel.org, linux-alpha@vger.kernel.org, mattst88@gmail.com, rth@twiddle.net, linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Greg KH <greg@kroah.com>, linux-serial@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
 
-On September 15, 2014 2:18:50 PM GMT+09:00, Al Viro <viro@ZenIV.linux.o=
-rg.uk> wrote:
->On Mon, Sep 15, 2014 at 01:39:19PM +0900, Seunghun Lee wrote:
->> 2014. 9. 15. =EC=98=A4=EC=A0=84 3:13=EC=97=90 "Al Viro" <viro@zeniv.=
-linux.org.uk> wrote:
->> > Applied with one modification: this getname/kern_path/putname is
->
->> Ok, I will resend it after modification.
->
->See above...  It's already in vfs.git#for-next.  The last commit of th=
-e
->branch at the moment.  The change was trivial - done it while applying
->the
->patch.
+Commit: e676253b19b2d269cccf67fdb1592120a0cd0676 (serial/8250: Add
+support for RS485 IOCTLs), adds support for RS485 ioctls for 825_core on
+all the archs. Unfortunaltely the definition of TIOCSRS485 and
+TIOCGRS485 was missing on the ioctls.h file
 
-Oh sorry, I misunderstood your email.
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+---
+ arch/alpha/include/uapi/asm/ioctls.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks.
+diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
+index 92c557b..f30c94a 100644
+--- a/arch/alpha/include/uapi/asm/ioctls.h
++++ b/arch/alpha/include/uapi/asm/ioctls.h
+@@ -90,6 +90,8 @@
+ #define TIOCSBRK	0x5427  /* BSD compatibility */
+ #define TIOCCBRK	0x5428  /* BSD compatibility */
+ #define TIOCGSID	0x5429  /* Return the session ID of FD */
++#define TIOCGRS485	_IOR('T', 0x2E, struct serial_rs485)
++#define TIOCSRS485	_IOWR('T', 0x2F, struct serial_rs485)
+ #define TIOCGPTN	_IOR('T',0x30, unsigned int) /* Get Pty Number (of pty-mux device) */
+ #define TIOCSPTLCK	_IOW('T',0x31, int)  /* Lock/unlock Pty */
+ #define TIOCGDEV	_IOR('T',0x32, unsigned int) /* Get primary device node of /dev/console */
+-- 
+2.1.0
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
