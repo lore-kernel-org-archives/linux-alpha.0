@@ -1,67 +1,45 @@
-From: Max Filippov <jcmvbkbc@gmail.com>
-Subject: Re: [PATCH] atomic_read: Use ACCESS_ONCE() instead of cast to volatile
-Date: Wed, 24 Sep 2014 03:56:39 +0400
-Message-ID: <CAMo8BfKxwq=pc5Lym7X0Qdgmr37jJ-OK_dCmzukkHxtCxz8_7A@mail.gmail.com>
-References: <1411482607-20948-1-git-send-email-bobby.prani@gmail.com>
-Mime-Version: 1.0
-Return-path: <linux-mips-bounce@linux-mips.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
-         :cc:content-type;
-        bh=IiESKKAOfEPzw1Oxz82a8AbV2yIceR7E9uGLcZGx1hw=;
-        b=fmILcF//HR/aPGDjiCDN0TxakDCAOnYOSOmf6gUNnBrhtUdGYqTXLl+IM9C9C3vSzo
-         wBLp8ix6zbwIrjdzYJvrDvddqRb53VvOcW8IgE0blhF15GDpdrvV98cl77C5eZs31Tvl
-         ttNaR2kYwp/0LiaYxD3tq11jptcxu6V+Vou5yDo54uIOOVGVlMnl302KlJgi9nWGUdSi
-         3HNDM/wnTaOr39XR/4CkZA6TFAnSS0HgqhUwFpxX60T8UOwcKHV0xKLFfHVfC/k10YbK
-         RSZcX1EaG1cgzwNgC39r0Aw1NmkTvyr2HC8qbz6C7WjIP7vuu2xPnw/5lZBdAIdqxoLf
-         DjKA==
-In-Reply-To: <1411482607-20948-1-git-send-email-bobby.prani@gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 03/44] hibernate: Call have_kernel_poweroff instead of checking pm_power_off
+Date: Mon,  6 Oct 2014 22:28:05 -0700
+Message-ID: <1412659726-29957-4-git-send-email-linux@roeck-us.net>
+References: <1412659726-29957-1-git-send-email-linux@roeck-us.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=roeck-us.net; s=default;
+	h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=I3SR4Q/d4aHJTkUJ5Y3TcLRykrT2is/gOCrUpJykK/E=;
+	b=2AVU1WSm5W7j+0O6Np81P10ByPdZ5awONROIedEfs8wY4bXEI844lwiNtZrzuMM5D7gbI6Z6ac32sJowU/I3p6tpafFWZMocKRX7+XlZVDaRh172hpVd1anq17NVZa5p9x4Mog6tiGhehLXD2P7BkpvHQwUH/mEoNJ/7HqM8rfE=;
+In-Reply-To: <1412659726-29957-1-git-send-email-linux@roeck-us.net>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Pranith Kumar <bobby.prani@gmail.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@arm.linux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, David Howells <dhowells@redhat.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Hirokazu Takata <takata@linux-m32r.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Ralf Baechle <ralf@linux-mips.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>
+To: linux-kernel@vger.kernel.org
+Cc: adi-buildroot-devel@lists.sourceforge.net, devel@driverdev.osuosl.org, devicetree@vger.kernel.org, lguest@lists.ozlabs.org, linux-acpi@vger.kernel.org, linux-alpha@vger.kernel.org, linux-am33-list@redhat.com, linux-cris-kernel@axis.com, linux-efi@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m32r-ja@ml.linux-m32r.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-xtensa@linux-xtensa.org, openipmi-developer@lists.sourceforge.net, user-mode-linux-devel@lists.sourceforge.net, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-sh@vger.kernel.org, xen-devel@lists.xenproject.org, Guenter Roeck <linux@roeck-us.net>, Rafael J. W
 
-On Tue, Sep 23, 2014 at 6:29 PM, Pranith Kumar <bobby.prani@gmail.com> wrote:
-> Use the much reader friendly ACCESS_ONCE() instead of the cast to volatile. This
-> is purely a style change.
->
-> Signed-off-by: Pranith Kumar <bobby.prani@gmail.com>
-> ---
->  arch/alpha/include/asm/atomic.h    | 4 ++--
->  arch/arm/include/asm/atomic.h      | 2 +-
->  arch/arm64/include/asm/atomic.h    | 4 ++--
->  arch/avr32/include/asm/atomic.h    | 2 +-
->  arch/cris/include/asm/atomic.h     | 2 +-
->  arch/frv/include/asm/atomic.h      | 2 +-
->  arch/ia64/include/asm/atomic.h     | 4 ++--
->  arch/m32r/include/asm/atomic.h     | 2 +-
->  arch/m68k/include/asm/atomic.h     | 2 +-
->  arch/mips/include/asm/atomic.h     | 4 ++--
->  arch/parisc/include/asm/atomic.h   | 4 ++--
->  arch/sh/include/asm/atomic.h       | 2 +-
->  arch/sparc/include/asm/atomic_32.h | 2 +-
->  arch/sparc/include/asm/atomic_64.h | 4 ++--
->  arch/x86/include/asm/atomic.h      | 2 +-
->  arch/x86/include/asm/atomic64_64.h | 2 +-
->  arch/xtensa/include/asm/atomic.h   | 2 +-
->  include/asm-generic/atomic.h       | 2 +-
->  18 files changed, 24 insertions(+), 24 deletions(-)
+Poweroff handlers may now be installed with register_poweroff_handler.
+Use the new API function have_kernel_poweroff to determine if a poweroff
+handler has been installed.
 
-For xtensa:
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Len Brown <len.brown@intel.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ kernel/power/hibernate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
+index a9dfa79..20353c5 100644
+--- a/kernel/power/hibernate.c
++++ b/kernel/power/hibernate.c
+@@ -602,7 +602,7 @@ static void power_down(void)
+ 	case HIBERNATION_PLATFORM:
+ 		hibernation_platform_enter();
+ 	case HIBERNATION_SHUTDOWN:
+-		if (pm_power_off)
++		if (have_kernel_poweroff())
+ 			kernel_power_off();
+ 		break;
+ #ifdef CONFIG_SUSPEND
 -- 
-Thanks.
--- Max
-
+1.9.1
