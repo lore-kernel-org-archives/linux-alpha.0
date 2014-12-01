@@ -1,82 +1,107 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH 5/5] PCI: Rip out pci_bus_add_devices() from pci_scan_root_bus()
-Date: Thu, 20 Nov 2014 09:49:05 +0800
-Message-ID: <546D4891.80503@huawei.com>
-References: <1416382369-13587-1-git-send-email-wangyijing@huawei.com> <1416382369-13587-6-git-send-email-wangyijing@huawei.com> <1645037.uypArjN50l@wuerfel>
+From: Chen Gang <gang.chen.5i5j@gmail.com>
+Subject: [PATCH] arch: uapi: asm: mman.h: Support MADV_FREE for madvise()
+Date: Tue, 02 Dec 2014 04:43:19 +0800
+Message-ID: <547CD2E7.7030100@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1645037.uypArjN50l@wuerfel>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=message-id:date:from:user-agent:mime-version:to:cc:subject
+         :content-type:content-transfer-encoding;
+        bh=A7E75woH+ZUFWug5UW6V5RNoSJDbxFaryl+jr8Y/tOE=;
+        b=L4gdNirVqvj1Y3dyvo9gmFC5kHDBPMrer4qgXIiIQ9UVh6KNahR+qWfWolqsS9WPWH
+         pZPQzs1LsN8M2K+jBnscC1BIdLBqLB/9UYHA/PqY3n15jlyreH+g0cOUe7l9kQr0LAIa
+         yu3vyYuKa35wKJIi05DAB4vL9NdNrdyUAd0cUJ8aM1Pv4vdLxiuuGP+2W9p91oRAiBq8
+         XKCwJXqfZK/Ssyr8VKQW37yHyfVs75NnT33lHEAZzeI8Np9X1U0vW6q6jCVuR/eetcJR
+         Yyolo0qny9x09B8bw0bgyG+EdZA7E2dBOr1pgpb6umzTjkRSodifuNPzZEXzDw80MdJ6
+         bn9Q==
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, linux-pci@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, sparclinux@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+To: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, minchan@kernel.org, "rth@twiddle.net" <rth@twiddle.net>, "ink@jurassic.park.msu.ru" <ink@jurassic.park.msu.ru>, "mattst88@gmail.com" <mattst88@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, "jejb@parisc-linux.org" <jejb@parisc-linux.org>, "deller@gmx.de" <deller@gmx.de>, "chris@zankel.net" <chris@zankel.net>, "jcmvbkbc@gmail.com" <jcmvbkbc@gmail.com>
+Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
->> diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
->> index 076c35c..97f9730 100644
->> --- a/arch/alpha/kernel/pci.c
->> +++ b/arch/alpha/kernel/pci.c
->> @@ -334,6 +334,8 @@ common_init_pci(void)
->>  
->>  		bus = pci_scan_root_bus(NULL, next_busno, alpha_mv.pci_ops,
->>  					hose, &resources);
->> +		if (bus)
->> +			pci_bus_add_devices(bus);
->>  		hose->bus = bus;
->>  		hose->need_domain_info = need_domain_info;
->>  		next_busno = bus->busn_res.end + 1;
-> 
-> How about making pci_bus_add_devices() handle a NULL argument to save
-> the if() here and elsewhere?
+At present, kernel supports madvise(MADV_FREE), so can benefit to all
+related architectures (can grep MADV_WILLNEED or MADV_REMOVE in "arch/"
+to know about all related architectures).
 
-This make sense, will update it, thanks!
+The related git commit: "4fb10ba mm: support madvise(MADV_FREE)".
 
->> diff --git a/arch/mips/pci/pci.c b/arch/mips/pci/pci.c
->> index 1bf60b1..f083688 100644
->> --- a/arch/mips/pci/pci.c
->> +++ b/arch/mips/pci/pci.c
->> @@ -113,6 +113,7 @@ static void pcibios_scanbus(struct pci_controller *hose)
->>  		if (!pci_has_flag(PCI_PROBE_ONLY)) {
->>  			pci_bus_size_bridges(bus);
->>  			pci_bus_assign_resources(bus);
->> +			pci_bus_add_devices(bus);
->>  		}
->>  	}
->>  }
-> 
-> This one looks wrong, I think you still want to call pci_bus_add_devices()
-> even with PCI_PROBE_ONLY set.
+The related error (with allmodconfig under parisc):
 
-Yes, this is my mistake, :(
+    CC      mm/madvise.o
+  mm/madvise.c: In function 'madvise_need_mmap_write':
+  mm/madvise.c:42:7: error: 'MADV_FREE' undeclared (first use in this function)
+    case MADV_FREE:
+       ^
+  mm/madvise.c:42:7: note: each undeclared identifier is reported only once for each function it appears in
+  mm/madvise.c: In function 'madvise_vma':
+  mm/madvise.c:534:7: error: 'MADV_FREE' undeclared (first use in this function)
+    case MADV_FREE:
+       ^
+  mm/madvise.c: In function 'madvise_behavior_valid':
+  mm/madvise.c:561:7: error: 'MADV_FREE' undeclared (first use in this function)
+    case MADV_FREE:
+       ^
+  make[1]: *** [mm/madvise.o] Error 1
+  make: *** [mm] Error 2
 
-> 
->> diff --git a/arch/tile/kernel/pci.c b/arch/tile/kernel/pci.c
->> index 1f80a88..007466e 100644
->> --- a/arch/tile/kernel/pci.c
->> +++ b/arch/tile/kernel/pci.c
->> @@ -308,6 +308,8 @@ int __init pcibios_init(void)
->>  			pci_add_resource(&resources, &iomem_resource);
->>  			bus = pci_scan_root_bus(NULL, 0, controller->ops,
->>  						controller, &resources);
->> +			if (bus)
->> +				pci_bus_add_devices(bus);
->>  			controller->root_bus = bus;
->>  			controller->last_busno = bus->busn_res.end;
->>  		}
-> 
-> Should the pci_bus_add_devices come after setting the bus numbers here?
+Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
+---
+ arch/alpha/include/uapi/asm/mman.h  | 1 +
+ arch/mips/include/uapi/asm/mman.h   | 1 +
+ arch/parisc/include/uapi/asm/mman.h | 1 +
+ arch/xtensa/include/uapi/asm/mman.h | 1 +
+ 4 files changed, 4 insertions(+)
 
-I think it's doesn't matter, but move it backward is ok to me.
-
-> 
-> 	Arnd
-> 
-> .
-> 
-
-
+diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
+index 0086b47..836fbd4 100644
+--- a/arch/alpha/include/uapi/asm/mman.h
++++ b/arch/alpha/include/uapi/asm/mman.h
+@@ -44,6 +44,7 @@
+ #define MADV_WILLNEED	3		/* will need these pages */
+ #define	MADV_SPACEAVAIL	5		/* ensure resources are available */
+ #define MADV_DONTNEED	6		/* don't need these pages */
++#define MADV_FREE	7		/* free pages only if memory pressure */
+ 
+ /* common/generic parameters */
+ #define MADV_REMOVE	9		/* remove these pages & resources */
+diff --git a/arch/mips/include/uapi/asm/mman.h b/arch/mips/include/uapi/asm/mman.h
+index cfcb876..106e741 100644
+--- a/arch/mips/include/uapi/asm/mman.h
++++ b/arch/mips/include/uapi/asm/mman.h
+@@ -67,6 +67,7 @@
+ #define MADV_SEQUENTIAL 2		/* expect sequential page references */
+ #define MADV_WILLNEED	3		/* will need these pages */
+ #define MADV_DONTNEED	4		/* don't need these pages */
++#define MADV_FREE	5		/* free pages only if memory pressure */
+ 
+ /* common parameters: try to keep these consistent across architectures */
+ #define MADV_REMOVE	9		/* remove these pages & resources */
+diff --git a/arch/parisc/include/uapi/asm/mman.h b/arch/parisc/include/uapi/asm/mman.h
+index 294d251..6cb8db7 100644
+--- a/arch/parisc/include/uapi/asm/mman.h
++++ b/arch/parisc/include/uapi/asm/mman.h
+@@ -40,6 +40,7 @@
+ #define MADV_SPACEAVAIL 5               /* insure that resources are reserved */
+ #define MADV_VPS_PURGE  6               /* Purge pages from VM page cache */
+ #define MADV_VPS_INHERIT 7              /* Inherit parents page size */
++#define MADV_FREE	8		/* free pages only if memory pressure */
+ 
+ /* common/generic parameters */
+ #define MADV_REMOVE	9		/* remove these pages & resources */
+diff --git a/arch/xtensa/include/uapi/asm/mman.h b/arch/xtensa/include/uapi/asm/mman.h
+index 201aec0..1b19f25 100644
+--- a/arch/xtensa/include/uapi/asm/mman.h
++++ b/arch/xtensa/include/uapi/asm/mman.h
+@@ -80,6 +80,7 @@
+ #define MADV_SEQUENTIAL	2		/* expect sequential page references */
+ #define MADV_WILLNEED	3		/* will need these pages */
+ #define MADV_DONTNEED	4		/* don't need these pages */
++#define MADV_FREE	5		/* free pages only if memory pressure */
+ 
+ /* common parameters: try to keep these consistent across architectures */
+ #define MADV_REMOVE	9		/* remove these pages & resources */
 -- 
-Thanks!
-Yijing
-
+1.9.3
