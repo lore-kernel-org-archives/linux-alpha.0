@@ -1,26 +1,26 @@
 From: Chen Gang <gang.chen.5i5j@gmail.com>
 Subject: [PATCH] arch: uapi: asm: mman.h: Support MADV_FREE for madvise()
-Date: Tue, 02 Dec 2014 04:43:19 +0800
-Message-ID: <547CD2E7.7030100@gmail.com>
+Date: Tue, 02 Dec 2014 04:43:48 +0800
+Message-ID: <547CD304.20407@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=message-id:date:from:user-agent:mime-version:to:cc:subject
          :content-type:content-transfer-encoding;
         bh=A7E75woH+ZUFWug5UW6V5RNoSJDbxFaryl+jr8Y/tOE=;
-        b=L4gdNirVqvj1Y3dyvo9gmFC5kHDBPMrer4qgXIiIQ9UVh6KNahR+qWfWolqsS9WPWH
-         pZPQzs1LsN8M2K+jBnscC1BIdLBqLB/9UYHA/PqY3n15jlyreH+g0cOUe7l9kQr0LAIa
-         yu3vyYuKa35wKJIi05DAB4vL9NdNrdyUAd0cUJ8aM1Pv4vdLxiuuGP+2W9p91oRAiBq8
-         XKCwJXqfZK/Ssyr8VKQW37yHyfVs75NnT33lHEAZzeI8Np9X1U0vW6q6jCVuR/eetcJR
-         Yyolo0qny9x09B8bw0bgyG+EdZA7E2dBOr1pgpb6umzTjkRSodifuNPzZEXzDw80MdJ6
-         bn9Q==
-Sender: linux-alpha-owner@vger.kernel.org
+        b=CGWBeEhuLB58w9hlKeQQ5hhV/60UK+Y6CApKa0dwBrkXdb4fpo/yelgc1aDQg6d41/
+         kDv+Tb9VYCuB66usDFV73gfJRp46Nz7hXH0t0bC1D43GpiqoY4m7jmnKFkErJhbWypdc
+         pY8GDpurWzr9X14PGpM3azUsg6j5gilwkdaRxgiW1zWemsiImGDVv5BwpNDXOFfla8uQ
+         92fKnFumLnQOMK+K4a+z7iRBxIDvwE0nmTNWcq1cFOuUw5U9UezNtChRJ0oDxFO424Fl
+         wIgviiROkc5Cx0bjMiM9oennPNUUBruozcXtuDd/wf5sus3x+qJt3nQFQuirzHcLjciz
+         cUaQ==
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, minchan@kernel.org, "rth@twiddle.net" <rth@twiddle.net>, "ink@jurassic.park.msu.ru" <ink@jurassic.park.msu.ru>, "mattst88@gmail.com" <mattst88@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, "jejb@parisc-linux.org" <jejb@parisc-linux.org>, "deller@gmx.de" <deller@gmx.de>, "chris@zankel.net" <chris@zankel.net>, "jcmvbkbc@gmail.com" <jcmvbkbc@gmail.com>
-Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
 At present, kernel supports madvise(MADV_FREE), so can benefit to all
 related architectures (can grep MADV_WILLNEED or MADV_REMOVE in "arch/"
