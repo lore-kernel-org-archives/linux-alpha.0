@@ -1,52 +1,51 @@
-From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-Subject: [PATCH] arch: alpha: kernel: core_titan.c:  Remove some unused functions
-Date: Sat,  6 Dec 2014 23:35:35 +0100
-Message-ID: <1417905335-4990-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 02/18] alpha/uaccess: fix sparse errors
+Date: Sun, 14 Dec 2014 18:52:01 +0200
+Message-ID: <1418575877-21488-3-git-send-email-mst@redhat.com>
+References: <1418575877-21488-1-git-send-email-mst@redhat.com>
+Mime-Version: 1.0
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1418575877-21488-1-git-send-email-mst@redhat.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Removes some functions that are not used anywhere:
-titan_write_tig() titan_read_tig()
+virtio wants to read bitwise types from userspace using get_user.  At the
+moment this triggers sparse errors, since the value is passed through an
+integer.
 
-This was partially found by using a static code analysis program called cppcheck.
+Fix that up using __force.
 
-Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
- arch/alpha/kernel/core_titan.c |   14 --------------
- 1 file changed, 14 deletions(-)
+ arch/alpha/include/asm/uaccess.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/alpha/kernel/core_titan.c b/arch/alpha/kernel/core_titan.c
-index 219bf27..2de2a2a 100644
---- a/arch/alpha/kernel/core_titan.c
-+++ b/arch/alpha/kernel/core_titan.c
-@@ -62,21 +62,7 @@ mk_tig_addr(int offset)
- 	return (volatile unsigned long *)(TITAN_TIG_SPACE + (offset << 6));
- }
+diff --git a/arch/alpha/include/asm/uaccess.h b/arch/alpha/include/asm/uaccess.h
+index 766fdfd..fbe1d1e 100644
+--- a/arch/alpha/include/asm/uaccess.h
++++ b/arch/alpha/include/asm/uaccess.h
+@@ -96,7 +96,7 @@ extern void __get_user_unknown(void);
+ 	  case 8: __get_user_64(ptr); break;			\
+ 	  default: __get_user_unknown(); break;			\
+ 	}							\
+-	(x) = (__typeof__(*(ptr))) __gu_val;			\
++	(x) = (__force __typeof__(*(ptr))) __gu_val;			\
+ 	__gu_err;						\
+ })
  
--static inline u8 
--titan_read_tig(int offset, u8 value)
--{
--	volatile unsigned long *tig_addr = mk_tig_addr(offset);
--	return (u8)(*tig_addr & 0xff);
--}
--
--static inline void 
--titan_write_tig(int offset, u8 value)
--{
--	volatile unsigned long *tig_addr = mk_tig_addr(offset);
--	*tig_addr = (unsigned long)value;
--}
+@@ -115,7 +115,7 @@ extern void __get_user_unknown(void);
+ 		  default: __get_user_unknown(); break;			\
+ 		}							\
+ 	}								\
+-	(x) = (__typeof__(*(ptr))) __gu_val;				\
++	(x) = (__force __typeof__(*(ptr))) __gu_val;				\
+ 	__gu_err;							\
+ })
  
--
- /*
-  * Given a bus, device, and function number, compute resulting
-  * configuration space address
 -- 
-1.7.10.4
-
+MST
