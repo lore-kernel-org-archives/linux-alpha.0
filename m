@@ -1,13 +1,13 @@
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 02/18] alpha/uaccess: fix sparse errors
-Date: Sun, 14 Dec 2014 18:52:01 +0200
-Message-ID: <1418575877-21488-3-git-send-email-mst@redhat.com>
-References: <1418575877-21488-1-git-send-email-mst@redhat.com>
+Subject: [PATCH repost 02/16] alpha/uaccess: fix sparse errors
+Date: Thu, 25 Dec 2014 11:28:37 +0200
+Message-ID: <1419499661-8566-3-git-send-email-mst@redhat.com>
+References: <1419499661-8566-1-git-send-email-mst@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1418575877-21488-1-git-send-email-mst@redhat.com>
-Sender: linux-arch-owner@vger.kernel.org
+In-Reply-To: <1419499661-8566-1-git-send-email-mst@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
