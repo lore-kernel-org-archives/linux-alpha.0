@@ -1,12 +1,12 @@
 From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH repost 02/16] alpha/uaccess: fix sparse errors
-Date: Thu, 25 Dec 2014 11:28:37 +0200
-Message-ID: <1419499661-8566-3-git-send-email-mst@redhat.com>
-References: <1419499661-8566-1-git-send-email-mst@redhat.com>
+Subject: [PATCH v2 02/40] alpha/uaccess: fix sparse errors
+Date: Tue, 6 Jan 2015 17:43:34 +0200
+Message-ID: <1420558883-10131-3-git-send-email-mst@redhat.com>
+References: <1420558883-10131-1-git-send-email-mst@redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1419499661-8566-1-git-send-email-mst@redhat.com>
+In-Reply-To: <1420558883-10131-1-git-send-email-mst@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -26,7 +26,7 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/alpha/include/asm/uaccess.h b/arch/alpha/include/asm/uaccess.h
-index 766fdfd..fbe1d1e 100644
+index 766fdfd..a234de7 100644
 --- a/arch/alpha/include/asm/uaccess.h
 +++ b/arch/alpha/include/asm/uaccess.h
 @@ -96,7 +96,7 @@ extern void __get_user_unknown(void);
@@ -34,7 +34,7 @@ index 766fdfd..fbe1d1e 100644
  	  default: __get_user_unknown(); break;			\
  	}							\
 -	(x) = (__typeof__(*(ptr))) __gu_val;			\
-+	(x) = (__force __typeof__(*(ptr))) __gu_val;			\
++	(x) = (__force __typeof__(*(ptr))) __gu_val;		\
  	__gu_err;						\
  })
  
@@ -43,7 +43,7 @@ index 766fdfd..fbe1d1e 100644
  		}							\
  	}								\
 -	(x) = (__typeof__(*(ptr))) __gu_val;				\
-+	(x) = (__force __typeof__(*(ptr))) __gu_val;				\
++	(x) = (__force __typeof__(*(ptr))) __gu_val;			\
  	__gu_err;							\
  })
  
