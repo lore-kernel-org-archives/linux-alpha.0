@@ -1,11 +1,11 @@
 From: Yinghai Lu <yinghai@kernel.org>
-Subject: [PATCH 03/10] PCI, alpha: clip firmware assigned resource under parent bridge's
-Date: Mon, 12 Jan 2015 11:23:13 -0800
-Message-ID: <1421090600-9750-4-git-send-email-yinghai@kernel.org>
-References: <1421090600-9750-1-git-send-email-yinghai@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1421090600-9750-1-git-send-email-yinghai@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH v2 03/10] PCI, alpha: clip firmware assigned resource under parent bridge's
+Date: Wed, 14 Jan 2015 20:31:30 -0800
+Message-ID: <1421296297-6371-4-git-send-email-yinghai@kernel.org>
+References: <1421296297-6371-1-git-send-email-yinghai@kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1421296297-6371-1-git-send-email-yinghai@kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -27,51 +27,27 @@ Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 Cc: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org
 ---
- arch/alpha/kernel/pci.c | 24 ++++++++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+ arch/alpha/kernel/pci.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
-index 076c35c..b54b40f 100644
+index 076c35c..98a1525 100644
 --- a/arch/alpha/kernel/pci.c
 +++ b/arch/alpha/kernel/pci.c
-@@ -277,6 +277,7 @@ pcibios_claim_one_bus(struct pci_bus *b)
- 	struct pci_bus *child_bus;
- 
- 	list_for_each_entry(dev, &b->devices, bus_list) {
-+		bool changed = false;
- 		int i;
- 
- 		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
-@@ -285,9 +286,28 @@ pcibios_claim_one_bus(struct pci_bus *b)
+@@ -285,8 +285,12 @@ pcibios_claim_one_bus(struct pci_bus *b)
  			if (r->parent || !r->start || !r->flags)
  				continue;
  			if (pci_has_flag(PCI_PROBE_ONLY) ||
 -			    (r->flags & IORESOURCE_PCI_FIXED))
 -				pci_claim_resource(dev, i);
 +			    (r->flags & IORESOURCE_PCI_FIXED)) {
-+				if (pci_claim_resource(dev, i) >= 0)
++				if (pci_claim_resource(dev, i) == 0)
 +					continue;
 +
-+				if (dev->subordinate &&
-+				    i >= PCI_BRIDGE_RESOURCES &&
-+				    i < PCI_NUM_RESOURCES &&
-+				    (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI &&
-+				    pci_bus_clip_resource(dev, r)) {
-+					changed = true;
-+					pci_claim_resource(dev, i);
-+				} else if (i < PCI_BRIDGE_RESOURCES &&
-+					   i != PCI_ROM_RESOURCE &&
-+					   pci_bus_clip_resource(dev, r)) {
-+						pci_update_resource(dev, i);
-+						pci_claim_resource(dev, i);
-+				}
++				pci_claim_bridge_resource(dev, i);
 +			}
  		}
-+
-+		if (changed)
-+			pci_setup_bridge(dev->subordinate);
  	}
  
- 	list_for_each_entry(child_bus, &b->children, node)
 -- 
 1.8.4.5
