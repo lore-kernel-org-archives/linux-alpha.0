@@ -1,91 +1,45 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH 13/28] PCI/x86: Refine pci_acpi_scan_root() with generic pci_host_bridge
-Date: Fri, 16 Jan 2015 09:44:11 +0800
-Message-ID: <1421372666-12288-14-git-send-email-wangyijing@huawei.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 08/28] PCI: Introduce pci_host_assign_domain_nr() to
+ assign domain
+Date: Fri, 16 Jan 2015 10:08:45 +0100
+Message-ID: <13182982.DnZJMY2KHL@wuerfel>
 References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com>
+ <1421372666-12288-9-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1421372666-12288-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1421372666-12288-9-git-send-email-wangyijing@huawei.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-m68k@lists.linux-m68k.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, "David S. Miller" <davem@davemloft.net>
 
-Signed-off-by: Yijing Wang <wangyijing@huawei.com>
----
- arch/x86/pci/acpi.c |   36 ++++++++++++++++++++----------------
- 1 files changed, 20 insertions(+), 16 deletions(-)
+On Friday 16 January 2015 09:44:06 Yijing Wang wrote:
+> Introduce pci_host_assign_domain_nr() to assign domain
+> number for pci_host_bridge. Later we will remove
+> pci_bus_assign_domain_nr().
+> 
+> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 
-diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
-index 8edea63..f9a55c2 100644
---- a/arch/x86/pci/acpi.c
-+++ b/arch/x86/pci/acpi.c
-@@ -467,6 +467,18 @@ static void probe_pci_root_info(struct pci_root_info *info,
- 				info);
- }
- 
-+static int pci_host_bridge_prepare(struct pci_host_bridge *bridge)
-+{
-+	struct pci_sysdata *sd = dev_get_drvdata(&bridge->dev);
-+
-+	ACPI_COMPANION_SET(&bridge->dev, sd->companion);
-+	return 0;
-+}
-+
-+static struct pci_host_bridge_ops phb_ops = {
-+	.phb_prepare = pci_host_bridge_prepare,
-+};
-+
- struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- {
- 	struct acpi_device *device = root->device;
-@@ -475,6 +487,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- 	int busnum = root->secondary.start;
- 	LIST_HEAD(resources);
- 	struct pci_bus *bus;
-+	struct pci_host_bridge *host = NULL;
- 	struct pci_sysdata *sd;
- 	int node;
- 
-@@ -537,14 +550,13 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- 
- 		if (!setup_mcfg_map(info, domain, (u8)root->secondary.start,
- 					(u8)root->secondary.end, root->mcfg_addr)) 
--			bus = pci_create_root_bus(NULL, PCI_DOMBUS(domain, busnum), 
--					&pci_root_ops, sd, &resources);
--
--		if (bus) {
--			pci_scan_child_bus(bus);
--			pci_set_host_bridge_release(
--				to_pci_host_bridge(bus->bridge),
--				release_pci_root_info, info);
-+			host = pci_scan_root_bridge(NULL, PCI_DOMBUS(domain, busnum),
-+					&pci_root_ops, sd, &resources, &phb_ops);
-+
-+		if (host) {
-+			bus = host->bus;
-+			pci_set_host_bridge_release(host, release_pci_root_info,
-+					info);
- 		} else {
- 			pci_free_resource_list(&resources);
- 			__release_pci_root_info(info);
-@@ -566,14 +578,6 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- 	return bus;
- }
- 
--int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
--{
--	struct pci_sysdata *sd = bridge->bus->sysdata;
--
--	ACPI_COMPANION_SET(&bridge->dev, sd->companion);
--	return 0;
--}
--
- int __init pci_acpi_init(void)
- {
- 	struct pci_dev *dev = NULL;
--- 
-1.7.1
+I'm confused: the same code is already part of the PCI tree, but with
+Lorenzo Pieralisi listed as the patch author. The code is good,
+and I acked it in the past, but one of you is (probably by accident)
+misattributing the patch.
 
+Assuming that the patch that is already merged in next is the right
+one, I think you should rebase your series on top of
+
+git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git#next
+
+to avoid conflicts like this one.
+
+	Arnd
