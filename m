@@ -1,105 +1,97 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH 08/28] PCI: Introduce pci_host_assign_domain_nr() to assign domain
-Date: Fri, 16 Jan 2015 09:44:06 +0800
-Message-ID: <1421372666-12288-9-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 14/28] PCI/IA64: Refine pci_acpi_scan_root() with generic
+ pci_host_bridge
+Date: Fri, 16 Jan 2015 09:44:12 +0800
+Message-ID: <1421372666-12288-15-git-send-email-wangyijing@huawei.com>
 References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1421372666-12288-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1421372666-12288-1-git-send-email-wangyijing@huawei.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
+Cc: Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing0307@gmail.com>, linux-alpha@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@linux.intel.com>, linux-arm-kernel@lists.infradead.org
 
-Introduce pci_host_assign_domain_nr() to assign domain
-number for pci_host_bridge. Later we will remove
-pci_bus_assign_domain_nr().
+From: Yijing Wang <wangyijing0307@gmail.com>
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/pci.c   |   47 +++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/pci.h |    4 ++++
- 2 files changed, 51 insertions(+), 0 deletions(-)
+ arch/ia64/pci/pci.c |   34 ++++++++++++++++++----------------
+ 1 files changed, 18 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index c419554..8b35e8e 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -4443,6 +4443,53 @@ int pci_get_new_domain_nr(void)
+diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
+index e457015..7736c02 100644
+--- a/arch/ia64/pci/pci.c
++++ b/arch/ia64/pci/pci.c
+@@ -420,6 +420,18 @@ probe_pci_root_info(struct pci_root_info *info, struct acpi_device *device,
+ 	return 0;
  }
  
- #ifdef CONFIG_PCI_DOMAINS_GENERIC
-+void pci_host_assign_domain_nr(struct pci_host_bridge *host)
++static int pci_host_bridge_prepare(struct pci_host_bridge *bridge)
 +{
-+	static int use_dt_domains = -1;
-+	struct device *parent = host->dev.parent;
-+	int domain = of_get_pci_domain_nr(parent->of_node);
++	struct pci_sysdata *sd = dev_get_drvdata(&bridge->dev);
 +
-+	/*
-+	 * Check DT domain and use_dt_domains values.
-+	 *
-+	 * If DT domain property is valid (domain >= 0) and
-+	 * use_dt_domains != 0, the DT assignment is valid since this means
-+	 * we have not previously allocated a domain number by using
-+	 * pci_get_new_domain_nr(); we should also update use_dt_domains to
-+	 * 1, to indicate that we have just assigned a domain number from
-+	 * DT.
-+	 *
-+	 * If DT domain property value is not valid (ie domain < 0), and we
-+	 * have not previously assigned a domain number from DT
-+	 * (use_dt_domains != 1) we should assign a domain number by
-+	 * using the:
-+	 *
-+	 * pci_get_new_domain_nr()
-+	 *
-+	 * API and update the use_dt_domains value to keep track of method we
-+	 * are using to assign domain numbers (use_dt_domains = 0).
-+	 *
-+	 * All other combinations imply we have a platform that is trying
-+	 * to mix domain numbers obtained from DT and pci_get_new_domain_nr(),
-+	 * which is a recipe for domain mishandling and it is prevented by
-+	 * invalidating the domain value (domain = -1) and printing a
-+	 * corresponding error.
-+	 */
-+	if (domain >= 0 && use_dt_domains) {
-+		use_dt_domains = 1;
-+	} else if (domain < 0 && use_dt_domains != 1) {
-+		use_dt_domains = 0;
-+		domain = pci_get_new_domain_nr();
-+	} else {
-+		dev_err(parent, "Node %s has inconsistent \"linux,pci-domain\" property in DT\n",
-+			parent->of_node->full_name);
-+		domain = -1;
-+	}
-+
-+	host->domain_nr = domain;
++	ACPI_COMPANION_SET(&bridge->dev, sd->companion);
++	return 0;
 +}
 +
++static struct pci_host_bridge_ops phb_ops = {
++	.phb_prepare = pci_host_bridge_prepare,
++};
 +
- void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
+ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
  {
- 	static int use_dt_domains = -1;
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index c771508..1b9c799 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1316,11 +1316,15 @@ static inline int pci_domain_nr(struct pci_bus *bus)
- 	return bus->domain_nr;
- }
- void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent);
-+void pci_host_assign_domain_nr(struct pci_host_bridge *host);
- #else
- static inline void pci_bus_assign_domain_nr(struct pci_bus *bus,
- 					struct device *parent)
- {
- }
-+static inline void pci_host_assign_domain_nr(struct pci_host_bridge *host)
-+{
-+}
- #endif
+ 	struct acpi_device *device = root->device;
+@@ -428,7 +440,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+ 	struct pci_controller *controller;
+ 	struct pci_root_info *info = NULL;
+ 	int busnum = root->secondary.start;
+-	struct pci_bus *pbus;
++	struct pci_host_bridge *host;
+ 	int ret;
  
- /* some architectures require additional setup to direct VGA traffic */
+ 	controller = alloc_pci_controller(domain);
+@@ -465,26 +477,16 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+ 	 * should handle the case here, but it appears that IA64 hasn't
+ 	 * such quirk. So we just ignore the case now.
+ 	 */
+-	pbus = pci_create_root_bus(NULL, PCI_DOMBUS(domain, bus), 
+-			&pci_root_ops, controller, &info->resources);
+-	if (!pbus) {
++	host = pci_scan_root_bridge(NULL, PCI_DOMBUS(domain, bus),
++			&pci_root_ops, controller, &info->resources, &phb_ops);
++	if (!host) {
+ 		pci_free_resource_list(&info->resources);
+ 		__release_pci_root_info(info);
+ 		return NULL;
+ 	}
+ 
+-	pci_set_host_bridge_release(to_pci_host_bridge(pbus->bridge),
+-			release_pci_root_info, info);
+-	pci_scan_child_bus(pbus);
+-	return pbus;
+-}
+-
+-int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
+-{
+-	struct pci_controller *controller = bridge->bus->sysdata;
+-
+-	ACPI_COMPANION_SET(&bridge->dev, controller->companion);
+-	return 0;
++	pci_set_host_bridge_release(host, release_pci_root_info, info);
++	return host->bus;
+ }
+ 
+ static int is_valid_resource(struct pci_dev *dev, int idx)
 -- 
 1.7.1
