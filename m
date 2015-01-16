@@ -1,7 +1,7 @@
 From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH 09/28] PCI: Separate pci_host_bridge creation out of pci_create_root_bus()
-Date: Fri, 16 Jan 2015 10:14:09 +0100
-Message-ID: <6955534.AnUg4xpxEu@wuerfel>
+Date: Fri, 16 Jan 2015 10:34:34 +0100
+Message-ID: <11966423.5s0rO0b8cE@wuerfel>
 References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-10-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
