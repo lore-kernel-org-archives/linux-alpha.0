@@ -1,40 +1,48 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 09/28] PCI: Separate pci_host_bridge creation out of pci_create_root_bus()
-Date: Fri, 16 Jan 2015 10:34:34 +0100
-Message-ID: <11966423.5s0rO0b8cE@wuerfel>
-References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-10-git-send-email-wangyijing@huawei.com>
+Subject: Re: [PATCH 11/28] PCI: Introduce pci_host_bridge_ops to setup host bridge
+Date: Fri, 16 Jan 2015 10:35:30 +0100
+Message-ID: <3832604.lYie7PXiOd@wuerfel>
+References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-12-git-send-email-wangyijing@huawei.com> <1443278.UW4hQ0rXtr@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1421372666-12288-10-git-send-email-wangyijing@huawei.com>
+In-Reply-To: <1443278.UW4hQ0rXtr@wuerfel>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: linux-arm-kernel@lists.infradead.org
-Cc: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@linux.intel.com>
+Content-Type: text/plain; charset="iso-8859-1"
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Friday 16 January 2015 09:44:07 Yijing Wang wrote:
-> We want to make a generic pci_host_bridge, then we could
-> place common PCI infos like domain number in it. Ripping
-> out pci_host_bridge creation from pci_create_root_bus()
-> make code more better readability. Further more, we could
-> use the generic pci_host_bridge to hold host bridge specific
-> operations like pcibios_root_bridge_prepare().
-> 
-> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> 
+On Friday 16 January 2015 10:23:11 Arnd Bergmann wrote:
+> On Friday 16 January 2015 09:44:09 Yijing Wang wrote:
+> > @@ -2064,7 +2073,7 @@ struct pci_bus *pci_scan_root_bus(struct devi=
+ce *parent, u32 db,
+> >  {
+> >         struct pci_host_bridge *host;
+> > =20
+> > -       host =3D pci_create_host_bridge(parent, db, resources, sysd=
+ata);
+> > +       host =3D pci_create_host_bridge(parent, db, resources, sysd=
+ata, NULL);
+> >         if (!host)
+> >                 return NULL;
+> > =20
+> >=20
+>=20
+> Same comment as for patch 10: If we leave this out of the pci_create_=
+host_bridge
+> argument but set it later, =FEe interface becomes simpler for callers=
+ that
+> don't have custom pci_host_bridge_ops.
+>=20
+> This would break your phb_prepare() callback, but I assume a host dri=
+ver
+> can just make a direct function call before entering pci_create_host_=
+bridge
+> for this. Let me know if I'm missing something here.
 
-I assume this patch is doing the right thing, but the description
-above doesn't really tell me enough to be sure.
-
-This is supposed to be transparent to the callers, right? If
-so, please mention it explicitly in the text.
-
-Also you don't explain what the list of host bridges is
-used for. Maybe you can split this out into a separate patch
-so you have one patch that just moves code from one file
-to the other but no functional changes, and a second patch
-that exports pci_create_host_bridge and introduces the list,
-with an explanation of what it is used for.
+I've read the later patches now that explain why it's needed, so neverm=
+ind
+my comment above.
 
 	Arnd
