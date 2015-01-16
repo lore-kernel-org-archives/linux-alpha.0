@@ -1,7 +1,7 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH 19/28] PCI: Introduce pci_bus_child_max_busnr()
-Date: Fri, 16 Jan 2015 09:44:17 +0800
-Message-ID: <1421372666-12288-20-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH 15/28] PCI/powerpc: Rename pcibios_root_bridge_prepare() for better readability
+Date: Fri, 16 Jan 2015 09:44:13 +0800
+Message-ID: <1421372666-12288-16-git-send-email-wangyijing@huawei.com>
 References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -13,114 +13,85 @@ Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-Sometimes, we need to know the highest reserved
-busnr for children bus. Because parent's
-bus->busn_res could have padding in it.
-This function return the max child busnr as
-pci_scan_child_bus().
+Pcibios_root_bridge_prepare() in powerpc is used
+to set root bus speed. So rename it to
+pcibios_set_root_bus_speed() for better readability.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/hotplug/acpiphp_glue.c |   29 +----------------------------
- drivers/pci/pci.c                  |   25 ++++++++++++++++++++++++-
- include/linux/pci.h                |    2 +-
- 3 files changed, 26 insertions(+), 30 deletions(-)
+ arch/powerpc/include/asm/machdep.h       |    2 +-
+ arch/powerpc/kernel/pci-common.c         |    4 ++--
+ arch/powerpc/platforms/pseries/pci.c     |    2 +-
+ arch/powerpc/platforms/pseries/pseries.h |    2 +-
+ arch/powerpc/platforms/pseries/setup.c   |    2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pci/hotplug/acpiphp_glue.c b/drivers/pci/hotplug/acpiphp_glue.c
-index bcb90e4..84f2584 100644
---- a/drivers/pci/hotplug/acpiphp_glue.c
-+++ b/drivers/pci/hotplug/acpiphp_glue.c
-@@ -397,33 +397,6 @@ static void cleanup_bridge(struct acpiphp_bridge *bridge)
- 	acpi_unlock_hp_context();
- }
+diff --git a/arch/powerpc/include/asm/machdep.h b/arch/powerpc/include/asm/machdep.h
+index c8175a3..8e7f2a8 100644
+--- a/arch/powerpc/include/asm/machdep.h
++++ b/arch/powerpc/include/asm/machdep.h
+@@ -129,7 +129,7 @@ struct machdep_calls {
+ 	void		(*pcibios_fixup)(void);
+ 	int		(*pci_probe_mode)(struct pci_bus *);
+ 	void		(*pci_irq_fixup)(struct pci_dev *dev);
+-	int		(*pcibios_root_bridge_prepare)(struct pci_host_bridge
++	int		(*pcibios_set_root_bus_speed)(struct pci_host_bridge
+ 				*bridge);
  
--/**
-- * acpiphp_max_busnr - return the highest reserved bus number under the given bus.
-- * @bus: bus to start search with
-- */
--static unsigned char acpiphp_max_busnr(struct pci_bus *bus)
--{
--	struct pci_bus *tmp;
--	unsigned char max, n;
--
--	/*
--	 * pci_bus_max_busnr will return the highest
--	 * reserved busnr for all these children.
--	 * that is equivalent to the bus->subordinate
--	 * value.  We don't want to use the parent's
--	 * bus->subordinate value because it could have
--	 * padding in it.
--	 */
--	max = bus->busn_res.start;
--
--	list_for_each_entry(tmp, &bus->children, node) {
--		n = pci_bus_max_busnr(tmp);
--		if (n > max)
--			max = n;
--	}
--	return max;
--}
--
- static void acpiphp_set_acpi_region(struct acpiphp_slot *slot)
+ 	/* To setup PHBs when using automatic OF platform driver for PCI */
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 927c3dd..2cf941e 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -769,8 +769,8 @@ int pci_proc_domain(struct pci_bus *bus)
+ 
+ int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
  {
- 	struct acpiphp_func *func;
-@@ -489,7 +462,7 @@ static void enable_slot(struct acpiphp_slot *slot)
- 	LIST_HEAD(add_list);
+-	if (ppc_md.pcibios_root_bridge_prepare)
+-		return ppc_md.pcibios_root_bridge_prepare(bridge);
++	if (ppc_md.pcibios_set_root_bus_speed)
++		return ppc_md.pcibios_set_root_bus_speed(bridge);
  
- 	acpiphp_rescan_slot(slot);
--	max = acpiphp_max_busnr(bus);
-+	max = pci_bus_child_max_busnr(bus);
- 	for (pass = 0; pass < 2; pass++) {
- 		list_for_each_entry(dev, &bus->devices, bus_list) {
- 			if (PCI_SLOT(dev->devfn) != slot->device)
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 8b35e8e..a05f406 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -121,7 +121,30 @@ unsigned char pci_bus_max_busnr(struct pci_bus *bus)
- 	}
- 	return max;
+ 	return 0;
  }
--EXPORT_SYMBOL_GPL(pci_bus_max_busnr);
-+
-+unsigned char pci_bus_child_max_busnr(struct pci_bus *bus)
-+{
-+	struct pci_bus *tmp;
-+	unsigned char max, n;
-+
-+	/*
-+	 * pci_bus_max_busnr will return the highest
-+	 * reserved busnr for all these children.
-+	 * that is equivalent to the bus->subordinate
-+	 * value.  We don't want to use the parent's
-+	 * bus->subordinate value because it could have
-+	 * padding in it.
-+	 */
-+	max = bus->busn_res.start;
-+
-+	list_for_each_entry(tmp, &bus->children, node) {
-+		n = pci_bus_max_busnr(tmp);
-+		if (n > max)
-+			max = n;
-+	}
-+	return max;
-+}
-+EXPORT_SYMBOL_GPL(pci_bus_child_max_busnr);
+diff --git a/arch/powerpc/platforms/pseries/pci.c b/arch/powerpc/platforms/pseries/pci.c
+index fe16a50..af685d6 100644
+--- a/arch/powerpc/platforms/pseries/pci.c
++++ b/arch/powerpc/platforms/pseries/pci.c
+@@ -110,7 +110,7 @@ static void fixup_winbond_82c105(struct pci_dev* dev)
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_WINBOND, PCI_DEVICE_ID_WINBOND_82C105,
+ 			 fixup_winbond_82c105);
  
- #ifdef CONFIG_HAS_IOMEM
- void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar)
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index da3a071..2970a84 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1176,7 +1176,7 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
- void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
- 		  void *userdata);
- int pci_cfg_space_size(struct pci_dev *dev);
--unsigned char pci_bus_max_busnr(struct pci_bus *bus);
-+unsigned char pci_bus_child_max_busnr(struct pci_bus *bus);
- void pci_setup_bridge(struct pci_bus *bus);
- resource_size_t pcibios_window_alignment(struct pci_bus *bus,
- 					 unsigned long type);
+-int pseries_root_bridge_prepare(struct pci_host_bridge *bridge)
++int pseries_set_root_bus_speed(struct pci_host_bridge *bridge)
+ {
+ 	struct device_node *dn, *pdn;
+ 	struct pci_bus *bus;
+diff --git a/arch/powerpc/platforms/pseries/pseries.h b/arch/powerpc/platforms/pseries/pseries.h
+index 1796c54..5d0be3a 100644
+--- a/arch/powerpc/platforms/pseries/pseries.h
++++ b/arch/powerpc/platforms/pseries/pseries.h
+@@ -63,7 +63,7 @@ extern int dlpar_detach_node(struct device_node *);
+ 
+ /* PCI root bridge prepare function override for pseries */
+ struct pci_host_bridge;
+-int pseries_root_bridge_prepare(struct pci_host_bridge *bridge);
++int pseries_set_root_bus_speed(struct pci_host_bridge *bridge);
+ 
+ unsigned long pseries_memory_block_size(void);
+ 
+diff --git a/arch/powerpc/platforms/pseries/setup.c b/arch/powerpc/platforms/pseries/setup.c
+index e445b67..b196c0d 100644
+--- a/arch/powerpc/platforms/pseries/setup.c
++++ b/arch/powerpc/platforms/pseries/setup.c
+@@ -496,7 +496,7 @@ static void __init pSeries_setup_arch(void)
+ 		ppc_md.enable_pmcs = power4_enable_pmcs;
+ 	}
+ 
+-	ppc_md.pcibios_root_bridge_prepare = pseries_root_bridge_prepare;
++	ppc_md.pcibios_set_root_bus_speed = pseries_set_root_bus_speed;
+ 
+ 	if (firmware_has_feature(FW_FEATURE_SET_MODE)) {
+ 		long rc;
 -- 
 1.7.1
