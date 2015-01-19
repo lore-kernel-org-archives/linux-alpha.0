@@ -1,65 +1,38 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH 18/28] PCI/sparc: Use pci_scan_root_bridge() for simplicity
-Date: Mon, 19 Jan 2015 11:17:02 +0800
-Message-ID: <54BC772E.6020103@huawei.com>
-References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-19-git-send-email-wangyijing@huawei.com> <2658988.B0VmbMPdJ9@wuerfel>
+Subject: Re: [PATCH 27/28] PCI: Remove platform specific pci_domain_nr()
+Date: Mon, 19 Jan 2015 11:19:15 +0800
+Message-ID: <54BC77B3.6080701@huawei.com>
+References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-28-git-send-email-wangyijing@huawei.com> <1561857.t9qV46uRjC@wuerfel>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <2658988.B0VmbMPdJ9@wuerfel>
-Sender: linux-ia64-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1561857.t9qV46uRjC@wuerfel>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
-Cc: Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, "David S. Miller" <davem@davemloft.net>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On 2015/1/16 18:01, Arnd Bergmann wrote:
-> On Friday 16 January 2015 09:44:16 Yijing Wang wrote:
->> +static void pci_host_bridge_probe_mode(
->> +               struct pci_host_bridge *host)
->> +{
->> +       host->of_scan = true;
->> +}
+On 2015/1/16 17:44, Arnd Bergmann wrote:
+> On Friday 16 January 2015 09:44:25 Yijing Wang wrote:
 >>
+>> +int pci_domain_nr(struct pci_bus *bus)
+>> +{
+>> +       struct pci_host_bridge *host = find_pci_host_bridge(bus);
+>> +
+>> +       return host->domain;
+>> +}
+>> +EXPORT_SYMBOL_GPL(pci_domain_nr);
+>> +
 > 
-> I probably missed something here, but where does host->of_scan
-> get used?
+> Since most of the existing functions are exported as EXPORT_SYMBOL
+> rather than EXPORT_SYMBOL_GPL, I think the new version should do
+> the same.
+
+Good catch. Thanks!
+
 > 
-
-It is used in __pci_scan_root_bus() to detect whether of scan bus is needed in patch 11.
-
-
-@@ -2051,10 +2053,17 @@ static struct pci_bus *__pci_scan_root_bus(
- 		pci_bus_insert_busn_res(b, host->busnum, 255);
- 	}
-
--	max = pci_scan_child_bus(b);
-+	if (host->ops && host->ops->phb_probe_mode)
-+		host->ops->phb_probe_mode(host);
-
--	if (!found)
--		pci_bus_update_busn_res_end(b, max);
-+	if (host->of_scan) {
-+		if (host->ops &&host->ops->phb_of_scan_bus)
-+			host->ops->phb_of_scan_bus(host);
-+	} else {
-+		max = pci_scan_child_bus(b);
-+		if (!found)
-+			pci_bus_update_busn_res_end(b, max);
-+	}
-
- 	return b;
-
-Thanks!
-Yijing.
-
-
 > 	Arnd
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 > 
 > .
 > 
@@ -68,4 +41,3 @@ Yijing.
 -- 
 Thanks!
 Yijing
-
