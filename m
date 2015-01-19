@@ -1,57 +1,58 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH 09/28] PCI: Separate pci_host_bridge creation out of pci_create_root_bus()
-Date: Mon, 19 Jan 2015 10:39:42 +0800
-Message-ID: <54BC6E6E.9090200@huawei.com>
-References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-10-git-send-email-wangyijing@huawei.com> <11966423.5s0rO0b8cE@wuerfel>
+Subject: Re: [PATCH 10/28] PCI: Save sysdata in pci_host_bridge drvdata
+Date: Mon, 19 Jan 2015 11:12:50 +0800
+Message-ID: <54BC7632.1080003@huawei.com>
+References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-11-git-send-email-wangyijing@huawei.com> <18973877.BYCS6vtzoq@wuerfel>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <11966423.5s0rO0b8cE@wuerfel>
-Sender: linux-m68k-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <18973877.BYCS6vtzoq@wuerfel>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
 Cc: Bjorn Helgaas <bhelgaas@google.com>, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@linux.intel.com>
 
-On 2015/1/16 17:34, Arnd Bergmann wrote:
-> On Friday 16 January 2015 09:44:07 Yijing Wang wrote:
->> We want to make a generic pci_host_bridge, then we could
->> place common PCI infos like domain number in it. Ripping
->> out pci_host_bridge creation from pci_create_root_bus()
->> make code more better readability. Further more, we could
->> use the generic pci_host_bridge to hold host bridge specific
->> operations like pcibios_root_bridge_prepare().
+On 2015/1/16 17:18, Arnd Bergmann wrote:
+> On Friday 16 January 2015 09:44:08 Yijing Wang wrote:
+>> @@ -2066,11 +2064,11 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, u32 db,
+>>  {
+>>         struct pci_host_bridge *host;
+>>  
+>> -       host = pci_create_host_bridge(parent, db, resources);
+>> +       host = pci_create_host_bridge(parent, db, resources, sysdata);
+>>         if (!host)
+>>                 return NULL;
+>>  
+>> -       return __pci_scan_root_bus(host, ops, sysdata);
+>> +       return __pci_scan_root_bus(host, ops);
+>>  }
+>>  EXPORT_SYMBOL(pci_scan_root_bus);
 >>
->> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
->>
 > 
-> I assume this patch is doing the right thing, but the description
-> above doesn't really tell me enough to be sure.
+> How about keeping the sysdata out of the pci_create_host_bridge interface, and
+> refactoring it so that the call sequence becomes
 > 
-> This is supposed to be transparent to the callers, right? If
-> so, please mention it explicitly in the text.
+> 	host = pci_create_host_bridge(parent, db, resources);
+> 	host->sysdata = sysdata;
+> 	__pci_scan_root_bus(host, ops);
+> 
+> This way, we can make sysdata completely option. I assume that more of the
+> fields we have in sysdata today can get moved into pci_host_bridge
+> over time, so a host bridge driver can just assign those members individually
+> between pci_create_host_bridge and __pci_scan_root_bus.
 
-Sorry, I will refresh the patch log for better description.
+I put the sysdata in pci_host_bridge, because some platforms x86/ia64
+need to call pcibios_root_bridge_prepare() before pci_host_bridge registration
+in pci_create_host_bridge(), and pcibios_root_bridge_prepare() need the companion
+acpi device pointer which is stored in sysdata.
 
-In this series I have no plan to export the pci_create_host_bridge()
-to callers, because I think pci_host_bridge_ops could make callers
-have the ability to setup the platform specific operations. But if this
-is needed, we could introduce another patches to export it.
+I like you idea, but I haven't find a better way yet.
+
+Thanks!
+Yijing.
 
 > 
-> Also you don't explain what the list of host bridges is
-> used for. Maybe you can split this out into a separate patch
-> so you have one patch that just moves code from one file
-> to the other but no functional changes, and a second patch
-> that exports pci_create_host_bridge and introduces the list,
-> with an explanation of what it is used for.
-> 
-
-pci_host_bridge_list is used to find out whether the pci_host_bridge
-in domain:bus is already existed, I will split the related code
-to another patch, thanks.
-
-
 > 	Arnd
 > 
 > .
@@ -61,3 +62,4 @@ to another patch, thanks.
 -- 
 Thanks!
 Yijing
+
