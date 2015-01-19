@@ -1,62 +1,64 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH 01/28] PCI: Rip out pci_bus_add_devices() from pci_scan_bus()
-Date: Mon, 19 Jan 2015 10:04:01 +0800
-Message-ID: <54BC6611.9020002@huawei.com>
-References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com>	<1421372666-12288-2-git-send-email-wangyijing@huawei.com>	<CAE9FiQUoocCzBKsHL_D4ypH1-DV7XxZMdREX7n=Tz1Kq3kHHeA@mail.gmail.com> <CAE9FiQV97PuDWBZYRxh8R0ADnUFTbo1NO3wAufj97en0yseYSQ@mail.gmail.com>
+Subject: Re: [PATCH 08/28] PCI: Introduce pci_host_assign_domain_nr() to assign
+ domain
+Date: Mon, 19 Jan 2015 10:14:44 +0800
+Message-ID: <54BC6894.6060500@huawei.com>
+References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-9-git-send-email-wangyijing@huawei.com> <13182982.DnZJMY2KHL@wuerfel> <3026954.09KG7UaUTi@wuerfel>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQV97PuDWBZYRxh8R0ADnUFTbo1NO3wAufj97en0yseYSQ@mail.gmail.com>
+In-Reply-To: <3026954.09KG7UaUTi@wuerfel>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Yinghai Lu <yinghai@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, the arch/x86 maintainers <x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
+To: Arnd Bergmann <arnd@arndb.de>, linux-arm-kernel@lists.infradead.org
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@linux.intel.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-On 2015/1/17 7:16, Yinghai Lu wrote:
-> On Fri, Jan 16, 2015 at 3:15 PM, Yinghai Lu <yinghai@kernel.org> wrote:
->> On Thu, Jan 15, 2015 at 5:43 PM, Yijing Wang <wangyijing@huawei.com> wrote:
->>> Pci_bus_add_devices() should not be placed in pci_scan_bus().
->>> Now pci device will be added to driver core once its
->>> creation. All things left in pci_bus_add_devices() are
->>> driver attachment and other trivial sysfs things.
->>> Pci_scan_bus() should be the function responsible for
->>> scanning PCI devices, not including driver attachment.
->>> Other, some callers(m68k,unicore32,alpha) of pci_scan_bus()
->>> will call pci_bus_size_bridges() and pci_bus_assign_resources()
->>> after pci_scan_bus().
->>>
->>> E.g.
->>> In m68k
->>> mcf_pci_init()
->>>         pci_scan_bus()
->>>                 ...
->>>                 pci_bus_add_devices() --- try to attach driver
->>>         pci_fixup_irqs()
->>>         pci_bus_size_bridges()
->>>         pci_bus_assign_resources()
->>>
->>> It is not correct, resources should be assigned correctly
->>> before attaching driver.
+>> I'm confused: the same code is already part of the PCI tree, but with
+>> Lorenzo Pieralisi listed as the patch author. The code is good,
+>> and I acked it in the past, but one of you is (probably by accident)
+>> misattributing the patch.
 >>
-> No, for booting path, at that time pci drivers are *NOT* loaded yet.
+>> Assuming that the patch that is already merged in next is the right
+>> one, I think you should rebase your series on top of
+>>
+>> git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git#next
+>>
+>> to avoid conflicts like this one.
+>>
+> 
+> I think I just got confused because the code duplicates most of
+> pci_bus_assign_domain_nr(). Maybe this can be done in a better way
+> by splitting the existing function into 
+> 
+> static int pci_assign_domain_nr(struct device *)
+> {
+> 	... /* most of pci_bus_assign_domain_nr */
+> 
+> 	return domain;
+> }
+> 
+> void pci_host_assign_domain_nr(struct pci_host_bridge *host)
+> {
+> 	host->domain = pci_assign_domain_nr(host->dev.parent);
+> }
+> 
+> void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
+> {
+> 	bus->domain_nr = pci_assign_domain_nr(parent);
+> }
+> 
 
-Hi Yinghai, I knew code flow here would not cause problems, sorry the log
-confused you, I will refresh it. But I think pci_scan_bus()/pci_scan_root_bus()
-which could only be used during system boot up(before module_init) make
-the pci scan logic obscure. Because most callers additionally call
-pci_bus_size_bridges() and pci_bus_assign_resources() later,
-so rip out pci_bus_add_devices() from pci_scan_bus()/pci_scan_root_bus()
-make code have better readability.
+Hi Arnd,
+   I kept the almost duplicated pci_host_assign_domain_nr() and
+pci_bus_assign_domain_nr() here for building happy, because now
+platform specific pci_domain_nr() still exists which may get domain
+number from pci_bus. pci_bus_assign_domain_nr() will be removed in
+the last patch.
 
 Thanks!
 Yijing.
 
-> 
-> Thanks
-> 
-> Yinghai
-> 
 > .
 > 
 
