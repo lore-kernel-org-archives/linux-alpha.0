@@ -1,52 +1,79 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 01/28] PCI: Rip out pci_bus_add_devices() from pci_scan_bus()
-Date: Mon, 19 Jan 2015 09:23:13 +0100
-Message-ID: <1877825.44iMOx15du@wuerfel>
-References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <CAE9FiQUoocCzBKsHL_D4ypH1-DV7XxZMdREX7n=Tz1Kq3kHHeA@mail.gmail.com> <CAE9FiQV97PuDWBZYRxh8R0ADnUFTbo1NO3wAufj97en0yseYSQ@mail.gmail.com>
+Subject: Re: [PATCH 18/28] PCI/sparc: Use pci_scan_root_bridge() for simplicity
+Date: Mon, 19 Jan 2015 09:44:31 +0100
+Message-ID: <7748275.Tf0dzsPZdA@wuerfel>
+References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <2658988.B0VmbMPdJ9@wuerfel> <54BC772E.6020103@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQV97PuDWBZYRxh8R0ADnUFTbo1NO3wAufj97en0yseYSQ@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <54BC772E.6020103@huawei.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Yinghai Lu <yinghai@kernel.org>
-Cc: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, the arch/x86 maintainers <x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Geert Uytterhoeven <geert@linux-m68k.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Yijing Wang <wangyijing@huawei.com>, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@linux.intel.com>
 
-On Friday 16 January 2015 15:16:28 Yinghai Lu wrote:
-> On Fri, Jan 16, 2015 at 3:15 PM, Yinghai Lu <yinghai@kernel.org> wrote:
-> > On Thu, Jan 15, 2015 at 5:43 PM, Yijing Wang <wangyijing@huawei.com> wrote:
-> >> Pci_bus_add_devices() should not be placed in pci_scan_bus().
-> >> Now pci device will be added to driver core once its
-> >> creation. All things left in pci_bus_add_devices() are
-> >> driver attachment and other trivial sysfs things.
-> >> Pci_scan_bus() should be the function responsible for
-> >> scanning PCI devices, not including driver attachment.
-> >> Other, some callers(m68k,unicore32,alpha) of pci_scan_bus()
-> >> will call pci_bus_size_bridges() and pci_bus_assign_resources()
-> >> after pci_scan_bus().
+On Monday 19 January 2015 11:17:02 Yijing Wang wrote:
+> On 2015/1/16 18:01, Arnd Bergmann wrote:
+> > On Friday 16 January 2015 09:44:16 Yijing Wang wrote:
+> >> +static void pci_host_bridge_probe_mode(
+> >> +               struct pci_host_bridge *host)
+> >> +{
+> >> +       host->of_scan = true;
+> >> +}
 > >>
-> >> E.g.
-> >> In m68k
-> >> mcf_pci_init()
-> >>         pci_scan_bus()
-> >>                 ...
-> >>                 pci_bus_add_devices() --- try to attach driver
-> >>         pci_fixup_irqs()
-> >>         pci_bus_size_bridges()
-> >>         pci_bus_assign_resources()
-> >>
-> >> It is not correct, resources should be assigned correctly
-> >> before attaching driver.
-> >
-> No, for booting path, at that time pci drivers are *NOT* loaded yet.
+> > 
+> > I probably missed something here, but where does host->of_scan
+> > get used?
+> > 
+> 
+> It is used in __pci_scan_root_bus() to detect whether of scan bus is needed in patch 11.
 
-This may be true for the m68k example, and traditionally for all
-PCI hosts, but as we move to a more modular architecture with
-drivers/pci/hosts, you can have PCI host drivers that are loadable
-modules and get loaded after the built-in drivers are initialized,
-or you can have host drivers that depend on a resource (clock,
-regulator, reset, gpio, ...) that in turn comes from a driver
-that gets initialized later.
+Ok, I see it now.
+
+> @@ -2051,10 +2053,17 @@ static struct pci_bus *__pci_scan_root_bus(
+>  		pci_bus_insert_busn_res(b, host->busnum, 255);
+>  	}
+> 
+> -	max = pci_scan_child_bus(b);
+> +	if (host->ops && host->ops->phb_probe_mode)
+> +		host->ops->phb_probe_mode(host);
+> 
+> -	if (!found)
+> -		pci_bus_update_busn_res_end(b, max);
+> +	if (host->of_scan) {
+> +		if (host->ops &&host->ops->phb_of_scan_bus)
+> +			host->ops->phb_of_scan_bus(host);
+> +	} else {
+> +		max = pci_scan_child_bus(b);
+> +		if (!found)
+> +			pci_bus_update_busn_res_end(b, max);
+> +	}
+> 
+
+I think we can simplify this based on the knowledge that this code
+will remain powerpc specific. How about removing the phb_probe_mode()
+callback and replacing it with just a phb_scan_bus() callback that
+will always get set on sparc, and do this on powerpc:
+
++static void pci_host_bridge_of_scan_bus(struct pci_host_bridge *host)
++{
++       int mode = PCI_PROBE_NORMAL;
++       struct pci_bus *bus = host->bus;
++       struct pci_controller *hose = dev_get_drvdata(&host->dev);
++
++       /* Get probe mode and perform scan */
++       if (hose->dn && ppc_md.pci_probe_mode)
++               mode = ppc_md.pci_probe_mode(bus);
++
++       pr_debug("    probe mode: %d\n", mode);
++       if (mode == PCI_PROBE_DEVTREE) {
++               of_scan_bus(host->dn, bus);
++		return max; // XXX need to get this from somewhere
++	}
++	return pci_scan_child_bus(b);
++}
+
+Would that work?
 
 	Arnd
