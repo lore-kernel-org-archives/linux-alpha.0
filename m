@@ -1,43 +1,70 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH 27/28] PCI: Remove platform specific pci_domain_nr()
-Date: Mon, 19 Jan 2015 11:19:15 +0800
-Message-ID: <54BC77B3.6080701@huawei.com>
-References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com> <1421372666-12288-28-git-send-email-wangyijing@huawei.com> <1561857.t9qV46uRjC@wuerfel>
+From: Greg Ungerer <gregungerer@westnet.com.au>
+Subject: Re: [PATCH 01/28] PCI: Rip out pci_bus_add_devices() from
+ pci_scan_bus()
+Date: Mon, 19 Jan 2015 14:59:44 +1000
+Message-ID: <54BC8F40.1080405@westnet.com.au>
+References: <1421372666-12288-1-git-send-email-wangyijing@huawei.com>	<1421372666-12288-2-git-send-email-wangyijing@huawei.com>	<CAE9FiQUoocCzBKsHL_D4ypH1-DV7XxZMdREX7n=Tz1Kq3kHHeA@mail.gmail.com>
+ <CAE9FiQV97PuDWBZYRxh8R0ADnUFTbo1NO3wAufj97en0yseYSQ@mail.gmail.com>
+ <54BC6611.9020002@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1561857.t9qV46uRjC@wuerfel>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <54BC6611.9020002@huawei.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Yijing Wang <wangyijing@huawei.com>, Yinghai Lu <yinghai@kernel.org>
+Cc: Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Jiang Liu <jiang.liu@linux.intel.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On 2015/1/16 17:44, Arnd Bergmann wrote:
-> On Friday 16 January 2015 09:44:25 Yijing Wang wrote:
->>
->> +int pci_domain_nr(struct pci_bus *bus)
->> +{
->> +       struct pci_host_bridge *host = find_pci_host_bridge(bus);
->> +
->> +       return host->domain;
->> +}
->> +EXPORT_SYMBOL_GPL(pci_domain_nr);
->> +
+On 19/01/15 12:04, Yijing Wang wrote:
+> On 2015/1/17 7:16, Yinghai Lu wrote:
+>> On Fri, Jan 16, 2015 at 3:15 PM, Yinghai Lu <yinghai@kernel.org> wrote:
+>>> On Thu, Jan 15, 2015 at 5:43 PM, Yijing Wang <wangyijing@huawei.com> wrote:
+>>>> Pci_bus_add_devices() should not be placed in pci_scan_bus().
+>>>> Now pci device will be added to driver core once its
+>>>> creation. All things left in pci_bus_add_devices() are
+>>>> driver attachment and other trivial sysfs things.
+>>>> Pci_scan_bus() should be the function responsible for
+>>>> scanning PCI devices, not including driver attachment.
+>>>> Other, some callers(m68k,unicore32,alpha) of pci_scan_bus()
+>>>> will call pci_bus_size_bridges() and pci_bus_assign_resources()
+>>>> after pci_scan_bus().
+>>>>
+>>>> E.g.
+>>>> In m68k
+>>>> mcf_pci_init()
+>>>>         pci_scan_bus()
+>>>>                 ...
+>>>>                 pci_bus_add_devices() --- try to attach driver
+>>>>         pci_fixup_irqs()
+>>>>         pci_bus_size_bridges()
+>>>>         pci_bus_assign_resources()
+>>>>
+>>>> It is not correct, resources should be assigned correctly
+>>>> before attaching driver.
+>>>
+>> No, for booting path, at that time pci drivers are *NOT* loaded yet.
 > 
-> Since most of the existing functions are exported as EXPORT_SYMBOL
-> rather than EXPORT_SYMBOL_GPL, I think the new version should do
-> the same.
+> Hi Yinghai, I knew code flow here would not cause problems, sorry the log
+> confused you, I will refresh it. But I think pci_scan_bus()/pci_scan_root_bus()
+> which could only be used during system boot up(before module_init) make
+> the pci scan logic obscure. Because most callers additionally call
+> pci_bus_size_bridges() and pci_bus_assign_resources() later,
+> so rip out pci_bus_add_devices() from pci_scan_bus()/pci_scan_root_bus()
+> make code have better readability.
 
-Good catch. Thanks!
+I agree that ordering seems odd. I recall there was a reason I had
+to put it in that order (at that time - which is a few years back now).
+I can't remember exactly now, but it was something like bridges
+didn't get resourced properly without a pci scan first.
 
-> 
-> 	Arnd
-> 
-> .
-> 
-
-
--- 
-Thanks!
-Yijing
+Regards
+Greg
