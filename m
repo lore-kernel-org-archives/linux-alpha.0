@@ -1,64 +1,126 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 24/30] PCI/tegra: Remove redundant tegra_pcie_scan_bus()
-Date: Wed, 21 Jan 2015 08:30:19 +0800
-Message-ID: <1421800225-26230-25-git-send-email-wangyijing@huawei.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: [PATCH v2 21/30] PCI: Introduce pci_bus_child_max_busnr()
+Date: Wed, 21 Jan 2015 08:30:16 +0800
+Message-ID: <1421800225-26230-22-git-send-email-wangyijing@huawei.com>
 References: <1421800225-26230-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1421800225-26230-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1421800225-26230-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Rusty Russell <rusty-8n+1lVoiYb80n/F98K4Iww@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, Liviu Dudau <liviu-I3yL/QOVVjH10XsdtD+oqA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-Now pci_scan_root_bus() is almost simliar to
-pci_create_root_bus() + pci_scan_child_bus().
-So we could use common pci_scan_root_bus() in
-pci_common_init_dev() to scan pci busses.
-tegra_pcie_scan_bus() is redundant, remove it.
+Sometimes, we need to know the highest reserved
+busnr for children bus. Because parent's
+bus->busn_res could have padding in it.
+This function return the max child busnr as
+pci_scan_child_bus().
 
-Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-CC: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-CC: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/host/pci-tegra.c |   16 ----------------
- 1 files changed, 0 insertions(+), 16 deletions(-)
+ drivers/pci/hotplug/acpiphp_glue.c |   29 +----------------------------
+ drivers/pci/pci.c                  |   25 ++++++++++++++++++++++++-
+ include/linux/pci.h                |    2 +-
+ 3 files changed, 26 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/pci/host/pci-tegra.c b/drivers/pci/host/pci-tegra.c
-index 6f9c29f..baed0c5 100644
---- a/drivers/pci/host/pci-tegra.c
-+++ b/drivers/pci/host/pci-tegra.c
-@@ -679,21 +679,6 @@ static int tegra_pcie_map_irq(const struct pci_dev *pdev, u8 slot, u8 pin)
- 	return irq;
+diff --git a/drivers/pci/hotplug/acpiphp_glue.c b/drivers/pci/hotplug/acpiphp_glue.c
+index bcb90e4..84f2584 100644
+--- a/drivers/pci/hotplug/acpiphp_glue.c
++++ b/drivers/pci/hotplug/acpiphp_glue.c
+@@ -397,33 +397,6 @@ static void cleanup_bridge(struct acpiphp_bridge *bridge)
+ 	acpi_unlock_hp_context();
  }
  
--static struct pci_bus *tegra_pcie_scan_bus(int nr, struct pci_sys_data *sys)
+-/**
+- * acpiphp_max_busnr - return the highest reserved bus number under the given bus.
+- * @bus: bus to start search with
+- */
+-static unsigned char acpiphp_max_busnr(struct pci_bus *bus)
 -{
--	struct tegra_pcie *pcie = sys_to_pcie(sys);
--	struct pci_bus *bus;
+-	struct pci_bus *tmp;
+-	unsigned char max, n;
 -
--	bus = pci_create_root_bus(pcie->dev, sys->busnr, &tegra_pcie_ops, sys,
--				  &sys->resources);
--	if (!bus)
--		return NULL;
+-	/*
+-	 * pci_bus_max_busnr will return the highest
+-	 * reserved busnr for all these children.
+-	 * that is equivalent to the bus->subordinate
+-	 * value.  We don't want to use the parent's
+-	 * bus->subordinate value because it could have
+-	 * padding in it.
+-	 */
+-	max = bus->busn_res.start;
 -
--	pci_scan_child_bus(bus);
--
--	return bus;
+-	list_for_each_entry(tmp, &bus->children, node) {
+-		n = pci_bus_max_busnr(tmp);
+-		if (n > max)
+-			max = n;
+-	}
+-	return max;
 -}
 -
- static irqreturn_t tegra_pcie_isr(int irq, void *arg)
+ static void acpiphp_set_acpi_region(struct acpiphp_slot *slot)
  {
- 	const char *err_msg[] = {
-@@ -1880,7 +1865,6 @@ static int tegra_pcie_enable(struct tegra_pcie *pcie)
- 	hw.private_data = (void **)&pcie;
- 	hw.setup = tegra_pcie_setup;
- 	hw.map_irq = tegra_pcie_map_irq;
--	hw.scan = tegra_pcie_scan_bus;
- 	hw.ops = &tegra_pcie_ops;
+ 	struct acpiphp_func *func;
+@@ -489,7 +462,7 @@ static void enable_slot(struct acpiphp_slot *slot)
+ 	LIST_HEAD(add_list);
  
- 	pci_common_init_dev(pcie->dev, &hw);
+ 	acpiphp_rescan_slot(slot);
+-	max = acpiphp_max_busnr(bus);
++	max = pci_bus_child_max_busnr(bus);
+ 	for (pass = 0; pass < 2; pass++) {
+ 		list_for_each_entry(dev, &bus->devices, bus_list) {
+ 			if (PCI_SLOT(dev->devfn) != slot->device)
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 3e10772..06d41b1 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -121,7 +121,30 @@ unsigned char pci_bus_max_busnr(struct pci_bus *bus)
+ 	}
+ 	return max;
+ }
+-EXPORT_SYMBOL_GPL(pci_bus_max_busnr);
++
++unsigned char pci_bus_child_max_busnr(struct pci_bus *bus)
++{
++	struct pci_bus *tmp;
++	unsigned char max, n;
++
++	/*
++	 * pci_bus_max_busnr will return the highest
++	 * reserved busnr for all these children.
++	 * that is equivalent to the bus->subordinate
++	 * value.  We don't want to use the parent's
++	 * bus->subordinate value because it could have
++	 * padding in it.
++	 */
++	max = bus->busn_res.start;
++
++	list_for_each_entry(tmp, &bus->children, node) {
++		n = pci_bus_max_busnr(tmp);
++		if (n > max)
++			max = n;
++	}
++	return max;
++}
++EXPORT_SYMBOL_GPL(pci_bus_child_max_busnr);
+ 
+ #ifdef CONFIG_HAS_IOMEM
+ void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar)
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index e81cd9b..4c4c9e4 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1172,7 +1172,7 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
+ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
+ 		  void *userdata);
+ int pci_cfg_space_size(struct pci_dev *dev);
+-unsigned char pci_bus_max_busnr(struct pci_bus *bus);
++unsigned char pci_bus_child_max_busnr(struct pci_bus *bus);
+ void pci_setup_bridge(struct pci_bus *bus);
+ resource_size_t pcibios_window_alignment(struct pci_bus *bus,
+ 					 unsigned long type);
 -- 
 1.7.1
