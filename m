@@ -1,44 +1,81 @@
-From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Subject: Re: [PATCH v2 23/30] PCI/mvebu: Use pci_common_init_dev() to
- simplify code
-Date: Thu, 22 Jan 2015 18:40:00 +0100
-Message-ID: <20150122184000.63ba06bb@free-electrons.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [PATCH v2 03/30] xen/PCI: Don't use deprecated function
+ pci_scan_bus_parented()
+Date: Thu, 22 Jan 2015 15:25:23 -0500
+Message-ID: <20150122202523.GC5813@l.oracle.com>
 References: <1421800225-26230-1-git-send-email-wangyijing@huawei.com>
-	<1421800225-26230-24-git-send-email-wangyijing@huawei.com>
+ <1421800225-26230-4-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <1421800225-26230-24-git-send-email-wangyijing@huawei.com>
-Sender: linux-ia64-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1421800225-26230-4-git-send-email-wangyijing@huawei.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Yijing Wang <wangyijing@huawei.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Jason Cooper <jason@lakedaemon.net>, Gregory =?UTF-8?B?Q2zDqW1lbnQ=?= <gregory.clement@free-electrons.com>, Lior Amsalem <>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@vger.kernel.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, xen-devel@lists.xenproject.org
 
-Dear Yijing Wang,
-
-On Wed, 21 Jan 2015 08:30:18 +0800, Yijing Wang wrote:
-> Mvebu_pcie_scan_bus() is not necessary, we could use
-> pci_common_init_dev() instead of pci_common_init(),
-> and pass the device pointer as the parent. Then
-> pci_scan_root_bus() will be called to scan the pci busses.
+On Wed, Jan 21, 2015 at 08:29:58AM +0800, Yijing Wang wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
+> Use pci_scan_root_bus() instead of deprecated function
+> pci_scan_bus_parented().
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> CC: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-> CC: Jason Cooper <jason@lakedaemon.net>
+> CC: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+> CC: xen-devel@lists.xenproject.org
 
-While I'm fine with the change to pci_common_init_dev(), I am not so
-sure about the removal of mvebu_pcie_scan_bus(). I vaguely remember
-that we intentionally did not use the default function for a specific
-reason. Of course, this was a long time ago, and I don't remember the
-reason. I would have to take a bit of time to 1/ review the archives of
-the discussion surrounding the pcie-mvebu driver, and 2/ test your
-patch to validate it works fine on HW.
-
-Thanks!
-
-Thomas
--- 
-Thomas Petazzoni, CTO, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+It looks OK to me thought I need to test it first.
+> ---
+>  drivers/pci/xen-pcifront.c |   10 +++++++---
+>  1 files changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
+> index b1ffebe..240ddbc 100644
+> --- a/drivers/pci/xen-pcifront.c
+> +++ b/drivers/pci/xen-pcifront.c
+> @@ -446,6 +446,7 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+>  				 unsigned int domain, unsigned int bus)
+>  {
+>  	struct pci_bus *b;
+> +	LIST_HEAD(resources);
+>  	struct pcifront_sd *sd = NULL;
+>  	struct pci_bus_entry *bus_entry = NULL;
+>  	int err = 0;
+> @@ -470,17 +471,20 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+>  		err = -ENOMEM;
+>  		goto err_out;
+>  	}
+> +	pci_add_resource(&resources, &ioport_resource);
+> +	pci_add_resource(&resources, &iomem_resource);
+>  	pcifront_init_sd(sd, domain, bus, pdev);
+>  
+>  	pci_lock_rescan_remove();
+>  
+> -	b = pci_scan_bus_parented(&pdev->xdev->dev, bus,
+> -				  &pcifront_bus_ops, sd);
+> +	b = pci_scan_root_bus(&pdev->xdev->dev, bus,
+> +				  &pcifront_bus_ops, sd, &resources);
+>  	if (!b) {
+>  		dev_err(&pdev->xdev->dev,
+>  			"Error creating PCI Frontend Bus!\n");
+>  		err = -ENOMEM;
+>  		pci_unlock_rescan_remove();
+> +		pci_free_resource_list(&resources);
+>  		goto err_out;
+>  	}
+>  
+> @@ -488,7 +492,7 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+>  
+>  	list_add(&bus_entry->list, &pdev->root_buses);
+>  
+> -	/* pci_scan_bus_parented skips devices which do not have a have
+> +	/* pci_scan_root_bus skips devices which do not have a have
+>  	* devfn==0. The pcifront_scan_bus enumerates all devfn. */
+>  	err = pcifront_scan_bus(pdev, domain, bus, b);
+>  
+> -- 
+> 1.7.1
+> 
