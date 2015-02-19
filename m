@@ -1,69 +1,54 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v2 23/30] PCI/mvebu: Use pci_common_init_dev() to
- simplify code
-Date: Mon, 16 Feb 2015 17:46:29 +0000
-Message-ID: <20150216174628.GA13861@red-moon>
-References: <1421800225-26230-1-git-send-email-wangyijing@huawei.com>
- <1421800225-26230-24-git-send-email-wangyijing@huawei.com>
- <20150122184000.63ba06bb@free-electrons.com>
+From: Joseph Myers <joseph@codesourcery.com>
+Subject: Re: [PATCH RFC] Update kernel math-emu code from current glibc
+ soft-fp
+Date: Thu, 19 Feb 2015 18:40:34 +0000
+Message-ID: <alpine.DEB.2.10.1502191835490.22905@digraph.polyomino.org.uk>
+References: <alpine.DEB.2.10.1502061719210.27832@digraph.polyomino.org.uk> <20150219.132122.204795202277130266.davem@davemloft.net>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150122184000.63ba06bb@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: multipart/mixed;
+	boundary="-1152306461-273902004-1424371234=:22905"
+Return-path: <sparclinux-owner@vger.kernel.org>
+In-Reply-To: <20150219.132122.204795202277130266.davem@davemloft.net>
+Sender: sparclinux-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Cc: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Yinghai Lu <yinghai@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, "x86@kernel.org" <x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-m68k@vger.kernel.org" <linux-m68k@vger.kernel.org>, Liv
+To: David Miller <davem@davemloft.net>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, kkojima@rr.iij4u.or.jp
 
-Hi Thomas,
+---1152306461-273902004-1424371234=:22905
+Content-Type: text/plain; charset="iso-8859-7"
+Content-Transfer-Encoding: base64
 
-On Thu, Jan 22, 2015 at 05:40:00PM +0000, Thomas Petazzoni wrote:
-> Dear Yijing Wang,
-> 
-> On Wed, 21 Jan 2015 08:30:18 +0800, Yijing Wang wrote:
-> > Mvebu_pcie_scan_bus() is not necessary, we could use
-> > pci_common_init_dev() instead of pci_common_init(),
-> > and pass the device pointer as the parent. Then
-> > pci_scan_root_bus() will be called to scan the pci busses.
-> > 
-> > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> > CC: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-> > CC: Jason Cooper <jason@lakedaemon.net>
-> 
-> While I'm fine with the change to pci_common_init_dev(), I am not so
-> sure about the removal of mvebu_pcie_scan_bus(). I vaguely remember
-> that we intentionally did not use the default function for a specific
-> reason. Of course, this was a long time ago, and I don't remember the
-> reason. I would have to take a bit of time to 1/ review the archives of
-> the discussion surrounding the pcie-mvebu driver, and 2/ test your
-> patch to validate it works fine on HW.
+T24gVGh1LCAxOSBGZWIgMjAxNSwgRGF2aWQgTWlsbGVyIHdyb3RlOgoKPiBGcm9tOiBKb3NlcGgg
+TXllcnMgPGpvc2VwaEBjb2Rlc291cmNlcnkuY29tPgo+IERhdGU6IEZyaSwgNiBGZWIgMjAxNSAx
+NzoyNToyOSArMDAwMAo+IAo+ID4gKiBPbiBTUEFSQywgY29tcGFyaXNvbnMgbm93IHVzZSByYXcg
+dW5wYWNraW5nICh0aGlzIHNob3VsZCBub3QgaW4gZmFjdAo+ID4gICBjaGFuZ2UgaG93IHRoZSBl
+bXVsYXRpb24gYmVoYXZlcywganVzdCBtYWtlIGl0IG1vcmUgZWZmaWNpZW50KS4KPiAKPiBJIGRp
+ZCBhIHNwYXJjNjQgdGVzdCBidWlsZCBhbmQgaXQgZmFpbGVkIGxpa2Ugc286Cj4gCj4gYXJjaC9z
+cGFyYy9tYXRoLWVtdS9tYXRoXzY0LmM6IEluIGZ1bmN0aW9uIKFkb19tYXRoZW11ojoKPiBhcmNo
+L3NwYXJjL21hdGgtZW11L21hdGhfNjQuYzo0ODc6MTogZXJyb3I6IGV4cGVjdGVkIGV4cHJlc3Np
+b24gYmVmb3JlIKFyZXR1cm6iCj4gYXJjaC9zcGFyYy9tYXRoLWVtdS9tYXRoXzY0LmM6NDg4OjE6
+IGVycm9yOiBleHBlY3RlZCBleHByZXNzaW9uIGJlZm9yZSChcmV0dXJuogo+IGFyY2gvc3BhcmMv
+bWF0aC1lbXUvbWF0aF82NC5jOjQ5MDoxOiBlcnJvcjogZXhwZWN0ZWQgZXhwcmVzc2lvbiBiZWZv
+cmUgoXJldHVybqIKPiBhcmNoL3NwYXJjL21hdGgtZW11L21hdGhfNjQuYzo0OTE6MTogZXJyb3I6
+IGV4cGVjdGVkIGV4cHJlc3Npb24gYmVmb3JlIKFyZXR1cm6iCj4gYXJjaC9zcGFyYy9tYXRoLWVt
+dS9tYXRoXzY0LmM6NDk1OjE6IGVycm9yOiBleHBlY3RlZCBleHByZXNzaW9uIGJlZm9yZSChcmV0
+dXJuogo+IAo+IEknbSBhdHRhY2hpbmcgYSBDUFAgcHJvY2Vzc2VkIG1hdGhfNjQuYyBmb3IgeW91
+ciBjb252ZW5pZW5jZToKClBsZWFzZSB0cnkgdGhpcyBwYXRjaCBvbiB0b3Agb2YgdGhlIHByZXZp
+b3VzIG9uZS4gIFRoZSB3YXkgYWJvcnQgaXMgCnJlZGVmaW5lZCBpbiB0aGUga2VybmVsIGNvZGUg
+ZG9lc24ndCB3b3JrIGZvciBvbmUgcGxhY2UgdXNpbmcgaXQgaW4gYW4gCmV4cHJlc3Npb247IHRo
+aXMgcGF0Y2ggY2hhbmdlcyBhIGNvbW1hIGV4cHJlc3Npb24gdG8gYSBzdGF0ZW1lbnQgCmV4cHJl
+c3Npb24uICBUaGlzIGRpZG4ndCBhcHBlYXIgaW4gbXkgcG93ZXJwYyB0ZXN0aW5nIGJlY2F1c2Ug
+dGhlIHBvd2VycGMgCmVtdWxhdGlvbiBuZXZlciB1c2VzIEZQX0ZST01fSU5UOyBJJ20gbm90IHN1
+cmUgaG93IEtheidzIHNoIHRlc3RpbmcgCmF2b2lkZWQgdGhlIHByb2JsZW0gYXBwZWFyaW5nIHRo
+ZXJlLgoKZGlmZiAtLWdpdCBhL2luY2x1ZGUvbWF0aC1lbXUvb3AtY29tbW9uLmggYi9pbmNsdWRl
+L21hdGgtZW11L29wLWNvbW1vbi5oCmluZGV4IGI5ZjVlMWEuLjhjMDU5YzMgMTAwNjQ0Ci0tLSBh
+L2luY2x1ZGUvbWF0aC1lbXUvb3AtY29tbW9uLmgKKysrIGIvaW5jbHVkZS9tYXRoLWVtdS9vcC1j
+b21tb24uaApAQCAtMTgxOCw3ICsxODE4LDcgQEAKIAkJCSBYIyNfZSA9IChfRlBfRVhQQklBU18j
+I2ZzICsgMiAqIF9GUF9XX1RZUEVfU0laRSAtIDEgXAogCQkJCSAgLSBfRlBfRlJPTV9JTlRfbHop
+OwkJCVwKIAkJICAgICAgIH0pCQkJCQkJXAotCQkgICAgIDogKGFib3J0ICgpLCAwKSkpOwkJCQkJ
+XAorCQkgICAgIDogKHsgYWJvcnQgKCk7IDA7IH0pKSk7CQkJCVwKIAkJCQkJCQkJCVwKIAkgIGlm
+ICgocnNpemUpIC0gMSArIF9GUF9FWFBCSUFTXyMjZnMgPj0gX0ZQX0VYUE1BWF8jI2ZzCQlcCiAJ
+ICAgICAgJiYgWCMjX2UgPj0gX0ZQX0VYUE1BWF8jI2ZzKQkJCQlcCgotLSAKSm9zZXBoIFMuIE15
+ZXJzCmpvc2VwaEBjb2Rlc291cmNlcnkuY29t
 
-I guess the reason: by providing the scan pointer to pcibios through
-the hw_pci struct you were preventing calling pci_scan_root_bus() in
-bios32.c that in turn can add devices before the resources are assigned.
-
-Basically mvebu_pci_scan_bus() was doing what pci_scan_root_bus() does
-except for calling pci_bus_add_devices().
-
-Yijing patches remove pci_bus_add_devices() from pci_scan_root_bus() so
-his change should be fine and it actually improves the current behaviour
-which is quite hard to untangle, and not just on mvebu (I suspect
-drivers/pci/host/pcie-xilinx.c can suffer from the same problem).
-
-Lorenzo
-
-> 
-> Thanks!
-> 
-> Thomas
-> -- 
-> Thomas Petazzoni, CTO, Free Electrons
-> Embedded Linux, Kernel and Android engineering
-> http://free-electrons.com
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+---1152306461-273902004-1424371234=:22905--
