@@ -1,48 +1,92 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v2 00/30] Refine PCI scan interfaces and make generic
- pci host bridge
-Date: Thu, 26 Feb 2015 08:54:04 +0800
-Message-ID: <54EE6EAC.9070607@huawei.com>
-References: <1421800225-26230-1-git-send-email-wangyijing@huawei.com> <20150225230925.GQ6220@google.com>
+Subject: [PATCH v3 15/30] PCI/IA64: Refine pci_acpi_scan_root() with generic pci_host_bridge
+Date: Thu, 26 Feb 2015 09:29:32 +0800
+Message-ID: <1424914187-21027-16-git-send-email-wangyijing@huawei.com>
+References: <1424914187-21027-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20150225230925.GQ6220@google.com>
-Sender: linux-ia64-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1424914187-21027-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Yijing Wang <wangyijing0307@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>
 
-On 2015/2/26 7:09, Bjorn Helgaas wrote:
-> On Wed, Jan 21, 2015 at 08:29:55AM +0800, Yijing Wang wrote:
->> v1->v2:
->> 	Split pci_host_bridge_list into a new patch, remove .phb_probe_mode
->> 	and rework powerpc .phb_of_scan_bus() for simpilicty suggested by
->> 	Arnd. Refresh some patch description log, and add a new patch to fix
->> 	build warning in ia64.
->>
->> This series is based on Bjorn's pci-next branch.
-> 
-> Hi Yijing,
-> 
-> Would you mind rebasing this to v4.0-rc1?  It doesn't apply quite cleanly
-> any more.
+From: Yijing Wang <wangyijing0307@gmail.com>
 
-OK, I will resend the series based on the v4.0-rc1.
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+CC: Tony Luck <tony.luck@intel.com>
+CC: Fenghua Yu <fenghua.yu@intel.com>
+CC: linux-ia64@vger.kernel.org
+---
+ arch/ia64/pci/pci.c |   34 ++++++++++++++++++----------------
+ 1 files changed, 18 insertions(+), 16 deletions(-)
 
-Thanks!
-Yijing.
-
-> 
-> Thanks,
->   Bjorn
-> 
-> .
-> 
-
-
+diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
+index e4cda61..dc5354d 100644
+--- a/arch/ia64/pci/pci.c
++++ b/arch/ia64/pci/pci.c
+@@ -420,6 +420,18 @@ probe_pci_root_info(struct pci_root_info *info, struct acpi_device *device,
+ 	return 0;
+ }
+ 
++static int pci_host_bridge_prepare(struct pci_host_bridge *bridge)
++{
++	struct pci_controller *controller = bridge->bus->sysdata;
++
++	ACPI_COMPANION_SET(&bridge->dev, controller->companion);
++	return 0;
++}
++
++static struct pci_host_bridge_ops phb_ops = {
++	.phb_prepare = pci_host_bridge_prepare,
++};
++
+ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+ {
+ 	struct acpi_device *device = root->device;
+@@ -428,7 +440,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+ 	struct pci_controller *controller;
+ 	struct pci_root_info *info = NULL;
+ 	int busnum = root->secondary.start;
+-	struct pci_bus *pbus;
++	struct pci_host_bridge *host;
+ 	int ret;
+ 
+ 	controller = alloc_pci_controller(domain);
+@@ -465,26 +477,16 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+ 	 * should handle the case here, but it appears that IA64 hasn't
+ 	 * such quirk. So we just ignore the case now.
+ 	 */
+-	pbus = pci_create_root_bus(NULL, PCI_DOMBUS(domain, bus), 
+-			&pci_root_ops, controller, &info->resources);
+-	if (!pbus) {
++	host = pci_scan_root_bridge(NULL, PCI_DOMBUS(domain, bus),
++			&pci_root_ops, controller, &info->resources, &phb_ops);
++	if (!host) {
+ 		pci_free_resource_list(&info->resources);
+ 		__release_pci_root_info(info);
+ 		return NULL;
+ 	}
+ 
+-	pci_set_host_bridge_release(to_pci_host_bridge(pbus->bridge),
+-			release_pci_root_info, info);
+-	pci_scan_child_bus(pbus);
+-	return pbus;
+-}
+-
+-int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
+-{
+-	struct pci_controller *controller = bridge->bus->sysdata;
+-
+-	ACPI_COMPANION_SET(&bridge->dev, controller->companion);
+-	return 0;
++	pci_set_host_bridge_release(host, release_pci_root_info, info);
++	return host->bus;
+ }
+ 
+ void pcibios_fixup_device_resources(struct pci_dev *dev)
 -- 
-Thanks!
-Yijing
+1.7.1
 
