@@ -1,7 +1,7 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v3 04/30] PCI: Remove deprecated pci_scan_bus_parented()
-Date: Thu, 26 Feb 2015 09:29:21 +0800
-Message-ID: <1424914187-21027-5-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v3 19/30] PCI: Remove weak pcibios_root_bridge_prepare()
+Date: Thu, 26 Feb 2015 09:29:36 +0800
+Message-ID: <1424914187-21027-20-git-send-email-wangyijing@huawei.com>
 References: <1424914187-21027-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -13,57 +13,60 @@ Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-No one uses pci_scan_bus_parented() any more,
-remove it.
+Now no one use weak pcibios_root_bridge_prepare(),
+we could remove it.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/probe.c |   19 -------------------
+ drivers/pci/probe.c |   15 ---------------
  include/linux/pci.h |    2 --
- 2 files changed, 0 insertions(+), 21 deletions(-)
+ 2 files changed, 0 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 8ef0375..699a238 100644
+index b5f9ca4..356c90f 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -2091,25 +2091,6 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
+@@ -1844,18 +1844,6 @@ unsigned int pci_scan_child_bus(struct pci_bus *bus)
  }
- EXPORT_SYMBOL(pci_scan_root_bus);
+ EXPORT_SYMBOL_GPL(pci_scan_child_bus);
  
--/* Deprecated; use pci_scan_root_bus() instead */
--struct pci_bus *pci_scan_bus_parented(struct device *parent,
--		int bus, struct pci_ops *ops, void *sysdata)
+-/**
+- * pcibios_root_bridge_prepare - Platform-specific host bridge setup.
+- * @bridge: Host bridge to set up.
+- *
+- * Default empty implementation.  Replace with an architecture-specific setup
+- * routine, if necessary.
+- */
+-int __weak pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
 -{
--	LIST_HEAD(resources);
--	struct pci_bus *b;
--
--	pci_add_resource(&resources, &ioport_resource);
--	pci_add_resource(&resources, &iomem_resource);
--	pci_add_resource(&resources, &busn_resource);
--	b = pci_create_root_bus(parent, bus, ops, sysdata, &resources);
--	if (b)
--		pci_scan_child_bus(b);
--	else
--		pci_free_resource_list(&resources);
--	return b;
+-	return 0;
 -}
--EXPORT_SYMBOL(pci_scan_bus_parented);
 -
- struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops,
- 					void *sysdata)
+ void __weak pcibios_add_bus(struct pci_bus *bus)
  {
+ }
+@@ -1890,9 +1878,6 @@ static struct pci_bus *__pci_create_root_bus(
+ 	b->bridge = get_device(&bridge->dev);
+ 	if (bridge->ops && bridge->ops->phb_set_root_bus_speed)
+ 		bridge->ops->phb_set_root_bus_speed(bridge);
+-	error = pcibios_root_bridge_prepare(bridge);
+-	if (error)
+-		goto err_out;
+ 
+ 	device_enable_async_suspend(b->bridge);
+ 	pci_set_bus_of_node(b);
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 211e9da..36effb8 100644
+index ef3a821..3c4413c 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -769,8 +769,6 @@ void pcibios_bus_to_resource(struct pci_bus *bus, struct resource *res,
- void pcibios_scan_specific_bus(int busn);
- struct pci_bus *pci_find_bus(int domain, int busnr);
- void pci_bus_add_devices(const struct pci_bus *bus);
--struct pci_bus *pci_scan_bus_parented(struct device *parent, int bus,
--				      struct pci_ops *ops, void *sysdata);
- struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops, void *sysdata);
- struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
- 				    struct pci_ops *ops, void *sysdata,
+@@ -423,8 +423,6 @@ struct pci_host_bridge {
+ void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
+ 		     void (*release_fn)(struct pci_host_bridge *),
+ 		     void *release_data);
+-
+-int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge);
+ struct pci_host_bridge *pci_create_host_bridge(
+ 		struct device *parent, u32 dombus, struct list_head *resources, 
+ 		void *sysdata, struct pci_host_bridge_ops *ops);
 -- 
 1.7.1
