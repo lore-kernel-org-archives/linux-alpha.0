@@ -1,72 +1,86 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v3 19/30] PCI: Remove weak pcibios_root_bridge_prepare()
-Date: Thu, 26 Feb 2015 09:29:36 +0800
-Message-ID: <1424914187-21027-20-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v3 17/30] PCI/powerpc: Rename pcibios_root_bridge_prepare()
+Date: Thu, 26 Feb 2015 09:29:34 +0800
+Message-ID: <1424914187-21027-18-git-send-email-wangyijing@huawei.com>
 References: <1424914187-21027-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <1424914187-21027-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
+Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
 
-Now no one use weak pcibios_root_bridge_prepare(),
-we could remove it.
-
-Signed-off-by: Yijing Wang <wangyijing@huawei.com>
----
- drivers/pci/probe.c |   15 ---------------
- include/linux/pci.h |    2 --
- 2 files changed, 0 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index b5f9ca4..356c90f 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1844,18 +1844,6 @@ unsigned int pci_scan_child_bus(struct pci_bus *bus)
- }
- EXPORT_SYMBOL_GPL(pci_scan_child_bus);
- 
--/**
-- * pcibios_root_bridge_prepare - Platform-specific host bridge setup.
-- * @bridge: Host bridge to set up.
-- *
-- * Default empty implementation.  Replace with an architecture-specific setup
-- * routine, if necessary.
-- */
--int __weak pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
--{
--	return 0;
--}
--
- void __weak pcibios_add_bus(struct pci_bus *bus)
- {
- }
-@@ -1890,9 +1878,6 @@ static struct pci_bus *__pci_create_root_bus(
- 	b->bridge = get_device(&bridge->dev);
- 	if (bridge->ops && bridge->ops->phb_set_root_bus_speed)
- 		bridge->ops->phb_set_root_bus_speed(bridge);
--	error = pcibios_root_bridge_prepare(bridge);
--	if (error)
--		goto err_out;
- 
- 	device_enable_async_suspend(b->bridge);
- 	pci_set_bus_of_node(b);
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index ef3a821..3c4413c 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -423,8 +423,6 @@ struct pci_host_bridge {
- void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
- 		     void (*release_fn)(struct pci_host_bridge *),
- 		     void *release_data);
--
--int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge);
- struct pci_host_bridge *pci_create_host_bridge(
- 		struct device *parent, u32 dombus, struct list_head *resources, 
- 		void *sysdata, struct pci_host_bridge_ops *ops);
--- 
-1.7.1
+UGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKCkgaW4gcG93ZXJwYyBpcyB1c2VkCnRvIHNldCBy
+b290IGJ1cyBzcGVlZC4gUmVuYW1lIGl0IHRvCnBjaWJpb3Nfc2V0X3Jvb3RfYnVzX3NwZWVkKCkg
+Zm9yIGJldHRlciByZWFkYWJpbGl0eS4KClNpZ25lZC1vZmYtYnk6IFlpamluZyBXYW5nIDx3YW5n
+eWlqaW5nQGh1YXdlaS5jb20+CkNDOiBCZW5qYW1pbiBIZXJyZW5zY2htaWR0IDxiZW5oQGtlcm5l
+bC5jcmFzaGluZy5vcmc+CkNDOiBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwotLS0KIGFy
+Y2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9tYWNoZGVwLmggICAgICAgfCAgICAyICstCiBhcmNoL3Bv
+d2VycGMva2VybmVsL3BjaS1jb21tb24uYyAgICAgICAgIHwgICAgNiArKystLS0KIGFyY2gvcG93
+ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wY2kuYyAgICAgfCAgICAyICstCiBhcmNoL3Bvd2VycGMv
+cGxhdGZvcm1zL3BzZXJpZXMvcHNlcmllcy5oIHwgICAgMiArLQogYXJjaC9wb3dlcnBjL3BsYXRm
+b3Jtcy9wc2VyaWVzL3NldHVwLmMgICB8ICAgIDIgKy0KIDUgZmlsZXMgY2hhbmdlZCwgNyBpbnNl
+cnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2FyY2gvcG93ZXJwYy9pbmNs
+dWRlL2FzbS9tYWNoZGVwLmggYi9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vbWFjaGRlcC5oCmlu
+ZGV4IGM4MTc1YTMuLjhlN2YyYTggMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2Fz
+bS9tYWNoZGVwLmgKKysrIGIvYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL21hY2hkZXAuaApAQCAt
+MTI5LDcgKzEyOSw3IEBAIHN0cnVjdCBtYWNoZGVwX2NhbGxzIHsKIAl2b2lkCQkoKnBjaWJpb3Nf
+Zml4dXApKHZvaWQpOwogCWludAkJKCpwY2lfcHJvYmVfbW9kZSkoc3RydWN0IHBjaV9idXMgKik7
+CiAJdm9pZAkJKCpwY2lfaXJxX2ZpeHVwKShzdHJ1Y3QgcGNpX2RldiAqZGV2KTsKLQlpbnQJCSgq
+cGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlCisJaW50
+CQkoKnBjaWJpb3Nfc2V0X3Jvb3RfYnVzX3NwZWVkKShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlCiAJ
+CQkJKmJyaWRnZSk7CiAKIAkvKiBUbyBzZXR1cCBQSEJzIHdoZW4gdXNpbmcgYXV0b21hdGljIE9G
+IHBsYXRmb3JtIGRyaXZlciBmb3IgUENJICovCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMva2Vy
+bmVsL3BjaS1jb21tb24uYyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNvbW1vbi5jCmluZGV4
+IDc4Y2Q0MWIuLjQ0MDFiNmEgMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNv
+bW1vbi5jCisrKyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNvbW1vbi5jCkBAIC03NjksOSAr
+NzY5LDkgQEAgaW50IHBjaV9wcm9jX2RvbWFpbihzdHJ1Y3QgcGNpX2J1cyAqYnVzKQogCiBpbnQg
+cGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKHN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRn
+ZSkKIHsKLQlpZiAocHBjX21kLnBjaWJpb3Nfcm9vdF9icmlkZ2VfcHJlcGFyZSkKLQkJcmV0dXJu
+IHBwY19tZC5wY2liaW9zX3Jvb3RfYnJpZGdlX3ByZXBhcmUoYnJpZGdlKTsKLQorCWlmIChwcGNf
+bWQucGNpYmlvc19zZXRfcm9vdF9idXNfc3BlZWQpCisJCXJldHVybiBwcGNfbWQucGNpYmlvc19z
+ZXRfcm9vdF9idXNfc3BlZWQoYnJpZGdlKTsKKwogCXJldHVybiAwOwogfQogCmRpZmYgLS1naXQg
+YS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvcGNpLmMgYi9hcmNoL3Bvd2VycGMvcGxh
+dGZvcm1zL3BzZXJpZXMvcGNpLmMKaW5kZXggZmUxNmE1MC4uYWY2ODVkNiAxMDA2NDQKLS0tIGEv
+YXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3BjaS5jCisrKyBiL2FyY2gvcG93ZXJwYy9w
+bGF0Zm9ybXMvcHNlcmllcy9wY2kuYwpAQCAtMTEwLDcgKzExMCw3IEBAIHN0YXRpYyB2b2lkIGZp
+eHVwX3dpbmJvbmRfODJjMTA1KHN0cnVjdCBwY2lfZGV2KiBkZXYpCiBERUNMQVJFX1BDSV9GSVhV
+UF9IRUFERVIoUENJX1ZFTkRPUl9JRF9XSU5CT05ELCBQQ0lfREVWSUNFX0lEX1dJTkJPTkRfODJD
+MTA1LAogCQkJIGZpeHVwX3dpbmJvbmRfODJjMTA1KTsKIAotaW50IHBzZXJpZXNfcm9vdF9icmlk
+Z2VfcHJlcGFyZShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpicmlkZ2UpCitpbnQgcHNlcmllc19z
+ZXRfcm9vdF9idXNfc3BlZWQoc3RydWN0IHBjaV9ob3N0X2JyaWRnZSAqYnJpZGdlKQogewogCXN0
+cnVjdCBkZXZpY2Vfbm9kZSAqZG4sICpwZG47CiAJc3RydWN0IHBjaV9idXMgKmJ1czsKZGlmZiAt
+LWdpdCBhL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wc2VyaWVzLmggYi9hcmNoL3Bv
+d2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvcHNlcmllcy5oCmluZGV4IDE3OTZjNTQuLjVkMGJlM2Eg
+MTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wc2VyaWVzLmgKKysr
+IGIvYXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3BzZXJpZXMuaApAQCAtNjMsNyArNjMs
+NyBAQCBleHRlcm4gaW50IGRscGFyX2RldGFjaF9ub2RlKHN0cnVjdCBkZXZpY2Vfbm9kZSAqKTsK
+IAogLyogUENJIHJvb3QgYnJpZGdlIHByZXBhcmUgZnVuY3Rpb24gb3ZlcnJpZGUgZm9yIHBzZXJp
+ZXMgKi8KIHN0cnVjdCBwY2lfaG9zdF9icmlkZ2U7Ci1pbnQgcHNlcmllc19yb290X2JyaWRnZV9w
+cmVwYXJlKHN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRnZSk7CitpbnQgcHNlcmllc19zZXRf
+cm9vdF9idXNfc3BlZWQoc3RydWN0IHBjaV9ob3N0X2JyaWRnZSAqYnJpZGdlKTsKIAogdW5zaWdu
+ZWQgbG9uZyBwc2VyaWVzX21lbW9yeV9ibG9ja19zaXplKHZvaWQpOwogCmRpZmYgLS1naXQgYS9h
+cmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYyBiL2FyY2gvcG93ZXJwYy9wbGF0
+Zm9ybXMvcHNlcmllcy9zZXR1cC5jCmluZGV4IGU0NDViNjcuLmIxOTZjMGQgMTAwNjQ0Ci0tLSBh
+L2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9zZXR1cC5jCisrKyBiL2FyY2gvcG93ZXJw
+Yy9wbGF0Zm9ybXMvcHNlcmllcy9zZXR1cC5jCkBAIC00OTYsNyArNDk2LDcgQEAgc3RhdGljIHZv
+aWQgX19pbml0IHBTZXJpZXNfc2V0dXBfYXJjaCh2b2lkKQogCQlwcGNfbWQuZW5hYmxlX3BtY3Mg
+PSBwb3dlcjRfZW5hYmxlX3BtY3M7CiAJfQogCi0JcHBjX21kLnBjaWJpb3Nfcm9vdF9icmlkZ2Vf
+cHJlcGFyZSA9IHBzZXJpZXNfcm9vdF9icmlkZ2VfcHJlcGFyZTsKKwlwcGNfbWQucGNpYmlvc19z
+ZXRfcm9vdF9idXNfc3BlZWQgPSBwc2VyaWVzX3NldF9yb290X2J1c19zcGVlZDsKIAogCWlmIChm
+aXJtd2FyZV9oYXNfZmVhdHVyZShGV19GRUFUVVJFX1NFVF9NT0RFKSkgewogCQlsb25nIHJjOwot
+LSAKMS43LjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CkxpbnV4cHBjLWRldiBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmcK
+aHR0cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRldg==
