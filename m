@@ -1,86 +1,108 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v4 17/30] PCI/powerpc: Rename pcibios_root_bridge_prepare()
-Date: Thu, 26 Feb 2015 16:12:11 +0800
-Message-ID: <1424938344-4017-18-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v4 22/30] PCI/Parisc: Use pci_scan_root_bus() for simplicity
+Date: Thu, 26 Feb 2015 16:12:16 +0800
+Message-ID: <1424938344-4017-23-git-send-email-wangyijing@huawei.com>
 References: <1424938344-4017-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1424938344-4017-1-git-send-email-wangyijing@huawei.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Yijing Wang <wangyijing0307@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, linux-parisc@vger.kernel.org
 
-UGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKCkgaW4gcG93ZXJwYyBpcyB1c2VkCnRvIHNldCBy
-b290IGJ1cyBzcGVlZC4gUmVuYW1lIGl0IHRvCnBjaWJpb3Nfc2V0X3Jvb3RfYnVzX3NwZWVkKCkg
-Zm9yIGJldHRlciByZWFkYWJpbGl0eS4KClNpZ25lZC1vZmYtYnk6IFlpamluZyBXYW5nIDx3YW5n
-eWlqaW5nQGh1YXdlaS5jb20+CkNDOiBCZW5qYW1pbiBIZXJyZW5zY2htaWR0IDxiZW5oQGtlcm5l
-bC5jcmFzaGluZy5vcmc+CkNDOiBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwotLS0KIGFy
-Y2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9tYWNoZGVwLmggICAgICAgfCAgICAyICstCiBhcmNoL3Bv
-d2VycGMva2VybmVsL3BjaS1jb21tb24uYyAgICAgICAgIHwgICAgNiArKystLS0KIGFyY2gvcG93
-ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wY2kuYyAgICAgfCAgICAyICstCiBhcmNoL3Bvd2VycGMv
-cGxhdGZvcm1zL3BzZXJpZXMvcHNlcmllcy5oIHwgICAgMiArLQogYXJjaC9wb3dlcnBjL3BsYXRm
-b3Jtcy9wc2VyaWVzL3NldHVwLmMgICB8ICAgIDIgKy0KIDUgZmlsZXMgY2hhbmdlZCwgNyBpbnNl
-cnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2FyY2gvcG93ZXJwYy9pbmNs
-dWRlL2FzbS9tYWNoZGVwLmggYi9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vbWFjaGRlcC5oCmlu
-ZGV4IGM4MTc1YTMuLjhlN2YyYTggMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2Fz
-bS9tYWNoZGVwLmgKKysrIGIvYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL21hY2hkZXAuaApAQCAt
-MTI5LDcgKzEyOSw3IEBAIHN0cnVjdCBtYWNoZGVwX2NhbGxzIHsKIAl2b2lkCQkoKnBjaWJpb3Nf
-Zml4dXApKHZvaWQpOwogCWludAkJKCpwY2lfcHJvYmVfbW9kZSkoc3RydWN0IHBjaV9idXMgKik7
-CiAJdm9pZAkJKCpwY2lfaXJxX2ZpeHVwKShzdHJ1Y3QgcGNpX2RldiAqZGV2KTsKLQlpbnQJCSgq
-cGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlCisJaW50
-CQkoKnBjaWJpb3Nfc2V0X3Jvb3RfYnVzX3NwZWVkKShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlCiAJ
-CQkJKmJyaWRnZSk7CiAKIAkvKiBUbyBzZXR1cCBQSEJzIHdoZW4gdXNpbmcgYXV0b21hdGljIE9G
-IHBsYXRmb3JtIGRyaXZlciBmb3IgUENJICovCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMva2Vy
-bmVsL3BjaS1jb21tb24uYyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNvbW1vbi5jCmluZGV4
-IDc4Y2Q0MWIuLjQ0MDFiNmEgMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNv
-bW1vbi5jCisrKyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNvbW1vbi5jCkBAIC03NjksOSAr
-NzY5LDkgQEAgaW50IHBjaV9wcm9jX2RvbWFpbihzdHJ1Y3QgcGNpX2J1cyAqYnVzKQogCiBpbnQg
-cGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKHN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRn
-ZSkKIHsKLQlpZiAocHBjX21kLnBjaWJpb3Nfcm9vdF9icmlkZ2VfcHJlcGFyZSkKLQkJcmV0dXJu
-IHBwY19tZC5wY2liaW9zX3Jvb3RfYnJpZGdlX3ByZXBhcmUoYnJpZGdlKTsKLQorCWlmIChwcGNf
-bWQucGNpYmlvc19zZXRfcm9vdF9idXNfc3BlZWQpCisJCXJldHVybiBwcGNfbWQucGNpYmlvc19z
-ZXRfcm9vdF9idXNfc3BlZWQoYnJpZGdlKTsKKwkKIAlyZXR1cm4gMDsKIH0KIApkaWZmIC0tZ2l0
-IGEvYXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3BjaS5jIGIvYXJjaC9wb3dlcnBjL3Bs
-YXRmb3Jtcy9wc2VyaWVzL3BjaS5jCmluZGV4IGZlMTZhNTAuLmFmNjg1ZDYgMTAwNjQ0Ci0tLSBh
-L2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wY2kuYworKysgYi9hcmNoL3Bvd2VycGMv
-cGxhdGZvcm1zL3BzZXJpZXMvcGNpLmMKQEAgLTExMCw3ICsxMTAsNyBAQCBzdGF0aWMgdm9pZCBm
-aXh1cF93aW5ib25kXzgyYzEwNShzdHJ1Y3QgcGNpX2RldiogZGV2KQogREVDTEFSRV9QQ0lfRklY
-VVBfSEVBREVSKFBDSV9WRU5ET1JfSURfV0lOQk9ORCwgUENJX0RFVklDRV9JRF9XSU5CT05EXzgy
-QzEwNSwKIAkJCSBmaXh1cF93aW5ib25kXzgyYzEwNSk7CiAKLWludCBwc2VyaWVzX3Jvb3RfYnJp
-ZGdlX3ByZXBhcmUoc3RydWN0IHBjaV9ob3N0X2JyaWRnZSAqYnJpZGdlKQoraW50IHBzZXJpZXNf
-c2V0X3Jvb3RfYnVzX3NwZWVkKHN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRnZSkKIHsKIAlz
-dHJ1Y3QgZGV2aWNlX25vZGUgKmRuLCAqcGRuOwogCXN0cnVjdCBwY2lfYnVzICpidXM7CmRpZmYg
-LS1naXQgYS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvcHNlcmllcy5oIGIvYXJjaC9w
-b3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3BzZXJpZXMuaAppbmRleCAxNzk2YzU0Li41ZDBiZTNh
-IDEwMDY0NAotLS0gYS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvcHNlcmllcy5oCisr
-KyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wc2VyaWVzLmgKQEAgLTYzLDcgKzYz
-LDcgQEAgZXh0ZXJuIGludCBkbHBhcl9kZXRhY2hfbm9kZShzdHJ1Y3QgZGV2aWNlX25vZGUgKik7
-CiAKIC8qIFBDSSByb290IGJyaWRnZSBwcmVwYXJlIGZ1bmN0aW9uIG92ZXJyaWRlIGZvciBwc2Vy
-aWVzICovCiBzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlOwotaW50IHBzZXJpZXNfcm9vdF9icmlkZ2Vf
-cHJlcGFyZShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpicmlkZ2UpOworaW50IHBzZXJpZXNfc2V0
-X3Jvb3RfYnVzX3NwZWVkKHN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRnZSk7CiAKIHVuc2ln
-bmVkIGxvbmcgcHNlcmllc19tZW1vcnlfYmxvY2tfc2l6ZSh2b2lkKTsKIApkaWZmIC0tZ2l0IGEv
-YXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3NldHVwLmMgYi9hcmNoL3Bvd2VycGMvcGxh
-dGZvcm1zL3BzZXJpZXMvc2V0dXAuYwppbmRleCBlNDQ1YjY3Li5iMTk2YzBkIDEwMDY0NAotLS0g
-YS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYworKysgYi9hcmNoL3Bvd2Vy
-cGMvcGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYwpAQCAtNDk2LDcgKzQ5Niw3IEBAIHN0YXRpYyB2
-b2lkIF9faW5pdCBwU2VyaWVzX3NldHVwX2FyY2godm9pZCkKIAkJcHBjX21kLmVuYWJsZV9wbWNz
-ID0gcG93ZXI0X2VuYWJsZV9wbWNzOwogCX0KIAotCXBwY19tZC5wY2liaW9zX3Jvb3RfYnJpZGdl
-X3ByZXBhcmUgPSBwc2VyaWVzX3Jvb3RfYnJpZGdlX3ByZXBhcmU7CisJcHBjX21kLnBjaWJpb3Nf
-c2V0X3Jvb3RfYnVzX3NwZWVkID0gcHNlcmllc19zZXRfcm9vdF9idXNfc3BlZWQ7CiAKIAlpZiAo
-ZmlybXdhcmVfaGFzX2ZlYXR1cmUoRldfRkVBVFVSRV9TRVRfTU9ERSkpIHsKIAkJbG9uZyByYzsK
-LS0gCjEuNy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-XwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3Jn
-Cmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
+From: Yijing Wang <wangyijing0307@gmail.com>
+
+Now pci_bus_add_devices() has been ripped out
+from pci_scan_root_bus(), we could use pci_scan_root_bus()
+instead of pci_create_root_bus() + pci_scan_child_bus()
+for simplicity. We could also remove the pci bus
+resource(dino_current_bus,255) and pci_bus_update_busn_res_end(),
+because pci_scan_root_bus() would do the same thing.
+
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+CC: "James E.J. Bottomley" <jejb@parisc-linux.org>
+CC: linux-parisc@vger.kernel.org
+---
+ drivers/parisc/dino.c    |   11 ++---------
+ drivers/parisc/lba_pci.c |    7 ++-----
+ 2 files changed, 4 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/parisc/dino.c b/drivers/parisc/dino.c
+index a0580af..e5ee339 100644
+--- a/drivers/parisc/dino.c
++++ b/drivers/parisc/dino.c
+@@ -977,15 +977,11 @@ static int __init dino_probe(struct parisc_device *dev)
+ 	if (dino_dev->hba.gmmio_space.flags)
+ 		pci_add_resource(&resources, &dino_dev->hba.gmmio_space);
+ 
+-	dino_dev->hba.bus_num.start = dino_current_bus;
+-	dino_dev->hba.bus_num.end = 255;
+-	dino_dev->hba.bus_num.flags = IORESOURCE_BUS;
+-	pci_add_resource(&resources, &dino_dev->hba.bus_num);
+ 	/*
+ 	** It's not used to avoid chicken/egg problems
+ 	** with configuration accessor functions.
+ 	*/
+-	dino_dev->hba.hba_bus = bus = pci_create_root_bus(&dev->dev,
++	dino_dev->hba.hba_bus = bus = pci_scan_root_bus(&dev->dev,
+ 			 dino_current_bus, &dino_cfg_ops, NULL, &resources);
+ 	if (!bus) {
+ 		printk(KERN_ERR "ERROR: failed to scan PCI bus on %s (duplicate bus number %d?)\n",
+@@ -996,13 +992,10 @@ static int __init dino_probe(struct parisc_device *dev)
+ 		return 0;
+ 	}
+ 
+-	max = pci_scan_child_bus(bus);
+-	pci_bus_update_busn_res_end(bus, max);
+-
+ 	/* This code *depends* on scanning being single threaded
+ 	 * if it isn't, this global bus number count will fail
+ 	 */
+-	dino_current_bus = max + 1;
++	dino_current_bus = bus->busn_res.end + 1;
+ 	pci_bus_assign_resources(bus);
+ 	pci_bus_add_devices(bus);
+ 	return 0;
+diff --git a/drivers/parisc/lba_pci.c b/drivers/parisc/lba_pci.c
+index dceb9dd..ba6daec 100644
+--- a/drivers/parisc/lba_pci.c
++++ b/drivers/parisc/lba_pci.c
+@@ -1422,7 +1422,6 @@ lba_driver_probe(struct parisc_device *dev)
+ 	void *tmp_obj;
+ 	char *version;
+ 	void __iomem *addr = ioremap_nocache(dev->hpa.start, 4096);
+-	int max;
+ 
+ 	/* Read HW Rev First */
+ 	func_class = READ_REG32(addr + LBA_FCLASS);
+@@ -1563,15 +1562,13 @@ lba_driver_probe(struct parisc_device *dev)
+ 
+ 	dev->dev.platform_data = lba_dev;
+ 	lba_bus = lba_dev->hba.hba_bus =
+-		pci_create_root_bus(&dev->dev, lba_dev->hba.bus_num.start,
++		pci_scan_root_bus(&dev->dev, lba_dev->hba.bus_num.start,
+ 				    cfg_ops, NULL, &resources);
+ 	if (!lba_bus) {
+ 		pci_free_resource_list(&resources);
+ 		return 0;
+ 	}
+ 
+-	max = pci_scan_child_bus(lba_bus);
+-
+ 	/* This is in lieu of calling pci_assign_unassigned_resources() */
+ 	if (is_pdc_pat()) {
+ 		/* assign resources to un-initialized devices */
+@@ -1599,7 +1596,7 @@ lba_driver_probe(struct parisc_device *dev)
+ 		lba_dev->flags |= LBA_FLAG_SKIP_PROBE;
+ 	}
+ 
+-	lba_next_bus = max + 1;
++	lba_next_bus = pci_bus_child_max_busnr(lba_bus) + 1;
+ 	pci_bus_add_devices(lba_bus);
+ 
+ 	/* Whew! Finally done! Tell services we got this one covered. */
+-- 
+1.7.1
