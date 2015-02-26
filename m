@@ -1,69 +1,86 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v4 23/30] PCI/mvebu: Use pci_common_init_dev() to simplify code
-Date: Thu, 26 Feb 2015 16:12:17 +0800
-Message-ID: <1424938344-4017-24-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v4 17/30] PCI/powerpc: Rename pcibios_root_bridge_prepare()
+Date: Thu, 26 Feb 2015 16:12:11 +0800
+Message-ID: <1424938344-4017-18-git-send-email-wangyijing@huawei.com>
 References: <1424938344-4017-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <1424938344-4017-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>
+Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
 
-Mvebu_pcie_scan_bus() is not necessary, we could use
-pci_common_init_dev() instead of pci_common_init(),
-and pass the device pointer as the parent. Then
-pci_scan_root_bus() will be called to scan the pci busses.
-
-Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-CC: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-CC: Jason Cooper <jason@lakedaemon.net>
----
- drivers/pci/host/pci-mvebu.c |   18 +-----------------
- 1 files changed, 1 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/pci/host/pci-mvebu.c b/drivers/pci/host/pci-mvebu.c
-index 1309cfb..d5a2b70 100644
---- a/drivers/pci/host/pci-mvebu.c
-+++ b/drivers/pci/host/pci-mvebu.c
-@@ -750,21 +750,6 @@ static int mvebu_pcie_setup(int nr, struct pci_sys_data *sys)
- 	return 1;
- }
- 
--static struct pci_bus *mvebu_pcie_scan_bus(int nr, struct pci_sys_data *sys)
--{
--	struct mvebu_pcie *pcie = sys_to_pcie(sys);
--	struct pci_bus *bus;
--
--	bus = pci_create_root_bus(&pcie->pdev->dev, sys->busnr,
--				  &mvebu_pcie_ops, sys, &sys->resources);
--	if (!bus)
--		return NULL;
--
--	pci_scan_child_bus(bus);
--
--	return bus;
--}
--
- static resource_size_t mvebu_pcie_align_resource(struct pci_dev *dev,
- 						 const struct resource *res,
- 						 resource_size_t start,
-@@ -808,12 +793,11 @@ static void mvebu_pcie_enable(struct mvebu_pcie *pcie)
- 	hw.nr_controllers = 1;
- 	hw.private_data   = (void **)&pcie;
- 	hw.setup          = mvebu_pcie_setup;
--	hw.scan           = mvebu_pcie_scan_bus;
- 	hw.map_irq        = of_irq_parse_and_map_pci;
- 	hw.ops            = &mvebu_pcie_ops;
- 	hw.align_resource = mvebu_pcie_align_resource;
- 
--	pci_common_init(&hw);
-+	pci_common_init_dev(&pcie->pdev->dev, &hw);
- }
- 
- /*
--- 
-1.7.1
+UGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKCkgaW4gcG93ZXJwYyBpcyB1c2VkCnRvIHNldCBy
+b290IGJ1cyBzcGVlZC4gUmVuYW1lIGl0IHRvCnBjaWJpb3Nfc2V0X3Jvb3RfYnVzX3NwZWVkKCkg
+Zm9yIGJldHRlciByZWFkYWJpbGl0eS4KClNpZ25lZC1vZmYtYnk6IFlpamluZyBXYW5nIDx3YW5n
+eWlqaW5nQGh1YXdlaS5jb20+CkNDOiBCZW5qYW1pbiBIZXJyZW5zY2htaWR0IDxiZW5oQGtlcm5l
+bC5jcmFzaGluZy5vcmc+CkNDOiBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwotLS0KIGFy
+Y2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9tYWNoZGVwLmggICAgICAgfCAgICAyICstCiBhcmNoL3Bv
+d2VycGMva2VybmVsL3BjaS1jb21tb24uYyAgICAgICAgIHwgICAgNiArKystLS0KIGFyY2gvcG93
+ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wY2kuYyAgICAgfCAgICAyICstCiBhcmNoL3Bvd2VycGMv
+cGxhdGZvcm1zL3BzZXJpZXMvcHNlcmllcy5oIHwgICAgMiArLQogYXJjaC9wb3dlcnBjL3BsYXRm
+b3Jtcy9wc2VyaWVzL3NldHVwLmMgICB8ICAgIDIgKy0KIDUgZmlsZXMgY2hhbmdlZCwgNyBpbnNl
+cnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2FyY2gvcG93ZXJwYy9pbmNs
+dWRlL2FzbS9tYWNoZGVwLmggYi9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vbWFjaGRlcC5oCmlu
+ZGV4IGM4MTc1YTMuLjhlN2YyYTggMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2Fz
+bS9tYWNoZGVwLmgKKysrIGIvYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL21hY2hkZXAuaApAQCAt
+MTI5LDcgKzEyOSw3IEBAIHN0cnVjdCBtYWNoZGVwX2NhbGxzIHsKIAl2b2lkCQkoKnBjaWJpb3Nf
+Zml4dXApKHZvaWQpOwogCWludAkJKCpwY2lfcHJvYmVfbW9kZSkoc3RydWN0IHBjaV9idXMgKik7
+CiAJdm9pZAkJKCpwY2lfaXJxX2ZpeHVwKShzdHJ1Y3QgcGNpX2RldiAqZGV2KTsKLQlpbnQJCSgq
+cGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlCisJaW50
+CQkoKnBjaWJpb3Nfc2V0X3Jvb3RfYnVzX3NwZWVkKShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlCiAJ
+CQkJKmJyaWRnZSk7CiAKIAkvKiBUbyBzZXR1cCBQSEJzIHdoZW4gdXNpbmcgYXV0b21hdGljIE9G
+IHBsYXRmb3JtIGRyaXZlciBmb3IgUENJICovCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMva2Vy
+bmVsL3BjaS1jb21tb24uYyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNvbW1vbi5jCmluZGV4
+IDc4Y2Q0MWIuLjQ0MDFiNmEgMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNv
+bW1vbi5jCisrKyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNvbW1vbi5jCkBAIC03NjksOSAr
+NzY5LDkgQEAgaW50IHBjaV9wcm9jX2RvbWFpbihzdHJ1Y3QgcGNpX2J1cyAqYnVzKQogCiBpbnQg
+cGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKHN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRn
+ZSkKIHsKLQlpZiAocHBjX21kLnBjaWJpb3Nfcm9vdF9icmlkZ2VfcHJlcGFyZSkKLQkJcmV0dXJu
+IHBwY19tZC5wY2liaW9zX3Jvb3RfYnJpZGdlX3ByZXBhcmUoYnJpZGdlKTsKLQorCWlmIChwcGNf
+bWQucGNpYmlvc19zZXRfcm9vdF9idXNfc3BlZWQpCisJCXJldHVybiBwcGNfbWQucGNpYmlvc19z
+ZXRfcm9vdF9idXNfc3BlZWQoYnJpZGdlKTsKKwkKIAlyZXR1cm4gMDsKIH0KIApkaWZmIC0tZ2l0
+IGEvYXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3BjaS5jIGIvYXJjaC9wb3dlcnBjL3Bs
+YXRmb3Jtcy9wc2VyaWVzL3BjaS5jCmluZGV4IGZlMTZhNTAuLmFmNjg1ZDYgMTAwNjQ0Ci0tLSBh
+L2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wY2kuYworKysgYi9hcmNoL3Bvd2VycGMv
+cGxhdGZvcm1zL3BzZXJpZXMvcGNpLmMKQEAgLTExMCw3ICsxMTAsNyBAQCBzdGF0aWMgdm9pZCBm
+aXh1cF93aW5ib25kXzgyYzEwNShzdHJ1Y3QgcGNpX2RldiogZGV2KQogREVDTEFSRV9QQ0lfRklY
+VVBfSEVBREVSKFBDSV9WRU5ET1JfSURfV0lOQk9ORCwgUENJX0RFVklDRV9JRF9XSU5CT05EXzgy
+QzEwNSwKIAkJCSBmaXh1cF93aW5ib25kXzgyYzEwNSk7CiAKLWludCBwc2VyaWVzX3Jvb3RfYnJp
+ZGdlX3ByZXBhcmUoc3RydWN0IHBjaV9ob3N0X2JyaWRnZSAqYnJpZGdlKQoraW50IHBzZXJpZXNf
+c2V0X3Jvb3RfYnVzX3NwZWVkKHN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRnZSkKIHsKIAlz
+dHJ1Y3QgZGV2aWNlX25vZGUgKmRuLCAqcGRuOwogCXN0cnVjdCBwY2lfYnVzICpidXM7CmRpZmYg
+LS1naXQgYS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvcHNlcmllcy5oIGIvYXJjaC9w
+b3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3BzZXJpZXMuaAppbmRleCAxNzk2YzU0Li41ZDBiZTNh
+IDEwMDY0NAotLS0gYS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvcHNlcmllcy5oCisr
+KyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wc2VyaWVzLmgKQEAgLTYzLDcgKzYz
+LDcgQEAgZXh0ZXJuIGludCBkbHBhcl9kZXRhY2hfbm9kZShzdHJ1Y3QgZGV2aWNlX25vZGUgKik7
+CiAKIC8qIFBDSSByb290IGJyaWRnZSBwcmVwYXJlIGZ1bmN0aW9uIG92ZXJyaWRlIGZvciBwc2Vy
+aWVzICovCiBzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlOwotaW50IHBzZXJpZXNfcm9vdF9icmlkZ2Vf
+cHJlcGFyZShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpicmlkZ2UpOworaW50IHBzZXJpZXNfc2V0
+X3Jvb3RfYnVzX3NwZWVkKHN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRnZSk7CiAKIHVuc2ln
+bmVkIGxvbmcgcHNlcmllc19tZW1vcnlfYmxvY2tfc2l6ZSh2b2lkKTsKIApkaWZmIC0tZ2l0IGEv
+YXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3NldHVwLmMgYi9hcmNoL3Bvd2VycGMvcGxh
+dGZvcm1zL3BzZXJpZXMvc2V0dXAuYwppbmRleCBlNDQ1YjY3Li5iMTk2YzBkIDEwMDY0NAotLS0g
+YS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYworKysgYi9hcmNoL3Bvd2Vy
+cGMvcGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYwpAQCAtNDk2LDcgKzQ5Niw3IEBAIHN0YXRpYyB2
+b2lkIF9faW5pdCBwU2VyaWVzX3NldHVwX2FyY2godm9pZCkKIAkJcHBjX21kLmVuYWJsZV9wbWNz
+ID0gcG93ZXI0X2VuYWJsZV9wbWNzOwogCX0KIAotCXBwY19tZC5wY2liaW9zX3Jvb3RfYnJpZGdl
+X3ByZXBhcmUgPSBwc2VyaWVzX3Jvb3RfYnJpZGdlX3ByZXBhcmU7CisJcHBjX21kLnBjaWJpb3Nf
+c2V0X3Jvb3RfYnVzX3NwZWVkID0gcHNlcmllc19zZXRfcm9vdF9idXNfc3BlZWQ7CiAKIAlpZiAo
+ZmlybXdhcmVfaGFzX2ZlYXR1cmUoRldfRkVBVFVSRV9TRVRfTU9ERSkpIHsKIAkJbG9uZyByYzsK
+LS0gCjEuNy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+XwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3Jn
+Cmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
