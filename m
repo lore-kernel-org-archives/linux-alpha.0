@@ -1,93 +1,75 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v4 16/30] PCI/IA64: Fix the build warning about
- pci_domain_nr()
-Date: Mon, 2 Mar 2015 20:56:22 -0600
-Message-ID: <20150303025622.GH11978@google.com>
+Subject: Re: [PATCH v4 12/30] PCI: Introduce pci_host_bridge_ops to support
+ host specific operations
+Date: Mon, 2 Mar 2015 21:03:01 -0600
+Message-ID: <20150303030301.GI11978@google.com>
 References: <1424938344-4017-1-git-send-email-wangyijing@huawei.com>
- <1424938344-4017-17-git-send-email-wangyijing@huawei.com>
+ <1424938344-4017-13-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20120113;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-type:content-disposition:in-reply-to:user-agent;
-        bh=pKOH3PLq472H3RxWr5qbkKd03lsLmYaT2JcaKNZDfkI=;
-        b=HoFaT0AJQ58ShVLd1QS25ogMW+8xg0VK3hHrvjuGqcJHGAsudevMpFFk0C6hKuWIto
-         OC02GtQ1Fd6jEVGaLj22RXb1ipXGMQ2jCWAPthWRW4panulM2woeVG0CdD3JLYnAPhyP
-         jeWd+NssEh2g0qAYxPiDpaUrOeBEeHPA0hNnVq6PN/xzcsHw7ihWLNNUs4bvS8r+XQbZ
-         jZLLoR07vFZa+49SZoz1s7ousELp1S3frcDa/8SyWpnPlJSlYI7ZP0kXmw6DF8HaqKaD
-         6X20oRzzQlDN4jskXuDV4+Mu1Ub+IbVHPwYnyuh2amEUmfV3BAOp1NzDyq83tfd4+gVa
-         LPaA==
+        bh=TdzUJN5mYS3iPhs5a5LFMzatlmteXotmpn3PGhwoCsI=;
+        b=QPAN0lQOf7v1ocmPxNdu43w517Gbnk8F/EAh2LO/Ht9HU4QAb7JjRRE3NvvTNBMNGL
+         Ktaw//aGph2qsrLziGBMeFPm6bSo7G85bp9D9/CMFnPJ0KyWBSotG5cGZkaPVuiIVeEp
+         +LWcg/zQ5p1PdBGxvJtJ1hbZn75Rd/Zv92pNZ2QzzKuL5fnz/EirKjU24wSb9Lo83wVJ
+         pQhqKPbGjwUwURcgq1X9en5iorIgexkKyPGZdzWqqTB+8rO6SKh2v8hzVCEWHacHhbep
+         ROWUwVfNHlsQRJmrzk1YknctUjARQxzyu8mJz4D8deWqvsZRQ5sMz/HhgkG2vOSs11aX
+         Qo+Q==
 Content-Disposition: inline
-In-Reply-To: <1424938344-4017-17-git-send-email-wangyijing@huawei.com>
-Sender: linux-alpha-owner@vger.kernel.org
+In-Reply-To: <1424938344-4017-13-git-send-email-wangyijing@huawei.com>
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Yijing Wang <wangyijing@huawei.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Fenghua Yu <fenghua.yu@intel.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Thu, Feb 26, 2015 at 04:12:10PM +0800, Yijing Wang wrote:
-> Should pass pci_bus * instead of pci_dev * to pci_domain_nr().
+On Thu, Feb 26, 2015 at 04:12:06PM +0800, Yijing Wang wrote:
+> Now we have weak functions like pcibios_root_bridge_prepare()
+> to setup pci host bridge, We could introduce pci_host_bridge_ops
+> which contain host bridge specific ops to setup pci_host_bridge.
+> Then host bridge driver could add pci_host_bridge_ops hooks
+> intead of weak function to setup pci_host_bridge.
+> This patch add following pci_host_bridge_ops hooks:
+> 
+> pci_host_bridge_ops {
+> 	/* set root bus speed, some platform need this like powerpc */
+> 	void (*phb_set_root_bus_speed)(struct pci_host_bridge *host);
+> 	/* setup pci_host_bridge before pci_host_bridge be added to driver core */
+> 	int (*phb_prepare)(struct pci_host_bridge *host);
+> 	/* platform specific of scan hook to scan pci device */
+> 	void (*phb_of_scan_bus)(struct pci_host_bridge *);
+> }
+> We could easily extend it to support different host bridge
+> specific operations.
 > 
 > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> CC: Tony Luck <tony.luck@intel.com>
-> CC: Fenghua Yu <fenghua.yu@intel.com>
-> CC: linux-ia64@vger.kernel.org
-> ---
->  arch/ia64/sn/kernel/io_acpi_init.c |    6 +++---
->  arch/ia64/sn/kernel/io_init.c      |    2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/ia64/sn/kernel/io_acpi_init.c b/arch/ia64/sn/kernel/io_acpi_init.c
-> index 0640739..2fd7414 100644
-> --- a/arch/ia64/sn/kernel/io_acpi_init.c
-> +++ b/arch/ia64/sn/kernel/io_acpi_init.c
-> @@ -364,12 +364,12 @@ sn_acpi_get_pcidev_info(struct pci_dev *dev, struct pcidev_info **pcidev_info,
->          status = acpi_evaluate_integer(rootbus_handle, METHOD_NAME__SEG, NULL,
->                                         &segment);
->          if (ACPI_SUCCESS(status)) {
-> -		if (segment != pci_domain_nr(dev)) {
-> +		if (segment != pci_domain_nr(dev->bus)) {
+> ...
 
-This is completely unrelated to the series, isn't it?  It looks like this
-is a bug fix that should be handled separately and marked for stable.
-
->  			acpi_get_name(rootbus_handle, ACPI_FULL_PATHNAME,
->  				&name_buffer);
->  			printk(KERN_ERR
->  			       "%s: Segment number mismatch, 0x%llx vs 0x%x for: %s\n",
-> -			       __func__, segment, pci_domain_nr(dev),
-> +			       __func__, segment, pci_domain_nr(dev->bus),
->  			       (char *)name_buffer.pointer);
->  			kfree(name_buffer.pointer);
->  			return 1;
-> @@ -407,7 +407,7 @@ sn_acpi_get_pcidev_info(struct pci_dev *dev, struct pcidev_info **pcidev_info,
->  	/* Build up the pcidev_info.pdi_slot_host_handle */
->  	host_devfn = get_host_devfn(pcidev_match.handle, rootbus_handle);
->  	(*pcidev_info)->pdi_slot_host_handle =
-> -			((unsigned long) pci_domain_nr(dev) << 40) |
-> +			((unsigned long) pci_domain_nr(dev->bus) << 40) |
->  					/* bus == 0 */
->  					host_devfn;
->  	return 0;
-> diff --git a/arch/ia64/sn/kernel/io_init.c b/arch/ia64/sn/kernel/io_init.c
-> index bcdc5b8..a97fad4 100644
-> --- a/arch/ia64/sn/kernel/io_init.c
-> +++ b/arch/ia64/sn/kernel/io_init.c
-> @@ -164,7 +164,7 @@ sn_io_slot_fixup(struct pci_dev *dev)
->  		panic("%s: Unable to alloc memory for sn_irq_info", __func__);
+> @@ -2050,10 +2052,13 @@ static struct pci_bus *__pci_scan_root_bus(
+>  		pci_bus_insert_busn_res(b, b->number, 255);
+>  	}
 >  
->  	/* Call to retrieve pci device information needed by kernel. */
-> -	status = sal_get_pcidev_info((u64) pci_domain_nr(dev),
-> +	status = sal_get_pcidev_info((u64) pci_domain_nr(dev->bus),
->  		(u64) dev->bus->number,
->  		dev->devfn,
->  		(u64) __pa(pcidev_info),
-> -- 
-> 1.7.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> -	max = pci_scan_child_bus(b);
+> -
+> -	if (!found)
+> -		pci_bus_update_busn_res_end(b, max);
+> +	if (host->ops && host->ops->phb_of_scan_bus) {
+> +		host->ops->phb_of_scan_bus(host);
+
+The important thing here is not the use of OF (Open Firmware/Device Tree),
+is it?  Why would we want "_of_" in the function name?  I assume the intent
+is that this host bridge op performs the same function as
+pci_scan_child_bus(), so I think the op should be called "scan_bus".
+
+> +	} else {
+> +		max = pci_scan_child_bus(b);
+> +		if (!found)
+> +			pci_bus_update_busn_res_end(b, max);
+> +	}
+>  
+>  	return b;
+>  }
