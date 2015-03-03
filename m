@@ -1,73 +1,156 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v4 28/30] PCI: Export find_pci_host_bridge()
-Date: Mon, 2 Mar 2015 21:40:48 -0600
-Message-ID: <20150303034048.GM11978@google.com>
-References: <1424938344-4017-1-git-send-email-wangyijing@huawei.com>
- <1424938344-4017-29-git-send-email-wangyijing@huawei.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: Re: [PATCH v4 05/30] PCI: Rename pci_scan_bus() to pci_scan_bus_legacy()
+Date: Tue, 3 Mar 2015 11:41:38 +0800
+Message-ID: <54F52D72.7070305@huawei.com>
+References: <1424938344-4017-1-git-send-email-wangyijing@huawei.com> <1424938344-4017-6-git-send-email-wangyijing@huawei.com> <20150303020607.GD11978@google.com>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-type:content-disposition:in-reply-to:user-agent;
-        bh=kqNFYnfJj7GyE35K0YI7YTb/ZDu+chGArLhbdbqCS3E=;
-        b=BqCl3K+AqiGZ1WitMdwBVCwIfcPrhizsTuz+zr39ig88UFnYzTH+KcJQwbM/Dk1OvE
-         lL79ZWZxeaQ3BHT6e8/mD3wV4sR0H7c6uBuueub7nSIG9fIeM4p0Hc1TShJAk6kf2aSu
-         WzIvNRPsoNPGWBDOIiTbrOGxjJNkDqbnih9aedloDyVZ1sK+7vWEzmlh1O7ETwTj4YJh
-         //eVd9ubrBA5QRDFwE0oRLU1qNLnyJD3+IhT3YFnFwPdP4wX+4+B/tZVodWkAfKmdcGF
-         4F0vYfA4wxG6/Y5d/9D1vcvee9k88A5uWT4MDtsRpCARrrXv1Azg02KnuvgG18MW1m9T
-         LCLQ==
-Content-Disposition: inline
-In-Reply-To: <1424938344-4017-29-git-send-email-wangyijing@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <20150303020607.GD11978@google.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Yijing Wang <wangyijing@huawei.com>
+To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Thu, Feb 26, 2015 at 04:12:22PM +0800, Yijing Wang wrote:
-> Export find_pci_host_bridge().
+On 2015/3/3 10:06, Bjorn Helgaas wrote:
+> On Thu, Feb 26, 2015 at 04:11:59PM +0800, Yijing Wang wrote:
+>> Pci_scan_bus() is called by legacy pci host drivers,
+>> the legacy host drivers mean they use NULL as parent
+>> device, use all IO/MEM as default resources. Rename
+>> pci_scan_bus() to pci_scan_bus_legacy() for better
+>> readability.
 > 
-> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> ---
->  drivers/pci/host-bridge.c |    2 +-
->  include/linux/pci.h       |    1 +
->  2 files changed, 2 insertions(+), 1 deletions(-)
+> We should mention that this changes an exported symbol, because that's
+> potentially an issue for distros.
 > 
-> diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-> index 4a2baa2..51e24f8 100644
-> --- a/drivers/pci/host-bridge.c
-> +++ b/drivers/pci/host-bridge.c
-> @@ -104,7 +104,7 @@ static struct pci_bus *find_pci_root_bus(struct pci_bus *bus)
->  	return bus;
->  }
->  
-> -static struct pci_host_bridge *find_pci_host_bridge(struct pci_bus *bus)
-> +struct pci_host_bridge *find_pci_host_bridge(struct pci_bus *bus)
+> I'm not saying we can't change it, but I don't want to do it unless there's
+> real benefit.  I'm not convinced of the benefit yet, but maybe I will be by
+> the end of the series.
+>
 
-Please name this "pci_find_host_bridge()" or similar so it looks like other
-PCI functions.
+Ok, I would move this one out of this series temporarily.
 
->  {
->  	struct pci_bus *root_bus = find_pci_root_bus(bus);
->  
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 2f29e95..6ac7926 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -426,6 +426,7 @@ void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
->  struct pci_host_bridge *pci_create_host_bridge(
->  		struct device *parent, u32 dombus, struct list_head *resources, 
->  		void *sysdata, struct pci_host_bridge_ops *ops);
-> +struct pci_host_bridge *find_pci_host_bridge(struct pci_bus* bus);
 
-I'm not sure this needs to be in include/linux/pci.h.  Wouldn't
-drivers/pci/pci.h be enough?
-
->  /*
->   * The first PCI_BRIDGE_RESOURCE_NUM PCI bus resources (those that correspond
->   * to P2P or CardBus bridge windows) go in a table.  Additional ones (for
-> -- 
-> 1.7.1
+>> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+>> ---
+>>  arch/alpha/kernel/sys_nautilus.c  |    2 +-
+>>  arch/m68k/coldfire/pci.c          |    2 +-
+>>  arch/sparc/kernel/pcic.c          |    2 +-
+>>  arch/unicore32/kernel/pci.c       |    2 +-
+>>  drivers/pci/hotplug/ibmphp_core.c |    2 +-
+>>  drivers/pci/probe.c               |    4 ++--
+>>  include/linux/pci.h               |    2 +-
+>>  7 files changed, 8 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
+>> index 4ae4a40..2c864bb 100644
+>> --- a/arch/alpha/kernel/sys_nautilus.c
+>> +++ b/arch/alpha/kernel/sys_nautilus.c
+>> @@ -206,7 +206,7 @@ nautilus_init_pci(void)
+>>  	unsigned long memtop = max_low_pfn << PAGE_SHIFT;
+>>  
+>>  	/* Scan our single hose.  */
+>> -	bus = pci_scan_bus(0, alpha_mv.pci_ops, hose);
+>> +	bus = pci_scan_bus_legacy(0, alpha_mv.pci_ops, hose);
+>>  	hose->bus = bus;
+>>  	pcibios_claim_one_bus(bus);
+>>  
+>> diff --git a/arch/m68k/coldfire/pci.c b/arch/m68k/coldfire/pci.c
+>> index d45f087..0ef4dd4 100644
+>> --- a/arch/m68k/coldfire/pci.c
+>> +++ b/arch/m68k/coldfire/pci.c
+>> @@ -312,7 +312,7 @@ static int __init mcf_pci_init(void)
+>>  	set_current_state(TASK_UNINTERRUPTIBLE);
+>>  	schedule_timeout(msecs_to_jiffies(200));
+>>  
+>> -	rootbus = pci_scan_bus(0, &mcf_pci_ops, NULL);
+>> +	rootbus = pci_scan_bus_legacy(0, &mcf_pci_ops, NULL);
+>>  	rootbus->resource[0] = &mcf_pci_io;
+>>  	rootbus->resource[1] = &mcf_pci_mem;
+>>  
+>> diff --git a/arch/sparc/kernel/pcic.c b/arch/sparc/kernel/pcic.c
+>> index 7a82fe2..f7edc97 100644
+>> --- a/arch/sparc/kernel/pcic.c
+>> +++ b/arch/sparc/kernel/pcic.c
+>> @@ -390,7 +390,7 @@ static void __init pcic_pbm_scan_bus(struct linux_pcic *pcic)
+>>  {
+>>  	struct linux_pbm_info *pbm = &pcic->pbm;
+>>  
+>> -	pbm->pci_bus = pci_scan_bus(pbm->pci_first_busno, &pcic_ops, pbm);
+>> +	pbm->pci_bus = pci_scan_bus_legacy(pbm->pci_first_busno, &pcic_ops, pbm);
+>>  	if (pbm->pci_bus)
+>>  		pci_bus_add_devices(pbm->pci_bus);
+>>  #if 0 /* deadwood transplanted from sparc64 */
+>> diff --git a/arch/unicore32/kernel/pci.c b/arch/unicore32/kernel/pci.c
+>> index 3d82024..2e238b4 100644
+>> --- a/arch/unicore32/kernel/pci.c
+>> +++ b/arch/unicore32/kernel/pci.c
+>> @@ -258,7 +258,7 @@ static int __init pci_common_init(void)
+>>  
+>>  	pci_puv3_preinit();
+>>  
+>> -	puv3_bus = pci_scan_bus(0, &pci_puv3_ops, NULL);
+>> +	puv3_bus = pci_scan_bus_legacy(0, &pci_puv3_ops, NULL);
+>>  
+>>  	if (!puv3_bus)
+>>  		panic("PCI: unable to scan bus!");
+>> diff --git a/drivers/pci/hotplug/ibmphp_core.c b/drivers/pci/hotplug/ibmphp_core.c
+>> index 86e3bfd..4ade1b4 100644
+>> --- a/drivers/pci/hotplug/ibmphp_core.c
+>> +++ b/drivers/pci/hotplug/ibmphp_core.c
+>> @@ -765,7 +765,7 @@ static u8 bus_structure_fixup(u8 busno)
+>>  					(l != 0x0000) && (l != 0xffff)) {
+>>  			debug("%s - Inside bus_structure_fixup()\n",
+>>  							__func__);
+>> -			b = pci_scan_bus(busno, ibmphp_pci_bus->ops, NULL);
+>> +			b = pci_scan_bus_legacy(busno, ibmphp_pci_bus->ops, NULL);
+>>  			if (b)
+>>  				pci_bus_add_devices(b);
+>>  			break;
+>> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+>> index 699a238..ccab9b1 100644
+>> --- a/drivers/pci/probe.c
+>> +++ b/drivers/pci/probe.c
+>> @@ -2091,7 +2091,7 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
+>>  }
+>>  EXPORT_SYMBOL(pci_scan_root_bus);
+>>  
+>> -struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops,
+>> +struct pci_bus *pci_scan_bus_legacy(int bus, struct pci_ops *ops,
+>>  					void *sysdata)
+>>  {
+>>  	LIST_HEAD(resources);
+>> @@ -2108,7 +2108,7 @@ struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops,
+>>  	}
+>>  	return b;
+>>  }
+>> -EXPORT_SYMBOL(pci_scan_bus);
+>> +EXPORT_SYMBOL(pci_scan_bus_legacy);
+>>  
+>>  /**
+>>   * pci_rescan_bus_bridge_resize - scan a PCI bus for devices.
+>> diff --git a/include/linux/pci.h b/include/linux/pci.h
+>> index 36effb8..6dffc57 100644
+>> --- a/include/linux/pci.h
+>> +++ b/include/linux/pci.h
+>> @@ -769,7 +769,7 @@ void pcibios_bus_to_resource(struct pci_bus *bus, struct resource *res,
+>>  void pcibios_scan_specific_bus(int busn);
+>>  struct pci_bus *pci_find_bus(int domain, int busnr);
+>>  void pci_bus_add_devices(const struct pci_bus *bus);
+>> -struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops, void *sysdata);
+>> +struct pci_bus *pci_scan_bus_legacy(int bus, struct pci_ops *ops, void *sysdata);
+>>  struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
+>>  				    struct pci_ops *ops, void *sysdata,
+>>  				    struct list_head *resources);
+>> -- 
+>> 1.7.1
+>>
 > 
+> .
+> 
+
+
+-- 
+Thanks!
+Yijing
