@@ -1,54 +1,93 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v4 13/30] PCI: Introduce new scan function
- pci_scan_root_bridge()
-Date: Mon, 2 Mar 2015 20:52:22 -0600
-Message-ID: <20150303025222.GG11978@google.com>
+Subject: Re: [PATCH v4 16/30] PCI/IA64: Fix the build warning about
+ pci_domain_nr()
+Date: Mon, 2 Mar 2015 20:56:22 -0600
+Message-ID: <20150303025622.GH11978@google.com>
 References: <1424938344-4017-1-git-send-email-wangyijing@huawei.com>
- <1424938344-4017-14-git-send-email-wangyijing@huawei.com>
+ <1424938344-4017-17-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20120113;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-type:content-disposition:in-reply-to:user-agent;
-        bh=YlJJHj9GM2g7xekC6HbAAmAqLfZJUyTFTTZYtn91VJk=;
-        b=Vls+f2VCoZ2SfHBWM7nkpoB/9T3e3sTJAu5JL8KM+UCMTorCQKrVtiDb07/7Xi7NX4
-         veMpUb5NhJOGeweOLHxdvyKyDiQVOABX8UpVVxc/AiqcjBPN1qgVbaB//ViKj1DggBRo
-         6+F8skzjzwKeVZ2RPsV9MCW+9evPzvUuAggxFk4ZDNCfbBu8w1Uh6j7h4IHvk0XqOFmY
-         Zff70EdfK+rjvodieWGibXHbuMUzmv/0MdGDgCxAs8Irgseks1i5IsO0kt4PyRs/5Pvh
-         PL2hk4WpmWBVo53nPN03ZTMt/2VQal5P/P2zLmENX71DW5JQwMpEOvoeEjaze8o6eXIG
-         cuFw==
+        bh=pKOH3PLq472H3RxWr5qbkKd03lsLmYaT2JcaKNZDfkI=;
+        b=HoFaT0AJQ58ShVLd1QS25ogMW+8xg0VK3hHrvjuGqcJHGAsudevMpFFk0C6hKuWIto
+         OC02GtQ1Fd6jEVGaLj22RXb1ipXGMQ2jCWAPthWRW4panulM2woeVG0CdD3JLYnAPhyP
+         jeWd+NssEh2g0qAYxPiDpaUrOeBEeHPA0hNnVq6PN/xzcsHw7ihWLNNUs4bvS8r+XQbZ
+         jZLLoR07vFZa+49SZoz1s7ousELp1S3frcDa/8SyWpnPlJSlYI7ZP0kXmw6DF8HaqKaD
+         6X20oRzzQlDN4jskXuDV4+Mu1Ub+IbVHPwYnyuh2amEUmfV3BAOp1NzDyq83tfd4+gVa
+         LPaA==
 Content-Disposition: inline
-In-Reply-To: <1424938344-4017-14-git-send-email-wangyijing@huawei.com>
-Sender: linux-ia64-owner@vger.kernel.org
+In-Reply-To: <1424938344-4017-17-git-send-email-wangyijing@huawei.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Yijing Wang <wangyijing@huawei.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Fenghua Yu <fenghua.yu@intel.com>
 
-On Thu, Feb 26, 2015 at 04:12:07PM +0800, Yijing Wang wrote:
-> Introduce new scan function pci_scan_root_bridge() to
-> support host bridge drivers that need to provide platform
-> own pci_host_bridge_ops.
+On Thu, Feb 26, 2015 at 04:12:10PM +0800, Yijing Wang wrote:
+> Should pass pci_bus * instead of pci_dev * to pci_domain_nr().
 > 
 > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+> CC: Tony Luck <tony.luck@intel.com>
+> CC: Fenghua Yu <fenghua.yu@intel.com>
+> CC: linux-ia64@vger.kernel.org
 > ---
->  drivers/pci/probe.c |   21 +++++++++++++++++++++
->  include/linux/pci.h |    3 +++
->  2 files changed, 24 insertions(+), 0 deletions(-)
+>  arch/ia64/sn/kernel/io_acpi_init.c |    6 +++---
+>  arch/ia64/sn/kernel/io_init.c      |    2 +-
+>  2 files changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index 8cec6ab..b5f9ca4 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -2063,6 +2063,27 @@ static struct pci_bus *__pci_scan_root_bus(
->  	return b;
->  }
->  
-> +struct pci_host_bridge *pci_scan_root_bridge(struct device *parent,
-> +		u32 db, struct pci_ops *ops, void *sysdata,
-> +		struct list_head *resources, struct pci_host_bridge_ops *phb_ops)
+> diff --git a/arch/ia64/sn/kernel/io_acpi_init.c b/arch/ia64/sn/kernel/io_acpi_init.c
+> index 0640739..2fd7414 100644
+> --- a/arch/ia64/sn/kernel/io_acpi_init.c
+> +++ b/arch/ia64/sn/kernel/io_acpi_init.c
+> @@ -364,12 +364,12 @@ sn_acpi_get_pcidev_info(struct pci_dev *dev, struct pcidev_info **pcidev_info,
+>          status = acpi_evaluate_integer(rootbus_handle, METHOD_NAME__SEG, NULL,
+>                                         &segment);
+>          if (ACPI_SUCCESS(status)) {
+> -		if (segment != pci_domain_nr(dev)) {
+> +		if (segment != pci_domain_nr(dev->bus)) {
 
-I prefer "host bridge" over "root bridge" because that's the terminology
-used by the PCI specs.
+This is completely unrelated to the series, isn't it?  It looks like this
+is a bug fix that should be handled separately and marked for stable.
+
+>  			acpi_get_name(rootbus_handle, ACPI_FULL_PATHNAME,
+>  				&name_buffer);
+>  			printk(KERN_ERR
+>  			       "%s: Segment number mismatch, 0x%llx vs 0x%x for: %s\n",
+> -			       __func__, segment, pci_domain_nr(dev),
+> +			       __func__, segment, pci_domain_nr(dev->bus),
+>  			       (char *)name_buffer.pointer);
+>  			kfree(name_buffer.pointer);
+>  			return 1;
+> @@ -407,7 +407,7 @@ sn_acpi_get_pcidev_info(struct pci_dev *dev, struct pcidev_info **pcidev_info,
+>  	/* Build up the pcidev_info.pdi_slot_host_handle */
+>  	host_devfn = get_host_devfn(pcidev_match.handle, rootbus_handle);
+>  	(*pcidev_info)->pdi_slot_host_handle =
+> -			((unsigned long) pci_domain_nr(dev) << 40) |
+> +			((unsigned long) pci_domain_nr(dev->bus) << 40) |
+>  					/* bus == 0 */
+>  					host_devfn;
+>  	return 0;
+> diff --git a/arch/ia64/sn/kernel/io_init.c b/arch/ia64/sn/kernel/io_init.c
+> index bcdc5b8..a97fad4 100644
+> --- a/arch/ia64/sn/kernel/io_init.c
+> +++ b/arch/ia64/sn/kernel/io_init.c
+> @@ -164,7 +164,7 @@ sn_io_slot_fixup(struct pci_dev *dev)
+>  		panic("%s: Unable to alloc memory for sn_irq_info", __func__);
+>  
+>  	/* Call to retrieve pci device information needed by kernel. */
+> -	status = sal_get_pcidev_info((u64) pci_domain_nr(dev),
+> +	status = sal_get_pcidev_info((u64) pci_domain_nr(dev->bus),
+>  		(u64) dev->bus->number,
+>  		dev->devfn,
+>  		(u64) __pa(pcidev_info),
+> -- 
+> 1.7.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
