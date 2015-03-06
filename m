@@ -1,107 +1,87 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v5 26/29] PCI: Rename __pci_create_root_bus() to pci_create_root_bus()
-Date: Fri, 6 Mar 2015 17:33:43 +0800
-Message-ID: <1425634426-437-27-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v5 15/29] powerpc/pci: Rename pcibios_root_bridge_prepare()
+Date: Fri, 6 Mar 2015 17:33:32 +0800
+Message-ID: <1425634426-437-16-git-send-email-wangyijing@huawei.com>
 References: <1425634426-437-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <1425634426-437-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
 
-Now no one use pci_create_root_bus(), we could remove it
-and rename __pci_create_root_bus() to pci_create_root_bus().
-
-Signed-off-by: wangyijing@huawei.com
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
- drivers/pci/probe.c |   27 ++++++++-------------------
- include/linux/pci.h |    3 ---
- 2 files changed, 8 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 63193b7..aae911a 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1852,7 +1852,7 @@ void __weak pcibios_remove_bus(struct pci_bus *bus)
- {
- }
- 
--static struct pci_bus *__pci_create_root_bus(
-+static struct pci_bus *pci_create_root_bus(
- 		struct pci_host_bridge *bridge, struct pci_ops *ops)
- {
- 	int error;
-@@ -1936,18 +1936,6 @@ err_out:
- 	return NULL;
- }
- 
--struct pci_bus *pci_create_root_bus(struct device *parent, u32 db,
--		struct pci_ops *ops, void *sysdata, struct list_head *resources)
--{
--	struct pci_host_bridge *host;
--
--	host = pci_create_host_bridge(parent, db, resources, sysdata, NULL);
--	if (!host)
--		return NULL;
--
--	return __pci_create_root_bus(host, ops);
--}
--
- int pci_bus_insert_busn_res(struct pci_bus *b, int bus, int bus_max)
- {
- 	struct resource *res = &b->busn_res;
-@@ -2025,7 +2013,7 @@ static struct pci_bus *__pci_scan_root_bus(
- 			break;
- 		}
- 
--	b = __pci_create_root_bus(host, ops);
-+	b = pci_create_root_bus(host, ops);
- 	if (!b) {
- 		pci_free_host_bridge(host);
- 		return NULL;
-@@ -2088,18 +2076,19 @@ struct pci_bus *pci_scan_bus(u32 db, struct pci_ops *ops,
- 					void *sysdata)
- {
- 	LIST_HEAD(resources);
--	struct pci_bus *b;
-+	struct pci_host_bridge *host;
- 
- 	pci_add_resource(&resources, &ioport_resource);
- 	pci_add_resource(&resources, &iomem_resource);
- 	pci_add_resource(&resources, &busn_resource);
--	b = pci_create_root_bus(NULL, db, ops, sysdata, &resources);
--	if (b) {
--		pci_scan_child_bus(b);
-+	host = pci_create_host_bridge(NULL, db, sysdata, &resources, NULL);
-+	if (host) {
-+		__pci_scan_root_bus(host, ops);
-+		return host->bus;
- 	} else {
- 		pci_free_resource_list(&resources);
- 	}
--	return b;
-+	return NULL;
- }
- EXPORT_SYMBOL(pci_scan_bus);
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 261b8de..5717b14 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -779,9 +779,6 @@ void pcibios_scan_specific_bus(int busn);
- struct pci_bus *pci_find_bus(int domain, int busnr);
- void pci_bus_add_devices(const struct pci_bus *bus);
- struct pci_bus *pci_scan_bus(u32 dombus, struct pci_ops *ops, void *sysdata);
--struct pci_bus *pci_create_root_bus(struct device *parent, u32 dombus,
--				    struct pci_ops *ops, void *sysdata,
--				    struct list_head *resources);
- int pci_bus_insert_busn_res(struct pci_bus *b, int bus, int busmax);
- int pci_bus_update_busn_res_end(struct pci_bus *b, int busmax);
- void pci_bus_release_busn_res(struct pci_bus *b);
--- 
-1.7.1
+UGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKCkgaW4gcG93ZXJwYyBpcyB1c2VkCnRvIHNldCBy
+b290IGJ1cyBzcGVlZC4gUmVuYW1lIGl0IHRvCnBjaWJpb3Nfc2V0X3Jvb3RfYnVzX3NwZWVkKCkg
+Zm9yIGJldHRlciByZWFkYWJpbGl0eS4KClNpZ25lZC1vZmYtYnk6IFlpamluZyBXYW5nIDx3YW5n
+eWlqaW5nQGh1YXdlaS5jb20+CkNDOiBCZW5qYW1pbiBIZXJyZW5zY2htaWR0IDxiZW5oQGtlcm5l
+bC5jcmFzaGluZy5vcmc+CkNDOiBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpTaWduZWQt
+b2ZmLWJ5OiBCam9ybiBIZWxnYWFzIDxiaGVsZ2Fhc0Bnb29nbGUuY29tPgotLS0KIGFyY2gvcG93
+ZXJwYy9pbmNsdWRlL2FzbS9tYWNoZGVwLmggICAgICAgfCAgICAyICstCiBhcmNoL3Bvd2VycGMv
+a2VybmVsL3BjaS1jb21tb24uYyAgICAgICAgIHwgICAgNCArKy0tCiBhcmNoL3Bvd2VycGMvcGxh
+dGZvcm1zL3BzZXJpZXMvcGNpLmMgICAgIHwgICAgMiArLQogYXJjaC9wb3dlcnBjL3BsYXRmb3Jt
+cy9wc2VyaWVzL3BzZXJpZXMuaCB8ICAgIDIgKy0KIGFyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNl
+cmllcy9zZXR1cC5jICAgfCAgICAyICstCiA1IGZpbGVzIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygr
+KSwgNiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20v
+bWFjaGRlcC5oIGIvYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL21hY2hkZXAuaAppbmRleCBjODE3
+NWEzLi44ZTdmMmE4IDEwMDY0NAotLS0gYS9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vbWFjaGRl
+cC5oCisrKyBiL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9tYWNoZGVwLmgKQEAgLTEyOSw3ICsx
+MjksNyBAQCBzdHJ1Y3QgbWFjaGRlcF9jYWxscyB7CiAJdm9pZAkJKCpwY2liaW9zX2ZpeHVwKSh2
+b2lkKTsKIAlpbnQJCSgqcGNpX3Byb2JlX21vZGUpKHN0cnVjdCBwY2lfYnVzICopOwogCXZvaWQJ
+CSgqcGNpX2lycV9maXh1cCkoc3RydWN0IHBjaV9kZXYgKmRldik7Ci0JaW50CQkoKnBjaWJpb3Nf
+cm9vdF9icmlkZ2VfcHJlcGFyZSkoc3RydWN0IHBjaV9ob3N0X2JyaWRnZQorCWludAkJKCpwY2li
+aW9zX3NldF9yb290X2J1c19zcGVlZCkoc3RydWN0IHBjaV9ob3N0X2JyaWRnZQogCQkJCSpicmlk
+Z2UpOwogCiAJLyogVG8gc2V0dXAgUEhCcyB3aGVuIHVzaW5nIGF1dG9tYXRpYyBPRiBwbGF0Zm9y
+bSBkcml2ZXIgZm9yIFBDSSAqLwpkaWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBjL2tlcm5lbC9wY2kt
+Y29tbW9uLmMgYi9hcmNoL3Bvd2VycGMva2VybmVsL3BjaS1jb21tb24uYwppbmRleCBhNDY3YWNh
+Li4wZDhiMzY5IDEwMDY0NAotLS0gYS9hcmNoL3Bvd2VycGMva2VybmVsL3BjaS1jb21tb24uYwor
+KysgYi9hcmNoL3Bvd2VycGMva2VybmVsL3BjaS1jb21tb24uYwpAQCAtNzY5LDggKzc2OSw4IEBA
+IGludCBwY2lfcHJvY19kb21haW4oc3RydWN0IHBjaV9idXMgKmJ1cykKIAogaW50IHBjaWJpb3Nf
+cm9vdF9icmlkZ2VfcHJlcGFyZShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpicmlkZ2UpCiB7Ci0J
+aWYgKHBwY19tZC5wY2liaW9zX3Jvb3RfYnJpZGdlX3ByZXBhcmUpCi0JCXJldHVybiBwcGNfbWQu
+cGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKGJyaWRnZSk7CisJaWYgKHBwY19tZC5wY2liaW9z
+X3NldF9yb290X2J1c19zcGVlZCkKKwkJcmV0dXJuIHBwY19tZC5wY2liaW9zX3NldF9yb290X2J1
+c19zcGVlZChicmlkZ2UpOwogCiAJcmV0dXJuIDA7CiB9CmRpZmYgLS1naXQgYS9hcmNoL3Bvd2Vy
+cGMvcGxhdGZvcm1zL3BzZXJpZXMvcGNpLmMgYi9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJp
+ZXMvcGNpLmMKaW5kZXggZmUxNmE1MC4uYWY2ODVkNiAxMDA2NDQKLS0tIGEvYXJjaC9wb3dlcnBj
+L3BsYXRmb3Jtcy9wc2VyaWVzL3BjaS5jCisrKyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNl
+cmllcy9wY2kuYwpAQCAtMTEwLDcgKzExMCw3IEBAIHN0YXRpYyB2b2lkIGZpeHVwX3dpbmJvbmRf
+ODJjMTA1KHN0cnVjdCBwY2lfZGV2KiBkZXYpCiBERUNMQVJFX1BDSV9GSVhVUF9IRUFERVIoUENJ
+X1ZFTkRPUl9JRF9XSU5CT05ELCBQQ0lfREVWSUNFX0lEX1dJTkJPTkRfODJDMTA1LAogCQkJIGZp
+eHVwX3dpbmJvbmRfODJjMTA1KTsKIAotaW50IHBzZXJpZXNfcm9vdF9icmlkZ2VfcHJlcGFyZShz
+dHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpicmlkZ2UpCitpbnQgcHNlcmllc19zZXRfcm9vdF9idXNf
+c3BlZWQoc3RydWN0IHBjaV9ob3N0X2JyaWRnZSAqYnJpZGdlKQogewogCXN0cnVjdCBkZXZpY2Vf
+bm9kZSAqZG4sICpwZG47CiAJc3RydWN0IHBjaV9idXMgKmJ1czsKZGlmZiAtLWdpdCBhL2FyY2gv
+cG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wc2VyaWVzLmggYi9hcmNoL3Bvd2VycGMvcGxhdGZv
+cm1zL3BzZXJpZXMvcHNlcmllcy5oCmluZGV4IDE3OTZjNTQuLjVkMGJlM2EgMTAwNjQ0Ci0tLSBh
+L2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wc2VyaWVzLmgKKysrIGIvYXJjaC9wb3dl
+cnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3BzZXJpZXMuaApAQCAtNjMsNyArNjMsNyBAQCBleHRlcm4g
+aW50IGRscGFyX2RldGFjaF9ub2RlKHN0cnVjdCBkZXZpY2Vfbm9kZSAqKTsKIAogLyogUENJIHJv
+b3QgYnJpZGdlIHByZXBhcmUgZnVuY3Rpb24gb3ZlcnJpZGUgZm9yIHBzZXJpZXMgKi8KIHN0cnVj
+dCBwY2lfaG9zdF9icmlkZ2U7Ci1pbnQgcHNlcmllc19yb290X2JyaWRnZV9wcmVwYXJlKHN0cnVj
+dCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRnZSk7CitpbnQgcHNlcmllc19zZXRfcm9vdF9idXNfc3Bl
+ZWQoc3RydWN0IHBjaV9ob3N0X2JyaWRnZSAqYnJpZGdlKTsKIAogdW5zaWduZWQgbG9uZyBwc2Vy
+aWVzX21lbW9yeV9ibG9ja19zaXplKHZvaWQpOwogCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMv
+cGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmll
+cy9zZXR1cC5jCmluZGV4IGU0NDViNjcuLmIxOTZjMGQgMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJw
+Yy9wbGF0Zm9ybXMvcHNlcmllcy9zZXR1cC5jCisrKyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMv
+cHNlcmllcy9zZXR1cC5jCkBAIC00OTYsNyArNDk2LDcgQEAgc3RhdGljIHZvaWQgX19pbml0IHBT
+ZXJpZXNfc2V0dXBfYXJjaCh2b2lkKQogCQlwcGNfbWQuZW5hYmxlX3BtY3MgPSBwb3dlcjRfZW5h
+YmxlX3BtY3M7CiAJfQogCi0JcHBjX21kLnBjaWJpb3Nfcm9vdF9icmlkZ2VfcHJlcGFyZSA9IHBz
+ZXJpZXNfcm9vdF9icmlkZ2VfcHJlcGFyZTsKKwlwcGNfbWQucGNpYmlvc19zZXRfcm9vdF9idXNf
+c3BlZWQgPSBwc2VyaWVzX3NldF9yb290X2J1c19zcGVlZDsKIAogCWlmIChmaXJtd2FyZV9oYXNf
+ZmVhdHVyZShGV19GRUFUVVJFX1NFVF9NT0RFKSkgewogCQlsb25nIHJjOwotLSAKMS43LjEKCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkxpbnV4cHBjLWRl
+diBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmcKaHR0cHM6Ly9saXN0
+cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRldg==
