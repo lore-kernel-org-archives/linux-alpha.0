@@ -1,37 +1,76 @@
-From: Bill MacAllister <whm@stanford.edu>
-Subject: Re: Pre-DEBIAN 8.0 install images for ALPHA architecture  (debian-ports unstable release)
-Date: Wed, 04 Mar 2015 12:39:46 -0800
-Message-ID: <12F17983CE06971783285C95@keddie.ca-zephyr.org>
-References: <54F17222.3090202@gmx.de> <707B2251-342A-4439-84DE-232BC6C69BF8@gmail.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: [PATCH v5 03/29] xen/PCI: Don't use deprecated function pci_scan_bus_parented()
+Date: Fri, 6 Mar 2015 17:33:20 +0800
+Message-ID: <1425634426-437-4-git-send-email-wangyijing@huawei.com>
+References: <1425634426-437-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <707B2251-342A-4439-84DE-232BC6C69BF8@gmail.com>
-Content-Disposition: inline; size=541
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1425634426-437-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Rafael Ruiz <gandano@gmail.com>, Helge Deller <deller@gmx.de>
-Cc: debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org, Bjorn Helgaas <bhelgaas@google.com>
 
+From: Arnd Bergmann <arnd@arndb.de>
 
+Use pci_scan_root_bus() instead of deprecated function
+pci_scan_bus_parented().
 
---On Wednesday, March 04, 2015 07:07:48 PM +0100 Rafael Ruiz <gandano@gmail.com> wrote:
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+CC: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+CC: xen-devel@lists.xenproject.org
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+---
+ drivers/pci/xen-pcifront.c |   11 ++++++++---
+ 1 files changed, 8 insertions(+), 3 deletions(-)
 
-> Hello!
-> I have tryed it on an AlphaStation 255/300, but after ncurses
-> installation menu, "killed" message printed on screen and no finish.
-
-I have successfully built working systems on a PWS 500au and a DS10L
-using both the NETINST and CD flavors of ISOs.
-
-Can you describe the problem more completely?  Which ISO are you using?
-What is the exact text of the failure message?
-
-Bill
-
+diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
+index b1ffebe..7057930 100644
+--- a/drivers/pci/xen-pcifront.c
++++ b/drivers/pci/xen-pcifront.c
+@@ -446,6 +446,7 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+ 				 unsigned int domain, unsigned int bus)
+ {
+ 	struct pci_bus *b;
++	LIST_HEAD(resources);
+ 	struct pcifront_sd *sd = NULL;
+ 	struct pci_bus_entry *bus_entry = NULL;
+ 	int err = 0;
+@@ -470,17 +471,21 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+ 		err = -ENOMEM;
+ 		goto err_out;
+ 	}
++	pci_add_resource(&resources, &ioport_resource);
++	pci_add_resource(&resources, &iomem_resource);
++	pci_add_resource(&resources, &busn_resource);
+ 	pcifront_init_sd(sd, domain, bus, pdev);
+ 
+ 	pci_lock_rescan_remove();
+ 
+-	b = pci_scan_bus_parented(&pdev->xdev->dev, bus,
+-				  &pcifront_bus_ops, sd);
++	b = pci_scan_root_bus(&pdev->xdev->dev, bus,
++				  &pcifront_bus_ops, sd, &resources);
+ 	if (!b) {
+ 		dev_err(&pdev->xdev->dev,
+ 			"Error creating PCI Frontend Bus!\n");
+ 		err = -ENOMEM;
+ 		pci_unlock_rescan_remove();
++		pci_free_resource_list(&resources);
+ 		goto err_out;
+ 	}
+ 
+@@ -488,7 +493,7 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+ 
+ 	list_add(&bus_entry->list, &pdev->root_buses);
+ 
+-	/* pci_scan_bus_parented skips devices which do not have a have
++	/* pci_scan_root_bus skips devices which do not have a
+ 	* devfn==0. The pcifront_scan_bus enumerates all devfn. */
+ 	err = pcifront_scan_bus(pdev, domain, bus, b);
+ 
 -- 
-
-Bill MacAllister
-Systems Programmer, Stanford University
-
+1.7.1
