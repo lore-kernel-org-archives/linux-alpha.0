@@ -1,66 +1,45 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v5 27/29] PCI: Export find_pci_host_bridge() and rename to pci_find_host_bridge()
-Date: Fri, 6 Mar 2015 17:33:44 +0800
-Message-ID: <1425634426-437-28-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v5 25/29] PCI/xgene: Use pci_scan_root_bus() instead of pci_create_root_bus()
+Date: Fri, 6 Mar 2015 17:33:42 +0800
+Message-ID: <1425634426-437-26-git-send-email-wangyijing@huawei.com>
 References: <1425634426-437-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
 In-Reply-To: <1425634426-437-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Tanmay Inamdar <tinamdar@apm.com>, Bjorn Helgaas <bhelgaas@google.com>
+
+Use pci_scan_root_bus() instead of pci_create_root_bus() +
+pci_scan_child_bus() for simplicity.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+CC: Tanmay Inamdar <tinamdar@apm.com>
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- drivers/pci/host-bridge.c |    6 +++---
- drivers/pci/pci.h         |    2 ++
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/pci/host/pci-xgene.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-index bc1de59..51f0a82 100644
---- a/drivers/pci/host-bridge.c
-+++ b/drivers/pci/host-bridge.c
-@@ -103,7 +103,7 @@ static struct pci_bus *find_pci_root_bus(struct pci_bus *bus)
- 	return bus;
- }
+diff --git a/drivers/pci/host/pci-xgene.c b/drivers/pci/host/pci-xgene.c
+index aab5547..0c0e632 100644
+--- a/drivers/pci/host/pci-xgene.c
++++ b/drivers/pci/host/pci-xgene.c
+@@ -499,12 +499,11 @@ static int xgene_pcie_probe_bridge(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
--static struct pci_host_bridge *find_pci_host_bridge(struct pci_bus *bus)
-+struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus)
- {
- 	struct pci_bus *root_bus = find_pci_root_bus(bus);
+-	bus = pci_create_root_bus(&pdev->dev, 0,
++	bus = pci_scan_root_bus(&pdev->dev, 0,
+ 					&xgene_pcie_ops, port, &res);
+ 	if (!bus)
+ 		return -ENOMEM;
  
-@@ -121,7 +121,7 @@ void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
- void pcibios_resource_to_bus(struct pci_bus *bus, struct pci_bus_region *region,
- 			     struct resource *res)
- {
--	struct pci_host_bridge *bridge = find_pci_host_bridge(bus);
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
- 	struct resource_entry *window;
- 	resource_size_t offset = 0;
+-	pci_scan_child_bus(bus);
+ 	pci_assign_unassigned_bus_resources(bus);
+ 	pci_bus_add_devices(bus);
  
-@@ -146,7 +146,7 @@ static bool region_contains(struct pci_bus_region *region1,
- void pcibios_bus_to_resource(struct pci_bus *bus, struct resource *res,
- 			     struct pci_bus_region *region)
- {
--	struct pci_host_bridge *bridge = find_pci_host_bridge(bus);
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
- 	struct resource_entry *window;
- 	resource_size_t offset = 0;
- 
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index 8bf5be7..ca9fc51 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -326,4 +326,6 @@ struct pci_host_bridge *pci_create_host_bridge(
- 		void *sysdata, struct pci_host_bridge_ops *ops);
- 
- void pci_free_host_bridge(struct pci_host_bridge *host);
-+struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus);
-+
- #endif /* DRIVERS_PCI_H */
 -- 
 1.7.1
