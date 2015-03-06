@@ -1,87 +1,256 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v5 15/29] powerpc/pci: Rename pcibios_root_bridge_prepare()
-Date: Fri, 6 Mar 2015 17:33:32 +0800
-Message-ID: <1425634426-437-16-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v5 28/29] PCI: Remove platform specific pci_domain_nr()
+Date: Fri, 6 Mar 2015 17:33:45 +0800
+Message-ID: <1425634426-437-29-git-send-email-wangyijing@huawei.com>
 References: <1425634426-437-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1425634426-437-1-git-send-email-wangyijing@huawei.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
 
-UGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKCkgaW4gcG93ZXJwYyBpcyB1c2VkCnRvIHNldCBy
-b290IGJ1cyBzcGVlZC4gUmVuYW1lIGl0IHRvCnBjaWJpb3Nfc2V0X3Jvb3RfYnVzX3NwZWVkKCkg
-Zm9yIGJldHRlciByZWFkYWJpbGl0eS4KClNpZ25lZC1vZmYtYnk6IFlpamluZyBXYW5nIDx3YW5n
-eWlqaW5nQGh1YXdlaS5jb20+CkNDOiBCZW5qYW1pbiBIZXJyZW5zY2htaWR0IDxiZW5oQGtlcm5l
-bC5jcmFzaGluZy5vcmc+CkNDOiBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpTaWduZWQt
-b2ZmLWJ5OiBCam9ybiBIZWxnYWFzIDxiaGVsZ2Fhc0Bnb29nbGUuY29tPgotLS0KIGFyY2gvcG93
-ZXJwYy9pbmNsdWRlL2FzbS9tYWNoZGVwLmggICAgICAgfCAgICAyICstCiBhcmNoL3Bvd2VycGMv
-a2VybmVsL3BjaS1jb21tb24uYyAgICAgICAgIHwgICAgNCArKy0tCiBhcmNoL3Bvd2VycGMvcGxh
-dGZvcm1zL3BzZXJpZXMvcGNpLmMgICAgIHwgICAgMiArLQogYXJjaC9wb3dlcnBjL3BsYXRmb3Jt
-cy9wc2VyaWVzL3BzZXJpZXMuaCB8ICAgIDIgKy0KIGFyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNl
-cmllcy9zZXR1cC5jICAgfCAgICAyICstCiA1IGZpbGVzIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygr
-KSwgNiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20v
-bWFjaGRlcC5oIGIvYXJjaC9wb3dlcnBjL2luY2x1ZGUvYXNtL21hY2hkZXAuaAppbmRleCBjODE3
-NWEzLi44ZTdmMmE4IDEwMDY0NAotLS0gYS9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vbWFjaGRl
-cC5oCisrKyBiL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9tYWNoZGVwLmgKQEAgLTEyOSw3ICsx
-MjksNyBAQCBzdHJ1Y3QgbWFjaGRlcF9jYWxscyB7CiAJdm9pZAkJKCpwY2liaW9zX2ZpeHVwKSh2
-b2lkKTsKIAlpbnQJCSgqcGNpX3Byb2JlX21vZGUpKHN0cnVjdCBwY2lfYnVzICopOwogCXZvaWQJ
-CSgqcGNpX2lycV9maXh1cCkoc3RydWN0IHBjaV9kZXYgKmRldik7Ci0JaW50CQkoKnBjaWJpb3Nf
-cm9vdF9icmlkZ2VfcHJlcGFyZSkoc3RydWN0IHBjaV9ob3N0X2JyaWRnZQorCWludAkJKCpwY2li
-aW9zX3NldF9yb290X2J1c19zcGVlZCkoc3RydWN0IHBjaV9ob3N0X2JyaWRnZQogCQkJCSpicmlk
-Z2UpOwogCiAJLyogVG8gc2V0dXAgUEhCcyB3aGVuIHVzaW5nIGF1dG9tYXRpYyBPRiBwbGF0Zm9y
-bSBkcml2ZXIgZm9yIFBDSSAqLwpkaWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBjL2tlcm5lbC9wY2kt
-Y29tbW9uLmMgYi9hcmNoL3Bvd2VycGMva2VybmVsL3BjaS1jb21tb24uYwppbmRleCBhNDY3YWNh
-Li4wZDhiMzY5IDEwMDY0NAotLS0gYS9hcmNoL3Bvd2VycGMva2VybmVsL3BjaS1jb21tb24uYwor
-KysgYi9hcmNoL3Bvd2VycGMva2VybmVsL3BjaS1jb21tb24uYwpAQCAtNzY5LDggKzc2OSw4IEBA
-IGludCBwY2lfcHJvY19kb21haW4oc3RydWN0IHBjaV9idXMgKmJ1cykKIAogaW50IHBjaWJpb3Nf
-cm9vdF9icmlkZ2VfcHJlcGFyZShzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpicmlkZ2UpCiB7Ci0J
-aWYgKHBwY19tZC5wY2liaW9zX3Jvb3RfYnJpZGdlX3ByZXBhcmUpCi0JCXJldHVybiBwcGNfbWQu
-cGNpYmlvc19yb290X2JyaWRnZV9wcmVwYXJlKGJyaWRnZSk7CisJaWYgKHBwY19tZC5wY2liaW9z
-X3NldF9yb290X2J1c19zcGVlZCkKKwkJcmV0dXJuIHBwY19tZC5wY2liaW9zX3NldF9yb290X2J1
-c19zcGVlZChicmlkZ2UpOwogCiAJcmV0dXJuIDA7CiB9CmRpZmYgLS1naXQgYS9hcmNoL3Bvd2Vy
-cGMvcGxhdGZvcm1zL3BzZXJpZXMvcGNpLmMgYi9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJp
-ZXMvcGNpLmMKaW5kZXggZmUxNmE1MC4uYWY2ODVkNiAxMDA2NDQKLS0tIGEvYXJjaC9wb3dlcnBj
-L3BsYXRmb3Jtcy9wc2VyaWVzL3BjaS5jCisrKyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNl
-cmllcy9wY2kuYwpAQCAtMTEwLDcgKzExMCw3IEBAIHN0YXRpYyB2b2lkIGZpeHVwX3dpbmJvbmRf
-ODJjMTA1KHN0cnVjdCBwY2lfZGV2KiBkZXYpCiBERUNMQVJFX1BDSV9GSVhVUF9IRUFERVIoUENJ
-X1ZFTkRPUl9JRF9XSU5CT05ELCBQQ0lfREVWSUNFX0lEX1dJTkJPTkRfODJDMTA1LAogCQkJIGZp
-eHVwX3dpbmJvbmRfODJjMTA1KTsKIAotaW50IHBzZXJpZXNfcm9vdF9icmlkZ2VfcHJlcGFyZShz
-dHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpicmlkZ2UpCitpbnQgcHNlcmllc19zZXRfcm9vdF9idXNf
-c3BlZWQoc3RydWN0IHBjaV9ob3N0X2JyaWRnZSAqYnJpZGdlKQogewogCXN0cnVjdCBkZXZpY2Vf
-bm9kZSAqZG4sICpwZG47CiAJc3RydWN0IHBjaV9idXMgKmJ1czsKZGlmZiAtLWdpdCBhL2FyY2gv
-cG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wc2VyaWVzLmggYi9hcmNoL3Bvd2VycGMvcGxhdGZv
-cm1zL3BzZXJpZXMvcHNlcmllcy5oCmluZGV4IDE3OTZjNTQuLjVkMGJlM2EgMTAwNjQ0Ci0tLSBh
-L2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9wc2VyaWVzLmgKKysrIGIvYXJjaC9wb3dl
-cnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3BzZXJpZXMuaApAQCAtNjMsNyArNjMsNyBAQCBleHRlcm4g
-aW50IGRscGFyX2RldGFjaF9ub2RlKHN0cnVjdCBkZXZpY2Vfbm9kZSAqKTsKIAogLyogUENJIHJv
-b3QgYnJpZGdlIHByZXBhcmUgZnVuY3Rpb24gb3ZlcnJpZGUgZm9yIHBzZXJpZXMgKi8KIHN0cnVj
-dCBwY2lfaG9zdF9icmlkZ2U7Ci1pbnQgcHNlcmllc19yb290X2JyaWRnZV9wcmVwYXJlKHN0cnVj
-dCBwY2lfaG9zdF9icmlkZ2UgKmJyaWRnZSk7CitpbnQgcHNlcmllc19zZXRfcm9vdF9idXNfc3Bl
-ZWQoc3RydWN0IHBjaV9ob3N0X2JyaWRnZSAqYnJpZGdlKTsKIAogdW5zaWduZWQgbG9uZyBwc2Vy
-aWVzX21lbW9yeV9ibG9ja19zaXplKHZvaWQpOwogCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMv
-cGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmll
-cy9zZXR1cC5jCmluZGV4IGU0NDViNjcuLmIxOTZjMGQgMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJw
-Yy9wbGF0Zm9ybXMvcHNlcmllcy9zZXR1cC5jCisrKyBiL2FyY2gvcG93ZXJwYy9wbGF0Zm9ybXMv
-cHNlcmllcy9zZXR1cC5jCkBAIC00OTYsNyArNDk2LDcgQEAgc3RhdGljIHZvaWQgX19pbml0IHBT
-ZXJpZXNfc2V0dXBfYXJjaCh2b2lkKQogCQlwcGNfbWQuZW5hYmxlX3BtY3MgPSBwb3dlcjRfZW5h
-YmxlX3BtY3M7CiAJfQogCi0JcHBjX21kLnBjaWJpb3Nfcm9vdF9icmlkZ2VfcHJlcGFyZSA9IHBz
-ZXJpZXNfcm9vdF9icmlkZ2VfcHJlcGFyZTsKKwlwcGNfbWQucGNpYmlvc19zZXRfcm9vdF9idXNf
-c3BlZWQgPSBwc2VyaWVzX3NldF9yb290X2J1c19zcGVlZDsKIAogCWlmIChmaXJtd2FyZV9oYXNf
-ZmVhdHVyZShGV19GRUFUVVJFX1NFVF9NT0RFKSkgewogCQlsb25nIHJjOwotLSAKMS43LjEKCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkxpbnV4cHBjLWRl
-diBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmcKaHR0cHM6Ly9saXN0
-cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRldg==
+Now pci_host_bridge holds the domain number,
+so we could eliminate all platform specific
+pci_domain_nr().
+
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+---
+ arch/alpha/include/asm/pci.h     |    2 --
+ arch/ia64/include/asm/pci.h      |    1 -
+ arch/microblaze/pci/pci-common.c |   11 -----------
+ arch/mips/include/asm/pci.h      |    2 --
+ arch/powerpc/kernel/pci-common.c |   11 -----------
+ arch/s390/pci/pci.c              |    6 ------
+ arch/sh/include/asm/pci.h        |    2 --
+ arch/sparc/kernel/pci.c          |   17 -----------------
+ arch/tile/include/asm/pci.h      |    2 --
+ arch/x86/include/asm/pci.h       |    6 ------
+ drivers/pci/pci.c                |    8 ++++++++
+ include/linux/pci.h              |    7 ++-----
+ 12 files changed, 10 insertions(+), 65 deletions(-)
+
+diff --git a/arch/alpha/include/asm/pci.h b/arch/alpha/include/asm/pci.h
+index f7f680f..63a9a1e 100644
+--- a/arch/alpha/include/asm/pci.h
++++ b/arch/alpha/include/asm/pci.h
+@@ -95,8 +95,6 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
+ 	return channel ? 15 : 14;
+ }
+ 
+-#define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
+-
+ static inline int pci_proc_domain(struct pci_bus *bus)
+ {
+ 	struct pci_controller *hose = bus->sysdata;
+diff --git a/arch/ia64/include/asm/pci.h b/arch/ia64/include/asm/pci.h
+index 52af5ed..1dcea49 100644
+--- a/arch/ia64/include/asm/pci.h
++++ b/arch/ia64/include/asm/pci.h
+@@ -99,7 +99,6 @@ struct pci_controller {
+ 
+ 
+ #define PCI_CONTROLLER(busdev) ((struct pci_controller *) busdev->sysdata)
+-#define pci_domain_nr(busdev)    (PCI_CONTROLLER(busdev)->segment)
+ 
+ extern struct pci_ops pci_root_ops;
+ 
+diff --git a/arch/microblaze/pci/pci-common.c b/arch/microblaze/pci/pci-common.c
+index 34a32ec..8651089 100644
+--- a/arch/microblaze/pci/pci-common.c
++++ b/arch/microblaze/pci/pci-common.c
+@@ -123,17 +123,6 @@ unsigned long pci_address_to_pio(phys_addr_t address)
+ }
+ EXPORT_SYMBOL_GPL(pci_address_to_pio);
+ 
+-/*
+- * Return the domain number for this bus.
+- */
+-int pci_domain_nr(struct pci_bus *bus)
+-{
+-	struct pci_controller *hose = pci_bus_to_host(bus);
+-
+-	return hose->global_number;
+-}
+-EXPORT_SYMBOL(pci_domain_nr);
+-
+ /* This routine is meant to be used early during boot, when the
+  * PCI bus numbers have not yet been assigned, and you need to
+  * issue PCI config cycles to an OF device.
+diff --git a/arch/mips/include/asm/pci.h b/arch/mips/include/asm/pci.h
+index 193b4c6..2e4d808 100644
+--- a/arch/mips/include/asm/pci.h
++++ b/arch/mips/include/asm/pci.h
+@@ -122,8 +122,6 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
+ #endif
+ 
+ #ifdef CONFIG_PCI_DOMAINS
+-#define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
+-
+ static inline int pci_proc_domain(struct pci_bus *bus)
+ {
+ 	struct pci_controller *hose = bus->sysdata;
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 71f0077..5f0a8f7 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -181,17 +181,6 @@ unsigned long pci_address_to_pio(phys_addr_t address)
+ }
+ EXPORT_SYMBOL_GPL(pci_address_to_pio);
+ 
+-/*
+- * Return the domain number for this bus.
+- */
+-int pci_domain_nr(struct pci_bus *bus)
+-{
+-	struct pci_controller *hose = pci_bus_to_host(bus);
+-
+-	return hose->global_number;
+-}
+-EXPORT_SYMBOL(pci_domain_nr);
+-
+ /* This routine is meant to be used early during boot, when the
+  * PCI bus numbers have not yet been assigned, and you need to
+  * issue PCI config cycles to an OF device.
+diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+index 20e662f..4823b0e 100644
+--- a/arch/s390/pci/pci.c
++++ b/arch/s390/pci/pci.c
+@@ -101,12 +101,6 @@ static struct zpci_dev *get_zdev_by_bus(struct pci_bus *bus)
+ 	return (bus && bus->sysdata) ? (struct zpci_dev *) bus->sysdata : NULL;
+ }
+ 
+-int pci_domain_nr(struct pci_bus *bus)
+-{
+-	return ((struct zpci_dev *) bus->sysdata)->domain;
+-}
+-EXPORT_SYMBOL_GPL(pci_domain_nr);
+-
+ int pci_proc_domain(struct pci_bus *bus)
+ {
+ 	return pci_domain_nr(bus);
+diff --git a/arch/sh/include/asm/pci.h b/arch/sh/include/asm/pci.h
+index 5b45115..4dc3ad6 100644
+--- a/arch/sh/include/asm/pci.h
++++ b/arch/sh/include/asm/pci.h
+@@ -109,8 +109,6 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
+ /* Board-specific fixup routines. */
+ int pcibios_map_platform_irq(const struct pci_dev *dev, u8 slot, u8 pin);
+ 
+-#define pci_domain_nr(bus) ((struct pci_channel *)(bus)->sysdata)->index
+-
+ static inline int pci_proc_domain(struct pci_bus *bus)
+ {
+ 	struct pci_channel *hose = bus->sysdata;
+diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
+index 7e28f74..b847d0c 100644
+--- a/arch/sparc/kernel/pci.c
++++ b/arch/sparc/kernel/pci.c
+@@ -902,23 +902,6 @@ int pcibus_to_node(struct pci_bus *pbus)
+ EXPORT_SYMBOL(pcibus_to_node);
+ #endif
+ 
+-/* Return the domain number for this pci bus */
+-
+-int pci_domain_nr(struct pci_bus *pbus)
+-{
+-	struct pci_pbm_info *pbm = pbus->sysdata;
+-	int ret;
+-
+-	if (!pbm) {
+-		ret = -ENXIO;
+-	} else {
+-		ret = pbm->index;
+-	}
+-
+-	return ret;
+-}
+-EXPORT_SYMBOL(pci_domain_nr);
+-
+ #ifdef CONFIG_PCI_MSI
+ int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
+ {
+diff --git a/arch/tile/include/asm/pci.h b/arch/tile/include/asm/pci.h
+index dfedd7a..23a726e 100644
+--- a/arch/tile/include/asm/pci.h
++++ b/arch/tile/include/asm/pci.h
+@@ -199,8 +199,6 @@ int __init pcibios_init(void);
+ 
+ void pcibios_fixup_bus(struct pci_bus *bus);
+ 
+-#define pci_domain_nr(bus) (((struct pci_controller *)(bus)->sysdata)->index)
+-
+ /*
+  * This decides whether to display the domain number in /proc.
+  */
+diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
+index 4e370a5..4fe0458 100644
+--- a/arch/x86/include/asm/pci.h
++++ b/arch/x86/include/asm/pci.h
+@@ -29,12 +29,6 @@ extern int noioapicreroute;
+ #ifdef CONFIG_PCI
+ 
+ #ifdef CONFIG_PCI_DOMAINS
+-static inline int pci_domain_nr(struct pci_bus *bus)
+-{
+-	struct pci_sysdata *sd = bus->sysdata;
+-	return sd->domain;
+-}
+-
+ static inline int pci_proc_domain(struct pci_bus *bus)
+ {
+ 	return pci_domain_nr(bus);
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 0001896..dd8aebc 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -4523,6 +4523,14 @@ int pci_get_new_domain_nr(void)
+ 	return atomic_inc_return(&__domain_nr);
+ }
+ 
++int pci_domain_nr(struct pci_bus *bus)
++{
++	struct pci_host_bridge *host = find_pci_host_bridge(bus);
++
++	return host->domain;
++}
++EXPORT_SYMBOL(pci_domain_nr);
++
+ #ifdef CONFIG_PCI_DOMAINS_GENERIC
+ static int pci_assign_domain_nr(struct device *dev)
+ {
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 5717b14..dc1c710 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1318,6 +1318,7 @@ void pci_cfg_access_unlock(struct pci_dev *dev);
+ #ifdef CONFIG_PCI_DOMAINS
+ extern int pci_domains_supported;
+ int pci_get_new_domain_nr(void);
++int pci_domain_nr(struct pci_bus *bus);
+ #else
+ enum { pci_domains_supported = 0 };
+ static inline int pci_domain_nr(struct pci_bus *bus) { return 0; }
+@@ -1331,15 +1332,11 @@ static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
+  * domains then this implementation will be used
+  */
+ #ifdef CONFIG_PCI_DOMAINS_GENERIC
+-static inline int pci_domain_nr(struct pci_bus *bus)
+-{
+-	return bus->domain_nr;
+-}
+ void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent);
+ void pci_host_assign_domain_nr(struct pci_host_bridge *host);
+ #else
+ static inline void pci_bus_assign_domain_nr(struct pci_bus *bus,
+-					struct device *parent)
++		struct device *parent)
+ {
+ }
+ static inline void pci_host_assign_domain_nr(struct pci_host_bridge *host)
+-- 
+1.7.1
