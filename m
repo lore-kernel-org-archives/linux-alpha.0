@@ -1,75 +1,256 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v6 28/30] PCI: Export find_pci_host_bridge() and rename to
- pci_find_host_bridge()
-Date: Mon, 9 Mar 2015 10:34:25 +0800
-Message-ID: <1425868467-9667-29-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v6 29/30] PCI: Remove platform specific pci_domain_nr()
+Date: Mon, 9 Mar 2015 10:34:26 +0800
+Message-ID: <1425868467-9667-30-git-send-email-wangyijing@huawei.com>
 References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-m68k-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
+
+Now pci_host_bridge holds the domain number,
+so we could eliminate all platform specific
+pci_domain_nr().
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- drivers/pci/host-bridge.c |    6 +++---
- drivers/pci/pci.h         |    2 ++
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ arch/alpha/include/asm/pci.h     |    2 --
+ arch/ia64/include/asm/pci.h      |    1 -
+ arch/microblaze/pci/pci-common.c |   11 -----------
+ arch/mips/include/asm/pci.h      |    2 --
+ arch/powerpc/kernel/pci-common.c |   11 -----------
+ arch/s390/pci/pci.c              |    6 ------
+ arch/sh/include/asm/pci.h        |    2 --
+ arch/sparc/kernel/pci.c          |   17 -----------------
+ arch/tile/include/asm/pci.h      |    2 --
+ arch/x86/include/asm/pci.h       |    6 ------
+ drivers/pci/pci.c                |    8 ++++++++
+ include/linux/pci.h              |    7 ++-----
+ 12 files changed, 10 insertions(+), 65 deletions(-)
 
-diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-index bc1de59..51f0a82 100644
---- a/drivers/pci/host-bridge.c
-+++ b/drivers/pci/host-bridge.c
-@@ -103,7 +103,7 @@ static struct pci_bus *find_pci_root_bus(struct pci_bus *bus)
- 	return bus;
+diff --git a/arch/alpha/include/asm/pci.h b/arch/alpha/include/asm/pci.h
+index f7f680f..63a9a1e 100644
+--- a/arch/alpha/include/asm/pci.h
++++ b/arch/alpha/include/asm/pci.h
+@@ -95,8 +95,6 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
+ 	return channel ? 15 : 14;
  }
  
--static struct pci_host_bridge *find_pci_host_bridge(struct pci_bus *bus)
-+struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus)
+-#define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
+-
+ static inline int pci_proc_domain(struct pci_bus *bus)
  {
- 	struct pci_bus *root_bus = find_pci_root_bus(bus);
+ 	struct pci_controller *hose = bus->sysdata;
+diff --git a/arch/ia64/include/asm/pci.h b/arch/ia64/include/asm/pci.h
+index 52af5ed..1dcea49 100644
+--- a/arch/ia64/include/asm/pci.h
++++ b/arch/ia64/include/asm/pci.h
+@@ -99,7 +99,6 @@ struct pci_controller {
  
-@@ -121,7 +121,7 @@ void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
- void pcibios_resource_to_bus(struct pci_bus *bus, struct pci_bus_region *region,
- 			     struct resource *res)
+ 
+ #define PCI_CONTROLLER(busdev) ((struct pci_controller *) busdev->sysdata)
+-#define pci_domain_nr(busdev)    (PCI_CONTROLLER(busdev)->segment)
+ 
+ extern struct pci_ops pci_root_ops;
+ 
+diff --git a/arch/microblaze/pci/pci-common.c b/arch/microblaze/pci/pci-common.c
+index 34a32ec..8651089 100644
+--- a/arch/microblaze/pci/pci-common.c
++++ b/arch/microblaze/pci/pci-common.c
+@@ -123,17 +123,6 @@ unsigned long pci_address_to_pio(phys_addr_t address)
+ }
+ EXPORT_SYMBOL_GPL(pci_address_to_pio);
+ 
+-/*
+- * Return the domain number for this bus.
+- */
+-int pci_domain_nr(struct pci_bus *bus)
+-{
+-	struct pci_controller *hose = pci_bus_to_host(bus);
+-
+-	return hose->global_number;
+-}
+-EXPORT_SYMBOL(pci_domain_nr);
+-
+ /* This routine is meant to be used early during boot, when the
+  * PCI bus numbers have not yet been assigned, and you need to
+  * issue PCI config cycles to an OF device.
+diff --git a/arch/mips/include/asm/pci.h b/arch/mips/include/asm/pci.h
+index 193b4c6..2e4d808 100644
+--- a/arch/mips/include/asm/pci.h
++++ b/arch/mips/include/asm/pci.h
+@@ -122,8 +122,6 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
+ #endif
+ 
+ #ifdef CONFIG_PCI_DOMAINS
+-#define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
+-
+ static inline int pci_proc_domain(struct pci_bus *bus)
  {
--	struct pci_host_bridge *bridge = find_pci_host_bridge(bus);
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
- 	struct resource_entry *window;
- 	resource_size_t offset = 0;
+ 	struct pci_controller *hose = bus->sysdata;
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 74cbb5d..c0a3aa4 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -181,17 +181,6 @@ unsigned long pci_address_to_pio(phys_addr_t address)
+ }
+ EXPORT_SYMBOL_GPL(pci_address_to_pio);
  
-@@ -146,7 +146,7 @@ static bool region_contains(struct pci_bus_region *region1,
- void pcibios_bus_to_resource(struct pci_bus *bus, struct resource *res,
- 			     struct pci_bus_region *region)
+-/*
+- * Return the domain number for this bus.
+- */
+-int pci_domain_nr(struct pci_bus *bus)
+-{
+-	struct pci_controller *hose = pci_bus_to_host(bus);
+-
+-	return hose->global_number;
+-}
+-EXPORT_SYMBOL(pci_domain_nr);
+-
+ /* This routine is meant to be used early during boot, when the
+  * PCI bus numbers have not yet been assigned, and you need to
+  * issue PCI config cycles to an OF device.
+diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+index 20e662f..4823b0e 100644
+--- a/arch/s390/pci/pci.c
++++ b/arch/s390/pci/pci.c
+@@ -101,12 +101,6 @@ static struct zpci_dev *get_zdev_by_bus(struct pci_bus *bus)
+ 	return (bus && bus->sysdata) ? (struct zpci_dev *) bus->sysdata : NULL;
+ }
+ 
+-int pci_domain_nr(struct pci_bus *bus)
+-{
+-	return ((struct zpci_dev *) bus->sysdata)->domain;
+-}
+-EXPORT_SYMBOL_GPL(pci_domain_nr);
+-
+ int pci_proc_domain(struct pci_bus *bus)
  {
--	struct pci_host_bridge *bridge = find_pci_host_bridge(bus);
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
- 	struct resource_entry *window;
- 	resource_size_t offset = 0;
+ 	return pci_domain_nr(bus);
+diff --git a/arch/sh/include/asm/pci.h b/arch/sh/include/asm/pci.h
+index 5b45115..4dc3ad6 100644
+--- a/arch/sh/include/asm/pci.h
++++ b/arch/sh/include/asm/pci.h
+@@ -109,8 +109,6 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
+ /* Board-specific fixup routines. */
+ int pcibios_map_platform_irq(const struct pci_dev *dev, u8 slot, u8 pin);
  
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index a1dc9f2..45252dd 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -328,4 +328,6 @@ struct pci_host_bridge *pci_create_host_bridge(
- 		void *sysdata, struct pci_host_bridge_ops *ops);
+-#define pci_domain_nr(bus) ((struct pci_channel *)(bus)->sysdata)->index
+-
+ static inline int pci_proc_domain(struct pci_bus *bus)
+ {
+ 	struct pci_channel *hose = bus->sysdata;
+diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
+index 7e28f74..b847d0c 100644
+--- a/arch/sparc/kernel/pci.c
++++ b/arch/sparc/kernel/pci.c
+@@ -902,23 +902,6 @@ int pcibus_to_node(struct pci_bus *pbus)
+ EXPORT_SYMBOL(pcibus_to_node);
+ #endif
  
- void pci_free_host_bridge(struct pci_host_bridge *host);
-+struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus);
+-/* Return the domain number for this pci bus */
+-
+-int pci_domain_nr(struct pci_bus *pbus)
+-{
+-	struct pci_pbm_info *pbm = pbus->sysdata;
+-	int ret;
+-
+-	if (!pbm) {
+-		ret = -ENXIO;
+-	} else {
+-		ret = pbm->index;
+-	}
+-
+-	return ret;
+-}
+-EXPORT_SYMBOL(pci_domain_nr);
+-
+ #ifdef CONFIG_PCI_MSI
+ int arch_setup_msi_irq(struct pci_dev *pdev, struct msi_desc *desc)
+ {
+diff --git a/arch/tile/include/asm/pci.h b/arch/tile/include/asm/pci.h
+index dfedd7a..23a726e 100644
+--- a/arch/tile/include/asm/pci.h
++++ b/arch/tile/include/asm/pci.h
+@@ -199,8 +199,6 @@ int __init pcibios_init(void);
+ 
+ void pcibios_fixup_bus(struct pci_bus *bus);
+ 
+-#define pci_domain_nr(bus) (((struct pci_controller *)(bus)->sysdata)->index)
+-
+ /*
+  * This decides whether to display the domain number in /proc.
+  */
+diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
+index 4e370a5..4fe0458 100644
+--- a/arch/x86/include/asm/pci.h
++++ b/arch/x86/include/asm/pci.h
+@@ -29,12 +29,6 @@ extern int noioapicreroute;
+ #ifdef CONFIG_PCI
+ 
+ #ifdef CONFIG_PCI_DOMAINS
+-static inline int pci_domain_nr(struct pci_bus *bus)
+-{
+-	struct pci_sysdata *sd = bus->sysdata;
+-	return sd->domain;
+-}
+-
+ static inline int pci_proc_domain(struct pci_bus *bus)
+ {
+ 	return pci_domain_nr(bus);
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 0001896..2cf942b 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -4523,6 +4523,14 @@ int pci_get_new_domain_nr(void)
+ 	return atomic_inc_return(&__domain_nr);
+ }
+ 
++int pci_domain_nr(struct pci_bus *bus)
++{
++	struct pci_host_bridge *host = pci_find_host_bridge(bus);
 +
- #endif /* DRIVERS_PCI_H */
++	return host->domain;
++}
++EXPORT_SYMBOL(pci_domain_nr);
++
+ #ifdef CONFIG_PCI_DOMAINS_GENERIC
+ static int pci_assign_domain_nr(struct device *dev)
+ {
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 5717b14..dc1c710 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1318,6 +1318,7 @@ void pci_cfg_access_unlock(struct pci_dev *dev);
+ #ifdef CONFIG_PCI_DOMAINS
+ extern int pci_domains_supported;
+ int pci_get_new_domain_nr(void);
++int pci_domain_nr(struct pci_bus *bus);
+ #else
+ enum { pci_domains_supported = 0 };
+ static inline int pci_domain_nr(struct pci_bus *bus) { return 0; }
+@@ -1331,15 +1332,11 @@ static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
+  * domains then this implementation will be used
+  */
+ #ifdef CONFIG_PCI_DOMAINS_GENERIC
+-static inline int pci_domain_nr(struct pci_bus *bus)
+-{
+-	return bus->domain_nr;
+-}
+ void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent);
+ void pci_host_assign_domain_nr(struct pci_host_bridge *host);
+ #else
+ static inline void pci_bus_assign_domain_nr(struct pci_bus *bus,
+-					struct device *parent)
++		struct device *parent)
+ {
+ }
+ static inline void pci_host_assign_domain_nr(struct pci_host_bridge *host)
 -- 
 1.7.1
