@@ -1,91 +1,44 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v6 08/30] PCI: Introduce pci_host_assign_domain_nr() to assign domain
-Date: Mon, 9 Mar 2015 10:34:05 +0800
-Message-ID: <1425868467-9667-9-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v6 19/30] sparc/PCI: Claim bus resources before pci_bus_add_devices()
+Date: Mon, 9 Mar 2015 10:34:16 +0800
+Message-ID: <1425868467-9667-20-git-send-email-wangyijing@huawei.com>
 References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 In-Reply-To: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-Introduce pci_host_assign_domain_nr() to assign domain
-number for pci_host_bridge. Later we will remove
-pci_bus_assign_domain_nr().
+Pci_claim_bus_resources() should be called before
+pci_bus_add_devices(), or driver may failed to
+load, because the resources had not claimed.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- drivers/pci/pci.c   |   20 +++++++++++++++-----
- include/linux/pci.h |    4 ++++
- 2 files changed, 19 insertions(+), 5 deletions(-)
+ arch/sparc/kernel/pci.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 81f06e8..c49eec1 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -4501,10 +4501,10 @@ int pci_get_new_domain_nr(void)
- }
- 
- #ifdef CONFIG_PCI_DOMAINS_GENERIC
--void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
-+static int pci_assign_domain_nr(struct device *dev)
- {
- 	static int use_dt_domains = -1;
--	int domain = of_get_pci_domain_nr(parent->of_node);
-+	int domain = of_get_pci_domain_nr(dev->of_node);
- 
- 	/*
- 	 * Check DT domain and use_dt_domains values.
-@@ -4538,12 +4538,22 @@ void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
- 		use_dt_domains = 0;
- 		domain = pci_get_new_domain_nr();
- 	} else {
--		dev_err(parent, "Node %s has inconsistent \"linux,pci-domain\" property in DT\n",
--			parent->of_node->full_name);
-+		dev_err(dev, "Node %s has inconsistent \"linux,pci-domain\" property in DT\n",
-+			dev->of_node->full_name);
- 		domain = -1;
+diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
+index 838fe1e..21f804a 100644
+--- a/arch/sparc/kernel/pci.c
++++ b/arch/sparc/kernel/pci.c
+@@ -678,11 +678,10 @@ struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
  	}
  
--	bus->domain_nr = domain;
-+	return domain;
-+}
-+
-+void pci_host_assign_domain_nr(struct pci_host_bridge *host)
-+{
-+	host->domain = pci_assign_domain_nr(host->dev.parent);
-+}
-+
-+void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
-+{
-+	bus->domain_nr = pci_assign_domain_nr(parent);
- }
- #endif
- #endif
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 8b3d245..2b1b998 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1327,11 +1327,15 @@ static inline int pci_domain_nr(struct pci_bus *bus)
- 	return bus->domain_nr;
- }
- void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent);
-+void pci_host_assign_domain_nr(struct pci_host_bridge *host);
- #else
- static inline void pci_bus_assign_domain_nr(struct pci_bus *bus,
- 					struct device *parent)
- {
- }
-+static inline void pci_host_assign_domain_nr(struct pci_host_bridge *host)
-+{
-+}
- #endif
+ 	pci_of_scan_bus(pbm, node, bus);
+-	pci_bus_add_devices(bus);
+ 	pci_bus_register_of_sysfs(bus);
  
- /* some architectures require additional setup to direct VGA traffic */
+ 	pci_claim_bus_resources(bus);
+-
++	pci_bus_add_devices(bus);
+ 	return bus;
+ }
+ 
 -- 
 1.7.1
+
