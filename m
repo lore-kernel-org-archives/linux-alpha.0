@@ -1,153 +1,39 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v6 21/30] PCI: Introduce pci_bus_child_max_busnr()
-Date: Thu, 12 Mar 2015 21:28:30 +0800
-Message-ID: <5501947E.4070801@huawei.com>
-References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <1425868467-9667-22-git-send-email-wangyijing@huawei.com> <20150312033643.GI10949@google.com>
+Subject: Re: [PATCH v6 28/30] PCI: Export find_pci_host_bridge() and rename
+ to pci_find_host_bridge()
+Date: Thu, 12 Mar 2015 21:29:17 +0800
+Message-ID: <550194AD.6080204@huawei.com>
+References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <1425868467-9667-29-git-send-email-wangyijing@huawei.com> <20150312034305.GJ10949@google.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20150312033643.GI10949@google.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <20150312034305.GJ10949@google.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Fengguang Wu <fengguang.wu@intel.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On 2015/3/12 11:36, Bjorn Helgaas wrote:
-> On Mon, Mar 09, 2015 at 10:34:18AM +0800, Yijing Wang wrote:
->> Sometimes, we need to know the highest reserved
->> busnr for children bus. Because parent's
->> bus->busn_res could have padding in it.
->> This function return the max child busnr as
->> pci_scan_child_bus().
->>
->> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
->> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
->> Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
+>> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+>> index a1dc9f2..45252dd 100644
+>> --- a/drivers/pci/pci.h
+>> +++ b/drivers/pci/pci.h
+>> @@ -328,4 +328,6 @@ struct pci_host_bridge *pci_create_host_bridge(
+>>  		void *sysdata, struct pci_host_bridge_ops *ops);
+>>  
+>>  void pci_free_host_bridge(struct pci_host_bridge *host);
+>> +struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus);
 > 
-> I must have screwed this up.  I don't know where the Signed-off-by from
-> Fengguang came from, but it shouldn't be there.  And I also screwed up by
-> adding my own Signed-off-by to the branch while we're still iterating on
-> this series.  The patches you post should not have my Signed-off-by in
-> them; I should add that.  But that's my fault because put them in the
-> branch, and I asked you to pull that branch and modify and repost it.
+> This is only used in drivers/pci/host-bridge.c and in drivers/pci/pci.c for
+> pci_domain_nr().  Can you drop this patch and put the generic
+> pci_domain_nr() implementation (next patch) in host-bridge.c instead of in
+> pci.c?
+
+Of course, thanks.
+
 > 
-
--.-! I added the Fengguang Signed-off-by, because his kbuild test robot sent a patch to me to fix a building error.
-
-Sorry, will remove Fengguang and your Signed-off-by.
-
->> ---
->>  drivers/pci/hotplug/acpiphp_glue.c |   29 +----------------------------
->>  drivers/pci/pci.c                  |   27 +++++++++++++++++++++++++--
->>  include/linux/pci.h                |    2 +-
->>  3 files changed, 27 insertions(+), 31 deletions(-)
->>
->> diff --git a/drivers/pci/hotplug/acpiphp_glue.c b/drivers/pci/hotplug/acpiphp_glue.c
->> index bcb90e4..84f2584 100644
->> --- a/drivers/pci/hotplug/acpiphp_glue.c
->> +++ b/drivers/pci/hotplug/acpiphp_glue.c
->> @@ -397,33 +397,6 @@ static void cleanup_bridge(struct acpiphp_bridge *bridge)
->>  	acpi_unlock_hp_context();
->>  }
->>  
->> -/**
->> - * acpiphp_max_busnr - return the highest reserved bus number under the given bus.
->> - * @bus: bus to start search with
->> - */
->> -static unsigned char acpiphp_max_busnr(struct pci_bus *bus)
->> -{
->> -	struct pci_bus *tmp;
->> -	unsigned char max, n;
->> -
->> -	/*
->> -	 * pci_bus_max_busnr will return the highest
->> -	 * reserved busnr for all these children.
->> -	 * that is equivalent to the bus->subordinate
->> -	 * value.  We don't want to use the parent's
->> -	 * bus->subordinate value because it could have
->> -	 * padding in it.
->> -	 */
->> -	max = bus->busn_res.start;
->> -
->> -	list_for_each_entry(tmp, &bus->children, node) {
->> -		n = pci_bus_max_busnr(tmp);
->> -		if (n > max)
->> -			max = n;
->> -	}
->> -	return max;
->> -}
->> -
->>  static void acpiphp_set_acpi_region(struct acpiphp_slot *slot)
->>  {
->>  	struct acpiphp_func *func;
->> @@ -489,7 +462,7 @@ static void enable_slot(struct acpiphp_slot *slot)
->>  	LIST_HEAD(add_list);
->>  
->>  	acpiphp_rescan_slot(slot);
->> -	max = acpiphp_max_busnr(bus);
->> +	max = pci_bus_child_max_busnr(bus);
->>  	for (pass = 0; pass < 2; pass++) {
->>  		list_for_each_entry(dev, &bus->devices, bus_list) {
->>  			if (PCI_SLOT(dev->devfn) != slot->device)
->> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
->> index c49eec1..0001896 100644
->> --- a/drivers/pci/pci.c
->> +++ b/drivers/pci/pci.c
->> @@ -108,7 +108,7 @@ static bool pcie_ari_disabled;
->>   * Given a PCI bus, returns the highest PCI bus number present in the set
->>   * including the given PCI bus and its list of child PCI buses.
->>   */
->> -unsigned char pci_bus_max_busnr(struct pci_bus *bus)
->> +static unsigned char pci_bus_max_busnr(struct pci_bus *bus)
->>  {
->>  	struct pci_bus *tmp;
->>  	unsigned char max, n;
->> @@ -121,7 +121,30 @@ unsigned char pci_bus_max_busnr(struct pci_bus *bus)
->>  	}
->>  	return max;
->>  }
->> -EXPORT_SYMBOL_GPL(pci_bus_max_busnr);
 >> +
->> +unsigned char pci_bus_child_max_busnr(struct pci_bus *bus)
->> +{
->> +	struct pci_bus *tmp;
->> +	unsigned char max, n;
->> +
->> +	/*
->> +	 * pci_bus_max_busnr will return the highest
->> +	 * reserved busnr for all these children.
->> +	 * that is equivalent to the bus->subordinate
->> +	 * value.  We don't want to use the parent's
->> +	 * bus->subordinate value because it could have
->> +	 * padding in it.
->> +	 */
->> +	max = bus->busn_res.start;
->> +
->> +	list_for_each_entry(tmp, &bus->children, node) {
->> +		n = pci_bus_max_busnr(tmp);
->> +		if (n > max)
->> +			max = n;
->> +	}
->> +	return max;
->> +}
->> +EXPORT_SYMBOL_GPL(pci_bus_child_max_busnr);
->>  
->>  #ifdef CONFIG_HAS_IOMEM
->>  void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar)
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index cfaf217..261b8de 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -1181,7 +1181,7 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
->>  void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
->>  		  void *userdata);
->>  int pci_cfg_space_size(struct pci_dev *dev);
->> -unsigned char pci_bus_max_busnr(struct pci_bus *bus);
->> +unsigned char pci_bus_child_max_busnr(struct pci_bus *bus);
->>  void pci_setup_bridge(struct pci_bus *bus);
->>  resource_size_t pcibios_window_alignment(struct pci_bus *bus,
->>  					 unsigned long type);
+>>  #endif /* DRIVERS_PCI_H */
 >> -- 
 >> 1.7.1
 >>
@@ -159,4 +45,3 @@ Sorry, will remove Fengguang and your Signed-off-by.
 -- 
 Thanks!
 Yijing
-
