@@ -1,116 +1,166 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v6 08/30] PCI: Introduce pci_host_assign_domain_nr() to
- assign domain
-Date: Wed, 11 Mar 2015 20:39:18 -0500
-Message-ID: <20150312013918.GC10949@google.com>
+Subject: Re: [PATCH v6 10/30] PCI: Introduce pci_host_bridge_list to manage
+ host bridges
+Date: Wed, 11 Mar 2015 21:55:37 -0500
+Message-ID: <20150312025537.GD10949@google.com>
 References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
- <1425868467-9667-9-git-send-email-wangyijing@huawei.com>
+ <1425868467-9667-11-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20120113;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-type:content-disposition:in-reply-to:user-agent;
-        bh=/8t2ZNhu1rqNsQI3PK3M6k97kBI7LIC+m0OEyqSWetg=;
-        b=Gr7lmD9oKzokR4BVEETJOB7cf06gOxFqFhuF1jxrZiyJO47RwqeQSckopIpcUJ//aL
-         +en6cSLn8ccPQSADGN6J1eu/uPrnMFv15XlOc9Abl5qZnqqz71e2Z4h1oTCWJjLEwSKo
-         G1UTXJME517+Kp3eTzuV5QXvEpvTi8+n+SkJdBaxcMz71XjZ18mqkrYJ0BZvYKSYp8Ls
-         tXSWPQ9jjBjX83vbscDnJ3rSD1fcuMoxiXWEbX9i+VPWPhFS6SF0LTJIJCdR+uz3lEds
-         Gl5rCyKKDwBGtRQNP1rzstNm9aJoFXgp6gM2ru+JllP9GqecLmLBBXJ5TZEw9AsQPrfo
-         0P6Q==
+        bh=0XZl7qthGILfk6N+3ugT2CJqFCXjBuONVPBTD6xad54=;
+        b=dq07PMfyyGPfwZ4mQru7iJEE+mQKGFyXnTevyObhO1oFX4WBHBzuTVjTo9u4fDcBtV
+         2181Od6iixenQxRqc0Ct77PvXESS43fjf+gpIRAC7fVsfGE62C+N7KOYR7xmB43zd9No
+         GkvfXWdIRcTX5L/re/TxcEYEZujgQBJ4IX6bE+oyC/gTY7O6OyaXHVw2qlPgzVdroVVJ
+         K9SdBM7gjuiTudJpjI5s6DFFKHdsJ6QvBj5bndMIIKypKgicWTlO5seahpeNgIim92Ji
+         O03WLal0VtoFQUxdvgx5V98giQEY0HvSa6lJ8vVXEZ/HtBY9KB/cSuHOc29SpxPptYa7
+         VkAQ==
 Content-Disposition: inline
-In-Reply-To: <1425868467-9667-9-git-send-email-wangyijing@huawei.com>
-Sender: linux-pci-owner@vger.kernel.org
+In-Reply-To: <1425868467-9667-11-git-send-email-wangyijing@huawei.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Yijing Wang <wangyijing@huawei.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Mon, Mar 09, 2015 at 10:34:05AM +0800, Yijing Wang wrote:
-> Introduce pci_host_assign_domain_nr() to assign domain
-> number for pci_host_bridge. Later we will remove
-> pci_bus_assign_domain_nr().
-> 
+On Mon, Mar 09, 2015 at 10:34:07AM +0800, Yijing Wang wrote:
+> Introduce pci_host_bridge_list to manage pci host
+> bridges in system, so we could detect whether
+> the host in domain:bus is alreay registered.
+> Then we could remove bus alreay exist test in
+> __pci_create_root_bus().
+
+It's a nice idea to move this test into the core.  While you're at it, why
+don't you check for any overlap with the bus ranges of existing host
+bridges?  For example, if we're trying to create a new host bridge to
+[bus 40-7f], it should conflict with existing bridges to [bus 00-7f]
+as well as to [bus 40-ff].  I think your current patch will detect the
+latter conflict but not the former.
+
 > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 > ---
->  drivers/pci/pci.c   |   20 +++++++++++++++-----
->  include/linux/pci.h |    4 ++++
->  2 files changed, 19 insertions(+), 5 deletions(-)
+>  drivers/pci/host-bridge.c |   24 +++++++++++++++++++++++-
+>  drivers/pci/probe.c       |    8 +-------
+>  include/linux/pci.h       |    1 +
+>  3 files changed, 25 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index 81f06e8..c49eec1 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -4501,10 +4501,10 @@ int pci_get_new_domain_nr(void)
->  }
+> diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+> index 3bd45e7..0bb08ef 100644
+> --- a/drivers/pci/host-bridge.c
+> +++ b/drivers/pci/host-bridge.c
+> @@ -8,6 +8,9 @@
 >  
->  #ifdef CONFIG_PCI_DOMAINS_GENERIC
-> -void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
-> +static int pci_assign_domain_nr(struct device *dev)
+>  #include "pci.h"
+>  
+> +static LIST_HEAD(pci_host_bridge_list);
+> +static DEFINE_MUTEX(phb_mutex);
+
+We don't use the "phb" abbreviation in the PCI core.
+
+> +
+>  static void pci_release_host_bridge_dev(struct device *dev)
 >  {
->  	static int use_dt_domains = -1;
-> -	int domain = of_get_pci_domain_nr(parent->of_node);
-> +	int domain = of_get_pci_domain_nr(dev->of_node);
+>  	struct pci_host_bridge *bridge = to_pci_host_bridge(dev);
+> @@ -25,7 +28,7 @@ struct pci_host_bridge *pci_create_host_bridge(
+>  	int error;
+>  	int bus = PCI_BUSNUM(db);
+>  	int domain = PCI_DOMAIN(db);
+> -	struct pci_host_bridge *host;
+> +	struct pci_host_bridge *host, *temp;
+>  	struct resource_entry *window, *n;
 >  
->  	/*
->  	 * Check DT domain and use_dt_domains values.
-> @@ -4538,12 +4538,22 @@ void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
->  		use_dt_domains = 0;
->  		domain = pci_get_new_domain_nr();
->  	} else {
-> -		dev_err(parent, "Node %s has inconsistent \"linux,pci-domain\" property in DT\n",
-> -			parent->of_node->full_name);
-> +		dev_err(dev, "Node %s has inconsistent \"linux,pci-domain\" property in DT\n",
-> +			dev->of_node->full_name);
->  		domain = -1;
->  	}
+>  	host = kzalloc(sizeof(*host), GFP_KERNEL);
+> @@ -40,6 +43,18 @@ struct pci_host_bridge *pci_create_host_bridge(
+>  	 */
+>  	pci_host_assign_domain_nr(host);
 >  
-> -	bus->domain_nr = domain;
-> +	return domain;
-> +}
+> +	mutex_lock(&phb_mutex);
+> +	list_for_each_entry(temp, &pci_host_bridge_list, list)
+> +		if (temp->domain == host->domain
+> +				&& temp->busnum == host->busnum) {
+> +			dev_dbg(&host->dev, "pci host bridge pci%04x:%02x exist\n",
+> +					host->domain, host->busnum);
+
+&host->dev hasn't been initialized yet!  And the text of the original
+message was better.
+
+> +			mutex_unlock(&phb_mutex);
+> +			kfree(host);
+> +			return NULL;
+> +		}
+> +	mutex_unlock(&phb_mutex);
+
+This is racy.  Two CPUs adding a bridge to [bus 00-7f] at about the same
+time can both succeed.
+
+And it needs curly braces around the list_for_each_entry() body.
+
 > +
-> +void pci_host_assign_domain_nr(struct pci_host_bridge *host)
-> +{
-> +	host->domain = pci_assign_domain_nr(host->dev.parent);
-> +}
-> +
-> +void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
-> +{
-> +	bus->domain_nr = pci_assign_domain_nr(parent);
+>  	host->dev.parent = parent;
+>  	INIT_LIST_HEAD(&host->windows);
+>  	host->dev.release = pci_release_host_bridge_dev;
+> @@ -55,11 +70,18 @@ struct pci_host_bridge *pci_create_host_bridge(
+>  	resource_list_for_each_entry_safe(window, n, resources)
+>  		list_move_tail(&window->node, &host->windows);
+>  
+> +	mutex_lock(&phb_mutex);
+> +	list_add_tail(&host->list, &pci_host_bridge_list);
+> +	mutex_unlock(&phb_mutex);
+>  	return host;
 >  }
->  #endif
->  #endif
+>  
+>  void pci_free_host_bridge(struct pci_host_bridge *host)
+>  {
+> +	mutex_lock(&phb_mutex);
+> +	list_del(&host->list);
+> +	mutex_unlock(&phb_mutex);
+> +
+>  	device_unregister(&host->dev);
+>  }
+>  
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 27ec612..7238fa3 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1870,7 +1870,7 @@ static struct pci_bus *__pci_create_root_bus(
+>  		void *sysdata)
+>  {
+>  	int error;
+> -	struct pci_bus *b, *b2;
+> +	struct pci_bus *b;
+>  	struct resource_entry *window;
+>  	struct device *parent;
+>  	struct resource *res;
+> @@ -1887,12 +1887,6 @@ static struct pci_bus *__pci_create_root_bus(
+>  	b->ops = ops;
+>  	b->number = b->busn_res.start = bridge->busnum;
+>  	pci_bus_assign_domain_nr(b, parent);
+> -	b2 = pci_find_bus(pci_domain_nr(b), b->number);
+> -	if (b2) {
+> -		/* If we already got to this bus through a different bridge, ignore it */
+> -		dev_dbg(&b2->dev, "bus already known\n");
+> -		goto err_out;
+> -	}
+>  
+>  	bridge->bus = b;
+>  	b->bridge = get_device(&bridge->dev);
 > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 8b3d245..2b1b998 100644
+> index 463eaa3..b621f5b 100644
 > --- a/include/linux/pci.h
 > +++ b/include/linux/pci.h
-> @@ -1327,11 +1327,15 @@ static inline int pci_domain_nr(struct pci_bus *bus)
->  	return bus->domain_nr;
->  }
->  void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent);
-> +void pci_host_assign_domain_nr(struct pci_host_bridge *host);
-
-I do not think this needs to be in include/linux/pci.h.  It's called only
-from drivers/pci/host-bridge.c, so at most, it needs to be in
-drivers/pci/pci.h.
-
-Better still would be if the definition could be moved from
-drivers/pci/pci.c to drivers/pci/host-bridge.c so we wouldn't need anything
-in a header file at all.
-
->  #else
->  static inline void pci_bus_assign_domain_nr(struct pci_bus *bus,
->  					struct device *parent)
->  {
->  }
-> +static inline void pci_host_assign_domain_nr(struct pci_host_bridge *host)
-> +{
-> +}
->  #endif
->  
->  /* some architectures require additional setup to direct VGA traffic */
+> @@ -406,6 +406,7 @@ struct pci_host_bridge {
+>  	struct device dev;
+>  	struct pci_bus *bus;		/* root bus */
+>  	struct list_head windows;	/* resource_entry */
+> +	struct list_head list;
+>  	void (*release_fn)(struct pci_host_bridge *);
+>  	void *release_data;
+>  };
 > -- 
 > 1.7.1
 > 
