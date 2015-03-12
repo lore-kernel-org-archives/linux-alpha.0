@@ -1,105 +1,92 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v6 04/30] xen/PCI: Don't use deprecated function
- pci_scan_bus_parented()
-Date: Thu, 12 Mar 2015 14:35:05 -0500
-Message-ID: <20150312193505.GB7346@google.com>
+Subject: Re: [PATCH v6 06/30] PCI: Combine PCI domain and bus number in u32
+ arg
+Date: Thu, 12 Mar 2015 14:49:27 -0500
+Message-ID: <20150312194927.GC7346@google.com>
 References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
- <1425868467-9667-5-git-send-email-wangyijing@huawei.com>
- <20150311223211.GB1082@google.com>
- <55017CA5.2010502@huawei.com>
+ <1425868467-9667-7-git-send-email-wangyijing@huawei.com>
+ <20150312012946.GA10949@google.com>
+ <55018330.5050002@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20120113;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-type:content-disposition:in-reply-to:user-agent;
-        bh=XEoUuLiDLBPRT4CsFenIT4kyzI+FF/TKSWC16jjRgXo=;
-        b=Grh/U2ZD1Zbm7ZT2jXwu2YhgCxnSxNvMWDhehwtnTa4BFOWbLas9Gyt5h5Cv+EA7M6
-         KjN7MfHdOtgyPdunSBx/oln+s2ZnHy7oVTWHrbuJC5yr6gXID+ZMiqlRcgxOKHmQUBxE
-         wINVshDo0onhLVbNbehls3ALX/ewOh792mIctFDeaNuz5QAzc39d0KMVRz6R8QXeHYCx
-         Eq6hY29YBNFvKbGfNIirau5N07II3Mn2PqlJMMUNp3RWykJTKU6KSE4y4RGHWqlHCeA7
-         FO3BvVpApA75SkX8x/ZB8Jv9mZCpWxNuzfqiGxNRuiQ4IOqO2bd3tYVNlxBn4fZntYpA
-         vtdQ==
+        bh=uNYTR55NTPTqsmTAr85/M1MJ1n93PA+7yjOgI2ylyiA=;
+        b=YaymEyfuqn8cehigS/djzzamiKLltGbdQOC531GSz4W9Z2n9D6bWZDcc1FCJBODXBW
+         ScSukaUMflpM6PhpE3ZzJzI6CFKdk1y9LnXpvICrijXuHOfQwj9uMJK9DHI2n0J1BB8i
+         wBBHPKCHiIoEYRAKNa97/v/j6zOFiIdG7Wu1W5ioq7Cp+lKuxny794FKdnEDeiaUQRXx
+         L54cS0Y0MjRc29DggfeRJ9M8EIZnGbO6qPN+Vu8Mjt8RX+PboXlX1sQ854G/4xS6ik+R
+         IQRunzUP52puqB07BC2fdUzrzmIpRETGv8aP8JOUJ9D1KWivLFyd4RmL5ArfnOZvlxNS
+         8y+A==
 Content-Disposition: inline
-In-Reply-To: <55017CA5.2010502@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <55018330.5050002@huawei.com>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Yijing Wang <wangyijing@huawei.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Thu, Mar 12, 2015 at 07:46:45PM +0800, Yijing Wang wrote:
-> >>  	struct pci_bus *b;
-> >> +	LIST_HEAD(resources);
-> >>  	struct pcifront_sd *sd = NULL;
-> >>  	struct pci_bus_entry *bus_entry = NULL;
-> >>  	int err = 0;
-> >> @@ -470,17 +472,21 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
-> >>  		err = -ENOMEM;
-> >>  		goto err_out;
-> >>  	}
-> >> +	pci_add_resource(&resources, &ioport_resource);
-> >> +	pci_add_resource(&resources, &iomem_resource);
-> >> +	pci_add_resource(&resources, &busn_resource);
+On Thu, Mar 12, 2015 at 08:14:40PM +0800, Yijing Wang wrote:
+> On 2015/3/12 9:29, Bjorn Helgaas wrote:
+> > On Mon, Mar 09, 2015 at 10:34:03AM +0800, Yijing Wang wrote:
+> >> Currently, we use int type for bus number in
+> >> pci_create_root_bus(), pci_scan_root_bus() and
+> >> pci_scan_bus_legacy. Because PCI bus number
+> >> always <= 255, so we could change the bus number
+> >> argument type to u32, and combine PCI domain and
+> >> bus number in one. 
 > > 
-> > Since I don't want to export busn_resource, you might have to allocate your
-> > own struct resource for it here.  And, of course, figure out the details of
-> > which PCI domain you're in and whether you need to share one struct
-> > resource across several host bridges in the same domain.
+> > This makes no sense.  Or rather, it only states the obvious: an 8-bit value
+> > and a 16-bit value will both fit in a 32-bit value.  But it doesn't say
+> > *why* you think it's a good idea to pass a single value that contains both
+> > domain and bus numbers.  The obvious thing is to pass two separate values,
+> > and you don't say why passing a single combined value is better.
 > 
-> Allocate its own resource here is ok for me, as I mentioned in previous reply,
-> so do we still need to add additional info to figure out which domain own the bus resource ?
+> Sorry for my poor description for this patch, I combined the domain and bus, because
+> I think now we have too many args at pci_scan_root_bus() or other scan functions,
+> 
+> struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
+> 		struct pci_ops *ops, void *sysdata, struct list_head *resources)
+> 
+> Now we have five args yet, plus the new introduced domain and pci_host_bridge_ops,
+> it will become 7.
+> 
+> I thought introduced a new structure which contain the necessary info to scan root bus/ host bridge,
+> 
+> E.g
+> 
+> struct pci_scan_info {
+> 	int bus;
+> 	struct device *parent;
+> 	struct pci_ops *ops;
+> 	void *sysdata;
+> 	struct list_head *resource;
+> 	int domain;
+> 	struct pci_host_bridge_ops;
+> }
+> 
+> Do you like this one or keep it like now ?
+> 
+> pci_scan_root_bus(struct device *parent, int domain, int bus,
+> 		struct pci_ops *ops, void *sysdata, struct list_head *resources, struct pci_host_bridge_ops *ops)
 
-That's up to the caller.  Only the platform knows which bridges it wants to
-have in the same domain.  In principle, every host bridge could be in its
-own domain, since each bridge is the root of a unique PCI hierarchy.  But
-some platforms have firmware that assumes otherwise.  I have no idea what
-xen assumes.
+I don't think reducing the number of arguments is a good argument for
+squashing some of them together.
 
-> >>  	pcifront_init_sd(sd, domain, bus, pdev);
-> >>  
-> >>  	pci_lock_rescan_remove();
-> >>  
-> >> -	b = pci_scan_bus_parented(&pdev->xdev->dev, bus,
-> >> -				  &pcifront_bus_ops, sd);
-> >> +	b = pci_scan_root_bus(&pdev->xdev->dev, bus,
-> >> +				  &pcifront_bus_ops, sd, &resources);
-> >>  	if (!b) {
-> >>  		dev_err(&pdev->xdev->dev,
-> >>  			"Error creating PCI Frontend Bus!\n");
-> >>  		err = -ENOMEM;
-> >>  		pci_unlock_rescan_remove();
-> >> +		pci_free_resource_list(&resources);
-> >>  		goto err_out;
-> >>  	}
-> >>  
-> >> @@ -488,7 +494,7 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
-> >>  
-> >>  	list_add(&bus_entry->list, &pdev->root_buses);
-> >>  
-> >> -	/* pci_scan_bus_parented skips devices which do not have a have
-> >> +	/* pci_scan_root_bus skips devices which do not have a
-> >>  	* devfn==0. The pcifront_scan_bus enumerates all devfn. */
-> >>  	err = pcifront_scan_bus(pdev, domain, bus, b);
-> >>  
-> >> -- 
-> >> 1.7.1
-> >>
-> >> --
-> >> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> >> the body of a message to majordomo@vger.kernel.org
-> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > 
-> > .
-> > 
-> 
-> 
-> -- 
-> Thanks!
-> Yijing
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+I don't really want to add a structure like that because it adds management
+complexity for all the callers because it contains per-bridge things (bus,
+parent, domain, resource, sysdata).  Things like struct pci_ops and struct
+pci_host_bridge_ops are much simpler because drivers can statically
+allocate a single copy and use it for multiple devices.
+
+I think it might make sense to put the struct pci_ops pointer inside struct
+pci_host_bridge_ops.  That would get rid of one of the arguments.
+
+You might also be able to get rid of the "bus" argument, since the caller
+should be passing an IORESOURCE_BUS resource in the resource list, and
+"bus" should be the same as res->start.
+
+Bjorn
