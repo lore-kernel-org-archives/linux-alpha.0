@@ -1,175 +1,152 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v6 10/30] PCI: Introduce pci_host_bridge_list to manage
- host bridges
-Date: Thu, 12 Mar 2015 21:03:12 +0800
-Message-ID: <55018E90.9030301@huawei.com>
-References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <1425868467-9667-11-git-send-email-wangyijing@huawei.com> <20150312025537.GD10949@google.com>
+Subject: Re: [PATCH v6 12/30] PCI: Introduce pci_host_bridge_ops to support
+ host specific operations
+Date: Thu, 12 Mar 2015 21:14:45 +0800
+Message-ID: <55019145.2060504@huawei.com>
+References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <1425868467-9667-13-git-send-email-wangyijing@huawei.com> <20150312032341.GE10949@google.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20150312025537.GD10949@google.com>
+In-Reply-To: <20150312032341.GE10949@google.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On 2015/3/12 10:55, Bjorn Helgaas wrote:
-> On Mon, Mar 09, 2015 at 10:34:07AM +0800, Yijing Wang wrote:
->> Introduce pci_host_bridge_list to manage pci host
->> bridges in system, so we could detect whether
->> the host in domain:bus is alreay registered.
->> Then we could remove bus alreay exist test in
->> __pci_create_root_bus().
-> 
-> It's a nice idea to move this test into the core.  While you're at it, why
-> don't you check for any overlap with the bus ranges of existing host
-> bridges?  For example, if we're trying to create a new host bridge to
-> [bus 40-7f], it should conflict with existing bridges to [bus 00-7f]
-> as well as to [bus 40-ff].  I think your current patch will detect the
-> latter conflict but not the former.
-
-Now pci host bridge may only know its start bus number, like acpi _BBN provided,
-but does not limit the end bus number, Eg. two pci roots report _BBN 0x0 and 0x80,
-so we have two bus number resource (0, 0xff) and (0x80, 0xff), if we check it strictly,
-some pci scan would fail which currently scan success.
-
-> 
->> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
->> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
->> ---
->>  drivers/pci/host-bridge.c |   24 +++++++++++++++++++++++-
->>  drivers/pci/probe.c       |    8 +-------
->>  include/linux/pci.h       |    1 +
->>  3 files changed, 25 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
->> index 3bd45e7..0bb08ef 100644
->> --- a/drivers/pci/host-bridge.c
->> +++ b/drivers/pci/host-bridge.c
->> @@ -8,6 +8,9 @@
->>  
->>  #include "pci.h"
->>  
->> +static LIST_HEAD(pci_host_bridge_list);
->> +static DEFINE_MUTEX(phb_mutex);
-> 
-> We don't use the "phb" abbreviation in the PCI core.
-
-OK
-
-> 
->> +
->>  static void pci_release_host_bridge_dev(struct device *dev)
->>  {
->>  	struct pci_host_bridge *bridge = to_pci_host_bridge(dev);
->> @@ -25,7 +28,7 @@ struct pci_host_bridge *pci_create_host_bridge(
->>  	int error;
->>  	int bus = PCI_BUSNUM(db);
->>  	int domain = PCI_DOMAIN(db);
->> -	struct pci_host_bridge *host;
->> +	struct pci_host_bridge *host, *temp;
->>  	struct resource_entry *window, *n;
->>  
->>  	host = kzalloc(sizeof(*host), GFP_KERNEL);
->> @@ -40,6 +43,18 @@ struct pci_host_bridge *pci_create_host_bridge(
->>  	 */
->>  	pci_host_assign_domain_nr(host);
->>  
->> +	mutex_lock(&phb_mutex);
->> +	list_for_each_entry(temp, &pci_host_bridge_list, list)
->> +		if (temp->domain == host->domain
->> +				&& temp->busnum == host->busnum) {
->> +			dev_dbg(&host->dev, "pci host bridge pci%04x:%02x exist\n",
->> +					host->domain, host->busnum);
-> 
-> &host->dev hasn't been initialized yet!  And the text of the original
-> message was better.
-
-Oh, my mistake, good catch.
-
-> 
->> +			mutex_unlock(&phb_mutex);
->> +			kfree(host);
->> +			return NULL;
->> +		}
->> +	mutex_unlock(&phb_mutex);
-> 
-> This is racy.  Two CPUs adding a bridge to [bus 00-7f] at about the same
-> time can both succeed.
-> 
-
-Hmm, I need to unlock after I add the new host bridge to the gloal host bridge list, thanks.
-
-> And it needs curly braces around the list_for_each_entry() body.
-
-OK
-
-> 
->> +
->>  	host->dev.parent = parent;
->>  	INIT_LIST_HEAD(&host->windows);
->>  	host->dev.release = pci_release_host_bridge_dev;
->> @@ -55,11 +70,18 @@ struct pci_host_bridge *pci_create_host_bridge(
->>  	resource_list_for_each_entry_safe(window, n, resources)
->>  		list_move_tail(&window->node, &host->windows);
->>  
->> +	mutex_lock(&phb_mutex);
->> +	list_add_tail(&host->list, &pci_host_bridge_list);
->> +	mutex_unlock(&phb_mutex);
->>  	return host;
->>  }
->>  
->>  void pci_free_host_bridge(struct pci_host_bridge *host)
->>  {
->> +	mutex_lock(&phb_mutex);
->> +	list_del(&host->list);
->> +	mutex_unlock(&phb_mutex);
->> +
->>  	device_unregister(&host->dev);
->>  }
->>  
+>>  void pci_free_host_bridge(struct pci_host_bridge *host);
+>>  #endif /* DRIVERS_PCI_H */
 >> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> index 27ec612..7238fa3 100644
+>> index c8e074d..59d9be3 100644
 >> --- a/drivers/pci/probe.c
 >> +++ b/drivers/pci/probe.c
->> @@ -1870,7 +1870,7 @@ static struct pci_bus *__pci_create_root_bus(
->>  		void *sysdata)
->>  {
->>  	int error;
->> -	struct pci_bus *b, *b2;
->> +	struct pci_bus *b;
->>  	struct resource_entry *window;
->>  	struct device *parent;
->>  	struct resource *res;
->> @@ -1887,12 +1887,6 @@ static struct pci_bus *__pci_create_root_bus(
->>  	b->ops = ops;
->>  	b->number = b->busn_res.start = bridge->busnum;
->>  	pci_bus_assign_domain_nr(b, parent);
->> -	b2 = pci_find_bus(pci_domain_nr(b), b->number);
->> -	if (b2) {
->> -		/* If we already got to this bus through a different bridge, ignore it */
->> -		dev_dbg(&b2->dev, "bus already known\n");
->> -		goto err_out;
->> -	}
+>> @@ -1889,6 +1889,8 @@ static struct pci_bus *__pci_create_root_bus(
 >>  
 >>  	bridge->bus = b;
 >>  	b->bridge = get_device(&bridge->dev);
+>> +	if (bridge->ops && bridge->ops->set_root_bus_speed)
+>> +		bridge->ops->set_root_bus_speed(bridge);
+> 
+> Before this patch, can you do this:
+> 
+>   - Rename the powerpc pcibios_root_bridge_prepare() to
+>     pcibios_set_root_bus_speed() and add a call to it here
+> 
+>   - Move the pcibios_root_bridge_prepare() call to pci_create_host_bridge()
+> 
+> Then this patch will make a lot more sense because it will look like this,
+> with the host bridge ops call right next to the matching pcibios call:
+> 
+>   +	if (host->ops && host->ops->prepare) {
+>   +		error = host->ops->prepare(host);
+>   +		...
+>   +	}
+> 	pcibios_root_bridge_prepare(...);
+> 
+>   +	if (bridge->ops && bridge->ops->set_root_bus_speed)
+>   +		bridge->ops->set_root_bus_speed(bridge);
+> 	pcibios_set_root_bus_speed(...);
+
+OK, will update.
+
+> 
+>>  	error = pcibios_root_bridge_prepare(bridge);
+>>  	if (error)
+>>  		goto err_out;
+>> @@ -1954,7 +1956,7 @@ struct pci_bus *pci_create_root_bus(struct device *parent, u32 db,
+>>  {
+>>  	struct pci_host_bridge *host;
+>>  
+>> -	host = pci_create_host_bridge(parent, db, resources, sysdata);
+>> +	host = pci_create_host_bridge(parent, db, resources, sysdata, NULL);
+>>  	if (!host)
+>>  		return NULL;
+>>  
+>> @@ -2051,10 +2053,13 @@ static struct pci_bus *__pci_scan_root_bus(
+>>  		pci_bus_insert_busn_res(b, b->number, 255);
+>>  	}
+>>  
+>> -	max = pci_scan_child_bus(b);
+>> -
+>> -	if (!found)
+>> -		pci_bus_update_busn_res_end(b, max);
+>> +	if (host->ops && host->ops->scan_bus) {
+>> +		host->ops->scan_bus(host);
+>> +	} else {
+>> +		max = pci_scan_child_bus(b);
+>> +		if (!found)
+>> +			pci_bus_update_busn_res_end(b, max);
+>> +	}
+> 
+> I think host->ops->scan_bus() should have the same prototype as
+> pci_scan_child_bus(), and it should return max, and you should do the same
+> busn update as when you call pci_scan_child_bus().  So the code would look
+> like this:
+> 
+>     if (host->ops && host->ops->scan_bus)
+> 	max = host->ops->scan_bus(b);
+>     else
+> 	max = pci_scan_child_bus(b);
+> 
+>     if (!found)
+> 	pci_bus_update_busn_res_end(b, max);
+> 
+
+OK, I will try to change the of scan_bus(), and make it return the max bus number like pci_scan_child_bus().
+
+>>  
+>>  	return b;
+>>  }
+>> @@ -2064,7 +2069,7 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, u32 db,
+>>  {
+>>  	struct pci_host_bridge *host;
+>>  
+>> -	host = pci_create_host_bridge(parent, db, resources, sysdata);
+>> +	host = pci_create_host_bridge(parent, db, resources, sysdata, NULL);
+>>  	if (!host)
+>>  		return NULL;
+>>  
 >> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index 463eaa3..b621f5b 100644
+>> index b621f5b..e9922b1 100644
 >> --- a/include/linux/pci.h
 >> +++ b/include/linux/pci.h
->> @@ -406,6 +406,7 @@ struct pci_host_bridge {
->>  	struct device dev;
+>> @@ -400,6 +400,13 @@ static inline int pci_channel_offline(struct pci_dev *pdev)
+>>  	return (pdev->error_state != pci_channel_io_normal);
+>>  }
+>>  
+>> +struct pci_host_bridge;
+>> +struct pci_host_bridge_ops {
+>> +	void (*set_root_bus_speed)(struct pci_host_bridge *host);
+>> +	int (*prepare)(struct pci_host_bridge *host);
+>> +	void (*scan_bus)(struct pci_host_bridge *);
+> 
+> Needs an argument name to match the style of the other ops.
+
+Sorry, I missed it, will add it, thanks.
+
+
+> 
+>> +};
+>> +
+>>  struct pci_host_bridge {
+>>  	u16	domain;
+>>  	u16 busnum;
+>> @@ -407,6 +414,7 @@ struct pci_host_bridge {
 >>  	struct pci_bus *bus;		/* root bus */
 >>  	struct list_head windows;	/* resource_entry */
->> +	struct list_head list;
+>>  	struct list_head list;
+>> +	struct pci_host_bridge_ops *ops;
 >>  	void (*release_fn)(struct pci_host_bridge *);
 >>  	void *release_data;
 >>  };
 >> -- 
 >> 1.7.1
 >>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> Please read the FAQ at  http://www.tux.org/lkml/
 > 
 > .
 > 
