@@ -1,121 +1,230 @@
-From: Scott Wood <scottwood@freescale.com>
-Subject: [PATCH 07/22] alpha: %pF is only for function pointers
-Date: Wed, 11 Mar 2015 22:13:42 -0500
-Message-ID: <1426130037-17956-7-git-send-email-scottwood@freescale.com>
-References: <1426130037-17956-1-git-send-email-scottwood@freescale.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v6 12/30] PCI: Introduce pci_host_bridge_ops to support
+ host specific operations
+Date: Wed, 11 Mar 2015 22:23:41 -0500
+Message-ID: <20150312032341.GE10949@google.com>
+References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
+ <1425868467-9667-13-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1426130037-17956-1-git-send-email-scottwood@freescale.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-ia64-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20120113;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-type:content-disposition:in-reply-to:user-agent;
+        bh=gG5k5ejZXSFKIyXh54k9UVMNBU8BNllBh+AKDkDEj3Y=;
+        b=VTsnu9MrI0bvdCjBNv/9ixToWsH68xnht2gbAQdDSoCW+9zvUgtnAtIME4cP9Av6D1
+         74ZDY4xm7OCW7v/M4zUJQqRUFWg8F/kjga86UfRuCpqlPRCymJhsK72GWRQHi/1T2zSg
+         87SdEDbCFmNLZWKTaiMZRvykMe5yEZU2nhN/U93ekSa2oLyvHM8h2NYuFTtQEpz3OlHW
+         u8I9QkTzAVgEPHOI0v+aHivlfsBqjyaYnyF768c41Z9+eeTX1vSuFL96yZ1jtLp/UCnC
+         ApVIQRnqd+Vbee88O9rIIxM8bzl6Us7IQk9HIfjF8zPjFEEv1KEyfksCnHG56eZy0s3K
+         9NOw==
+Content-Disposition: inline
+In-Reply-To: <1425868467-9667-13-git-send-email-wangyijing@huawei.com>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: trivial@kernel.org, linux-kernel@vger.kernel.org
-Cc: Scott Wood <scottwood@freescale.com>, linux-alpha@vger.kernel.org
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-Use %pS for actual addresses, otherwise you'll get bad output
-on arches like ppc64 where %pF expects a function descriptor.  Even on
-other architectures, refrain from setting a bad example that people
-copy.
+On Mon, Mar 09, 2015 at 10:34:09AM +0800, Yijing Wang wrote:
+> Now we have weak functions like pcibios_root_bridge_prepare()
+> to setup pci host bridge, We could introduce pci_host_bridge_ops
+> which contain host bridge specific ops to setup pci_host_bridge.
+> Then host bridge driver could add pci_host_bridge_ops hooks
+> intead of weak function to setup pci_host_bridge.
+> This patch add following pci_host_bridge_ops hooks:
+> 
+> pci_host_bridge_ops {
+> 	/* set root bus speed, some platform need this like powerpc */
+> 	void (*set_root_bus_speed)(struct pci_host_bridge *host);
+> 	/* setup pci_host_bridge before pci_host_bridge be added to driver core */
+> 	int (*prepare)(struct pci_host_bridge *host);
+> 	/* platform specific of scan hook to scan pci device */
+> 	void (*scan_bus)(struct pci_host_bridge *);
+> }
+> We could easily extend it to support different host bridge
+> specific operations.
+> 
+> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>  drivers/pci/host-bridge.c |   12 ++++++++++--
+>  drivers/pci/pci.h         |    4 ++--
+>  drivers/pci/probe.c       |   17 +++++++++++------
+>  include/linux/pci.h       |    8 ++++++++
+>  4 files changed, 31 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+> index 3c34c49..bc1de59 100644
+> --- a/drivers/pci/host-bridge.c
+> +++ b/drivers/pci/host-bridge.c
+> @@ -23,8 +23,8 @@ static void pci_release_host_bridge_dev(struct device *dev)
+>  }
+>  
+>  struct pci_host_bridge *pci_create_host_bridge(
+> -		struct device *parent, u32 db,
+> -		struct list_head *resources, void *sysdata)
+> +		struct device *parent, u32 db, struct list_head *resources,
+> +		void *sysdata, struct pci_host_bridge_ops *ops)
+>  {
+>  	int error;
+>  	int bus = PCI_BUSNUM(db);
+> @@ -56,6 +56,7 @@ struct pci_host_bridge *pci_create_host_bridge(
+>  		}
+>  	mutex_unlock(&phb_mutex);
+>  
+> +	host->ops = ops;
+>  	host->dev.parent = parent;
+>  	INIT_LIST_HEAD(&host->windows);
+>  	host->dev.release = pci_release_host_bridge_dev;
+> @@ -63,6 +64,13 @@ struct pci_host_bridge *pci_create_host_bridge(
+>  	dev_set_name(&host->dev, "pci%04x:%02x", host->domain,
+>  			host->busnum);
+>  
+> +	if (host->ops && host->ops->prepare) {
+> +		error = host->ops->prepare(host);
+> +		if (error) {
+> +			kfree(host);
+> +			return NULL;
+> +		}
+> +	}
+>  	error = device_register(&host->dev);
+>  	if (error) {
+>  		put_device(&host->dev);
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index 79a8894..a1dc9f2 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -324,8 +324,8 @@ static inline int pci_dev_specific_reset(struct pci_dev *dev, int probe)
+>  #endif
+>  
+>  struct pci_host_bridge *pci_create_host_bridge(
+> -		struct device *parent, u32 dombus,
+> -		struct list_head *resources, void *sysdata);
+> +		struct device *parent, u32 dombus, struct list_head *resources,
+> +		void *sysdata, struct pci_host_bridge_ops *ops);
+>  
+>  void pci_free_host_bridge(struct pci_host_bridge *host);
+>  #endif /* DRIVERS_PCI_H */
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index c8e074d..59d9be3 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1889,6 +1889,8 @@ static struct pci_bus *__pci_create_root_bus(
+>  
+>  	bridge->bus = b;
+>  	b->bridge = get_device(&bridge->dev);
+> +	if (bridge->ops && bridge->ops->set_root_bus_speed)
+> +		bridge->ops->set_root_bus_speed(bridge);
 
-Signed-off-by: Scott Wood <scottwood@freescale.com>
-Cc: linux-alpha@vger.kernel.org
----
- arch/alpha/kernel/pci_iommu.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+Before this patch, can you do this:
 
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index eddee77..2cd2804 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -236,7 +236,7 @@ static int pci_dac_dma_supported(struct pci_dev *dev, u64 mask)
- 		ok = 0;
- 
- 	/* If both conditions above are met, we are fine. */
--	DBGA("pci_dac_dma_supported %s from %pf\n",
-+	DBGA("pci_dac_dma_supported %s from %ps\n",
- 	     ok ? "yes" : "no", __builtin_return_address(0));
- 
- 	return ok;
-@@ -268,7 +268,7 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
- 	    && paddr + size <= __direct_map_size) {
- 		ret = paddr + __direct_map_base;
- 
--		DBGA2("pci_map_single: [%p,%zx] -> direct %llx from %pf\n",
-+		DBGA2("pci_map_single: [%p,%zx] -> direct %llx from %ps\n",
- 		      cpu_addr, size, ret, __builtin_return_address(0));
- 
- 		return ret;
-@@ -279,7 +279,7 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
- 	if (dac_allowed) {
- 		ret = paddr + alpha_mv.pci_dac_offset;
- 
--		DBGA2("pci_map_single: [%p,%zx] -> DAC %llx from %pf\n",
-+		DBGA2("pci_map_single: [%p,%zx] -> DAC %llx from %ps\n",
- 		      cpu_addr, size, ret, __builtin_return_address(0));
- 
- 		return ret;
-@@ -316,7 +316,7 @@ pci_map_single_1(struct pci_dev *pdev, void *cpu_addr, size_t size,
- 	ret = arena->dma_base + dma_ofs * PAGE_SIZE;
- 	ret += (unsigned long)cpu_addr & ~PAGE_MASK;
- 
--	DBGA2("pci_map_single: [%p,%zx] np %ld -> sg %llx from %pf\n",
-+	DBGA2("pci_map_single: [%p,%zx] np %ld -> sg %llx from %ps\n",
- 	      cpu_addr, size, npages, ret, __builtin_return_address(0));
- 
- 	return ret;
-@@ -383,14 +383,14 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
- 	    && dma_addr < __direct_map_base + __direct_map_size) {
- 		/* Nothing to do.  */
- 
--		DBGA2("pci_unmap_single: direct [%llx,%zx] from %pf\n",
-+		DBGA2("pci_unmap_single: direct [%llx,%zx] from %ps\n",
- 		      dma_addr, size, __builtin_return_address(0));
- 
- 		return;
- 	}
- 
- 	if (dma_addr > 0xffffffff) {
--		DBGA2("pci64_unmap_single: DAC [%llx,%zx] from %pf\n",
-+		DBGA2("pci64_unmap_single: DAC [%llx,%zx] from %ps\n",
- 		      dma_addr, size, __builtin_return_address(0));
- 		return;
- 	}
-@@ -422,7 +422,7 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
- 
- 	spin_unlock_irqrestore(&arena->lock, flags);
- 
--	DBGA2("pci_unmap_single: sg [%llx,%zx] np %ld from %pf\n",
-+	DBGA2("pci_unmap_single: sg [%llx,%zx] np %ld from %ps\n",
- 	      dma_addr, size, npages, __builtin_return_address(0));
- }
- 
-@@ -445,7 +445,7 @@ try_again:
- 	cpu_addr = (void *)__get_free_pages(gfp, order);
- 	if (! cpu_addr) {
- 		printk(KERN_INFO "pci_alloc_consistent: "
--		       "get_free_pages failed from %pf\n",
-+		       "get_free_pages failed from %ps\n",
- 			__builtin_return_address(0));
- 		/* ??? Really atomic allocation?  Otherwise we could play
- 		   with vmalloc and sg if we can't find contiguous memory.  */
-@@ -464,7 +464,7 @@ try_again:
- 		goto try_again;
- 	}
- 
--	DBGA2("pci_alloc_consistent: %zx -> [%p,%llx] from %pf\n",
-+	DBGA2("pci_alloc_consistent: %zx -> [%p,%llx] from %ps\n",
- 	      size, cpu_addr, *dma_addrp, __builtin_return_address(0));
- 
- 	return cpu_addr;
-@@ -484,7 +484,7 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
- 	pci_unmap_single(pdev, dma_addr, size, PCI_DMA_BIDIRECTIONAL);
- 	free_pages((unsigned long)cpu_addr, get_order(size));
- 
--	DBGA2("pci_free_consistent: [%llx,%zx] from %pf\n",
-+	DBGA2("pci_free_consistent: [%llx,%zx] from %ps\n",
- 	      dma_addr, size, __builtin_return_address(0));
- }
- 
--- 
-2.1.0
+  - Rename the powerpc pcibios_root_bridge_prepare() to
+    pcibios_set_root_bus_speed() and add a call to it here
+
+  - Move the pcibios_root_bridge_prepare() call to pci_create_host_bridge()
+
+Then this patch will make a lot more sense because it will look like this,
+with the host bridge ops call right next to the matching pcibios call:
+
+  +	if (host->ops && host->ops->prepare) {
+  +		error = host->ops->prepare(host);
+  +		...
+  +	}
+	pcibios_root_bridge_prepare(...);
+
+  +	if (bridge->ops && bridge->ops->set_root_bus_speed)
+  +		bridge->ops->set_root_bus_speed(bridge);
+	pcibios_set_root_bus_speed(...);
+
+>  	error = pcibios_root_bridge_prepare(bridge);
+>  	if (error)
+>  		goto err_out;
+> @@ -1954,7 +1956,7 @@ struct pci_bus *pci_create_root_bus(struct device *parent, u32 db,
+>  {
+>  	struct pci_host_bridge *host;
+>  
+> -	host = pci_create_host_bridge(parent, db, resources, sysdata);
+> +	host = pci_create_host_bridge(parent, db, resources, sysdata, NULL);
+>  	if (!host)
+>  		return NULL;
+>  
+> @@ -2051,10 +2053,13 @@ static struct pci_bus *__pci_scan_root_bus(
+>  		pci_bus_insert_busn_res(b, b->number, 255);
+>  	}
+>  
+> -	max = pci_scan_child_bus(b);
+> -
+> -	if (!found)
+> -		pci_bus_update_busn_res_end(b, max);
+> +	if (host->ops && host->ops->scan_bus) {
+> +		host->ops->scan_bus(host);
+> +	} else {
+> +		max = pci_scan_child_bus(b);
+> +		if (!found)
+> +			pci_bus_update_busn_res_end(b, max);
+> +	}
+
+I think host->ops->scan_bus() should have the same prototype as
+pci_scan_child_bus(), and it should return max, and you should do the same
+busn update as when you call pci_scan_child_bus().  So the code would look
+like this:
+
+    if (host->ops && host->ops->scan_bus)
+	max = host->ops->scan_bus(b);
+    else
+	max = pci_scan_child_bus(b);
+
+    if (!found)
+	pci_bus_update_busn_res_end(b, max);
+
+>  
+>  	return b;
+>  }
+> @@ -2064,7 +2069,7 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, u32 db,
+>  {
+>  	struct pci_host_bridge *host;
+>  
+> -	host = pci_create_host_bridge(parent, db, resources, sysdata);
+> +	host = pci_create_host_bridge(parent, db, resources, sysdata, NULL);
+>  	if (!host)
+>  		return NULL;
+>  
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index b621f5b..e9922b1 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -400,6 +400,13 @@ static inline int pci_channel_offline(struct pci_dev *pdev)
+>  	return (pdev->error_state != pci_channel_io_normal);
+>  }
+>  
+> +struct pci_host_bridge;
+> +struct pci_host_bridge_ops {
+> +	void (*set_root_bus_speed)(struct pci_host_bridge *host);
+> +	int (*prepare)(struct pci_host_bridge *host);
+> +	void (*scan_bus)(struct pci_host_bridge *);
+
+Needs an argument name to match the style of the other ops.
+
+> +};
+> +
+>  struct pci_host_bridge {
+>  	u16	domain;
+>  	u16 busnum;
+> @@ -407,6 +414,7 @@ struct pci_host_bridge {
+>  	struct pci_bus *bus;		/* root bus */
+>  	struct list_head windows;	/* resource_entry */
+>  	struct list_head list;
+> +	struct pci_host_bridge_ops *ops;
+>  	void (*release_fn)(struct pci_host_bridge *);
+>  	void *release_data;
+>  };
+> -- 
+> 1.7.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
