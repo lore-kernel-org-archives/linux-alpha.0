@@ -1,93 +1,76 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v6 09/30] PCI: Separate pci_host_bridge creation out of
- pci_create_root_bus()
-Date: Thu, 12 Mar 2015 21:44:07 +0800
-Message-ID: <55019827.2060803@huawei.com>
-References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <1425868467-9667-10-git-send-email-wangyijing@huawei.com> <20150312035202.GL10949@google.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v6 03/30] PCI: Export busn_resource to drivers/pci
+Date: Thu, 12 Mar 2015 14:32:19 -0500
+Message-ID: <20150312193219.GA7346@google.com>
+References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
+ <1425868467-9667-4-git-send-email-wangyijing@huawei.com>
+ <20150311222835.GA1082@google.com>
+ <55017BA1.7020700@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150312035202.GL10949@google.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20120113;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-type:content-disposition:in-reply-to:user-agent;
+        bh=KyXUYZpf573OHFpD13VDfzGZH8ykfFqxqFBRONgYzio=;
+        b=d94cSdgglFTuMSIyUXqY/EAQB3fhHQshsy4v9H2UVKtqmKISN4ysSbl++NUSSi7NW5
+         2A09i5jEV4In9nfLCuKTRRrwSms306SHmZs+qQZgcS72T9jC53OOJC+ck9N9SKKElJQY
+         YqdXYVx6g52moFMFOidEEhSUfBUnIlTdwTl6QxCHF7gd1trbvekBAUbxMYSId3hzIBrt
+         JWG99jNd+01//8t0v2qvTeWw9ALm+zSA+VpJY9q+Ollk3oZNhzFzChGZWPI21kySI5nI
+         9FgRy15hHFvyoReCoEOFAzCvAnbOHFFDWBw9aL/wsQr/MLJJeRiUHerrpKm1l6X+R27B
+         eW7w==
+Content-Disposition: inline
+In-Reply-To: <55017BA1.7020700@huawei.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Bjorn Helgaas <bhelgaas@google.com>
+Content-Transfer-Encoding: 7bit
+To: Yijing Wang <wangyijing@huawei.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
->> +	host = kzalloc(sizeof(*host), GFP_KERNEL);
->> +	if (!host)
->> +		return NULL;
->> +
->> +	host->busnum = bus;
->> +	host->domain = domain;
->> +	/* If support CONFIG_PCI_DOMAINS_GENERIC, use
->> +	 * pci_host_assign_domain_nr() to assign domain
->> +	 * number instead PCI_DOMAIN(db).
->> +	 */
+On Thu, Mar 12, 2015 at 07:42:25PM +0800, Yijing Wang wrote:
+> >> -static struct resource busn_resource = {
+> >> +struct resource busn_resource = {
+> >>  	.name	= "PCI busn",
+> >>  	.start	= 0,
+> >>  	.end	= 255,
+> >>  	.flags	= IORESOURCE_BUS,
+> >>  };
+> >> +EXPORT_SYMBOL(busn_resource);
+> > 
+> > I don't think this is a good idea.  We support multiple PCI domains, and
+> > each domain has its own 0-255 bus number range.  This busn_resource is
+> > only for domain 0 and probably should be handled in arch code instead of
+> > the PCI core.
+> > 
+> > Right now, I think it's possible to call pci_scan_bus_parented() or
+> > pci_scan_bus() several times for buses in different domains, and they would
+> > all share the same busn_resource, which would cause corruption.
+> > 
+> > So it's already broken, but I don't want to make it harder to fix by
+> > exporting this stuff.
 > 
-> Follow the normal Linux comment style:
+> Hi Bjorn, busn_resource may would not be shared by multi domains,
 > 
-> 	host->domain = domain;
+> We insert bus number resource like:
 > 
-> 	/*
-> 	 * If we support ...
-> 	 */
+> pci_add_resource(&resources, &busn_resource);	
+> 	pci_bus_insert_busn_res(root_bus, start, bus_max);	//start is the root bus number provided by arch pci host driver, bus max here == 255
+> 		get_pci_domain_busn_res(domain)	//for root bus	//try to get a domain specific pci_domain_busn_res, if not exist, create it.
+> 			request_resource_conflict(domain_specific_busn_res, res)   //request busn res(start, bus_max) from the pci_domain_busn_res.
+> 
+> So every domain has its own pci_domain_busn_res , different domain would not share the same bus number resource.
 
-OK.
+The intent of pci_add_resource() and passing the resulting resource list
+into pci_scan_root_bus(), etc., is that the host bridge may consume any
+resources described by the list.  If we pass the same resource to multiple
+calls, that means the resource must be shared between the multiple host
+bridges involved.  For bus numbers, that makes some sense if the platform
+considers the bridges to be in the same domain, but not if they are in
+different domains.
 
-> 
->> +	pci_host_assign_domain_nr(host);
->> +
-...
->>  
->> +struct pci_host_bridge *pci_create_host_bridge(
->> +		struct device *parent, u32 dombus, struct list_head *resources);
->> +void pci_free_host_bridge(struct pci_host_bridge *host);
-> 
-> A later patch adds another declaration and a blank line here.  If you want
-> the blank line, add it here, when you're adding the first declarations in
-> this section.
+If we export busn_resource, we have no control over what domains it becomes
+associated with because the domain is passed into pci_scan_root_bus() by
+the caller.
 
-OK.
-
-> 
->>  #endif /* DRIVERS_PCI_H */
->> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> index 3d6befd..27ec612 100644
->> --- a/drivers/pci/probe.c
->> +++ b/drivers/pci/probe.c
->> @@ -503,31 +503,6 @@ static struct pci_bus *pci_alloc_bus(struct pci_bus *parent)
->>  	return b;
->>  }
-...
->>  struct pci_host_bridge {
->>  	u16	domain;
->> +	u16 busnum;
-> 
-> Why do we need this?  host_bridge->bus->number and
-> host_bridge->bus->busn_res.start both already contain the same information,
-> and I hate to add a third place.  I know pci_create_host_bridge() doesn't
-> have a struct pci_bus at the point where you initialize busnum, but it does
-> have the resource list, which contains the bus number range.
-
-Hmm, I will try to remove it, I put it here because when call pci_create_root_bus(),
-I could only pass the pci_host_bridge_ops, don't need to provide the bus number,
-pci_scan_root_bus() may lack the bus number resource at that time.
-But I think fix it is not a hard job, I will rework it, thanks.
-
-
-> 
->>  	struct device dev;
->>  	struct pci_bus *bus;		/* root bus */
->>  	struct list_head windows;	/* resource_entry */
->> -- 
->> 1.7.1
->>
-> 
-> .
-> 
-
-
--- 
-Thanks!
-Yijing
+Bjorn
