@@ -1,25 +1,25 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
 Subject: Re: [PATCH v6 21/30] PCI: Introduce pci_bus_child_max_busnr()
-Date: Wed, 11 Mar 2015 22:33:05 -0500
-Message-ID: <20150312033305.GH10949@google.com>
+Date: Wed, 11 Mar 2015 22:36:43 -0500
+Message-ID: <20150312033643.GI10949@google.com>
 References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
  <1425868467-9667-22-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20120113;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-type:content-disposition:in-reply-to:user-agent;
-        bh=MsC++qIDn4KTueOnTT7ZsP/gI3+0z4/hgeOoZ7no2k8=;
-        b=VE4GY1C8urVrMFUabfmH0hEkuOQCXl0pINXYVFFk61ybm5sJZMOjIktGYC9ehcuOzc
-         AGqxIh4qxyfN+P9V0aUXzG0T2EElbdMjTmq/8ILo8+RUnKLN7NrjLhRgELNuiS6//zxf
-         Q8BQsowa6mEtMYdPwxCoot5nxoINb/8NdSUkbznfa5XRpwhV+Ni9euWFxRTw2PiuL/Bb
-         iMv8jtcr5sQf2Kn8tTVucD/8D079x4n8Ajgqra9Xo2Gfxq0G89m4up3kVQSTWmAgNWT9
-         x9axKBCpbdcbuJcZIKuOmbnA9GMwd2wTXrNChMQOH6Uz8UnkVwMOGvUzIJhd8zS849sh
-         irYw==
+        bh=gyNi3X9E27DvNk3GyjGQ55dVvhYxoDjxFwxw1SbB2NA=;
+        b=Wj0fvmCjFzfXs/ASZBuZJN9j2g4142OXIm96P14TBsMsb+n6caPKqrbBYnj+d8PlJJ
+         Sf0lLY542p8BNt8aTy9CsPqVhUh79rHdHtZyrzgjk/UVKpml4Zh5jA4SfD4hdsTHVvn9
+         vBnwVBjPLbQ06oSQiZkK7k9N7NkY/dXLwpX9er6+QhWRkx5onDq85zN8L3ev2egyx4jG
+         tUks92izZkxjs4mX3HmPbzU3LDFnHuBG1oIsa51OdRd11dsZeLIMBxzPhzeojMxclrvp
+         nyxA4h7ICmpfQlH6erWsF6TPeTti/SxMUGO6qyrCgT5Itg0UrrV74jsu0xn7LQo8e63M
+         9v7w==
 Content-Disposition: inline
 In-Reply-To: <1425868467-9667-22-git-send-email-wangyijing@huawei.com>
-Sender: linux-m68k-owner@vger.kernel.org
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -32,14 +32,18 @@ On Mon, Mar 09, 2015 at 10:34:18AM +0800, Yijing Wang wrote:
 > bus->busn_res could have padding in it.
 > This function return the max child busnr as
 > pci_scan_child_bus().
-
-I'm not convinced about this one.  The fact that it's only used by parisc
-lba_pci.c and acpiphp makes me suspicious that either they're doing
-something funny, or other drivers *should* be using it, too.
-
+> 
 > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 > Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
+
+I must have screwed this up.  I don't know where the Signed-off-by from
+Fengguang came from, but it shouldn't be there.  And I also screwed up by
+adding my own Signed-off-by to the branch while we're still iterating on
+this series.  The patches you post should not have my Signed-off-by in
+them; I should add that.  But that's my fault because put them in the
+branch, and I asked you to pull that branch and modify and repost it.
+
 > ---
 >  drivers/pci/hotplug/acpiphp_glue.c |   29 +----------------------------
 >  drivers/pci/pci.c                  |   27 +++++++++++++++++++++++++--
