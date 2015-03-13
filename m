@@ -1,67 +1,51 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v6 00/30] Refine PCI scan interfaces and make generic pci
- host bridge
-Date: Thu, 12 Mar 2015 16:23:06 -0500
-Message-ID: <20150312212306.GH7346@google.com>
-References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: Re: [PATCH v6 03/30] PCI: Export busn_resource to drivers/pci
+Date: Fri, 13 Mar 2015 09:57:25 +0800
+Message-ID: <55024405.8040504@huawei.com>
+References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <1425868467-9667-4-git-send-email-wangyijing@huawei.com> <20150311222835.GA1082@google.com> <55017BA1.7020700@huawei.com> <20150312193219.GA7346@google.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-type:content-disposition:in-reply-to:user-agent;
-        bh=qgGv45GQ6aQmzkssqL26pvrkBI5drtXuxr1V8hnol7s=;
-        b=CMuYvteJ5dKQn/e0ZWpqKSI1lG8/vje/BrlUV54voUG/aKQWjuYeGzVn28hazPcNvb
-         oK0iZ2nuYQZ4a/gaOEhejTG0LtYseKij67Q7ow/XG9I2Nq5SwvVuN4T4B3gD78SXpm6h
-         wPshSXXeFY4fTlnd+dCxhWlXAGuXuaZ4ryFxmqMKa4qAeCslYxJtroqggEYRmwzYYf/t
-         a2xe5skBbdB0BzLiQj0L71RpOKUl19x7r8HAF/AcXGjC7GsX0X0S+4FdC26EV7YUaKEu
-         C0AwY6o/2C+6mcqIy+GHCjvSkJtTFkPoDhxmMjVFoSy73aJIQAhJIeDBP+QErtBpD7AP
-         mahw==
-Content-Disposition: inline
-In-Reply-To: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
+In-Reply-To: <20150312193219.GA7346@google.com>
 Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Yijing Wang <wangyijing@huawei.com>
+To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Mon, Mar 09, 2015 at 10:33:57AM +0800, Yijing Wang wrote:
-> ...
-> Yijing Wang (29):
->   PCI: Rip out pci_bus_add_devices() from pci_scan_bus()
->   PCI: Rip out pci_bus_add_devices() from pci_scan_root_bus()
->   sparc/PCI: Claim bus resources before pci_bus_add_devices()
+>> Hi Bjorn, busn_resource may would not be shared by multi domains,
+>>
+>> We insert bus number resource like:
+>>
+>> pci_add_resource(&resources, &busn_resource);	
+>> 	pci_bus_insert_busn_res(root_bus, start, bus_max);	//start is the root bus number provided by arch pci host driver, bus max here == 255
+>> 		get_pci_domain_busn_res(domain)	//for root bus	//try to get a domain specific pci_domain_busn_res, if not exist, create it.
+>> 			request_resource_conflict(domain_specific_busn_res, res)   //request busn res(start, bus_max) from the pci_domain_busn_res.
+>>
+>> So every domain has its own pci_domain_busn_res , different domain would not share the same bus number resource.
+> 
+> The intent of pci_add_resource() and passing the resulting resource list
+> into pci_scan_root_bus(), etc., is that the host bridge may consume any
+> resources described by the list.  If we pass the same resource to multiple
+> calls, that means the resource must be shared between the multiple host
+> bridges involved.  For bus numbers, that makes some sense if the platform
+> considers the bridges to be in the same domain, but not if they are in
+> different domains.
+> 
+> If we export busn_resource, we have no control over what domains it becomes
+> associated with because the domain is passed into pci_scan_root_bus() by
+> the caller.
 
-I put the above patches plus a cleanup patch on my pci/enumeration branch.
-Please rebase your next revision to that.  If there's anything else
-non-controversial that we can pull in to chip away at this, let me know.
+Agree, I will drop this patch, thanks!
 
->   PCI: Export busn_resource to drivers/pci
->   PCI: Remove deprecated pci_scan_bus_parented()
->   PCI: Combine PCI domain and bus number in u32 arg
->   PCI: Pass PCI domain number combined with root bus number
->   PCI: Introduce pci_host_assign_domain_nr() to assign domain
->   PCI: Separate pci_host_bridge creation out of pci_create_root_bus()
->   PCI: Introduce pci_host_bridge_list to manage host bridges
->   PCI: Save sysdata in pci_host_bridge drvdata
->   PCI: Introduce pci_host_bridge_ops to support host specific
->     operations
->   PCI: Introduce new scan function pci_scan_host_bridge()
->   x86/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
->   ia64/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
->   powerpc/pci: Rename pcibios_root_bridge_prepare()
->   powerpc/pci: Use pci_scan_host_bridge() for simplicity
->   PCI: Remove weak pcibios_root_bridge_prepare()
->   sparc/PCI: Use pci_scan_host_bridge() for simplicity
->   PCI: Introduce pci_bus_child_max_busnr()
->   parisc/PCI: Use pci_scan_root_bus() for simplicity
->   PCI/mvebu: Use pci_common_init_dev() to simplify code
->   PCI/tegra: Remove redundant tegra_pcie_scan_bus()
->   PCI/designware: Use pci_scan_root_bus() for simplicity
->   PCI/xgene: Use pci_scan_root_bus() instead of pci_create_root_bus()
->   PCI: Rename __pci_create_root_bus() to pci_create_root_bus()
->   PCI: Export find_pci_host_bridge() and rename to
->     pci_find_host_bridge()
->   PCI: Remove platform specific pci_domain_nr()
->   PCI: Remove pci_bus_assign_domain_nr()
+> 
+> Bjorn
+> 
+> .
+> 
+
+
+-- 
+Thanks!
+Yijing
+
