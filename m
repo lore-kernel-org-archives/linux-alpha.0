@@ -1,55 +1,62 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v6 10/30] PCI: Introduce pci_host_bridge_list to manage
- host bridges
-Date: Fri, 13 Mar 2015 11:28:21 +0800
-Message-ID: <55025955.3020000@huawei.com>
-References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <1425868467-9667-11-git-send-email-wangyijing@huawei.com> <20150312025537.GD10949@google.com> <55018E90.9030301@huawei.com> <20150312195651.GD7346@google.com>
+Subject: Re: [PATCH v6 00/30] Refine PCI scan interfaces and make generic
+ pci host bridge
+Date: Fri, 13 Mar 2015 11:29:46 +0800
+Message-ID: <550259AA.2030609@huawei.com>
+References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <20150312212306.GH7346@google.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20150312195651.GD7346@google.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <20150312212306.GH7346@google.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
->>> It's a nice idea to move this test into the core.  While you're at it, why
->>> don't you check for any overlap with the bus ranges of existing host
->>> bridges?  For example, if we're trying to create a new host bridge to
->>> [bus 40-7f], it should conflict with existing bridges to [bus 00-7f]
->>> as well as to [bus 40-ff].  I think your current patch will detect the
->>> latter conflict but not the former.
->>
->> Now pci host bridge may only know its start bus number, like acpi _BBN provided,
->> but does not limit the end bus number, Eg. two pci roots report _BBN 0x0 and 0x80,
->> so we have two bus number resource (0, 0xff) and (0x80, 0xff), if we check it strictly,
->> some pci scan would fail which currently scan success.
+On 2015/3/13 5:23, Bjorn Helgaas wrote:
+> On Mon, Mar 09, 2015 at 10:33:57AM +0800, Yijing Wang wrote:
+>> ...
+>> Yijing Wang (29):
+>>   PCI: Rip out pci_bus_add_devices() from pci_scan_bus()
+>>   PCI: Rip out pci_bus_add_devices() from pci_scan_root_bus()
+>>   sparc/PCI: Claim bus resources before pci_bus_add_devices()
 > 
-> _BBN is not the correct source for the bridge's bus number range.  There's
-> a comment in acpi_pci_root_add() that explains why:
+> I put the above patches plus a cleanup patch on my pci/enumeration branch.
+> Please rebase your next revision to that.  If there's anything else
+> non-controversial that we can pull in to chip away at this, let me know.
 > 
->   * We need both the start and end of the downstream bus range
->   * to interpret _CBA (MMCONFIG base address), so it really is
->   * supposed to be in _CRS.  If we don't find it there, all we
->   * can do is assume [_BBN-0xFF] or [0-0xFF].
-> 
-> A platform SHOULD know the start and and end bus number.  If it doesn't I
-> think it's the platform's responsibility to carve up the bus number range.
-> Maybe this can be done by trimming the range of the [bus 00-ff] bridge when
-> we discover another bridge that leads to bus 80.
 
-Currently, if platform does not know the end bus number (not provide the bus resource),
-we will update the max bus number returned by pci_scan_child_bus() to the bus resource end,
-and I think this is reasonable. I consider to introduce a flag to identify the bus resource
-which end bus number is undefined, then we could force all pci_scan_root_bus()  etc. callers
-to provide the bus resource, and we could process the bus resource end according the bus resource flag.
-Also then we could reduce the bus argument which is the same as busn_res->start.
-I would try to provide draft patch, then we could discuss it more clearly.
+Nice, so we could rebase the rest series easier, thanks!
 
-Thanks!
-Yijing.
-
+>>   PCI: Export busn_resource to drivers/pci
+>>   PCI: Remove deprecated pci_scan_bus_parented()
+>>   PCI: Combine PCI domain and bus number in u32 arg
+>>   PCI: Pass PCI domain number combined with root bus number
+>>   PCI: Introduce pci_host_assign_domain_nr() to assign domain
+>>   PCI: Separate pci_host_bridge creation out of pci_create_root_bus()
+>>   PCI: Introduce pci_host_bridge_list to manage host bridges
+>>   PCI: Save sysdata in pci_host_bridge drvdata
+>>   PCI: Introduce pci_host_bridge_ops to support host specific
+>>     operations
+>>   PCI: Introduce new scan function pci_scan_host_bridge()
+>>   x86/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
+>>   ia64/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
+>>   powerpc/pci: Rename pcibios_root_bridge_prepare()
+>>   powerpc/pci: Use pci_scan_host_bridge() for simplicity
+>>   PCI: Remove weak pcibios_root_bridge_prepare()
+>>   sparc/PCI: Use pci_scan_host_bridge() for simplicity
+>>   PCI: Introduce pci_bus_child_max_busnr()
+>>   parisc/PCI: Use pci_scan_root_bus() for simplicity
+>>   PCI/mvebu: Use pci_common_init_dev() to simplify code
+>>   PCI/tegra: Remove redundant tegra_pcie_scan_bus()
+>>   PCI/designware: Use pci_scan_root_bus() for simplicity
+>>   PCI/xgene: Use pci_scan_root_bus() instead of pci_create_root_bus()
+>>   PCI: Rename __pci_create_root_bus() to pci_create_root_bus()
+>>   PCI: Export find_pci_host_bridge() and rename to
+>>     pci_find_host_bridge()
+>>   PCI: Remove platform specific pci_domain_nr()
+>>   PCI: Remove pci_bus_assign_domain_nr()
 > 
 > .
 > 
@@ -58,4 +65,3 @@ Yijing.
 -- 
 Thanks!
 Yijing
-
