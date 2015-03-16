@@ -1,64 +1,42 @@
-From: Alex Dowad <alexinbeijing@gmail.com>
-Subject: [PATCH 02/32] alpha: copy_thread(): rename 'arg' argument to 'kthread_arg'
-Date: Fri, 13 Mar 2015 20:04:17 +0200
-Message-ID: <1426269888-25600-2-git-send-email-alexinbeijing@gmail.com>
-References: <1426269888-25600-1-git-send-email-alexinbeijing@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=YnNOe9SyuwjOpZMxmNZWab/XoJhD1NXqDcIR8Rm8xuw=;
-        b=yaRz/uIspiinMPHV0Kve7vDs6C9hQuWcY98zvK/9wkl8PMrYYswJo2R4h6DD4rV25U
-         BSGhn3rCkTyVc0jY5s+lu0dHCZVeR/fySrGYSW0bSb67W9KkhSaVmxk5lrt7ewAt8UZE
-         FBu+3KgjT7r7VI90h1yLwg+fhG+nuaUX5UoVQTHJQBCHk5YUe47MIwSNTdpTxBMPbTZu
-         yiJxRvbsUtYtUzIYQkfXZHiO9hzy1+SQwcv6ztY9yfJC31+GWqt+7HIown9QOAumrnXs
-         tlKIuEieb5w9LakLsvttMrg1VaQp2L7BSMnzL2R0nlktyb0cjmIkaxkMp6mrlPwhbupR
-         xIzw==
-In-Reply-To: <1426269888-25600-1-git-send-email-alexinbeijing@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: Re: [PATCH v6 10/30] PCI: Introduce pci_host_bridge_list to manage
+ host bridges
+Date: Mon, 16 Mar 2015 09:28:16 +0800
+Message-ID: <550631B0.2030709@huawei.com>
+References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com> <1425868467-9667-11-git-send-email-wangyijing@huawei.com> <20150312025537.GD10949@google.com> <55018E90.9030301@huawei.com> <20150312195651.GD7346@google.com> <55025955.3020000@huawei.com> <CAErSpo5RgADWDPDvA-sg+MhmayPgTCfQqN1j0hYorAzZ=8_-qg@mail.gmail.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vget.kernel.org
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <CAErSpo5RgADWDPDvA-sg+MhmayPgTCfQqN1j0hYorAzZ=8_-qg@mail.gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Yinghai Lu <yinghai@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, linux-arm <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, "x86@kernel.org" <x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-The 'arg' argument to copy_thread() is only ever used when forking a new
-kernel thread. Hence, rename it to 'kthread_arg' for clarity (and consistency
-with do_fork() and other arch-specific implementations of copy_thread()).
+>> Currently, if platform does not know the end bus number (not provide the bus resource),
+>> we will update the max bus number returned by pci_scan_child_bus() to the bus resource end,
+>> and I think this is reasonable. I consider to introduce a flag to identify the bus resource
+>> which end bus number is undefined, then we could force all pci_scan_root_bus()  etc. callers
+>> to provide the bus resource, and we could process the bus resource end according the bus resource flag.
+>> Also then we could reduce the bus argument which is the same as busn_res->start.
+>> I would try to provide draft patch, then we could discuss it more clearly.
+> 
+> Without having seen a patch, my inclination is to avoid a flag because
+> flags change the behavior of the code you call, which makes that code
+> harder to follow.  Maybe we could require these platforms to
+> explicitly update the ending bus number after scanning the bus.
 
-Signed-off-by: Alex Dowad <alexinbeijing@gmail.com>
----
- arch/alpha/kernel/process.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+OK, agree, thanks for your suggestion :)
 
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index 1941a07..84d1326 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -236,12 +236,11 @@ release_thread(struct task_struct *dead_task)
- }
- 
- /*
-- * Copy an alpha thread..
-+ * Copy architecture-specific thread state
-  */
--
- int
- copy_thread(unsigned long clone_flags, unsigned long usp,
--	    unsigned long arg,
-+	    unsigned long kthread_arg,
- 	    struct task_struct *p)
- {
- 	extern void ret_from_fork(void);
-@@ -262,7 +261,7 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
- 			sizeof(struct switch_stack) + sizeof(struct pt_regs));
- 		childstack->r26 = (unsigned long) ret_from_kernel_thread;
- 		childstack->r9 = usp;	/* function */
--		childstack->r10 = arg;
-+		childstack->r10 = kthread_arg;
- 		childregs->hae = alpha_mv.hae_cache,
- 		childti->pcb.usp = 0;
- 		return 0;
+> 
+> Bjorn
+> 
+> .
+> 
+
+
 -- 
-2.0.0.GIT
+Thanks!
+Yijing
+
