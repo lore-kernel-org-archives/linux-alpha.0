@@ -1,48 +1,92 @@
-From: Ian Campbell <ian.campbell@citrix.com>
-Subject: Re: [Xen-devel] [PATCH v6 07/30] PCI: Pass PCI domain number
- combined with root bus number
-Date: Tue, 17 Mar 2015 14:05:30 +0000
-Message-ID: <1426601130.18247.238.camel@citrix.com>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Subject: Re: [PATCH v6 09/30] PCI: Separate pci_host_bridge creation out of
+ pci_create_root_bus()
+Date: Sat, 21 Mar 2015 18:21:55 -0500
+Message-ID: <550DFD13.9080505@amd.com>
 References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
-	 <1425868467-9667-8-git-send-email-wangyijing@huawei.com>
-	 <5507B88D.1020300@caviumnetworks.com>
+ <1425868467-9667-10-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <5507B88D.1020300@caviumnetworks.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <1425868467-9667-10-git-send-email-wangyijing@huawei.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Manish Jaggi <mjaggi@caviumnetworks.com>
-Cc: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, linux-pci@vger.kernel.org, Chris Metcalf <cmetcalf@ezchip.com>, Paul Mackerras <paulus@samba.org>, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-s390@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org, Sebastian Ott <sebott@linux.vnet.ibm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-arm-kernel@lists.infradead.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, xen-devel@lists.xenproject.org, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, I
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Tue, 2015-03-17 at 10:45 +0530, Manish Jaggi wrote:
-> On Monday 09 March 2015 08:04 AM, Yijing Wang wrote:
-> > Now we could pass PCI domain combined with bus number
-> > in u32 argu. Because in arm/arm64, PCI domain number
-> > is assigned by pci_bus_assign_domain_nr(). So we leave
-> > pci_scan_root_bus() and pci_create_root_bus() in arm/arm64
-> > unchanged. A new function pci_host_assign_domain_nr()
-> > will be introduced for arm/arm64 to assign domain number
-> > in later patch.
-> Hi,
-> I think these changes might not be required. We have made very few 
-> changes in the xen-pcifront to support PCI passthrough in arm64.
-> As per xen architecture for a domU only a single pci virtual bus is 
-> created and all passthrough devices are attached to it.
 
-I guess you are only talking about the changes to xen-pcifront.c?
-Otherwise you are ignoring the dom0 case which is exposed to the real
-set of PCI root complexes and anyway I'm not sure how "not needed for
-Xen domU" translates into not required, since it is clearly required for
-other systems.
 
-Strictly speaking the Xen pciif protocol does support multiple buses,
-it's just that the tools, and perhaps kernels, have not yet felt any
-need to actually make use of that.
+On 3/8/15 21:34, Yijing Wang wrote:
+> This patch separate pci_host_bridge creation out
+> of pci_create_root_bus(), and try to make a generic
+> pci_host_bridge, then we could place generic PCI
+> infos like domain number in it. Also Ripping out
+> pci_host_bridge creation from pci_create_root_bus()
+> make code more better readability. Further more,
+> we could use the generic pci_host_bridge to hold
+> host bridge specific operations like
+> pcibios_root_bridge_prepare(). The changes are
+> transparent to platform host bridge drivers.
+>
+> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>   drivers/pci/host-bridge.c |   55 ++++++++++++++++++++++
+>   drivers/pci/pci.h         |    3 +
+>   drivers/pci/probe.c       |  114 ++++++++++++++++++++-------------------------
+>   include/linux/pci.h       |    1 +
+>   4 files changed, 109 insertions(+), 64 deletions(-)
+>
+> diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+> index 39b2dbe..3bd45e7 100644
+> --- a/drivers/pci/host-bridge.c
+> +++ b/drivers/pci/host-bridge.c
+> @@ -8,6 +8,61 @@
+>
+>   #include "pci.h"
+>
+> +static void pci_release_host_bridge_dev(struct device *dev)
+> +{
+> +	struct pci_host_bridge *bridge = to_pci_host_bridge(dev);
+> +
+> +	if (bridge->release_fn)
+> +		bridge->release_fn(bridge);
+> +
+> +	pci_free_resource_list(&bridge->windows);
+> +	kfree(bridge);
+> +}
+> +
+> +struct pci_host_bridge *pci_create_host_bridge(
+> +		struct device *parent, u32 db, struct list_head *resources)
+> +{
+> +	int error;
+> +	int bus = PCI_BUSNUM(db);
+> +	int domain = PCI_DOMAIN(db);
+> +	struct pci_host_bridge *host;
+> +	struct resource_entry *window, *n;
+> +
+> +	host = kzalloc(sizeof(*host), GFP_KERNEL);
+> +	if (!host)
+> +		return NULL;
+> +
+> +	host->busnum = bus;
+> +	host->domain = domain;
+> +	/* If support CONFIG_PCI_DOMAINS_GENERIC, use
+> +	 * pci_host_assign_domain_nr() to assign domain
+> +	 * number instead PCI_DOMAIN(db).
+> +	 */
+> +	pci_host_assign_domain_nr(host);
 
-There doesn't seem to be any harm in updating pcifront to follow this
-generic API change.
+At this point, host->dev.parent has not been assigned. However, when 
+calling pci_host_assign_domain_nr(host), it calls 
+pci_assign_domain_nr(host->dev.parent), which uses parent->of_node 
+directly w/o checking if parent is NULL. This ended up causing NULL 
+pointer exception when I do the test.
 
-Ian.
+I think we need to moveo host->dev.parent = parent before calling 
+pci_host_assign_domain_nr(host).
 
+Thanks,
+
+Suravee
