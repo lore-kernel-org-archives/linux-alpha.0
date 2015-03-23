@@ -1,98 +1,54 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v7 19/31] powerpc/pci: Use pci_scan_host_bridge() for
- simplicity
-Date: Mon, 23 Mar 2015 20:40:45 +0800
-Message-ID: <1427114457-16687-20-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v7 28/31] PCI: rename to pci_find_host_bridge()
+Date: Mon, 23 Mar 2015 20:40:54 +0800
+Message-ID: <1427114457-16687-29-git-send-email-wangyijing@huawei.com>
 References: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 In-Reply-To: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Sender: linux-ia64-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-Tm93IHdlIGNvdWxkIHVzZSBwY2lfc2Nhbl9ob3N0X2JyaWRnZSgpIHRvIHNjYW4KcGNpIGJ1c2Vz
-LCBwcm92aWRlIHBvd2VycGMgc3BlY2lmaWMgcGNpX2hvc3RfYnJpZGdlX29wcy4KClNpZ25lZC1v
-ZmYtYnk6IFlpamluZyBXYW5nIDx3YW5neWlqaW5nQGh1YXdlaS5jb20+CkNDOiBCZW5qYW1pbiBI
-ZXJyZW5zY2htaWR0IDxiZW5oQGtlcm5lbC5jcmFzaGluZy5vcmc+CkNDOiBsaW51eHBwYy1kZXZA
-bGlzdHMub3psYWJzLm9yZwotLS0KIGFyY2gvcG93ZXJwYy9rZXJuZWwvcGNpLWNvbW1vbi5jIHwg
-ICA2MCArKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tCiAxIGZpbGVzIGNoYW5n
-ZWQsIDM3IGluc2VydGlvbnMoKyksIDIzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2FyY2gv
-cG93ZXJwYy9rZXJuZWwvcGNpLWNvbW1vbi5jIGIvYXJjaC9wb3dlcnBjL2tlcm5lbC9wY2ktY29t
-bW9uLmMKaW5kZXggMmM1ODIwMC4uZTJiNTBhMiAxMDA2NDQKLS0tIGEvYXJjaC9wb3dlcnBjL2tl
-cm5lbC9wY2ktY29tbW9uLmMKKysrIGIvYXJjaC9wb3dlcnBjL2tlcm5lbC9wY2ktY29tbW9uLmMK
-QEAgLTc3Myw2ICs3NzMsMjkgQEAgdm9pZCBwY2liaW9zX3NldF9yb290X2J1c19zcGVlZChzdHJ1
-Y3QgcGNpX2hvc3RfYnJpZGdlICpicmlkZ2UpCiAJCXJldHVybiBwcGNfbWQucGNpYmlvc19zZXRf
-cm9vdF9idXNfc3BlZWQoYnJpZGdlKTsKIH0KIAorc3RhdGljIGludCBwY2lfaG9zdF9zY2FuX2J1
-cyhzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpob3N0KQoreworCWludCBtb2RlID0gUENJX1BST0JF
-X05PUk1BTDsKKwlzdHJ1Y3QgcGNpX2J1cyAqYnVzID0gaG9zdC0+YnVzOworCXN0cnVjdCBwY2lf
-Y29udHJvbGxlciAqaG9zZSA9IGRldl9nZXRfZHJ2ZGF0YSgmaG9zdC0+ZGV2KTsKKworCS8qIEdl
-dCBwcm9iZSBtb2RlIGFuZCBwZXJmb3JtIHNjYW4gKi8KKwlpZiAoaG9zZS0+ZG4gJiYgcHBjX21k
-LnBjaV9wcm9iZV9tb2RlKQorCQltb2RlID0gcHBjX21kLnBjaV9wcm9iZV9tb2RlKGJ1cyk7CisK
-Kwlwcl9kZWJ1ZygiICAgIHByb2JlIG1vZGU6ICVkXG4iLCBtb2RlKTsKKwlpZiAobW9kZSA9PSBQ
-Q0lfUFJPQkVfREVWVFJFRSkKKwkJb2Zfc2Nhbl9idXMoaG9zZS0+ZG4sIGJ1cyk7CisKKwlpZiAo
-bW9kZSA9PSBQQ0lfUFJPQkVfTk9STUFMKSB7CisJCXBjaV9idXNfdXBkYXRlX2J1c25fcmVzX2Vu
-ZChidXMsIDI1NSk7CisJCWhvc2UtPmxhc3RfYnVzbm8gPSBwY2lfc2Nhbl9jaGlsZF9idXMoYnVz
-KTsKKwkJcGNpX2J1c191cGRhdGVfYnVzbl9yZXNfZW5kKGJ1cywgaG9zZS0+bGFzdF9idXNubyk7
-CisJfQorCisJcmV0dXJuIHBjaV9idXNfY2hpbGRfbWF4X2J1c25yKGJ1cyk7Cit9CisKIC8qIFRo
-aXMgaGVhZGVyIGZpeHVwIHdpbGwgZG8gdGhlIHJlc291cmNlIGZpeHVwIGZvciBhbGwgZGV2aWNl
-cyBhcyB0aGV5IGFyZQogICogcHJvYmVkLCBidXQgbm90IGZvciBicmlkZ2UgcmFuZ2VzCiAgKi8K
-QEAgLTE1ODUsNiArMTYwOCwxMSBAQCBzdHJ1Y3QgZGV2aWNlX25vZGUgKnBjaWJpb3NfZ2V0X3Bo
-Yl9vZl9ub2RlKHN0cnVjdCBwY2lfYnVzICpidXMpCiAJcmV0dXJuIG9mX25vZGVfZ2V0KGhvc2Ut
-PmRuKTsKIH0KIAorc3RhdGljIHN0cnVjdCBwY2lfaG9zdF9icmlkZ2Vfb3BzIHBjaV9ob3N0X29w
-cyA9IHsKKwkuc2V0X3Jvb3RfYnVzX3NwZWVkID0gcGNpYmlvc19zZXRfcm9vdF9idXNfc3BlZWQs
-CisJLnNjYW5fYnVzID0gcGNpX2hvc3Rfc2Nhbl9idXMsCit9OworCiAvKioKICAqIHBjaV9zY2Fu
-X3BoYiAtIEdpdmVuIGEgcGNpX2NvbnRyb2xsZXIsIHNldHVwIGFuZCBzY2FuIHRoZSBQQ0kgYnVz
-CiAgKiBAaG9zZTogUG9pbnRlciB0byB0aGUgUENJIGhvc3QgY29udHJvbGxlciBpbnN0YW5jZSBz
-dHJ1Y3R1cmUKQEAgLTE1OTIsOSArMTYyMCw4IEBAIHN0cnVjdCBkZXZpY2Vfbm9kZSAqcGNpYmlv
-c19nZXRfcGhiX29mX25vZGUoc3RydWN0IHBjaV9idXMgKmJ1cykKIHZvaWQgcGNpYmlvc19zY2Fu
-X3BoYihzdHJ1Y3QgcGNpX2NvbnRyb2xsZXIgKmhvc2UpCiB7CiAJTElTVF9IRUFEKHJlc291cmNl
-cyk7Ci0Jc3RydWN0IHBjaV9idXMgKmJ1czsKKwlzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpob3N0
-OwogCXN0cnVjdCBkZXZpY2Vfbm9kZSAqbm9kZSA9IGhvc2UtPmRuOwotCWludCBtb2RlOwogCiAJ
-cHJfZGVidWcoIlBDSTogU2Nhbm5pbmcgUEhCICVzXG4iLCBvZl9ub2RlX2Z1bGxfbmFtZShub2Rl
-KSk7CiAKQEAgLTE2MDksMzEgKzE2MzYsMTggQEAgdm9pZCBwY2liaW9zX3NjYW5fcGhiKHN0cnVj
-dCBwY2lfY29udHJvbGxlciAqaG9zZSkKIAlob3NlLT5idXNuLmZsYWdzID0gSU9SRVNPVVJDRV9C
-VVM7CiAJcGNpX2FkZF9yZXNvdXJjZSgmcmVzb3VyY2VzLCAmaG9zZS0+YnVzbik7CiAKKwlwY2lf
-aG9zdF9vcHMucGNpX29wcyA9IGhvc2UtPm9wczsKIAkvKiBDcmVhdGUgYW4gZW1wdHkgYnVzIGZv
-ciB0aGUgdG9wbGV2ZWwgKi8KLQlidXMgPSBwY2lfY3JlYXRlX3Jvb3RfYnVzKGhvc2UtPnBhcmVu
-dCwgaG9zZS0+Z2xvYmFsX251bWJlciwKLQkJCWhvc2UtPmZpcnN0X2J1c25vLCBob3NlLT5vcHMs
-IGhvc2UsICZyZXNvdXJjZXMpOwotCWlmIChidXMgPT0gTlVMTCkgewotCQlwcl9lcnIoIkZhaWxl
-ZCB0byBjcmVhdGUgYnVzIGZvciBQQ0kgZG9tYWluICUwNHhcbiIsCi0JCQlob3NlLT5nbG9iYWxf
-bnVtYmVyKTsKKwlob3N0ID0gcGNpX3NjYW5faG9zdF9icmlkZ2UoaG9zZS0+cGFyZW50LCBob3Nl
-LT5nbG9iYWxfbnVtYmVyLAorCQkJaG9zZS0+Zmlyc3RfYnVzbm8sIGhvc2UsICZyZXNvdXJjZXMs
-ICZwY2lfaG9zdF9vcHMpOworCWlmIChob3N0ID09IE5VTEwpIHsKKwkJcHJfZXJyKCJGYWlsZWQg
-dG8gY3JlYXRlIGhvc3QgYnJpZGdlIGZvciBwY2klMDR4OiUwMnhcbiIsCisJCQlob3NlLT5nbG9i
-YWxfbnVtYmVyLCBob3NlLT5maXJzdF9idXNubyk7CiAJCXBjaV9mcmVlX3Jlc291cmNlX2xpc3Qo
-JnJlc291cmNlcyk7CiAJCXJldHVybjsKIAl9CiAJaG9zZS0+YnVzID0gYnVzOwogCi0JLyogR2V0
-IHByb2JlIG1vZGUgYW5kIHBlcmZvcm0gc2NhbiAqLwotCW1vZGUgPSBQQ0lfUFJPQkVfTk9STUFM
-OwotCWlmIChub2RlICYmIHBwY19tZC5wY2lfcHJvYmVfbW9kZSkKLQkJbW9kZSA9IHBwY19tZC5w
-Y2lfcHJvYmVfbW9kZShidXMpOwotCXByX2RlYnVnKCIgICAgcHJvYmUgbW9kZTogJWRcbiIsIG1v
-ZGUpOwotCWlmIChtb2RlID09IFBDSV9QUk9CRV9ERVZUUkVFKQotCQlvZl9zY2FuX2J1cyhub2Rl
-LCBidXMpOwotCi0JaWYgKG1vZGUgPT0gUENJX1BST0JFX05PUk1BTCkgewotCQlwY2lfYnVzX3Vw
-ZGF0ZV9idXNuX3Jlc19lbmQoYnVzLCAyNTUpOwotCQlob3NlLT5sYXN0X2J1c25vID0gcGNpX3Nj
-YW5fY2hpbGRfYnVzKGJ1cyk7Ci0JCXBjaV9idXNfdXBkYXRlX2J1c25fcmVzX2VuZChidXMsIGhv
-c2UtPmxhc3RfYnVzbm8pOwotCX0KLQogCS8qIFBsYXRmb3JtIGdldHMgYSBjaGFuY2UgdG8gZG8g
-c29tZSBnbG9iYWwgZml4dXBzIGJlZm9yZQogCSAqIHdlIHByb2NlZWQgdG8gcmVzb3VyY2UgYWxs
-b2NhdGlvbgogCSAqLwpAQCAtMTY0MSw5ICsxNjU1LDkgQEAgdm9pZCBwY2liaW9zX3NjYW5fcGhi
-KHN0cnVjdCBwY2lfY29udHJvbGxlciAqaG9zZSkKIAkJcHBjX21kLnBjaWJpb3NfZml4dXBfcGhi
-KGhvc2UpOwogCiAJLyogQ29uZmlndXJlIFBDSSBFeHByZXNzIHNldHRpbmdzICovCi0JaWYgKGJ1
-cyAmJiAhcGNpX2hhc19mbGFnKFBDSV9QUk9CRV9PTkxZKSkgeworCWlmIChob3N0LT5idXMgJiYg
-IXBjaV9oYXNfZmxhZyhQQ0lfUFJPQkVfT05MWSkpIHsKIAkJc3RydWN0IHBjaV9idXMgKmNoaWxk
-OwotCQlsaXN0X2Zvcl9lYWNoX2VudHJ5KGNoaWxkLCAmYnVzLT5jaGlsZHJlbiwgbm9kZSkKKwkJ
-bGlzdF9mb3JfZWFjaF9lbnRyeShjaGlsZCwgJmhvc3QtPmJ1cy0+Y2hpbGRyZW4sIG5vZGUpCiAJ
-CQlwY2llX2J1c19jb25maWd1cmVfc2V0dGluZ3MoY2hpbGQpOwogCX0KIH0KLS0gCjEuNy4xCgpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eHBwYy1k
-ZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlz
-dHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+---
+ drivers/pci/host-bridge.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+index 919ba4d..8efb3a7 100644
+--- a/drivers/pci/host-bridge.c
++++ b/drivers/pci/host-bridge.c
+@@ -144,7 +144,7 @@ static struct pci_bus *find_pci_root_bus(struct pci_bus *bus)
+ 	return bus;
+ }
+ 
+-static struct pci_host_bridge *find_pci_host_bridge(struct pci_bus *bus)
++struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus)
+ {
+ 	struct pci_bus *root_bus = find_pci_root_bus(bus);
+ 
+@@ -162,7 +162,7 @@ void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
+ void pcibios_resource_to_bus(struct pci_bus *bus, struct pci_bus_region *region,
+ 			     struct resource *res)
+ {
+-	struct pci_host_bridge *bridge = find_pci_host_bridge(bus);
++	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
+ 	struct resource_entry *window;
+ 	resource_size_t offset = 0;
+ 
+@@ -187,7 +187,7 @@ static bool region_contains(struct pci_bus_region *region1,
+ void pcibios_bus_to_resource(struct pci_bus *bus, struct resource *res,
+ 			     struct pci_bus_region *region)
+ {
+-	struct pci_host_bridge *bridge = find_pci_host_bridge(bus);
++	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
+ 	struct resource_entry *window;
+ 	resource_size_t offset = 0;
+ 
+-- 
+1.7.1
+
