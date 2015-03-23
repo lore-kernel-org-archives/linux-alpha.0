@@ -1,155 +1,140 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v7 10/31] PCI: Introduce pci_host_bridge_list to manage host bridges
-Date: Mon, 23 Mar 2015 20:40:36 +0800
-Message-ID: <1427114457-16687-11-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v7 16/31] PCI: Introduce pci_bus_child_max_busnr()
+Date: Mon, 23 Mar 2015 20:40:42 +0800
+Message-ID: <1427114457-16687-17-git-send-email-wangyijing@huawei.com>
 References: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-ia64-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Fengguang Wu <fengguang.wu@intel.com>
 
-Introduce pci_host_bridge_list to manage pci host
-bridges in system, this make us have the ability
-to check whether the new host would conflict with
-existing one. Then we could remove bus alreay exist
-check in __pci_create_root_bus().
+Sometimes, we want to know the highest reserved
+busnr for children bus. Because parent's bus->busn_res
+may have padding in it. For example, some host drivers
+don't know the bus end, so they supply the bus
+resource (root_bus, 255), they want to update the
+max bus number after pci scan complete. But pci scan
+functions won't return the actual max bus number.
+So we could use pci_bus_child_max_busnr() to find
+that.
 
+Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/host-bridge.c |   41 ++++++++++++++++++++++++++++++++++++++++-
- drivers/pci/probe.c       |    9 +--------
- include/linux/pci.h       |    1 +
- 3 files changed, 42 insertions(+), 9 deletions(-)
+ drivers/pci/hotplug/acpiphp_glue.c |   29 +----------------------------
+ drivers/pci/pci.c                  |   27 +++++++++++++++++++++++++--
+ include/linux/pci.h                |    2 +-
+ 3 files changed, 27 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-index 1a9834b..8af6d51 100644
---- a/drivers/pci/host-bridge.c
-+++ b/drivers/pci/host-bridge.c
-@@ -8,6 +8,9 @@
- 
- #include "pci.h"
- 
-+static LIST_HEAD(pci_host_bridge_list);
-+static DEFINE_MUTEX(pci_host_mutex);
-+
- static void pci_release_host_bridge_dev(struct device *dev)
- {
- 	struct pci_host_bridge *bridge = to_pci_host_bridge(dev);
-@@ -41,12 +44,29 @@ static void pci_host_update_busn_res(
- 	pci_add_resource(resources, &host->busn_res);
+diff --git a/drivers/pci/hotplug/acpiphp_glue.c b/drivers/pci/hotplug/acpiphp_glue.c
+index bcb90e4..84f2584 100644
+--- a/drivers/pci/hotplug/acpiphp_glue.c
++++ b/drivers/pci/hotplug/acpiphp_glue.c
+@@ -397,33 +397,6 @@ static void cleanup_bridge(struct acpiphp_bridge *bridge)
+ 	acpi_unlock_hp_context();
  }
  
-+static bool pci_host_busn_res_overlap(
-+		struct pci_host_bridge *new, struct pci_host_bridge *old)
-+{
-+	struct resource_entry *entry;
-+	struct resource *res1 = NULL, *res2 = NULL;
-+
-+	resource_list_for_each_entry(entry, &old->windows)
-+		if (entry->res->flags & IORESOURCE_BUS)
-+			res1 = entry->res;
-+
-+	resource_list_for_each_entry(entry, &new->windows)
-+		if (entry->res->flags & IORESOURCE_BUS)
-+			res2 = entry->res;
-+
-+	return resource_overlaps(res1, res2);
-+}
-+
- struct pci_host_bridge *pci_create_host_bridge(
- 		struct device *parent, int domain, int bus,
- 		struct list_head *resources)
- {
- 	int error;
--	struct pci_host_bridge *host;
-+	struct pci_host_bridge *host, *tmp;
- 	struct resource_entry *window, *n;
- 
- 	host = kzalloc(sizeof(*host), GFP_KERNEL);
-@@ -65,6 +85,21 @@ struct pci_host_bridge *pci_create_host_bridge(
- 	 */
- 	host->domain = domain;
- 	pci_host_assign_domain_nr(host);
-+	mutex_lock(&pci_host_mutex);
-+	list_for_each_entry(tmp, &pci_host_bridge_list, list) {
-+		if (tmp->domain != host->domain
-+			  || pci_host_busn_res_overlap(host, tmp)) {
-+			pr_warn("pci host bridge pci%04x:%02x exist\n",
-+					host->domain, bus);
-+			mutex_unlock(&pci_host_mutex);
-+			pci_free_resource_list(&host->windows);
-+			kfree(host);
-+			return NULL;
-+		}
-+	}
-+	list_add_tail(&host->list, &pci_host_bridge_list);
-+	mutex_unlock(&pci_host_mutex);
-+
- 	host->dev.release = pci_release_host_bridge_dev;
- 	dev_set_name(&host->dev, "pci%04x:%02x",
- 			host->domain, bus);
-@@ -80,6 +115,10 @@ struct pci_host_bridge *pci_create_host_bridge(
- 
- void pci_free_host_bridge(struct pci_host_bridge *host)
- {
-+	mutex_lock(&pci_host_mutex);
-+	list_del(&host->list);
-+	mutex_unlock(&pci_host_mutex);
-+
- 	device_unregister(&host->dev);
- }
- 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 25ac741..8517d1b 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1869,7 +1869,7 @@ static struct pci_bus *__pci_create_root_bus(
- 		void *sysdata)
- {
- 	int error;
--	struct pci_bus *b, *b2;
-+	struct pci_bus *b;
- 	struct resource_entry *window;
- 	struct device *parent;
- 	struct resource *res;
-@@ -1887,12 +1887,6 @@ static struct pci_bus *__pci_create_root_bus(
- 	b->number = b->busn_res.start =
- 		pci_host_first_busnr(bridge);
- 	pci_bus_assign_domain_nr(b, parent);
--	b2 = pci_find_bus(pci_domain_nr(b), b->number);
--	if (b2) {
--		/* If we already got to this bus through a different bridge, ignore it */
--		dev_dbg(&b2->dev, "bus already known\n");
--		goto err_out;
+-/**
+- * acpiphp_max_busnr - return the highest reserved bus number under the given bus.
+- * @bus: bus to start search with
+- */
+-static unsigned char acpiphp_max_busnr(struct pci_bus *bus)
+-{
+-	struct pci_bus *tmp;
+-	unsigned char max, n;
+-
+-	/*
+-	 * pci_bus_max_busnr will return the highest
+-	 * reserved busnr for all these children.
+-	 * that is equivalent to the bus->subordinate
+-	 * value.  We don't want to use the parent's
+-	 * bus->subordinate value because it could have
+-	 * padding in it.
+-	 */
+-	max = bus->busn_res.start;
+-
+-	list_for_each_entry(tmp, &bus->children, node) {
+-		n = pci_bus_max_busnr(tmp);
+-		if (n > max)
+-			max = n;
 -	}
+-	return max;
+-}
+-
+ static void acpiphp_set_acpi_region(struct acpiphp_slot *slot)
+ {
+ 	struct acpiphp_func *func;
+@@ -489,7 +462,7 @@ static void enable_slot(struct acpiphp_slot *slot)
+ 	LIST_HEAD(add_list);
  
- 	bridge->bus = b;
- 	b->bridge = get_device(&bridge->dev);
-@@ -1952,7 +1946,6 @@ static struct pci_bus *__pci_create_root_bus(
- 
- put_dev:
- 	put_device(&bridge->dev);
--err_out:
- 	kfree(b);
- 	return NULL;
+ 	acpiphp_rescan_slot(slot);
+-	max = acpiphp_max_busnr(bus);
++	max = pci_bus_child_max_busnr(bus);
+ 	for (pass = 0; pass < 2; pass++) {
+ 		list_for_each_entry(dev, &bus->devices, bus_list) {
+ 			if (PCI_SLOT(dev->devfn) != slot->device)
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 6677fac..8a2f12c 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -108,7 +108,7 @@ static bool pcie_ari_disabled;
+  * Given a PCI bus, returns the highest PCI bus number present in the set
+  * including the given PCI bus and its list of child PCI buses.
+  */
+-unsigned char pci_bus_max_busnr(struct pci_bus *bus)
++static unsigned char pci_bus_max_busnr(struct pci_bus *bus)
+ {
+ 	struct pci_bus *tmp;
+ 	unsigned char max, n;
+@@ -121,7 +121,30 @@ unsigned char pci_bus_max_busnr(struct pci_bus *bus)
+ 	}
+ 	return max;
  }
+-EXPORT_SYMBOL_GPL(pci_bus_max_busnr);
++
++unsigned char pci_bus_child_max_busnr(struct pci_bus *bus)
++{
++	struct pci_bus *tmp;
++	unsigned char max, n;
++
++	/*
++	 * pci_bus_max_busnr will return the highest
++	 * reserved busnr for all these children.
++	 * that is equivalent to the bus->subordinate
++	 * value.  We don't want to use the parent's
++	 * bus->subordinate value because it could have
++	 * padding in it.
++	 */
++	max = bus->busn_res.start;
++
++	list_for_each_entry(tmp, &bus->children, node) {
++		n = pci_bus_max_busnr(tmp);
++		if (n > max)
++			max = n;
++	}
++	return max;
++}
++EXPORT_SYMBOL_GPL(pci_bus_child_max_busnr);
+ 
+ #ifdef CONFIG_HAS_IOMEM
+ void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar)
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index f189dfb..91cba01 100644
+index 7f4f182..0b921d6 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -407,6 +407,7 @@ struct pci_host_bridge {
- 	/* we use default bus resource if no bus resource provided */
- 	struct resource busn_res;
- 	struct list_head windows;	/* resource_entry */
-+	struct list_head list;
- 	void (*release_fn)(struct pci_host_bridge *);
- 	void *release_data;
- };
+@@ -1185,7 +1185,7 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
+ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
+ 		  void *userdata);
+ int pci_cfg_space_size(struct pci_dev *dev);
+-unsigned char pci_bus_max_busnr(struct pci_bus *bus);
++unsigned char pci_bus_child_max_busnr(struct pci_bus *bus);
+ void pci_setup_bridge(struct pci_bus *bus);
+ resource_size_t pcibios_window_alignment(struct pci_bus *bus,
+ 					 unsigned long type);
 -- 
 1.7.1
-
