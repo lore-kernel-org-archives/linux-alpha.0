@@ -1,64 +1,143 @@
-From: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 24/31] PCI/tegra: Remove redundant tegra_pcie_scan_bus()
-Date: Mon, 23 Mar 2015 20:40:50 +0800
-Message-ID: <1427114457-16687-25-git-send-email-wangyijing@huawei.com>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: [PATCH v7 12/31] powerpc/PCI: Rename pcibios_root_bridge_prepare() to pcibios_set_root_bus_speed()
+Date: Mon, 23 Mar 2015 20:40:38 +0800
+Message-ID: <1427114457-16687-13-git-send-email-wangyijing@huawei.com>
 References: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1427114457-16687-1-git-send-email-wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yinghai Lu <yinghai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Rusty Russell <rusty-8n+1lVoiYb80n/F98K4Iww@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, Liviu Dudau <liviu-I3yL/QOVVjH10XsdtD+oqA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-Now pci_scan_root_bus() is almost similar to
-pci_create_root_bus() + pci_scan_child_bus().
-So we could use common pci_scan_root_bus() in
-pci_common_init_dev() to scan pci busses.
-tegra_pcie_scan_bus() is redundant, remove it.
+pcibios_root_bridge_prepare() in powerpc set
+root bus speed, it's not the preparation for
+pci host bridge. Rename it for better readability,
+and we could move pcibios_root_bridge_prepare()
+to pci_create_host_bridge(), in which root bus
+is not created. We will clean up these weak functions,
+and add pci_host_bridge_ops to do the same thing
+in later patch.
 
-Signed-off-by: Yijing Wang <wangyijing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-CC: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-CC: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/host/pci-tegra.c |   16 ----------------
- 1 files changed, 0 insertions(+), 16 deletions(-)
+ arch/powerpc/include/asm/machdep.h     |    2 +-
+ arch/powerpc/kernel/pci-common.c       |    8 +++-----
+ arch/powerpc/platforms/pseries/pci.c   |    8 ++++----
+ arch/powerpc/platforms/pseries/setup.c |    2 +-
+ drivers/pci/probe.c                    |    5 +++++
+ 5 files changed, 14 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/pci/host/pci-tegra.c b/drivers/pci/host/pci-tegra.c
-index 94e9362..10c0571 100644
---- a/drivers/pci/host/pci-tegra.c
-+++ b/drivers/pci/host/pci-tegra.c
-@@ -630,21 +630,6 @@ static int tegra_pcie_map_irq(const struct pci_dev *pdev, u8 slot, u8 pin)
- 	return irq;
+diff --git a/arch/powerpc/include/asm/machdep.h b/arch/powerpc/include/asm/machdep.h
+index c8175a3..b811d12 100644
+--- a/arch/powerpc/include/asm/machdep.h
++++ b/arch/powerpc/include/asm/machdep.h
+@@ -129,7 +129,7 @@ struct machdep_calls {
+ 	void		(*pcibios_fixup)(void);
+ 	int		(*pci_probe_mode)(struct pci_bus *);
+ 	void		(*pci_irq_fixup)(struct pci_dev *dev);
+-	int		(*pcibios_root_bridge_prepare)(struct pci_host_bridge
++	void		(*pcibios_set_root_bus_speed)(struct pci_host_bridge
+ 				*bridge);
+ 
+ 	/* To setup PHBs when using automatic OF platform driver for PCI */
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 9913f6c..2c58200 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -767,12 +767,10 @@ int pci_proc_domain(struct pci_bus *bus)
+ 	return 1;
  }
  
--static struct pci_bus *tegra_pcie_scan_bus(int nr, struct pci_sys_data *sys)
--{
--	struct tegra_pcie *pcie = sys_to_pcie(sys);
--	struct pci_bus *bus;
--
--	bus = pci_create_root_bus(pcie->dev, -1, sys->busnr, &tegra_pcie_ops,
--			sys, &sys->resources);
--	if (!bus)
--		return NULL;
--
--	pci_scan_child_bus(bus);
--
--	return bus;
--}
--
- static irqreturn_t tegra_pcie_isr(int irq, void *arg)
+-int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
++void pcibios_set_root_bus_speed(struct pci_host_bridge *bridge)
  {
- 	const char *err_msg[] = {
-@@ -1831,7 +1816,6 @@ static int tegra_pcie_enable(struct tegra_pcie *pcie)
- 	hw.private_data = (void **)&pcie;
- 	hw.setup = tegra_pcie_setup;
- 	hw.map_irq = tegra_pcie_map_irq;
--	hw.scan = tegra_pcie_scan_bus;
- 	hw.ops = &tegra_pcie_ops;
+-	if (ppc_md.pcibios_root_bridge_prepare)
+-		return ppc_md.pcibios_root_bridge_prepare(bridge);
+-
+-	return 0;
++	if (ppc_md.pcibios_set_root_bus_speed)
++		return ppc_md.pcibios_set_root_bus_speed(bridge);
+ }
  
- 	pci_common_init_dev(pcie->dev, &hw);
+ /* This header fixup will do the resource fixup for all devices as they are
+diff --git a/arch/powerpc/platforms/pseries/pci.c b/arch/powerpc/platforms/pseries/pci.c
+index fe16a50..89ff79c 100644
+--- a/arch/powerpc/platforms/pseries/pci.c
++++ b/arch/powerpc/platforms/pseries/pci.c
+@@ -110,7 +110,7 @@ static void fixup_winbond_82c105(struct pci_dev* dev)
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_WINBOND, PCI_DEVICE_ID_WINBOND_82C105,
+ 			 fixup_winbond_82c105);
+ 
+-int pseries_root_bridge_prepare(struct pci_host_bridge *bridge)
++void pseries_set_root_bus_speed(struct pci_host_bridge *bridge)
+ {
+ 	struct device_node *dn, *pdn;
+ 	struct pci_bus *bus;
+@@ -121,7 +121,7 @@ int pseries_root_bridge_prepare(struct pci_host_bridge *bridge)
+ 
+ 	dn = pcibios_get_phb_of_node(bus);
+ 	if (!dn)
+-		return 0;
++		return;
+ 
+ 	for (pdn = dn; pdn != NULL; pdn = of_get_next_parent(pdn)) {
+ 		rc = of_property_read_u32_array(pdn,
+@@ -135,7 +135,7 @@ int pseries_root_bridge_prepare(struct pci_host_bridge *bridge)
+ 
+ 	if (rc) {
+ 		pr_debug("no ibm,pcie-link-speed-stats property\n");
+-		return 0;
++		return;
+ 	}
+ 
+ 	switch (pcie_link_speed_stats[0]) {
+@@ -168,5 +168,5 @@ int pseries_root_bridge_prepare(struct pci_host_bridge *bridge)
+ 		break;
+ 	}
+ 
+-	return 0;
++	return;
+ }
+diff --git a/arch/powerpc/platforms/pseries/setup.c b/arch/powerpc/platforms/pseries/setup.c
+index e445b67..b196c0d 100644
+--- a/arch/powerpc/platforms/pseries/setup.c
++++ b/arch/powerpc/platforms/pseries/setup.c
+@@ -496,7 +496,7 @@ static void __init pSeries_setup_arch(void)
+ 		ppc_md.enable_pmcs = power4_enable_pmcs;
+ 	}
+ 
+-	ppc_md.pcibios_root_bridge_prepare = pseries_root_bridge_prepare;
++	ppc_md.pcibios_set_root_bus_speed = pseries_set_root_bus_speed;
+ 
+ 	if (firmware_has_feature(FW_FEATURE_SET_MODE)) {
+ 		long rc;
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 0ac2bf6..418a426 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1856,6 +1856,10 @@ int __weak pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
+ 	return 0;
+ }
+ 
++void __weak pcibios_set_root_bus_speed(struct pci_host_bridge *bridge)
++{
++}
++
+ void __weak pcibios_add_bus(struct pci_bus *bus)
+ {
+ }
+@@ -1893,6 +1897,7 @@ static struct pci_bus *__pci_create_root_bus(
+ 	if (error)
+ 		goto put_dev;
+ 
++	pcibios_set_root_bus_speed(bridge);
+ 	device_enable_async_suspend(b->bridge);
+ 	pci_set_bus_of_node(b);
+ 
 -- 
 1.7.1
+
