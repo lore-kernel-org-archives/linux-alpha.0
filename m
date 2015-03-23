@@ -1,77 +1,137 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v7 02/31] PCI: Remove deprecated pci_scan_bus_parented()
-Date: Mon, 23 Mar 2015 20:40:28 +0800
-Message-ID: <1427114457-16687-3-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v7 07/31] PCI: Add default bus resource in pci_host_bridge
+Date: Mon, 23 Mar 2015 20:40:33 +0800
+Message-ID: <1427114457-16687-8-git-send-email-wangyijing@huawei.com>
 References: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1427114457-16687-1-git-send-email-wangyijing@huawei.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Liviu Dudau <liviu@dudau.co.uk>, Rusty Russell <rusty@rustcorp.com.au>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-alpha@vger.kernel.org, Tony Luck <tony.luck@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Yijing Wang <wangyijing@huawei.com>, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@linux.intel.com>, linux-arm-kernel@lists.infradead.org
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-No one uses pci_scan_bus_parented() any more,
-remove it.
+If there is no busn resource provided for pci_scan_root_bus(),
+we would insert a default bus resource (root_bus_number, 255)
+in root bus, and update the max bus number we found after
+pci_scan_child_bus(). We also need to hold the default bus
+resource in pci_host_bridge, then we could identify whether
+the new pci host bridge conflict with existing one.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/probe.c |   19 -------------------
- include/linux/pci.h |    2 --
- 2 files changed, 0 insertions(+), 21 deletions(-)
+ drivers/pci/host-bridge.c |   20 ++++++++++++++++++++
+ drivers/pci/probe.c       |   26 ++++++++++----------------
+ include/linux/pci.h       |    2 ++
+ 3 files changed, 32 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+index 7d52a0a..ecc1a7c 100644
+--- a/drivers/pci/host-bridge.c
++++ b/drivers/pci/host-bridge.c
+@@ -19,6 +19,25 @@ static void pci_release_host_bridge_dev(struct device *dev)
+ 	kfree(bridge);
+ }
+ 
++static void pci_host_update_busn_res(
++		struct pci_host_bridge *host, int bus,
++		struct list_head *resources)
++{
++	struct resource_entry *window;
++
++	resource_list_for_each_entry(window, resources)
++		if (window->res->flags & IORESOURCE_BUS)
++			return;
++
++	pr_info(
++	 "No busn resource found for pci%04x:%02x, will use [bus %02x-ff]\n",
++		host->domain, bus, bus);
++	host->busn_res.flags = IORESOURCE_BUS;
++	host->busn_res.start = bus;
++	host->busn_res.end = 255;
++	pci_add_resource(resources, &host->busn_res);
++}
++
+ struct pci_host_bridge *pci_create_host_bridge(
+ 		struct device *parent, int domain, int bus,
+ 		struct list_head *resources)
+@@ -33,6 +52,7 @@ struct pci_host_bridge *pci_create_host_bridge(
+ 
+ 	host->dev.parent = parent;
+ 	INIT_LIST_HEAD(&host->windows);
++	pci_host_update_busn_res(host, bus, resources);
+ 	resource_list_for_each_entry_safe(window, n, resources)
+ 		list_move_tail(&window->node, &host->windows);
+ 	/*
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 8ef0375..699a238 100644
+index 9bc4784..d5a12d9 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -2091,25 +2091,6 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
+@@ -2022,6 +2022,12 @@ int pci_bus_update_busn_res_end(struct pci_bus *b, int bus_max)
+ 	return ret;
  }
- EXPORT_SYMBOL(pci_scan_root_bus);
  
--/* Deprecated; use pci_scan_root_bus() instead */
--struct pci_bus *pci_scan_bus_parented(struct device *parent,
--		int bus, struct pci_ops *ops, void *sysdata)
--{
--	LIST_HEAD(resources);
--	struct pci_bus *b;
--
--	pci_add_resource(&resources, &ioport_resource);
--	pci_add_resource(&resources, &iomem_resource);
--	pci_add_resource(&resources, &busn_resource);
--	b = pci_create_root_bus(parent, bus, ops, sysdata, &resources);
--	if (b)
--		pci_scan_child_bus(b);
--	else
--		pci_free_resource_list(&resources);
--	return b;
--}
--EXPORT_SYMBOL(pci_scan_bus_parented);
--
- struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops,
- 					void *sysdata)
++static void pci_host_update_busn_res_end(
++		struct pci_host_bridge *host, int max)
++{
++	host->busn_res.end = max;
++}
++
+ void pci_bus_release_busn_res(struct pci_bus *b)
  {
+ 	struct resource *res = &b->busn_res;
+@@ -2040,32 +2046,20 @@ static struct pci_bus *__pci_scan_root_bus(int bus,
+ 		struct pci_host_bridge *host, struct pci_ops *ops,
+ 		void *sysdata)
+ {
+-	struct resource_entry *window;
+-	bool found = false;
+ 	struct pci_bus *b;
+ 	int max;
+ 
+-	resource_list_for_each_entry(window, &host->windows)
+-		if (window->res->flags & IORESOURCE_BUS) {
+-			found = true;
+-			break;
+-		}
+-
+ 	b = __pci_create_root_bus(bus, host, ops, sysdata);
+ 	if (!b)
+ 		return NULL;
+ 
+-	if (!found) {
+-		dev_info(&b->dev,
+-		 "No busn resource found for root bus, will use [bus %02x-ff]\n",
+-			bus);
+-		pci_bus_insert_busn_res(b, bus, 255);
+-	}
+-
+ 	max = pci_scan_child_bus(b);
+ 
+-	if (!found)
++	/* If default busn resource used, update the max bus number */
++	if (host->busn_res.flags & IORESOURCE_BUS) {
++		pci_host_update_busn_res_end(host, max);
+ 		pci_bus_update_busn_res_end(b, max);
++	}
+ 
+ 	return b;
+ }
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 211e9da..36effb8 100644
+index 1542df8..f189dfb 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -769,8 +769,6 @@ void pcibios_bus_to_resource(struct pci_bus *bus, struct resource *res,
- void pcibios_scan_specific_bus(int busn);
- struct pci_bus *pci_find_bus(int domain, int busnr);
- void pci_bus_add_devices(const struct pci_bus *bus);
--struct pci_bus *pci_scan_bus_parented(struct device *parent, int bus,
--				      struct pci_ops *ops, void *sysdata);
- struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops, void *sysdata);
- struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
- 				    struct pci_ops *ops, void *sysdata,
+@@ -404,6 +404,8 @@ struct pci_host_bridge {
+ 	int domain;
+ 	struct device dev;
+ 	struct pci_bus *bus;		/* root bus */
++	/* we use default bus resource if no bus resource provided */
++	struct resource busn_res;
+ 	struct list_head windows;	/* resource_entry */
+ 	void (*release_fn)(struct pci_host_bridge *);
+ 	void *release_data;
 -- 
 1.7.1
+
