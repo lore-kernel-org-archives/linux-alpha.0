@@ -1,92 +1,83 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v8 20/30] PCI: Remove pcibios_root_bridge_prepare() and pcibos_set_root_bus_speed()
-Date: Tue, 24 Mar 2015 11:34:14 +0800
-Message-ID: <1427168064-8657-21-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v8 21/30] sparc/PCI: Use pci_scan_host_bridge() for simplicity
+Date: Tue, 24 Mar 2015 11:34:15 +0800
+Message-ID: <1427168064-8657-22-git-send-email-wangyijing@huawei.com>
 References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-ia64-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, sparclinux@vger.kernel.org
 
-Now no one use weak pcibios_root_bridge_prepare() and
-pcibios_set_root_bus_speed, we could clean up them.
+Now we could use pci_scan_host_bridge() to scan
+pci buses, provide sparc specific pci_host_bridge_ops.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: sparclinux@vger.kernel.org
 ---
- drivers/pci/host-bridge.c |    4 ----
- drivers/pci/probe.c       |   18 +-----------------
- include/linux/pci.h       |    2 --
- 3 files changed, 1 insertions(+), 23 deletions(-)
+ arch/sparc/kernel/pci.c |   28 ++++++++++++++++++++++------
+ 1 files changed, 22 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-index b439264..919ba4d 100644
---- a/drivers/pci/host-bridge.c
-+++ b/drivers/pci/host-bridge.c
-@@ -110,10 +110,6 @@ struct pci_host_bridge *pci_create_host_bridge(
- 			goto list_del;
+diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
+index e40e456..fa95a1d 100644
+--- a/arch/sparc/kernel/pci.c
++++ b/arch/sparc/kernel/pci.c
+@@ -650,12 +650,27 @@ static void pci_claim_bus_resources(struct pci_bus *bus)
+ 		pci_claim_bus_resources(child_bus);
+ }
+ 
++static int pci_host_of_scan_bus(
++		struct pci_host_bridge *host)
++{
++	struct pci_pbm_info *pbm = dev_get_drvdata(&host->dev);
++	struct device_node *node = pbm->op->dev.of_node;
++
++	pci_of_scan_bus(pbm, node, host->bus);
++	return pci_bus_child_max_busnr(host->bus);
++}
++
++static struct pci_host_bridge_ops pci_host_ops = {
++	.scan_bus = pci_host_of_scan_bus,
++};
++
+ struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
+ 				 struct device *parent)
+ {
+ 	LIST_HEAD(resources);
+ 	struct device_node *node = pbm->op->dev.of_node;
+ 	struct pci_bus *bus;
++	struct pci_host_bridge *host;
+ 
+ 	printk("PCI: Scanning PBM %s\n", node->full_name);
+ 
+@@ -667,16 +682,17 @@ struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
+ 	pbm->busn.end	= pbm->pci_last_busno;
+ 	pbm->busn.flags	= IORESOURCE_BUS;
+ 	pci_add_resource(&resources, &pbm->busn);
+-	bus = pci_create_root_bus(parent, pbm->index, pbm->pci_first_busno,
+-			pbm->pci_ops, pbm, &resources);
+-	if (!bus) {
+-		printk(KERN_ERR "Failed to create bus for %s\n",
+-		       node->full_name);
++	pci_host_ops.pci_ops = pbm->pci_ops;
++	host = pci_scan_host_bridge(parent, pbm->index, pbm->pci_first_busno,
++			pbm, &resources, &pci_host_ops);
++	if (!host) {
++		pr_err("Failed to create host bridge pci%04x:%02x for %s\n",
++		       pbm->index, pbm->pci_first_busno, node->full_name);
+ 		pci_free_resource_list(&resources);
+ 		return NULL;
  	}
  
--	error = pcibios_root_bridge_prepare(host);
--	if (error)
--		goto list_del;
--
- 	error = device_register(&host->dev);
- 	if (error) {
- 		put_device(&host->dev);
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index b3d9b1b..7796bf8 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1844,22 +1844,6 @@ unsigned int pci_scan_child_bus(struct pci_bus *bus)
- }
- EXPORT_SYMBOL_GPL(pci_scan_child_bus);
+-	pci_of_scan_bus(pbm, node, bus);
++	bus = host->bus;
+ 	pci_bus_register_of_sysfs(bus);
  
--/**
-- * pcibios_root_bridge_prepare - Platform-specific host bridge setup.
-- * @bridge: Host bridge to set up.
-- *
-- * Default empty implementation.  Replace with an architecture-specific setup
-- * routine, if necessary.
-- */
--int __weak pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
--{
--	return 0;
--}
--
--void __weak pcibios_set_root_bus_speed(struct pci_host_bridge *bridge)
--{
--}
--
- void __weak pcibios_add_bus(struct pci_bus *bus)
- {
- }
-@@ -1896,7 +1880,7 @@ static struct pci_bus *__pci_create_root_bus(
- 
- 	if (bridge->ops && bridge->ops->set_root_bus_speed)
- 		bridge->ops->set_root_bus_speed(bridge);
--	pcibios_set_root_bus_speed(bridge);
-+
- 	device_enable_async_suspend(b->bridge);
- 	pci_set_bus_of_node(b);
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 0b921d6..61e0853 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -426,8 +426,6 @@ void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
- 		     void (*release_fn)(struct pci_host_bridge *),
- 		     void *release_data);
- 
--int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge);
--
- /*
-  * The first PCI_BRIDGE_RESOURCE_NUM PCI bus resources (those that correspond
-  * to P2P or CardBus bridge windows) go in a table.  Additional ones (for
+ 	pci_claim_bus_resources(bus);
 -- 
 1.7.1
-
