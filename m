@@ -1,77 +1,128 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v8 24/30] PCI/tegra: Remove redundant
- tegra_pcie_scan_bus()
-Date: Tue, 24 Mar 2015 13:31:40 +0100
-Message-ID: <20150324123139.GA11625@ulmo.nvidia.com>
+From: Daniel Axtens <dja@axtens.net>
+Subject: Re: [PATCH v8 19/30] powerpc/pci: Use pci_scan_host_bridge() for
+ simplicity
+Date: Wed, 25 Mar 2015 10:58:43 +1100
+Message-ID: <1427241523.2685.18.camel@axtens.net>
 References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>
- <1427168064-8657-25-git-send-email-wangyijing@huawei.com>
+	 <1427168064-8657-20-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-f8VqFOdjSIDYlQlsKBNk"
+Return-path: <linux-pci-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-type:content-disposition:in-reply-to:user-agent;
-        bh=sGcEWF5zMxgCVTCw/87okJ35OTnjYpHhABrF8DIPdr4=;
-        b=t5wm+RbFGISXZzVzlhncBC6kAXf940NeaU03Qr38EPpDhly2oGhhhkLbPLfR5d1kti
-         xZh2z7MRwaUOLsQc79XkAgAId7cwTNfBbiwTPHHgfSZ5I4IsVwl3EQAsvnYlaecwdtuP
-         bBNez+aN3c+J8kJ2FsdOoDfx7kXL1J4P7OK+cJOaY0PwVVKyV5W6HCsrVjCbB536LBmd
-         DmqbSSdxyJ3M0FObs3LSmyjpiycnNBl1H/eibam09a+0noB0HS8YcKJrtEV/cytsSvDU
-         PPTC8j1cMsk5O3kMqPOMNtAmw3Rk0W7PUQv9Jm5k27C4X2fujDssQXVLmSxjeLFFc6sb
-         NYgQ==
-Content-Disposition: inline
-In-Reply-To: <1427168064-8657-25-git-send-email-wangyijing@huawei.com>
-Sender: linux-alpha-owner@vger.kernel.org
+        d=axtens.net; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-type:mime-version;
+        bh=MwtRXrlf4YwsoG58d1Ax1CTt+o970v23/O8DDja7dEo=;
+        b=qvmHmwbK4I3RXuZtQpNvznt+r7czBsnoA0TttZHLVwFLY8EePXZR7M1VjyQNYT8NZ2
+         rUlH9pQtYoBWJM0j2Qb4a0UTldbKfLU+qwgkZbqeEDlV5oO0IDjwKu/SC26/J98Ti8ZJ
+         VqfaV9NUV0xsqdjUAfAUQK7mg0iYBhXHNYvfE=
+In-Reply-To: <1427168064-8657-20-git-send-email-wangyijing@huawei.com>
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 To: Yijing Wang <wangyijing@huawei.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-tegra@vger.kernel.org
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
 
 
---bp/iNruPH9dso1Pn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--=-f8VqFOdjSIDYlQlsKBNk
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 24, 2015 at 11:34:18AM +0800, Yijing Wang wrote:
-> Now pci_scan_root_bus() is almost similar to
-> pci_create_root_bus() + pci_scan_child_bus().
-> So we could use common pci_scan_root_bus() in
-> pci_common_init_dev() to scan pci busses.
-> tegra_pcie_scan_bus() is redundant, remove it.
+On Tue, 2015-03-24 at 11:34 +0800, Yijing Wang wrote:
+> Now we could use pci_scan_host_bridge() to scan
+> pci buses, provide powerpc specific pci_host_bridge_ops.
 >=20
 > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> CC: Thierry Reding <thierry.reding@gmail.com>
-> CC: linux-tegra@vger.kernel.org
+> CC: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> CC: linuxppc-dev@lists.ozlabs.org
 > ---
->  drivers/pci/host/pci-tegra.c |   16 ----------------
->  1 files changed, 0 insertions(+), 16 deletions(-)
+>  arch/powerpc/kernel/pci-common.c |   60 +++++++++++++++++++++++---------=
+-----
+>  1 files changed, 37 insertions(+), 23 deletions(-)
 
-Jetson TK1 still boots over NFS root via the onboard PCIe network card
-with this series applied, so:
+> diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-c=
+ommon.c
+> index 2c58200..e2b50a2 100644
+> --- a/arch/powerpc/kernel/pci-common.c
+> +++ b/arch/powerpc/kernel/pci-common.c
+> @@ -773,6 +773,29 @@ void pcibios_set_root_bus_speed(struct pci_host_brid=
+ge *bridge)
+>  		return ppc_md.pcibios_set_root_bus_speed(bridge);
+>  }
+> =20
+> +static int pci_host_scan_bus(struct pci_host_bridge *host)
+> +{
+> +	int mode =3D PCI_PROBE_NORMAL;
+> +	struct pci_bus *bus =3D host->bus;
+> +	struct pci_controller *hose =3D dev_get_drvdata(&host->dev);
+Is there any reason this isn't *hose =3D pci_bus_to_host(bus)?
+> +
+> +	/* Get probe mode and perform scan */
+> +	if (hose->dn && ppc_md.pci_probe_mode)
+> +		mode =3D ppc_md.pci_probe_mode(bus);
+> +
+> +	pr_debug("    probe mode: %d\n", mode);
+> +	if (mode =3D=3D PCI_PROBE_DEVTREE)
+> +		of_scan_bus(hose->dn, bus);
+> +
+> +	if (mode =3D=3D PCI_PROBE_NORMAL) {
+> +		pci_bus_update_busn_res_end(bus, 255);
+> +		hose->last_busno =3D pci_scan_child_bus(bus);
+> +		pci_bus_update_busn_res_end(bus, hose->last_busno);
+> +	}
+> +
+> +	return pci_bus_child_max_busnr(bus);
+> +}
+> +
+I'm having trouble convincing myself that this patch covers every
+variation within our PCI implementations. In particular, there's a
+stanza in of_scan_pci_bridge in kernel/pci_of_scan.c that's almost
+identical to this function. Does that implementation need to be cleaned
+up and replaced with this function too?
 
-Tested-by: Thierry Reding <treding@nvidia.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
 
---bp/iNruPH9dso1Pn
-Content-Type: application/pgp-signature
+> @@ -1641,9 +1655,9 @@ void pcibios_scan_phb(struct pci_controller *hose)
+>  		ppc_md.pcibios_fixup_phb(hose);
+> =20
+>  	/* Configure PCI Express settings */
+> -	if (bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+> +	if (host->bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+>  		struct pci_bus *child;
+> -		list_for_each_entry(child, &bus->children, node)
+> +		list_for_each_entry(child, &host->bus->children, node)
+>  			pcie_bus_configure_settings(child);
+>  	}
+>  }
+Two things: Firstly, the function uses hose throughout, not host.
+Secondly, you're not deleting the bus variable: what's the purpose of
+this change?
+
+Regards,
+Daniel
+
+
+--=-f8VqFOdjSIDYlQlsKBNk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
+Comment: GPGTools - https://gpgtools.org
 
-iQIcBAABCAAGBQJVEVknAAoJEN0jrNd/PrOhgSAQAKCC9PfTMZLcgurKsdBmqctU
-7WkCuoKLDv1sbEfF1mzfk8VI/9kROf6bIyKKgvXV2V50p8OHBbJBJmjR5U48/37v
-iDGVlSrSII4+G3Mv/HWx/Dvh1whXYp/TH+SNUPNY1BdSIRmvjmLQ3QYBuC6P3N6W
-kjd5NW5KkgZ0NPORWfXzEabkXIGEjIk8fsB6ILXxBVJMdUxiLA4LyOQAmmuzoviW
-TAsboT7liAJPbiM2mjnYqo6ZdDR7Y8hotXBf8KtIxlzns12VQZl40GdtvZ7zWi4R
-tH3zyYqJuhyg6VjvDMZzKZsmU4hctOQ2sgeYOFn52t8nPIZqJMoLT3nAabgUw+7x
-NNI+oZGD8Wo4XGDXQyiY1ihjObLCD2uDfpKfdwmCRlYFef66rEWW0gImACCCprEc
-9jqQgqZAN9AXX+1OkNyX+Ioiy2v7yicVi/JMHawdEEdszSuG3RuZIQQWku+T2UDy
-WmpI2MdZRUEAJiW1V5rOBibae2uvGEHedkZmOqkjG2NLFqt633FlUg416ucPD+eJ
-VKWNXwsJyqBtGpifsUaFZfSNFsvSZ4gceI+/KD0ZpmhhAXkh+AVoNTa1iZLjq3X9
-q8J1YflS6mHPbE+D37LRDLg47XoHRIf0Ly/9GukoXbowfnP3/Fy1532Zy+1eXyBb
-Lk3IVyxC8BFsZ0j1FZKG
-=0jIA
+iQIcBAABCAAGBQJVEfo/AAoJEPC3R3P2I92FxmIQAIshxMc6nPL6aTLS4mmTONnj
+6s9KW71n2ni64pT74/Q97KF4YJ/KLAPPNUpOZtZ46MbLtCXyFkZyxGtb+dArOUfy
+1G0LpoZOk06zszw/KuNwRSscZEYWf7AT35E4/BlONWjoPoNL2BQUexICrd38+/aE
+gV6zZfWZJrRzWtdxAIMsyoz33bKhRJgf6WGBGwh8aJj9TtXCc/Bz9UZT4ZbhIkWG
+QH7jly1n06OPXTn6Ap74VlbIGDnJBtvfm+hduFXqL5NlgmZJh9YSktjpq4PgmWVT
+EcNE5xfHyD884GpxYjckWqC+qKUynrFMtGT2a7t3HoylfcCQSbdYScAw4VHbDUR8
+yEvtbuWvoKUxdGKG8xBbNwIVkASoZMSld377hC9WVO5b42670JMIncGCZOr4svO0
+cCufQm9i01cplYD25rEwU7GEI7ZU+JLKsb/gihBmjht37Z4wjMtsiAgl+zuY9Tb5
+ilIUJJb00sXCLKYWhenplcVrTxX8RUbrU3FUG5M4FM+/WDYVLiMRcjTJshC897Em
+N/K2kXAYLYAi4THnRwS8wqFeYqEYUSKaTC2kz/LcEAg0rUwt1VPvwMJu/HeaBNLu
+b6Tpgf3QKihKqv78cY4oACebmzaSQBXPPs2p4uM5v/Xuk3M2KKWzcFdbXnBRiBk4
+wOFxmReRgVfXP7L2rniG
+=dWhE
 -----END PGP SIGNATURE-----
 
---bp/iNruPH9dso1Pn--
+--=-f8VqFOdjSIDYlQlsKBNk--
