@@ -1,44 +1,77 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v8 26/30] PCI/xgene: Use pci_scan_root_bus() instead of pci_create_root_bus()
-Date: Tue, 24 Mar 2015 11:34:20 +0800
-Message-ID: <1427168064-8657-27-git-send-email-wangyijing@huawei.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v8 24/30] PCI/tegra: Remove redundant
+ tegra_pcie_scan_bus()
+Date: Tue, 24 Mar 2015 13:31:40 +0100
+Message-ID: <20150324123139.GA11625@ulmo.nvidia.com>
 References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>
+ <1427168064-8657-25-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-type:content-disposition:in-reply-to:user-agent;
+        bh=sGcEWF5zMxgCVTCw/87okJ35OTnjYpHhABrF8DIPdr4=;
+        b=t5wm+RbFGISXZzVzlhncBC6kAXf940NeaU03Qr38EPpDhly2oGhhhkLbPLfR5d1kti
+         xZh2z7MRwaUOLsQc79XkAgAId7cwTNfBbiwTPHHgfSZ5I4IsVwl3EQAsvnYlaecwdtuP
+         bBNez+aN3c+J8kJ2FsdOoDfx7kXL1J4P7OK+cJOaY0PwVVKyV5W6HCsrVjCbB536LBmd
+         DmqbSSdxyJ3M0FObs3LSmyjpiycnNBl1H/eibam09a+0noB0HS8YcKJrtEV/cytsSvDU
+         PPTC8j1cMsk5O3kMqPOMNtAmw3Rk0W7PUQv9Jm5k27C4X2fujDssQXVLmSxjeLFFc6sb
+         NYgQ==
+Content-Disposition: inline
+In-Reply-To: <1427168064-8657-25-git-send-email-wangyijing@huawei.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Tanmay Inamdar <tinamdar@apm.com>
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-tegra@vger.kernel.org
 
-Use pci_scan_root_bus() instead of pci_create_root_bus() +
-pci_scan_child_bus() for simplicity.
 
-Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-CC: Tanmay Inamdar <tinamdar@apm.com>
----
- drivers/pci/host/pci-xgene.c |    3 +--
- 1 files changed, 1 insertions(+), 2 deletions(-)
+--bp/iNruPH9dso1Pn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pci/host/pci-xgene.c b/drivers/pci/host/pci-xgene.c
-index 078e853..380c259 100644
---- a/drivers/pci/host/pci-xgene.c
-+++ b/drivers/pci/host/pci-xgene.c
-@@ -499,12 +499,11 @@ static int xgene_pcie_probe_bridge(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	bus = pci_create_root_bus(&pdev->dev, -1, 0,
-+	bus = pci_scan_root_bus(&pdev->dev, -1, 0,
- 					&xgene_pcie_ops, port, &res);
- 	if (!bus)
- 		return -ENOMEM;
- 
--	pci_scan_child_bus(bus);
- 	pci_assign_unassigned_bus_resources(bus);
- 	pci_bus_add_devices(bus);
- 
--- 
-1.7.1
+On Tue, Mar 24, 2015 at 11:34:18AM +0800, Yijing Wang wrote:
+> Now pci_scan_root_bus() is almost similar to
+> pci_create_root_bus() + pci_scan_child_bus().
+> So we could use common pci_scan_root_bus() in
+> pci_common_init_dev() to scan pci busses.
+> tegra_pcie_scan_bus() is redundant, remove it.
+>=20
+> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+> CC: Thierry Reding <thierry.reding@gmail.com>
+> CC: linux-tegra@vger.kernel.org
+> ---
+>  drivers/pci/host/pci-tegra.c |   16 ----------------
+>  1 files changed, 0 insertions(+), 16 deletions(-)
+
+Jetson TK1 still boots over NFS root via the onboard PCIe network card
+with this series applied, so:
+
+Tested-by: Thierry Reding <treding@nvidia.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
+
+--bp/iNruPH9dso1Pn
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJVEVknAAoJEN0jrNd/PrOhgSAQAKCC9PfTMZLcgurKsdBmqctU
+7WkCuoKLDv1sbEfF1mzfk8VI/9kROf6bIyKKgvXV2V50p8OHBbJBJmjR5U48/37v
+iDGVlSrSII4+G3Mv/HWx/Dvh1whXYp/TH+SNUPNY1BdSIRmvjmLQ3QYBuC6P3N6W
+kjd5NW5KkgZ0NPORWfXzEabkXIGEjIk8fsB6ILXxBVJMdUxiLA4LyOQAmmuzoviW
+TAsboT7liAJPbiM2mjnYqo6ZdDR7Y8hotXBf8KtIxlzns12VQZl40GdtvZ7zWi4R
+tH3zyYqJuhyg6VjvDMZzKZsmU4hctOQ2sgeYOFn52t8nPIZqJMoLT3nAabgUw+7x
+NNI+oZGD8Wo4XGDXQyiY1ihjObLCD2uDfpKfdwmCRlYFef66rEWW0gImACCCprEc
+9jqQgqZAN9AXX+1OkNyX+Ioiy2v7yicVi/JMHawdEEdszSuG3RuZIQQWku+T2UDy
+WmpI2MdZRUEAJiW1V5rOBibae2uvGEHedkZmOqkjG2NLFqt633FlUg416ucPD+eJ
+VKWNXwsJyqBtGpifsUaFZfSNFsvSZ4gceI+/KD0ZpmhhAXkh+AVoNTa1iZLjq3X9
+q8J1YflS6mHPbE+D37LRDLg47XoHRIf0Ly/9GukoXbowfnP3/Fy1532Zy+1eXyBb
+Lk3IVyxC8BFsZ0j1FZKG
+=0jIA
+-----END PGP SIGNATURE-----
+
+--bp/iNruPH9dso1Pn--
