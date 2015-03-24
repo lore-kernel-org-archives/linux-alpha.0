@@ -1,7 +1,7 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v8 18/30] ia64/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
-Date: Tue, 24 Mar 2015 11:34:12 +0800
-Message-ID: <1427168064-8657-19-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v8 23/30] PCI/mvebu: Use pci_common_init_dev() to simplify code
+Date: Tue, 24 Mar 2015 11:34:17 +0800
+Message-ID: <1427168064-8657-24-git-send-email-wangyijing@huawei.com>
 References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-ia64-owner@vger.kernel.org>
@@ -11,83 +11,60 @@ List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Yijing Wang <wangyijing0307@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>
 
-From: Yijing Wang <wangyijing0307@gmail.com>
+Mvebu_pcie_scan_bus() is not necessary, we could use
+pci_common_init_dev() instead of pci_common_init(),
+and pass the device pointer as the parent. Then
+pci_scan_root_bus() will be called to scan the pci busses.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-CC: Tony Luck <tony.luck@intel.com>
-CC: Fenghua Yu <fenghua.yu@intel.com>
-CC: linux-ia64@vger.kernel.org
+CC: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+CC: Jason Cooper <jason@lakedaemon.net>
 ---
- arch/ia64/pci/pci.c |   34 +++++++++++++++++++---------------
- 1 files changed, 19 insertions(+), 15 deletions(-)
+ drivers/pci/host/pci-mvebu.c |   18 +-----------------
+ 1 files changed, 1 insertions(+), 17 deletions(-)
 
-diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
-index c642bc8..95dc43b 100644
---- a/arch/ia64/pci/pci.c
-+++ b/arch/ia64/pci/pci.c
-@@ -420,6 +420,19 @@ probe_pci_root_info(struct pci_root_info *info, struct acpi_device *device,
- 	return 0;
+diff --git a/drivers/pci/host/pci-mvebu.c b/drivers/pci/host/pci-mvebu.c
+index 0cfc494..d5a2b70 100644
+--- a/drivers/pci/host/pci-mvebu.c
++++ b/drivers/pci/host/pci-mvebu.c
+@@ -750,21 +750,6 @@ static int mvebu_pcie_setup(int nr, struct pci_sys_data *sys)
+ 	return 1;
  }
  
-+static int pci_host_bridge_prepare(struct pci_host_bridge *bridge)
-+{
-+	struct pci_controller *controller = bridge->bus->sysdata;
-+
-+	ACPI_COMPANION_SET(&bridge->dev, controller->companion);
-+	return 0;
-+}
-+
-+static struct pci_host_bridge_ops pci_host_ops = {
-+	.pci_ops = &pci_root_ops,
-+	.prepare = pci_host_bridge_prepare,
-+};
-+
- struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- {
- 	struct acpi_device *device = root->device;
-@@ -428,7 +441,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- 	struct pci_controller *controller;
- 	struct pci_root_info *info = NULL;
- 	int busnum = root->secondary.start;
--	struct pci_bus *pbus;
-+	struct pci_host_bridge *host;
- 	int ret;
- 
- 	controller = alloc_pci_controller(domain);
-@@ -465,26 +478,17 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- 	 * should handle the case here, but it appears that IA64 hasn't
- 	 * such quirk. So we just ignore the case now.
- 	 */
--	pbus = pci_create_root_bus(NULL, domain, bus, &pci_root_ops,
--			controller, &info->resources);
--	if (!pbus) {
-+	host = pci_scan_host_bridge(NULL, domain, bus, controller,
-+			&info->resources, &pci_host_ops);
-+	if (!host) {
- 		pci_free_resource_list(&info->resources);
- 		__release_pci_root_info(info);
- 		return NULL;
- 	}
- 
--	pci_set_host_bridge_release(to_pci_host_bridge(pbus->bridge),
-+	pci_set_host_bridge_release(host,
- 			release_pci_root_info, info);
--	pci_scan_child_bus(pbus);
--	return pbus;
+-static struct pci_bus *mvebu_pcie_scan_bus(int nr, struct pci_sys_data *sys)
+-{
+-	struct mvebu_pcie *pcie = sys_to_pcie(sys);
+-	struct pci_bus *bus;
+-
+-	bus = pci_create_root_bus(&pcie->pdev->dev, -1, sys->busnr,
+-				  &mvebu_pcie_ops, sys, &sys->resources);
+-	if (!bus)
+-		return NULL;
+-
+-	pci_scan_child_bus(bus);
+-
+-	return bus;
 -}
 -
--int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
--{
--	struct pci_controller *controller = bridge->bus->sysdata;
--
--	ACPI_COMPANION_SET(&bridge->dev, controller->companion);
--	return 0;
-+	return host->bus;
+ static resource_size_t mvebu_pcie_align_resource(struct pci_dev *dev,
+ 						 const struct resource *res,
+ 						 resource_size_t start,
+@@ -808,12 +793,11 @@ static void mvebu_pcie_enable(struct mvebu_pcie *pcie)
+ 	hw.nr_controllers = 1;
+ 	hw.private_data   = (void **)&pcie;
+ 	hw.setup          = mvebu_pcie_setup;
+-	hw.scan           = mvebu_pcie_scan_bus;
+ 	hw.map_irq        = of_irq_parse_and_map_pci;
+ 	hw.ops            = &mvebu_pcie_ops;
+ 	hw.align_resource = mvebu_pcie_align_resource;
+ 
+-	pci_common_init(&hw);
++	pci_common_init_dev(&pcie->pdev->dev, &hw);
  }
  
- void pcibios_fixup_device_resources(struct pci_dev *dev)
+ /*
 -- 
 1.7.1
 
