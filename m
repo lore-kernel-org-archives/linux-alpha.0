@@ -1,41 +1,108 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v8 24/30] PCI/tegra: Remove redundant tegra_pcie_scan_bus()
-Date: Wed, 25 Mar 2015 09:22:02 +0800
-Message-ID: <55120DBA.7080105@huawei.com>
-References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com> <1427168064-8657-25-git-send-email-wangyijing@huawei.com> <20150324123139.GA11625@ulmo.nvidia.com>
+Subject: Re: [PATCH v8 19/30] powerpc/pci: Use pci_scan_host_bridge() for
+ simplicity
+Date: Wed, 25 Mar 2015 15:42:22 +0800
+Message-ID: <551266DE.3030609@huawei.com>
+References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>	 <1427168064-8657-20-git-send-email-wangyijing@huawei.com> <1427241523.2685.18.camel@axtens.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20150324123139.GA11625@ulmo.nvidia.com>
-Sender: linux-ia64-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1427241523.2685.18.camel@axtens.net>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-tegra@vger.kernel.org
+To: Daniel Axtens <dja@axtens.net>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>
 
-On 2015/3/24 20:31, Thierry Reding wrote:
-> On Tue, Mar 24, 2015 at 11:34:18AM +0800, Yijing Wang wrote:
->> Now pci_scan_root_bus() is almost similar to
->> pci_create_root_bus() + pci_scan_child_bus().
->> So we could use common pci_scan_root_bus() in
->> pci_common_init_dev() to scan pci busses.
->> tegra_pcie_scan_bus() is redundant, remove it.
+On 2015/3/25 7:58, Daniel Axtens wrote:
+> On Tue, 2015-03-24 at 11:34 +0800, Yijing Wang wrote:
+>> Now we could use pci_scan_host_bridge() to scan
+>> pci buses, provide powerpc specific pci_host_bridge_ops.
 >>
 >> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
->> CC: Thierry Reding <thierry.reding@gmail.com>
->> CC: linux-tegra@vger.kernel.org
+>> CC: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+>> CC: linuxppc-dev@lists.ozlabs.org
 >> ---
->>  drivers/pci/host/pci-tegra.c |   16 ----------------
->>  1 files changed, 0 insertions(+), 16 deletions(-)
+>>  arch/powerpc/kernel/pci-common.c |   60 +++++++++++++++++++++++--------------
+>>  1 files changed, 37 insertions(+), 23 deletions(-)
 > 
-> Jetson TK1 still boots over NFS root via the onboard PCIe network card
-> with this series applied, so:
+>> diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+>> index 2c58200..e2b50a2 100644
+>> --- a/arch/powerpc/kernel/pci-common.c
+>> +++ b/arch/powerpc/kernel/pci-common.c
+>> @@ -773,6 +773,29 @@ void pcibios_set_root_bus_speed(struct pci_host_bridge *bridge)
+>>  		return ppc_md.pcibios_set_root_bus_speed(bridge);
+>>  }
+>>  
+>> +static int pci_host_scan_bus(struct pci_host_bridge *host)
+>> +{
+>> +	int mode = PCI_PROBE_NORMAL;
+>> +	struct pci_bus *bus = host->bus;
+>> +	struct pci_controller *hose = dev_get_drvdata(&host->dev);
+> Is there any reason this isn't *hose = pci_bus_to_host(bus)?
+
+Hi Daniel, thanks for your review and comments. We want to make a generic pci_host_bridge,
+which would hold the common host information, for example, pci domain is common info for
+pci host bridge, this series saved domain in pci_host_bridge, then we no need to
+extract out domain by pci_bus->sysdata by platform specific pci_domain_nr().
+Also we store the sysdata in pci_host_bridge, and pci_bus_to_host() is the platform
+interface, I think use the common interface would be better.
+
+>> +
+>> +	/* Get probe mode and perform scan */
+>> +	if (hose->dn && ppc_md.pci_probe_mode)
+>> +		mode = ppc_md.pci_probe_mode(bus);
+>> +
+>> +	pr_debug("    probe mode: %d\n", mode);
+>> +	if (mode == PCI_PROBE_DEVTREE)
+>> +		of_scan_bus(hose->dn, bus);
+>> +
+>> +	if (mode == PCI_PROBE_NORMAL) {
+>> +		pci_bus_update_busn_res_end(bus, 255);
+>> +		hose->last_busno = pci_scan_child_bus(bus);
+>> +		pci_bus_update_busn_res_end(bus, hose->last_busno);
+>> +	}
+>> +
+>> +	return pci_bus_child_max_busnr(bus);
+>> +}
+>> +
+> I'm having trouble convincing myself that this patch covers every
+> variation within our PCI implementations. In particular, there's a
+> stanza in of_scan_pci_bridge in kernel/pci_of_scan.c that's almost
+> identical to this function. Does that implementation need to be cleaned
+> up and replaced with this function too?
 > 
-> Tested-by: Thierry Reding <treding@nvidia.com>
-> Acked-by: Thierry Reding <treding@nvidia.com>
 
-Thanks!
+This is a pci_host_bridge_ops hook function, which would be called in
+PCI core, and after applied this series, we only need to call pci_scan_host_bridge()
+to scan pci devices, and this function is also extracted from the pcibios_scan_phb(),
+it's not the redundant code.
 
+> 
+>> @@ -1641,9 +1655,9 @@ void pcibios_scan_phb(struct pci_controller *hose)
+>>  		ppc_md.pcibios_fixup_phb(hose);
+>>  
+>>  	/* Configure PCI Express settings */
+>> -	if (bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+>> +	if (host->bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+>>  		struct pci_bus *child;
+>> -		list_for_each_entry(child, &bus->children, node)
+>> +		list_for_each_entry(child, &host->bus->children, node)
+>>  			pcie_bus_configure_settings(child);
+>>  	}
+>>  }
+> Two things: Firstly, the function uses hose throughout, not host.
+> Secondly, you're not deleting the bus variable: what's the purpose of
+> this change?
+
+host is the common pci_host_bridge which is created by PCI core for pci host bridge driver,
+the hose is the platform data used in powerpc. The purpose of the patch/series is to simplify
+pci enumeration interface, and try to reduce the weak functions which were used to setup pci bus/devices
+during PCI enumeration.
+
+> 
+> Regards,
+> Daniel
 > 
 
 
