@@ -1,84 +1,163 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v8 23/30] PCI/mvebu: Use pci_common_init_dev() to simplify
- code
-Date: Wed, 25 Mar 2015 16:55:02 +0800
-Message-ID: <551277E6.1010307@huawei.com>
-References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com> <1427168064-8657-24-git-send-email-wangyijing@huawei.com>
+From: Tomasz Nowicki <tomasz.nowicki@linaro.org>
+Subject: Re: [PATCH v8 10/30] PCI: Introduce pci_host_bridge_list to manage
+ host bridges
+Date: Wed, 25 Mar 2015 17:42:14 +0100
+Message-ID: <5512E566.5050201@linaro.org>
+References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com> <1427168064-8657-11-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <1427168064-8657-24-git-send-email-wangyijing@huawei.com>
-Sender: linux-m68k-owner@vger.kernel.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1427168064-8657-11-git-send-email-wangyijing@huawei.com>
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Yijing Wang <wangyijing@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Liviu Dudau <liviu@dudau.co.uk>, Rusty Russell <rusty@rustcorp.com.au>, Russell King <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linux-alpha@vger.kernel.org, Tony Luck <tony.luck@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, linux-ia64@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@linux.intel.com>, linux-arm-kernel@lists.infradead.org
 
-Hi Thomas and Jason,
-   Do you have any comment for this patch ? In this series, pci_bus_add_devices()
-has been ripped out from pci_scan_root_bus(), so I think the pci_scan_root_bus() is
-almost the same as pci_create_root_bus + pci_scan_child_bus(). And in this series,
-we try to unexport pci_create_root_bus(). It's even better if you could help test this changes.
-
-Thanks!
-Yijing.
-
-On 2015/3/24 11:34, Yijing Wang wrote:
-> Mvebu_pcie_scan_bus() is not necessary, we could use
-> pci_common_init_dev() instead of pci_common_init(),
-> and pass the device pointer as the parent. Then
-> pci_scan_root_bus() will be called to scan the pci busses.
-> 
+On 24.03.2015 04:34, Yijing Wang wrote:
+> Introduce pci_host_bridge_list to manage pci host
+> bridges in system, this make us have the ability
+> to check whether the new host would conflict with
+> existing one. Then we could remove bus alreay exist
+> check in __pci_create_root_bus().
+>
 > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-> CC: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-> CC: Jason Cooper <jason@lakedaemon.net>
 > ---
->  drivers/pci/host/pci-mvebu.c |   18 +-----------------
->  1 files changed, 1 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/pci/host/pci-mvebu.c b/drivers/pci/host/pci-mvebu.c
-> index 0cfc494..d5a2b70 100644
-> --- a/drivers/pci/host/pci-mvebu.c
-> +++ b/drivers/pci/host/pci-mvebu.c
-> @@ -750,21 +750,6 @@ static int mvebu_pcie_setup(int nr, struct pci_sys_data *sys)
->  	return 1;
->  }
->  
-> -static struct pci_bus *mvebu_pcie_scan_bus(int nr, struct pci_sys_data *sys)
-> -{
-> -	struct mvebu_pcie *pcie = sys_to_pcie(sys);
-> -	struct pci_bus *bus;
-> -
-> -	bus = pci_create_root_bus(&pcie->pdev->dev, -1, sys->busnr,
-> -				  &mvebu_pcie_ops, sys, &sys->resources);
-> -	if (!bus)
-> -		return NULL;
-> -
-> -	pci_scan_child_bus(bus);
-> -
-> -	return bus;
-> -}
-> -
->  static resource_size_t mvebu_pcie_align_resource(struct pci_dev *dev,
->  						 const struct resource *res,
->  						 resource_size_t start,
-> @@ -808,12 +793,11 @@ static void mvebu_pcie_enable(struct mvebu_pcie *pcie)
->  	hw.nr_controllers = 1;
->  	hw.private_data   = (void **)&pcie;
->  	hw.setup          = mvebu_pcie_setup;
-> -	hw.scan           = mvebu_pcie_scan_bus;
->  	hw.map_irq        = of_irq_parse_and_map_pci;
->  	hw.ops            = &mvebu_pcie_ops;
->  	hw.align_resource = mvebu_pcie_align_resource;
->  
-> -	pci_common_init(&hw);
-> +	pci_common_init_dev(&pcie->pdev->dev, &hw);
->  }
->  
->  /*
-> 
+>   drivers/pci/host-bridge.c |   41 ++++++++++++++++++++++++++++++++++++++++-
+>   drivers/pci/probe.c       |    9 +--------
+>   include/linux/pci.h       |    1 +
+>   3 files changed, 42 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+> index 1a9834b..8af6d51 100644
+> --- a/drivers/pci/host-bridge.c
+> +++ b/drivers/pci/host-bridge.c
+> @@ -8,6 +8,9 @@
+>
+>   #include "pci.h"
+>
+> +static LIST_HEAD(pci_host_bridge_list);
+> +static DEFINE_MUTEX(pci_host_mutex);
+> +
+>   static void pci_release_host_bridge_dev(struct device *dev)
+>   {
+>   	struct pci_host_bridge *bridge = to_pci_host_bridge(dev);
+> @@ -41,12 +44,29 @@ static void pci_host_update_busn_res(
+>   	pci_add_resource(resources, &host->busn_res);
+>   }
+>
+> +static bool pci_host_busn_res_overlap(
+> +		struct pci_host_bridge *new, struct pci_host_bridge *old)
+> +{
+> +	struct resource_entry *entry;
+> +	struct resource *res1 = NULL, *res2 = NULL;
+> +
+> +	resource_list_for_each_entry(entry, &old->windows)
+> +		if (entry->res->flags & IORESOURCE_BUS)
+> +			res1 = entry->res;
+> +
+> +	resource_list_for_each_entry(entry, &new->windows)
+> +		if (entry->res->flags & IORESOURCE_BUS)
+> +			res2 = entry->res;
+> +
+> +	return resource_overlaps(res1, res2);
+> +}
+> +
+>   struct pci_host_bridge *pci_create_host_bridge(
+>   		struct device *parent, int domain, int bus,
+>   		struct list_head *resources)
+>   {
+>   	int error;
+> -	struct pci_host_bridge *host;
+> +	struct pci_host_bridge *host, *tmp;
+>   	struct resource_entry *window, *n;
+>
+>   	host = kzalloc(sizeof(*host), GFP_KERNEL);
+> @@ -65,6 +85,21 @@ struct pci_host_bridge *pci_create_host_bridge(
+>   	 */
+>   	host->domain = domain;
+>   	pci_host_assign_domain_nr(host);
+> +	mutex_lock(&pci_host_mutex);
+> +	list_for_each_entry(tmp, &pci_host_bridge_list, list) {
+> +		if (tmp->domain != host->domain
+> +			  || pci_host_busn_res_overlap(host, tmp)) {
 
+I think you should construct condition this way:
++		if (tmp->domain == host->domain
++			  && pci_host_busn_res_overlap(host, tmp)) {
 
--- 
-Thanks!
-Yijing
+Regards,
+Tomasz
+
+> +			pr_warn("pci host bridge pci%04x:%02x exist\n",
+> +					host->domain, bus);
+> +			mutex_unlock(&pci_host_mutex);
+> +			pci_free_resource_list(&host->windows);
+> +			kfree(host);
+> +			return NULL;
+> +		}
+> +	}
+> +	list_add_tail(&host->list, &pci_host_bridge_list);
+> +	mutex_unlock(&pci_host_mutex);
+> +
+>   	host->dev.release = pci_release_host_bridge_dev;
+>   	dev_set_name(&host->dev, "pci%04x:%02x",
+>   			host->domain, bus);
+> @@ -80,6 +115,10 @@ struct pci_host_bridge *pci_create_host_bridge(
+>
+>   void pci_free_host_bridge(struct pci_host_bridge *host)
+>   {
+> +	mutex_lock(&pci_host_mutex);
+> +	list_del(&host->list);
+> +	mutex_unlock(&pci_host_mutex);
+> +
+>   	device_unregister(&host->dev);
+>   }
+>
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 25ac741..8517d1b 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1869,7 +1869,7 @@ static struct pci_bus *__pci_create_root_bus(
+>   		void *sysdata)
+>   {
+>   	int error;
+> -	struct pci_bus *b, *b2;
+> +	struct pci_bus *b;
+>   	struct resource_entry *window;
+>   	struct device *parent;
+>   	struct resource *res;
+> @@ -1887,12 +1887,6 @@ static struct pci_bus *__pci_create_root_bus(
+>   	b->number = b->busn_res.start =
+>   		pci_host_first_busnr(bridge);
+>   	pci_bus_assign_domain_nr(b, parent);
+> -	b2 = pci_find_bus(pci_domain_nr(b), b->number);
+> -	if (b2) {
+> -		/* If we already got to this bus through a different bridge, ignore it */
+> -		dev_dbg(&b2->dev, "bus already known\n");
+> -		goto err_out;
+> -	}
+>
+>   	bridge->bus = b;
+>   	b->bridge = get_device(&bridge->dev);
+> @@ -1952,7 +1946,6 @@ static struct pci_bus *__pci_create_root_bus(
+>
+>   put_dev:
+>   	put_device(&bridge->dev);
+> -err_out:
+>   	kfree(b);
+>   	return NULL;
+>   }
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index f189dfb..91cba01 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -407,6 +407,7 @@ struct pci_host_bridge {
+>   	/* we use default bus resource if no bus resource provided */
+>   	struct resource busn_res;
+>   	struct list_head windows;	/* resource_entry */
+> +	struct list_head list;
+>   	void (*release_fn)(struct pci_host_bridge *);
+>   	void *release_data;
+>   };
+>
