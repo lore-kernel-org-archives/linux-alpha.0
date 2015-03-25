@@ -1,116 +1,145 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH v6 04/30] xen/PCI: Don't use deprecated function
- pci_scan_bus_parented()
-Date: Wed, 25 Mar 2015 15:23:32 -0400
-Message-ID: <20150325192331.GG25884@l.oracle.com>
-References: <1425868467-9667-1-git-send-email-wangyijing@huawei.com>
- <1425868467-9667-5-git-send-email-wangyijing@huawei.com>
- <20150311223211.GB1082@google.com>
- <55017CA5.2010502@huawei.com>
- <20150312193505.GB7346@google.com>
- <55024D35.6050509@huawei.com>
- <CAErSpo4T7f9PNVMLrQbCvW2a=HnRauQR2eBz6H69B7Q2=ELNWw@mail.gmail.com>
- <20150313140132.GH5378@l.oracle.com>
- <CAErSpo69ytCxBK5AD79Nz05wy=GwzcOGV7WkiKFxpLDH4wtJXw@mail.gmail.com>
+From: Daniel Axtens <dja@axtens.net>
+Subject: Re: [PATCH v8 19/30] powerpc/pci: Use pci_scan_host_bridge() for
+ simplicity
+Date: Thu, 26 Mar 2015 09:13:51 +1100
+Message-ID: <1427321631.2575.3.camel@axtens.net>
+References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>
+		 <1427168064-8657-20-git-send-email-wangyijing@huawei.com>
+	 <1427241523.2685.18.camel@axtens.net> <551266DE.3030609@huawei.com>
 Mime-Version: 1.0
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-kGkB4ipJ9dr1gy57APLQ"
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAErSpo69ytCxBK5AD79Nz05wy=GwzcOGV7WkiKFxpLDH4wtJXw@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=axtens.net; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-type:mime-version;
+        bh=ZX5VNz+n10ckoWLRJ/2lsgprm5dW1yAN5V7PW2Rwn94=;
+        b=eEFvfewYs3v696Ph+Q5mOoGse5I+aUMjtpVNd6i+ZVXGCCPDpF7LHPVAFT0lcvFKVw
+         PPPtV1BsJG0G93LN4iPaLhwsva7PLLES6Nt6ZxOCxCfNArELdEyWRemlWBaTvj8uLnMA
+         x+uYuKzEoEVzU0AEidu+Vjr9yfzAJ1pGMHH8I=
+In-Reply-To: <551266DE.3030609@huawei.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Liviu Dudau <liviu@dudau.co.uk>, Rusty Russell <rusty@rustcorp.com.au>, linux-ia64@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, linux-pci@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, linuxppc-dev@lists.ozlabs.org, linux-m68k@lists.linux-m68k.org, Tony Luck <tony.luck@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-alpha@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Russell King <linux@arm.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Yinghai Lu <yinghai@kernel.org>, Jiang Liu <jiang.liu@linux.intel.com>, linux-arm-kernel@lists.infradead.org
+
+
+--=-kGkB4ipJ9dr1gy57APLQ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi Yijing,
+
+I wasn't quite sure I understood your comments, so I was trying to apply
+your patch series and test it, but patch 3 doesn't apply cleanly to
+4.0-rc5 or master. Can you respin the series?
+
+Thanks,
+Daniel
+
+
+> Hi Daniel, thanks for your review and comments. We want to make a generic=
+ pci_host_bridge,
+> which would hold the common host information, for example, pci domain is =
+common info for
+> pci host bridge, this series saved domain in pci_host_bridge, then we no =
+need to
+> extract out domain by pci_bus->sysdata by platform specific pci_domain_nr=
+().
+> Also we store the sysdata in pci_host_bridge, and pci_bus_to_host() is th=
+e platform
+> interface, I think use the common interface would be better.
+>=20
+> >> +
+> >> +	/* Get probe mode and perform scan */
+> >> +	if (hose->dn && ppc_md.pci_probe_mode)
+> >> +		mode =3D ppc_md.pci_probe_mode(bus);
+> >> +
+> >> +	pr_debug("    probe mode: %d\n", mode);
+> >> +	if (mode =3D=3D PCI_PROBE_DEVTREE)
+> >> +		of_scan_bus(hose->dn, bus);
+> >> +
+> >> +	if (mode =3D=3D PCI_PROBE_NORMAL) {
+> >> +		pci_bus_update_busn_res_end(bus, 255);
+> >> +		hose->last_busno =3D pci_scan_child_bus(bus);
+> >> +		pci_bus_update_busn_res_end(bus, hose->last_busno);
+> >> +	}
+> >> +
+> >> +	return pci_bus_child_max_busnr(bus);
+> >> +}
+> >> +
+> > I'm having trouble convincing myself that this patch covers every
+> > variation within our PCI implementations. In particular, there's a
+> > stanza in of_scan_pci_bridge in kernel/pci_of_scan.c that's almost
+> > identical to this function. Does that implementation need to be cleaned
+> > up and replaced with this function too?
+> >=20
+>=20
+> This is a pci_host_bridge_ops hook function, which would be called in
+> PCI core, and after applied this series, we only need to call pci_scan_ho=
+st_bridge()
+> to scan pci devices, and this function is also extracted from the pcibios=
+_scan_phb(),
+> it's not the redundant code.
+>=20
+> >=20
+> >> @@ -1641,9 +1655,9 @@ void pcibios_scan_phb(struct pci_controller *hos=
+e)
+> >>  		ppc_md.pcibios_fixup_phb(hose);
+> >> =20
+> >>  	/* Configure PCI Express settings */
+> >> -	if (bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+> >> +	if (host->bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+> >>  		struct pci_bus *child;
+> >> -		list_for_each_entry(child, &bus->children, node)
+> >> +		list_for_each_entry(child, &host->bus->children, node)
+> >>  			pcie_bus_configure_settings(child);
+> >>  	}
+> >>  }
+> > Two things: Firstly, the function uses hose throughout, not host.
+> > Secondly, you're not deleting the bus variable: what's the purpose of
+> > this change?
+>=20
+> host is the common pci_host_bridge which is created by PCI core for pci h=
+ost bridge driver,
+> the hose is the platform data used in powerpc. The purpose of the patch/s=
+eries is to simplify
+> pci enumeration interface, and try to reduce the weak functions which wer=
+e used to setup pci bus/devices
+> during PCI enumeration.
+>=20
+> >=20
+> > Regards,
+> > Daniel
+> >=20
+>=20
+>=20
+
+
+--=-kGkB4ipJ9dr1gy57APLQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Yijing Wang <wangyijing@huawei.com>, Jiang Liu <jiang.liu@linux.intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Yinghai Lu <yinghai@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, linux-arm <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, "x86@kernel.org" <x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@vger.kernel.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, xen-devel@lists.xenproject
 
-On Fri, Mar 13, 2015 at 09:26:08AM -0500, Bjorn Helgaas wrote:
-> On Fri, Mar 13, 2015 at 9:01 AM, Konrad Rzeszutek Wilk
-> <konrad.wilk@oracle.com> wrote:
-> > On Fri, Mar 13, 2015 at 08:24:58AM -0500, Bjorn Helgaas wrote:
-> >> On Thu, Mar 12, 2015 at 9:36 PM, Yijing Wang <wangyijing@huawei.com> wrote:
-> >> >>>>> +  pci_add_resource(&resources, &ioport_resource);
-> >> >>>>> +  pci_add_resource(&resources, &iomem_resource);
-> >> >>>>> +  pci_add_resource(&resources, &busn_resource);
-> >> >>>>
-> >> >>>> Since I don't want to export busn_resource, you might have to allocate your
-> >> >>>> own struct resource for it here.  And, of course, figure out the details of
-> >> >>>> which PCI domain you're in and whether you need to share one struct
-> >> >>>> resource across several host bridges in the same domain.
-> >> >>>
-> >> >>> Allocate its own resource here is ok for me, as I mentioned in previous reply,
-> >> >>> so do we still need to add additional info to figure out which domain own the bus resource ?
-> >> >>
-> >> >> That's up to the caller.  Only the platform knows which bridges it wants to
-> >> >> have in the same domain.  In principle, every host bridge could be in its
-> >> >> own domain, since each bridge is the root of a unique PCI hierarchy.  But
-> >> >> some platforms have firmware that assumes otherwise.  I have no idea what
-> >> >> xen assumes.
-> >> >
-> >> > I'm not xen guy, so I don't know much about it, but because it call pci_scan_bus_parented()
-> >> > before, and in which busn_resource is always shared for different host bridges(same domain or not),
-> >> > I think add a static bus resource(0,255) should be safe, at least, it would not introduce new risk.
-> >> >
-> >> > Something like:
-> >> >
-> >> > diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
-> >> > index b1ffebe..a69e529 100644
-> >> > --- a/drivers/pci/xen-pcifront.c
-> >> > +++ b/drivers/pci/xen-pcifront.c
-> >> > @@ -446,9 +446,15 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
-> >> >                                  unsigned int domain, unsigned int bus)
-> >> >  {
-> >> >         struct pci_bus *b;
-> >> > +       LIST_HEAD(resources);
-> >> >         struct pcifront_sd *sd = NULL;
-> >> >         struct pci_bus_entry *bus_entry = NULL;
-> >> >         int err = 0;
-> >> > +       static struct resource busn_res = {
-> >> > +               .start = 0,
-> >> > +               .end = 255,
-> >> > +               .flags = IORESOURCE_BUS,
-> >> > +       };
-> >> >
-> >> >  #ifndef CONFIG_PCI_DOMAINS
-> >> >         if (domain != 0) {
-> >> > @@ -470,17 +476,21 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
-> >> >                 err = -ENOMEM;
-> >> >                 goto err_out;
-> >> >         }
-> >> > +       pci_add_resource(&resources, &ioport_resource);
-> >> > +       pci_add_resource(&resources, &iomem_resource);
-> >> > +       pci_add_resource(&resources, &busn_res);
-> >> >         pcifront_init_sd(sd, domain, bus, pdev);
-> >> >
-> >> >         pci_lock_rescan_remove();
-> >> >
-> >> > -       b = pci_scan_bus_parented(&pdev->xdev->dev, bus,
-> >> > -                                 &pcifront_bus_ops, sd);
-> >> > +       b = pci_scan_root_bus(&pdev->xdev->dev, bus,
-> >> > +                                 &pcifront_bus_ops, sd, &resources);
-> >> >         if (!b) {
-> >> >
-> >> > Bjorn, what do you think about ?
-> >>
-> >> That seems OK to me.  Probably still wrong, but no worse than it was before.
-> >
-> > Interesting. The mechanism for PCI passthrough can either synthesize
-> > and PCI bus number starting at zero (so first device is always 0:0:0.0)
-> > or it can replicate the backend PCI topology. That means you
-> > could have segment values passed in, so: ab:ff:00.1). I've to admin
-> > I hadn't tried the 'physical' replication on an machine with
-> > domains (err, segments).
-> >
-> > Is there an git tree with this so I can just try it out?
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git
-> pci/enumeration-yw6 has similar code (it exports the single
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+Comment: GPGTools - https://gpgtools.org
 
-I presume now it is bjorn/pci/enumeration-yw8 ? Going to test this out
-this week.
-> busn_resource and makes xen use it).  That should be functionally
-> identical to what v4.0-rc1 does.
-> 
-> Yijing hasn't posted the static busn_res proposal above yet, so I
-> don't have a branch with that in it.
-> 
-> Bjorn
+iQIcBAABCAAGBQJVEzM2AAoJEPC3R3P2I92FQZwP/R5SRv7SsQeRdyiOrXCMLC7a
+JfCwcSHgDdhyWYCAYuSeOKjJjPiDz9QNm9KS8ntynhe6VJVBGcHpLslWxZTpI9Dl
+PHO/1b4i68YKxmjeXk19bQa38wDmuGxw8+ni1XX2ZzTIvm3fvOy9JZefde2lebi1
+dB/D0GSRQu7CcuKcyEYWEyvqwbfPqb8VbiKpEFUiImjMFjboP6Yl5dOcVye0NNnQ
+J36BOPHBj/FvIwK1ySUe5BE5mHjQUDijj9NkfqE5ED5Inf+/kjRYp9l0uBh3m8O1
+oGbpMp0b/7L0cXk4WuF0UFcaNkkI7+n24O2QJ8tBCIL8B+9U7nb41xqTcI2kbWGE
+9uKGGUDHQI1pERNtDKgLOsD+tFuyHo8oI99Oc8GFfWPnbvr576qEBBQaQI6Dwpdi
+dbejgs48MB8IRVdur3oWu8uibQhUddtk02CIfpTF3OT7rx9ay/CKC8NX/odUGtY6
+AYqqzNF6OxlfZXhrlS1nE1YWFacX+PKRiqulsgDE4peyq9cGse9ZYrOkkyL9VXdy
+ja3H43wace2qaa0JpzOu//uN/vULylpSh8QOfeqgLRCDlF29NbKn23gNbhzr+4yw
+xASO+O4SAR1IKM0hW2mqLE4/1TI8cDj5jX5emAhnCZi3uCnPkEAbq9C9ZqfJ2hEP
++2/0/9fEImcp/ma9tmc1
+=I0so
+-----END PGP SIGNATURE-----
+
+--=-kGkB4ipJ9dr1gy57APLQ--
+
