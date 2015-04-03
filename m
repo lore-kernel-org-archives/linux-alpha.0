@@ -1,83 +1,66 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v9 21/30] sparc/PCI: Use pci_scan_host_bridge() for simplicity
-Date: Fri, 3 Apr 2015 17:25:55 +0800
-Message-ID: <1428053164-28277-23-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v9 24/30] PCI/tegra: Remove redundant tegra_pcie_scan_bus()
+Date: Fri, 3 Apr 2015 17:25:58 +0800
+Message-ID: <1428053164-28277-26-git-send-email-wangyijing@huawei.com>
 References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
 In-Reply-To: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, sparclinux@vger.kernel.org
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Thierry Reding <thierry.reding@gmail.com>, linux-tegra@vger.kernel.org
 
-Now we could use pci_scan_host_bridge() to scan
-pci buses, provide sparc specific pci_host_bridge_ops.
+Now pci_scan_root_bus() is almost similar to
+pci_create_root_bus() + pci_scan_child_bus().
+So we could use common pci_scan_root_bus() in
+pci_common_init_dev() to scan pci busses.
+tegra_pcie_scan_bus() is redundant, remove it.
 
+Tested-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: sparclinux@vger.kernel.org
+Acked-by: Thierry Reding <treding@nvidia.com>
+CC: Thierry Reding <thierry.reding@gmail.com>
+CC: linux-tegra@vger.kernel.org
 ---
- arch/sparc/kernel/pci.c |   28 ++++++++++++++++++++++------
- 1 files changed, 22 insertions(+), 6 deletions(-)
+ drivers/pci/host/pci-tegra.c |   16 ----------------
+ 1 files changed, 0 insertions(+), 16 deletions(-)
 
-diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
-index e40e456..fa95a1d 100644
---- a/arch/sparc/kernel/pci.c
-+++ b/arch/sparc/kernel/pci.c
-@@ -650,12 +650,27 @@ static void pci_claim_bus_resources(struct pci_bus *bus)
- 		pci_claim_bus_resources(child_bus);
+diff --git a/drivers/pci/host/pci-tegra.c b/drivers/pci/host/pci-tegra.c
+index 94e9362..10c0571 100644
+--- a/drivers/pci/host/pci-tegra.c
++++ b/drivers/pci/host/pci-tegra.c
+@@ -630,21 +630,6 @@ static int tegra_pcie_map_irq(const struct pci_dev *pdev, u8 slot, u8 pin)
+ 	return irq;
  }
  
-+static int pci_host_of_scan_bus(
-+		struct pci_host_bridge *host)
-+{
-+	struct pci_pbm_info *pbm = dev_get_drvdata(&host->dev);
-+	struct device_node *node = pbm->op->dev.of_node;
-+
-+	pci_of_scan_bus(pbm, node, host->bus);
-+	return pci_bus_child_max_busnr(host->bus);
-+}
-+
-+static struct pci_host_bridge_ops pci_host_ops = {
-+	.scan_bus = pci_host_of_scan_bus,
-+};
-+
- struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
- 				 struct device *parent)
+-static struct pci_bus *tegra_pcie_scan_bus(int nr, struct pci_sys_data *sys)
+-{
+-	struct tegra_pcie *pcie = sys_to_pcie(sys);
+-	struct pci_bus *bus;
+-
+-	bus = pci_create_root_bus(pcie->dev, -1, sys->busnr, &tegra_pcie_ops,
+-			sys, &sys->resources);
+-	if (!bus)
+-		return NULL;
+-
+-	pci_scan_child_bus(bus);
+-
+-	return bus;
+-}
+-
+ static irqreturn_t tegra_pcie_isr(int irq, void *arg)
  {
- 	LIST_HEAD(resources);
- 	struct device_node *node = pbm->op->dev.of_node;
- 	struct pci_bus *bus;
-+	struct pci_host_bridge *host;
+ 	const char *err_msg[] = {
+@@ -1831,7 +1816,6 @@ static int tegra_pcie_enable(struct tegra_pcie *pcie)
+ 	hw.private_data = (void **)&pcie;
+ 	hw.setup = tegra_pcie_setup;
+ 	hw.map_irq = tegra_pcie_map_irq;
+-	hw.scan = tegra_pcie_scan_bus;
+ 	hw.ops = &tegra_pcie_ops;
  
- 	printk("PCI: Scanning PBM %s\n", node->full_name);
- 
-@@ -667,16 +682,17 @@ struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
- 	pbm->busn.end	= pbm->pci_last_busno;
- 	pbm->busn.flags	= IORESOURCE_BUS;
- 	pci_add_resource(&resources, &pbm->busn);
--	bus = pci_create_root_bus(parent, pbm->index, pbm->pci_first_busno,
--			pbm->pci_ops, pbm, &resources);
--	if (!bus) {
--		printk(KERN_ERR "Failed to create bus for %s\n",
--		       node->full_name);
-+	pci_host_ops.pci_ops = pbm->pci_ops;
-+	host = pci_scan_host_bridge(parent, pbm->index, pbm->pci_first_busno,
-+			pbm, &resources, &pci_host_ops);
-+	if (!host) {
-+		pr_err("Failed to create host bridge pci%04x:%02x for %s\n",
-+		       pbm->index, pbm->pci_first_busno, node->full_name);
- 		pci_free_resource_list(&resources);
- 		return NULL;
- 	}
- 
--	pci_of_scan_bus(pbm, node, bus);
-+	bus = host->bus;
- 	pci_bus_register_of_sysfs(bus);
- 
- 	pci_claim_bus_resources(bus);
+ 	pci_common_init_dev(pcie->dev, &hw);
 -- 
 1.7.1
