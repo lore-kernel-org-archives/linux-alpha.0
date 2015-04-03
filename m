@@ -1,47 +1,50 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v8 10/30] PCI: Introduce pci_host_bridge_list to manage
- host bridges
-Date: Fri, 27 Mar 2015 10:31:29 +0800
-Message-ID: <5514C101.8070705@huawei.com>
-References: <1427168064-8657-1-git-send-email-wangyijing@huawei.com>	<1427168064-8657-11-git-send-email-wangyijing@huawei.com> <CAE9FiQVgXfViM22qhB-sKDSTtnhvLDMk0NTiK_G88UogVMuM_w@mail.gmail.com>
+Subject: [PATCH v9 08/30] PCI: Update pci_host_bridge bus resource
+Date: Fri, 3 Apr 2015 17:25:42 +0800
+Message-ID: <1428053164-28277-10-git-send-email-wangyijing@huawei.com>
+References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <CAE9FiQVgXfViM22qhB-sKDSTtnhvLDMk0NTiK_G88UogVMuM_w@mail.gmail.com>
+In-Reply-To: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Yinghai Lu <yinghai@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Russell King <linux@arm.linux.org.uk>, the arch/x86 maintainers <x86@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Transfer-Encoding: 7bit
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Yijing Wang <wangyijing0307@gmail.com>
 
-On 2015/3/27 0:31, Yinghai Lu wrote:
-> On Mon, Mar 23, 2015 at 8:34 PM, Yijing Wang <wangyijing@huawei.com> wrote:
->> Introduce pci_host_bridge_list to manage pci host
->> bridges in system, this make us have the ability
->> to check whether the new host would conflict with
->> existing one. Then we could remove bus alreay exist
->> check in __pci_create_root_bus().
-> 
-> Can we use bus_type instead?
-> Then we can use bus_find_device for the host_bridge enumeration.
-> 
-> Please refer the patches that I sent out couple years ago.
+From: Yijing Wang <wangyijing0307@gmail.com>
 
-HI Yinghai,
-   I think your changes is good, but in this series, we only iterate the pci_host_bridge
-in drivers/pci/host-bridge.c. The simple list is enough, of course, if we want to export
-this list and support to host bridge hotplug, we must need a new iteration for host bridge,
-and your series looks good to me, I read your series history, found Bjorn comment a lot.
+Sometimes, the bus resource start number is not equal to
+root bus number. For example, in pci_scan_bus(), we always
+add the default bus resource which start bus number is 0,
+but the root bus number callers given may != 0, so
+we need to update pci_host_bridge bus resource, because we
+would check whether host bridge bus resoruce is confict
+in later patch.
 
-So I think Bjorn may have some comments for this.
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+---
+ drivers/pci/host-bridge.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
 
-Thanks!
-Yijing.
-
-
-
-
+diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
+index ecc1a7c..1a9834b 100644
+--- a/drivers/pci/host-bridge.c
++++ b/drivers/pci/host-bridge.c
+@@ -26,8 +26,11 @@ static void pci_host_update_busn_res(
+ 	struct resource_entry *window;
+ 
+ 	resource_list_for_each_entry(window, resources)
+-		if (window->res->flags & IORESOURCE_BUS)
++		if (window->res->flags & IORESOURCE_BUS) {
++			if (bus > window->res->start)
++				window->res->start = bus;
+ 			return;
++		}
+ 
+ 	pr_info(
+ 	 "No busn resource found for pci%04x:%02x, will use [bus %02x-ff]\n",
 -- 
-Thanks!
-Yijing
+1.7.1
 
