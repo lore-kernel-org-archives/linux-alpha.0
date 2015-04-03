@@ -1,118 +1,74 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v9 30/30] PCI: Clean up CONFIG_PCI_DOMAINS_GENERIC
-Date: Fri, 3 Apr 2015 17:26:04 +0800
-Message-ID: <1428053164-28277-32-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v9 15/30] PCI: Introduce new scan function pci_scan_host_bridge()
+Date: Fri, 3 Apr 2015 17:25:49 +0800
+Message-ID: <1428053164-28277-17-git-send-email-wangyijing@huawei.com>
 References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-m68k-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-Now we could clean up CONFIG_PCI_DOMAINS_GENERIC.
+Introduce new scan function pci_scan_host_bridge() to
+support host bridge drivers that need to provide platform
+own pci_host_bridge_ops.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- arch/arm/Kconfig          |    3 ---
- arch/arm64/Kconfig        |    3 ---
- drivers/pci/host-bridge.c |   11 ++++++-----
- drivers/pci/pci.c         |    2 --
- 4 files changed, 6 insertions(+), 13 deletions(-)
+ drivers/pci/probe.c |   22 ++++++++++++++++++++++
+ include/linux/pci.h |    3 +++
+ 2 files changed, 25 insertions(+), 0 deletions(-)
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 9f1f09a..b5dab6c 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1283,9 +1283,6 @@ config PCI_DOMAINS
- 	bool
- 	depends on PCI
- 
--config PCI_DOMAINS_GENERIC
--	def_bool PCI_DOMAINS
--
- config PCI_NANOENGINE
- 	bool "BSE nanoEngine PCI support"
- 	depends on SA1100_NANOENGINE
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 1b8e973..4b1cc27 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -242,9 +242,6 @@ config PCI
- config PCI_DOMAINS
- 	def_bool PCI
- 
--config PCI_DOMAINS_GENERIC
--	def_bool PCI
--
- config PCI_SYSCALL
- 	def_bool PCI
- 
-diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-index f193136..eb901b2 100644
---- a/drivers/pci/host-bridge.c
-+++ b/drivers/pci/host-bridge.c
-@@ -4,6 +4,8 @@
- 
- #include <linux/kernel.h>
- #include <linux/pci.h>
-+#include <linux/of_pci.h>
-+#include <linux/of.h>
- #include <linux/module.h>
- 
- #include "pci.h"
-@@ -82,12 +84,13 @@ struct pci_host_bridge *pci_create_host_bridge(
- 	resource_list_for_each_entry_safe(window, n, resources)
- 		list_move_tail(&window->node, &host->windows);
- 	/*
--	 * If support CONFIG_PCI_DOMAINS_GENERIC, use
-+	 * If domain == -1, we need to use
- 	 * pci_host_assign_domain_nr() to update domain
- 	 * number.
- 	 */
- 	host->domain = domain;
--	pci_host_assign_domain_nr(host);
-+	if (host->domain == -1)
-+		pci_host_assign_domain_nr(host);
- 	mutex_lock(&pci_host_mutex);
- 	list_for_each_entry(tmp, &pci_host_bridge_list, list) {
- 		if (tmp->domain == host->domain
-@@ -169,7 +172,6 @@ int pci_get_new_domain_nr(void)
- 	return atomic_inc_return(&__domain_nr);
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 36dfee0..b3d9b1b 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -2064,6 +2064,28 @@ static struct pci_bus *__pci_scan_root_bus(
+ 	return b;
  }
  
--#ifdef CONFIG_PCI_DOMAINS_GENERIC
- static int pci_assign_domain_nr(struct device *dev)
- {
- 	static int use_dt_domains = -1;
-@@ -215,11 +217,10 @@ static int pci_assign_domain_nr(struct device *dev)
- 	return domain;
- }
- #endif
--#endif
- 
- static void pci_host_assign_domain_nr(struct pci_host_bridge *host)
- {
--#ifdef CONFIG_PCI_DOMAINS_GENERIC
-+#ifdef CONFIG_PCI_DOMAINS
- 	host->domain = pci_assign_domain_nr(host->dev.parent);
- #endif
- }
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 044801c..5b18429 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -10,8 +10,6 @@
- #include <linux/kernel.h>
- #include <linux/delay.h>
- #include <linux/init.h>
--#include <linux/of.h>
--#include <linux/of_pci.h>
- #include <linux/pci.h>
- #include <linux/pm.h>
- #include <linux/slab.h>
++struct pci_host_bridge *pci_scan_host_bridge(
++		struct device *parent, int domain, int bus,
++		void *sysdata, struct list_head *resources,
++		struct pci_host_bridge_ops *ops)
++{
++	struct pci_host_bridge *host;
++
++	host = pci_create_host_bridge(parent, domain, bus, sysdata,
++			resources, ops);
++	if (!host)
++		return NULL;
++
++	host->bus = __pci_scan_root_bus(host, ops->pci_ops);
++	if (!host->bus) {
++		pci_free_host_bridge(host);
++		return NULL;
++	}
++
++	return host;
++}
++EXPORT_SYMBOL(pci_scan_host_bridge);
++
+ struct pci_bus *pci_scan_root_bus(struct device *parent, int domain,
+ 		int bus, struct pci_ops *ops, void *sysdata,
+ 		struct list_head *resources)
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 2702a51..7f4f182 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -793,6 +793,9 @@ void pci_bus_release_busn_res(struct pci_bus *b);
+ struct pci_bus *pci_scan_root_bus(struct device *parent, int domain, int bus,
+ 					     struct pci_ops *ops, void *sysdata,
+ 					     struct list_head *resources);
++struct pci_host_bridge *pci_scan_host_bridge(struct device *parent, int domain,
++		int bus, void *sysdata, struct list_head *resources,
++		struct pci_host_bridge_ops *ops);
+ struct pci_bus *pci_add_new_bus(struct pci_bus *parent, struct pci_dev *dev,
+ 				int busnr);
+ void pcie_update_link_speed(struct pci_bus *bus, u16 link_status);
 -- 
 1.7.1
