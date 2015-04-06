@@ -1,542 +1,210 @@
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Subject: Re: [PATCH] signal: optimize 'sigaction' call path
-Date: Sat, 4 Apr 2015 13:52:00 +0200
-Message-ID: <CAFLxGvxXY0Y3m0eL913VppobgRp-1AG8AzrAzJ54jwk=WcK_MQ@mail.gmail.com>
-References: <1428146533-2208-1-git-send-email-yury.norov@gmail.com>
+From: Daniel Axtens <dja@axtens.net>
+Subject: Re: [PATCH v9 19/30] powerpc/pci: Use pci_scan_host_bridge() for
+ simplicity
+Date: Tue, 07 Apr 2015 09:35:34 +1000
+Message-ID: <1428363334.22268.9.camel@axtens.net>
+References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
+	 <1428053164-28277-21-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-JBi1R6/zCXZTQ4qH8SNQ"
+Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
-         :cc:content-type;
-        bh=LkV8HBiGLXbcTdpAR+C7sBIpSnqE7eb7P9J1YfDDKjs=;
-        b=QAzDEgjXL/yKWrnebb1mctCcdt/KPhxWIFdLcfIgkdNqo+5HKhhJV31LIY++124UCA
-         F8HRgSOtZymGJXk8qCZQkmihUb8VlcEOxwRPvc966FNRpd8RJ9wOQdDYiqG4N3o9g58R
-         S6O5l+5MXGug0TQxEqVSsjsJpdjPqoRdB+VVkrN3n8EIsHyw3lSVZZ4sO/8PIxX0inX0
-         hT90RrZ6FDvHSQq58b0yU9RdjWiIK2cEijqGqsG4LeDITeLpVjfqxdBqv2tTDBFkA+Hh
-         5xw1v9wwXxiOfVBEpJrRDUrCA5AM9XcmU4+dli3ayClD4YCOA1zxF808H1vJYzqiJtqt
-         ZpuQ==
-In-Reply-To: <1428146533-2208-1-git-send-email-yury.norov@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+        d=axtens.net; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-type:mime-version;
+        bh=iQWBZPvqDm3h8C7Ix+AArxGxLc/e5A3EPizOT6atKp0=;
+        b=IaUF+4kr2zwrP/VU5NV5ZQgz+YPdLjFeXWI/YKpi2QfYWPEXU8RJ3wdQ7tG52ADLXp
+         GH8bXMP37kntOwHYeoaAw6ZtUeHkwHX+kmLvNaTNJ49wHQmjrprHjo7yXRO0cInuvo6b
+         UjzgmOo1qrCK9OEirm++PgRRL28dmzWl+IKlc=
+In-Reply-To: <1428053164-28277-21-git-send-email-wangyijing@huawei.com>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Yury Norov <yury.norov@gmail.com>
-Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, klimov.linux@gmail.com, LKML <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org, linux-mips@linux-mips.org, sparclinux@vger.kernel.org
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, linuxppc-dev@lists.ozlabs.org
 
-On Sat, Apr 4, 2015 at 1:22 PM, Yury Norov <yury.norov@gmail.com> wrote:
-> There is a set of syscalls in the kernel about 'sigaction'.
-> All they end up with calling the helper 'do_sigaction',
-> so the generic scheme is:
->
-> - copy user data to kernel;
-> - 'do_sigaction';
-> - copy kernel data to user.
->
-> 'do_sigaction' checks 'signum' parameter before doing its main job.
-> If this check fails syscall fails immediately, as well. But at this
-> stage first copy is already done. And so there's a potential chance
-> having it useless. It may affect performance significantly if user
-> data was, say, swapped, and a fault was handled to obtain it.
->
-> In this patch, 'signum' sanity check is moved out of 'do_sigaction'
-> to a small function 'user_signal'. So we can call it before any copying.
 
-Do you have benchmark results that show the performance impact of that change?
-Moving the checks out of do_sigaction() and spreading them all over the kernel
-is not nice and needs a good justification.
-Having the checks at a central point is much clearer.
+--=-JBi1R6/zCXZTQ4qH8SNQ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+I've been looking at this patch series for a while now, and I now
+believe it's ready on the PowerPC side.
+
+I was originally concerned that it would break odd corner cases,
+particularly where similar code appears (namely kernel/pci_hotplug.c and
+kernel/pci_of_scan.c). However, upon further examination, talking with
+Yijing, and some testing, I'm now convinced that it is indeed restricted
+to the generic code, and doesn't change behaviour.
+
+This is both a plus and a minus: because it's currently restricted to
+generic code, I'm confident it works, but the down side is that it
+doesn't yet simplify our arch-specific complexity. We'll need to do some
+more work on our side to reap the full benefits.
+
+I tested this entire series on a PowerNV machine, including doing EEH
+injection to trigger PCI hotplug:
+Tested-by: Daniel Axtens <dja@axtens.net>
+For completeness, it would be good to test it on Cell, as they are the
+only remaining user of pci_of_scan.c
+
+In conclusion, this patch is
+Reviewed-by: Daniel Axtens <dja@axtens.net>
+
+Regards,
+Daniel Axtens
+
+
+On Fri, 2015-04-03 at 17:25 +0800, Yijing Wang wrote:
+> Now we could use pci_scan_host_bridge() to scan
+> pci buses, provide powerpc specific pci_host_bridge_ops.
+>=20
+> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+> CC: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> CC: linuxppc-dev@lists.ozlabs.org
 > ---
->  arch/alpha/kernel/signal.c       | 19 +++++++-------
->  arch/mips/kernel/signal.c        | 10 +++++---
->  arch/mips/kernel/signal32.c      | 10 +++++---
->  arch/sparc/kernel/sys_sparc32.c  | 10 ++++----
->  arch/sparc/kernel/sys_sparc_32.c | 10 ++++----
->  arch/sparc/kernel/sys_sparc_64.c | 10 ++++----
->  include/linux/sched.h            |  2 +-
->  include/linux/signal.h           |  5 ++++
->  kernel/signal.c                  | 54 +++++++++++++++++++++-------------------
->  9 files changed, 71 insertions(+), 59 deletions(-)
-
-You add more lines than you delete, please post some hard facts why
-it is worth the hassle. :-)
-
-> diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
-> index 8dbfb15..5a5db6f 100644
-> --- a/arch/alpha/kernel/signal.c
-> +++ b/arch/alpha/kernel/signal.c
-> @@ -59,7 +59,9 @@ SYSCALL_DEFINE3(osf_sigaction, int, sig,
->                 struct osf_sigaction __user *, oact)
->  {
->         struct k_sigaction new_ka, old_ka;
-> -       int ret;
-> +
-> +       if (!user_signal(sig))
-> +               return -EINVAL;
->
->         if (act) {
->                 old_sigset_t mask;
-> @@ -72,9 +74,9 @@ SYSCALL_DEFINE3(osf_sigaction, int, sig,
->                 new_ka.ka_restorer = NULL;
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 if (!access_ok(VERIFY_WRITE, oact, sizeof(*oact)) ||
->                     __put_user(old_ka.sa.sa_handler, &oact->sa_handler) ||
->                     __put_user(old_ka.sa.sa_flags, &oact->sa_flags) ||
-> @@ -82,7 +84,7 @@ SYSCALL_DEFINE3(osf_sigaction, int, sig,
->                         return -EFAULT;
->         }
->
-> -       return ret;
-> +       return 0;
+>  arch/powerpc/kernel/pci-common.c |   62 +++++++++++++++++++++++---------=
+-----
+>  1 files changed, 38 insertions(+), 24 deletions(-)
+>=20
+> diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-c=
+ommon.c
+> index 2c58200..50b32f6 100644
+> --- a/arch/powerpc/kernel/pci-common.c
+> +++ b/arch/powerpc/kernel/pci-common.c
+> @@ -773,6 +773,29 @@ void pcibios_set_root_bus_speed(struct pci_host_brid=
+ge *bridge)
+>  		return ppc_md.pcibios_set_root_bus_speed(bridge);
 >  }
->
->  SYSCALL_DEFINE5(rt_sigaction, int, sig, const struct sigaction __user *, act,
-> @@ -90,10 +92,9 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig, const struct sigaction __user *, act,
->                 size_t, sigsetsize, void __user *, restorer)
->  {
->         struct k_sigaction new_ka, old_ka;
-> -       int ret;
->
->         /* XXX: Don't preclude handling different sized sigset_t's.  */
-> -       if (sigsetsize != sizeof(sigset_t))
-> +       if (sigsetsize != sizeof(sigset_t) || !user_signal(sig))
->                 return -EINVAL;
->
->         if (act) {
-> @@ -102,14 +103,14 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig, const struct sigaction __user *, act,
->                         return -EFAULT;
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 if (copy_to_user(oact, &old_ka.sa, sizeof(*oact)))
->                         return -EFAULT;
->         }
->
-> -       return ret;
-> +       return 0;
->  }
->
->  /*
-> diff --git a/arch/mips/kernel/signal.c b/arch/mips/kernel/signal.c
-> index 6a28c79..461a54f 100644
-> --- a/arch/mips/kernel/signal.c
-> +++ b/arch/mips/kernel/signal.c
-> @@ -316,9 +316,11 @@ SYSCALL_DEFINE3(sigaction, int, sig, const struct sigaction __user *, act,
->         struct sigaction __user *, oact)
->  {
->         struct k_sigaction new_ka, old_ka;
-> -       int ret;
->         int err = 0;
->
-> +       if (!user_signal(sig))
-> +               return -EINVAL;
-> +
->         if (act) {
->                 old_sigset_t mask;
->
-> @@ -333,9 +335,9 @@ SYSCALL_DEFINE3(sigaction, int, sig, const struct sigaction __user *, act,
->                 siginitset(&new_ka.sa.sa_mask, mask);
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 if (!access_ok(VERIFY_WRITE, oact, sizeof(*oact)))
->                         return -EFAULT;
->                 err |= __put_user(old_ka.sa.sa_flags, &oact->sa_flags);
-> @@ -348,7 +350,7 @@ SYSCALL_DEFINE3(sigaction, int, sig, const struct sigaction __user *, act,
->                         return -EFAULT;
->         }
->
-> -       return ret;
-> +       return 0;
->  }
->  #endif
->
-> diff --git a/arch/mips/kernel/signal32.c b/arch/mips/kernel/signal32.c
-> index 19a7705..7850b02 100644
-> --- a/arch/mips/kernel/signal32.c
-> +++ b/arch/mips/kernel/signal32.c
-> @@ -317,9 +317,11 @@ SYSCALL_DEFINE3(32_sigaction, long, sig, const struct compat_sigaction __user *,
->         struct compat_sigaction __user *, oact)
->  {
->         struct k_sigaction new_ka, old_ka;
-> -       int ret;
->         int err = 0;
->
-> +       if (!user_signal(sig))
-> +               return -EINVAL;
-> +
->         if (act) {
->                 old_sigset_t mask;
->                 s32 handler;
-> @@ -336,9 +338,9 @@ SYSCALL_DEFINE3(32_sigaction, long, sig, const struct compat_sigaction __user *,
->                 siginitset(&new_ka.sa.sa_mask, mask);
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 if (!access_ok(VERIFY_WRITE, oact, sizeof(*oact)))
->                         return -EFAULT;
->                 err |= __put_user(old_ka.sa.sa_flags, &oact->sa_flags);
-> @@ -352,7 +354,7 @@ SYSCALL_DEFINE3(32_sigaction, long, sig, const struct compat_sigaction __user *,
->                         return -EFAULT;
->         }
->
-> -       return ret;
-> +       return 0;
->  }
->
->  int copy_siginfo_to_user32(compat_siginfo_t __user *to, const siginfo_t *from)
-> diff --git a/arch/sparc/kernel/sys_sparc32.c b/arch/sparc/kernel/sys_sparc32.c
-> index 022c30c..5c83f7b 100644
-> --- a/arch/sparc/kernel/sys_sparc32.c
-> +++ b/arch/sparc/kernel/sys_sparc32.c
-> @@ -162,7 +162,7 @@ COMPAT_SYSCALL_DEFINE5(rt_sigaction, int, sig,
->         compat_sigset_t set32;
->
->          /* XXX: Don't preclude handling different sized sigset_t's.  */
-> -        if (sigsetsize != sizeof(compat_sigset_t))
-> +       if (sigsetsize != sizeof(compat_sigset_t) || !user_signal(sig))
->                  return -EINVAL;
->
->          if (act) {
-> @@ -180,19 +180,19 @@ COMPAT_SYSCALL_DEFINE5(rt_sigaction, int, sig,
->                         return -EFAULT;
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 sigset_to_compat(&set32, &old_ka.sa.sa_mask);
->                 ret = put_user(ptr_to_compat(old_ka.sa.sa_handler), &oact->sa_handler);
->                 ret |= copy_to_user(&oact->sa_mask, &set32, sizeof(compat_sigset_t));
->                 ret |= put_user(old_ka.sa.sa_flags, &oact->sa_flags);
->                 ret |= put_user(ptr_to_compat(old_ka.sa.sa_restorer), &oact->sa_restorer);
->                 if (ret)
-> -                       ret = -EFAULT;
-> +                       return -EFAULT;
->          }
->
-> -        return ret;
-> +       return 0;
->  }
->
->  asmlinkage compat_ssize_t sys32_pread64(unsigned int fd,
-> diff --git a/arch/sparc/kernel/sys_sparc_32.c b/arch/sparc/kernel/sys_sparc_32.c
-> index 646988d..ee5b598 100644
-> --- a/arch/sparc/kernel/sys_sparc_32.c
-> +++ b/arch/sparc/kernel/sys_sparc_32.c
-> @@ -20,6 +20,7 @@
->  #include <linux/utsname.h>
->  #include <linux/smp.h>
->  #include <linux/ipc.h>
-> +#include <linux/signal.h>
->
->  #include <asm/uaccess.h>
->  #include <asm/unistd.h>
-> @@ -177,10 +178,9 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig,
->                  size_t, sigsetsize)
->  {
->         struct k_sigaction new_ka, old_ka;
-> -       int ret;
->
->         /* XXX: Don't preclude handling different sized sigset_t's.  */
-> -       if (sigsetsize != sizeof(sigset_t))
-> +       if (sigsetsize != sizeof(sigset_t) || !user_signal(sig))
->                 return -EINVAL;
->
->         if (act) {
-> @@ -189,14 +189,14 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig,
->                         return -EFAULT;
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 if (copy_to_user(oact, &old_ka.sa, sizeof(*oact)))
->                         return -EFAULT;
->         }
->
-> -       return ret;
-> +       return 0;
->  }
->
->  asmlinkage long sys_getdomainname(char __user *name, int len)
-> diff --git a/arch/sparc/kernel/sys_sparc_64.c b/arch/sparc/kernel/sys_sparc_64.c
-> index c85403d..b22a753 100644
-> --- a/arch/sparc/kernel/sys_sparc_64.c
-> +++ b/arch/sparc/kernel/sys_sparc_64.c
-> @@ -25,6 +25,7 @@
->  #include <linux/random.h>
->  #include <linux/export.h>
->  #include <linux/context_tracking.h>
-> +#include <linux/signal.h>
->
->  #include <asm/uaccess.h>
->  #include <asm/utrap.h>
-> @@ -619,10 +620,9 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig, const struct sigaction __user *, act,
->                 size_t, sigsetsize)
->  {
->         struct k_sigaction new_ka, old_ka;
-> -       int ret;
->
->         /* XXX: Don't preclude handling different sized sigset_t's.  */
-> -       if (sigsetsize != sizeof(sigset_t))
-> +       if (sigsetsize != sizeof(sigset_t) || !user_signal(sig))
->                 return -EINVAL;
->
->         if (act) {
-> @@ -631,14 +631,14 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig, const struct sigaction __user *, act,
->                         return -EFAULT;
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 if (copy_to_user(oact, &old_ka.sa, sizeof(*oact)))
->                         return -EFAULT;
->         }
->
-> -       return ret;
-> +       return 0;
->  }
->
->  asmlinkage long sys_kern_features(void)
-> diff --git a/include/linux/sched.h b/include/linux/sched.h
-> index 6d77432..4643b7d 100644
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -2394,7 +2394,7 @@ extern int zap_other_threads(struct task_struct *p);
->  extern struct sigqueue *sigqueue_alloc(void);
->  extern void sigqueue_free(struct sigqueue *);
->  extern int send_sigqueue(struct sigqueue *,  struct task_struct *, int group);
-> -extern int do_sigaction(int, struct k_sigaction *, struct k_sigaction *);
-> +extern void do_sigaction(int, struct k_sigaction *, struct k_sigaction *);
->
->  static inline void restore_saved_sigmask(void)
->  {
-> diff --git a/include/linux/signal.h b/include/linux/signal.h
-> index ab1e039..129e975 100644
-> --- a/include/linux/signal.h
-> +++ b/include/linux/signal.h
-> @@ -437,6 +437,11 @@ int __save_altstack(stack_t __user *, unsigned long);
->         put_user_ex(t->sas_ss_size, &__uss->ss_size); \
->  } while (0);
->
-> +static inline int user_signal(unsigned long sig)
+> =20
+> +static int pci_host_scan_bus(struct pci_host_bridge *host)
 > +{
-> +       return sig && valid_signal(sig) && !sig_kernel_only(sig);
+> +	int mode =3D PCI_PROBE_NORMAL;
+> +	struct pci_bus *bus =3D host->bus;
+> +	struct pci_controller *hose =3D dev_get_drvdata(&host->dev);
+> +
+> +	/* Get probe mode and perform scan */
+> +	if (hose->dn && ppc_md.pci_probe_mode)
+> +		mode =3D ppc_md.pci_probe_mode(bus);
+> +
+> +	pr_debug("    probe mode: %d\n", mode);
+> +	if (mode =3D=3D PCI_PROBE_DEVTREE)
+> +		of_scan_bus(hose->dn, bus);
+> +
+> +	if (mode =3D=3D PCI_PROBE_NORMAL) {
+> +		pci_bus_update_busn_res_end(bus, 255);
+> +		hose->last_busno =3D pci_scan_child_bus(bus);
+> +		pci_bus_update_busn_res_end(bus, hose->last_busno);
+> +	}
+> +
+> +	return pci_bus_child_max_busnr(bus);
 > +}
 > +
->  #ifdef CONFIG_PROC_FS
->  struct seq_file;
->  extern void render_sigset_t(struct seq_file *, const char *, sigset_t *);
-> diff --git a/kernel/signal.c b/kernel/signal.c
-> index a390499..5537435 100644
-> --- a/kernel/signal.c
-> +++ b/kernel/signal.c
-> @@ -3099,15 +3099,12 @@ void kernel_sigaction(int sig, __sighandler_t action)
+>  /* This header fixup will do the resource fixup for all devices as they =
+are
+>   * probed, but not for bridge ranges
+>   */
+> @@ -1585,6 +1608,11 @@ struct device_node *pcibios_get_phb_of_node(struct=
+ pci_bus *bus)
+>  	return of_node_get(hose->dn);
 >  }
->  EXPORT_SYMBOL(kernel_sigaction);
->
-> -int do_sigaction(int sig, struct k_sigaction *act, struct k_sigaction *oact)
-> +void do_sigaction(int sig, struct k_sigaction *act, struct k_sigaction *oact)
+> =20
+> +static struct pci_host_bridge_ops pci_host_ops =3D {
+> +	.set_root_bus_speed =3D pcibios_set_root_bus_speed,
+> +	.scan_bus =3D pci_host_scan_bus,
+> +};
+> +
+>  /**
+>   * pci_scan_phb - Given a pci_controller, setup and scan the PCI bus
+>   * @hose: Pointer to the PCI host controller instance structure
+> @@ -1592,9 +1620,8 @@ struct device_node *pcibios_get_phb_of_node(struct =
+pci_bus *bus)
+>  void pcibios_scan_phb(struct pci_controller *hose)
 >  {
->         struct task_struct *p = current, *t;
->         struct k_sigaction *k;
->         sigset_t mask;
->
-> -       if (!valid_signal(sig) || sig < 1 || (act && sig_kernel_only(sig)))
-> -               return -EINVAL;
+>  	LIST_HEAD(resources);
+> -	struct pci_bus *bus;
+> +	struct pci_host_bridge *host;
+>  	struct device_node *node =3D hose->dn;
+> -	int mode;
+> =20
+>  	pr_debug("PCI: Scanning PHB %s\n", of_node_full_name(node));
+> =20
+> @@ -1609,30 +1636,17 @@ void pcibios_scan_phb(struct pci_controller *hose=
+)
+>  	hose->busn.flags =3D IORESOURCE_BUS;
+>  	pci_add_resource(&resources, &hose->busn);
+> =20
+> +	pci_host_ops.pci_ops =3D hose->ops;
+>  	/* Create an empty bus for the toplevel */
+> -	bus =3D pci_create_root_bus(hose->parent, hose->global_number,
+> -			hose->first_busno, hose->ops, hose, &resources);
+> -	if (bus =3D=3D NULL) {
+> -		pr_err("Failed to create bus for PCI domain %04x\n",
+> -			hose->global_number);
+> +	host =3D pci_scan_host_bridge(hose->parent, hose->global_number,
+> +			hose->first_busno, hose, &resources, &pci_host_ops);
+> +	if (host =3D=3D NULL) {
+> +		pr_err("Failed to create host bridge for pci%04x:%02x\n",
+> +			hose->global_number, hose->first_busno);
+>  		pci_free_resource_list(&resources);
+>  		return;
+>  	}
+> -	hose->bus =3D bus;
 > -
->         k = &p->sighand->action[sig-1];
->
->         spin_lock_irq(&p->sighand->siglock);
-> @@ -3139,8 +3136,8 @@ int do_sigaction(int sig, struct k_sigaction *act, struct k_sigaction *oact)
->         }
->
->         spin_unlock_irq(&p->sighand->siglock);
-> -       return 0;
+> -	/* Get probe mode and perform scan */
+> -	mode =3D PCI_PROBE_NORMAL;
+> -	if (node && ppc_md.pci_probe_mode)
+> -		mode =3D ppc_md.pci_probe_mode(bus);
+> -	pr_debug("    probe mode: %d\n", mode);
+> -	if (mode =3D=3D PCI_PROBE_DEVTREE)
+> -		of_scan_bus(node, bus);
+> -
+> -	if (mode =3D=3D PCI_PROBE_NORMAL) {
+> -		pci_bus_update_busn_res_end(bus, 255);
+> -		hose->last_busno =3D pci_scan_child_bus(bus);
+> -		pci_bus_update_busn_res_end(bus, hose->last_busno);
+> -	}
+> +	hose->bus =3D host->bus;
+> =20
+>  	/* Platform gets a chance to do some global fixups before
+>  	 * we proceed to resource allocation
+> @@ -1641,9 +1655,9 @@ void pcibios_scan_phb(struct pci_controller *hose)
+>  		ppc_md.pcibios_fixup_phb(hose);
+> =20
+>  	/* Configure PCI Express settings */
+> -	if (bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+> +	if (host->bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+>  		struct pci_bus *child;
+> -		list_for_each_entry(child, &bus->children, node)
+> +		list_for_each_entry(child, &host->bus->children, node)
+>  			pcie_bus_configure_settings(child);
+>  	}
 >  }
-> +EXPORT_SYMBOL(do_sigaction);
->
->  static int
->  do_sigaltstack (const stack_t __user *uss, stack_t __user *uoss, unsigned long sp)
-> @@ -3356,25 +3353,24 @@ SYSCALL_DEFINE4(rt_sigaction, int, sig,
->                 size_t, sigsetsize)
->  {
->         struct k_sigaction new_sa, old_sa;
-> -       int ret = -EINVAL;
->
->         /* XXX: Don't preclude handling different sized sigset_t's.  */
-> -       if (sigsetsize != sizeof(sigset_t))
-> -               goto out;
-> +       if (sigsetsize != sizeof(sigset_t) || !user_signal(sig))
-> +               return -EINVAL;
->
->         if (act) {
->                 if (copy_from_user(&new_sa.sa, act, sizeof(new_sa.sa)))
->                         return -EFAULT;
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_sa : NULL, oact ? &old_sa : NULL);
-> +       do_sigaction(sig, act ? &new_sa : NULL, oact ? &old_sa : NULL);
->
-> -       if (!ret && oact) {
-> +       if (!oact) {
->                 if (copy_to_user(oact, &old_sa.sa, sizeof(old_sa.sa)))
->                         return -EFAULT;
->         }
-> -out:
-> -       return ret;
-> +
-> +       return 0;
->  }
->  #ifdef CONFIG_COMPAT
->  COMPAT_SYSCALL_DEFINE4(rt_sigaction, int, sig,
-> @@ -3390,7 +3386,7 @@ COMPAT_SYSCALL_DEFINE4(rt_sigaction, int, sig,
->         int ret;
->
->         /* XXX: Don't preclude handling different sized sigset_t's.  */
-> -       if (sigsetsize != sizeof(compat_sigset_t))
-> +       if (sigsetsize != sizeof(compat_sigset_t) || !user_signal(sig))
->                 return -EINVAL;
->
->         if (act) {
-> @@ -3408,8 +3404,8 @@ COMPAT_SYSCALL_DEFINE4(rt_sigaction, int, sig,
->                 sigset_from_compat(&new_ka.sa.sa_mask, &mask);
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> -       if (!ret && oact) {
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       if (oact) {
->                 sigset_to_compat(&mask, &old_ka.sa.sa_mask);
->                 ret = put_user(ptr_to_compat(old_ka.sa.sa_handler),
->                                &oact->sa_handler);
-> @@ -3431,7 +3427,9 @@ SYSCALL_DEFINE3(sigaction, int, sig,
->                 struct old_sigaction __user *, oact)
->  {
->         struct k_sigaction new_ka, old_ka;
-> -       int ret;
-> +
-> +       if (!user_signal(sig))
-> +               return -EINVAL;
->
->         if (act) {
->                 old_sigset_t mask;
-> @@ -3447,9 +3445,9 @@ SYSCALL_DEFINE3(sigaction, int, sig,
->                 siginitset(&new_ka.sa.sa_mask, mask);
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +       do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 if (!access_ok(VERIFY_WRITE, oact, sizeof(*oact)) ||
->                     __put_user(old_ka.sa.sa_handler, &oact->sa_handler) ||
->                     __put_user(old_ka.sa.sa_restorer, &oact->sa_restorer) ||
-> @@ -3458,7 +3456,7 @@ SYSCALL_DEFINE3(sigaction, int, sig,
->                         return -EFAULT;
->         }
->
-> -       return ret;
-> +       return 0;
->  }
->  #endif
->  #ifdef CONFIG_COMPAT_OLD_SIGACTION
-> @@ -3467,10 +3465,12 @@ COMPAT_SYSCALL_DEFINE3(sigaction, int, sig,
->                 struct compat_old_sigaction __user *, oact)
->  {
->         struct k_sigaction new_ka, old_ka;
-> -       int ret;
->         compat_old_sigset_t mask;
->         compat_uptr_t handler, restorer;
->
-> +       if (!user_signal(sig))
-> +               return -EINVAL;
-> +
->         if (act) {
->                 if (!access_ok(VERIFY_READ, act, sizeof(*act)) ||
->                     __get_user(handler, &act->sa_handler) ||
-> @@ -3487,9 +3487,9 @@ COMPAT_SYSCALL_DEFINE3(sigaction, int, sig,
->                 siginitset(&new_ka.sa.sa_mask, mask);
->         }
->
-> -       ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
-> +        do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
->
-> -       if (!ret && oact) {
-> +       if (oact) {
->                 if (!access_ok(VERIFY_WRITE, oact, sizeof(*oact)) ||
->                     __put_user(ptr_to_compat(old_ka.sa.sa_handler),
->                                &oact->sa_handler) ||
-> @@ -3499,7 +3499,7 @@ COMPAT_SYSCALL_DEFINE3(sigaction, int, sig,
->                     __put_user(old_ka.sa.sa_mask.sig[0], &oact->sa_mask))
->                         return -EFAULT;
->         }
-> -       return ret;
-> +       return 0;
->  }
->  #endif
->
-> @@ -3533,15 +3533,17 @@ SYSCALL_DEFINE1(ssetmask, int, newmask)
->  SYSCALL_DEFINE2(signal, int, sig, __sighandler_t, handler)
->  {
->         struct k_sigaction new_sa, old_sa;
-> -       int ret;
-> +
-> +       if (!user_signal(sig))
-> +               return -EINVAL;
->
->         new_sa.sa.sa_handler = handler;
->         new_sa.sa.sa_flags = SA_ONESHOT | SA_NOMASK;
->         sigemptyset(&new_sa.sa.sa_mask);
->
-> -       ret = do_sigaction(sig, &new_sa, &old_sa);
-> +       do_sigaction(sig, &new_sa, &old_sa);
->
-> -       return ret ? ret : (unsigned long)old_sa.sa.sa_handler;
-> +       return (unsigned long) old_sa.sa.sa_handler;
->  }
->  #endif /* __ARCH_WANT_SYS_SIGNAL */
->
-> --
-> 2.1.0
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
 
 
+--=-JBi1R6/zCXZTQ4qH8SNQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
--- 
-Thanks,
-//richard
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+Comment: GPGTools - https://gpgtools.org
+
+iQIcBAABCAAGBQJVIxhSAAoJEPC3R3P2I92FGEkQAM0to7tMdeHcxvzb0mN4AVKY
+G2iyNjiSb0olgDa9iCjsJxr6Eg0cnL2kTSng+iWIyAywCEL8P438f2QX1bcRiLL4
+vhmsLAwpr6pf4kloaol/T8oFrg+uFRlTdiJE1D0omL94qj0A5INeDy7e9PwY+wrE
+mugTHnCG/O5O/DOthK+cPZ59BISZaKga4Uor6C7AgKiitsNQgNFWMOtLhpuKKUtD
+7OlbKc4HhTY40rJWikevOAlY/d5Hq1w3s0yvhugX4ForUes7frq4qMRtKRacS/Vg
+WMKF/9js3pX5S0YIscFe/A8UMT35wPfNwJUjHKPgWrQdOVw8ipAs0ga2F9bK6ipX
+6F/6d7DSDeNHpvFoS4A+zn/2wTjBGbNfKyO5c+hJFjlmRN4dRfA5MvQS3+vXrDC7
+muZuY6pwH2lsTM8UgwfXbmwOfOh47c0ohNLuX3Wpfkjz3jvuAUjyKAqFjwsdh3NW
+bWPv7ay1W1GcXJhfCI+5dK2MZzQ1JmGZnH/M8cl5qLiOSVlNgKXJxFVt3PEDZzB+
+CKe0wSbtw528pC2/P/utk4kFzEK+QMVCzi1H80b6XhFvgZLpU1bzLSZQR0p6C4g4
+2O46VVKu7alxphGyIlTavVXGiJzo8GoAgLSceHF3bnxwtizPF0yJN3Y9fQYxXh7Z
+bc65BhJ/bJiVnJXJx+gj
+=CqP4
+-----END PGP SIGNATURE-----
+
+--=-JBi1R6/zCXZTQ4qH8SNQ--
+
