@@ -1,80 +1,52 @@
-From: Daniel Axtens <dja@axtens.net>
-Subject: Re: [PATCH v9 14/30] PCI: Introduce pci_host_bridge_ops to support
- host specific operations
-Date: Tue, 07 Apr 2015 17:04:26 +1000
-Message-ID: <1428390266.14169.1.camel@axtens.net>
-References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
-	 <1428053164-28277-16-git-send-email-wangyijing@huawei.com>
+From: Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [PATCH] signal: optimize 'sigaction' call path
+Date: Tue, 7 Apr 2015 12:06:54 +0200
+Message-ID: <20150407100654.GA32743@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-+p8vPjV/hW23nWb2qOTV"
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=axtens.net; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-type:mime-version;
-        bh=ZFc47kM2zkZZ7R8O6nd2D54S1yQUjBxCxKkqJ/JmnJw=;
-        b=WCvAKwkfkrUM1U7FTyQu2sQoK5x0dj1J2Nat/VZc7voytb6B9PWa7paQQYSx63lhU9
-         3lvML8/Z84yduBkEp7a9Aqd96hOFLaGpMCKDXB2tLNXXH3u9Y0keHmT8q5duSByk3p0h
-         bMOpRcf/jiTGi8h+IAyynLpfj/GdNJeT66amI=
-In-Reply-To: <1428053164-28277-16-git-send-email-wangyijing@huawei.com>
-Sender: linux-ia64-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Yijing Wang <wangyijing@huawei.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
-
-
---=-+p8vPjV/hW23nWb2qOTV
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, 2015-04-03 at 17:25 +0800, Yijing Wang wrote:
-> Now we have weak functions like pcibios_root_bridge_prepare()
-> to setup pci host bridge, We could introduce pci_host_bridge_ops
-> which contain host bridge specific ops to setup pci_host_bridge.
-> Then host bridge driver could add pci_host_bridge_ops hooks
-> intead of weak function to setup pci_host_bridge.
-> This patch add following pci_host_bridge_ops hooks:
->=20
-> pci_host_bridge_ops {
-> 	struct pci_ops *ops;
-Trivial nit, but this is 'struct pci_ops *pci_ops' in the code below.
-
-> +struct pci_host_bridge;
-> +struct pci_host_bridge_ops {
-> +	struct pci_ops *pci_ops;
-> +	int (*prepare)(struct pci_host_bridge *host);
-> +	void (*set_root_bus_speed)(struct pci_host_bridge *host);
-> +	int (*scan_bus)(struct pci_host_bridge *host);
-> +};
-> +
-
-Regards,
-Daniel
-
---=-+p8vPjV/hW23nWb2qOTV
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+To: yury.norov@gmail.com, rth@twiddle.net, ink@jurassic.park.msu.ru, akpm@linux-foundation.org, davem@davemloft.net
+Cc: klimov.linux@gmail.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@linux-mips.org, sparclinux@vger.kernel.org
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: GPGTools - https://gpgtools.org
+> There is a set of syscalls in the kernel about 'sigaction'.
+> All they end up with calling the helper 'do_sigaction',
+> so the generic scheme is:
+>
+> - copy user data to kernel;
+> - 'do_sigaction';
+> - copy kernel data to user.
+>
+> 'do_sigaction' checks 'signum' parameter before doing its main job.
+> If this check fails syscall fails immediately, as well. But at this
+> stage first copy is already done. And so there's a potential chance
+> having it useless. It may affect performance significantly if user
+> data was, say, swapped, and a fault was handled to obtain it.
 
-iQIcBAABCAAGBQJVI4F6AAoJEPC3R3P2I92FjZwQAJw/0Bh3rRl6fwPkYFP66J+c
-2ZnbAeR25jp8VwFrHLBjTOLB/FYNkYnc1rOa6lrLi2Tzl9JupQ4Qr0GqkrUlU6tU
-z5mIxlBYbXGxquDSKlriq4Jh/7hP7Jsbztbo+WWz2oEH5QMD4bPcnAlXp26Y+h/D
-3kbiMiKQ9nbp9/AaME1PReUSVd1ZMvvu2Mb9IZaf0g+XR0QWBQTLuxI8KESdlozp
-wFY3sr9GtjcHLbjneeM4oiknWgnabIbcksBnBcajUItz/N8ik/56ofMevx+fMG6I
-TduJRjJdObe7vfnuPVQu9aOhgIOtGuqmzAUy9fpOkC967f7+nv0yn8CjVLhsSEYj
-DCyZfkEQ0YthVFUc/yBrYI89VBceyLxq0yCv8nOpWYRXHV2NZd+T5iahKZr0skHA
-Gu7WVC/mED3UOxRempwGFlDgMOakOYHjZVFRnjAnVzD3cCS9cCCfHhFfjAzR3CJG
-78QxuZxiV1nGH0AAvoGpVqQk8wbNrHa2ARPsku9Obf/tOp/GUC7zmDJj+1uNVlIt
-tLP6MVpv2y2nk2j6NK8HeTX1rdDontaBUIQk3wtPC8xGZuaDifgXPnEA5K6zpmzD
-SmcBfxXW4gA2Eh49XAA37poVZg/B/LbfuBXemqPhkdqO1HwZVRi4aVKp78C0dEnI
-ibpvlkMwd4AhMN4hcj4g
-=8gut
------END PGP SIGNATURE-----
+Only if the signal number is wrong? So why do we care?
 
---=-+p8vPjV/hW23nWb2qOTV--
+> In this patch, 'signum' sanity check is moved out of 'do_sigaction'
+> to a small function 'user_signal'. So we can call it before any copying.
+...
+>  arch/alpha/kernel/signal.c       | 19 +++++++-------
+>  arch/mips/kernel/signal.c        | 10 +++++---
+>  arch/mips/kernel/signal32.c      | 10 +++++---
+>  arch/sparc/kernel/sys_sparc32.c  | 10 ++++----
+>  arch/sparc/kernel/sys_sparc_32.c | 10 ++++----
+>  arch/sparc/kernel/sys_sparc_64.c | 10 ++++----
+>  include/linux/sched.h            |  2 +-
+>  include/linux/signal.h           |  5 ++++
+>  kernel/signal.c                  | 54 +++++++++++++++++++++-------------------
+>  9 files changed, 71 insertions(+), 59 deletions(-)
+
+And this blows the source and compiled code. Not too much, but this
+change should be justified somehow.
+
+And to me this patch doesn't look like a cleanup, imho this sanity
+check makes more sense in one place.
+
+Oleg.
 
