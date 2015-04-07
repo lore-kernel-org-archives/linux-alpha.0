@@ -1,162 +1,92 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v9 07/30] PCI: Add default bus resource in pci_host_bridge
-Date: Tue, 7 Apr 2015 17:25:41 -0500
-Message-ID: <20150407222541.GK10892@google.com>
+Subject: Re: [PATCH v9 08/30] PCI: Update pci_host_bridge bus resource
+Date: Tue, 7 Apr 2015 17:42:43 -0500
+Message-ID: <20150407224243.GL10892@google.com>
 References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
- <1428053164-28277-9-git-send-email-wangyijing@huawei.com>
+ <1428053164-28277-10-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20120113;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-type:content-disposition:in-reply-to:user-agent;
-        bh=vuwGRAYWYQBGvfqoZnEdJfIZQ8TZ8Xg+zDZu8quIkkw=;
-        b=ICC65fNbN2rMw4fEwEmMhfLtrX6HaggPGHKbr0B51XbjHyoZWXrarQK/zDDjW9u+0o
-         MkE9yt0h4vRkwoRoP3VFxpo4WX1fTvew/8Qz2rskFl3k1fASXO3HzgFoyHnvZ+3BVqJK
-         xTUe1J52DgpF1QAMlyeSopoHB3YZdJWXmVErQw6q8Q4WmPOd8xgn5XqtwctsWXpYKPnn
-         9IxscryNbvC3ae7rxV/0I4kFGyKb4pKNzL2+SMALqCUnvyErNLzHZDpLkLDiOh6M1Mdv
-         PtDf8XNwgclnPmUTbXxmLyJw5OkQutDa8IaMSx3sMzXoSLv6KwHcdfBytFCwQPG+wzhk
-         yAAA==
+        bh=ojWSeyKJJtkLcu3uI0hH9F6BdcmY9MWF5Lifhbwt7bs=;
+        b=kektxFcvBPFxf9XEaBIkMHoZfvpcmIJVUW25KxCvsFT7q64Ro2oxSncdcNbN7dNZmw
+         gMBcW/wkWBC9mo9kUrSy02gVz6PL/2dXpKMxY7mMikpb1rJeB38zZubVO1GWph9r3Eex
+         J3O8x1g3VMzJlQP1xjaL50NiyFKcg5PwFxfUEKRZ7VVIpoApZvOlMzrWwGFS5+qIPotx
+         mDbgqTJIU1+taLMjizVkj16I0ADjfKM73ZftT6QKJHVCB/c33NoOKibCvyeZWJh8+2Aw
+         TQjPDBCQwKOWJWJbX+3FkNIKVA4anTOXfaNEyv3LMXzPe4h8vkl1dqhzp4cnp6SkjgLd
+         k46w==
 Content-Disposition: inline
-In-Reply-To: <1428053164-28277-9-git-send-email-wangyijing@huawei.com>
-Sender: linux-ia64-owner@vger.kernel.org
+In-Reply-To: <1428053164-28277-10-git-send-email-wangyijing@huawei.com>
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Yijing Wang <wangyijing@huawei.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing0307@gmail.com>
 
-On Fri, Apr 03, 2015 at 05:25:41PM +0800, Yijing Wang wrote:
-> If there is no busn resource provided for pci_scan_root_bus(),
-> we would insert a default bus resource (root_bus_number, 255)
-> in root bus, and update the max bus number we found after
-> pci_scan_child_bus(). We also need to hold the default bus
-> resource in pci_host_bridge, then we could identify whether
-> the new pci host bridge conflict with existing one.
+On Fri, Apr 03, 2015 at 05:25:42PM +0800, Yijing Wang wrote:
+> From: Yijing Wang <wangyijing0307@gmail.com>
 > 
+> Sometimes, the bus resource start number is not equal to
+> root bus number. For example, in pci_scan_bus(), we always
+> add the default bus resource which start bus number is 0,
+> but the root bus number callers given may != 0, so
+> we need to update pci_host_bridge bus resource, because we
+> would check whether host bridge bus resoruce is confict
+> in later patch.
+
+It's true that pci_scan_bus() always inserts [bus 00-ff].  But I think
+that's completely bogus.  The caller of pci_scan_bus() supplies a root bus
+number X.  Any bus numbers below X are useless as far as this host bridge
+is concerned, and it's pointless to include them in the range inserted by
+pci_scan_bus().
+
+I think we'd be better off if we forced every pci_scan_bus() caller to
+supply a real non-overlapping bus number range.  We probably can't do that
+easily because the arch knows the beginning bus number, but some don't know
+how to figure out the ending bus number.
+
+Do we have a per-domain structure that tracks the bus numbers in use in the
+domain?  It seems like if we had one, we could use that to approximate the
+end.  For example, if the arch scans three root buses, at bus 00, bus 40,
+and bus 80, we could start with the first one at [bus 00-ff], and when we
+scan the one at bus 40, we could either report a conflict (if the bus 00
+tree included a bus 40) or reduce the first range to [bus 00-3f].
+
 > Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 > ---
->  drivers/pci/host-bridge.c |   20 ++++++++++++++++++++
->  drivers/pci/probe.c       |   26 ++++++++++----------------
->  include/linux/pci.h       |    2 ++
->  3 files changed, 32 insertions(+), 16 deletions(-)
+>  drivers/pci/host-bridge.c |    5 ++++-
+>  1 files changed, 4 insertions(+), 1 deletions(-)
 > 
 > diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-> index 7d52a0a..ecc1a7c 100644
+> index ecc1a7c..1a9834b 100644
 > --- a/drivers/pci/host-bridge.c
 > +++ b/drivers/pci/host-bridge.c
-> @@ -19,6 +19,25 @@ static void pci_release_host_bridge_dev(struct device *dev)
->  	kfree(bridge);
->  }
+> @@ -26,8 +26,11 @@ static void pci_host_update_busn_res(
+>  	struct resource_entry *window;
 >  
-> +static void pci_host_update_busn_res(
-> +		struct pci_host_bridge *host, int bus,
-> +		struct list_head *resources)
-> +{
-> +	struct resource_entry *window;
-> +
-> +	resource_list_for_each_entry(window, resources)
-> +		if (window->res->flags & IORESOURCE_BUS)
-> +			return;
-> +
-> +	pr_info(
-> +	 "No busn resource found for pci%04x:%02x, will use [bus %02x-ff]\n",
-> +		host->domain, bus, bus);
-> +	host->busn_res.flags = IORESOURCE_BUS;
-> +	host->busn_res.start = bus;
-> +	host->busn_res.end = 255;
-> +	pci_add_resource(resources, &host->busn_res);
-> +}
-> +
->  struct pci_host_bridge *pci_create_host_bridge(
->  		struct device *parent, int domain, int bus,
->  		struct list_head *resources)
-> @@ -33,6 +52,7 @@ struct pci_host_bridge *pci_create_host_bridge(
->  
->  	host->dev.parent = parent;
->  	INIT_LIST_HEAD(&host->windows);
-> +	pci_host_update_busn_res(host, bus, resources);
->  	resource_list_for_each_entry_safe(window, n, resources)
->  		list_move_tail(&window->node, &host->windows);
->  	/*
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index 9bc4784..d5a12d9 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -2022,6 +2022,12 @@ int pci_bus_update_busn_res_end(struct pci_bus *b, int bus_max)
->  	return ret;
->  }
->  
-> +static void pci_host_update_busn_res_end(
-> +		struct pci_host_bridge *host, int max)
-> +{
-> +	host->busn_res.end = max;
-> +}
-> +
->  void pci_bus_release_busn_res(struct pci_bus *b)
->  {
->  	struct resource *res = &b->busn_res;
-> @@ -2040,32 +2046,20 @@ static struct pci_bus *__pci_scan_root_bus(int bus,
->  		struct pci_host_bridge *host, struct pci_ops *ops,
->  		void *sysdata)
->  {
-> -	struct resource_entry *window;
-> -	bool found = false;
->  	struct pci_bus *b;
->  	int max;
->  
-> -	resource_list_for_each_entry(window, &host->windows)
-> -		if (window->res->flags & IORESOURCE_BUS) {
-> -			found = true;
-> -			break;
-> -		}
-> -
->  	b = __pci_create_root_bus(bus, host, ops, sysdata);
->  	if (!b)
->  		return NULL;
->  
-> -	if (!found) {
-> -		dev_info(&b->dev,
-> -		 "No busn resource found for root bus, will use [bus %02x-ff]\n",
-> -			bus);
-> -		pci_bus_insert_busn_res(b, bus, 255);
-> -	}
-> -
->  	max = pci_scan_child_bus(b);
->  
-> -	if (!found)
-> +	/* If default busn resource used, update the max bus number */
-> +	if (host->busn_res.flags & IORESOURCE_BUS) {
-> +		pci_host_update_busn_res_end(host, max);
->  		pci_bus_update_busn_res_end(b, max);
-> +	}
->  
->  	return b;
->  }
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 1542df8..f189dfb 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -404,6 +404,8 @@ struct pci_host_bridge {
->  	int domain;
->  	struct device dev;
->  	struct pci_bus *bus;		/* root bus */
-> +	/* we use default bus resource if no bus resource provided */
-> +	struct resource busn_res;
+>  	resource_list_for_each_entry(window, resources)
+> -		if (window->res->flags & IORESOURCE_BUS)
+> +		if (window->res->flags & IORESOURCE_BUS) {
+> +			if (bus > window->res->start)
+> +				window->res->start = bus;
 
-I don't understand the need for another busn_res here.  The host bridge bus
-range should be identical to the root bus range.  Having two copies will
-confuse things.
+I see what you're trying to do here, but I think this is the wrong place to
+do it.  I'd rather figure out a way to insert something other than
+busn_resource in pci_scan_bus().  That probably means we need to
+dynamically allocate a new busn_res struct.
 
-And apparently this host->busn_res is only filled in if the arch doesn't
-provide a busn resource?
-
-To check for conflicts between host bridges, can you iterate through the
-existing ones and check the range of their root buses?
-
->  	struct list_head windows;	/* resource_entry */
->  	void (*release_fn)(struct pci_host_bridge *);
->  	void *release_data;
+>  			return;
+> +		}
+>  
+>  	pr_info(
+>  	 "No busn resource found for pci%04x:%02x, will use [bus %02x-ff]\n",
 > -- 
 > 1.7.1
 > 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
