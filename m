@@ -1,87 +1,95 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v9 07/30] PCI: Add default bus resource in pci_host_bridge
-Date: Wed, 8 Apr 2015 16:14:11 +0800
-Message-ID: <5524E353.8070703@huawei.com>
-References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com> <1428053164-28277-9-git-send-email-wangyijing@huawei.com> <20150407222541.GK10892@google.com>
+Subject: Re: [PATCH v9 23/30] PCI/mvebu: Use pci_common_init_dev() to simplify
+ code
+Date: Wed, 8 Apr 2015 16:30:39 +0800
+Message-ID: <5524E72F.1050500@huawei.com>
+References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com> <1428053164-28277-25-git-send-email-wangyijing@huawei.com> <5524E1F9.6030700@free-electrons.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20150407222541.GK10892@google.com>
-Sender: linux-pci-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <5524E1F9.6030700@free-electrons.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
+To: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Jason Cooper <jason@lakedaemon.net>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, dja@axtens.net, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index 1542df8..f189dfb 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -404,6 +404,8 @@ struct pci_host_bridge {
->>  	int domain;
->>  	struct device dev;
->>  	struct pci_bus *bus;		/* root bus */
->> +	/* we use default bus resource if no bus resource provided */
->> +	struct resource busn_res;
+> 2 months ago, Thomas Petazzoni was concerned about the removal of
+> mvebu_pcie_scan_bus(). So I dig the archives of the discussion
+> surrounding the pcie-mvebu drive. I found that the main purpose
+> of using this function was to allow to pass "struct device *" pointer.
 > 
-> I don't understand the need for another busn_res here.  The host bridge bus
-> range should be identical to the root bus range.  Having two copies will
-> confuse things.
+> Thanks to the introduction of pci_common_init_dev it was not needed
+> anymore. Actually we should have done this change when this function
+> had been introduced. So for the point of view of the code it's fine.
+> Then I tested your full series on Armada XP, Armada 375 and Armada 38x
+> SoCs, and I didn't saw any regression. So you can add my:
 > 
-> And apparently this host->busn_res is only filled in if the arch doesn't
-> provide a busn resource?
-> 
-> To check for conflicts between host bridges, can you iterate through the
-> existing ones and check the range of their root buses?
+> Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+> Tested-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
 
-Checking root buses is not enough, there is time gap between pci_host_bridge creation and
-pci root bus creation.
-E.g. A and B do pci scan sync in two cpus, A first check the buses resource, and find free
-bus resource, then it go to create pci_host_bridge and scan root bus, at the same time, B
-also check the buses resource, because A has not created root bus, B also think there are
-free buses, this is a problem.
-
-I agree you that having two copies is not a good idea.
-
-For pci bus resource, we have the following request path:
-1. arch supplies the busn_res or PCI core add the default bus resource(in pci_scan_bus);
-2. Call pci_bus_insert_busn_res() to insert the bus resource for root bus.
-3. Call get_pci_domain_busn_res() to return the per-domain bus resource.
-4. Request root bus resource under per-domain bus resource.
-
-We have the per-domain structure pci_domain_busn_res to manage the bus resources in one domain,
-so what about add a bitmap to manage the free bus resource ?
-In pci_create_host_bridge(), first check whether the new pci_host_bridge bus resources required
-is free, if yes, we set the bitmap to occupy the bus resource at once,  then create the host bridge
-and add it to the global list.
-
-struct pci_domain_busn_res {
-	struct list_head list;
-	struct resource res;
-	int domain_nr;
-	bitmap used;
-};
-
-Another problem, I found it's unnecessary to add bus resource to pci_host_bridge->windows.
-Unlike the IO and MEM resource, we never use the pci_host_bridge bus resource again after
-pci enumeration. I think we could clean it up, or in some cases, when arch supplies the
-bus resource, we still have the two copies.
+Great, thanks very much!
 
 Thanks!
 Yijing.
 
+
 > 
->>  	struct list_head windows;	/* resource_entry */
->>  	void (*release_fn)(struct pci_host_bridge *);
->>  	void *release_data;
->> -- 
->> 1.7.1
+> 
+> 
+>> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+>> CC: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+>> CC: Jason Cooper <jason@lakedaemon.net>
+>> ---
+>>  drivers/pci/host/pci-mvebu.c |   18 +-----------------
+>>  1 files changed, 1 insertions(+), 17 deletions(-)
+>>
+>> diff --git a/drivers/pci/host/pci-mvebu.c b/drivers/pci/host/pci-mvebu.c
+>> index 0cfc494..d5a2b70 100644
+>> --- a/drivers/pci/host/pci-mvebu.c
+>> +++ b/drivers/pci/host/pci-mvebu.c
+>> @@ -750,21 +750,6 @@ static int mvebu_pcie_setup(int nr, struct pci_sys_data *sys)
+>>  	return 1;
+>>  }
+>>  
+>> -static struct pci_bus *mvebu_pcie_scan_bus(int nr, struct pci_sys_data *sys)
+>> -{
+>> -	struct mvebu_pcie *pcie = sys_to_pcie(sys);
+>> -	struct pci_bus *bus;
+>> -
+>> -	bus = pci_create_root_bus(&pcie->pdev->dev, -1, sys->busnr,
+>> -				  &mvebu_pcie_ops, sys, &sys->resources);
+>> -	if (!bus)
+>> -		return NULL;
+>> -
+>> -	pci_scan_child_bus(bus);
+>> -
+>> -	return bus;
+>> -}
+>> -
+>>  static resource_size_t mvebu_pcie_align_resource(struct pci_dev *dev,
+>>  						 const struct resource *res,
+>>  						 resource_size_t start,
+>> @@ -808,12 +793,11 @@ static void mvebu_pcie_enable(struct mvebu_pcie *pcie)
+>>  	hw.nr_controllers = 1;
+>>  	hw.private_data   = (void **)&pcie;
+>>  	hw.setup          = mvebu_pcie_setup;
+>> -	hw.scan           = mvebu_pcie_scan_bus;
+>>  	hw.map_irq        = of_irq_parse_and_map_pci;
+>>  	hw.ops            = &mvebu_pcie_ops;
+>>  	hw.align_resource = mvebu_pcie_align_resource;
+>>  
+>> -	pci_common_init(&hw);
+>> +	pci_common_init_dev(&pcie->pdev->dev, &hw);
+>>  }
+>>  
+>>  /*
 >>
 > 
-> .
 > 
 
 
 -- 
 Thanks!
 Yijing
+
