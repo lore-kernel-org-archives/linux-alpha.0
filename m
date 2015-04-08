@@ -1,89 +1,49 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v9 23/30] PCI/mvebu: Use pci_common_init_dev() to simplify
- code
-Date: Wed, 8 Apr 2015 16:30:39 +0800
-Message-ID: <5524E72F.1050500@huawei.com>
-References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com> <1428053164-28277-25-git-send-email-wangyijing@huawei.com> <5524E1F9.6030700@free-electrons.com>
+Subject: Re: [PATCH v9 03/30] PCI: Save domain in pci_host_bridge
+Date: Wed, 8 Apr 2015 16:32:27 +0800
+Message-ID: <5524E79B.5020304@huawei.com>
+References: <1428053164-28277-1-git-send-email-wangyijing@huawei.com>
+ <1428053164-28277-5-git-send-email-wangyijing@huawei.com>
+ <5524E248.9010509@free-electrons.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <5524E1F9.6030700@free-electrons.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <5524E248.9010509@free-electrons.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Jason Cooper <jason@lakedaemon.net>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, dja@axtens.net, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, dja@axtens.net, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 
-> 2 months ago, Thomas Petazzoni was concerned about the removal of
-> mvebu_pcie_scan_bus(). So I dig the archives of the discussion
-> surrounding the pcie-mvebu drive. I found that the main purpose
-> of using this function was to allow to pass "struct device *" pointer.
+On 2015/4/8 16:09, Gregory CLEMENT wrote:
+> Hi Yijing,
 > 
-> Thanks to the introduction of pci_common_init_dev it was not needed
-> anymore. Actually we should have done this change when this function
-> had been introduced. So for the point of view of the code it's fine.
-> Then I tested your full series on Armada XP, Armada 375 and Armada 38x
+> On 03/04/2015 11:25, Yijing Wang wrote:
+>> Save domain in pci_host_bridge, so we could get domain
+>> from pci_host_bridge, and at the end of series, we could
+>> clean up the arch specific pci_domain_nr(). For arm,
+>> we pass -1 as the domain number, we would update the
+>> domain number in core by pci_bus_assign_domain_nr().
+>>
+> For the mvebu part I tested on Armada XP, Armada 375 and Armada 38x
 > SoCs, and I didn't saw any regression. So you can add my:
 > 
-> Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
 > Tested-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
 
-Great, thanks very much!
+Thanks a lot for your test!
 
 Thanks!
 Yijing.
 
 
-> 
-> 
-> 
->> Signed-off-by: Yijing Wang <wangyijing@huawei.com>
->> CC: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
->> CC: Jason Cooper <jason@lakedaemon.net>
->> ---
->>  drivers/pci/host/pci-mvebu.c |   18 +-----------------
->>  1 files changed, 1 insertions(+), 17 deletions(-)
->>
->> diff --git a/drivers/pci/host/pci-mvebu.c b/drivers/pci/host/pci-mvebu.c
->> index 0cfc494..d5a2b70 100644
->> --- a/drivers/pci/host/pci-mvebu.c
->> +++ b/drivers/pci/host/pci-mvebu.c
->> @@ -750,21 +750,6 @@ static int mvebu_pcie_setup(int nr, struct pci_sys_data *sys)
->>  	return 1;
->>  }
->>  
->> -static struct pci_bus *mvebu_pcie_scan_bus(int nr, struct pci_sys_data *sys)
->> -{
->> -	struct mvebu_pcie *pcie = sys_to_pcie(sys);
->> -	struct pci_bus *bus;
->> -
->> -	bus = pci_create_root_bus(&pcie->pdev->dev, -1, sys->busnr,
->> -				  &mvebu_pcie_ops, sys, &sys->resources);
->> -	if (!bus)
->> -		return NULL;
->> -
->> -	pci_scan_child_bus(bus);
->> -
->> -	return bus;
->> -}
->> -
->>  static resource_size_t mvebu_pcie_align_resource(struct pci_dev *dev,
->>  						 const struct resource *res,
->>  						 resource_size_t start,
->> @@ -808,12 +793,11 @@ static void mvebu_pcie_enable(struct mvebu_pcie *pcie)
->>  	hw.nr_controllers = 1;
->>  	hw.private_data   = (void **)&pcie;
->>  	hw.setup          = mvebu_pcie_setup;
->> -	hw.scan           = mvebu_pcie_scan_bus;
->>  	hw.map_irq        = of_irq_parse_and_map_pci;
->>  	hw.ops            = &mvebu_pcie_ops;
->>  	hw.align_resource = mvebu_pcie_align_resource;
->>  
->> -	pci_common_init(&hw);
->> +	pci_common_init_dev(&pcie->pdev->dev, &hw);
->>  }
->>  
->>  /*
 >>
 > 
 > 
@@ -92,4 +52,3 @@ Yijing.
 -- 
 Thanks!
 Yijing
-
