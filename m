@@ -1,38 +1,83 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH] alpha: Forward declare struct pt_regs in processor.h
-Date: Thu, 16 Apr 2015 08:58:53 +0200
-Message-ID: <1429167533-13442-1-git-send-email-richard@nod.at>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: [PATCH v10 01/29] xen/PCI: Don't use deprecated function pci_scan_bus_parented()
+Date: Tue, 21 Apr 2015 19:34:20 +0800
+Message-ID: <1429616088-10249-2-git-send-email-wangyijing@huawei.com>
+References: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
+Mime-Version: 1.0
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, akpm@linux-foundation.org, Richard Weinberger <richard@nod.at>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org
 
-Removal of exec domains uncovered this new warning.
-processor.h re-used struct pt_regs from personality.h
-which is now gone.
+From: Arnd Bergmann <arnd@arndb.de>
 
-./arch/alpha/include/asm/processor.h:47:33: warning: 'struct pt_regs' declared inside parameter list [enabled by default]
+Use pci_scan_root_bus() instead of deprecated function
+pci_scan_bus_parented().
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+CC: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+CC: xen-devel@lists.xenproject.org
 ---
- arch/alpha/include/asm/processor.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/xen-pcifront.c |   16 +++++++++++++---
+ 1 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/arch/alpha/include/asm/processor.h b/arch/alpha/include/asm/processor.h
-index b4cf036..43a7559 100644
---- a/arch/alpha/include/asm/processor.h
-+++ b/arch/alpha/include/asm/processor.h
-@@ -44,6 +44,7 @@ struct task_struct;
- extern unsigned long thread_saved_pc(struct task_struct *);
+diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
+index b1ffebe..a69e529 100644
+--- a/drivers/pci/xen-pcifront.c
++++ b/drivers/pci/xen-pcifront.c
+@@ -446,9 +446,15 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+ 				 unsigned int domain, unsigned int bus)
+ {
+ 	struct pci_bus *b;
++	LIST_HEAD(resources);
+ 	struct pcifront_sd *sd = NULL;
+ 	struct pci_bus_entry *bus_entry = NULL;
+ 	int err = 0;
++	static struct resource busn_res = {
++		.start = 0,
++		.end = 255,
++		.flags = IORESOURCE_BUS,
++	};
  
- /* Do necessary setup to start up a newly executed thread.  */
-+struct pt_regs;
- extern void start_thread(struct pt_regs *, unsigned long, unsigned long);
+ #ifndef CONFIG_PCI_DOMAINS
+ 	if (domain != 0) {
+@@ -470,17 +476,21 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+ 		err = -ENOMEM;
+ 		goto err_out;
+ 	}
++	pci_add_resource(&resources, &ioport_resource);
++	pci_add_resource(&resources, &iomem_resource);
++	pci_add_resource(&resources, &busn_res);
+ 	pcifront_init_sd(sd, domain, bus, pdev);
  
- /* Free all resources held by a thread. */
+ 	pci_lock_rescan_remove();
+ 
+-	b = pci_scan_bus_parented(&pdev->xdev->dev, bus,
+-				  &pcifront_bus_ops, sd);
++	b = pci_scan_root_bus(&pdev->xdev->dev, bus,
++				  &pcifront_bus_ops, sd, &resources);
+ 	if (!b) {
+ 		dev_err(&pdev->xdev->dev,
+ 			"Error creating PCI Frontend Bus!\n");
+ 		err = -ENOMEM;
+ 		pci_unlock_rescan_remove();
++		pci_free_resource_list(&resources);
+ 		goto err_out;
+ 	}
+ 
+@@ -488,7 +498,7 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
+ 
+ 	list_add(&bus_entry->list, &pdev->root_buses);
+ 
+-	/* pci_scan_bus_parented skips devices which do not have a have
++	/* pci_scan_root_bus skips devices which do not have a
+ 	* devfn==0. The pcifront_scan_bus enumerates all devfn. */
+ 	err = pcifront_scan_bus(pdev, domain, bus, b);
+ 
 -- 
-1.8.4.5
+1.7.1
