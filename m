@@ -1,83 +1,62 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v10 01/29] xen/PCI: Don't use deprecated function pci_scan_bus_parented()
-Date: Tue, 21 Apr 2015 19:34:20 +0800
-Message-ID: <1429616088-10249-2-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v10 04/29] PCI: Move pci_bus_assign_domain_nr() declaration into drivers/pci/pci.h
+Date: Tue, 21 Apr 2015 19:34:23 +0800
+Message-ID: <1429616088-10249-5-git-send-email-wangyijing@huawei.com>
 References: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-m68k-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, xen-devel@lists.xenproject.org
+Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-From: Arnd Bergmann <arnd@arndb.de>
+pci_bus_assign_domain_nr() is only called in probe.c,
+Move pci_bus_assign_domain_nr() declaration into
+drivers/pci/pci.h.
 
-Use pci_scan_root_bus() instead of deprecated function
-pci_scan_bus_parented().
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
-CC: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-CC: xen-devel@lists.xenproject.org
 ---
- drivers/pci/xen-pcifront.c |   16 +++++++++++++---
- 1 files changed, 13 insertions(+), 3 deletions(-)
+ drivers/pci/pci.h   |    9 +++++++++
+ include/linux/pci.h |    6 ------
+ 2 files changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pci/xen-pcifront.c b/drivers/pci/xen-pcifront.c
-index b1ffebe..a69e529 100644
---- a/drivers/pci/xen-pcifront.c
-+++ b/drivers/pci/xen-pcifront.c
-@@ -446,9 +446,15 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
- 				 unsigned int domain, unsigned int bus)
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index d72f849..dbf1ac0 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -323,4 +323,13 @@ static inline int pci_dev_specific_reset(struct pci_dev *dev, int probe)
+ 
+ struct pci_host_bridge *pci_find_host_bridge(struct pci_bus *bus);
+ 
++#ifdef CONFIG_PCI_DOMAINS_GENERIC
++void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent);
++#else
++static inline void pci_bus_assign_domain_nr(struct pci_bus *bus,
++					struct device *parent)
++{
++}
++#endif
++
+ #endif /* DRIVERS_PCI_H */
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 1a0f8d2..0bdc639 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1331,12 +1331,6 @@ static inline int pci_domain_nr(struct pci_bus *bus)
  {
- 	struct pci_bus *b;
-+	LIST_HEAD(resources);
- 	struct pcifront_sd *sd = NULL;
- 	struct pci_bus_entry *bus_entry = NULL;
- 	int err = 0;
-+	static struct resource busn_res = {
-+		.start = 0,
-+		.end = 255,
-+		.flags = IORESOURCE_BUS,
-+	};
+ 	return bus->domain_nr;
+ }
+-void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent);
+-#else
+-static inline void pci_bus_assign_domain_nr(struct pci_bus *bus,
+-					struct device *parent)
+-{
+-}
+ #endif
  
- #ifndef CONFIG_PCI_DOMAINS
- 	if (domain != 0) {
-@@ -470,17 +476,21 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
- 		err = -ENOMEM;
- 		goto err_out;
- 	}
-+	pci_add_resource(&resources, &ioport_resource);
-+	pci_add_resource(&resources, &iomem_resource);
-+	pci_add_resource(&resources, &busn_res);
- 	pcifront_init_sd(sd, domain, bus, pdev);
- 
- 	pci_lock_rescan_remove();
- 
--	b = pci_scan_bus_parented(&pdev->xdev->dev, bus,
--				  &pcifront_bus_ops, sd);
-+	b = pci_scan_root_bus(&pdev->xdev->dev, bus,
-+				  &pcifront_bus_ops, sd, &resources);
- 	if (!b) {
- 		dev_err(&pdev->xdev->dev,
- 			"Error creating PCI Frontend Bus!\n");
- 		err = -ENOMEM;
- 		pci_unlock_rescan_remove();
-+		pci_free_resource_list(&resources);
- 		goto err_out;
- 	}
- 
-@@ -488,7 +498,7 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
- 
- 	list_add(&bus_entry->list, &pdev->root_buses);
- 
--	/* pci_scan_bus_parented skips devices which do not have a have
-+	/* pci_scan_root_bus skips devices which do not have a
- 	* devfn==0. The pcifront_scan_bus enumerates all devfn. */
- 	err = pcifront_scan_bus(pdev, domain, bus, b);
- 
+ /* some architectures require additional setup to direct VGA traffic */
 -- 
 1.7.1
