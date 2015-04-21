@@ -1,146 +1,55 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v10 27/29] PCI: Rename __pci_create_root_bus() to pci_create_root_bus()
-Date: Tue, 21 Apr 2015 19:34:46 +0800
-Message-ID: <1429616088-10249-28-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v10 25/29] PCI/designware: Use pci_scan_root_bus() for
+ simplicity
+Date: Tue, 21 Apr 2015 19:34:44 +0800
+Message-ID: <1429616088-10249-26-git-send-email-wangyijing@huawei.com>
 References: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
+Cc: Jingoo Han <jg1.han@samsung.com>, linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Mohit Kumar <mohit.kumar@st.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, dja@axtens.net, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 
-Now no one use pci_create_root_bus(), we could remove it
-and rename __pci_create_root_bus() to pci_create_root_bus().
+Use pci_scan_root_bus() instead of pci_create_root_bus() +
+pci_scan_child_bus() for simplicity.
 
-Signed-off-by: wangyijing@huawei.com
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+CC: Mohit Kumar <mohit.kumar@st.com>
+CC: Jingoo Han <jg1.han@samsung.com>
 ---
- drivers/pci/probe.c |   57 +++++++++++++++-----------------------------------
- include/linux/pci.h |    3 --
- 2 files changed, 17 insertions(+), 43 deletions(-)
+ drivers/pci/host/pcie-designware.c |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 2ba6754..c9bee34 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1858,7 +1858,7 @@ void __weak pcibios_remove_bus(struct pci_bus *bus)
- {
- }
+diff --git a/drivers/pci/host/pcie-designware.c b/drivers/pci/host/pcie-designware.c
+index 8854d25..f8d3424 100644
+--- a/drivers/pci/host/pcie-designware.c
++++ b/drivers/pci/host/pcie-designware.c
+@@ -728,13 +728,11 @@ static struct pci_bus *dw_pcie_scan_bus(int nr, struct pci_sys_data *sys)
+ 	struct pcie_port *pp = sys_to_pcie(sys);
  
--static struct pci_bus *__pci_create_root_bus(
-+static struct pci_bus *pci_create_root_bus(
- 		struct pci_host_bridge *bridge, struct pci_ops *ops)
- {
- 	int error, bus;
-@@ -1947,34 +1947,6 @@ put_bridge:
- }
- EXPORT_SYMBOL_GPL(pci_create_root_bus);
- 
--struct pci_bus *pci_create_root_bus(struct device *parent,
--		int domain, struct pci_ops *ops, void *sysdata,
--		struct list_head *resources)
--{
--	struct resource_entry *busn_res;
--	struct pci_host_bridge *host;
--
--	busn_res = pci_busn_resource(resources);
--	if (!busn_res) {
--		pr_err("No busn resource found\n");
--		return NULL;
--	}
--
--	host = pci_create_host_bridge(parent, domain, sysdata,
--			resources, NULL);
--	if (!host)
--		return NULL;
--
--	host->bus = __pci_create_root_bus(host, ops);
--	if (!host->bus) {
--		pci_free_host_bridge(host);
--		return NULL;
--	}
--
--	return host->bus;
--}
--
--
- int pci_bus_insert_busn_res(struct pci_bus *b, int bus, int bus_max)
- {
- 	struct resource *res = &b->busn_res;
-@@ -2060,7 +2032,7 @@ struct pci_host_bridge *pci_scan_host_bridge(
- 	if (!host)
+ 	pp->root_bus_nr = sys->busnr;
+-	bus = pci_create_root_bus(pp->dev, -1, &dw_pcie_ops, sys,
++	bus = pci_scan_root_bus(pp->dev, -1, sys->busnr, &dw_pcie_ops, sys,
+ 			&sys->resources);
+ 	if (!bus)
  		return NULL;
  
--	host->bus = __pci_create_root_bus(host, ops->pci_ops);
-+	host->bus = pci_create_root_bus(host, ops->pci_ops);
- 	if (!host->bus) {
- 		pci_free_host_bridge(host);
- 		return NULL;
-@@ -2104,7 +2076,7 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, int domain,
- 	if (busn_resource)
- 		host->dynamic_busn = true;
+-	pci_scan_child_bus(bus);
+-
+ 	if (bus && pp->ops->scan_bus)
+ 		pp->ops->scan_bus(pp);
  
--	host->bus = __pci_create_root_bus(host, ops);
-+	host->bus = pci_create_root_bus(host, ops);
- 	if (!host->bus) {
- 		pci_free_host_bridge(host);
- 		return NULL;
-@@ -2123,7 +2095,6 @@ struct pci_bus *pci_scan_bus(int domain, int bus,
- 		struct pci_ops *ops, void *sysdata)
- {
- 	LIST_HEAD(resources);
--	struct pci_bus *b;
- 	struct resource *busn_resource;
- 	struct pci_host_bridge *host;
- 
-@@ -2137,17 +2108,23 @@ struct pci_bus *pci_scan_bus(int domain, int bus,
- 	pci_add_resource(&resources, &ioport_resource);
- 	pci_add_resource(&resources, &iomem_resource);
- 	pci_add_resource(&resources, busn_resource);
--	b = pci_create_root_bus(NULL, domain, ops, sysdata,
--			&resources);
--	if (b) {
--		host = to_pci_host_bridge(b->bridge);
--		host->dynamic_busn = true;
--		pci_scan_child_bus(b);
--	} else {
-+	host = pci_create_host_bridge(NULL, domain, sysdata,
-+			&resources, NULL);
-+	if (!host) {
- 		kfree(busn_resource);
- 		pci_free_resource_list(&resources);
-+		return NULL;
- 	}
--	return b;
-+
-+	host->dynamic_busn = true;
-+	host->bus = pci_create_root_bus(host, ops);
-+	if (!host->bus) {
-+		pci_free_host_bridge(host);
-+		return NULL;
-+	}
-+
-+	pci_scan_child_bus(host->bus);
-+	return host->bus;
- }
- EXPORT_SYMBOL(pci_scan_bus);
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 41eb672..7a9bd2d 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -785,9 +785,6 @@ struct pci_bus *pci_find_bus(int domain, int busnr);
- void pci_bus_add_devices(const struct pci_bus *bus);
- struct pci_bus *pci_scan_bus(int domain, int bus, struct pci_ops *ops,
- 					void *sysdata);
--struct pci_bus *pci_create_root_bus(struct device *parent, int domain,
--				    struct pci_ops *ops, void *sysdata,
--				    struct list_head *resources);
- int pci_bus_insert_busn_res(struct pci_bus *b, int bus, int busmax);
- int pci_bus_update_busn_res_end(struct pci_bus *b, int busmax);
- void pci_bus_release_busn_res(struct pci_bus *b);
 -- 
 1.7.1
