@@ -1,9 +1,11 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v10 00/29] Refine PCI scan interfaces and make generic pci host bridge
-Date: Tue, 21 Apr 2015 19:34:19 +0800
-Message-ID: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v10 05/29] PCI: Remove argument bus for pci_create_root_bus()
+Date: Tue, 21 Apr 2015 19:34:24 +0800
+Message-ID: <1429616088-10249-6-git-send-email-wangyijing@huawei.com>
+References: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
 Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -11,166 +13,248 @@ Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-This series could be pulled from:
-https://github.com/YijingWang/linux-pci.git enumer10
+All pci_create_root_bus() callers have supplied
+busn resource, the argument bus is equal to
+busn_res->start, clean up the redundant argument
+bus for simplicity.
 
-v9->v10:
-	Dynamically allocate busn resource if callers don't supply.
-	Try to adjust busn resource if host bridge busn resource conlict.
-	Rebase whole series on Bjorn's latest pci-next branch.
-	Major v9->v10 changes are in patch 5,6,7,10.
-v8->v9:
-	Add Thierry's Acked-by and Tested-by.
-	Fix the building error for powerpc found by Daniel.
-	Change pci_host_assign_domain_nr() to static.
-v7->v8:
-	Fix some cross building errors found by kbuild test.
-	Drop the rename patch for find_pci_host_bridge().
-v6->v7:
-	Drop previous patch which combined the domain and bus in one argument.
-	Make the pci_host_bridge hold the default busn resource, so we could
-	check whether new host busn resource is conflict with existing ones.
-	Move pci_host_assign_domain_nr() to drivers/pci/host-bridge.c
-	Other changes suggested by Bjorn and Suravee.
-v5->v6:
-	Fix cross building errors found by kbuild test.
-	Export busn_resource to Xen pcifront driver.
-v4->v5:
-	Fix some code style issues and rename some functions suggested by Bjorn.
-	Fix some code flaw(Eg. call pci_bus_add_devices() before resources claim
-	or lack the return checking).
-v3->v4:
-	Fix the rebase issue.
-v2->v3:
-	Rebase this series on v4.0-rc1.
-v1->v2:
-	Split pci_host_bridge_list into a new patch, remove .phb_probe_mode
-	and rework powerpc .phb_of_scan_bus() for simpilicty suggested by
-	Arnd. Refresh some patch description log, and add a new patch to fix
-	build warning in ia64.
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+---
+ arch/ia64/pci/pci.c                |    3 +--
+ arch/powerpc/kernel/pci-common.c   |    2 +-
+ arch/sparc/kernel/pci.c            |    2 +-
+ arch/x86/pci/acpi.c                |    4 ++--
+ drivers/parisc/dino.c              |    2 +-
+ drivers/parisc/lba_pci.c           |    3 +--
+ drivers/pci/host/pci-mvebu.c       |    2 +-
+ drivers/pci/host/pci-tegra.c       |    2 +-
+ drivers/pci/host/pci-xgene.c       |    2 +-
+ drivers/pci/host/pcie-designware.c |    4 ++--
+ drivers/pci/probe.c                |   26 ++++++++++++++++++++------
+ include/linux/pci.h                |    2 +-
+ 12 files changed, 33 insertions(+), 21 deletions(-)
 
-This series is based on Bjorn's pci/enumeration branch.
-You could pull it from https://github.com/YijingWang/linux-pci.git enumer9
-
-Now in kernel, we scan pci bus use the following ways:
-1. pci_scan_bus. 
-	parent = NULL, default io/mem/bus resources
-	call pci_bus_add_devices()
-
-2. pci_scan_bus_parented() + pci_bus_add_devices()
-	default io/mem/bus resources, only used by xen
-
-3. pci_scan_root_bus() + pci_bus_add_devices()
-
-4. pci_create_root_bus() + pci_scan_child_bus() + pci_bus_add_devices()
-
-5. pci_create_root_bus() + xx_of_scan_bus()  +  pci_bus_add_devices()
-
-And we have a lot of arch specific pci_domain_nr() and other platform
-specific weak function like pcibios_root_bridge_prepare().
-
-After applied this series, we have following scan interfaces:
-
-1. pci_scan_bus() 
-	parent = NULL, default io/mem/bus resources.
-	for legacy pci scan
-
-2. pci_scan_root_bus()
-	for callers provide its own parent and io/mem/bus resources
-	but no platform specific pci_host_bridge operations
-
-3. pci_scan_host_bridge()
-	for callers provide its own parent and io/mem/bus resources
-
-
-
-Arnd Bergmann (1):
-  xen/PCI: Don't use deprecated function pci_scan_bus_parented()
-
-Yijing Wang (28):
-  PCI: Remove deprecated pci_scan_bus_parented()
-  PCI: Save domain in pci_host_bridge
-  PCI: Move pci_bus_assign_domain_nr() declaration into
-    drivers/pci/pci.h
-  PCI: Remove argument bus for pci_create_root_bus()
-  PCI: Alloc busn resource dynamically for pci_scan_bus()
-  PCI: Allocate busn resource for pci_scan_root_bus()
-  PCI: Introduce pci_host_assign_domain_nr() to assign domain
-  PCI: Separate pci_host_bridge creation out of pci_create_root_bus()
-  PCI: Introduce pci_host_bridge_list to manage host bridges
-  PCI: Save sysdata in pci_host_bridge drvdata
-  powerpc/PCI: Rename pcibios_root_bridge_prepare() to
-    pcibios_set_root_bus_speed()
-  PCI: Move pcibios_root_bridge_prepare() to pci_create_host_bridge()
-  PCI: Introduce pci_host_bridge_ops to support host specific
-    operations
-  PCI: Introduce new scan function pci_scan_host_bridge()
-  PCI: Introduce pci_bus_child_max_busnr()
-  x86/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
-  ia64/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
-  powerpc/pci: Use pci_scan_host_bridge() for simplicity
-  PCI: Remove pcibios_root_bridge_prepare() and
-    pcibos_set_root_bus_speed()
-  sparc/PCI: Use pci_scan_host_bridge() for simplicity
-  parisc/PCI: Use pci_scan_root_bus() for simplicity
-  PCI/mvebu: Use pci_common_init_dev() to simplify code
-  PCI/tegra: Remove redundant tegra_pcie_scan_bus()
-  PCI/designware: Use pci_scan_root_bus() for simplicity
-  PCI/xgene: Use pci_scan_root_bus() instead of pci_create_root_bus()
-  PCI: Rename __pci_create_root_bus() to pci_create_root_bus()
-  PCI: Remove platform specific pci_domain_nr()
-  PCI: Remove pci_bus_assign_domain_nr()
-
- arch/alpha/include/asm/pci.h             |    2 -
- arch/alpha/kernel/pci.c                  |    4 +-
- arch/alpha/kernel/sys_nautilus.c         |    2 +-
- arch/arm/kernel/bios32.c                 |    2 +-
- arch/arm/mach-dove/pcie.c                |    2 +-
- arch/arm/mach-iop13xx/pci.c              |    4 +-
- arch/arm/mach-mv78xx0/pcie.c             |    2 +-
- arch/arm/mach-orion5x/pci.c              |    4 +-
- arch/frv/mb93090-mb00/pci-vdk.c          |    3 +-
- arch/ia64/include/asm/pci.h              |    1 -
- arch/ia64/pci/pci.c                      |   35 ++--
- arch/ia64/sn/kernel/io_init.c            |    4 +-
- arch/m68k/coldfire/pci.c                 |    2 +-
- arch/microblaze/pci/pci-common.c         |   15 +--
- arch/mips/include/asm/pci.h              |    2 -
- arch/mips/pci/pci.c                      |    4 +-
- arch/mn10300/unit-asb2305/pci.c          |    3 +-
- arch/powerpc/include/asm/machdep.h       |    2 +-
- arch/powerpc/kernel/pci-common.c         |   79 +++++-----
- arch/powerpc/platforms/pseries/pci.c     |    8 +-
- arch/powerpc/platforms/pseries/pseries.h |    2 +-
- arch/powerpc/platforms/pseries/setup.c   |    2 +-
- arch/s390/pci/pci.c                      |   10 +-
- arch/sh/drivers/pci/pci.c                |    4 +-
- arch/sh/include/asm/pci.h                |    2 -
- arch/sparc/kernel/leon_pci.c             |    2 +-
- arch/sparc/kernel/pci.c                  |   45 +++---
- arch/sparc/kernel/pcic.c                 |    2 +-
- arch/tile/include/asm/pci.h              |    2 -
- arch/tile/kernel/pci.c                   |    4 +-
- arch/tile/kernel/pci_gx.c                |    4 +-
- arch/unicore32/kernel/pci.c              |    2 +-
- arch/x86/include/asm/pci.h               |    6 -
- arch/x86/pci/acpi.c                      |   37 +++--
- arch/x86/pci/common.c                    |    2 +-
- arch/xtensa/kernel/pci.c                 |    2 +-
- drivers/parisc/dino.c                    |    6 +-
- drivers/parisc/lba_pci.c                 |    6 +-
- drivers/pci/host-bridge.c                |  223 +++++++++++++++++++++++++
- drivers/pci/host/pci-mvebu.c             |   18 +--
- drivers/pci/host/pci-tegra.c             |   16 --
- drivers/pci/host/pci-versatile.c         |    3 +-
- drivers/pci/host/pci-xgene.c             |    5 +-
- drivers/pci/host/pcie-designware.c       |    6 +-
- drivers/pci/host/pcie-xilinx.c           |    2 +-
- drivers/pci/hotplug/acpiphp_glue.c       |   29 +---
- drivers/pci/hotplug/ibmphp_core.c        |    2 +-
- drivers/pci/pci.c                        |   85 +++-------
- drivers/pci/pci.h                        |    5 +
- drivers/pci/probe.c                      |  265 ++++++++++++++---------------
- drivers/pci/xen-pcifront.c               |   16 ++-
- include/linux/pci.h                      |   45 +++---
- 52 files changed, 573 insertions(+), 467 deletions(-)
+diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
+index c642bc8..84f1eb8 100644
+--- a/arch/ia64/pci/pci.c
++++ b/arch/ia64/pci/pci.c
+@@ -424,7 +424,6 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+ {
+ 	struct acpi_device *device = root->device;
+ 	int domain = root->segment;
+-	int bus = root->secondary.start;
+ 	struct pci_controller *controller;
+ 	struct pci_root_info *info = NULL;
+ 	int busnum = root->secondary.start;
+@@ -465,7 +464,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+ 	 * should handle the case here, but it appears that IA64 hasn't
+ 	 * such quirk. So we just ignore the case now.
+ 	 */
+-	pbus = pci_create_root_bus(NULL, domain, bus, &pci_root_ops,
++	pbus = pci_create_root_bus(NULL, domain, &pci_root_ops,
+ 			controller, &info->resources);
+ 	if (!pbus) {
+ 		pci_free_resource_list(&info->resources);
+diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+index 9913f6c..9acc08d 100644
+--- a/arch/powerpc/kernel/pci-common.c
++++ b/arch/powerpc/kernel/pci-common.c
+@@ -1613,7 +1613,7 @@ void pcibios_scan_phb(struct pci_controller *hose)
+ 
+ 	/* Create an empty bus for the toplevel */
+ 	bus = pci_create_root_bus(hose->parent, hose->global_number,
+-			hose->first_busno, hose->ops, hose, &resources);
++			hose->ops, hose, &resources);
+ 	if (bus == NULL) {
+ 		pr_err("Failed to create bus for PCI domain %04x\n",
+ 			hose->global_number);
+diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
+index e40e456..6ff363c 100644
+--- a/arch/sparc/kernel/pci.c
++++ b/arch/sparc/kernel/pci.c
+@@ -667,7 +667,7 @@ struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
+ 	pbm->busn.end	= pbm->pci_last_busno;
+ 	pbm->busn.flags	= IORESOURCE_BUS;
+ 	pci_add_resource(&resources, &pbm->busn);
+-	bus = pci_create_root_bus(parent, pbm->index, pbm->pci_first_busno,
++	bus = pci_create_root_bus(parent, pbm->index,
+ 			pbm->pci_ops, pbm, &resources);
+ 	if (!bus) {
+ 		printk(KERN_ERR "Failed to create bus for %s\n",
+diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+index 7563855..d6aab1c 100644
+--- a/arch/x86/pci/acpi.c
++++ b/arch/x86/pci/acpi.c
+@@ -430,8 +430,8 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
+ 
+ 		if (!setup_mcfg_map(info, domain, (u8)root->secondary.start,
+ 				    (u8)root->secondary.end, root->mcfg_addr))
+-			bus = pci_create_root_bus(NULL, domain, busnum,
+-					&pci_root_ops, sd, &resources);
++			bus = pci_create_root_bus(NULL, domain, &pci_root_ops,
++					sd, &resources);
+ 
+ 		if (bus) {
+ 			pci_scan_child_bus(bus);
+diff --git a/drivers/parisc/dino.c b/drivers/parisc/dino.c
+index f375252..56abc43 100644
+--- a/drivers/parisc/dino.c
++++ b/drivers/parisc/dino.c
+@@ -986,7 +986,7 @@ static int __init dino_probe(struct parisc_device *dev)
+ 	** with configuration accessor functions.
+ 	*/
+ 	dino_dev->hba.hba_bus = bus = pci_create_root_bus(&dev->dev,
+-			 0, dino_current_bus, &dino_cfg_ops, NULL, &resources);
++			 0, &dino_cfg_ops, NULL, &resources);
+ 	if (!bus) {
+ 		printk(KERN_ERR "ERROR: failed to scan PCI bus on %s (duplicate bus number %d?)\n",
+ 		       dev_name(&dev->dev), dino_current_bus);
+diff --git a/drivers/parisc/lba_pci.c b/drivers/parisc/lba_pci.c
+index 2949030..0b9ed96 100644
+--- a/drivers/parisc/lba_pci.c
++++ b/drivers/parisc/lba_pci.c
+@@ -1563,8 +1563,7 @@ lba_driver_probe(struct parisc_device *dev)
+ 
+ 	dev->dev.platform_data = lba_dev;
+ 	lba_bus = lba_dev->hba.hba_bus =
+-		pci_create_root_bus(&dev->dev, 0, lba_dev->hba.bus_num.start,
+-				    cfg_ops, NULL, &resources);
++		pci_create_root_bus(&dev->dev, 0, cfg_ops, NULL, &resources);
+ 	if (!lba_bus) {
+ 		pci_free_resource_list(&resources);
+ 		return 0;
+diff --git a/drivers/pci/host/pci-mvebu.c b/drivers/pci/host/pci-mvebu.c
+index bc4c6c0..c91a8b4 100644
+--- a/drivers/pci/host/pci-mvebu.c
++++ b/drivers/pci/host/pci-mvebu.c
+@@ -756,7 +756,7 @@ static struct pci_bus *mvebu_pcie_scan_bus(int nr, struct pci_sys_data *sys)
+ 	struct mvebu_pcie *pcie = sys_to_pcie(sys);
+ 	struct pci_bus *bus;
+ 
+-	bus = pci_create_root_bus(&pcie->pdev->dev, -1, sys->busnr,
++	bus = pci_create_root_bus(&pcie->pdev->dev, -1,
+ 				  &mvebu_pcie_ops, sys, &sys->resources);
+ 	if (!bus)
+ 		return NULL;
+diff --git a/drivers/pci/host/pci-tegra.c b/drivers/pci/host/pci-tegra.c
+index 94e9362..3e45142 100644
+--- a/drivers/pci/host/pci-tegra.c
++++ b/drivers/pci/host/pci-tegra.c
+@@ -635,7 +635,7 @@ static struct pci_bus *tegra_pcie_scan_bus(int nr, struct pci_sys_data *sys)
+ 	struct tegra_pcie *pcie = sys_to_pcie(sys);
+ 	struct pci_bus *bus;
+ 
+-	bus = pci_create_root_bus(pcie->dev, -1, sys->busnr, &tegra_pcie_ops,
++	bus = pci_create_root_bus(pcie->dev, -1, &tegra_pcie_ops,
+ 			sys, &sys->resources);
+ 	if (!bus)
+ 		return NULL;
+diff --git a/drivers/pci/host/pci-xgene.c b/drivers/pci/host/pci-xgene.c
+index c048e03..f11e77b 100644
+--- a/drivers/pci/host/pci-xgene.c
++++ b/drivers/pci/host/pci-xgene.c
+@@ -499,7 +499,7 @@ static int xgene_pcie_probe_bridge(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	bus = pci_create_root_bus(&pdev->dev, -1, 0,
++	bus = pci_create_root_bus(&pdev->dev, -1,
+ 					&xgene_pcie_ops, port, &res);
+ 	if (!bus)
+ 		return -ENOMEM;
+diff --git a/drivers/pci/host/pcie-designware.c b/drivers/pci/host/pcie-designware.c
+index 93778b9..8854d25 100644
+--- a/drivers/pci/host/pcie-designware.c
++++ b/drivers/pci/host/pcie-designware.c
+@@ -728,8 +728,8 @@ static struct pci_bus *dw_pcie_scan_bus(int nr, struct pci_sys_data *sys)
+ 	struct pcie_port *pp = sys_to_pcie(sys);
+ 
+ 	pp->root_bus_nr = sys->busnr;
+-	bus = pci_create_root_bus(pp->dev, -1, sys->busnr,
+-				  &dw_pcie_ops, sys, &sys->resources);
++	bus = pci_create_root_bus(pp->dev, -1, &dw_pcie_ops, sys,
++			&sys->resources);
+ 	if (!bus)
+ 		return NULL;
+ 
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 9f9445e..52b9257 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -59,6 +59,17 @@ static struct resource *get_pci_domain_busn_res(int domain_nr)
+ 	return &r->res;
+ }
+ 
++static struct resource_entry *pci_busn_resource(
++		struct list_head *resources)
++{
++	struct resource_entry *entry;
++
++	resource_list_for_each_entry(entry, resources)
++		if (entry->res->flags & IORESOURCE_BUS)
++			return entry;
++	return NULL;
++}
++
+ static int find_anything(struct device *dev, void *data)
+ {
+ 	return 1;
+@@ -1892,18 +1903,21 @@ void __weak pcibios_remove_bus(struct pci_bus *bus)
+ }
+ 
+ struct pci_bus *pci_create_root_bus(struct device *parent, int domain,
+-		int bus, struct pci_ops *ops, void *sysdata,
+-		struct list_head *resources)
++		struct pci_ops *ops, void *sysdata, struct list_head *resources)
+ {
+-	int error;
++	int error, bus;
+ 	struct pci_host_bridge *bridge;
+ 	struct pci_bus *b, *b2;
+-	struct resource_entry *window, *n;
++	struct resource_entry *window, *n, *busn_res;
+ 	struct resource *res;
+ 	resource_size_t offset;
+ 	char bus_addr[64];
+ 	char *fmt;
+ 
++	busn_res = pci_busn_resource(resources);
++	if (!busn_res)
++		return NULL;
++	bus = busn_res->res->start;
+ 	b = pci_alloc_bus(NULL);
+ 	if (!b)
+ 		return NULL;
+@@ -2077,7 +2091,7 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, int domain,
+ 			break;
+ 		}
+ 
+-	b = pci_create_root_bus(parent, domain, bus, ops,
++	b = pci_create_root_bus(parent, domain, ops,
+ 			sysdata, resources);
+ 	if (!b)
+ 		return NULL;
+@@ -2107,7 +2121,7 @@ struct pci_bus *pci_scan_bus(int domain, int bus,
+ 	pci_add_resource(&resources, &ioport_resource);
+ 	pci_add_resource(&resources, &iomem_resource);
+ 	pci_add_resource(&resources, &busn_resource);
+-	b = pci_create_root_bus(NULL, domain, bus, ops, sysdata,
++	b = pci_create_root_bus(NULL, domain, ops, sysdata,
+ 			&resources);
+ 	if (b) {
+ 		pci_scan_child_bus(b);
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 0bdc639..df77a62 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -776,7 +776,7 @@ struct pci_bus *pci_find_bus(int domain, int busnr);
+ void pci_bus_add_devices(const struct pci_bus *bus);
+ struct pci_bus *pci_scan_bus(int domain, int bus, struct pci_ops *ops,
+ 					void *sysdata);
+-struct pci_bus *pci_create_root_bus(struct device *parent, int domain, int bus,
++struct pci_bus *pci_create_root_bus(struct device *parent, int domain,
+ 				    struct pci_ops *ops, void *sysdata,
+ 				    struct list_head *resources);
+ int pci_bus_insert_busn_res(struct pci_bus *b, int bus, int busmax);
+-- 
+1.7.1
