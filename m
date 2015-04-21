@@ -1,8 +1,7 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH v10 20/29] PCI: Remove pcibios_root_bridge_prepare() and
- pcibos_set_root_bus_speed()
-Date: Tue, 21 Apr 2015 19:34:39 +0800
-Message-ID: <1429616088-10249-21-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH v10 07/29] PCI: Allocate busn resource for pci_scan_root_bus()
+Date: Tue, 21 Apr 2015 19:34:26 +0800
+Message-ID: <1429616088-10249-8-git-send-email-wangyijing@huawei.com>
 References: <1429616088-10249-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,79 +21,99 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: linux-ia64@vger.kernel.org, linux-pci@vger.kernel.org, Yijing Wang <wangyijing@huawei.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <marc.zyngier@arm.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-m68k@lists.linux-m68k.org, Thomas Gleixner <tglx@linutronix.de>, Yinghai Lu <yinghai@kernel.org>, linux-arm-kernel@lists.infradead.org, dja@axtens.net, Liviu Dudau <liviu@dudau.co.uk>, Tony Luck <tony.luck@intel.com>, linux-kernel@vger.kernel.org, Jiang Liu <jiang.liu@linux.intel.com>, linux-alpha@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 
-Now no one use weak pcibios_root_bridge_prepare() and
-pcibios_set_root_bus_speed, we could clean up them.
+Some pci_scan_root_bus() callers don't supply the busn
+resource, because they don't know the max bus number.
+Currently we insert default busn resource[bus-FF] to root bus,
+and update the max bus number after pci_scan_child_bus().
+We could dynamically allocate busn resource and add it
+to pci_host_bridge, in the later patch, it would be easy
+to check whether new pci_host_bridge busn resource conflict.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/host-bridge.c |    4 ----
- drivers/pci/probe.c       |   18 +-----------------
- include/linux/pci.h       |    2 --
- 3 files changed, 1 insertions(+), 23 deletions(-)
+ drivers/pci/probe.c |   43 ++++++++++++++++++++++++++++++-------------
+ 1 files changed, 30 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/pci/host-bridge.c b/drivers/pci/host-bridge.c
-index 7e25f53..af539c4 100644
---- a/drivers/pci/host-bridge.c
-+++ b/drivers/pci/host-bridge.c
-@@ -127,10 +127,6 @@ struct pci_host_bridge *pci_create_host_bridge(
- 			goto list_del;
- 	}
- 
--	error = pcibios_root_bridge_prepare(host);
--	if (error)
--		goto list_del;
--
- 	error = device_register(&host->dev);
- 	if (error) {
- 		put_device(&host->dev);
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 708bcf1..2ba6754 100644
+index c425755..0eafda2 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -1850,22 +1850,6 @@ unsigned int pci_scan_child_bus(struct pci_bus *bus)
- }
- EXPORT_SYMBOL_GPL(pci_scan_child_bus);
+@@ -2041,6 +2041,8 @@ int pci_bus_insert_busn_res(struct pci_bus *b, int bus, int bus_max)
  
--/**
-- * pcibios_root_bridge_prepare - Platform-specific host bridge setup.
-- * @bridge: Host bridge to set up.
-- *
-- * Default empty implementation.  Replace with an architecture-specific setup
-- * routine, if necessary.
-- */
--int __weak pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
--{
--	return 0;
--}
--
--void __weak pcibios_set_root_bus_speed(struct pci_host_bridge *bridge)
--{
--}
--
- void __weak pcibios_add_bus(struct pci_bus *bus)
+ int pci_bus_update_busn_res_end(struct pci_bus *b, int bus_max)
  {
- }
-@@ -1905,7 +1889,7 @@ static struct pci_bus *__pci_create_root_bus(
++	struct resource_entry *entry;
++	struct pci_host_bridge *host;
+ 	struct resource *res = &b->busn_res;
+ 	struct resource old_res = *res;
+ 	resource_size_t size;
+@@ -2058,6 +2060,14 @@ int pci_bus_update_busn_res_end(struct pci_bus *b, int bus_max)
+ 	if (!ret && !res->parent)
+ 		pci_bus_insert_busn_res(b, res->start, res->end);
  
- 	if (bridge->ops && bridge->ops->set_root_bus_speed)
- 		bridge->ops->set_root_bus_speed(bridge);
--	pcibios_set_root_bus_speed(bridge);
++	if (!ret && pci_is_root_bus(b)) {
++		host = to_pci_host_bridge(b->bridge);
++		if (host->dynamic_busn) {
++			entry = pci_busn_resource(&host->windows);
++			entry->res->end = bus_max;
++		}
++	}
 +
- 	device_enable_async_suspend(b->bridge);
- 	pci_set_bus_of_node(b);
+ 	return ret;
+ }
  
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index a82595a..41eb672 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -426,8 +426,6 @@ void pci_set_host_bridge_release(struct pci_host_bridge *bridge,
- 		     void (*release_fn)(struct pci_host_bridge *),
- 		     void *release_data);
+@@ -2079,32 +2089,39 @@ struct pci_bus *pci_scan_root_bus(struct device *parent, int domain,
+ 		int bus, struct pci_ops *ops, void *sysdata,
+ 		struct list_head *resources)
+ {
+-	struct resource_entry *window;
+-	bool found = false;
++	struct resource_entry *entry;
++	struct resource *busn_resource = NULL;
++	struct pci_host_bridge *host;
+ 	struct pci_bus *b;
+ 	int max;
  
--int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge);
--
- /*
-  * The first PCI_BRIDGE_RESOURCE_NUM PCI bus resources (those that correspond
-  * to P2P or CardBus bridge windows) go in a table.  Additional ones (for
+-	resource_list_for_each_entry(window, resources)
+-		if (window->res->flags & IORESOURCE_BUS) {
+-			found = true;
+-			break;
+-		}
++	entry = pci_busn_resource(resources);
++	if (!entry) {
++		busn_resource = kzalloc(sizeof (struct resource), GFP_KERNEL);
++		if (!busn_resource)
++			return NULL;
++		busn_resource->start = bus;
++		busn_resource->end = 255;
++		busn_resource->flags = IORESOURCE_BUS;
++		pci_add_resource(resources, busn_resource);
++		pr_info(
++		 "No busn resource found for root bus, will use [bus %02x-ff]\n",
++			bus);
++	}
+ 
+ 	b = pci_create_root_bus(parent, domain, ops,
+ 			sysdata, resources);
+ 	if (!b)
+ 		return NULL;
+ 
+-	if (!found) {
+-		dev_info(&b->dev,
+-		 "No busn resource found for root bus, will use [bus %02x-ff]\n",
+-			bus);
+-		pci_bus_insert_busn_res(b, bus, 255);
++	if (busn_resource) {
++		host = to_pci_host_bridge(b->bridge);
++		host->dynamic_busn = true;
+ 	}
+ 
+ 	max = pci_scan_child_bus(b);
+ 
+-	if (!found)
++	if (busn_resource)
+ 		pci_bus_update_busn_res_end(b, max);
+ 
+ 	return b;
 -- 
 1.7.1
