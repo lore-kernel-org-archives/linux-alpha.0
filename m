@@ -1,301 +1,755 @@
-From: Yijing Wang <wangyijing@huawei.com>
-Subject: Re: [PATCH v10 00/29] Refine PCI scan interfaces and make generic
- pci host bridge
-Date: Mon, 27 Apr 2015 14:25:26 +0800
-Message-ID: <553DD656.7000401@huawei.com>
-References: <1429616088-10249-1-git-send-email-wangyijing@huawei.com> <1430107754.6073.9.camel@axtens.net>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1430107754.6073.9.camel@axtens.net>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+From: Jiang Liu <jiang.liu@linux.intel.com>
+Subject: [RFC v1 06/11] genirq: Introduce helper function irq_data_get_affinity_mask()
+Date: Mon,  4 May 2015 11:15:34 +0800
+Message-ID: <1430709339-29083-7-git-send-email-jiang.liu@linux.intel.com>
+References: <1430709339-29083-1-git-send-email-jiang.liu@linux.intel.com>
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <1430709339-29083-1-git-send-email-jiang.liu@linux.intel.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Daniel Axtens <dja@axtens.net>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Jiang Liu <jiang.liu@linux.intel.com>, linux-pci@vger.kernel.org, Yinghai Lu <yinghai@kernel.org>, linux-kernel@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Transfer-Encoding: 7bit
+To: Thomas Gleixner <tglx@linutronix.de>, Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@arm.linux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Steven Miao <realmz6@gmail.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, James Hogan <james.hogan@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>
+Cc: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, Russell King <rmk+kernel@arm.linux.org.uk>, Ingo Molnar <mingo@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-ia64@vger.kernel.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-am33-list@redhat.com, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, xen-devel@lists.xenproject.org
 
-On 2015/4/27 12:09, Daniel Axtens wrote:
-> Hi Yijing,
-> 
-> I'm wondering if you might get some more momentum on these changes if
-> we could split them into a few smaller patch sets. I think we might
-> then be able to start getting bits of this in for 4.2, which should help
-> with getting the rest of it in.
+Introduce helper function irq_data_get_affinity_mask() and
+irq_get_affinity_mask() to hide implementation details,
+so we could move field 'affinity' from struct irq_data into
+struct irq_common_data later.
 
-Yes, I think this is a good idea, the whole series maybe a bit heavy,
-split it to several parts make it easier for folks to review and test the patchset.
+Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+---
+ arch/alpha/kernel/irq.c                   |    2 +-
+ arch/arm/kernel/irq.c                     |    4 ++--
+ arch/arm64/kernel/irq.c                   |    4 ++--
+ arch/blackfin/mach-common/ints-priority.c |    3 ++-
+ arch/ia64/kernel/iosapic.c                |    2 +-
+ arch/ia64/kernel/irq.c                    |    6 +++---
+ arch/ia64/kernel/msi_ia64.c               |    4 ++--
+ arch/ia64/sn/kernel/msi_sn.c              |    2 +-
+ arch/metag/kernel/irq.c                   |   10 ++++++----
+ arch/mips/bcm63xx/irq.c                   |    2 +-
+ arch/mips/cavium-octeon/octeon-irq.c      |   14 ++++++++------
+ arch/mips/pmcs-msp71xx/msp_irq_cic.c      |    3 ++-
+ arch/mn10300/kernel/cevt-mn10300.c        |    2 +-
+ arch/mn10300/kernel/irq.c                 |   13 +++++++------
+ arch/parisc/kernel/irq.c                  |   12 ++++++------
+ arch/powerpc/kernel/irq.c                 |    2 +-
+ arch/powerpc/sysdev/xics/ics-opal.c       |    2 +-
+ arch/powerpc/sysdev/xics/ics-rtas.c       |    2 +-
+ arch/sh/kernel/irq.c                      |    7 ++++---
+ arch/sparc/kernel/irq_64.c                |   12 +++++++-----
+ arch/sparc/kernel/leon_kernel.c           |    6 +++---
+ arch/x86/kernel/apic/io_apic.c            |    2 +-
+ arch/x86/kernel/apic/vector.c             |    5 ++---
+ arch/x86/kernel/irq.c                     |    5 +++--
+ arch/xtensa/kernel/irq.c                  |   10 ++++++----
+ drivers/irqchip/irq-mips-gic.c            |    2 +-
+ drivers/parisc/iosapic.c                  |    2 +-
+ drivers/sh/intc/chip.c                    |    6 +++---
+ drivers/xen/events/events_base.c          |    4 ++--
+ include/linux/irq.h                       |   11 +++++++++++
+ 30 files changed, 92 insertions(+), 69 deletions(-)
 
-> 
-> I think there are a few things that would be easy to pull out.
-> 
->   * #1 (xen/PCI: Don't use deprecated function
->      pci_scan_bus_parented()) can go directly to Xen people and should
->      be easy to merge. #2 (PCI: Remove deprecated
->      pci_scan_bus_parented()) is then an easy fixup.
-
-I will poke Konrad to try to get some feedback.
-
-> 
->   * I think #12 (powerpc/PCI: Rename pcibios_root_bridge_prepare() to
->     pcibios_set_root_bus_speed()) could go to the PowerPC folks
->     individually. I'm not sure, however, that it's worth renaming it
->     and creating another function and another hook when no other arch
->     uses it. If mpe and benh don't want to pick it up, it'd be pretty
->     easy to take out set_root_bus_speed from the host_bridge_ops
->     struct, and this way we can still advance other parts of the
->     series.
-> 
->   * #16 (PCI: Introduce pci_bus_child_max_busnr()) is self-contained
->      and already has a user, so that should go in easily.
-> 
->   * The domain/bus numbering cleanup stuff could be broken out:
->     #3  (PCI: Save domain in pci_host_bridge)
->     #4  (PCI: Move pci_bus_assign_domain_nr() declaration into
-> drivers/pci/pci.h)
->     #8  (PCI: Introduce pci_host_assign_domain_nr() to assign domain),
->     #28 (PCI: Remove platform specific pci_domain_nr())
->     #29 (PCI: Remove pci_bus_assign_domain_nr())
-> 
-
-The domain number related changes could be pulled out first, in this part,
-try to remove arch spec pci_domain_nr().
-
-> 
-> 
-> I've done a bunch of rebasing and compiles to try to make sure all of
-> these proposed divisions work and there are no dependencies that I've
-> missed. It it's helpful, you can see what I've done at
-> https://github.com/daxtens/linux in the YijingWang-enumer10
-> branch. Feel free to use it as you wish.
-> 
-> I think the remaining 20 patches could probably be split again at least
-> once - it looks like the bus/bus numbering stuff might be easy to split
-> out? I might have a look again in a few days.
-
-Hi Daniel, thanks very much!
-I will try to reorganize these patches in two days.
-
-Thanks!
-Yijing.
-
-> 
-> Regards,
-> Daniel
-> 
-> My final set of series, using your original patch names:
-> 
-> Set 1 (Xen cleanup):
->   xen/PCI: Don't use deprecated function pci_scan_bus_parented()
->   PCI: Remove deprecated pci_scan_bus_parented()
-> 
-> Set 2 (PowerPC cleanup):
->   powerpc/PCI: Rename pcibios_root_bridge_prepare() to
->     pcibios_set_root_bus_speed()
-> 
-> Set 3: (could possibly be merged with set 4)
->   PCI: Introduce pci_bus_child_max_busnr()
-> 
-> Set 4: (_nr and friends)
->   PCI: Save domain in pci_host_bridge
->   PCI: Move pci_bus_assign_domain_nr() declaration into
->        drivers/pci/pci.h
->   PCI: Introduce pci_host_assign_domain_nr() to assign domain
->   PCI: Remove platform specific pci_domain_nr()
->   PCI: Remove pci_bus_assign_domain_nr()
-> 
-> Remainder:
->   PCI: Remove argument bus for pci_create_root_bus()
->   PCI: Alloc busn resource dynamically for pci_scan_bus()
->   PCI: Allocate busn resource for pci_scan_root_bus()
->   PCI: Separate pci_host_bridge creation out of pci_create_root_bus()
->   PCI: Introduce pci_host_bridge_list to manage host bridges
->   PCI: Save sysdata in pci_host_bridge drvdata  
->   PCI: Move pcibios_root_bridge_prepare() to pci_create_host_bridge()
->   PCI: Introduce pci_host_bridge_ops to support host specific
->     operations
->   PCI: Introduce new scan function pci_scan_host_bridge()
->   x86/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
->   ia64/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
->   powerpc/pci: Use pci_scan_host_bridge() for simplicity
->   PCI: Remove pcibios_root_bridge_prepare() and
->     pcibos_set_root_bus_speed()
->   sparc/PCI: Use pci_scan_host_bridge() for simplicity
->   parisc/PCI: Use pci_scan_root_bus() for simplicity
->   PCI/mvebu: Use pci_common_init_dev() to simplify code
->   PCI/tegra: Remove redundant tegra_pcie_scan_bus()
->   PCI/designware: Use pci_scan_root_bus() for simplicity
->   PCI/xgene: Use pci_scan_root_bus() instead of pci_create_root_bus()
->   PCI: Rename __pci_create_root_bus() to pci_create_root_bus()
-> 
-> On Tue, 2015-04-21 at 19:34 +0800, Yijing Wang wrote:
->> This series could be pulled from:
->> https://github.com/YijingWang/linux-pci.git enumer10
->>
->> v9->v10:
->> 	Dynamically allocate busn resource if callers don't supply.
->> 	Try to adjust busn resource if host bridge busn resource conlict.
->> 	Rebase whole series on Bjorn's latest pci-next branch.
->> 	Major v9->v10 changes are in patch 5,6,7,10.
->> v8->v9:
->> 	Add Thierry's Acked-by and Tested-by.
->> 	Fix the building error for powerpc found by Daniel.
->> 	Change pci_host_assign_domain_nr() to static.
->> v7->v8:
->> 	Fix some cross building errors found by kbuild test.
->> 	Drop the rename patch for find_pci_host_bridge().
->> v6->v7:
->> 	Drop previous patch which combined the domain and bus in one argument.
->> 	Make the pci_host_bridge hold the default busn resource, so we could
->> 	check whether new host busn resource is conflict with existing ones.
->> 	Move pci_host_assign_domain_nr() to drivers/pci/host-bridge.c
->> 	Other changes suggested by Bjorn and Suravee.
->> v5->v6:
->> 	Fix cross building errors found by kbuild test.
->> 	Export busn_resource to Xen pcifront driver.
->> v4->v5:
->> 	Fix some code style issues and rename some functions suggested by Bjorn.
->> 	Fix some code flaw(Eg. call pci_bus_add_devices() before resources claim
->> 	or lack the return checking).
->> v3->v4:
->> 	Fix the rebase issue.
->> v2->v3:
->> 	Rebase this series on v4.0-rc1.
->> v1->v2:
->> 	Split pci_host_bridge_list into a new patch, remove .phb_probe_mode
->> 	and rework powerpc .phb_of_scan_bus() for simpilicty suggested by
->> 	Arnd. Refresh some patch description log, and add a new patch to fix
->> 	build warning in ia64.
->>
->> This series is based on Bjorn's pci/enumeration branch.
->> You could pull it from https://github.com/YijingWang/linux-pci.git enumer9
->>
->> Now in kernel, we scan pci bus use the following ways:
->> 1. pci_scan_bus. 
->> 	parent = NULL, default io/mem/bus resources
->> 	call pci_bus_add_devices()
->>
->> 2. pci_scan_bus_parented() + pci_bus_add_devices()
->> 	default io/mem/bus resources, only used by xen
->>
->> 3. pci_scan_root_bus() + pci_bus_add_devices()
->>
->> 4. pci_create_root_bus() + pci_scan_child_bus() + pci_bus_add_devices()
->>
->> 5. pci_create_root_bus() + xx_of_scan_bus()  +  pci_bus_add_devices()
->>
->> And we have a lot of arch specific pci_domain_nr() and other platform
->> specific weak function like pcibios_root_bridge_prepare().
->>
->> After applied this series, we have following scan interfaces:
->>
->> 1. pci_scan_bus() 
->> 	parent = NULL, default io/mem/bus resources.
->> 	for legacy pci scan
->>
->> 2. pci_scan_root_bus()
->> 	for callers provide its own parent and io/mem/bus resources
->> 	but no platform specific pci_host_bridge operations
->>
->> 3. pci_scan_host_bridge()
->> 	for callers provide its own parent and io/mem/bus resources
->>
->>
->>
->> Arnd Bergmann (1):
->>   xen/PCI: Don't use deprecated function pci_scan_bus_parented()
->>
->> Yijing Wang (28):
->>   PCI: Remove deprecated pci_scan_bus_parented()
->>   PCI: Save domain in pci_host_bridge
->>   PCI: Move pci_bus_assign_domain_nr() declaration into
->>     drivers/pci/pci.h
->>   PCI: Remove argument bus for pci_create_root_bus()
->>   PCI: Alloc busn resource dynamically for pci_scan_bus()
->>   PCI: Allocate busn resource for pci_scan_root_bus()
->>   PCI: Introduce pci_host_assign_domain_nr() to assign domain
->>   PCI: Separate pci_host_bridge creation out of pci_create_root_bus()
->>   PCI: Introduce pci_host_bridge_list to manage host bridges
->>   PCI: Save sysdata in pci_host_bridge drvdata
->>   powerpc/PCI: Rename pcibios_root_bridge_prepare() to
->>     pcibios_set_root_bus_speed()
->>   PCI: Move pcibios_root_bridge_prepare() to pci_create_host_bridge()
->>   PCI: Introduce pci_host_bridge_ops to support host specific
->>     operations
->>   PCI: Introduce new scan function pci_scan_host_bridge()
->>   PCI: Introduce pci_bus_child_max_busnr()
->>   x86/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
->>   ia64/PCI: Refine pci_acpi_scan_root() with generic pci_host_bridge
->>   powerpc/pci: Use pci_scan_host_bridge() for simplicity
->>   PCI: Remove pcibios_root_bridge_prepare() and
->>     pcibos_set_root_bus_speed()
->>   sparc/PCI: Use pci_scan_host_bridge() for simplicity
->>   parisc/PCI: Use pci_scan_root_bus() for simplicity
->>   PCI/mvebu: Use pci_common_init_dev() to simplify code
->>   PCI/tegra: Remove redundant tegra_pcie_scan_bus()
->>   PCI/designware: Use pci_scan_root_bus() for simplicity
->>   PCI/xgene: Use pci_scan_root_bus() instead of pci_create_root_bus()
->>   PCI: Rename __pci_create_root_bus() to pci_create_root_bus()
->>   PCI: Remove platform specific pci_domain_nr()
->>   PCI: Remove pci_bus_assign_domain_nr()
->>
->>  arch/alpha/include/asm/pci.h             |    2 -
->>  arch/alpha/kernel/pci.c                  |    4 +-
->>  arch/alpha/kernel/sys_nautilus.c         |    2 +-
->>  arch/arm/kernel/bios32.c                 |    2 +-
->>  arch/arm/mach-dove/pcie.c                |    2 +-
->>  arch/arm/mach-iop13xx/pci.c              |    4 +-
->>  arch/arm/mach-mv78xx0/pcie.c             |    2 +-
->>  arch/arm/mach-orion5x/pci.c              |    4 +-
->>  arch/frv/mb93090-mb00/pci-vdk.c          |    3 +-
->>  arch/ia64/include/asm/pci.h              |    1 -
->>  arch/ia64/pci/pci.c                      |   35 ++--
->>  arch/ia64/sn/kernel/io_init.c            |    4 +-
->>  arch/m68k/coldfire/pci.c                 |    2 +-
->>  arch/microblaze/pci/pci-common.c         |   15 +--
->>  arch/mips/include/asm/pci.h              |    2 -
->>  arch/mips/pci/pci.c                      |    4 +-
->>  arch/mn10300/unit-asb2305/pci.c          |    3 +-
->>  arch/powerpc/include/asm/machdep.h       |    2 +-
->>  arch/powerpc/kernel/pci-common.c         |   79 +++++-----
->>  arch/powerpc/platforms/pseries/pci.c     |    8 +-
->>  arch/powerpc/platforms/pseries/pseries.h |    2 +-
->>  arch/powerpc/platforms/pseries/setup.c   |    2 +-
->>  arch/s390/pci/pci.c                      |   10 +-
->>  arch/sh/drivers/pci/pci.c                |    4 +-
->>  arch/sh/include/asm/pci.h                |    2 -
->>  arch/sparc/kernel/leon_pci.c             |    2 +-
->>  arch/sparc/kernel/pci.c                  |   45 +++---
->>  arch/sparc/kernel/pcic.c                 |    2 +-
->>  arch/tile/include/asm/pci.h              |    2 -
->>  arch/tile/kernel/pci.c                   |    4 +-
->>  arch/tile/kernel/pci_gx.c                |    4 +-
->>  arch/unicore32/kernel/pci.c              |    2 +-
->>  arch/x86/include/asm/pci.h               |    6 -
->>  arch/x86/pci/acpi.c                      |   37 +++--
->>  arch/x86/pci/common.c                    |    2 +-
->>  arch/xtensa/kernel/pci.c                 |    2 +-
->>  drivers/parisc/dino.c                    |    6 +-
->>  drivers/parisc/lba_pci.c                 |    6 +-
->>  drivers/pci/host-bridge.c                |  223 +++++++++++++++++++++++++
->>  drivers/pci/host/pci-mvebu.c             |   18 +--
->>  drivers/pci/host/pci-tegra.c             |   16 --
->>  drivers/pci/host/pci-versatile.c         |    3 +-
->>  drivers/pci/host/pci-xgene.c             |    5 +-
->>  drivers/pci/host/pcie-designware.c       |    6 +-
->>  drivers/pci/host/pcie-xilinx.c           |    2 +-
->>  drivers/pci/hotplug/acpiphp_glue.c       |   29 +---
->>  drivers/pci/hotplug/ibmphp_core.c        |    2 +-
->>  drivers/pci/pci.c                        |   85 +++-------
->>  drivers/pci/pci.h                        |    5 +
->>  drivers/pci/probe.c                      |  265 ++++++++++++++---------------
->>  drivers/pci/xen-pcifront.c               |   16 ++-
->>  include/linux/pci.h                      |   45 +++---
->>  52 files changed, 573 insertions(+), 467 deletions(-)
->>
-> 
-
-
+diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
+index 7b2be251c30f..bd8e47699cad 100644
+--- a/arch/alpha/kernel/irq.c
++++ b/arch/alpha/kernel/irq.c
+@@ -60,7 +60,7 @@ int irq_select_affinity(unsigned int irq)
+ 		cpu = (cpu < (NR_CPUS-1) ? cpu + 1 : 0);
+ 	last_cpu = cpu;
+ 
+-	cpumask_copy(data->affinity, cpumask_of(cpu));
++	cpumask_copy(irq_data_get_affinity_mask(data), cpumask_of(cpu));
+ 	chip->irq_set_affinity(data, cpumask_of(cpu), false);
+ 	return 0;
+ }
+diff --git a/arch/arm/kernel/irq.c b/arch/arm/kernel/irq.c
+index 350f188c92d2..baf8edebe26f 100644
+--- a/arch/arm/kernel/irq.c
++++ b/arch/arm/kernel/irq.c
+@@ -140,7 +140,7 @@ int __init arch_probe_nr_irqs(void)
+ static bool migrate_one_irq(struct irq_desc *desc)
+ {
+ 	struct irq_data *d = irq_desc_get_irq_data(desc);
+-	const struct cpumask *affinity = d->affinity;
++	const struct cpumask *affinity = irq_data_get_affinity_mask(d);
+ 	struct irq_chip *c;
+ 	bool ret = false;
+ 
+@@ -160,7 +160,7 @@ static bool migrate_one_irq(struct irq_desc *desc)
+ 	if (!c->irq_set_affinity)
+ 		pr_debug("IRQ%u: unable to set affinity\n", d->irq);
+ 	else if (c->irq_set_affinity(d, affinity, false) == IRQ_SET_MASK_OK && ret)
+-		cpumask_copy(d->affinity, affinity);
++		cpumask_copy(irq_data_get_affinity_mask(d), affinity);
+ 
+ 	return ret;
+ }
+diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
+index 240b75c0e94f..463fa2e7e34c 100644
+--- a/arch/arm64/kernel/irq.c
++++ b/arch/arm64/kernel/irq.c
+@@ -61,7 +61,7 @@ void __init init_IRQ(void)
+ static bool migrate_one_irq(struct irq_desc *desc)
+ {
+ 	struct irq_data *d = irq_desc_get_irq_data(desc);
+-	const struct cpumask *affinity = d->affinity;
++	const struct cpumask *affinity = irq_data_get_affinity_mask(d);
+ 	struct irq_chip *c;
+ 	bool ret = false;
+ 
+@@ -81,7 +81,7 @@ static bool migrate_one_irq(struct irq_desc *desc)
+ 	if (!c->irq_set_affinity)
+ 		pr_debug("IRQ%u: unable to set affinity\n", d->irq);
+ 	else if (c->irq_set_affinity(d, affinity, false) == IRQ_SET_MASK_OK && ret)
+-		cpumask_copy(d->affinity, affinity);
++		cpumask_copy(irq_data_get_affinity_mask(d), affinity);
+ 
+ 	return ret;
+ }
+diff --git a/arch/blackfin/mach-common/ints-priority.c b/arch/blackfin/mach-common/ints-priority.c
+index 7236bdfc71e6..332a434b4669 100644
+--- a/arch/blackfin/mach-common/ints-priority.c
++++ b/arch/blackfin/mach-common/ints-priority.c
+@@ -194,7 +194,8 @@ void bfin_internal_unmask_irq(unsigned int irq)
+ #ifdef CONFIG_SMP
+ static void bfin_internal_unmask_irq_chip(struct irq_data *d)
+ {
+-	bfin_internal_unmask_irq_affinity(d->irq, d->affinity);
++	bfin_internal_unmask_irq_affinity(d->irq,
++					  irq_data_get_affinity_mask(d));
+ }
+ 
+ static int bfin_internal_set_affinity(struct irq_data *d,
+diff --git a/arch/ia64/kernel/iosapic.c b/arch/ia64/kernel/iosapic.c
+index bc9501e36e77..4d2698d43c39 100644
+--- a/arch/ia64/kernel/iosapic.c
++++ b/arch/ia64/kernel/iosapic.c
+@@ -838,7 +838,7 @@ iosapic_unregister_intr (unsigned int gsi)
+ 	if (iosapic_intr_info[irq].count == 0) {
+ #ifdef CONFIG_SMP
+ 		/* Clear affinity */
+-		cpumask_setall(irq_get_irq_data(irq)->affinity);
++		cpumask_setall(irq_get_affinity_mask(irq));
+ #endif
+ 		/* Clear the interrupt information */
+ 		iosapic_intr_info[irq].dest = 0;
+diff --git a/arch/ia64/kernel/irq.c b/arch/ia64/kernel/irq.c
+index 812a1e6b3179..de4fc00dea98 100644
+--- a/arch/ia64/kernel/irq.c
++++ b/arch/ia64/kernel/irq.c
+@@ -67,7 +67,7 @@ static char irq_redir [NR_IRQS]; // = { [0 ... NR_IRQS-1] = 1 };
+ void set_irq_affinity_info (unsigned int irq, int hwid, int redir)
+ {
+ 	if (irq < NR_IRQS) {
+-		cpumask_copy(irq_get_irq_data(irq)->affinity,
++		cpumask_copy(irq_get_affinity_mask(irq),
+ 			     cpumask_of(cpu_logical_id(hwid)));
+ 		irq_redir[irq] = (char) (redir & 0xff);
+ 	}
+@@ -119,8 +119,8 @@ static void migrate_irqs(void)
+ 		if (irqd_is_per_cpu(data))
+ 			continue;
+ 
+-		if (cpumask_any_and(data->affinity, cpu_online_mask)
+-		    >= nr_cpu_ids) {
++		if (cpumask_any_and(irq_data_get_affinity_mask(data),
++				    cpu_online_mask) >= nr_cpu_ids) {
+ 			/*
+ 			 * Save it for phase 2 processing
+ 			 */
+diff --git a/arch/ia64/kernel/msi_ia64.c b/arch/ia64/kernel/msi_ia64.c
+index d70bf15c690a..6c50d332b7d7 100644
+--- a/arch/ia64/kernel/msi_ia64.c
++++ b/arch/ia64/kernel/msi_ia64.c
+@@ -36,7 +36,7 @@ static int ia64_set_msi_irq_affinity(struct irq_data *idata,
+ 	msg.data = data;
+ 
+ 	pci_write_msi_msg(irq, &msg);
+-	cpumask_copy(idata->affinity, cpumask_of(cpu));
++	cpumask_copy(irq_data_get_affinity_mask(idata), cpumask_of(cpu));
+ 
+ 	return 0;
+ }
+@@ -148,7 +148,7 @@ static int dmar_msi_set_affinity(struct irq_data *data,
+ 	msg.address_lo |= MSI_ADDR_DEST_ID_CPU(cpu_physical_id(cpu));
+ 
+ 	dmar_msi_write(irq, &msg);
+-	cpumask_copy(data->affinity, mask);
++	cpumask_copy(irq_data_get_affinity_mask(data), mask);
+ 
+ 	return 0;
+ }
+diff --git a/arch/ia64/sn/kernel/msi_sn.c b/arch/ia64/sn/kernel/msi_sn.c
+index a0eb27b66d13..42b5a13af142 100644
+--- a/arch/ia64/sn/kernel/msi_sn.c
++++ b/arch/ia64/sn/kernel/msi_sn.c
+@@ -206,7 +206,7 @@ static int sn_set_msi_irq_affinity(struct irq_data *data,
+ 	msg.address_lo = (u32)(bus_addr & 0x00000000ffffffff);
+ 
+ 	pci_write_msi_msg(irq, &msg);
+-	cpumask_copy(data->affinity, cpu_mask);
++	cpumask_copy(irq_data_get_affinity_mask(data), cpu_mask);
+ 
+ 	return 0;
+ }
+diff --git a/arch/metag/kernel/irq.c b/arch/metag/kernel/irq.c
+index 4f8f1f87ef11..a336094a7a6c 100644
+--- a/arch/metag/kernel/irq.c
++++ b/arch/metag/kernel/irq.c
+@@ -270,23 +270,25 @@ void migrate_irqs(void)
+ 
+ 	for_each_active_irq(i) {
+ 		struct irq_data *data = irq_get_irq_data(i);
++		struct cpumask *mask;
+ 		unsigned int newcpu;
+ 
+ 		if (irqd_is_per_cpu(data))
+ 			continue;
+ 
+-		if (!cpumask_test_cpu(cpu, data->affinity))
++		mask = irq_data_get_affinity_mask(data);
++		if (!cpumask_test_cpu(cpu, mask))
+ 			continue;
+ 
+-		newcpu = cpumask_any_and(data->affinity, cpu_online_mask);
++		newcpu = cpumask_any_and(mask, cpu_online_mask);
+ 
+ 		if (newcpu >= nr_cpu_ids) {
+ 			pr_info_ratelimited("IRQ%u no longer affine to CPU%u\n",
+ 					    i, cpu);
+ 
+-			cpumask_setall(data->affinity);
++			cpumask_setall(mask);
+ 		}
+-		irq_set_affinity(i, data->affinity);
++		irq_set_affinity(i, mask);
+ 	}
+ }
+ #endif /* CONFIG_HOTPLUG_CPU */
+diff --git a/arch/mips/bcm63xx/irq.c b/arch/mips/bcm63xx/irq.c
+index e3e808a6c542..02983b90826d 100644
+--- a/arch/mips/bcm63xx/irq.c
++++ b/arch/mips/bcm63xx/irq.c
+@@ -60,7 +60,7 @@ static inline int enable_irq_for_cpu(int cpu, struct irq_data *d,
+ 	if (m)
+ 		enable &= cpumask_test_cpu(cpu, m);
+ 	else if (irqd_affinity_was_set(d))
+-		enable &= cpumask_test_cpu(cpu, d->affinity);
++		enable &= cpumask_test_cpu(cpu, irq_data_get_affinity_mask(d));
+ #endif
+ 	return enable;
+ }
+diff --git a/arch/mips/cavium-octeon/octeon-irq.c b/arch/mips/cavium-octeon/octeon-irq.c
+index 10f762557b92..0643ae614284 100644
+--- a/arch/mips/cavium-octeon/octeon-irq.c
++++ b/arch/mips/cavium-octeon/octeon-irq.c
+@@ -225,13 +225,14 @@ static int next_cpu_for_irq(struct irq_data *data)
+ 
+ #ifdef CONFIG_SMP
+ 	int cpu;
+-	int weight = cpumask_weight(data->affinity);
++	struct cpumask *mask = irq_data_get_affinity_mask(data);
++	int weight = cpumask_weight(mask);
+ 	struct octeon_ciu_chip_data *cd = irq_data_get_irq_chip_data(data);
+ 
+ 	if (weight > 1) {
+ 		cpu = cd->current_cpu;
+ 		for (;;) {
+-			cpu = cpumask_next(cpu, data->affinity);
++			cpu = cpumask_next(cpu, mask);
+ 			if (cpu >= nr_cpu_ids) {
+ 				cpu = -1;
+ 				continue;
+@@ -240,7 +241,7 @@ static int next_cpu_for_irq(struct irq_data *data)
+ 			}
+ 		}
+ 	} else if (weight == 1) {
+-		cpu = cpumask_first(data->affinity);
++		cpu = cpumask_first(mask);
+ 	} else {
+ 		cpu = smp_processor_id();
+ 	}
+@@ -710,16 +711,17 @@ static void octeon_irq_cpu_offline_ciu(struct irq_data *data)
+ {
+ 	int cpu = smp_processor_id();
+ 	cpumask_t new_affinity;
++	struct cpumask *mask = irq_data_get_affinity_mask(data);
+ 
+-	if (!cpumask_test_cpu(cpu, data->affinity))
++	if (!cpumask_test_cpu(cpu, mask))
+ 		return;
+ 
+-	if (cpumask_weight(data->affinity) > 1) {
++	if (cpumask_weight(mask) > 1) {
+ 		/*
+ 		 * It has multi CPU affinity, just remove this CPU
+ 		 * from the affinity set.
+ 		 */
+-		cpumask_copy(&new_affinity, data->affinity);
++		cpumask_copy(&new_affinity, mask);
+ 		cpumask_clear_cpu(cpu, &new_affinity);
+ 	} else {
+ 		/* Otherwise, put it on lowest numbered online CPU. */
+diff --git a/arch/mips/pmcs-msp71xx/msp_irq_cic.c b/arch/mips/pmcs-msp71xx/msp_irq_cic.c
+index 1207ec4dfb77..8b9cf6463040 100644
+--- a/arch/mips/pmcs-msp71xx/msp_irq_cic.c
++++ b/arch/mips/pmcs-msp71xx/msp_irq_cic.c
+@@ -88,7 +88,8 @@ static void unmask_cic_irq(struct irq_data *d)
+ 	* Make sure we have IRQ affinity.  It may have changed while
+ 	* we were processing the IRQ.
+ 	*/
+-	if (!cpumask_test_cpu(smp_processor_id(), d->affinity))
++	if (!cpumask_test_cpu(smp_processor_id(),
++			      irq_data_get_affinity_mask(d)))
+ 		return;
+ #endif
+ 
+diff --git a/arch/mn10300/kernel/cevt-mn10300.c b/arch/mn10300/kernel/cevt-mn10300.c
+index 60f64ca1752a..326677d4a3b2 100644
+--- a/arch/mn10300/kernel/cevt-mn10300.c
++++ b/arch/mn10300/kernel/cevt-mn10300.c
+@@ -123,7 +123,7 @@ int __init init_clockevents(void)
+ 	{
+ 		struct irq_data *data;
+ 		data = irq_get_irq_data(cd->irq);
+-		cpumask_copy(data->affinity, cpumask_of(cpu));
++		cpumask_copy(irq_data_get_affinity_mask(data), cpumask_of(cpu));
+ 		iact->flags |= IRQF_NOBALANCING;
+ 	}
+ #endif
+diff --git a/arch/mn10300/kernel/irq.c b/arch/mn10300/kernel/irq.c
+index 480de70f4059..c716437baa2c 100644
+--- a/arch/mn10300/kernel/irq.c
++++ b/arch/mn10300/kernel/irq.c
+@@ -87,7 +87,8 @@ static void mn10300_cpupic_mask_ack(struct irq_data *d)
+ 		tmp2 = GxICR(irq);
+ 
+ 		irq_affinity_online[irq] =
+-			cpumask_any_and(d->affinity, cpu_online_mask);
++			cpumask_any_and(irq_data_get_affinity_mask(d),
++					cpu_online_mask);
+ 		CROSS_GxICR(irq, irq_affinity_online[irq]) =
+ 			(tmp & (GxICR_LEVEL | GxICR_ENABLE)) | GxICR_DETECT;
+ 		tmp = CROSS_GxICR(irq, irq_affinity_online[irq]);
+@@ -124,7 +125,7 @@ static void mn10300_cpupic_unmask_clear(struct irq_data *d)
+ 	} else {
+ 		tmp = GxICR(irq);
+ 
+-		irq_affinity_online[irq] = cpumask_any_and(d->affinity,
++		irq_affinity_online[irq] = cpumask_any_and(irq_data_get_affinity_mask(d),
+ 							   cpu_online_mask);
+ 		CROSS_GxICR(irq, irq_affinity_online[irq]) = (tmp & GxICR_LEVEL) | GxICR_ENABLE | GxICR_DETECT;
+ 		tmp = CROSS_GxICR(irq, irq_affinity_online[irq]);
+@@ -316,15 +317,16 @@ void migrate_irqs(void)
+ 	self = smp_processor_id();
+ 	for (irq = 0; irq < NR_IRQS; irq++) {
+ 		struct irq_data *data = irq_get_irq_data(irq);
++		struct cpumask *mask = irq_data_get_affinity_mask(data);
+ 
+ 		if (irqd_is_per_cpu(data))
+ 			continue;
+ 
+-		if (cpumask_test_cpu(self, data->affinity) &&
++		if (cpumask_test_cpu(self, mask) &&
+ 		    !cpumask_intersects(&irq_affinity[irq], cpu_online_mask)) {
+ 			int cpu_id;
+ 			cpu_id = cpumask_first(cpu_online_mask);
+-			cpumask_set_cpu(cpu_id, data->affinity);
++			cpumask_set_cpu(cpu_id, mask);
+ 		}
+ 		/* We need to operate irq_affinity_online atomically. */
+ 		arch_local_cli_save(flags);
+@@ -335,8 +337,7 @@ void migrate_irqs(void)
+ 			GxICR(irq) = x & GxICR_LEVEL;
+ 			tmp = GxICR(irq);
+ 
+-			new = cpumask_any_and(data->affinity,
+-					      cpu_online_mask);
++			new = cpumask_any_and(mask, cpu_online_mask);
+ 			irq_affinity_online[irq] = new;
+ 
+ 			CROSS_GxICR(irq, new) =
+diff --git a/arch/parisc/kernel/irq.c b/arch/parisc/kernel/irq.c
+index f3191db6e2e9..413ec3c3f9cc 100644
+--- a/arch/parisc/kernel/irq.c
++++ b/arch/parisc/kernel/irq.c
+@@ -131,7 +131,7 @@ static int cpu_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
+ 	if (cpu_dest < 0)
+ 		return -1;
+ 
+-	cpumask_copy(d->affinity, dest);
++	cpumask_copy(irq_data_get_affinity_mask(d), dest);
+ 
+ 	return 0;
+ }
+@@ -339,7 +339,7 @@ unsigned long txn_affinity_addr(unsigned int irq, int cpu)
+ {
+ #ifdef CONFIG_SMP
+ 	struct irq_data *d = irq_get_irq_data(irq);
+-	cpumask_copy(d->affinity, cpumask_of(cpu));
++	cpumask_copy(irq_data_get_affinity_mask(d), cpumask_of(cpu));
+ #endif
+ 
+ 	return per_cpu(cpu_data, cpu).txn_addr;
+@@ -508,7 +508,7 @@ void do_cpu_irq_mask(struct pt_regs *regs)
+ 	unsigned long eirr_val;
+ 	int irq, cpu = smp_processor_id();
+ #ifdef CONFIG_SMP
+-	struct irq_desc *desc;
++	struct irq_data *irq_data;
+ 	cpumask_t dest;
+ #endif
+ 
+@@ -522,9 +522,9 @@ void do_cpu_irq_mask(struct pt_regs *regs)
+ 	irq = eirr_to_irq(eirr_val);
+ 
+ #ifdef CONFIG_SMP
+-	desc = irq_to_desc(irq);
+-	cpumask_copy(&dest, desc->irq_data.affinity);
+-	if (irqd_is_per_cpu(&desc->irq_data) &&
++	irq_data = irq_get_irq_data(irq);
++	cpumask_copy(&dest, irq_data_get_affinity_mask(irq_data));
++	if (irqd_is_per_cpu(irq_data) &&
+ 	    !cpumask_test_cpu(smp_processor_id(), &dest)) {
+ 		int cpu = cpumask_first(&dest);
+ 
+diff --git a/arch/powerpc/kernel/irq.c b/arch/powerpc/kernel/irq.c
+index 45096033d37b..290559df1e8b 100644
+--- a/arch/powerpc/kernel/irq.c
++++ b/arch/powerpc/kernel/irq.c
+@@ -441,7 +441,7 @@ void migrate_irqs(void)
+ 
+ 		chip = irq_data_get_irq_chip(data);
+ 
+-		cpumask_and(mask, data->affinity, map);
++		cpumask_and(mask, irq_data_get_affinity_mask(data), map);
+ 		if (cpumask_any(mask) >= nr_cpu_ids) {
+ 			pr_warn("Breaking affinity for irq %i\n", irq);
+ 			cpumask_copy(mask, map);
+diff --git a/arch/powerpc/sysdev/xics/ics-opal.c b/arch/powerpc/sysdev/xics/ics-opal.c
+index 68c7e5cc98e0..3996393c254d 100644
+--- a/arch/powerpc/sysdev/xics/ics-opal.c
++++ b/arch/powerpc/sysdev/xics/ics-opal.c
+@@ -54,7 +54,7 @@ static void ics_opal_unmask_irq(struct irq_data *d)
+ 	if (hw_irq == XICS_IPI || hw_irq == XICS_IRQ_SPURIOUS)
+ 		return;
+ 
+-	server = xics_get_irq_server(d->irq, d->affinity, 0);
++	server = xics_get_irq_server(d->irq, irq_data_get_affinity_mask(d), 0);
+ 	server = ics_opal_mangle_server(server);
+ 
+ 	rc = opal_set_xive(hw_irq, server, DEFAULT_PRIORITY);
+diff --git a/arch/powerpc/sysdev/xics/ics-rtas.c b/arch/powerpc/sysdev/xics/ics-rtas.c
+index 0af97deb83f3..e2665a9dfc0f 100644
+--- a/arch/powerpc/sysdev/xics/ics-rtas.c
++++ b/arch/powerpc/sysdev/xics/ics-rtas.c
+@@ -47,7 +47,7 @@ static void ics_rtas_unmask_irq(struct irq_data *d)
+ 	if (hw_irq == XICS_IPI || hw_irq == XICS_IRQ_SPURIOUS)
+ 		return;
+ 
+-	server = xics_get_irq_server(d->irq, d->affinity, 0);
++	server = xics_get_irq_server(d->irq, irq_data_get_affinity_mask(d), 0);
+ 
+ 	call_status = rtas_call(ibm_set_xive, 3, 1, NULL, hw_irq, server,
+ 				DEFAULT_PRIORITY);
+diff --git a/arch/sh/kernel/irq.c b/arch/sh/kernel/irq.c
+index 8dc677cc136b..6c0378c0b8b5 100644
+--- a/arch/sh/kernel/irq.c
++++ b/arch/sh/kernel/irq.c
+@@ -228,15 +228,16 @@ void migrate_irqs(void)
+ 		struct irq_data *data = irq_get_irq_data(irq);
+ 
+ 		if (irq_data_get_node(data) == cpu) {
+-			unsigned int newcpu = cpumask_any_and(data->affinity,
++			struct cpumask *mask = irq_data_get_affinity_mask(data);
++			unsigned int newcpu = cpumask_any_and(mask,
+ 							      cpu_online_mask);
+ 			if (newcpu >= nr_cpu_ids) {
+ 				pr_info_ratelimited("IRQ%u no longer affine to CPU%u\n",
+ 						    irq, cpu);
+ 
+-				cpumask_setall(data->affinity);
++				cpumask_setall(mask);
+ 			}
+-			irq_set_affinity(irq, data->affinity);
++			irq_set_affinity(irq, mask);
+ 		}
+ 	}
+ }
+diff --git a/arch/sparc/kernel/irq_64.c b/arch/sparc/kernel/irq_64.c
+index 5130f6e3e68e..e22416ce56ea 100644
+--- a/arch/sparc/kernel/irq_64.c
++++ b/arch/sparc/kernel/irq_64.c
+@@ -377,7 +377,8 @@ static void sun4u_irq_enable(struct irq_data *data)
+ 		unsigned long cpuid, imap, val;
+ 		unsigned int tid;
+ 
+-		cpuid = irq_choose_cpu(data->irq, data->affinity);
++		cpuid = irq_choose_cpu(data->irq,
++				       irq_data_get_affinity_mask(data));
+ 		imap = handler_data->imap;
+ 
+ 		tid = sun4u_compute_tid(imap, cpuid);
+@@ -449,7 +450,8 @@ static void sun4u_irq_eoi(struct irq_data *data)
+ 
+ static void sun4v_irq_enable(struct irq_data *data)
+ {
+-	unsigned long cpuid = irq_choose_cpu(data->irq, data->affinity);
++	unsigned long cpuid = irq_choose_cpu(data->irq,
++					     irq_data_get_affinity_mask(data));
+ 	unsigned int ino = irq_data_to_sysino(data);
+ 	int err;
+ 
+@@ -511,7 +513,7 @@ static void sun4v_virq_enable(struct irq_data *data)
+ 	unsigned long cpuid;
+ 	int err;
+ 
+-	cpuid = irq_choose_cpu(data->irq, data->affinity);
++	cpuid = irq_choose_cpu(data->irq, irq_data_get_affinity_mask(data));
+ 
+ 	err = sun4v_vintr_set_target(dev_handle, dev_ino, cpuid);
+ 	if (err != HV_EOK)
+@@ -884,8 +886,8 @@ void fixup_irqs(void)
+ 		if (desc->action && !irqd_is_per_cpu(data)) {
+ 			if (data->chip->irq_set_affinity)
+ 				data->chip->irq_set_affinity(data,
+-							     data->affinity,
+-							     false);
++					irq_data_get_affinity_mask(data),
++					false);
+ 		}
+ 		raw_spin_unlock_irqrestore(&desc->lock, flags);
+ 	}
+diff --git a/arch/sparc/kernel/leon_kernel.c b/arch/sparc/kernel/leon_kernel.c
+index 9bbb8f2bbfcc..0299f052a2ef 100644
+--- a/arch/sparc/kernel/leon_kernel.c
++++ b/arch/sparc/kernel/leon_kernel.c
+@@ -126,7 +126,7 @@ static int leon_set_affinity(struct irq_data *data, const struct cpumask *dest,
+ 	int oldcpu, newcpu;
+ 
+ 	mask = (unsigned long)data->chip_data;
+-	oldcpu = irq_choose_cpu(data->affinity);
++	oldcpu = irq_choose_cpu(irq_data_get_affinity_mask(data));
+ 	newcpu = irq_choose_cpu(dest);
+ 
+ 	if (oldcpu == newcpu)
+@@ -149,7 +149,7 @@ static void leon_unmask_irq(struct irq_data *data)
+ 	int cpu;
+ 
+ 	mask = (unsigned long)data->chip_data;
+-	cpu = irq_choose_cpu(data->affinity);
++	cpu = irq_choose_cpu(irq_data_get_affinity_mask(data));
+ 	spin_lock_irqsave(&leon_irq_lock, flags);
+ 	oldmask = LEON3_BYPASS_LOAD_PA(LEON_IMASK(cpu));
+ 	LEON3_BYPASS_STORE_PA(LEON_IMASK(cpu), (oldmask | mask));
+@@ -162,7 +162,7 @@ static void leon_mask_irq(struct irq_data *data)
+ 	int cpu;
+ 
+ 	mask = (unsigned long)data->chip_data;
+-	cpu = irq_choose_cpu(data->affinity);
++	cpu = irq_choose_cpu(irq_data_get_affinity_mask(data));
+ 	spin_lock_irqsave(&leon_irq_lock, flags);
+ 	oldmask = LEON3_BYPASS_LOAD_PA(LEON_IMASK(cpu));
+ 	LEON3_BYPASS_STORE_PA(LEON_IMASK(cpu), (oldmask & ~mask));
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index 845dc0df2002..09921de4210f 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -2541,7 +2541,7 @@ void __init setup_ioapic_dest(void)
+ 		 * Honour affinities which have been set in early boot
+ 		 */
+ 		if (!irqd_can_balance(idata) || irqd_affinity_was_set(idata))
+-			mask = idata->affinity;
++			mask = irq_data_get_affinity_mask(idata);
+ 		else
+ 			mask = apic->target_cpus();
+ 
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index 983bea2a09ce..c488d8b5d50b 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -546,9 +546,8 @@ static int apic_set_affinity(struct irq_data *irq_data,
+ 
+ 	err = assign_irq_vector(irq, data, dest);
+ 	if (err) {
+-		struct irq_data *top = irq_get_irq_data(irq);
+-
+-		if (assign_irq_vector(irq, data, top->affinity))
++		if (assign_irq_vector(irq, data,
++				      irq_data_get_affinity_mask(irq_data)))
+ 			pr_err("Failed to recover vector for irq %d\n", irq);
+ 		return err;
+ 	}
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index e5952c225532..f5d9cc16399c 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -306,7 +306,8 @@ int check_irq_vectors_for_cpu_disable(void)
+ 				continue;
+ 
+ 			data = irq_desc_get_irq_data(desc);
+-			cpumask_copy(&affinity_new, data->affinity);
++			cpumask_copy(&affinity_new,
++				     irq_data_get_affinity_mask(data));
+ 			cpumask_clear_cpu(this_cpu, &affinity_new);
+ 
+ 			/* Do not count inactive or per-cpu irqs. */
+@@ -384,7 +385,7 @@ void fixup_irqs(void)
+ 		raw_spin_lock(&desc->lock);
+ 
+ 		data = irq_desc_get_irq_data(desc);
+-		affinity = data->affinity;
++		affinity = irq_data_get_affinity_mask(data);
+ 		if (!irq_has_action(irq) || irqd_is_per_cpu(data) ||
+ 		    cpumask_subset(affinity, cpu_online_mask)) {
+ 			raw_spin_unlock(&desc->lock);
+diff --git a/arch/xtensa/kernel/irq.c b/arch/xtensa/kernel/irq.c
+index 3eee94f621eb..d7b5a4c8ae5d 100644
+--- a/arch/xtensa/kernel/irq.c
++++ b/arch/xtensa/kernel/irq.c
+@@ -166,23 +166,25 @@ void migrate_irqs(void)
+ 
+ 	for_each_active_irq(i) {
+ 		struct irq_data *data = irq_get_irq_data(i);
++		struct cpumask *mask;
+ 		unsigned int newcpu;
+ 
+ 		if (irqd_is_per_cpu(data))
+ 			continue;
+ 
+-		if (!cpumask_test_cpu(cpu, data->affinity))
++		mask = irq_data_get_affinity_mask(data);
++		if (!cpumask_test_cpu(cpu, mask))
+ 			continue;
+ 
+-		newcpu = cpumask_any_and(data->affinity, cpu_online_mask);
++		newcpu = cpumask_any_and(mask, cpu_online_mask);
+ 
+ 		if (newcpu >= nr_cpu_ids) {
+ 			pr_info_ratelimited("IRQ%u no longer affine to CPU%u\n",
+ 					    i, cpu);
+ 
+-			cpumask_setall(data->affinity);
++			cpumask_setall(mask);
+ 		}
+-		irq_set_affinity(i, data->affinity);
++		irq_set_affinity(i, mask);
+ 	}
+ }
+ #endif /* CONFIG_HOTPLUG_CPU */
+diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
+index 57f09cb54464..09257c301bd2 100644
+--- a/drivers/irqchip/irq-mips-gic.c
++++ b/drivers/irqchip/irq-mips-gic.c
+@@ -403,7 +403,7 @@ static int gic_set_affinity(struct irq_data *d, const struct cpumask *cpumask,
+ 		clear_bit(irq, pcpu_masks[i].pcpu_mask);
+ 	set_bit(irq, pcpu_masks[cpumask_first(&tmp)].pcpu_mask);
+ 
+-	cpumask_copy(d->affinity, cpumask);
++	cpumask_copy(irq_data_get_affinity_mask(d), cpumask);
+ 	spin_unlock_irqrestore(&gic_lock, flags);
+ 
+ 	return IRQ_SET_MASK_OK_NOCOPY;
+diff --git a/drivers/parisc/iosapic.c b/drivers/parisc/iosapic.c
+index 9ee04b4b68bf..144c77dfe4b1 100644
+--- a/drivers/parisc/iosapic.c
++++ b/drivers/parisc/iosapic.c
+@@ -691,7 +691,7 @@ static int iosapic_set_affinity_irq(struct irq_data *d,
+ 	if (dest_cpu < 0)
+ 		return -1;
+ 
+-	cpumask_copy(d->affinity, cpumask_of(dest_cpu));
++	cpumask_copy(irq_data_get_affinity_mask(d), cpumask_of(dest_cpu));
+ 	vi->txn_addr = txn_affinity_addr(d->irq, dest_cpu);
+ 
+ 	spin_lock_irqsave(&iosapic_lock, flags);
+diff --git a/drivers/sh/intc/chip.c b/drivers/sh/intc/chip.c
+index 46427b48e2f1..358df7510186 100644
+--- a/drivers/sh/intc/chip.c
++++ b/drivers/sh/intc/chip.c
+@@ -22,7 +22,7 @@ void _intc_enable(struct irq_data *data, unsigned long handle)
+ 
+ 	for (cpu = 0; cpu < SMP_NR(d, _INTC_ADDR_E(handle)); cpu++) {
+ #ifdef CONFIG_SMP
+-		if (!cpumask_test_cpu(cpu, data->affinity))
++		if (!cpumask_test_cpu(cpu, irq_data_get_affinity_mask(data)))
+ 			continue;
+ #endif
+ 		addr = INTC_REG(d, _INTC_ADDR_E(handle), cpu);
+@@ -50,7 +50,7 @@ static void intc_disable(struct irq_data *data)
+ 
+ 	for (cpu = 0; cpu < SMP_NR(d, _INTC_ADDR_D(handle)); cpu++) {
+ #ifdef CONFIG_SMP
+-		if (!cpumask_test_cpu(cpu, data->affinity))
++		if (!cpumask_test_cpu(cpu, irq_data_get_affinity_mask(data)))
+ 			continue;
+ #endif
+ 		addr = INTC_REG(d, _INTC_ADDR_D(handle), cpu);
+@@ -72,7 +72,7 @@ static int intc_set_affinity(struct irq_data *data,
+ 	if (!cpumask_intersects(cpumask, cpu_online_mask))
+ 		return -1;
+ 
+-	cpumask_copy(data->affinity, cpumask);
++	cpumask_copy(irq_data_get_affinity_mask(data), cpumask);
+ 
+ 	return IRQ_SET_MASK_OK_NOCOPY;
+ }
+diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
+index 70fba973a107..b472ce6b7ad3 100644
+--- a/drivers/xen/events/events_base.c
++++ b/drivers/xen/events/events_base.c
+@@ -336,7 +336,7 @@ static void bind_evtchn_to_cpu(unsigned int chn, unsigned int cpu)
+ 
+ 	BUG_ON(irq == -1);
+ #ifdef CONFIG_SMP
+-	cpumask_copy(irq_get_irq_data(irq)->affinity, cpumask_of(cpu));
++	cpumask_copy(irq_get_affinity_mask(irq), cpumask_of(cpu));
+ #endif
+ 	xen_evtchn_port_bind_to_cpu(info, cpu);
+ 
+@@ -373,7 +373,7 @@ static void xen_irq_init(unsigned irq)
+ 	struct irq_info *info;
+ #ifdef CONFIG_SMP
+ 	/* By default all event channels notify CPU#0. */
+-	cpumask_copy(irq_get_irq_data(irq)->affinity, cpumask_of(0));
++	cpumask_copy(irq_get_affinity_mask(irq), cpumask_of(0));
+ #endif
+ 
+ 	info = kzalloc(sizeof(*info), GFP_KERNEL);
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index 43581e166298..cf386d97b96d 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -650,6 +650,17 @@ static inline int irq_data_get_node(struct irq_data *d)
+ 	return irq_common_data_get_node(d->common);
+ }
+ 
++static inline struct cpumask *irq_get_affinity_mask(int irq)
++{
++	struct irq_data *d = irq_get_irq_data(irq);
++	return d ? d->affinity : NULL;
++}
++
++static inline struct cpumask *irq_data_get_affinity_mask(struct irq_data *d)
++{
++	return d->affinity;
++}
++
+ unsigned int arch_dynirq_lower_bound(unsigned int from);
+ 
+ int __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
 -- 
-Thanks!
-Yijing
+1.7.10.4
+
 
