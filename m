@@ -1,51 +1,57 @@
-From: Chen Gang <xili_gchen_5257@hotmail.com>
-Subject: Re: [PATCH] alpha: Wire up missing syscalls
-Date: Wed, 13 May 2015 08:55:54 +0800
-Message-ID: <BLU437-SMTP63A0F14D55020B3B3489E4B9D90@phx.gbl>
-References: <BLU436-SMTP115284EEDC94CD99F399465B9DD0@phx.gbl> <20150512085952.GC5711@tower> <20150512142942.GA12264@codemonkey.org.uk>
+From: Michal Hocko <mhocko@suse.cz>
+Subject: Re: [PATCH 0/3] Allow user to request memory to be locked on page
+ fault
+Date: Wed, 13 May 2015 15:58:05 +0200
+Message-ID: <20150513135805.GA17708@dhcp22.suse.cz>
+References: <1431113626-19153-1-git-send-email-emunson@akamai.com>
+ <20150508124203.6679b1d35ad9555425003929@linux-foundation.org>
+ <20150508200610.GB29933@akamai.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150512142942.GA12264@codemonkey.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150508200610.GB29933@akamai.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Dave Jones <davej@codemonkey.org.uk>, Michael Cree <mcree@orcon.net.nz>, rth@twiddle.net, ink@jurassic.park.msu.ru, "mattst88@gmail.com" <mattst88@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+To: Eric B Munson <emunson@akamai.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Shuah Khan <shuahkh@osg.samsung.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
 
-On 05/12/2015 10:29 PM, Dave Jones wrote:
-> On Tue, May 12, 2015 at 08:59:52PM +1200, Michael Cree wrote:
->  > On Sun, May 10, 2015 at 02:33:36AM +0800, Chen Gang wrote:
->  > > The related warnings:
->  > > 
->  > >     CALL    scripts/checksyscalls.sh
->  > >   <stdin>:1238:2: warning: #warning syscall seccomp not implemented [-Wcpp]
->  > >   <stdin>:1241:2: warning: #warning syscall getrandom not implemented [-Wcpp]
->  > >   <stdin>:1244:2: warning: #warning syscall memfd_create not implemented [-Wcpp]
->  > >   <stdin>:1247:2: warning: #warning syscall bpf not implemented [-Wcpp]
->  > >   <stdin>:1250:2: warning: #warning syscall execveat not implemented [-Wcpp]
->  > 
->  > Chen: Have you tested the syscalls you have wired up?
->  > 
->  > I have a suspicion that more is required to wire up the seccomp
->  > syscall.
+On Fri 08-05-15 16:06:10, Eric B Munson wrote:
+> On Fri, 08 May 2015, Andrew Morton wrote:
 > 
-> likewise sys_bpf judging by the absence of bpf_int_jit_compile and friends in arch/alpha
-> The weak symbols mean it probably compiles/links, but it doesn't actually do
-> anything, and now instead of -ENOSYS, anyone trying to actually use that syscall
-> on alpha will get weird results.
+> > On Fri,  8 May 2015 15:33:43 -0400 Eric B Munson <emunson@akamai.com> wrote:
+> > 
+> > > mlock() allows a user to control page out of program memory, but this
+> > > comes at the cost of faulting in the entire mapping when it is
+> > > allocated.  For large mappings where the entire area is not necessary
+> > > this is not ideal.
+> > > 
+> > > This series introduces new flags for mmap() and mlockall() that allow a
+> > > user to specify that the covered are should not be paged out, but only
+> > > after the memory has been used the first time.
+> > 
+> > Please tell us much much more about the value of these changes: the use
+> > cases, the behavioural improvements and performance results which the
+> > patchset brings to those use cases, etc.
+> > 
 > 
-> Shutting up warnings like this strikes me as the wrong thing to do.
-> 
+> The primary use case is for mmaping large files read only.  The process
+> knows that some of the data is necessary, but it is unlikely that the
+> entire file will be needed.  The developer only wants to pay the cost to
+> read the data in once.  Unfortunately developer must choose between
+> allowing the kernel to page in the memory as needed and guaranteeing
+> that the data will only be read from disk once.  The first option runs
+> the risk of having the memory reclaimed if the system is under memory
+> pressure, the second forces the memory usage and startup delay when
+> faulting in the entire file.
 
-It sounds reasonable. For me, we need to wire up implemented syscalls,
-and still left the unimplemented syscalls as building warnings.
-
-If no any additional reply, I shall try to send patch v2 for it within
-this week (2015-05-17).
-
-
-Thanks.
+Is there any reason you cannot do this from the userspace? Start by
+mmap(PROT_NONE) and do mmap(MAP_FIXED|MAP_LOCKED|MAP_READ|other_flags_you_need)
+from the SIGSEGV handler?
+You can generate a lot of vmas that way but you can mitigate that to a
+certain level by mapping larger than PAGE_SIZE chunks in the fault
+handler. Would that work in your usecase?
 -- 
-Chen Gang
-
-Open, share, and attitude like air, water, and life which God blessed
+Michal Hocko
+SUSE Labs
