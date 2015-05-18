@@ -1,18 +1,18 @@
 From: Chen Gang <xili_gchen_5257@hotmail.com>
-Subject: [PATCH v2] alpha: Wire up all implemented syscalls
-Date: Mon, 18 May 2015 06:21:40 +0800
-Message-ID: <BLU437-SMTP947C57B4E36F1AAE9E9BC0B9C50@phx.gbl>
+Subject: [PATCH v2] alpha: Wire up all missing implemented syscalls
+Date: Mon, 18 May 2015 12:36:50 +0800
+Message-ID: <BLU436-SMTP150604C1DD96EADCD91118EB9C40@phx.gbl>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, mcree@orcon.net.nz, Dave Jones <davej@codemonkey.org.uk>
-Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, mcree@orcon.net.nz
+Cc: Dave Jones <davej@codemonkey.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-And still left the unimplemented syscalls as warnings. The related
-warnings for implemented syscalls are:
+And still left the missing unimplemented syscalls as warnings. The
+related warnings for missing implemented syscalls:
 
     CALL    scripts/checksyscalls.sh
   <stdin>:1241:2: warning: #warning syscall getrandom not implemented [-Wcpp]
@@ -21,9 +21,9 @@ warnings for implemented syscalls are:
 
 Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
 ---
- arch/alpha/include/asm/unistd.h      | 2 +-
- arch/alpha/include/uapi/asm/unistd.h | 3 +++
- arch/alpha/kernel/systbls.S          | 3 +++
+ arch/alpha/include/asm/unistd.h      |    2 +-
+ arch/alpha/include/uapi/asm/unistd.h |    3 +++
+ arch/alpha/kernel/systbls.S          |    3 +++
  3 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
@@ -67,4 +67,4 @@ index 2478971..9b62e3f 100644
  	.size sys_call_table, . - sys_call_table
  	.type sys_call_table, @object
 -- 
-1.9.3
+1.7.9.5
