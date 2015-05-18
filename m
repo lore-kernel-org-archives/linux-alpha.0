@@ -1,70 +1,57 @@
 From: Chen Gang <xili_gchen_5257@hotmail.com>
-Subject: [PATCH v2] alpha: Wire up all missing implemented syscalls
-Date: Mon, 18 May 2015 12:36:50 +0800
-Message-ID: <BLU436-SMTP150604C1DD96EADCD91118EB9C40@phx.gbl>
+Subject: [PATCH] alpha: kernel: osf_sys: Set 'kts.tv_nsec' only when 'tv'
+ has effect
+Date: Mon, 18 May 2015 12:37:08 +0800
+Message-ID: <BLU436-SMTP22F7DFE18E42FC01E022CCB9C40@phx.gbl>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, mcree@orcon.net.nz
-Cc: Dave Jones <davej@codemonkey.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+To: Richard Henderson <rth@twiddle.net>, rth@twiddle.net, mattst88@gmail.com
+Cc: viro@zeniv.linux.org.uk, waydi1@gmail.com, miklos@szeredi.hu, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-And still left the missing unimplemented syscalls as warnings. The
-related warnings for missing implemented syscalls:
+The related warning:
 
-    CALL    scripts/checksyscalls.sh
-  <stdin>:1241:2: warning: #warning syscall getrandom not implemented [-Wcpp]
-  <stdin>:1244:2: warning: #warning syscall memfd_create not implemented [-Wcpp]
-  <stdin>:1250:2: warning: #warning syscall execveat not implemented [-Wcpp]
+    CC      init/do_mounts.o
+  arch/alpha/kernel/osf_sys.c: In function =E2=80=98SyS_osf_settimeofda=
+y=E2=80=99:
+  arch/alpha/kernel/osf_sys.c:1028:14: warning: =E2=80=98kts.tv_nsec=E2=
+=80=99 may be used uninitialized in this function [-Wmaybe-uninitialize=
+d]
+    kts.tv_nsec *=3D 1000;
+                ^
+  arch/alpha/kernel/osf_sys.c:1016:18: note: =E2=80=98kts=E2=80=99 was =
+declared here
+    struct timespec kts;
+                    ^
 
 Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
 ---
- arch/alpha/include/asm/unistd.h      |    2 +-
- arch/alpha/include/uapi/asm/unistd.h |    3 +++
- arch/alpha/kernel/systbls.S          |    3 +++
- 3 files changed, 7 insertions(+), 1 deletion(-)
+ arch/alpha/kernel/osf_sys.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
-index c509d30..a56e608 100644
---- a/arch/alpha/include/asm/unistd.h
-+++ b/arch/alpha/include/asm/unistd.h
-@@ -3,7 +3,7 @@
- 
- #include <uapi/asm/unistd.h>
- 
--#define NR_SYSCALLS			511
-+#define NR_SYSCALLS			514
- 
- #define __ARCH_WANT_OLD_READDIR
- #define __ARCH_WANT_STAT64
-diff --git a/arch/alpha/include/uapi/asm/unistd.h b/arch/alpha/include/uapi/asm/unistd.h
-index d214a035..aa33bf5 100644
---- a/arch/alpha/include/uapi/asm/unistd.h
-+++ b/arch/alpha/include/uapi/asm/unistd.h
-@@ -472,5 +472,8 @@
- #define __NR_sched_setattr		508
- #define __NR_sched_getattr		509
- #define __NR_renameat2			510
-+#define __NR_getrandom			511
-+#define __NR_memfd_create		512
-+#define __NR_execveat			513
- 
- #endif /* _UAPI_ALPHA_UNISTD_H */
-diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 2478971..9b62e3f 100644
---- a/arch/alpha/kernel/systbls.S
-+++ b/arch/alpha/kernel/systbls.S
-@@ -529,6 +529,9 @@ sys_call_table:
- 	.quad sys_sched_setattr
- 	.quad sys_sched_getattr
- 	.quad sys_renameat2			/* 510 */
-+	.quad sys_getrandom
-+	.quad sys_memfd_create
-+	.quad sys_execveat
- 
- 	.size sys_call_table, . - sys_call_table
- 	.type sys_call_table, @object
--- 
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index e51f578..36dc91a 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -1019,14 +1019,13 @@ SYSCALL_DEFINE2(osf_settimeofday, struct timeva=
+l32 __user *, tv,
+  	if (tv) {
+ 		if (get_tv32((struct timeval *)&kts, tv))
+ 			return -EFAULT;
++		kts.tv_nsec *=3D 1000;
+ 	}
+ 	if (tz) {
+ 		if (copy_from_user(&ktz, tz, sizeof(*tz)))
+ 			return -EFAULT;
+ 	}
+=20
+-	kts.tv_nsec *=3D 1000;
+-
+ 	return do_sys_settimeofday(tv ? &kts : NULL, tz ? &ktz : NULL);
+ }
+=20
+--=20
 1.7.9.5
