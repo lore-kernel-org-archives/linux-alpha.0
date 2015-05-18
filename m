@@ -1,57 +1,42 @@
 From: Chen Gang <xili_gchen_5257@hotmail.com>
-Subject: [PATCH] alpha: kernel: osf_sys: Set 'kts.tv_nsec' only when 'tv'
- has effect
-Date: Mon, 18 May 2015 12:37:08 +0800
-Message-ID: <BLU436-SMTP22F7DFE18E42FC01E022CCB9C40@phx.gbl>
+Subject: Re: [PATCH] alpha: Wire up missing syscalls
+Date: Mon, 18 May 2015 12:44:23 +0800
+Message-ID: <BLU436-SMTP97D9A8FE0BC532237BB98DB9C40@phx.gbl>
+References: <BLU436-SMTP115284EEDC94CD99F399465B9DD0@phx.gbl> <20150512085952.GC5711@tower> <20150512142942.GA12264@codemonkey.org.uk> <BLU437-SMTP63A0F14D55020B3B3489E4B9D90@phx.gbl>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <BLU437-SMTP63A0F14D55020B3B3489E4B9D90@phx.gbl>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Richard Henderson <rth@twiddle.net>, rth@twiddle.net, mattst88@gmail.com
-Cc: viro@zeniv.linux.org.uk, waydi1@gmail.com, miklos@szeredi.hu, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Dave Jones <davej@codemonkey.org.uk>, Michael Cree <mcree@orcon.net.nz>, rth@twiddle.net, ink@jurassic.park.msu.ru, "mattst88@gmail.com" <mattst88@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-The related warning:
+On 05/13/2015 08:55 AM, Chen Gang wrote:
+> On 05/12/2015 10:29 PM, Dave Jones wrote:
+>> likewise sys_bpf judging by the absence of bpf_int_jit_compile and friends in arch/alpha
+>> The weak symbols mean it probably compiles/links, but it doesn't actually do
+>> anything, and now instead of -ENOSYS, anyone trying to actually use that syscall
+>> on alpha will get weird results.
+>>
+>> Shutting up warnings like this strikes me as the wrong thing to do.
+>>
+> 
+> It sounds reasonable. For me, we need to wire up implemented syscalls,
+> and still left the unimplemented syscalls as building warnings.
+> 
+> If no any additional reply, I shall try to send patch v2 for it within
+> this week (2015-05-17).
+> 
 
-    CC      init/do_mounts.o
-  arch/alpha/kernel/osf_sys.c: In function =E2=80=98SyS_osf_settimeofda=
-y=E2=80=99:
-  arch/alpha/kernel/osf_sys.c:1028:14: warning: =E2=80=98kts.tv_nsec=E2=
-=80=99 may be used uninitialized in this function [-Wmaybe-uninitialize=
-d]
-    kts.tv_nsec *=3D 1000;
-                ^
-  arch/alpha/kernel/osf_sys.c:1016:18: note: =E2=80=98kts=E2=80=99 was =
-declared here
-    struct timespec kts;
-                    ^
+Sorry for sending patch v2 late (I sent it today just now).
 
-Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
----
- arch/alpha/kernel/osf_sys.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+The reason is I could not login to hotmail and gmail server at home
+during the last week end (although the network is OK for other website).
 
-diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index e51f578..36dc91a 100644
---- a/arch/alpha/kernel/osf_sys.c
-+++ b/arch/alpha/kernel/osf_sys.c
-@@ -1019,14 +1019,13 @@ SYSCALL_DEFINE2(osf_settimeofday, struct timeva=
-l32 __user *, tv,
-  	if (tv) {
- 		if (get_tv32((struct timeval *)&kts, tv))
- 			return -EFAULT;
-+		kts.tv_nsec *=3D 1000;
- 	}
- 	if (tz) {
- 		if (copy_from_user(&ktz, tz, sizeof(*tz)))
- 			return -EFAULT;
- 	}
-=20
--	kts.tv_nsec *=3D 1000;
--
- 	return do_sys_settimeofday(tv ? &kts : NULL, tz ? &ktz : NULL);
- }
-=20
---=20
-1.7.9.5
+
+Thanks.
+-- 
+Chen Gang
+
+Open, share, and attitude like air, water, and life which God blessed
