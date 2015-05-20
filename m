@@ -1,52 +1,39 @@
-From: Hans-Christian Egtvedt <egtvedt@samfundet.no>
-Subject: Re: [RFC v1 20/25] genirq: Kill the first parameter 'irq' of
- irq_flow_handler_t
-Date: Wed, 20 May 2015 12:16:46 +0200
-Message-ID: <20150520101646.GB12898@samfundet.no>
-References: <1432116013-25902-1-git-send-email-jiang.liu@linux.intel.com>
- <1432116013-25902-21-git-send-email-jiang.liu@linux.intel.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [Patch v2 08/14] genirq: Introduce helper function
+ irq_data_get_affinity_mask()
+Date: Wed, 20 May 2015 16:50:03 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1505201648490.4225@nanos>
+References: <1432114845-24304-1-git-send-email-jiang.liu@linux.intel.com> <1432114845-24304-9-git-send-email-jiang.liu@linux.intel.com>
 Mime-Version: 1.0
-Return-path: <sparclinux-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1432116013-25902-21-git-send-email-jiang.liu@linux.intel.com>
-Sender: sparclinux-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <1432114845-24304-9-git-send-email-jiang.liu@linux.intel.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Steven Miao <realmz6@gmail.com>, Mark Salter <msalter@redhat.com>, Aurelien Jacquiot <a-jacquiot@ti.com>, "David S. Miller" <davem@davemloft.net>, Chris Metcalf <cmetcalf@ezchip.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, x86@kernel.org, Rusty Russell <rusty@rustcorp.com.au>, Andreas Larsson <andreas@gaisler.com>, Joe Perches <joe@perches.com>, Christoph Lameter <cl@linux.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@arm.linux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Steven Miao <realmz6@gmail.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, James Hogan <james.hogan@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, David Howells <dhowells@redhat.com>
 
-Around Wed 20 May 2015 18:00:08 +0800 or thereabout, Jiang Liu wrote:
-> Now most IRQ flow handlers make no use of the first parameter 'irq'.
-> And for those who do make use of 'irq', we could easily get the irq
-> number through irq_desc->irq_data->irq. So kill the first parameter
-> 'irq' of irq_flow_handler_t.
-> 
-> To ease review, I have split the changes into several parts, though
-> they should be merge as one to support bisecting.
-> 
-> Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
-> ---
->  arch/alpha/kernel/irq.c             |    2 +-
->  arch/avr32/mach-at32ap/extint.c     |    2 +-
->  arch/avr32/mach-at32ap/pio.c        |    2 +-
+On Wed, 20 May 2015, Jiang Liu wrote:
 
-For the AVR32 related bits
+> Introduce helper function irq_data_get_affinity_mask() and
+> irq_get_affinity_mask() to hide implementation details,
 
-Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
+That patch does way more than introducing the functions. Again:
 
->  arch/blackfin/kernel/ipipe.c        |    4 ++--
->  arch/c6x/platforms/megamod-pic.c    |    3 ++-
->  arch/sparc/kernel/leon_kernel.c     |    2 +-
->  arch/sparc/kernel/leon_pci_grpci1.c |    2 +-
->  arch/sparc/kernel/leon_pci_grpci2.c |    2 +-
->  arch/tile/kernel/pci_gx.c           |    4 ++--
->  arch/unicore32/kernel/irq.c         |    3 ++-
->  arch/x86/kernel/irq_64.c            |    2 +-
->  arch/x86/lguest/boot.c              |    2 +-
->  12 files changed, 16 insertions(+), 14 deletions(-)
+Patch 1: Introduce helpers
 
-<snipp diff>
+Patch 2-n: Convert users subsystem wise
 
--- 
-HcE
+Thanks,
+
+	tglx
+
