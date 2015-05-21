@@ -1,87 +1,50 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [Patch v2 08/14] genirq: Introduce helper function
- irq_data_get_affinity_mask()
-Date: Wed, 20 May 2015 20:34:26 +0100
-Message-ID: <20150520193426.GT2067@n2100.arm.linux.org.uk>
-References: <1432114845-24304-1-git-send-email-jiang.liu@linux.intel.com>
- <1432114845-24304-9-git-send-email-jiang.liu@linux.intel.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [PATCH] arch: alpha: kernel: remove deprecated call to pci_get_slot
+Date: Wed, 20 May 2015 22:51:12 -0700
+Message-ID: <CAEdQ38EaE6f0MDQiKrdHu16aXAM5S0j+h2XA-gUkqjzdb1-DnA@mail.gmail.com>
+References: <1423171075-23058-1-git-send-email-pierrechevalier83@gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-mips-bounce@linux-mips.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=arm.linux.org.uk; s=pandora-2014;
-        h=Sender:In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=bsCq3ygpoZHvRFo7OZqofcWGuX8p4fLIfKDPcNJnAjo=;
-        b=OL+zzLPYaMy9fejRiic2vNNBH9n8nhgOE1kb0q3nwikwfil7FO+8tJIiEkk90IzUvKBMtax7H/U9u4Ct5oyg7pvyhIDQ52eiSIuX0vLE6g76Wl+RhbBDdiDtLdtJAv4qOGfUPt0Dsv1xepH9fVAr3W5R+EZ4CL4LKQM91bv3Ohg=;
-Content-Disposition: inline
-In-Reply-To: <1432114845-24304-9-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-type;
+        bh=6B22mEUCWquOuKCPXZbAxcl1Fha/OG4o3HbvMkE/9/A=;
+        b=IAPSNQMbOjzWcyA+WpQ+OoY5WUlfm8PtOoyZR3qBQWfu+DmZKh6BXoZd4M6B188N9W
+         JxZ9r19hFpHMaiqndH0LxD/eKTgc7UZ+ZbUcNRkS/GCIwOaPJZIarLRJ0L1idb8IJRl7
+         XibWhtrwj6yjLAd2RTgzSwzg2Lvza3nHsaWkxXKgIThmcH0QQYFRh4Eup574oHMJ3JXq
+         N7mEk0vG8HiN4GZ19kCHi/B4IPgu4caV7FmOrOIgPQ7fcmr6VCWHXiaiKAExUEMExdI9
+         yZM8/BruiKI99rA9raBZDdTGYaEYIwd8SDr4a1y5idvSC+G0Tyo8172dN/pMwkPCQxvq
+         iMXA==
+In-Reply-To: <1423171075-23058-1-git-send-email-pierrechevalier83@gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Steven Miao <realmz6@gmail.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, James Hogan <james.hogan@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, David Howells <dhowells@redhat.com>
+To: Pierre Chevalier <pierrechevalier83@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>, linux-alpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
 
-On Wed, May 20, 2015 at 05:40:39PM +0800, Jiang Liu wrote:
-> diff --git a/arch/arm/kernel/irq.c b/arch/arm/kernel/irq.c
-> index 350f188c92d2..baf8edebe26f 100644
-> --- a/arch/arm/kernel/irq.c
-> +++ b/arch/arm/kernel/irq.c
-> @@ -140,7 +140,7 @@ int __init arch_probe_nr_irqs(void)
->  static bool migrate_one_irq(struct irq_desc *desc)
->  {
->  	struct irq_data *d = irq_desc_get_irq_data(desc);
-> -	const struct cpumask *affinity = d->affinity;
-> +	const struct cpumask *affinity = irq_data_get_affinity_mask(d);
->  	struct irq_chip *c;
->  	bool ret = false;
->  
-> @@ -160,7 +160,7 @@ static bool migrate_one_irq(struct irq_desc *desc)
->  	if (!c->irq_set_affinity)
->  		pr_debug("IRQ%u: unable to set affinity\n", d->irq);
->  	else if (c->irq_set_affinity(d, affinity, false) == IRQ_SET_MASK_OK && ret)
-> -		cpumask_copy(d->affinity, affinity);
-> +		cpumask_copy(irq_data_get_affinity_mask(d), affinity);
->  
->  	return ret;
->  }
+On Thu, Feb 5, 2015 at 1:17 PM, Pierre Chevalier
+<pierrechevalier83@gmail.com> wrote:
+> According to Documentation/PCI/pci.txt, pci_get_slot has been
+> superseded by pci_get_domain_bus_and_slot.
+>
+> Signed-off-by: Pierre Chevalier <pierrechevalier83@gmail.com>
+> ---
+>  arch/alpha/kernel/sys_miata.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/alpha/kernel/sys_miata.c b/arch/alpha/kernel/sys_miata.c
+> index d5b9776..7b98b40 100644
+> --- a/arch/alpha/kernel/sys_miata.c
+> +++ b/arch/alpha/kernel/sys_miata.c
+> @@ -182,7 +182,8 @@ miata_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>
+>         if((slot == 7) && (PCI_FUNC(dev->devfn) == 3)) {
+>                 u8 irq=0;
+> -               struct pci_dev *pdev = pci_get_slot(dev->bus, dev->devfn & ~7);
+> +               struct pci_dev *pdev =
+> +                       pci_get_domain_bus_and_slot(dev->bus, dev->devfn & ~7);
 
-> diff --git a/include/linux/irq.h b/include/linux/irq.h
-> index 43581e166298..2eb82257aaee 100644
-> --- a/include/linux/irq.h
-> +++ b/include/linux/irq.h
-> @@ -650,6 +650,18 @@ static inline int irq_data_get_node(struct irq_data *d)
->  	return irq_common_data_get_node(d->common);
->  }
->  
-> +static inline struct cpumask *irq_get_affinity_mask(int irq)
-> +{
-> +	struct irq_data *d = irq_get_irq_data(irq);
-> +
-> +	return d ? d->affinity : NULL;
-> +}
-> +
-> +static inline struct cpumask *irq_data_get_affinity_mask(struct irq_data *d)
-> +{
-> +	return d->affinity;
-> +}
-> +
->  unsigned int arch_dynirq_lower_bound(unsigned int from);
->  
->  int __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
-
-For the above only,
-
-Acked-by: Russell King <rmk+kernel@arm.linux.org.uk>
-
-Thanks.
-
--- 
-FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-according to speedtest.net.
-
+Given that pci_get_domain_bus_and_slot takes three arguments, I don't
+think this compiles.
