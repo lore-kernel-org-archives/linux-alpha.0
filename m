@@ -1,165 +1,185 @@
-From: Jiang Liu <jiang.liu@linux.intel.com>
-Subject: [RFT v2 43/48] genirq, arch: Kill the first parameter 'irq' of irq_flow_handler_t
-Date: Thu,  4 Jun 2015 12:13:53 +0800
-Message-ID: <1433391238-19471-44-git-send-email-jiang.liu@linux.intel.com>
-References: <1433391238-19471-1-git-send-email-jiang.liu@linux.intel.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1433391238-19471-1-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 5/7] PCI: Remove unnecessary #includes of <asm/pci.h>
+Date: Thu, 04 Jun 2015 16:49:57 -0500
+Message-ID: <20150604214957.2399.66129.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+References: <20150604214614.2399.5142.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Thomas Gleixner <tglx@linutronix.de>, Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Mark Salter <msalter@redhat.com>, Aurelien Jacquiot <a-jacquiot@ti.com>, "David S. Miller" <davem@davemloft.net>, Chris Metcalf <cmetcalf@ezchip.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Andreas Larsson <andreas@gaisler.com>, Jiang Liu <jiang.liu@linux.intel.com>, Joe Perches <joe@perches.com>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tony Luck <tony.luck@intel.com>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, linux-alpha@vger.kernel.org, linux-c6x-dev@linux-c6x.org, sparclinux@vger.kernel.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20120113;
+        h=subject:to:from:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-type:content-transfer-encoding;
+        bh=PKT8h0RfCTYhRP3Pdsu7T100L31LBkplpTtjOyHSN7g=;
+        b=GgaSdM5uLIEIkZTzVGXqXvn20TxEabIq8/LC8kTqu2mGRMzgTM26Lk0vrGCggAqNdw
+         1VCd81uC6j6ADhuQzT0jJc7bXlKUY8uHlECyKU6a+AwPglp8bfPmtwPRR1maDylMa4YY
+         2pxxyhzcU3tf8/EX0ROHJ53SNp7mFbmIoeEpX+RGTIiuSEHry+FQMsCh2wyPu4PJRspx
+         fERloUUR5/CBobqAPOkCP524opv3coJC+wtG5fFlalXhF5vkewSlnjiUnxQXldtotQJ1
+         xx8KgLKQCfEJvs/k+vC9DsY+XCWKGUm3kb0da3rN/o530GTzUa4L9avUGXF1enilOynR
+         b0aQ==
+In-Reply-To: <20150604214614.2399.5142.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Sender: linux-sh-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-pci@vger.kernel.org
+Cc: linux-mips@linux-mips.org, linux-sh@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-alpha@vger.kernel.org
 
-Now most IRQ flow handlers make no use of the first parameter 'irq'.
-And for those who do make use of 'irq', we could easily get the irq
-number through irq_desc->irq_data->irq. So kill the first parameter
-'irq' of irq_flow_handler_t.
+In include/linux/pci.h, we already #include <asm/pci.h>, so we don't need
+to include <asm/pci.h> directly.
 
-To ease review, I have split the changes into several parts, though
-they should be merge as one to support bisecting.
+Remove the unnecessary includes.  All the files here already include
+<linux/pci.h>.
 
-Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
-Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+CC: linux-alpha@vger.kernel.org
+CC: linux-mips@linux-mips.org
+CC: linuxppc-dev@lists.ozlabs.org
+CC: linux-sh@vger.kernel.org
+CC: x86@kernel.org
 ---
- arch/alpha/kernel/irq.c             |    2 +-
- arch/avr32/mach-at32ap/extint.c     |    2 +-
- arch/avr32/mach-at32ap/pio.c        |    2 +-
- arch/c6x/platforms/megamod-pic.c    |    2 +-
- arch/sparc/kernel/leon_kernel.c     |    2 +-
- arch/sparc/kernel/leon_pci_grpci1.c |    2 +-
- arch/sparc/kernel/leon_pci_grpci2.c |    2 +-
- arch/tile/kernel/pci_gx.c           |    4 ++--
- arch/unicore32/kernel/irq.c         |    2 +-
- 9 files changed, 10 insertions(+), 10 deletions(-)
+ arch/alpha/kernel/core_irongate.c |    1 -
+ arch/alpha/kernel/sys_eiger.c     |    1 -
+ arch/alpha/kernel/sys_nautilus.c  |    1 -
+ arch/mips/pci/fixup-cobalt.c      |    1 -
+ arch/mips/pci/ops-mace.c          |    1 -
+ arch/mips/pci/pci-lantiq.c        |    1 -
+ arch/powerpc/kernel/prom.c        |    1 -
+ arch/powerpc/kernel/prom_init.c   |    1 -
+ arch/sh/drivers/pci/ops-sh5.c     |    1 -
+ arch/sh/drivers/pci/pci-sh5.c     |    1 -
+ arch/x86/kernel/x86_init.c        |    1 -
+ 11 files changed, 11 deletions(-)
 
-diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
-index bd8e47699cad..d2704d53aac8 100644
---- a/arch/alpha/kernel/irq.c
-+++ b/arch/alpha/kernel/irq.c
-@@ -118,6 +118,6 @@ handle_irq(int irq)
- 	}
+diff --git a/arch/alpha/kernel/core_irongate.c b/arch/alpha/kernel/core_irongate.c
+index 00096df..83d0a35 100644
+--- a/arch/alpha/kernel/core_irongate.c
++++ b/arch/alpha/kernel/core_irongate.c
+@@ -22,7 +22,6 @@
+ #include <linux/bootmem.h>
  
- 	irq_enter();
--	generic_handle_irq_desc(irq, desc);
-+	generic_handle_irq_desc(desc);
- 	irq_exit();
- }
-diff --git a/arch/avr32/mach-at32ap/extint.c b/arch/avr32/mach-at32ap/extint.c
-index cfb298d66305..b83a974b7855 100644
---- a/arch/avr32/mach-at32ap/extint.c
-+++ b/arch/avr32/mach-at32ap/extint.c
-@@ -144,7 +144,7 @@ static struct irq_chip eic_chip = {
- 	.irq_set_type	= eic_set_irq_type,
- };
+ #include <asm/ptrace.h>
+-#include <asm/pci.h>
+ #include <asm/cacheflush.h>
+ #include <asm/tlbflush.h>
  
--static void demux_eic_irq(unsigned int irq, struct irq_desc *desc)
-+static void demux_eic_irq(struct irq_desc *desc)
- {
- 	struct eic *eic = irq_desc_get_handler_data(desc);
- 	unsigned long status, pending;
-diff --git a/arch/avr32/mach-at32ap/pio.c b/arch/avr32/mach-at32ap/pio.c
-index 2583e6cc44e9..85009bbc01e6 100644
---- a/arch/avr32/mach-at32ap/pio.c
-+++ b/arch/avr32/mach-at32ap/pio.c
-@@ -281,7 +281,7 @@ static struct irq_chip gpio_irqchip = {
- 	.irq_set_type	= gpio_irq_type,
- };
+diff --git a/arch/alpha/kernel/sys_eiger.c b/arch/alpha/kernel/sys_eiger.c
+index 79d69d7..15f4208 100644
+--- a/arch/alpha/kernel/sys_eiger.c
++++ b/arch/alpha/kernel/sys_eiger.c
+@@ -22,7 +22,6 @@
+ #include <asm/irq.h>
+ #include <asm/mmu_context.h>
+ #include <asm/io.h>
+-#include <asm/pci.h>
+ #include <asm/pgtable.h>
+ #include <asm/core_tsunami.h>
+ #include <asm/hwrpb.h>
+diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
+index 700686d..2cfaa0e 100644
+--- a/arch/alpha/kernel/sys_nautilus.c
++++ b/arch/alpha/kernel/sys_nautilus.c
+@@ -39,7 +39,6 @@
+ #include <asm/irq.h>
+ #include <asm/mmu_context.h>
+ #include <asm/io.h>
+-#include <asm/pci.h>
+ #include <asm/pgtable.h>
+ #include <asm/core_irongate.h>
+ #include <asm/hwrpb.h>
+diff --git a/arch/mips/pci/fixup-cobalt.c b/arch/mips/pci/fixup-cobalt.c
+index a138e8e..b3ab593 100644
+--- a/arch/mips/pci/fixup-cobalt.c
++++ b/arch/mips/pci/fixup-cobalt.c
+@@ -13,7 +13,6 @@
+ #include <linux/kernel.h>
+ #include <linux/init.h>
  
--static void gpio_irq_handler(unsigned irq, struct irq_desc *desc)
-+static void gpio_irq_handler(struct irq_desc *desc)
- {
- 	struct pio_device	*pio = irq_desc_get_chip_data(desc);
- 	unsigned		gpio_irq;
-diff --git a/arch/c6x/platforms/megamod-pic.c b/arch/c6x/platforms/megamod-pic.c
-index 2e303b75060a..3da895dac1cd 100644
---- a/arch/c6x/platforms/megamod-pic.c
-+++ b/arch/c6x/platforms/megamod-pic.c
-@@ -93,7 +93,7 @@ static struct irq_chip megamod_chip = {
- 	.irq_unmask	= unmask_megamod,
- };
+-#include <asm/pci.h>
+ #include <asm/io.h>
+ #include <asm/gt64120.h>
  
--static void megamod_irq_cascade(unsigned int irq, struct irq_desc *desc)
-+static void megamod_irq_cascade(struct irq_desc *desc)
- {
- 	struct megamod_cascade_data *cascade;
- 	struct megamod_pic *pic;
-diff --git a/arch/sparc/kernel/leon_kernel.c b/arch/sparc/kernel/leon_kernel.c
-index 0299f052a2ef..42efcf85f721 100644
---- a/arch/sparc/kernel/leon_kernel.c
-+++ b/arch/sparc/kernel/leon_kernel.c
-@@ -53,7 +53,7 @@ static inline unsigned int leon_eirq_get(int cpu)
- }
+diff --git a/arch/mips/pci/ops-mace.c b/arch/mips/pci/ops-mace.c
+index 6b5821f..951d807 100644
+--- a/arch/mips/pci/ops-mace.c
++++ b/arch/mips/pci/ops-mace.c
+@@ -8,7 +8,6 @@
+ #include <linux/kernel.h>
+ #include <linux/pci.h>
+ #include <linux/types.h>
+-#include <asm/pci.h>
+ #include <asm/ip32/mace.h>
  
- /* Handle one or multiple IRQs from the extended interrupt controller */
--static void leon_handle_ext_irq(unsigned int irq, struct irq_desc *desc)
-+static void leon_handle_ext_irq(struct irq_desc *desc)
- {
- 	unsigned int eirq;
- 	struct irq_bucket *p;
-diff --git a/arch/sparc/kernel/leon_pci_grpci1.c b/arch/sparc/kernel/leon_pci_grpci1.c
-index 3382f7b3eeef..1e77128a8f88 100644
---- a/arch/sparc/kernel/leon_pci_grpci1.c
-+++ b/arch/sparc/kernel/leon_pci_grpci1.c
-@@ -357,7 +357,7 @@ static struct irq_chip grpci1_irq = {
- };
+ #if 0
+diff --git a/arch/mips/pci/pci-lantiq.c b/arch/mips/pci/pci-lantiq.c
+index 8b117e6..c5347d9 100644
+--- a/arch/mips/pci/pci-lantiq.c
++++ b/arch/mips/pci/pci-lantiq.c
+@@ -20,7 +20,6 @@
+ #include <linux/of_irq.h>
+ #include <linux/of_pci.h>
  
- /* Handle one or multiple IRQs from the PCI core */
--static void grpci1_pci_flow_irq(unsigned int irq, struct irq_desc *desc)
-+static void grpci1_pci_flow_irq(struct irq_desc *desc)
- {
- 	struct grpci1_priv *priv = grpci1priv;
- 	int i, ack = 0;
-diff --git a/arch/sparc/kernel/leon_pci_grpci2.c b/arch/sparc/kernel/leon_pci_grpci2.c
-index 94e392bdee7d..0398fc2c0e44 100644
---- a/arch/sparc/kernel/leon_pci_grpci2.c
-+++ b/arch/sparc/kernel/leon_pci_grpci2.c
-@@ -498,7 +498,7 @@ static struct irq_chip grpci2_irq = {
- };
+-#include <asm/pci.h>
+ #include <asm/gpio.h>
+ #include <asm/addrspace.h>
  
- /* Handle one or multiple IRQs from the PCI core */
--static void grpci2_pci_flow_irq(unsigned int irq, struct irq_desc *desc)
-+static void grpci2_pci_flow_irq(struct irq_desc *desc)
- {
- 	struct grpci2_priv *priv = grpci2priv;
- 	int i, ack = 0;
-diff --git a/arch/tile/kernel/pci_gx.c b/arch/tile/kernel/pci_gx.c
-index 65b701b3b5ed..4c017d0d2de8 100644
---- a/arch/tile/kernel/pci_gx.c
-+++ b/arch/tile/kernel/pci_gx.c
-@@ -304,7 +304,7 @@ static struct irq_chip tilegx_legacy_irq_chip = {
-  * to Linux which just calls handle_level_irq() after clearing the
-  * MAC INTx Assert status bit associated with this interrupt.
-  */
--static void trio_handle_level_irq(unsigned int irq, struct irq_desc *desc)
-+static void trio_handle_level_irq(struct irq_desc *desc)
- {
- 	struct pci_controller *controller = irq_desc_get_handler_data(desc);
- 	gxio_trio_context_t *trio_context = controller->trio;
-@@ -313,7 +313,7 @@ static void trio_handle_level_irq(unsigned int irq, struct irq_desc *desc)
- 	unsigned int reg_offset;
- 	uint64_t level_mask;
+diff --git a/arch/powerpc/kernel/prom.c b/arch/powerpc/kernel/prom.c
+index 308c5e1..00fdea2 100644
+--- a/arch/powerpc/kernel/prom.c
++++ b/arch/powerpc/kernel/prom.c
+@@ -46,7 +46,6 @@
+ #include <asm/mmu.h>
+ #include <asm/paca.h>
+ #include <asm/pgtable.h>
+-#include <asm/pci.h>
+ #include <asm/iommu.h>
+ #include <asm/btext.h>
+ #include <asm/sections.h>
+diff --git a/arch/powerpc/kernel/prom_init.c b/arch/powerpc/kernel/prom_init.c
+index fd1fe4c..fcca807 100644
+--- a/arch/powerpc/kernel/prom_init.c
++++ b/arch/powerpc/kernel/prom_init.c
+@@ -37,7 +37,6 @@
+ #include <asm/smp.h>
+ #include <asm/mmu.h>
+ #include <asm/pgtable.h>
+-#include <asm/pci.h>
+ #include <asm/iommu.h>
+ #include <asm/btext.h>
+ #include <asm/sections.h>
+diff --git a/arch/sh/drivers/pci/ops-sh5.c b/arch/sh/drivers/pci/ops-sh5.c
+index 4ce95a0..4536194 100644
+--- a/arch/sh/drivers/pci/ops-sh5.c
++++ b/arch/sh/drivers/pci/ops-sh5.c
+@@ -18,7 +18,6 @@
+ #include <linux/delay.h>
+ #include <linux/types.h>
+ #include <linux/irq.h>
+-#include <asm/pci.h>
+ #include <asm/io.h>
+ #include "pci-sh5.h"
  
--	handle_level_irq(irq, desc);
-+	handle_level_irq(desc);
+diff --git a/arch/sh/drivers/pci/pci-sh5.c b/arch/sh/drivers/pci/pci-sh5.c
+index 16c1e72..8229114 100644
+--- a/arch/sh/drivers/pci/pci-sh5.c
++++ b/arch/sh/drivers/pci/pci-sh5.c
+@@ -20,7 +20,6 @@
+ #include <linux/types.h>
+ #include <linux/irq.h>
+ #include <cpu/irq.h>
+-#include <asm/pci.h>
+ #include <asm/io.h>
+ #include "pci-sh5.h"
  
- 	/*
- 	 * Clear the INTx Level status, otherwise future interrupts are
-diff --git a/arch/unicore32/kernel/irq.c b/arch/unicore32/kernel/irq.c
-index 56fdd4dd2740..47ad19c072b2 100644
---- a/arch/unicore32/kernel/irq.c
-+++ b/arch/unicore32/kernel/irq.c
-@@ -113,7 +113,7 @@ static struct irq_chip puv3_low_gpio_chip = {
-  * and call the handler.
-  */
- static void
--puv3_gpio_handler(unsigned int __irq, struct irq_desc *desc)
-+puv3_gpio_handler(struct irq_desc *desc)
- {
- 	unsigned int mask;
- 
--- 
-1.7.10.4
+diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
+index 234b072..eed5625 100644
+--- a/arch/x86/kernel/x86_init.c
++++ b/arch/x86/kernel/x86_init.c
+@@ -11,7 +11,6 @@
+ #include <asm/bios_ebda.h>
+ #include <asm/paravirt.h>
+ #include <asm/pci_x86.h>
+-#include <asm/pci.h>
+ #include <asm/mpspec.h>
+ #include <asm/setup.h>
+ #include <asm/apic.h>
 
