@@ -1,45 +1,81 @@
-From: Mark Salter <msalter@redhat.com>
-Subject: Re: [RFT v2 43/48] genirq, arch: Kill the first parameter 'irq' of
- irq_flow_handler_t
-Date: Fri, 05 Jun 2015 10:16:40 -0400
-Message-ID: <1433513800.24429.56.camel@deneb.redhat.com>
-References: <1433391238-19471-1-git-send-email-jiang.liu@linux.intel.com>
-	 <1433391238-19471-44-git-send-email-jiang.liu@linux.intel.com>
+From: Xose Vazquez Perez <xose.vazquez@gmail.com>
+Subject: Generic kernel features that need architecture(alpha) support
+Date: Mon, 08 Jun 2015 16:51:51 +0200
+Message-ID: <5575AC07.8070006@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1433391238-19471-44-git-send-email-jiang.liu@linux.intel.com>
-Sender: linux-acpi-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=message-id:date:from:mime-version:to:subject:content-type
+         :content-transfer-encoding;
+        bh=6HjbO7ImUT4a69j8FTfQZuMDUagfSHyMzgv8U+Rc5Qs=;
+        b=Q3ptIeBAq74t6OYExg9QcM64ht7I78guW+p3p7Ml8YtnhtsZ6UcfNIcLpSThMLHbSS
+         ZhKc98Uki3UVd/HiYVCj8lsn+V5f1zZzGuW3DJYRNYXdWipNCJWH88jYUkBgaHdk+XSR
+         q5BV47UBNd1iPC46eOFjjPUMhZg7+ZIGIw6/evrgcNCdVJXDqjnFByDIJyh4fwFanK+d
+         3GdHdYbFYllNvYh6g04p7RO8y8JatUD8DYG12IzggM+jhiEl/VNdBP53kVLb2yll3P2Y
+         0JpTTMLoxHMybU7EnQWxf2t2cxqiGur7qHj3NF0VGzXbyIvUYrPO64zpyFVdrnw3DBdz
+         GHIw==
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Jiang Liu <jiang.liu@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Bjorn Helgaas <bhelgaas@google.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Randy Dunlap <rdunlap@infradead.org>, Yinghai Lu <yinghai@kernel.org>, Borislav Petkov <bp@alien8.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Aurelien Jacquiot <a-jacquiot@ti.com>, "David S. Miller" <davem@davemloft.net>, Chris Metcalf <cmetcalf@ezchip.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Andreas Larsson <andreas@gaisler.com>, Joe Perches <joe@perches.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tony Luck <tony.luck@intel.com>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+To: linux-alpha@vger.kernel.org
 
-On Thu, 2015-06-04 at 12:13 +0800, Jiang Liu wrote:
-> Now most IRQ flow handlers make no use of the first parameter 'irq'.
-> And for those who do make use of 'irq', we could easily get the irq
-> number through irq_desc->irq_data->irq. So kill the first parameter
-> 'irq' of irq_flow_handler_t.
-> 
-> To ease review, I have split the changes into several parts, though
-> they should be merge as one to support bisecting.
-> 
-> Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
-> Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
-> ---
->  arch/alpha/kernel/irq.c             |    2 +-
->  arch/avr32/mach-at32ap/extint.c     |    2 +-
->  arch/avr32/mach-at32ap/pio.c        |    2 +-
->  arch/c6x/platforms/megamod-pic.c    |    2 +-
->  arch/sparc/kernel/leon_kernel.c     |    2 +-
->  arch/sparc/kernel/leon_pci_grpci1.c |    2 +-
->  arch/sparc/kernel/leon_pci_grpci2.c |    2 +-
->  arch/tile/kernel/pci_gx.c           |    4 ++--
->  arch/unicore32/kernel/irq.c         |    2 +-
->  9 files changed, 10 insertions(+), 10 deletions(-)
+Hi,
 
-For c6x:
-
-Acked-by: Mark Salter <msalter@redhat.com>
+If there is anything wrong, please report it in this thread:
+https://marc.info/?t=143332955700003
 
 
+The meaning of entries in the tables is:
+
+    | ok |  # feature supported by the architecture
+    |TODO|  # feature not yet supported by the architecture
+    | .. |  # feature cannot be supported by the hardware
+
+#
+# Kernel feature support matrix of the 'alpha' architecture:
+#
+      time/ irq-time-acct        :  ..  |            HAVE_IRQ_TIME_ACCOUNTING #  arch supports precise IRQ time accounting
+      core/ generic-idle-thread  :  ok  |             GENERIC_SMP_IDLE_THREAD #  arch makes use of the generic SMP idle thread facility
+        io/ dma_map_attrs        :  ok  |                      HAVE_DMA_ATTRS #  arch provides dma_*map*_attrs() APIs
+   locking/ rwsem-optimized      :  ok  |               Optimized asm/rwsem.h #  arch provides optimized rwsem APIs
+      time/ clockevents          :  ok  |                 GENERIC_CLOCKEVENTS #  arch support generic clock events
+      time/ modern-timekeeping   :  ok  |            !ARCH_USES_GETTIMEOFFSET #  arch does not use arch_gettimeoffset() anymore
+      time/ virt-cpuacct         :  ok  |            HAVE_VIRT_CPU_ACCOUNTING #  arch supports precise virtual CPU time accounting
+      core/ BPF-JIT              : TODO |                        HAVE_BPF_JIT #  arch supports BPF JIT optimizations
+      core/ jump-labels          : TODO |                HAVE_ARCH_JUMP_LABEL #  arch supports live patched, high efficiency branches
+      core/ tracehook            : TODO |                 HAVE_ARCH_TRACEHOOK #  arch supports tracehook (ptrace) register handling APIs
+     debug/ gcov-profile-all     : TODO |           ARCH_HAS_GCOV_PROFILE_ALL #  arch supports whole-kernel GCOV code coverage profiling
+     debug/ KASAN                : TODO |                     HAVE_ARCH_KASAN #  arch supports the KASAN runtime memory checker
+     debug/ kgdb                 : TODO |                      HAVE_ARCH_KGDB #  arch supports the kGDB kernel debugger
+     debug/ kprobes              : TODO |                        HAVE_KPROBES #  arch supports live patched kernel probe
+     debug/ kprobes-on-ftrace    : TODO |              HAVE_KPROBES_ON_FTRACE #  arch supports combined kprobes and ftrace live patching
+     debug/ kretprobes           : TODO |                     HAVE_KRETPROBES #  arch supports kernel function-return probes
+     debug/ optprobes            : TODO |                      HAVE_OPTPROBES #  arch supports live patched optprobes
+     debug/ stackprotector       : TODO |              HAVE_CC_STACKPROTECTOR #  arch supports compiler driven stack overflow protection
+     debug/ uprobes              : TODO |               ARCH_SUPPORTS_UPROBES #  arch supports live patched user probes
+     debug/ user-ret-profiler    : TODO |           HAVE_USER_RETURN_NOTIFIER #  arch supports user-space return from system call profiler
+        io/ dma-api-debug        : TODO |                  HAVE_DMA_API_DEBUG #  arch supports DMA debug facilities
+        io/ dma-contiguous       : TODO |                 HAVE_DMA_CONTIGUOUS #  arch supports the DMA CMA (continuous memory allocator)
+        io/ sg-chain             : TODO |                   ARCH_HAS_SG_CHAIN #  arch supports chained scatter-gather lists
+       lib/ strncasecmp          : TODO |             __HAVE_ARCH_STRNCASECMP #  arch provides an optimized strncasecmp() function
+   locking/ cmpxchg-local        : TODO |                  HAVE_CMPXCHG_LOCAL #  arch supports the this_cpu_cmpxchg() API
+   locking/ lockdep              : TODO |                     LOCKDEP_SUPPORT #  arch supports the runtime locking correctness debug facility
+   locking/ queued-rwlocks       : TODO |             ARCH_USE_QUEUED_RWLOCKS #  arch supports queued rwlocks
+   locking/ queued-spinlocks     : TODO |           ARCH_USE_QUEUED_SPINLOCKS #  arch supports queued spinlocks
+      perf/ kprobes-event        : TODO |      HAVE_REGS_AND_STACK_ACCESS_API #  arch supports kprobes with perf events
+      perf/ perf-regs            : TODO |                      HAVE_PERF_REGS #  arch supports perf events register access
+      perf/ perf-stackdump       : TODO |           HAVE_PERF_USER_STACK_DUMP #  arch supports perf events stack dumps
+     sched/ numa-balancing       : TODO |        ARCH_SUPPORTS_NUMA_BALANCING #  arch supports NUMA balancing
+   seccomp/ seccomp-filter       : TODO |            HAVE_ARCH_SECCOMP_FILTER #  arch supports seccomp filters
+      time/ arch-tick-broadcast  : TODO |             ARCH_HAS_TICK_BROADCAST #  arch provides tick_broadcast()
+      time/ context-tracking     : TODO |               HAVE_CONTEXT_TRACKING #  arch supports context tracking for NO_HZ_FULL
+        vm/ ELF-ASLR             : TODO |              ARCH_HAS_ELF_RANDOMIZE #  arch randomizes the stack, heap and binary images of ELF binaries
+        vm/ huge-vmap            : TODO |                 HAVE_ARCH_HUGE_VMAP #  arch supports the ioremap_pud_enabled() and ioremap_pmd_enabled() VM APIs
+        vm/ ioremap_prot         : TODO |                   HAVE_IOREMAP_PROT #  arch has ioremap_prot()
+        vm/ numa-memblock        : TODO |              HAVE_MEMBLOCK_NODE_MAP #  arch supports NUMA aware memblocks
+        vm/ PG_uncached          : TODO |               ARCH_USES_PG_UNCACHED #  arch supports the PG_uncached page flag
+        vm/ pmdp_splitting_flush : TODO |    __HAVE_ARCH_PMDP_SPLITTING_FLUSH #  arch supports the pmdp_splitting_flush() VM API
+        vm/ pte_special          : TODO |             __HAVE_ARCH_PTE_SPECIAL #  arch supports the pte_special()/pte_mkspecial() VM APIs
+        vm/ THP                  : TODO |      HAVE_ARCH_TRANSPARENT_HUGEPAGE #  arch supports transparent hugepages
