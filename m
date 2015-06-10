@@ -1,81 +1,224 @@
-From: Xose Vazquez Perez <xose.vazquez@gmail.com>
-Subject: Generic kernel features that need architecture(alpha) support
-Date: Mon, 08 Jun 2015 16:51:51 +0200
-Message-ID: <5575AC07.8070006@gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=message-id:date:from:mime-version:to:subject:content-type
-         :content-transfer-encoding;
-        bh=6HjbO7ImUT4a69j8FTfQZuMDUagfSHyMzgv8U+Rc5Qs=;
-        b=Q3ptIeBAq74t6OYExg9QcM64ht7I78guW+p3p7Ml8YtnhtsZ6UcfNIcLpSThMLHbSS
-         ZhKc98Uki3UVd/HiYVCj8lsn+V5f1zZzGuW3DJYRNYXdWipNCJWH88jYUkBgaHdk+XSR
-         q5BV47UBNd1iPC46eOFjjPUMhZg7+ZIGIw6/evrgcNCdVJXDqjnFByDIJyh4fwFanK+d
-         3GdHdYbFYllNvYh6g04p7RO8y8JatUD8DYG12IzggM+jhiEl/VNdBP53kVLb2yll3P2Y
-         0JpTTMLoxHMybU7EnQWxf2t2cxqiGur7qHj3NF0VGzXbyIvUYrPO64zpyFVdrnw3DBdz
-         GHIw==
-Sender: linux-alpha-owner@vger.kernel.org
+From: Eric B Munson <emunson@akamai.com>
+Subject: [RESEND PATCH V2 1/3] Add mmap flag to request pages are locked after page fault
+Date: Wed, 10 Jun 2015 09:26:48 -0400
+Message-ID: <1433942810-7852-2-git-send-email-emunson@akamai.com>
+References: <1433942810-7852-1-git-send-email-emunson@akamai.com>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1433942810-7852-1-git-send-email-emunson@akamai.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Eric B Munson <emunson@akamai.com>, Michal Hocko <mhocko@suse.cz>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
 
-Hi,
+The cost of faulting in all memory to be locked can be very high when
+working with large mappings.  If only portions of the mapping will be
+used this can incur a high penalty for locking.
 
-If there is anything wrong, please report it in this thread:
-https://marc.info/?t=143332955700003
+For the example of a large file, this is the usage pattern for a large
+statical language model (probably applies to other statical or graphical
+models as well).  For the security example, any application transacting
+in data that cannot be swapped out (credit card data, medical records,
+etc).
 
+This patch introduces the ability to request that pages are not
+pre-faulted, but are placed on the unevictable LRU when they are finally
+faulted in.
 
-The meaning of entries in the tables is:
+To keep accounting checks out of the page fault path, users are billed
+for the entire mapping lock as if MAP_LOCKED was used.
 
-    | ok |  # feature supported by the architecture
-    |TODO|  # feature not yet supported by the architecture
-    | .. |  # feature cannot be supported by the hardware
+Signed-off-by: Eric B Munson <emunson@akamai.com>
+Cc: Michal Hocko <mhocko@suse.cz>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: linux-mm@kvack.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-api@vger.kernel.org
+---
+ arch/alpha/include/uapi/asm/mman.h   | 1 +
+ arch/mips/include/uapi/asm/mman.h    | 1 +
+ arch/parisc/include/uapi/asm/mman.h  | 1 +
+ arch/powerpc/include/uapi/asm/mman.h | 1 +
+ arch/sparc/include/uapi/asm/mman.h   | 1 +
+ arch/tile/include/uapi/asm/mman.h    | 1 +
+ arch/xtensa/include/uapi/asm/mman.h  | 1 +
+ include/linux/mm.h                   | 1 +
+ include/linux/mman.h                 | 3 ++-
+ include/uapi/asm-generic/mman.h      | 1 +
+ mm/mmap.c                            | 4 ++--
+ mm/swap.c                            | 3 ++-
+ 12 files changed, 15 insertions(+), 4 deletions(-)
 
-#
-# Kernel feature support matrix of the 'alpha' architecture:
-#
-      time/ irq-time-acct        :  ..  |            HAVE_IRQ_TIME_ACCOUNTING #  arch supports precise IRQ time accounting
-      core/ generic-idle-thread  :  ok  |             GENERIC_SMP_IDLE_THREAD #  arch makes use of the generic SMP idle thread facility
-        io/ dma_map_attrs        :  ok  |                      HAVE_DMA_ATTRS #  arch provides dma_*map*_attrs() APIs
-   locking/ rwsem-optimized      :  ok  |               Optimized asm/rwsem.h #  arch provides optimized rwsem APIs
-      time/ clockevents          :  ok  |                 GENERIC_CLOCKEVENTS #  arch support generic clock events
-      time/ modern-timekeeping   :  ok  |            !ARCH_USES_GETTIMEOFFSET #  arch does not use arch_gettimeoffset() anymore
-      time/ virt-cpuacct         :  ok  |            HAVE_VIRT_CPU_ACCOUNTING #  arch supports precise virtual CPU time accounting
-      core/ BPF-JIT              : TODO |                        HAVE_BPF_JIT #  arch supports BPF JIT optimizations
-      core/ jump-labels          : TODO |                HAVE_ARCH_JUMP_LABEL #  arch supports live patched, high efficiency branches
-      core/ tracehook            : TODO |                 HAVE_ARCH_TRACEHOOK #  arch supports tracehook (ptrace) register handling APIs
-     debug/ gcov-profile-all     : TODO |           ARCH_HAS_GCOV_PROFILE_ALL #  arch supports whole-kernel GCOV code coverage profiling
-     debug/ KASAN                : TODO |                     HAVE_ARCH_KASAN #  arch supports the KASAN runtime memory checker
-     debug/ kgdb                 : TODO |                      HAVE_ARCH_KGDB #  arch supports the kGDB kernel debugger
-     debug/ kprobes              : TODO |                        HAVE_KPROBES #  arch supports live patched kernel probe
-     debug/ kprobes-on-ftrace    : TODO |              HAVE_KPROBES_ON_FTRACE #  arch supports combined kprobes and ftrace live patching
-     debug/ kretprobes           : TODO |                     HAVE_KRETPROBES #  arch supports kernel function-return probes
-     debug/ optprobes            : TODO |                      HAVE_OPTPROBES #  arch supports live patched optprobes
-     debug/ stackprotector       : TODO |              HAVE_CC_STACKPROTECTOR #  arch supports compiler driven stack overflow protection
-     debug/ uprobes              : TODO |               ARCH_SUPPORTS_UPROBES #  arch supports live patched user probes
-     debug/ user-ret-profiler    : TODO |           HAVE_USER_RETURN_NOTIFIER #  arch supports user-space return from system call profiler
-        io/ dma-api-debug        : TODO |                  HAVE_DMA_API_DEBUG #  arch supports DMA debug facilities
-        io/ dma-contiguous       : TODO |                 HAVE_DMA_CONTIGUOUS #  arch supports the DMA CMA (continuous memory allocator)
-        io/ sg-chain             : TODO |                   ARCH_HAS_SG_CHAIN #  arch supports chained scatter-gather lists
-       lib/ strncasecmp          : TODO |             __HAVE_ARCH_STRNCASECMP #  arch provides an optimized strncasecmp() function
-   locking/ cmpxchg-local        : TODO |                  HAVE_CMPXCHG_LOCAL #  arch supports the this_cpu_cmpxchg() API
-   locking/ lockdep              : TODO |                     LOCKDEP_SUPPORT #  arch supports the runtime locking correctness debug facility
-   locking/ queued-rwlocks       : TODO |             ARCH_USE_QUEUED_RWLOCKS #  arch supports queued rwlocks
-   locking/ queued-spinlocks     : TODO |           ARCH_USE_QUEUED_SPINLOCKS #  arch supports queued spinlocks
-      perf/ kprobes-event        : TODO |      HAVE_REGS_AND_STACK_ACCESS_API #  arch supports kprobes with perf events
-      perf/ perf-regs            : TODO |                      HAVE_PERF_REGS #  arch supports perf events register access
-      perf/ perf-stackdump       : TODO |           HAVE_PERF_USER_STACK_DUMP #  arch supports perf events stack dumps
-     sched/ numa-balancing       : TODO |        ARCH_SUPPORTS_NUMA_BALANCING #  arch supports NUMA balancing
-   seccomp/ seccomp-filter       : TODO |            HAVE_ARCH_SECCOMP_FILTER #  arch supports seccomp filters
-      time/ arch-tick-broadcast  : TODO |             ARCH_HAS_TICK_BROADCAST #  arch provides tick_broadcast()
-      time/ context-tracking     : TODO |               HAVE_CONTEXT_TRACKING #  arch supports context tracking for NO_HZ_FULL
-        vm/ ELF-ASLR             : TODO |              ARCH_HAS_ELF_RANDOMIZE #  arch randomizes the stack, heap and binary images of ELF binaries
-        vm/ huge-vmap            : TODO |                 HAVE_ARCH_HUGE_VMAP #  arch supports the ioremap_pud_enabled() and ioremap_pmd_enabled() VM APIs
-        vm/ ioremap_prot         : TODO |                   HAVE_IOREMAP_PROT #  arch has ioremap_prot()
-        vm/ numa-memblock        : TODO |              HAVE_MEMBLOCK_NODE_MAP #  arch supports NUMA aware memblocks
-        vm/ PG_uncached          : TODO |               ARCH_USES_PG_UNCACHED #  arch supports the PG_uncached page flag
-        vm/ pmdp_splitting_flush : TODO |    __HAVE_ARCH_PMDP_SPLITTING_FLUSH #  arch supports the pmdp_splitting_flush() VM API
-        vm/ pte_special          : TODO |             __HAVE_ARCH_PTE_SPECIAL #  arch supports the pte_special()/pte_mkspecial() VM APIs
-        vm/ THP                  : TODO |      HAVE_ARCH_TRANSPARENT_HUGEPAGE #  arch supports transparent hugepages
+diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
+index 0086b47..15e96e1 100644
+--- a/arch/alpha/include/uapi/asm/mman.h
++++ b/arch/alpha/include/uapi/asm/mman.h
+@@ -30,6 +30,7 @@
+ #define MAP_NONBLOCK	0x40000		/* do not block on IO */
+ #define MAP_STACK	0x80000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x100000	/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x200000	/* Lock pages after they are faulted in, do not prefault */
+ 
+ #define MS_ASYNC	1		/* sync memory asynchronously */
+ #define MS_SYNC		2		/* synchronous memory sync */
+diff --git a/arch/mips/include/uapi/asm/mman.h b/arch/mips/include/uapi/asm/mman.h
+index cfcb876..47846a5 100644
+--- a/arch/mips/include/uapi/asm/mman.h
++++ b/arch/mips/include/uapi/asm/mman.h
+@@ -48,6 +48,7 @@
+ #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+ #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+ 
+ /*
+  * Flags for msync
+diff --git a/arch/parisc/include/uapi/asm/mman.h b/arch/parisc/include/uapi/asm/mman.h
+index 294d251..1514cd7 100644
+--- a/arch/parisc/include/uapi/asm/mman.h
++++ b/arch/parisc/include/uapi/asm/mman.h
+@@ -24,6 +24,7 @@
+ #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+ #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+ 
+ #define MS_SYNC		1		/* synchronous memory sync */
+ #define MS_ASYNC	2		/* sync memory asynchronously */
+diff --git a/arch/powerpc/include/uapi/asm/mman.h b/arch/powerpc/include/uapi/asm/mman.h
+index 6ea26df..fce74fe 100644
+--- a/arch/powerpc/include/uapi/asm/mman.h
++++ b/arch/powerpc/include/uapi/asm/mman.h
+@@ -27,5 +27,6 @@
+ #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+ #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x80000		/* Lock pages after they are faulted in, do not prefault */
+ 
+ #endif /* _UAPI_ASM_POWERPC_MMAN_H */
+diff --git a/arch/sparc/include/uapi/asm/mman.h b/arch/sparc/include/uapi/asm/mman.h
+index 0b14df3..12425d8 100644
+--- a/arch/sparc/include/uapi/asm/mman.h
++++ b/arch/sparc/include/uapi/asm/mman.h
+@@ -22,6 +22,7 @@
+ #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+ #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x80000		/* Lock pages after they are faulted in, do not prefault */
+ 
+ 
+ #endif /* _UAPI__SPARC_MMAN_H__ */
+diff --git a/arch/tile/include/uapi/asm/mman.h b/arch/tile/include/uapi/asm/mman.h
+index 81b8fc3..ec04eaf 100644
+--- a/arch/tile/include/uapi/asm/mman.h
++++ b/arch/tile/include/uapi/asm/mman.h
+@@ -29,6 +29,7 @@
+ #define MAP_DENYWRITE	0x0800		/* ETXTBSY */
+ #define MAP_EXECUTABLE	0x1000		/* mark it as an executable */
+ #define MAP_HUGETLB	0x4000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x8000		/* Lock pages after they are faulted in, do not prefault */
+ 
+ 
+ /*
+diff --git a/arch/xtensa/include/uapi/asm/mman.h b/arch/xtensa/include/uapi/asm/mman.h
+index 201aec0..42d43cc 100644
+--- a/arch/xtensa/include/uapi/asm/mman.h
++++ b/arch/xtensa/include/uapi/asm/mman.h
+@@ -55,6 +55,7 @@
+ #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+ #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+ #ifdef CONFIG_MMAP_ALLOW_UNINITIALIZED
+ # define MAP_UNINITIALIZED 0x4000000	/* For anonymous mmap, memory could be
+ 					 * uninitialized */
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 0755b9f..3e31457 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -126,6 +126,7 @@ extern unsigned int kobjsize(const void *objp);
+ #define VM_PFNMAP	0x00000400	/* Page-ranges managed without "struct page", just pure PFN */
+ #define VM_DENYWRITE	0x00000800	/* ETXTBSY on write attempts.. */
+ 
++#define VM_LOCKONFAULT	0x00001000	/* Lock the pages covered when they are faulted in */
+ #define VM_LOCKED	0x00002000
+ #define VM_IO           0x00004000	/* Memory mapped I/O or similar */
+ 
+diff --git a/include/linux/mman.h b/include/linux/mman.h
+index 16373c8..437264b 100644
+--- a/include/linux/mman.h
++++ b/include/linux/mman.h
+@@ -86,7 +86,8 @@ calc_vm_flag_bits(unsigned long flags)
+ {
+ 	return _calc_vm_trans(flags, MAP_GROWSDOWN,  VM_GROWSDOWN ) |
+ 	       _calc_vm_trans(flags, MAP_DENYWRITE,  VM_DENYWRITE ) |
+-	       _calc_vm_trans(flags, MAP_LOCKED,     VM_LOCKED    );
++	       _calc_vm_trans(flags, MAP_LOCKED,     VM_LOCKED    ) |
++	       _calc_vm_trans(flags, MAP_LOCKONFAULT,VM_LOCKONFAULT);
+ }
+ 
+ unsigned long vm_commit_limit(void);
+diff --git a/include/uapi/asm-generic/mman.h b/include/uapi/asm-generic/mman.h
+index e9fe6fd..fc4e586 100644
+--- a/include/uapi/asm-generic/mman.h
++++ b/include/uapi/asm-generic/mman.h
+@@ -12,6 +12,7 @@
+ #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+ #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x80000		/* Lock pages after they are faulted in, do not prefault */
+ 
+ /* Bits [26:31] are reserved, see mman-common.h for MAP_HUGETLB usage */
+ 
+diff --git a/mm/mmap.c b/mm/mmap.c
+index bb50cac..ba1a6bf 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1233,7 +1233,7 @@ static inline int mlock_future_check(struct mm_struct *mm,
+ 	unsigned long locked, lock_limit;
+ 
+ 	/*  mlock MCL_FUTURE? */
+-	if (flags & VM_LOCKED) {
++	if (flags & (VM_LOCKED | VM_LOCKONFAULT)) {
+ 		locked = len >> PAGE_SHIFT;
+ 		locked += mm->locked_vm;
+ 		lock_limit = rlimit(RLIMIT_MEMLOCK);
+@@ -1301,7 +1301,7 @@ unsigned long do_mmap_pgoff(struct file *file, unsigned long addr,
+ 	vm_flags = calc_vm_prot_bits(prot) | calc_vm_flag_bits(flags) |
+ 			mm->def_flags | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
+ 
+-	if (flags & MAP_LOCKED)
++	if (flags & (MAP_LOCKED | MAP_LOCKONFAULT))
+ 		if (!can_do_mlock())
+ 			return -EPERM;
+ 
+diff --git a/mm/swap.c b/mm/swap.c
+index a7251a8..07c905e 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -711,7 +711,8 @@ void lru_cache_add_active_or_unevictable(struct page *page,
+ {
+ 	VM_BUG_ON_PAGE(PageLRU(page), page);
+ 
+-	if (likely((vma->vm_flags & (VM_LOCKED | VM_SPECIAL)) != VM_LOCKED)) {
++	if (likely((vma->vm_flags & (VM_LOCKED | VM_LOCKONFAULT)) == 0) ||
++		   (vma->vm_flags & VM_SPECIAL)) {
+ 		SetPageActive(page);
+ 		lru_cache_add(page);
+ 		return;
+-- 
+1.9.1
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
