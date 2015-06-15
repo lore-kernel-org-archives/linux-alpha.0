@@ -1,99 +1,45 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [RESEND PATCH V2 0/3] Allow user to request memory to be locked
- on page fault
-Date: Fri, 12 Jun 2015 14:05:16 +0200
-Message-ID: <557ACAFC.90608@suse.cz>
-References: <1433942810-7852-1-git-send-email-emunson@akamai.com>	<20150610145929.b22be8647887ea7091b09ae1@linux-foundation.org>	<5579DFBA.80809@akamai.com> <20150611123424.4bb07cffd0e5bb146cc92231@linux-foundation.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] alpha: Add support for BOTHER
+Date: Mon, 15 Jun 2015 07:28:03 -0700
+Message-ID: <1434378483-12727-1-git-send-email-linux@roeck-us.net>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20150611123424.4bb07cffd0e5bb146cc92231@linux-foundation.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=roeck-us.net; s=default;
+	h=Message-Id:Date:Subject:Cc:To:From; bh=uBpMpg1V4okogq9C6Q+wzWAxcHT1i/IOAMl3KTSBWMU=;
+	b=E9tIQV8DGQ+1TBR8rZtzwWUSMFtC10IJzEuB7gkf4SZYNj5D14Iwx607CxYe0odvpEdD0sbqDHVR3baYGJ93lxiVmDuPo6yuZiGuXYSSIkxrJSGrAprRagfwfBhl5hedjzGClSQfk/Yvb2BdAaJGefO8QAsng3CEdXdZknwsIUI=;
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Andrew Morton <akpm@linux-foundation.org>, Eric B Munson <emunson@akamai.com>
-Cc: Shuah Khan <shuahkh@osg.samsung.com>, Michal Hocko <mhocko@suse.cz>, Michael Kerrisk <mtk.manpages@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>
+Cc: Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, Marcel Holtmann <marcel@holtmann.org>
 
-On 06/11/2015 09:34 PM, Andrew Morton wrote:
-> On Thu, 11 Jun 2015 15:21:30 -0400 Eric B Munson <emunson@akamai.com> wrote:
->
->>> Ditto mlockall(MCL_ONFAULT) followed by munlock().  I'm not sure
->>> that even makes sense but the behaviour should be understood and
->>> tested.
->>
->> I have extended the kselftest for lock-on-fault to try both of these
->> scenarios and they work as expected.  The VMA is split and the VM
->> flags are set appropriately for the resulting VMAs.
->
-> munlock() should do vma merging as well.  I *think* we implemented
-> that.  More tests for you to add ;)
->
-> How are you testing the vma merging and splitting, btw?  Parsing
-> the profcs files?
->
->>> What's missing here is a syscall to set VM_LOCKONFAULT on an
->>> arbitrary range of memory - mlock() for lock-on-fault.  It's a
->>> shame that mlock() didn't take a `mode' argument.  Perhaps we
->>> should add such a syscall - that would make the mmap flag unneeded
->>> but I suppose it should be kept for symmetry.
->>
->> Do you want such a system call as part of this set?  I would need some
->> time to make sure I had thought through all the possible corners one
->> could get into with such a call, so it would delay a V3 quite a bit.
->> Otherwise I can send a V3 out immediately.
->
-> I think the way to look at this is to pretend that mm/mlock.c doesn't
-> exist and ask "how should we design these features".
->
-> And that would be:
->
-> - mmap() takes a `flags' argument: MAP_LOCKED|MAP_LOCKONFAULT.
+In -next, alpha:allmodconfig fails to build with
 
-Note that the semantic of MAP_LOCKED can be subtly surprising:
+drivers/bluetooth/hci_ldisc.c: In function 'hci_uart_set_baudrate':
+drivers/bluetooth/hci_ldisc.c:276:22: error: 'BOTHER' undeclared
 
-"mlock(2) fails if the memory range cannot get populated to guarantee
-that no future major faults will happen on the range. mmap(MAP_LOCKED) 
-on the other hand silently succeeds even if the range was populated only
-partially."
+This could be fixed on the user side, but it makes more sense
+to just define BOTHER.
 
-( from http://marc.info/?l=linux-mm&m=143152790412727&w=2 )
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ arch/alpha/include/uapi/asm/termbits.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-So MAP_LOCKED can silently behave like MAP_LOCKONFAULT. While 
-MAP_LOCKONFAULT doesn't suffer from such problem, I wonder if that's 
-sufficient reason not to extend mmap by new mlock() flags that can be 
-instead applied to the VMA after mmapping, using the proposed mlock2() 
-with flags. So I think instead we could deprecate MAP_LOCKED more 
-prominently. I doubt the overhead of calling the extra syscall matters here?
-
-> - mlock() takes a `flags' argument.  Presently that's
->    MLOCK_LOCKED|MLOCK_LOCKONFAULT.
->
-> - munlock() takes a `flags' arument.  MLOCK_LOCKED|MLOCK_LOCKONFAULT
->    to specify which flags are being cleared.
->
-> - mlockall() and munlockall() ditto.
->
->
-> IOW, LOCKED and LOCKEDONFAULT are treated identically and independently.
->
-> Now, that's how we would have designed all this on day one.  And I
-> think we can do this now, by adding new mlock2() and munlock2()
-> syscalls.  And we may as well deprecate the old mlock() and munlock(),
-> not that this matters much.
->
-> *should* we do this?  I'm thinking "yes" - it's all pretty simple
-> boilerplate and wrappers and such, and it gets the interface correct,
-> and extensible.
-
-If the new LOCKONFAULT functionality is indeed desired (I haven't still 
-decided myself) then I agree that would be the cleanest way.
-
-> What do others think?
->
-> --
-> To unsubscribe, send a message with 'unsubscribe linux-mm' in
-> the body to majordomo@kvack.org.  For more info on Linux MM,
-> see: http://www.linux-mm.org/ .
-> Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
->
+diff --git a/arch/alpha/include/uapi/asm/termbits.h b/arch/alpha/include/uapi/asm/termbits.h
+index 879dd3589921..0d53d9e2633f 100644
+--- a/arch/alpha/include/uapi/asm/termbits.h
++++ b/arch/alpha/include/uapi/asm/termbits.h
+@@ -147,6 +147,7 @@ struct ktermios {
+ #define B3000000  00034
+ #define B3500000  00035
+ #define B4000000  00036
++#define   BOTHER  00037
+ 
+ #define CSIZE	00001400
+ #define   CS5	00000000
+-- 
+2.1.0
 
