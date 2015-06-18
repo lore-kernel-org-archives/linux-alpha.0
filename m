@@ -1,108 +1,241 @@
-From: Frans Klaver <fransklaver@gmail.com>
-Subject: Re: [PATCH 01/44] kernel: Add support for poweroff handler call chain
-Date: Thu, 18 Jun 2015 14:14:07 +0200
-Message-ID: <CAH6sp9O0B_BWS8cLSq=MoFbe3nB_45+K64gh7QMHO3meT-b14w@mail.gmail.com>
-References: <1412659726-29957-1-git-send-email-linux@roeck-us.net>
-	<1412659726-29957-2-git-send-email-linux@roeck-us.net>
-	<55821936.4040704@codeaurora.org>
-	<CAH6sp9P7rq2y_hiQPHKUP85CwnEmp87yC7Psh4=29h-pYnb_yw@mail.gmail.com>
-	<5582B15B.4010205@roeck-us.net>
+From: Michal Hocko <mhocko@suse.cz>
+Subject: Re: [RESEND PATCH V2 1/3] Add mmap flag to request pages are locked
+ after page fault
+Date: Thu, 18 Jun 2015 17:29:07 +0200
+Message-ID: <20150618152907.GG5858@dhcp22.suse.cz>
+References: <1433942810-7852-1-git-send-email-emunson@akamai.com>
+ <1433942810-7852-2-git-send-email-emunson@akamai.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
-         :cc:content-type;
-        bh=pDXdKyJBBgK5nFwU5yQ3UnTKhlYcQD8c+Oddqs6Tnc8=;
-        b=BzTV9WfdNhEwEniqxLpU5TymzevZf9dHC639SW3H34jb99UikBJdxNixhOk0uKrD5J
-         c9dcCgSvVUfTI9FMiRhbtVHj9eCX0podMfxjz7ksczqmICIFuvZu49y7jUYGhy8xuYct
-         BiKvO5HFdWaVg2HwpULYBBK5NCENBrxjQUfs6e/pHWCbTQQMqaI9CuDDjeHkkEnDkxSX
-         b+18ZluhVmTcT+ESGYKmEGaXigA0HAFOgJsJO8UFe1R9kMSYp6RyzEHGmmLcnK594iN3
-         nJSfr9OTKn8VdUUH4KSrkfkEm039YlkqcPT4aC0s1NLK/VkTt0TTvabp1qSu9wBK2gx/
-         TV8g==
-In-Reply-To: <5582B15B.4010205@roeck-us.net>
-Sender: linux-m68k-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1433942810-7852-2-git-send-email-emunson@akamai.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Stephen Boyd <sboyd@codeaurora.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-m32r-ja@ml.linux-m32r.org, linux-mips@linux-mips.org, linux-efi@vger.kernel.org, linux-ia64@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-sh@vger.kernel.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Pavel Machek <pavel@ucw.cz>, devel@driverdev.osuosl.org, linux-s390@vger.kernel.org, lguest@lists.ozlabs.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, Alexander Graf <agraf@suse.de>, linux-acpi <linux-acpi@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, xen-devel@lists.xenproject.org, Len Brown <len.brown@intel.com>, user-mode-linux-devel@lists.sourceforge.net, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, linux-xtensa@linux-xtensa.org, adi-buildroot-devel@lists.sourceforge.net, linux-m68k@lists.lin
+To: Eric B Munson <emunson@akamai.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
 
-On Thu, Jun 18, 2015 at 1:54 PM, Guenter Roeck <linux@roeck-us.net> wrote:
-> On 06/17/2015 11:53 PM, Frans Klaver wrote:
->>
->> On Thu, Jun 18, 2015 at 3:04 AM, Stephen Boyd <sboyd@codeaurora.org>
->> wrote:
->>>
->>> On 10/06/2014 10:28 PM, Guenter Roeck wrote:
->>>>
->>>> Various drivers implement architecture and/or device specific means to
->>>> remove power from the system.  For the most part, those drivers set the
->>>> global variable pm_power_off to point to a function within the driver.
->>>>
->>>> This mechanism has a number of drawbacks.  Typically only one scheme
->>>> to remove power is supported (at least if pm_power_off is used).
->>>> At least in theory there can be multiple means remove power, some of
->>>> which may be less desirable. For example, some mechanisms may only
->>>> power off the CPU or the CPU card, while another may power off the
->>>> entire system.  Others may really just execute a restart sequence
->>>> or drop into the ROM monitor. Using pm_power_off can also be racy
->>>> if the function pointer is set from a driver built as module, as the
->>>> driver may be in the process of being unloaded when pm_power_off is
->>>> called. If there are multiple poweroff handlers in the system, removing
->>>> a module with such a handler may inadvertently reset the pointer to
->>>> pm_power_off to NULL, leaving the system with no means to remove power.
->>>>
->>>> Introduce a system poweroff handler call chain to solve the described
->>>> problems.  This call chain is expected to be executed from the
->>>> architecture specific machine_power_off() function.  Drivers providing
->>>> system poweroff functionality are expected to register with this call
->>>> chain.
->>>> By using the priority field in the notifier block, callers can control
->>>> poweroff handler execution sequence and thus ensure that the poweroff
->>>> handler with the optimal capabilities to remove power for a given system
->>>> is called first.
->>>
->>>
->>> What happened to this series? I want to add shutdown support to my
->>> platform and I need to write a register on the PMIC in one driver to
->>> configure it for shutdown instead of restart and then write an MMIO
->>> register to tell the PMIC to actually do the shutdown in another driver.
->>> It seems that the notifier solves this case for me, albeit with the
->>> slight complication that I need to order the two with some priority.
->>
->>
->> I was wondering the same thing. I did find out that things kind of
->> stalled after Linus cast doubt on the chosen path [1]. I'm not sure
->> there's any consensus on what would be best to do instead.
->>
->
-> Linus cast doubt on it, then the maintainers started picking it apart.
-> At the end, trying not to use notifier callbacks made the code so
-> complicated that even I didn't understand it anymore. With no consensus
-> in sight, I abandoned it.
->
-> Problem is really that the notifier call chain would be perfect to solve
-> the problem, yet Linus didn't like priorities (which are essential),
-> and the power maintainers didn't like that a call chain is supposed
-> to execute _all_ callbacks, which would not be the case here. If I were
-> to start again, I would insist to use notifiers. However, I don't see
-> a chance to get that accepted, so I won't. Feel free to pick it up and
-> give it a try yourself.
+[Sorry for the late reply - I meant to answer in the previous threads
+ but something always preempted me from that]
 
-How about having two phases? One where all interested parts of the
-system get notified, one that does the final shutdown. It's a slightly
-different approach than you took, but does use the notifier chains as
-expected, and can be used to prepare peripherals for shutdown, if
-there's a use case for it.
+On Wed 10-06-15 09:26:48, Eric B Munson wrote:
+> The cost of faulting in all memory to be locked can be very high when
+> working with large mappings.  If only portions of the mapping will be
+> used this can incur a high penalty for locking.
+> 
+> For the example of a large file, this is the usage pattern for a large
+> statical language model (probably applies to other statical or graphical
+> models as well).  For the security example, any application transacting
+> in data that cannot be swapped out (credit card data, medical records,
+> etc).
 
-The two-stage approach does keep the single place to power down. I
-expect it would become more obvious that it would be silly to have
-more than one actual system power down sequence and hiding
-pm_power_off and unifying setting of it should become more straight
-forward as well.
+Such a use case makes some sense to me but I am not sure the way you
+implement it is the right one. This is another mlock related flag for
+mmap with a different semantic. You do not want to prefault but e.g. is
+the readahead or fault around acceptable? I do not see anything in your
+patch to handle those...
 
-Thoughts?
+Wouldn't it be much more reasonable and straightforward to have
+MAP_FAULTPOPULATE as a counterpart for MAP_POPULATE which would
+explicitly disallow any form of pre-faulting? It would be usable for
+other usecases than with MAP_LOCKED combination.
 
-Thanks,
-Frans
+> This patch introduces the ability to request that pages are not
+> pre-faulted, but are placed on the unevictable LRU when they are finally
+> faulted in.
+> 
+> To keep accounting checks out of the page fault path, users are billed
+> for the entire mapping lock as if MAP_LOCKED was used.
+> 
+> Signed-off-by: Eric B Munson <emunson@akamai.com>
+> Cc: Michal Hocko <mhocko@suse.cz>
+> Cc: linux-alpha@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-mips@linux-mips.org
+> Cc: linux-parisc@vger.kernel.org
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: sparclinux@vger.kernel.org
+> Cc: linux-xtensa@linux-xtensa.org
+> Cc: linux-mm@kvack.org
+> Cc: linux-arch@vger.kernel.org
+> Cc: linux-api@vger.kernel.org
+> ---
+>  arch/alpha/include/uapi/asm/mman.h   | 1 +
+>  arch/mips/include/uapi/asm/mman.h    | 1 +
+>  arch/parisc/include/uapi/asm/mman.h  | 1 +
+>  arch/powerpc/include/uapi/asm/mman.h | 1 +
+>  arch/sparc/include/uapi/asm/mman.h   | 1 +
+>  arch/tile/include/uapi/asm/mman.h    | 1 +
+>  arch/xtensa/include/uapi/asm/mman.h  | 1 +
+>  include/linux/mm.h                   | 1 +
+>  include/linux/mman.h                 | 3 ++-
+>  include/uapi/asm-generic/mman.h      | 1 +
+>  mm/mmap.c                            | 4 ++--
+>  mm/swap.c                            | 3 ++-
+>  12 files changed, 15 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
+> index 0086b47..15e96e1 100644
+> --- a/arch/alpha/include/uapi/asm/mman.h
+> +++ b/arch/alpha/include/uapi/asm/mman.h
+> @@ -30,6 +30,7 @@
+>  #define MAP_NONBLOCK	0x40000		/* do not block on IO */
+>  #define MAP_STACK	0x80000		/* give out an address that is best suited for process/thread stacks */
+>  #define MAP_HUGETLB	0x100000	/* create a huge page mapping */
+> +#define MAP_LOCKONFAULT	0x200000	/* Lock pages after they are faulted in, do not prefault */
+>  
+>  #define MS_ASYNC	1		/* sync memory asynchronously */
+>  #define MS_SYNC		2		/* synchronous memory sync */
+> diff --git a/arch/mips/include/uapi/asm/mman.h b/arch/mips/include/uapi/asm/mman.h
+> index cfcb876..47846a5 100644
+> --- a/arch/mips/include/uapi/asm/mman.h
+> +++ b/arch/mips/include/uapi/asm/mman.h
+> @@ -48,6 +48,7 @@
+>  #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+>  #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+>  #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
+> +#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+>  
+>  /*
+>   * Flags for msync
+> diff --git a/arch/parisc/include/uapi/asm/mman.h b/arch/parisc/include/uapi/asm/mman.h
+> index 294d251..1514cd7 100644
+> --- a/arch/parisc/include/uapi/asm/mman.h
+> +++ b/arch/parisc/include/uapi/asm/mman.h
+> @@ -24,6 +24,7 @@
+>  #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+>  #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+>  #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
+> +#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+>  
+>  #define MS_SYNC		1		/* synchronous memory sync */
+>  #define MS_ASYNC	2		/* sync memory asynchronously */
+> diff --git a/arch/powerpc/include/uapi/asm/mman.h b/arch/powerpc/include/uapi/asm/mman.h
+> index 6ea26df..fce74fe 100644
+> --- a/arch/powerpc/include/uapi/asm/mman.h
+> +++ b/arch/powerpc/include/uapi/asm/mman.h
+> @@ -27,5 +27,6 @@
+>  #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+>  #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+>  #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
+> +#define MAP_LOCKONFAULT	0x80000		/* Lock pages after they are faulted in, do not prefault */
+>  
+>  #endif /* _UAPI_ASM_POWERPC_MMAN_H */
+> diff --git a/arch/sparc/include/uapi/asm/mman.h b/arch/sparc/include/uapi/asm/mman.h
+> index 0b14df3..12425d8 100644
+> --- a/arch/sparc/include/uapi/asm/mman.h
+> +++ b/arch/sparc/include/uapi/asm/mman.h
+> @@ -22,6 +22,7 @@
+>  #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+>  #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+>  #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
+> +#define MAP_LOCKONFAULT	0x80000		/* Lock pages after they are faulted in, do not prefault */
+>  
+>  
+>  #endif /* _UAPI__SPARC_MMAN_H__ */
+> diff --git a/arch/tile/include/uapi/asm/mman.h b/arch/tile/include/uapi/asm/mman.h
+> index 81b8fc3..ec04eaf 100644
+> --- a/arch/tile/include/uapi/asm/mman.h
+> +++ b/arch/tile/include/uapi/asm/mman.h
+> @@ -29,6 +29,7 @@
+>  #define MAP_DENYWRITE	0x0800		/* ETXTBSY */
+>  #define MAP_EXECUTABLE	0x1000		/* mark it as an executable */
+>  #define MAP_HUGETLB	0x4000		/* create a huge page mapping */
+> +#define MAP_LOCKONFAULT	0x8000		/* Lock pages after they are faulted in, do not prefault */
+>  
+>  
+>  /*
+> diff --git a/arch/xtensa/include/uapi/asm/mman.h b/arch/xtensa/include/uapi/asm/mman.h
+> index 201aec0..42d43cc 100644
+> --- a/arch/xtensa/include/uapi/asm/mman.h
+> +++ b/arch/xtensa/include/uapi/asm/mman.h
+> @@ -55,6 +55,7 @@
+>  #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+>  #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+>  #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
+> +#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+>  #ifdef CONFIG_MMAP_ALLOW_UNINITIALIZED
+>  # define MAP_UNINITIALIZED 0x4000000	/* For anonymous mmap, memory could be
+>  					 * uninitialized */
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 0755b9f..3e31457 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -126,6 +126,7 @@ extern unsigned int kobjsize(const void *objp);
+>  #define VM_PFNMAP	0x00000400	/* Page-ranges managed without "struct page", just pure PFN */
+>  #define VM_DENYWRITE	0x00000800	/* ETXTBSY on write attempts.. */
+>  
+> +#define VM_LOCKONFAULT	0x00001000	/* Lock the pages covered when they are faulted in */
+>  #define VM_LOCKED	0x00002000
+>  #define VM_IO           0x00004000	/* Memory mapped I/O or similar */
+>  
+> diff --git a/include/linux/mman.h b/include/linux/mman.h
+> index 16373c8..437264b 100644
+> --- a/include/linux/mman.h
+> +++ b/include/linux/mman.h
+> @@ -86,7 +86,8 @@ calc_vm_flag_bits(unsigned long flags)
+>  {
+>  	return _calc_vm_trans(flags, MAP_GROWSDOWN,  VM_GROWSDOWN ) |
+>  	       _calc_vm_trans(flags, MAP_DENYWRITE,  VM_DENYWRITE ) |
+> -	       _calc_vm_trans(flags, MAP_LOCKED,     VM_LOCKED    );
+> +	       _calc_vm_trans(flags, MAP_LOCKED,     VM_LOCKED    ) |
+> +	       _calc_vm_trans(flags, MAP_LOCKONFAULT,VM_LOCKONFAULT);
+>  }
+>  
+>  unsigned long vm_commit_limit(void);
+> diff --git a/include/uapi/asm-generic/mman.h b/include/uapi/asm-generic/mman.h
+> index e9fe6fd..fc4e586 100644
+> --- a/include/uapi/asm-generic/mman.h
+> +++ b/include/uapi/asm-generic/mman.h
+> @@ -12,6 +12,7 @@
+>  #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+>  #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+>  #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
+> +#define MAP_LOCKONFAULT	0x80000		/* Lock pages after they are faulted in, do not prefault */
+>  
+>  /* Bits [26:31] are reserved, see mman-common.h for MAP_HUGETLB usage */
+>  
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index bb50cac..ba1a6bf 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -1233,7 +1233,7 @@ static inline int mlock_future_check(struct mm_struct *mm,
+>  	unsigned long locked, lock_limit;
+>  
+>  	/*  mlock MCL_FUTURE? */
+> -	if (flags & VM_LOCKED) {
+> +	if (flags & (VM_LOCKED | VM_LOCKONFAULT)) {
+>  		locked = len >> PAGE_SHIFT;
+>  		locked += mm->locked_vm;
+>  		lock_limit = rlimit(RLIMIT_MEMLOCK);
+> @@ -1301,7 +1301,7 @@ unsigned long do_mmap_pgoff(struct file *file, unsigned long addr,
+>  	vm_flags = calc_vm_prot_bits(prot) | calc_vm_flag_bits(flags) |
+>  			mm->def_flags | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
+>  
+> -	if (flags & MAP_LOCKED)
+> +	if (flags & (MAP_LOCKED | MAP_LOCKONFAULT))
+>  		if (!can_do_mlock())
+>  			return -EPERM;
+>  
+> diff --git a/mm/swap.c b/mm/swap.c
+> index a7251a8..07c905e 100644
+> --- a/mm/swap.c
+> +++ b/mm/swap.c
+> @@ -711,7 +711,8 @@ void lru_cache_add_active_or_unevictable(struct page *page,
+>  {
+>  	VM_BUG_ON_PAGE(PageLRU(page), page);
+>  
+> -	if (likely((vma->vm_flags & (VM_LOCKED | VM_SPECIAL)) != VM_LOCKED)) {
+> +	if (likely((vma->vm_flags & (VM_LOCKED | VM_LOCKONFAULT)) == 0) ||
+> +		   (vma->vm_flags & VM_SPECIAL)) {
+>  		SetPageActive(page);
+>  		lru_cache_add(page);
+>  		return;
+> -- 
+> 1.9.1
+> 
+
+-- 
+Michal Hocko
+SUSE Labs
