@@ -1,144 +1,60 @@
-From: Eric B Munson <emunson@akamai.com>
-Subject: Re: [RESEND PATCH V2 0/3] Allow user to request memory to be locked
- on page fault
-Date: Mon, 15 Jun 2015 10:43:56 -0400
-Message-ID: <20150615144356.GB12300@akamai.com>
-References: <1433942810-7852-1-git-send-email-emunson@akamai.com>
- <20150610145929.b22be8647887ea7091b09ae1@linux-foundation.org>
- <5579DFBA.80809@akamai.com>
- <20150611123424.4bb07cffd0e5bb146cc92231@linux-foundation.org>
- <557ACAFC.90608@suse.cz>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH 01/44] kernel: Add support for poweroff handler call chain
+Date: Wed, 17 Jun 2015 18:04:54 -0700
+Message-ID: <55821936.4040704@codeaurora.org>
+References: <1412659726-29957-1-git-send-email-linux@roeck-us.net> <1412659726-29957-2-git-send-email-linux@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tsOsTdHNUZQcU9Ye"
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <557ACAFC.90608@suse.cz>
-Sender: linux-arch-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+In-Reply-To: <1412659726-29957-2-git-send-email-linux@roeck-us.net>
+Sender: linux-hexagon-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Shuah Khan <shuahkh@osg.samsung.com>, Michal Hocko <mhocko@suse.cz>, Michael Kerrisk <mtk.manpages@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org
+Cc: linux-m32r-ja@ml.linux-m32r.org, linux-mips@linux-mips.org, linux-efi@vger.kernel.org, linux-ia64@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Len Brown <len.brown@intel.com>, linux-xtensa@linux-xtensa.org, Pavel Machek <pavel@ucw.cz>, devel@driverdev.osuosl.org, linux-s390@vger.kernel.org, lguest@lists.ozlabs.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-sh@vger.kernel.org, Alexander Graf <agraf@suse.de>, linux-acpi@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, xen-devel@lists.xenproject.org, devicetree@vger.kernel.org, user-mode-linux-devel@lists.sourceforge.net, linux-pm@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, linux-tegra@vger.kernel.org, openipmi-developer@lists.sourceforge.net, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead
 
+On 10/06/2014 10:28 PM, Guenter Roeck wrote:
+> Various drivers implement architecture and/or device specific means to
+> remove power from the system.  For the most part, those drivers set the
+> global variable pm_power_off to point to a function within the driver.
+>
+> This mechanism has a number of drawbacks.  Typically only one scheme
+> to remove power is supported (at least if pm_power_off is used).
+> At least in theory there can be multiple means remove power, some of
+> which may be less desirable. For example, some mechanisms may only
+> power off the CPU or the CPU card, while another may power off the
+> entire system.  Others may really just execute a restart sequence
+> or drop into the ROM monitor. Using pm_power_off can also be racy
+> if the function pointer is set from a driver built as module, as the
+> driver may be in the process of being unloaded when pm_power_off is
+> called. If there are multiple poweroff handlers in the system, removing
+> a module with such a handler may inadvertently reset the pointer to
+> pm_power_off to NULL, leaving the system with no means to remove power.
+>
+> Introduce a system poweroff handler call chain to solve the described
+> problems.  This call chain is expected to be executed from the
+> architecture specific machine_power_off() function.  Drivers providing
+> system poweroff functionality are expected to register with this call chain.
+> By using the priority field in the notifier block, callers can control
+> poweroff handler execution sequence and thus ensure that the poweroff
+> handler with the optimal capabilities to remove power for a given system
+> is called first.
 
---tsOsTdHNUZQcU9Ye
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+What happened to this series? I want to add shutdown support to my
+platform and I need to write a register on the PMIC in one driver to
+configure it for shutdown instead of restart and then write an MMIO
+register to tell the PMIC to actually do the shutdown in another driver.
+It seems that the notifier solves this case for me, albeit with the
+slight complication that I need to order the two with some priority.
 
-On Fri, 12 Jun 2015, Vlastimil Babka wrote:
+I'm also considering putting the PMIC configuration part into the reboot
+notifier chain, because it only does things to change the configuration
+and not actually any shutdown/restart itself. That removes any
+requirement to get the priority of notifiers right. This series will
+still be useful for the MMIO register that needs to be toggled though.
+Right now I have to assign pm_power_off or hook the reboot notifier with
+a different priority to make this work.
 
-> On 06/11/2015 09:34 PM, Andrew Morton wrote:
-> >On Thu, 11 Jun 2015 15:21:30 -0400 Eric B Munson <emunson@akamai.com> wr=
-ote:
-> >
-> >>>Ditto mlockall(MCL_ONFAULT) followed by munlock().  I'm not sure
-> >>>that even makes sense but the behaviour should be understood and
-> >>>tested.
-> >>
-> >>I have extended the kselftest for lock-on-fault to try both of these
-> >>scenarios and they work as expected.  The VMA is split and the VM
-> >>flags are set appropriately for the resulting VMAs.
-> >
-> >munlock() should do vma merging as well.  I *think* we implemented
-> >that.  More tests for you to add ;)
-> >
-> >How are you testing the vma merging and splitting, btw?  Parsing
-> >the profcs files?
-> >
-> >>>What's missing here is a syscall to set VM_LOCKONFAULT on an
-> >>>arbitrary range of memory - mlock() for lock-on-fault.  It's a
-> >>>shame that mlock() didn't take a `mode' argument.  Perhaps we
-> >>>should add such a syscall - that would make the mmap flag unneeded
-> >>>but I suppose it should be kept for symmetry.
-> >>
-> >>Do you want such a system call as part of this set?  I would need some
-> >>time to make sure I had thought through all the possible corners one
-> >>could get into with such a call, so it would delay a V3 quite a bit.
-> >>Otherwise I can send a V3 out immediately.
-> >
-> >I think the way to look at this is to pretend that mm/mlock.c doesn't
-> >exist and ask "how should we design these features".
-> >
-> >And that would be:
-> >
-> >- mmap() takes a `flags' argument: MAP_LOCKED|MAP_LOCKONFAULT.
->=20
-> Note that the semantic of MAP_LOCKED can be subtly surprising:
->=20
-> "mlock(2) fails if the memory range cannot get populated to guarantee
-> that no future major faults will happen on the range.
-> mmap(MAP_LOCKED) on the other hand silently succeeds even if the
-> range was populated only
-> partially."
->=20
-> ( from http://marc.info/?l=3Dlinux-mm&m=3D143152790412727&w=3D2 )
->=20
-> So MAP_LOCKED can silently behave like MAP_LOCKONFAULT. While
-> MAP_LOCKONFAULT doesn't suffer from such problem, I wonder if that's
-> sufficient reason not to extend mmap by new mlock() flags that can
-> be instead applied to the VMA after mmapping, using the proposed
-> mlock2() with flags. So I think instead we could deprecate
-> MAP_LOCKED more prominently. I doubt the overhead of calling the
-> extra syscall matters here?
-
-We could talk about retiring the MAP_LOCKED flag but I suspect that
-would get significantly more pushback than adding a new mmap flag.
-
-Likely that the overhead does not matter in most cases, but presumably
-there are cases where it does (as we have a MAP_LOCKED flag today).
-Even with the proposed new system calls I think we should have the
-MAP_LOCKONFAULT for parity with MAP_LOCKED.
-
->=20
-> >- mlock() takes a `flags' argument.  Presently that's
-> >   MLOCK_LOCKED|MLOCK_LOCKONFAULT.
-> >
-> >- munlock() takes a `flags' arument.  MLOCK_LOCKED|MLOCK_LOCKONFAULT
-> >   to specify which flags are being cleared.
-> >
-> >- mlockall() and munlockall() ditto.
-> >
-> >
-> >IOW, LOCKED and LOCKEDONFAULT are treated identically and independently.
-> >
-> >Now, that's how we would have designed all this on day one.  And I
-> >think we can do this now, by adding new mlock2() and munlock2()
-> >syscalls.  And we may as well deprecate the old mlock() and munlock(),
-> >not that this matters much.
-> >
-> >*should* we do this?  I'm thinking "yes" - it's all pretty simple
-> >boilerplate and wrappers and such, and it gets the interface correct,
-> >and extensible.
->=20
-> If the new LOCKONFAULT functionality is indeed desired (I haven't
-> still decided myself) then I agree that would be the cleanest way.
-
-Do you disagree with the use cases I have listed or do you think there
-is a better way of addressing those cases?
-
->=20
-> >What do others think?
-
---tsOsTdHNUZQcU9Ye
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVfuSrAAoJELbVsDOpoOa9SqoP/32pn+LLrjk0r2GNhFZF26Ig
-182hz7lG8As2Y7a1N+mtpfGq0JmrMbaytwEcmI1BpgI64DNcNOUINEqqaWXNeEBX
-idyVOQ1jeGGxDGyHLDNGfC6zlWxKGYPiKaaifSb37+hIQhOxsmXQ8U1E3GVdnRXK
-g8uPlztYSH5WN7LluiIEPXN1IPs57ADkoupTmSKzU2C9nnEUVYt9AmOm2Gt49Gmu
-F5f8rMGwvoC7WJGI83Xha60W7Fcv4hRoZeud/dspTKJmPrPERQ7kvqgwfTPoDWN+
-IvuzwjPSSCKNZie3HzEG7ae3KASKfh2Yat1zqrKZvI1/q+OSNsn/X8VjPcORIgDz
-OhzUEkL/4tTv+1a007eoPQEYUNxdgY+ZghOX7iw7OBT5gApUPc4kzwcnjTmK0l8A
-FJj6sn627osTIVoVL8ScRRWhY3BgscRhwFW2tBpRUc8GacMYyevfNEpOvX8oh2bv
-zdfo70SgsjTVseJb7WOB3TSjoXBgPV/xU0cBnMQZhLnUzdXHjWwm4lYqwRiPJZpO
-nAn32DLqbBe4GG+PtThn8Es/uddWOrypGtEaYu7ToYz6qqrLtVeMS5UTmaAijnZK
-xwEU889kELmPEg5C4rrfv+ttLUnCMkwLWxD4/fSIaPYLiz3yVIGzlTfUnyEUt8/H
-ZxlwoAMcTlbg88oH6jKj
-=u99f
------END PGP SIGNATURE-----
-
---tsOsTdHNUZQcU9Ye--
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
