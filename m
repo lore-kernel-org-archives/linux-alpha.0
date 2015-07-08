@@ -1,31 +1,40 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH V3 0/5] Allow user to request memory to be locked on
- page fault
-Date: Wed, 8 Jul 2015 10:00:08 -0700
-Message-ID: <20150708100008.e8a000ec.akpm@linux-foundation.org>
+From: Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH V3 3/5] mm: mlock: Introduce VM_LOCKONFAULT and add
+ mlock flags to enable it
+Date: Wed, 8 Jul 2015 13:23:51 -0600
+Message-ID: <20150708132351.61c13db6@lwn.net>
 References: <1436288623-13007-1-git-send-email-emunson@akamai.com>
-	<20150707141613.f945c98279dcb71c9743d5f2@linux-foundation.org>
-	<20150708132302.GB4669@akamai.com>
+	<1436288623-13007-4-git-send-email-emunson@akamai.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <20150708132302.GB4669@akamai.com>
+In-Reply-To: <1436288623-13007-4-git-send-email-emunson@akamai.com>
 Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Eric B Munson <emunson@akamai.com>
-Cc: Shuah Khan <shuahkh@osg.samsung.com>, Michal Hocko <mhocko@suse.cz>, Michael Kerrisk <mtk.manpages@gmail.com>, Vlastimil Babka <vbabka@suse.cz>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.cz>, Vlastimil Babka <vbabka@suse.cz>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
 
-On Wed, 8 Jul 2015 09:23:02 -0400 Eric B Munson <emunson@akamai.com> wrote:
+On Tue,  7 Jul 2015 13:03:41 -0400
+Eric B Munson <emunson@akamai.com> wrote:
 
-> > I don't know whether these syscalls should be documented via new
-> > manpages, or if we should instead add them to the existing
-> > mlock/munlock/mlockall manpages.  Michael, could you please advise?
-> > 
-> 
-> Thanks for adding the series.  I owe you several updates (getting the
-> new syscall right for all architectures and a set of tests for the new
-> syscalls).  Would you prefer a new pair of patches or I update this set?
+> This patch introduces the ability to request that pages are not
+> pre-faulted, but are placed on the unevictable LRU when they are finally
+> faulted in.  This can be done area at a time via the
+> mlock2(MLOCK_ONFAULT) or the mlockall(MCL_ONFAULT) system calls.  These
+> calls can be undone via munlock2(MLOCK_ONFAULT) or
+> munlockall2(MCL_ONFAULT).
 
-It doesn't matter much.  I guess a full update will be more convenient
-at your end.
+Quick, possibly dumb question: I've been beating my head against these for
+a little bit, and I can't figure out what's supposed to happen in this
+case:
+
+	mlock2(addr, len, MLOCK_ONFAULT);
+	munlock2(addr, len, MLOCK_LOCKED);
+
+It looks to me like it will clear VM_LOCKED without actually unlocking any
+pages.  Is that the intended result?
+
+Thanks,
+
+jon
