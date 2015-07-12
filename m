@@ -1,89 +1,53 @@
-From: Eric B Munson <emunson-JqFfY2XvxFXQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH V3 3/5] mm: mlock: Introduce VM_LOCKONFAULT and add mlock
- flags to enable it
-Date: Fri, 10 Jul 2015 12:19:48 -0400
-Message-ID: <20150710161948.GF4669@akamai.com>
-References: <1436288623-13007-1-git-send-email-emunson@akamai.com>
- <1436288623-13007-4-git-send-email-emunson@akamai.com>
- <20150708132351.61c13db6@lwn.net>
- <20150708203456.GC4669@akamai.com>
- <20150708151750.75e65859@lwn.net>
- <20150709184635.GE4669@akamai.com>
- <20150710101118.5d04d627@lwn.net>
+From: Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 0/3] IRQ trivial clarifications
+Date: Sun, 12 Jul 2015 17:01:45 -0500
+Message-ID: <20150712215559.7166.33068.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="B0nZA57HJSoPbsHY"
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=akamai.com; s=a1;
-	t=1436545205; bh=KNQwI4yHOEhrBMIfRM2sftRDSJJJj8jeEMxLQKZdaxc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qR+QFX50tIm4s4O92Z2+0IgBpPHr9JH8PbP9BXG3pPnI5jjRLUD1HTAz1iJ8snN3k
-	 2pI5fagFkfUNwwvKtW4ucgTX7B3yEjhi9S/1yMFDVhGmAW8xNA43PucrlQgct01O7h
-	 cLrzbiWT+VmJUICRJF0D7lAt47kxKUVE5PN/Hs/A=
-Content-Disposition: inline
-In-Reply-To: <20150710101118.5d04d627-T1hC0tSOHrs@public.gmane.org>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20120113;
+        h=subject:to:from:cc:date:message-id:user-agent:mime-version
+         :content-type:content-transfer-encoding;
+        bh=vm+llnLKuJ98kWsRukKf4ELJz+mj1f+Wk9P4dgdlL2A=;
+        b=JFUmISTSl80ujcZafLRQnswcfIhluszmB64GDxvBcLsyFhu0ukEZcZQ3DK7G7X4ce6
+         1YCjVPeOY/KlftBkce7YCBO4vXcsBf0kB8V4cmuMFvMBId8m2Uq6qQWFoxTcV9fYYueq
+         ylZWt2mwsdcBiPheFiOMgP5zY1mH7FLxg3bl1HNnUnu/e8+JpJ7jO1bon2DCg4VMQ/jl
+         2WbDp1bYnTFLOZWC+mwnBEs2vemeKRLGFp5MYvEkIHwnaT6daLoleX3WFLiJSV9gKW9z
+         nRqXqk5X1ZcO+GwybMXiHF7Qtj5DKr1nP64BMmc1v38xtVlapAU1ki3bwk6QDbVMJD9L
+         gBQQ==
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>
-Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Michal Hocko <mhocko-AlSwsSmVLrQ@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-am33-list@redhat.com, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-parisc@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org, x86@kernel.org, linuxppc-dev@lists.ozlabs.org
+
+These don't fix anything at all.  But they might make code understanding
+and debugging slightly easier.
+
+---
+
+Bjorn Helgaas (3):
+      x86, irq: Rename VECTOR_UNDEFINED and VECTOR_RETRIGGERED to IRQ_*
+      x86, irq: Clarify "No irq handler" message
+      IRQ: Print "unexpected IRQ" messages consistently across architectures
 
 
---B0nZA57HJSoPbsHY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, 10 Jul 2015, Jonathan Corbet wrote:
-
-> On Thu, 9 Jul 2015 14:46:35 -0400
-> Eric B Munson <emunson-JqFfY2XvxFXQT0dZR+AlfA@public.gmane.org> wrote:
->=20
-> > > One other question...if I call mlock2(MLOCK_ONFAULT) on a range that
-> > > already has resident pages, I believe that those pages will not be lo=
-cked
-> > > until they are reclaimed and faulted back in again, right?  I suspect=
- that
-> > > could be surprising to users. =20
-> >=20
-> > That is the case.  I am looking into what it would take to find only the
-> > present pages in a range and lock them, if that is the behavior that is
-> > preferred I can include it in the updated series.
->=20
-> For whatever my $0.02 is worth, I think that should be done.  Otherwise
-> the mlock2() interface is essentially nondeterministic; you'll never
-> really know if a specific page is locked or not.
->=20
-> Thanks,
->=20
-> jon
-
-Okay, I likely won't have the new set out today then.  This change is
-more invasive.  IIUC, I need an equivalent to __get_user_page() skips
-pages which are not present instead of faulting in and the call chain to
-get to it.  Unless there is an easier way that I am missing.
-
-Eric
-
---B0nZA57HJSoPbsHY
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVn/CkAAoJELbVsDOpoOa9fc8QAIYPJoEtJnOGLcp6XvlbR0qD
-EHm5hYg6euX6IzBeU/n1N4DZEv/6AHxxj33+oWf/0SvA7JpsvIZeCsy58KoiZzkO
-1z8xIe4ErMaaA4rb8O096V176BNouwx50PXJdPazalmkeWT6KFmgcLYhVLGJAFkW
-m5em8mli28pJiSRilOCcAffiHvt8+ThcCMqLqAKlQwz2AlvIcJQR8fBp59rmRE6r
-c4fYHulmiZHSsLbmvs3XoC1ChdgjUtloN7VEeDDs2Q9V3De0Vw7AzInIbW+7zwaL
-B+FnQmRpDvTcthu64eFo0cB+GBUfXSCIt+1Nugzl+Zir6N6hGPJemoEX2XzzNDnO
-L3M0uDFGR2RXyLLTfLsTFQfCLMpxtSz8QFM9/yDzQVntENCfEAainCWjaJLxSLsV
-yBPZxXiEdLgxTCFoo5hX/RL2tmge3x3WNnqReHEP9dt0r4UvxXxGOnlQk2I8TUgg
-fINo4V8a92DG4McWbhzqKofewDYrvY+rJ3I8jW2QC4QttTO8wJwycAurfhe0pv1M
-Jk9Exv6mn9JmQ7SxYQqOqz4nu92x6WsEbSaT0Syt0IFJYj4xcVUup/npgJKB9oDn
-7RXjXvHTRAUm4D+6PPW2ECmwHMWIcs/WpHoiKt3GrP3jkh1rqpXImXOagRpv/4kf
-+6n7EoyLk21P33MtY3g6
-=Tkn9
------END PGP SIGNATURE-----
-
---B0nZA57HJSoPbsHY--
+ arch/alpha/kernel/irq.c            |    2 +-
+ arch/blackfin/kernel/irqchip.c     |    2 +-
+ arch/c6x/kernel/irq.c              |    2 +-
+ arch/ia64/kernel/irq.c             |    2 +-
+ arch/m68k/include/asm/hardirq.h    |    2 +-
+ arch/mips/kernel/irq.c             |    2 +-
+ arch/mn10300/kernel/irq.c          |    2 +-
+ arch/parisc/include/asm/hardirq.h  |    2 +-
+ arch/powerpc/include/asm/hardirq.h |    2 +-
+ arch/s390/include/asm/hardirq.h    |    2 +-
+ arch/sh/kernel/irq.c               |    2 +-
+ arch/tile/kernel/irq.c             |    2 +-
+ arch/x86/include/asm/hw_irq.h      |    4 ++--
+ arch/x86/kernel/apic/vector.c      |   14 +++++++-------
+ arch/x86/kernel/irq.c              |   19 +++++++++----------
+ arch/x86/kernel/irqinit.c          |    4 ++--
+ include/asm-generic/hardirq.h      |    2 +-
+ 17 files changed, 33 insertions(+), 34 deletions(-)
