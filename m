@@ -1,101 +1,44 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: [PATCH 01/23] alpha/time: Migrate to new 'set-state' interface
-Date: Thu, 16 Jul 2015 16:56:13 +0530
-Message-ID: <cf58aab697e42e20563c848901ef601dd4898879.1437044517.git.viresh.kumar@linaro.org>
-References: <cover.1437044517.git.viresh.kumar@linaro.org>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <cover.1437044517.git.viresh.kumar@linaro.org>
-In-Reply-To: <cover.1437044517.git.viresh.kumar@linaro.org>
-References: <cover.1437044517.git.viresh.kumar@linaro.org>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH 1/3] x86, irq: Rename VECTOR_UNDEFINED and VECTOR_RETRIGGERED
+ to IRQ_*
+Date: Fri, 17 Jul 2015 16:06:54 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1507171558010.18576@nanos>
+References: <20150712215559.7166.33068.stgit@bhelgaas-glaptop2.roam.corp.google.com> <20150712220154.7166.48327.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Mime-Version: 1.0
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20150712220154.7166.48327.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Thomas Gleixner <tglx@linutronix.de>, Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: linaro-kernel@lists.linaro.org, linux-kernel@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Christoph Lameter <cl@linux.com>, linux-alpha@vger.kernel.org, Tejun Heo <tj@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-am33-list@redhat.com, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-parisc@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org, x86@kernel.org, linuxppc-dev@lists.ozlabs.org
 
-Migrate alpha driver to the new 'set-state' interface provided by
-clockevents core, the earlier 'set-mode' interface is marked obsolete
-now.
+On Sun, 12 Jul 2015, Bjorn Helgaas wrote:
 
-This also enables us to implement callbacks for new states of clockevent
-devices, for example: ONESHOT_STOPPED.
+> The per-cpu vector_irq[] table is indexed by CPU vector numbers, and each
+> entry contains an IRQ number.
+> 
+> Rename the special values VECTOR_UNDEFINED and VECTOR_RETRIGGERED to
+> IRQ_UNDEFINED and IRQ_RETRIGGERED to indicate that they are in the IRQ
+> number space, not the CPU vector number space.
 
-rtc clockevent device wasn't doing anything in set-mode and so its
-set-state callbacks aren't implemented.
+Makes some sense, but OTOH vector_irq actually reflects the vector
+state not the irq number state. The fact that we store the Linux irq
+number in vector_irq is just an implementation detail.
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Christoph Lameter <cl@linux.com>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
----
- arch/alpha/kernel/time.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+VECTOR_UNDEFINED is certainly a misnomer; that should be VECTOR_UNUSED
 
-diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
-index 643a9dcdf093..5b6202a825ff 100644
---- a/arch/alpha/kernel/time.c
-+++ b/arch/alpha/kernel/time.c
-@@ -93,7 +93,7 @@ rtc_timer_interrupt(int irq, void *dev)
- 	struct clock_event_device *ce = &per_cpu(cpu_ce, cpu);
- 
- 	/* Don't run the hook for UNUSED or SHUTDOWN.  */
--	if (likely(ce->mode == CLOCK_EVT_MODE_PERIODIC))
-+	if (likely(clockevent_state_periodic(ce)))
- 		ce->event_handler(ce);
- 
- 	if (test_irq_work_pending()) {
-@@ -104,13 +104,6 @@ rtc_timer_interrupt(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
- 
--static void
--rtc_ce_set_mode(enum clock_event_mode mode, struct clock_event_device *ce)
--{
--	/* The mode member of CE is updated in generic code.
--	   Since we only support periodic events, nothing to do.  */
--}
--
- static int
- rtc_ce_set_next_event(unsigned long evt, struct clock_event_device *ce)
- {
-@@ -129,7 +122,6 @@ init_rtc_clockevent(void)
- 		.features = CLOCK_EVT_FEAT_PERIODIC,
- 		.rating = 100,
- 		.cpumask = cpumask_of(cpu),
--		.set_mode = rtc_ce_set_mode,
- 		.set_next_event = rtc_ce_set_next_event,
- 	};
- 
-@@ -161,12 +153,12 @@ static struct clocksource qemu_cs = {
-  * The QEMU alarm as a clock_event_device primitive.
-  */
- 
--static void
--qemu_ce_set_mode(enum clock_event_mode mode, struct clock_event_device *ce)
-+static int qemu_ce_shutdown(struct clock_event_device *ce)
- {
- 	/* The mode member of CE is updated for us in generic code.
- 	   Just make sure that the event is disabled.  */
- 	qemu_set_alarm_abs(0);
-+	return 0;
- }
- 
- static int
-@@ -197,7 +189,9 @@ init_qemu_clockevent(void)
- 		.features = CLOCK_EVT_FEAT_ONESHOT,
- 		.rating = 400,
- 		.cpumask = cpumask_of(cpu),
--		.set_mode = qemu_ce_set_mode,
-+		.set_state_shutdown = qemu_ce_shutdown,
-+		.set_state_oneshot = qemu_ce_shutdown,
-+		.tick_resume = qemu_ce_shutdown,
- 		.set_next_event = qemu_ce_set_next_event,
- 	};
- 
--- 
-2.4.0
+VECTOR_RETRIGGERED is pretty accurate. In the case we retrigger an
+interrupt, we merily use the Linux irq number to figure out which
+vector to kick. And after we retriggered it, we lose the association
+to the Linux irq number completely.
+
+That said, I'm working on storing the irq descriptor pointer in
+vector_irq instead of the irq number, which has the advantage that we
+avoid the lookup of the irq descriptor in the interrupt hotpath.
+
+Thanks,
+
+	tglx
 
