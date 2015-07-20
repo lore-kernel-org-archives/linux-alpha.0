@@ -1,72 +1,68 @@
 From: Yijing Wang <wangyijing@huawei.com>
-Subject: [PATCH part3 v12 03/10] PCI: Remove declaration for pci_get_new_domain_nr()
-Date: Mon, 20 Jul 2015 20:01:11 +0800
-Message-ID: <1437393678-4077-4-git-send-email-wangyijing@huawei.com>
+Subject: [PATCH part3 v12 06/10] PCI: Make pci_host_bridge hold sysdata in drvdata
+Date: Mon, 20 Jul 2015 20:01:14 +0800
+Message-ID: <1437393678-4077-7-git-send-email-wangyijing@huawei.com>
 References: <1437393678-4077-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1437393678-4077-1-git-send-email-wangyijing@huawei.com>
-Sender: linux-m68k-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, linux-xtensa@linux-xtensa.org, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-pci_get_new_domain_nr() is only used in drivers/pci/pci.c,
-remove the declaration in include/linux/pci.h.
+Now platform specific sysdata is saved in pci_bus,
+and pcibios_root_bridge_prepare() need to know
+the sysdata. Later, we would move pcibios_root_bridge_prepare()
+prior to root bus creation, so we need to make
+pci_host_bridge hold sysdata.
 
 Signed-off-by: Yijing Wang <wangyijing@huawei.com>
 ---
- drivers/pci/pci.c   |    4 ++--
- include/linux/pci.h |    3 ---
- 2 files changed, 2 insertions(+), 5 deletions(-)
+ arch/ia64/pci/pci.c |    2 +-
+ arch/x86/pci/acpi.c |    2 +-
+ drivers/pci/probe.c |    1 +
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 0008c95..59032e2 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -4476,14 +4476,14 @@ static void pci_no_domains(void)
- }
- 
- #ifdef CONFIG_PCI_DOMAINS
-+#ifdef CONFIG_PCI_DOMAINS_GENERIC
- static atomic_t __domain_nr = ATOMIC_INIT(-1);
- 
--int pci_get_new_domain_nr(void)
-+static int pci_get_new_domain_nr(void)
- {
- 	return atomic_inc_return(&__domain_nr);
- }
- 
--#ifdef CONFIG_PCI_DOMAINS_GENERIC
- void pci_bus_assign_domain_nr(struct pci_bus *bus, struct device *parent)
- {
- 	static int use_dt_domains = -1;
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index f7e4204..4524592 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1319,12 +1319,10 @@ void pci_cfg_access_unlock(struct pci_dev *dev);
-  */
- #ifdef CONFIG_PCI_DOMAINS
- extern int pci_domains_supported;
--int pci_get_new_domain_nr(void);
- #else
- enum { pci_domains_supported = 0 };
- static inline int pci_domain_nr(struct pci_bus *bus) { return 0; }
- static inline int pci_proc_domain(struct pci_bus *bus) { return 0; }
--static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
- #endif /* CONFIG_PCI_DOMAINS */
- 
- /*
-@@ -1445,7 +1443,6 @@ static inline struct pci_dev *pci_get_bus_and_slot(unsigned int bus,
- 
- static inline int pci_domain_nr(struct pci_bus *bus) { return 0; }
- static inline struct pci_dev *pci_dev_get(struct pci_dev *dev) { return NULL; }
--static inline int pci_get_new_domain_nr(void) { return -ENOSYS; }
- 
- #define dev_is_pci(d) (false)
- #define dev_is_pf(d) (false)
+diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
+index 67ffe1f..8f79852 100644
+--- a/arch/ia64/pci/pci.c
++++ b/arch/ia64/pci/pci.c
+@@ -485,7 +485,7 @@ int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
+ 	 * that case.
+ 	 */
+ 	if (!bridge->dev.parent) {
+-		struct pci_controller *controller = bridge->bus->sysdata;
++		struct pci_controller *controller = dev_get_drvdata(&bridge->dev);
+ 		ACPI_COMPANION_SET(&bridge->dev, controller->companion);
+ 	}
+ 	return 0;
+diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+index 629fc3b..38ce348 100644
+--- a/arch/x86/pci/acpi.c
++++ b/arch/x86/pci/acpi.c
+@@ -502,7 +502,7 @@ int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
+ 	 * that case.
+ 	 */
+ 	if (!bridge->dev.parent) {
+-		struct pci_sysdata *sd = bridge->bus->sysdata;
++		struct pci_sysdata *sd = dev_get_drvdata(&bridge->dev);
+ 		ACPI_COMPANION_SET(&bridge->dev, sd->companion);
+ 	}
+ 	return 0;
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 0eba126..0ae8bf2 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1967,6 +1967,7 @@ struct pci_bus *pci_create_root_bus(struct device *parent, int domain,
+ 	bridge->domain = domain;
+ 	bridge->dev.parent = parent;
+ 	bridge->dev.release = pci_release_host_bridge_dev;
++	dev_set_drvdata(&bridge->dev, sysdata);
+ 	dev_set_name(&bridge->dev, "pci%04x:%02x", pci_domain_nr(b), bus);
+ 	error = pcibios_root_bridge_prepare(bridge);
+ 	if (error) {
 -- 
 1.7.1
