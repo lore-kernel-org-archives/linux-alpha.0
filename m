@@ -1,56 +1,153 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH 1/3] x86, irq: Rename VECTOR_UNDEFINED and
- VECTOR_RETRIGGERED to IRQ_*
-Date: Fri, 17 Jul 2015 12:50:05 -0500
-Message-ID: <CAErSpo6HFN1i2cMwrLyFoYGrvaX-QFeVT_bJyRo9wpFLwma49g@mail.gmail.com>
-References: <20150712215559.7166.33068.stgit@bhelgaas-glaptop2.roam.corp.google.com>
- <20150712220154.7166.48327.stgit@bhelgaas-glaptop2.roam.corp.google.com> <alpine.DEB.2.11.1507171558010.18576@nanos>
+From: Yijing Wang <wangyijing@huawei.com>
+Subject: [PATCH part3 v12 07/10] PCI: Create pci host bridge prior to root bus
+Date: Mon, 20 Jul 2015 20:01:15 +0800
+Message-ID: <1437393678-4077-8-git-send-email-wangyijing@huawei.com>
+References: <1437393678-4077-1-git-send-email-wangyijing@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20120113;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc:content-type;
-        bh=nWqtWfHmlMNzefTieAte5HbGcQ4lYrvLfeBYpjuJw4I=;
-        b=FXuVNqcrtyfFnuwyR7Ap6lE+ZAjsi8eRRrwa3MrygGmHLIh/Lehfuih4iCaaiAhmJs
-         Z/isAKAbkrSAxqAOjViTT9VEDyMPeiyOWLSnD/by1kfzcrsBzZ39E6cBFJlA2ZyFK4AM
-         lBMDI4g9cyTsCn92ipbMwul28p5VVn5ZmG7YCKMLd05OwZiUsJ2YlvFxSqgom3WShs6L
-         K7EoX9nwconFiF25ChYdqDmtyKaC4+wso2lkazSIu2mSmDwUCL5tSVc6Q8QKiCoooEHR
-         l+cpPkGQhuV5HX2oD8Je9lP1lAFRm5TyDgmFUCkDoV0i0r9xcYFVtbdFmv6FkVfQwpnX
-         3yDA==
-In-Reply-To: <alpine.DEB.2.11.1507171558010.18576@nanos>
-Sender: linux-parisc-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <1437393678-4077-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Linux-Arch <linux-arch@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, linux-am33-list@redhat.com, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, linux-parisc@vger.kernel.org, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, adi-buildroot-devel@lists.sourceforge.net, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org, "x86@kernel.org" <x86@kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, linux-xtensa@linux-xtensa.org, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Yijing Wang <wangyijing@huawei.com>
 
-On Fri, Jul 17, 2015 at 9:06 AM, Thomas Gleixner <tglx@linutronix.de> wrote:
-> On Sun, 12 Jul 2015, Bjorn Helgaas wrote:
->
->> The per-cpu vector_irq[] table is indexed by CPU vector numbers, and each
->> entry contains an IRQ number.
->>
->> Rename the special values VECTOR_UNDEFINED and VECTOR_RETRIGGERED to
->> IRQ_UNDEFINED and IRQ_RETRIGGERED to indicate that they are in the IRQ
->> number space, not the CPU vector number space.
->
-> Makes some sense, but OTOH vector_irq actually reflects the vector
-> state not the irq number state. The fact that we store the Linux irq
-> number in vector_irq is just an implementation detail.
->
-> VECTOR_UNDEFINED is certainly a misnomer; that should be VECTOR_UNUSED
->
-> VECTOR_RETRIGGERED is pretty accurate. In the case we retrigger an
-> interrupt, we merily use the Linux irq number to figure out which
-> vector to kick. And after we retriggered it, we lose the association
-> to the Linux irq number completely.
->
-> That said, I'm working on storing the irq descriptor pointer in
-> vector_irq instead of the irq number, which has the advantage that we
-> avoid the lookup of the irq descriptor in the interrupt hotpath.
+Pci_host_bridge hold the domain number, we need
+to assign domain number prior to root bus creation,
+because root bus need to know the domain number
+to check whether it's alreay exist. Also it's
+preparation for separating pci_host_bridge creation
+from pci_create_root_bus().
 
-OK, I'll abandon this.  Thanks for taking a look!
+Signed-off-by: Yijing Wang <wangyijing@huawei.com>
+---
+ drivers/pci/probe.c |   58 +++++++++++++++++++++++++++-----------------------
+ 1 files changed, 31 insertions(+), 27 deletions(-)
 
-Bjorn
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 0ae8bf2..cb525aa 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -515,7 +515,7 @@ static void pci_release_host_bridge_dev(struct device *dev)
+ 	kfree(bridge);
+ }
+ 
+-static struct pci_host_bridge *pci_alloc_host_bridge(struct pci_bus *b)
++static struct pci_host_bridge *pci_alloc_host_bridge(void)
+ {
+ 	struct pci_host_bridge *bridge;
+ 
+@@ -524,7 +524,6 @@ static struct pci_host_bridge *pci_alloc_host_bridge(struct pci_bus *b)
+ 		return NULL;
+ 
+ 	INIT_LIST_HEAD(&bridge->windows);
+-	bridge->bus = b;
+ 	return bridge;
+ }
+ 
+@@ -1938,48 +1937,53 @@ struct pci_bus *pci_create_root_bus(struct device *parent, int domain,
+ {
+ 	int error;
+ 	struct pci_host_bridge *bridge;
+-	struct pci_bus *b, *b2;
++	struct pci_bus *b;
+ 	struct resource_entry *window, *n;
+ 	struct resource *res;
+ 	resource_size_t offset;
+ 	char bus_addr[64];
+ 	char *fmt;
+ 
+-	b = pci_alloc_bus(NULL);
+-	if (!b)
++	bridge = pci_alloc_host_bridge();
++	if (!bridge)
+ 		return NULL;
+ 
+-	b->sysdata = sysdata;
+-	b->ops = ops;
+-	b->number = b->busn_res.start = bus;
+-	pci_bus_assign_domain_nr(b, parent);
+-	b2 = pci_find_bus(pci_domain_nr(b), bus);
+-	if (b2) {
++	bridge->dev.parent = parent;
++	pci_host_assign_domain_nr(bridge, domain);
++
++	b = pci_find_bus(bridge->domain, bus);
++	if (b) {
+ 		/* If we already got to this bus through a different bridge, ignore it */
+-		dev_dbg(&b2->dev, "bus already known\n");
+-		goto err_out;
++		dev_dbg(&b->dev, "bus already known\n");
++		kfree(bridge);
++		return NULL;
+ 	}
+ 
+-	bridge = pci_alloc_host_bridge(b);
+-	if (!bridge)
+-		goto err_out;
+-
+-	bridge->domain = domain;
+-	bridge->dev.parent = parent;
+ 	bridge->dev.release = pci_release_host_bridge_dev;
+ 	dev_set_drvdata(&bridge->dev, sysdata);
+-	dev_set_name(&bridge->dev, "pci%04x:%02x", pci_domain_nr(b), bus);
++	dev_set_name(&bridge->dev, "pci%04x:%02x", bridge->domain, bus);
+ 	error = pcibios_root_bridge_prepare(bridge);
+ 	if (error) {
+ 		kfree(bridge);
+-		goto err_out;
++		return NULL;
+ 	}
+ 
+ 	error = device_register(&bridge->dev);
+ 	if (error) {
+ 		put_device(&bridge->dev);
+-		goto err_out;
++		return NULL;
+ 	}
++
++	b = pci_alloc_bus(NULL);
++	if (!b)
++		goto unregister_host;
++
++	bridge->bus = b;
++	b->sysdata = sysdata;
++	b->ops = ops;
++	b->number = b->busn_res.start = bus;
++	pci_bus_assign_domain_nr(b, parent);
++
+ 	b->bridge = get_device(&bridge->dev);
+ 	device_enable_async_suspend(b->bridge);
+ 	pci_set_bus_of_node(b);
+@@ -1992,11 +1996,11 @@ struct pci_bus *pci_create_root_bus(struct device *parent, int domain,
+ 	dev_set_name(&b->dev, "%04x:%02x", pci_domain_nr(b), bus);
+ 	error = pcibios_root_bus_prepare(bridge);
+ 	if (error)
+-		goto class_dev_reg_err;
++		goto free_bus;
+ 
+ 	error = device_register(&b->dev);
+ 	if (error)
+-		goto class_dev_reg_err;
++		goto free_bus;
+ 
+ 	pcibios_add_bus(b);
+ 
+@@ -2036,11 +2040,11 @@ struct pci_bus *pci_create_root_bus(struct device *parent, int domain,
+ 
+ 	return b;
+ 
+-class_dev_reg_err:
++free_bus:
++	kfree(b);
+ 	put_device(&bridge->dev);
++unregister_host:
+ 	device_unregister(&bridge->dev);
+-err_out:
+-	kfree(b);
+ 	return NULL;
+ }
+ EXPORT_SYMBOL_GPL(pci_create_root_bus);
+-- 
+1.7.1
