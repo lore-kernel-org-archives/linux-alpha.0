@@ -1,56 +1,220 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH V3 3/5] mm: mlock: Introduce VM_LOCKONFAULT and add mlock
- flags to enable it
-Date: Tue, 21 Jul 2015 17:35:59 +0200
-Message-ID: <55AE66DF.1060600@suse.cz>
-References: <1436288623-13007-1-git-send-email-emunson@akamai.com> <1436288623-13007-4-git-send-email-emunson@akamai.com> <20150708132351.61c13db6@lwn.net> <20150708203456.GC4669@akamai.com> <20150708151750.75e65859@lwn.net> <20150709184635.GE4669@akamai.com> <20150710101118.5d04d627@lwn.net> <20150710161948.GF4669@akamai.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <20150710161948.GF4669@akamai.com>
-Sender: linux-parisc-owner@vger.kernel.org
+From: Eric B Munson <emunson@akamai.com>
+Subject: [PATCH V4 5/6] mm: mmap: Add mmap flag to request VM_LOCKONFAULT
+Date: Tue, 21 Jul 2015 15:59:40 -0400
+Message-ID: <1437508781-28655-6-git-send-email-emunson@akamai.com>
+References: <1437508781-28655-1-git-send-email-emunson@akamai.com>
+Return-path: <owner-linux-mm@kvack.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=akamai.com; s=a1;
+	t=1437508782; bh=ycuDQMKSBEwgPDs6bbb1rAfM3wCQt8M2zC6BNcNuwck=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=obVpHI45GrNefARpMc/3QA2XRTaWICmjGymmjaOzsiRwdSCq6hD3DRkReLKdrDC9/
+	 a0gNgwgxRZ+WPTgixTOaUZq0KWZhpg6JHlwaydhpfvzdQ8fioXcbv+gBuIw1kNSd5p
+	 anu6x9eoDrTC/YOzw0qiumd4F0OvRq13uSUvzeD4=
+In-Reply-To: <1437508781-28655-1-git-send-email-emunson@akamai.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Eric B Munson <emunson@akamai.com>, Jonathan Corbet <corbet@lwn.net>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.cz>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Eric B Munson <emunson@akamai.com>, Michal Hocko <mhocko@suse.cz>, Vlastimil Babka <vbabka@suse.cz>, Paul Gortmaker <paul.gortmaker@windriver.com>, Chris Metcalf <cmetcalf@ezchip.com>, Guenter Roeck <linux@roeck-us.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
 
-On 07/10/2015 06:19 PM, Eric B Munson wrote:
-> On Fri, 10 Jul 2015, Jonathan Corbet wrote:
->
->> On Thu, 9 Jul 2015 14:46:35 -0400
->> Eric B Munson <emunson@akamai.com> wrote:
->>
->>>> One other question...if I call mlock2(MLOCK_ONFAULT) on a range that
->>>> already has resident pages, I believe that those pages will not be locked
->>>> until they are reclaimed and faulted back in again, right?  I suspect that
->>>> could be surprising to users.
->>>
->>> That is the case.  I am looking into what it would take to find only the
->>> present pages in a range and lock them, if that is the behavior that is
->>> preferred I can include it in the updated series.
->>
->> For whatever my $0.02 is worth, I think that should be done.  Otherwise
->> the mlock2() interface is essentially nondeterministic; you'll never
->> really know if a specific page is locked or not.
->>
->> Thanks,
->>
->> jon
->
-> Okay, I likely won't have the new set out today then.  This change is
-> more invasive.  IIUC, I need an equivalent to __get_user_page() skips
-> pages which are not present instead of faulting in and the call chain to
-> get to it.  Unless there is an easier way that I am missing.
+The cost of faulting in all memory to be locked can be very high when
+working with large mappings.  If only portions of the mapping will be
+used this can incur a high penalty for locking.
 
-IIRC having page PageMlocked and put on unevictable list isn't necessary 
-to prevent it from being reclaimed. It's just to prevent it from being 
-scanned for reclaim in the first place. When attempting to unmap the 
-page, vma flags are still checked, see the code in try_to_unmap_one(). 
-You should probably extend the checks to your new VM_ flag as it is done 
-for VM_LOCKED and then you shouldn't need to walk the pages to mlock 
-them (although it would probably still be better for the accounting 
-accuracy).
+Now that we have the new VMA flag for the locked but not present state,
+expose it as an mmap option like MAP_LOCKED -> VM_LOCKED.
 
-> Eric
->
+Signed-off-by: Eric B Munson <emunson@akamai.com>
+Cc: Michal Hocko <mhocko@suse.cz>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Chris Metcalf <cmetcalf@ezchip.com>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: linux-mm@kvack.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-api@vger.kernel.org
+---
+Changes from V3:
+ Add missing MAP_LOCKONFAULT to tile
 
+ arch/alpha/include/uapi/asm/mman.h   | 1 +
+ arch/mips/include/uapi/asm/mman.h    | 1 +
+ arch/parisc/include/uapi/asm/mman.h  | 1 +
+ arch/powerpc/include/uapi/asm/mman.h | 1 +
+ arch/sparc/include/uapi/asm/mman.h   | 1 +
+ arch/tile/include/uapi/asm/mman.h    | 1 +
+ arch/xtensa/include/uapi/asm/mman.h  | 1 +
+ include/linux/mman.h                 | 3 ++-
+ include/uapi/asm-generic/mman.h      | 1 +
+ kernel/events/core.c                 | 2 ++
+ mm/mmap.c                            | 6 ++++--
+ 11 files changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
+index 77ae8db..3f80ca4 100644
+--- a/arch/alpha/include/uapi/asm/mman.h
++++ b/arch/alpha/include/uapi/asm/mman.h
+@@ -30,6 +30,7 @@
+ #define MAP_NONBLOCK	0x40000		/* do not block on IO */
+ #define MAP_STACK	0x80000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x100000	/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x200000	/* Lock pages after they are faulted in, do not prefault */
+ 
+ #define MS_ASYNC	1		/* sync memory asynchronously */
+ #define MS_SYNC		2		/* synchronous memory sync */
+diff --git a/arch/mips/include/uapi/asm/mman.h b/arch/mips/include/uapi/asm/mman.h
+index 71ed81d..905c1ea 100644
+--- a/arch/mips/include/uapi/asm/mman.h
++++ b/arch/mips/include/uapi/asm/mman.h
+@@ -48,6 +48,7 @@
+ #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+ #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+ 
+ /*
+  * Flags for msync
+diff --git a/arch/parisc/include/uapi/asm/mman.h b/arch/parisc/include/uapi/asm/mman.h
+index c0871ce..c4695f6 100644
+--- a/arch/parisc/include/uapi/asm/mman.h
++++ b/arch/parisc/include/uapi/asm/mman.h
+@@ -24,6 +24,7 @@
+ #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+ #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+ 
+ #define MS_SYNC		1		/* synchronous memory sync */
+ #define MS_ASYNC	2		/* sync memory asynchronously */
+diff --git a/arch/powerpc/include/uapi/asm/mman.h b/arch/powerpc/include/uapi/asm/mman.h
+index f93f7eb..40a3fda 100644
+--- a/arch/powerpc/include/uapi/asm/mman.h
++++ b/arch/powerpc/include/uapi/asm/mman.h
+@@ -31,5 +31,6 @@
+ #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+ #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x80000		/* Lock pages after they are faulted in, do not prefault */
+ 
+ #endif /* _UAPI_ASM_POWERPC_MMAN_H */
+diff --git a/arch/sparc/include/uapi/asm/mman.h b/arch/sparc/include/uapi/asm/mman.h
+index 8cd2ebc..3d74ab7 100644
+--- a/arch/sparc/include/uapi/asm/mman.h
++++ b/arch/sparc/include/uapi/asm/mman.h
+@@ -26,6 +26,7 @@
+ #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+ #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x8000		/* Lock pages after they are faulted in, do not prefault */
+ 
+ 
+ #endif /* _UAPI__SPARC_MMAN_H__ */
+diff --git a/arch/tile/include/uapi/asm/mman.h b/arch/tile/include/uapi/asm/mman.h
+index acdd013..800e5c3 100644
+--- a/arch/tile/include/uapi/asm/mman.h
++++ b/arch/tile/include/uapi/asm/mman.h
+@@ -29,6 +29,7 @@
+ #define MAP_DENYWRITE	0x0800		/* ETXTBSY */
+ #define MAP_EXECUTABLE	0x1000		/* mark it as an executable */
+ #define MAP_HUGETLB	0x4000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+ 
+ 
+ /*
+diff --git a/arch/xtensa/include/uapi/asm/mman.h b/arch/xtensa/include/uapi/asm/mman.h
+index 5725a15..689e1f2 100644
+--- a/arch/xtensa/include/uapi/asm/mman.h
++++ b/arch/xtensa/include/uapi/asm/mman.h
+@@ -55,6 +55,7 @@
+ #define MAP_NONBLOCK	0x20000		/* do not block on IO */
+ #define MAP_STACK	0x40000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x80000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x100000	/* Lock pages after they are faulted in, do not prefault */
+ #ifdef CONFIG_MMAP_ALLOW_UNINITIALIZED
+ # define MAP_UNINITIALIZED 0x4000000	/* For anonymous mmap, memory could be
+ 					 * uninitialized */
+diff --git a/include/linux/mman.h b/include/linux/mman.h
+index 16373c8..437264b 100644
+--- a/include/linux/mman.h
++++ b/include/linux/mman.h
+@@ -86,7 +86,8 @@ calc_vm_flag_bits(unsigned long flags)
+ {
+ 	return _calc_vm_trans(flags, MAP_GROWSDOWN,  VM_GROWSDOWN ) |
+ 	       _calc_vm_trans(flags, MAP_DENYWRITE,  VM_DENYWRITE ) |
+-	       _calc_vm_trans(flags, MAP_LOCKED,     VM_LOCKED    );
++	       _calc_vm_trans(flags, MAP_LOCKED,     VM_LOCKED    ) |
++	       _calc_vm_trans(flags, MAP_LOCKONFAULT,VM_LOCKONFAULT);
+ }
+ 
+ unsigned long vm_commit_limit(void);
+diff --git a/include/uapi/asm-generic/mman.h b/include/uapi/asm-generic/mman.h
+index 555aab0..007b784 100644
+--- a/include/uapi/asm-generic/mman.h
++++ b/include/uapi/asm-generic/mman.h
+@@ -12,6 +12,7 @@
+ #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+ #define MAP_STACK	0x20000		/* give out an address that is best suited for process/thread stacks */
+ #define MAP_HUGETLB	0x40000		/* create a huge page mapping */
++#define MAP_LOCKONFAULT	0x80000		/* Lock pages after they are faulted in, do not prefault */
+ 
+ /* Bits [26:31] are reserved, see mman-common.h for MAP_HUGETLB usage */
+ 
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index d3dae34..53f312c 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -5816,6 +5816,8 @@ static void perf_event_mmap_event(struct perf_mmap_event *mmap_event)
+ 			flags |= MAP_EXECUTABLE;
+ 		if (vma->vm_flags & VM_LOCKED)
+ 			flags |= MAP_LOCKED;
++		if (vma->vm_flags & VM_LOCKONFAULT)
++			flags |= MAP_LOCKONFAULT;
+ 		if (vma->vm_flags & VM_HUGETLB)
+ 			flags |= MAP_HUGETLB;
+ 
+diff --git a/mm/mmap.c b/mm/mmap.c
+index de89be4..54715b6 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1301,7 +1301,7 @@ unsigned long do_mmap_pgoff(struct file *file, unsigned long addr,
+ 	vm_flags = calc_vm_prot_bits(prot) | calc_vm_flag_bits(flags) |
+ 			mm->def_flags | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
+ 
+-	if (flags & MAP_LOCKED)
++	if (flags & (MAP_LOCKED | MAP_LOCKONFAULT))
+ 		if (!can_do_mlock())
+ 			return -EPERM;
+ 
+@@ -2678,12 +2678,14 @@ SYSCALL_DEFINE5(remap_file_pages, unsigned long, start, unsigned long, size,
+ 		flags |= MAP_LOCKED;
+ 		drop_lock_flag = VM_LOCKED;
+ 	} else if (vma->vm_flags & VM_LOCKONFAULT) {
++		flags |= MAP_LOCKONFAULT;
+ 		drop_lock_flag = VM_LOCKONFAULT;
+ 	}
+ 
++
+ 	if (drop_lock_flag)
+ 		/* drop PG_Mlocked flag for over-mapped range */
+-		munlock_vma_pages_range(vma, start, start + size, VM_LOCKED);
++		munlock_vma_pages_range(vma, start, start + size, drop_lock_flag);
+ 
+ 	file = get_file(vma->vm_file);
+ 	ret = do_mmap_pgoff(vma->vm_file, start, size,
+-- 
+1.9.1
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
