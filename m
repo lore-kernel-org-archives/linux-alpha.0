@@ -1,108 +1,310 @@
 From: Eric B Munson <emunson@akamai.com>
-Subject: Re: [PATCH V4 2/6] mm: mlock: Add new mlock, munlock, and munlockall
- system calls
-Date: Fri, 24 Jul 2015 11:53:13 -0400
-Message-ID: <20150724155313.GF9203@akamai.com>
-References: <1437508781-28655-1-git-send-email-emunson@akamai.com>
- <1437508781-28655-3-git-send-email-emunson@akamai.com>
- <20150721134441.d69e4e1099bd43e56835b3c5@linux-foundation.org>
- <1437528316.16792.7.camel@ellerman.id.au>
- <20150722141501.GA3203@akamai.com>
- <20150723065830.GA5919@linux-mips.org>
- <20150724143936.GE9203@akamai.com>
- <55B25DDE.8090107@roeck-us.net>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="iBwuxWUsK/REspAd"
+Subject: [PATCH V5 4/7] mm: mlock: Add mlock flags to enable VM_LOCKONFAULT usage
+Date: Fri, 24 Jul 2015 17:28:42 -0400
+Message-ID: <1437773325-8623-5-git-send-email-emunson@akamai.com>
+References: <1437773325-8623-1-git-send-email-emunson@akamai.com>
 Return-path: <owner-linux-mm@kvack.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=akamai.com; s=a1;
-	t=1437753193; bh=YrqvdTMhyV6/ZHTtE7486Ouq5yvEwkGkzJWMFEfli4s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kzPkpmo8LhRwqBfb4gxeqYPqG1c5t12YajyeeK/YoHJxQ4Uykdsj06NMH9zEVP4OB
-	 ZYkyBbwm+C7GLGAS2TWAzOY98CvRbruioeN9xYVkcP8OI1FWuXoRbf76zZFkcoEDyF
-	 1tvL9FDXkyazWSPEzjCQokna2Vofy8mvsX02EHSE=
-Content-Disposition: inline
-In-Reply-To: <55B25DDE.8090107@roeck-us.net>
+	t=1437773373; bh=2ZvTafMSlkuOO03m3OJiLtKJxJIyzOgMHkg5+UaHOO4=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=eWmiSXSitEBSGPGawHL3f4TnHLRl71LRwFW3E7WiHEofs2gRTUlHylkvdMWxQjFSq
+	 pn1QJ/G66N1CNkhEtesRKTDhqDAOEl+bfwq+CKaVqDGqRWIEDRyCHiyLLi7nGUfaEZ
+	 EGxSTJ8/+2VqI19z/oGiGJjK0oL/ZWxmpigbyZpY=
+In-Reply-To: <1437773325-8623-1-git-send-email-emunson@akamai.com>
 Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Ralf Baechle <ralf@linux-mips.org>, Michael Ellerman <mpe@ellerman.id.au>, Andrew Morton <akpm@linux-foundation.org>, linux-mips@linux-mips.org, linux-m68k@vger.kernel.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Michal Hocko <mhocko@suse.cz>, linux-mm@kvack.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>, linux-am33-list@redhat.com, Geert Uytterhoeven <geert@linux-m68k.org>, Vlastimil Babka <vbabka@suse.cz>, linux-xtensa@linux-xtensa.org, linux-s390@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, linux-arm-kernel@lists.infradead.org, linux-cris-kernel@axis.com, linux-parisc@vger.kernel.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.or
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Eric B Munson <emunson@akamai.com>, Michal Hocko <mhocko@suse.cz>, Vlastimil Babka <vbabka@suse.cz>, Jonathan Corbet <corbet@lwn.net>, "Kirill A. Shutemov" <kirill@shutemov.name>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org, linux-mm@kvack.org
 
+The previous patch introduced a flag that specified pages in a VMA
+should be placed on the unevictable LRU, but they should not be made
+present when the area is created.  This patch adds the ability to set
+this state via the new mlock system calls.
 
---iBwuxWUsK/REspAd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+We add MLOCK_ONFAULT for mlock2 and MCL_ONFAULT for mlockall.
+MLOCK_ONFAULT will set the VM_LOCKONFAULT flag as well as the VM_LOCKED
+flag for the target region.  MCL_CURRENT and MCL_ONFAULT are used to
+lock current mappings.  With MCL_CURRENT all pages are made present and
+with MCL_ONFAULT they are locked when faulted in.  When specified with
+MCL_FUTURE all new mappings will be marked with VM_LOCKONFAULT.
 
-On Fri, 24 Jul 2015, Guenter Roeck wrote:
+Currently, mlockall() clears all VMA lock flags and then sets the
+requested flags.  For instance, if a process has MCL_FUTURE and
+MCL_CURRENT set, but they want to clear MCL_FUTURE this would be
+accomplished by calling mlockall(MCL_CURRENT).  This still holds with
+the introduction of MCL_ONFAULT.  Each call to mlockall() resets all
+VMA flags to the values specified in the current call.  The new mlock2
+system call behaves in the same way.  If a region is locked with
+MLOCK_ONFAULT and a user wants to force it to be populated now, a second
+call to mlock2(MLOCK_LOCKED) will accomplish this.
 
-> On 07/24/2015 07:39 AM, Eric B Munson wrote:
-> >On Thu, 23 Jul 2015, Ralf Baechle wrote:
-> >
-> >>On Wed, Jul 22, 2015 at 10:15:01AM -0400, Eric B Munson wrote:
-> >>
-> >>>>
-> >>>>You haven't wired it up properly on powerpc, but I haven't mentioned =
-it because
-> >>>>I'd rather we did it.
-> >>>>
-> >>>>cheers
-> >>>
-> >>>It looks like I will be spinning a V5, so I will drop all but the x86
-> >>>system calls additions in that version.
-> >>
-> >>The MIPS bits are looking good however, so
-> >>
-> >>Acked-by: Ralf Baechle <ralf@linux-mips.org>
-> >>
-> >>With my ack, will you keep them or maybe carry them as a separate patch?
-> >
-> >I will keep the MIPS additions as a separate patch in the series, though
-> >I have dropped two of the new syscalls after some discussion.  So I will
-> >not include your ack on the new patch.
-> >
-> >Eric
-> >
->=20
-> Hi Eric,
->=20
-> next-20150724 still has some failures due to this patch set. Are those
-> being looked at (I know parisc builds fail, but there may be others) ?
->=20
-> Thanks,
-> Guenter
+munlock() will unconditionally clear both vma flags.  munlockall()
+unconditionally clears for VMA flags on all VMAs and in the
+mm->def_flags field.
 
-Guenter,
+Signed-off-by: Eric B Munson <emunson@akamai.com>
+Cc: Michal Hocko <mhocko@suse.cz>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-api@vger.kernel.org
+Cc: linux-mm@kvack.org
+---
+Changes from V4:
+* Split addition of VMA flag
 
-Yes, the next respin will drop all new arch syscall entries except
-x86[_64] and MIPS.  I will leave it up to arch maintainers to add the
-entries.
+Changes from V3:
+* Do extensive search for VM_LOCKED and ensure that VM_LOCKONFAULT is also handled
+ where appropriate
+ arch/alpha/include/uapi/asm/mman.h   |  2 ++
+ arch/mips/include/uapi/asm/mman.h    |  2 ++
+ arch/parisc/include/uapi/asm/mman.h  |  2 ++
+ arch/powerpc/include/uapi/asm/mman.h |  2 ++
+ arch/sparc/include/uapi/asm/mman.h   |  2 ++
+ arch/tile/include/uapi/asm/mman.h    |  3 +++
+ arch/xtensa/include/uapi/asm/mman.h  |  2 ++
+ include/uapi/asm-generic/mman.h      |  2 ++
+ mm/mlock.c                           | 41 ++++++++++++++++++++++++------------
+ 9 files changed, 45 insertions(+), 13 deletions(-)
 
-Eric
-
---iBwuxWUsK/REspAd
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVsl9pAAoJELbVsDOpoOa9EEUP/2M1Xsm8+njDOkkKbV0gBjBz
-b3xOA+mBrdWvRUHtbhky0XhLX9AQkuolm5Lqel2ldbkHMF2DQtqvQxMCpWJ25dJW
-oR5fnuh+arfoOsnEJAJ4Z47Qs/jiVAWHB3jupCxexg5zVZL2BIomII5Ewk00waGw
-zHjUYeLYPTn6IE1MWV1Mlbbx+kGCDRz8HgFq8b3WbrgH4pPzqaeSf3wxMnIYVKuL
-D/vyOdBOE0dW0Co4GdA3iqZ0JGSKknZUP/F3xB/z67wCkIjh133cUI3oDL/4MKbU
-vSac0mG99uhmMPii1kWKyF3OVx3flbHo4IPFDAaUfU1O1OAXHvjezBgL3eLEV3xl
-M/BZQZMEGNZjs6+c8oIrFuEvKDc424HRj7bKbBRvv7rXp3oaksyvuJ3mpEJyEhep
-O+pSxjZc5J9QaXer+Rdh3yX/hjM/dpnTsUPXTIgPlJcIS8gSc5GxrCOe1hQD7u08
-lIxdAs3sI5Tn6iwrjDRq1ySz2NZ2LkfBlliZ41xxt8/kzHvPoieeep2DRDJnpqJG
-nyQItitQpzs0vB7UMJV+yrbfSAR+lupvVdfyXjk8fsYPMNPBhWHQKZ6Ky6euTkYs
-/BWwZ2nvEjopIBEdrXJ97jJcjsAstFCnCm8V75JOX9KznfD0OUNCB6bg9UpUYQfX
-IV8UQYGPDzfVm060LKYD
-=SPSa
------END PGP SIGNATURE-----
-
---iBwuxWUsK/REspAd--
+diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
+index ec72436..77ae8db 100644
+--- a/arch/alpha/include/uapi/asm/mman.h
++++ b/arch/alpha/include/uapi/asm/mman.h
+@@ -37,8 +37,10 @@
+ 
+ #define MCL_CURRENT	 8192		/* lock all currently mapped pages */
+ #define MCL_FUTURE	16384		/* lock all additions to address space */
++#define MCL_ONFAULT	32768		/* lock all pages that are faulted in */
+ 
+ #define MLOCK_LOCKED	0x01		/* Lock and populate the specified range */
++#define MLOCK_ONFAULT	0x02		/* Lock pages in range after they are faulted in, do not prefault */
+ 
+ #define MADV_NORMAL	0		/* no further special treatment */
+ #define MADV_RANDOM	1		/* expect random page references */
+diff --git a/arch/mips/include/uapi/asm/mman.h b/arch/mips/include/uapi/asm/mman.h
+index 67c1cdf..71ed81d 100644
+--- a/arch/mips/include/uapi/asm/mman.h
++++ b/arch/mips/include/uapi/asm/mman.h
+@@ -61,11 +61,13 @@
+  */
+ #define MCL_CURRENT	1		/* lock all current mappings */
+ #define MCL_FUTURE	2		/* lock all future mappings */
++#define MCL_ONFAULT	4		/* lock all pages that are faulted in */
+ 
+ /*
+  * Flags for mlock
+  */
+ #define MLOCK_LOCKED	0x01		/* Lock and populate the specified range */
++#define MLOCK_ONFAULT	0x02		/* Lock pages in range after they are faulted in, do not prefault */
+ 
+ #define MADV_NORMAL	0		/* no further special treatment */
+ #define MADV_RANDOM	1		/* expect random page references */
+diff --git a/arch/parisc/include/uapi/asm/mman.h b/arch/parisc/include/uapi/asm/mman.h
+index daab994..c0871ce 100644
+--- a/arch/parisc/include/uapi/asm/mman.h
++++ b/arch/parisc/include/uapi/asm/mman.h
+@@ -31,8 +31,10 @@
+ 
+ #define MCL_CURRENT	1		/* lock all current mappings */
+ #define MCL_FUTURE	2		/* lock all future mappings */
++#define MCL_ONFAULT	4		/* lock all pages that are faulted in */
+ 
+ #define MLOCK_LOCKED	0x01		/* Lock and populate the specified range */
++#define MLOCK_ONFAULT	0x02		/* Lock pages in range after they are faulted in, do not prefault */
+ 
+ #define MADV_NORMAL     0               /* no further special treatment */
+ #define MADV_RANDOM     1               /* expect random page references */
+diff --git a/arch/powerpc/include/uapi/asm/mman.h b/arch/powerpc/include/uapi/asm/mman.h
+index 189e85f..f93f7eb 100644
+--- a/arch/powerpc/include/uapi/asm/mman.h
++++ b/arch/powerpc/include/uapi/asm/mman.h
+@@ -22,8 +22,10 @@
+ 
+ #define MCL_CURRENT     0x2000          /* lock all currently mapped pages */
+ #define MCL_FUTURE      0x4000          /* lock all additions to address space */
++#define MCL_ONFAULT	0x8000		/* lock all pages that are faulted in */
+ 
+ #define MLOCK_LOCKED	0x01		/* Lock and populate the specified range */
++#define MLOCK_ONFAULT	0x02		/* Lock pages in range after they are faulted in, do not prefault */
+ 
+ #define MAP_POPULATE	0x8000		/* populate (prefault) pagetables */
+ #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+diff --git a/arch/sparc/include/uapi/asm/mman.h b/arch/sparc/include/uapi/asm/mman.h
+index 13d51be..8cd2ebc 100644
+--- a/arch/sparc/include/uapi/asm/mman.h
++++ b/arch/sparc/include/uapi/asm/mman.h
+@@ -17,8 +17,10 @@
+ 
+ #define MCL_CURRENT     0x2000          /* lock all currently mapped pages */
+ #define MCL_FUTURE      0x4000          /* lock all additions to address space */
++#define MCL_ONFAULT	0x8000		/* lock all pages that are faulted in */
+ 
+ #define MLOCK_LOCKED	0x01		/* Lock and populate the specified range */
++#define MLOCK_ONFAULT	0x02		/* Lock pages in range after they are faulted in, do not prefault */
+ 
+ #define MAP_POPULATE	0x8000		/* populate (prefault) pagetables */
+ #define MAP_NONBLOCK	0x10000		/* do not block on IO */
+diff --git a/arch/tile/include/uapi/asm/mman.h b/arch/tile/include/uapi/asm/mman.h
+index f69ce48..acdd013 100644
+--- a/arch/tile/include/uapi/asm/mman.h
++++ b/arch/tile/include/uapi/asm/mman.h
+@@ -36,11 +36,14 @@
+  */
+ #define MCL_CURRENT	1		/* lock all current mappings */
+ #define MCL_FUTURE	2		/* lock all future mappings */
++#define MCL_ONFAULT	4		/* lock all pages that are faulted in */
++
+ 
+ /*
+  * Flags for mlock
+  */
+ #define MLOCK_LOCKED	0x01		/* Lock and populate the specified range */
++#define MLOCK_ONFAULT	0x02		/* Lock pages in range after they are faulted in, do not prefault */
+ 
+ 
+ #endif /* _ASM_TILE_MMAN_H */
+diff --git a/arch/xtensa/include/uapi/asm/mman.h b/arch/xtensa/include/uapi/asm/mman.h
+index 11f354f..5725a15 100644
+--- a/arch/xtensa/include/uapi/asm/mman.h
++++ b/arch/xtensa/include/uapi/asm/mman.h
+@@ -74,11 +74,13 @@
+  */
+ #define MCL_CURRENT	1		/* lock all current mappings */
+ #define MCL_FUTURE	2		/* lock all future mappings */
++#define MCL_ONFAULT	4		/* lock all pages that are faulted in */
+ 
+ /*
+  * Flags for mlock
+  */
+ #define MLOCK_LOCKED	0x01		/* Lock and populate the specified range */
++#define MLOCK_ONFAULT	0x02		/* Lock pages in range after they are faulted in, do not prefault */
+ 
+ #define MADV_NORMAL	0		/* no further special treatment */
+ #define MADV_RANDOM	1		/* expect random page references */
+diff --git a/include/uapi/asm-generic/mman.h b/include/uapi/asm-generic/mman.h
+index 242436b..555aab0 100644
+--- a/include/uapi/asm-generic/mman.h
++++ b/include/uapi/asm-generic/mman.h
+@@ -17,7 +17,9 @@
+ 
+ #define MCL_CURRENT	1		/* lock all current mappings */
+ #define MCL_FUTURE	2		/* lock all future mappings */
++#define MCL_ONFAULT	4		/* lock all pages that are faulted in */
+ 
+ #define MLOCK_LOCKED	0x01		/* Lock and populate the specified range */
++#define MLOCK_ONFAULT	0x02		/* Lock pages in range after they are faulted in, do not prefault */
+ 
+ #endif /* __ASM_GENERIC_MMAN_H */
+diff --git a/mm/mlock.c b/mm/mlock.c
+index e98bdd4..3a99c80 100644
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -506,7 +506,8 @@ static int mlock_fixup(struct vm_area_struct *vma, struct vm_area_struct **prev,
+ 
+ 	if (newflags == vma->vm_flags || (vma->vm_flags & VM_SPECIAL) ||
+ 	    is_vm_hugetlb_page(vma) || vma == get_gate_vma(current->mm))
+-		goto out;	/* don't set VM_LOCKED,  don't count */
++		/* don't set VM_LOCKED or VM_LOCKONFAULT and don't count */
++		goto out;
+ 
+ 	pgoff = vma->vm_pgoff + ((start - vma->vm_start) >> PAGE_SHIFT);
+ 	*prev = vma_merge(mm, *prev, start, end, newflags, vma->anon_vma,
+@@ -576,7 +577,7 @@ static int apply_vma_lock_flags(unsigned long start, size_t len,
+ 		prev = vma;
+ 
+ 	for (nstart = start ; ; ) {
+-		vm_flags_t newflags = vma->vm_flags & ~VM_LOCKED;
++		vm_flags_t newflags = vma->vm_flags & ~(VM_LOCKED | VM_LOCKONFAULT);
+ 		newflags |= flags;
+ 
+ 		/* Here we know that  vma->vm_start <= nstart < vma->vm_end. */
+@@ -645,9 +646,13 @@ SYSCALL_DEFINE2(mlock, unsigned long, start, size_t, len)
+ SYSCALL_DEFINE3(mlock2, unsigned long, start, size_t, len, int, flags)
+ {
+ 	vm_flags_t vm_flags = VM_LOCKED;
+-	if (!flags || (flags & ~(MLOCK_LOCKED)))
++	if (!flags || (flags & ~(MLOCK_LOCKED | MLOCK_ONFAULT)) ||
++	    flags == (MLOCK_LOCKED | MLOCK_ONFAULT))
+ 		return -EINVAL;
+ 
++	if (flags & MLOCK_ONFAULT)
++		vm_flags |= VM_LOCKONFAULT;
++
+ 	return do_mlock(start, len, vm_flags);
+ }
+ 
+@@ -668,21 +673,30 @@ SYSCALL_DEFINE2(munlock, unsigned long, start, size_t, len)
+ static int apply_mlockall_flags(int flags)
+ {
+ 	struct vm_area_struct * vma, * prev = NULL;
++	vm_flags_t to_add = 0;
+ 
+-	if (flags & MCL_FUTURE)
++	current->mm->def_flags &= ~(VM_LOCKED | VM_LOCKONFAULT);
++	if (flags & MCL_FUTURE) {
+ 		current->mm->def_flags |= VM_LOCKED;
+-	else
+-		current->mm->def_flags &= ~VM_LOCKED;
+ 
+-	if (flags == MCL_FUTURE)
+-		goto out;
++		if (flags == MCL_FUTURE)
++			goto out;
++
++		if (flags & MCL_ONFAULT)
++			current->mm->def_flags |= VM_LOCKONFAULT;
++	}
++
++	if (flags & (MCL_ONFAULT | MCL_CURRENT)) {
++		to_add |= VM_LOCKED;
++		if (flags & MCL_ONFAULT)
++			to_add |= VM_LOCKONFAULT;
++	}
+ 
+ 	for (vma = current->mm->mmap; vma ; vma = prev->vm_next) {
+ 		vm_flags_t newflags;
+ 
+-		newflags = vma->vm_flags & ~VM_LOCKED;
+-		if (flags & MCL_CURRENT)
+-			newflags |= VM_LOCKED;
++		newflags = vma->vm_flags & ~(VM_LOCKED | VM_LOCKONFAULT);
++		newflags |= to_add;
+ 
+ 		/* Ignore errors */
+ 		mlock_fixup(vma, &prev, vma->vm_start, vma->vm_end, newflags);
+@@ -697,7 +711,8 @@ SYSCALL_DEFINE1(mlockall, int, flags)
+ 	unsigned long lock_limit;
+ 	int ret = -EINVAL;
+ 
+-	if (!flags || (flags & ~(MCL_CURRENT | MCL_FUTURE)))
++	if (!flags || (flags & ~(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT)) ||
++	    (flags & (MCL_CURRENT | MCL_ONFAULT)) == (MCL_CURRENT | MCL_ONFAULT))
+ 		goto out;
+ 
+ 	ret = -EPERM;
+@@ -717,7 +732,7 @@ SYSCALL_DEFINE1(mlockall, int, flags)
+ 	    capable(CAP_IPC_LOCK))
+ 		ret = apply_mlockall_flags(flags);
+ 	up_write(&current->mm->mmap_sem);
+-	if (!ret && (flags & MCL_CURRENT))
++	if (!ret && (flags & (MCL_CURRENT | MCL_ONFAULT)))
+ 		mm_populate(0, TASK_SIZE);
+ out:
+ 	return ret;
+-- 
+1.9.1
 
 --
 To unsubscribe, send a message with 'unsubscribe linux-mm' in
