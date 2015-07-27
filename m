@@ -1,36 +1,59 @@
-From: "Kirill A. Shutemov" <kirill@shutemov.name>
-Subject: Re: [PATCH V5 5/7] mm: mmap: Add mmap flag to request VM_LOCKONFAULT
-Date: Mon, 27 Jul 2015 10:31:29 +0300
-Message-ID: <20150727073129.GE11657@node.dhcp.inet.fi>
+From: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH V5 0/7] Allow user to request memory to be locked on page
+ fault
+Date: Mon, 27 Jul 2015 11:08:15 +0200
+Message-ID: <55B5F4FF.9070604@suse.cz>
 References: <1437773325-8623-1-git-send-email-emunson@akamai.com>
- <1437773325-8623-6-git-send-email-emunson@akamai.com>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1437773325-8623-6-git-send-email-emunson@akamai.com>
-Sender: linux-arch-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Eric B Munson <emunson@akamai.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.cz>, Vlastimil Babka <vbabka@suse.cz>, Paul Gortmaker <paul.gortmaker@windriver.com>, Chris Metcalf <cmetcalf@ezchip.com>, Guenter Roeck <linux@roeck-us.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1437773325-8623-1-git-send-email-emunson@akamai.com>
+Sender: owner-linux-mm@kvack.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Eric B Munson <emunson@akamai.com>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Shuah Khan <shuahkh@osg.samsung.com>, Michal Hocko <mhocko@suse.cz>, Michael Kerrisk <mtk.manpages@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Ralf Baechle <ralf@linux-mips.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
 
-On Fri, Jul 24, 2015 at 05:28:43PM -0400, Eric B Munson wrote:
-> The cost of faulting in all memory to be locked can be very high when
-> working with large mappings.  If only portions of the mapping will be
-> used this can incur a high penalty for locking.
-> 
-> Now that we have the new VMA flag for the locked but not present state,
-> expose it as an mmap option like MAP_LOCKED -> VM_LOCKED.
+On 07/24/2015 11:28 PM, Eric B Munson wrote:
 
-As I mentioned before, I don't think this interface is justified.
+...
 
-MAP_LOCKED has known issues[1]. The MAP_LOCKED problem is not necessary
-affects MAP_LOCKONFAULT, but still.
+> Changes from V4:
+> Drop all architectures for new sys call entries except x86[_64] and MIPS
+> Drop munlock2 and munlockall2
+> Make VM_LOCKONFAULT a modifier to VM_LOCKED only to simplify book keeping
+> Adjust tests to match
 
-Let's not add new interface unless it's demonstrably useful.
+Hi, thanks for considering my suggestions. Well, I do hope there were 
+correct as API's are hard and I'm no API expert. But since API's are 
+also impossible to change after merging, I'm sorry but I'll keep 
+pestering for one last thing. Thanks again for persisting, I do believe 
+it's for the good thing!
 
-[1] http://lkml.kernel.org/g/20150114095019.GC4706@dhcp22.suse.cz
+The thing is that I still don't like that one has to call 
+mlock2(MLOCK_LOCKED) to get the equivalent of the old mlock(). Why is 
+that flag needed? We have two modes of locking now, and v5 no longer 
+treats them separately in vma flags. But having two flags gives us four 
+possible combinations, so two of them would serve nothing but to confuse 
+the programmer IMHO. What will mlock2() without flags do? What will 
+mlock2(MLOCK_LOCKED | MLOCK_ONFAULT) do? (Note I haven't studied the 
+code yet, as having agreed on the API should come first. But I did 
+suggest documenting these things more thoroughly too...)
+OK I checked now and both cases above seem to return EINVAL.
 
--- 
- Kirill A. Shutemov
+So about the only point I see in MLOCK_LOCKED flag is parity with 
+MAP_LOCKED for mmap(). But as Kirill said (and me before as well) 
+MAP_LOCKED is broken anyway so we shouldn't twist the rest just of the 
+API to keep the poor thing happier in its misery.
+
+Also note that AFAICS you don't have MCL_LOCKED for mlockall() so 
+there's no full parity anyway. But please don't fix that by adding 
+MCL_LOCKED :)
+
+Thanks!
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
