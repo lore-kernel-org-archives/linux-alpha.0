@@ -1,48 +1,33 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH -next] alpha: lib: Export __delay
-Date: Tue,  4 Aug 2015 23:57:32 -0700
-Message-ID: <1438757852-24298-1-git-send-email-linux@roeck-us.net>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=roeck-us.net; s=default;
-	h=Message-Id:Date:Subject:Cc:To:From; bh=sqRdr4GwIVWvNBlUGCyDmnh1cPlKeRWsJmvN8hFAo1s=;
-	b=XCr1sBJ5r4qqZgMcpwGqWbArEoC5lTtRKQPVW5u/QgD78nS6oO9Xl6J0fveW4oYHBD/5NT7DqzwRESI7yvVxBM8bqfoqLcWVtX4sl9urEBgAuTtzZsmzqxrII6I4jQlkLX8L7jrlBMKHbvDJUsmjY7TtA2g3En2LdXx0yAW1tSg=;
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH V6 2/6] mm: mlock: Add new mlock system call
+Date: Thu, 6 Aug 2015 16:00:33 +0200
+Message-ID: <55C36881.8050301@suse.cz>
+References: <1438184575-10537-1-git-send-email-emunson@akamai.com>
+ <1438184575-10537-3-git-send-email-emunson@akamai.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, Radha Mohan Chintakuntla <rchintakuntla@cavium.com>, David Daney <david.daney@cavium.com>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1438184575-10537-3-git-send-email-emunson@akamai.com>
+Sender: owner-linux-mm@kvack.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Eric B Munson <emunson@akamai.com>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Michal Hocko <mhocko@suse.cz>, Heiko Carstens <heiko.carstens@de.ibm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Catalin Marinas <catalin.marinas@arm.com>, Stephen Rothwell <sfr@canb.auug.org.au>, Guenter Roeck <linux@roeck-us.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-cris-kernel@axis.com, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, linux-mm@kvack.org
 
-__delay is exported by most architectures, and may be used in modules.
-Since it is not exported for alpha, alpha builds currently fail
-to build in -next with
+On 07/29/2015 05:42 PM, Eric B Munson wrote:
+> With the refactored mlock code, introduce a new system call for mlock.
+> The new call will allow the user to specify what lock states are being
+> added.  mlock2 is trivial at the moment, but a follow on patch will add
+> a new mlock state making it useful.
+>
+> Signed-off-by: Eric B Munson <emunson@akamai.com>
+> Cc: Michal Hocko <mhocko@suse.cz>
+> Cc: Vlastimil Babka <vbabka@suse.cz>
 
-ERROR: "__delay" [drivers/net/phy/mdio-octeon.ko] undefined!
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-if the offending driver is configured.
-
-Fixes: a6d678645210 ("net: mdio-octeon: Modify driver to work on both
-	ThunderX and Octeon")
-Cc: Radha Mohan Chintakuntla <rchintakuntla@cavium.com>
-Cc: David Daney <david.daney@cavium.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
- arch/alpha/lib/udelay.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/alpha/lib/udelay.c b/arch/alpha/lib/udelay.c
-index 69d52aa37bae..f2d81ff38aa6 100644
---- a/arch/alpha/lib/udelay.c
-+++ b/arch/alpha/lib/udelay.c
-@@ -30,6 +30,7 @@ __delay(int loops)
- 		"	bgt %0,1b"
- 		: "=&r" (tmp), "=r" (loops) : "1"(loops));
- }
-+EXPORT_SYMBOL(__delay);
- 
- #ifdef CONFIG_SMP
- #define LPJ	 cpu_data[smp_processor_id()].loops_per_jiffy
--- 
-2.1.4
-
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
