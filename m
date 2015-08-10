@@ -1,150 +1,102 @@
-From: Eric B Munson <emunson@akamai.com>
-Subject: [PATCH v7 2/6] mm: mlock: Add new mlock system call
-Date: Sun,  9 Aug 2015 01:22:52 -0400
-Message-ID: <1439097776-27695-3-git-send-email-emunson@akamai.com>
-References: <1439097776-27695-1-git-send-email-emunson@akamai.com>
-Return-path: <owner-linux-mm@kvack.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=akamai.com; s=a1;
-	t=1439097779; bh=pNMAXeaZeoCwyTgON0zTwcMEei9Z8C0j2Ld4eK2W9f8=;
-	l=4363; h=From:To:Cc:Date:In-Reply-To:References:From;
-	b=wJ281DuH1T36KCGPM8PRnbg6PxKSCtRkVkzgl4Gsh8CU8RUgZL0GjgPmAnUYIY2Nl
-	 Nz4HimQXdVbC1BhkKKY9DE3jatEl7GDMW2hQbYIR3OHlFtV5kSDFJcVPW1Q3Cfntr9
-	 gzRGRncJPdapU9GUDrVNafRBZZMASqiznhQ96jcU=
-In-Reply-To: <1439097776-27695-1-git-send-email-emunson@akamai.com>
-Sender: owner-linux-mm@kvack.org
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: [PATCH 59/74] alpha/time: Migrate to new 'set-state' interface
+Date: Mon, 10 Aug 2015 11:52:16 +0200
+Message-ID: <1439200352-26767-59-git-send-email-daniel.lezcano@linaro.org>
+References: <55C87382.4070309@linaro.org>
+ <1439200352-26767-1-git-send-email-daniel.lezcano@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1439200352-26767-1-git-send-email-daniel.lezcano@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Eric B Munson <emunson@akamai.com>, Michal Hocko <mhocko@suse.cz>, Vlastimil Babka <vbabka@suse.cz>, Heiko Carstens <heiko.carstens@de.ibm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Catalin Marinas <catalin.marinas@arm.com>, Stephen Rothwell <sfr@canb.auug.org.au>, Guenter Roeck <linux@roeck-us.net>, Andrea Arcangeli <aarcange@redhat.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-cris-kernel@axis.com, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, linux-mm@kvack.org
+To: mingo@kernel.org
+Cc: tglx@linutronix.de, linux-kernel@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Christoph Lameter <cl@linux.com>, linux-alpha@vger.kernel.org, Tejun Heo <tj@kernel.org>
 
-With the refactored mlock code, introduce a new system call for mlock.
-The new call will allow the user to specify what lock states are being
-added.  mlock2 is trivial at the moment, but a follow on patch will add
-a new mlock state making it useful.
+From: Viresh Kumar <viresh.kumar@linaro.org>
 
-Signed-off-by: Eric B Munson <emunson@akamai.com>
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
-Cc: Michal Hocko <mhocko@suse.cz>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
+Migrate alpha driver to the new 'set-state' interface provided by
+clockevents core, the earlier 'set-mode' interface is marked obsolete
+now.
+
+This also enables us to implement callbacks for new states of clockevent
+devices, for example: ONESHOT_STOPPED.
+
+rtc clockevent device wasn't doing anything in set-mode and so its
+set-state callbacks aren't implemented.
+
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Christoph Lameter <cl@linux.com>
 Cc: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: adi-buildroot-devel@lists.sourceforge.net
-Cc: linux-cris-kernel@axis.com
-Cc: linux-ia64@vger.kernel.org
-Cc: linux-m68k@lists.linux-m68k.org
-Cc: linux-am33-list@redhat.com
-Cc: linux-parisc@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-s390@vger.kernel.org
-Cc: linux-sh@vger.kernel.org
-Cc: sparclinux@vger.kernel.org
-Cc: linux-xtensa@linux-xtensa.org
-Cc: linux-api@vger.kernel.org
-Cc: linux-arch@vger.kernel.org
-Cc: linux-mm@kvack.org
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- arch/x86/entry/syscalls/syscall_32.tbl | 1 +
- arch/x86/entry/syscalls/syscall_64.tbl | 1 +
- include/linux/syscalls.h               | 2 ++
- include/uapi/asm-generic/unistd.h      | 4 +++-
- kernel/sys_ni.c                        | 1 +
- mm/mlock.c                             | 8 ++++++++
- 6 files changed, 16 insertions(+), 1 deletion(-)
+ arch/alpha/kernel/time.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
-index ef8187f..8e06da6 100644
---- a/arch/x86/entry/syscalls/syscall_32.tbl
-+++ b/arch/x86/entry/syscalls/syscall_32.tbl
-@@ -365,3 +365,4 @@
- 356	i386	memfd_create		sys_memfd_create
- 357	i386	bpf			sys_bpf
- 358	i386	execveat		sys_execveat			stub32_execveat
-+360	i386	mlock2			sys_mlock2
-diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
-index 9ef32d5..67601e7 100644
---- a/arch/x86/entry/syscalls/syscall_64.tbl
-+++ b/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -329,6 +329,7 @@
- 320	common	kexec_file_load		sys_kexec_file_load
- 321	common	bpf			sys_bpf
- 322	64	execveat		stub_execveat
-+324	common	mlock2			sys_mlock2
+diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
+index 643a9dc..5b6202a 100644
+--- a/arch/alpha/kernel/time.c
++++ b/arch/alpha/kernel/time.c
+@@ -93,7 +93,7 @@ rtc_timer_interrupt(int irq, void *dev)
+ 	struct clock_event_device *ce = &per_cpu(cpu_ce, cpu);
  
- #
- # x32-specific system call numbers start at 512 to avoid cache impact
-diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index b45c45b..56a3d59 100644
---- a/include/linux/syscalls.h
-+++ b/include/linux/syscalls.h
-@@ -884,4 +884,6 @@ asmlinkage long sys_execveat(int dfd, const char __user *filename,
- 			const char __user *const __user *argv,
- 			const char __user *const __user *envp, int flags);
+ 	/* Don't run the hook for UNUSED or SHUTDOWN.  */
+-	if (likely(ce->mode == CLOCK_EVT_MODE_PERIODIC))
++	if (likely(clockevent_state_periodic(ce)))
+ 		ce->event_handler(ce);
  
-+asmlinkage long sys_mlock2(unsigned long start, size_t len, int flags);
-+
- #endif
-diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
-index e016bd9..14a6013 100644
---- a/include/uapi/asm-generic/unistd.h
-+++ b/include/uapi/asm-generic/unistd.h
-@@ -709,9 +709,11 @@ __SYSCALL(__NR_memfd_create, sys_memfd_create)
- __SYSCALL(__NR_bpf, sys_bpf)
- #define __NR_execveat 281
- __SC_COMP(__NR_execveat, sys_execveat, compat_sys_execveat)
-+#define __NR_mlock2 282
-+__SYSCALL(__NR_mlock2, sys_mlock2)
- 
- #undef __NR_syscalls
--#define __NR_syscalls 282
-+#define __NR_syscalls 283
- 
- /*
-  * All syscalls below here should go away really,
-diff --git a/kernel/sys_ni.c b/kernel/sys_ni.c
-index 7995ef5..4818b71 100644
---- a/kernel/sys_ni.c
-+++ b/kernel/sys_ni.c
-@@ -193,6 +193,7 @@ cond_syscall(sys_mlock);
- cond_syscall(sys_munlock);
- cond_syscall(sys_mlockall);
- cond_syscall(sys_munlockall);
-+cond_syscall(sys_mlock2);
- cond_syscall(sys_mincore);
- cond_syscall(sys_madvise);
- cond_syscall(sys_mremap);
-diff --git a/mm/mlock.c b/mm/mlock.c
-index 5692ee5..3094f27 100644
---- a/mm/mlock.c
-+++ b/mm/mlock.c
-@@ -643,6 +643,14 @@ SYSCALL_DEFINE2(mlock, unsigned long, start, size_t, len)
- 	return do_mlock(start, len, VM_LOCKED);
+ 	if (test_irq_work_pending()) {
+@@ -104,13 +104,6 @@ rtc_timer_interrupt(int irq, void *dev)
+ 	return IRQ_HANDLED;
  }
  
-+SYSCALL_DEFINE3(mlock2, unsigned long, start, size_t, len, int, flags)
-+{
-+	if (flags)
-+		return -EINVAL;
-+
-+	return do_mlock(start, len, VM_LOCKED);
-+}
-+
- SYSCALL_DEFINE2(munlock, unsigned long, start, size_t, len)
+-static void
+-rtc_ce_set_mode(enum clock_event_mode mode, struct clock_event_device *ce)
+-{
+-	/* The mode member of CE is updated in generic code.
+-	   Since we only support periodic events, nothing to do.  */
+-}
+-
+ static int
+ rtc_ce_set_next_event(unsigned long evt, struct clock_event_device *ce)
  {
- 	int ret;
+@@ -129,7 +122,6 @@ init_rtc_clockevent(void)
+ 		.features = CLOCK_EVT_FEAT_PERIODIC,
+ 		.rating = 100,
+ 		.cpumask = cpumask_of(cpu),
+-		.set_mode = rtc_ce_set_mode,
+ 		.set_next_event = rtc_ce_set_next_event,
+ 	};
+ 
+@@ -161,12 +153,12 @@ static struct clocksource qemu_cs = {
+  * The QEMU alarm as a clock_event_device primitive.
+  */
+ 
+-static void
+-qemu_ce_set_mode(enum clock_event_mode mode, struct clock_event_device *ce)
++static int qemu_ce_shutdown(struct clock_event_device *ce)
+ {
+ 	/* The mode member of CE is updated for us in generic code.
+ 	   Just make sure that the event is disabled.  */
+ 	qemu_set_alarm_abs(0);
++	return 0;
+ }
+ 
+ static int
+@@ -197,7 +189,9 @@ init_qemu_clockevent(void)
+ 		.features = CLOCK_EVT_FEAT_ONESHOT,
+ 		.rating = 400,
+ 		.cpumask = cpumask_of(cpu),
+-		.set_mode = qemu_ce_set_mode,
++		.set_state_shutdown = qemu_ce_shutdown,
++		.set_state_oneshot = qemu_ce_shutdown,
++		.tick_resume = qemu_ce_shutdown,
+ 		.set_next_event = qemu_ce_set_next_event,
+ 	};
+ 
 -- 
 1.9.1
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
