@@ -1,84 +1,64 @@
-From: Boaz Harrosh <boaz-/8YdC2HfS5554TAoqtyWWQ@public.gmane.org>
-Subject: Re: RFC: prepare for struct scatterlist entries without page backing
-Date: Wed, 12 Aug 2015 15:42:47 +0300
-Message-ID: <55CB3F47.3000902@plexistor.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH 29/31] parisc: handle page-less SG entries
+Date: Wed, 12 Aug 2015 09:01:02 -0700
+Message-ID: <CA+55aFxsH9Lde7wqZi555vqfH2uxeQqC9cjeca9L6Wr=XpyzXA@mail.gmail.com>
 References: <1439363150-8661-1-git-send-email-hch@lst.de>
+	<1439363150-8661-30-git-send-email-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1439363150-8661-1-git-send-email-hch-jcswGhMUV9g@public.gmane.org>
-Sender: linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:sender:in-reply-to:references:date:message-id:subject
+         :from:to:cc:content-type;
+        bh=uE+jlzjQ6ahipSG8Nj+bY6dbWKdWRTbXaVBH8/czOsk=;
+        b=EWGoKlkvIHr3rbeEbqmfEVEfwBfTuwmKbXcie9HqS6GBRUIhTJj8H3YeacvEyke3xW
+         EXqkqwUax179k+jv0ouv6A6kxbr3m15JimhcbvKlBMHO+8fxdEitdX8s/pouZ9fw55pK
+         R0/6uxTeBM0akE9PI7dA8deKMKm3H5VEJJjjUcnzhV1s4/PXIBKyBBrwn+zbr1RtXDIs
+         AVWJkPgxBzICco6QNR2YueQqUJnU771+DJEaT3xVrmv3npsfTFLiKF6OxWnnWDVNCvPP
+         U97fUWnCyI0USs75jOv1/35gVcLfAs+NNSma76KYz00dHEtEBDMwQF4YDb8qm+9b/wtk
+         6Utw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:sender:in-reply-to:references:date:message-id:subject
+         :from:to:cc:content-type;
+        bh=uE+jlzjQ6ahipSG8Nj+bY6dbWKdWRTbXaVBH8/czOsk=;
+        b=Fk/NseaDldn9TyxCB7uoVACB5708PV8X3ygwx8tsPokEDvqev0eVnWQAiNGfBNhVwc
+         MB2HrPJIObht4uqCHoVrxUft3IiicZkFTemzOZopeXeTXAoMC1lsFrovvK0UbxZT5JxT
+         lSmu8lqZvviynCMBLmLmR5aT9e9PFcN8gQ5bA=
+In-Reply-To: <1439363150-8661-30-git-send-email-hch@lst.de>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-nvdimm-y27Ovi1pjclAfugRpC6u6w@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, hskinnemoen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, grundler-6jwH94ZQLHl74goWV3ctuw@public.gmane.org, realmz6-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Content-Transfer-Encoding: 7bit
+To: Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, Dan Williams <dan.j.williams@intel.com>, Vineet Gupta <vgupta@synopsys.com>, =?UTF-8?Q?H=C3=A5vard_Skinnemoen?= <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Miao Steven <realmz6@gmail.com>, David Howells <dhowells@redhat.com>, Michal Simek <monstr@monstr.eu>, the arch/x86 maintainers <x86@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, grundler@parisc-linux.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, linux-alpha@vger.kernel.org, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-metag@vger.kernel.org, linux-mips <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, ppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-s390 <linux-s390@vger.kernel.org>, s
 
-On 08/12/2015 10:05 AM, Christoph Hellwig wrote:
-> Dan Williams started to look into addressing I/O to and from
-> Persistent Memory in his series from June:
-> 
-> 	http://thread.gmane.org/gmane.linux.kernel.cross-arch/27944
-> 
-> I've started looking into DMA mapping of these SGLs specifically instead
-> of the map_pfn method in there.  In addition to supporting NVDIMM backed
-> I/O I also suspect this would be highly useful for media drivers that
-> go through nasty hoops to be able to DMA from/to their ioremapped regions,
-> with vb2_dc_get_userptr in drivers/media/v4l2-core/videobuf2-dma-contig.c
-> being a prime example for the unsafe hacks currently used.
-> 
+On Wed, Aug 12, 2015 at 12:05 AM, Christoph Hellwig <hch@lst.de> wrote:
+> Make all cache invalidation conditional on sg_has_page() and use
+> sg_phys to get the physical address directly.
 
-The support I have suggested and submitted for zone-less sections.
-(In my add_persistent_memory() patchset)
+So this worries me a bit (I'm just reacting to one random patch in the series).
 
-Would work perfectly well and transparent for all such multimedia cases.
-(All hacks removed). In fact I have loaded pmem (with-pages) on a VRAM
-a few times and it is great easy fun. (I wanted to experiment with cached
-memory over a pcie)
+The reason?
 
-> It turns out most DMA mapping implementation can handle SGLs without
-> page structures with some fairly simple mechanical work.  Most of it
-> is just about consistently using sg_phys.  For implementations that
-> need to flush caches we need a new helper that skips these cache
-> flushes if a entry doesn't have a kernel virtual address.
-> 
-> However the ccio (parisc) and sba_iommu (parisc & ia64) IOMMUs seem
-> to be operate mostly on virtual addresses.  It's a fairly odd concept
-> that I don't fully grasp, so I'll need some help with those if we want
-> to bring this forward.
-> 
-> Additional this series skips ARM entirely for now.  The reason is
-> that most arm implementations of the .map_sg operation just iterate
-> over all entries and call ->map_page for it, which means we'd need
-> to convert those to a ->map_pfn similar to Dan's previous approach.
-> 
+I think this wants a big honking comment somewhere saying "non-sg_page
+accesses are not necessarily cache coherent").
 
-All this endless work for nothing more than uglyfing the Kernel, and
-It will never end. When a real and fully working solution is right
-here for more then a year.
+Now, I don't think that's _wrong_, but it's an important distinction:
+if you look up pages in the page tables directly, there's a very
+subtle difference between then saving just the pfn and saving the
+"struct page" of the result.
 
-If you are really up for a deep audit and a mammoth testing effort,
-why not do a more worthy, and order of magnitude smaller work and support
-2M and 1G variable sized "pages". All the virtual-vs-phisical-vs-caching
-just works.
+On sane architectures, this whole cache flushing thing doesn't matter.
+Which just means that it's going to be even more subtle on the odd
+broken ones..
 
-Most of the core work is there. Block layer and lots of other subsytems
-already support sending a single page-pointer with bvec_offset bvec_len
-bigger then 4K. Other system will be small fixes sprinkled around but
-not at all this endless stream of subsystem after another of patches.
-And for why.
+I'm assuming that anybody who wants to use the page-less
+scatter-gather lists always does so on memory that isn't actually
+virtually mapped at all, or only does so on sane architectures that
+are cache coherent at a physical level, but I'd like that assumption
+*documented* somewhere.
 
-The novelty of pages is the section object, the section is reached
-from page* from virtual as well as physical planes. And is a center
-that translate from all plains to all plains. You keep this concept
-only make 2M-page sections and 1G-page sections.
+(And maybe it is, and I just didn't get to that patch yet)
 
-It is a bit of work but is worth while, and accelerating tremendously
-lots of workloads. Not like this abomination which only branches
-things more and more, and making things fatter and slower.
-
-It all feels like a typhoon, the inertia of tones and tons of
-men hours work, in a huge wave. How will you ever stop such a
-rushing mass. I'm trying to dock under but, surly it makes me sad.
-
-Thanks
-Boaz
+                   Linus
