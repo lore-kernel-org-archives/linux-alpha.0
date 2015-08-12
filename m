@@ -1,67 +1,55 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Catalin Marinas <catalin.marinas@gmail.com>
 Subject: Re: [PATCH 31/31] dma-mapping-common: skip kmemleak checks for
  page-less SG entries
-Date: Wed, 12 Aug 2015 09:05:15 -0700
-Message-ID: <CA+55aFxfZM81HNfo2ysfhGwrhx6GX-+F--+jLFmMVv+Z0id2rw@mail.gmail.com>
-References: <1439363150-8661-1-git-send-email-hch@lst.de>
-        <1439363150-8661-32-git-send-email-hch@lst.de>
+Date: Wed, 12 Aug 2015 17:26:44 +0100
+Message-ID: <CAHkRjk6ykXd1=DLZ16dKiyrBXWmd80WC4gLyoN50JYigJG_-bQ@mail.gmail.com>
+References: <1439363150-8661-1-git-send-email-hch@lst.de> <1439363150-8661-32-git-send-email-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-mips-bounce@linux-mips.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=mime-version:sender:in-reply-to:references:date:message-id:subject
-         :from:to:cc:content-type;
-        bh=MJzZL+CgMUY3GKm3z8wa7otA0jR+vzieLcQ/5SMgzCw=;
-        b=kkRRSsFoxIgSo1Bdk5Nf7Qd9PT5CZnku1e2US7Qyl67N8W8T6l8sw2TGRk3JQq+orD
-         unGyut8KkW8nSP/+sHKJZ9pr8yEi5u1NWYdyChPLptQq1wr3t0S86QVr9le8ffBISLCj
-         pVsu4LHPq/9xSWTbOuf3stzG85HzlrGlfJMc07Uz61mFENyv85ps9FWjUawvjR1RuymI
-         Kkpdb2pxKS7bs1PqDf+KKlSdl38uKGfF7XkZTyk2Gb/peUH31XlUifWHo1dZI7nGwFwB
-         1M/BxvpCJvILSJCkPizNDUyMkQF3jCwhQDzxUpo2zH4m/hEWM6CifvSsYJXMKziMe58s
-         pQUQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:sender:in-reply-to:references:date:message-id:subject
-         :from:to:cc:content-type;
-        bh=MJzZL+CgMUY3GKm3z8wa7otA0jR+vzieLcQ/5SMgzCw=;
-        b=CIH6VHeEYKQEZR6ycpamm1sYQdzNAvDu4IfBfFaAHPyoUdawGq8YuoAYg8JKjFvKi/
-         ISCpUT3kA22ttz7Ts6qZ2qoIVNxIe0i/+vGjSY+2RlSisZMfHUa693/kWh2uMM87TLht
-         JvVLGTH3430jAnnGE9wUoFngZHFAD96MXL0Ww=
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-type;
+        bh=DAf5Wyqqr9wwC0032B3Xti7JQwnG50zAYorCgiezCxw=;
+        b=fNqq66vzlXamCOKbyVLQiwBw46TDsIRz5zEHhCmCiHoivGOxZS8ZZ5v3yZ04RvCsNR
+         CqkMM+BdkUgxgHwOKr2kBzGBic+TmJPByaXUShQLQLUcRJbrG3KPGAJ2Zdjof5CVZOuu
+         MOkxl2JYXUJgvsJ9cg18W484ZrD8Jg/l0L5FHO4l59qee47HepbciemnmPsmuGD+sdmP
+         knf8Df9Jo9UlypjCbi001sJsmVxoauaQCMQzSiZhmn06Xd3TlJO3uSSp8KTA0bBAeeef
+         v8tSjwGpwm6uOgrc773vPBV6VesDObra9T/k/gnkbDW2ya/b1bS8Qb4oH8dbPXCJiD3b
+         cNig==
 In-Reply-To: <1439363150-8661-32-git-send-email-hch@lst.de>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+Sender: linux-ia64-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Christoph Hellwig <hch@lst.de>
-Cc: Jens Axboe <axboe@kernel.dk>, Dan Williams <dan.j.williams@intel.com>, Vineet Gupta <vgupta@synopsys.com>, =?UTF-8?Q?H=C3=A5vard_Skinnemoen?= <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Miao Steven <realmz6@gmail.com>, David Howells <dhowells@redhat.com>, Michal Simek <monstr@monstr.eu>, the arch/x86 maintainers <x86@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, grundler@parisc-linux.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, linux-alpha@vger.kernel.org, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-metag@vger.kernel.org, linux-mips <linux-mips@linux-mips.org>, Pari
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, axboe@kernel.dk, Dan Williams <dan.j.williams@intel.com>, vgupta@synopsys.com, hskinnemoen@gmail.com, egtvedt@samfundet.no, realmz6@gmail.com, David Howells <dhowells@redhat.com>, Michal Simek <monstr@monstr.eu>, "x86@kernel.org" <x86@kernel.org>, David Woodhouse <dwmw2@infradead.org>, alex.williamson@redhat.com, grundler@parisc-linux.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-nvdimm@ml01.01.org, Linux
 
-On Wed, Aug 12, 2015 at 12:05 AM, Christoph Hellwig <hch@lst.de> wrote:
+Christoph,
+
+On 12 August 2015 at 08:05, Christoph Hellwig <hch@lst.de> wrote:
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  include/asm-generic/dma-mapping-common.h | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/asm-generic/dma-mapping-common.h b/include/asm-generic/dma-mapping-common.h
+> index 940d5ec..afc3eaf 100644
+> --- a/include/asm-generic/dma-mapping-common.h
+> +++ b/include/asm-generic/dma-mapping-common.h
+> @@ -51,8 +51,10 @@ static inline int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+>         int i, ents;
+>         struct scatterlist *s;
+>
+> -       for_each_sg(sg, s, nents, i)
+> -               kmemcheck_mark_initialized(sg_virt(s), s->length);
 > +       for_each_sg(sg, s, nents, i) {
 > +               if (sg_has_page(s))
 > +                       kmemcheck_mark_initialized(sg_virt(s), s->length);
 > +       }
 
-[ Again, I'm responding to one random patch - this pattern was in
-other patches too.  ]
+Just a nitpick for the subject, it should say "kmemcheck" rather than
+"kmemleak" (different features ;)).
 
-A question: do we actually expect to mix page-less and pageful SG
-entries in the same SG list?
-
-How does that happen?
-
-(I'm not saying it can't, I'm just wondering where people expect this
-to happen).
-
-IOW, maybe it would be valid to have a rule saying "a SG list is
-either all pageful or pageless, never mixed", and then have the "if"
-statement outside the loop rather than inside.
-
-                      Linus
-
+-- 
+Catalin
