@@ -1,102 +1,37 @@
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-Subject: [PATCH 59/74] alpha/time: Migrate to new 'set-state' interface
-Date: Mon, 10 Aug 2015 11:52:16 +0200
-Message-ID: <1439200352-26767-59-git-send-email-daniel.lezcano@linaro.org>
-References: <55C87382.4070309@linaro.org>
- <1439200352-26767-1-git-send-email-daniel.lezcano@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1439200352-26767-1-git-send-email-daniel.lezcano@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 04/31] x86/pci-nommu: handle page-less SG entries
+Date: Wed, 12 Aug 2015 09:05:23 +0200
+Message-ID: <1439363150-8661-5-git-send-email-hch@lst.de>
+References: <1439363150-8661-1-git-send-email-hch@lst.de>
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <1439363150-8661-1-git-send-email-hch@lst.de>
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: mingo@kernel.org
-Cc: tglx@linutronix.de, linux-kernel@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Christoph Lameter <cl@linux.com>, linux-alpha@vger.kernel.org, Tejun Heo <tj@kernel.org>
+To: torvalds@linux-foundation.org, axboe@kernel.dk
+Cc: dan.j.williams@intel.com, vgupta@synopsys.com, hskinnemoen@gmail.com, egtvedt@samfundet.no, realmz6@gmail.com, dhowells@redhat.com, monstr@monstr.eu, x86@kernel.org, dwmw2@infradead.org, alex.williamson@redhat.com, grundler@parisc-linux.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-nvdimm@ml01.01.org, linux-media@vger.kernel.org
 
-From: Viresh Kumar <viresh.kumar@linaro.org>
+Just remove a BUG_ON, the code handles them just fine as-is.
 
-Migrate alpha driver to the new 'set-state' interface provided by
-clockevents core, the earlier 'set-mode' interface is marked obsolete
-now.
-
-This also enables us to implement callbacks for new states of clockevent
-devices, for example: ONESHOT_STOPPED.
-
-rtc clockevent device wasn't doing anything in set-mode and so its
-set-state callbacks aren't implemented.
-
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Christoph Lameter <cl@linux.com>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/alpha/kernel/time.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+ arch/x86/kernel/pci-nommu.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
-index 643a9dc..5b6202a 100644
---- a/arch/alpha/kernel/time.c
-+++ b/arch/alpha/kernel/time.c
-@@ -93,7 +93,7 @@ rtc_timer_interrupt(int irq, void *dev)
- 	struct clock_event_device *ce = &per_cpu(cpu_ce, cpu);
+diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
+index da15918..a218059 100644
+--- a/arch/x86/kernel/pci-nommu.c
++++ b/arch/x86/kernel/pci-nommu.c
+@@ -63,7 +63,6 @@ static int nommu_map_sg(struct device *hwdev, struct scatterlist *sg,
+ 	WARN_ON(nents == 0 || sg[0].length == 0);
  
- 	/* Don't run the hook for UNUSED or SHUTDOWN.  */
--	if (likely(ce->mode == CLOCK_EVT_MODE_PERIODIC))
-+	if (likely(clockevent_state_periodic(ce)))
- 		ce->event_handler(ce);
- 
- 	if (test_irq_work_pending()) {
-@@ -104,13 +104,6 @@ rtc_timer_interrupt(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
- 
--static void
--rtc_ce_set_mode(enum clock_event_mode mode, struct clock_event_device *ce)
--{
--	/* The mode member of CE is updated in generic code.
--	   Since we only support periodic events, nothing to do.  */
--}
--
- static int
- rtc_ce_set_next_event(unsigned long evt, struct clock_event_device *ce)
- {
-@@ -129,7 +122,6 @@ init_rtc_clockevent(void)
- 		.features = CLOCK_EVT_FEAT_PERIODIC,
- 		.rating = 100,
- 		.cpumask = cpumask_of(cpu),
--		.set_mode = rtc_ce_set_mode,
- 		.set_next_event = rtc_ce_set_next_event,
- 	};
- 
-@@ -161,12 +153,12 @@ static struct clocksource qemu_cs = {
-  * The QEMU alarm as a clock_event_device primitive.
-  */
- 
--static void
--qemu_ce_set_mode(enum clock_event_mode mode, struct clock_event_device *ce)
-+static int qemu_ce_shutdown(struct clock_event_device *ce)
- {
- 	/* The mode member of CE is updated for us in generic code.
- 	   Just make sure that the event is disabled.  */
- 	qemu_set_alarm_abs(0);
-+	return 0;
- }
- 
- static int
-@@ -197,7 +189,9 @@ init_qemu_clockevent(void)
- 		.features = CLOCK_EVT_FEAT_ONESHOT,
- 		.rating = 400,
- 		.cpumask = cpumask_of(cpu),
--		.set_mode = qemu_ce_set_mode,
-+		.set_state_shutdown = qemu_ce_shutdown,
-+		.set_state_oneshot = qemu_ce_shutdown,
-+		.tick_resume = qemu_ce_shutdown,
- 		.set_next_event = qemu_ce_set_next_event,
- 	};
- 
+ 	for_each_sg(sg, s, nents, i) {
+-		BUG_ON(!sg_page(s));
+ 		s->dma_address = sg_phys(s);
+ 		if (!check_addr("map_sg", hwdev, s->dma_address, s->length))
+ 			return 0;
 -- 
 1.9.1
+
