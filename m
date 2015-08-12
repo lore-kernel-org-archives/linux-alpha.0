@@ -1,64 +1,67 @@
 From: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH 29/31] parisc: handle page-less SG entries
-Date: Wed, 12 Aug 2015 09:01:02 -0700
-Message-ID: <CA+55aFxsH9Lde7wqZi555vqfH2uxeQqC9cjeca9L6Wr=XpyzXA@mail.gmail.com>
+Subject: Re: [PATCH 31/31] dma-mapping-common: skip kmemleak checks for
+ page-less SG entries
+Date: Wed, 12 Aug 2015 09:05:15 -0700
+Message-ID: <CA+55aFxfZM81HNfo2ysfhGwrhx6GX-+F--+jLFmMVv+Z0id2rw@mail.gmail.com>
 References: <1439363150-8661-1-git-send-email-hch@lst.de>
-	<1439363150-8661-30-git-send-email-hch@lst.de>
+        <1439363150-8661-32-git-send-email-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=mime-version:sender:in-reply-to:references:date:message-id:subject
          :from:to:cc:content-type;
-        bh=uE+jlzjQ6ahipSG8Nj+bY6dbWKdWRTbXaVBH8/czOsk=;
-        b=EWGoKlkvIHr3rbeEbqmfEVEfwBfTuwmKbXcie9HqS6GBRUIhTJj8H3YeacvEyke3xW
-         EXqkqwUax179k+jv0ouv6A6kxbr3m15JimhcbvKlBMHO+8fxdEitdX8s/pouZ9fw55pK
-         R0/6uxTeBM0akE9PI7dA8deKMKm3H5VEJJjjUcnzhV1s4/PXIBKyBBrwn+zbr1RtXDIs
-         AVWJkPgxBzICco6QNR2YueQqUJnU771+DJEaT3xVrmv3npsfTFLiKF6OxWnnWDVNCvPP
-         U97fUWnCyI0USs75jOv1/35gVcLfAs+NNSma76KYz00dHEtEBDMwQF4YDb8qm+9b/wtk
-         6Utw==
+        bh=MJzZL+CgMUY3GKm3z8wa7otA0jR+vzieLcQ/5SMgzCw=;
+        b=kkRRSsFoxIgSo1Bdk5Nf7Qd9PT5CZnku1e2US7Qyl67N8W8T6l8sw2TGRk3JQq+orD
+         unGyut8KkW8nSP/+sHKJZ9pr8yEi5u1NWYdyChPLptQq1wr3t0S86QVr9le8ffBISLCj
+         pVsu4LHPq/9xSWTbOuf3stzG85HzlrGlfJMc07Uz61mFENyv85ps9FWjUawvjR1RuymI
+         Kkpdb2pxKS7bs1PqDf+KKlSdl38uKGfF7XkZTyk2Gb/peUH31XlUifWHo1dZI7nGwFwB
+         1M/BxvpCJvILSJCkPizNDUyMkQF3jCwhQDzxUpo2zH4m/hEWM6CifvSsYJXMKziMe58s
+         pQUQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:sender:in-reply-to:references:date:message-id:subject
          :from:to:cc:content-type;
-        bh=uE+jlzjQ6ahipSG8Nj+bY6dbWKdWRTbXaVBH8/czOsk=;
-        b=Fk/NseaDldn9TyxCB7uoVACB5708PV8X3ygwx8tsPokEDvqev0eVnWQAiNGfBNhVwc
-         MB2HrPJIObht4uqCHoVrxUft3IiicZkFTemzOZopeXeTXAoMC1lsFrovvK0UbxZT5JxT
-         lSmu8lqZvviynCMBLmLmR5aT9e9PFcN8gQ5bA=
-In-Reply-To: <1439363150-8661-30-git-send-email-hch@lst.de>
-Sender: linux-arch-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+        bh=MJzZL+CgMUY3GKm3z8wa7otA0jR+vzieLcQ/5SMgzCw=;
+        b=CIH6VHeEYKQEZR6ycpamm1sYQdzNAvDu4IfBfFaAHPyoUdawGq8YuoAYg8JKjFvKi/
+         ISCpUT3kA22ttz7Ts6qZ2qoIVNxIe0i/+vGjSY+2RlSisZMfHUa693/kWh2uMM87TLht
+         JvVLGTH3430jAnnGE9wUoFngZHFAD96MXL0Ww=
+In-Reply-To: <1439363150-8661-32-git-send-email-hch@lst.de>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Christoph Hellwig <hch@lst.de>
-Cc: Jens Axboe <axboe@kernel.dk>, Dan Williams <dan.j.williams@intel.com>, Vineet Gupta <vgupta@synopsys.com>, =?UTF-8?Q?H=C3=A5vard_Skinnemoen?= <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Miao Steven <realmz6@gmail.com>, David Howells <dhowells@redhat.com>, Michal Simek <monstr@monstr.eu>, the arch/x86 maintainers <x86@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, grundler@parisc-linux.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, linux-alpha@vger.kernel.org, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-metag@vger.kernel.org, linux-mips <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, ppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-s390 <linux-s390@vger.kernel.org>, s
+Cc: Jens Axboe <axboe@kernel.dk>, Dan Williams <dan.j.williams@intel.com>, Vineet Gupta <vgupta@synopsys.com>, =?UTF-8?Q?H=C3=A5vard_Skinnemoen?= <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Miao Steven <realmz6@gmail.com>, David Howells <dhowells@redhat.com>, Michal Simek <monstr@monstr.eu>, the arch/x86 maintainers <x86@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, grundler@parisc-linux.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, linux-alpha@vger.kernel.org, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-metag@vger.kernel.org, linux-mips <linux-mips@linux-mips.org>, Pari
 
 On Wed, Aug 12, 2015 at 12:05 AM, Christoph Hellwig <hch@lst.de> wrote:
-> Make all cache invalidation conditional on sg_has_page() and use
-> sg_phys to get the physical address directly.
+> +       for_each_sg(sg, s, nents, i) {
+> +               if (sg_has_page(s))
+> +                       kmemcheck_mark_initialized(sg_virt(s), s->length);
+> +       }
 
-So this worries me a bit (I'm just reacting to one random patch in the series).
+[ Again, I'm responding to one random patch - this pattern was in
+other patches too.  ]
 
-The reason?
+A question: do we actually expect to mix page-less and pageful SG
+entries in the same SG list?
 
-I think this wants a big honking comment somewhere saying "non-sg_page
-accesses are not necessarily cache coherent").
+How does that happen?
 
-Now, I don't think that's _wrong_, but it's an important distinction:
-if you look up pages in the page tables directly, there's a very
-subtle difference between then saving just the pfn and saving the
-"struct page" of the result.
+(I'm not saying it can't, I'm just wondering where people expect this
+to happen).
 
-On sane architectures, this whole cache flushing thing doesn't matter.
-Which just means that it's going to be even more subtle on the odd
-broken ones..
+IOW, maybe it would be valid to have a rule saying "a SG list is
+either all pageful or pageless, never mixed", and then have the "if"
+statement outside the loop rather than inside.
 
-I'm assuming that anybody who wants to use the page-less
-scatter-gather lists always does so on memory that isn't actually
-virtually mapped at all, or only does so on sane architectures that
-are cache coherent at a physical level, but I'd like that assumption
-*documented* somewhere.
+                      Linus
 
-(And maybe it is, and I just didn't get to that patch yet)
-
-                   Linus
