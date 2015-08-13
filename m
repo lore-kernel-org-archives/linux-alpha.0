@@ -1,55 +1,32 @@
-From: Boaz Harrosh <boaz@plexistor.com>
-Subject: Re: RFC: prepare for struct scatterlist entries without page backing
-Date: Thu, 13 Aug 2015 18:42:32 +0300
-Message-ID: <55CCBAE8.8090502@plexistor.com>
-References: <1439363150-8661-1-git-send-email-hch@lst.de> <55CB3F47.3000902@plexistor.com> <20150813144036.GB17375@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 2/5] dma-mapping: consolidate
+	dma_{alloc,free}_noncoherent
+Date: Thu, 13 Aug 2015 19:55:41 +0200
+Message-ID: <20150813175541.GA21103@lst.de>
+References: <1439478248-15183-1-git-send-email-hch@lst.de> <1439478248-15183-3-git-send-email-hch@lst.de> <20150813152040.GQ7557@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <20150813144036.GB17375@lst.de>
-Sender: linux-parisc-owner@vger.kernel.org
+Return-path: <linux-ia64-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20150813152040.GQ7557@n2100.arm.linux.org.uk>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Christoph Hellwig <hch@lst.de>
-Cc: torvalds@linux-foundation.org, axboe@kernel.dk, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-nvdimm@ml01.01.org, dhowells@redhat.com, sparclinux@vger.kernel.org, egtvedt@samfundet.no, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, dwmw2@infradead.org, hskinnemoen@gmail.com, linux-xtensa@linux-xtensa.org, grundler@parisc-linux.org, realmz6@gmail.com, alex.williamson@redhat.com, linux-metag@vger.kernel.org, monstr@monstr.eu, linux-parisc@vger.kernel.org, vgupta@synopsys.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-media@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Transfer-Encoding: 7bit
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Christoph Hellwig <hch@lst.de>, akpm@linux-foundation.org, arnd@arndb.de, catalin.marinas@arm.com, will.deacon@arm.com, ysato@users.sourceforge.jp, monstr@monstr.eu, jonas@southpole.se, cmetcalf@ezchip.com, gxt@mprc.pku.edu.cn, x86@kernel.org, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 08/13/2015 05:40 PM, Christoph Hellwig wrote:
-> On Wed, Aug 12, 2015 at 03:42:47PM +0300, Boaz Harrosh wrote:
->> The support I have suggested and submitted for zone-less sections.
->> (In my add_persistent_memory() patchset)
->>
->> Would work perfectly well and transparent for all such multimedia cases.
->> (All hacks removed). In fact I have loaded pmem (with-pages) on a VRAM
->> a few times and it is great easy fun. (I wanted to experiment with cached
->> memory over a pcie)
+On Thu, Aug 13, 2015 at 04:20:40PM +0100, Russell King - ARM Linux wrote:
+> > -/*
+> > - * Dummy noncoherent implementation.  We don't provide a dma_cache_sync
+> > - * function so drivers using this API are highlighted with build warnings.
+> > - */
 > 
-> And everyone agree that it was both buggy and incomplete.
-> 
+> I'd like a similar comment to remain after this patch explaining that we
+> don't support non-coherent allocations and that it'll be highlighted by
+> the lack of dma_cache_sync, otherwise I'm sure we'll start to get patches
+> to add the thing.
 
-What? No one ever said anything about bugs. Is the first ever I hear of it.
-I was always in the notion that no one even tried it out.
-
-I'm smoking these page-full nvidimms for more than a year. With RDMA to
-pears and swap out to disks. So is not that bad I would say
-
-> Dan has done a respin of the page backed nvdimm work with most of
-> these comments addressed.
-> 
-
-I would love some comments. All I got so far is silence. (And I do not
-like Dan's patches comments will come next week)
-
-> I have to say I hate both pfn-based I/O [1] and page backed nvdimms with
-> passion, so we're looking into the lesser evil with an open mind.
-> 
-> [1] not the SGL part posted here, which I think is quite sane.  The bio
->     side is much worse, though.
-> 
-
-What can I say. I like the page-backed nvdimms. And the long term for me
-is 2M pages. I hope we can sit one day soon and you explain to me whats
-evil about it. I would really really like to understand
-
-Thanks though
-Boaz
+I'll keep a modified version of this comment in the ARM dma-mapping.h
+in addition to an explanation near the new common dma_alloc_noncoherent
+definition, thanks!
 
