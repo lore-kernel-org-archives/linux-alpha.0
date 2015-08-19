@@ -1,73 +1,37 @@
-From: Ingo Molnar <mingo@kernel.org>
+From: Christoph Hellwig <hch@lst.de>
 Subject: Re: provide more common DMA API functions V2
-Date: Tue, 18 Aug 2015 09:51:07 +0200
-Message-ID: <20150818075107.GA31884@gmail.com>
-References: <1439795216-32189-1-git-send-email-hch@lst.de>
- <20150817142429.95a3965e0b35d0f35d3c4cfe@linux-foundation.org>
- <20150818053825.GA20771@lst.de>
- <20150817224552.43d7267d.akpm@linux-foundation.org>
+Date: Wed, 19 Aug 2015 10:08:14 +0200
+Message-ID: <20150819080814.GA18115@lst.de>
+References: <1439795216-32189-1-git-send-email-hch@lst.de> <20150817142429.95a3965e0b35d0f35d3c4cfe@linux-foundation.org> <20150818053825.GA20771@lst.de> <20150817224552.43d7267d.akpm@linux-foundation.org> <20150818075107.GA31884@gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-hexagon-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-type:content-disposition:in-reply-to:user-agent;
-        bh=zEcE1oyr7eYmJsQqsmDiwjveCNuDSsBcc+oiZxEFqt0=;
-        b=zeR5M9w0p9kONJg6a4+x/gwjZe7ncbkdsvW+qtUvycczuCInTNR4HZWR5XjHhIomFh
-         DZF3dY+2xBej1S403uSyZi1rKK3t6jpheMhE9N50wqU/rFAvxiPFxQ5USEwBDQ7PLPIm
-         ZbhU1f1lSru6YVhOA5Uwg2DgTp0zqIONLyIfGubQ2WtCARcxrByDv3grDns/MTqHRGJC
-         MpVttKtaRuM9Yre9tRM39QiRXZNJa2WrJdihrvhQK8QeG0iPYG9eQtfBADGfffvpM/dN
-         q8ILoVCzkBE7H5xaOpDoecdnWyd0BMy5iIXTsaqVpDNq/BLAjuU2ok5ela5349PPkZNT
-         Lh5Q==
 Content-Disposition: inline
-In-Reply-To: <20150817224552.43d7267d.akpm@linux-foundation.org>
+In-Reply-To: <20150818075107.GA31884@gmail.com>
 Sender: linux-hexagon-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Christoph Hellwig <hch@lst.de>, arnd@arndb.de, linux@arm.linux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, ysato@users.sourceforge.jp, monstr@monstr.eu, jonas@southpole.se, cmetcalf@ezchip.com, gxt@mprc.pku.edu.cn, x86@kernel.org, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, arnd@arndb.de, linux@arm.linux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, ysato@users.sourceforge.jp, monstr@monstr.eu, jonas@southpole.se, cmetcalf@ezchip.com, gxt@mprc.pku.edu.cn, x86@kernel.org, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org
 
-
-* Andrew Morton <akpm@linux-foundation.org> wrote:
-
-> On Tue, 18 Aug 2015 07:38:25 +0200 Christoph Hellwig <hch@lst.de> wrote:
+On Tue, Aug 18, 2015 at 09:51:07AM +0200, Ingo Molnar wrote:
+> I.e. shouldn't this be:
 > 
-> > On Mon, Aug 17, 2015 at 02:24:29PM -0700, Andrew Morton wrote:
-> > > 110254 bytes saved, shrinking the kernel by a whopping 0.17%. 
-> > > Thoughts?
+> > I'll merge these 5 patches for 4.4.  That means I'll release them into 
+> > linux-next after 4.2 is released.
+> >
+> > [...]
 > > 
-> > Sounds fine to me.
+> > Linus will be releasing 4.2 in 1-2 weeks and until then, linux-next is supposed 
+> > to contain only 4.3 material.  Once 4.2 is released and the 4.3 merge window 
+> > opens, linux-next is open for 4.4 material.
 > 
-> OK, I'll clean it up a bit, check that each uninlining actually makes
-> sense and then I'll see how it goes.
-> 
-> > > 
-> > > I'll merge these 5 patches for 4.3.  That means I'll release them into
-> > > linux-next after 4.2 is released.
-> > 
-> > So you only add for-4.3 code to -next after 4.2 is odd?  Isn't thast the
-> > wrong way around?
-> 
-> Linus will be releasing 4.2 in 1-2 weeks and until then, linux-next is
-> supposed to contain only 4.2 material.  Once 4.2 is released,
-> linux-next is open for 4.3 material.
+> ?
 
-Isn't that off by one?
+That would make a lot more sense.  But also be said as I intended
+these as the simple part of the dma work I'd like to get into 4.3.
 
-I.e. shouldn't this be:
-
-> I'll merge these 5 patches for 4.4.  That means I'll release them into 
-> linux-next after 4.2 is released.
->
-> [...]
-> 
-> Linus will be releasing 4.2 in 1-2 weeks and until then, linux-next is supposed 
-> to contain only 4.3 material.  Once 4.2 is released and the 4.3 merge window 
-> opens, linux-next is open for 4.4 material.
-
-?
-
-Thanks,
-
-	Ingo
+Andrew, if you think it's not 4.3 material I'd rather keep them in
+my git tree for now so that I can stack additional patches I have
+in progress on top.  A non-git based tree like yours is unfortunately
+very bad for patches that are dependencies for others.
