@@ -1,63 +1,47 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: Ping Re: [PATCH 0/8] math-emu: Update kernel math-emu code from
- current glibc soft-fp
-Date: Thu, 20 Aug 2015 09:26:46 +1000
-Message-ID: <1440026806.13406.2.camel@ellerman.id.au>
-References: <alpine.DEB.2.10.1507021542380.29415@digraph.polyomino.org.uk>
-	 <alpine.DEB.2.10.1508191433380.11312@digraph.polyomino.org.uk>
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: provide more common DMA API functions V2
+Date: Thu, 20 Aug 2015 09:52:33 +1000
+Message-ID: <20150820095233.30bb9689@canb.auug.org.au>
+References: <1439795216-32189-1-git-send-email-hch@lst.de>
+	<20150817142429.95a3965e0b35d0f35d3c4cfe@linux-foundation.org>
+	<20150818053825.GA20771@lst.de>
+	<20150817224552.43d7267d.akpm@linux-foundation.org>
+	<20150818075107.GA31884@gmail.com>
+	<20150819080814.GA18115@lst.de>
+	<20150819143656.3a38eb538ffac60386e1224a@linux-foundation.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.10.1508191433380.11312@digraph.polyomino.org.uk>
+In-Reply-To: <20150819143656.3a38eb538ffac60386e1224a@linux-foundation.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Joseph Myers <joseph@codesourcery.com>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Christoph Hellwig <hch@lst.de>, Ingo Molnar <mingo@kernel.org>, arnd@arndb.de, linux@arm.linux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, ysato@users.sourceforge.jp, monstr@monstr.eu, jonas@southpole.se, cmetcalf@ezchip.com, gxt@mprc.pku.edu.cn, x86@kernel.org, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, 2015-08-19 at 14:39 +0000, Joseph Myers wrote:
-> I'd like to ping this patch series, not having seen any comments on it.
-> 
-> [PATCH 0/8] math-emu: Update kernel math-emu code from current glibc soft-fp
-> https://lkml.org/lkml/2015/7/2/394
-> 
-> [PATCH 1/8] math-emu: Move math-emu to math-emu-old
-> https://lkml.org/lkml/2015/7/2/395
-> 
-> [PATCH 2/8] math-emu: Import current glibc soft-fp as include/math-emu
-> https://lkml.org/lkml/2015/7/2/398
-> 
-> [PATCH 3/8] alpha/math-emu: Move alpha from math-emu-old to math-emu
-> https://lkml.org/lkml/2015/7/2/399
-> 
-> [PATCH 4/8] powerpc/math-emu: Move powerpc from math-emu-old to math-emu
-> https://lkml.org/lkml/2015/7/2/400
-> 
-> [PATCH 5/8] s390/math-emu: Move s390 from math-emu-old to math-emu
-> https://lkml.org/lkml/2015/7/2/401
-> 
-> [PATCH 6/8] sh/math-emu: Move sh from math-emu-old to math-emu
-> https://lkml.org/lkml/2015/7/2/402
-> 
-> [PATCH 7/8] sparc/math-emu: Move sparc from math-emu-old to math-emu
-> https://lkml.org/lkml/2015/7/2/404
-> 
-> [PATCH 8/8] math-emu: Remove math-emu-old
-> https://lkml.org/lkml/2015/7/2/405
-> 
-> As noted in patch 0, the dependencies are as follows: patch 2 depends on 
-> patch 1, patches 3-7 depend on patches 1 and 2 but are independent of each 
-> other, patch 8 depends on all the other patches.
+Hi Andrew (sorry, I can't tell who made the incorrect statement below
+that I am replying to),
 
-Hi Joseph,
+On Wed, 19 Aug 2015 14:36:56 -0700 Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Wed, 19 Aug 2015 10:08:14 +0200 Christoph Hellwig <hch@lst.de> wrote:
+> 
+> > On Tue, Aug 18, 2015 at 09:51:07AM +0200, Ingo Molnar wrote:
+> > > I.e. shouldn't this be:
+> > > 
+> > > > I'll merge these 5 patches for 4.4.  That means I'll release them into 
+> > > > linux-next after 4.2 is released.
+> > > >
+> > > > [...]
+> > > > 
+> > > > Linus will be releasing 4.2 in 1-2 weeks and until then, linux-next is supposed 
+> > > > to contain only 4.3 material.  Once 4.2 is released and the 4.3 merge window 
+> > > > opens, linux-next is open for 4.4 material.
 
-I have done some testing on powerpc, and it seems good.
+Just to be clear: the above should read "Once 4.2 is released and the
+4.3 merge window *closes* (i.e. v4.3-rc1 is released), linux-next is
+open for 4.4 material".
 
-I'm reluctant to proceed with merging them though until we've heard at least
-*something* from the other maintainers.
-
-We don't want to end up with math-emu-old hanging around for ever.
-
-cheers
-
-
+-- 
+Cheers,
+Stephen Rothwell                    sfr@canb.auug.org.au
