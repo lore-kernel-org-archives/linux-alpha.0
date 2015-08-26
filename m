@@ -1,48 +1,150 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: Ping Re: [PATCH 0/8] math-emu: Update kernel math-emu code from
- current glibc soft-fp
-Date: Wed, 26 Aug 2015 16:49:30 +0200
-Message-ID: <CAMuHMdWz=McFn81URtirXA4eMA4knhCfVVRLisixnxZaA46E-w@mail.gmail.com>
-References: <alpine.DEB.2.10.1507021542380.29415@digraph.polyomino.org.uk>
-	<alpine.DEB.2.10.1508191433380.11312@digraph.polyomino.org.uk>
-	<1440026806.13406.2.camel@ellerman.id.au>
-	<alpine.DEB.2.10.1508261442440.13146@digraph.polyomino.org.uk>
-Mime-Version: 1.0
-Return-path: <linux-sh-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:sender:in-reply-to:references:date:message-id:subject
-         :from:to:cc:content-type;
-        bh=nuXg8oYioyEOigwHNNMvCwmyp/9cmZc6op/I+Er3q74=;
-        b=yn5mFruNspfl7wQ0Zo+RavuteaFK+bENBZTQTpGWeOJb4tsXfzVaXje7xbmYDoVjxz
-         Fkw/B59a/0UVX7WcMH3lOj0lqbQ4XLQ29uFAfzRuTjdoOM0UKU2ToUu3KZbPJcKAPZAT
-         c3yzDI8GSX2n2aro0oDKsHZNWGl2MG3DVnEekXplEmqGyDxRiTmfUDokPGc7a5LKKIao
-         HAxODnQT1cf8TKVW/zseTpZuToY7fkmVGjinrTvFpc7XRCcokfM+Lhj5FmID8AsQXgBJ
-         +SwNN+hKuMlVLzIKG9CFXnP26qA02cOSedQzGUpZKPKpa/9HDuBz5IFVg876+w/cPK2L
-         /2hA==
-In-Reply-To: <alpine.DEB.2.10.1508261442440.13146@digraph.polyomino.org.uk>
-Sender: linux-sh-owner@vger.kernel.org
+From: Eric B Munson <emunson@akamai.com>
+Subject: [PATCH v8 2/6] mm: mlock: Add new mlock system call
+Date: Wed, 26 Aug 2015 14:24:21 -0400
+Message-ID: <1440613465-30393-3-git-send-email-emunson@akamai.com>
+References: <1440613465-30393-1-git-send-email-emunson@akamai.com>
+Return-path: <owner-linux-mm@kvack.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=akamai.com; s=a1;
+	t=1440613468; bh=owreH8DCaTxmlvtNmOZHySLPiEMtDOfWY41S02LuLpA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=dsteukobF6yBhI56yMP9QIuzOp9ITworbgr6+pInTh0Wv6ZYQSQiOoe6hh2nEKfyh
+	 xiKHlYr23UzQxg7Nv9+1LUUurNG0rKJK3+B9KMZENJONxu4EHItFPfefiB+H7U+F5U
+	 D9qGRf5/bkRG4yuElawVq+9FXDrd9XhpiuRJxy44=
+In-Reply-To: <1440613465-30393-1-git-send-email-emunson@akamai.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Joseph Myers <joseph@codesourcery.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, linux-s390 <linux-s390@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Eric B Munson <emunson@akamai.com>, Michal Hocko <mhocko@suse.cz>, Vlastimil Babka <vbabka@suse.cz>, Heiko Carstens <heiko.carstens@de.ibm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Catalin Marinas <catalin.marinas@arm.com>, Stephen Rothwell <sfr@canb.auug.org.au>, Guenter Roeck <linux@roeck-us.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-cris-kernel@axis.com, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, linux-mm@kvack.org
 
-On Wed, Aug 26, 2015 at 4:44 PM, Joseph Myers <joseph@codesourcery.com> wrote:
-> Ping again for the other-architecture maintainers (alpha, s390, sh,
-> sparc)....
+With the refactored mlock code, introduce a new system call for mlock.
+The new call will allow the user to specify what lock states are being
+added.  mlock2 is trivial at the moment, but a follow on patch will add
+a new mlock state making it useful.
 
-sh is orphaned, cfr. MAINTAINERS.
+Signed-off-by: Eric B Munson <emunson@akamai.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Cc: Michal Hocko <mhocko@suse.cz>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: adi-buildroot-devel@lists.sourceforge.net
+Cc: linux-cris-kernel@axis.com
+Cc: linux-ia64@vger.kernel.org
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: linux-am33-list@redhat.com
+Cc: linux-parisc@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-s390@vger.kernel.org
+Cc: linux-sh@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: linux-api@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-mm@kvack.org
+---
+ arch/x86/entry/syscalls/syscall_32.tbl | 1 +
+ arch/x86/entry/syscalls/syscall_64.tbl | 1 +
+ include/linux/syscalls.h               | 2 ++
+ include/uapi/asm-generic/unistd.h      | 4 +++-
+ kernel/sys_ni.c                        | 1 +
+ mm/mlock.c                             | 8 ++++++++
+ 6 files changed, 16 insertions(+), 1 deletion(-)
 
-Perhaps the J2/J4 people are interested in maintainership?
-
-Gr{oetje,eeting}s,
-
-                        Geert
+diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
+index ef8187f..8e06da6 100644
+--- a/arch/x86/entry/syscalls/syscall_32.tbl
++++ b/arch/x86/entry/syscalls/syscall_32.tbl
+@@ -365,3 +365,4 @@
+ 356	i386	memfd_create		sys_memfd_create
+ 357	i386	bpf			sys_bpf
+ 358	i386	execveat		sys_execveat			stub32_execveat
++360	i386	mlock2			sys_mlock2
+diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
+index 9ef32d5..67601e7 100644
+--- a/arch/x86/entry/syscalls/syscall_64.tbl
++++ b/arch/x86/entry/syscalls/syscall_64.tbl
+@@ -329,6 +329,7 @@
+ 320	common	kexec_file_load		sys_kexec_file_load
+ 321	common	bpf			sys_bpf
+ 322	64	execveat		stub_execveat
++324	common	mlock2			sys_mlock2
+ 
+ #
+ # x32-specific system call numbers start at 512 to avoid cache impact
+diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
+index b45c45b..56a3d59 100644
+--- a/include/linux/syscalls.h
++++ b/include/linux/syscalls.h
+@@ -884,4 +884,6 @@ asmlinkage long sys_execveat(int dfd, const char __user *filename,
+ 			const char __user *const __user *argv,
+ 			const char __user *const __user *envp, int flags);
+ 
++asmlinkage long sys_mlock2(unsigned long start, size_t len, int flags);
++
+ #endif
+diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
+index e016bd9..14a6013 100644
+--- a/include/uapi/asm-generic/unistd.h
++++ b/include/uapi/asm-generic/unistd.h
+@@ -709,9 +709,11 @@ __SYSCALL(__NR_memfd_create, sys_memfd_create)
+ __SYSCALL(__NR_bpf, sys_bpf)
+ #define __NR_execveat 281
+ __SC_COMP(__NR_execveat, sys_execveat, compat_sys_execveat)
++#define __NR_mlock2 282
++__SYSCALL(__NR_mlock2, sys_mlock2)
+ 
+ #undef __NR_syscalls
+-#define __NR_syscalls 282
++#define __NR_syscalls 283
+ 
+ /*
+  * All syscalls below here should go away really,
+diff --git a/kernel/sys_ni.c b/kernel/sys_ni.c
+index 7995ef5..4818b71 100644
+--- a/kernel/sys_ni.c
++++ b/kernel/sys_ni.c
+@@ -193,6 +193,7 @@ cond_syscall(sys_mlock);
+ cond_syscall(sys_munlock);
+ cond_syscall(sys_mlockall);
+ cond_syscall(sys_munlockall);
++cond_syscall(sys_mlock2);
+ cond_syscall(sys_mincore);
+ cond_syscall(sys_madvise);
+ cond_syscall(sys_mremap);
+diff --git a/mm/mlock.c b/mm/mlock.c
+index 5692ee5..3094f27 100644
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -643,6 +643,14 @@ SYSCALL_DEFINE2(mlock, unsigned long, start, size_t, len)
+ 	return do_mlock(start, len, VM_LOCKED);
+ }
+ 
++SYSCALL_DEFINE3(mlock2, unsigned long, start, size_t, len, int, flags)
++{
++	if (flags)
++		return -EINVAL;
++
++	return do_mlock(start, len, VM_LOCKED);
++}
++
+ SYSCALL_DEFINE2(munlock, unsigned long, start, size_t, len)
+ {
+ 	int ret;
+-- 
+1.9.1
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
