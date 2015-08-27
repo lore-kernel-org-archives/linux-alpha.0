@@ -1,56 +1,73 @@
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: [RFC PATCH 7/9] alpha: allocate sys_membarrier system call number
-Date: Thu, 27 Aug 2015 13:56:53 -0400
-Message-ID: <1440698215-8355-8-git-send-email-mathieu.desnoyers@efficios.com>
-References: <1440698215-8355-1-git-send-email-mathieu.desnoyers@efficios.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1440698215-8355-1-git-send-email-mathieu.desnoyers@efficios.com>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [RFC PATCH 7/9] alpha: allocate sys_membarrier system call number
+Date: Thu, 27 Aug 2015 11:34:20 -0700
+Message-ID: <CAEdQ38HvhvcbmV_zCi=hHBnx7OnuHgX_SvvhEFjs+-hYYaDa_w@mail.gmail.com>
+References: <1440698215-8355-1-git-send-email-mathieu.desnoyers@efficios.com> <1440698215-8355-8-git-send-email-mathieu.desnoyers@efficios.com>
+Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-type;
+        bh=gCdg722OLO7Z7xIPCQHK7tdTA+ae31taxy2IZaJhSPo=;
+        b=RPrYKf5qQZd/yN+ICpHkxHhrsvgqswVCWoTCaVKVhgmDvW8uRcFRSgOE03Qs7UPbFm
+         uuyjMFbih3mtniLOTNfpp97OgCxEy0pyMHZz2hy3VVXfDe0Wo++6j5LlRFCH3rUByrHO
+         b1oC6RopnWuXuiYka3Av7ffWs7b+APunCad/qmwVgLgdbEv8V0miWqR5sCODD+D/Pkk1
+         HqU1kIgh4QHZwu8oAai4YcH3QtEXajPBPKVMzhkyLB4GyoXSjbndLqgy4OW7h6u2W4ox
+         2ZjMK1w+mb7H1WF4RMoyUVLc7IjPiB3P0M8iUHiEApLYIO63N+b7U0BmUC8vVsBWqmOC
+         /19Q==
+In-Reply-To: <1440698215-8355-8-git-send-email-mathieu.desnoyers@efficios.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>, linux-api@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-api@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>
 
-[ Untested on this architecture. To try it out: fetch linux-next/akpm,
-  apply this patch, build/run a membarrier-enabled kernel, and do make
-  kselftest. ]
+On Thu, Aug 27, 2015 at 10:56 AM, Mathieu Desnoyers
+<mathieu.desnoyers@efficios.com> wrote:
+> [ Untested on this architecture. To try it out: fetch linux-next/akpm,
+>   apply this patch, build/run a membarrier-enabled kernel, and do make
+>   kselftest. ]
+>
+> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> CC: Andrew Morton <akpm@linux-foundation.org>
+> CC: linux-api@vger.kernel.org
+> CC: Richard Henderson <rth@twiddle.net>
+> CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> CC: Matt Turner <mattst88@gmail.com>
+> CC: linux-alpha@vger.kernel.org
+> ---
+>  arch/alpha/include/uapi/asm/unistd.h | 1 +
+>  arch/alpha/kernel/systbls.S          | 1 +
+>  2 files changed, 2 insertions(+)
+>
+> diff --git a/arch/alpha/include/uapi/asm/unistd.h b/arch/alpha/include/uapi/asm/unistd.h
+> index aa33bf5..7725619 100644
+> --- a/arch/alpha/include/uapi/asm/unistd.h
+> +++ b/arch/alpha/include/uapi/asm/unistd.h
+> @@ -475,5 +475,6 @@
+>  #define __NR_getrandom                 511
+>  #define __NR_memfd_create              512
+>  #define __NR_execveat                  513
+> +#define __NR_membarrier                        514
 
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-CC: Andrew Morton <akpm@linux-foundation.org>
-CC: linux-api@vger.kernel.org
-CC: Richard Henderson <rth@twiddle.net>
-CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-CC: Matt Turner <mattst88@gmail.com>
-CC: linux-alpha@vger.kernel.org
----
- arch/alpha/include/uapi/asm/unistd.h | 1 +
- arch/alpha/kernel/systbls.S          | 1 +
- 2 files changed, 2 insertions(+)
+NR_SYSCALLS in arch/alpha/include/asm/unistd.h needs to be updated as well.
 
-diff --git a/arch/alpha/include/uapi/asm/unistd.h b/arch/alpha/include/uapi/asm/unistd.h
-index aa33bf5..7725619 100644
---- a/arch/alpha/include/uapi/asm/unistd.h
-+++ b/arch/alpha/include/uapi/asm/unistd.h
-@@ -475,5 +475,6 @@
- #define __NR_getrandom			511
- #define __NR_memfd_create		512
- #define __NR_execveat			513
-+#define __NR_membarrier			514
- 
- #endif /* _UAPI_ALPHA_UNISTD_H */
-diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 9b62e3f..1ea64f4 100644
---- a/arch/alpha/kernel/systbls.S
-+++ b/arch/alpha/kernel/systbls.S
-@@ -532,6 +532,7 @@ sys_call_table:
- 	.quad sys_getrandom
- 	.quad sys_memfd_create
- 	.quad sys_execveat
-+	.quad sys_membarrier
- 
- 	.size sys_call_table, . - sys_call_table
- 	.type sys_call_table, @object
--- 
-1.9.1
+>
+>  #endif /* _UAPI_ALPHA_UNISTD_H */
+> diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+> index 9b62e3f..1ea64f4 100644
+> --- a/arch/alpha/kernel/systbls.S
+> +++ b/arch/alpha/kernel/systbls.S
+> @@ -532,6 +532,7 @@ sys_call_table:
+>         .quad sys_getrandom
+>         .quad sys_memfd_create
+>         .quad sys_execveat
+> +       .quad sys_membarrier
+>
+>         .size sys_call_table, . - sys_call_table
+>         .type sys_call_table, @object
+> --
+> 1.9.1
+>
