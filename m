@@ -1,71 +1,50 @@
-From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: [RFC PATCH v2] alpha: allocate sys_membarrier system call number
-Date: Thu, 27 Aug 2015 15:07:43 -0400
-Message-ID: <1440702463-9314-1-git-send-email-mathieu.desnoyers@efficios.com>
-References: <CAEdQ38HvhvcbmV_zCi=hHBnx7OnuHgX_SvvhEFjs+-hYYaDa_w@mail.gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <CAEdQ38HvhvcbmV_zCi=hHBnx7OnuHgX_SvvhEFjs+-hYYaDa_w@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: Ping Re: [PATCH 0/8] math-emu: Update kernel math-emu code from
+ current glibc soft-fp
+Date: Fri, 28 Aug 2015 13:38:35 +1000
+Message-ID: <1440733115.8076.6.camel@ellerman.id.au>
+References: <alpine.DEB.2.10.1507021542380.29415@digraph.polyomino.org.uk>
+	 <alpine.DEB.2.10.1508191433380.11312@digraph.polyomino.org.uk>
+	 <1440026806.13406.2.camel@ellerman.id.au>
+	 <alpine.DEB.2.10.1508261442440.13146@digraph.polyomino.org.uk>
+	 <1440645125.23182.11.camel@ellerman.id.au>
+	 <20150827133102.77026410@mschwide>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>, linux-api@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Return-path: <sparclinux-owner@vger.kernel.org>
+In-Reply-To: <20150827133102.77026410@mschwide>
+Sender: sparclinux-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Martin Schwidefsky <schwidefsky@de.ibm.com>, "David S.Miller" <davem@davemloft.net>
+Cc: Joseph Myers <joseph@codesourcery.com>, heiko.carstens@de.ibm.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org
 
-[ Untested on this architecture. To try it out: fetch linux-next/akpm,
-  apply this patch, build/run a membarrier-enabled kernel, and do make
-  kselftest. ]
+On Thu, 2015-08-27 at 13:31 +0200, Martin Schwidefsky wrote:
+> On Thu, 27 Aug 2015 13:12:05 +1000
+> Michael Ellerman <mpe@ellerman.id.au> wrote:
+> > On Wed, 2015-08-26 at 14:44 +0000, Joseph Myers wrote:
+> > > On Thu, 20 Aug 2015, Michael Ellerman wrote:
+> > > > I'm reluctant to proceed with merging them though until we've heard at least
+> > > > *something* from the other maintainers.
+> > > 
+> > > Ping again for the other-architecture maintainers (alpha, s390, sh, 
+> > > sparc)....
+> > 
+> > OK I've put this whole series in a branch with the acks we have so far.
+> > 
+> > I'll ask Stephen to put it in linux-next once 4.3-rc1 is out, and I'll ask
+> > Linus to pull it for 4.4
+> > 
+> > I haven't published the branch yet, so if the s390 and sparc maintainers want
+> > to send me acks I'll rebase and add them.
+> 
+> For the s390 parts:
+> Acked-by: Martin Schwidefsky <schwidefsky@de.ibm.com>
 
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-CC: Andrew Morton <akpm@linux-foundation.org>
-CC: linux-api@vger.kernel.org
-CC: Richard Henderson <rth@twiddle.net>
-CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-CC: Matt Turner <mattst88@gmail.com>
-CC: linux-alpha@vger.kernel.org
----
- arch/alpha/include/asm/unistd.h      | 2 +-
- arch/alpha/include/uapi/asm/unistd.h | 1 +
- arch/alpha/kernel/systbls.S          | 1 +
- 3 files changed, 3 insertions(+), 1 deletion(-)
+Thanks.
 
-diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
-index a56e608..07aa4ca 100644
---- a/arch/alpha/include/asm/unistd.h
-+++ b/arch/alpha/include/asm/unistd.h
-@@ -3,7 +3,7 @@
- 
- #include <uapi/asm/unistd.h>
- 
--#define NR_SYSCALLS			514
-+#define NR_SYSCALLS			515
- 
- #define __ARCH_WANT_OLD_READDIR
- #define __ARCH_WANT_STAT64
-diff --git a/arch/alpha/include/uapi/asm/unistd.h b/arch/alpha/include/uapi/asm/unistd.h
-index aa33bf5..7725619 100644
---- a/arch/alpha/include/uapi/asm/unistd.h
-+++ b/arch/alpha/include/uapi/asm/unistd.h
-@@ -475,5 +475,6 @@
- #define __NR_getrandom			511
- #define __NR_memfd_create		512
- #define __NR_execveat			513
-+#define __NR_membarrier			514
- 
- #endif /* _UAPI_ALPHA_UNISTD_H */
-diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 9b62e3f..1ea64f4 100644
---- a/arch/alpha/kernel/systbls.S
-+++ b/arch/alpha/kernel/systbls.S
-@@ -532,6 +532,7 @@ sys_call_table:
- 	.quad sys_getrandom
- 	.quad sys_memfd_create
- 	.quad sys_execveat
-+	.quad sys_membarrier
- 
- 	.size sys_call_table, . - sys_call_table
- 	.type sys_call_table, @object
--- 
-1.9.1
+So we're just waiting on davem for an ack for arch/sparc :D
+
+cheers
+
 
