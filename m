@@ -1,113 +1,64 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: [PULL] alpha.git
-Date: Sun, 30 Aug 2015 18:13:07 -0700
-Message-ID: <20150831011306.GA14041@ivybridge>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH -next] alpha: Define ioremap_uc and ioremap_wc
+Date: Tue, 1 Sep 2015 19:12:12 -0700
+Message-ID: <20150902021211.GA14302@roeck-us.net>
+References: <1438396359-27697-1-git-send-email-linux@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="yrj/dFKFPuw6o+aM"
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=date:from:to:cc:subject:message-id:mime-version:content-type
-         :content-disposition:user-agent;
-        bh=NvOumAtT2x35O9vvZdOkghzvZ4fT8CNM3jbs1Mi38rg=;
-        b=ZVLuNxO605ubZBbCMLGG92g/IXgMi20aDU0R0oAGeIkLzYDmcbk/YqBDohBuLTNanp
-         kYe6siJkAIiNtccvcFwGQJu8FQr/DfoBkMHwiItYvXSZi635Uu0bBNGRMlrEWehRz6Hn
-         p3Ja1hm9KkzY6+nFPaCi6HSVVdlY58JevK2Zyp/2xgdKgVxjxQg6MZtiwSWrU522rdh+
-         KfMiIUalnj6Se3bRlzTxCvpyL/KZLdlvoYDlq0luCXtwYIvpMvh3r8rehcb73h0twuAz
-         1WDi0sB4GiRkK9UkV/W71/5y1aN/TafNmR+ovyKqRMWU+lkOGKtR/o5LT+LAP+nr7qdj
-         HjZA==
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=roeck-us.net; s=default;
+	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=8oy+BXwkxqPtuDqZLXVOa7wEkqLCCgaeXQs8QPzrbD0=;
+	b=BVlu4bEaw/ffmO7UHsGrQyAQ3rsg27mq6dranyKjRgPGKLR20AvsiGZMIP3+V+i5ql/ZV22SVsOS/9jebVKQALkE+FoJE3/D+OxISYfE6u33GxeGMFkhemq6SihXkqe1YKr6ylWFDHJyfsoby33XmGvaQCRtIBKATsOt4CXUgG8=;
 Content-Disposition: inline
+In-Reply-To: <1438396359-27697-1-git-send-email-linux@roeck-us.net>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>
 
+On Fri, Jul 31, 2015 at 07:32:39PM -0700, Guenter Roeck wrote:
+> Commit 3cc2dac5be3f ("drivers/video/fbdev/atyfb: Replace MTRR UC hole
+> with strong UC") introduces calls to ioremap_wc and ioremap_uc. This
+> causes build failures with alpha:allmodconfig. Map the missing functions
+> to ioremap_nocache.
+> 
+> Fixes: 3cc2dac5be3f ("drivers/video/fbdev/atyfb:
+>         Replace MTRR UC hole with strong UC")
+> Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
+> Cc: Luis R. Rodriguez <mcgrof@suse.com>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 
---yrj/dFKFPuw6o+aM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ping ... alpha:allmodconfig now fails to build in mainline due to this
+problem.
 
-Hi Linus,
+Guenter
 
-Please pull a single patch for alpha, one that enables
-ARCH_USE_CMPXCHG_LOCKREF and offers around an 8% performance
-improvement on a little benchmark that you wrote.
-
-Thanks,
-Matt
-
-The following changes since commit 64291f7db5bd8150a74ad2036f1037e6a0428df2:
-
-  Linux 4.2 (2015-08-30 11:34:09 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
-
-for you to fetch changes up to 8f8dcb3f7fe4febbfa96e64d4ad47de958c5cc34:
-
-  alpha: select CONFIG_ARCH_USE_CMPXCHG_LOCKREF. (2015-08-30 18:01:16 -0700)
-
-----------------------------------------------------------------
-Matt Turner (1):
-      alpha: select CONFIG_ARCH_USE_CMPXCHG_LOCKREF.
-
- arch/alpha/Kconfig                | 1 +
- arch/alpha/include/asm/spinlock.h | 5 +++++
- 2 files changed, 6 insertions(+)
-
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index bf9e9d3..f515a4d 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -3,6 +3,7 @@ config ALPHA
- 	default y
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_MIGHT_HAVE_PC_SERIO
-+	select ARCH_USE_CMPXCHG_LOCKREF
- 	select HAVE_AOUT
- 	select HAVE_IDE
- 	select HAVE_OPROFILE
-diff --git a/arch/alpha/include/asm/spinlock.h b/arch/alpha/include/asm/spi=
-nlock.h
-index 37b570d..fed9c6f 100644
---- a/arch/alpha/include/asm/spinlock.h
-+++ b/arch/alpha/include/asm/spinlock.h
-@@ -16,6 +16,11 @@
- #define arch_spin_unlock_wait(x) \
- 		do { cpu_relax(); } while ((x)->lock)
-=20
-+static inline int arch_spin_value_unlocked(arch_spinlock_t lock)
-+{
-+        return lock.lock =3D=3D 0;
-+}
-+
- static inline void arch_spin_unlock(arch_spinlock_t * lock)
- {
- 	mb();
-
---yrj/dFKFPuw6o+aM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJV46oiAAoJEA/daC2XTKcqPvgQALJBUUuuwJuWOHd2yHNhfLvn
-IsKSTytGsLYbLaEz/tv6AZufivfMEFoHBSznXERlP4I9X0HAypw2fLjTycJGEnQb
-g4tMq+C3LrQyq//TTo0PDnN+77VZy86Iw3V9rcL/2vGKWGuZ4gxK808D1hkdNS47
-LQF6fFnWD7yv1sF53BoYheCeE0kLmpH4DPOHETH1D4RSRBsbwjuz2grUkyTnUjE2
-n737kXwhq5fh+yMLF16vDrCcjIKh+PzHt5ArU7eEyibWeMfmI2PCSbziI2SXdxOR
-lfIFnZNUEpqwe7iaif7MxTuWaEO/uqoQhNDKXw3VlKju7373aHU7TXG3kosKB28S
-fGF3ffVfMtY9Qkkg6jGeoBh0xNd4M/CfNfB/sRbI0bU2sBEgiGBE6Rj89SeLAbq6
-pEJUVlT+OfsvZu5dpV2cu117ToufSNO35T6pdyKX2DACSw9/JiaVnrsBkuYLz0/R
-zN+TgR7JHdZc3znvLfI+aEFBkK5XH3uFTQc5aQOHXbTMhWSEY8/2XV18KxycMhkS
-XINMZG1JkTXjY/SYmu3ggW9RxghU9pwT+YBhDpaM6e/qLX0zAZqW7NdrNe7Tn2me
-bunxQX6lIDxph8I7vtyallE6F1T+Tx3J3a3ktQoE7iwpqXdsUXtkwymhj81C63Dw
-RvEBJGFClEFT2y2PJwiH
-=1tu5
------END PGP SIGNATURE-----
-
---yrj/dFKFPuw6o+aM--
+> ---
+>  arch/alpha/include/asm/io.h | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+> index f05bdb4b1cb9..7edfe6bf0ee6 100644
+> --- a/arch/alpha/include/asm/io.h
+> +++ b/arch/alpha/include/asm/io.h
+> @@ -299,6 +299,9 @@ static inline void __iomem * ioremap_nocache(unsigned long offset,
+>  	return ioremap(offset, size);
+>  } 
+>  
+> +#define ioremap_wc	ioremap_nocache
+> +#define ioremap_uc	ioremap_nocache
+> +
+>  static inline void iounmap(volatile void __iomem *addr)
+>  {
+>  	IO_CONCAT(__IO_PREFIX,iounmap)(addr);
+> -- 
+> 2.1.4
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
+> 
