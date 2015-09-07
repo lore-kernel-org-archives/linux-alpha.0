@@ -1,64 +1,70 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH -next] alpha: Define ioremap_uc and ioremap_wc
-Date: Tue, 1 Sep 2015 19:12:12 -0700
-Message-ID: <20150902021211.GA14302@roeck-us.net>
-References: <1438396359-27697-1-git-send-email-linux@roeck-us.net>
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=roeck-us.net; s=default;
-	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=8oy+BXwkxqPtuDqZLXVOa7wEkqLCCgaeXQs8QPzrbD0=;
-	b=BVlu4bEaw/ffmO7UHsGrQyAQ3rsg27mq6dranyKjRgPGKLR20AvsiGZMIP3+V+i5ql/ZV22SVsOS/9jebVKQALkE+FoJE3/D+OxISYfE6u33GxeGMFkhemq6SihXkqe1YKr6ylWFDHJyfsoby33XmGvaQCRtIBKATsOt4CXUgG8=;
-Content-Disposition: inline
-In-Reply-To: <1438396359-27697-1-git-send-email-linux@roeck-us.net>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: [RFC PATCH v2 5/9] alpha: allocate sys_membarrier system call number
+Date: Mon,  7 Sep 2015 12:15:52 -0400
+Message-ID: <1441642556-30972-6-git-send-email-mathieu.desnoyers@efficios.com>
+References: <1441642556-30972-1-git-send-email-mathieu.desnoyers@efficios.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1441642556-30972-1-git-send-email-mathieu.desnoyers@efficios.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>
+To: Andrew Morton <akpm@linux-foundation.org>, linux-api@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Fri, Jul 31, 2015 at 07:32:39PM -0700, Guenter Roeck wrote:
-> Commit 3cc2dac5be3f ("drivers/video/fbdev/atyfb: Replace MTRR UC hole
-> with strong UC") introduces calls to ioremap_wc and ioremap_uc. This
-> causes build failures with alpha:allmodconfig. Map the missing functions
-> to ioremap_nocache.
-> 
-> Fixes: 3cc2dac5be3f ("drivers/video/fbdev/atyfb:
->         Replace MTRR UC hole with strong UC")
-> Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
-> Cc: Luis R. Rodriguez <mcgrof@suse.com>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+[ Untested on this architecture. To try it out: fetch linux-next/akpm,
+  apply this patch, build/run a membarrier-enabled kernel, and do make
+  kselftest. ]
 
-ping ... alpha:allmodconfig now fails to build in mainline due to this
-problem.
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+CC: Andrew Morton <akpm@linux-foundation.org>
+CC: linux-api@vger.kernel.org
+CC: Richard Henderson <rth@twiddle.net>
+CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+CC: Matt Turner <mattst88@gmail.com>
+CC: linux-alpha@vger.kernel.org
+---
+ arch/alpha/include/asm/unistd.h      | 2 +-
+ arch/alpha/include/uapi/asm/unistd.h | 1 +
+ arch/alpha/kernel/systbls.S          | 1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
 
-Guenter
-
-> ---
->  arch/alpha/include/asm/io.h | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-> index f05bdb4b1cb9..7edfe6bf0ee6 100644
-> --- a/arch/alpha/include/asm/io.h
-> +++ b/arch/alpha/include/asm/io.h
-> @@ -299,6 +299,9 @@ static inline void __iomem * ioremap_nocache(unsigned long offset,
->  	return ioremap(offset, size);
->  } 
->  
-> +#define ioremap_wc	ioremap_nocache
-> +#define ioremap_uc	ioremap_nocache
-> +
->  static inline void iounmap(volatile void __iomem *addr)
->  {
->  	IO_CONCAT(__IO_PREFIX,iounmap)(addr);
-> -- 
-> 2.1.4
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
-> 
+diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
+index a56e608..07aa4ca 100644
+--- a/arch/alpha/include/asm/unistd.h
++++ b/arch/alpha/include/asm/unistd.h
+@@ -3,7 +3,7 @@
+ 
+ #include <uapi/asm/unistd.h>
+ 
+-#define NR_SYSCALLS			514
++#define NR_SYSCALLS			515
+ 
+ #define __ARCH_WANT_OLD_READDIR
+ #define __ARCH_WANT_STAT64
+diff --git a/arch/alpha/include/uapi/asm/unistd.h b/arch/alpha/include/uapi/asm/unistd.h
+index aa33bf5..7725619 100644
+--- a/arch/alpha/include/uapi/asm/unistd.h
++++ b/arch/alpha/include/uapi/asm/unistd.h
+@@ -475,5 +475,6 @@
+ #define __NR_getrandom			511
+ #define __NR_memfd_create		512
+ #define __NR_execveat			513
++#define __NR_membarrier			514
+ 
+ #endif /* _UAPI_ALPHA_UNISTD_H */
+diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+index 9b62e3f..1ea64f4 100644
+--- a/arch/alpha/kernel/systbls.S
++++ b/arch/alpha/kernel/systbls.S
+@@ -532,6 +532,7 @@ sys_call_table:
+ 	.quad sys_getrandom
+ 	.quad sys_memfd_create
+ 	.quad sys_execveat
++	.quad sys_membarrier
+ 
+ 	.size sys_call_table, . - sys_call_table
+ 	.type sys_call_table, @object
+-- 
+1.9.1
