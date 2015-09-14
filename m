@@ -1,48 +1,49 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 2/2] alpha: lib: export __delay
-Date: Mon, 14 Sep 2015 17:19:29 +0530
-Message-ID: <1442231369-27118-3-git-send-email-sudipm.mukherjee@gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 0/2] alpha: fix build failure
+Date: Mon, 14 Sep 2015 14:22:08 -0700
+Message-ID: <20150914212208.GA11482@roeck-us.net>
 References: <1442231369-27118-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=xg+XMiHp433LaVv+ko1oopaNO7JfJA7yb3zeryhAlbA=;
-        b=AOMvXWX9M0CSkEH4o4octzmOKzELJaCmMCk9m7TOrhKkPACWz0FA7HZLImKFOWjI6I
-         3pcEKMlQUG+mkpPGDmNKy+xKLyV+TzASGExtSTblzTuAy5rViNjj4yJ7bziUHIKMQC5t
-         ED3SNgA1KvGYNvkwx9jR4oB6m9JDoIjyyz5t+aiQ8rNN9qO3S6/SDgHn9gM1H0n9Tx1R
-         CREmi6XvOmrEcdndfl9L0FmlSAVu8DjznYHMe7aFQ4Xt21BKCcYyUCxDLwQAgJEh6qUE
-         KkYnVayCxceNcxDBuURmtCGJCBXe/v/FQHNyNvRb+lnfh/5H/FaZLAsSq2qUKhO+scCW
-         yxoA==
+Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=roeck-us.net; s=default;
+	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=HNeJl6PpzMmSOODCF4Fjdo1k7g2LgQJw+v9iAMX3GWs=;
+	b=SNip1Uz9/xO5sOZYQJ/9XaF0zbNTsLgMannHgiRbIKJZm3E3LCY1qAygEBPBXXzU0QgpKA9S/TkbptseY+aFwIaQ6WKY8Mz6YRzPrF3TFfbH33q5Q69LENR6Id1aoFrfJ6G9wKlbP7gVrgJtu1+rEgs1LSf6uVEH+6IM3S8x8YM=;
+Content-Disposition: inline
 In-Reply-To: <1442231369-27118-1-git-send-email-sudipm.mukherjee@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org
 
-__delay was not exported as a result while building with allmodconfig we
-were getting build error of undefined symbol. __delay is being used by:
-drivers/net/phy/mdio-octeon.c
+On Mon, Sep 14, 2015 at 05:19:27PM +0530, Sudip Mukherjee wrote:
+> We were getting build failure on allmodconfig. Mainly two causes
+> ioremap_uc was not defined and __delay was not exported.
+> 
+I already submitted patches to fix those problems some 6+ weeks ago.
+Hope you'll have more luck.
 
-Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
----
- arch/alpha/lib/udelay.c | 1 +
- 1 file changed, 1 insertion(+)
+Guenter
 
-diff --git a/arch/alpha/lib/udelay.c b/arch/alpha/lib/udelay.c
-index 69d52aa..f2d81ff 100644
---- a/arch/alpha/lib/udelay.c
-+++ b/arch/alpha/lib/udelay.c
-@@ -30,6 +30,7 @@ __delay(int loops)
- 		"	bgt %0,1b"
- 		: "=&r" (tmp), "=r" (loops) : "1"(loops));
- }
-+EXPORT_SYMBOL(__delay);
- 
- #ifdef CONFIG_SMP
- #define LPJ	 cpu_data[smp_processor_id()].loops_per_jiffy
--- 
-1.9.1
+> regards
+> sudip
+> 
+> Sudip Mukherjee (2):
+>   alpha: io: define ioremap_uc
+>   alpha: lib: export __delay
+> 
+>  arch/alpha/include/asm/io.h | 4 +++-
+>  arch/alpha/lib/udelay.c     | 1 +
+>  2 files changed, 4 insertions(+), 1 deletion(-)
+> 
+> -- 
+> 1.9.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
+> 
