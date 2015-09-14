@@ -1,21 +1,21 @@
 From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 1/2] alpha: io: define ioremap_uc
-Date: Mon, 14 Sep 2015 17:19:28 +0530
-Message-ID: <1442231369-27118-2-git-send-email-sudipm.mukherjee@gmail.com>
+Subject: [PATCH 2/2] alpha: lib: export __delay
+Date: Mon, 14 Sep 2015 17:19:29 +0530
+Message-ID: <1442231369-27118-3-git-send-email-sudipm.mukherjee@gmail.com>
 References: <1442231369-27118-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=DOmZt+VUC5i5iCrSiozon0AiZxCGbxomi/9QxxS6s9E=;
-        b=XbWLh0WByGj2m/5hdaRtMky9HXCU1T4hyR9Cfk8Lg0/2sbqkCtP/0MuwmB9yTSpzkm
-         4VFniDRnxzztxrrrD7Y4wmgWlbZGMcUfStG8WzuKRn5wul7l7lMjbvritTGNpvHMDHk8
-         J6yaXfAUA0QQ/MpwupMVrBCf2Fpy87Ghzc8vqsJHtjPN2d4XnZwQaJKIWUE2uxY4uPCy
-         W3T/n1++9+g3BonCR7p491JcGWHCEF+J/FlBsQ3JOPesCBRGFbHOSZGRgQyKhwhR1WR1
-         lxFDXOqCA3w8cLDqGWblB/Yog7+FHjh+sWDec7GhVFXouxEqzLW4HXz0puzO3kRvApug
-         gPEA==
+        bh=xg+XMiHp433LaVv+ko1oopaNO7JfJA7yb3zeryhAlbA=;
+        b=AOMvXWX9M0CSkEH4o4octzmOKzELJaCmMCk9m7TOrhKkPACWz0FA7HZLImKFOWjI6I
+         3pcEKMlQUG+mkpPGDmNKy+xKLyV+TzASGExtSTblzTuAy5rViNjj4yJ7bziUHIKMQC5t
+         ED3SNgA1KvGYNvkwx9jR4oB6m9JDoIjyyz5t+aiQ8rNN9qO3S6/SDgHn9gM1H0n9Tx1R
+         CREmi6XvOmrEcdndfl9L0FmlSAVu8DjznYHMe7aFQ4Xt21BKCcYyUCxDLwQAgJEh6qUE
+         KkYnVayCxceNcxDBuURmtCGJCBXe/v/FQHNyNvRb+lnfh/5H/FaZLAsSq2qUKhO+scCW
+         yxoA==
 In-Reply-To: <1442231369-27118-1-git-send-email-sudipm.mukherjee@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,30 +23,26 @@ Content-Transfer-Encoding: 7bit
 To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 
-ioremap_uc was not defined and as a result while building with
-allmodconfig were getting build error of:
-implicit declaration of function 'ioremap_uc'.
+__delay was not exported as a result while building with allmodconfig we
+were getting build error of undefined symbol. __delay is being used by:
+drivers/net/phy/mdio-octeon.c
 
 Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
 ---
- arch/alpha/include/asm/io.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/alpha/lib/udelay.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-index f05bdb4..ff40491 100644
---- a/arch/alpha/include/asm/io.h
-+++ b/arch/alpha/include/asm/io.h
-@@ -297,7 +297,9 @@ static inline void __iomem * ioremap_nocache(unsigned long offset,
- 					     unsigned long size)
- {
- 	return ioremap(offset, size);
--} 
-+}
-+
-+#define ioremap_uc ioremap_nocache
+diff --git a/arch/alpha/lib/udelay.c b/arch/alpha/lib/udelay.c
+index 69d52aa..f2d81ff 100644
+--- a/arch/alpha/lib/udelay.c
++++ b/arch/alpha/lib/udelay.c
+@@ -30,6 +30,7 @@ __delay(int loops)
+ 		"	bgt %0,1b"
+ 		: "=&r" (tmp), "=r" (loops) : "1"(loops));
+ }
++EXPORT_SYMBOL(__delay);
  
- static inline void iounmap(volatile void __iomem *addr)
- {
+ #ifdef CONFIG_SMP
+ #define LPJ	 cpu_data[smp_processor_id()].loops_per_jiffy
 -- 
 1.9.1
-
