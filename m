@@ -1,40 +1,89 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 0/2] alpha: fix build failure
-Date: Tue, 15 Sep 2015 06:28:40 -0700
-Message-ID: <55F81D08.9000808@roeck-us.net>
-References: <1442231369-27118-1-git-send-email-sudipm.mukherjee@gmail.com>
- <20150914212208.GA11482@roeck-us.net> <20150915082135.GI9305@sudip-pc>
+From: Mathieu Desnoyers <mathieu.desnoyers-vg+e7yoeK/dWk0Htik3J/w@public.gmane.org>
+Subject: Re: [RFC PATCH v2 5/9] alpha: allocate sys_membarrier system call
+ number
+Date: Wed, 16 Sep 2015 15:17:32 +0000 (UTC)
+Message-ID: <51956530.9332.1442416652786.JavaMail.zimbra@efficios.com>
+References: <1441642556-30972-1-git-send-email-mathieu.desnoyers@efficios.com> <1441642556-30972-6-git-send-email-mathieu.desnoyers@efficios.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=roeck-us.net; s=default;
-	h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:Cc:References:To:Subject; bh=JoFKcWllvWCqriWnqo+8anb4zGUS1bLzTWpN+qTxMC0=;
-	b=4Xovljcq1sBL4R0ZbtEJlja2ggIi9LJ2+r7vGFgwvq8JR03X6aJ++gWpTWYcytBJoUYXCoESYOimS6JiDve21QdnVirijhf0/vuXAhlfrKk8vyo918J776q7K1PhFyhkZ2EqVXzdIR+6WHTKuAZAZZWeOqDKP9O8G/IFEzyKibc=;
-In-Reply-To: <20150915082135.GI9305@sudip-pc>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1441642556-30972-6-git-send-email-mathieu.desnoyers-vg+e7yoeK/dWk0Htik3J/w@public.gmane.org>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-api <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 
-On 09/15/2015 01:21 AM, Sudip Mukherjee wrote:
-> On Mon, Sep 14, 2015 at 02:22:08PM -0700, Guenter Roeck wrote:
->> On Mon, Sep 14, 2015 at 05:19:27PM +0530, Sudip Mukherjee wrote:
->>> We were getting build failure on allmodconfig. Mainly two causes
->>> ioremap_uc was not defined and __delay was not exported.
->>>
->> I already submitted patches to fix those problems some 6+ weeks ago.
->> Hope you'll have more luck.
-> For my allmodconfig test with next-20150915 alpha, m32r and openrisc
-> failed. And ofcourse mn10300 is broken since many months now.
-> Have you already done something with m32r or should I try? If both of us
-> are trying the same it will be a wastage of time. So asking you.
->
+----- On Sep 7, 2015, at 12:15 PM, Mathieu Desnoyers mathieu.desnoyers-vg+e7yoeK/dWk0Htik3J/w@public.gmane.org wrote:
 
-I am not building m32r:allmodconfig or openrisc:allmodconfig.
+> [ Untested on this architecture. To try it out: fetch linux-next/akpm,
+>  apply this patch, build/run a membarrier-enabled kernel, and do make
+>  kselftest. ]
 
-You can always check http://server.roeck-us.net:8010/builders to see
-what is covered by my builds and tests.
+Hi,
 
-Guenter
+sys_membarrier has been merged into Linux 4.3-rc1. sys_membarrier can therefore
+be tested on top of Linus' master.
 
+Thanks,
+
+Mathieu
+
+> 
+> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers-vg+e7yoeK/dWk0Htik3J/w@public.gmane.org>
+> CC: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+> CC: linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> CC: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>
+> CC: Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>
+> CC: Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> CC: linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> ---
+> arch/alpha/include/asm/unistd.h      | 2 +-
+> arch/alpha/include/uapi/asm/unistd.h | 1 +
+> arch/alpha/kernel/systbls.S          | 1 +
+> 3 files changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
+> index a56e608..07aa4ca 100644
+> --- a/arch/alpha/include/asm/unistd.h
+> +++ b/arch/alpha/include/asm/unistd.h
+> @@ -3,7 +3,7 @@
+> 
+> #include <uapi/asm/unistd.h>
+> 
+> -#define NR_SYSCALLS			514
+> +#define NR_SYSCALLS			515
+> 
+> #define __ARCH_WANT_OLD_READDIR
+> #define __ARCH_WANT_STAT64
+> diff --git a/arch/alpha/include/uapi/asm/unistd.h
+> b/arch/alpha/include/uapi/asm/unistd.h
+> index aa33bf5..7725619 100644
+> --- a/arch/alpha/include/uapi/asm/unistd.h
+> +++ b/arch/alpha/include/uapi/asm/unistd.h
+> @@ -475,5 +475,6 @@
+> #define __NR_getrandom			511
+> #define __NR_memfd_create		512
+> #define __NR_execveat			513
+> +#define __NR_membarrier			514
+> 
+> #endif /* _UAPI_ALPHA_UNISTD_H */
+> diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+> index 9b62e3f..1ea64f4 100644
+> --- a/arch/alpha/kernel/systbls.S
+> +++ b/arch/alpha/kernel/systbls.S
+> @@ -532,6 +532,7 @@ sys_call_table:
+> 	.quad sys_getrandom
+> 	.quad sys_memfd_create
+> 	.quad sys_execveat
+> +	.quad sys_membarrier
+> 
+> 	.size sys_call_table, . - sys_call_table
+> 	.type sys_call_table, @object
+> --
+> 1.9.1
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
