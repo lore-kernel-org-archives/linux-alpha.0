@@ -1,7 +1,7 @@
 From: Chris Metcalf <cmetcalf@ezchip.com>
-Subject: [PATCH v2 3/3] strscpy: zero any trailing garbage bytes in the destination
-Date: Tue, 6 Oct 2015 15:23:49 -0400
-Message-ID: <1444159429-4788-4-git-send-email-cmetcalf@ezchip.com>
+Subject: [PATCH v2 1/3] word-at-a-time.h: fix some Kbuild files
+Date: Tue, 6 Oct 2015 15:23:47 -0400
+Message-ID: <1444159429-4788-2-git-send-email-cmetcalf@ezchip.com>
 References: <1444159429-4788-1-git-send-email-cmetcalf@ezchip.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -13,33 +13,50 @@ Content-Transfer-Encoding: 7bit
 To: Michael Cree <mcree@orcon.net.nz>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Yoshinori Sato <ysato@users.sourceforge.jp>, Alexey Dobriyan <adobriyan@gmail.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Ingo Molnar <mingo@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <a.p.zijlstra@chello.nl>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, linux-alpha@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Cc: Chris Metcalf <cmetcalf@ezchip.com>
 
-It's possible that the destination can be shadowed in userspace
-(as, for example, the perf buffers are now).  So we should take
-care not to leak data that could be inspected by userspace.
+arch/tile added word-at-a-time.h after the patch that added generic-y
+entries; the generic-y entry is now stale.
+
+arch/h8300 is newer than the generic-y patch for word-at-a-time.h,
+and needs a generic-y entry.
+
+arch/powerpc seems to have gotten a generic-y entry by mistake in
+the first patch; this change removes it.
 
 Signed-off-by: Chris Metcalf <cmetcalf@ezchip.com>
 ---
- lib/string.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/h8300/include/asm/Kbuild   | 1 +
+ arch/powerpc/include/asm/Kbuild | 1 -
+ arch/tile/include/asm/Kbuild    | 1 -
+ 3 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/lib/string.c b/lib/string.c
-index 8dbb7b1eab50..84775ba873b9 100644
---- a/lib/string.c
-+++ b/lib/string.c
-@@ -203,12 +203,13 @@ ssize_t strscpy(char *dest, const char *src, size_t count)
- 		unsigned long c, data;
- 
- 		c = *(unsigned long *)(src+res);
--		*(unsigned long *)(dest+res) = c;
- 		if (has_zero(c, &data, &constants)) {
- 			data = prep_zero_mask(c, data, &constants);
- 			data = create_zero_mask(data);
-+			*(unsigned long *)(dest+res) = c & zero_bytemask(data);
- 			return res + find_zero(data);
- 		}
-+		*(unsigned long *)(dest+res) = c;
- 		res += sizeof(unsigned long);
- 		count -= sizeof(unsigned long);
- 		max -= sizeof(unsigned long);
+diff --git a/arch/h8300/include/asm/Kbuild b/arch/h8300/include/asm/Kbuild
+index 70e6ae1e7006..373cb23301e3 100644
+--- a/arch/h8300/include/asm/Kbuild
++++ b/arch/h8300/include/asm/Kbuild
+@@ -73,4 +73,5 @@ generic-y += uaccess.h
+ generic-y += ucontext.h
+ generic-y += unaligned.h
+ generic-y += vga.h
++generic-y += word-at-a-time.h
+ generic-y += xor.h
+diff --git a/arch/powerpc/include/asm/Kbuild b/arch/powerpc/include/asm/Kbuild
+index ac1662956e0c..ab9f4e0ed4cf 100644
+--- a/arch/powerpc/include/asm/Kbuild
++++ b/arch/powerpc/include/asm/Kbuild
+@@ -7,4 +7,3 @@ generic-y += mcs_spinlock.h
+ generic-y += preempt.h
+ generic-y += rwsem.h
+ generic-y += vtime.h
+-generic-y += word-at-a-time.h
+diff --git a/arch/tile/include/asm/Kbuild b/arch/tile/include/asm/Kbuild
+index 0b6cacaad933..ba35c41c71ff 100644
+--- a/arch/tile/include/asm/Kbuild
++++ b/arch/tile/include/asm/Kbuild
+@@ -40,5 +40,4 @@ generic-y += termbits.h
+ generic-y += termios.h
+ generic-y += trace_clock.h
+ generic-y += types.h
+-generic-y += word-at-a-time.h
+ generic-y += xor.h
 -- 
 2.1.2
