@@ -1,54 +1,113 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH] alpha: mm: fix build failure
-Date: Mon,  7 Dec 2015 17:32:24 +0530
-Message-ID: <1449489744-20051-1-git-send-email-sudipm.mukherjee@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=from:to:cc:subject:date:message-id;
-        bh=pOrBWw2m6iknEzxkqx6R22IBHaKvkBkpvaa17hpbMFM=;
-        b=X5fzowVtcc75qRnloeNEClw0dQtF9C8+xdskaNDz3ePUF61w0ma9xXVoeXTa2ojXTi
-         DNKUjLOLUbNUqKzAo7GtxA6bdgIisUF3FNu8kY9nlbMFOY+8a28blRzuKLqoH0tbYESR
-         TD3frnMvp4fdsm6uUTF0fq00ZHYqXK0I5wtVhC8qQH6oEq1+m73YUaHvrk1baxJM1ayx
-         yUZ5U+E9HSi5AEktyRtxErAKPKWF7kKva2N4vg5vtadFi3Yqho+gNk9n86z9KxQQCtzN
-         Ay1YfEpv55kCRjmq855vm+BbOafOGaQexux44TzLMn/70pQ8HC3TAnQPQddeuTEw4C7p
-         gb6A==
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH part3 v12 00/10] Cleanup platform pci_domain_nr()
+Date: Mon, 7 Dec 2015 15:53:56 -0600
+Message-ID: <20151207215356.GD14429@localhost>
+References: <1437393678-4077-1-git-send-email-wangyijing@huawei.com>
+Mime-Version: 1.0
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Disposition: inline
+In-Reply-To: <1437393678-4077-1-git-send-email-wangyijing@huawei.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>, Chen Gang <gang.chen.5i5j@gmail.com>, Minchan Kim <minchan@kernel.org>
+To: Yijing Wang <wangyijing@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Russell King <linux@arm.linux.org.uk>, dja@axtens.net, linux-xtensa@linux-xtensa.org, x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-mips@linux-mips.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Rusty Russell <rusty@rustcorp.com.au>, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-am33-list@redhat.com, Liviu Dudau <liviu@dudau.co.uk>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-We are having build failure with alpha defconfig with the error:
-"MADV_FREE" redefined.
+On Mon, Jul 20, 2015 at 08:01:08PM +0800, Yijing Wang wrote:
+> This series is splitted out from previous patchset
+> "Refine PCI scan interfaces and make generic pci host bridge".
+> It try to clean up all platform pci_domain_nr(), save domain
+> in pci_host_bridge, so we could get domain number from the
+> common interface. 
+> 
+> v11->v12:
+>   Introduce wrap function pci_create_root_bus_generic()
+>   and pci_create_root_bus_generic() for arm/arm64 which
+>   enable CONFIG_PCI_DOMAINS_GENERIC.
+>   Rebased this series based 4.2-rc1
+> 
+> Yijing Wang (10):
+>   PCI: Save domain in pci_host_bridge
+>   PCI: Move pci_bus_assign_domain_nr() declaration into
+>     drivers/pci/pci.h
+>   PCI: Remove declaration for pci_get_new_domain_nr()
+>   PCI: Introduce pci_host_assign_domain_nr() to assign domain
+>   powerpc/PCI: Rename pcibios_root_bridge_prepare() to
+>     pcibios_root_bus_prepare()
+>   PCI: Make pci_host_bridge hold sysdata in drvdata
+>   PCI: Create pci host bridge prior to root bus
+>   PCI: Introduce common pci_domain_nr() and remove platform specific
+>     code
+>   PCI: Remove pci_bus_assign_domain_nr()
+>   IA64/PCI: Fix build warning found by kbuild test
+> 
+>  arch/alpha/include/asm/pci.h             |    2 -
+>  arch/alpha/kernel/pci.c                  |    4 +-
+>  arch/alpha/kernel/sys_nautilus.c         |    2 +-
+>  arch/arm/kernel/bios32.c                 |    2 +-
+>  arch/arm/mach-dove/pcie.c                |    2 +-
+>  arch/arm/mach-iop13xx/pci.c              |    4 +-
+>  arch/arm/mach-mv78xx0/pcie.c             |    2 +-
+>  arch/arm/mach-orion5x/pci.c              |    4 +-
+>  arch/frv/mb93090-mb00/pci-vdk.c          |    3 +-
+>  arch/ia64/include/asm/pci.h              |    1 -
+>  arch/ia64/pci/pci.c                      |    6 +-
+>  arch/ia64/sn/kernel/io_acpi_init.c       |    6 +-
+>  arch/ia64/sn/kernel/io_init.c            |    6 +-
+>  arch/m68k/coldfire/pci.c                 |    2 +-
+>  arch/microblaze/include/asm/pci.h        |    2 -
+>  arch/microblaze/pci/pci-common.c         |   15 +----
+>  arch/mips/include/asm/pci.h              |    2 -
+>  arch/mips/pci/pci.c                      |    4 +-
+>  arch/mn10300/unit-asb2305/pci.c          |    3 +-
+>  arch/powerpc/include/asm/machdep.h       |    2 +-
+>  arch/powerpc/include/asm/pci.h           |    2 -
+>  arch/powerpc/kernel/pci-common.c         |   21 ++-----
+>  arch/powerpc/platforms/pseries/pci.c     |    2 +-
+>  arch/powerpc/platforms/pseries/pseries.h |    2 +-
+>  arch/powerpc/platforms/pseries/setup.c   |    2 +-
+>  arch/s390/include/asm/pci.h              |    1 -
+>  arch/s390/pci/pci.c                      |   10 +---
+>  arch/sh/drivers/pci/pci.c                |    4 +-
+>  arch/sh/include/asm/pci.h                |    2 -
+>  arch/sparc/include/asm/pci_64.h          |    1 -
+>  arch/sparc/kernel/leon_pci.c             |    2 +-
+>  arch/sparc/kernel/pci.c                  |   21 +------
+>  arch/sparc/kernel/pcic.c                 |    2 +-
+>  arch/tile/include/asm/pci.h              |    2 -
+>  arch/tile/kernel/pci.c                   |    4 +-
+>  arch/tile/kernel/pci_gx.c                |    4 +-
+>  arch/unicore32/kernel/pci.c              |    2 +-
+>  arch/x86/include/asm/pci.h               |    6 --
+>  arch/x86/pci/acpi.c                      |    6 +-
+>  arch/x86/pci/common.c                    |    2 +-
+>  arch/xtensa/kernel/pci.c                 |    2 +-
+>  drivers/parisc/dino.c                    |    2 +-
+>  drivers/parisc/lba_pci.c                 |    2 +-
+>  drivers/pci/host/pci-versatile.c         |    3 +-
+>  drivers/pci/host/pci-xgene.c             |    2 +-
+>  drivers/pci/host/pcie-designware.c       |    2 +-
+>  drivers/pci/host/pcie-iproc.c            |    2 +-
+>  drivers/pci/host/pcie-xilinx.c           |    2 +-
+>  drivers/pci/hotplug/ibmphp_core.c        |    2 +-
+>  drivers/pci/pci.c                        |   31 ++++++++--
+>  drivers/pci/pci.h                        |    1 +
+>  drivers/pci/probe.c                      |   92 +++++++++++++++++-------------
+>  drivers/pci/xen-pcifront.c               |    2 +-
+>  include/linux/pci.h                      |   39 ++++++-------
+>  54 files changed, 161 insertions(+), 195 deletions(-)
 
-commit d53d95838c7d introduced uniform values for all architecture but
-missed removing the old value.
+Doesn't apply to v4.4-rc2.  Please refresh and repost if this is still
+relevant.
 
-Fixes: d53d95838c7d ("arch/*/include/uapi/asm/mman.h: : let MADV_FREE have same value for all architectures")
-Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
----
-
-build log at:
-https://travis-ci.org/sudipm-mukherjee/parport/jobs/95309505
-
- arch/alpha/include/uapi/asm/mman.h | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
-index ab336c0..fec1947 100644
---- a/arch/alpha/include/uapi/asm/mman.h
-+++ b/arch/alpha/include/uapi/asm/mman.h
-@@ -47,7 +47,6 @@
- #define MADV_WILLNEED	3		/* will need these pages */
- #define	MADV_SPACEAVAIL	5		/* ensure resources are available */
- #define MADV_DONTNEED	6		/* don't need these pages */
--#define MADV_FREE	7		/* free pages only if memory pressure */
- 
- /* common/generic parameters */
- #define MADV_FREE	8		/* free pages only if memory pressure */
--- 
-1.9.1
+Bjorn
 
