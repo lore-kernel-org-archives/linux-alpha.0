@@ -1,7 +1,7 @@
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: [PATCH 3/6] s390/extable: use generic search and sort routines
-Date: Sun,  3 Jan 2016 17:05:54 +0100
-Message-ID: <1451837157-447-4-git-send-email-ard.biesheuvel@linaro.org>
+Subject: [PATCH 4/6] x86/extable: use generic search and sort routines
+Date: Sun,  3 Jan 2016 17:05:55 +0100
+Message-ID: <1451837157-447-5-git-send-email-ard.biesheuvel@linaro.org>
 References: <1451837157-447-1-git-send-email-ard.biesheuvel@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -9,10 +9,10 @@ Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=xKD9r9Wk09UdAF5wrHmxybydU1mlXcRjcQC8ma7+aJ8=;
- b=XI63UcnCnZ2qN6ay19yHfVm70HVr+3BwlD24rUHifF/hWIXdmQeE9FCA+R+UIIS6oO
- ABn6mAN9Xaf1/qTzixWC0gUi/GoES0lCb4bJy90GrA9LnC9WESo7CRbqOKNz5sInRJC4
- AW2lboXipokW9A1XlruCLx8hVyTvPxQH+f2ZI=
+ bh=+dPxZcuBfDpJNQBQyNImvabl8tyCCrbRohLEJK88654=;
+ b=G+aE2yAG4Q9/OwUcKbu0RqcXh/ZHW5KM7e3ED+aKvIpoD0GHBXDbs+pcg/jPP89sFU
+ B+BLSSNGLaDwnqtrWHy+SXQfoq4p4O3JeAowxDypAmOLFL9+9/LFzBr1UQPU0bSVKzvN
+ RPk+I24sAIRWY/yMXoScwZp/zpreisYwbHP5o=
 In-Reply-To: <1451837157-447-1-git-send-email-ard.biesheuvel@linaro.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -31,61 +31,55 @@ Replace the arch specific versions of search_extable() and sort_extable()
 with calls to the generic ones, which now support relative exception
 tables as well.
 
-Cc: Martin Schwidefsky <schwidefsky@de.ibm.com>
-Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
 Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 ---
- arch/s390/include/asm/uaccess.h |  8 +-
- arch/s390/mm/Makefile           |  2 +-
- arch/s390/mm/extable.c          | 85 --------------------
- 3 files changed, 2 insertions(+), 93 deletions(-)
+ arch/x86/include/asm/uaccess.h |   5 +-
+ arch/x86/mm/extable.c          | 106 +-------------------
+ 2 files changed, 4 insertions(+), 107 deletions(-)
 
-diff --git a/arch/s390/include/asm/uaccess.h b/arch/s390/include/asm/uaccess.h
-index 9dd4cc47ddc7..e0900ddf91dd 100644
---- a/arch/s390/include/asm/uaccess.h
-+++ b/arch/s390/include/asm/uaccess.h
-@@ -79,18 +79,12 @@ struct exception_table_entry
+diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+index 09b1b0ab94b7..6d130c4cb7de 100644
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -106,9 +106,8 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
+ struct exception_table_entry {
  	int insn, fixup;
  };
+-/* This is not the generic standard exception_table_entry format */
+-#define ARCH_HAS_SORT_EXTABLE
+-#define ARCH_HAS_SEARCH_EXTABLE
++
++#define ARCH_HAS_RELATIVE_EXTABLE
  
--static inline unsigned long extable_insn(const struct exception_table_entry *x)
+ extern int fixup_exception(struct pt_regs *regs);
+ extern int early_fixup_exception(unsigned long *ip);
+diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
+index 903ec1e9c326..0b172b656f43 100644
+--- a/arch/x86/mm/extable.c
++++ b/arch/x86/mm/extable.c
+@@ -1,14 +1,9 @@
++
+ #include <linux/module.h>
+-#include <linux/spinlock.h>
+-#include <linux/sort.h>
++
+ #include <asm/uaccess.h>
+ 
+ static inline unsigned long
+-ex_insn_addr(const struct exception_table_entry *x)
 -{
 -	return (unsigned long)&x->insn + x->insn;
 -}
--
- static inline unsigned long extable_fixup(const struct exception_table_entry *x)
+-static inline unsigned long
+ ex_fixup_addr(const struct exception_table_entry *x)
  {
  	return (unsigned long)&x->fixup + x->fixup;
+@@ -70,100 +65,3 @@ int __init early_fixup_exception(unsigned long *ip)
+ 
+ 	return 0;
  }
- 
--#define ARCH_HAS_SORT_EXTABLE
--#define ARCH_HAS_SEARCH_EXTABLE
-+#define ARCH_HAS_RELATIVE_EXTABLE
- 
- /**
-  * __copy_from_user: - Copy a block of data from user space, with less checking.
-diff --git a/arch/s390/mm/Makefile b/arch/s390/mm/Makefile
-index 839592ca265c..479550dae80e 100644
---- a/arch/s390/mm/Makefile
-+++ b/arch/s390/mm/Makefile
-@@ -3,7 +3,7 @@
- #
- 
- obj-y		:= init.o fault.o extmem.o mmap.o vmem.o pgtable.o maccess.o
--obj-y		+= page-states.o gup.o extable.o pageattr.o mem_detect.o
-+obj-y		+= page-states.o gup.o pageattr.o mem_detect.o
- 
- obj-$(CONFIG_CMM)		+= cmm.o
- obj-$(CONFIG_HUGETLB_PAGE)	+= hugetlbpage.o
-diff --git a/arch/s390/mm/extable.c b/arch/s390/mm/extable.c
-deleted file mode 100644
-index 18c8b819b0aa..000000000000
---- a/arch/s390/mm/extable.c
-+++ /dev/null
-@@ -1,85 +0,0 @@
--#include <linux/module.h>
--#include <linux/sort.h>
--#include <asm/uaccess.h>
 -
 -/*
 - * Search one exception table for an entry corresponding to the
@@ -99,20 +93,20 @@ index 18c8b819b0aa..000000000000
 -	       const struct exception_table_entry *last,
 -	       unsigned long value)
 -{
--	const struct exception_table_entry *mid;
--	unsigned long addr;
--
 -	while (first <= last) {
+-		const struct exception_table_entry *mid;
+-		unsigned long addr;
+-
 -		mid = ((last - first) >> 1) + first;
--		addr = extable_insn(mid);
+-		addr = ex_insn_addr(mid);
 -		if (addr < value)
 -			first = mid + 1;
 -		else if (addr > value)
 -			last = mid - 1;
 -		else
 -			return mid;
--	}
--	return NULL;
+-        }
+-        return NULL;
 -}
 -
 -/*
@@ -126,7 +120,13 @@ index 18c8b819b0aa..000000000000
 -{
 -	const struct exception_table_entry *x = a, *y = b;
 -
--	/* This compare is only valid after normalization. */
+-	/*
+-	 * This value will always end up fittin in an int, because on
+-	 * both i386 and x86-64 the kernel symbol-reachable address
+-	 * space is < 2 GiB.
+-	 *
+-	 * This compare is only valid after normalization.
+-	 */
 -	return x->insn - y->insn;
 -}
 -
@@ -136,16 +136,25 @@ index 18c8b819b0aa..000000000000
 -	struct exception_table_entry *p;
 -	int i;
 -
--	/* Normalize entries to being relative to the start of the section */
--	for (p = start, i = 0; p < finish; p++, i += 8) {
+-	/* Convert all entries to being relative to the start of the section */
+-	i = 0;
+-	for (p = start; p < finish; p++) {
 -		p->insn += i;
--		p->fixup += i + 4;
+-		i += 4;
+-		p->fixup += i;
+-		i += 4;
 -	}
--	sort(start, finish - start, sizeof(*start), cmp_ex, NULL);
+-
+-	sort(start, finish - start, sizeof(struct exception_table_entry),
+-	     cmp_ex, NULL);
+-
 -	/* Denormalize all entries */
--	for (p = start, i = 0; p < finish; p++, i += 8) {
+-	i = 0;
+-	for (p = start; p < finish; p++) {
 -		p->insn -= i;
--		p->fixup -= i + 4;
+-		i += 4;
+-		p->fixup -= i;
+-		i += 4;
 -	}
 -}
 -
@@ -156,15 +165,15 @@ index 18c8b819b0aa..000000000000
 - */
 -void trim_init_extable(struct module *m)
 -{
--	/* Trim the beginning */
+-	/*trim the beginning*/
 -	while (m->num_exentries &&
--	       within_module_init(extable_insn(&m->extable[0]), m)) {
+-	       within_module_init(ex_insn_addr(&m->extable[0]), m)) {
 -		m->extable++;
 -		m->num_exentries--;
 -	}
--	/* Trim the end */
+-	/*trim the end*/
 -	while (m->num_exentries &&
--	       within_module_init(extable_insn(&m->extable[m->num_exentries-1]), m))
+-	       within_module_init(ex_insn_addr(&m->extable[m->num_exentries-1]), m))
 -		m->num_exentries--;
 -}
 -#endif /* CONFIG_MODULES */
