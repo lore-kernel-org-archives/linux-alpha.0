@@ -1,13 +1,13 @@
 From: "H. Peter Anvin" <hpa@zytor.com>
 Subject: Re: [PATCH 6/6] arm64: switch to relative exception tables
-Date: Mon, 04 Jan 2016 10:47:09 -0800
-Message-ID: <568ABE2D.9060207@zytor.com>
+Date: Mon, 04 Jan 2016 11:21:46 -0800
+Message-ID: <568AC64A.4090601@zytor.com>
 References: <1451837157-447-1-git-send-email-ard.biesheuvel@linaro.org> <1451837157-447-7-git-send-email-ard.biesheuvel@linaro.org> <20160104144643.GE1616@arm.com> <568AB65A.8030901@zytor.com> <3908561D78D1C84285E8C5FCA982C28F39FA127B@ORSMSX114.amr.corp.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 In-Reply-To: <3908561D78D1C84285E8C5FCA982C28F39FA127B@ORSMSX114.amr.corp.intel.com>
-Sender: linux-ia64-owner@vger.kernel.org
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: "Luck, Tony" <tony.luck@intel.com>, Will Deacon <will.deacon@arm.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>
@@ -25,7 +25,8 @@ On 01/04/2016 10:20 AM, Luck, Tony wrote:
 > http://marc.info/?l=linux-kernel&m=145187079504846&w=2
 > 
 
-That doesn't mean it can't be overridden.
+I suspect that means we will also need to go back to arch-specific
+sorting for x86.
 
 	-hpa
 
