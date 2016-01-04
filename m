@@ -1,60 +1,27 @@
-From: "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH 0/6] generic relative extable support
-Date: Mon, 04 Jan 2016 10:15:28 -0800
-Message-ID: <568AB6C0.4060502@zytor.com>
-References: <1451837157-447-1-git-send-email-ard.biesheuvel@linaro.org> <20160104112026.GC4179@osiris>
+From: "Luck, Tony" <tony.luck@intel.com>
+Subject: RE: [PATCH 6/6] arm64: switch to relative exception tables
+Date: Mon, 4 Jan 2016 18:20:50 +0000
+Message-ID: <3908561D78D1C84285E8C5FCA982C28F39FA127B@ORSMSX114.amr.corp.intel.com>
+References: <1451837157-447-1-git-send-email-ard.biesheuvel@linaro.org>
+ <1451837157-447-7-git-send-email-ard.biesheuvel@linaro.org>
+ <20160104144643.GE1616@arm.com> <568AB65A.8030901@zytor.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20160104112026.GC4179@osiris>
+In-Reply-To: <568AB65A.8030901@zytor.com>
+Content-Language: en-US
 Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Heiko Carstens <heiko.carstens@de.ibm.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, mingo@redhat.com, schwidefsky@de.ibm.com, mattst88@gmail.com, ink@jurassic.park.msu.ru, rth@twiddle.net, tony.luck@intel.com, fenghua.yu@intel.com, catalin.marinas@arm.com, will.deacon@arm.com, arnd@arndb.de, akpm@linux-foundation.org, mark.rutland@arm.com, marc.zyngier@arm.com
+To: "H. Peter Anvin" <hpa@zytor.com>, Will Deacon <will.deacon@arm.com>, Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "mingo@redhat.com" <mingo@redhat.com>, "heiko.carstens@de.ibm.com" <heiko.carstens@de.ibm.com>, "schwidefsky@de.ibm.com" <schwidefsky@de.ibm.com>, "mattst88@gmail.com" <mattst88@gmail.com>, "ink@jurassic.park.msu.ru" <ink@jurassic.park.msu.ru>, "rth@twiddle.net" <rth@twiddle.net>, "Yu, Fenghua" <fenghua.yu@intel.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "arnd@arndb.de" <arnd@arndb.de>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, marc.zyngi
 
-On 01/04/2016 03:20 AM, Heiko Carstens wrote:
-> On Sun, Jan 03, 2016 at 05:05:51PM +0100, Ard Biesheuvel wrote:
->> There are currently four architectures (x86, ia64, alpha and s390) whose
->> user-access exception tables are relative to the table entry address rather
->> than absolute. Each of these architectures has its own search_extable() and
->> sort_extable() implementation, which are not only mostly identical to each
->> other, but also deviate very little from the generic absolute implementations
->> in lib/extable.c that they override.
->>
->> So before making arm64 the fifth architecture that reimplements this, let's
->> refactor the existing code so that all of these architectures use common code
->> for searching and sorting the relative extables. Archs may set
->> ARCH_HAS_RELATIVE_EXTABLE to indicate that the table consists of a pair of
->> relative ints, and may define swap_ex_entry_fixup() if the fixup member needs
->> special treatment in the swapping step of the sorting routine (such as alpha).
->>
->> Note that the s390 patch applies on top of the following patch:
->>
->>   http://article.gmane.org/gmane.linux.kernel/2117036
->>
->> which fixes a bug I spotted while working on this code. Since that probably
->> needs to go to -stable, I broke it out and posted it separately.
->>
->> Ard Biesheuvel (6):
->>   extable: add support for relative extables to search and sort routines
->>   alpha/extable: use generic search and sort routines
->>   s390/extable: use generic search and sort routines
->>   x86/extable: use generic search and sort routines
->>   ia64/extable: use generic search and sort routines
->>   arm64: switch to relative exception tables
-> 
-> For the s390 bits:
-> 
-> Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com>
-> 
-
-For the x86 bits:
-
-Acked-by: H. Peter Anvin <hpa@linux.intel.com>
-
-*However*, please see my comment about generalizing _ASM_EXTABLE() for
-the non-x86 architectures.
-
-	-hpa
-
+PiBNYXkgSSBodW1ibHkgYXNrIHdoeSB0aGUgW0Zpbm5pc2hdIHlvdSBkb24ndCB1c2UgdGhlIGVx
+dWl2YWxlbnQgb2YgdGhlDQo+IHg4NiBfQVNNX0VYVEFCTEUoKSBtYWNybz8gIEluIGZhY3QsIHdo
+eSBkb24ndCB3ZSBtYWtlIHRoYXQgb25lIGdlbmVyaWMsIHRvbz8NCg0KSSdtIG1lc3Npbmcgd2l0
+aCB0aGF0IHJpZ2h0IG5vdyAod2l0aCBoZWxwIGZyb20gQW5keSBMdXRvbWlyc2tpIGFuZCBCb3Jp
+cykgdG8NCmFkZCBkaWZmZXJlbnQgY2xhc3NlcyBvZiBleGNlcHRpb24gdGFibGUgKHNvIEkgY2Fu
+IHRhZyBzb21lIGluc3RydWN0aW9ucyBhcyBiZWluZw0Kc3VpdGFibGUgZm9yIGZpeHVwIGZyb20g
+dGhlIG1hY2hpbmUgY2hlY2sgaGFuZGxlcikuICBTbyBpdCBtaWdodCBub3QgYmUgZ2VuZXJpYw0K
+Zm9yIG11Y2ggbG9uZ2VyLg0KDQpodHRwOi8vbWFyYy5pbmZvLz9sPWxpbnV4LWtlcm5lbCZtPTE0
+NTE4NzA3OTUwNDg0NiZ3PTINCg0KLVRvbnkNCg==
