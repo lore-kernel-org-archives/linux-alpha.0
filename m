@@ -1,16 +1,18 @@
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: [PATCH v2 0/6] generic relative extable support
-Date: Tue,  5 Jan 2016 16:19:34 +0100
-Message-ID: <1452007180-27411-1-git-send-email-ard.biesheuvel@linaro.org>
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Subject: [PATCH v2 1/6] extable: add support for relative extables to search and sort routines
+Date: Tue,  5 Jan 2016 16:19:35 +0100
+Message-ID: <1452007180-27411-2-git-send-email-ard.biesheuvel@linaro.org>
+References: <1452007180-27411-1-git-send-email-ard.biesheuvel@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=KnnQ4vj7gRGzghyd2nJNejeOUPkG1noYjeNv6RudOwA=;
-        b=K46kzGEXmTUWph8YsMCdIKoQRP5vEILSqFtp8dSVPEYetrhxs4fpJbiksbPAWAr6gV
-         DGPhR/fZAby9O0VLraY87A65cQb6Yfq9q0GMbGRAEL3RTdYuvZ0gWb1IHF+24Z/JRISB
-         QmK1eSWa4TbimvEulejmtTpKDq8LJgxvAcdD8=
-Sender: linux-ia64-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=yR5Xnd8j37tGEeCYqflsSJCJeL9KBQq3IVxY/PTb5gs=;
+        b=N8Db+8vqed6o/k0ysvup1OdVwAogYfInHn9Qz57LWtyruadVTgFkef5ZHsI47FZAy/
+         3sRaIUzVJ/bPgDSwheHZ/Pnil+ddqETSruBBH9XTlTs2t+/6shK5MIoygBcV5kqfE0Zl
+         Gli9LdM/1KNqfUqV/RpAeAeexSPQfQnwNCN50=
+In-Reply-To: <1452007180-27411-1-git-send-email-ard.biesheuvel@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,69 +20,118 @@ Content-Transfer-Encoding: 7bit
 To: akpm@linux-foundation.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, hpa@zytor.com, mingo@redhat.com, heiko.carstens@de.ibm.com, schwidefsky@de.ibm.com, mattst88@gmail.com, ink@jurassic.park.msu.ru, rth@twiddle.net, tony.luck@intel.com, fenghua.yu@intel.com, catalin.marinas@arm.com, will.deacon@arm.com, arnd@arndb.de
 Cc: deller@gmx.de, mark.rutland@arm.com, Ard Biesheuvel <ard.biesheuvel@linaro.org>
 
-There are currently four architectures (x86, ia64, alpha and s390) whose
-user-access exception tables are relative to the table entry address rather
-than absolute. Each of these architectures has its own search_extable() and
-sort_extable() implementation, which are not only mostly identical to each
-other, but also deviate very little from the generic absolute implementations
-in lib/extable.c that they override.
+This adds support to the generic search_extable() and sort_extable()
+implementations for dealing with exception table entries whose fields
+contain relative offsets rather than absolute addresses.
 
-So before making arm64 the fifth architecture that reimplements this, let's
-refactor the existing code so that all of these architectures use common code
-for searching and sorting the relative extables. Archs may set
-ARCH_HAS_RELATIVE_EXTABLE to indicate that the table consists of a pair of
-relative ints, and may define swap_ex_entry_fixup() if the fixup member needs
-special treatment in the swapping step of the sorting routine (such as alpha).
+Acked-by: Helge Deller <deller@gmx.de>
+Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com>
+Acked-by: H. Peter Anvin <hpa@linux.intel.com>
+Acked-by: Tony Luck <tony.luck@intel.com>
+Acked-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+---
+ lib/extable.c | 50 ++++++++++++++++----
+ 1 file changed, 41 insertions(+), 9 deletions(-)
 
-Changes since v2:
-- introduce the _ASM_EXTABLE() cpp macro for arm64, and replace all open coded
-  exception table entries with it, including an instance I missed in v1 in
-  asm/word-at-a-time.h (suggested by hpa)
-- added acks to from arch maintainers
-
-No acks yet for the arch/alpha patch.
+diff --git a/lib/extable.c b/lib/extable.c
+index 4cac81ec225e..0be02ad561e9 100644
+--- a/lib/extable.c
++++ b/lib/extable.c
+@@ -14,7 +14,37 @@
+ #include <linux/sort.h>
+ #include <asm/uaccess.h>
  
-NOTE: I took the liberty of carrying over each arch specific ack to the generic
-shared first patch, since they are tightly coupled anyway. If anyone objects to
-this, please let me know.
-
-Also note that the s390 patch applies on top of the following patch:
-
-  http://article.gmane.org/gmane.linux.kernel/2117036
-
-which fixes a bug I spotted while working on this code. Since that probably
-needs to go to -stable, I broke it out and posted it separately.
-
-Ard Biesheuvel (6):
-  extable: add support for relative extables to search and sort routines
-  alpha/extable: use generic search and sort routines
-  s390/extable: use generic search and sort routines
-  x86/extable: use generic search and sort routines
-  ia64/extable: use generic search and sort routines
-  arm64: switch to relative exception tables
-
- arch/alpha/include/asm/uaccess.h        |  10 +-
- arch/alpha/mm/Makefile                  |   2 +-
- arch/alpha/mm/extable.c                 |  92 -----------------
- arch/arm64/include/asm/assembler.h      |  15 ++-
- arch/arm64/include/asm/futex.h          |  12 +--
- arch/arm64/include/asm/uaccess.h        |  30 +++---
- arch/arm64/include/asm/word-at-a-time.h |   7 +-
- arch/arm64/kernel/armv8_deprecated.c    |   7 +-
- arch/arm64/mm/extable.c                 |   2 +-
- arch/ia64/include/asm/uaccess.h         |   8 +-
- arch/ia64/mm/extable.c                  |  97 +-----------------
- arch/s390/include/asm/uaccess.h         |   8 +-
- arch/s390/mm/Makefile                   |   2 +-
- arch/s390/mm/extable.c                  |  85 ----------------
- arch/x86/include/asm/uaccess.h          |   5 +-
- arch/x86/mm/extable.c                   | 106 +-------------------
- lib/extable.c                           |  50 +++++++--
- scripts/sortextable.c                   |   2 +-
- 18 files changed, 98 insertions(+), 442 deletions(-)
- delete mode 100644 arch/alpha/mm/extable.c
- delete mode 100644 arch/s390/mm/extable.c
-
++#ifndef ARCH_HAS_RELATIVE_EXTABLE
++#define ex_to_insn(x)	((x)->insn)
++#else
++static inline unsigned long ex_to_insn(const struct exception_table_entry *x)
++{
++	return (unsigned long)&x->insn + x->insn;
++}
++#endif
++
+ #ifndef ARCH_HAS_SORT_EXTABLE
++#ifndef ARCH_HAS_RELATIVE_EXTABLE
++#define swap_ex		NULL
++#else
++static void swap_ex(void *a, void *b, int size)
++{
++	struct exception_table_entry *x = a, *y = b, tmp;
++	int delta = b - a;
++
++	tmp = *x;
++	x->insn = y->insn + delta;
++	y->insn = tmp.insn - delta;
++
++#ifdef swap_ex_entry_fixup
++	swap_ex_entry_fixup(x, y, tmp, delta);
++#else
++	x->fixup = y->fixup + delta;
++	y->fixup = tmp.fixup - delta;
++#endif
++}
++#endif /* ARCH_HAS_RELATIVE_EXTABLE */
++
+ /*
+  * The exception table needs to be sorted so that the binary
+  * search that we use to find entries in it works properly.
+@@ -26,9 +56,9 @@ static int cmp_ex(const void *a, const void *b)
+ 	const struct exception_table_entry *x = a, *y = b;
+ 
+ 	/* avoid overflow */
+-	if (x->insn > y->insn)
++	if (ex_to_insn(x) > ex_to_insn(y))
+ 		return 1;
+-	if (x->insn < y->insn)
++	if (ex_to_insn(x) < ex_to_insn(y))
+ 		return -1;
+ 	return 0;
+ }
+@@ -37,7 +67,7 @@ void sort_extable(struct exception_table_entry *start,
+ 		  struct exception_table_entry *finish)
+ {
+ 	sort(start, finish - start, sizeof(struct exception_table_entry),
+-	     cmp_ex, NULL);
++	     cmp_ex, swap_ex);
+ }
+ 
+ #ifdef CONFIG_MODULES
+@@ -48,13 +78,15 @@ void sort_extable(struct exception_table_entry *start,
+ void trim_init_extable(struct module *m)
+ {
+ 	/*trim the beginning*/
+-	while (m->num_exentries && within_module_init(m->extable[0].insn, m)) {
++	while (m->num_exentries &&
++	       within_module_init(ex_to_insn(&m->extable[0]), m)) {
+ 		m->extable++;
+ 		m->num_exentries--;
+ 	}
+ 	/*trim the end*/
+ 	while (m->num_exentries &&
+-		within_module_init(m->extable[m->num_exentries-1].insn, m))
++	       within_module_init(ex_to_insn(&m->extable[m->num_exentries - 1]),
++				  m))
+ 		m->num_exentries--;
+ }
+ #endif /* CONFIG_MODULES */
+@@ -81,13 +113,13 @@ search_extable(const struct exception_table_entry *first,
+ 		 * careful, the distance between value and insn
+ 		 * can be larger than MAX_LONG:
+ 		 */
+-		if (mid->insn < value)
++		if (ex_to_insn(mid) < value)
+ 			first = mid + 1;
+-		else if (mid->insn > value)
++		else if (ex_to_insn(mid) > value)
+ 			last = mid - 1;
+ 		else
+ 			return mid;
+-        }
+-        return NULL;
++	}
++	return NULL;
+ }
+ #endif
 -- 
 2.5.0
-
