@@ -1,104 +1,104 @@
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: [PATCH v2 4/6] x86/extable: use generic search and sort routines
-Date: Tue,  5 Jan 2016 16:19:38 +0100
-Message-ID: <1452007180-27411-5-git-send-email-ard.biesheuvel@linaro.org>
+Subject: [PATCH v2 2/6] alpha/extable: use generic search and sort routines
+Date: Tue,  5 Jan 2016 16:19:36 +0100
+Message-ID: <1452007180-27411-3-git-send-email-ard.biesheuvel@linaro.org>
 References: <1452007180-27411-1-git-send-email-ard.biesheuvel@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=OxOMMrHHPbi9qO8acfu7VvV16gehA4tfu9I0XgAw3GQ=;
-        b=EjmkEvDL94T2jPPduN0yh+UGU8f3weRhwIQmtqR9Z8CJAib8oiikP5qrY2niGj3BJp
-         Qx1QmgCNvVMrjfB87GXHKRhxr/ExIiyy5+Uu4gO7AjAL90PxSidSGjRLYjYP+aHRDB7K
-         x2ttF9I5k4r6YiMTobkDfyp0e1wud4WFMPBc0=
-In-Reply-To: <1452007180-27411-1-git-send-email-ard.biesheuvel@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
+Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references;
+ bh=NSrdBYEm0KL9634QG9kBML1XY0dqPSy55OrKmly8NQI=;
+ b=EL+a5zy3qD8A/Vx5hgIXmQa9qpFmBQMELhcYO7m+U95qzBNWWsPkMdWxG2rLw2c5db
+ i5Wnvj5/sQzW0vnT857rVX2y8mnUFFwfVoUoDZBSqmSkqqTt5SdnyQ8bA5bR3zkPuYKn
+ xriCNykPlIPFjFpj2yfiRnFPcJfroQMiae4ZY=
+In-Reply-To: <1452007180-27411-1-git-send-email-ard.biesheuvel@linaro.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: akpm@linux-foundation.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, hpa@zytor.com, mingo@redhat.com, heiko.carstens@de.ibm.com, schwidefsky@de.ibm.com, mattst88@gmail.com, ink@jurassic.park.msu.ru, rth@twiddle.net, tony.luck@intel.com, fenghua.yu@intel.com, catalin.marinas@arm.com, will.deacon@arm.com, arnd@arndb.de
-Cc: deller@gmx.de, mark.rutland@arm.com, Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc: mark.rutland@arm.com, deller@gmx.de, Ard Biesheuvel <ard.biesheuvel@linaro.org>
 
 Replace the arch specific versions of search_extable() and sort_extable()
 with calls to the generic ones, which now support relative exception
 tables as well.
 
-Acked-by: H. Peter Anvin <hpa@linux.intel.com>
 Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 ---
- arch/x86/include/asm/uaccess.h |   5 +-
- arch/x86/mm/extable.c          | 106 +-------------------
- 2 files changed, 4 insertions(+), 107 deletions(-)
+ arch/alpha/include/asm/uaccess.h | 10 ++-
+ arch/alpha/mm/Makefile           |  2 +-
+ arch/alpha/mm/extable.c          | 92 --------------------
+ 3 files changed, 9 insertions(+), 95 deletions(-)
 
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 09b1b0ab94b7..6d130c4cb7de 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -106,9 +106,8 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
- struct exception_table_entry {
- 	int insn, fixup;
- };
--/* This is not the generic standard exception_table_entry format */
+diff --git a/arch/alpha/include/asm/uaccess.h b/arch/alpha/include/asm/uaccess.h
+index 9b0d40093c9a..c419b43c461d 100644
+--- a/arch/alpha/include/asm/uaccess.h
++++ b/arch/alpha/include/asm/uaccess.h
+@@ -483,7 +483,13 @@ struct exception_table_entry
+ 	(pc) + (_fixup)->fixup.bits.nextinsn;			\
+ })
+ 
 -#define ARCH_HAS_SORT_EXTABLE
 -#define ARCH_HAS_SEARCH_EXTABLE
-+
 +#define ARCH_HAS_RELATIVE_EXTABLE
- 
- extern int fixup_exception(struct pt_regs *regs);
- extern int early_fixup_exception(unsigned long *ip);
-diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-index 903ec1e9c326..0b172b656f43 100644
---- a/arch/x86/mm/extable.c
-+++ b/arch/x86/mm/extable.c
-@@ -1,14 +1,9 @@
 +
- #include <linux/module.h>
--#include <linux/spinlock.h>
++#define swap_ex_entry_fixup(a, b, tmp, delta)			\
++	do {							\
++		(a)->fixup.unit = (b)->fixup.unit;		\
++		(b)->fixup.unit = (tmp).fixup.unit;		\
++	} while (0)
++
+ 
+ #endif /* __ALPHA_UACCESS_H */
+diff --git a/arch/alpha/mm/Makefile b/arch/alpha/mm/Makefile
+index c993d3f93cf6..5a9807936411 100644
+--- a/arch/alpha/mm/Makefile
++++ b/arch/alpha/mm/Makefile
+@@ -4,6 +4,6 @@
+ 
+ ccflags-y := -Werror
+ 
+-obj-y	:= init.o fault.o extable.o
++obj-y	:= init.o fault.o
+ 
+ obj-$(CONFIG_DISCONTIGMEM) += numa.o
+diff --git a/arch/alpha/mm/extable.c b/arch/alpha/mm/extable.c
+deleted file mode 100644
+index 813c9b63c0e1..000000000000
+--- a/arch/alpha/mm/extable.c
++++ /dev/null
+@@ -1,92 +0,0 @@
+-/*
+- * linux/arch/alpha/mm/extable.c
+- */
+-
+-#include <linux/module.h>
 -#include <linux/sort.h>
-+
- #include <asm/uaccess.h>
- 
- static inline unsigned long
--ex_insn_addr(const struct exception_table_entry *x)
+-#include <asm/uaccess.h>
+-
+-static inline unsigned long ex_to_addr(const struct exception_table_entry *x)
 -{
 -	return (unsigned long)&x->insn + x->insn;
 -}
--static inline unsigned long
- ex_fixup_addr(const struct exception_table_entry *x)
- {
- 	return (unsigned long)&x->fixup + x->fixup;
-@@ -70,100 +65,3 @@ int __init early_fixup_exception(unsigned long *ip)
- 
- 	return 0;
- }
 -
--/*
-- * Search one exception table for an entry corresponding to the
-- * given instruction address, and return the address of the entry,
-- * or NULL if none is found.
-- * We use a binary search, and thus we assume that the table is
-- * already sorted.
-- */
--const struct exception_table_entry *
--search_extable(const struct exception_table_entry *first,
--	       const struct exception_table_entry *last,
--	       unsigned long value)
+-static void swap_ex(void *a, void *b, int size)
 -{
--	while (first <= last) {
--		const struct exception_table_entry *mid;
--		unsigned long addr;
+-	struct exception_table_entry *ex_a = a, *ex_b = b;
+-	unsigned long addr_a = ex_to_addr(ex_a), addr_b = ex_to_addr(ex_b);
+-	unsigned int t = ex_a->fixup.unit;
 -
--		mid = ((last - first) >> 1) + first;
--		addr = ex_insn_addr(mid);
--		if (addr < value)
--			first = mid + 1;
--		else if (addr > value)
--			last = mid - 1;
--		else
--			return mid;
--        }
--        return NULL;
+-	ex_a->fixup.unit = ex_b->fixup.unit;
+-	ex_b->fixup.unit = t;
+-	ex_a->insn = (int)(addr_b - (unsigned long)&ex_a->insn);
+-	ex_b->insn = (int)(addr_a - (unsigned long)&ex_b->insn);
 -}
 -
 -/*
@@ -106,68 +106,67 @@ index 903ec1e9c326..0b172b656f43 100644
 - * search that we use to find entries in it works properly.
 - * This is used both for the kernel exception table and for
 - * the exception tables of modules that get loaded.
-- *
 - */
 -static int cmp_ex(const void *a, const void *b)
 -{
 -	const struct exception_table_entry *x = a, *y = b;
 -
--	/*
--	 * This value will always end up fittin in an int, because on
--	 * both i386 and x86-64 the kernel symbol-reachable address
--	 * space is < 2 GiB.
--	 *
--	 * This compare is only valid after normalization.
--	 */
--	return x->insn - y->insn;
+-	/* avoid overflow */
+-	if (ex_to_addr(x) > ex_to_addr(y))
+-		return 1;
+-	if (ex_to_addr(x) < ex_to_addr(y))
+-		return -1;
+-	return 0;
 -}
 -
 -void sort_extable(struct exception_table_entry *start,
 -		  struct exception_table_entry *finish)
 -{
--	struct exception_table_entry *p;
--	int i;
--
--	/* Convert all entries to being relative to the start of the section */
--	i = 0;
--	for (p = start; p < finish; p++) {
--		p->insn += i;
--		i += 4;
--		p->fixup += i;
--		i += 4;
--	}
--
 -	sort(start, finish - start, sizeof(struct exception_table_entry),
--	     cmp_ex, NULL);
--
--	/* Denormalize all entries */
--	i = 0;
--	for (p = start; p < finish; p++) {
--		p->insn -= i;
--		i += 4;
--		p->fixup -= i;
--		i += 4;
--	}
+-	     cmp_ex, swap_ex);
 -}
 -
 -#ifdef CONFIG_MODULES
 -/*
-- * If the exception table is sorted, any referring to the module init
-- * will be at the beginning or the end.
+- * Any entry referring to the module init will be at the beginning or
+- * the end.
 - */
 -void trim_init_extable(struct module *m)
 -{
 -	/*trim the beginning*/
 -	while (m->num_exentries &&
--	       within_module_init(ex_insn_addr(&m->extable[0]), m)) {
+-	       within_module_init(ex_to_addr(&m->extable[0]), m)) {
 -		m->extable++;
 -		m->num_exentries--;
 -	}
 -	/*trim the end*/
 -	while (m->num_exentries &&
--	       within_module_init(ex_insn_addr(&m->extable[m->num_exentries-1]), m))
+-	       within_module_init(ex_to_addr(&m->extable[m->num_exentries-1]),
+-				  m))
 -		m->num_exentries--;
 -}
 -#endif /* CONFIG_MODULES */
+-
+-const struct exception_table_entry *
+-search_extable(const struct exception_table_entry *first,
+-	       const struct exception_table_entry *last,
+-	       unsigned long value)
+-{
+-        while (first <= last) {
+-		const struct exception_table_entry *mid;
+-		unsigned long mid_value;
+-
+-		mid = (last - first) / 2 + first;
+-		mid_value = ex_to_addr(mid);
+-                if (mid_value == value)
+-                        return mid;
+-                else if (mid_value < value)
+-                        first = mid+1;
+-                else
+-                        last = mid-1;
+-        }
+-
+-        return NULL;
+-}
 -- 
 2.5.0
