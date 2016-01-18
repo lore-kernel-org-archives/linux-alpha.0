@@ -1,57 +1,96 @@
-From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: Re: [PATCH v2 0/6] generic relative extable support
-Date: Fri, 15 Jan 2016 10:59:36 +0100
-Message-ID: <CAKv+Gu_qJESX1iafST2M-dqP1nx2Y+bHt6TPXL2sb6ZoSq-yYw@mail.gmail.com>
-References: <1452007180-27411-1-git-send-email-ard.biesheuvel@linaro.org>
-	<CAKv+Gu8WW7opaa2ck9kEP91BF=amBo=jejcjnKQB1DgLWvtK3w@mail.gmail.com>
-	<20160114075720.GB4073@osiris>
-Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
-         :cc:content-type;
-        bh=PKSEQF5rYjoCuQcBzJszvL5+R0UOm9OAi7cbCTCA6P0=;
-        b=fdiwtVlzoufaxXwMvTx1FU7DNNQqrsgnSQoGWYFNHgT8iYHdQknHAqCKIOhfhAfm23
-         PBiExvySNggLdBOLe2POCtf8paa5qK7gKgGkc5mW0RYSYPV6r5FX3MkxgtwcSKZrnXrY
-         IgiUlPaHrR8ERQnZl0rWl+0S7ESocCTImX608=
-In-Reply-To: <20160114075720.GB4073@osiris>
-Sender: linux-ia64-owner@vger.kernel.org
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] mm: Remove duplicate definitions of MADV_FREE
+Date: Sun, 17 Jan 2016 19:29:06 -0800
+Message-ID: <1453087746-4658-1-git-send-email-linux@roeck-us.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=roeck-us.net; s=default; h=Message-Id:Date:Subject:Cc:To:From;
+	bh=5+wE5qUMdOTGV5SCN/5paJkoCtJdHsZCRsYHXwLdxoQ=; b=aTE8IjmAeO4BGSRROaqIkzQxDO
+	wQSQPj+p38nBtMAhTSHe0GzWlPvKgovsQpmHgtKri7diUxxVsqZNxXJotWmfCzaItnBQwCje2QAfg
+	PjWm54axsADvQ+ZATPNh7TmdQbXkFfYKNd5Tn8TfYIUVoYwNDH9UXsHWUVUwKUVX8xhCQlEo1/Zud
+	CFAUTEN6ORriaI9nunAhmPfgyE/L+26euRUkPPohg2w+rZrSdmUJbQNPLZRW/lHgNGBq1f3fIogKb
+	fzpI0sZ0XKlYSQI93nzl9qCrkBQa0ziQ08JBoctihP6kYmcilC8ko2YnzEDvSFOzjVRrmoXBG1Kjc
+	dtpoI4IQ==;
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Heiko Carstens <heiko.carstens@de.ibm.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-s390@vger.kernel.org, "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>, "mingo@redhat.com" <mingo@redhat.com>, schwidefsky@de.ibm.com, Matt Turner <mattst88@gmail.com>, ink@jurassic.park.msu.ru, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Arnd Bergmann <arnd@arndb.de>, Helge Deller <deller@gmx.de>, Mark Rutland <mark.rutland@arm.com>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Richard Henderson <rth@twiddle.net>, Ralf Baechle <ralf@linux-mips.org>, Helge Deller <deller@gmx.de>, Chris Zankel <chris@zankel.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org, Guenter Roeck <linux@roeck-us.net>, Chen Gang <gang.chen.5i5j@gmail.com>, Minchan Kim <minchan@kernel.org>
 
-On 14 January 2016 at 08:57, Heiko Carstens <heiko.carstens@de.ibm.com> wrote:
-> On Mon, Jan 11, 2016 at 02:59:46PM +0100, Ard Biesheuvel wrote:
->> On 5 January 2016 at 16:19, Ard Biesheuvel <ard.biesheuvel@linaro.org> wrote:
->> > There are currently four architectures (x86, ia64, alpha and s390) whose
->> > user-access exception tables are relative to the table entry address rather
->> > than absolute. Each of these architectures has its own search_extable() and
->> > sort_extable() implementation, which are not only mostly identical to each
->> > other, but also deviate very little from the generic absolute implementations
->> > in lib/extable.c that they override.
->> >
->> > So before making arm64 the fifth architecture that reimplements this, let's
->> > refactor the existing code so that all of these architectures use common code
->> > for searching and sorting the relative extables. Archs may set
->> > ARCH_HAS_RELATIVE_EXTABLE to indicate that the table consists of a pair of
->> > relative ints, and may define swap_ex_entry_fixup() if the fixup member needs
->> > special treatment in the swapping step of the sorting routine (such as alpha).
->> >
->>
->> [...]
->>
->> Now that I have collected acks for all the patches, I think this is
->> good to go in.
->>
->> @Andrew: since this touches 5 different architectures, is this perhaps
->> something that could go in via your tree after -rc1?
->> (assuming that the s390 bugfix has been merged by then)
->
-> Your s390 bugfix has been merged.  See git commit id bcb7825a77f4 ("s390:
-> fix normalization bug in exception table sorting").
->
+Commits 21f55b018ba5 ("arch/*/include/uapi/asm/mman.h: : let MADV_FREE
+have same value for all architectures") and ef58978f1eaa ("mm: define
+MADV_FREE for some arches") both defined MADV_FREE, but did not use the
+same values. This results in build errors such as
 
-Thanks for the head's up.
+./arch/alpha/include/uapi/asm/mman.h:53:0: error: "MADV_FREE" redefined
+./arch/alpha/include/uapi/asm/mman.h:50:0: note:
+	this is the location of the previous definition
+
+for the affected architectures.
+
+Fixes: 21f55b018ba5 ("arch/*/include/uapi/asm/mman.h: : let MADV_FREE have same value for all architectures")
+Fixes: ef58978f1eaa ("mm: define MADV_FREE for some arches")
+Cc: Chen Gang <gang.chen.5i5j@gmail.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ arch/alpha/include/uapi/asm/mman.h  | 1 -
+ arch/mips/include/uapi/asm/mman.h   | 1 -
+ arch/parisc/include/uapi/asm/mman.h | 1 -
+ arch/xtensa/include/uapi/asm/mman.h | 1 -
+ 4 files changed, 4 deletions(-)
+
+diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
+index ab336c06153e..fec1947b8dbc 100644
+--- a/arch/alpha/include/uapi/asm/mman.h
++++ b/arch/alpha/include/uapi/asm/mman.h
+@@ -47,7 +47,6 @@
+ #define MADV_WILLNEED	3		/* will need these pages */
+ #define	MADV_SPACEAVAIL	5		/* ensure resources are available */
+ #define MADV_DONTNEED	6		/* don't need these pages */
+-#define MADV_FREE	7		/* free pages only if memory pressure */
+ 
+ /* common/generic parameters */
+ #define MADV_FREE	8		/* free pages only if memory pressure */
+diff --git a/arch/mips/include/uapi/asm/mman.h b/arch/mips/include/uapi/asm/mman.h
+index b0ebe59f73fd..ccdcfcbb24aa 100644
+--- a/arch/mips/include/uapi/asm/mman.h
++++ b/arch/mips/include/uapi/asm/mman.h
+@@ -73,7 +73,6 @@
+ #define MADV_SEQUENTIAL 2		/* expect sequential page references */
+ #define MADV_WILLNEED	3		/* will need these pages */
+ #define MADV_DONTNEED	4		/* don't need these pages */
+-#define MADV_FREE	5		/* free pages only if memory pressure */
+ 
+ /* common parameters: try to keep these consistent across architectures */
+ #define MADV_FREE	8		/* free pages only if memory pressure */
+diff --git a/arch/parisc/include/uapi/asm/mman.h b/arch/parisc/include/uapi/asm/mman.h
+index cf830d465f75..f3db7d8eb0c2 100644
+--- a/arch/parisc/include/uapi/asm/mman.h
++++ b/arch/parisc/include/uapi/asm/mman.h
+@@ -43,7 +43,6 @@
+ #define MADV_SPACEAVAIL 5               /* insure that resources are reserved */
+ #define MADV_VPS_PURGE  6               /* Purge pages from VM page cache */
+ #define MADV_VPS_INHERIT 7              /* Inherit parents page size */
+-#define MADV_FREE	8		/* free pages only if memory pressure */
+ 
+ /* common/generic parameters */
+ #define MADV_FREE	8		/* free pages only if memory pressure */
+diff --git a/arch/xtensa/include/uapi/asm/mman.h b/arch/xtensa/include/uapi/asm/mman.h
+index d030594ed22b..9e079d49e7f2 100644
+--- a/arch/xtensa/include/uapi/asm/mman.h
++++ b/arch/xtensa/include/uapi/asm/mman.h
+@@ -86,7 +86,6 @@
+ #define MADV_SEQUENTIAL	2		/* expect sequential page references */
+ #define MADV_WILLNEED	3		/* will need these pages */
+ #define MADV_DONTNEED	4		/* don't need these pages */
+-#define MADV_FREE	5		/* free pages only if memory pressure */
+ 
+ /* common parameters: try to keep these consistent across architectures */
+ #define MADV_FREE	8		/* free pages only if memory pressure */
+-- 
+2.1.4
+
