@@ -1,18 +1,18 @@
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: [PATCH v2 resend 2/6] alpha/extable: use generic search and sort routines
-Date: Wed, 27 Jan 2016 11:55:19 +0100
-Message-ID: <1453892123-17973-3-git-send-email-ard.biesheuvel@linaro.org>
+Subject: [PATCH v2 resend 6/6] arm64: switch to relative exception tables
+Date: Wed, 27 Jan 2016 11:55:23 +0100
+Message-ID: <1453892123-17973-7-git-send-email-ard.biesheuvel@linaro.org>
 References: <1453892123-17973-1-git-send-email-ard.biesheuvel@linaro.org>
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0aGpHOCn76abuSMXHWZ/9WePKJSV4Qi7H/jHAPByYXQ=;
-        b=RT1ov3XSTqpQJBA5zlIAhFtV7DhDO3g+HEw1kOGVMT+BhjdcmNcge9gJJKIxfjnGMD
-         hqQ7S2NT+67oa3Dd59TWi0EBZxikGFWBYsyIuFMNRBm3SCvmN2/zs2abqgzbDluJ0lL1
-         o5ndZTqViskPsXRqkh2enp5g9RqA6BACQ7Vzk=
+        bh=NrGRPH1oCGC9J9oq0N9v5l7bx2e2j+5mpb5Uz5BB3A8=;
+        b=BkZXErSOlxMo+WokFFZW50efLBkXTAJ6xwunIIAjd89eS1s2ntPd0kl7akIbRIIJ0Q
+         Gn9vwEWEh230MsKI1m+YHvfivhyp/ZavjhFdtAioU3jDvqayS8iobAeV+nZcCx2TWmHI
+         BAcawcPk2ZdMevKHFJ6Yw1yJSn+yxhX0bQzFU=
 In-Reply-To: <1453892123-17973-1-git-send-email-ard.biesheuvel@linaro.org>
-Sender: linux-ia64-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,148 +20,232 @@ Content-Transfer-Encoding: 7bit
 To: akpm@linux-foundation.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, hpa@zytor.com, heiko.carstens@de.ibm.com, rth@twiddle.net, tony.luck@intel.com, will.deacon@arm.com
 Cc: deller@gmx.de, Ard Biesheuvel <ard.biesheuvel@linaro.org>
 
-Replace the arch specific versions of search_extable() and sort_extable()
-with calls to the generic ones, which now support relative exception
-tables as well.
+Instead of using absolute addresses for both the exception location
+and the fixup, use offsets relative to the exception table entry values.
+Not only does this cut the size of the exception table in half, it is
+also a prerequisite for KASLR, since absolute exception table entries
+are subject to dynamic relocation, which is incompatible with the sorting
+of the exception table that occurs at build time.
 
-Acked-by: Richard Henderson <rth@twiddle.net>
+This patch also introduces the _ASM_EXTABLE preprocessor macro (which
+exists on x86 as well) and its _asm_extable assembly counterpart, as
+shorthands to emit exception table entries.
+
+Acked-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 ---
- arch/alpha/include/asm/uaccess.h | 10 ++-
- arch/alpha/mm/Makefile           |  2 +-
- arch/alpha/mm/extable.c          | 92 --------------------
- 3 files changed, 9 insertions(+), 95 deletions(-)
+ arch/arm64/include/asm/assembler.h      | 15 +++++++---
+ arch/arm64/include/asm/futex.h          | 12 +++-----
+ arch/arm64/include/asm/uaccess.h        | 30 +++++++++++---------
+ arch/arm64/include/asm/word-at-a-time.h |  7 ++---
+ arch/arm64/kernel/armv8_deprecated.c    |  7 ++---
+ arch/arm64/mm/extable.c                 |  2 +-
+ scripts/sortextable.c                   |  2 +-
+ 7 files changed, 38 insertions(+), 37 deletions(-)
 
-diff --git a/arch/alpha/include/asm/uaccess.h b/arch/alpha/include/asm/uaccess.h
-index 9b0d40093c9a..c419b43c461d 100644
---- a/arch/alpha/include/asm/uaccess.h
-+++ b/arch/alpha/include/asm/uaccess.h
-@@ -483,7 +483,13 @@ struct exception_table_entry
- 	(pc) + (_fixup)->fixup.bits.nextinsn;			\
- })
+diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
+index bb7b72734c24..d8bfcc1ce923 100644
+--- a/arch/arm64/include/asm/assembler.h
++++ b/arch/arm64/include/asm/assembler.h
+@@ -94,12 +94,19 @@
+ 	dmb	\opt
+ 	.endm
  
--#define ARCH_HAS_SORT_EXTABLE
--#define ARCH_HAS_SEARCH_EXTABLE
++/*
++ * Emit an entry into the exception table
++ */
++	.macro		_asm_extable, from, to
++	.pushsection	__ex_table, "a"
++	.align		3
++	.long		(\from - .), (\to - .)
++	.popsection
++	.endm
++
+ #define USER(l, x...)				\
+ 9999:	x;					\
+-	.section __ex_table,"a";		\
+-	.align	3;				\
+-	.quad	9999b,l;			\
+-	.previous
++	_asm_extable	9999b, l
+ 
+ /*
+  * Register aliases.
+diff --git a/arch/arm64/include/asm/futex.h b/arch/arm64/include/asm/futex.h
+index 007a69fc4f40..1ab15a3b5a0e 100644
+--- a/arch/arm64/include/asm/futex.h
++++ b/arch/arm64/include/asm/futex.h
+@@ -42,10 +42,8 @@
+ "4:	mov	%w0, %w5\n"						\
+ "	b	3b\n"							\
+ "	.popsection\n"							\
+-"	.pushsection __ex_table,\"a\"\n"				\
+-"	.align	3\n"							\
+-"	.quad	1b, 4b, 2b, 4b\n"					\
+-"	.popsection\n"							\
++	_ASM_EXTABLE(1b, 4b)						\
++	_ASM_EXTABLE(2b, 4b)						\
+ 	ALTERNATIVE("nop", SET_PSTATE_PAN(1), ARM64_HAS_PAN,		\
+ 		    CONFIG_ARM64_PAN)					\
+ 	: "=&r" (ret), "=&r" (oldval), "+Q" (*uaddr), "=&r" (tmp)	\
+@@ -133,10 +131,8 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
+ "4:	mov	%w0, %w6\n"
+ "	b	3b\n"
+ "	.popsection\n"
+-"	.pushsection __ex_table,\"a\"\n"
+-"	.align	3\n"
+-"	.quad	1b, 4b, 2b, 4b\n"
+-"	.popsection\n"
++	_ASM_EXTABLE(1b, 4b)
++	_ASM_EXTABLE(2b, 4b)
+ 	: "+r" (ret), "=&r" (val), "+Q" (*uaddr), "=&r" (tmp)
+ 	: "r" (oldval), "r" (newval), "Ir" (-EFAULT)
+ 	: "memory");
+diff --git a/arch/arm64/include/asm/uaccess.h b/arch/arm64/include/asm/uaccess.h
+index b2ede967fe7d..dc11577fab7e 100644
+--- a/arch/arm64/include/asm/uaccess.h
++++ b/arch/arm64/include/asm/uaccess.h
+@@ -36,11 +36,11 @@
+ #define VERIFY_WRITE 1
+ 
+ /*
+- * The exception table consists of pairs of addresses: the first is the
+- * address of an instruction that is allowed to fault, and the second is
+- * the address at which the program should continue.  No registers are
+- * modified, so it is entirely up to the continuation code to figure out
+- * what to do.
++ * The exception table consists of pairs of relative offsets: the first
++ * is the relative offset to an instruction that is allowed to fault,
++ * and the second is the relative offset at which the program should
++ * continue. No registers are modified, so it is entirely up to the
++ * continuation code to figure out what to do.
+  *
+  * All the routines below use bits of fixup code that are out of line
+  * with the main instruction path.  This means when everything is well,
+@@ -50,9 +50,11 @@
+ 
+ struct exception_table_entry
+ {
+-	unsigned long insn, fixup;
++	int insn, fixup;
+ };
+ 
 +#define ARCH_HAS_RELATIVE_EXTABLE
 +
-+#define swap_ex_entry_fixup(a, b, tmp, delta)			\
-+	do {							\
-+		(a)->fixup.unit = (b)->fixup.unit;		\
-+		(b)->fixup.unit = (tmp).fixup.unit;		\
-+	} while (0)
+ extern int fixup_exception(struct pt_regs *regs);
+ 
+ #define KERNEL_DS	(-1UL)
+@@ -105,6 +107,12 @@ static inline void set_fs(mm_segment_t fs)
+ #define access_ok(type, addr, size)	__range_ok(addr, size)
+ #define user_addr_max			get_fs
+ 
++#define _ASM_EXTABLE(from, to)						\
++	"	.pushsection	__ex_table, \"a\"\n"			\
++	"	.align		3\n"					\
++	"	.long		(" #from " - .), (" #to " - .)\n"	\
++	"	.popsection\n"
 +
+ /*
+  * The "__xxx" versions of the user access functions do not verify the address
+  * space - it must have been done previously with a separate "access_ok()"
+@@ -123,10 +131,7 @@ static inline void set_fs(mm_segment_t fs)
+ 	"	mov	%1, #0\n"					\
+ 	"	b	2b\n"						\
+ 	"	.previous\n"						\
+-	"	.section __ex_table,\"a\"\n"				\
+-	"	.align	3\n"						\
+-	"	.quad	1b, 3b\n"					\
+-	"	.previous"						\
++	_ASM_EXTABLE(1b, 3b)						\
+ 	: "+r" (err), "=&r" (x)						\
+ 	: "r" (addr), "i" (-EFAULT))
  
- #endif /* __ALPHA_UACCESS_H */
-diff --git a/arch/alpha/mm/Makefile b/arch/alpha/mm/Makefile
-index c993d3f93cf6..5a9807936411 100644
---- a/arch/alpha/mm/Makefile
-+++ b/arch/alpha/mm/Makefile
-@@ -4,6 +4,6 @@
+@@ -190,10 +195,7 @@ do {									\
+ 	"3:	mov	%w0, %3\n"					\
+ 	"	b	2b\n"						\
+ 	"	.previous\n"						\
+-	"	.section __ex_table,\"a\"\n"				\
+-	"	.align	3\n"						\
+-	"	.quad	1b, 3b\n"					\
+-	"	.previous"						\
++	_ASM_EXTABLE(1b, 3b)						\
+ 	: "+r" (err)							\
+ 	: "r" (x), "r" (addr), "i" (-EFAULT))
  
- ccflags-y := -Werror
+diff --git a/arch/arm64/include/asm/word-at-a-time.h b/arch/arm64/include/asm/word-at-a-time.h
+index aab5bf09e9d9..2b79b8a89457 100644
+--- a/arch/arm64/include/asm/word-at-a-time.h
++++ b/arch/arm64/include/asm/word-at-a-time.h
+@@ -16,6 +16,8 @@
+ #ifndef __ASM_WORD_AT_A_TIME_H
+ #define __ASM_WORD_AT_A_TIME_H
  
--obj-y	:= init.o fault.o extable.o
-+obj-y	:= init.o fault.o
++#include <asm/uaccess.h>
++
+ #ifndef __AARCH64EB__
  
- obj-$(CONFIG_DISCONTIGMEM) += numa.o
-diff --git a/arch/alpha/mm/extable.c b/arch/alpha/mm/extable.c
-deleted file mode 100644
-index 813c9b63c0e1..000000000000
---- a/arch/alpha/mm/extable.c
-+++ /dev/null
-@@ -1,92 +0,0 @@
--/*
-- * linux/arch/alpha/mm/extable.c
-- */
--
--#include <linux/module.h>
--#include <linux/sort.h>
--#include <asm/uaccess.h>
--
--static inline unsigned long ex_to_addr(const struct exception_table_entry *x)
--{
--	return (unsigned long)&x->insn + x->insn;
--}
--
--static void swap_ex(void *a, void *b, int size)
--{
--	struct exception_table_entry *ex_a = a, *ex_b = b;
--	unsigned long addr_a = ex_to_addr(ex_a), addr_b = ex_to_addr(ex_b);
--	unsigned int t = ex_a->fixup.unit;
--
--	ex_a->fixup.unit = ex_b->fixup.unit;
--	ex_b->fixup.unit = t;
--	ex_a->insn = (int)(addr_b - (unsigned long)&ex_a->insn);
--	ex_b->insn = (int)(addr_a - (unsigned long)&ex_b->insn);
--}
--
--/*
-- * The exception table needs to be sorted so that the binary
-- * search that we use to find entries in it works properly.
-- * This is used both for the kernel exception table and for
-- * the exception tables of modules that get loaded.
-- */
--static int cmp_ex(const void *a, const void *b)
--{
--	const struct exception_table_entry *x = a, *y = b;
--
--	/* avoid overflow */
--	if (ex_to_addr(x) > ex_to_addr(y))
--		return 1;
--	if (ex_to_addr(x) < ex_to_addr(y))
--		return -1;
--	return 0;
--}
--
--void sort_extable(struct exception_table_entry *start,
--		  struct exception_table_entry *finish)
--{
--	sort(start, finish - start, sizeof(struct exception_table_entry),
--	     cmp_ex, swap_ex);
--}
--
--#ifdef CONFIG_MODULES
--/*
-- * Any entry referring to the module init will be at the beginning or
-- * the end.
-- */
--void trim_init_extable(struct module *m)
--{
--	/*trim the beginning*/
--	while (m->num_exentries &&
--	       within_module_init(ex_to_addr(&m->extable[0]), m)) {
--		m->extable++;
--		m->num_exentries--;
--	}
--	/*trim the end*/
--	while (m->num_exentries &&
--	       within_module_init(ex_to_addr(&m->extable[m->num_exentries-1]),
--				  m))
--		m->num_exentries--;
--}
--#endif /* CONFIG_MODULES */
--
--const struct exception_table_entry *
--search_extable(const struct exception_table_entry *first,
--	       const struct exception_table_entry *last,
--	       unsigned long value)
--{
--        while (first <= last) {
--		const struct exception_table_entry *mid;
--		unsigned long mid_value;
--
--		mid = (last - first) / 2 + first;
--		mid_value = ex_to_addr(mid);
--                if (mid_value == value)
--                        return mid;
--                else if (mid_value < value)
--                        first = mid+1;
--                else
--                        last = mid-1;
--        }
--
--        return NULL;
--}
+ #include <linux/kernel.h>
+@@ -81,10 +83,7 @@ static inline unsigned long load_unaligned_zeropad(const void *addr)
+ #endif
+ 	"	b	2b\n"
+ 	"	.popsection\n"
+-	"	.pushsection __ex_table,\"a\"\n"
+-	"	.align	3\n"
+-	"	.quad	1b, 3b\n"
+-	"	.popsection"
++	_ASM_EXTABLE(1b, 3b)
+ 	: "=&r" (ret), "=&r" (offset)
+ 	: "r" (addr), "Q" (*(unsigned long *)addr));
+ 
+diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
+index 3e01207917b1..c37202c0c838 100644
+--- a/arch/arm64/kernel/armv8_deprecated.c
++++ b/arch/arm64/kernel/armv8_deprecated.c
+@@ -297,11 +297,8 @@ static void __init register_insn_emulation_sysctl(struct ctl_table *table)
+ 	"4:	mov		%w0, %w5\n"			\
+ 	"	b		3b\n"				\
+ 	"	.popsection"					\
+-	"	.pushsection	 __ex_table,\"a\"\n"		\
+-	"	.align		3\n"				\
+-	"	.quad		0b, 4b\n"			\
+-	"	.quad		1b, 4b\n"			\
+-	"	.popsection\n"					\
++	_ASM_EXTABLE(0b, 4b)					\
++	_ASM_EXTABLE(1b, 4b)					\
+ 	ALTERNATIVE("nop", SET_PSTATE_PAN(1), ARM64_HAS_PAN,	\
+ 		CONFIG_ARM64_PAN)				\
+ 	: "=&r" (res), "+r" (data), "=&r" (temp)		\
+diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
+index 79444279ba8c..81acd4706878 100644
+--- a/arch/arm64/mm/extable.c
++++ b/arch/arm64/mm/extable.c
+@@ -11,7 +11,7 @@ int fixup_exception(struct pt_regs *regs)
+ 
+ 	fixup = search_exception_tables(instruction_pointer(regs));
+ 	if (fixup)
+-		regs->pc = fixup->fixup;
++		regs->pc = (unsigned long)&fixup->fixup + fixup->fixup;
+ 
+ 	return fixup != NULL;
+ }
+diff --git a/scripts/sortextable.c b/scripts/sortextable.c
+index c2423d913b46..af247c70fb66 100644
+--- a/scripts/sortextable.c
++++ b/scripts/sortextable.c
+@@ -282,12 +282,12 @@ do_file(char const *const fname)
+ 	case EM_386:
+ 	case EM_X86_64:
+ 	case EM_S390:
++	case EM_AARCH64:
+ 		custom_sort = sort_relative_table;
+ 		break;
+ 	case EM_ARCOMPACT:
+ 	case EM_ARCV2:
+ 	case EM_ARM:
+-	case EM_AARCH64:
+ 	case EM_MICROBLAZE:
+ 	case EM_MIPS:
+ 	case EM_XTENSA:
 -- 
 2.5.0
 
