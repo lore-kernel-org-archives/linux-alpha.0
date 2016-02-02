@@ -1,47 +1,107 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v2 resend 6/6] arm64: switch to relative exception
- tables
-Date: Wed, 27 Jan 2016 11:46:11 -0800
-Message-ID: <20160127114611.25531afcfabf03febc134b48@linux-foundation.org>
-References: <1453892123-17973-1-git-send-email-ard.biesheuvel@linaro.org>
-	<1453892123-17973-7-git-send-email-ard.biesheuvel@linaro.org>
-	<20160127113548.d4f2f2a7029b3b89f0e596da@linux-foundation.org>
-	<CAKv+Gu8hvxcc6Tiu0q7=HWqkEf4ZLfOvyoLGkp2mEgjz_1R9ew@mail.gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAKv+Gu8hvxcc6Tiu0q7=HWqkEf4ZLfOvyoLGkp2mEgjz_1R9ew@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Michal Hocko <mhocko@kernel.org>
+Subject: [RFC 12/12] locking, rwsem: provide down_write_killable
+Date: Tue,  2 Feb 2016 21:19:29 +0100
+Message-ID: <1454444369-2146-13-git-send-email-mhocko@kernel.org>
+References: <1454444369-2146-1-git-send-email-mhocko@kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1454444369-2146-1-git-send-email-mhocko@kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc: linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-s390@vger.kernel.org, "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, Will Deacon <will.deacon@arm.com>, Helge Deller <deller@gmx.de>
+Content-Transfer-Encoding: 7bit
+To: LKML <linux-kernel@vger.kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Michal Hocko <mhocko@suse.com>
 
-On Wed, 27 Jan 2016 20:39:23 +0100 Ard Biesheuvel <ard.biesheuvel@linaro.org> wrote:
+From: Michal Hocko <mhocko@suse.com>
 
-> On 27 January 2016 at 20:35, Andrew Morton <akpm@linux-foundation.org> wrote:
-> > On Wed, 27 Jan 2016 11:55:23 +0100 Ard Biesheuvel <ard.biesheuvel@linaro.org> wrote:
-> >
-> >> Instead of using absolute addresses for both the exception location
-> >> and the fixup, use offsets relative to the exception table entry values.
-> >> Not only does this cut the size of the exception table in half, it is
-> >> also a prerequisite for KASLR, since absolute exception table entries
-> >> are subject to dynamic relocation, which is incompatible with the sorting
-> >> of the exception table that occurs at build time.
-> >>
-> >> This patch also introduces the _ASM_EXTABLE preprocessor macro (which
-> >> exists on x86 as well) and its _asm_extable assembly counterpart, as
-> >> shorthands to emit exception table entries.
-> >
-> > checkpatch speaketh truth:
-> >
-> > ERROR: #define of 'ARCH_HAS_RELATIVE_EXTABLE' is wrong - use Kconfig variables or standard guards instead
-> > #113: FILE: arch/arm64/include/asm/uaccess.h:56:
-> 
-> That may be true, but it extends an established pattern of #defines in
-> the various uaccess.h versions, i.e., ARCH_HAS_SORT_EXTABLE, and
-> ARCH_HAS_SEARCH_EXTABLE
+Now that all the architectures implement the necessary glue code
+we can introduce down_write_killable. The only difference wrt. regular
+down_write is that the slow path waits in TASK_KILLABLE state and the
+interruption by the fatal signal is reported as -EINTR to the caller.
 
-True.  But now we have two things to fix, not one ;)
+Signed-off-by: Michal Hocko <mhocko@suse.com>
+---
+ include/linux/lockdep.h | 15 +++++++++++++++
+ include/linux/rwsem.h   |  1 +
+ kernel/locking/rwsem.c  | 19 +++++++++++++++++++
+ 3 files changed, 35 insertions(+)
 
-Whatever.  Later.
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index c57e424d914b..f6bd57c0784b 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -446,6 +446,18 @@ do {								\
+ 	lock_acquired(&(_lock)->dep_map, _RET_IP_);			\
+ } while (0)
+ 
++#define LOCK_CONTENDED_RETURN(_lock, try, lock)			\
++({								\
++	int ____err = 0;					\
++	if (!try(_lock)) {					\
++		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
++		____err = lock(_lock);				\
++	}							\
++	if (!____err)						\
++		lock_acquired(&(_lock)->dep_map, _RET_IP_);	\
++	____err;						\
++})
++
+ #else /* CONFIG_LOCK_STAT */
+ 
+ #define lock_contended(lockdep_map, ip) do {} while (0)
+@@ -454,6 +466,9 @@ do {								\
+ #define LOCK_CONTENDED(_lock, try, lock) \
+ 	lock(_lock)
+ 
++#define LOCK_CONTENDED_RETURN(_lock, try, lock) \
++	lock(_lock)
++
+ #endif /* CONFIG_LOCK_STAT */
+ 
+ #ifdef CONFIG_LOCKDEP
+diff --git a/include/linux/rwsem.h b/include/linux/rwsem.h
+index 7d7ae029dac5..d1c12d160ace 100644
+--- a/include/linux/rwsem.h
++++ b/include/linux/rwsem.h
+@@ -118,6 +118,7 @@ extern int down_read_trylock(struct rw_semaphore *sem);
+  * lock for writing
+  */
+ extern void down_write(struct rw_semaphore *sem);
++extern int __must_check down_write_killable(struct rw_semaphore *sem);
+ 
+ /*
+  * trylock for writing -- returns 1 if successful, 0 if contention
+diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
+index 205be0ce34de..c817216c1615 100644
+--- a/kernel/locking/rwsem.c
++++ b/kernel/locking/rwsem.c
+@@ -55,6 +55,25 @@ void __sched down_write(struct rw_semaphore *sem)
+ EXPORT_SYMBOL(down_write);
+ 
+ /*
++ * lock for writing
++ */
++int __sched down_write_killable(struct rw_semaphore *sem)
++{
++	might_sleep();
++	rwsem_acquire(&sem->dep_map, 0, 0, _RET_IP_);
++
++	if (LOCK_CONTENDED_RETURN(sem, __down_write_trylock, __down_write_killable)) {
++		rwsem_release(&sem->dep_map, 1, _RET_IP_);
++		return -EINTR;
++	}
++
++	rwsem_set_owner(sem);
++	return 0;
++}
++
++EXPORT_SYMBOL(down_write_killable);
++
++/*
+  * trylock for writing -- returns 1 if successful, 0 if contention
+  */
+ int down_write_trylock(struct rw_semaphore *sem)
+-- 
+2.7.0
+
