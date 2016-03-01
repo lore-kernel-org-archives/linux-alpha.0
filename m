@@ -1,231 +1,53 @@
-From: Michal Hocko <mhocko@kernel.org>
-Subject: [PATCH 03/11] locking, rwsem: introduce basis for down_write_killable
-Date: Mon, 29 Feb 2016 13:58:17 +0100
-Message-ID: <1456750705-7141-4-git-send-email-mhocko@kernel.org>
-References: <1456750705-7141-1-git-send-email-mhocko@kernel.org>
+From: JB <juergen-alpha@juergen-bierlein.org>
+Subject: Linux kernel 3.18 and above does not boot on PC164
+Date: Tue, 01 Mar 2016 20:08:28 +0100
+Message-ID: <2E8978F7-4F10-44C0-92ED-CADF683B61AE@juergen-bierlein.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1456750705-7141-1-git-send-email-mhocko@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1456859365; l=1223;
+	s=domk; d=juergen-bierlein.org;
+	h=To:Date:From:Subject:Content-Type:Content-Transfer-Encoding:
+	MIME-Version;
+	bh=TDh/TiO+BSE90u769y9OAh6A5sPb2DREulI68jndbE0=;
+	b=k5faUUB9RCtoEW7UCY3INd4PX/rvqP+CrwnHTsoEsgbItwxZVh9/EBqv62MYWoZO59m
+	hipy5AOipIU/A5MfaKGE+VDDhexvkIsYbR/ihKFbs/XlrukmqE1QpgGz+jfvyQj1YjnWJ
+	8V1oeCZVzL8R3FB2NBvWE/NRbNzpzAqJoXQ=
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: LKML <linux-kernel@vger.kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Michal Hocko <mhocko@suse.com>
+To: linux-alpha@vger.kernel.org
 
-From: Michal Hocko <mhocko@suse.com>
+Hi list,
 
-Introduce a generic implementation necessary for down_write_killable.
-This is a trivial extension of the already existing down_write call
-which can be interrupted by SIGKILL.  This patch doesn't provide
-down_write_killable yet because arches have to provide the necessary
-pieces before.
+i compiled the latest 3.14.62 kernel for my PC164 EV56 alpha system. This works without any failures since kernel 3.6.4 and above.
+Unfortunately i cannot get the linux kernel 3.18 and above to boot (the latest try today was a 4.4.3 Kernel).
 
-rwsem_down_write_failed which is a generic slow path for the
-write lock is extended to allow a task state and renamed to
-__rwsem_down_write_failed_state. The return value is either a valid
-semaphore pointer or ERR_PTR(-EINTR).
+The last entries on the screen are:
 
-rwsem_down_write_failed_killable is exported as a new way to wait for
-the lock and be killable.
+###############################################
+aboot: Linux/Alpha SRM bootloader version 1.0_pre20040408
+aboot: switching to OSF/1 PALcode version 1.23
+aboot: booting from device 'IDE 0 11 0 1 1 0 0'
+aboot: valid disklabel found: 4 partitions.
+aboot: loading compressed vmlinux-4.4.3.gz...
+aboot: PHDR 0 vaddr 0xfffffc0001010000 offset 0x2000 size 0xebe3b8
+aboot: bss at 0xfffffc0001ece3b8, size 0x179540
+aboot: zero-filling 1545536 bytes at 0xfffffc0001ece3b8
+aboot: starting kernel vmlinux-4.4.3.gz with arguments ro root=/dev/sda4
 
-For rwsem-spinlock implementation the current __down_write it updated
-in a similar way as __rwsem_down_write_failed_state except it doesn't
-need new exports just visible __down_write_killable.
+halted CPU 0
 
-Architectures which are not using the generic rwsem implementation are
-supposed to provide their __down_write_killable implementation and
-use rwsem_down_write_failed_killable for the slow path.
+halt code = 6
+double error halt
+PC = fffffc00010324e4
+boot failure
+###############################################
 
-Signed-off-by: Michal Hocko <mhocko@suse.com>
----
- include/asm-generic/rwsem.h     | 12 ++++++++++++
- include/linux/rwsem-spinlock.h  |  1 +
- include/linux/rwsem.h           |  2 ++
- kernel/locking/rwsem-spinlock.c | 23 +++++++++++++++++++++--
- kernel/locking/rwsem-xadd.c     | 31 +++++++++++++++++++++++++------
- 5 files changed, 61 insertions(+), 8 deletions(-)
+Did i miss a new mandatory kernel config option for alpha or am i the only one with this behaviour ?
+Hope you can help me a bit ...
 
-diff --git a/include/asm-generic/rwsem.h b/include/asm-generic/rwsem.h
-index b8d8a6cf4ca8..3fc94a046bf5 100644
---- a/include/asm-generic/rwsem.h
-+++ b/include/asm-generic/rwsem.h
-@@ -63,6 +63,18 @@ static inline void __down_write(struct rw_semaphore *sem)
- 		rwsem_down_write_failed(sem);
- }
- 
-+static inline int __down_write_killable(struct rw_semaphore *sem)
-+{
-+	long tmp;
-+
-+	tmp = atomic_long_add_return_acquire(RWSEM_ACTIVE_WRITE_BIAS,
-+				     (atomic_long_t *)&sem->count);
-+	if (unlikely(tmp != RWSEM_ACTIVE_WRITE_BIAS))
-+		if (IS_ERR(rwsem_down_write_failed_killable(sem)))
-+			return -EINTR;
-+	return 0;
-+}
-+
- static inline int __down_write_trylock(struct rw_semaphore *sem)
- {
- 	long tmp;
-diff --git a/include/linux/rwsem-spinlock.h b/include/linux/rwsem-spinlock.h
-index a733a5467e6c..ae0528b834cd 100644
---- a/include/linux/rwsem-spinlock.h
-+++ b/include/linux/rwsem-spinlock.h
-@@ -34,6 +34,7 @@ struct rw_semaphore {
- extern void __down_read(struct rw_semaphore *sem);
- extern int __down_read_trylock(struct rw_semaphore *sem);
- extern void __down_write(struct rw_semaphore *sem);
-+extern int __must_check __down_write_killable(struct rw_semaphore *sem);
- extern int __down_write_trylock(struct rw_semaphore *sem);
- extern void __up_read(struct rw_semaphore *sem);
- extern void __up_write(struct rw_semaphore *sem);
-diff --git a/include/linux/rwsem.h b/include/linux/rwsem.h
-index 8f498cdde280..7d7ae029dac5 100644
---- a/include/linux/rwsem.h
-+++ b/include/linux/rwsem.h
-@@ -14,6 +14,7 @@
- #include <linux/list.h>
- #include <linux/spinlock.h>
- #include <linux/atomic.h>
-+#include <linux/err.h>
- #ifdef CONFIG_RWSEM_SPIN_ON_OWNER
- #include <linux/osq_lock.h>
- #endif
-@@ -43,6 +44,7 @@ struct rw_semaphore {
- 
- extern struct rw_semaphore *rwsem_down_read_failed(struct rw_semaphore *sem);
- extern struct rw_semaphore *rwsem_down_write_failed(struct rw_semaphore *sem);
-+extern struct rw_semaphore *rwsem_down_write_failed_killable(struct rw_semaphore *sem);
- extern struct rw_semaphore *rwsem_wake(struct rw_semaphore *);
- extern struct rw_semaphore *rwsem_downgrade_wake(struct rw_semaphore *sem);
- 
-diff --git a/kernel/locking/rwsem-spinlock.c b/kernel/locking/rwsem-spinlock.c
-index bab26104a5d0..d1d04ca10d0e 100644
---- a/kernel/locking/rwsem-spinlock.c
-+++ b/kernel/locking/rwsem-spinlock.c
-@@ -191,11 +191,12 @@ int __down_read_trylock(struct rw_semaphore *sem)
- /*
-  * get a write lock on the semaphore
-  */
--void __sched __down_write(struct rw_semaphore *sem)
-+int __sched __down_write_state(struct rw_semaphore *sem, int state)
- {
- 	struct rwsem_waiter waiter;
- 	struct task_struct *tsk;
- 	unsigned long flags;
-+	int ret = 0;
- 
- 	raw_spin_lock_irqsave(&sem->wait_lock, flags);
- 
-@@ -215,16 +216,34 @@ void __sched __down_write(struct rw_semaphore *sem)
- 		 */
- 		if (sem->count == 0)
- 			break;
--		set_task_state(tsk, TASK_UNINTERRUPTIBLE);
-+		set_task_state(tsk, state);
- 		raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
- 		schedule();
-+		if (signal_pending_state(state, current)) {
-+			ret = -EINTR;
-+			raw_spin_lock_irqsave(&sem->wait_lock, flags);
-+			goto out;
-+		}
- 		raw_spin_lock_irqsave(&sem->wait_lock, flags);
- 	}
- 	/* got the lock */
- 	sem->count = -1;
-+out:
- 	list_del(&waiter.list);
- 
- 	raw_spin_unlock_irqrestore(&sem->wait_lock, flags);
-+
-+	return ret;
-+}
-+
-+void __sched __down_write(struct rw_semaphore *sem)
-+{
-+	__down_write_state(sem, TASK_UNINTERRUPTIBLE);
-+}
-+
-+int __sched __down_write_killable(struct rw_semaphore *sem)
-+{
-+	return __down_write_state(sem, TASK_KILLABLE);
- }
- 
- /*
-diff --git a/kernel/locking/rwsem-xadd.c b/kernel/locking/rwsem-xadd.c
-index a4d4de05b2d1..5cec34f1ad6f 100644
---- a/kernel/locking/rwsem-xadd.c
-+++ b/kernel/locking/rwsem-xadd.c
-@@ -433,12 +433,13 @@ static inline bool rwsem_has_spinner(struct rw_semaphore *sem)
- /*
-  * Wait until we successfully acquire the write lock
-  */
--__visible
--struct rw_semaphore __sched *rwsem_down_write_failed(struct rw_semaphore *sem)
-+static inline struct rw_semaphore *
-+__rwsem_down_write_failed_state(struct rw_semaphore *sem, int state)
- {
- 	long count;
- 	bool waiting = true; /* any queued threads before us */
- 	struct rwsem_waiter waiter;
-+	struct rw_semaphore *ret = sem;
- 
- 	/* undo write bias from down_write operation, stop active locking */
- 	count = rwsem_atomic_update(-RWSEM_ACTIVE_WRITE_BIAS, sem);
-@@ -478,7 +479,7 @@ struct rw_semaphore __sched *rwsem_down_write_failed(struct rw_semaphore *sem)
- 		count = rwsem_atomic_update(RWSEM_WAITING_BIAS, sem);
- 
- 	/* wait until we successfully acquire the lock */
--	set_current_state(TASK_UNINTERRUPTIBLE);
-+	set_current_state(state);
- 	while (true) {
- 		if (rwsem_try_write_lock(count, sem))
- 			break;
-@@ -487,20 +488,38 @@ struct rw_semaphore __sched *rwsem_down_write_failed(struct rw_semaphore *sem)
- 		/* Block until there are no active lockers. */
- 		do {
- 			schedule();
--			set_current_state(TASK_UNINTERRUPTIBLE);
-+			if (signal_pending_state(state, current)) {
-+				raw_spin_lock_irq(&sem->wait_lock);
-+				ret = ERR_PTR(-EINTR);
-+				goto out;
-+			}
-+			set_current_state(state);
- 		} while ((count = sem->count) & RWSEM_ACTIVE_MASK);
- 
- 		raw_spin_lock_irq(&sem->wait_lock);
- 	}
- 	__set_current_state(TASK_RUNNING);
--
-+out:
- 	list_del(&waiter.list);
- 	raw_spin_unlock_irq(&sem->wait_lock);
- 
--	return sem;
-+	return ret;
-+}
-+
-+__visible struct rw_semaphore * __sched
-+rwsem_down_write_failed(struct rw_semaphore *sem)
-+{
-+	return __rwsem_down_write_failed_state(sem, TASK_UNINTERRUPTIBLE);
- }
- EXPORT_SYMBOL(rwsem_down_write_failed);
- 
-+__visible struct rw_semaphore * __sched
-+rwsem_down_write_failed_killable(struct rw_semaphore *sem)
-+{
-+	return __rwsem_down_write_failed_state(sem, TASK_KILLABLE);
-+}
-+EXPORT_SYMBOL(rwsem_down_write_failed_killable);
-+
- /*
-  * handle waking up a waiter on the semaphore
-  * - up_read/up_write has decremented the active part of count if we come here
+Best regards,
+Juergen
 -- 
-2.7.0
-
+Diese Nachricht wurde von meinem Android-Mobiltelefon mit K-9 Mail gesendet.
