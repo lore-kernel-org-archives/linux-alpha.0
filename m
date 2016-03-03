@@ -1,19 +1,19 @@
 From: JB <juergen-alpha@juergen-bierlein.org>
 Subject: Re: Linux kernel 3.18 and above does not boot on PC164
-Date: Thu, 03 Mar 2016 07:19:35 +0100
-Message-ID: <BFC78F48-B423-467B-938C-5ADB4C73BBCE@juergen-bierlein.org>
+Date: Thu, 03 Mar 2016 07:22:22 +0100
+Message-ID: <B0C50BE7-A17C-40C0-B6E3-AC06233B5290@juergen-bierlein.org>
 References: <2E8978F7-4F10-44C0-92ED-CADF683B61AE@juergen-bierlein.org> <20160302080952.GB31216@tower> <4F3332A6-4A28-4D9D-9023-C5DFEFDBE44C@juergen-bierlein.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1456986146; l=3141;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1456986146; l=3223;
 	s=domk; d=juergen-bierlein.org;
 	h=CC:To:Date:From:Subject:Content-Type:Content-Transfer-Encoding:
 	MIME-Version:References:In-Reply-To;
-	bh=HGnTsWvybtRtqjH88P5wpHWUuKyWWOnOu1p0Bo6yvUg=;
-	b=okkV6XzZmRAugktCo0eAoF5k8KWF1cVfZIPt+YgkJXcMm+WTp7Ncy5eimp7FRbONdVT
-	LkvYGrwDFfuKZvEuINSJ+OrBOIqWpR1VJF1roUPAbf2HAxl4WMCYqv/gFT4Hbyfe/EBPj
-	9fVYteph5O8zyo/V9QcOS+sJUcHFeJaPvic=
+	bh=z+PrgHJiUb9cps9VgkAEJWdMkDvYzDCO5gPqqCrBs0A=;
+	b=WRYYOkb6kbgFemFIVuhbfm/AFEnO1RD7Ac0vUviJwsmTOx8iRVhxhLKFnKARAm6XXCV
+	VUGFgQJkKrJZdQKcRzeGthUzJK9PepV3syZkQdseOa42MUiJzKmnRLAgg5nYwqrFwz7OH
+	pDQE7Bhssk+2zVQyHSshd6JKWkqSbVezneE=
 In-Reply-To: <4F3332A6-4A28-4D9D-9023-C5DFEFDBE44C@juergen-bierlein.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -108,6 +108,9 @@ erlein.org>:
 >>the body of a message to majordomo@vger.kernel.org
 >>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
+--=20
+Diese Nachricht wurde von meinem Android-Mobiltelefon mit K-9 Mail gese=
+ndet.
 --=20
 Diese Nachricht wurde von meinem Android-Mobiltelefon mit K-9 Mail gese=
 ndet.
