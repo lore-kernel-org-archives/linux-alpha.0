@@ -1,121 +1,79 @@
-From: JB <juergen-alpha@juergen-bierlein.org>
-Subject: Re: Linux kernel 3.18 and above does not boot on PC164
-Date: Thu, 03 Mar 2016 07:22:22 +0100
-Message-ID: <B0C50BE7-A17C-40C0-B6E3-AC06233B5290@juergen-bierlein.org>
-References: <2E8978F7-4F10-44C0-92ED-CADF683B61AE@juergen-bierlein.org> <20160302080952.GB31216@tower> <4F3332A6-4A28-4D9D-9023-C5DFEFDBE44C@juergen-bierlein.org>
+From: Ingo Molnar <mingo@kernel.org>
+Subject: Re: [RFC 0/12] introduce down_write_killable for rw_semaphore
+Date: Wed, 9 Mar 2016 13:18:50 +0100
+Message-ID: <20160309121850.GA14915@gmail.com>
+References: <1454444369-2146-1-git-send-email-mhocko@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1456986146; l=3223;
-	s=domk; d=juergen-bierlein.org;
-	h=CC:To:Date:From:Subject:Content-Type:Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To;
-	bh=z+PrgHJiUb9cps9VgkAEJWdMkDvYzDCO5gPqqCrBs0A=;
-	b=WRYYOkb6kbgFemFIVuhbfm/AFEnO1RD7Ac0vUviJwsmTOx8iRVhxhLKFnKARAm6XXCV
-	VUGFgQJkKrJZdQKcRzeGthUzJK9PepV3syZkQdseOa42MUiJzKmnRLAgg5nYwqrFwz7OH
-	pDQE7Bhssk+2zVQyHSshd6JKWkqSbVezneE=
-In-Reply-To: <4F3332A6-4A28-4D9D-9023-C5DFEFDBE44C@juergen-bierlein.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WBA8LffU+eNh7+fii8JwK2Chs3qgJFtHFRagHBBhdyk=;
+        b=NfXbVCKFZPmptwD1/WYyFQJ759nomZTtk0LhpO4SBz4S1cBjh3Pd/JUgdMBRYYSz0S
+         zNsgCi5Il22YjgACUsAEjLhXVAdmvT+iL2sG+gxIBvv/74vKJOsW3A3elhLxhGVqOiLN
+         dThfb/5bspbBfG9EmU1hHTKxUOzFiglsRiwJXQOlL9vbHUU227CG/I5ycThzR4gulhV/
+         KEm3bktZRxmWUDS7+WKQqQaOtguKn3yTXrzXiZFil1anm8LZlafp2yeQMIAOCzfu/CzU
+         6yPZbcY/Ta4Iptsp0cPZKY0JlaPNpzTRpw3Dv5p0t19Z3ImhMOWcNRlHD4wYQc07UyOd
+         CY7A==
+Content-Disposition: inline
+In-Reply-To: <1454444369-2146-1-git-send-email-mhocko@kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Michael Cree <mcree@orcon.net.nz>, juergen-alpha@juergen-bierlein.org
-Cc: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Michal Hocko <mhocko@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <a.p.zijlstra@chello.nl>
 
-Hi all,
 
-The PC164 specific 4.4.3 kernel is booting now :-)
-The network interface is not present but this is secondary for now.
+* Michal Hocko <mhocko@kernel.org> wrote:
 
-Thanks for the tip.
-
-I try to find out which kernel patch introduced the error with the gene=
-ric kernel configuration. This will take some time as every kernel buil=
-d takes ~10 hours on this legacy machine ...
-
-Best regards,
-Juergen
-
-Am 2. M=C3=A4rz 2016 10:27:21 MEZ, schrieb JB <juergen-alpha@juergen-bi=
-erlein.org>:
->OK, i give the pc164 specific kernel a try. Will report here if it
->worked or not the next days ...
+> Hi,
 >
->At least i am not alone with the issue :-)
->
->Cheers, Juergen
->
->Am 2. M=C3=A4rz 2016 09:09:52 MEZ, schrieb Michael Cree
-><mcree@orcon.net.nz>:
->>On Tue, Mar 01, 2016 at 08:08:28PM +0100, JB wrote:
->>> i compiled the latest 3.14.62 kernel for my PC164 EV56 alpha system=
-=2E
->>This works without any failures since kernel 3.6.4 and above.
->>> Unfortunately i cannot get the linux kernel 3.18 and above to boot
->>(the latest try today was a 4.4.3 Kernel).
->>>=20
->>> The last entries on the screen are:
->>>=20
->>> ###############################################
->>> aboot: Linux/Alpha SRM bootloader version 1.0_pre20040408
->>> aboot: switching to OSF/1 PALcode version 1.23
->>> aboot: booting from device 'IDE 0 11 0 1 1 0 0'
->>> aboot: valid disklabel found: 4 partitions.
->>> aboot: loading compressed vmlinux-4.4.3.gz...
->>> aboot: PHDR 0 vaddr 0xfffffc0001010000 offset 0x2000 size 0xebe3b8
->>> aboot: bss at 0xfffffc0001ece3b8, size 0x179540
->>> aboot: zero-filling 1545536 bytes at 0xfffffc0001ece3b8
->>> aboot: starting kernel vmlinux-4.4.3.gz with arguments ro
->>root=3D/dev/sda4
->>>=20
->>> halted CPU 0
->>>=20
->>> halt code =3D 6
->>> double error halt
->>> PC =3D fffffc00010324e4
->>> boot failure
->>> ###############################################
->>>=20
->>> Did i miss a new mandatory kernel config option for alpha or am i
->the
->>only one with this behaviour ?
->>> Hope you can help me a bit ...
->>
->>This has also been noted for the debian-ports built generic kernel,
->>for kernel versions 4.3 and above.  They fail to boot with symptoms
->>exactly as shown above.
->>
->>There is some speculation on the debian-alpha mail list that only
->>a kernel built for generic system is failing to boot.  I have not
->>been able to confirm that.
->>
->>I managed to build a 4.3 dp264 variant kernel which boots okay on an
->>XP1000, but my attempts to build a 4.3 or 4.4 titan variant kernel
->>is failing with relocation errors such as:
->>
->>arch/alpha/kernel/built-in.o: In function `osf_filldir':
->>arch/alpha/kernel/osf_sys.o:(.text+0x278c): relocation truncated to
->>fit: BRSGP against symbol `__copy_user' defined in .text section in
->>arch/alpha/lib/lib.a(ev6-copy_user.o)
->>
->>so I have not got very far with exploring the problem.
->>
->>Cheers
->>Michael.
->>--
->>To unsubscribe from this list: send the line "unsubscribe linux-alpha=
-"
->>in
->>the body of a message to majordomo@vger.kernel.org
->>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> the following patchset implements a killable variant of write lock for 
+> rw_semaphore. My usecase is to turn as many mmap_sem write users to use a 
+> killable variant which will be helpful for the oom_reaper [1] to asynchronously 
+> tear down the oom victim address space which requires mmap_sem for read. This 
+> will reduce a likelihood of OOM livelocks caused by oom victim being stuck on a 
+> lock or other resource which prevents it to reach its exit path and release the 
+> memory. [...]
 
---=20
-Diese Nachricht wurde von meinem Android-Mobiltelefon mit K-9 Mail gese=
-ndet.
---=20
-Diese Nachricht wurde von meinem Android-Mobiltelefon mit K-9 Mail gese=
-ndet.
---
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+So I'm a tiny bit concerned about this arguments.
+
+AFAICS killability here just makes existing system calls more interruptible - 
+right? In that sense that's not really a livelock scenario: it just takes shorter 
+time for resources to be released.
+
+If a livelock is possible (where resources are never released) then I'd like to 
+see a specific example of such a livelock.
+
+You have the other patch-set:
+
+   [PATCH 0/18] change mmap_sem taken for write killable
+
+that makes use of down_write_killable(), and there you argue:
+
+ [...] this is a follow up work for oom_reaper [1]. As the async OOM killing 
+ depends on oom_sem for read we would really appreciate if a holder for write 
+ stood in the way. This patchset is changing many of down_write calls to be 
+ killable to help those cases when the writer is blocked and waiting for readers 
+ to release the lock and so help __oom_reap_task to process the oom victim.
+
+there seems to be a misunderstanding: if a writer is blocked waiting for readers 
+then no new readers are allowed - the writer will get its turn the moment all 
+existing readers drop the lock.
+
+So there's no livelock scenario - it's "only" about latencies.
+
+And once we realize that it's about latencies (assuming I'm right!), not about 
+correctness per se, I'm wondering whether it would be a good idea to introduce 
+down_write_interruptible(), instead of down_write_killable().
+
+I'd love various processes to quit faster on Ctrl-C as well, not just on kill -9!
+
+This would also test the new code paths a lot better: kill -9 is a lot rarer than 
+regular interruption.
+
+Thanks,
+
+	Ingo
