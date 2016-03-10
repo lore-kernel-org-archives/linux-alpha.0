@@ -1,16 +1,18 @@
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: [PATCH v3 0/4] generic relative extable support
-Date: Thu, 10 Mar 2016 21:43:12 +0700
-Message-ID: <1457620996-462-1-git-send-email-ard.biesheuvel@linaro.org>
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Subject: [PATCH v3 4/4] ia64/extable: use generic search and sort routines
+Date: Thu, 10 Mar 2016 21:43:16 +0700
+Message-ID: <1457620996-462-5-git-send-email-ard.biesheuvel@linaro.org>
+References: <1457620996-462-1-git-send-email-ard.biesheuvel@linaro.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=4BzGvnUzhZQZ1oaZp6wstsQsGE7SZk+5rD5rut8AFvc=;
-        b=OEdTrQs0AxbPG48m1K/2U5nVdZs35pF8Af/IZOURbURBWEdTGcPNTSmz8I4iCC7ZYl
-         Q1K1WCQVXaDbLQlIxX2HbTr9wQDdSj2Cg8f+kbnBZeDGVuVpRDPtF+0R6lyLVfg4XZsE
-         GUqz34pTf8uVsD7LF0FjAiHfZdzyvP5E0yNb8=
-Sender: linux-ia64-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=HbG3sAr4B6PS7n7BuAh8308eUgiNsq8Gc1rBZvKzmKY=;
+        b=FwQmYl6rk4UiVZPWQtXKYpTKuv/OZSiZoBWcY9y2I5ToYPytzN1znrCovMXOtLDV2D
+         twlNGfxhSHotkhmfeCss4HgHjNkJi3FhCq+zXu1ghT9FIEipFzk8N29Jm1LuOUImgtwN
+         +GtZWSao/ifdG7nkW9HikbWmhCIETaj5lkyUA=
+In-Reply-To: <1457620996-462-1-git-send-email-ard.biesheuvel@linaro.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,64 +20,151 @@ Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, x86@kernel.org, akpm@linux-foundation.org
 Cc: tony.luck@intel.com, rth@twiddle.net, hpa@zytor.com, heiko.carstens@de.ibm.com, Ard Biesheuvel <ard.biesheuvel@linaro.org>
 
-This is basically a resend of the remaining relative extable rework patches
-that were queued for v4.6 in Andrew's tree for a couple of weeks, and then
-subsequently dropped due to conflicts with the arm64 and x86 subtrees in -next.
+Replace the arch specific versions of search_extable() and sort_extable()
+with calls to the generic ones, which now support relative exception
+tables as well.
 
-Since the core patch that these remaining patches depend on is now queued in
-the arm64 tree for inclusion in v4.6, I have rebased this series onto
-next-20160310 so that they may be requeued and hopefully merged late during the
-next merge window. Alternatively, they could be picked up by each maintainer
-separately since they are all independent. Queueing them for v4.7 is likely
-to result in conflicts again, so I think that would be the least preferable
-option.
+Acked-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+---
+ arch/ia64/include/asm/uaccess.h |  8 +-
+ arch/ia64/mm/extable.c          | 97 +-------------------
+ 2 files changed, 4 insertions(+), 101 deletions(-)
 
-Changes since v2:
-- dropped core patch and arm64 patches since they are already en route
-- fixed up a purely contextual conflict in the x86 patch, the functional
-  changes were completely independent
-
----- v2 blurb ----
-There are currently four architectures (x86, ia64, alpha and s390) whose
-user-access exception tables are relative to the table entry address rather
-than absolute. Each of these architectures has its own search_extable() and
-sort_extable() implementation, which are not only mostly identical to each
-other, but also deviate very little from the generic absolute implementations
-in lib/extable.c that they override.
-
-So before making arm64 the fifth architecture that reimplements this, let's
-refactor the existing code so that all of these architectures use common code
-for searching and sorting the relative extables. Archs may set
-ARCH_HAS_RELATIVE_EXTABLE to indicate that the table consists of a pair of
-relative ints, and may define swap_ex_entry_fixup() if the fixup member needs
-special treatment in the swapping step of the sorting routine (such as alpha).
-
-Changes since v1:
-- introduce the _ASM_EXTABLE() cpp macro for arm64, and replace all open coded
-  exception table entries with it, including an instance I missed in v1 in
-  asm/word-at-a-time.h (suggested by hpa)
-- added acks to from arch maintainers
-
-Ard Biesheuvel (4):
-  alpha/extable: use generic search and sort routines
-  s390/extable: use generic search and sort routines
-  x86/extable: use generic search and sort routines
-  ia64/extable: use generic search and sort routines
-
- arch/alpha/include/asm/uaccess.h |  10 +-
- arch/alpha/mm/Makefile           |   2 +-
- arch/alpha/mm/extable.c          |  92 -----------------
- arch/ia64/include/asm/uaccess.h  |   8 +-
- arch/ia64/mm/extable.c           |  97 +-----------------
- arch/s390/include/asm/uaccess.h  |   8 +-
- arch/s390/mm/Makefile            |   2 +-
- arch/s390/mm/extable.c           |  85 ---------------
- arch/x86/include/asm/uaccess.h   |   5 +-
- arch/x86/mm/extable.c            | 108 --------------------
- 10 files changed, 17 insertions(+), 400 deletions(-)
- delete mode 100644 arch/alpha/mm/extable.c
- delete mode 100644 arch/s390/mm/extable.c
-
+diff --git a/arch/ia64/include/asm/uaccess.h b/arch/ia64/include/asm/uaccess.h
+index 4f3fb6ccbf21..2189d5ddc1ee 100644
+--- a/arch/ia64/include/asm/uaccess.h
++++ b/arch/ia64/include/asm/uaccess.h
+@@ -341,13 +341,11 @@ extern unsigned long __strnlen_user (const char __user *, long);
+ 	__su_ret;						\
+ })
+ 
+-/* Generic code can't deal with the location-relative format that we use for compactness.  */
+-#define ARCH_HAS_SORT_EXTABLE
+-#define ARCH_HAS_SEARCH_EXTABLE
++#define ARCH_HAS_RELATIVE_EXTABLE
+ 
+ struct exception_table_entry {
+-	int addr;	/* location-relative address of insn this fixup is for */
+-	int cont;	/* location-relative continuation addr.; if bit 2 is set, r9 is set to 0 */
++	int insn;	/* location-relative address of insn this fixup is for */
++	int fixup;	/* location-relative continuation addr.; if bit 2 is set, r9 is set to 0 */
+ };
+ 
+ extern void ia64_handle_exception (struct pt_regs *regs, const struct exception_table_entry *e);
+diff --git a/arch/ia64/mm/extable.c b/arch/ia64/mm/extable.c
+index c99a41e29fe8..8f70bb2d0c37 100644
+--- a/arch/ia64/mm/extable.c
++++ b/arch/ia64/mm/extable.c
+@@ -5,107 +5,12 @@
+  *	David Mosberger-Tang <davidm@hpl.hp.com>
+  */
+ 
+-#include <linux/sort.h>
+-
+ #include <asm/uaccess.h>
+-#include <linux/module.h>
+-
+-static int cmp_ex(const void *a, const void *b)
+-{
+-	const struct exception_table_entry *l = a, *r = b;
+-	u64 lip = (u64) &l->addr + l->addr;
+-	u64 rip = (u64) &r->addr + r->addr;
+-
+-	/* avoid overflow */
+-	if (lip > rip)
+-		return 1;
+-	if (lip < rip)
+-		return -1;
+-	return 0;
+-}
+-
+-static void swap_ex(void *a, void *b, int size)
+-{
+-	struct exception_table_entry *l = a, *r = b, tmp;
+-	u64 delta = (u64) r - (u64) l;
+-
+-	tmp = *l;
+-	l->addr = r->addr + delta;
+-	l->cont = r->cont + delta;
+-	r->addr = tmp.addr - delta;
+-	r->cont = tmp.cont - delta;
+-}
+-
+-/*
+- * Sort the exception table. It's usually already sorted, but there
+- * may be unordered entries due to multiple text sections (such as the
+- * .init text section). Note that the exception-table-entries contain
+- * location-relative addresses, which requires a bit of care during
+- * sorting to avoid overflows in the offset members (e.g., it would
+- * not be safe to make a temporary copy of an exception-table entry on
+- * the stack, because the stack may be more than 2GB away from the
+- * exception-table).
+- */
+-void sort_extable (struct exception_table_entry *start,
+-		   struct exception_table_entry *finish)
+-{
+-	sort(start, finish - start, sizeof(struct exception_table_entry),
+-	     cmp_ex, swap_ex);
+-}
+-
+-static inline unsigned long ex_to_addr(const struct exception_table_entry *x)
+-{
+-	return (unsigned long)&x->addr + x->addr;
+-}
+-
+-#ifdef CONFIG_MODULES
+-/*
+- * Any entry referring to the module init will be at the beginning or
+- * the end.
+- */
+-void trim_init_extable(struct module *m)
+-{
+-	/*trim the beginning*/
+-	while (m->num_exentries &&
+-	       within_module_init(ex_to_addr(&m->extable[0]), m)) {
+-		m->extable++;
+-		m->num_exentries--;
+-	}
+-	/*trim the end*/
+-	while (m->num_exentries &&
+-	       within_module_init(ex_to_addr(&m->extable[m->num_exentries-1]),
+-				  m))
+-		m->num_exentries--;
+-}
+-#endif /* CONFIG_MODULES */
+-
+-const struct exception_table_entry *
+-search_extable (const struct exception_table_entry *first,
+-		const struct exception_table_entry *last,
+-		unsigned long ip)
+-{
+-	const struct exception_table_entry *mid;
+-	unsigned long mid_ip;
+-	long diff;
+-
+-        while (first <= last) {
+-		mid = &first[(last - first)/2];
+-		mid_ip = (u64) &mid->addr + mid->addr;
+-		diff = mid_ip - ip;
+-                if (diff == 0)
+-                        return mid;
+-                else if (diff < 0)
+-                        first = mid + 1;
+-                else
+-                        last = mid - 1;
+-        }
+-        return NULL;
+-}
+ 
+ void
+ ia64_handle_exception (struct pt_regs *regs, const struct exception_table_entry *e)
+ {
+-	long fix = (u64) &e->cont + e->cont;
++	long fix = (u64) &e->fixup + e->fixup;
+ 
+ 	regs->r8 = -EFAULT;
+ 	if (fix & 4)
 -- 
 1.9.1
 
