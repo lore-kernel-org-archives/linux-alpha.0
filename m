@@ -1,61 +1,81 @@
-From: Ingo Molnar <mingo@kernel.org>
-Subject: Re: [RFC 0/12] introduce down_write_killable for rw_semaphore
-Date: Thu, 10 Mar 2016 11:24:13 +0100
-Message-ID: <20160310102412.GA21593@gmail.com>
-References: <1454444369-2146-1-git-send-email-mhocko@kernel.org>
- <20160309121850.GA14915@gmail.com>
- <20160309125641.GH27018@dhcp22.suse.cz>
- <20160309131710.GB7978@gmail.com>
- <20160309132855.GI27018@dhcp22.suse.cz>
- <20160309134339.GA20911@gmail.com>
- <20160309144140.GJ27018@dhcp22.suse.cz>
-Mime-Version: 1.0
+From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Subject: [PATCH v3 0/4] generic relative extable support
+Date: Thu, 10 Mar 2016 21:43:12 +0700
+Message-ID: <1457620996-462-1-git-send-email-ard.biesheuvel@linaro.org>
 Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Pmwb66fbGa8Yt51YVAzk2ETImWwgo6t2fwzkR2FNgGI=;
-        b=YcOaNNfFpSQonEvyjGKoCkYt4a8HD0aE/VTd5Q9tuYcO9879ZoOBKsHXqLCcbPaGmo
-         H9Y7cR849flSihs+GjK/oSDDx0wTj5w5aA21jxNz/xB23FOgz9OiGNm7PfTDk96wBeXO
-         NaKnGs2H0xMCL3xa3l3/WSKft6Sp3mfQ4TVD2RB6IUdXfpjFocFuS+NtKr+w5kfpf4q9
-         5IAO32l8TXG71rX1UcVUvm3IL5VuHWvnLuQLv9jfpTlanXJ5QamCFmzxwtiRWeyCZoTn
-         TGQ/4xTlNzBM8NBlmEwuMKIuKg7v7Vx/XxQvRkoxuJ/6jeaXfrNO1Wt4SwMLiDiN//Yw
-         Y46Q==
-Content-Disposition: inline
-In-Reply-To: <20160309144140.GJ27018@dhcp22.suse.cz>
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=4BzGvnUzhZQZ1oaZp6wstsQsGE7SZk+5rD5rut8AFvc=;
+        b=OEdTrQs0AxbPG48m1K/2U5nVdZs35pF8Af/IZOURbURBWEdTGcPNTSmz8I4iCC7ZYl
+         Q1K1WCQVXaDbLQlIxX2HbTr9wQDdSj2Cg8f+kbnBZeDGVuVpRDPtF+0R6lyLVfg4XZsE
+         GUqz34pTf8uVsD7LF0FjAiHfZdzyvP5E0yNb8=
 Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michal Hocko <mhocko@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Peter Zijlstra <a.p.zijlstra@chello.nl>
+To: linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, x86@kernel.org, akpm@linux-foundation.org
+Cc: tony.luck@intel.com, rth@twiddle.net, hpa@zytor.com, heiko.carstens@de.ibm.com, Ard Biesheuvel <ard.biesheuvel@linaro.org>
 
+This is basically a resend of the remaining relative extable rework patches
+that were queued for v4.6 in Andrew's tree for a couple of weeks, and then
+subsequently dropped due to conflicts with the arm64 and x86 subtrees in -next.
 
-* Michal Hocko <mhocko@kernel.org> wrote:
+Since the core patch that these remaining patches depend on is now queued in
+the arm64 tree for inclusion in v4.6, I have rebased this series onto
+next-20160310 so that they may be requeued and hopefully merged late during the
+next merge window. Alternatively, they could be picked up by each maintainer
+separately since they are all independent. Queueing them for v4.7 is likely
+to result in conflicts again, so I think that would be the least preferable
+option.
 
-> > > Why? Each syscall already is killable as the task might be killed by the OOM 
-> > > killer.
-> > 
-> > Not all syscalls are interruptible - for example sys_sync() isn't:
-> 
-> I guess we are talking past each other. [...]
+Changes since v2:
+- dropped core patch and arm64 patches since they are already en route
+- fixed up a purely contextual conflict in the x86 patch, the functional
+  changes were completely independent
 
-Heh, you are being polite, I think what happened is that I was being dense and 
-didn't understand your point:
+---- v2 blurb ----
+There are currently four architectures (x86, ia64, alpha and s390) whose
+user-access exception tables are relative to the table entry address rather
+than absolute. Each of these architectures has its own search_extable() and
+sort_extable() implementation, which are not only mostly identical to each
+other, but also deviate very little from the generic absolute implementations
+in lib/extable.c that they override.
 
-> [...] What I meant was that while all syscalls are allowed to not return to the 
-> userspace because the task might get killed but not all of them accept to get 
-> interrupted by a signal and return with EINTR. None of the man page of mmap, 
-> mremap, mlock, mprotect list EINTR as a possibility so I would be really afraid 
-> of returning an unexpected error code.
+So before making arm64 the fifth architecture that reimplements this, let's
+refactor the existing code so that all of these architectures use common code
+for searching and sorting the relative extables. Archs may set
+ARCH_HAS_RELATIVE_EXTABLE to indicate that the table consists of a pair of
+relative ints, and may define swap_ex_entry_fixup() if the fixup member needs
+special treatment in the swapping step of the sorting routine (such as alpha).
 
-Indeed.
+Changes since v1:
+- introduce the _ASM_EXTABLE() cpp macro for arm64, and replace all open coded
+  exception table entries with it, including an instance I missed in v1 in
+  asm/word-at-a-time.h (suggested by hpa)
+- added acks to from arch maintainers
 
-> Does this make more sense now?
+Ard Biesheuvel (4):
+  alpha/extable: use generic search and sort routines
+  s390/extable: use generic search and sort routines
+  x86/extable: use generic search and sort routines
+  ia64/extable: use generic search and sort routines
 
-It does!
+ arch/alpha/include/asm/uaccess.h |  10 +-
+ arch/alpha/mm/Makefile           |   2 +-
+ arch/alpha/mm/extable.c          |  92 -----------------
+ arch/ia64/include/asm/uaccess.h  |   8 +-
+ arch/ia64/mm/extable.c           |  97 +-----------------
+ arch/s390/include/asm/uaccess.h  |   8 +-
+ arch/s390/mm/Makefile            |   2 +-
+ arch/s390/mm/extable.c           |  85 ---------------
+ arch/x86/include/asm/uaccess.h   |   5 +-
+ arch/x86/mm/extable.c            | 108 --------------------
+ 10 files changed, 17 insertions(+), 400 deletions(-)
+ delete mode 100644 arch/alpha/mm/extable.c
+ delete mode 100644 arch/s390/mm/extable.c
 
-Thanks,
+-- 
+1.9.1
 
-	Ingo
