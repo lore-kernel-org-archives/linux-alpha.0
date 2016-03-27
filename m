@@ -1,32 +1,79 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [3/4] exit_thread: accept a task parameter to be exited
-Date: Fri, 25 Mar 2016 19:32:11 +1100 (AEDT)
-Message-ID: <3qWc3w0GCtz9sdm@ozlabs.org>
-References: <1458824294-29733-1-git-send-email-jslaby@suse.cz>
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <1458824294-29733-1-git-send-email-jslaby@suse.cz>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: "zhaoxiu.zeng" <zhaoxiu.zeng@gmail.com>
+Subject: [PATCH 03/31] Add alpha-specific parity functions
+Date: Sun, 27 Mar 2016 13:43:22 +0800
+Message-ID: <56F772FA.1030104@gmail.com>
+References: <1458788612-4367-1-git-send-email-zhaoxiu.zeng@gmail.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Jiri Slaby <jslaby@suse.cz>, akpm@linux-foundation.org
-Cc: linux-mips@linux-mips.org, linux-s390@vger.kernel.org, Rich Felker <dalias@libc.org>, Aurelien Jacquiot <a-jacquiot@ti.com>, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, Jiri Slaby <jslaby@suse.cz>, Lennox Wu <lennox.wu@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Jonas Bonn <jonas@southpole.se>, Chen Liqin <liqin.linux@gmail.com>, Jesper Nilsson <jesper.nilsson@axis.com>, linux-am33-list@redhat.com, Russell King <linux@arm.linux.org.uk>, linux-c6x-dev@linux-c6, x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org, Helge Deller <deller@gmx>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=37bcJiVcuxtNUPx4ess69o7vrM3ZR6Wsm8EIGk3KjqI=;
+        b=Wvb2ElXJ4HA1t7v4DHi1k5pY2+gFRKbJDQX9nYHu+FY1A+22O1DaTc+TtPxwAiTuyW
+         Uz43WrSXCEiWpkjVA4KXJ0zKQQQ1jTsFzm1vVscDBwj1S36b8QDxNGvQ8PoDupVveMRf
+         QkRx6K/v83xtvzg/5ExNhZSEWW4oWfAIzljdosFYWn2mkAMFDc9NaWZM1uatC4+Q/eZb
+         BVMuyX7i4LSyca4NZ8u8vUvZjsi5Ylk72ts/+hSxDUdwXA6QpIwz6PTlqGGcQzVj0Mbq
+         L7cU+jYxzdoAm5YWK8f7iDopdR8QaXvM0GiLpUP7ontD6denn9i+bkQ14DQRiAKOYGdS
+         uHSA==
+In-Reply-To: <1458788612-4367-1-git-send-email-zhaoxiu.zeng@gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Zeng Zhaoxiu <zhaoxiu.zeng@gmail.com>, linux-alpha@vger.kernel.org
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On Thu, 2016-24-03 at 12:58:13 UTC, Jiri Slaby wrote:
-> We need to call exit_thread from copy_process in a fail path.  So make
-> it accept task_struct as a parameter.
+From: Zeng Zhaoxiu <zhaoxiu.zeng@gmail.com>
 
-If I'm counting right 22 of those are empty functions, so would it be a good
-clean up to make it optional first?
+Signed-off-by: Zeng Zhaoxiu <zhaoxiu.zeng@gmail.com>
+---
+ arch/alpha/include/asm/bitops.h | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-cheers
+diff --git a/arch/alpha/include/asm/bitops.h b/arch/alpha/include/asm/bitops.h
+index 4bdfbd4..95a43fa 100644
+--- a/arch/alpha/include/asm/bitops.h
++++ b/arch/alpha/include/asm/bitops.h
+@@ -421,11 +421,38 @@ static inline unsigned int __arch_hweight8(unsigned int w)
+ {
+ 	return __arch_hweight64(w & 0xff);
+ }
++
++static inline unsigned int __arch_parity64(unsigned long w)
++{
++	return (unsigned int)__kernel_ctpop(w) & 1;
++}
++
++static inline unsigned int __arch_parity32(unsigned int w)
++{
++	return __arch_parity64(w);
++}
++
++static inline unsigned int __arch_parity16(unsigned int w)
++{
++	return __arch_parity64(w & 0xffff);
++}
++
++static inline unsigned int __arch_parity8(unsigned int w)
++{
++	return __arch_parity64(w & 0xff);
++}
++
++static inline unsigned int __arch_parity4(unsigned int w)
++{
++	return __arch_parity64(w & 0xf);
++}
+ #else
+ #include <asm-generic/bitops/arch_hweight.h>
++#include <asm-generic/bitops/arch_parity.h>
+ #endif
+ 
+ #include <asm-generic/bitops/const_hweight.h>
++#include <asm-generic/bitops/const_parity.h>
+ 
+ #endif /* __KERNEL__ */
+ 
+-- 
+2.5.5
 
