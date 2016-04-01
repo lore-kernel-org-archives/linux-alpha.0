@@ -1,7 +1,7 @@
-From: Ingo Molnar <mingo@kernel.org>
+From: Michal Hocko <mhocko@kernel.org>
 Subject: Re: [PATCH 0/11] introduce down_write_killable for rw_semaphore
-Date: Fri, 1 Apr 2016 11:50:00 +0200
-Message-ID: <20160401095000.GA2487@gmail.com>
+Date: Fri, 1 Apr 2016 12:52:20 +0200
+Message-ID: <20160401105219.GD8916@dhcp22.suse.cz>
 References: <1456750705-7141-1-git-send-email-mhocko@kernel.org>
  <20160330133217.GV3408@twins.programming.kicks-ass.net>
  <20160331085926.GB27831@dhcp22.suse.cz>
@@ -9,45 +9,39 @@ References: <1456750705-7141-1-git-send-email-mhocko@kernel.org>
  <20160331100331.73eb381a45a1e03473f700a9@linux-foundation.org>
  <20160401063348.GA6815@gmail.com>
  <20160401092146.GC8916@dhcp22.suse.cz>
+ <20160401095000.GA2487@gmail.com>
 Mime-Version: 1.0
-Return-path: <sparclinux-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/l9yLH+bIJC7k4Y6Zfbzvn6/Ixe6VNdNiEvc85dCex0=;
-        b=gVlq/0r6ItPNtFw23nrmKsIr27FT3zB+vJX6zUYSFsz/NdwIL8TQIDjEuYa1+uMvZU
-         /NtkZfR4CVoIVh0hhNI7JBPWeS/XmXdZ2s3egSgcAtxKQfzu8Gdl6ieqmZ07gf3EJblR
-         0C4cYqdOm1Xwa0DX8KP5kXbH1KizqxcPQIkqciZg4DTt209F5CFten5CnoSKKQKz8um2
-         ifLoHjC8Fcky/1fYU84AsnGGc2gCp0Kg18hjy/aNWw6ROu/4zcHeb3dp3OwB1M6Jlnf5
-         jKsGp/AFxrM30dACmYKl1ztfpElZ6ovN6m8gh6PPKmIrjy2QlMQGPrJlSZ88C/0ZrxJO
-         EUtA==
+Return-path: <linux-arch-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160401092146.GC8916@dhcp22.suse.cz>
-Sender: sparclinux-owner@vger.kernel.org
+In-Reply-To: <20160401095000.GA2487@gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michal Hocko <mhocko@kernel.org>
+To: Ingo Molnar <mingo@kernel.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org
 
-
-* Michal Hocko <mhocko@kernel.org> wrote:
-
-> On Fri 01-04-16 08:33:48, Ingo Molnar wrote:
-> [...]
-> > I can help on the Git level: I can do tip:locking/rwsem tree with only these 
-> > changes, with stable sha1's, on which the remaining work can be based. The
-> > locking tree typically goes in early during the merge window, so there's no
-> > real dependencies.
+On Fri 01-04-16 11:50:00, Ingo Molnar wrote:
 > 
-> OK, I will wait for this series to apear in tip:locking/rwsem and then post the 
-> follow up patches to Andrew. [...]
+> * Michal Hocko <mhocko@kernel.org> wrote:
+> 
+> > On Fri 01-04-16 08:33:48, Ingo Molnar wrote:
+> > [...]
+> > > I can help on the Git level: I can do tip:locking/rwsem tree with only these 
+> > > changes, with stable sha1's, on which the remaining work can be based. The
+> > > locking tree typically goes in early during the merge window, so there's no
+> > > real dependencies.
+> > 
+> > OK, I will wait for this series to apear in tip:locking/rwsem and then post the 
+> > follow up patches to Andrew. [...]
+> 
+> Well, 'this series' was posted a month ago, and patch #3 had a discussion and some 
+> corrections to it - so please re-send with a v4.6-rc1 base. (v4.5 is fine too if 
+> you double check that v4.6-rc1 merges cleanly with it.)
 
-Well, 'this series' was posted a month ago, and patch #3 had a discussion and some 
-corrections to it - so please re-send with a v4.6-rc1 base. (v4.5 is fine too if 
-you double check that v4.6-rc1 merges cleanly with it.)
+Sure will do.
 
-Thanks,
-
-	Ingo
+Thanks!
+-- 
+Michal Hocko
+SUSE Labs
