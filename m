@@ -1,47 +1,75 @@
-From: Max Filippov <jcmvbkbc@gmail.com>
-Subject: Re: [PATCH 1/2] xtensa, rwsem: drop superfluous arch specific implementation
-Date: Mon, 4 Apr 2016 13:23:56 +0300
-Message-ID: <CAMo8BfLCqaJ36qPQm4ttAREw22YDwTwT-JeRfr_mu_d0pAcGsg@mail.gmail.com>
-References: <20160404090335.GB10272@dhcp22.suse.cz>
-	<1459760800-13477-1-git-send-email-mhocko@kernel.org>
-Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
-         :cc;
-        bh=qUkBRaSm5bjGOAnc49bg7qmtT6cKjGENt/YQtcqH70o=;
-        b=RhV+DCASM66VURtuSjKBV8WOwrTsW+j9vUudQ6yOcNZYQg5NnYhLbwuBXdX3BZAhVn
-         rdIEcQkR0slKal6vomaU4CF0einhpTQVos2DZJbFPm6mKhZ2YFx81agLpEMCWxnKZe7r
-         9CfY3uhGO3H19oQRCfXBlNGFA7sCYKqWs7UQJwyWSpMHGNIjNhmvhFKQFU/LFYljNQYx
-         vi8Fhm9iRDUp6OKKXgXTIHvabUm0QoY/AaYX9S7unDTfsM60dUgKZHzvW7Zx1MFmu4V5
-         V368BVTSAnGB8pcsm/CwbYbAnZXEZDzuW6WCvG9tuahps1yoyg2ihO9g9CS1S0LR3imR
-         Z73Q==
-In-Reply-To: <1459760800-13477-1-git-send-email-mhocko@kernel.org>
-Sender: linux-ia64-owner@vger.kernel.org
+From: zengzhaoxiu@163.com
+Subject: [PATCH v2 03/30] Add alpha-specific parity functions
+Date: Wed,  6 Apr 2016 16:46:37 +0800
+Message-ID: <1459932397-6469-1-git-send-email-zengzhaoxiu@163.com>
+References: <57031D9D.801@gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:Subject:Date:Message-Id; bh=5EqEPmrODqBM7p9BNw
+	fI5e/Ou2z6YLhZluJUeB5j1cI=; b=DgQQmw9AvbydE2ZH0H9Sd+qTKoKp1j555p
+	ZKPtn5/wiGtNRQKdYEJqWhhVv6JWOLYNExRoH3If/95lStPEZxDqsv2plq0tziLs
+	l1iOwTKnRKjiBQXc4zxJncKf0f+t/u+6F1zLS0jTD6aIP9lOeFBlDsK8L0FBhAb2
+	Ll2L2hQh8=
+In-Reply-To: <57031D9D.801@gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michal Hocko <mhocko@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, "maintainer:X86 ARCHITECTURE..." <x86@kernel.org>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, "open list:IA64 (Itanium) PL..." <linux-ia64@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, "open list:SUPERH" <linux-sh@vger.kernel.org>, "open list:SPARC + UltraSPAR..." <sparclinux@vger.kernel.org>, "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>, Linux-Arch <linux-arch@vger.kernel.org>, Michal Hocko <mhocko@suse.com>
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
 
-On Mon, Apr 4, 2016 at 12:06 PM, Michal Hocko <mhocko@kernel.org> wrote:
-> From: Michal Hocko <mhocko@suse.com>
->
-> since "locking, rwsem: drop explicit memory barriers" the arch specific
-> code is basically same as the the generic one so we can drop the
-> superfluous code.
->
-> Suggested-by: Davidlohr Bueso <dave@stgolabs.net>
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
-> ---
->  arch/xtensa/include/asm/Kbuild  |   1 +
->  arch/xtensa/include/asm/rwsem.h | 134 ----------------------------------------
->  2 files changed, 1 insertion(+), 134 deletions(-)
->  delete mode 100644 arch/xtensa/include/asm/rwsem.h
+From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
 
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+---
+ arch/alpha/include/asm/bitops.h | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
+diff --git a/arch/alpha/include/asm/bitops.h b/arch/alpha/include/asm/bitops.h
+index 4bdfbd4..95a43fa 100644
+--- a/arch/alpha/include/asm/bitops.h
++++ b/arch/alpha/include/asm/bitops.h
+@@ -421,11 +421,38 @@ static inline unsigned int __arch_hweight8(unsigned int w)
+ {
+ 	return __arch_hweight64(w & 0xff);
+ }
++
++static inline unsigned int __arch_parity64(unsigned long w)
++{
++	return (unsigned int)__kernel_ctpop(w) & 1;
++}
++
++static inline unsigned int __arch_parity32(unsigned int w)
++{
++	return __arch_parity64(w);
++}
++
++static inline unsigned int __arch_parity16(unsigned int w)
++{
++	return __arch_parity64(w & 0xffff);
++}
++
++static inline unsigned int __arch_parity8(unsigned int w)
++{
++	return __arch_parity64(w & 0xff);
++}
++
++static inline unsigned int __arch_parity4(unsigned int w)
++{
++	return __arch_parity64(w & 0xf);
++}
+ #else
+ #include <asm-generic/bitops/arch_hweight.h>
++#include <asm-generic/bitops/arch_parity.h>
+ #endif
+ 
+ #include <asm-generic/bitops/const_hweight.h>
++#include <asm-generic/bitops/const_parity.h>
+ 
+ #endif /* __KERNEL__ */
+ 
 -- 
-Thanks.
--- Max
+2.5.0
+
+
