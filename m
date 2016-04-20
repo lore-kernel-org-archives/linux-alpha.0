@@ -1,119 +1,73 @@
-From: Michal Hocko <mhocko@kernel.org>
-Subject: Re: [PATCH 10/11] x86, rwsem: provide __down_write_killable
-Date: Sun, 17 Apr 2016 12:59:21 -0400
-Message-ID: <20160417165920.GA9051@dhcp22.suse.cz>
-References: <1460041951-22347-1-git-send-email-mhocko@kernel.org>
- <1460041951-22347-11-git-send-email-mhocko@kernel.org>
- <20160413090829.GB29579@gmail.com>
- <20160413091625.GF14351@dhcp22.suse.cz>
- <20160413091943.GA17858@gmail.com>
- <20160413102731.GA29896@gmail.com>
- <20160413124943.GH14351@dhcp22.suse.cz>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 16/23] alpha: remove ARCH_WANT_OPTIONAL_GPIOLIB
+Date: Wed, 20 Apr 2016 10:58:14 +0200
+Message-ID: <1461142701-21096-17-git-send-email-linus.walleij@linaro.org>
+References: <1461142701-21096-1-git-send-email-linus.walleij@linaro.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160413124943.GH14351@dhcp22.suse.cz>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-gpio-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UE8QoFfYA4So7IU5H6Lt/JoOj8erd5Ir1XnqlkKhhUs=;
+        b=iNmbpj5PUKwnBzerviqsFtckMTxHcpOCDLtFhrsVISom8MlfAGcBUVnfR+dilHkKCs
+         BUD7XnfTQnGX7DMC7lQh3fUqKos6v+MCxgf8ILICyy7YiNgLqJ0AdnDXne2XLBIq9dp2
+         AtbUEYT1igTcuXfprSfXH7wfWTnr+bGkNIekU=
+In-Reply-To: <1461142701-21096-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-gpio-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Ingo Molnar <mingo@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>
+Content-Type: text/plain; charset="iso-8859-1"
+To: linux-gpio@vger.kernel.org, Alexandre Courbot <acourbot@nvidia.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, =?UTF-8?q?Michael=20B=C3=BCsch?= <m@bues.ch>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Wed 13-04-16 14:49:43, Michal Hocko wrote:
-> On Wed 13-04-16 12:27:31, Ingo Molnar wrote:
-> >=20
-> > * Ingo Molnar <mingo@kernel.org> wrote:
-> >=20
-> > > I'm testing your patches today, if they are otherwise OK [...]
-> >=20
-> > got this build failure:
-> >=20
-> >   ./arch/x86/include/asm/rwsem.h:106:2: error: =E2=80=98asm=E2=80=99=
- operand has impossible constraints
->=20
-> Hmm, I have no idea why 64b didn't have problem with the asm but 32b
-> complains. Anyway, the following makes both happy. I have checked the
-> generated code for 64b and it hasn't changed after the patch. 32b als=
-o
-> seems to be generating a proper code. My gcc asm()-foo is rather weak=
- so
-> I would feel better if somebody double checked after me.
+This symbols is not needed to get access to selecting the
+GPIOLIB anymore: any arch can select GPIOLIB.
 
-Peter, Ingo, does the patch makes sense to you?
-Thanks!
+Cc: Michael B=C3=BCsch <m@bues.ch>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+Various arch maintainers:
 
-> ---
-> From d23f4e6994670bf2c5d864f2190f21022b4499b2 Mon Sep 17 00:00:00 200=
-1
-> From: Michal Hocko <mhocko@suse.com>
-> Date: Wed, 13 Apr 2016 14:21:25 +0200
-> Subject: [PATCH] x86: __down_read_trylock fix 32b build failure
-> MIME-Version: 1.0
-> Content-Type: text/plain; charset=3DUTF-8
-> Content-Transfer-Encoding: 8bit
->=20
-> Ingo has noticed the following compilation error with CONFIG_X86_32=3D=
-y
-> ./arch/x86/include/asm/rwsem.h:106:2: error: =E2=80=98asm=E2=80=99 op=
-erand has impossible constraints
->=20
-> The reason seems to be that 32b doesn't like ret being input and outp=
-ut
-> argument sharing the same register with sem which is only the input. =
-=46ix
-> this by making ret output only and use %3 (aka sem) for xadd.
->=20
-> ret initialization is not needed now because this is done implicitly
-> by the asm even for the fast path as both sem and ret share the same
-> register.
->=20
-> Reported-by: Ingo Molnar <mingo@kernel.org>
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
-> ---
->  arch/x86/include/asm/rwsem.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->=20
-> diff --git a/arch/x86/include/asm/rwsem.h b/arch/x86/include/asm/rwse=
-m.h
-> index d759c5f70f49..453744c1d347 100644
-> --- a/arch/x86/include/asm/rwsem.h
-> +++ b/arch/x86/include/asm/rwsem.h
-> @@ -102,9 +102,9 @@ static inline int __down_read_trylock(struct rw_s=
-emaphore *sem)
->  #define ____down_write(sem, slow_path)			\
->  ({							\
->  	long tmp;					\
-> -	struct rw_semaphore* ret =3D sem;			\
-> +	struct rw_semaphore* ret;			\
->  	asm volatile("# beginning down_write\n\t"	\
-> -		     LOCK_PREFIX "  xadd      %1,(%2)\n\t"	\
-> +		     LOCK_PREFIX "  xadd      %1,(%3)\n\t"	\
->  		     /* adds 0xffff0001, returns the old value */ \
->  		     "  test " __ASM_SEL(%w1,%k1) "," __ASM_SEL(%w1,%k1) "\n\t" \
->  		     /* was the active mask 0 before? */\
-> @@ -112,7 +112,7 @@ static inline int __down_read_trylock(struct rw_s=
-emaphore *sem)
->  		     "  call " slow_path "\n"		\
->  		     "1:\n"				\
->  		     "# ending down_write"		\
-> -		     : "+m" (sem->count), "=3Dd" (tmp), "+a" (ret)	\
-> +		     : "+m" (sem->count), "=3Dd" (tmp), "=3Da" (ret)	\
->  		     : "a" (sem), "1" (RWSEM_ACTIVE_WRITE_BIAS) \
->  		     : "memory", "cc");			\
->  	ret;						\
-> --=20
-> 2.8.0.rc3
->=20
-> --=20
-> Michal Hocko
-> SUSE Labs
+either ACK this and I will merge it into the GPIO tree for v4.7
+anticipating no clashes, or you wait until I have the enabling patch
+upstream (patch 1 in this series, removing deps on
+ARCH_[WANTS_OPTIONAL|REQUIRES]_GPIOLIB), and you will be able to
+merge it to your arch trees yourselves for late v4.7
+(post GPIO tree merge) or for v4.8.
 
+You can also ask me for an immutable branch if you prefer that, I
+will put the enabling patch on a branch and the patch for your arch
+on top and ask you to pull it.
+
+Select your option from the menu, silence probably means I will
+merge it to the GPIO tree. Unless you are X86 or ARM in which case
+I will be cautious.
+---
+ arch/alpha/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 9d8a85801ed1..fe99f894e57d 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -13,7 +13,6 @@ config ALPHA
+ 	select GENERIC_IRQ_PROBE
+ 	select AUTO_IRQ_AFFINITY if SMP
+ 	select GENERIC_IRQ_SHOW
+-	select ARCH_WANT_OPTIONAL_GPIOLIB
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+ 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
 --=20
-Michal Hocko
-SUSE Labs
+2.4.11
+
 --
-To unsubscribe from this list: send the line "unsubscribe linux-alpha" =
-in
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
