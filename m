@@ -1,73 +1,51 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 16/23] alpha: remove ARCH_WANT_OPTIONAL_GPIOLIB
-Date: Wed, 20 Apr 2016 10:58:14 +0200
-Message-ID: <1461142701-21096-17-git-send-email-linus.walleij@linaro.org>
-References: <1461142701-21096-1-git-send-email-linus.walleij@linaro.org>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH 10/11] x86, rwsem: provide __down_write_killable
+Date: Wed, 20 Apr 2016 15:40:19 +0200
+Message-ID: <20160420134019.GX3448@twins.programming.kicks-ass.net>
+References: <1460041951-22347-1-git-send-email-mhocko@kernel.org>
+ <1460041951-22347-11-git-send-email-mhocko@kernel.org>
+ <20160413090829.GB29579@gmail.com>
+ <20160413091625.GF14351@dhcp22.suse.cz>
+ <20160413091943.GA17858@gmail.com>
+ <20160413102731.GA29896@gmail.com>
+ <20160413124943.GH14351@dhcp22.suse.cz>
 Mime-Version: 1.0
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-gpio-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UE8QoFfYA4So7IU5H6Lt/JoOj8erd5Ir1XnqlkKhhUs=;
-        b=iNmbpj5PUKwnBzerviqsFtckMTxHcpOCDLtFhrsVISom8MlfAGcBUVnfR+dilHkKCs
-         BUD7XnfTQnGX7DMC7lQh3fUqKos6v+MCxgf8ILICyy7YiNgLqJ0AdnDXne2XLBIq9dp2
-         AtbUEYT1igTcuXfprSfXH7wfWTnr+bGkNIekU=
-In-Reply-To: <1461142701-21096-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-gpio-owner@vger.kernel.org
+Return-path: <linux-ia64-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160413124943.GH14351@dhcp22.suse.cz>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: linux-gpio@vger.kernel.org, Alexandre Courbot <acourbot@nvidia.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, =?UTF-8?q?Michael=20B=C3=BCsch?= <m@bues.ch>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+To: Michal Hocko <mhocko@kernel.org>
+Cc: Ingo Molnar <mingo@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>
 
-This symbols is not needed to get access to selecting the
-GPIOLIB anymore: any arch can select GPIOLIB.
+On Wed, Apr 13, 2016 at 02:49:43PM +0200, Michal Hocko wrote:
+> On Wed 13-04-16 12:27:31, Ingo Molnar wrote:
+> >=20
+> > * Ingo Molnar <mingo@kernel.org> wrote:
+> >=20
+> > > I'm testing your patches today, if they are otherwise OK [...]
+> >=20
+> > got this build failure:
+> >=20
+> >   ./arch/x86/include/asm/rwsem.h:106:2: error: =E2=80=98asm=E2=80=99=
+ operand has impossible constraints
+>=20
+> Hmm, I have no idea why 64b didn't have problem with the asm but 32b
+> complains. Anyway, the following makes both happy. I have checked the
+> generated code for 64b and it hasn't changed after the patch. 32b als=
+o
+> seems to be generating a proper code. My gcc asm()-foo is rather weak=
+ so
+> I would feel better if somebody double checked after me.
 
-Cc: Michael B=C3=BCsch <m@bues.ch>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-Various arch maintainers:
+I completely blow at this gcc-asm constraints thing too :/
 
-either ACK this and I will merge it into the GPIO tree for v4.7
-anticipating no clashes, or you wait until I have the enabling patch
-upstream (patch 1 in this series, removing deps on
-ARCH_[WANTS_OPTIONAL|REQUIRES]_GPIOLIB), and you will be able to
-merge it to your arch trees yourselves for late v4.7
-(post GPIO tree merge) or for v4.8.
-
-You can also ask me for an immutable branch if you prefer that, I
-will put the enabling patch on a branch and the patch for your arch
-on top and ask you to pull it.
-
-Select your option from the menu, silence probably means I will
-merge it to the GPIO tree. Unless you are X86 or ARM in which case
-I will be cautious.
----
- arch/alpha/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 9d8a85801ed1..fe99f894e57d 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -13,7 +13,6 @@ config ALPHA
- 	select GENERIC_IRQ_PROBE
- 	select AUTO_IRQ_AFFINITY if SMP
- 	select GENERIC_IRQ_SHOW
--	select ARCH_WANT_OPTIONAL_GPIOLIB
- 	select ARCH_WANT_IPC_PARSE_VERSION
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
- 	select ARCH_HAS_ATOMIC64_DEC_IF_POSITIVE
---=20
-2.4.11
-
+In any case, Ingo will you look after the rest of these patches, or do
+you want me to pick up the remaining bits?
 --
-To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+To unsubscribe from this list: send the line "unsubscribe linux-ia64" i=
 n
 the body of a message to majordomo@vger.kernel.org
 More majordomo info at  http://vger.kernel.org/majordomo-info.html
