@@ -1,76 +1,33 @@
-From: Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH 10/11] x86, rwsem: provide __down_write_killable
-Date: Fri, 22 Apr 2016 08:53:49 +0200
-Message-ID: <20160422065349.GA1135@gmail.com>
-References: <1460041951-22347-1-git-send-email-mhocko@kernel.org>
- <1460041951-22347-11-git-send-email-mhocko@kernel.org>
- <20160413090829.GB29579@gmail.com>
- <20160413091625.GF14351@dhcp22.suse.cz>
- <20160413091943.GA17858@gmail.com>
- <20160413102731.GA29896@gmail.com>
- <20160413124943.GH14351@dhcp22.suse.cz>
- <20160420134019.GX3448@twins.programming.kicks-ass.net>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 16/23] alpha: remove ARCH_WANT_OPTIONAL_GPIOLIB
+Date: Tue, 26 Apr 2016 13:59:04 +0200
+Message-ID: <CACRpkdbPn8cC-ODnsYz=96srXMJCEt0ayQtJ2Zyro36s-dap=g@mail.gmail.com>
+References: <1461142701-21096-1-git-send-email-linus.walleij@linaro.org>
+	<1461142701-21096-17-git-send-email-linus.walleij@linaro.org>
+	<CAEdQ38Hxa10s1QgEOrfL93=MFH4477ZLaFJSJyZdA3B+v++jtw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=4UM2zQ2qxOGmL8EHTagzyZ2F4fvlPKoZM3qi9TcdCbA=;
-        b=yuQO+V91RXXlgxQp6AWCz1hqAkHLmb0FekvATt4h43j5sCyAfvq2YcTBT5Nfkb/xY3
-         MqeWFzVgB8if9O/XpiwEkMerVELt1yzd/tDxiTFysAvg4RQ25x1JNhffaorHHaMMcnsj
-         ZVy9IEjmoY5pA+14S9Nb6Wv5UJMcUNO8VNcMBPko/uZKsPvOQ1tcJVos049Ic4dSodg7
-         CdhU9DSvyF5nq4Kacri1iNErIFMDHYKboUKGonUlEL16DT1TXrr8moSRh9ZnXUSyHJrp
-         /KKX46/QWwxveBcaaOOP6YFmAs3zdt8Ea3WmTQIeP+PTIXLQkeDEOfMYSjypw+1ugAgr
-         E1XA==
-Content-Disposition: inline
-In-Reply-To: <20160420134019.GX3448@twins.programming.kicks-ass.net>
-Sender: linux-ia64-owner@vger.kernel.org
+        d=linaro.org; s=google;
+        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
+         :cc;
+        bh=JDyoxOG3pTXzwo2cxvEeL8Un0lT5wUFfv8JWvJVAzU0=;
+        b=RHFTE+JqSdEbLxc03m0g6yFe93WX50poGO/E+D+ETY6H8XB3u0oqiB62EUFVm4zXdB
+         j86orwtfKJTGOAAAP+Z17Wnr43/UKpT5VQJns5LkycyPRYgzI48YEqc4IbtrFKjz8+8v
+         GS9a3dE9yJDavHDOQHKkuhjHswDjZUxWjmz/Y=
+In-Reply-To: <CAEdQ38Hxa10s1QgEOrfL93=MFH4477ZLaFJSJyZdA3B+v++jtw@mail.gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Michal Hocko <mhocko@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Matt Turner <mattst88@gmail.com>
+Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Alexandre Courbot <acourbot@nvidia.com>, =?UTF-8?Q?Michael_B=C3=BCsch?= <m@bues.ch>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>
 
+2016-04-20 18:15 GMT+02:00 Matt Turner <mattst88@gmail.com>:
 
-* Peter Zijlstra <peterz@infradead.org> wrote:
+> Acked-by: Matt Turner <mattst88@gmail.com>
 
-> On Wed, Apr 13, 2016 at 02:49:43PM +0200, Michal Hocko wrote:
-> > On Wed 13-04-16 12:27:31, Ingo Molnar wrote:
-> > >=20
-> > > * Ingo Molnar <mingo@kernel.org> wrote:
-> > >=20
-> > > > I'm testing your patches today, if they are otherwise OK [...]
-> > >=20
-> > > got this build failure:
-> > >=20
-> > >   ./arch/x86/include/asm/rwsem.h:106:2: error: =E2=80=98asm=E2=80=
-=99 operand has impossible constraints
-> >=20
-> > Hmm, I have no idea why 64b didn't have problem with the asm but 32=
-b
-> > complains. Anyway, the following makes both happy. I have checked t=
-he
-> > generated code for 64b and it hasn't changed after the patch. 32b a=
-lso
-> > seems to be generating a proper code. My gcc asm()-foo is rather we=
-ak so
-> > I would feel better if somebody double checked after me.
->=20
-> I completely blow at this gcc-asm constraints thing too :/
->=20
-> In any case, Ingo will you look after the rest of these patches, or d=
-o
-> you want me to pick up the remaining bits?
+Thanks, patch applied to the GPIO tree with your ACK.
 
-Yeah, it's on my list!
-
-Thanks,
-
-	Ingo
---
-To unsubscribe from this list: send the line "unsubscribe linux-ia64" i=
-n
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Yours,
+Linus Walleij
