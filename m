@@ -1,33 +1,45 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 16/23] alpha: remove ARCH_WANT_OPTIONAL_GPIOLIB
-Date: Tue, 26 Apr 2016 13:59:04 +0200
-Message-ID: <CACRpkdbPn8cC-ODnsYz=96srXMJCEt0ayQtJ2Zyro36s-dap=g@mail.gmail.com>
-References: <1461142701-21096-1-git-send-email-linus.walleij@linaro.org>
-	<1461142701-21096-17-git-send-email-linus.walleij@linaro.org>
-	<CAEdQ38Hxa10s1QgEOrfL93=MFH4477ZLaFJSJyZdA3B+v++jtw@mail.gmail.com>
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:in-reply-to:references:date:message-id:subject:from:to
-         :cc;
-        bh=JDyoxOG3pTXzwo2cxvEeL8Un0lT5wUFfv8JWvJVAzU0=;
-        b=RHFTE+JqSdEbLxc03m0g6yFe93WX50poGO/E+D+ETY6H8XB3u0oqiB62EUFVm4zXdB
-         j86orwtfKJTGOAAAP+Z17Wnr43/UKpT5VQJns5LkycyPRYgzI48YEqc4IbtrFKjz8+8v
-         GS9a3dE9yJDavHDOQHKkuhjHswDjZUxWjmz/Y=
-In-Reply-To: <CAEdQ38Hxa10s1QgEOrfL93=MFH4477ZLaFJSJyZdA3B+v++jtw@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 7/8] char/genrtc: disallow building on Alpha
+Date: Tue, 26 Apr 2016 23:44:11 +0200
+Message-ID: <1461707052-1337718-8-git-send-email-arnd@arndb.de>
+References: <1461707052-1337718-1-git-send-email-arnd@arndb.de>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <1461707052-1337718-1-git-send-email-arnd@arndb.de>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Alexandre Courbot <acourbot@nvidia.com>, =?UTF-8?Q?Michael_B=C3=BCsch?= <m@bues.ch>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, tony.luck@intel.com, geert@linux-m68k.org, jejb@parisc-linux.org, deller@gmx.de, benh@kernel.crashing.org, mpe@ellerman.id.au, dalias@libc.org, dhowells@redhat.com, yasutake.koichi@jp.panasonic.com, rth@twiddle.net, ink@jurassic.park.msu.ru, linux-alpha@vger.kernel.org, x86@kernel.org, a.zummo@towertech.it, alexandre.belloni@free-electrons.com, linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, rtc-linux@googlegroups.com, linux-arch@vger.kernel.org
 
-2016-04-20 18:15 GMT+02:00 Matt Turner <mattst88@gmail.com>:
+The genrtc driver serves no purpose on Alpha because it drives the
+same hardware as the original rtc.c driver, and the newer rtc-generic.c
+or rtc-cmos.c drivers on architectures that use the asm-generic/rtc.h
+header.
 
-> Acked-by: Matt Turner <mattst88@gmail.com>
+The defconfig uses CONFIG_RTC=y, so this driver is not used by default.
+At one point it was used to abstract a quirk for the "Marvel" platform,
+but it does not do this any more after the code was moved into yet
+another driver in arch/alpha/kernel/rtc.c.
 
-Thanks, patch applied to the GPIO tree with your ACK.
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/char/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yours,
-Linus Walleij
+diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+index 9bdb629fbaae..697510325b1d 100644
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -328,7 +328,7 @@ config JS_RTC
+ config GEN_RTC
+ 	tristate "Generic /dev/rtc emulation"
+ 	depends on RTC!=y
+-	depends on ALPHA || M68K || MN10300 || PARISC || PPC
++	depends on M68K || MN10300 || PARISC || PPC
+ 	---help---
+ 	  If you say Y here and create a character special file /dev/rtc with
+ 	  major number 10 and minor number 135 using mknod ("man mknod"), you
+-- 
+2.7.0
