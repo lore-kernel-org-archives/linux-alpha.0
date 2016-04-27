@@ -1,45 +1,109 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 6/8] char/genrtc: parisc: use asm-generic/rtc.h
-Date: Wed, 27 Apr 2016 14:44:34 +0200
-Message-ID: <4737487.5iYaado825@wuerfel>
-References: <1461707052-1337718-1-git-send-email-arnd@arndb.de> <4599222.az1Zyv5Lrl@wuerfel> <CAMuHMdV0DwdMkJURBH05ntrJWz0eY_wT__vHG32sx-sjSp0m_w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdV0DwdMkJURBH05ntrJWz0eY_wT__vHG32sx-sjSp0m_w@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Subject: [PATCH v3 07/16] rtc: parisc: provide rtc_class_ops directly
+Date: Thu, 28 Apr 2016 00:34:21 +0200
+Message-ID: <1461796470-1291527-8-git-send-email-arnd@arndb.de>
+References: <1461796470-1291527-1-git-send-email-arnd@arndb.de>
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <1461796470-1291527-1-git-send-email-arnd@arndb.de>
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Rolf Eike Beer <eike-kernel@sf-tec.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Luck <tony.luck@intel.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Rich Felker <dalias@libc.org>, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, alpha <linux-alpha@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Parisc List <linux-parisc@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, geert@linux-m68k.org, deller@gmx.de, benh@kernel.crashing.org, mpe@ellerman.id.au, dalias@libc.org, dhowells@redhat.com, linux-alpha@vger.kernel.org, a.zummo@towertech.it, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, linux-m68k@lists.linux-m68k.org, rtc-linux@googlegroups.com, linux-arch@vger.kernel.org
 
-On Wednesday 27 April 2016 13:55:43 Geert Uytterhoeven wrote:
-> On Wed, Apr 27, 2016 at 1:35 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Wednesday 27 April 2016 13:21:16 Arnd Bergmann wrote:
-> >> On Wednesday 27 April 2016 00:07:47 Rolf Eike Beer wrote:
-> >> > Arnd Bergmann wrote:
-> >> > > The asm-generic/rtc.h header can now be included by
-> >> > > architectures that provide their own set_rtc_time/get_rtc_time
-> >> > > macros, letting us remove most of the common contents in
-> >> > > the powerpc implementation.
-> >> >
-> >> > parisc in this case.
-> >> >
-> >>
-> >> Fixed, thanks!
-> >
-> > Actually, after the comment about just removing the gen_rtc driver
-> > in the long run, I checked again and found that PARISC unconditionally
-> > selects RTC_CLASS, so this driver can't even be built here.
-> > We should just remove the header and drop PARISC from the list.
-> >
-> > If we also drop m68k, that just leaves powerpc.
-> 
-> I've just checked Debian's unofficial linux-image-4.5.0-1-m68k_4.5.1-1_m68k,
-> and it also enables RTC_CLASS and CONFIG_RTC_DRV_GENERIC, so gen_rtc
-> can be dropped on m68k for sure.
+The rtc-generic driver provides an architecture specific
+wrapper on top of the generic rtc_class_ops abstraction,
+and on pa-risc, that is implemented using an open-coded
+version of rtc_time_to_tm/rtc_tm_to_time.
 
-Ok, excellent. I'll try to rework the series then to completely eliminate
-the driver (or leaving it ppc-only).
+This changes the parisc rtc-generic device to provide its
+rtc_class_ops directly, using the normal helper functions,
+which makes this y2038 safe (on 32-bit) and simplifies
+the implementation.
 
-	Arnd
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/parisc/kernel/time.c | 36 +++++++++++++++++++++++++++++++++++-
+ drivers/rtc/rtc-generic.c |  3 +--
+ 2 files changed, 36 insertions(+), 3 deletions(-)
+
+diff --git a/arch/parisc/kernel/time.c b/arch/parisc/kernel/time.c
+index 58dd6801f5be..744878789752 100644
+--- a/arch/parisc/kernel/time.c
++++ b/arch/parisc/kernel/time.c
+@@ -12,6 +12,7 @@
+  */
+ #include <linux/errno.h>
+ #include <linux/module.h>
++#include <linux/rtc.h>
+ #include <linux/sched.h>
+ #include <linux/kernel.h>
+ #include <linux/param.h>
+@@ -248,14 +249,47 @@ void __init start_cpu_itimer(void)
+ 	per_cpu(cpu_data, cpu).it_value = next_tick;
+ }
+ 
++#if IS_ENABLED(CONFIG_RTC_DRV_GENERIC)
++static int rtc_generic_get_time(struct device *dev, struct rtc_time *tm)
++{
++	struct pdc_tod tod_data;
++
++	memset(tm, 0, sizeof(*tm));
++	if (pdc_tod_read(&tod_data) < 0)
++		return -EOPNOTSUPP;
++
++	/* we treat tod_sec as unsigned, so this can work until year 2106 */
++	rtc_time64_to_tm(tod_data.tod_sec, tm);
++	return rtc_valid_tm(tm);
++}
++
++static int rtc_generic_set_time(struct device *dev, struct rtc_time *tm)
++{
++	time64_t secs = rtc_tm_to_time64(tm);
++
++	if (pdc_tod_set(secs, 0) < 0)
++		return -EOPNOTSUPP;
++
++	return 0;
++}
++
++static const struct rtc_class_ops rtc_generic_ops = {
++	.read_time = rtc_generic_get_time,
++	.set_time = rtc_generic_set_time,
++};
++
+ static int __init rtc_init(void)
+ {
+ 	struct platform_device *pdev;
+ 
+-	pdev = platform_device_register_simple("rtc-generic", -1, NULL, 0);
++	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
++					     &rtc_generic_ops,
++					     sizeof(rtc_generic_ops));
++
+ 	return PTR_ERR_OR_ZERO(pdev);
+ }
+ device_initcall(rtc_init);
++#endif
+ 
+ void read_persistent_clock(struct timespec *ts)
+ {
+diff --git a/drivers/rtc/rtc-generic.c b/drivers/rtc/rtc-generic.c
+index 3958e87a05fa..92b5e02a3750 100644
+--- a/drivers/rtc/rtc-generic.c
++++ b/drivers/rtc/rtc-generic.c
+@@ -9,8 +9,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/rtc.h>
+ 
+-#if defined(CONFIG_M68K) || defined(CONFIG_PARISC) || \
+-    defined(CONFIG_PPC)
++#if defined(CONFIG_M68K) || defined(CONFIG_PPC)
+ #include <asm/rtc.h>
+ 
+ static int generic_get_time(struct device *dev, struct rtc_time *tm)
+-- 
+2.7.0
+
