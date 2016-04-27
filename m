@@ -1,36 +1,64 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH 6/8] char/genrtc: parisc: use asm-generic/rtc.h
-Date: Wed, 27 Apr 2016 13:35:30 +0200
-Message-ID: <4599222.az1Zyv5Lrl@wuerfel>
-References: <1461707052-1337718-1-git-send-email-arnd@arndb.de> <3034953.EvqV1iv2Ef@caliban.sf-tec.de> <18012781.hPTzXnRcSP@wuerfel>
+Date: Wed, 27 Apr 2016 13:55:43 +0200
+Message-ID: <CAMuHMdV0DwdMkJURBH05ntrJWz0eY_wT__vHG32sx-sjSp0m_w@mail.gmail.com>
+References: <1461707052-1337718-1-git-send-email-arnd@arndb.de>
+	<3034953.EvqV1iv2Ef@caliban.sf-tec.de>
+	<18012781.hPTzXnRcSP@wuerfel>
+	<4599222.az1Zyv5Lrl@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <18012781.hPTzXnRcSP@wuerfel>
-Sender: linux-arch-owner@vger.kernel.org
+Return-path: <linux-sh-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:sender:in-reply-to:references:date:message-id:subject
+         :from:to:cc;
+        bh=nzIxPQ7bUkOwHc3jsyP7t7G4P4GiFdojQV4DRlL8cVI=;
+        b=cRusqZRklyU/MLJ1Gc5gkUTSvxmJ3Shx1/PLva4zyDRNMIJAMwCGKf1d+6f/xsOpLb
+         LMTNNk522O5EQFJ8gFlDtvMs1qN7Qx7ziXdtmT61yQexSEBiCZlbN9rqdQP6UeH/0j4E
+         YiXEsEZWu/ChBoCYrHlvQ6EhL59aaO64/gSyaCrX0LPhi0gGgpTHkL49lnxB1TTeqMiO
+         xXqP0ay7z/UFHQA/DYbG3xY+lgnMmPbFMEW1CvAYE2oy/ur99vlV2MK7b/ufmx8VQwsu
+         Cq4Iql5e/tXqB+kKyUoNI1Ss/CMHv5bRuFh8WDTRnzYRBE1EHQWPOGrPJC1GENAVvYMD
+         CIug==
+In-Reply-To: <4599222.az1Zyv5Lrl@wuerfel>
+Sender: linux-sh-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Rolf Eike Beer <eike-kernel@sf-tec.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, tony.luck@intel.com, geert@linux-m68k.org, jejb@parisc-linux.org, deller@gmx.de, benh@kernel.crashing.org, mpe@ellerman.id.au, dalias@libc.org, dhowells@redhat.com, yasutake.koichi@jp.panasonic.com, rth@twiddle.net, ink@jurassic.park.msu.ru, linux-alpha@vger.kernel.org, x86@kernel.org, a.zummo@towertech.it, alexandre.belloni@free-electrons.com, linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, rtc-linux@googlegroups.com, linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Rolf Eike Beer <eike-kernel@sf-tec.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tony Luck <tony.luck@intel.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Rich Felker <dalias@libc.org>, David Howells <dhowells@redhat.com>, Koichi Yasutake <yasutake.koichi@jp.panasonic.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, alpha <linux-alpha@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Parisc List <linux-parisc@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxp>
 
-On Wednesday 27 April 2016 13:21:16 Arnd Bergmann wrote:
-> On Wednesday 27 April 2016 00:07:47 Rolf Eike Beer wrote:
-> > Arnd Bergmann wrote:
-> > > The asm-generic/rtc.h header can now be included by
-> > > architectures that provide their own set_rtc_time/get_rtc_time
-> > > macros, letting us remove most of the common contents in
-> > > the powerpc implementation.
-> > 
-> > parisc in this case.
-> > 
-> 
-> Fixed, thanks!
+On Wed, Apr 27, 2016 at 1:35 PM, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Wednesday 27 April 2016 13:21:16 Arnd Bergmann wrote:
+>> On Wednesday 27 April 2016 00:07:47 Rolf Eike Beer wrote:
+>> > Arnd Bergmann wrote:
+>> > > The asm-generic/rtc.h header can now be included by
+>> > > architectures that provide their own set_rtc_time/get_rtc_time
+>> > > macros, letting us remove most of the common contents in
+>> > > the powerpc implementation.
+>> >
+>> > parisc in this case.
+>> >
+>>
+>> Fixed, thanks!
+>
+> Actually, after the comment about just removing the gen_rtc driver
+> in the long run, I checked again and found that PARISC unconditionally
+> selects RTC_CLASS, so this driver can't even be built here.
+> We should just remove the header and drop PARISC from the list.
+>
+> If we also drop m68k, that just leaves powerpc.
 
-Actually, after the comment about just removing the gen_rtc driver
-in the long run, I checked again and found that PARISC unconditionally
-selects RTC_CLASS, so this driver can't even be built here.
-We should just remove the header and drop PARISC from the list.
+I've just checked Debian's unofficial linux-image-4.5.0-1-m68k_4.5.1-1_m68k,
+and it also enables RTC_CLASS and CONFIG_RTC_DRV_GENERIC, so gen_rtc
+can be dropped on m68k for sure.
 
-If we also drop m68k, that just leaves powerpc.
+Gr{oetje,eeting}s,
 
-	Arnd
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
