@@ -1,65 +1,47 @@
-From: "George Spelvin" <linux@horizon.com>
+From: Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>
 Subject: Re: [patch V3] lib: GCD: add binary GCD algorithm
-Date: 28 Apr 2016 15:15:51 -0400
-Message-ID: <20160428191551.17438.qmail@ns.horizon.com>
-References: <20160428175843.GZ21636@brightrain.aerifal.cx>
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <20160428175843.GZ21636@brightrain.aerifal.cx>
-Sender: linux-parisc-owner@vger.kernel.org
+Date: Thu, 28 Apr 2016 21:54:06 +0200
+Message-ID: <20160428195326.GB29802@ravnborg.org>
+References: <1461843824-19853-1-git-send-email-zengzhaoxiu@163.com>
+ <20160428164856.10120.qmail@ns.horizon.com>
+Mime-Version: 1.0
+Return-path: <linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160428164856.10120.qmail-HzZAx2gCgqrSUeElwK9/Pw@public.gmane.org>
+Sender: linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: dalias@libc.org, geert@linux-m68k.org
-Cc: akpm@linux-foundation.org, davem@davemloft.net, deller@gmx.de, ink@jurassic.park.msu.ru, james.hogan@imgtec.com, jejb@parisc-linux.org, jonas@southpole.se, lennox.wu@gmail.com, lftan@altera.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux@arm.linux.org.uk, linux@horizon.com, linux@lists.openrisc.net, liqin.linux@gmail.com, mattst88@gmail.com, monstr@monstr.eu, nios2-dev@lists.rocketboards.org, peterz@infradead.org, ralf@linux-mips.org, rth@twiddle.net, sparclinux@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp, ysato@users.sourceforge.jp, zengzhaoxiu@163.com, zhaoxiu.zeng@gmail.com
+To: George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>
+Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, zengzhaoxiu-9Onoh4P/yGk@public.gmane.org, dalias-8zAoT0mYgF4@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org, deller-Mmb7MZpHnFY@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org, james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org, jejb-6jwH94ZQLHl74goWV3ctuw@public.gmane.org, jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org, lennox.wu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, liqin.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, uclinux-h8-devel-5NWGOfrQmneRv+LV9MX5uooqe+aC9MnS@public.gmane.org, ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org, zhaoxiu.zeng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 
-> How does a CPU lack an efficient ffs/ctz anyway? There are all sorts
-> of ways to implement it without a native insn, some of which are
-> almost or just as fast as the native insn on cpus that have the
-> latter. On anything with a fast multiply, the de Bruijn sequence
-> approach is near-optimal, and otherwise one of the binary-search type
-> approaches (possibly branchless) can be used. If the compiler doesn't
-> generate an appropriate one for __builtin_ctz, that's arguably a
-> compiler bug.
+> __ffs on the available architectures:
+> 	Alpha: sometimes (CONFIG_ALPHA_EV6, CONFIG_ALPHA_EV67)
+> 	ARC: sometimes (!CONFIG_ISA_ARCOMPACT)
+> 	ARM: sometimes (V5+)
+> 	ARM64: NO, could be written using RBIT and CLZ
+> 	AVR: yes
+> 	Blackfin: NO, could be written using hweight()
+> 	C6x: yes
+> 	CRIS: NO
+> 	FR-V: yes
+> 	H8300: NO
+> 	Hexagon: yes
+> 	IA64: yes
+> 	M32R: NO
+> 	M68k: sometimes
+> 	MetaG: NO
+> 	Microblaze: NO
+> 	MIPS: sometimes
+> 	MN10300: yes
+> 	OpenRISC: NO
+> 	PA-RISC: NO?  Interesting code, but I think it's a net loss.
+> 	PowerPC: yes
+> 	S390: sometimes (CONFIG_HAVE_MARCH_Z9_109_FEATURES)
+> 	Score: NO
+> 	SH: NO
+> 	SPARC: NO
+SPARC: sparc64: YES, sparc32: NO
+Patch needs to be updated to refelct this.
 
-What's wanted here is something faster than any of those.
-Yes, there's a simple constant-time branch-free implementation:
-
-unsigned inline __attribute__((const))
-hweight32(uint32_t x)
-{
-	x -= (x >> 1) & 0x55555555;
-	x  = ((x >> 2) & 0x33333333) + (x & 0x33333333);
-	x += x >> 4;
-	x &= 0x0f0f0f0f;
-	x += x >> 8;
-	x += x >> 16;
-	return x & 63;
-}
-
-unsigned inline __attribute__((const))
-__ffs32(uint32_t x)
-{
-	return hweight(~x & (x-1));
-}
-
-but if you work it through, that's about 19 instructions; a few more on
-platforms without 32-bit immediates.  The shift itself makes an even 20,
-and there are a lot of sequential dependencies (I count a 17-op chain
-including the shift) limiting execution time.
-
-The de Bruijn hack reduces the length but adds a memory access for
-the table lookup.  (http://supertech.csail.mit.edu/papers/debruijn.pdf)
-
-In the GCD code, the number to normalize is basically random, so the
-normalization loop shifts an average of 1 bit.  One bit half the time,
-a second bit 1/4 of the time, etc.
-
-(The posted code in the FAST_FFS case omits one guaranteed shift at the
-end of the loop because the normalization code is constant-time.)
-
-So "fast __ffs" basically means faster than *one* iteration of
-"while (!(x & 1)) x >>= 1;".
-
-In this case "fast" means cheaper than *one* unpredictable branch, which
-is a very small handful of instructions.
+	Sam
