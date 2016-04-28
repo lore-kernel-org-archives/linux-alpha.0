@@ -1,34 +1,136 @@
-From: Josh Juran <jjuran-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: "George Spelvin" <linux@horizon.com>
 Subject: Re: [patch V3] lib: GCD: add binary GCD algorithm
-Date: Thu, 28 Apr 2016 13:10:52 -0400
-Message-ID: <6FAE0D2C-A593-488B-AE26-E462AF372D8E@gmail.com>
+Date: 28 Apr 2016 12:48:56 -0400
+Message-ID: <20160428164856.10120.qmail@ns.horizon.com>
 References: <1461843824-19853-1-git-send-email-zengzhaoxiu@163.com>
-Mime-Version: 1.0 (Mac OS X Mail 6.6 \(1510\))
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=Fk9LM4LBIBfNYkQkgWTgZE0g39BgDi4WAfmUj9hduZA=;
-        b=djdGnM0GYTkCWBNhXPYmGYRnOdgTwy5Lvu7otvdHbFkMVj1NwveNdaag97Z+JLbL6g
-         l82rcJITZ3e9YsA3C4a22Me0Exou6NlMaG87V3nVAskd5dyafCbQiW2Syb7mmqZMAR/8
-         a2ZZ9gKTeDtlC9/lfv51BpxH4Yp44hmxdEjE1gVNNFIfWW+y+ift4zdLvmWNnF3R/SNH
-         uqYTPVKnX5J6Tfp4vIlZSth+lC49etLNr8ZwHS/+ZozCAPoWeEihKsn48131oj/E0nxq
-         2phSdVqvgMO/cUujahpMcvbXdpcu3+DLHwhrpduGbk5uR5yO1e7E+MnoVQaP6pJRzAuJ
-         yreQ==
-In-Reply-To: <1461843824-19853-1-git-send-email-zengzhaoxiu-9Onoh4P/yGk@public.gmane.org>
-Sender: linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1461843824-19853-1-git-send-email-zengzhaoxiu@163.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: zengzhaoxiu-9Onoh4P/yGk@public.gmane.org
-Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Zhaoxiu Zeng <zhaoxiu.zeng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, James Hogan <james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Ley Foon Tan <lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org>, Jonas Bonn <jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org>, "James E.J. Bottomley" <jejb-6jwH94ZQLHl74goWV3ctuw@public.gmane.org>, Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>, Chen Liqin <liqin.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lennox Wu <lennox.wu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, uclinux-h8-devel-5NWGOfrQmneRv+LV9MX5uooqe+aC9MnS@public.gmane.org
+Content-Transfer-Encoding: 7bit
+To: akpm@linux-foundation.org, linux@horizon.com, peterz@infradead.org, zengzhaoxiu@163.com
+Cc: dalias@libc.org, davem@davemloft.net, deller@gmx.de, geert@linux-m68k.org, ink@jurassic.park.msu.ru, james.hogan@imgtec.com, jejb@parisc-linux.org, jonas@southpole.se, lennox.wu@gmail.com, lftan@altera.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux@arm.linux.org.uk, linux@lists.openrisc.net, liqin.linux@gmail.com, mattst88@gmail.com, monstr@monstr.eu, nios2-dev@lists.rocketboards.org, ralf@linux-mips.org, rth@twiddle.net, sparclinux@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp, ysato@users.sourceforge.jp, zhaoxiu.zeng@gmail.com
 
-On Apr 28, 2016, at 7:43 AM, zengzhaoxiu-9Onoh4P/yGk@public.gmane.org wrote:
+Another few comments:
 
-> + * This implements the binary GCD algorithm. (Often attributed to Stein,
-> + * but as Knuth has noted, appears a first-century Chinese math text.)
+1. Would ARCH_HAS_FAST_FFS involve fewer changes than CPU_NO_EFFICIENT_FFS?
+   
+   Rather than updating all the Kconfig files, it could be #defined in
+   the arch/*/asm/bitops.h files where the __ffs macro is defined.  E.g.
 
-Should this be "appears in a"?
+diff --git a/arch/alpha/include/asm/bitops.h b/arch/alpha/include/asm/bitops.h
+index 4bdfbd44..c9c307a8 100644
+--- a/arch/alpha/include/asm/bitops.h
++++ b/arch/alpha/include/asm/bitops.h
+@@ -333,6 +333,7 @@ static inline unsigned long ffz(unsigned long word)
+ static inline unsigned long __ffs(unsigned long word)
+ {
+ #if defined(CONFIG_ALPHA_EV6) && defined(CONFIG_ALPHA_EV67)
++#define ARCH_HAS_FAST_FFS 1
+ 	/* Whee.  EV67 can calculate it directly.  */
+ 	return __kernel_cttz(word);
+ #else
 
-Josh
+Looking at the available architectures (list below), it looks like we
+have 9 with fast __ffs, 13 without, and 7 where it depends on the model.
+Three of the architectures without could have one written.
+
+In terms of code changes, ARCH_HAS_SLOW_FFS would be slightly smaller,
+inserting it into the asm-generic version and the few arch-specific
+versions (marked "NO" below) which have optimized but bit-at-a-time code.
+
+__ffs on the available architectures:
+	Alpha: sometimes (CONFIG_ALPHA_EV6, CONFIG_ALPHA_EV67)
+	ARC: sometimes (!CONFIG_ISA_ARCOMPACT)
+	ARM: sometimes (V5+)
+	ARM64: NO, could be written using RBIT and CLZ
+	AVR: yes
+	Blackfin: NO, could be written using hweight()
+	C6x: yes
+	CRIS: NO
+	FR-V: yes
+	H8300: NO
+	Hexagon: yes
+	IA64: yes
+	M32R: NO
+	M68k: sometimes
+	MetaG: NO
+	Microblaze: NO
+	MIPS: sometimes
+	MN10300: yes
+	OpenRISC: NO
+	PA-RISC: NO?  Interesting code, but I think it's a net loss.
+	PowerPC: yes
+	S390: sometimes (CONFIG_HAVE_MARCH_Z9_109_FEATURES)
+	Score: NO
+	SH: NO
+	SPARC: NO
+	Tile: NO, could be written using hweight()
+	Unicore32: yes
+	x86: yes
+	Xtensa: sometimes (XCHAL_HAVE_NSA)
+
+
+2. The documentation could definitely be improved.  If I may humbly
+   recommend something like the following.  I think it's particularly
+   important to say in the summary line that this is replacing something
+   rather than adding (which sets off code bloat alarms).
+
++Subject: lib: GCD: Use binary GCD algorithm instead of Euclidean
++
++Even on x86 machines with reasonable division hardware, the binary
++algorithm runs about 25% faster (80% the execution time) than the
++division-based Euclidian algorithm.
++
++On platforms like Alpha and ARMv6 where division is a function call to
++emulation code, it's even more significant.
++
++There are two variants of the code here, depending on whether a
++fast __ffs (find least significant set bit) instruction is available.
++This allows the unpredictable branches in the bit-at-a-time shifting
++loop to be eliminated.
++
++If fast __ffs is not available, the "even/odd" GCD variant is used.
++This adds an additional test in the loop to choose between
++(a-b)/4 and (a+b)/4, dividing by 4 each iteration.  If fast __ffs
++is available, this doesn't help.
+
+
+3. The benchmarking could be made more realistic.  Zhaoxiu Zeng's test
+   program uses full-width random inputs.  However, if there is a large
+   difference in the size of the inputs, it takes the binary algorithm
+   many steps to do what division does in one.
+   
+   (Aside: I'd use informal address, but I don't know which name to use.
+   Are those names in Western given-family order Zhaoxiu ZENG, or Eastern
+   family-given order ZHAOXIU Zeng?)
+
+For example, if I benchmark
+	gcd(random64(), 1000000)
+the binary code is barely faster on a Phenom, and if I drop that to
+1000, it's actually 25% slower.  On Ivy Bridge, the binary code is
+still consistently faster in both cases.
+
+On a Pentium 4, if anyone cares, the binary code is 2.4x faster
+on full-width inputs (32 bits in this case!), 25% faster with a fixed
+1,000,000 and about 7% slower with a fixed 1,000.
+
+It still seems like a net win to me, especially as the large speedups
+apply to the worst case (so you're saving large*large), while the
+slowdowns apply to the best case (you're losing small*small).
+But if someone wants to do suggest more realistic benchmark conditions,
+it would be interesting.
+
+This entire function isn't actually used in any performance-sensitive
+places AFAICT, so it's not very important one way or another, but I
+understand the urge.
+
+
+One way I changed the benchmark program was to eliminate the sleep(1)
+calls, bump the iteration count 100-fold, and do two passes over the
+list of, discarding the first one.
+
+Without that, the Euclidean algorithm, being the first to run, gets a
+huge penalty due to the CPU throttling up in the middle of its run.
