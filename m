@@ -1,42 +1,52 @@
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [patch V3] lib: GCD: add binary GCD algorithm
-Date: Thu, 28 Apr 2016 10:22:50 -0700
-Message-ID: <1461864170.2307.19.camel@HansenPartnership.com>
+Date: Thu, 28 Apr 2016 19:51:06 +0200
+Message-ID: <CAMuHMdU2e2PdwKYVaEsJ73X8Di1XHNPqnxuunr8R8bN8udazxw@mail.gmail.com>
 References: <1461843824-19853-1-git-send-email-zengzhaoxiu@163.com>
+	<20160428164856.10120.qmail@ns.horizon.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
-	s=20151216; t=1461864172;
-	bh=7tg3hUplyW2aFDHd42FHTlOSvw7WXL2VR2x463jD/m4=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=lQj4fQ5ANbJ9/m1b6+w4kgXPry4Kx8ERRFKUmdjkNE2nH+J+pIHr1XMkTSNt0mAmB
-	 cc1QUxdtimYx0VTnoq0Mtk5nwwYsIp2Rju3Q0a9X53rH2bZMxPPoyTnJtXWLreFJJD
-	 ROLjcjT3Ubiq2nn4E8lo9DmkU2ult304f3RxlPZo=
-In-Reply-To: <1461843824-19853-1-git-send-email-zengzhaoxiu@163.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:sender:in-reply-to:references:date:message-id:subject
+         :from:to:cc;
+        bh=IDC/Z2juvUxpC8A8fbWJYtyZOgEhS6AAXHTmxvSBt4Y=;
+        b=DBFZdmBcf1VoR2mhZ8Z/KWS0p3iFp/YwbkUPJnPXYbNZhXnuTzVFAHjLRWXN9DfE7d
+         lBV0jWnGrS4IhoWzwFnnrFLHsawGSXlGbr/FJjWmvBRYQdZZBT3XiGk6jmVyjZPq3NL9
+         gl3XqRLLJmbx2TqCktjTyjRmlvNKUOB2ILugmmnX5Ceal/jy/xRXczZqR6laoMfpoHBb
+         ETRaLzPkxtm2dlVB4GcTfpT0ErGyHXlRJFq9ZeS75Y555sj6yvt20fcxnLayBfZHQ52E
+         W9LK0QCy9pSsSbLtLCdK0GMDaEpcqwR2eZh3x6wU1TzndHOjuRFvrqPEukMkrZK3X1di
+         vCsA==
+In-Reply-To: <20160428164856.10120.qmail@ns.horizon.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: zengzhaoxiu@163.com, akpm@linux-foundation.org, linux@horizon.com, peterz@infradead.org
-Cc: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@arm.linux.org.uk>, Yoshinori Sato <ysato@users.sourceforge.jp>, Geert Uytterhoeven <geert@linux-m68k.org>, James Hogan <james.hogan@imgtec.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Ley Foon Tan <lftan@altera.com>, Jonas Bonn <jonas@southpole.se>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Chen Liqin <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, uclinux-h8-devel@lists.sourceforge.jp, linux-m68k@lists.linux-m68k.org, linux-metag@vger.kernel.org, linu
+Content-Transfer-Encoding: 7bit
+To: George Spelvin <linux@horizon.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Peter Zijlstra <peterz@infradead.org>, zengzhaoxiu@163.com, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Helge Deller <deller@gmx.de>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, James Hogan <james.hogan@imgtec.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Jonas Bonn <jonas@southpole.se>, Lennox Wu <lennox.wu@gmail.com>, Ley Foon Tan <lftan@altera.com>, alpha <linux-alpha@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, "open list:METAG ARCHITECTURE" <linux-metag@vger.kernel.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Russell King <l>
 
-On Thu, 2016-04-28 at 19:43 +0800, zengzhaoxiu@163.com wrote:
-> From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
-> 
-> Because some architectures (alpha, armv6, etc.) don't provide 
-> hardware division, the mod operation is slow! Binary GCD algorithm 
-> uses simple arithmetic operations, it replaces division with 
-> arithmetic shifts, comparisons, and subtractions.
-> 
-> I have compiled successfully with x86_64_defconfig and 
-> i386_defconfig.
+On Thu, Apr 28, 2016 at 6:48 PM, George Spelvin <linux@horizon.com> wrote:
+> Another few comments:
+>
+> 1. Would ARCH_HAS_FAST_FFS involve fewer changes than CPU_NO_EFFICIENT_FFS?
 
-What's the reason for wanting to optimize this and thus have to
-maintain (and test) two separate code paths, which is a significant
-expense? As far as I can see, gcd() is mosly used in finding optimal
-clocks for operations, which is usually done at start of day and not
-time critical.
+No, as you want to _disable_ ARCH_HAS_FAST_FFS / _enable_
+CPU_NO_EFFICIENT_FFS as soon as you're enabling support for a
+CPU that doesn't support it.
 
-James
+Logical OR is easier in both the Kconfig and C preprocessor languages
+than logical NAND.
 
+E.g. in Kconfig, a CPU core not supporting it can just select
+CPU_NO_EFFICIENT_FFS.
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
