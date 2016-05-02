@@ -1,47 +1,123 @@
-From: Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>
-Subject: Re: [patch V3] lib: GCD: add binary GCD algorithm
-Date: Thu, 28 Apr 2016 21:54:06 +0200
-Message-ID: <20160428195326.GB29802@ravnborg.org>
-References: <1461843824-19853-1-git-send-email-zengzhaoxiu@163.com>
- <20160428164856.10120.qmail@ns.horizon.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v3 00/16] genrtc removal
+Date: Mon, 2 May 2016 10:45:52 +0200
+Message-ID: <CAMuHMdV3ZHEKgv-LPPQdZzP8KBY-yiSoeJ-cAXy54qD04--LgA@mail.gmail.com>
+References: <1461796470-1291527-1-git-send-email-arnd@arndb.de>
+	<CAMuHMdUcrB38jL1_estfq5aK55UFUeF=4JciVGFqcE17pY9X7g@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160428164856.10120.qmail-HzZAx2gCgqrSUeElwK9/Pw@public.gmane.org>
-Sender: linux-metag-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=mime-version:sender:in-reply-to:references:date:message-id:subject
+         :from:to:cc:content-transfer-encoding;
+        bh=XgjMQkvSEu1QST4+x/muF/3JnM4OEUCRtJA3ii0wG+A=;
+        b=L3BxaGuuB1HnYNoSCNXoDNb9F08E0YSAUVqQpezDVyCyt4Bnz6ggkoC5IX0vQbv22B
+         +PTPzWHIojGpgdX2zvnR9wZR93VRhPqICzDSlEQDW5Waa0YbhuZGFUv8mvZT2I6A2kyb
+         9JDih62dsIU5IpYNkFfwwUvFYNNeEoEyUdsaZN7EX20CXPc3bVJYe/Zslf3PE7ILHooI
+         arD7MOIjg5yTxdTSpmUuPssG9rP55/b/o6SAsfzaG/aI10S+JHyb9VpHoNNCMvJ3Qau9
+         YwmBoKMxkE0TOhMe3ump6/M8zHrdAEthOUc1mIntYX5thrRoIU72KI3tAenjTcHNLrH7
+         Kt5Q==
+In-Reply-To: <CAMuHMdUcrB38jL1_estfq5aK55UFUeF=4JciVGFqcE17pY9X7g@mail.gmail.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: George Spelvin <linux-gpGsJRJZ3PBBDgjK7y7TUQ@public.gmane.org>
-Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, zengzhaoxiu-9Onoh4P/yGk@public.gmane.org, dalias-8zAoT0mYgF4@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org, deller-Mmb7MZpHnFY@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org, james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org, jejb-6jwH94ZQLHl74goWV3ctuw@public.gmane.org, jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org, lennox.wu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, liqin.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, uclinux-h8-devel-5NWGOfrQmneRv+LV9MX5uooqe+aC9MnS@public.gmane.org, ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org, zhaoxiu.zeng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Rich Felker <dalias@libc.org>, David Howells <dhowells@redhat.com>, alpha <linux-alpha@vger.kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Parisc List <linux-parisc@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Linux-sh list <linux-sh@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, RTCLINUX <rtc-linux@googlegroups.com>, Linux-Arch <linux-arch@vger.kernel.org>
 
-> __ffs on the available architectures:
-> 	Alpha: sometimes (CONFIG_ALPHA_EV6, CONFIG_ALPHA_EV67)
-> 	ARC: sometimes (!CONFIG_ISA_ARCOMPACT)
-> 	ARM: sometimes (V5+)
-> 	ARM64: NO, could be written using RBIT and CLZ
-> 	AVR: yes
-> 	Blackfin: NO, could be written using hweight()
-> 	C6x: yes
-> 	CRIS: NO
-> 	FR-V: yes
-> 	H8300: NO
-> 	Hexagon: yes
-> 	IA64: yes
-> 	M32R: NO
-> 	M68k: sometimes
-> 	MetaG: NO
-> 	Microblaze: NO
-> 	MIPS: sometimes
-> 	MN10300: yes
-> 	OpenRISC: NO
-> 	PA-RISC: NO?  Interesting code, but I think it's a net loss.
-> 	PowerPC: yes
-> 	S390: sometimes (CONFIG_HAVE_MARCH_Z9_109_FEATURES)
-> 	Score: NO
-> 	SH: NO
-> 	SPARC: NO
-SPARC: sparc64: YES, sparc32: NO
-Patch needs to be updated to refelct this.
+Hi Arnd,
 
-	Sam
+On Thu, Apr 28, 2016 at 9:48 AM, Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+> On Thu, Apr 28, 2016 at 12:34 AM, Arnd Bergmann <arnd@arndb.de> wrote=
+:
+>> I ended up stuffing the two patch series into one, as they are now
+>> more dependent on one another. This now thoroughly removes the
+>> genrtc driver including the asm/rtc.h headers it uses. For all
+>> architectures that still have a meaningful asm/rtc.h, this goes
+>> through two stages:
+>>
+>> 1) make the rtc-generic implementation independent of asm/rtc.h
+>> 2) remove the asm/rtc.h header and disallow the gen_rtc driver
+>>
+>> As the last step, the driver itself gets removed.
+>
+> In general, after fixing the minor nit:
+> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>
+> For the m68k bits:
+> Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+More build coverage uncovered two build failures on m68k due to "[PATCH=
+ v3
+02/16] rtc: cmos: move mc146818rtc code out of asm-generic/rtc.h":
+
+bvme6000_defconfig:
+
+    In file included from arch/m68k/bvme6000/rtc.c:19:
+    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_is_updat=
+ing=E2=80=99:
+    include/linux/mc146818rtc.h:138: error: implicit declaration of
+function =E2=80=98CMOS_READ=E2=80=99
+    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_get_time=
+=E2=80=99:
+    include/linux/mc146818rtc.h:189: error: =E2=80=98RTC_ALWAYS_BCD=E2=80=
+=99
+undeclared (first use in this function)
+    include/linux/mc146818rtc.h:189: error: (Each undeclared
+identifier is reported only once
+    include/linux/mc146818rtc.h:189: error: for each function it appear=
+s in.)
+    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_set_time=
+=E2=80=99:
+    include/linux/mc146818rtc.h:279: error: =E2=80=98RTC_ALWAYS_BCD=E2=80=
+=99
+undeclared (first use in this function)
+    include/linux/mc146818rtc.h:290: error: implicit declaration of
+function =E2=80=98CMOS_WRITE=E2=80=99
+
+mvme16x_defconfig:
+
+    In file included from arch/m68k/mvme16x/rtc.c:18:
+    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_is_updat=
+ing=E2=80=99:
+    include/linux/mc146818rtc.h:138: error: implicit declaration of
+function =E2=80=98CMOS_READ=E2=80=99
+    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_get_time=
+=E2=80=99:
+    include/linux/mc146818rtc.h:189: error: =E2=80=98RTC_ALWAYS_BCD=E2=80=
+=99
+undeclared (first use in this function)
+    include/linux/mc146818rtc.h:189: error: (Each undeclared
+identifier is reported only once
+    include/linux/mc146818rtc.h:189: error: for each function it appear=
+s in.)
+    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_set_time=
+=E2=80=99:
+    include/linux/mc146818rtc.h:279: error: =E2=80=98RTC_ALWAYS_BCD=E2=80=
+=99
+undeclared (first use in this function)
+    include/linux/mc146818rtc.h:290: error: implicit declaration of
+function =E2=80=98CMOS_WRITE=E2=80=99
+
+These do not show up with a multi-platform config including Atari
+support, as arch/m68k/include/asm/mc146818rtc.h provides a definition o=
+f
+CMOS_READ() if CONFIG_ATARI=3Dy.
+
+=46ortunately the fixes are simple: replace <linux/mc146818rtc.h> by
+<linux/rtc.h>. Will send patches to fix...
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-=
+m68k.org
+
+In personal conversations with technical people, I call myself a hacker=
+=2E But
+when I'm talking to journalists I just say "programmer" or something li=
+ke that.
+                                -- Linus Torvalds
