@@ -1,123 +1,42 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v3 00/16] genrtc removal
-Date: Mon, 2 May 2016 10:45:52 +0200
-Message-ID: <CAMuHMdV3ZHEKgv-LPPQdZzP8KBY-yiSoeJ-cAXy54qD04--LgA@mail.gmail.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH v3 12/16] rtc: powerpc: provide rtc_class_ops directly
+Date: Tue, 03 May 2016 14:05:09 +1000
+Message-ID: <1462248309.12788.4.camel@ellerman.id.au>
 References: <1461796470-1291527-1-git-send-email-arnd@arndb.de>
-	<CAMuHMdUcrB38jL1_estfq5aK55UFUeF=4JciVGFqcE17pY9X7g@mail.gmail.com>
+	 <1461796470-1291527-13-git-send-email-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:sender:in-reply-to:references:date:message-id:subject
-         :from:to:cc:content-transfer-encoding;
-        bh=XgjMQkvSEu1QST4+x/muF/3JnM4OEUCRtJA3ii0wG+A=;
-        b=L3BxaGuuB1HnYNoSCNXoDNb9F08E0YSAUVqQpezDVyCyt4Bnz6ggkoC5IX0vQbv22B
-         +PTPzWHIojGpgdX2zvnR9wZR93VRhPqICzDSlEQDW5Waa0YbhuZGFUv8mvZT2I6A2kyb
-         9JDih62dsIU5IpYNkFfwwUvFYNNeEoEyUdsaZN7EX20CXPc3bVJYe/Zslf3PE7ILHooI
-         arD7MOIjg5yTxdTSpmUuPssG9rP55/b/o6SAsfzaG/aI10S+JHyb9VpHoNNCMvJ3Qau9
-         YwmBoKMxkE0TOhMe3ump6/M8zHrdAEthOUc1mIntYX5thrRoIU72KI3tAenjTcHNLrH7
-         Kt5Q==
-In-Reply-To: <CAMuHMdUcrB38jL1_estfq5aK55UFUeF=4JciVGFqcE17pY9X7g@mail.gmail.com>
+In-Reply-To: <1461796470-1291527-13-git-send-email-arnd@arndb.de>
 Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Rich Felker <dalias@libc.org>, David Howells <dhowells@redhat.com>, alpha <linux-alpha@vger.kernel.org>, Alessandro Zummo <a.zummo@towertech.it>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Parisc List <linux-parisc@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Linux-sh list <linux-sh@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, RTCLINUX <rtc-linux@googlegroups.com>, Linux-Arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Arnd Bergmann <arnd@arndb.de>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: geert@linux-m68k.org, deller@gmx.de, benh@kernel.crashing.org, dalias@libc.org, dhowells@redhat.com, linux-alpha@vger.kernel.org, a.zummo@towertech.it, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, linux-m68k@lists.linux-m68k.org, rtc-linux@googlegroups.com, linux-arch@vger.kernel.org
 
-Hi Arnd,
+On Thu, 2016-04-28 at 00:34 +0200, Arnd Bergmann wrote:
 
-On Thu, Apr 28, 2016 at 9:48 AM, Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> On Thu, Apr 28, 2016 at 12:34 AM, Arnd Bergmann <arnd@arndb.de> wrote=
-:
->> I ended up stuffing the two patch series into one, as they are now
->> more dependent on one another. This now thoroughly removes the
->> genrtc driver including the asm/rtc.h headers it uses. For all
->> architectures that still have a meaningful asm/rtc.h, this goes
->> through two stages:
->>
->> 1) make the rtc-generic implementation independent of asm/rtc.h
->> 2) remove the asm/rtc.h header and disallow the gen_rtc driver
->>
->> As the last step, the driver itself gets removed.
->
-> In general, after fixing the minor nit:
-> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
->
-> For the m68k bits:
-> Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> The rtc-generic driver provides an architecture specific
+> wrapper on top of the generic rtc_class_ops abstraction,
+> and powerpc has another abstraction on top, which is a bit
+> silly.
+> 
+> This changes the powerpc rtc-generic device to provide its
+> rtc_class_ops directly, to reduce the number of layers
+> by one.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/powerpc/kernel/time.c | 29 ++++++++++++++++++++++++++++-
+>  drivers/rtc/rtc-generic.c  |  2 +-
+>  2 files changed, 29 insertions(+), 2 deletions(-)
 
-More build coverage uncovered two build failures on m68k due to "[PATCH=
- v3
-02/16] rtc: cmos: move mc146818rtc code out of asm-generic/rtc.h":
+If this hits linux-next it will go through my automated boot testing, which
+hopefully would be sufficient to catch any bugs in this patch, cross fingers.
 
-bvme6000_defconfig:
+I don't know jack about all the layers of RTC mess, so my ack is basically
+worthless here. But if you like you can have one anyway :)
 
-    In file included from arch/m68k/bvme6000/rtc.c:19:
-    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_is_updat=
-ing=E2=80=99:
-    include/linux/mc146818rtc.h:138: error: implicit declaration of
-function =E2=80=98CMOS_READ=E2=80=99
-    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_get_time=
-=E2=80=99:
-    include/linux/mc146818rtc.h:189: error: =E2=80=98RTC_ALWAYS_BCD=E2=80=
-=99
-undeclared (first use in this function)
-    include/linux/mc146818rtc.h:189: error: (Each undeclared
-identifier is reported only once
-    include/linux/mc146818rtc.h:189: error: for each function it appear=
-s in.)
-    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_set_time=
-=E2=80=99:
-    include/linux/mc146818rtc.h:279: error: =E2=80=98RTC_ALWAYS_BCD=E2=80=
-=99
-undeclared (first use in this function)
-    include/linux/mc146818rtc.h:290: error: implicit declaration of
-function =E2=80=98CMOS_WRITE=E2=80=99
+Acked-by: Michael Ellerman <mpe@ellerman.id.au>
 
-mvme16x_defconfig:
-
-    In file included from arch/m68k/mvme16x/rtc.c:18:
-    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_is_updat=
-ing=E2=80=99:
-    include/linux/mc146818rtc.h:138: error: implicit declaration of
-function =E2=80=98CMOS_READ=E2=80=99
-    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_get_time=
-=E2=80=99:
-    include/linux/mc146818rtc.h:189: error: =E2=80=98RTC_ALWAYS_BCD=E2=80=
-=99
-undeclared (first use in this function)
-    include/linux/mc146818rtc.h:189: error: (Each undeclared
-identifier is reported only once
-    include/linux/mc146818rtc.h:189: error: for each function it appear=
-s in.)
-    include/linux/mc146818rtc.h: In function =E2=80=98mc146818_set_time=
-=E2=80=99:
-    include/linux/mc146818rtc.h:279: error: =E2=80=98RTC_ALWAYS_BCD=E2=80=
-=99
-undeclared (first use in this function)
-    include/linux/mc146818rtc.h:290: error: implicit declaration of
-function =E2=80=98CMOS_WRITE=E2=80=99
-
-These do not show up with a multi-platform config including Atari
-support, as arch/m68k/include/asm/mc146818rtc.h provides a definition o=
-f
-CMOS_READ() if CONFIG_ATARI=3Dy.
-
-=46ortunately the fixes are simple: replace <linux/mc146818rtc.h> by
-<linux/rtc.h>. Will send patches to fix...
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-=
-m68k.org
-
-In personal conversations with technical people, I call myself a hacker=
-=2E But
-when I'm talking to journalists I just say "programmer" or something li=
-ke that.
-                                -- Linus Torvalds
+cheers
