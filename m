@@ -1,40 +1,87 @@
-From: Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [patch V4] lib: GCD: Use binary GCD algorithm instead of
- Euclidean
-Date: Sat, 7 May 2016 13:23:56 +0200
-Message-ID: <20160507112308.GA2612@ravnborg.org>
-References: <1462527763-15301-1-git-send-email-zengzhaoxiu@163.com>
+From: Zhaoxiu Zeng <zengzhaoxiu@163.com>
+Subject: Re: [patch V4] lib: GCD: Use binary GCD algorithm instead of Euclidean
+Date: Sun, 8 May 2016 20:52:52 +0800
+Message-ID: <042bae7f-51d6-93e8-549d-a38bcb4c9cf5@163.com>
+References: <20160507084129.7284.qmail@ns.horizon.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1462527763-15301-1-git-send-email-zengzhaoxiu@163.com>
-Sender: linux-m68k-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: zengzhaoxiu@163.com
-Cc: akpm@linux-foundation.org, linux@horizon.com, peterz@infradead.org, jjuran@gmail.com, James.Bottomley@HansenPartnership.com, geert@linux-m68k.org, dalias@libc.org, davem@davemloft.net, Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@arm.linux.org.uk>, Yoshinori Sato <ysato@users.sourceforge.jp>, James Hogan <james.hogan@imgtec.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Ley Foon Tan <lftan@altera.com>, Jonas Bonn <jonas@southpole.se>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Chen Liqin <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, linux-ke
+Content-Transfer-Encoding: base64
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+ s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=eleZG
+ LSwClBWAjciH5YGH0r+VNUDtF8xf22GFM6GWR4=; b=Z2fhF8eYSLu0yFDTgyf5Z
+ 2Z9kRoGS+p1zEoLEafUXdwdmxLXYe+IsDdTefQtdIfXRS9PoWU0F6J3qoaunu+5E
+ Ws3JBRG+e1WkQ0VJv902zEDqRrtJ5KeiGhBrJKySIooOD2c5q6WYSbWAezuvnTtF
+ 5+iZFSs060d5YEFVhzgWFg=
+In-Reply-To: <20160507084129.7284.qmail@ns.horizon.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+Content-Type: text/plain; charset="iso-8859-1"
+To: George Spelvin <linux@horizon.com>, akpm@linux-foundation.org, dalias@libc.org, davem@davemloft.net, geert@linux-m68k.org, James.Bottomley@HansenPartnership.com, jjuran@gmail.com, peterz@infradead.org, sam@ravnborg.org
+Cc: linux-mips@linux-mips.org, linux-sh@vger.kernel.org, heiko.carstens@de.ibm.com, linux@lists.openrisc.net, sparclinux@vger.kernel.org, lennox.wu@gmail.com, jonas@southpole.se, linux-s390@vger.kernel.org, linux@arm.linux.org.uk, ysato@users.sourceforge.jp, deller@gmx.de, jejb@parisc-linux.org, mattst88@gmail.com, linux-snps-arc@lists.infradead.org, uclinux-h8-devel@lists.sourceforge.jp, james.hogan@imgtec.com, liqin.linux@gmail.com, linux-m68k@lists.linux-m68k.org, ink@jurassic.park.msu.ru, zhaoxiu.zeng@gmail.com, nios2-dev@lists.rocketboards.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, rth@twiddle.net, monstr@monstr.eu, linux-parisc@vger.kernel.org, vgupta@synopsys.com, linux-kernel@vger.kernel.org, ralf@linux-mips.org, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, lftan@altera.com
 
-> diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
-> index 57ffaf2..ca675ed 100644
-> --- a/arch/sparc/Kconfig
-> +++ b/arch/sparc/Kconfig
-> @@ -42,6 +42,7 @@ config SPARC
->  	select ODD_RT_SIGACTION
->  	select OLD_SIGSUSPEND
->  	select ARCH_HAS_SG_CHAIN
-> +	select CPU_NO_EFFICIENT_FFS
->  
->  config SPARC32
->  	def_bool !64BIT
-
-sparc64 have an efficient ffs implementation.
-We use run-time patching to use the proper version
-depending on the actual sparc cpu.
-
-As this is determinded at config time, then let the
-sparc cpu that has the efficient ffs benefit from this.
-
-In other words - select CPU_NO_EFFICIENT_FFS only for SPARC32.
-
-	Sam
+1NogMjAxNi81LzcgMTY6NDEsIEdlb3JnZSBTcGVsdmluINC0tcA6Cj4gTm90aGluZyBjcml0aWNh
+bCwgYnV0IGEgYml0IG9mIGtpYml0emluZy4KPiAoVGhhdCBpcyBzbGFuZyBpbiB0aGUgWWlkZGlz
+aCBsYW5ndWFnZSBmb3IgYSBwZXJzb24KPiB3aG8gb2ZmZXJzIGFubm95aW5nIGFuZCB1bndhbnRl
+ZCBhZHZpY2UuKQo+Cj4+IFRoZSBiaW5hcnkgR0NEIGFsZ29yaXRobSBpcyBiYXNlZCBvbiB0aGUg
+Zm9sbG93aW5nIGZhY3RzOgo+PiAJMS4gSWYgYSBhbmQgYiBhcmUgYWxsIGV2ZW5zLCB0aGVuIGdj
+ZChhLGIpID0gMiAqIGdjZChhLzIsIGIvMikKPj4gCTIuIElmIGEgaXMgZXZlbiBhbmQgYiBpcyBv
+ZGQsIHRoZW4gZ2NkKGEsYikgPSBnY2QoYS8yLCBiKQo+PiAJMy4gSWYgYSBhbmQgYiBhcmUgYWxs
+IG9kZHMsIHRoZW4gZ2NkKGEsYikgPSBnY2QoKGEtYikvMiwgYikgPSBnY2QoKGErYikvMiwgYikK
+PiAxKSAiZXZlbiIgYW5kICJvZGQiIGFyZSBhZGplY3RpdmVzLiAgSW4gRW5nbGlzaCwgYWRqZWN0
+aXZlcyB0byBub3QgaGF2ZQo+ICAgIHBsdXJhbCBzdWZmaXhlcy4gIFRodXMsICJ0aGV5IGFyZSBl
+dmVuIiBvciAidGhleSBhcmUgb2RkIi4KPiAyKSBBbHRob3VnaCAiYWxsIiBpcyBub3QgZXhhY3Rs
+eSB3cm9uZywgaXQgc291bmRzIG9kZC4gIFNpbmNlIHRoZXJlIGFyZQo+ICAgIGV4YWN0bHkgdHdv
+IG9mIHRoZW0gaXQncyBjbGVhcmVyIHRvIHNheSAiYm90aCIuCj4KPiBJZiBJIGFsc28gcmVwaHJh
+c2UgdGhlIGxhc3QgbGluZSB0byBmaXQgaW50byA4MCBjb2x1bW5zLCB5b3UgZ2V0Ogo+Cj4gICBU
+aGUgYmluYXJ5IEdDRCBhbGdvcml0aG0gaXMgYmFzZWQgb24gdGhlIGZvbGxvd2luZyBmYWN0czoK
+PiAtIAkxLiBJZiBhIGFuZCBiIGFyZSBhbGwgZXZlbnMsIHRoZW4gZ2NkKGEsYikgPSAyICogZ2Nk
+KGEvMiwgYi8yKQo+ICsgCTEuIElmIGEgYW5kIGIgYXJlIGJvdGggZXZlbiwgdGhlbiBnY2QoYSxi
+KSA9IDIgKiBnY2QoYS8yLCBiLzIpCj4gIAkyLiBJZiBhIGlzIGV2ZW4gYW5kIGIgaXMgb2RkLCB0
+aGVuIGdjZChhLGIpID0gZ2NkKGEvMiwgYikKPiAtCTMuIElmIGEgYW5kIGIgYXJlIGFsbCBvZGRz
+LCB0aGVuIGdjZChhLGIpID0gZ2NkKChhLWIpLzIsIGIpID0gZ2NkKChhK2IpLzIsIGIpCj4gKwkz
+LiBJZiBib3RoIGFyZSBvZGQsIHRoZW4gZ2NkKGEsYikgPSBnY2QoKGEtYikvMiwgYikgPSBnY2Qo
+KGErYikvMiwgYikKPgo+IDMpIE5lZ2F0aXZlIGNvbmZpZyBvcHRpb25zIGFyZSBhbHdheXMgY29u
+ZnVzaW5nLgo+Cj4gV291bGQgaXQgYmUgYmV0dGVyIHRvIGNhbGwgaXQgQ09ORklHX0lORUZGSUNJ
+RUJOVF9GRlMsIG9yIGV2ZW4gc2ltcGxlcgo+IENPTkZJR19TTE9XX0ZGUz8KPgo+IEFsc28sIHlv
+dSdyZSBhbGxvd2VkIHRvIGFkZCAiaGVscCIgdG8gYSBub24taW50ZXJhY3RpdmUgY29uZmlnIG9w
+dGlvbiwKPiBhbmQgc29tZSBkb2N1bWVudGF0aW9uIG1pZ2h0IGJlIHVzZWZ1bC4KPiBFLmcuCj4K
+PiArY29uZmlnIENQVV9TTE9XX0ZGUwo+ICsJZGVmX2Jvb2wgbgo+ICsJaGVscAo+ICsJICBJZiBu
+LCB0aGUgQ1BVIHN1cHBvcnRzIGEgZmFzdCBfX2ZmcyAoX19idWlsdGluX2N0eikgb3BlcmF0aW9u
+LAo+ICsJICBlaXRoZXIgZGlyZWN0bHkgb3IgdmlhIGEgc2hvcnQgY29kZSBzZXF1ZW5jZSB1c2lu
+ZyBhIGNvdW50Cj4gKwkgIGxlYWRpbmcgemVyb3Mgb3IgcG9wdWxhdGlvbiBjb3VudCBpbnN0cnVj
+dGlvbi4gIElmIHksIHRoZQo+ICsJICBvcGVyYXRpb24gaXMgZW11bGF0ZWQgYnkgc2xvd2VyIHNv
+ZnR3YXJlLCBzdWNoIGFzIGFuIHVucm9sbGVkCj4gKwkgIGJpbmFyeSBzZWFyY2guCj4gKwo+ICsJ
+ICBUaGlzIGlzIHB1cmVseSBhbiBvcHRpbWl6YXRpb24gb3B0aW9uOyB0aGUga2VybmVsCj4gKwkg
+IHdpbGwgZnVuY3Rpb24gY29ycmVjdGx5IHJlZ2FyZGxlc3Mgb2YgaG93IGl0IGlzIHNldC4KPiAr
+CgpUaGFua3MgYSBsb3QuCgo+IFlvdXIgYmVuY2htYXJrIGNvZGUgZG9lc24ndCBoYXZlIHRvIGhh
+dmUgYSBzZXBhcmF0ZSBjb2RlIHBhdGggaWYKPiBfX3g4Nl82NF9fOyByZHRzYyB3b3JrcyBvbiAz
+Mi1iaXQgY29kZSBqdXN0IGFzIHdlbGwuICBwYXRocy4gIEFuZCB0aGUKPiB3YXkgeW91IHN1YnRy
+YWN0IHRoZSBlbmQgYW5kIHN0YXJ0IHRpbWVzIGlzIHVubmVjZXNzYXJpbHkgY29tcGxpY2F0ZWQu
+Cj4gVGhlIEMgbGFuZ3VhZ2UgZ3VhcmFudGVlcyB0aGF0IHVuc2lnbmVkIGFyaXRobWV0aWMgc2lt
+cGx5IHdyYXBzIG1vZHVsbwo+IDJeYml0cyBhcyBleHBlY3RlZC4KCnJkc2Mgd29ya3Mgb24geDg2
+LCB0aGUgb3RoZXIgcGF0aCBpcyBwcmVwYXJlZCBmb3Igb3RoZXIgYXJjaGl0ZWN0dXJlcy4KCj4g
+SGVyZSBhcmUgc29tZSBtb3JlIHRpbWluZ3MsIHdpdGggdGhlIHNhbWUgZmxhZ3MgYXMgeW91ciB0
+ZXN0czoKPgo+IEZpcnN0LCAzMiBiaXQgY29kZToKPiAJCWdjZDAJZ2NkMQlnY2QyCWdjZDMJZ2Nk
+NAo+IEl2eSBCcmlkZ2UJMzE1NgkxMTkyCTE3NDAJMTE2MAkxNjQwCVBBU1MKPiBBTUQgUGhlbm9t
+CTcxNTAJMjU2NAkyMzQ4CTI5NzUJMjg0MwlQQVNTCj4gQ29yZSAyCQk0MTc2CTI1OTIJNDE2NAky
+NjA0CTM5MDAJUEFTUwo+IFBlbnRpdW0gNAkxMTQ5Mgk0Nzg0CTc2MzIJNDg1Mgk2NDUyCVBBU1MK
+Pgo+IEFuZCA2NC1iaXQgKGxvbmdlciB0aW1lcyBiZWN1YXNlIHRoZSBpbnB1dHMgYXJlIGxhcmdl
+cik6Cj4gSXZ5IEJyaWRnZQkxMDYzNgkyNDk2CTM1MDAJMjQzMgkzMzYwCVBBU1MKPiBBTUQgUGhl
+bm9tCTE5NDgyCTQwNTgJNjAzMAk1MDAxCTY4NDUJUEFTUwo+Cj4gTG9va2luZyBhdCB0aG9zZSwg
+SSdtIG5vdCBzdXJlIGhvdyBtdWNoIGJldHRlciB0aGUgZ2NkMy80IHZlcnNpb25zIGFyZQo+IHRo
+YW4gZ2NkMS8yLiAgVGhlIGRpZmZlcmVuY2Ugc2VlbXMgcHJldHR5IG1pbm9yIGFuZCBzb21ldGlt
+ZXMgbmVnYXRpdmUuCj4KClRoZSB3b3JzdCBjYXNlIG9mIGJpbmFyeSBHQ0QgaXMgdGhhdCBvbmUg
+bnVtYmVyIGlzIHBvd2VyIG9mIDIsCmZvciBleGFtcGxlIGEgaXMgMHhmZmZmZmZmZiAoMHhjY2Nj
+Y2NjYyBmb3IgdGhlICJldmVuL29kZCIgdmFyaWFudCkgYW5kIGIgaXMgMS4KClRoZSBnY2QzLzQg
+dmVyc2lvbnMgY2FuIGhhbmRsZSB0aGlzIHByb3Blcmx5LgoKCgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1zbnBzLWFyYyBtYWlsaW5nIGxpc3QK
+bGludXgtc25wcy1hcmNAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFk
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXNucHMtYXJj
