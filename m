@@ -1,87 +1,194 @@
-From: Zhaoxiu Zeng <zengzhaoxiu@163.com>
-Subject: Re: [patch V4] lib: GCD: Use binary GCD algorithm instead of Euclidean
-Date: Sun, 8 May 2016 20:52:52 +0800
-Message-ID: <042bae7f-51d6-93e8-549d-a38bcb4c9cf5@163.com>
-References: <20160507084129.7284.qmail@ns.horizon.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+From: zengzhaoxiu@163.com
+Subject: [patch V4 00/31] bitops: add parity functions
+Date: Wed, 11 May 2016 16:25:58 +0800
+Message-ID: <1462955158-28394-1-git-send-email-zengzhaoxiu@163.com>
+Return-path: <linux-mips-bounce@linux-mips.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
- s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=eleZG
- LSwClBWAjciH5YGH0r+VNUDtF8xf22GFM6GWR4=; b=Z2fhF8eYSLu0yFDTgyf5Z
- 2Z9kRoGS+p1zEoLEafUXdwdmxLXYe+IsDdTefQtdIfXRS9PoWU0F6J3qoaunu+5E
- Ws3JBRG+e1WkQ0VJv902zEDqRrtJ5KeiGhBrJKySIooOD2c5q6WYSbWAezuvnTtF
- 5+iZFSs060d5YEFVhzgWFg=
-In-Reply-To: <20160507084129.7284.qmail@ns.horizon.com>
+        s=s110527; h=From:Subject:Date:Message-Id; bh=2gm+A1ykLRGiQLA/oz
+        uZneBDMj8Cjf4EpOnrvfgnmy4=; b=ETbpYKhYzlFhyikrVdggALV1gC5e+DhZga
+        NWfRhvqErt6Hv0Yjx3XVJweh1evrI4DiXejZmD/2JGR7DaAb6MTd9+dr9zUxo1uu
+        v2c2mcc15CV5XYkPqn+KFTR3+gjHDXUCwKxBfcAuxaDxBHM47nZ9o+KsSeaBt2Pe
+        ELHfGDnuM=
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-Content-Type: text/plain; charset="iso-8859-1"
-To: George Spelvin <linux@horizon.com>, akpm@linux-foundation.org, dalias@libc.org, davem@davemloft.net, geert@linux-m68k.org, James.Bottomley@HansenPartnership.com, jjuran@gmail.com, peterz@infradead.org, sam@ravnborg.org
-Cc: linux-mips@linux-mips.org, linux-sh@vger.kernel.org, heiko.carstens@de.ibm.com, linux@lists.openrisc.net, sparclinux@vger.kernel.org, lennox.wu@gmail.com, jonas@southpole.se, linux-s390@vger.kernel.org, linux@arm.linux.org.uk, ysato@users.sourceforge.jp, deller@gmx.de, jejb@parisc-linux.org, mattst88@gmail.com, linux-snps-arc@lists.infradead.org, uclinux-h8-devel@lists.sourceforge.jp, james.hogan@imgtec.com, liqin.linux@gmail.com, linux-m68k@lists.linux-m68k.org, ink@jurassic.park.msu.ru, zhaoxiu.zeng@gmail.com, nios2-dev@lists.rocketboards.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, rth@twiddle.net, monstr@monstr.eu, linux-parisc@vger.kernel.org, vgupta@synopsys.com, linux-kernel@vger.kernel.org, ralf@linux-mips.org, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, lftan@altera.com
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: akpm@linux-foundation.org, linux@horizon.com, bp@suse.de, ulrik.debie-os@e2big.org, sam@ravnborg.org, davem@davemloft.net, ddaney.cavm@gmail.com, joe@perches.com, computersforpeace@gmail.com
+Cc: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linux-am33-list@redhat.com, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, qat-linux@intel.com, linux-crypto@vger.kernel.org, linux-edac@vger.kernel.org, linux-media@vger.kernel.org, linux-mtd@lists.infradead.org, netdev@vger.kernel.org, linux-scsi@vger.kernel.org, linux-nfs@vger.kernel.org, linux-mediatek@lists.infradead.org, Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
 
-1NogMjAxNi81LzcgMTY6NDEsIEdlb3JnZSBTcGVsdmluINC0tcA6Cj4gTm90aGluZyBjcml0aWNh
-bCwgYnV0IGEgYml0IG9mIGtpYml0emluZy4KPiAoVGhhdCBpcyBzbGFuZyBpbiB0aGUgWWlkZGlz
-aCBsYW5ndWFnZSBmb3IgYSBwZXJzb24KPiB3aG8gb2ZmZXJzIGFubm95aW5nIGFuZCB1bndhbnRl
-ZCBhZHZpY2UuKQo+Cj4+IFRoZSBiaW5hcnkgR0NEIGFsZ29yaXRobSBpcyBiYXNlZCBvbiB0aGUg
-Zm9sbG93aW5nIGZhY3RzOgo+PiAJMS4gSWYgYSBhbmQgYiBhcmUgYWxsIGV2ZW5zLCB0aGVuIGdj
-ZChhLGIpID0gMiAqIGdjZChhLzIsIGIvMikKPj4gCTIuIElmIGEgaXMgZXZlbiBhbmQgYiBpcyBv
-ZGQsIHRoZW4gZ2NkKGEsYikgPSBnY2QoYS8yLCBiKQo+PiAJMy4gSWYgYSBhbmQgYiBhcmUgYWxs
-IG9kZHMsIHRoZW4gZ2NkKGEsYikgPSBnY2QoKGEtYikvMiwgYikgPSBnY2QoKGErYikvMiwgYikK
-PiAxKSAiZXZlbiIgYW5kICJvZGQiIGFyZSBhZGplY3RpdmVzLiAgSW4gRW5nbGlzaCwgYWRqZWN0
-aXZlcyB0byBub3QgaGF2ZQo+ICAgIHBsdXJhbCBzdWZmaXhlcy4gIFRodXMsICJ0aGV5IGFyZSBl
-dmVuIiBvciAidGhleSBhcmUgb2RkIi4KPiAyKSBBbHRob3VnaCAiYWxsIiBpcyBub3QgZXhhY3Rs
-eSB3cm9uZywgaXQgc291bmRzIG9kZC4gIFNpbmNlIHRoZXJlIGFyZQo+ICAgIGV4YWN0bHkgdHdv
-IG9mIHRoZW0gaXQncyBjbGVhcmVyIHRvIHNheSAiYm90aCIuCj4KPiBJZiBJIGFsc28gcmVwaHJh
-c2UgdGhlIGxhc3QgbGluZSB0byBmaXQgaW50byA4MCBjb2x1bW5zLCB5b3UgZ2V0Ogo+Cj4gICBU
-aGUgYmluYXJ5IEdDRCBhbGdvcml0aG0gaXMgYmFzZWQgb24gdGhlIGZvbGxvd2luZyBmYWN0czoK
-PiAtIAkxLiBJZiBhIGFuZCBiIGFyZSBhbGwgZXZlbnMsIHRoZW4gZ2NkKGEsYikgPSAyICogZ2Nk
-KGEvMiwgYi8yKQo+ICsgCTEuIElmIGEgYW5kIGIgYXJlIGJvdGggZXZlbiwgdGhlbiBnY2QoYSxi
-KSA9IDIgKiBnY2QoYS8yLCBiLzIpCj4gIAkyLiBJZiBhIGlzIGV2ZW4gYW5kIGIgaXMgb2RkLCB0
-aGVuIGdjZChhLGIpID0gZ2NkKGEvMiwgYikKPiAtCTMuIElmIGEgYW5kIGIgYXJlIGFsbCBvZGRz
-LCB0aGVuIGdjZChhLGIpID0gZ2NkKChhLWIpLzIsIGIpID0gZ2NkKChhK2IpLzIsIGIpCj4gKwkz
-LiBJZiBib3RoIGFyZSBvZGQsIHRoZW4gZ2NkKGEsYikgPSBnY2QoKGEtYikvMiwgYikgPSBnY2Qo
-KGErYikvMiwgYikKPgo+IDMpIE5lZ2F0aXZlIGNvbmZpZyBvcHRpb25zIGFyZSBhbHdheXMgY29u
-ZnVzaW5nLgo+Cj4gV291bGQgaXQgYmUgYmV0dGVyIHRvIGNhbGwgaXQgQ09ORklHX0lORUZGSUNJ
-RUJOVF9GRlMsIG9yIGV2ZW4gc2ltcGxlcgo+IENPTkZJR19TTE9XX0ZGUz8KPgo+IEFsc28sIHlv
-dSdyZSBhbGxvd2VkIHRvIGFkZCAiaGVscCIgdG8gYSBub24taW50ZXJhY3RpdmUgY29uZmlnIG9w
-dGlvbiwKPiBhbmQgc29tZSBkb2N1bWVudGF0aW9uIG1pZ2h0IGJlIHVzZWZ1bC4KPiBFLmcuCj4K
-PiArY29uZmlnIENQVV9TTE9XX0ZGUwo+ICsJZGVmX2Jvb2wgbgo+ICsJaGVscAo+ICsJICBJZiBu
-LCB0aGUgQ1BVIHN1cHBvcnRzIGEgZmFzdCBfX2ZmcyAoX19idWlsdGluX2N0eikgb3BlcmF0aW9u
-LAo+ICsJICBlaXRoZXIgZGlyZWN0bHkgb3IgdmlhIGEgc2hvcnQgY29kZSBzZXF1ZW5jZSB1c2lu
-ZyBhIGNvdW50Cj4gKwkgIGxlYWRpbmcgemVyb3Mgb3IgcG9wdWxhdGlvbiBjb3VudCBpbnN0cnVj
-dGlvbi4gIElmIHksIHRoZQo+ICsJICBvcGVyYXRpb24gaXMgZW11bGF0ZWQgYnkgc2xvd2VyIHNv
-ZnR3YXJlLCBzdWNoIGFzIGFuIHVucm9sbGVkCj4gKwkgIGJpbmFyeSBzZWFyY2guCj4gKwo+ICsJ
-ICBUaGlzIGlzIHB1cmVseSBhbiBvcHRpbWl6YXRpb24gb3B0aW9uOyB0aGUga2VybmVsCj4gKwkg
-IHdpbGwgZnVuY3Rpb24gY29ycmVjdGx5IHJlZ2FyZGxlc3Mgb2YgaG93IGl0IGlzIHNldC4KPiAr
-CgpUaGFua3MgYSBsb3QuCgo+IFlvdXIgYmVuY2htYXJrIGNvZGUgZG9lc24ndCBoYXZlIHRvIGhh
-dmUgYSBzZXBhcmF0ZSBjb2RlIHBhdGggaWYKPiBfX3g4Nl82NF9fOyByZHRzYyB3b3JrcyBvbiAz
-Mi1iaXQgY29kZSBqdXN0IGFzIHdlbGwuICBwYXRocy4gIEFuZCB0aGUKPiB3YXkgeW91IHN1YnRy
-YWN0IHRoZSBlbmQgYW5kIHN0YXJ0IHRpbWVzIGlzIHVubmVjZXNzYXJpbHkgY29tcGxpY2F0ZWQu
-Cj4gVGhlIEMgbGFuZ3VhZ2UgZ3VhcmFudGVlcyB0aGF0IHVuc2lnbmVkIGFyaXRobWV0aWMgc2lt
-cGx5IHdyYXBzIG1vZHVsbwo+IDJeYml0cyBhcyBleHBlY3RlZC4KCnJkc2Mgd29ya3Mgb24geDg2
-LCB0aGUgb3RoZXIgcGF0aCBpcyBwcmVwYXJlZCBmb3Igb3RoZXIgYXJjaGl0ZWN0dXJlcy4KCj4g
-SGVyZSBhcmUgc29tZSBtb3JlIHRpbWluZ3MsIHdpdGggdGhlIHNhbWUgZmxhZ3MgYXMgeW91ciB0
-ZXN0czoKPgo+IEZpcnN0LCAzMiBiaXQgY29kZToKPiAJCWdjZDAJZ2NkMQlnY2QyCWdjZDMJZ2Nk
-NAo+IEl2eSBCcmlkZ2UJMzE1NgkxMTkyCTE3NDAJMTE2MAkxNjQwCVBBU1MKPiBBTUQgUGhlbm9t
-CTcxNTAJMjU2NAkyMzQ4CTI5NzUJMjg0MwlQQVNTCj4gQ29yZSAyCQk0MTc2CTI1OTIJNDE2NAky
-NjA0CTM5MDAJUEFTUwo+IFBlbnRpdW0gNAkxMTQ5Mgk0Nzg0CTc2MzIJNDg1Mgk2NDUyCVBBU1MK
-Pgo+IEFuZCA2NC1iaXQgKGxvbmdlciB0aW1lcyBiZWN1YXNlIHRoZSBpbnB1dHMgYXJlIGxhcmdl
-cik6Cj4gSXZ5IEJyaWRnZQkxMDYzNgkyNDk2CTM1MDAJMjQzMgkzMzYwCVBBU1MKPiBBTUQgUGhl
-bm9tCTE5NDgyCTQwNTgJNjAzMAk1MDAxCTY4NDUJUEFTUwo+Cj4gTG9va2luZyBhdCB0aG9zZSwg
-SSdtIG5vdCBzdXJlIGhvdyBtdWNoIGJldHRlciB0aGUgZ2NkMy80IHZlcnNpb25zIGFyZQo+IHRo
-YW4gZ2NkMS8yLiAgVGhlIGRpZmZlcmVuY2Ugc2VlbXMgcHJldHR5IG1pbm9yIGFuZCBzb21ldGlt
-ZXMgbmVnYXRpdmUuCj4KClRoZSB3b3JzdCBjYXNlIG9mIGJpbmFyeSBHQ0QgaXMgdGhhdCBvbmUg
-bnVtYmVyIGlzIHBvd2VyIG9mIDIsCmZvciBleGFtcGxlIGEgaXMgMHhmZmZmZmZmZiAoMHhjY2Nj
-Y2NjYyBmb3IgdGhlICJldmVuL29kZCIgdmFyaWFudCkgYW5kIGIgaXMgMS4KClRoZSBnY2QzLzQg
-dmVyc2lvbnMgY2FuIGhhbmRsZSB0aGlzIHByb3Blcmx5LgoKCgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1zbnBzLWFyYyBtYWlsaW5nIGxpc3QK
-bGludXgtc25wcy1hcmNAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFk
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXNucHMtYXJj
+From: Zhaoxiu Zeng <zhaoxiu.zeng@gmail.com>
+
+When I do "grep parity -r linux", I found many parity calculations
+distributed in many drivers.
+
+This patch series does:
+  1. provide generic and architecture-specific parity calculations
+  2. remove drivers' local parity calculations, use bitops' parity
+     functions instead
+  3. replace "hweightN(x) & 1" with "parityN(x)" to improve readability,
+     and improve performance on some CPUs that without popcount support
+
+I did not use GCC's __builtin_parity* functions, based on the following reasons:
+  1. I don't know where to identify which version of GCC from the beginning
+     supported __builtin_parity for the architecture.
+  2. For the architecture that doesn't has popcount instruction, GCC instead use
+     "call __paritysi2" (__paritydi2 for 64-bits). So if use __builtin_parity, we must
+     provide __paritysi2 and __paritydi2 functions for these architectures.
+     Additionally, parity4,8,16 might be "__builtin_parity(x & mask)", but the "& mask"
+     operation is totally unnecessary.
+  3. For the architecture that has popcount instruction, we do the same things as GCC.
+  4. For powerpc, sparc, and x86, we do runtime patching to use popcount instruction
+     if the CPU support.
+
+I have compiled successfully with x86_64_defconfig, i386_defconfig, pseries_defconfig
+and sparc64_defconfig.
+
+Changes to V3:
+- Remove "odd" and "even" from documents. The function parityN returns whether an odd
+  or even number of bits are on in a N-bit word, does not involve the definition of
+  odd/even parity. Is it an odd or even parity checking, depends on the caller's context.
+- Replace "hweightN(x) % 2" with "parityN(x)" in crypto/sahara.c and edac/amd64_edac.c
+- Use PARITY_MAGIC instead of 0x6996 in powerpc's parity_64.S
+- Use PARITY_MAGIC instead of 0x6996 in sparc's parity.S
+- Pick up ACKs
+
+Changes to v2:
+- X86, remove custom calling convention, use inline asm
+- Add constant PARITY_MAGIC (proposals by Sam Ravnborg)
+- Add include/asm-generic/bitops/popc-parity.h (proposals by Chris Metcalf)
+- Tile uses popc-parity.h directly
+- Mips uses popc-parity.h if has usable __builtin_popcount
+- Add few comments in powerpc's and sparc's parity.S
+
+Changes to v1:
+- Add runtime patching for powerpc, sparc, and x86
+- Avr32 use grenric parity too
+- Fix error in ssfdc's patch, and add commit message
+- Don't change the original code composition of adxrs450.c
+- Directly assignement to phy_cap.parity in drivers/scsi/isci/phy.c
+
+Regards,
+
+=== diffstat ===
+
+Zhaoxiu Zeng (31):
+  bitops: add parity functions
+  bitops: Include generic parity.h in some architectures' bitops.h
+  bitops: Add alpha-specific parity functions
+  bitops: Add blackfin-specific parity functions
+  bitops: Add ia-specific parity functions
+  bitops: Tile and MIPS (if has usable __builtin_popcount) use popcount
+    parity functions
+  bitops: Add powerpc-specific parity functions
+  bitops: Add sparc-specific parity functions
+  bitops: Add x86-specific parity functions
+  sunrpc: use parity8
+  mips: use parity functions in cerr-sb1.c
+  lib: bch: use parity32
+  media: use parity8 in vivid-vbi-gen.c
+  media: use parity functions in saa7115
+  input: use parity32 in grip_mp
+  input: use parity64 in sidewinder
+  input: use parity16 in ams_delta_serio
+  scsi: use parity32 in isci's phy
+  mtd: use parity16 in ssfdc
+  mtd: use parity functions in inftlcore
+  crypto: use parity functions in qat_hal
+  mtd: use parity16 in sm_ftl
+  ethernet: use parity8 in sun/niu.c
+  input: use parity8 in pcips2
+  input: use parity8 in sa1111ps2
+  iio: use parity32 in adxrs450
+  serial: use parity32 in max3100
+  input: use parity8 in elantech
+  ethernet: use parity8 in broadcom/tg3.c
+  crypto: use parity_long is sahara.c
+  edac: use parity8 in amd64_edac.c
+
+ arch/alpha/include/asm/bitops.h              |  27 +++++
+ arch/arc/include/asm/bitops.h                |   1 +
+ arch/arm/include/asm/bitops.h                |   1 +
+ arch/arm64/include/asm/bitops.h              |   1 +
+ arch/avr32/include/asm/bitops.h              |   1 +
+ arch/blackfin/include/asm/bitops.h           |  31 ++++++
+ arch/c6x/include/asm/bitops.h                |   1 +
+ arch/cris/include/asm/bitops.h               |   1 +
+ arch/frv/include/asm/bitops.h                |   1 +
+ arch/h8300/include/asm/bitops.h              |   1 +
+ arch/hexagon/include/asm/bitops.h            |   1 +
+ arch/ia64/include/asm/bitops.h               |  31 ++++++
+ arch/m32r/include/asm/bitops.h               |   1 +
+ arch/m68k/include/asm/bitops.h               |   1 +
+ arch/metag/include/asm/bitops.h              |   1 +
+ arch/mips/include/asm/bitops.h               |   7 ++
+ arch/mips/mm/cerr-sb1.c                      |  67 ++++---------
+ arch/mn10300/include/asm/bitops.h            |   1 +
+ arch/openrisc/include/asm/bitops.h           |   1 +
+ arch/parisc/include/asm/bitops.h             |   1 +
+ arch/powerpc/include/asm/bitops.h            |  11 +++
+ arch/powerpc/lib/Makefile                    |   2 +-
+ arch/powerpc/lib/parity_64.S                 | 143 +++++++++++++++++++++++++++
+ arch/powerpc/lib/ppc_ksyms.c                 |   5 +
+ arch/s390/include/asm/bitops.h               |   1 +
+ arch/sh/include/asm/bitops.h                 |   1 +
+ arch/sparc/include/asm/bitops_32.h           |   1 +
+ arch/sparc/include/asm/bitops_64.h           |  18 ++++
+ arch/sparc/kernel/sparc_ksyms_64.c           |   6 ++
+ arch/sparc/lib/Makefile                      |   2 +-
+ arch/sparc/lib/parity.S                      | 129 ++++++++++++++++++++++++
+ arch/tile/include/asm/bitops.h               |   2 +
+ arch/x86/include/asm/arch_hweight.h          |   5 +
+ arch/x86/include/asm/arch_parity.h           | 117 ++++++++++++++++++++++
+ arch/x86/include/asm/bitops.h                |   4 +-
+ arch/xtensa/include/asm/bitops.h             |   1 +
+ drivers/crypto/qat/qat_common/qat_hal.c      |  32 ++----
+ drivers/crypto/sahara.c                      |   2 +-
+ drivers/edac/amd64_edac.c                    |   2 +-
+ drivers/iio/gyro/adxrs450.c                  |   4 +-
+ drivers/input/joystick/grip_mp.c             |  16 +--
+ drivers/input/joystick/sidewinder.c          |  24 +----
+ drivers/input/mouse/elantech.c               |  10 +-
+ drivers/input/mouse/elantech.h               |   1 -
+ drivers/input/serio/ams_delta_serio.c        |   8 +-
+ drivers/input/serio/pcips2.c                 |   2 +-
+ drivers/input/serio/sa1111ps2.c              |   2 +-
+ drivers/media/i2c/saa7115.c                  |  17 +---
+ drivers/media/platform/vivid/vivid-vbi-gen.c |   9 +-
+ drivers/mtd/inftlcore.c                      |  17 +---
+ drivers/mtd/sm_ftl.c                         |   5 +-
+ drivers/mtd/ssfdc.c                          |  31 ++----
+ drivers/net/ethernet/broadcom/tg3.c          |   6 +-
+ drivers/net/ethernet/sun/niu.c               |  10 +-
+ drivers/scsi/isci/phy.c                      |  15 +--
+ drivers/tty/serial/max3100.c                 |   2 +-
+ include/asm-generic/bitops.h                 |   1 +
+ include/asm-generic/bitops/arch_parity.h     |  39 ++++++++
+ include/asm-generic/bitops/const_parity.h    |  36 +++++++
+ include/asm-generic/bitops/parity.h          |   7 ++
+ include/asm-generic/bitops/popc-parity.h     |  32 ++++++
+ include/linux/bitops.h                       |  10 ++
+ lib/bch.c                                    |  14 +--
+ net/sunrpc/auth_gss/gss_krb5_keys.c          |   6 +-
+ 64 files changed, 749 insertions(+), 237 deletions(-)
+ create mode 100644 arch/powerpc/lib/parity_64.S
+ create mode 100644 arch/sparc/lib/parity.S
+ create mode 100644 arch/x86/include/asm/arch_parity.h
+ create mode 100644 include/asm-generic/bitops/arch_parity.h
+ create mode 100644 include/asm-generic/bitops/const_parity.h
+ create mode 100644 include/asm-generic/bitops/parity.h
+ create mode 100644 include/asm-generic/bitops/popc-parity.h
+
+-- 
+2.7.4
+
+
+
