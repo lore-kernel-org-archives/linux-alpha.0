@@ -1,27 +1,15 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH v4 00/16] genrtc removal
-Date: Tue, 31 May 2016 08:56:05 +0200
-Message-ID: <CAMuHMdV5mcKZcBz=v7Pn2pbDiuwMpQYs-70e6NmH6CZ88=JNzA@mail.gmail.com>
+From: Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>
+Subject: Re: [PATCH v4 04/16] rtc: sh: provide rtc_class_ops directly
+Date: Wed, 1 Jun 2016 17:58:14 -0400
+Message-ID: <20160601215814.GE10893@brightrain.aerifal.cx>
 References: <1464634684-1248135-1-git-send-email-arnd@arndb.de>
-	<20160530203207.GY3451@piout.net>
+ <1464634684-1248135-5-git-send-email-arnd@arndb.de>
 Reply-To: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Return-path: <rtc-linux+bncBCQJP74GSUDRBBPLWS5AKGQEEMCYSKI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=mime-version:sender:in-reply-to:references:date:message-id:subject
-         :from:to:cc:x-original-sender:x-original-authentication-results
-         :reply-to:precedence:mailing-list:list-id:x-spam-checked-in-group
-         :list-post:list-help:list-archive:list-subscribe:list-unsubscribe;
-        bh=HyMm7pioSBx+mgdF0FWZ6zUSdP7tnD/bdTXpGbnhNhE=;
-        b=IzjkNUZbdpxBpwVefcdE3d7uzo9/Zn3SxyxAwwznRTGcnXJDOEJt2WheGKPpbbrUfn
-         78b9XGU1PWRlKzw7DlepCfUZ47KAHyyIkBy0narNuDtdbASzzl+axNReufD0M+8BrJ/Y
-         J3DVd11I9dQfVOtucY3ijlT9yKkxcEWnpDxEpgI9U6dPYobSElAqn1euOt7FxcOD9ubE
-         MO3QtTy5lyDgx/6PaCkp/f0Vnv49+lH50mEkt+Hqy9c6Tf3BvsxIR7sMN6UxisMdLy4z
-         aQtMR6n0Molckoxm1kbHi151R1qFnFbMs2NKUVsnyeCj6bMHxp744QJUiAS3mJjrDaxX
-         np1Q==
-Sender: geert.uytterhoeven-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-In-Reply-To: <20160530203207.GY3451-m++hUPXGwpdeoWH0uzbU5w@public.gmane.org>
+Return-path: <rtc-linux+bncBCI4NDXKXQHBBIFVXW5AKGQEA3JEEAA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1464634684-1248135-5-git-send-email-arnd-r2nGTMty4D4@public.gmane.org>
+Sender: Rich Felker <dalias-/miJ2pyFWUyWIDz0JBNUog@public.gmane.org>
 List-ID: <linux-alpha.vger.kernel.org>
 List-Post: <https://groups.google.com/group/rtc-linux/post>, <mailto:rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:rtc-linux+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -31,43 +19,134 @@ List-Unsubscribe: <mailto:googlegroups-manage+712029733259+unsubscribe-/JYPxA39U
  <https://groups.google.com/group/rtc-linux/subscribe>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, alpha <linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Parisc List <linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-m68k <linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org>, RTCLINUX <rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Linux-Arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, deller-Mmb7MZpHnFY@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-Allo Alexandre,
+On Mon, May 30, 2016 at 08:57:52PM +0200, Arnd Bergmann wrote:
+> The rtc-generic driver provides an architecture specific
+> wrapper on top of the generic rtc_class_ops abstraction,
+> and on sh, that goes through another indirection using
+> the rtc_sh_get_time/rtc_sh_set_time functions.
+> 
+> This changes the sh rtc-generic device to provide its
+> rtc_class_ops directly, skipping one of the abstraction
+> levels.
+> 
+> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 
-On Mon, May 30, 2016 at 10:32 PM, Alexandre Belloni
-<alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
-> On 30/05/2016 at 20:57:48 +0200, Arnd Bergmann wrote :
->> This is the promised resend of the removal of the genrtc driver and some
->> related code, now that we are at a good time to merge this for the coming
->> merge window.
->>
->
-> Thanks a lot!
->
-> I'm applying the series right now so it sits in linux-next for a while
-> before the next merge window.
->
-> I would still happily take any acks, Reviewed-by or Tested-by tags.
+I haven't tested any of this, but based on our discussion of the
+previous version, I'm satisfied that it makes sense.
 
-Looks like Arnd forgot to include these when reposting:
+Acked-by: Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>
 
-Acked-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-
-For the m68k bits:
-Tested-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> ---
+>  arch/sh/include/asm/rtc.h | 11 -----------
+>  arch/sh/kernel/time.c     | 33 ++++++++++++++++++++-------------
+>  drivers/rtc/rtc-generic.c |  2 +-
+>  3 files changed, 21 insertions(+), 25 deletions(-)
+> 
+> diff --git a/arch/sh/include/asm/rtc.h b/arch/sh/include/asm/rtc.h
+> index 52b0c2dba979..f7b010d48af7 100644
+> --- a/arch/sh/include/asm/rtc.h
+> +++ b/arch/sh/include/asm/rtc.h
+> @@ -6,17 +6,6 @@ extern void (*board_time_init)(void);
+>  extern void (*rtc_sh_get_time)(struct timespec *);
+>  extern int (*rtc_sh_set_time)(const time_t);
+>  
+> -/* some dummy definitions */
+> -#define RTC_BATT_BAD 0x100	/* battery bad */
+> -#define RTC_SQWE 0x08		/* enable square-wave output */
+> -#define RTC_DM_BINARY 0x04	/* all time/date values are BCD if clear */
+> -#define RTC_24H 0x02		/* 24 hour mode - else hours bit 7 means pm */
+> -#define RTC_DST_EN 0x01	        /* auto switch DST - works f. USA only */
+> -
+> -struct rtc_time;
+> -unsigned int get_rtc_time(struct rtc_time *);
+> -int set_rtc_time(struct rtc_time *);
+> -
+>  #define RTC_CAP_4_DIGIT_YEAR	(1 << 0)
+>  
+>  struct sh_rtc_platform_info {
+> diff --git a/arch/sh/kernel/time.c b/arch/sh/kernel/time.c
+> index d6d0a986c6e9..a4a7862b489a 100644
+> --- a/arch/sh/kernel/time.c
+> +++ b/arch/sh/kernel/time.c
+> @@ -50,27 +50,31 @@ int update_persistent_clock(struct timespec now)
+>  }
+>  #endif
+>  
+> -unsigned int get_rtc_time(struct rtc_time *tm)
+> +static int rtc_generic_get_time(struct device *dev, struct rtc_time *tm)
+>  {
+> -	if (rtc_sh_get_time != null_rtc_get_time) {
+> -		struct timespec tv;
+> +	struct timespec tv;
+>  
+> -		rtc_sh_get_time(&tv);
+> -		rtc_time_to_tm(tv.tv_sec, tm);
+> -	}
+> -
+> -	return RTC_24H;
+> +	rtc_sh_get_time(&tv);
+> +	rtc_time_to_tm(tv.tv_sec, tm);
+> +	return 0;
+>  }
+> -EXPORT_SYMBOL(get_rtc_time);
+>  
+> -int set_rtc_time(struct rtc_time *tm)
+> +static int rtc_generic_set_time(struct device *dev, struct rtc_time *tm)
+>  {
+>  	unsigned long secs;
+>  
+>  	rtc_tm_to_time(tm, &secs);
+> -	return rtc_sh_set_time(secs);
+> +	if ((rtc_sh_set_time == null_rtc_set_time) ||
+> +	    (rtc_sh_set_time(secs) < 0))
+> +		return -EOPNOTSUPP;
+> +
+> +	return 0;
+>  }
+> -EXPORT_SYMBOL(set_rtc_time);
+> +
+> +static const struct rtc_class_ops rtc_generic_ops = {
+> +	.read_time = rtc_generic_get_time,
+> +	.set_time = rtc_generic_set_time,
+> +};
+>  
+>  static int __init rtc_generic_init(void)
+>  {
+> @@ -79,7 +83,10 @@ static int __init rtc_generic_init(void)
+>  	if (rtc_sh_get_time == null_rtc_get_time)
+>  		return -ENODEV;
+>  
+> -	pdev = platform_device_register_simple("rtc-generic", -1, NULL, 0);
+> +	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
+> +					     &rtc_generic_ops,
+> +					     sizeof(rtc_generic_ops));
+> +
+>  
+>  	return PTR_ERR_OR_ZERO(pdev);
+>  }
+> diff --git a/drivers/rtc/rtc-generic.c b/drivers/rtc/rtc-generic.c
+> index d726c6aa96a8..3958e87a05fa 100644
+> --- a/drivers/rtc/rtc-generic.c
+> +++ b/drivers/rtc/rtc-generic.c
+> @@ -10,7 +10,7 @@
+>  #include <linux/rtc.h>
+>  
+>  #if defined(CONFIG_M68K) || defined(CONFIG_PARISC) || \
+> -    defined(CONFIG_PPC) || defined(CONFIG_SUPERH32)
+> +    defined(CONFIG_PPC)
+>  #include <asm/rtc.h>
+>  
+>  static int generic_get_time(struct device *dev, struct rtc_time *tm)
+> -- 
+> 2.7.0
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 -- 
 You received this message because you are subscribed to "rtc-linux".
