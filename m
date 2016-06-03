@@ -1,159 +1,68 @@
-From: Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>
-Subject: Re: [PATCH v4 04/16] rtc: sh: provide rtc_class_ops directly
-Date: Wed, 1 Jun 2016 17:58:14 -0400
-Message-ID: <20160601215814.GE10893@brightrain.aerifal.cx>
-References: <1464634684-1248135-1-git-send-email-arnd@arndb.de>
- <1464634684-1248135-5-git-send-email-arnd@arndb.de>
-Reply-To: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [RFC v3 02/45] dma-mapping: Use unsigned long for dma_attrs
+Date: Fri, 3 Jun 2016 09:17:00 +0200
+Message-ID: <CAMuHMdXWMf7Dt77wSUj8NytQqb99jzDiAz46kJkAEz+6BX3Uvw@mail.gmail.com>
+References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
+	<1464881987-13203-3-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
-Return-path: <rtc-linux+bncBCI4NDXKXQHBBIFVXW5AKGQEA3JEEAA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1464634684-1248135-5-git-send-email-arnd-r2nGTMty4D4@public.gmane.org>
-Sender: Rich Felker <dalias-/miJ2pyFWUyWIDz0JBNUog@public.gmane.org>
-List-ID: <linux-alpha.vger.kernel.org>
-List-Post: <https://groups.google.com/group/rtc-linux/post>, <mailto:rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:rtc-linux+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/rtc-linux
-List-Subscribe: <https://groups.google.com/group/rtc-linux/subscribe>, <mailto:rtc-linux+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+712029733259+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/rtc-linux/subscribe>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, deller-Mmb7MZpHnFY@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20120113;
+	h=mime-version:sender:in-reply-to:references:from:date:message-id
+	:subject:to:cc;
+	bh=uCnxmB1T8a+4D+O4zpeSlaaz1Cfb9og2oC3TvgHjcRE=;
+	b=XIORJNb9acrmFYpTUR+IydSRCx8p6NgGzpCDttIL5VB/L08CUzbSmTqpRHktZyYUZk
+	Go4zRKJacq1XlR3GT11LQgHQA01kmYoADP4XCzXbsprp9X+xuzWcfEq3nPpJSSmma0Ei
+	gKX0mAfwzQs6bSr+KsOv17G1rSmnnUpKoN27qXpI3bSGAMN8Blv3fUGD01NZA9wpqD/W
+	su2VN8g+513h7RqBGkULEsGhpmHyEVyMEBc0jI2g0r21XTZXJyfQPAKuQWmunmUGSynV
+	OO6U5Mk+Rcu7XK3z2sf+o0382n0j1kJtR7CRg3XHQWb32Dp16dsTNrxFhYhefbMSpbOx
+	5onw==
+In-Reply-To: <1464881987-13203-3-git-send-email-k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux MIPS Mailing List <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Aurelien Jacquiot <a-jacquiot-l0cyMroinI0@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, DRI Development <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "James E.J. Bottomley" <jejb-6jwH94ZQLHl74goWV3ctuw@public.gmane.org>, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, uclinux-h8-devel-5NWGOfrQmneRv+LV9MX5uooqe+aC9MnS@public.gmane.org, James Hogan <james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, "adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 
-On Mon, May 30, 2016 at 08:57:52PM +0200, Arnd Bergmann wrote:
-> The rtc-generic driver provides an architecture specific
-> wrapper on top of the generic rtc_class_ops abstraction,
-> and on sh, that goes through another indirection using
-> the rtc_sh_get_time/rtc_sh_set_time functions.
-> 
-> This changes the sh rtc-generic device to provide its
-> rtc_class_ops directly, skipping one of the abstraction
-> levels.
-> 
-> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Hi Krzysztof,
 
-I haven't tested any of this, but based on our discussion of the
-previous version, I'm satisfied that it makes sense.
+On Thu, Jun 2, 2016 at 5:39 PM, Krzysztof Kozlowski
+<k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -5,13 +5,25 @@
 
-Acked-by: Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>
+> +/**
+> + * List of possible attributes associated with a DMA mapping. The semantics
+> + * of each attribute should be defined in Documentation/DMA-attributes.txt.
+> + */
+> +#define DMA_ATTR_WRITE_BARRIER         (1UL << 1)
 
-> ---
->  arch/sh/include/asm/rtc.h | 11 -----------
->  arch/sh/kernel/time.c     | 33 ++++++++++++++++++++-------------
->  drivers/rtc/rtc-generic.c |  2 +-
->  3 files changed, 21 insertions(+), 25 deletions(-)
-> 
-> diff --git a/arch/sh/include/asm/rtc.h b/arch/sh/include/asm/rtc.h
-> index 52b0c2dba979..f7b010d48af7 100644
-> --- a/arch/sh/include/asm/rtc.h
-> +++ b/arch/sh/include/asm/rtc.h
-> @@ -6,17 +6,6 @@ extern void (*board_time_init)(void);
->  extern void (*rtc_sh_get_time)(struct timespec *);
->  extern int (*rtc_sh_set_time)(const time_t);
->  
-> -/* some dummy definitions */
-> -#define RTC_BATT_BAD 0x100	/* battery bad */
-> -#define RTC_SQWE 0x08		/* enable square-wave output */
-> -#define RTC_DM_BINARY 0x04	/* all time/date values are BCD if clear */
-> -#define RTC_24H 0x02		/* 24 hour mode - else hours bit 7 means pm */
-> -#define RTC_DST_EN 0x01	        /* auto switch DST - works f. USA only */
-> -
-> -struct rtc_time;
-> -unsigned int get_rtc_time(struct rtc_time *);
-> -int set_rtc_time(struct rtc_time *);
-> -
->  #define RTC_CAP_4_DIGIT_YEAR	(1 << 0)
->  
->  struct sh_rtc_platform_info {
-> diff --git a/arch/sh/kernel/time.c b/arch/sh/kernel/time.c
-> index d6d0a986c6e9..a4a7862b489a 100644
-> --- a/arch/sh/kernel/time.c
-> +++ b/arch/sh/kernel/time.c
-> @@ -50,27 +50,31 @@ int update_persistent_clock(struct timespec now)
->  }
->  #endif
->  
-> -unsigned int get_rtc_time(struct rtc_time *tm)
-> +static int rtc_generic_get_time(struct device *dev, struct rtc_time *tm)
->  {
-> -	if (rtc_sh_get_time != null_rtc_get_time) {
-> -		struct timespec tv;
-> +	struct timespec tv;
->  
-> -		rtc_sh_get_time(&tv);
-> -		rtc_time_to_tm(tv.tv_sec, tm);
-> -	}
-> -
-> -	return RTC_24H;
-> +	rtc_sh_get_time(&tv);
-> +	rtc_time_to_tm(tv.tv_sec, tm);
-> +	return 0;
->  }
-> -EXPORT_SYMBOL(get_rtc_time);
->  
-> -int set_rtc_time(struct rtc_time *tm)
-> +static int rtc_generic_set_time(struct device *dev, struct rtc_time *tm)
->  {
->  	unsigned long secs;
->  
->  	rtc_tm_to_time(tm, &secs);
-> -	return rtc_sh_set_time(secs);
-> +	if ((rtc_sh_set_time == null_rtc_set_time) ||
-> +	    (rtc_sh_set_time(secs) < 0))
-> +		return -EOPNOTSUPP;
-> +
-> +	return 0;
->  }
-> -EXPORT_SYMBOL(set_rtc_time);
-> +
-> +static const struct rtc_class_ops rtc_generic_ops = {
-> +	.read_time = rtc_generic_get_time,
-> +	.set_time = rtc_generic_set_time,
-> +};
->  
->  static int __init rtc_generic_init(void)
->  {
-> @@ -79,7 +83,10 @@ static int __init rtc_generic_init(void)
->  	if (rtc_sh_get_time == null_rtc_get_time)
->  		return -ENODEV;
->  
-> -	pdev = platform_device_register_simple("rtc-generic", -1, NULL, 0);
-> +	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
-> +					     &rtc_generic_ops,
-> +					     sizeof(rtc_generic_ops));
-> +
->  
->  	return PTR_ERR_OR_ZERO(pdev);
->  }
-> diff --git a/drivers/rtc/rtc-generic.c b/drivers/rtc/rtc-generic.c
-> index d726c6aa96a8..3958e87a05fa 100644
-> --- a/drivers/rtc/rtc-generic.c
-> +++ b/drivers/rtc/rtc-generic.c
-> @@ -10,7 +10,7 @@
->  #include <linux/rtc.h>
->  
->  #if defined(CONFIG_M68K) || defined(CONFIG_PARISC) || \
-> -    defined(CONFIG_PPC) || defined(CONFIG_SUPERH32)
-> +    defined(CONFIG_PPC)
->  #include <asm/rtc.h>
->  
->  static int generic_get_time(struct device *dev, struct rtc_time *tm)
-> -- 
-> 2.7.0
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Any particular reason they start at 2, not 1?
 
--- 
-You received this message because you are subscribed to "rtc-linux".
-Membership options at http://groups.google.com/group/rtc-linux .
-Please read http://groups.google.com/group/rtc-linux/web/checklist
-before submitting a driver.
---- 
-You received this message because you are subscribed to the Google Groups "rtc-linux" group.
-To unsubscribe from this group and stop receiving emails from it, send an email to rtc-linux+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-For more options, visit https://groups.google.com/d/optout.
+> +#define DMA_ATTR_WEAK_ORDERING         (1UL << 2)
+> +#define DMA_ATTR_WRITE_COMBINE         (1UL << 3)
+> +#define DMA_ATTR_NON_CONSISTENT                (1UL << 4)
+> +#define DMA_ATTR_NO_KERNEL_MAPPING     (1UL << 5)
+> +#define DMA_ATTR_SKIP_CPU_SYNC         (1UL << 6)
+> +#define DMA_ATTR_FORCE_CONTIGUOUS      (1UL << 7)
+> +#define DMA_ATTR_ALLOC_SINGLE_PAGES    (1UL << 8)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
