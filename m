@@ -1,54 +1,26 @@
-From: Daniel Wagner <wagi@monom.org>
-Subject: [PATCH] binfmt_em86: Fix incompatible pointer type
-Date: Thu,  9 Jun 2016 14:43:24 +0200
-Message-ID: <1465476204-11923-1-git-send-email-wagi@monom.org>
+From: David Howells <dhowells@redhat.com>
+Subject: Re: [RFC 10/12] x86, rwsem: simplify __down_write
+Date: Thu, 09 Jun 2016 15:40:58 +0100
+Message-ID: <29355.1465483258@warthog.procyon.org.uk>
+References: <20160603223417.GB3892@twins.programming.kicks-ass.net> <1454444369-2146-1-git-send-email-mhocko@kernel.org> <1454444369-2146-11-git-send-email-mhocko@kernel.org> <20160203081016.GD32652@gmail.com> <20160603161339.GC3693@twins.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-fsdevel-owner@vger.kernel.org>
-Sender: linux-fsdevel-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20160603223417.GB3892@twins.programming.kicks-ass.net>
+Content-ID: <29354.1465483258.1@warthog.procyon.org.uk>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: linux-kernel@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org, linux-fsdevel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Daniel Wagner <daniel.wagner@bmw-carit.de>
+Content-Transfer-Encoding: 7bit
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: dhowells@redhat.com, Ingo Molnar <mingo@kernel.org>, Michal Hocko <mhocko@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Michal Hocko <mhocko@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, "Paul E. McKenney" <paulmck@us.ibm.com>, Jason Low <jason.low2@hpe.com>
 
-=46rom: Daniel Wagner <daniel.wagner@bmw-carit.de>
+Peter Zijlstra <peterz@infradead.org> wrote:
 
-Since the -Wincompatible-pointer-types is reported as error, alpha
-doesn't build anymore. Let's fix it in a minimal way.
+> Blergh; so looking at more asm there's still a few tricks we cannot do.
+> So while overall size is down, some paths do end up more expensive. (It
+> typically boils down to creative use of condition flags, which is very
+> hard in C)
 
-fs/binfmt_em86.c:73:35: error: passing argument 2 of =E2=80=98copy_stri=
-ngs_kernel=E2=80=99 from incompatible pointer type [-Werror=3Dincompati=
-ble-pointer-types]
-   retval =3D copy_strings_kernel(1, &i_arg, bprm);
-                                   ^            ^
-fs/binfmt_em86.c:77:34: error: passing argument 2 of =E2=80=98copy_stri=
-ngs_kernel=E2=80=99 from incompatible pointer type [-Werror=3Dincompati=
-ble-pointer-types]
-  retval =3D copy_strings_kernel(1, &i_name, bprm);
-                                  ^
-Signed-off-by: Daniel Wagner <daniel.wagner@bmw-carit.de>
----
- fs/binfmt_em86.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+It can be done using ISO __atomic_fetch_add() and suchlike.
 
-diff --git a/fs/binfmt_em86.c b/fs/binfmt_em86.c
-index 4905385..dd2d3f0 100644
---- a/fs/binfmt_em86.c
-+++ b/fs/binfmt_em86.c
-@@ -24,7 +24,8 @@
-=20
- static int load_em86(struct linux_binprm *bprm)
- {
--	char *interp, *i_name, *i_arg;
-+	const char *i_name, *i_arg;
-+	char *interp;
- 	struct file * file;
- 	int retval;
- 	struct elfhdr	elf_ex;
---=20
-2.5.5
---
-To unsubscribe from this list: send the line "unsubscribe linux-fsdevel=
-" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+David
