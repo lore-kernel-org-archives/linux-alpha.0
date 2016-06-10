@@ -1,112 +1,57 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: [PATCH v4 02/44] alpha: dma-mapping: Use unsigned long for dma_attrs
-Date: Fri, 10 Jun 2016 12:11:19 +0200
-Message-ID: <1465553521-27303-3-git-send-email-k.kozlowski@samsung.com>
-References: <1465553521-27303-1-git-send-email-k.kozlowski@samsung.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-reply-to: <1465553521-27303-1-git-send-email-k.kozlowski@samsung.com>
-Sender: linux-alpha-owner@vger.kernel.org
+From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Subject: Re: [RFC 10/12] x86, rwsem: simplify __down_write
+Date: Fri, 10 Jun 2016 09:39:41 -0700
+Message-ID: <20160610163941.GC3868@linux.vnet.ibm.com>
+References: <20160603223417.GB3892@twins.programming.kicks-ass.net>
+ <1454444369-2146-1-git-send-email-mhocko@kernel.org>
+ <1454444369-2146-11-git-send-email-mhocko@kernel.org>
+ <20160203081016.GD32652@gmail.com>
+ <20160603161339.GC3693@twins.programming.kicks-ass.net>
+ <29355.1465483258@warthog.procyon.org.uk>
+ <20160609173640.GX30154@twins.programming.kicks-ass.net>
+Reply-To: paulmck@linux.vnet.ibm.com
+Mime-Version: 1.0
+Return-path: <sparclinux-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160609173640.GX30154@twins.programming.kicks-ass.net>
+Sender: sparclinux-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: hch@infradead.org, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Guenter Roeck <linux@roeck-us.net>, Valentin Rothberg <valentinrothberg@gmail.com>, Christian Borntraeger <borntraeger@de.ibm.com>, Andy Lutomirski <luto@kernel.org>, Joerg Roedel <jroedel@suse.de>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: David Howells <dhowells@redhat.com>, Ingo Molnar <mingo@kernel.org>, Michal Hocko <mhocko@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Michal Hocko <mhocko@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Jason Low <jason.low2@hpe.com>
 
-Split out subsystem specific changes for easier reviews. This will be
-squashed with main commit.
+On Thu, Jun 09, 2016 at 07:36:40PM +0200, Peter Zijlstra wrote:
+> On Thu, Jun 09, 2016 at 03:40:58PM +0100, David Howells wrote:
+> > Peter Zijlstra <peterz@infradead.org> wrote:
+> > 
+> > > Blergh; so looking at more asm there's still a few tricks we cannot do.
+> > > So while overall size is down, some paths do end up more expensive. (It
+> > > typically boils down to creative use of condition flags, which is very
+> > > hard in C)
+> > 
+> > It can be done using ISO __atomic_fetch_add() and suchlike.
+> 
+> (ISO-C11, ISO as such is a bad abbreviation I think)
+> 
+> Maybe, but we're almost there with __GCC_ASM_FLAG_OUTPUTS__.
+> 
+> atomic_long_add_negative() can be made to do inc;j(n)s for __down_read.
+> 
+> the try_cmpxchg family you wanted to add independent from the ISO-C11
+> bits can do the cmpxchg-j(n)z for __down_{read,write}_trylock.
+> 
+> That only leaves us wanting an atomic_long_fetch_add_negative() for
+> __up_{read,write}().
+> 
+> Although I suppose, for this to be of use for our weakly ordered
+> friends, we need _relaxed versions of all that (so that _acquire and
+> _release variants are generated).
 
-Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
----
- arch/alpha/include/asm/dma-mapping.h |  2 --
- arch/alpha/kernel/pci-noop.c         |  2 +-
- arch/alpha/kernel/pci_iommu.c        | 12 ++++++------
- 3 files changed, 7 insertions(+), 9 deletions(-)
+Historically, the compilers have won this sort of contest over the
+long term.  That said, there is nothing quite like raising the bar for
+them to help them generate decent code.  So, David and Peter, I am behind
+both of you 100%.  ;-)
 
-diff --git a/arch/alpha/include/asm/dma-mapping.h b/arch/alpha/include/asm/dma-mapping.h
-index 3c3451f58ff4..c63b6ac19ee5 100644
---- a/arch/alpha/include/asm/dma-mapping.h
-+++ b/arch/alpha/include/asm/dma-mapping.h
-@@ -1,8 +1,6 @@
- #ifndef _ALPHA_DMA_MAPPING_H
- #define _ALPHA_DMA_MAPPING_H
- 
--#include <linux/dma-attrs.h>
--
- extern struct dma_map_ops *dma_ops;
- 
- static inline struct dma_map_ops *get_dma_ops(struct device *dev)
-diff --git a/arch/alpha/kernel/pci-noop.c b/arch/alpha/kernel/pci-noop.c
-index 8e735b5e56bd..bb152e21e5ae 100644
---- a/arch/alpha/kernel/pci-noop.c
-+++ b/arch/alpha/kernel/pci-noop.c
-@@ -109,7 +109,7 @@ sys_pciconfig_write(unsigned long bus, unsigned long dfn,
- 
- static void *alpha_noop_alloc_coherent(struct device *dev, size_t size,
- 				       dma_addr_t *dma_handle, gfp_t gfp,
--				       struct dma_attrs *attrs)
-+				       unsigned long attrs)
- {
- 	void *ret;
- 
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index 8969bf2dfe3a..451fc9cdd323 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -349,7 +349,7 @@ static struct pci_dev *alpha_gendev_to_pci(struct device *dev)
- static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
- 				     unsigned long offset, size_t size,
- 				     enum dma_data_direction dir,
--				     struct dma_attrs *attrs)
-+				     unsigned long attrs)
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
- 	int dac_allowed;
-@@ -369,7 +369,7 @@ static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
- 
- static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
- 				 size_t size, enum dma_data_direction dir,
--				 struct dma_attrs *attrs)
-+				 unsigned long attrs)
- {
- 	unsigned long flags;
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
-@@ -433,7 +433,7 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
- 
- static void *alpha_pci_alloc_coherent(struct device *dev, size_t size,
- 				      dma_addr_t *dma_addrp, gfp_t gfp,
--				      struct dma_attrs *attrs)
-+				      unsigned long attrs)
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
- 	void *cpu_addr;
-@@ -478,7 +478,7 @@ try_again:
- 
- static void alpha_pci_free_coherent(struct device *dev, size_t size,
- 				    void *cpu_addr, dma_addr_t dma_addr,
--				    struct dma_attrs *attrs)
-+				    unsigned long attrs)
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
- 	pci_unmap_single(pdev, dma_addr, size, PCI_DMA_BIDIRECTIONAL);
-@@ -651,7 +651,7 @@ sg_fill(struct device *dev, struct scatterlist *leader, struct scatterlist *end,
- 
- static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
- 			    int nents, enum dma_data_direction dir,
--			    struct dma_attrs *attrs)
-+			    unsigned long attrs)
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
- 	struct scatterlist *start, *end, *out;
-@@ -729,7 +729,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
- 
- static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
- 			       int nents, enum dma_data_direction dir,
--			       struct dma_attrs *attrs)
-+			       unsigned long attrs)
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
- 	unsigned long flags;
--- 
-1.9.1
+							Thanx, Paul
 
