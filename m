@@ -1,57 +1,52 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: [RFC 10/12] x86, rwsem: simplify __down_write
-Date: Fri, 10 Jun 2016 09:39:41 -0700
-Message-ID: <20160610163941.GC3868@linux.vnet.ibm.com>
-References: <20160603223417.GB3892@twins.programming.kicks-ass.net>
- <1454444369-2146-1-git-send-email-mhocko@kernel.org>
- <1454444369-2146-11-git-send-email-mhocko@kernel.org>
- <20160203081016.GD32652@gmail.com>
- <20160603161339.GC3693@twins.programming.kicks-ass.net>
- <29355.1465483258@warthog.procyon.org.uk>
- <20160609173640.GX30154@twins.programming.kicks-ass.net>
-Reply-To: paulmck@linux.vnet.ibm.com
-Mime-Version: 1.0
-Return-path: <sparclinux-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160609173640.GX30154@twins.programming.kicks-ass.net>
-Sender: sparclinux-owner@vger.kernel.org
+From: Waiman Long <Waiman.Long@hpe.com>
+Subject: [RFC PATCH-tip 0/6] locking/rwsem: Enable reader optimistic spinning
+Date: Tue, 14 Jun 2016 14:12:33 -0400
+Message-ID: <1465927959-39719-1-git-send-email-Waiman.Long@hpe.com>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: David Howells <dhowells@redhat.com>, Ingo Molnar <mingo@kernel.org>, Michal Hocko <mhocko@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "H. Peter Anvin" <hpa@zytor.com>, "David S. Miller" <davem@davemloft.net>, Tony Luck <tony.luck@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Michal Hocko <mhocko@suse.com>, Linus Torvalds <torvalds@linux-foundation.org>, Jason Low <jason.low2@hpe.com>
+To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>
+Cc: linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, xfs@oss.sgi.com, Davidlohr Bueso <dave@stgolabs.net>, Jason Low <jason.low2@hp.com>, Dave Chinner <david@fromorbit.com>, Scott J Norton <scott.norton@hpe.com>, Douglas Hatch <doug.hatch@hpe.com>, Waiman Long <Waiman.Long@hpe.com>
 
-On Thu, Jun 09, 2016 at 07:36:40PM +0200, Peter Zijlstra wrote:
-> On Thu, Jun 09, 2016 at 03:40:58PM +0100, David Howells wrote:
-> > Peter Zijlstra <peterz@infradead.org> wrote:
-> > 
-> > > Blergh; so looking at more asm there's still a few tricks we cannot do.
-> > > So while overall size is down, some paths do end up more expensive. (It
-> > > typically boils down to creative use of condition flags, which is very
-> > > hard in C)
-> > 
-> > It can be done using ISO __atomic_fetch_add() and suchlike.
-> 
-> (ISO-C11, ISO as such is a bad abbreviation I think)
-> 
-> Maybe, but we're almost there with __GCC_ASM_FLAG_OUTPUTS__.
-> 
-> atomic_long_add_negative() can be made to do inc;j(n)s for __down_read.
-> 
-> the try_cmpxchg family you wanted to add independent from the ISO-C11
-> bits can do the cmpxchg-j(n)z for __down_{read,write}_trylock.
-> 
-> That only leaves us wanting an atomic_long_fetch_add_negative() for
-> __up_{read,write}().
-> 
-> Although I suppose, for this to be of use for our weakly ordered
-> friends, we need _relaxed versions of all that (so that _acquire and
-> _release variants are generated).
+This patchset adds an option to enable more aggressive optimistic
+spinning on both readers and writers waiting on a writer or reader
+owned lock. Spinning on writer is done by looking at the on_cpu
+flag of the lock owner. Spinning on readers, on the other hand, is
+count-based as there is no easy way to figure out if all the readers
+are running. The spinner will stop spinning once the count goes to
+0. Because of that, spinning on readers may hurt performance in some
+cases. So this feature is optional and has to explicitly enabled for
+those rwsems where the readers are unlikely to go to sleep.
 
-Historically, the compilers have won this sort of contest over the
-long term.  That said, there is nothing quite like raising the bar for
-them to help them generate decent code.  So, David and Peter, I am behind
-both of you 100%.  ;-)
+Patch 1 reduces the length of the blocking window after a read locking
+attempt where writer lock stealing is disabled because of the active
+read lock. It can improve rwsem performance for contended lock. It is
+independent of the rest of the patchset.
 
-							Thanx, Paul
+Patches 2-5 lays the groundwork for enabling reader optimistic spinning.
+
+Patch 6 enables reader optimistic spinning in XFS for inodes that
+comes from a DAX-enabled mount point on top of persistent memory as
+the CPUs can do I/O directly without waiting or sleeping.
+
+Waiman Long (6):
+  locking/rwsem: Stop active read lock ASAP
+  locking/rwsem: Enable optional count-based spinning on reader
+  locking/rwsem: move down rwsem_down_read_failed function
+  locking/rwsem: Change RWSEM_WAITING_BIAS for better disambiguation
+  locking/rwsem: Enable spinning readers
+  xfs: Enable reader optimistic spinning for DAX inodes
+
+ arch/alpha/include/asm/rwsem.h |    7 +-
+ arch/ia64/include/asm/rwsem.h  |    6 +-
+ arch/s390/include/asm/rwsem.h  |    6 +-
+ arch/x86/include/asm/rwsem.h   |   13 ++-
+ fs/xfs/xfs_icache.c            |    9 ++
+ include/asm-generic/rwsem.h    |    9 +-
+ include/linux/rwsem.h          |   21 ++++-
+ kernel/locking/rwsem-xadd.c    |  212 ++++++++++++++++++++++++++--------------
+ 8 files changed, 192 insertions(+), 91 deletions(-)
 
