@@ -1,78 +1,105 @@
-From: Dave Chinner <david@fromorbit.com>
-Subject: Re: [RFC PATCH-tip 6/6] xfs: Enable reader optimistic spinning for
- DAX inodes
-Date: Wed, 15 Jun 2016 09:06:13 +1000
-Message-ID: <20160614230613.GB26977@dastard>
-References: <1465927959-39719-1-git-send-email-Waiman.Long@hpe.com>
- <1465927959-39719-7-git-send-email-Waiman.Long@hpe.com>
+From: Boqun Feng <boqun.feng@gmail.com>
+Subject: Re: [RFC PATCH-tip v2 1/6] locking/osq: Make lock/unlock proper
+ acquire/release barrier
+Date: Wed, 15 Jun 2016 16:04:46 +0800
+Message-ID: <20160615080446.GA28443@insomnia>
+References: <1465944489-43440-1-git-send-email-Waiman.Long@hpe.com>
+ <1465944489-43440-2-git-send-email-Waiman.Long@hpe.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="pf9I7BMVVzbSWLtt"
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=nJfN8qD7gnLOgO60YTLoa+1RCBRmnsRXuhG+PB2ctCE=;
+        b=gIf1mTMAJqPKTgbvf2rmFUMtkySK/QIDJEjVX/0OubJreEnm+IMM1fIl7oUOAVMnnv
+         2OiYYvNd/G1Ha7pOaNloZiuZ3/CPczOAz0Yb3GOBFqnFU0covJ1EJ7Zp/QKYmQ0f6Ln2
+         GYfET0CjIdmsOX/jm+yybDcHai41hEq3Yn9AGH13MBs4kJWpVBvDjmayPXzPz8GedNvy
+         ulhIz6rE4yC0i91o/tQncy+FcsVatVubdn1ObbFvYxuVr29oNuzYy0AiYdbQ6E8VqIOx
+         yp5NjgSwx+CAlGFsPpcyBJSt9MVKW+ib+cH25/Sfg+WapFQOc04i5wPb4WxRWDe4Ko4Q
+         2pbQ==
 Content-Disposition: inline
-In-Reply-To: <1465927959-39719-7-git-send-email-Waiman.Long@hpe.com>
-Sender: linux-alpha-owner@vger.kernel.org
+In-Reply-To: <1465944489-43440-2-git-send-email-Waiman.Long@hpe.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 To: Waiman Long <Waiman.Long@hpe.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, xfs@oss.sgi.com, Davidlohr Bueso <dave@stgolabs.net>, Jason Low <jason.low2@hp.com>, Scott J Norton <scott.norton@hpe.com>, Douglas Hatch <doug.hatch@hpe.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, Davidlohr Bueso <dave@stgolabs.net>, Jason Low <jason.low2@hp.com>, Dave Chinner <david@fromorbit.com>, Scott J Norton <scott.norton@hpe.com>, Douglas Hatch <doug.hatch@hpe.com>
 
-On Tue, Jun 14, 2016 at 02:12:39PM -0400, Waiman Long wrote:
-> This patch enables reader optimistic spinning for inodes that are
-> under a DAX-based mount point.
-> 
-> On a 4-socket Haswell machine running on a 4.7-rc1 tip-based kernel,
-> the fio test with multithreaded randrw and randwrite tests on the
-> same file on a XFS partition on top of a NVDIMM with DAX were run,
-> the aggregated bandwidths before and after the patch were as follows:
-> 
->   Test      BW before patch     BW after patch  % change
->   ----      ---------------     --------------  --------
->   randrw        1352 MB/s          2164 MB/s      +60%
->   randwrite     1710 MB/s          2550 MB/s      +49%
-> 
+
+--pf9I7BMVVzbSWLtt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi Waiman,
+
+On Tue, Jun 14, 2016 at 06:48:04PM -0400, Waiman Long wrote:
+> The osq_lock() and osq_unlock() function may not provide the necessary
+> acquire and release barrier in some cases. This patch makes sure
+> that the proper barriers are provided when osq_lock() is successful
+> or when osq_unlock() is called.
+>=20
 > Signed-off-by: Waiman Long <Waiman.Long@hpe.com>
 > ---
->  fs/xfs/xfs_icache.c |    9 +++++++++
->  1 files changed, 9 insertions(+), 0 deletions(-)
-> 
-> diff --git a/fs/xfs/xfs_icache.c b/fs/xfs/xfs_icache.c
-> index 99ee6ee..09f284f 100644
-> --- a/fs/xfs/xfs_icache.c
-> +++ b/fs/xfs/xfs_icache.c
-> @@ -71,6 +71,15 @@ xfs_inode_alloc(
->  
->  	mrlock_init(&ip->i_iolock, MRLOCK_BARRIER, "xfsio", ip->i_ino);
->  
-> +	/*
-> +	 * Enable reader spinning for DAX nount point
-> +	 */
-> +	if (mp->m_flags & XFS_MOUNT_DAX) {
-> +		rwsem_set_rspin_threshold(&ip->i_iolock.mr_lock);
-> +		rwsem_set_rspin_threshold(&ip->i_mmaplock.mr_lock);
-> +		rwsem_set_rspin_threshold(&ip->i_lock.mr_lock);
-> +	}
+>  kernel/locking/osq_lock.c |    4 ++--
+>  1 files changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/kernel/locking/osq_lock.c b/kernel/locking/osq_lock.c
+> index 05a3785..7dd4ee5 100644
+> --- a/kernel/locking/osq_lock.c
+> +++ b/kernel/locking/osq_lock.c
+> @@ -115,7 +115,7 @@ bool osq_lock(struct optimistic_spin_queue *lock)
+>  	 * cmpxchg in an attempt to undo our queueing.
+>  	 */
+> =20
+> -	while (!READ_ONCE(node->locked)) {
+> +	while (!smp_load_acquire(&node->locked)) {
+>  		/*
+>  		 * If we need to reschedule bail... so we can block.
+>  		 */
+> @@ -198,7 +198,7 @@ void osq_unlock(struct optimistic_spin_queue *lock)
+>  	 * Second most likely case.
+>  	 */
+>  	node =3D this_cpu_ptr(&osq_node);
+> -	next =3D xchg(&node->next, NULL);
+> +	next =3D xchg_release(&node->next, NULL);
+>  	if (next) {
+>  		WRITE_ONCE(next->locked, 1);
 
-That's wrong. DAX is a per-inode flag, not a mount wide flag. This
-needs to be done once the inode has been fully initialised and
-IS_DAX(inode) can be run.
+So we still use WRITE_ONCE() rather than smp_store_release() here?
 
-Also, the benchmark doesn't show that all these locks are being
-tested by this benchmark. e.g. the i_mmaplock isn't involved in
-the benchmark's IO paths at all. It's only taken in page faults and
-truncate paths....
+Though, IIUC, This is fine for all the archs but ARM64, because there
+will always be a xchg_release()/xchg() before the WRITE_ONCE(), which
+carries a necessary barrier to upgrade WRITE_ONCE() to a RELEASE.
 
-I'd also like to see how much of the gain comes from the iolock vs
-the ilock, as the ilock is nested inside the iolock and so
-contention is much rarer....
+Not sure whether it's a problem on ARM64, but I think we certainly need
+to add some comments here, if we count on this trick.
 
-As it is, I'm *extremely* paranoid when it comes to changes to core
-locking like this. Performance is secondary to correctness, and we
-need much more than just a few benchmarks to verify there aren't
-locking bugs being introduced....
+Am I missing something or misunderstanding you here?
 
-Cheers,
+Regards,
+Boqun
 
-Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+>  		return;
+> --=20
+> 1.7.1
+>=20
+
+--pf9I7BMVVzbSWLtt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAABCAAGBQJXYQwZAAoJEEl56MO1B/q4BTEIAJfTXZU/LW00kU5SZGECAbIb
+k/lhU4XFRPM4wCMZNsAgs3aO6V/VE7+F3TMfDdVik0w9zm0wvMGl3ELRTCcDNhgv
+JVguF3wnwfkOIWIG/pPvGaKOGMc/1g6Pi21cxAOceTF5H5roeB7hqcJfZ3fr32gd
+DYko8LgQ8xhqDV0HwIuekIgc7GP+D1sdesOcesntHOEi3xYjdDAPzZHGh0iMGzpv
+cFZVTa1+dTSpJYO3LoF/zcab6yb0q2WBAYZPuLRka9Wq/yJQ230Scq3Lwy+PoJPx
+eN++9Y5oXMaMAUB1PqsNPp4MOucrnakBo8dal7qA2z7k+fEFbWDxU0f5NmQDkeY=
+=mWBt
+-----END PGP SIGNATURE-----
+
+--pf9I7BMVVzbSWLtt--
