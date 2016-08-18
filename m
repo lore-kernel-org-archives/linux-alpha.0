@@ -1,64 +1,74 @@
-From: Daniel Wagner <wagi@monom.org>
-Subject: [PATCH] binfmt_em86: Fix incompatible pointer type
-Date: Tue, 26 Jul 2016 11:39:38 +0200
-Message-ID: <1469525978-23359-1-git-send-email-wagi@monom.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-fsdevel-owner@vger.kernel.org>
-Sender: linux-fsdevel-owner@vger.kernel.org
+From: Waiman Long <Waiman.Long@hpe.com>
+Subject: [RFC PATCH-tip v4 03/10] locking/rwsem: Make rwsem_spin_on_owner() return a tri-state value
+Date: Thu, 18 Aug 2016 17:11:05 -0400
+Message-ID: <1471554672-38662-4-git-send-email-Waiman.Long@hpe.com>
+References: <1471554672-38662-1-git-send-email-Waiman.Long@hpe.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <1471554672-38662-1-git-send-email-Waiman.Long@hpe.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: linux-kernel@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org, linux-fsdevel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Andrew Morton <akpm@linux-foundation.org>, Daniel Wagner <daniel.wagner@bmw-carit.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>
+Cc: linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, Davidlohr Bueso <dave@stgolabs.net>, Jason Low <jason.low2@hp.com>, Dave Chinner <david@fromorbit.com>, Jonathan Corbet <corbet@lwn.net>, Scott J Norton <scott.norton@hpe.com>, Douglas Hatch <doug.hatch@hpe.com>, Waiman Long <Waiman.Long@hpe.com>
 
-=46rom: Daniel Wagner <daniel.wagner@bmw-carit.de>
+This patch modifies rwsem_spin_on_owner() to return a tri-state value
+to better reflect the state of lock holder which enables us to make a
+better decision of what to do next.
 
-Since the -Wincompatible-pointer-types is reported as error, alpha
-doesn't build anymore. Let's fix it in a minimal way.
-
-fs/binfmt_em86.c:73:35: error: passing argument 2 of =E2=80=98copy_stri=
-ngs_kernel=E2=80=99 from incompatible pointer type [-Werror=3Dincompati=
-ble-pointer-types]
-   retval =3D copy_strings_kernel(1, &i_arg, bprm);
-                                   ^            ^
-fs/binfmt_em86.c:77:34: error: passing argument 2 of =E2=80=98copy_stri=
-ngs_kernel=E2=80=99 from incompatible pointer type [-Werror=3Dincompati=
-ble-pointer-types]
-  retval =3D copy_strings_kernel(1, &i_name, bprm);
-                                  ^
-Signed-off-by: Daniel Wagner <daniel.wagner@bmw-carit.de>
+Signed-off-by: Waiman Long <Waiman.Long@hpe.com>
 ---
-Hi,
+ kernel/locking/rwsem-xadd.c |   14 +++++++++-----
+ 1 files changed, 9 insertions(+), 5 deletions(-)
 
-Here is the same patch again. The 0day bot is nagging me that
-I broke that and up to now it's still not fixed.
-
-Andrew, are you willing to pick this one up?
-
-cheers,
-daniel
-
- fs/binfmt_em86.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/fs/binfmt_em86.c b/fs/binfmt_em86.c
-index 4905385..dd2d3f0 100644
---- a/fs/binfmt_em86.c
-+++ b/fs/binfmt_em86.c
-@@ -24,7 +24,8 @@
-=20
- static int load_em86(struct linux_binprm *bprm)
+diff --git a/kernel/locking/rwsem-xadd.c b/kernel/locking/rwsem-xadd.c
+index 9309e72..31cb286 100644
+--- a/kernel/locking/rwsem-xadd.c
++++ b/kernel/locking/rwsem-xadd.c
+@@ -352,9 +352,13 @@ done:
+ }
+ 
+ /*
+- * Return true only if we can still spin on the owner field of the rwsem.
++ * Return the folowing three values depending on the lock owner state.
++ *   1	when owner has changed and no reader is detected yet.
++ *   0	when owner has change and/or owner is a reader.
++ *  -1	when optimistic spinning has to stop because either the owner stops
++ *	running or its timeslice has been used up.
+  */
+-static noinline bool rwsem_spin_on_owner(struct rw_semaphore *sem)
++static noinline int rwsem_spin_on_owner(struct rw_semaphore *sem)
  {
--	char *interp, *i_name, *i_arg;
-+	const char *i_name, *i_arg;
-+	char *interp;
- 	struct file * file;
- 	int retval;
- 	struct elfhdr	elf_ex;
---=20
-2.5.5
---
-To unsubscribe from this list: send the line "unsubscribe linux-fsdevel=
-" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ 	struct task_struct *owner = READ_ONCE(sem->owner);
+ 
+@@ -374,7 +378,7 @@ static noinline bool rwsem_spin_on_owner(struct rw_semaphore *sem)
+ 		/* abort spinning when need_resched or owner is not running */
+ 		if (!owner->on_cpu || need_resched()) {
+ 			rcu_read_unlock();
+-			return false;
++			return -1;
+ 		}
+ 
+ 		cpu_relax_lowlatency();
+@@ -385,7 +389,7 @@ out:
+ 	 * If there is a new owner or the owner is not set, we continue
+ 	 * spinning.
+ 	 */
+-	return !rwsem_owner_is_reader(READ_ONCE(sem->owner));
++	return rwsem_owner_is_reader(READ_ONCE(sem->owner)) ? 0 : 1;
+ }
+ 
+ static bool rwsem_optimistic_spin(struct rw_semaphore *sem)
+@@ -408,7 +412,7 @@ static bool rwsem_optimistic_spin(struct rw_semaphore *sem)
+ 	 *  2) readers own the lock as we can't determine if they are
+ 	 *     actively running or not.
+ 	 */
+-	while (rwsem_spin_on_owner(sem)) {
++	while (rwsem_spin_on_owner(sem) > 0) {
+ 		/*
+ 		 * Try to acquire the lock
+ 		 */
+-- 
+1.7.1
+
