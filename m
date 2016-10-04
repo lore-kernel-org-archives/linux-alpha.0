@@ -1,61 +1,93 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH] alpha: migrate exception table users off module.h and onto extable.h
-Date: Mon, 19 Sep 2016 17:55:20 -0400
-Message-ID: <20160919215520.5517-1-paul.gortmaker@windriver.com>
+From: Davidlohr Bueso <dave@stgolabs.net>
+Subject: Re: [RFC PATCH-tip v4 01/10] locking/osq: Make lock/unlock proper
+ acquire/release barrier
+Date: Tue, 4 Oct 2016 12:06:01 -0700
+Message-ID: <20161004190601.GD24086@linux-80c1.suse>
+References: <1471554672-38662-1-git-send-email-Waiman.Long@hpe.com>
+ <1471554672-38662-2-git-send-email-Waiman.Long@hpe.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1471554672-38662-2-git-send-email-Waiman.Long@hpe.com>
+Sender: linux-doc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org
-Cc: Paul Gortmaker <paul.gortmaker@windriver.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Waiman Long <Waiman.Long@hpe.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, Jason Low <jason.low2@hp.com>, Dave Chinner <david@fromorbit.com>, Jonathan Corbet <corbet@lwn.net>, Scott J Norton <scott.norton@hpe.com>, Douglas Hatch <doug.hatch@hpe.com>
 
-These files were only including module.h for exception table
-related functions.  We've now separated that content out into its
-own file "extable.h" so now move over to that and avoid all the
-extra header content in module.h that we don't really need to compile
-these files.
+On Thu, 18 Aug 2016, Waiman Long wrote:
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
----
+>The osq_lock() and osq_unlock() function may not provide the necessary
+>acquire and release barrier in some cases. This patch makes sure
+>that the proper barriers are provided when osq_lock() is successful
+>or when osq_unlock() is called.
 
-[see: https://lkml.org/lkml/2016/7/24/224 for additional context if needed]
+But why do we need these guarantees given that osq is only used internally
+for lock owner spinning situations? Leaking out of the critical region will
+obviously be bad if using it as a full lock, but, as is, this can only hurt
+performance of two of the most popular locks in the kernel -- although yes,
+using smp_acquire__after_ctrl_dep is nicer for polling.
 
- arch/alpha/kernel/traps.c | 2 +-
- arch/alpha/mm/fault.c     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+If you need tighter osq for rwsems, could it be refactored such that mutexes
+do not take a hit?
 
-diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index 74aceead06e9..7cf05aa482d5 100644
---- a/arch/alpha/kernel/traps.c
-+++ b/arch/alpha/kernel/traps.c
-@@ -13,7 +13,7 @@
- #include <linux/sched.h>
- #include <linux/tty.h>
- #include <linux/delay.h>
--#include <linux/module.h>
-+#include <linux/extable.h>
- #include <linux/kallsyms.h>
- #include <linux/ratelimit.h>
- 
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 83e9eee57a55..47948b4dd157 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -22,7 +22,7 @@
- #include <linux/mman.h>
- #include <linux/smp.h>
- #include <linux/interrupt.h>
--#include <linux/module.h>
-+#include <linux/extable.h>
- #include <linux/uaccess.h>
- 
- extern void die_if_kernel(char *,struct pt_regs *,long, unsigned long *);
--- 
-2.8.4
+>
+>Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>Signed-off-by: Waiman Long <Waiman.Long@hpe.com>
+>---
+> kernel/locking/osq_lock.c |   24 ++++++++++++++++++------
+> 1 files changed, 18 insertions(+), 6 deletions(-)
+>
+>diff --git a/kernel/locking/osq_lock.c b/kernel/locking/osq_lock.c
+>index 05a3785..3da0b97 100644
+>--- a/kernel/locking/osq_lock.c
+>+++ b/kernel/locking/osq_lock.c
+>@@ -124,6 +124,11 @@ bool osq_lock(struct optimistic_spin_queue *lock)
+>
+> 		cpu_relax_lowlatency();
+> 	}
+>+	/*
+>+	 * Add an acquire memory barrier for pairing with the release barrier
+>+	 * in unlock.
+>+	 */
+>+	smp_acquire__after_ctrl_dep();
+> 	return true;
+>
+> unqueue:
+>@@ -198,13 +203,20 @@ void osq_unlock(struct optimistic_spin_queue *lock)
+> 	 * Second most likely case.
+> 	 */
+> 	node = this_cpu_ptr(&osq_node);
+>-	next = xchg(&node->next, NULL);
+>-	if (next) {
+>-		WRITE_ONCE(next->locked, 1);
+>+	next = xchg_relaxed(&node->next, NULL);
+>+	if (next)
+>+		goto unlock;
+>+
+>+	next = osq_wait_next(lock, node, NULL);
+>+	if (unlikely(!next)) {
+>+		/*
+>+		 * In the unlikely event that the OSQ is empty, we need to
+>+		 * provide a proper release barrier.
+>+		 */
+>+		smp_mb();
+> 		return;
+> 	}
+>
+>-	next = osq_wait_next(lock, node, NULL);
+>-	if (next)
+>-		WRITE_ONCE(next->locked, 1);
+>+unlock:
+>+	smp_store_release(&next->locked, 1);
+> }
 
+As well as for the smp_acquire__after_ctrl_dep comment you have above, this also
+obviously pairs with the osq_lock's smp_load_acquire while backing out (unqueueing,
+step A). Given the above, for this case we might also just rely on READ_ONCE(node->locked),
+if we get the conditional wrong and miss the node becoming locked, all we do is another
+iteration, and while there is a cmpxchg() there, it is mitigated with the ccas thingy.
+
+Thanks,
+Davidlohr
