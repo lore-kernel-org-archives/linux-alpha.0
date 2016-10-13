@@ -1,64 +1,138 @@
-From: Dave Chinner <david@fromorbit.com>
-Subject: Re: [RFC PATCH-tip v4 02/10] locking/rwsem: Stop active read lock
- ASAP
-Date: Wed, 12 Oct 2016 08:06:40 +1100
-Message-ID: <20161011210640.GB27872@dastard>
-References: <1471554672-38662-1-git-send-email-Waiman.Long@hpe.com>
- <1471554672-38662-3-git-send-email-Waiman.Long@hpe.com>
- <20161006181718.GA14967@linux-80c1.suse>
- <20161006214751.GU27872@dastard>
- <20161009151748.GA29102@infradead.org>
- <20161010060745.GA27872@dastard>
- <20161010093434.GA18024@infradead.org>
-Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20161010093434.GA18024@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Lorenzo Stoakes <lstoakes@gmail.com>
+Subject: [PATCH 01/10] mm: remove write/force parameters from __get_user_pages_locked()
+Date: Thu, 13 Oct 2016 01:20:11 +0100
+Message-ID: <20161013002020.3062-2-lstoakes@gmail.com>
+References: <20161013002020.3062-1-lstoakes@gmail.com>
+Return-path: <owner-linux-mm@kvack.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=j8gEP7ZoklccM5hp1+G67ywmwdx3iOL8C/MYVHp7EmU=;
+        b=JuT9DdHzwcRX2d57uF2Ok1/0XzI7mfCPFycwSWgLh256+HHE7svEZXWbxp4Dx344ri
+         cPTt+igPbNrjH+BbF106P95yuUwSVX0U64iJtlY8AK71Z2AYJuoQwnx5vu3wXyW/emdk
+         ZOvhoNRwvZZNJTTsjHBwe9pY0rqd61FyKapWpnalUl9qgWZZ1BnHxdXlMXlshZs7sL4C
+         Z85jYGH0L+yRzDioCGc+CFh0MJsB8hGGvCZ/WM+JTRVZ6/I6YiHJn1Kr5v7tVlurOs8i
+         mTBiUoggOdDLPjR1W5+lh0QXRxJPOHV0oqIZJlixH0Q0AusRDBgHFi1fCnFV9VYPDrHH
+         Gk/A==
+In-Reply-To: <20161013002020.3062-1-lstoakes@gmail.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Davidlohr Bueso <dave@stgolabs.net>, Waiman Long <Waiman.Long@hpe.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, Jason Low <jason.low2@hp.com>, Jonathan Corbet <corbet@lwn.net>, Scott J Norton <scott.norton@hpe.com>, Douglas Hatch <doug.hatch@hpe.com>
+To: linux-mm@kvack.org
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jan Kara <jack@suse.cz>, Hugh Dickins <hughd@google.com>, Dave Hansen <dave.hansen@linux.intel.com>, Rik van Riel <riel@redhat.com>, Mel Gorman <mgorman@techsingularity.net>, Andrew Morton <akpm@linux-foundation.org>, adi-buildroot-devel@lists.sourceforge.net, ceph-devel@vger.kernel.org, dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, kvm@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-cris-kernel@axis.com, linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, linux-mips@linux-mips.org, linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org, linux-sh@vger.kerne
 
-On Mon, Oct 10, 2016 at 02:34:34AM -0700, Christoph Hellwig wrote:
-> On Mon, Oct 10, 2016 at 05:07:45PM +1100, Dave Chinner wrote:
-> > > > *However*, the DAX IO path locking in XFS  has changed in 4.9-rc1 to
-> > > > match the buffered IO single writer POSIX semantics - the test is a
-> > > > bad test based on the fact it exercised a path that is under heavy
-> > > > development and so can't be used as a regression test across
-> > > > multiple kernels.
-> > > 
-> > > That being said - I wonder if we should allow the shared lock on DAX
-> > > files IFF the user is specifying O_DIRECT in the open mode..
-> > 
-> > It should do - if it doesn't then we screwed up the IO path
-> > selection logic in XFS and we'll need to fix it.
-> 
-> Depends on your defintion of "we".  The DAX code has always abused the
-> direct I/O path, and that abuse is ingrained in the VFS path in a way that
-> we can't easily undo it in XFS, e.g. take a look at io_is_direct and
-> iocb_flags in include/linux/fs.h, which ensure that DAX I/O will always
-> appear as IOCB_DIRECT to the fs. 
+This patch removes the write and force parameters from __get_user_pages_locked()
+to make the use of FOLL_FORCE explicit in callers as use of this flag can result
+in surprising behaviour (and hence bugs) within the mm subsystem.
 
-Um, I seem to have completely missed that change - when did that
-happen and why?
+Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
+---
+ mm/gup.c | 47 +++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 33 insertions(+), 14 deletions(-)
 
-Oh, it was part of the misguided "enable DAX on block devices"
-changes - it was supposed to fix a problem with block device access
-using buffered IO instead of DAX (commit 65f87ee71852 "fs, block:
-force direct-I/O for dax-enabled block devices")).  The original
-block device DAX code was reverted soon after this because it was
-badly flawed, but this change was not removed at the same time
-(probably because it was forgotton about).
-
-Hence I'd suggest that DAX check in io_is_direct() should be removed
-ASAP; the filesystems don't need it as they check the inode DAX
-state directly, and the code it "fixed" is no longer in the tree.
-
-Cheers,
-
-Dave.
+diff --git a/mm/gup.c b/mm/gup.c
+index 96b2b2f..ba83942 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -729,7 +729,6 @@ static __always_inline long __get_user_pages_locked(struct task_struct *tsk,
+ 						struct mm_struct *mm,
+ 						unsigned long start,
+ 						unsigned long nr_pages,
+-						int write, int force,
+ 						struct page **pages,
+ 						struct vm_area_struct **vmas,
+ 						int *locked, bool notify_drop,
+@@ -747,10 +746,6 @@ static __always_inline long __get_user_pages_locked(struct task_struct *tsk,
+ 
+ 	if (pages)
+ 		flags |= FOLL_GET;
+-	if (write)
+-		flags |= FOLL_WRITE;
+-	if (force)
+-		flags |= FOLL_FORCE;
+ 
+ 	pages_done = 0;
+ 	lock_dropped = false;
+@@ -846,9 +841,15 @@ long get_user_pages_locked(unsigned long start, unsigned long nr_pages,
+ 			   int write, int force, struct page **pages,
+ 			   int *locked)
+ {
++	unsigned int flags = FOLL_TOUCH;
++
++	if (write)
++		flags |= FOLL_WRITE;
++	if (force)
++		flags |= FOLL_FORCE;
++
+ 	return __get_user_pages_locked(current, current->mm, start, nr_pages,
+-				       write, force, pages, NULL, locked, true,
+-				       FOLL_TOUCH);
++				       pages, NULL, locked, true, flags);
+ }
+ EXPORT_SYMBOL(get_user_pages_locked);
+ 
+@@ -869,9 +870,15 @@ __always_inline long __get_user_pages_unlocked(struct task_struct *tsk, struct m
+ {
+ 	long ret;
+ 	int locked = 1;
++
++	if (write)
++		gup_flags |= FOLL_WRITE;
++	if (force)
++		gup_flags |= FOLL_FORCE;
++
+ 	down_read(&mm->mmap_sem);
+-	ret = __get_user_pages_locked(tsk, mm, start, nr_pages, write, force,
+-				      pages, NULL, &locked, false, gup_flags);
++	ret = __get_user_pages_locked(tsk, mm, start, nr_pages, pages, NULL,
++				      &locked, false, gup_flags);
+ 	if (locked)
+ 		up_read(&mm->mmap_sem);
+ 	return ret;
+@@ -963,9 +970,15 @@ long get_user_pages_remote(struct task_struct *tsk, struct mm_struct *mm,
+ 		int write, int force, struct page **pages,
+ 		struct vm_area_struct **vmas)
+ {
+-	return __get_user_pages_locked(tsk, mm, start, nr_pages, write, force,
+-				       pages, vmas, NULL, false,
+-				       FOLL_TOUCH | FOLL_REMOTE);
++	unsigned int flags = FOLL_TOUCH | FOLL_REMOTE;
++
++	if (write)
++		flags |= FOLL_WRITE;
++	if (force)
++		flags |= FOLL_FORCE;
++
++	return __get_user_pages_locked(tsk, mm, start, nr_pages, pages, vmas,
++				       NULL, false, flags);
+ }
+ EXPORT_SYMBOL(get_user_pages_remote);
+ 
+@@ -979,9 +992,15 @@ long get_user_pages(unsigned long start, unsigned long nr_pages,
+ 		int write, int force, struct page **pages,
+ 		struct vm_area_struct **vmas)
+ {
++	unsigned int flags = FOLL_TOUCH;
++
++	if (write)
++		flags |= FOLL_WRITE;
++	if (force)
++		flags |= FOLL_FORCE;
++
+ 	return __get_user_pages_locked(current, current->mm, start, nr_pages,
+-				       write, force, pages, vmas, NULL, false,
+-				       FOLL_TOUCH);
++				       pages, vmas, NULL, false, flags);
+ }
+ EXPORT_SYMBOL(get_user_pages);
+ 
 -- 
-Dave Chinner
-david@fromorbit.com
+2.10.0
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
