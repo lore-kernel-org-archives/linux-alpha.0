@@ -1,48 +1,41 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [RFC PATCH-tip v4 02/10] locking/rwsem: Stop active read lock
- ASAP
-Date: Sat, 15 Oct 2016 22:57:31 -0700
-Message-ID: <20161016055731.GA21379@infradead.org>
-References: <1471554672-38662-1-git-send-email-Waiman.Long@hpe.com>
- <1471554672-38662-3-git-send-email-Waiman.Long@hpe.com>
- <20161006181718.GA14967@linux-80c1.suse>
- <20161006214751.GU27872@dastard>
- <20161009151748.GA29102@infradead.org>
- <20161010060745.GA27872@dastard>
- <20161010093434.GA18024@infradead.org>
- <20161011210640.GB27872@dastard>
+From: Jesper Nilsson <jesper.nilsson@axis.com>
+Subject: Re: [PATCH 06/10] mm: replace get_user_pages() write/force
+ parameters with gup_flags
+Date: Mon, 17 Oct 2016 11:22:46 +0200
+Message-ID: <20161017092246.GG30704@axis.com>
+References: <20161013002020.3062-1-lstoakes@gmail.com>
+ <20161013002020.3062-7-lstoakes@gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <owner-linux-mm@kvack.org>
 Content-Disposition: inline
-In-Reply-To: <20161011210640.GB27872@dastard>
-Sender: linux-alpha-owner@vger.kernel.org
+In-Reply-To: <20161013002020.3062-7-lstoakes@gmail.com>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Dave Chinner <david@fromorbit.com>
-Cc: Christoph Hellwig <hch@infradead.org>, Davidlohr Bueso <dave@stgolabs.net>, Waiman Long <Waiman.Long@hpe.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, Jason Low <jason.low2@hp.com>, Jonathan Corbet <corbet@lwn.net>, Scott J Norton <scott.norton@hpe.com>, Douglas Hatch <doug.hatch@hpe.com>
+To: Lorenzo Stoakes <lstoakes@gmail.com>
+Cc: linux-mm@kvack.org, linux-mips@linux-mips.org, linux-fbdev@vger.kernel.org, Jan Kara <jack@suse.cz>, kvm@vger.kernel.org, linux-sh@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, sparclinux@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-rdma@vger.kernel.org, x86@kernel.org, Hugh Dickins <hughd@google.com>, linux-media@vger.kernel.org, Rik van Riel <riel@redhat.com>, intel-gfx@lists.freedesktop.org, adi-buildroot-devel@lists.sourceforge.net, ceph-devel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-cris-kernel@axis.com, Linus Torvalds <torvalds@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Wed, Oct 12, 2016 at 08:06:40AM +1100, Dave Chinner wrote:
-> Um, I seem to have completely missed that change - when did that
-> happen and why?
+On Thu, Oct 13, 2016 at 01:20:16AM +0100, Lorenzo Stoakes wrote:
+> This patch removes the write and force parameters from get_user_pages() and
+> replaces them with a gup_flags parameter to make the use of FOLL_FORCE explicit
+> in callers as use of this flag can result in surprising behaviour (and hence
+> bugs) within the mm subsystem.
 > 
-> Oh, it was part of the misguided "enable DAX on block devices"
-> changes -
+> Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
+> ---
+>  arch/cris/arch-v32/drivers/cryptocop.c                 |  4 +---
 
-o, that commit just switched it to use ->f_mapping:
+For the CRIS part:
 
--       return (filp->f_flags & O_DIRECT) || IS_DAX(file_inode(filp));
-+       return (filp->f_flags & O_DIRECT) || IS_DAX(filp->f_mapping->host);
+Acked-by: Jesper Nilsson <jesper.nilsson@axis.com>
 
-The original version of it goes all the way back to introducing the
-current-day DAX code in d475c6346 ("dax,ext2: replace XIP read and write
-with DAX I/O");
+/^JN - Jesper Nilsson
+-- 
+               Jesper Nilsson -- jesper.nilsson@axis.com
 
-> Hence I'd suggest that DAX check in io_is_direct() should be removed
-> ASAP; the filesystems don't need it as they check the inode DAX
-> state directly, and the code it "fixed" is no longer in the tree.
-
-As long as ext4 still uses the overloaded direct_IO we need the
-checks for DAX in the filemap.c generic read/write code.  It seems
-like that's only two spots anyway, but I'd feel much safer once ext4
-is switched over to the iomap version of the dax code.
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
