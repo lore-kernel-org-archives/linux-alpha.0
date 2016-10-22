@@ -1,40 +1,37 @@
-From: Michal Hocko <mhocko@kernel.org>
-Subject: Re: [PATCH 00/10] mm: adjust get_user_pages* functions to explicitly
- pass FOLL_* flags
-Date: Thu, 20 Oct 2016 21:26:47 +0200
-Message-ID: <20161020192646.GC27342@dhcp22.suse.cz>
-References: <20161013002020.3062-1-lstoakes@gmail.com>
- <20161018153050.GC13117@dhcp22.suse.cz>
- <20161019085815.GA22239@lucifer>
- <20161019090727.GE7517@dhcp22.suse.cz>
- <5807A427.7010200@linux.intel.com>
- <20161019170127.GN24393@dhcp22.suse.cz>
- <5807AC2B.4090208@linux.intel.com>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: BRSGP relocation truncations in linking kernel for Alpha.
+Date: Sat, 22 Oct 2016 15:41:03 +1300
+Message-ID: <20161022024044.vbfxx4o2rrkwc7gy@tower>
 Mime-Version: 1.0
-Return-path: <linux-media-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5807AC2B.4090208@linux.intel.com>
-Sender: linux-media-owner@vger.kernel.org
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org, Linus Torvalds <torvalds@linux-foundation.org>, Jan Kara <jack@suse.cz>, Hugh Dickins <hughd@google.com>, Rik van Riel <riel@redhat.com>, Mel Gorman <mgorman@techsingularity.net>, Andrew Morton <akpm@linux-foundation.org>, adi-buildroot-devel@lists.sourceforge.net, ceph-devel@vger.kernel.org, dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, kvm@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-cris-kernel@axis.com, linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, linux-mips@linux-mips.org, linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org, linux-samsung-soc@vg
+To: linux-alpha@vger.kernel.org
 
-On Wed 19-10-16 10:23:55, Dave Hansen wrote:
-> On 10/19/2016 10:01 AM, Michal Hocko wrote:
-> > The question I had earlier was whether this has to be an explicit FOLL
-> > flag used by g-u-p users or we can just use it internally when mm !=
-> > current->mm
-> 
-> The reason I chose not to do that was that deferred work gets run under
-> a basically random 'current'.  If we just use 'mm != current->mm', then
-> the deferred work will sometimes have pkeys enforced and sometimes not,
-> basically randomly.
+When building recent kernels for Alpha I am getting the following
+relocation errors:
 
-OK, I see (async_pf_execute and ksm ). It makes more sense to me. Thanks
-for the clarification.
+alpha-linux-gnu-ld -static -N --build-id -o .tmp_vmlinux1 -T
+./arch/alpha/kernel/vmlinux.lds arch/alpha/kernel/head.o init/built-in.o
+--start-group usr/built-in.o arch/alpha/kernel/built-in.o
+arch/alpha/mm/built-in.o arch/alpha/math-emu/built-in.o
+kernel/built-in.o certs/built-in.o mm/built-in.o fs/built-in.o
+ipc/built-in.o security/built-in.o crypto/built-in.o block/built-in.o
+lib/lib.a arch/alpha/lib/lib.a lib/built-in.o arch/alpha/lib/built-in.o
+drivers/built-in.o sound/built-in.o firmware/built-in.o net/built-in.o
+virt/built-in.o --end-group
+net/built-in.o: In function `packet_setsockopt':
+net/packet/af_packet.o:(.text+0xf71d0): relocation truncated to fit:
+BRSGP against symbol `__copy_user' defined in .text section in
+arch/alpha/lib/lib.a(ev6-copy_user.o)
 
--- 
-Michal Hocko
-SUSE Labs
+I can solve it by de-selecting config items, but it is getting
+frustrating that I can't build the kernel I would like to build.
+
+Is there anything we can do to resolve these relocations?
+
+Cheers
+Michael.
