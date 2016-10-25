@@ -1,90 +1,58 @@
-From: Richard Henderson <rth@twiddle.net>
-Subject: Re: BRSGP relocation truncations in linking kernel for Alpha.
-Date: Tue, 25 Oct 2016 09:58:11 -0700
-Message-ID: <b8cf4175-1dc8-80d3-1a77-aff7c20b91d7@twiddle.net>
-References: <20161022024044.vbfxx4o2rrkwc7gy@tower> <580E7616.2020806@gmx.de>
- <65016d6a-3e42-a493-8765-aef683fde537@twiddle.net>
- <20161025082638.u7c5kpi2q3kr3kld@tower>
+From: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>
+Subject: Re: [PATCH 2/3] ARM: convert to generated system call tables
+Date: Tue, 25 Oct 2016 10:03:43 -0700
+Message-ID: <d113bb21-cf52-6531-10b4-f73fc0b9e809@twiddle.net>
+References: <E1bwa6s-0004ZY-4k@rmk-PC.armlinux.org.uk>
+ <3851270.xZRcP9hae0@wuerfel> <20161025091210.rjfhvq4mqtuquei5@tower>
+ <4146248.jXuviLlvH5@wuerfel>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20120113;
-        h=sender:subject:to:references:from:message-id:date:user-agent
+        h=sender:subject:to:references:cc:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding;
-        bh=/OJ/LwAQENonDcnrrP3Tk07X2X/PzpHyja+SxFn1ycA=;
-        b=bWoOQl6nWaoAfnSmdEPwmLo3NVNzV5AX461+B/Pl7LwEd6bp0TjbyihXiVJ74Jl7qr
-         pKuzqXsX/obzdliP0hdwsyhX81HF2YF39MMllDMq8LBbwaqMp3n6bCfHfXABiQyl9PgV
-         FAU2d56q+A9NdkoBYngr1vfdZxmQSEGjoJDzrMgZwp5YbDKRa8y3xYIrXDp44fyyjcTq
-         sry43rcNO0/q4G029XixaiFyd52mPArNsPNIJthRyh16DzSwvEWB3l9CJZ3BuAX1rNAF
-         ZVwyyeUH5vIofHQIQwcXxHvsZet5rfUMs9MtkW3BFYc7EZV/I50uPHoI3E6P0WU+AaId
-         YGUw==
-In-Reply-To: <20161025082638.u7c5kpi2q3kr3kld@tower>
-Sender: linux-alpha-owner@vger.kernel.org
+        bh=3CudMH2AcprhgtV+/yTjNlRsEf5pkvXdO5R5+EptijY=;
+        b=Cx/ZBbMRDyGzI9bTDtN+XRJSzju75uxshGaPS8Y0vk7dmmW/V6LIXKwTpXwlwKrVdI
+         hKD/FOyHQ5BjSVpWWGAx+wK+S/lgDqRQ/Wa80SPC+5rUnctRHBSvkK9Cm5Y121mniDEE
+         4NnkBpSUPdcJKh7C4H0bjGqSFpdWmCMTFe3dXDwF3D3sj3FbwUE8SMRhojHkRCSyBnm9
+         LhukIXXr4UupXcTpw7u3TtAAer8bEIHablTJlSLfq9YbLn5tFy+K0MIJpWpFGkYBW5c1
+         bB7VkSQ+trZV8ZPUskHFvKJjv9V7vSqy/AO6d1eTxh+b62tiJ4TE/5ZDpnThEfRi2H2C
+         D9RQ==
+In-Reply-To: <4146248.jXuviLlvH5@wuerfel>
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Michael Cree <mcree@orcon.net.nz>, Helge Deller <deller@gmx.de>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Michael Cree <mcree-q3Ck4f9/EBK9koe0gwxAeg@public.gmane.org>
+Cc: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-api <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-On 10/25/2016 01:26 AM, Michael Cree wrote:
-> On Mon, Oct 24, 2016 at 08:13:22PM -0700, Richard Henderson wrote:
->> On 10/24/2016 01:59 PM, Helge Deller wrote:
->>> Does it only happens for __copy_user() ?
->>> If yes, I assume the problem happens because of __copy_tofrom_user_nocheck() in
->>> uaccess.h is always inlined. Maybe un-inlining helps?
->>> Or, the inline-assembly for jsr/bsr needs tweeking ?
+On 10/25/2016 03:28 AM, Arnd Bergmann wrote:
+> On Tuesday, October 25, 2016 10:12:10 PM CEST Michael Cree wrote:
+>> On Fri, Oct 21, 2016 at 03:06:45PM +0200, Arnd Bergmann wrote:
+>>> I see your point, but I think there are serious issues with the current
+>>> approach as well:
+>>>
+>>> - a lot of the less common architectures just don't get updated
+>>>   in time, out of 22 architectures that don't use asm-generic/unistd.h,
+>>>   only 12 have pwritev2 in linux-next, and only three have pkey_mprotect
+>>>
+>>> - some architectures that add all syscalls sometimes make a mistake
+>>>   and forget one, e.g. alpha apparently never added __NR_bpf, but it
+>>>   did add the later __NR_execveat.
 >>
->> Indeed.  Try changing #ifdef MODULE above __copy_tofrom_user_nocheck to #if 1.
+>> __NR_bpf was not forgotten on Alpha.  It was not wired up because
+>> extra architecture support is needed which has not been implemented.
+>>
+>> But maybe we should just wire it up to sys_ni_syscall in the meantime
+>> so a syscall number is reserved for it, and user space can call it to
+>> get -ENOSYS returned.
 > 
-> Thanks, that indeed fixes it.
-> 
-> While I have your ears (or eyes since this is email) I have been
-> running the ltp tests and noted some syscall test failures.  The sendmsg
-> call fails with a segfault instead of returning EFAULT, when one passes
-> in a NULL for the message arg.  When the test is run under gdb it
-> reports the segfault in the libc sendmsg function at the instruction
-> immediately following the syscall instruction and that instruction is a
-> move of a register to another register, not a memory access.  Would I
-> be correct in surmising that the segfault actually occurred in kernel
-> code but gets reported at the instruction following the syscall
-> instruction in user space?
+> Ah, I must have misinterpreted the code then. I assumed that the
+> bpf syscall always works on all architectures, but that only the
+> jit compiler for it required architecture specific code to make it
+> more efficient.
 
-That would be my assumption.
-
-> (But looking at the kernel source for
-> sys_sendmsg it looks to me that the msg argument is properly checked
-> before being accessed so why a segfault should occur is not
-> obvious...)
-
-Indeed, I don't see anything wrong with copy_msghdr_from_user.
-
-> 
-> (I see fstatfs also segfaults when passed a bad pointer but that's
-> because libc does not pass the bad address to the kernel, but
-> passes the address of a temporary buffer from which libc then
-> copies back into the bad address, thus kaboom instead of EFAULT.
-> C'est la vie.)
-
-Yep.
-
-> 
-> And while I mention gdb, it no longer works on Alpha since version
-> 7.10.  Richard, would you be able to take a look at the bug report:
-> https://sourceware.org/bugzilla/show_bug.cgi?id=19061
-
-Ah, yes.  I'll put that on my to-do list.
-
-> And while I mention libc I am seeing (rather rare) random segfaults
-> in programs such as cp, tar, install and dpkg ever since the upgrade
-> to glibc 2.23 (or maybe it was 2.24).  I am struggling to get a
-> backtrace because it only happens very occassionally (but often enough
-> that it is almost impossible for a build and install of large software
-> packages such as libreoffice to complete without failure at some
-> random point) and when I rerun the failing program manually it then
-> always works.  I'll keep trying to narrow this one down.
-
-Hmm.  I don't recall having seen such a thing.  But then, I can't recall the
-last time I did anything more than test glibc in situ, which doesn't show these
-sorts of things.  Perhaps I should do a test install to a sysroot or something...
+That was my interpretation as well.  What's the problem, Michael?
 
 
 r~
