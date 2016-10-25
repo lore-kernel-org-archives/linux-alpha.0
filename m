@@ -1,44 +1,51 @@
-From: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH 2/3] ARM: convert to generated system call tables
-Date: Tue, 25 Oct 2016 10:03:43 -0700
-Message-ID: <d113bb21-cf52-6531-10b4-f73fc0b9e809@twiddle.net>
+Date: Tue, 25 Oct 2016 19:09:36 +0200
+Message-ID: <CAMuHMdUdi353sSYwnfk85CnhOkFB5ddE8U2x2Z+yjTCo58s+3A@mail.gmail.com>
 References: <E1bwa6s-0004ZY-4k@rmk-PC.armlinux.org.uk>
- <3851270.xZRcP9hae0@wuerfel> <20161025091210.rjfhvq4mqtuquei5@tower>
- <4146248.jXuviLlvH5@wuerfel>
+ <3851270.xZRcP9hae0@wuerfel>
+ <20161025091210.rjfhvq4mqtuquei5@tower> <4146248.jXuviLlvH5@wuerfel>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=sender:subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=3CudMH2AcprhgtV+/yTjNlRsEf5pkvXdO5R5+EptijY=;
-        b=Cx/ZBbMRDyGzI9bTDtN+XRJSzju75uxshGaPS8Y0vk7dmmW/V6LIXKwTpXwlwKrVdI
-         hKD/FOyHQ5BjSVpWWGAx+wK+S/lgDqRQ/Wa80SPC+5rUnctRHBSvkK9Cm5Y121mniDEE
-         4NnkBpSUPdcJKh7C4H0bjGqSFpdWmCMTFe3dXDwF3D3sj3FbwUE8SMRhojHkRCSyBnm9
-         LhukIXXr4UupXcTpw7u3TtAAer8bEIHablTJlSLfq9YbLn5tFy+K0MIJpWpFGkYBW5c1
-         bB7VkSQ+trZV8ZPUskHFvKJjv9V7vSqy/AO6d1eTxh+b62tiJ4TE/5ZDpnThEfRi2H2C
-         D9RQ==
-In-Reply-To: <4146248.jXuviLlvH5@wuerfel>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Michael Cree <mcree-q3Ck4f9/EBK9koe0gwxAeg@public.gmane.org>
-Cc: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-api <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20120113;
+ h=mime-version:sender:in-reply-to:references:from:date:message-id
+ :subject:to:cc;
+ bh=38zhxVUncBBlFdoAtwtNYwxCk4tanJ3PJSn8YHkOdNY=;
+ b=JUBkMnHqah8z7pAvITODxCmCdzGJMneEiW2bJYXOiTkrMwD9wEUDQYIcE6T5YHlaTq
+ XHb2i8rABrOPPXskxOJjYhoW+49ZO8cyLCiHaVzKU8sH5NmK/00wffYBsmNsGRcc1fzz
+ bxhDqBp8U7pTGCsnpIWYih24OBSW6Q9e5v3PdH0O50Oo6V9cjqoaJ8zdgvCNBRFBa/mU
+ ADrAwyOf7GJDhBcxUMVeJydS+IJBUN0/mIsTIZhkp9Abpn01izIIgF8WsSOXuzgaJ1xj
+ 012flXgx4UsbJPulvMPeBKgyOn77kuPSJPsjgzZFXuv49f6rIbNiTNLK1Nz1G/Arc1GM
+ hZEQ==
+In-Reply-To: <4146248.jXuviLlvH5@wuerfel>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arch <linux-arch@vger.kernel.org>, Michael Cree <mcree@orcon.net.nz>, linux-api <linux-api@vger.kernel.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, alpha <linux-alpha@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On 10/25/2016 03:28 AM, Arnd Bergmann wrote:
+On Tue, Oct 25, 2016 at 12:28 PM, Arnd Bergmann <arnd@arndb.de> wrote:
 > On Tuesday, October 25, 2016 10:12:10 PM CEST Michael Cree wrote:
 >> On Fri, Oct 21, 2016 at 03:06:45PM +0200, Arnd Bergmann wrote:
->>> I see your point, but I think there are serious issues with the current
->>> approach as well:
->>>
->>> - a lot of the less common architectures just don't get updated
->>>   in time, out of 22 architectures that don't use asm-generic/unistd.h,
->>>   only 12 have pwritev2 in linux-next, and only three have pkey_mprotect
->>>
->>> - some architectures that add all syscalls sometimes make a mistake
->>>   and forget one, e.g. alpha apparently never added __NR_bpf, but it
->>>   did add the later __NR_execveat.
+>> > I see your point, but I think there are serious issues with the current
+>> > approach as well:
+>> >
+>> > - a lot of the less common architectures just don't get updated
+>> >   in time, out of 22 architectures that don't use asm-generic/unistd.h,
+>> >   only 12 have pwritev2 in linux-next, and only three have pkey_mprotect
+>> >
+>> > - some architectures that add all syscalls sometimes make a mistake
+>> >   and forget one, e.g. alpha apparently never added __NR_bpf, but it
+>> >   did add the later __NR_execveat.
 >>
 >> __NR_bpf was not forgotten on Alpha.  It was not wired up because
 >> extra architecture support is needed which has not been implemented.
@@ -46,13 +53,34 @@ On 10/25/2016 03:28 AM, Arnd Bergmann wrote:
 >> But maybe we should just wire it up to sys_ni_syscall in the meantime
 >> so a syscall number is reserved for it, and user space can call it to
 >> get -ENOSYS returned.
-> 
+>
 > Ah, I must have misinterpreted the code then. I assumed that the
 > bpf syscall always works on all architectures, but that only the
 > jit compiler for it required architecture specific code to make it
 > more efficient.
+>
+> The implementation of sys_bfp is compile-time selectable at the moment
+> and falls back to sys_no_syscall if CONFIG_BPF_SYSCALL is disabled.
+> If it doesn't work on Alpha, maybe that symbol could have a "depends
+> on !ALPHA" or "depends on BPF_SUPPORT"?
 
-That was my interpretation as well.  What's the problem, Michael?
+Yes, BPF should just work (m68k has it).
 
+> sys_seccomp is another one that falls into a similar category, but
+> it already depends on HAVE_ARCH_SECCOMP_FILTER, and most other
+> architectures have assigned a syscall number but not set this symbol.
+> This one will actually allow you to set strict seccomp mode even
+> without the Kconfig symbol, just not allow to set a filter.
 
-r~
+Seccomp needs architecture support (m68k doesn't have it).
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
