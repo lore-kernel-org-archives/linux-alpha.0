@@ -1,86 +1,78 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 2/3] ARM: convert to generated system call tables
-Date: Tue, 25 Oct 2016 19:09:36 +0200
-Message-ID: <CAMuHMdUdi353sSYwnfk85CnhOkFB5ddE8U2x2Z+yjTCo58s+3A@mail.gmail.com>
-References: <E1bwa6s-0004ZY-4k@rmk-PC.armlinux.org.uk>
- <3851270.xZRcP9hae0@wuerfel>
- <20161025091210.rjfhvq4mqtuquei5@tower> <4146248.jXuviLlvH5@wuerfel>
+From: Richard Henderson <rth@twiddle.net>
+Subject: Re: BRSGP relocation truncations in linking kernel for Alpha.
+Date: Tue, 25 Oct 2016 11:07:38 -0700
+Message-ID: <249e12e5-5ec7-a7a1-89c5-e3ac52a7ac5d@twiddle.net>
+References: <20161022024044.vbfxx4o2rrkwc7gy@tower> <580E7616.2020806@gmx.de>
+ <65016d6a-3e42-a493-8765-aef683fde537@twiddle.net>
+ <20161025082638.u7c5kpi2q3kr3kld@tower>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20120113;
- h=mime-version:sender:in-reply-to:references:from:date:message-id
- :subject:to:cc;
- bh=38zhxVUncBBlFdoAtwtNYwxCk4tanJ3PJSn8YHkOdNY=;
- b=JUBkMnHqah8z7pAvITODxCmCdzGJMneEiW2bJYXOiTkrMwD9wEUDQYIcE6T5YHlaTq
- XHb2i8rABrOPPXskxOJjYhoW+49ZO8cyLCiHaVzKU8sH5NmK/00wffYBsmNsGRcc1fzz
- bxhDqBp8U7pTGCsnpIWYih24OBSW6Q9e5v3PdH0O50Oo6V9cjqoaJ8zdgvCNBRFBa/mU
- ADrAwyOf7GJDhBcxUMVeJydS+IJBUN0/mIsTIZhkp9Abpn01izIIgF8WsSOXuzgaJ1xj
- 012flXgx4UsbJPulvMPeBKgyOn77kuPSJPsjgzZFXuv49f6rIbNiTNLK1Nz1G/Arc1GM
- hZEQ==
-In-Reply-To: <4146248.jXuviLlvH5@wuerfel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arch <linux-arch@vger.kernel.org>, Michael Cree <mcree@orcon.net.nz>, linux-api <linux-api@vger.kernel.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, alpha <linux-alpha@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=sender:subject:to:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=UEaHyKEllfwK7E0gKSePm3ZJCY0y1h1v5PO7OXakgtg=;
+        b=wFpc50lT4vkqe7mYFBBfkVY9HIQkBhTpBlSPBbJoYOQkcmlQ6sNtsvdSQdTN6pUo5j
+         1oC+TrwjFOGmmh12kCFYp43IVaEsdVzUt8oKlzlpC4mI+qA4mk+Y8ECIIeuZrWV901yo
+         DUcuPZtYAr5Xqi7GZ97SaYzUp48NUhZsuIzitP1NwGeQNrbu9pktherGSyLcTTkFqQAC
+         S9Pe9lvWezFFTX0999fvGeXubUmkXkhJVfAf16NqPTdzByIVVxMDxFoYzXvZVVQiQZb1
+         jeMnjntmgch5oZwIiySUi/BXI0vJWu2Q9o/2MhB7iX1iDwyMW54AxxT6fWb6KVgGkgzn
+         fDsw==
+In-Reply-To: <20161025082638.u7c5kpi2q3kr3kld@tower>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Michael Cree <mcree@orcon.net.nz>, Helge Deller <deller@gmx.de>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>
 
-On Tue, Oct 25, 2016 at 12:28 PM, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Tuesday, October 25, 2016 10:12:10 PM CEST Michael Cree wrote:
->> On Fri, Oct 21, 2016 at 03:06:45PM +0200, Arnd Bergmann wrote:
->> > I see your point, but I think there are serious issues with the current
->> > approach as well:
->> >
->> > - a lot of the less common architectures just don't get updated
->> >   in time, out of 22 architectures that don't use asm-generic/unistd.h,
->> >   only 12 have pwritev2 in linux-next, and only three have pkey_mprotect
->> >
->> > - some architectures that add all syscalls sometimes make a mistake
->> >   and forget one, e.g. alpha apparently never added __NR_bpf, but it
->> >   did add the later __NR_execveat.
->>
->> __NR_bpf was not forgotten on Alpha.  It was not wired up because
->> extra architecture support is needed which has not been implemented.
->>
->> But maybe we should just wire it up to sys_ni_syscall in the meantime
->> so a syscall number is reserved for it, and user space can call it to
->> get -ENOSYS returned.
->
-> Ah, I must have misinterpreted the code then. I assumed that the
-> bpf syscall always works on all architectures, but that only the
-> jit compiler for it required architecture specific code to make it
-> more efficient.
->
-> The implementation of sys_bfp is compile-time selectable at the moment
-> and falls back to sys_no_syscall if CONFIG_BPF_SYSCALL is disabled.
-> If it doesn't work on Alpha, maybe that symbol could have a "depends
-> on !ALPHA" or "depends on BPF_SUPPORT"?
+On 10/25/2016 01:26 AM, Michael Cree wrote:
+> And while I mention gdb, it no longer works on Alpha since version
+> 7.10.  Richard, would you be able to take a look at the bug report:
+> https://sourceware.org/bugzilla/show_bug.cgi?id=19061
 
-Yes, BPF should just work (m68k has it).
+In the PR, Pedro has exactly the right pointer to the problem.
 
-> sys_seccomp is another one that falls into a similar category, but
-> it already depends on HAVE_ARCH_SECCOMP_FILTER, and most other
-> architectures have assigned a syscall number but not set this symbol.
-> This one will actually allow you to set strict seccomp mode even
-> without the Kconfig symbol, just not allow to set a filter.
+From arch/alpha/kernel/traps.c:
 
-Seccomp needs architecture support (m68k doesn't have it).
+    info.si_signo = SIGTRAP;
+    info.si_errno = 0;
+    info.si_code = TRAP_BRKPT;
+    info.si_trapno = 0;
+    info.si_addr = (void __user *) regs->pc;
 
-Gr{oetje,eeting}s,
+    if (ptrace_cancel_bpt(current)) {
+        regs->pc -= 4;  /* make pc point to former bpt */
+    }
 
-                        Geert
+So we report the same si_code for executing a breakpoint insn inserted by gdb,
+and a "hardware" breakpoint managed by the kernel.  But for the later, we
+already back up the PC.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+So gdb winds up backing up the PC twice.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+This ought to be fixed by using TRAP_HWBKPT (4) for the ptrace_cancel_bpt case,
+but telling gdb about the issue in gdb/nat/linux-ptrace.c like so:
+
+#elif defined __alpha__
+# define GDB_ARCH_IS_TRAP_BRKPT(X)  ((X) == TRAP_BRKPT)
+# define GDB_ARCH_IS_TRAP_HWBKPT(X) ((X) == TRAP_BRKPT || (X) == TRAP_HWBKPT)
+
+which looks confusing, but does get checked:
+
+    if (GDB_ARCH_IS_TRAP_BRKPT (siginfo.si_code)
+        && GDB_ARCH_IS_TRAP_HWBKPT (siginfo.si_code))
+      {
+        /* The si_code is ambiguous on this arch -- check debug
+           registers.  */
+        if (!check_stopped_by_watchpoint (lp))
+          lp->stop_reason = TARGET_STOPPED_BY_SW_BREAKPOINT;
+
+but at the moment the default definition of GDB_ARCH_IS_TRAP_HWBKPT is always
+false for alpha.
+
+Another fix would be to completely disable gdb's use of "hardware" breakpoints
+for alpha.  Are they really more efficient than letting gdb manage everything?
+
+
+r~
+
