@@ -1,91 +1,103 @@
-From: Michael Cree <mcree-q3Ck4f9/EBK9koe0gwxAeg@public.gmane.org>
-Subject: bpf on Alpha [was Re: [PATCH 2/3] ARM: convert to generated system
- call tables]
-Date: Wed, 26 Oct 2016 22:12:50 +1300
-Message-ID: <20161026091250.djo6edsgjs7crsmg@tower>
-References: <E1bwa6s-0004ZY-4k@rmk-PC.armlinux.org.uk>
- <3851270.xZRcP9hae0@wuerfel>
- <20161025091210.rjfhvq4mqtuquei5@tower>
- <4146248.jXuviLlvH5@wuerfel>
- <20161026070430.e2tkbzza5lk4lgju@tower>
+From: Richard Henderson <rth@twiddle.net>
+Subject: Re: BRSGP relocation truncations in linking kernel for Alpha.
+Date: Wed, 26 Oct 2016 08:18:33 -0700
+Message-ID: <3f6f53fe-7889-8f3f-663e-bf6e29321136@twiddle.net>
+References: <20161022024044.vbfxx4o2rrkwc7gy@tower> <580E7616.2020806@gmx.de>
+ <65016d6a-3e42-a493-8765-aef683fde537@twiddle.net>
+ <20161025082638.u7c5kpi2q3kr3kld@tower>
+ <249e12e5-5ec7-a7a1-89c5-e3ac52a7ac5d@twiddle.net>
+ <20161026065649.2pmhrwx3y35m5fmi@tower>
 Mime-Version: 1.0
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20161026070430.e2tkbzza5lk4lgju@tower>
-Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=sender:subject:to:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=b03wxo32uqosbgfgCznvKg2ziyf8JJBkchqOYRcNKKw=;
+        b=VWikPzpIrfubafOr3kFEz3T7oyi+hwwIXlxUaR52qg2XRzfkuo9czqjzcRPbcVDhRj
+         KV2tC/mI0lHD5eYFNw0ShBLbZ7taT4jXJywh6j/2iLtwz8rUHmyL4eN3hQAuXZBnah4d
+         9fY4kLCVmdTHzGKlyC7cbz/1p5Cj2Zulqx70wIMPdyLJ9C0A2GCXvwoE7P7+3V8xechj
+         3DjkUiHnVvV6HLNtEQON+iVdQYp9mY8IA6x4uzT17paR4T/pzDBFjo3S1RB+ScBuCJwY
+         rkrnqWOmiKUJi2H30+PeLi8StdIF9ueU3wKW79tz/ZP9AoVzfyI6bOoVCw9anim5bKAt
+         jjyQ==
+In-Reply-To: <20161026065649.2pmhrwx3y35m5fmi@tower>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-api <linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Michael Cree <mcree@orcon.net.nz>, Helge Deller <deller@gmx.de>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>
 
-On Wed, Oct 26, 2016 at 08:04:30PM +1300, Michael Cree wrote:
-> On Tue, Oct 25, 2016 at 12:28:16PM +0200, Arnd Bergmann wrote:
-> > On Tuesday, October 25, 2016 10:12:10 PM CEST Michael Cree wrote:
-> > > On Fri, Oct 21, 2016 at 03:06:45PM +0200, Arnd Bergmann wrote:
-> > > > I see your point, but I think there are serious issues with the current
-> > > > approach as well:
-> > > > 
-> > > > - a lot of the less common architectures just don't get updated
-> > > >   in time, out of 22 architectures that don't use asm-generic/unistd.h,
-> > > >   only 12 have pwritev2 in linux-next, and only three have pkey_mprotect
-> > > > 
-> > > > - some architectures that add all syscalls sometimes make a mistake
-> > > >   and forget one, e.g. alpha apparently never added __NR_bpf, but it
-> > > >   did add the later __NR_execveat.
-> > > 
-> > > __NR_bpf was not forgotten on Alpha.  It was not wired up because
-> > > extra architecture support is needed which has not been implemented.
-> > > 
-> > > But maybe we should just wire it up to sys_ni_syscall in the meantime
-> > > so a syscall number is reserved for it, and user space can call it to
-> > > get -ENOSYS returned.
-> > 
-> > Ah, I must have misinterpreted the code then. I assumed that the
-> > bpf syscall always works on all architectures, but that only the
-> > jit compiler for it required architecture specific code to make it
-> > more efficient.
+On 10/25/2016 11:56 PM, Michael Cree wrote:
+> On Tue, Oct 25, 2016 at 11:07:38AM -0700, Richard Henderson wrote:
+>> On 10/25/2016 01:26 AM, Michael Cree wrote:
+>>> And while I mention gdb, it no longer works on Alpha since version
+>>> 7.10.  Richard, would you be able to take a look at the bug report:
+>>> https://sourceware.org/bugzilla/show_bug.cgi?id=19061
+>>
+>> In the PR, Pedro has exactly the right pointer to the problem.
+>>
+>> >From arch/alpha/kernel/traps.c:
+>>
+>>     info.si_signo = SIGTRAP;
+>>     info.si_errno = 0;
+>>     info.si_code = TRAP_BRKPT;
+>>     info.si_trapno = 0;
+>>     info.si_addr = (void __user *) regs->pc;
+>>
+>>     if (ptrace_cancel_bpt(current)) {
+>>         regs->pc -= 4;  /* make pc point to former bpt */
+>>     }
+>>
+>> So we report the same si_code for executing a breakpoint insn inserted by gdb,
+>> and a "hardware" breakpoint managed by the kernel.  But for the later, we
+>> already back up the PC.
+>>
+>> So gdb winds up backing up the PC twice.
+>>
+>> This ought to be fixed by using TRAP_HWBKPT (4) for the ptrace_cancel_bpt case,
+>> but telling gdb about the issue in gdb/nat/linux-ptrace.c like so:
+>>
+>> #elif defined __alpha__
+>> # define GDB_ARCH_IS_TRAP_BRKPT(X)  ((X) == TRAP_BRKPT)
+>> # define GDB_ARCH_IS_TRAP_HWBKPT(X) ((X) == TRAP_BRKPT || (X) == TRAP_HWBKPT)
+>>
+>> which looks confusing, but does get checked:
+>>
+>>     if (GDB_ARCH_IS_TRAP_BRKPT (siginfo.si_code)
+>>         && GDB_ARCH_IS_TRAP_HWBKPT (siginfo.si_code))
+>>       {
+>>         /* The si_code is ambiguous on this arch -- check debug
+>>            registers.  */
+>>         if (!check_stopped_by_watchpoint (lp))
+>>           lp->stop_reason = TARGET_STOPPED_BY_SW_BREAKPOINT;
+>>
+>> but at the moment the default definition of GDB_ARCH_IS_TRAP_HWBKPT is always
+>> false for alpha.
 > 
-> Oh.  When someone posted wiring up of syscalls on Alpha some time
-> back I raised a query about seccomp then someone else (I can't be
-> bothered looking up the old emails, it doesn't really matter)
-> said bpf was in the same basket, so the patch was re-submitted with
-> neither of those syscalls.
+> By saying "This ought to be fixed by [...] but at the moment [...]"
+> are you saying that the fix provided above will not work? 
+
+What I meant is "this is what I'm going to try".  And then forgot about the
+(annoyingly long) build I'd left running yesterday.
+
+> Indeed,
+> it doesn't work: I tried it and just about every test in the gdb test
+> suite still fails.  For example:
 > 
-> > sys_seccomp is another one that falls into a similar category, but
-> > it already depends on HAVE_ARCH_SECCOMP_FILTER, and most other
-> > architectures have assigned a syscall number but not set this symbol.
-> > This one will actually allow you to set strict seccomp mode even
-> > without the Kconfig symbol, just not allow to set a filter.
-> 
-> We have got way behind on syscalls on Alpha and I was just in the
-> process of wiring them up and testing them, so I will include both
-> seccomp and bpf in that.
+> Running
+> /home/mjc/toolchain/gdb-build/gdb/testsuite/../../../binutils-gdb/gdb/testsuite/gdb.base/break.exp
+> ...
+> FAIL: gdb.base/break.exp: run until function breakpoint (timeout)
+> FAIL: gdb.base/break.exp: list marker1 (timeout)
+> FAIL: gdb.base/break.exp: break lineno (timeout)
+> FAIL: gdb.base/break.exp: delete $bpnum (timeout)
+> FAIL: gdb.base/break.exp: run until breakpoint set at a line number
+> (timeout)
+> FAIL: gdb.base/break.exp: run until file:function(6) breakpoint
+> (timeout)
 
-Having just wired up bpf on an Alpha and run samples/bpf/test_verifier
-I get:
+Ok.  Well, I hope to get back to it soon.
 
-#0 add+sub+mul OK
-#1 unreachable OK
-#2 unreachable2 OK
-#3 out of range jump OK
 
-[snip many passing tests]
+r~
 
-#69 unpriv: check that printk is disallowed FAIL
-failed to load prog 'Invalid argument'
-0: (7a) *(u64 *)(r10 -8) = 0
-1: (bf) r1 = r10
-2: (07) r1 += -8
-3: (b7) r2 = 8
-4: (bf) r3 = r1
-5: (85) call 6
-unknown func 6
-
-[snip many more passing tests]
-
-Summary: 101 PASSED, 1 FAILED
-
-Should I be concerned about the failing #69 test?
-
-Cheers
-Michael.
