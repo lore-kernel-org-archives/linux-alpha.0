@@ -1,85 +1,63 @@
 From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: BRSGP relocation truncations in linking kernel for Alpha.
-Date: Wed, 26 Oct 2016 19:56:49 +1300
-Message-ID: <20161026065649.2pmhrwx3y35m5fmi@tower>
-References: <20161022024044.vbfxx4o2rrkwc7gy@tower>
- <580E7616.2020806@gmx.de>
- <65016d6a-3e42-a493-8765-aef683fde537@twiddle.net>
- <20161025082638.u7c5kpi2q3kr3kld@tower>
- <249e12e5-5ec7-a7a1-89c5-e3ac52a7ac5d@twiddle.net>
+Subject: Re: [PATCH 2/3] ARM: convert to generated system call tables
+Date: Wed, 26 Oct 2016 20:04:30 +1300
+Message-ID: <20161026070430.e2tkbzza5lk4lgju@tower>
+References: <E1bwa6s-0004ZY-4k@rmk-PC.armlinux.org.uk>
+ <3851270.xZRcP9hae0@wuerfel>
+ <20161025091210.rjfhvq4mqtuquei5@tower>
+ <4146248.jXuviLlvH5@wuerfel>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <249e12e5-5ec7-a7a1-89c5-e3ac52a7ac5d@twiddle.net>
+In-Reply-To: <4146248.jXuviLlvH5@wuerfel>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>
-Cc: Helge Deller <deller@gmx.de>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Russell King - ARM Linux <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org, linux-arch <linux-arch@vger.kernel.org>, linux-api <linux-api@vger.kernel.org>, linux-alpha@vger.kernel.org
 
-On Tue, Oct 25, 2016 at 11:07:38AM -0700, Richard Henderson wrote:
-> On 10/25/2016 01:26 AM, Michael Cree wrote:
-> > And while I mention gdb, it no longer works on Alpha since version
-> > 7.10.  Richard, would you be able to take a look at the bug report:
-> > https://sourceware.org/bugzilla/show_bug.cgi?id=19061
+On Tue, Oct 25, 2016 at 12:28:16PM +0200, Arnd Bergmann wrote:
+> On Tuesday, October 25, 2016 10:12:10 PM CEST Michael Cree wrote:
+> > On Fri, Oct 21, 2016 at 03:06:45PM +0200, Arnd Bergmann wrote:
+> > > I see your point, but I think there are serious issues with the current
+> > > approach as well:
+> > > 
+> > > - a lot of the less common architectures just don't get updated
+> > >   in time, out of 22 architectures that don't use asm-generic/unistd.h,
+> > >   only 12 have pwritev2 in linux-next, and only three have pkey_mprotect
+> > > 
+> > > - some architectures that add all syscalls sometimes make a mistake
+> > >   and forget one, e.g. alpha apparently never added __NR_bpf, but it
+> > >   did add the later __NR_execveat.
+> > 
+> > __NR_bpf was not forgotten on Alpha.  It was not wired up because
+> > extra architecture support is needed which has not been implemented.
+> > 
+> > But maybe we should just wire it up to sys_ni_syscall in the meantime
+> > so a syscall number is reserved for it, and user space can call it to
+> > get -ENOSYS returned.
 > 
-> In the PR, Pedro has exactly the right pointer to the problem.
-> 
-> >From arch/alpha/kernel/traps.c:
-> 
->     info.si_signo = SIGTRAP;
->     info.si_errno = 0;
->     info.si_code = TRAP_BRKPT;
->     info.si_trapno = 0;
->     info.si_addr = (void __user *) regs->pc;
-> 
->     if (ptrace_cancel_bpt(current)) {
->         regs->pc -= 4;  /* make pc point to former bpt */
->     }
-> 
-> So we report the same si_code for executing a breakpoint insn inserted by gdb,
-> and a "hardware" breakpoint managed by the kernel.  But for the later, we
-> already back up the PC.
-> 
-> So gdb winds up backing up the PC twice.
-> 
-> This ought to be fixed by using TRAP_HWBKPT (4) for the ptrace_cancel_bpt case,
-> but telling gdb about the issue in gdb/nat/linux-ptrace.c like so:
-> 
-> #elif defined __alpha__
-> # define GDB_ARCH_IS_TRAP_BRKPT(X)  ((X) == TRAP_BRKPT)
-> # define GDB_ARCH_IS_TRAP_HWBKPT(X) ((X) == TRAP_BRKPT || (X) == TRAP_HWBKPT)
-> 
-> which looks confusing, but does get checked:
-> 
->     if (GDB_ARCH_IS_TRAP_BRKPT (siginfo.si_code)
->         && GDB_ARCH_IS_TRAP_HWBKPT (siginfo.si_code))
->       {
->         /* The si_code is ambiguous on this arch -- check debug
->            registers.  */
->         if (!check_stopped_by_watchpoint (lp))
->           lp->stop_reason = TARGET_STOPPED_BY_SW_BREAKPOINT;
-> 
-> but at the moment the default definition of GDB_ARCH_IS_TRAP_HWBKPT is always
-> false for alpha.
+> Ah, I must have misinterpreted the code then. I assumed that the
+> bpf syscall always works on all architectures, but that only the
+> jit compiler for it required architecture specific code to make it
+> more efficient.
 
-By saying "This ought to be fixed by [...] but at the moment [...]"
-are you saying that the fix provided above will not work?  Indeed,
-it doesn't work: I tried it and just about every test in the gdb test
-suite still fails.  For example:
+Oh.  When someone posted wiring up of syscalls on Alpha some time
+back I raised a query about seccomp then someone else (I can't be
+bothered looking up the old emails, it doesn't really matter)
+said bpf was in the same basket, so the patch was re-submitted with
+neither of those syscalls.
 
-Running
-/home/mjc/toolchain/gdb-build/gdb/testsuite/../../../binutils-gdb/gdb/testsuite/gdb.base/break.exp
-...
-FAIL: gdb.base/break.exp: run until function breakpoint (timeout)
-FAIL: gdb.base/break.exp: list marker1 (timeout)
-FAIL: gdb.base/break.exp: break lineno (timeout)
-FAIL: gdb.base/break.exp: delete $bpnum (timeout)
-FAIL: gdb.base/break.exp: run until breakpoint set at a line number
-(timeout)
-FAIL: gdb.base/break.exp: run until file:function(6) breakpoint
-(timeout)
+> sys_seccomp is another one that falls into a similar category, but
+> it already depends on HAVE_ARCH_SECCOMP_FILTER, and most other
+> architectures have assigned a syscall number but not set this symbol.
+> This one will actually allow you to set strict seccomp mode even
+> without the Kconfig symbol, just not allow to set a filter.
+
+We have got way behind on syscalls on Alpha and I was just in the
+process of wiring them up and testing them, so I will include both
+seccomp and bpf in that.
 
 Cheers
 Michael.
