@@ -1,103 +1,515 @@
-From: Richard Henderson <rth@twiddle.net>
-Subject: Re: BRSGP relocation truncations in linking kernel for Alpha.
-Date: Wed, 26 Oct 2016 08:18:33 -0700
-Message-ID: <3f6f53fe-7889-8f3f-663e-bf6e29321136@twiddle.net>
-References: <20161022024044.vbfxx4o2rrkwc7gy@tower> <580E7616.2020806@gmx.de>
- <65016d6a-3e42-a493-8765-aef683fde537@twiddle.net>
- <20161025082638.u7c5kpi2q3kr3kld@tower>
- <249e12e5-5ec7-a7a1-89c5-e3ac52a7ac5d@twiddle.net>
- <20161026065649.2pmhrwx3y35m5fmi@tower>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20120113;
-        h=sender:subject:to:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=b03wxo32uqosbgfgCznvKg2ziyf8JJBkchqOYRcNKKw=;
-        b=VWikPzpIrfubafOr3kFEz3T7oyi+hwwIXlxUaR52qg2XRzfkuo9czqjzcRPbcVDhRj
-         KV2tC/mI0lHD5eYFNw0ShBLbZ7taT4jXJywh6j/2iLtwz8rUHmyL4eN3hQAuXZBnah4d
-         9fY4kLCVmdTHzGKlyC7cbz/1p5Cj2Zulqx70wIMPdyLJ9C0A2GCXvwoE7P7+3V8xechj
-         3DjkUiHnVvV6HLNtEQON+iVdQYp9mY8IA6x4uzT17paR4T/pzDBFjo3S1RB+ScBuCJwY
-         rkrnqWOmiKUJi2H30+PeLi8StdIF9ueU3wKW79tz/ZP9AoVzfyI6bOoVCw9anim5bKAt
-         jjyQ==
-In-Reply-To: <20161026065649.2pmhrwx3y35m5fmi@tower>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Christopher Covington <cov@codeaurora.org>
+Subject: [RFC v2 7/7] mm: Remove mm-arch-hooks.h
+Date: Tue,  1 Nov 2016 11:11:01 -0600
+Message-ID: <20161101171101.24704-7-cov@codeaurora.org>
+References: <20161101171101.24704-1-cov@codeaurora.org>
+Return-path: <owner-linux-mm@kvack.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1478020304;
+	bh=cvhKjxqqRT8HG2LYlHkU8YYP4pTCyMiv9IdTn2E3UlE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=QL8lcfKDenfXe9TEu+t6zTp1clgkgXxJ7vkmzS9woER+yAxRUuMuSTFpxD+8mEMES
+	 qanbE0P3hVT2MaB9dgB867xHnG9M2DhBo95V1DZIurydKrnB2IEJdpl+M/aOxEQCww
+	 SZtdPN2rH2G1Hbifcy8GcHpU1KwwPTS0fUgdxpT0=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1478020284;
+	bh=cvhKjxqqRT8HG2LYlHkU8YYP4pTCyMiv9IdTn2E3UlE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=VOUS5y5+Y22kRMWPPhIUWAcxbMGsfI51mScQLHIjNNBJFb+nC7G573mm/BrMYCBHr
+	 /2VbQ6ERVVuI+dcLTp5IzSqN68g6caIzVVi62Upz66ts+eXe07KZYbCZBMqVVJzJ3u
+	 yunccvhIA9WQS8zLLLTaSlhTCVPx4q7+yi7avp9I=
+In-Reply-To: <20161101171101.24704-1-cov@codeaurora.org>
+Sender: owner-linux-mm@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Michael Cree <mcree@orcon.net.nz>, Helge Deller <deller@gmx.de>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+To: criu@openvz.org, Will Deacon <will.deacon@arm.com>, linux-mm@kvack.org, Laurent Dufour <ldufour@linux.vnet.ibm.com>
+Cc: Christopher Covington <cov@codeaurora.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Steven Miao <realmz6@gmail.com>, Mark Salter <msalter@redhat.com>, Aurelien Jacquiot <a-jacquiot@ti.com>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, James Hogan <james.hogan@imgtec.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, David Howells <dhowells@re>
 
-On 10/25/2016 11:56 PM, Michael Cree wrote:
-> On Tue, Oct 25, 2016 at 11:07:38AM -0700, Richard Henderson wrote:
->> On 10/25/2016 01:26 AM, Michael Cree wrote:
->>> And while I mention gdb, it no longer works on Alpha since version
->>> 7.10.  Richard, would you be able to take a look at the bug report:
->>> https://sourceware.org/bugzilla/show_bug.cgi?id=19061
->>
->> In the PR, Pedro has exactly the right pointer to the problem.
->>
->> >From arch/alpha/kernel/traps.c:
->>
->>     info.si_signo = SIGTRAP;
->>     info.si_errno = 0;
->>     info.si_code = TRAP_BRKPT;
->>     info.si_trapno = 0;
->>     info.si_addr = (void __user *) regs->pc;
->>
->>     if (ptrace_cancel_bpt(current)) {
->>         regs->pc -= 4;  /* make pc point to former bpt */
->>     }
->>
->> So we report the same si_code for executing a breakpoint insn inserted by gdb,
->> and a "hardware" breakpoint managed by the kernel.  But for the later, we
->> already back up the PC.
->>
->> So gdb winds up backing up the PC twice.
->>
->> This ought to be fixed by using TRAP_HWBKPT (4) for the ptrace_cancel_bpt case,
->> but telling gdb about the issue in gdb/nat/linux-ptrace.c like so:
->>
->> #elif defined __alpha__
->> # define GDB_ARCH_IS_TRAP_BRKPT(X)  ((X) == TRAP_BRKPT)
->> # define GDB_ARCH_IS_TRAP_HWBKPT(X) ((X) == TRAP_BRKPT || (X) == TRAP_HWBKPT)
->>
->> which looks confusing, but does get checked:
->>
->>     if (GDB_ARCH_IS_TRAP_BRKPT (siginfo.si_code)
->>         && GDB_ARCH_IS_TRAP_HWBKPT (siginfo.si_code))
->>       {
->>         /* The si_code is ambiguous on this arch -- check debug
->>            registers.  */
->>         if (!check_stopped_by_watchpoint (lp))
->>           lp->stop_reason = TARGET_STOPPED_BY_SW_BREAKPOINT;
->>
->> but at the moment the default definition of GDB_ARCH_IS_TRAP_HWBKPT is always
->> false for alpha.
-> 
-> By saying "This ought to be fixed by [...] but at the moment [...]"
-> are you saying that the fix provided above will not work? 
+The only use case, VDSO remap support for PowerPC, has been made generic
+instead of architecture-specific. Since the infrastructure is no longer
+needed, remove it.
 
-What I meant is "this is what I'm going to try".  And then forgot about the
-(annoyingly long) build I'd left running yesterday.
+Signed-off-by: Christopher Covington <cov@codeaurora.org>
+---
+ arch/alpha/include/asm/Kbuild      |  1 -
+ arch/arc/include/asm/Kbuild        |  1 -
+ arch/arm/include/asm/Kbuild        |  1 -
+ arch/arm64/include/asm/Kbuild      |  1 -
+ arch/avr32/include/asm/Kbuild      |  1 -
+ arch/blackfin/include/asm/Kbuild   |  1 -
+ arch/c6x/include/asm/Kbuild        |  1 -
+ arch/cris/include/asm/Kbuild       |  1 -
+ arch/frv/include/asm/Kbuild        |  1 -
+ arch/h8300/include/asm/Kbuild      |  1 -
+ arch/hexagon/include/asm/Kbuild    |  1 -
+ arch/ia64/include/asm/Kbuild       |  1 -
+ arch/m32r/include/asm/Kbuild       |  1 -
+ arch/m68k/include/asm/Kbuild       |  1 -
+ arch/metag/include/asm/Kbuild      |  1 -
+ arch/microblaze/include/asm/Kbuild |  1 -
+ arch/mips/include/asm/Kbuild       |  1 -
+ arch/mn10300/include/asm/Kbuild    |  1 -
+ arch/nios2/include/asm/Kbuild      |  1 -
+ arch/openrisc/include/asm/Kbuild   |  1 -
+ arch/parisc/include/asm/Kbuild     |  1 -
+ arch/s390/include/asm/Kbuild       |  1 -
+ arch/score/include/asm/Kbuild      |  1 -
+ arch/sh/include/asm/Kbuild         |  1 -
+ arch/sparc/include/asm/Kbuild      |  1 -
+ arch/tile/include/asm/Kbuild       |  1 -
+ arch/um/include/asm/Kbuild         |  1 -
+ arch/unicore32/include/asm/Kbuild  |  1 -
+ arch/x86/include/asm/Kbuild        |  1 -
+ arch/xtensa/include/asm/Kbuild     |  1 -
+ include/asm-generic/mm_hooks.h     | 16 ----------------
+ mm/mremap.c                        | 20 +++++++++++++++++---
+ 32 files changed, 17 insertions(+), 49 deletions(-)
 
-> Indeed,
-> it doesn't work: I tried it and just about every test in the gdb test
-> suite still fails.  For example:
-> 
-> Running
-> /home/mjc/toolchain/gdb-build/gdb/testsuite/../../../binutils-gdb/gdb/testsuite/gdb.base/break.exp
-> ...
-> FAIL: gdb.base/break.exp: run until function breakpoint (timeout)
-> FAIL: gdb.base/break.exp: list marker1 (timeout)
-> FAIL: gdb.base/break.exp: break lineno (timeout)
-> FAIL: gdb.base/break.exp: delete $bpnum (timeout)
-> FAIL: gdb.base/break.exp: run until breakpoint set at a line number
-> (timeout)
-> FAIL: gdb.base/break.exp: run until file:function(6) breakpoint
-> (timeout)
+diff --git a/arch/alpha/include/asm/Kbuild b/arch/alpha/include/asm/Kbuild
+index bf8475c..0a5e0ec 100644
+--- a/arch/alpha/include/asm/Kbuild
++++ b/arch/alpha/include/asm/Kbuild
+@@ -6,7 +6,6 @@ generic-y += exec.h
+ generic-y += export.h
+ generic-y += irq_work.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += preempt.h
+ generic-y += sections.h
+ generic-y += trace_clock.h
+diff --git a/arch/arc/include/asm/Kbuild b/arch/arc/include/asm/Kbuild
+index c332604..e6059a8 100644
+--- a/arch/arc/include/asm/Kbuild
++++ b/arch/arc/include/asm/Kbuild
+@@ -22,7 +22,6 @@ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += msgbuf.h
+ generic-y += msi.h
+diff --git a/arch/arm/include/asm/Kbuild b/arch/arm/include/asm/Kbuild
+index 0745538..44b717c 100644
+--- a/arch/arm/include/asm/Kbuild
++++ b/arch/arm/include/asm/Kbuild
+@@ -15,7 +15,6 @@ generic-y += irq_regs.h
+ generic-y += kdebug.h
+ generic-y += local.h
+ generic-y += local64.h
+-generic-y += mm-arch-hooks.h
+ generic-y += msgbuf.h
+ generic-y += msi.h
+ generic-y += param.h
+diff --git a/arch/arm64/include/asm/Kbuild b/arch/arm64/include/asm/Kbuild
+index 44e1d7f..a42a136 100644
+--- a/arch/arm64/include/asm/Kbuild
++++ b/arch/arm64/include/asm/Kbuild
+@@ -20,7 +20,6 @@ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += msgbuf.h
+ generic-y += msi.h
+diff --git a/arch/avr32/include/asm/Kbuild b/arch/avr32/include/asm/Kbuild
+index 241b9b9..519810d 100644
+--- a/arch/avr32/include/asm/Kbuild
++++ b/arch/avr32/include/asm/Kbuild
+@@ -12,7 +12,6 @@ generic-y += irq_work.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += param.h
+ generic-y += percpu.h
+ generic-y += preempt.h
+diff --git a/arch/blackfin/include/asm/Kbuild b/arch/blackfin/include/asm/Kbuild
+index 91d49c0..c80181e 100644
+--- a/arch/blackfin/include/asm/Kbuild
++++ b/arch/blackfin/include/asm/Kbuild
+@@ -21,7 +21,6 @@ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += msgbuf.h
+ generic-y += mutex.h
+diff --git a/arch/c6x/include/asm/Kbuild b/arch/c6x/include/asm/Kbuild
+index 64465e7..1b9cbed 100644
+--- a/arch/c6x/include/asm/Kbuild
++++ b/arch/c6x/include/asm/Kbuild
+@@ -27,7 +27,6 @@ generic-y += kdebug.h
+ generic-y += kmap_types.h
+ generic-y += local.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += mmu.h
+ generic-y += mmu_context.h
+diff --git a/arch/cris/include/asm/Kbuild b/arch/cris/include/asm/Kbuild
+index 1778805..8e98d03 100644
+--- a/arch/cris/include/asm/Kbuild
++++ b/arch/cris/include/asm/Kbuild
+@@ -24,7 +24,6 @@ generic-y += linkage.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += module.h
+ generic-y += msgbuf.h
+diff --git a/arch/frv/include/asm/Kbuild b/arch/frv/include/asm/Kbuild
+index 1fa084c..2c987dc 100644
+--- a/arch/frv/include/asm/Kbuild
++++ b/arch/frv/include/asm/Kbuild
+@@ -4,7 +4,6 @@ generic-y += cputime.h
+ generic-y += exec.h
+ generic-y += irq_work.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += preempt.h
+ generic-y += trace_clock.h
+ generic-y += word-at-a-time.h
+diff --git a/arch/h8300/include/asm/Kbuild b/arch/h8300/include/asm/Kbuild
+index 373cb23..2a63a32 100644
+--- a/arch/h8300/include/asm/Kbuild
++++ b/arch/h8300/include/asm/Kbuild
+@@ -33,7 +33,6 @@ generic-y += linkage.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += mmu.h
+ generic-y += mmu_context.h
+diff --git a/arch/hexagon/include/asm/Kbuild b/arch/hexagon/include/asm/Kbuild
+index db8ddab..0988816 100644
+--- a/arch/hexagon/include/asm/Kbuild
++++ b/arch/hexagon/include/asm/Kbuild
+@@ -28,7 +28,6 @@ generic-y += kmap_types.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += msgbuf.h
+ generic-y += pci.h
+diff --git a/arch/ia64/include/asm/Kbuild b/arch/ia64/include/asm/Kbuild
+index 502a91d..dc05773 100644
+--- a/arch/ia64/include/asm/Kbuild
++++ b/arch/ia64/include/asm/Kbuild
+@@ -4,7 +4,6 @@ generic-y += exec.h
+ generic-y += irq_work.h
+ generic-y += kvm_para.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += preempt.h
+ generic-y += trace_clock.h
+ generic-y += vtime.h
+diff --git a/arch/m32r/include/asm/Kbuild b/arch/m32r/include/asm/Kbuild
+index 860e440..f09a5fd 100644
+--- a/arch/m32r/include/asm/Kbuild
++++ b/arch/m32r/include/asm/Kbuild
+@@ -5,7 +5,6 @@ generic-y += exec.h
+ generic-y += irq_work.h
+ generic-y += kvm_para.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += module.h
+ generic-y += preempt.h
+ generic-y += sections.h
+diff --git a/arch/m68k/include/asm/Kbuild b/arch/m68k/include/asm/Kbuild
+index eb85bd9..1555bc1 100644
+--- a/arch/m68k/include/asm/Kbuild
++++ b/arch/m68k/include/asm/Kbuild
+@@ -18,7 +18,6 @@ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += mutex.h
+ generic-y += percpu.h
+diff --git a/arch/metag/include/asm/Kbuild b/arch/metag/include/asm/Kbuild
+index 29acb89d..611c0df 100644
+--- a/arch/metag/include/asm/Kbuild
++++ b/arch/metag/include/asm/Kbuild
+@@ -25,7 +25,6 @@ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += msgbuf.h
+ generic-y += mutex.h
+ generic-y += param.h
+diff --git a/arch/microblaze/include/asm/Kbuild b/arch/microblaze/include/asm/Kbuild
+index b0ae88c..cefeaba 100644
+--- a/arch/microblaze/include/asm/Kbuild
++++ b/arch/microblaze/include/asm/Kbuild
+@@ -6,7 +6,6 @@ generic-y += device.h
+ generic-y += exec.h
+ generic-y += irq_work.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += preempt.h
+ generic-y += syscalls.h
+ generic-y += trace_clock.h
+diff --git a/arch/mips/include/asm/Kbuild b/arch/mips/include/asm/Kbuild
+index 9740066..f0ce0ae 100644
+--- a/arch/mips/include/asm/Kbuild
++++ b/arch/mips/include/asm/Kbuild
+@@ -8,7 +8,6 @@ generic-y += emergency-restart.h
+ generic-y += irq_work.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mutex.h
+ generic-y += parport.h
+ generic-y += percpu.h
+diff --git a/arch/mn10300/include/asm/Kbuild b/arch/mn10300/include/asm/Kbuild
+index 1c8dd0f..27cbc02 100644
+--- a/arch/mn10300/include/asm/Kbuild
++++ b/arch/mn10300/include/asm/Kbuild
+@@ -5,7 +5,6 @@ generic-y += cputime.h
+ generic-y += exec.h
+ generic-y += irq_work.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += preempt.h
+ generic-y += sections.h
+ generic-y += trace_clock.h
+diff --git a/arch/nios2/include/asm/Kbuild b/arch/nios2/include/asm/Kbuild
+index d63330e..e224789 100644
+--- a/arch/nios2/include/asm/Kbuild
++++ b/arch/nios2/include/asm/Kbuild
+@@ -30,7 +30,6 @@ generic-y += kmap_types.h
+ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += module.h
+ generic-y += msgbuf.h
+diff --git a/arch/openrisc/include/asm/Kbuild b/arch/openrisc/include/asm/Kbuild
+index 2832f03..2a2e39b 100644
+--- a/arch/openrisc/include/asm/Kbuild
++++ b/arch/openrisc/include/asm/Kbuild
+@@ -36,7 +36,6 @@ generic-y += kmap_types.h
+ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += module.h
+ generic-y += msgbuf.h
+diff --git a/arch/parisc/include/asm/Kbuild b/arch/parisc/include/asm/Kbuild
+index f9b3a81..12b341d 100644
+--- a/arch/parisc/include/asm/Kbuild
++++ b/arch/parisc/include/asm/Kbuild
+@@ -15,7 +15,6 @@ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mutex.h
+ generic-y += param.h
+ generic-y += percpu.h
+diff --git a/arch/s390/include/asm/Kbuild b/arch/s390/include/asm/Kbuild
+index 20f196b..c1ef825 100644
+--- a/arch/s390/include/asm/Kbuild
++++ b/arch/s390/include/asm/Kbuild
+@@ -4,7 +4,6 @@ generic-y += clkdev.h
+ generic-y += export.h
+ generic-y += irq_work.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += preempt.h
+ generic-y += trace_clock.h
+ generic-y += word-at-a-time.h
+diff --git a/arch/score/include/asm/Kbuild b/arch/score/include/asm/Kbuild
+index a05218f..ff19975 100644
+--- a/arch/score/include/asm/Kbuild
++++ b/arch/score/include/asm/Kbuild
+@@ -7,7 +7,6 @@ generic-y += clkdev.h
+ generic-y += cputime.h
+ generic-y += irq_work.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += preempt.h
+ generic-y += sections.h
+ generic-y += trace_clock.h
+diff --git a/arch/sh/include/asm/Kbuild b/arch/sh/include/asm/Kbuild
+index 751c337..7d1fb2c 100644
+--- a/arch/sh/include/asm/Kbuild
++++ b/arch/sh/include/asm/Kbuild
+@@ -17,7 +17,6 @@ generic-y += kvm_para.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += msgbuf.h
+ generic-y += param.h
+diff --git a/arch/sparc/include/asm/Kbuild b/arch/sparc/include/asm/Kbuild
+index cfc9180..0867d5a 100644
+--- a/arch/sparc/include/asm/Kbuild
++++ b/arch/sparc/include/asm/Kbuild
+@@ -13,7 +13,6 @@ generic-y += linkage.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += module.h
+ generic-y += mutex.h
+ generic-y += preempt.h
+diff --git a/arch/tile/include/asm/Kbuild b/arch/tile/include/asm/Kbuild
+index ba35c41..40d22b4 100644
+--- a/arch/tile/include/asm/Kbuild
++++ b/arch/tile/include/asm/Kbuild
+@@ -19,7 +19,6 @@ generic-y += irq_regs.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += msgbuf.h
+ generic-y += mutex.h
+ generic-y += param.h
+diff --git a/arch/um/include/asm/Kbuild b/arch/um/include/asm/Kbuild
+index 904f3eb..33c1d3e 100644
+--- a/arch/um/include/asm/Kbuild
++++ b/arch/um/include/asm/Kbuild
+@@ -16,7 +16,6 @@ generic-y += irq_regs.h
+ generic-y += irq_work.h
+ generic-y += kdebug.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mutex.h
+ generic-y += param.h
+ generic-y += pci.h
+diff --git a/arch/unicore32/include/asm/Kbuild b/arch/unicore32/include/asm/Kbuild
+index 256c45b..932070c 100644
+--- a/arch/unicore32/include/asm/Kbuild
++++ b/arch/unicore32/include/asm/Kbuild
+@@ -26,7 +26,6 @@ generic-y += kdebug.h
+ generic-y += kmap_types.h
+ generic-y += local.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += mman.h
+ generic-y += module.h
+ generic-y += msgbuf.h
+diff --git a/arch/x86/include/asm/Kbuild b/arch/x86/include/asm/Kbuild
+index 2cfed17..51b3d95 100644
+--- a/arch/x86/include/asm/Kbuild
++++ b/arch/x86/include/asm/Kbuild
+@@ -15,4 +15,3 @@ generic-y += cputime.h
+ generic-y += dma-contiguous.h
+ generic-y += early_ioremap.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+diff --git a/arch/xtensa/include/asm/Kbuild b/arch/xtensa/include/asm/Kbuild
+index 28cf4c5..bdade99 100644
+--- a/arch/xtensa/include/asm/Kbuild
++++ b/arch/xtensa/include/asm/Kbuild
+@@ -18,7 +18,6 @@ generic-y += linkage.h
+ generic-y += local.h
+ generic-y += local64.h
+ generic-y += mcs_spinlock.h
+-generic-y += mm-arch-hooks.h
+ generic-y += percpu.h
+ generic-y += preempt.h
+ generic-y += resource.h
+diff --git a/include/asm-generic/mm_hooks.h b/include/asm-generic/mm_hooks.h
+index 73f09f1..f4d43aa 100644
+--- a/include/asm-generic/mm_hooks.h
++++ b/include/asm-generic/mm_hooks.h
+@@ -3,7 +3,6 @@
+  * included in asm-FOO/mmu_context.h for any arch FOO which doesn't need to
+  * specially hook these.
+  *
+- * arch_remap originally from include/linux-mm-arch-hooks.h
+  * arch_unmap originally from arch/powerpc/include/asm/mmu_context.h
+  * Copyright (C) 2015, IBM Corporation
+  * Author: Laurent Dufour <ldufour@linux.vnet.ibm.com>
+@@ -35,21 +34,6 @@ static inline void arch_unmap(struct mm_struct *mm,
+ #endif /* CONFIG_GENERIC_VDSO */
+ }
+ 
+-static inline void arch_remap(struct mm_struct *mm,
+-			      unsigned long old_start, unsigned long old_end,
+-			      unsigned long new_start, unsigned long new_end)
+-{
+-#ifdef CONFIG_GENERIC_VDSO
+-	/*
+-	 * mremap() doesn't allow moving multiple vmas so we can limit the
+-	 * check to old_addr == vdso.
+-	 */
+-	if (old_addr == mm->context.vdso)
+-		mm->context.vdso = new_addr;
+-
+-#endif /* CONFIG_GENERIC_VDSO */
+-}
+-
+ static inline void arch_bprm_mm_init(struct mm_struct *mm,
+ 				     struct vm_area_struct *vma)
+ {
+diff --git a/mm/mremap.c b/mm/mremap.c
+index da22ad2..0d0ea14 100644
+--- a/mm/mremap.c
++++ b/mm/mremap.c
+@@ -5,6 +5,14 @@
+  *
+  *	Address space accounting code	<alan@lxorguk.ukuu.org.uk>
+  *	(C) Copyright 2002 Red Hat Inc, All Rights Reserved
++ *
++ *	arch_remap originally from include/linux-mm-arch-hooks.h
++ *	Copyright (C) 2015, IBM Corporation
++ *	Author: Laurent Dufour <ldufour@linux.vnet.ibm.com>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License version 2 as
++ *	published by the Free Software Foundation.
+  */
+ 
+ #include <linux/mm.h>
+@@ -21,7 +29,6 @@
+ #include <linux/syscalls.h>
+ #include <linux/mmu_notifier.h>
+ #include <linux/uaccess.h>
+-#include <linux/mm-arch-hooks.h>
+ 
+ #include <asm/cacheflush.h>
+ #include <asm/tlbflush.h>
+@@ -293,8 +300,15 @@ static unsigned long move_vma(struct vm_area_struct *vma,
+ 		old_addr = new_addr;
+ 		new_addr = err;
+ 	} else {
+-		arch_remap(mm, old_addr, old_addr + old_len,
+-			   new_addr, new_addr + new_len);
++#ifdef CONFIG_GENERIC_VDSO
++		/*
++		 * mremap() doesn't allow moving multiple vmas so we can limit
++		 * the check to old_addr == vdso.
++		 */
++		if (old_addr == mm->context.vdso)
++			mm->context.vdso = new_addr;
++
++#endif /* CONFIG_GENERIC_VDSO */
+ 	}
+ 
+ 	/* Conceal VM_ACCOUNT so old reservation is not undone */
+-- 
+Qualcomm Datacenter Technologies as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
 
-Ok.  Well, I hope to get back to it soon.
-
-
-r~
-
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
