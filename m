@@ -1,35 +1,25 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [patch] alpha: silence a buffer overflow warning
-Date: Mon, 14 Nov 2016 14:34:00 +0300
-Message-ID: <20161114113314.GB20543@mwanda>
+From: SF Markus Elfring <elfring@users.sourceforge.net>
+Subject: alpha: Checking for a failed kmalloc() in process_reloc_for_got()?
+Date: Sat, 3 Dec 2016 14:15:20 +0100
+Message-ID: <f5890058-e6e8-00ca-22c4-e1521cb5bf56@users.sourceforge.net>
 Mime-Version: 1.0
-Return-path: <kernel-janitors-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: kernel-janitors-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+To: linux-alpha@vger.kernel.org, Jiri Kosina <jkosina@suse.cz>, Josh Poimboeuf <jpoimboe@redhat.com>, Matt Turner <mattst88@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Richard Henderson <rth@twiddle.net>, Rusty Russell <rusty@rustcorp.com.au>
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 
-We check that "member" is in bounds for the first line, but we also use
-it on the next line without checking which is a mistake.
+Hello,
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Another run of a small script for the semantic patch language (Coccinelle)
+pointed the implementation of the function “process_reloc_for_got” out for
+further considerations.
+https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/arch/alpha/kernel/module.c?id=e05f574a0bb1f4502a4b2264fdb0ef6419cf3772#n40
 
-diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
-index 4811e54..7574377 100644
---- a/arch/alpha/kernel/setup.c
-+++ b/arch/alpha/kernel/setup.c
-@@ -1094,8 +1094,9 @@ get_sysnames(unsigned long type, unsigned long variation, unsigned long cpu,
- 	default: /* default to variation "0" for now */
- 		break;
- 	case ST_DEC_EB164:
--		if (member < ARRAY_SIZE(eb164_indices))
--			*variation_name = eb164_names[eb164_indices[member]];
-+		if (member >= ARRAY_SIZE(eb164_indices))
-+			break;
-+		*variation_name = eb164_names[eb164_indices[member]];
- 		/* PC164 may show as EB164 variation, but with EV56 CPU,
- 		   so, since no true EB164 had anything but EV5... */
- 		if (eb164_indices[member] == 0 && cpu == EV56_CPU)
+Would it be useful to check the return value from a call of the
+function “kmalloc” also there?
+
+Regards,
+Markus
