@@ -1,32 +1,35 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: Re: alpha: Checking for a failed kmalloc() in
- process_reloc_for_got()?
-Date: Sun, 4 Dec 2016 11:20:27 +0100
-Message-ID: <782323c8-7e33-39e5-ae04-a94cf454a346@users.sourceforge.net>
-References: <f5890058-e6e8-00ca-22c4-e1521cb5bf56@users.sourceforge.net>
- <alpine.LNX.2.00.1612040108350.29400@cbobk.fhfr.pm>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: 4.9.0 build error on Alpha
+Date: Tue, 13 Dec 2016 08:07:10 -0600
+Message-ID: <20161213140710.GA18471@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <alpine.LNX.2.00.1612040108350.29400@cbobk.fhfr.pm>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Jiri Kosina <jikos@kernel.org>
-Cc: linux-alpha@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>, Matt Turner <mattst88@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Richard Henderson <rth@twiddle.net>, Rusty Russell <rusty@rustcorp.com.au>, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
 
->> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/tree/arch/alpha/kernel/module.c?id=e05f574a0bb1f4502a4b2264fdb0ef6419cf3772#n40
->>
->> Would it be useful to check the return value from a call of the
->> function “kmalloc” also there?
-> 
-> *drumroll* it'd actually be a proper bugfix.
+Got all the way to the end of the 4.9-final kernel build, and ran into the
+following:
 
-Which kind of exception handling can be added here when the function
-“process_reloc_for_got” has got the return type “void” so far?
+  LD      init/built-in.o
+arch/alpha/lib/lib.a(strcat.o): In function `strcat':
+(.text+0x60): relocation truncated to fit: BRADDR against symbol `__stxcpy' defined in .text section in arch/alpha/lib/lib.a(stxcpy.o)
+arch/alpha/lib/lib.a(strncat.o): In function `strncat':
+(.text+0x60): relocation truncated to fit: BRADDR against symbol `__stxncpy' defined in .text section in arch/alpha/lib/lib.a(stxncpy.o)
+Makefile:969: recipe for target 'vmlinux' failed
+make: *** [vmlinux] Error 1
 
-Will it be needed to handle such a software failure at more source code places
-by a special error code?
+I didn't try building any of the 4.9 release candidates, so I have no
+idea where this issue was introduced except to say 4.8 built fine.
 
-Regards,
-Markus
+Toolchain is currently as follows, and note that "binutils" was upgraded
+within the past 24 hours, i.e., while the kernel build was in progress:
+
+gcc version 6.2.1 20161124
+binutils 2.27.51.20161212
+
+--Bob
