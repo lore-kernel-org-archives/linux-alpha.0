@@ -1,45 +1,82 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
+From: Helge Deller <deller@gmx.de>
 Subject: Re: [BUG] 4.9.0 build error on Alpha
-Date: Fri, 30 Dec 2016 16:02:00 +0000 (GMT)
-Message-ID: <alpine.LFD.2.20.1612301554130.1811@eddie.linux-mips.org>
-References: <20161230030846.GA25929@gherkin.frus.com> <CAEdQ38EX1rmir0bbY+S-QMfepyBsUJ1uEUjP3A76z8NF5dyrhA@mail.gmail.com> <20161230033747.GB26007@gherkin.frus.com>
+Date: Fri, 30 Dec 2016 22:07:06 +0100
+Message-ID: <3a3389e5-e6f5-5ec3-ca26-762162d2a4ac@gmx.de>
+References: <20161230030846.GA25929@gherkin.frus.com>
+ <CAEdQ38EX1rmir0bbY+S-QMfepyBsUJ1uEUjP3A76z8NF5dyrhA@mail.gmail.com>
+ <20161230033747.GB26007@gherkin.frus.com>
+ <alpine.LFD.2.20.1612301554130.1811@eddie.linux-mips.org>
 Mime-Version: 1.0
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-In-Reply-To: <20161230033747.GB26007@gherkin.frus.com>
-Resent-Message-ID: <n9ldS2FyOB.A.MsE.eroZYB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/alpine.LFD.2.20.1612301554130.1811@eddie.linux-mips.org
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Bob Tracy <rct@gherkin.frus.com>
+Content-Type: multipart/mixed;
+ boundary="------------34C5F9CC4E0959820E137531"
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <alpine.LFD.2.20.1612301554130.1811@eddie.linux-mips.org>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: "Maciej W. Rozycki" <macro@linux-mips.org>, Bob Tracy <rct@gherkin.frus.com>
 Cc: Matt Turner <mattst88@gmail.com>, linux-alpha <linux-alpha@vger.kernel.org>, Debian Alpha Mailing List <debian-alpha@lists.debian.org>, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>
 
-On Thu, 29 Dec 2016, Bob Tracy wrote:
+This is a multi-part message in MIME format.
+--------------34C5F9CC4E0959820E137531
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 
-> > I'm guessing it's another symptom of the old "kernel too big" problem?
+Hi Bob,
+
+On 30.12.2016 17:02, Maciej W. Rozycki wrote:
+> On Thu, 29 Dec 2016, Bob Tracy wrote:
 > 
-> How has this been worked around in the past?  I have a fairly
-> feature-full kernel, but the only built-in drivers are for the things
-> that have to be present at boot time.
+>>> I'm guessing it's another symptom of the old "kernel too big" problem?
+>>
+>> How has this been worked around in the past?  I have a fairly
+>> feature-full kernel, but the only built-in drivers are for the things
+>> that have to be present at boot time.
+> 
+>  This looks like a link ordering issue to me, the failures are branches 
+> between objects built from arch/alpha/lib/*.S assembly sources, which 
+> must have got moved apart more with the switch of the compiler version.
 
- This looks like a link ordering issue to me, the failures are branches 
-between objects built from arch/alpha/lib/*.S assembly sources, which 
-must have got moved apart more with the switch of the compiler version.
+Seems right.
+ 
+>  One workaround might be making them a .o rather than .a target, which 
+> will ensure they're close to each other, at the cost of a small kernel 
+> size increase if some of these functions would otherwise be unused.
 
- One workaround might be making them a .o rather than .a target, which 
-will ensure they're close to each other, at the cost of a small kernel 
-size increase if some of these functions would otherwise be unused.
+Possible.
 
- Replacing branches with full address calculation and register jumps might 
-be another, although this would cost some run time instead, so I think the 
-former approach is a bit better.
+>  Replacing branches with full address calculation and register jumps might 
+> be another, although this would cost some run time instead, so I think the 
+> former approach is a bit better.
 
- HTH,
+Another possibility could be to put all the lib functions into 
+a "alphalib" section into the final vmlinux.
+For that add at the top of each of the .S files in lib/ 
+	.section .alphalib,"ax"
+and apply the attached patch for arch/alpha/kernel/vmlinux.lds.S
+Patch and suggestion is completely untested.
 
-  Maciej
+Helge
 
+--------------34C5F9CC4E0959820E137531
+Content-Type: text/plain; charset=UTF-8;
+ name="p1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="p1"
+
+diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
+index cebecfb..88af6bc 100644
+--- a/arch/alpha/kernel/vmlinux.lds.S
++++ b/arch/alpha/kernel/vmlinux.lds.S
+@@ -20,6 +20,9 @@ SECTIONS
+ 	_text = .;	/* Text and read-only data */
+ 	.text : {
+ 		HEAD_TEXT
++		.alphalib: {
++			*(.alphalib)
++		} :kernel
+ 		TEXT_TEXT
+ 		SCHED_TEXT
+ 		CPUIDLE_TEXT
+
+--------------34C5F9CC4E0959820E137531--
