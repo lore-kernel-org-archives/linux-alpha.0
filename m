@@ -1,51 +1,43 @@
-From: Davidlohr Bueso <dave@stgolabs.net>
-Subject: [PATCH] alpha: use generic current.h
-Date: Tue, 27 Dec 2016 19:43:46 -0800
-Message-ID: <1482896626-25243-1-git-send-email-dave@stgolabs.net>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: [BUG] 4.9.0 build error on Alpha
+Date: Thu, 29 Dec 2016 21:08:46 -0600
+Message-ID: <20161230030846.GA25929@gherkin.frus.com>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Davidlohr Bueso <dave@stgolabs.net>, Davidlohr Bueso <dbueso@suse.de>
+To: linux-alpha@vger.kernel.org
+Cc: debian-alpha@lists.debian.org, mcree@orcon.net.nz, mattst88@gmail.com, rth@twiddle.net
 
-Given that the arch does not add its own implementations, simply
-use the asm-generic/current.h (generic-y) header instead of
-duplicating code.
+I'm guessing this is Alpha-specific at the moment, because I'm getting a
+world-class lettin' alone from the kernel developers.
 
-Signed-off-by: Davidlohr Bueso <dbueso@suse.de>
----
- arch/alpha/include/asm/Kbuild    | 1 +
- arch/alpha/include/asm/current.h | 9 ---------
- 2 files changed, 1 insertion(+), 9 deletions(-)
- delete mode 100644 arch/alpha/include/asm/current.h
+Saw another binutils update come through a couple of days ago, so tried
+another from-scratch kernel build.  No change in the outcome.  This
+"smells" like a gcc or binutils issue, because the Alpha-specific code
+being compiled and linked against hasn't changed in a very long time.
+Both "strcat" and "stxcpy" come from assembly language source files in
+the "arch/alpha/lib" directory.
 
-diff --git a/arch/alpha/include/asm/Kbuild b/arch/alpha/include/asm/Kbuild
-index bf8475ce85ee..4c5468b03e45 100644
---- a/arch/alpha/include/asm/Kbuild
-+++ b/arch/alpha/include/asm/Kbuild
-@@ -10,3 +10,4 @@ generic-y += mm-arch-hooks.h
- generic-y += preempt.h
- generic-y += sections.h
- generic-y += trace_clock.h
-+generic-y += current.h
-diff --git a/arch/alpha/include/asm/current.h b/arch/alpha/include/asm/current.h
-deleted file mode 100644
-index 094d285a1b34..000000000000
---- a/arch/alpha/include/asm/current.h
-+++ /dev/null
-@@ -1,9 +0,0 @@
--#ifndef _ALPHA_CURRENT_H
--#define _ALPHA_CURRENT_H
--
--#include <linux/thread_info.h>
--
--#define get_current()	(current_thread_info()->task)
--#define current		get_current()
--
--#endif /* _ALPHA_CURRENT_H */
--- 
-2.6.6
+In addition to trying new toolchain components as updates appear, I've
+tried making various changes to my kernel configuration in an attempt to
+make the problem move to a different place in the build process or go
+away entirely.  Nothing has had any effect whatsoever.
 
+I would reluctantly try downgrading gcc to version 4.x if someone
+thought that might make any difference.  I'd rather identify how the
+current toolchain is going off in the weeds, if that's what is going on
+here.
+
+>   LD      init/built-in.o
+> arch/alpha/lib/lib.a(strcat.o): In function `strcat':
+> (.text+0x60): relocation truncated to fit: BRADDR against symbol `__stxcpy' defined in .text section in arch/alpha/lib/lib.a(stxcpy.o)
+> arch/alpha/lib/lib.a(strncat.o): In function `strncat':
+> (.text+0x60): relocation truncated to fit: BRADDR against symbol `__stxncpy' defined in .text section in arch/alpha/lib/lib.a(stxncpy.o)
+> Makefile:969: recipe for target 'vmlinux' failed
+> make: *** [vmlinux] Error 1
+
+--Bob
