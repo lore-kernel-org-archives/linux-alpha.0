@@ -1,38 +1,45 @@
-From: Bob Tracy <rct@gherkin.frus.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
 Subject: Re: [BUG] 4.9.0 build error on Alpha
-Date: Thu, 29 Dec 2016 21:37:47 -0600
-Message-ID: <20161230033747.GB26007@gherkin.frus.com>
-References: <20161230030846.GA25929@gherkin.frus.com>
- <CAEdQ38EX1rmir0bbY+S-QMfepyBsUJ1uEUjP3A76z8NF5dyrhA@mail.gmail.com>
+Date: Fri, 30 Dec 2016 16:02:00 +0000 (GMT)
+Message-ID: <alpine.LFD.2.20.1612301554130.1811@eddie.linux-mips.org>
+References: <20161230030846.GA25929@gherkin.frus.com> <CAEdQ38EX1rmir0bbY+S-QMfepyBsUJ1uEUjP3A76z8NF5dyrhA@mail.gmail.com> <20161230033747.GB26007@gherkin.frus.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAEdQ38EX1rmir0bbY+S-QMfepyBsUJ1uEUjP3A76z8NF5dyrhA@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
+In-Reply-To: <20161230033747.GB26007@gherkin.frus.com>
+Resent-Message-ID: <n9ldS2FyOB.A.MsE.eroZYB@bendel>
+List-Id: <linux-alpha.vger.kernel.org>
+List-URL: <https://lists.debian.org/debian-alpha/>
+List-Post: <mailto:debian-alpha@lists.debian.org>
+List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+List-Archive: https://lists.debian.org/msgid-search/alpine.LFD.2.20.1612301554130.1811@eddie.linux-mips.org
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha <linux-alpha@vger.kernel.org>, Debian Alpha Mailing List <debian-alpha@lists.debian.org>, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>
+To: Bob Tracy <rct@gherkin.frus.com>
+Cc: Matt Turner <mattst88@gmail.com>, linux-alpha <linux-alpha@vger.kernel.org>, Debian Alpha Mailing List <debian-alpha@lists.debian.org>, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>
 
-On Thu, Dec 29, 2016 at 10:23:04PM -0500, Matt Turner wrote:
-> FWIW, when I saw your first email I tried compiling with gcc-4.9.4,
-> 5.4.0, and 6.2.0. All compiled my config fine.
+On Thu, 29 Dec 2016, Bob Tracy wrote:
 
-That's worth quite a bit to me, actually :-).  Tells me that downgrading
-my toolchain is probably a waste of time and effort.
+> > I'm guessing it's another symptom of the old "kernel too big" problem?
+> 
+> How has this been worked around in the past?  I have a fairly
+> feature-full kernel, but the only built-in drivers are for the things
+> that have to be present at boot time.
 
-> I'm guessing it's another symptom of the old "kernel too big" problem?
+ This looks like a link ordering issue to me, the failures are branches 
+between objects built from arch/alpha/lib/*.S assembly sources, which 
+must have got moved apart more with the switch of the compiler version.
 
-How has this been worked around in the past?  I have a fairly
-feature-full kernel, but the only built-in drivers are for the things
-that have to be present at boot time.
+ One workaround might be making them a .o rather than .a target, which 
+will ensure they're close to each other, at the cost of a small kernel 
+size increase if some of these functions would otherwise be unused.
 
-If drivers compiled as modules contribute to the bloat, I could easily
-omit file system support for things I'll likely never see attached to an
-alpha.  Similarly, drivers for removable USB devices I don't currently use
-with the system could be omitted as well.  Netfilter keeps growing like
-the hairball it is: features I'm not likely to ever use could be disabled
-if that might help.
+ Replacing branches with full address calculation and register jumps might 
+be another, although this would cost some run time instead, so I think the 
+former approach is a bit better.
 
---Bob
+ HTH,
+
+  Maciej
+
