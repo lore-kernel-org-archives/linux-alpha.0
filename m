@@ -1,45 +1,116 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v2 7/7] uapi: export all headers under uapi directories
-Date: Mon, 9 Jan 2017 04:56:38 -0800
-Message-ID: <20170109125638.GA15506@infradead.org>
-References: <bf83da6b-01ef-bf44-b3e1-ca6fc5636818@6wind.com>
- <1483695839-18660-1-git-send-email-nicolas.dichtel@6wind.com>
- <1483695839-18660-8-git-send-email-nicolas.dichtel@6wind.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: [PATCH v2 00/10] Finalize separation of extable.h from module.h
+Date: Mon, 9 Jan 2017 15:40:00 -0500
+Message-ID: <20170109204010.5047-1-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1483695839-18660-8-git-send-email-nicolas.dichtel@6wind.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc: linux-mips@linux-mips.org, alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, airlied@linux.ie, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-mtd@lists.infradead.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-am33-list@redhat.com, linux-c6x-dev@linux-c6x.org, linux-rdma@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-sh@vger.kernel.org, coreteam@netfilter.org, fcoe-devel@open-fcoe.org, xen-devel@lists.xenproject.org, linux-snps-arc@lists.infradead.org, linux-media@vger.kernel.org, uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org, arnd@arndb.de, linux-kbuild@vger.kernel.org, adi-buildroot-devel@lists.sourceforge.net, linux-raid@vger.kernel.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-metag@vger.kernel.org, linux-arm
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-xtensa@linux-xtensa.org, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, linux-am33-list@redhat.com, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org, Russell King <linux@armlinux.org.uk>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Rusty Russell <rusty@rustcorp.com.au>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Al Viro <viro@zeniv.linux.org.uk>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Chris Zankel <chris@zankel.net>, Tony Luck <tony.luck@intel.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 
-On Fri, Jan 06, 2017 at 10:43:59AM +0100, Nicolas Dichtel wrote:
-> Regularly, when a new header is created in include/uapi/, the developer
-> forgets to add it in the corresponding Kbuild file. This error is usually
-> detected after the release is out.
-> 
-> In fact, all headers under uapi directories should be exported, thus it's
-> useless to have an exhaustive list.
-> 
-> After this patch, the following files, which were not exported, are now
-> exported (with make headers_install_all):
+Some of the arch specific changes have already been picked up by the
+arch maintainers in v1, so I'm assuming the other folks just figured I'd
+ask Linus to pull the remainder.  Which is the current plan ; soak this
+in linux-next on 4.10-rc3 and request a pull in the next merge window.
 
-... snip ...
+So please shout if you are an arch maintainer and see something here you
+have questions or comments on.  Otherwise, you don't have to do anything.
 
-> linux/genwqe/.install
-> linux/genwqe/..install.cmd
-> linux/cifs/.install
-> linux/cifs/..install.cmd
+Once all the old users who expected extable content via module.h are
+gone, then and only then can we remove the back compat line as done in
+the final patch in this series.
 
-I'm pretty sure these should not be exported!
+I've been build testing this locally on a regular basis in with my other
+pending work, on a bunch of different architectures, so hopefully we
+don't see anything go pear shaped when it goes into sfr's linux-next.
+
+The only real change in the v1 ---> v2 aside from dropping merged
+content was the restructuring in the ia64 based on comments from Al
+Viro to improve some header separation at the same time.  I'd resent
+just those two for follow up comments and nobody seemed to have further 
+suggestions.  Note that I'm not able to run test ia64; just compile.
+
+There was also a minor context refresh required due to the recent
+treewide asm/uaccess --> linux/uaccess change, which gave me the
+motivation to get this out of my queue and finalized.
+
+RFC/V1: https://lkml.kernel.org/r/CA+55aFyDw_jK609LcjpWvVMTzCWuH6nLUXiZDeYC2tpSaZqhXA@mail.gmail.com
+ia64: https://lkml.kernel.org/r/20160920022924.9537-1-paul.gortmaker@windriver.com
+
+---
+
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Chris Zankel <chris@zankel.net>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-am33-list@redhat.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-ia64@vger.kernel.org
+Cc: linux-sh@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Max Filippov <jcmvbkbc@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Rich Felker <dalias@libc.org>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Rusty Russell <rusty@rustcorp.com.au>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
+
+Paul Gortmaker (10):
+  ia64: move ia64_done_with_exception out of asm/uaccess.h
+  ia64: ensure exception table search users include extable.h
+  m32r: migrate exception table users off module.h and onto extable.h
+  arm: migrate exception table users off module.h and onto extable.h
+  alpha: migrate exception table users off module.h and onto extable.h
+  mn10300: migrate exception table users off module.h and onto extable.h
+  xtensa: migrate exception table users off module.h and onto extable.h
+  sh: migrate exception table users off module.h and onto extable.h
+  core: migrate exception table users off module.h and onto extable.h
+  module.h: remove extable.h include now users have migrated
+
+ arch/alpha/kernel/traps.c         |  2 +-
+ arch/alpha/mm/fault.c             |  2 +-
+ arch/arm/mm/extable.c             |  2 +-
+ arch/arm/mm/fault.c               |  2 +-
+ arch/ia64/include/asm/exception.h | 35 +++++++++++++++++++++++++++++++++++
+ arch/ia64/include/asm/uaccess.h   | 15 ---------------
+ arch/ia64/kernel/kprobes.c        |  4 ++--
+ arch/ia64/kernel/traps.c          |  6 ++++--
+ arch/ia64/kernel/unaligned.c      |  4 +++-
+ arch/ia64/mm/fault.c              |  2 ++
+ arch/m32r/mm/extable.c            |  2 +-
+ arch/m32r/mm/fault.c              |  2 +-
+ arch/mn10300/mm/extable.c         |  2 +-
+ arch/mn10300/mm/misalignment.c    |  2 +-
+ arch/sh/include/asm/uaccess.h     |  1 -
+ arch/sh/kernel/kprobes.c          |  2 +-
+ arch/sh/kernel/traps.c            |  3 ++-
+ arch/sh/mm/extable_32.c           |  2 +-
+ arch/sh/mm/extable_64.c           |  2 +-
+ arch/xtensa/mm/fault.c            |  2 +-
+ include/linux/module.h            |  1 -
+ init/main.c                       |  1 +
+ kernel/extable.c                  |  1 +
+ kernel/module.c                   |  1 +
+ 24 files changed, 63 insertions(+), 35 deletions(-)
+ create mode 100644 arch/ia64/include/asm/exception.h
+
+-- 
+2.11.0
