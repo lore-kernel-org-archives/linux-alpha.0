@@ -1,46 +1,64 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: [BUG] 4.9.0 build error on Alpha
-Date: Thu, 12 Jan 2017 12:52:35 +0000 (GMT)
-Message-ID: <alpine.LFD.2.20.1701120056320.19339@eddie.linux-mips.org>
-References: <20161230033747.GB26007@gherkin.frus.com> <alpine.LFD.2.20.1612301554130.1811@eddie.linux-mips.org> <3a3389e5-e6f5-5ec3-ca26-762162d2a4ac@gmx.de> <20161231064337.GA3209@gherkin.frus.com> <20161231072032.GA3544@gherkin.frus.com>
- <alpine.LFD.2.20.1612310907560.1811@eddie.linux-mips.org> <20161231152037.GA4896@gherkin.frus.com> <alpine.LFD.2.20.1701010121490.1811@eddie.linux-mips.org> <20170101033258.GA7310@gherkin.frus.com> <20170101202948.GB8958@gherkin.frus.com>
- <20170103001536.GB14773@gherkin.frus.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: Re: [PATCH v2 7/7] uapi: export all headers under uapi directories
+Date: Thu, 12 Jan 2017 16:52:57 +0100
+Message-ID: <464a1323-4450-e563-ff59-9e6d57b75959@6wind.com>
+References: <bf83da6b-01ef-bf44-b3e1-ca6fc5636818@6wind.com>
+ <1483695839-18660-1-git-send-email-nicolas.dichtel@6wind.com>
+ <1483695839-18660-8-git-send-email-nicolas.dichtel@6wind.com>
+ <20170109125638.GA15506@infradead.org>
+Reply-To: nicolas.dichtel@6wind.com
 Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20170103001536.GB14773@gherkin.frus.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind-com.20150623.gappssmtp.com; s=20150623;
+        h=reply-to:subject:references:to:cc:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=1XRdB6+woEoPIFIzdROV46XkV3VusOtCKknGiL09tVE=;
+        b=qQiG+T9eXnUKXgRcmv1xurbYPI5bckmjW/HQqjnLycnlFZtWomM8iZPeOtq7glWUuY
+         h4RhWcyldnUhY6m//U48ndkzAqlu77EbdnZPKcgi80TWKSEx1CuKb4SsOLMm5T6/KxAr
+         4YdD/zWuleyPSLxbPjCPoodLJid/ZPgKsH2G1XyIzG5dWt6Gebuv8pX8KzdrPOsM2t4e
+         a8kJAtxWBYyCmZPYBeisRkxSpCREDxSgvH+F8YYjh33QnnavdU4szKtvpecOoXqV9GKE
+         GOTQgiCPJLHuSatc4XoPd3bqP9SrZzpgiCxkMR579Evj2EXQOqJ70tlHnx1Ih7EwuB3M
+         QpSA==
+In-Reply-To: <20170109125638.GA15506@infradead.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Bob Tracy <rct@gherkin.frus.com>
-Cc: Helge Deller <deller@gmx.de>, Matt Turner <mattst88@gmail.com>, linux-alpha <linux-alpha@vger.kernel.org>, Debian Alpha Mailing List <debian-alpha@lists.debian.org>, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>
+Content-Type: text/plain; charset="iso-8859-1"
+To: Christoph Hellwig <hch@infradead.org>
+Cc: arnd@arndb.de, mmarek@suse.com, linux-kbuild@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-c6x-dev@linux-c6x.org, linux-cris-kernel@axis.com, uclinux-h8-devel@lists.sourceforge.jp, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-am33-list@redhat.com, nios2-dev@lists.rocketboards.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-ar
 
-Bob,
+Le 09/01/2017 =E0 13:56, Christoph Hellwig a =E9crit :
+> On Fri, Jan 06, 2017 at 10:43:59AM +0100, Nicolas Dichtel wrote:
+>> Regularly, when a new header is created in include/uapi/, the developer
+>> forgets to add it in the corresponding Kbuild file. This error is usually
+>> detected after the release is out.
+>>
+>> In fact, all headers under uapi directories should be exported, thus it's
+>> useless to have an exhaustive list.
+>>
+>> After this patch, the following files, which were not exported, are now
+>> exported (with make headers_install_all):
+>=20
+> ... snip ...
+>=20
+>> linux/genwqe/.install
+>> linux/genwqe/..install.cmd
+>> linux/cifs/.install
+>> linux/cifs/..install.cmd
+>=20
+> I'm pretty sure these should not be exported!
+>=20
+Those files are created in every directory:
+$ find usr/include/ -name '\.\.install.cmd' | wc -l
+71
+$ find usr/include/ -name '\.install' | wc -l
+71
 
-> Credit to all who participated in working this issue.  Matt -- attached
-> is a patch set to be applied against the kernel.org 4.9.0 source tree.
-> If it passes inspection, please approve and forward upstream.
-> 
-> Apologies for not including in-line, but I don't trust my mailer to
-> preserve formatting unless I send as an attachment.
+See also
+http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/scripts=
+/Makefile.headersinst#n32
 
- Thanks for your contribution; you need to add a `Signed-off-by' tag 
-though for your change to go anywhere.
 
- Also I think the <asm/uaccess.h> part will need some further work; at the 
-very least the comment needs to be updated to state why the conditional 
-has now been hardwired.  Ultimately I think all the hackery can go and 
-`__copy_tofrom_user_nocheck' and `__clear_user' be replaced with direct 
-calls to `__copy_user' and `__do_clear_user' respectively (and 
-`__do_clear_user' renamed to `__clear_user' at the same time) as the +/- 
-4MiB branch range is too low these days to guarantee a kernel binary to 
-fit within.
-
- Alternatively a configuration option might be added for the branch 
-optimisation to stay instead if selected, perhaps also adding the 
-`-msmall-text' compiler option to let small configurations take advantage 
-of it globally rather than just in <asm/uaccess.h>.  This might not be 
-liked by people running build bots though as it would inevitably cause 
-some configurations to fail linking.
-
-  Maciej
+Thank you,
+Nicolas
