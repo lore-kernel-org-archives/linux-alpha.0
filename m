@@ -1,47 +1,46 @@
-From: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH 2/9] Move dma_ops from archdata into struct device
-Date: Thu, 12 Jan 2017 08:35:11 +0100
-Message-ID: <20170112073511.GA23347@kroah.com>
-References: <20170111005648.14988-1-bart.vanassche@sandisk.com>
-	<20170111005648.14988-3-bart.vanassche@sandisk.com>
-	<20170111064803.GB26893@kroah.com>
-	<1484158589.2619.14.camel@sandisk.com>
-	<20170111203100.GB17895@kroah.com>
-	<1484173670.2619.28.camel@sandisk.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: Re: [BUG] 4.9.0 build error on Alpha
+Date: Thu, 12 Jan 2017 12:52:35 +0000 (GMT)
+Message-ID: <alpine.LFD.2.20.1701120056320.19339@eddie.linux-mips.org>
+References: <20161230033747.GB26007@gherkin.frus.com> <alpine.LFD.2.20.1612301554130.1811@eddie.linux-mips.org> <3a3389e5-e6f5-5ec3-ca26-762162d2a4ac@gmx.de> <20161231064337.GA3209@gherkin.frus.com> <20161231072032.GA3544@gherkin.frus.com>
+ <alpine.LFD.2.20.1612310907560.1811@eddie.linux-mips.org> <20161231152037.GA4896@gherkin.frus.com> <alpine.LFD.2.20.1701010121490.1811@eddie.linux-mips.org> <20170101033258.GA7310@gherkin.frus.com> <20170101202948.GB8958@gherkin.frus.com>
+ <20170103001536.GB14773@gherkin.frus.com>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <20170103001536.GB14773@gherkin.frus.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1484173670.2619.28.camel-XdAiOPVOjttBDgjK7y7TUQ@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bart Van Assche <Bart.VanAssche-XdAiOPVOjttBDgjK7y7TUQ@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "dalias-8zAoT0mYgF4@public.gmane.org" <dalias-8zAoT0mYgF4@public.gmane.org>, "linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "a-jacquiot-l0cyMroinI0@public.gmane.org" <a-jacquiot-l0cyMroinI0@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org" <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, "dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org" <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, "jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org" <jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jesper.nilsson-VrBV9hrLPhE@public.gmane.org" <jesper.nilsson-VrBV9hrLPhE@public.gmane.org>, "linux-am33-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <linux-am33-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org" <l>
+To: Bob Tracy <rct@gherkin.frus.com>
+Cc: Helge Deller <deller@gmx.de>, Matt Turner <mattst88@gmail.com>, linux-alpha <linux-alpha@vger.kernel.org>, Debian Alpha Mailing List <debian-alpha@lists.debian.org>, Michael Cree <mcree@orcon.net.nz>, Richard Henderson <rth@twiddle.net>
 
-On Wed, Jan 11, 2017 at 10:28:05PM +0000, Bart Van Assche wrote:
-> On Wed, 2017-01-11 at 21:31 +0100, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org wrote:
-> > That's a big sign that your patch series needs work.  Break it up into
-> > smaller pieces, it should be possible, which will make merges easier
-> > (well, different in a way.)
+Bob,
+
+> Credit to all who participated in working this issue.  Matt -- attached
+> is a patch set to be applied against the kernel.org 4.9.0 source tree.
+> If it passes inspection, please approve and forward upstream.
 > 
-> Hello Greg,
-> 
-> Can you have a look at the attached patches? These three patches are a
-> splitup of the single patch at the start of this e-mail thread.
+> Apologies for not including in-line, but I don't trust my mailer to
+> preserve formatting unless I send as an attachment.
 
-Please send them in the proper format (i.e. one patch per email), and I
-will be glad to review them.  Otherwise it's really hard to do so, would
-you want to review attachments?
+ Thanks for your contribution; you need to add a `Signed-off-by' tag 
+though for your change to go anywhere.
 
-thanks,
+ Also I think the <asm/uaccess.h> part will need some further work; at the 
+very least the comment needs to be updated to state why the conditional 
+has now been hardwired.  Ultimately I think all the hackery can go and 
+`__copy_tofrom_user_nocheck' and `__clear_user' be replaced with direct 
+calls to `__copy_user' and `__do_clear_user' respectively (and 
+`__do_clear_user' renamed to `__clear_user' at the same time) as the +/- 
+4MiB branch range is too low these days to guarantee a kernel binary to 
+fit within.
 
-greg k-h
+ Alternatively a configuration option might be added for the branch 
+optimisation to stay instead if selected, perhaps also adding the 
+`-msmall-text' compiler option to let small configurations take advantage 
+of it globally rather than just in <asm/uaccess.h>.  This might not be 
+liked by people running build bots though as it would inevitably cause 
+some configurations to fail linking.
+
+  Maciej
