@@ -1,55 +1,53 @@
-From: Davidlohr Bueso <dave@stgolabs.net>
-Subject: [PATCH 1/4] alpha: use generic current.h
-Date: Wed,  1 Feb 2017 15:47:55 -0800
-Message-ID: <1485992878-4780-2-git-send-email-dave@stgolabs.net>
-References: <1485992878-4780-1-git-send-email-dave@stgolabs.net>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1485992878-4780-1-git-send-email-dave@stgolabs.net>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Alpha Kernel Regression [was Re: BRSGP relocation truncations in
+ linking kernel for Alpha.]
+Date: Thu, 9 Feb 2017 22:58:53 +1300
+Message-ID: <20170209095853.yjjuaajbzxofx7xu@tower>
+References: <20161022024044.vbfxx4o2rrkwc7gy@tower>
+ <580E7616.2020806@gmx.de>
+ <65016d6a-3e42-a493-8765-aef683fde537@twiddle.net>
+ <20161025082638.u7c5kpi2q3kr3kld@tower>
+Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20161025082638.u7c5kpi2q3kr3kld@tower>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: akpm@linux-foundation.org
-Cc: dave@stgolabs.net, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, rth@twiddle.net, Davidlohr Bueso <dbueso@suse.de>
+To: Richard Henderson <rth@twiddle.net>, linux-alpha <linux-alpha@vger.kernel.org>, Chen Feng <puck.chen@hisilicon.com>
+Cc: Helge Deller <deller@gmx.de>, LKML <linux-kernel@vger.kernel.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Michael Karcher <debian@mkarcher.dialup.fu-berlin.de>
 
-Given that the arch does not add its own implementations, simply
-use the asm-generic/current.h (generic-y) header instead of
-duplicating code.
+On Tue, Oct 25, 2016 at 09:26:38PM +1300, Michael Cree wrote:
+> And while I mention libc I am seeing (rather rare) random segfaults
+> in programs such as cp, tar, install and dpkg ever since the upgrade
+> to glibc 2.23 (or maybe it was 2.24).  I am struggling to get a
+> backtrace because it only happens very occassionally (but often enough
+> that it is almost impossible for a build and install of large software
+> packages such as libreoffice to complete without failure at some
+> random point) and when I rerun the failing program manually it then
+> always works.  I'll keep trying to narrow this one down.
 
-Cc: linux-alpha@vger.kernel.org
-Cc: rth@twiddle.net
-Signed-off-by: Davidlohr Bueso <dbueso@suse.de>
----
- arch/alpha/include/asm/Kbuild    | 1 +
- arch/alpha/include/asm/current.h | 9 ---------
- 2 files changed, 1 insertion(+), 9 deletions(-)
- delete mode 100644 arch/alpha/include/asm/current.h
+It's not glibc.  Downgrading to previously known working versions does
+not solve the random segfaults.  But downgrading the kernel does fix
+the problem on Alpha.  Noted that 4.6 is good but 4.6.7 is bad so
+bisected the 4.6.y stable kernel branch to get the first bad commit as
+0784672d05684de901fc2aa56150d7ea9a475a2d, i.e.:
 
-diff --git a/arch/alpha/include/asm/Kbuild b/arch/alpha/include/asm/Kbuild
-index bf8475ce85ee..4c5468b03e45 100644
---- a/arch/alpha/include/asm/Kbuild
-+++ b/arch/alpha/include/asm/Kbuild
-@@ -10,3 +10,4 @@ generic-y += mm-arch-hooks.h
- generic-y += preempt.h
- generic-y += sections.h
- generic-y += trace_clock.h
-+generic-y += current.h
-diff --git a/arch/alpha/include/asm/current.h b/arch/alpha/include/asm/current.h
-deleted file mode 100644
-index 094d285a1b34..000000000000
---- a/arch/alpha/include/asm/current.h
-+++ /dev/null
-@@ -1,9 +0,0 @@
--#ifndef _ALPHA_CURRENT_H
--#define _ALPHA_CURRENT_H
--
--#include <linux/thread_info.h>
--
--#define get_current()	(current_thread_info()->task)
--#define current		get_current()
--
--#endif /* _ALPHA_CURRENT_H */
--- 
-2.6.6
+commit 0784672d05684de901fc2aa56150d7ea9a475a2d
+Author: Chen Feng <puck.chen@hisilicon.com>
+Date:   Fri May 20 16:59:02 2016 -0700
 
+    mm/compaction.c: fix zoneindex in kcompactd()
+    
+    commit 6cd9dc3e75078ef646076fa63adfb9b85ced0b66 upstream.
+    
+    While testing the kcompactd in my platform 3G MEM only DMA ZONE.  I
+    found the kcompactd never wakeup.  It seems the zoneindex has already
+    minus 1 before.  So the traverse here should be <=.
+    
+    It fixes a regression where kswapd could previously compact, but
+    kcompactd not.  Not a crash fix though.
+
+Cheers
+Michael.
