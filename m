@@ -1,84 +1,117 @@
-From: Alan Stern <stern@rowland.harvard.edu>
+From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
 Subject: Re: Question about DEC Alpha memory ordering
-Date: Mon, 13 Feb 2017 16:06:21 -0500 (EST)
-Message-ID: <Pine.LNX.4.44L0.1702131604170.1905-100000@iolanthe.rowland.org>
+Date: Mon, 13 Feb 2017 13:24:36 -0800
+Message-ID: <20170213212436.GQ30506@linux.vnet.ibm.com>
 References: <20170213202849.GO30506@linux.vnet.ibm.com>
+ <Pine.LNX.4.44L0.1702131604170.1905-100000@iolanthe.rowland.org>
+Reply-To: paulmck@linux.vnet.ibm.com
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20170213202849.GO30506@linux.vnet.ibm.com>
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.44L0.1702131604170.1905-100000@iolanthe.rowland.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+To: Alan Stern <stern@rowland.harvard.edu>
 Cc: bob smith <sfmc68@verizon.net>, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, j.alglave@ucl.ac.uk, luc.maranget@inria.fr, parri.andrea@gmail.com, will.deacon@arm.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, 13 Feb 2017, Paul E. McKenney wrote:
-
-> On Mon, Feb 13, 2017 at 08:14:23PM +0100, Tobias Klausmann wrote:
-> > Hi! 
-> > 
-> > On Mon, 13 Feb 2017, Paul E. McKenney wrote:
-> > > On Mon, Feb 13, 2017 at 01:53:27PM -0500, bob smith wrote:
-> > > > On 2/13/17 1:39 PM, Paul E. McKenney wrote:
-> > > > > can real DEC Alpha hardware end up with both instances of "r1"
-> > > > > having the value 1?
-> > > > 
-> > > > I thought this question reminded me of something, so I found this:
-> > > > > https://www.kernel.org/doc/Documentation/memory-barriers.txt
-> > > > 
-> > > > and I pasted in the content - David Howells is one of the authors and
-> > > > maybe that is why the question sort of reminded me.
-> > > > 
-> > > > Maybe someone has an update but this is what was said then.
+On Mon, Feb 13, 2017 at 04:06:21PM -0500, Alan Stern wrote:
+> On Mon, 13 Feb 2017, Paul E. McKenney wrote:
+> 
+> > On Mon, Feb 13, 2017 at 08:14:23PM +0100, Tobias Klausmann wrote:
+> > > Hi! 
 > > > 
-> > > Well, thank you for pointing me to this, but my question was intended to
-> > > check whether or not the words I helped to write in memory-barriers.txt
-> > > are in fact accurate.  So if you have an SMP DEC Alpha system that you
-> > > could provide remote access to, that would be very helpful!
+> > > On Mon, 13 Feb 2017, Paul E. McKenney wrote:
+> > > > On Mon, Feb 13, 2017 at 01:53:27PM -0500, bob smith wrote:
+> > > > > On 2/13/17 1:39 PM, Paul E. McKenney wrote:
+> > > > > > can real DEC Alpha hardware end up with both instances of "r1"
+> > > > > > having the value 1?
+> > > > > 
+> > > > > I thought this question reminded me of something, so I found this:
+> > > > > > https://www.kernel.org/doc/Documentation/memory-barriers.txt
+> > > > > 
+> > > > > and I pasted in the content - David Howells is one of the authors and
+> > > > > maybe that is why the question sort of reminded me.
+> > > > > 
+> > > > > Maybe someone has an update but this is what was said then.
+> > > > 
+> > > > Well, thank you for pointing me to this, but my question was intended to
+> > > > check whether or not the words I helped to write in memory-barriers.txt
+> > > > are in fact accurate.  So if you have an SMP DEC Alpha system that you
+> > > > could provide remote access to, that would be very helpful!
+> > > 
+> > > I have a 4-cpu ES40. Send me a test program and I'll gladly run
+> > > it for you.
 > > 
-> > I have a 4-cpu ES40. Send me a test program and I'll gladly run
-> > it for you.
+> > Andrea, could you please convert the litmus test below and send it to
+> > Tobias?
+> > 
+> > 							Thanx, Paul
+> > 
+> > ------------------------------------------------------------------------
+> > 
+> > C auto/C-LB-LRW+OB-Dv
+> > (*
+> >  * Result: Never
+> >  * 
+> >  *)
+> > {
+> > }
+> > 
+> > P0(int *u0, int *x1)
+> > {
+> > 	r1 = READ_ONCE(*u0);
+> > 	smp_mb();
+> > 	WRITE_ONCE(*x1, 1);
+> > }
+> > 
+> > 
+> > P1(int *u0, int *x1)
+> > {
+> > 	r1 = rcu_dereference(*x1);
 > 
-> Andrea, could you please convert the litmus test below and send it to
-> Tobias?
+> No, please, not this.  It should be:
 > 
-> 							Thanx, Paul
+> 	r1 = READ_ONCE(*x1);
 > 
-> ------------------------------------------------------------------------
+> That is, the auto/C-LB-LRW+OB-Ov.litmus test.
 > 
-> C auto/C-LB-LRW+OB-Dv
-> (*
->  * Result: Never
->  * 
->  *)
-> {
-> }
-> 
-> P0(int *u0, int *x1)
-> {
-> 	r1 = READ_ONCE(*u0);
-> 	smp_mb();
-> 	WRITE_ONCE(*x1, 1);
-> }
-> 
-> 
-> P1(int *u0, int *x1)
-> {
-> 	r1 = rcu_dereference(*x1);
+> > 	WRITE_ONCE(*u0, r1);
+> > }
+> > 
+> > exists
+> > (0:r1=1 /\ 1:r1=1)
 
-No, please, not this.  It should be:
+Sorry, here is the correct one in full.
 
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+C auto/C-LB-LRW+OB-Ov
+(*
+ * Result: Maybe
+ * P0-P1 rf OB-Ov: Never->Maybe: Note lack of C11 guarantee, control dependency
+ * P1 Ov,LRW: Note lack of C11 guarantee, control dependency
+ *)
+{
+}
+
+P0(int *u0, int *x1)
+{
+	r1 = READ_ONCE(*u0);
+	smp_mb();
+	WRITE_ONCE(*x1, 1);
+}
+
+
+P1(int *u0, int *x1)
+{
 	r1 = READ_ONCE(*x1);
+	WRITE_ONCE(*u0, r1);
+}
 
-That is, the auto/C-LB-LRW+OB-Ov.litmus test.
-
-> 	WRITE_ONCE(*u0, r1);
-> }
-> 
-> exists
-> (0:r1=1 /\ 1:r1=1)
-
-Alan
-
+exists
+(0:r1=1 /\ 1:r1=1)
 
