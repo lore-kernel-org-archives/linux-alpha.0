@@ -1,61 +1,41 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Question about DEC Alpha memory ordering
-Date: Mon, 13 Feb 2017 10:39:20 -0800
-Message-ID: <20170213183920.GA25191@linux.vnet.ibm.com>
-Reply-To: paulmck@linux.vnet.ibm.com
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: Question about DEC Alpha memory ordering
+Date: Mon, 13 Feb 2017 19:08:39 +0000
+Message-ID: <20170213190839.GI10256@arm.com>
+References: <20170213183920.GA25191@linux.vnet.ibm.com>
+ <ee22c179-9020-7101-96df-30f8e2e469b8@verizon.net>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <ee22c179-9020-7101-96df-30f8e2e469b8@verizon.net>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: stern@rowland.harvard.edu, j.alglave@ucl.ac.uk, luc.maranget@inria.fr, parri.andrea@gmail.com, will.deacon@arm.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: bob smith <sfmc68@verizon.net>
+Cc: paulmck@linux.vnet.ibm.com, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, stern@rowland.harvard.edu, j.alglave@ucl.ac.uk, luc.maranget@inria.fr, parri.andrea@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hello!
+On Mon, Feb 13, 2017 at 01:53:27PM -0500, bob smith wrote:
+> On 2/13/17 1:39 PM, Paul E. McKenney wrote:
+> > can real DEC Alpha hardware end up with both instances of "r1"
+> > having the value 1?
+> 
+> I thought this question reminded me of something, so I found this:
+> > https://www.kernel.org/doc/Documentation/memory-barriers.txt
+> 
+> and I pasted in the content - David Howells is one of the authors and
+> maybe that is why the question sort of reminded me.
+> 
+> Maybe someone has an update but this is what was said then.
+> 
+> 			 ============================
+> 			 LINUX KERNEL MEMORY BARRIERS
+> 			 ============================
+> 
+> By: David Howells <dhowells@redhat.com>
+>     Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+      ^^^^^^^^^^^^^^^^
 
-We have a question about DEC Alpha memory ordering.  Given the litmus test
-shown at the end of this email, some of us believe that DEC Alpha won't
-ever have both P0()'s and P1()'s READ_ONCE() calls return 1, but others
-believe otherwise.  Our current Linux-kernel memory model assumes that
-it cannot, though we are not aware of any Linux-kernel code that cares.
+There's only one Paul E. McKenney.
 
-In this litmus test, the "C auto/C-LB-LRW+OB-Ov" and the empty pair
-of curly braces can be ignored.  P0() and P1() run concurrently, and
-are passed pointer to the two shared variables that they are accessing
-(u0 and x1, and yes, this test was automatically generated -- why do
-you ask?).  The "exists" clause at the end is evaluated at the end of
-time, after all the dust has settled.  Note that the undeclared "r1"
-variables are local to their respective functions, and that "0:r1" in
-the "exists" clause accesses P0()'s instance of "r1", and that "1:r1"
-similarly accesses P1()'s "r1".
-
-So, can real DEC Alpha hardware end up with both instances of "r1"
-having the value 1?
-
-							Thanx, Paul
-
-------------------------------------------------------------------------
-
-C auto/C-LB-LRW+OB-Ov
-{
-}
-
-P0(int *u0, int *x1)
-{
-	r1 = READ_ONCE(*u0);
-	smp_mb();
-	WRITE_ONCE(*x1, 1);
-}
-
-
-P1(int *u0, int *x1)
-{
-	r1 = READ_ONCE(*x1);
-	WRITE_ONCE(*u0, r1);
-}
-
-exists
-(0:r1=1 /\ 1:r1=1)
-
+Will
