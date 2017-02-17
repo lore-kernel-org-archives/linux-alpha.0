@@ -1,49 +1,70 @@
-From: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 00/35] treewide trivial patches converting pr_warning to pr_warn
-Date: Fri, 17 Feb 2017 13:27:00 +0100
-Message-ID: <CAJZ5v0gNcGtnXpE1n6LSq7ey+UDKx+oQfmTg0_PgFwzB0Dd_5A@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 00/35] treewide trivial patches converting pr_warning to
+	pr_warn
+Date: Fri, 17 Feb 2017 13:37:33 +0100
+Message-ID: <CAMuHMdWsG0DboaLqXag53Vejwvc5PPY2k2gy9PSdHWbNEx6nRQ@mail.gmail.com>
 References: <cover.1487314666.git.joe@perches.com>
+	<CAJZ5v0gNcGtnXpE1n6LSq7ey+UDKx+oQfmTg0_PgFwzB0Dd_5A@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:in-reply-to:references:from:date:message-id
-         :subject:to:cc;
-        bh=oYKbwObyUzfC51JDHTQVm/EJFO/lnoSoIH/+mwN3yG4=;
-        b=BPBzyiCs/TmYPg6hI1MBPrST9atzXM5IIjLgE1aFjwFm77pxLAv2dwCQY+D3l3a6RQ
-         ZCvaEuOMY4aX0lGLvdsk/SsJhSzlSy698+c1BHcnmXOQ4BqWMRpNrm2KA5vlr6fuHZ3S
-         C6fSqgmhPOuQVahRTRRRDXQlPyKK5bRvPA8/eT3InCEqvL+r5DaGkdwzv9xN4pnuOJDA
-         PEn1OdRpw7+k64OtNFltkHZZpg27+INs1BM4PJhyuuGe41mp0cT4hoWvTI34p7caYFf0
-         ed7zZ312Y0VWdfVMny8jG29AfvInj2Aeo6WYOjOg9uz+qVsiCsAbv2qmhFbhZ/hdQNOs
-         sbmg==
-In-Reply-To: <cover.1487314666.git.joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
-Cc: Alexander Shishkin <alexander.shishkin-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Karol Herbst <karolherbst-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Pekka Paalanen <ppaalanen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, tboot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, oprofile-list-TtF/mJH4Jtrk1uMJSBkQmQ@public.gmane.org, sfi-devel-yLnuTTp1/kvcsJTPyzm5gB2eb7JE58TQ@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, drbd-dev-cunTk1MwBs8qoQakbn7OcQ@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gigaset307x-common-5NWGOfrQmneRv+LV9MX5uv+2+P5yyue3@public.gmane.org
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:sender:in-reply-to:references:from:date:message-id
+	:subject:to:cc;
+	bh=shGp3AtshrauIjfKntoabWTq1xpeCqpOEuqWrM6/fac=;
+	b=cmw10SzDfaXZ//UzMeQ6DqRRiMEWY8Hd1CJ8EsOCRO6R4nHhaofbZBZkc8QoUzo9rx
+	Ii3EVZekGHFh1I9Cs2hhv/9I/nKGntLsDe6p1mea7EkZZJfZ8KFnG+8hTBFlkjF61fuu
+	IbJA5uouDvzSa4aWS3H1ggIZ5Jg1iLfAfwTenkHCOrfXHGhDjCPSMuWlwQcBvADw2S9X
+	iOdMi73+YDM6rO6EhVaQb+kJBe7bsZLtlJ0DLWtF2WOo2VPgEFXb1Ug16fqfLqqJJ4SA
+	EPkW4ZIkYv2kh+EbNrn4dLxvUvyXjA4mqIOQTZXm/kZ6Fqj8EgPWBwMtnBqbNY1+Vksp
+	xZjg==
+In-Reply-To: <CAJZ5v0gNcGtnXpE1n6LSq7ey+UDKx+oQfmTg0_PgFwzB0Dd_5A@mail.gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, nouveau@lists.freedesktop.org, "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel@alsa-project.org>, dri-devel <dri-devel@lists.freedesktop.org>, virtualization@lists.linux-foundation.org, "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>, MTD Maling List <linux-mtd@lists.infradead.org>, sparclinux <sparclinux@vger.kernel.org>, Lars Ellenberg <drbd-dev@lists.linbit.com>, "open list:TARGET SUBSYSTEM" <linux-scsi@vger.kernel.org>, Richard Weinberger <richard@nod.at>, sfi-devel@simplefirmware.org, amd-gfx@lists.freedesktop.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, tboot-devel@lists.sourceforge.net, oprofil
 
-On Fri, Feb 17, 2017 at 8:11 AM, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org> wrote:
-> There are ~4300 uses of pr_warn and ~250 uses of the older
-> pr_warning in the kernel source tree.
+Hi Rafael,
+
+On Fri, Feb 17, 2017 at 1:27 PM, Rafael J. Wysocki <rafael@kernel.org> wrote:
+> On Fri, Feb 17, 2017 at 8:11 AM, Joe Perches <joe@perches.com> wrote:
+>> There are ~4300 uses of pr_warn and ~250 uses of the older
+>> pr_warning in the kernel source tree.
+>>
+>> Make the use of pr_warn consistent across all kernel files.
+>>
+>> This excludes all files in tools/ as there is a separate
+>> define pr_warning for that directory tree and pr_warn is
+>> not used in tools/.
+>>
+>> Done with 'sed s/\bpr_warning\b/pr_warn/' and some emacsing.
 >
-> Make the use of pr_warn consistent across all kernel files.
+> Sorry about asking if that has been asked already.
 >
-> This excludes all files in tools/ as there is a separate
-> define pr_warning for that directory tree and pr_warn is
-> not used in tools/.
->
-> Done with 'sed s/\bpr_warning\b/pr_warn/' and some emacsing.
+> Wouldn't it be slightly less intrusive to simply redefined
+> pr_warning() as a synonym for pr_warn()?
 
-Sorry about asking if that has been asked already.
+That's already the case.
 
-Wouldn't it be slightly less intrusive to simply redefined
-pr_warning() as a synonym for pr_warn()?
+This series cleans up the cruft, so we can catch all users with
+"git grep -w pr_warn".
 
-Thanks,
-Rafael
+Gr{oetje,eeting}s,
+
+                        Geert
+
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
