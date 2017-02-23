@@ -1,70 +1,78 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH 00/35] treewide trivial patches converting pr_warning to
-	pr_warn
-Date: Fri, 17 Feb 2017 13:37:33 +0100
-Message-ID: <CAMuHMdWsG0DboaLqXag53Vejwvc5PPY2k2gy9PSdHWbNEx6nRQ@mail.gmail.com>
+ pr_warn
+Date: Thu, 23 Feb 2017 09:28:23 -0600
+Message-ID: <CAL_JsqLTaq-QLTqfyDO8EVJYpgeUx1e4J0Fo2NvfFWqVoiVedQ@mail.gmail.com>
 References: <cover.1487314666.git.joe@perches.com>
-	<CAJZ5v0gNcGtnXpE1n6LSq7ey+UDKx+oQfmTg0_PgFwzB0Dd_5A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:sender:in-reply-to:references:from:date:message-id
-	:subject:to:cc;
-	bh=shGp3AtshrauIjfKntoabWTq1xpeCqpOEuqWrM6/fac=;
-	b=cmw10SzDfaXZ//UzMeQ6DqRRiMEWY8Hd1CJ8EsOCRO6R4nHhaofbZBZkc8QoUzo9rx
-	Ii3EVZekGHFh1I9Cs2hhv/9I/nKGntLsDe6p1mea7EkZZJfZ8KFnG+8hTBFlkjF61fuu
-	IbJA5uouDvzSa4aWS3H1ggIZ5Jg1iLfAfwTenkHCOrfXHGhDjCPSMuWlwQcBvADw2S9X
-	iOdMi73+YDM6rO6EhVaQb+kJBe7bsZLtlJ0DLWtF2WOo2VPgEFXb1Ug16fqfLqqJJ4SA
-	EPkW4ZIkYv2kh+EbNrn4dLxvUvyXjA4mqIOQTZXm/kZ6Fqj8EgPWBwMtnBqbNY1+Vksp
-	xZjg==
-In-Reply-To: <CAJZ5v0gNcGtnXpE1n6LSq7ey+UDKx+oQfmTg0_PgFwzB0Dd_5A@mail.gmail.com>
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <cover.1487314666.git.joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Sender: virtualization-bounces@lists.linux-foundation.org
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, nouveau@lists.freedesktop.org, "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." <alsa-devel@alsa-project.org>, dri-devel <dri-devel@lists.freedesktop.org>, virtualization@lists.linux-foundation.org, "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>, MTD Maling List <linux-mtd@lists.infradead.org>, sparclinux <sparclinux@vger.kernel.org>, Lars Ellenberg <drbd-dev@lists.linbit.com>, "open list:TARGET SUBSYSTEM" <linux-scsi@vger.kernel.org>, Richard Weinberger <richard@nod.at>, sfi-devel@simplefirmware.org, amd-gfx@lists.freedesktop.org, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, tboot-devel@lists.sourceforge.net, oprofil
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
+Cc: "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, SH-Linux <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexander Shishkin <alexander.shishkin-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Linux-ALSA <alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, drbd-dev-cunTk1MwBs8qoQakbn7OcQ@public.gmane.org, linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, sfi-devel-yLnuTTp1/kvcsJTPyzm5gB2eb7JE58TQ@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, tboot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, oprofile-list-TtF/mJH4Jtrk1uMJSBkQmQ@public.gmane.org, "linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-media@vger.k
 
-Hi Rafael,
-
-On Fri, Feb 17, 2017 at 1:27 PM, Rafael J. Wysocki <rafael@kernel.org> wrote:
-> On Fri, Feb 17, 2017 at 8:11 AM, Joe Perches <joe@perches.com> wrote:
->> There are ~4300 uses of pr_warn and ~250 uses of the older
->> pr_warning in the kernel source tree.
->>
->> Make the use of pr_warn consistent across all kernel files.
->>
->> This excludes all files in tools/ as there is a separate
->> define pr_warning for that directory tree and pr_warn is
->> not used in tools/.
->>
->> Done with 'sed s/\bpr_warning\b/pr_warn/' and some emacsing.
->
-> Sorry about asking if that has been asked already.
->
-> Wouldn't it be slightly less intrusive to simply redefined
-> pr_warning() as a synonym for pr_warn()?
-
-That's already the case.
-
-This series cleans up the cruft, so we can catch all users with
-"git grep -w pr_warn".
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+T24gRnJpLCBGZWIgMTcsIDIwMTcgYXQgMToxMSBBTSwgSm9lIFBlcmNoZXMgPGpvZUBwZXJjaGVz
+LmNvbT4gd3JvdGU6Cj4gVGhlcmUgYXJlIH40MzAwIHVzZXMgb2YgcHJfd2FybiBhbmQgfjI1MCB1
+c2VzIG9mIHRoZSBvbGRlcgo+IHByX3dhcm5pbmcgaW4gdGhlIGtlcm5lbCBzb3VyY2UgdHJlZS4K
+Pgo+IE1ha2UgdGhlIHVzZSBvZiBwcl93YXJuIGNvbnNpc3RlbnQgYWNyb3NzIGFsbCBrZXJuZWwg
+ZmlsZXMuCj4KPiBUaGlzIGV4Y2x1ZGVzIGFsbCBmaWxlcyBpbiB0b29scy8gYXMgdGhlcmUgaXMg
+YSBzZXBhcmF0ZQo+IGRlZmluZSBwcl93YXJuaW5nIGZvciB0aGF0IGRpcmVjdG9yeSB0cmVlIGFu
+ZCBwcl93YXJuIGlzCj4gbm90IHVzZWQgaW4gdG9vbHMvLgo+Cj4gRG9uZSB3aXRoICdzZWQgcy9c
+YnByX3dhcm5pbmdcYi9wcl93YXJuLycgYW5kIHNvbWUgZW1hY3NpbmcuCj4KPiBNaXNjZWxsYW5l
+YToKPgo+IG8gQ29hbGVzY2UgZm9ybWF0cyBhbmQgcmVhbGlnbiBhcmd1bWVudHMKPgo+IFNvbWUg
+ZmlsZXMgbm90IGNvbXBpbGVkIC0gbm8gY3Jvc3MtY29tcGlsZXJzCj4KPiBKb2UgUGVyY2hlcyAo
+MzUpOgo+ICAgYWxwaGE6IENvbnZlcnQgcmVtYWluaW5nIHVzZXMgb2YgcHJfd2FybmluZyB0byBw
+cl93YXJuCj4gICBBUk06IGVwOTN4eDogQ29udmVydCByZW1haW5pbmcgdXNlcyBvZiBwcl93YXJu
+aW5nIHRvIHByX3dhcm4KPiAgIGFybTY0OiBDb252ZXJ0IHJlbWFpbmluZyB1c2VzIG9mIHByX3dh
+cm5pbmcgdG8gcHJfd2Fybgo+ICAgYXJjaC9ibGFja2ZpbjogQ29udmVydCByZW1haW5pbmcgdXNl
+cyBvZiBwcl93YXJuaW5nIHRvIHByX3dhcm4KPiAgIGlhNjQ6IENvbnZlcnQgcmVtYWluaW5nIHVz
+ZSBvZiBwcl93YXJuaW5nIHRvIHByX3dhcm4KPiAgIHBvd2VycGM6IENvbnZlcnQgcmVtYWluaW5n
+IHVzZXMgb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBzaDogQ29udmVydCByZW1haW5pbmcg
+dXNlcyBvZiBwcl93YXJuaW5nIHRvIHByX3dhcm4KPiAgIHNwYXJjOiBDb252ZXJ0IHJlbWFpbmlu
+ZyB1c2Ugb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICB4ODY6IENvbnZlcnQgcmVtYWluaW5n
+IHVzZXMgb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBkcml2ZXJzL2FjcGk6IENvbnZlcnQg
+cmVtYWluaW5nIHVzZXMgb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBibG9jay9kcmJkOiBD
+b252ZXJ0IHJlbWFpbmluZyB1c2VzIG9mIHByX3dhcm5pbmcgdG8gcHJfd2Fybgo+ICAgZ2Ryb206
+IENvbnZlcnQgcmVtYWluaW5nIHVzZXMgb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBkcml2
+ZXJzL2NoYXI6IENvbnZlcnQgcmVtYWluaW5nIHVzZSBvZiBwcl93YXJuaW5nIHRvIHByX3dhcm4K
+PiAgIGNsb2Nrc291cmNlOiBDb252ZXJ0IHJlbWFpbmluZyB1c2Ugb2YgcHJfd2FybmluZyB0byBw
+cl93YXJuCj4gICBkcml2ZXJzL2NyeXB0bzogQ29udmVydCByZW1haW5pbmcgdXNlcyBvZiBwcl93
+YXJuaW5nIHRvIHByX3dhcm4KPiAgIGZtYzogQ29udmVydCByZW1haW5pbmcgdXNlIG9mIHByX3dh
+cm5pbmcgdG8gcHJfd2Fybgo+ICAgZHJpdmVycy9ncHU6IENvbnZlcnQgcmVtYWluaW5nIHVzZXMg
+b2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBkcml2ZXJzL2lkZTogQ29udmVydCByZW1haW5p
+bmcgdXNlcyBvZiBwcl93YXJuaW5nIHRvIHByX3dhcm4KPiAgIGRyaXZlcnMvaW5wdXQ6IENvbnZl
+cnQgcmVtYWluaW5nIHVzZXMgb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBkcml2ZXJzL2lz
+ZG46IENvbnZlcnQgcmVtYWluaW5nIHVzZXMgb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBk
+cml2ZXJzL21hY2ludG9zaDogQ29udmVydCByZW1haW5pbmcgdXNlcyBvZiBwcl93YXJuaW5nIHRv
+IHByX3dhcm4KPiAgIGRyaXZlcnMvbWVkaWE6IENvbnZlcnQgcmVtYWluaW5nIHVzZSBvZiBwcl93
+YXJuaW5nIHRvIHByX3dhcm4KPiAgIGRyaXZlcnMvbWZkOiBDb252ZXJ0IHJlbWFpbmluZyB1c2Vz
+IG9mIHByX3dhcm5pbmcgdG8gcHJfd2Fybgo+ICAgZHJpdmVycy9tdGQ6IENvbnZlcnQgcmVtYWlu
+aW5nIHVzZXMgb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBkcml2ZXJzL29mOiBDb252ZXJ0
+IHJlbWFpbmluZyB1c2VzIG9mIHByX3dhcm5pbmcgdG8gcHJfd2Fybgo+ICAgZHJpdmVycy9vcHJv
+ZmlsZTogQ29udmVydCByZW1haW5pbmcgdXNlcyBvZiBwcl93YXJuaW5nIHRvIHByX3dhcm4KPiAg
+IGRyaXZlcnMvcGxhdGZvcm06IENvbnZlcnQgcmVtYWluaW5nIHVzZXMgb2YgcHJfd2FybmluZyB0
+byBwcl93YXJuCj4gICBkcml2ZXJzL3JhcGlkaW86IENvbnZlcnQgcmVtYWluaW5nIHVzZSBvZiBw
+cl93YXJuaW5nIHRvIHByX3dhcm4KPiAgIGRyaXZlcnMvc2NzaTogQ29udmVydCByZW1haW5pbmcg
+dXNlIG9mIHByX3dhcm5pbmcgdG8gcHJfd2Fybgo+ICAgZHJpdmVycy9zaDogQ29udmVydCByZW1h
+aW5pbmcgdXNlIG9mIHByX3dhcm5pbmcgdG8gcHJfd2Fybgo+ICAgZHJpdmVycy90dHk6IENvbnZl
+cnQgcmVtYWluaW5nIHVzZXMgb2YgcHJfd2FybmluZyB0byBwcl93YXJuCj4gICBkcml2ZXJzL3Zp
+ZGVvOiBDb252ZXJ0IHJlbWFpbmluZyB1c2VzIG9mIHByX3dhcm5pbmcgdG8gcHJfd2Fybgo+ICAg
+a2VybmVsL3RyYWNlOiBDb252ZXJ0IHJlbWFpbmluZyB1c2VzIG9mIHByX3dhcm5pbmcgdG8gcHJf
+d2Fybgo+ICAgbGliOiBDb252ZXJ0IHJlbWFpbmluZyB1c2VzIG9mIHByX3dhcm5pbmcgdG8gcHJf
+d2Fybgo+ICAgc291bmQvc29jOiBDb252ZXJ0IHJlbWFpbmluZyB1c2VzIG9mIHByX3dhcm5pbmcg
+dG8gcHJfd2FybgoKV2hlcmUncyB0aGUgcmVtb3ZhbCBvZiBwcl93YXJuaW5nIHNvIHdlIGRvbid0
+IGhhdmUgbW9yZSBzbmVhayBpbj8KClJvYgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwphbWQtZ2Z4IG1haWxpbmcgbGlzdAphbWQtZ2Z4QGxpc3RzLmZyZWVk
+ZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2FtZC1nZngK
