@@ -1,73 +1,294 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH 00/35] treewide trivial patches converting pr_warning to
- pr_warn
-Date: Thu, 23 Feb 2017 09:53:41 -0800
-Message-ID: <1487872421.14159.38.camel@perches.com>
-References: <cover.1487314666.git.joe@perches.com>
- <CAL_JsqLTaq-QLTqfyDO8EVJYpgeUx1e4J0Fo2NvfFWqVoiVedQ@mail.gmail.com>
- <1487870304.14159.29.camel@perches.com>
- <CACvgo50LUm5VSn_F=Dh8kL5zCPpCQDoCyUEL=Z+=1+6hJpfTaw@mail.gmail.com>
+From: "Dmitry V. Levin" <ldv@altlinux.org>
+Subject: [PATCH] uapi: fix asm/signal.h userspace compilation errors
+Date: Sun, 26 Feb 2017 04:01:56 +0300
+Message-ID: <20170226010156.GA28831@altlinux.org>
 Mime-Version: 1.0
+Return-path: <linux-m68k-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-m68k-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:Mime-Version:References:In-Reply-To:
-	Date:To:From:Subject:Message-ID:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=5a8VSx9AeUQf9gZ6mcMeE3ueIdbMB0H2nC0rGTNq3aE=; b=OyS0wM6+ly0aDw
-	SF47LSr2nUPPMcjfc1M8E2zSLoLJwFOecTEQ+8w8PDP0DGCQSLBCVbhT5JTECSRUmipknyOwgi8ob
-	vnS8gJYpb7BXugo24y8yNr3vgteH64tugw6jxi8IyU3p1Eeby8e44E/zpdt+GHNmxxF1dj3AWW4xg
-	FZ5OJ2AONa9xGkqpdKF2PQ5NtYPo+CoragHGAGl2GQGZaaA8ke2RYkCpVuqeW7yZNf2fD3jSDFfiN
-	OE4d4prAdlBKqkkPEe2lHw2ZmfYs3MlR2PwMQp2Ds9ksfivAHNpYwfu87YZFSpfA806eTIZtfS4Th
-	IXQgGFN+1B38FDy02Ffw==;
-In-Reply-To: <CACvgo50LUm5VSn_F=Dh8kL5zCPpCQDoCyUEL=Z+=1+6hJpfTaw@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Emil Velikov <emil.l.velikov@gmail.com>
-Cc: "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-ia64@vger.kernel.org, SH-Linux <linux-sh@vger.kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, ML nouveau <nouveau@lists.freedesktop.org>, Linux-ALSA <alsa-devel@alsa-project.org>, dri-devel <dri-devel@lists.freedesktop.org>, "open list:VIRTIO GPU DRIVER" <virtualization@lists.linux-foundation.org>, "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>, "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>, sparclinux@vger.kernel.org, drbd-dev@lists.linbit.com, Rob Herring <robh@kernel.org>, linux-omap <linux-omap@vger.kernel.org>, linux-scsi@vger.kernel.org, Richard Weinberger <richard@nod.at>, tboot-devel@lists.sourceforge.net, amd-gfx mailing list <amd-gfx@lists.freedesktop.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, sfi-devel@simplefirmware.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Russell King <linux@armlinux.org.uk>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Ralf Baechle <ralf@linux-mips.org>, David Howells <dhowells@redhat.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, "David S. Miller" <>
 
-On Thu, 2017-02-23 at 17:41 +0000, Emil Velikov wrote:
-> On 23 February 2017 at 17:18, Joe Perches <joe@perches.com> wrote:
-> > On Thu, 2017-02-23 at 09:28 -0600, Rob Herring wrote:
-> > > On Fri, Feb 17, 2017 at 1:11 AM, Joe Perches <joe@perches.com> wrote:
-> > > > There are ~4300 uses of pr_warn and ~250 uses of the older
-> > > > pr_warning in the kernel source tree.
-> > > > 
-> > > > Make the use of pr_warn consistent across all kernel files.
-> > > > 
-> > > > This excludes all files in tools/ as there is a separate
-> > > > define pr_warning for that directory tree and pr_warn is
-> > > > not used in tools/.
-> > > > 
-> > > > Done with 'sed s/\bpr_warning\b/pr_warn/' and some emacsing.
-> > 
-> > []
-> > > Where's the removal of pr_warning so we don't have more sneak in?
-> > 
-> > After all of these actually get applied,
-> > and maybe a cycle or two later, one would
-> > get sent.
-> > 
-> 
-> By which point you'll get a few reincarnation of it. So you'll have to
-> do the same exercise again :-(
+Include <stddef.h> (guarded by #ifndef __KERNEL__) to fix asm/signal.h
+userspace compilation errors like this:
 
-Maybe to one or two files.  Not a big deal.
+/usr/include/asm/signal.h:126:2: error: unknown type name 'size_t'
+  size_t ss_size;
 
-> I guess the question is - are you expecting to get the series merged
-> all together/via one tree ?
+As no uapi header provides a definition of size_t, inclusion
+of <stddef.h> seems to be the most conservative fix available.
 
-No.  The only person that could do that effectively is Linus.
+On the kernel side size_t is typedef'ed to __kernel_size_t, so
+an alternative fix would be to change the type of sigaltstack.ss_size
+from size_t to __kernel_size_t for all architectures except those where
+sizeof(size_t) < sizeof(__kernel_size_t), namely, x32 and mips n32.
 
-> If not, your plan is perfectly reasonable.
+On x32 and mips n32, however, #include <stddef.h> seems to be the most
+straightforward way to obtain the definition for sigaltstack.ss_size's
+type.
+
+Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+---
+ include/uapi/asm-generic/signal.h      | 3 +++
+ arch/alpha/include/uapi/asm/signal.h   | 3 +++
+ arch/arm/include/uapi/asm/signal.h     | 3 +++
+ arch/avr32/include/uapi/asm/signal.h   | 3 +++
+ arch/cris/include/uapi/asm/signal.h    | 3 +++
+ arch/h8300/include/uapi/asm/signal.h   | 3 +++
+ arch/ia64/include/uapi/asm/signal.h    | 4 ++++
+ arch/m32r/include/uapi/asm/signal.h    | 3 +++
+ arch/m68k/include/uapi/asm/signal.h    | 3 +++
+ arch/mips/include/uapi/asm/signal.h    | 3 +++
+ arch/mn10300/include/uapi/asm/signal.h | 3 +++
+ arch/parisc/include/uapi/asm/signal.h  | 4 ++++
+ arch/powerpc/include/uapi/asm/signal.h | 3 +++
+ arch/s390/include/uapi/asm/signal.h    | 3 +++
+ arch/sparc/include/uapi/asm/signal.h   | 3 +++
+ arch/x86/include/uapi/asm/signal.h     | 3 +++
+ arch/xtensa/include/uapi/asm/signal.h  | 2 ++
+ 17 files changed, 52 insertions(+)
+
+diff --git a/include/uapi/asm-generic/signal.h b/include/uapi/asm-generic/signal.h
+index 3094618..e618eab 100644
+--- a/include/uapi/asm-generic/signal.h
++++ b/include/uapi/asm-generic/signal.h
+@@ -100,6 +100,9 @@ typedef unsigned long old_sigset_t;
+ #endif
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ struct sigaction {
+ 	__sighandler_t sa_handler;
+ 	unsigned long sa_flags;
+diff --git a/arch/alpha/include/uapi/asm/signal.h b/arch/alpha/include/uapi/asm/signal.h
+index dd4ca4bc..74e09f6 100644
+--- a/arch/alpha/include/uapi/asm/signal.h
++++ b/arch/alpha/include/uapi/asm/signal.h
+@@ -94,6 +94,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/arm/include/uapi/asm/signal.h b/arch/arm/include/uapi/asm/signal.h
+index 33073bd..a7b0012 100644
+--- a/arch/arm/include/uapi/asm/signal.h
++++ b/arch/arm/include/uapi/asm/signal.h
+@@ -93,6 +93,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/avr32/include/uapi/asm/signal.h b/arch/avr32/include/uapi/asm/signal.h
+index ffe8c77..62f3b88 100644
+--- a/arch/avr32/include/uapi/asm/signal.h
++++ b/arch/avr32/include/uapi/asm/signal.h
+@@ -95,6 +95,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/cris/include/uapi/asm/signal.h b/arch/cris/include/uapi/asm/signal.h
+index ce42fa7..bedff78 100644
+--- a/arch/cris/include/uapi/asm/signal.h
++++ b/arch/cris/include/uapi/asm/signal.h
+@@ -89,6 +89,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/h8300/include/uapi/asm/signal.h b/arch/h8300/include/uapi/asm/signal.h
+index af3a6c3..361e2e5 100644
+--- a/arch/h8300/include/uapi/asm/signal.h
++++ b/arch/h8300/include/uapi/asm/signal.h
+@@ -88,6 +88,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/ia64/include/uapi/asm/signal.h b/arch/ia64/include/uapi/asm/signal.h
+index c0ea285..b089bfc 100644
+--- a/arch/ia64/include/uapi/asm/signal.h
++++ b/arch/ia64/include/uapi/asm/signal.h
+@@ -107,6 +107,10 @@
+ 
+ #  include <linux/types.h>
+ 
++#  ifndef __KERNEL__
++#   include <stddef.h>	/* For size_t. */
++#  endif
++
+ /* Avoid too many header ordering problems.  */
+ struct siginfo;
+ 
+diff --git a/arch/m32r/include/uapi/asm/signal.h b/arch/m32r/include/uapi/asm/signal.h
+index 54acacb..269ec39 100644
+--- a/arch/m32r/include/uapi/asm/signal.h
++++ b/arch/m32r/include/uapi/asm/signal.h
+@@ -90,6 +90,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/m68k/include/uapi/asm/signal.h b/arch/m68k/include/uapi/asm/signal.h
+index cba6f85..f6a409e 100644
+--- a/arch/m68k/include/uapi/asm/signal.h
++++ b/arch/m68k/include/uapi/asm/signal.h
+@@ -86,6 +86,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/mips/include/uapi/asm/signal.h b/arch/mips/include/uapi/asm/signal.h
+index addb9f5..744fd71 100644
+--- a/arch/mips/include/uapi/asm/signal.h
++++ b/arch/mips/include/uapi/asm/signal.h
+@@ -101,6 +101,9 @@ typedef unsigned long old_sigset_t;		/* at least 32 bits */
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ struct sigaction {
+ 	unsigned int	sa_flags;
+ 	__sighandler_t	sa_handler;
+diff --git a/arch/mn10300/include/uapi/asm/signal.h b/arch/mn10300/include/uapi/asm/signal.h
+index f423a08..2e79c71 100644
+--- a/arch/mn10300/include/uapi/asm/signal.h
++++ b/arch/mn10300/include/uapi/asm/signal.h
+@@ -98,6 +98,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/parisc/include/uapi/asm/signal.h b/arch/parisc/include/uapi/asm/signal.h
+index e26043b..6c6c979 100644
+--- a/arch/parisc/include/uapi/asm/signal.h
++++ b/arch/parisc/include/uapi/asm/signal.h
+@@ -81,6 +81,10 @@
+ 
+ #  include <linux/types.h>
+ 
++#  ifndef __KERNEL__
++#   include <stddef.h>	/* For size_t. */
++#  endif
++
+ /* Avoid too many header ordering problems.  */
+ struct siginfo;
+ 
+diff --git a/arch/powerpc/include/uapi/asm/signal.h b/arch/powerpc/include/uapi/asm/signal.h
+index 6c69ee9..fba7738 100644
+--- a/arch/powerpc/include/uapi/asm/signal.h
++++ b/arch/powerpc/include/uapi/asm/signal.h
+@@ -91,6 +91,9 @@ typedef struct {
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ struct old_sigaction {
+ 	__sighandler_t sa_handler;
+ 	old_sigset_t sa_mask;
+diff --git a/arch/s390/include/uapi/asm/signal.h b/arch/s390/include/uapi/asm/signal.h
+index 2f43cfb..306373b6a 100644
+--- a/arch/s390/include/uapi/asm/signal.h
++++ b/arch/s390/include/uapi/asm/signal.h
+@@ -96,6 +96,9 @@ typedef unsigned long sigset_t;
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+diff --git a/arch/sparc/include/uapi/asm/signal.h b/arch/sparc/include/uapi/asm/signal.h
+index f387400..3b4664c 100644
+--- a/arch/sparc/include/uapi/asm/signal.h
++++ b/arch/sparc/include/uapi/asm/signal.h
+@@ -154,6 +154,9 @@ struct sigstack {
+ #include <asm-generic/signal-defs.h>
+ 
+ #ifndef __KERNEL__
++
++#include <stddef.h>	/* For size_t. */
++
+ struct __new_sigaction {
+ 	__sighandler_t		sa_handler;
+ 	unsigned long		sa_flags;
+diff --git a/arch/x86/include/uapi/asm/signal.h b/arch/x86/include/uapi/asm/signal.h
+index 8264f47..2d6db1d 100644
+--- a/arch/x86/include/uapi/asm/signal.h
++++ b/arch/x86/include/uapi/asm/signal.h
+@@ -96,6 +96,9 @@ typedef unsigned long sigset_t;
+ 
+ 
+ # ifndef __KERNEL__
++
++#  include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ #ifdef __i386__
+ 
+diff --git a/arch/xtensa/include/uapi/asm/signal.h b/arch/xtensa/include/uapi/asm/signal.h
+index 586756e..bbc9b14 100644
+--- a/arch/xtensa/include/uapi/asm/signal.h
++++ b/arch/xtensa/include/uapi/asm/signal.h
+@@ -106,6 +106,8 @@ typedef struct {
+ 
+ #ifndef __KERNEL__
+ 
++#include <stddef.h>	/* For size_t. */
++
+ /* Here we must cater to libcs that poke about in kernel headers.  */
+ 
+ struct sigaction {
+-- 
+ldv
