@@ -1,52 +1,72 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] uapi: fix another asm/shmbuf.h userspace compilation error
-Date: Thu, 2 Mar 2017 14:07:20 +0100
-Message-ID: <CAK8P3a1=-Q=gVRyk+PwqxTeTPXa4yrmqWKG7SyZng2d7bcbG=g@mail.gmail.com>
-References: <20170302004607.GE27132@altlinux.org>
+Subject: Re: [PATCH 3/3] uapi: fix asm/shmbuf.h userspace compilation errors
+Date: Thu, 2 Mar 2017 14:14:59 +0100
+Message-ID: <CAK8P3a1_QLguZ6XEGC9TdGUmF0R3bKaU2EiJ6m+Gf=KpYnmqqw@mail.gmail.com>
+References: <CAK8P3a3Ptm68i43BT5+kWptDw1koPwexpuFwH3-1naj_xi+arQ@mail.gmail.com>
+ <20170302002253.GC27132@altlinux.org>
 Mime-Version: 1.0
-Return-path: <linux-mips-bounce@linux-mips.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:sender:in-reply-to:references:from:date:message-id
          :subject:to:cc;
-        bh=2mlNnCCcLJLg8qr76ydSPB3O+ZWQC1xIMPd+ts0b/+8=;
-        b=WX4y+fEY2rXVArlzsvtbBmutif16K0Ii43QztqOND3up4aumrRAX0KOWrWeMmhLnnw
-         l88k3QzO5rctw8jB9nShbjVTxVGVRuSjimsCygbcZgOqJVwJujX+52/0r7T6o/Gv40eD
-         x3l5VGoLAg3OYincvQL+eYodIRnmwP5uGSzF+vp7eAtI9g9QxoaJw6HP6nl7Cai6k0yI
-         kf7WsSQihnfbz6kZzSH27FD5bmAvNsyUBUStkMVT+Ny3D+aajW991yvt+rT1H2xlAnL9
-         vweFV8uPGLF+jv0Yw68HhGqeNq8YIPWyi4uehIC49AysM6q5DpO1v4QH3A3NcUiNsn7j
-         1uag==
-In-Reply-To: <20170302004607.GE27132@altlinux.org>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+        bh=LGfk9URCUF7TqADcIIjBxyusxwSZ+LkpE/A906F6xpQ=;
+        b=ROO0SiMmHHG1uQaQg1H/NzmERr796ok6eDblG8NgPOLkgkD+MOyDEab9tBPv2vo8v7
+         hS421i9A1KbIiM57uLE4qieZFymH9iXMqSonHJke9DDhCk39L4VpJ2bWtwgYWffWoTW+
+         k0j7CK2UBW1j8XuPWMH4V1jzOdf7p34knlMO+o1WHjteIHcddWuU2vYILRIKPHjbiyX7
+         1YqIV4Mf6EPN79m4/9X/NaPqq4ExzsJMM3/PpN9YtlnKxq71N1wGldYimB7avDjJq7Cg
+         c7JN4qFpPAh8ytVgXI2LBK257sSF0lVRsHcIDyu7/gzZdw30deybBj+dW4t7FpYRKMyg
+         ttGQ==
+In-Reply-To: <20170302002253.GC27132@altlinux.org>
+Sender: sparclinux-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: "Dmitry V. Levin" <ldv@altlinux.org>
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-xtensa@linux-xtensa.org, Heiko Carstens <heiko.carstens@de.ibm.com>, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Hans-Christian Egtvedt <egtvedt@samfundet.no>, linux-arch <linux-arch@vger.kernel.org>, linux-s390@vger.kernel.org, linux-am33-list@redhat.com, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Thomas Gleixner <tglx@linutronix.de>, Chris Zankel <chris@zankel.net>, Tony Luck <tony.luck@intel.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Ralf Baechle <ralf@linux-mip>
+Cc: Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, David Howells <dhowells@redhat.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, "David S. Miller" <davem@davemloft.net>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, linux-arch <linux-arch@vger.kernel.org>, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips
 
-On Thu, Mar 2, 2017 at 1:46 AM, Dmitry V. Levin <ldv@altlinux.org> wrote:
-> Replace size_t with __kernel_size_t to fix asm/shmbuf.h userspace
-> compilation errors like this:
+On Thu, Mar 2, 2017 at 1:22 AM, Dmitry V. Levin <ldv@altlinux.org> wrote:
+> Include <asm/ipcbuf.h> to fix asm/shmbuf.h userspace compilation errors
+> like this:
 >
-> /usr/include/asm-generic/shmbuf.h:28:2: error: unknown type name 'size_t'
->   size_t   shm_segsz; /* size of segment (bytes) */
->
-> x32 is the only architecture where sizeof(size_t) is less than
-> sizeof(__kernel_size_t), but as the kernel treats shm_segsz field as
-> __kernel_size_t anyway, UAPI should follow.  Thanks to little-endiannes
-> of x32 and 64-bit alignment of the field following shm_segsz, this
-> change doesn't break ABI, and the difference doesn't manifest itself
-> easily.
+> /usr/include/asm-generic/shmbuf.h:26:20: error: field 'shm_perm' has incomplete type
+>   struct ipc64_perm shm_perm; /* operation perms */
+> /usr/include/asm-generic/shmbuf.h:28:2: error: unknown type name '__kernel_time_t'
+>   __kernel_time_t  shm_atime; /* last attach time */
+> /usr/include/asm-generic/shmbuf.h:32:2: error: unknown type name '__kernel_time_t'
+>   __kernel_time_t  shm_dtime; /* last detach time */
+> /usr/include/asm-generic/shmbuf.h:36:2: error: unknown type name '__kernel_time_t'
+>   __kernel_time_t  shm_ctime; /* last change time */
+> /usr/include/asm-generic/shmbuf.h:40:2: error: unknown type name '__kernel_pid_t'
+>   __kernel_pid_t  shm_cpid; /* pid of creator */
+> /usr/include/asm-generic/shmbuf.h:41:2: error: unknown type name '__kernel_pid_t'
+>   __kernel_pid_t  shm_lpid; /* pid of last operator */
+> /usr/include/asm-generic/shmbuf.h:42:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t shm_nattch; /* no. of current attaches */
+> /usr/include/asm-generic/shmbuf.h:43:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t __unused4;
+> /usr/include/asm-generic/shmbuf.h:44:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t __unused5;
+> /usr/include/asm-generic/shmbuf.h:48:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t shmmax;
+> /usr/include/asm-generic/shmbuf.h:49:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t shmmin;
+> /usr/include/asm-generic/shmbuf.h:50:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t shmmni;
+> /usr/include/asm-generic/shmbuf.h:51:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t shmseg;
+> /usr/include/asm-generic/shmbuf.h:52:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t shmall;
+> /usr/include/asm-generic/shmbuf.h:53:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t __unused1;
+> /usr/include/asm-generic/shmbuf.h:54:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t __unused2;
+> /usr/include/asm-generic/shmbuf.h:55:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t __unused3;
+> /usr/include/asm-generic/shmbuf.h:56:2: error: unknown type name '__kernel_ulong_t'
+>   __kernel_ulong_t __unused4;
 >
 > Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+> ---
 
 Acked-by: Arnd Bergmann <arnd@arndb.de>
-
