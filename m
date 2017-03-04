@@ -1,49 +1,62 @@
-From: Chris Metcalf <cmetcalf@mellanox.com>
-Subject: Re: [PATCH 1/3] futex: remove duplicated code
-Date: Fri, 3 Mar 2017 09:48:52 -0500
-Message-ID: <8d435487-62a6-ebab-f45f-567d79237e9a@mellanox.com>
-References: <20170303122712.13353-1-jslaby@suse.cz>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Debian kernel boot failure on Alpha [was Re: systemd FTBFS]
+Date: Sat, 4 Mar 2017 13:45:54 +1300
+Message-ID: <20170304004554.a4tmk4rt7gvanv4t@tower>
+References: <6395CB04-91FE-4FD2-9693-8A4D60C4417A@debian.org>
+ <20170302082248.zncr6miwjh4xnhz3@tower>
+ <20170303233019.e6sirwrtvptdc3tk@tower>
+ <5192d31f-0f59-2019-2760-8743c9624f05@physik.fu-berlin.de>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5192d31f-0f59-2019-2760-8743c9624f05@physik.fu-berlin.de>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
- bh=huf8WtPH72S9HMHy7eI/WbmGGgqG70EhFkuGooPEtzw=;
- b=iRof2TDaTyb/xlMNfz2/HjpOZmSrR9tYTp01seNbFuLEgzFLk15V+h11x+Jk/0XU+NF3huGmlcx/HbRZktmuf8TJjpjxQj58XOR11YaLC+MrULaqNhSEa6TP4HiHSgloT9LpghShIGqzCGKtsVtoENNghh2XkkwqYpVqZGZLbJ4=
-In-Reply-To: <20170303122712.13353-1-jslaby@suse.cz>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-Id: <linux-alpha.vger.kernel.org>
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Jiri Slaby <jslaby@suse.cz>, akpm@linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <pau>
+To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc: James Clarke <jrtc27@debian.org>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
 
-On 3/3/2017 7:27 AM, Jiri Slaby wrote:
-> There is code duplicated over all architecture's headers for
-> futex_atomic_op_inuser. Namely op decoding, access_ok check for uaddr,
-> and comparison of the result.
->
-> Remove this duplication and leave up to the arches only the needed
-> assembly which is now in arch_futex_atomic_op_inuser.
->
-> Note that s390 removed access_ok check in d12a29703 ("s390/uaccess:
-> remove pointless access_ok() checks") as access_ok there returns true.
-> We introduce it back to the helper for the sake of simplicity (it gets
-> optimized away anyway).
->
-> Signed-off-by: Jiri Slaby<jslaby@suse.cz>
+On Sat, Mar 04, 2017 at 12:32:30AM +0100, John Paul Adrian Glaubitz wrote:
+> On 03/04/2017 12:30 AM, Michael Cree wrote:
+> > And the Debian kernel still doesn't boot on my XP1000.  As soon as
+> > SRM transfers control to the kernel it falls back to SRM with a boot
+> > failure message.
+> 
+> Is there any sort of error message? Can you provide all messages from
+> the kernel from the boot loader throughout the drop back to SRM
+> console?
 
-Acked-by: Chris Metcalf <cmetcalf@mellanox.com> [for tile]
+Interestingly it only fails on my XP1000 (DP264 variant Alpha).  Just
+tried booting Electro (Titan variant Alpha) with the Debian kernel and
+it came up fine.
 
--- 
-Chris Metcalf, Mellanox Technologies
-http://www.mellanox.com
+On the XP1000 we get the messages:
 
+aboot: starting kernel vmlinuz with arguments ...
 
+halted CPU 0
+halt code = 5
+HALT instruction executed
+PC = fffffc000102d800
+boot failure
+
+and then we are back in the SRM.
+
+Given that a HALT instruction is executed I am guessing the kernel
+panicked very early on.  The kernel symbols in the region of the PC
+are:
+
+fffffc000102d700 t el_process_regatta_subpacket
+fffffc000102d810 T privateer_machine_check
+fffffc000102d8f0 t marvel_process_680_frame
+
+and el_process_regatta_subpacket is in ./arch/alpha/kernel/err_titan.c.
+
+On a quick inspection I am not sure what that function is doing, and
+I am not sure why code intended for Titan variant Alphas is being
+run on DP264.  I thought the kernel read the HWPRB from SRM very
+early on and from that knows what hardware it is running on.
+
+Cheers
+Michael.
