@@ -1,62 +1,85 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Debian kernel boot failure on Alpha [was Re: systemd FTBFS]
-Date: Sat, 4 Mar 2017 13:45:54 +1300
-Message-ID: <20170304004554.a4tmk4rt7gvanv4t@tower>
-References: <6395CB04-91FE-4FD2-9693-8A4D60C4417A@debian.org>
- <20170302082248.zncr6miwjh4xnhz3@tower>
- <20170303233019.e6sirwrtvptdc3tk@tower>
- <5192d31f-0f59-2019-2760-8743c9624f05@physik.fu-berlin.de>
+From: "Carlos O'Donell" <carlos@systemhalted.org>
+Subject: Re: [PATCH] uapi: fix asm/signal.h userspace compilation errors
+Date: Fri, 3 Mar 2017 20:23:20 -0500
+Message-ID: <CAE2sS1i-xezJu2hHfzOxpCMZHc2J+dsturtqFPMRWHa6mm6ccQ@mail.gmail.com>
+References: <20170226010156.GA28831@altlinux.org> <CAK8P3a0YX3RGAqWN0mwUJtBsqUX0C+QRtJLrT_UA=wX6Z+q0DA@mail.gmail.com>
+ <CAE2sS1h9QNV+31GMSv8aahJYOb9hFtFp5Aj-yVOfg7cjBHr_kg@mail.gmail.com> <20170302154845.GB3503@altlinux.org>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5192d31f-0f59-2019-2760-8743c9624f05@physik.fu-berlin.de>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <linux-mips-bounce@linux-mips.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=systemhalted.org; s=google;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=WATg6wghVwQqK8lIVmzN45OxVBaaUPjfgpkkdfwxork=;
+        b=Gm+dMj4ch8A5wx/SS2vA+iegMUCl4qN8LhDpuz2JF1eH6ZV0t3jdk27ZnTatilD645
+         3V8ccBbjhAh7pjECzmoNlfkrzjIcl9UisOBEWXyuFAoK2fhsemEvAowxyRwjPBjBgslr
+         ufuLEDqpXYnzmhpA4lQa99CvUkYKIdzeimYQc=
+In-Reply-To: <20170302154845.GB3503@altlinux.org>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: James Clarke <jrtc27@debian.org>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+To: "Dmitry V. Levin" <ldv@altlinux.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Russell King <linux@armlinux.org.uk>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Ralf Baechle <ralf@linux-mips.org>, David Howells <dhowells@redhat.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.>
 
-On Sat, Mar 04, 2017 at 12:32:30AM +0100, John Paul Adrian Glaubitz wrote:
-> On 03/04/2017 12:30 AM, Michael Cree wrote:
-> > And the Debian kernel still doesn't boot on my XP1000.  As soon as
-> > SRM transfers control to the kernel it falls back to SRM with a boot
-> > failure message.
-> 
-> Is there any sort of error message? Can you provide all messages from
-> the kernel from the boot loader throughout the drop back to SRM
-> console?
+On Thu, Mar 2, 2017 at 10:48 AM, Dmitry V. Levin <ldv@altlinux.org> wrote:
+> On Thu, Mar 02, 2017 at 10:22:18AM -0500, Carlos O'Donell wrote:
+>> On Wed, Mar 1, 2017 at 11:20 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+>> > On Sun, Feb 26, 2017 at 2:01 AM, Dmitry V. Levin <ldv@altlinux.org> wrote:
+>> >> Include <stddef.h> (guarded by #ifndef __KERNEL__) to fix asm/signal.h
+>> >> userspace compilation errors like this:
+>> >>
+>> >> /usr/include/asm/signal.h:126:2: error: unknown type name 'size_t'
+>> >>   size_t ss_size;
+>> >>
+>> >> As no uapi header provides a definition of size_t, inclusion
+>> >> of <stddef.h> seems to be the most conservative fix available.
+> [...]
+>> > I'm not sure if this is the best fix. We generally should not include one
+>> > standard header from another standard header. Would it be possible
+>> > to use __kernel_size_t instead of size_t?
+>>
+>> In glibc we handle this with special use of __need_size_t with GCC's
+>> provided stddef.h.
+>>
+>> For example glibc's signal.h does this:
+>>
+>> # define __need_size_t
+>> # include <stddef.h>
+>
+> Just to make it clear, do you suggest this approach for asm/signal.h as well?
 
-Interestingly it only fails on my XP1000 (DP264 variant Alpha).  Just
-tried booting Electro (Titan variant Alpha) with the Debian kernel and
-it came up fine.
+The kernel is duplicating userspace headers in the UAPI implementation
+and running into exactly the same problems we have already solved in
+userspace. We currently have no better solution than the "__need_*"
+interface for avoiding the duplication of the type definitions and the
+problems that come with that.
 
-On the XP1000 we get the messages:
+I am taking this up with senior glibc developers on libc-alpha to see
+if we have a better suggestion. If you give me 72 hours I'll either
+have a better suggestion or the acknowledgement that my suggestion is
+the best practical solution we have.
 
-aboot: starting kernel vmlinuz with arguments ...
+Note that in a GNU userspace stddef.h here comes from gcc, which
+completes the implementation of the C development environment that
+provides the types you need. The use of "__need_size_t" is a collusion
+between the components of the implementation and use by the Linux
+kernel would mean expecting something specific to a GNU
+implementation.
 
-halted CPU 0
-halt code = 5
-HALT instruction executed
-PC = fffffc000102d800
-boot failure
+I might suggest you use include/uapi/linux/libc-compat.h in an attempt
+to abstract away the GNU-specific magic for getting just size_t from
+stddef.h. That way you have documented the places that other runtime
+authors need to fill out for things to work.
 
-and then we are back in the SRM.
+Cheers,
+Carlos.
 
-Given that a HALT instruction is executed I am guessing the kernel
-panicked very early on.  The kernel symbols in the region of the PC
-are:
-
-fffffc000102d700 t el_process_regatta_subpacket
-fffffc000102d810 T privateer_machine_check
-fffffc000102d8f0 t marvel_process_680_frame
-
-and el_process_regatta_subpacket is in ./arch/alpha/kernel/err_titan.c.
-
-On a quick inspection I am not sure what that function is doing, and
-I am not sure why code intended for Titan variant Alphas is being
-run on DP264.  I thought the kernel read the HWPRB from SRM very
-early on and from that knows what hardware it is running on.
-
-Cheers
-Michael.
