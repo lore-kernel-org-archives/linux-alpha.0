@@ -1,57 +1,96 @@
-From: "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH 1/3] futex: remove duplicated code
-Date: Wed, 08 Mar 2017 20:36:30 -0800
-Message-ID: <201703090437.v294b0RE021699__1497.35428062758$1489036085$gmane$org@mail.zytor.com>
-References: <20170303122712.13353-1-jslaby@suse.cz> <20170304130550.GT21222@n2100.armlinux.org.uk> <23e5808b-2a20-518d-b49a-4d95dd23cfde@landley.net>
+From: Julia Cartwright <julia@ni.com>
+Subject: [PATCH 03/19] alpha: marvel: make use of raw_spinlock variants
+Date: Thu, 9 Mar 2017 10:21:50 -0600
+Message-ID: <0b729cf0f8bf233ed7ef743cd811306fd5c959e8.1489015238.git.julia@ni.com>
+References: <cover.1489015238.git.julia@ni.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <23e5808b-2a20-518d-b49a-4d95dd23cfde@landley.net>
+In-Reply-To: <cover.1489015238.git.julia@ni.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Rob Landley <rob@landley.net>, Russell King - ARM Linux <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.cz>
-Cc: akpm@linux-foundation.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org
 
-<cmetcalf@mellanox.com>,Thomas Gleixner <tglx@linutronix.de>,Ingo Molnar <mingo@redhat.com>,Chris Zankel <chris@zankel.net>,Max Filippov <jcmvbkbc@gmail.com>,Arnd Bergmann <arnd@arndb.de>,x86@kernel.org,linux-alpha@vger.kernel.org,linux-snps-arc@lists.infradead.org,linux-arm-kernel@lists.infradead.org,linux-hexagon@vger.kernel.org,linux-ia64@vger.kernel.org,linux-mips@linux-mips.org,openrisc@lists.librecores.org,linux-parisc@vger.kernel.org,linuxppc-dev@lists.ozlabs.org,linux-s390@vger.kernel.org,linux-sh@vger.kernel.org,sparclinux@vger.kernel.org,linux-xtensa@linux-xtensa.org,linux-arch@vger.kernel.org
-From: hpa@zytor.com
-Message-ID: <83324528-AAA1-4BED-B0C7-48426ECBA261@zytor.com>
+The alpha/marvel code currently implements an irq_chip for handling
+interrupts; due to how irq_chip handling is done, it's necessary for the
+irq_chip methods to be invoked from hardirq context, even on a a
+real-time kernel.  Because the spinlock_t type becomes a "sleeping"
+spinlock w/ RT kernels, it is not suitable to be used with irq_chips.
 
-On March 8, 2017 8:16:49 PM PST, Rob Landley <rob@landley.net> wrote:
->On 03/04/2017 07:05 AM, Russell King - ARM Linux wrote:
->> On Fri, Mar 03, 2017 at 01:27:10PM +0100, Jiri Slaby wrote:
->>> diff --git a/kernel/futex.c b/kernel/futex.c
->>> index b687cb22301c..c5ff9850952f 100644
->>> --- a/kernel/futex.c
->>> +++ b/kernel/futex.c
->>> @@ -1457,6 +1457,42 @@ futex_wake(u32 __user *uaddr, unsigned int
->flags, int nr_wake, u32 bitset)
->>>  	return ret;
->>>  }
->>>  
->>> +static int futex_atomic_op_inuser(int encoded_op, u32 __user
->*uaddr)
->>> +{
->>> +	int op = (encoded_op >> 28) & 7;
->>> +	int cmp = (encoded_op >> 24) & 15;
->>> +	int oparg = (encoded_op << 8) >> 20;
->>> +	int cmparg = (encoded_op << 20) >> 20;
->> 
->> Hmm.  oparg and cmparg look like they're doing these shifts to get
->sign
->> extension of the 12-bit values by assuming that "int" is 32-bit -
->> probably worth a comment, or for safety, they should be "s32" so it's
->> not dependent on the bit-width of "int".
->
->I thought Linux depended on the LP64 standard for all architectures?
->
->Standard: http://www.unix.org/whitepapers/64bit.html
->Rationale: http://www.unix.org/version2/whatsnew/lp64_wp.html
->
->So int has a defined bit width (32) on linux?
->
->Rob
+A quick audit of the operations under the lock reveal that they do only
+minimal, bounded work, and are therefore safe to do under a raw spinlock.
 
-Linux is ILP32 on 32-bit architectures and LP64 on 64-bit architectures, but that doesn't inherently make this stuff clear.
+Signed-off-by: Julia Cartwright <julia@ni.com>
+---
+ arch/alpha/include/asm/core_marvel.h |  2 +-
+ arch/alpha/kernel/sys_marvel.c       | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/arch/alpha/include/asm/core_marvel.h b/arch/alpha/include/asm/core_marvel.h
+index dad300fa14ce..8dcf9dbda618 100644
+--- a/arch/alpha/include/asm/core_marvel.h
++++ b/arch/alpha/include/asm/core_marvel.h
+@@ -312,7 +312,7 @@ struct io7 {
+ 	io7_port7_csrs *csrs;
+ 	struct io7_port ports[IO7_NUM_PORTS];
+ 
+-	spinlock_t irq_lock;
++	raw_spinlock_t irq_lock;
+ };
+ 
+ #ifndef __EXTERN_INLINE
+diff --git a/arch/alpha/kernel/sys_marvel.c b/arch/alpha/kernel/sys_marvel.c
+index 24e41bd7d3c9..3e533920371f 100644
+--- a/arch/alpha/kernel/sys_marvel.c
++++ b/arch/alpha/kernel/sys_marvel.c
+@@ -115,11 +115,11 @@ io7_enable_irq(struct irq_data *d)
+ 		return;
+ 	}
+ 
+-	spin_lock(&io7->irq_lock);
++	raw_spin_lock(&io7->irq_lock);
+ 	*ctl |= 1UL << 24;
+ 	mb();
+ 	*ctl;
+-	spin_unlock(&io7->irq_lock);
++	raw_spin_unlock(&io7->irq_lock);
+ }
+ 
+ static void
+@@ -136,11 +136,11 @@ io7_disable_irq(struct irq_data *d)
+ 		return;
+ 	}
+ 
+-	spin_lock(&io7->irq_lock);
++	raw_spin_lock(&io7->irq_lock);
+ 	*ctl &= ~(1UL << 24);
+ 	mb();
+ 	*ctl;
+-	spin_unlock(&io7->irq_lock);
++	raw_spin_unlock(&io7->irq_lock);
+ }
+ 
+ static void
+@@ -263,7 +263,7 @@ init_io7_irqs(struct io7 *io7,
+ 	 */
+ 	printk("  Interrupts reported to CPU at PE %u\n", boot_cpuid);
+ 
+-	spin_lock(&io7->irq_lock);
++	raw_spin_lock(&io7->irq_lock);
+ 
+ 	/* set up the error irqs */
+ 	io7_redirect_irq(io7, &io7->csrs->HLT_CTL.csr, boot_cpuid);
+@@ -295,7 +295,7 @@ init_io7_irqs(struct io7 *io7,
+ 	for (i = 0; i < 16; ++i)
+ 		init_one_io7_msi(io7, i, boot_cpuid);
+ 
+-	spin_unlock(&io7->irq_lock);
++	raw_spin_unlock(&io7->irq_lock);
+ }
+ 
+ static void __init
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+2.11.1
+
