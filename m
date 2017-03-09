@@ -1,91 +1,57 @@
-From: "Carlos O'Donell" <carlos@systemhalted.org>
-Subject: Re: [PATCH] uapi: fix asm/signal.h userspace compilation errors
-Date: Mon, 6 Mar 2017 10:10:18 -0500
-Message-ID: <CAE2sS1jTyENymA-fSAk4dt29rYgX50zYqubVYnGVGnFrH=-1nA@mail.gmail.com>
-References: <20170226010156.GA28831@altlinux.org> <CAK8P3a0YX3RGAqWN0mwUJtBsqUX0C+QRtJLrT_UA=wX6Z+q0DA@mail.gmail.com>
- <CAE2sS1h9QNV+31GMSv8aahJYOb9hFtFp5Aj-yVOfg7cjBHr_kg@mail.gmail.com>
- <20170302154845.GB3503@altlinux.org> <CAE2sS1i-xezJu2hHfzOxpCMZHc2J+dsturtqFPMRWHa6mm6ccQ@mail.gmail.com>
+From: Rob Landley <rob@landley.net>
+Subject: Re: [PATCH 1/3] futex: remove duplicated code
+Date: Wed, 8 Mar 2017 22:16:49 -0600
+Message-ID: <23e5808b-2a20-518d-b49a-4d95dd23cfde@landley.net>
+References: <20170303122712.13353-1-jslaby@suse.cz>
+ <20170304130550.GT21222@n2100.armlinux.org.uk>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <sparclinux-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=systemhalted.org; s=google;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=WWJmdPZ9NWttrCdNFQI1XbK+HgGRSgTz2XdblaMohlU=;
-        b=FvnK+FdKN9EWyJsk4swpZCJq3DnDKeZlc+QWXRjwyuwpMJDHl9Sh53BLppRGVZEgZF
-         9/uGCvL3/xxC8VeD1v3H402rA0TjD0MNqWwyvKoo70qaVi3gjbIwY+69/RqBDhx6W2in
-         5xIxc8dsDCmmkgTyOluyvft8qBpNSO4azv7xY=
-In-Reply-To: <CAE2sS1i-xezJu2hHfzOxpCMZHc2J+dsturtqFPMRWHa6mm6ccQ@mail.gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
+        d=landley-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=OhUHJSE5xU6QMGVnJZxnedbXx+uYtbUUiw2eHUGexbc=;
+        b=x9/eJRzZHDDBHbBVNWBBuWp935tC5GuX3kZhgkgijhR3tsRQ7L5dU/NpbpAI5N04pM
+         460Vjh3374vT3oKaXYqfPQfOv6TAldpV4sSM59MZOB59MsA4JcxcmrsJJieDM7Fmt16e
+         U0vwgft7qcoWC4PHgXDPogNvAFGk/RsyUf4OUC6E0qMSJBzeMiLaMoFIb9GMGTILExoA
+         znpddWFZ16MaDxZUGU1MtE0pWckaRcAMGeD/4ncjPMWJ182IMuWUfNMv8iQQRgf3JyFJ
+         bvynm4ZslcpaenqeG5vkypNLlB1MmiRDM1pI3+Ls+ncPb7bubCed+bpolfsmg1SJD08k
+         IZ0A==
+In-Reply-To: <20170304130550.GT21222@n2100.armlinux.org.uk>
+Sender: sparclinux-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Dmitry V. Levin" <ldv@altlinux.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Russell King <linux@armlinux.org.uk>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Ralf Baechle <ralf@linux-mips.org>, David Howells <dhowells@redhat.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.>
+To: Russell King - ARM Linux <linux@armlinux.org.uk>, Jiri Slaby <jslaby@suse.cz>
+Cc: akpm@linux-foundation.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>
 
-On Fri, Mar 3, 2017 at 8:23 PM, Carlos O'Donell <carlos@systemhalted.org> wrote:
-> On Thu, Mar 2, 2017 at 10:48 AM, Dmitry V. Levin <ldv@altlinux.org> wrote:
->> On Thu, Mar 02, 2017 at 10:22:18AM -0500, Carlos O'Donell wrote:
->>> On Wed, Mar 1, 2017 at 11:20 AM, Arnd Bergmann <arnd@arndb.de> wrote:
->>> > On Sun, Feb 26, 2017 at 2:01 AM, Dmitry V. Levin <ldv@altlinux.org> wrote:
->>> >> Include <stddef.h> (guarded by #ifndef __KERNEL__) to fix asm/signal.h
->>> >> userspace compilation errors like this:
->>> >>
->>> >> /usr/include/asm/signal.h:126:2: error: unknown type name 'size_t'
->>> >>   size_t ss_size;
->>> >>
->>> >> As no uapi header provides a definition of size_t, inclusion
->>> >> of <stddef.h> seems to be the most conservative fix available.
->> [...]
->>> > I'm not sure if this is the best fix. We generally should not include one
->>> > standard header from another standard header. Would it be possible
->>> > to use __kernel_size_t instead of size_t?
->>>
->>> In glibc we handle this with special use of __need_size_t with GCC's
->>> provided stddef.h.
->>>
->>> For example glibc's signal.h does this:
->>>
->>> # define __need_size_t
->>> # include <stddef.h>
->>
->> Just to make it clear, do you suggest this approach for asm/signal.h as well?
+On 03/04/2017 07:05 AM, Russell King - ARM Linux wrote:
+> On Fri, Mar 03, 2017 at 01:27:10PM +0100, Jiri Slaby wrote:
+>> diff --git a/kernel/futex.c b/kernel/futex.c
+>> index b687cb22301c..c5ff9850952f 100644
+>> --- a/kernel/futex.c
+>> +++ b/kernel/futex.c
+>> @@ -1457,6 +1457,42 @@ futex_wake(u32 __user *uaddr, unsigned int flags, int nr_wake, u32 bitset)
+>>  	return ret;
+>>  }
+>>  
+>> +static int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
+>> +{
+>> +	int op = (encoded_op >> 28) & 7;
+>> +	int cmp = (encoded_op >> 24) & 15;
+>> +	int oparg = (encoded_op << 8) >> 20;
+>> +	int cmparg = (encoded_op << 20) >> 20;
+> 
+> Hmm.  oparg and cmparg look like they're doing these shifts to get sign
+> extension of the 12-bit values by assuming that "int" is 32-bit -
+> probably worth a comment, or for safety, they should be "s32" so it's
+> not dependent on the bit-width of "int".
 
-The best practice from the glibc community looks like this:
+I thought Linux depended on the LP64 standard for all architectures?
 
-(a) Create a bits/types/*.h header for the type you need.
+Standard: http://www.unix.org/whitepapers/64bit.html
+Rationale: http://www.unix.org/version2/whatsnew/lp64_wp.html
 
-e.g.
-./time/bits/types/struct_timeval.h
-./time/bits/types/struct_itimerspec.h
-./time/bits/types/time_t.h
-./time/bits/types/struct_timespec.h
-./time/bits/types/struct_tm.h
-./time/bits/types/clockid_t.h
-./time/bits/types/clock_t.h
-./time/bits/types/timer_t.h
+So int has a defined bit width (32) on linux?
 
-(b) If neccessary the bits/types/*.h header is a wrapper:
-~~~
-#define __need_size_t
-#include <stddef.h>
-~~~
-to get access to the compiler provided type.
-
-This way all of the code you need simplifies to includes for the types you need.
-
-e.g.
-
-time/sys/time.h:
-...
-#include <bits/types.h>
-#include <bits/types/time_t.h>
-#include <bits/types/struct_timeval.h>
-...
-
-This is what we've been doing in glibc starting last September as we
-cleaned up all the convoluted conditional logic to get the types we
-needed in the headers that needed them.
-
-Cheers,
-Carlos.
+Rob
