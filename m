@@ -1,233 +1,231 @@
-From: kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH 03/19] alpha: marvel: make use of raw_spinlock variants
-Date: Sun, 12 Mar 2017 10:58:35 +0800
-Message-ID: <201703121014.YoUhr4Ar%fengguang.wu@intel.com>
-References: <0b729cf0f8bf233ed7ef743cd811306fd5c959e8.1489015238.git.julia@ni.com>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="Nq2Wo0NMKNjxTN9z"
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <0b729cf0f8bf233ed7ef743cd811306fd5c959e8.1489015238.git.julia@ni.com>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Till Smejkal <till.smejkal@googlemail.com>
+Subject: [RFC PATCH 00/13] Introduce first class virtual address spaces
+Date: Mon, 13 Mar 2017 15:14:02 -0700
+Message-ID: <20170313221415.9375-1-till.smejkal@gmail.com>
+Return-path: <owner-linux-aio@kvack.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=HB6Ee28SXSHB4qLeQezigkg1cTeU5gQ+C8I9CspDT+M=;
+        b=RSVTSqGhd2BncvA+hd8bB0MZ5pJrz2sKI5NB7hduUe+IehtHnd9cUuiwQnEp22mTLe
+         rVtJT3xcGXW5xtblwSnQM9LPUU4Akx6M3xKUtPSEsKNhiYbNJOJ3vb3+duK5RORbhUl/
+         MH82/5bjFAD4GzqfIXinhC8SH/Xc3iBBO0bLXmB6YIgRyEBe2AE8w2valkukqnLtiguU
+         q72qUMSz0e65cNcDXw2Xa7QWlrY4py6kjSPOJV22PToCim7KZy/KAV+2AoUDyKDXsoCT
+         p4+OrUHATbCSPR2C3xAVRZnF6RII7LE5TyAdLcBsSaWB55Mw8NumD+b/s9GsMfBN0mC2
+         xx5g==
+Sender: owner-linux-aio@kvack.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Julia Cartwright <julia@ni.com>
-Cc: kbuild-all@01.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Steven Miao <realmz6@gmail.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, James Hogan <james.hogan@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@dave>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-metag@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-media@vger.kernel.org, linux-mtd@lists.infradead.org, linux-usb@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-aio@kvack.org, linux-mm@kvack.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, alsa-devel@alsa-project.org
 
+First class virtual address spaces (also called VAS) are a new functionality of
+the Linux kernel allowing address spaces to exist independently of processes.
+The general idea behind this feature is described in a paper at ASPLOS16 with
+the title 'SpaceJMP: Programming with Multiple Virtual Address Spaces' [1].
 
---Nq2Wo0NMKNjxTN9z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This patchset extends the kernel memory management subsystem with a new
+type of address spaces (called VAS) which can be created and destroyed
+independently of processes by a user in the system. During its lifetime
+such a VAS can be attached to processes by the user which allows a process
+to have multiple address spaces and thereby multiple, potentially
+different, views on the system's main memory. During its execution the
+threads belonging to the process are able to switch freely between the
+different attached VAS and the process' original AS enabling them to
+utilize the different available views on the memory. These multiple virtual
+address spaces per process and the possibility to switch between them
+freely can be used in multiple interesting ways as also outlined in the
+mentioned paper. Some of the many possible applications are for example to
+compartmentalize a process for security reasons, to improve the performance
+of data-centric applications and to introduce new application models [1].
 
-Hi Julia,
+In addition to the concept of first class virtual address spaces, this
+patchset introduces yet another feature called VAS segments. VAS segments
+are memory regions which have a fixed size and position in the virtual
+address space and can be shared between multiple first class virtual
+address spaces. Such shareable memory regions are especially useful for
+in-memory pointer-based data structures or other pure in-memory data.
 
-[auto build test ERROR on gpio/for-next]
-[also build test ERROR on v4.11-rc1 next-20170309]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+First class virtual address spaces have a significant advantage compared to
+forking a process and using inter process communication mechanism, namely
+that creating and switching between VAS is significant faster than creating
+and switching between processes. As it can be seen in the following table,
+measured on an Intel Xeon E5620 CPU with 2.40GHz, creating a VAS is about 7
+times faster than forking and switching between VAS is up to 4 times faster
+than switching between processes.
 
-url:    https://github.com/0day-ci/linux/commits/Julia-Cartwright/fixup-usage-of-non-raw-spinlocks-in-irqchips/20170312-015922
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-gpio.git for-next
-config: alpha-alldefconfig (attached as .config)
-compiler: alpha-linux-gnu-gcc (Debian 6.1.1-9) 6.1.1 20160705
-reproduce:
-        wget https://raw.githubusercontent.com/01org/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # save the attached .config to linux build tree
-        make.cross ARCH=alpha 
+            |     VAS     |  processes  |
+    -------------------------------------
+    switch  |       468ns |      1944ns |
+    create  |     20003ns |    150491ns |
 
-All error/warnings (new ones prefixed by >>):
+Hence, first class virtual address spaces provide a fast mechanism for
+applications to utilize multiple virtual address spaces in parallel with a
+higher performance than splitting up the application into multiple
+independent processes.
 
-   In file included from include/linux/mmzone.h:7:0,
-                    from include/linux/gfp.h:5,
-                    from include/linux/mm.h:9,
-                    from arch/alpha/include/asm/io.h:7,
-                    from arch/alpha/kernel/core_marvel.c:8:
-   arch/alpha/kernel/core_marvel.c: In function 'alloc_io7':
->> arch/alpha/kernel/core_marvel.c:121:17: error: passing argument 1 of 'spinlock_check' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     spin_lock_init(&io7->irq_lock);
-                    ^
-   include/linux/spinlock.h:293:17: note: in definition of macro 'spin_lock_init'
-     spinlock_check(_lock);    \
-                    ^~~~~
-   include/linux/spinlock.h:286:40: note: expected 'spinlock_t * {aka struct spinlock *}' but argument is of type 'raw_spinlock_t * {aka struct raw_spinlock *}'
-    static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
-                                           ^~~~~~~~~~~~~~
-   In file included from include/linux/mmzone.h:7:0,
-                    from include/linux/gfp.h:5,
-                    from include/linux/mm.h:9,
-                    from arch/alpha/include/asm/io.h:7,
-                    from arch/alpha/kernel/core_marvel.c:8:
->> include/linux/spinlock.h:294:29: error: 'raw_spinlock_t {aka struct raw_spinlock}' has no member named 'rlock'; did you mean 'raw_lock'?
-     raw_spin_lock_init(&(_lock)->rlock);  \
-                                ^
-   include/linux/spinlock.h:104:9: note: in definition of macro 'raw_spin_lock_init'
-     do { *(lock) = __RAW_SPIN_LOCK_UNLOCKED(lock); } while (0)
-            ^~~~
->> arch/alpha/kernel/core_marvel.c:121:2: note: in expansion of macro 'spin_lock_init'
-     spin_lock_init(&io7->irq_lock);
-     ^~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+Both VAS and VAS segments have another significant advantage when combined
+with non-volatile memory. Because of their independent life cycle from
+processes and other kernel data structures, they can be used to save
+special memory regions or even whole AS into non-volatile memory making it
+possible to reuse them across multiple system reboots.
 
-vim +294 include/linux/spinlock.h
+At the current state of the development, first class virtual address spaces
+have one limitation, that we haven't been able to solve so far. The feature
+allows, that different threads of the same process can execute in different
+AS at the same time. This is possible, because the VAS-switch operation
+only changes the active mm_struct for the task_struct of the calling
+thread. However, when a thread switches into a first class virtual address
+space, some parts of its original AS are duplicated into the new one to
+allow the thread to continue its execution at its current state.
+Accordingly, parts of the processes AS (e.g. the code section, data
+section, heap section and stack sections) exist in multiple AS if the
+process has a VAS attached to it. Changes to these shared memory regions
+are synchronized between the address spaces whenever a thread switches
+between two of them. Unfortunately, in some scenarios the kernel is not
+able to properly synchronize all these shared memory regions because of
+conflicting changes. One such example happens if there are two threads, one
+executing in an attached first class virtual address space, the other in
+the tasks original address space. If both threads make changes to the heap
+section that cause expansion of the underlying vm_area_struct, the kernel
+cannot correctly synchronize these changes, because that would cause parts
+of the virtual address space to be overwritten with unrelated data. In the
+current implementation such conflicts are only detected but not resolved
+and result in an error code being returned by the kernel during the VAS
+switch operation. Unfortunately, that means for the particular thread that
+tried to make the switch, that it cannot do this anymore in the future and
+accordingly has to be killed.
 
-c2f21ce2 Thomas Gleixner 2009-12-02  280  #endif
-c2f21ce2 Thomas Gleixner 2009-12-02  281  
-c2f21ce2 Thomas Gleixner 2009-12-02  282  /*
-c2f21ce2 Thomas Gleixner 2009-12-02  283   * Map the spin_lock functions to the raw variants for PREEMPT_RT=n
-c2f21ce2 Thomas Gleixner 2009-12-02  284   */
-c2f21ce2 Thomas Gleixner 2009-12-02  285  
-3490565b Denys Vlasenko  2015-07-13 @286  static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
-c2f21ce2 Thomas Gleixner 2009-12-02  287  {
-c2f21ce2 Thomas Gleixner 2009-12-02  288  	return &lock->rlock;
-c2f21ce2 Thomas Gleixner 2009-12-02  289  }
-c2f21ce2 Thomas Gleixner 2009-12-02  290  
-c2f21ce2 Thomas Gleixner 2009-12-02  291  #define spin_lock_init(_lock)				\
-c2f21ce2 Thomas Gleixner 2009-12-02  292  do {							\
-c2f21ce2 Thomas Gleixner 2009-12-02  293  	spinlock_check(_lock);				\
-c2f21ce2 Thomas Gleixner 2009-12-02 @294  	raw_spin_lock_init(&(_lock)->rlock);		\
-c2f21ce2 Thomas Gleixner 2009-12-02  295  } while (0)
-c2f21ce2 Thomas Gleixner 2009-12-02  296  
-3490565b Denys Vlasenko  2015-07-13  297  static __always_inline void spin_lock(spinlock_t *lock)
+This code was developed during an internship at Hewlett Packard Enterprise.
 
-:::::: The code at line 294 was first introduced by commit
-:::::: c2f21ce2e31286a0a32f8da0a7856e9ca1122ef3 locking: Implement new raw_spinlock
+[1] http://impact.crhc.illinois.edu/shared/Papers/ASPLOS16-SpaceJMP.pdf
 
-:::::: TO: Thomas Gleixner <tglx@linutronix.de>
-:::::: CC: Thomas Gleixner <tglx@linutronix.de>
+Till Smejkal (13):
+  mm: Add mm_struct argument to 'mmap_region'
+  mm: Add mm_struct argument to 'do_mmap' and 'do_mmap_pgoff'
+  mm: Rename 'unmap_region' and add mm_struct argument
+  mm: Add mm_struct argument to 'get_unmapped_area' and
+    'vm_unmapped_area'
+  mm: Add mm_struct argument to 'mm_populate' and '__mm_populate'
+  mm/mmap: Export 'vma_link' and 'find_vma_links' to mm subsystem
+  kernel/fork: Split and export 'mm_alloc' and 'mm_init'
+  kernel/fork: Define explicitly which mm_struct to duplicate during
+    fork
+  mm/memory: Add function to one-to-one duplicate page ranges
+  mm: Introduce first class virtual address spaces
+  mm/vas: Introduce VAS segments - shareable address space regions
+  mm/vas: Add lazy-attach support for first class virtual address spaces
+  fs/proc: Add procfs support for first class virtual address spaces
 
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ MAINTAINERS                                  |   10 +
+ arch/alpha/kernel/osf_sys.c                  |   19 +-
+ arch/arc/mm/mmap.c                           |    8 +-
+ arch/arm/kernel/process.c                    |    2 +-
+ arch/arm/mach-rpc/ecard.c                    |    2 +-
+ arch/arm/mm/mmap.c                           |   19 +-
+ arch/arm64/kernel/vdso.c                     |    2 +-
+ arch/blackfin/include/asm/pgtable.h          |    3 +-
+ arch/blackfin/kernel/sys_bfin.c              |    5 +-
+ arch/frv/mm/elf-fdpic.c                      |   11 +-
+ arch/hexagon/kernel/vdso.c                   |    2 +-
+ arch/ia64/kernel/perfmon.c                   |    3 +-
+ arch/ia64/kernel/sys_ia64.c                  |    6 +-
+ arch/ia64/mm/hugetlbpage.c                   |    7 +-
+ arch/metag/mm/hugetlbpage.c                  |   11 +-
+ arch/mips/kernel/vdso.c                      |    4 +-
+ arch/mips/mm/mmap.c                          |   27 +-
+ arch/parisc/kernel/sys_parisc.c              |   19 +-
+ arch/parisc/mm/hugetlbpage.c                 |    7 +-
+ arch/powerpc/include/asm/book3s/64/hugetlb.h |    6 +-
+ arch/powerpc/include/asm/page_64.h           |    3 +-
+ arch/powerpc/kernel/vdso.c                   |    2 +-
+ arch/powerpc/mm/hugetlbpage-radix.c          |    9 +-
+ arch/powerpc/mm/hugetlbpage.c                |    9 +-
+ arch/powerpc/mm/mmap.c                       |   17 +-
+ arch/powerpc/mm/slice.c                      |   25 +-
+ arch/s390/kernel/vdso.c                      |    3 +-
+ arch/s390/mm/mmap.c                          |   42 +-
+ arch/sh/kernel/vsyscall/vsyscall.c           |    2 +-
+ arch/sh/mm/mmap.c                            |   19 +-
+ arch/sparc/include/asm/pgtable_64.h          |    4 +-
+ arch/sparc/kernel/sys_sparc_32.c             |    6 +-
+ arch/sparc/kernel/sys_sparc_64.c             |   31 +-
+ arch/sparc/mm/hugetlbpage.c                  |   26 +-
+ arch/tile/kernel/vdso.c                      |    2 +-
+ arch/tile/mm/elf.c                           |    2 +-
+ arch/tile/mm/hugetlbpage.c                   |   26 +-
+ arch/x86/entry/syscalls/syscall_32.tbl       |   16 +
+ arch/x86/entry/syscalls/syscall_64.tbl       |   16 +
+ arch/x86/entry/vdso/vma.c                    |    2 +-
+ arch/x86/kernel/sys_x86_64.c                 |   19 +-
+ arch/x86/mm/hugetlbpage.c                    |   26 +-
+ arch/x86/mm/mpx.c                            |    6 +-
+ arch/xtensa/kernel/syscall.c                 |    7 +-
+ drivers/char/mem.c                           |   15 +-
+ drivers/dax/dax.c                            |   10 +-
+ drivers/media/usb/uvc/uvc_v4l2.c             |    6 +-
+ drivers/media/v4l2-core/v4l2-dev.c           |    8 +-
+ drivers/media/v4l2-core/videobuf2-v4l2.c     |    5 +-
+ drivers/mtd/mtdchar.c                        |    3 +-
+ drivers/usb/gadget/function/uvc_v4l2.c       |    3 +-
+ fs/aio.c                                     |    4 +-
+ fs/exec.c                                    |    5 +-
+ fs/hugetlbfs/inode.c                         |    8 +-
+ fs/proc/base.c                               |  528 ++++
+ fs/proc/inode.c                              |   11 +-
+ fs/proc/internal.h                           |    1 +
+ fs/ramfs/file-mmu.c                          |    5 +-
+ fs/ramfs/file-nommu.c                        |   10 +-
+ fs/romfs/mmap-nommu.c                        |    3 +-
+ include/linux/fs.h                           |    2 +-
+ include/linux/huge_mm.h                      |   12 +-
+ include/linux/hugetlb.h                      |   10 +-
+ include/linux/mm.h                           |   53 +-
+ include/linux/mm_types.h                     |   16 +-
+ include/linux/sched.h                        |   34 +-
+ include/linux/shmem_fs.h                     |    5 +-
+ include/linux/syscalls.h                     |   21 +
+ include/linux/vas.h                          |  322 +++
+ include/linux/vas_types.h                    |  173 ++
+ include/media/v4l2-dev.h                     |    3 +-
+ include/media/videobuf2-v4l2.h               |    5 +-
+ include/uapi/asm-generic/unistd.h            |   34 +-
+ include/uapi/linux/Kbuild                    |    1 +
+ include/uapi/linux/vas.h                     |   28 +
+ init/main.c                                  |    2 +
+ ipc/shm.c                                    |   22 +-
+ kernel/events/uprobes.c                      |    2 +-
+ kernel/exit.c                                |    2 +
+ kernel/fork.c                                |   99 +-
+ kernel/sys_ni.c                              |   18 +
+ mm/Kconfig                                   |   47 +
+ mm/Makefile                                  |    1 +
+ mm/gup.c                                     |    4 +-
+ mm/huge_memory.c                             |   83 +-
+ mm/hugetlb.c                                 |  205 +-
+ mm/internal.h                                |   19 +
+ mm/memory.c                                  |  469 +++-
+ mm/mlock.c                                   |   21 +-
+ mm/mmap.c                                    |  124 +-
+ mm/mremap.c                                  |   13 +-
+ mm/nommu.c                                   |   17 +-
+ mm/shmem.c                                   |   14 +-
+ mm/util.c                                    |    4 +-
+ mm/vas.c                                     | 3466 ++++++++++++++++++++++++++
+ sound/core/pcm_native.c                      |    3 +-
+ 96 files changed, 5927 insertions(+), 545 deletions(-)
+ create mode 100644 include/linux/vas.h
+ create mode 100644 include/linux/vas_types.h
+ create mode 100644 include/uapi/linux/vas.h
+ create mode 100644 mm/vas.c
 
---Nq2Wo0NMKNjxTN9z
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
+-- 
+2.12.0
 
-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
-
---Nq2Wo0NMKNjxTN9z--
+--
+To unsubscribe, send a message with 'unsubscribe linux-aio' in
+the body to majordomo@kvack.org.  For more info on Linux AIO,
+see: http://www.kvack.org/aio/
+Don't email: <a href=mailto:"aart@kvack.org">aart@kvack.org</a>
