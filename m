@@ -1,53 +1,113 @@
-From: Till Smejkal <till.smejkal@googlemail.com>
-Subject: Re: [RFC PATCH 00/13] Introduce first class virtual address spaces
-Date: Thu, 16 Mar 2017 10:50:33 -0700
-Message-ID: <20170316175033.pgkep75iszqy3csb@arch-dev>
-References: <alpine.DEB.2.20.1703161841220.3586@nanos>
+From: Julia Cartwright <julia@ni.com>
+Subject: [PATCH v2 2/9] alpha: marvel: make use of raw_spinlock variants
+Date: Tue, 21 Mar 2017 17:43:02 -0500
+Message-ID: <d3e80eff46901ad060350fb24403c3fe197c7fc6.1490135047.git.julia@ni.com>
+References: <cover.1490135047.git.julia@ni.com>
 Mime-Version: 1.0
-Return-path: <owner-linux-aio@kvack.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:mail-followup-to:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=NqSECOhtIPvGa/ZlYGLRwoaJQiZSEEXcOGoCa/UZC24=;
-        b=fqE6aNHwZq02pkPK/N3+9XVMv5K+sdxBmMVfgacKjoR8GzEsxU9buZiP9cYHpbvT78
-         Up6sWFswahm/vir6xwQhB92G5A4qUCrQ86GTaiLXKYtHLRG8le302oF+I0k6V6pGIRvB
-         5n9lHJpfkQyzAZKIEXI/r3F0RODfSvkODGX2Rfhl9vMxfUX6Qb6UdJwwKZ5SiZTcT1yg
-         wfcCjKuKNmUxfaUor1xUL48KqNLGdHQ0+li5DprAsMx/QJewiJqRYclvJkezklmH/aRW
-         Wg4D3kiiy69JvPZF/WgffZUX/vsQdnx8Ymgzfg4hjO1IgGj+mKtaWP4jrUct7YelcVAk
-         8IlQ==
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.20.1703161841220.3586@nanos>
-Sender: owner-linux-aio@kvack.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <cover.1490135047.git.julia@ni.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Till Smejkal <till.smejkal@googlemail.com>, Andy Lutomirski <luto@amacapital.net>, Andy Lutomirski <luto@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Steven Miao <realmz6@gmail.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, James Hogan <james.hogan@imgtec.com>, Ralf Baechle <ralf@linux-mips.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Thu, 16 Mar 2017, Thomas Gleixner wrote:
-> On Thu, 16 Mar 2017, Till Smejkal wrote:
-> > On Thu, 16 Mar 2017, Thomas Gleixner wrote:
-> > > Why do we need yet another mechanism to represent something which looks
-> > > like a file instead of simply using existing mechanisms and extend them?
-> > 
-> > You are right. I also recognized during the discussion with Andy, Chris,
-> > Matthew, Luck, Rich and the others that there are already other
-> > techniques in the Linux kernel that can achieve the same functionality
-> > when combined. As I said also to the others, I will drop the VAS segments
-> > for future versions. The first class virtual address space feature was
-> > the more interesting part of the patchset anyways.
-> 
-> While you are at it, could you please drop this 'first class' marketing as
-> well? It has zero technical value, really.
+The alpha/marvel code currently implements an irq_chip for handling
+interrupts; due to how irq_chip handling is done, it's necessary for the
+irq_chip methods to be invoked from hardirq context, even on a a
+real-time kernel.  Because the spinlock_t type becomes a "sleeping"
+spinlock w/ RT kernels, it is not suitable to be used with irq_chips.
 
-Yes of course. I am sorry for the trouble that I caused already.
+A quick audit of the operations under the lock reveal that they do only
+minimal, bounded work, and are therefore safe to do under a raw spinlock.
 
-Thanks
-Till
+Signed-off-by: Julia Cartwright <julia@ni.com>
+---
+v1 -> v2:
+  - Add hunk which properly initializes the spin-lock (via kbuild bot).
 
---
-To unsubscribe, send a message with 'unsubscribe linux-aio' in
-the body to majordomo@kvack.org.  For more info on Linux AIO,
-see: http://www.kvack.org/aio/
-Don't email: <a href=mailto:"aart@kvack.org">aart@kvack.org</a>
+ arch/alpha/include/asm/core_marvel.h |  2 +-
+ arch/alpha/kernel/core_marvel.c      |  2 +-
+ arch/alpha/kernel/sys_marvel.c       | 12 ++++++------
+ 3 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/alpha/include/asm/core_marvel.h b/arch/alpha/include/asm/core_marvel.h
+index dad300fa14ce..8dcf9dbda618 100644
+--- a/arch/alpha/include/asm/core_marvel.h
++++ b/arch/alpha/include/asm/core_marvel.h
+@@ -312,7 +312,7 @@ struct io7 {
+ 	io7_port7_csrs *csrs;
+ 	struct io7_port ports[IO7_NUM_PORTS];
+ 
+-	spinlock_t irq_lock;
++	raw_spinlock_t irq_lock;
+ };
+ 
+ #ifndef __EXTERN_INLINE
+diff --git a/arch/alpha/kernel/core_marvel.c b/arch/alpha/kernel/core_marvel.c
+index d5f0580746a5..4300b1d1cf2c 100644
+--- a/arch/alpha/kernel/core_marvel.c
++++ b/arch/alpha/kernel/core_marvel.c
+@@ -118,7 +118,7 @@ alloc_io7(unsigned int pe)
+ 
+ 	io7 = alloc_bootmem(sizeof(*io7));
+ 	io7->pe = pe;
+-	spin_lock_init(&io7->irq_lock);
++	raw_spin_lock_init(&io7->irq_lock);
+ 
+ 	for (h = 0; h < 4; h++) {
+ 		io7->ports[h].io7 = io7;
+diff --git a/arch/alpha/kernel/sys_marvel.c b/arch/alpha/kernel/sys_marvel.c
+index 24e41bd7d3c9..3e533920371f 100644
+--- a/arch/alpha/kernel/sys_marvel.c
++++ b/arch/alpha/kernel/sys_marvel.c
+@@ -115,11 +115,11 @@ io7_enable_irq(struct irq_data *d)
+ 		return;
+ 	}
+ 
+-	spin_lock(&io7->irq_lock);
++	raw_spin_lock(&io7->irq_lock);
+ 	*ctl |= 1UL << 24;
+ 	mb();
+ 	*ctl;
+-	spin_unlock(&io7->irq_lock);
++	raw_spin_unlock(&io7->irq_lock);
+ }
+ 
+ static void
+@@ -136,11 +136,11 @@ io7_disable_irq(struct irq_data *d)
+ 		return;
+ 	}
+ 
+-	spin_lock(&io7->irq_lock);
++	raw_spin_lock(&io7->irq_lock);
+ 	*ctl &= ~(1UL << 24);
+ 	mb();
+ 	*ctl;
+-	spin_unlock(&io7->irq_lock);
++	raw_spin_unlock(&io7->irq_lock);
+ }
+ 
+ static void
+@@ -263,7 +263,7 @@ init_io7_irqs(struct io7 *io7,
+ 	 */
+ 	printk("  Interrupts reported to CPU at PE %u\n", boot_cpuid);
+ 
+-	spin_lock(&io7->irq_lock);
++	raw_spin_lock(&io7->irq_lock);
+ 
+ 	/* set up the error irqs */
+ 	io7_redirect_irq(io7, &io7->csrs->HLT_CTL.csr, boot_cpuid);
+@@ -295,7 +295,7 @@ init_io7_irqs(struct io7 *io7,
+ 	for (i = 0; i < 16; ++i)
+ 		init_one_io7_msi(io7, i, boot_cpuid);
+ 
+-	spin_unlock(&io7->irq_lock);
++	raw_spin_unlock(&io7->irq_lock);
+ }
+ 
+ static void __init
+-- 
+2.12.0
+
