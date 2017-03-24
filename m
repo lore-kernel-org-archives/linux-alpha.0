@@ -1,113 +1,188 @@
-From: Julia Cartwright <julia@ni.com>
-Subject: [PATCH v2 2/9] alpha: marvel: make use of raw_spinlock variants
-Date: Tue, 21 Mar 2017 17:43:02 -0500
-Message-ID: <d3e80eff46901ad060350fb24403c3fe197c7fc6.1490135047.git.julia@ni.com>
-References: <cover.1490135047.git.julia@ni.com>
+From: Matthew Wilcox <willy@infradead.org>
+Subject: [PATCH v3 2/7] ARM: Implement memset16, memset32 & memset64
+Date: Fri, 24 Mar 2017 09:13:13 -0700
+Message-ID: <20170324161318.18718-3-willy@infradead.org>
+References: <20170324161318.18718-1-willy@infradead.org>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <cover.1490135047.git.julia@ni.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org, linux-alpha@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=kFSFqKgtPpjK24L9inLNj+80wftIKc4vndxS29Ldaqo=; b=S7B4s5RgtCS9QG8xDyKVrsc3lj
+	S49oihxH/9KFFEX9flzepo3aeQr4CtBZv3wM3OIPNO1dDsN6wf/iFHxKFpfa3kfjJxvDo+d7bdFFq
+	GHelKGa8BF/vRCXdLh8Sp4SuhVD5NHG4rViTj1ixxr6Q6eYfbsq8e5dkSDZN1vkue7IQlmsk3pfGx
+	E6gmxZ0k4HLp2pJpg/hiWofsH+zxEW2MEZ6hYMtAqmlMGL/xMCJptuMu2/yFePcCdzGG8CvWFteGm
+	vTWn2nTv/9RtnQyww5Ug21DnJex19PNgQxlCOYGHeJ/N0eOUesyaUCz6G4/nWOctEQDDCc39phKfc
+	R583cRsQ==;
+In-Reply-To: <20170324161318.18718-1-willy@infradead.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-fbdev@vger.kernel.org, Matthew Wilcox <mawilcox@microsoft.com>, x86@kernel.org, Minchan Kim <minchan@kernel.org>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-The alpha/marvel code currently implements an irq_chip for handling
-interrupts; due to how irq_chip handling is done, it's necessary for the
-irq_chip methods to be invoked from hardirq context, even on a a
-real-time kernel.  Because the spinlock_t type becomes a "sleeping"
-spinlock w/ RT kernels, it is not suitable to be used with irq_chips.
+From: Matthew Wilcox <mawilcox@microsoft.com>
 
-A quick audit of the operations under the lock reveal that they do only
-minimal, bounded work, and are therefore safe to do under a raw spinlock.
+ARM is only 32-bit, so it doesn't really need a memset64, but it was
+essentially free to add it to the existing implementation.
 
-Signed-off-by: Julia Cartwright <julia@ni.com>
+Signed-off-by: Matthew Wilcox <mawilcox@microsoft.com>
+Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
-v1 -> v2:
-  - Add hunk which properly initializes the spin-lock (via kbuild bot).
+ arch/arm/include/asm/string.h | 21 +++++++++++++++++++++
+ arch/arm/kernel/armksyms.c    |  3 +++
+ arch/arm/lib/memset.S         | 44 ++++++++++++++++++++++++++++++++++---------
+ 3 files changed, 59 insertions(+), 9 deletions(-)
 
- arch/alpha/include/asm/core_marvel.h |  2 +-
- arch/alpha/kernel/core_marvel.c      |  2 +-
- arch/alpha/kernel/sys_marvel.c       | 12 ++++++------
- 3 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/arch/alpha/include/asm/core_marvel.h b/arch/alpha/include/asm/core_marvel.h
-index dad300fa14ce..8dcf9dbda618 100644
---- a/arch/alpha/include/asm/core_marvel.h
-+++ b/arch/alpha/include/asm/core_marvel.h
-@@ -312,7 +312,7 @@ struct io7 {
- 	io7_port7_csrs *csrs;
- 	struct io7_port ports[IO7_NUM_PORTS];
+diff --git a/arch/arm/include/asm/string.h b/arch/arm/include/asm/string.h
+index cf4f3aad0fc1..bc7a1be7a76a 100644
+--- a/arch/arm/include/asm/string.h
++++ b/arch/arm/include/asm/string.h
+@@ -24,6 +24,27 @@ extern void * memchr(const void *, int, __kernel_size_t);
+ #define __HAVE_ARCH_MEMSET
+ extern void * memset(void *, int, __kernel_size_t);
  
--	spinlock_t irq_lock;
-+	raw_spinlock_t irq_lock;
- };
++#define __HAVE_ARCH_MEMSET16
++extern void *__memset16(uint16_t *, uint16_t v, __kernel_size_t);
++static inline void *memset16(uint16_t *p, uint16_t v, __kernel_size_t n)
++{
++	return __memset16(p, v, n * 2);
++}
++
++#define __HAVE_ARCH_MEMSET32
++extern void *__memset32(uint32_t *, uint32_t v, __kernel_size_t);
++static inline void *memset32(uint32_t *p, uint32_t v, __kernel_size_t n)
++{
++	return __memset32(p, v, n * 4);
++}
++
++#define __HAVE_ARCH_MEMSET64
++extern void *__memset64(uint64_t *, uint32_t low, __kernel_size_t, uint32_t hi);
++static inline void *memset64(uint64_t *p, uint64_t v, __kernel_size_t n)
++{
++	return __memset64(p, v, n * 8, v >> 32);
++}
++
+ extern void __memzero(void *ptr, __kernel_size_t n);
  
- #ifndef __EXTERN_INLINE
-diff --git a/arch/alpha/kernel/core_marvel.c b/arch/alpha/kernel/core_marvel.c
-index d5f0580746a5..4300b1d1cf2c 100644
---- a/arch/alpha/kernel/core_marvel.c
-+++ b/arch/alpha/kernel/core_marvel.c
-@@ -118,7 +118,7 @@ alloc_io7(unsigned int pe)
+ #define memset(p,v,n)							\
+diff --git a/arch/arm/kernel/armksyms.c b/arch/arm/kernel/armksyms.c
+index 8e8d20cdbce7..633341ed0713 100644
+--- a/arch/arm/kernel/armksyms.c
++++ b/arch/arm/kernel/armksyms.c
+@@ -87,6 +87,9 @@ EXPORT_SYMBOL(__raw_writesl);
+ EXPORT_SYMBOL(strchr);
+ EXPORT_SYMBOL(strrchr);
+ EXPORT_SYMBOL(memset);
++EXPORT_SYMBOL(__memset16);
++EXPORT_SYMBOL(__memset32);
++EXPORT_SYMBOL(__memset64);
+ EXPORT_SYMBOL(memcpy);
+ EXPORT_SYMBOL(memmove);
+ EXPORT_SYMBOL(memchr);
+diff --git a/arch/arm/lib/memset.S b/arch/arm/lib/memset.S
+index 3c65e3bd790f..9adc9bdf3ffb 100644
+--- a/arch/arm/lib/memset.S
++++ b/arch/arm/lib/memset.S
+@@ -21,14 +21,14 @@ ENTRY(memset)
+ UNWIND( .fnstart         )
+ 	ands	r3, r0, #3		@ 1 unaligned?
+ 	mov	ip, r0			@ preserve r0 as return value
++	orr	r1, r1, r1, lsl #8
+ 	bne	6f			@ 1
+ /*
+  * we know that the pointer in ip is aligned to a word boundary.
+  */
+-1:	orr	r1, r1, r1, lsl #8
+-	orr	r1, r1, r1, lsl #16
++1:	orr	r1, r1, r1, lsl #16
+ 	mov	r3, r1
+-	cmp	r2, #16
++7:	cmp	r2, #16
+ 	blt	4f
  
- 	io7 = alloc_bootmem(sizeof(*io7));
- 	io7->pe = pe;
--	spin_lock_init(&io7->irq_lock);
-+	raw_spin_lock_init(&io7->irq_lock);
+ #if ! CALGN(1)+0
+@@ -41,7 +41,7 @@ UNWIND( .fnend              )
+ UNWIND( .fnstart            )
+ UNWIND( .save {r8, lr}      )
+ 	mov	r8, r1
+-	mov	lr, r1
++	mov	lr, r3
  
- 	for (h = 0; h < 4; h++) {
- 		io7->ports[h].io7 = io7;
-diff --git a/arch/alpha/kernel/sys_marvel.c b/arch/alpha/kernel/sys_marvel.c
-index 24e41bd7d3c9..3e533920371f 100644
---- a/arch/alpha/kernel/sys_marvel.c
-+++ b/arch/alpha/kernel/sys_marvel.c
-@@ -115,11 +115,11 @@ io7_enable_irq(struct irq_data *d)
- 		return;
- 	}
+ 2:	subs	r2, r2, #64
+ 	stmgeia	ip!, {r1, r3, r8, lr}	@ 64 bytes at a time.
+@@ -73,11 +73,11 @@ UNWIND( .fnend                 )
+ UNWIND( .fnstart               )
+ UNWIND( .save {r4-r8, lr}      )
+ 	mov	r4, r1
+-	mov	r5, r1
++	mov	r5, r3
+ 	mov	r6, r1
+-	mov	r7, r1
++	mov	r7, r3
+ 	mov	r8, r1
+-	mov	lr, r1
++	mov	lr, r3
  
--	spin_lock(&io7->irq_lock);
-+	raw_spin_lock(&io7->irq_lock);
- 	*ctl |= 1UL << 24;
- 	mb();
- 	*ctl;
--	spin_unlock(&io7->irq_lock);
-+	raw_spin_unlock(&io7->irq_lock);
- }
- 
- static void
-@@ -136,11 +136,11 @@ io7_disable_irq(struct irq_data *d)
- 		return;
- 	}
- 
--	spin_lock(&io7->irq_lock);
-+	raw_spin_lock(&io7->irq_lock);
- 	*ctl &= ~(1UL << 24);
- 	mb();
- 	*ctl;
--	spin_unlock(&io7->irq_lock);
-+	raw_spin_unlock(&io7->irq_lock);
- }
- 
- static void
-@@ -263,7 +263,7 @@ init_io7_irqs(struct io7 *io7,
- 	 */
- 	printk("  Interrupts reported to CPU at PE %u\n", boot_cpuid);
- 
--	spin_lock(&io7->irq_lock);
-+	raw_spin_lock(&io7->irq_lock);
- 
- 	/* set up the error irqs */
- 	io7_redirect_irq(io7, &io7->csrs->HLT_CTL.csr, boot_cpuid);
-@@ -295,7 +295,7 @@ init_io7_irqs(struct io7 *io7,
- 	for (i = 0; i < 16; ++i)
- 		init_one_io7_msi(io7, i, boot_cpuid);
- 
--	spin_unlock(&io7->irq_lock);
-+	raw_spin_unlock(&io7->irq_lock);
- }
- 
- static void __init
+ 	cmp	r2, #96
+ 	tstgt	ip, #31
+@@ -114,12 +114,13 @@ UNWIND( .fnstart            )
+ 	tst	r2, #4
+ 	strne	r1, [ip], #4
+ /*
+- * When we get here, we've got less than 4 bytes to zero.  We
++ * When we get here, we've got less than 4 bytes to set.  We
+  * may have an unaligned pointer as well.
+  */
+ 5:	tst	r2, #2
++	movne	r3, r1, lsr #8		@ the top half of a 16-bit pattern
+ 	strneb	r1, [ip], #1
+-	strneb	r1, [ip], #1
++	strneb	r3, [ip], #1
+ 	tst	r2, #1
+ 	strneb	r1, [ip], #1
+ 	ret	lr
+@@ -135,3 +136,28 @@ UNWIND( .fnstart            )
+ UNWIND( .fnend   )
+ ENDPROC(memset)
+ ENDPROC(mmioset)
++
++ENTRY(__memset16)
++UNWIND( .fnstart         )
++	tst	r0, #2			@ pointer unaligned?
++	mov	ip, r0			@ preserve r0 as return value
++	beq	1b			@ jump into the middle of memset
++	subs	r2, r2, #2		@ cope with n == 0
++	movge	r3, r1, lsr #8		@ r3 = r1 >> 8
++	strgeb	r1, [ip], #1		@ *ip = r1
++	strgeb	r3, [ip], #1		@ *ip = r3
++	bgt	1b			@ back into memset if n > 0
++	ret	lr			@ otherwise return
++UNWIND( .fnend   )
++ENDPROC(__memset16)
++ENTRY(__memset32)
++UNWIND( .fnstart         )
++	mov	r3, r1			@ copy r1 to r3 and fall into memset64
++UNWIND( .fnend   )
++ENDPROC(__memset32)
++ENTRY(__memset64)
++UNWIND( .fnstart         )
++	mov	ip, r0			@ preserve r0 as return value
++	b	7b			@ jump into the middle of memset
++UNWIND( .fnend   )
++ENDPROC(__memset64)
 -- 
-2.12.0
-
+2.11.0
