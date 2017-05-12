@@ -1,48 +1,29 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH 2/2] alpha-module: Delete an error message for a failed memory
- allocation in module_frob_arch_sections()
-Date: Thu, 11 May 2017 13:55:54 +0200
-Message-ID: <98da03ff-97b5-af3a-f129-a212591fc3d5@users.sourceforge.net>
+From: Al Viro <viro@ZenIV.linux.org.uk>
+Subject: Re: [PATCH 1/2] alpha-module: Improve a size determination in
+ module_frob_arch_sections()
+Date: Fri, 12 May 2017 06:04:40 +0100
+Message-ID: <20170512050440.GO390@ZenIV.linux.org.uk>
 References: <21258632-0cde-f750-5864-406dc6dfad20@users.sourceforge.net>
+ <7e1572c7-8c8e-7b1b-ae56-cbdf1ad23fbc@users.sourceforge.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <21258632-0cde-f750-5864-406dc6dfad20@users.sourceforge.net>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <7e1572c7-8c8e-7b1b-ae56-cbdf1ad23fbc@users.sourceforge.net>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>
+Content-Transfer-Encoding: 7bit
+To: SF Markus Elfring <elfring@users.sourceforge.net>
+Cc: linux-alpha@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Thu, 11 May 2017 13:00:34 +0200
+On Thu, May 11, 2017 at 01:54:42PM +0200, SF Markus Elfring wrote:
+> From: Markus Elfring <elfring@users.sourceforge.net>
+> Date: Thu, 11 May 2017 12:54:29 +0200
+> 
+> Replace the specification of a data structure by a pointer dereference
+> as the parameter for the operator "sizeof" to make the corresponding size
+> determination a bit safer according to the Linux coding style convention.
 
-Omit an extra message for a memory allocation failure in this function.
-
-This issue was detected by using the Coccinelle software.
-
-Link: http://events.linuxfoundation.org/sites/events/files/slides/LCJ16-Refactor_Strings-WSang_0.pdf
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- arch/alpha/kernel/module.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
-index 387d9c500e48..211e62e9a0af 100644
---- a/arch/alpha/kernel/module.c
-+++ b/arch/alpha/kernel/module.c
-@@ -109,9 +109,5 @@ module_frob_arch_sections(Elf64_Ehdr *hdr, Elf64_Shdr *sechdrs,
--	if (!chains) {
--		printk(KERN_ERR
--		       "module %s: no memory for symbol chain buffer\n",
--		       me->name);
-+	if (!chains)
- 		return -ENOMEM;
--	}
- 
- 	got->sh_size = 0;
- 	got->sh_addralign = 8;
--- 
-2.12.3
-
+It's also making it harder to grep for.  For the record: any patches of
+that sort in VFS will be dropped.  Preferably - on their author's toes,
+after forcing said author to engrave them on bricks.  Ideally - lead ones...
