@@ -1,45 +1,59 @@
-From: Jiri Slaby <jslaby@suse.cz>
-Subject: Re: [PATCH 1/1] futex: remove duplicated code
-Date: Wed, 17 May 2017 10:01:29 +0200
-Message-ID: <14580dfc-9721-38ab-a1e0-6b4aba13b406@suse.cz>
-References: <20170515130742.18357-1-jslaby@suse.cz>
- <20170515131644.GA3605@arm.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: Tobias Klauser <tklauser@distanz.ch>
+Subject: [PATCH] alpha: use generic fb.h
+Date: Wed, 17 May 2017 10:29:34 +0200
+Message-ID: <20170517082934.1291-1-tklauser@distanz.ch>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20170515131644.GA3605@arm.com>
-Content-Language: en-GB
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Will Deacon <will.deacon@arm.com>
-Cc: tglx@linutronix.de, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Catalin Marinas <catalin.marinas@arm.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Martin Schwidefsky <schwidefsky@de.ibm.com>
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 05/15/2017, 03:16 PM, Will Deacon wrote:
-> Whilst I think this is a good idea, the code in question actually results
-> in undefined behaviour per the C spec and is reported by UBSAN.
+The arch uses a verbatim copy of the asm-generic version and does not
+add any own implemntations to the header, so use asm-generic/fb.h
+instead of duplicating code.
 
-Hi, yes, I know -- this patch was the 1st from the series of 3 which I
-sent a long time ago to fix that up too. But I remember your patch, so I
-sent only this one this time.
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+---
+ arch/alpha/include/asm/Kbuild |  1 +
+ arch/alpha/include/asm/fb.h   | 13 -------------
+ 2 files changed, 1 insertion(+), 13 deletions(-)
+ delete mode 100644 arch/alpha/include/asm/fb.h
 
-> See my
-> patch fixing arm64 here (which I'd forgotten about):
-> 
-> https://www.spinics.net/lists/linux-arch/msg38564.html
-> 
-> But, as stated in the thread above, I think we should go a step further
-> and remove FUTEX_OP_{OR,ANDN,XOR,OPARG_SHIFT} altogether. They don't
-> appear to be used by userspace, and this whole thing is a total mess.
-> 
-> Any thoughts?
-
-Ok, I am all for that. I think the only question is who is going to do
-the work and submit it :)? Do I understand correctly to eliminate all
-these functions and the path into the kernel? But won't this break API
--- are there really no users of this interface?
-
-thanks,
+diff --git a/arch/alpha/include/asm/Kbuild b/arch/alpha/include/asm/Kbuild
+index d103db5af5ff..5b974ab8425c 100644
+--- a/arch/alpha/include/asm/Kbuild
++++ b/arch/alpha/include/asm/Kbuild
+@@ -3,6 +3,7 @@
+ generic-y += clkdev.h
+ generic-y += exec.h
+ generic-y += export.h
++generic-y += fb.h
+ generic-y += irq_work.h
+ generic-y += mcs_spinlock.h
+ generic-y += mm-arch-hooks.h
+diff --git a/arch/alpha/include/asm/fb.h b/arch/alpha/include/asm/fb.h
+deleted file mode 100644
+index fa9bbb96b2b3..000000000000
+--- a/arch/alpha/include/asm/fb.h
++++ /dev/null
+@@ -1,13 +0,0 @@
+-#ifndef _ASM_FB_H_
+-#define _ASM_FB_H_
+-#include <linux/device.h>
+-
+-/* Caching is off in the I/O space quadrant by design.  */
+-#define fb_pgprotect(...) do {} while (0)
+-
+-static inline int fb_is_primary_device(struct fb_info *info)
+-{
+-	return 0;
+-}
+-
+-#endif /* _ASM_FB_H_ */
 -- 
-js
-suse labs
+2.13.0
+
+
