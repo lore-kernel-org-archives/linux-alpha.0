@@ -1,51 +1,34 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 1/1] futex: remove duplicated code
-Date: Thu, 18 May 2017 18:30:10 +0100
-Message-ID: <20170518173010.GK21359@arm.com>
-References: <20170515130742.18357-1-jslaby@suse.cz>
- <20170515131644.GA3605@arm.com>
- <14580dfc-9721-38ab-a1e0-6b4aba13b406@suse.cz>
+From: Christoph Hellwig <hch@lst.de>
+Subject: is alpha jensen support dead?
+Date: Sun, 21 May 2017 10:58:48 +0200
+Message-ID: <20170521085848.GA14559@lst.de>
 Mime-Version: 1.0
 Return-path: <linux-arch-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <14580dfc-9721-38ab-a1e0-6b4aba13b406@suse.cz>
 Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: tglx@linutronix.de, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Catalin Marinas <catalin.marinas@arm.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Martin Schwidefsky <schwidefsky@de.ibm.com>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: Christian Borntraeger <borntraeger@de.ibm.com>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, May 17, 2017 at 10:01:29AM +0200, Jiri Slaby wrote:
-> On 05/15/2017, 03:16 PM, Will Deacon wrote:
-> > Whilst I think this is a good idea, the code in question actually results
-> > in undefined behaviour per the C spec and is reported by UBSAN.
-> 
-> Hi, yes, I know -- this patch was the 1st from the series of 3 which I
-> sent a long time ago to fix that up too. But I remember your patch, so I
-> sent only this one this time.
-> 
-> > See my
-> > patch fixing arm64 here (which I'd forgotten about):
-> > 
-> > https://www.spinics.net/lists/linux-arch/msg38564.html
-> > 
-> > But, as stated in the thread above, I think we should go a step further
-> > and remove FUTEX_OP_{OR,ANDN,XOR,OPARG_SHIFT} altogether. They don't
-> > appear to be used by userspace, and this whole thing is a total mess.
-> > 
-> > Any thoughts?
-> 
-> Ok, I am all for that. I think the only question is who is going to do
-> the work and submit it :)? Do I understand correctly to eliminate all
-> these functions and the path into the kernel? But won't this break API
-> -- are there really no users of this interface?
+Hi all,
 
-That's the million-dollar question, really. I don't know of any code using
-it, and I couldn't find any when I looked (also nothing reported by Debian
-Codesearch afaict), but I was hoping linux-arch might have some thoughts
-on this too.
+it seems like the Alpha Jense build (the only one using pci-noop.c)
+and thus being a different build than all the later PCI capable
+system has been broken since at least:
 
-For now, I'll queue my arm64 patch before I forget about it again!
+commit 6aca0503847f6329460b15b3ab2b0e30bb752793
+Author: Christian Borntraeger <borntraeger@de.ibm.com>
+Date:   Tue Feb 2 21:46:33 2016 -0800
 
-Will
+    alpha/dma: use common noop dma ops
+
+which switches pci-noop.c to use generic code, but fat fingered a symbol
+and didn't wire up the Kconfig.
+
+Is there any value in keeping it alive?  Especially as there probably
+isn't any build coverage..
+
+Btw, how well is alpha working these days?  It looks like there hasn't
+been any maintainer activity for about two years.
