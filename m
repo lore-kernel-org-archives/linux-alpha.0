@@ -1,44 +1,25 @@
-From: Christian Borntraeger <borntraeger@de.ibm.com>
+From: Christoph Hellwig <hch@lst.de>
 Subject: Re: is alpha jensen support dead?
-Date: Wed, 24 May 2017 11:16:01 +0200
-Message-ID: <11c44626-d496-ec77-c294-1d734d6125aa@de.ibm.com>
-References: <20170521085848.GA14559@lst.de>
+Date: Wed, 24 May 2017 11:30:31 +0200
+Message-ID: <20170524093031.GA17247@lst.de>
+References: <20170521085848.GA14559@lst.de> <11c44626-d496-ec77-c294-1d734d6125aa@de.ibm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170521085848.GA14559@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <11c44626-d496-ec77-c294-1d734d6125aa@de.ibm.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Christoph Hellwig <hch@lst.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 05/21/2017 10:58 AM, Christoph Hellwig wrote:
-> Hi all,
+On Wed, May 24, 2017 at 11:16:01AM +0200, Christian Borntraeger wrote:
+> Hi Christoph,
 > 
-> it seems like the Alpha Jense build (the only one using pci-noop.c)
-> and thus being a different build than all the later PCI capable
-> system has been broken since at least:
-> 
-> commit 6aca0503847f6329460b15b3ab2b0e30bb752793
-> Author: Christian Borntraeger <borntraeger@de.ibm.com>
-> Date:   Tue Feb 2 21:46:33 2016 -0800
-> 
->     alpha/dma: use common noop dma ops
-> 
+> are you providing a fix (or a jensen removal) or do you expect a fix from me?
 
-Hi Christoph,
+Mostly just looking into the area for a series around dma_mapping_ops.
 
-are you providing a fix (or a jensen removal) or do you expect a fix from me?
-
-
-> which switches pci-noop.c to use generic code, but fat fingered a symbol
-> and didn't wire up the Kconfig.
-> 
-> Is there any value in keeping it alive?  Especially as there probably
-> isn't any build coverage..
-> 
-> Btw, how well is alpha working these days?  It looks like there hasn't
-> been any maintainer activity for about two years.
-> 
-
+Without build coverage I don't really dare to touch jensen, but I'll see
+if I can come up with a fix.
