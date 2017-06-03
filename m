@@ -1,61 +1,38 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v2 1/1] tty: add TIOCGPTPEER ioctl
-Date: Fri, 2 Jun 2017 12:04:55 +0200
-Message-ID: <CAK8P3a2Q5CwofO96fXyjTVqmm23UKZjd+mOopnvKr_TusLxXpQ@mail.gmail.com>
-References: <20170602084858.4299-1-asarai@suse.de> <20170602084858.4299-2-asarai@suse.de>
-Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:in-reply-to:references:from:date:message-id
-         :subject:to:cc;
-        bh=IWCJkxpcZdLEdtCOq4twVtZBuEXO4rbIIFD4I0IfQC4=;
-        b=haOkrB0/15pkSW9lj+T/2/nMOzlM4nreUI1uxKEmvVc8avlaMW476OJRjVhIq9194R
-         HgrWEqrW6Px7nmj7PupcfpzY1q5srWSnxE0c+u8EvUHcB+EUwL46np6SXBO3Bzv3wNks
-         bmaie7lomKfEFPxMxmTzpBhN+JW6KFbb+Zyr8KnQmtCSNgAr2AHnbxgvohMLrX9VV6Io
-         FH4ouZnmCzq5KX+/GtOlM/3MUGLDMVVI9LzKD7DpqbrughIj6MariBp2Tt/sPlOke7TS
-         twF4QA7B2HeXGuyPVOiljJjbGC5JmoyPlQK4+HVpyRe9baKIDVyf4Ie+ugtESDR39/m/
-         ZxIg==
-In-Reply-To: <20170602084858.4299-2-asarai@suse.de>
-Sender: linux-arch-owner@vger.kernel.org
+From: Aleksa Sarai <asarai@suse.de>
+Subject: [PATCH v3 0/2] tty: add TIOCGPTPEER ioctl
+Date: Sat,  3 Jun 2017 23:51:09 +1000
+Message-ID: <20170603135111.5444-1-asarai@suse.de>
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Aleksa Sarai <asarai@suse.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-sh@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, linux-xtensa@linux-xtensa.org, linux-arch <linux-arch@vger.kernel.org>, Christian Brauner <christian.brauner@ubuntu.com>, Valentin Rothberg <vrothberg@suse.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, Christian Brauner <christian.brauner@ubuntu.com>, Valentin Rothberg <vrothberg@suse.com>, Aleksa Sarai <asarai@suse.de>
 
-On Fri, Jun 2, 2017 at 10:48 AM, Aleksa Sarai <asarai@suse.de> wrote:
-> When opening the slave end of a PTY, it is not possible for userspace to
-> safely ensure that /dev/pts/$num is actually a slave (in cases where the
-> mount namespace in which devpts was mounted is controlled by an
-> untrusted process). In addition, there are several unresolvable
-> race conditions if userspace were to attempt to detect attacks through
-> stat(2) and other similar methods [in addition it is not clear how
-> userspace could detect attacks involving FUSE].
->
-> Resolve this by providing an interface for userpace to safely open the
-> "peer" end of a PTY file descriptor by using the dentry cached by
-> devpts. Since it is not possible to have an open master PTY without
-> having its slave exposed in /dev/pts this interface is safe. This
-> interface currently does not provide a way to get the master pty (since
-> it is not clear whether such an interface is safe or even useful).
+Changes in v3:
+  * Defined a compat_ioctl callback for all pty ioctls, since they are
+    all 32-bit and 64-bit compatible.
+  * Made TIOCGPTPEER support 32-bit userspace.
 
-This should be added to the compat ioctls as well. There are two ways
-of doing this:
+Aleksa Sarai (2):
+  tty: add compat_ioctl callbacks
+  tty: add TIOCGPTPEER ioctl
 
-a) like the other ioctls handled by pty_unix98_ioctl(), add it to the
-list in fs/compat_ioctl.c, and check that the list is still up-to-date with
-the current driver (someone else may have missed one)
+ Makefile                               |  1 +
+ arch/alpha/include/uapi/asm/ioctls.h   |  1 +
+ arch/mips/include/uapi/asm/ioctls.h    |  1 +
+ arch/parisc/include/uapi/asm/ioctls.h  |  1 +
+ arch/powerpc/include/uapi/asm/ioctls.h |  1 +
+ arch/sh/include/uapi/asm/ioctls.h      |  1 +
+ arch/sparc/include/uapi/asm/ioctls.h   |  3 +-
+ arch/xtensa/include/uapi/asm/ioctls.h  |  1 +
+ drivers/tty/pty.c                      | 93 ++++++++++++++++++++++++++++++++--
+ fs/compat_ioctl.c                      |  6 ---
+ include/uapi/asm-generic/ioctls.h      |  1 +
+ 11 files changed, 99 insertions(+), 11 deletions(-)
 
-b) remove all compat handling for ioctls that are specific to
-pty_unix98_ioctl() and pty_bsd_ioctl() from fs/compat_ioctl.c
-and add compat_ioctl callback pointers to master_pty_ops_bsd
-and ptm_unix98_ops, pointing to the respective ioctl handlers.
+-- 
+2.13.0
 
-I would recommend b) as it avoids the problem in the future,
-but it is a little more upfront work, and should be done as a
-separate preparation patch.
-All the ioctls here are compatible between 32-bit and 64-bit
-user space, so no special translation is needed.
-
-      Arnd
