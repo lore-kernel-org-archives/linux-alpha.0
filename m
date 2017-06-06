@@ -1,26 +1,118 @@
-From: "Maciej W. Rozycki" <macro@linux-mips.org>
-Subject: Re: is alpha jensen support dead?
-Date: Mon, 5 Jun 2017 13:49:36 +0100 (BST)
-Message-ID: <alpine.LFD.2.20.1706051347280.29944@eddie.linux-mips.org>
-References: <20170521085848.GA14559@lst.de> <20170521181128.GA13376@gherkin.frus.com> <20170522075128.GB2081@lst.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v3 1/2] tty: add compat_ioctl callbacks
+Date: Tue, 6 Jun 2017 13:01:23 +0200
+Message-ID: <CAK8P3a3j4rB+iVX=a36csE6mX9iMRp14TS1UeePyFsjTKQyiZw@mail.gmail.com>
+References: <20170603135111.5444-1-asarai@suse.de> <20170603135111.5444-2-asarai@suse.de>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170522075128.GB2081@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:in-reply-to:references:from:date:message-id
+         :subject:to:cc;
+        bh=qHDKWJ4Uy1VdijPZeGOSploOIp4wW9O1Y1eMeDS5Ojc=;
+        b=Mk4hwmoBipL0Ho91j65GjNMmdosFP1t4RuDpqWacyS88J3PwwLXQ5kxQztoozb32r3
+         kzXpAiC0TfsSWiI+6J+0sY/NkE7w/HPmNR5jiFsZuXoQg7TuDhJ5f45oUbBCmHOe142E
+         RpVomvEIHGRCiX9cOf54A7XAp1A+rj8Oni9j6YvKdVJiqoAR/zpIGqIDIiMZpdhdUqNw
+         Ebhn7O5UjO/XULwZ8DTABxI/QFezGyYLUpjQdhvt8iCi2SkZR4d9GLEiHlOsSezqEMAI
+         VSylnb+D1JpR7N3eDnk2PUpnFrRLNvw8Wmajir5+SG8D0/AS1BCv4ouXxiSP23IWrwlm
+         nFNg==
+In-Reply-To: <20170603135111.5444-2-asarai@suse.de>
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Christoph Hellwig <hch@lst.de>
-Cc: Bob Tracy <rct@gherkin.frus.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Christian Borntraeger <borntraeger@de.ibm.com>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Aleksa Sarai <asarai@suse.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-sh@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, linux-xtensa@linux-xtensa.org, linux-arch <linux-arch@vger.kernel.org>, Christian Brauner <christian.brauner@ubuntu.com>, Valentin Rothberg <vrothberg@suse.com>
 
-On Mon, 22 May 2017, Christoph Hellwig wrote:
+On Sat, Jun 3, 2017 at 3:51 PM, Aleksa Sarai <asarai@suse.de> wrote:
+> In order to avoid future diversions between fs/compat_ioctl.c and
+> drivers/tty/pty.c, define .compat_ioctl callbacks for the relevant
+> tty_operations structs. Since both pty_unix98_ioctl() and
+> pty_bsd_ioctl() are compatible between 32-bit and 64-bit userspace no
+> special translation is required.
+>
+> Signed-off-by: Aleksa Sarai <asarai@suse.de>
+> ---
+>  Makefile          |  1 +
+>  drivers/tty/pty.c | 22 ++++++++++++++++++++++
+>  fs/compat_ioctl.c |  6 ------
+>  3 files changed, 23 insertions(+), 6 deletions(-)
+>
+> diff --git a/Makefile b/Makefile
+> index 470bd4d9513a..fb689286d83a 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -401,6 +401,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+>                    -fno-strict-aliasing -fno-common \
+>                    -Werror-implicit-function-declaration \
+>                    -Wno-format-security \
+> +                  -Wno-error=int-in-bool-context \
+>                    -std=gnu89 $(call cc-option,-fno-PIE)
 
-> Great!  Still makes me wonder about Jensen, which appears to be
-> the only platform that requires a different build than the normal
-> generic PCI-enabled kernel.  And I suspect it's pretty much dead
-> at this point..
+This  slipped in by accident I assume? It seems completely unrelated.
 
- Jensen is EISA-only, which is likely why support wasn't folded into the 
-generic configuration.
+> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+> index 65799575c666..2a6bd9ae3f8b 100644
+> --- a/drivers/tty/pty.c
+> +++ b/drivers/tty/pty.c
+> @@ -481,6 +481,16 @@ static int pty_bsd_ioctl(struct tty_struct *tty,
+>         return -ENOIOCTLCMD;
+>  }
+>
+> +static long pty_bsd_compat_ioctl(struct tty_struct *tty,
+> +                                unsigned int cmd, unsigned long arg)
+> +{
+> +       /*
+> +        * PTY ioctls don't require any special translation between 32-bit and
+> +        * 64-bit userspace, they are already compatible.
+> +        */
+> +       return pty_bsd_ioctl(tty, cmd, arg);
+> +}
+> +
 
-  Maciej
+This looks correct but unnecessary, you can simply point both
+function pointers to the same function:
+
+>   * not really modular, but the easiest way to keep compat with existing
+> @@ -502,6 +512,7 @@ static const struct tty_operations master_pty_ops_bsd = {
+>         .chars_in_buffer = pty_chars_in_buffer,
+>         .unthrottle = pty_unthrottle,
+>         .ioctl = pty_bsd_ioctl,
+> +       .compat_ioctl = pty_bsd_compat_ioctl,
+
+           .compat_ioctl = pty_bsd_ioctl,
+
+The separate handler would only be required when you need any kind
+of special handling depending on the command.
+
+> diff --git a/fs/compat_ioctl.c b/fs/compat_ioctl.c
+> index 6116d5275a3e..112b3e1e20e3 100644
+> --- a/fs/compat_ioctl.c
+> +++ b/fs/compat_ioctl.c
+> @@ -866,8 +866,6 @@ COMPATIBLE_IOCTL(TIOCGDEV)
+>  COMPATIBLE_IOCTL(TIOCCBRK)
+>  COMPATIBLE_IOCTL(TIOCGSID)
+>  COMPATIBLE_IOCTL(TIOCGICOUNT)
+> -COMPATIBLE_IOCTL(TIOCGPKT)
+> -COMPATIBLE_IOCTL(TIOCGPTLCK)
+>  COMPATIBLE_IOCTL(TIOCGEXCL)
+>  /* Little t */
+>  COMPATIBLE_IOCTL(TIOCGETD)
+> @@ -883,16 +881,12 @@ COMPATIBLE_IOCTL(TIOCMGET)
+>  COMPATIBLE_IOCTL(TIOCMBIC)
+>  COMPATIBLE_IOCTL(TIOCMBIS)
+>  COMPATIBLE_IOCTL(TIOCMSET)
+> -COMPATIBLE_IOCTL(TIOCPKT)
+>  COMPATIBLE_IOCTL(TIOCNOTTY)
+>  COMPATIBLE_IOCTL(TIOCSTI)
+>  COMPATIBLE_IOCTL(TIOCOUTQ)
+>  COMPATIBLE_IOCTL(TIOCSPGRP)
+>  COMPATIBLE_IOCTL(TIOCGPGRP)
+> -COMPATIBLE_IOCTL(TIOCGPTN)
+> -COMPATIBLE_IOCTL(TIOCSPTLCK)
+>  COMPATIBLE_IOCTL(TIOCSERGETLSR)
+> -COMPATIBLE_IOCTL(TIOCSIG)
+
+Looks good.
+
+       Arnd
