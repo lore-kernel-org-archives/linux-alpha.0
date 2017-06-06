@@ -1,68 +1,38 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 1/2] tty: add compat_ioctl callbacks
-Date: Tue, 6 Jun 2017 14:46:20 +0200
-Message-ID: <CAK8P3a1XsE9uCwn9N7oc4GycPERX3t1XhGyiixxRjhG8GXoEuA@mail.gmail.com>
-References: <20170603135111.5444-1-asarai@suse.de> <20170603135111.5444-2-asarai@suse.de>
- <CAK8P3a3j4rB+iVX=a36csE6mX9iMRp14TS1UeePyFsjTKQyiZw@mail.gmail.com> <6faa7b93-a355-f7ba-e5e9-12f2414ac695@suse.de>
+Subject: Re: [PATCH v4 1/2] tty: add compat_ioctl callbacks
+Date: Tue, 6 Jun 2017 14:49:15 +0200
+Message-ID: <CAK8P3a2Y2U58dfAxRYPKQL2-o8ufpkvxxF07c_LCr5DOuQ4=vw@mail.gmail.com>
+References: <20170603141515.9529-1-asarai@suse.de> <20170603141515.9529-2-asarai@suse.de>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:sender:in-reply-to:references:from:date:message-id
          :subject:to:cc;
-        bh=T7lYZQVgrqA2+m4wU/qywIxN+Ygu0d7zAsKu+uFHBrs=;
-        b=tfPGXbj3YOVA/R/EN+WvuPM9hOz4Bx/6i4xj/nkMxpVXWWVxuMFzi7XW7XjYxGUTuW
-         poSCInNI+HJpBka3lypO+WDBdZEyACm1bjJDMp2k72tHQUM2j0hsWI7BUIDS2NtEWZ68
-         pkZo+0+tMXEq42IDIucabVQ10qcINfbJtS3O2LV9zOE/OsVYvvU5gzti5SB8TC4LQTRh
-         iK4A/Re6QTEaA66BoadD0mNZ8x52xG+LA2ttDWqeb3iZID1VyFBxtYLtnudPlY2RYTGv
-         eXLJFtNUyHzSheFGCx/vS5uQOeoXK33LGmp/xYPLRdnG/97SO357PsUjTBPpTit5ga+5
-         +j/w==
-In-Reply-To: <6faa7b93-a355-f7ba-e5e9-12f2414ac695@suse.de>
-Sender: linux-parisc-owner@vger.kernel.org
+        bh=VVGCrzYPYNl9UnSdgl6LGh57Dw+RALCxW2eBYRlY1JU=;
+        b=FeGBj3GbM3i1R2sZYlf4dzWOD+GICdaqL4tjkq273zawHxchklogR6ffmhPYKGRTaW
+         Gi4qU0mFf8hYuwZbxQzcVOshlY4ZNYVB5yzMyJG2iaE9/lbl2be4nw/OioOftyezru2/
+         pUJAM7+9LQUXRMC7ttl1CQZkrFvgZnbOVRknzAShfBiPLSNQfpcNU4TVvEgs2T9DkxCV
+         Xi1m7TPgbqf6jRF8swLn7V17IrQ2z4LuWBbSuCi3JQYiy+tqhJiCPwZXWCSQgjX0b88X
+         wGUmK5kZ+OyERwyk8rCMXCXE20bFXKDU4wIdcV1Yucs1eKweO6SkZYcu2qvsxr3QDSBK
+         vgPg==
+In-Reply-To: <20170603141515.9529-2-asarai@suse.de>
+Sender: linux-sh-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Aleksa Sarai <asarai@suse.de>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-sh@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, linux-xtensa@linux-xtensa.org, linux-arch <linux-arch@vger.kernel.org>, Christian Brauner <christian.brauner@ubuntu.com>, Valentin Rothberg <vrothberg@suse.com>
 
-On Tue, Jun 6, 2017 at 1:05 PM, Aleksa Sarai <asarai@suse.de> wrote:
->>> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
->>> index 65799575c666..2a6bd9ae3f8b 100644
->>> --- a/drivers/tty/pty.c
->>> +++ b/drivers/tty/pty.c
->>> @@ -481,6 +481,16 @@ static int pty_bsd_ioctl(struct tty_struct *tty,
->>>          return -ENOIOCTLCMD;
->>>   }
->>>
->>> +static long pty_bsd_compat_ioctl(struct tty_struct *tty,
->>> +                                unsigned int cmd, unsigned long arg)
->>> +{
->>> +       /*
->>> +        * PTY ioctls don't require any special translation between
->>> 32-bit and
->>> +        * 64-bit userspace, they are already compatible.
->>> +        */
->>> +       return pty_bsd_ioctl(tty, cmd, arg);
->>> +}
->>> +
->>
->>
->> This looks correct but unnecessary, you can simply point both
->> function pointers to the same function:
+On Sat, Jun 3, 2017 at 4:15 PM, Aleksa Sarai <asarai@suse.de> wrote:
+> In order to avoid future diversions between fs/compat_ioctl.c and
+> drivers/tty/pty.c, define .compat_ioctl callbacks for the relevant
+> tty_operations structs. Since both pty_unix98_ioctl() and
+> pty_bsd_ioctl() are compatible between 32-bit and 64-bit userspace no
+> special translation is required.
 >
->
-> They have different types, since they have different return types:
->
-> int  (*ioctl)(struct tty_struct *tty,
->             unsigned int cmd, unsigned long arg);
-> long (*compat_ioctl)(struct tty_struct *tty,
->                      unsigned int cmd, unsigned long arg);
->
-> If you like, I can change (*ioctl) to return longs as well, and then change
-> all of the call-sites (since unlocked_ioctl also returns long).
+> Signed-off-by: Aleksa Sarai <asarai@suse.de>
 
-Ah, my mistake. In most other data structures that have a compat_ioctl
-callback pointer, the prototypes are the same, and I had not realized
-that tty_operations is an exception.
+Looks good,
 
-        Arnd
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
