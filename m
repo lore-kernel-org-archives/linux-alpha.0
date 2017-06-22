@@ -1,63 +1,149 @@
-From: Darren Hart <dvhart@infradead.org>
-Subject: Re: [PATCH 1/1] futex: remove duplicated code and fix UB
-Date: Wed, 21 Jun 2017 20:53:37 -0700
-Message-ID: <20170622035337.GF25900@fury>
-References: <20170621115318.2781-1-jslaby@suse.cz>
-Mime-Version: 1.0
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: [PATCH 3/7] asm-generic/io.h: make ioread64 and iowrite64 universally available
+Date: Thu, 22 Jun 2017 10:48:13 -0600
+Message-ID: <20170622164817.25515-4-logang@deltatee.com>
+References: <20170622164817.25515-1-logang@deltatee.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <20170622164817.25515-1-logang@deltatee.com>
+Sender: linux-arch-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=ypKb0x41ANWfrfCRuR+/20TNk9hZPKlr8geJdc2pE0E=; b=jWRp537qzlZNvI
-	7qegdw9q4dAoJrnwgPYBta8GwWBCV1a648ByG7Sf3QKmzKvjs6Rp2HvucyfaBbMkRBIbYHK3+UFkW
-	VSBWAVPYf43j+lGzLGI1cOf9DxHtqghsiKlZuiNIwyxkUoYYdZY7qUYBIQTiO9rMrutHK9zAuRIno
-	5aCBOZaX7xaWY0mIUM+pe3DmkWSsT/J3/6Wb1QdyyUBhnl2TesXV6HK5IuyNeqGvFgWB8OpYMbKZb
-	oWpvIBXy8mIaXwcoiuSgWTNT8YAdOxV3aRvY6a36lN2ITOJMruSIDQK7ZJ205Y+3ZhqHFdHmukrGP
-	L+f36C6qjEBI2oG7uPJQ==;
-Content-Disposition: inline
-In-Reply-To: <20170621115318.2781-1-jslaby@suse.cz>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, peterz@infradead.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Will Deacon <will.deacon@arm.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, tglx@linutronix.de, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, mingo@redhat.com, Catalin Marinas <catalin.marinas@arm.com>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Fenghua Yu <fenghua.yu@intel.com>, Arnd Bergmann <arnd@arndb.de>, linux-xtensa@linux-xtensa.org, Stefan Kristiansson <ste>
+To: linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-ntb@googlegroups.com, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-crypto@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Bates <sbates@raithlin.com>, Logan Gunthorpe <logang@deltatee.com>
 
-On Wed, Jun 21, 2017 at 01:53:18PM +0200, Jiri Slaby wrote:
-> There is code duplicated over all architecture's headers for
-> futex_atomic_op_inuser. Namely op decoding, access_ok check for uaddr,
-> and comparison of the result.
-> 
-> Remove this duplication and leave up to the arches only the needed
-> assembly which is now in arch_futex_atomic_op_inuser.
-> 
-> This effectively distributes the Will Deacon's arm64 fix for undefined
-> behaviour reported by UBSAN to all architectures. The fix was done in
-> commit 5f16a046f8e1 (arm64: futex: Fix undefined behaviour with
-> FUTEX_OP_OPARG_SHIFT usage).  Look there for an example dump.
-> 
-> Note that s390 removed access_ok check in d12a29703 ("s390/uaccess:
-> remove pointless access_ok() checks") as access_ok there returns true.
-> We introduce it back to the helper for the sake of simplicity (it gets
-> optimized away anyway).
-> 
+Currently, ioread64 and iowrite64 are only available io CONFIG_64BIT=y
+and CONFIG_GENERIC_IOMAP=n. Thus, seeing the functions are not
+universally available, it makes them unusable for driver developers.
+This leads to ugly hacks such as those at the top of
 
-This required a minor manual merge for ARM on the tip of Linus' tree today. The
-reduced duplication is a welcome improvement.
+drivers/ntb/hw/intel/ntb_hw_intel.c
 
-Reviewed-by: Darren Hart (VMware) <dvhart@infradead.org>
+This patch adds fallback implementations for when CONFIG_64BIT and
+CONFIG_GENERIC_IOMAP are not set. These functions use two io32 based
+calls to complete the operation.
 
+Note, we do not use the volatile keyword in these functions like the
+others in the same file. It is necessary to avoid a compiler warning
+on arm.
+
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+---
+ include/asm-generic/io.h | 54 +++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 42 insertions(+), 12 deletions(-)
+
+diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+index 7ef015eb3403..817edaa3da78 100644
+--- a/include/asm-generic/io.h
++++ b/include/asm-generic/io.h
+@@ -585,15 +585,24 @@ static inline u32 ioread32(const volatile void __iomem *addr)
+ }
+ #endif
+ 
+-#ifdef CONFIG_64BIT
+ #ifndef ioread64
+ #define ioread64 ioread64
+-static inline u64 ioread64(const volatile void __iomem *addr)
++#ifdef readq
++static inline u64 ioread64(const void __iomem *addr)
+ {
+ 	return readq(addr);
+ }
++#else
++static inline u64 ioread64(const void __iomem *addr)
++{
++	u64 low, high;
++
++	low = ioread32(addr);
++	high = ioread32(addr + sizeof(u32));
++	return low | (high << 32);
++}
++#endif
+ #endif
+-#endif /* CONFIG_64BIT */
+ 
+ #ifndef iowrite8
+ #define iowrite8 iowrite8
+@@ -619,15 +628,21 @@ static inline void iowrite32(u32 value, volatile void __iomem *addr)
+ }
+ #endif
+ 
+-#ifdef CONFIG_64BIT
+ #ifndef iowrite64
+ #define iowrite64 iowrite64
+-static inline void iowrite64(u64 value, volatile void __iomem *addr)
++#ifdef writeq
++static inline void iowrite64(u64 value, void __iomem *addr)
+ {
+ 	writeq(value, addr);
+ }
++#else
++static inline void iowrite64(u64 value, void __iomem *addr)
++{
++	iowrite32(value, addr);
++	iowrite32(value >> 32, addr + sizeof(u32));
++}
++#endif
+ #endif
+-#endif /* CONFIG_64BIT */
+ 
+ #ifndef ioread16be
+ #define ioread16be ioread16be
+@@ -645,15 +660,24 @@ static inline u32 ioread32be(const volatile void __iomem *addr)
+ }
+ #endif
+ 
+-#ifdef CONFIG_64BIT
+ #ifndef ioread64be
+ #define ioread64be ioread64be
+-static inline u64 ioread64be(const volatile void __iomem *addr)
++#ifdef readq
++static inline u64 ioread64be(const void __iomem *addr)
+ {
+ 	return swab64(readq(addr));
+ }
++#else
++static inline u64 ioread64be(const void __iomem *addr)
++{
++	u64 low, high;
++
++	low = ioread32be(addr + sizeof(u32));
++	high = ioread32be(addr);
++	return low | (high << 32);
++}
++#endif
+ #endif
+-#endif /* CONFIG_64BIT */
+ 
+ #ifndef iowrite16be
+ #define iowrite16be iowrite16be
+@@ -671,15 +695,21 @@ static inline void iowrite32be(u32 value, volatile void __iomem *addr)
+ }
+ #endif
+ 
+-#ifdef CONFIG_64BIT
+ #ifndef iowrite64be
+ #define iowrite64be iowrite64be
+-static inline void iowrite64be(u64 value, volatile void __iomem *addr)
++#ifdef writeq
++static inline void iowrite64be(u64 value, void __iomem *addr)
+ {
+ 	writeq(swab64(value), addr);
+ }
++#else
++static inline void iowrite64be(u64 value, void __iomem *addr)
++{
++	iowrite32be(value >> 32, addr);
++	iowrite32be(value, addr + sizeof(u32));
++}
++#endif
+ #endif
+-#endif /* CONFIG_64BIT */
+ 
+ #ifndef ioread8_rep
+ #define ioread8_rep ioread8_rep
 -- 
-Darren Hart
-VMware Open Source Technology Center
+2.11.0
+
