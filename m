@@ -1,23 +1,23 @@
 From: Palmer Dabbelt <palmer@dabbelt.com>
 Subject: [PATCH] pci:  Add and use PCI_GENERIC_SETUP Kconfig entry
 Date: Fri, 23 Jun 2017 14:45:38 -0700
-Message-ID: <20170623214538.25967-1-palmer__14978.129688143$1498254481$gmane$org@dabbelt.com>
+Message-ID: <20170623214538.25967-1-palmer__37161.4886018962$1498254487$gmane$org@dabbelt.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
 	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
 	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Message-Id:Date:
 	Subject:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-	References:List-Owner; bh=yAXDZUvYDZoT7oQrOpEMrUdlxgX2ZtJfV7m3U0lwjOw=; b=S+h
-	98jk9+Jsj21TWJsA6gtaznM2kDI5mAFVVt73Qqz+3pWLP3STt5iDEjzN6SAMu5v9mCXnp7/nTf9az
-	Wf1E2GqLNd1mN+wH3GMXNdfqtjR6bcq4uf+RewDPcgzzteEs9VZgMp9Jk4QKXaK75Co37N3891Kuh
-	XUMauq/2Pz6c2RRg6aBPUWnbyKgFDggRYwsaBlHvD7CYwYnxh8ja9y0wzYIX/v/0jpQUxSSeTwrbo
-	90QIuyuhIzoy5VdNTfqLIG4ie8SBdDcvDzXYDw9joCnF77DYY7K9mkakTfgohrQnDIalwSz7oWuUE
-	EIGfI+VbdDipJtU+SP+jyKeK+/N8vGg==;
+	References:List-Owner; bh=Ygk69syPlsuLTGIuMZh+5gWDPszGKApwxmKJeZLn0UQ=; b=XpD
+	mQXKkblZ+d4X8bhJSsCUkrTB0x9yX0QtR+VownyR+87d+XyH5f8hXM7NELLVxtflRh4itUs2JVLpt
+	N7S0AR7m+VW51i7Dvvloae+q+QAiJkV6V9XrjXqpWKEPxtGqDCMAEBJ1LkIv1eq59sGPfkNo9quB5
+	oOJ30vrJby8Aq5a1dLsPb3La+yVacmLFqRI4YzGkPKJ9TwRjCaJEgLTCuHWEP7bsmuIkngEjQsoTm
+	pnQEUBza+ST2a28GIQRB/nZrNQz3pPIVkZF7pLThY73mTsfXZ2H6CuicoQSDYthKO9qkUt6BkwUdd
+	YZM0EHxgevG5Pr2JBYhp4TL4Bk8y1cw==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
  h=from:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to
@@ -30,15 +30,15 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  p/OtGOr98URgaePHoR9An6EdoEKnHNMu0AO32XIShQ/9BMXTNJ7dnJcBztA3PYRndK8E
  hOgQ==
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@synopsys.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, geert@linux-m68k.org, ralf@linux-mips.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, cmetcalf@mellanox.com, gxt@mprc.pku.edu.cn, bhelgaas@google.com, viro@zeniv.linux.org.uk, akpm@linux-foundation.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, hch@infradead.org
 Cc: Palmer Dabbelt <palmer@dabbelt.com>
 
