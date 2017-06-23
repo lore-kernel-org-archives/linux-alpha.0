@@ -1,19 +1,19 @@
 From: Richard Henderson <rth@twiddle.net>
-Subject: [PATCH 3/3] alpha: Fix typo in ev6-copy_user.S
-Date: Fri, 23 Jun 2017 14:20:01 -0700
-Message-ID: <20170623212001.2785-4-rth@twiddle.net>
+Subject: [PATCH 2/3] alpha: Package string routines together
+Date: Fri, 23 Jun 2017 14:20:00 -0700
+Message-ID: <20170623212001.2785-3-rth@twiddle.net>
 References: <20170623212001.2785-1-rth@twiddle.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nXI+RmrsHj2EdeWjiHChME6yLcHmyeuVIh6CSZQGYlo=;
-        b=Q007c7RzyxXOAUrZ54XHLItwXSANaxSEGBtcejTRhFphkeoI51YvYA9tTdRB4KLAVS
-         u06pCA25V9UnCV7pEjW7dnM3FUfUFDsJx+k1lxKuxu/VhrNXF9skEbfdJT3hlf71puTI
-         U00qcjJZRP4baWl+Xxl1wLa8we4FdNZeGLnG/hhA1ae1wVDzGAARxGUVRUBS9N5/IW2D
-         ONpU1B1n6OIRds5b2w6PE9Pc9eNwlEazsfVOJQThI3WRWa9twuBhMg9j9Ou+jDHyn093
-         6bok9QtPN9CT4v6BVFFF80RPagWNdSiQ3X6zUDqfqORy87ewjeykIyw7O92u5W1k9KRq
-         e4og==
+        bh=VoafEY0Zyq5pzOyrUdqqsoFgkvqru1zfEnOKiqm+F2A=;
+        b=S0Xm79i1ncTCADiP9RwomRrh4nOF78dmJXNI6acAUywNiRVZh08NdAe6zQNucp3j3S
+         SDodYoQ6lfNlFaGQCC9UTSj9N9BQxSGRXajGtdzxMmLwvchMN/lpkreHnxaNhm4Jd6Kz
+         3KHBJIXv47Pz1QPWHSnyFZ+dAvzOIs22DzT9XRbBnja1dF5z1qyvK9RPUOqpi8CknLBb
+         mgxNw38AtmtCxQ3fNBHUrY04nAu7s+VY6qFn4e1tLb2WjTIyXTsm9JE4t0MQY0UQOLjl
+         8S3uqaTJnnGMyz5Yqkc8vYWfSC40DrDOKtUclL8TL85v4ZrpD1tmcgNJeeN9DHqnY89X
+         WJGw==
 In-Reply-To: <20170623212001.2785-1-rth@twiddle.net>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -23,49 +23,51 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: linux-alpha@vger.kernel.org
 
-Patch 8525023121de4848b5f0a7d867ffeadbc477774d introduced a typo.
-
-That said, the identity AND insns added by that patch are more
-clearly written as MOV.  At the same time, re-schedule the ev6
-version so that the first dispatch can execute in parallel.
+There are direct branches between {str*cpy,str*cat} and stx*cpy.
+Ensure the branches are within range by merging these objects.
 
 Signed-off-by: Richard Henderson <rth@twiddle.net>
 ---
- arch/alpha/lib/copy_user.S     | 2 +-
- arch/alpha/lib/ev6-copy_user.S | 7 ++++---
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ arch/alpha/lib/Makefile | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/arch/alpha/lib/copy_user.S b/arch/alpha/lib/copy_user.S
-index 159f1b7..c277a1a 100644
---- a/arch/alpha/lib/copy_user.S
-+++ b/arch/alpha/lib/copy_user.S
-@@ -34,7 +34,7 @@
- 	.ent __copy_user
- __copy_user:
- 	.prologue 0
--	and $18,$18,$0
-+	mov $18,$0
- 	and $16,7,$3
- 	beq $0,$35
- 	beq $3,$36
-diff --git a/arch/alpha/lib/ev6-copy_user.S b/arch/alpha/lib/ev6-copy_user.S
-index 35e6710..954ca03 100644
---- a/arch/alpha/lib/ev6-copy_user.S
-+++ b/arch/alpha/lib/ev6-copy_user.S
-@@ -45,9 +45,10 @@
- 				# Pipeline info: Slotting & Comments
- __copy_user:
- 	.prologue 0
--	andq $18, $18, $0
--	subq $18, 32, $1	# .. E  .. ..	: Is this going to be a small copy?
--	beq $0, $zerolength	# U  .. .. ..	: U L U L
-+	mov $18, $0		# .. .. .. E
-+	subq $18, 32, $1	# .. .. E. ..	: Is this going to be a small copy?
-+	nop			# .. E  .. ..
-+	beq $18, $zerolength	# U  .. .. ..	: U L U L
- 
- 	and $16,7,$3		# .. .. .. E	: is leading dest misalignment
- 	ble $1, $onebyteloop	# .. .. U  ..	: 1st branch : small amount of data
+diff --git a/arch/alpha/lib/Makefile b/arch/alpha/lib/Makefile
+index 7083434..a808159 100644
+--- a/arch/alpha/lib/Makefile
++++ b/arch/alpha/lib/Makefile
+@@ -20,12 +20,8 @@ lib-y =	__divqu.o __remqu.o __divlu.o __remlu.o \
+ 	checksum.o \
+ 	csum_partial_copy.o \
+ 	$(ev67-y)strlen.o \
+-	$(ev67-y)strcat.o \
+-	strcpy.o \
+-	$(ev67-y)strncat.o \
+-	strncpy.o \
+-	$(ev6-y)stxcpy.o \
+-	$(ev6-y)stxncpy.o \
++	stycpy.o \
++	styncpy.o \
+ 	$(ev67-y)strchr.o \
+ 	$(ev67-y)strrchr.o \
+ 	$(ev6-y)memchr.o \
+@@ -49,3 +45,17 @@ AFLAGS___remlu.o =       -DREM -DINTSIZE
+ $(addprefix $(obj)/,__divqu.o __remqu.o __divlu.o __remlu.o): \
+ 						$(src)/$(ev6-y)divide.S FORCE
+ 	$(call if_changed_rule,as_o_S)
++
++# There are direct branches between {str*cpy,str*cat} and stx*cpy.
++# Ensure the branches are within range by merging these objects.
++
++LDFLAGS_stycpy.o := -r
++LDFLAGS_styncpy.o := -r
++
++$(obj)/stycpy.o: $(obj)/strcpy.o $(obj)/$(ev67-y)strcat.o \
++		 $(obj)/$(ev6-y)stxcpy.o FORCE
++	$(call if_changed,ld)
++
++$(obj)/styncpy.o: $(obj)/strncpy.o $(obj)/$(ev67-y)strncat.o \
++		 $(obj)/$(ev6-y)stxncpy.o FORCE
++	$(call if_changed,ld)
 -- 
 2.9.4
 
