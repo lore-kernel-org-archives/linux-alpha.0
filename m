@@ -1,48 +1,35 @@
 From: Palmer Dabbelt <palmer@dabbelt.com>
 Subject: [PATCH] pci:  Add and use PCI_GENERIC_SETUP Kconfig entry
 Date: Fri, 23 Jun 2017 15:08:57 -0700
-Message-ID: <20170623220857.28774-2-palmer__8425.61015529118$1498255787$gmane$org@dabbelt.com>
+Message-ID: <20170623220857.28774-2-palmer__16158.0688356937$1498255806$gmane$org@dabbelt.com>
 References: <20170623220104.GE31455@jhogan-linux.le.imgtec.org>
  <20170623220857.28774-1-palmer@dabbelt.com>
-Mime-Version: 1.0
+Return-path: <linux-mips-bounce@linux-mips.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to
+         :to:to:to:to:to:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=5MLzh58E17aEvEqlL7mH96lwgmMLBYwuP0x1n7GUuuU=;
+        b=hVDRDAyVfaxqaD+HPs+0rHaozSD3aWiXZWHLW7iZA4gUW1fyZCzGc3ciNPz+GKuUUG
+         0gg2HzWiLX/w1+o0ZaugJHyyQ/tirvacVo9JsvhnyXY7Milh6itvqnsQ4fxM51SzlWeD
+         wJWrLml7gnTLJ74BXNSwO0cZgGqTXZDZFeip91FK3Kp+ofj8KmBW2fLuPaKWDWJmlGYl
+         iv1RU5Pc874mWh1g4ORblyLd/3kbX2JegdyIZ3NAYcT5HU8rrJomUMD7W7EGvJ6kTCvD
+         dSShV5jyZZm/PiAtZWIC8jBzA8JJVWhzy1rutjzzfvmODq4CRtBfAEOykVtKlep30o/L
+         sZMg==
+In-Reply-To: <20170623220857.28774-1-palmer@dabbelt.com>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-Id: <linux-alpha.vger.kernel.org>
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
-	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Owner;
-	bh=c25JaATe1IfY9OI1MfUpoRiL1slhUhDfgzIA0KAQZbU=; b=FDAqrb9MqgwpTEZFHiGSDOOfiX
-	J6zr73+TEW8hpgvlvRdOr9qfzeb59TgIe+w51hdad/c+q7ESpNvzM061G972S31/Y6tbLCyp4de7m
-	pixi8vt/5bOv5F+0k/kfJ4b+BdeIhfqlqVEbjrhf4BrFvwNCpXoVrkBTDn1pVrLkJMv+ODQtejhBQ
-	4qQD6lbv0f2NUJMHZT2YrhhbVKQy9zRdZJlo9ATVPifC5zoIxlneQKpDyMO1fsftL/WOIrONGIZ4y
-	9pXHMOeRmQ/IylWVyO9P6nousModsxTJu/XvuG+JyxTBVTKnRYvbjJTPUi7LwRaqXQQqxBx1Sio1S
-	mK1Rf1ag==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
- h=from:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to
- :to:to:to:to:to:to:cc:subject:date:message-id:in-reply-to:references;
- bh=5MLzh58E17aEvEqlL7mH96lwgmMLBYwuP0x1n7GUuuU=;
- b=hVDRDAyVfaxqaD+HPs+0rHaozSD3aWiXZWHLW7iZA4gUW1fyZCzGc3ciNPz+GKuUUG
- 0gg2HzWiLX/w1+o0ZaugJHyyQ/tirvacVo9JsvhnyXY7Milh6itvqnsQ4fxM51SzlWeD
- wJWrLml7gnTLJ74BXNSwO0cZgGqTXZDZFeip91FK3Kp+ofj8KmBW2fLuPaKWDWJmlGYl
- iv1RU5Pc874mWh1g4ORblyLd/3kbX2JegdyIZ3NAYcT5HU8rrJomUMD7W7EGvJ6kTCvD
- dSShV5jyZZm/PiAtZWIC8jBzA8JJVWhzy1rutjzzfvmODq4CRtBfAEOykVtKlep30o/L
- sZMg==
-In-Reply-To: <20170623220857.28774-1-palmer@dabbelt.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
 To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@synopsys.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, geert@linux-m68k.org, ralf@linux-mips.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, cmetcalf@mellanox.com, gxt@mprc.pku.edu.cn, bhelgaas@google.com, viro@zeniv.linux.org.uk, akpm@linux-foundation.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, hch@infradead.org
 Cc: Palmer Dabbelt <palmer@dabbelt.com>
 
@@ -230,3 +217,5 @@ index 462c1f5f5546..26f4710c88ec 100644
  # ACPI Related PCI FW Functions
 -- 
 2.13.0
+
+
