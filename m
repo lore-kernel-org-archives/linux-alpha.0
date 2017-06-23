@@ -1,47 +1,163 @@
-From: Richard Henderson <rth@twiddle.net>
-Subject: Re: [PATCH 4/7] alpha: provide ioread64 and iowrite64 implementations
-Date: Thu, 22 Jun 2017 14:20:43 -0700
-Message-ID: <a854aa15-3ec7-1605-aeef-e41948996d21@twiddle.net>
+From: =?iso-8859-2?Q?Horia_Geant=E3?= <horia.geanta@nxp.com>
+Subject: Re: [PATCH 7/7] crypto: caam: cleanup CONFIG_64BIT ifdefs when using
+ io{read|write}64
+Date: Fri, 23 Jun 2017 06:51:14 +0000
+Message-ID: <VI1PR0401MB259182B9B11B72B4B53B2C1498D80@VI1PR0401MB2591.eurprd04.prod.outlook.com>
 References: <20170622164817.25515-1-logang@deltatee.com>
- <20170622164817.25515-5-logang@deltatee.com>
+ <20170622164817.25515-8-logang@deltatee.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-crypto-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bWr6MqcJvaSxYg0PGYsPBlwe+qp/day58VnONXtSiqI=;
-        b=ZDO6ebaoaoX5/qJkMBKzUJdY4l6uUONbSxfNjmtogL28IY9XOA20yoMZ+5nEh3AFEW
-         Rwbuo/UClr+ekXdnwXDULnir57yPRUs0aRrk75AS6cXNCcK52nI5VqX4pHFgQ5ipxnYT
-         B41V+gMjXyJ0aDVEBzqOkkQuWGMSy/2zQ8L13JU587nelWLwDC3Ldoq8ckpDprRAMBVz
-         JqbX7o1JB69U3jx97jurkXWlLJDiZVoLpT8Z9RYWdl4FweHq8OfOnPGH+9s6JNcNuwa4
-         AaKXMhYmX+gkK1OT03ORBYm/Rj3MsVkiUr+uJ4C0KHX60W5mfg7xRAcswjqVSZXZZ3/C
-         gy5A==
-In-Reply-To: <20170622164817.25515-5-logang@deltatee.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version;
+ bh=vWU3Fk2SPQ9PG+RH5A3DCcAYxgRiJfhbR+HHWBicRW8=;
+ b=JxmV/lsw3OM2oj+Anu9lz3csVqSQPfqBmnDqNUkfqJ/QVIOXtW7FnRSgiyQ9wirX/+KIXEqbqOP418+MUI0mNiUBBm+vR3GoSQWCDJOGyqby7OpEakZHX1mUfmnf8wJHkfNBJAPPkygo0HqAncw962rEr428SLR5TMeOD+VtIsU=
 Content-Language: en-US
 Sender: linux-crypto-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Logan Gunthorpe <logang@deltatee.com>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-ntb@googlegroups.com, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-crypto@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Bates <sbates@raithlin.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+To: Logan Gunthorpe <logang@deltatee.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-ntb@googlegroups.com" <linux-ntb@googlegroups.com>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Bates <sbates@raithlin.com>, Dan Douglass <dan.douglass@nxp.com>, Herbert Xu <herbert@gondor.apana.org.au>, "David S. Miller" <davem@davemloft.net>, Radu Solea <radu.solea@nxp.com>, Steve Cornelius <steve.cornelius@nxp.com>
 
-On 06/22/2017 09:48 AM, Logan Gunthorpe wrote:
-> Alpha implements its own io operation and doesn't use the
-> common library. Thus to make ioread64 and iowrite64 globally
-> available we need to add implementations for alpha.
-> 
-> For this, we simply use calls that chain two 32-bit operations.
-> (mostly because I don't really understand the alpha architecture.)
-
-It's not difficult to provide this interface[*].  I believe the only reason I 
-didn't do so from the beginning is that it wasn't used.
-
-
-
-r~
-
-
-* At least for systems other than Jensen, which cannot generate 64-bit I/O.  On 
-the other hand, Jensen doesn't have PCI (EISA only), and so won't have any 
-devices that care.
+On 6/22/2017 7:49 PM, Logan Gunthorpe wrote:=0A=
+> Now that ioread64 and iowrite64 are always available we don't=0A=
+> need the ugly ifdefs to change their implementation when they=0A=
+> are not.=0A=
+> =0A=
+Thanks Logan.=0A=
+=0A=
+Note however this is not equivalent - it changes the behaviour, since=0A=
+CAAM engine on i.MX6S/SL/D/Q platforms is broken in terms of 64-bit=0A=
+register endianness - see CONFIG_CRYPTO_DEV_FSL_CAAM_IMX usage in code=0A=
+you are removing.=0A=
+=0A=
+[Yes, current code has its problems, as it does not differentiate b/w=0A=
+i.MX platforms with and without the (unofficial) erratum, but this=0A=
+should be fixed separately.]=0A=
+=0A=
+Below is the change that would keep current logic - still forcing i.MX=0A=
+to write CAAM 64-bit registers in BE even if the engine is LE (yes, diff=0A=
+is doing a poor job).=0A=
+=0A=
+Horia=0A=
+=0A=
+diff --git a/drivers/crypto/caam/regs.h b/drivers/crypto/caam/regs.h=0A=
+index 84d2f838a063..b893ebb24e65 100644=0A=
+--- a/drivers/crypto/caam/regs.h=0A=
++++ b/drivers/crypto/caam/regs.h=0A=
+@@ -134,50 +134,25 @@ static inline void clrsetbits_32(void __iomem=0A=
+*reg, u32 clear, u32 set)=0A=
+  *    base + 0x0000 : least-significant 32 bits=0A=
+  *    base + 0x0004 : most-significant 32 bits=0A=
+  */=0A=
+-#ifdef CONFIG_64BIT=0A=
+ static inline void wr_reg64(void __iomem *reg, u64 data)=0A=
+ {=0A=
++#ifndef CONFIG_CRYPTO_DEV_FSL_CAAM_IMX=0A=
+        if (caam_little_end)=0A=
+                iowrite64(data, reg);=0A=
+        else=0A=
+-               iowrite64be(data, reg);=0A=
+-}=0A=
+-=0A=
+-static inline u64 rd_reg64(void __iomem *reg)=0A=
+-{=0A=
+-       if (caam_little_end)=0A=
+-               return ioread64(reg);=0A=
+-       else=0A=
+-               return ioread64be(reg);=0A=
+-}=0A=
+-=0A=
+-#else /* CONFIG_64BIT */=0A=
+-static inline void wr_reg64(void __iomem *reg, u64 data)=0A=
+-{=0A=
+-#ifndef CONFIG_CRYPTO_DEV_FSL_CAAM_IMX=0A=
+-       if (caam_little_end) {=0A=
+-               wr_reg32((u32 __iomem *)(reg) + 1, data >> 32);=0A=
+-               wr_reg32((u32 __iomem *)(reg), data);=0A=
+-       } else=0A=
+ #endif=0A=
+-       {=0A=
+-               wr_reg32((u32 __iomem *)(reg), data >> 32);=0A=
+-               wr_reg32((u32 __iomem *)(reg) + 1, data);=0A=
+-       }=0A=
++               iowrite64be(data, reg);=0A=
+ }=0A=
+=0A=
+ static inline u64 rd_reg64(void __iomem *reg)=0A=
+ {=0A=
+ #ifndef CONFIG_CRYPTO_DEV_FSL_CAAM_IMX=0A=
+        if (caam_little_end)=0A=
+-               return ((u64)rd_reg32((u32 __iomem *)(reg) + 1) << 32 |=0A=
+-                       (u64)rd_reg32((u32 __iomem *)(reg)));=0A=
++               return ioread64(reg);=0A=
+        else=0A=
+ #endif=0A=
+-               return ((u64)rd_reg32((u32 __iomem *)(reg)) << 32 |=0A=
+-                       (u64)rd_reg32((u32 __iomem *)(reg) + 1));=0A=
++               return ioread64be(reg);=0A=
+ }=0A=
+-#endif /* CONFIG_64BIT  */=0A=
+=0A=
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT=0A=
+ #ifdef CONFIG_SOC_IMX7D=0A=
+=0A=
+=0A=
+> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>=0A=
+> Cc: "Horia Geant=E3" <horia.geanta@nxp.com>=0A=
+> Cc: Dan Douglass <dan.douglass@nxp.com>=0A=
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>=0A=
+> Cc: "David S. Miller" <davem@davemloft.net>=0A=
+> ---=0A=
+>  drivers/crypto/caam/regs.h | 29 -----------------------------=0A=
+>  1 file changed, 29 deletions(-)=0A=
+> =0A=
+> diff --git a/drivers/crypto/caam/regs.h b/drivers/crypto/caam/regs.h=0A=
+> index 84d2f838a063..26fc19dd0c39 100644=0A=
+> --- a/drivers/crypto/caam/regs.h=0A=
+> +++ b/drivers/crypto/caam/regs.h=0A=
+> @@ -134,7 +134,6 @@ static inline void clrsetbits_32(void __iomem *reg, u=
+32 clear, u32 set)=0A=
+>   *    base + 0x0000 : least-significant 32 bits=0A=
+>   *    base + 0x0004 : most-significant 32 bits=0A=
+>   */=0A=
+> -#ifdef CONFIG_64BIT=0A=
+>  static inline void wr_reg64(void __iomem *reg, u64 data)=0A=
+>  {=0A=
+>  	if (caam_little_end)=0A=
+> @@ -151,34 +150,6 @@ static inline u64 rd_reg64(void __iomem *reg)=0A=
+>  		return ioread64be(reg);=0A=
+>  }=0A=
+>  =0A=
+> -#else /* CONFIG_64BIT */=0A=
+> -static inline void wr_reg64(void __iomem *reg, u64 data)=0A=
+> -{=0A=
+> -#ifndef CONFIG_CRYPTO_DEV_FSL_CAAM_IMX=0A=
+> -	if (caam_little_end) {=0A=
+> -		wr_reg32((u32 __iomem *)(reg) + 1, data >> 32);=0A=
+> -		wr_reg32((u32 __iomem *)(reg), data);=0A=
+> -	} else=0A=
+> -#endif=0A=
+> -	{=0A=
+> -		wr_reg32((u32 __iomem *)(reg), data >> 32);=0A=
+> -		wr_reg32((u32 __iomem *)(reg) + 1, data);=0A=
+> -	}=0A=
+> -}=0A=
+> -=0A=
+> -static inline u64 rd_reg64(void __iomem *reg)=0A=
+> -{=0A=
+> -#ifndef CONFIG_CRYPTO_DEV_FSL_CAAM_IMX=0A=
+> -	if (caam_little_end)=0A=
+> -		return ((u64)rd_reg32((u32 __iomem *)(reg) + 1) << 32 |=0A=
+> -			(u64)rd_reg32((u32 __iomem *)(reg)));=0A=
+> -	else=0A=
+> -#endif=0A=
+> -		return ((u64)rd_reg32((u32 __iomem *)(reg)) << 32 |=0A=
+> -			(u64)rd_reg32((u32 __iomem *)(reg) + 1));=0A=
+> -}=0A=
+> -#endif /* CONFIG_64BIT  */=0A=
+> -=0A=
+>  #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT=0A=
+>  #ifdef CONFIG_SOC_IMX7D=0A=
+>  #define cpu_to_caam_dma(value) \=0A=
+> =0A=
