@@ -1,10 +1,10 @@
 From: Palmer Dabbelt <palmer@dabbelt.com>
 Subject: [PATCH] pci:  Add and use PCI_GENERIC_SETUP Kconfig entry
 Date: Fri, 23 Jun 2017 15:08:57 -0700
-Message-ID: <20170623220857.28774-2-palmer@dabbelt.com>
+Message-ID: <20170623220857.28774-2-palmer__2023.14274288273$1498255759$gmane$org@dabbelt.com>
 References: <20170623220104.GE31455@jhogan-linux.le.imgtec.org>
  <20170623220857.28774-1-palmer@dabbelt.com>
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to
@@ -17,7 +17,7 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
          dSShV5jyZZm/PiAtZWIC8jBzA8JJVWhzy1rutjzzfvmODq4CRtBfAEOykVtKlep30o/L
          sZMg==
 In-Reply-To: <20170623220857.28774-1-palmer@dabbelt.com>
-Sender: linux-m68k-owner@vger.kernel.org
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -209,3 +209,4 @@ index 462c1f5f5546..26f4710c88ec 100644
  # ACPI Related PCI FW Functions
 -- 
 2.13.0
+
