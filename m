@@ -1,95 +1,47 @@
-From: =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>
-Subject: [PATCH v2 7/7] crypto: caam: cleanup CONFIG_64BIT ifdefs when using io{read|write}64
-Date: Sat, 24 Jun 2017 14:57:07 +0300
-Message-ID: <20170624115707.30095-1-horia.geanta@nxp.com>
-References: <411c4bb0-2709-1902-778a-bf4d7734e3e1@deltatee.com>
+From: Richard Henderson <rth@twiddle.net>
+Subject: Re: [PATCH] pci: Add and use PCI_GENERIC_SETUP Kconfig entry
+Date: Sat, 24 Jun 2017 08:08:43 -0700
+Message-ID: <60bd9a54-0220-5d52-8843-ea3a654020a6@twiddle.net>
+References: <20170623220104.GE31455@jhogan-linux.le.imgtec.org>
+ <20170623220857.28774-1-palmer@dabbelt.com>
+ <20170623220857.28774-2-palmer@dabbelt.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <411c4bb0-2709-1902-778a-bf4d7734e3e1@deltatee.com>
-Sender: linux-arch-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=16E7wkPxU7ZP5kdFTxJFcC88q0K4sDxq6OIOk+zXe6w=;
+        b=EHtY9aBXF7Z0sLX6FYXbOw0aEl2lSx+g7SpgaurTuAM+I0UmwTyI/CwB/YovI30sox
+         6JCO0lpkLCaX+M/BKgL8kD0z4An7cBFZrAW3O/D1nX/FiGZ1WTUC6TjXzIM1CeZ1/WPj
+         CxfMmX41qNGDv/XnZ5VavHxiG9KOx4p1BQWnfPN1lepaqrgHnFE4OaNxImYy4yjJ2faM
+         yIR9cAweSnEzA6muYfZ+pIveBVIuo5Lx81WE49Qmp7173cNLMZxBOEO2pIQQSoUbN9yn
+         1Bw8QMxWdso92f7HqiDlWOOUaNyVdhYn6EE25lQWBkI05fWTp+io/vn7EkygsT6Yr9Dg
+         iYuw==
+In-Reply-To: <20170623220857.28774-2-palmer@dabbelt.com>
+Content-Language: en-US
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Logan Gunthorpe <logang@deltatee.com>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-ntb@googlegroups.com, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-crypto@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Bates <sbates@raithlin.com>, Dan Douglass <dan.douglass@nxp.com>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Radu Solea <radu.solea@nxp.com>, Steve Cornelius <steve.cornelius@nxp.com>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Palmer Dabbelt <palmer@dabbelt.com>, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@synopsys.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, geert@linux-m68k.org, ralf@linux-mips.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, cmetcalf@mellanox.com, gxt@mprc.pku.edu.cn, bhelgaas@google.com, viro@zeniv.linux.org.uk, akpm@linux-foundation.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-m68k@vger.kernel.org, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, hch@infradead.org
 
-Now that ioread64 and iowrite64 are always available we don't
-need the ugly ifdefs to change their implementation when they
-are not.
+On 06/23/2017 03:08 PM, Palmer Dabbelt wrote:
+> We wanted to add RISC-V to the list of architectures that used the
+> generic PCI setup-irq.o inside the Makefile and it was suggested that
+> instead we define a Kconfig entry and use that.
+> 
+> I've done very minimal testing on this: I just checked to see that
+> an aarch64 defconfig still build setup-irq.o with the patch applied.
+> The intention is that this patch doesn't change the behavior of any
+> build.
+> 
+> Signed-off-by: Palmer Dabbelt<palmer@dabbelt.com>
+> Reviewed-by: James Hogan<james.hogan@imgtec.com>
+> ---
+>   arch/alpha/Kconfig     |  1 +
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: Horia Geantă <horia.geanta@nxp.com>
-Cc: Dan Douglass <dan.douglass@nxp.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: "David S. Miller" <davem@davemloft.net>
+Acked-by: Richard Henderson <rth@twiddle.net>
 
-Updated patch such that behaviour does not change
-from i.MX workaround point of view.
 
-Signed-off-by: Horia Geantă <horia.geanta@nxp.com>
----
- drivers/crypto/caam/regs.h | 33 ++++-----------------------------
- 1 file changed, 4 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/crypto/caam/regs.h b/drivers/crypto/caam/regs.h
-index 84d2f838a063..b893ebb24e65 100644
---- a/drivers/crypto/caam/regs.h
-+++ b/drivers/crypto/caam/regs.h
-@@ -134,50 +134,25 @@ static inline void clrsetbits_32(void __iomem *reg, u32 clear, u32 set)
-  *    base + 0x0000 : least-significant 32 bits
-  *    base + 0x0004 : most-significant 32 bits
-  */
--#ifdef CONFIG_64BIT
- static inline void wr_reg64(void __iomem *reg, u64 data)
- {
-+#ifndef CONFIG_CRYPTO_DEV_FSL_CAAM_IMX
- 	if (caam_little_end)
- 		iowrite64(data, reg);
- 	else
--		iowrite64be(data, reg);
--}
--
--static inline u64 rd_reg64(void __iomem *reg)
--{
--	if (caam_little_end)
--		return ioread64(reg);
--	else
--		return ioread64be(reg);
--}
--
--#else /* CONFIG_64BIT */
--static inline void wr_reg64(void __iomem *reg, u64 data)
--{
--#ifndef CONFIG_CRYPTO_DEV_FSL_CAAM_IMX
--	if (caam_little_end) {
--		wr_reg32((u32 __iomem *)(reg) + 1, data >> 32);
--		wr_reg32((u32 __iomem *)(reg), data);
--	} else
- #endif
--	{
--		wr_reg32((u32 __iomem *)(reg), data >> 32);
--		wr_reg32((u32 __iomem *)(reg) + 1, data);
--	}
-+		iowrite64be(data, reg);
- }
- 
- static inline u64 rd_reg64(void __iomem *reg)
- {
- #ifndef CONFIG_CRYPTO_DEV_FSL_CAAM_IMX
- 	if (caam_little_end)
--		return ((u64)rd_reg32((u32 __iomem *)(reg) + 1) << 32 |
--			(u64)rd_reg32((u32 __iomem *)(reg)));
-+		return ioread64(reg);
- 	else
- #endif
--		return ((u64)rd_reg32((u32 __iomem *)(reg)) << 32 |
--			(u64)rd_reg32((u32 __iomem *)(reg) + 1));
-+		return ioread64be(reg);
- }
--#endif /* CONFIG_64BIT  */
- 
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
- #ifdef CONFIG_SOC_IMX7D
--- 
-2.12.0.264.gd6db3f216544
-
+r~
