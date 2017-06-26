@@ -1,10 +1,10 @@
 From: Palmer Dabbelt <palmer@dabbelt.com>
 Subject: [PATCH] pci:  Add and use PCI_GENERIC_SETUP Kconfig entry
 Date: Mon, 26 Jun 2017 13:27:56 -0700
-Message-ID: <20170626202756.22220-2-palmer@dabbelt.com>
+Message-ID: <20170626202756.22220-2-palmer__47746.7201104902$1498508898$gmane$org@dabbelt.com>
 References: <CAMuHMdXSrfbSX2de2q35Hj6vQwi+sr23M1LEg82JL+FyLq4OJw@mail.gmail.com>
  <20170626202756.22220-1-palmer@dabbelt.com>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to:to
@@ -17,7 +17,7 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
          LWJWwjdVbSZKIYCvxqZ4kVsPzxJLyT00sx1Qgs9jAeasYj8waazcwtLtx+9Ofg/x8G2Q
          BpAQ==
 In-Reply-To: <20170626202756.22220-1-palmer@dabbelt.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
