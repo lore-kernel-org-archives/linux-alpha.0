@@ -1,56 +1,53 @@
-From: Jyri Sarha <jsarha@ti.com>
-Subject: Re: [PATCH 6/7] drm/tilcdc: clean up ifdef hacks around iowrite64
-Date: Mon, 26 Jun 2017 11:55:03 +0300
-Message-ID: <504da99a-838c-48ec-c5b2-6b611d587a10@ti.com>
-References: <20170622164817.25515-1-logang@deltatee.com>
- <20170622164817.25515-7-logang@deltatee.com>
+From: Jiri Slaby <jslaby@suse.cz>
+Subject: Re: [PATCH 1/1] futex: remove duplicated code and fix UB
+Date: Mon, 26 Jun 2017 14:02:31 +0200
+Message-ID: <80af8d81-4522-de2d-8289-1ab46565505a@suse.cz>
+References: <20170621115318.2781-1-jslaby@suse.cz>
+ <alpine.DEB.2.20.1706230017520.2221@nanos>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ti.com;
- s=ti-com-17Q1; t=1498467306;
- bh=8X65vYsc1s+TnNGRSaN9ybgkYiIns5zOrGpY0F8gTJw=;
- h=Subject:To:CC:References:From:Date:In-Reply-To;
- b=w4r24dyFO5hKppk6atGDgurvCgp/P/G4t+4xJ/mJe0ducyUZE0uDPgvdfJOMADWq8
- dR9DOlrtgELJBlRMI1GP/tW1hm8gFVcAd19alRr8ZAjq48u7Kg/13wv7BNekGtAHXu
- EAQ4qSkLBROGZeYfm6ipQVbzV3unFiKkomH0RKLo=
-In-Reply-To: <20170622164817.25515-7-logang@deltatee.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.20.1706230017520.2221@nanos>
 Content-Language: en-GB
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Logan Gunthorpe <logang@deltatee.com>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-ntb@googlegroups.com, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-crypto@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Arnd Bergmann <arnd@arndb.de>, Stephen Bates <sbates@raithlin.com>
+To: Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will.deacon@arm.com>
+Cc: mingo@redhat.com, peterz@infradead.org, dvhart@infradead.org, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Catalin Marinas <catalin.marinas@arm.com>, Richard Kuo <rkuo@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Marti
 
-T24gMDYvMjIvMTcgMTk6NDgsIExvZ2FuIEd1bnRob3JwZSB3cm90ZToKPiBOb3cgdGhhdCB3ZSBj
-YW4gZXhwZWN0IGlvd3JpdGU2NCB0byBhbHdheXMgZXhpc3QgdGhlIGhhY2sgaXMgbm8gbG9uZ2Vy
-Cj4gbmVjZXNzYXJ5IHNvIHdlIGp1c3QgY2FsbCBpb3dyaXRlNjQgZGlyZWN0bHkuCj4gCj4gU2ln
-bmVkLW9mZi1ieTogTG9nYW4gR3VudGhvcnBlIDxsb2dhbmdAZGVsdGF0ZWUuY29tPgo+IENjOiBK
-eXJpIFNhcmhhIDxqc2FyaGFAdGkuY29tPgo+IENjOiBUb21pIFZhbGtlaW5lbiA8dG9taS52YWxr
-ZWluZW5AdGkuY29tPgo+IENjOiBEYXZpZCBBaXJsaWUgPGFpcmxpZWRAbGludXguaWU+CgpBY2tl
-ZC1ieTogSnlyaSBTYXJoYSA8anNhcmhhQHRpLmNvbT4KCkFuZCB0aGFua3MhCgo+IC0tLQo+ICBk
-cml2ZXJzL2dwdS9kcm0vdGlsY2RjL3RpbGNkY19yZWdzLmggfCA2IC0tLS0tLQo+ICAxIGZpbGUg
-Y2hhbmdlZCwgNiBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJt
-L3RpbGNkYy90aWxjZGNfcmVncy5oIGIvZHJpdmVycy9ncHUvZHJtL3RpbGNkYy90aWxjZGNfcmVn
-cy5oCj4gaW5kZXggZTljZTcyNTY5OGE5Li4wYjkwMTQwNWYzMGEgMTAwNjQ0Cj4gLS0tIGEvZHJp
-dmVycy9ncHUvZHJtL3RpbGNkYy90aWxjZGNfcmVncy5oCj4gKysrIGIvZHJpdmVycy9ncHUvZHJt
-L3RpbGNkYy90aWxjZGNfcmVncy5oCj4gQEAgLTEzMywxMyArMTMzLDcgQEAgc3RhdGljIGlubGlu
-ZSB2b2lkIHRpbGNkY193cml0ZTY0KHN0cnVjdCBkcm1fZGV2aWNlICpkZXYsIHUzMiByZWcsIHU2
-NCBkYXRhKQo+ICAJc3RydWN0IHRpbGNkY19kcm1fcHJpdmF0ZSAqcHJpdiA9IGRldi0+ZGV2X3By
-aXZhdGU7Cj4gIAl2b2lkIF9faW9tZW0gKmFkZHIgPSBwcml2LT5tbWlvICsgcmVnOwo+ICAKPiAt
-I2lmZGVmIGlvd3JpdGU2NAo+ICAJaW93cml0ZTY0KGRhdGEsIGFkZHIpOwo+IC0jZWxzZQo+IC0J
-X19pb3dtYigpOwo+IC0JLyogVGhpcyBjb21waWxlcyB0byBzdHJkICg9NjQtYml0IHdyaXRlKSBv
-biBBUk03ICovCj4gLQkqKHU2NCBfX2ZvcmNlICopYWRkciA9IF9fY3B1X3RvX2xlNjQoZGF0YSk7
-Cj4gLSNlbmRpZgo+ICB9Cj4gIAo+ICBzdGF0aWMgaW5saW5lIHUzMiB0aWxjZGNfcmVhZChzdHJ1
-Y3QgZHJtX2RldmljZSAqZGV2LCB1MzIgcmVnKQo+IAoKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxA
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
-YW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On 06/23/2017, 09:51 AM, Thomas Gleixner wrote:
+> On Wed, 21 Jun 2017, Jiri Slaby wrote:
+>> diff --git a/arch/arm64/include/asm/futex.h b/arch/arm64/include/asm/futex.h
+>> index f32b42e8725d..5bb2fd4674e7 100644
+>> --- a/arch/arm64/include/asm/futex.h
+>> +++ b/arch/arm64/include/asm/futex.h
+>> @@ -48,20 +48,10 @@ do {									\
+>>  } while (0)
+>>  
+>>  static inline int
+>> -futex_atomic_op_inuser(unsigned int encoded_op, u32 __user *uaddr)
+> 
+> That unsigned int seems to be a change from the arm64 tree in next. It's
+> not upstream and it'll cause a (easy to resolve) conflict.
+
+Ugh, I thought the arm64 is in upstream already. Note that this patch
+just takes what is in this arm64 fix and makes it effective for all
+architectures. So I will wait with v2 until it merges upstream.
+
+So, Will, will you incorporate Thomas' comments into your arm64 fix?
+
+...
+
+> Yes, we probably can't change that anymore, but at least we should make it
+> very explicit and add a comment to that effect.
+
+Something like this or do you want a comment yet?
+        unsigned int op =         (encoded_op & 0x70000000) >> 28;
+        unsigned int cmp =        (encoded_op & 0x0f000000) >> 24;
+        int oparg = sign_extend32((encoded_op & 0x00fff000) >> 12, 12);
+        int cmparg = sign_extend32(encoded_op & 0x00000fff, 12);
+
+thanks,
+-- 
+js
+suse labs
