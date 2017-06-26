@@ -1,50 +1,60 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] pci: Add and use PCI_GENERIC_SETUP Kconfig entry
-Date: Mon, 26 Jun 2017 09:26:20 +0200
-Message-ID: <CAMuHMdXSrfbSX2de2q35Hj6vQwi+sr23M1LEg82JL+FyLq4OJw@mail.gmail.com>
-References: <20170623220857.28774-2-palmer@dabbelt.com> <201706261344.OUjMGlsQ%fengguang.wu@intel.com>
+From: Jyri Sarha <jsarha@ti.com>
+Subject: Re: [PATCH 1/7] drm/tilcdc: don't use volatile with iowrite64
+Date: Mon, 26 Jun 2017 11:54:25 +0300
+Message-ID: <33b6c00f-1982-69dd-86b2-107266d238d0@ti.com>
+References: <20170622164817.25515-1-logang@deltatee.com>
+ <20170622164817.25515-2-logang@deltatee.com>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:in-reply-to:references:from:date:message-id
-         :subject:to:cc;
-        bh=ABILBXWkQVT8FPiuMUb/79uGWXKdAPFO45P4nkfqDLw=;
-        b=kdgu4vOV9MuBOup0EZDl//i+LxazRA06d1IKDUxy5gX3eT71UxJ0i3qmLUapJ/Uhe3
-         FlP9vqy8gnj+CqqJeawKbpJVwjzkCUipyuGsT0MlhNNbn5QeUZjiVsBl2kkgH5Icj8gu
-         h3PT8eKdvdmGOr6HJ7wL+E4QQSIeS6m64NHvZTuJQBhXTzNUfn7ZbiwlsG2j9d8veSgX
-         w9axpWE4vS86Vfijh3OhB0NePbN46c57msbunAAIqZLxx+C33Wid44Z0oLa1yki/0STl
-         h9tG2fDHNFWakH/0kyhNehMKLxZDmCQcCWKqs4WxjDkDDniG+SHoPTUwyCVplSDI4iWG
-         UVSQ==
-In-Reply-To: <201706261344.OUjMGlsQ%fengguang.wu@intel.com>
-Sender: linux-pci-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ti.com;
+ s=ti-com-17Q1; t=1498467269;
+ bh=snFtFrwDl6kQu3T9FhObLHt5jxFCqSwCM4bz4IKQn00=;
+ h=Subject:To:CC:References:From:Date:In-Reply-To;
+ b=L4QRAG1WehFWFUjahOU5GGi30XQCbBCDUjpne95RnjDV8rGkD0OComnuOJUKrQr9p
+ L3EeczGsBWFjLKcAEBukDVd4qTf/B4zODCV/KpuWRC1fXLxpAhHcbtRhHoOkO1Qe6h
+ AIcbFiWjqaI2YD3oUkmnOhUqO7wztKl7LTub3xs8=
+In-Reply-To: <20170622164817.25515-2-logang@deltatee.com>
+Content-Language: en-GB
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: kbuild test robot <lkp@intel.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>, "kbuild-all@01.org" <kbuild-all@01.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, cmetcalf@mellanox.com, Guan Xuetao <gxt@mprc.pku.edu.cn>, Bjorn Helgaas <bhelgaas@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Andrew Morton <akpm@linux-foundation.org>, alpha <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel>
+To: Logan Gunthorpe <logang@deltatee.com>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-ntb@googlegroups.com, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-crypto@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Arnd Bergmann <arnd@arndb.de>, Stephen Bates <sbates@raithlin.com>
 
-On Mon, Jun 26, 2017 at 7:39 AM, kbuild test robot <lkp@intel.com> wrote:
-> [auto build test WARNING on linus/master]
-> [also build test WARNING on v4.12-rc6]
-> [cannot apply to next-20170623]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
->
-> url:    https://github.com/0day-ci/linux/commits/Palmer-Dabbelt/pci-Add-and-use-PCI_GENERIC_SETUP-Kconfig-entry/20170626-043558
-> config: m68k-allnoconfig (attached as .config)
-> compiler: m68k-linux-gcc (GCC) 4.9.0
-> reproduce:
->         wget https://raw.githubusercontent.com/01org/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         make.cross ARCH=m68k
->
-> All warnings (new ones prefixed by >>):
->
-> warning: (M68K) selects PCI_GENERIC_SETUP which has unmet direct dependencies (MMU)
-
-I can't seem to find this dependency of PCI_GENERIC_SETUP on MMU?
-
-Gr{oetje,eeting}s,
-
-                        Geert
+T24gMDYvMjIvMTcgMTk6NDgsIExvZ2FuIEd1bnRob3JwZSB3cm90ZToKPiBUaGlzIGlzIGEgcHJl
+cCBwYXRjaCBmb3IgYWRkaW5nIGEgdW5pdmVyc2FsIGlvd3JpdGU2NC4KPiAKPiBUaGUgcGF0Y2gg
+aXMgdG8gcHJldmVudCBjb21waWxlciB3YXJuaW5ncyB3aGVuIHdlIGFkZCBpb3dyaXRlNjQgdGhh
+dAo+IHdvdWxkIG9jY3VyIGJlY2F1c2UgdGhlcmUgaXMgYW4gdW5uZWNlc3Nhcnkgdm9sYXRpbGUg
+aW4gdGhpcyBkcml2ZXIuCj4gCj4gU2lnbmVkLW9mZi1ieTogTG9nYW4gR3VudGhvcnBlIDxsb2dh
+bmdAZGVsdGF0ZWUuY29tPgo+IENjOiBKeXJpIFNhcmhhIDxqc2FyaGFAdGkuY29tPgo+IENjOiBU
+b21pIFZhbGtlaW5lbiA8dG9taS52YWxrZWluZW5AdGkuY29tPgo+IENjOiBEYXZpZCBBaXJsaWUg
+PGFpcmxpZWRAbGludXguaWU+CgpBY2tlZC1ieTogSnlyaSBTYXJoYSA8anNhcmhhQHRpLmNvbT4K
+Cj4gLS0tCj4gIGRyaXZlcnMvZ3B1L2RybS90aWxjZGMvdGlsY2RjX3JlZ3MuaCB8IDQgKystLQo+
+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+IAo+IGRp
+ZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vdGlsY2RjL3RpbGNkY19yZWdzLmggYi9kcml2ZXJz
+L2dwdS9kcm0vdGlsY2RjL3RpbGNkY19yZWdzLmgKPiBpbmRleCA5ZDUyOGMwYTY3YTQuLmU5Y2U3
+MjU2OThhOSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vdGlsY2RjL3RpbGNkY19yZWdz
+LmgKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vdGlsY2RjL3RpbGNkY19yZWdzLmgKPiBAQCAtMTMx
+LDE0ICsxMzEsMTQgQEAgc3RhdGljIGlubGluZSB2b2lkIHRpbGNkY193cml0ZShzdHJ1Y3QgZHJt
+X2RldmljZSAqZGV2LCB1MzIgcmVnLCB1MzIgZGF0YSkKPiAgc3RhdGljIGlubGluZSB2b2lkIHRp
+bGNkY193cml0ZTY0KHN0cnVjdCBkcm1fZGV2aWNlICpkZXYsIHUzMiByZWcsIHU2NCBkYXRhKQo+
+ICB7Cj4gIAlzdHJ1Y3QgdGlsY2RjX2RybV9wcml2YXRlICpwcml2ID0gZGV2LT5kZXZfcHJpdmF0
+ZTsKPiAtCXZvbGF0aWxlIHZvaWQgX19pb21lbSAqYWRkciA9IHByaXYtPm1taW8gKyByZWc7Cj4g
+Kwl2b2lkIF9faW9tZW0gKmFkZHIgPSBwcml2LT5tbWlvICsgcmVnOwo+ICAKPiAgI2lmZGVmIGlv
+d3JpdGU2NAo+ICAJaW93cml0ZTY0KGRhdGEsIGFkZHIpOwo+ICAjZWxzZQo+ICAJX19pb3dtYigp
+Owo+ICAJLyogVGhpcyBjb21waWxlcyB0byBzdHJkICg9NjQtYml0IHdyaXRlKSBvbiBBUk03ICov
+Cj4gLQkqKHZvbGF0aWxlIHU2NCBfX2ZvcmNlICopYWRkciA9IF9fY3B1X3RvX2xlNjQoZGF0YSk7
+Cj4gKwkqKHU2NCBfX2ZvcmNlICopYWRkciA9IF9fY3B1X3RvX2xlNjQoZGF0YSk7Cj4gICNlbmRp
+Zgo+ICB9Cj4gIAo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Au
+b3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRl
+dmVsCg==
