@@ -1,15 +1,15 @@
 From: Ralf Baechle <ralf@linux-mips.org>
 Subject: Re: [PATCH] pci:  Add and use PCI_GENERIC_SETUP Kconfig entry
 Date: Tue, 27 Jun 2017 12:18:48 +0200
-Message-ID: <20170627101640.GA19700__46535.5888511569$1498558762$gmane$org@linux-mips.org>
+Message-ID: <20170627101640.GA19700__35976.4175177135$1498558764$gmane$org@linux-mips.org>
 References: <CAMuHMdXSrfbSX2de2q35Hj6vQwi+sr23M1LEg82JL+FyLq4OJw@mail.gmail.com>
  <20170626202756.22220-1-palmer@dabbelt.com>
  <20170626202756.22220-2-palmer@dabbelt.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <20170626202756.22220-2-palmer@dabbelt.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
