@@ -1,33 +1,25 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH 2/7] iomap: implement ioread64 and iowrite64
-Date: Mon, 26 Jun 2017 15:25:41 -0600
-Message-ID: <0746dbb0-9fc1-d24c-89c0-b079a3cd0c7b@deltatee.com>
-References: <20170622164817.25515-1-logang@deltatee.com>
- <20170622164817.25515-3-logang@deltatee.com>
- <CAK8P3a1Uh=PQbGi540KGLpkoEVH+KUW18mzqN3aiijroXwEMWQ@mail.gmail.com>
+From: Ralf Baechle <ralf@linux-mips.org>
+Subject: Re: [PATCH] pci:  Add and use PCI_GENERIC_SETUP Kconfig entry
+Date: Tue, 27 Jun 2017 12:18:48 +0200
+Message-ID: <20170627101640.GA19700__49637.4767659747$1498558748$gmane$org@linux-mips.org>
+References: <CAMuHMdXSrfbSX2de2q35Hj6vQwi+sr23M1LEg82JL+FyLq4OJw@mail.gmail.com>
+ <20170626202756.22220-1-palmer@dabbelt.com>
+ <20170626202756.22220-2-palmer@dabbelt.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a1Uh=PQbGi540KGLpkoEVH+KUW18mzqN3aiijroXwEMWQ@mail.gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170626202756.22220-2-palmer@dabbelt.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, linux-ntb@googlegroups.com, linux-alpha@vger.kernel.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-crypto@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Bates <sbates@raithlin.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Suresh Warrier <warrier@linux.vnet.ibm.com>, Nicholas Piggin <npiggin@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@synopsys.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, geert@linux-m68k.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, cmetcalf@mellanox.com, gxt@mprc.pku.edu.cn, bhelgaas@google.com, viro@zeniv.linux.org.uk, james.hogan@imgtec.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-m68k@vger.kernel.org, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org
 
-On 6/26/2017 2:43 PM, Arnd Bergmann wrote:
-> This hardcodes the behavior of include/linux/io-64-nonatomic-hi-lo.h, which
-> I find rather confusing, as only about one in five drivers wants this
-> behavior.
->
-> I'd suggest you don't add it in lib/iomap.c at all for 32-bit architectures,
-> but rather use the same logic that we have for readq/writeq in
-> io-64-nonatomic-hi-lo.h and io-64-nonatomic-lo-hi.h, adding
-> {lo_hi,hi_lo}_{ioread,iowrite}{,be} to the same files, and provide
-> the {ioread,iowrite}{,be} macros only if they have not been defined
-> at that point.
+On Mon, Jun 26, 2017 at 01:27:56PM -0700, Palmer Dabbelt wrote:
 
-Thanks Arnd. Yes, I'm already reworking this patchset to do exactly that.
+Acked-by: Ralf Baechle <ralf@linux-mips.org>
 
-Logan
+Thanks,
 
+  Ralf
