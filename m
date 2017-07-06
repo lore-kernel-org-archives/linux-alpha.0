@@ -1,95 +1,37 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 1/1] futex: remove duplicated code and fix UB
-Date: Mon, 3 Jul 2017 12:18:28 +0200 (CEST)
-Message-ID: <alpine.DEB.2.20.1707031211120.2188@nanos>
-References: <20170621115318.2781-1-jslaby@suse.cz>
- <alpine.DEB.2.20.1706230017520.2221@nanos>
- <80af8d81-4522-de2d-8289-1ab46565505a@suse.cz>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH 2/7] rwsem-spinlock: Add killable versions of
+ rwsem_down_read_failed()
+Date: Thu, 6 Jul 2017 10:04:47 +0200
+Message-ID: <20170706080447.a7emouoysilqex4p@hirez.programming.kicks-ass.net>
+References: <149789463636.9059.16943955939303454611.stgit@localhost.localdomain>
+ <149789534632.9059.2901382369609922565.stgit@localhost.localdomain>
 Mime-Version: 1.0
+Return-path: <linux-ia64-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=gX0p4vQuHBw8QOftdpwo+sr6jTpAiSyGgPUIRHR2OE8=; b=Zafbfbt9XbLczvyne/FEAJyLQ
+        kiWN9wQxtVXI1PeTSon+u7LIV5FTkLSqfPXwAzwGnC2cmipdaSaSRV/qpxFN1jrebL51I1F8vyN1G
+        XM2rLdtfiBON2b2YQOMmd9ZREIumM1jtaJMic8a370gFPli1kL5f71eIonhqN62G35k4lkd6CMaBS
+        PHqMghwekQs3rfJ5dsXcC5iP8BovM4QBF0w3RwYkzgdsL5fwYB2gkjgg6nsu8m+DhcOZXvW4e35wB
+        dOMH+aNI8s/L51kiI7DhtUHqeNZ6Uy3b2//JzDadTQPJ6Zz14gaCSvxnHqe++XnoqQ4TxbA7eG3wK
+    
+Content-Disposition: inline
+In-Reply-To: <149789534632.9059.2901382369609922565.stgit@localhost.localdomain>
+Sender: linux-ia64-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:Message-ID:
-	In-Reply-To:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=XSBNywpf9QrkEtCfFImMHpIf6ZOoiEqNCPxFD9r8vpM=; b=JHiYMPXReiw2Hc
-	OMlyytZgZlgZwBj0vXBSbjoT9TIbpM6DyJ29CEO1B8xsCj25ezMeJe9AEqd320mz09pNBLd4yFUgv
-	WNxlppGcVfyJeGJuYxsNQzvorKCi6+1DBYr7NCyOM5IfbxKbzgu7o9bK9rl+EPcJ/uybW9Ona3i8E
-	WHM4Ee1XzQtELKtwUhDIrvKmnX8oa92RYTfUh1chqSfh5IZl6w4o8T3QvTSz7xMzu3eWoa2x4WKVs
-	Up9NQ5l8wMPrZelchWt74kEoGafE9spmdtcipVnViKeSZbWUEE3M5P8jmpfTYb5VTvCMroIGJ6gCJ
-	jx0eaOQxaLU80WVQoWiQ==;
-In-Reply-To: <80af8d81-4522-de2d-8289-1ab46565505a@suse.cz>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Jiri Slaby <jslaby@suse.cz>
-Cc: linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, peterz@infradead.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Will Deacon <will.deacon@arm.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, mingo@redhat.com, Catalin Marinas <catalin.marinas@arm.com>, dvhart@infradead.org, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Fenghua Yu <fenghua.yu@intel.com>, Arnd Bergmann <arnd@arndb.de>, linux-xtensa@linux-xtensa.org, Stefan Kristiansson <>
+To: Kirill Tkhai <ktkhai@virtuozzo.com>
+Cc: linux-ia64@vger.kernel.org, avagin@virtuozzo.com, heiko.carstens@de.ibm.com, hpa@zytor.com, gorcunov@virtuozzo.com, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, mingo@redhat.com, mattst88@gmail.com, fenghua.yu@intel.com, arnd@arndb.de, ink@jurassic.park.msu.ru, tglx@linutronix.de, rth@twiddle.net, tony.luck@intel.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, davem@davemloft.net
 
-On Mon, 26 Jun 2017, Jiri Slaby wrote:
-> On 06/23/2017, 09:51 AM, Thomas Gleixner wrote:
-> > On Wed, 21 Jun 2017, Jiri Slaby wrote:
-> >> diff --git a/arch/arm64/include/asm/futex.h b/arch/arm64/include/asm/futex.h
-> >> index f32b42e8725d..5bb2fd4674e7 100644
-> >> --- a/arch/arm64/include/asm/futex.h
-> >> +++ b/arch/arm64/include/asm/futex.h
-> >> @@ -48,20 +48,10 @@ do {									\
-> >>  } while (0)
-> >>  
-> >>  static inline int
-> >> -futex_atomic_op_inuser(unsigned int encoded_op, u32 __user *uaddr)
-> > 
-> > That unsigned int seems to be a change from the arm64 tree in next. It's
-> > not upstream and it'll cause a (easy to resolve) conflict.
-> 
-> Ugh, I thought the arm64 is in upstream already. Note that this patch
-> just takes what is in this arm64 fix and makes it effective for all
-> architectures. So I will wait with v2 until it merges upstream.
+On Mon, Jun 19, 2017 at 09:02:26PM +0300, Kirill Tkhai wrote:
 
-Ok.
+> Subject: [PATCH 2/7] rwsem-spinlock: Add killable versions of rwsem_down_read_failed()
 
-> > Yes, we probably can't change that anymore, but at least we should make it
-> > very explicit and add a comment to that effect.
-> 
-> Something like this or do you want a comment yet?
->         unsigned int op =         (encoded_op & 0x70000000) >> 28;
->         unsigned int cmp =        (encoded_op & 0x0f000000) >> 24;
->         int oparg = sign_extend32((encoded_op & 0x00fff000) >> 12, 12);
->         int cmparg = sign_extend32(encoded_op & 0x00000fff, 12);
+>  kernel/locking/rwsem-xadd.c |   33 ++++++++++++++++++++++++++++++---
 
-Yes, that makes sense.
-
-There is also the issue with the shift. See this thread for further
-reference:
-
-  http://lkml.kernel.org/r/alpine.DEB.2.20.1706282353190.1890@nanos
-
-The gist is:
-
-  "Anything using a shift value < 0 or > 31 will get crap as a
-   result. Rightfully so because it's just undefined.
-
-   Yes I know that the insanity of user space is unlimited, but anything
-   attempting this is so broken that we cannot break it further by making
-   that shift arg unsigned and actually limit it to 0-31"
-
-So we should make that case explicit as well.
-
-        if (encoded_op & (FUTEX_OP_OPARG_SHIFT << 28)) {
-		if (oparg < 0 || oparg > 31)
-			return -EINVAL;
-                oparg = 1 << oparg;
-	}
-
-Thanks,
-
-	tglx
+Fixed that subject for your ;-)
