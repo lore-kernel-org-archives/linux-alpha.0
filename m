@@ -1,39 +1,107 @@
-From: Aleksa Sarai <asarai@suse.de>
-Subject: Re: [PATCH] tty: Fix TIOCGPTPEER ioctl definition
-Date: Wed, 12 Jul 2017 00:45:36 +1000
-Message-ID: <a99e301b-05d1-d262-aca2-60e3f3400bc5@suse.de>
-References: <20170711001207.GA11642@glebfm.cloud.tilaa.com>
- <063D6719AE5E284EB5DD2968C1650D6DD003758C@AcuExch.aculab.com>
+From: ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org (Eric W. Biederman)
+Subject: Re: [PATCH 1/8] signal/alpha: Document a conflict with SI_USER for SIGTRAP
+Date: Fri, 14 Jul 2017 05:59:06 -0500
+Message-ID: <87fudz5lol.fsf@xmission.com>
+References: <87efu22set.fsf@xmission.com>
+        <20170630123906.8865-1-ebiederm@xmission.com>
+        <20170702141320.GA32254@ls3530.fritz.box>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <063D6719AE5E284EB5DD2968C1650D6DD003758C@AcuExch.aculab.com>
-Content-Language: en-US
-Sender: linux-sh-owner@vger.kernel.org
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170702141320.GA32254-PwtjyNU/e7vkVFMGpb/cPg@public.gmane.org> (Helge Deller's message
+        of "Sun, 2 Jul 2017 16:13:20 +0200")
+Sender: linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: David Laight <David.Laight@ACULAB.COM>, 'Gleb Fotengauer-Malinovskiy' <glebfm@altlinux.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, Valentin Rothberg <vrothberg@suse.com>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Dmitry V. Levin" <ldv@altlinux.org>, Jiri Slaby <jslaby@suse.com>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, Christian Brauner <christian.brauner@ubuntu.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, Oleg Nesterov <oleg-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrei Vagin <avagin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Andrey Vagin <avagin-GEFAQzZX7r8dnm+yROfE0A@public.gmane.org>, Serge Hallyn <serge-A9i7LUbDfNHQT0dZR+AlfA@public.gmane.org>, Pavel Emelyanov <xemul-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Cyrill Gorcunov <gorcunov-GEFAQzZX7r8dnm+yROfE0A@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Willy Tarreau <w@1wt.eu>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Containers <containers-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Michael Kerrisk <mtk.manpages-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
->> Sent: 11 July 2017 01:12
->> This ioctl does nothing to justify an _IOC_READ or _IOC_WRITE flag
->> because it doesn't copy anything from/to userspace to access the
->> argument.
->>
->> Fixes: 54ebbfb1 ("tty: add TIOCGPTPEER ioctl")
-> ...
->> -#define TIOCGPTPEER	_IOR('T', 0x41, int) /* Safely open the slave */
->> +#define TIOCGPTPEER	_IO('T', 0x41) /* Safely open the slave */
-> 
-> This is a user API change. When was the ioctl added?
+Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org> writes:
 
-It was just pulled this merge window (4.13-rc1).
+> * Eric W. Biederman <ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org>:
+>> Setting si_code to __SI_FAULT results in a userspace seeing
+>> an si_code of 0.  This is the same si_code as SI_USER.  Posix
+>> and common sense requires that SI_USER not be a signal specific
+>> si_code.  As such this use of 0 for the si_code is a pretty
+>> horribly broken ABI.
+>> 
+>> Given that alpha is on it's last legs I don't know that it is worth
+>> fixing this, but it is worth documenting what is going on so that
+>> no one decides to copy this bad decision.
+>
+> The ABI was already broken, so IMHO I think it's better to somehow "fix"
+> it instead. Agreed, alpha and some other architectures are already aged,
+> but nevertheless most of them build in debian-ports.  Below is a
+> suggested fix which reuses/misuses other existing trap codes instead.
 
-  % git tag --contains 54ebbfb1603415d9953c150535850d30609ef077
-  %
+The conflict with SI_USER is real.  I don't know that we have any actual
+applications that are suffering.
 
--- 
-Aleksa Sarai
-Software Engineer (Containers)
-SUSE Linux GmbH
-https://www.cyphar.com/
+I simply don't have the architecture specific references handy to know
+in which cases the oddities will happen let alone test them.  Plus at
+least for ia64 and alpha those architectures don't appear to be
+receiving updates for new syscalls, and no new hardware is being built
+so I don't know how much longer they will last.
+
+That is building for alpha gives:
+>   CALL    /home/eric/projects/linux/linux-exit-cleanups/scripts/checksyscalls.sh
+> <stdin>:1239:2: warning: #warning syscall seccomp not implemented [-Wcpp]
+> <stdin>:1248:2: warning: #warning syscall bpf not implemented [-Wcpp]
+> <stdin>:1299:2: warning: #warning syscall userfaultfd not implemented [-Wcpp]
+> <stdin>:1302:2: warning: #warning syscall membarrier not implemented [-Wcpp]
+> <stdin>:1305:2: warning: #warning syscall mlock2 not implemented [-Wcpp]
+> <stdin>:1308:2: warning: #warning syscall copy_file_range not implemented [-Wcpp]
+> <stdin>:1311:2: warning: #warning syscall preadv2 not implemented [-Wcpp]
+> <stdin>:1314:2: warning: #warning syscall pwritev2 not implemented [-Wcpp]
+> <stdin>:1317:2: warning: #warning syscall pkey_mprotect not implemented [-Wcpp]
+> <stdin>:1320:2: warning: #warning syscall pkey_alloc not implemented [-Wcpp]
+> <stdin>:1323:2: warning: #warning syscall pkey_free not implemented [-Wcpp]
+> <stdin>:1326:2: warning: #warning syscall statx not implemented [-Wcpp]
+
+But a real fix like you have shown if you can get it approved by the
+alpha architecture maintainers I am more than happy to see, and would
+very much prefer.
+
+You certainly noticed that the middle case was SIGFPE when I missed
+that.
+
+Unfortunately I don't currently have the competence to judge the
+effects of your patch.
+
+Eric
+
+> Helge
+>
+> Signed-off-by: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
+>
+> diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+> index 65bb102..2ed37dd 100644
+> --- a/arch/alpha/kernel/traps.c
+> +++ b/arch/alpha/kernel/traps.c
+> @@ -278,7 +278,7 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+>  	      case 1: /* bugcheck */
+>  		info.si_signo = SIGTRAP;
+>  		info.si_errno = 0;
+> -		info.si_code = __SI_FAULT;
+> +		info.si_code = TRAP_HWBKPT;
+>  		info.si_addr = (void __user *) regs->pc;
+>  		info.si_trapno = 0;
+>  		send_sig_info(SIGTRAP, &info, current);
+> @@ -318,7 +318,7 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+>  			break;
+>  		case GEN_ROPRAND:
+>  			signo = SIGFPE;
+> -			code = __SI_FAULT;
+> +			code = FPE_FLTSUB;
+>  			break;
+>  
+>  		case GEN_DECOVF:
+> @@ -340,7 +340,7 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+>  		case GEN_SUBRNG7:
+>  		default:
+>  			signo = SIGTRAP;
+> -			code = __SI_FAULT;
+> +			code = TRAP_HWBKPT;
+>  			break;
+>  		}
+>  
