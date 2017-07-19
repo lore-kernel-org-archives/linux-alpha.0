@@ -1,70 +1,81 @@
-From: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>
-Subject: Re: [PATCH 1/7] signal/alpha: Document a conflict with SI_USER for
-	SIGTRAP
-Date: Tue, 18 Jul 2017 08:22:52 -1000
-Message-ID: <e0e3c779-b00b-dc86-60f5-12f54e8d5f3a@twiddle.net>
-References: <87o9shg7t7.fsf_-_@xmission.com>
-	<20170718140651.15973-1-ebiederm@xmission.com>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH] alpha: Restore symbol versions for symbols exported from
+ assembly
+Date: Wed, 19 Jul 2017 01:01:16 +0100
+Message-ID: <20170719000116.GC18698@decadent.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <containers-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=sender:subject:to:cc:references:from:message-id:date:user-agent
-	:mime-version:in-reply-to:content-language:content-transfer-encoding;
-	bh=9Ny3x2Xc10wZ2jZCk0ZtrSZ28hoDKqyxoRY0hmfKpwc=;
-	b=MNpN5ZMgyJqssRiigTXyBHx7VYKWPwTHl5uJmHfPSnVTUlkf2otpM07H2Ns/f3z0W6
-	jXgXUH0h32Qu6FwC99FDgNli4nHOZ9+btwnvWEO5gX5kigN1q7tD/Qxi2qWUIGYjJ0su
-	k9bEMhGIsSNNWSXmOeQL5tqwJJItKln9hNHUM14ABPgx+fFQyd5OsrfSl4rcHxLavRaI
-	0GoNye5jK4qs9oIEXmvfYg/Oz/2c7s8lzUb+Sqk4TxOgtnP5HO1obTH90NP7B8G5I4w4
-	RbCa5KJkcG9gnsv5VVlDtwYhyrfsfcCi6TyZuvXwOPgRF4tZOikEcabKZD7e/StaXAWV
-	uEAw==
-In-Reply-To: <20170718140651.15973-1-ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/containers>, 
-	<mailto:containers-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/containers/>
-List-Post: <mailto:containers-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:containers-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/containers>,
-	<mailto:containers-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: containers-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: containers-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: "Eric W. Biederman" <ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrei Vagin <avagin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>, Linux Containers <containers-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pavel Emelyanov <xemul-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Oleg Nesterov <oleg-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Cyrill Gorcunov <gorcunov-GEFAQzZX7r8dnm+yROfE0A@public.gmane.org>, Michael Kerrisk <mtk.manpages-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Willy Tarreau <w@1wt.eu>, Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>, Andrey Vagin <avagin-GEFAQzZX7r8dnm+yROfE0A@public.gmane.org>
-
-On 07/18/2017 04:06 AM, Eric W. Biederman wrote:
-> Setting si_code to __SI_FAULT results in a userspace seeing
-> an si_code of 0.  This is the same si_code as SI_USER.  Posix
-> and common sense requires that SI_USER not be a signal specific
-> si_code.  As such this use of 0 for the si_code is a pretty
-> horribly broken ABI.
-> 
-> Given that alpha is on it's last legs I don't know that it is worth
-> fixing this, but it is worth documenting what is going on so that
-> no one decides to copy this bad decision.
-> 
-> This was introduced during the 2.5 development cycle so this
-> mess has had a long time for people to be able to depend upon it.
-> 
-> v2: Added FPE_FIXME for alpha as Helge Deller<deller-Mmb7MZpHnFY@public.gmane.org>  pointed out
->      with his alternate patch one of the cases is SIGFPE not SIGTRAP.
-> 
-> Cc: Helge Deller<deller-Mmb7MZpHnFY@public.gmane.org>
-> Cc: Richard Henderson<rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>
-> Cc: Ivan Kokshaysky<ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>
-> Cc: Matt Turner<mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc:linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> History Tree:https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
-> Ref: 0a635c7a84cf ("Fill in siginfo_t.")
-> Signed-off-by: "Eric W. Biederman"<ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org>
-> ---
->   arch/alpha/include/uapi/asm/siginfo.h | 14 ++++++++++++++
->   arch/alpha/kernel/traps.c             |  6 +++---
->   2 files changed, 17 insertions(+), 3 deletions(-)
-
-Acked-by: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="J4XPiPrVK1ev6Sgr"
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: linux-alpha@vger.kernel.org
 
 
-r~
+--J4XPiPrVK1ev6Sgr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Add <asm/asm-prototypes.h> so that genksyms knows the types of
+these symbols and can generate CRCs for them.
+
+Fixes: 00fc0e0dda62 ("alpha: move exports to actual definitions")
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+---
+This is build-tested only (defconfig + MODVERSIONS=y).
+
+Ben.
+
+ arch/alpha/include/asm/asm-prototypes.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 arch/alpha/include/asm/asm-prototypes.h
+
+diff --git a/arch/alpha/include/asm/asm-prototypes.h b/arch/alpha/include/asm/asm-prototypes.h
+new file mode 100644
+index 000000000000..d12c68ea340b
+--- /dev/null
++++ b/arch/alpha/include/asm/asm-prototypes.h
+@@ -0,0 +1,18 @@
++#include <linux/spinlock.h>
++
++#include <asm/checksum.h>
++#include <asm/console.h>
++#include <asm/page.h>
++#include <asm/string.h>
++#include <asm/uaccess.h>
++
++#include <asm-generic/asm-prototypes.h>
++
++extern void __divl(void);
++extern void __reml(void);
++extern void __divq(void);
++extern void __remq(void);
++extern void __divlu(void);
++extern void __remlu(void);
++extern void __divqu(void);
++extern void __remqu(void);
+
+--J4XPiPrVK1ev6Sgr
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIVAwUBWW6hS+e/yOyVhhEJAQpw9w//R3sRE0t64zMybDvC8/8I9vwVuGgH6Uqp
+3ysRbY/iNpAeKgufzqWl/kT/GkPCkiynZk62DcYphuGHfAWt5hEr1okpsm7XyRzU
+tsIPAdy6YDCj/wSSGr444XiSBo0qocU+3TKe+/3NH5aiYR0AHiNCVQms7JEI3jfI
+bFV8PmryX4yAEGtlyG+2mlgKri2C0rWIWrfZ4cM5WNaTSFAjO149VeZOXJ1IxLn7
+ZL/ypfn1JPbscDVXu7lYEfmeE3BLQJrtVikBTxzcahLM5k2SxPcfxA7oaP8M+IlZ
+YdNsqPxqJawtXQRNdAtdysSjmbdxOBMJS5FObY+8G92xypHuUaxRnBhJieldn/7g
+G6/780LlfAWNHmGS8vxPYSnazUAvsOdIRPJrIRirZv4kSU1TC1KAS47ce52C7gdw
+hCpdBxR4ib3VZ0Gdeuyk0LbrEW/rNJKu3Mcg1NfGEUpvXQMkyYVHYwqkzHur640g
+4Og4J7GSaTR8eHTpciliDMcNsMsX0Ibs31cCPh/Tivni6bUFXfT53FvuShy9Dehq
+gv/zQ+6lfwFuhFzSTLBPbi59GMNMNVe+YSfMOCnX8J627qnVzx1f7zux1q1Y3DtU
+FHOZr7PVHlLovyjlBoM5ecOpzAA8emXOsNGOO12Rutvt6WutIA5GZfI/UcBZTuOa
+yxezfOBdUnM=
+=w//A
+-----END PGP SIGNATURE-----
+
+--J4XPiPrVK1ev6Sgr--
