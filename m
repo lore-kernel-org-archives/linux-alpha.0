@@ -1,67 +1,54 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v2 1/1] futex: remove duplicated code and fix UB
-Date: Fri, 25 Aug 2017 22:43:41 +0200 (CEST)
-Message-ID: <alpine.DEB.2.20.1708252243020.2124@nanos>
-References: <20170824073105.3901-1-jslaby@suse.cz>
- <20170824094756.GA6346@arm.com>
-Mime-Version: 1.0
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PATCH] alpha: Fix build error without CONFIG_VGA_HOSE.
+Date: Sat, 26 Aug 2017 20:52:28 -0700
+Message-ID: <20170827035228.21556-1-mattst88@gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=TFS5F3O24ZlLBYVVMWT97eCfANM8A7oI2JYWtuLM9mg=;
+        b=KFFtNDltf2vs5ri8OFoC/KECGfa6TH8sUxH5aAhA7MV823aNfziQgr5Nk6S/5x6tuf
+         mAezuyN+crhmiS9iyRnjb3yooB+/1i8KD8z9w7r0WUGVITctJlEonjKnXLmusAZGju7S
+         Yv0O2iCrFaKIXz2Sj7COqV4dl8T95s7bZbWurhVAre2BiYvxZ6vVCWFFTarRO6zkJHeJ
+         d+k+3O6XgPa42rPsW1Nn28QcPNrm30xLA4hEHTuZfWydC9YE6pwHaKpMTKDOhA4c7v2P
+         fr0Pkugdj6IdfdVAr9Xq3b6Vsuqag2tu2v5xN1WsGJCJSFIHFqvWNXL2n4p2W0vaxlyG
+         Qyzg==
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:Message-ID:
-	In-Reply-To:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=6cGgc292RtDsTw2FbkcoDsB9ktHCDQVKisSTidrMDjY=; b=RNrCNyEG8W3K0i
-	ZZyUac5lZtojyBylPeBpr0N2tLDk0Ez8Vkshos6R1a2hdAanBJEshDbQXfC2ROQasn9qPxiAXkMys
-	KSj+ecGDNqykV/chXqb/w6y8/xCwJVCIJdszvOg0XogjSbPgZN+ilXY4S6lx9IVTS8nHFxNPrh0+T
-	e/akRqvd924qzi6MeeOg+Ssq8g5cq/RmtYRzp1NnzD8JEHn/vUHfq/Cpg0js9o5VHDSerNTfBgWAC
-	wUrMcnikOLrUNWkfP7oSmeDdL1IWIOHxTF+k8m3JIgTijZFqywOIeHkhxGcgO3lr9MBu4j8XKmxN0
-	Uf4UW8NRYJ0mZe9k4hew==;
-In-Reply-To: <20170824094756.GA6346@arm.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, peterz@infradead.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, mingo@redhat.com, Catalin Marinas <catalin.marinas@arm.com>, dvhart@infradead.org, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Fenghua Yu <fenghua.yu@intel.com>, Arnd Bergmann <arnd@arndb.de>, linux-xtensa@linux-xtensa.org, Stefan Kristiansson <stefan>
+To: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-On Thu, 24 Aug 2017, Will Deacon wrote:
-> On Thu, Aug 24, 2017 at 09:31:05AM +0200, Jiri Slaby wrote:
-> > +static int futex_atomic_op_inuser(unsigned int encoded_op, u32 __user *uaddr)
-> > +{
-> > +	unsigned int op =	  (encoded_op & 0x70000000) >> 28;
-> > +	unsigned int cmp =	  (encoded_op & 0x0f000000) >> 24;
-> > +	int oparg = sign_extend32((encoded_op & 0x00fff000) >> 12, 12);
-> > +	int cmparg = sign_extend32(encoded_op & 0x00000fff, 12);
-> > +	int oldval, ret;
-> > +
-> > +	if (encoded_op & (FUTEX_OP_OPARG_SHIFT << 28)) {
-> > +		if (oparg < 0 || oparg > 31)
-> > +			return -EINVAL;
-> > +		oparg = 1 << oparg;
-> > +	}
-> > +
-> > +	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
-> > +		return -EFAULT;
-> > +
-> > +	ret = arch_futex_atomic_op_inuser(op, oparg, &oldval, uaddr);
-> > +	if (ret)
-> > +		return ret;
-> 
-> We could move the pagefault_{disable,enable} calls here, and then remove
-> them from the futex_atomic_op_inuser callsites elsewhere in futex.c
+pci_vga_hose is #defined to 0 in include/asm/vga.h if CONFIG_VGA_HOSE is
+not set.
 
-Correct, but we can do that after getting this in.
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+---
+ arch/alpha/kernel/core_marvel.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks,
+diff --git a/arch/alpha/kernel/core_marvel.c b/arch/alpha/kernel/core_marvel.c
+index d5f0580746a5..db72356714c1 100644
+--- a/arch/alpha/kernel/core_marvel.c
++++ b/arch/alpha/kernel/core_marvel.c
+@@ -369,6 +369,7 @@ marvel_io7_present(gct6_node *node)
+ static void __init
+ marvel_find_console_vga_hose(void)
+ {
++#ifdef CONFIG_VGA_HOSE
+ 	u64 *pu64 = (u64 *)((u64)hwrpb + hwrpb->ctbt_offset);
+ 
+ 	if (pu64[7] == 3) {	/* TERM_TYPE == graphics */
+@@ -402,6 +403,7 @@ marvel_find_console_vga_hose(void)
+ 			pci_vga_hose = hose;
+ 		}
+ 	}
++#endif
+ }
+ 
+ gct6_search_struct gct_wanted_node_list[] = {
+-- 
+2.13.0
 
-	tglx
