@@ -1,55 +1,64 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH] alpha: mmu_context: Add missing include of linux/sched.h
-Date: Sun, 10 Sep 2017 13:42:42 -0700
-Message-ID: <1505076162-18159-1-git-send-email-linux@roeck-us.net>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: [BUG] 4.13.0 kernel build error on Alpha
+Date: Sun, 10 Sep 2017 17:34:18 -0500
+Message-ID: <20170910223418.GA22820@gherkin.frus.com>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id;
-        bh=CtCw0L4MPQBg4R8mnbcW8tjnv8OXSNJnuSQsXCkYyPo=;
-        b=hzmNQvP7W9sB01DxSSPQLLlLhT9TLIzEM85zlQGLRs8j6OZVtWkKusz1kvUxHbtbsE
-         u3hiyKdvXKzc8uCjnX6p1hYLOY+dXdk1tP6jgmHXZjdR9xafFa5eVjyilAjzdfsNMU+s
-         79un7DQjwRH+bg+0UbUQ1QFNNInRyIS3GXdGEghx63hQK0x64dF26D0obDjlXxSpHYTn
-         prDO/LKvI1UlcIL3bbSgfBHTStwy2YbQbufRzugY0bg80cOBN2qeIs2geL8yIR6Odept
-         +gtojnt1y96JUcl6z8CxG/AFZbJcd68Tr7DRnkGeTWZvpmWSoxHR3XgkIxy3UaUfhR8V
-         NkDA==
+Content-Disposition: inline
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
+To: debian-alpha@lists.debian.org
+Cc: linux-alpha@vger.kernel.org, mcree@orcon.net.nz, mattst88@gmail.com, deller@gmx.de, macro@linux-mips.org
 
-Fix the following build error.
+Here we go again :-(.  Tool versions as follows:
 
-In file included from include/linux/mmu_context.h:4:0,
-                 from drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h:29,
-		 from drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.c:23:
-arch/alpha/include/asm/mmu_context.h: In function 'ev5_switch_mm':
-arch/alpha/include/asm/mmu_context.h:160:2: error:
-	implicit declaration of function 'task_thread_info'
+gcc version 7.2.0 (Debian 7.2.0-3)
+GNU ld (GNU Binutils for Debian) 2.29 (binutils 2.29-9)
 
-Fixes: 70539bd79500 ("drm/amd: Update MEC HQD loading code for KFD")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-"Exposed-by:" instead of "Fixes:" might be more appropriate.
+Note evidence of the ".alphalib" section patch first tried with the 4.9
+kernel source.  It has worked well up through 4.12.  I didn't try
+building any of the 4.13 release candidates because of all the compiler
+updates that came through during that time.
 
- arch/alpha/include/asm/mmu_context.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/alpha/include/asm/mmu_context.h b/arch/alpha/include/asm/mmu_context.h
-index 384bd47b5187..45c020a0fe76 100644
---- a/arch/alpha/include/asm/mmu_context.h
-+++ b/arch/alpha/include/asm/mmu_context.h
-@@ -8,6 +8,7 @@
-  */
- 
- #include <linux/mm_types.h>
-+#include <linux/sched.h>
- 
- #include <asm/machvec.h>
- #include <asm/compiler.h>
--- 
-2.7.4
+  MODPOST vmlinux.o
+WARNING: EXPORT symbol "callback_setenv" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "strrchr" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__divl" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__divqu" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__memsetw" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "strchr" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__reml" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "strcat" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__copy_user" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__remq" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "clear_page" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "strncpy" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "memmove" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__remqu" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "memchr" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__memset" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "copy_page" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__divlu" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "strlen" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "strncat" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "callback_save_env" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "memset" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: "saved_config" [vmlinux] is COMMON symbol
+WARNING: EXPORT symbol "__clear_user" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "callback_getenv" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__divq" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "strcpy" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "___memset" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__remlu" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "csum_ipv6_magic" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: EXPORT symbol "__constant_c_memset" [vmlinux] version generation failed, symbol will not be versioned.
+WARNING: modpost: Found 24 section mismatch(es).
+To see full details build your kernel with:
+'make CONFIG_DEBUG_SECTION_MISMATCH=y'
+arch/alpha/lib/memmove.o: In function `memmove':
+(.alphalib+0x2c): relocation truncated to fit: BRSGP against symbol `memcpy' defined in .text section in arch/alpha/lib/memcpy.o
+Makefile:1000: recipe for target 'vmlinux' failed
+make: *** [vmlinux] Error 1
 
