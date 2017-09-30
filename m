@@ -1,104 +1,37 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [RFC PATCH 1/2] arm64: mm: Use READ_ONCE/WRITE_ONCE when
- accessing page tables
-Date: Fri, 29 Sep 2017 17:33:49 +0100
-Message-ID: <20170929163348.GD2376@arm.com>
-References: <1506527369-19535-1-git-send-email-will.deacon@arm.com>
- <1506527369-19535-2-git-send-email-will.deacon@arm.com>
- <20170928083801.m6rb4frbbgzgam2o@hirez.programming.kicks-ass.net>
- <20170928084535.GA19060@arm.com>
- <20170928154354.GK3521@linux.vnet.ibm.com>
- <20170928185909.kgwy36hkoqxqgyc3@tower>
- <20170929005830.GU3521@linux.vnet.ibm.com>
- <20170929090843.GB14791@arm.com>
- <20170929162939.GY3521@linux.vnet.ibm.com>
+From: Heiko Carstens <heiko.carstens@de.ibm.com>
+Subject: Re: [PATCH REBASED 3/6] s390: Add __down_read_killable()
+Date: Sat, 30 Sep 2017 11:20:02 +0200
+Message-ID: <20170930092002.GA4623@osiris>
+References: <150670038738.23930.7190484711222807884.stgit@localhost.localdomain>
+ <150670117817.23930.13068785028558453848.stgit@localhost.localdomain>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170929162939.GY3521@linux.vnet.ibm.com>
+In-Reply-To: <150670117817.23930.13068785028558453848.stgit@localhost.localdomain>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, Peter Zijlstra <peterz@infradead.org>, kirill.shutemov@linux.intel.com, linux-kernel@vger.kernel.org, ynorov@caviumnetworks.com, rruigrok@codeaurora.org, linux-arch@vger.kernel.org, akpm@linux-foundation.org, catalin.marinas@arm.com, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
+To: Kirill Tkhai <ktkhai@virtuozzo.com>
+Cc: linux-ia64@vger.kernel.org, avagin@virtuozzo.com, peterz@infradead.org, hpa@zytor.com, gorcunov@virtuozzo.com, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, mingo@redhat.com, mattst88@gmail.com, fenghua.yu@intel.com, arnd@arndb.de, ink@jurassic.park.msu.ru, tglx@linutronix.de, rth@twiddle.net, tony.luck@intel.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, davem@davemloft.net, rientjes@google.com, viro@zeniv.linux.org.uk
 
-On Fri, Sep 29, 2017 at 09:29:39AM -0700, Paul E. McKenney wrote:
-> On Fri, Sep 29, 2017 at 10:08:43AM +0100, Will Deacon wrote:
-> > On Thu, Sep 28, 2017 at 05:58:30PM -0700, Paul E. McKenney wrote:
-> > > On Fri, Sep 29, 2017 at 07:59:09AM +1300, Michael Cree wrote:
-> > > > On Thu, Sep 28, 2017 at 08:43:54AM -0700, Paul E. McKenney wrote:
-> > > > > On Thu, Sep 28, 2017 at 09:45:35AM +0100, Will Deacon wrote:
-> > > > > > On Thu, Sep 28, 2017 at 10:38:01AM +0200, Peter Zijlstra wrote:
-> > > > > > > On Wed, Sep 27, 2017 at 04:49:28PM +0100, Will Deacon wrote:
-> > > > > > > > In many cases, page tables can be accessed concurrently by either another
-> > > > > > > > CPU (due to things like fast gup) or by the hardware page table walker
-> > > > > > > > itself, which may set access/dirty bits. In such cases, it is important
-> > > > > > > > to use READ_ONCE/WRITE_ONCE when accessing page table entries so that
-> > > > > > > > entries cannot be torn, merged or subject to apparent loss of coherence.
-> > > > > > > 
-> > > > > > > In fact, we should use lockless_dereference() for many of them. Yes
-> > > > > > > Alpha is the only one that cares about the difference between that and
-> > > > > > > READ_ONCE() and they do have the extra barrier, but if we're going to do
-> > > > > > > this, we might as well do it 'right' :-)
-> > > > > > 
-> > > > > > I know this sounds daft, but I think one of the big reasons why
-> > > > > > lockless_dereference() doesn't get an awful lot of use is because it's
-> > > > > > such a mouthful! Why don't we just move the smp_read_barrier_depends()
-> > > > > > into READ_ONCE? Would anybody actually care about the potential impact on
-> > > > > > Alpha (which, frankly, is treading on thin ice given the low adoption of
-> > > > > > lockless_dereference())?
-> > > > > 
-> > > > > This is my cue to ask my usual question...  ;-)
-> > > > > 
-> > > > > Are people still running mainline kernels on Alpha?  (Added Alpha folks.)
-> > > > 
-> > > > Yes.  I run two Alpha build daemons that build the unofficial
-> > > > debian-alpha port.  Debian popcon reports nine machines running
-> > > > Alpha, which are likely to be running the 4.12.y kernel which
-> > > > is currently in debian-alpha, (and presumably soon to be 4.13.y
-> > > > which is now built on Alpha in experimental).
-> > > 
-> > > I salute your dedication to Alpha!  ;-)
-> > 
-> > Ok, but where does that leave us wrt my initial proposal of moving
-> > smp_read_barrier_depends() into READ_ONCE and getting rid of
-> > lockless_dereference?
-> > 
-> > Michael (or anybody else running mainline on SMP Alpha) -- would you be
-> > able to give the diff below a spin and see whether there's a measurable
-> > performance impact?
+On Fri, Sep 29, 2017 at 07:06:18PM +0300, Kirill Tkhai wrote:
+> Similar to __down_write_killable(), and read killable primitive.
 > 
-> This will be a sensitive test.  The smp_read_barrier_depends() can be
-> removed from lockless_dereference().  Without this removal Alpha will
-> get two memory barriers from rcu_dereference() and friends.
+> Signed-off-by: Kirill Tkhai <ktkhai@virtuozzo.com>
+> ---
+>  arch/s390/include/asm/rwsem.h |   18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/s390/include/asm/rwsem.h b/arch/s390/include/asm/rwsem.h
 
-Oh yes, good point. I was trying to keep the diff simple, but you're
-right that this is packing too many barriers. Fixed diff below.
+FWIW, while looking into this patch I realized that we never optimized our
+rwsem primitives to make use of new atomic instructions.
 
-Thanks,
+The generic rwsem header file however does, since it uses atomic ops which
+we did optimize. Even when compiling for old machines the generic version
+generates better code. Therefore I will remove the 15 years old s390
+implementation and switch to the generic version instead.
 
-Will
+The same might be true for alpha and ia64...
 
---->8
-
-diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index e95a2631e545..c4ee9d6d8f2d 100644
---- a/include/linux/compiler.h
-+++ b/include/linux/compiler.h
-@@ -340,6 +340,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
- 		__read_once_size(&(x), __u.__c, sizeof(x));		\
- 	else								\
- 		__read_once_size_nocheck(&(x), __u.__c, sizeof(x));	\
-+	smp_read_barrier_depends(); /* Enforce dependency ordering from x */ \
- 	__u.__val;							\
- })
- #define READ_ONCE(x) __READ_ONCE(x, 1)
-@@ -620,7 +621,6 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
- ({ \
- 	typeof(p) _________p1 = READ_ONCE(p); \
- 	typeof(*(p)) *___typecheck_p __maybe_unused; \
--	smp_read_barrier_depends(); /* Dependency order vs. p above. */ \
- 	(_________p1); \
- })
- 
