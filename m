@@ -1,58 +1,57 @@
-From: Martin Schwidefsky <schwidefsky@de.ibm.com>
-Subject: Re: [PATCH REBASED 3/6] s390: Add __down_read_killable()
-Date: Sat, 30 Sep 2017 12:39:46 +0200
-Message-ID: <20170930123946.7bb586c2@mschwideX1>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH REBASED 0/6] rwsem: Implement down_read_killable()
+Date: Tue, 3 Oct 2017 11:03:03 +0200
+Message-ID: <20171003090303.aclppj3jozdirtxl@hirez.programming.kicks-ass.net>
 References: <150670038738.23930.7190484711222807884.stgit@localhost.localdomain>
-        <150670117817.23930.13068785028558453848.stgit@localhost.localdomain>
-        <20170930092002.GA4623@osiris>
-        <20170930123612.0fb250fe@mschwideX1>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <20170930123612.0fb250fe@mschwideX1>
-Sender: linux-arch-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=5eCnnyfq0VzgWqv3TagJ555UNFVsNLFslPLaC4fY+N8=; b=Bxgmf/wktEru9iNBCHNZ6SUqw
+        CiAHCcudTxkpiEngXGS6zPTHPBJdyXu2oNcqQrZqdESdKGgfpiCvc2eEeu2H0OKcJzR5s6H21z16T
+        eoHVqXDZRbNU0mpiOc8es+NTcEkOAZbLry8NBFn2c85kTwNeDYlf+jB3R1xEAmJm65q5+rKPi2TSH
+        tQvRCUHcKY+DA7IgolZx2woPbkZuMrS7iKe3EzGgVh5F5yUAJURjvcZyg0FOhIS166gktXBDNwxS6
+        IugmD/KX+U5bmNOuq8MC3d8FF1AfcUPU7zgAsd3nT28l/WzsZPPfTtF5htUF1rrCpQaG4kWFLxPQK
+      
+Content-Disposition: inline
+In-Reply-To: <150670038738.23930.7190484711222807884.stgit@localhost.localdomain>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Heiko Carstens <heiko.carstens@de.ibm.com>
-Cc: Kirill Tkhai <ktkhai@virtuozzo.com>, linux-ia64@vger.kernel.org, avagin@virtuozzo.com, peterz@infradead.org, hpa@zytor.com, gorcunov@virtuozzo.com, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, mingo@redhat.com, mattst88@gmail.com, fenghua.yu@intel.com, arnd@arndb.de, ink@jurassic.park.msu.ru, tglx@linutronix.de, rth@twiddle.net, tony.luck@intel.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, davem@davemloft.net, rientjes@google.com, viro@zeniv.linux.org.uk
+Content-Transfer-Encoding: 7bit
+To: Kirill Tkhai <ktkhai@virtuozzo.com>
+Cc: linux-ia64@vger.kernel.org, avagin@virtuozzo.com, heiko.carstens@de.ibm.com, hpa@zytor.com, gorcunov@virtuozzo.com, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, mingo@redhat.com, mattst88@gmail.com, fenghua.yu@intel.com, arnd@arndb.de, ink@jurassic.park.msu.ru, tglx@linutronix.de, rth@twiddle.net, tony.luck@intel.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, davem@davemloft.net, rientjes@google.com, viro@zeniv.linux.org.uk
 
-On Sat, 30 Sep 2017 12:36:12 +0200
-Martin Schwidefsky <schwidefsky@de.ibm.com> wrote:
-
-> On Sat, 30 Sep 2017 11:20:02 +0200
-> Heiko Carstens <heiko.carstens@de.ibm.com> wrote:
+On Fri, Sep 29, 2017 at 07:05:45PM +0300, Kirill Tkhai wrote:
+> The series introduces new down_read_killable() primitive, which
+> is similar to down_read(), but it may be interrupted by a signal.
+> The most touched is architectures code. Also, it marks a new user
+> of the primitive, which is iterate_dir().
 > 
-> > On Fri, Sep 29, 2017 at 07:06:18PM +0300, Kirill Tkhai wrote:  
-> > > Similar to __down_write_killable(), and read killable primitive.
-> > > 
-> > > Signed-off-by: Kirill Tkhai <ktkhai@virtuozzo.com>
-> > > ---
-> > >  arch/s390/include/asm/rwsem.h |   18 ++++++++++++++++--
-> > >  1 file changed, 16 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/arch/s390/include/asm/rwsem.h b/arch/s390/include/asm/rwsem.h    
-> > 
-> > FWIW, while looking into this patch I realized that we never optimized our
-> > rwsem primitives to make use of new atomic instructions.
-> > 
-> > The generic rwsem header file however does, since it uses atomic ops which
-> > we did optimize. Even when compiling for old machines the generic version
-> > generates better code. Therefore I will remove the 15 years old s390
-> > implementation and switch to the generic version instead.  
+> ---
 > 
-> Take care not to conflict with the queued spinlock/rwlock patches on the
-> features branch. 
+> Kirill Tkhai (6):
+>       alpha: Add __down_read_killable()
+>       ia64: Add __down_read_killable()
+>       s390: Add __down_read_killable()
+>       x86: Add __down_read_killable()
+>       rwsem: Add down_read_killable()
+>       fs: Use killable down_read() in iterate_dir()
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git/commit/?h=features&id=eb3b7b848fb3dd00f7a57d633d4ae4d194aa7865
 > 
-> Me thinks that what you have in mind is already done.
+>  arch/alpha/include/asm/rwsem.h |   18 ++++++++++++++++--
+>  arch/ia64/include/asm/rwsem.h  |   22 +++++++++++++++++++---
+>  arch/s390/include/asm/rwsem.h  |   18 ++++++++++++++++--
+>  arch/x86/include/asm/rwsem.h   |   35 +++++++++++++++++++++++++----------
+>  arch/x86/lib/rwsem.S           |   12 ++++++++++++
+>  fs/readdir.c                   |   11 +++++------
+>  include/asm-generic/rwsem.h    |    8 ++++++++
+>  include/linux/rwsem.h          |    1 +
+>  kernel/locking/rwsem.c         |   16 ++++++++++++++++
+>  9 files changed, 118 insertions(+), 23 deletions(-)
 
-Argh, pitfall rwlock != rwsem. Using the atomic_ops for the rwsem code makes
-a lot of sense. Yes, please..
-
--- 
-blue skies,
-   Martin.
-
-"Reality continues to ruin my life." - Calvin.
-
+thanks!
