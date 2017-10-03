@@ -1,57 +1,116 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH REBASED 0/6] rwsem: Implement down_read_killable()
-Date: Tue, 3 Oct 2017 11:03:03 +0200
-Message-ID: <20171003090303.aclppj3jozdirtxl@hirez.programming.kicks-ass.net>
-References: <150670038738.23930.7190484711222807884.stgit@localhost.localdomain>
+From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Subject: Re: [RFC PATCH 1/2] arm64: mm: Use READ_ONCE/WRITE_ONCE when
+ accessing page tables
+Date: Tue, 3 Oct 2017 12:11:10 -0700
+Message-ID: <20171003191109.GB3521@linux.vnet.ibm.com>
+References: <1506527369-19535-1-git-send-email-will.deacon@arm.com>
+ <1506527369-19535-2-git-send-email-will.deacon@arm.com>
+ <20170928083801.m6rb4frbbgzgam2o@hirez.programming.kicks-ass.net>
+ <20170928084535.GA19060@arm.com>
+ <20170928154354.GK3521@linux.vnet.ibm.com>
+ <20170928185909.kgwy36hkoqxqgyc3@tower>
+ <20170929005830.GU3521@linux.vnet.ibm.com>
+ <20170929090843.GB14791@arm.com>
+ <20170929162939.GY3521@linux.vnet.ibm.com>
+ <20170929163348.GD2376@arm.com>
+Reply-To: paulmck@linux.vnet.ibm.com
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=5eCnnyfq0VzgWqv3TagJ555UNFVsNLFslPLaC4fY+N8=; b=Bxgmf/wktEru9iNBCHNZ6SUqw
-        CiAHCcudTxkpiEngXGS6zPTHPBJdyXu2oNcqQrZqdESdKGgfpiCvc2eEeu2H0OKcJzR5s6H21z16T
-        eoHVqXDZRbNU0mpiOc8es+NTcEkOAZbLry8NBFn2c85kTwNeDYlf+jB3R1xEAmJm65q5+rKPi2TSH
-        tQvRCUHcKY+DA7IgolZx2woPbkZuMrS7iKe3EzGgVh5F5yUAJURjvcZyg0FOhIS166gktXBDNwxS6
-        IugmD/KX+U5bmNOuq8MC3d8FF1AfcUPU7zgAsd3nT28l/WzsZPPfTtF5htUF1rrCpQaG4kWFLxPQK
-      
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <150670038738.23930.7190484711222807884.stgit@localhost.localdomain>
-Sender: linux-alpha-owner@vger.kernel.org
+In-Reply-To: <20170929163348.GD2376@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Kirill Tkhai <ktkhai@virtuozzo.com>
-Cc: linux-ia64@vger.kernel.org, avagin@virtuozzo.com, heiko.carstens@de.ibm.com, hpa@zytor.com, gorcunov@virtuozzo.com, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, x86@kernel.org, mingo@redhat.com, mattst88@gmail.com, fenghua.yu@intel.com, arnd@arndb.de, ink@jurassic.park.msu.ru, tglx@linutronix.de, rth@twiddle.net, tony.luck@intel.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, davem@davemloft.net, rientjes@google.com, viro@zeniv.linux.org.uk
+To: Will Deacon <will.deacon@arm.com>
+Cc: Michael Cree <mcree@orcon.net.nz>, Peter Zijlstra <peterz@infradead.org>, kirill.shutemov@linux.intel.com, linux-kernel@vger.kernel.org, ynorov@caviumnetworks.com, rruigrok@codeaurora.org, linux-arch@vger.kernel.org, akpm@linux-foundation.org, catalin.marinas@arm.com, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-On Fri, Sep 29, 2017 at 07:05:45PM +0300, Kirill Tkhai wrote:
-> The series introduces new down_read_killable() primitive, which
-> is similar to down_read(), but it may be interrupted by a signal.
-> The most touched is architectures code. Also, it marks a new user
-> of the primitive, which is iterate_dir().
+On Fri, Sep 29, 2017 at 05:33:49PM +0100, Will Deacon wrote:
+> On Fri, Sep 29, 2017 at 09:29:39AM -0700, Paul E. McKenney wrote:
+> > On Fri, Sep 29, 2017 at 10:08:43AM +0100, Will Deacon wrote:
+> > > On Thu, Sep 28, 2017 at 05:58:30PM -0700, Paul E. McKenney wrote:
+> > > > On Fri, Sep 29, 2017 at 07:59:09AM +1300, Michael Cree wrote:
+> > > > > On Thu, Sep 28, 2017 at 08:43:54AM -0700, Paul E. McKenney wrote:
+> > > > > > On Thu, Sep 28, 2017 at 09:45:35AM +0100, Will Deacon wrote:
+> > > > > > > On Thu, Sep 28, 2017 at 10:38:01AM +0200, Peter Zijlstra wrote:
+> > > > > > > > On Wed, Sep 27, 2017 at 04:49:28PM +0100, Will Deacon wrote:
+> > > > > > > > > In many cases, page tables can be accessed concurrently by either another
+> > > > > > > > > CPU (due to things like fast gup) or by the hardware page table walker
+> > > > > > > > > itself, which may set access/dirty bits. In such cases, it is important
+> > > > > > > > > to use READ_ONCE/WRITE_ONCE when accessing page table entries so that
+> > > > > > > > > entries cannot be torn, merged or subject to apparent loss of coherence.
+> > > > > > > > 
+> > > > > > > > In fact, we should use lockless_dereference() for many of them. Yes
+> > > > > > > > Alpha is the only one that cares about the difference between that and
+> > > > > > > > READ_ONCE() and they do have the extra barrier, but if we're going to do
+> > > > > > > > this, we might as well do it 'right' :-)
+> > > > > > > 
+> > > > > > > I know this sounds daft, but I think one of the big reasons why
+> > > > > > > lockless_dereference() doesn't get an awful lot of use is because it's
+> > > > > > > such a mouthful! Why don't we just move the smp_read_barrier_depends()
+> > > > > > > into READ_ONCE? Would anybody actually care about the potential impact on
+> > > > > > > Alpha (which, frankly, is treading on thin ice given the low adoption of
+> > > > > > > lockless_dereference())?
+> > > > > > 
+> > > > > > This is my cue to ask my usual question...  ;-)
+> > > > > > 
+> > > > > > Are people still running mainline kernels on Alpha?  (Added Alpha folks.)
+> > > > > 
+> > > > > Yes.  I run two Alpha build daemons that build the unofficial
+> > > > > debian-alpha port.  Debian popcon reports nine machines running
+> > > > > Alpha, which are likely to be running the 4.12.y kernel which
+> > > > > is currently in debian-alpha, (and presumably soon to be 4.13.y
+> > > > > which is now built on Alpha in experimental).
+> > > > 
+> > > > I salute your dedication to Alpha!  ;-)
+> > > 
+> > > Ok, but where does that leave us wrt my initial proposal of moving
+> > > smp_read_barrier_depends() into READ_ONCE and getting rid of
+> > > lockless_dereference?
+> > > 
+> > > Michael (or anybody else running mainline on SMP Alpha) -- would you be
+> > > able to give the diff below a spin and see whether there's a measurable
+> > > performance impact?
+> > 
+> > This will be a sensitive test.  The smp_read_barrier_depends() can be
+> > removed from lockless_dereference().  Without this removal Alpha will
+> > get two memory barriers from rcu_dereference() and friends.
 > 
-> ---
-> 
-> Kirill Tkhai (6):
->       alpha: Add __down_read_killable()
->       ia64: Add __down_read_killable()
->       s390: Add __down_read_killable()
->       x86: Add __down_read_killable()
->       rwsem: Add down_read_killable()
->       fs: Use killable down_read() in iterate_dir()
-> 
-> 
->  arch/alpha/include/asm/rwsem.h |   18 ++++++++++++++++--
->  arch/ia64/include/asm/rwsem.h  |   22 +++++++++++++++++++---
->  arch/s390/include/asm/rwsem.h  |   18 ++++++++++++++++--
->  arch/x86/include/asm/rwsem.h   |   35 +++++++++++++++++++++++++----------
->  arch/x86/lib/rwsem.S           |   12 ++++++++++++
->  fs/readdir.c                   |   11 +++++------
->  include/asm-generic/rwsem.h    |    8 ++++++++
->  include/linux/rwsem.h          |    1 +
->  kernel/locking/rwsem.c         |   16 ++++++++++++++++
->  9 files changed, 118 insertions(+), 23 deletions(-)
+> Oh yes, good point. I was trying to keep the diff simple, but you're
+> right that this is packing too many barriers. Fixed diff below.
 
-thanks!
+Not seeing any objections thus far.  If there are none by (say) the
+end of this week, I would be happy to queue a patch for the 4.16
+merge window.  That should give ample opportunity for further review
+and testing.
+
+							Thanx, Paul
+
+> Thanks,
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/include/linux/compiler.h b/include/linux/compiler.h
+> index e95a2631e545..c4ee9d6d8f2d 100644
+> --- a/include/linux/compiler.h
+> +++ b/include/linux/compiler.h
+> @@ -340,6 +340,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+>  		__read_once_size(&(x), __u.__c, sizeof(x));		\
+>  	else								\
+>  		__read_once_size_nocheck(&(x), __u.__c, sizeof(x));	\
+> +	smp_read_barrier_depends(); /* Enforce dependency ordering from x */ \
+>  	__u.__val;							\
+>  })
+>  #define READ_ONCE(x) __READ_ONCE(x, 1)
+> @@ -620,7 +621,6 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+>  ({ \
+>  	typeof(p) _________p1 = READ_ONCE(p); \
+>  	typeof(*(p)) *___typecheck_p __maybe_unused; \
+> -	smp_read_barrier_depends(); /* Dependency order vs. p above. */ \
+>  	(_________p1); \
+>  })
+> 
+> 
+
