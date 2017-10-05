@@ -1,10 +1,9 @@
-From: Will Deacon <will.deacon@arm.com>
+From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
 Subject: Re: [RFC PATCH 1/2] arm64: mm: Use READ_ONCE/WRITE_ONCE when
  accessing page tables
-Date: Thu, 5 Oct 2017 17:31:54 +0100
-Message-ID: <20171005163154.GH11088@arm.com>
-References: <1506527369-19535-2-git-send-email-will.deacon@arm.com>
- <20170928083801.m6rb4frbbgzgam2o@hirez.programming.kicks-ass.net>
+Date: Thu, 5 Oct 2017 12:22:28 -0700
+Message-ID: <20171005192228.GU3521@linux.vnet.ibm.com>
+References: <20170928083801.m6rb4frbbgzgam2o@hirez.programming.kicks-ass.net>
  <20170928084535.GA19060@arm.com>
  <20170928154354.GK3521@linux.vnet.ibm.com>
  <20170928185909.kgwy36hkoqxqgyc3@tower>
@@ -13,90 +12,81 @@ References: <1506527369-19535-2-git-send-email-will.deacon@arm.com>
  <20170929162939.GY3521@linux.vnet.ibm.com>
  <20170929163348.GD2376@arm.com>
  <20171003191109.GB3521@linux.vnet.ibm.com>
+ <20171005163154.GH11088@arm.com>
+Reply-To: paulmck@linux.vnet.ibm.com
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20171003191109.GB3521@linux.vnet.ibm.com>
-Sender: linux-alpha-owner@vger.kernel.org
+In-Reply-To: <20171005163154.GH11088@arm.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="utf-8"
-To: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+To: Will Deacon <will.deacon@arm.com>
 Cc: Michael Cree <mcree@orcon.net.nz>, Peter Zijlstra <peterz@infradead.org>, kirill.shutemov@linux.intel.com, linux-kernel@vger.kernel.org, ynorov@caviumnetworks.com, rruigrok@codeaurora.org, linux-arch@vger.kernel.org, akpm@linux-foundation.org, catalin.marinas@arm.com, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 
-Hi Paul,
-
-On Tue, Oct 03, 2017 at 12:11:10PM -0700, Paul E. McKenney wrote:
-> On Fri, Sep 29, 2017 at 05:33:49PM +0100, Will Deacon wrote:
-> > On Fri, Sep 29, 2017 at 09:29:39AM -0700, Paul E. McKenney wrote:
-> > > On Fri, Sep 29, 2017 at 10:08:43AM +0100, Will Deacon wrote:
-> > > > Ok, but where does that leave us wrt my initial proposal of moving
-> > > > smp_read_barrier_depends() into READ_ONCE and getting rid of
-> > > > lockless_dereference?
-> > > > 
-> > > > Michael (or anybody else running mainline on SMP Alpha) -- would you be
-> > > > able to give the diff below a spin and see whether there's a measurable
-> > > > performance impact?
-> > > 
-> > > This will be a sensitive test.  The smp_read_barrier_depends() can be
-> > > removed from lockless_dereference().  Without this removal Alpha will
-> > > get two memory barriers from rcu_dereference() and friends.
-> > 
-> > Oh yes, good point. I was trying to keep the diff simple, but you're
-> > right that this is packing too many barriers. Fixed diff below.
+On Thu, Oct 05, 2017 at 05:31:54PM +0100, Will Deacon wrote:
+> Hi Paul,
 > 
-> Not seeing any objections thus far.  If there are none by (say) the
-> end of this week, I would be happy to queue a patch for the 4.16
-> merge window.  That should give ample opportunity for further review
-> and testing.
+> On Tue, Oct 03, 2017 at 12:11:10PM -0700, Paul E. McKenney wrote:
+> > On Fri, Sep 29, 2017 at 05:33:49PM +0100, Will Deacon wrote:
+> > > On Fri, Sep 29, 2017 at 09:29:39AM -0700, Paul E. McKenney wrote:
+> > > > On Fri, Sep 29, 2017 at 10:08:43AM +0100, Will Deacon wrote:
+> > > > > Ok, but where does that leave us wrt my initial proposal of moving
+> > > > > smp_read_barrier_depends() into READ_ONCE and getting rid of
+> > > > > lockless_dereference?
+> > > > > 
+> > > > > Michael (or anybody else running mainline on SMP Alpha) -- would you be
+> > > > > able to give the diff below a spin and see whether there's a measurable
+> > > > > performance impact?
+> > > > 
+> > > > This will be a sensitive test.  The smp_read_barrier_depends() can be
+> > > > removed from lockless_dereference().  Without this removal Alpha will
+> > > > get two memory barriers from rcu_dereference() and friends.
+> > > 
+> > > Oh yes, good point. I was trying to keep the diff simple, but you're
+> > > right that this is packing too many barriers. Fixed diff below.
+> > 
+> > Not seeing any objections thus far.  If there are none by (say) the
+> > end of this week, I would be happy to queue a patch for the 4.16
+> > merge window.  That should give ample opportunity for further review
+> > and testing.
+> 
+> Ok, full patch below.
 
-Ok, full patch below.
+Very good, applied for testing and review.  I did have to adjust context
+a bit for other -rcu commits, and the result is below.  (Removed a single
+"*" in a comment.)
 
-Will
+							Thanx, Paul
 
---->8
+------------------------------------------------------------------------
 
-From 15956d0cc6b37208d8542b1858a8d8b64227acf4 Mon Sep 17 00:00:00 2001
-From: Will Deacon <will.deacon@arm.com>
-Date: Thu, 5 Oct 2017 16:57:36 +0100
-Subject: [PATCH] locking/barriers: Kill lockless_dereference
+commit 7e3675cc18bbf4d84f60bfc02ff563ae3764ad35
+Author: Will Deacon <will.deacon@arm.com>
+Date:   Thu Oct 5 17:31:54 2017 +0100
 
-lockless_dereference is a nice idea, but it's gained little traction in
-kernel code since it's introduction three years ago. This is partly
-because it's a pain to type, but also because using READ_ONCE instead
-will work correctly on all architectures apart from Alpha, which is a
-fully supported but somewhat niche architecture these days.
-
-This patch moves smp_read_barrier_depends() (a NOP on all architectures
-other than Alpha) from lockless_dereference into READ_ONCE, converts
-the few actual users over to READ_ONCE and then finally removes
-lockless_dereference altogether.
-
-Signed-off-by: Will Deacon <will.deacon@arm.com>
----
- Documentation/memory-barriers.txt                   | 12 ------------
- .../translations/ko_KR/memory-barriers.txt          | 12 ------------
- arch/x86/events/core.c                              |  2 +-
- arch/x86/include/asm/mmu_context.h                  |  4 ++--
- arch/x86/kernel/ldt.c                               |  2 +-
- drivers/md/dm-mpath.c                               | 20 ++++++++++----------
- fs/dcache.c                                         |  4 ++--
- fs/overlayfs/ovl_entry.h                            |  2 +-
- fs/overlayfs/readdir.c                              |  2 +-
- include/linux/compiler.h                            | 21 +--------------------
- include/linux/rculist.h                             |  4 ++--
- include/linux/rcupdate.h                            |  4 ++--
- kernel/events/core.c                                |  4 ++--
- kernel/seccomp.c                                    |  2 +-
- kernel/task_work.c                                  |  2 +-
- mm/slab.h                                           |  2 +-
- 16 files changed, 28 insertions(+), 71 deletions(-)
+    locking/barriers: Kill lockless_dereference
+    
+    lockless_dereference is a nice idea, but it's gained little traction in
+    kernel code since it's introduction three years ago. This is partly
+    because it's a pain to type, but also because using READ_ONCE instead
+    will work correctly on all architectures apart from Alpha, which is a
+    fully supported but somewhat niche architecture these days.
+    
+    This patch moves smp_read_barrier_depends() (a NOP on all architectures
+    other than Alpha) from lockless_dereference into READ_ONCE, converts
+    the few actual users over to READ_ONCE and then finally removes
+    lockless_dereference altogether.
+    
+    Signed-off-by: Will Deacon <will.deacon@arm.com>
+    Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
 
 diff --git a/Documentation/memory-barriers.txt b/Documentation/memory-barriers.txt
-index b759a60624fd..470a682f3fa4 100644
+index 519940ec767f..479ecec80593 100644
 --- a/Documentation/memory-barriers.txt
 +++ b/Documentation/memory-barriers.txt
-@@ -1886,18 +1886,6 @@ There are some more advanced barrier functions:
+@@ -1880,18 +1880,6 @@ There are some more advanced barrier functions:
       See Documentation/atomic_{t,bitops}.txt for more information.
  
  
@@ -343,7 +333,7 @@ index e95a2631e545..f260ff39f90f 100644
 -
  #endif /* __LINUX_COMPILER_H */
 diff --git a/include/linux/rculist.h b/include/linux/rculist.h
-index b1fd8bf85fdc..3a2bb7d8ed4d 100644
+index 2bea1d5e9930..5ed091c064b2 100644
 --- a/include/linux/rculist.h
 +++ b/include/linux/rculist.h
 @@ -274,7 +274,7 @@ static inline void list_splice_tail_init_rcu(struct list_head *list,
@@ -353,7 +343,7 @@ index b1fd8bf85fdc..3a2bb7d8ed4d 100644
 -	container_of(lockless_dereference(ptr), type, member)
 +	container_of(READ_ONCE(ptr), type, member)
  
- /**
+ /*
   * Where are list_empty_rcu() and list_first_entry_rcu()?
 @@ -367,7 +367,7 @@ static inline void list_splice_tail_init_rcu(struct list_head *list,
   * example is when items are added to the list, but never deleted.
@@ -365,7 +355,7 @@ index b1fd8bf85fdc..3a2bb7d8ed4d 100644
  /**
   * list_for_each_entry_lockless - iterate over rcu list of given type
 diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-index de50d8a4cf41..380a3aeb09d7 100644
+index 1a9f70d44af9..a6ddc42f87a5 100644
 --- a/include/linux/rcupdate.h
 +++ b/include/linux/rcupdate.h
 @@ -346,7 +346,7 @@ static inline void rcu_preempt_sleep_check(void) { }
@@ -447,6 +437,4 @@ index 073362816acc..8894f811a89d 100644
  	rcu_read_unlock();
  
  	return cachep;
--- 
-2.1.4
 
