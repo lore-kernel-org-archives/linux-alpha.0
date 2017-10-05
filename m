@@ -1,13 +1,13 @@
 From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: [PATCH 3/4] PCI: Remove unused declarations
-Date: Thu, 05 Oct 2017 15:38:56 -0500
-Message-ID: <20171005203856.18300.62381.stgit@bhelgaas-glaptop.roam.corp.google.com>
+Subject: [PATCH 4/4] alpha/PCI: Make pdev_save_srm_config() static
+Date: Thu, 05 Oct 2017 15:39:06 -0500
+Message-ID: <20171005203906.18300.63272.stgit@bhelgaas-glaptop.roam.corp.google.com>
 References: <20171005201939.18300.25690.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
 In-Reply-To: <20171005201939.18300.25690.stgit@bhelgaas-glaptop.roam.corp.google.com>
-Sender: linux-sh-owner@vger.kernel.org
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-pci@vger.kernel.org
@@ -15,75 +15,57 @@ Cc: linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.ke
 
 From: Bjorn Helgaas <bhelgaas@google.com>
 
-Remove these unused declarations:
-
-  pcibios_config_init()              # never defined anywhere
-  pcibios_scan_root()                # only defined by x86
-  pcibios_get_irq_routing_table()    # only defined by x86
-  pcibios_set_irq_routing()          # only defined by x86
+pdev_save_srm_config() and struct pdev_srm_saved_conf are only used in
+arch/alpha/kernel/pci.c, so make them static there.
 
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- arch/cris/include/asm/pci.h             |    6 ------
- arch/ia64/include/asm/pci.h             |    2 --
- arch/mn10300/unit-asb2305/pci-asb2305.h |    3 ---
- arch/x86/include/asm/pci.h              |    1 -
- 4 files changed, 12 deletions(-)
+ arch/alpha/kernel/pci.c      |   11 ++++++++++-
+ arch/alpha/kernel/pci_impl.h |    8 --------
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/arch/cris/include/asm/pci.h b/arch/cris/include/asm/pci.h
-index 8ea640560a46..141337bf16bc 100644
---- a/arch/cris/include/asm/pci.h
-+++ b/arch/cris/include/asm/pci.h
-@@ -16,12 +16,6 @@
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index 564114eb85e1..16b67621a0d5 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -196,9 +196,16 @@ pcibios_init(void)
+ subsys_initcall(pcibios_init);
  
- #define PCIBIOS_MIN_CARDBUS_IO	0x4000
+ #ifdef ALPHA_RESTORE_SRM_SETUP
++/* Store PCI device configuration left by SRM here. */
++struct pdev_srm_saved_conf
++{
++	struct pdev_srm_saved_conf *next;
++	struct pci_dev *dev;
++};
++
+ static struct pdev_srm_saved_conf *srm_saved_configs;
  
--void pcibios_config_init(void);
--struct pci_bus * pcibios_scan_root(int bus);
--
--struct irq_routing_table *pcibios_get_irq_routing_table(void);
--int pcibios_set_irq_routing(struct pci_dev *dev, int pin, int irq);
--
- /* Dynamic DMA mapping stuff.
-  * i386 has everything mapped statically.
-  */
-diff --git a/arch/ia64/include/asm/pci.h b/arch/ia64/include/asm/pci.h
-index 8c4b37f6be3d..915531ede6a5 100644
---- a/arch/ia64/include/asm/pci.h
-+++ b/arch/ia64/include/asm/pci.h
-@@ -29,8 +29,6 @@ struct pci_vector_struct {
- #define PCIBIOS_MIN_IO		0x1000
- #define PCIBIOS_MIN_MEM		0x10000000
+-void pdev_save_srm_config(struct pci_dev *dev)
++static void pdev_save_srm_config(struct pci_dev *dev)
+ {
+ 	struct pdev_srm_saved_conf *tmp;
+ 	static int printed = 0;
+@@ -238,6 +245,8 @@ pci_restore_srm_config(void)
+ 		pci_restore_state(tmp->dev);
+ 	}
+ }
++#else
++#define pdev_save_srm_config(dev)	do {} while (0)
+ #endif
  
--void pcibios_config_init(void);
--
- /*
-  * PCI_DMA_BUS_IS_PHYS should be set to 1 if there is _necessarily_ a direct
-  * correspondence between device bus addresses and CPU physical addresses.
-diff --git a/arch/mn10300/unit-asb2305/pci-asb2305.h b/arch/mn10300/unit-asb2305/pci-asb2305.h
-index 96c484b12226..0667f613b023 100644
---- a/arch/mn10300/unit-asb2305/pci-asb2305.h
-+++ b/arch/mn10300/unit-asb2305/pci-asb2305.h
-@@ -30,9 +30,6 @@ extern void pcibios_resource_survey(void);
+ void pcibios_fixup_bus(struct pci_bus *bus)
+diff --git a/arch/alpha/kernel/pci_impl.h b/arch/alpha/kernel/pci_impl.h
+index 2b0ac429f5eb..65adea0d3d78 100644
+--- a/arch/alpha/kernel/pci_impl.h
++++ b/arch/alpha/kernel/pci_impl.h
+@@ -156,16 +156,8 @@ struct pci_iommu_arena
+ #endif
  
- extern struct pci_ops *pci_root_ops;
- 
--extern struct irq_routing_table *pcibios_get_irq_routing_table(void);
--extern int pcibios_set_irq_routing(struct pci_dev *dev, int pin, int irq);
--
- /* pci-irq.c */
- 
- struct irq_info {
-diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
-index 645019085bb8..53873a875c01 100644
---- a/arch/x86/include/asm/pci.h
-+++ b/arch/x86/include/asm/pci.h
-@@ -88,7 +88,6 @@ extern unsigned long pci_mem_start;
- #define PCIBIOS_MIN_CARDBUS_IO	0x4000
- 
- extern int pcibios_enabled;
--void pcibios_config_init(void);
- void pcibios_scan_root(int bus);
- 
- struct irq_routing_table *pcibios_get_irq_routing_table(void);
-
+ #ifdef ALPHA_RESTORE_SRM_SETUP
+-/* Store PCI device configuration left by SRM here. */
+-struct pdev_srm_saved_conf
+-{
+-	struct pdev_srm_saved_conf *next;
+-	struct pci_dev *dev;
+-};
