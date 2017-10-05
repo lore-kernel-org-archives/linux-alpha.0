@@ -1,71 +1,27 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: [PATCH 4/4] alpha/PCI: Make pdev_save_srm_config() static
-Date: Thu, 05 Oct 2017 15:39:06 -0500
-Message-ID: <20171005203906.18300.63272.stgit@bhelgaas-glaptop.roam.corp.google.com>
-References: <20171005201939.18300.25690.stgit@bhelgaas-glaptop.roam.corp.google.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH 1/4] PCI: Remove redundant pcibios_set_master()
+ declarations
+Date: Thu, 5 Oct 2017 22:57:16 +0200 (CEST)
+Message-ID: <alpine.DEB.2.20.1710052256540.2398@nanos>
+References: <20171005201939.18300.25690.stgit@bhelgaas-glaptop.roam.corp.google.com> <20171005203842.18300.67328.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <20171005201939.18300.25690.stgit@bhelgaas-glaptop.roam.corp.google.com>
-Sender: linux-parisc-owner@vger.kernel.org
+Return-path: <sparclinux-owner@vger.kernel.org>
+In-Reply-To: <20171005203842.18300.67328.stgit@bhelgaas-glaptop.roam.corp.google.com>
+Sender: sparclinux-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-pci@vger.kernel.org
-Cc: linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Jesper Nilsson <jesper.nilsson@axis.com>, linux-am33-list@redhat.com, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-xtensa@linux-xtensa.org, Mikael Starvik <starvik@axis.com>, Ivan
+Content-Transfer-Encoding: 7bit
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: linux-pci@vger.kernel.org, linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Jesper Nilsson <jesper.nilsson@axis.com>, linux-am33-list@redhat.com, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-xtensa@linux-xtensa.org, Mikael Starvik <starv>
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+On Thu, 5 Oct 2017, Bjorn Helgaas wrote:
 
-pdev_save_srm_config() and struct pdev_srm_saved_conf are only used in
-arch/alpha/kernel/pci.c, so make them static there.
+> From: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> All users of pcibios_set_master() include <linux/pci.h>, which already has
+> a declaration.  Remove the unnecessary declarations from the <asm/pci.h>
+> files.
+> 
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
- arch/alpha/kernel/pci.c      |   11 ++++++++++-
- arch/alpha/kernel/pci_impl.h |    8 --------
- 2 files changed, 10 insertions(+), 9 deletions(-)
-
-diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
-index 564114eb85e1..16b67621a0d5 100644
---- a/arch/alpha/kernel/pci.c
-+++ b/arch/alpha/kernel/pci.c
-@@ -196,9 +196,16 @@ pcibios_init(void)
- subsys_initcall(pcibios_init);
- 
- #ifdef ALPHA_RESTORE_SRM_SETUP
-+/* Store PCI device configuration left by SRM here. */
-+struct pdev_srm_saved_conf
-+{
-+	struct pdev_srm_saved_conf *next;
-+	struct pci_dev *dev;
-+};
-+
- static struct pdev_srm_saved_conf *srm_saved_configs;
- 
--void pdev_save_srm_config(struct pci_dev *dev)
-+static void pdev_save_srm_config(struct pci_dev *dev)
- {
- 	struct pdev_srm_saved_conf *tmp;
- 	static int printed = 0;
-@@ -238,6 +245,8 @@ pci_restore_srm_config(void)
- 		pci_restore_state(tmp->dev);
- 	}
- }
-+#else
-+#define pdev_save_srm_config(dev)	do {} while (0)
- #endif
- 
- void pcibios_fixup_bus(struct pci_bus *bus)
-diff --git a/arch/alpha/kernel/pci_impl.h b/arch/alpha/kernel/pci_impl.h
-index 2b0ac429f5eb..65adea0d3d78 100644
---- a/arch/alpha/kernel/pci_impl.h
-+++ b/arch/alpha/kernel/pci_impl.h
-@@ -156,16 +156,8 @@ struct pci_iommu_arena
- #endif
- 
- #ifdef ALPHA_RESTORE_SRM_SETUP
--/* Store PCI device configuration left by SRM here. */
--struct pdev_srm_saved_conf
--{
--	struct pdev_srm_saved_conf *next;
--	struct pci_dev *dev;
--};
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
