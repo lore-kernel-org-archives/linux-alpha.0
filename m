@@ -1,29 +1,50 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 3/4] PCI: Remove unused declarations
-Date: Thu, 5 Oct 2017 22:57:53 +0200 (CEST)
-Message-ID: <alpine.DEB.2.20.1710052257350.2398@nanos>
-References: <20171005201939.18300.25690.stgit@bhelgaas-glaptop.roam.corp.google.com> <20171005203856.18300.62381.stgit@bhelgaas-glaptop.roam.corp.google.com>
+From: Jesper Nilsson <jesper.nilsson@axis.com>
+Subject: Re: [PATCH 2/4] PCI: Remove redundant pci_dev, pci_bus, resource
+ declarations
+Date: Fri, 6 Oct 2017 09:27:13 +0200
+Message-ID: <20171006072713.GP17578@axis.com>
+References: <20171005201939.18300.25690.stgit@bhelgaas-glaptop.roam.corp.google.com>
+ <20171005203849.18300.20999.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <20171005203856.18300.62381.stgit@bhelgaas-glaptop.roam.corp.google.com>
+Content-Disposition: inline
+In-Reply-To: <20171005203849.18300.20999.stgit@bhelgaas-glaptop.roam.corp.google.com>
 Sender: linux-sh-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: linux-pci@vger.kernel.org, linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Jesper Nilsson <jesper.nilsson@axis.com>, linux-am33-list@redhat.com, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-xtensa@linux-xtensa.org, Mikael Starvik <starv>
+Cc: linux-pci@vger.kernel.org, linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, David Howells <dhowells@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Jesper Nilsson <jespern@axis.com>, linux-am33-list@redhat.com, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, linux-xtensa@linux-xtensa.org, Mikael Starvik <starvik@axis.com>
 
-On Thu, 5 Oct 2017, Bjorn Helgaas wrote:
-
+On Thu, Oct 05, 2017 at 03:38:49PM -0500, Bjorn Helgaas wrote:
 > From: Bjorn Helgaas <bhelgaas@google.com>
 > 
-> Remove these unused declarations:
+> <linux/pci.h> defines struct pci_bus and struct pci_dev and includes the
+> struct resource definition before including <asm/pci.h>.  Nobody includes
+> <asm/pci.h> directly, so they don't need their own declarations.
 > 
->   pcibios_config_init()              # never defined anywhere
->   pcibios_scan_root()                # only defined by x86
->   pcibios_get_irq_routing_table()    # only defined by x86
->   pcibios_set_irq_routing()          # only defined by x86
+> Remove the redundant struct pci_dev, pci_bus, resource declarations.
 > 
 > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>  arch/alpha/include/asm/pci.h    |    3 ---
+>  arch/cris/include/asm/pci.h     |    2 --
 
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+For what it's worth, for the cris changes:
+
+Acked-by: Jesper Nilsson <jesper.nilsson@axis.com>
+
+>  arch/frv/include/asm/pci.h      |    2 --
+>  arch/ia64/include/asm/pci.h     |    2 --
+>  arch/mips/include/asm/pci.h     |    2 --
+>  arch/mn10300/include/asm/pci.h  |    2 --
+>  arch/parisc/include/asm/pci.h   |    7 -------
+>  arch/powerpc/include/asm/pci.h  |    2 --
+>  arch/sh/include/asm/pci.h       |    2 --
+>  arch/sparc/include/asm/pci_32.h |    2 --
+>  arch/xtensa/include/asm/pci.h   |    2 --
+>  11 files changed, 28 deletions(-)
+
+/^JN - Jesper Nilsson
+-- 
+               Jesper Nilsson -- jesper.nilsson@axis.com
