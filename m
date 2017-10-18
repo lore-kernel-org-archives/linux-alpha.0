@@ -1,92 +1,196 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: [PATCH 3/3] alpha: atomics: Add smp_read_barrier_depends() to
- release/relaxed atomics
-Date: Thu, 12 Oct 2017 08:17:12 -0700
-Message-ID: <20171012151712.GA3521@linux.vnet.ibm.com>
-References: <1507818377-7546-1-git-send-email-will.deacon@arm.com>
- <1507818377-7546-4-git-send-email-will.deacon@arm.com>
-Reply-To: paulmck@linux.vnet.ibm.com
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1507818377-7546-4-git-send-email-will.deacon@arm.com>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Waiman Long <longman@redhat.com>
+Subject: [PATCH-tip v7 01/15] locking/rwsem: relocate rwsem_down_read_failed()
+Date: Wed, 18 Oct 2017 14:30:17 -0400
+Message-ID: <1508351431-22375-2-git-send-email-longman@redhat.com>
+References: <1508351431-22375-1-git-send-email-longman@redhat.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <1508351431-22375-1-git-send-email-longman@redhat.com>
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Will Deacon <will.deacon@arm.com>
-Cc: linux-kernel@vger.kernel.org, mcree@orcon.net.nz, peterz@infradead.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
+To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>
+Cc: linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-arch@vger.kernel.org, Davidlohr Bueso <dave@stgolabs.net>, Dave Chinner <david@fromorbit.com>, Waiman Long <longman@redhat.com>
 
-On Thu, Oct 12, 2017 at 03:26:17PM +0100, Will Deacon wrote:
-> As part of the fight against smp_read_barrier_depends(), we require
-> dependency ordering to be preserved when a dependency is headed by a load
-> performed using an atomic operation.
-> 
-> This patch adds smp_read_barrier_depends() to the _release and _relaxed
-> atomics on alpha, which otherwise lack anything to enforce dependency
-> ordering.
-> 
-> Signed-off-by: Will Deacon <will.deacon@arm.com>
+The rwsem_down_read_failed*() functions were relocted from above the
+optimistic spinning section to below that section. This enables
+them to use functions in that section in future patches. There is no
+code change.
 
-Reviewed-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Signed-off-by: Waiman Long <longman@redhat.com>
+---
+ kernel/locking/rwsem-xadd.c | 150 ++++++++++++++++++++++----------------------
+ 1 file changed, 75 insertions(+), 75 deletions(-)
 
-> ---
->  arch/alpha/include/asm/atomic.h | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/arch/alpha/include/asm/atomic.h b/arch/alpha/include/asm/atomic.h
-> index 498933a7df97..16961a3f45ba 100644
-> --- a/arch/alpha/include/asm/atomic.h
-> +++ b/arch/alpha/include/asm/atomic.h
-> @@ -13,6 +13,15 @@
->   * than regular operations.
->   */
-> 
-> +/*
-> + * To ensure dependency ordering is preserved for the _relaxed and
-> + * _release atomics, an smp_read_barrier_depends() is unconditionally
-> + * inserted into the _relaxed variants, which are used to build the
-> + * barriered versions. To avoid redundant back-to-back fences, we can
-> + * define the _acquire and _fence versions explicitly.
-> + */
-> +#define __atomic_op_acquire(op, args...)	op##_relaxed(args)
-> +#define __atomic_op_fence			__atomic_op_release
-> 
->  #define ATOMIC_INIT(i)		{ (i) }
->  #define ATOMIC64_INIT(i)	{ (i) }
-> @@ -60,6 +69,7 @@ static inline int atomic_##op##_return_relaxed(int i, atomic_t *v)	\
->  	".previous"							\
->  	:"=&r" (temp), "=m" (v->counter), "=&r" (result)		\
->  	:"Ir" (i), "m" (v->counter) : "memory");			\
-> +	smp_read_barrier_depends();					\
->  	return result;							\
->  }
-> 
-> @@ -77,6 +87,7 @@ static inline int atomic_fetch_##op##_relaxed(int i, atomic_t *v)	\
->  	".previous"							\
->  	:"=&r" (temp), "=m" (v->counter), "=&r" (result)		\
->  	:"Ir" (i), "m" (v->counter) : "memory");			\
-> +	smp_read_barrier_depends();					\
->  	return result;							\
->  }
-> 
-> @@ -111,6 +122,7 @@ static __inline__ long atomic64_##op##_return_relaxed(long i, atomic64_t * v)	\
->  	".previous"							\
->  	:"=&r" (temp), "=m" (v->counter), "=&r" (result)		\
->  	:"Ir" (i), "m" (v->counter) : "memory");			\
-> +	smp_read_barrier_depends();					\
->  	return result;							\
->  }
-> 
-> @@ -128,6 +140,7 @@ static __inline__ long atomic64_fetch_##op##_relaxed(long i, atomic64_t * v)	\
->  	".previous"							\
->  	:"=&r" (temp), "=m" (v->counter), "=&r" (result)		\
->  	:"Ir" (i), "m" (v->counter) : "memory");			\
-> +	smp_read_barrier_depends();					\
->  	return result;							\
->  }
-> 
-> -- 
-> 2.1.4
-> 
+diff --git a/kernel/locking/rwsem-xadd.c b/kernel/locking/rwsem-xadd.c
+index 1fefe6d..db5dedf 100644
+--- a/kernel/locking/rwsem-xadd.c
++++ b/kernel/locking/rwsem-xadd.c
+@@ -219,81 +219,6 @@ static void __rwsem_mark_wake(struct rw_semaphore *sem,
+ }
+ 
+ /*
+- * Wait for the read lock to be granted
+- */
+-static inline struct rw_semaphore __sched *
+-__rwsem_down_read_failed_common(struct rw_semaphore *sem, int state)
+-{
+-	long count, adjustment = -RWSEM_ACTIVE_READ_BIAS;
+-	struct rwsem_waiter waiter;
+-	DEFINE_WAKE_Q(wake_q);
+-
+-	waiter.task = current;
+-	waiter.type = RWSEM_WAITING_FOR_READ;
+-
+-	raw_spin_lock_irq(&sem->wait_lock);
+-	if (list_empty(&sem->wait_list))
+-		adjustment += RWSEM_WAITING_BIAS;
+-	list_add_tail(&waiter.list, &sem->wait_list);
+-
+-	/* we're now waiting on the lock, but no longer actively locking */
+-	count = atomic_long_add_return(adjustment, &sem->count);
+-
+-	/*
+-	 * If there are no active locks, wake the front queued process(es).
+-	 *
+-	 * If there are no writers and we are first in the queue,
+-	 * wake our own waiter to join the existing active readers !
+-	 */
+-	if (count == RWSEM_WAITING_BIAS ||
+-	    (count > RWSEM_WAITING_BIAS &&
+-	     adjustment != -RWSEM_ACTIVE_READ_BIAS))
+-		__rwsem_mark_wake(sem, RWSEM_WAKE_ANY, &wake_q);
+-
+-	raw_spin_unlock_irq(&sem->wait_lock);
+-	wake_up_q(&wake_q);
+-
+-	/* wait to be given the lock */
+-	while (true) {
+-		set_current_state(state);
+-		if (!waiter.task)
+-			break;
+-		if (signal_pending_state(state, current)) {
+-			raw_spin_lock_irq(&sem->wait_lock);
+-			if (waiter.task)
+-				goto out_nolock;
+-			raw_spin_unlock_irq(&sem->wait_lock);
+-			break;
+-		}
+-		schedule();
+-	}
+-
+-	__set_current_state(TASK_RUNNING);
+-	return sem;
+-out_nolock:
+-	list_del(&waiter.list);
+-	if (list_empty(&sem->wait_list))
+-		atomic_long_add(-RWSEM_WAITING_BIAS, &sem->count);
+-	raw_spin_unlock_irq(&sem->wait_lock);
+-	__set_current_state(TASK_RUNNING);
+-	return ERR_PTR(-EINTR);
+-}
+-
+-__visible struct rw_semaphore * __sched
+-rwsem_down_read_failed(struct rw_semaphore *sem)
+-{
+-	return __rwsem_down_read_failed_common(sem, TASK_UNINTERRUPTIBLE);
+-}
+-EXPORT_SYMBOL(rwsem_down_read_failed);
+-
+-__visible struct rw_semaphore * __sched
+-rwsem_down_read_failed_killable(struct rw_semaphore *sem)
+-{
+-	return __rwsem_down_read_failed_common(sem, TASK_KILLABLE);
+-}
+-EXPORT_SYMBOL(rwsem_down_read_failed_killable);
+-
+-/*
+  * This function must be called with the sem->wait_lock held to prevent
+  * race conditions between checking the rwsem wait list and setting the
+  * sem->count accordingly.
+@@ -488,6 +413,81 @@ static inline bool rwsem_has_spinner(struct rw_semaphore *sem)
+ #endif
+ 
+ /*
++ * Wait for the read lock to be granted
++ */
++static inline struct rw_semaphore __sched *
++__rwsem_down_read_failed_common(struct rw_semaphore *sem, int state)
++{
++	long count, adjustment = -RWSEM_ACTIVE_READ_BIAS;
++	struct rwsem_waiter waiter;
++	DEFINE_WAKE_Q(wake_q);
++
++	waiter.task = current;
++	waiter.type = RWSEM_WAITING_FOR_READ;
++
++	raw_spin_lock_irq(&sem->wait_lock);
++	if (list_empty(&sem->wait_list))
++		adjustment += RWSEM_WAITING_BIAS;
++	list_add_tail(&waiter.list, &sem->wait_list);
++
++	/* we're now waiting on the lock, but no longer actively locking */
++	count = atomic_long_add_return(adjustment, &sem->count);
++
++	/*
++	 * If there are no active locks, wake the front queued process(es).
++	 *
++	 * If there are no writers and we are first in the queue,
++	 * wake our own waiter to join the existing active readers !
++	 */
++	if (count == RWSEM_WAITING_BIAS ||
++	    (count > RWSEM_WAITING_BIAS &&
++	     adjustment != -RWSEM_ACTIVE_READ_BIAS))
++		__rwsem_mark_wake(sem, RWSEM_WAKE_ANY, &wake_q);
++
++	raw_spin_unlock_irq(&sem->wait_lock);
++	wake_up_q(&wake_q);
++
++	/* wait to be given the lock */
++	while (true) {
++		set_current_state(state);
++		if (!waiter.task)
++			break;
++		if (signal_pending_state(state, current)) {
++			raw_spin_lock_irq(&sem->wait_lock);
++			if (waiter.task)
++				goto out_nolock;
++			raw_spin_unlock_irq(&sem->wait_lock);
++			break;
++		}
++		schedule();
++	}
++
++	__set_current_state(TASK_RUNNING);
++	return sem;
++out_nolock:
++	list_del(&waiter.list);
++	if (list_empty(&sem->wait_list))
++		atomic_long_add(-RWSEM_WAITING_BIAS, &sem->count);
++	raw_spin_unlock_irq(&sem->wait_lock);
++	__set_current_state(TASK_RUNNING);
++	return ERR_PTR(-EINTR);
++}
++
++__visible struct rw_semaphore * __sched
++rwsem_down_read_failed(struct rw_semaphore *sem)
++{
++	return __rwsem_down_read_failed_common(sem, TASK_UNINTERRUPTIBLE);
++}
++EXPORT_SYMBOL(rwsem_down_read_failed);
++
++__visible struct rw_semaphore * __sched
++rwsem_down_read_failed_killable(struct rw_semaphore *sem)
++{
++	return __rwsem_down_read_failed_common(sem, TASK_KILLABLE);
++}
++EXPORT_SYMBOL(rwsem_down_read_failed_killable);
++
++/*
+  * Wait until we successfully acquire the write lock
+  */
+ static inline struct rw_semaphore *
+-- 
+1.8.3.1
 
