@@ -1,40 +1,110 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: Do any Alpha systems include InfiniBand?
-Date: Mon, 23 Oct 2017 11:01:36 -0700
-Message-ID: <20171023180136.GR3659@linux.vnet.ibm.com>
-References: <20171020194832.GA19016@linux.vnet.ibm.com>
- <20171023085921.jwbntptn6ictbnvj@tower>
- <20171023171312.GL3659@linux.vnet.ibm.com>
- <20171023171625.GF6222@arm.com>
-Reply-To: paulmck@linux.vnet.ibm.com
+From: Meelis Roos <mroos@linux.ee>
+Subject: Re: alpha boot hang - 4.14-rc* regression
+Date: Wed, 25 Oct 2017 11:12:21 +0300 (EEST)
+Message-ID: <alpine.LRH.2.21.1710251109150.7098@math.ut.ee>
+References: <alpine.LRH.2.21.1710251043170.7098@math.ut.ee>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171023171625.GF6222@arm.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <alpine.LRH.2.21.1710251043170.7098@math.ut.ee>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Will Deacon <will.deacon@arm.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, parri.andrea@gmail.com, linux-alpha@vger.kernel.org, peterz@infradead.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, mark.rutland@arm.com
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: linux-alpha@vger.kernel.org, Linux Kernel list <linux-kernel@vger.kernel.org>
 
-On Mon, Oct 23, 2017 at 06:16:25PM +0100, Will Deacon wrote:
-> On Mon, Oct 23, 2017 at 10:13:12AM -0700, Paul E. McKenney wrote:
-> > On Mon, Oct 23, 2017 at 09:59:21PM +1300, Michael Cree wrote:
-> > > On Fri, Oct 20, 2017 at 12:48:32PM -0700, Paul E. McKenney wrote:
-> > > > Do any of the DEC Alpha systems that run recent kernels have InfiniBand?
-> > > > Given my understanding of the history, I believe the answer to be "no".
-> > > 
-> > > I am not aware of any Alpha systems with InfiniBand.
-> > 
-> > Very good, then we need not worry about any Alpha-related consequences
-> > of removing smp_read_barrier_depends() invocations from the InfiniBand
-> > driver.  ;-)
+> I run Gentoo Linux on my alphas, with latest git kernels for test. 
+> 4.13.0 worked well on 3 alphas but 4.13.0-09217-g5969d1bb3082 hangs on 
+> boot on all 3 of them. Tried bisecting on PC164, got into unrelated 
+> stuff, so probably it does not trigger always. Retried bisecting on 
+> DS10L. On the first try I got that the same keel where I first saw bad 
+> was the culprit, another bisect led me to 
+> 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b which looks more related.
 > 
-> But maybe make that driver depend on !CONFIG_ALPHA, so as to avoid planting
-> any subtle ordering bugs?
+> This is how the crash looks on console:
+> 
+>  * Starting udev ...
+> starting version 225
+>  [ ok ]
+>  * Generating a rule to create a /dev/root symlink ...
+>  [ ok ]
+>  * Populating /dev with existing devices through uevents ...
+>  [ ok ]
+> 
+> halted CPU 0
+> 
+> halt code = 5
+> HALT instruction executed
+> PC = fffffc00009bf914
+> boot failure
+> >>>
+> 
+> What else can I do to debug this?
 
-Good point, that does sound like a very sensible precaution!
+Booting with debug ignore_loglevel I get also this:
 
-							Thanx, Paul
+seq 421 queued, 'add' 'platform'
+seq 417 running
+passed device to netlink monitor 0x200010c7820
+seq 417 processed
+seq 418 running
+IMPORT builtin 'hwdb' /lib/udev/rules.d/50-udev-default.rules:15
+IMPORT builtin 'hwdb' returned non-zero
+RUN 'kmod load $env{MODALIAS}' /lib/udev/rules.d/80-drivers.rules:5
+Execute 'load' 'platform:alarmtimer'
+seq 419 running
+IMPORT builtin 'hwdb' /lib/udev/rules.d/50-udev-default.rules:15
+IMPORT builtin 'hwdb' returned non-zero
+RUN 'kmod load $env{MODALIAS}' /lib/udev/rules.d/80-drivers.rules:5
+Execute 'load' 'platform:floppy'
+No module matches 'platform:floppy'
+passed device to netlink monitor 0x200010ca0c0
+seq 419 processed
+seq 421 forked new worker [453]
+seq 422 queued, 'add' 'serio'
+seq 420 running
+GROUP 11 /lib/udev/rules.d/40-gentoo.rules:2
+GROUP 6 /lib/udev/rules.d/50-udev-default.rules:55
+handling device node '/dev/fd0', devnum=b2:0, mode=0660, uid=0, gid=6
+set permissions /dev/fd0, 060660, uid=0, gid=6
+creating symlink '/dev/block/2:0' to '../fd0'
+created empty file '/run/udev/data/b2:0' for '/devices/platform/floppy.0/block/fd0'
+passed device to netlink monitor 0x200010c7820
+seq 420 processed
+No module matches 'platform:alarmtimer'
+passed device to netlink monitor 0x200010c8c50
+seq 418 processed
+passed 208 byte device to netlink monitor 0x2000109ffa0
+seq 423 queued, 'add' 'serio'
+seq 424 queued, 'add' 'platform'
+passed 178 byte device to netlink monitor 0x2000109ffa0
+seq 425 queued, 'add' 'platform'
+seq 425 running
+IMPORT builtin 'hwdb' /lib/udev/rules.d/50-udev-default.rules:15
+IMPORT builtin 'hwdb' returned non-zero
+RUN 'kmod load $env{MODALIAS}' /lib/udev/rules.d/80-drivers.rules:5
+Execute 'load' 'platform:rtc-alpha'
+No module matches 'platform:rtc-alpha'
+passed device to netlink monitor 0x200010c7820
+seq 425 processed
+seq 424 running
+IMPORT builtin 'hwdb' /lib/udev/rules.d/50-udev-default.rules:15
+IMPORT builtin 'hwdb' returned non-zero
+RUN 'kmod load $env{MODALIAS}' /lib/udev/rules.d/80-drivers.rules:5
+Execute 'load' 'platform:pcspkr'
+[   29.890609] libata version 3.00 loaded.
 
+passed device to netlink monitor 0x200010c8c50
+halted CPU 0
+
+halt code = 5
+HALT instruction executed
+PC = fffffc00009bf914
+boot failure
+
+
+So maybe it is related pcspkr loading, or the just loaded libata or 
+floppy...
+
+-- 
+Meelis Roos (mroos@linux.ee)
