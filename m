@@ -1,31 +1,31 @@
 From: Sinan Kaya <okaya@codeaurora.org>
-Subject: [PATCH 01/30] alpha/PCI: deprecate pci_get_bus_and_slot()
-Date: Wed, 22 Nov 2017 00:30:46 -0500
-Message-ID: <1511328675-21981-2-git-send-email-okaya@codeaurora.org>
-References: <1511328675-21981-1-git-send-email-okaya@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Subject: [PATCH V2 01/29] alpha/PCI: deprecate pci_get_bus_and_slot()
+Date: Wed, 22 Nov 2017 17:48:56 -0500
+Message-ID: <1511390964-9979-2-git-send-email-okaya@codeaurora.org>
+References: <1511390964-9979-1-git-send-email-okaya@codeaurora.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1511328685;
-        bh=VPdjwfzKLmtcyX1Jw5mwHr5Yu73zAyy669QzXlgaPHU=;
+        s=default; t=1511390975;
+        bh=bWpMibMxMjQqJYJAUqBCowNJMCpFFzaMKkcTSsEajEY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KlY5YKUuwFH980P8qs7aumSyjefaVyDRBHObDcRwLo+xX1CeaWtu2H75CedynhyeI
-         bLSUvNNcYFfBn/PL76eSC8PsPx0UhTf6caTfsVmdd1tbIG58eMqH23las5Rl5q9dpJ
-         PTV57p0d1m9BJpsEu8d+y64hCIP2LWYbKdPSaHL0=
+        b=EgX/+PQrgWjDCTAdYsPB0ZleU6cYT5xPkdZqactpvvDTiGJ3lAIggdVycmesgQutN
+         AqC56mYknjrO6PBtbqXMii2LBqpUdo+2ERby6jcLXB++T9s5HES5++s+/shZAsKHe/
+         PdEY40pbkFDNjHK465fAiS8oD2ut8Mpfo7uzLFO8=
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1511328684;
-        bh=VPdjwfzKLmtcyX1Jw5mwHr5Yu73zAyy669QzXlgaPHU=;
+        s=default; t=1511390974;
+        bh=bWpMibMxMjQqJYJAUqBCowNJMCpFFzaMKkcTSsEajEY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C0F2eKotsre9c+G/jy64rfVIVcuJYN8UR9U1Y33V1QIzJH4dmCQl8FEL0nBhMi+YP
-         lIyjE/mi2FD+c5cB3c7QfbMKSFlLSUygHADNkaVGHodZiv5n3ID9oEema9oVrvo/qN
-         6LV70R8VbNHRtxS3j+djjbrvPDIJqYvDmS5XCvRQ=
-In-Reply-To: <1511328675-21981-1-git-send-email-okaya@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
+        b=JETsqLzqDsk6/mmdNCBy0AgjP0t6FTjK+6/KMMQJFK+bF4EdTT6ysqqz5udIHfQ0i
+         I0oU5R2lk0zDONjl3BdG13hkn90mv9GE3CWfHQZzDFb9FmlL3Xe9YeLh4EPnSkLwdZ
+         Fxtut4yrbdvlPrIouYaBxIx+qbm0bQ2m0vt2wsy4=
+In-Reply-To: <1511390964-9979-1-git-send-email-okaya@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: linux-pci@vger.kernel.org, timur@codeaurora.org
-Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sinan Kaya <okaya@codeaurora.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bjorn Helgaas <bhelgaas@google.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sinan Kaya <okaya@codeaurora.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Bjorn Helgaas <bhelgaas@google.com>, Kate Stewart <kstewart@linuxfoundation.org>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 
 pci_get_bus_and_slot() is restrictive such that it assumes domain=0 as
 where a PCI device is present. This restricts the device drivers to be
@@ -55,7 +55,7 @@ index 08235bb..e866daf 100644
  				return -ENODEV;
  			hose = dev->sysdata;
 diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
-index 239dc0e..5eacaf9 100644
+index 239dc0e..ff4f54b 100644
 --- a/arch/alpha/kernel/sys_nautilus.c
 +++ b/arch/alpha/kernel/sys_nautilus.c
 @@ -237,7 +237,7 @@
@@ -63,9 +63,10 @@ index 239dc0e..5eacaf9 100644
  	pcibios_claim_one_bus(bus);
  
 -	irongate = pci_get_bus_and_slot(0, 0);
-+	irongate = pci_get_domain_bus_and_slot(0, 0, 0);
++	irongate = pci_get_domain_bus_and_slot(pci_domain_nr(bus), 0, 0);
  	bus->self = irongate;
  	bus->resource[0] = &irongate_io;
  	bus->resource[1] = &irongate_mem;
 -- 
 1.9.1
+
