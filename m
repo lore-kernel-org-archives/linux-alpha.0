@@ -1,49 +1,34 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 3/3] y2038: rusage: use __kernel_old_timeval for process times
-Date: Tue, 28 Nov 2017 11:32:06 +0100
-Message-ID: <CAK8P3a3yMhMPNQS1XQB_kiyL2mV-gCPNVT+Eyr13+dwNqADr7A@mail.gmail.com>
-References: <20171127170121.634826-1-arnd@arndb.de> <20171127170121.634826-3-arnd@arndb.de>
- <34369a6e-e0ce-fe7b-65e3-9c4a33e4789a@cs.ucla.edu> <87o9nnlfpq.fsf@xmission.com>
- <CAK8P3a1asMLnJtea=JkduiYzr0dF0BTKQzcx5aQVv1zU5dK2FA@mail.gmail.com>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: Re: [BUG] 4.14 cannot find configured disks/partitions
+Date: Wed, 29 Nov 2017 23:49:29 -0600
+Message-ID: <20171130054929.GC14814@gherkin.frus.com>
 Mime-Version: 1.0
-Return-path: <libc-alpha-return-87590-glibc-alpha=m.gmane.org@sourceware.org>
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=sourceware.org; h=list-id
-	:list-unsubscribe:list-subscribe:list-archive:list-post
-	:list-help:sender:mime-version:in-reply-to:references:from:date
-	:message-id:subject:to:cc:content-type; s=default; bh=WYQLERxiNR
-	Bohq0HMCFJytIMT5s=; b=NFElmLXGkiU23nd17pJnhox5vUfFH5lnQZUGqsl2nK
-	LoI5uUwCj125kI7g2hqCtGzF6I3BhDM0TeHHqQOImyfobElCTaKYirbJ3sHQ+lqz
-	bS+dKQUqSy97cOYqIyqbvg5cPKuZS2U0Qe6cauKCmXb2uzCGVl6CwbBhUGHsyw4Q
-	s=
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <mailto:libc-alpha-unsubscribe-glibc-alpha=m.gmane.org@sourceware.org>
-List-Subscribe: <mailto:libc-alpha-subscribe@sourceware.org>
-List-Archive: <http://sourceware.org/ml/libc-alpha/>
-List-Post: <mailto:libc-alpha@sourceware.org>
-List-Help: <mailto:libc-alpha-help@sourceware.org>, <http://sourceware.org/ml/#faqs>
-Sender: libc-alpha-owner@sourceware.org
-In-Reply-To: <CAK8P3a1asMLnJtea=JkduiYzr0dF0BTKQzcx5aQVv1zU5dK2FA@mail.gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: Paul Eggert <eggert@cs.ucla.edu>, John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, y2038 Mailman List <y2038@lists.linaro.org>, GNU C Library <libc-alpha@sourceware.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Linux API <linux-api@vger.kernel.org>, Albert ARIBAUD <albert.aribaud@3adev.fr>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Al Viro <viro@zeniv.linux.org.uk>, Ingo Molnar <mingo@kernel.org>, Frederic Weisbecker <fweisbec@gmail.com>, Deepa Dinamani <deepa.kernel@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Oleg Nesterov <oleg@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Kirill Tkhai <ktkhai@virtuozzo.com>, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org
 
-On Mon, Nov 27, 2017 at 9:41 PM, Arnd Bergmann <arnd@arndb.de> wrote:
->
-> One argument for using c) plus the emulation in glibc is that glibc
-> has to do emulation anyway, to allow running user space with 64-bit
-> time_t on older kernels that don't have the new getrusage system
-> call.
+On Tue, Nov 28, 2017 at 11:49:55PM -0600, Bob Tracy wrote:
+> (...)
+> 
+> Upon trying to reboot on my 4.13 kernel, I discovered *it's* now broken
+> as well, thanks to a recent udev update :-(.  Now I get a bunch of
+> timeouts for all the filesystems (including the swap partition) not
+> mounted immediately at boot time.  "journalctl -xb" is littered with
+> applicable messages of the form
+> 
+> dev-sdaX.device: Job dev-sdaX.device/start timed out.
+> Timed out waiting for device dev-sdaX.device.
+> 
+> In systemd's emergency mode, I can manually mount (or swapon as
+> appropriate) the various sdaX partitions.
 
-To clarify my point here, if we stay with approach c), I think it should work
-directly with the Albert's proposed patch "Y2038: add function
-__getrusage_t64" [1], and we can remove the  "  // TODO: use
-64-bit-time syscall if available" there. If we pick approach b), we
-still need the same glibc patch, but would also implement the
-interface to the new system call. As Eric said, this would be slightly
-cleaner, but not really help us since 32-bit fields in rusage are
-sufficient on the kernel interface side.
+I *thought* this particular scenario sounded familiar.  Nearly three
+years ago, this problem showed up when "systemd" and "udev" became
+dependent on CONFIG_FHANDLE being set in kernel builds.  I didn't
+suddenly start unsetting it again, so what changed in 2017?
 
-       Arnd
-
-[1] https://patchwork.ozlabs.org/patch/811246/
+--Bob
