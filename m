@@ -1,52 +1,50 @@
-From: Jason Gunthorpe <jgg-uk2M96/98Pc@public.gmane.org>
-Subject: Re: [PATCH tip/core/rcu 16/21] drivers/infiniband: Remove
- now-redundant smp_read_barrier_depends()
-Date: Fri, 1 Dec 2017 17:11:09 -0700
-Message-ID: <20171202001109.GQ7754@ziepe.ca>
-References: <20171201195053.GA23494@linux.vnet.ibm.com>
- <1512157876-24665-16-git-send-email-paulmck@linux.vnet.ibm.com>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: Re: [BUG] 4.14 cannot find configured disks/partitions
+Date: Fri, 1 Dec 2017 18:22:50 -0600
+Message-ID: <20171202002250.GB22990@gherkin.frus.com>
+References: <20171124051010.GA18422@gherkin.frus.com>
+ <20171129054955.GA9467@gherkin.frus.com>
+ <20171201211628.omfk6jchxgqc4eof@tower>
 Mime-Version: 1.0
-Return-path: <linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=BSJvrbMuKClrnF5rMcGlwAoN5wxojGzYDfr8sX4DjbI=;
-        b=GHR7RF+QsC8SCi3CVa7/BU/U9VhQIOHZZny4mlsewocM82Xk3ggj93pfveGQAaN76+
-         FNZvAvV+mrmOUsrsfYRjDUlRpWPmXBjIfHxbLjharYqW7dXnEqKypwyu3PRx9M54m7iH
-         Fzvk5/6sSDnJSpiP7YgC6xiJVtuJQYxAmwMvi+XzV3nbK7SjgIYkA28Ht+KcUveQEIlg
-         7aDlVvkjhaAeYtDuMucLt5Tii0u8513LhV/Fv5urshcfbFtCZVFyGbTTPy7bjm6a274R
-         q3nukO6BxyQLwzAt/iyzKL0XX8ZFN2lZ7Wxhvdgpo/m9b2PueMNxI9EMilJJ0GxSnFzu
-         2w/w==
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1512157876-24665-16-git-send-email-paulmck-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Sender: linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20171201211628.omfk6jchxgqc4eof@tower>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Paul E. McKenney" <paulmck-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jiangshanlai-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dipankar-xthvdsQ13ZrQT0dZR+AlfA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, mathieu.desnoyers-vg+e7yoeK/dWk0Htik3J/w@public.gmane.org, josh-iaAMLnmF4UmaiuxdJuQwMA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, edumazet-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, fweisbec-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, oleg-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Doug Ledford <dledford-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Michael Cree <mcree-q3Ck4f9/EBK9koe0gwxAeg@public.gmane.org>, Andrea Parri <parri.andrea-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Michael Cree <mcree@orcon.net.nz>, debian-alpha@lists.debian.org, Michael Cree <michael.cree@waikato.ac.nz>, linux-alpha@vger.kernel.org
 
-On Fri, Dec 01, 2017 at 11:51:11AM -0800, Paul E. McKenney wrote:
-> The smp_read_barrier_depends() does nothing at all except on DEC Alpha,
-> and no current DEC Alpha systems use Infiniband:
+On Sat, Dec 02, 2017 at 10:16:28AM +1300, Michael Cree wrote:
+> On Tue, Nov 28, 2017 at 11:49:55PM -0600, Bob Tracy wrote:
+> > On Thu, Nov 23, 2017 at 11:10:10PM -0600, Bob Tracy wrote:
+> > > Perhaps the subject isn't entirely accurate, but that's what seems to be
+> > > the case.  After loading the initial ramdisk, the boot process stalls
+> > > (loops indefinitely) with "mdadm" complaining about not being able to scan 
+> > > the disks defined in its configuration file, which is bone-stock.  What
+> > > makes this particularly infuriating is, I don't have anything configured
+> > > for "mdadm" to worry about, which is what's normally found, i.e.,
+> > > nothing of interest.
+> > > 
+> > > The 4.13 kernel loads and boots just fine with exactly the same
+> > > up-to-date (unstable/experimental) userspace libraries and utilities.
+> > > 
+> > > Bottom line: the 4.14 kernel doesn't seem to detect my SCSI disks for
+> > > some reason.  All the recent patches (end of October time frame) for PCI
+> > > on alpha (I *think* mostly having to do with addressing some weird kind
+> > > of libata conflict) didn't make any difference.
 > 
-> 	lkml.kernel.org/r/20171023085921.jwbntptn6ictbnvj@tower
+> Just got a chance to try out 4.14 on an Alpha and look like firmware
+> for built-in drivers are being treated differently.  I presume you
+> have a qlogic scsi driver.  Make sure qlogic/1040.bin (or whatever is
+> appropriate for your scsi driver) is listed under Drivers->Generic
+> Driver Options->Include in-kernel firmware blobs.
 
-I understand DEC Alpha has PCI, and we continue to support several
-RDMA devices that used the PCI bus.
+Glad I saw this before trying a freshly-built 4.14 with a few more
+kernel config options enabled per the README file for systemd.  Doesn't
+mean there isn't a systemd/udev issue as well, but if the firmware for
+the SCSI controller isn't getting loaded, that makes detection of the
+host and attached devices pretty much a non-starter.
 
-However, the hif1, rdma vt and qib drivers modified in this patch are
-PCI-Express ONLY. So I think this idea is fine, but would revise the
-commit message to focus on PCI-E not Infiniband.
-
->  drivers/dma/ioat/dma.c              | 2 --
->  drivers/infiniband/Kconfig          | 1 +
-
-Did you mean to have ioat/dma.c in this patch?
-
-Jason
---
-To unsubscribe from this list: send the line "unsubscribe linux-rdma" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Thanks!
+--Bob
