@@ -1,67 +1,72 @@
-From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
-Subject: Re: [PATCH tip/core/rcu 16/21] drivers/infiniband: Remove
- now-redundant smp_read_barrier_depends()
-Date: Tue, 5 Dec 2017 12:06:14 -0800
-Message-ID: <20171205200614.GQ7829@linux.vnet.ibm.com>
-References: <20171201195053.GA23494@linux.vnet.ibm.com>
- <1512157876-24665-16-git-send-email-paulmck@linux.vnet.ibm.com>
- <20171202001109.GQ7754@ziepe.ca>
- <20171202010851.GL7829@linux.vnet.ibm.com>
- <20171205150832.GA27409@ziepe.ca>
-Reply-To: paulmck@linux.vnet.ibm.com
-Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171205150832.GA27409@ziepe.ca>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: [PATCH V4 01/26] alpha/PCI: deprecate pci_get_bus_and_slot()
+Date: Tue, 19 Dec 2017 00:37:37 -0500
+Message-ID: <1513661883-28662-2-git-send-email-okaya@codeaurora.org>
+References: <1513661883-28662-1-git-send-email-okaya@codeaurora.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1513661895;
+        bh=nlBLy3aTwEBPERskKV+zwVjUcnEag2XGTrSp7R32tG4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=O7VwxRFXHp4OT0/nRfHMiXHupRhwRJ4jgaPBN1bLCZJeWiHcdny3RY+KPWYNTAeMY
+         KLHSUlCCgBiwRZhVyD57MTmWo0Og0MLUG9vRP7ZD+lagKIUgJDPfRZc6QgpIc4r5bY
+         K2V9B7NvAQTyKgL2OhfROid9IKBBPResWyBiprwM=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1513661894;
+        bh=nlBLy3aTwEBPERskKV+zwVjUcnEag2XGTrSp7R32tG4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iK8CKcJBrV1svRKED7nDkM4Cnz63ZYXqTmAg8MrJTvKEsVB9dvFDibk7C9JD22ihV
+         6G3C4Z51P9qjQNY+mqGiB1PZzphbeVCRCtr05RJJP60TEjAIk8JBaZ0DOr4rLkTD+C
+         VJ/5PVfSSBn6SyQcp2K98M/bNIhOU9PO5Hn4GvRg=
+In-Reply-To: <1513661883-28662-1-git-send-email-okaya@codeaurora.org>
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Dennis Dalessandro <dennis.dalessandro@intel.com>, linux-kernel@vger.kernel.org, mingo@kernel.org, jiangshanlai@gmail.com, dipankar@in.ibm.com, akpm@linux-foundation.org, mathieu.desnoyers@efficios.com, josh@joshtriplett.org, tglx@linutronix.de, peterz@infradead.org, rostedt@goodmis.org, dhowells@redhat.com, edumazet@google.com, fweisbec@gmail.com, oleg@redhat.com, Doug Ledford <dledford@redhat.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Michael Cree <mcree@orcon.net.nz>, Andrea Parri <parri.andrea@gmail.com>, linux-rdma@vger.kernel.org, linux-alpha@vger.kernel.org
+To: linux-pci@vger.kernel.org, timur@codeaurora.org
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sinan Kaya <okaya@codeaurora.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 
-On Tue, Dec 05, 2017 at 08:08:32AM -0700, Jason Gunthorpe wrote:
-> > commit c389c98ec5f4a7aa4c36853e89801eb5ea81870e
-> > Author: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> > Date:   Mon Nov 27 09:04:22 2017 -0800
-> > 
-> >     drivers/infiniband: Remove now-redundant smp_read_barrier_depends()
-> >     
-> >     The smp_read_barrier_depends() does nothing at all except on DEC Alpha,
-> >     and no current DEC Alpha systems use Infiniband:
-> >     
-> >     	lkml.kernel.org/r/20171023085921.jwbntptn6ictbnvj@tower
-> >     
-> >     This commit therefore makes Infiniband depend on !ALPHA and removes
-> >     the now-ineffective invocations of smp_read_barrier_depends() from
-> >     the InfiniBand driver.
-> >     
-> >     Please note that this patch should not be construed as my saying that
-> >     InfiniBand's memory ordering is correct, but rather that this patch does
-> >     not in any way affect InfiniBand's correctness.  In other words, the
-> >     result of applying this patch is bug-for-bug compatible with the original.
-> >     
-> >     Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-> >     Cc: Doug Ledford <dledford@redhat.com>
-> >     Cc: Jason Gunthorpe <jgg@mellanox.com>
-> >     Cc: Richard Henderson <rth@twiddle.net>
-> >     Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> >     Cc: Matt Turner <mattst88@gmail.com>
-> >     Cc: Michael Cree <mcree@orcon.net.nz>
-> >     Cc: Andrea Parri <parri.andrea@gmail.com>
-> >     Cc: <linux-rdma@vger.kernel.org>
-> >     Cc: <linux-alpha@vger.kernel.org>
-> >     [ paulmck: Removed drivers/dma/ioat/dma.c per Jason Gunthorpe's feedback. ]
-> 
-> Let me know if you want this patch to flow through the rdma tree..
-> 
-> Acked-by: Jason Gunthorpe <jgg@mellanox.com>
+pci_get_bus_and_slot() is restrictive such that it assumes domain=0 as
+where a PCI device is present. This restricts the device drivers to be
+reused for other domain numbers.
 
-I applied your ack, thank you!
+Use pci_get_domain_bus_and_slot() with a domain number of 0 where we can't
+extract the domain number. Other places, use the actual domain number from
+the device.
 
-Your choice as to what tree it flows through.  By default, and if all
-goes well, I will push this series through -rcu and -tip during the next
-merge window.
+Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+---
+ arch/alpha/kernel/pci.c          | 2 +-
+ arch/alpha/kernel/sys_nautilus.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-							Thanx, Paul
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index 87da005..2e86ebb 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -425,7 +425,7 @@ struct resource * __init
+ 		if (bus == 0 && dfn == 0) {
+ 			hose = pci_isa_hose;
+ 		} else {
+-			dev = pci_get_bus_and_slot(bus, dfn);
++			dev = pci_get_domain_bus_and_slot(0, bus, dfn);
+ 			if (!dev)
+ 				return -ENODEV;
+ 			hose = dev->sysdata;
+diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
+index 239dc0e..ff4f54b 100644
+--- a/arch/alpha/kernel/sys_nautilus.c
++++ b/arch/alpha/kernel/sys_nautilus.c
+@@ -237,7 +237,7 @@
+ 	bus = hose->bus = bridge->bus;
+ 	pcibios_claim_one_bus(bus);
+ 
+-	irongate = pci_get_bus_and_slot(0, 0);
++	irongate = pci_get_domain_bus_and_slot(pci_domain_nr(bus), 0, 0);
+ 	bus->self = irongate;
+ 	bus->resource[0] = &irongate_io;
+ 	bus->resource[1] = &irongate_mem;
+-- 
+1.9.1
 
