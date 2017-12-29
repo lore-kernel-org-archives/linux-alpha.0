@@ -1,72 +1,50 @@
-From: Sinan Kaya <okaya@codeaurora.org>
-Subject: [PATCH V4 01/26] alpha/PCI: deprecate pci_get_bus_and_slot()
-Date: Tue, 19 Dec 2017 00:37:37 -0500
-Message-ID: <1513661883-28662-2-git-send-email-okaya@codeaurora.org>
-References: <1513661883-28662-1-git-send-email-okaya@codeaurora.org>
-Return-path: <linux-pci-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1513661895;
-        bh=nlBLy3aTwEBPERskKV+zwVjUcnEag2XGTrSp7R32tG4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O7VwxRFXHp4OT0/nRfHMiXHupRhwRJ4jgaPBN1bLCZJeWiHcdny3RY+KPWYNTAeMY
-         KLHSUlCCgBiwRZhVyD57MTmWo0Og0MLUG9vRP7ZD+lagKIUgJDPfRZc6QgpIc4r5bY
-         K2V9B7NvAQTyKgL2OhfROid9IKBBPResWyBiprwM=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1513661894;
-        bh=nlBLy3aTwEBPERskKV+zwVjUcnEag2XGTrSp7R32tG4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iK8CKcJBrV1svRKED7nDkM4Cnz63ZYXqTmAg8MrJTvKEsVB9dvFDibk7C9JD22ihV
-         6G3C4Z51P9qjQNY+mqGiB1PZzphbeVCRCtr05RJJP60TEjAIk8JBaZ0DOr4rLkTD+C
-         VJ/5PVfSSBn6SyQcp2K98M/bNIhOU9PO5Hn4GvRg=
-In-Reply-To: <1513661883-28662-1-git-send-email-okaya@codeaurora.org>
-Sender: linux-pci-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
+From: Christoph Hellwig <hch@lst.de>
+Subject: consolidate direct dma mapping and swiotlb support
+Date: Fri, 29 Dec 2017 09:18:04 +0100
+Message-ID: <20171229081911.2802-1-hch@lst.de>
+Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-pci@vger.kernel.org, timur@codeaurora.org
-Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sinan Kaya <okaya@codeaurora.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Message-Id:Date:
+	Subject:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	References:List-Owner; bh=Q9kkdNPZKxtO3HM0BAWkcCZdSt2yK4KBYO4rnE91D/g=; b=P1N
+	YMCHNAJZnegLFGxu3IJ8MAgnTprRmLJClFJubajtbP2iWq/Yw4HmK8HAslOwvIfh3Y3UrW5+K2Lsq
+	9bW7wl4Xms/AXItebfax+FmAXdnIQYqVBVRTVVdkD931k1cQhp1HHb5qxLz9OS5OepXi0+ufPQl2r
+	OBu+ol8H0K+BLy9kCCAsYduW3xOclK839hStAeYdk8hcqFwDqF506NnGUFG8rI7ucbgOhtj8wXhHG
+	LmvPtTSzgoEI3pErLKmArf/P47zkUZEKXoDORU+1lrgezUivsV9sPWdPt/gudEKAZgmUnmWrhN7XU
+	Lx5oIcZihI/IIMmYjJXLYozOQd2Ne7w==;
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, linux-snps-arc@lists.infradead.org, adi-buildroot-devel@lists.sourceforge.net, linux-m68k@lists.linux-m68k.org, patches@groups.riscv.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
-pci_get_bus_and_slot() is restrictive such that it assumes domain=0 as
-where a PCI device is present. This restricts the device drivers to be
-reused for other domain numbers.
+Almost every architecture supports a direct dma mapping implementation,
+where no iommu is used and the device dma address is a 1:1 mapping to
+the physical address or has a simple linear offset.  Currently the
+code for this implementation is most duplicated over the architectures,
+and the duplicated again in the swiotlb code, and then duplicated again
+for special cases like the x86 memory encryption DMA ops.
 
-Use pci_get_domain_bus_and_slot() with a domain number of 0 where we can't
-extract the domain number. Other places, use the actual domain number from
-the device.
+This series takes the existing very simple dma-noop dma mapping
+implementation, enhances it with all the x86 features and quirks, and
+creates a common set of architecture hooks for it and the swiotlb code.
 
-Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
----
- arch/alpha/kernel/pci.c          | 2 +-
- arch/alpha/kernel/sys_nautilus.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+It then switches a large number of architectures to this generic
+direct map implement and the new generic swiotlb dma_map ops.
 
-diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
-index 87da005..2e86ebb 100644
---- a/arch/alpha/kernel/pci.c
-+++ b/arch/alpha/kernel/pci.c
-@@ -425,7 +425,7 @@ struct resource * __init
- 		if (bus == 0 && dfn == 0) {
- 			hose = pci_isa_hose;
- 		} else {
--			dev = pci_get_bus_and_slot(bus, dfn);
-+			dev = pci_get_domain_bus_and_slot(0, bus, dfn);
- 			if (!dev)
- 				return -ENODEV;
- 			hose = dev->sysdata;
-diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
-index 239dc0e..ff4f54b 100644
---- a/arch/alpha/kernel/sys_nautilus.c
-+++ b/arch/alpha/kernel/sys_nautilus.c
-@@ -237,7 +237,7 @@
- 	bus = hose->bus = bridge->bus;
- 	pcibios_claim_one_bus(bus);
- 
--	irongate = pci_get_bus_and_slot(0, 0);
-+	irongate = pci_get_domain_bus_and_slot(pci_domain_nr(bus), 0, 0);
- 	bus->self = irongate;
- 	bus->resource[0] = &irongate_io;
- 	bus->resource[1] = &irongate_mem;
--- 
-1.9.1
-
+Note that for now this only handles architectures that do cache coherent
+DMA, but a similar consolidation for non-coherent architectures is in the
+work for later merge windows.
