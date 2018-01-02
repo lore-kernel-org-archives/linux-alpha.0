@@ -1,51 +1,37 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks networking
-Date: Tue, 2 Jan 2018 15:50:41 -0600
-Message-ID: <CAErSpo6nrJa0ZQkAe-AYzqwk1cw+vsrpZzcNTe+bLp-B=Q4bQA@mail.gmail.com>
+From: Meelis Roos <mroos@ut.ee>
+Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks
+ networking
+Date: Tue, 2 Jan 2018 23:54:47 +0200 (EET)
+Message-ID: <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
 References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=fYNCv2pfzPIKEk5QWaZZcMIXjzzhxnn1+CEgDHGSIKE=;
-        b=r3mATkzwY8bFVRbKtXnlPJDTlKTpiyGbDJSH7jO0B82NJFPaM2EjdOspX/Qgkbgq0T
-         mvrAGZS47poqOAHhBDaBeXo0GJ/t17IQOkTy3noP71VbJ+VO0lN8l6DLeUvzw3VFJ60g
-         YQw3JhAp5cgp3f7fQW1Gg1cJ4KQUFgwN87QwpumzV8SlQvUuwWTwNEG84NOoyafXrlx2
-         O1yxoFwoegfMLQGIpSuCajtT93mrcmiEuc+wGzraCFo4UJf7cIEQKfBXl2lTWY2h0HxJ
-         +7X2v2WAfTASRs8dNOGLIBrt5RR6Ms16HT3YzcOux+j0YCwQs6bF7wMEBN0/F8DEzlez
-         pCew==
 In-Reply-To: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Meelis Roos <mroos@linux.ee>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-pci@vger.kernel.org
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-[+cc linux-pci]
-
-Thanks for the report!  Lorenzo has been on vacation and is probably
-buried in email, but I'm sure he'll be on this as soon as he digs out.
-
-On Tue, Jan 2, 2018 at 3:32 PM, Mikulas Patocka <mpatocka@redhat.com> wrote:
-> Hi
->
-> The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace
-> pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks
-> networking on Alpha for me. I have an Alpha Avanti server with tulip
+> The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
+> pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
+> networking on Alpha for me. I have an Alpha Avanti server with tulip 
 > network card.
->
-> The patch 0e4c2eeb breaks it so that I get MCE when the network card
-> driver is loaded. The patch 814eae59 fixes the MCE, the system boot
-> completes, but the network card doesn't receive any interrupts (and soon
-> it reports warning about timeout on tx queue). All kernels in the 4.14
+
+Matbe the map is wrong for Avanti? Is there some way to check that?
+> 
+> The patch 0e4c2eeb breaks it so that I get MCE when the network card 
+> driver is loaded. The patch 814eae59 fixes the MCE, the system boot 
+> completes, but the network card doesn't receive any interrupts (and soon 
+> it reports warning about timeout on tx queue). All kernels in the 4.14 
 > branch have this bug.
->
+
+Does some other IRQ icrease instead?
+
 > Mikulas
->
->
+> 
+> 
 > # cat /proc/interrupts
 >            CPU0
 >   1:          3    XT-PIC      i8042
@@ -55,10 +41,10 @@ On Tue, Jan 2, 2018 at 3:32 PM, Mikulas Patocka <mpatocka@redhat.com> wrote:
 >  10:       1613    XT-PIC      ide0, ide1
 >  11:        739    XT-PIC      sym53c8xx
 >  12:          5    XT-PIC      i8042
->  15:          0    XT-PIC      eth0     <--- note that the counter is zero
+>  15:          0    XT-PIC      eth0	<--- note that the counter is zero
 > PMI:          0           Performance Monitoring
 > ERR:          0
->
+> 
 > # lspci -vv
 > 00:06.0 SCSI storage controller: LSI Logic / Symbios Logic 53c810 (rev 01)
 >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
@@ -69,12 +55,12 @@ On Tue, Jan 2, 2018 at 3:32 PM, Mikulas Patocka <mpatocka@redhat.com> wrote:
 >         Region 1: Memory at 01300000 (32-bit, non-prefetchable) [size=256]
 >         Kernel driver in use: sym53c8xx
 >         Kernel modules: sym53c8xx
->
+> 
 > 00:07.0 ISA bridge: Intel Corporation 82378ZB/IB, 82379AB (SIO, SIO.A) PCI to ISA Bridge (rev 43)
 >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
 >         Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
 >         Latency: 0
->
+> 
 > 00:0b.0 Ethernet controller: Digital Equipment Corporation DECchip 21140 [FasterNet] (rev 22)
 >         Subsystem: Digital Equipment Corporation DECchip 21140 [FasterNet]
 >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
@@ -86,7 +72,7 @@ On Tue, Jan 2, 2018 at 3:32 PM, Mikulas Patocka <mpatocka@redhat.com> wrote:
 >         Expansion ROM at 01280000 [disabled] [size=256K]
 >         Kernel driver in use: tulip
 >         Kernel modules: tulip
->
+> 
 > 00:0c.0 Display controller: Digital Equipment Corporation DECchip 21030 [TGA] (rev 02)
 >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping+ SERR- FastB2B- DisINTx-
 >         Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
@@ -95,7 +81,7 @@ On Tue, Jan 2, 2018 at 3:32 PM, Mikulas Patocka <mpatocka@redhat.com> wrote:
 >         Region 0: Memory at 02000000 (32-bit, prefetchable) [size=32M]
 >         Expansion ROM at 012c0000 [disabled] [size=256K]
 >         Kernel driver in use: tgafb
->
+> 
 > 00:0d.0 RAID bus controller: Silicon Image, Inc. PCI0680 Ultra ATA-133 Host Controller (rev 02)
 >         Subsystem: Silicon Image, Inc. Winic W-680 (Silicon Image 680 based)
 >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
@@ -113,4 +99,7 @@ On Tue, Jan 2, 2018 at 3:32 PM, Mikulas Patocka <mpatocka@redhat.com> wrote:
 >                 Flags: PMEClk- DSI+ D1+ D2+ AuxCurrent=0mA PME(D0-,D1-,D2-,D3hot-,D3cold-)
 >                 Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=2 PME-
 >         Kernel driver in use: SiI_IDE
->
+> 
+
+-- 
+Meelis Roos (mroos@ut.ee)      http://www.cs.ut.ee/~mroos/
