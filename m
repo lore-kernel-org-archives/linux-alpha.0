@@ -1,62 +1,97 @@
 From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: [PATCH] alpha: fix crash if pthread_create races with signal
- delivery
-Date: Tue, 2 Jan 2018 14:01:34 -0500 (EST)
-Message-ID: <alpine.LRH.2.02.1801021400340.12797@file01.intranet.prod.int.rdu2.redhat.com>
+Subject: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks networking
+Date: Tue, 2 Jan 2018 16:32:45 -0500 (EST)
+Message-ID: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Meelis Roos <mroos@linux.ee>, Matt Turner <mattst88@gmail.com>, Meelis Roos <mroos@linux.ee>, linux-alpha@vger.kernel.org
 
-On alpha, a process will crash if it attempts to start a thread and a
-signal is delivered at the same time. The crash can be reproduced with
-this program: https://cygwin.com/ml/cygwin/2014-11/msg00473.html
+Hi
 
-The reason for the crash is this:
-* we call the clone syscall
-* we go to the function copy_process
-* copy process calls copy_thread_tls, it is a wrapper around copy_thread
-* copy_thread sets the tls pointer: childti->pcb.unique = regs->r20
-* copy_thread sets regs->r20 to zero
-* we go back to copy_process
-* copy process checks "if (signal_pending(current))" and returns
-  -ERESTARTNOINTR
-* the clone syscall is restarted, but this time, regs->r20 is zero, so
-  the new thread is created with zero tls pointer
-* the new thread crashes in start_thread when attempting to access tls
+The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
+pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
+networking on Alpha for me. I have an Alpha Avanti server with tulip 
+network card.
 
-The comment in the code says that setting the register r20 is some
-compatibility with OSF/1. But OSF/1 doesn't use the CLONE_SETTLS flag, so
-we don't have to zero r20 if CLONE_SETTLS is set. This patch fixes the bug
-by zeroing regs->r20 only if CLONE_SETTLS is not set.
+The patch 0e4c2eeb breaks it so that I get MCE when the network card 
+driver is loaded. The patch 814eae59 fixes the MCE, the system boot 
+completes, but the network card doesn't receive any interrupts (and soon 
+it reports warning about timeout on tx queue). All kernels in the 4.14 
+branch have this bug.
 
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Cc: stable@vger.kernel.org
+Mikulas
 
----
- arch/alpha/kernel/process.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Index: linux-stable/arch/alpha/kernel/process.c
-===================================================================
---- linux-stable.orig/arch/alpha/kernel/process.c	2017-12-31 17:42:12.000000000 +0100
-+++ linux-stable/arch/alpha/kernel/process.c	2018-01-02 18:06:24.000000000 +0100
-@@ -265,12 +265,13 @@ copy_thread(unsigned long clone_flags, u
- 	   application calling fork.  */
- 	if (clone_flags & CLONE_SETTLS)
- 		childti->pcb.unique = regs->r20;
-+	else
-+		regs->r20 = 0;	/* OSF/1 has some strange fork() semantics.  */
- 	childti->pcb.usp = usp ?: rdusp();
- 	*childregs = *regs;
- 	childregs->r0 = 0;
- 	childregs->r19 = 0;
- 	childregs->r20 = 1;	/* OSF/1 has some strange fork() semantics.  */
--	regs->r20 = 0;
- 	stack = ((struct switch_stack *) regs) - 1;
- 	*childstack = *stack;
- 	childstack->r26 = (unsigned long) ret_from_fork;
+# cat /proc/interrupts
+           CPU0
+  1:          3    XT-PIC      i8042
+  2:          0    XT-PIC      cascade
+  4:        752    XT-PIC      ttyS0
+  8:      58118     dummy    -RTC       timer
+ 10:       1613    XT-PIC      ide0, ide1
+ 11:        739    XT-PIC      sym53c8xx
+ 12:          5    XT-PIC      i8042
+ 15:          0    XT-PIC      eth0	<--- note that the counter is zero
+PMI:          0           Performance Monitoring
+ERR:          0
+
+# lspci -vv
+00:06.0 SCSI storage controller: LSI Logic / Symbios Logic 53c810 (rev 01)
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 255
+        Interrupt: pin A routed to IRQ 11
+        Region 0: I/O ports at 8000 [size=256]
+        Region 1: Memory at 01300000 (32-bit, non-prefetchable) [size=256]
+        Kernel driver in use: sym53c8xx
+        Kernel modules: sym53c8xx
+
+00:07.0 ISA bridge: Intel Corporation 82378ZB/IB, 82379AB (SIO, SIO.A) PCI to ISA Bridge (rev 43)
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+
+00:0b.0 Ethernet controller: Digital Equipment Corporation DECchip 21140 [FasterNet] (rev 22)
+        Subsystem: Digital Equipment Corporation DECchip 21140 [FasterNet]
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 255 (5000ns min, 10000ns max), Cache Line Size: 64 bytes
+        Interrupt: pin A routed to IRQ 15
+        Region 0: I/O ports at 8400 [size=128]
+        Region 1: Memory at 01302000 (32-bit, non-prefetchable) [size=128]
+        Expansion ROM at 01280000 [disabled] [size=256K]
+        Kernel driver in use: tulip
+        Kernel modules: tulip
+
+00:0c.0 Display controller: Digital Equipment Corporation DECchip 21030 [TGA] (rev 02)
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping+ SERR- FastB2B- DisINTx-
+        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 255
+        Interrupt: pin A routed to IRQ 5
+        Region 0: Memory at 02000000 (32-bit, prefetchable) [size=32M]
+        Expansion ROM at 012c0000 [disabled] [size=256K]
+        Kernel driver in use: tgafb
+
+00:0d.0 RAID bus controller: Silicon Image, Inc. PCI0680 Ultra ATA-133 Host Controller (rev 02)
+        Subsystem: Silicon Image, Inc. Winic W-680 (Silicon Image 680 based)
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 240, Cache Line Size: 4 bytes
+        Interrupt: pin A routed to IRQ 10
+        Region 0: I/O ports at 8490 [size=8]
+        Region 1: I/O ports at 84a0 [size=4]
+        Region 2: I/O ports at 8498 [size=8]
+        Region 3: I/O ports at 84a4 [size=4]
+        Region 4: I/O ports at 8480 [size=16]
+        Region 5: Memory at 01301000 (32-bit, non-prefetchable) [size=256]
+        Expansion ROM at 01200000 [disabled] [size=512K]
+        Capabilities: [60] Power Management version 2
+                Flags: PMEClk- DSI+ D1+ D2+ AuxCurrent=0mA PME(D0-,D1-,D2-,D3hot-,D3cold-)
+                Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=2 PME-
+        Kernel driver in use: SiI_IDE
+
