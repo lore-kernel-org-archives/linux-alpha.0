@@ -1,114 +1,44 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Meelis Roos <mroos@linux.ee>
 Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks
  networking
-Date: Wed, 3 Jan 2018 14:05:59 -0500 (EST)
-Message-ID: <alpine.LRH.2.02.1801031405410.28965@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
+Date: Wed, 3 Jan 2018 21:50:42 +0200 (EET)
+Message-ID: <alpine.LRH.2.21.1801032149040.12580@math.ut.ee>
+References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com> <20180103145533.GA7848@e107981-ln.cambridge.arm.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
+In-Reply-To: <20180103145533.GA7848@e107981-ln.cambridge.arm.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Meelis Roos <mroos@ut.ee>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Mikulas Patocka <mpatocka@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
+> I suspect we ought to map IRQs early in this platform so that we are
+> able to detect how platform code should set them up.
 
+SIO is used in multiple alpha platforms - should this patch work on all 
+of them?
 
-On Tue, 2 Jan 2018, Meelis Roos wrote:
-
-> > The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
-> > pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
-> > networking on Alpha for me. I have an Alpha Avanti server with tulip 
-> > network card.
 > 
-> Matbe the map is wrong for Avanti? Is there some way to check that?
-> > 
-> > The patch 0e4c2eeb breaks it so that I get MCE when the network card 
-> > driver is loaded. The patch 814eae59 fixes the MCE, the system boot 
-> > completes, but the network card doesn't receive any interrupts (and soon 
-> > it reports warning about timeout on tx queue). All kernels in the 4.14 
-> > branch have this bug.
+> Thanks,
+> Lorenzo
 > 
-> Does some other IRQ icrease instead?
-
-I doesn't seem to increase any other counter when I send a network packet.
-
-Mikulas
-
-> > Mikulas
-> > 
-> > 
-> > # cat /proc/interrupts
-> >            CPU0
-> >   1:          3    XT-PIC      i8042
-> >   2:          0    XT-PIC      cascade
-> >   4:        752    XT-PIC      ttyS0
-> >   8:      58118     dummy    -RTC       timer
-> >  10:       1613    XT-PIC      ide0, ide1
-> >  11:        739    XT-PIC      sym53c8xx
-> >  12:          5    XT-PIC      i8042
-> >  15:          0    XT-PIC      eth0	<--- note that the counter is zero
-> > PMI:          0           Performance Monitoring
-> > ERR:          0
-> > 
-> > # lspci -vv
-> > 00:06.0 SCSI storage controller: LSI Logic / Symbios Logic 53c810 (rev 01)
-> >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
-> >         Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-> >         Latency: 255
-> >         Interrupt: pin A routed to IRQ 11
-> >         Region 0: I/O ports at 8000 [size=256]
-> >         Region 1: Memory at 01300000 (32-bit, non-prefetchable) [size=256]
-> >         Kernel driver in use: sym53c8xx
-> >         Kernel modules: sym53c8xx
-> > 
-> > 00:07.0 ISA bridge: Intel Corporation 82378ZB/IB, 82379AB (SIO, SIO.A) PCI to ISA Bridge (rev 43)
-> >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
-> >         Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-> >         Latency: 0
-> > 
-> > 00:0b.0 Ethernet controller: Digital Equipment Corporation DECchip 21140 [FasterNet] (rev 22)
-> >         Subsystem: Digital Equipment Corporation DECchip 21140 [FasterNet]
-> >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
-> >         Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-> >         Latency: 255 (5000ns min, 10000ns max), Cache Line Size: 64 bytes
-> >         Interrupt: pin A routed to IRQ 15
-> >         Region 0: I/O ports at 8400 [size=128]
-> >         Region 1: Memory at 01302000 (32-bit, non-prefetchable) [size=128]
-> >         Expansion ROM at 01280000 [disabled] [size=256K]
-> >         Kernel driver in use: tulip
-> >         Kernel modules: tulip
-> > 
-> > 00:0c.0 Display controller: Digital Equipment Corporation DECchip 21030 [TGA] (rev 02)
-> >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping+ SERR- FastB2B- DisINTx-
-> >         Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-> >         Latency: 255
-> >         Interrupt: pin A routed to IRQ 5
-> >         Region 0: Memory at 02000000 (32-bit, prefetchable) [size=32M]
-> >         Expansion ROM at 012c0000 [disabled] [size=256K]
-> >         Kernel driver in use: tgafb
-> > 
-> > 00:0d.0 RAID bus controller: Silicon Image, Inc. PCI0680 Ultra ATA-133 Host Controller (rev 02)
-> >         Subsystem: Silicon Image, Inc. Winic W-680 (Silicon Image 680 based)
-> >         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
-> >         Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-> >         Latency: 240, Cache Line Size: 4 bytes
-> >         Interrupt: pin A routed to IRQ 10
-> >         Region 0: I/O ports at 8490 [size=8]
-> >         Region 1: I/O ports at 84a0 [size=4]
-> >         Region 2: I/O ports at 8498 [size=8]
-> >         Region 3: I/O ports at 84a4 [size=4]
-> >         Region 4: I/O ports at 8480 [size=16]
-> >         Region 5: Memory at 01301000 (32-bit, non-prefetchable) [size=256]
-> >         Expansion ROM at 01200000 [disabled] [size=512K]
-> >         Capabilities: [60] Power Management version 2
-> >                 Flags: PMEClk- DSI+ D1+ D2+ AuxCurrent=0mA PME(D0-,D1-,D2-,D3hot-,D3cold-)
-> >                 Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=2 PME-
-> >         Kernel driver in use: SiI_IDE
-> > 
+> -- >8 --
+> diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
+> index 37bd6d9b8eb9..407ab603e9b1 100644
+> --- a/arch/alpha/kernel/sys_sio.c
+> +++ b/arch/alpha/kernel/sys_sio.c
+> @@ -114,6 +114,8 @@ sio_collect_irq_levels(void)
+>  		    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
+>  			continue;
+>  
+> +		pci_assign_irq(dev);
+> +
+>  		if (dev->irq)
+>  			level_bits |= (1 << dev->irq);
+>  	}
 > 
-> -- 
-> Meelis Roos (mroos@ut.ee)      http://www.cs.ut.ee/~mroos/
-> 
+
+-- 
+Meelis Roos (mroos@ut.ee)      http://www.cs.ut.ee/~mroos/
