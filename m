@@ -1,68 +1,81 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks networking
-Date: Wed, 3 Jan 2018 10:38:37 +0000
-Message-ID: <20180103103837.GA22612@e107981-ln.cambridge.arm.com>
-References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: Re: [PATCH V4 01/26] alpha/PCI: deprecate pci_get_bus_and_slot()
+Date: Wed, 3 Jan 2018 07:43:51 -0500
+Message-ID: <73b8a0b3-eb69-f56a-bcde-08a5460859a6@codeaurora.org>
+References: <1513661883-28662-1-git-send-email-okaya@codeaurora.org>
+ <1513661883-28662-2-git-send-email-okaya@codeaurora.org>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1514983435;
+        bh=c0kSFc8m2HFLGh6x3Fl0J7SJI9oO68hJA/4BQzIQsvo=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=HTQcUx/x1uHHneFRD1e8PJW23lmEzgtp7DVdj0CBAZLqZOmstN62oQ930oCmMMZge
+         tLYjYXrnhXtQaLtgzJ7pQxA0EobMlTFnHgrSk/LGL0Xo0mStFOZYVbha3xoJ/OONQC
+         slCApi7wKE2lYow16hvm+NG4u2WEc7Gg9HIVjZZU=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1514983434;
+        bh=c0kSFc8m2HFLGh6x3Fl0J7SJI9oO68hJA/4BQzIQsvo=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=ejCKDIP1OcQZYxWghMQsn+72SsWVgRdNAS60NBUhxBoOPhaE0v6mQI/4aGtLoMjEG
+         7hXyllH3aJQzNBooOG629zfRUDfe44PeKdBxEKiLejltVet20o+lcIJ0NHVAhhcgN7
+         xZqba8aq7OEMDTSrJTUa7CDc1164Q1t08j9CX1eo=
+In-Reply-To: <1513661883-28662-2-git-send-email-okaya@codeaurora.org>
+Content-Language: en-US
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Meelis Roos <mroos@ut.ee>
-Cc: Mikulas Patocka <mpatocka@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: linux-pci@vger.kernel.org, timur@codeaurora.org
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Masahiro Yamada <yamada.masahiro@socionext.com>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 
-On Tue, Jan 02, 2018 at 11:54:47PM +0200, Meelis Roos wrote:
-> > The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
-> > pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
-> > networking on Alpha for me. I have an Alpha Avanti server with tulip 
-> > network card.
+On 12/19/2017 12:37 AM, Sinan Kaya wrote:
+> pci_get_bus_and_slot() is restrictive such that it assumes domain=0 as
+> where a PCI device is present. This restricts the device drivers to be
+> reused for other domain numbers.
 > 
-> Matbe the map is wrong for Avanti? Is there some way to check that?
+> Use pci_get_domain_bus_and_slot() with a domain number of 0 where we can't
+> extract the domain number. Other places, use the actual domain number from
+> the device.
+> 
+> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+> ---
+>  arch/alpha/kernel/pci.c          | 2 +-
+>  arch/alpha/kernel/sys_nautilus.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+> index 87da005..2e86ebb 100644
+> --- a/arch/alpha/kernel/pci.c
+> +++ b/arch/alpha/kernel/pci.c
+> @@ -425,7 +425,7 @@ struct resource * __init
+>  		if (bus == 0 && dfn == 0) {
+>  			hose = pci_isa_hose;
+>  		} else {
+> -			dev = pci_get_bus_and_slot(bus, dfn);
+> +			dev = pci_get_domain_bus_and_slot(0, bus, dfn);
+>  			if (!dev)
+>  				return -ENODEV;
+>  			hose = dev->sysdata;
+> diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
+> index 239dc0e..ff4f54b 100644
+> --- a/arch/alpha/kernel/sys_nautilus.c
+> +++ b/arch/alpha/kernel/sys_nautilus.c
+> @@ -237,7 +237,7 @@
+>  	bus = hose->bus = bridge->bus;
+>  	pcibios_claim_one_bus(bus);
+>  
+> -	irongate = pci_get_bus_and_slot(0, 0);
+> +	irongate = pci_get_domain_bus_and_slot(pci_domain_nr(bus), 0, 0);
+>  	bus->self = irongate;
+>  	bus->resource[0] = &irongate_io;
+>  	bus->resource[1] = &irongate_mem;
+> 
 
-I think the problem is in noname_init_pci(), that, AFAICS, in order to set-up
-the IRQ level, it requires IRQ mapping to be carried out. Joy.
+Any feedback here? most of the remaining patches have the ACK except these.
 
-See:
 
-sio_fixup_irq_levels()
-
-and in particular
-
-sio_collect_irq_levels()
-
-Does this horrid hack help (to understand where the problem is - how to
-fix it that's another story) ? Compile tested only.
-
--- >8 --
-diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
-index 37bd6d9b8eb9..ca090307ff54 100644
---- a/arch/alpha/kernel/sys_sio.c
-+++ b/arch/alpha/kernel/sys_sio.c
-@@ -120,7 +120,7 @@ sio_collect_irq_levels(void)
- 	return level_bits;
- }
- 
--static void __init
-+static void
- sio_fixup_irq_levels(unsigned int level_bits)
- {
- 	unsigned int old_level_bits;
-@@ -181,6 +181,14 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
- 	const long min_idsel = 6, max_idsel = 14, irqs_per_slot = 5;
- 	int irq = COMMON_TABLE_LOOKUP, tmp;
- 	tmp = __kernel_extbl(alpha_mv.sys.sio.route_tab, irq);
-+
-+	if ((dev->class >> 16 != PCI_BASE_CLASS_BRIDGE) ||
-+		    (dev->class >> 8 == PCI_CLASS_BRIDGE_PCMCIA)) {
-+
-+		if (irq >= 0)
-+			sio_fixup_irq_levels(1 << tmp);
-+	}
-+
- 	return irq >= 0 ? tmp : -1;
- }
- 
+-- 
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
