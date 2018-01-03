@@ -1,74 +1,90 @@
 From: Michael Cree <mcree@orcon.net.nz>
-Subject: [PATCH] alpha: extend memset16 to EV6 optimised routines
-Date: Wed,  3 Jan 2018 21:58:00 +1300
-Message-ID: <20180103085800.2343-1-mcree@orcon.net.nz>
-References: <677c9cbb-3568-e942-ae78-cb891f87e207@gmx.net>
+Subject: Re: [PATCH] alpha: fix crash if pthread_create races with signal
+ delivery
+Date: Wed, 3 Jan 2018 22:12:01 +1300
+Message-ID: <20180103091201.fu6v5zjxsoru7ox5@tower>
+References: <alpine.LRH.2.02.1801021400340.12797@file01.intranet.prod.int.rdu2.redhat.com>
+Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <677c9cbb-3568-e942-ae78-cb891f87e207@gmx.net>
+Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.02.1801021400340.12797@file01.intranet.prod.int.rdu2.redhat.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Dennis Luehring <dl.soluz@gmx.net>
-Cc: linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Michael Cree <mcree@orcon.net.nz>
+To: Mikulas Patocka <mpatocka@redhat.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Commit 92ce4c3ea7c4, "alpha: add support for memset16", renamed
-the function memsetw() to be memset16() but neglected to do this for
-the EV6 optimised version, thus when building a kernel optimised
-for EV6 (or later) link errors result.  This extends the memset16
-support to EV6.
+On Tue, Jan 02, 2018 at 02:01:34PM -0500, Mikulas Patocka wrote:
+> On alpha, a process will crash if it attempts to start a thread and a
+> signal is delivered at the same time. The crash can be reproduced with
+> this program: https://cygwin.com/ml/cygwin/2014-11/msg00473.html
+> 
+> The reason for the crash is this:
+> * we call the clone syscall
+> * we go to the function copy_process
+> * copy process calls copy_thread_tls, it is a wrapper around copy_thread
+> * copy_thread sets the tls pointer: childti->pcb.unique = regs->r20
+> * copy_thread sets regs->r20 to zero
+> * we go back to copy_process
+> * copy process checks "if (signal_pending(current))" and returns
+>   -ERESTARTNOINTR
+> * the clone syscall is restarted, but this time, regs->r20 is zero, so
+>   the new thread is created with zero tls pointer
+> * the new thread crashes in start_thread when attempting to access tls
+> 
+> The comment in the code says that setting the register r20 is some
+> compatibility with OSF/1. But OSF/1 doesn't use the CLONE_SETTLS flag, so
+> we don't have to zero r20 if CLONE_SETTLS is set. This patch fixes the bug
+> by zeroing regs->r20 only if CLONE_SETTLS is not set.
 
-Signed-off-by: Michael Cree <mcree@orcon.net.nz>
----
- arch/alpha/lib/ev6-memset.S | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+This bug was identified some three years ago; it triggers a failure
+in the glibc nptl/tst-eintr3 test.  See:
 
-diff --git a/arch/alpha/lib/ev6-memset.S b/arch/alpha/lib/ev6-memset.S
-index 316a99aa9efe..1cfcfbbea6f0 100644
---- a/arch/alpha/lib/ev6-memset.S
-+++ b/arch/alpha/lib/ev6-memset.S
-@@ -18,7 +18,7 @@
-  * The algorithm for the leading and trailing quadwords remains the same,
-  * however the loop has been unrolled to enable better memory throughput,
-  * and the code has been replicated for each of the entry points: __memset
-- * and __memsetw to permit better scheduling to eliminate the stalling
-+ * and __memset16 to permit better scheduling to eliminate the stalling
-  * encountered during the mask replication.
-  * A future enhancement might be to put in a byte store loop for really
-  * small (say < 32 bytes) memset()s.  Whether or not that change would be
-@@ -34,7 +34,7 @@
- 	.globl memset
- 	.globl __memset
- 	.globl ___memset
--	.globl __memsetw
-+	.globl __memset16
- 	.globl __constant_c_memset
- 
- 	.ent ___memset
-@@ -415,9 +415,9 @@ end:
- 	 * to mask stalls.  Note that entry point names also had to change
- 	 */
- 	.align 5
--	.ent __memsetw
-+	.ent __memset16
- 
--__memsetw:
-+__memset16:
- 	.frame $30,0,$26,0
- 	.prologue 0
- 
-@@ -596,8 +596,8 @@ end_w:
- 	nop
- 	ret $31,($26),1		# L0 :
- 
--	.end __memsetw
--	EXPORT_SYMBOL(__memsetw)
-+	.end __memset16
-+	EXPORT_SYMBOL(__memset16)
- 
- memset = ___memset
- __memset = ___memset
--- 
-2.11.0
+https://marc.info/?l=linux-alpha&m=140610647213217&w=2
 
+and a fix was proposed by RTH, namely:
+
+https://marc.info/?l=linux-alpha&m=140675667715872&w=2
+
+but was never included in the kernel because someone objected to
+breaking the ability to run OSF/1 executables.  That patch also
+deleted the line to set childregs->r20 to 1 which I mark below.
+
+> 
+> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+> Cc: stable@vger.kernel.org
+> 
+> ---
+>  arch/alpha/kernel/process.c |    3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> Index: linux-stable/arch/alpha/kernel/process.c
+> ===================================================================
+> --- linux-stable.orig/arch/alpha/kernel/process.c	2017-12-31 17:42:12.000000000 +0100
+> +++ linux-stable/arch/alpha/kernel/process.c	2018-01-02 18:06:24.000000000 +0100
+> @@ -265,12 +265,13 @@ copy_thread(unsigned long clone_flags, u
+>  	   application calling fork.  */
+>  	if (clone_flags & CLONE_SETTLS)
+>  		childti->pcb.unique = regs->r20;
+> +	else
+> +		regs->r20 = 0;	/* OSF/1 has some strange fork() semantics.  */
+>  	childti->pcb.usp = usp ?: rdusp();
+>  	*childregs = *regs;
+>  	childregs->r0 = 0;
+>  	childregs->r19 = 0;
+>  	childregs->r20 = 1;	/* OSF/1 has some strange fork() semantics.  */
+
+This line.  Is it not also problematic?
+
+Cheers
+Michael.
+
+> -	regs->r20 = 0;
+>  	stack = ((struct switch_stack *) regs) - 1;
+>  	*childstack = *stack;
+>  	childstack->r26 = (unsigned long) ret_from_fork;
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-alpha" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
