@@ -1,105 +1,44 @@
-From: Meelis Roos <mroos@ut.ee>
-Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks
- networking
-Date: Tue, 2 Jan 2018 23:54:47 +0200 (EET)
-Message-ID: <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
-References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 16/67] powerpc: rename dma_direct_ to dma_nommu_
+Date: Wed, 03 Jan 2018 17:24:02 +1100
+Message-ID: <87h8s3cvel.fsf@concordia.ellerman.id.au>
+References: <20171229081911.2802-1-hch@lst.de> <20171229081911.2802-17-hch@lst.de> <878tdgtwzp.fsf@concordia.ellerman.id.au> <CAMuHMdWWus2kNSOzS94k-3678826W1YjKwCWTquu3hBLZ80cvw@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <CAMuHMdWWus2kNSOzS94k-3678826W1YjKwCWTquu3hBLZ80cvw@mail.gmail.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Linux MIPS Mailing List <linux-mips@linux-mips.org>, linux-ia64@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, Linux-Arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, arcml <linux-snps-arc@lists.infradead.org>, adi-buildroot-devel@lists.sourceforge.net, linux-m68k <linux-m68k@lists.linux-m68k.org>, patches@groups.riscv.org, "open list:METAG ARCHITECTURE" <linux-metag@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, Michal
 
-> The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
-> pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
-> networking on Alpha for me. I have an Alpha Avanti server with tulip 
-> network card.
+Geert Uytterhoeven <geert@linux-m68k.org> writes:
 
-Matbe the map is wrong for Avanti? Is there some way to check that?
-> 
-> The patch 0e4c2eeb breaks it so that I get MCE when the network card 
-> driver is loaded. The patch 814eae59 fixes the MCE, the system boot 
-> completes, but the network card doesn't receive any interrupts (and soon 
-> it reports warning about timeout on tx queue). All kernels in the 4.14 
-> branch have this bug.
+> On Tue, Jan 2, 2018 at 10:45 AM, Michael Ellerman <mpe@ellerman.id.au> wrote:
+>> Christoph Hellwig <hch@lst.de> writes:
+>>
+>>> We want to use the dma_direct_ namespace for a generic implementation,
+>>> so rename powerpc to the second best choice: dma_nommu_.
+>>
+>> I'm not a fan of "nommu". Some of the users of direct ops *are* using an
+>> IOMMU, they're just setting up a 1:1 mapping once at init time, rather
+>> than mapping dynamically.
+>>
+>> Though I don't have a good idea for a better name, maybe "1to1",
+>> "linear", "premapped" ?
+>
+> "identity"?
 
-Does some other IRQ icrease instead?
+I think that would be wrong, but thanks for trying to help :)
 
-> Mikulas
-> 
-> 
-> # cat /proc/interrupts
->            CPU0
->   1:          3    XT-PIC      i8042
->   2:          0    XT-PIC      cascade
->   4:        752    XT-PIC      ttyS0
->   8:      58118     dummy    -RTC       timer
->  10:       1613    XT-PIC      ide0, ide1
->  11:        739    XT-PIC      sym53c8xx
->  12:          5    XT-PIC      i8042
->  15:          0    XT-PIC      eth0	<--- note that the counter is zero
-> PMI:          0           Performance Monitoring
-> ERR:          0
-> 
-> # lspci -vv
-> 00:06.0 SCSI storage controller: LSI Logic / Symbios Logic 53c810 (rev 01)
->         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
->         Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
->         Latency: 255
->         Interrupt: pin A routed to IRQ 11
->         Region 0: I/O ports at 8000 [size=256]
->         Region 1: Memory at 01300000 (32-bit, non-prefetchable) [size=256]
->         Kernel driver in use: sym53c8xx
->         Kernel modules: sym53c8xx
-> 
-> 00:07.0 ISA bridge: Intel Corporation 82378ZB/IB, 82379AB (SIO, SIO.A) PCI to ISA Bridge (rev 43)
->         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
->         Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
->         Latency: 0
-> 
-> 00:0b.0 Ethernet controller: Digital Equipment Corporation DECchip 21140 [FasterNet] (rev 22)
->         Subsystem: Digital Equipment Corporation DECchip 21140 [FasterNet]
->         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV+ VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
->         Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
->         Latency: 255 (5000ns min, 10000ns max), Cache Line Size: 64 bytes
->         Interrupt: pin A routed to IRQ 15
->         Region 0: I/O ports at 8400 [size=128]
->         Region 1: Memory at 01302000 (32-bit, non-prefetchable) [size=128]
->         Expansion ROM at 01280000 [disabled] [size=256K]
->         Kernel driver in use: tulip
->         Kernel modules: tulip
-> 
-> 00:0c.0 Display controller: Digital Equipment Corporation DECchip 21030 [TGA] (rev 02)
->         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping+ SERR- FastB2B- DisINTx-
->         Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
->         Latency: 255
->         Interrupt: pin A routed to IRQ 5
->         Region 0: Memory at 02000000 (32-bit, prefetchable) [size=32M]
->         Expansion ROM at 012c0000 [disabled] [size=256K]
->         Kernel driver in use: tgafb
-> 
-> 00:0d.0 RAID bus controller: Silicon Image, Inc. PCI0680 Ultra ATA-133 Host Controller (rev 02)
->         Subsystem: Silicon Image, Inc. Winic W-680 (Silicon Image 680 based)
->         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
->         Status: Cap+ 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
->         Latency: 240, Cache Line Size: 4 bytes
->         Interrupt: pin A routed to IRQ 10
->         Region 0: I/O ports at 8490 [size=8]
->         Region 1: I/O ports at 84a0 [size=4]
->         Region 2: I/O ports at 8498 [size=8]
->         Region 3: I/O ports at 84a4 [size=4]
->         Region 4: I/O ports at 8480 [size=16]
->         Region 5: Memory at 01301000 (32-bit, non-prefetchable) [size=256]
->         Expansion ROM at 01200000 [disabled] [size=512K]
->         Capabilities: [60] Power Management version 2
->                 Flags: PMEClk- DSI+ D1+ D2+ AuxCurrent=0mA PME(D0-,D1-,D2-,D3hot-,D3cold-)
->                 Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=2 PME-
->         Kernel driver in use: SiI_IDE
-> 
+The address on the device side is sometimes (often?) offset from the CPU
+address. So eg. the device can DMA to RAM address 0x0 using address
+0x800000000000000.
 
--- 
-Meelis Roos (mroos@ut.ee)      http://www.cs.ut.ee/~mroos/
+Identity would imply 0 == 0 etc.
+
+I think "bijective" is the correct term, but that's probably a bit
+esoteric.
+
+cheers
