@@ -1,90 +1,68 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: [PATCH] alpha: fix crash if pthread_create races with signal
- delivery
-Date: Wed, 3 Jan 2018 22:12:01 +1300
-Message-ID: <20180103091201.fu6v5zjxsoru7ox5@tower>
-References: <alpine.LRH.2.02.1801021400340.12797@file01.intranet.prod.int.rdu2.redhat.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks networking
+Date: Wed, 3 Jan 2018 10:38:37 +0000
+Message-ID: <20180103103837.GA22612@e107981-ln.cambridge.arm.com>
+References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.02.1801021400340.12797@file01.intranet.prod.int.rdu2.redhat.com>
+In-Reply-To: <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Meelis Roos <mroos@ut.ee>
+Cc: Mikulas Patocka <mpatocka@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Tue, Jan 02, 2018 at 02:01:34PM -0500, Mikulas Patocka wrote:
-> On alpha, a process will crash if it attempts to start a thread and a
-> signal is delivered at the same time. The crash can be reproduced with
-> this program: https://cygwin.com/ml/cygwin/2014-11/msg00473.html
+On Tue, Jan 02, 2018 at 11:54:47PM +0200, Meelis Roos wrote:
+> > The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
+> > pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
+> > networking on Alpha for me. I have an Alpha Avanti server with tulip 
+> > network card.
 > 
-> The reason for the crash is this:
-> * we call the clone syscall
-> * we go to the function copy_process
-> * copy process calls copy_thread_tls, it is a wrapper around copy_thread
-> * copy_thread sets the tls pointer: childti->pcb.unique = regs->r20
-> * copy_thread sets regs->r20 to zero
-> * we go back to copy_process
-> * copy process checks "if (signal_pending(current))" and returns
->   -ERESTARTNOINTR
-> * the clone syscall is restarted, but this time, regs->r20 is zero, so
->   the new thread is created with zero tls pointer
-> * the new thread crashes in start_thread when attempting to access tls
-> 
-> The comment in the code says that setting the register r20 is some
-> compatibility with OSF/1. But OSF/1 doesn't use the CLONE_SETTLS flag, so
-> we don't have to zero r20 if CLONE_SETTLS is set. This patch fixes the bug
-> by zeroing regs->r20 only if CLONE_SETTLS is not set.
+> Matbe the map is wrong for Avanti? Is there some way to check that?
 
-This bug was identified some three years ago; it triggers a failure
-in the glibc nptl/tst-eintr3 test.  See:
+I think the problem is in noname_init_pci(), that, AFAICS, in order to set-up
+the IRQ level, it requires IRQ mapping to be carried out. Joy.
 
-https://marc.info/?l=linux-alpha&m=140610647213217&w=2
+See:
 
-and a fix was proposed by RTH, namely:
+sio_fixup_irq_levels()
 
-https://marc.info/?l=linux-alpha&m=140675667715872&w=2
+and in particular
 
-but was never included in the kernel because someone objected to
-breaking the ability to run OSF/1 executables.  That patch also
-deleted the line to set childregs->r20 to 1 which I mark below.
+sio_collect_irq_levels()
 
-> 
-> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-> Cc: stable@vger.kernel.org
-> 
-> ---
->  arch/alpha/kernel/process.c |    3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> Index: linux-stable/arch/alpha/kernel/process.c
-> ===================================================================
-> --- linux-stable.orig/arch/alpha/kernel/process.c	2017-12-31 17:42:12.000000000 +0100
-> +++ linux-stable/arch/alpha/kernel/process.c	2018-01-02 18:06:24.000000000 +0100
-> @@ -265,12 +265,13 @@ copy_thread(unsigned long clone_flags, u
->  	   application calling fork.  */
->  	if (clone_flags & CLONE_SETTLS)
->  		childti->pcb.unique = regs->r20;
-> +	else
-> +		regs->r20 = 0;	/* OSF/1 has some strange fork() semantics.  */
->  	childti->pcb.usp = usp ?: rdusp();
->  	*childregs = *regs;
->  	childregs->r0 = 0;
->  	childregs->r19 = 0;
->  	childregs->r20 = 1;	/* OSF/1 has some strange fork() semantics.  */
+Does this horrid hack help (to understand where the problem is - how to
+fix it that's another story) ? Compile tested only.
 
-This line.  Is it not also problematic?
-
-Cheers
-Michael.
-
-> -	regs->r20 = 0;
->  	stack = ((struct switch_stack *) regs) - 1;
->  	*childstack = *stack;
->  	childstack->r26 = (unsigned long) ret_from_fork;
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-alpha" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- >8 --
+diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
+index 37bd6d9b8eb9..ca090307ff54 100644
+--- a/arch/alpha/kernel/sys_sio.c
++++ b/arch/alpha/kernel/sys_sio.c
+@@ -120,7 +120,7 @@ sio_collect_irq_levels(void)
+ 	return level_bits;
+ }
+ 
+-static void __init
++static void
+ sio_fixup_irq_levels(unsigned int level_bits)
+ {
+ 	unsigned int old_level_bits;
+@@ -181,6 +181,14 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+ 	const long min_idsel = 6, max_idsel = 14, irqs_per_slot = 5;
+ 	int irq = COMMON_TABLE_LOOKUP, tmp;
+ 	tmp = __kernel_extbl(alpha_mv.sys.sio.route_tab, irq);
++
++	if ((dev->class >> 16 != PCI_BASE_CLASS_BRIDGE) ||
++		    (dev->class >> 8 == PCI_CLASS_BRIDGE_PCMCIA)) {
++
++		if (irq >= 0)
++			sio_fixup_irq_levels(1 << tmp);
++	}
++
+ 	return irq >= 0 ? tmp : -1;
+ }
+ 
