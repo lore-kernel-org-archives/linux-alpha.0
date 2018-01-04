@@ -1,69 +1,85 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 30/67] dma-direct: retry allocations using GFP_DMA for
-	small masks
-Date: Thu, 4 Jan 2018 10:02:51 +0100
-Message-ID: <20180104090251.GE3251@lst.de>
-References: <20171229081911.2802-1-hch@lst.de>
-	<20171229081911.2802-31-hch@lst.de>
-	<f6139b03-0a4a-a9fe-4818-9b0bccf419e4@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks networking
+Date: Thu, 4 Jan 2018 10:46:48 +0000
+Message-ID: <20180104104648.GA9230@red-moon>
+References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.21.1801022353530.25029@math.ut.ee>
+ <20180103103837.GA22612@e107981-ln.cambridge.arm.com>
+ <alpine.LRH.2.02.1801031403150.28965@file01.intranet.prod.int.rdu2.redhat.com>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.02.1801031403150.28965@file01.intranet.prod.int.rdu2.redhat.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <f6139b03-0a4a-a9fe-4818-9b0bccf419e4-5wv7dgnIgG8@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vladimir Murzin <vladimir.murzin-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, patches-q3qR2WxjNRFS9aJRtSZj7A@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-cris-kernel-VrBV9hrLPhE@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Mikulas Patocka <mpatocka@redhat.com>
+Cc: Meelis Roos <mroos@ut.ee>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Tue, Jan 02, 2018 at 04:43:15PM +0000, Vladimir Murzin wrote:
-> On 29/12/17 08:18, Christoph Hellwig wrote:
-> > If we got back an allocation that wasn't inside the support coherent mask,
-> > retry the allocation using GFP_DMA.
+On Wed, Jan 03, 2018 at 02:05:16PM -0500, Mikulas Patocka wrote:
+> 
+> 
+> On Wed, 3 Jan 2018, Lorenzo Pieralisi wrote:
+> 
+> > On Tue, Jan 02, 2018 at 11:54:47PM +0200, Meelis Roos wrote:
+> > > > The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
+> > > > pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
+> > > > networking on Alpha for me. I have an Alpha Avanti server with tulip 
+> > > > network card.
+> > > 
+> > > Matbe the map is wrong for Avanti? Is there some way to check that?
 > > 
-> > Based on the x86 code.
+> > I think the problem is in noname_init_pci(), that, AFAICS, in order to set-up
+> > the IRQ level, it requires IRQ mapping to be carried out. Joy.
 > > 
-> > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> > ---
-> >  lib/dma-direct.c | 25 ++++++++++++++++++++++++-
-> >  1 file changed, 24 insertions(+), 1 deletion(-)
+> > See:
 > > 
-> > diff --git a/lib/dma-direct.c b/lib/dma-direct.c
-> > index ab81de3ac1d3..f8467cb3d89a 100644
-> > --- a/lib/dma-direct.c
-> > +++ b/lib/dma-direct.c
-> > @@ -28,6 +28,11 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
-> >  	return true;
+> > sio_fixup_irq_levels()
+> > 
+> > and in particular
+> > 
+> > sio_collect_irq_levels()
+> > 
+> > Does this horrid hack help (to understand where the problem is - how to
+> > fix it that's another story) ? Compile tested only.
+> > 
+> > -- >8 --
+> > diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
+> > index 37bd6d9b8eb9..ca090307ff54 100644
+> > --- a/arch/alpha/kernel/sys_sio.c
+> > +++ b/arch/alpha/kernel/sys_sio.c
+> > @@ -120,7 +120,7 @@ sio_collect_irq_levels(void)
+> >  	return level_bits;
 > >  }
 > >  
-> > +static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
-> > +{
-> > +	return phys_to_dma(dev, phys) + size <= dev->coherent_dma_mask;
-> 
-> Shouldn't it be: phys_to_dma(dev, phys) + size - 1 <= dev->coherent_dma_mask ?
-
-Yes, I think it should.  The existing code was blindly copy and pasted
-from x86.
-
-> > +	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
-> > +		__free_pages(page, page_order);
-> > +		page = NULL;
+> > -static void __init
+> > +static void
+> >  sio_fixup_irq_levels(unsigned int level_bits)
+> >  {
+> >  	unsigned int old_level_bits;
+> > @@ -181,6 +181,14 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+> >  	const long min_idsel = 6, max_idsel = 14, irqs_per_slot = 5;
+> >  	int irq = COMMON_TABLE_LOOKUP, tmp;
+> >  	tmp = __kernel_extbl(alpha_mv.sys.sio.route_tab, irq);
 > > +
-> > +		if (dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
-> > +		    !(gfp & GFP_DMA)) {
-> > +			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
-> > +			goto again;
+> > +	if ((dev->class >> 16 != PCI_BASE_CLASS_BRIDGE) ||
+> > +		    (dev->class >> 8 == PCI_CLASS_BRIDGE_PCMCIA)) {
+> > +
+> > +		if (irq >= 0)
+> > +			sio_fixup_irq_levels(1 << tmp);
+> > +	}
+> > +
+> >  	return irq >= 0 ? tmp : -1;
+> >  }
+> >  
 > 
-> Shouldn't we limit number of attempts?
+> This patch breaks it even more - so that the IDE controller doesn't 
+> receive any interrupts. I can't tell if the netowrk card receives 
+> interrupts or not, because it doesn't mount the root filesystem.
 
-We only retty once anyway, due to the !GFP_DMA check first and then
-ORing in GFP_DMA.
+Yes, I expected that after having a more thorough look, that's why
+I posted another patch.
+
+Thanks,
+Lorenzo
