@@ -1,44 +1,25 @@
-From: Meelis Roos <mroos@linux.ee>
-Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks
- networking
-Date: Wed, 3 Jan 2018 21:50:42 +0200 (EET)
-Message-ID: <alpine.LRH.2.21.1801032149040.12580@math.ut.ee>
-References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com> <20180103145533.GA7848@e107981-ln.cambridge.arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 17/67] microblaze: rename dma_direct to dma_microblaze
+Date: Thu, 4 Jan 2018 09:45:33 +0100
+Message-ID: <20180104084533.GA3135@lst.de>
+References: <20171229081911.2802-1-hch@lst.de> <20171229081911.2802-18-hch@lst.de> <CAGRGNgW1qwLcCAvU2Jc=3_7b-0Bu016to3cQUgVsc+ca0No_6g@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20180103145533.GA7848@e107981-ln.cambridge.arm.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-m68k-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAGRGNgW1qwLcCAvU2Jc=3_7b-0Bu016to3cQUgVsc+ca0No_6g@mail.gmail.com>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Mikulas Patocka <mpatocka@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Julian Calaby <julian.calaby@gmail.com>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, "Mailing List, Arm" <linux-arm-kernel@lists.infradead.org>, adi-buildroot-devel@lists.sourceforge.net, linux-c6x-dev@linux-c6x.org, linux-cris-kernel@axis.com, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-metag@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, patches@groups.riscv.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, Guan Xuetao <gxt@mprc.pku.edu.cn>, x86@kernel.org, linux-arch@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.or>
 
-> I suspect we ought to map IRQs early in this platform so that we are
-> able to detect how platform code should set them up.
-
-SIO is used in multiple alpha platforms - should this patch work on all 
-of them?
-
+On Fri, Dec 29, 2017 at 09:11:56PM +1100, Julian Calaby wrote:
+> Hi Christoph,
 > 
-> Thanks,
-> Lorenzo
+> On Fri, Dec 29, 2017 at 7:18 PM, Christoph Hellwig <hch@lst.de> wrote:
+> > This frees the dma_direct_* namespace for a generic implementation.
 > 
-> -- >8 --
-> diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
-> index 37bd6d9b8eb9..407ab603e9b1 100644
-> --- a/arch/alpha/kernel/sys_sio.c
-> +++ b/arch/alpha/kernel/sys_sio.c
-> @@ -114,6 +114,8 @@ sio_collect_irq_levels(void)
->  		    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
->  			continue;
->  
-> +		pci_assign_irq(dev);
-> +
->  		if (dev->irq)
->  			level_bits |= (1 << dev->irq);
->  	}
-> 
+> Don't you mean "dma_nommu" not "dma_microblaze" in the subject line?
 
--- 
-Meelis Roos (mroos@ut.ee)      http://www.cs.ut.ee/~mroos/
+Yes, thanks.
