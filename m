@@ -1,136 +1,141 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks
- networking
-Date: Fri, 5 Jan 2018 13:49:58 -0500 (EST)
-Message-ID: <alpine.LRH.2.02.1801051346030.14219@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com> <20180105112330.GA23999@e107981-ln.cambridge.arm.com>
+From: Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 09/67] arc: remove CONFIG_ARC_PLAT_NEEDS_PHYS_TO_DMA
+Date: Fri, 5 Jan 2018 11:45:16 -0800
+Message-ID: <2c24bfd1-5f54-4b82-444e-833dc53b6efd@synopsys.com>
+References: <20171229081911.2802-1-hch@lst.de>
+	<20171229081911.2802-10-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20180105112330.GA23999@e107981-ln.cambridge.arm.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Meelis Roos <mroos@linux.ee>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20171229081911.2802-10-hch-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-US
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, "linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org" <linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org>, "linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, "linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org" <linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org>, "patches-q3qR2WxjNRFS9aJRtSZj7A@public.gmane.org" <patches-q3qR2WxjNRFS9aJRtSZj7A@public.gmane.org>, "linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-metag@vger.k>
 
+On 12/29/2017 12:25 AM, Christoph Hellwig wrote:
+> We always use the stub definitions, so remove the unused other code.
+>
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 
+Acked-by: Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
 
-On Fri, 5 Jan 2018, Lorenzo Pieralisi wrote:
+FWIW, it was removed and reintroduced as one of the customers wanted it, which is 
+not relevant now !
 
-> On Tue, Jan 02, 2018 at 04:32:45PM -0500, Mikulas Patocka wrote:
-> > Hi
-> > 
-> > The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
-> > pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
-> > networking on Alpha for me. I have an Alpha Avanti server with tulip 
-> > network card.
-> > 
-> > The patch 0e4c2eeb breaks it so that I get MCE when the network card 
-> > driver is loaded. The patch 814eae59 fixes the MCE, the system boot 
-> > completes, but the network card doesn't receive any interrupts (and soon 
-> > it reports warning about timeout on tx queue). All kernels in the 4.14 
-> > branch have this bug.
-> 
-> I reworked the patch, please let me know if it does fix the issue.
-> 
-> Thanks,
-> Lorenzo
+Thx,
+-Vineet
 
-Networking doesn't work, other interrupts work.
-
-With this patch, /proc/interrupts shows one interrupt for the network card 
-(it used to be zero without this patch).
-
-# cat /proc/interrupts 
-           CPU0       
-  1:          3    XT-PIC      i8042
-  2:          0    XT-PIC      cascade
-  4:        655    XT-PIC      ttyS0
-  8:      15768     dummy    -RTC       timer
- 10:       1559    XT-PIC      ide0, ide1
- 11:        749    XT-PIC      sym53c8xx
- 12:          5    XT-PIC      i8042
- 15:          1    XT-PIC      eth0
-PMI:          0           Performance Monitoring
-ERR:          0
-
-Mikulas
-
-> -- >8 --
-> diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
-> index 37bd6d9b8eb9..2602e4abf05d 100644
-> --- a/arch/alpha/kernel/sys_sio.c
-> +++ b/arch/alpha/kernel/sys_sio.c
-> @@ -102,6 +102,15 @@ sio_pci_route(void)
->  				   alpha_mv.sys.sio.route_tab);
->  }
->  
-> +static bool sio_pci_dev_irq_needs_level(const struct pci_dev *dev)
-> +{
-> +	if ((dev->class >> 16 == PCI_BASE_CLASS_BRIDGE) &&
-> +	    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
-> +		return false;
-> +
-> +	return true;
-> +}
-> +
->  static unsigned int __init
->  sio_collect_irq_levels(void)
->  {
-> @@ -110,8 +119,7 @@ sio_collect_irq_levels(void)
->  
->  	/* Iterate through the devices, collecting IRQ levels.  */
->  	for_each_pci_dev(dev) {
-> -		if ((dev->class >> 16 == PCI_BASE_CLASS_BRIDGE) &&
-> -		    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
-> +		if (!sio_pci_dev_irq_needs_level(dev))
->  			continue;
->  
->  		if (dev->irq)
-> @@ -120,8 +128,7 @@ sio_collect_irq_levels(void)
->  	return level_bits;
->  }
->  
-> -static void __init
-> -sio_fixup_irq_levels(unsigned int level_bits)
-> +static void __sio_fixup_irq_levels(unsigned int level_bits, bool reset)
->  {
->  	unsigned int old_level_bits;
->  
-> @@ -139,12 +146,21 @@ sio_fixup_irq_levels(unsigned int level_bits)
->  	 */
->  	old_level_bits = inb(0x4d0) | (inb(0x4d1) << 8);
->  
-> -	level_bits |= (old_level_bits & 0x71ff);
-> +	if (reset)
-> +		old_level_bits &= 0x71ff;
-> +
-> +	level_bits |= old_level_bits;
->  
->  	outb((level_bits >> 0) & 0xff, 0x4d0);
->  	outb((level_bits >> 8) & 0xff, 0x4d1);
->  }
->  
-> +static inline void
-> +sio_fixup_irq_levels(unsigned int level_bits)
-> +{
-> +	__sio_fixup_irq_levels(level_bits, true);
-> +}
-> +
->  static inline int
->  noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
->  {
-> @@ -181,6 +197,11 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
->  	const long min_idsel = 6, max_idsel = 14, irqs_per_slot = 5;
->  	int irq = COMMON_TABLE_LOOKUP, tmp;
->  	tmp = __kernel_extbl(alpha_mv.sys.sio.route_tab, irq);
-> +
-> +	/* Fixup IRQ level if an actual IRQ mapping is detected */
-> +	if (sio_pci_dev_irq_needs_level(dev) && irq > 0)
-> +		__sio_fixup_irq_levels(1 << irq, false);
-> +
->  	return irq >= 0 ? tmp : -1;
->  }
->  
-> 
+> ---
+>   arch/arc/Kconfig                   |  3 ---
+>   arch/arc/include/asm/dma-mapping.h |  7 -------
+>   arch/arc/mm/dma.c                  | 14 +++++++-------
+>   3 files changed, 7 insertions(+), 17 deletions(-)
+>
+> diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
+> index 9d5fd00d9e91..f3a80cf164cc 100644
+> --- a/arch/arc/Kconfig
+> +++ b/arch/arc/Kconfig
+> @@ -463,9 +463,6 @@ config ARCH_PHYS_ADDR_T_64BIT
+>   config ARCH_DMA_ADDR_T_64BIT
+>   	bool
+>   
+> -config ARC_PLAT_NEEDS_PHYS_TO_DMA
+> -	bool
+> -
+>   config ARC_KVADDR_SIZE
+>   	int "Kernel Virtual Address Space size (MB)"
+>   	range 0 512
+> diff --git a/arch/arc/include/asm/dma-mapping.h b/arch/arc/include/asm/dma-mapping.h
+> index 94285031c4fb..7a16824bfe98 100644
+> --- a/arch/arc/include/asm/dma-mapping.h
+> +++ b/arch/arc/include/asm/dma-mapping.h
+> @@ -11,13 +11,6 @@
+>   #ifndef ASM_ARC_DMA_MAPPING_H
+>   #define ASM_ARC_DMA_MAPPING_H
+>   
+> -#ifndef CONFIG_ARC_PLAT_NEEDS_PHYS_TO_DMA
+> -#define plat_dma_to_phys(dev, dma_handle) ((phys_addr_t)(dma_handle))
+> -#define plat_phys_to_dma(dev, paddr) ((dma_addr_t)(paddr))
+> -#else
+> -#include <plat/dma.h>
+> -#endif
+> -
+>   extern const struct dma_map_ops arc_dma_ops;
+>   
+>   static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+> diff --git a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
+> index fad18261ef6a..1d405b86250c 100644
+> --- a/arch/arc/mm/dma.c
+> +++ b/arch/arc/mm/dma.c
+> @@ -60,7 +60,7 @@ static void *arc_dma_alloc(struct device *dev, size_t size,
+>   	/* This is linear addr (0x8000_0000 based) */
+>   	paddr = page_to_phys(page);
+>   
+> -	*dma_handle = plat_phys_to_dma(dev, paddr);
+> +	*dma_handle = paddr;
+>   
+>   	/* This is kernel Virtual address (0x7000_0000 based) */
+>   	if (need_kvaddr) {
+> @@ -92,7 +92,7 @@ static void *arc_dma_alloc(struct device *dev, size_t size,
+>   static void arc_dma_free(struct device *dev, size_t size, void *vaddr,
+>   		dma_addr_t dma_handle, unsigned long attrs)
+>   {
+> -	phys_addr_t paddr = plat_dma_to_phys(dev, dma_handle);
+> +	phys_addr_t paddr = dma_handle;
+>   	struct page *page = virt_to_page(paddr);
+>   	int is_non_coh = 1;
+>   
+> @@ -111,7 +111,7 @@ static int arc_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+>   {
+>   	unsigned long user_count = vma_pages(vma);
+>   	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> -	unsigned long pfn = __phys_to_pfn(plat_dma_to_phys(dev, dma_addr));
+> +	unsigned long pfn = __phys_to_pfn(dma_addr);
+>   	unsigned long off = vma->vm_pgoff;
+>   	int ret = -ENXIO;
+>   
+> @@ -175,7 +175,7 @@ static dma_addr_t arc_dma_map_page(struct device *dev, struct page *page,
+>   	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+>   		_dma_cache_sync(paddr, size, dir);
+>   
+> -	return plat_phys_to_dma(dev, paddr);
+> +	return paddr;
+>   }
+>   
+>   /*
+> @@ -190,7 +190,7 @@ static void arc_dma_unmap_page(struct device *dev, dma_addr_t handle,
+>   			       size_t size, enum dma_data_direction dir,
+>   			       unsigned long attrs)
+>   {
+> -	phys_addr_t paddr = plat_dma_to_phys(dev, handle);
+> +	phys_addr_t paddr = handle;
+>   
+>   	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+>   		_dma_cache_sync(paddr, size, dir);
+> @@ -224,13 +224,13 @@ static void arc_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+>   static void arc_dma_sync_single_for_cpu(struct device *dev,
+>   		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+>   {
+> -	_dma_cache_sync(plat_dma_to_phys(dev, dma_handle), size, DMA_FROM_DEVICE);
+> +	_dma_cache_sync(dma_handle, size, DMA_FROM_DEVICE);
+>   }
+>   
+>   static void arc_dma_sync_single_for_device(struct device *dev,
+>   		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+>   {
+> -	_dma_cache_sync(plat_dma_to_phys(dev, dma_handle), size, DMA_TO_DEVICE);
+> +	_dma_cache_sync(dma_handle, size, DMA_TO_DEVICE);
+>   }
+>   
+>   static void arc_dma_sync_sg_for_cpu(struct device *dev,
