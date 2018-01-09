@@ -1,72 +1,156 @@
-From: Richard Kuo <rkuo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 06/67] hexagon: remove unused flush_write_buffers
-	definition
-Date: Mon, 8 Jan 2018 21:13:39 -0600
-Message-ID: <20180109031339.GA4196@codeaurora.org>
-References: <20171229081911.2802-1-hch@lst.de>
-	<20171229081911.2802-7-hch@lst.de>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: the patch "alpha/PCI: Replace pci_fixup_irqs()" breaks networking
+Date: Tue, 9 Jan 2018 12:16:43 +0000
+Message-ID: <20180109121643.GB15197@e107981-ln.cambridge.arm.com>
+References: <alpine.LRH.2.02.1801021620520.4722@file01.intranet.prod.int.rdu2.redhat.com>
+ <20180105112330.GA23999@e107981-ln.cambridge.arm.com>
+ <alpine.LRH.2.02.1801051346030.14219@file01.intranet.prod.int.rdu2.redhat.com>
+ <20180108101802.GA20337@e107981-ln.cambridge.arm.com>
+ <alpine.LRH.2.02.1801081328570.14483@file01.intranet.prod.int.rdu2.redhat.com>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.02.1801081328570.14483@file01.intranet.prod.int.rdu2.redhat.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1515467624;
-	bh=qDmadMIpbbSNwDjLeXmAPKUnirVBzkl+XuhZLBfDG9s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EACt1qTUxC+q6/WrRWKatZc+SKKGa3Gk8P2jSneczFrHs81nPJtDBIim0ZpJsUKbI
-	T7giKanW40RTTsKwtrGULygJalEf8to0poyIWEHMrt5V6RPUqZNc4Ojx0achRQaWOd
-	mMe3HuoSbt08rJSojVKfDmhAJMGG4eimmVyBEizw=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1515467623;
-	bh=qDmadMIpbbSNwDjLeXmAPKUnirVBzkl+XuhZLBfDG9s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CaSD8Xagm9ls9G66PxhEy5W0fs+FE8NYbQzSV5CsqTgn+C+zXDVwdcB/Wb4hoXlkI
-	O671cD0fqdANV8WAuRDyTJWE4wvAZ1sf65r7r1ge1SAvNTPv6XH2r+M7ewEAiLZQFT
-	luRKpcDvBSY7gz1kcTRR7uktQk73kv8CdAvd0cGY=
-Content-Disposition: inline
-In-Reply-To: <20171229081911.2802-7-hch-jcswGhMUV9g@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, patches-q3qR2WxjNRFS9aJRtSZj7A@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-cris-kernel-VrBV9hrLPhE@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Mikulas Patocka <mpatocka@redhat.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Meelis Roos <mroos@linux.ee>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Fri, Dec 29, 2017 at 09:18:10AM +0100, Christoph Hellwig wrote:
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->  arch/hexagon/include/asm/io.h | 2 --
->  1 file changed, 2 deletions(-)
+On Mon, Jan 08, 2018 at 01:35:27PM -0500, Mikulas Patocka wrote:
 > 
-> diff --git a/arch/hexagon/include/asm/io.h b/arch/hexagon/include/asm/io.h
-> index 66f5e9a61efc..9e8621d94ee9 100644
-> --- a/arch/hexagon/include/asm/io.h
-> +++ b/arch/hexagon/include/asm/io.h
-> @@ -330,8 +330,6 @@ static inline void outsl(unsigned long port, const void *buffer, int count)
->  	}
->  }
->  
-> -#define flush_write_buffers() do { } while (0)
-> -
->  #endif /* __KERNEL__ */
->  
->  #endif
-> -- 
-> 2.14.2
 > 
+> On Mon, 8 Jan 2018, Lorenzo Pieralisi wrote:
+> 
+> > On Fri, Jan 05, 2018 at 01:49:58PM -0500, Mikulas Patocka wrote:
+> > > 
+> > > 
+> > > On Fri, 5 Jan 2018, Lorenzo Pieralisi wrote:
+> > > 
+> > > > On Tue, Jan 02, 2018 at 04:32:45PM -0500, Mikulas Patocka wrote:
+> > > > > Hi
+> > > > > 
+> > > > > The patch 0e4c2eeb758a91e68b9eaf7a4bee9bd5ed97ff2b ("alpha/PCI: Replace 
+> > > > > pci_fixup_irqs() call with host bridge IRQ mapping hooks") breaks 
+> > > > > networking on Alpha for me. I have an Alpha Avanti server with tulip 
+> > > > > network card.
+> > > > > 
+> > > > > The patch 0e4c2eeb breaks it so that I get MCE when the network card 
+> > > > > driver is loaded. The patch 814eae59 fixes the MCE, the system boot 
+> > > > > completes, but the network card doesn't receive any interrupts (and soon 
+> > > > > it reports warning about timeout on tx queue). All kernels in the 4.14 
+> > > > > branch have this bug.
+> > > > 
+> > > > I reworked the patch, please let me know if it does fix the issue.
+> > > > 
+> > > > Thanks,
+> > > > Lorenzo
+> > > 
+> > > Networking doesn't work, other interrupts work.
+> > > 
+> > > With this patch, /proc/interrupts shows one interrupt for the network card 
+> > > (it used to be zero without this patch).
+> > 
+> > It is getting harder to understand what's going on, here's an
+> > incremental patch with some logging, it would be ideal to add
+> > a similar logging with a working kernel so that we can actually
+> > compare the IRQ level registers programming, please test it
+> > when you have time.
+> 
+> This patch works. The patch contains some small changes in the function 
+> noname_map_irq compared to your previous patch and these changes make it 
+> work. If I revert these changes, networking doesn't work.
 
-For Hexagon:
+Yes - I am slowly understanding how this Alpha platform deals with IRQs,
+thank you for your help and apologies for the drawn-out fix, I just
+can't test on this platform.
 
-Acked-by: Richard Kuo <rkuo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Patch below (minus pr_info that I will remove) should be the final one,
+please test it and provide me with logs so that I can check.
 
+Thank you very much.
 
+-- >8 --
+diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
+index 37bd6d9b8eb9..754a890c8403 100644
+--- a/arch/alpha/kernel/sys_sio.c
++++ b/arch/alpha/kernel/sys_sio.c
+@@ -102,6 +102,15 @@ sio_pci_route(void)
+ 				   alpha_mv.sys.sio.route_tab);
+ }
+ 
++static bool sio_pci_dev_irq_needs_level(const struct pci_dev *dev)
++{
++	if ((dev->class >> 16 == PCI_BASE_CLASS_BRIDGE) &&
++	    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
++		return false;
++
++	return true;
++}
++
+ static unsigned int __init
+ sio_collect_irq_levels(void)
+ {
+@@ -110,8 +119,7 @@ sio_collect_irq_levels(void)
+ 
+ 	/* Iterate through the devices, collecting IRQ levels.  */
+ 	for_each_pci_dev(dev) {
+-		if ((dev->class >> 16 == PCI_BASE_CLASS_BRIDGE) &&
+-		    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
++		if (!sio_pci_dev_irq_needs_level(dev))
+ 			continue;
+ 
+ 		if (dev->irq)
+@@ -120,8 +128,7 @@ sio_collect_irq_levels(void)
+ 	return level_bits;
+ }
+ 
+-static void __init
+-sio_fixup_irq_levels(unsigned int level_bits)
++static void __sio_fixup_irq_levels(unsigned int level_bits, bool reset)
+ {
+ 	unsigned int old_level_bits;
+ 
+@@ -139,10 +146,21 @@ sio_fixup_irq_levels(unsigned int level_bits)
+ 	 */
+ 	old_level_bits = inb(0x4d0) | (inb(0x4d1) << 8);
+ 
+-	level_bits |= (old_level_bits & 0x71ff);
++	if (reset)
++		old_level_bits &= 0x71ff;
++
++	level_bits |= old_level_bits;
+ 
+ 	outb((level_bits >> 0) & 0xff, 0x4d0);
+ 	outb((level_bits >> 8) & 0xff, 0x4d1);
++
++	pr_info("%s: level bits %x\n", __func__, level_bits);
++}
++
++static inline void
++sio_fixup_irq_levels(unsigned int level_bits)
++{
++	__sio_fixup_irq_levels(level_bits, true);
+ }
+ 
+ static inline int
+@@ -181,7 +199,14 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+ 	const long min_idsel = 6, max_idsel = 14, irqs_per_slot = 5;
+ 	int irq = COMMON_TABLE_LOOKUP, tmp;
+ 	tmp = __kernel_extbl(alpha_mv.sys.sio.route_tab, irq);
+-	return irq >= 0 ? tmp : -1;
++
++	irq = irq >= 0 ? tmp : -1;
++
++	/* Fixup IRQ level if an actual IRQ mapping is detected */
++	if (sio_pci_dev_irq_needs_level(dev) && irq >= 0)
++		__sio_fixup_irq_levels(1 << irq, false);
++
++	return irq;
+ }
+ 
+ static inline int
 -- 
-Employee of Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, 
-a Linux Foundation Collaborative Project
+2.15.0
+
