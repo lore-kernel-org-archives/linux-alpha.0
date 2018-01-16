@@ -1,42 +1,141 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: consolidate direct dma mapping V4
-Date: Mon, 15 Jan 2018 23:52:43 -0800
-Message-ID: <20180116075243.GA12693@infradead.org>
-References: <20180112084232.2857-1-hch@lst.de>
-Mime-Version: 1.0
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH] alpha/PCI: Fix noname IRQ level detection
+Date: Tue, 16 Jan 2018 11:52:59 +0000
+Message-ID: <20180116115259.31861-1-lorenzo.pieralisi@arm.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=d6f4S39rfOVMPAg7fsXfVzXoNMyuiW6xwKdo+R9yujc=;
-	b=KVUUoa5NSH0udyu5aWbt5c8Eh
-	8mr+u5EFfRfwku9B2Xz5iBJXPIKpyPQlZiG6bm+vlghr8oPUaq/smfUtmuoUqHwb79SmMVRJrS6ur
-	1KNWDpee10R0oCAh5jf1WE0zKz0hfdEOPH1+5LSdE9uhLJY8n+pFpTunp3ITjQJ+P8LDbXIC5jfqZ
-	mXOWBohIlytYVoS+uYbeOljfyOiSiUM9pIDUouK07Si32OUr706lzGHKBoYHBqyav24h09NONhL3k
-	uGhzeDURUW1nZysuKYE2eVdSTq9opo/mxR9iRzW1EB2vbEr+iIzPUDuZJSW25AE8AhOI0yIcMZuD4
-	CDRzRLxJg==;
-Content-Disposition: inline
-In-Reply-To: <20180112084232.2857-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Guan Xuetao <gxt-TG0Ac1+ktVePQbnJrJN+5g@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, patches-q3qR2WxjNRFS9aJRtSZj7A@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-cris-kernel-VrBV9hrLPhE@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: linux-pci@vger.kernel.org
+Cc: linux-alpha@vger.kernel.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Mikulas Patocka <mpatocka@redhat.com>, Meelis Roos <mroos@linux.ee>, Matt Turner <mattst88@gmail.com>
 
-I've pulled this into the dma-mapping for-next branch so that we get
-a few days exposure before then end of the merge window.  If there is
-anything important (e.g. the powerpc naming issue) please send
-incremental patches.
+The conversion of the alpha architecture PCI host bridge legacy IRQ
+mapping/swizzling to the new PCI host bridge map/swizzle hooks carried
+out through:
+
+commit 0e4c2eeb758a ("alpha/PCI: Replace pci_fixup_irqs() call with
+host bridge IRQ mapping hooks")
+
+implies that IRQ for devices are now allocated through pci_assign_irq()
+function in pci_device_probe() that is called when a driver matching a
+device is found in order to probe the device through the device driver.
+
+Alpha noname platforms required IRQ level programming to be executed
+in sio_fixup_irq_levels(), that is called in noname_init_pci(), a
+platform hook called within a subsys_initcall.
+
+In noname_init_pci(), present IRQs are detected through
+sio_collect_irq_levels() that check the struct pci_dev->irq number
+to detect if an IRQ has been allocated for the device.
+
+By the time sio_collect_irq_levels() is called, some devices may still
+have not a matching driver loaded to match them (eg loadable module)
+therefore their IRQ allocation is still pending - which means that
+sio_collect_irq_levels() does not programme the correct IRQ level for
+those devices, causing their IRQ handling to be broken when the device
+driver is actually loaded and the device is probed.
+
+Fix the issue by adding code in the noname map_irq() function
+(noname_map_irq()) that, whilst mapping/swizzling the IRQ line, it also
+ensures that the correct IRQ level programming is executed at platform
+level, fixing the issue.
+
+Fixes: 0e4c2eeb758a ("alpha/PCI: Replace pci_fixup_irqs() call with
+host bridge IRQ mapping hooks")
+Reported-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: stable@vger.kernel.org # 4.14
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Mikulas Patocka <mpatocka@redhat.com>
+Cc: Meelis Roos <mroos@linux.ee>
+Cc: Matt Turner <mattst88@gmail.com>
+---
+ arch/alpha/kernel/sys_sio.c | 35 +++++++++++++++++++++++++++++------
+ 1 file changed, 29 insertions(+), 6 deletions(-)
+
+diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
+index 37bd6d9b8eb9..a6bdc1da47ad 100644
+--- a/arch/alpha/kernel/sys_sio.c
++++ b/arch/alpha/kernel/sys_sio.c
+@@ -102,6 +102,15 @@ sio_pci_route(void)
+ 				   alpha_mv.sys.sio.route_tab);
+ }
+ 
++static bool sio_pci_dev_irq_needs_level(const struct pci_dev *dev)
++{
++	if ((dev->class >> 16 == PCI_BASE_CLASS_BRIDGE) &&
++	    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
++		return false;
++
++	return true;
++}
++
+ static unsigned int __init
+ sio_collect_irq_levels(void)
+ {
+@@ -110,8 +119,7 @@ sio_collect_irq_levels(void)
+ 
+ 	/* Iterate through the devices, collecting IRQ levels.  */
+ 	for_each_pci_dev(dev) {
+-		if ((dev->class >> 16 == PCI_BASE_CLASS_BRIDGE) &&
+-		    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
++		if (!sio_pci_dev_irq_needs_level(dev))
+ 			continue;
+ 
+ 		if (dev->irq)
+@@ -120,8 +128,7 @@ sio_collect_irq_levels(void)
+ 	return level_bits;
+ }
+ 
+-static void __init
+-sio_fixup_irq_levels(unsigned int level_bits)
++static void __sio_fixup_irq_levels(unsigned int level_bits, bool reset)
+ {
+ 	unsigned int old_level_bits;
+ 
+@@ -139,12 +146,21 @@ sio_fixup_irq_levels(unsigned int level_bits)
+ 	 */
+ 	old_level_bits = inb(0x4d0) | (inb(0x4d1) << 8);
+ 
+-	level_bits |= (old_level_bits & 0x71ff);
++	if (reset)
++		old_level_bits &= 0x71ff;
++
++	level_bits |= old_level_bits;
+ 
+ 	outb((level_bits >> 0) & 0xff, 0x4d0);
+ 	outb((level_bits >> 8) & 0xff, 0x4d1);
+ }
+ 
++static inline void
++sio_fixup_irq_levels(unsigned int level_bits)
++{
++	__sio_fixup_irq_levels(level_bits, true);
++}
++
+ static inline int
+ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+ {
+@@ -181,7 +197,14 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+ 	const long min_idsel = 6, max_idsel = 14, irqs_per_slot = 5;
+ 	int irq = COMMON_TABLE_LOOKUP, tmp;
+ 	tmp = __kernel_extbl(alpha_mv.sys.sio.route_tab, irq);
+-	return irq >= 0 ? tmp : -1;
++
++	irq = irq >= 0 ? tmp : -1;
++
++	/* Fixup IRQ level if an actual IRQ mapping is detected */
++	if (sio_pci_dev_irq_needs_level(dev) && irq >= 0)
++		__sio_fixup_irq_levels(1 << irq, false);
++
++	return irq;
+ }
+ 
+ static inline int
+-- 
+2.15.0
+
