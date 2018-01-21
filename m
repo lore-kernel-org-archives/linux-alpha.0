@@ -1,141 +1,84 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH] alpha/PCI: Fix noname IRQ level detection
-Date: Tue, 16 Jan 2018 11:52:59 +0000
-Message-ID: <20180116115259.31861-1-lorenzo.pieralisi@arm.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-Sender: linux-pci-owner@vger.kernel.org
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PULL] alpha.git
+Date: Sat, 20 Jan 2018 18:25:42 -0800
+Message-ID: <20180121022542.GA1963@ivybridge.mattst88.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="WIyZ46R2i8wDzkSu"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=YJh446BHMhYkRCQcOKjT9xKE6Mf8JZcLYc9QFcX6JWA=;
+        b=hesbNFtwHfpkR93crdtaPKpsL0bvWnQGuF01zbSwJ6ERCpVTvprAO1J7zFBFPt/rT1
+         nq07XCruScNdAazl7oTullzDresIWAIVAJecZftUXjQL8oQI48X4R7YMvQmGhmuC1jHG
+         FEVUWHOWFRegvFMsn+JVcbGZQ5DqyL5k7f5JaHfsy6LMt7pkjRgq8pJMypNWd1Kxe4F2
+         JbtlbuNK5u6VHr3R224X3j/S9ZI5FIizKDCVHQeb7lPR1inaDuGO+C+8Vn3JOHbdVydP
+         aDMfb4aSIeBysLPSdiVXm+jZeMaFiqQqK8waI7vBKmWyeLytMtcyh2BNR2fU3nYE9YMt
+         xP5Q==
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-pci@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Mikulas Patocka <mpatocka@redhat.com>, Meelis Roos <mroos@linux.ee>, Matt Turner <mattst88@gmail.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Mikulas Patocka <mpatocka@redhat.com>, Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The conversion of the alpha architecture PCI host bridge legacy IRQ
-mapping/swizzling to the new PCI host bridge map/swizzle hooks carried
-out through:
 
-commit 0e4c2eeb758a ("alpha/PCI: Replace pci_fixup_irqs() call with
-host bridge IRQ mapping hooks")
+--WIyZ46R2i8wDzkSu
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
 
-implies that IRQ for devices are now allocated through pci_assign_irq()
-function in pci_device_probe() that is called when a driver matching a
-device is found in order to probe the device through the device driver.
+Hi Linus,
 
-Alpha noname platforms required IRQ level programming to be executed
-in sio_fixup_irq_levels(), that is called in noname_init_pci(), a
-platform hook called within a subsys_initcall.
+Please pull my alpha git tree. It contains a build fix and a regression fix.
 
-In noname_init_pci(), present IRQs are detected through
-sio_collect_irq_levels() that check the struct pci_dev->irq number
-to detect if an IRQ has been allocated for the device.
+Hopefully still in time for 4.15 :)
 
-By the time sio_collect_irq_levels() is called, some devices may still
-have not a matching driver loaded to match them (eg loadable module)
-therefore their IRQ allocation is still pending - which means that
-sio_collect_irq_levels() does not programme the correct IRQ level for
-those devices, causing their IRQ handling to be broken when the device
-driver is actually loaded and the device is probed.
+Thanks,
+Matt
 
-Fix the issue by adding code in the noname map_irq() function
-(noname_map_irq()) that, whilst mapping/swizzling the IRQ line, it also
-ensures that the correct IRQ level programming is executed at platform
-level, fixing the issue.
+The following changes since commit 8cbab92dff778e516064c13113ca15d4869ec883:
 
-Fixes: 0e4c2eeb758a ("alpha/PCI: Replace pci_fixup_irqs() call with
-host bridge IRQ mapping hooks")
-Reported-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org # 4.14
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Meelis Roos <mroos@linux.ee>
-Cc: Matt Turner <mattst88@gmail.com>
----
+  Merge tag 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma (2018-01-16 16:47:40 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+
+for you to fetch changes up to 86be89939d11a84800f66e2a283b915b704bf33d:
+
+  alpha/PCI: Fix noname IRQ level detection (2018-01-20 16:22:36 -0800)
+
+----------------------------------------------------------------
+Lorenzo Pieralisi (1):
+      alpha/PCI: Fix noname IRQ level detection
+
+Michael Cree (1):
+      alpha: extend memset16 to EV6 optimised routines
+
  arch/alpha/kernel/sys_sio.c | 35 +++++++++++++++++++++++++++++------
- 1 file changed, 29 insertions(+), 6 deletions(-)
+ arch/alpha/lib/ev6-memset.S | 12 ++++++------
+ 2 files changed, 35 insertions(+), 12 deletions(-)
 
-diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
-index 37bd6d9b8eb9..a6bdc1da47ad 100644
---- a/arch/alpha/kernel/sys_sio.c
-+++ b/arch/alpha/kernel/sys_sio.c
-@@ -102,6 +102,15 @@ sio_pci_route(void)
- 				   alpha_mv.sys.sio.route_tab);
- }
- 
-+static bool sio_pci_dev_irq_needs_level(const struct pci_dev *dev)
-+{
-+	if ((dev->class >> 16 == PCI_BASE_CLASS_BRIDGE) &&
-+	    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
-+		return false;
-+
-+	return true;
-+}
-+
- static unsigned int __init
- sio_collect_irq_levels(void)
- {
-@@ -110,8 +119,7 @@ sio_collect_irq_levels(void)
- 
- 	/* Iterate through the devices, collecting IRQ levels.  */
- 	for_each_pci_dev(dev) {
--		if ((dev->class >> 16 == PCI_BASE_CLASS_BRIDGE) &&
--		    (dev->class >> 8 != PCI_CLASS_BRIDGE_PCMCIA))
-+		if (!sio_pci_dev_irq_needs_level(dev))
- 			continue;
- 
- 		if (dev->irq)
-@@ -120,8 +128,7 @@ sio_collect_irq_levels(void)
- 	return level_bits;
- }
- 
--static void __init
--sio_fixup_irq_levels(unsigned int level_bits)
-+static void __sio_fixup_irq_levels(unsigned int level_bits, bool reset)
- {
- 	unsigned int old_level_bits;
- 
-@@ -139,12 +146,21 @@ sio_fixup_irq_levels(unsigned int level_bits)
- 	 */
- 	old_level_bits = inb(0x4d0) | (inb(0x4d1) << 8);
- 
--	level_bits |= (old_level_bits & 0x71ff);
-+	if (reset)
-+		old_level_bits &= 0x71ff;
-+
-+	level_bits |= old_level_bits;
- 
- 	outb((level_bits >> 0) & 0xff, 0x4d0);
- 	outb((level_bits >> 8) & 0xff, 0x4d1);
- }
- 
-+static inline void
-+sio_fixup_irq_levels(unsigned int level_bits)
-+{
-+	__sio_fixup_irq_levels(level_bits, true);
-+}
-+
- static inline int
- noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
- {
-@@ -181,7 +197,14 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
- 	const long min_idsel = 6, max_idsel = 14, irqs_per_slot = 5;
- 	int irq = COMMON_TABLE_LOOKUP, tmp;
- 	tmp = __kernel_extbl(alpha_mv.sys.sio.route_tab, irq);
--	return irq >= 0 ? tmp : -1;
-+
-+	irq = irq >= 0 ? tmp : -1;
-+
-+	/* Fixup IRQ level if an actual IRQ mapping is detected */
-+	if (sio_pci_dev_irq_needs_level(dev) && irq >= 0)
-+		__sio_fixup_irq_levels(1 << irq, false);
-+
-+	return irq;
- }
- 
- static inline int
--- 
-2.15.0
+--WIyZ46R2i8wDzkSu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEO7Y55W+GH6LoZQVpD91oLZdMpyoFAlpj+iYACgkQD91oLZdM
+pyqCdA/7BkWfs/kXqpymmmt9mGu58fWR7G7j4M3QETDhafmuiOZiBWEjEKyZaj9t
+wjOtjThTf+6+xvrbRsoAUbje4Afx3XgHYZl3FNsgmhZqe9LPsG7iJAkx9ZuwwbCL
+JuIfcWHx5gqymcqsNxIuLmU0n6ffseuYm07bVYXxrCZVpWtGM6tynoA+VG6U/k82
+pvZeLJHeZaIlY7DKtDQNN4rz9HpR9nNKocf1xUCZ9uY9NkSxAo6XpdeA1GOEyT9E
+xFVeCPJkpXiY+fpXeUJkamHiC2TuhOJ+IoaGTe1/VLsN1b9+Z0wruNQBhF714If3
+1icgI0ccaJ3mrkJVDU7C3yQxHcsidTBhRZhjfkhX5I8ecCsy1cp8SH/InpXcUKVP
+MYORTkeaXCfBPLzRCBbb8onuX/2wNFNuTHwskB8ptauyyp3CAisWnfN73thdwUO4
+dn/1cGozVRtNk7vaH7OW2xNAYryDSFpyReRqnaTs9UbvNCTb7N5lRxdFtZshJY1v
+QFPVomuklmUXSJYATy3Nc19PNguOr8pEBOLKnWcRZ+0bo+lP9/lzqRWzH66ceTYq
+BRLQLuGZ5h7RCoMacPm/jkWjIAsWhYI6+TemP/AFxQdEO8lrIkXAORPC7s7bifVl
+PyjBmwXiMLYn7LjqCC6QinjWB2jfX5tZGvVBU/A1qJsAhOLrmDI=
+=v81v
+-----END PGP SIGNATURE-----
+
+--WIyZ46R2i8wDzkSu--
