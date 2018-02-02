@@ -1,83 +1,104 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH 22/34] dma-mapping: add an arch_dma_supported hook
-Date: Fri, 2 Feb 2018 09:47:23 -0800
-Message-ID: <5d7dfb29-eeef-2280-13c9-5260e9104f67@infradead.org>
-References: <20180112084232.2857-1-hch@lst.de>
- <20180112084232.2857-23-hch@lst.de>
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PULL] alpha.git
+Date: Fri, 2 Feb 2018 11:52:39 -0800
+Message-ID: <20180202195239.GA15018@ivybridge.mattst88.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:
-	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
-	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=lVIIme6Jt6IhTbkXZiY+PAPS8MQ/8RDT2Vt7EuQJO88=; b=QySTwjJwAvqnh7
-	r4gu4lkTUP9tp/zaluUeEnKdryw6NHNzaQhly68EZQeaTDWBqZ3S3MU895j/wewsRl+nNU4CgNnJg
-	YDT8IykYC3jbtU8kkdniD92TMefRDz6VQgt0Lg+g4KZK2xbA3EokRhFR+KwVLQ3HbL9kV+nX7OI8x
-	u+TTxB2FPcs0v4qhkQafX6kavHVKl5AtzdqbZIzLKEKcsxMctrZLM+3Y9l1+ixu2MrPiGGuyU8jMm
-	9zxbP8yg3eo3lNw3i7iqQEWewfkkHDx8iPEO8DcYgubKcUMBaccl8dULmknoGn5M5UAAWgzmkEzc7
-	kYq3nyazG/jPfhxVKoiA==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
- :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
- List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=wOahYfPH3eqAbGWl///EiVWN8yzu/m5QdifGTHB8Dgc=; b=bWdqdLJiICz/HhEQHmVEEI9V5I
- b2NnwYz3+AT9i6+gB90OLvygXVj+ETZUSoe4TY2NtRL1Ou2id6xAZwEf3UpLgaU44Cpx7JjjkQUP3
- etDxjgstCKm66c3EY/JUQ8XY6Ivaeunqcb+BTwgb8tSrTnTqiOFnsiZlhrFRMwrqTP3Kl+2Qc44Ou
- TEJzNs5IBKctMdwM4eoAEUgV1xZQG08+UMNH/3LlgcjU/Ui7UJL72bQSYxJbnr0VBvgxF0AsSfrsx
- MZiu506SOcRAg/Z80PEz4X36xfUD/2XBHdrL18WV2G9A4x+vZrlAqDWJVfy2nGPbWeBgO1dzgxy7+
- nmOySb5Q==;
-In-Reply-To: <20180112084232.2857-23-hch@lst.de>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Guan Xuetao <gxt@mprc.pku.edu.cn>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, Konrad Rzeszutek Wilk <konrad@darnok.org>, linux-snps-arc@lists.infradead.org, linux-m68k@lists.linux-m68k.org, patches@groups.riscv.org, linux-metag@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-cris-kernel@axis.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-
-On 01/12/2018 12:42 AM, Christoph Hellwig wrote:
-> To implement the x86 forbid_dac and iommu_sac_force we want an arch hook
-> so that it can apply the global options across all dma_map_ops
-> implementations.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/x86/include/asm/dma-mapping.h |  3 +++
->  arch/x86/kernel/pci-dma.c          | 19 ++++++++++++-------
->  include/linux/dma-mapping.h        | 11 +++++++++++
->  3 files changed, 26 insertions(+), 7 deletions(-)
-
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 88bcb1a8211d..d67742dad904 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -576,6 +576,14 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
->  	return 0;
->  }
->  
-> +/*
-> + * This is a hack for the legacy x86 forbid_dac and iommu_sac_force. Please
-> + * don't use this is new code.
-
-                     in new code.
-
-> + */
-> +#ifndef arch_dma_supported
-> +#define arch_dma_supported(dev, mask)	(1)
-> +#endif
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="BOKacYhQ+x31HxR3"
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=w9EjSrfAV46qyZU/7P9Lt4Aw8nRXCNjbnIA10R5ngT4=;
+        b=Rua/OZl8HpSUO2UDE4VrlPUq5bXoo6bAL3XUnd8gynzTQdmtofJrzVomeDBn7W6eR9
+         ZU8cxLWO7kzhzva8GAYRyVH/SVlv6pxJiRbDykzt6UGlW1LpeOVpnfxV/MDlgusXZY8n
+         guX3BbD6BeJLYnnNYg/GAB/cx10ySf++8hE+XXjltWe7nQ5SXXzo3XD6IKY2b6rbQtGY
+         5zpj4wpA0d3LrwCLTJVU0nwcF4n1uwOIbjEQjPq/NlQCdjpHpvn9HhDbT3qMkXgKLtIF
+         a6KpjhJ2udJW3J0ftFBpMp1NqF1CmQWlIGUc3UuyEJ9mByOtzX+Db6KIOr3kkU+GfP9M
+         ZEWg==
+Content-Disposition: inline
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Mikulas Patocka <mpatocka@redhat.com>, Michael Cree <mcree@orcon.net.nz>, Sinan Kaya <okaya@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>, Tobias Klauser <tklauser@distanz.ch>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
--- 
-~Randy
+--BOKacYhQ+x31HxR3
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+
+Hi Linus,
+
+Please pull my alpha git tree. It contains a few small fixes and clean ups.
+
+Thanks,
+Matt
+
+The following changes since commit 8cbab92dff778e516064c13113ca15d4869ec883:
+
+  Merge tag 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma (2018-01-16 16:47:40 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+
+for you to fetch changes up to 21ffceda1c8b3807615c40d440d7815e0c85d366:
+
+  alpha: fix crash if pthread_create races with signal delivery (2018-01-20 17:01:16 -0800)
+
+----------------------------------------------------------------
+Arnd Bergmann (2):
+      alpha: osf_sys.c: fix put_tv32 regression
+      alpha: osf_sys.c: use timespec64 where appropriate
+
+Eugene Syromiatnikov (1):
+      alpha: make XTABS equivalent to TAB3
+
+Michael Cree (1):
+      alpha: Fix mixed up args in EXC macro in futex operations
+
+Mikulas Patocka (3):
+      alpha: fix reboot on Avanti platform
+      alpha: fix formating of stack content
+      alpha: fix crash if pthread_create races with signal delivery
+
+Sinan Kaya (1):
+      alpha: deprecate pci_get_bus_and_slot()
+
+Tobias Klauser (1):
+      alpha: make thread_saved_pc static
+
+ arch/alpha/include/asm/futex.h         |  8 ++--
+ arch/alpha/include/asm/processor.h     |  5 +--
+ arch/alpha/include/uapi/asm/termbits.h |  6 ++-
+ arch/alpha/kernel/osf_sys.c            | 72 +++++++++++++++++-----------------
+ arch/alpha/kernel/pci.c                |  2 +-
+ arch/alpha/kernel/pci_impl.h           |  3 +-
+ arch/alpha/kernel/process.c            |  5 ++-
+ arch/alpha/kernel/sys_nautilus.c       |  2 +-
+ arch/alpha/kernel/traps.c              | 13 ++++--
+ 9 files changed, 62 insertions(+), 54 deletions(-)
+
+--BOKacYhQ+x31HxR3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEO7Y55W+GH6LoZQVpD91oLZdMpyoFAlp0wX0ACgkQD91oLZdM
+pyr0/g//WdFtV+zRtEUo9nYzIfhF7YqftkXdUjIgzpzTkElJhNdDJkmNRWzAQP4j
+BeFqPKYn5MqP9JKrZ/h8d+ihS4AmQRhBS7i7JU9dRFA6Pk7GzAaUeHA7I80sA8NX
+G1dhFHgHEDe4XcjX8NpCUjBvCHpA7wuBR0BLxXh5O0Wld3wg/ocH7b2zTAOUkXmk
+v3Nzm9ITfaWFEi+qFluzZSum9BlN7ltSxpsE2y3/SXkmHwZrim2/A9f0TqqPqg4a
+5LXrdyPVnG3nXkX85w+jILal+36XgU9j1oT5Zpv8f8zIzsqkYCf0gNbfjxUrQL6O
+4vkQmatW/aETZUAsD9jG+eN5Eu+6Wb3Ss4L+cKKSMdgIv+nOJE5bowzEt3zmJ8HE
+D0WtAJdmkNVnI/6QD9sPRgUcPVOculq3kmr5IWWxrSW8Tjz/uy/WiyIleAA50VkN
+egKll00365VaEwtp2YHqIbekOxmM7POC9id6O/E0qqlH6eZ+unXhBm+IVg+b8N/U
+rkanRgprDZ7EEml+6y+RplZ8THEkNO0LsYaj7cUxpVf5ncW6fkEZcoxsauPBFbXg
+b+JD7jvXn3UVMJiBpH4IcwCxKeNudUyhBA0yINMkhntIqYBgfO0RTMl+cMMzqN7s
+HlIMVp6uSIz8Rpq6TKm/63p/V1uGbCMxtO0Mz4BeGVDSJhhX3Gk=
+=lA59
+-----END PGP SIGNATURE-----
+
+--BOKacYhQ+x31HxR3--
