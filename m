@@ -1,83 +1,161 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] char: rtc: remove unused rtc_control() API
-Date: Wed, 7 Feb 2018 11:24:27 +0100
-Message-ID: <CAK8P3a0QZNY+K+V1HG056xCerz=_L2jh5UfZ+2LWkDqkw5Zznw@mail.gmail.com>
-References: <20180206221226.10511-1-alexandre.belloni@bootlin.com>
- <CAK8P3a3=DKk9XZN7mPCrVgH=uSmC6kVQc8DAbp4nCoWxTpQ+eA@mail.gmail.com> <20180207010422.GU3404@piout.net>
-Mime-Version: 1.0
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH] alpha: rtc: remove unused set_mmss ops
+Date: Sat, 17 Feb 2018 00:34:46 +0100
+Message-ID: <20180216233446.26818-1-alexandre.belloni@bootlin.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:in-reply-to:references:from:date:message-id
-         :subject:to:cc;
-        bh=6KMG/YhDVJ3+BPD9QoNyTWW5jT6YDBCVQ076GBr2vAI=;
-        b=WIgNB13j97jZ54RY0feITYy7Gn99TJeq2x1iKlPRahZyXPdXIjSoTzHptk+VT6faxe
-         gqp/j4CqMHxQrK12YoagO+UHaz+IBNDLNAWMwWHIk2dmVI9OCZyBc8PL9dp1mXodbAHW
-         teFWCgGS77IWIW7o39s0D7VDuL6zi2Dd1JDs3JpmJus15+cbZy2GC+fzUCTUc58ugtke
-         dqckwK/O8ChUVXHHM+7JG/yehsnb4Q/USd61nSFmJv6D0yiWio5V3HKDgZZ99pdXUmiw
-         4x5VaJDHruR9eOwNeFq5y+ykVGt3Q/X9yQzunoLWT6mTfgdILbGha1uVWzUv9xLDp6KY
-         /VQQ==
-In-Reply-To: <20180207010422.GU3404@piout.net>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Matt Turner <mattst88@gmail.com>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-On Wed, Feb 7, 2018 at 2:04 AM, Alexandre Belloni
-<alexandre.belloni@bootlin.com> wrote:
-> On 07/02/2018 at 00:24:11 +0100, Arnd Bergmann wrote:
->> On Tue, Feb 6, 2018 at 11:12 PM, Alexandre Belloni
->> <alexandre.belloni@bootlin.com> wrote:
->> > Since commit 34ce71a96dcb ("ALSA: timer: remove legacy rtctimer"), the
->> > rtc_register/rtc_control/rtc_unregister API is unused. As it is highly
->> > unlikely to be needed again, remove it.
->> >
->> > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
->> > ---
->>
->> Nice!
->>
->> Acked-by: Arnd Bergmann <arnd@arndb.de>
->>
->> I forgot what's stopping us from removing the rest of that driver ;-)
->> Since we can only build it on alpha and mips/loongson64 these
->> days, is there anything that this driver does that the normal
->> one doesn't? If it's just a question of testing, we could probably
->> just move it to staging and see if anyone notices a difference.
->
-> I'd say it is a matter of testing. The loongsoon maintainers seem
-> responsive so we may get testing for that architecture. I'm not so sure
-> about alpha. Actually, I'm not even sure it is really used on alpha
-> because arch/alpha/kernel/rtc.c seems to do the right thing.
+The .set_mmss and .setmmss64 ops are only called when the RTC is not
+providing an implementation for the .set_time callback.
 
-The Alpha defconfig still enables it, and doesn't enable RTC_CLASS,
-so at least that has to be changed. I've added the Alpha maintainers
-to Cc, they can probably find out whether it works or not.
+On alpha, .set_time is provided so .set_mmss64 is never called. Remove the
+unused code.
 
-> I think I'll start by ripping of all the x86 and sparc specific parts
-> and see what's left.
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+ arch/alpha/kernel/rtc.c | 99 -------------------------------------------------
+ 1 file changed, 99 deletions(-)
 
-Just wait till we hear back from the others, removing it completely
-would be simpler ;-)
+diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
+index b3da0dcda47d..0816e6c747e8 100644
+--- a/arch/alpha/kernel/rtc.c
++++ b/arch/alpha/kernel/rtc.c
+@@ -114,83 +114,6 @@ alpha_rtc_set_time(struct device *dev, struct rtc_time *tm)
+ 	return mc146818_set_time(tm);
+ }
+ 
+-static int
+-alpha_rtc_set_mmss(struct device *dev, time64_t nowtime)
+-{
+-	int retval = 0;
+-	int real_seconds, real_minutes, cmos_minutes;
+-	unsigned char save_control, save_freq_select;
+-
+-	/* Note: This code only updates minutes and seconds.  Comments
+-	   indicate this was to avoid messing with unknown time zones,
+-	   and with the epoch nonsense described above.  In order for
+-	   this to work, the existing clock cannot be off by more than
+-	   15 minutes.
+-
+-	   ??? This choice is may be out of date.  The x86 port does
+-	   not have problems with timezones, and the epoch processing has
+-	   now been fixed in alpha_set_rtc_time.
+-
+-	   In either case, one can always force a full rtc update with
+-	   the userland hwclock program, so surely 15 minute accuracy
+-	   is no real burden.  */
+-
+-	/* In order to set the CMOS clock precisely, we have to be called
+-	   500 ms after the second nowtime has started, because when
+-	   nowtime is written into the registers of the CMOS clock, it will
+-	   jump to the next second precisely 500 ms later. Check the Motorola
+-	   MC146818A or Dallas DS12887 data sheet for details.  */
+-
+-	/* irq are locally disabled here */
+-	spin_lock(&rtc_lock);
+-	/* Tell the clock it's being set */
+-	save_control = CMOS_READ(RTC_CONTROL);
+-	CMOS_WRITE((save_control|RTC_SET), RTC_CONTROL);
+-
+-	/* Stop and reset prescaler */
+-	save_freq_select = CMOS_READ(RTC_FREQ_SELECT);
+-	CMOS_WRITE((save_freq_select|RTC_DIV_RESET2), RTC_FREQ_SELECT);
+-
+-	cmos_minutes = CMOS_READ(RTC_MINUTES);
+-	if (!(save_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD)
+-		cmos_minutes = bcd2bin(cmos_minutes);
+-
+-	real_seconds = nowtime % 60;
+-	real_minutes = nowtime / 60;
+-	if (((abs(real_minutes - cmos_minutes) + 15) / 30) & 1) {
+-		/* correct for half hour time zone */
+-		real_minutes += 30;
+-	}
+-	real_minutes %= 60;
+-
+-	if (abs(real_minutes - cmos_minutes) < 30) {
+-		if (!(save_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
+-			real_seconds = bin2bcd(real_seconds);
+-			real_minutes = bin2bcd(real_minutes);
+-		}
+-		CMOS_WRITE(real_seconds,RTC_SECONDS);
+-		CMOS_WRITE(real_minutes,RTC_MINUTES);
+-	} else {
+-		printk_once(KERN_NOTICE
+-			    "set_rtc_mmss: can't update from %d to %d\n",
+-			    cmos_minutes, real_minutes);
+-		retval = -1;
+-	}
+-
+-	/* The following flags have to be released exactly in this order,
+-	 * otherwise the DS12887 (popular MC146818A clone with integrated
+-	 * battery and quartz) will not reset the oscillator and will not
+-	 * update precisely 500 ms later. You won't find this mentioned in
+-	 * the Dallas Semiconductor data sheets, but who believes data
+-	 * sheets anyway ...                           -- Markus Kuhn
+-	 */
+-	CMOS_WRITE(save_control, RTC_CONTROL);
+-	CMOS_WRITE(save_freq_select, RTC_FREQ_SELECT);
+-	spin_unlock(&rtc_lock);
+-
+-	return retval;
+-}
+-
+ static int
+ alpha_rtc_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
+ {
+@@ -210,7 +133,6 @@ alpha_rtc_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
+ static const struct rtc_class_ops alpha_rtc_ops = {
+ 	.read_time = alpha_rtc_read_time,
+ 	.set_time = alpha_rtc_set_time,
+-	.set_mmss64 = alpha_rtc_set_mmss,
+ 	.ioctl = alpha_rtc_ioctl,
+ };
+ 
+@@ -225,7 +147,6 @@ static const struct rtc_class_ops alpha_rtc_ops = {
+ 
+ union remote_data {
+ 	struct rtc_time *tm;
+-	unsigned long now;
+ 	long retval;
+ };
+ 
+@@ -267,29 +188,9 @@ remote_set_time(struct device *dev, struct rtc_time *tm)
+ 	return alpha_rtc_set_time(NULL, tm);
+ }
+ 
+-static void
+-do_remote_mmss(void *data)
+-{
+-	union remote_data *x = data;
+-	x->retval = alpha_rtc_set_mmss(NULL, x->now);
+-}
+-
+-static int
+-remote_set_mmss(struct device *dev, time64_t now)
+-{
+-	union remote_data x;
+-	if (smp_processor_id() != boot_cpuid) {
+-		x.now = now;
+-		smp_call_function_single(boot_cpuid, do_remote_mmss, &x, 1);
+-		return x.retval;
+-	}
+-	return alpha_rtc_set_mmss(NULL, now);
+-}
+-
+ static const struct rtc_class_ops remote_rtc_ops = {
+ 	.read_time = remote_read_time,
+ 	.set_time = remote_set_time,
+-	.set_mmss64 = remote_set_mmss,
+ 	.ioctl = alpha_rtc_ioctl,
+ };
+ #endif
+-- 
+2.16.1
 
-> I would also love to get rid of drivers/char/efirtc.c but that probably
-> means doing some testing on both an ARM/ARM64 platform with EFI and
-> IA64.
-
-On ARM/ARM64, we can only use the drivers/rtc/rtc-efi.c driver,
-not drivers/char/efirtc.c, so it's only IA64, and they were also
-the ones that sent the rtc-efi driver before the start of the git
-history. However, the EFI_RTC driver is still in their defconfigs.
-
-For the other RTC drivers in drivers/char, JS_RTC has been dead
-for a while, since sparc selects RTC_CLASS. For DS1302, we
-have both a driver that is used on m32r and a generic rtc class
-driver for the same chip, but I wouldn't trust on that to work
-on m32r. We can probably find a solution for this one once
-the others are gone, e.g. removing arch/m32r, or adding some
-glue logic to make it plausible for the rtc class driver to work,
-without actually testing it.
-
-     Arnd
