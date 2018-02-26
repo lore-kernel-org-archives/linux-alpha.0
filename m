@@ -1,161 +1,114 @@
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH] alpha: rtc: remove unused set_mmss ops
-Date: Sat, 17 Feb 2018 00:34:46 +0100
-Message-ID: <20180216233446.26818-1-alexandre.belloni@bootlin.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: [PATCH] alpha: Implement CPU vulnerabilities sysfs functions.
+Date: Mon, 26 Feb 2018 22:02:12 +1300
+Message-ID: <20180226090212.23871-1-mcree@orcon.net.nz>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>
+To: linux-alpha@vger.kernel.org
+Cc: Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>
 
-The .set_mmss and .setmmss64 ops are only called when the RTC is not
-providing an implementation for the .set_time callback.
+Implement the CPU vulnerabilty show functions for meltdown, spectre_v1
+and spectre_v2 on Alpha.
 
-On alpha, .set_time is provided so .set_mmss64 is never called. Remove the
-unused code.
+Tests on XP1000 (EV67/667MHz) and ES45 (EV68CB/1.25GHz) show them
+to be vulnerable to Meltdown and Spectre V1.  In the case of
+Meltdown I saw a 1 to 2% success rate in reading bytes on the
+XP1000 and 50 to 60% success rate on the ES45. (This compares to
+99.97% success reported for Intel CPUs.)  Report EV6 and later
+CPUs as vulnerable.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Tests on PWS600au (EV56/600MHz) for Spectre V1 attack were
+unsuccessful (though I did not try particularly hard) so mark EV4
+through to EV56 as not vulnerable.
+
+Signed-off-by: Michael Cree <mcree@orcon.net.nz>
 ---
- arch/alpha/kernel/rtc.c | 99 -------------------------------------------------
- 1 file changed, 99 deletions(-)
+ arch/alpha/Kconfig         |  1 +
+ arch/alpha/kernel/Makefile |  2 +-
+ arch/alpha/kernel/bugs.c   | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 47 insertions(+), 1 deletion(-)
+ create mode 100644 arch/alpha/kernel/bugs.c
 
-diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
-index b3da0dcda47d..0816e6c747e8 100644
---- a/arch/alpha/kernel/rtc.c
-+++ b/arch/alpha/kernel/rtc.c
-@@ -114,83 +114,6 @@ alpha_rtc_set_time(struct device *dev, struct rtc_time *tm)
- 	return mc146818_set_time(tm);
- }
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index e96adcbcab41..b2022885ced8 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -18,6 +18,7 @@ config ALPHA
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+ 	select AUDIT_ARCH
+ 	select GENERIC_CLOCKEVENTS
++	select GENERIC_CPU_VULNERABILITIES
+ 	select GENERIC_SMP_IDLE_THREAD
+ 	select GENERIC_STRNCPY_FROM_USER
+ 	select GENERIC_STRNLEN_USER
+diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
+index bf7b41fa7b01..5a74581bf0ee 100644
+--- a/arch/alpha/kernel/Makefile
++++ b/arch/alpha/kernel/Makefile
+@@ -9,7 +9,7 @@ ccflags-y	:= -Wno-sign-compare
  
--static int
--alpha_rtc_set_mmss(struct device *dev, time64_t nowtime)
--{
--	int retval = 0;
--	int real_seconds, real_minutes, cmos_minutes;
--	unsigned char save_control, save_freq_select;
--
--	/* Note: This code only updates minutes and seconds.  Comments
--	   indicate this was to avoid messing with unknown time zones,
--	   and with the epoch nonsense described above.  In order for
--	   this to work, the existing clock cannot be off by more than
--	   15 minutes.
--
--	   ??? This choice is may be out of date.  The x86 port does
--	   not have problems with timezones, and the epoch processing has
--	   now been fixed in alpha_set_rtc_time.
--
--	   In either case, one can always force a full rtc update with
--	   the userland hwclock program, so surely 15 minute accuracy
--	   is no real burden.  */
--
--	/* In order to set the CMOS clock precisely, we have to be called
--	   500 ms after the second nowtime has started, because when
--	   nowtime is written into the registers of the CMOS clock, it will
--	   jump to the next second precisely 500 ms later. Check the Motorola
--	   MC146818A or Dallas DS12887 data sheet for details.  */
--
--	/* irq are locally disabled here */
--	spin_lock(&rtc_lock);
--	/* Tell the clock it's being set */
--	save_control = CMOS_READ(RTC_CONTROL);
--	CMOS_WRITE((save_control|RTC_SET), RTC_CONTROL);
--
--	/* Stop and reset prescaler */
--	save_freq_select = CMOS_READ(RTC_FREQ_SELECT);
--	CMOS_WRITE((save_freq_select|RTC_DIV_RESET2), RTC_FREQ_SELECT);
--
--	cmos_minutes = CMOS_READ(RTC_MINUTES);
--	if (!(save_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD)
--		cmos_minutes = bcd2bin(cmos_minutes);
--
--	real_seconds = nowtime % 60;
--	real_minutes = nowtime / 60;
--	if (((abs(real_minutes - cmos_minutes) + 15) / 30) & 1) {
--		/* correct for half hour time zone */
--		real_minutes += 30;
--	}
--	real_minutes %= 60;
--
--	if (abs(real_minutes - cmos_minutes) < 30) {
--		if (!(save_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
--			real_seconds = bin2bcd(real_seconds);
--			real_minutes = bin2bcd(real_minutes);
--		}
--		CMOS_WRITE(real_seconds,RTC_SECONDS);
--		CMOS_WRITE(real_minutes,RTC_MINUTES);
--	} else {
--		printk_once(KERN_NOTICE
--			    "set_rtc_mmss: can't update from %d to %d\n",
--			    cmos_minutes, real_minutes);
--		retval = -1;
--	}
--
--	/* The following flags have to be released exactly in this order,
--	 * otherwise the DS12887 (popular MC146818A clone with integrated
--	 * battery and quartz) will not reset the oscillator and will not
--	 * update precisely 500 ms later. You won't find this mentioned in
--	 * the Dallas Semiconductor data sheets, but who believes data
--	 * sheets anyway ...                           -- Markus Kuhn
--	 */
--	CMOS_WRITE(save_control, RTC_CONTROL);
--	CMOS_WRITE(save_freq_select, RTC_FREQ_SELECT);
--	spin_unlock(&rtc_lock);
--
--	return retval;
--}
--
- static int
- alpha_rtc_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
- {
-@@ -210,7 +133,6 @@ alpha_rtc_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
- static const struct rtc_class_ops alpha_rtc_ops = {
- 	.read_time = alpha_rtc_read_time,
- 	.set_time = alpha_rtc_set_time,
--	.set_mmss64 = alpha_rtc_set_mmss,
- 	.ioctl = alpha_rtc_ioctl,
- };
+ obj-y    := entry.o traps.o process.o osf_sys.o irq.o \
+ 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
+-	    systbls.o err_common.o io.o
++	    systbls.o err_common.o io.o bugs.o
  
-@@ -225,7 +147,6 @@ static const struct rtc_class_ops alpha_rtc_ops = {
- 
- union remote_data {
- 	struct rtc_time *tm;
--	unsigned long now;
- 	long retval;
- };
- 
-@@ -267,29 +188,9 @@ remote_set_time(struct device *dev, struct rtc_time *tm)
- 	return alpha_rtc_set_time(NULL, tm);
- }
- 
--static void
--do_remote_mmss(void *data)
--{
--	union remote_data *x = data;
--	x->retval = alpha_rtc_set_mmss(NULL, x->now);
--}
--
--static int
--remote_set_mmss(struct device *dev, time64_t now)
--{
--	union remote_data x;
--	if (smp_processor_id() != boot_cpuid) {
--		x.now = now;
--		smp_call_function_single(boot_cpuid, do_remote_mmss, &x, 1);
--		return x.retval;
--	}
--	return alpha_rtc_set_mmss(NULL, now);
--}
--
- static const struct rtc_class_ops remote_rtc_ops = {
- 	.read_time = remote_read_time,
- 	.set_time = remote_set_time,
--	.set_mmss64 = remote_set_mmss,
- 	.ioctl = alpha_rtc_ioctl,
- };
- #endif
+ obj-$(CONFIG_VGA_HOSE)	+= console.o
+ obj-$(CONFIG_SMP)	+= smp.o
+diff --git a/arch/alpha/kernel/bugs.c b/arch/alpha/kernel/bugs.c
+new file mode 100644
+index 000000000000..08cc10d7fa17
+--- /dev/null
++++ b/arch/alpha/kernel/bugs.c
+@@ -0,0 +1,45 @@
++
++#include <asm/hwrpb.h>
++#include <linux/device.h>
++
++
++#ifdef CONFIG_SYSFS
++
++static int cpu_is_ev6_or_later(void)
++{
++	struct percpu_struct *cpu;
++        unsigned long cputype;
++
++        cpu = (struct percpu_struct *)((char *)hwrpb + hwrpb->processor_offset);
++        cputype = cpu->type & 0xffffffff;
++        /* Include all of EV6, EV67, EV68, EV7, EV79 and EV69. */
++        return (cputype == EV6_CPU) || ((cputype >= EV67_CPU) && (cputype <= EV69_CPU));
++}
++
++ssize_t cpu_show_meltdown(struct device *dev,
++			  struct device_attribute *attr, char *buf)
++{
++	if (cpu_is_ev6_or_later())
++		return sprintf(buf, "Vulnerable\n");
++	else
++		return sprintf(buf, "Not affected\n");
++}
++
++ssize_t cpu_show_spectre_v1(struct device *dev,
++                            struct device_attribute *attr, char *buf)
++{
++	if (cpu_is_ev6_or_later())
++		return sprintf(buf, "Vulnerable\n");
++	else
++		return sprintf(buf, "Not affected\n");
++}
++
++ssize_t cpu_show_spectre_v2(struct device *dev,
++			    struct device_attribute *attr, char *buf)
++{
++	if (cpu_is_ev6_or_later())
++		return sprintf(buf, "Vulnerable\n");
++	else
++		return sprintf(buf, "Not affected\n");
++}
++#endif
 -- 
-2.16.1
+2.11.0
 
