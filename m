@@ -1,46 +1,93 @@
-From: Andrea Parri <parri.andrea@gmail.com>
-Subject: Re: [PATCH] locking/xchg/alpha: Remove memory barriers from the
- _local() variants
-Date: Wed, 28 Feb 2018 12:26:09 +0100
-Message-ID: <20180228112609.GA32523@andrea>
-References: <1519704058-13430-1-git-send-email-parri.andrea@gmail.com>
- <20180227200830.GA3164@andrea>
- <20180228105810.GB7681@arm.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [RFC PATCH 6/6] arch: add untagged_addr definition for other
+ arches
+Date: Fri, 9 Mar 2018 15:11:27 +0100
+Message-ID: <CAK8P3a0NZfxoxeJbrebBmZDqQhD9s12xpUwMoM-rZzH8aezuYA@mail.gmail.com>
+References: <cover.1520600533.git.andreyknvl@google.com>
+ <89b4bb181a0622d2c581699bb3814fc041078d04.1520600533.git.andreyknvl@google.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=duvKUW6jLl5q9FR3faVYUjszcuHxxZYmjnJXmvaBrjY=;
-        b=vgUg/LTmMjpzloJKeVDb43auoUS8XmPpwFzS47z/kGHFiHJKgQRhG3sxzhp7qG0apL
-         1lz4iueVON+aRyjXRciky6nvKybzaKPcmj/vIBbM8Sqpe3yb8S8cRKQQbwFbw+d+AKPO
-         MwyjwOFX8evP61wKnDD3J6geXmIU2BvAE6QucuQg76vU14JYAiPbdwWGbOXlTObREua4
-         ETHdU2GYh9Mp3FMAOvN1SkOHifDvNxU2acqh4YMsSJxLhhmvJkoKOlyTR7KMv/ryq8tf
-         fPnojMWbKaxcoAdYH2WErkFyyVSVTyHb7C9ZqAAe0n9BDXsYJwE2SRPQonCtMmYu+0NC
-         qwTA==
-Content-Disposition: inline
-In-Reply-To: <20180228105810.GB7681@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Will Deacon <will.deacon@arm.com>
-Cc: Ingo Molnar <mingo@kernel.org>, Peter Zijlstra <peterz@infradead.org>, linux-kernel@vger.kernel.org, "Paul E . McKenney" <paulmck@linux.vnet.ibm.com>, Alan Stern <stern@rowland.harvard.edu>, Andrew Morton <akpm@linux-foundation.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linus Torvalds <torvalds@linux-foundation.org>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
+	References:In-Reply-To:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=il08h2pS+JuO/Xf8IzHugvD8GtIkbLtP79YNgpIiKJ4=; b=BpfRuOBP0OXA0C
+	bdY1596T0AsTeKhTDr5oyO1R6WEm8iOjjiF0vsa1wdwcYmSo5vpBEk7FJB5AEE8ObOkkftfH/gM8J
+	42BVTAfHg9PevG/nCmUueYN67IsgoKYridsOfAwCAPSaOXzJdsNn5aKLjeJxoNNZ2C8lVlvJhFMIl
+	Oabt4f00R1Et8HQcRVej170s9s0ajCFpu5eBgnR4xxaxjGDvfaV1fZ+cNO/AXWEbYRr+2V2KMftUa
+	ezkE4xqHJBej9s6KJrq5UF21jqIALGsb2Mvc4ytHedMbdM3N5TdjSyGR/m4jirLQMHDAJZwn3zeFr
+	eMG/nj+vWNc19bm+JZGg==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:sender:in-reply-to:references:from:date:message-id
+ :subject:to:cc;
+ bh=tF6zZXjW2bG3tvxAqVdgADG8UGDkuePshWcNRfG/vQw=;
+ b=MVJ6Fg/Y0mmk9ErRwgCsKUl76iZH2bNTp+rtBFbumIES8A9UMiPC+OVy1bs+DcS3B6
+ P/3B/Qd+M1DuG8ZOMCgitqnEe0mIL9B/DfsRbX3SX/vdjHWUvcbrN59SH/NALATISFt+
+ P9auRfJrrNpjMU7bBnj7GmwqlAAkv9NLNLVVoZv0uiY3eq4MYM6KvDyHmGikgfc7LRVS
+ FnQZl48EBm18gMX4/18DJhtrHXcrAdDA5PLjIxjgK7lYG2h/vpU1nwUZMMV6OMLVBHi4
+ QL31J7B1Bic3A8vEjBlSKS/NgD/4bljJBSCM907QZ5Lv6VChZSQXPuz8EDFxozoqIUYc
+ JllQ==
+In-Reply-To: <89b4bb181a0622d2c581699bb3814fc041078d04.1520600533.git.andreyknvl@google.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: Andrey Konovalov <andreyknvl@google.com>
+Cc: "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Linux-sh list <linux-sh@vger.kernel.org>, Lee Smith <Lee.Smith@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@samba.org>, Shaohua Li <shli@fb.com>, linux-arch <linux-arch@vger.kernel.org>, Jacob Bramley <Jacob.Bramley@arm.com>, Michael Ellerman <mpe@ellerman.id.au>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Catalin Marinas <catalin.marinas@arm.com>, Matt Turner <mattst88@gmail.com>, Evgeniy Stepanov <eugenis@google.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, adi-buildroot-devel@lists.sourceforge.net, Mike Rapoport <rppt@linux.vnet.ibm.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, Richard Henderson <rth@twiddle.net>, linux-cris-kernel@axis.com
 
-On Wed, Feb 28, 2018 at 10:58:11AM +0000, Will Deacon wrote:
-> On Tue, Feb 27, 2018 at 09:08:31PM +0100, Andrea Parri wrote:
-> > [+ Will]
-> > 
-> > I'm not sure how this happened; Will, you at least figure as Reported-by: ;-)
-> 
-> Thanks, this looks better to me. Have you build an Alpha kernel to check
-> that the various cmpxchg variants are producing the expected asm?
+On Fri, Mar 9, 2018 at 3:02 PM, Andrey Konovalov <andreyknvl@google.com> wrote:
+> To allow arm64 syscalls accept tagged pointers from userspace, we must
+> untag them when they are passed to the kernel. Since untagging is done in
+> generic parts of the kernel (like the mm subsystem), the untagged_addr
+> macro should be defined for all architectures.
+>
+> Define it as a noop for all other architectures besides arm64.
+>
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> ---
+>  arch/alpha/include/asm/uaccess.h      | 2 ++
+>  arch/arc/include/asm/uaccess.h        | 1 +
+>  arch/arm/include/asm/uaccess.h        | 2 ++
+>  arch/blackfin/include/asm/uaccess.h   | 2 ++
+>  arch/c6x/include/asm/uaccess.h        | 2 ++
+>  arch/cris/include/asm/uaccess.h       | 2 ++
+>  arch/frv/include/asm/uaccess.h        | 2 ++
+>  arch/ia64/include/asm/uaccess.h       | 2 ++
+>  arch/m32r/include/asm/uaccess.h       | 2 ++
+>  arch/m68k/include/asm/uaccess.h       | 2 ++
+>  arch/metag/include/asm/uaccess.h      | 2 ++
+>  arch/microblaze/include/asm/uaccess.h | 2 ++
+>  arch/mips/include/asm/uaccess.h       | 2 ++
+>  arch/mn10300/include/asm/uaccess.h    | 2 ++
+>  arch/nios2/include/asm/uaccess.h      | 2 ++
+>  arch/openrisc/include/asm/uaccess.h   | 2 ++
+>  arch/parisc/include/asm/uaccess.h     | 2 ++
+>  arch/powerpc/include/asm/uaccess.h    | 2 ++
+>  arch/riscv/include/asm/uaccess.h      | 2 ++
+>  arch/score/include/asm/uaccess.h      | 2 ++
+>  arch/sh/include/asm/uaccess.h         | 2 ++
+>  arch/sparc/include/asm/uaccess.h      | 2 ++
+>  arch/tile/include/asm/uaccess.h       | 2 ++
+>  arch/x86/include/asm/uaccess.h        | 2 ++
+>  arch/xtensa/include/asm/uaccess.h     | 2 ++
+>  include/asm-generic/uaccess.h         | 2 ++
+>  26 files changed, 51 insertions(+)
 
-Indeed.  Compile tested (only).
+I have patches to remove the blackfin, cris, frv, m32r, metag, mn10300,
+score, tile and unicore32 architectures from the kernel, these should be
+part of linux-next in the next few days. It's not a big issue, but if you keep
+patching them, this will cause a merge conflict.
 
-  Andrea
+It might be easier to drop them from your patch as well.
 
-
-> 
-> Will
+    Arnd
