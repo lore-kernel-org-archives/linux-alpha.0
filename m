@@ -1,11 +1,9 @@
 From: Andrey Konovalov <andreyknvl@google.com>
-Subject: Re: [RFC PATCH 6/6] arch: add untagged_addr definition for other
- arches
-Date: Fri, 9 Mar 2018 16:47:23 +0100
-Message-ID: <CAAeHK+y=_imh4uNSAg_vj3DLAeDLcVP3a4f79dNMW=Ot5oLiZQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/6] arm64: untag user pointers passed to the kernel
+Date: Fri, 9 Mar 2018 18:58:00 +0100
+Message-ID: <CAAeHK+xTEp-jcMDxNK4kCKcNtVbu4s4VXxzThsKMMFaTdBv0RQ@mail.gmail.com>
 References: <cover.1520600533.git.andreyknvl@google.com>
- <89b4bb181a0622d2c581699bb3814fc041078d04.1520600533.git.andreyknvl@google.com>
- <b320ff92-43ae-a479-35aa-4257b9c5430e@arm.com>
+ <963e112a-88a0-94bc-e6eb-0e9f9a6ee14a@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,22 +14,22 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
 	References:In-Reply-To:MIME-Version:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=1hRG8zN9FlTOV4T9ikUKO2Sszr+6+Ded7wf5Wtwn12k=; b=i5b7d8ynzpr5b1
-	hkG5XAOmMlGCPFqCKb+wdlEL2HVx7RSe4AyVkr3uHQEV/uKBfVGfZC+0ZStOiF8yEveusoLAc7FKX
-	UgZz4isYb/0bnt33k7mTx+ywWFbsnJuL6Y/Mxn839cKdFxRs0Mpj+DFtkKsN/OxVhJcFR2sW93zN/
-	aDPDCYcWW/xaLHCSJiArfvgQYASVCs2zS4yXaiD3KKSJ8qkt6C002xDbUXjkTZDR3ItSkapwgpB3D
-	oSJuu/8m7JAVnLpgxAI+uzWr1ntoqVBeDfrQxP+spAnB4eryWIZUq1pAz1+s4JfC0bywt+2ru5kwq
-	rm701Z6RvroIHbMGTOiA==;
+	List-Owner; bh=xbu/sKFk7PMgjYdqWrJAWw0nkvwr6olpGfdLpRyOdw4=; b=kgH8fszHRWTyR/
+	A2teHAZx9YWzwhNvQlU6wGXfmOtzlvkIuVuScpuJsT9nUkwsdsssuqlO8E7+6tTqQI4rRcZm8tIFf
+	4Nj/tPK9iueNEdOLdhEryRcLKvB3dAe8oGyz6JRq4ck1rxIdBcUuMsr6veSb3Tk6SsMk8ge+1lsO4
+	a1Knc9dvVwNqAtO8UdyvhnHiH5BUkInVtrMi4dlh+U1BbZwwGms8inqexe1VHfahAZwqkX/kK8/EC
+	omn+lQwOv947/iIAyPMt54kdqkWd7QKH10j/sgnSiSl/6Qh5+zDgXfLnLPhu/J6Dm/NcuCJN0RnaC
+	m2tCpuqfWGkGhxSGBV/A==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=mime-version:in-reply-to:references:from:date:message-id:subject:to
- :cc; bh=jAAksnYYkMODsnsZbowE4/VFrct/KsJsppH3N6IgE5E=;
- b=UtibAzSDPg3Hg5hBk8M0mhG7Kp0G649HLc8j+63ikcwLMj5EOHI7aNDybftq6HDMym
- gPQudQDqqs41i1jkCgFzTYKkSFoWaA2CBCjEmjYX5r8nrtc4JO/EBXHAFvnecUELL26C
- /pt8P4whDL2PTLjzSinEq6AdlsXD43HpG74a/9/2O6rw3TEQqUH4Xem3NgrBPPBI0Jv7
- cRaaoLmGD1GhQMByIRcJLC4vCoqiByih0Xb9YxSNbn3LHn1Z32Gpr76mDgc2dCk3ARR5
- Jq3vRL2C5VHUX4c2xtptsue0bMshqLG3PSz+IhNCcBE/cjUhM1h3eRyWU3lSPm/YbwOm
- fMxw==
-In-Reply-To: <b320ff92-43ae-a479-35aa-4257b9c5430e@arm.com>
+ :cc; bh=ytr0eCyhrSlYJUx6v/73vhT/W9iKGUGXQ0WwWeu81/g=;
+ b=D2GjXNID2R5u9iwYfdZ19neDQv9gDkz7lYYR62QdIwxHQLwH3d3qynfY+ytqfHo9v8
+ outkJWhZzK3dm/kHxulpi5pmilm/eMgeR2bRj4BNgImnAxLt69DKTyG/mL+1vcGuGq7Y
+ yqOIgL/DKLXr10SKGHQ25HLf3W6vy8dIh4+YEH+3OChjH5U+Nq/7zuLqDZn8u8cqQt/E
+ LbJuoI970WH5zWE+hgDn945HmdW1uAXOfL4MXKmGsUDoACihDScHuw5ZD8DuOe/+Adp7
+ VxldyLw+PAmTF/k/awpUwtRA7tgo1UQPnJluMuPJHN9bW5nachCZXrgRrpAiTyuOav/q
+ B1Ow==
+In-Reply-To: <963e112a-88a0-94bc-e6eb-0e9f9a6ee14a@arm.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
  <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
@@ -45,22 +43,26 @@ Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: linux-mips@linux-mips.org, linux-sh@vger.kernel.org, Lee Smith <Lee.Smith@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@samba.org>, Shaohua Li <shli@fb.com>, linux-arch@vger.kernel.org, Jacob Bramley <Jacob.Bramley@arm.com>, Michael Ellerman <mpe@ellerman.id.au>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Catalin Marinas <catalin.marinas@arm.com>, Matt Turner <mattst88@gmail.com>, Evgeniy Stepanov <eugenis@google.com>, Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>, adi-buildroot-devel@lists.sourceforge.net, Mike Rapoport <rppt@linux.vnet.ibm.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, Richard Henderson <rth@twiddle.net>, linux-cris-kernel@axis.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, LKML <linux-kernel>
 
-On Fri, Mar 9, 2018 at 3:16 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 09/03/18 14:02, Andrey Konovalov wrote:
+On Fri, Mar 9, 2018 at 3:15 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> Hi Andrey,
+>
+> On 09/03/18 14:01, Andrey Konovalov wrote:
 >>
->> To allow arm64 syscalls accept tagged pointers from userspace, we must
->> untag them when they are passed to the kernel. Since untagging is done in
->> generic parts of the kernel (like the mm subsystem), the untagged_addr
->> macro should be defined for all architectures.
+>> arm64 has a feature called Top Byte Ignore, which allows to embed pointer
+>> tags into the top byte of each pointer. Userspace programs (such as
+>> HWASan, a memory debugging tool [1]) might use this feature and pass
+>> tagged user pointers to the kernel through syscalls or other interfaces.
 >
 >
-> Would it not suffice to have an "#ifndef untagged_addr..." fallback in
-> linux/uaccess.h?
+> If you propose changing the ABI, then
+> Documentation/arm64/tagged-pointers.txt needs to reflect the new one, since
+> passing nonzero tags via syscalls is currently explicitly forbidden.
 >
+> Robin.
 
 Hi Robin!
 
-This approach is much better, I'll try it. This will also solve the
-merge issues that Arnd mentioned.
+I will include changes to Documentation/arm64/tagged-pointers.txt in
+the next version.
 
 Thanks!
