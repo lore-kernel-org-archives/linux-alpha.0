@@ -1,7 +1,7 @@
 From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: [PATCH 09/32] docs/vm: hwpoison.txt: convert to ReST format
-Date: Wed, 21 Mar 2018 21:22:25 +0200
-Message-ID: <1521660168-14372-10-git-send-email-rppt@linux.vnet.ibm.com>
+Subject: [PATCH 06/32] docs/vm: hmm.txt: convert to ReST format
+Date: Wed, 21 Mar 2018 21:22:22 +0200
+Message-ID: <1521660168-14372-7-git-send-email-rppt@linux.vnet.ibm.com>
 References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
@@ -15,216 +15,182 @@ Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.ne
 
 Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
 ---
- Documentation/vm/hwpoison.txt | 141 +++++++++++++++++++++---------------------
- 1 file changed, 70 insertions(+), 71 deletions(-)
+ Documentation/vm/hmm.txt | 66 ++++++++++++++++++++----------------------------
+ 1 file changed, 28 insertions(+), 38 deletions(-)
 
-diff --git a/Documentation/vm/hwpoison.txt b/Documentation/vm/hwpoison.txt
-index e912d7e..b1a8c24 100644
---- a/Documentation/vm/hwpoison.txt
-+++ b/Documentation/vm/hwpoison.txt
-@@ -1,7 +1,14 @@
-+.. hwpoison:
+diff --git a/Documentation/vm/hmm.txt b/Documentation/vm/hmm.txt
+index 4d3aac9..3fafa33 100644
+--- a/Documentation/vm/hmm.txt
++++ b/Documentation/vm/hmm.txt
+@@ -1,4 +1,8 @@
++.. hmm:
 +
-+========
-+hwpoison
-+========
++=====================================
+ Heterogeneous Memory Management (HMM)
++=====================================
+ 
+ Transparently allow any component of a program to use any memory region of said
+ program with a device without using device specific memory allocator. This is
+@@ -14,19 +18,10 @@ deals with how device memory is represented inside the kernel. Finaly the last
+ section present the new migration helper that allow to leverage the device DMA
+ engine.
+ 
++.. contents:: :local:
+ 
+-1) Problems of using device specific memory allocator:
+-2) System bus, device memory characteristics
+-3) Share address space and migration
+-4) Address space mirroring implementation and API
+-5) Represent and manage device memory from core kernel point of view
+-6) Migrate to and from device memory
+-7) Memory cgroup (memcg) and rss accounting
+-
+-
+--------------------------------------------------------------------------------
+-
+-1) Problems of using device specific memory allocator:
++Problems of using device specific memory allocator
++==================================================
+ 
+ Device with large amount of on board memory (several giga bytes) like GPU have
+ historically manage their memory through dedicated driver specific API. This
+@@ -68,9 +63,8 @@ only do-able with a share address. It is as well more reasonable to use a share
+ address space for all the other patterns.
+ 
+ 
+--------------------------------------------------------------------------------
+-
+-2) System bus, device memory characteristics
++System bus, device memory characteristics
++=========================================
+ 
+ System bus cripple share address due to few limitations. Most system bus only
+ allow basic memory access from device to main memory, even cache coherency is
+@@ -100,9 +94,8 @@ access any memory memory but we must also permit any memory to be migrated to
+ device memory while device is using it (blocking CPU access while it happens).
+ 
+ 
+--------------------------------------------------------------------------------
+-
+-3) Share address space and migration
++Share address space and migration
++=================================
+ 
+ HMM intends to provide two main features. First one is to share the address
+ space by duplication the CPU page table into the device page table so same
+@@ -140,14 +133,13 @@ leverage device memory by migrating part of data-set that is actively use by a
+ device.
+ 
+ 
+--------------------------------------------------------------------------------
+-
+-4) Address space mirroring implementation and API
++Address space mirroring implementation and API
++==============================================
+ 
+ Address space mirroring main objective is to allow to duplicate range of CPU
+ page table into a device page table and HMM helps keeping both synchronize. A
+ device driver that want to mirror a process address space must start with the
+-registration of an hmm_mirror struct:
++registration of an hmm_mirror struct::
+ 
+  int hmm_mirror_register(struct hmm_mirror *mirror,
+                          struct mm_struct *mm);
+@@ -156,7 +148,7 @@ registration of an hmm_mirror struct:
+ 
+ The locked variant is to be use when the driver is already holding the mmap_sem
+ of the mm in write mode. The mirror struct has a set of callback that are use
+-to propagate CPU page table:
++to propagate CPU page table::
+ 
+  struct hmm_mirror_ops {
+      /* sync_cpu_device_pagetables() - synchronize page tables
+@@ -187,7 +179,8 @@ be done with the update.
+ 
+ 
+ When device driver wants to populate a range of virtual address it can use
+-either:
++either::
 +
- What is hwpoison?
-+=================
+  int hmm_vma_get_pfns(struct vm_area_struct *vma,
+                       struct hmm_range *range,
+                       unsigned long start,
+@@ -211,7 +204,7 @@ that array correspond to an address in the virtual range. HMM provide a set of
+ flags to help driver identify special CPU page table entries.
  
- Upcoming Intel CPUs have support for recovering from some memory errors
--(``MCA recovery''). This requires the OS to declare a page "poisoned",
-+(``MCA recovery``). This requires the OS to declare a page "poisoned",
- kill the processes associated with it and avoid using it in the future.
+ Locking with the update() callback is the most important aspect the driver must
+-respect in order to keep things properly synchronize. The usage pattern is :
++respect in order to keep things properly synchronize. The usage pattern is::
  
- This patchkit implements the necessary infrastructure in the VM.
-@@ -46,9 +53,10 @@ address. This in theory allows other applications to handle
- memory failures too. The expection is that near all applications
- won't do that, but some very specialized ones might.
+  int driver_populate_range(...)
+  {
+@@ -251,9 +244,8 @@ concurrently for multiple devices. Waiting for each device to report commands
+ as executed is serialize (there is no point in doing this concurrently).
  
-----
-+Failure recovery modes
-+======================
  
--There are two (actually three) modi memory failure recovery can be in:
-+There are two (actually three) modes memory failure recovery can be in:
- 
- vm.memory_failure_recovery sysctl set to zero:
- 	All memory failures cause a panic. Do not attempt recovery.
-@@ -67,9 +75,8 @@ late kill
- 	This is best for memory error unaware applications and default
- 	Note some pages are always handled as late kill.
- 
-----
+--------------------------------------------------------------------------------
 -
--User control:
-+User control
-+============
+-5) Represent and manage device memory from core kernel point of view
++Represent and manage device memory from core kernel point of view
++=================================================================
  
- vm.memory_failure_recovery
- 	See sysctl.txt
-@@ -79,11 +86,19 @@ vm.memory_failure_early_kill
+ Several differents design were try to support device memory. First one use
+ device specific data structure to keep information about migrated memory and
+@@ -269,14 +261,14 @@ un-aware of the difference. We only need to make sure that no one ever try to
+ map those page from the CPU side.
  
- PR_MCE_KILL
- 	Set early/late kill mode/revert to system default
--	arg1: PR_MCE_KILL_CLEAR: Revert to system default
--	arg1: PR_MCE_KILL_SET: arg2 defines thread specific mode
--		PR_MCE_KILL_EARLY: Early kill
--		PR_MCE_KILL_LATE:  Late kill
--		PR_MCE_KILL_DEFAULT: Use system global default
-+
-+	arg1: PR_MCE_KILL_CLEAR:
-+		Revert to system default
-+	arg1: PR_MCE_KILL_SET:
-+		arg2 defines thread specific mode
-+
-+		PR_MCE_KILL_EARLY:
-+			Early kill
-+		PR_MCE_KILL_LATE:
-+			Late kill
-+		PR_MCE_KILL_DEFAULT
-+			Use system global default
-+
- 	Note that if you want to have a dedicated thread which handles
- 	the SIGBUS(BUS_MCEERR_AO) on behalf of the process, you should
- 	call prctl(PR_MCE_KILL_EARLY) on the designated thread. Otherwise,
-@@ -92,77 +107,64 @@ PR_MCE_KILL
- PR_MCE_KILL_GET
- 	return current mode
+ HMM provide a set of helpers to register and hotplug device memory as a new
+-region needing struct page. This is offer through a very simple API:
++region needing struct page. This is offer through a very simple API::
  
-+Testing
-+=======
+  struct hmm_devmem *hmm_devmem_add(const struct hmm_devmem_ops *ops,
+                                    struct device *device,
+                                    unsigned long size);
+  void hmm_devmem_remove(struct hmm_devmem *devmem);
  
-----
+-The hmm_devmem_ops is where most of the important things are:
++The hmm_devmem_ops is where most of the important things are::
+ 
+  struct hmm_devmem_ops {
+      void (*free)(struct hmm_devmem *devmem, struct page *page);
+@@ -294,13 +286,12 @@ second callback happens whenever CPU try to access a device page which it can
+ not do. This second callback must trigger a migration back to system memory.
+ 
+ 
+--------------------------------------------------------------------------------
 -
--Testing:
+-6) Migrate to and from device memory
++Migrate to and from device memory
++=================================
+ 
+ Because CPU can not access device memory, migration must use device DMA engine
+ to perform copy from and to device memory. For this we need a new migration
+-helper:
++helper::
+ 
+  int migrate_vma(const struct migrate_vma_ops *ops,
+                  struct vm_area_struct *vma,
+@@ -319,7 +310,7 @@ such migration base on range of address the device is actively accessing.
+ 
+ The migrate_vma_ops struct define two callbacks. First one (alloc_and_copy())
+ control destination memory allocation and copy operation. Second one is there
+-to allow device driver to perform cleanup operation after migration.
++to allow device driver to perform cleanup operation after migration::
+ 
+  struct migrate_vma_ops {
+      void (*alloc_and_copy)(struct vm_area_struct *vma,
+@@ -353,9 +344,8 @@ bandwidth but this is considered as a rare event and a price that we are
+ willing to pay to keep all the code simpler.
+ 
+ 
+--------------------------------------------------------------------------------
 -
--madvise(MADV_HWPOISON, ....)
--	(as root)
--	Poison a page in the process for testing
--
-+* madvise(MADV_HWPOISON, ....) (as root) - Poison a page in the
-+  process for testing
+-7) Memory cgroup (memcg) and rss accounting
++Memory cgroup (memcg) and rss accounting
++========================================
  
--hwpoison-inject module through debugfs
-+* hwpoison-inject module through debugfs ``/sys/kernel/debug/hwpoison/``
- 
--/sys/kernel/debug/hwpoison/
-+  corrupt-pfn
-+	Inject hwpoison fault at PFN echoed into this file. This does
-+	some early filtering to avoid corrupted unintended pages in test suites.
- 
--corrupt-pfn
-+  unpoison-pfn
-+	Software-unpoison page at PFN echoed into this file. This way
-+	a page can be reused again.  This only works for Linux
-+	injected failures, not for real memory failures.
- 
--Inject hwpoison fault at PFN echoed into this file. This does
--some early filtering to avoid corrupted unintended pages in test suites.
-+  Note these injection interfaces are not stable and might change between
-+  kernel versions
- 
--unpoison-pfn
-+  corrupt-filter-dev-major, corrupt-filter-dev-minor
-+	Only handle memory failures to pages associated with the file
-+	system defined by block device major/minor.  -1U is the
-+	wildcard value.  This should be only used for testing with
-+	artificial injection.
- 
--Software-unpoison page at PFN echoed into this file. This
--way a page can be reused again.
--This only works for Linux injected failures, not for real
--memory failures.
-+  corrupt-filter-memcg
-+	Limit injection to pages owned by memgroup. Specified by inode
-+	number of the memcg.
- 
--Note these injection interfaces are not stable and might change between
--kernel versions
-+	Example::
- 
--corrupt-filter-dev-major
--corrupt-filter-dev-minor
-+		mkdir /sys/fs/cgroup/mem/hwpoison
- 
--Only handle memory failures to pages associated with the file system defined
--by block device major/minor.  -1U is the wildcard value.
--This should be only used for testing with artificial injection.
-+	        usemem -m 100 -s 1000 &
-+		echo `jobs -p` > /sys/fs/cgroup/mem/hwpoison/tasks
- 
--corrupt-filter-memcg
-+		memcg_ino=$(ls -id /sys/fs/cgroup/mem/hwpoison | cut -f1 -d' ')
-+		echo $memcg_ino > /debug/hwpoison/corrupt-filter-memcg
- 
--Limit injection to pages owned by memgroup. Specified by inode number
--of the memcg.
-+		page-types -p `pidof init`   --hwpoison  # shall do nothing
-+		page-types -p `pidof usemem` --hwpoison  # poison its pages
- 
--Example:
--        mkdir /sys/fs/cgroup/mem/hwpoison
-+  corrupt-filter-flags-mask, corrupt-filter-flags-value
-+	When specified, only poison pages if ((page_flags & mask) ==
-+	value).  This allows stress testing of many kinds of
-+	pages. The page_flags are the same as in /proc/kpageflags. The
-+	flag bits are defined in include/linux/kernel-page-flags.h and
-+	documented in Documentation/vm/pagemap.txt
- 
--        usemem -m 100 -s 1000 &
--        echo `jobs -p` > /sys/fs/cgroup/mem/hwpoison/tasks
-+* Architecture specific MCE injector
- 
--        memcg_ino=$(ls -id /sys/fs/cgroup/mem/hwpoison | cut -f1 -d' ')
--        echo $memcg_ino > /debug/hwpoison/corrupt-filter-memcg
-+  x86 has mce-inject, mce-test
- 
--        page-types -p `pidof init`   --hwpoison  # shall do nothing
--        page-types -p `pidof usemem` --hwpoison  # poison its pages
-+  Some portable hwpoison test programs in mce-test, see below.
- 
--corrupt-filter-flags-mask
--corrupt-filter-flags-value
--
--When specified, only poison pages if ((page_flags & mask) == value).
--This allows stress testing of many kinds of pages. The page_flags
--are the same as in /proc/kpageflags. The flag bits are defined in
--include/linux/kernel-page-flags.h and documented in
--Documentation/vm/pagemap.txt
--
--Architecture specific MCE injector
--
--x86 has mce-inject, mce-test
--
--Some portable hwpoison test programs in mce-test, see blow.
--
-----
--
--References:
-+References
-+==========
- 
- http://halobates.de/mce-lc09-2.pdf
- 	Overview presentation from LinuxCon 09
-@@ -174,14 +176,11 @@ git://git.kernel.org/pub/scm/utils/cpu/mce/mce-inject.git
- 	x86 specific injector
- 
- 
-----
--
--Limitations:
--
-+Limitations
-+===========
- - Not all page types are supported and never will. Most kernel internal
--objects cannot be recovered, only LRU pages for now.
-+  objects cannot be recovered, only LRU pages for now.
- - Right now hugepage support is missing.
- 
- ---
- Andi Kleen, Oct 2009
--
+ For now device memory is accounted as any regular page in rss counters (either
+ anonymous if device page is use for anonymous, file if device page is use for
 -- 
 2.7.4
 
