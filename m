@@ -1,7 +1,7 @@
 From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: [PATCH 16/32] docs/vm: numa: convert to ReST format
-Date: Wed, 21 Mar 2018 21:22:32 +0200
-Message-ID: <1521660168-14372-17-git-send-email-rppt@linux.vnet.ibm.com>
+Subject: [PATCH 14/32] docs/vm: overcommit-accounting: convert to ReST format
+Date: Wed, 21 Mar 2018 21:22:30 +0200
+Message-ID: <1521660168-14372-15-git-send-email-rppt@linux.vnet.ibm.com>
 References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
@@ -15,24 +15,151 @@ Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.ne
 
 Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
 ---
- Documentation/vm/numa | 4 ++++
- 1 file changed, 4 insertions(+)
+ Documentation/vm/overcommit-accounting | 107 ++++++++++++++++++---------------
+ 1 file changed, 57 insertions(+), 50 deletions(-)
 
-diff --git a/Documentation/vm/numa b/Documentation/vm/numa
-index a31b85b..c81e7c5 100644
---- a/Documentation/vm/numa
-+++ b/Documentation/vm/numa
-@@ -1,6 +1,10 @@
-+.. _numa:
+diff --git a/Documentation/vm/overcommit-accounting b/Documentation/vm/overcommit-accounting
+index cbfaaa6..0dd54bb 100644
+--- a/Documentation/vm/overcommit-accounting
++++ b/Documentation/vm/overcommit-accounting
+@@ -1,80 +1,87 @@
++.. _overcommit_accounting:
 +
- Started Nov 1999 by Kanoj Sarcar <kanoj@sgi.com>
++=====================
++Overcommit Accounting
++=====================
++
+ The Linux kernel supports the following overcommit handling modes
  
-+=============
- What is NUMA?
-+=============
+-0	-	Heuristic overcommit handling. Obvious overcommits of
+-		address space are refused. Used for a typical system. It
+-		ensures a seriously wild allocation fails while allowing
+-		overcommit to reduce swap usage.  root is allowed to 
+-		allocate slightly more memory in this mode. This is the 
+-		default.
++0
++	Heuristic overcommit handling. Obvious overcommits of address
++	space are refused. Used for a typical system. It ensures a
++	seriously wild allocation fails while allowing overcommit to
++	reduce swap usage.  root is allowed to allocate slightly more
++	memory in this mode. This is the default.
  
- This question can be answered from a couple of perspectives:  the
- hardware view and the Linux software view.
+-1	-	Always overcommit. Appropriate for some scientific
+-		applications. Classic example is code using sparse arrays
+-		and just relying on the virtual memory consisting almost
+-		entirely of zero pages.
++1
++	Always overcommit. Appropriate for some scientific
++	applications. Classic example is code using sparse arrays and
++	just relying on the virtual memory consisting almost entirely
++	of zero pages.
+ 
+-2	-	Don't overcommit. The total address space commit
+-		for the system is not permitted to exceed swap + a
+-		configurable amount (default is 50%) of physical RAM.
+-		Depending on the amount you use, in most situations
+-		this means a process will not be killed while accessing
+-		pages but will receive errors on memory allocation as
+-		appropriate.
++2
++	Don't overcommit. The total address space commit for the
++	system is not permitted to exceed swap + a configurable amount
++	(default is 50%) of physical RAM.  Depending on the amount you
++	use, in most situations this means a process will not be
++	killed while accessing pages but will receive errors on memory
++	allocation as appropriate.
+ 
+-		Useful for applications that want to guarantee their
+-		memory allocations will be available in the future
+-		without having to initialize every page.
++	Useful for applications that want to guarantee their memory
++	allocations will be available in the future without having to
++	initialize every page.
+ 
+-The overcommit policy is set via the sysctl `vm.overcommit_memory'.
++The overcommit policy is set via the sysctl ``vm.overcommit_memory``.
+ 
+-The overcommit amount can be set via `vm.overcommit_ratio' (percentage)
+-or `vm.overcommit_kbytes' (absolute value).
++The overcommit amount can be set via ``vm.overcommit_ratio`` (percentage)
++or ``vm.overcommit_kbytes`` (absolute value).
+ 
+ The current overcommit limit and amount committed are viewable in
+-/proc/meminfo as CommitLimit and Committed_AS respectively.
++``/proc/meminfo`` as CommitLimit and Committed_AS respectively.
+ 
+ Gotchas
+--------
++=======
+ 
+ The C language stack growth does an implicit mremap. If you want absolute
+-guarantees and run close to the edge you MUST mmap your stack for the 
++guarantees and run close to the edge you MUST mmap your stack for the
+ largest size you think you will need. For typical stack usage this does
+ not matter much but it's a corner case if you really really care
+ 
+-In mode 2 the MAP_NORESERVE flag is ignored. 
++In mode 2 the MAP_NORESERVE flag is ignored.
+ 
+ 
+ How It Works
+-------------
++============
+ 
+ The overcommit is based on the following rules
+ 
+ For a file backed map
+-	SHARED or READ-only	-	0 cost (the file is the map not swap)
+-	PRIVATE WRITABLE	-	size of mapping per instance
++	| SHARED or READ-only	-	0 cost (the file is the map not swap)
++	| PRIVATE WRITABLE	-	size of mapping per instance
+ 
+-For an anonymous or /dev/zero map
+-	SHARED			-	size of mapping
+-	PRIVATE READ-only	-	0 cost (but of little use)
+-	PRIVATE WRITABLE	-	size of mapping per instance
++For an anonymous or ``/dev/zero`` map
++	| SHARED			-	size of mapping
++	| PRIVATE READ-only	-	0 cost (but of little use)
++	| PRIVATE WRITABLE	-	size of mapping per instance
+ 
+ Additional accounting
+-	Pages made writable copies by mmap
+-	shmfs memory drawn from the same pool
++	| Pages made writable copies by mmap
++	| shmfs memory drawn from the same pool
+ 
+ Status
+-------
+-
+-o	We account mmap memory mappings
+-o	We account mprotect changes in commit
+-o	We account mremap changes in size
+-o	We account brk
+-o	We account munmap
+-o	We report the commit status in /proc
+-o	Account and check on fork
+-o	Review stack handling/building on exec
+-o	SHMfs accounting
+-o	Implement actual limit enforcement
++======
++
++*	We account mmap memory mappings
++*	We account mprotect changes in commit
++*	We account mremap changes in size
++*	We account brk
++*	We account munmap
++*	We report the commit status in /proc
++*	Account and check on fork
++*	Review stack handling/building on exec
++*	SHMfs accounting
++*	Implement actual limit enforcement
+ 
+ To Do
+------
+-o	Account ptrace pages (this is hard)
++=====
++*	Account ptrace pages (this is hard)
 -- 
 2.7.4
 
