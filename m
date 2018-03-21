@@ -1,155 +1,110 @@
 From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: [PATCH 30/32] docs/vm: zswap.txt: convert to ReST format
-Date: Wed, 21 Mar 2018 21:22:46 +0200
-Message-ID: <1521660168-14372-31-git-send-email-rppt@linux.vnet.ibm.com>
+Subject: [PATCH 29/32] docs/vm: zsmalloc.txt: convert to ReST format
+Date: Wed, 21 Mar 2018 21:22:45 +0200
+Message-ID: <1521660168-14372-30-git-send-email-rppt@linux.vnet.ibm.com>
 References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Jonathan Corbet <corbet@lwn.net>
 Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Alexander Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, kasan-dev@googlegroups.com, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, Mike Rapoport <rppt@linux.vnet.ibm.com>
 
 Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
 ---
- Documentation/vm/zswap.txt | 71 +++++++++++++++++++++++++++-------------------
- 1 file changed, 42 insertions(+), 29 deletions(-)
+ Documentation/vm/zsmalloc.txt | 60 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 36 insertions(+), 24 deletions(-)
 
-diff --git a/Documentation/vm/zswap.txt b/Documentation/vm/zswap.txt
-index 0b3a114..1444ecd 100644
---- a/Documentation/vm/zswap.txt
-+++ b/Documentation/vm/zswap.txt
-@@ -1,4 +1,11 @@
--Overview:
-+.. _zswap:
+diff --git a/Documentation/vm/zsmalloc.txt b/Documentation/vm/zsmalloc.txt
+index 64ed63c..6e79893 100644
+--- a/Documentation/vm/zsmalloc.txt
++++ b/Documentation/vm/zsmalloc.txt
+@@ -1,5 +1,8 @@
++.. _zsmalloc:
 +
-+=====
-+zswap
-+=====
-+
-+Overview
++========
+ zsmalloc
+---------
 +========
  
- Zswap is a lightweight compressed cache for swap pages. It takes pages that are
- in the process of being swapped out and attempts to compress them into a
-@@ -7,32 +14,34 @@ for potentially reduced swap I/O.  This trade-off can also result in a
- significant performance improvement if reads from the compressed cache are
- faster than reads from a swap device.
+ This allocator is designed for use with zram. Thus, the allocator is
+ supposed to work well under low memory conditions. In particular, it
+@@ -31,40 +34,49 @@ be mapped using zs_map_object() to get a usable pointer and subsequently
+ unmapped using zs_unmap_object().
  
--NOTE: Zswap is a new feature as of v3.11 and interacts heavily with memory
--reclaim.  This interaction has not been fully explored on the large set of
--potential configurations and workloads that exist.  For this reason, zswap
--is a work in progress and should be considered experimental.
-+.. note::
-+   Zswap is a new feature as of v3.11 and interacts heavily with memory
-+   reclaim.  This interaction has not been fully explored on the large set of
-+   potential configurations and workloads that exist.  For this reason, zswap
-+   is a work in progress and should be considered experimental.
+ stat
+-----
++====
+ 
+ With CONFIG_ZSMALLOC_STAT, we could see zsmalloc internal information via
+-/sys/kernel/debug/zsmalloc/<user name>. Here is a sample of stat output:
++``/sys/kernel/debug/zsmalloc/<user name>``. Here is a sample of stat output::
+ 
+-# cat /sys/kernel/debug/zsmalloc/zram0/classes
++ # cat /sys/kernel/debug/zsmalloc/zram0/classes
+ 
+  class  size almost_full almost_empty obj_allocated   obj_used pages_used pages_per_zspage
+-    ..
+-    ..
++    ...
++    ...
+      9   176           0            1           186        129          8                4
+     10   192           1            0          2880       2872        135                3
+     11   208           0            1           819        795         42                2
+     12   224           0            1           219        159         12                4
+-    ..
+-    ..
++    ...
++    ...
 +
-+   Some potential benefits:
  
--Some potential benefits:
- * Desktop/laptop users with limited RAM capacities can mitigate the
--    performance impact of swapping.
-+  performance impact of swapping.
- * Overcommitted guests that share a common I/O resource can
--    dramatically reduce their swap I/O pressure, avoiding heavy handed I/O
--    throttling by the hypervisor. This allows more work to get done with less
--    impact to the guest workload and guests sharing the I/O subsystem
-+  dramatically reduce their swap I/O pressure, avoiding heavy handed I/O
-+  throttling by the hypervisor. This allows more work to get done with less
-+  impact to the guest workload and guests sharing the I/O subsystem
- * Users with SSDs as swap devices can extend the life of the device by
--    drastically reducing life-shortening writes.
-+  drastically reducing life-shortening writes.
++class
++	index
++size
++	object size zspage stores
++almost_empty
++	the number of ZS_ALMOST_EMPTY zspages(see below)
++almost_full
++	the number of ZS_ALMOST_FULL zspages(see below)
++obj_allocated
++	the number of objects allocated
++obj_used
++	the number of objects allocated to the user
++pages_used
++	the number of pages allocated for the class
++pages_per_zspage
++	the number of 0-order pages to make a zspage
  
- Zswap evicts pages from compressed cache on an LRU basis to the backing swap
- device when the compressed pool reaches its size limit.  This requirement had
- been identified in prior community discussions.
+-class: index
+-size: object size zspage stores
+-almost_empty: the number of ZS_ALMOST_EMPTY zspages(see below)
+-almost_full: the number of ZS_ALMOST_FULL zspages(see below)
+-obj_allocated: the number of objects allocated
+-obj_used: the number of objects allocated to the user
+-pages_used: the number of pages allocated for the class
+-pages_per_zspage: the number of 0-order pages to make a zspage
++We assign a zspage to ZS_ALMOST_EMPTY fullness group when n <= N / f, where
  
- Zswap is disabled by default but can be enabled at boot time by setting
--the "enabled" attribute to 1 at boot time. ie: zswap.enabled=1.  Zswap
-+the ``enabled`` attribute to 1 at boot time. ie: ``zswap.enabled=1``.  Zswap
- can also be enabled and disabled at runtime using the sysfs interface.
- An example command to enable zswap at runtime, assuming sysfs is mounted
--at /sys, is:
-+at ``/sys``, is::
+-We assign a zspage to ZS_ALMOST_EMPTY fullness group when:
+-      n <= N / f, where
+-n = number of allocated objects
+-N = total number of objects zspage can store
+-f = fullness_threshold_frac(ie, 4 at the moment)
++* n = number of allocated objects
++* N = total number of objects zspage can store
++* f = fullness_threshold_frac(ie, 4 at the moment)
  
--echo 1 > /sys/module/zswap/parameters/enabled
-+	echo 1 > /sys/module/zswap/parameters/enabled
- 
- When zswap is disabled at runtime it will stop storing pages that are
- being swapped out.  However, it will _not_ immediately write out or fault
-@@ -43,7 +52,8 @@ pages out of the compressed pool, a swapoff on the swap device(s) will
- fault back into memory all swapped out pages, including those in the
- compressed pool.
- 
--Design:
-+Design
-+======
- 
- Zswap receives pages for compression through the Frontswap API and is able to
- evict pages from its own compressed pool on an LRU basis and write them back to
-@@ -53,12 +63,12 @@ Zswap makes use of zpool for the managing the compressed memory pool.  Each
- allocation in zpool is not directly accessible by address.  Rather, a handle is
- returned by the allocation routine and that handle must be mapped before being
- accessed.  The compressed memory pool grows on demand and shrinks as compressed
--pages are freed.  The pool is not preallocated.  By default, a zpool of type
--zbud is created, but it can be selected at boot time by setting the "zpool"
--attribute, e.g. zswap.zpool=zbud.  It can also be changed at runtime using the
--sysfs "zpool" attribute, e.g.
-+pages are freed.  The pool is not preallocated.  By default, a zpool
-+of type zbud is created, but it can be selected at boot time by
-+setting the ``zpool`` attribute, e.g. ``zswap.zpool=zbud``. It can
-+also be changed at runtime using the sysfs ``zpool`` attribute, e.g.::
- 
--echo zbud > /sys/module/zswap/parameters/zpool
-+	echo zbud > /sys/module/zswap/parameters/zpool
- 
- The zbud type zpool allocates exactly 1 page to store 2 compressed pages, which
- means the compression ratio will always be 2:1 or worse (because of half-full
-@@ -83,14 +93,16 @@ via frontswap, to free the compressed entry.
- 
- Zswap seeks to be simple in its policies.  Sysfs attributes allow for one user
- controlled policy:
+ Similarly, we assign zspage to:
+-      ZS_ALMOST_FULL  when n > N / f
+-      ZS_EMPTY        when n == 0
+-      ZS_FULL         when n == N
 +
- * max_pool_percent - The maximum percentage of memory that the compressed
--    pool can occupy.
-+  pool can occupy.
- 
--The default compressor is lzo, but it can be selected at boot time by setting
--the “compressor” attribute, e.g. zswap.compressor=lzo.  It can also be changed
--at runtime using the sysfs "compressor" attribute, e.g.
-+The default compressor is lzo, but it can be selected at boot time by
-+setting the ``compressor`` attribute, e.g. ``zswap.compressor=lzo``.
-+It can also be changed at runtime using the sysfs "compressor"
-+attribute, e.g.::
- 
--echo lzo > /sys/module/zswap/parameters/compressor
-+	echo lzo > /sys/module/zswap/parameters/compressor
- 
- When the zpool and/or compressor parameter is changed at runtime, any existing
- compressed pages are not modified; they are left in their own zpool.  When a
-@@ -106,11 +118,12 @@ compressed length of the page is set to zero and the pattern or same-filled
- value is stored.
- 
- Same-value filled pages identification feature is enabled by default and can be
--disabled at boot time by setting the "same_filled_pages_enabled" attribute to 0,
--e.g. zswap.same_filled_pages_enabled=0. It can also be enabled and disabled at
--runtime using the sysfs "same_filled_pages_enabled" attribute, e.g.
-+disabled at boot time by setting the ``same_filled_pages_enabled`` attribute
-+to 0, e.g. ``zswap.same_filled_pages_enabled=0``. It can also be enabled and
-+disabled at runtime using the sysfs ``same_filled_pages_enabled``
-+attribute, e.g.::
- 
--echo 1 > /sys/module/zswap/parameters/same_filled_pages_enabled
-+	echo 1 > /sys/module/zswap/parameters/same_filled_pages_enabled
- 
- When zswap same-filled page identification is disabled at runtime, it will stop
- checking for the same-value filled pages during store operation. However, the
++* ZS_ALMOST_FULL  when n > N / f
++* ZS_EMPTY        when n == 0
++* ZS_FULL         when n == N
 -- 
 2.7.4
 
