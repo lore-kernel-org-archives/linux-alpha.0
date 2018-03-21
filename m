@@ -1,7 +1,7 @@
 From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: [PATCH 12/32] docs/vm: mmu_notifier.txt: convert to ReST format
-Date: Wed, 21 Mar 2018 21:22:28 +0200
-Message-ID: <1521660168-14372-13-git-send-email-rppt@linux.vnet.ibm.com>
+Subject: [PATCH 09/32] docs/vm: hwpoison.txt: convert to ReST format
+Date: Wed, 21 Mar 2018 21:22:25 +0200
+Message-ID: <1521660168-14372-10-git-send-email-rppt@linux.vnet.ibm.com>
 References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
@@ -15,144 +15,216 @@ Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.ne
 
 Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
 ---
- Documentation/vm/mmu_notifier.txt | 108 ++++++++++++++++++++------------------
- 1 file changed, 57 insertions(+), 51 deletions(-)
+ Documentation/vm/hwpoison.txt | 141 +++++++++++++++++++++---------------------
+ 1 file changed, 70 insertions(+), 71 deletions(-)
 
-diff --git a/Documentation/vm/mmu_notifier.txt b/Documentation/vm/mmu_notifier.txt
-index 23b4625..47baa1c 100644
---- a/Documentation/vm/mmu_notifier.txt
-+++ b/Documentation/vm/mmu_notifier.txt
-@@ -1,7 +1,10 @@
-+.. _mmu_notifier:
+diff --git a/Documentation/vm/hwpoison.txt b/Documentation/vm/hwpoison.txt
+index e912d7e..b1a8c24 100644
+--- a/Documentation/vm/hwpoison.txt
++++ b/Documentation/vm/hwpoison.txt
+@@ -1,7 +1,14 @@
++.. hwpoison:
 +
- When do you need to notify inside page table lock ?
-+===================================================
- 
- When clearing a pte/pmd we are given a choice to notify the event through
--(notify version of *_clear_flush call mmu_notifier_invalidate_range) under
-+(notify version of \*_clear_flush call mmu_notifier_invalidate_range) under
- the page table lock. But that notification is not necessary in all cases.
- 
- For secondary TLB (non CPU TLB) like IOMMU TLB or device TLB (when device use
-@@ -18,6 +21,7 @@ a page that might now be used by some completely different task.
- 
- Case B is more subtle. For correctness it requires the following sequence to
- happen:
++========
++hwpoison
++========
 +
-   - take page table lock
-   - clear page table entry and notify ([pmd/pte]p_huge_clear_flush_notify())
-   - set page table entry to point to new page
-@@ -28,58 +32,60 @@ the device.
+ What is hwpoison?
++=================
  
- Consider the following scenario (device use a feature similar to ATS/PASID):
+ Upcoming Intel CPUs have support for recovering from some memory errors
+-(``MCA recovery''). This requires the OS to declare a page "poisoned",
++(``MCA recovery``). This requires the OS to declare a page "poisoned",
+ kill the processes associated with it and avoid using it in the future.
  
--Two address addrA and addrB such that |addrA - addrB| >= PAGE_SIZE we assume
-+Two address addrA and addrB such that \|addrA - addrB\| >= PAGE_SIZE we assume
- they are write protected for COW (other case of B apply too).
+ This patchkit implements the necessary infrastructure in the VM.
+@@ -46,9 +53,10 @@ address. This in theory allows other applications to handle
+ memory failures too. The expection is that near all applications
+ won't do that, but some very specialized ones might.
  
--[Time N] --------------------------------------------------------------------
--CPU-thread-0  {try to write to addrA}
--CPU-thread-1  {try to write to addrB}
--CPU-thread-2  {}
--CPU-thread-3  {}
--DEV-thread-0  {read addrA and populate device TLB}
--DEV-thread-2  {read addrB and populate device TLB}
--[Time N+1] ------------------------------------------------------------------
--CPU-thread-0  {COW_step0: {mmu_notifier_invalidate_range_start(addrA)}}
--CPU-thread-1  {COW_step0: {mmu_notifier_invalidate_range_start(addrB)}}
--CPU-thread-2  {}
--CPU-thread-3  {}
--DEV-thread-0  {}
--DEV-thread-2  {}
--[Time N+2] ------------------------------------------------------------------
--CPU-thread-0  {COW_step1: {update page table to point to new page for addrA}}
--CPU-thread-1  {COW_step1: {update page table to point to new page for addrB}}
--CPU-thread-2  {}
--CPU-thread-3  {}
--DEV-thread-0  {}
--DEV-thread-2  {}
--[Time N+3] ------------------------------------------------------------------
--CPU-thread-0  {preempted}
--CPU-thread-1  {preempted}
--CPU-thread-2  {write to addrA which is a write to new page}
--CPU-thread-3  {}
--DEV-thread-0  {}
--DEV-thread-2  {}
--[Time N+3] ------------------------------------------------------------------
--CPU-thread-0  {preempted}
--CPU-thread-1  {preempted}
--CPU-thread-2  {}
--CPU-thread-3  {write to addrB which is a write to new page}
--DEV-thread-0  {}
--DEV-thread-2  {}
--[Time N+4] ------------------------------------------------------------------
--CPU-thread-0  {preempted}
--CPU-thread-1  {COW_step3: {mmu_notifier_invalidate_range_end(addrB)}}
--CPU-thread-2  {}
--CPU-thread-3  {}
--DEV-thread-0  {}
--DEV-thread-2  {}
--[Time N+5] ------------------------------------------------------------------
--CPU-thread-0  {preempted}
--CPU-thread-1  {}
--CPU-thread-2  {}
--CPU-thread-3  {}
--DEV-thread-0  {read addrA from old page}
--DEV-thread-2  {read addrB from new page}
-+::
+----
++Failure recovery modes
++======================
+ 
+-There are two (actually three) modi memory failure recovery can be in:
++There are two (actually three) modes memory failure recovery can be in:
+ 
+ vm.memory_failure_recovery sysctl set to zero:
+ 	All memory failures cause a panic. Do not attempt recovery.
+@@ -67,9 +75,8 @@ late kill
+ 	This is best for memory error unaware applications and default
+ 	Note some pages are always handled as late kill.
+ 
+----
+-
+-User control:
++User control
++============
+ 
+ vm.memory_failure_recovery
+ 	See sysctl.txt
+@@ -79,11 +86,19 @@ vm.memory_failure_early_kill
+ 
+ PR_MCE_KILL
+ 	Set early/late kill mode/revert to system default
+-	arg1: PR_MCE_KILL_CLEAR: Revert to system default
+-	arg1: PR_MCE_KILL_SET: arg2 defines thread specific mode
+-		PR_MCE_KILL_EARLY: Early kill
+-		PR_MCE_KILL_LATE:  Late kill
+-		PR_MCE_KILL_DEFAULT: Use system global default
 +
-+ [Time N] --------------------------------------------------------------------
-+ CPU-thread-0  {try to write to addrA}
-+ CPU-thread-1  {try to write to addrB}
-+ CPU-thread-2  {}
-+ CPU-thread-3  {}
-+ DEV-thread-0  {read addrA and populate device TLB}
-+ DEV-thread-2  {read addrB and populate device TLB}
-+ [Time N+1] ------------------------------------------------------------------
-+ CPU-thread-0  {COW_step0: {mmu_notifier_invalidate_range_start(addrA)}}
-+ CPU-thread-1  {COW_step0: {mmu_notifier_invalidate_range_start(addrB)}}
-+ CPU-thread-2  {}
-+ CPU-thread-3  {}
-+ DEV-thread-0  {}
-+ DEV-thread-2  {}
-+ [Time N+2] ------------------------------------------------------------------
-+ CPU-thread-0  {COW_step1: {update page table to point to new page for addrA}}
-+ CPU-thread-1  {COW_step1: {update page table to point to new page for addrB}}
-+ CPU-thread-2  {}
-+ CPU-thread-3  {}
-+ DEV-thread-0  {}
-+ DEV-thread-2  {}
-+ [Time N+3] ------------------------------------------------------------------
-+ CPU-thread-0  {preempted}
-+ CPU-thread-1  {preempted}
-+ CPU-thread-2  {write to addrA which is a write to new page}
-+ CPU-thread-3  {}
-+ DEV-thread-0  {}
-+ DEV-thread-2  {}
-+ [Time N+3] ------------------------------------------------------------------
-+ CPU-thread-0  {preempted}
-+ CPU-thread-1  {preempted}
-+ CPU-thread-2  {}
-+ CPU-thread-3  {write to addrB which is a write to new page}
-+ DEV-thread-0  {}
-+ DEV-thread-2  {}
-+ [Time N+4] ------------------------------------------------------------------
-+ CPU-thread-0  {preempted}
-+ CPU-thread-1  {COW_step3: {mmu_notifier_invalidate_range_end(addrB)}}
-+ CPU-thread-2  {}
-+ CPU-thread-3  {}
-+ DEV-thread-0  {}
-+ DEV-thread-2  {}
-+ [Time N+5] ------------------------------------------------------------------
-+ CPU-thread-0  {preempted}
-+ CPU-thread-1  {}
-+ CPU-thread-2  {}
-+ CPU-thread-3  {}
-+ DEV-thread-0  {read addrA from old page}
-+ DEV-thread-2  {read addrB from new page}
++	arg1: PR_MCE_KILL_CLEAR:
++		Revert to system default
++	arg1: PR_MCE_KILL_SET:
++		arg2 defines thread specific mode
++
++		PR_MCE_KILL_EARLY:
++			Early kill
++		PR_MCE_KILL_LATE:
++			Late kill
++		PR_MCE_KILL_DEFAULT
++			Use system global default
++
+ 	Note that if you want to have a dedicated thread which handles
+ 	the SIGBUS(BUS_MCEERR_AO) on behalf of the process, you should
+ 	call prctl(PR_MCE_KILL_EARLY) on the designated thread. Otherwise,
+@@ -92,77 +107,64 @@ PR_MCE_KILL
+ PR_MCE_KILL_GET
+ 	return current mode
  
- So here because at time N+2 the clear page table entry was not pair with a
- notification to invalidate the secondary TLB, the device see the new value for
++Testing
++=======
+ 
+----
+-
+-Testing:
+-
+-madvise(MADV_HWPOISON, ....)
+-	(as root)
+-	Poison a page in the process for testing
+-
++* madvise(MADV_HWPOISON, ....) (as root) - Poison a page in the
++  process for testing
+ 
+-hwpoison-inject module through debugfs
++* hwpoison-inject module through debugfs ``/sys/kernel/debug/hwpoison/``
+ 
+-/sys/kernel/debug/hwpoison/
++  corrupt-pfn
++	Inject hwpoison fault at PFN echoed into this file. This does
++	some early filtering to avoid corrupted unintended pages in test suites.
+ 
+-corrupt-pfn
++  unpoison-pfn
++	Software-unpoison page at PFN echoed into this file. This way
++	a page can be reused again.  This only works for Linux
++	injected failures, not for real memory failures.
+ 
+-Inject hwpoison fault at PFN echoed into this file. This does
+-some early filtering to avoid corrupted unintended pages in test suites.
++  Note these injection interfaces are not stable and might change between
++  kernel versions
+ 
+-unpoison-pfn
++  corrupt-filter-dev-major, corrupt-filter-dev-minor
++	Only handle memory failures to pages associated with the file
++	system defined by block device major/minor.  -1U is the
++	wildcard value.  This should be only used for testing with
++	artificial injection.
+ 
+-Software-unpoison page at PFN echoed into this file. This
+-way a page can be reused again.
+-This only works for Linux injected failures, not for real
+-memory failures.
++  corrupt-filter-memcg
++	Limit injection to pages owned by memgroup. Specified by inode
++	number of the memcg.
+ 
+-Note these injection interfaces are not stable and might change between
+-kernel versions
++	Example::
+ 
+-corrupt-filter-dev-major
+-corrupt-filter-dev-minor
++		mkdir /sys/fs/cgroup/mem/hwpoison
+ 
+-Only handle memory failures to pages associated with the file system defined
+-by block device major/minor.  -1U is the wildcard value.
+-This should be only used for testing with artificial injection.
++	        usemem -m 100 -s 1000 &
++		echo `jobs -p` > /sys/fs/cgroup/mem/hwpoison/tasks
+ 
+-corrupt-filter-memcg
++		memcg_ino=$(ls -id /sys/fs/cgroup/mem/hwpoison | cut -f1 -d' ')
++		echo $memcg_ino > /debug/hwpoison/corrupt-filter-memcg
+ 
+-Limit injection to pages owned by memgroup. Specified by inode number
+-of the memcg.
++		page-types -p `pidof init`   --hwpoison  # shall do nothing
++		page-types -p `pidof usemem` --hwpoison  # poison its pages
+ 
+-Example:
+-        mkdir /sys/fs/cgroup/mem/hwpoison
++  corrupt-filter-flags-mask, corrupt-filter-flags-value
++	When specified, only poison pages if ((page_flags & mask) ==
++	value).  This allows stress testing of many kinds of
++	pages. The page_flags are the same as in /proc/kpageflags. The
++	flag bits are defined in include/linux/kernel-page-flags.h and
++	documented in Documentation/vm/pagemap.txt
+ 
+-        usemem -m 100 -s 1000 &
+-        echo `jobs -p` > /sys/fs/cgroup/mem/hwpoison/tasks
++* Architecture specific MCE injector
+ 
+-        memcg_ino=$(ls -id /sys/fs/cgroup/mem/hwpoison | cut -f1 -d' ')
+-        echo $memcg_ino > /debug/hwpoison/corrupt-filter-memcg
++  x86 has mce-inject, mce-test
+ 
+-        page-types -p `pidof init`   --hwpoison  # shall do nothing
+-        page-types -p `pidof usemem` --hwpoison  # poison its pages
++  Some portable hwpoison test programs in mce-test, see below.
+ 
+-corrupt-filter-flags-mask
+-corrupt-filter-flags-value
+-
+-When specified, only poison pages if ((page_flags & mask) == value).
+-This allows stress testing of many kinds of pages. The page_flags
+-are the same as in /proc/kpageflags. The flag bits are defined in
+-include/linux/kernel-page-flags.h and documented in
+-Documentation/vm/pagemap.txt
+-
+-Architecture specific MCE injector
+-
+-x86 has mce-inject, mce-test
+-
+-Some portable hwpoison test programs in mce-test, see blow.
+-
+----
+-
+-References:
++References
++==========
+ 
+ http://halobates.de/mce-lc09-2.pdf
+ 	Overview presentation from LinuxCon 09
+@@ -174,14 +176,11 @@ git://git.kernel.org/pub/scm/utils/cpu/mce/mce-inject.git
+ 	x86 specific injector
+ 
+ 
+----
+-
+-Limitations:
+-
++Limitations
++===========
+ - Not all page types are supported and never will. Most kernel internal
+-objects cannot be recovered, only LRU pages for now.
++  objects cannot be recovered, only LRU pages for now.
+ - Right now hugepage support is missing.
+ 
+ ---
+ Andi Kleen, Oct 2009
+-
 -- 
 2.7.4
 
