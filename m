@@ -1,7 +1,7 @@
 From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: [PATCH 32/32] docs/vm: add index.rst and link MM documentation to top level index
-Date: Wed, 21 Mar 2018 21:22:48 +0200
-Message-ID: <1521660168-14372-33-git-send-email-rppt@linux.vnet.ibm.com>
+Subject: [PATCH 27/32] docs/vm: userfaultfd.txt: convert to ReST format
+Date: Wed, 21 Mar 2018 21:22:43 +0200
+Message-ID: <1521660168-14372-28-git-send-email-rppt@linux.vnet.ibm.com>
 References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
@@ -15,112 +15,119 @@ Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.ne
 
 Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
 ---
- Documentation/index.rst    |  3 ++-
- Documentation/vm/conf.py   | 10 +++++++++
- Documentation/vm/index.rst | 56 ++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 68 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/vm/conf.py
- create mode 100644 Documentation/vm/index.rst
+ Documentation/vm/userfaultfd.txt | 66 ++++++++++++++++++++++++----------------
+ 1 file changed, 39 insertions(+), 27 deletions(-)
 
-diff --git a/Documentation/index.rst b/Documentation/index.rst
-index ef5080c..cc4a098 100644
---- a/Documentation/index.rst
-+++ b/Documentation/index.rst
-@@ -45,7 +45,7 @@ the kernel interface as seen by application developers.
- .. toctree::
-    :maxdepth: 2
+diff --git a/Documentation/vm/userfaultfd.txt b/Documentation/vm/userfaultfd.txt
+index bb2f945..5048cf6 100644
+--- a/Documentation/vm/userfaultfd.txt
++++ b/Documentation/vm/userfaultfd.txt
+@@ -1,6 +1,11 @@
+-= Userfaultfd =
++.. _userfaultfd:
  
--   userspace-api/index	      
-+   userspace-api/index
+-== Objective ==
++===========
++Userfaultfd
++===========
++
++Objective
++=========
  
+ Userfaults allow the implementation of on-demand paging from userland
+ and more generally they allow userland to take control of various
+@@ -9,7 +14,8 @@ memory page faults, something otherwise only the kernel code could do.
+ For example userfaults allows a proper and more optimal implementation
+ of the PROT_NONE+SIGSEGV trick.
  
- Introduction to kernel development
-@@ -88,6 +88,7 @@ needed).
-    sound/index
-    crypto/index
-    filesystems/index
-+   vm/index
+-== Design ==
++Design
++======
  
- Architecture-specific documentation
- -----------------------------------
-diff --git a/Documentation/vm/conf.py b/Documentation/vm/conf.py
-new file mode 100644
-index 0000000..3b0b601
---- /dev/null
-+++ b/Documentation/vm/conf.py
-@@ -0,0 +1,10 @@
-+# -*- coding: utf-8; mode: python -*-
-+
-+project = "Linux Memory Management Documentation"
-+
-+tags.add("subproject")
-+
-+latex_documents = [
-+    ('index', 'memory-management.tex', project,
-+     'The kernel development community', 'manual'),
-+]
-diff --git a/Documentation/vm/index.rst b/Documentation/vm/index.rst
-new file mode 100644
-index 0000000..6c45142
---- /dev/null
-+++ b/Documentation/vm/index.rst
-@@ -0,0 +1,56 @@
-+=====================================
-+Linux Memory Management Documentation
-+=====================================
-+
-+This is a collection of documents about Linux memory management (mm) subsystem.
-+
-+User guides for MM features
+ Userfaults are delivered and resolved through the userfaultfd syscall.
+ 
+@@ -41,7 +47,8 @@ different processes without them being aware about what is going on
+ themselves on the same region the manager is already tracking, which
+ is a corner case that would currently return -EBUSY).
+ 
+-== API ==
++API
++===
+ 
+ When first opened the userfaultfd must be enabled invoking the
+ UFFDIO_API ioctl specifying a uffdio_api.api value set to UFFD_API (or
+@@ -101,7 +108,8 @@ UFFDIO_COPY. They're atomic as in guaranteeing that nothing can see an
+ half copied page since it'll keep userfaulting until the copy has
+ finished.
+ 
+-== QEMU/KVM ==
++QEMU/KVM
++========
+ 
+ QEMU/KVM is using the userfaultfd syscall to implement postcopy live
+ migration. Postcopy live migration is one form of memory
+@@ -163,7 +171,8 @@ sending the same page twice (in case the userfault is read by the
+ postcopy thread just before UFFDIO_COPY|ZEROPAGE runs in the migration
+ thread).
+ 
+-== Non-cooperative userfaultfd ==
++Non-cooperative userfaultfd
 +===========================
+ 
+ When the userfaultfd is monitored by an external manager, the manager
+ must be able to track changes in the process virtual memory
+@@ -172,27 +181,30 @@ the same read(2) protocol as for the page fault notifications. The
+ manager has to explicitly enable these events by setting appropriate
+ bits in uffdio_api.features passed to UFFDIO_API ioctl:
+ 
+-UFFD_FEATURE_EVENT_FORK - enable userfaultfd hooks for fork(). When
+-this feature is enabled, the userfaultfd context of the parent process
+-is duplicated into the newly created process. The manager receives
+-UFFD_EVENT_FORK with file descriptor of the new userfaultfd context in
+-the uffd_msg.fork.
+-
+-UFFD_FEATURE_EVENT_REMAP - enable notifications about mremap()
+-calls. When the non-cooperative process moves a virtual memory area to
+-a different location, the manager will receive UFFD_EVENT_REMAP. The
+-uffd_msg.remap will contain the old and new addresses of the area and
+-its original length.
+-
+-UFFD_FEATURE_EVENT_REMOVE - enable notifications about
+-madvise(MADV_REMOVE) and madvise(MADV_DONTNEED) calls. The event
+-UFFD_EVENT_REMOVE will be generated upon these calls to madvise. The
+-uffd_msg.remove will contain start and end addresses of the removed
+-area.
+-
+-UFFD_FEATURE_EVENT_UNMAP - enable notifications about memory
+-unmapping. The manager will get UFFD_EVENT_UNMAP with uffd_msg.remove
+-containing start and end addresses of the unmapped area.
++UFFD_FEATURE_EVENT_FORK
++	enable userfaultfd hooks for fork(). When this feature is
++	enabled, the userfaultfd context of the parent process is
++	duplicated into the newly created process. The manager
++	receives UFFD_EVENT_FORK with file descriptor of the new
++	userfaultfd context in the uffd_msg.fork.
 +
-+The following documents provide guides for controlling and tuning
-+various features of the Linux memory management
++UFFD_FEATURE_EVENT_REMAP
++	enable notifications about mremap() calls. When the
++	non-cooperative process moves a virtual memory area to a
++	different location, the manager will receive
++	UFFD_EVENT_REMAP. The uffd_msg.remap will contain the old and
++	new addresses of the area and its original length.
 +
-+.. toctree::
-+   :maxdepth: 1
++UFFD_FEATURE_EVENT_REMOVE
++	enable notifications about madvise(MADV_REMOVE) and
++	madvise(MADV_DONTNEED) calls. The event UFFD_EVENT_REMOVE will
++	be generated upon these calls to madvise. The uffd_msg.remove
++	will contain start and end addresses of the removed area.
 +
-+   hugetlbpage
-+   idle_page_tracking
-+   ksm
-+   numa_memory_policy
-+   pagemap
-+   transhuge
-+   soft-dirty
-+   swap_numa
-+   userfaultfd
-+   zswap
-+
-+Kernel developers MM documentation
-+==================================
-+
-+The below documents describe MM internals with different level of
-+details ranging from notes and mailing list responses to elaborate
-+descriptions of data structures and algorithms.
-+
-+.. toctree::
-+   :maxdepth: 1
-+
-+   active_mm
-+   balance
-+   cleancache
-+   frontswap
-+   highmem
-+   hmm
-+   hwpoison
-+   hugetlbfs_reserv
-+   mmu_notifier
-+   numa
-+   overcommit-accounting
-+   page_migration
-+   page_frags
-+   page_owner
-+   remap_file_pages
-+   slub
-+   split_page_table_lock
-+   unevictable-lru
-+   z3fold
-+   zsmalloc
++UFFD_FEATURE_EVENT_UNMAP
++	enable notifications about memory unmapping. The manager will
++	get UFFD_EVENT_UNMAP with uffd_msg.remove containing start and
++	end addresses of the unmapped area.
+ 
+ Although the UFFD_FEATURE_EVENT_REMOVE and UFFD_FEATURE_EVENT_UNMAP
+ are pretty similar, they quite differ in the action expected from the
 -- 
 2.7.4
 
