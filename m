@@ -1,7 +1,7 @@
 From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: [PATCH 06/32] docs/vm: hmm.txt: convert to ReST format
-Date: Wed, 21 Mar 2018 21:22:22 +0200
-Message-ID: <1521660168-14372-7-git-send-email-rppt@linux.vnet.ibm.com>
+Subject: [PATCH 04/32] docs/vm: frontswap.txt: convert to ReST format
+Date: Wed, 21 Mar 2018 21:22:20 +0200
+Message-ID: <1521660168-14372-5-git-send-email-rppt@linux.vnet.ibm.com>
 References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
@@ -15,182 +15,138 @@ Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.ne
 
 Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
 ---
- Documentation/vm/hmm.txt | 66 ++++++++++++++++++++----------------------------
- 1 file changed, 28 insertions(+), 38 deletions(-)
+ Documentation/vm/frontswap.txt | 59 ++++++++++++++++++++++++++----------------
+ 1 file changed, 37 insertions(+), 22 deletions(-)
 
-diff --git a/Documentation/vm/hmm.txt b/Documentation/vm/hmm.txt
-index 4d3aac9..3fafa33 100644
---- a/Documentation/vm/hmm.txt
-+++ b/Documentation/vm/hmm.txt
-@@ -1,4 +1,8 @@
-+.. hmm:
+diff --git a/Documentation/vm/frontswap.txt b/Documentation/vm/frontswap.txt
+index c71a019..1979f43 100644
+--- a/Documentation/vm/frontswap.txt
++++ b/Documentation/vm/frontswap.txt
+@@ -1,13 +1,20 @@
++.. _frontswap:
 +
-+=====================================
- Heterogeneous Memory Management (HMM)
-+=====================================
- 
- Transparently allow any component of a program to use any memory region of said
- program with a device without using device specific memory allocator. This is
-@@ -14,19 +18,10 @@ deals with how device memory is represented inside the kernel. Finaly the last
- section present the new migration helper that allow to leverage the device DMA
- engine.
- 
-+.. contents:: :local:
- 
--1) Problems of using device specific memory allocator:
--2) System bus, device memory characteristics
--3) Share address space and migration
--4) Address space mirroring implementation and API
--5) Represent and manage device memory from core kernel point of view
--6) Migrate to and from device memory
--7) Memory cgroup (memcg) and rss accounting
--
--
---------------------------------------------------------------------------------
--
--1) Problems of using device specific memory allocator:
-+Problems of using device specific memory allocator
-+==================================================
- 
- Device with large amount of on board memory (several giga bytes) like GPU have
- historically manage their memory through dedicated driver specific API. This
-@@ -68,9 +63,8 @@ only do-able with a share address. It is as well more reasonable to use a share
- address space for all the other patterns.
- 
- 
---------------------------------------------------------------------------------
--
--2) System bus, device memory characteristics
-+System bus, device memory characteristics
-+=========================================
- 
- System bus cripple share address due to few limitations. Most system bus only
- allow basic memory access from device to main memory, even cache coherency is
-@@ -100,9 +94,8 @@ access any memory memory but we must also permit any memory to be migrated to
- device memory while device is using it (blocking CPU access while it happens).
- 
- 
---------------------------------------------------------------------------------
--
--3) Share address space and migration
-+Share address space and migration
-+=================================
- 
- HMM intends to provide two main features. First one is to share the address
- space by duplication the CPU page table into the device page table so same
-@@ -140,14 +133,13 @@ leverage device memory by migrating part of data-set that is actively use by a
- device.
- 
- 
---------------------------------------------------------------------------------
--
--4) Address space mirroring implementation and API
-+Address space mirroring implementation and API
-+==============================================
- 
- Address space mirroring main objective is to allow to duplicate range of CPU
- page table into a device page table and HMM helps keeping both synchronize. A
- device driver that want to mirror a process address space must start with the
--registration of an hmm_mirror struct:
-+registration of an hmm_mirror struct::
- 
-  int hmm_mirror_register(struct hmm_mirror *mirror,
-                          struct mm_struct *mm);
-@@ -156,7 +148,7 @@ registration of an hmm_mirror struct:
- 
- The locked variant is to be use when the driver is already holding the mmap_sem
- of the mm in write mode. The mirror struct has a set of callback that are use
--to propagate CPU page table:
-+to propagate CPU page table::
- 
-  struct hmm_mirror_ops {
-      /* sync_cpu_device_pagetables() - synchronize page tables
-@@ -187,7 +179,8 @@ be done with the update.
- 
- 
- When device driver wants to populate a range of virtual address it can use
--either:
-+either::
++=========
++Frontswap
++=========
 +
-  int hmm_vma_get_pfns(struct vm_area_struct *vma,
-                       struct hmm_range *range,
-                       unsigned long start,
-@@ -211,7 +204,7 @@ that array correspond to an address in the virtual range. HMM provide a set of
- flags to help driver identify special CPU page table entries.
+ Frontswap provides a "transcendent memory" interface for swap pages.
+ In some environments, dramatic performance savings may be obtained because
+ swapped pages are saved in RAM (or a RAM-like device) instead of a swap disk.
  
- Locking with the update() callback is the most important aspect the driver must
--respect in order to keep things properly synchronize. The usage pattern is :
-+respect in order to keep things properly synchronize. The usage pattern is::
+-(Note, frontswap -- and cleancache (merged at 3.0) -- are the "frontends"
++(Note, frontswap -- and :ref:`cleancache` (merged at 3.0) -- are the "frontends"
+ and the only necessary changes to the core kernel for transcendent memory;
+ all other supporting code -- the "backends" -- is implemented as drivers.
+-See the LWN.net article "Transcendent memory in a nutshell" for a detailed
+-overview of frontswap and related kernel parts:
+-https://lwn.net/Articles/454795/ )
++See the LWN.net article `Transcendent memory in a nutshell`_
++for a detailed overview of frontswap and related kernel parts)
++
++.. _Transcendent memory in a nutshell: https://lwn.net/Articles/454795/
  
-  int driver_populate_range(...)
-  {
-@@ -251,9 +244,8 @@ concurrently for multiple devices. Waiting for each device to report commands
- as executed is serialize (there is no point in doing this concurrently).
+ Frontswap is so named because it can be thought of as the opposite of
+ a "backing" store for a swap device.  The storage is assumed to be
+@@ -50,19 +57,27 @@ or the store fails AND the page is invalidated.  This ensures stale data may
+ never be obtained from frontswap.
  
+ If properly configured, monitoring of frontswap is done via debugfs in
+-the /sys/kernel/debug/frontswap directory.  The effectiveness of
++the `/sys/kernel/debug/frontswap` directory.  The effectiveness of
+ frontswap can be measured (across all swap devices) with:
  
---------------------------------------------------------------------------------
--
--5) Represent and manage device memory from core kernel point of view
-+Represent and manage device memory from core kernel point of view
-+=================================================================
+-failed_stores	- how many store attempts have failed
+-loads		- how many loads were attempted (all should succeed)
+-succ_stores	- how many store attempts have succeeded
+-invalidates	- how many invalidates were attempted
++``failed_stores``
++	how many store attempts have failed
++
++``loads``
++	how many loads were attempted (all should succeed)
++
++``succ_stores``
++	how many store attempts have succeeded
++
++``invalidates``
++	how many invalidates were attempted
  
- Several differents design were try to support device memory. First one use
- device specific data structure to keep information about migrated memory and
-@@ -269,14 +261,14 @@ un-aware of the difference. We only need to make sure that no one ever try to
- map those page from the CPU side.
+ A backend implementation may provide additional metrics.
  
- HMM provide a set of helpers to register and hotplug device memory as a new
--region needing struct page. This is offer through a very simple API:
-+region needing struct page. This is offer through a very simple API::
+ FAQ
++===
  
-  struct hmm_devmem *hmm_devmem_add(const struct hmm_devmem_ops *ops,
-                                    struct device *device,
-                                    unsigned long size);
-  void hmm_devmem_remove(struct hmm_devmem *devmem);
+-1) Where's the value?
++* Where's the value?
  
--The hmm_devmem_ops is where most of the important things are:
-+The hmm_devmem_ops is where most of the important things are::
+ When a workload starts swapping, performance falls through the floor.
+ Frontswap significantly increases performance in many such workloads by
+@@ -117,8 +132,8 @@ A KVM implementation is underway and has been RFC'ed to lkml.  And,
+ using frontswap, investigation is also underway on the use of NVM as
+ a memory extension technology.
  
-  struct hmm_devmem_ops {
-      void (*free)(struct hmm_devmem *devmem, struct page *page);
-@@ -294,13 +286,12 @@ second callback happens whenever CPU try to access a device page which it can
- not do. This second callback must trigger a migration back to system memory.
+-2) Sure there may be performance advantages in some situations, but
+-   what's the space/time overhead of frontswap?
++* Sure there may be performance advantages in some situations, but
++  what's the space/time overhead of frontswap?
  
+ If CONFIG_FRONTSWAP is disabled, every frontswap hook compiles into
+ nothingness and the only overhead is a few extra bytes per swapon'ed
+@@ -148,8 +163,8 @@ pressure that can potentially outweigh the other advantages.  A
+ backend, such as zcache, must implement policies to carefully (but
+ dynamically) manage memory limits to ensure this doesn't happen.
  
---------------------------------------------------------------------------------
--
--6) Migrate to and from device memory
-+Migrate to and from device memory
-+=================================
+-3) OK, how about a quick overview of what this frontswap patch does
+-   in terms that a kernel hacker can grok?
++* OK, how about a quick overview of what this frontswap patch does
++  in terms that a kernel hacker can grok?
  
- Because CPU can not access device memory, migration must use device DMA engine
- to perform copy from and to device memory. For this we need a new migration
--helper:
-+helper::
+ Let's assume that a frontswap "backend" has registered during
+ kernel initialization; this registration indicates that this
+@@ -188,9 +203,9 @@ and (potentially) a swap device write are replaced by a "frontswap backend
+ store" and (possibly) a "frontswap backend loads", which are presumably much
+ faster.
  
-  int migrate_vma(const struct migrate_vma_ops *ops,
-                  struct vm_area_struct *vma,
-@@ -319,7 +310,7 @@ such migration base on range of address the device is actively accessing.
+-4) Can't frontswap be configured as a "special" swap device that is
+-   just higher priority than any real swap device (e.g. like zswap,
+-   or maybe swap-over-nbd/NFS)?
++* Can't frontswap be configured as a "special" swap device that is
++  just higher priority than any real swap device (e.g. like zswap,
++  or maybe swap-over-nbd/NFS)?
  
- The migrate_vma_ops struct define two callbacks. First one (alloc_and_copy())
- control destination memory allocation and copy operation. Second one is there
--to allow device driver to perform cleanup operation after migration.
-+to allow device driver to perform cleanup operation after migration::
+ No.  First, the existing swap subsystem doesn't allow for any kind of
+ swap hierarchy.  Perhaps it could be rewritten to accommodate a hierarchy,
+@@ -240,9 +255,9 @@ installation, frontswap is useless.  Swapless portable devices
+ can still use frontswap but a backend for such devices must configure
+ some kind of "ghost" swap device and ensure that it is never used.
  
-  struct migrate_vma_ops {
-      void (*alloc_and_copy)(struct vm_area_struct *vma,
-@@ -353,9 +344,8 @@ bandwidth but this is considered as a rare event and a price that we are
- willing to pay to keep all the code simpler.
+-5) Why this weird definition about "duplicate stores"?  If a page
+-   has been previously successfully stored, can't it always be
+-   successfully overwritten?
++* Why this weird definition about "duplicate stores"?  If a page
++  has been previously successfully stored, can't it always be
++  successfully overwritten?
  
+ Nearly always it can, but no, sometimes it cannot.  Consider an example
+ where data is compressed and the original 4K page has been compressed
+@@ -254,7 +269,7 @@ the old data and ensure that it is no longer accessible.  Since the
+ swap subsystem then writes the new data to the read swap device,
+ this is the correct course of action to ensure coherency.
  
---------------------------------------------------------------------------------
--
--7) Memory cgroup (memcg) and rss accounting
-+Memory cgroup (memcg) and rss accounting
-+========================================
+-6) What is frontswap_shrink for?
++* What is frontswap_shrink for?
  
- For now device memory is accounted as any regular page in rss counters (either
- anonymous if device page is use for anonymous, file if device page is use for
+ When the (non-frontswap) swap subsystem swaps out a page to a real
+ swap device, that page is only taking up low-value pre-allocated disk
+@@ -267,7 +282,7 @@ to "repatriate" pages sent to a remote machine back to the local machine;
+ this is driven using the frontswap_shrink mechanism when memory pressure
+ subsides.
+ 
+-7) Why does the frontswap patch create the new include file swapfile.h?
++* Why does the frontswap patch create the new include file swapfile.h?
+ 
+ The frontswap code depends on some swap-subsystem-internal data
+ structures that have, over the years, moved back and forth between
 -- 
 2.7.4
 
