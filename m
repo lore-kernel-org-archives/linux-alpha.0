@@ -1,7 +1,7 @@
 From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: [PATCH 20/32] docs/vm: remap_file_pages.txt: conert to ReST format
-Date: Wed, 21 Mar 2018 21:22:36 +0200
-Message-ID: <1521660168-14372-21-git-send-email-rppt@linux.vnet.ibm.com>
+Subject: [PATCH 28/32] docs/vm: z3fold.txt: convert to ReST format
+Date: Wed, 21 Mar 2018 21:22:44 +0200
+Message-ID: <1521660168-14372-29-git-send-email-rppt@linux.vnet.ibm.com>
 References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
@@ -15,23 +15,31 @@ Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.ne
 
 Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
 ---
- Documentation/vm/remap_file_pages.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/vm/z3fold.txt | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/vm/remap_file_pages.txt b/Documentation/vm/remap_file_pages.txt
-index f609142..7bef671 100644
---- a/Documentation/vm/remap_file_pages.txt
-+++ b/Documentation/vm/remap_file_pages.txt
-@@ -1,3 +1,9 @@
-+.. _remap_file_pages:
+diff --git a/Documentation/vm/z3fold.txt b/Documentation/vm/z3fold.txt
+index 38e4dac..224e3c6 100644
+--- a/Documentation/vm/z3fold.txt
++++ b/Documentation/vm/z3fold.txt
+@@ -1,5 +1,8 @@
++.. _z3fold:
 +
-+==============================
-+remap_file_pages() system call
-+==============================
++======
+ z3fold
+-------
++======
+ 
+ z3fold is a special purpose allocator for storing compressed pages.
+ It is designed to store up to three compressed pages per physical page.
+@@ -7,6 +10,7 @@ It is a zbud derivative which allows for higher compression
+ ratio keeping the simplicity and determinism of its predecessor.
+ 
+ The main differences between z3fold and zbud are:
 +
- The remap_file_pages() system call is used to create a nonlinear mapping,
- that is, a mapping in which the pages of the file are mapped into a
- nonsequential order in memory. The advantage of using remap_file_pages()
+ * unlike zbud, z3fold allows for up to PAGE_SIZE allocations
+ * z3fold can hold up to 3 compressed pages in its page
+ * z3fold doesn't export any API itself and is thus intended to be used
 -- 
 2.7.4
 
