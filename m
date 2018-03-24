@@ -1,7 +1,7 @@
 From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH 03/16] alpha: Use INITRAMFS_GENERIC_UNLOAD
-Date: Sat, 24 Mar 2018 13:44:45 -0400
-Message-ID: <20180324174458.26423-4-shea@shealevy.com>
+Subject: [PATCH 04/16] arc: Use INITRAMFS_GENERIC_UNLOAD
+Date: Sat, 24 Mar 2018 13:44:46 -0400
+Message-ID: <20180324174458.26423-5-shea@shealevy.com>
 References: <20180324174458.26423-1-shea@shealevy.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,12 +14,12 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=w/mkMpcZMlfPcSZA1KTd1kaUB9KzafZRM/X5ke4RnFA=; b=lgCqoAEM9obXxD9CK+1bgoss+P
-	AB/IyNnYBuxEcxm0/BzMhUZH24G1JOHSgnSWjkiSNo0Sq8E/eAPfDfd0XgseEaKwSUoIjheSnf+fQ
-	PyiFeKtRCNCyaOF2dxPFCjZiZECOQ0ud7JMWfzJl9W+Pp8gIz1JKsMoj4RREr4Fqax4AsCxAj2xwk
-	B/Vs2JvYrB+1I0TiMDy1TDfIB8FG82GxJtt504JR+NRURVPbtuDz2yx4K5Elgjc7QAiOU3+2hDKPT
-	XGe3h8Xf2ZpRW5h4Rlu4yVr46fCvP+33Kyhp9BAPVj4+DIi2HcpMNZTeL77Ay+KbJ7xktbUJx5Jky
-	+nU4Ni+w==;
+	bh=i3TJpGzdouuw8nmVSyNeg0W7Rn8CM1zflC0pq39V4c0=; b=l3XpXQ4+v44EYkwPL4YUWNJqok
+	UFNwHt1y0ZmBSS2fFqYWcg2qIzMvg0Sjuc89bIMYAJ8IL8ApTDMs7ymxXVvjAoMAnCCU8xaun9GUj
+	MoLlzjs5kAORogT3kL0WhKi7GWZUM3zzpxHVzuB1oExNZqfIsBqFoA6MDmJYWAahOP/qOyLZDFEHb
+	8SiCipgyzk7w4vrV36pyl+Yl49BQoCevQbutFFB5JeCfYXNcu3dBwbYm1e4Lii2gRJxevSuvvYSCD
+	eQEibxrffhowLRjpPraemKQIIjg54qVbLFjcTeuSrch4KH4aFslDIx1SialOS3LbqTc2UgSr6f/EA
+	mn61VBwA==;
 In-Reply-To: <20180324174458.26423-1-shea@shealevy.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
@@ -36,34 +36,33 @@ Cc: Shea Levy <shea@shealevy.com>
 
 Signed-off-by: Shea Levy <shea@shealevy.com>
 ---
- arch/alpha/Kconfig   | 1 +
- arch/alpha/mm/init.c | 8 --------
- 2 files changed, 1 insertion(+), 8 deletions(-)
+ arch/arc/Kconfig   | 1 +
+ arch/arc/mm/init.c | 7 -------
+ 2 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index e96adcbcab41..238d743ae8f2 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -27,6 +27,7 @@ config ALPHA
- 	select ODD_RT_SIGACTION
- 	select OLD_SIGSUSPEND
- 	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
+diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
+index d76bf4a83740..2844ce5b910c 100644
+--- a/arch/arc/Kconfig
++++ b/arch/arc/Kconfig
+@@ -44,6 +44,7 @@ config ARC
+ 	select HAVE_GENERIC_DMA_COHERENT
+ 	select HAVE_KERNEL_GZIP
+ 	select HAVE_KERNEL_LZMA
 +	select INITRAMFS_GENERIC_UNLOAD
- 	help
- 	  The Alpha is a 64-bit general-purpose processor designed and
- 	  marketed by the Digital Equipment Corporation of blessed memory,
-diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
-index 9d74520298ab..55f7c8efa962 100644
---- a/arch/alpha/mm/init.c
-+++ b/arch/alpha/mm/init.c
-@@ -291,11 +291,3 @@ free_initmem(void)
+ 
+ config MIGHT_HAVE_PCI
+ 	bool
+diff --git a/arch/arc/mm/init.c b/arch/arc/mm/init.c
+index ba145065c579..7bcf23ab1756 100644
+--- a/arch/arc/mm/init.c
++++ b/arch/arc/mm/init.c
+@@ -229,10 +229,3 @@ void __ref free_initmem(void)
  {
  	free_initmem_default(-1);
  }
 -
 -#ifdef CONFIG_BLK_DEV_INITRD
--void
--free_initrd_mem(unsigned long start, unsigned long end)
+-void __init free_initrd_mem(unsigned long start, unsigned long end)
 -{
 -	free_reserved_area((void *)start, (void *)end, -1, "initrd");
 -}
