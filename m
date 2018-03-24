@@ -1,7 +1,7 @@
 From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH 02/16] riscv: Use INITRAMFS_GENERIC_UNLOAD.
-Date: Sat, 24 Mar 2018 13:44:44 -0400
-Message-ID: <20180324174458.26423-3-shea@shealevy.com>
+Subject: [PATCH 05/16] c6x: Use INITRAMFS_GENERIC_UNLOAD
+Date: Sat, 24 Mar 2018 13:44:47 -0400
+Message-ID: <20180324174458.26423-6-shea@shealevy.com>
 References: <20180324174458.26423-1-shea@shealevy.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180324174458.26423-1-shea@shealevy.com>
@@ -15,36 +15,40 @@ Cc: Shea Levy <shea@shealevy.com>
 
 Signed-off-by: Shea Levy <shea@shealevy.com>
 ---
- arch/riscv/Kconfig   | 1 +
- arch/riscv/mm/init.c | 6 ------
- 2 files changed, 1 insertion(+), 6 deletions(-)
+ arch/c6x/Kconfig   | 1 +
+ arch/c6x/mm/init.c | 7 -------
+ 2 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index c22ebe08e902..ab1b4cee84fc 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -37,6 +37,7 @@ config RISCV
- 	select THREAD_INFO_IN_TASK
- 	select RISCV_TIMER
- 	select GENERIC_IRQ_MULTI_HANDLER
+diff --git a/arch/c6x/Kconfig b/arch/c6x/Kconfig
+index c6b4dd1418b4..857f95f9a6a4 100644
+--- a/arch/c6x/Kconfig
++++ b/arch/c6x/Kconfig
+@@ -19,6 +19,7 @@ config C6X
+ 	select GENERIC_CLOCKEVENTS
+ 	select MODULES_USE_ELF_RELA
+ 	select ARCH_NO_COHERENT_DMA_MMAP
 +	select INITRAMFS_GENERIC_UNLOAD
  
  config MMU
- 	def_bool y
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index c77df8142be2..36f83fe8a726 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -62,9 +62,3 @@ void free_initmem(void)
- {
- 	free_initmem_default(0);
+ 	def_bool n
+diff --git a/arch/c6x/mm/init.c b/arch/c6x/mm/init.c
+index 4cc72b0d1c1d..a11cb657182a 100644
+--- a/arch/c6x/mm/init.c
++++ b/arch/c6x/mm/init.c
+@@ -66,13 +66,6 @@ void __init mem_init(void)
+ 	mem_init_print_info(NULL);
  }
--
+ 
 -#ifdef CONFIG_BLK_DEV_INITRD
--void free_initrd_mem(unsigned long start, unsigned long end)
+-void __init free_initrd_mem(unsigned long start, unsigned long end)
 -{
+-	free_reserved_area((void *)start, (void *)end, -1, "initrd");
 -}
--#endif /* CONFIG_BLK_DEV_INITRD */
+-#endif
+-
+ void __init free_initmem(void)
+ {
+ 	free_initmem_default(-1);
 -- 
 2.16.2
 
