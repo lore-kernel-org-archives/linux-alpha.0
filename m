@@ -1,7 +1,7 @@
 From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH 07/16] h8300: Use INITRAMFS_GENERIC_UNLOAD
-Date: Sat, 24 Mar 2018 13:44:49 -0400
-Message-ID: <20180324174458.26423-8-shea@shealevy.com>
+Subject: [PATCH 10/16] microblaze: Use INITRAMFS_GENERIC_UNLOAD
+Date: Sat, 24 Mar 2018 13:44:52 -0400
+Message-ID: <20180324174458.26423-11-shea@shealevy.com>
 References: <20180324174458.26423-1-shea@shealevy.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,12 +14,12 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=HU94vqGEqMuG5Fs6zcnSV/pJBddzdvkTV/H3Twfn+wQ=; b=DZSNYusNQLpRINa5Z6S2NfKCwZ
-	CeOahY4eUVE6DQXyyKuJ/9kUMTVb8FkhA3pR9m+AAP4hZuz7lPvaIJIcl6zSygNGQf1KbsPvNeTSO
-	40TdcLon213bgxh0LzKKDYQ3V1T20zJBoODGoMb59/GZAbgajhY9ZeTBwhptOWc2bEorI7SAVPUcX
-	BQhKQKrr5rKL6xc7YPzzc4E0NJbRVaHDlXBu4JlYLXzt7V26foJ4QiZZBajLOfFs7CZ4dw+FxvqPP
-	AfnTQkLYKMT1LIgoOwKU9kIMTh11YzcTjk+l4Tkvy3KVLa8FfJfPYGyX2FWyYv8nWXabxNoBGcy+E
-	4L7ASjUg==;
+	bh=VVwOeWYW6wDw/bmTai8eVyAD8s9D31/upugj6yaaD4c=; b=LXIXLd3t6+TvWcmbH6PMsKDTD9
+	00c15cyfwoXhwJZEaNPst3sCFLI9dGeTVpjOkQL/m5BgnT/gEwX0S/CmoLW1pgulOyuR7EXMvB7JU
+	VpKCZh5byA7p6MrcA9Or5NnLlAerjjvbWsJ0UxYlCL77f1Bu8ch8R08lVpW6CGxuy18U+EkPMv5Pc
+	QDsZY1ABu/8jpPB9tstWTVc5TVioScfF8t+D07uVBol8pUVSV8QSvkjh3U0dWnD3XoIgzw2MMTxbc
+	ZNibUSVp28uCbVyKmvnck4B0dsvwuFaJYDRZen8TjI9lO6lZlzcfra2PprshNnWRBBUXCPx9y5lBx
+	HrncLSxQ==;
 In-Reply-To: <20180324174458.26423-1-shea@shealevy.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
@@ -36,29 +36,29 @@ Cc: Shea Levy <shea@shealevy.com>
 
 Signed-off-by: Shea Levy <shea@shealevy.com>
 ---
- arch/h8300/Kconfig   | 1 +
- arch/h8300/mm/init.c | 7 -------
+ arch/microblaze/Kconfig   | 1 +
+ arch/microblaze/mm/init.c | 7 -------
  2 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/h8300/Kconfig b/arch/h8300/Kconfig
-index 091d6d04b5e5..58c9b6b1df16 100644
---- a/arch/h8300/Kconfig
-+++ b/arch/h8300/Kconfig
-@@ -24,6 +24,7 @@ config H8300
- 	select HAVE_ARCH_HASH
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 3817a3e2146c..ef23e8410b4b 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -36,6 +36,7 @@ config MICROBLAZE
+ 	select TRACING_SUPPORT
+ 	select VIRT_TO_BUS
  	select CPU_NO_EFFICIENT_FFS
- 	select DMA_DIRECT_OPS
 +	select INITRAMFS_GENERIC_UNLOAD
  
- config CPU_BIG_ENDIAN
- 	def_bool y
-diff --git a/arch/h8300/mm/init.c b/arch/h8300/mm/init.c
-index 015287ac8ce8..37574332b202 100644
---- a/arch/h8300/mm/init.c
-+++ b/arch/h8300/mm/init.c
-@@ -102,13 +102,6 @@ void __init mem_init(void)
+ # Endianness selection
+ choice
+diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
+index df6de7ccdc2e..ea058dfda222 100644
+--- a/arch/microblaze/mm/init.c
++++ b/arch/microblaze/mm/init.c
+@@ -187,13 +187,6 @@ void __init setup_memory(void)
+ 	paging_init();
  }
- 
  
 -#ifdef CONFIG_BLK_DEV_INITRD
 -void free_initrd_mem(unsigned long start, unsigned long end)
@@ -67,8 +67,8 @@ index 015287ac8ce8..37574332b202 100644
 -}
 -#endif
 -
- void
- free_initmem(void)
+ void free_initmem(void)
  {
+ 	free_initmem_default(-1);
 -- 
 2.16.2
