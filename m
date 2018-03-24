@@ -1,7 +1,7 @@
 From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH 12/16] openrisc: Use INITRAMFS_GENERIC_UNLOAD
-Date: Sat, 24 Mar 2018 13:44:54 -0400
-Message-ID: <20180324174458.26423-13-shea@shealevy.com>
+Subject: [PATCH 14/16] powerpc: Use INITRAMFS_GENERIC_UNLOAD
+Date: Sat, 24 Mar 2018 13:44:56 -0400
+Message-ID: <20180324174458.26423-15-shea@shealevy.com>
 References: <20180324174458.26423-1-shea@shealevy.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,12 +14,12 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=/EdcBejCTElrGGrp3RqZ3/A5VfDTtt/VJIgMgATFiRk=; b=rNhRq29RbnU1A72RLn+dcsn/t4
-	TY/63pecmCe97La1OaKUY1xbJiASwQ+p64xBOYLo7g/7l21z9N0kdT0Md0vNKiVZsChsI9fC1CxhL
-	PJ3kfKmcfUr+z8MPX/Cx6ZLBjHJ+8Fd6oeBJYiDFtYpRlFskxMcwbeFgDUlStke61XhRPQ6bPFLc9
-	7F36wzD9UBLNyqWNUCsjd5MpKrjhp49/LldyLC2JrgpfbUJzmVrifYk28QjgLQxDHyhbmJWWl6O5O
-	Ryu2NJeXciyaO4Ox4e+LdeofxmLaOWsmUzIwxmUbXmKrsamXhQpwvC4KU7eR9264UeavT459iuecQ
-	aBKVZuGQ==;
+	bh=KQHkvJlIyd7RJjLH90pzPvvn7CYjQCWYd+Rmkd1jTIY=; b=bv5SvVi8B2+g5BBtfbHTb9Umfv
+	L491qfM5ZI5TllpXZDxdy81UFrBhabGl4eRIORkGLVC4vM4QRKnDJ5NTuU6+b47UXvZUBs3yt6tOf
+	BslPz3EJzh2CBA9tC2VerHTdJcL1nicEU2BSckpl0zQ+/mXlGI+HanbBAAfsTufsQO7nhyQCp4y9R
+	Syhujew88csS+WvOYl23Iv02SYv0R9NwSqIMQJZn/hgPWkoAz9n3rTgr8kdsVOKAj3NRfdgbrj8rN
+	YJGsvsvnGlme1paI/ZzMbCG7kxCZaLErfR1CD6YF/g9MGQpJ2YBdoM5SJoILXcf/pmWGBS6ck/82j
+	zZ3IDQkw==;
 In-Reply-To: <20180324174458.26423-1-shea@shealevy.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
@@ -36,39 +36,39 @@ Cc: Shea Levy <shea@shealevy.com>
 
 Signed-off-by: Shea Levy <shea@shealevy.com>
 ---
- arch/openrisc/Kconfig   | 1 +
- arch/openrisc/mm/init.c | 7 -------
+ arch/powerpc/Kconfig  | 1 +
+ arch/powerpc/mm/mem.c | 7 -------
  2 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/openrisc/Kconfig b/arch/openrisc/Kconfig
-index dfb6a79ba7ff..0f8d2132baa5 100644
---- a/arch/openrisc/Kconfig
-+++ b/arch/openrisc/Kconfig
-@@ -36,6 +36,7 @@ config OPENRISC
- 	select OMPIC if SMP
- 	select ARCH_WANT_FRAME_POINTERS
- 	select GENERIC_IRQ_MULTI_HANDLER
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 73ce5dd07642..8cf384068e79 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -223,6 +223,7 @@ config PPC
+ 	select HAVE_SYSCALL_TRACEPOINTS
+ 	select HAVE_VIRT_CPU_ACCOUNTING
+ 	select HAVE_IRQ_TIME_ACCOUNTING
 +	select INITRAMFS_GENERIC_UNLOAD
- 
- config CPU_BIG_ENDIAN
- 	def_bool y
-diff --git a/arch/openrisc/mm/init.c b/arch/openrisc/mm/init.c
-index 6972d5d6f23f..c1a3dcf9ad40 100644
---- a/arch/openrisc/mm/init.c
-+++ b/arch/openrisc/mm/init.c
-@@ -222,13 +222,6 @@ void __init mem_init(void)
- 	return;
+ 	select IRQ_DOMAIN
+ 	select IRQ_FORCED_THREADING
+ 	select MODULES_USE_ELF_RELA
+diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
+index fe8c61149fb8..e85b2a3cd264 100644
+--- a/arch/powerpc/mm/mem.c
++++ b/arch/powerpc/mm/mem.c
+@@ -404,13 +404,6 @@ void free_initmem(void)
+ 	free_initmem_default(POISON_FREE_INITMEM);
  }
  
 -#ifdef CONFIG_BLK_DEV_INITRD
--void free_initrd_mem(unsigned long start, unsigned long end)
+-void __init free_initrd_mem(unsigned long start, unsigned long end)
 -{
 -	free_reserved_area((void *)start, (void *)end, -1, "initrd");
 -}
 -#endif
 -
- void free_initmem(void)
- {
- 	free_initmem_default(-1);
+ /*
+  * This is called when a page has been modified by the kernel.
+  * It just marks the page as not i-cache clean.  We do the i-cache
 -- 
 2.16.2
