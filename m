@@ -1,7 +1,7 @@
 From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH v2 03/16] alpha: Use INITRAMFS_GENERIC_UNLOAD
-Date: Sun, 25 Mar 2018 18:18:40 -0400
-Message-ID: <20180325221853.10839-4-shea@shealevy.com>
+Subject: [PATCH v2 08/16] m32r: Use INITRAMFS_GENERIC_UNLOAD
+Date: Sun, 25 Mar 2018 18:18:45 -0400
+Message-ID: <20180325221853.10839-9-shea@shealevy.com>
 References: <20180324174458.26423-1-shea@shealevy.com>
  <20180325221853.10839-1-shea@shealevy.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -16,34 +16,37 @@ Cc: Shea Levy <shea@shealevy.com>
 
 Signed-off-by: Shea Levy <shea@shealevy.com>
 ---
- arch/alpha/Kconfig   | 1 +
- arch/alpha/mm/init.c | 8 --------
- 2 files changed, 1 insertion(+), 8 deletions(-)
+ arch/m32r/Kconfig   |  1 +
+ arch/m32r/mm/init.c | 11 -----------
+ 2 files changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index e96adcbcab41..238d743ae8f2 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -27,6 +27,7 @@ config ALPHA
- 	select ODD_RT_SIGACTION
- 	select OLD_SIGSUSPEND
- 	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
+diff --git a/arch/m32r/Kconfig b/arch/m32r/Kconfig
+index dd84ee194579..010a2b999181 100644
+--- a/arch/m32r/Kconfig
++++ b/arch/m32r/Kconfig
+@@ -21,6 +21,7 @@ config M32R
+ 	select CPU_NO_EFFICIENT_FFS
+ 	select DMA_DIRECT_OPS
+ 	select ARCH_NO_COHERENT_DMA_MMAP if !MMU
 +	select INITRAMFS_GENERIC_UNLOAD
- 	help
- 	  The Alpha is a 64-bit general-purpose processor designed and
- 	  marketed by the Digital Equipment Corporation of blessed memory,
-diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
-index 9d74520298ab..55f7c8efa962 100644
---- a/arch/alpha/mm/init.c
-+++ b/arch/alpha/mm/init.c
-@@ -291,11 +291,3 @@ free_initmem(void)
+ 
+ config SBUS
+ 	bool
+diff --git a/arch/m32r/mm/init.c b/arch/m32r/mm/init.c
+index 93abc8c3a46e..e2b5f09209ee 100644
+--- a/arch/m32r/mm/init.c
++++ b/arch/m32r/mm/init.c
+@@ -139,14 +139,3 @@ void free_initmem(void)
  {
  	free_initmem_default(-1);
  }
 -
 -#ifdef CONFIG_BLK_DEV_INITRD
--void
--free_initrd_mem(unsigned long start, unsigned long end)
+-/*======================================================================*
+- * free_initrd_mem() :
+- * orig : arch/sh/mm/init.c
+- *======================================================================*/
+-void free_initrd_mem(unsigned long start, unsigned long end)
 -{
 -	free_reserved_area((void *)start, (void *)end, -1, "initrd");
 -}
