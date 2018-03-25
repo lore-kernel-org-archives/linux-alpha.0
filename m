@@ -1,74 +1,67 @@
-From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH 14/16] powerpc: Use INITRAMFS_GENERIC_UNLOAD
-Date: Sat, 24 Mar 2018 13:44:56 -0400
-Message-ID: <20180324174458.26423-15-shea@shealevy.com>
+From: LEROY Christophe <christophe.leroy@c-s.fr>
+Subject: Re: [PATCH 01/16] initrd: Add generic code path for common initrd
+ unloading logic.
+Date: Sun, 25 Mar 2018 19:17:40 +0200
+Message-ID: <20180325191740.Horde.Cymi0yr0xcQQV1s42wkNkg2@messagerie.si.c-s.fr>
 References: <20180324174458.26423-1-shea@shealevy.com>
+ <20180324174458.26423-2-shea@shealevy.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
-	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Owner;
-	bh=KQHkvJlIyd7RJjLH90pzPvvn7CYjQCWYd+Rmkd1jTIY=; b=bv5SvVi8B2+g5BBtfbHTb9Umfv
-	L491qfM5ZI5TllpXZDxdy81UFrBhabGl4eRIORkGLVC4vM4QRKnDJ5NTuU6+b47UXvZUBs3yt6tOf
-	BslPz3EJzh2CBA9tC2VerHTdJcL1nicEU2BSckpl0zQ+/mXlGI+HanbBAAfsTufsQO7nhyQCp4y9R
-	Syhujew88csS+WvOYl23Iv02SYv0R9NwSqIMQJZn/hgPWkoAz9n3rTgr8kdsVOKAj3NRfdgbrj8rN
-	YJGsvsvnGlme1paI/ZzMbCG7kxCZaLErfR1CD6YF/g9MGQpJ2YBdoM5SJoILXcf/pmWGBS6ck/82j
-	zZ3IDQkw==;
-In-Reply-To: <20180324174458.26423-1-shea@shealevy.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-c6x-dev@linux-c6x.org, uclinux-h8-devel@lists.sourceforge.jp, linux-m68k@lists.linux-m68k.org, nios2-dev@lists.rocketboards.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, user-mode-linux-devel@lists.sourceforge.net
-Cc: Shea Levy <shea@shealevy.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180324174458.26423-2-shea@shealevy.com>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"; delsp="Yes"
+To: Shea Levy <shea@shealevy.com>
+Cc: user-mode-linux-devel@lists.sourceforge.net, linux-sh@vger.kernel.org, linux-riscv@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org, openrisc@lists.librecores.org, nios2-dev@lists.rocketboards.org, linux-m68k@lists.linux-m68k.org, uclinux-h8-devel@lists.sourceforge.jp, linux-c6x-dev@linux-c6x.org, linux-snps-arc@lists.infradead.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-Signed-off-by: Shea Levy <shea@shealevy.com>
----
- arch/powerpc/Kconfig  | 1 +
- arch/powerpc/mm/mem.c | 7 -------
- 2 files changed, 1 insertion(+), 7 deletions(-)
+Shea Levy <shea@shealevy.com> a écrit :
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 73ce5dd07642..8cf384068e79 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -223,6 +223,7 @@ config PPC
- 	select HAVE_SYSCALL_TRACEPOINTS
- 	select HAVE_VIRT_CPU_ACCOUNTING
- 	select HAVE_IRQ_TIME_ACCOUNTING
-+	select INITRAMFS_GENERIC_UNLOAD
- 	select IRQ_DOMAIN
- 	select IRQ_FORCED_THREADING
- 	select MODULES_USE_ELF_RELA
-diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-index fe8c61149fb8..e85b2a3cd264 100644
---- a/arch/powerpc/mm/mem.c
-+++ b/arch/powerpc/mm/mem.c
-@@ -404,13 +404,6 @@ void free_initmem(void)
- 	free_initmem_default(POISON_FREE_INITMEM);
- }
- 
--#ifdef CONFIG_BLK_DEV_INITRD
--void __init free_initrd_mem(unsigned long start, unsigned long end)
--{
--	free_reserved_area((void *)start, (void *)end, -1, "initrd");
--}
--#endif
--
- /*
-  * This is called when a page has been modified by the kernel.
-  * It just marks the page as not i-cache clean.  We do the i-cache
--- 
-2.16.2
+> Signed-off-by: Shea Levy <shea@shealevy.com>
+> ---
+>  init/initramfs.c | 7 +++++++
+>  usr/Kconfig      | 4 ++++
+>  2 files changed, 11 insertions(+)
+>
+> diff --git a/init/initramfs.c b/init/initramfs.c
+> index 7e99a0038942..de5ce873eb5a 100644
+> --- a/init/initramfs.c
+> +++ b/init/initramfs.c
+> @@ -526,6 +526,13 @@ extern unsigned long __initramfs_size;
+>  #include <linux/initrd.h>
+>  #include <linux/kexec.h>
+>
+> +#ifdef CONFIG_INITRAMFS_GENERIC_UNLOAD
+> +void free_initrd_mem(unsigned long start, unsigned long end)
+> +{
+> +       free_reserved_area((void *)start, (void *)end, -1, "initrd");
+> +}
+> +#endif
+
+In powerpc this was an __init function. Why not also put the generic  
+one in __init section ?
+
+Christophe
+
+
+> +
+>  static void __init free_initrd(void)
+>  {
+>  #ifdef CONFIG_KEXEC_CORE
+> diff --git a/usr/Kconfig b/usr/Kconfig
+> index 43658b8a975e..fd79d4d6fa26 100644
+> --- a/usr/Kconfig
+> +++ b/usr/Kconfig
+> @@ -233,3 +233,7 @@ config INITRAMFS_COMPRESSION
+>  	default ".lzma" if RD_LZMA
+>  	default ".bz2"  if RD_BZIP2
+>  	default ""
+> +
+> +# Arches can select this for a generic initrd unloading codepath
+> +config INITRAMFS_GENERIC_UNLOAD
+> +	bool
+> --
+> 2.16.2
+
+
