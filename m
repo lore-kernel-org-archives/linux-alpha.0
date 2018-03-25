@@ -1,7 +1,7 @@
 From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH v2 12/16] openrisc: Use INITRAMFS_GENERIC_UNLOAD
-Date: Sun, 25 Mar 2018 18:18:49 -0400
-Message-ID: <20180325221853.10839-13-shea@shealevy.com>
+Subject: [PATCH v2 10/16] microblaze: Use INITRAMFS_GENERIC_UNLOAD
+Date: Sun, 25 Mar 2018 18:18:47 -0400
+Message-ID: <20180325221853.10839-11-shea@shealevy.com>
 References: <20180324174458.26423-1-shea@shealevy.com>
  <20180325221853.10839-1-shea@shealevy.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -16,28 +16,28 @@ Cc: Shea Levy <shea@shealevy.com>
 
 Signed-off-by: Shea Levy <shea@shealevy.com>
 ---
- arch/openrisc/Kconfig   | 1 +
- arch/openrisc/mm/init.c | 7 -------
+ arch/microblaze/Kconfig   | 1 +
+ arch/microblaze/mm/init.c | 7 -------
  2 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/openrisc/Kconfig b/arch/openrisc/Kconfig
-index dfb6a79ba7ff..0f8d2132baa5 100644
---- a/arch/openrisc/Kconfig
-+++ b/arch/openrisc/Kconfig
-@@ -36,6 +36,7 @@ config OPENRISC
- 	select OMPIC if SMP
- 	select ARCH_WANT_FRAME_POINTERS
- 	select GENERIC_IRQ_MULTI_HANDLER
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 3817a3e2146c..ef23e8410b4b 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -36,6 +36,7 @@ config MICROBLAZE
+ 	select TRACING_SUPPORT
+ 	select VIRT_TO_BUS
+ 	select CPU_NO_EFFICIENT_FFS
 +	select INITRAMFS_GENERIC_UNLOAD
  
- config CPU_BIG_ENDIAN
- 	def_bool y
-diff --git a/arch/openrisc/mm/init.c b/arch/openrisc/mm/init.c
-index 6972d5d6f23f..c1a3dcf9ad40 100644
---- a/arch/openrisc/mm/init.c
-+++ b/arch/openrisc/mm/init.c
-@@ -222,13 +222,6 @@ void __init mem_init(void)
- 	return;
+ # Endianness selection
+ choice
+diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
+index df6de7ccdc2e..ea058dfda222 100644
+--- a/arch/microblaze/mm/init.c
++++ b/arch/microblaze/mm/init.c
+@@ -187,13 +187,6 @@ void __init setup_memory(void)
+ 	paging_init();
  }
  
 -#ifdef CONFIG_BLK_DEV_INITRD
