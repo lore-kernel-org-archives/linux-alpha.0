@@ -1,7 +1,7 @@
 From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH v2 08/16] m32r: Use INITRAMFS_GENERIC_UNLOAD
-Date: Sun, 25 Mar 2018 18:18:45 -0400
-Message-ID: <20180325221853.10839-9-shea@shealevy.com>
+Subject: [PATCH v2 02/16] riscv: Use INITRAMFS_GENERIC_UNLOAD.
+Date: Sun, 25 Mar 2018 18:18:39 -0400
+Message-ID: <20180325221853.10839-3-shea@shealevy.com>
 References: <20180324174458.26423-1-shea@shealevy.com>
  <20180325221853.10839-1-shea@shealevy.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -16,41 +16,36 @@ Cc: Shea Levy <shea@shealevy.com>
 
 Signed-off-by: Shea Levy <shea@shealevy.com>
 ---
- arch/m32r/Kconfig   |  1 +
- arch/m32r/mm/init.c | 11 -----------
- 2 files changed, 1 insertion(+), 11 deletions(-)
+ arch/riscv/Kconfig   | 1 +
+ arch/riscv/mm/init.c | 6 ------
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/arch/m32r/Kconfig b/arch/m32r/Kconfig
-index dd84ee194579..010a2b999181 100644
---- a/arch/m32r/Kconfig
-+++ b/arch/m32r/Kconfig
-@@ -21,6 +21,7 @@ config M32R
- 	select CPU_NO_EFFICIENT_FFS
- 	select DMA_DIRECT_OPS
- 	select ARCH_NO_COHERENT_DMA_MMAP if !MMU
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index c22ebe08e902..ab1b4cee84fc 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -37,6 +37,7 @@ config RISCV
+ 	select THREAD_INFO_IN_TASK
+ 	select RISCV_TIMER
+ 	select GENERIC_IRQ_MULTI_HANDLER
 +	select INITRAMFS_GENERIC_UNLOAD
  
- config SBUS
- 	bool
-diff --git a/arch/m32r/mm/init.c b/arch/m32r/mm/init.c
-index 93abc8c3a46e..e2b5f09209ee 100644
---- a/arch/m32r/mm/init.c
-+++ b/arch/m32r/mm/init.c
-@@ -139,14 +139,3 @@ void free_initmem(void)
+ config MMU
+ 	def_bool y
+diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+index c77df8142be2..36f83fe8a726 100644
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -62,9 +62,3 @@ void free_initmem(void)
  {
- 	free_initmem_default(-1);
+ 	free_initmem_default(0);
  }
 -
 -#ifdef CONFIG_BLK_DEV_INITRD
--/*======================================================================*
-- * free_initrd_mem() :
-- * orig : arch/sh/mm/init.c
-- *======================================================================*/
 -void free_initrd_mem(unsigned long start, unsigned long end)
 -{
--	free_reserved_area((void *)start, (void *)end, -1, "initrd");
 -}
--#endif
+-#endif /* CONFIG_BLK_DEV_INITRD */
 -- 
 2.16.2
 
