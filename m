@@ -1,7 +1,7 @@
 From: Shea Levy <shea@shealevy.com>
-Subject: [PATCH v2 10/16] microblaze: Use INITRAMFS_GENERIC_UNLOAD
-Date: Sun, 25 Mar 2018 18:18:47 -0400
-Message-ID: <20180325221853.10839-11-shea@shealevy.com>
+Subject: [PATCH v2 03/16] alpha: Use INITRAMFS_GENERIC_UNLOAD
+Date: Sun, 25 Mar 2018 18:18:40 -0400
+Message-ID: <20180325221853.10839-4-shea@shealevy.com>
 References: <20180324174458.26423-1-shea@shealevy.com>
  <20180325221853.10839-1-shea@shealevy.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -16,40 +16,38 @@ Cc: Shea Levy <shea@shealevy.com>
 
 Signed-off-by: Shea Levy <shea@shealevy.com>
 ---
- arch/microblaze/Kconfig   | 1 +
- arch/microblaze/mm/init.c | 7 -------
- 2 files changed, 1 insertion(+), 7 deletions(-)
+ arch/alpha/Kconfig   | 1 +
+ arch/alpha/mm/init.c | 8 --------
+ 2 files changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
-index 3817a3e2146c..ef23e8410b4b 100644
---- a/arch/microblaze/Kconfig
-+++ b/arch/microblaze/Kconfig
-@@ -36,6 +36,7 @@ config MICROBLAZE
- 	select TRACING_SUPPORT
- 	select VIRT_TO_BUS
- 	select CPU_NO_EFFICIENT_FFS
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index e96adcbcab41..238d743ae8f2 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -27,6 +27,7 @@ config ALPHA
+ 	select ODD_RT_SIGACTION
+ 	select OLD_SIGSUSPEND
+ 	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
 +	select INITRAMFS_GENERIC_UNLOAD
- 
- # Endianness selection
- choice
-diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
-index df6de7ccdc2e..ea058dfda222 100644
---- a/arch/microblaze/mm/init.c
-+++ b/arch/microblaze/mm/init.c
-@@ -187,13 +187,6 @@ void __init setup_memory(void)
- 	paging_init();
+ 	help
+ 	  The Alpha is a 64-bit general-purpose processor designed and
+ 	  marketed by the Digital Equipment Corporation of blessed memory,
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index 9d74520298ab..55f7c8efa962 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -291,11 +291,3 @@ free_initmem(void)
+ {
+ 	free_initmem_default(-1);
  }
- 
+-
 -#ifdef CONFIG_BLK_DEV_INITRD
--void free_initrd_mem(unsigned long start, unsigned long end)
+-void
+-free_initrd_mem(unsigned long start, unsigned long end)
 -{
 -	free_reserved_area((void *)start, (void *)end, -1, "initrd");
 -}
 -#endif
--
- void free_initmem(void)
- {
- 	free_initmem_default(-1);
 -- 
 2.16.2
 
