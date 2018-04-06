@@ -1,82 +1,129 @@
-From: Ilya Smith <blackzert@gmail.com>
-Subject: Re: [RFC PATCH v2 0/2] Randomization of address chosen by mmap.
-Date: Tue, 3 Apr 2018 03:11:50 +0300
-Message-ID: <D9173B50-39D6-4EE5-AF8B-3EB50D0C9A3B@gmail.com>
-References: <1521736598-12812-1-git-send-email-blackzert@gmail.com>
- <20180323124806.GA5624@bombadil.infradead.org>
- <651E0DB6-4507-4DA1-AD46-9C26ED9792A8@gmail.com>
- <20180326084650.GC5652@dhcp22.suse.cz>
- <01A133F4-27DF-4AE2-80D6-B0368BF758CD@gmail.com>
- <20180327072432.GY5652@dhcp22.suse.cz>
- <0549F29C-12FC-4401-9E85-A430BC11DA78@gmail.com>
- <CAGXu5j+XXufprMaJ9GbHxD3mZ7iqUuu60-tTMC6wo2x1puYzMQ@mail.gmail.com>
- <20180327234904.GA27734@bombadil.infradead.org>
- <20180328000025.GM1436@brightrain.aerifal.cx>
- <3908561D78D1C84285E8C5FCA982C28F7B3B8BC5@ORSMSX110.amr.corp.intel.com>
-Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
-Content-Transfer-Encoding: base64
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:To:References:Message-Id:Date:
-	In-Reply-To:From:Subject:Mime-Version:Reply-To:Content-ID:Content-Description
-	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=yiTlZzHOraXb2l7uSY/Q+cQlU0zxL23qAGDjEMIAtF8=; b=pfraRL9V5ng7DW
-	YkIOh04lNn7h54pEO73/0OWVPCMATnVrty0dsuTJ24kwZ/SkRKa83gzdVQ41Ns8UEIOlRyWpl8Yk9
-	pYgujV97QGUfWdXtAxXC9cca88q5iwox5yiSdESy3ucwI4Au0pRLnL+fvMn6KJkzfBOJL+knHmkyT
-	N14VQRV5VsL1i7evHBc0wd7H668nuiDJ4JtsLaIZ2LFGEnBnBDvo5t4gJaZqvgTngYSGoWWW4L28H
-	9FtMwi7I8lxlahDirBLCOD06GhZCNWqxiB7y72zkRVSYuAIeOagHRNMUsaTJlAP3j4R4ChJGMNRwv
-	P3sr5KiV399m/kqevaeg==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:subject:from:in-reply-to:date:cc
- :content-transfer-encoding:message-id:references:to;
- bh=J1d8GZtrK4hY+JTjitzp/6IX1SAUit8cEPdA71kilVA=;
- b=EuGazHaJzfISFZPcaALS46j4L2SWOQSJr2G0H6JQggNgAP3jOI/Z1miZU0cLVtfS+D
- XQHKKNOuaR0G4aP4sVgBxJCb5pGMX9v5HTG2Xo/kSfMUrBs+Z+LqpNIVRFRgKtpEwcyJ
- Tw8Fwdp0WRulT0LU7BkFCv/X2cVbfO0Kz7bbrnptgTn/8O6unYV6Tt1Epoj8qtwwGSpq
- dO3Q5AxB4ASt322rkDh94EeraoMfNW10dAwylgtAQnTo9bSGgQOlZGxR4ifxFyhfrWyZ
- Og5c8OJc0VsU+yZA5lE987aGBBu0mgSoCKczbI5z9eo8v2VK2G+mckRss/zkON29ss6+
- 9UPA==
-In-Reply-To: <3908561D78D1C84285E8C5FCA982C28F7B3B8BC5@ORSMSX110.amr.corp.intel.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-Content-Type: text/plain; charset="windows-1252"
-To: "Luck, Tony" <tony.luck@intel.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>, Rich Felker <dalias@libc.org>, Jan Kara <jack@suse.cz>, linux-sh <linux-sh@vger.kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Bhupesh Sharma <bhsharma@redhat.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Michal Hocko <mhocko@kernel.org>, Linux-MM <linux-mm@kvack.org>, Paul Mackerras <paulus@samba.org>, Deepa Dinamani <deepa.kernel@gmail.com>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux <sparclinux@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "Williams,
- Dan J" <dan.j.williams@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, linux-s390 <linux-s390@vger.kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, X86 ML <x86@kernel.org>, Hugh Dickins <hu>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: Re: [PATCH] alpha: io: reorder barriers to guarantee writeX() and
+ iowriteX() ordering
+Date: Thu, 5 Apr 2018 21:35:10 -0400
+Message-ID: <3c28281e-de52-abbe-36bc-06f5527da921@codeaurora.org>
+References: <1522691281-21593-1-git-send-email-okaya@codeaurora.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1522978514;
+        bh=KQr2OtYOZtUY2q9VO5FYa/bc90VcJAfTaxLhJ8BRHfU=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=o2sU71ZfQvP4WvBa96Mj+QPczkkqMUIBDNYSRZXRTwhH3/Uq3AS+iMSlX0dtNh9Jj
+         z90ojbYMAN97AdZkOpGjw46io+nVumyrubbHA2d96nR47ARt9eWP+qStr24cGAddEz
+         9RWACJYqQV2XOUnnCAOQnqKIyRSnwLiWmt7ht2MA=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1522978513;
+        bh=KQr2OtYOZtUY2q9VO5FYa/bc90VcJAfTaxLhJ8BRHfU=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=JJvntSk3su8WNlOAquuAB77lK44vFAFynlXqYYpnoxzyuTV3C5RQTF64o0WEFBaFE
+         10FLmpz+XuWBS0Pb9w77CB0z00TLMA+eEMktXoA1hOSwiTNIprybqfCGJHyBZJwTiQ
+         HRPFPHSgABNKudKRIC1mGFrQdXC5JioQeo9Qb0MU=
+In-Reply-To: <1522691281-21593-1-git-send-email-okaya@codeaurora.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-alpha@vger.kernel.org, timur@codeaurora.org, sulrich@codeaurora.org
+Cc: arnd@arndb.de, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guenter Roeck <linux@roeck-us.net>, Kate Stewart <kstewart@linuxfoundation.org>, linux-kernel@vger.kernel.org
 
-PiBPbiAyOSBNYXIgMjAxOCwgYXQgMDA6MDcsIEx1Y2ssIFRvbnkgPHRvbnkubHVja0BpbnRlbC5j
-b20+IHdyb3RlOgo+IAo+PiBUaGUgZGVmYXVsdCBsaW1pdCBvZiBvbmx5IDY1NTM2IFZNQXMgd2ls
-bCBhbHNvIHF1aWNrbHkgY29tZSBpbnRvIHBsYXkKPj4gaWYgY29uc2VjdXRpdmUgYW5vbiBtbWFw
-cyBkb24ndCBnZXQgbWVyZ2VkLiBPZiBjb3Vyc2UgdGhpcyBjYW4gYmUKPj4gcmFpc2VkLCBidXQg
-aXQgaGFzIHNpZ25pZmljYW50IHJlc291cmNlIGFuZCBwZXJmb3JtYW5jZSAoZm9yaykgY29zdHMu
-Cj4gCj4gQ291bGQgdGhlIHJhbmRvbSBtbWFwIGFkZHJlc3MgY2hvb3NlciBsb29rIGZvciBob3cg
-bWFueSBleGlzdGluZwo+IFZNQXMgaGF2ZSBzcGFjZSBiZWZvcmUvYWZ0ZXIgYW5kIHRoZSByaWdo
-dCBhdHRyaWJ1dGVzIHRvIG1lcmdlIHdpdGggdGhlCj4gbmV3IG9uZSB5b3Ugd2FudCB0byBjcmVh
-dGU/IElmIHRoaXMgaXMgYWJvdmUgc29tZSB0aHJlc2hvbGQgKDEwMD8pIHRoZW4KPiBwaWNrIG9u
-ZSBvZiB0aGVtIHJhbmRvbWx5IGFuZCBhbGxvY2F0ZSB0aGUgbmV3IGFkZHJlc3Mgc28gdGhhdCBp
-dCB3aWxsCj4gbWVyZ2UgZnJvbSBiZWxvdy9hYm92ZSB3aXRoIGFuIGV4aXN0aW5nIG9uZS4KPiAK
-PiBUaGF0IHNob3VsZCBzdGlsbCBnaXZlIHlvdSBhIHZlcnkgaGlnaCBkZWdyZWUgb2YgcmFuZG9t
-bmVzcywgYnV0IHByZXZlbnQKPiBvdXQgb2YgY29udHJvbCBudW1iZXJzIG9mIFZNQXMgZnJvbSBi
-ZWluZyBjcmVhdGVkLgoKSSB0aGluayB0aGlzIHdvdWxkbuKAmXQgd29yay4gRm9yIGV4YW1wbGUg
-dGhlc2UgMTAwIGFsbG9jYXRpb24gbWF5IGhhcHBlbmVkIG9uIApwcm9jZXNzIGluaXRpYWxpemF0
-aW9uLiBCdXQgd2hlbiBhdHRhY2tlciBjb21lIHRvIHRoZSBzZXJ2ZXIgYWxsIGhpcyAKYWxsb2Nh
-dGlvbnMgd291bGQgYmUgbWFkZSBvbiB0aGUgcHJlZGljdGFibGUgb2Zmc2V0cyBmcm9tIGVhY2gg
-b3RoZXIuIFNvIGluIApyZXN1bHQgd2UgZGlkIG5vdGhpbmcganVzdCBkZWNyZWFzZSBwZXJmb3Jt
-YW5jZSBvZiBmaXJzdCAxMDAgYWxsb2NhdGlvbnMuIEkgCnRoaW5rIEkgY2FuIG1ha2UgaW9jdGwg
-dG8gdHVybiBvZmYgdGhpcyByYW5kb21pemF0aW9uIHBlciBwcm9jZXNzIGFuZCBpdCBjb3VsZCAK
-YmUgdXNlZCBpZiBuZWVkZWQuIEZvciBleGFtcGxlIGlmIGFwcGxpY2F0aW9uIGdvaW5nIHRvIGFs
-bG9jYXRlIGJpZyBjaHVuayBvciAKbWFrZSBiaWcgbWVtb3J5IHByZXNzdXJlLCBldGMuCgpCZXN0
-IHJlZ2FyZHMsCklseWEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fCmxpbnV4LXNucHMtYXJjIG1haWxpbmcgbGlzdApsaW51eC1zbnBzLWFyY0BsaXN0cy5p
-bmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8v
-bGludXgtc25wcy1hcmM=
+On 4/2/2018 1:48 PM, Sinan Kaya wrote:
+> memory-barriers.txt has been updated with the following requirement.
+> 
+> "When using writel(), a prior wmb() is not needed to guarantee that the
+> cache coherent memory writes have completed before writing to the MMIO
+> region."
+> 
+> Current writeX() and iowriteX() implementations on alpha are not
+> satisfying this requirement as the barrier is after the register write.
+> 
+> Move mb() in writeX() and iowriteX() functions to guarantee that HW
+> observes memory changes before performing register operations.
+> 
+> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+> Reported-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/alpha/include/asm/io.h | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+> index d123ff9..4c533fc 100644
+> --- a/arch/alpha/include/asm/io.h
+> +++ b/arch/alpha/include/asm/io.h
+> @@ -341,14 +341,14 @@ extern inline unsigned int ioread16(void __iomem *addr)
+>  
+>  extern inline void iowrite8(u8 b, void __iomem *addr)
+>  {
+> -	IO_CONCAT(__IO_PREFIX,iowrite8)(b, addr);
+>  	mb();
+> +	IO_CONCAT(__IO_PREFIX, iowrite8)(b, addr);
+>  }
+>  
+>  extern inline void iowrite16(u16 b, void __iomem *addr)
+>  {
+> -	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
+>  	mb();
+> +	IO_CONCAT(__IO_PREFIX, iowrite16)(b, addr);
+>  }
+>  
+>  extern inline u8 inb(unsigned long port)
+> @@ -382,8 +382,8 @@ extern inline unsigned int ioread32(void __iomem *addr)
+>  
+>  extern inline void iowrite32(u32 b, void __iomem *addr)
+>  {
+> -	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
+>  	mb();
+> +	IO_CONCAT(__IO_PREFIX, iowrite32)(b, addr);
+>  }
+>  
+>  extern inline u32 inl(unsigned long port)
+> @@ -434,14 +434,14 @@ extern inline u16 readw(const volatile void __iomem *addr)
+>  
+>  extern inline void writeb(u8 b, volatile void __iomem *addr)
+>  {
+> -	__raw_writeb(b, addr);
+>  	mb();
+> +	__raw_writeb(b, addr);
+>  }
+>  
+>  extern inline void writew(u16 b, volatile void __iomem *addr)
+>  {
+> -	__raw_writew(b, addr);
+>  	mb();
+> +	__raw_writew(b, addr);
+>  }
+>  #endif
+>  
+> @@ -482,14 +482,14 @@ extern inline u64 readq(const volatile void __iomem *addr)
+>  
+>  extern inline void writel(u32 b, volatile void __iomem *addr)
+>  {
+> -	__raw_writel(b, addr);
+>  	mb();
+> +	__raw_writel(b, addr);
+>  }
+>  
+>  extern inline void writeq(u64 b, volatile void __iomem *addr)
+>  {
+> -	__raw_writeq(b, addr);
+>  	mb();
+> +	__raw_writeq(b, addr);
+>  }
+>  #endif
+>  
+> 
+
+
+Can we get these merged to 4.17? 
+
+There was a consensus to fix the architectures having API violation issues.
+https://www.mail-archive.com/netdev@vger.kernel.org/msg225971.html
+
+
+
+-- 
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
