@@ -1,21 +1,42 @@
 From: yuan linyu <cugyly@163.com>
-Subject: [RFC linux] init: make all setup_arch() output string to boot_command_line[]
-Date: Fri,  6 Apr 2018 19:11:59 +0800
-Message-ID: <20180406111159.5385-1-cugyly@163.com>
+Subject: [RFC linux v2] init: make all setup_arch() output string to
+ boot_command_line[]
+Date: Sat,  7 Apr 2018 09:55:20 +0800
+Message-ID: <20180407015520.2839-1-cugyly@163.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=aGj/u
-        hspmOg2sq3Tv8TMFDGlD5HLk5yyhR25/Lr4k1s=; b=jOfKt2zh2WVTIPjLL7Szk
-        rLIAFvqZAxMcc8UIOAzwKKHofSKn3/sJRQtsa+ZdUk8/gUUWK6Pb6iE6ygJez4EL
-        eW01z9QoerWqmaWbqV50j+Ek1eTpMSw/Z5J5A6vi8Go1tzhnIocToc7bEBimoGGx
-        ePgaDvRNBC4sZQXqGNDBJ4=
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To
+	:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
+	List-Owner; bh=i9qNIGvzBsSucef7AXmno5AMavaJZWcfAS4XW5nIy8c=; b=CpvN6LU/5G7JKK
+	5xN5yGA0eMbC25EJrn0MGFEIbHyliaHPLFpvsNubHiUhTH0ZCsnfYPMTfh5/yDwwIoGL8R7sIhdkd
+	Yh9N7pHI0F96yip1vtjJp1t0r/Dc3fc7Xt4lR/mpsetysTOR5SgztQrmDyoPrVggWlyhJnuWyxtHy
+	T3bdCEuempeD8jMU3MLONNFmtoJnzdg+6OioB3oma4g0gZXI8YeuvRvhttho/IRjz7R0ZWymCo2LP
+	86QwtF6ZrpYsRAvtxuHwF2Ib3kHIBgEFCT5L0gA6Co/6aStUkU+jCyWy+fr9FS0Y3hSVmF3IPMD5u
+	1NqQiFGCL/aQWdWEyseg==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+ s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=HpZf4
+ rDUCUpFwDbSKvXgs4mPCIKP+4LRA6ygjCBjwWQ=; b=ZCaauZTiDXZ/BCB6ac4tO
+ Oi4UQCTN2R/yZ3gaZ/ZNjV3gmpzOApLBXQhPhQ6R4F2qRiU5ObhvxeGkP2ztzg23
+ 1XViD6rsw81PEj8tLsypldk1AqGoHJN5xFMurLou5PsWgKAT00iy++eh4ykfu14E
+ pqRmNduCpMlbQilPrvY2ZA=
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
 To: linux-kernel@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, uclinux-h8-devel@lists.sourceforge.jp, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, linux-mips@linux-mips.org, Greentime Hu <green.hu@gmail.com>, nios2-dev@lists.rocketboards.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, user-mode-linux-devel@lists.sourceforge.net, user-mode-linux-user@lists.sourceforge.net, Guan Xuetao <gxt@pku.edu.cn>, linux-xtensa@linux-xtensa.org, yuan linyu <Linyu.Yuan@alcatel-sbell.com.cn>
+Cc: linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-snps-arc@lists.infradead.org, uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org, user-mode-linux-devel@lists.sourceforge.net, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, Greentime Hu <green.hu@gmail.com>, user-mode-linux-user@lists.sourceforge.net, Guan Xuetao <gxt@pku.edu.cn>, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, yuan linyu <Linyu.Yuan@alcatel-sbell.com.cn>, linux-alpha@vger.kernel.org, nios2-dev@lists.rocketboards.org, linuxppc-dev@lists.ozlabs.org
 
 From: yuan linyu <Linyu.Yuan@alcatel-sbell.com.cn>
 
@@ -23,6 +44,9 @@ then all arch boot parameter handled in the same way in start_kernel()
 
 Signed-off-by: yuan linyu <Linyu.Yuan@alcatel-sbell.com.cn>
 ---
+v2:
+	fix kbuild issue of parisc
+
  arch/alpha/kernel/setup.c          |  4 +---
  arch/arc/kernel/setup.c            |  5 +----
  arch/arm/kernel/setup.c            |  7 +------
@@ -38,7 +62,7 @@ Signed-off-by: yuan linyu <Linyu.Yuan@alcatel-sbell.com.cn>
  arch/nds32/kernel/setup.c          |  3 +--
  arch/nios2/kernel/setup.c          |  5 +----
  arch/openrisc/kernel/setup.c       |  4 +---
- arch/parisc/kernel/setup.c         |  9 ++-------
+ arch/parisc/kernel/setup.c         | 11 +++--------
  arch/powerpc/kernel/setup-common.c |  4 +---
  arch/riscv/kernel/setup.c          |  4 +---
  arch/s390/kernel/setup.c           |  6 +-----
@@ -51,7 +75,7 @@ Signed-off-by: yuan linyu <Linyu.Yuan@alcatel-sbell.com.cn>
  arch/xtensa/kernel/setup.c         |  9 +++++----
  include/linux/init.h               |  2 +-
  init/main.c                        | 14 +++++++-------
- 28 files changed, 59 insertions(+), 124 deletions(-)
+ 28 files changed, 60 insertions(+), 125 deletions(-)
 
 diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
 index 5576f7646fb6..c74675cf7129 100644
@@ -461,7 +485,7 @@ index 9d28ab14d139..d73e1faa88d1 100644
  }
  
 diff --git a/arch/parisc/kernel/setup.c b/arch/parisc/kernel/setup.c
-index 0e9675f857a5..7756a6110b83 100644
+index 0e9675f857a5..0a78a897959a 100644
 --- a/arch/parisc/kernel/setup.c
 +++ b/arch/parisc/kernel/setup.c
 @@ -51,8 +51,6 @@
@@ -501,6 +525,15 @@ index 0e9675f857a5..7756a6110b83 100644
  {
  #ifdef CONFIG_64BIT
  	extern int parisc_narrow_firmware;
+@@ -160,7 +155,7 @@ void __init setup_arch(char **cmdline_p)
+ 	}
+ #endif
+ 	setup_pdc();
+-	setup_cmdline(cmdline_p);
++	setup_cmdline();
+ 	collect_boot_cpu_data();
+ 	do_memory_inventory();  /* probe for physical memory */
+ 	parisc_cache_init();
 diff --git a/arch/powerpc/kernel/setup-common.c b/arch/powerpc/kernel/setup-common.c
 index d73ec518ef80..b88ce4afaafd 100644
 --- a/arch/powerpc/kernel/setup-common.c
@@ -822,5 +855,3 @@ index e4a3160991ea..8df5917867b1 100644
  	boot_cpu_state_init();
 -- 
 2.14.1
-
-
