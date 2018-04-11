@@ -1,122 +1,62 @@
-From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: Re: [PATCH 00/32] docs/vm: convert to ReST format
-Date: Tue, 10 Apr 2018 13:23:07 +0300
-Message-ID: <20180410102306.GB5900@rapoport-lnx>
-References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
- <20180329154607.3d8bda75@lwn.net>
- <20180401063857.GA3357@rapoport-lnx>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] bug.h: Work around GCC PR82365 in BUG()
+Date: Wed, 11 Apr 2018 12:08:51 +0200
+Message-ID: <CAK8P3a2_ihWCuUvDz_SVA1TMomkO1d7pa6e2bOQkZcEVP+Ff-A@mail.gmail.com>
+References: <20171219114112.939391-1-arnd@arndb.de> <20180410224805.GA21429@saruman>
+ <CAK8P3a0-_u7_FCj-nH0izBv4ub6krm1uA32bwi2jtBzXJePcnQ@mail.gmail.com> <20180411095359.GB21429@saruman>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180401063857.GA3357@rapoport-lnx>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:in-reply-to:references:from:date:message-id
+         :subject:to:cc;
+        bh=V5psy+kJgYxBotBWKaGcOBr64KsWORkUlVfiZW1FHHo=;
+        b=gRcQ6DkvyJGIs12j48GEfQR2cOvab0hj1xA8P5qsqBWmbx818CTC9GsGJAkbsvzkNn
+         Rs5nkSSexcB5955ZuZAc6eyIUH03Vix5PABSVSbjY+Q2gZeLeBNSRM15hWw9uIs2cAVN
+         mlD0T0/1qDvYwMQdk6bbWjVjy8kZAd+N/qp4vu9GQ8LdmuGxbMXFkzp3+NrWtAB7N+1F
+         bRZAb391qiQ/B3N3Jxumu61bVrPI2WAxXCHNuJgrOppFET+t96Xq/f808c5ZFuT5xvOT
+         pVOJU4xfROIQcBEraUS/NHdmUpgNaWdELrwxaBXpyJcirZXfoH9+VWARK8MF/6byLqxN
+         Cl7A==
+In-Reply-To: <20180411095359.GB21429@saruman>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Jonathan Corbet <corbet@lwn.net>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Alexander Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, kasan-dev@googlegroups.com, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+To: James Hogan <jhogan@kernel.org>
+Cc: "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Maciej Rozycki <macro@mips.com>, linux-arch <linux-arch@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>, Vineet Gupta <vgupta@synopsys.com>, Mikael Starvik <starvik@axis.com>, Jesper Nilsson <jesper.nilsson@axis.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, "David S. Miller" <davem@davemloft.net>, Christopher Li <sparse@chrisli.org>, Thomas Gleixner <tglx@linutronix.de>, Peter Zijlstra <peterz@infradead.org>, Kees Cook <keescook@chromium.org>, Ingo Molnar <mingo@kernel.org>, Josh Poimboeuf <jpoimboe@redh>
 
-Jon, Andrew,
+On Wed, Apr 11, 2018 at 11:54 AM, James Hogan <jhogan@kernel.org> wrote:
+> On Wed, Apr 11, 2018 at 09:30:56AM +0200, Arnd Bergmann wrote:
+>> On Wed, Apr 11, 2018 at 12:48 AM, James Hogan <jhogan@kernel.org> wrote:
+>> > Before I forward port those patches to add .insn for MIPS, is that sort
+>> > of approach (an arch specific asm/compiler-gcc.h to allow MIPS to
+>> > override barrier_before_unreachable()) an acceptable fix?
+>>
+>> That sounds fine to me. However, I would suggest making that
+>> asm/compiler.h instead of asm/compiler-gcc.h, so we can also
+>> use the same file to include workarounds for clang if needed.
+>
+> Yes, though there are a few asm/compiler.h's already, and the alpha one
+> includes linux/compiler.h before undefining inline, so seems to have its
+> own specific purpose...
 
-How do you suggest to continue with this?
+Interesting. For the other ones, including asm/compiler.h from linux/compiler.h
+seems appropriate though, so the question would be what to do with the
+alpha case. I think we can simply remove that header file and replace
+it with this patch:
 
-On Sun, Apr 01, 2018 at 09:38:58AM +0300, Mike Rapoport wrote:
-> (added akpm)
-> 
-> On Thu, Mar 29, 2018 at 03:46:07PM -0600, Jonathan Corbet wrote:
-> > On Wed, 21 Mar 2018 21:22:16 +0200
-> > Mike Rapoport <rppt@linux.vnet.ibm.com> wrote:
-> > 
-> > > These patches convert files in Documentation/vm to ReST format, add an
-> > > initial index and link it to the top level documentation.
-> > > 
-> > > There are no contents changes in the documentation, except few spelling
-> > > fixes. The relatively large diffstat stems from the indentation and
-> > > paragraph wrapping changes.
-> > > 
-> > > I've tried to keep the formatting as consistent as possible, but I could
-> > > miss some places that needed markup and add some markup where it was not
-> > > necessary.
-> > 
-> > So I've been pondering on these for a bit.  It looks like a reasonable and
-> > straightforward RST conversion, no real complaints there.  But I do have a
-> > couple of concerns...
-> > 
-> > One is that, as we move documentation into RST, I'm really trying to
-> > organize it a bit so that it is better tuned to the various audiences we
-> > have.  For example, ksm.txt is going to be of interest to sysadmin types,
-> > who might want to tune it.  mmu_notifier.txt is of interest to ...
-> > somebody, but probably nobody who is thinking in user space.  And so on.
-> > 
-> > So I would really like to see this material split up and put into the
-> > appropriate places in the RST hierarchy - admin-guide for administrative
-> > stuff, core-api for kernel development topics, etc.  That, of course,
-> > could be done separately from the RST conversion, but I suspect I know
-> > what will (or will not) happen if we agree to defer that for now :)
-> 
-> Well, I was actually planning on doing that ;-)
-> 
-> My thinking was to start with mechanical RST conversion and then to start
-> working on the contents and ordering of the documentation. Some of the
-> existing files, e.g. ksm.txt, can be moved as is into the appropriate
-> places, others, like transhuge.txt should be at least split into admin/user
-> and developer guides.
-> 
-> Another problem with many of the existing mm docs is that they are rather
-> developer notes and it wouldn't be really straight forward to assign them
-> to a particular topic.
-> 
-> I believe that keeping the mm docs together will give better visibility of
-> what (little) mm documentation we have and will make the updates easier.
-> The documents that fit well into a certain topic could be linked there. For
-> instance:
-> 
-> -------------------------
-> diff --git a/Documentation/admin-guide/index.rst b/Documentation/admin-guide/index.rst
-> index 5bb9161..8f6c6e6 100644
-> --- a/Documentation/admin-guide/index.rst
-> +++ b/Documentation/admin-guide/index.rst
-> @@ -63,6 +63,7 @@ configure specific aspects of kernel behavior to your liking.
->     pm/index
->     thunderbolt
->     LSM/index
-> +   vm/index
-> 
->  .. only::  subproject and html
-> 
-> diff --git a/Documentation/admin-guide/vm/index.rst b/Documentation/admin-guide/vm/index.rst
-> new file mode 100644
-> index 0000000..d86f1c8
-> --- /dev/null
-> +++ b/Documentation/admin-guide/vm/index.rst
-> @@ -0,0 +1,5 @@
-> +==============================================
-> +Knobs and Buttons for Memory Management Tuning
-> +==============================================
-> +
-> +* :ref:`ksm <ksm>`
-> -------------------------
-> 
-> > The other is the inevitable merge conflicts that changing that many doc
-> > files will create.  Sending the patches through Andrew could minimize
-> > that, I guess, or at least make it his problem.  Alternatively, we could
-> > try to do it as an end-of-merge-window sort of thing.  I can try to manage
-> > that, but an ack or two from the mm crowd would be nice to have.
-> 
-> I can rebase on top of Andrew's tree if that would help to minimize the
-> merge conflicts.
-> 
-> > Thanks,
-> > 
-> > jon
-> > 
-> 
-> -- 
-> Sincerely yours,
-> Mike.
-> 
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index b2022885ced8..5502404f54cd 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -81,6 +81,9 @@ config PGTABLE_LEVELS
+        int
+        default 3
 
--- 
-Sincerely yours,
-Mike.
++config OPTIMIZE_INLINING
++       def_bool y
++
+ source "init/Kconfig"
+ source "kernel/Kconfig.freezer"
 
+which should have the same effect.
