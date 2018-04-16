@@ -1,39 +1,107 @@
-From: Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH 00/32] docs/vm: convert to ReST format
-Date: Mon, 16 Apr 2018 14:35:38 -0600
-Message-ID: <20180416143538.40a40457@lwn.net>
-References: <1521660168-14372-1-git-send-email-rppt@linux.vnet.ibm.com>
-        <20180329154607.3d8bda75@lwn.net>
-        <20180401063857.GA3357@rapoport-lnx>
-        <20180413135551.0e6d1b12@lwn.net>
-        <20180415173655.GB31176@rapoport-lnx>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: [PATCH] alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2
+Date: Mon, 16 Apr 2018 18:16:56 -0400
+Message-ID: <1523917017-28084-1-git-send-email-okaya@codeaurora.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180415173655.GB31176@rapoport-lnx>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1523917023;
+        bh=QBPD/8VyLsPq8gTO0OMGnDMhaNKKNBYLIZ9QLcCHCjA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HgpPul9Du4Co/rv6Y+9eV5dZw4u2XiIUa2P/BlH+Lw+IKk0gh3kzL2g/LGgWYPy4+
+         ss5L80MztJI1254ZPIwI3BEFrhz0FNNtDsd90+P5WHsVIwbm8UJk0HAQEy0Dsj3Uxk
+         fGBaoxt9M/C/rWhjkA/t2CMv2ISjQdnLIqJiwcSw=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1523917022;
+        bh=QBPD/8VyLsPq8gTO0OMGnDMhaNKKNBYLIZ9QLcCHCjA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Ukak19d3YonwBPfInb8ELjavhlnBMcy4xhYem4Jrkbe6rQZ18LBY98tpGAg7KHLBI
+         iM1As7HJW+irDovC6eHhJVwct5y4xFlNJWpyWzW056K/FIJSuLqlx3nG6P8/G/JmOn
+         qoC3GJxzuPLoVLzljFCGh9M6Z4Vt8yWnWkV/YK5I=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Alexander Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, kasan-dev@googlegroups.com, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+To: linux-alpha@vger.kernel.org, arnd@arndb.de, timur@codeaurora.org, sulrich@codeaurora.org
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sinan Kaya <okaya@codeaurora.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, linux-kernel@vger.kernel.org
 
-On Sun, 15 Apr 2018 20:36:56 +0300
-Mike Rapoport <rppt@linux.vnet.ibm.com> wrote:
+memory-barriers.txt has been updated with the following requirement.
 
-> I didn't mean we should keep it as unorganized jumble of stuff and I agree
-> that splitting the documentation by audience is better because developers
-> are already know how to find it :)
-> 
-> I just thought that putting the doc into the place should not be done
-> immediately after mechanical ReST conversion but rather after improving the
-> contents.
+"When using writel(), a prior wmb() is not needed to guarantee that the
+cache coherent memory writes have completed before writing to the MMIO
+region."
 
-OK, this is fine.  I'll go ahead and apply the set, but then I'll be
-watching to see that the other improvements come :)
+Current writeX() and iowriteX() implementations on alpha are not
+satisfying this requirement as the barrier is after the register write.
 
-In applying the set, there was a significant set of conflicts with
-vm/hmm.rst; hopefully I've sorted those out properly.
+Move mb() in writeX() and iowriteX() functions to guarantee that HW
+observes memory changes before performing register operations.
 
-Thanks,
+Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/alpha/kernel/io.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-jon
+diff --git a/arch/alpha/kernel/io.c b/arch/alpha/kernel/io.c
+index 3e3d49c..c025a3e 100644
+--- a/arch/alpha/kernel/io.c
++++ b/arch/alpha/kernel/io.c
+@@ -37,20 +37,20 @@ unsigned int ioread32(void __iomem *addr)
+ 
+ void iowrite8(u8 b, void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,iowrite8)(b, addr);
+ 	mb();
++	IO_CONCAT(__IO_PREFIX,iowrite8)(b, addr);
+ }
+ 
+ void iowrite16(u16 b, void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
+ 	mb();
++	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
+ }
+ 
+ void iowrite32(u32 b, void __iomem *addr)
+ {
+-	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
+ 	mb();
++	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
+ }
+ 
+ EXPORT_SYMBOL(ioread8);
+@@ -176,26 +176,26 @@ u64 readq(const volatile void __iomem *addr)
+ 
+ void writeb(u8 b, volatile void __iomem *addr)
+ {
+-	__raw_writeb(b, addr);
+ 	mb();
++	__raw_writeb(b, addr);
+ }
+ 
+ void writew(u16 b, volatile void __iomem *addr)
+ {
+-	__raw_writew(b, addr);
+ 	mb();
++	__raw_writew(b, addr);
+ }
+ 
+ void writel(u32 b, volatile void __iomem *addr)
+ {
+-	__raw_writel(b, addr);
+ 	mb();
++	__raw_writel(b, addr);
+ }
+ 
+ void writeq(u64 b, volatile void __iomem *addr)
+ {
+-	__raw_writeq(b, addr);
+ 	mb();
++	__raw_writeq(b, addr);
+ }
+ 
+ EXPORT_SYMBOL(readb);
+-- 
+2.7.4
+
