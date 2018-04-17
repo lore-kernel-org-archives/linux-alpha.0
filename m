@@ -1,107 +1,93 @@
-From: Sinan Kaya <okaya@codeaurora.org>
-Subject: [PATCH] alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2
-Date: Mon, 16 Apr 2018 18:16:56 -0400
-Message-ID: <1523917017-28084-1-git-send-email-okaya@codeaurora.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: James Hogan <jhogan@kernel.org>
+Subject: [PATCH v3 0/3] MIPS: Override barrier_before_unreachable() to fix microMIPS
+Date: Tue, 17 Apr 2018 11:11:03 +0100
+Message-ID: <cover.ebc99f68d5063a817328b9184d747f539800cff0.1523959603.git-series.jhogan@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1523917023;
-        bh=QBPD/8VyLsPq8gTO0OMGnDMhaNKKNBYLIZ9QLcCHCjA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HgpPul9Du4Co/rv6Y+9eV5dZw4u2XiIUa2P/BlH+Lw+IKk0gh3kzL2g/LGgWYPy4+
-         ss5L80MztJI1254ZPIwI3BEFrhz0FNNtDsd90+P5WHsVIwbm8UJk0HAQEy0Dsj3Uxk
-         fGBaoxt9M/C/rWhjkA/t2CMv2ISjQdnLIqJiwcSw=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1523917022;
-        bh=QBPD/8VyLsPq8gTO0OMGnDMhaNKKNBYLIZ9QLcCHCjA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Ukak19d3YonwBPfInb8ELjavhlnBMcy4xhYem4Jrkbe6rQZ18LBY98tpGAg7KHLBI
-         iM1As7HJW+irDovC6eHhJVwct5y4xFlNJWpyWzW056K/FIJSuLqlx3nG6P8/G/JmOn
-         qoC3GJxzuPLoVLzljFCGh9M6Z4Vt8yWnWkV/YK5I=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org, arnd@arndb.de, timur@codeaurora.org, sulrich@codeaurora.org
-Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sinan Kaya <okaya@codeaurora.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: linux-mips@linux-mips.org, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, James Hogan <jhogan@kernel.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, Matthew Fortune <matthew.fortune@mips.com>, Robert Suchanek <robert.suchanek@mips.com>
 
-memory-barriers.txt has been updated with the following requirement.
+This series overrides barrier_before_unreachable() for MIPS to add an
+.insn assembler directive.
 
-"When using writel(), a prior wmb() is not needed to guarantee that the
-cache coherent memory writes have completed before writing to the MMIO
-region."
+Due to the subsequent __builtin_unreachable(), the assembler can't tell
+that a label on the empty inline asm is code rather than data, so any
+microMIPS branches targetting it (which sadly can't be removed) raise
+errors due to the mismatching ISA mode, Adding the .insn in patch 3
+tells the assembler that it should be treated as code.
 
-Current writeX() and iowriteX() implementations on alpha are not
-satisfying this requirement as the barrier is after the register write.
+To do this we add a new standard asm/compiler.h for architecture
+overrides in patch 2. There are a few existing asm/compiler.h files
+already existing, most of which are fairly simple and don't include
+anything else (arm, arm64, mips). Unfortunately the alpha one includes
+linux/compiler.h though, so it can undefine some inline macros. On
+Arnd's suggestion this is converted to use OPTIMIZE_INLINING instead in
+patch 1. A build of alpha's defconfig on GCC 7.3 before and after this
+series results in the following size differences, which appear harmless
+to me:
 
-Move mb() in writeX() and iowriteX() functions to guarantee that HW
-observes memory changes before performing register operations.
+$ ./scripts/bloat-o-meter vmlinux.1 vmlinux.2
+add/remove: 1/1 grow/shrink: 3/0 up/down: 264/-348 (-84)
+Function                                     old     new   delta
+cap_bprm_set_creds                          1496    1664    +168
+cap_issubset                                   -      68     +68
+flex_array_put                               328     344     +16
+cap_capset                                   488     500     +12
+nonroot_raised_pE.constprop                  348       -    -348
+Total: Before=5823709, After=5823625, chg -0.00%
 
-Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
-Reported-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/alpha/kernel/io.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: Paul Burton <paul.burton@mips.com>
+Cc: Matthew Fortune <matthew.fortune@mips.com>
+Cc: Robert Suchanek <robert.suchanek@mips.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linux-arch@vger.kernel.org
 
-diff --git a/arch/alpha/kernel/io.c b/arch/alpha/kernel/io.c
-index 3e3d49c..c025a3e 100644
---- a/arch/alpha/kernel/io.c
-+++ b/arch/alpha/kernel/io.c
-@@ -37,20 +37,20 @@ unsigned int ioread32(void __iomem *addr)
- 
- void iowrite8(u8 b, void __iomem *addr)
- {
--	IO_CONCAT(__IO_PREFIX,iowrite8)(b, addr);
- 	mb();
-+	IO_CONCAT(__IO_PREFIX,iowrite8)(b, addr);
- }
- 
- void iowrite16(u16 b, void __iomem *addr)
- {
--	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
- 	mb();
-+	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
- }
- 
- void iowrite32(u32 b, void __iomem *addr)
- {
--	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
- 	mb();
-+	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
- }
- 
- EXPORT_SYMBOL(ioread8);
-@@ -176,26 +176,26 @@ u64 readq(const volatile void __iomem *addr)
- 
- void writeb(u8 b, volatile void __iomem *addr)
- {
--	__raw_writeb(b, addr);
- 	mb();
-+	__raw_writeb(b, addr);
- }
- 
- void writew(u16 b, volatile void __iomem *addr)
- {
--	__raw_writew(b, addr);
- 	mb();
-+	__raw_writew(b, addr);
- }
- 
- void writel(u32 b, volatile void __iomem *addr)
- {
--	__raw_writel(b, addr);
- 	mb();
-+	__raw_writel(b, addr);
- }
- 
- void writeq(u64 b, volatile void __iomem *addr)
- {
--	__raw_writeq(b, addr);
- 	mb();
-+	__raw_writeq(b, addr);
- }
- 
- EXPORT_SYMBOL(readb);
+James Hogan (1):
+  alpha: Use OPTIMIZE_INLINING instead of asm/compiler.h
+
+Paul Burton (2):
+  compiler.h: Allow arch-specific overrides
+  MIPS: Workaround GCC __builtin_unreachable reordering bug
+
+ arch/alpha/Kconfig                 |  6 ++++++
+ arch/alpha/include/asm/compiler.h  | 11 -----------
+ arch/arc/include/asm/Kbuild        |  1 +
+ arch/c6x/include/asm/Kbuild        |  1 +
+ arch/h8300/include/asm/Kbuild      |  1 +
+ arch/hexagon/include/asm/Kbuild    |  1 +
+ arch/ia64/include/asm/Kbuild       |  1 +
+ arch/m68k/include/asm/Kbuild       |  1 +
+ arch/microblaze/include/asm/Kbuild |  1 +
+ arch/mips/include/asm/compiler.h   | 23 +++++++++++++++++++++++
+ arch/nds32/include/asm/Kbuild      |  1 +
+ arch/nios2/include/asm/Kbuild      |  1 +
+ arch/openrisc/include/asm/Kbuild   |  1 +
+ arch/parisc/include/asm/Kbuild     |  1 +
+ arch/powerpc/include/asm/Kbuild    |  1 +
+ arch/riscv/include/asm/Kbuild      |  1 +
+ arch/s390/include/asm/Kbuild       |  1 +
+ arch/sh/include/asm/Kbuild         |  1 +
+ arch/sparc/include/asm/Kbuild      |  1 +
+ arch/um/include/asm/Kbuild         |  1 +
+ arch/unicore32/include/asm/Kbuild  |  1 +
+ arch/x86/include/asm/Kbuild        |  1 +
+ arch/xtensa/include/asm/Kbuild     |  1 +
+ include/asm-generic/compiler.h     |  8 ++++++++
+ include/linux/compiler-gcc.h       |  2 ++
+ include/linux/compiler_types.h     |  3 +++
+ 26 files changed, 62 insertions(+), 11 deletions(-)
+ create mode 100644 include/asm-generic/compiler.h
+
+base-commit: b284d4d5a6785f8cd07eda2646a95782373cd01e
 -- 
-2.7.4
-
+git-series 0.9.1
