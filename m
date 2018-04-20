@@ -1,618 +1,274 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH v2 2/2] rusage: allow 64-bit times ru_utime/ru_stime
-Date: Fri, 20 Apr 2018 14:05:14 +0200
-Message-ID: <20180420120605.1612248-2-arnd@arndb.de>
-References: <20180420120605.1612248-1-arnd@arndb.de>
+From: "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [REVIEW][PATCH 01/22] signal/alpha: Use send_sig_fault where appropriate
+Date: Fri, 20 Apr 2018 09:37:50 -0500
+Message-ID: <20180420143811.9994-1-ebiederm@xmission.com>
+References: <87604mhrnb.fsf@xmission.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180420120605.1612248-1-arnd@arndb.de>
+In-Reply-To: <87604mhrnb.fsf@xmission.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: y2038@lists.linaro.org
-Cc: linux-kernel@vger.kernel.org, x86@kernel.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Paul Eggert <eggert@cs.ucla.edu>, "Eric W . Biederman" <ebiederm@xmission.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Al Viro <viro@zeniv.linux.org.uk>, Dominik Brodowski <linux@dominikbrodowski.net>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, Deepa Dinamani <deepa.kernel@gmail.com>, Ingo Molnar <mingo@kernel.org>
+To: linux-arch@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
 
-As part of the y2038 system call work, the getrusage/wait4/waitid system
-calls came up, since they pass time data to user space in 'timeval'
-format as required by POSIX. This means the existing kernel data structure
-is no longer compatible with the one from user space once we have a C
-library exposing 64-bit time_t, requiring the library to convert the
-kernel structure into its own structure.
+Filling in struct siginfo before calling send_sig_info a tedious and
+error prone process, where once in a great while the wrong fields
+are filled out, and siginfo has been inconsistently cleared.
 
-This patch moves that conversion into the kernel itself, providing a
-set of system calls that can directly be used to implement the libc
-getrusage/wait4/waitid functions as we have traditionally done.
+Simplify this process by using the helper send_sig_fault.  Which
+takes as a parameters all of the information it needs, ensures
+all of the fiddly bits of filling in struct siginfo are done properly
+and then calls send_sig_info.
 
-There are two advantages to this:
+In short about a 5 line reduction in code for every time send_sig_info
+is called, which makes the calling function clearer.
 
-- The new path becomes the native case, avoiding the conversion
-  overhead for future 32-bit C libraries.  At least glibc will still
-  have to implement a conversion logic as a fallback in order to run
-  new applications on older kernels, but that does not have to be used
-  on new kernels.
-- The range for the ru_utime/ru_stime is no longer limited to
-  a 31-bit second counter (about 68 years). That limit may theoretically
-  be hit on large SMP systems with a single process running for an
-  extended time, e.g. 256 concurrent threads running for more than
-  97 days.  Note that there is no overflow in 2038, as all the times
-  are relative to the start of a process.
-
-The downside of this is obviously the added complexity of having three
-additional system call entry points plus their respective compat handlers,
-and updated syscall tables on each architecture (not included in this
-patch). Overall, I think this is *not* worth it, but I feel it's important
-to show how it can be done and what the cost is.
-
-There are probably some minor improvements that can be implemented on top,
-as well as bugs that I introduce.  When reviewing this patch, let's for
-now focus instead on the question whether we want it at all or not.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- arch/alpha/kernel/osf_sys.c   |   2 +-
- include/linux/compat.h        |  26 ++++++++-
- include/linux/resource.h      |   4 +-
- include/linux/sched/task.h    |   4 +-
- include/linux/syscalls.h      |   8 +++
- include/uapi/linux/resource.h |  29 ++++++++++
- kernel/compat.c               |  30 ++++++++++-
- kernel/exit.c                 | 120 ++++++++++++++++++++++++++++++++++++++----
- kernel/sys.c                  |  74 +++++++++++++++++++++++---
- 9 files changed, 275 insertions(+), 22 deletions(-)
+ arch/alpha/kernel/osf_sys.c | 10 ++-----
+ arch/alpha/kernel/signal.c  | 22 +++-----------
+ arch/alpha/kernel/traps.c   | 71 +++++++++++----------------------------------
+ 3 files changed, 24 insertions(+), 79 deletions(-)
 
 diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index cad03ee445b3..aecdb48257b5 100644
+index bb3619118926..6e921754c8fc 100644
 --- a/arch/alpha/kernel/osf_sys.c
 +++ b/arch/alpha/kernel/osf_sys.c
-@@ -1185,7 +1185,7 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
- {
- 	unsigned int status = 0;
- 	struct rusage32 r32;
--	struct rusage r;
-+	struct __kernel_rusage r;
- 	long err = kernel_wait4(pid, &status, options, &r);
- 	if (err <= 0)
- 		return err;
-diff --git a/include/linux/compat.h b/include/linux/compat.h
-index b73e2616a409..2ef30d314c48 100644
---- a/include/linux/compat.h
-+++ b/include/linux/compat.h
-@@ -105,7 +105,7 @@ typedef __compat_uid32_t	compat_uid_t;
- typedef __compat_gid32_t	compat_gid_t;
+@@ -871,7 +871,6 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
+ 		   send a signal.  Old exceptions are not signaled.  */
+ 		fex = (exc >> IEEE_STATUS_TO_EXCSUM_SHIFT) & swcr;
+  		if (fex) {
+-			siginfo_t info;
+ 			int si_code = FPE_FLTUNK;
  
- struct compat_sel_arg_struct;
--struct rusage;
-+struct __kernel_rusage;
+ 			if (fex & IEEE_TRAP_ENABLE_DNO) si_code = FPE_FLTUND;
+@@ -881,12 +880,9 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
+ 			if (fex & IEEE_TRAP_ENABLE_DZE) si_code = FPE_FLTDIV;
+ 			if (fex & IEEE_TRAP_ENABLE_INV) si_code = FPE_FLTINV;
  
- struct compat_itimerspec {
- 	struct compat_timespec it_interval;
-@@ -321,9 +321,31 @@ struct compat_rusage {
- 	compat_long_t	ru_nivcsw;
- };
- 
--extern int put_compat_rusage(const struct rusage *,
-+struct compat_rusage_time64 {
-+	struct __kernel_rusage_timeval ru_utime;
-+	struct __kernel_rusage_timeval ru_stime;
-+	compat_long_t	ru_maxrss;
-+	compat_long_t	ru_ixrss;
-+	compat_long_t	ru_idrss;
-+	compat_long_t	ru_isrss;
-+	compat_long_t	ru_minflt;
-+	compat_long_t	ru_majflt;
-+	compat_long_t	ru_nswap;
-+	compat_long_t	ru_inblock;
-+	compat_long_t	ru_oublock;
-+	compat_long_t	ru_msgsnd;
-+	compat_long_t	ru_msgrcv;
-+	compat_long_t	ru_nsignals;
-+	compat_long_t	ru_nvcsw;
-+	compat_long_t	ru_nivcsw;
-+};
-+
-+extern int put_compat_rusage(const struct __kernel_rusage *,
- 			     struct compat_rusage __user *);
- 
-+extern int put_compat_rusage_time64(const struct __kernel_rusage *,
-+				    struct compat_rusage_time64 __user *);
-+
- struct compat_siginfo;
- 
- struct compat_dirent {
-diff --git a/include/linux/resource.h b/include/linux/resource.h
-index bdf491cbcab7..8cebf90e76b7 100644
---- a/include/linux/resource.h
-+++ b/include/linux/resource.h
-@@ -7,8 +7,10 @@
- 
- struct task_struct;
- 
--void getrusage(struct task_struct *p, int who, struct rusage *ru);
-+void getrusage(struct task_struct *p, int who, struct __kernel_rusage *ru);
- int do_prlimit(struct task_struct *tsk, unsigned int resource,
- 		struct rlimit *new_rlim, struct rlimit *old_rlim);
- 
-+int put_rusage(const struct __kernel_rusage *rk, struct rusage __user *ru);
-+
- #endif
-diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
-index 5be31eb7b266..cc54ae5e6010 100644
---- a/include/linux/sched/task.h
-+++ b/include/linux/sched/task.h
-@@ -10,7 +10,7 @@
- #include <linux/sched.h>
- 
- struct task_struct;
--struct rusage;
-+struct __kernel_rusage;
- union thread_union;
- 
- /*
-@@ -75,7 +75,7 @@ extern long _do_fork(unsigned long, unsigned long, unsigned long, int __user *,
- extern long do_fork(unsigned long, unsigned long, unsigned long, int __user *, int __user *);
- struct task_struct *fork_idle(int);
- extern pid_t kernel_thread(int (*fn)(void *), void *arg, unsigned long flags);
--extern long kernel_wait4(pid_t, int *, int, struct rusage *);
-+extern long kernel_wait4(pid_t, int *, int, struct __kernel_rusage *);
- 
- extern void free_task(struct task_struct *tsk);
- 
-diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index a756ab42894f..084360078f29 100644
---- a/include/linux/syscalls.h
-+++ b/include/linux/syscalls.h
-@@ -37,6 +37,7 @@ struct pollfd;
- struct rlimit;
- struct rlimit64;
- struct rusage;
-+struct __kernel_rusage;
- struct sched_param;
- struct sched_attr;
- struct sel_arg_struct;
-@@ -522,6 +523,10 @@ asmlinkage long sys_waitid(int which, pid_t pid,
- 			   struct siginfo __user *infop,
- 			   int options, struct rusage __user *ru);
- 
-+asmlinkage long sys_waitid_time64(int which, pid_t pid,
-+			   struct siginfo __user *infop,
-+			   int options, struct __kernel_rusage __user *ru);
-+
- /* kernel/fork.c */
- asmlinkage long sys_set_tid_address(int __user *tidptr);
- asmlinkage long sys_unshare(unsigned long unshare_flags);
-@@ -656,6 +661,7 @@ asmlinkage long sys_getrlimit(unsigned int resource,
- asmlinkage long sys_setrlimit(unsigned int resource,
- 				struct rlimit __user *rlim);
- asmlinkage long sys_getrusage(int who, struct rusage __user *ru);
-+asmlinkage long sys_getrusage_time64(int who, struct __kernel_rusage __user *ru);
- asmlinkage long sys_umask(int mask);
- asmlinkage long sys_prctl(int option, unsigned long arg2, unsigned long arg3,
- 			unsigned long arg4, unsigned long arg5);
-@@ -821,6 +827,8 @@ asmlinkage long sys_recvmmsg(int fd, struct mmsghdr __user *msg,
- 
- asmlinkage long sys_wait4(pid_t pid, int __user *stat_addr,
- 				int options, struct rusage __user *ru);
-+asmlinkage long sys_wait4_time64(pid_t pid, int __user *stat_addr,
-+				int options, struct __kernel_rusage __user *ru);
- asmlinkage long sys_prlimit64(pid_t pid, unsigned int resource,
- 				const struct rlimit64 __user *new_rlim,
- 				struct rlimit64 __user *old_rlim);
-diff --git a/include/uapi/linux/resource.h b/include/uapi/linux/resource.h
-index 611d3745c70a..a822e716e122 100644
---- a/include/uapi/linux/resource.h
-+++ b/include/uapi/linux/resource.h
-@@ -50,6 +50,35 @@ struct	rusage {
- 	__kernel_long_t	ru_nivcsw;	/* involuntary " */
- };
- 
-+/*
-+ * __kernel_rusage is the binary that we expect 32-bit C libraries
-+ * to provide for their 'struct rusage' after migrating to a 64-bit
-+ * time_t.
-+ */
-+struct __kernel_rusage_timeval {
-+	__s64 tv_sec;
-+	__s64 tv_usec;
-+};
-+
-+struct	__kernel_rusage {
-+	struct __kernel_rusage_timeval	ru_utime; /* user time used */
-+	struct __kernel_rusage_timeval	ru_stime; /* system time used */
-+	__kernel_long_t	ru_maxrss;	/* maximum resident set size */
-+	__kernel_long_t	ru_ixrss;	/* integral shared memory size */
-+	__kernel_long_t	ru_idrss;	/* integral unshared data size */
-+	__kernel_long_t	ru_isrss;	/* integral unshared stack size */
-+	__kernel_long_t	ru_minflt;	/* page reclaims */
-+	__kernel_long_t	ru_majflt;	/* page faults */
-+	__kernel_long_t	ru_nswap;	/* swaps */
-+	__kernel_long_t	ru_inblock;	/* block input operations */
-+	__kernel_long_t	ru_oublock;	/* block output operations */
-+	__kernel_long_t	ru_msgsnd;	/* messages sent */
-+	__kernel_long_t	ru_msgrcv;	/* messages received */
-+	__kernel_long_t	ru_nsignals;	/* signals received */
-+	__kernel_long_t	ru_nvcsw;	/* voluntary context switches */
-+	__kernel_long_t	ru_nivcsw;	/* involuntary " */
-+};
-+
- struct rlimit {
- 	__kernel_ulong_t	rlim_cur;
- 	__kernel_ulong_t	rlim_max;
-diff --git a/kernel/compat.c b/kernel/compat.c
-index 51a081b46832..e3cb7c14558a 100644
---- a/kernel/compat.c
-+++ b/kernel/compat.c
-@@ -234,7 +234,7 @@ COMPAT_SYSCALL_DEFINE3(sigprocmask, int, how,
- 
- #endif
- 
--int put_compat_rusage(const struct rusage *r, struct compat_rusage __user *ru)
-+int put_compat_rusage(const struct __kernel_rusage *r, struct compat_rusage __user *ru)
- {
- 	struct compat_rusage r32;
- 	memset(&r32, 0, sizeof(r32));
-@@ -261,6 +261,34 @@ int put_compat_rusage(const struct rusage *r, struct compat_rusage __user *ru)
- 	return 0;
- }
- 
-+int put_compat_rusage_time64(const struct __kernel_rusage *r,
-+			     struct compat_rusage_time64 __user *ru)
-+{
-+	struct compat_rusage_time64 r32;
-+	memset(&r32, 0, sizeof(r32));
-+	r32.ru_utime.tv_sec = r->ru_utime.tv_sec;
-+	r32.ru_utime.tv_usec = r->ru_utime.tv_usec;
-+	r32.ru_stime.tv_sec = r->ru_stime.tv_sec;
-+	r32.ru_stime.tv_usec = r->ru_stime.tv_usec;
-+	r32.ru_maxrss = r->ru_maxrss;
-+	r32.ru_ixrss = r->ru_ixrss;
-+	r32.ru_idrss = r->ru_idrss;
-+	r32.ru_isrss = r->ru_isrss;
-+	r32.ru_minflt = r->ru_minflt;
-+	r32.ru_majflt = r->ru_majflt;
-+	r32.ru_nswap = r->ru_nswap;
-+	r32.ru_inblock = r->ru_inblock;
-+	r32.ru_oublock = r->ru_oublock;
-+	r32.ru_msgsnd = r->ru_msgsnd;
-+	r32.ru_msgrcv = r->ru_msgrcv;
-+	r32.ru_nsignals = r->ru_nsignals;
-+	r32.ru_nvcsw = r->ru_nvcsw;
-+	r32.ru_nivcsw = r->ru_nivcsw;
-+	if (copy_to_user(ru, &r32, sizeof(r32)))
-+		return -EFAULT;
-+	return 0;
-+}
-+
- static int compat_get_user_cpu_mask(compat_ulong_t __user *user_mask_ptr,
- 				    unsigned len, struct cpumask *new_mask)
- {
-diff --git a/kernel/exit.c b/kernel/exit.c
-index c3c7ac560114..5088c671ea74 100644
---- a/kernel/exit.c
-+++ b/kernel/exit.c
-@@ -995,7 +995,7 @@ struct wait_opts {
- 
- 	struct waitid_info	*wo_info;
- 	int			wo_stat;
--	struct rusage		*wo_rusage;
-+	struct __kernel_rusage	*wo_rusage;
- 
- 	wait_queue_entry_t		child_wait;
- 	int			notask_error;
-@@ -1548,7 +1548,7 @@ static long do_wait(struct wait_opts *wo)
- }
- 
- static long kernel_waitid(int which, pid_t upid, struct waitid_info *infop,
--			  int options, struct rusage *ru)
-+			  int options, struct __kernel_rusage *ru)
- {
- 	struct wait_opts wo;
- 	struct pid *pid = NULL;
-@@ -1596,7 +1596,7 @@ static long kernel_waitid(int which, pid_t upid, struct waitid_info *infop,
- SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
- 		infop, int, options, struct rusage __user *, ru)
- {
--	struct rusage r;
-+	struct __kernel_rusage r;
- 	struct waitid_info info = {.status = 0};
- 	long err = kernel_waitid(which, upid, &info, options, ru ? &r : NULL);
- 	int signo = 0;
-@@ -1604,7 +1604,41 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
- 	if (err > 0) {
- 		signo = SIGCHLD;
- 		err = 0;
--		if (ru && copy_to_user(ru, &r, sizeof(struct rusage)))
-+		if (ru && put_rusage(&r, ru))
-+			return -EFAULT;
-+	}
-+	if (!infop)
-+		return err;
-+
-+	if (!access_ok(VERIFY_WRITE, infop, sizeof(*infop)))
-+		return -EFAULT;
-+
-+	user_access_begin();
-+	unsafe_put_user(signo, &infop->si_signo, Efault);
-+	unsafe_put_user(0, &infop->si_errno, Efault);
-+	unsafe_put_user(info.cause, &infop->si_code, Efault);
-+	unsafe_put_user(info.pid, &infop->si_pid, Efault);
-+	unsafe_put_user(info.uid, &infop->si_uid, Efault);
-+	unsafe_put_user(info.status, &infop->si_status, Efault);
-+	user_access_end();
-+	return err;
-+Efault:
-+	user_access_end();
-+	return -EFAULT;
-+}
-+
-+SYSCALL_DEFINE5(waitid_time64, int, which, pid_t, upid, struct siginfo __user *,
-+		infop, int, options, struct __kernel_rusage __user *, ru)
-+{
-+	struct __kernel_rusage r;
-+	struct waitid_info info = {.status = 0};
-+	long err = kernel_waitid(which, upid, &info, options, ru ? &r : NULL);
-+	int signo = 0;
-+
-+	if (err > 0) {
-+		signo = SIGCHLD;
-+		err = 0;
-+		if (ru && copy_to_user(ru, &r, sizeof(struct __kernel_rusage)))
- 			return -EFAULT;
+-			clear_siginfo(&info);
+-			info.si_signo = SIGFPE;
+-			info.si_errno = 0;
+-			info.si_code = si_code;
+-			info.si_addr = NULL;  /* FIXME */
+- 			send_sig_info(SIGFPE, &info, current);
++			send_sig_fault(SIGFPE, si_code,
++				       (void __user *)NULL,  /* FIXME */
++				       0, current);
+  		}
+ 		return 0;
  	}
- 	if (!infop)
-@@ -1628,7 +1662,7 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
- }
+diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
+index cd306e602313..8c0c4ee0be6e 100644
+--- a/arch/alpha/kernel/signal.c
++++ b/arch/alpha/kernel/signal.c
+@@ -219,15 +219,8 @@ do_sigreturn(struct sigcontext __user *sc)
  
- long kernel_wait4(pid_t upid, int __user *stat_addr, int options,
--		  struct rusage *ru)
-+		  struct __kernel_rusage *ru)
- {
- 	struct wait_opts wo;
- 	struct pid *pid = NULL;
-@@ -1673,11 +1707,24 @@ long kernel_wait4(pid_t upid, int __user *stat_addr, int options,
- SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
- 		int, options, struct rusage __user *, ru)
- {
--	struct rusage r;
-+	struct __kernel_rusage r;
- 	long err = kernel_wait4(upid, stat_addr, options, ru ? &r : NULL);
- 
- 	if (err > 0) {
--		if (ru && copy_to_user(ru, &r, sizeof(struct rusage)))
-+		if (ru && put_rusage(&r, ru))
-+			return -EFAULT;
-+	}
-+	return err;
-+}
-+
-+SYSCALL_DEFINE4(wait4_time64, pid_t, upid, int __user *, stat_addr,
-+		int, options, struct __kernel_rusage __user *, ru)
-+{
-+	struct __kernel_rusage r;
-+	long err = kernel_wait4(upid, stat_addr, options, ru ? &r : NULL);
-+
-+	if (err > 0) {
-+		if (ru && copy_to_user(ru, &r, sizeof(struct __kernel_rusage)))
- 			return -EFAULT;
+ 	/* Send SIGTRAP if we're single-stepping: */
+ 	if (ptrace_cancel_bpt (current)) {
+-		siginfo_t info;
+-
+-		clear_siginfo(&info);
+-		info.si_signo = SIGTRAP;
+-		info.si_errno = 0;
+-		info.si_code = TRAP_BRKPT;
+-		info.si_addr = (void __user *) regs->pc;
+-		info.si_trapno = 0;
+-		send_sig_info(SIGTRAP, &info, current);
++		send_sig_fault(SIGTRAP, TRAP_BRKPT, (void __user *) regs->pc, 0,
++			       current);
  	}
- 	return err;
-@@ -1703,7 +1750,7 @@ COMPAT_SYSCALL_DEFINE4(wait4,
- 	int, options,
- 	struct compat_rusage __user *, ru)
+ 	return;
+ 
+@@ -254,15 +247,8 @@ do_rt_sigreturn(struct rt_sigframe __user *frame)
+ 
+ 	/* Send SIGTRAP if we're single-stepping: */
+ 	if (ptrace_cancel_bpt (current)) {
+-		siginfo_t info;
+-
+-		clear_siginfo(&info);
+-		info.si_signo = SIGTRAP;
+-		info.si_errno = 0;
+-		info.si_code = TRAP_BRKPT;
+-		info.si_addr = (void __user *) regs->pc;
+-		info.si_trapno = 0;
+-		send_sig_info(SIGTRAP, &info, current);
++		send_sig_fault(SIGTRAP, TRAP_BRKPT, (void __user *) regs->pc, 0,
++			       current);
+ 	}
+ 	return;
+ 
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index 242c83d86ace..106a1692fca0 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -213,7 +213,6 @@ do_entArith(unsigned long summary, unsigned long write_mask,
+ 	    struct pt_regs *regs)
  {
--	struct rusage r;
-+	struct __kernel_rusage r;
- 	long err = kernel_wait4(pid, stat_addr, options, ru ? &r : NULL);
- 	if (err > 0) {
- 		if (ru && put_compat_rusage(&r, ru))
-@@ -1712,12 +1759,27 @@ COMPAT_SYSCALL_DEFINE4(wait4,
- 	return err;
+ 	long si_code = FPE_FLTINV;
+-	siginfo_t info;
+ 
+ 	if (summary & 1) {
+ 		/* Software-completion summary bit is set, so try to
+@@ -228,21 +227,14 @@ do_entArith(unsigned long summary, unsigned long write_mask,
+ 	}
+ 	die_if_kernel("Arithmetic fault", regs, 0, NULL);
+ 
+-	clear_siginfo(&info);
+-	info.si_signo = SIGFPE;
+-	info.si_errno = 0;
+-	info.si_code = si_code;
+-	info.si_addr = (void __user *) regs->pc;
+-	send_sig_info(SIGFPE, &info, current);
++	send_sig_fault(SIGFPE, si_code, (void __user *) regs->pc, 0, current);
  }
  
-+COMPAT_SYSCALL_DEFINE4(wait4_time64,
-+	compat_pid_t, pid,
-+	compat_uint_t __user *, stat_addr,
-+	int, options,
-+	struct compat_rusage_time64 __user *, ru)
-+{
-+	struct __kernel_rusage r;
-+	long err = kernel_wait4(pid, stat_addr, options, ru ? &r : NULL);
-+	if (err > 0) {
-+		if (ru && put_compat_rusage_time64(&r, ru))
-+			return -EFAULT;
-+	}
-+	return err;
-+}
-+
- COMPAT_SYSCALL_DEFINE5(waitid,
- 		int, which, compat_pid_t, pid,
- 		struct compat_siginfo __user *, infop, int, options,
- 		struct compat_rusage __user *, uru)
+ asmlinkage void
+ do_entIF(unsigned long type, struct pt_regs *regs)
  {
--	struct rusage ru;
-+	struct __kernel_rusage ru;
- 	struct waitid_info info = {.status = 0};
- 	long err = kernel_waitid(which, pid, &info, options, uru ? &ru : NULL);
- 	int signo = 0;
-@@ -1754,6 +1816,46 @@ COMPAT_SYSCALL_DEFINE5(waitid,
- 	user_access_end();
- 	return -EFAULT;
- }
-+
-+COMPAT_SYSCALL_DEFINE5(waitid_time64,
-+		int, which, compat_pid_t, pid,
-+		struct compat_siginfo __user *, infop, int, options,
-+		struct compat_rusage_time64 __user *, uru)
-+{
-+	struct __kernel_rusage ru;
-+	struct waitid_info info = {.status = 0};
-+	long err = kernel_waitid(which, pid, &info, options, uru ? &ru : NULL);
-+	int signo = 0;
-+	if (err > 0) {
-+		signo = SIGCHLD;
-+		err = 0;
-+		if (uru) {
-+			/* kernel_waitid() overwrites everything in ru */
-+			err = put_compat_rusage_time64(&ru, uru);
-+			if (err)
-+				return -EFAULT;
-+		}
-+	}
-+
-+	if (!infop)
-+		return err;
-+
-+	if (!access_ok(VERIFY_WRITE, infop, sizeof(*infop)))
-+		return -EFAULT;
-+
-+	user_access_begin();
-+	unsafe_put_user(signo, &infop->si_signo, Efault);
-+	unsafe_put_user(0, &infop->si_errno, Efault);
-+	unsafe_put_user(info.cause, &infop->si_code, Efault);
-+	unsafe_put_user(info.pid, &infop->si_pid, Efault);
-+	unsafe_put_user(info.uid, &infop->si_uid, Efault);
-+	unsafe_put_user(info.status, &infop->si_status, Efault);
-+	user_access_end();
-+	return err;
-+Efault:
-+	user_access_end();
-+	return -EFAULT;
-+}
- #endif
+-	siginfo_t info;
+ 	int signo, code;
  
- __weak void abort(void)
-diff --git a/kernel/sys.c b/kernel/sys.c
-index 1de538f622e8..5b5f2dc19e79 100644
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -1699,7 +1699,7 @@ SYSCALL_DEFINE2(setrlimit, unsigned int, resource, struct rlimit __user *, rlim)
-  *
-  */
+-	clear_siginfo(&info);
+ 	if ((regs->ps & ~IPL_MAX) == 0) {
+ 		if (type == 1) {
+ 			const unsigned int *data
+@@ -272,31 +264,20 @@ do_entIF(unsigned long type, struct pt_regs *regs)
  
--static void accumulate_thread_rusage(struct task_struct *t, struct rusage *r)
-+static void accumulate_thread_rusage(struct task_struct *t, struct __kernel_rusage *r)
- {
- 	r->ru_nvcsw += t->nvcsw;
- 	r->ru_nivcsw += t->nivcsw;
-@@ -1709,12 +1709,13 @@ static void accumulate_thread_rusage(struct task_struct *t, struct rusage *r)
- 	r->ru_oublock += task_io_get_oublock(t);
+ 	switch (type) {
+ 	      case 0: /* breakpoint */
+-		info.si_signo = SIGTRAP;
+-		info.si_errno = 0;
+-		info.si_code = TRAP_BRKPT;
+-		info.si_trapno = 0;
+-		info.si_addr = (void __user *) regs->pc;
+-
+ 		if (ptrace_cancel_bpt(current)) {
+ 			regs->pc -= 4;	/* make pc point to former bpt */
+ 		}
+ 
+-		send_sig_info(SIGTRAP, &info, current);
++		send_sig_fault(SIGTRAP, TRAP_BRKPT, (void __user *)regs->pc, 0,
++			       current);
+ 		return;
+ 
+ 	      case 1: /* bugcheck */
+-		info.si_signo = SIGTRAP;
+-		info.si_errno = 0;
+-		info.si_code = TRAP_UNK;
+-		info.si_addr = (void __user *) regs->pc;
+-		info.si_trapno = 0;
+-		send_sig_info(SIGTRAP, &info, current);
++		send_sig_fault(SIGTRAP, TRAP_UNK, (void __user *) regs->pc, 0,
++			       current);
+ 		return;
+ 		
+ 	      case 2: /* gentrap */
+-		info.si_addr = (void __user *) regs->pc;
+-		info.si_trapno = regs->r16;
+ 		switch ((long) regs->r16) {
+ 		case GEN_INTOVF:
+ 			signo = SIGFPE;
+@@ -354,11 +335,8 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+ 			break;
+ 		}
+ 
+-		info.si_signo = signo;
+-		info.si_errno = 0;
+-		info.si_code = code;
+-		info.si_addr = (void __user *) regs->pc;
+-		send_sig_info(signo, &info, current);
++		send_sig_fault(signo, code, (void __user *) regs->pc, regs->r16,
++			       current);
+ 		return;
+ 
+ 	      case 4: /* opDEC */
+@@ -382,11 +360,9 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+ 			if (si_code == 0)
+ 				return;
+ 			if (si_code > 0) {
+-				info.si_signo = SIGFPE;
+-				info.si_errno = 0;
+-				info.si_code = si_code;
+-				info.si_addr = (void __user *) regs->pc;
+-				send_sig_info(SIGFPE, &info, current);
++				send_sig_fault(SIGFPE, si_code,
++					       (void __user *) regs->pc, 0,
++					       current);
+ 				return;
+ 			}
+ 		}
+@@ -411,11 +387,7 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+ 		      ;
+ 	}
+ 
+-	info.si_signo = SIGILL;
+-	info.si_errno = 0;
+-	info.si_code = ILL_ILLOPC;
+-	info.si_addr = (void __user *) regs->pc;
+-	send_sig_info(SIGILL, &info, current);
++	send_sig_fault(SIGILL, ILL_ILLOPC, (void __user *)regs->pc, 0, current);
  }
  
--void getrusage(struct task_struct *p, int who, struct rusage *r)
-+void getrusage(struct task_struct *p, int who, struct __kernel_rusage *r)
- {
- 	struct task_struct *t;
- 	unsigned long flags;
- 	u64 tgutime, tgstime, utime, stime;
- 	unsigned long maxrss = 0;
-+	struct timespec64 ts;
+ /* There is an ifdef in the PALcode in MILO that enables a 
+@@ -761,11 +733,9 @@ do_entUnaUser(void __user * va, unsigned long opcode,
  
- 	memset((char *)r, 0, sizeof (*r));
- 	utime = stime = 0;
-@@ -1769,8 +1770,12 @@ void getrusage(struct task_struct *p, int who, struct rusage *r)
- 	unlock_task_sighand(p, &flags);
+ 	unsigned long tmp1, tmp2, tmp3, tmp4;
+ 	unsigned long fake_reg, *reg_addr = &fake_reg;
+-	siginfo_t info;
++	int si_code;
+ 	long error;
  
- out:
--	r->ru_utime = ns_to_kernel_old_timeval(utime);
--	r->ru_stime = ns_to_kernel_old_timeval(stime);
-+	ts = ns_to_timespec64(utime);
-+	r->ru_utime.tv_sec = ts.tv_sec;
-+	r->ru_utime.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
-+	ts = ns_to_timespec64(stime);
-+	r->ru_stime.tv_sec = ts.tv_sec;
-+	r->ru_stime.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+-	clear_siginfo(&info);
+-
+ 	/* Check the UAC bits to decide what the user wants us to do
+ 	   with the unaliged access.  */
  
- 	if (who != RUSAGE_CHILDREN) {
- 		struct mm_struct *mm = get_task_mm(p);
-@@ -1783,10 +1788,54 @@ void getrusage(struct task_struct *p, int who, struct rusage *r)
- 	r->ru_maxrss = maxrss * (PAGE_SIZE / 1024); /* convert pages to KBs */
+@@ -986,34 +956,27 @@ do_entUnaUser(void __user * va, unsigned long opcode,
+ 
+ give_sigsegv:
+ 	regs->pc -= 4;  /* make pc point to faulting insn */
+-	info.si_signo = SIGSEGV;
+-	info.si_errno = 0;
+ 
+ 	/* We need to replicate some of the logic in mm/fault.c,
+ 	   since we don't have access to the fault code in the
+ 	   exception handling return path.  */
+ 	if ((unsigned long)va >= TASK_SIZE)
+-		info.si_code = SEGV_ACCERR;
++		si_code = SEGV_ACCERR;
+ 	else {
+ 		struct mm_struct *mm = current->mm;
+ 		down_read(&mm->mmap_sem);
+ 		if (find_vma(mm, (unsigned long)va))
+-			info.si_code = SEGV_ACCERR;
++			si_code = SEGV_ACCERR;
+ 		else
+-			info.si_code = SEGV_MAPERR;
++			si_code = SEGV_MAPERR;
+ 		up_read(&mm->mmap_sem);
+ 	}
+-	info.si_addr = va;
+-	send_sig_info(SIGSEGV, &info, current);
++	send_sig_fault(SIGSEGV, si_code, va, 0, current);
+ 	return;
+ 
+ give_sigbus:
+ 	regs->pc -= 4;
+-	info.si_signo = SIGBUS;
+-	info.si_errno = 0;
+-	info.si_code = BUS_ADRALN;
+-	info.si_addr = va;
+-	send_sig_info(SIGBUS, &info, current);
++	send_sig_fault(SIGBUS, BUS_ADRALN, va, 0, current);
+ 	return;
  }
  
--SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
-+int put_rusage(const struct __kernel_rusage *rk, struct rusage __user *ru)
- {
- 	struct rusage r;
- 
-+	if (IS_ENABLED(CONFIG_64BIT))
-+		return copy_to_user(ru, &rk, sizeof(rk)) ? -EFAULT : 0;
-+
-+	memset(&r, 0, sizeof(r));
-+	r.ru_utime.tv_sec = rk->ru_utime.tv_sec;
-+	r.ru_utime.tv_usec = rk->ru_utime.tv_usec;
-+	r.ru_stime.tv_sec = rk->ru_stime.tv_sec;
-+	r.ru_stime.tv_usec = rk->ru_stime.tv_usec;
-+	r.ru_maxrss = rk->ru_maxrss;
-+	r.ru_ixrss = rk->ru_ixrss;
-+	r.ru_idrss = rk->ru_idrss;
-+	r.ru_isrss = rk->ru_isrss;
-+	r.ru_minflt = rk->ru_minflt;
-+	r.ru_majflt = rk->ru_majflt;
-+	r.ru_nswap = rk->ru_nswap;
-+	r.ru_inblock = rk->ru_inblock;
-+	r.ru_oublock = rk->ru_oublock;
-+	r.ru_msgsnd = rk->ru_msgsnd;
-+	r.ru_msgrcv = rk->ru_msgrcv;
-+	r.ru_nsignals = rk->ru_nsignals;
-+	r.ru_nvcsw = rk->ru_nvcsw;
-+	r.ru_nivcsw = rk->ru_nivcsw;
-+	if (copy_to_user(ru, &r, sizeof(r)))
-+		return -EFAULT;
-+	return 0;
-+}
-+
-+SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
-+{
-+	struct __kernel_rusage r;
-+
-+	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
-+	    who != RUSAGE_THREAD)
-+		return -EINVAL;
-+
-+	getrusage(current, who, &r);
-+	return put_rusage(&r, ru);
-+}
-+
-+#ifndef CONFIG_64BIT
-+SYSCALL_DEFINE2(getrusage_time64, int, who, struct __kernel_rusage __user *, ru)
-+{
-+	struct __kernel_rusage r;
-+
- 	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
- 	    who != RUSAGE_THREAD)
- 		return -EINVAL;
-@@ -1794,11 +1843,12 @@ SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
- 	getrusage(current, who, &r);
- 	return copy_to_user(ru, &r, sizeof(r)) ? -EFAULT : 0;
- }
-+#endif
- 
- #ifdef CONFIG_COMPAT
- COMPAT_SYSCALL_DEFINE2(getrusage, int, who, struct compat_rusage __user *, ru)
- {
--	struct rusage r;
-+	struct __kernel_rusage r;
- 
- 	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
- 	    who != RUSAGE_THREAD)
-@@ -1807,6 +1857,18 @@ COMPAT_SYSCALL_DEFINE2(getrusage, int, who, struct compat_rusage __user *, ru)
- 	getrusage(current, who, &r);
- 	return put_compat_rusage(&r, ru);
- }
-+
-+COMPAT_SYSCALL_DEFINE2(getrusage_time64, int, who, struct compat_rusage_time64 __user *, ru)
-+{
-+	struct __kernel_rusage r;
-+
-+	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
-+	    who != RUSAGE_THREAD)
-+		return -EINVAL;
-+
-+	getrusage(current, who, &r);
-+	return put_compat_rusage_time64(&r, ru);
-+}
- #endif
- 
- SYSCALL_DEFINE1(umask, int, mask)
 -- 
-2.9.0
+2.14.1
 
