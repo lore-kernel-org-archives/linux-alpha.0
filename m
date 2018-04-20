@@ -1,7 +1,7 @@
 From: "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [REVIEW][PATCH 15/17] signal: Add TRAP_UNK si_code for undiagnosted trap exceptions
-Date: Thu, 19 Apr 2018 20:04:06 -0500
-Message-ID: <20180420010408.24438-15-ebiederm@xmission.com>
+Subject: [REVIEW][PATCH 16/17] signal/alpha:  Replace TRAP_FIXME with TRAP_UNK
+Date: Thu, 19 Apr 2018 20:04:07 -0500
+Message-ID: <20180420010408.24438-16-ebiederm@xmission.com>
 References: <878t9ilmhv.fsf@xmission.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <878t9ilmhv.fsf@xmission.com>
@@ -11,57 +11,74 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: linux-arch@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc: linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>, Helge Deller <deller@gmx.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Both powerpc and alpha have cases where they wronly set si_code to 0
-in combination with SIGTRAP and don't mean SI_USER.
+Using an si_code of 0 that aliases with SI_USER is clearly the wrong
+thing to do, and causes problems in interesting ways.
 
-About half the time this is because the architecture can not report
-accurately what kind of trap exception triggered the trap exception.
-The other half the time it looks like no one has bothered to
-figure out an appropriate si_code.
+For it really is not clear to me if using TRAP_UNK bugcheck or
+the default case of gentrap is really the best way to handle
+things.  There is certainly enough information that that a more
+specific si_code could potentially be used.  That said TRAP_UNK
+is definitely an improvement over 0 as it removes the ambiguiuty
+of what si_code of 0 with SIGTRAP means on alpha.
 
-For the cases where the architecture does not have enough information
-or is too lazy to figure out exactly what kind of trap exception
-it is define TRAP_UNK.
+Recent history suggests no actually cares about crazy corner cases of
+the kernel behavior like this so I don't expect any regressions from
+changing this.  However if something does happen this change is easy
+to revert.
 
-Cc: linux-api@vger.kernel.org
-Cc: linux-arch@vger.kernel.org
+Cc: Helge Deller <deller@gmx.de>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
+Fixes: 0a635c7a84cf ("Fill in siginfo_t.")
+History Tree: https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
 Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 ---
- arch/x86/kernel/signal_compat.c    | 2 +-
- include/uapi/asm-generic/siginfo.h | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ arch/alpha/include/uapi/asm/siginfo.h | 7 -------
+ arch/alpha/kernel/traps.c             | 4 ++--
+ 2 files changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/kernel/signal_compat.c b/arch/x86/kernel/signal_compat.c
-index 14c057f29979..9ccbf0576cd0 100644
---- a/arch/x86/kernel/signal_compat.c
-+++ b/arch/x86/kernel/signal_compat.c
-@@ -29,7 +29,7 @@ static inline void signal_compat_build_tests(void)
- 	BUILD_BUG_ON(NSIGFPE  != 15);
- 	BUILD_BUG_ON(NSIGSEGV != 7);
- 	BUILD_BUG_ON(NSIGBUS  != 5);
--	BUILD_BUG_ON(NSIGTRAP != 4);
-+	BUILD_BUG_ON(NSIGTRAP != 5);
- 	BUILD_BUG_ON(NSIGCHLD != 6);
- 	BUILD_BUG_ON(NSIGSYS  != 1);
+diff --git a/arch/alpha/include/uapi/asm/siginfo.h b/arch/alpha/include/uapi/asm/siginfo.h
+index 3ebbb1e17902..db3f0138536f 100644
+--- a/arch/alpha/include/uapi/asm/siginfo.h
++++ b/arch/alpha/include/uapi/asm/siginfo.h
+@@ -7,11 +7,4 @@
  
-diff --git a/include/uapi/asm-generic/siginfo.h b/include/uapi/asm-generic/siginfo.h
-index 558b902f18d4..80e2a7227205 100644
---- a/include/uapi/asm-generic/siginfo.h
-+++ b/include/uapi/asm-generic/siginfo.h
-@@ -249,7 +249,8 @@ typedef struct siginfo {
- #define TRAP_TRACE	2	/* process trace trap */
- #define TRAP_BRANCH     3	/* process taken branch trap */
- #define TRAP_HWBKPT     4	/* hardware breakpoint/watchpoint */
--#define NSIGTRAP	4
-+#define TRAP_UNK	5	/* undiagnosed trap */
-+#define NSIGTRAP	5
+ #include <asm-generic/siginfo.h>
  
- /*
-  * There is an additional set of SIGTRAP si_codes used by ptrace
+-/*
+- * SIGTRAP si_codes
+- */
+-#ifdef __KERNEL__
+-#define TRAP_FIXME	0	/* Broken dup of SI_USER */
+-#endif /* __KERNEL__ */
+-
+ #endif
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index 422b676b28f2..242c83d86ace 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -288,7 +288,7 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+ 	      case 1: /* bugcheck */
+ 		info.si_signo = SIGTRAP;
+ 		info.si_errno = 0;
+-		info.si_code = TRAP_FIXME;
++		info.si_code = TRAP_UNK;
+ 		info.si_addr = (void __user *) regs->pc;
+ 		info.si_trapno = 0;
+ 		send_sig_info(SIGTRAP, &info, current);
+@@ -350,7 +350,7 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+ 		case GEN_SUBRNG7:
+ 		default:
+ 			signo = SIGTRAP;
+-			code = TRAP_FIXME;
++			code = TRAP_UNK;
+ 			break;
+ 		}
+ 
 -- 
 2.14.1
 
