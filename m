@@ -1,62 +1,48 @@
-From: James Hogan <jhogan@kernel.org>
-Subject: Re: [PATCH v3 2/3] compiler.h: Allow arch-specific overrides
-Date: Tue, 17 Apr 2018 22:04:18 +0100
-Message-ID: <20180417210416.GB21386@saruman>
-References: <cbf1a73e1c751fc8db124f974e268bab0d9727a5.1523959603.git-series.jhogan@kernel.org>
- <201804180342.6jrQJ6v3%fengguang.wu@intel.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="rJwd6BRFiFCcLxzm"
+From: "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [REVIEW][PATCH 01/17] signal/alpha: Document a conflict with SI_USER for SIGFPE
+Date: Thu, 19 Apr 2018 20:03:52 -0500
+Message-ID: <20180420010408.24438-1-ebiederm@xmission.com>
+References: <878t9ilmhv.fsf@xmission.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <201804180342.6jrQJ6v3%fengguang.wu@intel.com>
+In-Reply-To: <878t9ilmhv.fsf@xmission.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: kbuild test robot <lkp@intel.com>
-Cc: kbuild-all@01.org, linux-mips@linux-mips.org, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, Paul Burton <paul.burton@mips.com>, Ralf Baechle <ralf@linux-mips.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: linux-arch@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>, Helge Deller <deller@gmx.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
+Setting si_code to 0 is the same as setting si_code to SI_USER.  This
+is the same si_code as SI_USER.  Posix and common sense requires that
+SI_USER not be a signal specific si_code.  As such this use of 0 for
+the si_code is a pretty horribly broken ABI.
 
---rJwd6BRFiFCcLxzm
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Cc: Helge Deller <deller@gmx.de>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+History Tree: https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
+Ref: 0a635c7a84cf ("Fill in siginfo_t.")
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+---
+ arch/alpha/kernel/osf_sys.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hi kbuild test robot,
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 89faa6f4de47..2e02aef5a334 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -872,7 +872,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
+ 		fex = (exc >> IEEE_STATUS_TO_EXCSUM_SHIFT) & swcr;
+  		if (fex) {
+ 			siginfo_t info;
+-			int si_code = 0;
++			int si_code = FPE_FIXME;
+ 
+ 			if (fex & IEEE_TRAP_ENABLE_DNO) si_code = FPE_FLTUND;
+ 			if (fex & IEEE_TRAP_ENABLE_INE) si_code = FPE_FLTRES;
+-- 
+2.14.1
 
-On Wed, Apr 18, 2018 at 03:19:47AM +0800, kbuild test robot wrote:
->    In file included from ./arch/x86/include/generated/asm/compiler.h:1:0,
->                     from include/linux/compiler_types.h:58,
->                     from <command-line>:0:
-> >> include/asm-generic/compiler.h:2:2: error: #error "Please don't include <asm/compiler.h> directly, include <linux/compiler.h> instead."
->     #error "Please don't include <asm/compiler.h> directly, include <linux/compiler.h> instead."
-
-Whoops, I love your bug report.
-
-I'll change asm-generic/compiler.h to look for __LINUX_COMPILER_TYPES_H
-instead of __LINUX_COMPILER_H and resend soon.
-
-Thanks!
-James
-
-
---rJwd6BRFiFCcLxzm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEd80NauSabkiESfLYbAtpk944dnoFAlrWYVAACgkQbAtpk944
-dnpItBAAufXUFwYhH2lz7N2GEw1Z23twrtCeSRcrq65r2wEcMizH6taYASGvNoww
-tmaKoXz+9oQQqvK1/4MSXMotkNYkVSe+MoGXnXU4x+v3dLsAiKG433SJKi65g97S
-jsEr+nWlGJMBFyD/zbLjYpCwKcx4fAqyR02VVQs87ChO1uaHE33LrK5pYpqLCqud
-1/tkeoP61zIE42fhEsXvS7Mw+5VDIGksPWuiMfpsxpsOek/tOhfDF2dDLFWK3gz6
-OUnL33pma+ocv+MP3+g1lI3PGqPSB+k4D3BYpLM7sQUNcFrr0qI/5gC8cc7QRuo8
-bGj36DXnYO6pqkWbHoiZC+PkelL+CcBj/aYlM/pKUr/84J9A1QX+6slsmgbtcQQT
-wUnsPtSrRnZw0/BbilsGPE9BakF8epbnB5u+mu7Fp4VAMgiKd/b1VKZ2M740dpqM
-UODP5v/CxSE4YGVHTx8TDutciODzbOcJu7mvogRw+QufVHX6GKvcdl/CU6ezGZuM
-LXzT+W7YRlLZ8X0/0JopD0mcDMc8Oglr3W3ilkG/pYa09vFHwW6KmeeFqBw4XSOT
-gxdk0QUahi7wo2+to2zxAfky0FT06Vzxx0tXP3x+nXTL52D+CMQtGacZPEpDnTn6
-+gnkisuFdngBdb0YB0UGDzY8zoLfjzdA7X38v9U91vLHizWxgWU=
-=ROKm
------END PGP SIGNATURE-----
-
---rJwd6BRFiFCcLxzm--
