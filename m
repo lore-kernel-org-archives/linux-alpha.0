@@ -1,101 +1,74 @@
-From: "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [REVIEW][PATCH 02/22] signal/alpha: Use force_sig_fault where appropriate
-Date: Fri, 20 Apr 2018 09:37:51 -0500
-Message-ID: <20180420143811.9994-2-ebiederm@xmission.com>
-References: <87604mhrnb.fsf@xmission.com>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: Re: [PATCH] alpha: io: reorder barriers to guarantee writeX() and
+ iowriteX() ordering #2
+Date: Fri, 20 Apr 2018 12:20:11 -0400
+Message-ID: <2fd54f7c-ff73-5935-a253-c924f4373cc6@codeaurora.org>
+References: <1523917017-28084-1-git-send-email-okaya@codeaurora.org>
+ <b9d845ad-62af-d300-53d9-2b62f5da6c44@codeaurora.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <87604mhrnb.fsf@xmission.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1524241230;
+        bh=nWY4YCdP3dN+k6mxAQqY0vSarayH/fDIEIjwv26RPMg=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=W8GuY07mn7TEIdgEIhTWrlfCQpNeM15GU9brnOG2BV/EiyODb8uxcImTOk06R/Zdx
+         q/HC9LbVcF8NBhUsqQt7l6WZQcwR6nw7NlzvHZi8uvMCbZdVteEB9WgkoHuvX9BPy7
+         X2WYz5NK3nG0pjSZBfslPwyPw2KYp/9DDPILFrRE=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1524241223;
+        bh=nWY4YCdP3dN+k6mxAQqY0vSarayH/fDIEIjwv26RPMg=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=l4DV6guHx+f0kxQn5kZ/qcuVCuZFqd29KJ4g1DSE0fXfaJSz4ecJDjDkuMaMSNF0y
+         UnHuKd3xtSjWcYE9dDXjSqGHc/aod69/GWdVf2isXF1vS6GO4faoIb/sb74sPGgMCC
+         uzPnihH+fFrEjv2aVoXfqEeghP/QDa9HGG4k9Ic4=
+In-Reply-To: <b9d845ad-62af-d300-53d9-2b62f5da6c44@codeaurora.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-arch@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org, arnd@arndb.de, timur@codeaurora.org, sulrich@codeaurora.org, Matt Turner <mattst88@gmail.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, linux-kernel@vger.kernel.org
 
-Filling in struct siginfo before calling force_sig_info a tedious and
-error prone process, where once in a great while the wrong fields
-are filled out, and siginfo has been inconsistently cleared.
+Hi Matt,
 
-Simplify this process by using the helper force_sig_fault.  Which
-takes as a parameters all of the information it needs, ensures
-all of the fiddly bits of filling in struct siginfo are done properly
-and then calls force_sig_info.
+On 4/17/2018 2:43 PM, Sinan Kaya wrote:
+> On 4/16/2018 6:16 PM, Sinan Kaya wrote:
+>> memory-barriers.txt has been updated with the following requirement.
+>>
+>> "When using writel(), a prior wmb() is not needed to guarantee that the
+>> cache coherent memory writes have completed before writing to the MMIO
+>> region."
+>>
+>> Current writeX() and iowriteX() implementations on alpha are not
+>> satisfying this requirement as the barrier is after the register write.
+>>
+>> Move mb() in writeX() and iowriteX() functions to guarantee that HW
+>> observes memory changes before performing register operations.
+>>
+>> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+>> Reported-by: Arnd Bergmann <arnd@arndb.de>
+>> ---
+>>  arch/alpha/kernel/io.c | 14 +++++++-------
+>>  1 file changed, 7 insertions(+), 7 deletions(-)
+> 
+> Sorry for catching this late but this also needs to go to 4.17 after
+> review.
+> 
+> I missed the writel() implementation on arch/alpha/kernel/io.c file
+> on my first patch.
+> 
 
-In short about a 5 line reduction in code for every time force_sig_info
-is called, which makes the calling function clearer.
+Can you also queue this for 4.17?
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
----
- arch/alpha/kernel/traps.c |  9 +--------
- arch/alpha/mm/fault.c     | 15 ++-------------
- 2 files changed, 3 insertions(+), 21 deletions(-)
+There are already drivers checked into 4.17 that dropped the unnecessary
+barriers. 
 
-diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index 106a1692fca0..bc9627698796 100644
---- a/arch/alpha/kernel/traps.c
-+++ b/arch/alpha/kernel/traps.c
-@@ -400,16 +400,9 @@ do_entIF(unsigned long type, struct pt_regs *regs)
- asmlinkage void
- do_entDbg(struct pt_regs *regs)
- {
--	siginfo_t info;
--
- 	die_if_kernel("Instruction fault", regs, 0, NULL);
- 
--	clear_siginfo(&info);
--	info.si_signo = SIGILL;
--	info.si_errno = 0;
--	info.si_code = ILL_ILLOPC;
--	info.si_addr = (void __user *) regs->pc;
--	force_sig_info(SIGILL, &info, current);
-+	force_sig_fault(SIGILL, ILL_ILLOPC, (void __user *)regs->pc, 0, current);
- }
- 
- 
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 7f2202a9f50a..de2bd217adad 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -88,11 +88,8 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 	struct mm_struct *mm = current->mm;
- 	const struct exception_table_entry *fixup;
- 	int fault, si_code = SEGV_MAPERR;
--	siginfo_t info;
- 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
- 
--	clear_siginfo(&info);
--
- 	/* As of EV6, a load into $31/$f31 is a prefetch, and never faults
- 	   (or is suppressed by the PALcode).  Support that for older CPUs
- 	   by ignoring such an instruction.  */
-@@ -223,21 +220,13 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 	up_read(&mm->mmap_sem);
- 	/* Send a sigbus, regardless of whether we were in kernel
- 	   or user mode.  */
--	info.si_signo = SIGBUS;
--	info.si_errno = 0;
--	info.si_code = BUS_ADRERR;
--	info.si_addr = (void __user *) address;
--	force_sig_info(SIGBUS, &info, current);
-+	force_sig_fault(SIGBUS, BUS_ADRERR, (void __user *) address, 0, current);
- 	if (!user_mode(regs))
- 		goto no_context;
- 	return;
- 
-  do_sigsegv:
--	info.si_signo = SIGSEGV;
--	info.si_errno = 0;
--	info.si_code = si_code;
--	info.si_addr = (void __user *) address;
--	force_sig_info(SIGSEGV, &info, current);
-+	force_sig_fault(SIGSEGV, si_code, (void __user *) address, 0, current);
- 	return;
- 
- #ifdef CONFIG_ALPHA_LARGE_VMALLOC
+I really hate to see Alpha broken because of this.
+
+Sinan
+
 -- 
-2.14.1
-
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
