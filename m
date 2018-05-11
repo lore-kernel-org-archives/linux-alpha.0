@@ -1,80 +1,65 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 2/2] alpha: simplify get_arch_dma_ops
-Date: Wed,  9 May 2018 16:04:52 +0200
-Message-ID: <20180509140452.20716-3-hch@lst.de>
-References: <20180509140452.20716-1-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: common non-cache coherent direct dma mapping ops
+Date: Fri, 11 May 2018 09:59:25 +0200
+Message-ID: <20180511075945.16548-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=References:In-Reply-To:Message-Id:
-	Date:Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=6YsxktIFApfljqDxCaSnQ3rBiukrtF50KorjTad9lzY=;
-	b=kxqCzb9hqZnni0Cx056/JOegv
-	Pl9y2fdM5WvYbz6hHhkBJhylWc3jbyFkeAGqXdVt3IvUb7Brcw+Ql5YICG2ImNR/d8JCm7WmVfmDL
-	/Ebf11e6FY0aCDRf7dxdcMQrLVGdnOv4bo9THIKB4s9DQc9qHnANpxASqDwV6Hpn031bb6R4h2zIc
-	W4U+a6aH6sUD4NsiIH5eUpfRhIcaf0enzKKvfiUUUYyhkDPqDwYYWpW2zS/0qu5XHw//PBQK2VSZa
-	BprS+b4VFrykeqom+BT7hfd99fZrGfRVe/ikGqIL+6Ksh6vIch1kGcniRK2cmS3k00tp7Arv96uB/
-	nDTpXXQdA==;
-In-Reply-To: <20180509140452.20716-1-hch-jcswGhMUV9g@public.gmane.org>
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:Message-Id:Date:
+	Subject:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	References:List-Owner; bh=4wx5mKm3C3YIokHdRKpACvmtVmKY5sD2XUoq4d8zIhw=; b=hgo
+	9kH976usDgVuwCXGaqJH0oATyQa5r1lA7h4NkDKT5wcukqf3zkJ+pk7GzdR7fsl/RpPi9IZ9wjbBR
+	iDPQtku5k6nwiXFuqJKE3Y+tuXSmbjmBu8e0hAsoXPuRdgvshgI7IMb21hZCsw8skOctfzqZXxsqh
+	h+kKKubakZ1WiL6H6IOj/X85sM8St/+2W1sDqrUSNufsp7ER2Y3jKuo2TEM/LS2FQ16doBcq8M7Pe
+	2mtEufIwQjEOBnbpJXVXFcWF3FRXMTilYVS+g6H4zVv24TKLsKhaMSBpZ95YLnegHc4RQldnRF7Zw
+	P1BeCwAsG4AWIXU9PhKyuC64u+LjKVg==;
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org, mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-arch@vger.kernel.org, linux-xtensa@linux-xtensa.org, Michal Simek <monstr@monstr.eu>, Vincent Chen <deanbo422@gmail.com>, linux-c6x-dev@linux-c6x.org, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, Greentime Hu <green.hu@gmail.com>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 
-Remove the dma_ops indirection.
+Hi all,
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/alpha/include/asm/dma-mapping.h | 4 ++--
- arch/alpha/kernel/pci_iommu.c        | 4 +---
- 2 files changed, 3 insertions(+), 5 deletions(-)
+this series continues consolidating the dma-mapping code, with a focus
+on architectures that do not (always) provide cache coherence for DMA.
+Three architectures (arm, mips and powerpc) are still left to be
+converted later due to complexity of their dma ops selection.
 
-diff --git a/arch/alpha/include/asm/dma-mapping.h b/arch/alpha/include/asm/dma-mapping.h
-index 76ce923ecca1..8beeafd4f68e 100644
---- a/arch/alpha/include/asm/dma-mapping.h
-+++ b/arch/alpha/include/asm/dma-mapping.h
-@@ -2,14 +2,14 @@
- #ifndef _ALPHA_DMA_MAPPING_H
- #define _ALPHA_DMA_MAPPING_H
- 
--extern const struct dma_map_ops *dma_ops;
-+extern const struct dma_map_ops alpha_pci_ops;
- 
- static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
- {
- #ifdef CONFIG_ALPHA_JENSEN
- 	return &dma_direct_ops;
- #else
--	return dma_ops;
-+	return &alpha_pci_ops;
- #endif
- }
- 
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index 83b34b9188ea..6923b0d9c1e1 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -950,6 +950,4 @@ const struct dma_map_ops alpha_pci_ops = {
- 	.mapping_error		= alpha_pci_mapping_error,
- 	.dma_supported		= alpha_pci_supported,
- };
--
--const struct dma_map_ops *dma_ops = &alpha_pci_ops;
--EXPORT_SYMBOL(dma_ops);
-+EXPORT_SYMBOL(alpha_pci_ops);
--- 
-2.17.0
+The dma-noncoherent ops calls the dma-direct ops for the actual
+translation of streaming mappins and allow the architecture to provide
+any cache flushing required for cpu to device and/or device to cpu
+ownership transfers.  The dma coherent allocator is for now still left
+entirely to architecture supplied implementations due the amount of
+variations.  Hopefully we can do some consolidation for them later on
+as well.
+
+A lot of architectures are currently doing very questionable things
+in their dma mapping routines, which are documented in the changelogs
+for each patch.  Please review them very careful and correct me on
+incorrect assumptions.
+
+Because this series sits on top of two previously submitted series
+a git tree might be useful to actually test it.  It is provided here:
+
+    git://git.infradead.org/users/hch/misc.git generic-dma-noncoherent
+
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/generic-dma-noncoherent
+
+Changes since RFC:
+ - fix a typo accidentally disabling the device to cpu transfer sync
+ - fixed a few compile failures
