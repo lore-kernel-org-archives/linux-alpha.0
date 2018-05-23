@@ -1,83 +1,87 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 12/25] openrisc: remove the sync_single_for_cpu DMA operation
-Date: Tue, 22 May 2018 14:04:17 +0200
-Message-ID: <20180522120430.28709-13-hch@lst.de>
-References: <20180522120430.28709-1-hch@lst.de>
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PULL] alpha.git
+Date: Tue, 22 May 2018 21:02:17 -0700
+Message-ID: <20180523040217.GA6512@ivybridge.mattst88.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=References:In-Reply-To:Message-Id:
-	Date:Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=3X9/Tom9ASBMGSi/LDU7cBZ334J+TTZzxFLYPETEYIU=;
-	b=Vlpc+QWkuNRroj9dqMV4XOzrY
-	O73NOCvTeMO1IeI77/5Fy452W6YcGwUXRgzSryJxWK918yYhq+QogGeCvUMQYfqOPdGjZcnpoMpCN
-	oIM7xlLdPvFyeC9V2zsV+keoKnmpt4avjSrXxMN/nEgT4v7IblzH0mRKlRoNt4i4RWZv6yqoyyrVv
-	yS+Uif9F0XDniYg27Uujr7NK2ifaLJt5ozZEwBb9RIsvXpgNZipou4zlbcsBL+w0SBqVC+g+GIzrR
-	9RTPvb42WgnVT5yFobOeCaMNpWQ3QEOIIenQARZsCaMr3KwiaoHwTh926f77nZMLk3oVYzbC4WtFX
-	WFYm1Jclw==;
-In-Reply-To: <20180522120430.28709-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="2fHTh5uZTiUOsy+g"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=/KfCWkKKims04xC+5yWr6Y4q/a98RTsY//GfiQAAnT0=;
+        b=X9OMRY1abp8Wzo8/YTjDCCNzoqKrs8QipExcTPL05dS0wUQKU3XzFsQtovwdr/8G/L
+         E2JpSbUV02sN7piV+LKjc7Roxh+NA/CHJNgTKD9arUbxgyojuU91wec7CEopU1goJ0rz
+         B15QcxKl54rM1AC8258+hQU8AOABqaA8KQyobxSAcGZ/rm6cDb6lkoMEkkBSB/ekkqj2
+         mJn+AI80xn10ZrDoUcTscdnRlFsq2KODkX0L8H3dfrS0TsRlCuEq4pfTmu2gjFwmesSq
+         cusZXK0oUr7fZwoQZV6iBu7oT5GyS9x/gDzIE2CArFDxFJziXWpDd1VGUoyq5ULVyb6q
+         z4uw==
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Christoph Hellwig <hch@lst.de>, Sinan Kaya <okaya@codeaurora.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-openrisc does all the required cache maintainance at dma map time, and none
-at unmap time.  It thus has to implement sync_single_for_device to match
-the map cace for buffer reuse, but there is no point in doing another
-invalidation in the sync_single_cpu_case, which in terms of cache
-maintainance is equivalent to the unmap case.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/openrisc/kernel/dma.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+--2fHTh5uZTiUOsy+g
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/arch/openrisc/kernel/dma.c b/arch/openrisc/kernel/dma.c
-index ec7fd45704d2..47601274abf7 100644
---- a/arch/openrisc/kernel/dma.c
-+++ b/arch/openrisc/kernel/dma.c
-@@ -208,20 +208,6 @@ or1k_unmap_sg(struct device *dev, struct scatterlist *sg,
- 	}
- }
- 
--static void
--or1k_sync_single_for_cpu(struct device *dev,
--			 dma_addr_t dma_handle, size_t size,
--			 enum dma_data_direction dir)
--{
--	unsigned long cl;
--	dma_addr_t addr = dma_handle;
--	struct cpuinfo_or1k *cpuinfo = &cpuinfo_or1k[smp_processor_id()];
--
--	/* Invalidate the dcache for the requested range */
--	for (cl = addr; cl < addr + size; cl += cpuinfo->dcache_block_size)
--		mtspr(SPR_DCBIR, cl);
--}
--
- static void
- or1k_sync_single_for_device(struct device *dev,
- 			    dma_addr_t dma_handle, size_t size,
-@@ -243,7 +229,6 @@ const struct dma_map_ops or1k_dma_map_ops = {
- 	.unmap_page = or1k_unmap_page,
- 	.map_sg = or1k_map_sg,
- 	.unmap_sg = or1k_unmap_sg,
--	.sync_single_for_cpu = or1k_sync_single_for_cpu,
- 	.sync_single_for_device = or1k_sync_single_for_device,
- };
- EXPORT_SYMBOL(or1k_dma_map_ops);
--- 
-2.17.0
+Hi Linus,
+
+Please pull a few small changes for alpha.
+
+Thanks,
+Matt
+
+
+The following changes since commit c61a56ababa404961fa769a2b24229f18e461961:
+
+  Merge branch 'x86-urgent-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip (2018-04-29 10:06:05 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+
+for you to fetch changes up to 92d7223a74235054f2aa7227d207d9c57f84dca0:
+
+  alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2 (2018-05-22 18:10:36 -0700)
+
+----------------------------------------------------------------
+Christoph Hellwig (2):
+      alpha: use dma_direct_ops for jensen
+      alpha: simplify get_arch_dma_ops
+
+Sinan Kaya (1):
+      alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2
+
+ arch/alpha/Kconfig                   |  1 +
+ arch/alpha/include/asm/dma-mapping.h |  8 ++++++--
+ arch/alpha/kernel/io.c               | 14 +++++++-------
+ arch/alpha/kernel/pci-noop.c         | 33 ---------------------------------
+ arch/alpha/kernel/pci_iommu.c        |  4 +---
+ 5 files changed, 15 insertions(+), 45 deletions(-)
+
+--2fHTh5uZTiUOsy+g
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEO7Y55W+GH6LoZQVpD91oLZdMpyoFAlsE58UACgkQD91oLZdM
+pyoH0RAAjH0zXHAixaRf1rrKhXtytCnW/Zwv/XcrewOnbJFVWUmjJi5iIg+Nbooi
+7WVfpf2f843FMG55/Ie/KVA3f5VA9NdHvOJ5tNBq3Nj2oi+K0PBr7il+DOCRWIWE
+yMWa/hcjw1aoO7nWsqodKYtn/X44yY1KRxUcrPtW1Mrzy6XYDaJxlkCLiWMrEvXe
+2YjU9UKHRusvPaVJAemYU++qnAoUbnu2nlnk/3J+txTQLUGc0oPcqYkp5fhfOneR
+9L+k3XLenvsZWwdcvhR/rghoL16spVaS7bkeIFtZCs3HWqnNTBo7fo2ulXT221ei
+ERpBfQPyf9vhWx+w5tyKSrDXQbNnaWFFNeDA0oe/JsPP+krW1JgEtD1uE8pbqrx+
+5gsSSreF974MzOIXLFJt8yaWisnWHTBny0PSWkexx/QwfOFH8rzl/QCjgxe/X4re
+BdjYTzIPMFPtGWWnqxsmq3YxpgncpNtubgzDcUtsLuuxqyhwylmRqQCNXIgg+2GU
+FqUmAGBI4EqqAGaP7eB7WjefshxxS7ETOUQ0alm3ilarsb2rXp7nP9j35dHFN9xL
+UedwzJAULLm/WRS/O8m3b8SoJ5mRlZk6kFAojIxpdfqrHgB7+3BvpUOPsMwC/cao
+MeRPOW+URajpGp6hVVRlKofY0pRsN26Al8qeW+Xh6qvmWtyPYAE=
+=eVuD
+-----END PGP SIGNATURE-----
+
+--2fHTh5uZTiUOsy+g--
