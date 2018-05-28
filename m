@@ -1,18 +1,18 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.9 136/329] locking/xchg/alpha: Fix xchg() and cmpxchg() memory ordering bugs
-Date: Mon, 28 May 2018 12:01:05 +0200
-Message-ID: <20180528100253.960186828@linuxfoundation.org>
-References: <20180528100241.796630982@linuxfoundation.org>
+Subject: [PATCH 3.18 070/185] locking/xchg/alpha: Fix xchg() and cmpxchg() memory ordering bugs
+Date: Mon, 28 May 2018 12:01:51 +0200
+Message-ID: <20180528100056.780995508@linuxfoundation.org>
+References: <20180528100050.700971285@linuxfoundation.org>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1527503539;
-        bh=Dkw87Po/8mc1GBoYu+hCZhyXUI7t5Km2KHY1x+4Fof0=;
+        s=default; t=1527502169;
+        bh=hnH48IUuR2AzGd8+wnOU7yX6Oajritn76MLkioWlc6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GmvcUpFDQy282z8EwUvzfMrPDk5A8CK1qAqg93HuBfJxzCcIxQD4ixTVX0bLDFS5I
-         /+inLxXLWb3KQwHlQnusLGoiri7rVUz9ulX+9dCzsQ5IUUkCf8bM8yg2lvlTs1PmSV
-         T6KmPmQyEOb6iTUKe1PXunq+c4RWv53+hKuFn/9U=
-In-Reply-To: <20180528100241.796630982@linuxfoundation.org>
+        b=N58GWFKCuTA76rdSyCCAMh/SCMtMLmBFj150zXpOb+GdVfcPizkaV0PdCnPPVSzUZ
+         xhJYHblemH56luwn3wZ8p8xvD9zqyCmH5PBylxks2lZWXdXlGgoeNwEkLP60qywbgT
+         YASKhjIvRQzka0EadZfHU4v66gAJKJU2lzaPg1jQ=
+In-Reply-To: <20180528100050.700971285@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -20,7 +20,7 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Andrea Parri <parri.andrea@gmail.com>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Alan Stern <stern@rowland.harvard.edu>, Andrew Morton <akpm@linux-foundation.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linus Torvalds <torvalds@linux-foundation.org>, Matt Turner <mattst88@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Richard Henderson <rth@twiddle.net>, Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, Sasha Levin <alexander.levin@microsoft.com>
 
-4.9-stable review patch.  If anyone has any objections, please let me know.
+3.18-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
