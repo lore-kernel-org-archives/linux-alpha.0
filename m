@@ -1,63 +1,92 @@
-From: Rob Landley <rob@landley.net>
+From: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
 Subject: Re: [PATCH] kbuild: add machine size to CHEKCFLAGS
-Date: Wed, 30 May 2018 17:36:45 -0500
-Message-ID: <0dd9d6dc-6cb3-157c-33ac-8c3e449a3859@landley.net>
-References: <20180530204838.22079-1-luc.vanoostenryck@gmail.com>
- <d47b72cc-9209-a190-38b3-969870e1bf26@suse.de>
+Date: Thu, 31 May 2018 01:06:53 +0200
+Message-ID: <CAMHZB6GXVPvr1uwbemuxqPPtNzYT7jeVokR6q9tz2mS_=TG6vA@mail.gmail.com>
+References: <20180530204838.22079-1-luc.vanoostenryck@gmail.com> <d47b72cc-9209-a190-38b3-969870e1bf26@suse.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=landley-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kgm5l5XhYV99nBDdwXztR+m6Mhkyb42YXSSjhwGnFsk=;
-        b=pM/BdO6sKD3wfcSv9xvyZ9ZZCh95V7KGyxioXz7TwWqwLU9e34XtChmNbHZG4qdisG
-         iKZCcD28oylehJumuvOJHI+idt/AL8JhGroW1BAiwQg9UB3e3wEwrkf6pIzOK+C+yBGA
-         +ZakEAKiu3s5sZ1tD9ZhIe3pc8AsH6fazt0wGLIbSkoBf2gv4gPLfOuN/hYSAi3tzbCD
-         VtKbVlzSP73VtTYMnaWNjmQmGnd/4O9HJ7ZBAvGSCtQQpErdiT6O5jw05WuhEbp28MJZ
-         rbfk2fAQX2+aoTyKoPVWZCT7bXF7bjLcl9iTeoA2pSomumRaEw6MWhJxgdANM5jhlB+x
-         S++g==
+        d=gmail.com; s=20161025;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=07aXHtt9Oy/CtH/eFeOA82JbgRI6LuaMmZ8NxzSnisw=;
+        b=vAYeJp1g8XSm04eNyxPffG0CBOvPNwvv4YhhefUxMN83K2rxgN8KJzUmp03sGRNrLO
+         K+UzT0kG3vy01VVZWQdoqhoxFOvsqrhZxKx3Tmt6Wy0k6kJjyeOu2Kvy7swdEyWeZerH
+         WGBvPv53OGBIoL2vMeYLcd/ta3ix3qKUtXsYax8uvsLzlifZ2cdc+9U9xQvCJi8rVRQ6
+         GDTLlH9k2OJ9AEQ1Te34TzlbVVy0kVqHOIBWnAB28q2zb7O87hewxHrEmVPRXhixuhmx
+         rNWDGWhXvQJBBZyawa62+QERFeGtPCT4iEusgtvsG/G9jJ5NZtBRLWdNy9ISKapXOyQX
+         uYHA==
 In-Reply-To: <d47b72cc-9209-a190-38b3-969870e1bf26@suse.de>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>, Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Michal Marek <michal.lkml@markovi.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Brendan Higgins <brendanhiggins@google.com>
+To: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Michal Marek <michal.lkml@markovi.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, Brendan
 
-On 05/30/2018 05:00 PM, Andreas F=C3=A4rber wrote:
+On Thu, May 31, 2018 at 12:00 AM, Andreas F=C3=A4rber <afaerber@suse.de> wr=
+ote:
+> Hi Luc,
+>
+> The typo in the subject made me curious...
+>
+> Am 30.05.2018 um 22:48 schrieb Luc Van Oostenryck:
+>> By default, sparse assumes a 64bit machine when compiled on x86-64
+>> and 32bit when compiled on anything else.
+>>
+>> This can of course create all sort of problems for the other archs, like
+>> issuing false warnings ('shift too big (32) for type unsigned long'), or
+>> worse, failing to emit legitimate warnings.
+>>
+>> Fix this by adding the -m32/-m64 flag, depending on CONFIG_64BIT,
+>> to CHECKFLAGS in the main Makefile (and so for all archs).
+>> Also, remove the now unneeded -m32/-m64 in arch specific Makefiles.
+>>
+>> Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+>> ---
+>>  Makefile             | 3 +++
+>>  arch/alpha/Makefile  | 2 +-
+>>  arch/arm/Makefile    | 2 +-
+>>  arch/arm64/Makefile  | 2 +-
+>>  arch/ia64/Makefile   | 2 +-
+>>  arch/mips/Makefile   | 3 ---
+>>  arch/parisc/Makefile | 2 +-
+>>  arch/sparc/Makefile  | 2 +-
+>>  arch/x86/Makefile    | 2 +-
+>>  9 files changed, 10 insertions(+), 10 deletions(-)
+>
 > What about the architectures not touched by your patch that previously
 > had no -m32/-m64? (arc, c6x, h8300, hexagon, m68k, microblaze, nds32,
 > nios2, openrisc, powerpc, riscv, s390, sh, unicore32, xtensa)
->=20
+
+As explained in the patch, by default sparse uses -m64 if compiled on x86-6=
+4
+and 32bit on everything else (well, more recent versions use -m64 if
+compiled on any 64 bit machine). I think that most ppc devs use a ppc
+machine and so ppc was most probably fine (at least ppc64) but I suspect
+that most of these others archs either had never sparse used on them
+or had a lot of wrong warnings. IOW, it was maybe OK but most probably
+incorrect for them and now it is OK.
+
 > You forgot to CC them on this patch.
 
-A) He cc'd arch/sh on the previous patch earlier today, to which I replied:
-
-https://marc.info/?l=3Dlinux-sh&m=3D152769132515226&w=3D2
-
-B) Every change to common infrastructure should cc: every arch? Really? So =
-like
-filesystem changes and stuff to?
+I didn't thought/knew  it was needed and the CC list is already
+quite long but, if needed, no problem for me.
 
 > Have you really checked that all their toolchains support the -m32/-m64
 > flags you newly introduce for them? Apart from non-biarch architectures,
 > I'm thinking of 31-bit s390 as a corner case where !64 !=3D 32.
 
-1) Last I heard Linux implements lp64:
-   http://www.unix.org/whitepapers/64bit.html
+Hmm, there is no change to anything I call 'toolchain related', like
+compiler and linker. The only change is sparse (or any other checker)
+receiving now a correct and explicit -m32 or -m64.
 
-2) it's unlikely to be worse than it was before the patch,
+For s390, as far as I know:
+1) it has CONFIG_64BIT unconditionally definee (because the old 31bit
+   is no more supported, now everything is s390x only).
+2) even if the *address space* was only 31 bit, I'm very sure
+   that sizeof(long) and sizeof(void*) was 4 on these machine
+   hence -m32 would have been correct.
 
-3) last I checked https://github.com/landley/mkroot boots to an s390 shell
-prompt under qemu, although I haven't tried building with this patch. (And =
-you
-may still need to add HOST_EXTRA=3D'lex yacc bison flex' to the command line
-unless they've re-added the _shipped versions like the old kconfig had...) =
-Point
-is, shouldn't be too hard to test it. Presumably that's why we have an -rc1=
- and
-then 6 more -rc versions each release...
-
-Rob
+Best regards,
+-- Luc
