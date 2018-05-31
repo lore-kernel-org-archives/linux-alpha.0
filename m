@@ -1,105 +1,119 @@
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
 Subject: Re: [PATCH] kbuild: add machine size to CHEKCFLAGS
-Date: Wed, 30 May 2018 17:06:24 -0700
-Message-ID: <01db7e93-89f3-361a-29c6-5146cda1d745@infradead.org>
+Date: Thu, 31 May 2018 10:31:49 +0900
+Message-ID: <CAK7LNARYP9T4pfuA32KrnP4-8_S+BPkvGBVyFgWXp_roXfQV7w@mail.gmail.com>
 References: <20180530204838.22079-1-luc.vanoostenryck@gmail.com>
- <d47b72cc-9209-a190-38b3-969870e1bf26@suse.de>
- <CAMHZB6GXVPvr1uwbemuxqPPtNzYT7jeVokR6q9tz2mS_=TG6vA@mail.gmail.com>
+ <d47b72cc-9209-a190-38b3-969870e1bf26@suse.de> <CAMHZB6GXVPvr1uwbemuxqPPtNzYT7jeVokR6q9tz2mS_=TG6vA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:
-	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
-	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=E4RcKMIDTi3B/Be/qyV7Vbl2fKYj8uMFExzgiC86AHw=; b=DSSQBr8CGWdUww
-	tyxIjYAnfaU/rovj96mUB5JljfbX0u9rrwHVTja1F63iupBAgGm+sfR38oKWCUISTZLVPogiYDebR
-	LTWKSG/u+aKRZNqM4TjM32XVC2MvnoLoyNvGjcLgYyKiOP9355y5pjJda85hj963hF+5Nx0St9zyg
-	sfDL3Nddlnf9Wc8akdkPOqODLYry1qJ3yH0KZjGA9mXkQFC4/mQs1kUb/96gIpV3yiYudK3SG5vNi
-	gDtCw4jzKHx+HUmSe1ZKgXuuS6kD+/W46hiARY4zvm2IJCvLShKq3Tm6QAruVsrpZ93F6oLSsPFx7
-	kgWVw1nP7viyXLGLQvlQ==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
- In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
- :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
- Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
- List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=GoviHrwN7e8AO6TnnGMqUD9sqS+cFSGHgRNpjOVmB1U=; b=03fyUlrXi5SiWampbA4moD8m7l
- kzpJQQKn6Z473c8s25c4qjN69njOvmxf+mR34BP3XYFOTQeZeguDdpMT21gj2m9RbdOhI8y2uPS6s
- bNIkRanip+34rDZ38xPJ6KR5IOVTF/yLCH/fLUArlP/d5Al8WPuk5N9e+jaubu4kgiP1xBiwvjErk
- X0nbuh24Q8gc0f2S/TZlunzzrdfFPiLIDf/Nob02Kyuekx/U3ljisSKtRB5DuCbhsRlPBL+yhrx5/
- DBQgLJLjG6IPl7m9ZEaLt5GJygVtTMPIZQRakroYhNKcaWidj028soJX1C/ebTQBYa4g8AeDqfFP0
- PoFVxZKw==;
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com w4V1WWXv017753
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1527730353;
+        bh=umFZwwKoVrClAkiEXAXVy8YYb3HJpBcwey/N9CUPxSs=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=UQchLP1aLMJj4iVvbNPsJuVV+zTAKBxPYN+UBFl8F1kL3xI2jucDqijr/8VwuI55C
+         z99Z8hUct99TWAa8IF8Zsg8GBcFxf7phySdKDWJxc2HsWyVnMr9tfujNNoGOOrGUIU
+         shLpAwPMB3dDSi6KD79KKYFm4d4SIj0pMm5awFsXTXor2KSNIY8ijPqQAC6Dj2UQme
+         1cUI18/XF6u3cQYEtq9Rys+p6pebUVlCnDldOLkhkKsC3wHSU2LUWPyNO90LjfgVMJ
+         5AEgeHAhkW3iG/Om4eh41aXhuOSaQVBYatQnS4atLhRb3OGStvx71eOHRumzsU5ysk
+         qkBPXcHn/F2OA==
 In-Reply-To: <CAMHZB6GXVPvr1uwbemuxqPPtNzYT7jeVokR6q9tz2mS_=TG6vA@mail.gmail.com>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>, =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Cc: Nicolas Pitre <nicolas.pitre@linaro.org>, linux-mips@linux-mips.org, linux-ia64@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Masahiro Yamada <yamada.masahiro@socionext.com>, "H . Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, Helge Deller <deller@gmx.de>, the arch/x86 maintainers <x86@kernel.org>, Russell King <linux@armlinux.org.uk>, Christoph Hellwig <hch@infradead.org>, Ingo Molnar <mingo@redhat.com>, James Hogan <jhogan@kernel.org>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Brendan Higgins <brendanhiggins@google.com>, Cao jin <caoj.fnst@cn.fujitsu.com>, Tony Luck <tony.luck@intel.com>, Ivan Kokshaysky <ink@jurassic.>
+To: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+Cc: =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, Michal Marek <michal.lkml@markovi.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, the arch/x86 maintainers <x86@kernel.org>, Brendan
 
-T24gMDUvMzAvMjAxOCAwNDowNiBQTSwgTHVjIFZhbiBPb3N0ZW5yeWNrIHdyb3RlOgo+IE9uIFRo
-dSwgTWF5IDMxLCAyMDE4IGF0IDEyOjAwIEFNLCBBbmRyZWFzIEbDpHJiZXIgPGFmYWVyYmVyQHN1
-c2UuZGU+IHdyb3RlOgo+PiBIaSBMdWMsCj4+Cj4+IFRoZSB0eXBvIGluIHRoZSBzdWJqZWN0IG1h
-ZGUgbWUgY3VyaW91cy4uLgo+Pgo+PiBBbSAzMC4wNS4yMDE4IHVtIDIyOjQ4IHNjaHJpZWIgTHVj
-IFZhbiBPb3N0ZW5yeWNrOgo+Pj4gQnkgZGVmYXVsdCwgc3BhcnNlIGFzc3VtZXMgYSA2NGJpdCBt
-YWNoaW5lIHdoZW4gY29tcGlsZWQgb24geDg2LTY0Cj4+PiBhbmQgMzJiaXQgd2hlbiBjb21waWxl
-ZCBvbiBhbnl0aGluZyBlbHNlLgo+Pj4KPj4+IFRoaXMgY2FuIG9mIGNvdXJzZSBjcmVhdGUgYWxs
-IHNvcnQgb2YgcHJvYmxlbXMgZm9yIHRoZSBvdGhlciBhcmNocywgbGlrZQo+Pj4gaXNzdWluZyBm
-YWxzZSB3YXJuaW5ncyAoJ3NoaWZ0IHRvbyBiaWcgKDMyKSBmb3IgdHlwZSB1bnNpZ25lZCBsb25n
-JyksIG9yCj4+PiB3b3JzZSwgZmFpbGluZyB0byBlbWl0IGxlZ2l0aW1hdGUgd2FybmluZ3MuCj4+
-Pgo+Pj4gRml4IHRoaXMgYnkgYWRkaW5nIHRoZSAtbTMyLy1tNjQgZmxhZywgZGVwZW5kaW5nIG9u
-IENPTkZJR182NEJJVCwKPj4+IHRvIENIRUNLRkxBR1MgaW4gdGhlIG1haW4gTWFrZWZpbGUgKGFu
-ZCBzbyBmb3IgYWxsIGFyY2hzKS4KPj4+IEFsc28sIHJlbW92ZSB0aGUgbm93IHVubmVlZGVkIC1t
-MzIvLW02NCBpbiBhcmNoIHNwZWNpZmljIE1ha2VmaWxlcy4KPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5
-OiBMdWMgVmFuIE9vc3RlbnJ5Y2sgPGx1Yy52YW5vb3N0ZW5yeWNrQGdtYWlsLmNvbT4KPj4+IC0t
-LQo+Pj4gIE1ha2VmaWxlICAgICAgICAgICAgIHwgMyArKysKPj4+ICBhcmNoL2FscGhhL01ha2Vm
-aWxlICB8IDIgKy0KPj4+ICBhcmNoL2FybS9NYWtlZmlsZSAgICB8IDIgKy0KPj4+ICBhcmNoL2Fy
-bTY0L01ha2VmaWxlICB8IDIgKy0KPj4+ICBhcmNoL2lhNjQvTWFrZWZpbGUgICB8IDIgKy0KPj4+
-ICBhcmNoL21pcHMvTWFrZWZpbGUgICB8IDMgLS0tCj4+PiAgYXJjaC9wYXJpc2MvTWFrZWZpbGUg
-fCAyICstCj4+PiAgYXJjaC9zcGFyYy9NYWtlZmlsZSAgfCAyICstCj4+PiAgYXJjaC94ODYvTWFr
-ZWZpbGUgICAgfCAyICstCj4+PiAgOSBmaWxlcyBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCAx
-MCBkZWxldGlvbnMoLSkKPj4KPj4gV2hhdCBhYm91dCB0aGUgYXJjaGl0ZWN0dXJlcyBub3QgdG91
-Y2hlZCBieSB5b3VyIHBhdGNoIHRoYXQgcHJldmlvdXNseQo+PiBoYWQgbm8gLW0zMi8tbTY0PyAo
-YXJjLCBjNngsIGg4MzAwLCBoZXhhZ29uLCBtNjhrLCBtaWNyb2JsYXplLCBuZHMzMiwKPj4gbmlv
-czIsIG9wZW5yaXNjLCBwb3dlcnBjLCByaXNjdiwgczM5MCwgc2gsIHVuaWNvcmUzMiwgeHRlbnNh
-KQo+IAo+IEFzIGV4cGxhaW5lZCBpbiB0aGUgcGF0Y2gsIGJ5IGRlZmF1bHQgc3BhcnNlIHVzZXMg
-LW02NCBpZiBjb21waWxlZCBvbiB4ODYtNjQKPiBhbmQgMzJiaXQgb24gZXZlcnl0aGluZyBlbHNl
-ICh3ZWxsLCBtb3JlIHJlY2VudCB2ZXJzaW9ucyB1c2UgLW02NCBpZgo+IGNvbXBpbGVkIG9uIGFu
-eSA2NCBiaXQgbWFjaGluZSkuIEkgdGhpbmsgdGhhdCBtb3N0IHBwYyBkZXZzIHVzZSBhIHBwYwo+
-IG1hY2hpbmUgYW5kIHNvIHBwYyB3YXMgbW9zdCBwcm9iYWJseSBmaW5lIChhdCBsZWFzdCBwcGM2
-NCkgYnV0IEkgc3VzcGVjdAo+IHRoYXQgbW9zdCBvZiB0aGVzZSBvdGhlcnMgYXJjaHMgZWl0aGVy
-IGhhZCBuZXZlciBzcGFyc2UgdXNlZCBvbiB0aGVtCj4gb3IgaGFkIGEgbG90IG9mIHdyb25nIHdh
-cm5pbmdzLiBJT1csIGl0IHdhcyBtYXliZSBPSyBidXQgbW9zdCBwcm9iYWJseQo+IGluY29ycmVj
-dCBmb3IgdGhlbSBhbmQgbm93IGl0IGlzIE9LLgo+IAo+PiBZb3UgZm9yZ290IHRvIENDIHRoZW0g
-b24gdGhpcyBwYXRjaC4KPiAKPiBJIGRpZG4ndCB0aG91Z2h0L2tuZXcgIGl0IHdhcyBuZWVkZWQg
-YW5kIHRoZSBDQyBsaXN0IGlzIGFscmVhZHkKPiBxdWl0ZSBsb25nIGJ1dCwgaWYgbmVlZGVkLCBu
-byBwcm9ibGVtIGZvciBtZS4KCklkZWFsbHksIGFkZGluZyBsaW51eC1hcmNoQHZnZXIua2VybmVs
-Lm9yZyB3b3VsZCBiZSBzdWZmaWNpZW50LCBidXQKc2FkbHkgSSBoYXZlIGRvdWJ0cyBhYm91dCB0
-aGF0LgoKPj4gSGF2ZSB5b3UgcmVhbGx5IGNoZWNrZWQgdGhhdCBhbGwgdGhlaXIgdG9vbGNoYWlu
-cyBzdXBwb3J0IHRoZSAtbTMyLy1tNjQKPj4gZmxhZ3MgeW91IG5ld2x5IGludHJvZHVjZSBmb3Ig
-dGhlbT8gQXBhcnQgZnJvbSBub24tYmlhcmNoIGFyY2hpdGVjdHVyZXMsCj4+IEknbSB0aGlua2lu
-ZyBvZiAzMS1iaXQgczM5MCBhcyBhIGNvcm5lciBjYXNlIHdoZXJlICE2NCAhPSAzMi4KPiAKPiBI
-bW0sIHRoZXJlIGlzIG5vIGNoYW5nZSB0byBhbnl0aGluZyBJIGNhbGwgJ3Rvb2xjaGFpbiByZWxh
-dGVkJywgbGlrZQo+IGNvbXBpbGVyIGFuZCBsaW5rZXIuIFRoZSBvbmx5IGNoYW5nZSBpcyBzcGFy
-c2UgKG9yIGFueSBvdGhlciBjaGVja2VyKQo+IHJlY2VpdmluZyBub3cgYSBjb3JyZWN0IGFuZCBl
-eHBsaWNpdCAtbTMyIG9yIC1tNjQuCj4gCj4gRm9yIHMzOTAsIGFzIGZhciBhcyBJIGtub3c6Cj4g
-MSkgaXQgaGFzIENPTkZJR182NEJJVCB1bmNvbmRpdGlvbmFsbHkgZGVmaW5lZSAoYmVjYXVzZSB0
-aGUgb2xkIDMxYml0Cj4gICAgaXMgbm8gbW9yZSBzdXBwb3J0ZWQsIG5vdyBldmVyeXRoaW5nIGlz
-IHMzOTB4IG9ubHkpLgo+IDIpIGV2ZW4gaWYgdGhlICphZGRyZXNzIHNwYWNlKiB3YXMgb25seSAz
-MSBiaXQsIEknbSB2ZXJ5IHN1cmUKPiAgICB0aGF0IHNpemVvZihsb25nKSBhbmQgc2l6ZW9mKHZv
-aWQqKSB3YXMgNCBvbiB0aGVzZSBtYWNoaW5lCj4gICAgaGVuY2UgLW0zMiB3b3VsZCBoYXZlIGJl
-ZW4gY29ycmVjdC4KCgotLSAKflJhbmR5CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0t
-a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+2018-05-31 8:06 GMT+09:00 Luc Van Oostenryck <luc.vanoostenryck@gmail.com>:
+> On Thu, May 31, 2018 at 12:00 AM, Andreas F=C3=A4rber <afaerber@suse.de> =
+wrote:
+>> Hi Luc,
+>>
+>> The typo in the subject made me curious...
+>>
+>> Am 30.05.2018 um 22:48 schrieb Luc Van Oostenryck:
+>>> By default, sparse assumes a 64bit machine when compiled on x86-64
+>>> and 32bit when compiled on anything else.
+>>>
+>>> This can of course create all sort of problems for the other archs, lik=
+e
+>>> issuing false warnings ('shift too big (32) for type unsigned long'), o=
+r
+>>> worse, failing to emit legitimate warnings.
+>>>
+>>> Fix this by adding the -m32/-m64 flag, depending on CONFIG_64BIT,
+>>> to CHECKFLAGS in the main Makefile (and so for all archs).
+>>> Also, remove the now unneeded -m32/-m64 in arch specific Makefiles.
+>>>
+>>> Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+>>> ---
+>>>  Makefile             | 3 +++
+>>>  arch/alpha/Makefile  | 2 +-
+>>>  arch/arm/Makefile    | 2 +-
+>>>  arch/arm64/Makefile  | 2 +-
+>>>  arch/ia64/Makefile   | 2 +-
+>>>  arch/mips/Makefile   | 3 ---
+>>>  arch/parisc/Makefile | 2 +-
+>>>  arch/sparc/Makefile  | 2 +-
+>>>  arch/x86/Makefile    | 2 +-
+>>>  9 files changed, 10 insertions(+), 10 deletions(-)
+>>
+>> What about the architectures not touched by your patch that previously
+>> had no -m32/-m64? (arc, c6x, h8300, hexagon, m68k, microblaze, nds32,
+>> nios2, openrisc, powerpc, riscv, s390, sh, unicore32, xtensa)
+>
+> As explained in the patch, by default sparse uses -m64 if compiled on x86=
+-64
+> and 32bit on everything else (well, more recent versions use -m64 if
+> compiled on any 64 bit machine). I think that most ppc devs use a ppc
+> machine and so ppc was most probably fine (at least ppc64) but I suspect
+> that most of these others archs either had never sparse used on them
+> or had a lot of wrong warnings. IOW, it was maybe OK but most probably
+> incorrect for them and now it is OK.
+>
+>> You forgot to CC them on this patch.
+>
+> I didn't thought/knew  it was needed and the CC list is already
+> quite long but, if needed, no problem for me.
+>
+>> Have you really checked that all their toolchains support the -m32/-m64
+>> flags you newly introduce for them? Apart from non-biarch architectures,
+>> I'm thinking of 31-bit s390 as a corner case where !64 !=3D 32.
+>
+> Hmm, there is no change to anything I call 'toolchain related', like
+> compiler and linker. The only change is sparse (or any other checker)
+> receiving now a correct and explicit -m32 or -m64.
+
+
+Right.  We are talking about sparse.
+Nobody needs to test vmlinux or whatever objects.
+
+Except the typo in the subject (I can locally fix it up, though),
+this patch looks good to me.
+
+
+
+
+
+
+> For s390, as far as I know:
+> 1) it has CONFIG_64BIT unconditionally definee (because the old 31bit
+>    is no more supported, now everything is s390x only).
+> 2) even if the *address space* was only 31 bit, I'm very sure
+>    that sizeof(long) and sizeof(void*) was 4 on these machine
+>    hence -m32 would have been correct.
+>
+> Best regards,
+> -- Luc
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kbuild" i=
+n
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+
+
+--=20
+Best Regards
+Masahiro Yamada
