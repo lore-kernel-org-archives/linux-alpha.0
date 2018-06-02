@@ -1,49 +1,49 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
+From: Masahiro Yamada <yamada.masahiro@socionext.com>
 Subject: Re: [PATCH] kbuild: add machine size to CHEKCFLAGS
-Date: Thu, 31 May 2018 09:38:32 +0100
-Message-ID: <20180531083832.glzcj23cgucev77v@holly.lan>
+Date: Sat, 2 Jun 2018 16:53:48 +0900
+Message-ID: <CAK7LNASGYhAGbHbVzb+bbnpOsh2Vvt-C0cYpzu55b0PS-Oqc4Q@mail.gmail.com>
 References: <20180530204838.22079-1-luc.vanoostenryck@gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ztsPvYEWARJUvJ1opa/XEvLAXjZYFHe/8IpWVNHQtPY=;
-        b=MwIaSl0dCU4IZEyYOgV0jAdSmiJy+/btG2ob9D57Ufv9820x6qsumBRBX8oawI7R15
-         JXAQQAmgYAQvT6RzdEjASjtStuaOsQSkvOIYfQRD5cES8nVYhnxZ6tcKKt2izHtpNa+N
-         WgnCEC3vqzcB3F+AEnJSuO8HMbwWq1kPoDyss=
-Content-Disposition: inline
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com w527sVB4000328
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1527926072;
+        bh=5A9S+PR/n9S7v5bfEEHf0oEK5Kh+aYqMilWTOt+7sF8=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=IyWbu3wZ6no/W5S7j9YdP3Zk4gB3Tft/lYfpKfDP9jZ7qavSh8FZGVPcooX5DqRoN
+         4YfYKZ6IMhMFtWULsktJICbpN8vIeMK/PIxPPaJjSaUwY0/gek3N8ZX2G9Salp6BCb
+         JPv1A2pIfzFsG1BuW9oIhcdmCUvMsCen0FU88BUuEXRgYQg1pTtlRwaESc9iNgovdg
+         XUT18SOW/t2mbrBcvlVfIHqCXyHjCFr0jCaYHdDGGS4KFAfr3EGXjSRFQG3uGdnwq7
+         drKonXlVQ2KNdf9sGJBh5foEzRVXiQSb7vojdiL6p4xb24YJ/kR23oNB9A0sVmmnEO
+         pa+7H3GpBSxwA==
 In-Reply-To: <20180530204838.22079-1-luc.vanoostenryck@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Michal Marek <michal.lkml@markovi.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org, Brendan Higgins <brendanhiggins@google.com>
+Cc: Michal Marek <michal.lkml@markovi.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, X86 ML <x86@kernel.org>, Brendan Higgins <brendanhiggins@google.com>, Martin Blumenstingl <martin.blumenstingl@googl>
 
-On Wed, May 30, 2018 at 10:48:38PM +0200, Luc Van Oostenryck wrote:
+2018-05-31 5:48 GMT+09:00 Luc Van Oostenryck <luc.vanoostenryck@gmail.com>:
 > By default, sparse assumes a 64bit machine when compiled on x86-64
 > and 32bit when compiled on anything else.
-> 
+>
 > This can of course create all sort of problems for the other archs, like
 > issuing false warnings ('shift too big (32) for type unsigned long'), or
 > worse, failing to emit legitimate warnings.
-> 
+>
 > Fix this by adding the -m32/-m64 flag, depending on CONFIG_64BIT,
 > to CHECKFLAGS in the main Makefile (and so for all archs).
 > Also, remove the now unneeded -m32/-m64 in arch specific Makefiles.
-> 
+>
 > Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-
-Looks like a good clean up to me. However the typo in the Subject: line
-did attract my attention.
-
-
-Daniel.
-
-
 > ---
+
+Fixed CHEKCFLAGS -> CHECKFLAGS
+and applied to linux-kbuild.  Thanks!
+
+
+
 >  Makefile             | 3 +++
 >  arch/alpha/Makefile  | 2 +-
 >  arch/arm/Makefile    | 2 +-
@@ -54,7 +54,7 @@ Daniel.
 >  arch/sparc/Makefile  | 2 +-
 >  arch/x86/Makefile    | 2 +-
 >  9 files changed, 10 insertions(+), 10 deletions(-)
-> 
+>
 > diff --git a/Makefile b/Makefile
 > index 6c6610913..18379987c 100644
 > --- a/Makefile
@@ -62,7 +62,7 @@ Daniel.
 > @@ -881,6 +881,9 @@ endif
 >  # insure the checker run with the right endianness
 >  CHECKFLAGS += $(if $(CONFIG_CPU_BIG_ENDIAN),-mbig-endian,-mlittle-endian)
->  
+>
 > +# the checker needs the correct machine size
 > +CHECKFLAGS += $(if $(CONFIG_64BIT),-m64,-m32)
 > +
@@ -75,78 +75,78 @@ Daniel.
 > +++ b/arch/alpha/Makefile
 > @@ -11,7 +11,7 @@
 >  NM := $(NM) -B
->  
->  LDFLAGS_vmlinux	:= -static -N #-relax
-> -CHECKFLAGS	+= -D__alpha__ -m64
-> +CHECKFLAGS	+= -D__alpha__
->  cflags-y	:= -pipe -mno-fp-regs -ffixed-8
->  cflags-y	+= $(call cc-option, -fno-jump-tables)
->  
+>
+>  LDFLAGS_vmlinux        := -static -N #-relax
+> -CHECKFLAGS     += -D__alpha__ -m64
+> +CHECKFLAGS     += -D__alpha__
+>  cflags-y       := -pipe -mno-fp-regs -ffixed-8
+>  cflags-y       += $(call cc-option, -fno-jump-tables)
+>
 > diff --git a/arch/arm/Makefile b/arch/arm/Makefile
 > index e4e537f27..f32a5468d 100644
 > --- a/arch/arm/Makefile
 > +++ b/arch/arm/Makefile
 > @@ -135,7 +135,7 @@ endif
->  KBUILD_CFLAGS	+=$(CFLAGS_ABI) $(CFLAGS_ISA) $(arch-y) $(tune-y) $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,)) -msoft-float -Uarm
->  KBUILD_AFLAGS	+=$(CFLAGS_ABI) $(AFLAGS_ISA) $(arch-y) $(tune-y) -include asm/unified.h -msoft-float
->  
-> -CHECKFLAGS	+= -D__arm__ -m32
-> +CHECKFLAGS	+= -D__arm__
->  
+>  KBUILD_CFLAGS  +=$(CFLAGS_ABI) $(CFLAGS_ISA) $(arch-y) $(tune-y) $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,)) -msoft-float -Uarm
+>  KBUILD_AFLAGS  +=$(CFLAGS_ABI) $(AFLAGS_ISA) $(arch-y) $(tune-y) -include asm/unified.h -msoft-float
+>
+> -CHECKFLAGS     += -D__arm__ -m32
+> +CHECKFLAGS     += -D__arm__
+>
 >  #Default value
->  head-y		:= arch/arm/kernel/head$(MMUEXT).o
+>  head-y         := arch/arm/kernel/head$(MMUEXT).o
 > diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
 > index 87f7d2f9f..3c353b471 100644
 > --- a/arch/arm64/Makefile
 > +++ b/arch/arm64/Makefile
-> @@ -78,7 +78,7 @@ LDFLAGS		+= -maarch64linux
->  UTS_MACHINE	:= aarch64
+> @@ -78,7 +78,7 @@ LDFLAGS               += -maarch64linux
+>  UTS_MACHINE    := aarch64
 >  endif
->  
-> -CHECKFLAGS	+= -D__aarch64__ -m64
-> +CHECKFLAGS	+= -D__aarch64__
->  
+>
+> -CHECKFLAGS     += -D__aarch64__ -m64
+> +CHECKFLAGS     += -D__aarch64__
+>
 >  ifeq ($(CONFIG_ARM64_MODULE_PLTS),y)
->  KBUILD_LDFLAGS_MODULE	+= -T $(srctree)/arch/arm64/kernel/module.lds
+>  KBUILD_LDFLAGS_MODULE  += -T $(srctree)/arch/arm64/kernel/module.lds
 > diff --git a/arch/ia64/Makefile b/arch/ia64/Makefile
 > index 2dd7f519a..45f59808b 100644
 > --- a/arch/ia64/Makefile
 > +++ b/arch/ia64/Makefile
 > @@ -18,7 +18,7 @@ READELF := $(CROSS_COMPILE)readelf
->  
+>
 >  export AWK
->  
-> -CHECKFLAGS	+= -m64 -D__ia64=1 -D__ia64__=1 -D_LP64 -D__LP64__
-> +CHECKFLAGS	+= -D__ia64=1 -D__ia64__=1 -D_LP64 -D__LP64__
->  
->  OBJCOPYFLAGS	:= --strip-all
->  LDFLAGS_vmlinux	:= -static
+>
+> -CHECKFLAGS     += -m64 -D__ia64=1 -D__ia64__=1 -D_LP64 -D__LP64__
+> +CHECKFLAGS     += -D__ia64=1 -D__ia64__=1 -D_LP64 -D__LP64__
+>
+>  OBJCOPYFLAGS   := --strip-all
+>  LDFLAGS_vmlinux        := -static
 > diff --git a/arch/mips/Makefile b/arch/mips/Makefile
 > index 5e9fce076..e2122cca4 100644
 > --- a/arch/mips/Makefile
 > +++ b/arch/mips/Makefile
 > @@ -309,9 +309,6 @@ ifdef CONFIG_MIPS
 >  CHECKFLAGS += $(shell $(CC) $(KBUILD_CFLAGS) -dM -E -x c /dev/null | \
->  	egrep -vw '__GNUC_(|MINOR_|PATCHLEVEL_)_' | \
->  	sed -e "s/^\#define /-D'/" -e "s/ /'='/" -e "s/$$/'/" -e 's/\$$/&&/g')
+>         egrep -vw '__GNUC_(|MINOR_|PATCHLEVEL_)_' | \
+>         sed -e "s/^\#define /-D'/" -e "s/ /'='/" -e "s/$$/'/" -e 's/\$$/&&/g')
 > -ifdef CONFIG_64BIT
-> -CHECKFLAGS		+= -m64
+> -CHECKFLAGS             += -m64
 > -endif
 >  endif
->  
->  OBJCOPYFLAGS		+= --remove-section=.reginfo
+>
+>  OBJCOPYFLAGS           += --remove-section=.reginfo
 > diff --git a/arch/parisc/Makefile b/arch/parisc/Makefile
 > index 348ae4779..714284ea6 100644
 > --- a/arch/parisc/Makefile
 > +++ b/arch/parisc/Makefile
 > @@ -28,7 +28,7 @@ export LIBGCC
->  
+>
 >  ifdef CONFIG_64BIT
->  UTS_MACHINE	:= parisc64
-> -CHECKFLAGS	+= -D__LP64__=1 -m64
-> +CHECKFLAGS	+= -D__LP64__=1
->  CC_ARCHES	= hppa64
->  LD_BFD		:= elf64-hppa-linux
+>  UTS_MACHINE    := parisc64
+> -CHECKFLAGS     += -D__LP64__=1 -m64
+> +CHECKFLAGS     += -D__LP64__=1
+>  CC_ARCHES      = hppa64
+>  LD_BFD         := elf64-hppa-linux
 >  else # 32-bit
 > diff --git a/arch/sparc/Makefile b/arch/sparc/Makefile
 > index edac927e4..966a13d2b 100644
@@ -155,7 +155,7 @@ Daniel.
 > @@ -39,7 +39,7 @@ else
 >  # sparc64
 >  #
->  
+>
 > -CHECKFLAGS    += -D__sparc__ -D__sparc_v9__ -D__arch64__ -m64
 > +CHECKFLAGS    += -D__sparc__ -D__sparc_v9__ -D__arch64__
 >  LDFLAGS       := -m elf64_sparc
@@ -171,9 +171,15 @@ Daniel.
 >          UTS_MACHINE := x86_64
 > -        CHECKFLAGS += -D__x86_64__ -m64
 > +        CHECKFLAGS += -D__x86_64__
->  
+>
 >          biarch := -m64
 >          KBUILD_AFLAGS += -m64
-> -- 
+> --
 > 2.17.0
-> 
+>
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
