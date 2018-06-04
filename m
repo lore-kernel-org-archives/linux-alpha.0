@@ -1,185 +1,115 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: Re: [PATCH] kbuild: add machine size to CHEKCFLAGS
-Date: Sat, 2 Jun 2018 16:53:48 +0900
-Message-ID: <CAK7LNASGYhAGbHbVzb+bbnpOsh2Vvt-C0cYpzu55b0PS-Oqc4Q@mail.gmail.com>
-References: <20180530204838.22079-1-luc.vanoostenryck@gmail.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 1/5 v2] spinlock: atomic_dec_and_lock: Add an irqsave variant
+Date: Mon, 4 Jun 2018 12:25:59 +0200
+Message-ID: <20180604102559.2ynbassthjzva62l@linutronix.de>
+References: <20180504154533.8833-1-bigeasy@linutronix.de>
+ <20180504154533.8833-2-bigeasy@linutronix.de>
 Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com w527sVB4000328
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1527926072;
-        bh=5A9S+PR/n9S7v5bfEEHf0oEK5Kh+aYqMilWTOt+7sF8=;
-        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
-        b=IyWbu3wZ6no/W5S7j9YdP3Zk4gB3Tft/lYfpKfDP9jZ7qavSh8FZGVPcooX5DqRoN
-         4YfYKZ6IMhMFtWULsktJICbpN8vIeMK/PIxPPaJjSaUwY0/gek3N8ZX2G9Salp6BCb
-         JPv1A2pIfzFsG1BuW9oIhcdmCUvMsCen0FU88BUuEXRgYQg1pTtlRwaESc9iNgovdg
-         XUT18SOW/t2mbrBcvlVfIHqCXyHjCFr0jCaYHdDGGS4KFAfr3EGXjSRFQG3uGdnwq7
-         drKonXlVQ2KNdf9sGJBh5foEzRVXiQSb7vojdiL6p4xb24YJ/kR23oNB9A0sVmmnEO
-         pa+7H3GpBSxwA==
-In-Reply-To: <20180530204838.22079-1-luc.vanoostenryck@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20180504154533.8833-2-bigeasy@linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-Cc: Michal Marek <michal.lkml@markovi.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, "James E . J . Bottomley" <jejb@parisc-linux.org>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, X86 ML <x86@kernel.org>, Brendan Higgins <brendanhiggins@google.com>, Martin Blumenstingl <martin.blumenstingl@googl>
+Content-Type: text/plain; charset="windows-1252"
+To: linux-kernel@vger.kernel.org
+Cc: tglx@linutronix.de, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, linux-mm@kvack.org, Shaohua Li <shli@kernel.org>, linux-raid@vger.kernel.org, Anna-Maria Gleixner <anna-maria@linutronix.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-2018-05-31 5:48 GMT+09:00 Luc Van Oostenryck <luc.vanoostenryck@gmail.com>:
-> By default, sparse assumes a 64bit machine when compiled on x86-64
-> and 32bit when compiled on anything else.
->
-> This can of course create all sort of problems for the other archs, like
-> issuing false warnings ('shift too big (32) for type unsigned long'), or
-> worse, failing to emit legitimate warnings.
->
-> Fix this by adding the -m32/-m64 flag, depending on CONFIG_64BIT,
-> to CHECKFLAGS in the main Makefile (and so for all archs).
-> Also, remove the now unneeded -m32/-m64 in arch specific Makefiles.
->
-> Signed-off-by: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
-> ---
+There are in-tree users of atomic_dec_and_lock() which must acquire the
+spin lock with interrupts disabled. To workaround the lack of an irqsave
+variant of atomic_dec_and_lock() they use local_irq_save() at the call
+site. This causes extra code and creates in some places unneeded long
+interrupt disabled times. These places need also extra treatment for
+PREEMPT_RT due to the disconnect of the irq disabling and the lock
+function.
 
-Fixed CHEKCFLAGS -> CHECKFLAGS
-and applied to linux-kbuild.  Thanks!
+Implement the missing irqsave variant of the function.
+Add a stub for Alpha which should work without the assmebly optimisation
+for the fastpath.
 
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org> [not the Alpha bits]
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Anna-Maria Gleixner <anna-maria@linutronix.de>
+[bigeasy: adding Alpha bits]
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+v1=E2=80=A6v2: Add Alpha bits (kbuild reported build failure on Alpha)
 
+ arch/alpha/lib/dec_and_lock.c | 16 ++++++++++++++++
+ include/linux/spinlock.h      |  5 +++++
+ lib/dec_and_lock.c            | 16 ++++++++++++++++
+ 3 files changed, 37 insertions(+)
 
->  Makefile             | 3 +++
->  arch/alpha/Makefile  | 2 +-
->  arch/arm/Makefile    | 2 +-
->  arch/arm64/Makefile  | 2 +-
->  arch/ia64/Makefile   | 2 +-
->  arch/mips/Makefile   | 3 ---
->  arch/parisc/Makefile | 2 +-
->  arch/sparc/Makefile  | 2 +-
->  arch/x86/Makefile    | 2 +-
->  9 files changed, 10 insertions(+), 10 deletions(-)
->
-> diff --git a/Makefile b/Makefile
-> index 6c6610913..18379987c 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -881,6 +881,9 @@ endif
->  # insure the checker run with the right endianness
->  CHECKFLAGS += $(if $(CONFIG_CPU_BIG_ENDIAN),-mbig-endian,-mlittle-endian)
->
-> +# the checker needs the correct machine size
-> +CHECKFLAGS += $(if $(CONFIG_64BIT),-m64,-m32)
-> +
->  # Default kernel image to build when no specific target is given.
->  # KBUILD_IMAGE may be overruled on the command line or
->  # set in the environment
-> diff --git a/arch/alpha/Makefile b/arch/alpha/Makefile
-> index 2cc3cc519..c5ec8c09c 100644
-> --- a/arch/alpha/Makefile
-> +++ b/arch/alpha/Makefile
-> @@ -11,7 +11,7 @@
->  NM := $(NM) -B
->
->  LDFLAGS_vmlinux        := -static -N #-relax
-> -CHECKFLAGS     += -D__alpha__ -m64
-> +CHECKFLAGS     += -D__alpha__
->  cflags-y       := -pipe -mno-fp-regs -ffixed-8
->  cflags-y       += $(call cc-option, -fno-jump-tables)
->
-> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-> index e4e537f27..f32a5468d 100644
-> --- a/arch/arm/Makefile
-> +++ b/arch/arm/Makefile
-> @@ -135,7 +135,7 @@ endif
->  KBUILD_CFLAGS  +=$(CFLAGS_ABI) $(CFLAGS_ISA) $(arch-y) $(tune-y) $(call cc-option,-mshort-load-bytes,$(call cc-option,-malignment-traps,)) -msoft-float -Uarm
->  KBUILD_AFLAGS  +=$(CFLAGS_ABI) $(AFLAGS_ISA) $(arch-y) $(tune-y) -include asm/unified.h -msoft-float
->
-> -CHECKFLAGS     += -D__arm__ -m32
-> +CHECKFLAGS     += -D__arm__
->
->  #Default value
->  head-y         := arch/arm/kernel/head$(MMUEXT).o
-> diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-> index 87f7d2f9f..3c353b471 100644
-> --- a/arch/arm64/Makefile
-> +++ b/arch/arm64/Makefile
-> @@ -78,7 +78,7 @@ LDFLAGS               += -maarch64linux
->  UTS_MACHINE    := aarch64
->  endif
->
-> -CHECKFLAGS     += -D__aarch64__ -m64
-> +CHECKFLAGS     += -D__aarch64__
->
->  ifeq ($(CONFIG_ARM64_MODULE_PLTS),y)
->  KBUILD_LDFLAGS_MODULE  += -T $(srctree)/arch/arm64/kernel/module.lds
-> diff --git a/arch/ia64/Makefile b/arch/ia64/Makefile
-> index 2dd7f519a..45f59808b 100644
-> --- a/arch/ia64/Makefile
-> +++ b/arch/ia64/Makefile
-> @@ -18,7 +18,7 @@ READELF := $(CROSS_COMPILE)readelf
->
->  export AWK
->
-> -CHECKFLAGS     += -m64 -D__ia64=1 -D__ia64__=1 -D_LP64 -D__LP64__
-> +CHECKFLAGS     += -D__ia64=1 -D__ia64__=1 -D_LP64 -D__LP64__
->
->  OBJCOPYFLAGS   := --strip-all
->  LDFLAGS_vmlinux        := -static
-> diff --git a/arch/mips/Makefile b/arch/mips/Makefile
-> index 5e9fce076..e2122cca4 100644
-> --- a/arch/mips/Makefile
-> +++ b/arch/mips/Makefile
-> @@ -309,9 +309,6 @@ ifdef CONFIG_MIPS
->  CHECKFLAGS += $(shell $(CC) $(KBUILD_CFLAGS) -dM -E -x c /dev/null | \
->         egrep -vw '__GNUC_(|MINOR_|PATCHLEVEL_)_' | \
->         sed -e "s/^\#define /-D'/" -e "s/ /'='/" -e "s/$$/'/" -e 's/\$$/&&/g')
-> -ifdef CONFIG_64BIT
-> -CHECKFLAGS             += -m64
-> -endif
->  endif
->
->  OBJCOPYFLAGS           += --remove-section=.reginfo
-> diff --git a/arch/parisc/Makefile b/arch/parisc/Makefile
-> index 348ae4779..714284ea6 100644
-> --- a/arch/parisc/Makefile
-> +++ b/arch/parisc/Makefile
-> @@ -28,7 +28,7 @@ export LIBGCC
->
->  ifdef CONFIG_64BIT
->  UTS_MACHINE    := parisc64
-> -CHECKFLAGS     += -D__LP64__=1 -m64
-> +CHECKFLAGS     += -D__LP64__=1
->  CC_ARCHES      = hppa64
->  LD_BFD         := elf64-hppa-linux
->  else # 32-bit
-> diff --git a/arch/sparc/Makefile b/arch/sparc/Makefile
-> index edac927e4..966a13d2b 100644
-> --- a/arch/sparc/Makefile
-> +++ b/arch/sparc/Makefile
-> @@ -39,7 +39,7 @@ else
->  # sparc64
->  #
->
-> -CHECKFLAGS    += -D__sparc__ -D__sparc_v9__ -D__arch64__ -m64
-> +CHECKFLAGS    += -D__sparc__ -D__sparc_v9__ -D__arch64__
->  LDFLAGS       := -m elf64_sparc
->  export BITS   := 64
->  UTS_MACHINE   := sparc64
-> diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-> index 60135cbd9..f0a6ea224 100644
-> --- a/arch/x86/Makefile
-> +++ b/arch/x86/Makefile
-> @@ -94,7 +94,7 @@ ifeq ($(CONFIG_X86_32),y)
->  else
->          BITS := 64
->          UTS_MACHINE := x86_64
-> -        CHECKFLAGS += -D__x86_64__ -m64
-> +        CHECKFLAGS += -D__x86_64__
->
->          biarch := -m64
->          KBUILD_AFLAGS += -m64
-> --
-> 2.17.0
->
+diff --git a/arch/alpha/lib/dec_and_lock.c b/arch/alpha/lib/dec_and_lock.c
+index a117707f57fe..069fef7372dc 100644
+--- a/arch/alpha/lib/dec_and_lock.c
++++ b/arch/alpha/lib/dec_and_lock.c
+@@ -42,3 +42,19 @@ static int __used atomic_dec_and_lock_1(atomic_t *atomic=
+, spinlock_t *lock)
+ 	return 0;
+ }
+ EXPORT_SYMBOL(_atomic_dec_and_lock);
++
++int _atomic_dec_and_lock_irqsave(atomic_t *atomic, spinlock_t *lock,
++				 unsigned long *flags)
++{
++	/* Subtract 1 from counter unless that drops it to 0 (ie. it was 1) */
++	if (atomic_add_unless(atomic, -1, 1))
++		return 0;
++
++	/* Otherwise do it the slow way */
++	spin_lock_irqsave(lock, *flags);
++	if (atomic_dec_and_test(atomic))
++		return 1;
++	spin_unlock_irqrestore(lock, *flags);
++	return 0;
++}
++EXPORT_SYMBOL(_atomic_dec_and_lock_irqsave);
+diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
+index 4894d322d258..803536c992f5 100644
+--- a/include/linux/spinlock.h
++++ b/include/linux/spinlock.h
+@@ -409,6 +409,11 @@ extern int _atomic_dec_and_lock(atomic_t *atomic, spin=
+lock_t *lock);
+ #define atomic_dec_and_lock(atomic, lock) \
+ 		__cond_lock(lock, _atomic_dec_and_lock(atomic, lock))
+=20
++extern int _atomic_dec_and_lock_irqsave(atomic_t *atomic, spinlock_t *lock,
++					unsigned long *flags);
++#define atomic_dec_and_lock_irqsave(atomic, lock, flags) \
++		__cond_lock(lock, _atomic_dec_and_lock_irqsave(atomic, lock, &(flags)))
++
+ int alloc_bucket_spinlocks(spinlock_t **locks, unsigned int *lock_mask,
+ 			   size_t max_size, unsigned int cpu_mult,
+ 			   gfp_t gfp);
+diff --git a/lib/dec_and_lock.c b/lib/dec_and_lock.c
+index 347fa7ac2e8a..9555b68bb774 100644
+--- a/lib/dec_and_lock.c
++++ b/lib/dec_and_lock.c
+@@ -33,3 +33,19 @@ int _atomic_dec_and_lock(atomic_t *atomic, spinlock_t *l=
+ock)
+ }
+=20
+ EXPORT_SYMBOL(_atomic_dec_and_lock);
++
++int _atomic_dec_and_lock_irqsave(atomic_t *atomic, spinlock_t *lock,
++				 unsigned long *flags)
++{
++	/* Subtract 1 from counter unless that drops it to 0 (ie. it was 1) */
++	if (atomic_add_unless(atomic, -1, 1))
++		return 0;
++
++	/* Otherwise do it the slow way */
++	spin_lock_irqsave(lock, *flags);
++	if (atomic_dec_and_test(atomic))
++		return 1;
++	spin_unlock_irqrestore(lock, *flags);
++	return 0;
++}
++EXPORT_SYMBOL(_atomic_dec_and_lock_irqsave);
+--=20
+2.17.1
 
-
-
--- 
-Best Regards
-Masahiro Yamada
