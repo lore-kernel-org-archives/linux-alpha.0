@@ -1,8 +1,7 @@
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH 1.5/5] alpha: atomic: provide asm for the fastpath for
- _atomic_dec_and_lock_irqsave
-Date: Mon, 4 Jun 2018 14:55:20 +0200
-Message-ID: <20180604125520.pkxvwg4sjlws2lrs@linutronix.de>
+Subject: [PATCH 0.5/5] alpha: remove custom dec_and_lock() implementation
+Date: Wed, 6 Jun 2018 13:18:50 +0200
+Message-ID: <20180606111849.4vr2ap2w4mlyqm23@linutronix.de>
 References: <20180504154533.8833-1-bigeasy@linutronix.de>
  <20180504154533.8833-2-bigeasy@linutronix.de>
  <20180604102559.2ynbassthjzva62l@linutronix.de>
@@ -19,28 +18,152 @@ Content-Transfer-Encoding: 7bit
 To: Peter Zijlstra <peterz@infradead.org>
 Cc: linux-kernel@vger.kernel.org, tglx@linutronix.de, Ingo Molnar <mingo@redhat.com>, Anna-Maria Gleixner <anna-maria@linutronix.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On 2018-06-04 13:48:52 [+0200], Peter Zijlstra wrote:
-> On Mon, Jun 04, 2018 at 12:27:57PM +0200, Sebastian Andrzej Siewior wrote:
-> > I just looked at Alpha's atomic_dec_and_lock assembly and did something
-> > that should work for atomic_dec_and_lock_irqsave. I think it works but I
-> > would prefer for someone from the Alpha-Camp to ack this before it goes
-> > in. It is not critical because the non-optimized version should work.
-> 
-> I would vote to simply delete this entire file and get alpha on the
-> generic code.
-> 
-> Afaict, this asm gets the ordering wrong, and I doubt it is much faster
-> than using atomic_add_unless() in any case (+- the ordering of course).
+Alpha provides a custom implementation of dec_and_lock(). The functions
+is split into two parts:
+- atomic_add_unless() + return 0 (fast path in assembly)
+- remaining part including locking (slow path in C)
 
-I *think* the Alpha version is slightly wrong here. It does
-	load
-	dec by one
-	cmpeq
+Comparing the result of the alpha implementation with the generic
+implementation compiled by gcc it looks like the fast path is optimized
+by avoiding a stack frame (and reloading the GP), register store and all
+this. This is only done in the slowpath.
+After marking the slowpath (atomic_dec_and_lock_1()) as "noinline" and
+doing the slowpath in C (the atomic_add_unless(atomic, -1, 1) part) I
+noticed differences in the resulting assembly:
+- the GP is still reloaded
+- atomic_add_unless() adds more memory barriers compared to the custom
+  assembly
+- the custom assembly here does "load, sub, beq" while
+  atomic_add_unless() does "load, cmpeq, add, bne". This is okay because
+  it compares against zero after subtraction while the generic code
+  compares against 1 before.
 
-while the __atomic_add_unless() implementation does
-	load
-	cmpeq
-	
-which is the right thing (unless I can't parse the assembly properly).
+I'm not sure if avoiding the stack frame (and GP reloading) brings a lot
+in terms of performance. I can't tell if the different memory barriers
+are an issue but having the same barriers is probably good.
+This implementation forces me however to do the same thing for the
+upcoming dec_and_lock_irqsave() which I would like to avoid.
 
-Sebastian
+I suggest to remove the custom alpha implementation of dec_and_lock()
+and if it is an issue (performance wise) we could still inline the fast
+path of dec_and_lock().
+
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/alpha/Kconfig            |  5 ----
+ arch/alpha/lib/Makefile       |  2 --
+ arch/alpha/lib/dec_and_lock.c | 44 -----------------------------------
+ lib/Makefile                  |  6 +----
+ 4 files changed, 1 insertion(+), 56 deletions(-)
+ delete mode 100644 arch/alpha/lib/dec_and_lock.c
+
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index f19dc31288c8..786649e0fdf9 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -565,11 +565,6 @@ config SMP
+ 
+ 	  If you don't know what to do here, say N.
+ 
+-config HAVE_DEC_LOCK
+-	bool
+-	depends on SMP
+-	default y
+-
+ config NR_CPUS
+ 	int "Maximum number of CPUs (2-32)"
+ 	range 2 32
+diff --git a/arch/alpha/lib/Makefile b/arch/alpha/lib/Makefile
+index 04f9729de57c..854d5e79979e 100644
+--- a/arch/alpha/lib/Makefile
++++ b/arch/alpha/lib/Makefile
+@@ -35,8 +35,6 @@ lib-y =	__divqu.o __remqu.o __divlu.o __remlu.o \
+ 	callback_srm.o srm_puts.o srm_printk.o \
+ 	fls.o
+ 
+-lib-$(CONFIG_SMP) += dec_and_lock.o
+-
+ # The division routines are built from single source, with different defines.
+ AFLAGS___divqu.o = -DDIV
+ AFLAGS___remqu.o =       -DREM
+diff --git a/arch/alpha/lib/dec_and_lock.c b/arch/alpha/lib/dec_and_lock.c
+deleted file mode 100644
+index a117707f57fe..000000000000
+--- a/arch/alpha/lib/dec_and_lock.c
++++ /dev/null
+@@ -1,44 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * arch/alpha/lib/dec_and_lock.c
+- *
+- * ll/sc version of atomic_dec_and_lock()
+- * 
+- */
+-
+-#include <linux/spinlock.h>
+-#include <linux/atomic.h>
+-#include <linux/export.h>
+-
+-  asm (".text					\n\
+-	.global _atomic_dec_and_lock		\n\
+-	.ent _atomic_dec_and_lock		\n\
+-	.align	4				\n\
+-_atomic_dec_and_lock:				\n\
+-	.prologue 0				\n\
+-1:	ldl_l	$1, 0($16)			\n\
+-	subl	$1, 1, $1			\n\
+-	beq	$1, 2f				\n\
+-	stl_c	$1, 0($16)			\n\
+-	beq	$1, 4f				\n\
+-	mb					\n\
+-	clr	$0				\n\
+-	ret					\n\
+-2:	br	$29, 3f				\n\
+-3:	ldgp	$29, 0($29)			\n\
+-	br	$atomic_dec_and_lock_1..ng	\n\
+-	.subsection 2				\n\
+-4:	br	1b				\n\
+-	.previous				\n\
+-	.end _atomic_dec_and_lock");
+-
+-static int __used atomic_dec_and_lock_1(atomic_t *atomic, spinlock_t *lock)
+-{
+-	/* Slow path */
+-	spin_lock(lock);
+-	if (atomic_dec_and_test(atomic))
+-		return 1;
+-	spin_unlock(lock);
+-	return 0;
+-}
+-EXPORT_SYMBOL(_atomic_dec_and_lock);
+diff --git a/lib/Makefile b/lib/Makefile
+index ce20696d5a92..d0c1531c43f4 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -23,7 +23,7 @@ lib-y := ctype.o string.o vsprintf.o cmdline.o \
+ 	 sha1.o chacha20.o irq_regs.o argv_split.o \
+ 	 flex_proportions.o ratelimit.o show_mem.o \
+ 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
+-	 earlycpio.o seq_buf.o siphash.o \
++	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
+ 	 nmi_backtrace.o nodemask.o win_minmax.o
+ 
+ lib-$(CONFIG_PRINTK) += dump_stack.o
+@@ -96,10 +96,6 @@ obj-$(CONFIG_DEBUG_PREEMPT) += smp_processor_id.o
+ obj-$(CONFIG_DEBUG_LIST) += list_debug.o
+ obj-$(CONFIG_DEBUG_OBJECTS) += debugobjects.o
+ 
+-ifneq ($(CONFIG_HAVE_DEC_LOCK),y)
+-  lib-y += dec_and_lock.o
+-endif
+-
+ obj-$(CONFIG_BITREVERSE) += bitrev.o
+ obj-$(CONFIG_RATIONAL)	+= rational.o
+ obj-$(CONFIG_CRC_CCITT)	+= crc-ccitt.o
+-- 
+2.17.1
+
