@@ -1,191 +1,607 @@
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 1/3] alpha: remove custom dec_and_lock() implementation
-Date: Tue, 12 Jun 2018 18:16:19 +0200
-Message-ID: <20180612161621.22645-2-bigeasy@linutronix.de>
-References: <20180612161621.22645-1-bigeasy@linutronix.de>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: [PATCH] mm: convert return type of handle_mm_fault() caller to
+ vm_fault_t
+Date: Fri, 15 Jun 2018 00:36:30 +0530
+Message-ID: <20180614190629.GA18576@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180612161621.22645-1-bigeasy@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=rqXlLO/FUcDZUteIoqyH4iNrijFHZjzJ7JpxqvL6Y/4=;
+        b=mRfjg6IJswTE1kOPHYYxF8JZubIBnmZj1kIs9SE+GAn+BDlewoXzcud1HzT5NX50BV
+         iwofJXG3iNBVZg5ikszt/5utdljTjzvtjvQa8LYTZ/+BeafNCRg+QFjAOXAepEglea7A
+         l6JhPlYawPD99+8GR+InkNVcvq7DZZ2g/uN7wtfObTSPurCiGpw1uj6scti9JLfqbt66
+         Alf6uR7cknv3WXcpoFlGmpQpolV6MwUpP0s/2P4+SQY4xvOHnK5/fauJU5riCuFJWXaY
+         JhxIDvaDBodccijLUBWbh/P+eA4KPdO8nhNK68DgWVNk0nGtmP78Eejp0XyAcPIOQU9H
+         /KTg==
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: tglx@linutronix.de, Ingo Molnar <mingo@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: willy@infradead.org, rth@twiddle.net, tony.luck@intel.com, mattst88@gmail.com, vgupta@synopsys.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, rkuo@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu, jhogan@kernel.org, lftan@altera.com, jonas@southpole.se, jejb@parisc-linux.org, benh@kernel.crashing.org, palmer@sifive.com, ysato@users.sourceforge.jp, davem@davemloft.net, richard@nod.at, gxt@pku.edu.cn, tglx@linutronix.de, hpa@zytor.com, alexander.levin@verizon.com, akpm@linux-foundation.org
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@linux-mips.org, nios2-dev@lists.rocketboards.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, user-mode-linux-devel@lists.sourceforge.net, user-mode-linux-user@lists.sourceforge.net, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, brajeswar.linux@gmail.com, sabyasachi.linux@gmail.com
 
-Alpha provides a custom implementation of dec_and_lock(). The functions
-is split into two parts:
-- atomic_add_unless() + return 0 (fast path in assembly)
-- remaining part including locking (slow path in C)
+Use new return type vm_fault_t for fault handler. For
+now, this is just documenting that the function returns
+a VM_FAULT value rather than an errno. Once all instances
+are converted, vm_fault_t will become a distinct type.
 
-Comparing the result of the alpha implementation with the generic
-implementation compiled by gcc it looks like the fast path is optimized
-by avoiding a stack frame (and reloading the GP), register store and all
-this. This is only done in the slowpath.
-After marking the slowpath (atomic_dec_and_lock_1()) as "noinline" and
-doing the slowpath in C (the atomic_add_unless(atomic, -1, 1) part) I
-noticed differences in the resulting assembly:
-- the GP is still reloaded
-- atomic_add_unless() adds more memory barriers compared to the custom
-  assembly
-- the custom assembly here does "load, sub, beq" while
-  atomic_add_unless() does "load, cmpeq, add, bne". This is okay because
-  it compares against zero after subtraction while the generic code
-  compares against 1 before.
+Ref-> commit 1c8f422059ae ("mm: change return type to vm_fault_t")
 
-I'm not sure if avoiding the stack frame (and GP reloading) brings a lot
-in terms of performance. Regarding the different barriers, Peter
-Zijlstra says:
-|refcount decrement needs to be a RELEASE operation, such that all the
-|load/stores to the object happen before we decrement the refcount.
-|
-|Otherwise things like:
-|
-|        obj->foo =3D 5;
-|        refcnt_dec(&obj->ref);
-|
-|can be re-ordered, which then allows fun scenarios like:
-|
-|        CPU0                            CPU1
-|
-|        refcnt_dec(&obj->ref);
-|                                        if (dec_and_test(&obj->ref))
-|                                                free(obj);
-|        obj->foo =3D 5; // oops UaF
-|
-|
-|This means (for alpha) that there should be a memory barrier _before_
-|the decrement, however the dec_and_lock asm thing only has one _after_,
-|which, per the above, is too late.
-|
-|The generic version using add_unless will result in memory barrier
-|before and after (because that is the rule for atomic ops with a return
-|value) which is strictly too many barriers for the refcount story, but
-|who knows what other ordering requirements code has.
+In this patch all the caller of handle_mm_fault()
+are changed to return vm_fault_t type.
 
-I suggest to remove the custom alpha implementation of dec_and_lock()
-and if it is an issue (performance wise) we could still inline the fast
-path of dec_and_lock().
-
-Link: https://lkml.kernel.org/r/20180606115918.GG12198@hirez.programming.ki=
-cks-ass.net
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
 ---
- arch/alpha/Kconfig            |  5 ----
- arch/alpha/lib/Makefile       |  2 --
- arch/alpha/lib/dec_and_lock.c | 44 -----------------------------------
- lib/Makefile                  |  6 +----
- 4 files changed, 1 insertion(+), 56 deletions(-)
- delete mode 100644 arch/alpha/lib/dec_and_lock.c
+ arch/alpha/mm/fault.c         |  3 ++-
+ arch/arc/mm/fault.c           |  4 +++-
+ arch/arm/mm/fault.c           |  7 ++++---
+ arch/arm64/mm/fault.c         |  6 +++---
+ arch/hexagon/mm/vm_fault.c    |  2 +-
+ arch/ia64/mm/fault.c          |  2 +-
+ arch/m68k/mm/fault.c          |  4 ++--
+ arch/microblaze/mm/fault.c    |  2 +-
+ arch/mips/mm/fault.c          |  2 +-
+ arch/nds32/mm/fault.c         |  2 +-
+ arch/nios2/mm/fault.c         |  2 +-
+ arch/openrisc/mm/fault.c      |  2 +-
+ arch/parisc/mm/fault.c        |  2 +-
+ arch/powerpc/mm/copro_fault.c |  2 +-
+ arch/powerpc/mm/fault.c       |  7 ++++---
+ arch/riscv/mm/fault.c         |  3 ++-
+ arch/s390/mm/fault.c          | 13 ++++++++-----
+ arch/sh/mm/fault.c            |  4 ++--
+ arch/sparc/mm/fault_32.c      |  3 ++-
+ arch/sparc/mm/fault_64.c      |  3 ++-
+ arch/um/kernel/trap.c         |  2 +-
+ arch/unicore32/mm/fault.c     |  9 +++++----
+ arch/x86/mm/fault.c           |  5 +++--
+ arch/xtensa/mm/fault.c        |  2 +-
+ drivers/iommu/amd_iommu_v2.c  |  2 +-
+ drivers/iommu/intel-svm.c     |  4 +++-
+ mm/hmm.c                      |  8 ++++----
+ mm/ksm.c                      |  2 +-
+ 28 files changed, 62 insertions(+), 47 deletions(-)
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index f19dc31288c8..786649e0fdf9 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -565,11 +565,6 @@ config SMP
-=20
- 	  If you don't know what to do here, say N.
-=20
--config HAVE_DEC_LOCK
--	bool
--	depends on SMP
--	default y
--
- config NR_CPUS
- 	int "Maximum number of CPUs (2-32)"
- 	range 2 32
-diff --git a/arch/alpha/lib/Makefile b/arch/alpha/lib/Makefile
-index 04f9729de57c..854d5e79979e 100644
---- a/arch/alpha/lib/Makefile
-+++ b/arch/alpha/lib/Makefile
-@@ -35,8 +35,6 @@ lib-y =3D	__divqu.o __remqu.o __divlu.o __remlu.o \
- 	callback_srm.o srm_puts.o srm_printk.o \
- 	fls.o
-=20
--lib-$(CONFIG_SMP) +=3D dec_and_lock.o
--
- # The division routines are built from single source, with different defin=
-es.
- AFLAGS___divqu.o =3D -DDIV
- AFLAGS___remqu.o =3D       -DREM
-diff --git a/arch/alpha/lib/dec_and_lock.c b/arch/alpha/lib/dec_and_lock.c
-deleted file mode 100644
-index a117707f57fe..000000000000
---- a/arch/alpha/lib/dec_and_lock.c
-+++ /dev/null
-@@ -1,44 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * arch/alpha/lib/dec_and_lock.c
-- *
-- * ll/sc version of atomic_dec_and_lock()
-- *=20
-- */
--
--#include <linux/spinlock.h>
--#include <linux/atomic.h>
--#include <linux/export.h>
--
--  asm (".text					\n\
--	.global _atomic_dec_and_lock		\n\
--	.ent _atomic_dec_and_lock		\n\
--	.align	4				\n\
--_atomic_dec_and_lock:				\n\
--	.prologue 0				\n\
--1:	ldl_l	$1, 0($16)			\n\
--	subl	$1, 1, $1			\n\
--	beq	$1, 2f				\n\
--	stl_c	$1, 0($16)			\n\
--	beq	$1, 4f				\n\
--	mb					\n\
--	clr	$0				\n\
--	ret					\n\
--2:	br	$29, 3f				\n\
--3:	ldgp	$29, 0($29)			\n\
--	br	$atomic_dec_and_lock_1..ng	\n\
--	.subsection 2				\n\
--4:	br	1b				\n\
--	.previous				\n\
--	.end _atomic_dec_and_lock");
--
--static int __used atomic_dec_and_lock_1(atomic_t *atomic, spinlock_t *lock)
--{
--	/* Slow path */
--	spin_lock(lock);
--	if (atomic_dec_and_test(atomic))
--		return 1;
--	spin_unlock(lock);
--	return 0;
--}
--EXPORT_SYMBOL(_atomic_dec_and_lock);
-diff --git a/lib/Makefile b/lib/Makefile
-index ce20696d5a92..d0c1531c43f4 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -23,7 +23,7 @@ lib-y :=3D ctype.o string.o vsprintf.o cmdline.o \
- 	 sha1.o chacha20.o irq_regs.o argv_split.o \
- 	 flex_proportions.o ratelimit.o show_mem.o \
- 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
--	 earlycpio.o seq_buf.o siphash.o \
-+	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
- 	 nmi_backtrace.o nodemask.o win_minmax.o
-=20
- lib-$(CONFIG_PRINTK) +=3D dump_stack.o
-@@ -96,10 +96,6 @@ obj-$(CONFIG_DEBUG_PREEMPT) +=3D smp_processor_id.o
- obj-$(CONFIG_DEBUG_LIST) +=3D list_debug.o
- obj-$(CONFIG_DEBUG_OBJECTS) +=3D debugobjects.o
-=20
--ifneq ($(CONFIG_HAVE_DEC_LOCK),y)
--  lib-y +=3D dec_and_lock.o
--endif
--
- obj-$(CONFIG_BITREVERSE) +=3D bitrev.o
- obj-$(CONFIG_RATIONAL)	+=3D rational.o
- obj-$(CONFIG_CRC_CCITT)	+=3D crc-ccitt.o
---=20
-2.17.1
+diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
+index cd3c572..2a979ee 100644
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -87,7 +87,8 @@
+ 	struct vm_area_struct * vma;
+ 	struct mm_struct *mm = current->mm;
+ 	const struct exception_table_entry *fixup;
+-	int fault, si_code = SEGV_MAPERR;
++	int si_code = SEGV_MAPERR;
++	vm_fault_t fault;
+ 	siginfo_t info;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+diff --git a/arch/arc/mm/fault.c b/arch/arc/mm/fault.c
+index a0b7bd6..3a18d33 100644
+--- a/arch/arc/mm/fault.c
++++ b/arch/arc/mm/fault.c
+@@ -15,6 +15,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/kdebug.h>
+ #include <linux/perf_event.h>
++#include <linux/mm_types.h>
+ #include <asm/pgalloc.h>
+ #include <asm/mmu.h>
+ 
+@@ -66,7 +67,8 @@ void do_page_fault(unsigned long address, struct pt_regs *regs)
+ 	struct task_struct *tsk = current;
+ 	struct mm_struct *mm = tsk->mm;
+ 	siginfo_t info;
+-	int fault, ret;
++	int ret;
++	vm_fault_t fault;
+ 	int write = regs->ecr_cause & ECR_C_PROTV_STORE;  /* ST/EX */
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
+index b75eada..758abcb 100644
+--- a/arch/arm/mm/fault.c
++++ b/arch/arm/mm/fault.c
+@@ -219,12 +219,12 @@ static inline bool access_error(unsigned int fsr, struct vm_area_struct *vma)
+ 	return vma->vm_flags & mask ? false : true;
+ }
+ 
+-static int __kprobes
++static vm_fault_t __kprobes
+ __do_page_fault(struct mm_struct *mm, unsigned long addr, unsigned int fsr,
+ 		unsigned int flags, struct task_struct *tsk)
+ {
+ 	struct vm_area_struct *vma;
+-	int fault;
++	vm_fault_t fault;
+ 
+ 	vma = find_vma(mm, addr);
+ 	fault = VM_FAULT_BADMAP;
+@@ -259,7 +259,8 @@ static inline bool access_error(unsigned int fsr, struct vm_area_struct *vma)
+ {
+ 	struct task_struct *tsk;
+ 	struct mm_struct *mm;
+-	int fault, sig, code;
++	int sig, code;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	if (notify_page_fault(regs, fsr))
+diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+index 2af3dd8..8da263b 100644
+--- a/arch/arm64/mm/fault.c
++++ b/arch/arm64/mm/fault.c
+@@ -371,12 +371,12 @@ static void do_bad_area(unsigned long addr, unsigned int esr, struct pt_regs *re
+ #define VM_FAULT_BADMAP		0x010000
+ #define VM_FAULT_BADACCESS	0x020000
+ 
+-static int __do_page_fault(struct mm_struct *mm, unsigned long addr,
++static vm_fault_t __do_page_fault(struct mm_struct *mm, unsigned long addr,
+ 			   unsigned int mm_flags, unsigned long vm_flags,
+ 			   struct task_struct *tsk)
+ {
+ 	struct vm_area_struct *vma;
+-	int fault;
++	vm_fault_t fault;
+ 
+ 	vma = find_vma(mm, addr);
+ 	fault = VM_FAULT_BADMAP;
+@@ -419,7 +419,7 @@ static int __kprobes do_page_fault(unsigned long addr, unsigned int esr,
+ 	struct task_struct *tsk;
+ 	struct mm_struct *mm;
+ 	struct siginfo si;
+-	int fault, major = 0;
++	vm_fault_t fault, major = 0;
+ 	unsigned long vm_flags = VM_READ | VM_WRITE;
+ 	unsigned int mm_flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+diff --git a/arch/hexagon/mm/vm_fault.c b/arch/hexagon/mm/vm_fault.c
+index 3eec33c..5d1de6c 100644
+--- a/arch/hexagon/mm/vm_fault.c
++++ b/arch/hexagon/mm/vm_fault.c
+@@ -52,7 +52,7 @@ void do_page_fault(unsigned long address, long cause, struct pt_regs *regs)
+ 	struct mm_struct *mm = current->mm;
+ 	siginfo_t info;
+ 	int si_code = SEGV_MAPERR;
+-	int fault;
++	vm_fault_t fault;
+ 	const struct exception_table_entry *fixup;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+diff --git a/arch/ia64/mm/fault.c b/arch/ia64/mm/fault.c
+index dfdc152..e085d89 100644
+--- a/arch/ia64/mm/fault.c
++++ b/arch/ia64/mm/fault.c
+@@ -87,7 +87,7 @@ static inline int notify_page_fault(struct pt_regs *regs, int trap)
+ 	struct mm_struct *mm = current->mm;
+ 	struct siginfo si;
+ 	unsigned long mask;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	mask = ((((isr >> IA64_ISR_X_BIT) & 1UL) << VM_EXEC_BIT)
+diff --git a/arch/m68k/mm/fault.c b/arch/m68k/mm/fault.c
+index 03253c4..1fc7ac0 100644
+--- a/arch/m68k/mm/fault.c
++++ b/arch/m68k/mm/fault.c
+@@ -73,7 +73,7 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
+ {
+ 	struct mm_struct *mm = current->mm;
+ 	struct vm_area_struct * vma;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	pr_debug("do page fault:\nregs->sr=%#x, regs->pc=%#lx, address=%#lx, %ld, %p\n",
+@@ -139,7 +139,7 @@ int do_page_fault(struct pt_regs *regs, unsigned long address,
+ 	 */
+ 
+ 	fault = handle_mm_fault(vma, address, flags);
+-	pr_debug("handle_mm_fault returns %d\n", fault);
++	pr_debug("handle_mm_fault returns %x\n", fault);
+ 
+ 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
+ 		return 0;
+diff --git a/arch/microblaze/mm/fault.c b/arch/microblaze/mm/fault.c
+index f91b30f..92a8682 100644
+--- a/arch/microblaze/mm/fault.c
++++ b/arch/microblaze/mm/fault.c
+@@ -91,7 +91,7 @@ void do_page_fault(struct pt_regs *regs, unsigned long address,
+ 	siginfo_t info;
+ 	int code = SEGV_MAPERR;
+ 	int is_write = error_code & ESR_S;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	regs->ear = address;
+diff --git a/arch/mips/mm/fault.c b/arch/mips/mm/fault.c
+index 4f8f5bf..0bc5030 100644
+--- a/arch/mips/mm/fault.c
++++ b/arch/mips/mm/fault.c
+@@ -43,7 +43,7 @@ static void __kprobes __do_page_fault(struct pt_regs *regs, unsigned long write,
+ 	struct mm_struct *mm = tsk->mm;
+ 	const int field = sizeof(unsigned long) * 2;
+ 	siginfo_t info;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	static DEFINE_RATELIMIT_STATE(ratelimit_state, 5 * HZ, 10);
+diff --git a/arch/nds32/mm/fault.c b/arch/nds32/mm/fault.c
+index 3a246fb..96796d3 100644
+--- a/arch/nds32/mm/fault.c
++++ b/arch/nds32/mm/fault.c
+@@ -73,7 +73,7 @@ void do_page_fault(unsigned long entry, unsigned long addr,
+ 	struct mm_struct *mm;
+ 	struct vm_area_struct *vma;
+ 	siginfo_t info;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int mask = VM_READ | VM_WRITE | VM_EXEC;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+diff --git a/arch/nios2/mm/fault.c b/arch/nios2/mm/fault.c
+index b804dd0..24fd84c 100644
+--- a/arch/nios2/mm/fault.c
++++ b/arch/nios2/mm/fault.c
+@@ -47,7 +47,7 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long cause,
+ 	struct task_struct *tsk = current;
+ 	struct mm_struct *mm = tsk->mm;
+ 	int code = SEGV_MAPERR;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	cause >>= 2;
+diff --git a/arch/openrisc/mm/fault.c b/arch/openrisc/mm/fault.c
+index d0021df..21e8f16 100644
+--- a/arch/openrisc/mm/fault.c
++++ b/arch/openrisc/mm/fault.c
+@@ -53,7 +53,7 @@ asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long address,
+ 	struct mm_struct *mm;
+ 	struct vm_area_struct *vma;
+ 	siginfo_t info;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	tsk = current;
+diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
+index e247edb..ff9e634 100644
+--- a/arch/parisc/mm/fault.c
++++ b/arch/parisc/mm/fault.c
+@@ -262,7 +262,7 @@ void do_page_fault(struct pt_regs *regs, unsigned long code,
+ 	struct task_struct *tsk;
+ 	struct mm_struct *mm;
+ 	unsigned long acc_type;
+-	int fault = 0;
++	vm_fault_t fault = 0;
+ 	unsigned int flags;
+ 
+ 	if (faulthandler_disabled())
+diff --git a/arch/powerpc/mm/copro_fault.c b/arch/powerpc/mm/copro_fault.c
+index 7d0945b..c8da352 100644
+--- a/arch/powerpc/mm/copro_fault.c
++++ b/arch/powerpc/mm/copro_fault.c
+@@ -34,7 +34,7 @@
+  * to handle fortunately.
+  */
+ int copro_handle_mm_fault(struct mm_struct *mm, unsigned long ea,
+-		unsigned long dsisr, unsigned *flt)
++		unsigned long dsisr, vm_fault_t *flt)
+ {
+ 	struct vm_area_struct *vma;
+ 	unsigned long is_write;
+diff --git a/arch/powerpc/mm/fault.c b/arch/powerpc/mm/fault.c
+index c01d627..17cce1b 100644
+--- a/arch/powerpc/mm/fault.c
++++ b/arch/powerpc/mm/fault.c
+@@ -159,7 +159,7 @@ static noinline int bad_access(struct pt_regs *regs, unsigned long address)
+ }
+ 
+ static int do_sigbus(struct pt_regs *regs, unsigned long address,
+-		     unsigned int fault)
++		     vm_fault_t fault)
+ {
+ 	siginfo_t info;
+ 	unsigned int lsb = 0;
+@@ -189,7 +189,8 @@ static int do_sigbus(struct pt_regs *regs, unsigned long address,
+ 	return 0;
+ }
+ 
+-static int mm_fault_error(struct pt_regs *regs, unsigned long addr, int fault)
++static int mm_fault_error(struct pt_regs *regs, unsigned long addr,
++				vm_fault_t fault)
+ {
+ 	/*
+ 	 * Kernel page fault interrupted by SIGKILL. We have no reason to
+@@ -402,7 +403,7 @@ static int __do_page_fault(struct pt_regs *regs, unsigned long address,
+  	int is_exec = TRAP(regs) == 0x400;
+ 	int is_user = user_mode(regs);
+ 	int is_write = page_fault_is_write(error_code);
+-	int fault, major = 0;
++	vm_fault_t fault, major = 0;
+ 	bool store_update_sp = false;
+ 
+ 	if (notify_page_fault(regs))
+diff --git a/arch/riscv/mm/fault.c b/arch/riscv/mm/fault.c
+index 148c98c..88401d5 100644
+--- a/arch/riscv/mm/fault.c
++++ b/arch/riscv/mm/fault.c
+@@ -41,7 +41,8 @@ asmlinkage void do_page_fault(struct pt_regs *regs)
+ 	struct mm_struct *mm;
+ 	unsigned long addr, cause;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+-	int fault, code = SEGV_MAPERR;
++	int code = SEGV_MAPERR;
++	vm_fault_t fault;
+ 
+ 	cause = regs->scause;
+ 	addr = regs->sbadaddr;
+diff --git a/arch/s390/mm/fault.c b/arch/s390/mm/fault.c
+index 93faeca..8ea0855 100644
+--- a/arch/s390/mm/fault.c
++++ b/arch/s390/mm/fault.c
+@@ -350,7 +350,8 @@ static noinline int signal_return(struct pt_regs *regs)
+ 	return -EACCES;
+ }
+ 
+-static noinline void do_fault_error(struct pt_regs *regs, int access, int fault)
++static noinline void do_fault_error(struct pt_regs *regs, int access,
++					vm_fault_t fault)
+ {
+ 	int si_code;
+ 
+@@ -410,7 +411,7 @@ static noinline void do_fault_error(struct pt_regs *regs, int access, int fault)
+  *   11       Page translation     ->  Not present       (nullification)
+  *   3b       Region third trans.  ->  Not present       (nullification)
+  */
+-static inline int do_exception(struct pt_regs *regs, int access)
++static inline vm_fault_t do_exception(struct pt_regs *regs, int access)
+ {
+ 	struct gmap *gmap;
+ 	struct task_struct *tsk;
+@@ -420,7 +421,7 @@ static inline int do_exception(struct pt_regs *regs, int access)
+ 	unsigned long trans_exc_code;
+ 	unsigned long address;
+ 	unsigned int flags;
+-	int fault;
++	vm_fault_t fault;
+ 
+ 	tsk = current;
+ 	/*
+@@ -571,7 +572,8 @@ static inline int do_exception(struct pt_regs *regs, int access)
+ void do_protection_exception(struct pt_regs *regs)
+ {
+ 	unsigned long trans_exc_code;
+-	int access, fault;
++	int access;
++	vm_fault_t fault;
+ 
+ 	trans_exc_code = regs->int_parm_long;
+ 	/*
+@@ -606,7 +608,8 @@ void do_protection_exception(struct pt_regs *regs)
+ 
+ void do_dat_exception(struct pt_regs *regs)
+ {
+-	int access, fault;
++	int access;
++	vm_fault_t fault;
+ 
+ 	access = VM_READ | VM_EXEC | VM_WRITE;
+ 	fault = do_exception(regs, access);
+diff --git a/arch/sh/mm/fault.c b/arch/sh/mm/fault.c
+index 6fd1bf7..474bf14 100644
+--- a/arch/sh/mm/fault.c
++++ b/arch/sh/mm/fault.c
+@@ -320,7 +320,7 @@ static noinline int vmalloc_fault(unsigned long address)
+ 
+ static noinline int
+ mm_fault_error(struct pt_regs *regs, unsigned long error_code,
+-	       unsigned long address, unsigned int fault)
++	       unsigned long address, vm_fault_t fault)
+ {
+ 	/*
+ 	 * Pagefault was interrupted by SIGKILL. We have no reason to
+@@ -403,7 +403,7 @@ asmlinkage void __kprobes do_page_fault(struct pt_regs *regs,
+ 	struct task_struct *tsk;
+ 	struct mm_struct *mm;
+ 	struct vm_area_struct * vma;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	tsk = current;
+diff --git a/arch/sparc/mm/fault_32.c b/arch/sparc/mm/fault_32.c
+index a8103a8..1a44a4e 100644
+--- a/arch/sparc/mm/fault_32.c
++++ b/arch/sparc/mm/fault_32.c
+@@ -174,7 +174,8 @@ asmlinkage void do_sparc_fault(struct pt_regs *regs, int text_fault, int write,
+ 	unsigned int fixup;
+ 	unsigned long g2;
+ 	int from_user = !(regs->psr & PSR_PS);
+-	int fault, code;
++	int code;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	if (text_fault)
+diff --git a/arch/sparc/mm/fault_64.c b/arch/sparc/mm/fault_64.c
+index 41363f4..2078bfe 100644
+--- a/arch/sparc/mm/fault_64.c
++++ b/arch/sparc/mm/fault_64.c
+@@ -284,7 +284,8 @@ asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
+ 	struct mm_struct *mm = current->mm;
+ 	struct vm_area_struct *vma;
+ 	unsigned int insn = 0;
+-	int si_code, fault_code, fault;
++	int si_code, fault_code;
++	vm_fault_t fault;
+ 	unsigned long address, mm_rss;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+diff --git a/arch/um/kernel/trap.c b/arch/um/kernel/trap.c
+index b2b02df..0afcd09 100644
+--- a/arch/um/kernel/trap.c
++++ b/arch/um/kernel/trap.c
+@@ -72,7 +72,7 @@ int handle_page_fault(unsigned long address, unsigned long ip,
+ 	}
+ 
+ 	do {
+-		int fault;
++		vm_fault_t fault;
+ 
+ 		fault = handle_mm_fault(vma, address, flags);
+ 
+diff --git a/arch/unicore32/mm/fault.c b/arch/unicore32/mm/fault.c
+index bbefcc4..2982140 100644
+--- a/arch/unicore32/mm/fault.c
++++ b/arch/unicore32/mm/fault.c
+@@ -167,11 +167,11 @@ static inline bool access_error(unsigned int fsr, struct vm_area_struct *vma)
+ 	return vma->vm_flags & mask ? false : true;
+ }
+ 
+-static int __do_pf(struct mm_struct *mm, unsigned long addr, unsigned int fsr,
+-		unsigned int flags, struct task_struct *tsk)
++static vm_fault_t __do_pf(struct mm_struct *mm, unsigned long addr,
++		unsigned int fsr, unsigned int flags, struct task_struct *tsk)
+ {
+ 	struct vm_area_struct *vma;
+-	int fault;
++	vm_fault_t fault;
+ 
+ 	vma = find_vma(mm, addr);
+ 	fault = VM_FAULT_BADMAP;
+@@ -208,7 +208,8 @@ static int do_pf(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+ {
+ 	struct task_struct *tsk;
+ 	struct mm_struct *mm;
+-	int fault, sig, code;
++	int sig, code;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	tsk = current;
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index 73bd8c9..5171d60 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -16,6 +16,7 @@
+ #include <linux/prefetch.h>		/* prefetchw			*/
+ #include <linux/context_tracking.h>	/* exception_enter(), ...	*/
+ #include <linux/uaccess.h>		/* faulthandler_disabled()	*/
++#include <linux/mm_types.h>
+ 
+ #include <asm/cpufeature.h>		/* boot_cpu_has, ...		*/
+ #include <asm/traps.h>			/* dotraplinkage, ...		*/
+@@ -1004,7 +1005,7 @@ static inline bool bad_area_access_from_pkeys(unsigned long error_code,
+ 
+ static noinline void
+ mm_fault_error(struct pt_regs *regs, unsigned long error_code,
+-	       unsigned long address, u32 *pkey, unsigned int fault)
++	       unsigned long address, u32 *pkey, vm_fault_t fault)
+ {
+ 	if (fatal_signal_pending(current) && !(error_code & X86_PF_USER)) {
+ 		no_context(regs, error_code, address, 0, 0);
+@@ -1218,7 +1219,7 @@ static inline bool smap_violation(int error_code, struct pt_regs *regs)
+ 	struct vm_area_struct *vma;
+ 	struct task_struct *tsk;
+ 	struct mm_struct *mm;
+-	int fault, major = 0;
++	vm_fault_t fault, major = 0;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 	u32 pkey;
+ 
+diff --git a/arch/xtensa/mm/fault.c b/arch/xtensa/mm/fault.c
+index 8b9b6f4..203fade 100644
+--- a/arch/xtensa/mm/fault.c
++++ b/arch/xtensa/mm/fault.c
+@@ -42,7 +42,7 @@ void do_page_fault(struct pt_regs *regs)
+ 	siginfo_t info;
+ 
+ 	int is_write, is_exec;
+-	int fault;
++	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE;
+ 
+ 	info.si_code = SEGV_MAPERR;
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
+index 1d0b53a0..58da65d 100644
+--- a/drivers/iommu/amd_iommu_v2.c
++++ b/drivers/iommu/amd_iommu_v2.c
+@@ -508,7 +508,7 @@ static void do_fault(struct work_struct *work)
+ {
+ 	struct fault *fault = container_of(work, struct fault, work);
+ 	struct vm_area_struct *vma;
+-	int ret = VM_FAULT_ERROR;
++	vm_fault_t ret = VM_FAULT_ERROR;
+ 	unsigned int flags = 0;
+ 	struct mm_struct *mm;
+ 	u64 address;
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index e8cd984..75189c0 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -24,6 +24,7 @@
+ #include <linux/pci-ats.h>
+ #include <linux/dmar.h>
+ #include <linux/interrupt.h>
++#include <linux/mm_types.h>
+ #include <asm/page.h>
+ 
+ #define PASID_ENTRY_P		BIT_ULL(0)
+@@ -594,7 +595,8 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		struct vm_area_struct *vma;
+ 		struct page_req_dsc *req;
+ 		struct qi_desc resp;
+-		int ret, result;
++		int result;
++		vm_fault_t ret;
+ 		u64 address;
+ 
+ 		handled = 1;
+diff --git a/mm/hmm.c b/mm/hmm.c
+index 486dc39..d7919e5 100644
+--- a/mm/hmm.c
++++ b/mm/hmm.c
+@@ -308,14 +308,14 @@ static int hmm_vma_do_fault(struct mm_walk *walk, unsigned long addr,
+ 	struct hmm_vma_walk *hmm_vma_walk = walk->private;
+ 	struct hmm_range *range = hmm_vma_walk->range;
+ 	struct vm_area_struct *vma = walk->vma;
+-	int r;
++	vm_fault_t ret;
+ 
+ 	flags |= hmm_vma_walk->block ? 0 : FAULT_FLAG_ALLOW_RETRY;
+ 	flags |= write_fault ? FAULT_FLAG_WRITE : 0;
+-	r = handle_mm_fault(vma, addr, flags);
+-	if (r & VM_FAULT_RETRY)
++	ret = handle_mm_fault(vma, addr, flags);
++	if (ret & VM_FAULT_RETRY)
+ 		return -EBUSY;
+-	if (r & VM_FAULT_ERROR) {
++	if (ret & VM_FAULT_ERROR) {
+ 		*pfn = range->values[HMM_PFN_ERROR];
+ 		return -EFAULT;
+ 	}
+diff --git a/mm/ksm.c b/mm/ksm.c
+index e3cbf9a..cb4e6ed 100644
+--- a/mm/ksm.c
++++ b/mm/ksm.c
+@@ -451,7 +451,7 @@ static inline bool ksm_test_exit(struct mm_struct *mm)
+ static int break_ksm(struct vm_area_struct *vma, unsigned long addr)
+ {
+ 	struct page *page;
+-	int ret = 0;
++	vm_fault_t ret = 0;
+ 
+ 	do {
+ 		cond_resched();
+-- 
+1.9.1
 
