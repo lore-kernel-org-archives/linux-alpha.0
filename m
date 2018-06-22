@@ -1,78 +1,68 @@
-From: Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH v2 2/2] rusage: allow 64-bit times ru_utime/ru_stime
-Date: Fri, 22 Jun 2018 04:16:36 +0200
-Message-ID: <20180622021636.GA11266@gmail.com>
-References: <20180420120605.1612248-1-arnd@arndb.de>
- <20180420120605.1612248-2-arnd@arndb.de>
- <20180621154915.GA31947@gmail.com>
- <CAK8P3a1QYTfRNQt2+a29BpvgYM_pnSFrO=NBvVo=BdUa2q9ngQ@mail.gmail.com>
- <20180621161121.GB7222@gmail.com>
- <CAK8P3a1mx16S+DhEMQA6WBJ7efdhN5YaKKVHU6n+E6kfifM-Qg@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v2] time: Make sure jiffies_to_msecs() preserves non-zero
+ time periods
+Date: Fri, 22 Jun 2018 10:11:58 +0200
+Message-ID: <CAMuHMdWhFyiAhA=bdjxSSmopJ=yJMXqMmOAD8hWUHWpiz0t4kA@mail.gmail.com>
+References: <20180622075421.16001-1-geert@linux-m68k.org>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=1JbndTnYc3Q3Dqvmu4J4c1v+h6gLXYgoIfJasBccAGE=;
-        b=rszLokPwx2q7OqPtTz1xpnXWeEchjLFuIMsh46y1VBO8Y4oO/HhLmGPMwXs9Cz4VYS
-         xqbNA1UxHVoKChH4IcwMoWz7eFUk+HwFNrLZTs/A/IKYNtzzAiFS9Ve0FL6qNweoI+r3
-         dWsrhgQe706eyJxGqzMIOZnEu/mnY+S8g9Ad1fGqRB5kJXevx8ICKWRblZpor3+kRUqo
-         7V2kdfz/v1eItRDF9cOown8+DACmPHP7o9s28N9ZpgRbd8HQVgXvFY2P/MW8xfG24eRW
-         7NHm9zljzUgpj9JH46eIoLaXkkjKcoK3rAAk9YFTNQaXS+JcqcAXGrV8Iwp3TMZ8LVOg
-         ZkZw==
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a1mx16S+DhEMQA6WBJ7efdhN5YaKKVHU6n+E6kfifM-Qg@mail.gmail.com>
+In-Reply-To: <20180622075421.16001-1-geert@linux-m68k.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Paul Eggert <eggert@cs.ucla.edu>, "Eric W . Biederman" <ebiederm@xmission.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Al Viro <viro@zeniv.linux.org.uk>, Dominik Brodowski <linux@dominikbrodowski.net>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, Deepa Dinamani <deepa.kernel@gmail.com>
+To: John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Stephen Boyd <sboyd@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, Linux MIPS Mailing List <linux-mips@linux-mips.org>
 
+CC alpha, mips
 
-* Arnd Bergmann <arnd@arndb.de> wrote:
-
-> However, the other question that has to be asked then is whether
-> there is anything wrong with wait4()/waitid() and getrusuage() that
-> we want to change beyond the time value passing. We have
-> answered a similar question with 'yes' for stat(), which has led
-> to the introduction of statx(),
-
-So we are thinking about adding wait5() in essence, right?
-
-One thing we might want to look into whether the wait4() and waitid() ABIs could 
-be 'merged', by making wait4() essentially a natural special case of waitid().
-
-This would mean that the only new system call we'd have to add is waitid2() in 
-essence, which would solve both the rusage layout problem and would offer a 
-unified ABI.
-
-If that makes sense (it might not!!), then I'd also modernize waitid2() by making 
-it attribute structure based, have a length field and make the ABI extensible from 
-now on going forward without having to introduce a new syscall variant every time 
-we come up with something new...
-
-I.e. how the perf syscall does ABI extensions: we've had dozens of ABI extensions, 
-some of them pretty complex, and not a single time did we have to modify glibc and 
-tooling was able to adapt quickly yet in a both backwards and forwards compatible 
-fashion.
-
-Another, simpler example is the new sys_sched_setattr() syscall, that too is using 
-the perf_copy_attr() ABI method, via sched_copy_attr(). (With a minor 
-compatibility quirk of SCHED_ATTR_SIZE_VER0 that a new wait ABI wouldn't have to 
-do - i.e. it could be made even simpler.)
-
-This way we only have:
-
-SYSCALL_DEFINE3(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr, unsigned int, flags)
-
-But even 'pid' and 'flags' could have been part of the attribute, i.e. one we pick 
-up an attribute structure from user-space we can have really low argument count 
-system calls. This also concentrates all the compat concerns into handling the 
-attribute structure properly - no weird per-arch artifacts and quirks with 4-5-6 
-system call arguments.
-
-Thanks,
-
-	Ingo
+On Fri, Jun 22, 2018 at 9:54 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> For the common cases where 1000 is a multiple of HZ, or HZ is a multiple
+> of 1000, jiffies_to_msecs() never returns zero when passed a non-zero
+> time period.
+>
+> However, if HZ > 1000 and not an integer multiple of 1000 (e.g. 1024 or
+> 1200, as used on alpha and DECstation), jiffies_to_msecs() may return
+> zero for small non-zero time periods.  This may break code that relies
+> on receiving back a non-zero value.
+>
+> jiffies_to_usecs() does not need such a fix, as <linux/jiffies.h> does
+> not support values of HZ larger than 12287, thus rejecting any
+> problematic huge values of HZ.
+>
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+> v2:
+>   - Add examples of affected systems,
+>   - Use DIV_ROUND_UP().
+> ---
+>  kernel/time/time.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/kernel/time/time.c b/kernel/time/time.c
+> index 6fa99213fc720e4b..2b41e8e2d31db26f 100644
+> --- a/kernel/time/time.c
+> +++ b/kernel/time/time.c
+> @@ -28,6 +28,7 @@
+>   */
+>
+>  #include <linux/export.h>
+> +#include <linux/kernel.h>
+>  #include <linux/timex.h>
+>  #include <linux/capability.h>
+>  #include <linux/timekeeper_internal.h>
+> @@ -314,9 +315,10 @@ unsigned int jiffies_to_msecs(const unsigned long j)
+>         return (j + (HZ / MSEC_PER_SEC) - 1)/(HZ / MSEC_PER_SEC);
+>  #else
+>  # if BITS_PER_LONG == 32
+> -       return (HZ_TO_MSEC_MUL32 * j) >> HZ_TO_MSEC_SHR32;
+> +       return (HZ_TO_MSEC_MUL32 * j + (1ULL << HZ_TO_MSEC_SHR32) - 1) >>
+> +              HZ_TO_MSEC_SHR32;
+>  # else
+> -       return (j * HZ_TO_MSEC_NUM) / HZ_TO_MSEC_DEN;
+> +       return DIV_ROUND_UP(j * HZ_TO_MSEC_NUM, HZ_TO_MSEC_DEN);
+>  # endif
+>  #endif
+>  }
+> --
+> 2.17.1
