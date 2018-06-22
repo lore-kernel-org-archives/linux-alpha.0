@@ -1,74 +1,108 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v3] time: Make sure jiffies_to_msecs() preserves non-zero time periods
-Date: Fri, 22 Jun 2018 16:33:57 +0200
-Message-ID: <20180622143357.7495-1-geert@linux-m68k.org>
+From: ebiederm@xmission.com (Eric W. Biederman)
+Subject: Re: [PATCH v2 2/2] rusage: allow 64-bit times ru_utime/ru_stime
+Date: Fri, 22 Jun 2018 12:45:50 -0500
+Message-ID: <87a7rm3eb5.fsf@xmission.com>
+References: <20180420120605.1612248-1-arnd@arndb.de>
+        <20180420120605.1612248-2-arnd@arndb.de>
+        <20180621154915.GA31947@gmail.com>
+        <CAK8P3a1QYTfRNQt2+a29BpvgYM_pnSFrO=NBvVo=BdUa2q9ngQ@mail.gmail.com>
+        <20180621161121.GB7222@gmail.com>
+        <CAK8P3a1mx16S+DhEMQA6WBJ7efdhN5YaKKVHU6n+E6kfifM-Qg@mail.gmail.com>
+        <20180622021636.GA11266@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180622021636.GA11266@gmail.com> (Ingo Molnar's message of
+        "Fri, 22 Jun 2018 04:16:36 +0200")
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: John Stultz <john.stultz@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Stephen Boyd <sboyd@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, stable@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Ingo Molnar <mingo@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Paul Eggert <eggert@cs.ucla.edu>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Al Viro <viro@zeniv.linux.org.uk>, Dominik Brodowski <linux@dominikbrodowski.net>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, Deepa Dinamani <deepa.kernel@gmail.com>
 
-For the common cases where 1000 is a multiple of HZ, or HZ is a multiple
-of 1000, jiffies_to_msecs() never returns zero when passed a non-zero
-time period.
+Ingo Molnar <mingo@kernel.org> writes:
 
-However, if HZ > 1000 and not an integer multiple of 1000 (e.g. 1024 or
-1200, as used on alpha and DECstation), jiffies_to_msecs() may return
-zero for small non-zero time periods.  This may break code that relies
-on receiving back a non-zero value.
+> * Arnd Bergmann <arnd@arndb.de> wrote:
+>
+>> However, the other question that has to be asked then is whether
+>> there is anything wrong with wait4()/waitid() and getrusuage() that
+>> we want to change beyond the time value passing. We have
+>> answered a similar question with 'yes' for stat(), which has led
+>> to the introduction of statx(),
+>
+> So we are thinking about adding wait5() in essence, right?
 
-jiffies_to_usecs() does not need such a fix: one jiffy can only be
-less than one =C2=B5s if HZ > 1000000, and such large values of HZ are
-already rejected at build time, twice:
-  - include/linux/jiffies.h does #error if HZ >=3D 12288,
-  - kernel/time/time.c has BUILD_BUG_ON(HZ > USEC_PER_SEC).
+> One thing we might want to look into whether the wait4() and waitid() ABIs could 
+> be 'merged', by making wait4() essentially a natural special case of
+> waitid().
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Cc: stable@vger.kernel.org
----
-Broken since forever.
+Essentially waitid(2) not waitid(3) has already seen this merger.
+In that there is nothing to wait for that you can not already
+expression with waitid.  status vs siginfo is a little different
+but the information is encoded in both.
 
-v3:
-  - Add Reviewed-by,
-  - Cc stable,
-  - Explain better why jiffies_to_usecs() does not need a fix,
+And waitid(2) optionally returns a struct rusage.
 
-v2:
-  - Add examples of affected systems,
-  - Use DIV_ROUND_UP().
----
- kernel/time/time.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+> This would mean that the only new system call we'd have to add is waitid2() in 
+> essence, which would solve both the rusage layout problem and would offer a 
+> unified ABI.
+>
+> If that makes sense (it might not!!), then I'd also modernize waitid2() by making 
+> it attribute structure based, have a length field and make the ABI extensible from 
+> now on going forward without having to introduce a new syscall variant every time 
+> we come up with something new...
 
-diff --git a/kernel/time/time.c b/kernel/time/time.c
-index 6fa99213fc720e4b..2b41e8e2d31db26f 100644
---- a/kernel/time/time.c
-+++ b/kernel/time/time.c
-@@ -28,6 +28,7 @@
-  */
-=20
- #include <linux/export.h>
-+#include <linux/kernel.h>
- #include <linux/timex.h>
- #include <linux/capability.h>
- #include <linux/timekeeper_internal.h>
-@@ -314,9 +315,10 @@ unsigned int jiffies_to_msecs(const unsigned long j)
- 	return (j + (HZ / MSEC_PER_SEC) - 1)/(HZ / MSEC_PER_SEC);
- #else
- # if BITS_PER_LONG =3D=3D 32
--	return (HZ_TO_MSEC_MUL32 * j) >> HZ_TO_MSEC_SHR32;
-+	return (HZ_TO_MSEC_MUL32 * j + (1ULL << HZ_TO_MSEC_SHR32) - 1) >>
-+	       HZ_TO_MSEC_SHR32;
- # else
--	return (j * HZ_TO_MSEC_NUM) / HZ_TO_MSEC_DEN;
-+	return DIV_ROUND_UP(j * HZ_TO_MSEC_NUM, HZ_TO_MSEC_DEN);
- # endif
- #endif
- }
---=20
-2.17.1
+The only part where something is not parameterized in waitid is with the
+return of rusage.
 
+What to wait for takes an explicit type parameter.
+What is being returned in siginfo returns an si_code to describe how
+to decode it.
+
+If it weren't for the zombie being gone after waitid returns I don't
+think it would make any sense to combine getrusage and waitid together
+at all.
+
+> I.e. how the perf syscall does ABI extensions: we've had dozens of ABI extensions, 
+> some of them pretty complex, and not a single time did we have to modify glibc and 
+> tooling was able to adapt quickly yet in a both backwards and forwards compatible 
+> fashion.
+>
+> Another, simpler example is the new sys_sched_setattr() syscall, that too is using 
+> the perf_copy_attr() ABI method, via sched_copy_attr(). (With a minor 
+> compatibility quirk of SCHED_ATTR_SIZE_VER0 that a new wait ABI wouldn't have to 
+> do - i.e. it could be made even simpler.)
+>
+> This way we only have:
+>
+> SYSCALL_DEFINE3(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr, unsigned int, flags)
+>
+> But even 'pid' and 'flags' could have been part of the attribute, i.e. one we pick 
+> up an attribute structure from user-space we can have really low argument count 
+> system calls. This also concentrates all the compat concerns into handling the 
+> attribute structure properly - no weird per-arch artifacts and quirks with 4-5-6 
+> system call arguments.
+
+The trouble with attributes is that means you can't filter your system
+call arguments with seccomp.  Which most of the time is a pretty big
+downside.
+
+
+From what I have seen the only truly interesting case for extending
+waitid is something file descriptor based so the parent/child
+relationship is not necessary to wait for a process to terminate.
+
+As for getrusage.  If a sane union of the rusage limits and cgroups or
+something like cgroups could be devised.  That would be ideal.  Of
+course except for the memory cgroups the similarity to the resource
+usage measurments and limits really isn't there.  So I don't know if
+merging them would be a real possibility.
+
+So I suspect the simplest thing to do would be to set a flag in the
+idtype member of waitid that says give me rusage64 and then we would
+be done.  Alternately we could use the low bits of the resource usage
+pointer.  Assuming we don't want to introduce another syscall that is.
+I really don't see much incremental extensibility potential in the wait
+or rusage interface right now.
+
+Eric
