@@ -1,95 +1,477 @@
-From: ebiederm@xmission.com (Eric W. Biederman)
-Subject: Re: [PATCH v2 2/2] rusage: allow 64-bit times ru_utime/ru_stime
-Date: Mon, 25 Jun 2018 11:21:59 -0500
-Message-ID: <874lhqzviw.fsf@xmission.com>
-References: <20180420120605.1612248-1-arnd@arndb.de>
-        <20180420120605.1612248-2-arnd@arndb.de>
-        <20180621154915.GA31947@gmail.com>
-        <CAK8P3a1QYTfRNQt2+a29BpvgYM_pnSFrO=NBvVo=BdUa2q9ngQ@mail.gmail.com>
-        <20180621161121.GB7222@gmail.com>
-        <CAK8P3a1mx16S+DhEMQA6WBJ7efdhN5YaKKVHU6n+E6kfifM-Qg@mail.gmail.com>
-        <20180622021636.GA11266@gmail.com> <87a7rm3eb5.fsf@xmission.com>
-        <20180624071258.GB29407@gmail.com> <87y3f31wsv.fsf@xmission.com>
-        <20180625091426.GA18351@gmail.com>
+From: Jann Horn <jannh@google.com>
+Subject: [PATCH] sys: don't hold uts_sem while accessing userspace memory
+Date: Mon, 25 Jun 2018 18:34:10 +0200
+Message-ID: <20180625163410.216168-1-jannh@google.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180625091426.GA18351@gmail.com> (Ingo Molnar's message of
-        "Mon, 25 Jun 2018 11:14:26 +0200")
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:date:message-id:subject:from:to:cc;
+        bh=Hiq40fPDMkVFLv3LCZ1BRZNd0Pdx+YdHs8ULPnrRbvo=;
+        b=B6AUrJXjlq/esbudg+M04pkQPbUXB2mgFjD0GCnM+C1i/OApKg4/7USqonTsMdDtGX
+         t4b1uMA3CSLJ+1u0tCxnrQE6P83+0PWxlwaOIYIwz5eWzS4Pd4YEEMeXtUv1dX+wliAF
+         cdZ3hYOaVTSIZbJnsBFNimp+/4GeLuHSyPiSEOuJ6pGKhqByhRanpLJE7SjcqSpsF+EK
+         jtVFwCBDTbYc2etKM8IRiIWKn2Lw4NZRO7ZufSVoZQ3WRo588lUxk4kr1bbLXCjqfVB0
+         WiJx5iyevxgWUvQCMMvQrAyQSLPM0GsAbPRP96g0kSiK5uhTgLUuely5mSuYVRCqWFkA
+         QJlg==
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Ingo Molnar <mingo@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Paul Eggert <eggert@cs.ucla.edu>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Al Viro <viro@zeniv.linux.org.uk>, Dominik Brodowski <linux@dominikbrodowski.net>, Thomas Gleixner <tglx@linutronix.de>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, Deepa Dinamani <deepa.kernel@gmail.com>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>, Al Viro <viro@zeniv.linux.org.uk>, jannh@google.com
+Cc: linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, security@kernel.org, Christoph Hellwig <hch@infradead.org>, Serge Hallyn <serge@hallyn.com>
 
-Ingo Molnar <mingo@kernel.org> writes:
+Holding uts_sem as a writer while accessing userspace memory allows a
+namespace admin to stall all processes that attempt to take uts_sem.
+Instead, move data through stack buffers and don't access userspace memory
+while uts_sem is held.
 
-> * Eric W. Biederman <ebiederm@xmission.com> wrote:
->
->> Ingo Molnar <mingo@kernel.org> writes:
->> 
->> > * Eric W. Biederman <ebiederm@xmission.com> wrote:
->> >
->> >> The trouble with attributes is that means you can't filter your system
->> >> call arguments with seccomp. [...]
->> >
->> > There's nothing keeping seccomp from securely fetching those arguments and 
->> > extending filtering to them as well ...
->> >
->> > Allowing that would make sense for a lot of other system calls as
->> > well.
->> 
->> Possibly.  The challenge is that if the fetch for the kernel to use
->> those arguments is different from the fetch of seccomp to test those
->> arguments you have a time of test vs time of use race.
->
-> Those fetched values should obviously then be used to call permitted
-> system calls.
+Cc: stable@vger.kernel.org
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jann Horn <jannh@google.com>
+---
+ arch/alpha/kernel/osf_sys.c      | 51 ++++++++---------
+ arch/sparc/kernel/sys_sparc_32.c | 22 +++++---
+ arch/sparc/kernel/sys_sparc_64.c | 20 ++++---
+ kernel/sys.c                     | 95 +++++++++++++++-----------------
+ kernel/utsname_sysctl.c          | 41 ++++++++------
+ 5 files changed, 119 insertions(+), 110 deletions(-)
 
-Agreed.  To my knowledge no one has figured out how to make that work
-yet.  For the most part it has been unnecessary.
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 6e921754c8fc..2a5c768df335 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -530,24 +530,19 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
+ SYSCALL_DEFINE1(osf_utsname, char __user *, name)
+ {
+ 	int error;
++	char tmp[5 * 32];
+ 
+ 	down_read(&uts_sem);
+-	error = -EFAULT;
+-	if (copy_to_user(name + 0, utsname()->sysname, 32))
+-		goto out;
+-	if (copy_to_user(name + 32, utsname()->nodename, 32))
+-		goto out;
+-	if (copy_to_user(name + 64, utsname()->release, 32))
+-		goto out;
+-	if (copy_to_user(name + 96, utsname()->version, 32))
+-		goto out;
+-	if (copy_to_user(name + 128, utsname()->machine, 32))
+-		goto out;
++	memcpy(tmp + 0 * 32, utsname()->sysname, 32);
++	memcpy(tmp + 1 * 32, utsname()->nodename, 32);
++	memcpy(tmp + 2 * 32, utsname()->release, 32);
++	memcpy(tmp + 3 * 32, utsname()->version, 32);
++	memcpy(tmp + 4 * 32, utsname()->machine, 32);
++	up_read(&uts_sem);
+ 
+-	error = 0;
+- out:
+-	up_read(&uts_sem);	
+-	return error;
++	if (copy_to_user(name, tmp, sizeof(tmp)))
++		return -EFAULT;
++	return 0;
+ }
+ 
+ SYSCALL_DEFINE0(getpagesize)
+@@ -567,18 +562,21 @@ SYSCALL_DEFINE2(osf_getdomainname, char __user *, name, int, namelen)
+ {
+ 	int len, err = 0;
+ 	char *kname;
++	char tmp[32];
+ 
+-	if (namelen > 32)
++	if (namelen < 0 || namelen > 32)
+ 		namelen = 32;
+ 
+ 	down_read(&uts_sem);
+ 	kname = utsname()->domainname;
+ 	len = strnlen(kname, namelen);
+-	if (copy_to_user(name, kname, min(len + 1, namelen)))
+-		err = -EFAULT;
++	len = min(len + 1, namelen);
++	memcpy(tmp, kname, len);
+ 	up_read(&uts_sem);
+ 
+-	return err;
++	if (copy_to_user(name, tmp, len))
++		return -EFAULT;
++	return 0;
+ }
+ 
+ /*
+@@ -739,13 +737,14 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
+ 	};
+ 	unsigned long offset;
+ 	const char *res;
+-	long len, err = -EINVAL;
++	long len;
++	char tmp[__NEW_UTS_LEN + 1];
+ 
+ 	offset = command-1;
+ 	if (offset >= ARRAY_SIZE(sysinfo_table)) {
+ 		/* Digital UNIX has a few unpublished interfaces here */
+ 		printk("sysinfo(%d)", command);
+-		goto out;
++		return -EINVAL;
+ 	}
+ 
+ 	down_read(&uts_sem);
+@@ -753,13 +752,11 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
+ 	len = strlen(res)+1;
+ 	if ((unsigned long)len > (unsigned long)count)
+ 		len = count;
+-	if (copy_to_user(buf, res, len))
+-		err = -EFAULT;
+-	else
+-		err = 0;
++	memcpy(tmp, res, len);
+ 	up_read(&uts_sem);
+- out:
+-	return err;
++	if (copy_to_user(buf, tmp, len))
++		return -EFAULT;
++	return 0;
+ }
+ 
+ SYSCALL_DEFINE5(osf_getsysinfo, unsigned long, op, void __user *, buffer,
+diff --git a/arch/sparc/kernel/sys_sparc_32.c b/arch/sparc/kernel/sys_sparc_32.c
+index 7f3d9c59719a..452e4d080855 100644
+--- a/arch/sparc/kernel/sys_sparc_32.c
++++ b/arch/sparc/kernel/sys_sparc_32.c
+@@ -197,23 +197,27 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig,
+ 
+ SYSCALL_DEFINE2(getdomainname, char __user *, name, int, len)
+ {
+- 	int nlen, err;
+- 	
++	int nlen, err;
++	char tmp[__NEW_UTS_LEN + 1];
++
+ 	if (len < 0)
+ 		return -EINVAL;
+ 
+- 	down_read(&uts_sem);
+- 	
++	down_read(&uts_sem);
++
+ 	nlen = strlen(utsname()->domainname) + 1;
+ 	err = -EINVAL;
+ 	if (nlen > len)
+-		goto out;
++		goto out_unlock;
++	memcpy(tmp, utsname()->domainname, nlen);
+ 
+-	err = -EFAULT;
+-	if (!copy_to_user(name, utsname()->domainname, nlen))
+-		err = 0;
++	up_read(&uts_sem);
+ 
+-out:
++	if (copy_to_user(name, tmp, nlen))
++		return -EFAULT;
++	return 0;
++
++out_unlock:
+ 	up_read(&uts_sem);
+ 	return err;
+ }
+diff --git a/arch/sparc/kernel/sys_sparc_64.c b/arch/sparc/kernel/sys_sparc_64.c
+index 63baa8aa9414..274ed0b9b3e0 100644
+--- a/arch/sparc/kernel/sys_sparc_64.c
++++ b/arch/sparc/kernel/sys_sparc_64.c
+@@ -519,23 +519,27 @@ asmlinkage void sparc_breakpoint(struct pt_regs *regs)
+ 
+ SYSCALL_DEFINE2(getdomainname, char __user *, name, int, len)
+ {
+-        int nlen, err;
++	int nlen, err;
++	char tmp[__NEW_UTS_LEN + 1];
+ 
+ 	if (len < 0)
+ 		return -EINVAL;
+ 
+- 	down_read(&uts_sem);
+- 	
++	down_read(&uts_sem);
++
+ 	nlen = strlen(utsname()->domainname) + 1;
+ 	err = -EINVAL;
+ 	if (nlen > len)
+-		goto out;
++		goto out_unlock;
++	memcpy(tmp, utsname()->domainname, nlen);
++
++	up_read(&uts_sem);
+ 
+-	err = -EFAULT;
+-	if (!copy_to_user(name, utsname()->domainname, nlen))
+-		err = 0;
++	if (copy_to_user(name, tmp, nlen))
++		return -EFAULT;
++	return 0;
+ 
+-out:
++out_unlock:
+ 	up_read(&uts_sem);
+ 	return err;
+ }
+diff --git a/kernel/sys.c b/kernel/sys.c
+index 38509dc1f77b..69b9a37ecf0d 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -1237,18 +1237,19 @@ static int override_release(char __user *release, size_t len)
+ 
+ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
+ {
+-	int errno = 0;
++	struct new_utsname tmp;
+ 
+ 	down_read(&uts_sem);
+-	if (copy_to_user(name, utsname(), sizeof *name))
+-		errno = -EFAULT;
++	memcpy(&tmp, utsname(), sizeof(tmp));
+ 	up_read(&uts_sem);
++	if (copy_to_user(name, &tmp, sizeof(tmp)))
++		return -EFAULT;
+ 
+-	if (!errno && override_release(name->release, sizeof(name->release)))
+-		errno = -EFAULT;
+-	if (!errno && override_architecture(name))
+-		errno = -EFAULT;
+-	return errno;
++	if (override_release(name->release, sizeof(name->release)))
++		return -EFAULT;
++	if (override_architecture(name))
++		return -EFAULT;
++	return 0;
+ }
+ 
+ #ifdef __ARCH_WANT_SYS_OLD_UNAME
+@@ -1257,55 +1258,46 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
+  */
+ SYSCALL_DEFINE1(uname, struct old_utsname __user *, name)
+ {
+-	int error = 0;
++	struct old_utsname tmp;
+ 
+ 	if (!name)
+ 		return -EFAULT;
+ 
+ 	down_read(&uts_sem);
+-	if (copy_to_user(name, utsname(), sizeof(*name)))
+-		error = -EFAULT;
++	memcpy(&tmp, utsname(), sizeof(tmp));
+ 	up_read(&uts_sem);
++	if (copy_to_user(name, &tmp, sizeof(tmp)))
++		return -EFAULT;
+ 
+-	if (!error && override_release(name->release, sizeof(name->release)))
+-		error = -EFAULT;
+-	if (!error && override_architecture(name))
+-		error = -EFAULT;
+-	return error;
++	if (override_release(name->release, sizeof(name->release)))
++		return -EFAULT;
++	if (override_architecture(name))
++		return -EFAULT;
++	return 0;
+ }
+ 
+ SYSCALL_DEFINE1(olduname, struct oldold_utsname __user *, name)
+ {
+-	int error;
++	struct oldold_utsname tmp = {};
+ 
+ 	if (!name)
+ 		return -EFAULT;
+-	if (!access_ok(VERIFY_WRITE, name, sizeof(struct oldold_utsname)))
+-		return -EFAULT;
+ 
+ 	down_read(&uts_sem);
+-	error = __copy_to_user(&name->sysname, &utsname()->sysname,
+-			       __OLD_UTS_LEN);
+-	error |= __put_user(0, name->sysname + __OLD_UTS_LEN);
+-	error |= __copy_to_user(&name->nodename, &utsname()->nodename,
+-				__OLD_UTS_LEN);
+-	error |= __put_user(0, name->nodename + __OLD_UTS_LEN);
+-	error |= __copy_to_user(&name->release, &utsname()->release,
+-				__OLD_UTS_LEN);
+-	error |= __put_user(0, name->release + __OLD_UTS_LEN);
+-	error |= __copy_to_user(&name->version, &utsname()->version,
+-				__OLD_UTS_LEN);
+-	error |= __put_user(0, name->version + __OLD_UTS_LEN);
+-	error |= __copy_to_user(&name->machine, &utsname()->machine,
+-				__OLD_UTS_LEN);
+-	error |= __put_user(0, name->machine + __OLD_UTS_LEN);
++	memcpy(&tmp.sysname, &utsname()->sysname, __OLD_UTS_LEN);
++	memcpy(&tmp.nodename, &utsname()->nodename, __OLD_UTS_LEN);
++	memcpy(&tmp.release, &utsname()->release, __OLD_UTS_LEN);
++	memcpy(&tmp.version, &utsname()->version, __OLD_UTS_LEN);
++	memcpy(&tmp.machine, &utsname()->machine, __OLD_UTS_LEN);
+ 	up_read(&uts_sem);
++	if (copy_to_user(name, &tmp, sizeof(tmp)))
++		return -EFAULT;
+ 
+-	if (!error && override_architecture(name))
+-		error = -EFAULT;
+-	if (!error && override_release(name->release, sizeof(name->release)))
+-		error = -EFAULT;
+-	return error ? -EFAULT : 0;
++	if (override_architecture(name))
++		return -EFAULT;
++	if (override_release(name->release, sizeof(name->release)))
++		return -EFAULT;
++	return 0;
+ }
+ #endif
+ 
+@@ -1319,17 +1311,18 @@ SYSCALL_DEFINE2(sethostname, char __user *, name, int, len)
+ 
+ 	if (len < 0 || len > __NEW_UTS_LEN)
+ 		return -EINVAL;
+-	down_write(&uts_sem);
+ 	errno = -EFAULT;
+ 	if (!copy_from_user(tmp, name, len)) {
+-		struct new_utsname *u = utsname();
++		struct new_utsname *u;
+ 
++		down_write(&uts_sem);
++		u = utsname();
+ 		memcpy(u->nodename, tmp, len);
+ 		memset(u->nodename + len, 0, sizeof(u->nodename) - len);
+ 		errno = 0;
+ 		uts_proc_notify(UTS_PROC_HOSTNAME);
++		up_write(&uts_sem);
+ 	}
+-	up_write(&uts_sem);
+ 	return errno;
+ }
+ 
+@@ -1337,8 +1330,9 @@ SYSCALL_DEFINE2(sethostname, char __user *, name, int, len)
+ 
+ SYSCALL_DEFINE2(gethostname, char __user *, name, int, len)
+ {
+-	int i, errno;
++	int i;
+ 	struct new_utsname *u;
++	char tmp[__NEW_UTS_LEN + 1];
+ 
+ 	if (len < 0)
+ 		return -EINVAL;
+@@ -1347,11 +1341,11 @@ SYSCALL_DEFINE2(gethostname, char __user *, name, int, len)
+ 	i = 1 + strlen(u->nodename);
+ 	if (i > len)
+ 		i = len;
+-	errno = 0;
+-	if (copy_to_user(name, u->nodename, i))
+-		errno = -EFAULT;
++	memcpy(tmp, u->nodename, i);
+ 	up_read(&uts_sem);
+-	return errno;
++	if (copy_to_user(name, tmp, i))
++		return -EFAULT;
++	return 0;
+ }
+ 
+ #endif
+@@ -1370,17 +1364,18 @@ SYSCALL_DEFINE2(setdomainname, char __user *, name, int, len)
+ 	if (len < 0 || len > __NEW_UTS_LEN)
+ 		return -EINVAL;
+ 
+-	down_write(&uts_sem);
+ 	errno = -EFAULT;
+ 	if (!copy_from_user(tmp, name, len)) {
+-		struct new_utsname *u = utsname();
++		struct new_utsname *u;
+ 
++		down_write(&uts_sem);
++		u = utsname();
+ 		memcpy(u->domainname, tmp, len);
+ 		memset(u->domainname + len, 0, sizeof(u->domainname) - len);
+ 		errno = 0;
+ 		uts_proc_notify(UTS_PROC_DOMAINNAME);
++		up_write(&uts_sem);
+ 	}
+-	up_write(&uts_sem);
+ 	return errno;
+ }
+ 
+diff --git a/kernel/utsname_sysctl.c b/kernel/utsname_sysctl.c
+index 233cd8fc6910..258033d62cb3 100644
+--- a/kernel/utsname_sysctl.c
++++ b/kernel/utsname_sysctl.c
+@@ -18,7 +18,7 @@
+ 
+ #ifdef CONFIG_PROC_SYSCTL
+ 
+-static void *get_uts(struct ctl_table *table, int write)
++static void *get_uts(struct ctl_table *table)
+ {
+ 	char *which = table->data;
+ 	struct uts_namespace *uts_ns;
+@@ -26,21 +26,9 @@ static void *get_uts(struct ctl_table *table, int write)
+ 	uts_ns = current->nsproxy->uts_ns;
+ 	which = (which - (char *)&init_uts_ns) + (char *)uts_ns;
+ 
+-	if (!write)
+-		down_read(&uts_sem);
+-	else
+-		down_write(&uts_sem);
+ 	return which;
+ }
+ 
+-static void put_uts(struct ctl_table *table, int write, void *which)
+-{
+-	if (!write)
+-		up_read(&uts_sem);
+-	else
+-		up_write(&uts_sem);
+-}
+-
+ /*
+  *	Special case of dostring for the UTS structure. This has locks
+  *	to observe. Should this be in kernel/sys.c ????
+@@ -50,13 +38,34 @@ static int proc_do_uts_string(struct ctl_table *table, int write,
+ {
+ 	struct ctl_table uts_table;
+ 	int r;
++	char tmp_data[__NEW_UTS_LEN + 1];
++
+ 	memcpy(&uts_table, table, sizeof(uts_table));
+-	uts_table.data = get_uts(table, write);
++	uts_table.data = tmp_data;
++
++	/*
++	 * Buffer the value in tmp_data so that proc_dostring() can be called
++	 * without holding any locks.
++	 * We also need to read the original value in the write==1 case to
++	 * support partial writes.
++	 */
++	down_read(&uts_sem);
++	memcpy(tmp_data, get_uts(table), sizeof(tmp_data));
++	up_read(&uts_sem);
+ 	r = proc_dostring(&uts_table, write, buffer, lenp, ppos);
+-	put_uts(table, write, uts_table.data);
+ 
+-	if (write)
++	if (write) {
++		/*
++		 * Write back the new value.
++		 * Note that, since we dropped uts_sem, the result can
++		 * theoretically be incorrect if there are two parallel writes
++		 * at non-zero offsets to the same sysctl.
++		 */
++		down_write(&uts_sem);
++		memcpy(get_uts(table), tmp_data, sizeof(tmp_data));
++		up_write(&uts_sem);
+ 		proc_sys_poll_notify(table->poll);
++	}
+ 
+ 	return r;
+ }
+-- 
+2.18.0.rc2.346.g013aa6912e-goog
 
->> Given the location of the seccomp hook at the kernel user space border
->> there is no easy way for seccomp to share the fetch with the system
->> call itself.
->> 
->> So I don't see how seccomp could perform the fetch securely.
->
-> Looks like more of a seccomp mis-design/mis-implementation than some fundamental 
-> problem.
-
-Frankly.  Given that there are some very good solutions in other
-operating systems, I think the misdesign is in unix/linux not providing
-a good answer to what to do when you need more than 6 arguments to a
-system call.
-
-> Mis-designed security features should not hinder system call design.
-
-I certainly agree that seccomp should not be the sole reason for not
-doing something.  However there are lots of reasons to avoid
-extensibility in general.
-
-Excess extensibility has been the cause of more than one security issue.
-
-Lots of flexibility comes at the price of lots of conditional execution
-which tends to explode the test matrix of possibilities to test, with
-the result that some combinations are never thought about or tested
-because they don't make sense to combine.  Then someone with
-mischievious intent see that combination and thinks what happens when I
-do this.
-
-Further that conditional execution can frequently be the cause of slow
-code as well.
-
-So while there are many nice features of tagged values.  I don't think
-they are a general solution.  The lack of seccomp support (today) is
-just one downside among many.
-
-
-I do think it would be nice to have a general pattern for those
-system calls that require extensibility.  My gut feel says something
-like the L4 pseudo registers (to give a maxium request size)
-combined with something like netlink encoding would make a very
-nice template for making fast and flexible system calls.
-
-Eric
