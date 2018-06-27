@@ -1,85 +1,399 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: Re: [PATCH] sys: don't hold uts_sem while accessing userspace memory
-Date: Tue, 26 Jun 2018 18:43:10 +0100
-Message-ID: <d23cd44b1e2e1521cedb1c514d392263ed976dca.camel@decadent.org.uk>
-References: <20180625163410.216168-1-jannh@google.com>
-         <20180625164109.GF30522@ZenIV.linux.org.uk>
-         <CAG48ez2i2Dpy5TLTjtLiGKdkFDYLGURqAGoTDbETaBGf5SgxPw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-cEEqpFC4a1Cfx+GixbOI"
+From: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Subject: [PATCH] alpha: switch to NO_BOOTMEM
+Date: Wed, 27 Jun 2018 14:32:48 +0300
+Message-ID: <1530099168-31421-1-git-send-email-rppt@linux.vnet.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAG48ez2i2Dpy5TLTjtLiGKdkFDYLGURqAGoTDbETaBGf5SgxPw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>
-Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, "David S. Miller" <davem@davemloft.net>, kernel list <linux-kernel@vger.kernel.org>, "Eric W. Biederman" <ebiederm@xmission.com>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, security@kernel.org, Christoph Hellwig <hch@infradead.org>, "Serge E. Hallyn" <serge@hallyn.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Michal Hocko <mhocko@kernel.org>, linux-alpha <linux-alpha@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, lkml <linux-kernel@vger.kernel.org>, Mike Rapoport <rppt@linux.vnet.ibm.com>
 
+Replace bootmem allocator with memblock and enable use of NO_BOOTMEM like
+on most other architectures.
 
---=-cEEqpFC4a1Cfx+GixbOI
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The conversion does not take care of NUMA support which is marked broken
+for more than 10 years now.
 
-On Mon, 2018-06-25 at 20:16 +0200, Jann Horn wrote:
-> On Mon, Jun 25, 2018 at 6:41 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> >=20
-> > On Mon, Jun 25, 2018 at 06:34:10PM +0200, Jann Horn wrote:
-> >=20
-> > > +     char tmp[32];
-> > >=20
-> > > -     if (namelen > 32)
-> > > +     if (namelen < 0 || namelen > 32)
-> > >               namelen =3D 32;
-> > >=20
-> > >       down_read(&uts_sem);
-> > >       kname =3D utsname()->domainname;
-> > >       len =3D strnlen(kname, namelen);
-> > > -     if (copy_to_user(name, kname, min(len + 1, namelen)))
-> > > -             err =3D -EFAULT;
-> > > +     len =3D min(len + 1, namelen);
-> > > +     memcpy(tmp, kname, len);
-> > >       up_read(&uts_sem);
-> > >=20
-> > > -     return err;
-> > > +     if (copy_to_user(name, tmp, len))
-> > > +             return -EFAULT;
-> >=20
-> > Infoleak, and similar in a lot of other places.
->=20
-> I don't see a problem. copy_to_user() copies "len" bytes from "tmp".
-[...]
-> Can you please explain why there is an infoleak here?
+Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
+---
 
-I think you're *fixing* information leaks in the Alpha syscalls,
-because a negative value of namelen used to result in a huge length
-argument to copy_to_user().
+Tested with qemu-system-alpha. I've added some tweaks to sys_dp264 to force
+memory split for testing with CONFIG_DISCONTIGMEM=y
 
-Ben.
+ arch/alpha/Kconfig                |   2 +
+ arch/alpha/kernel/core_irongate.c |   4 +-
+ arch/alpha/kernel/setup.c         |  98 ++++-----------------------------
+ arch/alpha/mm/numa.c              | 113 +++++---------------------------------
+ 4 files changed, 29 insertions(+), 188 deletions(-)
 
---=20
-Ben Hutchings
-Once a job is fouled up, anything done to improve it makes it worse.
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 04a4a138ed13..040692a8d433 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -30,6 +30,8 @@ config ALPHA
+ 	select ODD_RT_SIGACTION
+ 	select OLD_SIGSUSPEND
+ 	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
++	select HAVE_MEMBLOCK
++	select NO_BOOTMEM
+ 	help
+ 	  The Alpha is a 64-bit general-purpose processor designed and
+ 	  marketed by the Digital Equipment Corporation of blessed memory,
+diff --git a/arch/alpha/kernel/core_irongate.c b/arch/alpha/kernel/core_irongate.c
+index aec757250e07..f70986683fc6 100644
+--- a/arch/alpha/kernel/core_irongate.c
++++ b/arch/alpha/kernel/core_irongate.c
+@@ -21,6 +21,7 @@
+ #include <linux/init.h>
+ #include <linux/initrd.h>
+ #include <linux/bootmem.h>
++#include <linux/memblock.h>
+ 
+ #include <asm/ptrace.h>
+ #include <asm/cacheflush.h>
+@@ -241,8 +242,7 @@ albacore_init_arch(void)
+ 				       size / 1024);
+ 		}
+ #endif
+-		reserve_bootmem_node(NODE_DATA(0), pci_mem, memtop -
+-				pci_mem, BOOTMEM_DEFAULT);
++		memblock_reserve(pci_mem, memtop - pci_mem);
+ 		printk("irongate_init_arch: temporarily reserving "
+ 			"region %08lx-%08lx for PCI\n", pci_mem, memtop - 1);
+ 	}
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index 5576f7646fb6..4f0d94471bc9 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -30,6 +30,7 @@
+ #include <linux/ioport.h>
+ #include <linux/platform_device.h>
+ #include <linux/bootmem.h>
++#include <linux/memblock.h>
+ #include <linux/pci.h>
+ #include <linux/seq_file.h>
+ #include <linux/root_dev.h>
+@@ -312,9 +313,7 @@ setup_memory(void *kernel_end)
+ {
+ 	struct memclust_struct * cluster;
+ 	struct memdesc_struct * memdesc;
+-	unsigned long start_kernel_pfn, end_kernel_pfn;
+-	unsigned long bootmap_size, bootmap_pages, bootmap_start;
+-	unsigned long start, end;
++	unsigned long kernel_size;
+ 	unsigned long i;
+ 
+ 	/* Find free clusters, and init and free the bootmem accordingly.  */
+@@ -322,6 +321,8 @@ setup_memory(void *kernel_end)
+ 	  (hwrpb->mddt_offset + (unsigned long) hwrpb);
+ 
+ 	for_each_mem_cluster(memdesc, cluster, i) {
++		unsigned long end;
++
+ 		printk("memcluster %lu, usage %01lx, start %8lu, end %8lu\n",
+ 		       i, cluster->usage, cluster->start_pfn,
+ 		       cluster->start_pfn + cluster->numpages);
+@@ -335,6 +336,9 @@ setup_memory(void *kernel_end)
+ 		end = cluster->start_pfn + cluster->numpages;
+ 		if (end > max_low_pfn)
+ 			max_low_pfn = end;
++
++		memblock_add(PFN_PHYS(cluster->start_pfn),
++			     cluster->numpages << PAGE_SHIFT);
+ 	}
+ 
+ 	/*
+@@ -363,87 +367,9 @@ setup_memory(void *kernel_end)
+ 		max_low_pfn = mem_size_limit;
+ 	}
+ 
+-	/* Find the bounds of kernel memory.  */
+-	start_kernel_pfn = PFN_DOWN(KERNEL_START_PHYS);
+-	end_kernel_pfn = PFN_UP(virt_to_phys(kernel_end));
+-	bootmap_start = -1;
+-
+- try_again:
+-	if (max_low_pfn <= end_kernel_pfn)
+-		panic("not enough memory to boot");
+-
+-	/* We need to know how many physically contiguous pages
+-	   we'll need for the bootmap.  */
+-	bootmap_pages = bootmem_bootmap_pages(max_low_pfn);
+-
+-	/* Now find a good region where to allocate the bootmap.  */
+-	for_each_mem_cluster(memdesc, cluster, i) {
+-		if (cluster->usage & 3)
+-			continue;
+-
+-		start = cluster->start_pfn;
+-		end = start + cluster->numpages;
+-		if (start >= max_low_pfn)
+-			continue;
+-		if (end > max_low_pfn)
+-			end = max_low_pfn;
+-		if (start < start_kernel_pfn) {
+-			if (end > end_kernel_pfn
+-			    && end - end_kernel_pfn >= bootmap_pages) {
+-				bootmap_start = end_kernel_pfn;
+-				break;
+-			} else if (end > start_kernel_pfn)
+-				end = start_kernel_pfn;
+-		} else if (start < end_kernel_pfn)
+-			start = end_kernel_pfn;
+-		if (end - start >= bootmap_pages) {
+-			bootmap_start = start;
+-			break;
+-		}
+-	}
+-
+-	if (bootmap_start == ~0UL) {
+-		max_low_pfn >>= 1;
+-		goto try_again;
+-	}
+-
+-	/* Allocate the bootmap and mark the whole MM as reserved.  */
+-	bootmap_size = init_bootmem(bootmap_start, max_low_pfn);
+-
+-	/* Mark the free regions.  */
+-	for_each_mem_cluster(memdesc, cluster, i) {
+-		if (cluster->usage & 3)
+-			continue;
+-
+-		start = cluster->start_pfn;
+-		end = cluster->start_pfn + cluster->numpages;
+-		if (start >= max_low_pfn)
+-			continue;
+-		if (end > max_low_pfn)
+-			end = max_low_pfn;
+-		if (start < start_kernel_pfn) {
+-			if (end > end_kernel_pfn) {
+-				free_bootmem(PFN_PHYS(start),
+-					     (PFN_PHYS(start_kernel_pfn)
+-					      - PFN_PHYS(start)));
+-				printk("freeing pages %ld:%ld\n",
+-				       start, start_kernel_pfn);
+-				start = end_kernel_pfn;
+-			} else if (end > start_kernel_pfn)
+-				end = start_kernel_pfn;
+-		} else if (start < end_kernel_pfn)
+-			start = end_kernel_pfn;
+-		if (start >= end)
+-			continue;
+-
+-		free_bootmem(PFN_PHYS(start), PFN_PHYS(end) - PFN_PHYS(start));
+-		printk("freeing pages %ld:%ld\n", start, end);
+-	}
+-
+-	/* Reserve the bootmap memory.  */
+-	reserve_bootmem(PFN_PHYS(bootmap_start), bootmap_size,
+-			BOOTMEM_DEFAULT);
+-	printk("reserving pages %ld:%ld\n", bootmap_start, bootmap_start+PFN_UP(bootmap_size));
++	/* Reserve the kernel memory. */
++	kernel_size = virt_to_phys(kernel_end) - KERNEL_START_PHYS;
++	memblock_reserve(KERNEL_START_PHYS, kernel_size);
+ 
+ #ifdef CONFIG_BLK_DEV_INITRD
+ 	initrd_start = INITRD_START;
+@@ -459,8 +385,8 @@ setup_memory(void *kernel_end)
+ 				       initrd_end,
+ 				       phys_to_virt(PFN_PHYS(max_low_pfn)));
+ 		} else {
+-			reserve_bootmem(virt_to_phys((void *)initrd_start),
+-					INITRD_SIZE, BOOTMEM_DEFAULT);
++			memblock_reserve(virt_to_phys((void *)initrd_start),
++					INITRD_SIZE);
+ 		}
+ 	}
+ #endif /* CONFIG_BLK_DEV_INITRD */
+diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
+index a9e86475f169..26cd925d19b1 100644
+--- a/arch/alpha/mm/numa.c
++++ b/arch/alpha/mm/numa.c
+@@ -11,6 +11,7 @@
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/bootmem.h>
++#include <linux/memblock.h>
+ #include <linux/swap.h>
+ #include <linux/initrd.h>
+ #include <linux/pfn.h>
+@@ -59,12 +60,10 @@ setup_memory_node(int nid, void *kernel_end)
+ 	struct memclust_struct * cluster;
+ 	struct memdesc_struct * memdesc;
+ 	unsigned long start_kernel_pfn, end_kernel_pfn;
+-	unsigned long bootmap_size, bootmap_pages, bootmap_start;
+ 	unsigned long start, end;
+ 	unsigned long node_pfn_start, node_pfn_end;
+ 	unsigned long node_min_pfn, node_max_pfn;
+ 	int i;
+-	unsigned long node_datasz = PFN_UP(sizeof(pg_data_t));
+ 	int show_init = 0;
+ 
+ 	/* Find the bounds of current node */
+@@ -134,24 +133,14 @@ setup_memory_node(int nid, void *kernel_end)
+ 	/* Cute trick to make sure our local node data is on local memory */
+ 	node_data[nid] = (pg_data_t *)(__va(node_min_pfn << PAGE_SHIFT));
+ #endif
+-	/* Quasi-mark the pg_data_t as in-use */
+-	node_min_pfn += node_datasz;
+-	if (node_min_pfn >= node_max_pfn) {
+-		printk(" not enough mem to reserve NODE_DATA");
+-		return;
+-	}
+-	NODE_DATA(nid)->bdata = &bootmem_node_data[nid];
+-
+ 	printk(" Detected node memory:   start %8lu, end %8lu\n",
+ 	       node_min_pfn, node_max_pfn);
+ 
+ 	DBGDCONT(" DISCONTIG: node_data[%d]   is at 0x%p\n", nid, NODE_DATA(nid));
+-	DBGDCONT(" DISCONTIG: NODE_DATA(%d)->bdata is at 0x%p\n", nid, NODE_DATA(nid)->bdata);
+ 
+ 	/* Find the bounds of kernel memory.  */
+ 	start_kernel_pfn = PFN_DOWN(KERNEL_START_PHYS);
+ 	end_kernel_pfn = PFN_UP(virt_to_phys(kernel_end));
+-	bootmap_start = -1;
+ 
+ 	if (!nid && (node_max_pfn < end_kernel_pfn || node_min_pfn > start_kernel_pfn))
+ 		panic("kernel loaded out of ram");
+@@ -161,89 +150,11 @@ setup_memory_node(int nid, void *kernel_end)
+ 	   has much larger alignment than 8Mb, so it's safe. */
+ 	node_min_pfn &= ~((1UL << (MAX_ORDER-1))-1);
+ 
+-	/* We need to know how many physically contiguous pages
+-	   we'll need for the bootmap.  */
+-	bootmap_pages = bootmem_bootmap_pages(node_max_pfn-node_min_pfn);
+-
+-	/* Now find a good region where to allocate the bootmap.  */
+-	for_each_mem_cluster(memdesc, cluster, i) {
+-		if (cluster->usage & 3)
+-			continue;
+-
+-		start = cluster->start_pfn;
+-		end = start + cluster->numpages;
+-
+-		if (start >= node_max_pfn || end <= node_min_pfn)
+-			continue;
+-
+-		if (end > node_max_pfn)
+-			end = node_max_pfn;
+-		if (start < node_min_pfn)
+-			start = node_min_pfn;
+-
+-		if (start < start_kernel_pfn) {
+-			if (end > end_kernel_pfn
+-			    && end - end_kernel_pfn >= bootmap_pages) {
+-				bootmap_start = end_kernel_pfn;
+-				break;
+-			} else if (end > start_kernel_pfn)
+-				end = start_kernel_pfn;
+-		} else if (start < end_kernel_pfn)
+-			start = end_kernel_pfn;
+-		if (end - start >= bootmap_pages) {
+-			bootmap_start = start;
+-			break;
+-		}
+-	}
+-
+-	if (bootmap_start == -1)
+-		panic("couldn't find a contiguous place for the bootmap");
+-
+-	/* Allocate the bootmap and mark the whole MM as reserved.  */
+-	bootmap_size = init_bootmem_node(NODE_DATA(nid), bootmap_start,
+-					 node_min_pfn, node_max_pfn);
+-	DBGDCONT(" bootmap_start %lu, bootmap_size %lu, bootmap_pages %lu\n",
+-		 bootmap_start, bootmap_size, bootmap_pages);
++	memblock_add(PFN_PHYS(node_min_pfn),
++		     (node_max_pfn - node_min_pfn) << PAGE_SHIFT);
+ 
+-	/* Mark the free regions.  */
+-	for_each_mem_cluster(memdesc, cluster, i) {
+-		if (cluster->usage & 3)
+-			continue;
+-
+-		start = cluster->start_pfn;
+-		end = cluster->start_pfn + cluster->numpages;
+-
+-		if (start >= node_max_pfn || end <= node_min_pfn)
+-			continue;
+-
+-		if (end > node_max_pfn)
+-			end = node_max_pfn;
+-		if (start < node_min_pfn)
+-			start = node_min_pfn;
+-
+-		if (start < start_kernel_pfn) {
+-			if (end > end_kernel_pfn) {
+-				free_bootmem_node(NODE_DATA(nid), PFN_PHYS(start),
+-					     (PFN_PHYS(start_kernel_pfn)
+-					      - PFN_PHYS(start)));
+-				printk(" freeing pages %ld:%ld\n",
+-				       start, start_kernel_pfn);
+-				start = end_kernel_pfn;
+-			} else if (end > start_kernel_pfn)
+-				end = start_kernel_pfn;
+-		} else if (start < end_kernel_pfn)
+-			start = end_kernel_pfn;
+-		if (start >= end)
+-			continue;
+-
+-		free_bootmem_node(NODE_DATA(nid), PFN_PHYS(start), PFN_PHYS(end) - PFN_PHYS(start));
+-		printk(" freeing pages %ld:%ld\n", start, end);
+-	}
+-
+-	/* Reserve the bootmap memory.  */
+-	reserve_bootmem_node(NODE_DATA(nid), PFN_PHYS(bootmap_start),
+-			bootmap_size, BOOTMEM_DEFAULT);
+-	printk(" reserving pages %ld:%ld\n", bootmap_start, bootmap_start+PFN_UP(bootmap_size));
++	NODE_DATA(nid)->node_start_pfn = node_min_pfn;
++	NODE_DATA(nid)->node_present_pages = node_max_pfn - node_min_pfn;
+ 
+ 	node_set_online(nid);
+ }
+@@ -251,6 +162,7 @@ setup_memory_node(int nid, void *kernel_end)
+ void __init
+ setup_memory(void *kernel_end)
+ {
++	unsigned long kernel_size;
+ 	int nid;
+ 
+ 	show_mem_layout();
+@@ -262,6 +174,9 @@ setup_memory(void *kernel_end)
+ 	for (nid = 0; nid < MAX_NUMNODES; nid++)
+ 		setup_memory_node(nid, kernel_end);
+ 
++	kernel_size = virt_to_phys(kernel_end) - KERNEL_START_PHYS;
++	memblock_reserve(KERNEL_START_PHYS, kernel_size);
++
+ #ifdef CONFIG_BLK_DEV_INITRD
+ 	initrd_start = INITRD_START;
+ 	if (initrd_start) {
+@@ -279,9 +194,8 @@ setup_memory(void *kernel_end)
+ 				       phys_to_virt(PFN_PHYS(max_low_pfn)));
+ 		} else {
+ 			nid = kvaddr_to_nid(initrd_start);
+-			reserve_bootmem_node(NODE_DATA(nid),
+-					     virt_to_phys((void *)initrd_start),
+-					     INITRD_SIZE, BOOTMEM_DEFAULT);
++			memblock_reserve(virt_to_phys((void *)initrd_start),
++					 INITRD_SIZE);
+ 		}
+ 	}
+ #endif /* CONFIG_BLK_DEV_INITRD */
+@@ -303,9 +217,8 @@ void __init paging_init(void)
+ 	dma_local_pfn = virt_to_phys((char *)MAX_DMA_ADDRESS) >> PAGE_SHIFT;
+ 
+ 	for_each_online_node(nid) {
+-		bootmem_data_t *bdata = &bootmem_node_data[nid];
+-		unsigned long start_pfn = bdata->node_min_pfn;
+-		unsigned long end_pfn = bdata->node_low_pfn;
++		unsigned long start_pfn = NODE_DATA(nid)->node_start_pfn;
++		unsigned long end_pfn = start_pfn + NODE_DATA(nid)->node_present_pages;
+ 
+ 		if (dma_local_pfn >= end_pfn - start_pfn)
+ 			zones_size[ZONE_DMA] = end_pfn - start_pfn;
+-- 
+2.7.4
 
-
---=-cEEqpFC4a1Cfx+GixbOI
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAlsyey4ACgkQ57/I7JWG
-EQmGfBAAkJ8kvkN4ILTBveOXPzElFepd1FUG5pMwo5IfJw5Oq8f2/GbfGXDZ14Tj
-abmu/OVqgeJZ/T1/Kqq96FGuz6uT61SB+eX5ncTu52xA9mWfPWVG/0wR3eplSvPY
-kxsxJ61Wtdd9WjHtt4u5/OeKR6HmuxSF5b+Rfhzs5U1iJCVwxdswTnPwXqFQpS+T
-YutNUFhxnI5gOvKaWuRa0v0L60v5Bah8tVICEwl+g5UqDCfarjLgIpLuoc6iNABK
-UOVg9jw8wC64KQrOrUiDItG5T9E+FY4FnnRDekm2WZwbKNpW0wRM6dFmJSjeuXAT
-moSF+Yws0iRyhMpUD0Ysk04gHZLZO0T40wRKfWBEa9I4Z8kMEKsTpGqltyKuU7aE
-d9hICe8xpdWYYYV0bRWkDa53eQzmkHp6mfKmcnWqksuXK6887qBArslvEmHFWS1K
-kvCDsVjyWTUTWNcRD0mVZ8DwpBGG/+vvf0rdUiX+EMmi8721df6mdZvRLknftsBb
-gKejdzYugladdM3L36Tch/+PqDTHvvOxYW6XKVb/NxH/tkL8wMv3+jS4y2Xf5Lhi
-Zk1B9mN836ZW8v9QgiFc8vYyp+4RioBSMqXEAFeWt5GJU/eyWxSqpZuIeFto/acw
-1AIxwXBM7lg4ctxenK673epS+L3sQMolh6SXar7P9sjcAAp28xM=
-=a19a
------END PGP SIGNATURE-----
-
---=-cEEqpFC4a1Cfx+GixbOI--
