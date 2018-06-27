@@ -1,41 +1,67 @@
-From: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Subject: Re: [PATCH] alpha: switch to NO_BOOTMEM
-Date: Wed, 27 Jun 2018 15:00:20 +0300
-Message-ID: <20180627120020.GE4291@rapoport-lnx>
-References: <1530099168-31421-1-git-send-email-rppt@linux.vnet.ibm.com>
- <20180627113851.GP32348@dhcp22.suse.cz>
+From: Jann Horn <jannh@google.com>
+Subject: Re: [PATCH] sys: don't hold uts_sem while accessing userspace memory
+Date: Wed, 27 Jun 2018 14:29:33 +0200
+Message-ID: <CAG48ez2JAj1daM5s7gyS0nzB+J85PkmUL5+D_BC4-afag9SWFA@mail.gmail.com>
+References: <20180625163410.216168-1-jannh@google.com> <20180625164109.GF30522@ZenIV.linux.org.uk>
+ <CAG48ez2i2Dpy5TLTjtLiGKdkFDYLGURqAGoTDbETaBGf5SgxPw@mail.gmail.com> <d23cd44b1e2e1521cedb1c514d392263ed976dca.camel@decadent.org.uk>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180627113851.GP32348@dhcp22.suse.cz>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AoGcdOYnPY9XIT4BiPzncYhe8nv+5XxhAuO7U0UQo6E=;
+        b=rtUVtqQecJsRqLilFeAL7lYLvI66EgXB7wK+YujDYNZOmCF2vpbAv1HjZmuWiBrQb+
+         wZkoPGQfGta5M3+DA8R1wB2Vbb8z5eLvduw/ExdjhGilEVoo94/L9Hx+JoidyHhpR4qn
+         m1xwgScQKOXqfBxH1QpE2DAT5A33Jwh6n2D6rARt4flqzBIcmbhpVdtdXuOkFgcyk9Xm
+         R7joUM96Dq0fLY6EoPRI49o533HHre8clZ95p1V8V1zGgNjGrcohRtbHq4Xb4JHUG44G
+         XtLzs/Iu+/bOdw/NWP4SjmX/M6je+/1Vpgn05Jwo+BaxPCzbkMMu6tlKC7KXbqqXrgA7
+         tjog==
+In-Reply-To: <d23cd44b1e2e1521cedb1c514d392263ed976dca.camel@decadent.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michal Hocko <mhocko@kernel.org>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, lkml <linux-kernel@vger.kernel.org>
+To: ben@decadent.org.uk, Al Viro <viro@zeniv.linux.org.uk>
+Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, davem@davemloft.net, linux-kernel@vger.kernel.org, ebiederm@xmission.com, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, security@kernel.org, hch@infradead.org, serge@hallyn.com
 
-On Wed, Jun 27, 2018 at 01:38:51PM +0200, Michal Hocko wrote:
-> On Wed 27-06-18 14:32:48, Mike Rapoport wrote:
-> > Replace bootmem allocator with memblock and enable use of NO_BOOTMEM like
-> > on most other architectures.
-> > 
-> > The conversion does not take care of NUMA support which is marked broken
-> > for more than 10 years now.
-> 
-> It would be great to describe how is the conversion done. At least on
-> high level.
+On Tue, Jun 26, 2018 at 7:43 PM Ben Hutchings <ben@decadent.org.uk> wrote:
+>
+> On Mon, 2018-06-25 at 20:16 +0200, Jann Horn wrote:
+> > On Mon, Jun 25, 2018 at 6:41 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> > >
+> > > On Mon, Jun 25, 2018 at 06:34:10PM +0200, Jann Horn wrote:
+> > >
+> > > > +     char tmp[32];
+> > > >
+> > > > -     if (namelen > 32)
+> > > > +     if (namelen < 0 || namelen > 32)
+> > > >               namelen = 32;
+> > > >
+> > > >       down_read(&uts_sem);
+> > > >       kname = utsname()->domainname;
+> > > >       len = strnlen(kname, namelen);
+> > > > -     if (copy_to_user(name, kname, min(len + 1, namelen)))
+> > > > -             err = -EFAULT;
+> > > > +     len = min(len + 1, namelen);
+> > > > +     memcpy(tmp, kname, len);
+> > > >       up_read(&uts_sem);
+> > > >
+> > > > -     return err;
+> > > > +     if (copy_to_user(name, tmp, len))
+> > > > +             return -EFAULT;
+> > >
+> > > Infoleak, and similar in a lot of other places.
+> >
+> > I don't see a problem. copy_to_user() copies "len" bytes from "tmp".
+> [...]
+> > Can you please explain why there is an infoleak here?
+>
+> I think you're *fixing* information leaks in the Alpha syscalls,
+> because a negative value of namelen used to result in a huge length
+> argument to copy_to_user().
 
-It's straightforward, isn't it? :)
-
-Sure, no problem. I'll just wait for other feedback before sending v2.
-
-> -- 
-> Michal Hocko
-> SUSE Labs
-> 
-
--- 
-Sincerely yours,
-Mike.
-
+Ah, you're right. Looks like this was previously fixed in commit
+21c5977a836e ("alpha: fix several security issues", first in v3.0),
+and then un-fixed in commit 9ba3eb5103cf ("osf_getdomainname(): use
+copy_to_user()", first in v4.13).
