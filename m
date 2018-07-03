@@ -1,57 +1,360 @@
 From: Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: [PATCH 0/6] Introduce struct __kernel_timex
-Date: Mon,  2 Jul 2018 22:44:16 -0700
-Message-ID: <20180703054422.12089-1-deepa.kernel@gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <y2038-bounces@lists.linaro.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/y2038/>
-List-Post: <mailto:y2038@lists.linaro.org>
-List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
-List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=subscribe>
-Errors-To: y2038-bounces@lists.linaro.org
-Sender: "Y2038" <y2038-bounces@lists.linaro.org>
+Subject: [PATCH 5/6] timex: use __kernel_timex internally
+Date: Mon,  2 Jul 2018 22:44:21 -0700
+Message-ID: <20180703054422.12089-6-deepa.kernel@gmail.com>
+References: <20180703054422.12089-1-deepa.kernel@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=w+g1iU+CIWgujU5j2TxFuDt2uX8T8R+zbKplAuuZA98=;
+        b=To4ey5BxP+WolZpeXWA4IrOyQr+i3hCb117Xp9JVRazTQ7xT4JMUPPo0G6IICanCxb
+         x/hQp6EO1kQAQjiDJ3YY8JxOtrrWe3sct4VkFZ+wvwvC8Q0XPnc0Qw6ocDgwfnWSXXWy
+         4cOs2Rm4GUBKI+B5p0ntbasr8fA3eO2c6pRlkIqQ979Pw5ENHVtqxiTfsKwRYyNwsPva
+         f92ApNcI+4bmp5Tzs+flwaHiKvPtcCXyRsq4Wpelxo8rhDgJNzlM95lKVEb5z1r8jwV1
+         t6fC5bUO3IBOI5FUfXmQanWTlgz+BnW5PT4imAU2CXeOaS2NXbeMCULwxbct87woSI2v
+         cVhg==
+In-Reply-To: <20180703054422.12089-1-deepa.kernel@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: tglx@linutronix.de, linux-kernel@vger.kernel.org
-Cc: linux-arch@vger.kernel.org, arnd@arndb.de, y2038@lists.linaro.org, catalin.marinas@arm.com, linux-alpha@vger.kernel.org, netdev@vger.kernel.org, linux-api@vger.kernel.org, davem@davemloft.net
+Cc: arnd@arndb.de, y2038@lists.linaro.org, linux-alpha@vger.kernel.org, netdev@vger.kernel.org
 
-VGhlIHNlcmllcyBpbnRyb2R1Y2VzIHN0cnVjdCBfX2tlcm5lbF90aW1leCBhcyBhIHN1YnN0aXR1
-dGUgZm9yCnRoZSBub24geTIwMzggc2FmZSBzdHJ1Y3QgdGltZXguCgpUaGUgc2VyaWVzIGlzIGJh
-c2VkIG9uIHRoZSBvcmlnaW5hbCBzZXJpZXMgcG9zdGVkIGJ5IEFybmQgQmVyZ21hbm4KaW4gWzFd
-LgoKVGhlIG92ZXJ2aWV3IG9mIHRoZSBzZXJpZXMgaXMgYXMgYmVsb3c6CjEuIFByZXBhcmUgZm9y
-IHRoZSBjb21wYXQgdGltZXggaW50ZXJmYWNlcyB0byBiZSB1c2VkIHVuY29uZGl0aW9uYWxseS4K
-Mi4gSW50cm9kdWNlIHN0cnVjdCBfX2tlcm5lbF90aW1leC4KMy4gVXNlIHN0cnVjdCBfX2tlcm5l
-bF90aW1leCBpbiBwbGFjZSBvZiBzdHJ1Y3QgdGltZXguCjQuIFN3aXRjaCBzeXNjYWxscyB0byB1
-c2Ugc3RydWN0IF9fa2VybmVsX3RpbWV4LgoKRGVlcGEgRGluYW1hbmkgKDYpOgogIGFybTY0OiBN
-YWtlIGJhc2ljIGNvbXBhdF8qIHR5cGVzIGFsd2F5cyBhdmFpbGFibGUKICBzcGFyYzogTWFrZSB0
-aHJlYWRfaW5mby5oIGF2YWlsYWJsZSBkaXJlY3RseQogIHRpbWV4OiBwcmVwYXJlIGNvbXBhdCBo
-ZWxwZXJzIGZvciB5MjAzOCBjaGFuZ2VzCiAgdGltZTogQWRkIHN0cnVjdCBfX2tlcm5lbF90aW1l
-eAogIHRpbWV4OiB1c2UgX19rZXJuZWxfdGltZXggaW50ZXJuYWxseQogIHRpbWV4OiBjaGFuZ2Ug
-c3lzY2FsbHMgdG8gdXNlIHN0cnVjdCBfX2tlcm5lbF90aW1leAoKIGFyY2gvYWxwaGEva2VybmVs
-L29zZl9zeXMuYyAgICAgfCAgMiArLQogYXJjaC9hcm02NC9pbmNsdWRlL2FzbS9jb21wYXQuaCB8
-IDIyICsrKystLS0tLQogYXJjaC9zcGFyYy9pbmNsdWRlL2FzbS9jb21wYXQuaCB8ICAyICsKIGRy
-aXZlcnMvcHRwL3B0cF9jbG9jay5jICAgICAgICAgfCAgMiArLQogaW5jbHVkZS9hc20tZ2VuZXJp
-Yy9jb21wYXQuaCAgICB8ICA4ICsrKy0KIGluY2x1ZGUvbGludXgvY29tcGF0LmggICAgICAgICAg
-fCAzMyAtLS0tLS0tLS0tLS0tLQogaW5jbHVkZS9saW51eC9jb21wYXRfdGltZS5oICAgICB8IDM0
-ICsrKysrKysrKysrKysrCiBpbmNsdWRlL2xpbnV4L3Bvc2l4LWNsb2NrLmggICAgIHwgIDIgKy0K
-IGluY2x1ZGUvbGludXgvc3lzY2FsbHMuaCAgICAgICAgfCAgNSArLS0KIGluY2x1ZGUvbGludXgv
-dGltZXguaCAgICAgICAgICAgfCAgOSArKystCiBpbmNsdWRlL3VhcGkvbGludXgvdGltZXguaCAg
-ICAgIHwgNDEgKysrKysrKysrKysrKysrKysKIGtlcm5lbC9jb21wYXQuYyAgICAgICAgICAgICAg
-ICAgfCA2MyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoga2VybmVsL3RpbWUvbnRwLmMgICAg
-ICAgICAgICAgICB8IDEyICsrLS0tCiBrZXJuZWwvdGltZS9udHBfaW50ZXJuYWwuaCAgICAgIHwg
-IDIgKy0KIGtlcm5lbC90aW1lL3Bvc2l4LWNsb2NrLmMgICAgICAgfCAgMiArLQoga2VybmVsL3Rp
-bWUvcG9zaXgtdGltZXJzLmMgICAgICB8IDE0ICsrLS0tLQoga2VybmVsL3RpbWUvcG9zaXgtdGlt
-ZXJzLmggICAgICB8ICAyICstCiBrZXJuZWwvdGltZS90aW1lLmMgICAgICAgICAgICAgIHwgODAg
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tCiBrZXJuZWwvdGltZS90aW1la2VlcGlu
-Zy5jICAgICAgIHwgIDQgKy0KIDE5IGZpbGVzIGNoYW5nZWQsIDE5OCBpbnNlcnRpb25zKCspLCAx
-NDEgZGVsZXRpb25zKC0pCgoKYmFzZS1jb21taXQ6IDY5ODc3ZjA2OTE1ZjFjN2E5ZjE3MDQ0NDI5
-OTNiY2MxMmMxM2FjZTIKLS0gCjIuMTcuMQoKQ2M6IGNhdGFsaW4ubWFyaW5hc0Bhcm0uY29tCkNj
-OiBkYXZlbUBkYXZlbWxvZnQubmV0CkNjOiBsaW51eC1hbHBoYUB2Z2VyLmtlcm5lbC5vcmcKQ2M6
-IGxpbnV4LWFwaUB2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4LWFyY2hAdmdlci5rZXJuZWwub3Jn
-CkNjOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fClkyMDM4IG1haWxpbmcgbGlzdApZMjAzOEBsaXN0cy5saW5hcm8u
-b3JnCmh0dHBzOi8vbGlzdHMubGluYXJvLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3kyMDM4Cg==
+struct timex is not y2038 safe.
+Replace all uses of timex with y2038 safe __kernel_timex.
+
+Note that struct __kernel_timex is an ABI interface definition.
+We could define a new structure based on __kernel_timex that
+is only available internally instead. Right now, there isn't
+a strong motivation for this as the structure is isolated to
+a few defined struct timex interfaces and such a structure would
+be exactly the same as struct timex.
+
+The patch was generated by the following coccinelle script:
+
+virtual patch
+
+@depends on patch forall@
+identifier ts;
+expression e;
+@@
+(
+- struct timex ts;
++ struct __kernel_timex ts;
+|
+- struct timex ts = {};
++ struct __kernel_timex ts = {};
+|
+- struct timex ts = e;
++ struct __kernel_timex ts = e;
+|
+- struct timex *ts;
++ struct __kernel_timex *ts;
+|
+(memset \| copy_from_user \| copy_to_user \)(...,
+- sizeof(struct timex))
++ sizeof(struct __kernel_timex))
+)
+
+@depends on patch forall@
+identifier ts;
+identifier fn;
+@@
+fn(...,
+- struct timex *ts,
++ struct __kernel_timex *ts,
+...) {
+...
+}
+
+@depends on patch forall@
+identifier ts;
+identifier fn;
+@@
+fn(...,
+- struct timex *ts) {
++ struct __kernel_timex *ts) {
+...
+}
+
+Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: netdev@vger.kernel.org
+---
+ arch/alpha/kernel/osf_sys.c |  2 +-
+ drivers/ptp/ptp_clock.c     |  2 +-
+ include/linux/compat_time.h |  6 +++---
+ include/linux/posix-clock.h |  2 +-
+ include/linux/timex.h       |  2 +-
+ kernel/time/ntp.c           | 12 +++++++-----
+ kernel/time/ntp_internal.h  |  2 +-
+ kernel/time/posix-clock.c   |  2 +-
+ kernel/time/posix-timers.c  |  4 ++--
+ kernel/time/posix-timers.h  |  2 +-
+ kernel/time/time.c          | 14 +++++++-------
+ kernel/time/timekeeping.c   |  4 ++--
+ 12 files changed, 28 insertions(+), 26 deletions(-)
+
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 6e921754c8fc..ec86e77d3055 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -1260,7 +1260,7 @@ struct timex32 {
+ 
+ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
+ {
+-        struct timex txc;
++	struct __kernel_timex txc;
+ 	int ret;
+ 
+ 	/* copy relevant bits of struct timex. */
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index 7eacc1c4b3b1..f2147e9dd3ca 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -121,7 +121,7 @@ static int ptp_clock_gettime(struct posix_clock *pc, struct timespec64 *tp)
+ 	return err;
+ }
+ 
+-static int ptp_clock_adjtime(struct posix_clock *pc, struct timex *tx)
++static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
+ {
+ 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
+ 	struct ptp_clock_info *ops;
+diff --git a/include/linux/compat_time.h b/include/linux/compat_time.h
+index f04454e1b863..25dbd59b3b43 100644
+--- a/include/linux/compat_time.h
++++ b/include/linux/compat_time.h
+@@ -59,8 +59,8 @@ extern int get_compat_itimerspec64(struct itimerspec64 *its,
+ 			const struct compat_itimerspec __user *uits);
+ extern int put_compat_itimerspec64(const struct itimerspec64 *its,
+ 			struct compat_itimerspec __user *uits);
+-struct timex;
+-int compat_get_timex(struct timex *, const struct compat_timex __user *);
+-int compat_put_timex(struct compat_timex __user *, const struct timex *);
++struct __kernel_timex;
++int compat_get_timex(struct __kernel_timex *, const struct compat_timex __user *);
++int compat_put_timex(struct compat_timex __user *, const struct __kernel_timex *);
+ 
+ #endif /* _LINUX_COMPAT_TIME_H */
+diff --git a/include/linux/posix-clock.h b/include/linux/posix-clock.h
+index 3a3bc71017d5..18674d7d5b1c 100644
+--- a/include/linux/posix-clock.h
++++ b/include/linux/posix-clock.h
+@@ -51,7 +51,7 @@ struct posix_clock;
+ struct posix_clock_operations {
+ 	struct module *owner;
+ 
+-	int  (*clock_adjtime)(struct posix_clock *pc, struct timex *tx);
++	int  (*clock_adjtime)(struct posix_clock *pc, struct __kernel_timex *tx);
+ 
+ 	int  (*clock_gettime)(struct posix_clock *pc, struct timespec64 *ts);
+ 
+diff --git a/include/linux/timex.h b/include/linux/timex.h
+index 7f40e9e42ecc..cb894730463c 100644
+--- a/include/linux/timex.h
++++ b/include/linux/timex.h
+@@ -158,7 +158,7 @@ extern unsigned long tick_nsec;		/* SHIFTED_HZ period (nsec) */
+ #define NTP_INTERVAL_FREQ  (HZ)
+ #define NTP_INTERVAL_LENGTH (NSEC_PER_SEC/NTP_INTERVAL_FREQ)
+ 
+-extern int do_adjtimex(struct timex *);
++extern int do_adjtimex(struct __kernel_timex *);
+ extern void hardpps(const struct timespec64 *, const struct timespec64 *);
+ 
+ int read_current_timer(unsigned long *timer_val);
+diff --git a/kernel/time/ntp.c b/kernel/time/ntp.c
+index 10a79053e82f..7da9eb8adfd4 100644
+--- a/kernel/time/ntp.c
++++ b/kernel/time/ntp.c
+@@ -189,7 +189,7 @@ static inline int is_error_status(int status)
+ 			&& (status & (STA_PPSWANDER|STA_PPSERROR)));
+ }
+ 
+-static inline void pps_fill_timex(struct timex *txc)
++static inline void pps_fill_timex(struct __kernel_timex *txc)
+ {
+ 	txc->ppsfreq	   = shift_right((pps_freq >> PPM_SCALE_INV_SHIFT) *
+ 					 PPM_SCALE_INV, NTP_SCALE_SHIFT);
+@@ -221,7 +221,7 @@ static inline int is_error_status(int status)
+ 	return status & (STA_UNSYNC|STA_CLOCKERR);
+ }
+ 
+-static inline void pps_fill_timex(struct timex *txc)
++static inline void pps_fill_timex(struct __kernel_timex *txc)
+ {
+ 	/* PPS is not implemented, so these are zero */
+ 	txc->ppsfreq	   = 0;
+@@ -642,7 +642,8 @@ void ntp_notify_cmos_timer(void)
+ /*
+  * Propagate a new txc->status value into the NTP state:
+  */
+-static inline void process_adj_status(struct timex *txc, struct timespec64 *ts)
++static inline void process_adj_status(struct __kernel_timex *txc,
++				      struct timespec64 *ts)
+ {
+ 	if ((time_status & STA_PLL) && !(txc->status & STA_PLL)) {
+ 		time_state = TIME_OK;
+@@ -665,7 +666,7 @@ static inline void process_adj_status(struct timex *txc, struct timespec64 *ts)
+ }
+ 
+ 
+-static inline void process_adjtimex_modes(struct timex *txc,
++static inline void process_adjtimex_modes(struct __kernel_timex *txc,
+ 						struct timespec64 *ts,
+ 						s32 *time_tai)
+ {
+@@ -718,7 +719,8 @@ static inline void process_adjtimex_modes(struct timex *txc,
+  * adjtimex mainly allows reading (and writing, if superuser) of
+  * kernel time-keeping variables. used by xntpd.
+  */
+-int __do_adjtimex(struct timex *txc, struct timespec64 *ts, s32 *time_tai)
++int __do_adjtimex(struct __kernel_timex *txc, struct timespec64 *ts,
++		  s32 *time_tai)
+ {
+ 	int result;
+ 
+diff --git a/kernel/time/ntp_internal.h b/kernel/time/ntp_internal.h
+index 909bd1f1bfb1..4386138bed32 100644
+--- a/kernel/time/ntp_internal.h
++++ b/kernel/time/ntp_internal.h
+@@ -8,6 +8,6 @@ extern void ntp_clear(void);
+ extern u64 ntp_tick_length(void);
+ extern ktime_t ntp_get_next_leap(void);
+ extern int second_overflow(time64_t secs);
+-extern int __do_adjtimex(struct timex *, struct timespec64 *, s32 *);
++extern int __do_adjtimex(struct __kernel_timex *, struct timespec64 *, s32 *);
+ extern void __hardpps(const struct timespec64 *, const struct timespec64 *);
+ #endif /* _LINUX_NTP_INTERNAL_H */
+diff --git a/kernel/time/posix-clock.c b/kernel/time/posix-clock.c
+index fe56c4e06c51..a138642553cf 100644
+--- a/kernel/time/posix-clock.c
++++ b/kernel/time/posix-clock.c
+@@ -241,7 +241,7 @@ static void put_clock_desc(struct posix_clock_desc *cd)
+ 	fput(cd->fp);
+ }
+ 
+-static int pc_clock_adjtime(clockid_t id, struct timex *tx)
++static int pc_clock_adjtime(clockid_t id, struct __kernel_timex *tx)
+ {
+ 	struct posix_clock_desc cd;
+ 	int err;
+diff --git a/kernel/time/posix-timers.c b/kernel/time/posix-timers.c
+index 80d59333c76e..640e30792413 100644
+--- a/kernel/time/posix-timers.c
++++ b/kernel/time/posix-timers.c
+@@ -209,7 +209,7 @@ static int posix_clock_realtime_set(const clockid_t which_clock,
+ }
+ 
+ static int posix_clock_realtime_adj(const clockid_t which_clock,
+-				    struct timex *t)
++				    struct __kernel_timex *t)
+ {
+ 	return do_adjtimex(t);
+ }
+@@ -1078,7 +1078,7 @@ SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
+ 		struct timex __user *, utx)
+ {
+ 	const struct k_clock *kc = clockid_to_kclock(which_clock);
+-	struct timex ktx;
++	struct __kernel_timex ktx;
+ 	int err;
+ 
+ 	if (!kc)
+diff --git a/kernel/time/posix-timers.h b/kernel/time/posix-timers.h
+index 151e28f5bf30..1d7238084dcd 100644
+--- a/kernel/time/posix-timers.h
++++ b/kernel/time/posix-timers.h
+@@ -8,7 +8,7 @@ struct k_clock {
+ 			     const struct timespec64 *tp);
+ 	int	(*clock_get)(const clockid_t which_clock,
+ 			     struct timespec64 *tp);
+-	int	(*clock_adj)(const clockid_t which_clock, struct timex *tx);
++	int	(*clock_adj)(const clockid_t which_clock, struct __kernel_timex *tx);
+ 	int	(*timer_create)(struct k_itimer *timer);
+ 	int	(*nsleep)(const clockid_t which_clock, int flags,
+ 			  const struct timespec64 *);
+diff --git a/kernel/time/time.c b/kernel/time/time.c
+index c40cce820380..2c5afb008b14 100644
+--- a/kernel/time/time.c
++++ b/kernel/time/time.c
+@@ -265,24 +265,24 @@ COMPAT_SYSCALL_DEFINE2(settimeofday, struct compat_timeval __user *, tv,
+ 
+ SYSCALL_DEFINE1(adjtimex, struct timex __user *, txc_p)
+ {
+-	struct timex txc;		/* Local copy of parameter */
++	struct __kernel_timex txc;		/* Local copy of parameter */
+ 	int ret;
+ 
+ 	/* Copy the user data space into the kernel copy
+ 	 * structure. But bear in mind that the structures
+ 	 * may change
+ 	 */
+-	if (copy_from_user(&txc, txc_p, sizeof(struct timex)))
++	if (copy_from_user(&txc, txc_p, sizeof(struct __kernel_timex)))
+ 		return -EFAULT;
+ 	ret = do_adjtimex(&txc);
+-	return copy_to_user(txc_p, &txc, sizeof(struct timex)) ? -EFAULT : ret;
++	return copy_to_user(txc_p, &txc, sizeof(struct __kernel_timex)) ? -EFAULT : ret;
+ }
+ 
+ #ifdef CONFIG_COMPAT
+ 
+ COMPAT_SYSCALL_DEFINE1(adjtimex, struct compat_timex __user *, utp)
+ {
+-	struct timex txc;
++	struct __kernel_timex txc;
+ 	int err, ret;
+ 
+ 	err = compat_get_timex(&txc, utp);
+@@ -979,11 +979,11 @@ int put_compat_itimerspec64(const struct itimerspec64 *its,
+ }
+ EXPORT_SYMBOL_GPL(put_compat_itimerspec64);
+ 
+-int compat_get_timex(struct timex *txc, const struct compat_timex __user *utp)
++int compat_get_timex(struct __kernel_timex *txc, const struct compat_timex __user *utp)
+ {
+ 	struct compat_timex tx32;
+ 
+-	memset(txc, 0, sizeof(struct timex));
++	memset(txc, 0, sizeof(struct __kernel_timex));
+ 	if (copy_from_user(&tx32, utp, sizeof(struct compat_timex)))
+ 		return -EFAULT;
+ 
+@@ -1011,7 +1011,7 @@ int compat_get_timex(struct timex *txc, const struct compat_timex __user *utp)
+ 	return 0;
+ }
+ 
+-int compat_put_timex(struct compat_timex __user *utp, const struct timex *txc)
++int compat_put_timex(struct compat_timex __user *utp, const struct __kernel_timex *txc)
+ {
+ 	struct compat_timex tx32;
+ 
+diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+index 77c436a0070b..9bb7e977f50e 100644
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -2220,7 +2220,7 @@ ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, ktime_t *offs_real,
+ /**
+  * timekeeping_validate_timex - Ensures the timex is ok for use in do_adjtimex
+  */
+-static int timekeeping_validate_timex(struct timex *txc)
++static int timekeeping_validate_timex(struct __kernel_timex *txc)
+ {
+ 	if (txc->modes & ADJ_ADJTIME) {
+ 		/* singleshot must not be used with any other mode bits */
+@@ -2286,7 +2286,7 @@ static int timekeeping_validate_timex(struct timex *txc)
+ /**
+  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
+  */
+-int do_adjtimex(struct timex *txc)
++int do_adjtimex(struct __kernel_timex *txc)
+ {
+ 	struct timekeeper *tk = &tk_core.timekeeper;
+ 	unsigned long flags;
+-- 
+2.17.1
+
