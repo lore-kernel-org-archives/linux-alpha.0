@@ -1,360 +1,426 @@
-From: Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: [PATCH 5/6] timex: use __kernel_timex internally
-Date: Mon,  2 Jul 2018 22:44:21 -0700
-Message-ID: <20180703054422.12089-6-deepa.kernel@gmail.com>
-References: <20180703054422.12089-1-deepa.kernel@gmail.com>
+From: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Subject: Re: [PATCH v2] alpha: switch to NO_BOOTMEM
+Date: Wed, 4 Jul 2018 15:44:47 +0300
+Message-ID: <20180704124446.GF4352@rapoport-lnx>
+References: <1530371610-22174-1-git-send-email-rppt@linux.vnet.ibm.com>
+Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=w+g1iU+CIWgujU5j2TxFuDt2uX8T8R+zbKplAuuZA98=;
-        b=To4ey5BxP+WolZpeXWA4IrOyQr+i3hCb117Xp9JVRazTQ7xT4JMUPPo0G6IICanCxb
-         x/hQp6EO1kQAQjiDJ3YY8JxOtrrWe3sct4VkFZ+wvwvC8Q0XPnc0Qw6ocDgwfnWSXXWy
-         4cOs2Rm4GUBKI+B5p0ntbasr8fA3eO2c6pRlkIqQ979Pw5ENHVtqxiTfsKwRYyNwsPva
-         f92ApNcI+4bmp5Tzs+flwaHiKvPtcCXyRsq4Wpelxo8rhDgJNzlM95lKVEb5z1r8jwV1
-         t6fC5bUO3IBOI5FUfXmQanWTlgz+BnW5PT4imAU2CXeOaS2NXbeMCULwxbct87woSI2v
-         cVhg==
-In-Reply-To: <20180703054422.12089-1-deepa.kernel@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1530371610-22174-1-git-send-email-rppt@linux.vnet.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: tglx@linutronix.de, linux-kernel@vger.kernel.org
-Cc: arnd@arndb.de, y2038@lists.linaro.org, linux-alpha@vger.kernel.org, netdev@vger.kernel.org
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Michal Hocko <mhocko@kernel.org>, linux-alpha <linux-alpha@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, lkml <linux-kernel@vger.kernel.org>
 
-struct timex is not y2038 safe.
-Replace all uses of timex with y2038 safe __kernel_timex.
+Any comments on this?
 
-Note that struct __kernel_timex is an ABI interface definition.
-We could define a new structure based on __kernel_timex that
-is only available internally instead. Right now, there isn't
-a strong motivation for this as the structure is isolated to
-a few defined struct timex interfaces and such a structure would
-be exactly the same as struct timex.
+On Sat, Jun 30, 2018 at 06:13:30PM +0300, Mike Rapoport wrote:
+> Replace bootmem allocator with memblock and enable use of NO_BOOTMEM like
+> on most other architectures.
+> 
+> Alpha gets the description of the physical memory from the firmware as an
+> array of memory clusters. Each cluster that is not reserved by the firmware
+> is added to memblock.memory.
+> 
+> Once the memblock.memory is set up, we reserve the kernel and initrd pages
+> with memblock reserve.
+> 
+> Since we don't need the bootmem bitmap anymore, the code that finds an
+> appropriate place is removed.
+> 
+> The conversion does not take care of NUMA support which is marked broken
+> for more than 10 years now.
+> 
+> Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
+> ---
+> v2: describe the conversion as per Michal's request
+> 
+> Tested with qemu-system-alpha. I've added some tweaks to sys_dp264 to force
+> memory split for testing with CONFIG_DISCONTIGMEM=y
+> 
+> The allyesconfig build requires update to DEFERRED_STRUCT_PAGE_INIT
+> dependencies [1] which is already in -mm tree.
+> 
+> [1] https://lkml.org/lkml/2018/6/29/353
+> 
+>  arch/alpha/Kconfig                |   2 +
+>  arch/alpha/kernel/core_irongate.c |   4 +-
+>  arch/alpha/kernel/setup.c         |  98 ++++-----------------------------
+>  arch/alpha/mm/numa.c              | 113 +++++---------------------------------
+>  4 files changed, 29 insertions(+), 188 deletions(-)
+> 
+> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+> index 04a4a138ed13..040692a8d433 100644
+> --- a/arch/alpha/Kconfig
+> +++ b/arch/alpha/Kconfig
+> @@ -30,6 +30,8 @@ config ALPHA
+>  	select ODD_RT_SIGACTION
+>  	select OLD_SIGSUSPEND
+>  	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
+> +	select HAVE_MEMBLOCK
+> +	select NO_BOOTMEM
+>  	help
+>  	  The Alpha is a 64-bit general-purpose processor designed and
+>  	  marketed by the Digital Equipment Corporation of blessed memory,
+> diff --git a/arch/alpha/kernel/core_irongate.c b/arch/alpha/kernel/core_irongate.c
+> index aec757250e07..f70986683fc6 100644
+> --- a/arch/alpha/kernel/core_irongate.c
+> +++ b/arch/alpha/kernel/core_irongate.c
+> @@ -21,6 +21,7 @@
+>  #include <linux/init.h>
+>  #include <linux/initrd.h>
+>  #include <linux/bootmem.h>
+> +#include <linux/memblock.h>
+> 
+>  #include <asm/ptrace.h>
+>  #include <asm/cacheflush.h>
+> @@ -241,8 +242,7 @@ albacore_init_arch(void)
+>  				       size / 1024);
+>  		}
+>  #endif
+> -		reserve_bootmem_node(NODE_DATA(0), pci_mem, memtop -
+> -				pci_mem, BOOTMEM_DEFAULT);
+> +		memblock_reserve(pci_mem, memtop - pci_mem);
+>  		printk("irongate_init_arch: temporarily reserving "
+>  			"region %08lx-%08lx for PCI\n", pci_mem, memtop - 1);
+>  	}
+> diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+> index 5576f7646fb6..4f0d94471bc9 100644
+> --- a/arch/alpha/kernel/setup.c
+> +++ b/arch/alpha/kernel/setup.c
+> @@ -30,6 +30,7 @@
+>  #include <linux/ioport.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/bootmem.h>
+> +#include <linux/memblock.h>
+>  #include <linux/pci.h>
+>  #include <linux/seq_file.h>
+>  #include <linux/root_dev.h>
+> @@ -312,9 +313,7 @@ setup_memory(void *kernel_end)
+>  {
+>  	struct memclust_struct * cluster;
+>  	struct memdesc_struct * memdesc;
+> -	unsigned long start_kernel_pfn, end_kernel_pfn;
+> -	unsigned long bootmap_size, bootmap_pages, bootmap_start;
+> -	unsigned long start, end;
+> +	unsigned long kernel_size;
+>  	unsigned long i;
+> 
+>  	/* Find free clusters, and init and free the bootmem accordingly.  */
+> @@ -322,6 +321,8 @@ setup_memory(void *kernel_end)
+>  	  (hwrpb->mddt_offset + (unsigned long) hwrpb);
+> 
+>  	for_each_mem_cluster(memdesc, cluster, i) {
+> +		unsigned long end;
+> +
+>  		printk("memcluster %lu, usage %01lx, start %8lu, end %8lu\n",
+>  		       i, cluster->usage, cluster->start_pfn,
+>  		       cluster->start_pfn + cluster->numpages);
+> @@ -335,6 +336,9 @@ setup_memory(void *kernel_end)
+>  		end = cluster->start_pfn + cluster->numpages;
+>  		if (end > max_low_pfn)
+>  			max_low_pfn = end;
+> +
+> +		memblock_add(PFN_PHYS(cluster->start_pfn),
+> +			     cluster->numpages << PAGE_SHIFT);
+>  	}
+> 
+>  	/*
+> @@ -363,87 +367,9 @@ setup_memory(void *kernel_end)
+>  		max_low_pfn = mem_size_limit;
+>  	}
+> 
+> -	/* Find the bounds of kernel memory.  */
+> -	start_kernel_pfn = PFN_DOWN(KERNEL_START_PHYS);
+> -	end_kernel_pfn = PFN_UP(virt_to_phys(kernel_end));
+> -	bootmap_start = -1;
+> -
+> - try_again:
+> -	if (max_low_pfn <= end_kernel_pfn)
+> -		panic("not enough memory to boot");
+> -
+> -	/* We need to know how many physically contiguous pages
+> -	   we'll need for the bootmap.  */
+> -	bootmap_pages = bootmem_bootmap_pages(max_low_pfn);
+> -
+> -	/* Now find a good region where to allocate the bootmap.  */
+> -	for_each_mem_cluster(memdesc, cluster, i) {
+> -		if (cluster->usage & 3)
+> -			continue;
+> -
+> -		start = cluster->start_pfn;
+> -		end = start + cluster->numpages;
+> -		if (start >= max_low_pfn)
+> -			continue;
+> -		if (end > max_low_pfn)
+> -			end = max_low_pfn;
+> -		if (start < start_kernel_pfn) {
+> -			if (end > end_kernel_pfn
+> -			    && end - end_kernel_pfn >= bootmap_pages) {
+> -				bootmap_start = end_kernel_pfn;
+> -				break;
+> -			} else if (end > start_kernel_pfn)
+> -				end = start_kernel_pfn;
+> -		} else if (start < end_kernel_pfn)
+> -			start = end_kernel_pfn;
+> -		if (end - start >= bootmap_pages) {
+> -			bootmap_start = start;
+> -			break;
+> -		}
+> -	}
+> -
+> -	if (bootmap_start == ~0UL) {
+> -		max_low_pfn >>= 1;
+> -		goto try_again;
+> -	}
+> -
+> -	/* Allocate the bootmap and mark the whole MM as reserved.  */
+> -	bootmap_size = init_bootmem(bootmap_start, max_low_pfn);
+> -
+> -	/* Mark the free regions.  */
+> -	for_each_mem_cluster(memdesc, cluster, i) {
+> -		if (cluster->usage & 3)
+> -			continue;
+> -
+> -		start = cluster->start_pfn;
+> -		end = cluster->start_pfn + cluster->numpages;
+> -		if (start >= max_low_pfn)
+> -			continue;
+> -		if (end > max_low_pfn)
+> -			end = max_low_pfn;
+> -		if (start < start_kernel_pfn) {
+> -			if (end > end_kernel_pfn) {
+> -				free_bootmem(PFN_PHYS(start),
+> -					     (PFN_PHYS(start_kernel_pfn)
+> -					      - PFN_PHYS(start)));
+> -				printk("freeing pages %ld:%ld\n",
+> -				       start, start_kernel_pfn);
+> -				start = end_kernel_pfn;
+> -			} else if (end > start_kernel_pfn)
+> -				end = start_kernel_pfn;
+> -		} else if (start < end_kernel_pfn)
+> -			start = end_kernel_pfn;
+> -		if (start >= end)
+> -			continue;
+> -
+> -		free_bootmem(PFN_PHYS(start), PFN_PHYS(end) - PFN_PHYS(start));
+> -		printk("freeing pages %ld:%ld\n", start, end);
+> -	}
+> -
+> -	/* Reserve the bootmap memory.  */
+> -	reserve_bootmem(PFN_PHYS(bootmap_start), bootmap_size,
+> -			BOOTMEM_DEFAULT);
+> -	printk("reserving pages %ld:%ld\n", bootmap_start, bootmap_start+PFN_UP(bootmap_size));
+> +	/* Reserve the kernel memory. */
+> +	kernel_size = virt_to_phys(kernel_end) - KERNEL_START_PHYS;
+> +	memblock_reserve(KERNEL_START_PHYS, kernel_size);
+> 
+>  #ifdef CONFIG_BLK_DEV_INITRD
+>  	initrd_start = INITRD_START;
+> @@ -459,8 +385,8 @@ setup_memory(void *kernel_end)
+>  				       initrd_end,
+>  				       phys_to_virt(PFN_PHYS(max_low_pfn)));
+>  		} else {
+> -			reserve_bootmem(virt_to_phys((void *)initrd_start),
+> -					INITRD_SIZE, BOOTMEM_DEFAULT);
+> +			memblock_reserve(virt_to_phys((void *)initrd_start),
+> +					INITRD_SIZE);
+>  		}
+>  	}
+>  #endif /* CONFIG_BLK_DEV_INITRD */
+> diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
+> index a9e86475f169..26cd925d19b1 100644
+> --- a/arch/alpha/mm/numa.c
+> +++ b/arch/alpha/mm/numa.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/kernel.h>
+>  #include <linux/mm.h>
+>  #include <linux/bootmem.h>
+> +#include <linux/memblock.h>
+>  #include <linux/swap.h>
+>  #include <linux/initrd.h>
+>  #include <linux/pfn.h>
+> @@ -59,12 +60,10 @@ setup_memory_node(int nid, void *kernel_end)
+>  	struct memclust_struct * cluster;
+>  	struct memdesc_struct * memdesc;
+>  	unsigned long start_kernel_pfn, end_kernel_pfn;
+> -	unsigned long bootmap_size, bootmap_pages, bootmap_start;
+>  	unsigned long start, end;
+>  	unsigned long node_pfn_start, node_pfn_end;
+>  	unsigned long node_min_pfn, node_max_pfn;
+>  	int i;
+> -	unsigned long node_datasz = PFN_UP(sizeof(pg_data_t));
+>  	int show_init = 0;
+> 
+>  	/* Find the bounds of current node */
+> @@ -134,24 +133,14 @@ setup_memory_node(int nid, void *kernel_end)
+>  	/* Cute trick to make sure our local node data is on local memory */
+>  	node_data[nid] = (pg_data_t *)(__va(node_min_pfn << PAGE_SHIFT));
+>  #endif
+> -	/* Quasi-mark the pg_data_t as in-use */
+> -	node_min_pfn += node_datasz;
+> -	if (node_min_pfn >= node_max_pfn) {
+> -		printk(" not enough mem to reserve NODE_DATA");
+> -		return;
+> -	}
+> -	NODE_DATA(nid)->bdata = &bootmem_node_data[nid];
+> -
+>  	printk(" Detected node memory:   start %8lu, end %8lu\n",
+>  	       node_min_pfn, node_max_pfn);
+> 
+>  	DBGDCONT(" DISCONTIG: node_data[%d]   is at 0x%p\n", nid, NODE_DATA(nid));
+> -	DBGDCONT(" DISCONTIG: NODE_DATA(%d)->bdata is at 0x%p\n", nid, NODE_DATA(nid)->bdata);
+> 
+>  	/* Find the bounds of kernel memory.  */
+>  	start_kernel_pfn = PFN_DOWN(KERNEL_START_PHYS);
+>  	end_kernel_pfn = PFN_UP(virt_to_phys(kernel_end));
+> -	bootmap_start = -1;
+> 
+>  	if (!nid && (node_max_pfn < end_kernel_pfn || node_min_pfn > start_kernel_pfn))
+>  		panic("kernel loaded out of ram");
+> @@ -161,89 +150,11 @@ setup_memory_node(int nid, void *kernel_end)
+>  	   has much larger alignment than 8Mb, so it's safe. */
+>  	node_min_pfn &= ~((1UL << (MAX_ORDER-1))-1);
+> 
+> -	/* We need to know how many physically contiguous pages
+> -	   we'll need for the bootmap.  */
+> -	bootmap_pages = bootmem_bootmap_pages(node_max_pfn-node_min_pfn);
+> -
+> -	/* Now find a good region where to allocate the bootmap.  */
+> -	for_each_mem_cluster(memdesc, cluster, i) {
+> -		if (cluster->usage & 3)
+> -			continue;
+> -
+> -		start = cluster->start_pfn;
+> -		end = start + cluster->numpages;
+> -
+> -		if (start >= node_max_pfn || end <= node_min_pfn)
+> -			continue;
+> -
+> -		if (end > node_max_pfn)
+> -			end = node_max_pfn;
+> -		if (start < node_min_pfn)
+> -			start = node_min_pfn;
+> -
+> -		if (start < start_kernel_pfn) {
+> -			if (end > end_kernel_pfn
+> -			    && end - end_kernel_pfn >= bootmap_pages) {
+> -				bootmap_start = end_kernel_pfn;
+> -				break;
+> -			} else if (end > start_kernel_pfn)
+> -				end = start_kernel_pfn;
+> -		} else if (start < end_kernel_pfn)
+> -			start = end_kernel_pfn;
+> -		if (end - start >= bootmap_pages) {
+> -			bootmap_start = start;
+> -			break;
+> -		}
+> -	}
+> -
+> -	if (bootmap_start == -1)
+> -		panic("couldn't find a contiguous place for the bootmap");
+> -
+> -	/* Allocate the bootmap and mark the whole MM as reserved.  */
+> -	bootmap_size = init_bootmem_node(NODE_DATA(nid), bootmap_start,
+> -					 node_min_pfn, node_max_pfn);
+> -	DBGDCONT(" bootmap_start %lu, bootmap_size %lu, bootmap_pages %lu\n",
+> -		 bootmap_start, bootmap_size, bootmap_pages);
+> +	memblock_add(PFN_PHYS(node_min_pfn),
+> +		     (node_max_pfn - node_min_pfn) << PAGE_SHIFT);
+> 
+> -	/* Mark the free regions.  */
+> -	for_each_mem_cluster(memdesc, cluster, i) {
+> -		if (cluster->usage & 3)
+> -			continue;
+> -
+> -		start = cluster->start_pfn;
+> -		end = cluster->start_pfn + cluster->numpages;
+> -
+> -		if (start >= node_max_pfn || end <= node_min_pfn)
+> -			continue;
+> -
+> -		if (end > node_max_pfn)
+> -			end = node_max_pfn;
+> -		if (start < node_min_pfn)
+> -			start = node_min_pfn;
+> -
+> -		if (start < start_kernel_pfn) {
+> -			if (end > end_kernel_pfn) {
+> -				free_bootmem_node(NODE_DATA(nid), PFN_PHYS(start),
+> -					     (PFN_PHYS(start_kernel_pfn)
+> -					      - PFN_PHYS(start)));
+> -				printk(" freeing pages %ld:%ld\n",
+> -				       start, start_kernel_pfn);
+> -				start = end_kernel_pfn;
+> -			} else if (end > start_kernel_pfn)
+> -				end = start_kernel_pfn;
+> -		} else if (start < end_kernel_pfn)
+> -			start = end_kernel_pfn;
+> -		if (start >= end)
+> -			continue;
+> -
+> -		free_bootmem_node(NODE_DATA(nid), PFN_PHYS(start), PFN_PHYS(end) - PFN_PHYS(start));
+> -		printk(" freeing pages %ld:%ld\n", start, end);
+> -	}
+> -
+> -	/* Reserve the bootmap memory.  */
+> -	reserve_bootmem_node(NODE_DATA(nid), PFN_PHYS(bootmap_start),
+> -			bootmap_size, BOOTMEM_DEFAULT);
+> -	printk(" reserving pages %ld:%ld\n", bootmap_start, bootmap_start+PFN_UP(bootmap_size));
+> +	NODE_DATA(nid)->node_start_pfn = node_min_pfn;
+> +	NODE_DATA(nid)->node_present_pages = node_max_pfn - node_min_pfn;
+> 
+>  	node_set_online(nid);
+>  }
+> @@ -251,6 +162,7 @@ setup_memory_node(int nid, void *kernel_end)
+>  void __init
+>  setup_memory(void *kernel_end)
+>  {
+> +	unsigned long kernel_size;
+>  	int nid;
+> 
+>  	show_mem_layout();
+> @@ -262,6 +174,9 @@ setup_memory(void *kernel_end)
+>  	for (nid = 0; nid < MAX_NUMNODES; nid++)
+>  		setup_memory_node(nid, kernel_end);
+> 
+> +	kernel_size = virt_to_phys(kernel_end) - KERNEL_START_PHYS;
+> +	memblock_reserve(KERNEL_START_PHYS, kernel_size);
+> +
+>  #ifdef CONFIG_BLK_DEV_INITRD
+>  	initrd_start = INITRD_START;
+>  	if (initrd_start) {
+> @@ -279,9 +194,8 @@ setup_memory(void *kernel_end)
+>  				       phys_to_virt(PFN_PHYS(max_low_pfn)));
+>  		} else {
+>  			nid = kvaddr_to_nid(initrd_start);
+> -			reserve_bootmem_node(NODE_DATA(nid),
+> -					     virt_to_phys((void *)initrd_start),
+> -					     INITRD_SIZE, BOOTMEM_DEFAULT);
+> +			memblock_reserve(virt_to_phys((void *)initrd_start),
+> +					 INITRD_SIZE);
+>  		}
+>  	}
+>  #endif /* CONFIG_BLK_DEV_INITRD */
+> @@ -303,9 +217,8 @@ void __init paging_init(void)
+>  	dma_local_pfn = virt_to_phys((char *)MAX_DMA_ADDRESS) >> PAGE_SHIFT;
+> 
+>  	for_each_online_node(nid) {
+> -		bootmem_data_t *bdata = &bootmem_node_data[nid];
+> -		unsigned long start_pfn = bdata->node_min_pfn;
+> -		unsigned long end_pfn = bdata->node_low_pfn;
+> +		unsigned long start_pfn = NODE_DATA(nid)->node_start_pfn;
+> +		unsigned long end_pfn = start_pfn + NODE_DATA(nid)->node_present_pages;
+> 
+>  		if (dma_local_pfn >= end_pfn - start_pfn)
+>  			zones_size[ZONE_DMA] = end_pfn - start_pfn;
+> -- 
+> 2.7.4
+> 
 
-The patch was generated by the following coccinelle script:
-
-virtual patch
-
-@depends on patch forall@
-identifier ts;
-expression e;
-@@
-(
-- struct timex ts;
-+ struct __kernel_timex ts;
-|
-- struct timex ts = {};
-+ struct __kernel_timex ts = {};
-|
-- struct timex ts = e;
-+ struct __kernel_timex ts = e;
-|
-- struct timex *ts;
-+ struct __kernel_timex *ts;
-|
-(memset \| copy_from_user \| copy_to_user \)(...,
-- sizeof(struct timex))
-+ sizeof(struct __kernel_timex))
-)
-
-@depends on patch forall@
-identifier ts;
-identifier fn;
-@@
-fn(...,
-- struct timex *ts,
-+ struct __kernel_timex *ts,
-...) {
-...
-}
-
-@depends on patch forall@
-identifier ts;
-identifier fn;
-@@
-fn(...,
-- struct timex *ts) {
-+ struct __kernel_timex *ts) {
-...
-}
-
-Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: netdev@vger.kernel.org
----
- arch/alpha/kernel/osf_sys.c |  2 +-
- drivers/ptp/ptp_clock.c     |  2 +-
- include/linux/compat_time.h |  6 +++---
- include/linux/posix-clock.h |  2 +-
- include/linux/timex.h       |  2 +-
- kernel/time/ntp.c           | 12 +++++++-----
- kernel/time/ntp_internal.h  |  2 +-
- kernel/time/posix-clock.c   |  2 +-
- kernel/time/posix-timers.c  |  4 ++--
- kernel/time/posix-timers.h  |  2 +-
- kernel/time/time.c          | 14 +++++++-------
- kernel/time/timekeeping.c   |  4 ++--
- 12 files changed, 28 insertions(+), 26 deletions(-)
-
-diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index 6e921754c8fc..ec86e77d3055 100644
---- a/arch/alpha/kernel/osf_sys.c
-+++ b/arch/alpha/kernel/osf_sys.c
-@@ -1260,7 +1260,7 @@ struct timex32 {
- 
- SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
- {
--        struct timex txc;
-+	struct __kernel_timex txc;
- 	int ret;
- 
- 	/* copy relevant bits of struct timex. */
-diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-index 7eacc1c4b3b1..f2147e9dd3ca 100644
---- a/drivers/ptp/ptp_clock.c
-+++ b/drivers/ptp/ptp_clock.c
-@@ -121,7 +121,7 @@ static int ptp_clock_gettime(struct posix_clock *pc, struct timespec64 *tp)
- 	return err;
- }
- 
--static int ptp_clock_adjtime(struct posix_clock *pc, struct timex *tx)
-+static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
- {
- 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
- 	struct ptp_clock_info *ops;
-diff --git a/include/linux/compat_time.h b/include/linux/compat_time.h
-index f04454e1b863..25dbd59b3b43 100644
---- a/include/linux/compat_time.h
-+++ b/include/linux/compat_time.h
-@@ -59,8 +59,8 @@ extern int get_compat_itimerspec64(struct itimerspec64 *its,
- 			const struct compat_itimerspec __user *uits);
- extern int put_compat_itimerspec64(const struct itimerspec64 *its,
- 			struct compat_itimerspec __user *uits);
--struct timex;
--int compat_get_timex(struct timex *, const struct compat_timex __user *);
--int compat_put_timex(struct compat_timex __user *, const struct timex *);
-+struct __kernel_timex;
-+int compat_get_timex(struct __kernel_timex *, const struct compat_timex __user *);
-+int compat_put_timex(struct compat_timex __user *, const struct __kernel_timex *);
- 
- #endif /* _LINUX_COMPAT_TIME_H */
-diff --git a/include/linux/posix-clock.h b/include/linux/posix-clock.h
-index 3a3bc71017d5..18674d7d5b1c 100644
---- a/include/linux/posix-clock.h
-+++ b/include/linux/posix-clock.h
-@@ -51,7 +51,7 @@ struct posix_clock;
- struct posix_clock_operations {
- 	struct module *owner;
- 
--	int  (*clock_adjtime)(struct posix_clock *pc, struct timex *tx);
-+	int  (*clock_adjtime)(struct posix_clock *pc, struct __kernel_timex *tx);
- 
- 	int  (*clock_gettime)(struct posix_clock *pc, struct timespec64 *ts);
- 
-diff --git a/include/linux/timex.h b/include/linux/timex.h
-index 7f40e9e42ecc..cb894730463c 100644
---- a/include/linux/timex.h
-+++ b/include/linux/timex.h
-@@ -158,7 +158,7 @@ extern unsigned long tick_nsec;		/* SHIFTED_HZ period (nsec) */
- #define NTP_INTERVAL_FREQ  (HZ)
- #define NTP_INTERVAL_LENGTH (NSEC_PER_SEC/NTP_INTERVAL_FREQ)
- 
--extern int do_adjtimex(struct timex *);
-+extern int do_adjtimex(struct __kernel_timex *);
- extern void hardpps(const struct timespec64 *, const struct timespec64 *);
- 
- int read_current_timer(unsigned long *timer_val);
-diff --git a/kernel/time/ntp.c b/kernel/time/ntp.c
-index 10a79053e82f..7da9eb8adfd4 100644
---- a/kernel/time/ntp.c
-+++ b/kernel/time/ntp.c
-@@ -189,7 +189,7 @@ static inline int is_error_status(int status)
- 			&& (status & (STA_PPSWANDER|STA_PPSERROR)));
- }
- 
--static inline void pps_fill_timex(struct timex *txc)
-+static inline void pps_fill_timex(struct __kernel_timex *txc)
- {
- 	txc->ppsfreq	   = shift_right((pps_freq >> PPM_SCALE_INV_SHIFT) *
- 					 PPM_SCALE_INV, NTP_SCALE_SHIFT);
-@@ -221,7 +221,7 @@ static inline int is_error_status(int status)
- 	return status & (STA_UNSYNC|STA_CLOCKERR);
- }
- 
--static inline void pps_fill_timex(struct timex *txc)
-+static inline void pps_fill_timex(struct __kernel_timex *txc)
- {
- 	/* PPS is not implemented, so these are zero */
- 	txc->ppsfreq	   = 0;
-@@ -642,7 +642,8 @@ void ntp_notify_cmos_timer(void)
- /*
-  * Propagate a new txc->status value into the NTP state:
-  */
--static inline void process_adj_status(struct timex *txc, struct timespec64 *ts)
-+static inline void process_adj_status(struct __kernel_timex *txc,
-+				      struct timespec64 *ts)
- {
- 	if ((time_status & STA_PLL) && !(txc->status & STA_PLL)) {
- 		time_state = TIME_OK;
-@@ -665,7 +666,7 @@ static inline void process_adj_status(struct timex *txc, struct timespec64 *ts)
- }
- 
- 
--static inline void process_adjtimex_modes(struct timex *txc,
-+static inline void process_adjtimex_modes(struct __kernel_timex *txc,
- 						struct timespec64 *ts,
- 						s32 *time_tai)
- {
-@@ -718,7 +719,8 @@ static inline void process_adjtimex_modes(struct timex *txc,
-  * adjtimex mainly allows reading (and writing, if superuser) of
-  * kernel time-keeping variables. used by xntpd.
-  */
--int __do_adjtimex(struct timex *txc, struct timespec64 *ts, s32 *time_tai)
-+int __do_adjtimex(struct __kernel_timex *txc, struct timespec64 *ts,
-+		  s32 *time_tai)
- {
- 	int result;
- 
-diff --git a/kernel/time/ntp_internal.h b/kernel/time/ntp_internal.h
-index 909bd1f1bfb1..4386138bed32 100644
---- a/kernel/time/ntp_internal.h
-+++ b/kernel/time/ntp_internal.h
-@@ -8,6 +8,6 @@ extern void ntp_clear(void);
- extern u64 ntp_tick_length(void);
- extern ktime_t ntp_get_next_leap(void);
- extern int second_overflow(time64_t secs);
--extern int __do_adjtimex(struct timex *, struct timespec64 *, s32 *);
-+extern int __do_adjtimex(struct __kernel_timex *, struct timespec64 *, s32 *);
- extern void __hardpps(const struct timespec64 *, const struct timespec64 *);
- #endif /* _LINUX_NTP_INTERNAL_H */
-diff --git a/kernel/time/posix-clock.c b/kernel/time/posix-clock.c
-index fe56c4e06c51..a138642553cf 100644
---- a/kernel/time/posix-clock.c
-+++ b/kernel/time/posix-clock.c
-@@ -241,7 +241,7 @@ static void put_clock_desc(struct posix_clock_desc *cd)
- 	fput(cd->fp);
- }
- 
--static int pc_clock_adjtime(clockid_t id, struct timex *tx)
-+static int pc_clock_adjtime(clockid_t id, struct __kernel_timex *tx)
- {
- 	struct posix_clock_desc cd;
- 	int err;
-diff --git a/kernel/time/posix-timers.c b/kernel/time/posix-timers.c
-index 80d59333c76e..640e30792413 100644
---- a/kernel/time/posix-timers.c
-+++ b/kernel/time/posix-timers.c
-@@ -209,7 +209,7 @@ static int posix_clock_realtime_set(const clockid_t which_clock,
- }
- 
- static int posix_clock_realtime_adj(const clockid_t which_clock,
--				    struct timex *t)
-+				    struct __kernel_timex *t)
- {
- 	return do_adjtimex(t);
- }
-@@ -1078,7 +1078,7 @@ SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
- 		struct timex __user *, utx)
- {
- 	const struct k_clock *kc = clockid_to_kclock(which_clock);
--	struct timex ktx;
-+	struct __kernel_timex ktx;
- 	int err;
- 
- 	if (!kc)
-diff --git a/kernel/time/posix-timers.h b/kernel/time/posix-timers.h
-index 151e28f5bf30..1d7238084dcd 100644
---- a/kernel/time/posix-timers.h
-+++ b/kernel/time/posix-timers.h
-@@ -8,7 +8,7 @@ struct k_clock {
- 			     const struct timespec64 *tp);
- 	int	(*clock_get)(const clockid_t which_clock,
- 			     struct timespec64 *tp);
--	int	(*clock_adj)(const clockid_t which_clock, struct timex *tx);
-+	int	(*clock_adj)(const clockid_t which_clock, struct __kernel_timex *tx);
- 	int	(*timer_create)(struct k_itimer *timer);
- 	int	(*nsleep)(const clockid_t which_clock, int flags,
- 			  const struct timespec64 *);
-diff --git a/kernel/time/time.c b/kernel/time/time.c
-index c40cce820380..2c5afb008b14 100644
---- a/kernel/time/time.c
-+++ b/kernel/time/time.c
-@@ -265,24 +265,24 @@ COMPAT_SYSCALL_DEFINE2(settimeofday, struct compat_timeval __user *, tv,
- 
- SYSCALL_DEFINE1(adjtimex, struct timex __user *, txc_p)
- {
--	struct timex txc;		/* Local copy of parameter */
-+	struct __kernel_timex txc;		/* Local copy of parameter */
- 	int ret;
- 
- 	/* Copy the user data space into the kernel copy
- 	 * structure. But bear in mind that the structures
- 	 * may change
- 	 */
--	if (copy_from_user(&txc, txc_p, sizeof(struct timex)))
-+	if (copy_from_user(&txc, txc_p, sizeof(struct __kernel_timex)))
- 		return -EFAULT;
- 	ret = do_adjtimex(&txc);
--	return copy_to_user(txc_p, &txc, sizeof(struct timex)) ? -EFAULT : ret;
-+	return copy_to_user(txc_p, &txc, sizeof(struct __kernel_timex)) ? -EFAULT : ret;
- }
- 
- #ifdef CONFIG_COMPAT
- 
- COMPAT_SYSCALL_DEFINE1(adjtimex, struct compat_timex __user *, utp)
- {
--	struct timex txc;
-+	struct __kernel_timex txc;
- 	int err, ret;
- 
- 	err = compat_get_timex(&txc, utp);
-@@ -979,11 +979,11 @@ int put_compat_itimerspec64(const struct itimerspec64 *its,
- }
- EXPORT_SYMBOL_GPL(put_compat_itimerspec64);
- 
--int compat_get_timex(struct timex *txc, const struct compat_timex __user *utp)
-+int compat_get_timex(struct __kernel_timex *txc, const struct compat_timex __user *utp)
- {
- 	struct compat_timex tx32;
- 
--	memset(txc, 0, sizeof(struct timex));
-+	memset(txc, 0, sizeof(struct __kernel_timex));
- 	if (copy_from_user(&tx32, utp, sizeof(struct compat_timex)))
- 		return -EFAULT;
- 
-@@ -1011,7 +1011,7 @@ int compat_get_timex(struct timex *txc, const struct compat_timex __user *utp)
- 	return 0;
- }
- 
--int compat_put_timex(struct compat_timex __user *utp, const struct timex *txc)
-+int compat_put_timex(struct compat_timex __user *utp, const struct __kernel_timex *txc)
- {
- 	struct compat_timex tx32;
- 
-diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index 77c436a0070b..9bb7e977f50e 100644
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -2220,7 +2220,7 @@ ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, ktime_t *offs_real,
- /**
-  * timekeeping_validate_timex - Ensures the timex is ok for use in do_adjtimex
-  */
--static int timekeeping_validate_timex(struct timex *txc)
-+static int timekeeping_validate_timex(struct __kernel_timex *txc)
- {
- 	if (txc->modes & ADJ_ADJTIME) {
- 		/* singleshot must not be used with any other mode bits */
-@@ -2286,7 +2286,7 @@ static int timekeeping_validate_timex(struct timex *txc)
- /**
-  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
-  */
--int do_adjtimex(struct timex *txc)
-+int do_adjtimex(struct __kernel_timex *txc)
- {
- 	struct timekeeper *tk = &tk_core.timekeeper;
- 	unsigned long flags;
 -- 
-2.17.1
+Sincerely yours,
+Mike.
 
