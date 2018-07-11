@@ -1,37 +1,81 @@
-From: Richard Henderson <rth@twiddle.net>
-Subject: Re: [PATCH v3 6/7] timex: use __kernel_timex internally
-Date: Sat, 7 Jul 2018 07:23:15 -0700
-Message-ID: <f47f0a96-9d47-944c-8054-697db7bd6eb0@twiddle.net>
-References: <20180707054247.19802-1-deepa.kernel@gmail.com>
- <20180707054247.19802-7-deepa.kernel@gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <y2038-bounces@lists.linaro.org>
-In-Reply-To: <20180707054247.19802-7-deepa.kernel@gmail.com>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/y2038/>
-List-Post: <mailto:y2038@lists.linaro.org>
-List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
-List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=subscribe>
-Errors-To: y2038-bounces@lists.linaro.org
-Sender: "Y2038" <y2038-bounces@lists.linaro.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 1/2] ia64: use asm-generic/io.h
+Date: Wed, 11 Jul 2018 14:08:05 +0200
+Message-ID: <20180711120824.3882108-1-arnd@arndb.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Deepa Dinamani <deepa.kernel@gmail.com>, tglx@linutronix.de, linux-kernel@vger.kernel.org
-Cc: y2038@lists.linaro.org, netdev@vger.kernel.org, arnd@arndb.de, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+Cc: Boris Brezillon <boris.brezillon@bootlin.com>, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
 
-T24gMDcvMDYvMjAxOCAxMDo0MiBQTSwgRGVlcGEgRGluYW1hbmkgd3JvdGU6Cj4gZGlmZiAtLWdp
-dCBhL2FyY2gvYWxwaGEva2VybmVsL29zZl9zeXMuYyBiL2FyY2gvYWxwaGEva2VybmVsL29zZl9z
-eXMuYwo+IGluZGV4IDZlOTIxNzU0YzhmYy4uZWM4NmU3N2QzMDU1IDEwMDY0NAo+IC0tLSBhL2Fy
-Y2gvYWxwaGEva2VybmVsL29zZl9zeXMuYwo+ICsrKyBiL2FyY2gvYWxwaGEva2VybmVsL29zZl9z
-eXMuYwo+IEBAIC0xMjYwLDcgKzEyNjAsNyBAQCBzdHJ1Y3QgdGltZXgzMiB7Cj4gIAo+ICBTWVND
-QUxMX0RFRklORTEob2xkX2FkanRpbWV4LCBzdHJ1Y3QgdGltZXgzMiBfX3VzZXIgKiwgdHhjX3Ap
-Cj4gIHsKPiAtICAgICAgICBzdHJ1Y3QgdGltZXggdHhjOwo+ICsJc3RydWN0IF9fa2VybmVsX3Rp
-bWV4IHR4YzsKPiAgCWludCByZXQ7Cj4gIAo+ICAJLyogY29weSByZWxldmFudCBiaXRzIG9mIHN0
-cnVjdCB0aW1leC4gKi8KCkFja2VkLWJ5OiBSaWNoYXJkIEhlbmRlcnNvbiA8cnRoQHR3aWRkbGUu
-bmV0PgoKCnJ+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-ClkyMDM4IG1haWxpbmcgbGlzdApZMjAzOEBsaXN0cy5saW5hcm8ub3JnCmh0dHBzOi8vbGlzdHMu
-bGluYXJvLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3kyMDM4Cg==
+asm-generic/io.h provides a generic implementation of all I/O accessors,
+which the architectures can override.
+
+Since ia64 does not provide readsl/writesl etc, any driver using those
+fails to build, and including asm-generic/io.h will provide the
+missing interfaces, as well as any other future interfaces that get
+added there. We need to #define a couple of symbols to themselves
+in the ia64 to ensure that we use the ia64 specific version of those
+rather than the generic one.
+
+There should be no other effect than adding {read,write}s{b,w,l}()
+as well as {in,out}s{b,w,l}_p(), which were also not provided
+by ia64 but are provided by the generic header for historic reasons.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/ia64/include/asm/io.h | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/arch/ia64/include/asm/io.h b/arch/ia64/include/asm/io.h
+index fb0651961e2c..6f952171abf9 100644
+--- a/arch/ia64/include/asm/io.h
++++ b/arch/ia64/include/asm/io.h
+@@ -83,12 +83,14 @@ virt_to_phys (volatile void *address)
+ {
+ 	return (unsigned long) address - PAGE_OFFSET;
+ }
++#define virt_to_phys virt_to_phys
+ 
+ static inline void*
+ phys_to_virt (unsigned long address)
+ {
+ 	return (void *) (address + PAGE_OFFSET);
+ }
++#define phys_to_virt phys_to_virt
+ 
+ #define ARCH_HAS_VALID_PHYS_ADDR_RANGE
+ extern u64 kern_mem_attribute (unsigned long phys_addr, unsigned long size);
+@@ -433,9 +435,11 @@ static inline void __iomem * ioremap_cache (unsigned long phys_addr, unsigned lo
+ {
+ 	return ioremap(phys_addr, size);
+ }
++#define ioremap ioremap
++#define ioremap_nocache ioremap_nocache
+ #define ioremap_cache ioremap_cache
+ #define ioremap_uc ioremap_nocache
+-
++#define iounmap iounmap
+ 
+ /*
+  * String version of IO memory access ops:
+@@ -444,6 +448,13 @@ extern void memcpy_fromio(void *dst, const volatile void __iomem *src, long n);
+ extern void memcpy_toio(volatile void __iomem *dst, const void *src, long n);
+ extern void memset_io(volatile void __iomem *s, int c, long n);
+ 
++#define memcpy_fromio memcpy_fromio
++#define memcpy_toio memcpy_toio
++#define memset_io memset_io
++#define xlate_dev_kmem_ptr xlate_dev_kmem_ptr
++#define xlate_dev_mem_ptr xlate_dev_mem_ptr
++#include <asm-generic/io.h>
++
+ # endif /* __KERNEL__ */
+ 
+ #endif /* _ASM_IA64_IO_H */
+-- 
+2.9.0
+
