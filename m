@@ -1,37 +1,74 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v3 6/7] timex: use __kernel_timex internally
-Date: Thu, 12 Jul 2018 01:27:07 -0700
-Message-ID: <20180712082707.GC8802@infradead.org>
-References: <20180707054247.19802-1-deepa.kernel@gmail.com>
- <20180707054247.19802-7-deepa.kernel@gmail.com>
-Mime-Version: 1.0
+From: Firoz Khan <firoz.khan@linaro.org>
+Subject: [PATCH 0/6] System call table generation support
+Date: Mon, 16 Jul 2018 15:53:52 +0530
+Message-ID: <1531736638-15294-1-git-send-email-firoz.khan@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=A3p39y8aA3sVLeA7QmYGcOzlRAS9Lp/mO4/efZWr3Uo=; b=HEcihj15dahPicLcbGy+JKTYr
-        EyJ1NkXMYA53qq6/FqV2fmFW4sfayP/A6rWv5hEhTlEuUdkNpAFdVQ7+mmNlBFgY6owaBcyOiXSpR
-        AXEc0tHIRDWeKNs2ONI1+fLe89oYFg1T8Hl3bwdO+rtkcmaWLKg/r7j/CxHvQw1dfuhxfy8/3ZWqK
-        Uo86QvCiBUmVDeN4yhfLI2VmNtZWd4O1rHvhZE13koQX3gYkUOZpO/Rzip5JWmWUk92jF9Xj+AK6m
-        J8SmnSU0Uy3c9kF7mLsEX0xf9gr8OCJj1A+kWjkpssL30YyqkwyJT6O0Ry4oUdwi3rHiNI83BIiLm
-    
-Content-Disposition: inline
-In-Reply-To: <20180707054247.19802-7-deepa.kernel@gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=7zxb9x25D+o72PMUdhr2y2Hd7CM8FXJU04kdXZt7GfU=;
+        b=WRISZPDVsrgDrxXZKgjiB/6QmYOv5+m6lekAl5R8NBpDpeENQY0j5Ac7LvzWsMgc+R
+         UZiQuFiN502iIajjyhOPA4WP3mw9yHOsT22mfRYrYSm+7aA95Vn1HIjDkdnyNqHKEnG+
+         szNoe8KIWqOMXT3KFZ3LGjAI1j1R1Tb6qArmU=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Deepa Dinamani <deepa.kernel@gmail.com>
-Cc: tglx@linutronix.de, linux-kernel@vger.kernel.org, arnd@arndb.de, y2038@lists.linaro.org, linux-alpha@vger.kernel.org, netdev@vger.kernel.org
+To: linux-alpha@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Cc: y2038@lists.linaro.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, arnd@arndb.de, deepa.kernel@gmail.com, Firoz Khan <firoz.khan@linaro.org>
 
-On Fri, Jul 06, 2018 at 10:42:46PM -0700, Deepa Dinamani wrote:
-> struct timex is not y2038 safe.
-> Replace all uses of timex with y2038 safe __kernel_timex.
-> 
-> Note that struct __kernel_timex is an ABI interface definition.
+The goal of this patch series is to easily add/modify/delete a
+system call by changing entry in syscall.tbl file. No need
+to manually edit many files.
 
-If it actually is an ABI interface it should probably have a different
-name.
+The another goal of this patch series is to to unify the system
+call implementation across all the architectures. ARM, s390 and 
+x86 architecuture does have the similar support. I leverage their 
+implementation to come up with a generic solution.
+
+I have done the same support for work for ia64, m68k, microblaze, 
+mips, parisc, powerpc, sh, sparc, and xtensa. But I started sending 
+the patch for one architecuture for review. Below mentioned git
+repository contains more details.
+Git repo:- https://github.com/frzkhn/system_call_table_generator/
+
+Finally, this is the ground work for solving the Y2038 issue. We 
+need to change two dozen of system calls to solve Y2038 issue. So
+this implementation will help to easily modify from existing system
+call to Y2038 compatible system calls.
+
+Firoz Khan (6):
+  alpha: Move __IGNORE* entries to non uapi header
+  alpha: Add CONFIG_OSF4_COMPAT for compat syscall support
+  alpha: Unify the not-implemented system call entry name
+  alpha: Replace NR_SYSCALLS macro from asm/unistd.h
+  alpha: Add system call table generation support
+  alpha: uapi header and system call table file generation
+
+ arch/alpha/Makefile                      |   3 +
+ arch/alpha/include/asm/Kbuild            |   3 +-
+ arch/alpha/include/asm/unistd.h          |   7 +-
+ arch/alpha/include/uapi/asm/Kbuild       |   2 +
+ arch/alpha/include/uapi/asm/unistd.h     | 489 ---------------------------
+ arch/alpha/kernel/Makefile               |   2 +-
+ arch/alpha/kernel/entry.S                |   4 +-
+ arch/alpha/kernel/osf_sys.c              |   9 +-
+ arch/alpha/kernel/syscall.S              |  20 ++
+ arch/alpha/kernel/syscalls/Makefile      |  37 +++
+ arch/alpha/kernel/syscalls/syscall.tbl   | 450 +++++++++++++++++++++++++
+ arch/alpha/kernel/syscalls/syscallhdr.sh |  33 ++
+ arch/alpha/kernel/syscalls/syscalltbl.sh |  28 ++
+ arch/alpha/kernel/systbls.S              | 552 -------------------------------
+ 14 files changed, 589 insertions(+), 1050 deletions(-)
+ delete mode 100644 arch/alpha/include/uapi/asm/unistd.h
+ create mode 100644 arch/alpha/kernel/syscall.S
+ create mode 100644 arch/alpha/kernel/syscalls/Makefile
+ create mode 100644 arch/alpha/kernel/syscalls/syscall.tbl
+ create mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
+ create mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
+ delete mode 100644 arch/alpha/kernel/systbls.S
+
+-- 
+2.7.4
+
