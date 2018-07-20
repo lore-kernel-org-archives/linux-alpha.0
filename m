@@ -1,53 +1,105 @@
-From: Dave Chinner <david@fromorbit.com>
-Subject: Re: [PATCH] fs: don't let getdents return bogus names
-Date: Thu, 19 Jul 2018 10:50:00 +1000
-Message-ID: <20180719005000.GE19934@dastard>
-References: <20180716194843.252772-1-jannh@google.com>
- <20180716195657.GO30522@ZenIV.linux.org.uk>
+From: Boris Brezillon <boris.brezillon@bootlin.com>
+Subject: Re: [PATCH 2/2] sparc64: add reads{b,w,l}/writes{b,w,l}
+Date: Fri, 20 Jul 2018 10:23:39 +0200
+Message-ID: <20180720102339.22c9aa57@bbrezillon>
+References: <20180711120824.3882108-1-arnd@arndb.de>
+        <20180711120824.3882108-2-arnd@arndb.de>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180716195657.GO30522@ZenIV.linux.org.uk>
+In-Reply-To: <20180711120824.3882108-2-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Al Viro <viro@ZenIV.linux.org.uk>
-Cc: Jann Horn <jannh@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-fsdevel@vger.kernel.org, "Eric W. Biederman" <ebiederm@xmission.com>, Theodore Ts'o <tytso@mit.edu>, Andreas Dilger <adilger.kernel@dilger.ca>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: "David S. Miller" <davem@davemloft.net>, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>, "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>
 
-On Mon, Jul 16, 2018 at 08:56:57PM +0100, Al Viro wrote:
-> On Mon, Jul 16, 2018 at 09:48:43PM +0200, Jann Horn wrote:
-> > When you e.g. run `find` on a directory for which getdents returns
-> > "filenames" that contain slashes, `find` passes those "filenames" back to
-> > the kernel, which then interprets them as paths. That could conceivably
-> > cause userspace to do something bad when accessing something like an
-> > untrusted USB stick, but I'm not aware of any specific example.
-> > 
-> > Instead of returning bogus filenames to userspace, return -EUCLEAN.
++Miquel who's in charge of the NAND tree for this release
+
+On Wed, 11 Jul 2018 14:08:06 +0200
+Arnd Bergmann <arnd@arndb.de> wrote:
+
+> Some drivers need these for compile-testing. On most architectures
+> they come from asm-generic/io.h, but not on sparc64, which has its
+> own definitions.
 > 
-> Because there's such a lot of userland code that expect and handles that
-> error value...
+> Since we already have ioread*_rep()/iowrite*_rep() that have the
+> same behavior on sparc64 (i.e. all PCI I/O space is memory mapped),
+> we can rename the existing helpers and add macros to define them
+> to the same implementation.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-We've been using EUCLEAN ("structure needs cleaning") for indicating
-filesystem corruption errors for many years now. e.g.
+I tried to compile a sparc64 kernel with COMPILE_TEST=y plus the
+orion and s3c2410 NAND drivers enabled and it compiles fine (it does
+without this patch). So it seems to fix the compilation error reported
+by kbuild robots.
 
-fs/ext2/ext2.h:#define  EFSCORRUPTED                    EUCLEAN /* Filesystem is corrupted */
-fs/ext4/ext4.h:#define EFSCORRUPTED     EUCLEAN         /* Filesystem is corrupted */
-fs/hpfs/hpfs_fn.h:#define EFSERROR  EUCLEAN
-fs/xfs/xfs_linux.h:#define EFSCORRUPTED EUCLEAN         /* Filesystem is corrupted */
-include/linux/jbd2.h:#define EFSCORRUPTED       EUCLEAN         /* Filesystem is corrupted */
+Tested-by: Boris Brezillon <boris.brezillon@bootlin>
+(only compile-tested)
 
-There's hundreds of places in the filesystem code that this
-specific error is returned to userspace - there's more than 500
-individual places this error can be returned from just XFS....
+Dave gave his A-b, so, if everyone is okay with that, I'd like this
+patch to go trough the NAND tree.
 
-To me it seems like the right error to return if a dirent is
-corrupted, because that's exactly what XFS will return if any of the
-directory structure around the dirent name itself is corrupt...
+Thanks,
 
-Cheers,
+Boris
 
-Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+> ---
+>  arch/sparc/include/asm/io_64.h | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/sparc/include/asm/io_64.h b/arch/sparc/include/asm/io_64.h
+> index 9a1e9cbc7e6d..b162c23ae8c2 100644
+> --- a/arch/sparc/include/asm/io_64.h
+> +++ b/arch/sparc/include/asm/io_64.h
+> @@ -243,35 +243,42 @@ void insb(unsigned long, void *, unsigned long);
+>  void insw(unsigned long, void *, unsigned long);
+>  void insl(unsigned long, void *, unsigned long);
+>  
+> -static inline void ioread8_rep(void __iomem *port, void *buf, unsigned long count)
+> +static inline void readsb(void __iomem *port, void *buf, unsigned long count)
+>  {
+>  	insb((unsigned long __force)port, buf, count);
+>  }
+> -static inline void ioread16_rep(void __iomem *port, void *buf, unsigned long count)
+> +static inline void readsw(void __iomem *port, void *buf, unsigned long count)
+>  {
+>  	insw((unsigned long __force)port, buf, count);
+>  }
+>  
+> -static inline void ioread32_rep(void __iomem *port, void *buf, unsigned long count)
+> +static inline void readsl(void __iomem *port, void *buf, unsigned long count)
+>  {
+>  	insl((unsigned long __force)port, buf, count);
+>  }
+>  
+> -static inline void iowrite8_rep(void __iomem *port, const void *buf, unsigned long count)
+> +static inline void writesb(void __iomem *port, const void *buf, unsigned long count)
+>  {
+>  	outsb((unsigned long __force)port, buf, count);
+>  }
+>  
+> -static inline void iowrite16_rep(void __iomem *port, const void *buf, unsigned long count)
+> +static inline void writesw(void __iomem *port, const void *buf, unsigned long count)
+>  {
+>  	outsw((unsigned long __force)port, buf, count);
+>  }
+>  
+> -static inline void iowrite32_rep(void __iomem *port, const void *buf, unsigned long count)
+> +static inline void writesl(void __iomem *port, const void *buf, unsigned long count)
+>  {
+>  	outsl((unsigned long __force)port, buf, count);
+>  }
+>  
+> +#define ioread8_rep(p,d,l)	readsb(p,d,l)
+> +#define ioread16_rep(p,d,l)	readsw(p,d,l)
+> +#define ioread32_rep(p,d,l)	readsl(p,d,l)
+> +#define iowrite8_rep(p,d,l)	writesb(p,d,l)
+> +#define iowrite16_rep(p,d,l)	writesw(p,d,l)
+> +#define iowrite32_rep(p,d,l)	writesl(p,d,l)
+> +
+>  /* Valid I/O Space regions are anywhere, because each PCI bus supported
+>   * can live in an arbitrary area of the physical address range.
+>   */
+
