@@ -1,40 +1,48 @@
-From: Al Viro <viro@ZenIV.linux.org.uk>
-Subject: [PATCH] fix osf_wait4() breakage
-Date: Sun, 22 Jul 2018 15:07:11 +0100
-Message-ID: <20180722140711.GF30522@ZenIV.linux.org.uk>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH] fix osf_wait4() breakage
+Date: Sun, 22 Jul 2018 11:45:29 -0700
+Message-ID: <CA+55aFxyagGA=3XqqVhw8XAKG90Z+EWKYA=DSVkQKzmHsO+6cQ@mail.gmail.com>
+References: <20180722140711.GF30522@ZenIV.linux.org.uk>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2zIYqof/wyWEfb8OugjakOp1sks1FLuEozB2G3y4u6E=;
+        b=TW5EyYmeT+IL+U+Fn+e+fjq3Rf8PyCuamzLiGyalo0y31ztqzbs3c16ItoHAYDBBi8
+         6nu1UG9agzvkmb1z4i2NTiEDf8323284SWqXGbJwx1D5gRX+iCH1z6JIO0I9/FF8qWct
+         +Fi73CfeEFUU3domicuO+Ogu6RCm5eO4gQThY=
+In-Reply-To: <20180722140711.GF30522@ZenIV.linux.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-kernel_wait4() expects a userland address for status - it's only
-rusage that goes as a kernel one (and needs a copyout afterwards)
+Applied.
 
-Fixes: "osf_wait4: switch to kernel_wait4()"
-Cc: stable@vger.kernel.org # v4.12+
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
----
-diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index 6e921754c8fc..c210a25dd6da 100644
---- a/arch/alpha/kernel/osf_sys.c
-+++ b/arch/alpha/kernel/osf_sys.c
-@@ -1180,13 +1180,10 @@ SYSCALL_DEFINE2(osf_getrusage, int, who, struct rusage32 __user *, ru)
- SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
- 		struct rusage32 __user *, ur)
- {
--	unsigned int status = 0;
- 	struct rusage r;
--	long err = kernel_wait4(pid, &status, options, &r);
-+	long err = kernel_wait4(pid, ustatus, options, &r);
- 	if (err <= 0)
- 		return err;
--	if (put_user(status, ustatus))
--		return -EFAULT;
- 	if (!ur)
- 		return err;
- 	if (put_tv_to_tv32(&ur->ru_utime, &r.ru_utime))
+Just a note:
+
+On Sun, Jul 22, 2018 at 7:07 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+> Fixes: "osf_wait4: switch to kernel_wait4()"
+
+Please put the actual commit ID there too, because that's what people
+with automation check.
+
+> Cc: stable@vger.kernel.org # v4.12+
+
+.. and when you do that, you'll see that it wasn't actually in 4.12,
+but got merged during the 4.13 merge window:
+
+    $ git name-rev 92ebce5ac55d
+    92ebce5ac55d tags/v4.13-rc1~154^2
+
+(unless it was backported, but I don't think it was).
+
+Also, the prototype for kernel_wait4() (in <linux/sched/task.h>) is
+wrong, and doesn't have the __user annotation.
+
+                Linus
