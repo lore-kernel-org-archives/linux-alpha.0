@@ -1,71 +1,110 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 1/6] alpha: Move __IGNORE* entries to non uapi
-	header
-Date: Sun, 12 Aug 2018 00:27:23 +0200
-Message-ID: <CAK8P3a1mfnM6qTuxAqJ3_cUv4bZHNScS+VTytyU9oqmo00r7Kg@mail.gmail.com>
-References: <1531736638-15294-1-git-send-email-firoz.khan@linaro.org>
- <1531736638-15294-2-git-send-email-firoz.khan@linaro.org>
- <20180811192804.GI6515@ZenIV.linux.org.uk>
- <20180811205901.gxbcn5vf4z36cozi@tower>
+From: "Luck, Tony" <tony.luck@intel.com>
+Subject: Re: [PATCH 1/2] ia64: use asm-generic/io.h
+Date: Wed, 15 Aug 2018 16:34:16 -0700
+Message-ID: <20180815233416.GA28832@agluck-desk>
+References: <20180711120824.3882108-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <y2038-bounces@lists.linaro.org>
-In-Reply-To: <20180811205901.gxbcn5vf4z36cozi@tower>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/y2038/>
-List-Post: <mailto:y2038@lists.linaro.org>
-List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
-List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=subscribe>
-Errors-To: y2038-bounces@lists.linaro.org
-Sender: "Y2038" <y2038-bounces@lists.linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180711120824.3882108-1-arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: mcree@orcon.net.nz, Al Viro <viro@zeniv.linux.org.uk>, Firoz Khan <firoz.khan@linaro.org>, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Deepa Dinamani <deepa.kernel@gmail.com>
+Content-Transfer-Encoding: 7bit
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Boris Brezillon <boris.brezillon@bootlin.com>, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-T24gU2F0LCBBdWcgMTEsIDIwMTggYXQgMTA6NTkgUE0gTWljaGFlbCBDcmVlIDxtY3JlZUBvcmNv
-bi5uZXQubno+IHdyb3RlOgo+Cj4gT24gU2F0LCBBdWcgMTEsIDIwMTggYXQgMDg6Mjg6MDRQTSAr
-MDEwMCwgQWwgVmlybyB3cm90ZToKPiA+IE9uIE1vbiwgSnVsIDE2LCAyMDE4IGF0IDAzOjUzOjUz
-UE0gKzA1MzAsIEZpcm96IEtoYW4gd3JvdGU6Cj4gPiA+IEl0IGlzIGNvcnJlY3QgdG8ga2VlcCBf
-X0lHTk9SRSogZW50cnkgaW4gbm9uIHVhcGkgaGVhZGVyCj4gPiA+IGFzbS91bmlzdGQuaCB3aGls
-ZSB1YXBpL2FzbS91bmlzdGQuaCBtdXN0IGhvbGQgaW5mb3JtYXRpb24KPiA+ID4gb25seSB1c2Vm
-dWwgZm9yIHVzZXIgc3BhY2UgYXBwbGljYXRpb25zLgo+ID4KPiA+ID4gZGlmZiAtLWdpdCBhL2Fy
-Y2gvYWxwaGEvaW5jbHVkZS91YXBpL2FzbS91bmlzdGQuaCBiL2FyY2gvYWxwaGEvaW5jbHVkZS91
-YXBpL2FzbS91bmlzdGQuaAo+ID4gPiBpbmRleCBlMTUzY2E2Li4zYmI2YWMxIDEwMDY0NAo+ID4g
-PiAtLS0gYS9hcmNoL2FscGhhL2luY2x1ZGUvdWFwaS9hc20vdW5pc3RkLmgKPiA+ID4gKysrIGIv
-YXJjaC9hbHBoYS9pbmNsdWRlL3VhcGkvYXNtL3VuaXN0ZC5oCj4gPiA+IEBAIC00ODEsOSArNDgx
-LDQgQEAKPiA+ID4gICNkZWZpbmUgX19OUl9wd3JpdGV2MiAgICAgICAgICAgICAgICAgICAgICA1
-MjEKPiA+ID4gICNkZWZpbmUgX19OUl9zdGF0eCAgICAgICAgICAgICAgICAgNTIyCj4gPiA+Cj4g
-PiA+IC0vKiBBbHBoYSBkb2Vzbid0IGhhdmUgcHJvdGVjdGlvbiBrZXlzLiAqLwo+ID4gPiAtI2Rl
-ZmluZSBfX0lHTk9SRV9wa2V5X21wcm90ZWN0Cj4gPiA+IC0jZGVmaW5lIF9fSUdOT1JFX3BrZXlf
-YWxsb2MKPiA+ID4gLSNkZWZpbmUgX19JR05PUkVfcGtleV9mcmVlCj4gPiA+IC0KPiA+ID4gICNl
-bmRpZiAvKiBfVUFQSV9BTFBIQV9VTklTVERfSCAqLwo+ID4KPiA+IEhtbS4uLiAgVGhlcmUncyBh
-bHNvCj4gPgo+ID4gI2RlZmluZSBfX0lHTk9SRV9hbGFybQo+ID4gI2RlZmluZSBfX0lHTk9SRV9j
-cmVhdAo+Cj4gVGVsbCB5b3Ugd2hhdCwgSSB3b3VsZG4ndCBtaW5kIGlmIHRoZSBmb2xsb3dpbmcg
-b25lcyB3ZXJlIGFjdHVhbGx5Cj4gaW1wbGVtZW50ZWQgYXMgc3lzY2FsbHMgaW4gdGhlIGtlcm5l
-bCBvbiBBbHBoYToKPgo+ID4gI2RlZmluZSBfX0lHTk9SRV9nZXRlZ2lkCj4gPiAjZGVmaW5lIF9f
-SUdOT1JFX2dldGV1aWQKPiA+ICNkZWZpbmUgX19JR05PUkVfZ2V0Z2lkCj4gPiAjZGVmaW5lIF9f
-SUdOT1JFX2dldHBpZAo+ID4gI2RlZmluZSBfX0lHTk9SRV9nZXRwcGlkCj4gPiAjZGVmaW5lIF9f
-SUdOT1JFX2dldHVpZAo+Cj4gVGhlcmUncyBhIGdyb3dpbmcgbnVtYmVyIG9mIHNvZnR3YXJlIHBh
-Y2thZ2VzIHRoYXQgYXJlIGRlY2lkaW5nCj4gdG8gc2lkZXNraXAgZ2xpYmMgYW5kIGNhbGwgdGhl
-c2Ugc3lzY2FsbHMgZGlyZWN0bHkuICBTdXBwb3J0aW5nCj4gT1NGJ3MgQyBBQkkgaW5jb21wbGlh
-bnQgZ2V0eHBpZCwgZXRjLiwgaW4gc3VjaCBwYWNrYWdlcyBpcyBub3QKPiBlYXN5IGFuZCByYXRo
-ZXIgaW50cnVzaXZlLgoKVGhhdCBzb3VuZHMgbGlrZSBhIGdvb2QgaWRlYSB0byBtZS4gSXQgd291
-bGQgYWxzbyBoZWxwIHNpbXBsaWZ5IGxpYmMKaW1wbGVtZW50YXRpb25zIGluIHRoZSBsb25nIHJ1
-biwgYXMgd2Ugd2lsbCBwcm9iYWJseSBzb29uIGhhdmUgYQpuZXcgYmFzZWxpbmUga2VybmVsIGhl
-YWRlciB2ZXJzaW9uIG9uY2UgdGhlIHkyMDM4IHN5c2NhbGxzCmFyZSBhZGRlZCwgd2l0aCBnbGli
-YyAoYW5kIG1heWJlIG90aGVycykgcmVxdWlyaW5nIGF0IGxlYXQgdGhhdApuZXcgdmVyc2lvbiBh
-cyBhIGJ1aWxkIHRpbWUgZGVwZW5kZW5jeSByYXRoZXIgdGhhbiByZXF1aXJpbmcKbGludXgtMy4y
-KyBmb3IgYm90aCBoZWFkZXJzIGFuZCBydW50aW1lLgoKSW4gYSBudW1iZXIgb2YgeWVhcnMsIHRo
-ZSBsYXRlc3QgZ2xpYmMgbWlnaHQgdGhlbiB1c2UgdGhhdCBzYW1lCnZlcnNpb24gYWdhaW4gZm9y
-IGJvdGggdGhlIGhlYWRlciB2ZXJzaW9uIGFuZCB0aGUga2VybmVsIHJ1bnRpbWUsCmFuZCBhdCB0
-aGF0IHBvaW50LCBpdCBjYW4gZHJvcCB0aGUgYWxwaGEgc3BlY2lmaWMgd3JhcHBlci4KCkZvciB0
-aGUgb3RoZXIgX19JR05PUkVfIGVudHJpZXMsIEkgdGhpbmsgd2UgY2FuIGp1c3QgZHJvcCB0aGUg
-b25lcwpmb3IgYWxhcm0sIGNyZWF0LCBwYXVzZSwgdGltZSBhbmQgdXRpbWUsIGFzIHRoZXkgYXJl
-IGFscmVhZHkgcHJlc2VudAppbiBzY3JpcHRzL2NoZWNrc3lzY2FsbHMuc2guIF9fSUdOT1JFX21v
-dW50MiBpcyBzdGlsbCByZXF1aXJlZCBoZXJlLApzaW5jZSBhbHBoYSBjYWxscyBpdCBfX05SX21v
-dW50IHJhdGhlciB0aGFuIF9fTlJfbW91bnQyLgoKICAgIEFybmQKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KWTIwMzggbWFpbGluZyBsaXN0ClkyMDM4QGxp
-c3RzLmxpbmFyby5vcmcKaHR0cHM6Ly9saXN0cy5saW5hcm8ub3JnL21haWxtYW4vbGlzdGluZm8v
-eTIwMzgK
+On Wed, Jul 11, 2018 at 02:08:05PM +0200, Arnd Bergmann wrote:
+> asm-generic/io.h provides a generic implementation of all I/O accessors,
+> which the architectures can override.
+> 
+> Since ia64 does not provide readsl/writesl etc, any driver using those
+> fails to build, and including asm-generic/io.h will provide the
+> missing interfaces, as well as any other future interfaces that get
+> added there. We need to #define a couple of symbols to themselves
+> in the ia64 to ensure that we use the ia64 specific version of those
+> rather than the generic one.
+> 
+> There should be no other effect than adding {read,write}s{b,w,l}()
+> as well as {in,out}s{b,w,l}_p(), which were also not provided
+> by ia64 but are provided by the generic header for historic reasons.
+
+Sorry. I should have tried this when you sent it to me a month ago.
+
+There must be something subtle in there somewhere because ia64 panics
+early in boot with this patch present.  Revert the patch and it boots
+OK.
+
+Snip from console log:
+
+
+NET: Registered protocol family 16
+ACPI: bus type PCI registered
+acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+HugeTLB registered 256 MiB page size, pre-allocated 0 pages
+ACPI: Added _OSI(Module Device)
+ACPI: Added _OSI(Processor Device)
+ACPI: Added _OSI(3.0 _SCP Extensions)
+ACPI: Added _OSI(Processor Aggregator Device)
+ACPI: Added _OSI(Linux-Dell-Video)
+ACPI: 1 ACPI AML tables successfully acquired and loaded
+ACPI: Interpreter enabled
+ACPI: (supports S0 S5)
+ACPI: Using IOSAPIC for interrupt routing
+ACPI: Enabled 11 GPEs in block 00 to 3F
+ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-7f])
+acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig Segments MSI]
+acpi PNP0A08:00: PCIe port services disabled; not requesting _OSC control
+kernel BUG at lib/ioremap.c:72!
+swapper/0[1]: bugcheck! 0 [1]
+Modules linked in:
+
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.18.0-rc3-bisect-00137-g0bbf47e #15
+Hardware name: Supermicro I8QBH/I8QBH, BIOS I8QBH 15.006.004RAS 2010/05/10
+psr : 00001010084a6010 ifs : 800000000000050d ip  : [<a000000100e6d830>]    Not tainted (4.18.0-rc3-bisect-00137-g0bbf47e)
+ip is at ioremap_pte_range+0x190/0x1a0
+unat: 0000000000000000 pfs : 000000000000050d rsc : 0000000000000003
+rnat: fffffffffffc3358 bsps: 0000000000000000 pr  : 0000000000014745
+ldrs: 0000000000000000 ccv : 00000000017c00be fpsr: 0009804c8a70433f
+csd : 0930ffff00063000 ssd : 0930ffff00063000
+b0  : a000000100e6d830 b6  : a000000100e91fa0 b7  : a000000100e91fa0
+f6  : 1003e00000000000000a0 f7  : 1003e0000000000000000
+f8  : 1003e0000000000000001 f9  : 1003efffffffffffffffc
+f10 : 1001b80140227f7febfde f11 : 1003e20c49ba5e353f7cf
+r1  : a000000101b3b7e0 r2  : a0000001018ca770 r3  : a00000010193c5d8
+r8  : 000000000000001f r9  : 0000000000004000 r10 : fffffffffffc0408
+r11 : 000000000000047e r12 : e000000301bdfca0 r13 : e000000301bd0000
+r14 : a0000001018ca778 r15 : a0000001018ca778 r16 : 0000000000000000
+r17 : 00000010084a2010 r18 : e000000301bdfc60 r19 : 0000000000000000
+r20 : 000000000000047c r21 : 0000000000000000 r22 : 00000000000000ea
+r23 : 000000000000017c r24 : 000000000000017c r25 : a0000001011d87b8
+r26 : a000000100e91fa0 r27 : ffffffffffffffff r28 : a000000100e91fa0
+r29 : a0000001011d87b8 r30 : a000000100e91fa0 r31 : a00000010198a300
+
+Call Trace:
+ [<a0000001000155e0>] show_stack+0x80/0xa0
+                                sp=e000000301bdf880 bsp=e000000301bd17b8
+Disabling lock debugging due to kernel taint
+Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+
+---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+
+Here's the surrounding code to the "BUG at lib/ioremap.c"
+
+ 61 static int ioremap_pte_range(pmd_t *pmd, unsigned long addr,
+ 62                 unsigned long end, phys_addr_t phys_addr, pgprot_t prot)
+ 63 {
+ 64         pte_t *pte;
+ 65         u64 pfn;
+ 66
+ 67         pfn = phys_addr >> PAGE_SHIFT;
+ 68         pte = pte_alloc_kernel(pmd, addr);
+ 69         if (!pte)
+ 70                 return -ENOMEM;
+ 71         do {
+ 72                 BUG_ON(!pte_none(*pte));
+ 73                 set_pte_at(&init_mm, addr, pte, pfn_pte(pfn, prot));
+ 74                 pfn++;
+ 75         } while (pte++, addr += PAGE_SIZE, addr != end);
+ 76         return 0;
+ 77 }
