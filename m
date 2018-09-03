@@ -1,96 +1,410 @@
-From: Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH] treewide: remove current_text_addr
-Date: Fri, 31 Aug 2018 09:48:56 -0700
-Message-ID: <CAKwvOdmXhRZJ5bQw+W0Ro+oeWSTRJzG1UAJnjyjciR1JFs+ubA@mail.gmail.com>
-References: <20180821202900.208417-1-ndesaulniers@google.com>
- <207784db-4fcc-85e7-a0b2-fec26b7dab81@gmx.de>
- <c62e4e00-fb8f-19a6-f3eb-bde60118cb1a@zytor.com>
- <81141365-8168-799b-f34f-da5f92efaaf9@zytor.com>
- <7f49eeab-a5cc-867f-58fb-abd266f9c2c9@zytor.com>
- <6ca8a1d3-ff95-e9f4-f003-0a5af85bcb6f@zytor.com>
- <CA+55aFzuSCKfmgT9efHuwtan+m3+bPh4BpwbZwn5gGX_H=Thuw@mail.gmail.com>
- <CAKwvOd=wAaPBkFHAcWxgMW91a--9gbvu7xrt3j-q8c+-mT=7Lw@mail.gmail.com>
- <20180827073358.GV24124@hirez.programming.kicks-ass.net>
- <f9896d68-4a49-e666-cea5-a9c0522f1658@zytor.com>
- <20180827131103.GD24124@hirez.programming.kicks-ass.net>
- <4d1a8f35-e2fc-70d2-ca0e-44b8574c86f1@zytor.com>
-Mime-Version: 1.0
+From: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Subject: [RESEND PATCH v2] alpha: switch to NO_BOOTMEM
+Date: Mon,  3 Sep 2018 08:34:54 +0300
+Message-ID: <1535952894-10967-1-git-send-email-rppt@linux.vnet.ibm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
-	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=uPK7SUogjrFbV1F0zVInHfuefnDhQ7ws4nvm0gi0cWk=; b=RQML+wWd3vd/V9
-	nL94TK2CqJ9uTzvGDUu5qT3MszFsFqRv36MPsoVzTjg4N+T28FyTHQWXDU8uaiqmF4UStoZHHaunV
-	0zGLFT2g0tgLTBvv4eK0l5VoivVKZ6sl/juvCs/D5JO3rgSFkwMkWNYqL9RW3+yqXl5cFqghWMf4h
-	KRojBNmVHBCMEQSnJjSJTz3sZFFoj96CMTA/gL3rfqtKnitHVX/30UW4wDAdoY8TMwyv1QfhPjDGp
-	7IV9Uc069liV5YaOw1pRymKhtJlbN8jZ1RGdLdA2Z00I88jf6cvLxilS1GOpbUIzAeVdNa00hO2a6
-	54LHUecjosNpoWIq8mqg==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=bCAuXK2OzX1Y32o4nfX28eLgRp+6m9IIcFWuemVE5WY=;
- b=N18YRpr8Sb1LGBugLd2WKciz/6inmAgY4pGO/BJSgASuLXw3cUZK9Fc91sHLPyPzur
- h59KQ9BlIUiAigm8ubE55V4N6/53+5jD/Kbcq0N4xoPSeBxIkDwJwdwSUWzEzVMbb0TZ
- MFQdDCBv+rpJUkfTRi2D3PtRo5/qh6AEEdTLb/aEIliVhnpYKjp4Q2bakgARP51iJNrC
- 01+GpwMzT5JyHtVWTwLziSLHTD5MwGA+OqGWBpU6VPF6Pu/NKBJ6SM3aDjR6VSQ6Wq36
- zTPjlA8/quUpxZwtwYw69Qzm4KCXQAHE0iJNTjbS/JujWES9LuRc4lxfgVtesjPXWf5A
- nGaw==
-In-Reply-To: <4d1a8f35-e2fc-70d2-ca0e-44b8574c86f1@zytor.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Nicolas Pitre <nicolas.pitre@linaro.org>, linux-mips@linux-mips.org, linux-sh@vger.kernel.org, benh@kernel.crashing.org, Will Deacon <will.deacon@arm.com>, paulus@samba.org, mpe@ellerman.id.au, jejb@parisc-linux.org, Geert Uytterhoeven <geert@linux-m68k.org>, Catalin Marinas <catalin.marinas@arm.com>, gor@linux.vnet.ibm.com, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Marc Zyngier <marc.zyngier@arm.com>, linuxram@us.ibm.com, linux-um@lists.infradead.org, Nicholas Piggin <npiggin@gmail.com>, luto@kernel.org, shannon.nelson@oracle.com, Thomas Gleixner <tglx@linutronix.de>, =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>, rth@twiddle.net, jkosina@suse.cz, LKML <linux-kernel@vger.kernel.org>, ralf@linux-mips.org, rkuo@codeaurora.org, paul.burton@mips.com, aneesh.kumar@linux.vnet.ibm.com, Greg KH <gregkh@linuxfoundation.org>, Andrew
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@kernel.org>, linux-alpha <linux-alpha@vger.kernel.org>, linux-mm <linux-mm@kvack.org>, lkml <linux-kernel@vger.kernel.org>, Mike Rapoport <rppt@linux.vnet.ibm.com>
 
-On Mon, Aug 27, 2018 at 6:34 AM H. Peter Anvin <hpa@zytor.com> wrote:
->
-> On 08/27/18 06:11, Peter Zijlstra wrote:
-> > On Mon, Aug 27, 2018 at 05:26:53AM -0700, H. Peter Anvin wrote:
-> >
-> >> _THIS_IP_, however, is completely ill-defined, other than being an
-> >> address *somewhere* in the same global function (not even necessarily
-> >> the same function if the function is static!)  As my experiment show, in
-> >> many (nearly) cases gcc will hoist the address all the way to the top of
-> >> the function, at least for the current generic implementation.
-> >
-> > It seems to have mostly worked so far... did anything change?
-> >
->
-> Most likely because the major architectures contain a arch-specific
-> assembly implementation.  The generic implementation used in some places
-> is completely broken, as my experiments show.
->
-> >> For the case where _THIS_IP_ is passed to an out-of-line function in all
-> >> cases, it is extra pointless because all it does is increase the
-> >> footprint of every caller: _RET_IP_ is inherently passed to the function
-> >> anyway, and with tailcall protection it will uniquely identify a callsite.
-> >
-> > So I think we can convert many of the lockdep _THIS_IP_ calls to
-> > _RET_IP_ on the other side, with a wee bit of care.
-> >
-> > A little something like so perhaps...
->
-> I don't have time to look at this right now (I'm on sabbatical, and I'm
-> dealing with personal legal stuff right at the moment), but I think it
-> is the right direction.
->
->         -hpa
+Replace bootmem allocator with memblock and enable use of NO_BOOTMEM like
+on most other architectures.
 
-Linus,
-Can this patch please be merged?  Then we can polish off Peter's
-change to lockdep to not even use _THIS_IP_.
+Alpha gets the description of the physical memory from the firmware as an
+array of memory clusters. Each cluster that is not reserved by the firmware
+is added to memblock.memory.
 
+Once the memblock.memory is set up, we reserve the kernel and initrd pages
+with memblock reserve.
+
+Since we don't need the bootmem bitmap anymore, the code that finds an
+appropriate place is removed.
+
+The conversion does not take care of NUMA support which is marked broken
+for more than 10 years now.
+
+Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
+---
+v2: describe the conversion as per Michal's request
+
+Tested with qemu-system-alpha. I've added some tweaks to sys_dp264 to force
+memory split for testing with CONFIG_DISCONTIGMEM=y
+
+ arch/alpha/Kconfig                |   2 +
+ arch/alpha/kernel/core_irongate.c |   4 +-
+ arch/alpha/kernel/setup.c         |  98 ++++-----------------------------
+ arch/alpha/mm/numa.c              | 113 +++++---------------------------------
+ 4 files changed, 29 insertions(+), 188 deletions(-)
+
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 5b4f883..620b0a7 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -31,6 +31,8 @@ config ALPHA
+ 	select ODD_RT_SIGACTION
+ 	select OLD_SIGSUSPEND
+ 	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
++	select HAVE_MEMBLOCK
++	select NO_BOOTMEM
+ 	help
+ 	  The Alpha is a 64-bit general-purpose processor designed and
+ 	  marketed by the Digital Equipment Corporation of blessed memory,
+diff --git a/arch/alpha/kernel/core_irongate.c b/arch/alpha/kernel/core_irongate.c
+index aec7572..f709866 100644
+--- a/arch/alpha/kernel/core_irongate.c
++++ b/arch/alpha/kernel/core_irongate.c
+@@ -21,6 +21,7 @@
+ #include <linux/init.h>
+ #include <linux/initrd.h>
+ #include <linux/bootmem.h>
++#include <linux/memblock.h>
+ 
+ #include <asm/ptrace.h>
+ #include <asm/cacheflush.h>
+@@ -241,8 +242,7 @@ albacore_init_arch(void)
+ 				       size / 1024);
+ 		}
+ #endif
+-		reserve_bootmem_node(NODE_DATA(0), pci_mem, memtop -
+-				pci_mem, BOOTMEM_DEFAULT);
++		memblock_reserve(pci_mem, memtop - pci_mem);
+ 		printk("irongate_init_arch: temporarily reserving "
+ 			"region %08lx-%08lx for PCI\n", pci_mem, memtop - 1);
+ 	}
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index 5576f76..4f0d944 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -30,6 +30,7 @@
+ #include <linux/ioport.h>
+ #include <linux/platform_device.h>
+ #include <linux/bootmem.h>
++#include <linux/memblock.h>
+ #include <linux/pci.h>
+ #include <linux/seq_file.h>
+ #include <linux/root_dev.h>
+@@ -312,9 +313,7 @@ setup_memory(void *kernel_end)
+ {
+ 	struct memclust_struct * cluster;
+ 	struct memdesc_struct * memdesc;
+-	unsigned long start_kernel_pfn, end_kernel_pfn;
+-	unsigned long bootmap_size, bootmap_pages, bootmap_start;
+-	unsigned long start, end;
++	unsigned long kernel_size;
+ 	unsigned long i;
+ 
+ 	/* Find free clusters, and init and free the bootmem accordingly.  */
+@@ -322,6 +321,8 @@ setup_memory(void *kernel_end)
+ 	  (hwrpb->mddt_offset + (unsigned long) hwrpb);
+ 
+ 	for_each_mem_cluster(memdesc, cluster, i) {
++		unsigned long end;
++
+ 		printk("memcluster %lu, usage %01lx, start %8lu, end %8lu\n",
+ 		       i, cluster->usage, cluster->start_pfn,
+ 		       cluster->start_pfn + cluster->numpages);
+@@ -335,6 +336,9 @@ setup_memory(void *kernel_end)
+ 		end = cluster->start_pfn + cluster->numpages;
+ 		if (end > max_low_pfn)
+ 			max_low_pfn = end;
++
++		memblock_add(PFN_PHYS(cluster->start_pfn),
++			     cluster->numpages << PAGE_SHIFT);
+ 	}
+ 
+ 	/*
+@@ -363,87 +367,9 @@ setup_memory(void *kernel_end)
+ 		max_low_pfn = mem_size_limit;
+ 	}
+ 
+-	/* Find the bounds of kernel memory.  */
+-	start_kernel_pfn = PFN_DOWN(KERNEL_START_PHYS);
+-	end_kernel_pfn = PFN_UP(virt_to_phys(kernel_end));
+-	bootmap_start = -1;
+-
+- try_again:
+-	if (max_low_pfn <= end_kernel_pfn)
+-		panic("not enough memory to boot");
+-
+-	/* We need to know how many physically contiguous pages
+-	   we'll need for the bootmap.  */
+-	bootmap_pages = bootmem_bootmap_pages(max_low_pfn);
+-
+-	/* Now find a good region where to allocate the bootmap.  */
+-	for_each_mem_cluster(memdesc, cluster, i) {
+-		if (cluster->usage & 3)
+-			continue;
+-
+-		start = cluster->start_pfn;
+-		end = start + cluster->numpages;
+-		if (start >= max_low_pfn)
+-			continue;
+-		if (end > max_low_pfn)
+-			end = max_low_pfn;
+-		if (start < start_kernel_pfn) {
+-			if (end > end_kernel_pfn
+-			    && end - end_kernel_pfn >= bootmap_pages) {
+-				bootmap_start = end_kernel_pfn;
+-				break;
+-			} else if (end > start_kernel_pfn)
+-				end = start_kernel_pfn;
+-		} else if (start < end_kernel_pfn)
+-			start = end_kernel_pfn;
+-		if (end - start >= bootmap_pages) {
+-			bootmap_start = start;
+-			break;
+-		}
+-	}
+-
+-	if (bootmap_start == ~0UL) {
+-		max_low_pfn >>= 1;
+-		goto try_again;
+-	}
+-
+-	/* Allocate the bootmap and mark the whole MM as reserved.  */
+-	bootmap_size = init_bootmem(bootmap_start, max_low_pfn);
+-
+-	/* Mark the free regions.  */
+-	for_each_mem_cluster(memdesc, cluster, i) {
+-		if (cluster->usage & 3)
+-			continue;
+-
+-		start = cluster->start_pfn;
+-		end = cluster->start_pfn + cluster->numpages;
+-		if (start >= max_low_pfn)
+-			continue;
+-		if (end > max_low_pfn)
+-			end = max_low_pfn;
+-		if (start < start_kernel_pfn) {
+-			if (end > end_kernel_pfn) {
+-				free_bootmem(PFN_PHYS(start),
+-					     (PFN_PHYS(start_kernel_pfn)
+-					      - PFN_PHYS(start)));
+-				printk("freeing pages %ld:%ld\n",
+-				       start, start_kernel_pfn);
+-				start = end_kernel_pfn;
+-			} else if (end > start_kernel_pfn)
+-				end = start_kernel_pfn;
+-		} else if (start < end_kernel_pfn)
+-			start = end_kernel_pfn;
+-		if (start >= end)
+-			continue;
+-
+-		free_bootmem(PFN_PHYS(start), PFN_PHYS(end) - PFN_PHYS(start));
+-		printk("freeing pages %ld:%ld\n", start, end);
+-	}
+-
+-	/* Reserve the bootmap memory.  */
+-	reserve_bootmem(PFN_PHYS(bootmap_start), bootmap_size,
+-			BOOTMEM_DEFAULT);
+-	printk("reserving pages %ld:%ld\n", bootmap_start, bootmap_start+PFN_UP(bootmap_size));
++	/* Reserve the kernel memory. */
++	kernel_size = virt_to_phys(kernel_end) - KERNEL_START_PHYS;
++	memblock_reserve(KERNEL_START_PHYS, kernel_size);
+ 
+ #ifdef CONFIG_BLK_DEV_INITRD
+ 	initrd_start = INITRD_START;
+@@ -459,8 +385,8 @@ setup_memory(void *kernel_end)
+ 				       initrd_end,
+ 				       phys_to_virt(PFN_PHYS(max_low_pfn)));
+ 		} else {
+-			reserve_bootmem(virt_to_phys((void *)initrd_start),
+-					INITRD_SIZE, BOOTMEM_DEFAULT);
++			memblock_reserve(virt_to_phys((void *)initrd_start),
++					INITRD_SIZE);
+ 		}
+ 	}
+ #endif /* CONFIG_BLK_DEV_INITRD */
+diff --git a/arch/alpha/mm/numa.c b/arch/alpha/mm/numa.c
+index a9e8647..26cd925 100644
+--- a/arch/alpha/mm/numa.c
++++ b/arch/alpha/mm/numa.c
+@@ -11,6 +11,7 @@
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/bootmem.h>
++#include <linux/memblock.h>
+ #include <linux/swap.h>
+ #include <linux/initrd.h>
+ #include <linux/pfn.h>
+@@ -59,12 +60,10 @@ setup_memory_node(int nid, void *kernel_end)
+ 	struct memclust_struct * cluster;
+ 	struct memdesc_struct * memdesc;
+ 	unsigned long start_kernel_pfn, end_kernel_pfn;
+-	unsigned long bootmap_size, bootmap_pages, bootmap_start;
+ 	unsigned long start, end;
+ 	unsigned long node_pfn_start, node_pfn_end;
+ 	unsigned long node_min_pfn, node_max_pfn;
+ 	int i;
+-	unsigned long node_datasz = PFN_UP(sizeof(pg_data_t));
+ 	int show_init = 0;
+ 
+ 	/* Find the bounds of current node */
+@@ -134,24 +133,14 @@ setup_memory_node(int nid, void *kernel_end)
+ 	/* Cute trick to make sure our local node data is on local memory */
+ 	node_data[nid] = (pg_data_t *)(__va(node_min_pfn << PAGE_SHIFT));
+ #endif
+-	/* Quasi-mark the pg_data_t as in-use */
+-	node_min_pfn += node_datasz;
+-	if (node_min_pfn >= node_max_pfn) {
+-		printk(" not enough mem to reserve NODE_DATA");
+-		return;
+-	}
+-	NODE_DATA(nid)->bdata = &bootmem_node_data[nid];
+-
+ 	printk(" Detected node memory:   start %8lu, end %8lu\n",
+ 	       node_min_pfn, node_max_pfn);
+ 
+ 	DBGDCONT(" DISCONTIG: node_data[%d]   is at 0x%p\n", nid, NODE_DATA(nid));
+-	DBGDCONT(" DISCONTIG: NODE_DATA(%d)->bdata is at 0x%p\n", nid, NODE_DATA(nid)->bdata);
+ 
+ 	/* Find the bounds of kernel memory.  */
+ 	start_kernel_pfn = PFN_DOWN(KERNEL_START_PHYS);
+ 	end_kernel_pfn = PFN_UP(virt_to_phys(kernel_end));
+-	bootmap_start = -1;
+ 
+ 	if (!nid && (node_max_pfn < end_kernel_pfn || node_min_pfn > start_kernel_pfn))
+ 		panic("kernel loaded out of ram");
+@@ -161,89 +150,11 @@ setup_memory_node(int nid, void *kernel_end)
+ 	   has much larger alignment than 8Mb, so it's safe. */
+ 	node_min_pfn &= ~((1UL << (MAX_ORDER-1))-1);
+ 
+-	/* We need to know how many physically contiguous pages
+-	   we'll need for the bootmap.  */
+-	bootmap_pages = bootmem_bootmap_pages(node_max_pfn-node_min_pfn);
+-
+-	/* Now find a good region where to allocate the bootmap.  */
+-	for_each_mem_cluster(memdesc, cluster, i) {
+-		if (cluster->usage & 3)
+-			continue;
+-
+-		start = cluster->start_pfn;
+-		end = start + cluster->numpages;
+-
+-		if (start >= node_max_pfn || end <= node_min_pfn)
+-			continue;
+-
+-		if (end > node_max_pfn)
+-			end = node_max_pfn;
+-		if (start < node_min_pfn)
+-			start = node_min_pfn;
+-
+-		if (start < start_kernel_pfn) {
+-			if (end > end_kernel_pfn
+-			    && end - end_kernel_pfn >= bootmap_pages) {
+-				bootmap_start = end_kernel_pfn;
+-				break;
+-			} else if (end > start_kernel_pfn)
+-				end = start_kernel_pfn;
+-		} else if (start < end_kernel_pfn)
+-			start = end_kernel_pfn;
+-		if (end - start >= bootmap_pages) {
+-			bootmap_start = start;
+-			break;
+-		}
+-	}
+-
+-	if (bootmap_start == -1)
+-		panic("couldn't find a contiguous place for the bootmap");
+-
+-	/* Allocate the bootmap and mark the whole MM as reserved.  */
+-	bootmap_size = init_bootmem_node(NODE_DATA(nid), bootmap_start,
+-					 node_min_pfn, node_max_pfn);
+-	DBGDCONT(" bootmap_start %lu, bootmap_size %lu, bootmap_pages %lu\n",
+-		 bootmap_start, bootmap_size, bootmap_pages);
++	memblock_add(PFN_PHYS(node_min_pfn),
++		     (node_max_pfn - node_min_pfn) << PAGE_SHIFT);
+ 
+-	/* Mark the free regions.  */
+-	for_each_mem_cluster(memdesc, cluster, i) {
+-		if (cluster->usage & 3)
+-			continue;
+-
+-		start = cluster->start_pfn;
+-		end = cluster->start_pfn + cluster->numpages;
+-
+-		if (start >= node_max_pfn || end <= node_min_pfn)
+-			continue;
+-
+-		if (end > node_max_pfn)
+-			end = node_max_pfn;
+-		if (start < node_min_pfn)
+-			start = node_min_pfn;
+-
+-		if (start < start_kernel_pfn) {
+-			if (end > end_kernel_pfn) {
+-				free_bootmem_node(NODE_DATA(nid), PFN_PHYS(start),
+-					     (PFN_PHYS(start_kernel_pfn)
+-					      - PFN_PHYS(start)));
+-				printk(" freeing pages %ld:%ld\n",
+-				       start, start_kernel_pfn);
+-				start = end_kernel_pfn;
+-			} else if (end > start_kernel_pfn)
+-				end = start_kernel_pfn;
+-		} else if (start < end_kernel_pfn)
+-			start = end_kernel_pfn;
+-		if (start >= end)
+-			continue;
+-
+-		free_bootmem_node(NODE_DATA(nid), PFN_PHYS(start), PFN_PHYS(end) - PFN_PHYS(start));
+-		printk(" freeing pages %ld:%ld\n", start, end);
+-	}
+-
+-	/* Reserve the bootmap memory.  */
+-	reserve_bootmem_node(NODE_DATA(nid), PFN_PHYS(bootmap_start),
+-			bootmap_size, BOOTMEM_DEFAULT);
+-	printk(" reserving pages %ld:%ld\n", bootmap_start, bootmap_start+PFN_UP(bootmap_size));
++	NODE_DATA(nid)->node_start_pfn = node_min_pfn;
++	NODE_DATA(nid)->node_present_pages = node_max_pfn - node_min_pfn;
+ 
+ 	node_set_online(nid);
+ }
+@@ -251,6 +162,7 @@ setup_memory_node(int nid, void *kernel_end)
+ void __init
+ setup_memory(void *kernel_end)
+ {
++	unsigned long kernel_size;
+ 	int nid;
+ 
+ 	show_mem_layout();
+@@ -262,6 +174,9 @@ setup_memory(void *kernel_end)
+ 	for (nid = 0; nid < MAX_NUMNODES; nid++)
+ 		setup_memory_node(nid, kernel_end);
+ 
++	kernel_size = virt_to_phys(kernel_end) - KERNEL_START_PHYS;
++	memblock_reserve(KERNEL_START_PHYS, kernel_size);
++
+ #ifdef CONFIG_BLK_DEV_INITRD
+ 	initrd_start = INITRD_START;
+ 	if (initrd_start) {
+@@ -279,9 +194,8 @@ setup_memory(void *kernel_end)
+ 				       phys_to_virt(PFN_PHYS(max_low_pfn)));
+ 		} else {
+ 			nid = kvaddr_to_nid(initrd_start);
+-			reserve_bootmem_node(NODE_DATA(nid),
+-					     virt_to_phys((void *)initrd_start),
+-					     INITRD_SIZE, BOOTMEM_DEFAULT);
++			memblock_reserve(virt_to_phys((void *)initrd_start),
++					 INITRD_SIZE);
+ 		}
+ 	}
+ #endif /* CONFIG_BLK_DEV_INITRD */
+@@ -303,9 +217,8 @@ void __init paging_init(void)
+ 	dma_local_pfn = virt_to_phys((char *)MAX_DMA_ADDRESS) >> PAGE_SHIFT;
+ 
+ 	for_each_online_node(nid) {
+-		bootmem_data_t *bdata = &bootmem_node_data[nid];
+-		unsigned long start_pfn = bdata->node_min_pfn;
+-		unsigned long end_pfn = bdata->node_low_pfn;
++		unsigned long start_pfn = NODE_DATA(nid)->node_start_pfn;
++		unsigned long end_pfn = start_pfn + NODE_DATA(nid)->node_present_pages;
+ 
+ 		if (dma_local_pfn >= end_pfn - start_pfn)
+ 			zones_size[ZONE_DMA] = end_pfn - start_pfn;
 -- 
-Thanks,
-~Nick Desaulniers
+2.7.4
+
