@@ -1,43 +1,31 @@
-From: Daniel Bristot de Oliveira <bristot@redhat.com>
-Subject: [PATCH] alpha: Fix a typo on ptrace.h
-Date: Tue, 25 Sep 2018 20:31:48 +0200
-Message-ID: <60a1ebdc46fb3c8317c43446b1e050ce126c61cd.1537899770.git.bristot@redhat.com>
+From: Michal Hocko <mhocko@kernel.org>
+Subject: Re: [PATCH 02/30] mm: remove CONFIG_NO_BOOTMEM
+Date: Wed, 26 Sep 2018 11:22:39 +0200
+Message-ID: <20180926092239.GK6278@dhcp22.suse.cz>
+References: <1536927045-23536-1-git-send-email-rppt@linux.vnet.ibm.com>
+ <1536927045-23536-3-git-send-email-rppt@linux.vnet.ibm.com>
+Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1536927045-23536-3-git-send-email-rppt@linux.vnet.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>
+To: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Cc: linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Chris Zankel <chris@zankel.net>, "David S. Miller" <davem@davemloft.net>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Ingo Molnar <mingo@redhat.com>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Jonas Bonn <jonas@southpole.se>, Jonathan Corbet <corbet@lwn.net>, Ley Foon Tan <lftan@altera.com>, Mark Salter <msalter@redhat.com>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Palmer Dabbelt <palmer@sifive.com>, Paul Burton <p>
 
- - struct has as little information as possible. * I does not have*
- + struct has as little information as possible. *It does not have*
+On Fri 14-09-18 15:10:17, Mike Rapoport wrote:
+> All achitectures select NO_BOOTMEM which essentially becomes 'Y' for any
+> kernel configuration and therefore it can be removed.
 
-Signed-off-by: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- arch/alpha/include/uapi/asm/ptrace.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+git grep suggests that DEFERRED_STRUCT_PAGE_INIT still depends on
+NO_BOOTMEM but I have a vague feeling that I've seen a patch to address
+that. It would be great to have it folded to this one.
 
-diff --git a/arch/alpha/include/uapi/asm/ptrace.h b/arch/alpha/include/uapi/asm/ptrace.h
-index 1dfd065e45b1..c29194181025 100644
---- a/arch/alpha/include/uapi/asm/ptrace.h
-+++ b/arch/alpha/include/uapi/asm/ptrace.h
-@@ -8,7 +8,7 @@
-  * kernel stack during a system call or other kernel entry
-  *
-  * NOTE! I want to minimize the overhead of system calls, so this
-- * struct has as little information as possible.  I does not have
-+ * struct has as little information as possible. It does not have
-  *
-  *  - floating point regs: the kernel doesn't change those
-  *  - r9-15: saved by the C compiler
+> Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
+
+Acked-by: Michal Hocko <mhocko@suse.com>
 -- 
-2.17.1
-
+Michal Hocko
+SUSE Labs
