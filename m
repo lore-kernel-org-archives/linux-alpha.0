@@ -1,17 +1,17 @@
 From: "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH stable 2/2] termios, tty/tty_baudrate.c: simplify, auto-generate baud table
-Date: Sat,  6 Oct 2018 20:37:48 -0700
-Message-ID: <20181007033748.224461-3-hpa@zytor.com>
-References: <20181007033748.224461-1-hpa@zytor.com>
+Subject: [PATCH stable v2 2/2] termios, tty/tty_baudrate.c: simplify, auto-generate baud table
+Date: Sun,  7 Oct 2018 21:06:20 -0700
+Message-ID: <20181008040620.1248277-3-hpa@zytor.com>
+References: <20181008040620.1248277-1-hpa@zytor.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181007033748.224461-1-hpa@zytor.com>
+In-Reply-To: <20181008040620.1248277-1-hpa@zytor.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
-Cc: "H. Peter Anvin (Intel)" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, stable@vger.kernel.org
+Cc: Tobias Klausmann <klausman@schwarzvogel.de>, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, stable@vger.kernel.org
 
 From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
 
@@ -19,13 +19,18 @@ Now when all architectures define BOTHER and IBSHIFT, we can
 unconditionally rely on these constants. Furthermore, the code can be
 significantly simplified in a number of places.
 
-Finally, rather than having two tables and needing to be able to keep
-them in sync at all times, have one auto-generated table. This also
-lets us avoid the fact that architectures that have CBAUDEX == 0 have
-BOTHER in a different location that those that don't.
+Rather than having two tables and needing to be able to keep them in
+sync at all times, have one auto-generated table. This also lets us
+avoid the fact that architectures that have CBAUDEX == 0 have BOTHER
+in a different location that those that don't.
+
+The code for masking CBAUDEX as a fallback is never exercised on any
+architecture, because for all architectures, either the baud rate
+table is completely defined for all CBAUD values, or CBAUDEX == 0, so
+we can just remove it.
 
 Finally, this patch avoids overrunning the baud_table[] for
-architectures with CBAUDEX == 0 (Alpha and PowerPC).
+architectures with CBAUDEX == 0.
 
 Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -43,16 +48,13 @@ Cc: <linux-alpha@vger.kernel.org>
 Cc: <linux-serial@vger.kernel.org>
 Cc: Johan Hovold <johan@kernel.org>
 Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
 Cc: <stable@vger.kernel.org>
 ---
  drivers/tty/.gitignore     |   1 +
  drivers/tty/Makefile       |  16 ++++
  drivers/tty/bmacros.c      |   2 +
- drivers/tty/tty_baudrate.c | 190 +++++++++++++++----------------------
- 4 files changed, 93 insertions(+), 116 deletions(-)
+ drivers/tty/tty_baudrate.c | 182 ++++++++++++++-----------------------
+ 4 files changed, 85 insertions(+), 116 deletions(-)
  create mode 100644 drivers/tty/.gitignore
  create mode 100644 drivers/tty/bmacros.c
 
@@ -96,10 +98,10 @@ index 000000000000..0af865ff00de
 +/* This file is used to extract the B... macros from header files */
 +#include <linux/termios.h>
 diff --git a/drivers/tty/tty_baudrate.c b/drivers/tty/tty_baudrate.c
-index 7576ceace571..5a41eda7912a 100644
+index 7576ceace571..ec6d3d93ffac 100644
 --- a/drivers/tty/tty_baudrate.c
 +++ b/drivers/tty/tty_baudrate.c
-@@ -9,43 +9,56 @@
+@@ -9,43 +9,48 @@
  #include <linux/tty.h>
  #include <linux/export.h>
  
@@ -171,21 +173,13 @@ index 7576ceace571..5a41eda7912a 100644
 +		return bother_speed;
 +
 +	cbaud = BPOS(cbaud);
-+
-+	/* If CBAUDEX != 0, and we overrun the table, try dropping CBAUDEX */
-+	if (cbaud & ~CBAUDNX) {
-+		if (BPOS(cbaud) >= n_baud_table) {
-+			/* Try without CBAUDEX */
-+			cbaud &= ~CBAUDNX;
-+		}
-+	}
 +	return (cbaud >= n_baud_table) ? 0 : baud_table[cbaud];
 +}
 +
  /**
   *	tty_termios_baud_rate
   *	@termios: termios structure
-@@ -60,24 +73,8 @@ static int n_baud_table = ARRAY_SIZE(baud_table);
+@@ -60,24 +65,8 @@ static int n_baud_table = ARRAY_SIZE(baud_table);
  
  speed_t tty_termios_baud_rate(struct ktermios *termios)
  {
@@ -212,7 +206,7 @@ index 7576ceace571..5a41eda7912a 100644
  }
  EXPORT_SYMBOL(tty_termios_baud_rate);
  
-@@ -95,28 +92,15 @@ EXPORT_SYMBOL(tty_termios_baud_rate);
+@@ -95,28 +84,15 @@ EXPORT_SYMBOL(tty_termios_baud_rate);
  
  speed_t tty_termios_input_baud_rate(struct ktermios *termios)
  {
@@ -248,7 +242,7 @@ index 7576ceace571..5a41eda7912a 100644
  }
  EXPORT_SYMBOL(tty_termios_input_baud_rate);
  
-@@ -145,38 +129,27 @@ EXPORT_SYMBOL(tty_termios_input_baud_rate);
+@@ -145,38 +121,27 @@ EXPORT_SYMBOL(tty_termios_input_baud_rate);
  void tty_termios_encode_baud_rate(struct ktermios *termios,
  				  speed_t ibaud, speed_t obaud)
  {
@@ -294,7 +288,7 @@ index 7576ceace571..5a41eda7912a 100644
  
  	/*
  	 *	Our goal is to find a close match to the standard baud rate
-@@ -184,43 +157,28 @@ void tty_termios_encode_baud_rate(struct ktermios *termios,
+@@ -184,43 +149,28 @@ void tty_termios_encode_baud_rate(struct ktermios *termios,
  	 *	match then report back the speed as a POSIX Bxxxx value by
  	 *	preference
  	 */
