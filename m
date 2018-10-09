@@ -1,55 +1,44 @@
-From: Bob Tracy <rct@gherkin.frus.com>
-Subject: X11 on Alpha running Debian "sid"
-Date: Mon, 8 Oct 2018 13:49:27 -0500
-Message-ID: <20181008184927.GA7997@gherkin.frus.com>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH] memblock: stop using implicit alignement to
+ SMP_CACHE_BYTES
+Date: Tue, 9 Oct 2018 23:01:40 +0000
+Message-ID: <20181009230137.rju3lm2saou5xsa4@pburton-laptop>
+References: <1538687224-17535-1-git-send-email-rppt@linux.vnet.ibm.com>
 Mime-Version: 1.0
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-Content-Disposition: inline
-Resent-Message-ID: <tb3aD0FdIXO.A.D1E.Kb6ubB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/20181008184927.GA7997@gherkin.frus.com
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org
-Cc: debian-alpha@lists.debian.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=wavesemi.onmicrosoft.com; s=selector1-wavecomp-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c+HhjWAMCdXZohntLO9fRopZreqMCdmZG2vRYZta1Kc=;
+ b=EfdnyWPzzDMBnFTOgK2eTA7Ccrdf4wqPWM+c7MxgF/bFrenm3rBJzGAEcK8koONFOwpDzsbnvUG1lzuiy5l1y+9hYMmtKckflLW/fuA9qS3D9nQ+/ZFiyaCrH2MBukhX0nF93qd2OuUOMyBc29XZcj2/jrvVcbzz+47oAzNY/OA=
+In-Reply-To: <1538687224-17535-1-git-send-email-rppt@linux.vnet.ibm.com>
+Content-Language: en-US
+Content-ID: <E3554E11A6C0914FA9C02D46ED897C1C@namprd22.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Mike Rapoport <rppt@linux.vnet.ibm.com>
+Cc: "linux-mm@kvack.org" <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Chris Zankel <chris@zankel.net>, Geert Uytterhoeven <geert@linux-m68k.org>, Guan Xuetao <gxt@pku.edu.cn>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Hocko <mhocko@suse.com>, Michal Simek <monstr@monstr.eu>, Richard Weinberger <richard@nod.at>, Russell King <linux@armlinux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, Tony Luck <tony.luck@intel.com>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, 
 
-It had been an *extremely* long time since I dared try to run a graphical
-console on my PWS 433au, so I screwed-up my courage and gave it a try...
+Hi Mike,
 
-"sddm" is extremely slow to initialize, and even slower to respond to
-both keyboard and mouse input.  Usually, this means something screwy
-going on with acceleration, which historically has barely worked on this
-platform anyway.  AIGLX is something new showing up in the "Xorg.log.0"
-file that wasn't there the last time I had X11 working (which should
-tell you something about how long it has been), so that's a prime suspect.
+On Fri, Oct 05, 2018 at 12:07:04AM +0300, Mike Rapoport wrote:
+> When a memblock allocation APIs are called with align =3D 0, the alignmen=
+t is
+> implicitly set to SMP_CACHE_BYTES.
+>=20
+> Replace all such uses of memblock APIs with the 'align' parameter explici=
+tly
+> set to SMP_CACHE_BYTES and stop implicit alignment assignment in the
+> memblock internal allocation functions.
+>=20
+>%
+>=20
+> Suggested-by: Michal Hocko <mhocko@suse.com>
+> Signed-off-by: Mike Rapoport <rppt@linux.vnet.ibm.com>
 
-On the system configuration side of things, the video card is a Radeon 7500
-(RV200), which is pretty much as good as it gets on the Alpha.  Modern Xorg
-releases do a respectable job of figuring things out on their own as far as
-not needing to override anything (or at least not much) in a "xorg.conf"
-file, so I moved that out of the way as part of the debugging effort.
-That didn't make any difference as best I can tell, i.e., the display
-still initializes properly, and while Xorg.0.log has a lot more
-information related to "figuring things out" in it, there's nothing
-there to raise an eyebrow.
+  Acked-by: Paul Burton <paul.burton@mips.com> # MIPS part
 
-KDE and GNOME are both elephantine on a 1.5 GB machine in 2018, so I'm
-attempting to run with AfterStep.  It seems to mostly work, or *will*
-when I replace all the "x-terminal-emulator" in-/re-direction going on
-in the Wharf configuration.  Out of the box, the configuration seems
-predisposed to use the gnome terminal, whereas AfterStep should default
-to aterm --> urxvt.
-
-So, if someone can provide a hint or three as to how to make "sddm" more
-responsive, that would be much appreciated.  Alternatively, if I need to
-be using a different display manager, suggestions would be appreciated
-as long as they're window-manager-agnostic.  In particular, substantial
-dependencies on KDE infrastructure should probably be avoided :-(.
-
---Bob
-
+Thanks,
+    Paul
