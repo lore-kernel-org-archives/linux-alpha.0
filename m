@@ -1,35 +1,22 @@
-From: Meelis Roos <mroos@linux.ee>
-Subject: Relocation (type 4) overflow on alpha for big module
-Date: Sun, 14 Oct 2018 10:07:13 +0300
-Message-ID: <5bc11e00-258d-a6ea-fe63-ddcfdb847071@linux.ee>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: Re: Relocation (type 4) overflow on alpha for big module
+Date: Sun, 14 Oct 2018 12:33:06 -0500
+Message-ID: <20181014173306.GA14639@gherkin.frus.com>
+References: <5bc11e00-258d-a6ea-fe63-ddcfdb847071@linux.ee>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: et-EE
+Content-Disposition: inline
+In-Reply-To: <5bc11e00-258d-a6ea-fe63-ddcfdb847071@linux.ee>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Meelis Roos <mroos@linux.ee>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-I decided to try btrfs on one of my alphas and got a surprise - btrfs module does not load:
+On Sun, Oct 14, 2018 at 10:07:13AM +0300, Meelis Roos wrote:
+> I decided to try btrfs on one of my alphas and got a surprise - btrfs module does not load:
 
-modprobe: ERROR: could not insert 'btrfs': Exec format error
+Confirmed on a PWS 433au running 4.19.0-rc6 with latest "sid" toolchain.
 
-dmesg has
-
-module btrfs: Relocation (type 4) overflow vs btrfs_attach_transaction_barrier
-
-Happens both natively on alpha:
-binutils 2.30.0 (Gentoo 2.30 p2) and gcc version 7.3.0 (Gentoo 7.3.0-r3 p1.4)
-or in cross-compiling:
-binutils (GNU Binutils for Debian) 2.31.1 and gcc version 8.1.0 (Debian 8.1.0-12)
-
-btrfs.ko has size 2939856. Build-in btrfs initializes and tests itself just fine.
-
-This seems to have happened in the distant past:
-https://www.redhat.com/archives/axp-list/2005-March/msg00060.html
-
-Do we have a similar binutils problem again with big modules?
-
--- 
-Meelis Roos <mroos@linux.ee>
+--Bob
