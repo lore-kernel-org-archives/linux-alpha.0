@@ -1,136 +1,65 @@
-From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
-Subject: [PATCH stable v2 2/2] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
-Date: Mon, 22 Oct 2018 09:19:05 -0700
-Message-ID: <20181022161905.26589-2-hpa@zytor.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH stable v2 1/2] termios, tty/tty_baudrate.c: fix buffer
+ overrun
+Date: Tue, 23 Oct 2018 15:53:51 +0100
+Message-ID: <20181023145351.GA28516@kroah.com>
 References: <20181022161905.26589-1-hpa@zytor.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Return-path: <stable-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1540306433;
+        bh=JFz8FHM04e7ExSFZuStT+SdD+P10LDOVEef0HXREebg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OyNlfW0uStAuG4mgLc8upXUaonXGhtmhiz6ISzVNJ/btiKVhsvIbTYx6C+oY/cozx
+         UdsQPDoY8RGa6ES+Xk/mpquGOO9yoc6BJQkxrJKSWX6yJZTkiLMngLYqj/IygyrIt2
+         kwnmgjQjjUIuJ9vMmZvLkLs6ersRFlTBzAJ38vc8=
+Content-Disposition: inline
 In-Reply-To: <20181022161905.26589-1-hpa@zytor.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: stable-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: "H. Peter Anvin (Intel)" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>, stable@vger.kernel.org
+To: "H. Peter Anvin (Intel)" <hpa@zytor.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, Alan Cox <alan@lxorguk.ukuu.org.uk>, stable@vger.kernel.org
 
-Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
-using arbitrary flags. Because BOTHER is not defined, the general
-Linux code doesn't allow setting arbitrary baud rates, and because
-CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
-drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
+On Mon, Oct 22, 2018 at 09:19:04AM -0700, H. Peter Anvin (Intel) wrote:
+> From: "H. Peter Anvin" <hpa@zytor.com>
+> 
+> On architectures with CBAUDEX == 0 (Alpha and PowerPC), the code in tty_baudrate.c does
+> not do any limit checking on the tty_baudrate[] array, and in fact a
+> buffer overrun is possible on both architectures. Add a limit check to
+> prevent that situation.
+> 
+> This will be followed by a much bigger cleanup/simplification patch.
+> 
+> Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
+> Requested-by: Cc: Johan Hovold <johan@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jiri Slaby <jslaby@suse.com>
+> Cc: Al Viro <viro@zeniv.linux.org.uk>
+> Cc: Richard Henderson <rth@twiddle.net>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Kate Stewart <kstewart@linuxfoundation.org>
+> Cc: Philippe Ombredanne <pombredanne@nexb.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Eugene Syromiatnikov <esyr@redhat.com>
+> Cc: <linux-alpha@vger.kernel.org>
+> Cc: <linux-serial@vger.kernel.org>
+> Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+> Cc: <stable@vger.kernel.org>
+> ---
+>  drivers/tty/tty_baudrate.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Resolve both problems by #defining BOTHER to 037 on Alpha.
+As I think Al's big termios cleanups are going to be hitting Linus's
+tree soon, do you know how these patches interact with that?
 
-However, userspace still needs to know if setting BOTHER is actually
-safe given legacy kernels (does anyone actually care about that on
-Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
-though they use the same structure. Define struct termios2 just for
-compatibility; it is the exact same structure as struct termios. In a
-future patchset, this will be cleaned up so the uapi headers are
-usable from libc.
+This patch seems like it will not, so I'll be glad to queue that up
+after my first round of patches get merged to Linus later this week, but
+the second one worries me.
 
-Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Eugene Syromiatnikov <esyr@redhat.com>
-Cc: <linux-alpha@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: <stable@vger.kernel.org>
----
- arch/alpha/include/asm/termios.h       |  8 +++++++-
- arch/alpha/include/uapi/asm/ioctls.h   |  5 +++++
- arch/alpha/include/uapi/asm/termbits.h | 17 +++++++++++++++++
- 3 files changed, 29 insertions(+), 1 deletion(-)
+thanks,
 
-diff --git a/arch/alpha/include/asm/termios.h b/arch/alpha/include/asm/termios.h
-index 6a8c53dec57e..b7c77bb1bfd2 100644
---- a/arch/alpha/include/asm/termios.h
-+++ b/arch/alpha/include/asm/termios.h
-@@ -73,9 +73,15 @@
- })
- 
- #define user_termios_to_kernel_termios(k, u) \
--	copy_from_user(k, u, sizeof(struct termios))
-+	copy_from_user(k, u, sizeof(struct termios2))
- 
- #define kernel_termios_to_user_termios(u, k) \
-+	copy_to_user(u, k, sizeof(struct termios2))
-+
-+#define user_termios_to_kernel_termios_1(k, u) \
-+	copy_from_user(k, u, sizeof(struct termios))
-+
-+#define kernel_termios_to_user_termios_1(u, k) \
- 	copy_to_user(u, k, sizeof(struct termios))
- 
- #endif	/* _ALPHA_TERMIOS_H */
-diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
-index 3729d92d3fa8..dc8c20ac7191 100644
---- a/arch/alpha/include/uapi/asm/ioctls.h
-+++ b/arch/alpha/include/uapi/asm/ioctls.h
-@@ -32,6 +32,11 @@
- #define TCXONC		_IO('t', 30)
- #define TCFLSH		_IO('t', 31)
- 
-+#define TCGETS2		_IOR('T', 42, struct termios2)
-+#define TCSETS2		_IOW('T', 43, struct termios2)
-+#define TCSETSW2	_IOW('T', 44, struct termios2)
-+#define TCSETSF2	_IOW('T', 45, struct termios2)
-+
- #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
- #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
- #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
-diff --git a/arch/alpha/include/uapi/asm/termbits.h b/arch/alpha/include/uapi/asm/termbits.h
-index de6c8360fbe3..4575ba34a0ea 100644
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -26,6 +26,19 @@ struct termios {
- 	speed_t c_ospeed;		/* output speed */
- };
- 
-+/* Alpha has identical termios and termios2 */
-+
-+struct termios2 {
-+	tcflag_t c_iflag;		/* input mode flags */
-+	tcflag_t c_oflag;		/* output mode flags */
-+	tcflag_t c_cflag;		/* control mode flags */
-+	tcflag_t c_lflag;		/* local mode flags */
-+	cc_t c_cc[NCCS];		/* control characters */
-+	cc_t c_line;			/* line discipline (== c_cc[19]) */
-+	speed_t c_ispeed;		/* input speed */
-+	speed_t c_ospeed;		/* output speed */
-+};
-+
- /* Alpha has matching termios and ktermios */
- 
- struct ktermios {
-@@ -152,6 +165,7 @@ struct ktermios {
- #define B3000000  00034
- #define B3500000  00035
- #define B4000000  00036
-+#define BOTHER    00037
- 
- #define CSIZE	00001400
- #define   CS5	00000000
-@@ -169,6 +183,9 @@ struct ktermios {
- #define CMSPAR	  010000000000		/* mark or space (stick) parity */
- #define CRTSCTS	  020000000000		/* flow control */
- 
-+#define CIBAUD	07600000
-+#define IBSHIFT	16
-+
- /* c_lflag bits */
- #define ISIG	0x00000080
- #define ICANON	0x00000100
--- 
-2.14.4
-
+greg k-h
