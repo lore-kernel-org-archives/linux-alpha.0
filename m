@@ -1,56 +1,95 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 2/4] mm: speed up mremap by 500x on large regions (v2)
-Date: Mon, 29 Oct 2018 10:28:40 +0000
-Message-ID: <20181029102840.GC13965@arm.com>
-References: <20181013013200.206928-1-joel@joelfernandes.org>
- <20181013013200.206928-3-joel@joelfernandes.org>
- <20181024101255.it4lptrjogalxbey@kshutemo-mobl1>
- <20181024115733.GN8537@350D>
- <20181024125724.yf6frdimjulf35do@kshutemo-mobl1>
- <20181025020907.GA13560@joelaf.mtv.corp.google.com>
- <20181025101900.phqnqpoju5t2gar5@kshutemo-mobl1>
- <20181026211148.GA140716@joelaf.mtv.corp.google.com>
-Mime-Version: 1.0
+From: Firoz Khan <firoz.khan@linaro.org>
+Subject: [PATCH v2 0/5] alpha: system call table generation support
+Date: Thu,  1 Nov 2018 19:13:32 +0530
+Message-ID: <1541079817-3431-1-git-send-email-firoz.khan@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=Aq2ismV06kUtMdw76a7jFmIWugJfYMfogF8ILYQJUog=;
+        b=jJVLW4amcVwJPGMl/daHOL2njI+fc8edDKbJsYSBA6Vkrzp9Y+77w71RTzDSTlCxp0
+         QABG4L1A/5FRtQRYvEk9GdUfvLP2OygTuYSbRovKbPFpwILs6/5ys/i4hF2pqfNmaRgY
+         WXbJ/3Grb5YkCEIfpV6s4T5ipdSVQ5q0thlSM=
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=Z4ZJjOaGkSMLsPCbjsA6K1hsYkeciqbbOxQnSR9Ysr8=; b=V7ur7xIcY7pSDa
-	ksrFbFxKrFnfh1URyDeBbqjibENtVWg+qvGDgR9QhZfWy5HKwwzA3lg8I5ZC2B0uDV3CsdFoU8ASa
-	4lJlh0RkwlXxPTe+3ojgSTTZndO8+twJP4WfbA3FuLqkdSXQ/4blaUTWowJfTWChz6Rt9HzfauHlz
-	dm1OqRcWHysrfF5Tq41i1wECz/6GH3dECBW/F9yAVkAtVSbgXJhGi5CpcE4z+zLoW5jsSQjGl5D0n
-	D3rEKDJyzeUxth+X/1+kAWwfOEPrY5lR/dIRUS+pCik8GnClBr9du6/wl4cIm7X/SGUOG/hKlWVza
-	eFmp9IREL6Wo2bmxEn2A==;
-Content-Disposition: inline
-In-Reply-To: <20181026211148.GA140716@joelaf.mtv.corp.google.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Joel Fernandes <joel@joelfernandes.org>
-Cc: linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Balbir Singh <bsingharora@gmail.com>, Dave Hansen <dave.hansen@linux.intel.com>, mhocko@kernel.org, linux-mm@kvack.org, lokeshgidra@google.com, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, elfring@users.sourceforge.net, Jonas Bonn <jonas@southpole.se>, kvmarm@lists.cs.columbia.edu, dancol@google.com, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-xtensa@linux-xtensa.org, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>, hughd@google.com, "James E.J. Bottomley" <jejb@parisc-linux.org>, kasan-dev@googlegroups.com, anton.ivanov@kot-begemot.co.uk, Ingo Molnar <mingo@redhat.com>, Geer
+To: linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>
+Cc: y2038@lists.linaro.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, arnd@arndb.de, deepa.kernel@gmail.com, marcin.juszkiewicz@linaro.org, firoz.khan@linaro.org
 
-On Fri, Oct 26, 2018 at 02:11:48PM -0700, Joel Fernandes wrote:
-> My thinking is to take it slow and get the patch in in its current state,
-> since it improves x86. Then as a next step, look into why the arm64 tlb
-> flushes are that expensive and look into optimizing that. On arm64 I am
-> testing on a 4.9 kernel so I'm wondering there are any optimizations since
-> 4.9 that can help speed it up there. After that, if all else fails about
-> speeding up arm64, then I look into developing the cleanest possible solution
-> where we can keep the lock held for longer and flush lesser.
+The purpose of this patch series is, we can easily
+add/modify/delete system call table support by cha-
+nging entry in syscall.tbl file instead of manually
+changing many files. The other goal is to unify the 
+system call table generation support implementation 
+across all the architectures. 
 
-We rewrote a good chunk of the arm64 TLB invalidation and core mmu_gather
-code this merge window, so please do have another look at -rc1!
+The system call tables are in different format in 
+all architecture. It will be difficult to manually
+add, modify or delete the system calls in the resp-
+ective files manually. To make it easy by keeping a 
+script and which'll generate uapi header file and 
+syscall table file.
 
-Will
+syscall.tbl contains the list of available system 
+calls along with system call number and correspond-
+ing entry point. Add a new system call in this arch-
+itecture will be possible by adding new entry in the
+syscall.tbl file.
+
+Adding a new table entry consisting of:
+        - System call number.
+        - ABI.
+        - System call name.
+        - Entry point name.
+
+ARM, s390 and x86 architecuture does exist the sim-
+ilar support. I leverage their implementation to come
+up with a generic solution.
+
+I have done the same support for work for ia64, m68k, 
+microblaze, mips, parisc, powerpc, sh sparc and xtensa.
+Below mentioned git repository contains more details 
+about the workflow.
+
+ https://github.com/frzkhn/system_call_table_generator/
+
+Finally, this is the ground work to solve the Y2038
+issue. We need to add two dozen of system calls to solve
+Y2038 issue. So this patch series will help to add new 
+system calls easily by adding new entry in the syscall.tbl.
+
+Changes since v1:
+ - optimized/updated the syscall table generation 
+   scripts.
+ - fixed all mixed indentation issues in syscall.tbl.
+ - added "comments" in syscall.tbl.
+
+Firoz Khan (5):
+  alpha: move __IGNORE* entries to non uapi header
+  alpha: remove CONFIG_OSF4_COMPAT flag from syscall table
+  alpha: add __NR_syscalls along with NR_SYSCALLS
+  alpha: add system call table generation support
+  alpha: generate uapi header and syscall table header files
+
+ arch/alpha/Makefile                      |   3 +
+ arch/alpha/include/asm/Kbuild            |   2 +-
+ arch/alpha/include/asm/unistd.h          |  23 +-
+ arch/alpha/include/uapi/asm/Kbuild       |   1 +
+ arch/alpha/include/uapi/asm/unistd.h     | 484 +--------------------------
+ arch/alpha/kernel/osf_sys.c              |   9 +-
+ arch/alpha/kernel/syscalls/Makefile      |  38 +++
+ arch/alpha/kernel/syscalls/syscall.tbl   | 453 ++++++++++++++++++++++++++
+ arch/alpha/kernel/syscalls/syscallhdr.sh |  36 ++
+ arch/alpha/kernel/syscalls/syscalltbl.sh |  36 ++
+ arch/alpha/kernel/systbls.S              | 542 +------------------------------
+ 11 files changed, 600 insertions(+), 1027 deletions(-)
+ create mode 100644 arch/alpha/kernel/syscalls/Makefile
+ create mode 100644 arch/alpha/kernel/syscalls/syscall.tbl
+ create mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
+ create mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
+
+-- 
+1.9.1
+
