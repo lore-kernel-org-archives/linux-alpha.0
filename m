@@ -1,62 +1,50 @@
-From: Bob Tracy <rct@gherkin.frus.com>
-Subject: Re: [alpha] Debian 9.0 NETINST fails
-Date: Fri, 2 Nov 2018 13:56:23 -0500
-Message-ID: <20181102185623.GB15241@gherkin.frus.com>
-References: <20181102184151.GA15241@gherkin.frus.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [PATCH] include/asm/cmpxchg.h: Remove duplicate header
+Date: Fri, 2 Nov 2018 12:01:18 -0700
+Message-ID: <CAEdQ38Fh99QmusGbEBi9TjUKQbQDX90pEaUC5Y=s-BL=RQ3o_A@mail.gmail.com>
+References: <20181102152637.GA3105@hp-pavilion-15-notebook-pc-brajeswar>
+ <20181102182905.3klrdw4dxapeoiib@tower> <CAFqt6zYmBFQ7gDJJkYAhPzPYyLGsDqOdr8ctXmYbd7e9sv75xg@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-Content-Disposition: inline
-In-Reply-To: <20181102184151.GA15241@gherkin.frus.com>
-Resent-Message-ID: <PV8j2xgdIfC.A.BYC.s3J3bB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/20181102185623.GB15241@gherkin.frus.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IhU2XrXFH1Kd1kmLevrD6bAw5GU/51Fr/Y3DBQC8Uo4=;
+        b=uyLPVGUfxtvGIuY4oZxPSD3ztYWoyWW/md8zYE3HJrjiFR8SRWMUkTetTfbGuOf2Ac
+         /Gu7xL5l5a5Tjsn+WW1jdUmlJ5FC6FPZCi4JrM7B8wSOJX/fRirhUg4vSs8jCgnYnyij
+         blqDJ4AHO/45pHHV0BYsu19iaefn2112IHa7ELWXJqFpUHrXJaeBJtXvp1DgjznqcNsE
+         wtbtMoThH1cmBD7lksigWNSbDSTFNsS+tLmWQdmgPupnTj3DPJuHpbrKUr4ibXqf8NnH
+         RV0pyx3hx+rDENUX7S1L3u4NginaXgqgcCrt98cRpWzgnQEZ03LCkr7JeZmP7ic6X/7q
+         +8iA==
+In-Reply-To: <CAFqt6zYmBFQ7gDJJkYAhPzPYyLGsDqOdr8ctXmYbd7e9sv75xg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: debian-alpha@lists.debian.org
-Cc: linux-alpha@vger.kernel.org, mcree@orcon.net.nz
+To: jrdr.linux@gmail.com
+Cc: Michael Cree <mcree@orcon.net.nz>, brajeswar.linux@gmail.com, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Andrea Parri <parri.andrea@gmail.com>, Ingo Molnar <mingo@kernel.org>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, linux-alpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, sabyasachi.linux@gmail.com
 
-(Dyslexia-related failure on original copy to Michael)
+On Fri, Nov 2, 2018 at 11:55 AM Souptick Joarder <jrdr.linux@gmail.com> wrote:
+> We run the static analyser "make includecheck" which list out files where
+> duplicate headers can be removed and based on that we thought to remove
+> from this file. Didn't understood about the existence of second include ??
 
-On Fri, Nov 02, 2018 at 01:41:51PM -0500, Bob Tracy wrote:
-> Quick background info: I'm having to do a "from scratch" install on my
-> PWS 433au (miata) due to a SCSI disk failure.
-> 
-> The Debian 9.0 NETINST image (from
-> "http://cdimage.debian.org/cdimage/ports/9.0/alpha/iso-cd/") seems to
-> boot ok from SRM (>>> b dka[device_spec]) and takes me to the usual
-> "aboot" menu.  Typing "l" to get a list of pre-configured kernels gets
-> me three items, all of which are designated "n" rather than the expected
-> "0", "1", "2".  The first kernel seems to be the desired one, as the
-> other two expect a serial console on ttyS0 and ttyS1 respectively.
-> 
-> Typing "0" at the "aboot" prompt seems to do the right thing as far as
-> selecting the first item in the list.  The "initrd" loads, and at the
-> point where a message gets printed out to the effect it's booting the
-> kernel with the expected options (as listed for the first kernel in the
-> aboot menu), I get a halt with code 5 (CPU 0 halted), and I'm back at
-> the SRM prompt.  Completely repeatable.
-> 
-> Before I try the 8.0 NETINST image, if anyone has noticed anything
-> fundamentally wrong with how I'm trying to boot the 9.0 image, kindly
-> let me know.
-> 
-> Possibly relevant: I'm using the Radeon video card that was in the
-> machine when the disk failed.  I have the original TGA video card if the
-> NETINST kernel can't handle the Radeon, but would rather not have to
-> swap out the video card if I don't absolutely have to.
 
-Additional info...  Frank Scheiner reported similar badness on his PWS
-back in March of 2017.  See the "debian-alpha" archive link:
+#define ____xchg(type, args...)         __xchg ## type ## _local(args)
+#define ____cmpxchg(type, args...)      __cmpxchg ## type ## _local(args)
+#include <asm/xchg.h>
+[snip]
+#undef ____xchg
+#undef ____cmpxchg
+#define ____xchg(type, args...)         __xchg ##type(args)
+#define ____cmpxchg(type, args...)      __cmpxchg ##type(args)
+#include <asm/xchg.h>
 
-https://lists.debian.org/debian-alpha/2017/03/msg00007.html
+asm/xchg.h has a comment at the top that says
 
-Executive summary: SMP 4.x kernels work fine, but the generic Debian
-kernel does *not* (or at least didn't at that time).
-
---Bob
-
+/*
+ * xchg/xchg_local and cmpxchg/cmpxchg_local share the same code
+ * except that local version do not have the expensive memory barrier.
+ * So this file is included twice from asm/cmpxchg.h.
+ */
