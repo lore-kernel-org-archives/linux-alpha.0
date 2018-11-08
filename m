@@ -1,163 +1,128 @@
-From: <gregkh@linuxfoundation.org>
-Subject: patch "arch/alpha, termios: implement BOTHER, IBSHIFT and termios2" added to tty-linus
-Date: Thu, 08 Nov 2018 05:32:40 -0800
-Message-ID: <1541683960141253@kroah.com>
+From: Joel Fernandes <joel@joelfernandes.org>
+Subject: [PATCH -next-akpm 0/3] Add support for fast mremap
+Date: Thu,  8 Nov 2018 10:11:58 -0800
+Message-ID: <20181108181201.88826-1-joelaf@google.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1541683960;
-        bh=6qgsZXUc1FDTYtQ3tOpEDdbpb5blRLYfrmUGR60CP3k=;
-        h=Subject:To:From:Date:From;
-        b=Hm3TP0NDpLu/fa2diJVoUIC66riE27wlKMpGrZ25bAbXJEMfXme9ML5WtjiRf+uzY
-         VVtPbjFbFckHAsQDMM5iV6hk7cdEg8B+uoUSyaXoMTT5Xkb1IuGl/jz4z7gHXcxxUI
-         UCAZ9mLQhlz800ByXS+J+7JZiUFP9vVcT2tvPJXw=
-Sender: stable-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: hpa@zytor.com, alan@lxorguk.ukuu.org.uk, esyr@redhat.com, gregkh@linuxfoundation.org, ink@jurassic.park.msu.ru, johan@kernel.org, jslaby@suse.com, kstewart@linuxfoundation.org, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, mattst88@gmail.com, pombredanne@nexb.com, rth@twiddle.net, stable@vger.kernel.org, tglx@linutronix.de, viro@zeniv.linux.org.uk
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To
+	:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
+	List-Owner; bh=Bdar5OLDgwW+6zYoh19yhVf09YDUtIoxXu0HDsx1usg=; b=EhjjzrBWVxANfZ
+	xRm/7pKN1Sfze+WNkV1iAakvC78Y0MJZPwGbxYu4001Zgi0UrH/shj4+1zQ/a9VKepD7Je+Fmr0lj
+	H2lwHEjxPY8M+rbvGYuHA4YrVB7xCCFN9as9OaoL4O6PKl8jQpSgc5VvMU1AVOedV8NgfpI7Geoa6
+	RysdgxUwDplfisJtTtpOTK9BfEX55rcmlvF/vVSN/MbgR/y0lVY1pLeDO1fOMXTutWSwPLXgyKhH2
+	8flgVbD5XEcs+JCz81QUwQtPWheHcp0r8C/S0cVKr7S0fuFvS4vwLVM02sXsCpJpEWBb5kXHH6M9W
+	EMk5lJBf/CXLBr3J1ctA==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=joelfernandes.org; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=B0gA8LsXswfrIAmbtYisG71JTJmLmakfJ+ILccJByaU=;
+ b=buc3UhoKkeYLzhfy1LFvSgTevjKzuw+S/EPNcM7/J1DWFKB4AczvPH1MMD5Ak06Z9l
+ 1Xlxhv1dwM8hMSb36qsqIYc3EEW/DmX/L4l/q+89z1P8aLicH26pXwnG2h8/KhPOVHe+
+ TvMvNwTMBp+zR1I4QvrRyuY93K0+fxHhDJoc8=
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: linux-kernel@vger.kernel.org
+Cc: Joel Fernandes <joelaf@google.com>, linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, Will Deacon <will.deacon@arm.com>, Michal Hocko <mhocko@kernel.org>, linux-mm@kvack.org, lokeshgidra@google.com, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, anton.ivanov@kot-begemot.co.uk, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, dancol@google.com, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-xtensa@linux-xtensa.org, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, "maintainer:X86 ARCHITECTURE 32-BIT AND 64-BIT" <x86@kernel.org>, hughd@google.com, "James E.J. Bottomley" <jejb@parisc-linux.org>, kasan-dev@googlegroups.com, kvmarm@lists.cs.columbia.ed
 
+Hi,
+Here is the "fast mremap" series. This just a repost with Kirill's Acked-bys
+added and William's Reviewed-by added. Also fixed a UML build error reported
+last week. I would like this to be considered for linux -next. The performance
+numbers in the series are for testing on x86. The config enablement patch for
+arm64 will be posted in the future after testing (see notes below).
 
-This is a note to let you know that I've just added the patch titled
+List of patches in series:
 
-    arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
+(1) mm: select HAVE_MOVE_PMD in x86 for faster mremap
 
-to my tty git tree which can be found at
-    git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git
-in the tty-linus branch.
+(2) mm: speed up mremap by 20x on large regions (v5)
+v1->v2: Added support for per-arch enablement (Kirill Shutemov)
+v2->v3: Updated commit message to state the optimization may also
+	run for non-thp type of systems (Daniel Col).
+v3->v4: Remove useless pmd_lock check (Kirill Shutemov)
+	Rebased ontop of Linus's master, updated perf results based
+        on x86 testing. Added Kirill's Acks.
+v4->v5: Added William's Reviewed-by. Fixed arch/um build error
+	due to set_pmd_at not defined. Rebased on linux-next/akpm.
 
-The patch will show up in the next release of the linux-next tree
-(usually sometime within the next 24 hours during the week.)
+(3) mm: treewide: remove unused address argument from pte_alloc functions (v2)
+v1->v2: fix arch/um/ prototype which was missed in v1 (Anton Ivanov)
+        update changelog with manual fixups for m68k and microblaze.
 
-The patch will hopefully also be merged in Linus's tree for the
-next -rc kernel release.
+not included - (4) mm: select HAVE_MOVE_PMD in arm64 for faster mremap
+    This patch is dropped since last posting pending further performance
+    testing on arm64 with new TLB gather updates. See notes in patch
+    titled "mm: speed up mremap by 500x on large regions" for more
+    details.
 
-If you have any questions about this process, please let me know.
+Joel Fernandes (Google) (3):
+mm: treewide: remove unused address argument from pte_alloc functions
+(v2)
+mm: speed up mremap by 20x on large regions (v5)
+mm: select HAVE_MOVE_PMD in x86 for faster mremap
 
+arch/Kconfig                                 |  5 ++
+arch/alpha/include/asm/pgalloc.h             |  6 +-
+arch/arc/include/asm/pgalloc.h               |  5 +-
+arch/arm/include/asm/pgalloc.h               |  4 +-
+arch/arm64/include/asm/pgalloc.h             |  4 +-
+arch/hexagon/include/asm/pgalloc.h           |  6 +-
+arch/ia64/include/asm/pgalloc.h              |  5 +-
+arch/m68k/include/asm/mcf_pgalloc.h          |  8 +--
+arch/m68k/include/asm/motorola_pgalloc.h     |  4 +-
+arch/m68k/include/asm/sun3_pgalloc.h         |  6 +-
+arch/microblaze/include/asm/pgalloc.h        | 19 +-----
+arch/microblaze/mm/pgtable.c                 |  3 +-
+arch/mips/include/asm/pgalloc.h              |  6 +-
+arch/nds32/include/asm/pgalloc.h             |  5 +-
+arch/nios2/include/asm/pgalloc.h             |  6 +-
+arch/openrisc/include/asm/pgalloc.h          |  5 +-
+arch/openrisc/mm/ioremap.c                   |  3 +-
+arch/parisc/include/asm/pgalloc.h            |  4 +-
+arch/powerpc/include/asm/book3s/32/pgalloc.h |  4 +-
+arch/powerpc/include/asm/book3s/64/pgalloc.h | 12 ++--
+arch/powerpc/include/asm/nohash/32/pgalloc.h |  4 +-
+arch/powerpc/include/asm/nohash/64/pgalloc.h |  6 +-
+arch/powerpc/mm/pgtable-book3s64.c           |  2 +-
+arch/powerpc/mm/pgtable_32.c                 |  4 +-
+arch/riscv/include/asm/pgalloc.h             |  6 +-
+arch/s390/include/asm/pgalloc.h              |  4 +-
+arch/sh/include/asm/pgalloc.h                |  6 +-
+arch/sparc/include/asm/pgalloc_32.h          |  5 +-
+arch/sparc/include/asm/pgalloc_64.h          |  6 +-
+arch/sparc/mm/init_64.c                      |  6 +-
+arch/sparc/mm/srmmu.c                        |  4 +-
+arch/um/include/asm/pgalloc.h                |  4 +-
+arch/um/kernel/mem.c                         |  4 +-
+arch/unicore32/include/asm/pgalloc.h         |  4 +-
+arch/x86/Kconfig                             |  1 +
+arch/x86/include/asm/pgalloc.h               |  4 +-
+arch/x86/mm/pgtable.c                        |  4 +-
+arch/xtensa/include/asm/pgalloc.h            |  8 +--
+include/linux/mm.h                           | 13 ++--
+mm/huge_memory.c                             |  8 +--
+mm/kasan/kasan_init.c                        |  2 +-
+mm/memory.c                                  | 17 +++---
+mm/migrate.c                                 |  2 +-
+mm/mremap.c                                  | 64 +++++++++++++++++++-
+mm/userfaultfd.c                             |  2 +-
+virt/kvm/arm/mmu.c                           |  2 +-
+46 files changed, 165 insertions(+), 147 deletions(-)
 
-From d0ffb805b729322626639336986bc83fc2e60871 Mon Sep 17 00:00:00 2001
-From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
-Date: Mon, 22 Oct 2018 09:19:05 -0700
-Subject: arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
-
-Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
-using arbitrary flags. Because BOTHER is not defined, the general
-Linux code doesn't allow setting arbitrary baud rates, and because
-CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
-drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
-
-Resolve both problems by #defining BOTHER to 037 on Alpha.
-
-However, userspace still needs to know if setting BOTHER is actually
-safe given legacy kernels (does anyone actually care about that on
-Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
-though they use the same structure. Define struct termios2 just for
-compatibility; it is the exact same structure as struct termios. In a
-future patchset, this will be cleaned up so the uapi headers are
-usable from libc.
-
-Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Eugene Syromiatnikov <esyr@redhat.com>
-Cc: <linux-alpha@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/alpha/include/asm/termios.h       |  8 +++++++-
- arch/alpha/include/uapi/asm/ioctls.h   |  5 +++++
- arch/alpha/include/uapi/asm/termbits.h | 17 +++++++++++++++++
- 3 files changed, 29 insertions(+), 1 deletion(-)
-
-diff --git a/arch/alpha/include/asm/termios.h b/arch/alpha/include/asm/termios.h
-index 6a8c53dec57e..b7c77bb1bfd2 100644
---- a/arch/alpha/include/asm/termios.h
-+++ b/arch/alpha/include/asm/termios.h
-@@ -73,9 +73,15 @@
- })
- 
- #define user_termios_to_kernel_termios(k, u) \
--	copy_from_user(k, u, sizeof(struct termios))
-+	copy_from_user(k, u, sizeof(struct termios2))
- 
- #define kernel_termios_to_user_termios(u, k) \
-+	copy_to_user(u, k, sizeof(struct termios2))
-+
-+#define user_termios_to_kernel_termios_1(k, u) \
-+	copy_from_user(k, u, sizeof(struct termios))
-+
-+#define kernel_termios_to_user_termios_1(u, k) \
- 	copy_to_user(u, k, sizeof(struct termios))
- 
- #endif	/* _ALPHA_TERMIOS_H */
-diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
-index 3729d92d3fa8..dc8c20ac7191 100644
---- a/arch/alpha/include/uapi/asm/ioctls.h
-+++ b/arch/alpha/include/uapi/asm/ioctls.h
-@@ -32,6 +32,11 @@
- #define TCXONC		_IO('t', 30)
- #define TCFLSH		_IO('t', 31)
- 
-+#define TCGETS2		_IOR('T', 42, struct termios2)
-+#define TCSETS2		_IOW('T', 43, struct termios2)
-+#define TCSETSW2	_IOW('T', 44, struct termios2)
-+#define TCSETSF2	_IOW('T', 45, struct termios2)
-+
- #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
- #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
- #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
-diff --git a/arch/alpha/include/uapi/asm/termbits.h b/arch/alpha/include/uapi/asm/termbits.h
-index de6c8360fbe3..4575ba34a0ea 100644
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -26,6 +26,19 @@ struct termios {
- 	speed_t c_ospeed;		/* output speed */
- };
- 
-+/* Alpha has identical termios and termios2 */
-+
-+struct termios2 {
-+	tcflag_t c_iflag;		/* input mode flags */
-+	tcflag_t c_oflag;		/* output mode flags */
-+	tcflag_t c_cflag;		/* control mode flags */
-+	tcflag_t c_lflag;		/* local mode flags */
-+	cc_t c_cc[NCCS];		/* control characters */
-+	cc_t c_line;			/* line discipline (== c_cc[19]) */
-+	speed_t c_ispeed;		/* input speed */
-+	speed_t c_ospeed;		/* output speed */
-+};
-+
- /* Alpha has matching termios and ktermios */
- 
- struct ktermios {
-@@ -152,6 +165,7 @@ struct ktermios {
- #define B3000000  00034
- #define B3500000  00035
- #define B4000000  00036
-+#define BOTHER    00037
- 
- #define CSIZE	00001400
- #define   CS5	00000000
-@@ -169,6 +183,9 @@ struct ktermios {
- #define CMSPAR	  010000000000		/* mark or space (stick) parity */
- #define CRTSCTS	  020000000000		/* flow control */
- 
-+#define CIBAUD	07600000
-+#define IBSHIFT	16
-+
- /* c_lflag bits */
- #define ISIG	0x00000080
- #define ICANON	0x00000100
--- 
-2.19.1
-
-
+--
+2.19.1.930.g4563a0d9d0-goog
