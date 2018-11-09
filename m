@@ -1,70 +1,58 @@
-From: Joel Fernandes <joel@joelfernandes.org>
-Subject: [PATCH -next-akpm 3/3] mm: select HAVE_MOVE_PMD in x86 for faster
- mremap
-Date: Thu,  8 Nov 2018 10:12:01 -0800
-Message-ID: <20181108181201.88826-4-joelaf@google.com>
-References: <20181108181201.88826-1-joelaf@google.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [RFC] remove the ->mapping_error method from dma_map_ops
+Date: Fri,  9 Nov 2018 09:46:30 +0100
+Message-ID: <20181109084632.22848-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
-	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=vOmGpS+xE0zcmUE48zeU9vsU8JY3XV5cOEvkstaN+5Q=; b=Hrv+JghhhO9eoY
-	EH7m/lX0OZjUTmzF/zOd7PFbjJO4rI2oZairVNqUujBzrRd3uoZdyXeWJo4Jwefg1RvGV8QCN09h8
-	R3NA77rQTiwlOzcMP534GQ2RUZHbNUfkuGWsoz6K6szdywqdQ3Ng+7Fxkucj4frlMadXHG+1W1txX
-	O77Po03ZeZTUXZkMrHFcUk4NxFG2OJdmcu+7OSr3K0pfAaCJBA0u/lpDF3cJo5i+Uu09AFTKG0MCm
-	j5NCpBkox1jZyW1sEMwhjVlfTeL2G90ayxU1b5cdhXM1yB1YTc4cXI+Pm2bzngSv7BqscOCDv+Fdn
-	RvZx9ueIhK7e0z+iMU5w==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=joelfernandes.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=ba1SMLAqIgmFI6NH+RBLXEYzItBpgF4xQcT0H6ilVn4=;
- b=Sd/TmY9ueaUX+dApcoIPz7eAiunY6S8dWblAnYCegng0zsspcZ/BAyYvXqKHGnfFnr
- jrW93Eh4p6ZETBfFvU23lIxT3wP6dIvp1WSxOZnUAcSq8Wm9nP/e0Wijn/ien3UEVX4p
- QX1eigA/kEAUmS4Qut12n2rTOw/aGSwvEtyjY=
-In-Reply-To: <20181108181201.88826-1-joelaf@google.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-mips@linux-mips.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, Will Deacon <will.deacon@arm.com>, Michal Hocko <mhocko@kernel.org>, linux-mm@kvack.org, lokeshgidra@google.com, "Joel Fernandes (Google)" <joel@joelfernandes.org>, linux-riscv@lists.infradead.org, anton.ivanov@kot-begemot.co.uk, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, dancol@google.com, Yoshinori Sato <ysato@users.sourceforge.jp>, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, "maintainer:X86 ARCHITECTURE 32-BIT AND 64-BIT" <x86@kernel.org>, hughd@google.com, "James E.J. Bottomley" <jejb@parisc-linux.org>, kasan-dev@googlegroups.com, kvmarm@l
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=De2A+1IHJlYtybiY9A9qCj5zOmyIhenMIF4tqQhXVsI=; b=U3ABsBhfauT6Zg3v3DAHwrO1V
+        +sOmLkjJ3w1NEbIyAb8kRoWeAQKeHRXdVqtttASanv8RE9azt2xNPy2RC94Cu7bwZpylGP++aaiwU
+        UdQBHTlfVuIMPrbvo0GBWD9vAd5nLWrbvWAcAYnEu4wvhBrsPAm9TpGDpxAdu+SBN4DuS+BwMEIi5
+        635+nVrr7FjO1s/cCru2V7v13Nncv5B76FOi20Kyi9FjUYt5DDMT04KFnoLj+24RKpmA13IoqbXlg
+        1m771/qNeP22p0T/f5DXccUKiAttAcaNC9edarXpwC+ndY1Y4fx0pKnbBuCE/4Xypt1q8aC3V+B6u
+    
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: iommu@lists.linux-foundation.org
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
 
-From: "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Error reporting for the dma_map_single and dma_map_page operations is
+currently a mess.  Both APIs directly return the dma_addr_t to be used for
+the DMA, with a magic error escape that is specific to the instance and
+checked by another method provided.  This has a few downsides:
 
-Moving page-tables at the PMD-level on x86 is known to be safe. Enable
-this option so that we can do fast mremap when possible.
+ - the error check is easily forgotten and a __must_check marker doesn't
+   help as the value always is consumed anyway
+ - the error checking requires another indirect call, which have gotten
+   incredibly expensive
+ - a lot of code is wasted on implementing these methods
 
-Suggested-by: Kirill A. Shutemov <kirill@shutemov.name>
-Acked-by: Kirill A. Shutemov <kirill@shutemov.name>
-Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
----
- arch/x86/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+The historical reason for this is that people thought DMA mappings would
+not fail when the API was created, which sounds like a really bad
+assumption in retrospective, and then we tried to cram error handling
+onto it later on.
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 605bec0c228f..05f3667de0d2 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -173,6 +173,7 @@ config X86
- 	select HAVE_MEMBLOCK_NODE_MAP
- 	select HAVE_MIXED_BREAKPOINTS_REGS
- 	select HAVE_MOD_ARCH_SPECIFIC
-+	select HAVE_MOVE_PMD
- 	select HAVE_NMI
- 	select HAVE_OPROFILE
- 	select HAVE_OPTPROBES
--- 
-2.19.1.930.g4563a0d9d0-goog
+There basically are two variants:  the error code is 0 because the
+implementation will never return 0 as a valid DMA address, or the error
+code is all-F as the implementation won't ever return an address that
+high.  The old AMD GART is the only one not falling into these two camps
+as it picks sort of a relative zero relative to where it is mapped.
+
+The 0 return doesn't work for a lot of IOMMUs that start allocating
+bus space from address zero, so we can't consolidate on that, but I think
+we can move everyone to all-Fs, which the patch here does.  The reason
+for that is that there is only one way to ever get this address: by
+doing a 1-byte long, 1-byte aligned mapping, but all our mappings
+are not only longer but generally aligned, and the mappings have to
+keep at least the basic alignment.  Please try to poke holes into this
+idea as it would simplify our logic a lot, and also allow to change
+at least the not so commonly used yet dma_map_single_attrs and
+dma_map_page_attrs to actually return an error code and further improve
+the error handling flow in the drivers.
