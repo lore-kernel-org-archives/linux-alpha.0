@@ -1,126 +1,66 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/2] dma-mapping: remove ->mapping_error
-Date: Fri, 9 Nov 2018 14:41:18 +0000
-Message-ID: <75c72464-1ff6-7c53-2cdb-0c5882c190aa@arm.com>
+From: David Miller <davem@davemloft.net>
+Subject: Re: [RFC] remove the ->mapping_error method from dma_map_ops
+Date: Fri, 09 Nov 2018 15:12:34 -0800 (PST)
+Message-ID: <20181109.151234.2231390463846593374.davem@davemloft.net>
 References: <20181109084632.22848-1-hch@lst.de>
- <20181109084632.22848-2-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181109084632.22848-2-hch@lst.de>
-Content-Language: en-GB
+In-Reply-To: <20181109084632.22848-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-Cc: linux-arch@vger.kernel.org, x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Type: Text/Plain; charset="us-ascii"
+To: hch@lst.de
+Cc: iommu@lists.linux-foundation.org, torvalds@linux-foundation.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
 
-On 09/11/2018 08:46, Christoph Hellwig wrote:
-[...]
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 1167ff0416cf..cfb422e17049 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -55,8 +55,6 @@
->   #include "amd_iommu_types.h"
->   #include "irq_remapping.h"
->   
-> -#define AMD_IOMMU_MAPPING_ERROR	0
-> -
->   #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
->   
->   #define LOOP_TIMEOUT	100000
-> @@ -2339,7 +2337,7 @@ static dma_addr_t __map_single(struct device *dev,
->   	paddr &= PAGE_MASK;
->   
->   	address = dma_ops_alloc_iova(dev, dma_dom, pages, dma_mask);
-> -	if (address == AMD_IOMMU_MAPPING_ERROR)
-> +	if (address == DMA_MAPPING_ERROR)
+From: Christoph Hellwig <hch@lst.de>
+Date: Fri,  9 Nov 2018 09:46:30 +0100
 
-This for one is clearly broken, because the IOVA allocator still returns 
-0 on failure here...
+> Error reporting for the dma_map_single and dma_map_page operations is
+> currently a mess.  Both APIs directly return the dma_addr_t to be used for
+> the DMA, with a magic error escape that is specific to the instance and
+> checked by another method provided.  This has a few downsides:
+> 
+>  - the error check is easily forgotten and a __must_check marker doesn't
+>    help as the value always is consumed anyway
+>  - the error checking requires another indirect call, which have gotten
+>    incredibly expensive
+>  - a lot of code is wasted on implementing these methods
+> 
+> The historical reason for this is that people thought DMA mappings would
+> not fail when the API was created, which sounds like a really bad
+> assumption in retrospective, and then we tried to cram error handling
+> onto it later on.
+> 
+> There basically are two variants:  the error code is 0 because the
+> implementation will never return 0 as a valid DMA address, or the error
+> code is all-F as the implementation won't ever return an address that
+> high.  The old AMD GART is the only one not falling into these two camps
+> as it picks sort of a relative zero relative to where it is mapped.
+> 
+> The 0 return doesn't work for a lot of IOMMUs that start allocating
+> bus space from address zero, so we can't consolidate on that, but I think
+> we can move everyone to all-Fs, which the patch here does.  The reason
+> for that is that there is only one way to ever get this address: by
+> doing a 1-byte long, 1-byte aligned mapping, but all our mappings
+> are not only longer but generally aligned, and the mappings have to
+> keep at least the basic alignment.  Please try to poke holes into this
+> idea as it would simplify our logic a lot, and also allow to change
+> at least the not so commonly used yet dma_map_single_attrs and
+> dma_map_page_attrs to actually return an error code and further improve
+> the error handling flow in the drivers.
 
->   		goto out;
->   
->   	prot = dir2prot(direction);
-> @@ -2376,7 +2374,7 @@ static dma_addr_t __map_single(struct device *dev,
->   
->   	dma_ops_free_iova(dma_dom, address, pages);
->   
-> -	return AMD_IOMMU_MAPPING_ERROR;
-> +	return DMA_MAPPING_ERROR;
->   }
->   
->   /*
-> @@ -2427,7 +2425,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
->   	if (PTR_ERR(domain) == -EINVAL)
->   		return (dma_addr_t)paddr;
->   	else if (IS_ERR(domain))
-> -		return AMD_IOMMU_MAPPING_ERROR;
-> +		return DMA_MAPPING_ERROR;
->   
->   	dma_mask = *dev->dma_mask;
->   	dma_dom = to_dma_ops_domain(domain);
-> @@ -2504,7 +2502,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
->   	npages = sg_num_pages(dev, sglist, nelems);
->   
->   	address = dma_ops_alloc_iova(dev, dma_dom, npages, dma_mask);
-> -	if (address == AMD_IOMMU_MAPPING_ERROR)
-> +	if (address == DMA_MAPPING_ERROR)
+I have no problem with patch #1, it looks great.
 
-..and here.
+But patch #2 on the other hand, not so much.
 
-I very much agree with the concept, but I think the way to go about it 
-is to convert the implementations which need it to the standardised 
-*_MAPPING_ERROR value one-by-one, and only then then do the big sweep to 
-remove them all. That has more of a chance of getting worthwhile review 
-and testing from the respective relevant parties (I'll confess I came 
-looking for this bug specifically, since I happened to recall amd_iommu 
-having a tricky implicit reliance on the old DMA_ERROR_CODE being 0 on x86).
+I hate seeing values returned by reference, it adds cost especially
+on cpus where all argments and return values fit in registers (we end
+up forcing a stack slot and memory references).
 
-In terms of really minimising the error-checking overhead it's a bit of 
-a shame that DMA_MAPPING_ERROR = 0 doesn't seem viable as the thing to 
-standardise on, since that has advantages at the micro-optimisation 
-level for many ISAs - fixing up the legacy IOMMU code doesn't seem 
-insurmountable, but I suspect there may well be non-IOMMU platforms 
-where DMA to physical address 0 is a thing :(
+And we don't need it here.
 
-(yeah, I know saving a couple of instructions and potential register 
-allocations is down in the noise when we're already going from an 
-indirect call to an inline comparison; I'm mostly just thinking out loud 
-there)
+DMA addresses are like pointers, and therefore we can return errors and
+valid success values in the same dma_addr_t just fine.  PTR_ERR() --> DMA_ERR(),
+IS_PTR_ERR() --> IS_DMA_ERR, etc.
 
-Robin.
-
->   		goto out_err;
->   
->   	prot = dir2prot(direction);
-> @@ -2627,7 +2625,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
->   	*dma_addr = __map_single(dev, dma_dom, page_to_phys(page),
->   				 size, DMA_BIDIRECTIONAL, dma_mask);
->   
-> -	if (*dma_addr == AMD_IOMMU_MAPPING_ERROR)
-> +	if (*dma_addr == DMA_MAPPING_ERROR)
->   		goto out_free;
->   
->   	return page_address(page);
-> @@ -2678,11 +2676,6 @@ static int amd_iommu_dma_supported(struct device *dev, u64 mask)
->   	return check_device(dev);
->   }
->   
-> -static int amd_iommu_mapping_error(struct device *dev, dma_addr_t dma_addr)
-> -{
-> -	return dma_addr == AMD_IOMMU_MAPPING_ERROR;
-> -}
-> -
->   static const struct dma_map_ops amd_iommu_dma_ops = {
->   	.alloc		= alloc_coherent,
->   	.free		= free_coherent,
-> @@ -2691,7 +2684,6 @@ static const struct dma_map_ops amd_iommu_dma_ops = {
->   	.map_sg		= map_sg,
->   	.unmap_sg	= unmap_sg,
->   	.dma_supported	= amd_iommu_dma_supported,
-> -	.mapping_error	= amd_iommu_mapping_error,
->   };
->   
->   static int init_reserved_iova_ranges(void)
