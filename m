@@ -1,66 +1,81 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [RFC] remove the ->mapping_error method from dma_map_ops
-Date: Fri, 09 Nov 2018 15:12:34 -0800 (PST)
-Message-ID: <20181109.151234.2231390463846593374.davem@davemloft.net>
-References: <20181109084632.22848-1-hch@lst.de>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 3.16 183/366] time: Make sure jiffies_to_msecs() preserves
+ non-zero time periods
+Date: Sun, 11 Nov 2018 19:49:05 +0000
+Message-ID: <lsq.1541965745.992465034@decadent.org.uk>
+References: <lsq.1541965744.387173642@decadent.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181109084632.22848-1-hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <lsq.1541965744.387173642@decadent.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: Text/Plain; charset="us-ascii"
-To: hch@lst.de
-Cc: iommu@lists.linux-foundation.org, torvalds@linux-foundation.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: akpm@linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-mips@linux-mips.org, Thomas Gleixner <tglx@linutronix.de>, Stephen Boyd <sboyd@kernel.org>, John Stultz <john.stultz@linaro.org>, linux-alpha@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
-Date: Fri,  9 Nov 2018 09:46:30 +0100
+3.16.61-rc1 review patch.  If anyone has any objections, please let me know.
 
-> Error reporting for the dma_map_single and dma_map_page operations is
-> currently a mess.  Both APIs directly return the dma_addr_t to be used for
-> the DMA, with a magic error escape that is specific to the instance and
-> checked by another method provided.  This has a few downsides:
-> 
->  - the error check is easily forgotten and a __must_check marker doesn't
->    help as the value always is consumed anyway
->  - the error checking requires another indirect call, which have gotten
->    incredibly expensive
->  - a lot of code is wasted on implementing these methods
-> 
-> The historical reason for this is that people thought DMA mappings would
-> not fail when the API was created, which sounds like a really bad
-> assumption in retrospective, and then we tried to cram error handling
-> onto it later on.
-> 
-> There basically are two variants:  the error code is 0 because the
-> implementation will never return 0 as a valid DMA address, or the error
-> code is all-F as the implementation won't ever return an address that
-> high.  The old AMD GART is the only one not falling into these two camps
-> as it picks sort of a relative zero relative to where it is mapped.
-> 
-> The 0 return doesn't work for a lot of IOMMUs that start allocating
-> bus space from address zero, so we can't consolidate on that, but I think
-> we can move everyone to all-Fs, which the patch here does.  The reason
-> for that is that there is only one way to ever get this address: by
-> doing a 1-byte long, 1-byte aligned mapping, but all our mappings
-> are not only longer but generally aligned, and the mappings have to
-> keep at least the basic alignment.  Please try to poke holes into this
-> idea as it would simplify our logic a lot, and also allow to change
-> at least the not so commonly used yet dma_map_single_attrs and
-> dma_map_page_attrs to actually return an error code and further improve
-> the error handling flow in the drivers.
+------------------
 
-I have no problem with patch #1, it looks great.
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-But patch #2 on the other hand, not so much.
+commit abcbcb80cd09cd40f2089d912764e315459b71f7 upstream.
 
-I hate seeing values returned by reference, it adds cost especially
-on cpus where all argments and return values fit in registers (we end
-up forcing a stack slot and memory references).
+For the common cases where 1000 is a multiple of HZ, or HZ is a multiple of
+1000, jiffies_to_msecs() never returns zero when passed a non-zero time
+period.
 
-And we don't need it here.
+However, if HZ > 1000 and not an integer multiple of 1000 (e.g. 1024 or
+1200, as used on alpha and DECstation), jiffies_to_msecs() may return zero
+for small non-zero time periods.  This may break code that relies on
+receiving back a non-zero value.
 
-DMA addresses are like pointers, and therefore we can return errors and
-valid success values in the same dma_addr_t just fine.  PTR_ERR() --> DMA_ERR(),
-IS_PTR_ERR() --> IS_DMA_ERR, etc.
+jiffies_to_usecs() does not need such a fix: one jiffy can only be less
+than one =C2=B5s if HZ > 1000000, and such large values of HZ are already
+rejected at build time, twice:
+
+  - include/linux/jiffies.h does #error if HZ >=3D 12288,
+  - kernel/time/time.c has BUILD_BUG_ON(HZ > USEC_PER_SEC).
+
+Broken since forever.
+
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: John Stultz <john.stultz@linaro.org>
+Cc: Stephen Boyd <sboyd@kernel.org>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Link: https://lkml.kernel.org/r/20180622143357.7495-1-geert@linux-m68k.org
+[bwh: Backported to 3.16: adjust filename]
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+---
+ kernel/time.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/kernel/time.c
++++ b/kernel/time.c
+@@ -28,6 +28,7 @@
+  */
+=20
+ #include <linux/export.h>
++#include <linux/kernel.h>
+ #include <linux/timex.h>
+ #include <linux/capability.h>
+ #include <linux/timekeeper_internal.h>
+@@ -253,9 +254,10 @@ unsigned int jiffies_to_msecs(const unsi
+ 	return (j + (HZ / MSEC_PER_SEC) - 1)/(HZ / MSEC_PER_SEC);
+ #else
+ # if BITS_PER_LONG =3D=3D 32
+-	return (HZ_TO_MSEC_MUL32 * j) >> HZ_TO_MSEC_SHR32;
++	return (HZ_TO_MSEC_MUL32 * j + (1ULL << HZ_TO_MSEC_SHR32) - 1) >>
++	       HZ_TO_MSEC_SHR32;
+ # else
+-	return (j * HZ_TO_MSEC_NUM) / HZ_TO_MSEC_DEN;
++	return DIV_ROUND_UP(j * HZ_TO_MSEC_NUM, HZ_TO_MSEC_DEN);
+ # endif
+ #endif
+ }
 
