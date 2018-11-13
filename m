@@ -1,42 +1,103 @@
-From: Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: Re: [RFC] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Mon, 12 Nov 2018 17:17:19 +0530
-Message-ID: <d947edec-8c5a-78d7-4069-687ac4ad7cb8@arm.com>
-References: <1541990515-11670-1-git-send-email-anshuman.khandual@arm.com>
- <de754de5-cdf9-87d2-7ab2-a3630c034121@xs4all.nl>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: Firoz Khan <firoz.khan@linaro.org>
+Subject: [PATCH v3 0/5] alpha: system call table generation support
+Date: Tue, 13 Nov 2018 15:01:48 +0530
+Message-ID: <1542101513-22010-1-git-send-email-firoz.khan@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <de754de5-cdf9-87d2-7ab2-a3630c034121@xs4all.nl>
-Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=fSR/dgGGAx64INZQhuJJoz0fYjyw+R3P/dJMarV8PZs=;
+        b=H/MV6fiBX7ArMsF9B5XAAx2+AuQC7fTMA6ePnj9hWQkaXgUk3K89AgPfF67x+IEdpL
+         0F8s3RKDvJScUuCgv4SCn2Rj6c3yn6wn9U/hCjFBxNrkn7XVjusYVypEtedzkoHl5bez
+         gJ6ZFyDF5IPMDhpffF5lAtfLRkMkZQhUk36/Q=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Hans Verkuil <hverkuil@xs4all.nl>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>
+Cc: y2038@lists.linaro.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, arnd@arndb.de, deepa.kernel@gmail.com, marcin.juszkiewicz@linaro.org, firoz.khan@linaro.org
 
+The purpose of this patch series is, we can easily
+add/modify/delete system call table support by cha-
+nging entry in syscall.tbl file instead of manually
+changing many files. The other goal is to unify the
+system call table generation support implementation
+across all the architectures.
 
+The system call tables are in different format in
+all architecture. It will be difficult to manually
+add, modify or delete the system calls in the resp-
+ective files manually. To make it easy by keeping a
+script and which'll generate uapi header file and
+syscall table file.
 
-On 11/12/2018 02:13 PM, Hans Verkuil wrote:
-> On 11/12/2018 03:41 AM, Anshuman Khandual wrote:
->> At present there are multiple places where invalid node number is encoded
->> as -1. Even though implicitly understood it is always better to have macros
->> in there. Replace these open encodings for an invalid node number with the
->> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
->> 'invalid node' from various places redirecting them to a common definition.
->>
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> ---
->> Build tested this with multiple cross compiler options like alpha, sparc,
->> arm64, x86, powerpc64le etc with their default config which might not have
->> compiled tested all driver related changes. I will appreciate folks giving
->> this a test in their respective build environment.
->>
->> All these places for replacement were found by running the following grep
->> patterns on the entire kernel code. Please let me know if this might have
->> missed some instances. This might also have replaced some false positives.
->> I will appreciate suggestions, inputs and review.
-> The 'node' in the drivers/media and the drivers/video sources has nothing to
-> do with numa. It's an index for a framebuffer instead (i.e. the X in /dev/fbX).
+syscall.tbl contains the list of available system
+calls along with system call number and correspond-
+ing entry point. Add a new system call in this arch-
+itecture will be possible by adding new entry in the
+syscall.tbl file.
 
-Thanks for the input. Will drop the changes there.
+Adding a new table entry consisting of:
+        - System call number.
+        - ABI.
+        - System call name.
+        - Entry point name.
+
+ARM, s390 and x86 architecuture does exist the sim-
+ilar support. I leverage their implementation to
+come up with a generic solution.
+
+I have done the same support for work for ia64, m68k, 
+microblaze, mips, parisc, powerpc, sh, sparc and xtensa.
+Below mentioned git repository contains more details
+about the workflow.
+
+https://github.com/frzkhn/system_call_table_generator/
+
+Finally, this is the ground work to solve the Y2038
+issue. We need to add two dozen of system calls to
+solve Y2038 issue. So this patch series will help to
+add new system calls easily by adding new entry in
+the syscall.tbl.
+
+changes since v2:
+ - changed from generic-y to generated-y in Kbuild.
+ - made changes in syscall.tbl for removing entry - 
+   alpha_ni_syscall.
+
+changes since v1:
+ - optimized/updated the syscall table generation
+   scripts.
+ - fixed all mixed indentation issues in syscall.tbl.
+ - added "comments" in syscall.tbl.
+ - enclosed __NR_sycalls macro with __KERNEL__.
+ - added missing new line.
+
+Firoz Khan (5):
+  alpha: move __IGNORE* entries to non uapi header
+  alpha: remove CONFIG_OSF4_COMPAT flag from syscall table
+  alpha: add __NR_syscalls along with NR_SYSCALLS
+  alpha: add system call table generation support
+  alpha: generate uapi header and syscall table header files
+
+ arch/alpha/Makefile                      |   3 +
+ arch/alpha/include/asm/Kbuild            |   2 +-
+ arch/alpha/include/asm/unistd.h          |  23 +-
+ arch/alpha/include/uapi/asm/Kbuild       |   1 +
+ arch/alpha/include/uapi/asm/unistd.h     | 484 +--------------------------
+ arch/alpha/kernel/osf_sys.c              |   9 +-
+ arch/alpha/kernel/syscalls/Makefile      |  38 +++
+ arch/alpha/kernel/syscalls/syscall.tbl   | 453 ++++++++++++++++++++++++++
+ arch/alpha/kernel/syscalls/syscallhdr.sh |  36 ++
+ arch/alpha/kernel/syscalls/syscalltbl.sh |  32 ++
+ arch/alpha/kernel/systbls.S              | 542 +------------------------------
+ 11 files changed, 596 insertions(+), 1027 deletions(-)
+ create mode 100644 arch/alpha/kernel/syscalls/Makefile
+ create mode 100644 arch/alpha/kernel/syscalls/syscall.tbl
+ create mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
+ create mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
+
+-- 
+1.9.1
+
