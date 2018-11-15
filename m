@@ -1,65 +1,66 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: move bus (PCI, PCMCIA, EISA, rapdio) config to drivers/ v4
-Date: Thu, 15 Nov 2018 20:05:28 +0100
-Message-ID: <20181115190538.17016-1-hch@lst.de>
+Subject: [PATCH 1/9] arm: remove EISA kconfig option
+Date: Thu, 15 Nov 2018 20:05:29 +0100
+Message-ID: <20181115190538.17016-2-hch@lst.de>
+References: <20181115190538.17016-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To
-	:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
-	List-Owner; bh=9oAcY+PGIrVUxYK/dw1WHJ8D0Nj/O2Qvl3hytv811wE=; b=UCAKIOebt12Bhz
-	KyG+uuKdO+VnNncPuSDHO90NQtBw8kfMvYYP334QZo+wMTVNg98XYUvc5uQ1dpm+yqy0PITam44+G
-	zTE8uF/LqYwL2YC0GnvH9zQELrlN76dMS3rBQDP3yb9vddfg2H/4NTj9ISq6DM8PWsC2mFC86p+Vm
-	7/bVNdC2zzN4xdKaZ2Ig5krSX6EZKh7KHTILsYYPaXIDnoJtgOsB82wuBgRjtdNc7NKep0wIumgDr
-	EDuLIwPy9MlHcJVPzOZ/UwkNZucfv4Z5wK41bESRKGkQf0YkfDOJcIHMwZPEsiZVHjPrkuSW+az57
-	GU9elBE6uz64SxO6XxLA==;
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
+        :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=b/bu/9pgdVGHgVmVL74u6sTXJYv774AB75fo2cbsSkk=; b=NgcCkC95ScqwwWvR8Lg6zagjrj
+        ftIUrG2nBUZzfF64e5yK4Auk0pOmzQyRDy53KTMOUn4rrvSKZGCR0+UvMDYSwDCKxcxA7TLRwvf68
+        NzkDoWLd+ZcvPL94Tsu7J5lCLIrLkZ9a3GOTEWKedYxHvoo1V6FN3rmQN6R0NE7LDzNOv4lNb3Q7L
+        9l5sOGAe2azSuZclRZ2nFje90ILfD2lsYTNBppbHGYb2p3bJ8bEznU+AZJoVxKrkNe+psXuO07k/7
+        r/4tpSOPvzX427lpafekojEAE3qJvjZk032KuQuOBW5AixarcT9Sk+q9gTd7oHTL2S+++AoJfPLEL
+    
+In-Reply-To: <20181115190538.17016-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-kbuild@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Dominik Brodowski <linux@dominikbrodowski.net>, Alexandre Bounine <alex.bou9@gmail.com>, linux-alpha@vger.kernel.org, Matt Porter <mporter@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Cc: Matt Porter <mporter@kernel.crashing.org>, Alexandre Bounine <alex.bou9@gmail.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kbuild@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-mips@linux-mips.org
 
-Hi all,
+No arm config enables EISA, and arm does not include drivers/eisa/Kconfig
+which provides support for things like PCI to EISA bridges, so it is most
+likely dead.
 
-currently every architecture that wants to provide on of the common
-periphal busses needs to add some boilerplate code and include the
-right Kconfig files.   This series instead just selects the presence
-(when needed) and then handles everything in the bus-specific
-Kconfig file under drivers/.
+Suggested-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/arm/Kconfig | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-Changes since v3:
- - drop the patches already merged
- - fix a typo in the PCI help text
- - split the always enable PCI on alpha change into a separate patch
- - remove the mips HT_PCI symbol
- - add a new FORCE_PCI symbol to easily allow selecting PCI support
- - new patch to consolidate PCI_DOMAINS
- - new patch to consolidate PCI_SYSCALL
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 91be74d8df65..f24a7435d19a 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -163,21 +163,6 @@ config HAVE_PROC_CPU
+ config NO_IOPORT_MAP
+ 	bool
+ 
+-config EISA
+-	bool
+-	---help---
+-	  The Extended Industry Standard Architecture (EISA) bus was
+-	  developed as an open alternative to the IBM MicroChannel bus.
+-
+-	  The EISA bus provided some of the features of the IBM MicroChannel
+-	  bus while maintaining backward compatibility with cards made for
+-	  the older ISA bus.  The EISA bus saw limited use between 1988 and
+-	  1995 when it was made obsolete by the PCI bus.
+-
+-	  Say Y here if you are building a kernel for an EISA-based machine.
+-
+-	  Otherwise, say N.
+-
+ config SBUS
+ 	bool
+ 
+-- 
+2.19.1
 
-Changes since v2:
- - depend on HAVE_PCI for PCIe endpoint code
- - fix some commit message typos
- - remove CONFIG_PCI from xtensa iss defconfig
- - drop EISA support from arm
- - clean up EISA selection for alpha
-
-Changes since v1:
- - rename all HAS_* Kconfig symbols to HAVE_*
- - drop the CONFIG_PCI_QSPAN option entirely
- - drop duplicate select from powerpc
- - restore missing selection of PCI_MSI for riscv
- - update x86 and riscv defconfigs to include PCI
- - actually inclue drivers/eisa/Kconfig
- - adjust some captilizations
