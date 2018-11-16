@@ -1,7 +1,7 @@
 From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH 05/10] powerpc/pmu/fsl: add additional validation to event_init
-Date: Fri, 16 Nov 2018 10:24:08 +0000
-Message-ID: <1542363853-13849-6-git-send-email-andrew.murray@arm.com>
+Subject: [PATCH 06/10] alpha: perf/core: generalise event exclusion checking with perf macro
+Date: Fri, 16 Nov 2018 10:24:09 +0000
+Message-ID: <1542363853-13849-7-git-send-email-andrew.murray@arm.com>
 References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
@@ -13,28 +13,32 @@ Content-Transfer-Encoding: 7bit
 To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org
 Cc: linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-The fsl PMU driver doesn't support host/guest mode exclusion so
-let's report this when event_init is called with these exclusion
-flags set.
+Replace checking of perf event exclusion flags with perf macro.
+
+This is a functional change as __hw_perf_event_init will now indicate
+that it doesn't support exclude_host and exclude_guest event flags.
 
 Signed-off-by: Andrew Murray <andrew.murray@arm.com>
 ---
- arch/powerpc/perf/core-fsl-emb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/alpha/kernel/perf_event.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/perf/core-fsl-emb.c b/arch/powerpc/perf/core-fsl-emb.c
-index ba48584..b1cc9d1 100644
---- a/arch/powerpc/perf/core-fsl-emb.c
-+++ b/arch/powerpc/perf/core-fsl-emb.c
-@@ -559,6 +559,8 @@ static int fsl_emb_pmu_event_init(struct perf_event *event)
- 		event->hw.config_base |= PMLCA_FCS;
- 	if (event->attr.exclude_idle)
- 		return -ENOTSUPP;
-+	if (event->attr.exclude_host || event->attr.exclude_guest)
-+		return -ENOTSUPP;
+diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
+index 5613aa37..36f98ee 100644
+--- a/arch/alpha/kernel/perf_event.c
++++ b/arch/alpha/kernel/perf_event.c
+@@ -631,10 +631,8 @@ static int __hw_perf_event_init(struct perf_event *event)
+ 	}
  
- 	event->hw.last_period = event->hw.sample_period;
- 	local64_set(&event->hw.period_left, event->hw.last_period);
+ 	/* The EV67 does not support mode exclusion */
+-	if (attr->exclude_kernel || attr->exclude_user
+-			|| attr->exclude_hv || attr->exclude_idle) {
++	if (event_has_exclude_flags(event))
+ 		return -EPERM;
+-	}
+ 
+ 	/*
+ 	 * We place the event type in event_base here and leave calculation
 -- 
 2.7.4
 
