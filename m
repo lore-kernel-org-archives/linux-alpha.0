@@ -1,26 +1,26 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.18 098/171] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
-Date: Mon, 19 Nov 2018 17:28:14 +0100
-Message-ID: <20181119162634.591044013@linuxfoundation.org>
-References: <20181119162618.909354448@linuxfoundation.org>
+Subject: [PATCH 4.14 066/124] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
+Date: Mon, 19 Nov 2018 17:28:40 +0100
+Message-ID: <20181119162626.148740463@linuxfoundation.org>
+References: <20181119162612.951907286@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1542645811;
-        bh=pVUHpq6cMjXMhErNAgXcY7EcDCZzqWtGZF0XtISnqds=;
+        s=default; t=1542646180;
+        bh=FXqR0JNaLJX7M0Qlwvh1Z+6n70vkeZ6ztM0lczBoMSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MYFYk29Rc2fdKk9mYFAqZ1urWgHdv/4h+bSg1oADuCX2YPB+lSW0UTx44+GOgaN3p
-         /TBSmyz5elxOF2h/GqqjeCg/RbsBYDeL/I9Tye69RfAMfg25J5mMBhwPbXOQRIcqSi
-         7nrK70vyKpTLS96SBWuyoBYmk+mPBHV3cFpLH52E=
-In-Reply-To: <20181119162618.909354448@linuxfoundation.org>
+        b=nM+dYoU8DcxJtg/W1jY7F3oxNUmvj1i8kPMnF3wM0W9ZR3uuOCd+memRoe/UdJILZ
+         oUVWKPaQK03ACo71ZUtBFVJri+ulItixiBEHnoAIeq/T0tf6ogf6oFMjr2/Of9HAET
+         mBLpFwLCn2PiFGxwOMJUhZ3i5TVB9IptcwQqRpic=
+In-Reply-To: <20181119162612.951907286@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-4.18-stable review patch.  If anyone has any objections, please let me know.
+4.14-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -122,7 +122,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  /* Alpha has matching termios and ktermios */
  
  struct ktermios {
-@@ -152,6 +165,7 @@ struct ktermios {
+@@ -148,6 +161,7 @@ struct ktermios {
  #define B3000000  00034
  #define B3500000  00035
  #define B4000000  00036
@@ -130,7 +130,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  
  #define CSIZE	00001400
  #define   CS5	00000000
-@@ -169,6 +183,9 @@ struct ktermios {
+@@ -165,6 +179,9 @@ struct ktermios {
  #define CMSPAR	  010000000000		/* mark or space (stick) parity */
  #define CRTSCTS	  020000000000		/* flow control */
  
