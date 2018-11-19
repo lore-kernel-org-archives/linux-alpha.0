@@ -1,144 +1,79 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 3.18 71/90] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
-Date: Mon, 19 Nov 2018 17:29:53 +0100
-Message-ID: <20181119162631.732191857@linuxfoundation.org>
-References: <20181119162620.585061184@linuxfoundation.org>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH 3/9] MIPS: remove the HT_PCI config option
+Date: Mon, 19 Nov 2018 21:01:42 +0000
+Message-ID: <20181119210141.nissqr6zaldt23xg@pburton-laptop>
+References: <20181115190538.17016-1-hch@lst.de>
+ <20181115190538.17016-4-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1542647211;
-        bh=mUd+RRhthCdJ3kGFtQRGYzQd8MfVnEBeFZcAfxnzjcY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pPotxrMkvWTKVaQt2E2UArZxaKDxXNvEFpqWqWzTfpOgY8K8Q7xJ7LO4fzHVMjw4T
-         3VTDxcQP6V2T/NiGyhlxXm3d3UTStg+MezDn6zI9u3phxSMAHADnozx2NOCD/iZyhv
-         nTGB/z56cGcGscYhGIcAe8dJ+nVnGAp18r42Is8U=
-In-Reply-To: <20181119162620.585061184@linuxfoundation.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=wavesemi.onmicrosoft.com; s=selector1-wavecomp-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LR6Q3hG3hYLpbioSi3vivJvNLJOSd0kJD80x3c7GY4Q=;
+ b=VgoswmAdGDx9R3Jx+C1VVIeh/gybsCDjkEv4IMGm56SaeDCBLvkFx5JCe1Fo9AQDU5ptuq7rOaPlpRvnSMvt2UES8lECVbE77kfJMs/Qa5HWOG2qvEzTpviyt9hg/KyQFeVumne5VBM/WL3xm5SU4YfBO0SgcwXNBozzaOCmrVw=
+In-Reply-To: <20181115190538.17016-4-hch@lst.de>
+Content-Language: en-US
+Content-ID: <40C8AC8315647748863615FE4C97EE3C@namprd22.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>, Matt Porter <mporter@kernel.crashing.org>, Alexandre Bounine <alex.bou9@gmail.com>, Dominik Brodowski <linux@dominikbrodowski.net>, "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>
 
-3.18-stable review patch.  If anyone has any objections, please let me know.
+Hi Christoph,
 
-------------------
+On Thu, Nov 15, 2018 at 08:05:31PM +0100, Christoph Hellwig wrote:
+> This option is always selected from LOONGSON_MACH3X.  Switch to just
+> seleting PCI from that option and definining LOONGSON_PCIIO_BASE based
+> on CONFIG_LOONGSON_MACH3X.
+>=20
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/mips/Kconfig                                | 11 -----------
+>  arch/mips/include/asm/mach-loongson64/loongson.h |  2 +-
+>  arch/mips/loongson64/Kconfig                     |  2 +-
+>  3 files changed, 2 insertions(+), 13 deletions(-)
+>=20
+> diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+> index 8272ea4c7264..7d28c9dd75d0 100644
+> --- a/arch/mips/Kconfig
+> +++ b/arch/mips/Kconfig
+> @@ -3040,17 +3040,6 @@ config PCI
+>  	  your box. Other bus systems are ISA, EISA, or VESA. If you have PCI,
+>  	  say Y, otherwise N.
+> =20
+> -config HT_PCI
+> -	bool "Support for HT-linked PCI"
+> -	default y
+> -	depends on CPU_LOONGSON3
+> -	select PCI
+> -	select PCI_DOMAINS
+> -	help
+> -	  Loongson family machines use Hyper-Transport bus for inter-core
+> -	  connection and device connection. The PCI bus is a subordinate
+> -	  linked at HT. Choose Y for Loongson-3 based machines.
+> -
+>  config PCI_DOMAINS
+>  	bool
+> =20
+> diff --git a/arch/mips/loongson64/Kconfig b/arch/mips/loongson64/Kconfig
+> index c865b4b9b775..781a5156ab21 100644
+> --- a/arch/mips/loongson64/Kconfig
+> +++ b/arch/mips/loongson64/Kconfig
+> @@ -76,7 +76,7 @@ config LOONGSON_MACH3X
+>  	select CPU_HAS_WB
+>  	select HW_HAS_PCI
+>  	select ISA
+> -	select HT_PCI
+> +	select PCI
+>  	select I8259
+>  	select IRQ_MIPS_CPU
+>  	select NR_CPUS_DEFAULT_4
 
-From: H. Peter Anvin (Intel) <hpa@zytor.com>
+Should this also select PCI_DOMAINS to preserve the existing behavior?
 
-commit d0ffb805b729322626639336986bc83fc2e60871 upstream.
+If not, could you explain why in the commit message?
 
-Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
-using arbitrary flags. Because BOTHER is not defined, the general
-Linux code doesn't allow setting arbitrary baud rates, and because
-CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
-drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
-
-Resolve both problems by #defining BOTHER to 037 on Alpha.
-
-However, userspace still needs to know if setting BOTHER is actually
-safe given legacy kernels (does anyone actually care about that on
-Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
-though they use the same structure. Define struct termios2 just for
-compatibility; it is the exact same structure as struct termios. In a
-future patchset, this will be cleaned up so the uapi headers are
-usable from libc.
-
-Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Eugene Syromiatnikov <esyr@redhat.com>
-Cc: <linux-alpha@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- arch/alpha/include/asm/termios.h       |    8 +++++++-
- arch/alpha/include/uapi/asm/ioctls.h   |    5 +++++
- arch/alpha/include/uapi/asm/termbits.h |   17 +++++++++++++++++
- 3 files changed, 29 insertions(+), 1 deletion(-)
-
---- a/arch/alpha/include/asm/termios.h
-+++ b/arch/alpha/include/asm/termios.h
-@@ -72,9 +72,15 @@
- })
- 
- #define user_termios_to_kernel_termios(k, u) \
--	copy_from_user(k, u, sizeof(struct termios))
-+	copy_from_user(k, u, sizeof(struct termios2))
- 
- #define kernel_termios_to_user_termios(u, k) \
-+	copy_to_user(u, k, sizeof(struct termios2))
-+
-+#define user_termios_to_kernel_termios_1(k, u) \
-+	copy_from_user(k, u, sizeof(struct termios))
-+
-+#define kernel_termios_to_user_termios_1(u, k) \
- 	copy_to_user(u, k, sizeof(struct termios))
- 
- #endif	/* _ALPHA_TERMIOS_H */
---- a/arch/alpha/include/uapi/asm/ioctls.h
-+++ b/arch/alpha/include/uapi/asm/ioctls.h
-@@ -31,6 +31,11 @@
- #define TCXONC		_IO('t', 30)
- #define TCFLSH		_IO('t', 31)
- 
-+#define TCGETS2		_IOR('T', 42, struct termios2)
-+#define TCSETS2		_IOW('T', 43, struct termios2)
-+#define TCSETSW2	_IOW('T', 44, struct termios2)
-+#define TCSETSF2	_IOW('T', 45, struct termios2)
-+
- #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
- #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
- #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -25,6 +25,19 @@ struct termios {
- 	speed_t c_ospeed;		/* output speed */
- };
- 
-+/* Alpha has identical termios and termios2 */
-+
-+struct termios2 {
-+	tcflag_t c_iflag;		/* input mode flags */
-+	tcflag_t c_oflag;		/* output mode flags */
-+	tcflag_t c_cflag;		/* control mode flags */
-+	tcflag_t c_lflag;		/* local mode flags */
-+	cc_t c_cc[NCCS];		/* control characters */
-+	cc_t c_line;			/* line discipline (== c_cc[19]) */
-+	speed_t c_ispeed;		/* input speed */
-+	speed_t c_ospeed;		/* output speed */
-+};
-+
- /* Alpha has matching termios and ktermios */
- 
- struct ktermios {
-@@ -147,6 +160,7 @@ struct ktermios {
- #define B3000000  00034
- #define B3500000  00035
- #define B4000000  00036
-+#define BOTHER    00037
- 
- #define CSIZE	00001400
- #define   CS5	00000000
-@@ -164,6 +178,9 @@ struct ktermios {
- #define CMSPAR	  010000000000		/* mark or space (stick) parity */
- #define CRTSCTS	  020000000000		/* flow control */
- 
-+#define CIBAUD	07600000
-+#define IBSHIFT	16
-+
- /* c_lflag bits */
- #define ISIG	0x00000080
- #define ICANON	0x00000100
-
-
+Thanks,
+    Paul
