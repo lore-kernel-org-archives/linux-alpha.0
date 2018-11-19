@@ -1,197 +1,144 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH 09/10] drivers/perf: perf/core: generalise event
- exclusion checking with perf macro
-Date: Mon, 19 Nov 2018 16:03:52 +0000
-Message-ID: <20181119160352.ua2lx72l754imiek@lakrids.cambridge.arm.com>
-References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
- <1542363853-13849-10-git-send-email-andrew.murray@arm.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.19 121/205] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
+Date: Mon, 19 Nov 2018 17:27:08 +0100
+Message-ID: <20181119162636.039331082@linuxfoundation.org>
+References: <20181119162616.586062722@linuxfoundation.org>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1542363853-13849-10-git-send-email-andrew.murray@arm.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1542645322;
+        bh=+BarRwKgBdNSh3WSeaBQOh5xV7ETk03+4+0ctVw0+9k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bRaQRr9+REQuQ2SlUMSObQakUXH1kAU+oJ9Ua0XCssp/LIevBGMVkHu8Q29Uw2IQL
+         OvZWl38SsbXYyPFfg1jFCr2XQmELT/YznVm2ibAhB8u50vVurV3qDrFJ1WxrRIpo0p
+         Y6XoSQ0ZD/z3kJP8vEUtN4/F4sbB/pg69kZ2d9oQ=
+In-Reply-To: <20181119162616.586062722@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Andrew Murray <andrew.murray@arm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Fri, Nov 16, 2018 at 10:24:12AM +0000, Andrew Murray wrote:
-> Replace checking of perf event exclusion flags with perf macro.
-> 
-> This is a functional change as exclude_host and exclude_guest are added
-> in the following files:
-> 
->  - drivers/perf/qcom_l2_pmu.c
->  - drivers/perf/qcom_l3_pmu.c
->  - drivers/perf/arm_pmu.c
-> 
-> And exclude_idle and exclude_hv are added in these files:
-> 
->  - drivers/perf/xgene_pmu.c
+4.19-stable review patch.  If anyone has any objections, please let me know.
 
-FWIW, that all sounds fine to me.
+------------------
 
-Assuming you fix up the 'macro' nit:
+From: H. Peter Anvin (Intel) <hpa@zytor.com>
 
-Acked-by: Mark Rutland <mark.rutland@arm.com>
+commit d0ffb805b729322626639336986bc83fc2e60871 upstream.
 
-... unless we go for Peter's core cap for this.
+Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
+using arbitrary flags. Because BOTHER is not defined, the general
+Linux code doesn't allow setting arbitrary baud rates, and because
+CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
+drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
 
-Thanks,
-Mark.
+Resolve both problems by #defining BOTHER to 037 on Alpha.
 
-> Signed-off-by: Andrew Murray <andrew.murray@arm.com>
-> ---
->  drivers/perf/arm-cci.c                   | 7 +------
->  drivers/perf/arm-ccn.c                   | 5 +----
->  drivers/perf/arm_dsu_pmu.c               | 7 +------
->  drivers/perf/arm_pmu.c                   | 9 +--------
->  drivers/perf/hisilicon/hisi_uncore_pmu.c | 7 +------
->  drivers/perf/qcom_l2_pmu.c               | 3 +--
->  drivers/perf/qcom_l3_pmu.c               | 3 +--
->  drivers/perf/xgene_pmu.c                 | 3 +--
->  8 files changed, 8 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/perf/arm-cci.c b/drivers/perf/arm-cci.c
-> index 1bfeb16..d749f19 100644
-> --- a/drivers/perf/arm-cci.c
-> +++ b/drivers/perf/arm-cci.c
-> @@ -1328,12 +1328,7 @@ static int cci_pmu_event_init(struct perf_event *event)
->  		return -EOPNOTSUPP;
->  
->  	/* We have no filtering of any kind */
-> -	if (event->attr.exclude_user	||
-> -	    event->attr.exclude_kernel	||
-> -	    event->attr.exclude_hv	||
-> -	    event->attr.exclude_idle	||
-> -	    event->attr.exclude_host	||
-> -	    event->attr.exclude_guest)
-> +	if (event_has_exclude_flags(event))
->  		return -EINVAL;
->  
->  	/*
-> diff --git a/drivers/perf/arm-ccn.c b/drivers/perf/arm-ccn.c
-> index 7dd850e..9a22a95 100644
-> --- a/drivers/perf/arm-ccn.c
-> +++ b/drivers/perf/arm-ccn.c
-> @@ -741,10 +741,7 @@ static int arm_ccn_pmu_event_init(struct perf_event *event)
->  		return -EOPNOTSUPP;
->  	}
->  
-> -	if (has_branch_stack(event) || event->attr.exclude_user ||
-> -			event->attr.exclude_kernel || event->attr.exclude_hv ||
-> -			event->attr.exclude_idle || event->attr.exclude_host ||
-> -			event->attr.exclude_guest) {
-> +	if (has_branch_stack(event) || event_has_exclude_flags(event)) {
->  		dev_dbg(ccn->dev, "Can't exclude execution levels!\n");
->  		return -EINVAL;
->  	}
-> diff --git a/drivers/perf/arm_dsu_pmu.c b/drivers/perf/arm_dsu_pmu.c
-> index 660cb8a..300ff3d 100644
-> --- a/drivers/perf/arm_dsu_pmu.c
-> +++ b/drivers/perf/arm_dsu_pmu.c
-> @@ -563,12 +563,7 @@ static int dsu_pmu_event_init(struct perf_event *event)
->  	}
->  
->  	if (has_branch_stack(event) ||
-> -	    event->attr.exclude_user ||
-> -	    event->attr.exclude_kernel ||
-> -	    event->attr.exclude_hv ||
-> -	    event->attr.exclude_idle ||
-> -	    event->attr.exclude_host ||
-> -	    event->attr.exclude_guest) {
-> +	    event_has_exclude_flags(event)) {
->  		dev_dbg(dsu_pmu->pmu.dev, "Can't support filtering\n");
->  		return -EINVAL;
->  	}
-> diff --git a/drivers/perf/arm_pmu.c b/drivers/perf/arm_pmu.c
-> index 7f01f6f..a03634f 100644
-> --- a/drivers/perf/arm_pmu.c
-> +++ b/drivers/perf/arm_pmu.c
-> @@ -357,13 +357,6 @@ static irqreturn_t armpmu_dispatch_irq(int irq, void *dev)
->  }
->  
->  static int
-> -event_requires_mode_exclusion(struct perf_event_attr *attr)
-> -{
-> -	return attr->exclude_idle || attr->exclude_user ||
-> -	       attr->exclude_kernel || attr->exclude_hv;
-> -}
-> -
-> -static int
->  __hw_perf_event_init(struct perf_event *event)
->  {
->  	struct arm_pmu *armpmu = to_arm_pmu(event->pmu);
-> @@ -395,7 +388,7 @@ __hw_perf_event_init(struct perf_event *event)
->  	 */
->  	if ((!armpmu->set_event_filter ||
->  	     armpmu->set_event_filter(hwc, &event->attr)) &&
-> -	     event_requires_mode_exclusion(&event->attr)) {
-> +	     event_has_exclude_flags(event)) {
->  		pr_debug("ARM performance counters do not support "
->  			 "mode exclusion\n");
->  		return -EOPNOTSUPP;
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> index 9efd241..d3edff9 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> @@ -143,12 +143,7 @@ int hisi_uncore_pmu_event_init(struct perf_event *event)
->  		return -EOPNOTSUPP;
->  
->  	/* counters do not have these bits */
-> -	if (event->attr.exclude_user	||
-> -	    event->attr.exclude_kernel	||
-> -	    event->attr.exclude_host	||
-> -	    event->attr.exclude_guest	||
-> -	    event->attr.exclude_hv	||
-> -	    event->attr.exclude_idle)
-> +	if (event_has_exclude_flags(event))
->  		return -EINVAL;
->  
->  	/*
-> diff --git a/drivers/perf/qcom_l2_pmu.c b/drivers/perf/qcom_l2_pmu.c
-> index 842135c..d7d85a2 100644
-> --- a/drivers/perf/qcom_l2_pmu.c
-> +++ b/drivers/perf/qcom_l2_pmu.c
-> @@ -510,8 +510,7 @@ static int l2_cache_event_init(struct perf_event *event)
->  	}
->  
->  	/* We cannot filter accurately so we just don't allow it. */
-> -	if (event->attr.exclude_user || event->attr.exclude_kernel ||
-> -	    event->attr.exclude_hv || event->attr.exclude_idle) {
-> +	if (event_has_exclude_flags(event)) {
->  		dev_dbg_ratelimited(&l2cache_pmu->pdev->dev,
->  				    "Can't exclude execution levels\n");
->  		return -EOPNOTSUPP;
-> diff --git a/drivers/perf/qcom_l3_pmu.c b/drivers/perf/qcom_l3_pmu.c
-> index 2dc63d6..f27af67 100644
-> --- a/drivers/perf/qcom_l3_pmu.c
-> +++ b/drivers/perf/qcom_l3_pmu.c
-> @@ -497,8 +497,7 @@ static int qcom_l3_cache__event_init(struct perf_event *event)
->  	/*
->  	 * There are no per-counter mode filters in the PMU.
->  	 */
-> -	if (event->attr.exclude_user || event->attr.exclude_kernel ||
-> -	    event->attr.exclude_hv || event->attr.exclude_idle)
-> +	if (event_has_exclude_flags(event))
->  		return -EINVAL;
->  
->  	/*
-> diff --git a/drivers/perf/xgene_pmu.c b/drivers/perf/xgene_pmu.c
-> index 0e31f13..1fcd5a0 100644
-> --- a/drivers/perf/xgene_pmu.c
-> +++ b/drivers/perf/xgene_pmu.c
-> @@ -915,8 +915,7 @@ static int xgene_perf_event_init(struct perf_event *event)
->  		return -EINVAL;
->  
->  	/* SOC counters do not have usr/os/guest/host bits */
-> -	if (event->attr.exclude_user || event->attr.exclude_kernel ||
-> -	    event->attr.exclude_host || event->attr.exclude_guest)
-> +	if (event_has_exclude_flags(event))
->  		return -EINVAL;
->  
->  	if (event->cpu < 0)
-> -- 
-> 2.7.4
-> 
+However, userspace still needs to know if setting BOTHER is actually
+safe given legacy kernels (does anyone actually care about that on
+Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
+though they use the same structure. Define struct termios2 just for
+compatibility; it is the exact same structure as struct termios. In a
+future patchset, this will be cleaned up so the uapi headers are
+usable from libc.
+
+Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Eugene Syromiatnikov <esyr@redhat.com>
+Cc: <linux-alpha@vger.kernel.org>
+Cc: <linux-serial@vger.kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/alpha/include/asm/termios.h       |    8 +++++++-
+ arch/alpha/include/uapi/asm/ioctls.h   |    5 +++++
+ arch/alpha/include/uapi/asm/termbits.h |   17 +++++++++++++++++
+ 3 files changed, 29 insertions(+), 1 deletion(-)
+
+--- a/arch/alpha/include/asm/termios.h
++++ b/arch/alpha/include/asm/termios.h
+@@ -73,9 +73,15 @@
+ })
+ 
+ #define user_termios_to_kernel_termios(k, u) \
+-	copy_from_user(k, u, sizeof(struct termios))
++	copy_from_user(k, u, sizeof(struct termios2))
+ 
+ #define kernel_termios_to_user_termios(u, k) \
++	copy_to_user(u, k, sizeof(struct termios2))
++
++#define user_termios_to_kernel_termios_1(k, u) \
++	copy_from_user(k, u, sizeof(struct termios))
++
++#define kernel_termios_to_user_termios_1(u, k) \
+ 	copy_to_user(u, k, sizeof(struct termios))
+ 
+ #endif	/* _ALPHA_TERMIOS_H */
+--- a/arch/alpha/include/uapi/asm/ioctls.h
++++ b/arch/alpha/include/uapi/asm/ioctls.h
+@@ -32,6 +32,11 @@
+ #define TCXONC		_IO('t', 30)
+ #define TCFLSH		_IO('t', 31)
+ 
++#define TCGETS2		_IOR('T', 42, struct termios2)
++#define TCSETS2		_IOW('T', 43, struct termios2)
++#define TCSETSW2	_IOW('T', 44, struct termios2)
++#define TCSETSF2	_IOW('T', 45, struct termios2)
++
+ #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
+ #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
+ #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
+--- a/arch/alpha/include/uapi/asm/termbits.h
++++ b/arch/alpha/include/uapi/asm/termbits.h
+@@ -26,6 +26,19 @@ struct termios {
+ 	speed_t c_ospeed;		/* output speed */
+ };
+ 
++/* Alpha has identical termios and termios2 */
++
++struct termios2 {
++	tcflag_t c_iflag;		/* input mode flags */
++	tcflag_t c_oflag;		/* output mode flags */
++	tcflag_t c_cflag;		/* control mode flags */
++	tcflag_t c_lflag;		/* local mode flags */
++	cc_t c_cc[NCCS];		/* control characters */
++	cc_t c_line;			/* line discipline (== c_cc[19]) */
++	speed_t c_ispeed;		/* input speed */
++	speed_t c_ospeed;		/* output speed */
++};
++
+ /* Alpha has matching termios and ktermios */
+ 
+ struct ktermios {
+@@ -152,6 +165,7 @@ struct ktermios {
+ #define B3000000  00034
+ #define B3500000  00035
+ #define B4000000  00036
++#define BOTHER    00037
+ 
+ #define CSIZE	00001400
+ #define   CS5	00000000
+@@ -169,6 +183,9 @@ struct ktermios {
+ #define CMSPAR	  010000000000		/* mark or space (stick) parity */
+ #define CRTSCTS	  020000000000		/* flow control */
+ 
++#define CIBAUD	07600000
++#define IBSHIFT	16
++
+ /* c_lflag bits */
+ #define ISIG	0x00000080
+ #define ICANON	0x00000100
+
+
