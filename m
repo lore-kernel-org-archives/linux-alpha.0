@@ -1,39 +1,61 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC] remove the ->mapping_error method from dma_map_ops
-Date: Mon, 19 Nov 2018 14:55:00 +0100
-Message-ID: <20181119135459.GB16334@lst.de>
-References: <20181109084632.22848-1-hch@lst.de> <20181109.151234.2231390463846593374.davem@davemloft.net>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 01/10] perf/core: Add macro to test for event exclusion
+ flags
+Date: Mon, 19 Nov 2018 16:01:20 +0000
+Message-ID: <20181119160119.mp6oq6rt5k4fdrd5@lakrids.cambridge.arm.com>
+References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
+ <1542363853-13849-2-git-send-email-andrew.murray@arm.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181109.151234.2231390463846593374.davem@davemloft.net>
+In-Reply-To: <1542363853-13849-2-git-send-email-andrew.murray@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: David Miller <davem@davemloft.net>
-Cc: hch@lst.de, iommu@lists.linux-foundation.org, torvalds@linux-foundation.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>, Dan Carpenter <dan.carpenter@oracle.com>
+To: Andrew Murray <andrew.murray@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On Fri, Nov 09, 2018 at 03:12:34PM -0800, David Miller wrote:
-> But patch #2 on the other hand, not so much.
+On Fri, Nov 16, 2018 at 10:24:04AM +0000, Andrew Murray wrote:
+> Add a macro that tests if any of the perf event exclusion flags
+> are set on a given event.
 > 
-> I hate seeing values returned by reference, it adds cost especially
-> on cpus where all argments and return values fit in registers (we end
-> up forcing a stack slot and memory references).
-> 
-> And we don't need it here.
-> 
-> DMA addresses are like pointers, and therefore we can return errors and
-> valid success values in the same dma_addr_t just fine.  PTR_ERR() --> DMA_ERR(),
-> IS_PTR_ERR() --> IS_DMA_ERR, etc.
+> Signed-off-by: Andrew Murray <andrew.murray@arm.com>
 
-In the end this is an inline function, so with a decently smart
-compiler the generated code shouldn't change too much.  The big problem
-that prompted me to come up with this patch is that not handling failure
-from dma_map* in a swiotlb setup can lead to grave data corruption, and
-we have no easy way to force error checking on these return values.
+Aside from the s/macro/function, or s/macro/helper/, this looks sound to
+me.
 
-I've added a few of the static typechecking suspect if they have a
-better idea on how to make the return value of dma_map_single/pages
-in a way that we get warnings if dma_mapping_error isn't called on them.
-But I can't really think of a good way.
+Assuming you fix that up here and in subsequent commit messages, for
+this patch feel free to add:
+
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+Mark.
+
+> ---
+>  include/linux/perf_event.h | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+> index 53c500f..89ee7fa 100644
+> --- a/include/linux/perf_event.h
+> +++ b/include/linux/perf_event.h
+> @@ -1004,6 +1004,15 @@ perf_event__output_id_sample(struct perf_event *event,
+>  extern void
+>  perf_log_lost_samples(struct perf_event *event, u64 lost);
+>  
+> +static inline bool event_has_exclude_flags(struct perf_event *event)
+> +{
+> +	struct perf_event_attr *attr = &event->attr;
+> +
+> +	return attr->exclude_idle || attr->exclude_user ||
+> +	       attr->exclude_kernel || attr->exclude_hv ||
+> +	       attr->exclude_guest || attr->exclude_host;
+> +}
+> +
+>  static inline bool is_sampling_event(struct perf_event *event)
+>  {
+>  	return event->attr.sample_period != 0;
+> -- 
+> 2.7.4
+> 
