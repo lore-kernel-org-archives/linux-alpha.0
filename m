@@ -1,108 +1,59 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 00/10] perf/core: Generalise event exclusion checking
-Date: Mon, 19 Nov 2018 14:08:00 +0100
-Message-ID: <20181119130800.GE9761@hirez.programming.kicks-ass.net>
-References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/2] dma-mapping: remove ->mapping_error
+Date: Mon, 19 Nov 2018 14:52:17 +0100
+Message-ID: <20181119135217.GA16334@lst.de>
+References: <20181109084632.22848-1-hch@lst.de> <20181109084632.22848-2-hch@lst.de> <75c72464-1ff6-7c53-2cdb-0c5882c190aa@arm.com>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <75c72464-1ff6-7c53-2cdb-0c5882c190aa@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=iIXhT0JzrMr+u8T8q4QUKKi1S5xXa3Q8RSGuNnwPWYM=; b=QCBO54U/zxSFbW
-	dJoqgAHLh1PrJiIzAQz5XOl/J76yBCyM7K7sNkHke4OhQUjSFK8N+WwFoo1VCT6Xezm7KF56DlR9e
-	ZZoq467p9mkC43z6m304gSrTbNDrWQpF/TxgSmhNhi/o2tjxf5XEzehTwQL/kifabqvjxhcxGMuMb
-	T05DBDMDjErZE2bddy00ps6X5A3SWfA3i8hOKJjJev1H2lgyYWlxvcwS8fWVPcSC/4GO/zesBzRBL
-	PPtl3V4lQsLbvbpNwkK2azpP74741a7cpF+3BbKrlcMU35xw0OHGzr2n9i2AizX2JoYywhiMA0Gu6
-	uHJU5ePxdQm0pCYarusQ==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
- List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=OjEPoOrSvn/SVnSSCA7UFGSNFLgoXG8AkPeL/+L6YF0=; b=sSZI6FDxu+tf8PQCNWEkJ+Tz8
- oT3acWz0M2WVtCMCF5Fpo/a5j98FxzyitYJKXB0XckSeSbEwwHNUuAOBgo45a67zpPJIXS4gFSl2G
- yjqidKF0N1/i+2KxdsNEKvmTjTE8hZ57kV/Esy+Mo16uEadxL6Tp9injSfGZ7jLONWu6dYZdw4mlJ
- hzuv+KZnPqtZK9GOiIidk7wTerGDYgJXbMJF69XsA9jwJHba2o6AGXJq79x1IHh7CPQegUjIM8HpY
- P39BJbhj/xfe1wf8N03bAwk2nTGR8qVbuxjEjB8Ov3ZJj4az77bcMKWwkdVWse0pyrVL0TDgBn6RV
- +hpidC2HQ==;
-Content-Disposition: inline
-In-Reply-To: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andrew Murray <andrew.murray@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Sascha Hauer <s.hauer@pengutronix.de>, x86@kernel.org, Will Deacon <will.deacon@arm.com>, linuxppc-dev@lists.ozlabs.org, Arnaldo Carvalho de Melo <acme@kernel.org>, linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, linux-alpha@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Shawn Guo <shawnguo@kernel.org>, linux-arm-kernel@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Fri, Nov 16, 2018 at 10:24:03AM +0000, Andrew Murray wrote:
-> Many PMU drivers do not have the capability to exclude counting events
-> that occur in specific contexts such as idle, kernel, guest, etc. These
-> drivers indicate this by returning an error in their event_init upon
-> testing the events attribute flags.
-> 
-> However this approach requires that each time a new event modifier is
-> added to perf, all the perf drivers need to be modified to indicate that
-> they don't support the attribute. This results in additional boiler-plate
-> code common to many drivers that needs to be maintained. An example of
-> this is the addition of exclude_host and exclude_guest in 2011 yet many
-> PMU drivers do not support this or indicate an error on events that make
-> use of it.
-> 
-> This patch generalises the test for exclusion and updates PMU drivers to
-> use it. This is a functional change as some PMU drivers will now correctly
-> report that they don't support certain events whereas they previously did.
+On Fri, Nov 09, 2018 at 02:41:18PM +0000, Robin Murphy wrote:
+>> -
+>>   #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
+>>     #define LOOP_TIMEOUT	100000
+>> @@ -2339,7 +2337,7 @@ static dma_addr_t __map_single(struct device *dev,
+>>   	paddr &= PAGE_MASK;
+>>     	address = dma_ops_alloc_iova(dev, dma_dom, pages, dma_mask);
+>> -	if (address == AMD_IOMMU_MAPPING_ERROR)
+>> +	if (address == DMA_MAPPING_ERROR)
+>
+> This for one is clearly broken, because the IOVA allocator still returns 0 
+> on failure here...
 
-Right, I like that idea, and yes, there's a lot of fail around there :/
+Indeed.  And that shows how the original code was making a mess of these
+different constants..
 
-> A longer term approach may instead be for PMU's to advertise their
-> capabilities on registration.
+> I very much agree with the concept, but I think the way to go about it is 
+> to convert the implementations which need it to the standardised 
+> *_MAPPING_ERROR value one-by-one, and only then then do the big sweep to 
+> remove them all. That has more of a chance of getting worthwhile review and 
+> testing from the respective relevant parties (I'll confess I came looking 
+> for this bug specifically, since I happened to recall amd_iommu having a 
+> tricky implicit reliance on the old DMA_ERROR_CODE being 0 on x86).
 
-This I think is the better approach. We already have the
-PERF_PMU_CAP_flags that can be used to advertise various PMU
-capabilities.
+I'll see if I can split this out somehow, but I'm not sure it is going
+to be all that much more readable..
 
-Something along these lines I suppose; then every PMU that actually
-checks the flags, needs to set the flag, otherwise it'll fail.
+> In terms of really minimising the error-checking overhead it's a bit of a 
+> shame that DMA_MAPPING_ERROR = 0 doesn't seem viable as the thing to 
+> standardise on, since that has advantages at the micro-optimisation level 
+> for many ISAs - fixing up the legacy IOMMU code doesn't seem 
+> insurmountable, but I suspect there may well be non-IOMMU platforms where 
+> DMA to physical address 0 is a thing :(
 
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 53c500f0ca79..de15723ea52a 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -244,6 +244,7 @@ struct perf_event;
- #define PERF_PMU_CAP_EXCLUSIVE			0x10
- #define PERF_PMU_CAP_ITRACE			0x20
- #define PERF_PMU_CAP_HETEROGENEOUS_CPUS		0x40
-+#define PERF_PMU_CAP_EXCLUDE			0x80
- 
- /**
-  * struct pmu - generic performance monitoring unit
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 84530ab358c3..d76b724177b9 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -9772,6 +9772,14 @@ static int perf_try_init_event(struct pmu *pmu, struct perf_event *event)
- 	if (ctx)
- 		perf_event_ctx_unlock(event->group_leader, ctx);
- 
-+	if (!ret) {
-+		if ((pmu->capabilities & PERF_PMU_CAP_EXCLUDE) ||
-+		    event_has_exclude_flags(event)) {
-+			event->destroy(event);
-+			ret = -EINVAL;
-+		}
-+	}
-+
- 	if (ret)
- 		module_put(pmu->module);
+Yes, that is what I'm more worried about.
+
+> (yeah, I know saving a couple of instructions and potential register 
+> allocations is down in the noise when we're already going from an indirect 
+> call to an inline comparison; I'm mostly just thinking out loud there)
+
+The nice bit of standardizing the value is that we get rid of an
+indirect call, which generally is much more of a problem at the
+micro-architecture level.
