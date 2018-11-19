@@ -1,26 +1,26 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.4 134/160] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
-Date: Mon, 19 Nov 2018 17:29:33 +0100
-Message-ID: <20181119162643.216732703@linuxfoundation.org>
-References: <20181119162630.031306128@linuxfoundation.org>
+Subject: [PATCH 3.18 71/90] arch/alpha, termios: implement BOTHER, IBSHIFT and termios2
+Date: Mon, 19 Nov 2018 17:29:53 +0100
+Message-ID: <20181119162631.732191857@linuxfoundation.org>
+References: <20181119162620.585061184@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1542646903;
-        bh=3CGK5v63yQL9FBInsD8ZIXmipZHs/jpj++PkiH1+xsM=;
+        s=default; t=1542647211;
+        bh=mUd+RRhthCdJ3kGFtQRGYzQd8MfVnEBeFZcAfxnzjcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iiXxnBD9nf+JJl3Vu1MCc0tST4v7w3Tvvz+LVSbUJmI/RlZnMGdBnZcSnd68gc8Jd
-         ZCudU/YpuhfVjeeFczkbNBx5VogMdTs/QWJIDM5UhjIslD73a9RRKLDTk1i42PCAaB
-         L1EMdL8UbQdr+P+RV26uBgmPwDeO5hxKEDY/sjAY=
-In-Reply-To: <20181119162630.031306128@linuxfoundation.org>
+        b=pPotxrMkvWTKVaQt2E2UArZxaKDxXNvEFpqWqWzTfpOgY8K8Q7xJ7LO4fzHVMjw4T
+         3VTDxcQP6V2T/NiGyhlxXm3d3UTStg+MezDn6zI9u3phxSMAHADnozx2NOCD/iZyhv
+         nTGB/z56cGcGscYhGIcAe8dJ+nVnGAp18r42Is8U=
+In-Reply-To: <20181119162620.585061184@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Jiri Slaby <jslaby@suse.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Eugene Syromiatnikov <esyr@redhat.com>, linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org, Johan Hovold <johan@kernel.org>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-4.4-stable review patch.  If anyone has any objections, please let me know.
+3.18-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
