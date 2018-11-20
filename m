@@ -1,11 +1,11 @@
 From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH 01/10] perf/core: Add macro to test for event exclusion flags
-Date: Tue, 20 Nov 2018 22:28:34 +1100
-Message-ID: <87sgzw0yzh.fsf@concordia.ellerman.id.au>
-References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com> <1542363853-13849-2-git-send-email-andrew.murray@arm.com>
+Subject: Re: [PATCH 10/10] perf/doc: update design.txt for exclude_{host|guest} flags
+Date: Tue, 20 Nov 2018 22:31:36 +1100
+Message-ID: <87pnv00yuf.fsf@concordia.ellerman.id.au>
+References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com> <1542363853-13849-11-git-send-email-andrew.murray@arm.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1542363853-13849-2-git-send-email-andrew.murray@arm.com>
+In-Reply-To: <1542363853-13849-11-git-send-email-andrew.murray@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -15,38 +15,26 @@ Cc: linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel
 
 Andrew Murray <andrew.murray@arm.com> writes:
 
-> Add a macro that tests if any of the perf event exclusion flags
-> are set on a given event.
+> Update design.txt to reflect the presence of the exclude_host
+> and exclude_guest perf flags.
 >
 > Signed-off-by: Andrew Murray <andrew.murray@arm.com>
 > ---
->  include/linux/perf_event.h | 9 +++++++++
->  1 file changed, 9 insertions(+)
+>  tools/perf/design.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
 >
-> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-> index 53c500f..89ee7fa 100644
-> --- a/include/linux/perf_event.h
-> +++ b/include/linux/perf_event.h
-> @@ -1004,6 +1004,15 @@ perf_event__output_id_sample(struct perf_event *event,
->  extern void
->  perf_log_lost_samples(struct perf_event *event, u64 lost);
+> diff --git a/tools/perf/design.txt b/tools/perf/design.txt
+> index a28dca2..7de7d83 100644
+> --- a/tools/perf/design.txt
+> +++ b/tools/perf/design.txt
+> @@ -222,6 +222,10 @@ The 'exclude_user', 'exclude_kernel' and 'exclude_hv' bits provide a
+>  way to request that counting of events be restricted to times when the
+>  CPU is in user, kernel and/or hypervisor mode.
 >  
-> +static inline bool event_has_exclude_flags(struct perf_event *event)
-> +{
-> +	struct perf_event_attr *attr = &event->attr;
-> +
-> +	return attr->exclude_idle || attr->exclude_user ||
-> +	       attr->exclude_kernel || attr->exclude_hv ||
-> +	       attr->exclude_guest || attr->exclude_host;
-> +}
+> +Furthermore the 'exclude_host' and 'exclude_guest' bits provide a way
+> +to request counting of events restricted to guest and host contexts when
+> +using virtualisation.
 
-Sorry to be a total PITA, but using "flags" plural suggests that it only
-returns true if there is more than one exclude flag set.
-
-A better name would be event_has_exclude_flag() or maybe
-event_has_any_exclude_flag().
-
-If you're doing a respin anyway it'd be nice to fix the name, but
-obviously it's not high priority.
+How does exclude_host differ from exclude_hv ?
 
 cheers
