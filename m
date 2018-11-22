@@ -1,44 +1,71 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
 Subject: Re: remove the ->mapping_error method from dma_map_ops V2
-Date: Thu, 22 Nov 2018 08:50:47 -0800
-Message-ID: <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
+Date: Thu, 22 Nov 2018 17:07:15 +0000
+Message-ID: <20181122170715.GI30658@n2100.armlinux.org.uk>
 References: <20181122140320.24080-1-hch@lst.de>
+ <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e562HhA2flT6fTyLAvxV3SOYh8Ynz+eq8zTy+B4XCBo=;
-        b=fFLdH/fArJodPzBcL/riDZt8I8jJRKO5OTA2wYlDGTSL/IN1W/LlKJCXcPi1UZXmRv
-         pk4iVZGuDq14GcO/8fgeKYOsPQw+C+viw101r+YOZQ3OQFF9njL+ZtIucWKEtWpBN+1e
-         HeB0H6QQoTAIqrtq8SlsKP2n9UAcAUiaQO2sI=
-In-Reply-To: <20181122140320.24080-1-hch@lst.de>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2014; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=N5JqTIVcQxGnW3jhvc7PN2ZvPmWZ9oBpMwqexak7ISE=; b=Wzf+T71IEkeCzeUTkYk1lPY8t
+        HJXb3dWQZtwasdmlXPBojH0MC77ybisq3Z+9lb7O4d7vnqLhjgkHYgrQvN2NUcQGPZoDnMX3ez7Fq
+        mLQEw1Rh7xawfBuf+6CPIXCc//KPIvho+rteUEuRVkpoWF5/ira6hAFZgRyvGufEiSixs=;
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, jdmason@kudzu.us, joro@8bytes.org, David Woodhouse <dwmw2@infradead.org>, m.szyprowski@samsung.com, robin.murphy@arm.com, the arch/x86 maintainers <x86@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, linux-arch@vger.kernel.org, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, joro@8bytes.org, the arch/x86 maintainers <x86@kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, jdmason@kudzu.us, xen-devel@lists.xenproject.org, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
 
-On Thu, Nov 22, 2018 at 6:03 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> The 0 return doesn't work for direct mappings that have ram at address
-> zero and a lot of IOMMUs that start allocating bus space from address
-> zero, so we can't consolidate on that, but I think we can move everyone
-> to all-Fs, which the patch here does.
+On Thu, Nov 22, 2018 at 08:50:47AM -0800, Linus Torvalds wrote:
+> On Thu, Nov 22, 2018 at 6:03 AM Christoph Hellwig <hch@lst.de> wrote:
+> >
+> > The 0 return doesn't work for direct mappings that have ram at address
+> > zero and a lot of IOMMUs that start allocating bus space from address
+> > zero, so we can't consolidate on that, but I think we can move everyone
+> > to all-Fs, which the patch here does.
+> 
+> Hmm. Maybe not limit it to just all ones, but actually use the
+> (standard, for the kernel) IS_ERR_VALUE()?
+> 
+> That basically reserves the last 4095 values in an unsigned long for
+> error values.
+> 
+> Then those functions could actually return *what* error they
+> encountered, using just plain
+> 
+>         return -ENOMEM;
+> 
+> or whatever?
 
-Hmm. Maybe not limit it to just all ones, but actually use the
-(standard, for the kernel) IS_ERR_VALUE()?
+Linus,
 
-That basically reserves the last 4095 values in an unsigned long for
-error values.
+I'm afraid that won't work very well - 32 bit platforms with 64-bit
+addresses (LPAE) would have dma_addr_t as a 64-bit value, which
+wouldn't fit into an unsigned long.
 
-Then those functions could actually return *what* error they
-encountered, using just plain
+IS_ERR_VALUE() would cast a 64-bit DMA address down to a 32-bit
+pointer (effectively masking with 0xffffffff).  It would have the
+effect of making (eg) 0xXXXXXXXX_fffffVVV an error, where XXXXXXXX
+are any of the top 32-bits of a 64-bit bus address, and VVV is the
+error code value.
 
-        return -ENOMEM;
+That could be a problem if you hit it in several places throughout
+your available RAM... we'd have to mark every top page of RAM in
+a naturally aligned 4GB as unusable, as well as block the top page
+in natually aligned 4GB blocks from IOMMUs... and then what about
+buses that have weird offsets...
 
-or whatever?
+So, I don't think the IS_ERR_VALUE() would work very well.
 
-               Linus
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
