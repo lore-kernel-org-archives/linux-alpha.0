@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 01/24] dma-direct: Make DIRECT_MAPPING_ERROR viable for SWIOTLB
-Date: Thu, 22 Nov 2018 15:02:57 +0100
-Message-ID: <20181122140320.24080-2-hch@lst.de>
+Subject: [PATCH 02/24] swiotlb: Skip cache maintenance on map error
+Date: Thu, 22 Nov 2018 15:02:58 +0100
+Message-ID: <20181122140320.24080-3-hch@lst.de>
 References: <20181122140320.24080-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -13,13 +13,13 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
 	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
 	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=MtJ8xWA9qUHloLCvIEk/FO/K2KiiWlRZFAUGaRfluEU=;
-	b=VBeO4MUyZpT6Uz3BAJpXDOk8Uo
-	/FRVCIk1A14IplUDrLhOK/gb7SBRYL4RerbmU9plQ3LHIcmmN4tyiGNuJbB9rz7dJKxSpUS0GHIN1
-	Kphn/TXjf55Olgpc9jNDFR+ufftxyVdLXH7aygV7C9ZJ4ZQcFpK8RXniWYx/H/Gw74hoXFLadGVJi
-	kPk3z49co61r2z/69Xf+Kwnt0CCYu8afTmAvS2HCKXnUfGAMsWPWbfq1SlkVW17aNYEFT2KzbIysg
-	iKoBMFEDulX4iK3g+vTgOhytNYv72XKVdeSZZYSb9qDXmS/znUupeKXJbpLTBYBVKsmSqsvvdz1pu
-	1U2moY4Q==;
+	bh=9YixXoOCvTbfXDjN53pMRm0NG2dEtXbXnG/qpDVGj5U=;
+	b=mjwab/ANWvbCntAYdSA+p+t5e5
+	KghP9FKQgGU9IO/wq+Pa0hWEDbVlptCgMbY4ZEqYcXVbIFJdyW41ySTsUR5dEC2+RSE1wLcvN0o9v
+	NCiUoE+B8vVfRmKGJCtw4w5UHmYSazpTy3rgUtc11HLIdVrqGpgxKFJdgA+BlZ6eHdIvUzHUKzTQQ
+	V0ke6KaJMMrbRn6ku6RzvlDlBMONUTKFkfbJqfi8HMEJgsSpfUrPoQ38KJQ8BonVQpe/op6AmjUGX
+	pr3TWypFtx9N3/laSvSkbVC5EFx283/8vgmydn3s7p5DEErHfcSm85GWUjxxheB8E4M8jBD5tlGVJ
+	iYwv+oXg==;
 In-Reply-To: <20181122140320.24080-1-hch-jcswGhMUV9g@public.gmane.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -36,39 +36,34 @@ Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY7
 
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-With the overflow buffer removed, we no longer have a unique address
-which is guaranteed not to be a valid DMA target to use as an error
-token. The DIRECT_MAPPING_ERROR value of 0 tries to at least represent
-an unlikely DMA target, but unfortunately there are already SWIOTLB
-users with DMA-able memory at physical address 0 which now gets falsely
-treated as a mapping failure and leads to all manner of misbehaviour.
+If swiotlb_bounce_page() failed, calling arch_sync_dma_for_device() may
+lead to such delights as performing cache maintenance on whatever
+address phys_to_virt(SWIOTLB_MAP_ERROR) looks like, which is typically
+outside the kernel memory map and goes about as well as expected.
 
-The best we can do to mitigate that is flip DIRECT_MAPPING_ERROR to the
-other commonly-used error value of all-bits-set, since the last single
-byte of memory is by far the least-likely-valid DMA target.
+Don't do that.
 
-Fixes: dff8d6c1ed58 ("swiotlb: remove the overflow buffer")
-Reported-by: John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Fixes: a4a4330db46a ("swiotlb: add support for non-coherent DMA")
 Tested-by: John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Acked-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- include/linux/dma-direct.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/dma/swiotlb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index bd73e7a91410..9e66bfe369aa 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -5,7 +5,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/mem_encrypt.h>
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 5731daa09a32..045930e32c0e 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -679,7 +679,8 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
+ 	}
  
--#define DIRECT_MAPPING_ERROR		0
-+#define DIRECT_MAPPING_ERROR		(~(dma_addr_t)0)
+ 	if (!dev_is_dma_coherent(dev) &&
+-	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
++	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0 &&
++	    dev_addr != DIRECT_MAPPING_ERROR)
+ 		arch_sync_dma_for_device(dev, phys, size, dir);
  
- #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
- #include <asm/dma-direct.h>
+ 	return dev_addr;
 -- 
 2.19.1
