@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 21/24] iommu/vt-d: remove the mapping_error dma_map_ops method
-Date: Thu, 22 Nov 2018 15:03:17 +0100
-Message-ID: <20181122140320.24080-22-hch@lst.de>
+Subject: [PATCH 23/24] xen-swiotlb: remove the mapping_error dma_map_ops method
+Date: Thu, 22 Nov 2018 15:03:19 +0100
+Message-ID: <20181122140320.24080-24-hch@lst.de>
 References: <20181122140320.24080-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,11 +12,11 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Bf282GfOWp/JaIi9SWPOLCHGBo2bD6VW/B+mP7iUSLs=; b=S4qsKP0rfS0C/Mp/AZ4mVdXbDx
-        rwyEguoDmgy2BiJjDlH5x5+5Wkm4SqqGQcrZG3bmXuumETfumW8LoZUU8dLUbLh21rsd0MO9yrU+Z
-        g3yTlO2q+tfCmJ+/Cy8sldi0nBVwhlQpHc+SrK+v3w/p6OcKNeX3XfD3P9tvWg/H9pVw+ayll9ZH4
-        S4Uzk3ILKKUE0GluXeGwtu3qU0aa8s+KNruKDeZc9bT2GuQsUW5euNoZNHhgM9zX9a0RNtt2Qscsb
-        LpZJLMZ80xxrKtipL20cA08DmlgKuT9BN7kFYGTbkL6iE7zRLOS06a7gTw+BIF6ZgvT1CjgWE4C6F
+        bh=WHPez5RhxTIcMvprH5ITOwWzwL8816DB5aR/L+bV10Y=; b=iXTjDfc+EGineHV5XPn0jZsdxs
+        ie3idgdj7spU8QlqDiAk6DynhstM8EQMF+TPY4B4YaAVzC7YyDlEjb1m8/YrMveX0TkheUGSpd0u6
+        Yf7KqakIbaaL8oUCA83YGK8XhWdqxsRtIqJfjfcW7Y9a510QCTyNzBfFvNLlak0nQdw6wTnX+1CZa
+        PDxWZXy11waRlC/+nPE++0QMshU77c3LPWHxfh8Ay4WmTEk9PBeDfjg8s0uN7ZXIAXZjkVy78SqnC
+        R9yZUeHunEpedADHhWGUnv+Db+LL3z/TiV0uQT/9WvN+tYw+w0dFS2LTh0UsV4CHPijhAQb3yW+YO
     
 In-Reply-To: <20181122140320.24080-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -30,60 +30,58 @@ the core dma-mapping code handle the rest.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/intel-iommu.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/xen/swiotlb-xen.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3b8a7acac7a1..a5704155932d 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3617,7 +3617,7 @@ static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 2a7f545bd0b5..6dc969d5ea2f 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -53,8 +53,6 @@
+  * API.
+  */
  
- 	domain = get_valid_domain_for_dev(dev);
- 	if (!domain)
--		return 0;
+-#define XEN_SWIOTLB_ERROR_CODE	(~(dma_addr_t)0x0)
+-
+ static char *xen_io_tlb_start, *xen_io_tlb_end;
+ static unsigned long xen_io_tlb_nslabs;
+ /*
+@@ -406,7 +404,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ 	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, dir,
+ 				     attrs);
+ 	if (map == SWIOTLB_MAP_ERROR)
+-		return XEN_SWIOTLB_ERROR_CODE;
 +		return DMA_MAPPING_ERROR;
  
- 	iommu = domain_get_iommu(domain);
- 	size = aligned_nrpages(paddr, size);
-@@ -3655,7 +3655,7 @@ static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
- 		free_iova_fast(&domain->iovad, iova_pfn, dma_to_mm_pfn(size));
- 	pr_err("Device %s request: %zx@%llx dir %d --- failed\n",
- 		dev_name(dev), size, (unsigned long long)paddr, dir);
--	return 0;
+ 	dev_addr = xen_phys_to_bus(map);
+ 	xen_dma_map_page(dev, pfn_to_page(map >> PAGE_SHIFT),
+@@ -421,7 +419,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ 	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+ 	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
+ 
+-	return XEN_SWIOTLB_ERROR_CODE;
 +	return DMA_MAPPING_ERROR;
  }
  
- static dma_addr_t intel_map_page(struct device *dev, struct page *page,
-@@ -3756,7 +3756,7 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
- 
- 	*dma_handle = __intel_map_page(dev, page, 0, size, DMA_BIDIRECTIONAL,
- 				       dev->coherent_dma_mask);
--	if (*dma_handle)
-+	if (*dma_handle != DMA_MAPPING_ERROR)
- 		return page_address(page);
- 	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
- 		__free_pages(page, order);
-@@ -3865,11 +3865,6 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
- 	return nelems;
+ /*
+@@ -700,11 +698,6 @@ xen_swiotlb_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 	return dma_common_get_sgtable(dev, sgt, cpu_addr, handle, size, attrs);
  }
  
--static int intel_mapping_error(struct device *dev, dma_addr_t dma_addr)
+-static int xen_swiotlb_mapping_error(struct device *dev, dma_addr_t dma_addr)
 -{
--	return !dma_addr;
+-	return dma_addr == XEN_SWIOTLB_ERROR_CODE;
 -}
 -
- static const struct dma_map_ops intel_dma_ops = {
- 	.alloc = intel_alloc_coherent,
- 	.free = intel_free_coherent,
-@@ -3877,7 +3872,6 @@ static const struct dma_map_ops intel_dma_ops = {
- 	.unmap_sg = intel_unmap_sg,
- 	.map_page = intel_map_page,
- 	.unmap_page = intel_unmap_page,
--	.mapping_error = intel_mapping_error,
- 	.dma_supported = dma_direct_supported,
+ const struct dma_map_ops xen_swiotlb_dma_ops = {
+ 	.alloc = xen_swiotlb_alloc_coherent,
+ 	.free = xen_swiotlb_free_coherent,
+@@ -719,5 +712,4 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
+ 	.dma_supported = xen_swiotlb_dma_supported,
+ 	.mmap = xen_swiotlb_dma_mmap,
+ 	.get_sgtable = xen_swiotlb_get_sgtable,
+-	.mapping_error	= xen_swiotlb_mapping_error,
  };
- 
 -- 
 2.19.1
 
