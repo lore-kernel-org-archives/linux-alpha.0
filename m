@@ -1,7 +1,7 @@
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+From: Michael Cree <mcree@orcon.net.nz>
 Subject: Re: [alpha] Debian 9.0 NETINST fails
-Date: Fri, 23 Nov 2018 20:57:02 +0100
-Message-ID: <6f72165c-93d5-3b83-56e6-281648ae90dc@physik.fu-berlin.de>
+Date: Sat, 24 Nov 2018 09:07:09 +1300
+Message-ID: <20181123200709.nc7uikaifg2xkrac@tower>
 References: <20181102184151.GA15241@gherkin.frus.com>
  <20181102185623.GB15241@gherkin.frus.com>
  <4cf52d37-6f60-1714-de43-f9c1b72202c7@web.de>
@@ -12,31 +12,37 @@ References: <20181102184151.GA15241@gherkin.frus.com>
  <04e3c137-1c38-a377-2442-5ea7d8242041@physik.fu-berlin.de>
  <20181123194116.GA14674@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
+Content-Disposition: inline
 In-Reply-To: <20181123194116.GA14674@gherkin.frus.com>
-Content-Language: en-US
-Resent-Message-ID: <Y1fnvy9ieJE.A.TvG.ruF-bB@bendel>
+Resent-Message-ID: <r2j2sATpdcF.A.VAB.K4F-bB@bendel>
 List-Id: <linux-alpha.vger.kernel.org>
 List-URL: <https://lists.debian.org/debian-alpha/>
 List-Post: <mailto:debian-alpha@lists.debian.org>
 List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
 List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
 List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/6f72165c-93d5-3b83-56e6-281648ae90dc@physik.fu-berlin.de
+List-Archive: https://lists.debian.org/msgid-search/20181123200709.nc7uikaifg2xkrac@tower
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Bob Tracy <rct@gherkin.frus.com>
-Cc: Helge Deller <deller@gmx.de>, Michael Cree <mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Helge Deller <deller@gmx.de>, Frank Scheiner <frank.scheiner@web.de>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
 
-On 11/23/18 8:41 PM, Bob Tracy wrote:
-> Just a quick update, and hopefully there's a Gentoo advocate/developer
-> reading this...
+On Fri, Nov 23, 2018 at 01:41:17PM -0600, Bob Tracy wrote:
+> Trying the 20181120 minimal installation CD fails due to the firmware
+> for the Qlogic ISP1020 (1040.bin) SCSI adapter not being present, either
+> as built-in to the kernel or as a standalone file.  No firmware means no
+> hard disks detected means "full stop" -- can't get there from here.
 
-Not sure whether Gentoo folk is reading the Debian mailing lists,
-but you can get in touch with them on #debian-ports on OFTC IRC as
-some of them hang around there.
+Yeah, that's a problem.  I think the Qlogic firmware is in the 
+firmware-linux-nonfree package.  You will need to get that separately
+from the main repo.  Do you have a floppy drive?  The installer gives
+the option to scan extra disks for firmware; not sure if it would
+scan a floppy disk but it should scan a CD for firmware so you might
+be able to write another disk with the firmware. (One would normally
+put the firmware on a USB stick but I an guessing that is not an
+option for you.)
 
-Any chance someone can get me full access to an Alpha box so I don't
-have to hurl my AlphaStations out of the basement?
+Cheers,
+Michael.
 
-Adrian
