@@ -1,39 +1,57 @@
-From: Bob Tracy <rct@gherkin.frus.com>
-Subject: Re: [alpha] Debian 9.0 NETINST fails
-Date: Fri, 23 Nov 2018 13:41:17 -0600
-Message-ID: <20181123194116.GA14674@gherkin.frus.com>
-References: <20181102184151.GA15241@gherkin.frus.com>
- <20181102185623.GB15241@gherkin.frus.com>
- <4cf52d37-6f60-1714-de43-f9c1b72202c7@web.de>
- <847ee7b7-29fa-c1ec-fd1d-610ddad190d9@physik.fu-berlin.de>
- <20181121205330.GA19204@gherkin.frus.com>
- <20181122053454.5qzz3qvlna3xt2v5@tower>
- <666da863-ccba-2972-c5e4-ae42870c3775@gmx.de>
- <04e3c137-1c38-a377-2442-5ea7d8242041@physik.fu-berlin.de>
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH] mm: Replace all open encodings for NUMA_NO_NODE
+Date: Fri, 23 Nov 2018 15:44:15 -0800
+Message-ID: <20181123154415.42898a42e28a31488749738a@linux-foundation.org>
+References: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
 Mime-Version: 1.0
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-Content-Disposition: inline
-In-Reply-To: <04e3c137-1c38-a377-2442-5ea7d8242041@physik.fu-berlin.de>
-Resent-Message-ID: <_cA6QjdggRO.A.UZB.w8F-bB@bendel>
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
 List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/20181123194116.GA14674@gherkin.frus.com
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: Helge Deller <deller@gmx.de>, Michael Cree <mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+To: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: hverkuil@xs4all.nl, linux-fbdev@vger.kernel.org, linux-ia64@vger.kernel.org, linux-rdma@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-block@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, intel-wired-lan@lists.osuosl.org, linux-alpha@vger.kernel.org, dmaengine@vger.kernel.org, sparclinux@vger.kernel.org, jiangqi903@gmail.com, linuxppc-dev@lists.ozlabs.org, ocfs2-devel@oss.oracle.com, linux-media@vger.kernel.org
 
-Just a quick update, and hopefully there's a Gentoo advocate/developer
-reading this...
-
-Trying the 20181120 minimal installation CD fails due to the firmware
-for the Qlogic ISP1020 (1040.bin) SCSI adapter not being present, either
-as built-in to the kernel or as a standalone file.  No firmware means no
-hard disks detected means "full stop" -- can't get there from here.
-
---Bob
-
+T24gRnJpLCAyMyBOb3YgMjAxOCAxNToyNDoxNiArMDUzMCBBbnNodW1hbiBLaGFuZHVhbCA8YW5z
+aHVtYW4ua2hhbmR1YWxAYXJtLmNvbT4gd3JvdGU6Cgo+IEF0IHByZXNlbnQgdGhlcmUgYXJlIG11
+bHRpcGxlIHBsYWNlcyB3aGVyZSBpbnZhbGlkIG5vZGUgbnVtYmVyIGlzIGVuY29kZWQKPiBhcyAt
+MS4gRXZlbiB0aG91Z2ggaW1wbGljaXRseSB1bmRlcnN0b29kIGl0IGlzIGFsd2F5cyBiZXR0ZXIg
+dG8gaGF2ZSBtYWNyb3MKPiBpbiB0aGVyZS4gUmVwbGFjZSB0aGVzZSBvcGVuIGVuY29kaW5ncyBm
+b3IgYW4gaW52YWxpZCBub2RlIG51bWJlciB3aXRoIHRoZQo+IGdsb2JhbCBtYWNybyBOVU1BX05P
+X05PREUuIFRoaXMgaGVscHMgcmVtb3ZlIE5VTUEgcmVsYXRlZCBhc3N1bXB0aW9ucyBsaWtlCj4g
+J2ludmFsaWQgbm9kZScgZnJvbSB2YXJpb3VzIHBsYWNlcyByZWRpcmVjdGluZyB0aGVtIHRvIGEg
+Y29tbW9uIGRlZmluaXRpb24uCj4gCj4gLi4uCj4gCj4gQnVpbGQgdGVzdGVkIHRoaXMgd2l0aCBt
+dWx0aXBsZSBjcm9zcyBjb21waWxlciBvcHRpb25zIGxpa2UgYWxwaGEsIHNwYXJjLAo+IGFybTY0
+LCB4ODYsIHBvd2VycGMsIHBvd2VycGM2NGxlIGV0YyB3aXRoIHRoZWlyIGRlZmF1bHQgY29uZmln
+IHdoaWNoIG1pZ2h0Cj4gbm90IGhhdmUgY29tcGlsZWQgdGVzdGVkIGFsbCBkcml2ZXIgcmVsYXRl
+ZCBjaGFuZ2VzLiBJIHdpbGwgYXBwcmVjaWF0ZQo+IGZvbGtzIGdpdmluZyB0aGlzIGEgdGVzdCBp
+biB0aGVpciByZXNwZWN0aXZlIGJ1aWxkIGVudmlyb25tZW50Lgo+IAo+IEFsbCB0aGVzZSBwbGFj
+ZXMgZm9yIHJlcGxhY2VtZW50IHdlcmUgZm91bmQgYnkgcnVubmluZyB0aGUgZm9sbG93aW5nIGdy
+ZXAKPiBwYXR0ZXJucyBvbiB0aGUgZW50aXJlIGtlcm5lbCBjb2RlLiBQbGVhc2UgbGV0IG1lIGtu
+b3cgaWYgdGhpcyBtaWdodCBoYXZlCj4gbWlzc2VkIHNvbWUgaW5zdGFuY2VzLiBUaGlzIG1pZ2h0
+IGFsc28gaGF2ZSByZXBsYWNlZCBzb21lIGZhbHNlIHBvc2l0aXZlcy4KPiBJIHdpbGwgYXBwcmVj
+aWF0ZSBzdWdnZXN0aW9ucywgaW5wdXRzIGFuZCByZXZpZXcuCj4gCj4gMS4gZ2l0IGdyZXAgIm5p
+ZCA9PSAtMSIKPiAyLiBnaXQgZ3JlcCAibm9kZSA9PSAtMSIKPiAzLiBnaXQgZ3JlcCAibmlkID0g
+LTEiCj4gNC4gZ2l0IGdyZXAgIm5vZGUgPSAtMSIKClRoZSBidWlsZCB0ZXN0aW5nIGlzIGdvb2Qs
+IGJ1dCBJIHdvcnJ5IHRoYXQgc29tZSBvZiB0aGUgYWZmZWN0ZWQgZmlsZXMKZG9uJ3QgY2xlYXJs
+eSBoYXZlIG51bWEuaCBpbiB0aGVpciBpbmNsdWRlIHBhdGhzLCBmb3IgdGhlIE5VTUFfTk9fTk9E
+RQpkZWZpbml0aW9uLgoKVGhlIGZpcnN0IHRoaW5nIEkgbG9va2VkIGl0IGlzIGFyY2gvcG93ZXJw
+Yy9pbmNsdWRlL2FzbS9wY2ktYnJpZGdlLmguIApNYXliZSBpdCBzb21laG93IG1hbmFnZXMgdG8g
+aW5jbHVkZSBudW1hLmggdmlhIHNvbWUgbmVzdGVkIGluY2x1ZGUsIGJ1dAppZiBzbywgaXMgdGhh
+dCByZWxpYWJsZSBhY3Jvc3MgYWxsIGNvbmZpZyBjb21iaW5hdGlvbnMgYW5kIGFzIGNvZGUKZXZv
+bHZlcz8KClNvIEkgdGhpbmsgdGhhdCB0aGUgcGF0Y2ggc2hvdWxkIGhhdmUgYWRkZWQgYW4gZXhw
+bGljaXQgaW5jbHVkZSBvZgpudW1hLmgsIGVzcGVjaWFsbHkgaW4gY2FzZXMgd2hlcmUgdGhlIGFm
+ZmVjdGVkIGZpbGUgcHJldmlvdXNseSBoYWQgbm8KcmVmZXJlbmNlcyB0byBhbnkgb2YgdGhlIHRo
+aW5ncyB3aGljaCBudW1hLmggZGVmaW5lcy4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3Rz
+LmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2RyaS1kZXZlbAo=
