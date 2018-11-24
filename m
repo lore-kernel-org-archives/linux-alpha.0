@@ -1,38 +1,61 @@
-From: Vinod Koul <vkoul@kernel.org>
-Subject: Re: [PATCH] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Sat, 24 Nov 2018 19:35:54 +0530
-Message-ID: <20181124140554.GG3175@vkoul-mobl.Dlink>
-References: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: Re: [alpha] Debian 9.0 NETINST fails
+Date: Sat, 24 Nov 2018 15:57:27 -0600
+Message-ID: <20181124215727.GA21952@gherkin.frus.com>
+References: <20181102184151.GA15241@gherkin.frus.com>
+ <20181102185623.GB15241@gherkin.frus.com>
+ <4cf52d37-6f60-1714-de43-f9c1b72202c7@web.de>
+ <847ee7b7-29fa-c1ec-fd1d-610ddad190d9@physik.fu-berlin.de>
+ <20181121205330.GA19204@gherkin.frus.com>
+ <20181122053454.5qzz3qvlna3xt2v5@tower>
+ <666da863-ccba-2972-c5e4-ae42870c3775@gmx.de>
+ <04e3c137-1c38-a377-2442-5ea7d8242041@physik.fu-berlin.de>
+ <20181123194116.GA14674@gherkin.frus.com>
+ <20181123200709.nc7uikaifg2xkrac@tower>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
 Content-Disposition: inline
-In-Reply-To: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
+In-Reply-To: <20181123200709.nc7uikaifg2xkrac@tower>
+Resent-Message-ID: <mbxhiJJIDvD.A.RAE.elc-bB@bendel>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+List-URL: <https://lists.debian.org/debian-alpha/>
+List-Post: <mailto:debian-alpha@lists.debian.org>
+List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+List-Archive: https://lists.debian.org/msgid-search/20181124215727.GA21952@gherkin.frus.com
 Content-Type: text/plain; charset="us-ascii"
-To: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: hverkuil@xs4all.nl, linux-fbdev@vger.kernel.org, linux-ia64@vger.kernel.org, linux-rdma@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-block@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, intel-wired-lan@lists.osuosl.org, linux-alpha@vger.kernel.org, dmaengine@vger.kernel.org, sparclinux@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, linuxppc-dev@lists.ozlabs.org, ocfs2-devel@oss.oracle.com, linux-media@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Michael Cree <mcree@orcon.net.nz>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Helge Deller <deller@gmx.de>, Frank Scheiner <frank.scheiner@web.de>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
 
-T24gMjMtMTEtMTgsIDE1OjI0LCBBbnNodW1hbiBLaGFuZHVhbCB3cm90ZToKCj4gLS0tIGEvZHJp
-dmVycy9kbWEvZG1hZW5naW5lLmMKPiArKysgYi9kcml2ZXJzL2RtYS9kbWFlbmdpbmUuYwo+IEBA
-IC0zODYsNyArMzg2LDggQEAgRVhQT1JUX1NZTUJPTChkbWFfaXNzdWVfcGVuZGluZ19hbGwpOwo+
-ICBzdGF0aWMgYm9vbCBkbWFfY2hhbl9pc19sb2NhbChzdHJ1Y3QgZG1hX2NoYW4gKmNoYW4sIGlu
-dCBjcHUpCj4gIHsKPiAgCWludCBub2RlID0gZGV2X3RvX25vZGUoY2hhbi0+ZGV2aWNlLT5kZXYp
-Owo+IC0JcmV0dXJuIG5vZGUgPT0gLTEgfHwgY3B1bWFza190ZXN0X2NwdShjcHUsIGNwdW1hc2tf
-b2Zfbm9kZShub2RlKSk7Cj4gKwlyZXR1cm4gbm9kZSA9PSBOVU1BX05PX05PREUgfHwKPiArCQlj
-cHVtYXNrX3Rlc3RfY3B1KGNwdSwgY3B1bWFza19vZl9ub2RlKG5vZGUpKTsKPiAgfQoKSSBkbyBu
-b3Qgc2VlIGRldl90b19ub2RlIGJlaW5nIHVwZGF0ZWQgZmlyc3QsIHRoYXQgcmV0dXJucyAtMSBz
-byBJIHdvdWxkCnByZWZlciB0byBjaGVjayBmb3IgLTEgdW5sZXNzIGl0IHJldHVybiBOVU1BX05P
-X05PREUKCi0tIAp+Vmlub2QKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
-b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
-LWRldmVsCg==
+On Sat, Nov 24, 2018 at 09:07:09AM +1300, Michael Cree wrote:
+> On Fri, Nov 23, 2018 at 01:41:17PM -0600, Bob Tracy wrote:
+> > Trying the 20181120 minimal installation CD fails due to the firmware
+> > for the Qlogic ISP1020 (1040.bin) SCSI adapter not being present, either
+> > as built-in to the kernel or as a standalone file.  No firmware means no
+> > hard disks detected means "full stop" -- can't get there from here.
+> 
+> Yeah, that's a problem.
+
+(Missing context: I was trying the Gentoo "install-alpha-minimal" CD
+when I ran into the missing firmware issue.  Their CD is based on a
+later kernel than Debian's, and boots/runs ok other than the missing
+firmware issue.  Yes, I'm keeping "debian-alpha" in the list, because
+our community is small enough to make keeping maximal eyes on Alpha
+installation issues a good thing.)
+
+Submitted a bug report via Gentoo's bugzilla page to get the ball
+rolling on that side of the fence.  Doesn't help as far as fixing the
+problems with the Debian installer though...
+
+Other architectures officially supported by Debian have moved to a later
+kernel for their installation CDs, and we should do likewise.  There are
+known issues with 4.9.X which prompted the move to, I think, 4.12.X for
+other Debian install CDs.  We (Debian) ran into a Qlogic firmware issue
+about a year ago when the 4.14 kernel was current, because that was
+around the time firmware was removed from the kernel source tree.  I
+mention that as a reminder in case we decide to use a later kernel than
+the other architectures.
+
+--Bob
+
