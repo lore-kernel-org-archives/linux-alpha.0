@@ -1,61 +1,36 @@
-From: Bob Tracy <rct@gherkin.frus.com>
-Subject: Re: [alpha] Debian 9.0 NETINST fails
-Date: Sat, 24 Nov 2018 15:57:27 -0600
-Message-ID: <20181124215727.GA21952@gherkin.frus.com>
-References: <20181102184151.GA15241@gherkin.frus.com>
- <20181102185623.GB15241@gherkin.frus.com>
- <4cf52d37-6f60-1714-de43-f9c1b72202c7@web.de>
- <847ee7b7-29fa-c1ec-fd1d-610ddad190d9@physik.fu-berlin.de>
- <20181121205330.GA19204@gherkin.frus.com>
- <20181122053454.5qzz3qvlna3xt2v5@tower>
- <666da863-ccba-2972-c5e4-ae42870c3775@gmx.de>
- <04e3c137-1c38-a377-2442-5ea7d8242041@physik.fu-berlin.de>
- <20181123194116.GA14674@gherkin.frus.com>
- <20181123200709.nc7uikaifg2xkrac@tower>
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH 2/8] sockopt: Rename SO_TIMESTAMP* to SO_TIMESTAMP*_OLD
+Date: Sat, 24 Nov 2018 22:58:39 -0500
+Message-ID: <CAF=yD-KfxXK=Ta=+a8UYMcmUYzN=UokotfzSno2-xi=JeS6=0g@mail.gmail.com>
+References: <20181124022035.17519-1-deepa.kernel@gmail.com> <20181124022035.17519-3-deepa.kernel@gmail.com>
 Mime-Version: 1.0
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-Content-Disposition: inline
-In-Reply-To: <20181123200709.nc7uikaifg2xkrac@tower>
-Resent-Message-ID: <mbxhiJJIDvD.A.RAE.elc-bB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/20181124215727.GA21952@gherkin.frus.com
+Return-path: <netdev-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c+VbIPcUA0nJnu19TEKgDmZfhoeqvq+Zc/bRRQahK3k=;
+        b=ocdTkfBE5AFtLyhSSV8CuyIFXHG7GlsaOSO2j0zy3JdpMsb0At1PKZh1bBgvl+syDO
+         lx45TU5Phwa8H6BdHwH+Bf6IJPf7HRQ/yOAe7fZjbM8U51f6xAyBZi8Po1l7EBMRCzXq
+         zhCEziYoT2r3r1dgupyt6RCI4LoeiJ0GexBWvcivKlOZZzLssK2SAjLMwh0svjbJdzxw
+         cvwHa4m9XqlCttALqA20+fJbDiTTaX7Pa7FnMBLyJZCAeKGWLPMbuN6ZU1K3cOxPMaBp
+         W40LpbtMifYMNHlQ6g7X4/cSupZ5xareMupm50/a4TGfR3zSOJJjJ5JoV+UbmSWqYB6N
+         oloQ==
+In-Reply-To: <20181124022035.17519-3-deepa.kernel@gmail.com>
+Sender: netdev-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Helge Deller <deller@gmx.de>, Frank Scheiner <frank.scheiner@web.de>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+To: Deepa Dinamani <deepa.kernel@gmail.com>
+Cc: David Miller <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>, Network Development <netdev@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Helge Deller <deller@gmx.de>, David Howells <dhowells@redhat.com>, jejb@parisc-linux.org, ralf@linux-mips.org, rth@twiddle.net, linux-afs@lists.infradead.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-rdma@vger.kernel.org, sparclinux@vger.kernel.org
 
-On Sat, Nov 24, 2018 at 09:07:09AM +1300, Michael Cree wrote:
-> On Fri, Nov 23, 2018 at 01:41:17PM -0600, Bob Tracy wrote:
-> > Trying the 20181120 minimal installation CD fails due to the firmware
-> > for the Qlogic ISP1020 (1040.bin) SCSI adapter not being present, either
-> > as built-in to the kernel or as a standalone file.  No firmware means no
-> > hard disks detected means "full stop" -- can't get there from here.
-> 
-> Yeah, that's a problem.
+On Sat, Nov 24, 2018 at 3:58 AM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
+>
+> SO_TIMESTAMP, SO_TIMESTAMPNS and SO_TIMESTAMPING options, the
+> way they are currently defined, are not y2038 safe.
+> Subsequent patches in the series add new y2038 safe versions
+> of these options which provide 64 bit timestamps on all
+> architectures uniformly.
+> Hence, rename existing options with OLD tag suffixes.
 
-(Missing context: I was trying the Gentoo "install-alpha-minimal" CD
-when I ran into the missing firmware issue.  Their CD is based on a
-later kernel than Debian's, and boots/runs ok other than the missing
-firmware issue.  Yes, I'm keeping "debian-alpha" in the list, because
-our community is small enough to make keeping maximal eyes on Alpha
-installation issues a good thing.)
-
-Submitted a bug report via Gentoo's bugzilla page to get the ball
-rolling on that side of the fence.  Doesn't help as far as fixing the
-problems with the Debian installer though...
-
-Other architectures officially supported by Debian have moved to a later
-kernel for their installation CDs, and we should do likewise.  There are
-known issues with 4.9.X which prompted the move to, I think, 4.12.X for
-other Debian install CDs.  We (Debian) ran into a Qlogic firmware issue
-about a year ago when the 4.14 kernel was current, because that was
-around the time firmware was removed from the kernel source tree.  I
-mention that as a reminder in case we decide to use a later kernel than
-the other architectures.
-
---Bob
-
+Why do the existing interfaces have to be renamed when new interfaces are added?
