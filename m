@@ -1,121 +1,35 @@
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH 7/8] socket: Add SO_TIMESTAMP[NS]_NEW
-Date: Sat, 24 Nov 2018 23:17:25 -0500
-Message-ID: <CAF=yD-K3Ga8qojSh5Epa6m4EYn-Lvdo=e38MnFqOKch1128VHw@mail.gmail.com>
+From: Deepa Dinamani <deepa.kernel@gmail.com>
+Subject: Re: [PATCH 8/8] socket: Add SO_TIMESTAMPING_NEW
+Date: Sat, 24 Nov 2018 21:07:35 -0800
+Message-ID: <CABeXuvoRPAFa5v86pp+WmBkjzbHZSJqjzibL1+Zx8Uas6bvohg@mail.gmail.com>
 References: <20181124022035.17519-1-deepa.kernel@gmail.com>
- <20181124022035.17519-8-deepa.kernel@gmail.com>
- <CAF=yD-K=ZLZ_S=Y6YnhvvkfKQS=21ujwiGd7+JB9yDMtiX_9hg@mail.gmail.com>
+ <20181124022035.17519-9-deepa.kernel@gmail.com> <CAF=yD-Jz8c2EsoKxUDbf7dygWRW49kwteUsksq3eUV00Eg94-w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <y2038-bounces@lists.linaro.org>
-In-Reply-To: <CAF=yD-K=ZLZ_S=Y6YnhvvkfKQS=21ujwiGd7+JB9yDMtiX_9hg@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/y2038/>
-List-Post: <mailto:y2038@lists.linaro.org>
-List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
-List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=subscribe>
-Errors-To: y2038-bounces@lists.linaro.org
-Sender: "Y2038" <y2038-bounces@lists.linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VVUtrEXZA+jRPL+fVbmJthoajvPk69C0Kd+Rm2/KstQ=;
+        b=vYXXJbapH/+kHOwdAsgQJjBZFg1A/8PyjY2TL3FaU0OIIg1uLQVItXaMPbyIM45X4T
+         /Rb6ISaMhvFopBImLt+RpgZh8wdnhCfYdHxcasoI/C8UVpQk/0963+LZW2Bb3Ls6Y1bk
+         HFvDaXxsuYBt+syfaS4qeupM7GHCJAYt7cOl//LhU0nxFuO3tGIbo0Rc9Azzf3hefA2c
+         YOQQRQlqRINtLowTROqYUmmCa+mn6ZiOThp5JzZ4+CuFKGJr/TreXsDHdJ8KC1IZ2SEy
+         lhPNLox/O1PVHWx3U/B2HlMyG2Bahat5BXb7kJY9LHrs1Vs+97w71EX8vEXAFlvrW2xg
+         u+wQ==
+In-Reply-To: <CAF=yD-Jz8c2EsoKxUDbf7dygWRW49kwteUsksq3eUV00Eg94-w@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Deepa Dinamani <deepa.kernel@gmail.com>
-Cc: linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Network Development <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, ralf@linux-mips.org, jejb@parisc-linux.org, linux-rdma@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, David Miller <davem@davemloft.net>, rth@twiddle.net
+Content-Transfer-Encoding: 7bit
+To: willemdebruijn.kernel@gmail.com
+Cc: "David S. Miller" <davem@davemloft.net>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux Network Devel Mailing List <netdev@vger.kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Chris Zankel <chris@zankel.net>, fenghua.yu@intel.com, rth@twiddle.net, Thomas Gleixner <tglx@linutronix.de>, ubraun@linux.ibm.com, linux-alpha@vger.kernel.org, linux-arch <linux-arch@vger.kernel.org>, linux-ia64@vger.kernel.org, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, linux-s390 <linux-s390@vger.kernel.org>, linux-xtensa@linux-xtensa.org, sparclinux <sparclinux@vger.kernel.org>
 
-T24gU2F0LCBOb3YgMjQsIDIwMTggYXQgMTA6NTkgUE0gV2lsbGVtIGRlIEJydWlqbgo8d2lsbGVt
-ZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbT4gd3JvdGU6Cj4KPiBPbiBTYXQsIE5vdiAyNCwgMjAx
-OCBhdCAzOjU4IEFNIERlZXBhIERpbmFtYW5pIDxkZWVwYS5rZXJuZWxAZ21haWwuY29tPiB3cm90
-ZToKPiA+Cj4gPiBBZGQgU09fVElNRVNUQU1QX05FVyBhbmQgU09fVElNRVNUQU1QTlNfTkVXIHZh
-cmlhbnRzIG9mCj4gPiBzb2NrZXQgdGltZXN0YW1wIG9wdGlvbnMuCj4gPiBUaGVzZSBhcmUgdGhl
-IHkyMDM4IHNhZmUgdmVyc2lvbnMgb2YgdGhlIFNPX1RJTUVTVEFNUF9PTEQKPiA+IGFuZCBTT19U
-SU1FU1RBTVBOU19PTEQgZm9yIGFsbCBhcmNoaXRlY3R1cmVzLgo+ID4KPiA+IE5vdGUgdGhhdCB0
-aGUgZm9ybWF0IG9mIHNjbV90aW1lc3RhbXBpbmcudHNbMF0gaXMgbm90IGNoYW5nZWQKPiA+IGlu
-IHRoaXMgcGF0Y2guCj4gPgo+ID4gU2lnbmVkLW9mZi1ieTogRGVlcGEgRGluYW1hbmkgPGRlZXBh
-Lmtlcm5lbEBnbWFpbC5jb20+Cj4gPiBDYzogamVqYkBwYXJpc2MtbGludXgub3JnCj4gPiBDYzog
-cmFsZkBsaW51eC1taXBzLm9yZwo+ID4gQ2M6IHJ0aEB0d2lkZGxlLm5ldAo+ID4gQ2M6IGxpbnV4
-LWFscGhhQHZnZXIua2VybmVsLm9yZwo+ID4gQ2M6IGxpbnV4LW1pcHNAbGludXgtbWlwcy5vcmcK
-PiA+IENjOiBsaW51eC1wYXJpc2NAdmdlci5rZXJuZWwub3JnCj4gPiBDYzogbGludXgtcmRtYUB2
-Z2VyLmtlcm5lbC5vcmcKPiA+IENjOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnCj4gPiBDYzogc3Bh
-cmNsaW51eEB2Z2VyLmtlcm5lbC5vcmcKPiA+IC0tLQo+Cj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVk
-ZS9uZXQvc29jay5oIGIvaW5jbHVkZS9uZXQvc29jay5oCj4gPiBpbmRleCA4MTQzYzRjMWE0OWQu
-LjllZGY5MDlkYzE3NiAxMDA2NDQKPiA+IC0tLSBhL2luY2x1ZGUvbmV0L3NvY2suaAo+ID4gKysr
-IGIvaW5jbHVkZS9uZXQvc29jay5oCj4gPiBAQCAtODAxLDYgKzgwMSw3IEBAIGVudW0gc29ja19m
-bGFncyB7Cj4gPiAgICAgICAgIFNPQ0tfUkNVX0ZSRUUsIC8qIHdhaXQgcmN1IGdyYWNlIHBlcmlv
-ZCBpbiBza19kZXN0cnVjdCgpICovCj4gPiAgICAgICAgIFNPQ0tfVFhUSU1FLAo+ID4gICAgICAg
-ICBTT0NLX1hEUCwgLyogWERQIGlzIGF0dGFjaGVkICovCj4gPiArICAgICAgIFNPQ0tfVFNUQU1Q
-X05FVywgLyogSW5kaWNhdGVzIDY0IGJpdCB0aW1lc3RhbXBzIGFsd2F5cyAqLwo+Cj4gc2tfZmxh
-Z3MgaXMgZ2V0dGluZyBleGhhdXN0ZWQuIENvbW1pdCBiOWY0MGUyMWVmNDIgKCJuZXQtdGltZXN0
-YW1wOgo+IG1vdmUgdGltZXN0YW1wIGZsYWdzIG91dCBvZiBza19mbGFncyIpIGFkZGVkIGEgbmV3
-IHUxNiBza190c2ZsYWdzCj4gc3BlY2lmaWNhbGx5IGZvciB0aW1lc3RhbXBzLiBUaGF0IG1heSBi
-ZSBhIGJldHRlciBjaG9pY2UgaGVyZSwgdG9vLgo+Cj4gPiBkaWZmIC0tZ2l0IGEvbmV0L2NvcmUv
-c29jay5jIGIvbmV0L2NvcmUvc29jay5jCj4gPiBpbmRleCBlNjAwMzY2MTgyMDUuLjdiNDg1ZGZh
-YTQwMCAxMDA2NDQKPiA+IC0tLSBhL25ldC9jb3JlL3NvY2suYwo+ID4gKysrIGIvbmV0L2NvcmUv
-c29jay5jCj4gPiBAQCAtNjUyLDE1ICs2NTIsMjMgQEAgc3RhdGljIHZvaWQgc2V0c29ja29wdF90
-aW1lc3RhbXAoc3RydWN0IHNvY2sgKnNrLCBpbnQgdHlwZSwgaW50IHZhbCkKPiA+ICAgICAgICAg
-aWYgKCF2YWwpIHsKPiA+ICAgICAgICAgICAgICAgICBzb2NrX3Jlc2V0X2ZsYWcoc2ssIFNPQ0tf
-UkNWVFNUQU1QKTsKPiA+ICAgICAgICAgICAgICAgICBzb2NrX3Jlc2V0X2ZsYWcoc2ssIFNPQ0tf
-UkNWVFNUQU1QTlMpOwo+ID4gKyAgICAgICAgICAgICAgIHNvY2tfcmVzZXRfZmxhZyhzaywgU09D
-S19UU1RBTVBfTkVXKTsKPiA+ICAgICAgICAgICAgICAgICByZXR1cm47Cj4gPiAgICAgICAgIH0K
-PiA+Cj4gPiArICAgICAgIGlmICh0eXBlID09IFNPX1RJTUVTVEFNUF9ORVcgfHwgdHlwZSA9PSBT
-T19USU1FU1RBTVBOU19ORVcpCj4gPiArICAgICAgICAgICAgICAgc29ja19zZXRfZmxhZyhzaywg
-U09DS19UU1RBTVBfTkVXKTsKPiA+ICsgICAgICAgZWxzZQo+ID4gKyAgICAgICAgICAgICAgIHNv
-Y2tfcmVzZXRfZmxhZyhzaywgU09DS19UU1RBTVBfTkVXKTsKPiA+ICsKPgo+IGlmIGFkZGluZyBh
-IGJvb2xlYW4gd2hldGhlciB0aGUgc29ja2V0IHVzZXMgbmV3IG9yIG9sZC1zdHlsZQo+IHRpbWVz
-dGFtcHMsIHBlcmhhcHMgZmFpbCBoYXJkIGlmIGEgcHJvY2VzcyB0cmllcyB0byBzZXQgYSBuZXct
-c3R5bGUKPiBvcHRpb24gd2hpbGUgYW4gb2xkLXN0eWxlIGlzIGFscmVhZHkgc2V0IGFuZCB2aWNl
-IHZlcnNhLiBBbHNvIGluY2x1ZGUKPiBTT19USU1FU1RBTVBJTkdfTkVXIGFzIGl0IHRvZ2dsZXMg
-dGhlIHNhbWUgb3B0aW9uLgo+Cj4gPiBkaWZmIC0tZ2l0IGEvbmV0L3NvY2tldC5jIGIvbmV0L3Nv
-Y2tldC5jCj4gPiBpbmRleCBkM2RlZmJhNTU1NDcuLjlhYmViNmJjOWNmZSAxMDA2NDQKPiA+IC0t
-LSBhL25ldC9zb2NrZXQuYwo+ID4gKysrIGIvbmV0L3NvY2tldC5jCj4gPiBAQCAtNjk5LDYgKzY5
-OSwzOCBAQCBzdGF0aWMgdm9pZCBwdXRfdHNfcGt0aW5mbyhzdHJ1Y3QgbXNnaGRyICptc2csIHN0
-cnVjdCBza19idWZmICpza2IpCj4gPiAgICAgICAgICAgICAgICAgIHNpemVvZih0c19wa3RpbmZv
-KSwgJnRzX3BrdGluZm8pOwo+ID4gIH0KPiA+Cj4gPiArc3RhdGljIHZvaWQgc29ja19yZWN2X3N3
-X3RpbWVzdGFtcChzdHJ1Y3QgbXNnaGRyICptc2csIHN0cnVjdCBzb2NrICpzaywKPiA+ICsgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IHNrX2J1ZmYgKnNrYikKPiA+ICt7
-Cj4gPiArICAgICAgIGlmIChzb2NrX2ZsYWcoc2ssIFNPQ0tfVFNUQU1QX05FVykpIHsKPiA+ICsg
-ICAgICAgICAgICAgICBpZiAoIXNvY2tfZmxhZyhzaywgU09DS19SQ1ZUU1RBTVBOUykpIHsKPiA+
-ICsgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBzb2NrX3RpbWV2YWwgdHY7Cj4gPiArCj4g
-PiArICAgICAgICAgICAgICAgICAgICAgICBza2JfZ2V0X25ld190aW1lc3RhbXAoc2tiLCAmdHYp
-Owo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgcHV0X2Ntc2cobXNnLCBTT0xfU09DS0VULCBT
-T19USU1FU1RBTVBfTkVXLAo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2l6
-ZW9mKHR2KSwgJnR2KTsKPiA+ICsgICAgICAgICAgICAgICB9IGVsc2Ugewo+ID4gKyAgICAgICAg
-ICAgICAgICAgICAgICAgc3RydWN0IF9fa2VybmVsX3RpbWVzcGVjIHRzOwo+ID4gKwo+ID4gKyAg
-ICAgICAgICAgICAgICAgICAgICAgc2tiX2dldF9uZXdfdGltZXN0YW1wbnMoc2tiLCAmdHMpOwo+
-ID4gKyAgICAgICAgICAgICAgICAgICAgICAgcHV0X2Ntc2cobXNnLCBTT0xfU09DS0VULCBTT19U
-SU1FU1RBTVBOU19ORVcsCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzaXpl
-b2YodHMpLCAmdHMpOwo+ID4gKyAgICAgICAgICAgICAgIH0KPiA+ICsgICAgICAgfQo+ID4gKyAg
-ICAgICBpZiAoIXNvY2tfZmxhZyhzaywgU09DS19SQ1ZUU1RBTVBOUykpIHsKPiA+ICsgICAgICAg
-ICAgICAgICBzdHJ1Y3QgX19rZXJuZWxfb2xkX3RpbWV2YWwgdHY7Cj4gPiArCj4gPiArICAgICAg
-ICAgICAgICAgc2tiX2dldF90aW1lc3RhbXAoc2tiLCAmdHYpOwo+ID4gKyAgICAgICAgICAgICAg
-IHB1dF9jbXNnKG1zZywgU09MX1NPQ0tFVCwgU09fVElNRVNUQU1QX09MRCwKPiA+ICsgICAgICAg
-ICAgICAgICAgICAgICAgICBzaXplb2YodHYpLCAmdHYpOwo+ID4gKyAgICAgICB9IGVsc2Ugewo+
-ID4gKyAgICAgICAgICAgICAgIHN0cnVjdCB0aW1lc3BlYyB0czsKPiA+ICsKPiA+ICsgICAgICAg
-ICAgICAgICBza2JfZ2V0X3RpbWVzdGFtcG5zKHNrYiwgJnRzKTsKPiA+ICsgICAgICAgICAgICAg
-ICBwdXRfY21zZyhtc2csIFNPTF9TT0NLRVQsIFNPX1RJTUVTVEFNUE5TX09MRCwKPiA+ICsgICAg
-ICAgICAgICAgICAgICAgICAgICBzaXplb2YodHMpLCAmdHMpOwo+ID4gKyAgICAgICB9Cj4gPiAr
-fQo+ID4gIC8qCj4gPiAgICogY2FsbGVkIGZyb20gc29ja19yZWN2X3RpbWVzdGFtcCgpIGlmIHNv
-Y2tfZmxhZyhzaywgU09DS19SQ1ZUU1RBTVApCj4gPiAgICogb3Igc29ja19mbGFnKHNrLCBTT0NL
-X1JDVlRTVEFNUE5TKQo+ID4gQEAgLTcxOSwxOSArNzUxLDggQEAgdm9pZCBfX3NvY2tfcmVjdl90
-aW1lc3RhbXAoc3RydWN0IG1zZ2hkciAqbXNnLCBzdHJ1Y3Qgc29jayAqc2ssCj4gPiAgICAgICAg
-ICAgICAgICAgZmFsc2VfdHN0YW1wID0gMTsKPiA+ICAgICAgICAgfQo+ID4gLSAgICAgICBpZiAo
-bmVlZF9zb2Z0d2FyZV90c3RhbXApIHsKPgo+IENvbnNpZGVyYWJseSBsZXNzIGNvZGUgY2h1cm4g
-aWYgYWRkaW5nIF9fc29ja19yZWN2X3RpbWVzdGFtcF8yMDM4IGFuZAo+IGNhbGxpbmcgdGhhdCBo
-ZXJlOgo+Cj4gICAgICAgICAgICAgICAgICAgIGlmIChzb2NrX2ZsYWcoc2ssIFNPQ0tfVFNUQU1Q
-X05FVykpCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgX19zb2NrX3JlY3ZfdGltZXN0YW1w
-XzIwMzgobXNnLCBzaywgc2tiKTsKPiAgICAgICAgICAgICAgICAgICAgZWxzZSBpZiAuLi4KPgo+
-IFNhbWUgZm9yIHRoZSB0Y3AgY2FzZSBhYm92ZSwgcmVhbGx5LCBhbmQgaW4gdGhlIGNhc2Ugb2Yg
-dGhlIG5leHQgcGF0Y2gKPiBmb3IgU09fVElNRVNUQU1QSU5HX05FVwoKVGhhdCBuYW1pbmcgY29u
-dmVudGlvbiwgLi4uXzIwMzgsIGlzIG5vdCB0aGUgbmljZXN0LCBvZiBjb3Vyc2UuIFRoYXQKaXMg
-bm90IHRoZSByZWxldmFudCBiaXQgaW4gdGhlIGFib3ZlIGNvbW1lbnQuCgpDb21lIHRvIHRoaW5r
-IG9mIGl0LCBhbmQgcmVsYXRlZCB0byBteSBxdWVzdGlvbiBpbiBwYXRjaCAyIHdoeSB0aGUKbmVl
-ZCB0byByZW5hbWUgYXQgYWxsLCBjb3VsZCBhbGwgbmV3IHN0cnVjdHMsIGNvbnN0YW50cyBhbmQg
-ZnVuY3Rpb25zCmJlIG5hbWVkIGNvbnNpc3RlbnRseSB3aXRoIDY0IHN1ZmZpeD8gX19zb2NrX3Jl
-Y3ZfdGltZXN0YW1wNjQsClNPX1RJTUVTVEFNUElORzY0IGFuZCB0aW1ldmFsNjQgKGluc3RlYWQg
-b2Ygc29ja190aW1ldmFsLAppdCBpc24ndCByZWFsbHkgYSBzb2NrIHNwZWNpZmljIHN0cnVjdCk/
-CgpJIGd1ZXNzIHRoYXQgdGhlcmUgaXMgYSBnb29kIHJlYXNvbiBmb3IgdGhlIHJlbmFtaW5nIGV4
-ZXJjaXNlIGFuZApjb25kaXRpb25hbCBtYXBwaW5nIG9mIFNPX1RJTUVTVEFNUCBvbnRvIG9sZCBv
-ciBuZXcgaW50ZXJmYWNlLgpQbGVhc2UgZWx1Y2lkYXRlIGluIHRoZSBjb21taXQgbWVzc2FnZS4K
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KWTIwMzggbWFp
-bGluZyBsaXN0ClkyMDM4QGxpc3RzLmxpbmFyby5vcmcKaHR0cHM6Ly9saXN0cy5saW5hcm8ub3Jn
-L21haWxtYW4vbGlzdGluZm8veTIwMzgK
+> > +               new_tstamp = sock_flag(sk, SOCK_TSTAMP_NEW);
+> > +               if (new_tstamp)
+>
+> nit: no need for explicit variable
+
+Sure, will drop it.
+
+-Deepa
