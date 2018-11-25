@@ -1,166 +1,95 @@
 From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH 7/8] socket: Add SO_TIMESTAMP[NS]_NEW
-Date: Sat, 24 Nov 2018 22:59:54 -0500
-Message-ID: <CAF=yD-K=ZLZ_S=Y6YnhvvkfKQS=21ujwiGd7+JB9yDMtiX_9hg@mail.gmail.com>
-References: <20181124022035.17519-1-deepa.kernel@gmail.com> <20181124022035.17519-8-deepa.kernel@gmail.com>
+Subject: Re: [PATCH 8/8] socket: Add SO_TIMESTAMPING_NEW
+Date: Sat, 24 Nov 2018 23:00:08 -0500
+Message-ID: <CAF=yD-Jz8c2EsoKxUDbf7dygWRW49kwteUsksq3eUV00Eg94-w@mail.gmail.com>
+References: <20181124022035.17519-1-deepa.kernel@gmail.com> <20181124022035.17519-9-deepa.kernel@gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=b0vV7/EObBCO4v9Rbbv3QtqSUcOg+1e5F/clF9P9EI4=;
-        b=pIFLmXiOKG8nxFxCUFxvKfEsTNbZUHTZXYoKBOrkZPzuyKP3vZizA9/vXUEXNoK5Mj
-         TyAUoBqlJFo76mnp9yIaolSyH/fqmtG9AIN3C3M3i4Z9YpQhcq2K4hozDjtKi1phO369
-         6i+abB2q7vZ/H0ZRZW4GAbnOueijLaknYZj+0EL95O98J7N9IYCZCwkWSy6gPE2JR9js
-         pEBQW81eY6TmwYFICsbHx5bpSlelLJVTjvHSXRYGB34x26GgALYs7dDRhyVUt1AJmmbD
-         6cdec+Fwb5ff4sFOacX1Q0lCYJZ5/54aX+XcIhf3Mb7E0EddjR569wVT63ZtB/8Bx3wy
-         FB2Q==
-In-Reply-To: <20181124022035.17519-8-deepa.kernel@gmail.com>
+        bh=obtjhgtDDsP+5Ip6HZR8RzVAI2Sl/WwjveNuv60FNDs=;
+        b=YqOmSidS95BPQYBVzqnNeBa4T7rgsx5jQyJB8lWWrWUOypCe3UU48DBr5T6RKM/rQa
+         hPYciCQu0hNgfnKSkX29QKmwqkarhfaTT3FkHPIdeC04uGRgL0FBLnGbWv9Rw2S7521Q
+         +nVEk46+FXxcZm8WQ3ZYsHn/xr+3veZkjqDUgQdm8YINbiDQO/wN7oxCxAYLN1bcWLsw
+         GQy8by3SgVIRMl331D//UNZxLAb7EOtAVSNCQhmKf9mYCjbE/Q5X5CFVbztRRL+Kz3N7
+         8HB+Xrp3toMt+Y3gE8GdDCC2HyUJtC0ePC1rg/E8+RqQE1DgJ3w8NfPAXutLtKtIam9h
+         qFdA==
+In-Reply-To: <20181124022035.17519-9-deepa.kernel@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Deepa Dinamani <deepa.kernel@gmail.com>
-Cc: David Miller <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>, Network Development <netdev@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, jejb@parisc-linux.org, ralf@linux-mips.org, rth@twiddle.net, linux-alpha@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-rdma@vger.kernel.org, sparclinux@vger.kernel.org
+Cc: David Miller <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>, Network Development <netdev@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, chris@zankel.net, fenghua.yu@intel.com, rth@twiddle.net, Thomas Gleixner <tglx@linutronix.de>, ubraun@linux.ibm.com, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linux-s390 <linux-s390@vger.kernel.org>, linux-xtensa@linux-xtensa.org, sparclinux@vger.kernel.org
 
 On Sat, Nov 24, 2018 at 3:58 AM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
 >
-> Add SO_TIMESTAMP_NEW and SO_TIMESTAMPNS_NEW variants of
-> socket timestamp options.
-> These are the y2038 safe versions of the SO_TIMESTAMP_OLD
-> and SO_TIMESTAMPNS_OLD for all architectures.
->
-> Note that the format of scm_timestamping.ts[0] is not changed
-> in this patch.
+> Add SO_TIMESTAMPING_NEW variant of socket timestamp options.
+> This is the y2038 safe versions of the SO_TIMESTAMPING_OLD
+> for all architectures.
 >
 > Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
-> Cc: jejb@parisc-linux.org
-> Cc: ralf@linux-mips.org
+> Cc: chris@zankel.net
+> Cc: fenghua.yu@intel.com
 > Cc: rth@twiddle.net
+> Cc: tglx@linutronix.de
+> Cc: ubraun@linux.ibm.com
 > Cc: linux-alpha@vger.kernel.org
+> Cc: linux-arch@vger.kernel.org
+> Cc: linux-ia64@vger.kernel.org
 > Cc: linux-mips@linux-mips.org
-> Cc: linux-parisc@vger.kernel.org
-> Cc: linux-rdma@vger.kernel.org
-> Cc: netdev@vger.kernel.org
+> Cc: linux-s390@vger.kernel.org
+> Cc: linux-xtensa@linux-xtensa.org
 > Cc: sparclinux@vger.kernel.org
 > ---
 
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 8143c4c1a49d..9edf909dc176 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -801,6 +801,7 @@ enum sock_flags {
->         SOCK_RCU_FREE, /* wait rcu grace period in sk_destruct() */
->         SOCK_TXTIME,
->         SOCK_XDP, /* XDP is attached */
-> +       SOCK_TSTAMP_NEW, /* Indicates 64 bit timestamps always */
-
-sk_flags is getting exhausted. Commit b9f40e21ef42 ("net-timestamp:
-move timestamp flags out of sk_flags") added a new u16 sk_tsflags
-specifically for timestamps. That may be a better choice here, too.
-
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index e60036618205..7b485dfaa400 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -652,15 +652,23 @@ static void setsockopt_timestamp(struct sock *sk, int type, int val)
->         if (!val) {
->                 sock_reset_flag(sk, SOCK_RCVTSTAMP);
->                 sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
-> +               sock_reset_flag(sk, SOCK_TSTAMP_NEW);
->                 return;
->         }
->
-> +       if (type == SO_TIMESTAMP_NEW || type == SO_TIMESTAMPNS_NEW)
-> +               sock_set_flag(sk, SOCK_TSTAMP_NEW);
-> +       else
-> +               sock_reset_flag(sk, SOCK_TSTAMP_NEW);
-> +
-
-if adding a boolean whether the socket uses new or old-style
-timestamps, perhaps fail hard if a process tries to set a new-style
-option while an old-style is already set and vice versa. Also include
-SO_TIMESTAMPING_NEW as it toggles the same option.
-
-> diff --git a/net/socket.c b/net/socket.c
-> index d3defba55547..9abeb6bc9cfe 100644
-> --- a/net/socket.c
-> +++ b/net/socket.c
-> @@ -699,6 +699,38 @@ static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb)
->                  sizeof(ts_pktinfo), &ts_pktinfo);
->  }
->
-> +static void sock_recv_sw_timestamp(struct msghdr *msg, struct sock *sk,
-> +                                  struct sk_buff *skb)
-> +{
-> +       if (sock_flag(sk, SOCK_TSTAMP_NEW)) {
-> +               if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> +                       struct sock_timeval tv;
-> +
-> +                       skb_get_new_timestamp(skb, &tv);
-> +                       put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_NEW,
-> +                                sizeof(tv), &tv);
-> +               } else {
-> +                       struct __kernel_timespec ts;
-> +
-> +                       skb_get_new_timestampns(skb, &ts);
-> +                       put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPNS_NEW,
-> +                                sizeof(ts), &ts);
-> +               }
-> +       }
-> +       if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> +               struct __kernel_old_timeval tv;
-> +
-> +               skb_get_timestamp(skb, &tv);
-> +               put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
-> +                        sizeof(tv), &tv);
-> +       } else {
-> +               struct timespec ts;
-> +
-> +               skb_get_timestampns(skb, &ts);
-> +               put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPNS_OLD,
-> +                        sizeof(ts), &ts);
-> +       }
-> +}
 >  /*
 >   * called from sock_recv_timestamp() if sock_flag(sk, SOCK_RCVTSTAMP)
 >   * or sock_flag(sk, SOCK_RCVTSTAMPNS)
-> @@ -719,19 +751,8 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
->                 false_tstamp = 1;
->         }
-> -       if (need_software_tstamp) {
-
-Considerably less code churn if adding __sock_recv_timestamp_2038 and
-calling that here:
-
-                   if (sock_flag(sk, SOCK_TSTAMP_NEW))
-                           __sock_recv_timestamp_2038(msg, sk, skb);
-                   else if ...
-
-Same for the tcp case above, really, and in the case of the next patch
-for SO_TIMESTAMPING_NEW
-
-
-> -               if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> -                       struct __kernel_old_timeval tv;
-> -                       skb_get_timestamp(skb, &tv);
-> -                       put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
-> -                                sizeof(tv), &tv);
-> -               } else {
-> -                       struct timespec ts;
-> -                       skb_get_timestampns(skb, &ts);
-> -                       put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPNS_OLD,
-> -                                sizeof(ts), &ts);
-> -               }
-> -       }
-
-
-> +       if (need_software_tstamp)
-> +               sock_recv_sw_timestamp(msg, sk, skb);
+> @@ -739,8 +740,8 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+>         struct sk_buff *skb)
+>  {
+>         int need_software_tstamp = sock_flag(sk, SOCK_RCVTSTAMP) || sock_flag(sk, SOCK_RCVTSTAMPNS);
+> -       struct scm_timestamping tss;
+> -       int empty = 1, false_tstamp = 0;
+> +       struct scm_timestamping_internal tss;
+> +       int empty = 1, false_tstamp = 0, new_tstamp = 0;
+>         struct skb_shared_hwtstamps *shhwtstamps =
+>                 skb_hwtstamps(skb);
+>
+> @@ -756,20 +757,23 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
 >
 >         memset(&tss, 0, sizeof(tss));
 >         if ((sk->sk_tsflags & SOF_TIMESTAMPING_SOFTWARE) &&
+> -           ktime_to_timespec_cond(skb->tstamp, tss.ts + 0))
+> +           ktime_to_timespec64_cond(skb->tstamp, tss.ts + 0))
+>                 empty = 0;
+>         if (shhwtstamps &&
+>             (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+>             !skb_is_swtx_tstamp(skb, false_tstamp) &&
+> -           ktime_to_timespec_cond(shhwtstamps->hwtstamp, tss.ts + 2)) {
+> +           ktime_to_timespec64_cond(shhwtstamps->hwtstamp, tss.ts + 2)) {
+>                 empty = 0;
+>                 if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
+>                     !skb_is_err_queue(skb))
+>                         put_ts_pktinfo(msg, skb);
+>         }
+>         if (!empty) {
+> -               put_cmsg(msg, SOL_SOCKET,
+> -                        SO_TIMESTAMPING_OLD, sizeof(tss), &tss);
+> +               new_tstamp = sock_flag(sk, SOCK_TSTAMP_NEW);
+> +               if (new_tstamp)
+
+nit: no need for explicit variable
+
+> +                       put_cmsg_scm_timestamping64(msg, &tss);
+> +               else
+> +                       put_cmsg_scm_timestamping(msg, &tss);
+>
+>                 if (skb_is_err_queue(skb) && skb->len &&
+>                     SKB_EXT_ERR(skb)->opt_stats)
 > --
 > 2.17.1
 >
