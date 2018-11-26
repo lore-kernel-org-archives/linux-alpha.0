@@ -1,7 +1,7 @@
 From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH v2 14/20] powerpc: perf/core: remove unnecessary checks for exclusion
-Date: Mon, 26 Nov 2018 11:12:30 +0000
-Message-ID: <1543230756-15319-15-git-send-email-andrew.murray@arm.com>
+Subject: [PATCH v2 15/20] s390: perf/events: advertise PMU exclusion capability
+Date: Mon, 26 Nov 2018 11:12:31 +0000
+Message-ID: <1543230756-15319-16-git-send-email-andrew.murray@arm.com>
 References: <1543230756-15319-1-git-send-email-andrew.murray@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1543230756-15319-1-git-send-email-andrew.murray@arm.com>
@@ -13,95 +13,42 @@ Content-Transfer-Encoding: 7bit
 To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, "David S . Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>
 Cc: linux-s390@vger.kernel.org, linux-mips@linux-mips.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
 
-For PowerPC PMUs that do not support context exclusion we do not
-advertise the PERF_PMU_CAP_EXCLUDE capability. This ensures that
-perf will prevent us from handling events where any exclusion
-flags are set. Let's remove the now unnecessary check for exclusion
-flags.
+The s390 cpum_cf and cpum_sf PMUs have the capability to exclude
+events based on context. Let's advertise that we support the
+PERF_PMU_CAP_EXCLUDE capability to ensure that perf doesn't
+prevent us from handling events where any exclusion flags are set.
 
 Signed-off-by: Andrew Murray <andrew.murray@arm.com>
 ---
- arch/powerpc/perf/hv-24x7.c |  9 ---------
- arch/powerpc/perf/hv-gpci.c |  9 ---------
- arch/powerpc/perf/imc-pmu.c | 18 ------------------
- 3 files changed, 36 deletions(-)
+ arch/s390/kernel/perf_cpum_cf.c | 1 +
+ arch/s390/kernel/perf_cpum_sf.c | 2 ++
+ 2 files changed, 3 insertions(+)
 
-diff --git a/arch/powerpc/perf/hv-24x7.c b/arch/powerpc/perf/hv-24x7.c
-index 72238ee..d13d8a9 100644
---- a/arch/powerpc/perf/hv-24x7.c
-+++ b/arch/powerpc/perf/hv-24x7.c
-@@ -1306,15 +1306,6 @@ static int h_24x7_event_init(struct perf_event *event)
- 		return -EINVAL;
- 	}
+diff --git a/arch/s390/kernel/perf_cpum_cf.c b/arch/s390/kernel/perf_cpum_cf.c
+index cc085e2..7b583ed 100644
+--- a/arch/s390/kernel/perf_cpum_cf.c
++++ b/arch/s390/kernel/perf_cpum_cf.c
+@@ -667,6 +667,7 @@ static struct pmu cpumf_pmu = {
+ 	.start_txn    = cpumf_pmu_start_txn,
+ 	.commit_txn   = cpumf_pmu_commit_txn,
+ 	.cancel_txn   = cpumf_pmu_cancel_txn,
++	.capabilities = PERF_PMU_CAP_EXCLUDE,
+ };
  
--	/* unsupported modes and filters */
--	if (event->attr.exclude_user   ||
--	    event->attr.exclude_kernel ||
--	    event->attr.exclude_hv     ||
--	    event->attr.exclude_idle   ||
--	    event->attr.exclude_host   ||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	/* no branch sampling */
- 	if (has_branch_stack(event))
- 		return -EOPNOTSUPP;
-diff --git a/arch/powerpc/perf/hv-gpci.c b/arch/powerpc/perf/hv-gpci.c
-index 43fabb3..e0ce0e0 100644
---- a/arch/powerpc/perf/hv-gpci.c
-+++ b/arch/powerpc/perf/hv-gpci.c
-@@ -232,15 +232,6 @@ static int h_gpci_event_init(struct perf_event *event)
- 		return -EINVAL;
- 	}
+ static int cpumf_pmf_setup(unsigned int cpu, int flags)
+diff --git a/arch/s390/kernel/perf_cpum_sf.c b/arch/s390/kernel/perf_cpum_sf.c
+index 5c53e97..25a64aa 100644
+--- a/arch/s390/kernel/perf_cpum_sf.c
++++ b/arch/s390/kernel/perf_cpum_sf.c
+@@ -1885,6 +1885,8 @@ static struct pmu cpumf_sampling = {
  
--	/* unsupported modes and filters */
--	if (event->attr.exclude_user   ||
--	    event->attr.exclude_kernel ||
--	    event->attr.exclude_hv     ||
--	    event->attr.exclude_idle   ||
--	    event->attr.exclude_host   ||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	/* no branch sampling */
- 	if (has_branch_stack(event))
- 		return -EOPNOTSUPP;
-diff --git a/arch/powerpc/perf/imc-pmu.c b/arch/powerpc/perf/imc-pmu.c
-index 1fafc32b..49c0b1c 100644
---- a/arch/powerpc/perf/imc-pmu.c
-+++ b/arch/powerpc/perf/imc-pmu.c
-@@ -473,15 +473,6 @@ static int nest_imc_event_init(struct perf_event *event)
- 	if (event->hw.sample_period)
- 		return -EINVAL;
+ 	.setup_aux    = aux_buffer_setup,
+ 	.free_aux     = aux_buffer_free,
++
++	.capabilities = PERF_PMU_CAP_EXCLUDE,
+ };
  
--	/* unsupported modes and filters */
--	if (event->attr.exclude_user   ||
--	    event->attr.exclude_kernel ||
--	    event->attr.exclude_hv     ||
--	    event->attr.exclude_idle   ||
--	    event->attr.exclude_host   ||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	if (event->cpu < 0)
- 		return -EINVAL;
- 
-@@ -748,15 +739,6 @@ static int core_imc_event_init(struct perf_event *event)
- 	if (event->hw.sample_period)
- 		return -EINVAL;
- 
--	/* unsupported modes and filters */
--	if (event->attr.exclude_user   ||
--	    event->attr.exclude_kernel ||
--	    event->attr.exclude_hv     ||
--	    event->attr.exclude_idle   ||
--	    event->attr.exclude_host   ||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	if (event->cpu < 0)
- 		return -EINVAL;
- 
+ static void cpumf_measurement_alert(struct ext_code ext_code,
 -- 
 2.7.4
 
