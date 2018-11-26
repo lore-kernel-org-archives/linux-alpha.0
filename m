@@ -1,101 +1,151 @@
-From: Andrew Murray <andrew.murray@arm.com>
-Subject: Re: [PATCH v2 03/20] perf/core: add PERF_PMU_CAP_EXCLUDE for
- exclusion capable PMUs
-Date: Mon, 26 Nov 2018 14:55:04 +0000
-Message-ID: <20181126145503.GA25271@e119886-lin.cambridge.arm.com>
-References: <1543230756-15319-1-git-send-email-andrew.murray@arm.com>
- <1543230756-15319-4-git-send-email-andrew.murray@arm.com>
- <8c9003c3-ccbf-c342-024f-772d697a911b@arm.com>
+From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: Re: [Intel-wired-lan] [PATCH V2] mm: Replace all open encodings for
+ NUMA_NO_NODE
+Date: Mon, 26 Nov 2018 09:56:28 -0800
+Message-ID: <c1b8de1a8e9d4d215b56498e2d5b83a02083483a.camel@intel.com>
+References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
+Reply-To: jeffrey.t.kirsher@intel.com
 Mime-Version: 1.0
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-w/yFab8vycJu1U8x0saQ"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <8c9003c3-ccbf-c342-024f-772d697a911b@arm.com>
+In-Reply-To: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc: hverkuil@xs4all.nl, linux-fbdev@vger.kernel.org, linux-ia64@vger.kernel.org, linux-rdma@vger.kernel.org, netdev@vger.kernel.org, vkoul@kernel.org, dri-devel@lists.freedesktop.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, intel-wired-lan@lists.osuosl.org, linux-alpha@vger.kernel.org, dmaengine@vger.kernel.org, jiangqi903@gmail.com, akpm@linux-foundation.org, linuxppc-dev@lists.ozlabs.org, ocfs2-devel@oss.oracle.com, linux-media@vger.kernel.org
+
+
+--=-w/yFab8vycJu1U8x0saQ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, 2018-11-26 at 17:56 +0530, Anshuman Khandual wrote:
+> At present there are multiple places where invalid node number is
+> encoded
+> as -1. Even though implicitly understood it is always better to have
+> macros
+> in there. Replace these open encodings for an invalid node number
+> with the
+> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions
+> like
+> 'invalid node' from various places redirecting them to a common
+> definition.
+>=20
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+
+For the 'ixgbe' driver changes.
+
+Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+
+
+> ---
+> Changes in V2:
+>=20
+> - Added inclusion of 'numa.h' header at various places per Andrew
+> - Updated 'dev_to_node' to use NUMA_NO_NODE instead per Vinod
+>=20
+> Changes in V1: (https://lkml.org/lkml/2018/11/23/485)
+>=20
+> - Dropped OCFS2 changes per Joseph
+> - Dropped media/video drivers changes per Hans
+>=20
+> RFC - https://patchwork.kernel.org/patch/10678035/
+>=20
+> Build tested this with multiple cross compiler options like alpha,
+> sparc,
+> arm64, x86, powerpc, powerpc64le etc with their default config which
+> might
+> not have compiled tested all driver related changes. I will
+> appreciate
+> folks giving this a test in their respective build environment.
+>=20
+> All these places for replacement were found by running the following
+> grep
+> patterns on the entire kernel code. Please let me know if this might
+> have
+> missed some instances. This might also have replaced some false
+> positives.
+> I will appreciate suggestions, inputs and review.
+>=20
+> 1. git grep "nid =3D=3D -1"
+> 2. git grep "node =3D=3D -1"
+> 3. git grep "nid =3D -1"
+> 4. git grep "node =3D -1"
+>=20
+>  arch/alpha/include/asm/topology.h             |  3 ++-
+>  arch/ia64/kernel/numa.c                       |  2 +-
+>  arch/ia64/mm/discontig.c                      |  6 +++---
+>  arch/ia64/sn/kernel/io_common.c               |  3 ++-
+>  arch/powerpc/include/asm/pci-bridge.h         |  3 ++-
+>  arch/powerpc/kernel/paca.c                    |  3 ++-
+>  arch/powerpc/kernel/pci-common.c              |  3 ++-
+>  arch/powerpc/mm/numa.c                        | 14 +++++++-------
+>  arch/powerpc/platforms/powernv/memtrace.c     |  5 +++--
+>  arch/sparc/kernel/auxio_32.c                  |  3 ++-
+>  arch/sparc/kernel/pci_fire.c                  |  3 ++-
+>  arch/sparc/kernel/pci_schizo.c                |  3 ++-
+>  arch/sparc/kernel/pcic.c                      |  7 ++++---
+>  arch/sparc/kernel/psycho_common.c             |  3 ++-
+>  arch/sparc/kernel/sbus.c                      |  3 ++-
+>  arch/sparc/mm/init_64.c                       |  6 +++---
+>  arch/sparc/prom/init_32.c                     |  3 ++-
+>  arch/sparc/prom/init_64.c                     |  5 +++--
+>  arch/sparc/prom/tree_32.c                     | 13 +++++++------
+>  arch/sparc/prom/tree_64.c                     | 19 ++++++++++-------
+> --
+>  arch/x86/include/asm/pci.h                    |  3 ++-
+>  arch/x86/kernel/apic/x2apic_uv_x.c            |  7 ++++---
+>  arch/x86/kernel/smpboot.c                     |  3 ++-
+>  arch/x86/platform/olpc/olpc_dt.c              | 17 +++++++++--------
+>  drivers/block/mtip32xx/mtip32xx.c             |  5 +++--
+>  drivers/dma/dmaengine.c                       |  4 +++-
+>  drivers/infiniband/hw/hfi1/affinity.c         |  3 ++-
+>  drivers/infiniband/hw/hfi1/init.c             |  3 ++-
+>  drivers/iommu/dmar.c                          |  5 +++--
+>  drivers/iommu/intel-iommu.c                   |  3 ++-
+>  drivers/misc/sgi-xp/xpc_uv.c                  |  3 ++-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  5 +++--
+>  include/linux/device.h                        |  2 +-
+>  init/init_task.c                              |  3 ++-
+>  kernel/kthread.c                              |  3 ++-
+>  kernel/sched/fair.c                           | 15 ++++++++-------
+>  lib/cpumask.c                                 |  3 ++-
+>  mm/huge_memory.c                              | 13 +++++++------
+>  mm/hugetlb.c                                  |  3 ++-
+>  mm/ksm.c                                      |  2 +-
+>  mm/memory.c                                   |  7 ++++---
+>  mm/memory_hotplug.c                           | 12 ++++++------
+>  mm/mempolicy.c                                |  2 +-
+>  mm/page_alloc.c                               |  4 ++--
+>  mm/page_ext.c                                 |  2 +-
+>  net/core/pktgen.c                             |  3 ++-
+>  net/qrtr/qrtr.c                               |  3 ++-
+>  tools/perf/bench/numa.c                       |  6 +++---
+>  48 files changed, 146 insertions(+), 108 deletions(-)
+
+
+--=-w/yFab8vycJu1U8x0saQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 Content-Transfer-Encoding: 7bit
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, "David S . Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, linux-s390@vger.kernel.org, linux-mips@linux-mips.org
 
-On Mon, Nov 26, 2018 at 02:10:24PM +0000, Robin Murphy wrote:
-> Hi Andrew,
-> 
-> On 26/11/2018 11:12, Andrew Murray wrote:
-> > Many PMU drivers do not have the capability to exclude counting events
-> > that occur in specific contexts such as idle, kernel, guest, etc. These
-> > drivers indicate this by returning an error in their event_init upon
-> > testing the events attribute flags. This approach is error prone and
-> > often inconsistent.
-> > 
-> > Let's instead allow PMU drivers to advertise their ability to exclude
-> > based on context via a new capability: PERF_PMU_CAP_EXCLUDE. This
-> > allows the perf core to reject requests for exclusion events where
-> > there is no support in the PMU.
-> > 
-> > Signed-off-by: Andrew Murray <andrew.murray@arm.com>
-> > ---
-> >   include/linux/perf_event.h | 1 +
-> >   kernel/events/core.c       | 9 +++++++++
-> >   2 files changed, 10 insertions(+)
-> > 
-> > diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-> > index b2e806f..69b3d65 100644
-> > --- a/include/linux/perf_event.h
-> > +++ b/include/linux/perf_event.h
-> > @@ -244,6 +244,7 @@ struct perf_event;
-> >   #define PERF_PMU_CAP_EXCLUSIVE			0x10
-> >   #define PERF_PMU_CAP_ITRACE			0x20
-> >   #define PERF_PMU_CAP_HETEROGENEOUS_CPUS		0x40
-> > +#define PERF_PMU_CAP_EXCLUDE			0x80
-> >   /**
-> >    * struct pmu - generic performance monitoring unit
-> > diff --git a/kernel/events/core.c b/kernel/events/core.c
-> > index 5a97f34..9afb33c 100644
-> > --- a/kernel/events/core.c
-> > +++ b/kernel/events/core.c
-> > @@ -9743,6 +9743,15 @@ static int perf_try_init_event(struct pmu *pmu, struct perf_event *event)
-> >   	if (ctx)
-> >   		perf_event_ctx_unlock(event->group_leader, ctx);
-> > +	if (!ret) {
-> > +		if (!(pmu->capabilities & PERF_PMU_CAP_EXCLUDE) &&
-> > +				event_has_any_exclude_flag(event)) {
-> 
-> Technically this is a bisection-breaker, since no driver has this capability
-> yet - ideally, this patch should come after all the ones introducing it to
-> the relevant drivers (with the removal of the now-redundant code from the
-> other drivers at the end).
+-----BEGIN PGP SIGNATURE-----
 
-Indeed. Thought it is possible to first introduce the capability, update the
-relevant drivers to advertise it, then add the change to core.c and finally
-remove the unnecessary error checks as a result of using the new capability.
-This approach could be bisection-proof.
+iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAlv8M8wACgkQ5W/vlVpL
+7c7QNQ/+NU3ikW7p6wkGj8G70RbkJORkKztnANrZvZMGTngn9AOr2IYiWm5l1FX0
+J1AyprX0m4BmLXBgW1BrOiReEiunq9RWtCT+2d7jQD6HxydLdRIbnQhLreHfcFv7
+6pUvyapG9B8a4X/6OzQXJVkRV+iXi/NzVxJ2WvZ6PhifiPMJo9oWab/OJDu/+8Fn
+w9BrPNqJhTdrSQ1E7aeMWUs/GbfQsQ+cm51Yb12KAemw5ocp45GNNeN2Y14g+YFZ
+Yhf7+/ihwBaph/zDYqFRsI+uSLnKIh7vLC/weBglkzU5mNZU9ugRj6M76jDE+OI3
+yqOTMp6DquBqH7qYuGA+yJfWvnsXa/KphTKzISpKXzkcGI4uyhjfWjoUN2CPbLWj
+55+k1mCY0glzACh1K+SFV1EDJ157U0sEx+vGaKDfpEcUFi/SUU7xE/u+4lI12Kec
+fMhcStiYmF5wvVMO8ID6+aPl9F7uNdrAJjPV6psDtLRhi6D+EkFRPG/2sxGNWNBC
+2FfNwyEy9of0UsptOWI3IOt80Oz2usDEwcnC4gAQhykPe/6lNI6Yb1OjsMtUdzw1
+BqoYXFKLnC2JQWxluwLMjJ/ng/Af94RzzYw901pIhtJjlTOx6nYUxO38hLp6JU6B
+qKDxnSxdVo6/2QOJpMCJ2o0tX/Q1MdMWbySfxnCX9il8o/TgOck=
+=I+vR
+-----END PGP SIGNATURE-----
 
-> 
-> Alternatively, since we already have several other negative capabilities,
-> unless there's a strong feeling against adding any more then it might work
-> out simpler to flip it to PERF_PMU_CAP_NO_EXCLUDE, such that we only need to
-> introduce the core check then directly replace the open-coded event checks
-> with the capability in the appropriate drivers, and need not touch the
-> exclusion-supporting ones at all.
+--=-w/yFab8vycJu1U8x0saQ--
 
-This would certaintly be less risky and invasive (e.g. compare the number of
-files touched between this v2 and the previous v1).
-
-I'm happy with either approach.
-
-Thanks,
-
-Andrew Murray
-
-> 
-> Robin.
-> 
-> > +			if (event->destroy)
-> > +				event->destroy(event);
-> > +			ret = -EINVAL;
-> > +		}
-> > +	}
-> > +
-> >   	if (ret)
-> >   		module_put(pmu->module);
-> > 
