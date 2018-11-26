@@ -1,48 +1,62 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH v2 16/20] sparc: perf/core: advertise PMU exclusion
- capability
-Date: Mon, 26 Nov 2018 10:00:46 -0800 (PST)
-Message-ID: <20181126.100046.860156356512347227.davem@davemloft.net>
-References: <1543230756-15319-1-git-send-email-andrew.murray@arm.com>
- <1543230756-15319-17-git-send-email-andrew.murray@arm.com>
+From: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>
+Subject: Re: [Intel-wired-lan] [PATCH V2] mm: Replace all open encodings for
+	NUMA_NO_NODE
+Date: Mon, 26 Nov 2018 11:04:24 -0700
+Message-ID: <4d0840f2-bd96-e671-8120-56ef33a37816@kernel.dk>
+References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
+	<c1b8de1a8e9d4d215b56498e2d5b83a02083483a.camel@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:Mime-Version:References:In-Reply-To:
-	From:Subject:To:Message-Id:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=btG0Zdm10nU8HXp+Sz+zjRV1jBR7ZMEeJ4GPzssOn/w=; b=n2bwLEr0DRRoiR
-	sEIrUupeZSNy7fsffAD+mcHn3nyuVsNLg3MXLaxcapXAKIvF2tTuL/rNCzv4pG9D7alRAsplyFI59
-	rrspeAZEd/fzioeRZWXX08I6gvefKL9mg0IWkGhIys8CeFP84/K0zNEpBL2/QU4Dy2oh5Lgj2LlgF
-	SvuvkA9I6xn1lUfKLBQQpMGQgIsui9Nk0eicKt4TLp0fgDf3tCnwnLaoxuIvkmZfX1zSgle1STiGT
-	7kI0/GP3SB3eMukoOsVNNwuaiaaI+wSmsEjieyYhWGQoxLr+lR/gyiwHP7uZK+DLl1QEqTnjoR4LQ
-	vKrokepidCOHmhcvuwsQ==;
-In-Reply-To: <1543230756-15319-17-git-send-email-andrew.murray@arm.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+	h=subject:to:cc:references:from:message-id:date:user-agent
+	:mime-version:in-reply-to:content-language:content-transfer-encoding;
+	bh=PqTq+H8+rhmPLG6tqGEachvR9RLFaxATqoCV/phnZGQ=;
+	b=Lw9f4paennw2Q7ERYGYf13QL1FEe8xX+NxItWg7dT86uTIxE6CA6xqC2DagjtU3aqu
+	JtoCrXTbTEym46o184VZvjfSsi0wU0CNg3iX3/UYitIcAo2af000amHmxeLr5hE0rxkT
+	qnJ/CBQfVqFuzNNBlde+2rvGFo64GKbOGA9W0HyceNRKniIaXvsKe9u1X4ESusWJantf
+	M4qMcRJ95em052Z4P8pghjv/XJgQ0afoEqPrfgwKzIIUXnoidlUf9mgZCKFEzoZPlgOc
+	oJ2orvxxl6Qn33jVhfR4FlRRXQUW7fn3pvtRUOInThi1VSI3eBD+7/ublnTh3Ka3fOc2
+	2S/w==
+In-Reply-To: <c1b8de1a8e9d4d215b56498e2d5b83a02083483a.camel-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: andrew.murray@arm.com
-Cc: mark.rutland@arm.com, linux-mips@linux-mips.org, peterz@infradead.org, benh@kernel.crashing.org, heiko.carstens@de.ibm.com, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, mpe@ellerman.id.au, x86@kernel.org, mingo@redhat.com, jhogan@kernel.org, will.deacon@arm.com, s.hauer@pengutronix.de, acme@kernel.org, bp@alien8.de, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org, shawnguo@kernel.org, linux-kernel@vger.kernel.org, ralf@linux-mips.org, paul.burton@mips.com, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, linuxppc-dev@lists.ozlabs.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: jeffrey.t.kirsher-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, hverkuil-qWit8jRvyhVmR6Xm/wNWPw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vkoul-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, intel-wired-lan-qjLDD68F18P21nG7glBr7A@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jiangqi903-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, ocfs2-devel-N0ozoZBvEnrZJqsBc5GL+g@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-From: Andrew Murray <andrew.murray@arm.com>
-Date: Mon, 26 Nov 2018 11:12:32 +0000
-
-> The SPARC PMU has the capability to exclude events based on context
->  - let's advertise that we support the PERF_PMU_CAP_EXCLUDE
-> capability to ensure that perf doesn't prevent us from handling
-> events where any exclusion flags are set.
+On 11/26/18 10:56 AM, Jeff Kirsher wrote:
+> On Mon, 2018-11-26 at 17:56 +0530, Anshuman Khandual wrote:
+>> At present there are multiple places where invalid node number is
+>> encoded
+>> as -1. Even though implicitly understood it is always better to have
+>> macros
+>> in there. Replace these open encodings for an invalid node number
+>> with the
+>> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions
+>> like
+>> 'invalid node' from various places redirecting them to a common
+>> definition.
+>>
+>> Signed-off-by: Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
 > 
-> Signed-off-by: Andrew Murray <andrew.murray@arm.com>
+> For the 'ixgbe' driver changes.
+> 
+> Acked-by: Jeff Kirsher <jeffrey.t.kirsher-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-Acked-by: David S. Miller <davem@davemloft.net>
+Lost the original, but for mtip32xx:
+
+Acked-by: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>
+
+-- 
+Jens Axboe
