@@ -1,46 +1,28 @@
-From: Vinod Koul <vkoul-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH V2] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Tue, 27 Nov 2018 19:28:09 +0530
-Message-ID: <20181127135809.GB3175@vkoul-mobl.Dlink>
-References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: remove the ->mapping_error method from dma_map_ops V2
+Date: Wed, 28 Nov 2018 08:41:17 +0100
+Message-ID: <20181128074117.GA21126@lst.de>
+References: <20181122140320.24080-1-hch@lst.de> <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com> <20181122170715.GI30658@n2100.armlinux.org.uk> <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com> <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com> <CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA@mail.gmail.com> <20181123065511.GA17856@lst.de>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181123065511.GA17856@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1543327099;
-	bh=aXTzB4gOQzyDA6L+Jzie7MRhtPahKJ5+IEYqkO4DxyY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=j9H+dV5eEQz0+uG9OwpHTcSjsn7SSngzUJ5mOFXbriz+3Q1Ld4MH3jYQ55FpmkqK7
-	w7D/mrRysYIzlkoRBEqjmc3WNr6HACSa0juktBffgbGF2cg4jLQpq2evn1NDELJZB5
-	UXecId5Yu+E49xEbvxlGiIrUWX9GWdD5QeLmwnFE=
-Content-Disposition: inline
-In-Reply-To: <1543235202-9075-1-git-send-email-anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
-Cc: hverkuil-qWit8jRvyhVmR6Xm/wNWPw@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-wired-lan-qjLDD68F18P21nG7glBr7A@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, jiangqi903-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, ocfs2-devel-N0ozoZBvEnrZJqsBc5GL+g@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, the arch/x86 maintainers <x86@kernel.org>, linux@armlinux.org.uk, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, linux-alpha@vger.kernel.org, xen-devel@lists.xenproject.org, robin.murphy@arm.com, Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 
-On 26-11-18, 17:56, Anshuman Khandual wrote:
-> At present there are multiple places where invalid node number is encoded
-> as -1. Even though implicitly understood it is always better to have macros
-> in there. Replace these open encodings for an invalid node number with the
-> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
-> 'invalid node' from various places redirecting them to a common definition.
+On Fri, Nov 23, 2018 at 07:55:11AM +0100, Christoph Hellwig wrote:
+> On Thu, Nov 22, 2018 at 09:55:25AM -0800, Linus Torvalds wrote:
+> > No, the big immediate benefit of allowing "return -EINVAL" etc is
+> > simply legibility and error avoidance.
 > 
+> Well, I can tweak the last patch to return -EINVAL from dma_mapping_error
+> instead of the old 1 is as bool true.  The callers should all be fine,
+> although I'd have to audit them.  Still wouldn't help with being able to
+> return different errors.
 
->  drivers/dma/dmaengine.c                       |  4 +++-
-
-
-Acked-by: Vinod Koul <vkoul-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-
--- 
-~Vinod
+Any opinions?  I'd really like to make some forward progress on this
+series.
