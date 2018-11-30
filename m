@@ -1,130 +1,160 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 05/23] mips/jazz: remove the mapping_error dma_map_ops method
-Date: Fri, 30 Nov 2018 14:22:13 +0100
-Message-ID: <20181130132231.16512-6-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 07/23] sparc: remove the mapping_error dma_map_ops method
+Date: Fri, 30 Nov 2018 14:22:15 +0100
+Message-ID: <20181130132231.16512-8-hch@lst.de>
 References: <20181130132231.16512-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=ddSc0GEXTciULelNE8dEV/Abh7889SvikaXoFrcrdpo=;
-	b=WG3Z0TF1jTV7S4ZI/vHa/naeew
-	Hdek1MTiX2n2pXh//mvzidi/IfYqOi+QTotcOqAX8qAtbEwv1dbJZWGBnuEqLN60YPp+ppvtc4uaN
-	eAr72euskW/fwZGaHgfJEDT3VbSAX5XYogYkopb9XOebEKPR7lXjSbob+n4aZCPkvpzzfb6eCnUBb
-	C471oi6+yPwkOZaafoFP6GHCPeHY8K7aP8F7P3Kdu9kP+XdqUs2mjNDjO463L8OnHTy75nVdxjDT1
-	KRi3rvbLBVgytL+RoInb+rr8A1DzEn/v669AIr2mBUUYLfHO+2IyzGsJqh/ULbthwc6R8QHumPL4O
-	D9Dy7JRw==;
-In-Reply-To: <20181130132231.16512-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
+        :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ZNLU6sSp3uiLMX8F8bTjTkvpVBXJnza8jEm00Ete8Hs=; b=WYL13HPtB9MlQv/kOGe/4Q3WSs
+        yDbms2Kmar5C6qmbVX42/1vftIrIP/q5R+GUqvWbKgH+0NlKvxGDNcEW9F6PV0CwM6ew7lf7+QJhe
+        XOTdLguzwpqS4ulTosRL4UhQPEcfBtI/uWa7aUCxgOYF9EebN6zQV+lgRTd5zaCs20hU49pg1Qj05
+        pqnUOuPImzRAt3DZLPmXh6skgIazBpZvW/bRIFJ/xWtBuNWdyPQHzPO82j9v8TwAjAupS/CyLZBgR
+        zP7XuhfSyQyCXjTonrPX37iJwkwhUBlt6TtiOe/ywYj6atWqay5tq3k2lIl+Ul+62XWi5uhxRKOK9
+    
+In-Reply-To: <20181130132231.16512-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: iommu@lists.linux-foundation.org
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jon Mason <jdmason@kudzu.us>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The Jazz iommu code already returns (~(dma_addr_t)0x0) on mapping
-failures, so we can switch over to returning DMA_MAPPING_ERROR and
-let the core dma-mapping code handle the rest.
+Sparc already returns (~(dma_addr_t)0x0) on mapping failures, so we can
+switch over to returning DMA_MAPPING_ERROR and let the core dma-mapping
+code handle the rest.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/mips/include/asm/jazzdma.h |  6 ------
- arch/mips/jazz/jazzdma.c        | 16 +++++-----------
- 2 files changed, 5 insertions(+), 17 deletions(-)
+ arch/sparc/kernel/iommu.c        | 12 +++---------
+ arch/sparc/kernel/iommu_common.h |  2 --
+ arch/sparc/kernel/pci_sun4v.c    | 14 ++++----------
+ 3 files changed, 7 insertions(+), 21 deletions(-)
 
-diff --git a/arch/mips/include/asm/jazzdma.h b/arch/mips/include/asm/jazzdma.h
-index d913439c738c..d13f940022d5 100644
---- a/arch/mips/include/asm/jazzdma.h
-+++ b/arch/mips/include/asm/jazzdma.h
-@@ -39,12 +39,6 @@ extern int vdma_get_enable(int channel);
- #define VDMA_PAGE(a)		((unsigned int)(a) >> 12)
- #define VDMA_OFFSET(a)		((unsigned int)(a) & (VDMA_PAGESIZE-1))
- 
--/*
-- * error code returned by vdma_alloc()
-- * (See also arch/mips/kernel/jazzdma.c)
-- */
--#define VDMA_ERROR		0xffffffff
--
- /*
-  * VDMA pagetable entry description
-  */
-diff --git a/arch/mips/jazz/jazzdma.c b/arch/mips/jazz/jazzdma.c
-index 4c41ed0a637e..6256d35dbf4d 100644
---- a/arch/mips/jazz/jazzdma.c
-+++ b/arch/mips/jazz/jazzdma.c
-@@ -104,12 +104,12 @@ unsigned long vdma_alloc(unsigned long paddr, unsigned long size)
- 		if (vdma_debug)
- 			printk("vdma_alloc: Invalid physical address: %08lx\n",
- 			       paddr);
--		return VDMA_ERROR;	/* invalid physical address */
-+		return DMA_MAPPING_ERROR;	/* invalid physical address */
- 	}
- 	if (size > 0x400000 || size == 0) {
- 		if (vdma_debug)
- 			printk("vdma_alloc: Invalid size: %08lx\n", size);
--		return VDMA_ERROR;	/* invalid physical address */
-+		return DMA_MAPPING_ERROR;	/* invalid physical address */
- 	}
- 
- 	spin_lock_irqsave(&vdma_lock, flags);
-@@ -123,7 +123,7 @@ unsigned long vdma_alloc(unsigned long paddr, unsigned long size)
- 		       first < VDMA_PGTBL_ENTRIES) first++;
- 		if (first + pages > VDMA_PGTBL_ENTRIES) {	/* nothing free */
- 			spin_unlock_irqrestore(&vdma_lock, flags);
--			return VDMA_ERROR;
-+			return DMA_MAPPING_ERROR;
- 		}
- 
- 		last = first + 1;
-@@ -569,7 +569,7 @@ static void *jazz_dma_alloc(struct device *dev, size_t size,
- 		return NULL;
- 
- 	*dma_handle = vdma_alloc(virt_to_phys(ret), size);
--	if (*dma_handle == VDMA_ERROR) {
-+	if (*dma_handle == DMA_MAPPING_ERROR) {
- 		dma_direct_free_pages(dev, size, ret, *dma_handle, attrs);
- 		return NULL;
- 	}
-@@ -620,7 +620,7 @@ static int jazz_dma_map_sg(struct device *dev, struct scatterlist *sglist,
- 			arch_sync_dma_for_device(dev, sg_phys(sg), sg->length,
- 				dir);
- 		sg->dma_address = vdma_alloc(sg_phys(sg), sg->length);
--		if (sg->dma_address == VDMA_ERROR)
-+		if (sg->dma_address == DMA_MAPPING_ERROR)
- 			return 0;
- 		sg_dma_len(sg) = sg->length;
- 	}
-@@ -674,11 +674,6 @@ static void jazz_dma_sync_sg_for_cpu(struct device *dev,
- 		arch_sync_dma_for_cpu(dev, sg_phys(sg), sg->length, dir);
+diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
+index 40d008b0bd3e..0626bae5e3da 100644
+--- a/arch/sparc/kernel/iommu.c
++++ b/arch/sparc/kernel/iommu.c
+@@ -315,7 +315,7 @@ static dma_addr_t dma_4u_map_page(struct device *dev, struct page *page,
+ bad_no_ctx:
+ 	if (printk_ratelimit())
+ 		WARN_ON(1);
+-	return SPARC_MAPPING_ERROR;
++	return DMA_MAPPING_ERROR;
  }
  
--static int jazz_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ static void strbuf_flush(struct strbuf *strbuf, struct iommu *iommu,
+@@ -548,7 +548,7 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ 	if (outcount < incount) {
+ 		outs = sg_next(outs);
+-		outs->dma_address = SPARC_MAPPING_ERROR;
++		outs->dma_address = DMA_MAPPING_ERROR;
+ 		outs->dma_length = 0;
+ 	}
+ 
+@@ -574,7 +574,7 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
+ 			iommu_tbl_range_free(&iommu->tbl, vaddr, npages,
+ 					     IOMMU_ERROR_CODE);
+ 
+-			s->dma_address = SPARC_MAPPING_ERROR;
++			s->dma_address = DMA_MAPPING_ERROR;
+ 			s->dma_length = 0;
+ 		}
+ 		if (s == outs)
+@@ -742,11 +742,6 @@ static void dma_4u_sync_sg_for_cpu(struct device *dev,
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ }
+ 
+-static int dma_4u_mapping_error(struct device *dev, dma_addr_t dma_addr)
 -{
--	return dma_addr == VDMA_ERROR;
+-	return dma_addr == SPARC_MAPPING_ERROR;
 -}
 -
- const struct dma_map_ops jazz_dma_ops = {
- 	.alloc			= jazz_dma_alloc,
- 	.free			= jazz_dma_free,
-@@ -692,6 +687,5 @@ const struct dma_map_ops jazz_dma_ops = {
- 	.sync_sg_for_device	= jazz_dma_sync_sg_for_device,
- 	.dma_supported		= dma_direct_supported,
- 	.cache_sync		= arch_dma_cache_sync,
--	.mapping_error		= jazz_dma_mapping_error,
+ static int dma_4u_supported(struct device *dev, u64 device_mask)
+ {
+ 	struct iommu *iommu = dev->archdata.iommu;
+@@ -772,7 +767,6 @@ static const struct dma_map_ops sun4u_dma_ops = {
+ 	.sync_single_for_cpu	= dma_4u_sync_single_for_cpu,
+ 	.sync_sg_for_cpu	= dma_4u_sync_sg_for_cpu,
+ 	.dma_supported		= dma_4u_supported,
+-	.mapping_error		= dma_4u_mapping_error,
  };
- EXPORT_SYMBOL(jazz_dma_ops);
+ 
+ const struct dma_map_ops *dma_ops = &sun4u_dma_ops;
+diff --git a/arch/sparc/kernel/iommu_common.h b/arch/sparc/kernel/iommu_common.h
+index e3c02ba32500..d62ed9c5682d 100644
+--- a/arch/sparc/kernel/iommu_common.h
++++ b/arch/sparc/kernel/iommu_common.h
+@@ -48,6 +48,4 @@ static inline int is_span_boundary(unsigned long entry,
+ 	return iommu_is_span_boundary(entry, nr, shift, boundary_size);
+ }
+ 
+-#define SPARC_MAPPING_ERROR	(~(dma_addr_t)0x0)
+-
+ #endif /* _IOMMU_COMMON_H */
+diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
+index 565d9ac883d0..fa0e42b4cbfb 100644
+--- a/arch/sparc/kernel/pci_sun4v.c
++++ b/arch/sparc/kernel/pci_sun4v.c
+@@ -414,12 +414,12 @@ static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
+ bad:
+ 	if (printk_ratelimit())
+ 		WARN_ON(1);
+-	return SPARC_MAPPING_ERROR;
++	return DMA_MAPPING_ERROR;
+ 
+ iommu_map_fail:
+ 	local_irq_restore(flags);
+ 	iommu_tbl_range_free(tbl, bus_addr, npages, IOMMU_ERROR_CODE);
+-	return SPARC_MAPPING_ERROR;
++	return DMA_MAPPING_ERROR;
+ }
+ 
+ static void dma_4v_unmap_page(struct device *dev, dma_addr_t bus_addr,
+@@ -592,7 +592,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ 	if (outcount < incount) {
+ 		outs = sg_next(outs);
+-		outs->dma_address = SPARC_MAPPING_ERROR;
++		outs->dma_address = DMA_MAPPING_ERROR;
+ 		outs->dma_length = 0;
+ 	}
+ 
+@@ -609,7 +609,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
+ 			iommu_tbl_range_free(tbl, vaddr, npages,
+ 					     IOMMU_ERROR_CODE);
+ 			/* XXX demap? XXX */
+-			s->dma_address = SPARC_MAPPING_ERROR;
++			s->dma_address = DMA_MAPPING_ERROR;
+ 			s->dma_length = 0;
+ 		}
+ 		if (s == outs)
+@@ -688,11 +688,6 @@ static int dma_4v_supported(struct device *dev, u64 device_mask)
+ 	return pci64_dma_supported(to_pci_dev(dev), device_mask);
+ }
+ 
+-static int dma_4v_mapping_error(struct device *dev, dma_addr_t dma_addr)
+-{
+-	return dma_addr == SPARC_MAPPING_ERROR;
+-}
+-
+ static const struct dma_map_ops sun4v_dma_ops = {
+ 	.alloc				= dma_4v_alloc_coherent,
+ 	.free				= dma_4v_free_coherent,
+@@ -701,7 +696,6 @@ static const struct dma_map_ops sun4v_dma_ops = {
+ 	.map_sg				= dma_4v_map_sg,
+ 	.unmap_sg			= dma_4v_unmap_sg,
+ 	.dma_supported			= dma_4v_supported,
+-	.mapping_error			= dma_4v_mapping_error,
+ };
+ 
+ static void pci_sun4v_scan_bus(struct pci_pbm_info *pbm, struct device *parent)
 -- 
 2.19.1
+
