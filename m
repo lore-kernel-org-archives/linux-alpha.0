@@ -1,67 +1,99 @@
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH 7/8] socket: Add SO_TIMESTAMP[NS]_NEW
-Date: Fri, 30 Nov 2018 18:37:34 -0500
-Message-ID: <CAF=yD-J=yTunQr279x8qb5B0xdAcdmcBj6utyM1gE8QfgorQPw@mail.gmail.com>
-References: <20181124022035.17519-1-deepa.kernel@gmail.com>
- <20181124022035.17519-8-deepa.kernel@gmail.com>
- <CAF=yD-K=ZLZ_S=Y6YnhvvkfKQS=21ujwiGd7+JB9yDMtiX_9hg@mail.gmail.com>
- <CAF=yD-K3Ga8qojSh5Epa6m4EYn-Lvdo=e38MnFqOKch1128VHw@mail.gmail.com>
- <CABeXuvoDPvT45CCt2L0TReqtb1Q_-E8+toYu6qjiP0cxfdQNdA@mail.gmail.com>
- <CAF=yD-LngkYq23Q2TCJv_0PRiAryznYRWRbqYFaQkNO=U0w9gQ@mail.gmail.com>
- <CABeXuvp5OaVetzJJf2L5ZE1BP_KOO2FvvG8EWn5t29eCe-=dtg@mail.gmail.com>
+From: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 21/23] xen-swiotlb: remove the mapping_error dma_map_ops
+	method
+Date: Sun, 2 Dec 2018 07:42:42 -0500
+Message-ID: <20181202124241.GB3166@localhost.localdomain>
+References: <20181130132231.16512-1-hch@lst.de>
+	<20181130132231.16512-22-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <y2038-bounces@lists.linaro.org>
-In-Reply-To: <CABeXuvp5OaVetzJJf2L5ZE1BP_KOO2FvvG8EWn5t29eCe-=dtg@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/y2038/>
-List-Post: <mailto:y2038@lists.linaro.org>
-List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
-List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=subscribe>
-Errors-To: y2038-bounces@lists.linaro.org
-Sender: "Y2038" <y2038-bounces@lists.linaro.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Deepa Dinamani <deepa.kernel@gmail.com>
-Cc: linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Network Development <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, ralf@linux-mips.org, jejb@parisc-linux.org, linux-rdma@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, David Miller <davem@davemloft.net>, rth@twiddle.net
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=sender:date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:in-reply-to:user-agent;
+	bh=lEtZ8HUr5ta3aKPraRuQaLc/uiyvX7GFrTe4WWXumQI=;
+	b=nvMrjOsPdkPMzQLlt1gunKPVHCAajsFxx0tWR6GaGF7HBlewscy+eiPaX1SQpZP/nS
+	vnhJr27IuE7V4isA7367vYd3vuhRTsll1+3rA5gg8VyHUOcAEUjtBSRVEQw+hZYzgP1t
+	UxYBtIpAA5c8k4TEigeoDoqu5fnoWxGrPrm603hx3H2+5NAdttbjdDWgbZsI7ovMhLSR
+	l5IbUKsCuCwlMtSDiP4/QAo6BjTwdjHw5Bo8lY5GWkQaBUVmNu1yqTu1S4YXUes+ZsU+
+	JE0JiR3PKDnT7okU4ZU17FJmEdzcM2mJAs3I7t5mM82Vcjz1779tMprJlSleWYPdf9xD
+	l9fA==
+Content-Disposition: inline
+In-Reply-To: <20181130132231.16512-22-hch-jcswGhMUV9g@public.gmane.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 
-T24gRnJpLCBOb3YgMzAsIDIwMTggYXQgNTo0MyBQTSBEZWVwYSBEaW5hbWFuaSA8ZGVlcGEua2Vy
-bmVsQGdtYWlsLmNvbT4gd3JvdGU6Cj4KPiBPbiBTdW4sIE5vdiAyNSwgMjAxOCBhdCA2OjMzIEFN
-IFdpbGxlbSBkZSBCcnVpam4KPiA8d2lsbGVtZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbT4gd3Jv
-dGU6Cj4gPgo+ID4gT24gU3VuLCBOb3YgMjUsIDIwMTggYXQgMTI6MjggQU0gRGVlcGEgRGluYW1h
-bmkgPGRlZXBhLmtlcm5lbEBnbWFpbC5jb20+IHdyb3RlOgo+ID4gPgo+ID4gPiA+ID4gPiArICAg
-ICAgIGlmICh0eXBlID09IFNPX1RJTUVTVEFNUF9ORVcgfHwgdHlwZSA9PSBTT19USU1FU1RBTVBO
-U19ORVcpCj4gPiA+ID4gPiA+ICsgICAgICAgICAgICAgICBzb2NrX3NldF9mbGFnKHNrLCBTT0NL
-X1RTVEFNUF9ORVcpOwo+ID4gPiA+ID4gPiArICAgICAgIGVsc2UKPiA+ID4gPiA+ID4gKyAgICAg
-ICAgICAgICAgIHNvY2tfcmVzZXRfZmxhZyhzaywgU09DS19UU1RBTVBfTkVXKTsKPiA+ID4gPiA+
-ID4gKwo+ID4gPiA+ID4KPiA+ID4gPiA+IGlmIGFkZGluZyBhIGJvb2xlYW4gd2hldGhlciB0aGUg
-c29ja2V0IHVzZXMgbmV3IG9yIG9sZC1zdHlsZQo+ID4gPiA+ID4gdGltZXN0YW1wcywgcGVyaGFw
-cyBmYWlsIGhhcmQgaWYgYSBwcm9jZXNzIHRyaWVzIHRvIHNldCBhIG5ldy1zdHlsZQo+ID4gPiA+
-ID4gb3B0aW9uIHdoaWxlIGFuIG9sZC1zdHlsZSBpcyBhbHJlYWR5IHNldCBhbmQgdmljZSB2ZXJz
-YS4gQWxzbyBpbmNsdWRlCj4gPiA+ID4gPiBTT19USU1FU1RBTVBJTkdfTkVXIGFzIGl0IHRvZ2ds
-ZXMgdGhlIHNhbWUgb3B0aW9uLgo+ID4gPgo+ID4gPiBJIGRvIG5vdCB0aGluayB0aGlzIGlzIGEg
-cHJvYmxlbS4KPiA+ID4gQ29uc2lkZXIgdGhpcyBleGFtcGxlLCBpZiB0aGVyZSBpcyBhIHVzZXIg
-YXBwbGljYXRpb24gd2l0aCB1cGRhdGVkCj4gPiA+IHNvY2tldCB0aW1lc3RhbXBzIGlzIGxpbmtp
-bmcgaW50byBhIGxpYnJhcnkgdGhhdCBpcyB5ZXQgdG8gYmUgdXBkYXRlZC4KPiA+Cj4gPiBBbHNv
-IGNvbnNpZGVyIGFwcGxpY2F0aW9ucyB0aGF0IGRvIG5vdCB1c2UgbGlicmFyaWVzLgo+Cj4gQXJu
-ZCBhbmQgSSB0YWxrZWQgYWJvdXQgdGhpcy4KPiBXZSB0aG91Z2h0IHRoYXQgdGhlIG5ldyBvcHRp
-b25zIHNob3VsZCBiZWhhdmUgbGlrZSB0aGUgYWxyZWFkeQo+IGV4aXN0aW5nIG9wdGlvbnMuIFRo
-ZSBwYXRjaCBhbHJlYWR5IGRvZXMgdGhpcy4KPiBFZzogVG9kYXkgaWYgd2Ugc2V0IFNPX1RJTUVT
-VEFNUCBhbmQgdGhlbiB0cnkgdG8gc3dpdGNoIHRvCj4gU09fVElNRVNUQU1QTlMgdGhlbiB0aGVy
-ZSBpcyBubyBmYWlsLgoKPiBEbyB5b3Ugc3RpbGwgd2FudCBhIGhhcmQgZmFpbD8KCkkgZG8gdGhp
-bmsgdGhhdCBpdCBpcyBwcmVmZXJhYmxlLiBJbiBnZW5lcmFsLCBhbmQgaW4gdGhpcyBzcGVjaWZp
-YyBjYXNlLgoKV2UgaGF2ZSBoYWQgaGFkIG1hbnkgYnVnIHJlcG9ydHMgZnJvbSBzeXprYWxsZXIg
-d2hlcmUgdGhlIGZ1enplcgptYW5hZ2VzIHRvIHRyaWdnZXIgdW5leHBlY3RlZCBiZWhhdmlvciBi
-eSBjb21iaW5pbmcgdHdvIEFQSXMKdGhhdCB3ZXJlIG5ldmVyIGludGVuZGVkIHRvIGJlIHVzZWQg
-dG9nZXRoZXIuCgpIb3dldmVyIGluYW5lIHRoZSBjb21iaW5hdGlvbiBtYXkgYmUsIG9uY2UgYW4g
-QVBJIGlzIHB1Ymxpc2hlZCwKd2UgY2Fubm90IHNpbXBseSBhZGQgYW4gRUlOVkFMIGFuZCBzdG9w
-IHN1cHBvcnRpbmcgaXQuIFNvIGl0IGlzIHNhZmVyCnRvIGV4cGxpY2l0bHkgYmxvY2sgdW5zYWZl
-IGNvbWJpbmF0aW9ucyBmcm9tIHRoZSBzdGFydC4gSWYgdGhlcmUgaXMgYQpsZWdpdGltYXRlIHVz
-ZSBpdCBpcyBhbHdheXMgcG9zc2libGUgdG8gbG9vc2VuIHRoYXQgcmVzdHJpY3Rpb24gbGF0ZXIu
-CgpJIGRvbid0IHNlZSBhbnkgc2Vuc2libGUgdXNlIGZvciBtaXhpbmcgYm90aCB0aGUgb2xkIGFu
-ZCB0aGUgbmV3CmludGVyZmFjZSBvbiB0aGUgc2FtZSBzb2NrZXQuCgpUaGF0IHNhaWQsIGp1c3Qg
-YSBzdWdnZXN0aW9uLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwpZMjAzOCBtYWlsaW5nIGxpc3QKWTIwMzhAbGlzdHMubGluYXJvLm9yZwpodHRwczovL2xp
-c3RzLmxpbmFyby5vcmcvbWFpbG1hbi9saXN0aW5mby95MjAzOAo=
+On Fri, Nov 30, 2018 at 02:22:29PM +0100, Christoph Hellwig wrote:
+> Return DMA_MAPPING_ERROR instead of 0 on a dma mapping failure and let
+> the core dma-mapping code handle the rest.
+> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+
+Reviewed-by: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/xen/swiotlb-xen.c | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 2a7f545bd0b5..6dc969d5ea2f 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -53,8 +53,6 @@
+>   * API.
+>   */
+>  
+> -#define XEN_SWIOTLB_ERROR_CODE	(~(dma_addr_t)0x0)
+> -
+>  static char *xen_io_tlb_start, *xen_io_tlb_end;
+>  static unsigned long xen_io_tlb_nslabs;
+>  /*
+> @@ -406,7 +404,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+>  	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, dir,
+>  				     attrs);
+>  	if (map == SWIOTLB_MAP_ERROR)
+> -		return XEN_SWIOTLB_ERROR_CODE;
+> +		return DMA_MAPPING_ERROR;
+>  
+>  	dev_addr = xen_phys_to_bus(map);
+>  	xen_dma_map_page(dev, pfn_to_page(map >> PAGE_SHIFT),
+> @@ -421,7 +419,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+>  	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+>  	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
+>  
+> -	return XEN_SWIOTLB_ERROR_CODE;
+> +	return DMA_MAPPING_ERROR;
+>  }
+>  
+>  /*
+> @@ -700,11 +698,6 @@ xen_swiotlb_get_sgtable(struct device *dev, struct sg_table *sgt,
+>  	return dma_common_get_sgtable(dev, sgt, cpu_addr, handle, size, attrs);
+>  }
+>  
+> -static int xen_swiotlb_mapping_error(struct device *dev, dma_addr_t dma_addr)
+> -{
+> -	return dma_addr == XEN_SWIOTLB_ERROR_CODE;
+> -}
+> -
+>  const struct dma_map_ops xen_swiotlb_dma_ops = {
+>  	.alloc = xen_swiotlb_alloc_coherent,
+>  	.free = xen_swiotlb_free_coherent,
+> @@ -719,5 +712,4 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
+>  	.dma_supported = xen_swiotlb_dma_supported,
+>  	.mmap = xen_swiotlb_dma_mmap,
+>  	.get_sgtable = xen_swiotlb_get_sgtable,
+> -	.mapping_error	= xen_swiotlb_mapping_error,
+>  };
+> -- 
+> 2.19.1
+> 
