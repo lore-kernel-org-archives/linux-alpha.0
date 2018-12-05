@@ -1,139 +1,49 @@
-From: Lubomir Rintel <lkundrak@v3.sk>
-Subject: Re: [PATCH V2] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Wed, 05 Dec 2018 12:47:00 +0100
-Message-ID: <f2ca9a41e8c9da66f828a0e40449d01d8e2e6f39.camel@v3.sk>
-References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
-         <a9082610ae6d99d988f7cc22a29d8474726a12e7.camel@v3.sk>
-         <d58f8b38-660c-7673-4466-6651ad32eada@arm.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH 3/3] arch: remove redundant generic-y defines
+Date: Wed, 5 Dec 2018 06:44:38 -0800
+Message-ID: <20181205144438.GA30692@infradead.org>
+References: <1544009286-15705-1-git-send-email-yamada.masahiro@socionext.com>
+ <1544009286-15705-3-git-send-email-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <d58f8b38-660c-7673-4466-6651ad32eada@arm.com>
-Sender: netdev-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl, vkoul@kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=J36lbgMbxb84VTNM/HxCPmEIhANJ9Lhj3BdaZVqK26M=; b=VU21WjcnoCUoa7
+	ZN39rd89EkRyZ230oPJowZXmqibDkX9wyPFnUlmO4ZLFrcLl/IG0RmNRnTBB1CCQVopHDA57TQX2h
+	h88e1ypTdek4qkpzci+G1D0JryNVFnW7eA+Fcudk8V9DlEzrgoGWvzI5/htKRVBG5Vm0me5pOw/aA
+	mEJ6CriZhNxn4eAEcQ61bKOilL7FA9nNkTRMcEHxsg/Jqh3972gDxP+KCU4X5rJX3tFjNEcO9FDmK
+	vxFo11E7xOMXPMOZG8Uhom3Br3yONwvHwxrizf5bFlxCZT4UJ6fGM+PXdUGHqx9pGFJRtTBfeN2VG
+	YQjJqNOVfsLLTdEjRmTw==;
+Content-Disposition: inline
+In-Reply-To: <1544009286-15705-3-git-send-email-yamada.masahiro@socionext.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, James Hogan <jhogan@kernel.org>, Palmer Dabbelt <palmer@sifive.com>, Will Deacon <will.deacon@arm.com>, Alexei Starovoitov <ast@kernel.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Max Filippov <jcmvbkbc@gmail.com>, Hendrik Brueckner <brueckner@linux.vnet.ibm.com>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Vincent Chen <deanbo422@gmail.com>, Sam Ravnborg <sam@ravnborg.org>, Thomas Gleixner <tglx@linutronix.de>, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Daniel Borkmann <daniel@iogearbox.net>, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, In
 
-On Wed, 2018-12-05 at 17:01 +0530, Anshuman Khandual wrote:
+On Wed, Dec 05, 2018 at 08:28:06PM +0900, Masahiro Yamada wrote:
+> Now that Kbuild automatically creates asm-generic wrappers for missing
+> mandatory headers, it is redundant to list the same headers in
+> generic-y and mandatory-y.
 > 
-> On 12/05/2018 02:56 AM, Lubomir Rintel wrote:
-> > On Mon, 2018-11-26 at 17:56 +0530, Anshuman Khandual wrote:
-> > > At present there are multiple places where invalid node number is encoded
-> > > as -1. Even though implicitly understood it is always better to have macros
-> > > in there. Replace these open encodings for an invalid node number with the
-> > > global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
-> > > 'invalid node' from various places redirecting them to a common definition.
-> > > 
-> > > Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> > > ---
-> > > Changes in V2:
-> > > 
-> > > - Added inclusion of 'numa.h' header at various places per Andrew
-> > > - Updated 'dev_to_node' to use NUMA_NO_NODE instead per Vinod
-> > > 
-> > > Changes in V1: (https://lkml.org/lkml/2018/11/23/485)
-> > > 
-> > > - Dropped OCFS2 changes per Joseph
-> > > - Dropped media/video drivers changes per Hans
-> > > 
-> > > RFC - https://patchwork.kernel.org/patch/10678035/
-> > > 
-> > > Build tested this with multiple cross compiler options like alpha, sparc,
-> > > arm64, x86, powerpc, powerpc64le etc with their default config which might
-> > > not have compiled tested all driver related changes. I will appreciate
-> > > folks giving this a test in their respective build environment.
-> > > 
-> > > All these places for replacement were found by running the following grep
-> > > patterns on the entire kernel code. Please let me know if this might have
-> > > missed some instances. This might also have replaced some false positives.
-> > > I will appreciate suggestions, inputs and review.
-> > > 
-> > > 1. git grep "nid == -1"
-> > > 2. git grep "node == -1"
-> > > 3. git grep "nid = -1"
-> > > 4. git grep "node = -1"
-> > > 
-> > >  arch/alpha/include/asm/topology.h             |  3 ++-
-> > >  arch/ia64/kernel/numa.c                       |  2 +-
-> > >  arch/ia64/mm/discontig.c                      |  6 +++---
-> > >  arch/ia64/sn/kernel/io_common.c               |  3 ++-
-> > >  arch/powerpc/include/asm/pci-bridge.h         |  3 ++-
-> > >  arch/powerpc/kernel/paca.c                    |  3 ++-
-> > >  arch/powerpc/kernel/pci-common.c              |  3 ++-
-> > >  arch/powerpc/mm/numa.c                        | 14 +++++++-------
-> > >  arch/powerpc/platforms/powernv/memtrace.c     |  5 +++--
-> > >  arch/sparc/kernel/auxio_32.c                  |  3 ++-
-> > >  arch/sparc/kernel/pci_fire.c                  |  3 ++-
-> > >  arch/sparc/kernel/pci_schizo.c                |  3 ++-
-> > >  arch/sparc/kernel/pcic.c                      |  7 ++++---
-> > >  arch/sparc/kernel/psycho_common.c             |  3 ++-
-> > >  arch/sparc/kernel/sbus.c                      |  3 ++-
-> > >  arch/sparc/mm/init_64.c                       |  6 +++---
-> > >  arch/sparc/prom/init_32.c                     |  3 ++-
-> > >  arch/sparc/prom/init_64.c                     |  5 +++--
-> > >  arch/sparc/prom/tree_32.c                     | 13 +++++++------
-> > >  arch/sparc/prom/tree_64.c                     | 19 ++++++++++---------
-> > >  arch/x86/include/asm/pci.h                    |  3 ++-
-> > >  arch/x86/kernel/apic/x2apic_uv_x.c            |  7 ++++---
-> > >  arch/x86/kernel/smpboot.c                     |  3 ++-
-> > >  arch/x86/platform/olpc/olpc_dt.c              | 17 +++++++++--------
-> > >  drivers/block/mtip32xx/mtip32xx.c             |  5 +++--
-> > >  drivers/dma/dmaengine.c                       |  4 +++-
-> > >  drivers/infiniband/hw/hfi1/affinity.c         |  3 ++-
-> > >  drivers/infiniband/hw/hfi1/init.c             |  3 ++-
-> > >  drivers/iommu/dmar.c                          |  5 +++--
-> > >  drivers/iommu/intel-iommu.c                   |  3 ++-
-> > >  drivers/misc/sgi-xp/xpc_uv.c                  |  3 ++-
-> > >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  5 +++--
-> > >  include/linux/device.h                        |  2 +-
-> > >  init/init_task.c                              |  3 ++-
-> > >  kernel/kthread.c                              |  3 ++-
-> > >  kernel/sched/fair.c                           | 15 ++++++++-------
-> > >  lib/cpumask.c                                 |  3 ++-
-> > >  mm/huge_memory.c                              | 13 +++++++------
-> > >  mm/hugetlb.c                                  |  3 ++-
-> > >  mm/ksm.c                                      |  2 +-
-> > >  mm/memory.c                                   |  7 ++++---
-> > >  mm/memory_hotplug.c                           | 12 ++++++------
-> > >  mm/mempolicy.c                                |  2 +-
-> > >  mm/page_alloc.c                               |  4 ++--
-> > >  mm/page_ext.c                                 |  2 +-
-> > >  net/core/pktgen.c                             |  3 ++-
-> > >  net/qrtr/qrtr.c                               |  3 ++-
-> > >  tools/perf/bench/numa.c                       |  6 +++---
-> > >  48 files changed, 146 insertions(+), 108 deletions(-)
-> > Thanks for the patch. It seems to me that you've got a fairly large
-> > amount of it wrong though -- perhaps relying just on "git grep" alone
-> > is not the best idea.
-> 
-> Hmm, okay.
-> 
-> > The diffstat is not all that big, it is entirely plausible to just
-> > review each hunk manually: just do a "git show -U20" to get some
-> > context.
-> > 
-> > You get a NAK from me for the OLPC DT part, but I think at least the
-> > sparc/prom part also deals with device tree nodes and not NUMA nodes.
-> 
-> Will take a closer look at all the instances you have pointed out and
-> then re-spin the patch. Just wondering how should I take care of
-> Stephen's patch which is a fix for this one and available in Andrew's
-> staging tree. Should I just go ahead and fold both them with Stephen's
-> signed-off-by while re-spinning this patch ? Please suggest.
+> Suggested-by: Sam Ravnborg <sam@ravnborg.org>
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 
-I think it would be better if this had been split into multiple
-patches, one per subsystem, instead of a single large patch. It would
-be easier to review it that way.
+Oh, that is very useful, especially as maintainance of those
+generic-y lines has been a mess!
 
-With Stephen's patch (am I looking at the correct one?) the tools/perf
-part gets its own copy of numa.h and thus is not dependent on the rest
-of the patch, correct?
-
-To me it seems that the best course of action now would be to split off
-a "tools: replace open encodings for NUMA_NO_NODE" patch with Stephen's
-changes folded in. Keep his sign-off and add a "Co-Developed-by" tag. 
-
-Cheers,
-Lubo
-
+Acked-by: Christoph Hellwig <hch@lst.de>
