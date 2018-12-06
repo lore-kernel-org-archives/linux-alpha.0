@@ -1,7 +1,7 @@
 From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH v3 05/12] arm: perf: conditionally use PERF_PMU_CAP_NO_EXCLUDE
-Date: Thu,  6 Dec 2018 16:47:22 +0000
-Message-ID: <1544114849-47266-6-git-send-email-andrew.murray@arm.com>
+Subject: [PATCH v3 04/12] alpha: perf/core: use PERF_PMU_CAP_NO_EXCLUDE
+Date: Thu,  6 Dec 2018 16:47:21 +0000
+Message-ID: <1544114849-47266-5-git-send-email-andrew.murray@arm.com>
 References: <1544114849-47266-1-git-send-email-andrew.murray@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1544114849-47266-1-git-send-email-andrew.murray@arm.com>
@@ -13,57 +13,47 @@ Content-Transfer-Encoding: 7bit
 To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>
 Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org
 
-The ARM PMU driver can be used to represent a variety of ARM based
-PMUs. Some of these PMUs do not provide support for context
-exclusion, where this is the case we advertise the
-PERF_PMU_CAP_NO_EXCLUDE capability to ensure that perf prevents us
-from handling events where any exclusion flags are set.
+As the Alpha PMU doesn't support context exclusion let's advertise
+the PERF_PMU_CAP_NO_EXCLUDE capability. This ensures that perf will
+prevent us from handling events where any exclusion flags are set.
+Let's also remove the now unnecessary check for exclusion flags.
+
+This change means that __hw_perf_event_init will now also
+indicate that it doesn't support exclude_host and exclude_guest and
+will now implicitly return -EINVAL instead of -EPERM. This is likely
+more desirable as -EPERM will result in a kernel.perf_event_paranoid
+related warning from the perf userspace utility.
 
 Signed-off-by: Andrew Murray <andrew.murray@arm.com>
 ---
- drivers/perf/arm_pmu.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ arch/alpha/kernel/perf_event.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/perf/arm_pmu.c b/drivers/perf/arm_pmu.c
-index 7f01f6f..ea69067 100644
---- a/drivers/perf/arm_pmu.c
-+++ b/drivers/perf/arm_pmu.c
-@@ -357,13 +357,6 @@ static irqreturn_t armpmu_dispatch_irq(int irq, void *dev)
- }
+diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
+index 5613aa37..4341ccf 100644
+--- a/arch/alpha/kernel/perf_event.c
++++ b/arch/alpha/kernel/perf_event.c
+@@ -630,12 +630,6 @@ static int __hw_perf_event_init(struct perf_event *event)
+ 		return ev;
+ 	}
  
- static int
--event_requires_mode_exclusion(struct perf_event_attr *attr)
--{
--	return attr->exclude_idle || attr->exclude_user ||
--	       attr->exclude_kernel || attr->exclude_hv;
--}
+-	/* The EV67 does not support mode exclusion */
+-	if (attr->exclude_kernel || attr->exclude_user
+-			|| attr->exclude_hv || attr->exclude_idle) {
+-		return -EPERM;
+-	}
 -
--static int
- __hw_perf_event_init(struct perf_event *event)
- {
- 	struct arm_pmu *armpmu = to_arm_pmu(event->pmu);
-@@ -393,9 +386,8 @@ __hw_perf_event_init(struct perf_event *event)
  	/*
- 	 * Check whether we need to exclude the counter from certain modes.
- 	 */
--	if ((!armpmu->set_event_filter ||
--	     armpmu->set_event_filter(hwc, &event->attr)) &&
--	     event_requires_mode_exclusion(&event->attr)) {
-+	if (armpmu->set_event_filter &&
-+	    armpmu->set_event_filter(hwc, &event->attr)) {
- 		pr_debug("ARM performance counters do not support "
- 			 "mode exclusion\n");
- 		return -EOPNOTSUPP;
-@@ -861,6 +853,9 @@ int armpmu_register(struct arm_pmu *pmu)
- 	if (ret)
- 		return ret;
+ 	 * We place the event type in event_base here and leave calculation
+ 	 * of the codes to programme the PMU for alpha_pmu_enable() because
+@@ -771,6 +765,7 @@ static struct pmu pmu = {
+ 	.start		= alpha_pmu_start,
+ 	.stop		= alpha_pmu_stop,
+ 	.read		= alpha_pmu_read,
++	.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+ };
  
-+	if (!pmu->set_event_filter)
-+		pmu->pmu.capabilities |= PERF_PMU_CAP_NO_EXCLUDE;
-+
- 	ret = perf_pmu_register(&pmu->pmu, pmu->name, -1);
- 	if (ret)
- 		goto out_destroy;
+ 
 -- 
 2.7.4
 
