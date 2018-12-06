@@ -1,7 +1,7 @@
 From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH v3 03/12] perf/core: add PERF_PMU_CAP_NO_EXCLUDE for exclusion incapable PMUs
-Date: Thu,  6 Dec 2018 16:47:20 +0000
-Message-ID: <1544114849-47266-4-git-send-email-andrew.murray@arm.com>
+Subject: [PATCH v3 05/12] arm: perf: conditionally use PERF_PMU_CAP_NO_EXCLUDE
+Date: Thu,  6 Dec 2018 16:47:22 +0000
+Message-ID: <1544114849-47266-6-git-send-email-andrew.murray@arm.com>
 References: <1544114849-47266-1-git-send-email-andrew.murray@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1544114849-47266-1-git-send-email-andrew.murray@arm.com>
@@ -13,55 +13,57 @@ Content-Transfer-Encoding: 7bit
 To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>
 Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org
 
-Many PMU drivers do not have the capability to exclude counting events
-that occur in specific contexts such as idle, kernel, guest, etc. These
-drivers indicate this by returning an error in their event_init upon
-testing the events attribute flags. This approach is error prone and
-often inconsistent.
-
-Let's instead allow PMU drivers to advertise their inability to exclude
-based on context via a new capability: PERF_PMU_CAP_NO_EXCLUDE. This
-allows the perf core to reject requests for exclusion events where
-there is no support in the PMU.
+The ARM PMU driver can be used to represent a variety of ARM based
+PMUs. Some of these PMUs do not provide support for context
+exclusion, where this is the case we advertise the
+PERF_PMU_CAP_NO_EXCLUDE capability to ensure that perf prevents us
+from handling events where any exclusion flags are set.
 
 Signed-off-by: Andrew Murray <andrew.murray@arm.com>
 ---
- include/linux/perf_event.h | 1 +
- kernel/events/core.c       | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ drivers/perf/arm_pmu.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index b2e806f..fe92b89 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -244,6 +244,7 @@ struct perf_event;
- #define PERF_PMU_CAP_EXCLUSIVE			0x10
- #define PERF_PMU_CAP_ITRACE			0x20
- #define PERF_PMU_CAP_HETEROGENEOUS_CPUS		0x40
-+#define PERF_PMU_CAP_NO_EXCLUDE			0x80
+diff --git a/drivers/perf/arm_pmu.c b/drivers/perf/arm_pmu.c
+index 7f01f6f..ea69067 100644
+--- a/drivers/perf/arm_pmu.c
++++ b/drivers/perf/arm_pmu.c
+@@ -357,13 +357,6 @@ static irqreturn_t armpmu_dispatch_irq(int irq, void *dev)
+ }
  
- /**
-  * struct pmu - generic performance monitoring unit
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 5a97f34..5113cfc 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -9743,6 +9743,15 @@ static int perf_try_init_event(struct pmu *pmu, struct perf_event *event)
- 	if (ctx)
- 		perf_event_ctx_unlock(event->group_leader, ctx);
- 
-+	if (!ret) {
-+		if (pmu->capabilities & PERF_PMU_CAP_NO_EXCLUDE &&
-+				event_has_any_exclude_flag(event)) {
-+			if (event->destroy)
-+				event->destroy(event);
-+			ret = -EINVAL;
-+		}
-+	}
-+
+ static int
+-event_requires_mode_exclusion(struct perf_event_attr *attr)
+-{
+-	return attr->exclude_idle || attr->exclude_user ||
+-	       attr->exclude_kernel || attr->exclude_hv;
+-}
+-
+-static int
+ __hw_perf_event_init(struct perf_event *event)
+ {
+ 	struct arm_pmu *armpmu = to_arm_pmu(event->pmu);
+@@ -393,9 +386,8 @@ __hw_perf_event_init(struct perf_event *event)
+ 	/*
+ 	 * Check whether we need to exclude the counter from certain modes.
+ 	 */
+-	if ((!armpmu->set_event_filter ||
+-	     armpmu->set_event_filter(hwc, &event->attr)) &&
+-	     event_requires_mode_exclusion(&event->attr)) {
++	if (armpmu->set_event_filter &&
++	    armpmu->set_event_filter(hwc, &event->attr)) {
+ 		pr_debug("ARM performance counters do not support "
+ 			 "mode exclusion\n");
+ 		return -EOPNOTSUPP;
+@@ -861,6 +853,9 @@ int armpmu_register(struct arm_pmu *pmu)
  	if (ret)
- 		module_put(pmu->module);
+ 		return ret;
  
++	if (!pmu->set_event_filter)
++		pmu->pmu.capabilities |= PERF_PMU_CAP_NO_EXCLUDE;
++
+ 	ret = perf_pmu_register(&pmu->pmu, pmu->name, -1);
+ 	if (ret)
+ 		goto out_destroy;
 -- 
 2.7.4
 
