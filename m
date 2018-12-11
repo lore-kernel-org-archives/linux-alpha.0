@@ -1,68 +1,89 @@
-From: Andrew Murray <andrew.murray@arm.com>
-Subject: Re: [PATCH v3 00/12] perf/core: Generalise event exclusion checking
-Date: Mon, 10 Dec 2018 23:51:58 +0000
-Message-ID: <20181210235158.GD13393@e119886-lin.cambridge.arm.com>
-References: <1544114849-47266-1-git-send-email-andrew.murray@arm.com>
- <20181207172516.GB2044@edgewater-inn.cambridge.arm.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 10/10] perf/doc: update design.txt for exclude_{host|guest} flags
+Date: Tue, 11 Dec 2018 22:06:53 +1100
+Message-ID: <87bm5sxqya.fsf@concordia.ellerman.id.au>
+References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com> <1542363853-13849-11-git-send-email-andrew.murray@arm.com> <87pnv00yuf.fsf@concordia.ellerman.id.au> <20181120133202.GH35798@e119886-lin.cambridge.arm.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181207172516.GB2044@edgewater-inn.cambridge.arm.com>
+In-Reply-To: <20181120133202.GH35798@e119886-lin.cambridge.arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Will Deacon <will.deacon@arm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org
+To: Andrew Murray <andrew.murray@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, "paulus@samba.org" <paulus@samba.org>
 
-On Fri, Dec 07, 2018 at 05:25:17PM +0000, Will Deacon wrote:
-> On Thu, Dec 06, 2018 at 04:47:17PM +0000, Andrew Murray wrote:
-> > Many PMU drivers do not have the capability to exclude counting events
-> > that occur in specific contexts such as idle, kernel, guest, etc. These
-> > drivers indicate this by returning an error in their event_init upon
-> > testing the events attribute flags.
-> > 
-> > However this approach requires that each time a new event modifier is
-> > added to perf, all the perf drivers need to be modified to indicate that
-> > they don't support the attribute. This results in additional boiler-plate
-> > code common to many drivers that needs to be maintained. Furthermore the
-> > drivers are not consistent with regards to the error value they return
-> > when reporting unsupported attributes.
-> > 
-> > This patchset allow PMU drivers to advertise their inability to exclude
-> > based on context via a new capability: PERF_PMU_CAP_NO_EXCLUDE. This
-> > allows the perf core to reject requests for exclusion events where there
-> > is no support in the PMU.
-> > 
-> > This is a functional change, in particular:
-> > 
-> >  - Some drivers will now additionally (but correctly) report unsupported
-> >    exclusion flags. It's typical for existing userspace tools such as
-> >    perf to handle such errors by retrying the system call without the
-> >    unsupported flags.
-> > 
-> >  - Drivers that do not support any exclusion that previously reported
-> >    -EPERM or -EOPNOTSUPP will now report -EINVAL - this is consistent
-> >    with the majority and results in userspace perf retrying without
-> >    exclusion.
-> > 
-> > All drivers touched by this patchset have been compile tested.
-> 
-> For the bits under arch/arm/ and drivers/perf:
-> 
-> Acked-by: Will Deacon <will.deacon@arm.com>
-> 
-> Note that I've queued the TX2 uncore PMU for 4.21 [1], which could also
-> benefit from your new flag.
+[ Reviving old thread. ]
 
-Ah thanks for pointing this out, I'll send a patch in due course.
+Andrew Murray <andrew.murray@arm.com> writes:
+> On Tue, Nov 20, 2018 at 10:31:36PM +1100, Michael Ellerman wrote:
+>> Andrew Murray <andrew.murray@arm.com> writes:
+>> 
+>> > Update design.txt to reflect the presence of the exclude_host
+>> > and exclude_guest perf flags.
+>> >
+>> > Signed-off-by: Andrew Murray <andrew.murray@arm.com>
+>> > ---
+>> >  tools/perf/design.txt | 4 ++++
+>> >  1 file changed, 4 insertions(+)
+>> >
+>> > diff --git a/tools/perf/design.txt b/tools/perf/design.txt
+>> > index a28dca2..7de7d83 100644
+>> > --- a/tools/perf/design.txt
+>> > +++ b/tools/perf/design.txt
+>> > @@ -222,6 +222,10 @@ The 'exclude_user', 'exclude_kernel' and 'exclude_hv' bits provide a
+>> >  way to request that counting of events be restricted to times when the
+>> >  CPU is in user, kernel and/or hypervisor mode.
+>> >  
+>> > +Furthermore the 'exclude_host' and 'exclude_guest' bits provide a way
+>> > +to request counting of events restricted to guest and host contexts when
+>> > +using virtualisation.
+>> 
+>> How does exclude_host differ from exclude_hv ?
+>
+> I believe exclude_host / exclude_guest are intented to distinguish
+> between host and guest in the hosted hypervisor context (KVM).
 
-Thanks,
+OK yeah, from the perf-list man page:
 
-Andrwe Murray
+           u - user-space counting
+           k - kernel counting
+           h - hypervisor counting
+           I - non idle counting
+           G - guest counting (in KVM guests)
+           H - host counting (not in KVM guests)
 
-> 
-> Will
-> 
-> [1]
-> https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/commit/?h=for-next/perf&id=69c32972d59388c041268e8206e8eb1acff29b9a
+> Whereas exclude_hv allows to distinguish between guest and
+> hypervisor in the bare-metal type hypervisors.
+
+Except that's exactly not how we use them on powerpc :)
+
+We use exclude_hv to exclude "the hypervisor", regardless of whether
+it's KVM or PowerVM (which is a bare-metal hypervisor).
+
+We don't use exclude_host / exclude_guest at all, which I guess is a
+bug, except I didn't know they existed until this thread.
+
+eg, in a KVM guest:
+
+  $ perf record -e cycles:G /bin/bash -c "for i in {0..100000}; do :;done"
+  $ perf report -D | grep -Fc "dso: [hypervisor]"
+  16
+
+
+> In the case of arm64 - if VHE extensions are present then the host
+> kernel will run at a higher privilege to the guest kernel, in which
+> case there is no distinction between hypervisor and host so we ignore
+> exclude_hv. But where VHE extensions are not present then the host
+> kernel runs at the same privilege level as the guest and we use a
+> higher privilege level to switch between them - in this case we can
+> use exclude_hv to discount that hypervisor role of switching between
+> guests.
+
+I couldn't find any arm64 perf code using exclude_host/guest at all?
+
+And I don't see any x86 code using exclude_hv.
+
+But maybe that's OK, I just worry this is confusing for users.
+
+cheers
