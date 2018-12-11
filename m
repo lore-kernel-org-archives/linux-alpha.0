@@ -1,89 +1,129 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH 10/10] perf/doc: update design.txt for exclude_{host|guest} flags
-Date: Tue, 11 Dec 2018 22:06:53 +1100
-Message-ID: <87bm5sxqya.fsf@concordia.ellerman.id.au>
-References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com> <1542363853-13849-11-git-send-email-andrew.murray@arm.com> <87pnv00yuf.fsf@concordia.ellerman.id.au> <20181120133202.GH35798@e119886-lin.cambridge.arm.com>
+From: Andrew Murray <andrew.murray@arm.com>
+Subject: Re: [PATCH 10/10] perf/doc: update design.txt for
+ exclude_{host|guest} flags
+Date: Tue, 11 Dec 2018 13:59:03 +0000
+Message-ID: <20181211135903.GG13393@e119886-lin.cambridge.arm.com>
+References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
+ <1542363853-13849-11-git-send-email-andrew.murray@arm.com>
+ <87pnv00yuf.fsf@concordia.ellerman.id.au>
+ <20181120133202.GH35798@e119886-lin.cambridge.arm.com>
+ <87bm5sxqya.fsf@concordia.ellerman.id.au>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181120133202.GH35798@e119886-lin.cambridge.arm.com>
+Content-Disposition: inline
+In-Reply-To: <87bm5sxqya.fsf@concordia.ellerman.id.au>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andrew Murray <andrew.murray@arm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, "paulus@samba.org" <paulus@samba.org>
+To: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, "paulus@samba.org" <paulus@samba.org>, Christoffer.Dall@arm.com
 
-[ Reviving old thread. ]
+On Tue, Dec 11, 2018 at 10:06:53PM +1100, Michael Ellerman wrote:
+> [ Reviving old thread. ]
+> 
+> Andrew Murray <andrew.murray@arm.com> writes:
+> > On Tue, Nov 20, 2018 at 10:31:36PM +1100, Michael Ellerman wrote:
+> >> Andrew Murray <andrew.murray@arm.com> writes:
+> >> 
+> >> > Update design.txt to reflect the presence of the exclude_host
+> >> > and exclude_guest perf flags.
+> >> >
+> >> > Signed-off-by: Andrew Murray <andrew.murray@arm.com>
+> >> > ---
+> >> >  tools/perf/design.txt | 4 ++++
+> >> >  1 file changed, 4 insertions(+)
+> >> >
+> >> > diff --git a/tools/perf/design.txt b/tools/perf/design.txt
+> >> > index a28dca2..7de7d83 100644
+> >> > --- a/tools/perf/design.txt
+> >> > +++ b/tools/perf/design.txt
+> >> > @@ -222,6 +222,10 @@ The 'exclude_user', 'exclude_kernel' and 'exclude_hv' bits provide a
+> >> >  way to request that counting of events be restricted to times when the
+> >> >  CPU is in user, kernel and/or hypervisor mode.
+> >> >  
+> >> > +Furthermore the 'exclude_host' and 'exclude_guest' bits provide a way
+> >> > +to request counting of events restricted to guest and host contexts when
+> >> > +using virtualisation.
+> >> 
+> >> How does exclude_host differ from exclude_hv ?
+> >
+> > I believe exclude_host / exclude_guest are intented to distinguish
+> > between host and guest in the hosted hypervisor context (KVM).
+> 
+> OK yeah, from the perf-list man page:
+> 
+>            u - user-space counting
+>            k - kernel counting
+>            h - hypervisor counting
+>            I - non idle counting
+>            G - guest counting (in KVM guests)
+>            H - host counting (not in KVM guests)
+> 
+> > Whereas exclude_hv allows to distinguish between guest and
+> > hypervisor in the bare-metal type hypervisors.
+> 
+> Except that's exactly not how we use them on powerpc :)
+> 
+> We use exclude_hv to exclude "the hypervisor", regardless of whether
+> it's KVM or PowerVM (which is a bare-metal hypervisor).
+> 
+> We don't use exclude_host / exclude_guest at all, which I guess is a
+> bug, except I didn't know they existed until this thread.
+> 
+> eg, in a KVM guest:
+> 
+>   $ perf record -e cycles:G /bin/bash -c "for i in {0..100000}; do :;done"
+>   $ perf report -D | grep -Fc "dso: [hypervisor]"
+>   16
+> 
+> 
+> > In the case of arm64 - if VHE extensions are present then the host
+> > kernel will run at a higher privilege to the guest kernel, in which
+> > case there is no distinction between hypervisor and host so we ignore
+> > exclude_hv. But where VHE extensions are not present then the host
+> > kernel runs at the same privilege level as the guest and we use a
+> > higher privilege level to switch between them - in this case we can
+> > use exclude_hv to discount that hypervisor role of switching between
+> > guests.
+> 
+> I couldn't find any arm64 perf code using exclude_host/guest at all?
 
-Andrew Murray <andrew.murray@arm.com> writes:
-> On Tue, Nov 20, 2018 at 10:31:36PM +1100, Michael Ellerman wrote:
->> Andrew Murray <andrew.murray@arm.com> writes:
->> 
->> > Update design.txt to reflect the presence of the exclude_host
->> > and exclude_guest perf flags.
->> >
->> > Signed-off-by: Andrew Murray <andrew.murray@arm.com>
->> > ---
->> >  tools/perf/design.txt | 4 ++++
->> >  1 file changed, 4 insertions(+)
->> >
->> > diff --git a/tools/perf/design.txt b/tools/perf/design.txt
->> > index a28dca2..7de7d83 100644
->> > --- a/tools/perf/design.txt
->> > +++ b/tools/perf/design.txt
->> > @@ -222,6 +222,10 @@ The 'exclude_user', 'exclude_kernel' and 'exclude_hv' bits provide a
->> >  way to request that counting of events be restricted to times when the
->> >  CPU is in user, kernel and/or hypervisor mode.
->> >  
->> > +Furthermore the 'exclude_host' and 'exclude_guest' bits provide a way
->> > +to request counting of events restricted to guest and host contexts when
->> > +using virtualisation.
->> 
->> How does exclude_host differ from exclude_hv ?
->
-> I believe exclude_host / exclude_guest are intented to distinguish
-> between host and guest in the hosted hypervisor context (KVM).
+Correct - but this is in flight as I am currently adding support for this
+see [1].
 
-OK yeah, from the perf-list man page:
+> 
+> And I don't see any x86 code using exclude_hv.
 
-           u - user-space counting
-           k - kernel counting
-           h - hypervisor counting
-           I - non idle counting
-           G - guest counting (in KVM guests)
-           H - host counting (not in KVM guests)
+I can't find any either.
 
-> Whereas exclude_hv allows to distinguish between guest and
-> hypervisor in the bare-metal type hypervisors.
+> 
+> But maybe that's OK, I just worry this is confusing for users.
 
-Except that's exactly not how we use them on powerpc :)
+There is some extra context regarding this where exclude_guest/exclude_host
+was added, see [2] and where exclude_hv was added, see [3]
 
-We use exclude_hv to exclude "the hypervisor", regardless of whether
-it's KVM or PowerVM (which is a bare-metal hypervisor).
+Generally it seems that exclude_guest/exclude_host relies upon switching
+counters off/on on guest/host switch code (which works well in the nested
+virt case). Whereas exclude_hv tends to rely solely on hardware capability
+based on privilege level (which works well in the bare metal case where
+the guest doesn't run at same privilege as the host).
 
-We don't use exclude_host / exclude_guest at all, which I guess is a
-bug, except I didn't know they existed until this thread.
+I think from the user perspective exclude_hv allows you to see your overhead
+if you are a guest (i.e. work done by bare metal hypervisor associated with
+you as the guest). Whereas exclude_guest/exclude_host doesn't allow you to
+see events above you (i.e. the kernel hypervisor) if you are the guest...
 
-eg, in a KVM guest:
+At least that's how I read this, I've copied in others that may provide
+more authoritative feedback.
 
-  $ perf record -e cycles:G /bin/bash -c "for i in {0..100000}; do :;done"
-  $ perf report -D | grep -Fc "dso: [hypervisor]"
-  16
+[1] https://lists.cs.columbia.edu/pipermail/kvmarm/2018-December/033698.html
+[2] https://www.spinics.net/lists/kvm/msg53996.html
+[3] https://lore.kernel.org/patchwork/patch/143918/
 
+Thanks,
 
-> In the case of arm64 - if VHE extensions are present then the host
-> kernel will run at a higher privilege to the guest kernel, in which
-> case there is no distinction between hypervisor and host so we ignore
-> exclude_hv. But where VHE extensions are not present then the host
-> kernel runs at the same privilege level as the guest and we use a
-> higher privilege level to switch between them - in this case we can
-> use exclude_hv to discount that hypervisor role of switching between
-> guests.
+Andrew Murray
 
-I couldn't find any arm64 perf code using exclude_host/guest at all?
-
-And I don't see any x86 code using exclude_hv.
-
-But maybe that's OK, I just worry this is confusing for users.
-
-cheers
+> 
+> cheers
