@@ -1,129 +1,143 @@
-From: Andrew Murray <andrew.murray@arm.com>
-Subject: Re: [PATCH 10/10] perf/doc: update design.txt for
- exclude_{host|guest} flags
-Date: Tue, 11 Dec 2018 13:59:03 +0000
-Message-ID: <20181211135903.GG13393@e119886-lin.cambridge.arm.com>
-References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
- <1542363853-13849-11-git-send-email-andrew.murray@arm.com>
- <87pnv00yuf.fsf@concordia.ellerman.id.au>
- <20181120133202.GH35798@e119886-lin.cambridge.arm.com>
- <87bm5sxqya.fsf@concordia.ellerman.id.au>
-Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <87bm5sxqya.fsf@concordia.ellerman.id.au>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Deepa Dinamani <deepa.kernel@gmail.com>
+Subject: [PATCH v2 0/8] net: y2038-safe socket timestamps
+Date: Tue, 11 Dec 2018 12:25:12 -0800
+Message-ID: <20181211202520.16799-1-deepa.kernel@gmail.com>
+Return-path: <netdev-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=lKnmtK0zdgi2LDNyagX2ic26ZL1LqZiggpIN6hpm3DU=;
+        b=Gow6BwEfeBgmgZu5DPVo7p1vPOEYJhSui+9IcN2SGOgfXTbQDUIOorpQ25I4W+gYE5
+         lcuNsh2pA5+mgHCO65Hxw6l2fV5Rb5seuvK3JPJdD6XFbDM4qKX6TbTZ18VAzEmFJmi2
+         Uw5jYe7oXpFAYvpJ41svImuMtCJjp2fnebplMV/7NGG46EQ+4CSwT/Cutyhz3qGdiLW6
+         +YqYV7eVupIAHkTiTuOpFkbCaWEln1PgWIuZlSe79XNbXixo+idzIIiazMNeCmxe3gdJ
+         JxBrsd8b4j4b6pi9OIIocXxDD71ZZFZOysIRwAABerRV1eFMH3E4iqr1eEPyP4pi7Wlo
+         XcEA==
+Sender: netdev-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, "paulus@samba.org" <paulus@samba.org>, Christoffer.Dall@arm.com
+To: davem@davemloft.net, linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org, arnd@arndb.de, y2038@lists.linaro.org, chris@zankel.net, deller@gmx.de, dhowells@redhat.com, fenghua.yu@intel.com, isdn@linux-pingi.de, jejb@parisc-linux.org, ralf@linux-mips.org, rth@twiddle.net, schwidefsky@de.ibm.com, tglx@linutronix.de, ubraun@linux.ibm.com, linux-afs@lists.infradead.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org, linux-xtensa@linux-xtensa.org, sparclinux@vger.kernel.org
 
-On Tue, Dec 11, 2018 at 10:06:53PM +1100, Michael Ellerman wrote:
-> [ Reviving old thread. ]
-> 
-> Andrew Murray <andrew.murray@arm.com> writes:
-> > On Tue, Nov 20, 2018 at 10:31:36PM +1100, Michael Ellerman wrote:
-> >> Andrew Murray <andrew.murray@arm.com> writes:
-> >> 
-> >> > Update design.txt to reflect the presence of the exclude_host
-> >> > and exclude_guest perf flags.
-> >> >
-> >> > Signed-off-by: Andrew Murray <andrew.murray@arm.com>
-> >> > ---
-> >> >  tools/perf/design.txt | 4 ++++
-> >> >  1 file changed, 4 insertions(+)
-> >> >
-> >> > diff --git a/tools/perf/design.txt b/tools/perf/design.txt
-> >> > index a28dca2..7de7d83 100644
-> >> > --- a/tools/perf/design.txt
-> >> > +++ b/tools/perf/design.txt
-> >> > @@ -222,6 +222,10 @@ The 'exclude_user', 'exclude_kernel' and 'exclude_hv' bits provide a
-> >> >  way to request that counting of events be restricted to times when the
-> >> >  CPU is in user, kernel and/or hypervisor mode.
-> >> >  
-> >> > +Furthermore the 'exclude_host' and 'exclude_guest' bits provide a way
-> >> > +to request counting of events restricted to guest and host contexts when
-> >> > +using virtualisation.
-> >> 
-> >> How does exclude_host differ from exclude_hv ?
-> >
-> > I believe exclude_host / exclude_guest are intented to distinguish
-> > between host and guest in the hosted hypervisor context (KVM).
-> 
-> OK yeah, from the perf-list man page:
-> 
->            u - user-space counting
->            k - kernel counting
->            h - hypervisor counting
->            I - non idle counting
->            G - guest counting (in KVM guests)
->            H - host counting (not in KVM guests)
-> 
-> > Whereas exclude_hv allows to distinguish between guest and
-> > hypervisor in the bare-metal type hypervisors.
-> 
-> Except that's exactly not how we use them on powerpc :)
-> 
-> We use exclude_hv to exclude "the hypervisor", regardless of whether
-> it's KVM or PowerVM (which is a bare-metal hypervisor).
-> 
-> We don't use exclude_host / exclude_guest at all, which I guess is a
-> bug, except I didn't know they existed until this thread.
-> 
-> eg, in a KVM guest:
-> 
->   $ perf record -e cycles:G /bin/bash -c "for i in {0..100000}; do :;done"
->   $ perf report -D | grep -Fc "dso: [hypervisor]"
->   16
-> 
-> 
-> > In the case of arm64 - if VHE extensions are present then the host
-> > kernel will run at a higher privilege to the guest kernel, in which
-> > case there is no distinction between hypervisor and host so we ignore
-> > exclude_hv. But where VHE extensions are not present then the host
-> > kernel runs at the same privilege level as the guest and we use a
-> > higher privilege level to switch between them - in this case we can
-> > use exclude_hv to discount that hypervisor role of switching between
-> > guests.
-> 
-> I couldn't find any arm64 perf code using exclude_host/guest at all?
+The series introduces new socket timestamps that are
+y2038 safe.
 
-Correct - but this is in flight as I am currently adding support for this
-see [1].
+The time data types used for the existing socket timestamp
+options: SO_TIMESTAMP, SO_TIMESTAMPNS and SO_TIMESTAMPING
+are not y2038 safe. The series introduces SO_TIMESTAMP_NEW,
+SO_TIMESTAMPNS_NEW and SO_TIMESTAMPING_NEW to replace these.
+These new timestamps can be used on all architectures.
 
-> 
-> And I don't see any x86 code using exclude_hv.
+The alternative considered was to extend the sys_setsockopt()
+by using the flags. We did not receive any strong opinions about
+either of the approaches. Hence, this was chosen, as glibc folks
+preferred this.
 
-I can't find any either.
+The series does not deal with updating the internal kernel socket
+calls like rxrpc to make them y2038 safe. This will be dealt
+with separately.
 
-> 
-> But maybe that's OK, I just worry this is confusing for users.
+Note that the timestamps behavior already does not match the
+man page specific behavior:
+SIOCGSTAMP
+    This ioctl should only be used if the socket option SO_TIMESTAMP
+	is not set on the socket. Otherwise, it returns the timestamp of
+	the last packet that was received while SO_TIMESTAMP was not set,
+	or it fails if no such packet has been received,
+	(i.e., ioctl(2) returns -1 with errno set to ENOENT).
+	
+The recommendation is to update the man page to remove the above statement.
 
-There is some extra context regarding this where exclude_guest/exclude_host
-was added, see [2] and where exclude_hv was added, see [3]
+The overview of the series is as below:
+1. Delete asm specific socket.h when possible.
+2. Support SO/SCM_TIMESTAMP* options only in userspace.
+3. Rename current SO/SCM_TIMESTAMP* to SO/SCM_TIMESTAMP*_OLD.
+3. Alter socket options so that SOCK_RCVTSTAMPNS does
+   not rely on SOCK_RCVTSTAMP.
+4. Introduce y2038 safe types for socket timestamp.
+5. Introduce new y2038 safe socket options SO/SCM_TIMESTAMP*_NEW.
 
-Generally it seems that exclude_guest/exclude_host relies upon switching
-counters off/on on guest/host switch code (which works well in the nested
-virt case). Whereas exclude_hv tends to rely solely on hardware capability
-based on privilege level (which works well in the bare metal case where
-the guest doesn't run at same privilege as the host).
+Changes since v1:
+* Dropped the change to disentangle sock flags
+* Renamed sock_timeval to __kernel_sock_timeval
+* Updated a few comments
+* Added documentation changes
 
-I think from the user perspective exclude_hv allows you to see your overhead
-if you are a guest (i.e. work done by bare metal hypervisor associated with
-you as the guest). Whereas exclude_guest/exclude_host doesn't allow you to
-see events above you (i.e. the kernel hypervisor) if you are the guest...
+Deepa Dinamani (8):
+  arch: Use asm-generic/socket.h when possible
+  sockopt: Rename SO_TIMESTAMP* to SO_TIMESTAMP*_OLD
+  arch: sparc: Override struct __kernel_old_timeval
+  socket: Use old_timeval types for socket timestamps
+  socket: Add struct __kernel_sock_timeval
+  socket: Add SO_TIMESTAMP[NS]_NEW
+  socket: Add SO_TIMESTAMPING_NEW
+  socket: Update timestamping Documentation
 
-At least that's how I read this, I've copied in others that may provide
-more authoritative feedback.
+ Documentation/networking/timestamping.txt |  43 ++++++-
+ arch/alpha/include/uapi/asm/socket.h      |  35 ++++--
+ arch/ia64/include/uapi/asm/Kbuild         |   1 +
+ arch/ia64/include/uapi/asm/socket.h       | 120 -------------------
+ arch/mips/include/uapi/asm/socket.h       |  34 ++++--
+ arch/parisc/include/uapi/asm/socket.h     |  34 ++++--
+ arch/s390/include/uapi/asm/Kbuild         |   1 +
+ arch/s390/include/uapi/asm/socket.h       | 117 ------------------
+ arch/sparc/include/uapi/asm/posix_types.h |  10 ++
+ arch/sparc/include/uapi/asm/socket.h      |  36 ++++--
+ arch/x86/include/uapi/asm/Kbuild          |   1 +
+ arch/x86/include/uapi/asm/socket.h        |   1 -
+ arch/xtensa/include/asm/Kbuild            |   1 +
+ arch/xtensa/include/uapi/asm/Kbuild       |   1 +
+ arch/xtensa/include/uapi/asm/socket.h     | 122 -------------------
+ drivers/isdn/mISDN/socket.c               |   2 +-
+ include/linux/skbuff.h                    |  24 +++-
+ include/linux/socket.h                    |   7 ++
+ include/net/sock.h                        |   1 +
+ include/uapi/asm-generic/socket.h         |  35 ++++--
+ include/uapi/linux/errqueue.h             |   4 +
+ include/uapi/linux/time.h                 |   7 ++
+ net/bluetooth/hci_sock.c                  |   4 +-
+ net/compat.c                              |  12 +-
+ net/core/scm.c                            |  27 +++++
+ net/core/sock.c                           | 138 ++++++++++++++--------
+ net/ipv4/tcp.c                            |  82 ++++++++-----
+ net/rds/af_rds.c                          |  10 +-
+ net/rds/recv.c                            |  18 ++-
+ net/rxrpc/local_object.c                  |   2 +-
+ net/smc/af_smc.c                          |   3 +-
+ net/socket.c                              |  64 +++++++---
+ 32 files changed, 478 insertions(+), 519 deletions(-)
+ delete mode 100644 arch/ia64/include/uapi/asm/socket.h
+ delete mode 100644 arch/s390/include/uapi/asm/socket.h
+ delete mode 100644 arch/x86/include/uapi/asm/socket.h
+ delete mode 100644 arch/xtensa/include/uapi/asm/socket.h
 
-[1] https://lists.cs.columbia.edu/pipermail/kvmarm/2018-December/033698.html
-[2] https://www.spinics.net/lists/kvm/msg53996.html
-[3] https://lore.kernel.org/patchwork/patch/143918/
 
-Thanks,
+base-commit: b124b524bc97868cc2b5656e6ffa21a9b752b7e0
+-- 
+2.17.1
 
-Andrew Murray
+Cc: chris@zankel.net
+Cc: deller@gmx.de
+Cc: dhowells@redhat.com
+Cc: fenghua.yu@intel.com
+Cc: isdn@linux-pingi.de
+Cc: jejb@parisc-linux.org
+Cc: ralf@linux-mips.org
+Cc: rth@twiddle.net
+Cc: schwidefsky@de.ibm.com
+Cc: tglx@linutronix.de
+Cc: ubraun@linux.ibm.com
 
-> 
-> cheers
+Cc: linux-afs@lists.infradead.org
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-ia64@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linux-rdma@vger.kernel.org
+Cc: linux-s390@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: netdev@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
