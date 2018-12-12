@@ -1,71 +1,175 @@
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH v2 6/8] socket: Add SO_TIMESTAMP[NS]_NEW
-Date: Wed, 12 Dec 2018 10:35:23 -0500
-Message-ID: <CAF=yD-J8Ea1ope3ZBgPCufnMxDgGArhqRdvszz44u29BJAPS7w@mail.gmail.com>
-References: <20181211202520.16799-1-deepa.kernel@gmail.com>
- <20181211202520.16799-7-deepa.kernel@gmail.com> <CAF=yD-LDWrjxK+XFv-KNAoyP7NCOZiL00n5PkzQ-5aEzq+eCLQ@mail.gmail.com>
+From: Andrew Murray <andrew.murray@arm.com>
+Subject: Re: [PATCH 10/10] perf/doc: update design.txt for
+ exclude_{host|guest} flags
+Date: Wed, 12 Dec 2018 17:08:19 +0000
+Message-ID: <20181212170819.GD48249@e119886-lin.cambridge.arm.com>
+References: <1542363853-13849-1-git-send-email-andrew.murray@arm.com>
+ <1542363853-13849-11-git-send-email-andrew.murray@arm.com>
+ <87pnv00yuf.fsf@concordia.ellerman.id.au>
+ <20181120133202.GH35798@e119886-lin.cambridge.arm.com>
+ <87bm5sxqya.fsf@concordia.ellerman.id.au>
+ <20181211135903.GG13393@e119886-lin.cambridge.arm.com>
+ <20181212080742.GA30263@e113682-lin.lund.arm.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W89X3rrftkS34pp8m4+cNsxgaqdG/+ly7NIdp+tMwg8=;
-        b=aO2jXo9cna//uAcdtmyRdaUZLdOg7nZCHKkZ6UQ2LuVVA9GwunE1scGMZ5MVTinzbf
-         +AzWr+gHGAmMYbWwnh8qbddvV9pMQNMSnWDbk3KXQ9H1ee/9AUTui8myA4OLiiysZo3p
-         FmepUaKYUY3+tscWYNhUNG9ntUZJh9yc2QqGcBNHiz0v0r9YhcRV08ULGxhJz3Npywjx
-         Xs0MpBgV/r/bkDF1iLMKjyPCzlKiDtG42lYtbAE8PlXcrgnujj7VGddPY4g6PLG9n5c3
-         OY7WZAhdJ3EiVpfO/s9kCOYImShh8UV7KvWOVEDUueqGh8QAarclkvjjTCPs6QWVMRtB
-         xKxQ==
-In-Reply-To: <CAF=yD-LDWrjxK+XFv-KNAoyP7NCOZiL00n5PkzQ-5aEzq+eCLQ@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20181212080742.GA30263@e113682-lin.lund.arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Deepa Dinamani <deepa.kernel@gmail.com>
-Cc: David Miller <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>, Network Development <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, jejb@parisc-linux.org, ralf@linux-mips.org, rth@twiddle.net, linux-alpha@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-rdma@vger.kernel.org, sparclinux@vger.kernel.org
+To: Christoffer Dall <christoffer.dall@arm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, "paulus@samba.org" <paulus@samba.org>
 
-> This did not address yet the previous comments on consistency and
-> unnecessary code churn.
->
-> The existing logic to differentiate SO_TIMESTAMP from SO_TIMESTAMPNS
-> in both tcp_recv_timestamp and __sock_recv_timestamp is
->
->   if (sock_flag(sk, SOCK_RCVTSTAMP)) {
->       if (sock_flag(sk, SOCK_RCVTSTAMPNS))
->           /* timespec case */
->       else
->           /* timeval case */
->   }
->
-> A new level of nesting needs to be added to differentiate .._OLD from .._NEW.
->
-> Even if massively changing the original functions, please do so
-> consistently, either
->
->   if (sock_flag(sk, SOCK_RCVTSTAMP)) {
->       if (sock_flag(sk, SOCK_TSTAMP_NEW) {
->           /* new code */
->       } else {
->           if (sock_flag(sk, SOCK_RCVTSTAMPNS))
->               /* timespec case */
->           else
->               /* timeval case */
->      }
->   }
+On Wed, Dec 12, 2018 at 09:07:42AM +0100, Christoffer Dall wrote:
+> On Tue, Dec 11, 2018 at 01:59:03PM +0000, Andrew Murray wrote:
+> > On Tue, Dec 11, 2018 at 10:06:53PM +1100, Michael Ellerman wrote:
+> > > [ Reviving old thread. ]
+> > > 
+> > > Andrew Murray <andrew.murray@arm.com> writes:
+> > > > On Tue, Nov 20, 2018 at 10:31:36PM +1100, Michael Ellerman wrote:
+> > > >> Andrew Murray <andrew.murray@arm.com> writes:
+> > > >> 
+> > > >> > Update design.txt to reflect the presence of the exclude_host
+> > > >> > and exclude_guest perf flags.
+> > > >> >
+> > > >> > Signed-off-by: Andrew Murray <andrew.murray@arm.com>
+> > > >> > ---
+> > > >> >  tools/perf/design.txt | 4 ++++
+> > > >> >  1 file changed, 4 insertions(+)
+> > > >> >
+> > > >> > diff --git a/tools/perf/design.txt b/tools/perf/design.txt
+> > > >> > index a28dca2..7de7d83 100644
+> > > >> > --- a/tools/perf/design.txt
+> > > >> > +++ b/tools/perf/design.txt
+> > > >> > @@ -222,6 +222,10 @@ The 'exclude_user', 'exclude_kernel' and 'exclude_hv' bits provide a
+> > > >> >  way to request that counting of events be restricted to times when the
+> > > >> >  CPU is in user, kernel and/or hypervisor mode.
+> > > >> >  
+> > > >> > +Furthermore the 'exclude_host' and 'exclude_guest' bits provide a way
+> > > >> > +to request counting of events restricted to guest and host contexts when
+> > > >> > +using virtualisation.
+> > > >> 
+> > > >> How does exclude_host differ from exclude_hv ?
+> > > >
+> > > > I believe exclude_host / exclude_guest are intented to distinguish
+> > > > between host and guest in the hosted hypervisor context (KVM).
+> > > 
+> > > OK yeah, from the perf-list man page:
+> > > 
+> > >            u - user-space counting
+> > >            k - kernel counting
+> > >            h - hypervisor counting
+> > >            I - non idle counting
+> > >            G - guest counting (in KVM guests)
+> > >            H - host counting (not in KVM guests)
+> > > 
+> > > > Whereas exclude_hv allows to distinguish between guest and
+> > > > hypervisor in the bare-metal type hypervisors.
+> > > 
+> > > Except that's exactly not how we use them on powerpc :)
+> > > 
+> > > We use exclude_hv to exclude "the hypervisor", regardless of whether
+> > > it's KVM or PowerVM (which is a bare-metal hypervisor).
+> > > 
+> > > We don't use exclude_host / exclude_guest at all, which I guess is a
+> > > bug, except I didn't know they existed until this thread.
+> > > 
+> > > eg, in a KVM guest:
+> > > 
+> > >   $ perf record -e cycles:G /bin/bash -c "for i in {0..100000}; do :;done"
+> > >   $ perf report -D | grep -Fc "dso: [hypervisor]"
+> > >   16
+> > > 
+> > > 
+> > > > In the case of arm64 - if VHE extensions are present then the host
+> > > > kernel will run at a higher privilege to the guest kernel, in which
+> > > > case there is no distinction between hypervisor and host so we ignore
+> > > > exclude_hv. But where VHE extensions are not present then the host
+> > > > kernel runs at the same privilege level as the guest and we use a
+> > > > higher privilege level to switch between them - in this case we can
+> > > > use exclude_hv to discount that hypervisor role of switching between
+> > > > guests.
+> > > 
+> > > I couldn't find any arm64 perf code using exclude_host/guest at all?
+> > 
+> > Correct - but this is in flight as I am currently adding support for this
+> > see [1].
+> > 
+> > > 
+> > > And I don't see any x86 code using exclude_hv.
+> > 
+> > I can't find any either.
+> > 
+> > > 
+> > > But maybe that's OK, I just worry this is confusing for users.
+> > 
+> > There is some extra context regarding this where exclude_guest/exclude_host
+> > was added, see [2] and where exclude_hv was added, see [3]
+> > 
+> > Generally it seems that exclude_guest/exclude_host relies upon switching
+> > counters off/on on guest/host switch code (which works well in the nested
+> > virt case). Whereas exclude_hv tends to rely solely on hardware capability
+> > based on privilege level (which works well in the bare metal case where
+> > the guest doesn't run at same privilege as the host).
+> > 
+> > I think from the user perspective exclude_hv allows you to see your overhead
+> > if you are a guest (i.e. work done by bare metal hypervisor associated with
+> > you as the guest). Whereas exclude_guest/exclude_host doesn't allow you to
+> > see events above you (i.e. the kernel hypervisor) if you are the guest...
+> > 
+> > At least that's how I read this, I've copied in others that may provide
+> > more authoritative feedback.
+> > 
+> > [1] https://lists.cs.columbia.edu/pipermail/kvmarm/2018-December/033698.html
+> > [2] https://www.spinics.net/lists/kvm/msg53996.html
+> > [3] https://lore.kernel.org/patchwork/patch/143918/
+> > 
+> 
+> I'll try to answer this in a different way, based on previous
+> discussions with Joerg et al. who introduced these flags.  Assume no
+> support for nested virtualization as a first approximation:
+> 
+>   If you are running as a guest:
+>     - exclude_hv: stop counting events when the hypervisor runs
+>     - exclude_host: has no effect
+>     - exclude_guest: has no effect
+>   
+>   If you are running as a host/hypervisor:
+>    - exclude_hv: has no effect
+>    - exclude_host: only count events when the guest is running
+>    - exclude_guest: only count events when the host is running
+> 
+> With nested virtualization, you get the natural union of the above.
+> 
+> **This has nothing to do with the design of the hypervisor such as the
+> ARM non-VHE KVM which splits its execution across EL1 and EL2 -- those
+> are both considered host from the point of view of Linux as a hypervisor
+> using KVM, and both considered hypervisor from the point of view of a
+> guest.**
 
-This first example is wrong. I meant
+For clarity, this is what arm64 currently does (assuming no nesting and
+without the current version of this patchset):
 
-   if (sock_flag(sk, SOCK_RCVTSTAMP)) {
-       if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-           if (sock_flag(sk, SOCK_TSTAMP_NEW)
-                /* new code */
-          else
-                /* timespec case */
-       } else {
-           if (sock_flag(sk, SOCK_TSTAMP_NEW)
-                /* new code */
-          else
-                /* timeval case */
-        }
-   }
+   If you are running as a guest (VHE or !VHE host):
+     - exclude_hv: has no effect for a KVM guest (filters hypervisor on !VHE
+		   bare metal hypervisor guest)
+     - exclude_host: has no effect
+     - exclude_guest: has no effect
+   
+   If you are running as a host/hypervisor:
+    - exclude_hv: has no effect for VHE (filters EL2 on !VHE)
+    - exclude_host: only count events when the guest is running
+    - exclude_guest: only count events when the host is running
+ 
+Is this as expected?
+
+Thanks,
+
+Andrew Murray
+
+> 
+> 
+> Thanks,
+> 
+>     Christoffer
