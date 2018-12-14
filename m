@@ -1,211 +1,95 @@
-From: Greg Ungerer <gregungerer@westnet.com.au>
-Subject: Re: [PATCH 1/2] dma-mapping: zero memory returned from dma_alloc_*
-Date: Sat, 15 Dec 2018 00:14:29 +1000
-Message-ID: <5ae55118-6858-9121-6b3e-9b19b41550ef@westnet.com.au>
-References: <20181214082515.14835-1-hch@lst.de>
- <20181214082515.14835-2-hch@lst.de>
- <CAMuHMdWOr0EsgFQF8tjJYLxKVXx+Jwn73N8SVKt8AQGLKQ8V-A@mail.gmail.com>
- <20181214114719.GA3316@lst.de>
+From: Firoz Khan <firoz.khan@linaro.org>
+Subject: Re: [PATCH v3 0/5] alpha: system call table generation support
+Date: Fri, 14 Dec 2018 20:47:51 +0530
+Message-ID: <CALxhOngxbsYFSbK1Y0okuiTmjWEQ8Zcd4vQ0OezhXBgXH82DtA@mail.gmail.com>
+References: <1542101513-22010-1-git-send-email-firoz.khan@linaro.org>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SgR7/zvoTitAcWtzspwpFbA2pChllrGr1cdcJ907dAE=;
+        b=MnWJRCM33UxKWjgGBiFsns1d5BvTi7SYsCn0IqH8uwMe0Cn+75+E3UxGPDGMocDXFv
+         mrT1YSV8hlaTyFIl7mOtqkQM9RPhzOepRzzyZUTO37EYgGnzq0aEZvcKkwvVFZpgXeiH
+         BdmKCob79YpuDItcmlt1nGI0SJrV8RiEUesXU=
+In-Reply-To: <1542101513-22010-1-git-send-email-firoz.khan@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Content-Type:
-	Content-Transfer-Encoding:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:Message-ID:From:
-	References:To:Subject:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=QjaAIsVYjZNweCSkPoq5WurSsJnLG2ykvQYWRwqxhMU=; b=MTKv4CLW+54H0PYFYqVRKZ4iM
-	ta4e+qHgNCowXN7PhQdGQv7tTlu07h2EjCGD1nWg9qZl5c+gx7LkqzfDPm8dzlavRwn9uHbt3C+Yp
-	J88VnpDIcb9JwZfuUHFlS/GT8upTEYzO/ywlz1NA0YneYbR5vagZEjOgVYI2+V6wGG0db7mcl1Jzf
-	x9w4OY3q+M1Q9aC+2pAA0byDQLyR25K+pTR7CpWpUcG0W8c4ZdzjSa7jc3cUeyGukt3/y4tu8MdG5
-	HXiAA5CQkKG2BusajNiB5PwN7Haap9IIoqMwbU6eY6wEbALlvueAp0xmvSKpmGnKQny0krC9wXRvo
-	mmiwJ3o+g==;
-In-Reply-To: <20181214114719.GA3316@lst.de>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Christoph Hellwig <hch@lst.de>, Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-s390 <linux-s390@vger.kernel.org>, Michal Simek <monstr@monstr.eu>, linux-c6x-dev@linux-c6x.org, Parisc List <linux-parisc@vger.kernel.org>, linux-xtensa@linux-xtensa.org, linux-m68k <linux-m68k@lists.linux-m68k.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, ashutosh.dixit@intel.com, Linux IOMMU <iommu@lists.linux-foundation.org>, Openrisc <openrisc@lists.librecores.org>, alpha <linux-alpha@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, arcml <linux-snps-arc@lists.infradead.org>
+To: linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>
+Cc: y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Deepa Dinamani <deepa.kernel@gmail.com>, Marcin Juszkiewicz <marcin.juszkiewicz@linaro.org>
 
+Hi Folks,
 
-On 14/12/18 9:47 pm, Christoph Hellwig wrote:
-> On Fri, Dec 14, 2018 at 10:54:32AM +0100, Geert Uytterhoeven wrote:
->>> -       page = alloc_pages(flag, order);
->>> +       page = alloc_pages(flag | GFP_ZERO, order);
->>>          if (!page)
->>>                  return NULL;
->>
->> There's second implementation below, which calls __get_free_pages() and
->> does an explicit memset().  As __get_free_pages() calls alloc_pages(), perhaps
->> it makes sense to replace the memset() by GFP_ZERO, to increase consistency?
-> 
-> It would, but this patch really tries to be minimally invasive to just
-> provide the zeroing everywhere.  There is plenty of opportunity
-> to improve the m68k dma allocator if I can get enough reviewers/testers:
-> 
->   - for one the coldfire/nommu case absolutely does not make sense to
->     me as there is not work done at all to make sure the memory is
->     mapped uncached despite the architecture implementing cache
->     flushing for the map interface.  So this whole implementation
->     looks broken to me and will need some major work (I had a previous
->     discussion with Greg on that which needs to be dug out)
+On Tue, 13 Nov 2018 at 15:02, Firoz Khan <firoz.khan@linaro.org> wrote:
+>
+> The purpose of this patch series is, we can easily
+> add/modify/delete system call table support by cha-
+> nging entry in syscall.tbl file instead of manually
+> changing many files. The other goal is to unify the
+> system call table generation support implementation
+> across all the architectures.
+>
+> The system call tables are in different format in
+> all architecture. It will be difficult to manually
+> add, modify or delete the system calls in the resp-
+> ective files manually. To make it easy by keeping a
+> script and which'll generate uapi header file and
+> syscall table file.
+>
+> syscall.tbl contains the list of available system
+> calls along with system call number and correspond-
+> ing entry point. Add a new system call in this arch-
+> itecture will be possible by adding new entry in the
+> syscall.tbl file.
+>
+> Adding a new table entry consisting of:
+>         - System call number.
+>         - ABI.
+>         - System call name.
+>         - Entry point name.
+>
+> ARM, s390 and x86 architecuture does exist the sim-
+> ilar support. I leverage their implementation to
+> come up with a generic solution.
+>
+> I have done the same support for work for ia64, m68k,
+> microblaze, mips, parisc, powerpc, sh, sparc and xtensa.
+> Below mentioned git repository contains more details
+> about the workflow.
+>
+> https://github.com/frzkhn/system_call_table_generator/
+>
+> Finally, this is the ground work to solve the Y2038
+> issue. We need to add two dozen of system calls to
+> solve Y2038 issue. So this patch series will help to
+> add new system calls easily by adding new entry in
+> the syscall.tbl.
+>
+> changes since v2:
+>  - changed from generic-y to generated-y in Kbuild.
+>  - made changes in syscall.tbl for removing entry -
+>    alpha_ni_syscall.
+>
+> changes since v1:
+>  - optimized/updated the syscall table generation
+>    scripts.
+>  - fixed all mixed indentation issues in syscall.tbl.
+>  - added "comments" in syscall.tbl.
+>  - enclosed __NR_sycalls macro with __KERNEL__.
+>  - added missing new line.
+>
+> Firoz Khan (5):
+>   alpha: move __IGNORE* entries to non uapi header
+>   alpha: remove CONFIG_OSF4_COMPAT flag from syscall table
+>   alpha: add __NR_syscalls along with NR_SYSCALLS
+>   alpha: add system call table generation support
+>   alpha: generate uapi header and syscall table header files
 
-Yep, that is right. Certainly the MMU case is broken. Some noMMU cases work
-by virtue of the SoC only having an instruction cache (the older V2 cores).
+Could someone review this patch series and queue it for 4.21
+through alpha tree would be great.
 
-The MMU case is fixable, but I think it will mean changing away from
-the fall-back virtual:physical 1:1 mapping it uses for the kernel address
-space. So not completely trivial. Either that or a dedicated area of RAM
-for coherent allocations that we can mark as non-cachable via the really
-course grained and limited ACR registers - not really very appealing.
-
-The noMMU case in general is probably limited to something like that same
-type of dedicated RAM/ACR register mechamism.
-
-The most commonly used periperal with DMA is the FEC ethernet module,
-and it has some "special" (used very loosely) cache flushing for
-parts like the 532x family which probably makes it mostly work right.
-There is a PCI bus on the 54xx family of parts, and I know general
-ethernet cards on it (like e1000's) have problems I am sure are
-related to the fact that coherent memory allocations aren't.
-
-I do plan to have a look at this for the MMU case some time soon.
-
-Regards
-Greg
-
-
-
-
->   - the "regular" implementation in this patch should probably be replaced
->     with the generic remapping helpers that have been added for the 4.21
->     merge window:
-> 
-> 	http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/0c3b3171ceccb8830c2bb5adff1b4e9b204c1450
-> 
-> Compile tested only patch below:
-> 
-> --
->>From ade86dc75b9850daf9111ebf9ce15825a6144f2d Mon Sep 17 00:00:00 2001
-> From: Christoph Hellwig <hch@lst.de>
-> Date: Fri, 14 Dec 2018 12:41:45 +0100
-> Subject: m68k: use the generic dma coherent remap allocator
-> 
-> This switche to using common code for the DMA allocations, including
-> potential use of the CMA allocator if configure.  Also add a few
-> comments where the existing behavior seems to be lacking.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   arch/m68k/Kconfig      |  2 ++
->   arch/m68k/kernel/dma.c | 64 ++++++++++++------------------------------
->   2 files changed, 20 insertions(+), 46 deletions(-)
-> 
-> diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
-> index 8a5868e9a3a0..60788cf02fbc 100644
-> --- a/arch/m68k/Kconfig
-> +++ b/arch/m68k/Kconfig
-> @@ -2,10 +2,12 @@
->   config M68K
->   	bool
->   	default y
-> +	select ARCH_HAS_DMA_MMAP_PGPROT if MMU && !COLDFIRE
->   	select ARCH_HAS_SYNC_DMA_FOR_DEVICE if HAS_DMA
->   	select ARCH_MIGHT_HAVE_PC_PARPORT if ISA
->   	select ARCH_NO_COHERENT_DMA_MMAP if !MMU
->   	select ARCH_NO_PREEMPT if !COLDFIRE
-> +	select DMA_DIRECT_REMAP if MMU && !COLDFIRE
->   	select HAVE_IDE
->   	select HAVE_AOUT if MMU
->   	select HAVE_DEBUG_BUGVERBOSE
-> diff --git a/arch/m68k/kernel/dma.c b/arch/m68k/kernel/dma.c
-> index dafe99d08a6a..16da5d96e228 100644
-> --- a/arch/m68k/kernel/dma.c
-> +++ b/arch/m68k/kernel/dma.c
-> @@ -18,57 +18,29 @@
->   #include <asm/pgalloc.h>
->   
->   #if defined(CONFIG_MMU) && !defined(CONFIG_COLDFIRE)
-> -
-> -void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
-> -		gfp_t flag, unsigned long attrs)
-> +void arch_dma_prep_coherent(struct page *page, size_t size)
->   {
-> -	struct page *page, **map;
-> -	pgprot_t pgprot;
-> -	void *addr;
-> -	int i, order;
-> -
-> -	pr_debug("dma_alloc_coherent: %d,%x\n", size, flag);
-> -
-> -	size = PAGE_ALIGN(size);
-> -	order = get_order(size);
-> -
-> -	page = alloc_pages(flag | GFP_ZERO, order);
-> -	if (!page)
-> -		return NULL;
-> -
-> -	*handle = page_to_phys(page);
-> -	map = kmalloc(sizeof(struct page *) << order, flag & ~__GFP_DMA);
-> -	if (!map) {
-> -		__free_pages(page, order);
-> -		return NULL;
-> -	}
-> -	split_page(page, order);
-> -
-> -	order = 1 << order;
-> -	size >>= PAGE_SHIFT;
-> -	map[0] = page;
-> -	for (i = 1; i < size; i++)
-> -		map[i] = page + i;
-> -	for (; i < order; i++)
-> -		__free_page(page + i);
-> -	pgprot = __pgprot(_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_DIRTY);
-> -	if (CPU_IS_040_OR_060)
-> -		pgprot_val(pgprot) |= _PAGE_GLOBAL040 | _PAGE_NOCACHE_S;
-> -	else
-> -		pgprot_val(pgprot) |= _PAGE_NOCACHE030;
-> -	addr = vmap(map, size, VM_MAP, pgprot);
-> -	kfree(map);
-> -
-> -	return addr;
-> +	/*
-> +	 * XXX: don't we need to flush and invalidate the caches before
-> +	 * creating a coherent mapping?
-> +	 * coherent?
-> +	 */
->   }
->   
-> -void arch_dma_free(struct device *dev, size_t size, void *addr,
-> -		dma_addr_t handle, unsigned long attrs)
-> +pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
-> +		unsigned long attrs)
->   {
-> -	pr_debug("dma_free_coherent: %p, %x\n", addr, handle);
-> -	vfree(addr);
-> +	/*
-> +	 * XXX: this doesn't seem to handle the sun3 MMU at all.
-> +	 */
-> +	if (CPU_IS_040_OR_060) {
-> +		pgprot_val(prot) &= ~_PAGE_CACHE040;
-> +		pgprot_val(prot) |= _PAGE_GLOBAL040 | _PAGE_NOCACHE_S;
-> +	} else {
-> +		pgprot_val(prot) |= _PAGE_NOCACHE030;
-> +	}
-> +	return prot;
->   }
-> -
->   #else
->   
->   #include <asm/cacheflush.h>
-> 
+Thanks
+Firoz
