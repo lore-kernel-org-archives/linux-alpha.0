@@ -1,105 +1,49 @@
-From: Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: Re: [PATCH v2 6/8] socket: Add SO_TIMESTAMP[NS]_NEW
-Date: Sat, 15 Dec 2018 12:56:07 -0800
-Message-ID: <CABeXuvr7je=LG9+xO286b7HH2WNLSfoOL4V6nN0AkjsGr_SoCQ@mail.gmail.com>
-References: <20181211202520.16799-1-deepa.kernel@gmail.com>
- <20181211202520.16799-7-deepa.kernel@gmail.com> <CAF=yD-LDWrjxK+XFv-KNAoyP7NCOZiL00n5PkzQ-5aEzq+eCLQ@mail.gmail.com>
- <CABeXuvpAZfd6gAdJbKxsOowXnDnwyQQRuYMJ-6LDo9BsRDDj-g@mail.gmail.com>
- <CAF=yD-L4xTU-KXsQ=uU36fEKv5St=69mmKqT8sD1mAmT_hfuVQ@mail.gmail.com>
- <CABeXuvqrZgEDF5RYQEPJ8RyXDg0uvXx_qMq=2ER8Bc9RXFPDGQ@mail.gmail.com> <CAF=yD-KFYdXRgL-HpAJLLHuywMcaBGfz7sDL35DBNs0hoq+zxQ@mail.gmail.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/2] dma-mapping: zero memory returned from dma_alloc_*
+Date: Mon, 17 Dec 2018 12:59:31 +0100
+Message-ID: <20181217115931.GA6853@lst.de>
+References: <20181214082515.14835-1-hch@lst.de> <20181214082515.14835-2-hch@lst.de> <CAMuHMdWOr0EsgFQF8tjJYLxKVXx+Jwn73N8SVKt8AQGLKQ8V-A@mail.gmail.com> <20181214114719.GA3316@lst.de> <5ae55118-6858-9121-6b3e-9b19b41550ef@westnet.com.au>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RxUIYK5jq5UFHGA9uu0rZ7mZo30FH8h4myjB1K/gJPk=;
-        b=EaE57+j5uiOByuwN6hqdu1RyKysSVPETULK74LbAvzHx9c3ARjSCow5D3a7EBWh+Ri
-         zJJ4pQQ5az5tbEa70GAw8ejjYnYFu9cPkcCCAE86IiYPbqb7SEQRbPU+1/H3YX4+pDC4
-         3TTzM+uRMvUv+rEOZG+zcykyjUMDpfufsvONSMY09uRjn1H+OG91HHzfkHawe3wWMrIe
-         JMmkE5onTp/Ge+GVfU/A1yzzE3yz8VUAGMGMj3JZGoPMRRVRx/9qWgVqRvNDFycaDRxy
-         a+nSG2FzC5qi/cNws9yu2dsPCw2d/cba/InvuOWzdDuVuK1LwphU8Xu64Ejqal8Bzkee
-         vx2Q==
-In-Reply-To: <CAF=yD-KFYdXRgL-HpAJLLHuywMcaBGfz7sDL35DBNs0hoq+zxQ@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <5ae55118-6858-9121-6b3e-9b19b41550ef@westnet.com.au>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: willemdebruijn.kernel@gmail.com
-Cc: "David S. Miller" <davem@davemloft.net>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux Network Devel Mailing List <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ralf Baechle <ralf@linux-mips.org>, rth@twiddle.net, linux-alpha@vger.kernel.org, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-rdma@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>
+To: Greg Ungerer <gregungerer@westnet.com.au>
+Cc: Christoph Hellwig <hch@lst.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Michal Simek <monstr@monstr.eu>, ashutosh.dixit@intel.com, alpha <linux-alpha@vger.kernel.org>, arcml <linux-snps-arc@lists.infradead.org>, linux-c6x-dev@linux-c6x.org, linux-m68k <linux-m68k@lists.linux-m68k.org>, Openrisc <openrisc@lists.librecores.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, linux-xtensa@linux-xtensa.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-> > Also for the other comment. The reason the conditionals were not
-> > consistent is because they were not consistent to begin with.
->
-> The only difference I see is an inversion of the test. Nesting order
-> is the same:
->
->         int need_software_tstamp = sock_flag(sk, SOCK_RCVTSTAMP);
->         ...
->         if (need_software_tstamp) {
->                 if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
->                 } else {
->                 }
->         }
->
-> vs
->
->                 if (sock_flag(sk, SOCK_RCVTSTAMP)) {
->                         if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
->                         } else {
->                         }
->                 }
->
-> I suggest just adding something like
->
->         if (need_software_tstamp) {
-> +              if (sock_uses_new_tstamp(sk) {
-> +                   __sock_recv_timestamp_new(msg, sk,
-> ktime_to_timespec64(skb->tstamp));
-> +              } else if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> -               if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
->                 } else {
->                 }
->
-> and
->
->                 if (sock_flag(sk, SOCK_RCVTSTAMP)) {
-> +                      if (sock_uses_new_tstamp(sk) {
-> +                           __sock_recv_timestamp_new(msg, sk, ts);
-> +                      else if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> -                       if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
->                         } else {
->                         }
->
-> I think we can use the same helper for both the sock and tcp variant.
-> The only intended difference between the two functions, as described
-> in the tcp_recv_timestamp function comment, is the absence of an skb
-> in the tcp case. That is immaterial at this level.
+On Sat, Dec 15, 2018 at 12:14:29AM +1000, Greg Ungerer wrote:
+> Yep, that is right. Certainly the MMU case is broken. Some noMMU cases work
+> by virtue of the SoC only having an instruction cache (the older V2 cores).
 
-I will just not refactor things into a function: __sock_rescv_timestamp_new().
-I will just add new conditionals for the new timestamps.
-When you guys refactor the other timestamp stuff like you mentioned
-below maybe you can move the new timestamps to a new funtcion as you
-see fit.
+Is there a good an easy case to detect if a core has a cache?  Either
+runtime or in Kconfig?
 
-The helper functions in skbuff.h might first need to be refactored
-first. But I again leave this to you guys.
+> The MMU case is fixable, but I think it will mean changing away from
+> the fall-back virtual:physical 1:1 mapping it uses for the kernel address
+> space. So not completely trivial. Either that or a dedicated area of RAM
+> for coherent allocations that we can mark as non-cachable via the really
+> course grained and limited ACR registers - not really very appealing.
 
-> Note also (2) tentative helper function sock_uses_new_tstamp(const
-> struct sock *sk) instead of testing sock_flag(sk, SOCK_TSTAMP_NEW)
-> directly. Since the .._NEW variants are equivalent to .._OLD on 64-bit,
-> I wonder if we can just compile out the branch. Something like
+What about CF_PAGE_NOCACHE?  Reading arch/m68k/include/asm/mcf_pgtable.h
+suggest this would cause an uncached mapping, in which case something
+like this should work:
+
+	http://git.infradead.org/users/hch/misc.git/commitdiff/4b8711d436e8d56edbc5ca19aa2be639705bbfef
+
+> The noMMU case in general is probably limited to something like that same
+> type of dedicated RAM/ACR register mechamism.
 >
->     static inline bool sock_uses_new_tstamp(const struct sock *sk) {
->             return (sizeof(time_t) != sizeof(__kernel_long_t)) &&
->                        sock_flag(sk, SOCK_TSTAMP_NEW);
->     }
->
+> The most commonly used periperal with DMA is the FEC ethernet module,
+> and it has some "special" (used very loosely) cache flushing for
+> parts like the 532x family which probably makes it mostly work right.
+> There is a PCI bus on the 54xx family of parts, and I know general
+> ethernet cards on it (like e1000's) have problems I am sure are
+> related to the fact that coherent memory allocations aren't.
 
-You could just ifdef CONFIG_64BIT if you are worried about branching.
-Note that SO_TIMESTAMP is by default SO_TIMESTAMP_OLD on 64 bit machines.
-But, I will again leave the optimization to you. I will implement in a
-straight forward way and you guys can deicde how you want to optimize
-the fast path or what should it even be.
-
--Deepa
+If we really just care about FEC we can just switch it do use
+DMA_ATTR_NON_CONSISTENT and do explicit cache flushing.  But as far
+as I can tell FEC only uses DMA coherent allocations for the TSO
+headers anyway, is TSO even used on this SOC?
