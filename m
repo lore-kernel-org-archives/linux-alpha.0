@@ -1,49 +1,102 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/2] dma-mapping: zero memory returned from dma_alloc_*
-Date: Mon, 17 Dec 2018 12:59:31 +0100
-Message-ID: <20181217115931.GA6853@lst.de>
-References: <20181214082515.14835-1-hch@lst.de> <20181214082515.14835-2-hch@lst.de> <CAMuHMdWOr0EsgFQF8tjJYLxKVXx+Jwn73N8SVKt8AQGLKQ8V-A@mail.gmail.com> <20181214114719.GA3316@lst.de> <5ae55118-6858-9121-6b3e-9b19b41550ef@westnet.com.au>
-Mime-Version: 1.0
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: [PATCH V3 0/2] Replace all open encodings for NUMA_NO_NODE
+Date: Tue, 18 Dec 2018 15:42:11 +0530
+Message-ID: <1545127933-10711-1-git-send-email-anshuman.khandual@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5ae55118-6858-9121-6b3e-9b19b41550ef@westnet.com.au>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Greg Ungerer <gregungerer@westnet.com.au>
-Cc: Christoph Hellwig <hch@lst.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Michal Simek <monstr@monstr.eu>, ashutosh.dixit@intel.com, alpha <linux-alpha@vger.kernel.org>, arcml <linux-snps-arc@lists.infradead.org>, linux-c6x-dev@linux-c6x.org, linux-m68k <linux-m68k@lists.linux-m68k.org>, Openrisc <openrisc@lists.librecores.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, linux-xtensa@linux-xtensa.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl, vkoul@kernel.org, sfr@canb.auug.org.au, dledford@redhat.com, mpe@ellerman.id.au, axboe@kernel.dk, jeffrey.t.kirsher@intel.com, david@redhat.com
 
-On Sat, Dec 15, 2018 at 12:14:29AM +1000, Greg Ungerer wrote:
-> Yep, that is right. Certainly the MMU case is broken. Some noMMU cases work
-> by virtue of the SoC only having an instruction cache (the older V2 cores).
+Changes in V3:
 
-Is there a good an easy case to detect if a core has a cache?  Either
-runtime or in Kconfig?
+- Dropped all references to NUMA_NO_NODE as per Lubomir Rinetl
+- Split the patch into two creating a new one specifically for tools
+- Folded Stephen's linux-next build fix into the second patch
 
-> The MMU case is fixable, but I think it will mean changing away from
-> the fall-back virtual:physical 1:1 mapping it uses for the kernel address
-> space. So not completely trivial. Either that or a dedicated area of RAM
-> for coherent allocations that we can mark as non-cachable via the really
-> course grained and limited ACR registers - not really very appealing.
+Changes in V2: (https://patchwork.kernel.org/patch/10698089/)
 
-What about CF_PAGE_NOCACHE?  Reading arch/m68k/include/asm/mcf_pgtable.h
-suggest this would cause an uncached mapping, in which case something
-like this should work:
+- Added inclusion of 'numa.h' header at various places per Andrew
+- Updated 'dev_to_node' to use NUMA_NO_NODE instead per Vinod
 
-	http://git.infradead.org/users/hch/misc.git/commitdiff/4b8711d436e8d56edbc5ca19aa2be639705bbfef
+Changes in V1: (https://lkml.org/lkml/2018/11/23/485)
 
-> The noMMU case in general is probably limited to something like that same
-> type of dedicated RAM/ACR register mechamism.
->
-> The most commonly used periperal with DMA is the FEC ethernet module,
-> and it has some "special" (used very loosely) cache flushing for
-> parts like the 532x family which probably makes it mostly work right.
-> There is a PCI bus on the 54xx family of parts, and I know general
-> ethernet cards on it (like e1000's) have problems I am sure are
-> related to the fact that coherent memory allocations aren't.
+- Dropped OCFS2 changes per Joseph
+- Dropped media/video drivers changes per Hans
 
-If we really just care about FEC we can just switch it do use
-DMA_ATTR_NON_CONSISTENT and do explicit cache flushing.  But as far
-as I can tell FEC only uses DMA coherent allocations for the TSO
-headers anyway, is TSO even used on this SOC?
+RFC - https://patchwork.kernel.org/patch/10678035/
+
+Build tested this with multiple cross compiler options like alpha, sparc,
+arm64, x86, powerpc, powerpc64le etc with their default config which might
+not have compiled tested all driver related changes. I will appreciate
+folks giving this a test in their respective build environments.
+
+All these places for replacement were found by running the following grep
+patterns on the entire kernel code. Please let me know if this might have
+missed some instances. This might also have replaced some false positives.
+I will appreciate suggestions, inputs and review.
+
+1. git grep "nid == -1"
+2. git grep "node == -1"
+3. git grep "nid = -1"
+4. git grep "node = -1"
+
+NOTE: I can still split the first patch into multiple ones - one for each
+subsystem as suggested by Lubomir if that would be better.
+
+Anshuman Khandual (1):
+  mm: Replace all open encodings for NUMA_NO_NODE
+
+Stephen Rothwell (1):
+  Tools: Replace open encodings for NUMA_NO_NODE
+
+ arch/alpha/include/asm/topology.h             |  3 ++-
+ arch/ia64/kernel/numa.c                       |  2 +-
+ arch/ia64/mm/discontig.c                      |  6 +++---
+ arch/powerpc/include/asm/pci-bridge.h         |  3 ++-
+ arch/powerpc/kernel/paca.c                    |  3 ++-
+ arch/powerpc/kernel/pci-common.c              |  3 ++-
+ arch/powerpc/mm/numa.c                        | 14 +++++++-------
+ arch/powerpc/platforms/powernv/memtrace.c     |  5 +++--
+ arch/sparc/kernel/pci_fire.c                  |  3 ++-
+ arch/sparc/kernel/pci_schizo.c                |  3 ++-
+ arch/sparc/kernel/psycho_common.c             |  3 ++-
+ arch/sparc/kernel/sbus.c                      |  3 ++-
+ arch/sparc/mm/init_64.c                       |  6 +++---
+ arch/x86/include/asm/pci.h                    |  3 ++-
+ arch/x86/kernel/apic/x2apic_uv_x.c            |  7 ++++---
+ arch/x86/kernel/smpboot.c                     |  3 ++-
+ drivers/block/mtip32xx/mtip32xx.c             |  5 +++--
+ drivers/dma/dmaengine.c                       |  4 +++-
+ drivers/infiniband/hw/hfi1/affinity.c         |  3 ++-
+ drivers/infiniband/hw/hfi1/init.c             |  3 ++-
+ drivers/iommu/dmar.c                          |  5 +++--
+ drivers/iommu/intel-iommu.c                   |  3 ++-
+ drivers/misc/sgi-xp/xpc_uv.c                  |  3 ++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  5 +++--
+ include/linux/device.h                        |  2 +-
+ init/init_task.c                              |  3 ++-
+ kernel/kthread.c                              |  3 ++-
+ kernel/sched/fair.c                           | 15 ++++++++-------
+ lib/cpumask.c                                 |  3 ++-
+ mm/huge_memory.c                              | 13 +++++++------
+ mm/hugetlb.c                                  |  3 ++-
+ mm/ksm.c                                      |  2 +-
+ mm/memory.c                                   |  7 ++++---
+ mm/memory_hotplug.c                           | 12 ++++++------
+ mm/mempolicy.c                                |  2 +-
+ mm/page_alloc.c                               |  4 ++--
+ mm/page_ext.c                                 |  2 +-
+ net/core/pktgen.c                             |  3 ++-
+ net/qrtr/qrtr.c                               |  3 ++-
+ tools/include/linux/numa.h                    | 16 ++++++++++++++++
+ tools/perf/bench/numa.c                       |  6 +++---
+ 41 files changed, 123 insertions(+), 77 deletions(-)
+ create mode 100644 tools/include/linux/numa.h
+
+-- 
+2.7.4
+
