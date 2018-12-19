@@ -1,127 +1,99 @@
-From: Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: Re: [PATCH v2 6/8] socket: Add SO_TIMESTAMP[NS]_NEW
-Date: Tue, 18 Dec 2018 13:27:48 -0800
-Message-ID: <CABeXuvru4uY01DJW-rOCsG3hs6hLmDRuUCGSSPHrNDcAEm7y5Q@mail.gmail.com>
-References: <20181211202520.16799-1-deepa.kernel@gmail.com>
- <20181211202520.16799-7-deepa.kernel@gmail.com> <CAF=yD-LDWrjxK+XFv-KNAoyP7NCOZiL00n5PkzQ-5aEzq+eCLQ@mail.gmail.com>
- <CABeXuvpAZfd6gAdJbKxsOowXnDnwyQQRuYMJ-6LDo9BsRDDj-g@mail.gmail.com>
- <CAF=yD-L4xTU-KXsQ=uU36fEKv5St=69mmKqT8sD1mAmT_hfuVQ@mail.gmail.com>
- <CABeXuvqrZgEDF5RYQEPJ8RyXDg0uvXx_qMq=2ER8Bc9RXFPDGQ@mail.gmail.com>
- <CAF=yD-KFYdXRgL-HpAJLLHuywMcaBGfz7sDL35DBNs0hoq+zxQ@mail.gmail.com> <CAK8P3a0PFQCqo2Ofce7uJeWAgssMbh8u1CNWeAmUk9LzQRn35g@mail.gmail.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [PATCH v3 0/5] alpha: system call table generation support
+Date: Wed, 19 Dec 2018 10:59:10 -0500
+Message-ID: <CAEdQ38FQNC0mnf6UWOeandwR2guLRGmbYaJAo8MrEKFn2U61Gw@mail.gmail.com>
+References: <1542101513-22010-1-git-send-email-firoz.khan@linaro.org> <CALxhOngxbsYFSbK1Y0okuiTmjWEQ8Zcd4vQ0OezhXBgXH82DtA@mail.gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5+4TnHrfI6zYyhZHg0GbGxgjAJe/nrWkO6NadpWyjc4=;
-        b=uPUVg7P/W/I/La99y40K+swKIPutRK3MQtD2YDbxV7m6bijJB+KG0oRNGLiobtldI8
-         MVRNwA9WeIweEMVoCL9UHXn/2a9/NiHR5vfdMY3WAy59QidK+53AnG8oHhDxNNNudvnS
-         f4GM7jFP2wpdw90YpF2Tx1w01+dJrw2FmqmwTG6Vxo/FHrHnocyB1DzcHOAF6c+QtrqB
-         IE1hBbwi3PUaHMxpianUOW7A8WTF//yhfet+QczC7ontEVLWlKMfSDHfAO5qIcYSSYbR
-         ozL9R6ffhhQqiOd9TuwsM2XMkTE4cS05+aX6Vq4Dx9wR2XjtLt/gXK1EfWbAK6lE+x/Y
-         O/NQ==
-In-Reply-To: <CAK8P3a0PFQCqo2Ofce7uJeWAgssMbh8u1CNWeAmUk9LzQRn35g@mail.gmail.com>
+        bh=L9Oe0ayTRjWuO0bO25VljJGJZxyDQt7qiLMrAfR62L4=;
+        b=foyG8pJ6eYATlT3t/v3/QqPCjazxd7lRYM7EST/C+ScjOFHPmDTcrKjfJP34XdxJ6I
+         E5WVVAH/uQkJfb2Ep7MPoNiacIeEP3M+H4vUTuJ0TO/sYAbl4sYHcHQbgJER6MeIGe0B
+         GEqpaGIgebbIuVTHxWf0nBfhJcjyZcbnk4yAYyEeW9XGZ6Yyb+1SQgvU2gY22rSCBsq2
+         EuntTFjDJdpmjoZFx0twq8pIlmTN//Y/oaiFotdrESQbZCC5Xl+td7/DPBCpu2+07lZs
+         wRcRLoQyeJMF448/PZuMFaAaJWy7Xd40SnU5rhhtneTGfwojfMKbfKrVwUhaKxzal5r4
+         +M0w==
+In-Reply-To: <CALxhOngxbsYFSbK1Y0okuiTmjWEQ8Zcd4vQ0OezhXBgXH82DtA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>, David Miller <davem@davemloft.net>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Networking <netdev@vger.kernel.org>, y2038 Mailman List <y2038@lists.linaro.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ralf Baechle <ralf@linux-mips.org>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-rdma <linux-rdma@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>
+To: Firoz Khan <firoz.khan@linaro.org>
+Cc: linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>, y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Deepa Dinamani <deepa.kernel@gmail.com>, Marcin Juszkiewicz <marcin.juszkiewicz@linaro.org>
 
-On Tue, Dec 18, 2018 at 8:33 AM Arnd Bergmann <arnd@arndb.de> wrote:
+On Fri, Dec 14, 2018 at 10:18 AM Firoz Khan <firoz.khan@linaro.org> wrote:
 >
-> On Sat, Dec 15, 2018 at 7:52 PM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > > 3 reasons for not doing this:
-> > >
-> > > 1. We do not want to break userspace. If we move this to
-> > > linux/socket.h all the userspace programs now have to include
-> > > linux/socket.h or get this definition through a new libc.
-> > > 2. All the socket options are together in the file asm/socket.h. It
-> > > doesn't seem good for maintainability to move just a few bits
-> > > elsewhere.
-> > > 3. There are only 4 arches (after the series is applied) that have
-> > > their own asm/socket.h. And, this is because there seems to be
-> > > significant differences to asm-generic/socket.h that don't seem
-> > > logically obvious to group and eliminate some of the defines.
-> >
-> > Agreed. All good reasons to leave as is.
-> >
-> > > Also for the other comment. The reason the conditionals were not
-> > > consistent is because they were not consistent to begin with.
-> >
-> > The only difference I see is an inversion of the test. Nesting order
-> > is the same:
-> >
-> >         int need_software_tstamp = sock_flag(sk, SOCK_RCVTSTAMP);
-> >         ...
-> >         if (need_software_tstamp) {
-> >                 if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> >                 } else {
-> >                 }
-> >         }
-> >
-> > vs
-> >
-> >                 if (sock_flag(sk, SOCK_RCVTSTAMP)) {
-> >                         if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> >                         } else {
-> >                         }
-> >                 }
-> >
-> > I suggest just adding something like
-> >
-> >         if (need_software_tstamp) {
-> > +              if (sock_uses_new_tstamp(sk) {
-> > +                   __sock_recv_timestamp_new(msg, sk,
-> > ktime_to_timespec64(skb->tstamp));
-> > +              } else if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> > -               if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> >                 } else {
-> >                 }
-> >
-> > and
-> >
-> >                 if (sock_flag(sk, SOCK_RCVTSTAMP)) {
-> > +                      if (sock_uses_new_tstamp(sk) {
-> > +                           __sock_recv_timestamp_new(msg, sk, ts);
-> > +                      else if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> > -                       if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
-> >                         } else {
-> >                         }
+> Hi Folks,
 >
-> Generally speaking, I think we want the new time handling
-> to be written as the default case rather than have it hidden away
-> in a separate function. If we didn't have the sparc64 quirk with its
-> unusual timeval definition, we'd only need a special flag for the
-> old 32-bit format, but that doesn't work as long we have to support
-> two different 64-bit formats for 64-bit timeval on sparc64
-> (32 or 64 bit microseconds).
->
-> > Note also (2) tentative helper function sock_uses_new_tstamp(const
-> > struct sock *sk) instead of testing sock_flag(sk, SOCK_TSTAMP_NEW)
-> > directly. Since the .._NEW variants are equivalent to .._OLD on 64-bit,
-> > I wonder if we can just compile out the branch. Something like
+> On Tue, 13 Nov 2018 at 15:02, Firoz Khan <firoz.khan@linaro.org> wrote:
 > >
-> >     static inline bool sock_uses_new_tstamp(const struct sock *sk) {
-> >             return (sizeof(time_t) != sizeof(__kernel_long_t)) &&
-> >                        sock_flag(sk, SOCK_TSTAMP_NEW);
-> >     }
+> > The purpose of this patch series is, we can easily
+> > add/modify/delete system call table support by cha-
+> > nging entry in syscall.tbl file instead of manually
+> > changing many files. The other goal is to unify the
+> > system call table generation support implementation
+> > across all the architectures.
+> >
+> > The system call tables are in different format in
+> > all architecture. It will be difficult to manually
+> > add, modify or delete the system calls in the resp-
+> > ective files manually. To make it easy by keeping a
+> > script and which'll generate uapi header file and
+> > syscall table file.
+> >
+> > syscall.tbl contains the list of available system
+> > calls along with system call number and correspond-
+> > ing entry point. Add a new system call in this arch-
+> > itecture will be possible by adding new entry in the
+> > syscall.tbl file.
+> >
+> > Adding a new table entry consisting of:
+> >         - System call number.
+> >         - ABI.
+> >         - System call name.
+> >         - Entry point name.
+> >
+> > ARM, s390 and x86 architecuture does exist the sim-
+> > ilar support. I leverage their implementation to
+> > come up with a generic solution.
+> >
+> > I have done the same support for work for ia64, m68k,
+> > microblaze, mips, parisc, powerpc, sh, sparc and xtensa.
+> > Below mentioned git repository contains more details
+> > about the workflow.
+> >
+> > https://github.com/frzkhn/system_call_table_generator/
+> >
+> > Finally, this is the ground work to solve the Y2038
+> > issue. We need to add two dozen of system calls to
+> > solve Y2038 issue. So this patch series will help to
+> > add new system calls easily by adding new entry in
+> > the syscall.tbl.
+> >
+> > changes since v2:
+> >  - changed from generic-y to generated-y in Kbuild.
+> >  - made changes in syscall.tbl for removing entry -
+> >    alpha_ni_syscall.
+> >
+> > changes since v1:
+> >  - optimized/updated the syscall table generation
+> >    scripts.
+> >  - fixed all mixed indentation issues in syscall.tbl.
+> >  - added "comments" in syscall.tbl.
+> >  - enclosed __NR_sycalls macro with __KERNEL__.
+> >  - added missing new line.
+> >
+> > Firoz Khan (5):
+> >   alpha: move __IGNORE* entries to non uapi header
+> >   alpha: remove CONFIG_OSF4_COMPAT flag from syscall table
+> >   alpha: add __NR_syscalls along with NR_SYSCALLS
+> >   alpha: add system call table generation support
+> >   alpha: generate uapi header and syscall table header files
 >
-> I think that would break compat handling: when we have a 32-bit
-> user space process, the difference between old and new timestamps
-> is meaningful even on 64-bit kernels, but the distinction is only made all
-> the way down in put_cmsg_compat().
+> Could someone review this patch series and queue it for 4.21
+> through alpha tree would be great.
 
-As I mentioned previously, I have refrained from adding these
-optimizations for now.
-The old timestamps are as is and the new timestamps are not yet being
-used anywhere as we have not switched any of the architectures to use
-y2038 syscalls and data structures yet.
-So even if these optimizations are needed these can be added as
-separate patches.
-Let me know if this is acceptable for everyone and I can post the update.
-
--Deepa
+Thank you! I'll take a look.
