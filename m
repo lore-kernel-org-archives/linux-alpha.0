@@ -1,99 +1,17 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH v3 0/5] alpha: system call table generation support
-Date: Wed, 19 Dec 2018 10:59:10 -0500
-Message-ID: <CAEdQ38FQNC0mnf6UWOeandwR2guLRGmbYaJAo8MrEKFn2U61Gw@mail.gmail.com>
-References: <1542101513-22010-1-git-send-email-firoz.khan@linaro.org> <CALxhOngxbsYFSbK1Y0okuiTmjWEQ8Zcd4vQ0OezhXBgXH82DtA@mail.gmail.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: ensure dma_alloc_coherent always returns zeroed memory
+Date: Wed, 19 Dec 2018 17:59:39 +0100
+Message-ID: <20181219165939.GA26087@lst.de>
+References: <20181214082515.14835-1-hch@lst.de>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=L9Oe0ayTRjWuO0bO25VljJGJZxyDQt7qiLMrAfR62L4=;
-        b=foyG8pJ6eYATlT3t/v3/QqPCjazxd7lRYM7EST/C+ScjOFHPmDTcrKjfJP34XdxJ6I
-         E5WVVAH/uQkJfb2Ep7MPoNiacIeEP3M+H4vUTuJ0TO/sYAbl4sYHcHQbgJER6MeIGe0B
-         GEqpaGIgebbIuVTHxWf0nBfhJcjyZcbnk4yAYyEeW9XGZ6Yyb+1SQgvU2gY22rSCBsq2
-         EuntTFjDJdpmjoZFx0twq8pIlmTN//Y/oaiFotdrESQbZCC5Xl+td7/DPBCpu2+07lZs
-         wRcRLoQyeJMF448/PZuMFaAaJWy7Xd40SnU5rhhtneTGfwojfMKbfKrVwUhaKxzal5r4
-         +M0w==
-In-Reply-To: <CALxhOngxbsYFSbK1Y0okuiTmjWEQ8Zcd4vQ0OezhXBgXH82DtA@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20181214082515.14835-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Firoz Khan <firoz.khan@linaro.org>
-Cc: linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>, y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Deepa Dinamani <deepa.kernel@gmail.com>, Marcin Juszkiewicz <marcin.juszkiewicz@linaro.org>
+To: iommu@lists.linux-foundation.org
+Cc: linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-c6x-dev@linux-c6x.org, linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-kernel@vger.kernel.org, Ashutosh Dixit <ashutosh.dixit@intel.com>, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-snps-arc@lists.infradead.org
 
-On Fri, Dec 14, 2018 at 10:18 AM Firoz Khan <firoz.khan@linaro.org> wrote:
->
-> Hi Folks,
->
-> On Tue, 13 Nov 2018 at 15:02, Firoz Khan <firoz.khan@linaro.org> wrote:
-> >
-> > The purpose of this patch series is, we can easily
-> > add/modify/delete system call table support by cha-
-> > nging entry in syscall.tbl file instead of manually
-> > changing many files. The other goal is to unify the
-> > system call table generation support implementation
-> > across all the architectures.
-> >
-> > The system call tables are in different format in
-> > all architecture. It will be difficult to manually
-> > add, modify or delete the system calls in the resp-
-> > ective files manually. To make it easy by keeping a
-> > script and which'll generate uapi header file and
-> > syscall table file.
-> >
-> > syscall.tbl contains the list of available system
-> > calls along with system call number and correspond-
-> > ing entry point. Add a new system call in this arch-
-> > itecture will be possible by adding new entry in the
-> > syscall.tbl file.
-> >
-> > Adding a new table entry consisting of:
-> >         - System call number.
-> >         - ABI.
-> >         - System call name.
-> >         - Entry point name.
-> >
-> > ARM, s390 and x86 architecuture does exist the sim-
-> > ilar support. I leverage their implementation to
-> > come up with a generic solution.
-> >
-> > I have done the same support for work for ia64, m68k,
-> > microblaze, mips, parisc, powerpc, sh, sparc and xtensa.
-> > Below mentioned git repository contains more details
-> > about the workflow.
-> >
-> > https://github.com/frzkhn/system_call_table_generator/
-> >
-> > Finally, this is the ground work to solve the Y2038
-> > issue. We need to add two dozen of system calls to
-> > solve Y2038 issue. So this patch series will help to
-> > add new system calls easily by adding new entry in
-> > the syscall.tbl.
-> >
-> > changes since v2:
-> >  - changed from generic-y to generated-y in Kbuild.
-> >  - made changes in syscall.tbl for removing entry -
-> >    alpha_ni_syscall.
-> >
-> > changes since v1:
-> >  - optimized/updated the syscall table generation
-> >    scripts.
-> >  - fixed all mixed indentation issues in syscall.tbl.
-> >  - added "comments" in syscall.tbl.
-> >  - enclosed __NR_sycalls macro with __KERNEL__.
-> >  - added missing new line.
-> >
-> > Firoz Khan (5):
-> >   alpha: move __IGNORE* entries to non uapi header
-> >   alpha: remove CONFIG_OSF4_COMPAT flag from syscall table
-> >   alpha: add __NR_syscalls along with NR_SYSCALLS
-> >   alpha: add system call table generation support
-> >   alpha: generate uapi header and syscall table header files
->
-> Could someone review this patch series and queue it for 4.21
-> through alpha tree would be great.
-
-Thank you! I'll take a look.
+FYI, I've picked this up for dma-mapping for-next now.
