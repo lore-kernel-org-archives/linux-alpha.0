@@ -1,39 +1,62 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v3 0/5] alpha: system call table generation support
-Date: Wed, 19 Dec 2018 18:08:13 +0100
-Message-ID: <CAK8P3a366UUWv8hXxWFQo9EQs++t5x4N+JmJ5abgD8BP99hECQ@mail.gmail.com>
-References: <1542101513-22010-1-git-send-email-firoz.khan@linaro.org>
- <CALxhOngxbsYFSbK1Y0okuiTmjWEQ8Zcd4vQ0OezhXBgXH82DtA@mail.gmail.com> <CAEdQ38FQNC0mnf6UWOeandwR2guLRGmbYaJAo8MrEKFn2U61Gw@mail.gmail.com>
+From: Eugeniy Paltsev <eugeniy.paltsev@synopsys.com>
+Subject: Re: ensure dma_alloc_coherent always returns zeroed memory
+Date: Thu, 20 Dec 2018 14:32:52 +0000
+Message-ID: <1545316369.14089.20.camel@synopsys.com>
+References: <20181214082515.14835-1-hch@lst.de>
+         <20181219165939.GA26087@lst.de>
 Mime-Version: 1.0
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAEdQ38FQNC0mnf6UWOeandwR2guLRGmbYaJAo8MrEKFn2U61Gw@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1545316378; bh=GOeeGQYGm4G/inhh155glchXwRUk2B2MXoesoIy4i8A=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=SXTCiUztfb3IDqMdskTrelyyR4NkaQp7GpHRB7D1C7jhIepoOfr/E3+7/IgLEAPn7
+         aQNxwbYvyv62kYZeBle75lwOYy45ubl5trfBPNFYaA2V2FsNL5F0jQ65cqzF/Rmqb2
+         AkmyreJpLxt44nOvWCUvTJgWT3Oh1PP2f79xTcqDVC8IAZDVnSkIid8+Y0oYp+nniP
+         QZ9jsL6nD/dMVWC6ciHYfAI5yohSaBCpsNS/x4jLfpeN0iPjWWvPqaXsTkS0JRuVdY
+         9shkXjxEGqVwCmHDIvCFbfTHYJd0tb7KE+19b0EptBkNTb565QSXWBpjcSNhPI3/99
+         hid/6p4cWYZdw==
+In-Reply-To: <20181219165939.GA26087@lst.de>
+Content-Language: en-US
+Content-ID: <EE3F2B66B5D61E4486F0534F863C1240@internal.synopsys.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Firoz Khan <firoz.khan@linaro.org>, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Stephen Rothwell <sfr@canb.auug.org.au>
+To: "hch@lst.de" <hch@lst.de>, Vineet Gupta <vineet.gupta1@synopsys.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>, "linux-m68k@lists.linux-m68k.org" <linux-m68k@lists.linux-m68k.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>, "openrisc@lists.librecores.org" <openrisc@lists.librecores.org>, "ashutosh.dixit@intel.com" <ashutosh.dixit@intel.com>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-c6x-dev@linux-c6x.org" <linux-c6x-dev@linux-c6x.org>, "monstr@monstr.eu" <monstr@monstr.eu>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
 
-On Wed, Dec 19, 2018 at 4:59 PM Matt Turner <mattst88@gmail.com> wrote:
-> On Fri, Dec 14, 2018 at 10:18 AM Firoz Khan <firoz.khan@linaro.org> wrote:
-> > On Tue, 13 Nov 2018 at 15:02, Firoz Khan <firoz.khan@linaro.org> wrote:
-> >
-> > Could someone review this patch series and queue it for 4.21
-> > through alpha tree would be great.
->
-> Thank you! I'll take a look.
-
-Hi Matt,
-
-I see that you merged the changes a while ago into
-
-git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha#for-linus
-
-This all seems fine, but they never showed up in linux-next,
-which his what had both Firoz and me confused.
-
-Is that intentional, or should it be added there?
-
-Added Stephen to Cc here in case you want it added.
-
-       Arnd
+SGkgQ2hyaXN0b3BoLA0KDQpJIHRlc3Qga2VybmVsIGZyb20geW91ciAnZG1hLWFsbG9jLWFsd2F5
+cy16ZXJvJyBicmFuY2gsIGFuZCBhcw0KSSBjYW4gc2VlIHdlIGhhdmUgRE1BIHBlcmlwaGVyYWxz
+IChsaWtlIFVTQikgYnJva2VuLg0KDQpUaGVyZSBhcmUgdGhlIGVycm9ycyBleGFtcGxlIEkgZ290
+IGR1cmluZyBVU0IgaW5pdGlhbGl6aW5nOg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+PjgtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KdXNiIDEtMTogZGV2aWNlIGRlc2Ny
+aXB0b3IgcmVhZC82NCwgZXJyb3IgLTExMA0KdXNiIHVzYjEtcG9ydDE6IGF0dGVtcHQgcG93ZXIg
+Y3ljbGUNCnVzYiAxLTE6IG5ldyBoaWdoLXNwZWVkIFVTQiBkZXZpY2UgbnVtYmVyIDQgdXNpbmcg
+ZWhjaS1wbGF0Zm9ybQ0KdXNiIDEtMTogZGV2aWNlIGRlc2NyaXB0b3IgcmVhZC82NCwgZXJyb3Ig
+LTExMA0KdXNiIDEtMTogZGV2aWNlIGRlc2NyaXB0b3IgcmVhZC82NCwgZXJyb3IgLTExMA0KdXNi
+IDEtMTogbmV3IGhpZ2gtc3BlZWQgVVNCIGRldmljZSBudW1iZXIgNSB1c2luZyBlaGNpLXBsYXRm
+b3JtDQp1c2IgMS0xOiBkZXZpY2UgZGVzY3JpcHRvciByZWFkLzY0LCBlcnJvciAtMTEwDQp1c2Ig
+MS0xOiBkZXZpY2UgZGVzY3JpcHRvciByZWFkLzY0LCBlcnJvciAtMTEwDQp1c2IgdXNiMS1wb3J0
+MTogdW5hYmxlIHRvIGVudW1lcmF0ZSBVU0IgZGV2aWNlDQp1c2IgMi0xOiBuZXcgZnVsbC1zcGVl
+ZCBVU0IgZGV2aWNlIG51bWJlciAyIHVzaW5nIG9oY2ktcGxhdGZvcm0NCnVzYiAyLTE6IGRldmlj
+ZSBkZXNjcmlwdG9yIHJlYWQvYWxsLCBlcnJvciAtODQNCnVzYiAyLTE6IG5ldyBmdWxsLXNwZWVk
+IFVTQiBkZXZpY2UgbnVtYmVyIDMgdXNpbmcgb2hjaS1wbGF0Zm9ybQ0KdXNiIDItMTogZGV2aWNl
+IGRlc2NyaXB0b3IgcmVhZC9hbGwsIGVycm9yIC04NA0KdXNiIHVzYjItcG9ydDE6IGF0dGVtcHQg
+cG93ZXIgY3ljbGUNCnVzYiAyLTE6IG5ldyBmdWxsLXNwZWVkIFVTQiBkZXZpY2UgbnVtYmVyIDQg
+dXNpbmcgb2hjaS1wbGF0Zm9ybQ0KdXNiIDItMTogZGV2aWNlIGRlc2NyaXB0b3IgcmVhZC84LCBl
+cnJvciAtNjINCnVzYiAyLTE6IGRldmljZSBkZXNjcmlwdG9yIHJlYWQvOCwgZXJyb3IgLTYyDQp1
+c2IgMi0xOiBuZXcgZnVsbC1zcGVlZCBVU0IgZGV2aWNlIG51bWJlciA1IHVzaW5nIG9oY2ktcGxh
+dGZvcm0NCnVzYiAyLTE6IGRldmljZSBkZXNjcmlwdG9yIHJlYWQvOCwgZXJyb3IgLTg0DQp1c2Ig
+Mi0xOiBkZXZpY2UgZGVzY3JpcHRvciByZWFkLzgsIGVycm9yIC04NA0KdXNiIHVzYjItcG9ydDE6
+IHVuYWJsZSB0byBlbnVtZXJhdGUgVVNCIGRldmljZQ0KIFtzbmlwXQ0KLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tODwtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KDQoNCk9u
+IFdlZCwgMjAxOC0xMi0xOSBhdCAxNzo1OSArMDEwMCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6
+DQo+IEZZSSwgSSd2ZSBwaWNrZWQgdGhpcyB1cCBmb3IgZG1hLW1hcHBpbmcgZm9yLW5leHQgbm93
+Lg0KPiANCj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18N
+Cj4gbGludXgtc25wcy1hcmMgbWFpbGluZyBsaXN0DQo+IGxpbnV4LXNucHMtYXJjQGxpc3RzLmlu
+ZnJhZGVhZC5vcmcNCj4gaHR0cHM6Ly91cmxkZWZlbnNlLnByb29mcG9pbnQuY29tL3YyL3VybD91
+PWh0dHAtM0FfX2xpc3RzLmluZnJhZGVhZC5vcmdfbWFpbG1hbl9saXN0aW5mb19saW51eC0yRHNu
+cHMtMkRhcmMmZD1Ed0lDQWcmYz1EUEw2X1hfNkprWEZ4N0FYV3FCMHRnJnI9WmxKTg0KPiAxTXJp
+UFVUa0JLQ3JQU3g2N0dtYXBsRVVHY0FFazl5UHRDTGRVWEkmbT1uYUJDVDk2QTRSU1FKTHpCV3p1
+Q2NtcHRGR2lRRGZGVE9XSnBwcnFESVZrJnM9Y0hGODR2YTg5b2ZQNlZsclY2ODNld0VOVVhkYUxX
+N29wYW1MWlNrWkJnayZlPQ0KLS0gDQogRXVnZW5peSBQYWx0c2V2
