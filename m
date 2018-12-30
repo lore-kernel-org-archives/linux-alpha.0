@@ -1,81 +1,121 @@
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH v3 0/5] alpha: system call table generation support
-Date: Sat, 22 Dec 2018 21:27:20 +1100
-Message-ID: <20181222212720.6637ef8e@canb.auug.org.au>
-References: <1542101513-22010-1-git-send-email-firoz.khan@linaro.org>
-        <CALxhOngxbsYFSbK1Y0okuiTmjWEQ8Zcd4vQ0OezhXBgXH82DtA@mail.gmail.com>
-        <CAEdQ38FQNC0mnf6UWOeandwR2guLRGmbYaJAo8MrEKFn2U61Gw@mail.gmail.com>
-        <CAK8P3a366UUWv8hXxWFQo9EQs++t5x4N+JmJ5abgD8BP99hECQ@mail.gmail.com>
-        <CAEdQ38EY3ix6XAwAjY8H4OhFwRcT1Yuvk4ofLa_GVyh5COpkRA@mail.gmail.com>
+From: Sergei Trofimovich <slyfox@gentoo.org>
+Subject: [PATCH] alpha: fix page fault handling for r16-r18 targets
+Date: Sun, 30 Dec 2018 20:23:12 +0000
+Message-ID: <20181230202312.7239-1-slyfox@gentoo.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/K95BLF44cm9c5f5+VcHpoTZ"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1545474457;
-        bh=hdnsth3jgykOQO/lDqWMCkrn9f5XMowa5z7e/RKFjZg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z76bueo5LwbUB23rBancAbcZSHOCqpjLNxpTJNLTSaAbGqRATOEM8Oc/ckhmIxRw3
-         W5/epF3/SnPO04pC9C95TAXpIXc1Br159+o6YW1ak9+IS3pi7W0z4WmOphTgvpw01E
-         jVdzQgvpELXQhFulQvF4ceMZcorq+ykxEeWjoFmFE1dMtprORYgS6AzaUVypcZgrL/
-         24iUMVU6yn2kXwKlRLhGz0CVjV9Z7UekSV+me6bNmK9cBCKNIE/7lSKEOmGXKZCYzj
-         Cv7KzVV1m44K4phEgvFiifHDtIhMIjueZZrU9nydvVgMd5pTe5dvTI4UxwbSY7Yvwt
-         O/tBUXJAhV7EA==
-In-Reply-To: <CAEdQ38EY3ix6XAwAjY8H4OhFwRcT1Yuvk4ofLa_GVyh5COpkRA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Matt Turner <mattst88@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Firoz Khan <firoz.khan@linaro.org>, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, y2038 Mailman List <y2038@lists.linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Sergei Trofimovich <slyfox@gentoo.org>, "Dmitry V . Levin" <gentoo.dl@altlinux.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
---Sig_/K95BLF44cm9c5f5+VcHpoTZ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Fix page fault handling code to fixup r16-r18 registers.
+Before the patch code had off-by-two registers bug.
+This bug caused overwriting of ps,pc,gp registers instead
+of fixing intended r16,r17,r18 (see `struct pt_regs`).
 
-Hi Matt,
+More details:
 
-On Fri, 21 Dec 2018 11:46:59 -0500 Matt Turner <mattst88@gmail.com> wrote:
->
-> Probably so. This is just a super part-time thing for me, so I've
-> never figured out what I needed to do to be included in linux-next.
+Initially Dmitry noticed a kernel bug as a failure
+on strace test suite. Test passes unmapped userspace
+pointer to io_submit:
 
-The requirements are:
+```c
+    #include <err.h>
+    #include <unistd.h>
+    #include <sys/mman.h>
+    #include <asm/unistd.h>
+    int main(void)
+    {
+        unsigned long ctx = 0;
+        if (syscall(__NR_io_setup, 1, &ctx))
+            err(1, "io_setup");
+        const size_t page_size = sysconf(_SC_PAGESIZE);
+        const size_t size = page_size * 2;
+        void *ptr = mmap(NULL, size, PROT_READ | PROT_WRITE,
+                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        if (MAP_FAILED == ptr)
+            err(1, "mmap(%zu)", size);
+        if (munmap(ptr, size))
+            err(1, "munmap");
+        syscall(__NR_io_submit, ctx, 1, ptr + page_size);
+        syscall(__NR_io_destroy, ctx);
+        return 0;
+    }
+```
 
-"You will need to ensure that the patches/commits in your tree/series have
-been:
-     * submitted under GPL v2 (or later) and include the Contributor's
-        Signed-off-by,
-     * posted to the relevant mailing list,
-     * reviewed by you (or another maintainer of your subsystem tree),
-     * successfully unit tested, and=20
-     * destined for the current or next Linux merge window.
+Running this test causes kernel to crash when handling page fault:
 
-Basically, this should be just what you would send to Linus (or ask him
-to fetch).  It is allowed to be rebased if you deem it necessary."
+```
+    Unable to handle kernel paging request at virtual address ffffffffffff9468
+    CPU 3
+    aio(26027): Oops 0
+    pc = [<fffffc00004eddf8>]  ra = [<fffffc00004edd5c>]  ps = 0000    Not tainted
+    pc is at sys_io_submit+0x108/0x200
+    ra is at sys_io_submit+0x6c/0x200
+    v0 = fffffc00c58e6300  t0 = fffffffffffffff2  t1 = 000002000025e000
+    t2 = fffffc01f159fef8  t3 = fffffc0001009640  t4 = fffffc0000e0f6e0
+    t5 = 0000020001002e9e  t6 = 4c41564e49452031  t7 = fffffc01f159c000
+    s0 = 0000000000000002  s1 = 000002000025e000  s2 = 0000000000000000
+    s3 = 0000000000000000  s4 = 0000000000000000  s5 = fffffffffffffff2
+    s6 = fffffc00c58e6300
+    a0 = fffffc00c58e6300  a1 = 0000000000000000  a2 = 000002000025e000
+    a3 = 00000200001ac260  a4 = 00000200001ac1e8  a5 = 0000000000000001
+    t8 = 0000000000000008  t9 = 000000011f8bce30  t10= 00000200001ac440
+    t11= 0000000000000000  pv = fffffc00006fd320  at = 0000000000000000
+    gp = 0000000000000000  sp = 00000000265fd174
+    Disabling lock debugging due to kernel taint
+    Trace:
+    [<fffffc0000311404>] entSys+0xa4/0xc0
+```
 
-Just send me an email with the URL of a git tree that has a branch that
-I can fetch every day.
+Here `gp` has invalid value. `gp is s overwritten by a fixup for the
+following page fault handler in `io_submit` syscall handler:
 
-However, I am not doing any releases until Jan 2, so it will be
-included then.
+```
+    __se_sys_io_submit
+    ...
+        ldq     a1,0(t1)
+        bne     t0,4280 <__se_sys_io_submit+0x180>
+```
 
---=20
-Cheers,
-Stephen Rothwell
+After a page fault `t0` should contain -EFALUT and `a1` is 0.
+Instead `gp` was overwritten in place of `a1`.
 
---Sig_/K95BLF44cm9c5f5+VcHpoTZ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+This happens due to a off-by-two bug in `dpf_reg()` for `r16-r18`
+(aka `a0-a2`).
 
------BEGIN PGP SIGNATURE-----
+I think the bug went unnoticed for a long time as `gp` is one
+of scratch registers. Any kernel function call would re-calculate `gp`.
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAlweEYgACgkQAVBC80lX
-0GzAZQf/ceFemIRud5chQHnpxdM8Q4WTwZPcT3g997vj97b35xydgjUw24JHscAi
-OJN7B2qj6Ieus3yyy+yrveCkxQlIVkmv9dhKete6KHiGIHogCcmwBT7lpsQK1qje
-CsdoKSEffgDUzPYe7uhGHGI2JdJnfM2OjfYXe/VgLdduUoMVD8S2z8qtAD6h27IC
-/M5zUSPPXF/+j8TXBeRPhIUMANw2q5oWx5rH10DTsC2NJ1rDsgy2adJY2kdul99d
-ORSsdvb/UqsjN8fjeoDFqsZEvGjicv9nN29IatD0Ih44cUZVdnPeB7S1OSCiwrsL
-Fomphge7jlCE0BrSP1LetXSjSHHzsQ==
-=KcoK
------END PGP SIGNATURE-----
+CC: Dmitry V. Levin <gentoo.dl@altlinux.org>
+CC: Richard Henderson <rth@twiddle.net>
+CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+CC: Matt Turner <mattst88@gmail.com>
+CC: linux-alpha@vger.kernel.org
+CC: linux-kernel@vger.kernel.org
+Reported-by: Dmitry V. Levin
+Bug: https://bugs.gentoo.org/672040
+Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+---
+ arch/alpha/mm/fault.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---Sig_/K95BLF44cm9c5f5+VcHpoTZ--
+diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
+index d73dc473fbb9..188fc9256baf 100644
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -78,7 +78,7 @@ __load_new_mm_context(struct mm_struct *next_mm)
+ /* Macro for exception fixup code to access integer registers.  */
+ #define dpf_reg(r)							\
+ 	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
+-				 (r) <= 18 ? (r)+8 : (r)-10])
++				 (r) <= 18 ? (r)+10 : (r)-10])
+ 
+ asmlinkage void
+ do_page_fault(unsigned long address, unsigned long mmcsr,
+-- 
+2.20.1
+
