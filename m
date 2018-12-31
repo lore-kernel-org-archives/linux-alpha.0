@@ -1,106 +1,187 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: [PULL] alpha.git
-Date: Sun, 30 Dec 2018 17:25:19 -0500
-Message-ID: <20181230222519.GA4195@p50>
+From: "Dmitry V. Levin" <ldv@altlinux.org>
+Subject: Re: [PATCH] alpha: fix page fault handling for r16-r18 targets
+Date: Mon, 31 Dec 2018 04:45:15 +0300
+Message-ID: <20181231014515.GA13296@altlinux.org>
+References: <20181230202312.7239-1-slyfox@gentoo.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7AUc2qLy4jB3hD7Z"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="/9DWx/yDrRhgMJTb"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=5cKcfmJ20UK9CCVQ6E8lFHgopqsdOf7qXHzuf3MsKjk=;
-        b=jZEE28awEXDEvvpl8+leq1fJV+YHYN+R3jqU2090Gj1Bu00rX940TaRqa1JUkynXk+
-         o3772XeIf8ZsQJ732+Hiu+ooW8U24zUJoNcpAhf9K1nnSIxK26wzGYekpJPQjMlRhhKv
-         3S5Tlzts4uNfhi13E9ZPwuGGO2KGPqTvhV2M7EJcFGtUdoBWswPc1LhN1IAC27MFFHTV
-         tr9cxVBF4W10HZB7IxNOpn4Cz3KDL6Io80IK9xwlhVZcSfVGlwcngLJqTT1p9ryRktGo
-         rKYBthb28XrlhNHaOks2lV6FqF/I4LNzuYbIDvWThEz/4MTCTRnmKWR31sB2OIYRVlxS
-         GAHw==
 Content-Disposition: inline
+In-Reply-To: <20181230202312.7239-1-slyfox@gentoo.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, Colin Ian King <colin.king@canonical.com>, Firoz Khan <firoz.khan@linaro.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Sergei Trofimovich <slyfox@gentoo.org>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---7AUc2qLy4jB3hD7Z
-Content-Type: text/plain; charset=us-ascii; format=flowed
+--/9DWx/yDrRhgMJTb
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hi Linus,
+Hi,
 
-Please pull a few small changes for alpha as well as the new system call table
-generation support from Firoz Khan.
+On Sun, Dec 30, 2018 at 08:23:12PM +0000, Sergei Trofimovich wrote:
+> Fix page fault handling code to fixup r16-r18 registers.
+> Before the patch code had off-by-two registers bug.
+> This bug caused overwriting of ps,pc,gp registers instead
+> of fixing intended r16,r17,r18 (see `struct pt_regs`).
+>=20
+> More details:
+>=20
+> Initially Dmitry noticed a kernel bug as a failure
+> on strace test suite. Test passes unmapped userspace
+> pointer to io_submit:
+>=20
+> ```c
+>     #include <err.h>
+>     #include <unistd.h>
+>     #include <sys/mman.h>
+>     #include <asm/unistd.h>
+>     int main(void)
+>     {
+>         unsigned long ctx =3D 0;
+>         if (syscall(__NR_io_setup, 1, &ctx))
+>             err(1, "io_setup");
+>         const size_t page_size =3D sysconf(_SC_PAGESIZE);
+>         const size_t size =3D page_size * 2;
+>         void *ptr =3D mmap(NULL, size, PROT_READ | PROT_WRITE,
+>                          MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+>         if (MAP_FAILED =3D=3D ptr)
+>             err(1, "mmap(%zu)", size);
+>         if (munmap(ptr, size))
+>             err(1, "munmap");
+>         syscall(__NR_io_submit, ctx, 1, ptr + page_size);
+>         syscall(__NR_io_destroy, ctx);
+>         return 0;
+>     }
+> ```
+>=20
+> Running this test causes kernel to crash when handling page fault:
+>=20
+> ```
+>     Unable to handle kernel paging request at virtual address fffffffffff=
+f9468
+>     CPU 3
+>     aio(26027): Oops 0
+>     pc =3D [<fffffc00004eddf8>]  ra =3D [<fffffc00004edd5c>]  ps =3D 0000=
+    Not tainted
+>     pc is at sys_io_submit+0x108/0x200
+>     ra is at sys_io_submit+0x6c/0x200
+>     v0 =3D fffffc00c58e6300  t0 =3D fffffffffffffff2  t1 =3D 000002000025=
+e000
+>     t2 =3D fffffc01f159fef8  t3 =3D fffffc0001009640  t4 =3D fffffc0000e0=
+f6e0
+>     t5 =3D 0000020001002e9e  t6 =3D 4c41564e49452031  t7 =3D fffffc01f159=
+c000
+>     s0 =3D 0000000000000002  s1 =3D 000002000025e000  s2 =3D 000000000000=
+0000
+>     s3 =3D 0000000000000000  s4 =3D 0000000000000000  s5 =3D ffffffffffff=
+fff2
+>     s6 =3D fffffc00c58e6300
+>     a0 =3D fffffc00c58e6300  a1 =3D 0000000000000000  a2 =3D 000002000025=
+e000
+>     a3 =3D 00000200001ac260  a4 =3D 00000200001ac1e8  a5 =3D 000000000000=
+0001
+>     t8 =3D 0000000000000008  t9 =3D 000000011f8bce30  t10=3D 00000200001a=
+c440
+>     t11=3D 0000000000000000  pv =3D fffffc00006fd320  at =3D 000000000000=
+0000
+>     gp =3D 0000000000000000  sp =3D 00000000265fd174
+>     Disabling lock debugging due to kernel taint
+>     Trace:
+>     [<fffffc0000311404>] entSys+0xa4/0xc0
+> ```
+>=20
+> Here `gp` has invalid value. `gp is s overwritten by a fixup for the
+> following page fault handler in `io_submit` syscall handler:
+>=20
+> ```
+>     __se_sys_io_submit
+>     ...
+>         ldq     a1,0(t1)
+>         bne     t0,4280 <__se_sys_io_submit+0x180>
+> ```
+>=20
+> After a page fault `t0` should contain -EFALUT and `a1` is 0.
+> Instead `gp` was overwritten in place of `a1`.
+>=20
+> This happens due to a off-by-two bug in `dpf_reg()` for `r16-r18`
+> (aka `a0-a2`).
+>=20
+> I think the bug went unnoticed for a long time as `gp` is one
+> of scratch registers. Any kernel function call would re-calculate `gp`.
 
-Thanks,
-Matt
+Thanks, that's impressive!
 
+According to the history git, the off-by-two bug was introduced in linux
+2.1.32 when trap_a{0,1,2} fields were inserted into struct pt_regs on
+alpha without an appropriate dpf_reg() update.
 
-The following changes since commit 9097a058d49e049925d8da72db07fffcee24efa0:
+Before 2.1.32 (back to 2.1.7 when dpf_reg() was introduced)
+there was another off-by-one bug in dpf_reg(): r16 was written
+into struct pt_regs.r17.
 
-  Merge branch 'i2c/for-current' of git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux (2018-12-20 14:49:56 -0800)
+In other words, the bug is quite old indeed.
 
-are available in the Git repository at:
+You can add
+Reported-and-reviewed-by: "Dmitry V. Levin" <ldv@altlinux.org>
+Cc: stable@vger.kernel.org # v2.1.32+
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+> CC: Dmitry V. Levin <gentoo.dl@altlinux.org>
 
-for you to fetch changes up to 1c3243f61fa7daea78de9866af2625f559ebf456:
+This is a technical address, please remove it.
 
-  alpha: Remove some unused variables (2018-12-21 16:02:03 -0500)
+> CC: Richard Henderson <rth@twiddle.net>
+> CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> CC: Matt Turner <mattst88@gmail.com>
+> CC: linux-alpha@vger.kernel.org
+> CC: linux-kernel@vger.kernel.org
+> Reported-by: Dmitry V. Levin
+> Bug: https://bugs.gentoo.org/672040
+> Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+> ---
+>  arch/alpha/mm/fault.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
+> index d73dc473fbb9..188fc9256baf 100644
+> --- a/arch/alpha/mm/fault.c
+> +++ b/arch/alpha/mm/fault.c
+> @@ -78,7 +78,7 @@ __load_new_mm_context(struct mm_struct *next_mm)
+>  /* Macro for exception fixup code to access integer registers.  */
+>  #define dpf_reg(r)							\
+>  	(((unsigned long *)regs)[(r) <=3D 8 ? (r) : (r) <=3D 15 ? (r)-16 :	\
+> -				 (r) <=3D 18 ? (r)+8 : (r)-10])
+> +				 (r) <=3D 18 ? (r)+10 : (r)-10])
+> =20
+>  asmlinkage void
+>  do_page_fault(unsigned long address, unsigned long mmcsr,
+> --=20
+> 2.20.1
 
-----------------------------------------------------------------
-Alexandre Belloni (1):
-      alpha: rtc: simplify alpha_rtc_init
+--=20
+ldv
 
-Colin Ian King (1):
-      alpha: fix spelling mistake QSD_PORT_ACTUVE -> QSD_PORT_ACTIVE
-
-Daniel Bristot de Oliveira (1):
-      alpha: Fix a typo on ptrace.h
-
-Firoz Khan (5):
-      alpha: move __IGNORE* entries to non uapi header
-      alpha: remove CONFIG_OSF4_COMPAT flag from syscall table
-      alpha: add __NR_syscalls along with NR_SYSCALLS
-      alpha: add system call table generation support
-      alpha: generate uapi header and syscall table header files
-
-Matt Turner (1):
-      alpha: Remove some unused variables
-
- arch/alpha/Makefile                      |   3 +
- arch/alpha/include/asm/Kbuild            |   2 +-
- arch/alpha/include/asm/unistd.h          |  23 +-
- arch/alpha/include/uapi/asm/Kbuild       |   1 +
- arch/alpha/include/uapi/asm/ptrace.h     |   2 +-
- arch/alpha/include/uapi/asm/unistd.h     | 484 +--------------------------
- arch/alpha/kernel/core_wildfire.c        |   2 +-
- arch/alpha/kernel/osf_sys.c              |  12 +-
- arch/alpha/kernel/rtc.c                  |  22 +-
- arch/alpha/kernel/syscalls/Makefile      |  38 +++
- arch/alpha/kernel/syscalls/syscall.tbl   | 453 ++++++++++++++++++++++++++
- arch/alpha/kernel/syscalls/syscallhdr.sh |  36 ++
- arch/alpha/kernel/syscalls/syscalltbl.sh |  32 ++
- arch/alpha/kernel/systbls.S              | 542 +------------------------------
- 14 files changed, 609 insertions(+), 1043 deletions(-)
- create mode 100644 arch/alpha/kernel/syscalls/Makefile
- create mode 100644 arch/alpha/kernel/syscalls/syscall.tbl
- create mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
- create mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
-
---7AUc2qLy4jB3hD7Z
+--/9DWx/yDrRhgMJTb
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
 
-iNUEABYKAH0WIQSzlptPDvl9ch5jjr2cglpmBdQLvgUCXClFz18UgAAAAAAuAChp
-c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjM5
-NjlCNEYwRUY5N0Q3MjFFNjM4RUJEOUM4MjVBNjYwNUQ0MEJCRQAKCRCcglpmBdQL
-voRIAQCKGxM8wqW+zJQi1JX6N2jNEhP2fPh4Nekf5rtwheTBdAD/ZIszO3xxsqzb
-khElq4SeErcRxYtJFZAXwAM2YMOdrwU=
-=xXfP
+iQIcBAEBCAAGBQJcKXSrAAoJEAVFT+BVnCUI0J8P/j/xCYbqq6l7cMnZ2IEIZ1hG
+fr5mV4+8JmL+gHoB3uGw3thvbk1sbXR22Dfn39VggnFgoAg9r0M9WAUXx7HJ0jwV
+s7zEHePg3UQDHvPb4DlMgVnHrPqZbBmLUvQEIIXTqCZ8z3mZB3ROD28kspRxLCX1
+xbvEpsvXdDfqAVhfAWSXA9NAEHRumDWPRsVaIcagrp9olwv6NI4A2vB5WRNcY2Bb
+858VReUuam2TGQ8OyR2VkgTaFZAG5LSGe3JfGBDNgNE0ceRHEK+YA788Yr5gm6tv
+Si+gyqFvjlmjK+CwGOES5jxIifG0a/pw4DfPec2u5mlGB7GjGVni+GGSbn+XD9pU
+FSpyyc7/MS77H1W2Lu/l2ysz33N2J3FAMA4E8rpQEKmFfI0iRStWdqkh+CGp5seB
+e2Iu/cJ3OuRMSG84S9Y2cJ7Fcs9vaKuJQ4gKO3y1y/F3U/g8ca8UbsuweWnLmY04
+DdF9TRf/HjXaD6eh6GfQo6QnxvBbLPc/jD/499BI9EyHa49v7hGQiKtpSP76Xo0T
+/ZycmcD+qeuXcKLuhpQyU64CpEbLZ10d4mbsajcne88Y7Ub0r/OChxBNB991XCT/
+GaM66D9jkNNmLiy2d3z8z2fX9KtdcuF+K46MUknJRvpc0J64m9ITiWkDiSPA3M24
+yEnKi9EuadAEuQRH5h/N
+=3Aks
 -----END PGP SIGNATURE-----
 
---7AUc2qLy4jB3hD7Z--
+--/9DWx/yDrRhgMJTb--
