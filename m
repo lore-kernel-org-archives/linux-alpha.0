@@ -1,34 +1,48 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [PULL] alpha.git
-Date: Mon, 31 Dec 2018 18:05:02 +0000
-Message-ID: <20181231180502.27307.1063.pr-tracker-bot@pdx-korg-gitolite-1.ci.codeaurora.org>
-References: <20181230222519.GA4195@p50>
+From: Firoz Khan <firoz.khan@linaro.org>
+Subject: [PATCH 0/2] alpha: Unify the system call scripts
+Date: Wed,  2 Jan 2019 20:36:57 +0530
+Message-ID: <1546441619-19977-1-git-send-email-firoz.khan@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1546279502;
-        bh=CPwgeh9by+9NlQ2bdqb8yZ9W1sc0TVlf/UTzabunRxc=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=rbs43b6XH2Nr2ConfvcfFc/9j2eIbgQ5u/7XiFyunr2qigjyPc5D9iXOkLFBpdoKH
-         b/sQZCpbeYcsPxfG8+XzETpvMQYIuY20NzbT/z4/6dS0fNeX7U8GE/LQbrOnVGGdpC
-         RvQx6yZTyPfGOb6tE8xS7Q561H3bUe7UMLd3QIQM=
-In-Reply-To: <20181230222519.GA4195@p50>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=l72O1yHKskevMuQqETV1P3+jNv442XJdoumK6XZxj5E=;
+        b=QOwnZd5wGvIU23cC4WECPVNiyx8pWr81BbfyBBugkfVbY7b05SUFMBfy12vaSliC+I
+         MXxWoYOGSX3zgRvHoI/iNrSUTH2nakX7KWltw1w6mLMkvfuKA6FOYD7u8Mk+lAU/ElCk
+         2YSynOQkYZtI+CQWKqvOOAWOkYlpJaURgitG0=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, Colin Ian King <colin.king@canonical.com>, Firoz Khan <firoz.khan@linaro.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Al Viro <viro@ZenIV.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, Kate Stewart <kstewart@linuxfoundation.org>
+Cc: y2038@lists.linaro.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, arnd@arndb.de, deepa.kernel@gmail.com, marcin.juszkiewicz@linaro.org, firoz.khan@linaro.org
 
-The pull request you sent on Sun, 30 Dec 2018 17:25:19 -0500:
+System call table generation support is provided for
+alpha, ia64, m68k, microblaze, mips, parisc, powerpc,
+sh, sparc and xtensa architectures. The implementat-
+ions are almost similar across all the above archte-
+ctures. In order to reduce the source code across all
+the above architectures, create common ".sh" files and
+keep it in the common directory, script/. This will 
+be a generic scripts which can use for all the above
+architectures.
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+This patch depends on;
+ https://lore.kernel.org/lkml/1546439331-18646-1-git-send-email-firoz.khan@linaro.org/
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f12e840c819bab42621685558a01d3f46ab9a226
+Firoz Khan (2):
+  alpha: remove nargs from __SYSCALL
+  alpha: generate uapi header and syscall table header files
 
-Thank you!
+ arch/alpha/kernel/syscalls/Makefile      | 11 ++++++++--
+ arch/alpha/kernel/syscalls/syscallhdr.sh | 36 --------------------------------
+ arch/alpha/kernel/syscalls/syscalltbl.sh | 32 ----------------------------
+ arch/alpha/kernel/systbls.S              |  2 +-
+ 4 files changed, 10 insertions(+), 71 deletions(-)
+ delete mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
+ delete mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+1.9.1
+
