@@ -1,59 +1,118 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH RFC 3/4] barriers: convert a control to a data dependency
-Date: Mon, 7 Jan 2019 11:22:23 -0500
-Message-ID: <20190107112007-mutt-send-email-mst@kernel.org>
-References: <20190102205715.14054-1-mst@redhat.com>
- <20190102205715.14054-4-mst@redhat.com>
- <86023cbe-d1ae-a0d6-7b75-26556f1a0c1f@redhat.com>
- <20190106231756-mutt-send-email-mst@kernel.org>
- <20190107094610.GA2861@worktop.programming.kicks-ass.net>
- <20190107082223-mutt-send-email-mst@kernel.org>
- <20190107155423.GM2218@hirez.programming.kicks-ass.net>
-Mime-Version: 1.0
+From: Andrew Murray <andrew.murray@arm.com>
+Subject: [PATCH v4 00/13] perf/core: Generalise event exclusion checking
+Date: Mon,  7 Jan 2019 16:27:17 +0000
+Message-ID: <1546878450-20341-1-git-send-email-andrew.murray@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190107155423.GM2218@hirez.programming.kicks-ass.net>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, Andrea Parri <andrea.parri@amarulasolutions.com>, Will Deacon <will.deacon@arm.com>, Boqun Feng <boqun.feng@gmail.com>, Nicholas Piggin <npiggin@gmail.com>, David Howells <dhowells@redhat.com>, Jade Alglave <j.alglave@ucl.ac.uk>, Luc Maranget <luc.maranget@inria.fr>, "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>, Akira Yokosawa <akiyks@gmail.com>, Daniel Lustig <dlustig@nvidia.com>, linux-arch@vger.kernel.org, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Arnd Bergmann <arnd@arnd>
+To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>
+Cc: x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
 
-On Mon, Jan 07, 2019 at 04:54:23PM +0100, Peter Zijlstra wrote:
-> On Mon, Jan 07, 2019 at 08:36:36AM -0500, Michael S. Tsirkin wrote:
-> > On Mon, Jan 07, 2019 at 10:46:10AM +0100, Peter Zijlstra wrote:
-> 
-> > > How about naming the thing: dependent_ptr() ? That is without any (r)mb
-> > > implications at all. The address dependency is strictly weaker than an
-> > > rmb in that it will only order the two loads in qestion and not, like
-> > > rmb, any prior to any later load.
-> > 
-> > So I'm fine with this as it's enough for virtio, but I would like to point out two things:
-> > 
-> > 1. E.g. on x86 both SMP and DMA variants can be NOPs but
-> > the madatory one can't, so assuming we do not want
-> > it to be stronger than rmp then either we want
-> > smp_dependent_ptr(), dma_dependent_ptr(), dependent_ptr()
-> > or we just will specify that dependent_ptr() works for
-> > both DMA and SMP.
-> 
-> The latter; the construct simply generates dependent loads. It is up to
-> the CPU as to what all that works for.
+Many PMU drivers do not have the capability to exclude counting events
+that occur in specific contexts such as idle, kernel, guest, etc. These
+drivers indicate this by returning an error in their event_init upon
+testing the events attribute flags.
 
-But not on intel right? On intel loads are ordered so it can be a nop.
+However this approach requires that each time a new event modifier is
+added to perf, all the perf drivers need to be modified to indicate that
+they don't support the attribute. This results in additional boiler-plate
+code common to many drivers that needs to be maintained. Furthermore the
+drivers are not consistent with regards to the error value they return
+when reporting unsupported attributes.
 
-> > 2. Down the road, someone might want to order a store after a load.
-> > Address dependency does that for us too. Assuming we make
-> > dependent_ptr a NOP on x86, we will want an mb variant
-> > which isn't a NOP on x86. Will we want to rename
-> > dependent_ptr to dependent_ptr_rmb at that point?
-> 
-> Not sure; what is the actual overhead of the construct on x86 vs the
-> NOP?
+This patchset allow PMU drivers to advertise their inability to exclude
+based on context via a new capability: PERF_PMU_CAP_NO_EXCLUDE. This
+allows the perf core to reject requests for exclusion events where there
+is no support in the PMU.
 
-I'll have to check. There's a pipeline stall almost for sure - that's
-why we put it there after all :).
+This is a functional change, in particular:
+
+ - Some drivers will now additionally (but correctly) report unsupported
+   exclusion flags. It's typical for existing userspace tools such as
+   perf to handle such errors by retrying the system call without the
+   unsupported flags.
+
+ - Drivers that do not support any exclusion that previously reported
+   -EPERM or -EOPNOTSUPP will now report -EINVAL - this is consistent
+   with the majority and results in userspace perf retrying without
+   exclusion.
+
+All drivers touched by this patchset have been compile tested.
+
+Changes from v3:
+
+ - Added PERF_PMU_CAP_NO_EXCLUDE to Cavium TX2 PMU driver
+
+Changes from v2:
+
+ - Invert logic from CAP_EXCLUDE to CAP_NO_EXCLUDE
+
+Changes from v1:
+
+ - Changed approach from explicitly rejecting events in unsupporting PMU
+   drivers to explicitly advertising a capability in PMU drivers that
+   do support exclusion events
+
+ - Added additional information to tools/perf/design.txt
+
+ - Rename event_has_exclude_flags to event_has_any_exclude_flag and
+   update commit log to reflect it's a function
+
+Andrew Murray (13):
+  perf/doc: update design.txt for exclude_{host|guest} flags
+  perf/core: add function to test for event exclusion flags
+  perf/core: add PERF_PMU_CAP_NO_EXCLUDE for exclusion incapable PMUs
+  alpha: perf/core: use PERF_PMU_CAP_NO_EXCLUDE
+  arm: perf: conditionally use PERF_PMU_CAP_NO_EXCLUDE
+  arm: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable PMUs
+  drivers/perf: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude
+    incapable PMUs
+  drivers/perf: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude
+    incapable PMUs
+  powerpc: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable
+    PMUs
+  x86: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable PMUs
+  x86: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable PMUs
+  perf/core: remove unused perf_flags
+  drivers/perf: use PERF_PMU_CAP_NO_EXCLUDE for Cavium TX2 PMU
+
+ arch/alpha/kernel/perf_event.c                |  7 +------
+ arch/arm/mach-imx/mmdc.c                      |  9 ++-------
+ arch/arm/mm/cache-l2x0-pmu.c                  |  9 +--------
+ arch/powerpc/perf/hv-24x7.c                   | 10 +---------
+ arch/powerpc/perf/hv-gpci.c                   | 10 +---------
+ arch/powerpc/perf/imc-pmu.c                   | 19 +------------------
+ arch/x86/events/amd/ibs.c                     | 13 +------------
+ arch/x86/events/amd/iommu.c                   |  6 +-----
+ arch/x86/events/amd/power.c                   | 10 ++--------
+ arch/x86/events/amd/uncore.c                  |  7 ++-----
+ arch/x86/events/intel/cstate.c                | 12 +++---------
+ arch/x86/events/intel/rapl.c                  |  9 ++-------
+ arch/x86/events/intel/uncore.c                |  9 +--------
+ arch/x86/events/intel/uncore_snb.c            |  9 ++-------
+ arch/x86/events/msr.c                         | 10 ++--------
+ drivers/perf/arm-cci.c                        | 10 +---------
+ drivers/perf/arm-ccn.c                        |  6 ++----
+ drivers/perf/arm_dsu_pmu.c                    |  9 ++-------
+ drivers/perf/arm_pmu.c                        | 15 +++++----------
+ drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c |  1 +
+ drivers/perf/hisilicon/hisi_uncore_hha_pmu.c  |  1 +
+ drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c  |  1 +
+ drivers/perf/hisilicon/hisi_uncore_pmu.c      |  9 ---------
+ drivers/perf/qcom_l2_pmu.c                    |  9 +--------
+ drivers/perf/qcom_l3_pmu.c                    |  8 +-------
+ drivers/perf/thunderx2_pmu.c                  | 10 +---------
+ drivers/perf/xgene_pmu.c                      |  6 +-----
+ include/linux/perf_event.h                    | 10 ++++++++++
+ include/uapi/linux/perf_event.h               |  2 --
+ kernel/events/core.c                          |  9 +++++++++
+ tools/include/uapi/linux/perf_event.h         |  2 --
+ tools/perf/design.txt                         |  4 ++++
+ 32 files changed, 63 insertions(+), 198 deletions(-)
 
 -- 
-MST
+2.7.4
+
