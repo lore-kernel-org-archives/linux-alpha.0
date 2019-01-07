@@ -1,55 +1,82 @@
-From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH v4 13/13] drivers/perf: use PERF_PMU_CAP_NO_EXCLUDE for Cavium TX2 PMU
-Date: Mon,  7 Jan 2019 16:27:30 +0000
-Message-ID: <1546878450-20341-14-git-send-email-andrew.murray@arm.com>
-References: <1546878450-20341-1-git-send-email-andrew.murray@arm.com>
+From: "Paul E. McKenney" <paulmck@linux.ibm.com>
+Subject: Re: [PATCH RFC 3/4] barriers: convert a control to a data dependency
+Date: Mon, 7 Jan 2019 11:02:36 -0800
+Message-ID: <20190107190236.GF1215@linux.ibm.com>
+References: <20190102205715.14054-1-mst@redhat.com>
+ <20190102205715.14054-4-mst@redhat.com>
+ <86023cbe-d1ae-a0d6-7b75-26556f1a0c1f@redhat.com>
+ <20190106231756-mutt-send-email-mst@kernel.org>
+ <20190107094610.GA2861@worktop.programming.kicks-ass.net>
+ <20190107082223-mutt-send-email-mst@kernel.org>
+Reply-To: paulmck@linux.ibm.com
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1546878450-20341-1-git-send-email-andrew.murray@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20190107082223-mutt-send-email-mst@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>
-Cc: x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, Andrea Parri <andrea.parri@amarulasolutions.com>, Will Deacon <will.deacon@arm.com>, Boqun Feng <boqun.feng@gmail.com>, Nicholas Piggin <npiggin@gmail.com>, David Howells <dhowells@redhat.com>, Jade Alglave <j.alglave@ucl.ac.uk>, Luc Maranget <luc.maranget@inria.fr>, Akira Yokosawa <akiyks@gmail.com>, Daniel Lustig <dlustig@nvidia.com>, linux-arch@vger.kernel.org, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Arnd Bergmann <arnd@arndb.de>
 
-The Cavium ThunderX2 UNCORE PMU driver doesn't support any event
-filtering. Let's advertise the PERF_PMU_CAP_NO_EXCLUDE capability to
-simplify the code.
+On Mon, Jan 07, 2019 at 08:36:36AM -0500, Michael S. Tsirkin wrote:
+> On Mon, Jan 07, 2019 at 10:46:10AM +0100, Peter Zijlstra wrote:
+> > On Sun, Jan 06, 2019 at 11:23:07PM -0500, Michael S. Tsirkin wrote:
+> > > On Mon, Jan 07, 2019 at 11:58:23AM +0800, Jason Wang wrote:
+> > > > On 2019/1/3 上午4:57, Michael S. Tsirkin wrote:
+> > 
+> > > > > +#if defined(COMPILER_HAS_OPTIMIZER_HIDE_VAR) && \
+> > > > > +	!defined(ARCH_NEEDS_READ_BARRIER_DEPENDS)
+> > > > > +
+> > > > > +#define dependent_ptr_mb(ptr, val) ({					\
+> > > > > +	long dependent_ptr_mb_val = (long)(val);			\
+> > > > > +	long dependent_ptr_mb_ptr = (long)(ptr) - dependent_ptr_mb_val;	\
+> > > > > +									\
+> > > > > +	BUILD_BUG_ON(sizeof(val) > sizeof(long));			\
+> > > > > +	OPTIMIZER_HIDE_VAR(dependent_ptr_mb_val);			\
+> > > > > +	(typeof(ptr))(dependent_ptr_mb_ptr + dependent_ptr_mb_val);	\
+> > > > > +})
+> > > > > +
+> > > > > +#else
+> > > > > +
+> > > > > +#define dependent_ptr_mb(ptr, val) ({ mb(); (ptr); })
+> > > > 
+> > > > 
+> > > > So for the example of patch 4, we'd better fall back to rmb() or need a
+> > > > dependent_ptr_rmb()?
+> > > > 
+> > > > Thanks
+> > > 
+> > > You mean for strongly ordered architectures like Intel?
+> > > Yes, maybe it makes sense to have dependent_ptr_smp_rmb,
+> > > dependent_ptr_dma_rmb and dependent_ptr_virt_rmb.
+> > > 
+> > > mb variant is unused right now so I'll remove it.
+> > 
+> > How about naming the thing: dependent_ptr() ? That is without any (r)mb
+> > implications at all. The address dependency is strictly weaker than an
+> > rmb in that it will only order the two loads in qestion and not, like
+> > rmb, any prior to any later load.
+> 
+> So I'm fine with this as it's enough for virtio, but I would like to point out two things:
+> 
+> 1. E.g. on x86 both SMP and DMA variants can be NOPs but
+> the madatory one can't, so assuming we do not want
+> it to be stronger than rmp then either we want
+> smp_dependent_ptr(), dma_dependent_ptr(), dependent_ptr()
+> or we just will specify that dependent_ptr() works for
+> both DMA and SMP.
+> 
+> 2. Down the road, someone might want to order a store after a load.
+> Address dependency does that for us too. Assuming we make
+> dependent_ptr a NOP on x86, we will want an mb variant
+> which isn't a NOP on x86. Will we want to rename
+> dependent_ptr to dependent_ptr_rmb at that point?
 
-Signed-off-by: Andrew Murray <andrew.murray@arm.com>
----
- drivers/perf/thunderx2_pmu.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+But x86 preserves store-after-load orderings anyway, and even Alpha
+respects ordering from loads to dependent stores.  So what am I missing
+here?
 
-diff --git a/drivers/perf/thunderx2_pmu.c b/drivers/perf/thunderx2_pmu.c
-index c9a1701..43d76c8 100644
---- a/drivers/perf/thunderx2_pmu.c
-+++ b/drivers/perf/thunderx2_pmu.c
-@@ -424,15 +424,6 @@ static int tx2_uncore_event_init(struct perf_event *event)
- 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
- 		return -EINVAL;
- 
--	/* We have no filtering of any kind */
--	if (event->attr.exclude_user	||
--	    event->attr.exclude_kernel	||
--	    event->attr.exclude_hv	||
--	    event->attr.exclude_idle	||
--	    event->attr.exclude_host	||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	if (event->cpu < 0)
- 		return -EINVAL;
- 
-@@ -572,6 +563,7 @@ static int tx2_uncore_pmu_register(
- 		.start		= tx2_uncore_event_start,
- 		.stop		= tx2_uncore_event_stop,
- 		.read		= tx2_uncore_event_read,
-+		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
- 	};
- 
- 	tx2_pmu->pmu.name = devm_kasprintf(dev, GFP_KERNEL,
--- 
-2.7.4
+							Thanx, Paul
 
