@@ -1,54 +1,83 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v4 11/13] x86: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for
- exclude incapable PMUs
-Date: Tue, 8 Jan 2019 11:49:40 +0100
-Message-ID: <20190108104940.GE6808@hirez.programming.kicks-ass.net>
+From: Andrew Murray <andrew.murray@arm.com>
+Subject: Re: [PATCH v4 05/13] arm: perf: conditionally use
+ PERF_PMU_CAP_NO_EXCLUDE
+Date: Tue, 8 Jan 2019 13:07:41 +0000
+Message-ID: <20190108130740.GC56789@e119886-lin.cambridge.arm.com>
 References: <1546878450-20341-1-git-send-email-andrew.murray@arm.com>
- <1546878450-20341-12-git-send-email-andrew.murray@arm.com>
+ <1546878450-20341-6-git-send-email-andrew.murray@arm.com>
+ <20190108102802.GC6808@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190108102802.GC6808@hirez.programming.kicks-ass.net>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=+qlKHdplP5fDdj0EMCgnsNMKi1R62iq8ijuX+R8IM+U=; b=G/4bjmJHvsJ+CH
-	igZdVtdoR90wHszqCUVQqxe81Nonrf71iepqbfxm0TedsRvhZ/E9dnbcKVWI8ehk4InXlJDHHOpyQ
-	SsCtuI9jWUlzTPXRT1JeVuPi7FYlR0LHzaE9GMlfZwHuRGYdwNGkVGFNc6IM+R8JERZH3kHG6YzpU
-	M4l7GXi6zdjM6Vrib9MU2k0ZGQeYX87By4G24RkeK2teN8C0nuGDyUhf/+mCFBf4h+8ZqnFO8Wrvh
-	u6fPe3e+Gh12a4jajh15mO2ypPY0cD/+oS1bn7HcUMrQpfxcbsszHee3y02QrUx0itYl2byoDWmWb
-	+2/jT9GIOQA6V5IIjZIA==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
- List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=OnwtPs5be4ZWFbK8e++4kO+bbmnQAgKMSMIUXwvqZ74=; b=uVnlZiqDJqSeyKFfOli3GPUc1
- iEqVHqOPhWABh6R2Foby075U7DYteAbyFJ0uaSp7vffyX8YZvXaEIMzImbXX5B5CgvBKZLD7B7bJB
- ISqzcSH1vIINbEABvu2tkGXRioetvKjgouy7mUs3dvf0nGtU/QdaQyNJrrUSteo/zYJ70/BgVxbaL
- CHZdEO81Te7so71ZiMNq1OfG7hxdHp9T8D/cHumpAeaq5GCCiB4njv0lwwz9a6j0PFER2rofTxLDt
- O6uVfVvU0HWe6zjKwp/+yUfRjcZ9oq/LUtbxhF5CSHNonNIQdwx8RcMyEn20an2YufILOCtRtM7nT
- m0v42t79g==;
-Content-Disposition: inline
-In-Reply-To: <1546878450-20341-12-git-send-email-andrew.murray@arm.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andrew Murray <andrew.murray@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@samba.org>, Shawn Guo <shawnguo@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, suzuki.poulose@arm.com, Sascha Hauer <s.hauer@pengutronix.de>, Arnaldo Carvalho de Melo <acme@kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, robin.murphy@arm.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Borislav Petkov <bp@alien8.de>, linuxppc-dev@lists.ozlabs.org
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
 
-On Mon, Jan 07, 2019 at 04:27:28PM +0000, Andrew Murray wrote:
+On Tue, Jan 08, 2019 at 11:28:02AM +0100, Peter Zijlstra wrote:
+> On Mon, Jan 07, 2019 at 04:27:22PM +0000, Andrew Murray wrote:
+> > @@ -393,9 +386,8 @@ __hw_perf_event_init(struct perf_event *event)
+> >  	/*
+> >  	 * Check whether we need to exclude the counter from certain modes.
+> >  	 */
+> > +	if (armpmu->set_event_filter &&
+> > +	    armpmu->set_event_filter(hwc, &event->attr)) {
+> >  		pr_debug("ARM performance counters do not support "
+> >  			 "mode exclusion\n");
+> >  		return -EOPNOTSUPP;
+> 
+> This then requires all set_event_filter() implementations to check all
+> the various exclude options;
 
-This patch has the exact same subject as the previous one.. that seems
-sub-optimal.
+Yes but this isn't a new requirement, this hunk uses the absence of
+set_event_filter to blanket indicate that no exclusion flags are supported.
+
+
+> also, set_event_filter() failing then
+> returns with -EOPNOTSUPP instead of the -EINVAL the CAP_NO_EXCLUDE
+> generates, which is again inconsitent.
+
+Yes, it's not ideal - but a step in the right direction. I wanted to limit
+user visible changes as much as possible, where I've identified them I've
+noted it in the commit log.
+
+> 
+> If I look at (the very first git-grep found me)
+> armv7pmu_set_event_filter(), then I find it returning -EPERM (again
+> inconsistent but irrelevant because the actual value is not preserved)
+> for exclude_idle.
+> 
+> But it doesn't seem to check exclude_host at all for example.
+
+Yes I found lots of examples like this across the tree whilst doing this
+work. However I decided to initially start with simply removing duplicated
+code as a result of adding this flag and attempting to preserve existing
+functionality. I thought that if I add missing checks then the patchset
+will get much bigger and be harder to merge. I would like to do this though
+as another non-cross-arch series.
+
+Can we limit this patch series to the minimal changes required to fully
+use PERF_PMU_CAP_NO_EXCLUDE and then attempt to fix these existing problems
+in subsequent patch sets?
+
+Thanks,
+
+Andrew Murray
+
+> 
+> > @@ -867,6 +859,9 @@ int armpmu_register(struct arm_pmu *pmu)
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > +	if (!pmu->set_event_filter)
+> > +		pmu->pmu.capabilities |= PERF_PMU_CAP_NO_EXCLUDE;
+> > +
+> >  	ret = perf_pmu_register(&pmu->pmu, pmu->name, -1);
+> >  	if (ret)
+> >  		goto out_destroy;
+> > -- 
+> > 2.7.4
+> > 
