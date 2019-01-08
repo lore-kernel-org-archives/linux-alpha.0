@@ -1,56 +1,67 @@
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH v3 6/8] socket: Add SO_TIMESTAMP[NS]_NEW
-Date: Tue, 8 Jan 2019 09:03:04 -0500
-Message-ID: <CAF=yD-L_KbVEbMaY6-3uA4Sp7gDMPEcF7+74J4TzukXb33t55w@mail.gmail.com>
-References: <20190108032657.8331-1-deepa.kernel@gmail.com> <20190108032657.8331-7-deepa.kernel@gmail.com>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v4 05/13] arm: perf: conditionally use
+ PERF_PMU_CAP_NO_EXCLUDE
+Date: Tue, 8 Jan 2019 15:43:50 +0100
+Message-ID: <20190108144350.GA30894@hirez.programming.kicks-ass.net>
+References: <1546878450-20341-1-git-send-email-andrew.murray@arm.com>
+ <1546878450-20341-6-git-send-email-andrew.murray@arm.com>
+ <20190108102802.GC6808@hirez.programming.kicks-ass.net>
+ <20190108130740.GC56789@e119886-lin.cambridge.arm.com>
+ <20190108131031.GG6808@hirez.programming.kicks-ass.net>
+ <20190108131357.GF56789@e119886-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2u1e3R9FKHkYT4sG/wFzD0rdqI12hDyfz5KaMxjR9iM=;
-        b=mcbxLlYku3eSZzrS/PjlTJ61jmlRNiW3xrwNwVihU0gjdoTaCxClHPWdPw06gGNCst
-         pgiUoNjbMhcqYifr0k1Q7EDqZZyEJHnH5ftiIWC8OwymLkxpWEblgvN+zwwnQcr60IgD
-         uJ0zvHlCpfXHyxppAOGFysgq2mlrcUYF+RnLeXvfb2Tui4pAFQtEng7gFFwIf1ZBoovJ
-         /z09MSZZUKdR4QZHmyDIJL8Aitsf0Tyk0Rf+zsu7vfhxpNC2Ywvj4EsCxRJxJ1N1wDy3
-         ErupAlDDHue0uvy7bCVWuLyfuCwOMH/FfEkf2hC28eY73vrqao9OQmBoDHt46CQ//U/U
-         7ecA==
-In-Reply-To: <20190108032657.8331-7-deepa.kernel@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Deepa Dinamani <deepa.kernel@gmail.com>
-Cc: David Miller <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>, Network Development <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, "James E.J. Bottomley" <jejb@parisc-linux.org>, Ralf Baechle <ralf@linux-mips.org>, rth@twiddle.net, linux-alpha@vger.kernel.org, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-rdma@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=ZgmbKUqNWa7CSR+P/MlN3MW3vqL2lZ7f2v/MDnPAVVs=; b=u+gjmXF3zIm2bv
+	8eoEINClexcbTLO4EHRLRzMTQN4SZWk1rji+lwsV/myYXHCTdGTY7/St34cOkVIUOK05P6zj6/V/6
+	HtcglurbRcIjwGy4NF5yceeRqWuoclA0QfQBcM2IVyUazHE2cE/LBTCKxLiMKdSfzytDSO9FZwv4j
+	FiGBJWrx3q6fMBFu8WhgJAZ3BzbBJMO8wkz7BcVrRF0pAN+pEkcu3PmKMm1YBteIIgKGlalj5tvYG
+	RJ3Lj19OHfR4wR5RaxNqUg2hKsX3m+ByhXXIIcNnFQYQu+0lF+e1atwyn/8S7gqwatxhs5MiExS+Z
+	ZROverRlUn1t5dTU0OLw==;
+Content-Disposition: inline
+In-Reply-To: <20190108131357.GF56789@e119886-lin.cambridge.arm.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andrew Murray <andrew.murray@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@samba.org>, Shawn Guo <shawnguo@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, suzuki.poulose@arm.com, Sascha Hauer <s.hauer@pengutronix.de>, Arnaldo Carvalho de Melo <acme@kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, robin.murphy@arm.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Borislav Petkov <bp@alien8.de>, linuxppc-dev@lists.ozlabs.org
 
-On Mon, Jan 7, 2019 at 10:29 PM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
->
-> Add SO_TIMESTAMP_NEW and SO_TIMESTAMPNS_NEW variants of
-> socket timestamp options.
-> These are the y2038 safe versions of the SO_TIMESTAMP_OLD
-> and SO_TIMESTAMPNS_OLD for all architectures.
->
-> Note that the format of scm_timestamping.ts[0] is not changed
-> in this patch.
->
-> Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
-> Cc: jejb@parisc-linux.org
-> Cc: ralf@linux-mips.org
-> Cc: rth@twiddle.net
-> Cc: linux-alpha@vger.kernel.org
-> Cc: linux-mips@linux-mips.org
-> Cc: linux-parisc@vger.kernel.org
-> Cc: linux-rdma@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: sparclinux@vger.kernel.org
+On Tue, Jan 08, 2019 at 01:13:57PM +0000, Andrew Murray wrote:
+> On Tue, Jan 08, 2019 at 02:10:31PM +0100, Peter Zijlstra wrote:
+> > On Tue, Jan 08, 2019 at 01:07:41PM +0000, Andrew Murray wrote:
+> > 
+> > > Yes I found lots of examples like this across the tree whilst doing this
+> > > work. However I decided to initially start with simply removing duplicated
+> > > code as a result of adding this flag and attempting to preserve existing
+> > > functionality. I thought that if I add missing checks then the patchset
+> > > will get much bigger and be harder to merge. I would like to do this though
+> > > as another non-cross-arch series.
+> > > 
+> > > Can we limit this patch series to the minimal changes required to fully
+> > > use PERF_PMU_CAP_NO_EXCLUDE and then attempt to fix these existing problems
+> > > in subsequent patch sets?
+> > 
+> > Ok, but it would've been nice to see that mentioned somewhere.
+> 
+> I'll update the cover leter on any next revision. I'll try to be clearer next
+> time with my intentions.
 
-> @@ -1864,20 +1864,39 @@ static void tcp_update_recv_tstamps(struct sk_buff *skb,
->  static void tcp_recv_timestamp(struct msghdr *msg, const struct sock *sk,
->                                struct scm_timestamping *tss)
->  {
-> -       struct __kernel_old_timeval tv;
->         bool has_timestamping = false;
-> +       int new_tstamp = sock_flag(sk, SOCK_TSTAMP_NEW);
+Could you maybe include it in the relevant patches too; like for example
+the ARM one where we rely on set_event_filter() to DTRT.
 
-nit: move above has_timestamping to maintain reverse christmas tree ordering
+So with the changelogs and subjects fixed I can take these patches and
+then you can get on with cleaning up the individual drivers.
