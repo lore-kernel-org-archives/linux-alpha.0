@@ -1,41 +1,80 @@
-From: Andrew Murray <andrew.murray@arm.com>
-Subject: Re: [PATCH v4 05/13] arm: perf: conditionally use
- PERF_PMU_CAP_NO_EXCLUDE
-Date: Tue, 8 Jan 2019 13:13:57 +0000
-Message-ID: <20190108131357.GF56789@e119886-lin.cambridge.arm.com>
-References: <1546878450-20341-1-git-send-email-andrew.murray@arm.com>
- <1546878450-20341-6-git-send-email-andrew.murray@arm.com>
- <20190108102802.GC6808@hirez.programming.kicks-ass.net>
- <20190108130740.GC56789@e119886-lin.cambridge.arm.com>
- <20190108131031.GG6808@hirez.programming.kicks-ass.net>
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH v3 0/8] net: y2038-safe socket timestamps
+Date: Tue, 8 Jan 2019 08:37:07 -0500
+Message-ID: <CAF=yD-JuXHnp-5TvPSq87PDvHD1hkrUEWHQ9Uxwhbsd08vszHw@mail.gmail.com>
+References: <20190108032657.8331-1-deepa.kernel@gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190108131031.GG6808@hirez.programming.kicks-ass.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6nXKYaCNiwgzlBrCj/v1vQjps+Q5gGfbpQOOfB1h0CI=;
+        b=fQJq3kfazkRaVcWp/jPyOlyKRy5/ek8ymQOV+bF2CWzmEjQUp053C+Rgi/qmTgxPb7
+         2AiGxr0nOB+Osg6yaSWO3EoPyW8btVIJDxvZFk211tKdiHLhXICxYKURjEUDjgR7c3BE
+         7Pp4d7Xkb5SUpz066jZZ2OK6w4qtdfNP1XPUF6fdNqJaFMdtIPVyBBJnj6IhiQy0AA0J
+         LgUa75e0kK/DymYavwYIg7nKGj40aqv0rcaDgdYAQ4yzXboZqTFPtvglQgYIV330GHm3
+         h8ksU4gM3pO1YNzJtUYRdWDMnVwaJFqz2iTO6DL8UfDPpefn0sVNG2l24PFVvS8EM4NK
+         ChUw==
+In-Reply-To: <20190108032657.8331-1-deepa.kernel@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
+To: Deepa Dinamani <deepa.kernel@gmail.com>
+Cc: David Miller <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>, Network Development <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Chris Zankel <chris@zankel.net>, Helge Deller <deller@gmx.de>, David Howells <dhowells@redhat.com>, fenghua.yu@intel.com, isdn@linux-pingi.de, "James E.J. Bottomley" <jejb@parisc-linux.org>, linux-afs@lists.infradead.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, "open list:RALINK MIPS ARCHITECTURE" <linux-mips@linux-mips.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-rdma@vger.kernel.org, linux-s390 <linux-s390@vger.kernel.org>, linux-xtensa@linux-xtensa.org, Ralf Baechle <ralf@linux-mips.org>, rth@twiddle.net, sch
 
-On Tue, Jan 08, 2019 at 02:10:31PM +0100, Peter Zijlstra wrote:
-> On Tue, Jan 08, 2019 at 01:07:41PM +0000, Andrew Murray wrote:
-> 
-> > Yes I found lots of examples like this across the tree whilst doing this
-> > work. However I decided to initially start with simply removing duplicated
-> > code as a result of adding this flag and attempting to preserve existing
-> > functionality. I thought that if I add missing checks then the patchset
-> > will get much bigger and be harder to merge. I would like to do this though
-> > as another non-cross-arch series.
-> > 
-> > Can we limit this patch series to the minimal changes required to fully
-> > use PERF_PMU_CAP_NO_EXCLUDE and then attempt to fix these existing problems
-> > in subsequent patch sets?
-> 
-> Ok, but it would've been nice to see that mentioned somewhere.
+On Mon, Jan 7, 2019 at 10:29 PM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
+>
+> The series introduces new socket timestamps that are
+> y2038 safe.
+>
+> The time data types used for the existing socket timestamp
+> options: SO_TIMESTAMP, SO_TIMESTAMPNS and SO_TIMESTAMPING
+> are not y2038 safe. The series introduces SO_TIMESTAMP_NEW,
+> SO_TIMESTAMPNS_NEW and SO_TIMESTAMPING_NEW to replace these.
+> These new timestamps can be used on all architectures.
+>
+> The alternative considered was to extend the sys_setsockopt()
+> by using the flags. We did not receive any strong opinions about
+> either of the approaches. Hence, this was chosen, as glibc folks
+> preferred this.
+>
+> The series does not deal with updating the internal kernel socket
+> calls like rxrpc to make them y2038 safe. This will be dealt
+> with separately.
+>
+> Note that the timestamps behavior already does not match the
+> man page specific behavior:
+> SIOCGSTAMP
+>     This ioctl should only be used if the socket option SO_TIMESTAMP
+>         is not set on the socket. Otherwise, it returns the timestamp of
+>         the last packet that was received while SO_TIMESTAMP was not set,
+>         or it fails if no such packet has been received,
+>         (i.e., ioctl(2) returns -1 with errno set to ENOENT).
+>
+> The recommendation is to update the man page to remove the above statement.
+>
+> The overview of the series is as below:
+> 1. Delete asm specific socket.h when possible.
+> 2. Support SO/SCM_TIMESTAMP* options only in userspace.
+> 3. Rename current SO/SCM_TIMESTAMP* to SO/SCM_TIMESTAMP*_OLD.
+> 3. Alter socket options so that SOCK_RCVTSTAMPNS does
+>    not rely on SOCK_RCVTSTAMP.
+> 4. Introduce y2038 safe types for socket timestamp.
+> 5. Introduce new y2038 safe socket options SO/SCM_TIMESTAMP*_NEW.
+>
+> Changes since v2:
+> * Removed extra functions to reduce diff churn as per code review
 
-I'll update the cover leter on any next revision. I'll try to be clearer next
-time with my intentions.
+Thanks, Deepa. This set looks great to me.
 
-Andrew Murray
+One issue, it does not apply cleanly to current davem-net-next/master
+for me. A conflict on patch 7. It does apply cleanly on davem-net
+master. Please rebase and also send with [PATCH net-next].
+
+Perhaps also run the selftests in
+tools/testing/selftests/networking/timestamping/txtimestamp.sh, just
+to be sure.
+
+Since you have a to resend anyway, a few minor nits inline, as well.
