@@ -1,101 +1,145 @@
-From: "Paul E. McKenney" <paulmck@linux.ibm.com>
-Subject: Re: [PATCH RFC 3/4] barriers: convert a control to a data dependency
-Date: Mon, 7 Jan 2019 11:25:34 -0800
-Message-ID: <20190107192534.GG1215@linux.ibm.com>
-References: <20190102205715.14054-1-mst@redhat.com>
- <20190102205715.14054-4-mst@redhat.com>
- <86023cbe-d1ae-a0d6-7b75-26556f1a0c1f@redhat.com>
- <20190106231756-mutt-send-email-mst@kernel.org>
- <20190107094610.GA2861@worktop.programming.kicks-ass.net>
- <20190107082223-mutt-send-email-mst@kernel.org>
- <20190107190236.GF1215@linux.ibm.com>
- <20190107140447-mutt-send-email-mst@kernel.org>
-Reply-To: paulmck@linux.ibm.com
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190107140447-mutt-send-email-mst@kernel.org>
-Sender: netdev-owner@vger.kernel.org
+From: Deepa Dinamani <deepa.kernel@gmail.com>
+Subject: [PATCH v3 0/8] net: y2038-safe socket timestamps
+Date: Mon,  7 Jan 2019 19:26:49 -0800
+Message-ID: <20190108032657.8331-1-deepa.kernel@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=53eG1MihA10uvQoTcq8xNmo0jwEZfSdP9MAYM6dnCwE=;
+        b=ae4bfRVYI1XkhhEGb/HrAWI7BnG1FSa4PMhM2M0T/1PWxR64gSM08cCTUbVBE0NJZc
+         BBzFzIQPa6ILqK5LOD4rhZEUZoQavohnw4Z3XqkABBHAoueWVWckWPd0qxLoXo2YXsig
+         3D9LoMEe6oaI8A9JyO6ZDFZjKOA/SOOBimsnVMjr+1wed8pUyjLF11SlNbJVeMyDOsgN
+         c3VRAaX3nBTNW4wnvJWwzCPTIduDwxiximYvoc7UbHXZhON+oC7hrc2LEtLazTzxInS3
+         zGTHzD4fc8jrpW+vcuEQmTqK66+djxBj5vFobrxi5oZKD1zGuwVIDE6ZdvAk3jqY+FOo
+         gAvg==
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, Andrea Parri <andrea.parri@amarulasolutions.com>, Will Deacon <will.deacon@arm.com>, Boqun Feng <boqun.feng@gmail.com>, Nicholas Piggin <npiggin@gmail.com>, David Howells <dhowells@redhat.com>, Jade Alglave <j.alglave@ucl.ac.uk>, Luc Maranget <luc.maranget@inria.fr>, Akira Yokosawa <akiyks@gmail.com>, Daniel Lustig <dlustig@nvidia.com>, linux-arch@vger.kernel.org, netdev@vger.kernel.org, virtualization@lists.linux-foundation.org, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Arnd Bergmann <arnd@arndb.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: davem@davemloft.net, linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org, arnd@arndb.de, y2038@lists.linaro.org, chris@zankel.net, deller@gmx.de, dhowells@redhat.com, fenghua.yu@intel.com, isdn@linux-pingi.de, jejb@parisc-linux.org, linux-afs@lists.infradead.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org, linux-xtensa@linux-xtensa.org, ralf@linux-mips.org, rth@twiddle.net, schwidefsky@de.ibm.com, sparclinux@vger.kernel.org, tglx@linutronix.de, ubraun@linux.ibm.com
 
-On Mon, Jan 07, 2019 at 02:13:29PM -0500, Michael S. Tsirkin wrote:
-> On Mon, Jan 07, 2019 at 11:02:36AM -0800, Paul E. McKenney wrote:
-> > On Mon, Jan 07, 2019 at 08:36:36AM -0500, Michael S. Tsirkin wrote:
-> > > On Mon, Jan 07, 2019 at 10:46:10AM +0100, Peter Zijlstra wrote:
-> > > > On Sun, Jan 06, 2019 at 11:23:07PM -0500, Michael S. Tsirkin wrote:
-> > > > > On Mon, Jan 07, 2019 at 11:58:23AM +0800, Jason Wang wrote:
-> > > > > > On 2019/1/3 上午4:57, Michael S. Tsirkin wrote:
-> > > > 
-> > > > > > > +#if defined(COMPILER_HAS_OPTIMIZER_HIDE_VAR) && \
-> > > > > > > +	!defined(ARCH_NEEDS_READ_BARRIER_DEPENDS)
-> > > > > > > +
-> > > > > > > +#define dependent_ptr_mb(ptr, val) ({					\
-> > > > > > > +	long dependent_ptr_mb_val = (long)(val);			\
-> > > > > > > +	long dependent_ptr_mb_ptr = (long)(ptr) - dependent_ptr_mb_val;	\
-> > > > > > > +									\
-> > > > > > > +	BUILD_BUG_ON(sizeof(val) > sizeof(long));			\
-> > > > > > > +	OPTIMIZER_HIDE_VAR(dependent_ptr_mb_val);			\
-> > > > > > > +	(typeof(ptr))(dependent_ptr_mb_ptr + dependent_ptr_mb_val);	\
-> > > > > > > +})
-> > > > > > > +
-> > > > > > > +#else
-> > > > > > > +
-> > > > > > > +#define dependent_ptr_mb(ptr, val) ({ mb(); (ptr); })
-> > > > > > 
-> > > > > > 
-> > > > > > So for the example of patch 4, we'd better fall back to rmb() or need a
-> > > > > > dependent_ptr_rmb()?
-> > > > > > 
-> > > > > > Thanks
-> > > > > 
-> > > > > You mean for strongly ordered architectures like Intel?
-> > > > > Yes, maybe it makes sense to have dependent_ptr_smp_rmb,
-> > > > > dependent_ptr_dma_rmb and dependent_ptr_virt_rmb.
-> > > > > 
-> > > > > mb variant is unused right now so I'll remove it.
-> > > > 
-> > > > How about naming the thing: dependent_ptr() ? That is without any (r)mb
-> > > > implications at all. The address dependency is strictly weaker than an
-> > > > rmb in that it will only order the two loads in qestion and not, like
-> > > > rmb, any prior to any later load.
-> > > 
-> > > So I'm fine with this as it's enough for virtio, but I would like to point out two things:
-> > > 
-> > > 1. E.g. on x86 both SMP and DMA variants can be NOPs but
-> > > the madatory one can't, so assuming we do not want
-> > > it to be stronger than rmp then either we want
-> > > smp_dependent_ptr(), dma_dependent_ptr(), dependent_ptr()
-> > > or we just will specify that dependent_ptr() works for
-> > > both DMA and SMP.
-> > > 
-> > > 2. Down the road, someone might want to order a store after a load.
-> > > Address dependency does that for us too. Assuming we make
-> > > dependent_ptr a NOP on x86, we will want an mb variant
-> > > which isn't a NOP on x86. Will we want to rename
-> > > dependent_ptr to dependent_ptr_rmb at that point?
-> > 
-> > But x86 preserves store-after-load orderings anyway, and even Alpha
-> > respects ordering from loads to dependent stores.  So what am I missing
-> > here?
-> > 
-> > 							Thanx, Paul
-> 
-> Oh you are right. Stores are not reordered with older loads on x86.
-> 
-> So point 2 is moot. Sorry about the noise.
-> 
-> I guess at this point the only sticking point is the ECC compiler.
-> I'm inclined to stick an mb() there, seeing as it doesn't even
-> have spectre protection enabled. Slow but safe.
+The series introduces new socket timestamps that are
+y2038 safe.
 
-Well, there is a mention of DMA above, which on some systems throws in
-a wild card.  I would certainly hope that DMA would integrate nicely
-with the cache-coherence protocols these days, unlike 25 years ago,
-but who knows?
+The time data types used for the existing socket timestamp
+options: SO_TIMESTAMP, SO_TIMESTAMPNS and SO_TIMESTAMPING
+are not y2038 safe. The series introduces SO_TIMESTAMP_NEW,
+SO_TIMESTAMPNS_NEW and SO_TIMESTAMPING_NEW to replace these.
+These new timestamps can be used on all architectures.
 
-							Thanx, Paul
+The alternative considered was to extend the sys_setsockopt()
+by using the flags. We did not receive any strong opinions about
+either of the approaches. Hence, this was chosen, as glibc folks
+preferred this.
 
+The series does not deal with updating the internal kernel socket
+calls like rxrpc to make them y2038 safe. This will be dealt
+with separately.
+
+Note that the timestamps behavior already does not match the
+man page specific behavior:
+SIOCGSTAMP
+    This ioctl should only be used if the socket option SO_TIMESTAMP
+	is not set on the socket. Otherwise, it returns the timestamp of
+	the last packet that was received while SO_TIMESTAMP was not set,
+	or it fails if no such packet has been received,
+	(i.e., ioctl(2) returns -1 with errno set to ENOENT).
+	
+The recommendation is to update the man page to remove the above statement.
+
+The overview of the series is as below:
+1. Delete asm specific socket.h when possible.
+2. Support SO/SCM_TIMESTAMP* options only in userspace.
+3. Rename current SO/SCM_TIMESTAMP* to SO/SCM_TIMESTAMP*_OLD.
+3. Alter socket options so that SOCK_RCVTSTAMPNS does
+   not rely on SOCK_RCVTSTAMP.
+4. Introduce y2038 safe types for socket timestamp.
+5. Introduce new y2038 safe socket options SO/SCM_TIMESTAMP*_NEW.
+
+Changes since v2:
+* Removed extra functions to reduce diff churn as per code review
+
+Changes since v1:
+* Dropped the change to disentangle sock flags
+* Renamed sock_timeval to __kernel_sock_timeval
+* Updated a few comments
+* Added documentation changes
+
+Deepa Dinamani (8):
+  arch: Use asm-generic/socket.h when possible
+  sockopt: Rename SO_TIMESTAMP* to SO_TIMESTAMP*_OLD
+  arch: sparc: Override struct __kernel_old_timeval
+  socket: Use old_timeval types for socket timestamps
+  socket: Add struct __kernel_sock_timeval
+  socket: Add SO_TIMESTAMP[NS]_NEW
+  socket: Add SO_TIMESTAMPING_NEW
+  socket: Update timestamping Documentation
+
+ Documentation/networking/timestamping.txt |  43 +++++++-
+ arch/alpha/include/uapi/asm/socket.h      |  35 +++++--
+ arch/ia64/include/uapi/asm/Kbuild         |   1 +
+ arch/ia64/include/uapi/asm/socket.h       | 120 ---------------------
+ arch/mips/include/uapi/asm/socket.h       |  34 ++++--
+ arch/parisc/include/uapi/asm/socket.h     |  34 ++++--
+ arch/s390/include/uapi/asm/Kbuild         |   1 +
+ arch/s390/include/uapi/asm/socket.h       | 117 ---------------------
+ arch/sparc/include/uapi/asm/posix_types.h |  10 ++
+ arch/sparc/include/uapi/asm/socket.h      |  36 +++++--
+ arch/x86/include/uapi/asm/Kbuild          |   1 +
+ arch/x86/include/uapi/asm/socket.h        |   1 -
+ arch/xtensa/include/asm/Kbuild            |   1 +
+ arch/xtensa/include/uapi/asm/Kbuild       |   1 +
+ arch/xtensa/include/uapi/asm/socket.h     | 122 ----------------------
+ drivers/isdn/mISDN/socket.c               |   2 +-
+ include/linux/skbuff.h                    |  24 ++++-
+ include/linux/socket.h                    |   8 ++
+ include/net/sock.h                        |   1 +
+ include/uapi/asm-generic/socket.h         |  35 +++++--
+ include/uapi/linux/errqueue.h             |   4 +
+ include/uapi/linux/time.h                 |   7 ++
+ net/bluetooth/hci_sock.c                  |   4 +-
+ net/compat.c                              |  14 +--
+ net/core/scm.c                            |  27 +++++
+ net/core/sock.c                           |  43 ++++++--
+ net/ipv4/tcp.c                            |  61 +++++++----
+ net/rds/af_rds.c                          |  10 +-
+ net/rds/recv.c                            |  18 +++-
+ net/rxrpc/local_object.c                  |   2 +-
+ net/smc/af_smc.c                          |   3 +-
+ net/socket.c                              |  50 ++++++---
+ 32 files changed, 404 insertions(+), 466 deletions(-)
+ delete mode 100644 arch/ia64/include/uapi/asm/socket.h
+ delete mode 100644 arch/s390/include/uapi/asm/socket.h
+ delete mode 100644 arch/x86/include/uapi/asm/socket.h
+ delete mode 100644 arch/xtensa/include/uapi/asm/socket.h
+
+
+base-commit: a4983672f9ca4c8393f26b6b80710e6c78886b8c
+-- 
+2.17.1
+
+Cc: chris@zankel.net
+Cc: deller@gmx.de
+Cc: dhowells@redhat.com
+Cc: fenghua.yu@intel.com
+Cc: isdn@linux-pingi.de
+Cc: jejb@parisc-linux.org
+Cc: linux-afs@lists.infradead.org
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-ia64@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linux-rdma@vger.kernel.org
+Cc: linux-s390@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: netdev@vger.kernel.org
+Cc: ralf@linux-mips.org
+Cc: rth@twiddle.net
+Cc: schwidefsky@de.ibm.com
+Cc: sparclinux@vger.kernel.org
+Cc: tglx@linutronix.de
+Cc: ubraun@linux.ibm.com
