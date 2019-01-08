@@ -1,69 +1,90 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v4 10/13] x86: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for
- exclude incapable PMUs
-Date: Tue, 8 Jan 2019 19:49:01 +0100
-Message-ID: <20190108184901.GA1900@hirez.programming.kicks-ass.net>
-References: <1546878450-20341-1-git-send-email-andrew.murray@arm.com>
- <1546878450-20341-11-git-send-email-andrew.murray@arm.com>
- <20190108104841.GD6808@hirez.programming.kicks-ass.net>
- <7300f0af-b532-5546-a6f4-fec69cb91a0f@oracle.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 2/3] socket: Rename SO_RCVTIMEO/ SO_SNDTIMEO with _OLD suffixes
+Date: Tue, 8 Jan 2019 21:03:49 +0100
+Message-ID: <CAK8P3a2T=dWgD1mvi77fbdKEsm=ZUwsQENv-btjhECjf+Y5wcg@mail.gmail.com>
+References: <20190108052255.10699-1-deepa.kernel@gmail.com> <20190108052255.10699-3-deepa.kernel@gmail.com>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190108052255.10699-3-deepa.kernel@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=vI4m8dpHuhnGOjCUNLS66rzPB2jUOYp/33FPowtJz4A=; b=KHElCv2qbdMDkM
-	mNCSCeVEYhKq+01ujq2IcTRPmdcpRpvgVJPXNtQP3mFlvuiGRmggv62eWbgRyiDjMzdsEshRg4CV+
-	PnK24UhV24dzSz88fqDMuSVoLZlX2LEE8HtWDR5lQHdJDcX/MRp6FAC4gL05H3aA/YIFFxoE5ZSq3
-	afQph6pGCkhPBHTasCgBoqwkIJ9g16DHsW6S5a/89ihoxfKiVeH7Ef+6NzxyFmTD2YMJUJw/hKB3D
-	IEFDdDo//fQ3Gi4g7w0kOc7FGC32nSA2FRxGY+HEBky2jSKmMzJRqLfC8z3r1OqhKk3e0vUkN//Ji
-	s8hJGrhk/hlFdddqEw0w==;
-Content-Disposition: inline
-In-Reply-To: <7300f0af-b532-5546-a6f4-fec69cb91a0f@oracle.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@samba.org>, Shawn Guo <shawnguo@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ingo Molnar <mingo@redhat.com>, Matt Turner <mattst88@gmail.com>, suzuki.poulose@arm.com, Sascha Hauer <s.hauer@pengutronix.de>, Arnaldo Carvalho de Melo <acme@kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Andrew Murray <andrew.murray@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, jgross@suse.com, robin.murphy@arm.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Borislav Petkov <bp@alien8.de>, linuxppc-dev@lists.ozlabs.org
+To: Deepa Dinamani <deepa.kernel@gmail.com>
+Cc: David Miller <davem@davemloft.net>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Networking <netdev@vger.kernel.org>, y2038 Mailman List <y2038@lists.linaro.org>, ccaulfie@redhat.com, Helge Deller <deller@gmx.de>, Paul Mackerras <paulus@samba.org>, Ralf Baechle <ralf@linux-mips.org>, Richard Henderson <rth@twiddle.net>, cluster-devel@redhat.com, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-alpha@vger.kernel.org, linux-arch <linux-arch@vger.kernel.org>, linux-mips@vger.kernel.org, Parisc List <linux-parisc@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>
 
-On Tue, Jan 08, 2019 at 11:36:33AM -0500, Boris Ostrovsky wrote:
-> On 1/8/19 5:48 AM, Peter Zijlstra wrote:
+On Tue, Jan 8, 2019 at 6:24 AM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
+>
+> SO_RCVTIMEO and SO_SNDTIMEO socket options use struct timeval
+> as the time format. struct timeval is not y2038 safe.
+> The subsequent patches in the series add support for new socket
+> timeout options with _NEW suffix that are y2038 safe.
+> Rename the existing options with _OLD suffix forms so that the
+> right option is enabled for userspace applications according
+> to the architecture and time_t definition of libc.
+>
+> Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
 
-> > On the various exclude options; they are as follows (IIUC):
-> >
-> >   - exclude_guest: we're a HV/host-kernel and we don't want the counter
-> >                    to run when we run a guest context.
-> >
-> >   - exclude_host: we're a HV/host-kernel and we don't want the counter
-> >                   to run when we run in host context.
-> >
-> >   - exclude_hv: we're a guest and don't want the counter to run in HV
-> >                 context.
-> >
-> > Now, KVM always implies exclude_hv afaict (for guests), I'm not sure
-> > what, if anything Xen does on x86 (IIRC Brendan Gregg once said perf
-> > works on Xen) -- nor quite sure who to ask, Boris, Jeurgen?
-> 
-> perf does work inside guests.
-> 
-> VPMU is managed by the Xen and it presents to the guest only samples
-> that are associated with the guest. So from that perspective exclude_hv
-> doesn't seem to be needed.
-> 
-> There is a VPMU mode that allows profiling whole system (host and
-> guests) from dom0, and this where exclude_hv might be useful. But this
-> mode, ahem, needs some work.
+Looks good overall. A few minor concerns:
 
-Thanks Boris!
+The description above makes it sound like there is a bug with y2038-safety
+in this particular interface, which I think is just not what you meant,
+as the change is only needed for compatiblity with new C libraries
+that work around the y2038 problem in general by changing their
+timeval definition.
+
+> diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
+> index 76976d6e50f9..c98ad9777ad9 100644
+> --- a/fs/dlm/lowcomms.c
+> +++ b/fs/dlm/lowcomms.c
+> @@ -1089,12 +1089,12 @@ static void sctp_connect_to_sock(struct connection *con)
+>          * since O_NONBLOCK argument in connect() function does not work here,
+>          * then, we should restore the default value of this attribute.
+>          */
+> -       kernel_setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv,
+> +       kernel_setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO_OLD, (char *)&tv,
+>                           sizeof(tv));
+>         result = sock->ops->connect(sock, (struct sockaddr *)&daddr, addr_len,
+>                                    0);
+>         memset(&tv, 0, sizeof(tv));
+> -       kernel_setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv,
+> +       kernel_setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO_OLD, (char *)&tv,
+>                           sizeof(tv));
+>
+>         if (result == -EINPROGRESS)
+
+It took me a bit to realize there that this is safe as well even if
+we don't use SO_SNDTIMEO_NEW, for the same reason.
+
+> --- a/net/compat.c
+> +++ b/net/compat.c
+> @@ -378,7 +378,7 @@ static int compat_sock_setsockopt(struct socket *sock, int level, int optname,
+>                 return do_set_attach_filter(sock, level, optname,
+>                                             optval, optlen);
+>         if (!COMPAT_USE_64BIT_TIME &&
+> -           (optname == SO_RCVTIMEO || optname == SO_SNDTIMEO))
+> +           (optname == SO_RCVTIMEO_OLD || optname == SO_SNDTIMEO_OLD))
+>                 return do_set_sock_timeout(sock, level, optname, optval, optlen);
+>
+>         return sock_setsockopt(sock, level, optname, optval, optlen);
+> @@ -450,7 +450,7 @@ static int compat_sock_getsockopt(struct socket *sock, int level, int optname,
+>                                 char __user *optval, int __user *optlen)
+>  {
+>         if (!COMPAT_USE_64BIT_TIME &&
+> -           (optname == SO_RCVTIMEO || optname == SO_SNDTIMEO))
+> +           (optname == SO_RCVTIMEO_OLD || optname == SO_SNDTIMEO_OLD))
+>                 return do_get_sock_timeout(sock, level, optname, optval, optlen);
+>         return sock_getsockopt(sock, level, optname, optval, optlen);
+>  }
+
+I looked at the original code and noticed that it's horrible, which of course
+is not your fault, but I wonder if we should just fix it now to avoid that
+get_fs()/set_fs() hack, since that code mostly implements what you
+also have in your patch 3 (which is done more nicely).
+
+I'll follow up with a patch to demonstrate what I mean here. Your third
+patch will then just have to add another code path so we can handle
+all of old_timespec32 (for existing 32-bit user space), __kernel_old_timespec
+(for sparc64) and __kernel_sock_timeval (for everything else).
+
+       Arnd
