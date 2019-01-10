@@ -1,52 +1,103 @@
-From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH v5 12/12] perf/core: remove unused perf_flags
-Date: Thu, 10 Jan 2019 13:53:34 +0000
-Message-ID: <1547128414-50693-13-git-send-email-andrew.murray@arm.com>
-References: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 01/15] ia64: add __NR_umount2 definition
+Date: Thu, 10 Jan 2019 17:24:21 +0100
+Message-ID: <20190110162435.309262-2-arnd@arndb.de>
+References: <20190110162435.309262-1-arnd@arndb.de>
+Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>
-Cc: x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=+LhGHXquq3796dgUaGAVOw/prwQFDd/ZV6EFt3ozqbo=; b=UU1fecHDrcUI/b
+	UJ4gLEYanYf1vYQwoNCy55Ew6NqVvV0jgnzvq6Vw1A60/zlcM7m1vcdoqggtvzbm68B1UttGYTE08
+	5R2n+wtvwS0GoLqLsjuYLheZ9S6w39s69VfMGxzSju5JUzIGxqg4Ps/6Oqa+o+Nux8OpTMQhOj9Xr
+	eG/++PyJXNAOmCNpUEydyVTEVPbqP+Poq3xlqhh6TYHFYjqWv7xmIk5llbrC6NrFAXn0cPRbyq+4N
+	SP/KdJ6GoyyoJZuAZDopUzV/PYqpd33Tiw2zwc7iiPNFyKUBaabDx4ujSARnO3IVU0wC5Hy+FqQmV
+	FfFuf2F1erx/IJ1obv0A==;
+In-Reply-To: <20190110162435.309262-1-arnd@arndb.de>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: y2038@lists.linaro.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: dalias@libc.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, catalin.marinas@arm.com, will.deacon@arm.com, linux@dominikbrodowski.net, jcmvbkbc@gmail.com, deepa.kernel@gmail.com, hpa@zytor.com, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, dave@stgolabs.net, mpe@ellerman.id.au, deller@gmx.de, x86@kernel.org, linux@armlinux.org.uk, mingo@redhat.com, geert@linux-m68k.org, firoz.khan@linaro.org, mattst88@gmail.com, fenghua.yu@intel.com, Arnd Bergmann <arnd@arndb.de>, heiko.carstens@de.ibm.com, linux-m68k@lists.linux-m68k.org, ink@jurassic.park.msu.ru, luto@kernel.org, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org, monstr@monstr.eu, tony.luck@intel.com, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, paul.burton@mips.com, ebiederm@xmission.com, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, akpm@linux-foundation.org, linuxppc-dev
 
-Now that perf_flags is not used we remove it.
+Other architectures commonly use __NR_umount2 for sys_umount,
+only ia64 and alpha use __NR_umount here. In order to synchronize
+the generated tables, use umount2 like everyone else, and add back
+the old name from asm/unistd.h for compatibility.
 
-Signed-off-by: Andrew Murray <andrew.murray@arm.com>
+The __IGNORE_* lines are now all obsolete and can be removed as
+a side-effect.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- include/uapi/linux/perf_event.h       | 2 --
- tools/include/uapi/linux/perf_event.h | 2 --
- 2 files changed, 4 deletions(-)
+ arch/ia64/include/asm/unistd.h        | 14 --------------
+ arch/ia64/include/uapi/asm/unistd.h   |  2 ++
+ arch/ia64/kernel/syscalls/syscall.tbl |  2 +-
+ 3 files changed, 3 insertions(+), 15 deletions(-)
 
-diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-index 9de8780..ea19b5d 100644
---- a/include/uapi/linux/perf_event.h
-+++ b/include/uapi/linux/perf_event.h
-@@ -445,8 +445,6 @@ struct perf_event_query_bpf {
- 	__u32	ids[0];
- };
+diff --git a/arch/ia64/include/asm/unistd.h b/arch/ia64/include/asm/unistd.h
+index 0b08ebd2dfde..9ba6110b10b9 100644
+--- a/arch/ia64/include/asm/unistd.h
++++ b/arch/ia64/include/asm/unistd.h
+@@ -12,20 +12,6 @@
  
--#define perf_flags(attr)	(*(&(attr)->read_format + 1))
--
- /*
-  * Ioctls that can be done on a perf event fd:
-  */
-diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
-index 9de8780..ea19b5d 100644
---- a/tools/include/uapi/linux/perf_event.h
-+++ b/tools/include/uapi/linux/perf_event.h
-@@ -445,8 +445,6 @@ struct perf_event_query_bpf {
- 	__u32	ids[0];
- };
+ #define NR_syscalls		__NR_syscalls /* length of syscall table */
  
--#define perf_flags(attr)	(*(&(attr)->read_format + 1))
+-/*
+- * The following defines stop scripts/checksyscalls.sh from complaining about
+- * unimplemented system calls.  Glibc provides for each of these by using
+- * more modern equivalent system calls.
+- */
+-#define __IGNORE_fork		/* clone() */
+-#define __IGNORE_time		/* gettimeofday() */
+-#define __IGNORE_alarm		/* setitimer(ITIMER_REAL, ... */
+-#define __IGNORE_pause		/* rt_sigprocmask(), rt_sigsuspend() */
+-#define __IGNORE_utime		/* utimes() */
+-#define __IGNORE_getpgrp	/* getpgid() */
+-#define __IGNORE_vfork		/* clone() */
+-#define __IGNORE_umount2	/* umount() */
 -
- /*
-  * Ioctls that can be done on a perf event fd:
-  */
+ #define __ARCH_WANT_NEW_STAT
+ #define __ARCH_WANT_SYS_UTIME
+ 
+diff --git a/arch/ia64/include/uapi/asm/unistd.h b/arch/ia64/include/uapi/asm/unistd.h
+index b2513922dcb5..013e0bcacc39 100644
+--- a/arch/ia64/include/uapi/asm/unistd.h
++++ b/arch/ia64/include/uapi/asm/unistd.h
+@@ -15,6 +15,8 @@
+ 
+ #define __NR_Linux      1024
+ 
++#define __NR_umount __NR_umount2
++
+ #include <asm/unistd_64.h>
+ 
+ #endif /* _UAPI_ASM_IA64_UNISTD_H */
+diff --git a/arch/ia64/kernel/syscalls/syscall.tbl b/arch/ia64/kernel/syscalls/syscall.tbl
+index b22203b40bfe..e97caf51be42 100644
+--- a/arch/ia64/kernel/syscalls/syscall.tbl
++++ b/arch/ia64/kernel/syscalls/syscall.tbl
+@@ -29,7 +29,7 @@
+ 17	common	getpid				sys_getpid
+ 18	common	getppid				sys_getppid
+ 19	common	mount				sys_mount
+-20	common	umount				sys_umount
++20	common	umount2				sys_umount
+ 21	common	setuid				sys_setuid
+ 22	common	getuid				sys_getuid
+ 23	common	geteuid				sys_geteuid
 -- 
-2.7.4
-
+2.20.0
