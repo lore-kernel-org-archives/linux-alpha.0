@@ -1,8 +1,10 @@
 From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH v5 00/12] perf/core: Generalise event exclusion checking
-Date: Thu, 10 Jan 2019 13:53:22 +0000
-Message-ID: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
+Subject: [PATCH v5 01/12] perf/doc: update design.txt for exclude_{host|guest} flags
+Date: Thu, 10 Jan 2019 13:53:23 +0000
+Message-ID: <1547128414-50693-2-git-send-email-andrew.murray@arm.com>
+References: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -11,117 +13,29 @@ Content-Transfer-Encoding: 7bit
 To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>
 Cc: x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
 
-Many PMU drivers do not have the capability to exclude counting events
-that occur in specific contexts such as idle, kernel, guest, etc. These
-drivers indicate this by returning an error in their event_init upon
-testing the events attribute flags.
+Update design.txt to reflect the presence of the exclude_host
+and exclude_guest perf flags.
 
-However this approach requires that each time a new event modifier is
-added to perf, all the perf drivers need to be modified to indicate that
-they don't support the attribute. This results in additional boiler-plate
-code common to many drivers that needs to be maintained. Furthermore the
-drivers are not consistent with regards to the error value they return
-when reporting unsupported attributes.
+Signed-off-by: Andrew Murray <andrew.murray@arm.com>
+---
+ tools/perf/design.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-This patchset allow PMU drivers to advertise their inability to exclude
-based on context via a new capability: PERF_PMU_CAP_NO_EXCLUDE. This
-allows the perf core to reject requests for exclusion events where there
-is no support in the PMU.
-
-This is a functional change, in particular:
-
- - Some drivers will now additionally (but correctly) report unsupported
-   exclusion flags. It's typical for existing userspace tools such as
-   perf to handle such errors by retrying the system call without the
-   unsupported flags.
-
- - Drivers that do not support any exclusion that previously reported
-   -EPERM or -EOPNOTSUPP will now report -EINVAL - this is consistent
-   with the majority and results in userspace perf retrying without
-   exclusion.
-
-All drivers touched by this patchset have been compile tested.
-
-Changes from v4:
-
- - Squashed Cavium TX2 patch into drivers/perf patch
- - Removed duplicate patch subjects by using 'strengthen ..' wording to
-   indicate patches that use PERF_PMU_CAP_NO_EXCLUDE which make behavioural
-   changes
- - Added additional information to commit messages
-
-Changes from v3:
-
- - Added PERF_PMU_CAP_NO_EXCLUDE to Cavium TX2 PMU driver
-
-Changes from v2:
-
- - Invert logic from CAP_EXCLUDE to CAP_NO_EXCLUDE
-
-Changes from v1:
-
- - Changed approach from explicitly rejecting events in unsupporting PMU
-   drivers to explicitly advertising a capability in PMU drivers that
-   do support exclusion events
-
- - Added additional information to tools/perf/design.txt
-
- - Rename event_has_exclude_flags to event_has_any_exclude_flag and
-   update commit log to reflect it's a function
-
-
-Andrew Murray (12):
-  perf/doc: update design.txt for exclude_{host|guest} flags
-  perf/core: add function to test for event exclusion flags
-  perf/core: add PERF_PMU_CAP_NO_EXCLUDE for exclusion incapable PMUs
-  alpha: perf/core: strengthen exclude checks with
-    PERF_PMU_CAP_NO_EXCLUDE
-  arm: perf: conditionally use PERF_PMU_CAP_NO_EXCLUDE
-  arm: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable PMUs
-  drivers/perf: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude
-    incapable PMUs
-  drivers/perf: perf/core: strengthen exclude checks with
-    PERF_PMU_CAP_NO_EXCLUDE
-  powerpc: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable
-    PMUs
-  x86: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable PMUs
-  x86: perf/core: strengthen exclude checks with PERF_PMU_CAP_NO_EXCLUDE
-  perf/core: remove unused perf_flags
-
- arch/alpha/kernel/perf_event.c                |  7 +------
- arch/arm/mach-imx/mmdc.c                      |  9 ++-------
- arch/arm/mm/cache-l2x0-pmu.c                  |  9 +--------
- arch/powerpc/perf/hv-24x7.c                   | 10 +---------
- arch/powerpc/perf/hv-gpci.c                   | 10 +---------
- arch/powerpc/perf/imc-pmu.c                   | 19 +------------------
- arch/x86/events/amd/ibs.c                     | 13 +------------
- arch/x86/events/amd/iommu.c                   |  6 +-----
- arch/x86/events/amd/power.c                   | 10 ++--------
- arch/x86/events/amd/uncore.c                  |  7 ++-----
- arch/x86/events/intel/cstate.c                | 12 +++---------
- arch/x86/events/intel/rapl.c                  |  9 ++-------
- arch/x86/events/intel/uncore.c                |  9 +--------
- arch/x86/events/intel/uncore_snb.c            |  9 ++-------
- arch/x86/events/msr.c                         | 10 ++--------
- drivers/perf/arm-cci.c                        | 10 +---------
- drivers/perf/arm-ccn.c                        |  6 ++----
- drivers/perf/arm_dsu_pmu.c                    |  9 ++-------
- drivers/perf/arm_pmu.c                        | 15 +++++----------
- drivers/perf/hisilicon/hisi_uncore_ddrc_pmu.c |  1 +
- drivers/perf/hisilicon/hisi_uncore_hha_pmu.c  |  1 +
- drivers/perf/hisilicon/hisi_uncore_l3c_pmu.c  |  1 +
- drivers/perf/hisilicon/hisi_uncore_pmu.c      |  9 ---------
- drivers/perf/qcom_l2_pmu.c                    |  9 +--------
- drivers/perf/qcom_l3_pmu.c                    |  8 +-------
- drivers/perf/thunderx2_pmu.c                  | 10 +---------
- drivers/perf/xgene_pmu.c                      |  6 +-----
- include/linux/perf_event.h                    | 10 ++++++++++
- include/uapi/linux/perf_event.h               |  2 --
- kernel/events/core.c                          |  9 +++++++++
- tools/include/uapi/linux/perf_event.h         |  2 --
- tools/perf/design.txt                         |  4 ++++
- 32 files changed, 63 insertions(+), 198 deletions(-)
-
+diff --git a/tools/perf/design.txt b/tools/perf/design.txt
+index a28dca2..0453ba2 100644
+--- a/tools/perf/design.txt
++++ b/tools/perf/design.txt
+@@ -222,6 +222,10 @@ The 'exclude_user', 'exclude_kernel' and 'exclude_hv' bits provide a
+ way to request that counting of events be restricted to times when the
+ CPU is in user, kernel and/or hypervisor mode.
+ 
++Furthermore the 'exclude_host' and 'exclude_guest' bits provide a way
++to request counting of events restricted to guest and host contexts when
++using Linux as the hypervisor.
++
+ The 'mmap' and 'munmap' bits allow recording of PROT_EXEC mmap/munmap
+ operations, these can be used to relate userspace IP addresses to actual
+ code, even after the mapping (or even the whole process) is gone,
 -- 
 2.7.4
 
