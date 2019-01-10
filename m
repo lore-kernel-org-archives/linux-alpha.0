@@ -1,48 +1,46 @@
-From: Heiko Carstens <heiko.carstens@de.ibm.com>
-Subject: Re: [PATCH 07/11] y2038: syscalls: rename y2038 compat syscalls
-Date: Thu, 10 Jan 2019 21:55:22 +0100
-Message-ID: <20190110205522.GC3676@osiris>
-References: <20190110172216.313063-1-arnd@arndb.de>
- <20190110172216.313063-8-arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 00/15] arch: synchronize syscall tables in preparation for y2038
+Date: Thu, 10 Jan 2019 23:42:32 +0100
+Message-ID: <CAK8P3a2f4SCJXrm6HWO9UKY-akSW+ONNpOvQOtYbia_fRo9ciQ@mail.gmail.com>
+References: <20190110162435.309262-1-arnd@arndb.de> <alpine.DEB.2.21.1901101808220.31458@digraph.polyomino.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20190110172216.313063-8-arnd@arndb.de>
-Content-Disposition: inline
-Sender: netdev-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.21.1901101808220.31458@digraph.polyomino.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: y2038@lists.linaro.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, mattst88@gmail.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, tony.luck@intel.com, fenghua.yu@intel.com, geert@linux-m68k.org, monstr@monstr.eu, paul.burton@mips.com, deller@gmx.de, benh@kernel.crashing.org, mpe@ellerman.id.au, schwidefsky@de.ibm.com, dalias@libc.org, davem@davemloft.net, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, jcmvbkbc@gmail.com, akpm@linux-foundation.org, deepa.kernel@gmail.com, ebiederm@xmission.com, firoz.khan@linaro.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Joseph Myers <joseph@codesourcery.com>
+Cc: y2038 Mailman List <y2038@lists.linaro.org>, Linux API <linux-api@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King - ARM Linux <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Rich Felker <dalias@libc.org>, David Miller <davem@davemloft.net>
 
-On Thu, Jan 10, 2019 at 06:22:12PM +0100, Arnd Bergmann wrote:
-> diff --git a/arch/s390/kernel/syscalls/syscall.tbl b/arch/s390/kernel/syscalls/syscall.tbl
-> index f84ea364a302..b3199a744731 100644
-> --- a/arch/s390/kernel/syscalls/syscall.tbl
-> +++ b/arch/s390/kernel/syscalls/syscall.tbl
-> @@ -20,7 +20,7 @@
->  10   common	unlink			sys_unlink			compat_sys_unlink
->  11   common	execve			sys_execve			compat_sys_execve
->  12   common	chdir			sys_chdir			compat_sys_chdir
-> -13   32		time			-				compat_sys_time
-> +13   32		time			-				sys_time32
->  14   common	mknod			sys_mknod			compat_sys_mknod
->  15   common	chmod			sys_chmod			compat_sys_chmod
->  16   32		lchown			-				compat_sys_s390_lchown16
-> @@ -30,11 +30,11 @@
->  22   common	umount			sys_oldumount			compat_sys_oldumount
->  23   32		setuid			-				compat_sys_s390_setuid16
->  24   32		getuid			-				compat_sys_s390_getuid16
-> -25   32		stime			-				compat_sys_stime
-> +25   32		stime			-				sys_stime32
->  26   common	ptrace			sys_ptrace			compat_sys_ptrace
->  27   common	alarm			sys_alarm			sys_alarm
->  29   common	pause			sys_pause			sys_pause
-> -30   common	utime			sys_utime			compat_sys_utime
-> +30   common	utime			sys_utime			sys_utime32
-...(and more)...
+On Thu, Jan 10, 2019 at 7:10 PM Joseph Myers <joseph@codesourcery.com> wrote:
+>
+> On Thu, 10 Jan 2019, Arnd Bergmann wrote:
+>
+> > - Add system calls that have not yet been integrated into all
+> >   architectures but that we definitely want there.
+>
+> glibc has a note that alpha lacks statfs64, any plans for that?
 
-All of them need compat wrappers to clear the uppermost 33 bits of
-user space pointers. I assume there is no new *32 system call which
-takes u64/s64 arguments; so the pointers should be the only problem.
+Good catch, I missed that because all other 64-bit architectures
+have a statfs() call with 64-bit fields. I see that it also has an
+osf_statfs64 structure and system call with lots of padding and some
+oddly sized fields: f_type, f_flags and f_namemax are only 16 bits
+wide, the rest is all 64-bit.
 
+Adding the regular statfs64() should be easy enough, we just need to
+decide which layout to use:
+
+a) use the currently unused 'struct statfs64' as provided by the
+    alpha uapi headers, which has a 32-bit __statfs_word but
+    64-bit f_blocks, f_bfree, f_bavail, f_files, and f_ffree.
+
+b) copy asm-generic/statfs.h to the alpha asm/statfs.h and
+    change statfs64 to have the regular layout that we use
+    on all other 64-bit architectures, using all 64-bit fields.
+
+The other open question for alpha (as mentioned in one of the
+patches I sent) would be whether to add get{eg,eu,g,p,pp,u}id()
+with the regular calling conventions.
+
+       Arnd
