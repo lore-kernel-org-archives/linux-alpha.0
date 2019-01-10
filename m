@@ -1,7 +1,7 @@
 From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH v5 08/12] drivers/perf: perf/core: strengthen exclude checks with PERF_PMU_CAP_NO_EXCLUDE
-Date: Thu, 10 Jan 2019 13:53:30 +0000
-Message-ID: <1547128414-50693-9-git-send-email-andrew.murray@arm.com>
+Subject: [PATCH v5 09/12] powerpc: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable PMUs
+Date: Thu, 10 Jan 2019 13:53:31 +0000
+Message-ID: <1547128414-50693-10-git-send-email-andrew.murray@arm.com>
 References: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
@@ -13,105 +13,121 @@ Content-Transfer-Encoding: 7bit
 To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>
 Cc: x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
 
-For drivers that do not support context exclusion let's advertise the
-PERF_PMU_CAP_NO_EXCLUDE capability. This ensures that perf will
-prevent us from handling events where any exclusion flags are set.
-Let's also remove the now unnecessary check for exclusion flags.
-
-This change means that qcom_{l2|l3}_pmu will now also indicate that
-they do not support exclude_{host|guest} and that xgene_pmu does
-not also support exclude_idle and exclude_hv.
-
-Note that for qcom_l2_pmu we now implictly return -EINVAL instead
-of -EOPNOTSUPP. This change will result in the perf userspace
-utility retrying the perf_event_open system call with fallback
-event attributes that do not fail.
+For PowerPC PMUs that do not support context exclusion let's
+advertise the PERF_PMU_CAP_NO_EXCLUDE capability. This ensures that
+perf will prevent us from handling events where any exclusion flags
+are set. Let's also remove the now unnecessary check for exclusion
+flags.
 
 Signed-off-by: Andrew Murray <andrew.murray@arm.com>
-Acked-by: Will Deacon <will.deacon@arm.com>
+Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
+Acked-by: Michael Ellerman <mpe@ellerman.id.au>
 ---
- drivers/perf/qcom_l2_pmu.c | 9 +--------
- drivers/perf/qcom_l3_pmu.c | 8 +-------
- drivers/perf/xgene_pmu.c   | 6 +-----
- 3 files changed, 3 insertions(+), 20 deletions(-)
+ arch/powerpc/perf/hv-24x7.c | 10 +---------
+ arch/powerpc/perf/hv-gpci.c | 10 +---------
+ arch/powerpc/perf/imc-pmu.c | 19 +------------------
+ 3 files changed, 3 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/perf/qcom_l2_pmu.c b/drivers/perf/qcom_l2_pmu.c
-index 842135c..091b4d7 100644
---- a/drivers/perf/qcom_l2_pmu.c
-+++ b/drivers/perf/qcom_l2_pmu.c
-@@ -509,14 +509,6 @@ static int l2_cache_event_init(struct perf_event *event)
- 		return -EOPNOTSUPP;
+diff --git a/arch/powerpc/perf/hv-24x7.c b/arch/powerpc/perf/hv-24x7.c
+index 72238ee..d2b8e60 100644
+--- a/arch/powerpc/perf/hv-24x7.c
++++ b/arch/powerpc/perf/hv-24x7.c
+@@ -1306,15 +1306,6 @@ static int h_24x7_event_init(struct perf_event *event)
+ 		return -EINVAL;
  	}
  
--	/* We cannot filter accurately so we just don't allow it. */
--	if (event->attr.exclude_user || event->attr.exclude_kernel ||
--	    event->attr.exclude_hv || event->attr.exclude_idle) {
--		dev_dbg_ratelimited(&l2cache_pmu->pdev->dev,
--				    "Can't exclude execution levels\n");
--		return -EOPNOTSUPP;
--	}
--
- 	if (((L2_EVT_GROUP(event->attr.config) > L2_EVT_GROUP_MAX) ||
- 	     ((event->attr.config & ~L2_EVT_MASK) != 0)) &&
- 	    (event->attr.config != L2CYCLE_CTR_RAW_CODE)) {
-@@ -982,6 +974,7 @@ static int l2_cache_pmu_probe(struct platform_device *pdev)
- 		.stop		= l2_cache_event_stop,
- 		.read		= l2_cache_event_read,
- 		.attr_groups	= l2_cache_pmu_attr_grps,
-+		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
- 	};
- 
- 	l2cache_pmu->num_counters = get_num_counters();
-diff --git a/drivers/perf/qcom_l3_pmu.c b/drivers/perf/qcom_l3_pmu.c
-index 2dc63d6..5d70646 100644
---- a/drivers/perf/qcom_l3_pmu.c
-+++ b/drivers/perf/qcom_l3_pmu.c
-@@ -495,13 +495,6 @@ static int qcom_l3_cache__event_init(struct perf_event *event)
- 		return -ENOENT;
- 
- 	/*
--	 * There are no per-counter mode filters in the PMU.
--	 */
--	if (event->attr.exclude_user || event->attr.exclude_kernel ||
--	    event->attr.exclude_hv || event->attr.exclude_idle)
+-	/* unsupported modes and filters */
+-	if (event->attr.exclude_user   ||
+-	    event->attr.exclude_kernel ||
+-	    event->attr.exclude_hv     ||
+-	    event->attr.exclude_idle   ||
+-	    event->attr.exclude_host   ||
+-	    event->attr.exclude_guest)
 -		return -EINVAL;
 -
--	/*
- 	 * Sampling not supported since these events are not core-attributable.
- 	 */
- 	if (hwc->sample_period)
-@@ -777,6 +770,7 @@ static int qcom_l3_cache_pmu_probe(struct platform_device *pdev)
- 		.read		= qcom_l3_cache__event_read,
+ 	/* no branch sampling */
+ 	if (has_branch_stack(event))
+ 		return -EOPNOTSUPP;
+@@ -1577,6 +1568,7 @@ static struct pmu h_24x7_pmu = {
+ 	.start_txn   = h_24x7_event_start_txn,
+ 	.commit_txn  = h_24x7_event_commit_txn,
+ 	.cancel_txn  = h_24x7_event_cancel_txn,
++	.capabilities = PERF_PMU_CAP_NO_EXCLUDE,
+ };
  
- 		.attr_groups	= qcom_l3_cache_pmu_attr_grps,
-+		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
- 	};
+ static int hv_24x7_init(void)
+diff --git a/arch/powerpc/perf/hv-gpci.c b/arch/powerpc/perf/hv-gpci.c
+index 43fabb3..735e77b 100644
+--- a/arch/powerpc/perf/hv-gpci.c
++++ b/arch/powerpc/perf/hv-gpci.c
+@@ -232,15 +232,6 @@ static int h_gpci_event_init(struct perf_event *event)
+ 		return -EINVAL;
+ 	}
  
- 	memrc = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-diff --git a/drivers/perf/xgene_pmu.c b/drivers/perf/xgene_pmu.c
-index 0dc9ff0..d4ec048 100644
---- a/drivers/perf/xgene_pmu.c
-+++ b/drivers/perf/xgene_pmu.c
-@@ -917,11 +917,6 @@ static int xgene_perf_event_init(struct perf_event *event)
- 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
+-	/* unsupported modes and filters */
+-	if (event->attr.exclude_user   ||
+-	    event->attr.exclude_kernel ||
+-	    event->attr.exclude_hv     ||
+-	    event->attr.exclude_idle   ||
+-	    event->attr.exclude_host   ||
+-	    event->attr.exclude_guest)
+-		return -EINVAL;
+-
+ 	/* no branch sampling */
+ 	if (has_branch_stack(event))
+ 		return -EOPNOTSUPP;
+@@ -285,6 +276,7 @@ static struct pmu h_gpci_pmu = {
+ 	.start       = h_gpci_event_start,
+ 	.stop        = h_gpci_event_stop,
+ 	.read        = h_gpci_event_update,
++	.capabilities = PERF_PMU_CAP_NO_EXCLUDE,
+ };
+ 
+ static int hv_gpci_init(void)
+diff --git a/arch/powerpc/perf/imc-pmu.c b/arch/powerpc/perf/imc-pmu.c
+index f292a3f..b1c37cc 100644
+--- a/arch/powerpc/perf/imc-pmu.c
++++ b/arch/powerpc/perf/imc-pmu.c
+@@ -473,15 +473,6 @@ static int nest_imc_event_init(struct perf_event *event)
+ 	if (event->hw.sample_period)
  		return -EINVAL;
  
--	/* SOC counters do not have usr/os/guest/host bits */
--	if (event->attr.exclude_user || event->attr.exclude_kernel ||
--	    event->attr.exclude_host || event->attr.exclude_guest)
+-	/* unsupported modes and filters */
+-	if (event->attr.exclude_user   ||
+-	    event->attr.exclude_kernel ||
+-	    event->attr.exclude_hv     ||
+-	    event->attr.exclude_idle   ||
+-	    event->attr.exclude_host   ||
+-	    event->attr.exclude_guest)
 -		return -EINVAL;
 -
  	if (event->cpu < 0)
  		return -EINVAL;
- 	/*
-@@ -1136,6 +1131,7 @@ static int xgene_init_perf(struct xgene_pmu_dev *pmu_dev, char *name)
- 		.start		= xgene_perf_start,
- 		.stop		= xgene_perf_stop,
- 		.read		= xgene_perf_read,
-+		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
- 	};
  
- 	/* Hardware counter init */
+@@ -748,15 +739,6 @@ static int core_imc_event_init(struct perf_event *event)
+ 	if (event->hw.sample_period)
+ 		return -EINVAL;
+ 
+-	/* unsupported modes and filters */
+-	if (event->attr.exclude_user   ||
+-	    event->attr.exclude_kernel ||
+-	    event->attr.exclude_hv     ||
+-	    event->attr.exclude_idle   ||
+-	    event->attr.exclude_host   ||
+-	    event->attr.exclude_guest)
+-		return -EINVAL;
+-
+ 	if (event->cpu < 0)
+ 		return -EINVAL;
+ 
+@@ -1069,6 +1051,7 @@ static int update_pmu_ops(struct imc_pmu *pmu)
+ 	pmu->pmu.stop = imc_event_stop;
+ 	pmu->pmu.read = imc_event_update;
+ 	pmu->pmu.attr_groups = pmu->attr_groups;
++	pmu->pmu.capabilities = PERF_PMU_CAP_NO_EXCLUDE;
+ 	pmu->attr_groups[IMC_FORMAT_ATTR] = &imc_format_group;
+ 
+ 	switch (pmu->domain) {
 -- 
 2.7.4
 
