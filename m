@@ -1,7 +1,7 @@
 From: Andrew Murray <andrew.murray@arm.com>
-Subject: [PATCH v5 09/12] powerpc: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable PMUs
-Date: Thu, 10 Jan 2019 13:53:31 +0000
-Message-ID: <1547128414-50693-10-git-send-email-andrew.murray@arm.com>
+Subject: [PATCH v5 10/12] x86: perf/core: use PERF_PMU_CAP_NO_EXCLUDE for exclude incapable PMUs
+Date: Thu, 10 Jan 2019 13:53:32 +0000
+Message-ID: <1547128414-50693-11-git-send-email-andrew.murray@arm.com>
 References: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1547128414-50693-1-git-send-email-andrew.murray@arm.com>
@@ -13,121 +13,211 @@ Content-Transfer-Encoding: 7bit
 To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@alien8.de>, Russell King <linux@armlinux.org.uk>, suzuki.poulose@arm.com, robin.murphy@arm.com, Michael Ellerman <mpe@ellerman.id.au>
 Cc: x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org
 
-For PowerPC PMUs that do not support context exclusion let's
-advertise the PERF_PMU_CAP_NO_EXCLUDE capability. This ensures that
-perf will prevent us from handling events where any exclusion flags
-are set. Let's also remove the now unnecessary check for exclusion
-flags.
+For drivers that do not support context exclusion let's advertise the
+PERF_PMU_CAP_NOEXCLUDE capability. This ensures that perf will
+prevent us from handling events where any exclusion flags are set.
+Let's also remove the now unnecessary check for exclusion flags.
+
+PMU drivers that support at least one exclude flag won't have the
+PERF_PMU_CAP_NOEXCLUDE capability set - these PMU drivers should still
+check and fail on unsupported exclude flags. These missing tests are
+not added in this patch.
 
 Signed-off-by: Andrew Murray <andrew.murray@arm.com>
-Reviewed-by: Madhavan Srinivasan <maddy@linux.vnet.ibm.com>
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
 ---
- arch/powerpc/perf/hv-24x7.c | 10 +---------
- arch/powerpc/perf/hv-gpci.c | 10 +---------
- arch/powerpc/perf/imc-pmu.c | 19 +------------------
- 3 files changed, 3 insertions(+), 36 deletions(-)
+ arch/x86/events/amd/ibs.c          | 13 +------------
+ arch/x86/events/amd/power.c        | 10 ++--------
+ arch/x86/events/intel/cstate.c     | 12 +++---------
+ arch/x86/events/intel/rapl.c       |  9 ++-------
+ arch/x86/events/intel/uncore_snb.c |  9 ++-------
+ arch/x86/events/msr.c              | 10 ++--------
+ 6 files changed, 12 insertions(+), 51 deletions(-)
 
-diff --git a/arch/powerpc/perf/hv-24x7.c b/arch/powerpc/perf/hv-24x7.c
-index 72238ee..d2b8e60 100644
---- a/arch/powerpc/perf/hv-24x7.c
-+++ b/arch/powerpc/perf/hv-24x7.c
-@@ -1306,15 +1306,6 @@ static int h_24x7_event_init(struct perf_event *event)
- 		return -EINVAL;
- 	}
+diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
+index d50bb4d..62f317c 100644
+--- a/arch/x86/events/amd/ibs.c
++++ b/arch/x86/events/amd/ibs.c
+@@ -253,15 +253,6 @@ static int perf_ibs_precise_event(struct perf_event *event, u64 *config)
+ 	return -EOPNOTSUPP;
+ }
  
--	/* unsupported modes and filters */
+-static const struct perf_event_attr ibs_notsupp = {
+-	.exclude_user	= 1,
+-	.exclude_kernel	= 1,
+-	.exclude_hv	= 1,
+-	.exclude_idle	= 1,
+-	.exclude_host	= 1,
+-	.exclude_guest	= 1,
+-};
+-
+ static int perf_ibs_init(struct perf_event *event)
+ {
+ 	struct hw_perf_event *hwc = &event->hw;
+@@ -282,9 +273,6 @@ static int perf_ibs_init(struct perf_event *event)
+ 	if (event->pmu != &perf_ibs->pmu)
+ 		return -ENOENT;
+ 
+-	if (perf_flags(&event->attr) & perf_flags(&ibs_notsupp))
+-		return -EINVAL;
+-
+ 	if (config & ~perf_ibs->config_mask)
+ 		return -EINVAL;
+ 
+@@ -537,6 +525,7 @@ static struct perf_ibs perf_ibs_fetch = {
+ 		.start		= perf_ibs_start,
+ 		.stop		= perf_ibs_stop,
+ 		.read		= perf_ibs_read,
++		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+ 	},
+ 	.msr			= MSR_AMD64_IBSFETCHCTL,
+ 	.config_mask		= IBS_FETCH_CONFIG_MASK,
+diff --git a/arch/x86/events/amd/power.c b/arch/x86/events/amd/power.c
+index 2aefacf..c5ff084 100644
+--- a/arch/x86/events/amd/power.c
++++ b/arch/x86/events/amd/power.c
+@@ -136,14 +136,7 @@ static int pmu_event_init(struct perf_event *event)
+ 		return -ENOENT;
+ 
+ 	/* Unsupported modes and filters. */
 -	if (event->attr.exclude_user   ||
 -	    event->attr.exclude_kernel ||
 -	    event->attr.exclude_hv     ||
 -	    event->attr.exclude_idle   ||
 -	    event->attr.exclude_host   ||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	/* no branch sampling */
- 	if (has_branch_stack(event))
- 		return -EOPNOTSUPP;
-@@ -1577,6 +1568,7 @@ static struct pmu h_24x7_pmu = {
- 	.start_txn   = h_24x7_event_start_txn,
- 	.commit_txn  = h_24x7_event_commit_txn,
- 	.cancel_txn  = h_24x7_event_cancel_txn,
-+	.capabilities = PERF_PMU_CAP_NO_EXCLUDE,
+-	    event->attr.exclude_guest  ||
+-	    /* no sampling */
+-	    event->attr.sample_period)
++	if (event->attr.sample_period)
+ 		return -EINVAL;
+ 
+ 	if (cfg != AMD_POWER_EVENTSEL_PKG)
+@@ -226,6 +219,7 @@ static struct pmu pmu_class = {
+ 	.start		= pmu_event_start,
+ 	.stop		= pmu_event_stop,
+ 	.read		= pmu_event_read,
++	.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
  };
  
- static int hv_24x7_init(void)
-diff --git a/arch/powerpc/perf/hv-gpci.c b/arch/powerpc/perf/hv-gpci.c
-index 43fabb3..735e77b 100644
---- a/arch/powerpc/perf/hv-gpci.c
-+++ b/arch/powerpc/perf/hv-gpci.c
-@@ -232,15 +232,6 @@ static int h_gpci_event_init(struct perf_event *event)
- 		return -EINVAL;
- 	}
+ static int power_cpu_exit(unsigned int cpu)
+diff --git a/arch/x86/events/intel/cstate.c b/arch/x86/events/intel/cstate.c
+index d2e7807..94a4b7f 100644
+--- a/arch/x86/events/intel/cstate.c
++++ b/arch/x86/events/intel/cstate.c
+@@ -280,13 +280,7 @@ static int cstate_pmu_event_init(struct perf_event *event)
+ 		return -ENOENT;
  
--	/* unsupported modes and filters */
+ 	/* unsupported modes and filters */
 -	if (event->attr.exclude_user   ||
 -	    event->attr.exclude_kernel ||
 -	    event->attr.exclude_hv     ||
 -	    event->attr.exclude_idle   ||
 -	    event->attr.exclude_host   ||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	/* no branch sampling */
- 	if (has_branch_stack(event))
- 		return -EOPNOTSUPP;
-@@ -285,6 +276,7 @@ static struct pmu h_gpci_pmu = {
- 	.start       = h_gpci_event_start,
- 	.stop        = h_gpci_event_stop,
- 	.read        = h_gpci_event_update,
-+	.capabilities = PERF_PMU_CAP_NO_EXCLUDE,
+-	    event->attr.exclude_guest  ||
+-	    event->attr.sample_period) /* no sampling */
++	if (event->attr.sample_period) /* no sampling */
+ 		return -EINVAL;
+ 
+ 	if (event->cpu < 0)
+@@ -437,7 +431,7 @@ static struct pmu cstate_core_pmu = {
+ 	.start		= cstate_pmu_event_start,
+ 	.stop		= cstate_pmu_event_stop,
+ 	.read		= cstate_pmu_event_update,
+-	.capabilities	= PERF_PMU_CAP_NO_INTERRUPT,
++	.capabilities	= PERF_PMU_CAP_NO_INTERRUPT | PERF_PMU_CAP_NO_EXCLUDE,
+ 	.module		= THIS_MODULE,
  };
  
- static int hv_gpci_init(void)
-diff --git a/arch/powerpc/perf/imc-pmu.c b/arch/powerpc/perf/imc-pmu.c
-index f292a3f..b1c37cc 100644
---- a/arch/powerpc/perf/imc-pmu.c
-+++ b/arch/powerpc/perf/imc-pmu.c
-@@ -473,15 +473,6 @@ static int nest_imc_event_init(struct perf_event *event)
- 	if (event->hw.sample_period)
+@@ -451,7 +445,7 @@ static struct pmu cstate_pkg_pmu = {
+ 	.start		= cstate_pmu_event_start,
+ 	.stop		= cstate_pmu_event_stop,
+ 	.read		= cstate_pmu_event_update,
+-	.capabilities	= PERF_PMU_CAP_NO_INTERRUPT,
++	.capabilities	= PERF_PMU_CAP_NO_INTERRUPT | PERF_PMU_CAP_NO_EXCLUDE,
+ 	.module		= THIS_MODULE,
+ };
+ 
+diff --git a/arch/x86/events/intel/rapl.c b/arch/x86/events/intel/rapl.c
+index 91039ff..94dc564 100644
+--- a/arch/x86/events/intel/rapl.c
++++ b/arch/x86/events/intel/rapl.c
+@@ -397,13 +397,7 @@ static int rapl_pmu_event_init(struct perf_event *event)
  		return -EINVAL;
  
--	/* unsupported modes and filters */
+ 	/* unsupported modes and filters */
 -	if (event->attr.exclude_user   ||
 -	    event->attr.exclude_kernel ||
 -	    event->attr.exclude_hv     ||
 -	    event->attr.exclude_idle   ||
 -	    event->attr.exclude_host   ||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	if (event->cpu < 0)
+-	    event->attr.exclude_guest  ||
+-	    event->attr.sample_period) /* no sampling */
++	if (event->attr.sample_period) /* no sampling */
  		return -EINVAL;
  
-@@ -748,15 +739,6 @@ static int core_imc_event_init(struct perf_event *event)
- 	if (event->hw.sample_period)
+ 	/* must be done before validate_group */
+@@ -699,6 +693,7 @@ static int __init init_rapl_pmus(void)
+ 	rapl_pmus->pmu.stop		= rapl_pmu_event_stop;
+ 	rapl_pmus->pmu.read		= rapl_pmu_event_read;
+ 	rapl_pmus->pmu.module		= THIS_MODULE;
++	rapl_pmus->pmu.capabilities	= PERF_PMU_CAP_NO_EXCLUDE;
+ 	return 0;
+ }
+ 
+diff --git a/arch/x86/events/intel/uncore_snb.c b/arch/x86/events/intel/uncore_snb.c
+index 2593b0d..b12517f 100644
+--- a/arch/x86/events/intel/uncore_snb.c
++++ b/arch/x86/events/intel/uncore_snb.c
+@@ -397,13 +397,7 @@ static int snb_uncore_imc_event_init(struct perf_event *event)
  		return -EINVAL;
  
--	/* unsupported modes and filters */
+ 	/* unsupported modes and filters */
 -	if (event->attr.exclude_user   ||
 -	    event->attr.exclude_kernel ||
 -	    event->attr.exclude_hv     ||
 -	    event->attr.exclude_idle   ||
 -	    event->attr.exclude_host   ||
--	    event->attr.exclude_guest)
--		return -EINVAL;
--
- 	if (event->cpu < 0)
+-	    event->attr.exclude_guest  ||
+-	    event->attr.sample_period) /* no sampling */
++	if (event->attr.sample_period) /* no sampling */
  		return -EINVAL;
  
-@@ -1069,6 +1051,7 @@ static int update_pmu_ops(struct imc_pmu *pmu)
- 	pmu->pmu.stop = imc_event_stop;
- 	pmu->pmu.read = imc_event_update;
- 	pmu->pmu.attr_groups = pmu->attr_groups;
-+	pmu->pmu.capabilities = PERF_PMU_CAP_NO_EXCLUDE;
- 	pmu->attr_groups[IMC_FORMAT_ATTR] = &imc_format_group;
+ 	/*
+@@ -497,6 +491,7 @@ static struct pmu snb_uncore_imc_pmu = {
+ 	.start		= uncore_pmu_event_start,
+ 	.stop		= uncore_pmu_event_stop,
+ 	.read		= uncore_pmu_event_read,
++	.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+ };
  
- 	switch (pmu->domain) {
+ static struct intel_uncore_ops snb_uncore_imc_ops = {
+diff --git a/arch/x86/events/msr.c b/arch/x86/events/msr.c
+index 1b9f85a..a878e62 100644
+--- a/arch/x86/events/msr.c
++++ b/arch/x86/events/msr.c
+@@ -160,13 +160,7 @@ static int msr_event_init(struct perf_event *event)
+ 		return -ENOENT;
+ 
+ 	/* unsupported modes and filters */
+-	if (event->attr.exclude_user   ||
+-	    event->attr.exclude_kernel ||
+-	    event->attr.exclude_hv     ||
+-	    event->attr.exclude_idle   ||
+-	    event->attr.exclude_host   ||
+-	    event->attr.exclude_guest  ||
+-	    event->attr.sample_period) /* no sampling */
++	if (event->attr.sample_period) /* no sampling */
+ 		return -EINVAL;
+ 
+ 	if (cfg >= PERF_MSR_EVENT_MAX)
+@@ -256,7 +250,7 @@ static struct pmu pmu_msr = {
+ 	.start		= msr_event_start,
+ 	.stop		= msr_event_stop,
+ 	.read		= msr_event_update,
+-	.capabilities	= PERF_PMU_CAP_NO_INTERRUPT,
++	.capabilities	= PERF_PMU_CAP_NO_INTERRUPT | PERF_PMU_CAP_NO_EXCLUDE,
+ };
+ 
+ static int __init msr_init(void)
 -- 
 2.7.4
 
