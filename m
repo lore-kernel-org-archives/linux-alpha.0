@@ -1,46 +1,28 @@
-From: Heiko Carstens <heiko.carstens@de.ibm.com>
-Subject: Re: [PATCH 15/15] arch: add pkey and rseq syscall numbers everywhere
-Date: Mon, 14 Jan 2019 09:31:13 +0100
-Message-ID: <20190114083113.GB15160@osiris>
-References: <20190110162435.309262-1-arnd@arndb.de>
- <20190110162435.309262-16-arnd@arndb.de>
- <20190110203638.GB3676@osiris>
- <CAK8P3a0M6qSJQAtFNKVS5muissKvyzeE9MSYT_uwKnM4BKCAug@mail.gmail.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 14/15] arch: add split IPC system calls where needed
+Date: Mon, 14 Jan 2019 20:58:52 +1100
+Message-ID: <87muo31rxf.fsf@concordia.ellerman.id.au>
+References: <20190110162435.309262-1-arnd@arndb.de> <20190110162435.309262-15-arnd@arndb.de> <87pnsz28k2.fsf@concordia.ellerman.id.au>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAK8P3a0M6qSJQAtFNKVS5muissKvyzeE9MSYT_uwKnM4BKCAug@mail.gmail.com>
-Content-Disposition: inline
+In-Reply-To: <87pnsz28k2.fsf@concordia.ellerman.id.au>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: y2038 Mailman List <y2038@lists.linaro.org>, Linux API <linux-api@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King - ARM Linux <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Rich Felker <dalias@libc.org>, David Miller <davem@davemloft.net>, Andy Lutomirski <luto@kernel.org>
+Content-Type: text/plain; charset="windows-1254"
+To: Arnd Bergmann <arnd@arndb.de>, y2038@lists.linaro.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, tony.luck@intel.com, fenghua.yu@intel.com, geert@linux-m68k.org, monstr@monstr.eu, paul.burton@mips.com, deller@gmx.de, schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com, dalias@libc.org, davem@davemloft.net, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, jcmvbkbc@gmail.com, firoz.khan@linaro.org, ebiederm@xmission.com, deepa.kernel@gmail.com, linux@dominikbrodowski.net, akpm@linux-foundation.org, dave@stgolabs.net, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, l
 
-On Fri, Jan 11, 2019 at 06:30:43PM +0100, Arnd Bergmann wrote:
-> On Thu, Jan 10, 2019 at 9:36 PM Heiko Carstens
-> <heiko.carstens@de.ibm.com> wrote:
-> > On Thu, Jan 10, 2019 at 05:24:35PM +0100, Arnd Bergmann wrote:
-> 
-> > Since you only need/want the system call numbers, could you please
-> > change these lines to:
-> >
-> > > +384  common  pkey_alloc              -                               -
-> > > +385  common  pkey_free               -                               -
-> > > +386  common  pkey_mprotect           -                               -
-> >
-> > Otherwise it _looks_ like we would need compat wrappers here as well,
-> > even though all of them would just jump to sys_ni_syscall() in this
-> > case. Making this explicit seems to better.
-> 
-> Ok, fair enough. I considered doing this originally and then
-> decided against it for consistency with the asm-generic file,
-> but I don't care much either way.
-> 
-> Is this something you may want to add later? I'm not sure exactly
-> how pkey compares to s390 storage keys, or if this is something
-> completely unrelated.
-
-I don't think pkeys will ever work on s390, since they require a key
-per mapping, while the s390 storage keys are per physical page.
-
+TWljaGFlbCBFbGxlcm1hbiA8bXBlQGVsbGVybWFuLmlkLmF1PiB3cml0ZXM6Cj4gSGkgQXJuZCwK
+Pgo+IEFybmQgQmVyZ21hbm4gPGFybmRAYXJuZGIuZGU+IHdyaXRlczoKPj4gVGhlIElQQyBzeXN0
+ZW0gY2FsbCBoYW5kbGluZyBpcyBoaWdobHkgaW5jb25zaXN0ZW50IGFjcm9zcyBhcmNoaXRlY3R1
+cmVzLAo+PiBzb21lIHVzZSBzeXNfaXBjLCBzb21lIHVzZSBzZXBhcmF0ZSBjYWxscywgYW5kIHNv
+bWUgdXNlIGJvdGguICBXZSBhbHNvCj4+IGhhdmUgc29tZSBhcmNoaXRlY3R1cmVzIHRoYXQgcmVx
+dWlyZSBwYXNzaW5nIElQQ182NCBpbiB0aGUgZmxhZ3MsIGFuZAo+PiBvdGhlcnMgdGhhdCBzZXQg
+aXQgaW1wbGljaXRseS4KLi4uCj4KPiBXZSBhbHJlYWR5IGhhdmUgYSBnYXAgYXQgMzY2LTM3NyBm
+cm9tIHdoZW4gd2UgdHJpZWQgdG8gYWRkIHRoZSBzcGxpdCBJUEMKPiBjYWxscyBhIGZldyB5ZWFy
+cyBiYWNrLgo+Cj4gSSBndWVzcyBJIGRvbid0IG1pbmQgbGVhdmluZyB0aGF0IGdhcCBhbmQgdXNp
+bmcgdGhlIGNvbW1vbiBudW1iZXJzIGFzCj4geW91J3ZlIGRvbmUgaGVyZS4KPgo+IEJ1dCBpdCB3
+b3VsZCBiZSBnb29kIHRvIGFkZCBhIGNvbW1lbnQgcG9pbnRpbmcgb3V0IHRoYXQgd2UgaGF2ZSBy
+b29tCj4gYXQgMzY2IGZvciBtb3JlIGFyY2ggc3BlY2lmaWMgc3lzY2FsbHMgYXMgd2VsbC4KPgo+
+IGNoZWVycwoKR3Vlc3MgSSBzZW50IHRoYXQgb25lIHR3aWNlLiDwn6SmCgpjaGVlcnMK
