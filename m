@@ -1,38 +1,17 @@
 From: Michael Ellerman <mpe@ellerman.id.au>
 Subject: Re: [PATCH 14/15] arch: add split IPC system calls where needed
-Date: Mon, 14 Jan 2019 14:40:14 +1100
-Message-ID: <87r2df29gh.fsf@concordia.ellerman.id.au>
-References: <20190110162435.309262-1-arnd@arndb.de>
- <20190110162435.309262-15-arnd@arndb.de>
+Date: Mon, 14 Jan 2019 14:59:41 +1100
+Message-ID: <87pnsz28k2.fsf@concordia.ellerman.id.au>
+References: <20190110162435.309262-1-arnd@arndb.de> <20190110162435.309262-15-arnd@arndb.de>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190110162435.309262-15-arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-ID:Date:References
-	:In-Reply-To:Subject:To:From:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=gvVhwD2HbA5xvMfsvm6AQqDNAzZthp9gqnyAOFz0L6U=; b=Ev8U1qAEXvES/W
-	1hHhqyPLMXm8d1v/Calop3pRb0iG7T/eDEPICxsHA8yWRhhGln4C8t81AGkNHX9C5lsinrxXahdag
-	Ayy9giLIKB0DFsiPiGry/awORmoC3QbL5DL7kcszLf/9jKJJKZgz/xgq9lFBXV1W+HF7Q4MF6iaDj
-	+OipHAuk6qU3dyTHlrUI45iMhsGifv+Pvk+YHDWmiKnHNXvttNpUdUcpMbyQo8G56D3bnWFoFI1RK
-	8vNAtDrKHmmIFj6sHGXUHpu0Cam3/qQAJHRkrtldicnf76PG1hwf0QBZhqlBdGgWKSGvhRi7sXFNU
-	ZfuE2HfEaZS0UJ0TGDlg==;
-In-Reply-To: <20190110162435.309262-15-arnd@arndb.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Arnd Bergmann <arnd@arndb.de>, y2038@lists.linaro.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: dalias@libc.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, catalin.marinas@arm.com, will.deacon@arm.com, linux@dominikbrodowski.net, jcmvbkbc@gmail.com, deepa.kernel@gmail.com, hpa@zytor.com, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, dave@stgolabs.net, deller@gmx.de, x86@kernel.org, linux@armlinux.org.uk, mingo@redhat.com, geert@linux-m68k.org, firoz.khan@linaro.org, mattst88@gmail.com, fenghua.yu@intel.com, Arnd Bergmann <arnd@arndb.de>, heiko.carstens@de.ibm.com, linux-m68k@lists.linux-m68k.org, ink@jurassic.park.msu.ru, luto@kernel.org, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org, monstr@monstr.eu, tony.luck@intel.com, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, paul.burton@mips.com, ebiederm@xmission.com, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, akpm@linux-foundation.org, linuxppc-dev@lists.ozlabs.org, d
+Cc: Arnd Bergmann <arnd@arndb.de>, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, tony.luck@intel.com, fenghua.yu@intel.com, geert@linux-m68k.org, monstr@monstr.eu, paul.burton@mips.com, deller@gmx.de, schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com, dalias@libc.org, davem@davemloft.net, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, jcmvbkbc@gmail.com, firoz.khan@linaro.org, ebiederm@xmission.com, deepa.kernel@gmail.com, linux@dominikbrodowski.net, akpm@linux-foundation.org, dave@stgolabs.net, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, l
 
 Hi Arnd,
 
@@ -101,9 +80,10 @@ I'll try and send them today.
 We already have a gap at 366-377 from when we tried to add the split IPC
 calls a few years back.
 
-I guess I don't mind leaving that gap and using the common numbers.
+I guess I don't mind leaving that gap and using the common numbers as
+you've done here.
 
-But would be good to add a comment pointing out that we have room there
-for arch specific syscalls as well.
+But it would be good to add a comment pointing out that we have room
+at 366 for more arch specific syscalls as well.
 
 cheers
