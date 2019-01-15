@@ -1,10 +1,10 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 15/15] arch: add pkey and rseq syscall numbers everywhere
-Date: Tue, 15 Jan 2019 15:47:14 +0100
-Message-ID: <CAK8P3a1Xb4z-mbhBTPZ0Cpy0Hy_s2wwT-8UG9yO6AGbUTjdkyw@mail.gmail.com>
+Subject: Re: [PATCH 14/15] arch: add split IPC system calls where needed
+Date: Tue, 15 Jan 2019 16:01:24 +0100
+Message-ID: <CAK8P3a0uas76i2W1yjFvxHT-2=A8_egUZeAUM-Vya6386+87Xg@mail.gmail.com>
 References: <20190110162435.309262-1-arnd@arndb.de>
- <20190110162435.309262-16-arnd@arndb.de>
- <20190115115229.mcrmmpwdmjxf2cra@e5254000004ec.dyn.armlinux.org.uk>
+ <20190110162435.309262-15-arnd@arndb.de>
+ <87pnsz28k2.fsf@concordia.ellerman.id.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,13 +15,13 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
 	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=B+n7uqmaYl7Ztk5e6CYhHYnTw8G8uw3k/awX/73NQKg=; b=gAn8ldb95e/rdI
-	TgFMALH5+5qdcNF6kRSBuXfvVjw+g21h0TLua0QQ0nUYIzT1iOynVoyx4RTYIHB6qTTwzygcYRT2X
-	lkwGiyyQWeETlgY0j8FInMEsk/YggX8t4zocO/cYOcRciP7xyuMH/8K+8mJ/h7WjaDD7Ct22dnq30
-	u/4AqCt8dwdprlxn8NibOFrEBk3FHbIdViXlg/LEmU+I3UzKgQH2rRH3V9bJpxCiyVV9AmFdTL+yf
-	kuoQ7xrjxXkGgDiPRnfMrj2C3qt0g5J+DOrE0qQ0RG3vtKvhXzX8J2DJAOK58JtDwCJpJHfjYxLYs
-	vpnamI5ozqQRsQVPnRJA==;
-In-Reply-To: <20190115115229.mcrmmpwdmjxf2cra@e5254000004ec.dyn.armlinux.org.uk>
+	List-Owner; bh=XS0Yea0KoAPcL3dhw0Q6jiHOEOrTsEOQGSUS9fhKwqg=; b=GkF3V3UW4tsRTI
+	2mqWXIl1aIeo1ml6/9tUYw9i/tJxIlnl6FTpVy9c9EFxDa5MmoelQezZWYtupX4MoVQaOLrLuDebM
+	uE/8ld28oh4WvZDXQs7VorUagSSjkiqTj3+oV3WglBvCk6cgjgaelgNnxFQm6vkJsN5kmvIHCpc7H
+	8IstLpch0T+L+LYTv5Y+1OwoBj/f78YP5+YZeQLNK1SrAMCr0sQ+7t5qgaOdiP9apPEn22a8ljzJL
+	YWJRDevTDUc8/dvNNZFesdp4rGzciXpCMZUJxj5u2dIirOglW58wLK9XYaIVz1zWSF0i+IOnv6hyf
+	5Oop0WtNIgFaDbBcEgqg==;
+In-Reply-To: <87pnsz28k2.fsf@concordia.ellerman.id.au>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
@@ -32,34 +32,67 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Deepa Dinamani <deepa.kernel@gmail.com>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux <sparclinux@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, Davidlohr Bueso <dave@stgolabs.net>, y2038 Mailman List <y2038@lists.linaro.org>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, the arch/x86 maintainers <x86@kernel.org>, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Firoz Khan <firoz.khan@linaro.org>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Will Deacon <will.deacon@arm.com>, linux-m68k <linux>
+To: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Deepa Dinamani <deepa.kernel@gmail.com>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux <sparclinux@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, Davidlohr Bueso <dave@stgolabs.net>, y2038 Mailman List <y2038@lists.linaro.org>, Helge Deller <deller@gmx.de>, the arch/x86 maintainers <x86@kernel.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Firoz Khan <firoz.khan@linaro.org>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Will Deacon <will.deacon@arm.com>, linux-
 
-On Tue, Jan 15, 2019 at 12:52 PM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
+On Mon, Jan 14, 2019 at 4:59 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
+> Arnd Bergmann <arnd@arndb.de> writes:
+> >  arch/m68k/kernel/syscalls/syscall.tbl     | 11 +++++++++++
+> >  arch/mips/kernel/syscalls/syscall_o32.tbl | 11 +++++++++++
+> >  arch/powerpc/kernel/syscalls/syscall.tbl  | 12 ++++++++++++
 >
-> On Thu, Jan 10, 2019 at 05:24:35PM +0100, Arnd Bergmann wrote:
-> > Most architectures define system call numbers for the rseq and pkey system
-> > calls, even when they don't support the features, and perhaps never will.
-> >
-> > Only a few architectures are missing these, so just define them anyway
-> > for consistency. If we decide to add them later to one of these, the
-> > system call numbers won't get out of sync then.
+> I have some changes I'd like to make to our syscall table that will
+> clash with this.
 >
-> I was lambasted for adding the pkey syscalls for 32-bit ARM in 2016,
-> which will probably never support it.  Why has the attitude towards
-> this kind of thing now apparently become acceptable?
+> I'll try and send them today.
 
-I was (and still am) a bit unsure about this one. A number of architectures
-added the numbers that won't ever support them, but I wasn't sure if
-any of those that didn't add them might need it later.
+Ok. Are those for 5.0 or 5.1? If they are intended for 5.0, it would be
+nice for me to have a branch based on 5.0-rc1 that I can put
+the other patches on top of.
 
-I tried to just go by the rule that anything that we list in
-asm-generic/unistd.h
-is probably important enough that we want to list it everywhere, even if
-that includes a couple that we end up being rather architecture specific.
+> > diff --git a/arch/powerpc/kernel/syscalls/syscall.tbl b/arch/powerpc/kernel/syscalls/syscall.tbl
+> > index db3bbb8744af..1bffab54ff35 100644
+> > --- a/arch/powerpc/kernel/syscalls/syscall.tbl
+> > +++ b/arch/powerpc/kernel/syscalls/syscall.tbl
+> > @@ -425,3 +425,15 @@
+> >  386  nospu   pkey_mprotect                   sys_pkey_mprotect
+> >  387  nospu   rseq                            sys_rseq
+> >  388  nospu   io_pgetevents                   sys_io_pgetevents               compat_sys_io_pgetevents
+> > +# room for arch specific syscalls
+> > +392  64      semtimedop                      sys_semtimedop
+> > +393  common  semget                          sys_semget
+> > +394  common  semctl                          sys_semctl                      compat_sys_semctl
+> > +395  common  shmget                          sys_shmget
+> > +396  common  shmctl                          sys_shmctl                      compat_sys_shmctl
+> > +397  common  shmat                           sys_shmat                       compat_sys_shmat
+> > +398  common  shmdt                           sys_shmdt
+> > +399  common  msgget                          sys_msgget
+> > +400  common  msgsnd                          sys_msgsnd                      compat_sys_msgsnd
+> > +401  common  msgrcv                          sys_msgrcv                      compat_sys_msgrcv
+> > +402  common  msgctl                          sys_msgctl                      compat_sys_msgctl
+>
+> We already have a gap at 366-377 from when we tried to add the split IPC
+> calls a few years back.
+>
+> I guess I don't mind leaving that gap and using the common numbers as
+> you've done here.
+>
+> But it would be good to add a comment pointing out that we have room
+> at 366 for more arch specific syscalls as well.
 
-I'm happy to drop this patch if you or others feel that we're better off
-without it though.
+Ah, I missed that. I've added this to my patch now:
 
-      Arnd
+index 5c0936d862fc..2ddfba536d5f 100644
+--- a/arch/powerpc/kernel/syscalls/syscall.tbl
++++ b/arch/powerpc/kernel/syscalls/syscall.tbl
+@@ -460,6 +460,7 @@
+ 363    spu     switch_endian                   sys_ni_syscall
+ 364    common  userfaultfd                     sys_userfaultfd
+ 365    common  membarrier                      sys_membarrier
++# 366-377 originally left for IPC, now unused
+ 378    nospu   mlock2                          sys_mlock2
+ 379    nospu   copy_file_range                 sys_copy_file_range
+ 380    common  preadv2                         sys_preadv2
+         compat_sys_preadv2
+
+       Arnd
