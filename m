@@ -1,35 +1,36 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH 15/21] sparc: add checks for the return value of
- memblock_alloc*()
-Date: Wed, 16 Jan 2019 09:21:47 -0800 (PST)
-Message-ID: <20190116.092147.2222967221278304230.davem@davemloft.net>
-References: <1547646261-32535-1-git-send-email-rppt@linux.ibm.com>
-        <1547646261-32535-16-git-send-email-rppt@linux.ibm.com>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: Re: PWS 433au (Miata) recovery update
+Date: Wed, 16 Jan 2019 16:50:44 -0600
+Message-ID: <20190116225044.GA16573@gherkin.frus.com>
+References: <20190116071014.GA11881@gherkin.frus.com>
 Mime-Version: 1.0
+Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
+Content-Disposition: inline
+In-Reply-To: <20190116071014.GA11881@gherkin.frus.com>
+Resent-Message-ID: <PBkqRZzd9ZN.A.Q9D.TV7PcB@bendel>
+List-Id: <linux-alpha.vger.kernel.org>
+List-URL: <https://lists.debian.org/debian-alpha/>
+List-Post: <mailto:debian-alpha@lists.debian.org>
+List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+List-Archive: https://lists.debian.org/msgid-search/20190116225044.GA16573@gherkin.frus.com
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1547646261-32535-16-git-send-email-rppt@linux.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: Text/Plain; charset="us-ascii"
-To: rppt@linux.ibm.com
-Cc: linux-mm@kvack.org, akpm@linux-foundation.org, catalin.marinas@arm.com, hch@lst.de, dennis@kernel.org, geert@linux-m68k.org, green.hu@gmail.com, gregkh@linuxfoundation.org, gxt@pku.edu.cn, guoren@kernel.org, heiko.carstens@de.ibm.com, msalter@redhat.com, mattst88@gmail.com, jcmvbkbc@gmail.com, mpe@ellerman.id.au, monstr@monstr.eu, paul.burton@mips.com, pmladek@suse.com, dalias@libc.org, richard@nod.at, robh+dt@kernel.org, linux@armlinux.org.uk, shorne@gmail.com, tony.luck@intel.com, vgupta@synopsys.com, ysato@users.sourceforge.jp, devicetree@vger.kernel.org, kasan-dev@googlegroups.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@v
+To: debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+Cc: mcree@orcon.net.nz, mattst88@gmail.com
 
-From: Mike Rapoport <rppt@linux.ibm.com>
-Date: Wed, 16 Jan 2019 15:44:15 +0200
+On Wed, Jan 16, 2019 at 01:10:14AM -0600, Bob Tracy wrote:
+> (initramfs / systemd / udevd issue)
 
-> Add panic() calls if memblock_alloc*() returns NULL.
-> 
-> Most of the changes are simply addition of
-> 
->         if(!ptr)
->                 panic();
-> 
-> statements after the calls to memblock_alloc*() variants.
-> 
-> Exceptions are pcpu_populate_pte() and kernel_map_range() that were
-> slightly refactored to accommodate the change.
-> 
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+I think I may have this one painted into a corner...
 
-Acked-by: David S. Miller <davem@davemloft.net>
+CONFIG_UNIX (at least) needs to be "y" instead of "m".  This is a
+relatively new dependency.
+
+For userland applications used in the boot process to have such
+dependencies on kernel configuration options is "unfortunate" to
+put it mildly.
+
+--Bob
+
