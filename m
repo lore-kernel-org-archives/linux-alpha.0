@@ -1,47 +1,83 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 21/21] memblock: drop memblock_alloc_*_nopanic() variants
-Date: Fri, 18 Jan 2019 09:42:30 +0100
-Message-ID: <20190118084230.GA8855@kroah.com>
+From: Heiko Carstens <heiko.carstens@de.ibm.com>
+Subject: Re: [PATCH 19/21] treewide: add checks for the return value of
+ memblock_alloc*()
+Date: Fri, 18 Jan 2019 09:43:02 +0100
+Message-ID: <20190118084302.GA4160@osiris>
 References: <1547646261-32535-1-git-send-email-rppt@linux.ibm.com>
- <1547646261-32535-22-git-send-email-rppt@linux.ibm.com>
+ <1547646261-32535-20-git-send-email-rppt@linux.ibm.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1547800953;
-        bh=/A19VUor74ICH0K0h/pulLr023SA07xwYLMGvSrqEU4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=euYF565NKIFwTO8L7LafcO3f+dvk3VpVOqUE3KZqyrAGoL+mfBNN/NBfukJu2vppN
-         jyZroW4VJ+NZVDY0kUiVXswgZ3QIA9IPTrccAzpph12M+/gvbY1jT7YCaLWREj4Dmc
-         XiiHsU4i/YM2IIvKOJvbfh1trsEz6JqMornEb95A=
-Content-Disposition: inline
-In-Reply-To: <1547646261-32535-22-git-send-email-rppt@linux.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:Message-Id:In-Reply-To:MIME-Version:
+	References:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=ZLbLAZ24QjTFYv9s72xTim+rw7rrwaP6PX1ZjCQXPD8=; b=dYr62yXi/EtofE
+	eFCbt9Oh2RF7QtliyBzGtmk0B2vzmkEO4zEpXkyRZvvzR+ude1MpuSeObF/agT2uJkn2EZ2SXx6Gg
+	2npKbQMlrVJY+g2kj8Vc2XKs1ocTzejR6y1qONFU/o9UTmgP3YQiFOUfpVoo2QlVETfuJW0k5oNMM
+	9lFpr6YOo6q9U7MKCcabqRKHAWZLsCoK0jsgoF8upYagylqWu9GzQoipVKN5BK4JC4ojbzjqaU0pY
+	9Fl4C9XsGgP/p9FANDBri8FNzMOUqct5Tuytg40+t0ZntZc9MegJhIvcsu0b88VAfV4NbUn4ut4JS
+	BHKnDmGQks3N6afhj5mQ==;
+In-Reply-To: <1547646261-32535-20-git-send-email-rppt@linux.ibm.com>
+Content-Disposition: inline
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
 To: Mike Rapoport <rppt@linux.ibm.com>
-Cc: linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Petr Mladek <pmladek@suse.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>, Rob Herring <robh+dt@kernel.org>, Russell King <>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, x86@kernel.org, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, linux-sh@vger.kernel.org, Russell King <linux@armlinux.org.uk>, kasan-dev@googlegroups.com, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, uclinux-h8-devel@lists.sourceforge.jp, Petr Mladek <pmladek@suse.com>, linux-xtensa@linux-xtensa.org, linux-alpha@vger.kernel.org, linux-um@lists.infradead.org, linux-m68k@li
 
-On Wed, Jan 16, 2019 at 03:44:21PM +0200, Mike Rapoport wrote:
-> As all the memblock allocation functions return NULL in case of error
-> rather than panic(), the duplicates with _nopanic suffix can be removed.
+On Wed, Jan 16, 2019 at 03:44:19PM +0200, Mike Rapoport wrote:
+> Add check for the return value of memblock_alloc*() functions and call
+> panic() in case of error.
+> The panic message repeats the one used by panicing memblock allocators with
+> adjustment of parameters to include only relevant ones.
+> 
+> The replacement was mostly automated with semantic patches like the one
+> below with manual massaging of format strings.
+> 
+> @@
+> expression ptr, size, align;
+> @@
+> ptr = memblock_alloc(size, align);
+> + if (!ptr)
+> + 	panic("%s: Failed to allocate %lu bytes align=0x%lx\n", __func__,
+> size, align);
 > 
 > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> ---
->  arch/arc/kernel/unwind.c       |  3 +--
->  arch/sh/mm/init.c              |  2 +-
->  arch/x86/kernel/setup_percpu.c | 10 +++++-----
->  arch/x86/mm/kasan_init_64.c    | 14 ++++++++------
->  drivers/firmware/memmap.c      |  2 +-
->  drivers/usb/early/xhci-dbc.c   |  2 +-
->  include/linux/memblock.h       | 35 -----------------------------------
->  kernel/dma/swiotlb.c           |  2 +-
->  kernel/printk/printk.c         | 17 +++++++----------
->  mm/memblock.c                  | 35 -----------------------------------
->  mm/page_alloc.c                | 10 +++++-----
->  mm/page_ext.c                  |  2 +-
->  mm/percpu.c                    | 11 ++++-------
->  mm/sparse.c                    |  6 ++----
->  14 files changed, 37 insertions(+), 114 deletions(-)
+...
+> diff --git a/arch/s390/numa/toptree.c b/arch/s390/numa/toptree.c
+> index 71a608c..0118c77 100644
+> --- a/arch/s390/numa/toptree.c
+> +++ b/arch/s390/numa/toptree.c
+> @@ -31,10 +31,14 @@ struct toptree __ref *toptree_alloc(int level, int id)
+>  {
+>  	struct toptree *res;
+> 
+> -	if (slab_is_available())
+> +	if (slab_is_available()) {
+>  		res = kzalloc(sizeof(*res), GFP_KERNEL);
+> -	else
+> +	} else {
+>  		res = memblock_alloc(sizeof(*res), 8);
+> +		if (!res)
+> +			panic("%s: Failed to allocate %zu bytes align=0x%x\n",
+> +			      __func__, sizeof(*res), 8);
+> +	}
+>  	if (!res)
+>  		return res;
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Please remove this hunk, since the code _should_ be able to handle
+allocation failures anyway (see end of quoted code).
+
+Otherwise for the s390 bits:
+Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com>
