@@ -1,47 +1,57 @@
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
-Subject: Re: [PATCH v2 00/29] y2038: add time64 syscalls
-Date: Fri, 18 Jan 2019 09:45:18 -0800
-Message-ID: <1547833518.2794.36.camel@HansenPartnership.com>
-References: <20190118161835.2259170-1-arnd@arndb.de>
-         <be3863ae-d903-8e9e-5e6c-e4a58fac189d@blastwave.org>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH 12/21] arch: use memblock_alloc() instead of
+ memblock_alloc_from(size, align, 0)
+Date: Fri, 18 Jan 2019 17:53:36 +0000
+Message-ID: <20190118175334.mj2mahbf4onhujgz@pburton-laptop>
+References: <1547646261-32535-1-git-send-email-rppt@linux.ibm.com>
+ <1547646261-32535-13-git-send-email-rppt@linux.ibm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
-        s=20151216; t=1547833520;
-        bh=XXQLXCymB8vOJAkOPmNQI+AOkRgkwA1dHK7GADdM3yU=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=R9WeU/KMkVaa6iP7Pp3wYocx0/dXtN94bF6JMCXpNgrPa0+6kXx+p8ugiGNGWeFvK
-         NyXTpJiwFZR4Yx64OlyySakUFsNn1vA3uDfYr89rHvphDI6UKfVMm7YpmablmnonUb
-         SSSVbS9S63Tvu2GKjTbrRiEXQzC+FJCjZHgJo2VE=
-In-Reply-To: <be3863ae-d903-8e9e-5e6c-e4a58fac189d@blastwave.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Dennis Clarke <dclarke@blastwave.org>, Arnd Bergmann <arnd@arndb.de>, y2038@lists.linaro.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
-Cc: mattst88@gmail.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, tony.luck@intel.com, fenghua.yu@intel.com, geert@linux-m68k.org, monstr@monstr.eu, paul.burton@mips.com, deller@gmx.de, benh@kernel.crashing.org, mpe@ellerman.id.au, schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com, dalias@libc.org, davem@davemloft.net, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, jcmvbkbc@gmail.com, akpm@linux-foundation.org, deepa.kernel@gmail.com, ebiederm@xmission.com, firoz.khan@linaro.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Content-ID:In-Reply-To:
+	References:Message-ID:Date:Subject:To:From:Reply-To:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=PoYkjnC2aRASLgfd7LW1fJl0FUFMw4dGExWfIzpXeWQ=; b=k27lOdveTAFF9t
+	YUSAq2cj7O4VlX6z03ftmWYyanCS4QfqyxhLHfqDnzLPgXIhMiYY0WrfDKuxsDy9Uv26IqrD4VpNt
+	NcPkXy3hiDTrPLdBcxeafD7vz9r/FI1NYBCIwWsQQA5cU6Hp/H1l0V7fgKh20ihTdaFnJKvKUjT/1
+	J+szJ3KQtbuoSSdH+0hTach6pLD+6hM3gieH7cJwJN/Lco1JVMNgzac0tMKmPSV2uXtRiHJ+qrRwQ
+	jWtgXcDEe6JaML9ycVr49uHsBJsiomKEngK+A3xE6J2ei19dbho6u/eOZimA2V3kwM06BxY9aPQJg
+	uaMiXWSTAJ1bGNucbNCA==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=wavesemi.onmicrosoft.com; s=selector1-wavecomp-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YMOM8O196eAFagU4Ul/4cB40eaDuvSu+yFz6aQcvq2g=;
+ b=oEIVoFNOUSYW53tuMbQclAnHJB9YaEYV5vpwumGQNifk5gmo8THc6Pw8wFXn5YlGF3s68xqjT2OFAYeZ6hsIxsynLEK8f7HBTdZd/M4FalYNobCb57oFtPIrVHL2hqbaen204MTl+KtLt5JArP4KM8Aiw1aEFT4FHzI6BNoh8QE=
+In-Reply-To: <1547646261-32535-13-git-send-email-rppt@linux.ibm.com>
+Content-Language: en-US
+Content-ID: <27E0FF00A643614DAB51ABA4F92A557E@namprd22.prod.outlook.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Mike Rapoport <rppt@linux.ibm.com>
+Cc: Rich Felker <dalias@libc.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, "x86@kernel.org" <x86@kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "linux-c6x-dev@linux-c6x.org" <linux-c6x-dev@linux-c6x.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Fri, 2019-01-18 at 11:57 -0500, Dennis Clarke wrote:
-> On 1/18/19 11:18 AM, Arnd Bergmann wrote:
-> > This is a minor update of the patches I posted last week, I
-> > would like to add this into linux-next now, but would still do
-> > changes if there are concerns about the contents. The first
-> > version did not see a lot of replies, which could mean that
-> > either everyone is happy with it, or that it was largely ignored.
-> > 
-> > See also the article at https://lwn.net/Articles/776435/.
+Hi Mike,
+
+On Wed, Jan 16, 2019 at 03:44:12PM +0200, Mike Rapoport wrote:
+> The last parameter of memblock_alloc_from() is the lower limit for the
+> memory allocation. When it is 0, the call is equivalent to
+> memblock_alloc().
 > 
-> I would be happy to read "Approaching the kernel year-2038 end game"
-> however it is behind a pay wall.  Perhaps it may be best to just
-> host interesting articles about open source idea elsewhere.
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 
-Hey, this is an unfair characterization: lwn.net operates an early
-access subscription model, so you can't read the above for 14 days
-after publication without paying for an lwn.net subscription, but by
-the time these patches are upstream there will be no paywall because it
-will expire on 24 January and that URL will then be readable by all. 
-That makes LWN.net a nice, reliable resource for us while still
-supporting some business model to keep it going.
+Acked-by: Paul Burton <paul.burton@mips.com> # MIPS part
 
-James
-
+Thanks,
+    Paul
