@@ -1,83 +1,106 @@
-From: Heiko Carstens <heiko.carstens@de.ibm.com>
-Subject: Re: [PATCH 19/21] treewide: add checks for the return value of
- memblock_alloc*()
-Date: Fri, 18 Jan 2019 09:43:02 +0100
-Message-ID: <20190118084302.GA4160@osiris>
-References: <1547646261-32535-1-git-send-email-rppt@linux.ibm.com>
- <1547646261-32535-20-git-send-email-rppt@linux.ibm.com>
+From: Jann Horn <jannh@google.com>
+Subject: [PATCH v4 1/3] fs: hoist EFSCORRUPTED definition into uapi header
+Date: Fri, 18 Jan 2019 17:14:38 +0100
+Message-ID: <20190118161440.220134-1-jannh@google.com>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=acKuHWDxCAo2HtjYv0zQtkcTtJK21uLYyRX29pjdtaY=;
+        b=OOyZK/XV1Jf2ajxcEWDA2gNbmCgZ01lv9jDs5rhxuE11ERFuA+qJCOuXhBuUgVc5Nm
+         AqgltZ82enjTRDDWDBYQW3yYdDVAjtLQbe8gpl8f5ZG8cJ1fCo8Q47CqvXoxANRYA1GV
+         Rk9yt7+262HG/5T6fv1J9FCZfMi30ksa9EeLFaa4skxzjylHpN4SbHb8osRYGDEKR6Hk
+         8Rmr/NW/00g9X5yLT7/66sPw6D7/7/vjCSmLWM+xz8owAj8Y1l9ifR6/QmwAHeN1H8tD
+         YTVbl1t7b8FB963/C0+dTasPIvpFm52jx3yZkI9m9i9gwICGMHbwu6kq3vapYIxrHXZ6
+         JtEQ==
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:Message-Id:In-Reply-To:MIME-Version:
-	References:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=ZLbLAZ24QjTFYv9s72xTim+rw7rrwaP6PX1ZjCQXPD8=; b=dYr62yXi/EtofE
-	eFCbt9Oh2RF7QtliyBzGtmk0B2vzmkEO4zEpXkyRZvvzR+ude1MpuSeObF/agT2uJkn2EZ2SXx6Gg
-	2npKbQMlrVJY+g2kj8Vc2XKs1ocTzejR6y1qONFU/o9UTmgP3YQiFOUfpVoo2QlVETfuJW0k5oNMM
-	9lFpr6YOo6q9U7MKCcabqRKHAWZLsCoK0jsgoF8upYagylqWu9GzQoipVKN5BK4JC4ojbzjqaU0pY
-	9Fl4C9XsGgP/p9FANDBri8FNzMOUqct5Tuytg40+t0ZntZc9MegJhIvcsu0b88VAfV4NbUn4ut4JS
-	BHKnDmGQks3N6afhj5mQ==;
-In-Reply-To: <1547646261-32535-20-git-send-email-rppt@linux.ibm.com>
-Content-Disposition: inline
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Mike Rapoport <rppt@linux.ibm.com>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, x86@kernel.org, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, linux-sh@vger.kernel.org, Russell King <linux@armlinux.org.uk>, kasan-dev@googlegroups.com, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, uclinux-h8-devel@lists.sourceforge.jp, Petr Mladek <pmladek@suse.com>, linux-xtensa@linux-xtensa.org, linux-alpha@vger.kernel.org, linux-um@lists.infradead.org, linux-m68k@li
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, jannh@google.com
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>, Theodore Ts'o <tytso@mit.edu>, Andreas Dilger <adilger.kernel@dilger.ca>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Dave Chinner <david@fromorbit.com>, Pavel Machek <pavel@ucw.cz>, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
 
-On Wed, Jan 16, 2019 at 03:44:19PM +0200, Mike Rapoport wrote:
-> Add check for the return value of memblock_alloc*() functions and call
-> panic() in case of error.
-> The panic message repeats the one used by panicing memblock allocators with
-> adjustment of parameters to include only relevant ones.
-> 
-> The replacement was mostly automated with semantic patches like the one
-> below with manual massaging of format strings.
-> 
-> @@
-> expression ptr, size, align;
-> @@
-> ptr = memblock_alloc(size, align);
-> + if (!ptr)
-> + 	panic("%s: Failed to allocate %lu bytes align=0x%lx\n", __func__,
-> size, align);
-> 
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-...
-> diff --git a/arch/s390/numa/toptree.c b/arch/s390/numa/toptree.c
-> index 71a608c..0118c77 100644
-> --- a/arch/s390/numa/toptree.c
-> +++ b/arch/s390/numa/toptree.c
-> @@ -31,10 +31,14 @@ struct toptree __ref *toptree_alloc(int level, int id)
->  {
->  	struct toptree *res;
-> 
-> -	if (slab_is_available())
-> +	if (slab_is_available()) {
->  		res = kzalloc(sizeof(*res), GFP_KERNEL);
-> -	else
-> +	} else {
->  		res = memblock_alloc(sizeof(*res), 8);
-> +		if (!res)
-> +			panic("%s: Failed to allocate %zu bytes align=0x%x\n",
-> +			      __func__, sizeof(*res), 8);
-> +	}
->  	if (!res)
->  		return res;
+Multiple filesystems can already return EFSCORRUPTED errors to userspace;
+however, so far, definitions of EFSCORRUPTED were in filesystem-private
+headers.
 
-Please remove this hunk, since the code _should_ be able to handle
-allocation failures anyway (see end of quoted code).
+I wanted to use EUCLEAN to indicate data corruption in the VFS layer;
+Dave Chinner says that I should instead hoist the definitions of
+EFSCORRUPTED into the UAPI header and then use EFSCORRUPTED.
 
-Otherwise for the s390 bits:
-Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com>
+This patch is marked for stable backport because it is a prerequisite for
+the following patch.
+
+Cc: stable@vger.kernel.org
+Suggested-by: Dave Chinner <david@fromorbit.com>
+Signed-off-by: Jann Horn <jannh@google.com>
+---
+ fs/ext2/ext2.h                   | 1 -
+ fs/ext4/ext4.h                   | 1 -
+ fs/xfs/xfs_linux.h               | 1 -
+ include/linux/jbd2.h             | 1 -
+ include/uapi/asm-generic/errno.h | 1 +
+ 5 files changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/fs/ext2/ext2.h b/fs/ext2/ext2.h
+index e770cd100a6a..7fafc19e5aa0 100644
+--- a/fs/ext2/ext2.h
++++ b/fs/ext2/ext2.h
+@@ -369,7 +369,6 @@ struct ext2_inode {
+  */
+ #define	EXT2_VALID_FS			0x0001	/* Unmounted cleanly */
+ #define	EXT2_ERROR_FS			0x0002	/* Errors detected */
+-#define	EFSCORRUPTED			EUCLEAN	/* Filesystem is corrupted */
+ 
+ /*
+  * Mount flags
+diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+index 185a05d3257e..9397e97fc15b 100644
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -3247,6 +3247,5 @@ extern const struct iomap_ops ext4_iomap_ops;
+ #endif	/* __KERNEL__ */
+ 
+ #define EFSBADCRC	EBADMSG		/* Bad CRC detected */
+-#define EFSCORRUPTED	EUCLEAN		/* Filesystem is corrupted */
+ 
+ #endif	/* _EXT4_H */
+diff --git a/fs/xfs/xfs_linux.h b/fs/xfs/xfs_linux.h
+index edbd5a210df2..36e5c6549f15 100644
+--- a/fs/xfs/xfs_linux.h
++++ b/fs/xfs/xfs_linux.h
+@@ -125,7 +125,6 @@ typedef __u32			xfs_nlink_t;
+ 
+ #define ENOATTR		ENODATA		/* Attribute not found */
+ #define EWRONGFS	EINVAL		/* Mount with wrong filesystem type */
+-#define EFSCORRUPTED	EUCLEAN		/* Filesystem is corrupted */
+ #define EFSBADCRC	EBADMSG		/* Bad CRC detected */
+ 
+ #define SYNCHRONIZE()	barrier()
+diff --git a/include/linux/jbd2.h b/include/linux/jbd2.h
+index 0f919d5fe84f..1d0da9c78216 100644
+--- a/include/linux/jbd2.h
++++ b/include/linux/jbd2.h
+@@ -1640,6 +1640,5 @@ static inline tid_t  jbd2_get_latest_transaction(journal_t *journal)
+ #endif	/* __KERNEL__ */
+ 
+ #define EFSBADCRC	EBADMSG		/* Bad CRC detected */
+-#define EFSCORRUPTED	EUCLEAN		/* Filesystem is corrupted */
+ 
+ #endif	/* _LINUX_JBD2_H */
+diff --git a/include/uapi/asm-generic/errno.h b/include/uapi/asm-generic/errno.h
+index cf9c51ac49f9..5ddebc1bf951 100644
+--- a/include/uapi/asm-generic/errno.h
++++ b/include/uapi/asm-generic/errno.h
+@@ -98,6 +98,7 @@
+ #define	EINPROGRESS	115	/* Operation now in progress */
+ #define	ESTALE		116	/* Stale file handle */
+ #define	EUCLEAN		117	/* Structure needs cleaning */
++#define	EFSCORRUPTED	EUCLEAN	/* Filesystem is corrupted */
+ #define	ENOTNAM		118	/* Not a XENIX named type file */
+ #define	ENAVAIL		119	/* No XENIX semaphores available */
+ #define	EISNAM		120	/* Is a named type file */
+-- 
+2.20.1.321.g9e740568ce-goog
+
