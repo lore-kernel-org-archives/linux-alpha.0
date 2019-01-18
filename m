@@ -1,61 +1,92 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 21/21] memblock: drop memblock_alloc_*_nopanic() variants
-Date: Thu, 17 Jan 2019 10:28:42 +0100
-Message-ID: <20190117092842.wnvsc6em5mxga3rn@pathway.suse.cz>
-References: <1547646261-32535-1-git-send-email-rppt@linux.ibm.com>
- <1547646261-32535-22-git-send-email-rppt@linux.ibm.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: Re: PWS 433au (Miata) recovery update
+Date: Fri, 18 Jan 2019 00:19:52 +0000 (GMT)
+Message-ID: <alpine.LFD.2.21.1901172329010.14808@eddie.linux-mips.org>
+References: <20190116071014.GA11881@gherkin.frus.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1547646261-32535-22-git-send-email-rppt@linux.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
+Sender: "Maciej W. Rozycki" <macro@linux-mips.org>
+In-Reply-To: <20190116071014.GA11881@gherkin.frus.com>
+Resent-Message-ID: <fnlBs3PQzWK.A.n6D.UGSQcB@bendel>
+List-Id: <linux-alpha.vger.kernel.org>
+List-URL: <https://lists.debian.org/debian-alpha/>
+List-Post: <mailto:debian-alpha@lists.debian.org>
+List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+List-Archive: https://lists.debian.org/msgid-search/alpine.LFD.2.21.1901172329010.14808@eddie.linux-mips.org
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mike Rapoport <rppt@linux.ibm.com>
-Cc: linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>, Rob Herring <robh+dt@kernel.org>
+To: Bob Tracy <rct@gherkin.frus.com>
+Cc: debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org, mcree@orcon.net.nz, mattst88@gmail.com
 
-On Wed 2019-01-16 15:44:21, Mike Rapoport wrote:
-> As all the memblock allocation functions return NULL in case of error
-> rather than panic(), the duplicates with _nopanic suffix can be removed.
+On Wed, 16 Jan 2019, Bob Tracy wrote:
 
-[...]
+> Odd thing about the disk partitioning scheme.  The disk label definitely
+> has to be "bsd" for SRM to be happy, but if Linux is the only OS on the
+> disk, all the rest of the BSD partitioning conventions don't have to be
+> observed as far as slice "c" spanning the entire disk, slice "a" being
+> the "boot" slice, slice "b" being "swap", and so forth.  I doubt dual-
+> booting with Digital UNIX or one of the *BSD variants is a practical
+> possibility for most people, particularly those with PWS systems having
+> limited disk space.
 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index c4f0a41..ae65221 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -1147,17 +1147,14 @@ void __init setup_log_buf(int early)
->  	if (!new_log_buf_len)
->  		return;
->  
-> -	if (early) {
-> -		new_log_buf =
-> -			memblock_alloc(new_log_buf_len, LOG_ALIGN);
-> -	} else {
-> -		new_log_buf = memblock_alloc_nopanic(new_log_buf_len,
-> -							  LOG_ALIGN);
-> -	}
-> -
-> +	new_log_buf = memblock_alloc(new_log_buf_len, LOG_ALIGN);
+ SRM doesn't actually care about or know the disk partitioning scheme, 
+however it does require a signature and a pointer to the location of the 
+boot loader (with `aboot' being the usual choice for Linux) in the first 
+physical sector, and these structures happen to clash with the location of 
+the IBM PC's DOS-style partition table.
 
-The above change is enough.
+ As you observe the partitions for Linux use can be arbitrary.  I used to 
+install `aboot' outside any partition by just leaving a number of sectors 
+at the beginning of the disk unassigned; `aboot' takes some 80KiB only. 
+This is analogous to disks using a DOS-style partition table where you'd 
+often leave the whole (simulated) first track of first cylinder unassigned 
+for boot loader use.  This saves a partition table entry for a data area 
+that can hardly be used through the corresponding block device anyway.
 
->  	if (unlikely(!new_log_buf)) {
-> -		pr_err("log_buf_len: %lu bytes not available\n",
-> -			new_log_buf_len);
-> +		if (early)
-> +			panic("log_buf_len: %lu bytes not available\n",
-> +				new_log_buf_len);
+ NB be aware if you ever boot Windows NT on an Alpha machine that has an 
+SRM signature on some disks, then the first sector of these disks will get 
+corrupted under NT's assumption that these disks have no data and need to 
+have a DOS-style partition table installed in the first sector.  Any OSF/1 
+disk label will be retained, however the SRM signature will be lost making 
+such disks unbootable and will have to be restored to make them bootable 
+again.  Also the presence of the DOS-style partition table marker may 
+confuse the Linux kernel if support for such partition tables has been 
+compiled in in the addition to support for OSF/1 disk labels.
 
-panic() is not needed here. printk() will just continue using
-the (smaller) static buffer.
+> A brief note about partitioning programs: "fdisk" is NOT your friend
+> on the Alpha, especially in "modern" times.  Use "parted" and save
+> yourself much frustration.
 
-> +		else
-> +			pr_err("log_buf_len: %lu bytes not available\n",
-> +			       new_log_buf_len);
->  		return;
->  	}
+ I had a look at the GIT history of `util-linux' and it looks like in the 
+conversion of the tool to use `libfdisk', also included with `util-linux', 
+support has been lost, which I find rather unfortunate.
 
-Best Regards,
-Petr
+ It should be pretty straightforward to resurrect with the aid of old 
+code, however it was never particularly clean (as has not been what still 
+remains in `fdisk') due to the use of `#ifdef __alpha__' to select the 
+label type, meaning you could not work with a disk intended for an Alpha 
+system using fdisk compiled for a different host architecture.  It looks 
+to me like the current framework would make it easier to avoid this #ifdef 
+hack, but obviously any remains would have to be cleaned up.
+
+ There used to be a tool called `minlabel' too that you could use to 
+partition your Alpha disk, but it was rather crude.
+
+> (1) "systemd" (and "udevd" by extension) don't play well with "/usr"
+> being on a separate partition from "/".  If I have *any* advice to offer
+> both the battle-scarred veteran and the newbie, it would be to consider
+> consolidating those two partitions into a single partition.  Me?  I'd
+> prefer the younger generation of system programmers consider the
+> perfectly valid reasons why those filesystems might have been separate
+> to begin with, and respect those reasons.  (Hint: much smaller disks.)
+
+ In the old days it used to be a common practice to have /usr NFS-mounted 
+in some installations, often where NIS was also used; perhaps it is not 
+anymore.
+
+ FWIW,
+
+  Maciej
+
