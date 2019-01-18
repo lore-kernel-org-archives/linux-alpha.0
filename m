@@ -1,64 +1,47 @@
-From: Gabriel Paubert <paubert@iram.es>
-Subject: Re: [PATCH v2 13/29] arch: add split IPC system calls where needed
-Date: Fri, 18 Jan 2019 18:18:30 +0100
-Message-ID: <20190118171830.quvvwdgbuhq2nqrh@lt-gp.iram.es>
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
+Subject: Re: [PATCH v2 00/29] y2038: add time64 syscalls
+Date: Fri, 18 Jan 2019 09:45:18 -0800
+Message-ID: <1547833518.2794.36.camel@HansenPartnership.com>
 References: <20190118161835.2259170-1-arnd@arndb.de>
- <20190118161835.2259170-14-arnd@arndb.de>
+         <be3863ae-d903-8e9e-5e6c-e4a58fac189d@blastwave.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=nqvyRVV15Ia3iDBEz3AiZkv+wz71BzAcDgVUpblxL3c=; b=TNJJ5pEgp+RVAz
-	3PMXNj0dYAbGI25L58xo0jB9yFvE+leKkhjR2lIje3BClyhVeWIZXTJC4OaFiNuZrHHpmg7EaINSI
-	r9qO5flhqwTX2rpFe+fdl/3OXfeLAlcKC6+Ig3xsbJXpEv43Ag3QNiUruniptqsMEIjbpinzjZX0v
-	s8DiOeN+QDe6XduZ7Ywfq2pNrn7SfFyuJ1IMD/Io30Vy5TrZwSVBug30znMw6RSO7xe657HGXIsdP
-	Dqo+O6vLR228/vMA74/qn3s/cJBG+Acc9yWrYDHfWQxghZpSU6vtsn4yekcrf8ZlQj0F17bF4hsL7
-	hxLNgyAyD0fNyjp0uneQ==;
-Content-Disposition: inline
-In-Reply-To: <20190118161835.2259170-14-arnd@arndb.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: dalias@libc.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, catalin.marinas@arm.com, will.deacon@arm.com, linux-mips@vger.kernel.org, jcmvbkbc@gmail.com, deepa.kernel@gmail.com, hpa@zytor.com, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, y2038@lists.linaro.org, deller@gmx.de, x86@kernel.org, linux@armlinux.org.uk, mingo@redhat.com, geert@linux-m68k.org, firoz.khan@linaro.org, mattst88@gmail.com, fenghua.yu@intel.com, heiko.carstens@de.ibm.com, linux-alpha@vger.kernel.org, schwidefsky@de.ibm.com, linux-m68k@lists.linux-m68k.org, luto@kernel.org, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org, monstr@monstr.eu, tony.luck@intel.com, linux-parisc@vger.kernel.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, paul.burton@mips.com, ebiederm@xmission.com, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1547833520;
+        bh=XXQLXCymB8vOJAkOPmNQI+AOkRgkwA1dHK7GADdM3yU=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=R9WeU/KMkVaa6iP7Pp3wYocx0/dXtN94bF6JMCXpNgrPa0+6kXx+p8ugiGNGWeFvK
+         NyXTpJiwFZR4Yx64OlyySakUFsNn1vA3uDfYr89rHvphDI6UKfVMm7YpmablmnonUb
+         SSSVbS9S63Tvu2GKjTbrRiEXQzC+FJCjZHgJo2VE=
+In-Reply-To: <be3863ae-d903-8e9e-5e6c-e4a58fac189d@blastwave.org>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Dennis Clarke <dclarke@blastwave.org>, Arnd Bergmann <arnd@arndb.de>, y2038@lists.linaro.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Cc: mattst88@gmail.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will.deacon@arm.com, tony.luck@intel.com, fenghua.yu@intel.com, geert@linux-m68k.org, monstr@monstr.eu, paul.burton@mips.com, deller@gmx.de, benh@kernel.crashing.org, mpe@ellerman.id.au, schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com, dalias@libc.org, davem@davemloft.net, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, jcmvbkbc@gmail.com, akpm@linux-foundation.org, deepa.kernel@gmail.com, ebiederm@xmission.com, firoz.khan@linaro.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org
 
-On Fri, Jan 18, 2019 at 05:18:19PM +0100, Arnd Bergmann wrote:
-> The IPC system call handling is highly inconsistent across architectures,
-> some use sys_ipc, some use separate calls, and some use both.  We also
-> have some architectures that require passing IPC_64 in the flags, and
-> others that set it implicitly.
+On Fri, 2019-01-18 at 11:57 -0500, Dennis Clarke wrote:
+> On 1/18/19 11:18 AM, Arnd Bergmann wrote:
+> > This is a minor update of the patches I posted last week, I
+> > would like to add this into linux-next now, but would still do
+> > changes if there are concerns about the contents. The first
+> > version did not see a lot of replies, which could mean that
+> > either everyone is happy with it, or that it was largely ignored.
+> > 
+> > See also the article at https://lwn.net/Articles/776435/.
 > 
-> For the additon of a y2083 safe semtimedop() system call, I chose to only
+> I would be happy to read "Approaching the kernel year-2038 end game"
+> however it is behind a pay wall.  Perhaps it may be best to just
+> host interesting articles about open source idea elsewhere.
 
-It's not critical, but there are two typos in that line: 
-additon -> addition
-2083 -> 2038
+Hey, this is an unfair characterization: lwn.net operates an early
+access subscription model, so you can't read the above for 14 days
+after publication without paying for an lwn.net subscription, but by
+the time these patches are upstream there will be no paywall because it
+will expire on 24 January and that URL will then be readable by all. 
+That makes LWN.net a nice, reliable resource for us while still
+supporting some business model to keep it going.
 
-	Gabriel
+James
 
-> support the separate entry points, but that requires first supporting
-> the regular ones with their own syscall numbers.
-> 
-> The IPC_64 is now implied by the new semctl/shmctl/msgctl system
-> calls even on the architectures that require passing it with the ipc()
-> multiplexer.
-> 
-> I'm not adding the new semtimedop() or semop() on 32-bit architectures,
-> those will get implemented using the new semtimedop_time64() version
-> that gets added along with the other time64 calls.
-> Three 64-bit architectures (powerpc, s390 and sparc) get semtimedop().
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
