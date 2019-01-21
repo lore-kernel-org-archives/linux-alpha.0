@@ -1,83 +1,118 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v2 29/29] y2038: add 64-bit time_t syscalls to all 32-bit architectures
-Date: Mon, 21 Jan 2019 18:08:20 +0100
-Message-ID: <CAK8P3a04UC2dHVqx1gHXJQzsDw446h1ghLEuRe0xmUyJgrOktw@mail.gmail.com>
-References: <20190118161835.2259170-1-arnd@arndb.de> <20190118161835.2259170-30-arnd@arndb.de>
- <CALCETrXqM5mhvwreN5y-9K99h1j9rs9MAVK-cNLC54s1fdHA6w@mail.gmail.com>
- <CAK8P3a0V+xboaGAF2nqrYtpjXXA7y0LcvCKi4ngLTus1D_XZBA@mail.gmail.com>
- <CALCETrWPj6dHEyo=AELoVjXGsiwuSpRp17x3CEWBHvp7i3cy+Q@mail.gmail.com>
- <20190119142852.cntdihah4mpa3lgx@e5254000004ec.dyn.armlinux.org.uk> <CAMuHMdXzQNEEDjWrmTph8Krovj1g2WhnBUaM=FvKB+J2fZqctA@mail.gmail.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 19/21] treewide: add checks for the return value of
+ memblock_alloc*()
+Date: Mon, 21 Jan 2019 11:18:21 -0600
+Message-ID: <20190121171821.GA13557@bogus>
+References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
+ <1548057848-15136-20-git-send-email-rppt@linux.ibm.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAMuHMdXzQNEEDjWrmTph8Krovj1g2WhnBUaM=FvKB+J2fZqctA@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1548057848-15136-20-git-send-email-rppt@linux.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Russell King - ARM Linux admin <linux@armlinux.org.uk>, Andy Lutomirski <luto@kernel.org>, y2038 Mailman List <y2038@lists.linaro.org>, Linux API <linux-api@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Matt Turner <mattst88@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Rich Felker <dalias@libc.org>, D
+To: Mike Rapoport <rppt@linux.ibm.com>
+Cc: linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Petr Mladek <pmladek@suse.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>
 
-On Mon, Jan 21, 2019 at 9:19 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Sat, Jan 19, 2019 at 3:29 PM Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> > On Fri, Jan 18, 2019 at 11:53:25AM -0800, Andy Lutomirski wrote:
-> > > On Fri, Jan 18, 2019 at 11:33 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> > > > On Fri, Jan 18, 2019 at 7:50 PM Andy Lutomirski <luto@kernel.org> wrote:
-> > >
-> > > Can we perhaps just start the consistent numbers above 547 or maybe
-> > > block out 512..547 in the new regime?
-> >
-> > I don't think you gain much with that kind of scheme - it won't take
-> > very long before an architecture misses having a syscall added, and
-> > then someone else adds their own.  Been there with ARM - I was keeping
-> > the syscall table in the same order as x86 for new syscalls, but now
->
-> Same for m68k, and probably other architectures.
->
-> > that others have been adding syscalls to the table since I converted
-> > ARM to the tabular form, that's now gone out the window.
-> >
-> > So, I think it's completely pointless to do what you're suggesting.
-> > We'll just end up with a big hole in the middle of the syscall table
-> > and then revert back to random numbering of syscalls thereafter again.
->
-> I believe the plan is to add future syscalls for all architectures in a
-> single commit, to keep everything in sync.
+On Mon, Jan 21, 2019 at 10:04:06AM +0200, Mike Rapoport wrote:
+> Add check for the return value of memblock_alloc*() functions and call
+> panic() in case of error.
+> The panic message repeats the one used by panicing memblock allocators with
+> adjustment of parameters to include only relevant ones.
+> 
+> The replacement was mostly automated with semantic patches like the one
+> below with manual massaging of format strings.
+> 
+> @@
+> expression ptr, size, align;
+> @@
+> ptr = memblock_alloc(size, align);
+> + if (!ptr)
+> + 	panic("%s: Failed to allocate %lu bytes align=0x%lx\n", __func__,
+> size, align);
+> 
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> Reviewed-by: Guo Ren <ren_guo@c-sky.com>             # c-sky
+> Acked-by: Paul Burton <paul.burton@mips.com>	     # MIPS
+> Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com> # s390
+> Reviewed-by: Juergen Gross <jgross@suse.com>         # Xen
+> ---
+>  arch/alpha/kernel/core_cia.c              |  3 +++
+>  arch/alpha/kernel/core_marvel.c           |  6 ++++++
+>  arch/alpha/kernel/pci-noop.c              | 13 +++++++++++--
+>  arch/alpha/kernel/pci.c                   | 11 ++++++++++-
+>  arch/alpha/kernel/pci_iommu.c             | 12 ++++++++++++
+>  arch/arc/mm/highmem.c                     |  4 ++++
+>  arch/arm/kernel/setup.c                   |  6 ++++++
+>  arch/arm/mm/mmu.c                         | 14 +++++++++++++-
+>  arch/arm64/kernel/setup.c                 |  8 +++++---
+>  arch/arm64/mm/kasan_init.c                | 10 ++++++++++
+>  arch/c6x/mm/dma-coherent.c                |  4 ++++
+>  arch/c6x/mm/init.c                        |  3 +++
+>  arch/csky/mm/highmem.c                    |  5 +++++
+>  arch/h8300/mm/init.c                      |  3 +++
+>  arch/m68k/atari/stram.c                   |  4 ++++
+>  arch/m68k/mm/init.c                       |  3 +++
+>  arch/m68k/mm/mcfmmu.c                     |  6 ++++++
+>  arch/m68k/mm/motorola.c                   |  9 +++++++++
+>  arch/m68k/mm/sun3mmu.c                    |  6 ++++++
+>  arch/m68k/sun3/sun3dvma.c                 |  3 +++
+>  arch/microblaze/mm/init.c                 |  8 ++++++--
+>  arch/mips/cavium-octeon/dma-octeon.c      |  3 +++
+>  arch/mips/kernel/setup.c                  |  3 +++
+>  arch/mips/kernel/traps.c                  |  3 +++
+>  arch/mips/mm/init.c                       |  5 +++++
+>  arch/nds32/mm/init.c                      | 12 ++++++++++++
+>  arch/openrisc/mm/ioremap.c                |  8 ++++++--
+>  arch/powerpc/kernel/dt_cpu_ftrs.c         |  5 +++++
+>  arch/powerpc/kernel/pci_32.c              |  3 +++
+>  arch/powerpc/kernel/setup-common.c        |  3 +++
+>  arch/powerpc/kernel/setup_64.c            |  4 ++++
+>  arch/powerpc/lib/alloc.c                  |  3 +++
+>  arch/powerpc/mm/hash_utils_64.c           |  3 +++
+>  arch/powerpc/mm/mmu_context_nohash.c      |  9 +++++++++
+>  arch/powerpc/mm/pgtable-book3e.c          | 12 ++++++++++--
+>  arch/powerpc/mm/pgtable-book3s64.c        |  3 +++
+>  arch/powerpc/mm/pgtable-radix.c           |  9 ++++++++-
+>  arch/powerpc/mm/ppc_mmu_32.c              |  3 +++
+>  arch/powerpc/platforms/pasemi/iommu.c     |  3 +++
+>  arch/powerpc/platforms/powermac/nvram.c   |  3 +++
+>  arch/powerpc/platforms/powernv/opal.c     |  3 +++
+>  arch/powerpc/platforms/powernv/pci-ioda.c |  8 ++++++++
+>  arch/powerpc/platforms/ps3/setup.c        |  3 +++
+>  arch/powerpc/sysdev/msi_bitmap.c          |  3 +++
+>  arch/s390/kernel/setup.c                  | 13 +++++++++++++
+>  arch/s390/kernel/smp.c                    |  5 ++++-
+>  arch/s390/kernel/topology.c               |  6 ++++++
+>  arch/s390/numa/mode_emu.c                 |  3 +++
+>  arch/s390/numa/numa.c                     |  6 +++++-
+>  arch/sh/mm/init.c                         |  6 ++++++
+>  arch/sh/mm/numa.c                         |  4 ++++
+>  arch/um/drivers/net_kern.c                |  3 +++
+>  arch/um/drivers/vector_kern.c             |  3 +++
+>  arch/um/kernel/initrd.c                   |  2 ++
+>  arch/um/kernel/mem.c                      | 16 ++++++++++++++++
+>  arch/unicore32/kernel/setup.c             |  4 ++++
+>  arch/unicore32/mm/mmu.c                   | 15 +++++++++++++--
+>  arch/x86/kernel/acpi/boot.c               |  3 +++
+>  arch/x86/kernel/apic/io_apic.c            |  5 +++++
+>  arch/x86/kernel/e820.c                    |  3 +++
+>  arch/x86/platform/olpc/olpc_dt.c          |  3 +++
+>  arch/x86/xen/p2m.c                        | 11 +++++++++--
+>  arch/xtensa/mm/kasan_init.c               |  4 ++++
+>  arch/xtensa/mm/mmu.c                      |  3 +++
+>  drivers/clk/ti/clk.c                      |  3 +++
+>  drivers/macintosh/smu.c                   |  3 +++
+>  drivers/of/fdt.c                          |  8 +++++++-
+>  drivers/of/unittest.c                     |  8 +++++++-
 
-Yes, that is the idea. This was not realistic before, since each one
-of the old architectures had its own way of describing the system call
-tables, and many needed a different set of quirks.
+Acked-by: Rob Herring <robh@kernel.org>
 
-Since (almost) everything is now converted to the syscall.tbl format,
-we have removed all obsolete architectures, and a lot of the quirks
-(x32, spu, s390-31) won't matter as much in the future, I think it is
-now possible to do it.
-
-We could even extend scripts/checksyscalls.sh to warn if a new
-syscall above 423 is not added to all 16 tables at the same time.
-
-> Regardless, I'm wondering what to do with the holes marked "room for
-> arch specific calls".
-> When is a syscall really arch-specific, and can it be added there, and
-> when does it turn out (later) that it isn't, breaking the
-> synchronization again?
-
-We've had a bit of that already, with cacheflush(), which exists on
-a couple of architectures, including some that use the first
-'arch specific' slot (244) of the asm-generic table. I think this
-will be rare enough that we can figure out a solution when we
-get there.
-
-> The pkey syscalls may be a bad example, as AFAIU they can be implemented
-> on some architectures, but not on some others.  Still, I had skipped them
-> when adding new syscalls to m68k.
->
-> Perhaps we should get rid of the notion of "arch-specific syscalls", and
-> reserve a slot everywhere anyway?
-
-I don't mind calling the hole something else if that helps. Out of
-principle I would already assume that anything we add for x86
-or the generic table should be added everywhere, but we can
-make it broader than that.
-
-      Arnd
+>  drivers/xen/swiotlb-xen.c                 |  7 +++++--
+>  kernel/power/snapshot.c                   |  3 +++
+>  lib/cpumask.c                             |  3 +++
+>  mm/kasan/init.c                           | 10 ++++++++--
+>  mm/sparse.c                               | 19 +++++++++++++++++--
+>  73 files changed, 409 insertions(+), 28 deletions(-)
