@@ -1,96 +1,75 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 29/29] y2038: add 64-bit time_t syscalls to all 32-bit architectures
-Date: Mon, 21 Jan 2019 09:19:11 +0100
-Message-ID: <CAMuHMdXzQNEEDjWrmTph8Krovj1g2WhnBUaM=FvKB+J2fZqctA@mail.gmail.com>
-References: <20190118161835.2259170-1-arnd@arndb.de> <20190118161835.2259170-30-arnd@arndb.de>
- <CALCETrXqM5mhvwreN5y-9K99h1j9rs9MAVK-cNLC54s1fdHA6w@mail.gmail.com>
- <CAK8P3a0V+xboaGAF2nqrYtpjXXA7y0LcvCKi4ngLTus1D_XZBA@mail.gmail.com>
- <CALCETrWPj6dHEyo=AELoVjXGsiwuSpRp17x3CEWBHvp7i3cy+Q@mail.gmail.com> <20190119142852.cntdihah4mpa3lgx@e5254000004ec.dyn.armlinux.org.uk>
+Subject: Re: [PATCH v2 19/21] treewide: add checks for the return value of
+ memblock_alloc*()
+Date: Mon, 21 Jan 2019 09:39:40 +0100
+Message-ID: <CAMuHMdUhaTv0E3oMjMjoW0XReZgB=bm+8OGUvuDtLPBJzGQYjw@mail.gmail.com>
+References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
+ <1548057848-15136-20-git-send-email-rppt@linux.ibm.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190119142852.cntdihah4mpa3lgx@e5254000004ec.dyn.armlinux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc: Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Linux API <linux-api@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Matt Turner <mattst88@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=+lFvMqd4CYqYaQeS8PB0LyXTcPx4WwmxbtJQugM/PhM=; b=rhxjGV8dwrCGfz
+	8rigCvcX66jpYsdtfDIdL9YSvEai9luPN9YWeMqXVFJ4SrTQ2VoJf351e6X4iLTGlxYjw7zPy31mn
+	2ICdU+Gw6aZQZHQP+5zscpbhg69w41W/vC3dD5G+J3IX/mv4o2M4WdaESZoDZyeCHqkKYIxAGqeRT
+	SKvA6RgaHk7+5toUt+hOL9Ka13Cnyewi4+zKEX6SsKcEzq3y7a6DaFKdafnl18MhhHMbqjn6wHNaC
+	X2UC6dG+GleHNrgzf+p79nOSpf2CHI5UArhrXnXLe3Xs/5U8/VQTbXqqX2RvVy5Hff5L3xTLGdw6o
+	ZxPf2XJbCYVU3X5c2Fkg==;
+In-Reply-To: <1548057848-15136-20-git-send-email-rppt@linux.ibm.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Mike Rapoport <rppt@linux.ibm.com>
+Cc: Rich Felker <dalias@libc.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, the arch/x86 maintainers <x86@kernel.org>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, sparclinux <sparclinux@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, linux-s390 <linux-s390@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, Linux-sh list <linux-sh@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, kasan-dev@googlegroups.com, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, arcml <linux-snps-arc@lists.infradead.org>, 
 
-Hi Russell,
-
-On Sat, Jan 19, 2019 at 3:29 PM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
-> On Fri, Jan 18, 2019 at 11:53:25AM -0800, Andy Lutomirski wrote:
-> > On Fri, Jan 18, 2019 at 11:33 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> > > On Fri, Jan 18, 2019 at 7:50 PM Andy Lutomirski <luto@kernel.org> wrote:
-> > > > On Fri, Jan 18, 2019 at 8:25 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> > > > > - Once we get to 512, we clash with the x32 numbers (unless
-> > > > >   we remove x32 support first), and probably have to skip
-> > > > >   a few more. I also considered using the 512..547 space
-> > > > >   for 32-bit-only calls (which never clash with x32), but
-> > > > >   that also seems to add a bit of complexity.
-> > > >
-> > > > I have a patch that I'll send soon to make x32 use its own table.  As
-> > > > far as I'm concerned, 547 is *it*.  548 is just a normal number and is
-> > > > not special.  But let's please not reuse 512..547 for other purposes
-> > > > on x86 variants -- that way lies even more confusion, IMO.
-> > >
-> > > Fair enough, the space for those numbers is cheap enough here.
-> > > I take it you mean we also should not reuse that number space if
-> > > we were to decide to remove x32 soon, but you are not worried
-> > > about clashing with arch/alpha when everything else uses consistent
-> > > numbers?
-> > >
-> >
-> > I think we have two issues if we reuse those numbers for new syscalls.
-> > First, I'd really like to see new syscalls be numbered consistently
-> > everywhere, or at least on all x86 variants, and we can't on x32
-> > because they mean something else.  Perhaps more importantly, due to
-> > what is arguably a rather severe bug, issuing a native x86_64 syscall
-> > (x32 bit clear) with nr in the range 512..547 does *not* return
-> > -ENOSYS on a kernel with x32 enabled.  Instead it does something that
-> > is somewhat arbitrary.  With my patch applied, it will return -ENOSYS,
-> > but old kernels will still exist, and this will break syscall probing.
-> >
-> > Can we perhaps just start the consistent numbers above 547 or maybe
-> > block out 512..547 in the new regime?
+On Mon, Jan 21, 2019 at 9:06 AM Mike Rapoport <rppt@linux.ibm.com> wrote:
+> Add check for the return value of memblock_alloc*() functions and call
+> panic() in case of error.
+> The panic message repeats the one used by panicing memblock allocators with
+> adjustment of parameters to include only relevant ones.
 >
-> I don't think you gain much with that kind of scheme - it won't take
-> very long before an architecture misses having a syscall added, and
-> then someone else adds their own.  Been there with ARM - I was keeping
-> the syscall table in the same order as x86 for new syscalls, but now
-
-Same for m68k, and probably other architectures.
-
-> that others have been adding syscalls to the table since I converted
-> ARM to the tabular form, that's now gone out the window.
+> The replacement was mostly automated with semantic patches like the one
+> below with manual massaging of format strings.
 >
-> So, I think it's completely pointless to do what you're suggesting.
-> We'll just end up with a big hole in the middle of the syscall table
-> and then revert back to random numbering of syscalls thereafter again.
+> @@
+> expression ptr, size, align;
+> @@
+> ptr = memblock_alloc(size, align);
+> + if (!ptr)
+> +       panic("%s: Failed to allocate %lu bytes align=0x%lx\n", __func__,
+> size, align);
+>
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 
-I believe the plan is to add future syscalls for all architectures in a
-single commit, to keep everything in sync.
+>  arch/m68k/atari/stram.c                   |  4 ++++
+>  arch/m68k/mm/init.c                       |  3 +++
+>  arch/m68k/mm/mcfmmu.c                     |  6 ++++++
+>  arch/m68k/mm/motorola.c                   |  9 +++++++++
+>  arch/m68k/mm/sun3mmu.c                    |  6 ++++++
+>  arch/m68k/sun3/sun3dvma.c                 |  3 +++
 
-Regardless, I'm wondering what to do with the holes marked "room for
-arch specific calls".
-When is a syscall really arch-specific, and can it be added there, and
-when does it turn out (later) that it isn't, breaking the
-synchronization again?
-
-The pkey syscalls may be a bad example, as AFAIU they can be implemented
-on some architectures, but not on some others.  Still, I had skipped them
-when adding new syscalls to m68k.
-
-Perhaps we should get rid of the notion of "arch-specific syscalls", and
-reserve a slot everywhere anyway?
+For m68k:
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
 Gr{oetje,eeting}s,
 
                         Geert
 
-
---
+-- 
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
