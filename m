@@ -1,59 +1,49 @@
-From: Bob Tracy <rct@gherkin.frus.com>
-Subject: [PATCH] 4.18-rc7 on alpha: bitsperlong issue
-Date: Mon, 21 Jan 2019 15:42:32 -0600
-Message-ID: <20190121214232.GA14964@gherkin.frus.com>
-References: <20190121161928.GA12984@gherkin.frus.com>
+From: "Theodore Y. Ts'o" <tytso@mit.edu>
+Subject: Re: [PATCH v4 1/3] fs: hoist EFSCORRUPTED definition into uapi header
+Date: Mon, 21 Jan 2019 16:54:54 -0500
+Message-ID: <20190121215454.GA12996@mit.edu>
+References: <20190118161440.220134-1-jannh@google.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="NzB8fVQJ5HfG6fxh"
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
+Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kYvqp4hrgCFQ836s5UO6vH3TJDt91NQ8hh7mp7rPDg4=;
+ b=YpTQtwx1zrNSQUuRwnKpcKWDpSLFbk0SKu0JJCZnHHfX0WKbhinqHaP9ksODm/TTkvagk4wa4KxJvu0mKWiTZhvMWycyN+ZBV2MZQy7tZeMc1NNsIDZ5i2YBC2udXCzfxyT8e0TeUAiPdfW93xPd3gde5C1BKZTYBDco1hNXzbo=
 Content-Disposition: inline
-In-Reply-To: <20190121161928.GA12984@gherkin.frus.com>
-Resent-Message-ID: <2hX1Cnh7zUE.A.m-B.XzjRcB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/20190121214232.GA14964@gherkin.frus.com
-To: linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org
-Cc: mcree@orcon.net.nz, mattst88@gmail.com
+In-Reply-To: <20190118161440.220134-1-jannh@google.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+To: Jann Horn <jannh@google.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, "Eric W. Biederman" <ebiederm@xmission.com>, Andreas Dilger <adilger.kernel@dilger.ca>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Dave Chinner <david@fromorbit.com>, Pavel Machek <pavel@ucw.cz>, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
 
+On Fri, Jan 18, 2019 at 05:14:38PM +0100, Jann Horn wrote:
+> Multiple filesystems can already return EFSCORRUPTED errors to userspace;
+> however, so far, definitions of EFSCORRUPTED were in filesystem-private
+> headers.
+> 
+> I wanted to use EUCLEAN to indicate data corruption in the VFS layer;
+> Dave Chinner says that I should instead hoist the definitions of
+> EFSCORRUPTED into the UAPI header and then use EFSCORRUPTED.
+> 
+> This patch is marked for stable backport because it is a prerequisite for
+> the following patch.
+> 
+> Cc: stable@vger.kernel.org
+> Suggested-by: Dave Chinner <david@fromorbit.com>
+> Signed-off-by: Jann Horn <jannh@google.com>
 
---NzB8fVQJ5HfG6fxh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Before we enshrine the overloading of EUCLEAN and EFSCORRUPTED, I
+wonder if we should at least consider the option of assigning a new
+error code number for EFSCORRUPTED.  The downside of doing this is
+that for a while, older versions glibc won't have strerror/perror
+translation for the new error code.  On the other hand, I'm not sure
+it will be that much more confusing to the average user than
+"Structure needs cleaning".  :-)
 
-Apologies for what is essentially a repost with a proper subject header
-in the sense of trying to get the attention of people who collect/approve
-patches for submission upstream.  See my posting from earlier today
-(followup: [FTBFS] kernel 4.18-rc7 bitsperlong.h issue on alpha) for the
-back story.  As mentioned there, this patch applies cleanly to at least
-all mainline kernel source trees >= version 4.18.
+The upside of assigning a new error code is that in a year or two,
+we'll actually have an intelligible error message showing up in log
+files and in user's terminals.
 
-Further apologies for including the patch as an attachment, but I don't
-trust my mailer not to impose unintended formatting.
-
---Bob
-
-Signed-off-by: Bob Tracy <rct@frus.com>
-Tested-by: Bob Tracy <rct@frus.com>
-
---NzB8fVQJ5HfG6fxh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename=patch18_bitsperlong
-
---- a/tools/include/uapi/asm/bitsperlong.h	2019-01-20 14:40:32.522422998 -0600
-+++ b/tools/include/uapi/asm/bitsperlong.h	2019-01-21 09:51:45.336938260 -0600
-@@ -13,6 +13,8 @@
- #include "../../arch/mips/include/uapi/asm/bitsperlong.h"
- #elif defined(__ia64__)
- #include "../../arch/ia64/include/uapi/asm/bitsperlong.h"
-+#elif defined(__alpha__)
-+#include "../../arch/alpha/include/uapi/asm/bitsperlong.h"
- #else
- #include <asm-generic/bitsperlong.h>
- #endif
-
---NzB8fVQJ5HfG6fxh--
-
+					- Ted
