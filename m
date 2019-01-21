@@ -1,78 +1,55 @@
-From: Bob Tracy <rct@gherkin.frus.com>
-Subject: followup: [FTBFS] kernel 4.18-rc7 bitsperlong.h issue on alpha
-Date: Mon, 21 Jan 2019 10:19:28 -0600
-Message-ID: <20190121161928.GA12984@gherkin.frus.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 29/29] y2038: add 64-bit time_t syscalls to all 32-bit architectures
+Date: Mon, 21 Jan 2019 17:31:01 +0100
+Message-ID: <CAK8P3a2grsgvLeBHFoLnnpJti7qkZFfBPTrXf+CoihtOJKySzw@mail.gmail.com>
+References: <20190118161835.2259170-1-arnd@arndb.de> <20190118161835.2259170-30-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="x+6KMIRAuhnl3hBn"
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-Content-Disposition: inline
-Resent-Message-ID: <LvxZD5mWZdK.A.koH.hEfRcB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/20190121161928.GA12984@gherkin.frus.com
-To: linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org
-Cc: mcree@orcon.net.nz, mattst88@gmail.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190118161835.2259170-30-arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: y2038 Mailman List <y2038@lists.linaro.org>, Linux API <linux-api@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>
+Cc: Matt Turner <mattst88@gmail.com>, Russell King - ARM Linux <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Rich Felker <dalias@libc.org>, David Miller <davem@davemloft.net>, Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa>
 
+On Fri, Jan 18, 2019 at 5:25 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> This adds 21 new system calls on each ABI that has 32-bit time_t
+> today. All of these have the exact same semantics as their existing
+> counterparts, and the new ones all have macro names that end in 'time64'
+> for clarification.
+>
+> This gets us to the point of being able to safely use a C library
+> that has 64-bit time_t in user space. There are still a couple of
+> loose ends to tie up in various areas of the code, but this is the
+> big one, and should be entirely uncontroversial at this point.
 
---x+6KMIRAuhnl3hBn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I've successfully tested this with musl and LTP now, using an
+i386 kernel. The musl port I used is at
+https://git.linaro.org/people/arnd.bergmann/musl-y2038.git/
+This is just an updated version of what I used for testing last
+year, using the current syscall assignment, and going back
+to the time32 versions of getitimer/setitimer and
+wait4/waitid/getusage.
 
-July 30, 2018 I reported the following to linux-kernel, linux-alpha, etc.:
+It's certainly not intended for merging like this, but a proper
+musl port is under discussion now, and this should be
+sufficient if anyone else wants to try out the new syscall
+ABI before we merge it.
 
-On an alpha system, got the following build error on the 4.18-rc7
-mainline kernel source tree:
+The LTP I have is heavily hacked, and has a number of
+failures resulting from differences between musl and glibc,
+or from the way we convert between the kernel types and
+the user space types.
 
-  HOSTCC  net/bpfilter/main.o
-In file included from tools/include/uapi/asm/bitsperlong.h:17,
-                 from /usr/include/asm-generic/int-ll64.h:12,
-		 from /usr/include/alpha-linux-gnu/asm/types.h:24,
-                 from tools/include/linux/types.h:10,
-                 from ./include/uapi/linux/bpf.h:11,
-                 from net/bpfilter/main.c:9:
-tools/include/asm-generic/bitsperlong.h:14:2: error: #error Inconsistent word size.  Check asm/bitsperlong.h
- #error Inconsistent word size.  Check asm/bitsperlong.h
-  ^~~~~
-scripts/Makefile.host:107: recipe for target 'net/bpfilter/main.o' failed
-make[2]: *** [net/bpfilter/main.o] Error 1
-scripts/Makefile.build:558: recipe for target 'net/bpfilter' failed
-make[1]: *** [net/bpfilter] Error 2
-Makefile:1029: recipe for target 'net' failed
-make: *** [net] Error 2
+The testing found one minor bug in all the kernel syscall tables:
 
+> +418    common  mq_timedsend_time64             sys_mq_timedsend
+> +419    common  mq_timedreceiv_time64           sys_mq_timedreceive
 
-I implemented a crap workaround at the time in
-"linux/tools/include/asm-generic/bitsperlong.h", similar to what some
-frustrated person did for the x86-64 case in
-"linux/include/asm-generic/bitsperlong.h".  Never sent that in because I
-knew it was the wrong approach.
+While this would have fit in with umount(), creat() and mknod(),
+it was unintentional, and I've changed it back to
+mq_timedreceive_time64 (with an added 'e').
 
-The proper fix is attached.  If needed, consider this my official
-"signed off by" and/or "tested by".  This applies cleanly to at least
-all kernel mainline source trees from 4.18 to current.
-
-Thanks.
---Bob
-
---x+6KMIRAuhnl3hBn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename=patch18_bitsperlong
-
---- a/tools/include/uapi/asm/bitsperlong.h	2019-01-20 14:40:32.522422998 -0600
-+++ b/tools/include/uapi/asm/bitsperlong.h	2019-01-21 09:51:45.336938260 -0600
-@@ -13,6 +13,8 @@
- #include "../../arch/mips/include/uapi/asm/bitsperlong.h"
- #elif defined(__ia64__)
- #include "../../arch/ia64/include/uapi/asm/bitsperlong.h"
-+#elif defined(__alpha__)
-+#include "../../arch/alpha/include/uapi/asm/bitsperlong.h"
- #else
- #include <asm-generic/bitsperlong.h>
- #endif
-
---x+6KMIRAuhnl3hBn--
-
+       Arnd
