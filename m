@@ -1,122 +1,59 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH v2 29/29] y2038: add 64-bit time_t syscalls to all 32-bit
- architectures
-Date: Mon, 21 Jan 2019 21:40:01 +0100
-Message-ID: <CAK8P3a11Pme2d6VbTb2t7fi_vd7UmNuN-yOf2zT59KPzbCT1Lw@mail.gmail.com>
-References: <20190118161835.2259170-1-arnd@arndb.de>
- <20190118161835.2259170-30-arnd@arndb.de>
- <CALCETrXqM5mhvwreN5y-9K99h1j9rs9MAVK-cNLC54s1fdHA6w@mail.gmail.com>
- <CAK8P3a0V+xboaGAF2nqrYtpjXXA7y0LcvCKi4ngLTus1D_XZBA@mail.gmail.com>
- <CALCETrWPj6dHEyo=AELoVjXGsiwuSpRp17x3CEWBHvp7i3cy+Q@mail.gmail.com>
- <20190119142852.cntdihah4mpa3lgx@e5254000004ec.dyn.armlinux.org.uk>
- <CAMuHMdXzQNEEDjWrmTph8Krovj1g2WhnBUaM=FvKB+J2fZqctA@mail.gmail.com>
- <CAK8P3a04UC2dHVqx1gHXJQzsDw446h1ghLEuRe0xmUyJgrOktw@mail.gmail.com>
+From: Bob Tracy <rct@gherkin.frus.com>
+Subject: [PATCH] 4.18-rc7 on alpha: bitsperlong issue
+Date: Mon, 21 Jan 2019 15:42:32 -0600
+Message-ID: <20190121214232.GA14964@gherkin.frus.com>
+References: <20190121161928.GA12984@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
-	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=1FRHjCXbfLu+qdGIfNP0UPpZGwAW0u/Wvfik7E7EtEw=; b=iHsUX5VAYRZKj/
-	BCw47KhGjSIXbdRzv7P3jFYfKtyCuuLbaRbC4PLwnexKTzr+CPlH6ZM5zL+19ekJ8POf9X/+nifKa
-	iS27DGDIuET5p9NaVfUW/xI/168yW4RQJq9Xoez5QDKu2iOCJqAJ9fr/f88oPKfmapX8MnGtbW6DR
-	5n8Y7ysO+l1KDNBA6fMr9HQ2Dw7KGfW/NUP9sSYo/YV46RMjsFeqSegWOz40BBzePvG/52CmB3fkS
-	vigJblRDqqeEOJCnMughyY4WESPp44asWyhX28z0l58DRFRFrNeQwx0WWGo3sq82tqYY2rBQb4NmT
-	rByac9js2ZI84H5C2sQw==;
-In-Reply-To: <CAK8P3a04UC2dHVqx1gHXJQzsDw446h1ghLEuRe0xmUyJgrOktw@mail.gmail.com>
+Content-Type: multipart/mixed; boundary="NzB8fVQJ5HfG6fxh"
+Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
+Content-Disposition: inline
+In-Reply-To: <20190121161928.GA12984@gherkin.frus.com>
+Resent-Message-ID: <2hX1Cnh7zUE.A.m-B.XzjRcB@bendel>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Rich Felker <dalias@libc.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Network Development <netdev@vger.kernel.org>, Deepa Dinamani <deepa.kernel@gmail.com>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux <sparclinux@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, y2038 Mailman List <y2038@lists.linaro.org>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, X86 ML <x86@kernel.org>, Russell King - ARM Linux admin <linux@armlinux.org.uk>, Ingo Molnar <mingo@redhat.com>, Firoz Khan <firoz.khan@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, Matt Turner <mattst88@gmail.com>, Fengh
+List-URL: <https://lists.debian.org/debian-alpha/>
+List-Post: <mailto:debian-alpha@lists.debian.org>
+List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+List-Archive: https://lists.debian.org/msgid-search/20190121214232.GA14964@gherkin.frus.com
+To: linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org
+Cc: mcree@orcon.net.nz, mattst88@gmail.com
 
-On Mon, Jan 21, 2019 at 6:08 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> On Mon, Jan 21, 2019 at 9:19 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > Regardless, I'm wondering what to do with the holes marked "room for
-> > arch specific calls".
-> > When is a syscall really arch-specific, and can it be added there, and
-> > when does it turn out (later) that it isn't, breaking the
-> > synchronization again?
->
-> We've had a bit of that already, with cacheflush(), which exists on
-> a couple of architectures, including some that use the first
-> 'arch specific' slot (244) of the asm-generic table. I think this
-> will be rare enough that we can figure out a solution when we
-> get there.
->
-> > The pkey syscalls may be a bad example, as AFAIU they can be implemented
-> > on some architectures, but not on some others.  Still, I had skipped them
-> > when adding new syscalls to m68k.
-> >
-> > Perhaps we should get rid of the notion of "arch-specific syscalls", and
-> > reserve a slot everywhere anyway?
->
-> I don't mind calling the hole something else if that helps. Out of
-> principle I would already assume that anything we add for x86
-> or the generic table should be added everywhere, but we can
-> make it broader than that.
 
-Applying this fixup below,
+--NzB8fVQJ5HfG6fxh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-     ARnd
+Apologies for what is essentially a repost with a proper subject header
+in the sense of trying to get the attention of people who collect/approve
+patches for submission upstream.  See my posting from earlier today
+(followup: [FTBFS] kernel 4.18-rc7 bitsperlong.h issue on alpha) for the
+back story.  As mentioned there, this patch applies cleanly to at least
+all mainline kernel source trees >= version 4.18.
 
-diff --git a/arch/x86/entry/syscalls/syscall_32.tbl
-b/arch/x86/entry/syscalls/syscall_32.tbl
-index d9c2d2eea044..955ab6a3b61f 100644
---- a/arch/x86/entry/syscalls/syscall_32.tbl
-+++ b/arch/x86/entry/syscalls/syscall_32.tbl
-@@ -398,7 +398,7 @@
- 384    i386    arch_prctl              sys_arch_prctl
- __ia32_compat_sys_arch_prctl
- 385    i386    io_pgetevents           sys_io_pgetevents_time32
- __ia32_compat_sys_io_pgetevents
- 386    i386    rseq                    sys_rseq
- __ia32_sys_rseq
--# room for arch specific syscalls
-+# don't use numbers 387 through 392, add new calls at the end
- 393    i386    semget                  sys_semget
- __ia32_sys_semget
- 394    i386    semctl                  sys_semctl
- __ia32_compat_sys_semctl
- 395    i386    shmget                  sys_shmget
- __ia32_sys_shmget
-diff --git a/arch/x86/entry/syscalls/syscall_64.tbl
-b/arch/x86/entry/syscalls/syscall_64.tbl
-index 43a622aec07e..2ae92fddb6d5 100644
---- a/arch/x86/entry/syscalls/syscall_64.tbl
-+++ b/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -343,6 +343,8 @@
- 332    common  statx                   __x64_sys_statx
- 333    common  io_pgetevents           __x64_sys_io_pgetevents
- 334    common  rseq                    __x64_sys_rseq
-+# don't use numbers 387 through 423, add new calls after the last
-+# 'common' entry
+Further apologies for including the patch as an attachment, but I don't
+trust my mailer not to impose unintended formatting.
 
- #
- # x32-specific system call numbers start at 512 to avoid cache impact
-diff --git a/include/uapi/asm-generic/unistd.h
-b/include/uapi/asm-generic/unistd.h
-index 53831e4a4c86..acf9a07ab2ff 100644
---- a/include/uapi/asm-generic/unistd.h
-+++ b/include/uapi/asm-generic/unistd.h
-@@ -740,7 +740,7 @@ __SC_COMP_3264(__NR_io_pgetevents,
-sys_io_pgetevents_time32, sys_io_pgetevents,
- __SYSCALL(__NR_rseq, sys_rseq)
- #define __NR_kexec_file_load 294
- __SYSCALL(__NR_kexec_file_load,     sys_kexec_file_load)
--/* 295 through 402 are unassigned to sync up with generic numbers */
-+/* 295 through 402 are unassigned to sync up with generic numbers, don't use */
- #if __BITS_PER_LONG == 32
- #define __NR_clock_gettime64 403
- __SYSCALL(__NR_clock_gettime64, sys_clock_gettime)
+--Bob
+
+Signed-off-by: Bob Tracy <rct@frus.com>
+Tested-by: Bob Tracy <rct@frus.com>
+
+--NzB8fVQJ5HfG6fxh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=patch18_bitsperlong
+
+--- a/tools/include/uapi/asm/bitsperlong.h	2019-01-20 14:40:32.522422998 -0600
++++ b/tools/include/uapi/asm/bitsperlong.h	2019-01-21 09:51:45.336938260 -0600
+@@ -13,6 +13,8 @@
+ #include "../../arch/mips/include/uapi/asm/bitsperlong.h"
+ #elif defined(__ia64__)
+ #include "../../arch/ia64/include/uapi/asm/bitsperlong.h"
++#elif defined(__alpha__)
++#include "../../arch/alpha/include/uapi/asm/bitsperlong.h"
+ #else
+ #include <asm-generic/bitsperlong.h>
+ #endif
+
+--NzB8fVQJ5HfG6fxh--
+
