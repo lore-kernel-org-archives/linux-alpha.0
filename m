@@ -1,64 +1,36 @@
-From: =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <f4bug@amsat.org>
-Subject: Re: [PATCH] 4.18-rc7 on alpha: bitsperlong issue
-Date: Tue, 22 Jan 2019 10:21:47 +0100
-Message-ID: <8a1038a8-2ded-649f-57cd-3d5dabfa4173@amsat.org>
-References: <20190121161928.GA12984@gherkin.frus.com>
- <20190121214232.GA14964@gherkin.frus.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 29/29] y2038: add 64-bit time_t syscalls to all 32-bit architectures
+Date: Tue, 22 Jan 2019 10:37:12 +0100
+Message-ID: <CAK8P3a2sMgHWpSV8OAa7LCo6oQiQ4xd5WQHKJ1-tN0TV8uRDHQ@mail.gmail.com>
+References: <20190118161835.2259170-1-arnd@arndb.de> <20190118161835.2259170-30-arnd@arndb.de>
+ <CALCETrXqM5mhvwreN5y-9K99h1j9rs9MAVK-cNLC54s1fdHA6w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:openpgp:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9dlDMd5X8e+UEBMHm/L7VjYzQdNKCKBt59rGhxHuLOQ=;
-        b=RaHJ9jglJWGWTfT7N5ElsAfCLqLupWIr7dSZsSQvCHNHsW0fZSRcme88dyciVRsU2q
-         uNnb9y6f9NZmbyTRZ1qDUU4pFw1zJ5EIyaEbuxWUg7KRK+h5Xum7/wIdKMat8rEm/F5N
-         Y92v7CgrRf5X70Hr2tdNAx08nRayAvCvmNc9BHjamSXFMlqxLXtbZl0i1Dpgk5V8hFA2
-         lWcQqH2z7maeGtlbQYsLz8D1bJWbmuYwv3nLJWOC5jMoWljsQIixNvnJzF/q01b9sWVH
-         eym+wZrRnIsn+o00/jQLNTKhI4HZzm0OJb1jdCXD/tSCEhjhnvFhOSBIMbpRh6sjiXxx
-         3c6g==
-Sender: =?UTF-8?Q?Philippe_Mathieu=2DDaud=C3=A9?= <philippe.mathieu.daude@gmail.com>
-In-Reply-To: <20190121214232.GA14964@gherkin.frus.com>
-Content-Language: en-US
-Resent-Message-ID: <TP9_A298i0E.A.9OF.9CuRcB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/8a1038a8-2ded-649f-57cd-3d5dabfa4173@amsat.org
-Content-Type: text/plain; charset="iso-8859-1"
-To: Bob Tracy <rct@gherkin.frus.com>, linux-alpha@vger.kernel.org, debian-alpha@lists.debian.org
-Cc: mcree@orcon.net.nz, mattst88@gmail.com
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CALCETrXqM5mhvwreN5y-9K99h1j9rs9MAVK-cNLC54s1fdHA6w@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Andy Lutomirski <luto@kernel.org>
+Cc: y2038 Mailman List <y2038@lists.linaro.org>, Linux API <linux-api@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, X86 ML <x86@kernel.org>, alpha <linux-alpha@vger.kernel.org>
 
-Hi Bob,
+On Fri, Jan 18, 2019 at 7:50 PM Andy Lutomirski <luto@kernel.org> wrote:
+> On Fri, Jan 18, 2019 at 8:25 AM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> I have a patch that I'll send soon to make x32 use its own table.  As
+> far as I'm concerned, 547 is *it*.  548 is just a normal number and is
+> not special.  But let's please not reuse 512..547 for other purposes
+> on x86 variants -- that way lies even more confusion, IMO.
 
-On 1/21/19 10:42 PM, Bob Tracy wrote:
-> Apologies for what is essentially a repost with a proper subject header
-> in the sense of trying to get the attention of people who collect/approve
-> patches for submission upstream.  See my posting from earlier today
-> (followup: [FTBFS] kernel 4.18-rc7 bitsperlong.h issue on alpha) for the
-> back story.  As mentioned there, this patch applies cleanly to at least
-> all mainline kernel source trees >=3D version 4.18.
->=20
-> Further apologies for including the patch as an attachment, but I don't
-> trust my mailer not to impose unintended formatting.
->=20
-> --Bob
->=20
-> Signed-off-by: Bob Tracy <rct@frus.com>
-> Tested-by: Bob Tracy <rct@frus.com>
+(trimming Cc list, as this is getting a little off-topic most most)
 
-With your "Signed-off-by" tag, the "Tested-by" tag is implicit,
-it is expected patches are at least tested by the contributor ;)
+Just so I understand: do you mean duplicating the .tbl file, or just
+the resulting table of entry points?
 
-That said,
-Reviewed-by: Philippe Mathieu-Daud=E9 <f4bug@amsat.org>
+In either way, how will that work with the new io_uring_setup()
+system call that will have to use the compat entry point?
+Are you planning to use the same syscall number as x86_64
+but point it to the compat function, or do we still need a new
+syscall number for x32 in the regular range?
 
-Thanks for fixing this,
-
-Phil.
-
+       Arnd
