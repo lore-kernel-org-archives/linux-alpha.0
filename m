@@ -1,41 +1,46 @@
-From: "Theodore Y. Ts'o" <tytso@mit.edu>
-Subject: Re: [PATCH v4 1/3] fs: hoist EFSCORRUPTED definition into uapi header
-Date: Mon, 21 Jan 2019 19:38:23 -0500
-Message-ID: <20190122003823.GC19379@mit.edu>
-References: <20190118161440.220134-1-jannh@google.com>
- <20190121215454.GA12996@mit.edu>
- <20190121235158.GA4363@magnolia>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [PATCH] 4.18-rc7 on alpha: bitsperlong issue
+Date: Mon, 21 Jan 2019 23:35:26 -0800
+Message-ID: <CAEdQ38Eh21eyk8LecnsR986mpTAfzU7KFHoPos1ruubLnMw3_A@mail.gmail.com>
+References: <20190121161928.GA12984@gherkin.frus.com> <20190121214232.GA14964@gherkin.frus.com>
 Mime-Version: 1.0
+Return-path: <bounce-debian-alpha=debian-alpha=m.gmane.org@lists.debian.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tDoCWJ743CJFKg1cINYML/MiZJZ1sdVkOD6fclDikDE=;
+        b=mq+frOQjm+CYfNPGrI//97C3UfGRHYFVN/5/rWcVqNqxOjmmhr2KDd9V6ysURlavze
+         m9CWF3Dw3ijwWkzHnv2wYwu5EF5QJLGR4CJyrzXgMbEvPIOvW+Ip++vcSW+Zx6ZoXdcd
+         hNeaep7wqjfvJWsALyKHopIw308HnCQsF+Av41ff5aOq02wgkvktbZzKl/az7umiguMO
+         OBPsMBLJqBoWGi3KBVEo+bS22vZ5aXqaT9/QFPr+xb3I99Bf1mzp0BNgNqKupr5KdW0b
+         1qdpVRxcOzr9kqG1WbYwEkykwNDmRs9GccT6Ez5f1J8p7jz/3m6u9rnaUV36sIvgLSfq
+         amnA==
+In-Reply-To: <20190121214232.GA14964@gherkin.frus.com>
+Resent-Message-ID: <0KI0jLNCtVK.A.bYB.YfsRcB@bendel>
+List-Id: <linux-alpha.vger.kernel.org>
+List-URL: <https://lists.debian.org/debian-alpha/>
+List-Post: <mailto:debian-alpha@lists.debian.org>
+List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+List-Archive: https://lists.debian.org/msgid-search/CAEdQ38Eh21eyk8LecnsR986mpTAfzU7KFHoPos1ruubLnMw3_A@mail.gmail.com
 Content-Type: text/plain; charset="us-ascii"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8x1Ul0XPXdaNl+LgnAo5XLRrH80MUux5XIW9GbunHfk=;
- b=BMyDpRqOryxZ6kvcPoAVD+bauWOV8UPkurcWgOqxx2HrKZ1WjX5vmTnUBmyPQYl+b0CfU0Dltw8no8B4ERmCx2nYgu6YhRMJIf/je7aOhKiilniPwbUsoj8d+Oyi3mMeuNyyWBV81PfA6QUqaUJjLFP/5fzykChNrgI6aRuwBc4=
-Content-Disposition: inline
-In-Reply-To: <20190121235158.GA4363@magnolia>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Transfer-Encoding: 7bit
-To: "Darrick J. Wong" <darrick.wong@oracle.com>
-Cc: Jann Horn <jannh@google.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, "Eric W. Biederman" <ebiederm@xmission.com>, Andreas Dilger <adilger.kernel@dilger.ca>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Dave Chinner <david@fromorbit.com>, Pavel Machek <pavel@ucw.cz>, linux-arch@vger.kernel.org, linux-api@vger.kernel.org
+To: Bob Tracy <rct@gherkin.frus.com>
+Cc: linux-alpha <linux-alpha@vger.kernel.org>, Debian Alpha Mailing List <debian-alpha@lists.debian.org>, Michael Cree <mcree@orcon.net.nz>
 
-On Mon, Jan 21, 2019 at 03:51:58PM -0800, Darrick J. Wong wrote:
-> 
-> I disagree with upending 13 years of established precedent for user
-> visible behavior.  We possibly could've pulled this off ten years ago,
-> but it's waaaay too late now.  Too much work, too little gain.
+On Mon, Jan 21, 2019 at 1:42 PM Bob Tracy <rct@gherkin.frus.com> wrote:
+>
+> Apologies for what is essentially a repost with a proper subject header
+> in the sense of trying to get the attention of people who collect/approve
+> patches for submission upstream.  See my posting from earlier today
+> (followup: [FTBFS] kernel 4.18-rc7 bitsperlong.h issue on alpha) for the
+> back story.  As mentioned there, this patch applies cleanly to at least
+> all mainline kernel source trees >= version 4.18.
+>
+> Further apologies for including the patch as an attachment, but I don't
+> trust my mailer not to impose unintended formatting.
 
-I remember the discussion; but now that we're adding it to uapi header
-files, it's really going to be impossible.  And I have had some
-regrets about that decision ten years ago.  I agree it would cause
-confusion if we do it now, but it's basically the our last
-opportunity.
- 
-How about this then?  We could ask glibc to change the string returned
-by strerror for EUCLEAN/EFSCORRUPTED to be something like "File system
-or block device corrupted".  This is how the errno is used in the
-kernel; and if we don't want to change the error code, changing the
-string returned by glibc should be less problematic.
+Thanks Bob. I've vacuumed the patch up and will include it in a pull req soon.
 
-					- Ted
