@@ -1,49 +1,40 @@
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH v2 07/29] ARM: add kexec_file_load system call number
-Date: Fri, 25 Jan 2019 16:21:06 +0000
-Message-ID: <20190125162106.axfhoxxdutkmaeh3@e5254000004ec.dyn.armlinux.org.uk>
-References: <20190118161835.2259170-1-arnd@arndb.de>
- <20190118161835.2259170-8-arnd@arndb.de>
- <20190125154359.GG25901@arrakis.emea.arm.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH v2 06/21] memblock: memblock_phys_alloc_try_nid(): don't
+ panic
+Date: Fri, 25 Jan 2019 17:45:02 +0000
+Message-ID: <20190125174502.GL25901@arrakis.emea.arm.com>
+References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
+ <1548057848-15136-7-git-send-email-rppt@linux.ibm.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2014; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Fb6QfXnDya57aIllN8OrBHEzgweeEhiGtjzhT0asteg=; b=Jg+mY4fZd4Fh38o/VC9Ln2xfb
-        JN3U08pa9jgQaUkC9++KAWmKjLgpzUEBx35I75q4QyMFkgorfHmpgnMPnZDwsLxk30AnWeLDKkcgw
-        t6YNTJS4cjCz1xF4o4zbIyr/kj25p4WOZhvftqtGwu1UfwwMXq5O6ec68tvt8EGnndrvg=;
 Content-Disposition: inline
-In-Reply-To: <20190125154359.GG25901@arrakis.emea.arm.com>
+In-Reply-To: <1548057848-15136-7-git-send-email-rppt@linux.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, y2038@lists.linaro.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, mattst88@gmail.com, will.deacon@arm.com, tony.luck@intel.com, fenghua.yu@intel.com, geert@linux-m68k.org, monstr@monstr.eu, paul.burton@mips.com, deller@gmx.de, benh@kernel.crashing.org, mpe@ellerman.id.au, schwidefsky@de.ibm.com, heiko.carstens@de.ibm.com, dalias@libc.org, davem@davemloft.net, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com, x86@kernel.org, jcmvbkbc@gmail.com, akpm@linux-foundation.org, deepa.kernel@gmail.com, ebiederm@xmission.com, firoz.khan@linaro.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.or
+To: Mike Rapoport <rppt@linux.ibm.com>
+Cc: linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Petr Mladek <pmladek@suse.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>, Rob Herring <robh+dt@kernel.org>, Russell
 
-On Fri, Jan 25, 2019 at 03:43:59PM +0000, Catalin Marinas wrote:
-> On Fri, Jan 18, 2019 at 05:18:13PM +0100, Arnd Bergmann wrote:
-> > diff --git a/arch/arm/tools/syscall.tbl b/arch/arm/tools/syscall.tbl
-> > index 86de9eb34296..20ed7e026723 100644
-> > --- a/arch/arm/tools/syscall.tbl
-> > +++ b/arch/arm/tools/syscall.tbl
-> > @@ -415,3 +415,4 @@
-> >  398	common	rseq			sys_rseq
-> >  399	common	io_pgetevents		sys_io_pgetevents
-> >  400	common	migrate_pages		sys_migrate_pages
-> > +401	common	kexec_file_load		sys_kexec_file_load
-> 
-> I presume on arm32 this would still return -ENOSYS.
+On Mon, Jan 21, 2019 at 10:03:53AM +0200, Mike Rapoport wrote:
+> diff --git a/arch/arm64/mm/numa.c b/arch/arm64/mm/numa.c
+> index ae34e3a..2c61ea4 100644
+> --- a/arch/arm64/mm/numa.c
+> +++ b/arch/arm64/mm/numa.c
+> @@ -237,6 +237,10 @@ static void __init setup_node_data(int nid, u64 start_pfn, u64 end_pfn)
+>  		pr_info("Initmem setup node %d [<memory-less node>]\n", nid);
+>  
+>  	nd_pa = memblock_phys_alloc_try_nid(nd_size, SMP_CACHE_BYTES, nid);
+> +	if (!nd_pa)
+> +		panic("Cannot allocate %zu bytes for node %d data\n",
+> +		      nd_size, nid);
+> +
+>  	nd = __va(nd_pa);
+>  
+>  	/* report and initialize */
 
-Yes, I already checked.  If CONFIG_KEXEC_FILE is not set, then
-kernel/kexec_file.c is not built, and we fall back to the stub
-in kernel/sys_ni.c.
+Does it mean that memblock_phys_alloc_try_nid() never returns valid
+physical memory starting at 0?
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Catalin
