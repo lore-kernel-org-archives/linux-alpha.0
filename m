@@ -1,35 +1,49 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH v2 09/21] memblock: drop memblock_alloc_base()
-Date: Tue, 29 Jan 2019 21:29:19 +1100
-Message-ID: <87sgxbrc3k.fsf@concordia.ellerman.id.au>
-References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com> <1548057848-15136-10-git-send-email-rppt@linux.ibm.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v2 21/21] memblock: drop memblock_alloc_*_nopanic()
+ variants
+Date: Wed, 30 Jan 2019 14:38:45 +0100
+Message-ID: <20190130133845.nps4itatl4fm6dcl@pathway.suse.cz>
+References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
+ <1548057848-15136-22-git-send-email-rppt@linux.ibm.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1548057848-15136-10-git-send-email-rppt@linux.ibm.com>
+Content-Disposition: inline
+In-Reply-To: <1548057848-15136-22-git-send-email-rppt@linux.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mike Rapoport <rppt@linux.ibm.com>, linux-mm@kvack.org
-Cc: Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Petr Mladek <pmladek@suse.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arml>
+To: Mike Rapoport <rppt@linux.ibm.com>
+Cc: linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>, Rob Herring <robh+dt@kernel.org>
 
-Mike Rapoport <rppt@linux.ibm.com> writes:
-
-> The memblock_alloc_base() function tries to allocate a memory up to the
-> limit specified by its max_addr parameter and panics if the allocation
-> fails. Replace its usage with memblock_phys_alloc_range() and make the
-> callers check the return value and panic in case of error.
->
+On Mon 2019-01-21 10:04:08, Mike Rapoport wrote:
+> As all the memblock allocation functions return NULL in case of error
+> rather than panic(), the duplicates with _nopanic suffix can be removed.
+> 
 > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  arch/powerpc/kernel/rtas.c      |  6 +++++-
->  arch/powerpc/mm/hash_utils_64.c |  8 ++++++--
->  arch/s390/kernel/smp.c          |  6 +++++-
->  drivers/macintosh/smu.c         |  2 +-
->  include/linux/memblock.h        |  2 --
->  mm/memblock.c                   | 14 --------------
->  6 files changed, 17 insertions(+), 21 deletions(-)
+>  arch/arc/kernel/unwind.c       |  3 +--
+>  arch/sh/mm/init.c              |  2 +-
+>  arch/x86/kernel/setup_percpu.c | 10 +++++-----
+>  arch/x86/mm/kasan_init_64.c    | 14 ++++++++------
+>  drivers/firmware/memmap.c      |  2 +-
+>  drivers/usb/early/xhci-dbc.c   |  2 +-
+>  include/linux/memblock.h       | 35 -----------------------------------
+>  kernel/dma/swiotlb.c           |  2 +-
+>  kernel/printk/printk.c         |  9 +--------
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+For printk:
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Acked-by: Petr Mladek <pmladek@suse.com>
 
-cheers
+Best Regards,
+Petr
+
+>  mm/memblock.c                  | 35 -----------------------------------
+>  mm/page_alloc.c                | 10 +++++-----
+>  mm/page_ext.c                  |  2 +-
+>  mm/percpu.c                    | 11 ++++-------
+>  mm/sparse.c                    |  6 ++----
+>  14 files changed, 31 insertions(+), 112 deletions(-)
+> 
