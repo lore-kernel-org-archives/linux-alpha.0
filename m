@@ -1,147 +1,79 @@
-From: Mike Rapoport <rppt@linux.ibm.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
 Subject: Re: [PATCH v2 19/21] treewide: add checks for the return value of
  memblock_alloc*()
-Date: Thu, 31 Jan 2019 09:14:59 +0200
-Message-ID: <20190131071459.GC28876@rapoport-lnx>
+Date: Thu, 31 Jan 2019 07:23:02 -0800
+Message-ID: <CAMo8BfKhjwimXrGCcPjmS0+w8o6yW=ohG-hZ7caWnGpPSF6qJA@mail.gmail.com>
 References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
  <1548057848-15136-20-git-send-email-rppt@linux.ibm.com>
- <b7c12014-14ae-2a38-900c-41fd145307bc@c-s.fr>
- <20190131064139.GB28876@rapoport-lnx>
- <8838f7ab-998b-6d78-02a8-a53f8a3619d9@c-s.fr>
- <d5e4ff5b-d33a-e641-8159-d4f83bc28d0b@c-s.fr>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <d5e4ff5b-d33a-e641-8159-d4f83bc28d0b@c-s.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Christophe Leroy <christophe.leroy@c-s.fr>
-Cc: linux-mm@kvack.org, Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, x86@kernel.org, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, linux-sh@vger.kernel.org, Russell King <linux@armlinux.org.uk>, kasan-dev@googlegroups.com, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=Nq/u+rThu/fE1INRmgavSkne7/kWQHU+Ws3mMyljG7s=; b=CypoCM2zifHSDr
+	jp2z2i/f4NR3Fa5bPUC3dZbal5BE108U/YsgJt42dXdZxre3FTTzr67TtpYY8doazez/aJjcHQoaY
+	Gby4xBEa5UysMM4MRJCVVEC38RupbF8ZO65P7prWnLFhVHoZUFZ3aStLOIjEW2Mrk1psWBxaPHuJl
+	ncx9F6WdOXjoqFyVbuUc4zhiR2HmZyL/mnl4GYnt77UcEapcwQPPse5syxoQPlYPCGld7Wvn1yk1A
+	j9ajyD/62MUiF51LJ1MOabezn/KkDRHxnnnw718s4kDjrrj9XQooWk2Cz3d+TD4p0Qc4pvtO5AmXB
+	Xesad7OGtMja9Vtg7ojg==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=FEGsjMX0dp8RIKABY7YbpDek7VAiBMQ5lvDJ9kXcOns=;
+ b=ZsyLjm/2i8qflJj65Hki7ZjvX/p5TsVDbFLDy7tSrA+zq8/rmQhKZ5yU4Bl9kcqNBG
+ CY9HOGBpR1srhF7u4H9mYJcYyDuPjhrBD47VmrCaaN1SX2ExDlH0GQYz6bDNKGIeER/N
+ DF6b1r3SOqJa9XC74nY0HVQaA3twQDl0/0usSyHts9dncP4v3Vg8voOJ8+jyAG7v0bUA
+ B6+B6kriQluxGxRJeHVpFuS3YlZmyHiGWyoenK6JbziwuNQ+Alt9qkijGVE2SEtb3tDq
+ 9pqtKFQFBYtBJG7fxZ1NDZFxq1qNSGZFFtsmGMF43OGLzTtwPolkWURu5aoBZtbx+lxK
+ 2bIQ==
+In-Reply-To: <1548057848-15136-20-git-send-email-rppt@linux.ibm.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Mike Rapoport <rppt@linux.ibm.com>
+Cc: Rich Felker <dalias@libc.org>, "open list:IA64 (Itanium) PL..." <linux-ia64@vger.kernel.org>, devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, "maintainer:X86 ARCHITECTURE..." <x86@kernel.org>, linux-mips@vger.kernel.org, linux-mm@kvack.org, Guo Ren <guoren@kernel.org>, "open list:SPARC + UltraSPAR..." <sparclinux@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, linux-s390 <linux-s390@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, "open list:SUPERH" <linux-sh@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, kasan-dev@googlegroups.com, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, m
 
-On Thu, Jan 31, 2019 at 08:07:29AM +0100, Christophe Leroy wrote:
->=20
->=20
-> Le 31/01/2019 =E0 07:44, Christophe Leroy a =E9crit=A0:
-> >
-> >
-> >Le 31/01/2019 =E0 07:41, Mike Rapoport a =E9crit=A0:
-> >>On Thu, Jan 31, 2019 at 07:07:46AM +0100, Christophe Leroy wrote:
-> >>>
-> >>>
-> >>>Le 21/01/2019 =E0 09:04, Mike Rapoport a =E9crit=A0:
-> >>>>Add check for the return value of memblock_alloc*() functions and call
-> >>>>panic() in case of error.
-> >>>>The panic message repeats the one used by panicing memblock
-> >>>>allocators with
-> >>>>adjustment of parameters to include only relevant ones.
-> >>>>
-> >>>>The replacement was mostly automated with semantic patches like the o=
-ne
-> >>>>below with manual massaging of format strings.
-> >>>>
-> >>>>@@
-> >>>>expression ptr, size, align;
-> >>>>@@
-> >>>>ptr =3D memblock_alloc(size, align);
-> >>>>+ if (!ptr)
-> >>>>+=A0=A0=A0=A0 panic("%s: Failed to allocate %lu bytes align=3D0x%lx\n=
-", __func__,
-> >>>>size, align);
-> >>>>
-> >>>>Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> >>>>Reviewed-by: Guo Ren <ren_guo@c-sky.com>=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0 # c-sky
-> >>>>Acked-by: Paul Burton <paul.burton@mips.com>=A0=A0=A0=A0=A0=A0=A0=A0 =
-# MIPS
-> >>>>Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com> # s390
-> >>>>Reviewed-by: Juergen Gross <jgross@suse.com>=A0=A0=A0=A0=A0=A0=A0=A0 =
-# Xen
-> >>>>---
-> >>>
-> >>>[...]
-> >>>
-> >>>>diff --git a/mm/sparse.c b/mm/sparse.c
-> >>>>index 7ea5dc6..ad94242 100644
-> >>>>--- a/mm/sparse.c
-> >>>>+++ b/mm/sparse.c
-> >>>
-> >>>[...]
-> >>>
-> >>>>@@ -425,6 +436,10 @@ static void __init sparse_buffer_init(unsigned
-> >>>>long size, int nid)
-> >>>>=A0=A0=A0=A0=A0=A0=A0=A0=A0 memblock_alloc_try_nid_raw(size, PAGE_SIZ=
-E,
-> >>>>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0 __pa(MAX_DMA_ADDRESS),
-> >>>>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0 MEMBLOCK_ALLOC_ACCESSIBLE, nid);
-> >>>>+=A0=A0=A0 if (!sparsemap_buf)
-> >>>>+=A0=A0=A0=A0=A0=A0=A0 panic("%s: Failed to allocate %lu bytes align=
-=3D0x%lx nid=3D%d
-> >>>>from=3D%lx\n",
-> >>>>+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 __func__, size, PAGE_SIZE, n=
-id, __pa(MAX_DMA_ADDRESS));
-> >>>>+
-> >>>
-> >>>memblock_alloc_try_nid_raw() does not panic (help explicitly says:
-> >>>Does not
-> >>>zero allocated memory, does not panic if request cannot be satisfied.).
-> >>
-> >>"Does not panic" does not mean it always succeeds.
-> >
-> >I agree, but at least here you are changing the behaviour by making it
-> >panic explicitly. Are we sure there are not cases where the system could
-> >just continue functionning ? Maybe a WARN_ON() would be enough there ?
->=20
-> Looking more in details, it looks like everything is done to live with
-> sparsemap_buf NULL, all functions using it check it so having it NULL
-> shouldn't imply a panic I believe, see code below.
+On Mon, Jan 21, 2019 at 12:06 AM Mike Rapoport <rppt@linux.ibm.com> wrote:
+>
+> Add check for the return value of memblock_alloc*() functions and call
+> panic() in case of error.
+> The panic message repeats the one used by panicing memblock allocators with
+> adjustment of parameters to include only relevant ones.
+>
+> The replacement was mostly automated with semantic patches like the one
+> below with manual massaging of format strings.
+>
+> @@
+> expression ptr, size, align;
+> @@
+> ptr = memblock_alloc(size, align);
+> + if (!ptr)
+> +       panic("%s: Failed to allocate %lu bytes align=0x%lx\n", __func__,
+> size, align);
+>
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> Reviewed-by: Guo Ren <ren_guo@c-sky.com>             # c-sky
+> Acked-by: Paul Burton <paul.burton@mips.com>         # MIPS
+> Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com> # s390
+> Reviewed-by: Juergen Gross <jgross@suse.com>         # Xen
+> ---
+>  arch/xtensa/mm/kasan_init.c               |  4 ++++
+>  arch/xtensa/mm/mmu.c                      |  3 +++
 
-You are right, I'm preparing the fix right now.
-=20
-> static void *sparsemap_buf __meminitdata;
-> static void *sparsemap_buf_end __meminitdata;
->=20
-> static void __init sparse_buffer_init(unsigned long size, int nid)
-> {
-> 	WARN_ON(sparsemap_buf);	/* forgot to call sparse_buffer_fini()? */
-> 	sparsemap_buf =3D
-> 		memblock_alloc_try_nid_raw(size, PAGE_SIZE,
-> 						__pa(MAX_DMA_ADDRESS),
-> 						MEMBLOCK_ALLOC_ACCESSIBLE, nid);
-> 	sparsemap_buf_end =3D sparsemap_buf + size;
-> }
->=20
-> static void __init sparse_buffer_fini(void)
-> {
-> 	unsigned long size =3D sparsemap_buf_end - sparsemap_buf;
->=20
-> 	if (sparsemap_buf && size > 0)
-> 		memblock_free_early(__pa(sparsemap_buf), size);
-> 	sparsemap_buf =3D NULL;
-> }
->=20
-> void * __meminit sparse_buffer_alloc(unsigned long size)
-> {
-> 	void *ptr =3D NULL;
->=20
-> 	if (sparsemap_buf) {
-> 		ptr =3D PTR_ALIGN(sparsemap_buf, size);
-> 		if (ptr + size > sparsemap_buf_end)
-> 			ptr =3D NULL;
-> 		else
-> 			sparsemap_buf =3D ptr + size;
-> 	}
-> 	return ptr;
-> }
->=20
->=20
-> Christophe
->=20
+For xtensa:
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
 
---=20
-Sincerely yours,
-Mike.
-
+-- 
+Thanks.
+-- Max
