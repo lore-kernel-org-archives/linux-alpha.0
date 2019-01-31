@@ -1,79 +1,170 @@
-From: Max Filippov <jcmvbkbc@gmail.com>
-Subject: Re: [PATCH v2 19/21] treewide: add checks for the return value of
- memblock_alloc*()
-Date: Thu, 31 Jan 2019 07:23:02 -0800
-Message-ID: <CAMo8BfKhjwimXrGCcPjmS0+w8o6yW=ohG-hZ7caWnGpPSF6qJA@mail.gmail.com>
-References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
- <1548057848-15136-20-git-send-email-rppt@linux.ibm.com>
+From: "Darrick J. Wong" <darrick.wong@oracle.com>
+Subject: Re: [PATCH v4 3/3] fs: let filldir_t return bool instead of an error
+ code
+Date: Thu, 31 Jan 2019 12:39:40 -0800
+Message-ID: <20190131203940.GA27972@magnolia>
+References: <20190118161440.220134-1-jannh@google.com>
+ <20190118161440.220134-3-jannh@google.com>
+ <20190120224059.GA4205@dastard>
+ <CAG48ez3SgejgGbctHwxON1B1k26xk-z16xdozKZkx7=-Li0aHw@mail.gmail.com>
+ <20190121222411.GD4205@dastard>
+ <CAG48ez2UmgEkitbgyCCs9LLdgahweFFAJWCU_vcqES6YgN=gLw@mail.gmail.com>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=Lz5JHc+Ue+BmrKXLjFXGNF4LxQlSB+QOkl0q+V6XNq8=;
+ b=5k+tBmfO1XidU4vgYSd65UjEKrHUAqzZMhZqcsOeT3jSvL64vmsgip7BagP6R8YlKjcX
+ t20oDYvoY38zo9thiugJQkG0SK/SDhT9s1+VS4dZPYQB5qGCW/rCfAcLFgFBvs+MvK8w
+ Tf6I6v8izo0WxFginA/R9rexuMJJYFlOjXjZai/RRayFChXfioT7yEYfmOuig3iA6RU4
+ i6sRxi+YIXGirAPFW6sWdv5z1ZZfrGoZ+vp2lu4wwTWjRHzG0q9rtoYUcmTf70NeA8FX
+ RLmy20EPZqNNSo66f4bgdRyJEl2NczbYnnDyo5EkiNYkQN9nEB61swfTwySXtyxejh1t Dg== 
+Content-Disposition: inline
+In-Reply-To: <CAG48ez2UmgEkitbgyCCs9LLdgahweFFAJWCU_vcqES6YgN=gLw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
-	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=Nq/u+rThu/fE1INRmgavSkne7/kWQHU+Ws3mMyljG7s=; b=CypoCM2zifHSDr
-	jp2z2i/f4NR3Fa5bPUC3dZbal5BE108U/YsgJt42dXdZxre3FTTzr67TtpYY8doazez/aJjcHQoaY
-	Gby4xBEa5UysMM4MRJCVVEC38RupbF8ZO65P7prWnLFhVHoZUFZ3aStLOIjEW2Mrk1psWBxaPHuJl
-	ncx9F6WdOXjoqFyVbuUc4zhiR2HmZyL/mnl4GYnt77UcEapcwQPPse5syxoQPlYPCGld7Wvn1yk1A
-	j9ajyD/62MUiF51LJ1MOabezn/KkDRHxnnnw718s4kDjrrj9XQooWk2Cz3d+TD4p0Qc4pvtO5AmXB
-	Xesad7OGtMja9Vtg7ojg==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=FEGsjMX0dp8RIKABY7YbpDek7VAiBMQ5lvDJ9kXcOns=;
- b=ZsyLjm/2i8qflJj65Hki7ZjvX/p5TsVDbFLDy7tSrA+zq8/rmQhKZ5yU4Bl9kcqNBG
- CY9HOGBpR1srhF7u4H9mYJcYyDuPjhrBD47VmrCaaN1SX2ExDlH0GQYz6bDNKGIeER/N
- DF6b1r3SOqJa9XC74nY0HVQaA3twQDl0/0usSyHts9dncP4v3Vg8voOJ8+jyAG7v0bUA
- B6+B6kriQluxGxRJeHVpFuS3YlZmyHiGWyoenK6JbziwuNQ+Alt9qkijGVE2SEtb3tDq
- 9pqtKFQFBYtBJG7fxZ1NDZFxq1qNSGZFFtsmGMF43OGLzTtwPolkWURu5aoBZtbx+lxK
- 2bIQ==
-In-Reply-To: <1548057848-15136-20-git-send-email-rppt@linux.ibm.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mike Rapoport <rppt@linux.ibm.com>
-Cc: Rich Felker <dalias@libc.org>, "open list:IA64 (Itanium) PL..." <linux-ia64@vger.kernel.org>, devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, "maintainer:X86 ARCHITECTURE..." <x86@kernel.org>, linux-mips@vger.kernel.org, linux-mm@kvack.org, Guo Ren <guoren@kernel.org>, "open list:SPARC + UltraSPAR..." <sparclinux@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, linux-s390 <linux-s390@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, "open list:SUPERH" <linux-sh@vger.kernel.org>, Russell King <linux@armlinux.org.uk>, kasan-dev@googlegroups.com, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, m
+To: Jann Horn <jannh@google.com>
+Cc: Dave Chinner <david@fromorbit.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, "Eric W. Biederman" <ebiederm@xmission.com>, Theodore Ts'o <tytso@mit.edu>, Andreas Dilger <adilger.kernel@dilger.ca>, linux-alpha@vger.kernel.org, kernel list <linux-kernel@vger.kernel.org>, Pavel Machek <pavel@ucw.cz>, linux-arch <linux-arch@vger.kernel.org>, Linux API <linux-api@vger.kernel.org>
 
-On Mon, Jan 21, 2019 at 12:06 AM Mike Rapoport <rppt@linux.ibm.com> wrote:
->
-> Add check for the return value of memblock_alloc*() functions and call
-> panic() in case of error.
-> The panic message repeats the one used by panicing memblock allocators with
-> adjustment of parameters to include only relevant ones.
->
-> The replacement was mostly automated with semantic patches like the one
-> below with manual massaging of format strings.
->
-> @@
-> expression ptr, size, align;
-> @@
-> ptr = memblock_alloc(size, align);
-> + if (!ptr)
-> +       panic("%s: Failed to allocate %lu bytes align=0x%lx\n", __func__,
-> size, align);
->
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> Reviewed-by: Guo Ren <ren_guo@c-sky.com>             # c-sky
-> Acked-by: Paul Burton <paul.burton@mips.com>         # MIPS
-> Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com> # s390
-> Reviewed-by: Juergen Gross <jgross@suse.com>         # Xen
-> ---
->  arch/xtensa/mm/kasan_init.c               |  4 ++++
->  arch/xtensa/mm/mmu.c                      |  3 +++
+On Wed, Jan 23, 2019 at 04:07:59PM +0100, Jann Horn wrote:
+> On Mon, Jan 21, 2019 at 11:24 PM Dave Chinner <david@fromorbit.com> wrote:
+> > On Mon, Jan 21, 2019 at 04:49:45PM +0100, Jann Horn wrote:
+> > > On Sun, Jan 20, 2019 at 11:41 PM Dave Chinner <david@fromorbit.com> wrote:
+> > > > On Fri, Jan 18, 2019 at 05:14:40PM +0100, Jann Horn wrote:
+> > > > > As Al Viro pointed out, many filldir_t functions return error codes, but
+> > > > > all callers of filldir_t functions just check whether the return value is
+> > > > > non-zero (to determine whether to continue reading the directory); more
+> > > > > precise errors have to be signalled via struct dir_context.
+> > > > > Change all filldir_t functions to return bool instead of int.
+> > > > >
+> > > > > Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
+> > > > > Signed-off-by: Jann Horn <jannh@google.com>
+> > > > > ---
+> > > > >  arch/alpha/kernel/osf_sys.c | 12 +++----
+> > > > >  fs/afs/dir.c                | 30 +++++++++--------
+> > > > >  fs/ecryptfs/file.c          | 13 ++++----
+> > > > >  fs/exportfs/expfs.c         |  8 ++---
+> > > > >  fs/fat/dir.c                |  8 ++---
+> > > > >  fs/gfs2/export.c            |  6 ++--
+> > > > >  fs/nfsd/nfs4recover.c       |  8 ++---
+> > > > >  fs/nfsd/vfs.c               |  6 ++--
+> > > > >  fs/ocfs2/dir.c              | 10 +++---
+> > > > >  fs/ocfs2/journal.c          | 14 ++++----
+> > > > >  fs/overlayfs/readdir.c      | 24 +++++++-------
+> > > > >  fs/readdir.c                | 64 ++++++++++++++++++-------------------
+> > > > >  fs/reiserfs/xattr.c         | 20 ++++++------
+> > > > >  fs/xfs/scrub/dir.c          |  8 ++---
+> > > > >  fs/xfs/scrub/parent.c       |  4 +--
+> > > > >  include/linux/fs.h          | 10 +++---
+> > > > >  16 files changed, 125 insertions(+), 120 deletions(-)
+> > > > >
+> > > > > diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+> > > > > index db1c2144d477..14e5ae0dac50 100644
+> > > > > --- a/arch/alpha/kernel/osf_sys.c
+> > > > > +++ b/arch/alpha/kernel/osf_sys.c
+> > > > > @@ -108,7 +108,7 @@ struct osf_dirent_callback {
+> > > > >       int error;
+> > > > >  };
+> > > > >
+> > > > > -static int
+> > > > > +static bool
+> > > > >  osf_filldir(struct dir_context *ctx, const char *name, int namlen,
+> > > > >           loff_t offset, u64 ino, unsigned int d_type)
+> > > > >  {
+> > > > > @@ -120,14 +120,14 @@ osf_filldir(struct dir_context *ctx, const char *name, int namlen,
+> > > > >
+> > > > >       buf->error = check_dirent_name(name, namlen);
+> > > > >       if (unlikely(buf->error))
+> > > > > -             return -EFSCORRUPTED;
+> > > > > +             return false;
+> > > > >       buf->error = -EINVAL;   /* only used if we fail */
+> > > > >       if (reclen > buf->count)
+> > > > > -             return -EINVAL;
+> > > > > +             return false;
+> > > >
+> > > > Oh, it's because the error being returned is being squashed by
+> > > > dir_emit():
+> > >
+> > > Yeah.
+> > >
+> > > > >  struct dir_context {
+> > > > > @@ -3469,17 +3471,17 @@ static inline bool dir_emit(struct dir_context *ctx,
+> > > > >                           const char *name, int namelen,
+> > > > >                           u64 ino, unsigned type)
+> > > > >  {
+> > > > > -     return ctx->actor(ctx, name, namelen, ctx->pos, ino, type) == 0;
+> > > > > +     return ctx->actor(ctx, name, namelen, ctx->pos, ino, type);
+> > > > >  }
+> > > >
+> > > > /me wonders if it would be cleaner to do:
+> > > >
+> > > > static inline bool dir_emit(...)
+> > > > {
+> > > >         buf->error = ctx->actor(....)
+> > > >         if (buf->error)
+> > > >                 return false;
+> > > >         return true;
+> > > > }
+> > > >
+> > > > And clean up all filldir actors just to return the error state
+> > > > rather than have to jump through hoops to stash the error state in
+> > > > the context buffer and return the error state?
+> > >
+> > > One negative thing about that, IMO, is that it mixes up the request
+> > > for termination of the loop and the presence of an error.
+> >
+> > Doesn't the code already do that, only worse?
+> 
+> The current code does that, yes. But with this patch, I think that's
+> not really the case anymore?
+> 
+> > > > That then allows callers who want/need the full error info can
+> > > > continue to call ctx->actor directly,
+> > >
+> > > "continue to call ctx->actor directly"? I don't remember any code that
+> > > calls ctx->actor directly.
+> >
+> > ovl_fill_real().
+> 
+> Ah, right.
+> 
+> 
+> > And the XFS directory scrubber could probably make better use of the
+> > error return from ctx->actor when validating the directory contents
+> > rather than just calling dir_emit() and aborting the scan at the
+> > first error encountered. We eventually want to know exactly what
+> > error was encountered here to determine if it is safe to continue,
+> > not just a "stop processing" flag. e.g. a bad name length will need
+> > to stop traversal because we can't trust the underlying structure,
+> > but an invalid file type isn't a structural flaw that prevents us
+> > from continuing to traverse and check the rest of the directory....
+> 
+> Sorry, maybe I'm a bit dense right now, I don't get your point. Are
+> you talking about filesystem errors detected in the actor? If so,
+> doesn't it make *more* sense for non-fatal errors to put a note that
+> an error happened into the xchk_dir_ctx (if that information should be
+> kept around), then return a value that says "please continue"?
 
-For xtensa:
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+As I understand the scrub code, we /do/ stash the error state elsewhere
+and set the xchk_dir_actor return value as appropriate to continue or
+stop the directory iteration.  Granted, it's not very nuanced since
+anything out of order sets the CORRUPT flag and aborts the iteration,
+but in principle xchk_dir_actor could set the scrub warning flag and
+return 0 if it wanted to.
 
--- 
-Thanks.
--- Max
+(So maybe I'm dense too, but I don't know what Dave is talking
+about...?)
+
+--D
+
+> Or are you talking about filesystem errors detected in the readdir
+> implementation? In that case, you're AFAICS going to need special-case
+> logic gated on ctx->actor==xchk_dir_actor anyway if you want the
+> scrubber to continue while readdir() stops.
+> 
+> (But as I've said, I don't really care about this patch. If Al takes
+> patches 1 and 2 from this series, I'm happy; this patch is just in
+> response to <https://lore.kernel.org/lkml/20180731165112.GJ30522@ZenIV.linux.org.uk/>.)
