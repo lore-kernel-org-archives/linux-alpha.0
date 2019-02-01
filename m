@@ -1,170 +1,493 @@
-From: "Darrick J. Wong" <darrick.wong@oracle.com>
-Subject: Re: [PATCH v4 3/3] fs: let filldir_t return bool instead of an error
- code
-Date: Thu, 31 Jan 2019 12:39:40 -0800
-Message-ID: <20190131203940.GA27972@magnolia>
-References: <20190118161440.220134-1-jannh@google.com>
- <20190118161440.220134-3-jannh@google.com>
- <20190120224059.GA4205@dastard>
- <CAG48ez3SgejgGbctHwxON1B1k26xk-z16xdozKZkx7=-Li0aHw@mail.gmail.com>
- <20190121222411.GD4205@dastard>
- <CAG48ez2UmgEkitbgyCCs9LLdgahweFFAJWCU_vcqES6YgN=gLw@mail.gmail.com>
-Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=Lz5JHc+Ue+BmrKXLjFXGNF4LxQlSB+QOkl0q+V6XNq8=;
- b=5k+tBmfO1XidU4vgYSd65UjEKrHUAqzZMhZqcsOeT3jSvL64vmsgip7BagP6R8YlKjcX
- t20oDYvoY38zo9thiugJQkG0SK/SDhT9s1+VS4dZPYQB5qGCW/rCfAcLFgFBvs+MvK8w
- Tf6I6v8izo0WxFginA/R9rexuMJJYFlOjXjZai/RRayFChXfioT7yEYfmOuig3iA6RU4
- i6sRxi+YIXGirAPFW6sWdv5z1ZZfrGoZ+vp2lu4wwTWjRHzG0q9rtoYUcmTf70NeA8FX
- RLmy20EPZqNNSo66f4bgdRyJEl2NczbYnnDyo5EkiNYkQN9nEB61swfTwySXtyxejh1t Dg== 
-Content-Disposition: inline
-In-Reply-To: <CAG48ez2UmgEkitbgyCCs9LLdgahweFFAJWCU_vcqES6YgN=gLw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+From: Deepa Dinamani <deepa.kernel@gmail.com>
+Subject: [PATCH net-next v4 04/12] sockopt: Rename SO_TIMESTAMP* to SO_TIMESTAMP*_OLD
+Date: Fri,  1 Feb 2019 07:43:48 -0800
+Message-ID: <20190201154356.15536-5-deepa.kernel@gmail.com>
+References: <20190201154356.15536-1-deepa.kernel@gmail.com>
+Return-path: <netdev-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=kXEku7wVKej63PQJBSR7MpeLK5IYIVw7q0O+wrSF/Ao=;
+        b=LxzJyRIKuk2uU4Jgs68zIOUBdYe3nZ7wiFq0qiWO5uyY5ZQBQY6pVtBOln/Ju4w70c
+         bjJdRVF7zTBZXwpkh2DlFbvTJBwiyWqVm30LGcB2yGnF08Z/aDNhJFqUSk9TBSGoHYcg
+         ZvFG6dJBUvRFApHkg/Dkjwxjdq4BExuNMlubwN9aMrSRMLqK/Vi0RxSs0BWoTGfbqZx2
+         MoTCWkFhzaoP4Es7iEJsDydidERDozwZVxu5U/zU9X5pjz4xcrigbT8PRkC35U+b9go5
+         qU375AUn3QkHUNeg+UXaWRwO9dTmGSaeQS9Bsmaq0rlLqH7X3hv1+9uImPc7hKkhO1dL
+         RY1A==
+In-Reply-To: <20190201154356.15536-1-deepa.kernel@gmail.com>
+Sender: netdev-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Jann Horn <jannh@google.com>
-Cc: Dave Chinner <david@fromorbit.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, linux-fsdevel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, "Eric W. Biederman" <ebiederm@xmission.com>, Theodore Ts'o <tytso@mit.edu>, Andreas Dilger <adilger.kernel@dilger.ca>, linux-alpha@vger.kernel.org, kernel list <linux-kernel@vger.kernel.org>, Pavel Machek <pavel@ucw.cz>, linux-arch <linux-arch@vger.kernel.org>, Linux API <linux-api@vger.kernel.org>
+To: davem@davemloft.net, linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org, arnd@arndb.de, y2038@lists.linaro.org, deller@gmx.de, dhowells@redhat.com, jejb@parisc-linux.org, ralf@linux-mips.org, rth@twiddle.net, linux-afs@lists.infradead.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@linux-mips.org, linux-parisc@vger.kernel.org, linux-rdma@vger.kernel.org, sparclinux@vger.kernel.org
 
-On Wed, Jan 23, 2019 at 04:07:59PM +0100, Jann Horn wrote:
-> On Mon, Jan 21, 2019 at 11:24 PM Dave Chinner <david@fromorbit.com> wrote:
-> > On Mon, Jan 21, 2019 at 04:49:45PM +0100, Jann Horn wrote:
-> > > On Sun, Jan 20, 2019 at 11:41 PM Dave Chinner <david@fromorbit.com> wrote:
-> > > > On Fri, Jan 18, 2019 at 05:14:40PM +0100, Jann Horn wrote:
-> > > > > As Al Viro pointed out, many filldir_t functions return error codes, but
-> > > > > all callers of filldir_t functions just check whether the return value is
-> > > > > non-zero (to determine whether to continue reading the directory); more
-> > > > > precise errors have to be signalled via struct dir_context.
-> > > > > Change all filldir_t functions to return bool instead of int.
-> > > > >
-> > > > > Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
-> > > > > Signed-off-by: Jann Horn <jannh@google.com>
-> > > > > ---
-> > > > >  arch/alpha/kernel/osf_sys.c | 12 +++----
-> > > > >  fs/afs/dir.c                | 30 +++++++++--------
-> > > > >  fs/ecryptfs/file.c          | 13 ++++----
-> > > > >  fs/exportfs/expfs.c         |  8 ++---
-> > > > >  fs/fat/dir.c                |  8 ++---
-> > > > >  fs/gfs2/export.c            |  6 ++--
-> > > > >  fs/nfsd/nfs4recover.c       |  8 ++---
-> > > > >  fs/nfsd/vfs.c               |  6 ++--
-> > > > >  fs/ocfs2/dir.c              | 10 +++---
-> > > > >  fs/ocfs2/journal.c          | 14 ++++----
-> > > > >  fs/overlayfs/readdir.c      | 24 +++++++-------
-> > > > >  fs/readdir.c                | 64 ++++++++++++++++++-------------------
-> > > > >  fs/reiserfs/xattr.c         | 20 ++++++------
-> > > > >  fs/xfs/scrub/dir.c          |  8 ++---
-> > > > >  fs/xfs/scrub/parent.c       |  4 +--
-> > > > >  include/linux/fs.h          | 10 +++---
-> > > > >  16 files changed, 125 insertions(+), 120 deletions(-)
-> > > > >
-> > > > > diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-> > > > > index db1c2144d477..14e5ae0dac50 100644
-> > > > > --- a/arch/alpha/kernel/osf_sys.c
-> > > > > +++ b/arch/alpha/kernel/osf_sys.c
-> > > > > @@ -108,7 +108,7 @@ struct osf_dirent_callback {
-> > > > >       int error;
-> > > > >  };
-> > > > >
-> > > > > -static int
-> > > > > +static bool
-> > > > >  osf_filldir(struct dir_context *ctx, const char *name, int namlen,
-> > > > >           loff_t offset, u64 ino, unsigned int d_type)
-> > > > >  {
-> > > > > @@ -120,14 +120,14 @@ osf_filldir(struct dir_context *ctx, const char *name, int namlen,
-> > > > >
-> > > > >       buf->error = check_dirent_name(name, namlen);
-> > > > >       if (unlikely(buf->error))
-> > > > > -             return -EFSCORRUPTED;
-> > > > > +             return false;
-> > > > >       buf->error = -EINVAL;   /* only used if we fail */
-> > > > >       if (reclen > buf->count)
-> > > > > -             return -EINVAL;
-> > > > > +             return false;
-> > > >
-> > > > Oh, it's because the error being returned is being squashed by
-> > > > dir_emit():
-> > >
-> > > Yeah.
-> > >
-> > > > >  struct dir_context {
-> > > > > @@ -3469,17 +3471,17 @@ static inline bool dir_emit(struct dir_context *ctx,
-> > > > >                           const char *name, int namelen,
-> > > > >                           u64 ino, unsigned type)
-> > > > >  {
-> > > > > -     return ctx->actor(ctx, name, namelen, ctx->pos, ino, type) == 0;
-> > > > > +     return ctx->actor(ctx, name, namelen, ctx->pos, ino, type);
-> > > > >  }
-> > > >
-> > > > /me wonders if it would be cleaner to do:
-> > > >
-> > > > static inline bool dir_emit(...)
-> > > > {
-> > > >         buf->error = ctx->actor(....)
-> > > >         if (buf->error)
-> > > >                 return false;
-> > > >         return true;
-> > > > }
-> > > >
-> > > > And clean up all filldir actors just to return the error state
-> > > > rather than have to jump through hoops to stash the error state in
-> > > > the context buffer and return the error state?
-> > >
-> > > One negative thing about that, IMO, is that it mixes up the request
-> > > for termination of the loop and the presence of an error.
-> >
-> > Doesn't the code already do that, only worse?
-> 
-> The current code does that, yes. But with this patch, I think that's
-> not really the case anymore?
-> 
-> > > > That then allows callers who want/need the full error info can
-> > > > continue to call ctx->actor directly,
-> > >
-> > > "continue to call ctx->actor directly"? I don't remember any code that
-> > > calls ctx->actor directly.
-> >
-> > ovl_fill_real().
-> 
-> Ah, right.
-> 
-> 
-> > And the XFS directory scrubber could probably make better use of the
-> > error return from ctx->actor when validating the directory contents
-> > rather than just calling dir_emit() and aborting the scan at the
-> > first error encountered. We eventually want to know exactly what
-> > error was encountered here to determine if it is safe to continue,
-> > not just a "stop processing" flag. e.g. a bad name length will need
-> > to stop traversal because we can't trust the underlying structure,
-> > but an invalid file type isn't a structural flaw that prevents us
-> > from continuing to traverse and check the rest of the directory....
-> 
-> Sorry, maybe I'm a bit dense right now, I don't get your point. Are
-> you talking about filesystem errors detected in the actor? If so,
-> doesn't it make *more* sense for non-fatal errors to put a note that
-> an error happened into the xchk_dir_ctx (if that information should be
-> kept around), then return a value that says "please continue"?
+SO_TIMESTAMP, SO_TIMESTAMPNS and SO_TIMESTAMPING options, the
+way they are currently defined, are not y2038 safe.
+Subsequent patches in the series add new y2038 safe versions
+of these options which provide 64 bit timestamps on all
+architectures uniformly.
+Hence, rename existing options with OLD tag suffixes.
 
-As I understand the scrub code, we /do/ stash the error state elsewhere
-and set the xchk_dir_actor return value as appropriate to continue or
-stop the directory iteration.  Granted, it's not very nuanced since
-anything out of order sets the CORRUPT flag and aborts the iteration,
-but in principle xchk_dir_actor could set the scrub warning flag and
-return 0 if it wanted to.
+Also note that kernel will not use the untagged SO_TIMESTAMP*
+and SCM_TIMESTAMP* options internally anymore.
 
-(So maybe I'm dense too, but I don't know what Dave is talking
-about...?)
+Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
+Cc: deller@gmx.de
+Cc: dhowells@redhat.com
+Cc: jejb@parisc-linux.org
+Cc: ralf@linux-mips.org
+Cc: rth@twiddle.net
+Cc: linux-afs@lists.infradead.org
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linux-rdma@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
+---
+ arch/alpha/include/uapi/asm/socket.h  | 23 ++++++++++++++++-------
+ arch/mips/include/uapi/asm/socket.h   | 23 ++++++++++++++++-------
+ arch/parisc/include/uapi/asm/socket.h | 23 ++++++++++++++++-------
+ arch/sparc/include/uapi/asm/socket.h  | 24 ++++++++++++++++--------
+ include/uapi/asm-generic/socket.h     | 23 ++++++++++++++++-------
+ net/compat.c                          |  6 +++---
+ net/core/sock.c                       | 16 ++++++++--------
+ net/ipv4/tcp.c                        |  6 +++---
+ net/rds/af_rds.c                      |  2 +-
+ net/rds/recv.c                        |  2 +-
+ net/rxrpc/local_object.c              |  2 +-
+ net/socket.c                          |  8 ++++----
+ 12 files changed, 101 insertions(+), 57 deletions(-)
 
---D
+diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
+index b1c9b542c021..992a0a6dcea1 100644
+--- a/arch/alpha/include/uapi/asm/socket.h
++++ b/arch/alpha/include/uapi/asm/socket.h
+@@ -51,13 +51,9 @@
+ #define SO_GET_FILTER		SO_ATTACH_FILTER
+ 
+ #define SO_PEERNAME		28
+-#define SO_TIMESTAMP		29
+-#define SCM_TIMESTAMP		SO_TIMESTAMP
+ 
+ #define SO_PEERSEC		30
+ #define SO_PASSSEC		34
+-#define SO_TIMESTAMPNS		35
+-#define SCM_TIMESTAMPNS		SO_TIMESTAMPNS
+ 
+ /* Security levels - as per NRL IPv6 - don't actually do anything */
+ #define SO_SECURITY_AUTHENTICATION		19
+@@ -66,9 +62,6 @@
+ 
+ #define SO_MARK			36
+ 
+-#define SO_TIMESTAMPING		37
+-#define SCM_TIMESTAMPING	SO_TIMESTAMPING
+-
+ #define SO_RXQ_OVFL             40
+ 
+ #define SO_WIFI_STATUS		41
+@@ -117,4 +110,20 @@
+ 
+ #define SO_BINDTOIFINDEX	62
+ 
++#define SO_TIMESTAMP_OLD        29
++#define SO_TIMESTAMPNS_OLD      35
++#define SO_TIMESTAMPING_OLD     37
++
++#if !defined(__KERNEL__)
++
++#define SO_TIMESTAMP            SO_TIMESTAMP_OLD
++#define SO_TIMESTAMPNS          SO_TIMESTAMPNS_OLD
++#define SO_TIMESTAMPING         SO_TIMESTAMPING_OLD
++
++#define SCM_TIMESTAMP           SO_TIMESTAMP
++#define SCM_TIMESTAMPNS         SO_TIMESTAMPNS
++#define SCM_TIMESTAMPING        SO_TIMESTAMPING
++
++#endif
++
+ #endif /* _UAPI_ASM_SOCKET_H */
+diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
+index 73e25e35d803..0f4516c34df2 100644
+--- a/arch/mips/include/uapi/asm/socket.h
++++ b/arch/mips/include/uapi/asm/socket.h
+@@ -65,21 +65,14 @@
+ #define SO_GET_FILTER		SO_ATTACH_FILTER
+ 
+ #define SO_PEERNAME		28
+-#define SO_TIMESTAMP		29
+-#define SCM_TIMESTAMP		SO_TIMESTAMP
+ 
+ #define SO_PEERSEC		30
+ #define SO_SNDBUFFORCE		31
+ #define SO_RCVBUFFORCE		33
+ #define SO_PASSSEC		34
+-#define SO_TIMESTAMPNS		35
+-#define SCM_TIMESTAMPNS		SO_TIMESTAMPNS
+ 
+ #define SO_MARK			36
+ 
+-#define SO_TIMESTAMPING		37
+-#define SCM_TIMESTAMPING	SO_TIMESTAMPING
+-
+ #define SO_RXQ_OVFL		40
+ 
+ #define SO_WIFI_STATUS		41
+@@ -128,4 +121,20 @@
+ 
+ #define SO_BINDTOIFINDEX	62
+ 
++#define SO_TIMESTAMP_OLD        29
++#define SO_TIMESTAMPNS_OLD      35
++#define SO_TIMESTAMPING_OLD     37
++
++#if !defined(__KERNEL__)
++
++#define SO_TIMESTAMP            SO_TIMESTAMP_OLD
++#define SO_TIMESTAMPNS          SO_TIMESTAMPNS_OLD
++#define SO_TIMESTAMPING         SO_TIMESTAMPING_OLD
++
++#define SCM_TIMESTAMP           SO_TIMESTAMP
++#define SCM_TIMESTAMPNS         SO_TIMESTAMPNS
++#define SCM_TIMESTAMPING        SO_TIMESTAMPING
++
++#endif
++
+ #endif /* _UAPI_ASM_SOCKET_H */
+diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
+index 52bed5976cbe..7c180321ebd6 100644
+--- a/arch/parisc/include/uapi/asm/socket.h
++++ b/arch/parisc/include/uapi/asm/socket.h
+@@ -34,10 +34,6 @@
+ #define SO_BSDCOMPAT	0x400e
+ #define SO_PASSCRED	0x4010
+ #define SO_PEERCRED	0x4011
+-#define SO_TIMESTAMP	0x4012
+-#define SCM_TIMESTAMP	SO_TIMESTAMP
+-#define SO_TIMESTAMPNS	0x4013
+-#define SCM_TIMESTAMPNS	SO_TIMESTAMPNS
+ 
+ /* Security levels - as per NRL IPv6 - don't actually do anything */
+ #define SO_SECURITY_AUTHENTICATION		0x4016
+@@ -58,9 +54,6 @@
+ 
+ #define SO_MARK			0x401f
+ 
+-#define SO_TIMESTAMPING		0x4020
+-#define SCM_TIMESTAMPING	SO_TIMESTAMPING
+-
+ #define SO_RXQ_OVFL             0x4021
+ 
+ #define SO_WIFI_STATUS		0x4022
+@@ -109,4 +102,20 @@
+ 
+ #define SO_BINDTOIFINDEX	0x4037
+ 
++#define SO_TIMESTAMP_OLD        0x4012
++#define SO_TIMESTAMPNS_OLD      0x4013
++#define SO_TIMESTAMPING_OLD     0x4020
++
++#if !defined(__KERNEL__)
++
++#define SO_TIMESTAMP            SO_TIMESTAMP_OLD
++#define SO_TIMESTAMPNS          SO_TIMESTAMPNS_OLD
++#define SO_TIMESTAMPING         SO_TIMESTAMPING_OLD
++
++#define SCM_TIMESTAMP           SO_TIMESTAMP
++#define SCM_TIMESTAMPNS         SO_TIMESTAMPNS
++#define SCM_TIMESTAMPING        SO_TIMESTAMPING
++
++#endif
++
+ #endif /* _UAPI_ASM_SOCKET_H */
+diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
+index bbdb81594dd4..d8a1bbc3e6c4 100644
+--- a/arch/sparc/include/uapi/asm/socket.h
++++ b/arch/sparc/include/uapi/asm/socket.h
+@@ -33,7 +33,6 @@
+ #define SO_PROTOCOL	0x1028
+ #define SO_DOMAIN	0x1029
+ 
+-
+ /* Linux specific, keep the same. */
+ #define SO_NO_CHECK	0x000b
+ #define SO_PRIORITY	0x000c
+@@ -45,19 +44,12 @@
+ #define SO_GET_FILTER		SO_ATTACH_FILTER
+ 
+ #define SO_PEERNAME		0x001c
+-#define SO_TIMESTAMP		0x001d
+-#define SCM_TIMESTAMP		SO_TIMESTAMP
+ 
+ #define SO_PEERSEC		0x001e
+ #define SO_PASSSEC		0x001f
+-#define SO_TIMESTAMPNS		0x0021
+-#define SCM_TIMESTAMPNS		SO_TIMESTAMPNS
+ 
+ #define SO_MARK			0x0022
+ 
+-#define SO_TIMESTAMPING		0x0023
+-#define SCM_TIMESTAMPING	SO_TIMESTAMPING
+-
+ #define SO_RXQ_OVFL             0x0024
+ 
+ #define SO_WIFI_STATUS		0x0025
+@@ -111,4 +103,20 @@
+ #define SO_SECURITY_ENCRYPTION_TRANSPORT	0x5002
+ #define SO_SECURITY_ENCRYPTION_NETWORK		0x5004
+ 
++#define SO_TIMESTAMP_OLD         0x001d
++#define SO_TIMESTAMPNS_OLD       0x0021
++#define SO_TIMESTAMPING_OLD      0x0023
++
++#if !defined(__KERNEL__)
++
++#define SO_TIMESTAMP           SO_TIMESTAMP_OLD
++#define SO_TIMESTAMPNS         SO_TIMESTAMPNS_OLD
++#define SO_TIMESTAMPING        SO_TIMESTAMPING_OLD
++
++#define SCM_TIMESTAMP          SO_TIMESTAMP
++#define SCM_TIMESTAMPNS        SO_TIMESTAMPNS
++#define SCM_TIMESTAMPING       SO_TIMESTAMPING
++
++#endif
++
+ #endif /* _ASM_SOCKET_H */
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index 3066ab3853a8..4ef3aed31fb7 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -46,21 +46,14 @@
+ #define SO_GET_FILTER		SO_ATTACH_FILTER
+ 
+ #define SO_PEERNAME		28
+-#define SO_TIMESTAMP		29
+-#define SCM_TIMESTAMP		SO_TIMESTAMP
+ 
+ #define SO_ACCEPTCONN		30
+ 
+ #define SO_PEERSEC		31
+ #define SO_PASSSEC		34
+-#define SO_TIMESTAMPNS		35
+-#define SCM_TIMESTAMPNS		SO_TIMESTAMPNS
+ 
+ #define SO_MARK			36
+ 
+-#define SO_TIMESTAMPING		37
+-#define SCM_TIMESTAMPING	SO_TIMESTAMPING
+-
+ #define SO_PROTOCOL		38
+ #define SO_DOMAIN		39
+ 
+@@ -112,4 +105,20 @@
+ 
+ #define SO_BINDTOIFINDEX	62
+ 
++#define SO_TIMESTAMP_OLD        29
++#define SO_TIMESTAMPNS_OLD      35
++#define SO_TIMESTAMPING_OLD     37
++
++#if !defined(__KERNEL__)
++
++#define SO_TIMESTAMP            SO_TIMESTAMP_OLD
++#define SO_TIMESTAMPNS          SO_TIMESTAMPNS_OLD
++#define SO_TIMESTAMPING         SO_TIMESTAMPING_OLD
++
++#define SCM_TIMESTAMP           SO_TIMESTAMP
++#define SCM_TIMESTAMPNS         SO_TIMESTAMPNS
++#define SCM_TIMESTAMPING        SO_TIMESTAMPING
++
++#endif
++
+ #endif /* __ASM_GENERIC_SOCKET_H */
+diff --git a/net/compat.c b/net/compat.c
+index ce8f6e8cdcd2..ccf93cd0e49b 100644
+--- a/net/compat.c
++++ b/net/compat.c
+@@ -219,7 +219,7 @@ int put_cmsg_compat(struct msghdr *kmsg, int level, int type, int len, void *dat
+ 	}
+ 
+ 	if (!COMPAT_USE_64BIT_TIME) {
+-		if (level == SOL_SOCKET && type == SCM_TIMESTAMP) {
++		if (level == SOL_SOCKET && type == SO_TIMESTAMP_OLD) {
+ 			struct timeval *tv = (struct timeval *)data;
+ 			ctv.tv_sec = tv->tv_sec;
+ 			ctv.tv_usec = tv->tv_usec;
+@@ -227,8 +227,8 @@ int put_cmsg_compat(struct msghdr *kmsg, int level, int type, int len, void *dat
+ 			len = sizeof(ctv);
+ 		}
+ 		if (level == SOL_SOCKET &&
+-		    (type == SCM_TIMESTAMPNS || type == SCM_TIMESTAMPING)) {
+-			int count = type == SCM_TIMESTAMPNS ? 1 : 3;
++		    (type == SO_TIMESTAMPNS_OLD || type == SO_TIMESTAMPING_OLD)) {
++			int count = type == SO_TIMESTAMPNS_OLD ? 1 : 3;
+ 			int i;
+ 			struct timespec *ts = (struct timespec *)data;
+ 			for (i = 0; i < count; i++) {
+diff --git a/net/core/sock.c b/net/core/sock.c
+index a3fe0e7f49b0..5c38c740131d 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -867,10 +867,10 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 			clear_bit(SOCK_PASSCRED, &sock->flags);
+ 		break;
+ 
+-	case SO_TIMESTAMP:
+-	case SO_TIMESTAMPNS:
++	case SO_TIMESTAMP_OLD:
++	case SO_TIMESTAMPNS_OLD:
+ 		if (valbool)  {
+-			if (optname == SO_TIMESTAMP)
++			if (optname == SO_TIMESTAMP_OLD)
+ 				sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
+ 			else
+ 				sock_set_flag(sk, SOCK_RCVTSTAMPNS);
+@@ -882,7 +882,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 		}
+ 		break;
+ 
+-	case SO_TIMESTAMPING:
++	case SO_TIMESTAMPING_OLD:
+ 		if (val & ~SOF_TIMESTAMPING_MASK) {
+ 			ret = -EINVAL;
+ 			break;
+@@ -1243,16 +1243,16 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+ 		sock_warn_obsolete_bsdism("getsockopt");
+ 		break;
+ 
+-	case SO_TIMESTAMP:
++	case SO_TIMESTAMP_OLD:
+ 		v.val = sock_flag(sk, SOCK_RCVTSTAMP) &&
+ 				!sock_flag(sk, SOCK_RCVTSTAMPNS);
+ 		break;
+ 
+-	case SO_TIMESTAMPNS:
++	case SO_TIMESTAMPNS_OLD:
+ 		v.val = sock_flag(sk, SOCK_RCVTSTAMPNS);
+ 		break;
+ 
+-	case SO_TIMESTAMPING:
++	case SO_TIMESTAMPING_OLD:
+ 		v.val = sk->sk_tsflags;
+ 		break;
+ 
+@@ -2168,7 +2168,7 @@ int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
+ 			return -EINVAL;
+ 		sockc->mark = *(u32 *)CMSG_DATA(cmsg);
+ 		break;
+-	case SO_TIMESTAMPING:
++	case SO_TIMESTAMPING_OLD:
+ 		if (cmsg->cmsg_len != CMSG_LEN(sizeof(u32)))
+ 			return -EINVAL;
+ 
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 6f8d292ad501..e29aec59cad1 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1867,13 +1867,13 @@ static void tcp_recv_timestamp(struct msghdr *msg, const struct sock *sk,
+ 	if (tss->ts[0].tv_sec || tss->ts[0].tv_nsec) {
+ 		if (sock_flag(sk, SOCK_RCVTSTAMP)) {
+ 			if (sock_flag(sk, SOCK_RCVTSTAMPNS)) {
+-				put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMPNS,
++				put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPNS_OLD,
+ 					 sizeof(tss->ts[0]), &tss->ts[0]);
+ 			} else {
+ 				tv.tv_sec = tss->ts[0].tv_sec;
+ 				tv.tv_usec = tss->ts[0].tv_nsec / 1000;
+ 
+-				put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMP,
++				put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
+ 					 sizeof(tv), &tv);
+ 			}
+ 		}
+@@ -1893,7 +1893,7 @@ static void tcp_recv_timestamp(struct msghdr *msg, const struct sock *sk,
+ 
+ 	if (has_timestamping) {
+ 		tss->ts[1] = (struct timespec) {0};
+-		put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMPING,
++		put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPING_OLD,
+ 			 sizeof(*tss), tss);
+ 	}
+ }
+diff --git a/net/rds/af_rds.c b/net/rds/af_rds.c
+index 65387e1e6964..eeb4639adbe5 100644
+--- a/net/rds/af_rds.c
++++ b/net/rds/af_rds.c
+@@ -430,7 +430,7 @@ static int rds_setsockopt(struct socket *sock, int level, int optname,
+ 		ret = rds_set_transport(rs, optval, optlen);
+ 		release_sock(sock->sk);
+ 		break;
+-	case SO_TIMESTAMP:
++	case SO_TIMESTAMP_OLD:
+ 		lock_sock(sock->sk);
+ 		ret = rds_enable_recvtstamp(sock->sk, optval, optlen);
+ 		release_sock(sock->sk);
+diff --git a/net/rds/recv.c b/net/rds/recv.c
+index 727639dac8a7..04e30d63a159 100644
+--- a/net/rds/recv.c
++++ b/net/rds/recv.c
+@@ -550,7 +550,7 @@ static int rds_cmsg_recv(struct rds_incoming *inc, struct msghdr *msg,
+ 	if ((inc->i_rx_tstamp != 0) &&
+ 	    sock_flag(rds_rs_to_sk(rs), SOCK_RCVTSTAMP)) {
+ 		struct timeval tv = ktime_to_timeval(inc->i_rx_tstamp);
+-		ret = put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMP,
++		ret = put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
+ 			       sizeof(tv), &tv);
+ 		if (ret)
+ 			goto out;
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index 0906e51d3cfb..15cf42d5b53a 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -202,7 +202,7 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+ 
+ 		/* We want receive timestamps. */
+ 		opt = 1;
+-		ret = kernel_setsockopt(local->socket, SOL_SOCKET, SO_TIMESTAMPNS,
++		ret = kernel_setsockopt(local->socket, SOL_SOCKET, SO_TIMESTAMPNS_OLD,
+ 					(char *)&opt, sizeof(opt));
+ 		if (ret < 0) {
+ 			_debug("setsockopt failed");
+diff --git a/net/socket.c b/net/socket.c
+index e89884e2197b..5087f9e40f3a 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -669,7 +669,7 @@ static bool skb_is_err_queue(const struct sk_buff *skb)
+  * before the software timestamp is received, a hardware TX timestamp may be
+  * returned only if there is no software TX timestamp. Ignore false software
+  * timestamps, which may be made in the __sock_recv_timestamp() call when the
+- * option SO_TIMESTAMP(NS) is enabled on the socket, even when the skb has a
++ * option SO_TIMESTAMP_OLD(NS) is enabled on the socket, even when the skb has a
+  * hardware timestamp.
+  */
+ static bool skb_is_swtx_tstamp(const struct sk_buff *skb, int false_tstamp)
+@@ -721,12 +721,12 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+ 		if (!sock_flag(sk, SOCK_RCVTSTAMPNS)) {
+ 			struct timeval tv;
+ 			skb_get_timestamp(skb, &tv);
+-			put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMP,
++			put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
+ 				 sizeof(tv), &tv);
+ 		} else {
+ 			struct timespec ts;
+ 			skb_get_timestampns(skb, &ts);
+-			put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMPNS,
++			put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPNS_OLD,
+ 				 sizeof(ts), &ts);
+ 		}
+ 	}
+@@ -746,7 +746,7 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+ 	}
+ 	if (!empty) {
+ 		put_cmsg(msg, SOL_SOCKET,
+-			 SCM_TIMESTAMPING, sizeof(tss), &tss);
++			 SO_TIMESTAMPING_OLD, sizeof(tss), &tss);
+ 
+ 		if (skb_is_err_queue(skb) && skb->len &&
+ 		    SKB_EXT_ERR(skb)->opt_stats)
+-- 
+2.17.1
 
-> Or are you talking about filesystem errors detected in the readdir
-> implementation? In that case, you're AFAICS going to need special-case
-> logic gated on ctx->actor==xchk_dir_actor anyway if you want the
-> scrubber to continue while readdir() stops.
-> 
-> (But as I've said, I don't really care about this patch. If Al takes
-> patches 1 and 2 from this series, I'm happy; this patch is just in
-> response to <https://lore.kernel.org/lkml/20180731165112.GJ30522@ZenIV.linux.org.uk/>.)
