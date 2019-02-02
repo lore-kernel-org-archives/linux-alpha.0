@@ -1,327 +1,168 @@
 From: Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: [PATCH net-next v4 12/12] sock: Add SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW
-Date: Fri,  1 Feb 2019 07:43:56 -0800
-Message-ID: <20190201154356.15536-13-deepa.kernel@gmail.com>
-References: <20190201154356.15536-1-deepa.kernel@gmail.com>
-Return-path: <netdev-owner@vger.kernel.org>
+Subject: [PATCH net-next v5 00/12] net: y2038-safe socket timestamps
+Date: Sat,  2 Feb 2019 07:34:42 -0800
+Message-ID: <20190202153454.7121-1-deepa.kernel@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dF2LAdEhafWzIQxJixmVAE4RRAMYhlC7Kg9jv7I5j10=;
-        b=XP7KRo9svwCOnSGr/XwaOFUopNKEZ1AZtkrvqQRRfkESyrydFcLoLJD1oZ6GF/csvD
-         udoA6fJdJlwf7fz+Oxt3YVchPP7ADbR2O0DEJ7NfJbyCcyMhqcyE93+x2oJFisrS7MV4
-         uCzrL1kVK05zz2cpVMju/2xMFdF24fy3U3YP8l4+PgPW1b6tVRD9HA+FN/zJw0gRHZCi
-         nNWEYxMlHs441Plq5yVXT8XU5IgEOZiDn7T1Edy7Bjw6s4HZUsfkSheZ50qutXk+eZ+F
-         /HGtYliVmFdoyNG28IS5ccJcb8zCcCbIDIIaUx+pAYlcXd8+afYo6jTQc858W8TvW7q8
-         A58A==
-In-Reply-To: <20190201154356.15536-1-deepa.kernel@gmail.com>
-Sender: netdev-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id;
+        bh=MOOCgWMcqNx29qDNgQPggQZMAPyyh787m+mGlOgujkA=;
+        b=sAHg/EBDlVWLBUIoEVcqMCGpCbLoqv7KzituBNXF6/2kks+YcGn2lBgl5/YTFtY0Vn
+         I1pAoAoYa2Z38m+9nA/NnOv90SUfiN4Dxz/JbTSv8ymtdBTNtuXtFBwqOGbWM2dPkF4D
+         djPgs2gC/NzPTcQRhZbvYWglZva7fp4KPyaNuBh9ya7J3yj8aecRhqIrqnnXDsdlrHV5
+         WuRF3eqTv+p2tKoL1IJCH3lEJ4+x4bRJntdTPtRENO9EdenrErqfyifmYvnAVf1ImooQ
+         L1yswmQ6N4GDnhxBteCU9FBXHtnp6ZFSI3otEvJaZVnCc+gZQlriXsLeXoEH/epAoJ15
+         WJ4g==
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: davem@davemloft.net, linux-kernel@vger.kernel.org
-Cc: netdev@vger.kernel.org, arnd@arndb.de, y2038@lists.linaro.org, ccaulfie@redhat.com, deller@gmx.de, paulus@samba.org, ralf@linux-mips.org, rth@twiddle.net, cluster-devel@redhat.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org
+Cc: netdev@vger.kernel.org, arnd@arndb.de, y2038@lists.linaro.org, ccaulfie@redhat.com, chris@zankel.net, cluster-devel@redhat.com, deller@gmx.de, dhowells@redhat.com, fenghua.yu@intel.com, isdn@linux-pingi.de, jejb@parisc-linux.org, linux-afs@lists.infradead.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@linux-mips.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org, linux-xtensa@linux-xtensa.org, paulus@samba.org, ralf@linux-mips.org, rth@twiddle.net, schwidefsky@de.ibm.com, sparclinux@vger.kernel.org, tglx@linutronix.de, ubraun@linux.ibm.com
 
-Add new socket timeout options that are y2038 safe.
+The series introduces new socket timestamps that are
+y2038 safe.
 
-Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
-Cc: ccaulfie@redhat.com
-Cc: davem@davemloft.net
-Cc: deller@gmx.de
-Cc: paulus@samba.org
-Cc: ralf@linux-mips.org
-Cc: rth@twiddle.net
-Cc: cluster-devel@redhat.com
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-arch@vger.kernel.org
-Cc: linux-mips@vger.kernel.org
-Cc: linux-parisc@vger.kernel.org
-Cc: sparclinux@vger.kernel.org
----
- arch/alpha/include/uapi/asm/socket.h  | 12 +++++--
- arch/mips/include/uapi/asm/socket.h   | 11 ++++--
- arch/parisc/include/uapi/asm/socket.h | 10 ++++--
- arch/sparc/include/uapi/asm/socket.h  | 11 ++++--
- include/uapi/asm-generic/socket.h     | 11 ++++--
- net/core/sock.c                       | 49 ++++++++++++++++++++-------
- 6 files changed, 81 insertions(+), 23 deletions(-)
+The time data types used for the existing socket timestamp
+options: SO_TIMESTAMP, SO_TIMESTAMPNS and SO_TIMESTAMPING
+are not y2038 safe. The series introduces SO_TIMESTAMP_NEW,
+SO_TIMESTAMPNS_NEW and SO_TIMESTAMPING_NEW to replace these.
+These new timestamps can be used on all architectures.
 
-diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
-index 9826d1db71d0..0d0fddb7e738 100644
---- a/arch/alpha/include/uapi/asm/socket.h
-+++ b/arch/alpha/include/uapi/asm/socket.h
-@@ -119,19 +119,25 @@
- #define SO_TIMESTAMPNS_NEW      64
- #define SO_TIMESTAMPING_NEW     65
- 
--#if !defined(__KERNEL__)
-+#define SO_RCVTIMEO_NEW         66
-+#define SO_SNDTIMEO_NEW         67
- 
--#define	SO_RCVTIMEO SO_RCVTIMEO_OLD
--#define	SO_SNDTIMEO SO_SNDTIMEO_OLD
-+#if !defined(__KERNEL__)
- 
- #if __BITS_PER_LONG == 64
- #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
- #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
- #define SO_TIMESTAMPING         SO_TIMESTAMPING_OLD
-+
-+#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
-+#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
- #else
- #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
- #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
- #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
-+
-+#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
-+#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
- #endif
- 
- #define SCM_TIMESTAMP           SO_TIMESTAMP
-diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
-index 96cc0e907f12..eb9f33f8a8b3 100644
---- a/arch/mips/include/uapi/asm/socket.h
-+++ b/arch/mips/include/uapi/asm/socket.h
-@@ -130,18 +130,25 @@
- #define SO_TIMESTAMPNS_NEW      64
- #define SO_TIMESTAMPING_NEW     65
- 
-+#define SO_RCVTIMEO_NEW         66
-+#define SO_SNDTIMEO_NEW         67
-+
- #if !defined(__KERNEL__)
- 
--#define	SO_RCVTIMEO SO_RCVTIMEO_OLD
--#define	SO_SNDTIMEO SO_SNDTIMEO_OLD
- #if __BITS_PER_LONG == 64
- #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
- #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
- #define SO_TIMESTAMPING		SO_TIMESTAMPING_OLD
-+
-+#define SO_RCVTIMEO             SO_RCVTIMEO_OLD
-+#define SO_SNDTIMEO             SO_SNDTIMEO_OLD
- #else
- #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
- #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
- #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
-+
-+#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
-+#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
- #endif
- 
- #define SCM_TIMESTAMP           SO_TIMESTAMP
-diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
-index 046f0cd9cce4..16e428f03526 100644
---- a/arch/parisc/include/uapi/asm/socket.h
-+++ b/arch/parisc/include/uapi/asm/socket.h
-@@ -111,18 +111,24 @@
- #define SO_TIMESTAMPNS_NEW      0x4039
- #define SO_TIMESTAMPING_NEW     0x403A
- 
-+#define SO_RCVTIMEO_NEW         0x4040
-+#define SO_SNDTIMEO_NEW         0x4041
-+
- #if !defined(__KERNEL__)
- 
--#define	SO_RCVTIMEO SO_RCVTIMEO_OLD
--#define	SO_SNDTIMEO SO_SNDTIMEO_OLD
- #if __BITS_PER_LONG == 64
- #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
- #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
- #define SO_TIMESTAMPING         SO_TIMESTAMPING_OLD
-+#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
-+#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
- #else
- #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
- #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
- #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
-+
-+#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
-+#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
- #endif
- 
- #define SCM_TIMESTAMP           SO_TIMESTAMP
-diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
-index 342ffdc3b424..8c9f74a66b55 100644
---- a/arch/sparc/include/uapi/asm/socket.h
-+++ b/arch/sparc/include/uapi/asm/socket.h
-@@ -112,19 +112,26 @@
- #define SO_TIMESTAMPNS_NEW       0x0042
- #define SO_TIMESTAMPING_NEW      0x0043
- 
-+#define SO_RCVTIMEO_NEW          0x0044
-+#define SO_SNDTIMEO_NEW          0x0045
-+
- #if !defined(__KERNEL__)
- 
--#define SO_RCVTIMEO              SO_RCVTIMEO_OLD
--#define SO_SNDTIMEO              SO_SNDTIMEO_OLD
- 
- #if __BITS_PER_LONG == 64
- #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
- #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
- #define SO_TIMESTAMPING		SO_TIMESTAMPING_OLD
-+
-+#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
-+#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
- #else
- #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
- #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
- #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
-+
-+#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
-+#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
- #endif
- 
- #define SCM_TIMESTAMP          SO_TIMESTAMP
-diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
-index c56b8b487c12..c8b430cb6dc4 100644
---- a/include/uapi/asm-generic/socket.h
-+++ b/include/uapi/asm-generic/socket.h
-@@ -114,19 +114,26 @@
- #define SO_TIMESTAMPNS_NEW      64
- #define SO_TIMESTAMPING_NEW     65
- 
-+#define SO_RCVTIMEO_NEW         66
-+#define SO_SNDTIMEO_NEW         67
-+
- #if !defined(__KERNEL__)
- 
--#define	SO_RCVTIMEO SO_RCVTIMEO_OLD
--#define	SO_SNDTIMEO SO_SNDTIMEO_OLD
- #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
- /* on 64-bit and x32, avoid the ?: operator */
- #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
- #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
- #define SO_TIMESTAMPING		SO_TIMESTAMPING_OLD
-+
-+#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
-+#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
- #else
- #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
- #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
- #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
-+
-+#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
-+#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
- #endif
- 
- #define SCM_TIMESTAMP           SO_TIMESTAMP
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 0e29e0b0338f..3a74adae23d0 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -335,9 +335,10 @@ int __sk_backlog_rcv(struct sock *sk, struct sk_buff *skb)
- }
- EXPORT_SYMBOL(__sk_backlog_rcv);
- 
--static int sock_get_timeout(long timeo, void *optval)
-+static int sock_get_timeout(long timeo, void *optval, bool old_timeval)
- {
--	struct __kernel_old_timeval tv;
-+	struct __kernel_sock_timeval tv;
-+	int size;
- 
- 	if (timeo == MAX_SCHEDULE_TIMEOUT) {
- 		tv.tv_sec = 0;
-@@ -353,13 +354,23 @@ static int sock_get_timeout(long timeo, void *optval)
- 		return sizeof(tv32);
- 	}
- 
--	*(struct __kernel_old_timeval *)optval = tv;
--	return sizeof(tv);
-+	if (old_timeval) {
-+		struct __kernel_old_timeval old_tv;
-+		old_tv.tv_sec = tv.tv_sec;
-+		old_tv.tv_usec = tv.tv_usec;
-+		*(struct __kernel_old_timeval *)optval = old_tv;
-+		size = sizeof(old_tv);
-+	} else {
-+		*(struct __kernel_sock_timeval *)optval = tv;
-+		size = sizeof(tv);
-+	}
-+
-+	return size;
- }
- 
--static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
-+static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen, bool old_timeval)
- {
--	struct __kernel_old_timeval tv;
-+	struct __kernel_sock_timeval tv;
- 
- 	if (in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
- 		struct old_timeval32 tv32;
-@@ -371,6 +382,15 @@ static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
- 			return -EFAULT;
- 		tv.tv_sec = tv32.tv_sec;
- 		tv.tv_usec = tv32.tv_usec;
-+	} else if (old_timeval) {
-+		struct __kernel_old_timeval old_tv;
-+
-+		if (optlen < sizeof(old_tv))
-+			return -EINVAL;
-+		if (copy_from_user(&old_tv, optval, sizeof(old_tv)))
-+			return -EFAULT;
-+		tv.tv_sec = old_tv.tv_sec;
-+		tv.tv_usec = old_tv.tv_usec;
- 	} else {
- 		if (optlen < sizeof(tv))
- 			return -EINVAL;
-@@ -394,8 +414,8 @@ static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
- 	*timeo_p = MAX_SCHEDULE_TIMEOUT;
- 	if (tv.tv_sec == 0 && tv.tv_usec == 0)
- 		return 0;
--	if (tv.tv_sec < (MAX_SCHEDULE_TIMEOUT/HZ - 1))
--		*timeo_p = tv.tv_sec * HZ + DIV_ROUND_UP(tv.tv_usec, USEC_PER_SEC / HZ);
-+	if (tv.tv_sec < (MAX_SCHEDULE_TIMEOUT / HZ - 1))
-+		*timeo_p = tv.tv_sec * HZ + DIV_ROUND_UP((unsigned long)tv.tv_usec, USEC_PER_SEC / HZ);
- 	return 0;
- }
- 
-@@ -942,11 +962,13 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case SO_RCVTIMEO_OLD:
--		ret = sock_set_timeout(&sk->sk_rcvtimeo, optval, optlen);
-+	case SO_RCVTIMEO_NEW:
-+		ret = sock_set_timeout(&sk->sk_rcvtimeo, optval, optlen, optname == SO_RCVTIMEO_OLD);
- 		break;
- 
- 	case SO_SNDTIMEO_OLD:
--		ret = sock_set_timeout(&sk->sk_sndtimeo, optval, optlen);
-+	case SO_SNDTIMEO_NEW:
-+		ret = sock_set_timeout(&sk->sk_sndtimeo, optval, optlen, optname == SO_SNDTIMEO_OLD);
- 		break;
- 
- 	case SO_ATTACH_FILTER:
-@@ -1171,6 +1193,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
- 		struct linger ling;
- 		struct old_timeval32 tm32;
- 		struct __kernel_old_timeval tm;
-+		struct  __kernel_sock_timeval stm;
- 		struct sock_txtime txtime;
- 	} v;
- 
-@@ -1280,11 +1303,13 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case SO_RCVTIMEO_OLD:
--		lv = sock_get_timeout(sk->sk_rcvtimeo, optval);
-+	case SO_RCVTIMEO_NEW:
-+		lv = sock_get_timeout(sk->sk_rcvtimeo, optval, SO_RCVTIMEO_OLD == optname);
- 		break;
- 
- 	case SO_SNDTIMEO_OLD:
--		lv = sock_get_timeout(sk->sk_sndtimeo, optval);
-+	case SO_SNDTIMEO_NEW:
-+		lv = sock_get_timeout(sk->sk_sndtimeo, optval, SO_SNDTIMEO_OLD == optname);
- 		break;
- 
- 	case SO_RCVLOWAT:
+The alternative considered was to extend the sys_setsockopt()
+by using the flags. We did not receive any strong opinions about
+either of the approaches. Hence, this was chosen, as glibc folks
+preferred this.
+
+The series does not deal with updating the internal kernel socket
+calls like rxrpc to make them y2038 safe. This will be dealt
+with separately.
+
+Note that the timestamps behavior already does not match the
+man page specific behavior:
+SIOCGSTAMP
+    This ioctl should only be used if the socket option SO_TIMESTAMP
+	is not set on the socket. Otherwise, it returns the timestamp of
+	the last packet that was received while SO_TIMESTAMP was not set,
+	or it fails if no such packet has been received,
+	(i.e., ioctl(2) returns -1 with errno set to ENOENT).
+	
+The recommendation is to update the man page to remove the above statement.
+
+The overview of the socket timestamp series is as below:
+1. Delete asm specific socket.h when possible.
+2. Support SO/SCM_TIMESTAMP* options only in userspace.
+3. Rename current SO/SCM_TIMESTAMP* to SO/SCM_TIMESTAMP*_OLD.
+3. Alter socket options so that SOCK_RCVTSTAMPNS does
+   not rely on SOCK_RCVTSTAMP.
+4. Introduce y2038 safe types for socket timestamp.
+5. Introduce new y2038 safe socket options SO/SCM_TIMESTAMP*_NEW.
+6. Intorduce new y2038 safe socket timeout options.
+
+Changes since v4:
+* Fixed the typo in calling sock_get_timeout()
+
+Changes since v3:
+* Rebased onto net-next and fixups as per review comments
+* Merged the socket timeout series
+* Integrated Arnd's patch to simplify compat handling of timeout syscalls
+
+Changes since v2:
+* Removed extra functions to reduce diff churn as per code review
+
+Changes since v1:
+* Dropped the change to disentangle sock flags
+* Renamed sock_timeval to __kernel_sock_timeval
+* Updated a few comments
+* Added documentation changes
+
+Arnd Bergmann (1):
+  socket: move compat timeout handling into sock.c
+
+Deepa Dinamani (11):
+  selftests: add missing include unistd
+  arch: Use asm-generic/socket.h when possible
+  sockopt: Rename SO_TIMESTAMP* to SO_TIMESTAMP*_OLD
+  arch: sparc: Override struct __kernel_old_timeval
+  socket: Use old_timeval types for socket timestamps
+  socket: Add struct __kernel_sock_timeval
+  socket: Add SO_TIMESTAMP[NS]_NEW
+  socket: Add SO_TIMESTAMPING_NEW
+  socket: Update timestamping Documentation
+  socket: Rename SO_RCVTIMEO/ SO_SNDTIMEO with _OLD suffixes
+  sock: Add SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW
+
+ Documentation/networking/timestamping.txt     |  43 ++++-
+ arch/alpha/include/uapi/asm/socket.h          |  47 ++++--
+ arch/ia64/include/uapi/asm/Kbuild             |   1 +
+ arch/ia64/include/uapi/asm/socket.h           | 122 --------------
+ arch/mips/include/uapi/asm/socket.h           |  47 ++++--
+ arch/parisc/include/uapi/asm/socket.h         |  46 ++++--
+ arch/powerpc/include/uapi/asm/socket.h        |   4 +-
+ arch/s390/include/uapi/asm/Kbuild             |   1 +
+ arch/s390/include/uapi/asm/socket.h           | 119 --------------
+ arch/sparc/include/uapi/asm/posix_types.h     |  10 ++
+ arch/sparc/include/uapi/asm/socket.h          |  49 ++++--
+ arch/x86/include/uapi/asm/Kbuild              |   1 +
+ arch/x86/include/uapi/asm/socket.h            |   1 -
+ arch/xtensa/include/asm/Kbuild                |   1 +
+ arch/xtensa/include/uapi/asm/Kbuild           |   1 +
+ arch/xtensa/include/uapi/asm/socket.h         | 124 --------------
+ drivers/isdn/mISDN/socket.c                   |   2 +-
+ fs/dlm/lowcomms.c                             |   4 +-
+ include/linux/skbuff.h                        |  24 ++-
+ include/linux/socket.h                        |   8 +
+ include/net/sock.h                            |   1 +
+ include/uapi/asm-generic/socket.h             |  48 ++++--
+ include/uapi/linux/errqueue.h                 |   4 +
+ include/uapi/linux/time.h                     |   7 +
+ net/bluetooth/hci_sock.c                      |   4 +-
+ net/compat.c                                  |  78 +--------
+ net/core/scm.c                                |  27 ++++
+ net/core/sock.c                               | 151 +++++++++++++-----
+ net/ipv4/tcp.c                                |  61 ++++---
+ net/rds/af_rds.c                              |  10 +-
+ net/rds/recv.c                                |  18 ++-
+ net/rxrpc/local_object.c                      |   2 +-
+ net/smc/af_smc.c                              |   3 +-
+ net/socket.c                                  |  50 ++++--
+ net/vmw_vsock/af_vsock.c                      |   4 +-
+ .../networking/timestamping/rxtimestamp.c     |   1 +
+ 36 files changed, 541 insertions(+), 583 deletions(-)
+ delete mode 100644 arch/ia64/include/uapi/asm/socket.h
+ delete mode 100644 arch/s390/include/uapi/asm/socket.h
+ delete mode 100644 arch/x86/include/uapi/asm/socket.h
+ delete mode 100644 arch/xtensa/include/uapi/asm/socket.h
+
 -- 
 2.17.1
 
+Cc: ccaulfie@redhat.com
+Cc: chris@zankel.net
+Cc: cluster-devel@redhat.com
+Cc: davem@davemloft.net
+Cc: deller@gmx.de
+Cc: dhowells@redhat.com
+Cc: fenghua.yu@intel.com
+Cc: isdn@linux-pingi.de
+Cc: jejb@parisc-linux.org
+Cc: linux-afs@lists.infradead.org
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-ia64@vger.kernel.org
+Cc: linux-mips@linux-mips.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-rdma@vger.kernel.org
+Cc: linux-s390@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: netdev@vger.kernel.org
+Cc: paulus@samba.org
+Cc: ralf@linux-mips.org
+Cc: rth@twiddle.net
+Cc: schwidefsky@de.ibm.com
+Cc: sparclinux@vger.kernel.org
+Cc: tglx@linutronix.de
+Cc: ubraun@linux.ibm.com
