@@ -1,81 +1,85 @@
-From: Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: Re: [PATCH net-next v5 12/12] sock: Add SO_RCVTIMEO_NEW and
-	SO_SNDTIMEO_NEW
-Date: Sat, 2 Feb 2019 18:47:20 -0800
-Message-ID: <CABeXuvrf_s_LzwYy5p_gqw+PU70OnFAntdtyazN+CBAbyS07TA@mail.gmail.com>
-References: <20190202153454.7121-1-deepa.kernel@gmail.com>
- <20190202153454.7121-13-deepa.kernel@gmail.com>
- <0fad3f4d-4c0e-d9f2-1af0-7890d40c19c0@hartkopp.net>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH v2 10/21] memblock: refactor internal allocation functions
+Date: Sun, 03 Feb 2019 20:39:20 +1100
+Message-ID: <87ftt5nrcn.fsf@concordia.ellerman.id.au>
+References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com> <1548057848-15136-11-git-send-email-rppt@linux.ibm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <y2038-bounces@lists.linaro.org>
-In-Reply-To: <0fad3f4d-4c0e-d9f2-1af0-7890d40c19c0@hartkopp.net>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/y2038/>
-List-Post: <mailto:y2038@lists.linaro.org>
-List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
-List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=subscribe>
-Errors-To: y2038-bounces@lists.linaro.org
-Sender: "Y2038" <y2038-bounces@lists.linaro.org>
-Content-Type: text/plain; charset="windows-1252"
-To: Oliver Hartkopp <socketcan@hartkopp.net>
-Cc: linux-arch <linux-arch@vger.kernel.org>, Parisc List <linux-parisc@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, y2038 Mailman List <y2038@lists.linaro.org>, Linux Network Devel Mailing List <netdev@vger.kernel.org>, Helge Deller <deller@gmx.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Ralf Baechle <ralf@linux-mips.org>, linux-mips@vger.kernel.org, cluster-devel <cluster-devel@redhat.com>, ccaulfie@redhat.com, Paul Mackerras <paulus@samba.org>, linux-alpha@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, "David S. Miller" <davem@davemloft.net>, Richard Henderson <rth@twiddle.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1548057848-15136-11-git-send-email-rppt@linux.ibm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Mike Rapoport <rppt@linux.ibm.com>, linux-mm@kvack.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Petr Mladek <pmladek@suse.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arml>
 
-T24gU2F0LCBGZWIgMiwgMjAxOSBhdCA5OjE1IEFNIE9saXZlciBIYXJ0a29wcCA8c29ja2V0Y2Fu
-QGhhcnRrb3BwLm5ldD4gd3JvdGU6Cj4KPiBIaSBhbGwsCj4KPiBPbiAwMi4wMi4xOSAxNjozNCwg
-RGVlcGEgRGluYW1hbmkgd3JvdGU6Cj4gPiBBZGQgbmV3IHNvY2tldCB0aW1lb3V0IG9wdGlvbnMg
-dGhhdCBhcmUgeTIwMzggc2FmZS4KPiAoLi4pCj4gPgo+ID4gZGlmZiAtLWdpdCBhL2FyY2gvYWxw
-aGEvaW5jbHVkZS91YXBpL2FzbS9zb2NrZXQuaCBiL2FyY2gvYWxwaGEvaW5jbHVkZS91YXBpL2Fz
-bS9zb2NrZXQuaAo+ID4gaW5kZXggOTgyNmQxZGI3MWQwLi4wZDBmZGRiN2U3MzggMTAwNjQ0Cj4g
-PiAtLS0gYS9hcmNoL2FscGhhL2luY2x1ZGUvdWFwaS9hc20vc29ja2V0LmgKPiA+ICsrKyBiL2Fy
-Y2gvYWxwaGEvaW5jbHVkZS91YXBpL2FzbS9zb2NrZXQuaAo+ID4gQEAgLTExOSwxOSArMTE5LDI1
-IEBACj4gPiAgICNkZWZpbmUgU09fVElNRVNUQU1QTlNfTkVXICAgICAgNjQKPiA+ICAgI2RlZmlu
-ZSBTT19USU1FU1RBTVBJTkdfTkVXICAgICA2NQo+ID4KPiA+IC0jaWYgIWRlZmluZWQoX19LRVJO
-RUxfXykKPiA+ICsjZGVmaW5lIFNPX1JDVlRJTUVPX05FVyAgICAgICAgIDY2Cj4gPiArI2RlZmlu
-ZSBTT19TTkRUSU1FT19ORVcgICAgICAgICA2Nwo+ID4KPiA+IC0jZGVmaW5lICAgICAgU09fUkNW
-VElNRU8gU09fUkNWVElNRU9fT0xECj4gPiAtI2RlZmluZSAgICAgIFNPX1NORFRJTUVPIFNPX1NO
-RFRJTUVPX09MRAo+ID4gKyNpZiAhZGVmaW5lZChfX0tFUk5FTF9fKQo+ID4KPiA+ICAgI2lmIF9f
-QklUU19QRVJfTE9ORyA9PSA2NAo+ID4gICAjZGVmaW5lIFNPX1RJTUVTVEFNUCAgICAgICAgICAg
-ICAgICBTT19USU1FU1RBTVBfT0xECj4gPiAgICNkZWZpbmUgU09fVElNRVNUQU1QTlMgICAgICAg
-ICAgICAgIFNPX1RJTUVTVEFNUE5TX09MRAo+ID4gICAjZGVmaW5lIFNPX1RJTUVTVEFNUElORyAg
-ICAgICAgIFNPX1RJTUVTVEFNUElOR19PTEQKPiA+ICsKPiA+ICsjZGVmaW5lIFNPX1JDVlRJTUVP
-ICAgICAgICAgIFNPX1JDVlRJTUVPX09MRAo+ID4gKyNkZWZpbmUgU09fU05EVElNRU8gICAgICAg
-ICAgU09fU05EVElNRU9fT0xECj4KPiBNYXliZSBJJ20gYSBiaXQgbGF0ZSBpbiB0aGlzIGRpc2N1
-c3Npb24gYXMgeW91IGFyZSBhbHJlYWR5IGluIHY1IC4uLgo+Cj4gSSBjYW4gc2VlIHBhdGNoZXMg
-bWFraW5nIHRoZSB0cmFuc2l0aW9uIGluIGRpZmZlcmVudCBzdGVwcyB3aGVyZSBpdAo+IG1pZ2h0
-IGJlIGhlbHBmdWwgdG8gbmFtZSB0aGVtICpfT0xEIGFuZCAqX05FVyB0byB1bmRlcnN0YW5kIHRo
-ZSBwYXRjaGVzLgo+Cj4gQnV0IGluIHRoZSBlbmQgdGhlIG5hbWluZyBzdGF5cyBpbiB0aGUga2Vy
-bmVsIGZvciBhIHZlcnkgbG9uZyB0aW1lIGFuZCBJCj4gcmVtZW1iZXIgbXlzZWxmIChpbiBlYXJs
-eSB5ZWFycykgdG8gbmFtZSB0aGluZ3MgJ25ldycsICduZXcyJywgJ25ldzMnLgo+Cj4gSW4gZmFj
-dCBTT19USU1FU1RBTVBfT0xEIHNob3VsZCBiZSBuYW1lZCBTT19USU1FU1RBTVAzMiBhbmQKPiBT
-T19USU1FU1RBTVBfTkVXIHNob3VsZCBiZSBuYW1lZCBTT19USU1FU1RBTVA2NC4KCkhtbS4gU09f
-VElNRVNUQU1QX09MRCB1c2VzIDY0LWJpdCB0aW1lX3Qgb24gYSA2NCBiaXQgbWFjaGluZS4gSW4g
-ZmFjdCwKdGhlcmUgaXMgbm8gZGlmZmVyZW5jZSBiZXR3ZWVuIHRoZSB0d28gb3B0aW9ucyBvbiBh
-IDY0IGJpdCBtYWNoaW5lLiBTbwp1c2luZyAgU09fVElNRVNUQU1QXzMyIGlzIGp1c3Qgd3Jvbmcu
-CgpMaWtld2lzZSwgU09fVElNRVNUQU1QXzY0IG5hbWluZyBzb21laG93IGluZGljYXRlcyB0aGF0
-IHRoZSBleGlzdGluZwpvbmUgd2FzIG5vdCwgYW5kIHRoYXQgaXMgYWxzbyBub3QgdHJ1ZSBvbiBh
-IDY0LWJpdCBtYWNoaW5lLgoKRnVydGhlciwgdXNlcnNwYWNlIHdpbGwgc3RpbGwgY29udGludWUg
-dG8gdXNlIFNPX1RJTUVTVEFNUCBhbmQgdGhlCm1hY3JvcyB0YWtlIGNhcmUgb2Ygd2hpY2ggb3B0
-aW9uIHRvIHNlbGVjdCBpbnRlcm5hbGx5LgoKTW9yZW92ZXIsIHRoZXNlIG1hY3JvcyBoYXZlIGJl
-ZW4gdGhlcmUgZm9yIG1vcmUgdGhhbiB0ZW4geWVhcnMKKGludHJvZHVjZWQgYmVmb3JlIDIuNCkg
-YW5kIHRoZXJlIGhhcyBiZWVuIG5vIGNoYW5nZS4gSSBkb3VidCB5b3Ugd2lsbApldmVyIGhhdmUg
-TkVXMi4KSSB0aGluayB0aGlzIGFyZ3VtZW50IGlzIHNpbWlsYXIgdG8gc2F5aW5nIGRvbuKAmXQg
-bmFtZSB0aGVzZSBtYWNyb3MKU09fVElNRVNUQU1QIGJlY2F1c2UgdGhlcmUgbWlnaHQgYmUgU09f
-VElNRVNUQU1QMSBzb21lIGRheS4gVGhlcmUgaXMKbmV2ZXIgYSBwZXJmZWN0IG5hbWUuIFNPX1RJ
-TUVTVEFNUElORyBpcyBhbHNvIG5vdCByZWFsbHkgZGVzY3JpcHRpdmUuCgo+IEVzcGVjaWFsbHkg
-YXMgaXQgdGVsbHMgeW91IHdoYXQgaXMgJ2luc2lkZScsIHRoZSBuYW1pbmcgb2YgdGhlc2UgbmV3
-IGludHJvZHVjZWQgY29uc3RhbnRzIHNob3VsZCBiZSByZXBsYWNlZCB3aXRoICozMiBhbmQgKjY0
-IG5hbWVzLgo+IFRoZSBkb2N1bWVudGF0aW9uIGFuZCB0aGUgb3RoZXIgY29tbWVudHMgc3RpbGwg
-Zml0IHBlcmZlY3RseSB0aGVuLgoKSSB3b3VsZCBwcmVmZXIgbm90IHRvIGRvIHRoaXMsIGZvciBy
-ZWFzb25zIG1lbnRpb25lZCBhYm92ZS4gU2luY2UgeW91CnBvaW50IG91dCB0aGF0IGl0IGlzIGVh
-c2llciB0byB1c2UgdGhpcyBuYW1pbmcgZm9yIGludGVybWVkaWF0ZSBzdGVwcywKSSBzdWdnZXN0
-IHRoYXQgd2UgbGVhdmUgdGhlIHNlcmllcyBhcyBpdCBpcy4KSWYgeW91IGZlZWwgc3Ryb25nbHkg
-dG8gcG9zdCBhIGZvbGxvdy1vbiByZW5hbWluZyBwYXRjaCwgeW91IGNvdWxkCmRpc2N1c3MgaXQg
-d2l0aCB0aGUgc3Vic3lzdGVtIG1haW50YWluZXJzLCBpZiB5b3UgdGhpbmsgdGhlcmUgaXMgYQpj
-b3JyZWN0IGJ1dCBtb3JlIGRlc2NyaXB0aXZlIG5hbWluZy4KCi1EZWVwYQoKPiBSZWdhcmRzLAo+
-IE9saXZlcgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpZ
-MjAzOCBtYWlsaW5nIGxpc3QKWTIwMzhAbGlzdHMubGluYXJvLm9yZwpodHRwczovL2xpc3RzLmxp
-bmFyby5vcmcvbWFpbG1hbi9saXN0aW5mby95MjAzOAo=
+Mike Rapoport <rppt@linux.ibm.com> writes:
+
+> Currently, memblock has several internal functions with overlapping
+> functionality. They all call memblock_find_in_range_node() to find free
+> memory and then reserve the allocated range and mark it with kmemleak.
+> However, there is difference in the allocation constraints and in fallback
+> strategies.
+>
+> The allocations returning physical address first attempt to find free
+> memory on the specified node within mirrored memory regions, then retry on
+> the same node without the requirement for memory mirroring and finally fall
+> back to all available memory.
+>
+> The allocations returning virtual address start with clamping the allowed
+> range to memblock.current_limit, attempt to allocate from the specified
+> node from regions with mirroring and with user defined minimal address. If
+> such allocation fails, next attempt is done with node restriction lifted.
+> Next, the allocation is retried with minimal address reset to zero and at
+> last without the requirement for mirrored regions.
+>
+> Let's consolidate various fallbacks handling and make them more consistent
+> for physical and virtual variants. Most of the fallback handling is moved
+> to memblock_alloc_range_nid() and it now handles node and mirror fallbacks.
+>
+> The memblock_alloc_internal() uses memblock_alloc_range_nid() to get a
+> physical address of the allocated range and converts it to virtual address.
+>
+> The fallback for allocation below the specified minimal address remains in
+> memblock_alloc_internal() because memblock_alloc_range_nid() is used by CMA
+> with exact requirement for lower bounds.
+
+This is causing problems on some of my machines.
+
+I see NODE_DATA allocations falling back to node 0 when they shouldn't,
+or didn't previously.
+
+eg, before:
+
+57990190: (116011251): numa:   NODE_DATA [mem 0xfffe4980-0xfffebfff]
+58152042: (116373087): numa:   NODE_DATA [mem 0x8fff90980-0x8fff97fff]
+
+after:
+
+16356872061562: (6296877055): numa:   NODE_DATA [mem 0xfffe4980-0xfffebfff]
+16356872079279: (6296894772): numa:   NODE_DATA [mem 0xfffcd300-0xfffd497f]
+16356872096376: (6296911869): numa:     NODE_DATA(1) on node 0
+
+
+On some of my other systems it does that, and then panics because it
+can't allocate anything at all:
+
+[    0.000000] numa:   NODE_DATA [mem 0x7ffcaee80-0x7ffcb3fff]
+[    0.000000] numa:   NODE_DATA [mem 0x7ffc99d00-0x7ffc9ee7f]
+[    0.000000] numa:     NODE_DATA(1) on node 0
+[    0.000000] Kernel panic - not syncing: Cannot allocate 20864 bytes for node 16 data
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.0.0-rc4-gccN-next-20190201-gdc4c899 #1
+[    0.000000] Call Trace:
+[    0.000000] [c0000000011cfca0] [c000000000c11044] dump_stack+0xe8/0x164 (unreliable)
+[    0.000000] [c0000000011cfcf0] [c0000000000fdd6c] panic+0x17c/0x3e0
+[    0.000000] [c0000000011cfd90] [c000000000f61bc8] initmem_init+0x128/0x260
+[    0.000000] [c0000000011cfe60] [c000000000f57940] setup_arch+0x398/0x418
+[    0.000000] [c0000000011cfee0] [c000000000f50a94] start_kernel+0xa0/0x684
+[    0.000000] [c0000000011cff90] [c00000000000af70] start_here_common+0x1c/0x52c
+[    0.000000] Rebooting in 180 seconds..
+
+
+So there's something going wrong there, I haven't had time to dig into
+it though (Sunday night here).
+
+cheers
