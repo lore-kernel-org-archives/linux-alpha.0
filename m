@@ -1,97 +1,137 @@
-From: Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH v2 10/21] memblock: refactor internal allocation functions
-Date: Sun, 3 Feb 2019 12:04:28 +0200
-Message-ID: <20190203100428.GB8620@rapoport-lnx>
-References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
- <1548057848-15136-11-git-send-email-rppt@linux.ibm.com>
- <87ftt5nrcn.fsf@concordia.ellerman.id.au>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 3.16 165/305] arch/alpha, termios: implement BOTHER,
+ IBSHIFT and termios2
+Date: Sun, 03 Feb 2019 14:45:08 +0100
+Message-ID: <lsq.1549201508.777894721@decadent.org.uk>
+References: <lsq.1549201507.384106140@decadent.org.uk>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87ftt5nrcn.fsf@concordia.ellerman.id.au>
+In-Reply-To: <lsq.1549201507.384106140@decadent.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Dennis Zhou <dennis@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guan Xuetao <gxt@pku.edu.cn>, Guo Ren <guoren@kernel.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michal Simek <monstr@monstr.eu>, Paul Burton <paul.burton@mips.com>, Petr Mladek <pmladek@suse.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>, Rob Herring <robh+dt@kernel.org>, Russ
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: akpm@linux-foundation.org, Denis Kirjanov <kda@linux-powerpc.org>, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Johan Hovold <johan@kernel.org>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Eugene Syromiatnikov <esyr@redhat.com>, linux-serial@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>
 
-On Sun, Feb 03, 2019 at 08:39:20PM +1100, Michael Ellerman wrote:
-> Mike Rapoport <rppt@linux.ibm.com> writes:
-> 
-> > Currently, memblock has several internal functions with overlapping
-> > functionality. They all call memblock_find_in_range_node() to find free
-> > memory and then reserve the allocated range and mark it with kmemleak.
-> > However, there is difference in the allocation constraints and in fallback
-> > strategies.
-> >
-> > The allocations returning physical address first attempt to find free
-> > memory on the specified node within mirrored memory regions, then retry on
-> > the same node without the requirement for memory mirroring and finally fall
-> > back to all available memory.
-> >
-> > The allocations returning virtual address start with clamping the allowed
-> > range to memblock.current_limit, attempt to allocate from the specified
-> > node from regions with mirroring and with user defined minimal address. If
-> > such allocation fails, next attempt is done with node restriction lifted.
-> > Next, the allocation is retried with minimal address reset to zero and at
-> > last without the requirement for mirrored regions.
-> >
-> > Let's consolidate various fallbacks handling and make them more consistent
-> > for physical and virtual variants. Most of the fallback handling is moved
-> > to memblock_alloc_range_nid() and it now handles node and mirror fallbacks.
-> >
-> > The memblock_alloc_internal() uses memblock_alloc_range_nid() to get a
-> > physical address of the allocated range and converts it to virtual address.
-> >
-> > The fallback for allocation below the specified minimal address remains in
-> > memblock_alloc_internal() because memblock_alloc_range_nid() is used by CMA
-> > with exact requirement for lower bounds.
-> 
-> This is causing problems on some of my machines.
-> 
-> I see NODE_DATA allocations falling back to node 0 when they shouldn't,
-> or didn't previously.
-> 
-> eg, before:
-> 
-> 57990190: (116011251): numa:   NODE_DATA [mem 0xfffe4980-0xfffebfff]
-> 58152042: (116373087): numa:   NODE_DATA [mem 0x8fff90980-0x8fff97fff]
-> 
-> after:
-> 
-> 16356872061562: (6296877055): numa:   NODE_DATA [mem 0xfffe4980-0xfffebfff]
-> 16356872079279: (6296894772): numa:   NODE_DATA [mem 0xfffcd300-0xfffd497f]
-> 16356872096376: (6296911869): numa:     NODE_DATA(1) on node 0
-> 
-> 
-> On some of my other systems it does that, and then panics because it
-> can't allocate anything at all:
-> 
-> [    0.000000] numa:   NODE_DATA [mem 0x7ffcaee80-0x7ffcb3fff]
-> [    0.000000] numa:   NODE_DATA [mem 0x7ffc99d00-0x7ffc9ee7f]
-> [    0.000000] numa:     NODE_DATA(1) on node 0
-> [    0.000000] Kernel panic - not syncing: Cannot allocate 20864 bytes for node 16 data
-> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.0.0-rc4-gccN-next-20190201-gdc4c899 #1
-> [    0.000000] Call Trace:
-> [    0.000000] [c0000000011cfca0] [c000000000c11044] dump_stack+0xe8/0x164 (unreliable)
-> [    0.000000] [c0000000011cfcf0] [c0000000000fdd6c] panic+0x17c/0x3e0
-> [    0.000000] [c0000000011cfd90] [c000000000f61bc8] initmem_init+0x128/0x260
-> [    0.000000] [c0000000011cfe60] [c000000000f57940] setup_arch+0x398/0x418
-> [    0.000000] [c0000000011cfee0] [c000000000f50a94] start_kernel+0xa0/0x684
-> [    0.000000] [c0000000011cff90] [c00000000000af70] start_here_common+0x1c/0x52c
-> [    0.000000] Rebooting in 180 seconds..
-> 
-> 
-> So there's something going wrong there, I haven't had time to dig into
-> it though (Sunday night here).
+3.16.63-rc1 review patch.  If anyone has any objections, please let me know.
 
-I'll try to see if I can reproduce it with qemu.
+------------------
+
+From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
+
+commit d0ffb805b729322626639336986bc83fc2e60871 upstream.
+
+Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
+using arbitrary flags. Because BOTHER is not defined, the general
+Linux code doesn't allow setting arbitrary baud rates, and because
+CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
+drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
+
+Resolve both problems by #defining BOTHER to 037 on Alpha.
+
+However, userspace still needs to know if setting BOTHER is actually
+safe given legacy kernels (does anyone actually care about that on
+Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
+though they use the same structure. Define struct termios2 just for
+compatibility; it is the exact same structure as struct termios. In a
+future patchset, this will be cleaned up so the uapi headers are
+usable from libc.
+
+Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Philippe Ombredanne <pombredanne@nexb.com>
+Cc: Eugene Syromiatnikov <esyr@redhat.com>
+Cc: <linux-alpha@vger.kernel.org>
+Cc: <linux-serial@vger.kernel.org>
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+---
+ arch/alpha/include/asm/termios.h       |  8 +++++++-
+ arch/alpha/include/uapi/asm/ioctls.h   |  5 +++++
+ arch/alpha/include/uapi/asm/termbits.h | 17 +++++++++++++++++
+ 3 files changed, 29 insertions(+), 1 deletion(-)
+
+--- a/arch/alpha/include/asm/termios.h
++++ b/arch/alpha/include/asm/termios.h
+@@ -72,9 +72,15 @@
+ })
  
-> cheers
-> 
-
--- 
-Sincerely yours,
-Mike.
+ #define user_termios_to_kernel_termios(k, u) \
+-	copy_from_user(k, u, sizeof(struct termios))
++	copy_from_user(k, u, sizeof(struct termios2))
+ 
+ #define kernel_termios_to_user_termios(u, k) \
++	copy_to_user(u, k, sizeof(struct termios2))
++
++#define user_termios_to_kernel_termios_1(k, u) \
++	copy_from_user(k, u, sizeof(struct termios))
++
++#define kernel_termios_to_user_termios_1(u, k) \
+ 	copy_to_user(u, k, sizeof(struct termios))
+ 
+ #endif	/* _ALPHA_TERMIOS_H */
+--- a/arch/alpha/include/uapi/asm/ioctls.h
++++ b/arch/alpha/include/uapi/asm/ioctls.h
+@@ -31,6 +31,11 @@
+ #define TCXONC		_IO('t', 30)
+ #define TCFLSH		_IO('t', 31)
+ 
++#define TCGETS2		_IOR('T', 42, struct termios2)
++#define TCSETS2		_IOW('T', 43, struct termios2)
++#define TCSETSW2	_IOW('T', 44, struct termios2)
++#define TCSETSF2	_IOW('T', 45, struct termios2)
++
+ #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
+ #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
+ #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
+--- a/arch/alpha/include/uapi/asm/termbits.h
++++ b/arch/alpha/include/uapi/asm/termbits.h
+@@ -25,6 +25,19 @@ struct termios {
+ 	speed_t c_ospeed;		/* output speed */
+ };
+ 
++/* Alpha has identical termios and termios2 */
++
++struct termios2 {
++	tcflag_t c_iflag;		/* input mode flags */
++	tcflag_t c_oflag;		/* output mode flags */
++	tcflag_t c_cflag;		/* control mode flags */
++	tcflag_t c_lflag;		/* local mode flags */
++	cc_t c_cc[NCCS];		/* control characters */
++	cc_t c_line;			/* line discipline (== c_cc[19]) */
++	speed_t c_ispeed;		/* input speed */
++	speed_t c_ospeed;		/* output speed */
++};
++
+ /* Alpha has matching termios and ktermios */
+ 
+ struct ktermios {
+@@ -147,6 +160,7 @@ struct ktermios {
+ #define B3000000  00034
+ #define B3500000  00035
+ #define B4000000  00036
++#define BOTHER    00037
+ 
+ #define CSIZE	00001400
+ #define   CS5	00000000
+@@ -164,6 +178,9 @@ struct ktermios {
+ #define CMSPAR	  010000000000		/* mark or space (stick) parity */
+ #define CRTSCTS	  020000000000		/* flow control */
+ 
++#define CIBAUD	07600000
++#define IBSHIFT	16
++
+ /* c_lflag bits */
+ #define ISIG	0x00000080
+ #define ICANON	0x00000100
 
