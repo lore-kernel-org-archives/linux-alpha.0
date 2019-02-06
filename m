@@ -1,137 +1,330 @@
-From: Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 3.16 165/305] arch/alpha, termios: implement BOTHER,
- IBSHIFT and termios2
-Date: Sun, 03 Feb 2019 14:45:08 +0100
-Message-ID: <lsq.1549201508.777894721@decadent.org.uk>
-References: <lsq.1549201507.384106140@decadent.org.uk>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH net-next v5 12/12] sock: Add SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW
+Date: Wed, 06 Feb 2019 22:56:44 +1100
+Message-ID: <87r2clku4j.fsf@concordia.ellerman.id.au>
+References: <20190202153454.7121-1-deepa.kernel@gmail.com> <20190202153454.7121-13-deepa.kernel@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <lsq.1549201507.384106140@decadent.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <20190202153454.7121-13-deepa.kernel@gmail.com>
+Sender: netdev-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: akpm@linux-foundation.org, Denis Kirjanov <kda@linux-powerpc.org>, "H. Peter Anvin (Intel)" <hpa@zytor.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Johan Hovold <johan@kernel.org>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Eugene Syromiatnikov <esyr@redhat.com>, linux-serial@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, Jiri Slaby <jslaby@suse.com>, Alan Cox <alan@lxorguk.ukuu.org.uk>
+Content-Transfer-Encoding: 7bit
+To: Deepa Dinamani <deepa.kernel@gmail.com>, davem@davemloft.net, linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org, arnd@arndb.de, y2038@lists.linaro.org, ccaulfie@redhat.com, deller@gmx.de, paulus@samba.org, ralf@linux-mips.org, rth@twiddle.net, cluster-devel@redhat.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org
 
-3.16.63-rc1 review patch.  If anyone has any objections, please let me know.
+Deepa Dinamani <deepa.kernel@gmail.com> writes:
 
-------------------
+> Add new socket timeout options that are y2038 safe.
+>
+> Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
+> Acked-by: Willem de Bruijn <willemb@google.com>
+> Cc: ccaulfie@redhat.com
+> Cc: davem@davemloft.net
+> Cc: deller@gmx.de
+> Cc: paulus@samba.org
+> Cc: ralf@linux-mips.org
+> Cc: rth@twiddle.net
+> Cc: cluster-devel@redhat.com
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: linux-alpha@vger.kernel.org
+> Cc: linux-arch@vger.kernel.org
+> Cc: linux-mips@vger.kernel.org
+> Cc: linux-parisc@vger.kernel.org
+> Cc: sparclinux@vger.kernel.org
+> ---
+>  arch/alpha/include/uapi/asm/socket.h  | 12 ++++--
+>  arch/mips/include/uapi/asm/socket.h   | 11 +++++-
+>  arch/parisc/include/uapi/asm/socket.h | 10 ++++-
+>  arch/sparc/include/uapi/asm/socket.h  | 11 +++++-
 
-From: "H. Peter Anvin (Intel)" <hpa@zytor.com>
+You touched powerpc in the previous patch but not this one.
 
-commit d0ffb805b729322626639336986bc83fc2e60871 upstream.
+That's because we use the asm-generic version I assume. Would be good to
+mention in the change log though to avoid any confusion.
 
-Alpha has had c_ispeed and c_ospeed, but still set speeds in c_cflags
-using arbitrary flags. Because BOTHER is not defined, the general
-Linux code doesn't allow setting arbitrary baud rates, and because
-CBAUDEX == 0, we can have an array overrun of the baud_rate[] table in
-drivers/tty/tty_baudrate.c if (c_cflags & CBAUD) == 037.
+cheers
 
-Resolve both problems by #defining BOTHER to 037 on Alpha.
-
-However, userspace still needs to know if setting BOTHER is actually
-safe given legacy kernels (does anyone actually care about that on
-Alpha anymore?), so enable the TCGETS2/TCSETS*2 ioctls on Alpha, even
-though they use the same structure. Define struct termios2 just for
-compatibility; it is the exact same structure as struct termios. In a
-future patchset, this will be cleaned up so the uapi headers are
-usable from libc.
-
-Signed-off-by: H. Peter Anvin (Intel) <hpa@zytor.com>
-Cc: Jiri Slaby <jslaby@suse.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Eugene Syromiatnikov <esyr@redhat.com>
-Cc: <linux-alpha@vger.kernel.org>
-Cc: <linux-serial@vger.kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
----
- arch/alpha/include/asm/termios.h       |  8 +++++++-
- arch/alpha/include/uapi/asm/ioctls.h   |  5 +++++
- arch/alpha/include/uapi/asm/termbits.h | 17 +++++++++++++++++
- 3 files changed, 29 insertions(+), 1 deletion(-)
-
---- a/arch/alpha/include/asm/termios.h
-+++ b/arch/alpha/include/asm/termios.h
-@@ -72,9 +72,15 @@
- })
- 
- #define user_termios_to_kernel_termios(k, u) \
--	copy_from_user(k, u, sizeof(struct termios))
-+	copy_from_user(k, u, sizeof(struct termios2))
- 
- #define kernel_termios_to_user_termios(u, k) \
-+	copy_to_user(u, k, sizeof(struct termios2))
-+
-+#define user_termios_to_kernel_termios_1(k, u) \
-+	copy_from_user(k, u, sizeof(struct termios))
-+
-+#define kernel_termios_to_user_termios_1(u, k) \
- 	copy_to_user(u, k, sizeof(struct termios))
- 
- #endif	/* _ALPHA_TERMIOS_H */
---- a/arch/alpha/include/uapi/asm/ioctls.h
-+++ b/arch/alpha/include/uapi/asm/ioctls.h
-@@ -31,6 +31,11 @@
- #define TCXONC		_IO('t', 30)
- #define TCFLSH		_IO('t', 31)
- 
-+#define TCGETS2		_IOR('T', 42, struct termios2)
-+#define TCSETS2		_IOW('T', 43, struct termios2)
-+#define TCSETSW2	_IOW('T', 44, struct termios2)
-+#define TCSETSF2	_IOW('T', 45, struct termios2)
-+
- #define TIOCSWINSZ	_IOW('t', 103, struct winsize)
- #define TIOCGWINSZ	_IOR('t', 104, struct winsize)
- #define	TIOCSTART	_IO('t', 110)		/* start output, like ^Q */
---- a/arch/alpha/include/uapi/asm/termbits.h
-+++ b/arch/alpha/include/uapi/asm/termbits.h
-@@ -25,6 +25,19 @@ struct termios {
- 	speed_t c_ospeed;		/* output speed */
- };
- 
-+/* Alpha has identical termios and termios2 */
-+
-+struct termios2 {
-+	tcflag_t c_iflag;		/* input mode flags */
-+	tcflag_t c_oflag;		/* output mode flags */
-+	tcflag_t c_cflag;		/* control mode flags */
-+	tcflag_t c_lflag;		/* local mode flags */
-+	cc_t c_cc[NCCS];		/* control characters */
-+	cc_t c_line;			/* line discipline (== c_cc[19]) */
-+	speed_t c_ispeed;		/* input speed */
-+	speed_t c_ospeed;		/* output speed */
-+};
-+
- /* Alpha has matching termios and ktermios */
- 
- struct ktermios {
-@@ -147,6 +160,7 @@ struct ktermios {
- #define B3000000  00034
- #define B3500000  00035
- #define B4000000  00036
-+#define BOTHER    00037
- 
- #define CSIZE	00001400
- #define   CS5	00000000
-@@ -164,6 +178,9 @@ struct ktermios {
- #define CMSPAR	  010000000000		/* mark or space (stick) parity */
- #define CRTSCTS	  020000000000		/* flow control */
- 
-+#define CIBAUD	07600000
-+#define IBSHIFT	16
-+
- /* c_lflag bits */
- #define ISIG	0x00000080
- #define ICANON	0x00000100
-
+>  include/uapi/asm-generic/socket.h     | 11 +++++-
+>  net/core/sock.c                       | 53 ++++++++++++++++++++-------
+>  6 files changed, 83 insertions(+), 25 deletions(-)
+>
+> diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
+> index 9826d1db71d0..0d0fddb7e738 100644
+> --- a/arch/alpha/include/uapi/asm/socket.h
+> +++ b/arch/alpha/include/uapi/asm/socket.h
+> @@ -119,19 +119,25 @@
+>  #define SO_TIMESTAMPNS_NEW      64
+>  #define SO_TIMESTAMPING_NEW     65
+>  
+> -#if !defined(__KERNEL__)
+> +#define SO_RCVTIMEO_NEW         66
+> +#define SO_SNDTIMEO_NEW         67
+>  
+> -#define	SO_RCVTIMEO SO_RCVTIMEO_OLD
+> -#define	SO_SNDTIMEO SO_SNDTIMEO_OLD
+> +#if !defined(__KERNEL__)
+>  
+>  #if __BITS_PER_LONG == 64
+>  #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
+>  #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
+>  #define SO_TIMESTAMPING         SO_TIMESTAMPING_OLD
+> +
+> +#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
+> +#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
+>  #else
+>  #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
+>  #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
+>  #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
+> +
+> +#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
+> +#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
+>  #endif
+>  
+>  #define SCM_TIMESTAMP           SO_TIMESTAMP
+> diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
+> index 96cc0e907f12..eb9f33f8a8b3 100644
+> --- a/arch/mips/include/uapi/asm/socket.h
+> +++ b/arch/mips/include/uapi/asm/socket.h
+> @@ -130,18 +130,25 @@
+>  #define SO_TIMESTAMPNS_NEW      64
+>  #define SO_TIMESTAMPING_NEW     65
+>  
+> +#define SO_RCVTIMEO_NEW         66
+> +#define SO_SNDTIMEO_NEW         67
+> +
+>  #if !defined(__KERNEL__)
+>  
+> -#define	SO_RCVTIMEO SO_RCVTIMEO_OLD
+> -#define	SO_SNDTIMEO SO_SNDTIMEO_OLD
+>  #if __BITS_PER_LONG == 64
+>  #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
+>  #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
+>  #define SO_TIMESTAMPING		SO_TIMESTAMPING_OLD
+> +
+> +#define SO_RCVTIMEO             SO_RCVTIMEO_OLD
+> +#define SO_SNDTIMEO             SO_SNDTIMEO_OLD
+>  #else
+>  #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
+>  #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
+>  #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
+> +
+> +#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
+> +#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
+>  #endif
+>  
+>  #define SCM_TIMESTAMP           SO_TIMESTAMP
+> diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
+> index 046f0cd9cce4..16e428f03526 100644
+> --- a/arch/parisc/include/uapi/asm/socket.h
+> +++ b/arch/parisc/include/uapi/asm/socket.h
+> @@ -111,18 +111,24 @@
+>  #define SO_TIMESTAMPNS_NEW      0x4039
+>  #define SO_TIMESTAMPING_NEW     0x403A
+>  
+> +#define SO_RCVTIMEO_NEW         0x4040
+> +#define SO_SNDTIMEO_NEW         0x4041
+> +
+>  #if !defined(__KERNEL__)
+>  
+> -#define	SO_RCVTIMEO SO_RCVTIMEO_OLD
+> -#define	SO_SNDTIMEO SO_SNDTIMEO_OLD
+>  #if __BITS_PER_LONG == 64
+>  #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
+>  #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
+>  #define SO_TIMESTAMPING         SO_TIMESTAMPING_OLD
+> +#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
+> +#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
+>  #else
+>  #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
+>  #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
+>  #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
+> +
+> +#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
+> +#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
+>  #endif
+>  
+>  #define SCM_TIMESTAMP           SO_TIMESTAMP
+> diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
+> index 342ffdc3b424..8c9f74a66b55 100644
+> --- a/arch/sparc/include/uapi/asm/socket.h
+> +++ b/arch/sparc/include/uapi/asm/socket.h
+> @@ -112,19 +112,26 @@
+>  #define SO_TIMESTAMPNS_NEW       0x0042
+>  #define SO_TIMESTAMPING_NEW      0x0043
+>  
+> +#define SO_RCVTIMEO_NEW          0x0044
+> +#define SO_SNDTIMEO_NEW          0x0045
+> +
+>  #if !defined(__KERNEL__)
+>  
+> -#define SO_RCVTIMEO              SO_RCVTIMEO_OLD
+> -#define SO_SNDTIMEO              SO_SNDTIMEO_OLD
+>  
+>  #if __BITS_PER_LONG == 64
+>  #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
+>  #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
+>  #define SO_TIMESTAMPING		SO_TIMESTAMPING_OLD
+> +
+> +#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
+> +#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
+>  #else
+>  #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
+>  #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
+>  #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
+> +
+> +#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
+> +#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
+>  #endif
+>  
+>  #define SCM_TIMESTAMP          SO_TIMESTAMP
+> diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+> index c56b8b487c12..c8b430cb6dc4 100644
+> --- a/include/uapi/asm-generic/socket.h
+> +++ b/include/uapi/asm-generic/socket.h
+> @@ -114,19 +114,26 @@
+>  #define SO_TIMESTAMPNS_NEW      64
+>  #define SO_TIMESTAMPING_NEW     65
+>  
+> +#define SO_RCVTIMEO_NEW         66
+> +#define SO_SNDTIMEO_NEW         67
+> +
+>  #if !defined(__KERNEL__)
+>  
+> -#define	SO_RCVTIMEO SO_RCVTIMEO_OLD
+> -#define	SO_SNDTIMEO SO_SNDTIMEO_OLD
+>  #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+>  /* on 64-bit and x32, avoid the ?: operator */
+>  #define SO_TIMESTAMP		SO_TIMESTAMP_OLD
+>  #define SO_TIMESTAMPNS		SO_TIMESTAMPNS_OLD
+>  #define SO_TIMESTAMPING		SO_TIMESTAMPING_OLD
+> +
+> +#define SO_RCVTIMEO		SO_RCVTIMEO_OLD
+> +#define SO_SNDTIMEO		SO_SNDTIMEO_OLD
+>  #else
+>  #define SO_TIMESTAMP (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMP_OLD : SO_TIMESTAMP_NEW)
+>  #define SO_TIMESTAMPNS (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPNS_OLD : SO_TIMESTAMPNS_NEW)
+>  #define SO_TIMESTAMPING (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_TIMESTAMPING_OLD : SO_TIMESTAMPING_NEW)
+> +
+> +#define SO_RCVTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_RCVTIMEO_OLD : SO_RCVTIMEO_NEW)
+> +#define SO_SNDTIMEO (sizeof(time_t) == sizeof(__kernel_long_t) ? SO_SNDTIMEO_OLD : SO_SNDTIMEO_NEW)
+>  #endif
+>  
+>  #define SCM_TIMESTAMP           SO_TIMESTAMP
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 27b40002b780..a8904ae40713 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -335,9 +335,10 @@ int __sk_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+>  }
+>  EXPORT_SYMBOL(__sk_backlog_rcv);
+>  
+> -static int sock_get_timeout(long timeo, void *optval)
+> +static int sock_get_timeout(long timeo, void *optval, bool old_timeval)
+>  {
+> -	struct __kernel_old_timeval tv;
+> +	struct __kernel_sock_timeval tv;
+> +	int size;
+>  
+>  	if (timeo == MAX_SCHEDULE_TIMEOUT) {
+>  		tv.tv_sec = 0;
+> @@ -353,13 +354,23 @@ static int sock_get_timeout(long timeo, void *optval)
+>  		return sizeof(tv32);
+>  	}
+>  
+> -	*(struct __kernel_old_timeval *)optval = tv;
+> -	return sizeof(tv);
+> +	if (old_timeval) {
+> +		struct __kernel_old_timeval old_tv;
+> +		old_tv.tv_sec = tv.tv_sec;
+> +		old_tv.tv_usec = tv.tv_usec;
+> +		*(struct __kernel_old_timeval *)optval = old_tv;
+> +		size = sizeof(old_tv);
+> +	} else {
+> +		*(struct __kernel_sock_timeval *)optval = tv;
+> +		size = sizeof(tv);
+> +	}
+> +
+> +	return size;
+>  }
+>  
+> -static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
+> +static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen, bool old_timeval)
+>  {
+> -	struct __kernel_old_timeval tv;
+> +	struct __kernel_sock_timeval tv;
+>  
+>  	if (in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
+>  		struct old_timeval32 tv32;
+> @@ -371,6 +382,15 @@ static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
+>  			return -EFAULT;
+>  		tv.tv_sec = tv32.tv_sec;
+>  		tv.tv_usec = tv32.tv_usec;
+> +	} else if (old_timeval) {
+> +		struct __kernel_old_timeval old_tv;
+> +
+> +		if (optlen < sizeof(old_tv))
+> +			return -EINVAL;
+> +		if (copy_from_user(&old_tv, optval, sizeof(old_tv)))
+> +			return -EFAULT;
+> +		tv.tv_sec = old_tv.tv_sec;
+> +		tv.tv_usec = old_tv.tv_usec;
+>  	} else {
+>  		if (optlen < sizeof(tv))
+>  			return -EINVAL;
+> @@ -394,8 +414,8 @@ static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
+>  	*timeo_p = MAX_SCHEDULE_TIMEOUT;
+>  	if (tv.tv_sec == 0 && tv.tv_usec == 0)
+>  		return 0;
+> -	if (tv.tv_sec < (MAX_SCHEDULE_TIMEOUT/HZ - 1))
+> -		*timeo_p = tv.tv_sec * HZ + DIV_ROUND_UP(tv.tv_usec, USEC_PER_SEC / HZ);
+> +	if (tv.tv_sec < (MAX_SCHEDULE_TIMEOUT / HZ - 1))
+> +		*timeo_p = tv.tv_sec * HZ + DIV_ROUND_UP((unsigned long)tv.tv_usec, USEC_PER_SEC / HZ);
+>  	return 0;
+>  }
+>  
+> @@ -942,11 +962,13 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+>  		break;
+>  
+>  	case SO_RCVTIMEO_OLD:
+> -		ret = sock_set_timeout(&sk->sk_rcvtimeo, optval, optlen);
+> +	case SO_RCVTIMEO_NEW:
+> +		ret = sock_set_timeout(&sk->sk_rcvtimeo, optval, optlen, optname == SO_RCVTIMEO_OLD);
+>  		break;
+>  
+>  	case SO_SNDTIMEO_OLD:
+> -		ret = sock_set_timeout(&sk->sk_sndtimeo, optval, optlen);
+> +	case SO_SNDTIMEO_NEW:
+> +		ret = sock_set_timeout(&sk->sk_sndtimeo, optval, optlen, optname == SO_SNDTIMEO_OLD);
+>  		break;
+>  
+>  	case SO_ATTACH_FILTER:
+> @@ -1171,6 +1193,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+>  		struct linger ling;
+>  		struct old_timeval32 tm32;
+>  		struct __kernel_old_timeval tm;
+> +		struct  __kernel_sock_timeval stm;
+>  		struct sock_txtime txtime;
+>  	} v;
+>  
+> @@ -1279,12 +1302,14 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+>  		v.val = sk->sk_tsflags;
+>  		break;
+>  
+> -	case SO_RCVTIMEO:
+> -		lv = sock_get_timeout(sk->sk_rcvtimeo, &v);
+> +	case SO_RCVTIMEO_OLD:
+> +	case SO_RCVTIMEO_NEW:
+> +		lv = sock_get_timeout(sk->sk_rcvtimeo, &v, SO_RCVTIMEO_OLD == optname);
+>  		break;
+>  
+> -	case SO_SNDTIMEO:
+> -		lv = sock_get_timeout(sk->sk_sndtimeo, &v);
+> +	case SO_SNDTIMEO_OLD:
+> +	case SO_SNDTIMEO_NEW:
+> +		lv = sock_get_timeout(sk->sk_sndtimeo, &v, SO_SNDTIMEO_OLD == optname);
+>  		break;
+>  
+>  	case SO_RCVLOWAT:
+> -- 
+> 2.17.1
