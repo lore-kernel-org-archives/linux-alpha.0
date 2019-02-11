@@ -1,150 +1,82 @@
-From: Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: Re: [PATCH net-next v5 09/12] socket: Add SO_TIMESTAMPING_NEW
-Date: Sun, 10 Feb 2019 19:21:43 -0800
-Message-ID: <CABeXuvqMR7T=3ORvXPihkz-WbTN+oFeHkCu9uvebEq9wTLpJuQ@mail.gmail.com>
-References: <20190202153454.7121-1-deepa.kernel@gmail.com> <20190202153454.7121-10-deepa.kernel@gmail.com>
- <AM4PR0501MB2769C4BE6CF1C5B051068D0BC56B0@AM4PR0501MB2769.eurprd05.prod.outlook.com>
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PULL] alpha.git
+Date: Sun, 10 Feb 2019 20:46:15 -0800
+Message-ID: <20190211044615.GA30805@p50-ethernet>
 Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="opJtzjQTFsWo+cga"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Av/cbEdgHXFxeqNqKtYWk0nOBn8QfGpGC0c5TeUYcIs=;
-        b=pm6v9gldLb+dTHCpConV8woP2PviDvu0Drf2kAVIJmDvvtQQZXicM15AylV6Y8/J3p
-         rqjj4qEEsaPacN/y9n5aTpPcGxWIwtKtf7ATKPkiOHbX4KoXR/DrA0IxdzBKG0d381MA
-         DG4yolPa6T0qTaddlbZ0mDJzTA3xG8W1rSqJhJCmWpqc+vvKI3ChIDgVZ2xUZHTrVIwS
-         CdxxBFisaKWukTJ046r1kTp+0BidOT0+r7yO+ZONUwYXnjyg/21GnbGfDhG+EqrQcl4I
-         tQnDB6D///EICJ5f4h70R+AEe9VnH9C9Gif4jYZV318vPapU3Ru62Ug087+s6Cq99Dez
-         JX0g==
-In-Reply-To: <AM4PR0501MB2769C4BE6CF1C5B051068D0BC56B0@AM4PR0501MB2769.eurprd05.prod.outlook.com>
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=TQaWtqfaua1Hjo0MyL7tHgbuxemTghT+fCzIyDHfzRw=;
+        b=bZDXbqsLKn3mbNYHBviCP96zZCE/W7Wbkvw+1i+H2LuRozINF2omF33A6loxQufxht
+         DI5Rop3UZrMFrDP78GzVmIzAsq3OTfA4M2vcRkcDWfx3tgy2VH0XnU1OveiK1tkqQNuS
+         Q4+YIxI0H8UNJm4z7vjjI43mjEU6z6gcDnhgB6FysxstfudYK1MkVeYHPKz2jVjBpcKN
+         eci0SQsy5KqcLjmcf4Yj+8NSGB89nr0WkX9s9mErR5Inqu2LBlhJRvOVmkpSTVZfmJms
+         Qi5UtG+LdzRrbH7gwc7+sAoM15N1w4GgOzogtvqp0yIZDea14+QdjUWSLPUcUov7uqKR
+         Up9w==
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Ran Rozenstein <ranro@mellanox.com>
-Cc: "davem@davemloft.net" <davem@davemloft.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "y2038@lists.linaro.org" <y2038@lists.linaro.org>, "chris@zankel.net" <chris@zankel.net>, "fenghua.yu@intel.com" <fenghua.yu@intel.com>, "rth@twiddle.net" <rth@twiddle.net>, "tglx@linutronix.de" <tglx@linutronix.de>, "ubraun@linux.ibm.com" <ubraun@linux.ibm.com>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, linux-xtensa@linux-xtens
-
-On Feb 10, 2019, at 7:43 AM, Ran Rozenstein <ranro@mellanox.com> wrote:
-
->> Subject: [PATCH net-next v5 09/12] socket: Add SO_TIMESTAMPING_NEW
->>
->> Add SO_TIMESTAMPING_NEW variant of socket timestamp options.
->> This is the y2038 safe versions of the SO_TIMESTAMPING_OLD for all
->> architectures.
->>
->> Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
->> Acked-by: Willem de Bruijn <willemb@google.com>
->
->
-> Hi,
->
-> I have app that include:
->    #include <linux/errqueue.h>
->
-> It now fail with this error:
->    In file included from timestamping.c:6:0:
->    /usr/include/linux/errqueue.h:46:27: error: array type has incomplete element type 'struct __kernel_timespec'
->      struct __kernel_timespec ts[3];
->                                       ^~
-> I tried to do the trivial fix, to include time.h:
-> In include/uapi/linux/errqueue.h
->    #include <linux/time.h>
->    #include <linux/types.h>
->
-> But it just add some other noises:
->                In file included from /usr/include/linux/errqueue.h:5:0,
->                                 from timestamping.c:6:
->                /usr/include/linux/time.h:10:8: error: redefinition of ?struct timespec?
->                 struct timespec {
->                        ^~~~~~~~
->                In file included from /usr/include/sys/select.h:39:0,
->                                 from /usr/include/sys/types.h:197,
->                                 from /usr/include/stdlib.h:279,
->                                 from timestamping.c:2:
->                /usr/include/bits/types/struct_timespec.h:8:8: note: originally defined here
->                 struct timespec
->                        ^~~~~~~~
->                In file included from /usr/include/linux/errqueue.h:5:0,
->                                 from timestamping.c:6:
->                /usr/include/linux/time.h:16:8: error: redefinition of ?struct timeval?
->                 struct timeval {
->                        ^~~~~~~
->                In file included from /usr/include/sys/select.h:37:0,
->                                 from /usr/include/sys/types.h:197,
->                                 from /usr/include/stdlib.h:279,
->                                 from timestamping.c:2:
->                /usr/include/bits/types/struct_timeval.h:8:8: note: originally defined here
->                 struct timeval
->                        ^~~~~~~
->
->
-> Can you please advise how to solve it?
->
-> Thanks,
-> Ran
-
-The errqueue.h already had the same issue reported previously:
-https://lore.kernel.org/netdev/CAF=yD-L2ntuH54J_SwN9WcpBMgkV_v0e-Q2Pu2mrQ3+1RozGFQ@mail.gmail.com/
-
-Earlier when I tested this with kernel selftests such as
-tools/testing/selftests/networking/timestamping/rxtimestamp(the test
-was broken to begin with because of  missing include of unistd.h), I
-was using make.cross to build.
-This does not put the headers in the right place
-(obj-$ARCH/usr/include instead of usr/include). Hence, I did not
-realize that this breaks the inclusion of errqueue.h due to the
-missing __kernel_timespec definition.
-I forgot that nobody seems to be using linux/time.h.
-
-But, if I include guards( #ifndef __KERNEL__) for struct timespec,
-struct timeval etc for linux/time.h, then we can include it from
-userspace/ errqueue.h for __kernel_timespec:
-
---- a/include/uapi/linux/errqueue.h
-+++ b/include/uapi/linux/errqueue.h
-@@ -2,7 +2,7 @@
- #ifndef _UAPI_LINUX_ERRQUEUE_H
- #define _UAPI_LINUX_ERRQUEUE_H
-
--#include <linux/types.h>
-+#include <linux/time.h>
-
- struct sock_extended_err {
-        __u32   ee_errno;
-diff --git a/include/uapi/linux/time.h b/include/uapi/linux/time.h
-index a6aca9aaab80..40913d9a5bc8 100644
---- a/include/uapi/linux/time.h
-+++ b/include/uapi/linux/time.h
-@@ -5,6 +5,8 @@
- #include <linux/types.h>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Sergei Trofimovich <slyfox@gentoo.org>, "Dmitry V. Levin" <ldv@altlinux.org>, Meelis Roos <mroos@linux.ee>, Bob Tracy <rct@frus.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
-+#ifdef __KERNEL__
-+
- #ifndef _STRUCT_TIMESPEC
- #define _STRUCT_TIMESPEC
- struct timespec {
-@@ -42,6 +44,8 @@ struct itimerval {
-        struct timeval it_value;        /* current value */
- };
+--opJtzjQTFsWo+cga
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
 
-+#endif /* __KERNEL__ */
+Hi Linus,
 
-Arnd,
-
-I forgot how we plan to include the definition for __kernel_timespec
-for libc or userspace. Does this seem right to you?
-Also these changes to errqueue.h needs to be reverted probably as this
-breaks userspace.
+Please pull a few changes for alpha, including a build fix, a fix for the Eiger
+platform, and a fix for a tricky bug uncovered by the strace test suite that
+has existed since at least 1997 (v2.1.32)!
 
 Thanks,
--Deepa
+Matt
 
 
+The following changes since commit d13937116f1e82bf508a6325111b322c30c85eb9:
 
+  Linux 5.0-rc6 (2019-02-10 14:42:20 -0800)
 
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
 
+for you to fetch changes up to 491af60ffb848b59e82f7c9145833222e0bf27a5:
 
--Deepa
+  alpha: fix page fault handling for r16-r18 targets (2019-02-10 20:42:23 -0800)
+
+----------------------------------------------------------------
+Bob Tracy (1):
+      tools uapi: fix Alpha support
+
+Meelis Roos (1):
+      alpha: Fix Eiger NR_IRQS to 128
+
+Sergei Trofimovich (1):
+      alpha: fix page fault handling for r16-r18 targets
+
+ arch/alpha/include/asm/irq.h         | 6 +++---
+ arch/alpha/mm/fault.c                | 2 +-
+ tools/include/uapi/asm/bitsperlong.h | 2 ++
+ 3 files changed, 6 insertions(+), 4 deletions(-)
+
+--opJtzjQTFsWo+cga
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iNUEABYKAH0WIQSzlptPDvl9ch5jjr2cglpmBdQLvgUCXGD+FF8UgAAAAAAuAChp
+c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjM5
+NjlCNEYwRUY5N0Q3MjFFNjM4RUJEOUM4MjVBNjYwNUQ0MEJCRQAKCRCcglpmBdQL
+vpblAQDdRyUGTMIZfZ+O5amIfyScCTqRakEu7WWpPrsDLFp0KAD7BAT+L63aYLKq
+cV6/MO6IJjorFILxvulKs4iAj5E1ygM=
+=0oVh
+-----END PGP SIGNATURE-----
+
+--opJtzjQTFsWo+cga--
