@@ -1,82 +1,89 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: [PULL] alpha.git
-Date: Sun, 10 Feb 2019 20:46:15 -0800
-Message-ID: <20190211044615.GA30805@p50-ethernet>
+From: Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH] locking/rwsem: Remove arch specific rwsem files
+Date: Mon, 11 Feb 2019 08:11:59 +0100
+Message-ID: <20190211071159.GA55579@gmail.com>
+References: <1549850450-10171-1-git-send-email-longman@redhat.com>
+ <a610aeb2-b1cb-0d57-8078-97d1051481f9@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="opJtzjQTFsWo+cga"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=TQaWtqfaua1Hjo0MyL7tHgbuxemTghT+fCzIyDHfzRw=;
-        b=bZDXbqsLKn3mbNYHBviCP96zZCE/W7Wbkvw+1i+H2LuRozINF2omF33A6loxQufxht
-         DI5Rop3UZrMFrDP78GzVmIzAsq3OTfA4M2vcRkcDWfx3tgy2VH0XnU1OveiK1tkqQNuS
-         Q4+YIxI0H8UNJm4z7vjjI43mjEU6z6gcDnhgB6FysxstfudYK1MkVeYHPKz2jVjBpcKN
-         eci0SQsy5KqcLjmcf4Yj+8NSGB89nr0WkX9s9mErR5Inqu2LBlhJRvOVmkpSTVZfmJms
-         Qi5UtG+LdzRrbH7gwc7+sAoM15N1w4GgOzogtvqp0yIZDea14+QdjUWSLPUcUov7uqKR
-         Up9w==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BK4Sm1vYAP/cUQnaGA8IV1A1wXMg4Z4Mq4IDBe+5Fz0=;
+        b=iLc0oI6v6Cc382OU0fdlNtw/4hwzwv60nfBQ5KbKbVaS4A61E93cSWC8jo2x/WEl1a
+         /7iNgiNDbixuFiTPVQxi8pc+/7fGx7pcuID+pMESwbpBB58ja3pRwNYGtoteTRn6cyHX
+         VckXzbs5q4+RkIKdXXafDtC0IPMQNYgZCtrdvLgHeBBkHD9tEw/VRJq1p441jPtIqSIQ
+         IJ/q1mwZcAvFB2yG85C6ntvl+UYgPG+r8dkD4WtUr93nSoN1GOE9cAmp6aCYRXO1Q3Ue
+         sMgUko0pVzP2JoCJuinZBMQqE+COBfHkCMgJfh+JRAGW8JHu+EFVr4Ml2wOSRNsdda4K
+         M0yw==
 Content-Disposition: inline
+In-Reply-To: <a610aeb2-b1cb-0d57-8078-97d1051481f9@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Sergei Trofimovich <slyfox@gentoo.org>, "Dmitry V. Levin" <ldv@altlinux.org>, Meelis Roos <mroos@linux.ee>, Bob Tracy <rct@frus.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Waiman Long <longman@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Davidlohr Bueso <dave@stgolabs.net>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Tim Chen <tim.c.chen@linux.intel.com>
 
 
---opJtzjQTFsWo+cga
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
+* Waiman Long <longman@redhat.com> wrote:
 
-Hi Linus,
+> On 02/10/2019 09:00 PM, Waiman Long wrote:
+> > As the generic rwsem-xadd code is using the appropriate acquire and
+> > release versions of the atomic operations, the arch specific rwsem.h
+> > files will not be that much faster than the generic code as long as the
+> > atomic functions are properly implemented. So we can remove those arch
+> > specific rwsem.h and stop building asm/rwsem.h to reduce maintenance
+> > effort.
+> >
+> > Currently, only x86, alpha and ia64 have implemented architecture
+> > specific fast paths. I don't have access to alpha and ia64 systems for
+> > testing, but they are legacy systems that are not likely to be updated
+> > to the latest kernel anyway.
+> >
+> > By using a rwsem microbenchmark, the total locking rates on a 4-socket
+> > 56-core 112-thread x86-64 system before and after the patch were as
+> > follows (mixed means equal # of read and write locks):
+> >
+> >                       Before Patch              After Patch
+> >    # of Threads  wlock   rlock   mixed     wlock   rlock   mixed
+> >    ------------  -----   -----   -----     -----   -----   -----
+> >         1        27,373  29,409  28,170    28,773  30,164  29,276
+> >         2         7,697  14,922   1,703     7,435  15,167   1,729
+> >         4         6,987  14,285   1,490     7,181  14,438   1,330
+> >         8         6,650  13,652     761     6,918  13,796     718
+> >        16         6,434  15,729     713     6,554  16,030     625
+> >        32         5,590  15,312     552     6,124  15,344     471
+> >        64         5,980  15,478      61     5,668  15,509      58
+> >
+> > There were some run-to-run variations for the multi-thread tests. For
+> > x86-64, using the generic C code fast path seems to be a liitle bit
+> > faster than the assembly version especially for read-lock and when lock
+> > contention is low.  Looking at the assembly version of the fast paths,
+> > there are assembly to/from C code wrappers that save and restore all
+> > the callee-clobbered registers (7 registers on x86-64). The assembly
+> > generated from the generic C code doesn't need to do that. That may
+> > explain the slight performance gain here.
+> >
+> > The generic asm rwsem.h can also be merged into kernel/locking/rwsem.h
+> > as no other code other than those under kernel/locking needs to access
+> > the internal rwsem macros and functions.
+> >
+> > Signed-off-by: Waiman Long <longman@redhat.com>
+> 
+> I have decided to break the rwsem patchset that I sent out on last
+> Thursday into 3 parts. This patch is part 0 as it touches a number of
+> arch specific files and so have the widest distribution. I would like to
+> get it merged first. Part 1 will be patches 1-10 (except 4) of my
+> original rwsem patchset. This part moves things around, adds more
+> debugging capability and lays the ground work for the next part. Part 2
+> will contains the remaining patches which are the real beef of the whole
+> patchset.
 
-Please pull a few changes for alpha, including a build fix, a fix for the Eiger
-platform, and a fix for a tricky bug uncovered by the strace test suite that
-has existed since at least 1997 (v2.1.32)!
+Sounds good to me - I've merged this patch, will push it out after 
+testing.
 
 Thanks,
-Matt
 
-
-The following changes since commit d13937116f1e82bf508a6325111b322c30c85eb9:
-
-  Linux 5.0-rc6 (2019-02-10 14:42:20 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
-
-for you to fetch changes up to 491af60ffb848b59e82f7c9145833222e0bf27a5:
-
-  alpha: fix page fault handling for r16-r18 targets (2019-02-10 20:42:23 -0800)
-
-----------------------------------------------------------------
-Bob Tracy (1):
-      tools uapi: fix Alpha support
-
-Meelis Roos (1):
-      alpha: Fix Eiger NR_IRQS to 128
-
-Sergei Trofimovich (1):
-      alpha: fix page fault handling for r16-r18 targets
-
- arch/alpha/include/asm/irq.h         | 6 +++---
- arch/alpha/mm/fault.c                | 2 +-
- tools/include/uapi/asm/bitsperlong.h | 2 ++
- 3 files changed, 6 insertions(+), 4 deletions(-)
-
---opJtzjQTFsWo+cga
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iNUEABYKAH0WIQSzlptPDvl9ch5jjr2cglpmBdQLvgUCXGD+FF8UgAAAAAAuAChp
-c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjM5
-NjlCNEYwRUY5N0Q3MjFFNjM4RUJEOUM4MjVBNjYwNUQ0MEJCRQAKCRCcglpmBdQL
-vpblAQDdRyUGTMIZfZ+O5amIfyScCTqRakEu7WWpPrsDLFp0KAD7BAT+L63aYLKq
-cV6/MO6IJjorFILxvulKs4iAj5E1ygM=
-=0oVh
------END PGP SIGNATURE-----
-
---opJtzjQTFsWo+cga--
+	Ingo
