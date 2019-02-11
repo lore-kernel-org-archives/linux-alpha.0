@@ -1,34 +1,58 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [PULL] alpha.git
-Date: Mon, 11 Feb 2019 18:35:02 +0000
-Message-ID: <154991010269.27938.3585347665579017754.pr-tracker-bot@kernel.org>
-References: <20190211044615.GA30805@p50-ethernet>
+From: Waiman Long <longman@redhat.com>
+Subject: [PATCH v2 0/2] locking/rwsem: Remove arch specific rwsem files
+Date: Mon, 11 Feb 2019 14:31:24 -0500
+Message-ID: <1549913486-16799-1-git-send-email-longman@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549910102;
-        bh=OI2L5XYc6tmSoxU04a80mo2HQXYs6X8Ya23WM5NB7dI=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=k2E7gSuXBxCU5WAm5T3ul+/XrtDvlf/OF4R8pGy3GyzoXUTMj76d46pI2sSV1RnMQ
-         twOFoGQBIc7/gBuaCZo5kD9qwjDFFQcEyXm+RY4BQnYXOlYo4hm256UTpit2MMp6LO
-         yn9s6Z5g+UPIEqeAN7DBEA9h9qZDHX1WJwtiZ6Xk=
-In-Reply-To: <20190211044615.GA30805@p50-ethernet>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Sergei Trofimovich <slyfox@gentoo.org>, "Dmitry V. Levin" <ldv@altlinux.org>, Meelis Roos <mroos@linux.ee>, Bob Tracy <rct@frus.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Davidlohr Bueso <dave@stgolabs.net>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Tim Chen <tim.c.chen@linux.intel.com>, Waiman Long <longman@redhat.com>
 
-The pull request you sent on Sun, 10 Feb 2019 20:46:15 -0800:
+v2:
+ - Add patch 2 to optimize __down_read_trylock() as suggested by PeterZ.
+ - Update performance test data in patch 1.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+This is part 0 of my rwsem patchset. It just removes the architecture
+specific files to make it easer to add enhancements in the upcoming
+rwsem patches.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/244cce14c17705e6376cd12c20c27f8712793acc
+Since the two ll/sc platforms that I can tested on (arm64 & ppc) are
+both using the generic C codes, the rwsem performance shouldn't be
+affected by this patch except the down_read_trylock() code which was
+included in patch 2 for arm64.
 
-Thank you!
+Waiman Long (2):
+  locking/rwsem: Remove arch specific rwsem files
+  locking/rwsem: Optimize down_read_trylock()
+
+ MAINTAINERS                     |   1 -
+ arch/alpha/include/asm/rwsem.h  | 211 -----------------------------------
+ arch/arm/include/asm/Kbuild     |   1 -
+ arch/arm64/include/asm/Kbuild   |   1 -
+ arch/hexagon/include/asm/Kbuild |   1 -
+ arch/ia64/include/asm/rwsem.h   | 172 -----------------------------
+ arch/powerpc/include/asm/Kbuild |   1 -
+ arch/s390/include/asm/Kbuild    |   1 -
+ arch/sh/include/asm/Kbuild      |   1 -
+ arch/sparc/include/asm/Kbuild   |   1 -
+ arch/x86/include/asm/rwsem.h    | 237 ----------------------------------------
+ arch/x86/lib/Makefile           |   1 -
+ arch/x86/lib/rwsem.S            | 156 --------------------------
+ arch/xtensa/include/asm/Kbuild  |   1 -
+ include/asm-generic/rwsem.h     | 140 ------------------------
+ include/linux/rwsem.h           |   4 +-
+ kernel/locking/percpu-rwsem.c   |   2 +
+ kernel/locking/rwsem.h          | 130 ++++++++++++++++++++++
+ 18 files changed, 133 insertions(+), 929 deletions(-)
+ delete mode 100644 arch/alpha/include/asm/rwsem.h
+ delete mode 100644 arch/ia64/include/asm/rwsem.h
+ delete mode 100644 arch/x86/include/asm/rwsem.h
+ delete mode 100644 arch/x86/lib/rwsem.S
+ delete mode 100644 include/asm-generic/rwsem.h
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+1.8.3.1
+
