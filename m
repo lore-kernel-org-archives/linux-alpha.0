@@ -1,93 +1,154 @@
-From: Waiman Long <longman@redhat.com>
-Subject: Re: [PATCH v2 2/2] locking/rwsem: Optimize down_read_trylock()
-Date: Tue, 12 Feb 2019 13:38:43 -0500
-Message-ID: <0dc32b77-9485-0800-695d-1a076923b1e6@redhat.com>
-References: <1549913486-16799-1-git-send-email-longman@redhat.com>
- <1549913486-16799-3-git-send-email-longman@redhat.com>
- <20190212132404.GI32494@hirez.programming.kicks-ass.net>
- <20190212132537.GL32534@hirez.programming.kicks-ass.net>
- <a90fa2cf-f891-d64c-101b-adc81e06e0de@redhat.com>
+From: Deepa Dinamani <deepa.kernel@gmail.com>
+Subject: Re: [PATCH net-next v5 09/12] socket: Add SO_TIMESTAMPING_NEW
+Date: Tue, 12 Feb 2019 11:08:52 -0800
+Message-ID: <CABeXuvomXSgYQaFQgv71xQu837J_HUYR4NvMqXPyh4Z3Btnprg@mail.gmail.com>
+References: <20190202153454.7121-1-deepa.kernel@gmail.com> <20190202153454.7121-10-deepa.kernel@gmail.com>
+ <AM4PR0501MB2769C4BE6CF1C5B051068D0BC56B0@AM4PR0501MB2769.eurprd05.prod.outlook.com>
+ <CABeXuvqMR7T=3ORvXPihkz-WbTN+oFeHkCu9uvebEq9wTLpJuQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a90fa2cf-f891-d64c-101b-adc81e06e0de@redhat.com>
-Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Cnqr2wXipCxgDB3fFdGxUE67iCptpYk32YabGjqXilY=;
+        b=RT2Fq6Vwj96574gFRSFJBCaEru8kvFDXF0AGVSe3ycoyK8BV9L3kqX6qkUw0XtITq0
+         4Xv8fyKlBoWXISpATw3b5qpZ4C2lKKH3Cb9IK2FqApeALAR+TAH0DC9wWV53VWeK8YXf
+         ZEHTPNoKJ4WcMBlR3DTqdwo5dyeqtSRGtX8UnKTuJ6WJpDQvDiE7TWHz0gSkeoyxuOUk
+         3vuQd36veXEn1775p9QyJqxfBM63s9dnD+0i1c6L837nebwlDSfuVDvvPIfHpIIhbp5V
+         oyAMRDRE1vsWoG08ScV9Y+P/TVP6rMoTjEqZ9E7ZzcfGDVtt/btCxuNaM+dt41hFrqZ2
+         Yupw==
+In-Reply-To: <CABeXuvqMR7T=3ORvXPihkz-WbTN+oFeHkCu9uvebEq9wTLpJuQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Davidlohr Bueso <dave@stgolabs.net>, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Tim Chen <tim.c.chen@linux.intel.com>
+Content-Transfer-Encoding: 7bit
+To: Ran Rozenstein <ranro@mellanox.com>
+Cc: "davem@davemloft.net" <davem@davemloft.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "y2038@lists.linaro.org" <y2038@lists.linaro.org>, "chris@zankel.net" <chris@zankel.net>, "fenghua.yu@intel.com" <fenghua.yu@intel.com>, "rth@twiddle.net" <rth@twiddle.net>, "tglx@linutronix.de" <tglx@linutronix.de>, "ubraun@linux.ibm.com" <ubraun@linux.ibm.com>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, linux-xtensa@linux-xtens
 
-On 02/12/2019 01:36 PM, Waiman Long wrote:
-> On 02/12/2019 08:25 AM, Peter Zijlstra wrote:
->> On Tue, Feb 12, 2019 at 02:24:04PM +0100, Peter Zijlstra wrote:
->>> On Mon, Feb 11, 2019 at 02:31:26PM -0500, Waiman Long wrote:
->>>> Modify __down_read_trylock() to make it generate slightly better code
->>>> (smaller and maybe a tiny bit faster).
->>>>
->>>> Before this patch, down_read_trylock:
->>>>
->>>>    0x0000000000000000 <+0>:     callq  0x5 <down_read_trylock+5>
->>>>    0x0000000000000005 <+5>:     jmp    0x18 <down_read_trylock+24>
->>>>    0x0000000000000007 <+7>:     lea    0x1(%rdx),%rcx
->>>>    0x000000000000000b <+11>:    mov    %rdx,%rax
->>>>    0x000000000000000e <+14>:    lock cmpxchg %rcx,(%rdi)
->>>>    0x0000000000000013 <+19>:    cmp    %rax,%rdx
->>>>    0x0000000000000016 <+22>:    je     0x23 <down_read_trylock+35>
->>>>    0x0000000000000018 <+24>:    mov    (%rdi),%rdx
->>>>    0x000000000000001b <+27>:    test   %rdx,%rdx
->>>>    0x000000000000001e <+30>:    jns    0x7 <down_read_trylock+7>
->>>>    0x0000000000000020 <+32>:    xor    %eax,%eax
->>>>    0x0000000000000022 <+34>:    retq
->>>>    0x0000000000000023 <+35>:    mov    %gs:0x0,%rax
->>>>    0x000000000000002c <+44>:    or     $0x3,%rax
->>>>    0x0000000000000030 <+48>:    mov    %rax,0x20(%rdi)
->>>>    0x0000000000000034 <+52>:    mov    $0x1,%eax
->>>>    0x0000000000000039 <+57>:    retq
->>>>
->>>> After patch, down_read_trylock:
->>>>
->>>>    0x0000000000000000 <+0>:     callq  0x5 <down_read_trylock+5>
->>>>    0x0000000000000005 <+5>:     mov    (%rdi),%rax
->>>>    0x0000000000000008 <+8>:     test   %rax,%rax
->>>>    0x000000000000000b <+11>:    js     0x2f <down_read_trylock+47>
->>>>    0x000000000000000d <+13>:    lea    0x1(%rax),%rdx
->>>>    0x0000000000000011 <+17>:    lock cmpxchg %rdx,(%rdi)
->>>>    0x0000000000000016 <+22>:    jne    0x8 <down_read_trylock+8>
->>>>    0x0000000000000018 <+24>:    mov    %gs:0x0,%rax
->>>>    0x0000000000000021 <+33>:    or     $0x3,%rax
->>>>    0x0000000000000025 <+37>:    mov    %rax,0x20(%rdi)
->>>>    0x0000000000000029 <+41>:    mov    $0x1,%eax
->>>>    0x000000000000002e <+46>:    retq
->>>>    0x000000000000002f <+47>:    xor    %eax,%eax
->>>>    0x0000000000000031 <+49>:    retq
->>>>
->>>> By using a rwsem microbenchmark, the down_read_trylock() rate on a
->>>> x86-64 system before and after the patch were:
->>>>
->>>>                  Before Patch    After Patch
->>>>    # of Threads     rlock           rlock
->>>>    ------------     -----           -----
->>>>         1           27,787          28,259
->>>>         2            8,359           9,234
->>> From 1/2:
->>>
->>> 1        29,201  30,143  29,458    28,615  30,172  29,201
->>> 2         6,807  13,299   1,171     7,725  15,025   1,804
->> Argh, fat fingered and send before I was done typing.
->>
->> What I wanted to say was; those rlock numbers don't match up. What
->> gives?
->>
->> The before _this_ patch number of 27k787 should be the same as the after
->> first patch number of 30k172.
-> The rlock number in patch 1 refers to down_read() which uses xadd. The
-> number here in patch 2 refers specifically to down_read_trylock() which
-> uses cmpxchg() as this patch changes only __down_read_tryulock(). So the
-> performance data differ.
+On Sun, Feb 10, 2019 at 7:21 PM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
+>
+> On Feb 10, 2019, at 7:43 AM, Ran Rozenstein <ranro@mellanox.com> wrote:
+>
+> >> Subject: [PATCH net-next v5 09/12] socket: Add SO_TIMESTAMPING_NEW
+> >>
+> >> Add SO_TIMESTAMPING_NEW variant of socket timestamp options.
+> >> This is the y2038 safe versions of the SO_TIMESTAMPING_OLD for all
+> >> architectures.
+> >>
+> >> Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
+> >> Acked-by: Willem de Bruijn <willemb@google.com>
+> >
+> >
+> > Hi,
+> >
+> > I have app that include:
+> >    #include <linux/errqueue.h>
+> >
+> > It now fail with this error:
+> >    In file included from timestamping.c:6:0:
+> >    /usr/include/linux/errqueue.h:46:27: error: array type has incomplete element type 'struct __kernel_timespec'
+> >      struct __kernel_timespec ts[3];
+> >                                       ^~
+> > I tried to do the trivial fix, to include time.h:
+> > In include/uapi/linux/errqueue.h
+> >    #include <linux/time.h>
+> >    #include <linux/types.h>
+> >
+> > But it just add some other noises:
+> >                In file included from /usr/include/linux/errqueue.h:5:0,
+> >                                 from timestamping.c:6:
+> >                /usr/include/linux/time.h:10:8: error: redefinition of ?struct timespec?
+> >                 struct timespec {
+> >                        ^~~~~~~~
+> >                In file included from /usr/include/sys/select.h:39:0,
+> >                                 from /usr/include/sys/types.h:197,
+> >                                 from /usr/include/stdlib.h:279,
+> >                                 from timestamping.c:2:
+> >                /usr/include/bits/types/struct_timespec.h:8:8: note: originally defined here
+> >                 struct timespec
+> >                        ^~~~~~~~
+> >                In file included from /usr/include/linux/errqueue.h:5:0,
+> >                                 from timestamping.c:6:
+> >                /usr/include/linux/time.h:16:8: error: redefinition of ?struct timeval?
+> >                 struct timeval {
+> >                        ^~~~~~~
+> >                In file included from /usr/include/sys/select.h:37:0,
+> >                                 from /usr/include/sys/types.h:197,
+> >                                 from /usr/include/stdlib.h:279,
+> >                                 from timestamping.c:2:
+> >                /usr/include/bits/types/struct_timeval.h:8:8: note: originally defined here
+> >                 struct timeval
+> >                        ^~~~~~~
+> >
+> >
+> > Can you please advise how to solve it?
+> >
+> > Thanks,
+> > Ran
+>
+> The errqueue.h already had the same issue reported previously:
+> https://lore.kernel.org/netdev/CAF=yD-L2ntuH54J_SwN9WcpBMgkV_v0e-Q2Pu2mrQ3+1RozGFQ@mail.gmail.com/
+>
+> Earlier when I tested this with kernel selftests such as
+> tools/testing/selftests/networking/timestamping/rxtimestamp(the test
+> was broken to begin with because of  missing include of unistd.h), I
+> was using make.cross to build.
+> This does not put the headers in the right place
+> (obj-$ARCH/usr/include instead of usr/include). Hence, I did not
+> realize that this breaks the inclusion of errqueue.h due to the
+> missing __kernel_timespec definition.
+> I forgot that nobody seems to be using linux/time.h.
+>
+> But, if I include guards( #ifndef __KERNEL__) for struct timespec,
+> struct timeval etc for linux/time.h, then we can include it from
+> userspace/ errqueue.h for __kernel_timespec:
+>
+> --- a/include/uapi/linux/errqueue.h
+> +++ b/include/uapi/linux/errqueue.h
+> @@ -2,7 +2,7 @@
+>  #ifndef _UAPI_LINUX_ERRQUEUE_H
+>  #define _UAPI_LINUX_ERRQUEUE_H
+>
+> -#include <linux/types.h>
+> +#include <linux/time.h>
+>
+>  struct sock_extended_err {
+>         __u32   ee_errno;
+> diff --git a/include/uapi/linux/time.h b/include/uapi/linux/time.h
+> index a6aca9aaab80..40913d9a5bc8 100644
+> --- a/include/uapi/linux/time.h
+> +++ b/include/uapi/linux/time.h
+> @@ -5,6 +5,8 @@
+>  #include <linux/types.h>
+>
+>
+> +#ifdef __KERNEL__
+> +
+>  #ifndef _STRUCT_TIMESPEC
+>  #define _STRUCT_TIMESPEC
+>  struct timespec {
+> @@ -42,6 +44,8 @@ struct itimerval {
+>         struct timeval it_value;        /* current value */
+>  };
+>
+> +#endif /* __KERNEL__ */
+>
+> Arnd,
+>
+> I forgot how we plan to include the definition for __kernel_timespec
+> for libc or userspace. Does this seem right to you?
+> Also these changes to errqueue.h needs to be reverted probably as this
+> breaks userspace.
 
-You can see that the performance is worse if we use cmpxchg for
-down_read instead of using xadd.
+Arnd and I talked about this today morning.
+We agreed that we could introduce a new time_types.h along the lines
+of posix_types.h. We will move all the time definitions that we plan
+to keep in the kernel uapi headers to this header. This header will
+also not have any overlap with the sys/time.h and can be included
+along with it from userspace.
+I will post this patch shortly.
 
-Cheers,
-Longman
+This should fix Ran's issue.
+
+-Deepa
