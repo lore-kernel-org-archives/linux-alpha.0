@@ -1,154 +1,102 @@
-From: Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: Re: [PATCH net-next v5 09/12] socket: Add SO_TIMESTAMPING_NEW
-Date: Tue, 12 Feb 2019 11:08:52 -0800
-Message-ID: <CABeXuvomXSgYQaFQgv71xQu837J_HUYR4NvMqXPyh4Z3Btnprg@mail.gmail.com>
-References: <20190202153454.7121-1-deepa.kernel@gmail.com> <20190202153454.7121-10-deepa.kernel@gmail.com>
- <AM4PR0501MB2769C4BE6CF1C5B051068D0BC56B0@AM4PR0501MB2769.eurprd05.prod.outlook.com>
- <CABeXuvqMR7T=3ORvXPihkz-WbTN+oFeHkCu9uvebEq9wTLpJuQ@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v2 2/2] locking/rwsem: Optimize down_read_trylock()
+Date: Tue, 12 Feb 2019 11:58:03 -0800
+Message-ID: <CAHk-=wjTmSg6zX=xKFSPZor7FWi3s4D0dy-hz_M=yeF_6478QA@mail.gmail.com>
+References: <1549913486-16799-1-git-send-email-longman@redhat.com>
+ <1549913486-16799-3-git-send-email-longman@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Cnqr2wXipCxgDB3fFdGxUE67iCptpYk32YabGjqXilY=;
-        b=RT2Fq6Vwj96574gFRSFJBCaEru8kvFDXF0AGVSe3ycoyK8BV9L3kqX6qkUw0XtITq0
-         4Xv8fyKlBoWXISpATw3b5qpZ4C2lKKH3Cb9IK2FqApeALAR+TAH0DC9wWV53VWeK8YXf
-         ZEHTPNoKJ4WcMBlR3DTqdwo5dyeqtSRGtX8UnKTuJ6WJpDQvDiE7TWHz0gSkeoyxuOUk
-         3vuQd36veXEn1775p9QyJqxfBM63s9dnD+0i1c6L837nebwlDSfuVDvvPIfHpIIhbp5V
-         oyAMRDRE1vsWoG08ScV9Y+P/TVP6rMoTjEqZ9E7ZzcfGDVtt/btCxuNaM+dt41hFrqZ2
-         Yupw==
-In-Reply-To: <CABeXuvqMR7T=3ORvXPihkz-WbTN+oFeHkCu9uvebEq9wTLpJuQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Ran Rozenstein <ranro@mellanox.com>
-Cc: "davem@davemloft.net" <davem@davemloft.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "y2038@lists.linaro.org" <y2038@lists.linaro.org>, "chris@zankel.net" <chris@zankel.net>, "fenghua.yu@intel.com" <fenghua.yu@intel.com>, "rth@twiddle.net" <rth@twiddle.net>, "tglx@linutronix.de" <tglx@linutronix.de>, "ubraun@linux.ibm.com" <ubraun@linux.ibm.com>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, linux-xtensa@linux-xtens
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=PE4UXnLFAHviSw3ls7BdzXsr3l0tFKrRIuAN6zFmzVo=; b=G/bwXugDttlp5L
+	1ZdwVeygOeWmZPuBjm6qCP4pk2ptWcSYTiWWFdV8tx/zprSy2JaAnsiKv/2riDNVh75flm3WZIwRO
+	Lv1+1jVmskbLK1XvWU/nYUsrcfzRBh22FpkdLKgmp+K7dIaORCw/qtgYGukmE2lL8HNwj6RRUxtVF
+	AovdkYm5jHk31miNhBrwSb2MgDvr3slPHpQaFpx344/ljrvC5hSNwWcttJpChDCdI6YjosSmiQR+k
+	Gf29pVYEGj7wk8zlJzNZ5eVbD+kJXVwC9QHlyuClleqyJm8OxtKysRFEZXQiIqCbK8sc9gcjLEhh/
+	ZP10YmOUQJ5KI5UD1PpQ==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=linux-foundation.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=/n+2vOYomTB5BLs+7tL7KTaBHH30/oos+ud6/cnVnSI=;
+ b=D253Chez2iaEQIcdy2TZNsUlaqMRm9VIwWrpW4fWK//FTDXCKKfklGuD0o642xmL34
+ Mp7YirjzpQRotbrv0djWXVT+vJS5/MLsACCfzpkJ9An4MiWd9dVmmIgjhdo9yVZ3/bHH
+ 9o6+1iNpzzKTb5pLfsCFl4j2YHGc18WAFp/jg=
+In-Reply-To: <1549913486-16799-3-git-send-email-longman@redhat.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Waiman Long <longman@redhat.com>
+Cc: linux-arch <linux-arch@vger.kernel.org>, linux-xtensa@linux-xtensa.org, Davidlohr Bueso <dave@stgolabs.net>, linux-ia64@vger.kernel.org, Tim Chen <tim.c.chen@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Linux-sh list <linux-sh@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>, linux-hexagon@vger.kernel.org, the arch/x86 maintainers <x86@kernel.org>, Will Deacon <will.deacon@arm.com>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, linuxppc-dev@lists.ozlabs.org, Andrew Morton <akpm@linux-foundation.org>, linux-arm-kernel@lists.infradead.org
 
-On Sun, Feb 10, 2019 at 7:21 PM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
+On Mon, Feb 11, 2019 at 11:31 AM Waiman Long <longman@redhat.com> wrote:
 >
-> On Feb 10, 2019, at 7:43 AM, Ran Rozenstein <ranro@mellanox.com> wrote:
->
-> >> Subject: [PATCH net-next v5 09/12] socket: Add SO_TIMESTAMPING_NEW
-> >>
-> >> Add SO_TIMESTAMPING_NEW variant of socket timestamp options.
-> >> This is the y2038 safe versions of the SO_TIMESTAMPING_OLD for all
-> >> architectures.
-> >>
-> >> Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
-> >> Acked-by: Willem de Bruijn <willemb@google.com>
-> >
-> >
-> > Hi,
-> >
-> > I have app that include:
-> >    #include <linux/errqueue.h>
-> >
-> > It now fail with this error:
-> >    In file included from timestamping.c:6:0:
-> >    /usr/include/linux/errqueue.h:46:27: error: array type has incomplete element type 'struct __kernel_timespec'
-> >      struct __kernel_timespec ts[3];
-> >                                       ^~
-> > I tried to do the trivial fix, to include time.h:
-> > In include/uapi/linux/errqueue.h
-> >    #include <linux/time.h>
-> >    #include <linux/types.h>
-> >
-> > But it just add some other noises:
-> >                In file included from /usr/include/linux/errqueue.h:5:0,
-> >                                 from timestamping.c:6:
-> >                /usr/include/linux/time.h:10:8: error: redefinition of ?struct timespec?
-> >                 struct timespec {
-> >                        ^~~~~~~~
-> >                In file included from /usr/include/sys/select.h:39:0,
-> >                                 from /usr/include/sys/types.h:197,
-> >                                 from /usr/include/stdlib.h:279,
-> >                                 from timestamping.c:2:
-> >                /usr/include/bits/types/struct_timespec.h:8:8: note: originally defined here
-> >                 struct timespec
-> >                        ^~~~~~~~
-> >                In file included from /usr/include/linux/errqueue.h:5:0,
-> >                                 from timestamping.c:6:
-> >                /usr/include/linux/time.h:16:8: error: redefinition of ?struct timeval?
-> >                 struct timeval {
-> >                        ^~~~~~~
-> >                In file included from /usr/include/sys/select.h:37:0,
-> >                                 from /usr/include/sys/types.h:197,
-> >                                 from /usr/include/stdlib.h:279,
-> >                                 from timestamping.c:2:
-> >                /usr/include/bits/types/struct_timeval.h:8:8: note: originally defined here
-> >                 struct timeval
-> >                        ^~~~~~~
-> >
-> >
-> > Can you please advise how to solve it?
-> >
-> > Thanks,
-> > Ran
->
-> The errqueue.h already had the same issue reported previously:
-> https://lore.kernel.org/netdev/CAF=yD-L2ntuH54J_SwN9WcpBMgkV_v0e-Q2Pu2mrQ3+1RozGFQ@mail.gmail.com/
->
-> Earlier when I tested this with kernel selftests such as
-> tools/testing/selftests/networking/timestamping/rxtimestamp(the test
-> was broken to begin with because of  missing include of unistd.h), I
-> was using make.cross to build.
-> This does not put the headers in the right place
-> (obj-$ARCH/usr/include instead of usr/include). Hence, I did not
-> realize that this breaks the inclusion of errqueue.h due to the
-> missing __kernel_timespec definition.
-> I forgot that nobody seems to be using linux/time.h.
->
-> But, if I include guards( #ifndef __KERNEL__) for struct timespec,
-> struct timeval etc for linux/time.h, then we can include it from
-> userspace/ errqueue.h for __kernel_timespec:
->
-> --- a/include/uapi/linux/errqueue.h
-> +++ b/include/uapi/linux/errqueue.h
-> @@ -2,7 +2,7 @@
->  #ifndef _UAPI_LINUX_ERRQUEUE_H
->  #define _UAPI_LINUX_ERRQUEUE_H
->
-> -#include <linux/types.h>
-> +#include <linux/time.h>
->
->  struct sock_extended_err {
->         __u32   ee_errno;
-> diff --git a/include/uapi/linux/time.h b/include/uapi/linux/time.h
-> index a6aca9aaab80..40913d9a5bc8 100644
-> --- a/include/uapi/linux/time.h
-> +++ b/include/uapi/linux/time.h
-> @@ -5,6 +5,8 @@
->  #include <linux/types.h>
->
->
-> +#ifdef __KERNEL__
-> +
->  #ifndef _STRUCT_TIMESPEC
->  #define _STRUCT_TIMESPEC
->  struct timespec {
-> @@ -42,6 +44,8 @@ struct itimerval {
->         struct timeval it_value;        /* current value */
->  };
->
-> +#endif /* __KERNEL__ */
->
-> Arnd,
->
-> I forgot how we plan to include the definition for __kernel_timespec
-> for libc or userspace. Does this seem right to you?
-> Also these changes to errqueue.h needs to be reverted probably as this
-> breaks userspace.
+> Modify __down_read_trylock() to make it generate slightly better code
+> (smaller and maybe a tiny bit faster).
 
-Arnd and I talked about this today morning.
-We agreed that we could introduce a new time_types.h along the lines
-of posix_types.h. We will move all the time definitions that we plan
-to keep in the kernel uapi headers to this header. This header will
-also not have any overlap with the sys/time.h and can be included
-along with it from userspace.
-I will post this patch shortly.
+This looks good, but I would ask you to try one slightly different approach.
 
-This should fix Ran's issue.
+Instead of this:
 
--Deepa
+>        long tmp = atomic_long_read(&sem->count);
+>
+>        while (tmp >= 0) {
+>                if (atomic_long_try_cmpxchg_acquire(&sem->count, &tmp,
+>                                        tmp + RWSEM_ACTIVE_READ_BIAS)) {
+>                        return 1;
+>                }
+>        }
+
+try doing this instead:
+
+        long tmp = 0;
+
+        do {
+                if (atomic_long_try_cmpxchg_acquire(&sem->count, &tmp,
+                                        tmp + RWSEM_ACTIVE_READ_BIAS)) {
+                        return 1;
+        } while (tmp >= 0);
+        return 0;
+
+because especially when it comes to locking, it's usually better to
+just *guess* that the lock is unlocked, than it is to actually read
+from the line to see what the state is.
+
+Often - but certainly not always - the lock is the first access to the
+target cacheline, and assuming the trylock is successful (which I
+think is the case we want to optimize for), we're much better off
+causing that first access to be a read-for-ownership, rather than a
+read-for-sharing.
+
+Because if you first read from the line, and then do a cmpxchg, and if
+the line was not in the cache, your cache coherency protocol will
+generally go through two states: first shared (for the initial read)
+and then exclusive-dirty (for the cmpxchg).
+
+Now, this is obviously very micro-architecture dependent, and in fact
+the microarchitecture could even see the "predict fallthrough to a
+cmpxchg with the same address" and turn the first read into a
+read-for-ownership, but we've done this at some point before, and the
+"guess unlocked" was actually the one that performed better.
+
+Of course, the downside is that it might be worse when the guess is
+incorrect - either because of a nested read lock or due to an actual
+conflict with a write, but on the whole those *should* be the rare
+cases, and not the cases where we necessarily optimize for latency of
+the operation.
+
+Hmm?
+
+                    Linus
