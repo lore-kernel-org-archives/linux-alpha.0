@@ -1,55 +1,59 @@
-From: Meelis Roos <mroos@linux.ee>
-Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
-Date: Fri, 15 Feb 2019 18:59:48 +0200
-Message-ID: <076b8b72-fab0-ea98-f32f-f48949585f9d@linux.ee>
-References: <fb63a4d0-d124-21c8-7395-90b34b57c85a@linux.ee>
- <1c26eab4-3277-9066-5dce-6734ca9abb96@linux.ee>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v3 2/2] locking/rwsem: Optimize down_read_trylock()
+Date: Fri, 15 Feb 2019 18:35:05 +0000
+Message-ID: <20190215183505.GB15084@fuggles.cambridge.arm.com>
+References: <1550089932-6888-1-git-send-email-longman@redhat.com>
+ <1550089932-6888-3-git-send-email-longman@redhat.com>
+ <20190214103333.GH32494@hirez.programming.kicks-ass.net>
+ <9e01d4ef-56df-7af8-a0f5-b49644e298bf@redhat.com>
+ <CAHk-=whKmuranma_HUOKBbDJHGmdWZr9MYW-+cmGzsOiJ2N1Sg@mail.gmail.com>
+ <CAHk-=wi03J1jurebJNHPxGCVss7ARAN+2JuVthEGoEx=qkT4dQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1c26eab4-3277-9066-5dce-6734ca9abb96@linux.ee>
-Content-Language: et-EE
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wi03J1jurebJNHPxGCVss7ARAN+2JuVthEGoEx=qkT4dQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org, Jan Kara <jack@suse.cz>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Waiman Long <longman@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-arm-kernel@lists.infradead.org>, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Linux-sh list <linux-sh@vger.kernel.org>, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch <linux-arch@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Davidlohr Bueso <dave@stgolabs.net>, Andrew Morton <akpm@linux-f>
 
->> I have noticed ext4 filesystem corruption on two of my test alphas with 4.20.0-09062-gd8372ba8ce28.
+On Thu, Feb 14, 2019 at 10:09:44AM -0800, Linus Torvalds wrote:
+> On Thu, Feb 14, 2019 at 9:51 AM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > The arm64 numbers scaled horribly even before, and that's because
+> > there is too much ping-pong, and it's probably because there is no
+> > "stickiness" to the cacheline to the core, and thus adding the extra
+> > loop can make the ping-pong issue even worse because now there is more
+> > of it.
 > 
-> Retried it, still happens with 5.0.0-rc5-00358-gdf3865f8f568 - rsync of emerge --sync just fail with nothing in dmesg.
+> Actually, if it's using the ll/sc, then I don't see why arm64 should
+> even change. It doesn't really even change the pattern: the initial
+> load of the value is just replaced with a "ll" that gets a non-zero
+> value, and then we re-try without even doing the "sc" part.
 
-Finished second round of bisecting, first round did not get me far enough so
-I may still have false "goods" in my bisection history.
+So our cmpxchg() has a prefetch-with-intent-to-modify instruction before the
+'ll' part, which will attempt to grab the line unique the first time round.
+The 'll' also has acquire semantics, so there's the chance for the
+micro-architecture to handle that badly too.
 
-The command I used for bisecting was Gentoos
-emerge --sync.
-that sometimes failed from error -6 or -11 from rsync.
-Usually the file system corruption did not happen and nothing was in dmesg, just file IO error from rsync.
+I think that the problem with the proposed changed change is that whenever a
+reader tries to acquire an rwsem that is already held for read, it will
+always fail the first cmpxchg(), so in this situation the read path is
+considerably slower than before.
 
-The result of the bisection is
-[88dbcbb3a4847f5e6dfeae952d3105497700c128] blkdev: avoid migration stalls for blkdev pages
-
-Is that result relevant for the problem or should I continue bisecting between 4.20.0 and the so far first bad commit?
-
->> On AlphaServer DS10:
->> [10749.664418] EXT4-fs error (device sda2): __ext4_iget:5052: inode #1853093: block 1: comm rsync: invalid block
->>
->> On AlphaServer DS10L:
->> [ 5325.064656] EXT4-fs error (device sda2): htree_dirblock_to_tree:1007: inode #1191951: block 4731728: comm rm: bad entry in directory: directory entry overrun - offset=76, inode=417080, rec_len=61816, name_len=35, size=4096
->> [ 5325.069539] EXT4-fs error (device sda2): htree_dirblock_to_tree:1007: inode #1191951: block 4731728: comm rm: bad entry in directory: directory entry overrun - offset=76, inode=417080, rec_len=61816, name_len=35, size=4096
->> [ 5325.077351] EXT4-fs error (device sda2): ext4_empty_dir:2718: inode #1191951: block 4731728: comm rm: bad entry in directory: directory entry overrun - offset=76, inode=417080, rec_len=61816, name_len=35, size=4096
->>
->> Two other alphas, PC-164 and Eiger, worked fine with the same kernel version (different kernel configs according to hardware).
->>
->> The details:
->> 4.20 worked fine, with gentoo emerge package update after bootup.
->> Next, 4.20.0-06428-g00c569b567c7 worked fine, with gentoo emerge after bootup.
->> Next, 4.20.0-09062-gd8372ba8ce28 booted up fine but rsync and rm during start of gentoo emerge errored out like above.
->>
->> So the corruption _might_ have happened during bootup of previous kernel but it looks more likely that only the latest kernel with blk-mq introduced the problems. mq-deadline is in use on all the alphas.
->>
->> DS10 has Symbios 53C896 SCSI (sym2 driver), DS10L has QLogic ISP1040, so they are different. Working Eiger and PC164 have sym2 based scsi controllers too.
+> End result: exact same "load once, then do ll/sc to update". Just
+> using a slightly different instruction pattern.
 > 
+> But maybe "ll" does something different to the cacheline than a regular "ld"?
+> 
+> Alternatively, the machine you used is using LSE, and the "swp" thing
+> has some horrid behavior when it fails.
 
--- 
-Meelis Roos <mroos@linux.ee>
+Depending on where the data is, the LSE instructions may execute outside of
+the CPU (e.g. in a cache controller) and so could add latency to a failing
+CAS.
+
+Will
