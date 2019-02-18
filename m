@@ -1,26 +1,26 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.9 44/58] alpha: fix page fault handling for r16-r18 targets
-Date: Mon, 18 Feb 2019 14:44:05 +0100
-Message-ID: <20190218133511.966882720@linuxfoundation.org>
-References: <20190218133508.567416115@linuxfoundation.org>
+Subject: [PATCH 4.4 132/143] alpha: fix page fault handling for r16-r18 targets
+Date: Mon, 18 Feb 2019 14:44:20 +0100
+Message-ID: <20190218133533.806037827@linuxfoundation.org>
+References: <20190218133529.099444112@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550498406;
-        bh=JPjnjBh/2P05Mlob42zJ6dm5Hq2g2eHf6WMOKojcBF8=;
+        s=default; t=1550498880;
+        bh=dGBrEl2Qd+13N9I2u+fe8yahnJBIIoS5WFC+CKJi1/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LmB0oTdt0Hf9QpePSy752SXYiw3YVeGcmrc/Swy85CAq/u2JnNRT4HIW2w3UlVWy8
-         4l69ldvpD7DKCppPy4yQlpci9SUyOp0cKB7iZDNPWvHkc5WuPTcWAcOj264s5h4CzQ
-         0IEGJ0qBcTNPpzVmI3GSy45DOXsX/BP4mN0kWntU=
-In-Reply-To: <20190218133508.567416115@linuxfoundation.org>
+        b=04kYyrk1TEaHRtIDbq0Qlyomeh6rxJD3qHsn81RhoHF7j2WI8uRoust7LoWjufEfZ
+         93648IuUxLVWuMmPoN8E+OcdxQOfUrJWNQRoho00C36NsOH4x71EqBS7dafMW//7Va
+         vb3mfxssiBBwipJMzIkhUv4qUVFHu+lDiHlzsSJ4=
+In-Reply-To: <20190218133529.099444112@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Sergei Trofimovich <slyfox@gentoo.org>, Matt Turner <mattst88@gmail.com>, "Dmitry V. Levin" <ldv@altlinux.org>
 
-4.9-stable review patch.  If anyone has any objections, please let me know.
+4.4-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
