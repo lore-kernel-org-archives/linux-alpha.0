@@ -1,33 +1,141 @@
-From: Meelis Roos <mroos@linux.ee>
-Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
-Date: Mon, 18 Feb 2019 14:37:24 +0200
-Message-ID: <7ffcadd5-47b3-e44a-bd18-7e9f1a636f8d@linux.ee>
-References: <fb63a4d0-d124-21c8-7395-90b34b57c85a@linux.ee>
- <1c26eab4-3277-9066-5dce-6734ca9abb96@linux.ee>
- <076b8b72-fab0-ea98-f32f-f48949585f9d@linux.ee>
- <20190216174536.GC23000@mit.edu>
- <e175b885-082a-97c1-a0be-999040a06443@linux.ee>
- <20190218120209.GC20919@quack2.suse.cz>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.20 73/92] alpha: fix page fault handling for r16-r18 targets
+Date: Mon, 18 Feb 2019 14:43:16 +0100
+Message-ID: <20190218133501.704873176@linuxfoundation.org>
+References: <20190218133454.668268457@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190218120209.GC20919@quack2.suse.cz>
-Content-Language: et-EE
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <stable-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1550497751;
+        bh=9XjZLCxws4ohLujiDQX6MmxM/G0oeat23eMG+qtqthM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FUJF0USy3HstlOf0XxHXUp2jA31dqwmeVa9Jta7Y0Z8fMeNXchSG0B4ijNnDzr9US
+         7PNNpY8rIRLq8XbMdwOzPFepTPceUiEBgKHWLjLMOWk+N1Ig+O0P+Fuo034jdJuz0v
+         T9nzHJPDkKN6/qCiy9VkBTTXeDVBPubYVxeotxCo=
+In-Reply-To: <20190218133454.668268457@linuxfoundation.org>
+Sender: stable-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Jan Kara <jack@suse.cz>
-Cc: "Theodore Y. Ts'o" <tytso@mit.edu>, linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Sergei Trofimovich <slyfox@gentoo.org>, Matt Turner <mattst88@gmail.com>, "Dmitry V. Levin" <ldv@altlinux.org>
 
-> Hum, weird. I have hard time understanding how that change could be causing
-> fs corruption on Aplha but OTOH it is not completely unthinkable. With this
-> commit we may migrate some block device pages we were not able to migrate
-> previously and that could be causing some unexpected issue. I'll look into
-> this.
+4.20-stable review patch.  If anyone has any objections, please let me know.
 
-To make things more interesting, it does not happen on any alpha but only one subarch
-so far: https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1889207.html
-is my original bug report.
+------------------
 
--- 
-Meelis Roos <mroos@linux.ee>
+From: Sergei Trofimovich <slyfox@gentoo.org>
+
+commit 491af60ffb848b59e82f7c9145833222e0bf27a5 upstream.
+
+Fix page fault handling code to fixup r16-r18 registers.
+Before the patch code had off-by-two registers bug.
+This bug caused overwriting of ps,pc,gp registers instead
+of fixing intended r16,r17,r18 (see `struct pt_regs`).
+
+More details:
+
+Initially Dmitry noticed a kernel bug as a failure
+on strace test suite. Test passes unmapped userspace
+pointer to io_submit:
+
+```c
+    #include <err.h>
+    #include <unistd.h>
+    #include <sys/mman.h>
+    #include <asm/unistd.h>
+    int main(void)
+    {
+        unsigned long ctx = 0;
+        if (syscall(__NR_io_setup, 1, &ctx))
+            err(1, "io_setup");
+        const size_t page_size = sysconf(_SC_PAGESIZE);
+        const size_t size = page_size * 2;
+        void *ptr = mmap(NULL, size, PROT_READ | PROT_WRITE,
+                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        if (MAP_FAILED == ptr)
+            err(1, "mmap(%zu)", size);
+        if (munmap(ptr, size))
+            err(1, "munmap");
+        syscall(__NR_io_submit, ctx, 1, ptr + page_size);
+        syscall(__NR_io_destroy, ctx);
+        return 0;
+    }
+```
+
+Running this test causes kernel to crash when handling page fault:
+
+```
+    Unable to handle kernel paging request at virtual address ffffffffffff9468
+    CPU 3
+    aio(26027): Oops 0
+    pc = [<fffffc00004eddf8>]  ra = [<fffffc00004edd5c>]  ps = 0000    Not tainted
+    pc is at sys_io_submit+0x108/0x200
+    ra is at sys_io_submit+0x6c/0x200
+    v0 = fffffc00c58e6300  t0 = fffffffffffffff2  t1 = 000002000025e000
+    t2 = fffffc01f159fef8  t3 = fffffc0001009640  t4 = fffffc0000e0f6e0
+    t5 = 0000020001002e9e  t6 = 4c41564e49452031  t7 = fffffc01f159c000
+    s0 = 0000000000000002  s1 = 000002000025e000  s2 = 0000000000000000
+    s3 = 0000000000000000  s4 = 0000000000000000  s5 = fffffffffffffff2
+    s6 = fffffc00c58e6300
+    a0 = fffffc00c58e6300  a1 = 0000000000000000  a2 = 000002000025e000
+    a3 = 00000200001ac260  a4 = 00000200001ac1e8  a5 = 0000000000000001
+    t8 = 0000000000000008  t9 = 000000011f8bce30  t10= 00000200001ac440
+    t11= 0000000000000000  pv = fffffc00006fd320  at = 0000000000000000
+    gp = 0000000000000000  sp = 00000000265fd174
+    Disabling lock debugging due to kernel taint
+    Trace:
+    [<fffffc0000311404>] entSys+0xa4/0xc0
+```
+
+Here `gp` has invalid value. `gp is s overwritten by a fixup for the
+following page fault handler in `io_submit` syscall handler:
+
+```
+    __se_sys_io_submit
+    ...
+        ldq     a1,0(t1)
+        bne     t0,4280 <__se_sys_io_submit+0x180>
+```
+
+After a page fault `t0` should contain -EFALUT and `a1` is 0.
+Instead `gp` was overwritten in place of `a1`.
+
+This happens due to a off-by-two bug in `dpf_reg()` for `r16-r18`
+(aka `a0-a2`).
+
+I think the bug went unnoticed for a long time as `gp` is one
+of scratch registers. Any kernel function call would re-calculate `gp`.
+
+Dmitry tracked down the bug origin back to 2.1.32 kernel version
+where trap_a{0,1,2} fields were inserted into struct pt_regs.
+And even before that `dpf_reg()` contained off-by-one error.
+
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Reported-and-reviewed-by: "Dmitry V. Levin" <ldv@altlinux.org>
+Cc: stable@vger.kernel.org # v2.1.32+
+Bug: https://bugs.gentoo.org/672040
+Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/alpha/mm/fault.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -78,7 +78,7 @@ __load_new_mm_context(struct mm_struct *
+ /* Macro for exception fixup code to access integer registers.  */
+ #define dpf_reg(r)							\
+ 	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
+-				 (r) <= 18 ? (r)+8 : (r)-10])
++				 (r) <= 18 ? (r)+10 : (r)-10])
+ 
+ asmlinkage void
+ do_page_fault(unsigned long address, unsigned long mmcsr,
+
+
