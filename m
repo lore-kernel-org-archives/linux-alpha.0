@@ -1,141 +1,63 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.19 70/85] alpha: fix page fault handling for r16-r18 targets
-Date: Mon, 18 Feb 2019 14:43:36 +0100
-Message-ID: <20190218133506.674821441@linuxfoundation.org>
-References: <20190218133459.758004711@linuxfoundation.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v4 0/3] locking/rwsem: Rwsem rearchitecture part 0
+Date: Mon, 18 Feb 2019 14:58:20 +0000
+Message-ID: <20190218145820.GA16091@fuggles.cambridge.arm.com>
+References: <1550095217-12047-1-git-send-email-longman@redhat.com>
+ <20190214103715.GI32494@hirez.programming.kicks-ass.net>
+ <20190215184056.GC15084@fuggles.cambridge.arm.com>
+ <a45d8b68-5623-d6fe-8080-072994f7625e@redhat.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550497976;
-        bh=KFt+RsToke8sPxa/jQt/k4jkfjFj1us4Gi5swTKL2Dg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NfSNTsjRF888zMnva6PPP3gDiTWGEh1FgOTH1eTAHRq+Wrig9yJqH1XNnhNnsCWZJ
-         ma1prPdu7V5j0iFPud3Rk0meytUW36zHh5G3Rw4s+yZLgvRwoq5UsLAa0myJOwzpmT
-         i3IHhxAVy2kQ0sY3knkmEPdmgvHmjQm0lIkXTV4o=
-In-Reply-To: <20190218133459.758004711@linuxfoundation.org>
+Content-Disposition: inline
+In-Reply-To: <a45d8b68-5623-d6fe-8080-072994f7625e@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Sergei Trofimovich <slyfox@gentoo.org>, Matt Turner <mattst88@gmail.com>, "Dmitry V. Levin" <ldv@altlinux.org>
+Content-Transfer-Encoding: 7bit
+To: Waiman Long <longman@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, uclinux-h8-devel@lists.sourceforge.jp, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, nios2-dev@lists.rocketboards.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Borislav
 
-4.19-stable review patch.  If anyone has any objections, please let me know.
+On Fri, Feb 15, 2019 at 01:58:34PM -0500, Waiman Long wrote:
+> On 02/15/2019 01:40 PM, Will Deacon wrote:
+> > On Thu, Feb 14, 2019 at 11:37:15AM +0100, Peter Zijlstra wrote:
+> >> On Wed, Feb 13, 2019 at 05:00:14PM -0500, Waiman Long wrote:
+> >>> v4:
+> >>>  - Remove rwsem-spinlock.c and make all archs use rwsem-xadd.c.
+> >>>
+> >>> v3:
+> >>>  - Optimize __down_read_trylock() for the uncontended case as suggested
+> >>>    by Linus.
+> >>>
+> >>> v2:
+> >>>  - Add patch 2 to optimize __down_read_trylock() as suggested by PeterZ.
+> >>>  - Update performance test data in patch 1.
+> >>>
+> >>> The goal of this patchset is to remove the architecture specific files
+> >>> for rwsem-xadd to make it easer to add enhancements in the later rwsem
+> >>> patches. It also removes the legacy rwsem-spinlock.c file and make all
+> >>> the architectures use one single implementation of rwsem - rwsem-xadd.c.
+> >>>
+> >>> Waiman Long (3):
+> >>>   locking/rwsem: Remove arch specific rwsem files
+> >>>   locking/rwsem: Remove rwsem-spinlock.c & use rwsem-xadd.c for all
+> >>>     archs
+> >>>   locking/rwsem: Optimize down_read_trylock()
+> >> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> >>
+> >> with the caveat that I'm happy to exchange patch 3 back to my earlier
+> >> suggestion in case Will expesses concerns wrt the ARM64 performance of
+> >> Linus' suggestion.
+> > Right, the current proposal doesn't work well for us, unfortunately. Which
+> > was your earlier suggestion?
+> >
+> > Will
+> 
+> In my posting yesterday, I showed that most of the trylocks done were
+> actually uncontended. Assuming that pattern hold for the most of the
+> workloads, it will not that bad after all.
 
-------------------
+That's fair enough; if you're going to sit in a tight trylock() loop like the
+benchmark does, then you're much better off just calling lock() if you care
+at all about scalability.
 
-From: Sergei Trofimovich <slyfox@gentoo.org>
-
-commit 491af60ffb848b59e82f7c9145833222e0bf27a5 upstream.
-
-Fix page fault handling code to fixup r16-r18 registers.
-Before the patch code had off-by-two registers bug.
-This bug caused overwriting of ps,pc,gp registers instead
-of fixing intended r16,r17,r18 (see `struct pt_regs`).
-
-More details:
-
-Initially Dmitry noticed a kernel bug as a failure
-on strace test suite. Test passes unmapped userspace
-pointer to io_submit:
-
-```c
-    #include <err.h>
-    #include <unistd.h>
-    #include <sys/mman.h>
-    #include <asm/unistd.h>
-    int main(void)
-    {
-        unsigned long ctx = 0;
-        if (syscall(__NR_io_setup, 1, &ctx))
-            err(1, "io_setup");
-        const size_t page_size = sysconf(_SC_PAGESIZE);
-        const size_t size = page_size * 2;
-        void *ptr = mmap(NULL, size, PROT_READ | PROT_WRITE,
-                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-        if (MAP_FAILED == ptr)
-            err(1, "mmap(%zu)", size);
-        if (munmap(ptr, size))
-            err(1, "munmap");
-        syscall(__NR_io_submit, ctx, 1, ptr + page_size);
-        syscall(__NR_io_destroy, ctx);
-        return 0;
-    }
-```
-
-Running this test causes kernel to crash when handling page fault:
-
-```
-    Unable to handle kernel paging request at virtual address ffffffffffff9468
-    CPU 3
-    aio(26027): Oops 0
-    pc = [<fffffc00004eddf8>]  ra = [<fffffc00004edd5c>]  ps = 0000    Not tainted
-    pc is at sys_io_submit+0x108/0x200
-    ra is at sys_io_submit+0x6c/0x200
-    v0 = fffffc00c58e6300  t0 = fffffffffffffff2  t1 = 000002000025e000
-    t2 = fffffc01f159fef8  t3 = fffffc0001009640  t4 = fffffc0000e0f6e0
-    t5 = 0000020001002e9e  t6 = 4c41564e49452031  t7 = fffffc01f159c000
-    s0 = 0000000000000002  s1 = 000002000025e000  s2 = 0000000000000000
-    s3 = 0000000000000000  s4 = 0000000000000000  s5 = fffffffffffffff2
-    s6 = fffffc00c58e6300
-    a0 = fffffc00c58e6300  a1 = 0000000000000000  a2 = 000002000025e000
-    a3 = 00000200001ac260  a4 = 00000200001ac1e8  a5 = 0000000000000001
-    t8 = 0000000000000008  t9 = 000000011f8bce30  t10= 00000200001ac440
-    t11= 0000000000000000  pv = fffffc00006fd320  at = 0000000000000000
-    gp = 0000000000000000  sp = 00000000265fd174
-    Disabling lock debugging due to kernel taint
-    Trace:
-    [<fffffc0000311404>] entSys+0xa4/0xc0
-```
-
-Here `gp` has invalid value. `gp is s overwritten by a fixup for the
-following page fault handler in `io_submit` syscall handler:
-
-```
-    __se_sys_io_submit
-    ...
-        ldq     a1,0(t1)
-        bne     t0,4280 <__se_sys_io_submit+0x180>
-```
-
-After a page fault `t0` should contain -EFALUT and `a1` is 0.
-Instead `gp` was overwritten in place of `a1`.
-
-This happens due to a off-by-two bug in `dpf_reg()` for `r16-r18`
-(aka `a0-a2`).
-
-I think the bug went unnoticed for a long time as `gp` is one
-of scratch registers. Any kernel function call would re-calculate `gp`.
-
-Dmitry tracked down the bug origin back to 2.1.32 kernel version
-where trap_a{0,1,2} fields were inserted into struct pt_regs.
-And even before that `dpf_reg()` contained off-by-one error.
-
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Reported-and-reviewed-by: "Dmitry V. Levin" <ldv@altlinux.org>
-Cc: stable@vger.kernel.org # v2.1.32+
-Bug: https://bugs.gentoo.org/672040
-Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
-Signed-off-by: Matt Turner <mattst88@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- arch/alpha/mm/fault.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -78,7 +78,7 @@ __load_new_mm_context(struct mm_struct *
- /* Macro for exception fixup code to access integer registers.  */
- #define dpf_reg(r)							\
- 	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
--				 (r) <= 18 ? (r)+8 : (r)-10])
-+				 (r) <= 18 ? (r)+10 : (r)-10])
- 
- asmlinkage void
- do_page_fault(unsigned long address, unsigned long mmcsr,
-
-
+Will
