@@ -1,26 +1,26 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.20 73/92] alpha: fix page fault handling for r16-r18 targets
-Date: Mon, 18 Feb 2019 14:43:16 +0100
-Message-ID: <20190218133501.704873176@linuxfoundation.org>
-References: <20190218133454.668268457@linuxfoundation.org>
+Subject: [PATCH 4.9 44/58] alpha: fix page fault handling for r16-r18 targets
+Date: Mon, 18 Feb 2019 14:44:05 +0100
+Message-ID: <20190218133511.966882720@linuxfoundation.org>
+References: <20190218133508.567416115@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550497751;
-        bh=9XjZLCxws4ohLujiDQX6MmxM/G0oeat23eMG+qtqthM=;
+        s=default; t=1550498406;
+        bh=JPjnjBh/2P05Mlob42zJ6dm5Hq2g2eHf6WMOKojcBF8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FUJF0USy3HstlOf0XxHXUp2jA31dqwmeVa9Jta7Y0Z8fMeNXchSG0B4ijNnDzr9US
-         7PNNpY8rIRLq8XbMdwOzPFepTPceUiEBgKHWLjLMOWk+N1Ig+O0P+Fuo034jdJuz0v
-         T9nzHJPDkKN6/qCiy9VkBTTXeDVBPubYVxeotxCo=
-In-Reply-To: <20190218133454.668268457@linuxfoundation.org>
-Sender: stable-owner@vger.kernel.org
+        b=LmB0oTdt0Hf9QpePSy752SXYiw3YVeGcmrc/Swy85CAq/u2JnNRT4HIW2w3UlVWy8
+         4l69ldvpD7DKCppPy4yQlpci9SUyOp0cKB7iZDNPWvHkc5WuPTcWAcOj264s5h4CzQ
+         0IEGJ0qBcTNPpzVmI3GSy45DOXsX/BP4mN0kWntU=
+In-Reply-To: <20190218133508.567416115@linuxfoundation.org>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Sergei Trofimovich <slyfox@gentoo.org>, Matt Turner <mattst88@gmail.com>, "Dmitry V. Levin" <ldv@altlinux.org>
 
-4.20-stable review patch.  If anyone has any objections, please let me know.
+4.9-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -128,7 +128,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/arch/alpha/mm/fault.c
 +++ b/arch/alpha/mm/fault.c
-@@ -78,7 +78,7 @@ __load_new_mm_context(struct mm_struct *
+@@ -77,7 +77,7 @@ __load_new_mm_context(struct mm_struct *
  /* Macro for exception fixup code to access integer registers.  */
  #define dpf_reg(r)							\
  	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
