@@ -1,26 +1,26 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.14 50/62] alpha: fix page fault handling for r16-r18 targets
-Date: Mon, 18 Feb 2019 14:43:56 +0100
-Message-ID: <20190218133510.080169310@linuxfoundation.org>
-References: <20190218133505.801423074@linuxfoundation.org>
+Subject: [PATCH 4.19 70/85] alpha: fix page fault handling for r16-r18 targets
+Date: Mon, 18 Feb 2019 14:43:36 +0100
+Message-ID: <20190218133506.674821441@linuxfoundation.org>
+References: <20190218133459.758004711@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550498235;
-        bh=7U4/vqoDvWEEh5tnNp3TTYMLiBX1Vh/dtCSIYLsATQU=;
+        s=default; t=1550497976;
+        bh=KFt+RsToke8sPxa/jQt/k4jkfjFj1us4Gi5swTKL2Dg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AAEJmn2G2wS1+jNN5yFMr1YVM3ssRfqCc1F54Z8dIk6VB8jgP07QHdGdZlVhtN0og
-         nXIs2Jl9H9tblWjhzdzxTaiylNFTzo/vZDnFGBOapEr/GB+wnsU8r9woaiFPovSDsO
-         riuEk1L7ULNNR60gIIJRlqZjNJnwlc1rBt8adQ+Q=
-In-Reply-To: <20190218133505.801423074@linuxfoundation.org>
+        b=NfSNTsjRF888zMnva6PPP3gDiTWGEh1FgOTH1eTAHRq+Wrig9yJqH1XNnhNnsCWZJ
+         ma1prPdu7V5j0iFPud3Rk0meytUW36zHh5G3Rw4s+yZLgvRwoq5UsLAa0myJOwzpmT
+         i3IHhxAVy2kQ0sY3knkmEPdmgvHmjQm0lIkXTV4o=
+In-Reply-To: <20190218133459.758004711@linuxfoundation.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Sergei Trofimovich <slyfox@gentoo.org>, Matt Turner <mattst88@gmail.com>, "Dmitry V. Levin" <ldv@altlinux.org>
 
-4.14-stable review patch.  If anyone has any objections, please let me know.
+4.19-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
