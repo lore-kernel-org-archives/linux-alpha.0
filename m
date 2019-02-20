@@ -1,55 +1,111 @@
-From: Jan Kara <jack@suse.cz>
-Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
-Date: Wed, 20 Feb 2019 10:48:13 +0100
-Message-ID: <20190220094813.GA27474@quack2.suse.cz>
-References: <fb63a4d0-d124-21c8-7395-90b34b57c85a@linux.ee>
- <1c26eab4-3277-9066-5dce-6734ca9abb96@linux.ee>
- <076b8b72-fab0-ea98-f32f-f48949585f9d@linux.ee>
- <20190216174536.GC23000@mit.edu>
- <e175b885-082a-97c1-a0be-999040a06443@linux.ee>
- <20190218120209.GC20919@quack2.suse.cz>
- <4e015688-8633-d1a0-308b-ba2a78600544@linux.ee>
- <20190219132026.GA28293@quack2.suse.cz>
- <20190219144454.GB12668@bombadil.infradead.org>
- <d444f653-9b99-5e9b-3b47-97f824c29b0e@linux.ee>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v4 1/3] locking/rwsem: Remove arch specific rwsem files
+Date: Wed, 20 Feb 2019 14:47:17 +0000
+Message-ID: <20190220144717.GI7523@fuggles.cambridge.arm.com>
+References: <1550095217-12047-1-git-send-email-longman@redhat.com>
+ <1550095217-12047-2-git-send-email-longman@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <d444f653-9b99-5e9b-3b47-97f824c29b0e@linux.ee>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Meelis Roos <mroos@linux.ee>
-Cc: Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>, "Theodore Y. Ts'o" <tytso@mit.edu>, linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org, linux-mm@kvack.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=/xRyYdsNgbGotPshTpkl2Kp2IRgvnE9xsKwIWWkspIU=; b=hlWxS0OO2NQ/s2
+	9UqRSO/e50sZ8Zu0LqDavgWAe08+jaGz4+l1kqsteWgDp0YjiAdgvCZDPAkBMOGykYw6ZgLY/8/Bd
+	FtuSbPyNfe5Q7rl0dYI1uhHntaH/lMvXzTmWfr4JtoePKrGq2uc/DCIZl8MRkCUVy8ZIU0EnvkiPj
+	oq5SfxKexqALmxgKbgTn39qPGw02BztyPqXuwixou+GkIZZSc/EoNYt6hXQE10kh5irBJacNmprHn
+	gberGD5BVI3FYOTFBvWTPzGUgRjSL5lTrTsyugIAqjTrefSQv45kILsfM6pHnbnNohBvpUTj95zds
+	ICyCkZZWAjvedyH7qvBg==;
+Content-Disposition: inline
+In-Reply-To: <1550095217-12047-2-git-send-email-longman@redhat.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Waiman Long <longman@redhat.com>
+Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, linux-mips@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Davidlohr Bueso <dave@stgolabs.net>, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, Ingo Molnar <mingo@redhat.com>, uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>, linux-um@lists.infradead.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Tim Chen <tim.c.chen@linux.intel.com>, linux-parisc@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-alpha@vger
 
-On Wed 20-02-19 08:31:05, Meelis Roos wrote:
-> > Could
-> > https://lore.kernel.org/linux-mm/20190219123212.29838-1-larper@axis.com/T/#u
-> > be relevant?
+On Wed, Feb 13, 2019 at 05:00:15PM -0500, Waiman Long wrote:
+> As the generic rwsem-xadd code is using the appropriate acquire and
+> release versions of the atomic operations, the arch specific rwsem.h
+> files will not be that much faster than the generic code as long as the
+> atomic functions are properly implemented. So we can remove those arch
+> specific rwsem.h and stop building asm/rwsem.h to reduce maintenance
+> effort.
 > 
-> Tried it, still broken.
-
-OK, I didn't put too much hope into this patch as you see filesystem
-metadata corruption so icache/dcache coherency issues seemed unlikely.
-Still good that you've tried so that we are sure.
-
-> I wrote:
+> Currently, only x86, alpha and ia64 have implemented architecture
+> specific fast paths. I don't have access to alpha and ia64 systems for
+> testing, but they are legacy systems that are not likely to be updated
+> to the latest kernel anyway.
 > 
-> > But my kernel config had memory compaction (that turned on page migration) and
-> > bounce buffers. I do not remember why I found them necessary but I will try
-> > without them.
+> By using a rwsem microbenchmark, the total locking rates on a 4-socket
+> 56-core 112-thread x86-64 system before and after the patch were as
+> follows (mixed means equal # of read and write locks):
 > 
-> First, I found out that both the problematic alphas had memory compaction and
-> page migration and bounce buffers turned on, and working alphas had them off.
+>                       Before Patch              After Patch
+>    # of Threads  wlock   rlock   mixed     wlock   rlock   mixed
+>    ------------  -----   -----   -----     -----   -----   -----
+>         1        29,201  30,143  29,458    28,615  30,172  29,201
+>         2         6,807  13,299   1,171     7,725  15,025   1,804
+>         4         6,504  12,755   1,520     7,127  14,286   1,345
+>         8         6,762  13,412     764     6,826  13,652     726
+>        16         6,693  15,408     662     6,599  15,938     626
+>        32         6,145  15,286     496     5,549  15,487     511
+>        64         5,812  15,495      60     5,858  15,572      60
 > 
-> Next, turing off these options makes the problematic alphas work.
+> There were some run-to-run variations for the multi-thread tests. For
+> x86-64, using the generic C code fast path seems to be a little bit
+> faster than the assembly version with low lock contention.  Looking at
+> the assembly version of the fast paths, there are assembly to/from C
+> code wrappers that save and restore all the callee-clobbered registers
+> (7 registers on x86-64). The assembly generated from the generic C
+> code doesn't need to do that. That may explain the slight performance
+> gain here.
+> 
+> The generic asm rwsem.h can also be merged into kernel/locking/rwsem.h
+> with no code change as no other code other than those under
+> kernel/locking needs to access the internal rwsem macros and functions.
+> 
+> Signed-off-by: Waiman Long <longman@redhat.com>
+> ---
+>  MAINTAINERS                     |   1 -
+>  arch/alpha/include/asm/rwsem.h  | 211 -----------------------------------
+>  arch/arm/include/asm/Kbuild     |   1 -
+>  arch/arm64/include/asm/Kbuild   |   1 -
+>  arch/hexagon/include/asm/Kbuild |   1 -
+>  arch/ia64/include/asm/rwsem.h   | 172 -----------------------------
+>  arch/powerpc/include/asm/Kbuild |   1 -
+>  arch/s390/include/asm/Kbuild    |   1 -
+>  arch/sh/include/asm/Kbuild      |   1 -
+>  arch/sparc/include/asm/Kbuild   |   1 -
+>  arch/x86/include/asm/rwsem.h    | 237 ----------------------------------------
+>  arch/x86/lib/Makefile           |   1 -
+>  arch/x86/lib/rwsem.S            | 156 --------------------------
+>  arch/x86/um/Makefile            |   1 -
+>  arch/xtensa/include/asm/Kbuild  |   1 -
+>  include/asm-generic/rwsem.h     | 140 ------------------------
+>  include/linux/rwsem.h           |   4 +-
+>  kernel/locking/percpu-rwsem.c   |   2 +
+>  kernel/locking/rwsem.h          | 130 ++++++++++++++++++++++
+>  19 files changed, 133 insertions(+), 930 deletions(-)
+>  delete mode 100644 arch/alpha/include/asm/rwsem.h
+>  delete mode 100644 arch/ia64/include/asm/rwsem.h
+>  delete mode 100644 arch/x86/include/asm/rwsem.h
+>  delete mode 100644 arch/x86/lib/rwsem.S
+>  delete mode 100644 include/asm-generic/rwsem.h
 
-OK, thanks for testing! Can you narrow down whether the problem is due to
-CONFIG_BOUNCE or CONFIG_MIGRATION + CONFIG_COMPACTION? These are two
-completely different things so knowing where to look will help. Thanks!
+Looks like a nice cleanup, thanks:
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Acked-by: Will Deacon <will.deacon@arm.com>
+
+Will
