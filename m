@@ -1,81 +1,42 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v4 2/3] locking/rwsem: Remove rwsem-spinlock.c & use
- rwsem-xadd.c for all archs
-Date: Wed, 20 Feb 2019 14:47:56 +0000
-Message-ID: <20190220144756.GK7523@fuggles.cambridge.arm.com>
-References: <1550095217-12047-1-git-send-email-longman@redhat.com>
- <1550095217-12047-3-git-send-email-longman@redhat.com>
+From: Meelis Roos <mroos@linux.ee>
+Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
+Date: Thu, 21 Feb 2019 01:23:50 +0200
+Message-ID: <2381c264-92f5-db43-b6a5-8e00bd881fef@linux.ee>
+References: <fb63a4d0-d124-21c8-7395-90b34b57c85a@linux.ee>
+ <1c26eab4-3277-9066-5dce-6734ca9abb96@linux.ee>
+ <076b8b72-fab0-ea98-f32f-f48949585f9d@linux.ee>
+ <20190216174536.GC23000@mit.edu>
+ <e175b885-082a-97c1-a0be-999040a06443@linux.ee>
+ <20190218120209.GC20919@quack2.suse.cz>
+ <4e015688-8633-d1a0-308b-ba2a78600544@linux.ee>
+ <20190219132026.GA28293@quack2.suse.cz>
+ <20190219144454.GB12668@bombadil.infradead.org>
+ <d444f653-9b99-5e9b-3b47-97f824c29b0e@linux.ee>
+ <20190220094813.GA27474@quack2.suse.cz>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1550095217-12047-3-git-send-email-longman@redhat.com>
+In-Reply-To: <20190220094813.GA27474@quack2.suse.cz>
+Content-Language: et-EE
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Waiman Long <longman@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, uclinux-h8-devel@lists.sourceforge.jp, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, nios2-dev@lists.rocketboards.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, Borislav
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Jan Kara <jack@suse.cz>
+Cc: Matthew Wilcox <willy@infradead.org>, "Theodore Y. Ts'o" <tytso@mit.edu>, linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org, linux-mm@kvack.org
 
-On Wed, Feb 13, 2019 at 05:00:16PM -0500, Waiman Long wrote:
-> Currently, we have two different implementation of rwsem:
->  1) CONFIG_RWSEM_GENERIC_SPINLOCK (rwsem-spinlock.c)
->  2) CONFIG_RWSEM_XCHGADD_ALGORITHM (rwsem-xadd.c)
+>> First, I found out that both the problematic alphas had memory compaction and
+>> page migration and bounce buffers turned on, and working alphas had them off.
+>>
+>> Next, turing off these options makes the problematic alphas work.
 > 
-> As we are going to use a single generic implementation for rwsem-xadd.c
-> and no architecture-specific code will be needed, there is no point
-> in keeping two different implementations of rwsem. In most cases, the
-> performance of rwsem-spinlock.c will be worse. It also doesn't get all
-> the performance tuning and optimizations that had been implemented in
-> rwsem-xadd.c over the years.
-> 
-> For simplication, we are going to remove rwsem-spinlock.c and make all
-> architectures use a single implementation of rwsem - rwsem-xadd.c.
-> 
-> All references to RWSEM_GENERIC_SPINLOCK and RWSEM_XCHGADD_ALGORITHM
-> in the code are removed.
-> 
-> Suggested-by: Peter Zijlstra <peterz@infradead.org>
-> Signed-off-by: Waiman Long <longman@redhat.com>
-> ---
->  arch/alpha/Kconfig              |   7 -
->  arch/arc/Kconfig                |   3 -
->  arch/arm/Kconfig                |   4 -
->  arch/arm64/Kconfig              |   3 -
->  arch/c6x/Kconfig                |   3 -
->  arch/csky/Kconfig               |   3 -
->  arch/h8300/Kconfig              |   3 -
->  arch/hexagon/Kconfig            |   6 -
->  arch/ia64/Kconfig               |   4 -
->  arch/m68k/Kconfig               |   7 -
->  arch/microblaze/Kconfig         |   6 -
->  arch/mips/Kconfig               |   7 -
->  arch/nds32/Kconfig              |   3 -
->  arch/nios2/Kconfig              |   3 -
->  arch/openrisc/Kconfig           |   6 -
->  arch/parisc/Kconfig             |   6 -
->  arch/powerpc/Kconfig            |   7 -
->  arch/riscv/Kconfig              |   3 -
->  arch/s390/Kconfig               |   6 -
->  arch/sh/Kconfig                 |   6 -
->  arch/sparc/Kconfig              |   8 -
->  arch/unicore32/Kconfig          |   6 -
->  arch/x86/Kconfig                |   3 -
->  arch/x86/um/Kconfig             |   6 -
->  arch/xtensa/Kconfig             |   3 -
->  include/linux/rwsem-spinlock.h  |  47 ------
->  include/linux/rwsem.h           |   5 -
->  kernel/Kconfig.locks            |   2 +-
->  kernel/locking/Makefile         |   4 +-
->  kernel/locking/rwsem-spinlock.c | 339 ----------------------------------------
->  kernel/locking/rwsem.h          |   3 -
->  31 files changed, 2 insertions(+), 520 deletions(-)
->  delete mode 100644 include/linux/rwsem-spinlock.h
->  delete mode 100644 kernel/locking/rwsem-spinlock.c
+> OK, thanks for testing! Can you narrow down whether the problem is due to
+> CONFIG_BOUNCE or CONFIG_MIGRATION + CONFIG_COMPACTION? These are two
+> completely different things so knowing where to look will help. Thanks!
 
-Another nice cleanup, and it looks like the optimistic spinning in the xadd
-implementation is predicated on ARCH_SUPPORTS_ATOMIC_RMW, so we're all good
-there too.
+Tested both.
 
-Acked-by: Will Deacon <will.deacon@arm.com>
+Just CONFIG_MIGRATION + CONFIG_COMPACTION breaks the alpha.
+Just CONFIG_BOUNCE has no effect in 5 tries.
 
-Will
+-- 
+Meelis Roos
