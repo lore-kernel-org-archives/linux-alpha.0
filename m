@@ -1,52 +1,54 @@
-From: Steven Price <steven.price@arm.com>
-Subject: [PATCH v3 01/34] alpha: mm: Add p?d_large() definitions
-Date: Wed, 27 Feb 2019 17:05:35 +0000
-Message-ID: <20190227170608.27963-2-steven.price@arm.com>
-References: <20190227170608.27963-1-steven.price@arm.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH] x86: Deprecate a.out support
+Date: Tue, 5 Mar 2019 19:18:08 +0100
+Message-ID: <20190305181808.GH8256@zn.tnic>
+References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
+ <20190305091904.GB8256@zn.tnic>
+ <20190305122218.GD13380@bombadil.infradead.org>
+ <20190305134347.4be2449c@alans-desktop>
+ <20190305145717.GD8256@zn.tnic>
+ <CAHk-=wi2E4kugAW7BQwNSVwYHOr=B_9EgzBRMpQ2+1dxAqydDg@mail.gmail.com>
+ <20190305173134.GE8256@zn.tnic>
+ <CAHk-=wg0bY=RFhD4NW9x++fC0bME=_-9xM3kexGGM3gefHQTyQ@mail.gmail.com>
+ <20190305181138.GG8256@zn.tnic>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190227170608.27963-1-steven.price@arm.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1551809885;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=zSTufVaUCZI5YOnwsLc4xAHOFWxe5Am/nC0+VF8ZJDw=;
+        b=I+Ef0zg6AYvh7HiH9FNlmTq/5+6zqnWoBmW8rGMIA3/ujnurhJDKrY9sfAxajzzKrGgudJ
+        dUNYdGDavT7f3UmdEp0DiYVcovDE06ycrPDjizgfEUsX/dS9X/Hia1keUuyytII+F8YpAI
+        Vm8DiUKIS4V0PQEON/i+ev0/eO3yhoM=
+Content-Disposition: inline
+In-Reply-To: <20190305181138.GG8256@zn.tnic>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-mm@kvack.org
-Cc: Steven Price <steven.price@arm.com>, Andy Lutomirski <luto@kernel.org>, Ard Biesheuvel <ard.biesheuvel@linaro.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, Ingo Molnar <mingo@redhat.com>, James Morse <james.morse@arm.com>, =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will.deacon@arm.com>, x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Mark Rutland <Mark.Rutland@arm.com>, "Liang, Kan" <kan.liang@linux.intel.com>, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>
+Content-Transfer-Encoding: 7bit
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org
 
-walk_page_range() is going to be allowed to walk page tables other than
-those of user space. For this it needs to know when it has reached a
-'leaf' entry in the page tables. This information will be provided by the
-p?d_large() functions/macros.
+On Tue, Mar 05, 2019 at 07:11:38PM +0100, Borislav Petkov wrote:
+> I guess you could Cc arch maintainers with the a.out-core.h removal
+> patch to see if anyone screams.
 
-For alpha, we don't support huge pages, so add stubs returning 0.
+And they're like two for which we need confirmation:
 
-CC: linux-alpha@vger.kernel.org
-CC: Richard Henderson <rth@twiddle.net>
-CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-CC: Matt Turner <mattst88@gmail.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
----
- arch/alpha/include/asm/pgtable.h | 2 ++
- 1 file changed, 2 insertions(+)
+$ git ls-files | grep a.out-core.h
+arch/alpha/include/asm/a.out-core.h
+arch/m68k/include/asm/a.out-core.h
+arch/um/include/asm/a.out-core.h
+arch/x86/include/asm/a.out-core.h
 
-diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index 89c2032f9960..e5726d3a3200 100644
---- a/arch/alpha/include/asm/pgtable.h
-+++ b/arch/alpha/include/asm/pgtable.h
-@@ -254,11 +254,13 @@ extern inline void pte_clear(struct mm_struct *mm, unsigned long addr, pte_t *pt
- extern inline int pmd_none(pmd_t pmd)		{ return !pmd_val(pmd); }
- extern inline int pmd_bad(pmd_t pmd)		{ return (pmd_val(pmd) & ~_PFN_MASK) != _PAGE_TABLE; }
- extern inline int pmd_present(pmd_t pmd)	{ return pmd_val(pmd) & _PAGE_VALID; }
-+extern inline int pmd_large(pmd_t pmd)		{ return 0; }
- extern inline void pmd_clear(pmd_t * pmdp)	{ pmd_val(*pmdp) = 0; }
- 
- extern inline int pgd_none(pgd_t pgd)		{ return !pgd_val(pgd); }
- extern inline int pgd_bad(pgd_t pgd)		{ return (pgd_val(pgd) & ~_PFN_MASK) != _PAGE_TABLE; }
- extern inline int pgd_present(pgd_t pgd)	{ return pgd_val(pgd) & _PAGE_VALID; }
-+extern inline int pgd_large(pgd_t pgd)		{ return 0; }
- extern inline void pgd_clear(pgd_t * pgdp)	{ pgd_val(*pgdp) = 0; }
- 
- /*
+um and x86 are clear.
+
+Adding alpha and m68k MLs to Cc.
+
 -- 
-2.20.1
+Regards/Gruss,
+    Boris.
 
+Good mailing practices for 400: avoid top-posting and trim the reply.
