@@ -1,7 +1,7 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Matt Turner <mattst88@gmail.com>
 Subject: Re: [PATCH] x86: Deprecate a.out support
-Date: Wed, 6 Mar 2019 16:07:29 +0100
-Message-ID: <CAMuHMdW+m0Q+j3rsQdMXnrEPm+XB5Y2AQrxW5sD1mZAKgmEqoA@mail.gmail.com>
+Date: Sun, 10 Mar 2019 14:37:00 -0700
+Message-ID: <CAEdQ38G5M3vq9pGBV1iyEViO7JhFuXk5g+VCs-vUH+Z62kNqgQ@mail.gmail.com>
 References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
  <20190305091904.GB8256@zn.tnic> <20190305122218.GD13380@bombadil.infradead.org>
  <20190305134347.4be2449c@alans-desktop> <20190305145717.GD8256@zn.tnic>
@@ -10,17 +10,27 @@ References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
  <20190305181138.GG8256@zn.tnic> <20190305181808.GH8256@zn.tnic>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=73P3Dft49iftY1p1QpC3pi8LiXQIFmDJRFgq+sY8vCA=;
+        b=oVXtGtbEQZpFPC/JgrecJ+DmCTjyTQAktFMHka18apdweh96TngwSS7nIFuWZf7tgw
+         +338Ay2YNVmiqdOz+XELTVnTLJvCzpadMqVcl55i31E0K9HjQxNYB5afYoaY76WjE/LS
+         uFySCQPEMTQF/UvNRRflVup2qFumRV5JOxG9Kdl3sbzJ4Ls9XhAmp0WVmvDM8XhnTyQO
+         NnHR2HTMA79BZN96XzJr4+V2/cNEmDKdGvjLzKDZVbunZ8nleJQ7cWUdCQtqhpmc7z/0
+         6Dg041S3fYtwwvNuOiyzOOSMpSiwDo+fe1Uj0pejbZgingSJax3vjAoPDv4lT+eQ2eWR
+         IZDQ==
 In-Reply-To: <20190305181808.GH8256@zn.tnic>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Borislav Petkov <bp@alien8.de>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k@lists.linux-m68k.org
 
-Hi Borislav,
-
-On Tue, Mar 5, 2019 at 8:04 PM Borislav Petkov <bp@alien8.de> wrote:
+On Tue, Mar 5, 2019 at 11:04 AM Borislav Petkov <bp@alien8.de> wrote:
+>
 > On Tue, Mar 05, 2019 at 07:11:38PM +0100, Borislav Petkov wrote:
 > > I guess you could Cc arch maintainers with the a.out-core.h removal
 > > patch to see if anyone screams.
@@ -37,22 +47,4 @@ On Tue, Mar 5, 2019 at 8:04 PM Borislav Petkov <bp@alien8.de> wrote:
 >
 > Adding alpha and m68k MLs to Cc.
 
-Thanks!
-
-The oldest binaries I still have lying around (an ext2 ramdisk image,
-still used from time to time) are ELF, from just after the a.out to ELF
-transition on m68k.
-
-I think it's safe to assume no one still runs a.out binaries on m68k.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+I'm not aware of a reason to keep a.out support on alpha.
