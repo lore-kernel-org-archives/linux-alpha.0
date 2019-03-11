@@ -1,114 +1,48 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] y2038: fix socket.h header inclusion
-Date: Mon, 11 Mar 2019 16:38:17 +0100
-Message-ID: <20190311153857.563743-1-arnd@arndb.de>
+From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+Subject: Re: [PATCH] x86: Deprecate a.out support
+Date: Mon, 11 Mar 2019 16:26:03 +0000
+Message-ID: <yw1xa7i14btw.fsf@mansr.com>
+References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
+        <20190305091904.GB8256@zn.tnic>
+        <20190305122218.GD13380@bombadil.infradead.org>
+        <20190305134347.4be2449c@alans-desktop>
+        <20190305145717.GD8256@zn.tnic>
+        <CAHk-=wi2E4kugAW7BQwNSVwYHOr=B_9EgzBRMpQ2+1dxAqydDg@mail.gmail.com>
+        <20190305173134.GE8256@zn.tnic>
+        <CAHk-=wg0bY=RFhD4NW9x++fC0bME=_-9xM3kexGGM3gefHQTyQ@mail.gmail.com>
+        <20190305181138.GG8256@zn.tnic> <20190305181808.GH8256@zn.tnic>
+        <CAEdQ38G5M3vq9pGBV1iyEViO7JhFuXk5g+VCs-vUH+Z62kNqgQ@mail.gmail.com>
+        <CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com>
+        (Linus Torvalds's message of "Sun, 10 Mar 2019 15:40:20 -0700")
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: "David S . Miller" <davem@davemloft.net>
-Cc: Deepa Dinamani <deepa.kernel@gmail.com>, Willem de Bruijn <willemb@google.com>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, Laura Abbott <labbott@redhat.com>, netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Matt Turner <mattst88@gmail.com>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k@lists.linux-m68k.org
 
-Referencing the __kernel_long_t type caused some user space applications
-to stop compiling when they had not already included linux/posix_types.h,
-e.g.
+Linus Torvalds <torvalds@linux-foundation.org> writes:
 
-s/multicast.c -o ext/sockets/multicast.lo
-In file included from /builddir/build/BUILD/php-7.3.3/main/php.h:468,
-                 from /builddir/build/BUILD/php-7.3.3/ext/sockets/sockets.c:27:
-/builddir/build/BUILD/php-7.3.3/ext/sockets/sockets.c: In function 'zm_startup_sockets':
-/builddir/build/BUILD/php-7.3.3/ext/sockets/sockets.c:776:40: error: '__kernel_long_t' undeclared (first use in this function)
-  776 |  REGISTER_LONG_CONSTANT("SO_SNDTIMEO", SO_SNDTIMEO, CONST_CS | CONST_PERSISTENT);
+> On Sun, Mar 10, 2019 at 2:37 PM Matt Turner <mattst88@gmail.com> wrote:
+>>
+>> I'm not aware of a reason to keep a.out support on alpha.
+>
+> Hmm. I was looking at removing a.out support entirely, but it's
+> actually fairly incestuous on alpha.
+>
+> For example, arch/alpha/boot/tools/objstrip.c very much has some a.out
+> support in it. Maybe it can just be removed entirely.
+>
+> There's also an a.out.h include in arch/alpha/kernel/binfmt_loader.c.
+>
+> Finally, note that CONFIG_OSF4_COMPAT also no longer makes sense
+> without a.out support.
 
-It is safe to include that header here, since it only contains kernel
-internal types that do not conflict with other user space types.
+Anyone running an Alpha machine likely also has some old OSF/1 binaries
+they may wish to use.  It would be a shame to remove this feature, IMO.
 
-It's still possible that some related build failures remain, but those
-are likely to be for code that is not already y2038 safe.
-
-Reported-by: Laura Abbott <labbott@redhat.com>
-Fixes: a9beb86ae6e5 ("sock: Add SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/alpha/include/uapi/asm/socket.h  | 2 +-
- arch/mips/include/uapi/asm/socket.h   | 2 +-
- arch/parisc/include/uapi/asm/socket.h | 2 +-
- arch/sparc/include/uapi/asm/socket.h  | 2 +-
- include/uapi/asm-generic/socket.h     | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
-index 0d0fddb7e738..976e89b116e5 100644
---- a/arch/alpha/include/uapi/asm/socket.h
-+++ b/arch/alpha/include/uapi/asm/socket.h
-@@ -2,8 +2,8 @@
- #ifndef _UAPI_ASM_SOCKET_H
- #define _UAPI_ASM_SOCKET_H
- 
-+#include <linux/posix_types.h>
- #include <asm/sockios.h>
--#include <asm/bitsperlong.h>
- 
- /* For setsockopt(2) */
- /*
-diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
-index eb9f33f8a8b3..d41765cfbc6e 100644
---- a/arch/mips/include/uapi/asm/socket.h
-+++ b/arch/mips/include/uapi/asm/socket.h
-@@ -10,8 +10,8 @@
- #ifndef _UAPI_ASM_SOCKET_H
- #define _UAPI_ASM_SOCKET_H
- 
-+#include <linux/posix_types.h>
- #include <asm/sockios.h>
--#include <asm/bitsperlong.h>
- 
- /*
-  * For setsockopt(2)
-diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
-index 16e428f03526..66c5dd245ac7 100644
---- a/arch/parisc/include/uapi/asm/socket.h
-+++ b/arch/parisc/include/uapi/asm/socket.h
-@@ -2,8 +2,8 @@
- #ifndef _UAPI_ASM_SOCKET_H
- #define _UAPI_ASM_SOCKET_H
- 
-+#include <linux/posix_types.h>
- #include <asm/sockios.h>
--#include <asm/bitsperlong.h>
- 
- /* For setsockopt(2) */
- #define SOL_SOCKET	0xffff
-diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
-index 88fe4f978aca..9265a9eece15 100644
---- a/arch/sparc/include/uapi/asm/socket.h
-+++ b/arch/sparc/include/uapi/asm/socket.h
-@@ -2,8 +2,8 @@
- #ifndef _ASM_SOCKET_H
- #define _ASM_SOCKET_H
- 
-+#include <linux/posix_types.h>
- #include <asm/sockios.h>
--#include <asm/bitsperlong.h>
- 
- /* For setsockopt(2) */
- #define SOL_SOCKET	0xffff
-diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
-index c8b430cb6dc4..8c1391c89171 100644
---- a/include/uapi/asm-generic/socket.h
-+++ b/include/uapi/asm-generic/socket.h
-@@ -2,8 +2,8 @@
- #ifndef __ASM_GENERIC_SOCKET_H
- #define __ASM_GENERIC_SOCKET_H
- 
-+#include <linux/posix_types.h>
- #include <asm/sockios.h>
--#include <asm/bitsperlong.h>
- 
- /* For setsockopt(2) */
- #define SOL_SOCKET	1
--- 
-2.20.0
-
+--=20
+M=E5ns Rullg=E5rd
