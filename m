@@ -1,40 +1,58 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH] y2038: fix socket.h header inclusion
-Date: Mon, 11 Mar 2019 11:23:32 -0700 (PDT)
-Message-ID: <20190311.112332.2212718467104899802.davem@davemloft.net>
-References: <20190311153857.563743-1-arnd@arndb.de>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [PATCH] x86: Deprecate a.out support
+Date: Mon, 11 Mar 2019 11:58:26 -0700
+Message-ID: <CAEdQ38ESK4mz6T4=fO_1Zyg-jJfhR3A+jg2Nw0rMKq-p_1U0UA@mail.gmail.com>
+References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
+ <20190305091904.GB8256@zn.tnic> <20190305122218.GD13380@bombadil.infradead.org>
+ <20190305134347.4be2449c@alans-desktop> <20190305145717.GD8256@zn.tnic>
+ <CAHk-=wi2E4kugAW7BQwNSVwYHOr=B_9EgzBRMpQ2+1dxAqydDg@mail.gmail.com>
+ <20190305173134.GE8256@zn.tnic> <CAHk-=wg0bY=RFhD4NW9x++fC0bME=_-9xM3kexGGM3gefHQTyQ@mail.gmail.com>
+ <20190305181138.GG8256@zn.tnic> <20190305181808.GH8256@zn.tnic>
+ <CAEdQ38G5M3vq9pGBV1iyEViO7JhFuXk5g+VCs-vUH+Z62kNqgQ@mail.gmail.com>
+ <CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com> <yw1xa7i14btw.fsf@mansr.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190311153857.563743-1-arnd@arndb.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aLCvz858hUYTF/dMencUvDgx3C6vOwwgHb25WIkm1N0=;
+        b=KcetIFuJsDmDeerEPxRqK0Fj8NPiy7HqxD/Rw3zfoGjChl+F30BS4LjwnB07yx8m0x
+         ej+SPOKS5lXE4JjQDkZcD79Fs8p6PkwTmhdTyEpG/oqpFsumcjwQXzYPmG+cAfwLUwON
+         LHbkla/38bHrmlAxxoG5cjuM+R1WVHHdAhfNfJqvZEYEXQ5gp+WqZ4zzxCDNNo0/lChV
+         ifePUd0l4UJ266kfrWkhIIQUUs497eL4l2stqCyUTfWks2tIrzgbhYugI05YHufzi3j1
+         omROnIzKbrWBCyxlaTVKJqQuDu0jYRuB/fuI8pxrFd8uFHPVL23qSXXo9BsqbKTj0Kwb
+         y8pQ==
+In-Reply-To: <yw1xa7i14btw.fsf@mansr.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: Text/Plain; charset="us-ascii"
-To: arnd@arndb.de
-Cc: deepa.kernel@gmail.com, willemb@google.com, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, labbott@redhat.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+To: =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k@lists.linux-m68k.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Mon, 11 Mar 2019 16:38:17 +0100
+On Mon, Mar 11, 2019 at 9:26 AM M=C3=A5ns Rullg=C3=A5rd <mans@mansr.com> wr=
+ote:
+>
+> Linus Torvalds <torvalds@linux-foundation.org> writes:
+>
+> > On Sun, Mar 10, 2019 at 2:37 PM Matt Turner <mattst88@gmail.com> wrote:
+> >>
+> >> I'm not aware of a reason to keep a.out support on alpha.
+> >
+> > Hmm. I was looking at removing a.out support entirely, but it's
+> > actually fairly incestuous on alpha.
+> >
+> > For example, arch/alpha/boot/tools/objstrip.c very much has some a.out
+> > support in it. Maybe it can just be removed entirely.
+> >
+> > There's also an a.out.h include in arch/alpha/kernel/binfmt_loader.c.
+> >
+> > Finally, note that CONFIG_OSF4_COMPAT also no longer makes sense
+> > without a.out support.
+>
+> Anyone running an Alpha machine likely also has some old OSF/1 binaries
+> they may wish to use.  It would be a shame to remove this feature, IMO.
 
-> Referencing the __kernel_long_t type caused some user space applications
-> to stop compiling when they had not already included linux/posix_types.h,
-> e.g.
-> 
-> s/multicast.c -o ext/sockets/multicast.lo
-> In file included from /builddir/build/BUILD/php-7.3.3/main/php.h:468,
->                  from /builddir/build/BUILD/php-7.3.3/ext/sockets/sockets.c:27:
-> /builddir/build/BUILD/php-7.3.3/ext/sockets/sockets.c: In function 'zm_startup_sockets':
-> /builddir/build/BUILD/php-7.3.3/ext/sockets/sockets.c:776:40: error: '__kernel_long_t' undeclared (first use in this function)
->   776 |  REGISTER_LONG_CONSTANT("SO_SNDTIMEO", SO_SNDTIMEO, CONST_CS | CONST_PERSISTENT);
-> 
-> It is safe to include that header here, since it only contains kernel
-> internal types that do not conflict with other user space types.
-> 
-> It's still possible that some related build failures remain, but those
-> are likely to be for code that is not already y2038 safe.
-> 
-> Reported-by: Laura Abbott <labbott@redhat.com>
-> Fixes: a9beb86ae6e5 ("sock: Add SO_RCVTIMEO_NEW and SO_SNDTIMEO_NEW")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Applied, thanks.
+Tru64 5.1 uses ECOFF binaries, I believe. Do you know when OSF/1 /
+Digital UNIX / Tru64 switched from a.out to ECOFF?
