@@ -1,7 +1,7 @@
-From: Matt Turner <mattst88@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 Subject: Re: [PATCH] x86: Deprecate a.out support
-Date: Mon, 11 Mar 2019 11:58:26 -0700
-Message-ID: <CAEdQ38ESK4mz6T4=fO_1Zyg-jJfhR3A+jg2Nw0rMKq-p_1U0UA@mail.gmail.com>
+Date: Mon, 11 Mar 2019 12:03:18 -0700
+Message-ID: <CAHk-=wiU7xacTqDfm-x29-meyJWNd_X95K0T8FQMcDgy-yo3Qw@mail.gmail.com>
 References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
  <20190305091904.GB8256@zn.tnic> <20190305122218.GD13380@bombadil.infradead.org>
  <20190305134347.4be2449c@alans-desktop> <20190305145717.GD8256@zn.tnic>
@@ -9,50 +9,39 @@ References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
  <20190305173134.GE8256@zn.tnic> <CAHk-=wg0bY=RFhD4NW9x++fC0bME=_-9xM3kexGGM3gefHQTyQ@mail.gmail.com>
  <20190305181138.GG8256@zn.tnic> <20190305181808.GH8256@zn.tnic>
  <CAEdQ38G5M3vq9pGBV1iyEViO7JhFuXk5g+VCs-vUH+Z62kNqgQ@mail.gmail.com>
- <CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com> <yw1xa7i14btw.fsf@mansr.com>
+ <CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com>
+ <yw1xa7i14btw.fsf@mansr.com> <CAHk-=whD1SumZUBQeuMT-GcciwPxg_jW_TsPAmokYp3sGGCGhA@mail.gmail.com>
+ <yw1x5zsp473a.fsf@mansr.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=aLCvz858hUYTF/dMencUvDgx3C6vOwwgHb25WIkm1N0=;
-        b=KcetIFuJsDmDeerEPxRqK0Fj8NPiy7HqxD/Rw3zfoGjChl+F30BS4LjwnB07yx8m0x
-         ej+SPOKS5lXE4JjQDkZcD79Fs8p6PkwTmhdTyEpG/oqpFsumcjwQXzYPmG+cAfwLUwON
-         LHbkla/38bHrmlAxxoG5cjuM+R1WVHHdAhfNfJqvZEYEXQ5gp+WqZ4zzxCDNNo0/lChV
-         ifePUd0l4UJ266kfrWkhIIQUUs497eL4l2stqCyUTfWks2tIrzgbhYugI05YHufzi3j1
-         omROnIzKbrWBCyxlaTVKJqQuDu0jYRuB/fuI8pxrFd8uFHPVL23qSXXo9BsqbKTj0Kwb
-         y8pQ==
-In-Reply-To: <yw1xa7i14btw.fsf@mansr.com>
+        bh=aPksBs5gmVWSAtQBhdxf/7+kKKa60fGxFB1/+DhE2AQ=;
+        b=Kc1ld9FxqH/Ed0XvvvnE0Y0vZYjRwQfgjTvHHYtdBVU5MHvQpzZAW/DccGNCX6kSqo
+         JJdbKDRrnnf8ajFkkLwnL36D4j1fdUwRVX7xwxUzn93jAaYjIY3YWFk+PCMvgHQaADgA
+         Jk25ujdwaDWfDowZGtVB2nypw19/ibH2N2vi0=
+In-Reply-To: <yw1x5zsp473a.fsf@mansr.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="utf-8"
 To: =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k@lists.linux-m68k.org
+Cc: Matt Turner <mattst88@gmail.com>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k@lists.linux-m68k.org
 
-On Mon, Mar 11, 2019 at 9:26 AM M=C3=A5ns Rullg=C3=A5rd <mans@mansr.com> wr=
-ote:
+On Mon, Mar 11, 2019 at 11:08 AM M=C3=A5ns Rullg=C3=A5rd <mans@mansr.com> w=
+rote:
 >
-> Linus Torvalds <torvalds@linux-foundation.org> writes:
->
-> > On Sun, Mar 10, 2019 at 2:37 PM Matt Turner <mattst88@gmail.com> wrote:
-> >>
-> >> I'm not aware of a reason to keep a.out support on alpha.
-> >
-> > Hmm. I was looking at removing a.out support entirely, but it's
-> > actually fairly incestuous on alpha.
-> >
-> > For example, arch/alpha/boot/tools/objstrip.c very much has some a.out
-> > support in it. Maybe it can just be removed entirely.
-> >
-> > There's also an a.out.h include in arch/alpha/kernel/binfmt_loader.c.
-> >
-> > Finally, note that CONFIG_OSF4_COMPAT also no longer makes sense
-> > without a.out support.
->
-> Anyone running an Alpha machine likely also has some old OSF/1 binaries
-> they may wish to use.  It would be a shame to remove this feature, IMO.
+> The latest version I have is 5.1, and that uses ECOFF.
 
-Tru64 5.1 uses ECOFF binaries, I believe. Do you know when OSF/1 /
-Digital UNIX / Tru64 switched from a.out to ECOFF?
+ECOFF _is_ a.out as far as Linux is concerned.
+
+So Linux basically treats ECOFF as "regular a.out with just some
+header extensions".
+
+We don't have any specific support for ECOFF.
+
+I _think_. Again, it's been years and years.
+
+               Linus
