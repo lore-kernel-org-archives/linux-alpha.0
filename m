@@ -1,70 +1,63 @@
-From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+From: Michael Cree <mcree@orcon.net.nz>
 Subject: Re: [PATCH] x86: Deprecate a.out support
-Date: Mon, 11 Mar 2019 22:12:50 +0000
-Message-ID: <yw1xsgvt2h7h.fsf@mansr.com>
-References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
-        <20190305091904.GB8256@zn.tnic>
-        <20190305122218.GD13380@bombadil.infradead.org>
-        <20190305134347.4be2449c@alans-desktop>
-        <20190305145717.GD8256@zn.tnic>
-        <CAHk-=wi2E4kugAW7BQwNSVwYHOr=B_9EgzBRMpQ2+1dxAqydDg@mail.gmail.com>
-        <20190305173134.GE8256@zn.tnic>
-        <CAHk-=wg0bY=RFhD4NW9x++fC0bME=_-9xM3kexGGM3gefHQTyQ@mail.gmail.com>
-        <20190305181138.GG8256@zn.tnic> <20190305181808.GH8256@zn.tnic>
-        <CAEdQ38G5M3vq9pGBV1iyEViO7JhFuXk5g+VCs-vUH+Z62kNqgQ@mail.gmail.com>
-        <CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com>
-        <yw1xa7i14btw.fsf@mansr.com>
-        <CAHk-=whD1SumZUBQeuMT-GcciwPxg_jW_TsPAmokYp3sGGCGhA@mail.gmail.com>
-        <yw1x5zsp473a.fsf@mansr.com>
-        <CAHk-=wiU7xacTqDfm-x29-meyJWNd_X95K0T8FQMcDgy-yo3Qw@mail.gmail.com>
-        <yw1x1s3d42ia.fsf@mansr.com>
-        <CAK8P3a031d9mSOxVmCAGcrbdaCE8N3R4e2Smtxp-Z+cautTAvg@mail.gmail.com>
-        <CAHk-=wj3v41CWH+3ry3+vrkjAEcyGojtevpsZDbiXVvpv1nTkA@mail.gmail.com>
+Date: Tue, 12 Mar 2019 19:38:24 +1300
+Message-ID: <20190312063824.wx7vow22cc35co77@tower>
+References: <20190305181808.GH8256@zn.tnic>
+ <CAEdQ38G5M3vq9pGBV1iyEViO7JhFuXk5g+VCs-vUH+Z62kNqgQ@mail.gmail.com>
+ <CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com>
+ <yw1xa7i14btw.fsf@mansr.com>
+ <CAHk-=whD1SumZUBQeuMT-GcciwPxg_jW_TsPAmokYp3sGGCGhA@mail.gmail.com>
+ <yw1x5zsp473a.fsf@mansr.com>
+ <CAHk-=wiU7xacTqDfm-x29-meyJWNd_X95K0T8FQMcDgy-yo3Qw@mail.gmail.com>
+ <yw1x1s3d42ia.fsf@mansr.com>
+ <CAK8P3a031d9mSOxVmCAGcrbdaCE8N3R4e2Smtxp-Z+cautTAvg@mail.gmail.com>
+ <CAEdQ38HSKy+muCwAk9w0yNCt649HVja1Pe+yY23-4zBjDvWFRA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHk-=wj3v41CWH+3ry3+vrkjAEcyGojtevpsZDbiXVvpv1nTkA@mail.gmail.com>
-        (Linus Torvalds's message of "Mon, 11 Mar 2019 14:45:27 -0700")
+Content-Disposition: inline
+In-Reply-To: <CAEdQ38HSKy+muCwAk9w0yNCt649HVja1Pe+yY23-4zBjDvWFRA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Matt Turner <mattst88@gmail.com>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>
+To: Matt Turner <mattst88@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>, Linus Torvalds <torvalds@linux-foundation.org>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
-
+On Mon, Mar 11, 2019 at 03:11:55PM -0700, Matt Turner wrote:
 > On Mon, Mar 11, 2019 at 2:34 PM Arnd Bergmann <arnd@arndb.de> wrote:
->>
->> The main historic use case I've heard of was running Netscape
->> Navigator on Alpha Linux, before there was an open source version.
->> Doing this today to connect to the open internet is probably
->> a bit pointless, but there may be other use cases.
->
-> The _really_ main version was that I decided to make my life easier
-> for the initial alpha port by trying to run basic (tested) OSF/1
-> binaries directly.
->
-> Netscape may have been one of the binaries people actually ended up
-> using, but it's probably not a reason any more, since the internet has
-> moved past that anyway.
->
->> Looking at the system call table in the kernel
->> (arch/alpha/kernel/syscalls/syscall.tbl), we seem to support a
->> specific subset that was required for a set of applications, and
->> not much more.
->
-> Yeah, it never supported arbitrary binaries, particularly since
-> there's often lots of other issues too with running things like that
-> (ie filesystem layout etc). It worked for normal fairly well behaved
-> stuff, but wasn't ever a full OSF/1 emulation environment.
->
-> I _suspect_ nobody actually runs any OSF/1 binaries any more, but it
-> would obviously be good to verify that. Your argument that timeval
-> handling was broken _may_ be an indication of that (or may just mean
-> very few apps care).
+> > On Mon, Mar 11, 2019 at 8:47 PM M=E5ns Rullg=E5rd <mans@mansr.com> wrot=
+e:
+> > > Linus Torvalds <torvalds@linux-foundation.org> writes:
+> > > > On Mon, Mar 11, 2019 at 11:08 AM M=E5ns Rullg=E5rd <mans@mansr.com>=
+ wrote:
+> > > > We don't have any specific support for ECOFF.
+> > > >
+> > > > I _think_. Again, it's been years and years.
 
-Does it count if I fire up an Alpha and run a few OSF/1 binaries right
-now? :-)
+I agree. I personally have never run any OSF/1 executables on
+Linux Alpha and have no interest in doing so.
 
---=20
-M=E5ns Rullg=E5rd
+> > The main historic use case I've heard of was running Netscape
+> > Navigator on Alpha Linux, before there was an open source version.
+> > Doing this today to connect to the open internet is probably
+> > a bit pointless, but there may be other use cases.
+>=20
+> The best use case I know of is to run their C compiler. M=E5ns sent
+> patches in fact to make it work.
+>=20
+> There is a Linux version of the same compiler but I have a vague
+> memory that it's broken in various ways that the Tru64 version is
+> not.
+
+The last time I tried the Compaq C compiler for Alpha-Linux it still
+worked, well, that is, the compiler worked, but the library header
+files are broken and haven't worked with glibc for a long time.  So
+it is only useful as a free-standing compiler.
+
+In the past it also produced better code than gcc, but gcc is now
+so vastly improved w.r.t. optimisation and compliance to more recent
+standards, that I would be surprised if there is any real use for
+the Compaq compiler.
+
+Cheers,
+Michael.
