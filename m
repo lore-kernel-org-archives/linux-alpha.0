@@ -1,7 +1,7 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
 Subject: Re: [PATCH] x86: Deprecate a.out support
-Date: Tue, 12 Mar 2019 09:44:34 +0100
-Message-ID: <CAMuHMdU76V=p8GLqVdChx+Sa_aPZ9BMCnnzmzWonqEq4Xe+LEQ@mail.gmail.com>
+Date: Thu, 14 Mar 2019 19:38:23 +0100
+Message-ID: <CANiq72=Hvvw7QCKMquWmefKz1OLUrYoDZUHRT2XKUEwTfsLv4Q@mail.gmail.com>
 References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
  <20190305091904.GB8256@zn.tnic> <20190305122218.GD13380@bombadil.infradead.org>
  <20190305134347.4be2449c@alans-desktop> <20190305145717.GD8256@zn.tnic>
@@ -13,43 +13,37 @@ References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
  <yw1xa7i14btw.fsf@mansr.com> <CAHk-=whD1SumZUBQeuMT-GcciwPxg_jW_TsPAmokYp3sGGCGhA@mail.gmail.com>
  <yw1x5zsp473a.fsf@mansr.com> <CAHk-=wiU7xacTqDfm-x29-meyJWNd_X95K0T8FQMcDgy-yo3Qw@mail.gmail.com>
  <yw1x1s3d42ia.fsf@mansr.com> <CAK8P3a031d9mSOxVmCAGcrbdaCE8N3R4e2Smtxp-Z+cautTAvg@mail.gmail.com>
- <CAHk-=wj3v41CWH+3ry3+vrkjAEcyGojtevpsZDbiXVvpv1nTkA@mail.gmail.com>
+ <CAHk-=wj3v41CWH+3ry3+vrkjAEcyGojtevpsZDbiXVvpv1nTkA@mail.gmail.com> <CAMuHMdU76V=p8GLqVdChx+Sa_aPZ9BMCnnzmzWonqEq4Xe+LEQ@mail.gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHk-=wj3v41CWH+3ry3+vrkjAEcyGojtevpsZDbiXVvpv1nTkA@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H+gQBiVflYsd+bovfxrF0mnBQAXyra2Y1EbBe8xHSvA=;
+        b=aygQDYI9FcLewv5oySMNO+nToTCVV+AcmaAzqNPUxFj6DVt7q9uggshhh9q6jCVNSs
+         SObnxDrEgV5HGmsTV9/U41JzR9xVQTT9OsgL8GDA5EnqVkszIFVDltraOHjPzcK8GYv/
+         qM1JwL24ce3eLgf4Oi6R2+ii5BG8kFjNUKX0z53gEAw5Y6GiZ8bHwoE25qncydGV9Uh6
+         3yGEZpu5u+6eTHRIHRFKpRlw0bPEDkZI+ZbYlWkOMlrRmFbyttsR0KiwKaUycGvipbaI
+         4eSblrO0Xe+Hrmcl3EWTM3bpKYpNjZYFT6rSD+RLyfeHqH/cPBTeZxlhehwFRdrmOHJk
+         47xA==
+In-Reply-To: <CAMuHMdU76V=p8GLqVdChx+Sa_aPZ9BMCnnzmzWonqEq4Xe+LEQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>, Matt Turner <mattst88@gmail.com>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>, Matt Turner <mattst88@gmail.com>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.l>
 
-On Mon, Mar 11, 2019 at 10:46 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
-> On Mon, Mar 11, 2019 at 2:34 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > The main historic use case I've heard of was running Netscape
-> > Navigator on Alpha Linux, before there was an open source version.
-> > Doing this today to connect to the open internet is probably
-> > a bit pointless, but there may be other use cases.
+On Tue, Mar 12, 2019 at 9:46 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 >
-> The _really_ main version was that I decided to make my life easier
-> for the initial alpha port by trying to run basic (tested) OSF/1
-> binaries directly.
->
-> Netscape may have been one of the binaries people actually ended up
-> using, but it's probably not a reason any more, since the internet has
-> moved past that anyway.
+> Yeah, the alphas on the server side, powering AltaVista, are also long
+> gone...
 
-Yeah, the alphas on the server side, powering AltaVista, are also long
-gone...
+As usual with these things, people can still use older Linux releases
+for a very long time. If they really need it (e.g. commercially), they
+have the reference code and can bring it up to speed again relatively
+easily. It is not as if they have no way to submit it back again.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Cheers,
+Miguel
