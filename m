@@ -1,263 +1,134 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 2/2] arch: add pidfd and io_uring syscalls everywhere
-Date: Mon, 25 Mar 2019 15:47:37 +0100
-Message-ID: <20190325144737.703921-1-arnd@arndb.de>
-References: <20190325143521.34928-1-arnd@arndb.de>
+From: Christophe Leroy <christophe.leroy@c-s.fr>
+Subject: Re: [PATCH v5 3/3] locking/rwsem: Optimize down_read_trylock()
+Date: Mon, 25 Mar 2019 16:25:24 +0100
+Message-ID: <014279a5-8998-8e03-adb3-c3d611dff171@c-s.fr>
+References: <20190322143008.21313-1-longman@redhat.com>
+ <20190322143008.21313-4-longman@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
-	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=0Y5vhPY/KomQ/I/R7rcE/bu94RzG9AT6ATpP1lDNFUM=; b=mJP05ACk44eLPt
-	0FxPrtfEOLA5/A3c9Klv1up4j7bRLA5Sn0mb6e4AzV7eNlQqxl7sa6yBf8kDYejHB77a7mliwjbDV
-	HIuJUCzfA5qW9/dc8seyojbJy5VHUtlyL4uQyMCTFYiRi8HTMbLd67vHrzfUSNd3b2BsiZII4UVjf
-	lNAIuZidwR79XzD7DOTMD3HV8JB3fvnqyOyvVH2NVxbf219aDn2y/a343mhcsNQ7UN7FrBG1tH6+i
-	7L6X0cmTbd4kodb5FDY+o2Y3qA+43ypmGG35OGvqbRJsLZhiavEnoeaEACqr3MYPaj7AOjjWK0ciL
-	2HJ9nhQsIHjLroD/yeWg==;
-In-Reply-To: <20190325143521.34928-1-arnd@arndb.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-mips@vger.kernel.org, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Paul Mackerras <paulus@samba.org>, sparclinux@vger.kernel.org, linux-s390@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, Russell King <linux@armlinux.org.uk>, Geert Uytterhoeven <geert@linux-m68k.org>, Catalin Marinas <catalin.marinas@arm.com>, James Hogan <jhogan@kernel.org>, Firoz Khan <firoz.khan@linaro.org>, Matt Turner <mattst88@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>, Arnd Bergmann <arnd@arndb.de>, Will Deacon <will.deacon@arm.com>, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-a
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
+        t=1553527520; bh=JrL7MExoxenGmOAA8+6zfD5VS8gV08AijePqq6+rivY=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Gb0MkZXr4cfDzR19n8lna6H+IPA5AH3vZL1jNvOtCev91KCVbckg3/MYHKcjqkio5
+         h3ZxOQHblb9nHvTSJ7+rGRyQcDlyWn4FJ8MQkFBX2AdS6cvQu/8kr1/7uriihL47lA
+         Q8KeTVo/1kkW9DTDs2sH3feGWWW85xlVR3ifVPe8=
+In-Reply-To: <20190322143008.21313-4-longman@redhat.com>
+Content-Language: fr
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+To: Waiman Long <longman@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, linux-mips@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Davidlohr Bueso <dave@stgolabs.net>, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, x86@kernel.org, uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>, linux-um@lists.infradead.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, Borislav Petkov <bp@alien8.de>, linux-arm-kernel@lists.infradead.org, Tim Chen <tim.c.chen@linux.intel.com>, linux-parisc@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.or
 
-Add the io_uring and pidfd_send_signal system calls to all architectures.
+Hi,
 
-These system calls are designed to handle both native and compat tasks,
-so all entries are the same across architectures, only arm-compat and
-the generic tale still use an old format.
+Could you share the microbenchmark you are using ?
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/alpha/kernel/syscalls/syscall.tbl      | 4 ++++
- arch/arm/tools/syscall.tbl                  | 4 ++++
- arch/arm64/include/asm/unistd.h             | 2 +-
- arch/arm64/include/asm/unistd32.h           | 8 ++++++++
- arch/ia64/kernel/syscalls/syscall.tbl       | 4 ++++
- arch/m68k/kernel/syscalls/syscall.tbl       | 4 ++++
- arch/microblaze/kernel/syscalls/syscall.tbl | 4 ++++
- arch/mips/kernel/syscalls/syscall_n32.tbl   | 4 ++++
- arch/mips/kernel/syscalls/syscall_n64.tbl   | 4 ++++
- arch/mips/kernel/syscalls/syscall_o32.tbl   | 4 ++++
- arch/parisc/kernel/syscalls/syscall.tbl     | 4 ++++
- arch/powerpc/kernel/syscalls/syscall.tbl    | 4 ++++
- arch/s390/kernel/syscalls/syscall.tbl       | 4 ++++
- arch/sh/kernel/syscalls/syscall.tbl         | 4 ++++
- arch/sparc/kernel/syscalls/syscall.tbl      | 4 ++++
- arch/xtensa/kernel/syscalls/syscall.tbl     | 4 ++++
- 16 files changed, 65 insertions(+), 1 deletion(-)
+I'd like to test the series on powerpc.
 
-diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/syscalls/syscall.tbl
-index 63ed39cbd3bd..165f268beafc 100644
---- a/arch/alpha/kernel/syscalls/syscall.tbl
-+++ b/arch/alpha/kernel/syscalls/syscall.tbl
-@@ -463,3 +463,7 @@
- 532	common	getppid				sys_getppid
- # all other architectures have common numbers for new syscall, alpha
- # is the exception.
-+534	common	pidfd_send_signal		sys_pidfd_send_signal
-+535	common	io_uring_setup			sys_io_uring_setup
-+536	common	io_uring_enter			sys_io_uring_enter
-+537	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/arm/tools/syscall.tbl b/arch/arm/tools/syscall.tbl
-index 9016f4081bb9..0393917eaa57 100644
---- a/arch/arm/tools/syscall.tbl
-+++ b/arch/arm/tools/syscall.tbl
-@@ -437,3 +437,7 @@
- 421	common	rt_sigtimedwait_time64		sys_rt_sigtimedwait
- 422	common	futex_time64			sys_futex
- 423	common	sched_rr_get_interval_time64	sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/arm64/include/asm/unistd.h b/arch/arm64/include/asm/unistd.h
-index 310d8f1cae7a..c6946fe640e6 100644
---- a/arch/arm64/include/asm/unistd.h
-+++ b/arch/arm64/include/asm/unistd.h
-@@ -49,7 +49,7 @@
- #define __ARM_NR_compat_set_tls		(__ARM_NR_COMPAT_BASE + 5)
- #define __ARM_NR_COMPAT_END		(__ARM_NR_COMPAT_BASE + 0x800)
- 
--#define __NR_compat_syscalls		424
-+#define __NR_compat_syscalls		428
- #endif
- 
- #define __ARCH_WANT_SYS_CLONE
-diff --git a/arch/arm64/include/asm/unistd32.h b/arch/arm64/include/asm/unistd32.h
-index 5590f2623690..23f1a44acada 100644
---- a/arch/arm64/include/asm/unistd32.h
-+++ b/arch/arm64/include/asm/unistd32.h
-@@ -866,6 +866,14 @@ __SYSCALL(__NR_rt_sigtimedwait_time64, compat_sys_rt_sigtimedwait_time64)
- __SYSCALL(__NR_futex_time64, sys_futex)
- #define __NR_sched_rr_get_interval_time64 423
- __SYSCALL(__NR_sched_rr_get_interval_time64, sys_sched_rr_get_interval)
-+#define __NR_pidfd_send_signal 424
-+__SYSCALL(__NR_pidfd_send_signal, sys_pidfd_send_signal)
-+#define __NR_io_uring_setup 425
-+__SYSCALL(__NR_io_uring_setup, sys_io_uring_setup)
-+#define __NR_io_uring_enter 426
-+__SYSCALL(__NR_io_uring_enter, sys_io_uring_enter)
-+#define __NR_io_uring_register 427
-+__SYSCALL(__NR_io_uring_register, sys_io_uring_register)
- 
- /*
-  * Please add new compat syscalls above this comment and update
-diff --git a/arch/ia64/kernel/syscalls/syscall.tbl b/arch/ia64/kernel/syscalls/syscall.tbl
-index ab9cda5f6136..56e3d0b685e1 100644
---- a/arch/ia64/kernel/syscalls/syscall.tbl
-+++ b/arch/ia64/kernel/syscalls/syscall.tbl
-@@ -344,3 +344,7 @@
- 332	common	pkey_free			sys_pkey_free
- 333	common	rseq				sys_rseq
- # 334 through 423 are reserved to sync up with other architectures
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/m68k/kernel/syscalls/syscall.tbl b/arch/m68k/kernel/syscalls/syscall.tbl
-index 125c14178979..df4ec3ec71d1 100644
---- a/arch/m68k/kernel/syscalls/syscall.tbl
-+++ b/arch/m68k/kernel/syscalls/syscall.tbl
-@@ -423,3 +423,7 @@
- 421	common	rt_sigtimedwait_time64		sys_rt_sigtimedwait
- 422	common	futex_time64			sys_futex
- 423	common	sched_rr_get_interval_time64	sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/microblaze/kernel/syscalls/syscall.tbl b/arch/microblaze/kernel/syscalls/syscall.tbl
-index 8ee3a8c18498..4964947732af 100644
---- a/arch/microblaze/kernel/syscalls/syscall.tbl
-+++ b/arch/microblaze/kernel/syscalls/syscall.tbl
-@@ -429,3 +429,7 @@
- 421	common	rt_sigtimedwait_time64		sys_rt_sigtimedwait
- 422	common	futex_time64			sys_futex
- 423	common	sched_rr_get_interval_time64	sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/mips/kernel/syscalls/syscall_n32.tbl b/arch/mips/kernel/syscalls/syscall_n32.tbl
-index 15f4117900ee..9392dfe33f97 100644
---- a/arch/mips/kernel/syscalls/syscall_n32.tbl
-+++ b/arch/mips/kernel/syscalls/syscall_n32.tbl
-@@ -362,3 +362,7 @@
- 421	n32	rt_sigtimedwait_time64		compat_sys_rt_sigtimedwait_time64
- 422	n32	futex_time64			sys_futex
- 423	n32	sched_rr_get_interval_time64	sys_sched_rr_get_interval
-+424	n32	pidfd_send_signal		sys_pidfd_send_signal
-+425	n32	io_uring_setup			sys_io_uring_setup
-+426	n32	io_uring_enter			sys_io_uring_enter
-+427	n32	io_uring_register		sys_io_uring_register
-diff --git a/arch/mips/kernel/syscalls/syscall_n64.tbl b/arch/mips/kernel/syscalls/syscall_n64.tbl
-index c85502e67b44..c4a49f7d57bb 100644
---- a/arch/mips/kernel/syscalls/syscall_n64.tbl
-+++ b/arch/mips/kernel/syscalls/syscall_n64.tbl
-@@ -338,3 +338,7 @@
- 327	n64	rseq				sys_rseq
- 328	n64	io_pgetevents			sys_io_pgetevents
- # 329 through 423 are reserved to sync up with other architectures
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/mips/kernel/syscalls/syscall_o32.tbl b/arch/mips/kernel/syscalls/syscall_o32.tbl
-index 2e063d0f837e..e849e8ffe4a2 100644
---- a/arch/mips/kernel/syscalls/syscall_o32.tbl
-+++ b/arch/mips/kernel/syscalls/syscall_o32.tbl
-@@ -411,3 +411,7 @@
- 421	o32	rt_sigtimedwait_time64		sys_rt_sigtimedwait		compat_sys_rt_sigtimedwait_time64
- 422	o32	futex_time64			sys_futex			sys_futex
- 423	o32	sched_rr_get_interval_time64	sys_sched_rr_get_interval	sys_sched_rr_get_interval
-+424	o32	pidfd_send_signal		sys_pidfd_send_signal
-+425	o32	io_uring_setup			sys_io_uring_setup
-+426	o32	io_uring_enter			sys_io_uring_enter
-+427	o32	io_uring_register		sys_io_uring_register
-diff --git a/arch/parisc/kernel/syscalls/syscall.tbl b/arch/parisc/kernel/syscalls/syscall.tbl
-index b26766c6647d..fe8ca623add8 100644
---- a/arch/parisc/kernel/syscalls/syscall.tbl
-+++ b/arch/parisc/kernel/syscalls/syscall.tbl
-@@ -420,3 +420,7 @@
- 421	32	rt_sigtimedwait_time64		sys_rt_sigtimedwait		compat_sys_rt_sigtimedwait_time64
- 422	32	futex_time64			sys_futex			sys_futex
- 423	32	sched_rr_get_interval_time64	sys_sched_rr_get_interval	sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/powerpc/kernel/syscalls/syscall.tbl b/arch/powerpc/kernel/syscalls/syscall.tbl
-index b18abb0c3dae..00f5a63c8d9a 100644
---- a/arch/powerpc/kernel/syscalls/syscall.tbl
-+++ b/arch/powerpc/kernel/syscalls/syscall.tbl
-@@ -505,3 +505,7 @@
- 421	32	rt_sigtimedwait_time64		sys_rt_sigtimedwait		compat_sys_rt_sigtimedwait_time64
- 422	32	futex_time64			sys_futex			sys_futex
- 423	32	sched_rr_get_interval_time64	sys_sched_rr_get_interval	sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/s390/kernel/syscalls/syscall.tbl b/arch/s390/kernel/syscalls/syscall.tbl
-index 02579f95f391..3eb56e639b96 100644
---- a/arch/s390/kernel/syscalls/syscall.tbl
-+++ b/arch/s390/kernel/syscalls/syscall.tbl
-@@ -426,3 +426,7 @@
- 421	32	rt_sigtimedwait_time64	-				compat_sys_rt_sigtimedwait_time64
- 422	32	futex_time64		-				sys_futex
- 423	32	sched_rr_get_interval_time64	-			sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/sh/kernel/syscalls/syscall.tbl b/arch/sh/kernel/syscalls/syscall.tbl
-index bfda678576e4..480b057556ee 100644
---- a/arch/sh/kernel/syscalls/syscall.tbl
-+++ b/arch/sh/kernel/syscalls/syscall.tbl
-@@ -426,3 +426,7 @@
- 421	common	rt_sigtimedwait_time64		sys_rt_sigtimedwait
- 422	common	futex_time64			sys_futex
- 423	common	sched_rr_get_interval_time64	sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/sparc/kernel/syscalls/syscall.tbl b/arch/sparc/kernel/syscalls/syscall.tbl
-index b9a5a04b2d2c..a1dd24307b00 100644
---- a/arch/sparc/kernel/syscalls/syscall.tbl
-+++ b/arch/sparc/kernel/syscalls/syscall.tbl
-@@ -469,3 +469,7 @@
- 421	32	rt_sigtimedwait_time64		sys_rt_sigtimedwait		compat_sys_rt_sigtimedwait_time64
- 422	32	futex_time64			sys_futex			sys_futex
- 423	32	sched_rr_get_interval_time64	sys_sched_rr_get_interval	sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
-diff --git a/arch/xtensa/kernel/syscalls/syscall.tbl b/arch/xtensa/kernel/syscalls/syscall.tbl
-index 6af49929de85..30084eaf8422 100644
---- a/arch/xtensa/kernel/syscalls/syscall.tbl
-+++ b/arch/xtensa/kernel/syscalls/syscall.tbl
-@@ -394,3 +394,7 @@
- 421	common	rt_sigtimedwait_time64		sys_rt_sigtimedwait
- 422	common	futex_time64			sys_futex
- 423	common	sched_rr_get_interval_time64	sys_sched_rr_get_interval
-+424	common	pidfd_send_signal		sys_pidfd_send_signal
-+425	common	io_uring_setup			sys_io_uring_setup
-+426	common	io_uring_enter			sys_io_uring_enter
-+427	common	io_uring_register		sys_io_uring_register
--- 
-2.20.0
+Thanks
+Christophe
+
+Le 22/03/2019 à 15:30, Waiman Long a écrit :
+> Modify __down_read_trylock() to optimize for an unlocked rwsem and make
+> it generate slightly better code.
+> 
+> Before this patch, down_read_trylock:
+> 
+>     0x0000000000000000 <+0>:     callq  0x5 <down_read_trylock+5>
+>     0x0000000000000005 <+5>:     jmp    0x18 <down_read_trylock+24>
+>     0x0000000000000007 <+7>:     lea    0x1(%rdx),%rcx
+>     0x000000000000000b <+11>:    mov    %rdx,%rax
+>     0x000000000000000e <+14>:    lock cmpxchg %rcx,(%rdi)
+>     0x0000000000000013 <+19>:    cmp    %rax,%rdx
+>     0x0000000000000016 <+22>:    je     0x23 <down_read_trylock+35>
+>     0x0000000000000018 <+24>:    mov    (%rdi),%rdx
+>     0x000000000000001b <+27>:    test   %rdx,%rdx
+>     0x000000000000001e <+30>:    jns    0x7 <down_read_trylock+7>
+>     0x0000000000000020 <+32>:    xor    %eax,%eax
+>     0x0000000000000022 <+34>:    retq
+>     0x0000000000000023 <+35>:    mov    %gs:0x0,%rax
+>     0x000000000000002c <+44>:    or     $0x3,%rax
+>     0x0000000000000030 <+48>:    mov    %rax,0x20(%rdi)
+>     0x0000000000000034 <+52>:    mov    $0x1,%eax
+>     0x0000000000000039 <+57>:    retq
+> 
+> After patch, down_read_trylock:
+> 
+>     0x0000000000000000 <+0>:	callq  0x5 <down_read_trylock+5>
+>     0x0000000000000005 <+5>:	xor    %eax,%eax
+>     0x0000000000000007 <+7>:	lea    0x1(%rax),%rdx
+>     0x000000000000000b <+11>:	lock cmpxchg %rdx,(%rdi)
+>     0x0000000000000010 <+16>:	jne    0x29 <down_read_trylock+41>
+>     0x0000000000000012 <+18>:	mov    %gs:0x0,%rax
+>     0x000000000000001b <+27>:	or     $0x3,%rax
+>     0x000000000000001f <+31>:	mov    %rax,0x20(%rdi)
+>     0x0000000000000023 <+35>:	mov    $0x1,%eax
+>     0x0000000000000028 <+40>:	retq
+>     0x0000000000000029 <+41>:	test   %rax,%rax
+>     0x000000000000002c <+44>:	jns    0x7 <down_read_trylock+7>
+>     0x000000000000002e <+46>:	xor    %eax,%eax
+>     0x0000000000000030 <+48>:	retq
+> 
+> By using a rwsem microbenchmark, the down_read_trylock() rate (with a
+> load of 10 to lengthen the lock critical section) on a x86-64 system
+> before and after the patch were:
+> 
+>                   Before Patch    After Patch
+>     # of Threads     rlock           rlock
+>     ------------     -----           -----
+>          1           14,496          14,716
+>          2            8,644           8,453
+> 	4            6,799           6,983
+> 	8            5,664           7,190
+> 
+> On a ARM64 system, the performance results were:
+> 
+>                   Before Patch    After Patch
+>     # of Threads     rlock           rlock
+>     ------------     -----           -----
+>          1           23,676          24,488
+>          2            7,697           9,502
+>          4            4,945           3,440
+>          8            2,641           1,603
+> 
+> For the uncontended case (1 thread), the new down_read_trylock() is a
+> little bit faster. For the contended cases, the new down_read_trylock()
+> perform pretty well in x86-64, but performance degrades at high
+> contention level on ARM64.
+> 
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Signed-off-by: Waiman Long <longman@redhat.com>
+> ---
+>   kernel/locking/rwsem.h | 13 ++++++++-----
+>   1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> diff --git a/kernel/locking/rwsem.h b/kernel/locking/rwsem.h
+> index 45ee00236e03..1f5775aa6a1d 100644
+> --- a/kernel/locking/rwsem.h
+> +++ b/kernel/locking/rwsem.h
+> @@ -174,14 +174,17 @@ static inline int __down_read_killable(struct rw_semaphore *sem)
+>   
+>   static inline int __down_read_trylock(struct rw_semaphore *sem)
+>   {
+> -	long tmp;
+> +	/*
+> +	 * Optimize for the case when the rwsem is not locked at all.
+> +	 */
+> +	long tmp = RWSEM_UNLOCKED_VALUE;
+>   
+> -	while ((tmp = atomic_long_read(&sem->count)) >= 0) {
+> -		if (tmp == atomic_long_cmpxchg_acquire(&sem->count, tmp,
+> -				   tmp + RWSEM_ACTIVE_READ_BIAS)) {
+> +	do {
+> +		if (atomic_long_try_cmpxchg_acquire(&sem->count, &tmp,
+> +					tmp + RWSEM_ACTIVE_READ_BIAS)) {
+>   			return 1;
+>   		}
+> -	}
+> +	} while (tmp >= 0);
+>   	return 0;
+>   }
+>   
+> 
