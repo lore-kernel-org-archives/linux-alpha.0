@@ -1,56 +1,122 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 2/2] arch: add pidfd and io_uring syscalls everywhere
-Date: Tue, 26 Mar 2019 09:40:57 +0100
-Message-ID: <CAK8P3a1dVLdL_oM8iCGP1R0SG=4BrrsPSaTare5NN5WLxJb_Uw@mail.gmail.com>
-References: <20190325143521.34928-1-arnd@arndb.de> <20190325144737.703921-1-arnd@arndb.de>
- <20190325173704.mun2cj2ulswv7s3i@pburton-laptop>
-Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190325173704.mun2cj2ulswv7s3i@pburton-laptop>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+From: George Spelvin <lkml@sdf.org>
+Subject: CONFIG_ARCH_SUPPORTS_INT128: Why not mips, s390, powerpc, and alpha?
+Date: Fri, 29 Mar 2019 13:07:07 GMT
+Message-ID: <201903291307.x2TD772v013534@sdf.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=sdf.org; s=default;
+ t=1553864836; bh=8YRwR3yMd0d+KmTP83jP1DXcBrFHiIf3wDMXMVarqIg=;
+ h=Date:From:To:Subject:Cc;
+ b=klCrQccBZVcPalDQLRFRayly6cD1dUqGarewpeB34eaWc77ouPgOCvRcbx5dExYxc
+ hY3iqJYoorpRzRXEoR3u4RacU8Y4kiUFqpQVtS6zoDpdHWzftW66TQKLyiACKNT7FA
+ l6ykZiSaA8QOJtU/AiGYb5g+EFp6WoLlO5ID1cEc=
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Paul Burton <paul.burton@mips.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Martin Schwidefsky <schwidefsky@de.ibm.com>
+To: linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc: lkml@sdf.org
 
-On Mon, Mar 25, 2019 at 6:37 PM Paul Burton <paul.burton@mips.com> wrote:
-> On Mon, Mar 25, 2019 at 03:47:37PM +0100, Arnd Bergmann wrote:
-> > Add the io_uring and pidfd_send_signal system calls to all architectures.
-> >
-> > These system calls are designed to handle both native and compat tasks,
-> > so all entries are the same across architectures, only arm-compat and
-> > the generic tale still use an old format.
-> >
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> > ---
-> >%
-> > diff --git a/arch/mips/kernel/syscalls/syscall_n64.tbl b/arch/mips/kernel/syscalls/syscall_n64.tbl
-> > index c85502e67b44..c4a49f7d57bb 100644
-> > --- a/arch/mips/kernel/syscalls/syscall_n64.tbl
-> > +++ b/arch/mips/kernel/syscalls/syscall_n64.tbl
-> > @@ -338,3 +338,7 @@
-> >  327  n64     rseq                            sys_rseq
-> >  328  n64     io_pgetevents                   sys_io_pgetevents
-> >  # 329 through 423 are reserved to sync up with other architectures
-> > +424  common  pidfd_send_signal               sys_pidfd_send_signal
-> > +425  common  io_uring_setup                  sys_io_uring_setup
-> > +426  common  io_uring_enter                  sys_io_uring_enter
-> > +427  common  io_uring_register               sys_io_uring_register
->
-> Shouldn't these declare the ABI as "n64"?
->
-> I don't see anywhere that it would actually change the generated code,
-> but a comment at the top of the file says that every entry should use
-> "n64" and so far they all do. Did you have something else in mind here?
+(Cross-posted in case there are generic issues; please trim if
+discussion wanders into single-architecture details.)
 
-You are right, the use of 'common' here is unintentional but harmless,
-and I should have used 'n64' here.
+I was working on some scaling code that can benefit from 64x64->128-bit
+multiplies.  GCC supports an __int128 type on processors with hardware
+support (including z/Arch and MIPS64), but the support was broken on
+early compilers, so it's gated behind CONFIG_ARCH_SUPPORTS_INT128.
 
-We may decide to do things differently in the future, i.e. we could
-have just a single global file for newly added system calls once
-it turns out that the tables are consistent across all architectures,
-but I'd probably go on with the separate identical entries for a bit
-before changing that.
+Currently, of the ten 64-bit architectures Linux supports, that's
+only enabled on x86, ARM, and RISC-V.
 
-     Arnd
+SPARC and HP-PA don't have support.
+
+But that leaves Alpha, Mips, PowerPC, and S/390x.
+
+Current mips64, powerpc64, and s390x gcc seems to generate sensible code
+for mul_u64_u64_shr() in <linux/math64.h> if I cross-compile them.
+
+I don't have easy access to an Alpha cross-compiler to test, but
+as it has UMULH, I suspect it would work, too.
+
+Is there a reason it hasn't been enabled on these platforms?
+
+There might be a MIPS64r6 issue, since r6 changed from DMULTU
+writing the lo and hi registers to DMULU/DMUHU, and gcc 8.3, at
+least, doesn't know how to generate inline code for the latter.
+
+(Note that users *also* check __INT128__, which is defined if GCC
+claims to support __int128, so you don't have to worry about 32-bit
+compiles or ancient compilers.  It only has to be conditional on
+*broken* support.)
+
+
+FWIW, the code I'm working on has this inner loop:
+(https://arxiv.org/abs/1805.10941 for details)
+
+u64 get_random_u64(void);
+u64 get_random_max64(u64 range, u64 lim)
+{
+	unsigned __int128 prod;
+	do {
+		prod = (unsigned __int128)get_random_u64() * range;
+	} while (unlikely((u64)prod < lim));
+	return prod >> 64;
+}
+
+Which turns into these inner loops:
+MIPS:
+.L7:
+	jal	get_random_u64
+	nop
+	dmultu $2,$17
+	mflo	$3
+	sltu	$4,$3,$16
+	bne	$4,$0,.L7
+	mfhi	$2
+
+PowerPC:
+.L9:
+	bl get_random_u64
+	nop
+	mulld 9,3,31
+	mulhdu 3,3,31
+	cmpld 7,30,9
+	bgt 7,.L9
+
+s/390:
+.L13:
+	brasl	%r14,get_random_u64@PLT
+	lgr	%r5,%r2
+	mlgr	%r4,%r10
+	lgr	%r2,%r4
+	clgr	%r11,%r5
+	jh	.L13
+
+I like that the MIPS code leaves the high half of the product in
+the hi register until it tests the low half; I wish PowerPC would
+similarly move the mulhdu *after* the loop, like the following
+hypothetical MIPS R6 code:
+
+.L7:
+	balc	get_random_u64
+	dmulu	$3, $2, $17
+	sltu	$3, $3, $16
+	bnezc	$3, .L7
+	dmuhu	$2, $2, $17
+
+Or this handwritten Alpha code:
+1:
+	bsr	$26, get_random_u64
+	mulq	$0, $9, $1	# $9 is range
+	cmpult	$1, $10, $1	# $10 is lim
+	bne	$1, 1b
+	umulh	$0, $9, $0
