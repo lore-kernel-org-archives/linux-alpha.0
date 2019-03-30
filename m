@@ -1,8 +1,8 @@
-From: Segher Boessenkool <segher@kernel.crashing.org>
-Subject: Re: CONFIG_ARCH_SUPPORTS_INT128: Why not mips, s390, powerpc,
- and alpha?
-Date: Fri, 29 Mar 2019 15:25:58 -0500
-Message-ID: <20190329202557.GL3969@gate.crashing.org>
+From: Heiko Carstens <heiko.carstens@de.ibm.com>
+Subject: Re: CONFIG_ARCH_SUPPORTS_INT128: Why not mips, s390, powerpc, and
+ alpha?
+Date: Sat, 30 Mar 2019 09:43:47 +0100
+Message-ID: <20190330084346.GA3801@osiris>
 References: <201903291307.x2TD772v013534@sdf.org>
 Mime-Version: 1.0
 Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
@@ -24,9 +24,10 @@ Content-Transfer-Encoding: 7bit
 To: George Spelvin <lkml@sdf.org>
 Cc: linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org, linux-alpha@vger.kernel.org
 
-Hi!
-
 On Fri, Mar 29, 2019 at 01:07:07PM +0000, George Spelvin wrote:
+> (Cross-posted in case there are generic issues; please trim if
+> discussion wanders into single-architecture details.)
+> 
 > I was working on some scaling code that can benefit from 64x64->128-bit
 > multiplies.  GCC supports an __int128 type on processors with hardware
 > support (including z/Arch and MIPS64), but the support was broken on
@@ -41,64 +42,15 @@ On Fri, Mar 29, 2019 at 01:07:07PM +0000, George Spelvin wrote:
 > 
 > Current mips64, powerpc64, and s390x gcc seems to generate sensible code
 > for mul_u64_u64_shr() in <linux/math64.h> if I cross-compile them.
-
-Yup.
-
+> 
 > I don't have easy access to an Alpha cross-compiler to test, but
 > as it has UMULH, I suspect it would work, too.
-
-https://mirrors.edge.kernel.org/pub/tools/crosstool/
-
-> u64 get_random_u64(void);
-> u64 get_random_max64(u64 range, u64 lim)
-> {
-> 	unsigned __int128 prod;
-> 	do {
-> 		prod = (unsigned __int128)get_random_u64() * range;
-> 	} while (unlikely((u64)prod < lim));
-> 	return prod >> 64;
-> }
-
-> Which turns into these inner loops:
-> MIPS:
-> .L7:
-> 	jal	get_random_u64
-> 	nop
-> 	dmultu $2,$17
-> 	mflo	$3
-> 	sltu	$4,$3,$16
-> 	bne	$4,$0,.L7
-> 	mfhi	$2
 > 
-> PowerPC:
-> .L9:
-> 	bl get_random_u64
-> 	nop
-> 	mulld 9,3,31
-> 	mulhdu 3,3,31
-> 	cmpld 7,30,9
-> 	bgt 7,.L9
-> 
-> s/390:
-> .L13:
-> 	brasl	%r14,get_random_u64@PLT
-> 	lgr	%r5,%r2
-> 	mlgr	%r4,%r10
-> 	lgr	%r2,%r4
-> 	clgr	%r11,%r5
-> 	jh	.L13
-> 
-> I like that the MIPS code leaves the high half of the product in
-> the hi register until it tests the low half; I wish PowerPC would
-> similarly move the mulhdu *after* the loop,
+> Is there a reason it hasn't been enabled on these platforms?
 
-The MIPS code has the multiplication inside the loop as well, and even
-the mfhi I think: MIPS has delay slots.
+It hasn't been enabled on s390 simply because at least I wasn't aware
+of this config option. Feel free to send a patch, otherwise I will
+enable this. Whatever you prefer.
 
-GCC treats the int128 as one register until it has expanded to RTL, and it
-does not do such loop optimisations after that, apparently.
+Thanks for pointing this out!
 
-File a PR please?  https://gcc.gnu.org/bugzilla/
-
-
-Segher
