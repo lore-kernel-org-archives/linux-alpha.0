@@ -1,14 +1,14 @@
 From: Segher Boessenkool <segher@kernel.crashing.org>
 Subject: Re: CONFIG_ARCH_SUPPORTS_INT128: Why not mips, s390, powerpc,
  and alpha?
-Date: Sat, 30 Mar 2019 18:14:03 -0500
-Message-ID: <20190330231402.GM3969@gate.crashing.org>
-References: <201903291307.x2TD772v013534@sdf.org>
- <20190329200015.ujmjrvn6ta67h74j@tower>
+Date: Sat, 30 Mar 2019 18:52:06 -0500
+Message-ID: <20190330235205.GN3969@gate.crashing.org>
+References: <20190329202557.GL3969@gate.crashing.org>
+ <201903301128.x2UBSLNH017484@sdf.org>
 Mime-Version: 1.0
 Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Disposition: inline
-In-Reply-To: <20190329200015.ujmjrvn6ta67h74j@tower>
+In-Reply-To: <201903301128.x2UBSLNH017484@sdf.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
  <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
@@ -22,29 +22,46 @@ Sender: "Linuxppc-dev"
  <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>, George Spelvin <lkml@sdf.org>, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: George Spelvin <lkml@sdf.org>
+Cc: linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Sat, Mar 30, 2019 at 09:00:15AM +1300, Michael Cree wrote:
-> It does move the umulh inside the loop but that seems sensible since
-> the use of unlikely() implies that the loop is unlikely to be taken
-> so on average it would be a good bet to start the calculation of
-> umulh earlier since it has a few cycles latency to get the result,
-> and it is pipelined so it can be calculated in the shadow of the
-> mulq instruction on the same execution unit.
+On Sat, Mar 30, 2019 at 11:28:21AM +0000, George Spelvin wrote:
+> >> I like that the MIPS code leaves the high half of the product in
+> >> the hi register until it tests the low half; I wish PowerPC would
+> >> similarly move the mulhdu *after* the loop,
+> 
+> > The MIPS code has the multiplication inside the loop as well, and even
+> > the mfhi I think: MIPS has delay slots.
+> 
+> Yes, it's in the delay slot, which is fine (the branch is unlikely,
+> after all).  But it does the compare (sltu) before accessing %hi, which
+> is good as %hi often has a longer latency than %lo.  (On out-of-order
+> cores, of course, none of this matters.)
 
-That may make sense, but it is not what happens, sorry.  It _starts off_
-as part of the loop, and it is never moved outside.
+Yes.  But it does the mfhi on every iteration, while it only needs it for
+the last one (or after the last one).  This may not be more expensive for
+the actual hardware, but it is for GCC's cost model
 
-The only difference between a likely loop and an unlikely loop here I've
-seen (on all targets I tried) is that with a likely loop the loop target
-is aligned, while with an unlikely loop it isn't.
+> > GCC treats the int128 as one register until it has expanded to RTL, and it
+> > does not do such loop optimisations after that, apparently.
+> > 
+> > File a PR please?  https://gcc.gnu.org/bugzilla/
+> 
+> Er...  about what?  The fact that the PowerPC code is not
+> >> PowerPC:
+> >> .L9:
+> >> 	bl get_random_u64
+> >> 	nop
+> >> 	mulld 9,3,31
+> >> 	cmpld 7,30,9
+> >> 	bgt 7,.L9
+> >> 	mulhdu 3,3,31
+> 
+> I'm not sure quite how to explain it in gcc-ese.
 
-> On the older CPUs
-> (before EV6 which are not out-of-order execution) having the umulh
-> inside the loop may be a net gain.
-
-Yes.  Similarly, on Power you can often calculate the high mul at the same
-time as the low mul, for no extra cost.  This may be true on many archs.
+Yeah, exactly, like that.  This transformation is called "loop sinking"
+usually: if anything that is set within a loop is only used after the loop,
+it can be set after the loop (provided you keep the set's sources alive).
 
 
 Segher
