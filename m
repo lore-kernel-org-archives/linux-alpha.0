@@ -1,47 +1,43 @@
-From: Segher Boessenkool <segher@kernel.crashing.org>
-Subject: Re: CONFIG_ARCH_SUPPORTS_INT128: Why not mips, s390, powerpc,
- and alpha?
-Date: Sat, 30 Mar 2019 19:30:21 -0500
-Message-ID: <20190331003020.GO3969@gate.crashing.org>
-References: <20190330084346.GA3801@osiris>
- <201903301030.x2UAUNOg026448@sdf.org>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 2/2] arch: add pidfd and io_uring syscalls everywhere
+Date: Sun, 31 Mar 2019 20:47:13 +1100
+Message-ID: <87y34vl6ji.fsf@concordia.ellerman.id.au>
+References: <20190325143521.34928-1-arnd@arndb.de> <20190325144737.703921-1-arnd@arndb.de>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-Content-Disposition: inline
-In-Reply-To: <201903301030.x2UAUNOg026448@sdf.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190325144737.703921-1-arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: George Spelvin <lkml@sdf.org>
-Cc: linux-s390@vger.kernel.org, linux-alpha@vger.kernel.org, heiko.carstens@de.ibm.com, linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>
 
-On Sat, Mar 30, 2019 at 10:30:23AM +0000, George Spelvin wrote:
-> For s390, that was added on 24 March 2017 by
-> https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=246457
-> which is part of GCC 7.
-> 
-> It also only applies to TARGET_ARCH12, which I am guessing
-> corresponds to HAVE_MARCH_ZEC12_FEATURES.
+Arnd Bergmann <arnd@arndb.de> writes:
+> Add the io_uring and pidfd_send_signal system calls to all architectures.
+>
+> These system calls are designed to handle both native and compat tasks,
+> so all entries are the same across architectures, only arm-compat and
+> the generic tale still use an old format.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/alpha/kernel/syscalls/syscall.tbl      | 4 ++++
+>  arch/arm/tools/syscall.tbl                  | 4 ++++
+>  arch/arm64/include/asm/unistd.h             | 2 +-
+>  arch/arm64/include/asm/unistd32.h           | 8 ++++++++
+>  arch/ia64/kernel/syscalls/syscall.tbl       | 4 ++++
+>  arch/m68k/kernel/syscalls/syscall.tbl       | 4 ++++
+>  arch/microblaze/kernel/syscalls/syscall.tbl | 4 ++++
+>  arch/mips/kernel/syscalls/syscall_n32.tbl   | 4 ++++
+>  arch/mips/kernel/syscalls/syscall_n64.tbl   | 4 ++++
+>  arch/mips/kernel/syscalls/syscall_o32.tbl   | 4 ++++
+>  arch/parisc/kernel/syscalls/syscall.tbl     | 4 ++++
+>  arch/powerpc/kernel/syscalls/syscall.tbl    | 4 ++++
 
-zEC12 is arch10, while z14 is arch12.  See
-https://sourceware.org/binutils/docs-2.32/as/s390-Options.html#s390-Options
-for example; it lists the correspondences, and states "The processor names
-starting with arch refer to the edition number in the Principle of
-Operations manual.  They can be used as alternate processor names and have
-been added for compatibility with the IBM XL compiler."
+Have you done any testing?
 
-Newer GCC does not use the somewhat confusing TARGET_ARCH12 name anymore;
-see https://gcc.gnu.org/r264796 .
+I'd rather not wire up syscalls that have never been tested at all on
+powerpc.
 
-
-Segher
+cheers
