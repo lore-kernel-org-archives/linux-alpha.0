@@ -1,46 +1,54 @@
-From: Paul Burton <paul.burton@mips.com>
-Subject: Re: [PATCH] [v2] arch: add pidfd and io_uring syscalls everywhere
-Date: Mon, 15 Apr 2019 17:19:11 +0000
-Message-ID: <20190415171910.ezhsqmncj2eiw7cc@pburton-laptop>
-References: <20190415143007.2989285-1-arnd@arndb.de>
+From: Jon Masters <jcm@jonmasters.org>
+Subject: Re: [PATCH] x86: Deprecate a.out support
+Date: Mon, 15 Apr 2019 23:19:47 -0400
+Message-ID: <cb8451f5-e49f-a389-2b78-d6f8265ccecf@jonmasters.org>
+References: <CAG48ez1RVd5mQ_Pb6eygQESaZhpQz765OAZYSoPE0kPqfZEXQg@mail.gmail.com>
+ <20190305091904.GB8256@zn.tnic>
+ <20190305122218.GD13380@bombadil.infradead.org>
+ <20190305134347.4be2449c@alans-desktop> <20190305145717.GD8256@zn.tnic>
+ <CAHk-=wi2E4kugAW7BQwNSVwYHOr=B_9EgzBRMpQ2+1dxAqydDg@mail.gmail.com>
+ <20190305173134.GE8256@zn.tnic>
+ <CAHk-=wg0bY=RFhD4NW9x++fC0bME=_-9xM3kexGGM3gefHQTyQ@mail.gmail.com>
+ <20190305181138.GG8256@zn.tnic> <20190305181808.GH8256@zn.tnic>
+ <CAEdQ38G5M3vq9pGBV1iyEViO7JhFuXk5g+VCs-vUH+Z62kNqgQ@mail.gmail.com>
+ <CAHk-=wgt7M6yA5BJCJo0nF22WgPJnN8CvViL9CAJmd+S+Civ6w@mail.gmail.com>
+ <yw1xa7i14btw.fsf@mansr.com>
+ <CAHk-=whD1SumZUBQeuMT-GcciwPxg_jW_TsPAmokYp3sGGCGhA@mail.gmail.com>
+ <yw1x5zsp473a.fsf@mansr.com>
+ <CAHk-=wiU7xacTqDfm-x29-meyJWNd_X95K0T8FQMcDgy-yo3Qw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=wavesemi.onmicrosoft.com; s=selector1-wavecomp-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R0LkaZmIAoSPOG2sRgQfljHs///NujAgFS3mww58ebs=;
- b=GSy7QBTorNHx7h1o9R7BBTfbPWD5W0Hh4sk9HweHDaKDieGzXtOa6UV9/aOCPBL6QbIOnkl/FCf0GwTx0XomV547kMBtrK+ZKTH+Pn8jd3dV1qydvJtoX3ObhZ1r78hP1HcNGMNvx6IBDE/MPGzo+2zQT85jh8v1fhPUrLWX/FU=
-In-Reply-To: <20190415143007.2989285-1-arnd@arndb.de>
+In-Reply-To: <CAHk-=wiU7xacTqDfm-x29-meyJWNd_X95K0T8FQMcDgy-yo3Qw@mail.gmail.com>
 Content-Language: en-US
-Content-ID: <0BFCBE85B6EE3C42A598251C8BA649BF@namprd22.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Heiko Carstens <heiko.carstens@de.ibm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, James Hogan <jhogan@kernel.org>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Martin Schwidefsky <s>
+Content-Type: text/plain; charset="utf-8"
+To: Linus Torvalds <torvalds@linux-foundation.org>, =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>
+Cc: Matt Turner <mattst88@gmail.com>, Borislav Petkov <bp@alien8.de>, Alan Cox <gnomes@lxorguk.ukuu.org.uk>, Matthew Wilcox <willy@infradead.org>, Jann Horn <jannh@google.com>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, kernel list <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, Linux API <linux-api@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-m68k@lists.linux-m68k.org
 
-Hi Arnd,
+Hi Linus,
 
-On Mon, Apr 15, 2019 at 04:22:57PM +0200, Arnd Bergmann wrote:
-> Add the io_uring and pidfd_send_signal system calls to all architectures.
->=20
-> These system calls are designed to handle both native and compat tasks,
-> so all entries are the same across architectures, only arm-compat and
-> the generic tale still use an old format.
->=20
-> Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
-> Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com> (s390)
-> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> Changes since v1:
-> - fix s390 table
-> - use 'n64' tag in mips-n64 instead of common.
+I'm Jon, and I just bought my first Alpha. What can I say, I was late to
+the party, and I probably need to get out more. Actually, I wanted it
+for its memory consistency model, or (some would say) lack thereof.
 
-Thanks for taking care of this:
+On 3/11/19 3:03 PM, Linus Torvalds wrote:
+> On Mon, Mar 11, 2019 at 11:08 AM Måns Rullgård <mans@mansr.com> wrote:
+>>
+>> The latest version I have is 5.1, and that uses ECOFF.
+> 
+> ECOFF _is_ a.out as far as Linux is concerned.
+> 
+> So Linux basically treats ECOFF as "regular a.out with just some
+> header extensions".
+> 
+> We don't have any specific support for ECOFF.
+> 
+> I _think_. Again, it's been years and years.
 
-  Acked-by: Paul Burton <paul.burton@mips.com> # MIPS
+...so removing a.out would break various boot tooling as well. I'm still
+working on getting my Miata up and running upstream kernels (should be
+shortly) but I'm happy to help out testing any proposals.
 
-Thanks,
-    Paul
+Jon.
