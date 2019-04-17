@@ -1,17 +1,17 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH net-next 3/3] net: socket: implement 64-bit timestamps
-Date: Tue, 16 Apr 2019 22:32:50 +0200
-Message-ID: <20190416203620.539628-3-arnd@arndb.de>
-References: <20190416203620.539628-1-arnd@arndb.de>
+Subject: [PATCH 3/3 v3] net: socket: implement 64-bit timestamps
+Date: Wed, 17 Apr 2019 22:56:11 +0200
+Message-ID: <20190417205659.2036372-1-arnd@arndb.de>
+References: <20190417205404.1877560-1-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190416203620.539628-1-arnd@arndb.de>
+In-Reply-To: <20190417205404.1877560-1-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>
-Cc: Johannes Berg <johannes.berg@intel.com>, Deepa Dinamani <deepa.kernel@gmail.com>, Willem de Bruijn <willemb@google.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-sh@vger.kernel.org, linux-arch@vger.kernel.org, netdev@vger.kernel.org
+To: netdev@vger.kernel.org
+Cc: y2038@lists.linaro.org, Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Deepa Dinamani <deepa.kernel@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, "David S. Miller" <davem@davemloft.net>, Willem de Bruijn <willemb@google.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-sh@vger.kernel.org, linux-arch@vger.kernel.org
 
 The 'timeval' and 'timespec' data structures used for socket timestamps
 are going to be redefined in user space based on 64-bit time_t in future
@@ -36,6 +36,8 @@ specific layout. The new command number is only used when they are
 actually different.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+v3: no changes since v1
 ---
  arch/alpha/include/uapi/asm/sockios.h  |  4 ++--
  arch/mips/include/uapi/asm/sockios.h   |  4 ++--
