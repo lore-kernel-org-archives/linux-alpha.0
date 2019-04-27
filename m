@@ -1,218 +1,133 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 3/3 v3] net: socket: implement 64-bit timestamps
-Date: Wed, 17 Apr 2019 22:56:11 +0200
-Message-ID: <20190417205659.2036372-1-arnd@arndb.de>
-References: <20190417205404.1877560-1-arnd@arndb.de>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 3.16 144/202] alpha: fix page fault handling for r16-r18
+ targets
+Date: Sat, 27 Apr 2019 16:13:09 +0100
+Message-ID: <lsq.1556377989.31751765@decadent.org.uk>
+References: <lsq.1556377988.384060557@decadent.org.uk>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190417205404.1877560-1-arnd@arndb.de>
+Content-Disposition: inline
+In-Reply-To: <lsq.1556377988.384060557@decadent.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: netdev@vger.kernel.org
-Cc: y2038@lists.linaro.org, Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Deepa Dinamani <deepa.kernel@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paul.burton@mips.com>, James Hogan <jhogan@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, "David S. Miller" <davem@davemloft.net>, Willem de Bruijn <willemb@google.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-sh@vger.kernel.org, linux-arch@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: akpm@linux-foundation.org, Denis Kirjanov <kda@linux-powerpc.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, Sergei Trofimovich <slyfox@gentoo.org>, Matt Turner <mattst88@gmail.com>
 
-The 'timeval' and 'timespec' data structures used for socket timestamps
-are going to be redefined in user space based on 64-bit time_t in future
-versions of the C library to deal with the y2038 overflow problem,
-which breaks the ABI definition.
+3.16.66-rc1 review patch.  If anyone has any objections, please let me know.
 
-Unlike many modern ioctl commands, SIOCGSTAMP and SIOCGSTAMPNS do not
-use the _IOR() macro to encode the size of the transferred data, so it
-remains ambiguous whether the application uses the old or new layout.
+------------------
 
-The best workaround I could find is rather ugly: we redefine the command
-code based on the size of the respective data structure with a ternary
-operator. This lets it get evaluated as late as possible, hopefully after
-that structure is visible to the caller. We cannot use an #ifdef here,
-because inux/sockios.h might have been included before any libc header
-that could determine the size of time_t.
+From: Sergei Trofimovich <slyfox@gentoo.org>
 
-The ioctl implementation now interprets the new command codes as always
-referring to the 64-bit structure on all architectures, while the old
-architecture specific command code still refers to the old architecture
-specific layout. The new command number is only used when they are
-actually different.
+commit 491af60ffb848b59e82f7c9145833222e0bf27a5 upstream.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fix page fault handling code to fixup r16-r18 registers.
+Before the patch code had off-by-two registers bug.
+This bug caused overwriting of ps,pc,gp registers instead
+of fixing intended r16,r17,r18 (see `struct pt_regs`).
+
+More details:
+
+Initially Dmitry noticed a kernel bug as a failure
+on strace test suite. Test passes unmapped userspace
+pointer to io_submit:
+
+```c
+    #include <err.h>
+    #include <unistd.h>
+    #include <sys/mman.h>
+    #include <asm/unistd.h>
+    int main(void)
+    {
+        unsigned long ctx = 0;
+        if (syscall(__NR_io_setup, 1, &ctx))
+            err(1, "io_setup");
+        const size_t page_size = sysconf(_SC_PAGESIZE);
+        const size_t size = page_size * 2;
+        void *ptr = mmap(NULL, size, PROT_READ | PROT_WRITE,
+                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        if (MAP_FAILED == ptr)
+            err(1, "mmap(%zu)", size);
+        if (munmap(ptr, size))
+            err(1, "munmap");
+        syscall(__NR_io_submit, ctx, 1, ptr + page_size);
+        syscall(__NR_io_destroy, ctx);
+        return 0;
+    }
+```
+
+Running this test causes kernel to crash when handling page fault:
+
+```
+    Unable to handle kernel paging request at virtual address ffffffffffff9468
+    CPU 3
+    aio(26027): Oops 0
+    pc = [<fffffc00004eddf8>]  ra = [<fffffc00004edd5c>]  ps = 0000    Not tainted
+    pc is at sys_io_submit+0x108/0x200
+    ra is at sys_io_submit+0x6c/0x200
+    v0 = fffffc00c58e6300  t0 = fffffffffffffff2  t1 = 000002000025e000
+    t2 = fffffc01f159fef8  t3 = fffffc0001009640  t4 = fffffc0000e0f6e0
+    t5 = 0000020001002e9e  t6 = 4c41564e49452031  t7 = fffffc01f159c000
+    s0 = 0000000000000002  s1 = 000002000025e000  s2 = 0000000000000000
+    s3 = 0000000000000000  s4 = 0000000000000000  s5 = fffffffffffffff2
+    s6 = fffffc00c58e6300
+    a0 = fffffc00c58e6300  a1 = 0000000000000000  a2 = 000002000025e000
+    a3 = 00000200001ac260  a4 = 00000200001ac1e8  a5 = 0000000000000001
+    t8 = 0000000000000008  t9 = 000000011f8bce30  t10= 00000200001ac440
+    t11= 0000000000000000  pv = fffffc00006fd320  at = 0000000000000000
+    gp = 0000000000000000  sp = 00000000265fd174
+    Disabling lock debugging due to kernel taint
+    Trace:
+    [<fffffc0000311404>] entSys+0xa4/0xc0
+```
+
+Here `gp` has invalid value. `gp is s overwritten by a fixup for the
+following page fault handler in `io_submit` syscall handler:
+
+```
+    __se_sys_io_submit
+    ...
+        ldq     a1,0(t1)
+        bne     t0,4280 <__se_sys_io_submit+0x180>
+```
+
+After a page fault `t0` should contain -EFALUT and `a1` is 0.
+Instead `gp` was overwritten in place of `a1`.
+
+This happens due to a off-by-two bug in `dpf_reg()` for `r16-r18`
+(aka `a0-a2`).
+
+I think the bug went unnoticed for a long time as `gp` is one
+of scratch registers. Any kernel function call would re-calculate `gp`.
+
+Dmitry tracked down the bug origin back to 2.1.32 kernel version
+where trap_a{0,1,2} fields were inserted into struct pt_regs.
+And even before that `dpf_reg()` contained off-by-one error.
+
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Reported-and-reviewed-by: "Dmitry V. Levin" <ldv@altlinux.org>
+Bug: https://bugs.gentoo.org/672040
+Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 ---
-v3: no changes since v1
----
- arch/alpha/include/uapi/asm/sockios.h  |  4 ++--
- arch/mips/include/uapi/asm/sockios.h   |  4 ++--
- arch/sh/include/uapi/asm/sockios.h     |  5 +++--
- arch/xtensa/include/uapi/asm/sockios.h |  4 ++--
- include/uapi/asm-generic/sockios.h     |  4 ++--
- include/uapi/linux/sockios.h           | 21 +++++++++++++++++++++
- net/socket.c                           | 24 ++++++++++++++++++------
- 7 files changed, 50 insertions(+), 16 deletions(-)
+ arch/alpha/mm/fault.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/include/uapi/asm/sockios.h b/arch/alpha/include/uapi/asm/sockios.h
-index ba287e4b01bf..af92bc27c3be 100644
---- a/arch/alpha/include/uapi/asm/sockios.h
-+++ b/arch/alpha/include/uapi/asm/sockios.h
-@@ -11,7 +11,7 @@
- #define SIOCSPGRP	_IOW('s', 8, pid_t)
- #define SIOCGPGRP	_IOR('s', 9, pid_t)
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -78,7 +78,7 @@ __load_new_mm_context(struct mm_struct *
+ /* Macro for exception fixup code to access integer registers.  */
+ #define dpf_reg(r)							\
+ 	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
+-				 (r) <= 18 ? (r)+8 : (r)-10])
++				 (r) <= 18 ? (r)+10 : (r)-10])
  
--#define SIOCGSTAMP	0x8906		/* Get stamp (timeval) */
--#define SIOCGSTAMPNS	0x8907		/* Get stamp (timespec) */
-+#define SIOCGSTAMP_OLD	0x8906		/* Get stamp (timeval) */
-+#define SIOCGSTAMPNS_OLD 0x8907		/* Get stamp (timespec) */
- 
- #endif /* _ASM_ALPHA_SOCKIOS_H */
-diff --git a/arch/mips/include/uapi/asm/sockios.h b/arch/mips/include/uapi/asm/sockios.h
-index 5b40a88593fa..66f60234f290 100644
---- a/arch/mips/include/uapi/asm/sockios.h
-+++ b/arch/mips/include/uapi/asm/sockios.h
-@@ -21,7 +21,7 @@
- #define SIOCSPGRP	_IOW('s', 8, pid_t)
- #define SIOCGPGRP	_IOR('s', 9, pid_t)
- 
--#define SIOCGSTAMP	0x8906		/* Get stamp (timeval) */
--#define SIOCGSTAMPNS	0x8907		/* Get stamp (timespec) */
-+#define SIOCGSTAMP_OLD	0x8906		/* Get stamp (timeval) */
-+#define SIOCGSTAMPNS_OLD 0x8907		/* Get stamp (timespec) */
- 
- #endif /* _ASM_SOCKIOS_H */
-diff --git a/arch/sh/include/uapi/asm/sockios.h b/arch/sh/include/uapi/asm/sockios.h
-index 17313d2c3527..ef18a668456d 100644
---- a/arch/sh/include/uapi/asm/sockios.h
-+++ b/arch/sh/include/uapi/asm/sockios.h
-@@ -10,6 +10,7 @@
- #define SIOCSPGRP	_IOW('s', 8, pid_t)
- #define SIOCGPGRP	_IOR('s', 9, pid_t)
- 
--#define SIOCGSTAMP	_IOR('s', 100, struct timeval) /* Get stamp (timeval) */
--#define SIOCGSTAMPNS	_IOR('s', 101, struct timespec) /* Get stamp (timespec) */
-+#define SIOCGSTAMP_OLD	_IOR('s', 100, struct timeval) /* Get stamp (timeval) */
-+#define SIOCGSTAMPNS_OLD _IOR('s', 101, struct timespec) /* Get stamp (timespec) */
-+
- #endif /* __ASM_SH_SOCKIOS_H */
-diff --git a/arch/xtensa/include/uapi/asm/sockios.h b/arch/xtensa/include/uapi/asm/sockios.h
-index fb8ac3607189..1a1f58f4b75a 100644
---- a/arch/xtensa/include/uapi/asm/sockios.h
-+++ b/arch/xtensa/include/uapi/asm/sockios.h
-@@ -26,7 +26,7 @@
- #define SIOCSPGRP	_IOW('s', 8, pid_t)
- #define SIOCGPGRP	_IOR('s', 9, pid_t)
- 
--#define SIOCGSTAMP	0x8906		/* Get stamp (timeval) */
--#define SIOCGSTAMPNS	0x8907		/* Get stamp (timespec) */
-+#define SIOCGSTAMP_OLD	0x8906		/* Get stamp (timeval) */
-+#define SIOCGSTAMPNS_OLD 0x8907		/* Get stamp (timespec) */
- 
- #endif	/* _XTENSA_SOCKIOS_H */
-diff --git a/include/uapi/asm-generic/sockios.h b/include/uapi/asm-generic/sockios.h
-index 64f658c7cec2..44fa3ed70483 100644
---- a/include/uapi/asm-generic/sockios.h
-+++ b/include/uapi/asm-generic/sockios.h
-@@ -8,7 +8,7 @@
- #define FIOGETOWN	0x8903
- #define SIOCGPGRP	0x8904
- #define SIOCATMARK	0x8905
--#define SIOCGSTAMP	0x8906		/* Get stamp (timeval) */
--#define SIOCGSTAMPNS	0x8907		/* Get stamp (timespec) */
-+#define SIOCGSTAMP_OLD	0x8906		/* Get stamp (timeval) */
-+#define SIOCGSTAMPNS_OLD 0x8907		/* Get stamp (timespec) */
- 
- #endif /* __ASM_GENERIC_SOCKIOS_H */
-diff --git a/include/uapi/linux/sockios.h b/include/uapi/linux/sockios.h
-index d393e9ed3964..7d1bccbbef78 100644
---- a/include/uapi/linux/sockios.h
-+++ b/include/uapi/linux/sockios.h
-@@ -19,6 +19,7 @@
- #ifndef _LINUX_SOCKIOS_H
- #define _LINUX_SOCKIOS_H
- 
-+#include <asm/bitsperlong.h>
- #include <asm/sockios.h>
- 
- /* Linux-specific socket ioctls */
-@@ -27,6 +28,26 @@
- 
- #define SOCK_IOC_TYPE	0x89
- 
-+/*
-+ * the timeval/timespec data structure layout is defined by libc,
-+ * so we need to cover both possible versions on 32-bit.
-+ */
-+/* Get stamp (timeval) */
-+#define SIOCGSTAMP_NEW	 _IOR(SOCK_IOC_TYPE, 0x06, long long[2])
-+/* Get stamp (timespec) */
-+#define SIOCGSTAMPNS_NEW _IOR(SOCK_IOC_TYPE, 0x07, long long[2])
-+
-+#if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
-+/* on 64-bit and x32, avoid the ?: operator */
-+#define SIOCGSTAMP	SIOCGSTAMP_OLD
-+#define SIOCGSTAMPNS	SIOCGSTAMPNS_OLD
-+#else
-+#define SIOCGSTAMP	((sizeof(struct timeval))  == 8 ? \
-+			 SIOCGSTAMP_OLD   : SIOCGSTAMP_NEW)
-+#define SIOCGSTAMPNS	((sizeof(struct timespec)) == 8 ? \
-+			 SIOCGSTAMPNS_OLD : SIOCGSTAMPNS_NEW)
-+#endif
-+
- /* Routing table calls. */
- #define SIOCADDRT	0x890B		/* add routing table entry	*/
- #define SIOCDELRT	0x890C		/* delete routing table entry	*/
-diff --git a/net/socket.c b/net/socket.c
-index ab624d42ead5..8d9d4fc7d962 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1164,14 +1164,24 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
- 
- 			err = open_related_ns(&net->ns, get_net_ns);
- 			break;
--		case SIOCGSTAMP:
--		case SIOCGSTAMPNS:
-+		case SIOCGSTAMP_OLD:
-+		case SIOCGSTAMPNS_OLD:
- 			if (!sock->ops->gettstamp) {
- 				err = -ENOIOCTLCMD;
- 				break;
- 			}
- 			err = sock->ops->gettstamp(sock, argp,
--						   cmd == SIOCGSTAMP, false);
-+						   cmd == SIOCGSTAMP_OLD,
-+						   !IS_ENABLED(CONFIG_64BIT));
-+		case SIOCGSTAMP_NEW:
-+		case SIOCGSTAMPNS_NEW:
-+			if (!sock->ops->gettstamp) {
-+				err = -ENOIOCTLCMD;
-+				break;
-+			}
-+			err = sock->ops->gettstamp(sock, argp,
-+						   cmd == SIOCGSTAMP_NEW,
-+						   false);
- 			break;
- 		default:
- 			err = sock_do_ioctl(net, sock, cmd, arg);
-@@ -3324,11 +3334,11 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
- 	case SIOCADDRT:
- 	case SIOCDELRT:
- 		return routing_ioctl(net, sock, cmd, argp);
--	case SIOCGSTAMP:
--	case SIOCGSTAMPNS:
-+	case SIOCGSTAMP_OLD:
-+	case SIOCGSTAMPNS_OLD:
- 		if (!sock->ops->gettstamp)
- 			return -ENOIOCTLCMD;
--		return sock->ops->gettstamp(sock, argp, cmd == SIOCGSTAMP,
-+		return sock->ops->gettstamp(sock, argp, cmd == SIOCGSTAMP_OLD,
- 					    !COMPAT_USE_64BIT_TIME);
- 
- 	case SIOCBONDSLAVEINFOQUERY:
-@@ -3348,6 +3358,8 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
- 	case SIOCADDDLCI:
- 	case SIOCDELDLCI:
- 	case SIOCGSKNS:
-+	case SIOCGSTAMP_NEW:
-+	case SIOCGSTAMPNS_NEW:
- 		return sock_ioctl(file, cmd, arg);
- 
- 	case SIOCGIFFLAGS:
--- 
-2.20.0
+ asmlinkage void
+ do_page_fault(unsigned long address, unsigned long mmcsr,
 
