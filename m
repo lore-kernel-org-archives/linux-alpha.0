@@ -1,11 +1,11 @@
-From: Matthew Wilcox <willy@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 Subject: Re: [PATCH 1/2] open: add close_range()
-Date: Tue, 21 May 2019 12:59:28 -0700
-Message-ID: <20190521195928.GB6738@bombadil.infradead.org>
+Date: Tue, 21 May 2019 13:23:13 -0700
+Message-ID: <CAHk-=wgtHm4t71oKbykE=awiVv2H2wCy8yH0L_FsyhHQ5OSO+Q@mail.gmail.com>
 References: <20190521150006.GJ17978@ZenIV.linux.org.uk>
  <20190521113448.20654-1-christian@brauner.io>
  <28114.1558456227@warthog.procyon.org.uk>
- <20190521192009.GK17978@ZenIV.linux.org.uk>
+ <20190521164141.rbehqnghiej3gfua@brauner.io>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -13,17 +13,23 @@ Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infrad
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
 	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=av/UN6sMWicLPSY0BirHluQNdGd4rQF19iZrTrKSDaU=; b=kqahrrOFQ52Zw8
-	GCOvifbo3x8a+utmsyP+a4PIjdf22wXXK16pPFRA2l58MmwBzEeHWfy13YrlcIfkPJ7WLMsVyGPu/
-	Yio3KhWKp7oy0CA4LQ9qu3Lvf4fP2r40scXjxuY8YaM0yzPtMGkPoLVsyrusX03cGXS6eiL1who+z
-	DwT/9bs8WdW+0Cx/9HA62Gyt86Dykr07eD2G9EbGtUwod8Vf1416BGCYwUPuQuUmjDmEZ27JvADA5
-	mF//flg2FUC2nyOo3x88JG3/Yxgr5IIhbKkc7+d/+mJS/3V901XoH3tLAjaol7h0gTL7w/wWisOXq
-	1d3xVK5r6x+g1My8MePA==;
-Content-Disposition: inline
-In-Reply-To: <20190521192009.GK17978@ZenIV.linux.org.uk>
+	List-Owner; bh=4kcaAIaDR0H3GIEDIQLcBEDRl3VIG8RlAF/TPdFW/Qo=; b=ByvtOV/tniVCjx
+	rQxI1bYyt65F7fqMHFv1ONJmDbs51AVL5J8Rg7Y6g9+Qo1093/P/ucM+xIgxVj1+Wv+RdXyDJYUkt
+	Gj3WM6159SZQlkvawWIg/70emzZ4Js33l+IKrd5vm3oixEv61KB7P1x9skSgEjV8YW/xEIoYgB4eB
+	xdVXCeOQpqhjgSBYLYCLyAnj++8YJyuWoCyBGR+ZqxkcUSCrmwNTons7s11OO1a2iHEa8FCeBbOPj
+	6CXwoFh0GDwj+7KQY5/BD/0ECt5rujCWhSsntIlmy/G8E31pmC8BXsGUcO92ztKdRYgPHYmvpc4XP
+	Dt3q6OfwKin6w0R7nbAA==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=linux-foundation.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=mwA8SKkNo0NB1BSSFbQlGkhBkIi6dkzdh19hX1ggqqc=;
+ b=E9cuWHFCD4Bgx1lOv97Ctr9bLKO3EjHQDpiZyM5FZUFuOxpsSHENK8V3oPkAEWY2CT
+ 4OwJ0l1afyS0KlYgZEStFftLyE7H7JbMd/BnYgfS8lVdq73pcYKuqkBJcrl7o7GLJZCx
+ 7466NcnIhfaDTvK1H+iwihEveSzhyKGC/2Zgk=
+In-Reply-To: <20190521164141.rbehqnghiej3gfua@brauner.io>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
@@ -34,26 +40,27 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, oleg@redhat.com, David Howells <dhowells@redhat.com>, linux-kselftest@vger.kernel.org, sparclinux@vger.kernel.org, shuah@kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, miklos@szeredi.hu, x86@kernel.org, torvalds@linux-foundation.org, Christian Brauner <christian@brauner.io>, linux-mips@vger.kernel.org, linux-xtensa@linux-xtensa.org, tkjos@android.com, arnd@arndb.de, jannh@google.com, linux-m68k@lists.linux-m68k.org, tglx@linutronix.de, ldv@altlinux.org, linux-arm-kernel@lists.infradead.org, fweimer@redhat.com, linux-parisc@vger.kernel.org, linux-api@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-fsdevel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: Christian Brauner <christian@brauner.io>
+Cc: linux-ia64@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, Oleg Nesterov <oleg@redhat.com>, David Howells <dhowells@redhat.com>, "open list:KERNEL SELFTEST FRAMEWORK" <linux-kselftest@vger.kernel.org>, sparclinux@vger.kernel.org, Shuah Khan <shuah@kernel.org>, linux-arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, Miklos Szeredi <miklos@szeredi.hu>, the arch/x86 maintainers <x86@kernel.org>, linux-mips@vger.kernel.org, linux-xtensa@linux-xtensa.org, tkjos@android.com, Arnd Bergmann <arnd@arndb.de>, Jann Horn <jannh@google.com>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Al Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, "Dmitry V. Levin" <ldv@altlinux.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Florian Weimer <fweimer@redhat.com>, linux-parisc@vger.kernel.org, Linux API <linux-api@vger.kernel.org>
 
-On Tue, May 21, 2019 at 08:20:09PM +0100, Al Viro wrote:
-> On Tue, May 21, 2019 at 05:30:27PM +0100, David Howells wrote:
-> 
-> > If we can live with close_from(int first) rather than close_range(), then this
-> > can perhaps be done a lot more efficiently by:
-> > 
-> > 	new = alloc_fdtable(first);
-> > 	spin_lock(&files->file_lock);
-> > 	old = files_fdtable(files);
-> > 	copy_fds(new, old, 0, first - 1);
-> > 	rcu_assign_pointer(files->fdt, new);
-> > 	spin_unlock(&files->file_lock);
-> > 	clear_fds(old, 0, first - 1);
-> > 	close_fdt_from(old, first);
-> > 	kfree_rcu(old);
-> 
-> I really hate to think how that would interact with POSIX locks...
+On Tue, May 21, 2019 at 9:41 AM Christian Brauner <christian@brauner.io> wrote:
+>
+> Yeah, you mentioned this before. I do like being able to specify an
+> upper bound to have the ability to place fds strategically after said
+> upper bound.
 
-POSIX locks store current->files in fl_owner; David's resizing the
-underlying files->fdt, just like growing from 64 to 256 fds.
+I suspect that's the case.
+
+And if somebody really wants to just close everything and uses a large
+upper bound, we can - if we really want to - just compare the upper
+bound to the file table size, and do an optimized case for that. We do
+that upper bound comparison anyway to limit the size of the walk, so
+*if* it's a big deal, that case could then do the whole "shrink
+fdtable" case too.
+
+But I don't believe it's worth optimizing for unless somebody really
+has a load where that is shown to be a big deal.   Just do the silly
+and simple loop, and add a cond_resched() in the loop, like
+close_files() does for the "we have a _lot_ of files open" case.
+
+                   Linus
