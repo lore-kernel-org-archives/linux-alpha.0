@@ -1,59 +1,222 @@
 From: Christian Brauner <christian@brauner.io>
-Subject: Re: [PATCH 1/2] open: add close_range()
-Date: Wed, 22 May 2019 10:12:11 +0200
-Message-ID: <CAHrFyr4NV_5Z7TRSXTaurd4KCTLiHqKb47dN=bdY46HiL9ZY3Q@mail.gmail.com>
-References: <20190521150006.GJ17978@ZenIV.linux.org.uk> <20190521113448.20654-1-christian@brauner.io>
- <28114.1558456227@warthog.procyon.org.uk> <20190521164141.rbehqnghiej3gfua@brauner.io>
- <CAHk-=wgtHm4t71oKbykE=awiVv2H2wCy8yH0L_FsyhHQ5OSO+Q@mail.gmail.com>
+Subject: [PATCH v1 2/2] tests: add close_range() tests
+Date: Wed, 22 May 2019 17:52:59 +0200
+Message-ID: <20190522155259.11174-2-christian@brauner.io>
+References: <20190522155259.11174-1-christian@brauner.io>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=brauner.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NinRxNHyDYbCj8IbjH00ChDPuWJUmzxEB5UBBCZfvuk=;
-        b=FQpPrYcaQxCAFGTYiUsPu0qLO+TyOcW7gshxdKkzEdBEoeF7zfGLnQVrcgcr4gKCeX
-         LJ4YXrL36Z8UOIkkUcBOLv8jo3+1wy2Zrr1Gv+mEl7u90rBwnDVcVlXzHgwabis+F7I/
-         dlJlteIhWCGDFh11b+aiyTTGML6DsZQmYr7FjOpjo+237NiSY/93FSEYu5SmcuC+kMHi
-         w+QbDlfq/QnsLdgPfA6Jf+xdMdism6B4eELfwRuNPZvO4gmtKOqxk/k31Xt7g6ek0i6A
-         6O4E/le0sudnktBxl+9AFEIeQt8N5n9ZAVs90K2h9eXQLV3Rz/8qfSLtahw9cvbBcJ3h
-         1JTg==
-In-Reply-To: <CAHk-=wgtHm4t71oKbykE=awiVv2H2wCy8yH0L_FsyhHQ5OSO+Q@mail.gmail.com>
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yF9i8CBoIre9ittu6TL9sPlugb9HPbhX86BuS4x2hi8=;
+        b=RYzExnyoOv3w5Fb8VLaJHKEDYxs4aenFqlTgzrIoyILRfHlvMh2wGo5lxkZtzBmSIr
+         kOGCfp5ne9EqBjqB6SzVHfmT6akW35gkdJVszwCJfKB8OV9YsU+yLxNBGrh9EpI2AGJh
+         UC9CvWQkTTUhhU+Qs7HlgDA9/qRwQSTqEeE1QaaLxOvM3rcT5L1U8BZ/5wc1ZG5x0i7E
+         oVzw1tA9/4XF6mpiT+HTIGS38DpLhBMAGWhCo8hqTjqdKKGpJ7IGV/2j7ZITikN0fESr
+         Plage1J7mGBtdyltzXMUFjtQKVS37nFTFKuGUm5GPSBVyEtAs/0A2m/IvTHzNtOz+P81
+         l4yw==
+In-Reply-To: <20190522155259.11174-1-christian@brauner.io>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: David Howells <dhowells@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, Linux API <linux-api@vger.kernel.org>, Jann Horn <jannh@google.com>, Florian Weimer <fweimer@redhat.com>, Oleg Nesterov <oleg@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Shuah Khan <shuah@kernel.org>, Todd Kjos <tkjos@android.com>, "Dmitry V. Levin" <ldv@altlinux.org>, Miklos Szeredi <miklos@szeredi.hu>, alpha <linux-alpha@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-ia64@vger.kernel.org, linux-m68k <linux-m68k@lists.linux-m68k.org>, linux-mips@vger.kernel.org, Parisc List <linux-parisc@vger.kernel.org>
+To: viro@zeniv.linux.org.uk, linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org, torvalds@linux-foundation.org, fweimer@redhat.com
+Cc: jannh@google.com, oleg@redhat.com, tglx@linutronix.de, arnd@arndb.de, shuah@kernel.org, dhowells@redhat.com, tkjos@android.com, ldv@altlinux.org, miklos@szeredi.hu, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, linux-kselftest@vger.kernel.org, x86@kernel.org, Christian Brauner <christian@brauner.io>
 
-On Tue, May 21, 2019 at 10:23 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Tue, May 21, 2019 at 9:41 AM Christian Brauner <christian@brauner.io> wrote:
-> >
-> > Yeah, you mentioned this before. I do like being able to specify an
-> > upper bound to have the ability to place fds strategically after said
-> > upper bound.
->
-> I suspect that's the case.
->
-> And if somebody really wants to just close everything and uses a large
-> upper bound, we can - if we really want to - just compare the upper
-> bound to the file table size, and do an optimized case for that. We do
-> that upper bound comparison anyway to limit the size of the walk, so
-> *if* it's a big deal, that case could then do the whole "shrink
-> fdtable" case too.
+This adds basic tests for the new close_range() syscall.
+- test that no invalid flags can be passed
+- test that a range of file descriptors is correctly closed
+- test that a range of file descriptors is correctly closed if there there
+  are already closed file descriptors in the range
+- test that max_fd is correctly capped to the current fdtable maximum
 
-Makes sense.
+Signed-off-by: Christian Brauner <christian@brauner.io>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Jann Horn <jannh@google.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Dmitry V. Levin <ldv@altlinux.org>
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Florian Weimer <fweimer@redhat.com>
+Cc: linux-api@vger.kernel.org
+---
+v1: unchanged
+---
+ tools/testing/selftests/Makefile              |   1 +
+ tools/testing/selftests/core/.gitignore       |   1 +
+ tools/testing/selftests/core/Makefile         |   6 +
+ .../testing/selftests/core/close_range_test.c | 128 ++++++++++++++++++
+ 4 files changed, 136 insertions(+)
+ create mode 100644 tools/testing/selftests/core/.gitignore
+ create mode 100644 tools/testing/selftests/core/Makefile
+ create mode 100644 tools/testing/selftests/core/close_range_test.c
 
->
-> But I don't believe it's worth optimizing for unless somebody really
-> has a load where that is shown to be a big deal.   Just do the silly
-> and simple loop, and add a cond_resched() in the loop, like
-> close_files() does for the "we have a _lot_ of files open" case.
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index 9781ca79794a..06e57fabbff9 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -4,6 +4,7 @@ TARGETS += bpf
+ TARGETS += breakpoints
+ TARGETS += capabilities
+ TARGETS += cgroup
++TARGETS += core
+ TARGETS += cpufreq
+ TARGETS += cpu-hotplug
+ TARGETS += drivers/dma-buf
+diff --git a/tools/testing/selftests/core/.gitignore b/tools/testing/selftests/core/.gitignore
+new file mode 100644
+index 000000000000..6e6712ce5817
+--- /dev/null
++++ b/tools/testing/selftests/core/.gitignore
+@@ -0,0 +1 @@
++close_range_test
+diff --git a/tools/testing/selftests/core/Makefile b/tools/testing/selftests/core/Makefile
+new file mode 100644
+index 000000000000..de3ae68aa345
+--- /dev/null
++++ b/tools/testing/selftests/core/Makefile
+@@ -0,0 +1,6 @@
++CFLAGS += -g -I../../../../usr/include/ -I../../../../include
++
++TEST_GEN_PROGS := close_range_test
++
++include ../lib.mk
++
+diff --git a/tools/testing/selftests/core/close_range_test.c b/tools/testing/selftests/core/close_range_test.c
+new file mode 100644
+index 000000000000..ab10cd205ab9
+--- /dev/null
++++ b/tools/testing/selftests/core/close_range_test.c
+@@ -0,0 +1,128 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#define _GNU_SOURCE
++#include <errno.h>
++#include <fcntl.h>
++#include <linux/kernel.h>
++#include <limits.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <syscall.h>
++#include <unistd.h>
++
++#include "../kselftest.h"
++
++static inline int sys_close_range(unsigned int fd, unsigned int max_fd,
++				  unsigned int flags)
++{
++	return syscall(__NR_close_range, fd, max_fd, flags);
++}
++
++#ifndef ARRAY_SIZE
++#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
++#endif
++
++int main(int argc, char **argv)
++{
++	const char *test_name = "close_range";
++	int i, ret;
++	int open_fds[100];
++	int fd_max, fd_mid, fd_min;
++
++	ksft_set_plan(7);
++
++	for (i = 0; i < ARRAY_SIZE(open_fds); i++) {
++		int fd;
++
++		fd = open("/dev/null", O_RDONLY | O_CLOEXEC);
++		if (fd < 0) {
++			if (errno == ENOENT)
++				ksft_exit_skip(
++					"%s test: skipping test since /dev/null does not exist\n",
++					test_name);
++
++			ksft_exit_fail_msg(
++				"%s test: %s - failed to open /dev/null\n",
++				strerror(errno), test_name);
++		}
++
++		open_fds[i] = fd;
++	}
++
++	fd_min = open_fds[0];
++	fd_max = open_fds[99];
++
++	ret = sys_close_range(fd_min, fd_max, 1);
++	if (!ret)
++		ksft_exit_fail_msg(
++			"%s test: managed to pass invalid flag value\n",
++			test_name);
++	ksft_test_result_pass("do not allow invalid flag values for close_range()\n");
++
++	fd_mid = open_fds[50];
++	ret = sys_close_range(fd_min, fd_mid, 0);
++	if (ret < 0)
++		ksft_exit_fail_msg(
++			"%s test: Failed to close range of file descriptors from 4 to 50\n",
++			test_name);
++	ksft_test_result_pass("close_range() from %d to %d\n", fd_min, fd_mid);
++
++	for (i = 0; i <= 50; i++) {
++		ret = fcntl(open_fds[i], F_GETFL);
++		if (ret >= 0)
++			ksft_exit_fail_msg(
++				"%s test: Failed to close range of file descriptors from 4 to 50\n",
++				test_name);
++	}
++	ksft_test_result_pass("fcntl() verify closed range from %d to %d\n", fd_min, fd_mid);
++
++	/* create a couple of gaps */
++	close(57);
++	close(78);
++	close(81);
++	close(82);
++	close(84);
++	close(90);
++
++	fd_mid = open_fds[51];
++	/* Choose slightly lower limit and leave some fds for a later test */
++	fd_max = open_fds[92];
++	ret = sys_close_range(fd_mid, fd_max, 0);
++	if (ret < 0)
++		ksft_exit_fail_msg(
++			"%s test: Failed to close range of file descriptors from 51 to 100\n",
++			test_name);
++	ksft_test_result_pass("close_range() from %d to %d\n", fd_mid, fd_max);
++
++	for (i = 51; i <= 92; i++) {
++		ret = fcntl(open_fds[i], F_GETFL);
++		if (ret >= 0)
++			ksft_exit_fail_msg(
++				"%s test: Failed to close range of file descriptors from 51 to 100\n",
++				test_name);
++	}
++	ksft_test_result_pass("fcntl() verify closed range from %d to %d\n", fd_mid, fd_max);
++
++	fd_mid = open_fds[93];
++	fd_max = open_fds[99];
++	/* test that the kernel caps and still closes all fds */
++	ret = sys_close_range(fd_mid, UINT_MAX, 0);
++	if (ret < 0)
++		ksft_exit_fail_msg(
++			"%s test: Failed to close range of file descriptors from 51 to 100\n",
++			test_name);
++	ksft_test_result_pass("close_range() from %d to %d\n", fd_mid, fd_max);
++
++	for (i = 93; i < 100; i++) {
++		ret = fcntl(open_fds[i], F_GETFL);
++		if (ret >= 0)
++			ksft_exit_fail_msg(
++				"%s test: Failed to close range of file descriptors from 51 to 100\n",
++				test_name);
++	}
++	ksft_test_result_pass("fcntl() verify closed range from %d to %d\n", fd_mid, fd_max);
++
++	return ksft_exit_pass();
++}
+-- 
+2.21.0
 
-Ok. I will resend a v1 later with the cond_resched() logic you and Al
-suggested added.
-
-Thanks!
-Christian
