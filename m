@@ -1,44 +1,35 @@
-From: Cyril Hrubis <chrubis@suse.cz>
-Subject: Re: [PATCH] [RFC] Remove bdflush syscall stub
-Date: Tue, 28 May 2019 13:20:23 +0200
-Message-ID: <20190528112022.GA16683@rei>
-References: <20190528101012.11402-1-chrubis@suse.cz>
- <mvmr28idgfu.fsf@linux-m68k.org>
- <20190528104017.GA11969@rei>
- <87ftoyg7t3.fsf@oldenburg2.str.redhat.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH 4/5] kconfig: make arch/*/configs/defconfig the default
+ of KBUILD_DEFCONFIG
+Date: Tue, 28 May 2019 15:12:33 +0100
+Message-ID: <20190528141232.GC32006@arrakis.emea.arm.com>
+References: <20190527143725.12542-1-yamada.masahiro@socionext.com>
+ <20190527143725.12542-4-yamada.masahiro@socionext.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87ftoyg7t3.fsf@oldenburg2.str.redhat.com>
+In-Reply-To: <20190527143725.12542-4-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Florian Weimer <fweimer@redhat.com>
-Cc: Andreas Schwab <schwab@linux-m68k.org>, lkml <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: linux-kbuild@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, Firoz Khan <firoz.khan@linaro.org>, Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, Greentime Hu <green.hu@gmail.com>, Guo Ren <guoren@kernel.org>, Palmer Dabbelt <palmer@sifive.com>, Will Deacon <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org, Albert Ou <aou@eecs.berkeley.edu>, Luc Van Oostenryck <luc.vanoostenryck@gmail.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-kernel@vger.kernel.org, Vincent Chen <deanbo422@gmail.com>, linux-alpha@vger.kernel.org, Martin Schwidefsky <schwidefsky@de.ibm.com>
 
-Hi!
-> >> > I've tested the patch on i386. Before the patch calling bdflush() with
-> >> > attempt to tune a variable returned 0 and after the patch the syscall
-> >> > fails with EINVAL.
-> >> 
-> >> Should be ENOSYS, doesn't it?
-> >
-> > My bad, the LTP syscall wrapper handles ENOSYS and produces skipped
-> > results based on that.
-> >
-> > EINVAL is what you get for not yet implemented syscalls, i.e. new
-> > syscall on old kernel.
-> 
-> EINVAL?  Is that a bdflush-specific thing, test-specific, or is itmore
-> general?
-> 
-> glibc has fallback paths that test for ENOSYS only.  EINVAL will be
-> passed to the application, skipping fallback.  For missing system calls,
-> this is not what we want.
+On Mon, May 27, 2019 at 11:37:24PM +0900, Masahiro Yamada wrote:
+> diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+> index b025304bde46..970c41a30ed3 100644
+> --- a/arch/arm64/Makefile
+> +++ b/arch/arm64/Makefile
+> @@ -30,8 +30,6 @@ LDFLAGS_vmlinux	+= --fix-cortex-a53-843419
+>    endif
+>  endif
+>  
+> -KBUILD_DEFCONFIG := defconfig
+> -
+>  # Check for binutils support for specific extensions
+>  lseinstr := $(call as-instr,.arch_extension lse,-DCONFIG_AS_LSE=1)
 
-The syscall returns ENOSYS after this change, sorry for the confusion.
+For arm64:
 
--- 
-Cyril Hrubis
-chrubis@suse.cz
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
