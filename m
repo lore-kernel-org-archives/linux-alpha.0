@@ -1,168 +1,101 @@
-From: Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH 4/5] kconfig: make arch/*/configs/defconfig the default of
- KBUILD_DEFCONFIG
-Date: Mon, 27 May 2019 23:37:24 +0900
-Message-ID: <20190527143725.12542-4-yamada.masahiro@socionext.com>
-References: <20190527143725.12542-1-yamada.masahiro@socionext.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH v2 2/2] tests: add close_range() tests
+Date: Tue, 28 May 2019 12:33:41 +1000
+Message-ID: <8736kzqpdm.fsf@concordia.ellerman.id.au>
+References: <20190523154747.15162-1-christian@brauner.io> <20190523154747.15162-3-christian@brauner.io>
 Mime-Version: 1.0
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190523154747.15162-3-christian@brauner.io>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
-	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Owner;
-	bh=w73jFOodj9sjFvQQpL/two+0FaWIGkblmd/v4ObVUWs=; b=aIHuV1yux43JgrUWPRlp53uZN8
-	z0SOTUusah9qS7C7T5VkNDt87ALZfNIiKhnScp8WOz18WpnLTNe0zEN6Kn3O4we9jukeoAHaK23OH
-	mCdKTQ0rWTWF0uv7PUg+9R+pf0NMY041T+EK0yTVaLsx/5lEGVCUEd4jZIDA+iDdlLXG1dNYBpNqO
-	6gMMj2qwM//eNl3nyHornvLOn2IjoLou6JX2S/XpJ3CRUTBJNH5/kZ7rezGORU+N1XJFTObDu5CHt
-	MTgbVS54h/p3Vx3oXGk3QU5p3VNp7Iiaq/nXGfvI3DeWULkv3vmDAm/m7n6m2Fy5/Er28YKhVBiz5
-	EJCxRt4A==;
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com x4REc8hp015915
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
- s=dec2015msa; t=1558967891;
- bh=aMC7wmc6MMrYj/SHWn59QiqWoFmT1b06tH2CVxBYQ/k=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=OKUBRFm8XZeO61bzi1Dt9OL9aFjL/GMFhjLgL9UsMdBmtaKiMZhsQ+ax4GKFt48Cn
- QXnq5+/DwPeKbyfSh+X5hpA4lMmO3AfHt3HO5+8MzEDoOJnnm1DgbJv2P4HY6KZOMB
- 8uBa9R/Z6424lD+ZwCQdB/+QXNkW9F9pbLIrZIHedwIqSFoPsQQmTYbGVnBHOfeMtp
- 1G87BxhCj+OMqnMfu6o5d3iVOARn4eDMu7DllObLccIp3d3LGqZ3EDl6yeVVkcm9p4
- WieBNMO7gyMrM4TyG5JnuaJWofywUCzfq+PQD9CH2lNwzCVA3NZjH1KsDoC5efuVGv
- NffcJi2LM4IdQ==
-In-Reply-To: <20190527143725.12542-1-yamada.masahiro@socionext.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-kbuild@vger.kernel.org
-Cc: linux-s390@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, Albert Ou <aou@eecs.berkeley.edu>, Heiko Carstens <heiko.carstens@de.ibm.com>, Luc Van Oostenryck <luc.vanoostenryck@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Catalin Marinas <catalin.marinas@arm.com>, Palmer Dabbelt <palmer@sifive.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Masahiro Yamada <yamada.masahiro@socionext.com>, Firoz Khan <firoz.khan@linaro.org>, Greentime Hu <green.hu@gmail.com>, linux-alpha@vger.kernel.org, Martin Schwidefsky <schwidefsky@de.ibm.com>, Guo Ren <guoren@kernel.org>, Matt Turner <mattst88@gmail.com>, Vincent Chen <deanbo422@gmail.com>, linux-riscv@lists.infradead.org, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
+To: Christian Brauner <christian@brauner.io>, viro@zeniv.linux.org.uk, linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org, torvalds@linux-foundation.org, fweimer@redhat.com
+Cc: jannh@google.com, oleg@redhat.com, tglx@linutronix.de, arnd@arndb.de, shuah@kernel.org, dhowells@redhat.com, tkjos@android.com, ldv@altlinux.org, miklos@szeredi.hu, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@vger.kernel.org, linux-kselftest@vger.kernel.org, x86@kernel.org, Christian Brauner <christian@brauner.io>
 
-Until recently, if KBUILD_DEFCONFIG was not set by the arch Makefile,
-the default path arch/*/defconfig was used.
+Christian Brauner <christian@brauner.io> writes:
+> This adds basic tests for the new close_range() syscall.
+> - test that no invalid flags can be passed
+> - test that a range of file descriptors is correctly closed
+> - test that a range of file descriptors is correctly closed if there there
+>   are already closed file descriptors in the range
+> - test that max_fd is correctly capped to the current fdtable maximum
+>
+> Signed-off-by: Christian Brauner <christian@brauner.io>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Jann Horn <jannh@google.com>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: Dmitry V. Levin <ldv@altlinux.org>
+> Cc: Oleg Nesterov <oleg@redhat.com>
+> Cc: Linus Torvalds <torvalds@linux-foundation.org>
+> Cc: Florian Weimer <fweimer@redhat.com>
+> Cc: linux-api@vger.kernel.org
+> ---
+> v1: unchanged
+> v2:
+> - Christian Brauner <christian@brauner.io>:
+>   - verify that close_range() correctly closes a single file descriptor
+> ---
+>  tools/testing/selftests/Makefile              |   1 +
+>  tools/testing/selftests/core/.gitignore       |   1 +
+>  tools/testing/selftests/core/Makefile         |   6 +
+>  .../testing/selftests/core/close_range_test.c | 142 ++++++++++++++++++
+>  4 files changed, 150 insertions(+)
+>  create mode 100644 tools/testing/selftests/core/.gitignore
+>  create mode 100644 tools/testing/selftests/core/Makefile
+>  create mode 100644 tools/testing/selftests/core/close_range_test.c
+>
+> diff --git a/tools/testing/selftests/core/.gitignore b/tools/testing/selftests/core/.gitignore
+> new file mode 100644
+> index 000000000000..6e6712ce5817
+> --- /dev/null
+> +++ b/tools/testing/selftests/core/.gitignore
+> @@ -0,0 +1 @@
+> +close_range_test
+> diff --git a/tools/testing/selftests/core/Makefile b/tools/testing/selftests/core/Makefile
+> new file mode 100644
+> index 000000000000..de3ae68aa345
+> --- /dev/null
+> +++ b/tools/testing/selftests/core/Makefile
+> @@ -0,0 +1,6 @@
+> +CFLAGS += -g -I../../../../usr/include/ -I../../../../include
 
-The last users of the default are gone by the following commits:
+Your second -I pulls the unexported kernel headers in, userspace
+programs shouldn't include unexported kernel headers.
 
-- Commit f3e20ad67b4c ("s390: move arch/s390/defconfig to
-  arch/s390/configs/defconfig")
+It breaks the build on powerpc with eg:
 
-- Commit 986a13769c4b ("alpha: move arch/alpha/defconfig to
-  arch/alpha/configs/defconfig")
+  powerpc64le-linux-gnu-gcc -g -I../../../../usr/include/ -I../../../../include    close_range_test.c  -o /output/kselftest/core/close_range_test
+  In file included from /usr/powerpc64le-linux-gnu/include/bits/fcntl-linux.h:346,
+                   from /usr/powerpc64le-linux-gnu/include/bits/fcntl.h:62,
+                   from /usr/powerpc64le-linux-gnu/include/fcntl.h:35,
+                   from close_range_test.c:5:
+  ../../../../include/linux/falloc.h:13:2: error: unknown type name '__s16'
+    __s16  l_type;
+    ^~~~~
 
-Let's set arch/*/configs/defconfig as a new default. This saves
-KBUILD_DEFCONFIG for some architectures.
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
+Did you do that on purpose or just copy it from one of the other
+Makefiles? :)
 
- arch/alpha/Makefile      | 2 --
- arch/arm64/Makefile      | 2 --
- arch/csky/Makefile       | 1 -
- arch/nds32/Makefile      | 2 --
- arch/riscv/Makefile      | 2 --
- arch/s390/Makefile       | 2 --
- scripts/kconfig/Makefile | 4 ++++
- 7 files changed, 4 insertions(+), 11 deletions(-)
+If you're just wanting to get the syscall number when the headers
+haven't been exported, I think the best solution is to do eg:
 
-diff --git a/arch/alpha/Makefile b/arch/alpha/Makefile
-index b3314e0dcb6f..12dee59b011c 100644
---- a/arch/alpha/Makefile
-+++ b/arch/alpha/Makefile
-@@ -8,8 +8,6 @@
- # Copyright (C) 1994 by Linus Torvalds
- #
- 
--KBUILD_DEFCONFIG := defconfig
--
- NM := $(NM) -B
- 
- LDFLAGS_vmlinux	:= -static -N #-relax
-diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-index b025304bde46..970c41a30ed3 100644
---- a/arch/arm64/Makefile
-+++ b/arch/arm64/Makefile
-@@ -30,8 +30,6 @@ LDFLAGS_vmlinux	+= --fix-cortex-a53-843419
-   endif
- endif
- 
--KBUILD_DEFCONFIG := defconfig
--
- # Check for binutils support for specific extensions
- lseinstr := $(call as-instr,.arch_extension lse,-DCONFIG_AS_LSE=1)
- 
-diff --git a/arch/csky/Makefile b/arch/csky/Makefile
-index f9aab9157c4a..fb1bbbd91954 100644
---- a/arch/csky/Makefile
-+++ b/arch/csky/Makefile
-@@ -1,7 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- OBJCOPYFLAGS		:=-O binary
- GZFLAGS			:=-9
--KBUILD_DEFCONFIG	:= defconfig
- 
- ifdef CONFIG_CPU_HAS_FPU
- FPUEXT = f
-diff --git a/arch/nds32/Makefile b/arch/nds32/Makefile
-index 14dab5ad88ef..ccdca7142020 100644
---- a/arch/nds32/Makefile
-+++ b/arch/nds32/Makefile
-@@ -2,8 +2,6 @@
- LDFLAGS_vmlinux	:= --no-undefined -X
- OBJCOPYFLAGS	:= -O binary -R .note -R .note.gnu.build-id -R .comment -S
- 
--KBUILD_DEFCONFIG := defconfig
--
- ifdef CONFIG_FUNCTION_TRACER
- arch-y += -malways-save-lp -mno-relax
- endif
-diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
-index 03e760267657..7a117be8297c 100644
---- a/arch/riscv/Makefile
-+++ b/arch/riscv/Makefile
-@@ -16,8 +16,6 @@ endif
- KBUILD_AFLAGS_MODULE += -fPIC
- KBUILD_CFLAGS_MODULE += -fPIC
- 
--KBUILD_DEFCONFIG = defconfig
--
- export BITS
- ifeq ($(CONFIG_ARCH_RV64I),y)
- 	BITS := 64
-diff --git a/arch/s390/Makefile b/arch/s390/Makefile
-index de8521fc9de5..df1d6a150f30 100644
---- a/arch/s390/Makefile
-+++ b/arch/s390/Makefile
-@@ -10,8 +10,6 @@
- # Copyright (C) 1994 by Linus Torvalds
- #
- 
--KBUILD_DEFCONFIG := defconfig
--
- LD_BFD		:= elf64-s390
- KBUILD_LDFLAGS	:= -m elf64_s390
- KBUILD_AFLAGS_MODULE += -fPIC
-diff --git a/scripts/kconfig/Makefile b/scripts/kconfig/Makefile
-index 059642bd6584..ab30fe724c43 100644
---- a/scripts/kconfig/Makefile
-+++ b/scripts/kconfig/Makefile
-@@ -12,6 +12,10 @@ else
- Kconfig := Kconfig
- endif
- 
-+ifndef KBUILD_DEFCONFIG
-+KBUILD_DEFCONFIG := defconfig
-+endif
+diff --git a/tools/testing/selftests/core/close_range_test.c b/tools/testing/selftests/core/close_range_test.c
+index d6e6079d3d53..34c6f02f25de 100644
+--- a/tools/testing/selftests/core/close_range_test.c
++++ b/tools/testing/selftests/core/close_range_test.c
+@@ -14,6 +14,10 @@
+
+ #include "../kselftest.h"
+
++#ifndef __NR_close_range
++#define __NR_close_range       435
++#endif
 +
- ifeq ($(quiet),silent_)
- silent := -s
- endif
--- 
-2.17.1
+ static inline int sys_close_range(unsigned int fd, unsigned int max_fd,
+                                  unsigned int flags)
+ {
+
+
+cheers
