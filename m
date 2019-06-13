@@ -1,35 +1,80 @@
-From: Catalin Marinas <catalin.marinas@arm.com>
-Subject: Re: [PATCH 4/5] kconfig: make arch/*/configs/defconfig the default
- of KBUILD_DEFCONFIG
-Date: Tue, 28 May 2019 15:12:33 +0100
-Message-ID: <20190528141232.GC32006@arrakis.emea.arm.com>
-References: <20190527143725.12542-1-yamada.masahiro@socionext.com>
- <20190527143725.12542-4-yamada.masahiro@socionext.com>
-Mime-Version: 1.0
+From: Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] Drop unused isa_page_to_bus
+Date: Thu, 13 Jun 2019 18:11:55 +0200
+Message-ID: <20190613161155.16946-1-steve@sk2.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190527143725.12542-4-yamada.masahiro@socionext.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: linux-kbuild@vger.kernel.org, Paul Walmsley <paul@pwsan.com>, Firoz Khan <firoz.khan@linaro.org>, Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, Greentime Hu <green.hu@gmail.com>, Guo Ren <guoren@kernel.org>, Palmer Dabbelt <palmer@sifive.com>, Will Deacon <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org, Albert Ou <aou@eecs.berkeley.edu>, Luc Van Oostenryck <luc.vanoostenryck@gmail.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-kernel@vger.kernel.org, Vincent Chen <deanbo422@gmail.com>, linux-alpha@vger.kernel.org, Martin Schwidefsky <schwidefsky@de.ibm.com>
+To: x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
 
-On Mon, May 27, 2019 at 11:37:24PM +0900, Masahiro Yamada wrote:
-> diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-> index b025304bde46..970c41a30ed3 100644
-> --- a/arch/arm64/Makefile
-> +++ b/arch/arm64/Makefile
-> @@ -30,8 +30,6 @@ LDFLAGS_vmlinux	+= --fix-cortex-a53-843419
->    endif
->  endif
->  
-> -KBUILD_DEFCONFIG := defconfig
-> -
->  # Check for binutils support for specific extensions
->  lseinstr := $(call as-instr,.arch_extension lse,-DCONFIG_AS_LSE=1)
+isa_page_to_bus is deprecated and no longer used anywhere, this patch
+removes it entirely.
 
-For arm64:
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ arch/alpha/include/asm/io.h | 5 -----
+ arch/arm/include/asm/io.h   | 1 -
+ arch/mips/include/asm/io.h  | 2 --
+ arch/x86/include/asm/io.h   | 1 -
+ 4 files changed, 9 deletions(-)
 
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+index ccf9d65166bb..af2c0063dc75 100644
+--- a/arch/alpha/include/asm/io.h
++++ b/arch/alpha/include/asm/io.h
+@@ -93,11 +93,6 @@ static inline void * phys_to_virt(unsigned long address)
+ 
+ #define page_to_phys(page)	page_to_pa(page)
+ 
+-static inline dma_addr_t __deprecated isa_page_to_bus(struct page *page)
+-{
+-	return page_to_phys(page);
+-}
+-
+ /* Maximum PIO space address supported?  */
+ #define IO_SPACE_LIMIT 0xffff
+ 
+diff --git a/arch/arm/include/asm/io.h b/arch/arm/include/asm/io.h
+index 7e22c81398c4..f96ec93679b7 100644
+--- a/arch/arm/include/asm/io.h
++++ b/arch/arm/include/asm/io.h
+@@ -33,7 +33,6 @@
+  * ISA I/O bus memory addresses are 1:1 with the physical address.
+  */
+ #define isa_virt_to_bus virt_to_phys
+-#define isa_page_to_bus page_to_phys
+ #define isa_bus_to_virt phys_to_virt
+ 
+ /*
+diff --git a/arch/mips/include/asm/io.h b/arch/mips/include/asm/io.h
+index 29997e42480e..1790274c27eb 100644
+--- a/arch/mips/include/asm/io.h
++++ b/arch/mips/include/asm/io.h
+@@ -149,8 +149,6 @@ static inline void *isa_bus_to_virt(unsigned long address)
+ 	return phys_to_virt(address);
+ }
+ 
+-#define isa_page_to_bus page_to_phys
+-
+ /*
+  * However PCI ones are not necessarily 1:1 and therefore these interfaces
+  * are forbidden in portable PCI drivers.
+diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
+index a06a9f8294ea..6bed97ff6db2 100644
+--- a/arch/x86/include/asm/io.h
++++ b/arch/x86/include/asm/io.h
+@@ -165,7 +165,6 @@ static inline unsigned int isa_virt_to_bus(volatile void *address)
+ {
+ 	return (unsigned int)virt_to_phys(address);
+ }
+-#define isa_page_to_bus(page)	((unsigned int)page_to_phys(page))
+ #define isa_bus_to_virt		phys_to_virt
+ 
+ /*
+-- 
+2.11.0
+
