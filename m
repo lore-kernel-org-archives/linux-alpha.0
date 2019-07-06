@@ -1,431 +1,242 @@
-From: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-Subject: Re: [PATCH v3 1/2] pid: add pidfd_open()
-Date: Thu, 27 Jun 2019 16:57:18 +0300
-Message-ID: <6d1cba6c-4dac-4d31-653e-e4211c75803a@yandex-team.ru>
-References: <20190520155630.21684-1-christian@brauner.io>
+From: Aleksa Sarai <cyphar@cyphar.com>
+Subject: [PATCH v9 00/10] namei: openat2(2) path resolution restrictions
+Date: Sun,  7 Jul 2019 00:57:27 +1000
+Message-ID: <20190706145737.5299-1-cyphar@cyphar.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Content-Type:
-	Content-Transfer-Encoding:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:Message-ID:From:
-	References:To:Subject:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=ILYT4gl42h2+3SjTk31uLslWIxoYQzuVAoEYzRK1//Q=; b=WIWa4EmKgsw3wbGv7IDOsUPQm
-	uFP8R0vUcK6dHMaWfzQnH/wS8sMKNgy8lZAvNycyC/9/Qn1Su4fV46UuEFZpRgY74V+JSfzue8YCp
-	JhuhkrbzKZPbP089+a5vEDUHLO01I/iPVmQK0GmufuTx2wAi+l+LYm+6ERliTRgxjiraPBvrDSS9t
-	qg7BlkvpSurJfeCthq1HbAwJzj7MojXYItV76tnDgspm8tv7gGxGdSJ/8kvFAZ806i5kSaUmfvttk
-	RjFtjoc4S2/4IGolbDwtPuuZBwsO4IKs2nTd7sNP9VPF7N7a55ilZkSFezwZWFC8THThyvHEIkFIt
-	EgPdCZqDg==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru;
- s=default; 
- t=1561643843; bh=SGYkaK+Rlbq+Uc7ERgjWGNaZgL9QynbVGqBIggRLS3w=;
- h=In-Reply-To:Message-ID:From:Date:References:To:Subject:Cc;
- b=TmIBiFqI6uM3l95NO9ustp4eRdIjTeBMjtd31VpWL0RprfGb6zWlFQ5y9pFXfBs/X
- 1FTPfF7JiMfFZYD5r7z2GONAAxznFsTe2jnC4xfFGggamopna8V2i8JlEDp1xZ+HDY
- vvA/q8ee7ai60eFDK3uq1Cd7RpciF0IizCey09ys=
-In-Reply-To: <20190520155630.21684-1-christian@brauner.io>
-Content-Language: en-CA
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Christian Brauner <christian@brauner.io>, jannh@google.com, oleg@redhat.com, viro@zeniv.linux.org.uk, torvalds@linux-foundation.org, linux-kernel@vger.kernel.org, arnd@arndb.de
-Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, linux-mips@vger.kernel.org, dhowells@redhat.com, joel@joelfernandes.org, linux-kselftest@vger.kernel.org, sparclinux@vger.kernel.org, elena.reshetova@intel.com, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, dancol@google.com, kernel-team@android.com, serge@hallyn.com, linux-xtensa@linux-xtensa.org, keescook@chromium.org, linux-m68k@lists.linux-m68k.org, luto@kernel.org, tglx@linutronix.de, surenb@google.com, linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-api@vger.kernel.org, cyphar@cyphar.com, luto@amacapital.net, ebiederm@xmission.com, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, linuxppc-dev@lists.ozlabs.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Al Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>
+Cc: Aleksa Sarai <cyphar@cyphar.com>, Eric Biederman <ebiederm@xmission.com>, Andy Lutomirski <luto@kernel.org>, Jann Horn <jannh@google.com>, Christian Brauner <christian@brauner.io>, David Drysdale <drysdale@google.com>, Tycho Andersen <tycho@tycho.ws>, Kees Cook <keescook@chromium.org>, Linus Torvalds <torvalds@linux-foundation.org>, containers@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Aleksa Sarai <asarai@suse.de>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 20.05.2019 18:56, Christian Brauner wrote:
-> This adds the pidfd_open() syscall. It allows a caller to retrieve pollable
-> pidfds for a process which did not get created via CLONE_PIDFD, i.e. for a
-> process that is created via traditional fork()/clone() calls that is only
-> referenced by a PID:
-> 
-> int pidfd = pidfd_open(1234, 0);
-> ret = pidfd_send_signal(pidfd, SIGSTOP, NULL, 0);
-> 
-> With the introduction of pidfds through CLONE_PIDFD it is possible to
-> created pidfds at process creation time.
-> However, a lot of processes get created with traditional PID-based calls
-> such as fork() or clone() (without CLONE_PIDFD). For these processes a
-> caller can currently not create a pollable pidfd. This is a problem for
-> Android's low memory killer (LMK) and service managers such as systemd.
-> Both are examples of tools that want to make use of pidfds to get reliable
-> notification of process exit for non-parents (pidfd polling) and race-free
-> signal sending (pidfd_send_signal()). They intend to switch to this API for
-> process supervision/management as soon as possible. Having no way to get
-> pollable pidfds from PID-only processes is one of the biggest blockers for
-> them in adopting this api. With pidfd_open() making it possible to retrieve
-> pidfds for PID-based processes we enable them to adopt this api.
-> 
-> In line with Arnd's recent changes to consolidate syscall numbers across
-> architectures, I have added the pidfd_open() syscall to all architectures
-> at the same time.
+Patch changelog:
+  v9:
+    * Replace resolveat(2) with openat2(2). [Linus]
+    * Output a warning to dmesg if may_open_magiclink() is violated.
+    * Add an openat2(O_CREAT) testcase.
+  v8:
+    * Default to O_CLOEXEC to match other new fd-creation syscalls
+      (users can always disable O_CLOEXEC afterwards). [Christian]
+    * Implement magic-link restrictions based on their mode. This is
+      done through a series of masks and is designed to avoid breaking
+      users -- most users don't have chained O_PATH fd re-opens.
+    * Add O_EMPTYPATH which allows for fd re-opening without needing
+      procfs. This would help some users of fd re-opening, and with the
+      changes to magic-link permissions we now have the right semantics
+      for such a flag.
+    * Add selftests for resolveat(2), O_EMPTYPATH, and the magic-link
+      mode semantics.
+  v7:
+    * Remove execveat(2) support for these flags since it might
+      result in some pretty hairy security issues with setuid binaries.
+      There are other avenues we can go down to solve the issues with
+      CVE-2019-5736. [Jann]
+    * Reserve an additional bit in resolveat(2) for the eXecute access
+      mode if we end up implementing it.
+  v6:
+    * Drop O_* flags API to the new LOOKUP_ path scoping bits and
+      instead introduce resolveat(2) as an alternative method of
+      obtaining an O_PATH. The justification for this is included in
+      patch 6 (though switching back to O_* flags is trivial).
+  v5:
+    * In response to CVE-2019-5736 (one of the vectors showed that
+      open(2)+fexec(3) cannot be used to scope binfmt_script's implicit
+      open_exec()), AT_* flags have been re-added and are now piped
+      through to binfmt_script (and other binfmt_* that use open_exec)
+      but are only supported for execveat(2) for now.
+  v4:
+    * Remove AT_* flag reservations, as they require more discussion.
+    * Switch to path_is_under() over __d_path() for breakout checking.
+    * Make O_XDEV no longer block openat("/tmp", "/", O_XDEV) -- dirfd
+      is now ignored for absolute paths to match other flags.
+    * Improve the dirfd_path_init() refactor and move it to a separate
+      commit.
+    * Remove reference to Linux-capsicum.
+    * Switch "proclink" name to magic-link.
+  v3: [resend]
+  v2:
+    * Made ".." resolution with AT_THIS_ROOT and AT_BENEATH safe(r) with
+      some semi-aggressive __d_path checking (see patch 3).
+    * Disallowed "proclinks" with AT_THIS_ROOT and AT_BENEATH, in the
+      hopes they can be re-enabled once safe.
+    * Removed the selftests as they will be reimplemented as xfstests.
+    * Removed stat(2) support, since you can already get it through
+      O_PATH and fstatat(2).
 
-As I see pidfd_open() works only within current pid-namespace.
+The need for some sort of control over VFS's path resolution (to avoid
+malicious paths resulting in inadvertent breakouts) has been a very
+long-standing desire of many userspace applications. This patchset is a
+revival of Al Viro's old AT_NO_JUMPS[1,2] patchset (which was a variant
+of David Drysdale's O_BENEATH patchset[3] which was a spin-off of the
+Capsicum project[4]) with a few additions and changes made based on the
+previous discussion within [5] as well as others I felt were useful.
 
-Have you considered separate argument for pidns-fd or flag for opening pid in
-pid-ns referred by nsproxy->pid_ns_for_children set by setns.
+In line with the conclusions of the original discussion of AT_NO_JUMPS,
+the flag has been split up into separate flags. However, instead of
+being an openat(2) flag it is provided through a new syscall openat2(2)
+which provides an alternative way to get an O_PATH file descriptor (the
+reasoning for doing this is included in patch 6). The following new
+LOOKUP_ flags are added:
 
-This could be used for use cases I've tried to cover by syscall "translate_pid"
-https://lkml.org/lkml/2018/6/1/788
+  * LOOKUP_XDEV blocks all mountpoint crossings (upwards, downwards, or
+    through absolute links). Absolute pathnames alone in openat(2) do
+    not trigger this.
 
-> 
-> Signed-off-by: Christian Brauner <christian@brauner.io>
-> Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Joel Fernandes (Google) <joel@joelfernandes.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Jann Horn <jannh@google.com>
-> Cc: David Howells <dhowells@redhat.com>
-> Cc: Andy Lutomirsky <luto@kernel.org>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Aleksa Sarai <cyphar@cyphar.com>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Al Viro <viro@zeniv.linux.org.uk>
-> Cc: linux-api@vger.kernel.org
-> ---
-> v1:
-> - kbuild test robot <lkp@intel.com>:
->    - add missing entry for pidfd_open to arch/arm/tools/syscall.tbl
-> - Oleg Nesterov <oleg@redhat.com>:
->    - use simpler thread-group leader check
-> v2:
-> - Oleg Nesterov <oleg@redhat.com>:
->    - avoid using additional variable
->    - remove unneeded comment
-> - Arnd Bergmann <arnd@arndb.de>:
->    - switch from 428 to 434 since the new mount api has taken it
->    - bump syscall numbers in arch/arm64/include/asm/unistd.h
-> - Joel Fernandes (Google) <joel@joelfernandes.org>:
->    - switch from ESRCH to EINVAL when the passed-in pid does not refer to a
->      thread-group leader
-> - Christian Brauner <christian@brauner.io>:
->    - rebase on v5.2-rc1
->    - adapt syscall number to account for new mount api syscalls
-> v3:
-> - Arnd Bergmann <arnd@arndb.de>:
->    - add missing syscall entries for mips-o32 and mips-n64
-> ---
->   arch/alpha/kernel/syscalls/syscall.tbl      |  1 +
->   arch/arm/tools/syscall.tbl                  |  1 +
->   arch/arm64/include/asm/unistd.h             |  2 +-
->   arch/arm64/include/asm/unistd32.h           |  2 +
->   arch/ia64/kernel/syscalls/syscall.tbl       |  1 +
->   arch/m68k/kernel/syscalls/syscall.tbl       |  1 +
->   arch/microblaze/kernel/syscalls/syscall.tbl |  1 +
->   arch/mips/kernel/syscalls/syscall_n32.tbl   |  1 +
->   arch/mips/kernel/syscalls/syscall_n64.tbl   |  1 +
->   arch/mips/kernel/syscalls/syscall_o32.tbl   |  1 +
->   arch/parisc/kernel/syscalls/syscall.tbl     |  1 +
->   arch/powerpc/kernel/syscalls/syscall.tbl    |  1 +
->   arch/s390/kernel/syscalls/syscall.tbl       |  1 +
->   arch/sh/kernel/syscalls/syscall.tbl         |  1 +
->   arch/sparc/kernel/syscalls/syscall.tbl      |  1 +
->   arch/x86/entry/syscalls/syscall_32.tbl      |  1 +
->   arch/x86/entry/syscalls/syscall_64.tbl      |  1 +
->   arch/xtensa/kernel/syscalls/syscall.tbl     |  1 +
->   include/linux/pid.h                         |  1 +
->   include/linux/syscalls.h                    |  1 +
->   include/uapi/asm-generic/unistd.h           |  4 +-
->   kernel/fork.c                               |  2 +-
->   kernel/pid.c                                | 43 +++++++++++++++++++++
->   23 files changed, 68 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/syscalls/syscall.tbl
-> index 9e7704e44f6d..1db9bbcfb84e 100644
-> --- a/arch/alpha/kernel/syscalls/syscall.tbl
-> +++ b/arch/alpha/kernel/syscalls/syscall.tbl
-> @@ -473,3 +473,4 @@
->   541	common	fsconfig			sys_fsconfig
->   542	common	fsmount				sys_fsmount
->   543	common	fspick				sys_fspick
-> +544	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/arm/tools/syscall.tbl b/arch/arm/tools/syscall.tbl
-> index aaf479a9e92d..81e6e1817c45 100644
-> --- a/arch/arm/tools/syscall.tbl
-> +++ b/arch/arm/tools/syscall.tbl
-> @@ -447,3 +447,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/arm64/include/asm/unistd.h b/arch/arm64/include/asm/unistd.h
-> index 70e6882853c0..e8f7d95a1481 100644
-> --- a/arch/arm64/include/asm/unistd.h
-> +++ b/arch/arm64/include/asm/unistd.h
-> @@ -44,7 +44,7 @@
->   #define __ARM_NR_compat_set_tls		(__ARM_NR_COMPAT_BASE + 5)
->   #define __ARM_NR_COMPAT_END		(__ARM_NR_COMPAT_BASE + 0x800)
->   
-> -#define __NR_compat_syscalls		434
-> +#define __NR_compat_syscalls		435
->   #endif
->   
->   #define __ARCH_WANT_SYS_CLONE
-> diff --git a/arch/arm64/include/asm/unistd32.h b/arch/arm64/include/asm/unistd32.h
-> index c39e90600bb3..7a3158ccd68e 100644
-> --- a/arch/arm64/include/asm/unistd32.h
-> +++ b/arch/arm64/include/asm/unistd32.h
-> @@ -886,6 +886,8 @@ __SYSCALL(__NR_fsconfig, sys_fsconfig)
->   __SYSCALL(__NR_fsmount, sys_fsmount)
->   #define __NR_fspick 433
->   __SYSCALL(__NR_fspick, sys_fspick)
-> +#define __NR_pidfd_open 434
-> +__SYSCALL(__NR_pidfd_open, sys_pidfd_open)
->   
->   /*
->    * Please add new compat syscalls above this comment and update
-> diff --git a/arch/ia64/kernel/syscalls/syscall.tbl b/arch/ia64/kernel/syscalls/syscall.tbl
-> index e01df3f2f80d..ecc44926737b 100644
-> --- a/arch/ia64/kernel/syscalls/syscall.tbl
-> +++ b/arch/ia64/kernel/syscalls/syscall.tbl
-> @@ -354,3 +354,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/m68k/kernel/syscalls/syscall.tbl b/arch/m68k/kernel/syscalls/syscall.tbl
-> index 7e3d0734b2f3..9a3eb2558568 100644
-> --- a/arch/m68k/kernel/syscalls/syscall.tbl
-> +++ b/arch/m68k/kernel/syscalls/syscall.tbl
-> @@ -433,3 +433,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/microblaze/kernel/syscalls/syscall.tbl b/arch/microblaze/kernel/syscalls/syscall.tbl
-> index 26339e417695..ad706f83c755 100644
-> --- a/arch/microblaze/kernel/syscalls/syscall.tbl
-> +++ b/arch/microblaze/kernel/syscalls/syscall.tbl
-> @@ -439,3 +439,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/mips/kernel/syscalls/syscall_n32.tbl b/arch/mips/kernel/syscalls/syscall_n32.tbl
-> index 0e2dd68ade57..97035e19ad03 100644
-> --- a/arch/mips/kernel/syscalls/syscall_n32.tbl
-> +++ b/arch/mips/kernel/syscalls/syscall_n32.tbl
-> @@ -372,3 +372,4 @@
->   431	n32	fsconfig			sys_fsconfig
->   432	n32	fsmount				sys_fsmount
->   433	n32	fspick				sys_fspick
-> +434	n32	pidfd_open			sys_pidfd_open
-> diff --git a/arch/mips/kernel/syscalls/syscall_n64.tbl b/arch/mips/kernel/syscalls/syscall_n64.tbl
-> index 5eebfa0d155c..d7292722d3b0 100644
-> --- a/arch/mips/kernel/syscalls/syscall_n64.tbl
-> +++ b/arch/mips/kernel/syscalls/syscall_n64.tbl
-> @@ -348,3 +348,4 @@
->   431	n64	fsconfig			sys_fsconfig
->   432	n64	fsmount				sys_fsmount
->   433	n64	fspick				sys_fspick
-> +434	n64	pidfd_open			sys_pidfd_open
-> diff --git a/arch/mips/kernel/syscalls/syscall_o32.tbl b/arch/mips/kernel/syscalls/syscall_o32.tbl
-> index 3cc1374e02d0..dba084c92f14 100644
-> --- a/arch/mips/kernel/syscalls/syscall_o32.tbl
-> +++ b/arch/mips/kernel/syscalls/syscall_o32.tbl
-> @@ -421,3 +421,4 @@
->   431	o32	fsconfig			sys_fsconfig
->   432	o32	fsmount				sys_fsmount
->   433	o32	fspick				sys_fspick
-> +434	o32	pidfd_open			sys_pidfd_open
-> diff --git a/arch/parisc/kernel/syscalls/syscall.tbl b/arch/parisc/kernel/syscalls/syscall.tbl
-> index c9e377d59232..5022b9e179c2 100644
-> --- a/arch/parisc/kernel/syscalls/syscall.tbl
-> +++ b/arch/parisc/kernel/syscalls/syscall.tbl
-> @@ -430,3 +430,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/powerpc/kernel/syscalls/syscall.tbl b/arch/powerpc/kernel/syscalls/syscall.tbl
-> index 103655d84b4b..f2c3bda2d39f 100644
-> --- a/arch/powerpc/kernel/syscalls/syscall.tbl
-> +++ b/arch/powerpc/kernel/syscalls/syscall.tbl
-> @@ -515,3 +515,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/s390/kernel/syscalls/syscall.tbl b/arch/s390/kernel/syscalls/syscall.tbl
-> index e822b2964a83..6ebacfeaf853 100644
-> --- a/arch/s390/kernel/syscalls/syscall.tbl
-> +++ b/arch/s390/kernel/syscalls/syscall.tbl
-> @@ -436,3 +436,4 @@
->   431  common	fsconfig		sys_fsconfig			sys_fsconfig
->   432  common	fsmount			sys_fsmount			sys_fsmount
->   433  common	fspick			sys_fspick			sys_fspick
-> +434  common	pidfd_open		sys_pidfd_open			sys_pidfd_open
-> diff --git a/arch/sh/kernel/syscalls/syscall.tbl b/arch/sh/kernel/syscalls/syscall.tbl
-> index 016a727d4357..834c9c7d79fa 100644
-> --- a/arch/sh/kernel/syscalls/syscall.tbl
-> +++ b/arch/sh/kernel/syscalls/syscall.tbl
-> @@ -436,3 +436,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/sparc/kernel/syscalls/syscall.tbl b/arch/sparc/kernel/syscalls/syscall.tbl
-> index e047480b1605..c58e71f21129 100644
-> --- a/arch/sparc/kernel/syscalls/syscall.tbl
-> +++ b/arch/sparc/kernel/syscalls/syscall.tbl
-> @@ -479,3 +479,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
-> index ad968b7bac72..43e4429a5272 100644
-> --- a/arch/x86/entry/syscalls/syscall_32.tbl
-> +++ b/arch/x86/entry/syscalls/syscall_32.tbl
-> @@ -438,3 +438,4 @@
->   431	i386	fsconfig		sys_fsconfig			__ia32_sys_fsconfig
->   432	i386	fsmount			sys_fsmount			__ia32_sys_fsmount
->   433	i386	fspick			sys_fspick			__ia32_sys_fspick
-> +434	i386	pidfd_open		sys_pidfd_open			__ia32_sys_pidfd_open
-> diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
-> index b4e6f9e6204a..1bee0a77fdd3 100644
-> --- a/arch/x86/entry/syscalls/syscall_64.tbl
-> +++ b/arch/x86/entry/syscalls/syscall_64.tbl
-> @@ -355,6 +355,7 @@
->   431	common	fsconfig		__x64_sys_fsconfig
->   432	common	fsmount			__x64_sys_fsmount
->   433	common	fspick			__x64_sys_fspick
-> +434	common	pidfd_open		__x64_sys_pidfd_open
->   
->   #
->   # x32-specific system call numbers start at 512 to avoid cache impact
-> diff --git a/arch/xtensa/kernel/syscalls/syscall.tbl b/arch/xtensa/kernel/syscalls/syscall.tbl
-> index 5fa0ee1c8e00..782b81945ccc 100644
-> --- a/arch/xtensa/kernel/syscalls/syscall.tbl
-> +++ b/arch/xtensa/kernel/syscalls/syscall.tbl
-> @@ -404,3 +404,4 @@
->   431	common	fsconfig			sys_fsconfig
->   432	common	fsmount				sys_fsmount
->   433	common	fspick				sys_fspick
-> +434	common	pidfd_open			sys_pidfd_open
-> diff --git a/include/linux/pid.h b/include/linux/pid.h
-> index 3c8ef5a199ca..c938a92eab99 100644
-> --- a/include/linux/pid.h
-> +++ b/include/linux/pid.h
-> @@ -67,6 +67,7 @@ struct pid
->   extern struct pid init_struct_pid;
->   
->   extern const struct file_operations pidfd_fops;
-> +extern int pidfd_create(struct pid *pid);
->   
->   static inline struct pid *get_pid(struct pid *pid)
->   {
-> diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-> index e2870fe1be5b..989055e0b501 100644
-> --- a/include/linux/syscalls.h
-> +++ b/include/linux/syscalls.h
-> @@ -929,6 +929,7 @@ asmlinkage long sys_clock_adjtime32(clockid_t which_clock,
->   				struct old_timex32 __user *tx);
->   asmlinkage long sys_syncfs(int fd);
->   asmlinkage long sys_setns(int fd, int nstype);
-> +asmlinkage long sys_pidfd_open(pid_t pid, unsigned int flags);
->   asmlinkage long sys_sendmmsg(int fd, struct mmsghdr __user *msg,
->   			     unsigned int vlen, unsigned flags);
->   asmlinkage long sys_process_vm_readv(pid_t pid,
-> diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
-> index a87904daf103..e5684a4512c0 100644
-> --- a/include/uapi/asm-generic/unistd.h
-> +++ b/include/uapi/asm-generic/unistd.h
-> @@ -844,9 +844,11 @@ __SYSCALL(__NR_fsconfig, sys_fsconfig)
->   __SYSCALL(__NR_fsmount, sys_fsmount)
->   #define __NR_fspick 433
->   __SYSCALL(__NR_fspick, sys_fspick)
-> +#define __NR_pidfd_open 434
-> +__SYSCALL(__NR_pidfd_open, sys_pidfd_open)
->   
->   #undef __NR_syscalls
-> -#define __NR_syscalls 434
-> +#define __NR_syscalls 435
->   
->   /*
->    * 32 bit systems traditionally used different
-> diff --git a/kernel/fork.c b/kernel/fork.c
-> index b4cba953040a..c3df226f47a1 100644
-> --- a/kernel/fork.c
-> +++ b/kernel/fork.c
-> @@ -1724,7 +1724,7 @@ const struct file_operations pidfd_fops = {
->    * Return: On success, a cloexec pidfd is returned.
->    *         On error, a negative errno number will be returned.
->    */
-> -static int pidfd_create(struct pid *pid)
-> +int pidfd_create(struct pid *pid)
->   {
->   	int fd;
->   
-> diff --git a/kernel/pid.c b/kernel/pid.c
-> index 89548d35eefb..8fc9d94f6ac1 100644
-> --- a/kernel/pid.c
-> +++ b/kernel/pid.c
-> @@ -37,6 +37,7 @@
->   #include <linux/syscalls.h>
->   #include <linux/proc_ns.h>
->   #include <linux/proc_fs.h>
-> +#include <linux/sched/signal.h>
->   #include <linux/sched/task.h>
->   #include <linux/idr.h>
->   
-> @@ -450,6 +451,48 @@ struct pid *find_ge_pid(int nr, struct pid_namespace *ns)
->   	return idr_get_next(&ns->idr, &nr);
->   }
->   
-> +/**
-> + * pidfd_open() - Open new pid file descriptor.
-> + *
-> + * @pid:   pid for which to retrieve a pidfd
-> + * @flags: flags to pass
-> + *
-> + * This creates a new pid file descriptor with the O_CLOEXEC flag set for
-> + * the process identified by @pid. Currently, the process identified by
-> + * @pid must be a thread-group leader. This restriction currently exists
-> + * for all aspects of pidfds including pidfd creation (CLONE_PIDFD cannot
-> + * be used with CLONE_THREAD) and pidfd polling (only supports thread group
-> + * leaders).
-> + *
-> + * Return: On success, a cloexec pidfd is returned.
-> + *         On error, a negative errno number will be returned.
-> + */
-> +SYSCALL_DEFINE2(pidfd_open, pid_t, pid, unsigned int, flags)
-> +{
-> +	int fd, ret;
-> +	struct pid *p;
-> +
-> +	if (flags)
-> +		return -EINVAL;
-> +
-> +	if (pid <= 0)
-> +		return -EINVAL;
-> +
-> +	p = find_get_pid(pid);
-> +	if (!p)
-> +		return -ESRCH;
-> +
-> +	ret = 0;
-> +	rcu_read_lock();
-> +	if (!pid_task(p, PIDTYPE_TGID))
-> +		ret = -EINVAL;
-> +	rcu_read_unlock();
-> +
-> +	fd = ret ?: pidfd_create(p);
-> +	put_pid(p);
-> +	return fd;
-> +}
-> +
->   void __init pid_idr_init(void)
->   {
->   	/* Verify no one has done anything silly: */
-> 
+  * LOOKUP_NO_MAGICLINKS blocks resolution through /proc/$pid/fd-style
+    links. This is done by blocking the usage of nd_jump_link() during
+    resolution in a filesystem. The term "magic-links" is used to match
+    with the only reference to these links in Documentation/, but I'm
+    happy to change the name.
+
+    It should be noted that this is different to the scope of
+    ~LOOKUP_FOLLOW in that it applies to all path components. However,
+	you can do openat2(NO_FOLLOW|NO_MAGICLINKS) on a magic-link and it
+	will *not* fail (assuming that no parent component was a
+	magic-link), and you will have an fd for the magic-link.
+
+  * LOOKUP_BENEATH disallows escapes to outside the starting dirfd's
+    tree, using techniques such as ".." or absolute links. Absolute
+    paths in openat(2) are also disallowed. Conceptually this flag is to
+    ensure you "stay below" a certain point in the filesystem tree --
+    but this requires some additional to protect against various races
+    that would allow escape using "..".
+
+    Currently LOOKUP_BENEATH implies LOOKUP_NO_MAGICLINKS, because it
+    can trivially beam you around the filesystem (breaking the
+    protection). In future, there might be similar safety checks done as
+	in LOOKUP_IN_ROOT, but that requires more discussion.
+
+In addition, two new flags are added that expand on the above ideas:
+
+  * LOOKUP_NO_SYMLINKS does what it says on the tin. No symlink
+    resolution is allowed at all, including magic-links. Just as with
+    LOOKUP_NO_MAGICLINKS this can still be used with NOFOLLOW to open an
+    fd for the symlink as long as no parent path had a symlink
+    component.
+
+  * LOOKUP_IN_ROOT is an extension of LOOKUP_BENEATH that, rather than
+    blocking attempts to move past the root, forces all such movements
+    to be scoped to the starting point. This provides chroot(2)-like
+    protection but without the cost of a chroot(2) for each filesystem
+    operation, as well as being safe against race attacks that chroot(2)
+    is not.
+
+    If a race is detected (as with LOOKUP_BENEATH) then an error is
+    generated, and similar to LOOKUP_BENEATH it is not permitted to cross
+    magic-links with LOOKUP_IN_ROOT.
+
+    The primary need for this is from container runtimes, which
+    currently need to do symlink scoping in userspace[6] when opening
+    paths in a potentially malicious container. There is a long list of
+    CVEs that could have bene mitigated by having O_THISROOT (such as
+    CVE-2017-1002101, CVE-2017-1002102, CVE-2018-15664, and
+    CVE-2019-5736, just to name a few).
+
+And further, several semantics of file descriptor "re-opening" are now
+changed to prevent attacks like CVE-2019-5736 by restricting how
+magic-links can be resolved (based on their mode). This required some
+other changes to the semantics of the modes of O_PATH file descriptor's
+associated /proc/self/fd magic-links. openat2(2) has the ability to
+further restrict re-opening of its own O_PATH fds, so that users can
+make even better use of this feature.
+
+Finally, O_EMPTYPATH was added so that users can do /proc/self/fd-style
+re-opening without depending on procfs. The new restricted semantics for
+magic-links are applied here too.
+
+In order to make all of the above more usable, I'm working on
+libpathrs[7] which is a C-friendly library for safe path resolution. It
+features a userspace-emulated backend if the kernel doesn't support
+openat2(2). Hopefully we can get userspace to switch to using it, and
+thus get openat2(2) support for free once it's ready.
+
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Eric Biederman <ebiederm@xmission.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Jann Horn <jannh@google.com>
+Cc: Christian Brauner <christian@brauner.io>
+Cc: David Drysdale <drysdale@google.com>
+Cc: Tycho Andersen <tycho@tycho.ws>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: <containers@lists.linux-foundation.org>
+Cc: <linux-fsdevel@vger.kernel.org>
+Cc: <linux-api@vger.kernel.org>
+
+[1]: https://lwn.net/Articles/721443/
+[2]: https://lore.kernel.org/patchwork/patch/784221/
+[3]: https://lwn.net/Articles/619151/
+[4]: https://lwn.net/Articles/603929/
+[5]: https://lwn.net/Articles/723057/
+[6]: https://github.com/cyphar/filepath-securejoin
+[7]: https://github.com/openSUSE/libpathrs
+
+Aleksa Sarai (10):
+  namei: obey trailing magic-link DAC permissions
+  procfs: switch magic-link modes to be more sane
+  open: O_EMPTYPATH: procfs-less file descriptor re-opening
+  namei: split out nd->dfd handling to dirfd_path_init
+  namei: O_BENEATH-style path resolution flags
+  namei: LOOKUP_IN_ROOT: chroot-like path resolution
+  namei: aggressively check for nd->root escape on ".." resolution
+  open: openat2(2) syscall
+  kselftest: save-and-restore errno to allow for %m formatting
+  selftests: add openat2(2) selftests
+
+ arch/alpha/kernel/syscalls/syscall.tbl        |   1 +
+ arch/arm/tools/syscall.tbl                    |   1 +
+ arch/arm64/include/asm/unistd.h               |   2 +-
+ arch/arm64/include/asm/unistd32.h             |   2 +
+ arch/ia64/kernel/syscalls/syscall.tbl         |   1 +
+ arch/m68k/kernel/syscalls/syscall.tbl         |   1 +
+ arch/microblaze/kernel/syscalls/syscall.tbl   |   1 +
+ arch/mips/kernel/syscalls/syscall_n32.tbl     |   1 +
+ arch/mips/kernel/syscalls/syscall_n64.tbl     |   1 +
+ arch/mips/kernel/syscalls/syscall_o32.tbl     |   1 +
+ arch/parisc/kernel/syscalls/syscall.tbl       |   1 +
+ arch/powerpc/kernel/syscalls/syscall.tbl      |   1 +
+ arch/s390/kernel/syscalls/syscall.tbl         |   1 +
+ arch/sh/kernel/syscalls/syscall.tbl           |   1 +
+ arch/sparc/kernel/syscalls/syscall.tbl        |   1 +
+ arch/x86/entry/syscalls/syscall_32.tbl        |   1 +
+ arch/x86/entry/syscalls/syscall_64.tbl        |   1 +
+ arch/xtensa/kernel/syscalls/syscall.tbl       |   1 +
+ fs/fcntl.c                                    |   2 +-
+ fs/internal.h                                 |   1 +
+ fs/namei.c                                    | 333 ++++++++++++---
+ fs/open.c                                     | 140 +++++--
+ fs/proc/base.c                                |  20 +-
+ fs/proc/fd.c                                  |  23 +-
+ fs/proc/namespaces.c                          |   2 +-
+ include/linux/fcntl.h                         |  17 +-
+ include/linux/fs.h                            |   8 +-
+ include/linux/namei.h                         |   8 +
+ include/linux/syscalls.h                      |  14 +-
+ include/uapi/asm-generic/fcntl.h              |   5 +
+ include/uapi/asm-generic/unistd.h             |   5 +-
+ include/uapi/linux/fcntl.h                    |  38 ++
+ tools/testing/selftests/Makefile              |   1 +
+ tools/testing/selftests/kselftest.h           |  15 +
+ tools/testing/selftests/memfd/memfd_test.c    |   7 +-
+ tools/testing/selftests/openat2/.gitignore    |   1 +
+ tools/testing/selftests/openat2/Makefile      |  12 +
+ tools/testing/selftests/openat2/helpers.c     | 162 +++++++
+ tools/testing/selftests/openat2/helpers.h     | 114 +++++
+ .../testing/selftests/openat2/linkmode_test.c | 325 ++++++++++++++
+ .../selftests/openat2/rename_attack_test.c    | 124 ++++++
+ .../testing/selftests/openat2/resolve_test.c  | 395 ++++++++++++++++++
+ 42 files changed, 1667 insertions(+), 125 deletions(-)
+ create mode 100644 tools/testing/selftests/openat2/.gitignore
+ create mode 100644 tools/testing/selftests/openat2/Makefile
+ create mode 100644 tools/testing/selftests/openat2/helpers.c
+ create mode 100644 tools/testing/selftests/openat2/helpers.h
+ create mode 100644 tools/testing/selftests/openat2/linkmode_test.c
+ create mode 100644 tools/testing/selftests/openat2/rename_attack_test.c
+ create mode 100644 tools/testing/selftests/openat2/resolve_test.c
+
+-- 
+2.22.0
+
