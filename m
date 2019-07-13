@@ -1,56 +1,47 @@
-From: Aleksa Sarai <cyphar@cyphar.com>
-Subject: Re: [PATCH v9 00/10] namei: openat2(2) path resolution restrictions
-Date: Sat, 13 Jul 2019 01:32:27 +1000
-Message-ID: <20190712153227.owkjmx47lzrggweo@yavin>
+From: Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v9 05/10] namei: O_BENEATH-style path resolution flags
+Date: Sat, 13 Jul 2019 03:41:53 +0100
+Message-ID: <20190713024153.GA3817@ZenIV.linux.org.uk>
 References: <20190706145737.5299-1-cyphar@cyphar.com>
- <20190712151118.GP17978@ZenIV.linux.org.uk>
+ <20190706145737.5299-6-cyphar@cyphar.com>
+ <20190712043341.GI17978@ZenIV.linux.org.uk>
+ <20190712105745.nruaftgeat6irhzr@yavin>
+ <20190712123924.GK17978@ZenIV.linux.org.uk>
+ <20190712125552.GL17978@ZenIV.linux.org.uk>
+ <20190712132553.GN17978@ZenIV.linux.org.uk>
+ <20190712150026.GO17978@ZenIV.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="whm56wbfs3ehouyz"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190712151118.GP17978@ZenIV.linux.org.uk>
+In-Reply-To: <20190712150026.GO17978@ZenIV.linux.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Eric Biederman <ebiederm@xmission.com>, Andy Lutomirski <luto@kernel.org>, Jann Horn <jannh@google.com>, Christian Brauner <christian@brauner.io>, David Drysdale <drysdale@google.com>, Tycho Andersen <tycho@tycho.ws>, Kees Cook <keescook@chromium.org>, Linus Torvalds <torvalds@linux-foundation.org>, containers@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <ole>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Aleksa Sarai <cyphar@cyphar.com>
+Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Christian Brauner <christian@brauner.io>, David Drysdale <drysdale@google.com>, Andy Lutomirski <luto@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Eric Biederman <ebiederm@xmission.com>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Aleksa Sarai <asarai@suse.de>, containers@lists.linux-foundation.org, linux-alpha@vger.kernel.org
 
+On Fri, Jul 12, 2019 at 04:00:26PM +0100, Al Viro wrote:
+> On Fri, Jul 12, 2019 at 02:25:53PM +0100, Al Viro wrote:
+> 
+> > 	if (flags & LOOKUP_BENEATH) {
+> > 		nd->root = nd->path;
+> > 		if (!(flags & LOOKUP_RCU))
+> > 			path_get(&nd->root);
+> > 		else
+> > 			nd->root_seq = nd->seq;
+> 
+> BTW, this assignment is needed for LOOKUP_RCU case.  Without it
+> you are pretty much guaranteed that lazy pathwalk will fail,
+> when it comes to complete_walk().
+> 
+> Speaking of which, what would happen if LOOKUP_ROOT/LOOKUP_BENEATH
+> combination would someday get passed?
 
---whm56wbfs3ehouyz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I don't understand what's going on with ->r_seq in there - your
+call of path_is_under() is after having (re-)sampled rename_lock,
+but if that was the only .. in there, who's going to recheck
+the value?  For that matter, what's to guarantee that the thing
+won't get moved just as you are returning from handle_dots()?
 
-On 2019-07-12, Al Viro <viro@zeniv.linux.org.uk> wrote:
-> On Sun, Jul 07, 2019 at 12:57:27AM +1000, Aleksa Sarai wrote:
-> > Patch changelog:
-> >   v9:
-> >     * Replace resolveat(2) with openat2(2). [Linus]
-> >     * Output a warning to dmesg if may_open_magiclink() is violated.
-> >     * Add an openat2(O_CREAT) testcase.
->=20
-> One general note for the future, BTW: for such series it's generally
-> a good idea to put it into a public git tree somewhere and mention that
-> in the announcement...
-
-Sure, I'll mention it next time. For the record the tree is
-  <https://github.com/cyphar/linux/tree/resolveat/master>
-
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
-
---whm56wbfs3ehouyz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXSioAwAKCRCdlLljIbnQ
-EgzkAQChn28FqDC8mwoRBSpKSsYawQ4zVuMzbt7zKNknJNg7nQD/cmJDlKpmnt40
-Jbd8FP1RPFVHA8Y7yVeIE+cOpg3nbw4=
-=RciL
------END PGP SIGNATURE-----
-
---whm56wbfs3ehouyz--
+IOW, what does LOOKUP_IN_ROOT guarantee for caller (openat2())?
