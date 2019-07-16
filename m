@@ -1,133 +1,62 @@
-From: Christian Brauner <christian@brauner.io>
+From: Sven Schnelle <svens@stackframe.org>
 Subject: Re: [PATCH 1/2] arch: mark syscall number 435 reserved for clone3
-Date: Tue, 16 Jul 2019 15:06:33 +0200
-Message-ID: <20190716130631.tohj4ub54md25dys@brauner.io>
+Date: Tue, 16 Jul 2019 20:53:10 +0200
+Message-ID: <20190716185310.GA12537@t470p.stackframe.org>
 References: <20190714192205.27190-1-christian@brauner.io>
  <20190714192205.27190-2-christian@brauner.io>
  <e14eb2f9-43cb-0b9d-dec4-b7e7dcd62091@de.ibm.com>
+ <20190716130631.tohj4ub54md25dys@brauner.io>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brauner.io; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=HndzIrwk0eloZ/VKZJ3ivaH1s8315qlKpsro16xZw70=;
-        b=b8dhUBZSz3RGMnHXa2eQUBcpb0Fr1c6vhDDwn4sy14RwoF3LeMqo4GwVei/eUCKLfN
-         2ysAKK0S6zo65plaT8Lmyu1cdKbX5vv5C3GPTJPIInad+mBHinkOAREnbCNuxmpL9VDG
-         fvZUIwNFnzQNqEmzHkL0RRQ1MQkDpVZLaNNcaAVC/zAYUxremZf5+M3FMQbomiyN3wH4
-         zc2zC/xff3jM5dpplZUlTKdEFImIprhxsju27ez6MU1i0OsgFNq72UzfzJW9Togr4CqO
-         YkkRxSa2wlAwsL/E0oFuYOap/7lvKcKnsDSBvmk5MITFO2BYwQSiCBv4/QcWtaXdxpFP
-         2++g==
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=duncanthrax.net; s=dkim; h=In-Reply-To:Content-Type:MIME-Version:References
+ :Message-ID:Subject:Cc:To:From:Date;
+ bh=dKHH4h/q3QG6V+WLSyHa/70tf/GFmuqAjtSnkGY7D2U=; b=EInCxkcX8/U7HJUwQX6zQawdSA
+ 3En7UuZMxWmfpQQF+KD4KM1ZhQkrsY8ilze4mu+wmEjt4CDQ5zYqbUN3KgJVT6QaszCyuS3hR9bBO
+ qU7MV+VzceEfmsLdf7RLymVUnFZS5OewOtK76S4aHj4tYo94hhMXGfxzrzYwOcQMJw1Y=;
 Content-Disposition: inline
-In-Reply-To: <e14eb2f9-43cb-0b9d-dec4-b7e7dcd62091@de.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+In-Reply-To: <20190716130631.tohj4ub54md25dys@brauner.io>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Christian Borntraeger <borntraeger@de.ibm.com>
-Cc: linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, mpe@ellerman.id.au
+To: Christian Brauner <christian@brauner.io>
+Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, arnd@arndb.de, linux-sh@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, Christian Borntraeger <borntraeger@de.ibm.com>, linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Vasily Gorbik <gor@linux.ibm.com>
 
-On Mon, Jul 15, 2019 at 03:56:04PM +0200, Christian Borntraeger wrote:
-> I think Vasily already has a clone3 patch for s390x with 435. 
+Hi,
 
-A quick follow-up on this. Helge and Michael have asked whether there
-are any tests for clone3. Yes, there will be and I try to have them
-ready by the end of the this or next week for review. In the meantime I
-hope the following minimalistic test program that just verifies very
-very basic functionality (It's not pretty.) will help you test:
+[Adding Helge to CC list]
 
-#define _GNU_SOURCE
-#include <err.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <linux/sched.h>
-#include <linux/types.h>
-#include <sched.h>
-#include <signal.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/mount.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/syscall.h>
-#include <sys/sysmacros.h>
-#include <sys/types.h>
-#include <sys/un.h>
-#include <sys/wait.h>
-#include <unistd.h>
+On Tue, Jul 16, 2019 at 03:06:33PM +0200, Christian Brauner wrote:
+> On Mon, Jul 15, 2019 at 03:56:04PM +0200, Christian Borntraeger wrote:
+> > I think Vasily already has a clone3 patch for s390x with 435. 
+> 
+> A quick follow-up on this. Helge and Michael have asked whether there
+> are any tests for clone3. Yes, there will be and I try to have them
+> ready by the end of the this or next week for review. In the meantime I
+> hope the following minimalistic test program that just verifies very
+> very basic functionality (It's not pretty.) will help you test:
+> [..]
 
-#ifndef CLONE_PIDFD
-#define CLONE_PIDFD 0x00001000
-#endif
+On PA-RISC this seems to work fine with Helge's patch to wire up the
+clone3 syscall.
 
-#ifndef __NR_clone3
-#define __NR_clone3 -1
-#endif
+root@c3750:/# clonetest
+Parent process received child's pid 84 as return value
+Parent process received child's pidfd 3
+Parent process received child's pid 84 as return argument
+Child process with pid 84
+root@c3750:/# echo $?
+0
 
-static pid_t sys_clone3(struct clone_args *args)
-{
-	return syscall(__NR_clone3, args, sizeof(struct clone_args));
-}
-
-static int wait_for_pid(pid_t pid)
-{
-	int status, ret;
-
-again:
-	ret = waitpid(pid, &status, 0);
-	if (ret == -1) {
-		if (errno == EINTR)
-			goto again;
-
-		return -1;
-	}
-
-	if (ret != pid)
-		goto again;
-
-	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-		return -1;
-
-	return 0;
-}
-
-#define ptr_to_u64(ptr) ((__u64)((uintptr_t)(ptr)))
-
-int main(int argc, char *argv[])
-{
-	int pidfd = -1;
-	pid_t parent_tid = -1, pid = -1;
-	struct clone_args args = {0};
-
-	args.parent_tid = ptr_to_u64(&parent_tid); /* CLONE_PARENT_SETTID */
-	args.pidfd = ptr_to_u64(&pidfd); /* CLONE_PIDFD */
-	args.flags = CLONE_PIDFD | CLONE_PARENT_SETTID;
-	args.exit_signal = SIGCHLD;
-
-	pid = sys_clone3(&args);
-	if (pid < 0) {
-		fprintf(stderr, "%s - Failed to create new process\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	if (pid == 0) {
-		printf("Child process with pid %d\n", getpid());
-		exit(EXIT_SUCCESS);
-	}
-
-	printf("Parent process received child's pid %d as return value\n", pid);
-	printf("Parent process received child's pidfd %d\n", *(int *)args.pidfd);
-	printf("Parent process received child's pid %d as return argument\n",
-	       *(pid_t *)args.parent_tid);
-
-	if (wait_for_pid(pid))
-		exit(EXIT_FAILURE);
-
-	if (pid != *(pid_t *)args.parent_tid)
-		exit(EXIT_FAILURE);
-
-	close(pidfd);
-
-	return 0;
-}
+Regards
+Sven
