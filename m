@@ -1,7 +1,7 @@
 From: Palmer Dabbelt <palmer@sifive.com>
-Subject: [PATCH v2 4/4] tools: Add fchmodat4
-Date: Tue, 16 Jul 2019 18:27:19 -0700
-Message-ID: <20190717012719.5524-5-palmer@sifive.com>
+Subject: [PATCH v2 2/4] Add fchmodat4(), a new syscall
+Date: Tue, 16 Jul 2019 18:27:17 -0700
+Message-ID: <20190717012719.5524-3-palmer@sifive.com>
 References: <20190717012719.5524-1-palmer@sifive.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -10,13 +10,13 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding:cc:from:to;
-        bh=Zt2cGhW98jjWE3OdliFocFdkTeCj4B287sEGZ0SpTug=;
-        b=LRzFJFoIhdEmL95807L32ZJIuoUYPRnejcM4WZZAS5I0UeznU/mAzk5GHoafmOmsHO
-         IM1q2PeVsvlEPnevADzvUbNh7W588och2Rq5fZ7FuM8MS5EZgdQu/E3L+BqIYSfN2XU/
-         fS7NBtFCaQBxI26WtshKHqrbJwSXRxg0DRH2E+7ihFfC5kinDvs9QAQl4LeKl3WMrLal
-         EZk+GjuTQmWvWRkiN6fD0Uh9EK++IoK7hPKkpfs3WJ+9PYY0m//oOKVgI1hVB+8KwfWp
-         /ROJj7wU7v2lVN33h5c47bRwWtpAubgsifHDAD3lPqVXVzkWPuUCHQEfzucJpkMLwZmo
-         z7ZA==
+        bh=Km6i2EwlnHTMsEa+Chc8B8lkJXrzGe+ncWgEI0oBDH8=;
+        b=DLAJM7oG3ybeUmclWPVZfMhBUnRrw9wGMdXduIn2giXhaGrJ7S5W8yVcEE2KwLFQAh
+         D1fm8Qfvlg4+vU/wK9eEo2SBWGFnrW2QH4msqzaJa2F5Mqtk545ueU4VzXlO2Pka91aE
+         0ZIjIFL3MsFSMfhP6hasIsWi+LC5nQsPKwISrpKwFjetWndP1gu0y7RwT7xlLsYYY3bX
+         aA9+vRQ2Jy/EGfc2fUemHwW+nDNJKVxhk9EQMc/dKQv4LICHm3AoRl9JnxONdNyJNxBk
+         BKPc4PBCTZeLcTJbqW33HPUobtx12bsfbsrHt2Ek4XDY+qdDSWFBlI6LBq/1RrDbWAwT
+         fAfQ==
 In-Reply-To: <20190717012719.5524-1-palmer@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,45 +24,95 @@ Content-Type: text/plain; charset="us-ascii"
 To: viro@zeniv.linux.org.uk, linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
 Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will@kernel.org, tony.luck@intel.com, fenghua.yu@intel.com, geert@linux-m68k.org, monstr@monstr.eu, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, James.Bottomley@HansenPartnership.com, deller@gmx.de, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, peterz@infradead.org, acme@kernel.org, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org, Palmer Dabbelt <palm>
 
-I'm not sure why it's necessary to add this explicitly to tools/ as well
-as arch/, but there were a few instances of fspick in here so I blindly
-added fchmodat4 in the same fashion.
+man 3p says that fchmodat() takes a flags argument, but the Linux
+syscall does not.  There doesn't appear to be a good userspace
+workaround for this issue but the implementation in the kernel is pretty
+straight-forward.  The specific use case where the missing flags came up
+was WRT a fuse filesystem implemenation, but the functionality is pretty
+generic so I'm assuming there would be other use cases.
 
 Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
 ---
- tools/include/uapi/asm-generic/unistd.h           | 4 +++-
- tools/perf/arch/x86/entry/syscalls/syscall_64.tbl | 1 +
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ fs/open.c                | 20 ++++++++++++++++----
+ include/linux/syscalls.h |  7 +++++--
+ 2 files changed, 21 insertions(+), 6 deletions(-)
 
-diff --git a/tools/include/uapi/asm-generic/unistd.h b/tools/include/uapi/asm-generic/unistd.h
-index a87904daf103..36232ea94956 100644
---- a/tools/include/uapi/asm-generic/unistd.h
-+++ b/tools/include/uapi/asm-generic/unistd.h
-@@ -844,9 +844,11 @@ __SYSCALL(__NR_fsconfig, sys_fsconfig)
- __SYSCALL(__NR_fsmount, sys_fsmount)
- #define __NR_fspick 433
- __SYSCALL(__NR_fspick, sys_fspick)
-+#define __NR_fchmodat4 434
-+__SYSCALL(__NR_fchmodat4, sys_fchmodat4)
+diff --git a/fs/open.c b/fs/open.c
+index b5b80469b93d..2f72b4d6a2c1 100644
+--- a/fs/open.c
++++ b/fs/open.c
+@@ -569,11 +569,17 @@ SYSCALL_DEFINE2(fchmod, unsigned int, fd, umode_t, mode)
+ 	return ksys_fchmod(fd, mode);
+ }
  
- #undef __NR_syscalls
--#define __NR_syscalls 434
-+#define __NR_syscalls 435
+-int do_fchmodat(int dfd, const char __user *filename, umode_t mode)
++int do_fchmodat4(int dfd, const char __user *filename, umode_t mode, int flags)
+ {
+ 	struct path path;
+ 	int error;
+-	unsigned int lookup_flags = LOOKUP_FOLLOW;
++	unsigned int lookup_flags;
++
++	if (unlikely(flags & ~AT_SYMLINK_NOFOLLOW))
++		return -EINVAL;
++
++	lookup_flags = flags & AT_SYMLINK_NOFOLLOW ? 0 : LOOKUP_FOLLOW;
++
+ retry:
+ 	error = user_path_at(dfd, filename, lookup_flags, &path);
+ 	if (!error) {
+@@ -587,15 +593,21 @@ int do_fchmodat(int dfd, const char __user *filename, umode_t mode)
+ 	return error;
+ }
  
- /*
-  * 32 bit systems traditionally used different
-diff --git a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-index b4e6f9e6204a..b92d5b195e66 100644
---- a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-+++ b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -355,6 +355,7 @@
- 431	common	fsconfig		__x64_sys_fsconfig
- 432	common	fsmount			__x64_sys_fsmount
- 433	common	fspick			__x64_sys_fspick
-+434	common	fchmodat4		__x64_sys_fchmodat4
++SYSCALL_DEFINE4(fchmodat4, int, dfd, const char __user *, filename,
++		umode_t, mode, int, flags)
++{
++	return do_fchmodat4(dfd, filename, mode, flags);
++}
++
+ SYSCALL_DEFINE3(fchmodat, int, dfd, const char __user *, filename,
+ 		umode_t, mode)
+ {
+-	return do_fchmodat(dfd, filename, mode);
++	return do_fchmodat4(dfd, filename, mode, 0);
+ }
  
- #
- # x32-specific system call numbers start at 512 to avoid cache impact
+ SYSCALL_DEFINE2(chmod, const char __user *, filename, umode_t, mode)
+ {
+-	return do_fchmodat(AT_FDCWD, filename, mode);
++	return do_fchmodat4(AT_FDCWD, filename, mode, 0);
+ }
+ 
+ static int chown_common(const struct path *path, uid_t user, gid_t group)
+diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
+index e1c20f1d0525..a4bde25ad264 100644
+--- a/include/linux/syscalls.h
++++ b/include/linux/syscalls.h
+@@ -433,6 +433,8 @@ asmlinkage long sys_chroot(const char __user *filename);
+ asmlinkage long sys_fchmod(unsigned int fd, umode_t mode);
+ asmlinkage long sys_fchmodat(int dfd, const char __user *filename,
+ 			     umode_t mode);
++asmlinkage long sys_fchmodat4(int dfd, const char __user *filename,
++			     umode_t mode, int flags);
+ asmlinkage long sys_fchownat(int dfd, const char __user *filename, uid_t user,
+ 			     gid_t group, int flag);
+ asmlinkage long sys_fchown(unsigned int fd, uid_t user, gid_t group);
+@@ -1320,11 +1322,12 @@ static inline long ksys_link(const char __user *oldname,
+ 	return do_linkat(AT_FDCWD, oldname, AT_FDCWD, newname, 0);
+ }
+ 
+-extern int do_fchmodat(int dfd, const char __user *filename, umode_t mode);
++extern int do_fchmodat4(int dfd, const char __user *filename, umode_t mode,
++			int flags);
+ 
+ static inline int ksys_chmod(const char __user *filename, umode_t mode)
+ {
+-	return do_fchmodat(AT_FDCWD, filename, mode);
++	return do_fchmodat4(AT_FDCWD, filename, mode, 0);
+ }
+ 
+ extern long do_faccessat(int dfd, const char __user *filename, int mode);
 -- 
 2.21.0
 
