@@ -1,57 +1,51 @@
-From: Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH 1/2] arch: mark syscall number 435 reserved for clone3
-Date: Tue, 16 Jul 2019 22:13:58 +0200
-Message-ID: <6d47935e-218c-3eb9-7617-14ce199f5958@gmx.de>
-References: <20190714192205.27190-1-christian@brauner.io>
- <20190714192205.27190-2-christian@brauner.io>
- <e14eb2f9-43cb-0b9d-dec4-b7e7dcd62091@de.ibm.com>
- <20190716130631.tohj4ub54md25dys@brauner.io>
- <20190716185310.GA12537@t470p.stackframe.org>
- <20190716185554.gwpppirvmxgvnkgb@brauner.io>
+From: Palmer Dabbelt <palmer@sifive.com>
+Subject: [PATCH v2 1/4] Non-functional cleanup of a "__user * filename"
+Date: Tue, 16 Jul 2019 18:27:16 -0700
+Message-ID: <20190717012719.5524-2-palmer@sifive.com>
+References: <20190717012719.5524-1-palmer@sifive.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1563308042;
-        bh=7VY8YH9jMovACrIdrhvISc8JByEG9+fowfzeNmRgOfo=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=Kw1mKomLyf4TbBJ/zg23P7apFrDxlIIFzSokOMo69AtSxElmYEy4eq2eopppd7wMr
-         V8XRtNTIUYn4ltq5K91JC1v/XK7U38Oklx26zHYJGCDzpAqlGcHoZIBzBhosfArtWz
-         QREVdI+1aykJHs0N3A/CQ2T+LAPEzD202Z7jEasM=
-In-Reply-To: <20190716185554.gwpppirvmxgvnkgb@brauner.io>
-Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=/JCMTovNsMOTb4V8NbJUn4gtZFBomdigf57eMm4vvwA=;
+        b=lx7DMwJwb44W7Tsx+wtQGpeBhtEGmLrTQeHhVfpNHKCPvBD3EZccrC+x1nOiZ399Ox
+         Ce7qyy+Rjzuxnpqy8yeYrgqjTmrF1e4jLl6TgE3ixOT/U87rKHP/GwhBwHUCMYYMBtSX
+         XTxaPmwymA5BLTwz52iRqFqvtSq/Vds0zwWqSBqBhCoTjEmDNRyJXxv1Z31bPto7petN
+         4K4DlHQcEWAQRcfUEdZhqZdNL8Hu1gE5jSIKmzD34yWc3h67AlA1Bsy7Mb4SoM0dQh/o
+         8yYfnpbjmU1EbMOju/emLtWoEWPcrjXBQNL7vtCS5P7kJATFe6R2UYNx/eNwEOEaDppF
+         HG5A==
+In-Reply-To: <20190717012719.5524-1-palmer@sifive.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Christian Brauner <christian@brauner.io>, Sven Schnelle <svens@stackframe.org>
-Cc: Christian Borntraeger <borntraeger@de.ibm.com>, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, mpe@ellerman.id.au
+Content-Type: text/plain; charset="us-ascii"
+To: viro@zeniv.linux.org.uk, linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux@armlinux.org.uk, catalin.marinas@arm.com, will@kernel.org, tony.luck@intel.com, fenghua.yu@intel.com, geert@linux-m68k.org, monstr@monstr.eu, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, James.Bottomley@HansenPartnership.com, deller@gmx.de, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, luto@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org, Arnd Bergmann <arnd@arndb.de>, peterz@infradead.org, acme@kernel.org, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org, Palmer Dabbelt <palm>
 
-On 16.07.19 20:55, Christian Brauner wrote:
-> On Tue, Jul 16, 2019 at 08:53:10PM +0200, Sven Schnelle wrote:
->> Hi,
->>
->> [Adding Helge to CC list]
->>
->> On Tue, Jul 16, 2019 at 03:06:33PM +0200, Christian Brauner wrote:
->>> On Mon, Jul 15, 2019 at 03:56:04PM +0200, Christian Borntraeger wrote:
->>>> I think Vasily already has a clone3 patch for s390x with 435.
->>>
->>> A quick follow-up on this. Helge and Michael have asked whether there
->>> are any tests for clone3. Yes, there will be and I try to have them
->>> ready by the end of the this or next week for review. In the meantime =
-I
->>> hope the following minimalistic test program that just verifies very
->>> very basic functionality (It's not pretty.) will help you test:
->>> [..]
->>
->> On PA-RISC this seems to work fine with Helge's patch to wire up the
->> clone3 syscall.
->
-> [...]
-> In any case, I saw Helge's patch and I think I might've missed to add an
-> Acked-by but feel free to add it.
+The next patch defines a very similar interface, which I copied from
+this definition.  Since I'm touching it anyway I don't see any reason
+not to just go fix this one up.
 
-Thanks!
-I've added the patch to the parisc-linux for-next tree.
+Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
+---
+ include/linux/syscalls.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Helge
+diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
+index 2bcef4c70183..e1c20f1d0525 100644
+--- a/include/linux/syscalls.h
++++ b/include/linux/syscalls.h
+@@ -431,7 +431,7 @@ asmlinkage long sys_chdir(const char __user *filename);
+ asmlinkage long sys_fchdir(unsigned int fd);
+ asmlinkage long sys_chroot(const char __user *filename);
+ asmlinkage long sys_fchmod(unsigned int fd, umode_t mode);
+-asmlinkage long sys_fchmodat(int dfd, const char __user * filename,
++asmlinkage long sys_fchmodat(int dfd, const char __user *filename,
+ 			     umode_t mode);
+ asmlinkage long sys_fchownat(int dfd, const char __user *filename, uid_t user,
+ 			     gid_t group, int flag);
+-- 
+2.21.0
+
