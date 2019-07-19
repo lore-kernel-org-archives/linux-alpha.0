@@ -1,65 +1,45 @@
-From: Aleksa Sarai <cyphar@cyphar.com>
-Subject: Re: [PATCH v9 08/10] open: openat2(2) syscall
-Date: Fri, 19 Jul 2019 12:19:31 +1000
-Message-ID: <20190719021931.ypwvcvp3imbgjjx6@yavin>
-References: <20190706145737.5299-1-cyphar@cyphar.com>
- <20190706145737.5299-9-cyphar@cyphar.com>
- <20190719015933.GA18022@altlinux.org>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 1/2] arch: mark syscall number 435 reserved for clone3
+Date: Fri, 19 Jul 2019 20:18:02 +1000
+Message-ID: <874l3i8h0l.fsf@concordia.ellerman.id.au>
+References: <20190714192205.27190-1-christian@brauner.io> <20190714192205.27190-2-christian@brauner.io> <e14eb2f9-43cb-0b9d-dec4-b7e7dcd62091@de.ibm.com> <20190716130631.tohj4ub54md25dys@brauner.io>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="g4nevyq6aunc32xc"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190719015933.GA18022@altlinux.org>
+In-Reply-To: <20190716130631.tohj4ub54md25dys@brauner.io>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: "Dmitry V. Levin" <ldv@altlinux.org>
-Cc: Al Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Christian Brauner <christian@brauner.io>, Eric Biederman <ebiederm@xmission.com>, Andy Lutomirski <luto@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>, David Drysdale <drysdale@google.com>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Aleksa Sarai <asarai@suse.de>, Linus Torvalds <torvalds@linux-foundation.org>, containers@lists.linux-f
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Christian Brauner <christian@brauner.io>, Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>
+
+Christian Brauner <christian@brauner.io> writes:
+> On Mon, Jul 15, 2019 at 03:56:04PM +0200, Christian Borntraeger wrote:
+>> I think Vasily already has a clone3 patch for s390x with 435. 
+>
+> A quick follow-up on this. Helge and Michael have asked whether there
+> are any tests for clone3. Yes, there will be and I try to have them
+> ready by the end of the this or next week for review. In the meantime I
+> hope the following minimalistic test program that just verifies very
+> very basic functionality (It's not pretty.) will help you test:
+
+Hi Christian,
+
+Thanks for the test.
+
+This actually oopses on powerpc, it hits the BUG_ON in CHECK_FULL_REGS
+in process.c around line 1633:
+
+	} else {
+		/* user thread */
+		struct pt_regs *regs = current_pt_regs();
+		CHECK_FULL_REGS(regs);
+		*childregs = *regs;
+		if (usp)
 
 
---g4nevyq6aunc32xc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+So I'll have to dig into how we fix that before we wire up clone3.
 
-On 2019-07-19, Dmitry V. Levin <ldv@altlinux.org> wrote:
-> On Sun, Jul 07, 2019 at 12:57:35AM +1000, Aleksa Sarai wrote:
-> [...]
-> > +/**
-> > + * Arguments for how openat2(2) should open the target path. If @extra=
- is zero,
-> > + * then openat2(2) is identical to openat(2).
-> > + *
-> > + * @flags: O_* flags (unknown flags ignored).
->=20
-> What was the rationale for implementing this semantics?
-> Ignoring unknown flags makes potential extension of this new interface
-> problematic.  This has bitten us many times already, so ...
+Turns out testing is good! :)
 
-I am mirroring the semantics of open(2) and openat(2).
-
-To be clear, I am in favour of doing it -- and it would definitely be
-possible to implement it with -EINVAL (you would just mask off
-~VALID_OPEN_FLAGS for the older syscalls). But Linus' response to my
-point about (the lack of) -EINVAL for unknown open(2) flags gave me the
-impression he would be against this idea (though I might be
-misunderstanding the point he was making).
-
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
-
---g4nevyq6aunc32xc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXTEorwAKCRCdlLljIbnQ
-Eop3AQDsS+JxsKMay74AdwHvqjPK3crvN47y0krPsv6vGBsWhQD/f+ChPlnwx226
-SbxKk/nCjHvnDSJga0WPUznn7tBxUQQ=
-=7H8a
------END PGP SIGNATURE-----
-
---g4nevyq6aunc32xc--
+cheers
