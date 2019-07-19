@@ -1,80 +1,103 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Christian Brauner <christian@brauner.io>
 Subject: Re: [PATCH 1/2] arch: mark syscall number 435 reserved for clone3
-Date: Fri, 19 Jul 2019 21:13:16 +1000
-Message-ID: <871rym8egj.fsf@concordia.ellerman.id.au>
-References: <20190714192205.27190-1-christian@brauner.io> <20190714192205.27190-2-christian@brauner.io> <e14eb2f9-43cb-0b9d-dec4-b7e7dcd62091@de.ibm.com> <20190716130631.tohj4ub54md25dys@brauner.io> <874l3i8h0l.fsf@concordia.ellerman.id.au> <20190719102503.tm3ahvkh4rwykmws@brauner.io>
+Date: Fri, 19 Jul 2019 14:20:59 +0200
+Message-ID: <20190719122058.njbtwy2fbd6xrp2d@brauner.io>
+References: <20190714192205.27190-1-christian@brauner.io>
+ <20190714192205.27190-2-christian@brauner.io>
+ <e14eb2f9-43cb-0b9d-dec4-b7e7dcd62091@de.ibm.com>
+ <20190716130631.tohj4ub54md25dys@brauner.io>
+ <874l3i8h0l.fsf@concordia.ellerman.id.au>
+ <20190719102503.tm3ahvkh4rwykmws@brauner.io>
+ <871rym8egj.fsf@concordia.ellerman.id.au>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190719102503.tm3ahvkh4rwykmws@brauner.io>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brauner.io; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZSNxINB1eoSUuwzdj5DoTcqLmEl60Bp0Y1Hgn40sFfw=;
+        b=YA6EggnrFQ6Rx4knXWvUwz2U9x+1SCXFlO09KhemP39oSM5WYZgQ2m/kFVHmUdPaiL
+         Bm1Ggw6zh2v63WBxSukl1wDC7kjbGrKz1ZXMbEgZLoli/r4F13x+dHAZ6rE4Pz2qeley
+         9tPCOG2cMyDnw62NpBr9grkI92uWPyMgpht0Uw2SLvd9Dz2mAO6avNTIp3+tem/noeAR
+         V4om6zfHYpQNS87JMPrVvHsV4E1J0XeN9bBskUB2432vKBEvTC8+7q2OQdTGZ93iZIvI
+         ohhk/qhXg1mByYO2x65TDsZB/H0HOt+SpMEznQE/4/KLLVO6NYvQR0/hZMhvkRJlJ94I
+         XwzQ==
+Content-Disposition: inline
+In-Reply-To: <871rym8egj.fsf@concordia.ellerman.id.au>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Christian Brauner <christian@brauner.io>
+To: Michael Ellerman <mpe@ellerman.id.au>
 Cc: Christian Borntraeger <borntraeger@de.ibm.com>, linux-kernel@vger.kernel.org, arnd@arndb.de, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>
 
-Christian Brauner <christian@brauner.io> writes:
-> On Fri, Jul 19, 2019 at 08:18:02PM +1000, Michael Ellerman wrote:
->> Christian Brauner <christian@brauner.io> writes:
->> > On Mon, Jul 15, 2019 at 03:56:04PM +0200, Christian Borntraeger wrote:
->> >> I think Vasily already has a clone3 patch for s390x with 435. 
->> >
->> > A quick follow-up on this. Helge and Michael have asked whether there
->> > are any tests for clone3. Yes, there will be and I try to have them
->> > ready by the end of the this or next week for review. In the meantime I
->> > hope the following minimalistic test program that just verifies very
->> > very basic functionality (It's not pretty.) will help you test:
->> 
->> Hi Christian,
->> 
->> Thanks for the test.
->> 
->> This actually oopses on powerpc, it hits the BUG_ON in CHECK_FULL_REGS
->> in process.c around line 1633:
->> 
->> 	} else {
->> 		/* user thread */
->> 		struct pt_regs *regs = current_pt_regs();
->> 		CHECK_FULL_REGS(regs);
->> 		*childregs = *regs;
->> 		if (usp)
->> 
->> 
->> So I'll have to dig into how we fix that before we wire up clone3.
->> 
->> Turns out testing is good! :)
->
-> Indeed. I have a test-suite for clone3 in mind and I hope to have it
-> ready by the end of next week. It's just always the finding the time
-> part that is annoying. :)
+On Fri, Jul 19, 2019 at 09:13:16PM +1000, Michael Ellerman wrote:
+> Christian Brauner <christian@brauner.io> writes:
+> > On Fri, Jul 19, 2019 at 08:18:02PM +1000, Michael Ellerman wrote:
+> >> Christian Brauner <christian@brauner.io> writes:
+> >> > On Mon, Jul 15, 2019 at 03:56:04PM +0200, Christian Borntraeger wrote:
+> >> >> I think Vasily already has a clone3 patch for s390x with 435. 
+> >> >
+> >> > A quick follow-up on this. Helge and Michael have asked whether there
+> >> > are any tests for clone3. Yes, there will be and I try to have them
+> >> > ready by the end of the this or next week for review. In the meantime I
+> >> > hope the following minimalistic test program that just verifies very
+> >> > very basic functionality (It's not pretty.) will help you test:
+> >> 
+> >> Hi Christian,
+> >> 
+> >> Thanks for the test.
+> >> 
+> >> This actually oopses on powerpc, it hits the BUG_ON in CHECK_FULL_REGS
+> >> in process.c around line 1633:
+> >> 
+> >> 	} else {
+> >> 		/* user thread */
+> >> 		struct pt_regs *regs = current_pt_regs();
+> >> 		CHECK_FULL_REGS(regs);
+> >> 		*childregs = *regs;
+> >> 		if (usp)
+> >> 
+> >> 
+> >> So I'll have to dig into how we fix that before we wire up clone3.
+> >> 
+> >> Turns out testing is good! :)
+> >
+> > Indeed. I have a test-suite for clone3 in mind and I hope to have it
+> > ready by the end of next week. It's just always the finding the time
+> > part that is annoying. :)
+> 
+> I know the feeling!
+> 
+> > Thanks for digging into this, Michael!
+> 
+> No worries, happy to help where I can.
+> 
+> In the intervening five minutes I remembered how we handle this, we just
+> need a little wrapper to save the non-volatile regs:
+> 
+> _GLOBAL(ppc_clone3)
+> 	bl	save_nvgprs
+> 	bl	sys_clone3
+> 	b	.Lsyscall_exit
 
-I know the feeling!
+Sounds good.
 
-> Thanks for digging into this, Michael!
+> 
+> 
+> A while back I meant to make it generate those automatically based on a
+> flag in the syscall.tbl but of course haven't got around to it :)
+> 
+> So with the above it seems all good:
+> 
+> $ ./clone3 ; echo $?
+> Parent process received child's pid 4204 as return value
+> Parent process received child's pidfd 3
+> Parent process received child's pid 4204 as return argument
+> Child process with pid 4204
+> 0
+> 
+> I'll send a patch to wire it up on Monday.
 
-No worries, happy to help where I can.
-
-In the intervening five minutes I remembered how we handle this, we just
-need a little wrapper to save the non-volatile regs:
-
-_GLOBAL(ppc_clone3)
-	bl	save_nvgprs
-	bl	sys_clone3
-	b	.Lsyscall_exit
-
-
-A while back I meant to make it generate those automatically based on a
-flag in the syscall.tbl but of course haven't got around to it :)
-
-So with the above it seems all good:
-
-$ ./clone3 ; echo $?
-Parent process received child's pid 4204 as return value
-Parent process received child's pidfd 3
-Parent process received child's pid 4204 as return argument
-Child process with pid 4204
-0
-
-I'll send a patch to wire it up on Monday.
-
-cheers
+Excellent! Thank you!
+Christian
