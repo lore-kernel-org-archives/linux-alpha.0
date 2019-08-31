@@ -1,7 +1,7 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH v2 8/9] mips: numa: check the node id consistently for mips ip27
-Date: Sat, 31 Aug 2019 13:58:22 +0800
-Message-ID: <1567231103-13237-9-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v2 4/9] powerpc: numa: check the node id consistently for powerpc
+Date: Sat, 31 Aug 2019 13:58:18 +0800
+Message-ID: <1567231103-13237-5-git-send-email-linyunsheng@huawei.com>
 References: <1567231103-13237-1-git-send-email-linyunsheng@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -21,46 +21,43 @@ associations within a machine. _PXM evaluates to an integer
 that identifies a device as belonging to a Proximity Domain
 defined in the System Resource Affinity Table (SRAT).
 
-Since mips ip27 uses hub_data instead of node_to_cpumask_map,
-this patch checks node id with the below case before returning
-&hub_data(node)->h_cpus:
-1. if node_id >= MAX_COMPACT_NODES, return cpu_none_mask
+This patch checks node id with the below case before returning
+node_to_cpumask_map[node]:
+1. if node_id >= nr_node_ids, return cpu_none_mask
 2. if node_id < 0, return cpu_online_mask
-3. if hub_data(node) is NULL, return cpu_online_mask
+3. if node_to_cpumask_map[node_id] is NULL, return cpu_online_mask
 
 [1] https://uefi.org/sites/default/files/resources/ACPI_6_3_final_Jan30.pdf
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- arch/mips/include/asm/mach-ip27/topology.h | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ arch/powerpc/include/asm/topology.h | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/arch/mips/include/asm/mach-ip27/topology.h b/arch/mips/include/asm/mach-ip27/topology.h
-index 965f079..914a55a 100644
---- a/arch/mips/include/asm/mach-ip27/topology.h
-+++ b/arch/mips/include/asm/mach-ip27/topology.h
-@@ -15,9 +15,18 @@ struct cpuinfo_ip27 {
- extern struct cpuinfo_ip27 sn_cpu_info[NR_CPUS];
+diff --git a/arch/powerpc/include/asm/topology.h b/arch/powerpc/include/asm/topology.h
+index 2f7e1ea..217dc9b 100644
+--- a/arch/powerpc/include/asm/topology.h
++++ b/arch/powerpc/include/asm/topology.h
+@@ -17,9 +17,16 @@ struct device_node;
  
- #define cpu_to_node(cpu)	(sn_cpu_info[(cpu)].p_nodeid)
--#define cpumask_of_node(node)	((node) == -1 ?				\
--				 cpu_all_mask :				\
--				 &hub_data(node)->h_cpus)
-+
+ #include <asm/mmzone.h>
+ 
+-#define cpumask_of_node(node) ((node) == -1 ?				\
+-			       cpu_all_mask :				\
+-			       node_to_cpumask_map[node])
 +static inline const struct cpumask *cpumask_of_node(int node)
 +{
-+	if (node >= MAX_COMPACT_NODES)
++	if (node >= nr_node_ids)
 +		return cpu_none_mask;
 +
-+	if (node < 0 || !hub_data(node))
++	if (node < 0 || !node_to_cpumask_map[node])
 +		return cpu_online_mask;
 +
-+	return &hub_data(node)->h_cpus;
++	return node_to_cpumask_map[node];
 +}
-+
- struct pci_bus;
- extern int pcibus_to_node(struct pci_bus *);
  
+ struct pci_bus;
+ #ifdef CONFIG_PCI
 -- 
 2.8.1
 
