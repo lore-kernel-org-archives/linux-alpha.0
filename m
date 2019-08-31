@@ -1,7 +1,7 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH v2 5/9] s390: numa: check the node id consistently for s390
-Date: Sat, 31 Aug 2019 13:58:19 +0800
-Message-ID: <1567231103-13237-6-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v2 7/9] sparc64: numa: check the node id consistently for sparc64
+Date: Sat, 31 Aug 2019 13:58:21 +0800
+Message-ID: <1567231103-13237-8-git-send-email-linyunsheng@huawei.com>
 References: <1567231103-13237-1-git-send-email-linyunsheng@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -22,40 +22,46 @@ that identifies a device as belonging to a Proximity Domain
 defined in the System Resource Affinity Table (SRAT).
 
 This patch checks node id with the below case before returning
-node_to_cpumask_map[node]:
+&numa_cpumask_lookup_table[node]:
 1. if node_id >= nr_node_ids, return cpu_none_mask
 2. if node_id < 0, return cpu_online_mask
-3. if node_to_cpumask_map[node_id] is NULL, return cpu_online_mask
+3. Since numa_cpumask_lookup_table is not a pointer, a comment
+   is added to indicate that
 
 [1] https://uefi.org/sites/default/files/resources/ACPI_6_3_final_Jan30.pdf
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
-Note node_to_cpumask_map[node] is already a pointer, so
-returning &node_to_cpumask_map[node] does not seem to
-be correct, if this is problem, maybe clean it up in another
-patch.
----
- arch/s390/include/asm/topology.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/sparc/include/asm/topology_64.h | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/arch/s390/include/asm/topology.h b/arch/s390/include/asm/topology.h
-index cca406f..75340ca 100644
---- a/arch/s390/include/asm/topology.h
-+++ b/arch/s390/include/asm/topology.h
-@@ -78,6 +78,12 @@ static inline int cpu_to_node(int cpu)
- #define cpumask_of_node cpumask_of_node
- static inline const struct cpumask *cpumask_of_node(int node)
- {
-+	if (node >= nr_node_ids)
-+		return cpu_none_mask;
-+
-+	if (node < 0 || !node_to_cpumask_map[node])
-+		return cpu_online_mask;
-+
- 	return &node_to_cpumask_map[node];
+diff --git a/arch/sparc/include/asm/topology_64.h b/arch/sparc/include/asm/topology_64.h
+index 34c628a..66a7917 100644
+--- a/arch/sparc/include/asm/topology_64.h
++++ b/arch/sparc/include/asm/topology_64.h
+@@ -11,9 +11,19 @@ static inline int cpu_to_node(int cpu)
+ 	return numa_cpu_lookup_table[cpu];
  }
  
+-#define cpumask_of_node(node) ((node) == -1 ?				\
+-			       cpu_all_mask :				\
+-			       &numa_cpumask_lookup_table[node])
++static inline const struct cpumask *cpumask_of_node(int node)
++{
++	if (node >= MAX_NUMNODES)
++		return cpu_none_mask;
++
++	/* numa_cpumask_lookup_table[node] is not a pointer, so
++	 * no need to check for NULL here.
++	 */
++	if (node < 0)
++		return cpu_online_mask;
++
++	return &numa_cpumask_lookup_table[node];
++}
+ 
+ struct pci_bus;
+ #ifdef CONFIG_PCI
 -- 
 2.8.1
 
