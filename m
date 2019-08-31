@@ -1,7 +1,7 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH v2 9/9] mips: numa: check the node id consistently for mips loongson64
-Date: Sat, 31 Aug 2019 13:58:23 +0800
-Message-ID: <1567231103-13237-10-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v2 8/9] mips: numa: check the node id consistently for mips ip27
+Date: Sat, 31 Aug 2019 13:58:22 +0800
+Message-ID: <1567231103-13237-9-git-send-email-linyunsheng@huawei.com>
 References: <1567231103-13237-1-git-send-email-linyunsheng@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -21,10 +21,10 @@ associations within a machine. _PXM evaluates to an integer
 that identifies a device as belonging to a Proximity Domain
 defined in the System Resource Affinity Table (SRAT).
 
-Since mips loongson64 uses __node_data instead of
-node_to_cpumask_map, this patch checks node id with the below
-case before returning &__node_data[node]->cpumask:
-1. if node_id >= MAX_NUMNODES, return cpu_none_mask
+Since mips ip27 uses hub_data instead of node_to_cpumask_map,
+this patch checks node id with the below case before returning
+&hub_data(node)->h_cpus:
+1. if node_id >= MAX_COMPACT_NODES, return cpu_none_mask
 2. if node_id < 0, return cpu_online_mask
 3. if hub_data(node) is NULL, return cpu_online_mask
 
@@ -32,32 +32,35 @@ case before returning &__node_data[node]->cpumask:
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- arch/mips/include/asm/mach-loongson64/topology.h | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ arch/mips/include/asm/mach-ip27/topology.h | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/arch/mips/include/asm/mach-loongson64/topology.h b/arch/mips/include/asm/mach-loongson64/topology.h
-index 7ff819a..b19b983 100644
---- a/arch/mips/include/asm/mach-loongson64/topology.h
-+++ b/arch/mips/include/asm/mach-loongson64/topology.h
-@@ -5,7 +5,17 @@
- #ifdef CONFIG_NUMA
+diff --git a/arch/mips/include/asm/mach-ip27/topology.h b/arch/mips/include/asm/mach-ip27/topology.h
+index 965f079..914a55a 100644
+--- a/arch/mips/include/asm/mach-ip27/topology.h
++++ b/arch/mips/include/asm/mach-ip27/topology.h
+@@ -15,9 +15,18 @@ struct cpuinfo_ip27 {
+ extern struct cpuinfo_ip27 sn_cpu_info[NR_CPUS];
  
- #define cpu_to_node(cpu)	(cpu_logical_map(cpu) >> 2)
--#define cpumask_of_node(node)	(&__node_data[(node)]->cpumask)
+ #define cpu_to_node(cpu)	(sn_cpu_info[(cpu)].p_nodeid)
+-#define cpumask_of_node(node)	((node) == -1 ?				\
+-				 cpu_all_mask :				\
+-				 &hub_data(node)->h_cpus)
 +
 +static inline const struct cpumask *cpumask_of_node(int node)
 +{
-+	if (node >= MAX_NUMNODES)
++	if (node >= MAX_COMPACT_NODES)
 +		return cpu_none_mask;
 +
-+	if (node < 0 || !__node_data[node])
++	if (node < 0 || !hub_data(node))
 +		return cpu_online_mask;
 +
-+	return &__node_data[node]->cpumask;
++	return &hub_data(node)->h_cpus;
 +}
- 
++
  struct pci_bus;
  extern int pcibus_to_node(struct pci_bus *);
+ 
 -- 
 2.8.1
 
