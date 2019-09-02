@@ -1,12 +1,11 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: Re: [PATCH v2 7/9] sparc64: numa: check the node id consistently for
- sparc64
-Date: Mon, 2 Sep 2019 14:08:31 +0800
-Message-ID: <1e128e33-427f-19a2-0e13-95a9c0656ab1@huawei.com>
-References: <1567231103-13237-8-git-send-email-linyunsheng@huawei.com>
- <20190830.235337.570776316111294728.davem@davemloft.net>
- <0195eb73-99ae-fec2-3e11-2cb9e6677926@huawei.com>
- <20190831.130250.1236116087422472663.davem@davemloft.net>
+Subject: Re: [PATCH v2 8/9] mips: numa: check the node id consistently for
+ mips ip27
+Date: Mon, 2 Sep 2019 14:11:37 +0800
+Message-ID: <0290a79f-008a-a789-8545-1141c96c1023@huawei.com>
+References: <1567231103-13237-1-git-send-email-linyunsheng@huawei.com>
+ <1567231103-13237-9-git-send-email-linyunsheng@huawei.com>
+ <20190831154547.qzh6j4jwg5o5y4db@pburton-laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -17,13 +16,13 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:
 	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
 	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=FJfxoYCV7VcJHitVQ2mswuU8xgDFgO6mHq7DUxfCnG0=; b=ErJlKR0LIqPJyQ
-	HLZcPcvxX/VHqgqGdZOPBEAJ5GiO9+k/fWKUXsr29OoXjo4vFBzeiWLuJ25oLfuJbM4ZJK1T9AABG
-	uH+qwj8RY6FkPMckzUkA2/nqcusLe+Pb975LiMn48C0hWAI+TYbZR69hJxiEUkb5u4jDqaUkusLJ8
-	QSSPPcWcY2nW8P0z3ZD/KNV7Mh1JJOFegaznK7h5XfIarSNOvcCKhOqLiCRRujSxOYu8xU0OG662I
-	89QsuafN1t+xp9yXih5Jn+DkHnDkt0jYlO4HPBjpe2phaKzOPqTju6dzL/SmNdmsIGi5BPb71S5CX
-	aKldjR4XD3OYcCW9fIyg==;
-In-Reply-To: <20190831.130250.1236116087422472663.davem@davemloft.net>
+	List-Owner; bh=Mjm2/nCwZkwq6IZSIy8bk5COPuPvLPqN0E/8aRwRNiM=; b=eXHjYLHCJnJRhJ
+	YfqaA/JThwzqswefPHogG3+68p/Gm/ZKC3DNQI+qxTq7u3vYUx941gejskWffSqmm4k2H6rQaudfW
+	NBAg9xyPxQZGgfpgj8+mqkPVdOFNiQZzCvsb01BOdxnV182iyHIDyScBdz3DF0KTgZ+h73WOvLHkC
+	Kxc2xAkqJBO8Vv4hTSsZTfiKYSeuU7e1uKCQu/rWODOnGhOZaP2Hpvo/XOT6ahvXxHNepC1aAo+dZ
+	1KFG7CH7I/JVsJZ5i56M+5qKF3c7wvuyl10pWxB6F9cr85hVF67xKBtBxSCBfIbftLrlU9sMT2FOr
+	TolsUDfwEsfypcOuAL4A==;
+In-Reply-To: <20190831154547.qzh6j4jwg5o5y4db@pburton-laptop>
 Content-Language: en-US
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -35,29 +34,80 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: David Miller <davem@davemloft.net>
-Cc: dalias@libc.org, linux-sh@vger.kernel.org, peterz@infradead.org, catalin.marinas@arm.com, dave.hansen@linux.intel.com, heiko.carstens@de.ibm.com, linuxarm@huawei.com, jiaxun.yang@flygoat.com, linux-mips@vger.kernel.org, mwb@linux.vnet.ibm.com, paulus@samba.org, hpa@zytor.com, sparclinux@vger.kernel.org, chenhc@lemote.com, will@kernel.org, cai@lca.pw, linux-s390@vger.kernel.org, ysato@users.sourceforge.jp, mpe@ellerman.id.au, x86@kernel.org, rppt@linux.ibm.com, borntraeger@de.ibm.com, dledford@redhat.com, mingo@redhat.com, jeffrey.t.kirsher@intel.com, benh@kernel.crashing.org, jhogan@kernel.org, nfont@linux.vnet.ibm.com, mattst88@gmail.com, len.brown@intel.com, gor@linux.ibm.com, anshuman.khandual@arm.com, bp@alien8.de, luto@kernel.org, tglx@linutronix.de, naveen.n.rao@linux.vnet.ibm.com, linux-arm-kernel@lists.infradead.org, rth@twiddle.net, axboe@kernel.dk, 
+To: Paul Burton <paul.burton@mips.com>
+Cc: "dalias@libc.org" <dalias@libc.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "peterz@infradead.org" <peterz@infradead.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "heiko.carstens@de.ibm.com" <heiko.carstens@de.ibm.com>, "linuxarm@huawei.com" <linuxarm@huawei.com>, "jiaxun.yang@flygoat.com" <jiaxun.yang@flygoat.com>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "mwb@linux.vnet.ibm.com" <mwb@linux.vnet.ibm.com>, "paulus@samba.org" <paulus@samba.org>, "hpa@zytor.com" <hpa@zytor.com>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, "chenhc@lemote.com" <chenhc@lemote.com>, "will@kernel.org" <will@kernel.org>, "cai@lca.pw" <cai@lca.pw>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "ysato@users.sourceforge.jp" <ysato@users.sourceforge.jp>, mpe@ell
 
-On 2019/9/1 4:02, David Miller wrote:
-> From: Yunsheng Lin <linyunsheng@huawei.com>
-> Date: Sat, 31 Aug 2019 16:57:04 +0800
+On 2019/8/31 23:45, Paul Burton wrote:
+> Hi Yunsheng,
 > 
->> Did you mean sparc64 system does not has ACPI, the device's node id will
->> not specified by ACPI, so the ACPI is unrelated here?
+> On Sat, Aug 31, 2019 at 01:58:22PM +0800, Yunsheng Lin wrote:
+>> According to Section 6.2.14 from ACPI spec 6.3 [1], the setting
+>> of proximity domain is optional, as below:
+>>
+>> This optional object is used to describe proximity domain
+>> associations within a machine. _PXM evaluates to an integer
+>> that identifies a device as belonging to a Proximity Domain
+>> defined in the System Resource Affinity Table (SRAT).
+>>
+>> Since mips ip27 uses hub_data instead of node_to_cpumask_map,
+>> this patch checks node id with the below case before returning
+>> &hub_data(node)->h_cpus:
+>> 1. if node_id >= MAX_COMPACT_NODES, return cpu_none_mask
+>> 2. if node_id < 0, return cpu_online_mask
+>> 3. if hub_data(node) is NULL, return cpu_online_mask
+>>
+>> [1] https://uefi.org/sites/default/files/resources/ACPI_6_3_final_Jan30.pdf
 > 
-> Yes, sparc64 never has and never will have ACPI.
+> Similar to David's comment on the sparc patch, these systems don't use
+> ACPI so I don't see from your commit message why this change would be
+> relevant.
 > 
-> This is also true for several other platforms where you have made this
-> change.
-> 
-> The assumption of your entire patch set is that the semantics of the
-> NUMA node ID are somehow completely defined by ACPI semantics.  Which
-> is not true.
+> This same comment applies to patch 9 too.
 
 Thanks for pointing out.
 
-The NUMA node id in sparc64 system is defined by DT semantics?
+MIPS's NUMA node id is also defined by DT?
 
+
+> 
+> Thanks,
+>     Paul
+> 
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>  arch/mips/include/asm/mach-ip27/topology.h | 15 ++++++++++++---
+>>  1 file changed, 12 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/arch/mips/include/asm/mach-ip27/topology.h b/arch/mips/include/asm/mach-ip27/topology.h
+>> index 965f079..914a55a 100644
+>> --- a/arch/mips/include/asm/mach-ip27/topology.h
+>> +++ b/arch/mips/include/asm/mach-ip27/topology.h
+>> @@ -15,9 +15,18 @@ struct cpuinfo_ip27 {
+>>  extern struct cpuinfo_ip27 sn_cpu_info[NR_CPUS];
+>>  
+>>  #define cpu_to_node(cpu)	(sn_cpu_info[(cpu)].p_nodeid)
+>> -#define cpumask_of_node(node)	((node) == -1 ?				\
+>> -				 cpu_all_mask :				\
+>> -				 &hub_data(node)->h_cpus)
+>> +
+>> +static inline const struct cpumask *cpumask_of_node(int node)
+>> +{
+>> +	if (node >= MAX_COMPACT_NODES)
+>> +		return cpu_none_mask;
+>> +
+>> +	if (node < 0 || !hub_data(node))
+>> +		return cpu_online_mask;
+>> +
+>> +	return &hub_data(node)->h_cpus;
+>> +}
+>> +
+>>  struct pci_bus;
+>>  extern int pcibus_to_node(struct pci_bus *);
+>>  
+>> -- 
+>> 2.8.1
+>>
 > 
 > .
 > 
