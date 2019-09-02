@@ -1,135 +1,63 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: Re: [PATCH v2 2/9] x86: numa: check the node id consistently for x86
-Date: Mon, 2 Sep 2019 13:46:51 +0800
-Message-ID: <ae64285f-5134-4147-7b02-34bb5d519e8c@huawei.com>
-References: <1567231103-13237-1-git-send-email-linyunsheng@huawei.com>
- <1567231103-13237-3-git-send-email-linyunsheng@huawei.com>
- <20190831085539.GG2369@hirez.programming.kicks-ass.net>
- <4d89c688-49e4-a2aa-32ee-65e36edcd913@huawei.com>
- <20190831161247.GM2369@hirez.programming.kicks-ass.net>
+Subject: Re: [PATCH v2 7/9] sparc64: numa: check the node id consistently for
+ sparc64
+Date: Mon, 2 Sep 2019 14:08:31 +0800
+Message-ID: <1e128e33-427f-19a2-0e13-95a9c0656ab1@huawei.com>
+References: <1567231103-13237-8-git-send-email-linyunsheng@huawei.com>
+ <20190830.235337.570776316111294728.davem@davemloft.net>
+ <0195eb73-99ae-fec2-3e11-2cb9e6677926@huawei.com>
+ <20190831.130250.1236116087422472663.davem@davemloft.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190831161247.GM2369@hirez.programming.kicks-ass.net>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: dalias@libc.org, linux-sh@vger.kernel.org, catalin.marinas@arm.com, dave.hansen@linux.intel.com, heiko.carstens@de.ibm.com, linuxarm@huawei.com, jiaxun.yang@flygoat.com, linux-mips@vger.kernel.org, mwb@linux.vnet.ibm.com, paulus@samba.org, hpa@zytor.com, sparclinux@vger.kernel.org, chenhc@lemote.com, will@kernel.org, cai@lca.pw, linux-s390@vger.kernel.org, ysato@users.sourceforge.jp, mpe@ellerman.id.au, x86@kernel.org, rppt@linux.ibm.com, borntraeger@de.ibm.com, dledford@redhat.com, mingo@redhat.com, jeffrey.t.kirsher@intel.com, benh@kernel.crashing.org, jhogan@kernel.org, nfont@linux.vnet.ibm.com, mattst88@gmail.com, len.brown@intel.com, gor@linux.ibm.com, anshuman.khandual@arm.com, bp@alien8.de, luto@kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:
+	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
+	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=FJfxoYCV7VcJHitVQ2mswuU8xgDFgO6mHq7DUxfCnG0=; b=ErJlKR0LIqPJyQ
+	HLZcPcvxX/VHqgqGdZOPBEAJ5GiO9+k/fWKUXsr29OoXjo4vFBzeiWLuJ25oLfuJbM4ZJK1T9AABG
+	uH+qwj8RY6FkPMckzUkA2/nqcusLe+Pb975LiMn48C0hWAI+TYbZR69hJxiEUkb5u4jDqaUkusLJ8
+	QSSPPcWcY2nW8P0z3ZD/KNV7Mh1JJOFegaznK7h5XfIarSNOvcCKhOqLiCRRujSxOYu8xU0OG662I
+	89QsuafN1t+xp9yXih5Jn+DkHnDkt0jYlO4HPBjpe2phaKzOPqTju6dzL/SmNdmsIGi5BPb71S5CX
+	aKldjR4XD3OYcCW9fIyg==;
+In-Reply-To: <20190831.130250.1236116087422472663.davem@davemloft.net>
+Content-Language: en-US
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: David Miller <davem@davemloft.net>
+Cc: dalias@libc.org, linux-sh@vger.kernel.org, peterz@infradead.org, catalin.marinas@arm.com, dave.hansen@linux.intel.com, heiko.carstens@de.ibm.com, linuxarm@huawei.com, jiaxun.yang@flygoat.com, linux-mips@vger.kernel.org, mwb@linux.vnet.ibm.com, paulus@samba.org, hpa@zytor.com, sparclinux@vger.kernel.org, chenhc@lemote.com, will@kernel.org, cai@lca.pw, linux-s390@vger.kernel.org, ysato@users.sourceforge.jp, mpe@ellerman.id.au, x86@kernel.org, rppt@linux.ibm.com, borntraeger@de.ibm.com, dledford@redhat.com, mingo@redhat.com, jeffrey.t.kirsher@intel.com, benh@kernel.crashing.org, jhogan@kernel.org, nfont@linux.vnet.ibm.com, mattst88@gmail.com, len.brown@intel.com, gor@linux.ibm.com, anshuman.khandual@arm.com, bp@alien8.de, luto@kernel.org, tglx@linutronix.de, naveen.n.rao@linux.vnet.ibm.com, linux-arm-kernel@lists.infradead.org, rth@twiddle.net, axboe@kernel.dk, 
 
-On 2019/9/1 0:12, Peter Zijlstra wrote:
-> On Sat, Aug 31, 2019 at 06:09:39PM +0800, Yunsheng Lin wrote:
->>
->>
->> On 2019/8/31 16:55, Peter Zijlstra wrote:
->>> On Sat, Aug 31, 2019 at 01:58:16PM +0800, Yunsheng Lin wrote:
->>>> According to Section 6.2.14 from ACPI spec 6.3 [1], the setting
->>>> of proximity domain is optional, as below:
->>>>
->>>> This optional object is used to describe proximity domain
->>>> associations within a machine. _PXM evaluates to an integer
->>>> that identifies a device as belonging to a Proximity Domain
->>>> defined in the System Resource Affinity Table (SRAT).
->>>
->>> That's just words.. what does it actually mean?
->>
->> It means the dev_to_node(dev) may return -1 if the bios does not
->> implement the proximity domain feature, user may use that value
->> to call cpumask_of_node and cpumask_of_node does not protect itself
->> from node id being -1, which causes out of bound access.
+On 2019/9/1 4:02, David Miller wrote:
+> From: Yunsheng Lin <linyunsheng@huawei.com>
+> Date: Sat, 31 Aug 2019 16:57:04 +0800
 > 
->>>> @@ -69,6 +69,12 @@ extern const struct cpumask *cpumask_of_node(int node);
->>>>  /* Returns a pointer to the cpumask of CPUs on Node 'node'. */
->>>>  static inline const struct cpumask *cpumask_of_node(int node)
->>>>  {
->>>> +	if (node >= nr_node_ids)
->>>> +		return cpu_none_mask;
->>>> +
->>>> +	if (node < 0 || !node_to_cpumask_map[node])
->>>> +		return cpu_online_mask;
->>>> +
->>>>  	return node_to_cpumask_map[node];
->>>>  }
->>>>  #endif
->>>
->>> I _reallly_ hate this. Users are expected to use valid numa ids. Now
->>> we're adding all this checking to all users. Why do we want to do that?
->>
->> As above, the dev_to_node(dev) may return -1.
->>
->>>
->>> Using '(unsigned)node >= nr_nods_ids' is an error.
->>
->> 'node >= nr_node_ids' can be dropped if all user is expected to not call
->> cpumask_of_node with node id greater or equal to nr_nods_ids.
+>> Did you mean sparc64 system does not has ACPI, the device's node id will
+>> not specified by ACPI, so the ACPI is unrelated here?
 > 
-> you copied my typo :-)
-
-I did note the typo, corrected the first one, but missed the second one :)
-
+> Yes, sparc64 never has and never will have ACPI.
 > 
->> From what I can see, the problem can be fixed in three place:
->> 1. Make user dev_to_node return a valid node id even when proximity
->>    domain is not set by bios(or node id set by buggy bios is not valid),
->>    which may need info from the numa system to make sure it will return
->>    a valid node.
->>
->> 2. User that call cpumask_of_node should ensure the node id is valid
->>    before calling cpumask_of_node, and user also need some info to
->>    make ensure node id is valid.
->>
->> 3. Make sure cpumask_of_node deal with invalid node id as this patchset.
->>
->> Which one do you prefer to make sure node id is valid, or do you
->> have any better idea?
->>
->> Any detail advice and suggestion will be very helpful, thanks.
+> This is also true for several other platforms where you have made this
+> change.
 > 
-> 1) because even it is not set, the device really does belong to a node.
-> It is impossible a device will have magic uniform access to memory when
-> CPUs cannot.
+> The assumption of your entire patch set is that the semantics of the
+> NUMA node ID are somehow completely defined by ACPI semantics.  Which
+> is not true.
 
-So it means dev_to_node() will return either NUMA_NO_NODE or a
-valid node id?
+Thanks for pointing out.
 
-> 
-> 2) is already true today, cpumask_of_node() requires a valid node_id.
+The NUMA node id in sparc64 system is defined by DT semantics?
 
-Ok, most of the user does check node_id before calling
-cpumask_of_node(), but does a little different type of checking:
-
-1) some does " < 0" check;
-2) some does "== NUMA_NO_NODE" check;
-3) some does ">= MAX_NUMNODES" check;
-4) some does "< 0 || >= MAX_NUMNODES || !node_online(node)" check.
-
-
-> 
-> 3) is just wrong and increases overhead for everyone.
-
-Ok, cpumask_of_node() is also used in some critical path such
-as scheduling, which may not need those checking, the overhead
-is unnecessary.
-
-But for non-critical path such as setup or configuration path,
-it better to have consistent checking, and also simplify the
-user code that calls cpumask_of_node().
-
-Do you think it is worth the trouble to add a new function
-such as cpumask_of_node_check(maybe some other name) to do
-consistent checking?
-
-Or caller just simply check if dev_to_node()'s return value is
-NUMA_NO_NODE before calling cpumask_of_node()?
-
-
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 > 
 > .
 > 
-
