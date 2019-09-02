@@ -1,98 +1,173 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v2 2/9] x86: numa: check the node id consistently for x86
-Date: Mon, 2 Sep 2019 14:56:44 +0200
-Message-ID: <20190902125644.GQ2369@hirez.programming.kicks-ass.net>
-References: <1567231103-13237-1-git-send-email-linyunsheng@huawei.com>
- <1567231103-13237-3-git-send-email-linyunsheng@huawei.com>
- <20190831085539.GG2369@hirez.programming.kicks-ass.net>
- <4d89c688-49e4-a2aa-32ee-65e36edcd913@huawei.com>
- <20190831161247.GM2369@hirez.programming.kicks-ass.net>
- <ae64285f-5134-4147-7b02-34bb5d519e8c@huawei.com>
- <20190902072542.GN2369@hirez.programming.kicks-ass.net>
- <5fa2aa99-89fa-cd41-b090-36a23cfdeb73@huawei.com>
+From: Michal Simek <monstr@monstr.eu>
+Subject: Re: [PATCH 03/26] m68k, microblaze: remove ioremap_fullcache
+Date: Mon, 2 Sep 2019 16:16:52 +0200
+Message-ID: <9a11ddb0-0799-c64a-f5aa-0504c564998f@monstr.eu>
+References: <20190817073253.27819-1-hch@lst.de>
+ <20190817073253.27819-4-hch@lst.de>
+Reply-To: monstr@monstr.eu
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="===============4753553538835135711=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=9h13EkBbQnZFZZifKdj3rs2HLYagXdgFWT2AUzdmgpI=; b=hbKCmxrhUY1zqpP0uzODVohmc
-        7Gc3fRoEvRGtWXSR1YHAsRyqeOQZ+xSo3xueOYK0vZkz2wXZDvUnLNC21905DicvN9MPBAs4DBoHP
-        3bEPPX3Lah67+Yt2YExpC+47yEB1NRTiRlG2syuXFfZuBnYx1rgsSfXzIhagdqy2nJMJMcIGaOkBm
-        jqE6smn69C/mhsZ+W09pCKWboIYlgkXz4x5ucnn1GxJP4fgNnVDc7NhwfOC1XwO1DTcx+XifaEChK
-        ej/28hnJz2yhxza7ykMLMj5I6MCx6KdQRmTPPejmkQG2Pu2wo4ajJdOKDSq+MquqSIw54tqAYCWoV
-Content-Disposition: inline
-In-Reply-To: <5fa2aa99-89fa-cd41-b090-36a23cfdeb73@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Content-Type:Cc:Reply-To
+	:List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
+	In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	 bh=JgflPxg3PoqXQhdOIO/84F/igKCeO5j6wqL8xJXju9M=; b=TICcBPJNIMYvUdQUYBlWWwkJu
+	mvLTfahwbLVrBqFUcRfPycGzKr1PoNcXiADRr9SkrGo7X8O5hb9wrKdYo1L848SOgGlylDYOcb3pA
+	2K4JM20nkCZUZhuYZC1ZcVF7cPJ85gFPUPWTngEpltomsAMSqnskeRLzcECpdef9cHJMQnyRHZu8h
+	1GxNSYnrMTEIFJC5ixPlNOfIjSh5hreKNjHF3HZ+fkjoIEGxjf5Fol1tNeQKFRyytw9+kB70eBORH
+	jwEosPP6tojtFG3sCpzeoU+uoSzd0ZAHbujc8quUEwxWi/EavTS72EK8sNH+xTVlPA6tKViDE3Jut
+	UeIPHpDhw==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=monstr-eu.20150623.gappssmtp.com; s=20150623;
+ h=reply-to:subject:to:cc:references:from:openpgp:autocrypt:message-id
+ :date:user-agent:mime-version:in-reply-to;
+ bh=wHLGtYkZTmnf/Q+NJRht7CodjM3w+dg+9ES/vSM0RcI=;
+ b=afYPXPQLzvFAj1lVnwBQn3TA5rDlPS9rxLsQKmLyUEVYYqLvv2di5vklel8nyDuIlj
+ IagBthy5dYLukTgWxTT/3ztKBRs9PTOZ66iuza579Dfj5UnylogGKx0AMzEUMimvbUWZ
+ v0Jple7LvgR/plVjamH/3QMW3Vb3p+g8yC6PXiSurp6qQqqA/N9J6twCJEbcgPkvIwyL
+ WsQO4HxJE3vbkuodjs3S68y25OtneQYX4b8YKVWUaflWKRlIMn5V5CKAAS7VvPy3RMkl
+ oDTh3MMO0lQA3AxaolW6Uh96p9mpUIjQPq9teH1xMncYapsZ1Q7Az7UhWut9STf4/cGK
+ RxUA==
+In-Reply-To: <20190817073253.27819-4-hch@lst.de>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>, Guo Ren <guoren@kernel.org>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>, x86@kernel.org
+Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-mtd@lists.infradead.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--===============4753553538835135711==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="sxrD5DzuLHXmSTexCf4xoEovzaJstmsXm"
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--sxrD5DzuLHXmSTexCf4xoEovzaJstmsXm
+Content-Type: multipart/mixed; boundary="Gv98DqTDPDXpgdAS8uye8pnF1A8XQfxBm";
+ protected-headers="v1"
+From: Michal Simek <monstr@monstr.eu>
+Reply-To: monstr@monstr.eu
+To: Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
+ Guo Ren <guoren@kernel.org>, Greentime Hu <green.hu@gmail.com>,
+ Vincent Chen <deanbo422@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>,
+ x86@kernel.org
+Cc: linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org,
+ linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+ linux-mips@vger.kernel.org, nios2-dev@lists.rocketboards.org,
+ openrisc@lists.librecores.org, linux-parisc@vger.kernel.org,
+ linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+ linux-xtensa@linux-xtensa.org, linux-mtd@lists.infradead.org,
+ linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <9a11ddb0-0799-c64a-f5aa-0504c564998f@monstr.eu>
+Subject: Re: [PATCH 03/26] m68k, microblaze: remove ioremap_fullcache
+References: <20190817073253.27819-1-hch@lst.de>
+ <20190817073253.27819-4-hch@lst.de>
+In-Reply-To: <20190817073253.27819-4-hch@lst.de>
+
+--Gv98DqTDPDXpgdAS8uye8pnF1A8XQfxBm
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+
+On 17. 08. 19 9:32, Christoph Hellwig wrote:
+> No callers of this function.
+>=20
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/m68k/include/asm/kmap.h     | 7 -------
+>  arch/microblaze/include/asm/io.h | 1 -
+>  2 files changed, 8 deletions(-)
+>=20
+> diff --git a/arch/m68k/include/asm/kmap.h b/arch/m68k/include/asm/kmap.=
+h
+> index aac7f045f7f0..03d904fe6087 100644
+> --- a/arch/m68k/include/asm/kmap.h
+> +++ b/arch/m68k/include/asm/kmap.h
+> @@ -43,13 +43,6 @@ static inline void __iomem *ioremap_wt(unsigned long=
+ physaddr,
+>  	return __ioremap(physaddr, size, IOMAP_WRITETHROUGH);
+>  }
+> =20
+> -#define ioremap_fullcache ioremap_fullcache
+> -static inline void __iomem *ioremap_fullcache(unsigned long physaddr,
+> -					      unsigned long size)
+> -{
+> -	return __ioremap(physaddr, size, IOMAP_FULL_CACHING);
+> -}
+> -
+>  #define memset_io memset_io
+>  static inline void memset_io(volatile void __iomem *addr, unsigned cha=
+r val,
+>  			     int count)
+> diff --git a/arch/microblaze/include/asm/io.h b/arch/microblaze/include=
+/asm/io.h
+> index c7968139486f..86c95b2a1ce1 100644
+> --- a/arch/microblaze/include/asm/io.h
+> +++ b/arch/microblaze/include/asm/io.h
+> @@ -40,7 +40,6 @@ extern void iounmap(volatile void __iomem *addr);
+> =20
+>  extern void __iomem *ioremap(phys_addr_t address, unsigned long size);=
+
+>  #define ioremap_nocache(addr, size)		ioremap((addr), (size))
+> -#define ioremap_fullcache(addr, size)		ioremap((addr), (size))
+>  #define ioremap_wc(addr, size)			ioremap((addr), (size))
+>  #define ioremap_wt(addr, size)			ioremap((addr), (size))
+> =20
+>=20
+
+Acked-by: Michal Simek <monstr@monstr.eu> (for Microblaze)
+
+Thanks,
+Michal
+
+--=20
+Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
+w: www.monstr.eu p: +42-0-721842854
+Maintainer of Linux kernel - Xilinx Microblaze
+Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
+U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
+
+
+
+--Gv98DqTDPDXpgdAS8uye8pnF1A8XQfxBm--
+
+--sxrD5DzuLHXmSTexCf4xoEovzaJstmsXm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EARECAB0WIQQbPNTMvXmYlBPRwx7KSWXLKUoMIQUCXW0kVQAKCRDKSWXLKUoM
+IUCIAJ0dq35U3Gq44M2ocYgcj4SW3Em/1wCfajAs22UIYAGzwTZZyZTvB5OFi1I=
+=essT
+-----END PGP SIGNATURE-----
+
+--sxrD5DzuLHXmSTexCf4xoEovzaJstmsXm--
+
+
+--===============4753553538835135711==
 Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: dalias@libc.org, linux-sh@vger.kernel.org, catalin.marinas@arm.com, dave.hansen@linux.intel.com, heiko.carstens@de.ibm.com, linuxarm@huawei.com, jiaxun.yang@flygoat.com, linux-kernel@vger.kernel.org, mwb@linux.vnet.ibm.com, paulus@samba.org, hpa@zytor.com, sparclinux@vger.kernel.org, chenhc@lemote.com, will@kernel.org, linux-s390@vger.kernel.org, ysato@users.sourceforge.jp, mpe@ellerman.id.au, x86@kernel.org, rppt@linux.ibm.com, borntraeger@de.ibm.com, dledford@redhat.com, mingo@redhat.com, jeffrey.t.kirsher@intel.com, benh@kernel.crashing.org, jhogan@kernel.org, nfont@linux.vnet.ibm.com, mattst88@gmail.com, len.brown@intel.com, gor@linux.ibm.com, anshuman.khandual@arm.com, ink@jurassic.park.msu.ru, cai@lca.pw, luto@kernel.org, tglx@linutronix.de, naveen.n.rao@linux.vnet.ibm.com
+Content-Disposition: inline
 
-On Mon, Sep 02, 2019 at 08:25:24PM +0800, Yunsheng Lin wrote:
-> On 2019/9/2 15:25, Peter Zijlstra wrote:
-> > On Mon, Sep 02, 2019 at 01:46:51PM +0800, Yunsheng Lin wrote:
-> >> On 2019/9/1 0:12, Peter Zijlstra wrote:
-> > 
-> >>> 1) because even it is not set, the device really does belong to a node.
-> >>> It is impossible a device will have magic uniform access to memory when
-> >>> CPUs cannot.
-> >>
-> >> So it means dev_to_node() will return either NUMA_NO_NODE or a
-> >> valid node id?
-> > 
-> > NUMA_NO_NODE := -1, which is not a valid node number. It is also, like I
-> > said, not a valid device location on a NUMA system.
-> > 
-> > Just because ACPI/BIOS is shit, doesn't mean the device doesn't have a
-> > node association. It just means we don't know and might have to guess.
-> 
-> How do we guess the device's location when ACPI/BIOS does not set it?
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
-See device_add(), it looks to the device's parent and on NO_NODE, puts
-it there.
+--===============4753553538835135711==--
 
-Lacking any hints, just stick it to node0 and print a FW_BUG or
-something.
-
-> It seems dev_to_node() does not do anything about that and leave the
-> job to the caller or whatever function that get called with its return
-> value, such as cpumask_of_node().
-
-Well, dev_to_node() doesn't do anything; nor should it. It are the
-callers of set_dev_node() that should be taking care.
-
-Also note how device_add() sets the device node to the parent device's
-node on NUMA_NO_NODE. Arguably we should change it to complain when it
-finds NUMA_NO_NODE and !parent.
-
----
- drivers/base/core.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index f0dd8e38fee3..2caf204966a0 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -2120,8 +2120,16 @@ int device_add(struct device *dev)
- 		dev->kobj.parent = kobj;
- 
- 	/* use parent numa_node */
--	if (parent && (dev_to_node(dev) == NUMA_NO_NODE))
--		set_dev_node(dev, dev_to_node(parent));
-+	if (dev_to_node(dev) == NUMA_NO_NODE) {
-+		if (parent)
-+			set_dev_node(dev, dev_to_node(parent));
-+#ifdef CONFIG_NUMA
-+		else {
-+			pr_err("device: '%s': has no assigned NUMA node\n", dev_name(dev));
-+			set_dev_node(dev, 0);
-+		}
-+#endif
-+	}
- 
- 	/* first, register with generic layer. */
- 	/* we require the name to be set before, and pass NULL */
