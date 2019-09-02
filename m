@@ -1,173 +1,25 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [PATCH 03/26] m68k, microblaze: remove ioremap_fullcache
-Date: Mon, 2 Sep 2019 16:16:52 +0200
-Message-ID: <9a11ddb0-0799-c64a-f5aa-0504c564998f@monstr.eu>
-References: <20190817073253.27819-1-hch@lst.de>
- <20190817073253.27819-4-hch@lst.de>
-Reply-To: monstr@monstr.eu
+From: David Miller <davem@davemloft.net>
+Subject: Re: [PATCH v2 7/9] sparc64: numa: check the node id consistently
+ for sparc64
+Date: Mon, 02 Sep 2019 08:17:27 -0700 (PDT)
+Message-ID: <20190902.081727.1498167275046613083.davem@davemloft.net>
+References: <0195eb73-99ae-fec2-3e11-2cb9e6677926@huawei.com>
+        <20190831.130250.1236116087422472663.davem@davemloft.net>
+        <1e128e33-427f-19a2-0e13-95a9c0656ab1@huawei.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4753553538835135711=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Content-Type:Cc:Reply-To
-	:List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=JgflPxg3PoqXQhdOIO/84F/igKCeO5j6wqL8xJXju9M=; b=TICcBPJNIMYvUdQUYBlWWwkJu
-	mvLTfahwbLVrBqFUcRfPycGzKr1PoNcXiADRr9SkrGo7X8O5hb9wrKdYo1L848SOgGlylDYOcb3pA
-	2K4JM20nkCZUZhuYZC1ZcVF7cPJ85gFPUPWTngEpltomsAMSqnskeRLzcECpdef9cHJMQnyRHZu8h
-	1GxNSYnrMTEIFJC5ixPlNOfIjSh5hreKNjHF3HZ+fkjoIEGxjf5Fol1tNeQKFRyytw9+kB70eBORH
-	jwEosPP6tojtFG3sCpzeoU+uoSzd0ZAHbujc8quUEwxWi/EavTS72EK8sNH+xTVlPA6tKViDE3Jut
-	UeIPHpDhw==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=monstr-eu.20150623.gappssmtp.com; s=20150623;
- h=reply-to:subject:to:cc:references:from:openpgp:autocrypt:message-id
- :date:user-agent:mime-version:in-reply-to;
- bh=wHLGtYkZTmnf/Q+NJRht7CodjM3w+dg+9ES/vSM0RcI=;
- b=afYPXPQLzvFAj1lVnwBQn3TA5rDlPS9rxLsQKmLyUEVYYqLvv2di5vklel8nyDuIlj
- IagBthy5dYLukTgWxTT/3ztKBRs9PTOZ66iuza579Dfj5UnylogGKx0AMzEUMimvbUWZ
- v0Jple7LvgR/plVjamH/3QMW3Vb3p+g8yC6PXiSurp6qQqqA/N9J6twCJEbcgPkvIwyL
- WsQO4HxJE3vbkuodjs3S68y25OtneQYX4b8YKVWUaflWKRlIMn5V5CKAAS7VvPy3RMkl
- oDTh3MMO0lQA3AxaolW6Uh96p9mpUIjQPq9teH1xMncYapsZ1Q7Az7UhWut9STf4/cGK
- RxUA==
-In-Reply-To: <20190817073253.27819-4-hch@lst.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>, Guo Ren <guoren@kernel.org>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>, x86@kernel.org
-Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-mtd@lists.infradead.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---===============4753553538835135711==
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="sxrD5DzuLHXmSTexCf4xoEovzaJstmsXm"
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---sxrD5DzuLHXmSTexCf4xoEovzaJstmsXm
-Content-Type: multipart/mixed; boundary="Gv98DqTDPDXpgdAS8uye8pnF1A8XQfxBm";
- protected-headers="v1"
-From: Michal Simek <monstr@monstr.eu>
-Reply-To: monstr@monstr.eu
-To: Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
- Guo Ren <guoren@kernel.org>, Greentime Hu <green.hu@gmail.com>,
- Vincent Chen <deanbo422@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>,
- x86@kernel.org
-Cc: linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org,
- linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
- linux-mips@vger.kernel.org, nios2-dev@lists.rocketboards.org,
- openrisc@lists.librecores.org, linux-parisc@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-xtensa@linux-xtensa.org, linux-mtd@lists.infradead.org,
- linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <9a11ddb0-0799-c64a-f5aa-0504c564998f@monstr.eu>
-Subject: Re: [PATCH 03/26] m68k, microblaze: remove ioremap_fullcache
-References: <20190817073253.27819-1-hch@lst.de>
- <20190817073253.27819-4-hch@lst.de>
-In-Reply-To: <20190817073253.27819-4-hch@lst.de>
-
---Gv98DqTDPDXpgdAS8uye8pnF1A8XQfxBm
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-
-On 17. 08. 19 9:32, Christoph Hellwig wrote:
-> No callers of this function.
->=20
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/m68k/include/asm/kmap.h     | 7 -------
->  arch/microblaze/include/asm/io.h | 1 -
->  2 files changed, 8 deletions(-)
->=20
-> diff --git a/arch/m68k/include/asm/kmap.h b/arch/m68k/include/asm/kmap.=
-h
-> index aac7f045f7f0..03d904fe6087 100644
-> --- a/arch/m68k/include/asm/kmap.h
-> +++ b/arch/m68k/include/asm/kmap.h
-> @@ -43,13 +43,6 @@ static inline void __iomem *ioremap_wt(unsigned long=
- physaddr,
->  	return __ioremap(physaddr, size, IOMAP_WRITETHROUGH);
->  }
-> =20
-> -#define ioremap_fullcache ioremap_fullcache
-> -static inline void __iomem *ioremap_fullcache(unsigned long physaddr,
-> -					      unsigned long size)
-> -{
-> -	return __ioremap(physaddr, size, IOMAP_FULL_CACHING);
-> -}
-> -
->  #define memset_io memset_io
->  static inline void memset_io(volatile void __iomem *addr, unsigned cha=
-r val,
->  			     int count)
-> diff --git a/arch/microblaze/include/asm/io.h b/arch/microblaze/include=
-/asm/io.h
-> index c7968139486f..86c95b2a1ce1 100644
-> --- a/arch/microblaze/include/asm/io.h
-> +++ b/arch/microblaze/include/asm/io.h
-> @@ -40,7 +40,6 @@ extern void iounmap(volatile void __iomem *addr);
-> =20
->  extern void __iomem *ioremap(phys_addr_t address, unsigned long size);=
-
->  #define ioremap_nocache(addr, size)		ioremap((addr), (size))
-> -#define ioremap_fullcache(addr, size)		ioremap((addr), (size))
->  #define ioremap_wc(addr, size)			ioremap((addr), (size))
->  #define ioremap_wt(addr, size)			ioremap((addr), (size))
-> =20
->=20
-
-Acked-by: Michal Simek <monstr@monstr.eu> (for Microblaze)
-
-Thanks,
-Michal
-
---=20
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Xilinx Microblaze
-Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
-U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
-
-
-
---Gv98DqTDPDXpgdAS8uye8pnF1A8XQfxBm--
-
---sxrD5DzuLHXmSTexCf4xoEovzaJstmsXm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EARECAB0WIQQbPNTMvXmYlBPRwx7KSWXLKUoMIQUCXW0kVQAKCRDKSWXLKUoM
-IUCIAJ0dq35U3Gq44M2ocYgcj4SW3Em/1wCfajAs22UIYAGzwTZZyZTvB5OFi1I=
-=essT
------END PGP SIGNATURE-----
-
---sxrD5DzuLHXmSTexCf4xoEovzaJstmsXm--
-
-
---===============4753553538835135711==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1e128e33-427f-19a2-0e13-95a9c0656ab1@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: Text/Plain; charset="us-ascii"
+To: linyunsheng@huawei.com
+Cc: catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hpa@zytor.com, x86@kernel.org, dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org, len.brown@intel.com, axboe@kernel.dk, dledford@redhat.com, jeffrey.t.kirshe
 
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Date: Mon, 2 Sep 2019 14:08:31 +0800
 
---===============4753553538835135711==--
+> The NUMA node id in sparc64 system is defined by DT semantics?
 
+Sometimes, and in other cases other methods are used to determine
+the NUMA node id.
