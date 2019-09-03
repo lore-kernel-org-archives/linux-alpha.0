@@ -1,39 +1,105 @@
-From: Paul Burton <paul.burton@mips.com>
-Subject: Re: [PATCH 04/26] mips: remove ioremap_cachable
-Date: Tue, 3 Sep 2019 08:57:00 +0000
-Message-ID: <MWHPR2201MB1277E4E8214F6E50E5EC9BFCC1B90@MWHPR2201MB1277.namprd22.prod.outlook.com>
-References: <20190817073253.27819-5-hch@lst.de>
+From: Salil Mehta <salil.mehta@huawei.com>
+Subject: RE: [PATCH v2 2/9] x86: numa: check the node id consistently for x86
+Date: Tue, 3 Sep 2019 12:15:24 +0000
+Message-ID: <3bc19c01095545ddbe2ba424f5488b4d@huawei.com>
+References: <1567231103-13237-1-git-send-email-linyunsheng@huawei.com>
+ <1567231103-13237-3-git-send-email-linyunsheng@huawei.com>
+ <20190831085539.GG2369@hirez.programming.kicks-ass.net>
+ <4d89c688-49e4-a2aa-32ee-65e36edcd913@huawei.com>
+ <20190831161247.GM2369@hirez.programming.kicks-ass.net>
+ <ae64285f-5134-4147-7b02-34bb5d519e8c@huawei.com>
+ <20190902072542.GN2369@hirez.programming.kicks-ass.net>
+ <5fa2aa99-89fa-cd41-b090-36a23cfdeb73@huawei.com>
+ <20190902125644.GQ2369@hirez.programming.kicks-ass.net>
+ <1f48081c-c9d6-8f3e-9559-8b0bec98f125@huawei.com>
+ <20190903071111.GU2369@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wavecomp.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pKGjwp1Uo8LfIHoyH7+b//d/bD44+fJfePgvviW7l8g=;
- b=VCoxzS8WWTGfTcQYd0/WZ+jzrF0fosMbreNkfKpbvjQ4IW659Bg+NPwvuAf4EQKOuVRKFsAOj0pCb8p+7Dill9cY5mxZ4QAPW5CJCiLvD1LY+jZ1udVFo87TRkJbmYam+XgewallJsGzm3jjrChp1wMbXFymbbSiyHLv9/Ei034=
-In-Reply-To: <20190817073253.27819-5-hch@lst.de>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Christoph Hellwig <hch@lst.de>
-Cc: Arnd Bergmann <arnd@arndb.de>, Guo Ren <guoren@kernel.org>, Michal Simek <monstr@monstr.eu>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>, "x86@kernel.org" <x86@kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-hexagon@vger.kernel.org" <linux-hexagon@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "linux-m68k@lists.linux-m68k.org" <linux-m68k@lists.linux-m68k.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "nios2-dev@lists.rocketboards.org" <nios2-dev@lists.rocketboards.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <20190903071111.GU2369@hirez.programming.kicks-ass.net>
+Content-Language: en-US
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Peter Zijlstra <peterz@infradead.org>, linyunsheng <linyunsheng@huawei.com>
+Cc: "dalias@libc.org" <dalias@libc.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "heiko.carstens@de.ibm.com" <heiko.carstens@de.ibm.com>, Linuxarm <linuxarm@huawei.com>, "jiaxun.yang@flygoat.com" <jiaxun.yang@flygoat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "mwb@linux.vnet.ibm.com" <mwb@linux.vnet.ibm.com>, "paulus@samba.org" <paulus@samba.org>, "hpa@zytor.com" <hpa@zytor.com>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, "chenhc@lemote.com" <chenhc@lemote.com>, "will@kernel.org" <will@kernel.org>, "cai@lca.pw" <cai@lca.pw>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "ysato@users.sourceforge.jp" <ysato@users.sourceforge.jp>, "x86@kernel.org" <x86@kernel.org>, "rppt@linux.ibm.com" <rppt@lin>
 
-Hello,
-
-Christoph Hellwig wrote:
-> Just define ioremap_cache directly.
-
-Applied to mips-next.
-
-> commit 60af0d94cc37
-> https://git.kernel.org/mips/c/60af0d94cc37
+> From: Linuxarm [mailto:linuxarm-bounces@huawei.com] On Behalf Of Peter Zi=
+jlstra
+> Sent: Tuesday, September 3, 2019 8:11 AM
 >=20
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Paul Burton <paul.burton@mips.com>
+> On Tue, Sep 03, 2019 at 02:19:04PM +0800, Yunsheng Lin wrote:
+> > On 2019/9/2 20:56, Peter Zijlstra wrote:
+> > > On Mon, Sep 02, 2019 at 08:25:24PM +0800, Yunsheng Lin wrote:
+> > >> On 2019/9/2 15:25, Peter Zijlstra wrote:
+> > >>> On Mon, Sep 02, 2019 at 01:46:51PM +0800, Yunsheng Lin wrote:
+> > >>>> On 2019/9/1 0:12, Peter Zijlstra wrote:
+> > >>>
+> > >>>>> 1) because even it is not set, the device really does belong to a=
+ node.
+> > >>>>> It is impossible a device will have magic uniform access to memor=
+y when
+> > >>>>> CPUs cannot.
+> > >>>>
+> > >>>> So it means dev_to_node() will return either NUMA_NO_NODE or a
+> > >>>> valid node id?
+> > >>>
+> > >>> NUMA_NO_NODE :=3D -1, which is not a valid node number. It is also,=
+ like> I
+> > >>> said, not a valid device location on a NUMA system.
+> > >>>
+> > >>> Just because ACPI/BIOS is shit, doesn't mean the device doesn't hav=
+e a
+> > >>> node association. It just means we don't know and might have to gue=
+ss.
+> > >>
+> > >> How do we guess the device's location when ACPI/BIOS does not set it=
+?
+> > >
+> > > See device_add(), it looks to the device's parent and on NO_NODE, put=
+s
+> > > it there.
+> > >
+> > > Lacking any hints, just stick it to node0 and print a FW_BUG or
+> > > something.
+> > >
+> > >> It seems dev_to_node() does not do anything about that and leave the
+> > >> job to the caller or whatever function that get called with its retu=
+rn
+> > >> value, such as cpumask_of_node().
+> > >
+> > > Well, dev_to_node() doesn't do anything; nor should it. It are the
+> > > callers of set_dev_node() that should be taking care.
+> > >
+> > > Also note how device_add() sets the device node to the parent device'=
+s
+> > > node on NUMA_NO_NODE. Arguably we should change it to complain when i=
+t
+> > > finds NUMA_NO_NODE and !parent.
+> >
+> > Is it possible that the node id set by device_add() become invalid
+> > if the node is offlined, then dev_to_node() may return a invalid
+> > node id.
+>=20
+> In that case I would expect the device to go away too. Once the memory
+> controller goes away, the PCI bus connected to it cannot continue to
+> function.
 
-Thanks,
-    Paul
+I am not sure if this is *exactly* true on our system as NUMA nodes are
+part of the SoCs and devices could still be used even if all the memory
+and CPUs part of the node are turned off. Although, it is highly unlikely
+anybody would do that(maybe could be debated for the Power Management case?=
+)=20
 
-[ This message was auto-generated; if you believe anything is incorrect
-  then please email paul.burton@mips.com to report it. ]
+Best Regards
+Salil
+
