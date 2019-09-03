@@ -1,111 +1,39 @@
-From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: Re: [PATCH v2 2/9] x86: numa: check the node id consistently for x86
-Date: Tue, 3 Sep 2019 16:31:11 +0800
-Message-ID: <06eee8d0-ce56-03da-30a5-6b07e989a5e0@huawei.com>
-References: <1567231103-13237-1-git-send-email-linyunsheng@huawei.com>
- <1567231103-13237-3-git-send-email-linyunsheng@huawei.com>
- <20190831085539.GG2369@hirez.programming.kicks-ass.net>
- <4d89c688-49e4-a2aa-32ee-65e36edcd913@huawei.com>
- <20190831161247.GM2369@hirez.programming.kicks-ass.net>
- <ae64285f-5134-4147-7b02-34bb5d519e8c@huawei.com>
- <20190902072542.GN2369@hirez.programming.kicks-ass.net>
- <5fa2aa99-89fa-cd41-b090-36a23cfdeb73@huawei.com>
- <20190902125644.GQ2369@hirez.programming.kicks-ass.net>
- <1f48081c-c9d6-8f3e-9559-8b0bec98f125@huawei.com>
- <20190903071111.GU2369@hirez.programming.kicks-ass.net>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH 04/26] mips: remove ioremap_cachable
+Date: Tue, 3 Sep 2019 08:57:00 +0000
+Message-ID: <MWHPR2201MB1277E4E8214F6E50E5EC9BFCC1B90@MWHPR2201MB1277.namprd22.prod.outlook.com>
+References: <20190817073253.27819-5-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190903071111.GU2369@hirez.programming.kicks-ass.net>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wavecomp.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pKGjwp1Uo8LfIHoyH7+b//d/bD44+fJfePgvviW7l8g=;
+ b=VCoxzS8WWTGfTcQYd0/WZ+jzrF0fosMbreNkfKpbvjQ4IW659Bg+NPwvuAf4EQKOuVRKFsAOj0pCb8p+7Dill9cY5mxZ4QAPW5CJCiLvD1LY+jZ1udVFo87TRkJbmYam+XgewallJsGzm3jjrChp1wMbXFymbbSiyHLv9/Ei034=
+In-Reply-To: <20190817073253.27819-5-hch@lst.de>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: dalias@libc.org, linux-sh@vger.kernel.org, catalin.marinas@arm.com, dave.hansen@linux.intel.com, heiko.carstens@de.ibm.com, linuxarm@huawei.com, jiaxun.yang@flygoat.com, linux-kernel@vger.kernel.org, mwb@linux.vnet.ibm.com, paulus@samba.org, hpa@zytor.com, sparclinux@vger.kernel.org, chenhc@lemote.com, will@kernel.org, linux-s390@vger.kernel.org, ysato@users.sourceforge.jp, mpe@ellerman.id.au, x86@kernel.org, rppt@linux.ibm.com, borntraeger@de.ibm.com, dledford@redhat.com, mingo@redhat.com, jeffrey.t.kirsher@intel.com, benh@kernel.crashing.org, jhogan@kernel.org, nfont@linux.vnet.ibm.com, mattst88@gmail.com, len.brown@intel.com, gor@linux.ibm.com, anshuman.khandual@arm.com, ink@jurassic.park.msu.ru, cai@lca.pw
+To: Christoph Hellwig <hch@lst.de>
+Cc: Arnd Bergmann <arnd@arndb.de>, Guo Ren <guoren@kernel.org>, Michal Simek <monstr@monstr.eu>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>, "x86@kernel.org" <x86@kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-hexagon@vger.kernel.org" <linux-hexagon@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "linux-m68k@lists.linux-m68k.org" <linux-m68k@lists.linux-m68k.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "nios2-dev@lists.rocketboards.org" <nios2-dev@lists.rocketboards.org>
 
-On 2019/9/3 15:11, Peter Zijlstra wrote:
-> On Tue, Sep 03, 2019 at 02:19:04PM +0800, Yunsheng Lin wrote:
->> On 2019/9/2 20:56, Peter Zijlstra wrote:
->>> On Mon, Sep 02, 2019 at 08:25:24PM +0800, Yunsheng Lin wrote:
->>>> On 2019/9/2 15:25, Peter Zijlstra wrote:
->>>>> On Mon, Sep 02, 2019 at 01:46:51PM +0800, Yunsheng Lin wrote:
->>>>>> On 2019/9/1 0:12, Peter Zijlstra wrote:
->>>>>
->>>>>>> 1) because even it is not set, the device really does belong to a node.
->>>>>>> It is impossible a device will have magic uniform access to memory when
->>>>>>> CPUs cannot.
->>>>>>
->>>>>> So it means dev_to_node() will return either NUMA_NO_NODE or a
->>>>>> valid node id?
->>>>>
->>>>> NUMA_NO_NODE := -1, which is not a valid node number. It is also, like I
->>>>> said, not a valid device location on a NUMA system.
->>>>>
->>>>> Just because ACPI/BIOS is shit, doesn't mean the device doesn't have a
->>>>> node association. It just means we don't know and might have to guess.
->>>>
->>>> How do we guess the device's location when ACPI/BIOS does not set it?
->>>
->>> See device_add(), it looks to the device's parent and on NO_NODE, puts
->>> it there.
->>>
->>> Lacking any hints, just stick it to node0 and print a FW_BUG or
->>> something.
->>>
->>>> It seems dev_to_node() does not do anything about that and leave the
->>>> job to the caller or whatever function that get called with its return
->>>> value, such as cpumask_of_node().
->>>
->>> Well, dev_to_node() doesn't do anything; nor should it. It are the
->>> callers of set_dev_node() that should be taking care.
->>>
->>> Also note how device_add() sets the device node to the parent device's
->>> node on NUMA_NO_NODE. Arguably we should change it to complain when it
->>> finds NUMA_NO_NODE and !parent.
->>
->> Is it possible that the node id set by device_add() become invalid
->> if the node is offlined, then dev_to_node() may return a invalid
->> node id.
-> 
-> In that case I would expect the device to go away too. Once the memory
-> controller goes away, the PCI bus connected to it cannot continue to
-> function.
+Hello,
 
-Ok. To summarize the discussion in order to for me to understand it
-correctly:
+Christoph Hellwig wrote:
+> Just define ioremap_cache directly.
 
-1) Make sure device_add() set to default node0 to a device if
-   ACPI/BIOS does not set the node id and it has not no parent device.
+Applied to mips-next.
 
-2) Use '(unsigned)node_id >= nr_node_ids' to fix the
-   CONFIG_DEBUG_PER_CPU_MAPS version of cpumask_of_node() for x86
-   and arm64, x86 just has a fix from you now, a patch for arm64 is
-   also needed.
+> commit 60af0d94cc37
+> https://git.kernel.org/mips/c/60af0d94cc37
+>=20
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Paul Burton <paul.burton@mips.com>
 
-3) Maybe fix some other the sign bug for node id checking through the
-   kernel using the '(unsigned)node_id >= nr_node_ids'.
+Thanks,
+    Paul
 
-Please see if I understand it correctly or miss something.
-Maybe I can begin by sending a patch about item one to see if everyone
-is ok with the idea?
-
-
-> 
->> From the comment in select_fallback_rq(), it seems that a node can
->> be offlined, not sure if node offline process has taken cared of that?
->>
->> 	/*
->>          * If the node that the CPU is on has been offlined, cpu_to_node()
->>          * will return -1. There is no CPU on the node, and we should
->>          * select the CPU on the other node.
->>          */
-> 
-> Ugh, so I disagree with that notion. cpu_to_node() mapping should be
-> fixed, you simply cannot change it after boot, too much stuff relies on
-> it.
-> 
-> Setting cpu_to_node to -1 on node offline is just wrong. But alas, it
-> seems this is already so.
-
-
+[ This message was auto-generated; if you believe anything is incorrect
+  then please email paul.burton@mips.com to report it. ]
