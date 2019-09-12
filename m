@@ -1,7 +1,7 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH v3 6/8] sparc64: numa: make node_to_cpumask_map() NUMA_NO_NODE aware for sparc64
-Date: Thu, 12 Sep 2019 18:15:32 +0800
-Message-ID: <1568283334-178380-7-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v3 7/8] mips: numa: make node_to_cpumask_map() NUMA_NO_NODE aware for mips
+Date: Thu, 12 Sep 2019 18:15:33 +0800
+Message-ID: <1568283334-178380-8-git-send-email-linyunsheng@huawei.com>
 References: <1568283334-178380-1-git-send-email-linyunsheng@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -42,24 +42,24 @@ V3: Change to only handle NUMA_NO_NODE, and return cpu_online_mask
     for NUMA_NO_NODE case, and change the commit log to better justify
     the change.
 ---
- arch/sparc/include/asm/topology_64.h | 4 ++--
+ arch/mips/include/asm/mach-ip27/topology.h | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/sparc/include/asm/topology_64.h b/arch/sparc/include/asm/topology_64.h
-index 34c628a..34f9240 100644
---- a/arch/sparc/include/asm/topology_64.h
-+++ b/arch/sparc/include/asm/topology_64.h
-@@ -11,8 +11,8 @@ static inline int cpu_to_node(int cpu)
- 	return numa_cpu_lookup_table[cpu];
- }
+diff --git a/arch/mips/include/asm/mach-ip27/topology.h b/arch/mips/include/asm/mach-ip27/topology.h
+index 965f079..04505e6 100644
+--- a/arch/mips/include/asm/mach-ip27/topology.h
++++ b/arch/mips/include/asm/mach-ip27/topology.h
+@@ -15,8 +15,8 @@ struct cpuinfo_ip27 {
+ extern struct cpuinfo_ip27 sn_cpu_info[NR_CPUS];
  
--#define cpumask_of_node(node) ((node) == -1 ?				\
--			       cpu_all_mask :				\
-+#define cpumask_of_node(node) ((node) == NUMA_NO_NODE ?			\
-+			       cpu_online_mask :			\
- 			       &numa_cpumask_lookup_table[node])
- 
+ #define cpu_to_node(cpu)	(sn_cpu_info[(cpu)].p_nodeid)
+-#define cpumask_of_node(node)	((node) == -1 ?				\
+-				 cpu_all_mask :				\
++#define cpumask_of_node(node)	((node) == NUMA_NO_NODE ?		\
++				 cpu_online_mask :			\
+ 				 &hub_data(node)->h_cpus)
  struct pci_bus;
+ extern int pcibus_to_node(struct pci_bus *);
 -- 
 2.8.1
 
