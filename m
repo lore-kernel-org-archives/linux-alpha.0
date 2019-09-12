@@ -1,7 +1,7 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH v3 3/8] alpha: numa: make node_to_cpumask_map() NUMA_NO_NODE aware for alpha
-Date: Thu, 12 Sep 2019 18:15:29 +0800
-Message-ID: <1568283334-178380-4-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v3 5/8] s390: numa: make node_to_cpumask_map() NUMA_NO_NODE aware for s390
+Date: Thu, 12 Sep 2019 18:15:31 +0800
+Message-ID: <1568283334-178380-6-git-send-email-linyunsheng@huawei.com>
 References: <1568283334-178380-1-git-send-email-linyunsheng@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -31,9 +31,6 @@ to the particular node's cpus which would have really non deterministic
 behavior depending on where the code is executed. So in fact we really
 want to return cpu_online_mask for NUMA_NO_NODE.
 
-Since this arch was already NUMA_NO_NODE aware, this patch only changes
-it to return cpu_online_mask.
-
 [1] https://lore.kernel.org/patchwork/patch/1125789/
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Suggested-by: Michal Hocko <mhocko@kernel.org>
@@ -42,21 +39,22 @@ V3: Change to only handle NUMA_NO_NODE, and return cpu_online_mask
     for NUMA_NO_NODE case, and change the commit log to better justify
     the change.
 ---
- arch/alpha/include/asm/topology.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/include/asm/topology.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/alpha/include/asm/topology.h b/arch/alpha/include/asm/topology.h
-index 5a77a40..836c9e2 100644
---- a/arch/alpha/include/asm/topology.h
-+++ b/arch/alpha/include/asm/topology.h
-@@ -31,7 +31,7 @@ static const struct cpumask *cpumask_of_node(int node)
- 	int cpu;
- 
- 	if (node == NUMA_NO_NODE)
--		return cpu_all_mask;
+diff --git a/arch/s390/include/asm/topology.h b/arch/s390/include/asm/topology.h
+index cca406f..1bd2e73 100644
+--- a/arch/s390/include/asm/topology.h
++++ b/arch/s390/include/asm/topology.h
+@@ -78,6 +78,9 @@ static inline int cpu_to_node(int cpu)
+ #define cpumask_of_node cpumask_of_node
+ static inline const struct cpumask *cpumask_of_node(int node)
+ {
++	if (node == NUMA_NO_NODE)
 +		return cpu_online_mask;
- 
- 	cpumask_clear(&node_to_cpumask_map[node]);
++
+ 	return &node_to_cpumask_map[node];
+ }
  
 -- 
 2.8.1
