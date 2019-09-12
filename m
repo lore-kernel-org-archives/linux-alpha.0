@@ -1,7 +1,7 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH v3 5/8] s390: numa: make node_to_cpumask_map() NUMA_NO_NODE aware for s390
-Date: Thu, 12 Sep 2019 18:15:31 +0800
-Message-ID: <1568283334-178380-6-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v3 4/8] powerpc: numa: make node_to_cpumask_map() NUMA_NO_NODE aware for powerpc
+Date: Thu, 12 Sep 2019 18:15:30 +0800
+Message-ID: <1568283334-178380-5-git-send-email-linyunsheng@huawei.com>
 References: <1568283334-178380-1-git-send-email-linyunsheng@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -31,6 +31,9 @@ to the particular node's cpus which would have really non deterministic
 behavior depending on where the code is executed. So in fact we really
 want to return cpu_online_mask for NUMA_NO_NODE.
 
+Since this arch was already NUMA_NO_NODE aware, this patch only changes
+it to return cpu_online_mask and use NUMA_NO_NODE instead of "-1".
+
 [1] https://lore.kernel.org/patchwork/patch/1125789/
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Suggested-by: Michal Hocko <mhocko@kernel.org>
@@ -39,23 +42,24 @@ V3: Change to only handle NUMA_NO_NODE, and return cpu_online_mask
     for NUMA_NO_NODE case, and change the commit log to better justify
     the change.
 ---
- arch/s390/include/asm/topology.h | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/powerpc/include/asm/topology.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/s390/include/asm/topology.h b/arch/s390/include/asm/topology.h
-index cca406f..1bd2e73 100644
---- a/arch/s390/include/asm/topology.h
-+++ b/arch/s390/include/asm/topology.h
-@@ -78,6 +78,9 @@ static inline int cpu_to_node(int cpu)
- #define cpumask_of_node cpumask_of_node
- static inline const struct cpumask *cpumask_of_node(int node)
- {
-+	if (node == NUMA_NO_NODE)
-+		return cpu_online_mask;
-+
- 	return &node_to_cpumask_map[node];
- }
+diff --git a/arch/powerpc/include/asm/topology.h b/arch/powerpc/include/asm/topology.h
+index 2f7e1ea..107f5cd 100644
+--- a/arch/powerpc/include/asm/topology.h
++++ b/arch/powerpc/include/asm/topology.h
+@@ -17,8 +17,8 @@ struct device_node;
  
+ #include <asm/mmzone.h>
+ 
+-#define cpumask_of_node(node) ((node) == -1 ?				\
+-			       cpu_all_mask :				\
++#define cpumask_of_node(node) ((node) == NUMA_NO_NODE ?			\
++			       cpu_online_mask :			\
+ 			       node_to_cpumask_map[node])
+ 
+ struct pci_bus;
 -- 
 2.8.1
 
