@@ -1,7 +1,7 @@
 From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH v3 8/8] mips: numa: make node_to_cpumask_map() NUMA_NO_NODE aware for loongson64
-Date: Thu, 12 Sep 2019 18:15:34 +0800
-Message-ID: <1568283334-178380-9-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v3 1/8] arm64: numa: make node_to_cpumask_map() NUMA_NO_NODE aware for arm64
+Date: Thu, 12 Sep 2019 18:15:27 +0800
+Message-ID: <1568283334-178380-2-git-send-email-linyunsheng@huawei.com>
 References: <1568283334-178380-1-git-send-email-linyunsheng@huawei.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
@@ -31,6 +31,12 @@ to the particular node's cpus which would have really non deterministic
 behavior depending on where the code is executed. So in fact we really
 want to return cpu_online_mask for NUMA_NO_NODE.
 
+Also there is a debuging version of node_to_cpumask_map(), which only
+is used when CONFIG_DEBUG_PER_CPU_MAPS is defined, this patch changes
+it to handle NUMA_NO_NODE as the normal node_to_cpumask_map(). And "fix"
+a sign "bug" since it is for debugging and should catch all the error
+cases.
+
 [1] https://lore.kernel.org/patchwork/patch/1125789/
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Suggested-by: Michal Hocko <mhocko@kernel.org>
@@ -39,24 +45,40 @@ V3: Change to only handle NUMA_NO_NODE, and return cpu_online_mask
     for NUMA_NO_NODE case, and change the commit log to better justify
     the change.
 ---
- arch/mips/include/asm/mach-loongson64/topology.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/include/asm/numa.h | 3 +++
+ arch/arm64/mm/numa.c          | 5 ++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/include/asm/mach-loongson64/topology.h b/arch/mips/include/asm/mach-loongson64/topology.h
-index 7ff819a..2207e2e 100644
---- a/arch/mips/include/asm/mach-loongson64/topology.h
-+++ b/arch/mips/include/asm/mach-loongson64/topology.h
-@@ -5,7 +5,9 @@
- #ifdef CONFIG_NUMA
+diff --git a/arch/arm64/include/asm/numa.h b/arch/arm64/include/asm/numa.h
+index 626ad01..c8a4b31 100644
+--- a/arch/arm64/include/asm/numa.h
++++ b/arch/arm64/include/asm/numa.h
+@@ -25,6 +25,9 @@ const struct cpumask *cpumask_of_node(int node);
+ /* Returns a pointer to the cpumask of CPUs on Node 'node'. */
+ static inline const struct cpumask *cpumask_of_node(int node)
+ {
++	if (node == NUMA_NO_NODE)
++		return cpu_online_mask;
++
+ 	return node_to_cpumask_map[node];
+ }
+ #endif
+diff --git a/arch/arm64/mm/numa.c b/arch/arm64/mm/numa.c
+index 4f241cc..bef4bdd 100644
+--- a/arch/arm64/mm/numa.c
++++ b/arch/arm64/mm/numa.c
+@@ -46,7 +46,10 @@ EXPORT_SYMBOL(node_to_cpumask_map);
+  */
+ const struct cpumask *cpumask_of_node(int node)
+ {
+-	if (WARN_ON(node >= nr_node_ids))
++	if (node == NUMA_NO_NODE)
++		return cpu_online_mask;
++
++	if (WARN_ON((unsigned int)node >= nr_node_ids))
+ 		return cpu_none_mask;
  
- #define cpu_to_node(cpu)	(cpu_logical_map(cpu) >> 2)
--#define cpumask_of_node(node)	(&__node_data[(node)]->cpumask)
-+#define cpumask_of_node(node)  ((node) == NUMA_NO_NODE ?	\
-+				cpu_online_mask :		\
-+				(&__node_data[(node)]->cpumask)
- 
- struct pci_bus;
- extern int pcibus_to_node(struct pci_bus *);
+ 	if (WARN_ON(node_to_cpumask_map[node] == NULL))
 -- 
 2.8.1
 
