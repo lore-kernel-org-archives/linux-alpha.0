@@ -1,215 +1,121 @@
-From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH v5] numa: make node_to_cpumask_map() NUMA_NO_NODE aware
-Date: Mon, 16 Sep 2019 21:28:01 +0800
-Message-ID: <1568640481-133352-1-git-send-email-linyunsheng@huawei.com>
+From: Denis Efremov <efremov@linux.com>
+Subject: [PATCH v3 00/26] Add definition for the number of standard PCI BARs
+Date: Mon, 16 Sep 2019 23:41:32 +0300
+Message-ID: <20190916204158.6889-1-efremov@linux.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com
-Cc: akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hpa@zytor.com, x86@kernel.org, dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org, len.brown@intel.com, axboe@kernel.dk, dledford@redhat.com, jeffrey.t.kirsher@intel.com, linux-alpha@vger.kernel.org, naveen.n.rao@linux.vnet.ibm.com, mwb@linux.vnet.ibm.com, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, tbogendoerfer@suse.de, linux-mips@vger.kernel.org, rafael@kernel.org, mhocko@kernel.org, gregkh@linuxfoundation.org
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>, 
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>, 
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, linux-usb@vger.kernel.org, linux-ia64@vger.kernel.org, Sebastian Ott <sebott@linux.ibm.com>, linux-pci@vger.kernel.org, devel@driverdev.osuosl.org, linux-hyperv@vger.kernel.org, linux-ide@vger.kernel.org, Peter Jones <pjones@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Stephen Hemminger <sthemmin@microsoft.com>, Maxim Levitsky <maximlevitsky@gmail.com>, linux-scsi@vger.kernel.org, x86@kernel.org, Kishon Vijay Abraham I <kishon@ti.com>, Jeff Kirsher <jeffrey.t.kirsher@intel.com>, linux-serial@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>, Matt Turner <mattst88@gmail.com>, Jack Wang <jinpu.wang@cloud.ionos.com>, "James E.J. Bottomley" <jejb@linux.ibm.com>, linux-arm-kernel@lists.infradead.org
 
-When passing the return value of dev_to_node() to cpumask_of_node()
-without checking if the device's node id is NUMA_NO_NODE, there is
-global-out-of-bounds detected by KASAN.
+Code that iterates over all standard PCI BARs typically uses
+PCI_STD_RESOURCE_END, but this is error-prone because it requires
+"i <= PCI_STD_RESOURCE_END" rather than something like
+"i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
+way PCI_SRIOV_NUM_BARS is used. The patchset also replaces constant (6)
+with new define PCI_STD_NUM_BARS where appropriate and removes local
+declarations for the number of PCI BARs.
 
-From the discussion [1], NUMA_NO_NODE really means no node affinity,
-which also means all cpus should be usable. So the cpumask_of_node()
-should always return all cpus online when user passes the node id as
-NUMA_NO_NODE, just like similar semantic that page allocator handles
-NUMA_NO_NODE.
+Changes in v3:
+  - Updated commits description.
+  - Refactored "< PCI_ROM_RESOURCE" with "< PCI_STD_NUM_BARS" in loops.
+  - Refactored "<= BAR_5" with "< PCI_STD_NUM_BARS" in loops.
+  - Removed local define GASKET_NUM_BARS.
+  - Removed local define PCI_NUM_BAR_RESOURCES.
 
-But we cannot really copy the page allocator logic. Simply because the
-page allocator doesn't enforce the near node affinity. It just picks it
-up as a preferred node but then it is free to fallback to any other numa
-node. This is not the case here and node_to_cpumask_map will only restrict
-to the particular node's cpus which would have really non deterministic
-behavior depending on where the code is executed. So in fact we really
-want to return cpu_online_mask for NUMA_NO_NODE.
+Changes in v2:
+  - Reversed checks in pci_iomap_range,pci_iomap_wc_range.
+  - Refactored loops in vfio_pci to keep PCI_STD_RESOURCES.
+  - Added 2 new patches to replace the magic constant with new define.
+  - Splitted net patch in v1 to separate stmmac and dwc-xlgmac patches.
 
-Some arches were already NUMA_NO_NODE aware, but they return cpu_all_mask,
-which should be identical with cpu_online_mask when those arches do not
-support cpu hotplug, this patch also changes them to return cpu_online_mask
-in order to be consistent and use NUMA_NO_NODE instead of "-1".
+Denis Efremov (26):
+  PCI: Add define for the number of standard PCI BARs
+  PCI: hv: Use PCI_STD_NUM_BARS
+  PCI: dwc: Use PCI_STD_NUM_BARS
+  PCI: endpoint: Use PCI_STD_NUM_BARS
+  misc: pci_endpoint_test: Use PCI_STD_NUM_BARS
+  s390/pci: Use PCI_STD_NUM_BARS
+  x86/PCI: Loop using PCI_STD_NUM_BARS
+  alpha/PCI: Use PCI_STD_NUM_BARS
+  ia64: Use PCI_STD_NUM_BARS
+  stmmac: pci: Loop using PCI_STD_NUM_BARS
+  net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
+  ixgb: use PCI_STD_NUM_BARS
+  e1000: Use PCI_STD_NUM_BARS
+  rapidio/tsi721: Loop using PCI_STD_NUM_BARS
+  efifb: Loop using PCI_STD_NUM_BARS
+  fbmem: use PCI_STD_NUM_BARS
+  vfio_pci: Loop using PCI_STD_NUM_BARS
+  scsi: pm80xx: Use PCI_STD_NUM_BARS
+  ata: sata_nv: Use PCI_STD_NUM_BARS
+  staging: gasket: Use PCI_STD_NUM_BARS
+  serial: 8250_pci: Use PCI_STD_NUM_BARS
+  pata_atp867x: Use PCI_STD_NUM_BARS
+  memstick: use PCI_STD_NUM_BARS
+  USB: core: Use PCI_STD_NUM_BARS
+  usb: pci-quirks: Use PCI_STD_NUM_BARS
+  devres: use PCI_STD_NUM_BARS
 
-Also there is a debugging version of node_to_cpumask_map() for x86 and
-arm64, which is only used when CONFIG_DEBUG_PER_CPU_MAPS is defined, this
-patch changes it to handle NUMA_NO_NODE as normal node_to_cpumask_map().
+ arch/alpha/kernel/pci-sysfs.c                 |  8 ++---
+ arch/ia64/sn/pci/pcibr/pcibr_dma.c            |  4 +--
+ arch/s390/include/asm/pci.h                   |  5 +--
+ arch/s390/include/asm/pci_clp.h               |  6 ++--
+ arch/s390/pci/pci.c                           | 16 +++++-----
+ arch/s390/pci/pci_clp.c                       |  6 ++--
+ arch/x86/pci/common.c                         |  2 +-
+ arch/x86/pci/intel_mid_pci.c                  |  2 +-
+ drivers/ata/pata_atp867x.c                    |  2 +-
+ drivers/ata/sata_nv.c                         |  2 +-
+ drivers/memstick/host/jmb38x_ms.c             |  2 +-
+ drivers/misc/pci_endpoint_test.c              |  8 ++---
+ drivers/net/ethernet/intel/e1000/e1000.h      |  1 -
+ drivers/net/ethernet/intel/e1000/e1000_main.c |  2 +-
+ drivers/net/ethernet/intel/ixgb/ixgb.h        |  1 -
+ drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  2 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  4 +--
+ .../net/ethernet/synopsys/dwc-xlgmac-pci.c    |  2 +-
+ drivers/pci/controller/dwc/pci-dra7xx.c       |  2 +-
+ .../pci/controller/dwc/pci-layerscape-ep.c    |  2 +-
+ drivers/pci/controller/dwc/pcie-artpec6.c     |  2 +-
+ .../pci/controller/dwc/pcie-designware-plat.c |  2 +-
+ drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
+ drivers/pci/controller/pci-hyperv.c           | 10 +++---
+ drivers/pci/endpoint/functions/pci-epf-test.c | 10 +++---
+ drivers/pci/pci-sysfs.c                       |  4 +--
+ drivers/pci/pci.c                             | 13 ++++----
+ drivers/pci/proc.c                            |  4 +--
+ drivers/pci/quirks.c                          |  4 +--
+ drivers/rapidio/devices/tsi721.c              |  2 +-
+ drivers/scsi/pm8001/pm8001_hwi.c              |  2 +-
+ drivers/scsi/pm8001/pm8001_init.c             |  2 +-
+ drivers/staging/gasket/gasket_constants.h     |  3 --
+ drivers/staging/gasket/gasket_core.c          | 12 +++----
+ drivers/staging/gasket/gasket_core.h          |  4 +--
+ drivers/tty/serial/8250/8250_pci.c            |  8 ++---
+ drivers/usb/core/hcd-pci.c                    |  2 +-
+ drivers/usb/host/pci-quirks.c                 |  2 +-
+ drivers/vfio/pci/vfio_pci.c                   | 11 ++++---
+ drivers/vfio/pci/vfio_pci_config.c            | 32 ++++++++++---------
+ drivers/vfio/pci/vfio_pci_private.h           |  4 +--
+ drivers/video/fbdev/core/fbmem.c              |  4 +--
+ drivers/video/fbdev/efifb.c                   |  2 +-
+ include/linux/pci-epc.h                       |  2 +-
+ include/linux/pci.h                           |  2 +-
+ include/uapi/linux/pci_regs.h                 |  1 +
+ lib/devres.c                                  |  2 +-
+ 47 files changed, 112 insertions(+), 115 deletions(-)
 
-[1] https://lore.kernel.org/patchwork/patch/1125789/
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-Suggested-by: Michal Hocko <mhocko@kernel.org>
-Acked-by: Michal Hocko <mhocko@suse.com>
----
-V5: Drop unsigned "fix" change for x86/arm64, and change comment log
-    according to Michal's comment.
-V4: Have all these changes in a single patch.
-V3: Change to only handle NUMA_NO_NODE, and return cpu_online_mask
-    for NUMA_NO_NODE case, and change the commit log to better justify
-    the change.
-V2: make the node id checking change to other arches too.
----
- arch/alpha/include/asm/topology.h                | 2 +-
- arch/arm64/include/asm/numa.h                    | 3 +++
- arch/arm64/mm/numa.c                             | 3 +++
- arch/mips/include/asm/mach-ip27/topology.h       | 4 ++--
- arch/mips/include/asm/mach-loongson64/topology.h | 4 +++-
- arch/powerpc/include/asm/topology.h              | 6 +++---
- arch/s390/include/asm/topology.h                 | 3 +++
- arch/sparc/include/asm/topology_64.h             | 6 +++---
- arch/x86/include/asm/topology.h                  | 3 +++
- arch/x86/mm/numa.c                               | 3 +++
- 10 files changed, 27 insertions(+), 10 deletions(-)
-
-diff --git a/arch/alpha/include/asm/topology.h b/arch/alpha/include/asm/topology.h
-index 5a77a40..836c9e2 100644
---- a/arch/alpha/include/asm/topology.h
-+++ b/arch/alpha/include/asm/topology.h
-@@ -31,7 +31,7 @@ static const struct cpumask *cpumask_of_node(int node)
- 	int cpu;
- 
- 	if (node == NUMA_NO_NODE)
--		return cpu_all_mask;
-+		return cpu_online_mask;
- 
- 	cpumask_clear(&node_to_cpumask_map[node]);
- 
-diff --git a/arch/arm64/include/asm/numa.h b/arch/arm64/include/asm/numa.h
-index 626ad01..c8a4b31 100644
---- a/arch/arm64/include/asm/numa.h
-+++ b/arch/arm64/include/asm/numa.h
-@@ -25,6 +25,9 @@ const struct cpumask *cpumask_of_node(int node);
- /* Returns a pointer to the cpumask of CPUs on Node 'node'. */
- static inline const struct cpumask *cpumask_of_node(int node)
- {
-+	if (node == NUMA_NO_NODE)
-+		return cpu_online_mask;
-+
- 	return node_to_cpumask_map[node];
- }
- #endif
-diff --git a/arch/arm64/mm/numa.c b/arch/arm64/mm/numa.c
-index 4f241cc..f57202d 100644
---- a/arch/arm64/mm/numa.c
-+++ b/arch/arm64/mm/numa.c
-@@ -46,6 +46,9 @@ EXPORT_SYMBOL(node_to_cpumask_map);
-  */
- const struct cpumask *cpumask_of_node(int node)
- {
-+	if (node == NUMA_NO_NODE)
-+		return cpu_online_mask;
-+
- 	if (WARN_ON(node >= nr_node_ids))
- 		return cpu_none_mask;
- 
-diff --git a/arch/mips/include/asm/mach-ip27/topology.h b/arch/mips/include/asm/mach-ip27/topology.h
-index 965f079..04505e6 100644
---- a/arch/mips/include/asm/mach-ip27/topology.h
-+++ b/arch/mips/include/asm/mach-ip27/topology.h
-@@ -15,8 +15,8 @@ struct cpuinfo_ip27 {
- extern struct cpuinfo_ip27 sn_cpu_info[NR_CPUS];
- 
- #define cpu_to_node(cpu)	(sn_cpu_info[(cpu)].p_nodeid)
--#define cpumask_of_node(node)	((node) == -1 ?				\
--				 cpu_all_mask :				\
-+#define cpumask_of_node(node)	((node) == NUMA_NO_NODE ?		\
-+				 cpu_online_mask :			\
- 				 &hub_data(node)->h_cpus)
- struct pci_bus;
- extern int pcibus_to_node(struct pci_bus *);
-diff --git a/arch/mips/include/asm/mach-loongson64/topology.h b/arch/mips/include/asm/mach-loongson64/topology.h
-index 7ff819a..e78daa6 100644
---- a/arch/mips/include/asm/mach-loongson64/topology.h
-+++ b/arch/mips/include/asm/mach-loongson64/topology.h
-@@ -5,7 +5,9 @@
- #ifdef CONFIG_NUMA
- 
- #define cpu_to_node(cpu)	(cpu_logical_map(cpu) >> 2)
--#define cpumask_of_node(node)	(&__node_data[(node)]->cpumask)
-+#define cpumask_of_node(node)	((node) == NUMA_NO_NODE ?		\
-+				 cpu_online_mask :			\
-+				 &__node_data[(node)]->cpumask)
- 
- struct pci_bus;
- extern int pcibus_to_node(struct pci_bus *);
-diff --git a/arch/powerpc/include/asm/topology.h b/arch/powerpc/include/asm/topology.h
-index 2f7e1ea..309f847 100644
---- a/arch/powerpc/include/asm/topology.h
-+++ b/arch/powerpc/include/asm/topology.h
-@@ -17,9 +17,9 @@ struct device_node;
- 
- #include <asm/mmzone.h>
- 
--#define cpumask_of_node(node) ((node) == -1 ?				\
--			       cpu_all_mask :				\
--			       node_to_cpumask_map[node])
-+#define cpumask_of_node(node)	((node) == NUMA_NO_NODE ?		\
-+				 cpu_online_mask :			\
-+				 node_to_cpumask_map[node])
- 
- struct pci_bus;
- #ifdef CONFIG_PCI
-diff --git a/arch/s390/include/asm/topology.h b/arch/s390/include/asm/topology.h
-index cca406f..1bd2e73 100644
---- a/arch/s390/include/asm/topology.h
-+++ b/arch/s390/include/asm/topology.h
-@@ -78,6 +78,9 @@ static inline int cpu_to_node(int cpu)
- #define cpumask_of_node cpumask_of_node
- static inline const struct cpumask *cpumask_of_node(int node)
- {
-+	if (node == NUMA_NO_NODE)
-+		return cpu_online_mask;
-+
- 	return &node_to_cpumask_map[node];
- }
- 
-diff --git a/arch/sparc/include/asm/topology_64.h b/arch/sparc/include/asm/topology_64.h
-index 34c628a..8c29357 100644
---- a/arch/sparc/include/asm/topology_64.h
-+++ b/arch/sparc/include/asm/topology_64.h
-@@ -11,9 +11,9 @@ static inline int cpu_to_node(int cpu)
- 	return numa_cpu_lookup_table[cpu];
- }
- 
--#define cpumask_of_node(node) ((node) == -1 ?				\
--			       cpu_all_mask :				\
--			       &numa_cpumask_lookup_table[node])
-+#define cpumask_of_node(node)	((node) == NUMA_NO_NODE ?		\
-+				 cpu_online_mask :			\
-+				 &numa_cpumask_lookup_table[node])
- 
- struct pci_bus;
- #ifdef CONFIG_PCI
-diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
-index 4b14d23..7fa82e1 100644
---- a/arch/x86/include/asm/topology.h
-+++ b/arch/x86/include/asm/topology.h
-@@ -69,6 +69,9 @@ extern const struct cpumask *cpumask_of_node(int node);
- /* Returns a pointer to the cpumask of CPUs on Node 'node'. */
- static inline const struct cpumask *cpumask_of_node(int node)
- {
-+	if (node == NUMA_NO_NODE)
-+		return cpu_online_mask;
-+
- 	return node_to_cpumask_map[node];
- }
- #endif
-diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
-index e6dad60..84b28ef 100644
---- a/arch/x86/mm/numa.c
-+++ b/arch/x86/mm/numa.c
-@@ -861,6 +861,9 @@ void numa_remove_cpu(int cpu)
-  */
- const struct cpumask *cpumask_of_node(int node)
- {
-+	if (node == NUMA_NO_NODE)
-+		return cpu_online_mask;
-+
- 	if (node >= nr_node_ids) {
- 		printk(KERN_WARNING
- 			"cpumask_of_node(%d): node > nr_node_ids(%u)\n",
 -- 
-2.8.1
-
+2.21.0
