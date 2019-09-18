@@ -1,133 +1,125 @@
-From: Andrew Murray <andrew.murray@arm.com>
-Subject: Re: [PATCH v3 00/26] Add definition for the number of standard PCI
- BARs
-Date: Wed, 18 Sep 2019 10:20:39 +0100
-Message-ID: <20190918092038.GC9720@e119886-lin.cambridge.arm.com>
-References: <20190916204158.6889-1-efremov@linux.com>
+From: Aleksa Sarai <cyphar@cyphar.com>
+Subject: Re: [PATCH v12 05/12] namei: obey trailing magic-link DAC permissions
+Date: Wed, 18 Sep 2019 15:51:00 +0200
+Message-ID: <20190918135100.sdxdmdluq6wlwryv@yavin.microfocus.com>
+References: <20190904201933.10736-1-cyphar@cyphar.com>
+ <20190904201933.10736-6-cyphar@cyphar.com>
+ <CAG48ez1_64249RdX6Nj_32YS+jhuXZBAd_ZL9ozggbSQy+cc-A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gouyu6bptahztw3s"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190916204158.6889-1-efremov@linux.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>, 
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>, 
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Denis Efremov <efremov@linux.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, linux-usb@vger.kernel.org, linux-ia64@vger.kernel.org, Sebastian Ott <sebott@linux.ibm.com>, linux-pci@vger.kernel.org, devel@driverdev.osuosl.org, linux-hyperv@vger.kernel.org, linux-ide@vger.kernel.org, Peter Jones <pjones@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Stephen Hemminger <sthemmin@microsoft.com>, Maxim Levitsky <maximlevitsky@gmail.com>, linux-scsi@vger.kernel.org, x86@kernel.org, Kishon Vijay Abraham I <kishon@ti.com>, Jeff Kirsher <jeffrey.t.kirsher@intel.com>, linux-serial@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>, Matt Turner <mattst88@gmail.com>, Jack Wang <jinpu.wang@cloud.ionos.com>, "James E.J. Bottomley" <jejb@linux.ibm.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <CAG48ez1_64249RdX6Nj_32YS+jhuXZBAd_ZL9ozggbSQy+cc-A@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Jann Horn <jannh@google.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Christian Brauner <christian@brauner.io>, Andy Lutomirski <luto@kernel.org>, Eric Biederman <ebiederm@xmission.com>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Tycho Andersen <tycho@tycho.ws>, David Drysdale <drysdale@google.com>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, A
 
-On Mon, Sep 16, 2019 at 11:41:32PM +0300, Denis Efremov wrote:
-> Code that iterates over all standard PCI BARs typically uses
-> PCI_STD_RESOURCE_END, but this is error-prone because it requires
-> "i <= PCI_STD_RESOURCE_END" rather than something like
-> "i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
-> way PCI_SRIOV_NUM_BARS is used. The patchset also replaces constant (6)
-> with new define PCI_STD_NUM_BARS where appropriate and removes local
-> declarations for the number of PCI BARs.
 
-I've made several comments to various patches, however for all the patches
-you can add:
+--gouyu6bptahztw3s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Andrew Murray <andrew.murray@arm.com>
+On 2019-09-17, Jann Horn <jannh@google.com> wrote:
+> On Wed, Sep 4, 2019 at 10:21 PM Aleksa Sarai <cyphar@cyphar.com> wrote:
+> > The ability for userspace to "re-open" file descriptors through
+> > /proc/self/fd has been a very useful tool for all sorts of usecases
+> > (container runtimes are one common example). However, the current
+> > interface for doing this has resulted in some pretty subtle security
+> > holes. Userspace can re-open a file descriptor with more permissions
+> > than the original, which can result in cases such as /proc/$pid/exe
+> > being re-opened O_RDWR at a later date even though (by definition)
+> > /proc/$pid/exe cannot be opened for writing. When combined with O_PATH
+> > the results can get even more confusing.
+> [...]
+> > Instead we have to restrict it in such a way that it doesn't break
+> > (good) users but does block potential attackers. The solution applied in
+> > this patch is to restrict *re-opening* (not resolution through)
+> > magic-links by requiring that mode of the link be obeyed. Normal
+> > symlinks have modes of a+rwx but magic-links have other modes. These
+> > magic-link modes were historically ignored during path resolution, but
+> > they've now been re-purposed for more useful ends.
+>=20
+> Thanks for dealing with this issue!
+>=20
+> [...]
+> > diff --git a/fs/namei.c b/fs/namei.c
+> > index 209c51a5226c..54d57dad0f91 100644
+> > --- a/fs/namei.c
+> > +++ b/fs/namei.c
+> > @@ -872,7 +872,7 @@ void nd_jump_link(struct path *path)
+> >
+> >         nd->path =3D *path;
+> >         nd->inode =3D nd->path.dentry->d_inode;
+> > -       nd->flags |=3D LOOKUP_JUMPED;
+> > +       nd->flags |=3D LOOKUP_JUMPED | LOOKUP_MAGICLINK_JUMPED;
+> >  }
+> [...]
+> > +static int trailing_magiclink(struct nameidata *nd, int acc_mode,
+> > +                             fmode_t *opath_mask)
+> > +{
+> > +       struct inode *inode =3D nd->link_inode;
+> > +       fmode_t upgrade_mask =3D 0;
+> > +
+> > +       /* Was the trailing_symlink() a magic-link? */
+> > +       if (!(nd->flags & LOOKUP_MAGICLINK_JUMPED))
+> > +               return 0;
+> > +
+> > +       /*
+> > +        * Figure out the upgrade-mask of the link_inode. Since these a=
+ren't
+> > +        * strictly POSIX semantics we don't do an acl_permission_check=
+() here,
+> > +        * so we only care that at least one bit is set for each upgrad=
+e-mode.
+> > +        */
+> > +       if (inode->i_mode & S_IRUGO)
+> > +               upgrade_mask |=3D FMODE_PATH_READ;
+> > +       if (inode->i_mode & S_IWUGO)
+> > +               upgrade_mask |=3D FMODE_PATH_WRITE;
+> > +       /* Restrict the O_PATH upgrade-mask of the caller. */
+> > +       if (opath_mask)
+> > +               *opath_mask &=3D upgrade_mask;
+> > +       return may_open_magiclink(upgrade_mask, acc_mode);
+> >  }
+>=20
+> This looks racy because entries in the file descriptor table can be
+> switched out as long as task->files->file_lock isn't held. Unless I'm
+> missing something, something like the following (untested) would
+> bypass this restriction:
 
-> 
-> Changes in v3:
->   - Updated commits description.
->   - Refactored "< PCI_ROM_RESOURCE" with "< PCI_STD_NUM_BARS" in loops.
->   - Refactored "<= BAR_5" with "< PCI_STD_NUM_BARS" in loops.
->   - Removed local define GASKET_NUM_BARS.
->   - Removed local define PCI_NUM_BAR_RESOURCES.
-> 
-> Changes in v2:
->   - Reversed checks in pci_iomap_range,pci_iomap_wc_range.
->   - Refactored loops in vfio_pci to keep PCI_STD_RESOURCES.
->   - Added 2 new patches to replace the magic constant with new define.
->   - Splitted net patch in v1 to separate stmmac and dwc-xlgmac patches.
-> 
-> Denis Efremov (26):
->   PCI: Add define for the number of standard PCI BARs
->   PCI: hv: Use PCI_STD_NUM_BARS
->   PCI: dwc: Use PCI_STD_NUM_BARS
->   PCI: endpoint: Use PCI_STD_NUM_BARS
->   misc: pci_endpoint_test: Use PCI_STD_NUM_BARS
->   s390/pci: Use PCI_STD_NUM_BARS
->   x86/PCI: Loop using PCI_STD_NUM_BARS
->   alpha/PCI: Use PCI_STD_NUM_BARS
->   ia64: Use PCI_STD_NUM_BARS
->   stmmac: pci: Loop using PCI_STD_NUM_BARS
->   net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
->   ixgb: use PCI_STD_NUM_BARS
->   e1000: Use PCI_STD_NUM_BARS
->   rapidio/tsi721: Loop using PCI_STD_NUM_BARS
->   efifb: Loop using PCI_STD_NUM_BARS
->   fbmem: use PCI_STD_NUM_BARS
->   vfio_pci: Loop using PCI_STD_NUM_BARS
->   scsi: pm80xx: Use PCI_STD_NUM_BARS
->   ata: sata_nv: Use PCI_STD_NUM_BARS
->   staging: gasket: Use PCI_STD_NUM_BARS
->   serial: 8250_pci: Use PCI_STD_NUM_BARS
->   pata_atp867x: Use PCI_STD_NUM_BARS
->   memstick: use PCI_STD_NUM_BARS
->   USB: core: Use PCI_STD_NUM_BARS
->   usb: pci-quirks: Use PCI_STD_NUM_BARS
->   devres: use PCI_STD_NUM_BARS
-> 
->  arch/alpha/kernel/pci-sysfs.c                 |  8 ++---
->  arch/ia64/sn/pci/pcibr/pcibr_dma.c            |  4 +--
->  arch/s390/include/asm/pci.h                   |  5 +--
->  arch/s390/include/asm/pci_clp.h               |  6 ++--
->  arch/s390/pci/pci.c                           | 16 +++++-----
->  arch/s390/pci/pci_clp.c                       |  6 ++--
->  arch/x86/pci/common.c                         |  2 +-
->  arch/x86/pci/intel_mid_pci.c                  |  2 +-
->  drivers/ata/pata_atp867x.c                    |  2 +-
->  drivers/ata/sata_nv.c                         |  2 +-
->  drivers/memstick/host/jmb38x_ms.c             |  2 +-
->  drivers/misc/pci_endpoint_test.c              |  8 ++---
->  drivers/net/ethernet/intel/e1000/e1000.h      |  1 -
->  drivers/net/ethernet/intel/e1000/e1000_main.c |  2 +-
->  drivers/net/ethernet/intel/ixgb/ixgb.h        |  1 -
->  drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  2 +-
->  .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  4 +--
->  .../net/ethernet/synopsys/dwc-xlgmac-pci.c    |  2 +-
->  drivers/pci/controller/dwc/pci-dra7xx.c       |  2 +-
->  .../pci/controller/dwc/pci-layerscape-ep.c    |  2 +-
->  drivers/pci/controller/dwc/pcie-artpec6.c     |  2 +-
->  .../pci/controller/dwc/pcie-designware-plat.c |  2 +-
->  drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
->  drivers/pci/controller/pci-hyperv.c           | 10 +++---
->  drivers/pci/endpoint/functions/pci-epf-test.c | 10 +++---
->  drivers/pci/pci-sysfs.c                       |  4 +--
->  drivers/pci/pci.c                             | 13 ++++----
->  drivers/pci/proc.c                            |  4 +--
->  drivers/pci/quirks.c                          |  4 +--
->  drivers/rapidio/devices/tsi721.c              |  2 +-
->  drivers/scsi/pm8001/pm8001_hwi.c              |  2 +-
->  drivers/scsi/pm8001/pm8001_init.c             |  2 +-
->  drivers/staging/gasket/gasket_constants.h     |  3 --
->  drivers/staging/gasket/gasket_core.c          | 12 +++----
->  drivers/staging/gasket/gasket_core.h          |  4 +--
->  drivers/tty/serial/8250/8250_pci.c            |  8 ++---
->  drivers/usb/core/hcd-pci.c                    |  2 +-
->  drivers/usb/host/pci-quirks.c                 |  2 +-
->  drivers/vfio/pci/vfio_pci.c                   | 11 ++++---
->  drivers/vfio/pci/vfio_pci_config.c            | 32 ++++++++++---------
->  drivers/vfio/pci/vfio_pci_private.h           |  4 +--
->  drivers/video/fbdev/core/fbmem.c              |  4 +--
->  drivers/video/fbdev/efifb.c                   |  2 +-
->  include/linux/pci-epc.h                       |  2 +-
->  include/linux/pci.h                           |  2 +-
->  include/uapi/linux/pci_regs.h                 |  1 +
->  lib/devres.c                                  |  2 +-
->  47 files changed, 112 insertions(+), 115 deletions(-)
-> 
-> -- 
-> 2.21.0
-> 
+You're absolutely right -- good catch!
+
+> Perhaps you could change nd_jump_link() to "void nd_jump_link(struct
+> path *path, umode_t link_mode)", and let proc_pid_get_link() pass the
+> link_mode through from an out-argument of .proc_get_link()? Then
+> proc_fd_link() could grab the proper mode in a race-free manner. And
+> nd_jump_link() could stash the mode in the nameidata.
+
+This indeed does appear to be the simplest solution -- I'm currently
+testing a variation of the patch you proposed (with a few extra bits to
+deal with nd_jump_link and proc_get_link being used elsewhere).
+
+I'll include this change (assuming it fixes the flaw you found) in the
+v13 series I'll send around next week. Thanks, Jann!
+
+--=20
+Aleksa Sarai
+Senior Software Engineer (Containers)
+SUSE Linux GmbH
+<https://www.cyphar.com/>
+
+--gouyu6bptahztw3s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXYI2QQAKCRCdlLljIbnQ
+EmFyAQDaPj8ZCZBcO2zL0gyE8hzxrvDfq7RVsdmeagxmIbg+wQD+JIZBdpjvnXYQ
+ZNsb7Dh/C5zkird/0LE1VGr7KfjKnQU=
+=4db+
+-----END PGP SIGNATURE-----
+
+--gouyu6bptahztw3s--
