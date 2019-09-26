@@ -1,117 +1,110 @@
-From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH 15/29] x86: Actually use _etext for end of text segment
-Date: Thu, 26 Sep 2019 10:55:48 -0700
-Message-ID: <20190926175602.33098-16-keescook@chromium.org>
-References: <20190926175602.33098-1-keescook@chromium.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=l1/coTYTe+wj6TaniwTTIjxs1/tlAJ4ZBZ+k2HAUhoc=;
-        b=ZT90Hlbgza5mA13/d6UGS0pzfZxLKfXWME64PvV9Xl8CYO2kbvJSsEXc4JwWRHrHWB
-         InrMjw1u0CbOHhrlMXR26Z9Pb5c7tAJ8jH6LE/YESZsEJSUAo4/QiXnuUcayFxkX0Me0
-         dj1EzZmZAVOcOsMHTRIfYk2DcenQKhga/VkuQ=
-In-Reply-To: <20190926175602.33098-1-keescook@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
+From: Adam Ford <aford173@gmail.com>
+Subject: Re: [PATCH v2 00/21] Refine memblock API
+Date: Thu, 26 Sep 2019 14:35:53 -0500
+Message-ID: <CAHCN7xL1sFXDhKUpj04d3eDZNgLA1yGAOqwEeCxedy1Qm-JOfQ@mail.gmail.com>
+References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
+ <CAHCN7x+Jv7yGPoB0Gm=TJ30ObLJduw2XomHkd++KqFEURYQcGg@mail.gmail.com>
+ <CAOMZO5A_U4aYC4XZXK1r9JaLg-eRdXy8m6z4GatQp62rK4HZ6A@mail.gmail.com>
+ <CAHCN7xJdzEppn8-74SvzACsA25bUHGdV7v=CfS08xzSi59Z2uw@mail.gmail.com>
+ <CAOMZO5D2uzR6Sz1QnX3G-Ce_juxU-0PO_vBZX+nR1mpQB8s8-w@mail.gmail.com>
+ <CAHCN7xJ32BYZu-DVTVLSzv222U50JDb8F0A_tLDERbb8kPdRxg@mail.gmail.com>
+ <20190926160433.GD32311@linux.ibm.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Kees Cook <keescook@chromium.org>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=s8r8NxaTpfRo86EEbL+7IkQOYltD2/erzCKehN4pYY4=; b=V6VCvsP1CrOuEP
+	SM0uE6/9gIFXqih2585CPx+D1lbwNrpLGmkhzZG1dl8cQDlJ/2mhpzWpqdyj0T+ri2SbkQWK5GTt3
+	koNSyyM9JXGVMEfCQPKLFW/p55kUz/1odpp0pyUge4kkETtLZM91DwP4/B7cUGgmJNDwt+2ZPTLdH
+	rW673KQzxcThVC/at5cG/XluNM5t1t8NcCRFD9LEXgqRp1zWJ0OrgXyrrD19q76M3wq2Uq0CJwJyO
+	2MLS93R9CEDwiCKAb9CzHDgcfsoZH/hE6Viq2RR0XYC5B2KBSdMAq5KldoKo7XreL/IpEXN+zItSV
+	HB4Gdo7NF5PzdP6d7Q9g==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=uv8sypDhr4ui+8J14AcrUpiwkTC+Ius1tZ05+vuLNHk=;
+ b=lFVH4DJZInfXaRXpqmiMEK9WpeSM/1iq4W9bn5uziJHuNnpDS5uJfwrrSMkKUYaoWu
+ tjIzRew236DgZA4ISwubGuuzdkMEJIbQ8yLo4Gw4blLNNqTUJXJQc2T8EmFOMMaE/MZN
+ TWI21uIOpWZV0B6kiTUPUzXP+86XUqzfSXBes1IbztoB6sCaCe2+0vHVrK7I1YSyHTRf
+ vUusvWxQUo6svZWbb5qWyg1vE5i/0/5lEgToMxkxJ7QF/bNuxlBlDbD6OXf3ku60x8mI
+ qYDnylEQgvdyDcRtg2M6u1XUP8jT9lELn92+Mho67HMmT8OkOdOtqWogr7E2TIwC5RUe
+ rt7w==
+In-Reply-To: <20190926160433.GD32311@linux.ibm.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: Mike Rapoport <rppt@linux.ibm.com>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, devicetree <devicetree@vger.kernel.org>, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, kasan-dev <kasan-dev@googlegroups.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Chris Healy <cphealy@gmail.com>, uclinux-h8-devel@lists.sourceforge.j
 
-Various calculations are using the end of the exception table (which
-does not need to be executable) as the end of the text segment. Instead,
-in preparation for moving the exception table into RO_DATA, move _etext
-after the exception table and update the calculations.
+On Thu, Sep 26, 2019 at 11:04 AM Mike Rapoport <rppt@linux.ibm.com> wrote:
+>
+> Hi,
+>
+> On Thu, Sep 26, 2019 at 08:09:52AM -0500, Adam Ford wrote:
+> > On Wed, Sep 25, 2019 at 10:17 AM Fabio Estevam <festevam@gmail.com> wrote:
+> > >
+> > > On Wed, Sep 25, 2019 at 9:17 AM Adam Ford <aford173@gmail.com> wrote:
+> > >
+> > > > I tried cma=256M and noticed the cma dump at the beginning didn't
+> > > > change.  Do we need to setup a reserved-memory node like
+> > > > imx6ul-ccimx6ulsom.dtsi did?
+> > >
+> > > I don't think so.
+> > >
+> > > Were you able to identify what was the exact commit that caused such regression?
+> >
+> > I was able to narrow it down the 92d12f9544b7 ("memblock: refactor
+> > internal allocation functions") that caused the regression with
+> > Etnaviv.
+>
+>
+> Can you please test with this change:
+>
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- arch/x86/include/asm/sections.h | 1 -
- arch/x86/kernel/vmlinux.lds.S   | 7 +++----
- arch/x86/mm/init_64.c           | 6 +++---
- arch/x86/mm/pti.c               | 2 +-
- 4 files changed, 7 insertions(+), 9 deletions(-)
+That appears to have fixed my issue.  I am not sure what the impact
+is, but is this a safe option?
 
-diff --git a/arch/x86/include/asm/sections.h b/arch/x86/include/asm/sections.h
-index 71b32f2570ab..036c360910c5 100644
---- a/arch/x86/include/asm/sections.h
-+++ b/arch/x86/include/asm/sections.h
-@@ -6,7 +6,6 @@
- #include <asm/extable.h>
- 
- extern char __brk_base[], __brk_limit[];
--extern struct exception_table_entry __stop___ex_table[];
- extern char __end_rodata_aligned[];
- 
- #if defined(CONFIG_X86_64)
-diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index 41362e90142d..a1a758e25b2b 100644
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -143,15 +143,14 @@ SECTIONS
- 		*(.text.__x86.indirect_thunk)
- 		__indirect_thunk_end = .;
- #endif
--
--		/* End of text section */
--		_etext = .;
- 	} :text = 0x9090
- 
- 	EXCEPTION_TABLE(16)
- 
--	/* .text should occupy whole number of pages */
-+	/* End of text section, which should occupy whole number of pages */
-+	_etext = .;
- 	. = ALIGN(PAGE_SIZE);
-+
- 	X86_ALIGN_RODATA_BEGIN
- 	RO_DATA(PAGE_SIZE)
- 	X86_ALIGN_RODATA_END
-diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
-index a6b5c653727b..26299e9ce6da 100644
---- a/arch/x86/mm/init_64.c
-+++ b/arch/x86/mm/init_64.c
-@@ -1263,7 +1263,7 @@ int kernel_set_to_readonly;
- void set_kernel_text_rw(void)
- {
- 	unsigned long start = PFN_ALIGN(_text);
--	unsigned long end = PFN_ALIGN(__stop___ex_table);
-+	unsigned long end = PFN_ALIGN(_etext);
- 
- 	if (!kernel_set_to_readonly)
- 		return;
-@@ -1282,7 +1282,7 @@ void set_kernel_text_rw(void)
- void set_kernel_text_ro(void)
- {
- 	unsigned long start = PFN_ALIGN(_text);
--	unsigned long end = PFN_ALIGN(__stop___ex_table);
-+	unsigned long end = PFN_ALIGN(_etext);
- 
- 	if (!kernel_set_to_readonly)
- 		return;
-@@ -1301,7 +1301,7 @@ void mark_rodata_ro(void)
- 	unsigned long start = PFN_ALIGN(_text);
- 	unsigned long rodata_start = PFN_ALIGN(__start_rodata);
- 	unsigned long end = (unsigned long) &__end_rodata_hpage_align;
--	unsigned long text_end = PFN_ALIGN(&__stop___ex_table);
-+	unsigned long text_end = PFN_ALIGN(&_etext);
- 	unsigned long rodata_end = PFN_ALIGN(&__end_rodata);
- 	unsigned long all_end;
- 
-diff --git a/arch/x86/mm/pti.c b/arch/x86/mm/pti.c
-index b196524759ec..bd3404fd9d80 100644
---- a/arch/x86/mm/pti.c
-+++ b/arch/x86/mm/pti.c
-@@ -572,7 +572,7 @@ static void pti_clone_kernel_text(void)
- 	 */
- 	unsigned long start = PFN_ALIGN(_text);
- 	unsigned long end_clone  = (unsigned long)__end_rodata_aligned;
--	unsigned long end_global = PFN_ALIGN((unsigned long)__stop___ex_table);
-+	unsigned long end_global = PFN_ALIGN((unsigned long)_etext);
- 
- 	if (!pti_kernel_image_global_ok())
- 		return;
--- 
-2.17.1
 
+adam
+
+> diff --git a/mm/memblock.c b/mm/memblock.c
+> index 7d4f61a..1f5a0eb 100644
+> --- a/mm/memblock.c
+> +++ b/mm/memblock.c
+> @@ -1356,9 +1356,6 @@ static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
+>                 align = SMP_CACHE_BYTES;
+>         }
+>
+> -       if (end > memblock.current_limit)
+> -               end = memblock.current_limit;
+> -
+>  again:
+>         found = memblock_find_in_range_node(size, align, start, end, nid,
+>                                             flags);
+>
+> > I also noticed that if I create a reserved memory node as was done one
+> > imx6ul-ccimx6ulsom.dtsi the 3D seems to work again, but without it, I
+> > was getting errors regardless of the 'cma=256M' or not.
+> > I don't have a problem using the reserved memory, but I guess I am not
+> > sure what the amount should be.  I know for the video decoding 1080p,
+> > I have historically used cma=128M, but with the 3D also needing some
+> > memory allocation, is that enough or should I use 256M?
+> >
+> > adam
+>
+> --
+> Sincerely yours,
+> Mike.
+>
