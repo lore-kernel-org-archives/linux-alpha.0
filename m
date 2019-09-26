@@ -1,91 +1,65 @@
-From: Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH v2 00/21] Refine memblock API
-Date: Thu, 26 Sep 2019 19:04:34 +0300
-Message-ID: <20190926160433.GD32311@linux.ibm.com>
-References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
- <CAHCN7x+Jv7yGPoB0Gm=TJ30ObLJduw2XomHkd++KqFEURYQcGg@mail.gmail.com>
- <CAOMZO5A_U4aYC4XZXK1r9JaLg-eRdXy8m6z4GatQp62rK4HZ6A@mail.gmail.com>
- <CAHCN7xJdzEppn8-74SvzACsA25bUHGdV7v=CfS08xzSi59Z2uw@mail.gmail.com>
- <CAOMZO5D2uzR6Sz1QnX3G-Ce_juxU-0PO_vBZX+nR1mpQB8s8-w@mail.gmail.com>
- <CAHCN7xJ32BYZu-DVTVLSzv222U50JDb8F0A_tLDERbb8kPdRxg@mail.gmail.com>
-Mime-Version: 1.0
+From: Kees Cook <keescook@chromium.org>
+Subject: [PATCH 04/29] alpha: Rename PT_LOAD identifier "kernel" to "text"
+Date: Thu, 26 Sep 2019 10:55:37 -0700
+Message-ID: <20190926175602.33098-5-keescook@chromium.org>
+References: <20190926175602.33098-1-keescook@chromium.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=tfsXsrL5x37ZSQucWl8Bh6EyFQTE0kRi9peGDqUDYWM=;
+        b=KfnDRarTGgWf60O4C9cF+YzTjYXp+pSkpdzWR7YKNXHXP7TAfTSHAkqA4UoYNAcWUP
+         NDUbjKE6AWe2+D+wOTvvlqXbdNAJZsnyYEgw38E2fXR/V8EEz3Xj/vyRfzrhH+es6//f
+         V34BpcFgVde9WGbqi6+RYmyV1MCa8QFUww3V8=
+In-Reply-To: <20190926175602.33098-1-keescook@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:Message-Id:In-Reply-To:MIME-Version:
-	References:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=Gv+YX47Z3IZSyP/iedAiXpVEuSt0W6Ja4NrLyRil6Yg=; b=lm7NjnCvFHHhR7
-	M1yprKcQJiPnyhby/PlgX0tBAJ4caAIcf0+lpTWJ+ud4CsYNUN9SrlyiRyQvZcwBDSiqzXADrBuib
-	0pP9Y0ILhxRjlIU9KZyRWMQFgZ8Sn/uL64hyE+1QqZfMeY/qdBJ+RqxW7JmzPzfSeThlnWkSHXkaT
-	GfkiphQO1H+SM0oaHXS361Fo/wu9NOql/vZVYOBDjsvUY65Avea14/d/LPEFBc9Rd3ZD00s2ppqBS
-	GTNC5TzsSfI7wektUz/dPfy5oADw0hu3LgEMzQpS83rpHl6NLuPaDSVtTb/+QyEn/nTHPlACVtFvn
-	k1xUe6167jvAWomUoPXg==;
-Content-Disposition: inline
-In-Reply-To: <CAHCN7xJ32BYZu-DVTVLSzv222U50JDb8F0A_tLDERbb8kPdRxg@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Adam Ford <aford173@gmail.com>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, devicetree <devicetree@vger.kernel.org>, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, kasan-dev <kasan-dev@googlegroups.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Chris Healy <cphealy@gmail.com>, uclinux-h8-devel@lists.sourceforge.j
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Kees Cook <keescook@chromium.org>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, linux-kernel@vger.kernel.org
 
-Hi,
+In preparation for moving NOTES into RO_DATA, this renames the linker
+script internal identifier for the PT_LOAD Program Header from "kernel"
+to "text" to match other architectures.
 
-On Thu, Sep 26, 2019 at 08:09:52AM -0500, Adam Ford wrote:
-> On Wed, Sep 25, 2019 at 10:17 AM Fabio Estevam <festevam@gmail.com> wrote:
-> >
-> > On Wed, Sep 25, 2019 at 9:17 AM Adam Ford <aford173@gmail.com> wrote:
-> >
-> > > I tried cma=256M and noticed the cma dump at the beginning didn't
-> > > change.  Do we need to setup a reserved-memory node like
-> > > imx6ul-ccimx6ulsom.dtsi did?
-> >
-> > I don't think so.
-> >
-> > Were you able to identify what was the exact commit that caused such regression?
-> 
-> I was able to narrow it down the 92d12f9544b7 ("memblock: refactor
-> internal allocation functions") that caused the regression with
-> Etnaviv.
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ arch/alpha/kernel/vmlinux.lds.S | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-
-Can you please test with this change:
-
-diff --git a/mm/memblock.c b/mm/memblock.c
-index 7d4f61a..1f5a0eb 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -1356,9 +1356,6 @@ static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
- 		align = SMP_CACHE_BYTES;
- 	}
+diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
+index c4b5ceceab52..781090cacc96 100644
+--- a/arch/alpha/kernel/vmlinux.lds.S
++++ b/arch/alpha/kernel/vmlinux.lds.S
+@@ -8,7 +8,7 @@
+ OUTPUT_FORMAT("elf64-alpha")
+ OUTPUT_ARCH(alpha)
+ ENTRY(__start)
+-PHDRS { kernel PT_LOAD; note PT_NOTE; }
++PHDRS { text PT_LOAD; note PT_NOTE; }
+ jiffies = jiffies_64;
+ SECTIONS
+ {
+@@ -27,14 +27,14 @@ SECTIONS
+ 		LOCK_TEXT
+ 		*(.fixup)
+ 		*(.gnu.warning)
+-	} :kernel
++	} :text
+ 	swapper_pg_dir = SWAPPER_PGD;
+ 	_etext = .;	/* End of text section */
  
--	if (end > memblock.current_limit)
--		end = memblock.current_limit;
--
- again:
- 	found = memblock_find_in_range_node(size, align, start, end, nid,
- 					    flags);
+-	NOTES :kernel :note
++	NOTES :text :note
+ 	.dummy : {
+ 		*(.dummy)
+-	} :kernel
++	} :text
  
-> I also noticed that if I create a reserved memory node as was done one
-> imx6ul-ccimx6ulsom.dtsi the 3D seems to work again, but without it, I
-> was getting errors regardless of the 'cma=256M' or not.
-> I don't have a problem using the reserved memory, but I guess I am not
-> sure what the amount should be.  I know for the video decoding 1080p,
-> I have historically used cma=128M, but with the 3D also needing some
-> memory allocation, is that enough or should I use 256M?
-> 
-> adam
-
+ 	RODATA
+ 	EXCEPTION_TABLE(16)
 -- 
-Sincerely yours,
-Mike.
+2.17.1
+
