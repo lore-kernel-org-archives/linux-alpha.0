@@ -1,110 +1,116 @@
-From: Adam Ford <aford173@gmail.com>
-Subject: Re: [PATCH v2 00/21] Refine memblock API
-Date: Thu, 26 Sep 2019 14:35:53 -0500
-Message-ID: <CAHCN7xL1sFXDhKUpj04d3eDZNgLA1yGAOqwEeCxedy1Qm-JOfQ@mail.gmail.com>
-References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
- <CAHCN7x+Jv7yGPoB0Gm=TJ30ObLJduw2XomHkd++KqFEURYQcGg@mail.gmail.com>
- <CAOMZO5A_U4aYC4XZXK1r9JaLg-eRdXy8m6z4GatQp62rK4HZ6A@mail.gmail.com>
- <CAHCN7xJdzEppn8-74SvzACsA25bUHGdV7v=CfS08xzSi59Z2uw@mail.gmail.com>
- <CAOMZO5D2uzR6Sz1QnX3G-Ce_juxU-0PO_vBZX+nR1mpQB8s8-w@mail.gmail.com>
- <CAHCN7xJ32BYZu-DVTVLSzv222U50JDb8F0A_tLDERbb8kPdRxg@mail.gmail.com>
- <20190926160433.GD32311@linux.ibm.com>
+From: Denis Efremov <efremov@linux.com>
+Subject: [PATCH RESEND v3 00/26] Add definition for the number of standard PCI BARs
+Date: Sat, 28 Sep 2019 02:40:26 +0300
+Message-ID: <20190927234026.23342-1-efremov@linux.com>
+References: <20190916204158.6889-3-efremov@linux.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <20190916204158.6889-3-efremov@linux.com>
+Sender: netdev-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
-	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=s8r8NxaTpfRo86EEbL+7IkQOYltD2/erzCKehN4pYY4=; b=V6VCvsP1CrOuEP
-	SM0uE6/9gIFXqih2585CPx+D1lbwNrpLGmkhzZG1dl8cQDlJ/2mhpzWpqdyj0T+ri2SbkQWK5GTt3
-	koNSyyM9JXGVMEfCQPKLFW/p55kUz/1odpp0pyUge4kkETtLZM91DwP4/B7cUGgmJNDwt+2ZPTLdH
-	rW673KQzxcThVC/at5cG/XluNM5t1t8NcCRFD9LEXgqRp1zWJ0OrgXyrrD19q76M3wq2Uq0CJwJyO
-	2MLS93R9CEDwiCKAb9CzHDgcfsoZH/hE6Viq2RR0XYC5B2KBSdMAq5KldoKo7XreL/IpEXN+zItSV
-	HB4Gdo7NF5PzdP6d7Q9g==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=uv8sypDhr4ui+8J14AcrUpiwkTC+Ius1tZ05+vuLNHk=;
- b=lFVH4DJZInfXaRXpqmiMEK9WpeSM/1iq4W9bn5uziJHuNnpDS5uJfwrrSMkKUYaoWu
- tjIzRew236DgZA4ISwubGuuzdkMEJIbQ8yLo4Gw4blLNNqTUJXJQc2T8EmFOMMaE/MZN
- TWI21uIOpWZV0B6kiTUPUzXP+86XUqzfSXBes1IbztoB6sCaCe2+0vHVrK7I1YSyHTRf
- vUusvWxQUo6svZWbb5qWyg1vE5i/0/5lEgToMxkxJ7QF/bNuxlBlDbD6OXf3ku60x8mI
- qYDnylEQgvdyDcRtg2M6u1XUP8jT9lELn92+Mho67HMmT8OkOdOtqWogr7E2TIwC5RUe
- rt7w==
-In-Reply-To: <20190926160433.GD32311@linux.ibm.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Mike Rapoport <rppt@linux.ibm.com>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, devicetree <devicetree@vger.kernel.org>, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, kasan-dev <kasan-dev@googlegroups.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Chris Healy <cphealy@gmail.com>, uclinux-h8-devel@lists.sourceforge.j
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Denis Efremov <efremov@linux.com>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-hyperv@vger.kernel.org, x86@kernel.org, linux-s390@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org, linux-fbdev@vger.kernel.org, kvm@vger.kernel.org, linux-scsi@vger.kernel.org, linux-ide@vger.kernel.org, linux-usb@vger.kernel.org, devel@driverdev.osuosl.org, linux-serial@vger.kernel.org, linux-mmc@vger.kernel.org
 
-On Thu, Sep 26, 2019 at 11:04 AM Mike Rapoport <rppt@linux.ibm.com> wrote:
->
-> Hi,
->
-> On Thu, Sep 26, 2019 at 08:09:52AM -0500, Adam Ford wrote:
-> > On Wed, Sep 25, 2019 at 10:17 AM Fabio Estevam <festevam@gmail.com> wrote:
-> > >
-> > > On Wed, Sep 25, 2019 at 9:17 AM Adam Ford <aford173@gmail.com> wrote:
-> > >
-> > > > I tried cma=256M and noticed the cma dump at the beginning didn't
-> > > > change.  Do we need to setup a reserved-memory node like
-> > > > imx6ul-ccimx6ulsom.dtsi did?
-> > >
-> > > I don't think so.
-> > >
-> > > Were you able to identify what was the exact commit that caused such regression?
-> >
-> > I was able to narrow it down the 92d12f9544b7 ("memblock: refactor
-> > internal allocation functions") that caused the regression with
-> > Etnaviv.
->
->
-> Can you please test with this change:
->
+Code that iterates over all standard PCI BARs typically uses
+PCI_STD_RESOURCE_END, but this is error-prone because it requires
+"i <= PCI_STD_RESOURCE_END" rather than something like
+"i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
+way PCI_SRIOV_NUM_BARS is used. The patchset also replaces constant (6)
+with new define PCI_STD_NUM_BARS where appropriate and removes local
+declarations for the number of PCI BARs.
 
-That appears to have fixed my issue.  I am not sure what the impact
-is, but is this a safe option?
+Changes in v3:
+  - Updated commits description.
+  - Refactored "< PCI_ROM_RESOURCE" with "< PCI_STD_NUM_BARS" in loops.
+  - Refactored "<= BAR_5" with "< PCI_STD_NUM_BARS" in loops.
+  - Removed local define GASKET_NUM_BARS.
+  - Removed local define PCI_NUM_BAR_RESOURCES.
 
+Changes in v2:
+  - Reversed checks in pci_iomap_range,pci_iomap_wc_range.
+  - Refactored loops in vfio_pci to keep PCI_STD_RESOURCES.
+  - Added 2 new patches to replace the magic constant with new define.
+  - Splitted net patch in v1 to separate stmmac and dwc-xlgmac patches.
 
-adam
+Denis Efremov (26):
+  PCI: Add define for the number of standard PCI BARs
+  PCI: hv: Use PCI_STD_NUM_BARS
+  PCI: dwc: Use PCI_STD_NUM_BARS
+  PCI: endpoint: Use PCI_STD_NUM_BARS
+  misc: pci_endpoint_test: Use PCI_STD_NUM_BARS
+  s390/pci: Use PCI_STD_NUM_BARS
+  x86/PCI: Loop using PCI_STD_NUM_BARS
+  alpha/PCI: Use PCI_STD_NUM_BARS
+  ia64: Use PCI_STD_NUM_BARS
+  stmmac: pci: Loop using PCI_STD_NUM_BARS
+  net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
+  ixgb: use PCI_STD_NUM_BARS
+  e1000: Use PCI_STD_NUM_BARS
+  rapidio/tsi721: Loop using PCI_STD_NUM_BARS
+  efifb: Loop using PCI_STD_NUM_BARS
+  fbmem: use PCI_STD_NUM_BARS
+  vfio_pci: Loop using PCI_STD_NUM_BARS
+  scsi: pm80xx: Use PCI_STD_NUM_BARS
+  ata: sata_nv: Use PCI_STD_NUM_BARS
+  staging: gasket: Use PCI_STD_NUM_BARS
+  serial: 8250_pci: Use PCI_STD_NUM_BARS
+  pata_atp867x: Use PCI_STD_NUM_BARS
+  memstick: use PCI_STD_NUM_BARS
+  USB: core: Use PCI_STD_NUM_BARS
+  usb: pci-quirks: Use PCI_STD_NUM_BARS
+  devres: use PCI_STD_NUM_BARS
 
-> diff --git a/mm/memblock.c b/mm/memblock.c
-> index 7d4f61a..1f5a0eb 100644
-> --- a/mm/memblock.c
-> +++ b/mm/memblock.c
-> @@ -1356,9 +1356,6 @@ static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
->                 align = SMP_CACHE_BYTES;
->         }
->
-> -       if (end > memblock.current_limit)
-> -               end = memblock.current_limit;
-> -
->  again:
->         found = memblock_find_in_range_node(size, align, start, end, nid,
->                                             flags);
->
-> > I also noticed that if I create a reserved memory node as was done one
-> > imx6ul-ccimx6ulsom.dtsi the 3D seems to work again, but without it, I
-> > was getting errors regardless of the 'cma=256M' or not.
-> > I don't have a problem using the reserved memory, but I guess I am not
-> > sure what the amount should be.  I know for the video decoding 1080p,
-> > I have historically used cma=128M, but with the 3D also needing some
-> > memory allocation, is that enough or should I use 256M?
-> >
-> > adam
->
-> --
-> Sincerely yours,
-> Mike.
->
+ arch/alpha/kernel/pci-sysfs.c                 |  8 ++---
+ arch/ia64/sn/pci/pcibr/pcibr_dma.c            |  4 +--
+ arch/s390/include/asm/pci.h                   |  5 +--
+ arch/s390/include/asm/pci_clp.h               |  6 ++--
+ arch/s390/pci/pci.c                           | 16 +++++-----
+ arch/s390/pci/pci_clp.c                       |  6 ++--
+ arch/x86/pci/common.c                         |  2 +-
+ arch/x86/pci/intel_mid_pci.c                  |  2 +-
+ drivers/ata/pata_atp867x.c                    |  2 +-
+ drivers/ata/sata_nv.c                         |  2 +-
+ drivers/memstick/host/jmb38x_ms.c             |  2 +-
+ drivers/misc/pci_endpoint_test.c              |  8 ++---
+ drivers/net/ethernet/intel/e1000/e1000.h      |  1 -
+ drivers/net/ethernet/intel/e1000/e1000_main.c |  2 +-
+ drivers/net/ethernet/intel/ixgb/ixgb.h        |  1 -
+ drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  2 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  4 +--
+ .../net/ethernet/synopsys/dwc-xlgmac-pci.c    |  2 +-
+ drivers/pci/controller/dwc/pci-dra7xx.c       |  2 +-
+ .../pci/controller/dwc/pci-layerscape-ep.c    |  2 +-
+ drivers/pci/controller/dwc/pcie-artpec6.c     |  2 +-
+ .../pci/controller/dwc/pcie-designware-plat.c |  2 +-
+ drivers/pci/controller/dwc/pcie-designware.h  |  2 +-
+ drivers/pci/controller/pci-hyperv.c           | 10 +++---
+ drivers/pci/endpoint/functions/pci-epf-test.c | 10 +++---
+ drivers/pci/pci-sysfs.c                       |  4 +--
+ drivers/pci/pci.c                             | 13 ++++----
+ drivers/pci/proc.c                            |  4 +--
+ drivers/pci/quirks.c                          |  4 +--
+ drivers/rapidio/devices/tsi721.c              |  2 +-
+ drivers/scsi/pm8001/pm8001_hwi.c              |  2 +-
+ drivers/scsi/pm8001/pm8001_init.c             |  2 +-
+ drivers/staging/gasket/gasket_constants.h     |  3 --
+ drivers/staging/gasket/gasket_core.c          | 12 +++----
+ drivers/staging/gasket/gasket_core.h          |  4 +--
+ drivers/tty/serial/8250/8250_pci.c            |  8 ++---
+ drivers/usb/core/hcd-pci.c                    |  2 +-
+ drivers/usb/host/pci-quirks.c                 |  2 +-
+ drivers/vfio/pci/vfio_pci.c                   | 11 ++++---
+ drivers/vfio/pci/vfio_pci_config.c            | 32 ++++++++++---------
+ drivers/vfio/pci/vfio_pci_private.h           |  4 +--
+ drivers/video/fbdev/core/fbmem.c              |  4 +--
+ drivers/video/fbdev/efifb.c                   |  2 +-
+ include/linux/pci-epc.h                       |  2 +-
+ include/linux/pci.h                           |  2 +-
+ include/uapi/linux/pci_regs.h                 |  1 +
+ lib/devres.c                                  |  2 +-
+ 47 files changed, 112 insertions(+), 115 deletions(-)
+
+-- 
+2.21.0
+
