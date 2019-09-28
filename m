@@ -1,188 +1,112 @@
-From: Denis Efremov <efremov@linux.com>
-Subject: [PATCH RESEND v3 01/26] PCI: Add define for the number of standard PCI BARs
-Date: Sat, 28 Sep 2019 02:43:08 +0300
-Message-ID: <20190927234308.23935-1-efremov@linux.com>
-References: <20190916204158.6889-3-efremov@linux.com>
+From: Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v2 00/21] Refine memblock API
+Date: Sat, 28 Sep 2019 10:33:32 +0300
+Message-ID: <20190928073331.GA5269@linux.ibm.com>
+References: <1548057848-15136-1-git-send-email-rppt@linux.ibm.com>
+ <CAHCN7x+Jv7yGPoB0Gm=TJ30ObLJduw2XomHkd++KqFEURYQcGg@mail.gmail.com>
+ <CAOMZO5A_U4aYC4XZXK1r9JaLg-eRdXy8m6z4GatQp62rK4HZ6A@mail.gmail.com>
+ <CAHCN7xJdzEppn8-74SvzACsA25bUHGdV7v=CfS08xzSi59Z2uw@mail.gmail.com>
+ <CAOMZO5D2uzR6Sz1QnX3G-Ce_juxU-0PO_vBZX+nR1mpQB8s8-w@mail.gmail.com>
+ <CAHCN7xJ32BYZu-DVTVLSzv222U50JDb8F0A_tLDERbb8kPdRxg@mail.gmail.com>
+ <20190926160433.GD32311@linux.ibm.com>
+ <CAHCN7xL1sFXDhKUpj04d3eDZNgLA1yGAOqwEeCxedy1Qm-JOfQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190916204158.6889-3-efremov@linux.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Denis Efremov <efremov@linux.com>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-hyperv@vger.kernel.org, x86@kernel.org, linux-s390@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:Message-Id:In-Reply-To:MIME-Version:
+	References:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=6xTUZTaUQAeKPGimbQ65F9TlYt1YjL7iMx7W3fTRSLM=; b=uPDCRz8ivm4Im9
+	g+IaK4ft4FQC4vvtdEqRQt5Z1fgUiqXev875X7OVXrDUr1TB71w+1mEMTSHHbRMS05uvZ0yS69QnR
+	SFOQgARHz73KpEkKJ49pClp27tePI+/Xk1Xr4iXyhnV2sKPTTjIy9EgoSeYvLzRgCISSqlRKydYOk
+	B0PDLZ6zVT0fhopFn2ZbeAWbKvA7O7bpPkaO2jIKnjCvWKFQpaopYS38Xfjao7VROfeySQtyWPkfA
+	8lJYAtUMgyNAc7rpOMaoGoun1P/9guvu3JohNiiGSfEpj3rVxEOIAKx1u2Ne9KQrSzu72kDfrlsN3
+	QRdMTuxccHBke45+CiOg==;
+Content-Disposition: inline
+In-Reply-To: <CAHCN7xL1sFXDhKUpj04d3eDZNgLA1yGAOqwEeCxedy1Qm-JOfQ@mail.gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: Adam Ford <aford173@gmail.com>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, devicetree <devicetree@vger.kernel.org>, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, Fabio Estevam <festevam@gmail.com>, Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger <richard@nod.at>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, kasan-dev <kasan-dev@googlegroups.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Mark Salter <msalter@redhat.com>, Dennis Zhou <dennis@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Chris Healy <cphealy@gmail.com>, uclinux-h8-devel@lists.sourceforge.j
 
-Code that iterates over all standard PCI BARs typically uses
-PCI_STD_RESOURCE_END. However, it requires the "unusual" loop condition
-"i <= PCI_STD_RESOURCE_END" rather than something more standard like
-"i < PCI_STD_NUM_BARS".
+On Thu, Sep 26, 2019 at 02:35:53PM -0500, Adam Ford wrote:
+> On Thu, Sep 26, 2019 at 11:04 AM Mike Rapoport <rppt@linux.ibm.com> wrote:
+> >
+> > Hi,
+> >
+> > On Thu, Sep 26, 2019 at 08:09:52AM -0500, Adam Ford wrote:
+> > > On Wed, Sep 25, 2019 at 10:17 AM Fabio Estevam <festevam@gmail.com> wrote:
+> > > >
+> > > > On Wed, Sep 25, 2019 at 9:17 AM Adam Ford <aford173@gmail.com> wrote:
+> > > >
+> > > > > I tried cma=256M and noticed the cma dump at the beginning didn't
+> > > > > change.  Do we need to setup a reserved-memory node like
+> > > > > imx6ul-ccimx6ulsom.dtsi did?
+> > > >
+> > > > I don't think so.
+> > > >
+> > > > Were you able to identify what was the exact commit that caused such regression?
+> > >
+> > > I was able to narrow it down the 92d12f9544b7 ("memblock: refactor
+> > > internal allocation functions") that caused the regression with
+> > > Etnaviv.
+> >
+> >
+> > Can you please test with this change:
+> >
+> 
+> That appears to have fixed my issue.  I am not sure what the impact
+> is, but is this a safe option?
 
-This patch adds the definition PCI_STD_NUM_BARS which is equivalent to
-"PCI_STD_RESOURCE_END + 1". To iterate through all possible BARs, loop
-conditions changed to the *number* of BARs "i < PCI_STD_NUM_BARS",
-instead of the index of the last valid BAR "i <= PCI_STD_RESOURCE_END"
-or PCI_ROM_RESOURCE. The magic constant (6) is also replaced with new
-define PCI_STD_NUM_BARS.
+It's not really a fix, I just wanted to see how exactly 92d12f9544b7 ("memblock:
+refactor internal allocation functions") broke your setup.
 
-Signed-off-by: Denis Efremov <efremov@linux.com>
----
- drivers/pci/pci-sysfs.c       |  4 ++--
- drivers/pci/pci.c             | 13 +++++++------
- drivers/pci/proc.c            |  4 ++--
- drivers/pci/quirks.c          |  4 ++--
- include/linux/pci.h           |  2 +-
- include/uapi/linux/pci_regs.h |  1 +
- 6 files changed, 15 insertions(+), 13 deletions(-)
+Can you share the dts you are using and the full kernel log?
+ 
+> adam
+> 
+> > diff --git a/mm/memblock.c b/mm/memblock.c
+> > index 7d4f61a..1f5a0eb 100644
+> > --- a/mm/memblock.c
+> > +++ b/mm/memblock.c
+> > @@ -1356,9 +1356,6 @@ static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
+> >                 align = SMP_CACHE_BYTES;
+> >         }
+> >
+> > -       if (end > memblock.current_limit)
+> > -               end = memblock.current_limit;
+> > -
+> >  again:
+> >         found = memblock_find_in_range_node(size, align, start, end, nid,
+> >                                             flags);
+> >
+> > > I also noticed that if I create a reserved memory node as was done one
+> > > imx6ul-ccimx6ulsom.dtsi the 3D seems to work again, but without it, I
+> > > was getting errors regardless of the 'cma=256M' or not.
+> > > I don't have a problem using the reserved memory, but I guess I am not
+> > > sure what the amount should be.  I know for the video decoding 1080p,
+> > > I have historically used cma=128M, but with the 3D also needing some
+> > > memory allocation, is that enough or should I use 256M?
+> > >
+> > > adam
+> >
+> > --
+> > Sincerely yours,
+> > Mike.
+> >
 
-diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-index 965c72104150..3e26b8e03bd5 100644
---- a/drivers/pci/pci-sysfs.c
-+++ b/drivers/pci/pci-sysfs.c
-@@ -1257,7 +1257,7 @@ static void pci_remove_resource_files(struct pci_dev *pdev)
- {
- 	int i;
- 
--	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
-+	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
- 		struct bin_attribute *res_attr;
- 
- 		res_attr = pdev->res_attr[i];
-@@ -1328,7 +1328,7 @@ static int pci_create_resource_files(struct pci_dev *pdev)
- 	int retval;
- 
- 	/* Expose the PCI resources from this device as files */
--	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
-+	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
- 
- 		/* skip empty resources */
- 		if (!pci_resource_len(pdev, i))
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 1b27b5af3d55..7d543986026b 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -674,7 +674,7 @@ struct resource *pci_find_resource(struct pci_dev *dev, struct resource *res)
- {
- 	int i;
- 
--	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
-+	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
- 		struct resource *r = &dev->resource[i];
- 
- 		if (r->start && resource_contains(r, res))
-@@ -3768,7 +3768,7 @@ void pci_release_selected_regions(struct pci_dev *pdev, int bars)
- {
- 	int i;
- 
--	for (i = 0; i < 6; i++)
-+	for (i = 0; i < PCI_STD_NUM_BARS; i++)
- 		if (bars & (1 << i))
- 			pci_release_region(pdev, i);
- }
-@@ -3779,7 +3779,7 @@ static int __pci_request_selected_regions(struct pci_dev *pdev, int bars,
- {
- 	int i;
- 
--	for (i = 0; i < 6; i++)
-+	for (i = 0; i < PCI_STD_NUM_BARS; i++)
- 		if (bars & (1 << i))
- 			if (__pci_request_region(pdev, i, res_name, excl))
- 				goto err_out;
-@@ -3827,7 +3827,7 @@ EXPORT_SYMBOL(pci_request_selected_regions_exclusive);
- 
- void pci_release_regions(struct pci_dev *pdev)
- {
--	pci_release_selected_regions(pdev, (1 << 6) - 1);
-+	pci_release_selected_regions(pdev, (1 << PCI_STD_NUM_BARS) - 1);
- }
- EXPORT_SYMBOL(pci_release_regions);
- 
-@@ -3846,7 +3846,8 @@ EXPORT_SYMBOL(pci_release_regions);
-  */
- int pci_request_regions(struct pci_dev *pdev, const char *res_name)
- {
--	return pci_request_selected_regions(pdev, ((1 << 6) - 1), res_name);
-+	return pci_request_selected_regions(pdev,
-+			((1 << PCI_STD_NUM_BARS) - 1), res_name);
- }
- EXPORT_SYMBOL(pci_request_regions);
- 
-@@ -3868,7 +3869,7 @@ EXPORT_SYMBOL(pci_request_regions);
- int pci_request_regions_exclusive(struct pci_dev *pdev, const char *res_name)
- {
- 	return pci_request_selected_regions_exclusive(pdev,
--					((1 << 6) - 1), res_name);
-+				((1 << PCI_STD_NUM_BARS) - 1), res_name);
- }
- EXPORT_SYMBOL(pci_request_regions_exclusive);
- 
-diff --git a/drivers/pci/proc.c b/drivers/pci/proc.c
-index fe7fe678965b..cb61ec2c24e8 100644
---- a/drivers/pci/proc.c
-+++ b/drivers/pci/proc.c
-@@ -248,13 +248,13 @@ static int proc_bus_pci_mmap(struct file *file, struct vm_area_struct *vma)
- 	}
- 
- 	/* Make sure the caller is mapping a real resource for this device */
--	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
-+	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
- 		if (dev->resource[i].flags & res_bit &&
- 		    pci_mmap_fits(dev, i, vma,  PCI_MMAP_PROCFS))
- 			break;
- 	}
- 
--	if (i >= PCI_ROM_RESOURCE)
-+	if (i >= PCI_STD_NUM_BARS)
- 		return -ENODEV;
- 
- 	if (fpriv->mmap_state == pci_mmap_mem &&
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 44c4ae1abd00..998454b0ae8d 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -475,7 +475,7 @@ static void quirk_extend_bar_to_page(struct pci_dev *dev)
- {
- 	int i;
- 
--	for (i = 0; i <= PCI_STD_RESOURCE_END; i++) {
-+	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
- 		struct resource *r = &dev->resource[i];
- 
- 		if (r->flags & IORESOURCE_MEM && resource_size(r) < PAGE_SIZE) {
-@@ -1810,7 +1810,7 @@ static void quirk_alder_ioapic(struct pci_dev *pdev)
- 	 * The next five BARs all seem to be rubbish, so just clean
- 	 * them out.
- 	 */
--	for (i = 1; i < 6; i++)
-+	for (i = 1; i < PCI_STD_NUM_BARS; i++)
- 		memset(&pdev->resource[i], 0, sizeof(pdev->resource[i]));
- }
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL,	PCI_DEVICE_ID_INTEL_EESSC,	quirk_alder_ioapic);
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 82e4cd1b7ac3..cf7d16305243 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -76,7 +76,7 @@ enum pci_mmap_state {
- enum {
- 	/* #0-5: standard PCI resources */
- 	PCI_STD_RESOURCES,
--	PCI_STD_RESOURCE_END = 5,
-+	PCI_STD_RESOURCE_END = PCI_STD_RESOURCES + PCI_STD_NUM_BARS - 1,
- 
- 	/* #6: expansion ROM resource */
- 	PCI_ROM_RESOURCE,
-diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
-index f28e562d7ca8..68b571d491eb 100644
---- a/include/uapi/linux/pci_regs.h
-+++ b/include/uapi/linux/pci_regs.h
-@@ -34,6 +34,7 @@
-  * of which the first 64 bytes are standardized as follows:
-  */
- #define PCI_STD_HEADER_SIZEOF	64
-+#define PCI_STD_NUM_BARS	6	/* Number of standard BARs */
- #define PCI_VENDOR_ID		0x00	/* 16 bits */
- #define PCI_DEVICE_ID		0x02	/* 16 bits */
- #define PCI_COMMAND		0x04	/* 16 bits */
 -- 
-2.21.0
-
+Sincerely yours,
+Mike.
