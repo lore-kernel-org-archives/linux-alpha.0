@@ -1,83 +1,69 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH 14/29] vmlinux.lds.h: Allow EXCEPTION_TABLE to live in
- RO_DATA
-Date: Thu, 10 Oct 2019 17:25:16 +0200
-Message-ID: <20191010152516.GG7658@zn.tnic>
+From: Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH 07/29] x86: Restore "text" Program Header with dummy
+ section
+Date: Thu, 10 Oct 2019 09:46:36 -0700
+Message-ID: <201910100944.92CFB97157@keescook>
 References: <20190926175602.33098-1-keescook@chromium.org>
- <20190926175602.33098-15-keescook@chromium.org>
+ <20190926175602.33098-8-keescook@chromium.org>
+ <20191010103305.GD7658@zn.tnic>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1570721124;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=oFtLtIT92PEjPANVccNt8bv5ZEw6stfT1hPzmyy05AU=;
-        b=XvDnIWbOWnxP5VFZO9ko7ahJhTcRm/Xsrm8HgemYJGsHSBOE6Uta44f3AIYcSZ6OfEGl/a
-        AEH1A9BDC9JA4n3PgugNym5/q4Nt+C+NeHY9F4IhvYggxoRn7C5NPgZWNAKd44J4GzphzU
-        Yg/gusTeVLuPtqp+cJTKXO0tNksVAHs=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ucc2HcE1KFej2LH6JBkm0K2H0dlib4/rpE4E9DkdWnQ=;
+        b=jCH7hVEz9DolIZ1tWTZ2WBzCCWqtC/N1Zw7aqh/YsT1JbgkR+jdLg1c8HFybVnrnDt
+         zDT8Pac3++Knf0BDJnT4AHK6EvCPW0ovTGp9VFWoRwYqDitcprYMafhTNkb/D4GuI+mu
+         p5DqysPLL8vgpaaxV3VItm4rQa6UKBD0JpAMw=
 Content-Disposition: inline
-In-Reply-To: <20190926175602.33098-15-keescook@chromium.org>
+In-Reply-To: <20191010103305.GD7658@zn.tnic>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Kees Cook <keescook@chromium.org>
+To: Borislav Petkov <bp@alien8.de>
 Cc: Thomas Gleixner <tglx@linutronix.de>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, Sep 26, 2019 at 10:55:47AM -0700, Kees Cook wrote:
-> Many architectures have an EXCEPTION_TABLE that needs only to be
-> read-only. As such, it should live in RO_DATA. This creates a macro to
-> identify this case for the architectures that can move EXCEPTION_TABLE
-> into RO_DATA.
+On Thu, Oct 10, 2019 at 12:33:05PM +0200, Borislav Petkov wrote:
+> On Thu, Sep 26, 2019 at 10:55:40AM -0700, Kees Cook wrote:
+> > Instead of depending on markings in the section following NOTES to
+> > restore the associated Program Header, use a dummy section, as done
+> > in other architectures.
 > 
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  include/asm-generic/vmlinux.lds.h | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
+> This is very laconic and after some staring at ld.info, I think you mean
+> this:
 > 
-> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-> index d57a28786bb8..35a6cba39d9f 100644
-> --- a/include/asm-generic/vmlinux.lds.h
-> +++ b/include/asm-generic/vmlinux.lds.h
-> @@ -69,6 +69,17 @@
->  #define NOTES_HEADERS_RESTORE
->  #endif
->  
-> +/*
-> + * Some architectures have non-executable read-only exception tables.
-> + * They can be added to the RO_DATA segment by specifying their desired
-> + * alignment.
-> + */
-> +#ifdef RO_DATA_EXCEPTION_TABLE_ALIGN
-> +#define RO_DATA_EXCEPTION_TABLE	EXCEPTION_TABLE(RO_DATA_EXCEPTION_TABLE_ALIGN)
-> +#else
-> +#define RO_DATA_EXCEPTION_TABLE
-> +#endif
-> +
->  /* Align . to a 8 byte boundary equals to maximum function alignment. */
->  #define ALIGN_FUNCTION()  . = ALIGN(8)
->  
-> @@ -508,6 +519,7 @@
->  		__stop___modver = .;					\
->  	}								\
->  									\
-> +	RO_DATA_EXCEPTION_TABLE						\
->  	NOTES								\
->  									\
->  	. = ALIGN((align));						\
-> -- 
+> "   If you place a section in one or more segments using ':PHDR', then
+> the linker will place all subsequent allocatable sections which do not
+> specify ':PHDR' in the same segments."
+> 
+> but I could be way off. Yes, no?
+> 
+> IOW, please write in the commit messages first what the problem is
+> you're addressing.
 
-I think you can drop the "DATA" from the names as it is kinda clear
-where the exception table lands:
+Yeah, that's much improved. I really struggled to describe this, given
+how weird the linker script logic is here.
 
-RO_EXCEPTION_TABLE_ALIGN
-RO_EXCEPTION_TABLE
+> > --- a/arch/x86/kernel/vmlinux.lds.S
+> > +++ b/arch/x86/kernel/vmlinux.lds.S
+> > @@ -147,8 +147,9 @@ SECTIONS
+> >  	} :text = 0x9090
+> >  
+> >  	NOTES :text :note
+> > +	.dummy : { *(.dummy) } :text
+> >  
+> > -	EXCEPTION_TABLE(16) :text = 0x9090
+> > +	EXCEPTION_TABLE(16)
+> 
+> This is killing the filler byte but I have a suspicion that'll change
+> eventually to INT3... :)
 
-The "read-only" part is the important one.
+Yes, though since the exception table isn't executable, filling with
+0x90 has no meaning, and I think when I looked at the alignment there
+were actually no fill bytes from here on. But it doesn't matter; it all
+goes away in the end.
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Kees Cook
