@@ -1,16 +1,16 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v2 22/29] microblaze: Move EXCEPTION_TABLE to RO_DATA segment
-Date: Thu, 10 Oct 2019 17:06:02 -0700
-Message-ID: <20191011000609.29728-23-keescook@chromium.org>
+Subject: [PATCH v2 21/29] ia64: Move EXCEPTION_TABLE to RO_DATA segment
+Date: Thu, 10 Oct 2019 17:06:01 -0700
+Message-ID: <20191011000609.29728-22-keescook@chromium.org>
 References: <20191011000609.29728-1-keescook@chromium.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=bvYKnL/TaFkIaenIAvKRMlAb1gjfrMgYQ33pk+cyLNw=;
-        b=VJjnLJGIO0uGgKBCPhgyxZ/iGefUMJczEPz55L/NXxQm4X5HtH7Z6IwSEISlxXbPIi
-         0AKWMzRKkEkFoTXpqSQ6so/StMfOF2yJFPqmtCJOuv0Jt6L5qcDOFqlnVgUtBy87cn2m
-         oVq9vePrz89q5V3+gDCK4GhXWqgAgeYpXsYQQ=
+        bh=BONbSwO3yUZE8RnSGxOUsa1O5SfUej1bEo+UUtcRz+8=;
+        b=WAsHYQawMi4SZmZgp8/tZRHbrTyjaN/efP/1ePAdIKhuzenhHAkQSemi72oSFyzy5T
+         BUP8VJmLQCYcSjbNgTQmhLF0rh39giv7Aj/ab5NbcDAnNRa5xqPwvle+ummM9Ru1MTnT
+         6FSY7l03L75U7xLgPLADUTO/JJnoTeuiDWO4o=
 In-Reply-To: <20191011000609.29728-1-keescook@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,30 +24,29 @@ Since the EXCEPTION_TABLE is read-only, collapse it into RO_DATA.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- arch/microblaze/kernel/vmlinux.lds.S | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/ia64/kernel/vmlinux.lds.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/microblaze/kernel/vmlinux.lds.S b/arch/microblaze/kernel/vmlinux.lds.S
-index b8efb08204a1..760cac41cbfe 100644
---- a/arch/microblaze/kernel/vmlinux.lds.S
-+++ b/arch/microblaze/kernel/vmlinux.lds.S
-@@ -11,6 +11,8 @@
- OUTPUT_ARCH(microblaze)
- ENTRY(microblaze_start)
- 
-+#define RO_EXCEPTION_TABLE_ALIGN	16
-+
- #include <asm/page.h>
- #include <asm-generic/vmlinux.lds.h>
+diff --git a/arch/ia64/kernel/vmlinux.lds.S b/arch/ia64/kernel/vmlinux.lds.S
+index 11d5115bc44d..1ec6b703c5b4 100644
+--- a/arch/ia64/kernel/vmlinux.lds.S
++++ b/arch/ia64/kernel/vmlinux.lds.S
+@@ -6,6 +6,7 @@
  #include <asm/thread_info.h>
-@@ -52,7 +54,6 @@ SECTIONS {
  
- 	. = ALIGN(16);
- 	RO_DATA(4096)
+ #define EMITS_PT_NOTE
++#define RO_EXCEPTION_TABLE_ALIGN	16
+ 
+ #include <asm-generic/vmlinux.lds.h>
+ 
+@@ -70,7 +71,6 @@ SECTIONS {
+ 	/*
+ 	 * Read-only data
+ 	 */
 -	EXCEPTION_TABLE(16)
  
- 	/*
- 	 * sdata2 section can go anywhere, but must be word aligned
+ 	/* MCA table */
+ 	. = ALIGN(16);
 -- 
 2.17.1
 
