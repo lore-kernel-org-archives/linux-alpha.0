@@ -1,45 +1,63 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v6] numa: make node_to_cpumask_map() NUMA_NO_NODE aware
-Date: Fri, 11 Oct 2019 13:15:39 +0200
-Message-ID: <20191011111539.GX2311@hirez.programming.kicks-ass.net>
-References: <20190924124325.GQ2349@hirez.programming.kicks-ass.net>
- <20190924125936.GR2349@hirez.programming.kicks-ass.net>
- <20190924131939.GS23050@dhcp22.suse.cz>
- <1adcbe68-6753-3497-48a0-cc84ac503372@huawei.com>
- <20190925104108.GE4553@hirez.programming.kicks-ass.net>
- <47fa4cee-8528-7c23-c7de-7be1b65aa2ae@huawei.com>
- <bec80499-86d9-bf1f-df23-9044a8099992@arm.com>
- <a5f0fc80-8e88-b781-77ce-1213e5d62125@huawei.com>
- <20191010073212.GB18412@dhcp22.suse.cz>
- <6cc94f9b-0d79-93a8-5ec2-4f6c21639268@huawei.com>
+From: Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH v2 02/29] powerpc: Remove PT_NOTE workaround
+Date: Fri, 11 Oct 2019 09:09:22 -0700
+Message-ID: <201910110908.040009F27@keescook>
+References: <20191011000609.29728-1-keescook@chromium.org>
+ <20191011000609.29728-3-keescook@chromium.org>
+ <878sprx1br.fsf@mpe.ellerman.id.au>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=9RB6rkmSiOjXUMDAbYMVz16wPxZvcpZ/Dq4/WoJod1c=; b=IeAKD/zQ6b02r9EEPDnx+6VZ3
-        d6FVQZLjt99AqTm2MYf+gGHIW/+laa5nhQFsKjOeUro3Aho/g4a1qo4Yj8HuaJAHaq5XCfv1N1KgI
-        OImifMtiMWCI2u2oGjfESRY0aooZU19Aj5cvaRPUk6h9yLdnkxrmM3PmqQsWspaw6MgHkJ4CA0+4h
-        6seHBQqyco+2Pgg7Ltlv0K/VyiciyKTb4QX/Hok0aJ+89P4/FqWqmq3gytUZcvr/DCsfXXSwoqdEN
-        3eTaXcTYlgG8FB1d4Nlkl81MyFiJmF9d5l95a2ftQc/l8N9rAWBAQ5xkEy8RE5M/j15sEn3OuUKJ8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rz208JH/bAYgb34feMbXc7rOAmJSapYVvu3TBVmWgf0=;
+        b=k3VEdnK1XLODdhPbFCe/vXjRUrVGk8LtbhfzFlecnP8Kmv9f4bYkCsfO3n/TqN0AdN
+         qBPqcub0N0dKdLHi1OxIweb3/6eczWoee7LuePEuJPxxCrmCNRf0LI9uLqFq5rTIaXHw
+         uP6X5tVwyIUzUKipWUOB9mLE9R+uA81t/qC+c=
 Content-Disposition: inline
-In-Reply-To: <6cc94f9b-0d79-93a8-5ec2-4f6c21639268@huawei.com>
+In-Reply-To: <878sprx1br.fsf@mpe.ellerman.id.au>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Michal Hocko <mhocko@kernel.org>, Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hpa@zytor.com, x86@kernel.org, dave.hansen@linux.intel.com, luto@kernel.org, len.brown@intel.com, 
+To: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Borislav Petkov <bp@alien8.de>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Heiko Carstens <heiko.carstens@de.ibm.com>, Will Deacon <will@kernel.org>, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, linux-kernel@vger.kernel.org, Joel Stanley <joel@jms.id.au>, Segher Boessenkool <segher@kernel.crashing.org>
 
-On Fri, Oct 11, 2019 at 11:27:54AM +0800, Yunsheng Lin wrote:
-> But I failed to see why the above is related to making node_to_cpumask_map()
-> NUMA_NO_NODE aware?
+On Fri, Oct 11, 2019 at 05:07:04PM +1100, Michael Ellerman wrote:
+> Kees Cook <keescook@chromium.org> writes:
+> > In preparation for moving NOTES into RO_DATA, remove the PT_NOTE
+> > workaround since the kernel requires at least gcc 4.6 now.
+> >
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > ---
+> >  arch/powerpc/kernel/vmlinux.lds.S | 24 ++----------------------
+> >  1 file changed, 2 insertions(+), 22 deletions(-)
+> 
+> Acked-by: Michael Ellerman <mpe@ellerman.id.au>
 
-Your initial bug is for hns3, which is a PCI device, which really _MUST_
-have a node assigned.
+Thanks!
 
-It not having one, is a straight up bug. We must not silently accept
-NO_NODE there, ever.
+> For the archives, Joel tried a similar patch a while back which caused
+> some problems, see:
+> 
+>   https://lore.kernel.org/linuxppc-dev/20190321003253.22100-1-joel@jms.id.au/
+> 
+> and a v2:
+> 
+>   https://lore.kernel.org/linuxppc-dev/20190329064453.12761-1-joel@jms.id.au/
+> 
+> This is similar to his v2. The only outstanding comment on his v2 was
+> from Segher:
+>   (And I do not know if there are any tools that expect the notes in a phdr,
+>   or even specifically the second phdr).
+> 
+> But this patch solves that by not changing the note.
+
+Ah yes. Agreed: I'm retaining the note and dropping the workarounds.
+FWIW, this builds happily for me in my tests.
+
+-Kees
+
+-- 
+Kees Cook
