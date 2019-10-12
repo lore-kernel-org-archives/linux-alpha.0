@@ -1,7 +1,7 @@
-From: Greg KH <gregkh@linuxfoundation.org>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 Subject: Re: [PATCH v6] numa: make node_to_cpumask_map() NUMA_NO_NODE aware
-Date: Sat, 12 Oct 2019 09:40:14 +0200
-Message-ID: <20191012074014.GA2037204@kroah.com>
+Date: Sat, 12 Oct 2019 17:47:56 +0800
+Message-ID: <1e1ec851-b5e7-8f35-a627-4c12ca9c2d3c@huawei.com>
 References: <20190924131939.GS23050@dhcp22.suse.cz>
  <1adcbe68-6753-3497-48a0-cc84ac503372@huawei.com>
  <20190925104108.GE4553@hirez.programming.kicks-ass.net>
@@ -12,68 +12,75 @@ References: <20190924131939.GS23050@dhcp22.suse.cz>
  <6cc94f9b-0d79-93a8-5ec2-4f6c21639268@huawei.com>
  <20191011111539.GX2311@hirez.programming.kicks-ass.net>
  <7fad58d6-5126-e8b8-a7d8-a91814da53ba@huawei.com>
+ <20191012074014.GA2037204@kroah.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570866037;
-        bh=ymNNDx8Fo6uelERv6sLz5FrpkUpLXJNH+cXIPy6IgQo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ot8f41TKzj8Uyk3uaJjDgmRmJCCUEX5IwsF6OZJejumM5mBiZmWoPWs0TNXw34Cvm
-         lc0PGWk6jgAwWW+ruUVJqAQEpuG/UBMsvUrDGYEz8PQHRKAzc1Z9YYyro/ls3L8ddT
-         9kwveJ9nnRcV63+0ftQ9noDCsvnzMi6Pp/krJ0jg=
-Content-Disposition: inline
-In-Reply-To: <7fad58d6-5126-e8b8-a7d8-a91814da53ba@huawei.com>
+In-Reply-To: <20191012074014.GA2037204@kroah.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Michal Hocko <mhocko@kernel.org>, Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hpa@zytor.com, x86@kernel.org, dave.hansen@linux.intel.com
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>, Michal Hocko <mhocko@kernel.org>, Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel
 
-On Sat, Oct 12, 2019 at 02:17:26PM +0800, Yunsheng Lin wrote:
-> add pci and acpi maintainer
-> cc linux-pci@vger.kernel.org and linux-acpi@vger.kernel.org
+On 2019/10/12 15:40, Greg KH wrote:
+> On Sat, Oct 12, 2019 at 02:17:26PM +0800, Yunsheng Lin wrote:
+>> add pci and acpi maintainer
+>> cc linux-pci@vger.kernel.org and linux-acpi@vger.kernel.org
+>>
+>> On 2019/10/11 19:15, Peter Zijlstra wrote:
+>>> On Fri, Oct 11, 2019 at 11:27:54AM +0800, Yunsheng Lin wrote:
+>>>> But I failed to see why the above is related to making node_to_cpumask_map()
+>>>> NUMA_NO_NODE aware?
+>>>
+>>> Your initial bug is for hns3, which is a PCI device, which really _MUST_
+>>> have a node assigned.
+>>>
+>>> It not having one, is a straight up bug. We must not silently accept
+>>> NO_NODE there, ever.
+>>>
+>>
+>> I suppose you mean reporting a lack of affinity when the node of a pcie
+>> device is not set by "not silently accept NO_NODE".
 > 
-> On 2019/10/11 19:15, Peter Zijlstra wrote:
-> > On Fri, Oct 11, 2019 at 11:27:54AM +0800, Yunsheng Lin wrote:
-> >> But I failed to see why the above is related to making node_to_cpumask_map()
-> >> NUMA_NO_NODE aware?
-> > 
-> > Your initial bug is for hns3, which is a PCI device, which really _MUST_
-> > have a node assigned.
-> > 
-> > It not having one, is a straight up bug. We must not silently accept
-> > NO_NODE there, ever.
-> > 
+> If the firmware of a pci device does not provide the node information,
+> then yes, warn about that.
 > 
-> I suppose you mean reporting a lack of affinity when the node of a pcie
-> device is not set by "not silently accept NO_NODE".
-
-If the firmware of a pci device does not provide the node information,
-then yes, warn about that.
-
-> As Greg has asked about in [1]:
-> what is a user to do when the user sees the kernel reporting that?
+>> As Greg has asked about in [1]:
+>> what is a user to do when the user sees the kernel reporting that?
+>>
+>> We may tell user to contact their vendor for info or updates about
+>> that when they do not know about their system well enough, but their
+>> vendor may get away with this by quoting ACPI spec as the spec
+>> considering this optional. Should the user believe this is indeed a
+>> fw bug or a misreport from the kernel?
 > 
-> We may tell user to contact their vendor for info or updates about
-> that when they do not know about their system well enough, but their
-> vendor may get away with this by quoting ACPI spec as the spec
-> considering this optional. Should the user believe this is indeed a
-> fw bug or a misreport from the kernel?
+> Say it is a firmware bug, if it is a firmware bug, that's simple.
+> 
+>> If this kind of reporting is common pratice and will not cause any
+>> misunderstanding, then maybe we can report that.
+> 
+> Yes, please do so, that's the only way those boxes are ever going to get
+> fixed.  And go add the test to the "firmware testing" tool that is based
+> on Linux that Intel has somewhere, to give vendors a chance to fix this
+> before they ship hardware.
+> 
+> This shouldn't be a big deal, we warn of other hardware bugs all the
+> time.
 
-Say it is a firmware bug, if it is a firmware bug, that's simple.
+Ok, thanks for clarifying.
 
-> If this kind of reporting is common pratice and will not cause any
-> misunderstanding, then maybe we can report that.
+Will send a patch to catch the case when a pcie device without numa node
+being set and warn about it.
 
-Yes, please do so, that's the only way those boxes are ever going to get
-fixed.  And go add the test to the "firmware testing" tool that is based
-on Linux that Intel has somewhere, to give vendors a chance to fix this
-before they ship hardware.
+Maybe use dev->bus to verify if it is a pci device?
 
-This shouldn't be a big deal, we warn of other hardware bugs all the
-time.
+> 
+> thanks,
+> 
+> greg k-h
+> 
+> .
+> 
 
-thanks,
-
-greg k-h
