@@ -1,71 +1,146 @@
-From: Segher Boessenkool <segher@kernel.crashing.org>
-Subject: Re: [PATCH v2 01/29] powerpc: Rename "notes" PT_NOTE to "note"
-Date: Fri, 11 Oct 2019 11:25:52 -0500
-Message-ID: <20191011162552.GK9749@gate.crashing.org>
-References: <20191011000609.29728-1-keescook@chromium.org>
- <20191011000609.29728-2-keescook@chromium.org>
- <20191011082519.GI9749@gate.crashing.org> <201910110910.48270FC97@keescook>
+From: Aleksa Sarai <cyphar@cyphar.com>
+Subject: Re: [PATCH v14 2/6] namei: LOOKUP_IN_ROOT: chroot-like path
+ resolution
+Date: Sat, 12 Oct 2019 15:08:15 +1100
+Message-ID: <20191012040815.gnc43cfmo5mnv67u@yavin.dot.cyphar.com>
+References: <20191010054140.8483-1-cyphar@cyphar.com>
+ <20191010054140.8483-3-cyphar@cyphar.com>
+ <CAHk-=wh8L50f31vW8BwRUXhLiq3eoCQ3tg8ER4Yp2dzuU1w5rQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:Mime-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=r4RKYftH7rY3bK/9SWnLWc4c+k/JM1cewvK+WvL2bSo=; b=fWLusbc/iPKwxn
-	guQ3AfYaluvQCdj9rT4UQWQ0ei4kXqza/l2/JSrMaN5EzCZjcydIaJY0qHWZC3HTpjGJIhaXfZ6oC
-	QNiQ6aD56XrMHMi/b/RWnwmRKlKpaQ0RJWH7vToruy1M78ZUUp3RdwAKAY3icw5xrmPQ5ZEPwwRCu
-	rV4PCvoTqaKH0KgoAs+orN4gjQ987YYTVI/zgQjkSWZWTnzx5xSCamd8uzn7sYcKgx1wXP+LDl5z6
-	85AtHHgXq1dgvSL57ZkHxe1yD39SyNpJCWyhC0+HVijrAkXBRlp8jq944qKaizCxU7UZltjLvaRMV
-	HvweHBbYVkFHkhfUpUkA==;
-Content-Disposition: inline
-In-Reply-To: <201910110910.48270FC97@keescook>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="t2fxesclfr677pzw"
+Return-path: <libc-alpha-return-105904-glibc-alpha=m.gmane.org@sourceware.org>
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=sourceware.org; h=list-id
+	:list-unsubscribe:list-subscribe:list-archive:list-post
+	:list-help:sender:date:from:to:cc:subject:message-id:references
+	:mime-version:content-type:in-reply-to; s=default; bh=+iqhAVUVl7
+	oDgjM1jzaaxO+lI2s=; b=cGbEJdkVWUsGQzmFTi+thLYoA+pfgXKQv1MgGB9jHx
+	Jrkdmn0p8ZJy3NehPjKMQEzMggQD23PuB3PTfvK+MZ5PJMc2f315lGzEjNwE9c5b
+	vSb2P7TxOpLwrma/5iELhE94yce4JLzmj6IHQZYYuH8IxdjB2OlsU3vorT1AxZ80
+	8=
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Kees Cook <keescook@chromium.org>
-Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, Dave Hansen <dave.hansen@linux.intel.com>, linux-ia64@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Arnd Bergmann <arnd@arndb.de>, linux-xtensa@linux-xtensa.org, Will Deacon <will@kernel.org>, x86@kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>, linux-parisc@vger.kernel.org, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
-
-On Fri, Oct 11, 2019 at 09:11:43AM -0700, Kees Cook wrote:
-> On Fri, Oct 11, 2019 at 03:25:19AM -0500, Segher Boessenkool wrote:
-> > On Thu, Oct 10, 2019 at 05:05:41PM -0700, Kees Cook wrote:
-> > > The Program Header identifiers are internal to the linker scripts. In
-> > > preparation for moving the NOTES segment declaration into RO_DATA,
-> > > standardize the identifier for the PT_NOTE entry to "note" as used by
-> > > all other architectures that emit PT_NOTE.
-> > 
-> > All other archs are wrong, and "notes" is a much better name.  This
-> > segment does not contain a single "note", but multiple "notes".
-> 
-> True, but the naming appears to be based off the Program Header name of
-> "PT_NOTE".
-
-Ah, so that's why the kernel segment (which isn't text btw, it's rwx) is
-called "load" :-P
-
-(Not convinced.  Some arch just got it wrong, and many others blindly
-copied it?  That sounds a lot more likely imo.)
-
-> Regardless, it is an entirely internal-to-the-linker-script
-> identifier, so I am just consolidating on a common name with the least
-> number of collateral changes.
-
-Yes, that's what I'm complaining about.
-
-Names *matter*, internal names doubly so.  So why replace a good name with
-a worse name?  Because it is slightly less work for you?
+List-Unsubscribe: <mailto:libc-alpha-unsubscribe-glibc-alpha=m.gmane.org@sourceware.org>
+List-Subscribe: <mailto:libc-alpha-subscribe@sourceware.org>
+List-Archive: <http://sourceware.org/ml/libc-alpha/>
+List-Post: <mailto:libc-alpha@sourceware.org>
+List-Help: <mailto:libc-alpha-help@sourceware.org>, <http://sourceware.org/ml/#faqs>
+Sender: libc-alpha-owner@sourceware.org
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wh8L50f31vW8BwRUXhLiq3eoCQ3tg8ER4Yp2dzuU1w5rQ@mail.gmail.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Al Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Eric Biederman <ebiederm@xmission.com>, Andy Lutomirski <luto@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>, David Drysdale <drysdale@google.com>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>, Christian Brauner <christian@bra>
 
 
-Segher
+--t2fxesclfr677pzw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-p.s. Thanks for doing this, removing the powerpc workaround etc. :-)
+On 2019-10-10, Linus Torvalds <torvalds@linux-foundation.org> wrote:
+> On Wed, Oct 9, 2019 at 10:42 PM Aleksa Sarai <cyphar@cyphar.com> wrote:
+> >
+> > --- a/fs/namei.c
+> > +++ b/fs/namei.c
+> > @@ -2277,6 +2277,11 @@ static const char *path_init(struct nameidata *n=
+d, unsigned flags)
+> >
+> >         nd->m_seq =3D read_seqbegin(&mount_lock);
+> >
+> > +       /* LOOKUP_IN_ROOT treats absolute paths as being relative-to-di=
+rfd. */
+> > +       if (flags & LOOKUP_IN_ROOT)
+> > +               while (*s =3D=3D '/')
+> > +                       s++;
+> > +
+> >         /* Figure out the starting path and root (if needed). */
+> >         if (*s =3D=3D '/') {
+> >                 error =3D nd_jump_root(nd);
+>=20
+> Hmm. Wouldn't this make more sense all inside the if (*s =3D- '/') test?
+> That way if would be where we check for "should we start at the root",
+> which seems to make more sense conceptually.
+
+I don't really agree (though I do think that both options are pretty
+ugly). Doing it before the block makes it clear that absolute paths are
+just treated relative-to-dirfd -- doing it inside the block makes it
+look more like "/" is a special-case for nd_jump_root(). And while that
+is somewhat true, this is just a side-effect of making the code more
+clean -- my earlier versions reworked the dirfd handling to always grab
+nd->root first if LOOKUP_IS_SCOPED. I switched to this method based on
+Al's review.
+
+In fairness, I do agree that the lonely while loop looks ugly.
+
+> That test for '/' currently has a "} else if (..)", but that's
+> pointless since it ends with a "return" anyway. So the "else" logic is
+> just noise.
+
+This depends on the fact that LOOKUP_BENEATH always triggers -EXDEV for
+nd_jump_root() -- if we ever add another "scoped lookup" flag then the
+logic will have to be further reworked.
+
+(It should be noted that the new version doesn't always end with a
+"return", but you could change it to act that way given the above
+assumption.)
+
+> And if you get rid of the unnecessary else, moving the LOOKUP_IN_ROOT
+> inside the if-statement works fine.
+>=20
+> So this could be something like
+>=20
+>     --- a/fs/namei.c
+>     +++ b/fs/namei.c
+>     @@ -2194,11 +2196,19 @@ static const char *path_init(struct
+> nameidata *nd, unsigned flags)
+>=20
+>         nd->m_seq =3D read_seqbegin(&mount_lock);
+>         if (*s =3D=3D '/') {
+>     -           set_root(nd);
+>     -           if (likely(!nd_jump_root(nd)))
+>     -                   return s;
+>     -           return ERR_PTR(-ECHILD);
+>     -   } else if (nd->dfd =3D=3D AT_FDCWD) {
+>     +           /* LOOKUP_IN_ROOT treats absolute paths as being
+> relative-to-dirfd. */
+>     +           if (!(flags & LOOKUP_IN_ROOT)) {
+>     +                   set_root(nd);
+>     +                   if (likely(!nd_jump_root(nd)))
+>     +                           return s;
+>     +                   return ERR_PTR(-ECHILD);
+>     +           }
+>     +
+>     +           /* Skip initial '/' for LOOKUP_IN_ROOT */
+>     +           do { s++; } while (*s =3D=3D '/');
+>     +   }
+>     +
+>     +   if (nd->dfd =3D=3D AT_FDCWD) {
+>                 if (flags & LOOKUP_RCU) {
+>                         struct fs_struct *fs =3D current->fs;
+>                         unsigned seq;
+>=20
+> instead. The patch ends up slightly bigger (due to the re-indentation)
+> but now it handles all the "start at root" in the same place. Doesn't
+> that make sense?
+
+It is correct (though I'd need to clean it up a bit to handle
+nd_jump_root() correctly), and if you really would like me to change it
+I will -- but I just don't agree that it's cleaner.
+
+--=20
+Aleksa Sarai
+Senior Software Engineer (Containers)
+SUSE Linux GmbH
+<https://www.cyphar.com/>
+
+--t2fxesclfr677pzw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXaFRqQAKCRCdlLljIbnQ
+El00AQDKyu1GNvL91tAxvDZP/2rrqVrUf7Ad1T8uobD+aKQbgwEAvz9eeuLveRVq
+aqnd3Ifu8HO4SYcqYn+hDFgDz5D5Kwo=
+=XXCi
+-----END PGP SIGNATURE-----
+
+--t2fxesclfr677pzw--
