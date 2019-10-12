@@ -1,156 +1,61 @@
-From: Aleksa Sarai <cyphar@cyphar.com>
-Subject: Re: [PATCH v14 2/6] namei: LOOKUP_IN_ROOT: chroot-like path
- resolution
-Date: Sat, 12 Oct 2019 15:15:41 +1100
-Message-ID: <20191012041541.milbmfbjpj5bcl5a@yavin.dot.cyphar.com>
-References: <20191010054140.8483-1-cyphar@cyphar.com>
- <20191010054140.8483-3-cyphar@cyphar.com>
- <CAHk-=wh8L50f31vW8BwRUXhLiq3eoCQ3tg8ER4Yp2dzuU1w5rQ@mail.gmail.com>
- <20191012040815.gnc43cfmo5mnv67u@yavin.dot.cyphar.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Subject: Re: [PATCH v6] numa: make node_to_cpumask_map() NUMA_NO_NODE aware
+Date: Sat, 12 Oct 2019 14:17:26 +0800
+Message-ID: <7fad58d6-5126-e8b8-a7d8-a91814da53ba@huawei.com>
+References: <20190924124325.GQ2349@hirez.programming.kicks-ass.net>
+ <20190924125936.GR2349@hirez.programming.kicks-ass.net>
+ <20190924131939.GS23050@dhcp22.suse.cz>
+ <1adcbe68-6753-3497-48a0-cc84ac503372@huawei.com>
+ <20190925104108.GE4553@hirez.programming.kicks-ass.net>
+ <47fa4cee-8528-7c23-c7de-7be1b65aa2ae@huawei.com>
+ <bec80499-86d9-bf1f-df23-9044a8099992@arm.com>
+ <a5f0fc80-8e88-b781-77ce-1213e5d62125@huawei.com>
+ <20191010073212.GB18412@dhcp22.suse.cz>
+ <6cc94f9b-0d79-93a8-5ec2-4f6c21639268@huawei.com>
+ <20191011111539.GX2311@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="2tj3n7ljtot3r57d"
-Return-path: <libc-alpha-return-105905-glibc-alpha=m.gmane.org@sourceware.org>
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=sourceware.org; h=list-id
-	:list-unsubscribe:list-subscribe:list-archive:list-post
-	:list-help:sender:date:from:to:cc:subject:message-id:references
-	:mime-version:content-type:in-reply-to; s=default; bh=V67JKcgw1f
-	HkuWtOmmWmo09Gq/E=; b=fQHne+B70IQxOlLHf2IEirqS/ufYBavIajK/+TOrUa
-	/HR7Utm2A+BLiwdlbkgcudQ9MDuna6CmM0GkF46LUIaBRTOF1TIbuSr3co1wdmC1
-	hbS9VQV1clJ6FbABjkb/Cw271jP86xjyQPbRrtvX0VmHVKweHtf/Az00YVLAzV0E
-	g=
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <mailto:libc-alpha-unsubscribe-glibc-alpha=m.gmane.org@sourceware.org>
-List-Subscribe: <mailto:libc-alpha-subscribe@sourceware.org>
-List-Archive: <http://sourceware.org/ml/libc-alpha/>
-List-Post: <mailto:libc-alpha@sourceware.org>
-List-Help: <mailto:libc-alpha-help@sourceware.org>, <http://sourceware.org/ml/#faqs>
-Sender: libc-alpha-owner@sourceware.org
-Content-Disposition: inline
-In-Reply-To: <20191012040815.gnc43cfmo5mnv67u@yavin.dot.cyphar.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Al Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Eric Biederman <ebiederm@xmission.com>, Andy Lutomirski <luto@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>, David Drysdale <drysdale@google.com>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>, Christian Brauner <christian@bra>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191011111539.GX2311@hirez.programming.kicks-ass.net>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Michal Hocko <mhocko@kernel.org>, Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hpa@zytor.com, x86@kernel.org
 
+add pci and acpi maintainer
+cc linux-pci@vger.kernel.org and linux-acpi@vger.kernel.org
 
---2tj3n7ljtot3r57d
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 2019/10/11 19:15, Peter Zijlstra wrote:
+> On Fri, Oct 11, 2019 at 11:27:54AM +0800, Yunsheng Lin wrote:
+>> But I failed to see why the above is related to making node_to_cpumask_map()
+>> NUMA_NO_NODE aware?
+> 
+> Your initial bug is for hns3, which is a PCI device, which really _MUST_
+> have a node assigned.
+> 
+> It not having one, is a straight up bug. We must not silently accept
+> NO_NODE there, ever.
+> 
 
-On 2019-10-12, Aleksa Sarai <cyphar@cyphar.com> wrote:
-> On 2019-10-10, Linus Torvalds <torvalds@linux-foundation.org> wrote:
-> > On Wed, Oct 9, 2019 at 10:42 PM Aleksa Sarai <cyphar@cyphar.com> wrote:
-> > >
-> > > --- a/fs/namei.c
-> > > +++ b/fs/namei.c
-> > > @@ -2277,6 +2277,11 @@ static const char *path_init(struct nameidata =
-*nd, unsigned flags)
-> > >
-> > >         nd->m_seq =3D read_seqbegin(&mount_lock);
-> > >
-> > > +       /* LOOKUP_IN_ROOT treats absolute paths as being relative-to-=
-dirfd. */
-> > > +       if (flags & LOOKUP_IN_ROOT)
-> > > +               while (*s =3D=3D '/')
-> > > +                       s++;
-> > > +
-> > >         /* Figure out the starting path and root (if needed). */
-> > >         if (*s =3D=3D '/') {
-> > >                 error =3D nd_jump_root(nd);
-> >=20
-> > Hmm. Wouldn't this make more sense all inside the if (*s =3D- '/') test?
-> > That way if would be where we check for "should we start at the root",
-> > which seems to make more sense conceptually.
->=20
-> I don't really agree (though I do think that both options are pretty
-> ugly). Doing it before the block makes it clear that absolute paths are
-> just treated relative-to-dirfd -- doing it inside the block makes it
-> look more like "/" is a special-case for nd_jump_root(). And while that
+I suppose you mean reporting a lack of affinity when the node of a pcie
+device is not set by "not silently accept NO_NODE".
 
-Sorry, I meant "special-case for LOOKUP_IN_ROOT".
+As Greg has asked about in [1]:
+what is a user to do when the user sees the kernel reporting that?
 
-> is somewhat true, this is just a side-effect of making the code more
-> clean -- my earlier versions reworked the dirfd handling to always grab
-> nd->root first if LOOKUP_IS_SCOPED. I switched to this method based on
-> Al's review.
->=20
-> In fairness, I do agree that the lonely while loop looks ugly.
+We may tell user to contact their vendor for info or updates about
+that when they do not know about their system well enough, but their
+vendor may get away with this by quoting ACPI spec as the spec
+considering this optional. Should the user believe this is indeed a
+fw bug or a misreport from the kernel?
 
-And with the old way I did it (where we grabbed nd->root first) the
-semantics were slightly more clear -- stripping leading "/"s doesn't
-really look as "clearly obvious" as grabbing nd->root beforehand and
-treating "/"s normally. But the code was also needlessly more complex.
+If this kind of reporting is common pratice and will not cause any
+misunderstanding, then maybe we can report that.
 
-> > That test for '/' currently has a "} else if (..)", but that's
-> > pointless since it ends with a "return" anyway. So the "else" logic is
-> > just noise.
->=20
-> This depends on the fact that LOOKUP_BENEATH always triggers -EXDEV for
-> nd_jump_root() -- if we ever add another "scoped lookup" flag then the
-> logic will have to be further reworked.
->=20
-> (It should be noted that the new version doesn't always end with a
-> "return", but you could change it to act that way given the above
-> assumption.)
->=20
-> > And if you get rid of the unnecessary else, moving the LOOKUP_IN_ROOT
-> > inside the if-statement works fine.
-> >=20
-> > So this could be something like
-> >=20
-> >     --- a/fs/namei.c
-> >     +++ b/fs/namei.c
-> >     @@ -2194,11 +2196,19 @@ static const char *path_init(struct
-> > nameidata *nd, unsigned flags)
-> >=20
-> >         nd->m_seq =3D read_seqbegin(&mount_lock);
-> >         if (*s =3D=3D '/') {
-> >     -           set_root(nd);
-> >     -           if (likely(!nd_jump_root(nd)))
-> >     -                   return s;
-> >     -           return ERR_PTR(-ECHILD);
-> >     -   } else if (nd->dfd =3D=3D AT_FDCWD) {
-> >     +           /* LOOKUP_IN_ROOT treats absolute paths as being
-> > relative-to-dirfd. */
-> >     +           if (!(flags & LOOKUP_IN_ROOT)) {
-> >     +                   set_root(nd);
-> >     +                   if (likely(!nd_jump_root(nd)))
-> >     +                           return s;
-> >     +                   return ERR_PTR(-ECHILD);
-> >     +           }
-> >     +
-> >     +           /* Skip initial '/' for LOOKUP_IN_ROOT */
-> >     +           do { s++; } while (*s =3D=3D '/');
-> >     +   }
-> >     +
-> >     +   if (nd->dfd =3D=3D AT_FDCWD) {
-> >                 if (flags & LOOKUP_RCU) {
-> >                         struct fs_struct *fs =3D current->fs;
-> >                         unsigned seq;
-> >=20
-> > instead. The patch ends up slightly bigger (due to the re-indentation)
-> > but now it handles all the "start at root" in the same place. Doesn't
-> > that make sense?
->=20
-> It is correct (though I'd need to clean it up a bit to handle
-> nd_jump_root() correctly), and if you really would like me to change it
-> I will -- but I just don't agree that it's cleaner.
+[1] https://lore.kernel.org/lkml/20190905055727.GB23826@kroah.com/
 
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
+> .
+> 
 
---2tj3n7ljtot3r57d
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXaFTZwAKCRCdlLljIbnQ
-EsoyAQDTzuZiYFf1pW7tBymiBU+fSwe8/adLefrS9DH9oll0LQD+M2OnaEH8wDH5
-iC8HumWtmk7eUf1CcqNfwVk4mwQXYwU=
-=dEoe
------END PGP SIGNATURE-----
-
---2tj3n7ljtot3r57d--
