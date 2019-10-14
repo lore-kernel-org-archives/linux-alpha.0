@@ -1,110 +1,59 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v6] numa: make node_to_cpumask_map() NUMA_NO_NODE aware
-Date: Sat, 12 Oct 2019 12:47:42 +0200
-Message-ID: <20191012104742.GA2053473@kroah.com>
-References: <47fa4cee-8528-7c23-c7de-7be1b65aa2ae@huawei.com>
- <bec80499-86d9-bf1f-df23-9044a8099992@arm.com>
- <a5f0fc80-8e88-b781-77ce-1213e5d62125@huawei.com>
- <20191010073212.GB18412@dhcp22.suse.cz>
- <6cc94f9b-0d79-93a8-5ec2-4f6c21639268@huawei.com>
- <20191011111539.GX2311@hirez.programming.kicks-ass.net>
- <7fad58d6-5126-e8b8-a7d8-a91814da53ba@huawei.com>
- <20191012074014.GA2037204@kroah.com>
- <1e1ec851-b5e7-8f35-a627-4c12ca9c2d3c@huawei.com>
- <20191012104001.GA2052933@kroah.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
+Subject: Re: [PATCH v2 25/29] xtensa: Move EXCEPTION_TABLE to RO_DATA segment
+Date: Mon, 14 Oct 2019 00:41:06 -0700
+Message-ID: <CAMo8BfKexMmMusB3XOeaMOZHdU4ccz+PMGA=Jy+KQhgD8H_8UQ@mail.gmail.com>
+References: <20191011000609.29728-1-keescook@chromium.org>
+ <20191011000609.29728-26-keescook@chromium.org>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570877267;
-        bh=c1ahRCPb4Eo+9z/r2VokBGFXTe+DDzN1spGLnNmcLik=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yCP0s70dm1a55ecw9eCB0kcOKHGZqhZ+WokkyJBArIGz+oL53TYWVDiYP6qr72P9d
-         DYVW5h/6uwq8dLk9/zG4G+s8x3b/mIqsk1QD69yidkRhK7xT9r3UGzGwwtGgPybQIy
-         8FjMPdh2pmPJ5NZFY0000d1ctzTP+vO6DUdIklX8=
-Content-Disposition: inline
-In-Reply-To: <20191012104001.GA2052933@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Michal Hocko <mhocko@kernel.org>, Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hpa@zytor.com, x86@kernel.org, dave.hansen@linux.intel.com
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=aXyiD03G4f+T1yZCEI8iN0bp3eZ6jP8QSHvnlOrDtHk=; b=mfLSp5t0iIa5Xk
+	4pjWTI37SWVq+i6j9YOg7sindu05ChhuqRWEQr6Lo2DkroqxMU6VAG4QDN2DYdV9pFQtDFFW/+zc2
+	nbq6mkyr2CCwB6Hm/AWQizSLbXRRFToV55CMVb0VDvVdPJ1LT8T+BlgqAUM7BpZ6eA1GrrUxXNrF2
+	yrYrUO12L7xT6encnXHKHv/nBwitMej2GHmhMFthGgZJ2nEzzBr31hXUGvaf+OagRJQ0meE81OhDd
+	8OlIpxgltoPpurtRd1sktX4n4InpaFZ1CIPd1PP5rixovJ/9jkf0bnoOVG5FRrbBm3j5Jttpi4dGQ
+	N0Qg+QP88y1tZlIvuing==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=sEN7o3yuO56xvPDuUwKgUiAGNAgWvdh9IYFyMwir9eg=;
+ b=ULg0x+kVwo2eT+iIl7xEqgOGbAzw68nEs+Tf1EX6WbkwD6JZiL1PJq9RZFvkDJEthU
+ ocfdC+Pu3HU8yKboyYft824CwBNxjIEzx8zyCCvt9khKX2P3rnlv1B/RrEDuwgE/1mG/
+ dO9bqvuIwHg7kYFJ6cR8Rxh98z5xxnACgBkXR6UU0aSIjsvAx7CLSTrvS1W1Yc6B2hbM
+ xVKkvAsHm4h5LvwOcL7O3xZNwPSbX/1EH8Ha7BFbRmH59L7FLoc17rAHr/p/fi2/0aQd
+ XhR8EuPvAa5rR0cGHGbuZEBAsY6jzipW6b/VsB7pAItTeOGbyHWLGnGRGwAir0skqH6K
+ QqgA==
+In-Reply-To: <20191011000609.29728-26-keescook@chromium.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Kees Cook <keescook@chromium.org>
+Cc: Linux-Arch <linux-arch@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, Michal Simek <monstr@monstr.eu>, "maintainer:X86 ARCHITECTURE..." <x86@kernel.org>, "open list:IA64 (Itanium) PL..." <linux-ia64@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, Arnd Bergmann <arnd@arndb.de>, "open list:TENSILICA XTENSA PORT (xtensa)" <linux-xtensa@linux-xtensa.org>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linuxppc-dev@lists.ozlabs.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Borislav Petkov <bp@alien8.de>, "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>, Andy Lutomirski <luto@kernel.org>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-ke
 
-On Sat, Oct 12, 2019 at 12:40:01PM +0200, Greg KH wrote:
-> On Sat, Oct 12, 2019 at 05:47:56PM +0800, Yunsheng Lin wrote:
-> > On 2019/10/12 15:40, Greg KH wrote:
-> > > On Sat, Oct 12, 2019 at 02:17:26PM +0800, Yunsheng Lin wrote:
-> > >> add pci and acpi maintainer
-> > >> cc linux-pci@vger.kernel.org and linux-acpi@vger.kernel.org
-> > >>
-> > >> On 2019/10/11 19:15, Peter Zijlstra wrote:
-> > >>> On Fri, Oct 11, 2019 at 11:27:54AM +0800, Yunsheng Lin wrote:
-> > >>>> But I failed to see why the above is related to making node_to_cpumask_map()
-> > >>>> NUMA_NO_NODE aware?
-> > >>>
-> > >>> Your initial bug is for hns3, which is a PCI device, which really _MUST_
-> > >>> have a node assigned.
-> > >>>
-> > >>> It not having one, is a straight up bug. We must not silently accept
-> > >>> NO_NODE there, ever.
-> > >>>
-> > >>
-> > >> I suppose you mean reporting a lack of affinity when the node of a pcie
-> > >> device is not set by "not silently accept NO_NODE".
-> > > 
-> > > If the firmware of a pci device does not provide the node information,
-> > > then yes, warn about that.
-> > > 
-> > >> As Greg has asked about in [1]:
-> > >> what is a user to do when the user sees the kernel reporting that?
-> > >>
-> > >> We may tell user to contact their vendor for info or updates about
-> > >> that when they do not know about their system well enough, but their
-> > >> vendor may get away with this by quoting ACPI spec as the spec
-> > >> considering this optional. Should the user believe this is indeed a
-> > >> fw bug or a misreport from the kernel?
-> > > 
-> > > Say it is a firmware bug, if it is a firmware bug, that's simple.
-> > > 
-> > >> If this kind of reporting is common pratice and will not cause any
-> > >> misunderstanding, then maybe we can report that.
-> > > 
-> > > Yes, please do so, that's the only way those boxes are ever going to get
-> > > fixed.  And go add the test to the "firmware testing" tool that is based
-> > > on Linux that Intel has somewhere, to give vendors a chance to fix this
-> > > before they ship hardware.
-> > > 
-> > > This shouldn't be a big deal, we warn of other hardware bugs all the
-> > > time.
-> > 
-> > Ok, thanks for clarifying.
-> > 
-> > Will send a patch to catch the case when a pcie device without numa node
-> > being set and warn about it.
-> > 
-> > Maybe use dev->bus to verify if it is a pci device?
-> 
-> No, do that in the pci bus core code itself, when creating the devices
-> as that is when you know, or do not know, the numa node, right?
-> 
-> This can't be in the driver core only, as each bus type will have a
-> different way of determining what the node the device is on.  For some
-> reason, I thought the PCI core code already does this, right?
+On Thu, Oct 10, 2019 at 5:16 PM Kees Cook <keescook@chromium.org> wrote:
+>
+> Since the EXCEPTION_TABLE is read-only, collapse it into RO_DATA.
+>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  arch/xtensa/kernel/vmlinux.lds.S | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Yes, pci_irq_get_node(), which NO ONE CALLS!  I should go delete that
-thing...
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
 
-Anyway, it looks like the pci core code does call set_dev_node() based
-on the PCI bridge, so if that is set up properly, all should be fine.
-
-If not, well, you have buggy firmware and you need to warn about that at
-the time you are creating the bridge.  Look at the call to
-pcibus_to_node() in pci_register_host_bridge().
-
-And yes, you need to do this all on a per-bus-type basis, as has been
-pointed out.  It's up to the bus to create the device and set this up
-properly.
-
-thanks,
-
-greg k-h
+-- 
+Thanks.
+-- Max
