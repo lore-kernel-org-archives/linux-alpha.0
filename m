@@ -1,45 +1,53 @@
-From: Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH v2 01/29] powerpc: Rename "notes" PT_NOTE to "note"
-Date: Tue, 15 Oct 2019 10:36:21 -0700
-Message-ID: <201910151034.A21FDCA32@keescook>
+From: Heiko Carstens <heiko.carstens@de.ibm.com>
+Subject: Re: [PATCH v2 06/29] s390: Move RO_DATA into "text" PT_LOAD Program
+ Header
+Date: Wed, 16 Oct 2019 10:25:16 +0200
+Message-ID: <20191016082516.GB4267@osiris>
 References: <20191011000609.29728-1-keescook@chromium.org>
- <20191011000609.29728-2-keescook@chromium.org>
- <20191011082519.GI9749@gate.crashing.org>
- <201910110910.48270FC97@keescook>
- <20191011162552.GK9749@gate.crashing.org>
- <20191015165412.GD596@zn.tnic>
+ <20191011000609.29728-7-keescook@chromium.org>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m+oSkq2BGDVnMXCTCZOGBY+AVAcaQgizlBaC3TfYgbk=;
-        b=JV+TKEsIejeoGguft/smdhcOhD8TznOS3FDgaThCNzjFd/zO9Gf+USti5K/cmcvGGL
-         VL+DN5u7ePo4IWynJI4kZyUxYCOiGUo31kRO4IGsw0RDA7MEE9P0Lx+Gh5T4vmOLDPmO
-         nAWj+aCJO3XdoGRVZfY2JbnQgqczJYP20lPBE=
 Content-Disposition: inline
-In-Reply-To: <20191015165412.GD596@zn.tnic>
+In-Reply-To: <20191011000609.29728-7-keescook@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Borislav Petkov <bp@alien8.de>
-Cc: Segher Boessenkool <segher@kernel.crashing.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, x86@kernel.org, linux-ia64@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-xtensa@linux-xtensa.org, Dave Hansen <dave.hansen@linux.intel.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linuxppc-dev@lists.ozlabs.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-parisc@vger.kernel.org, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
+To: Kees Cook <keescook@chromium.org>
+Cc: Borislav Petkov <bp@alien8.de>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Will Deacon <will@kernel.org>, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, linux-kernel@vger.kernel.org
 
-On Tue, Oct 15, 2019 at 06:54:13PM +0200, Borislav Petkov wrote:
-> On Fri, Oct 11, 2019 at 11:25:52AM -0500, Segher Boessenkool wrote:
-> > Names *matter*, internal names doubly so.  So why replace a good name with
-> > a worse name?  Because it is slightly less work for you?
+On Thu, Oct 10, 2019 at 05:05:46PM -0700, Kees Cook wrote:
+> In preparation for moving NOTES into RO_DATA, move RO_DATA back into the
+> "text" PT_LOAD Program Header, as done with other architectures. The
+> "data" PT_LOAD now starts with the writable data section.
 > 
-> So if we agree on the name "notes" and we decide to rename the other
-> arches, this should all be done in a separate patchset anyway, and ontop
-> of this one. And I believe Kees wouldn't mind doing it ontop since he's
-> gotten his hands dirty already. :-P
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  arch/s390/kernel/vmlinux.lds.S | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/s390/kernel/vmlinux.lds.S b/arch/s390/kernel/vmlinux.lds.S
+> index 7e0eb4020917..13294fef473e 100644
+> --- a/arch/s390/kernel/vmlinux.lds.S
+> +++ b/arch/s390/kernel/vmlinux.lds.S
+> @@ -52,7 +52,7 @@ SECTIONS
+> 
+>  	NOTES :text :note
+> 
+> -	.dummy : { *(.dummy) } :data
+> +	.dummy : { *(.dummy) } :text
+> 
+>  	RO_DATA_SECTION(PAGE_SIZE)
+> 
+> @@ -64,7 +64,7 @@ SECTIONS
+>  	.data..ro_after_init : {
+>  		 *(.data..ro_after_init)
+>  		JUMP_TABLE_DATA
+> -	}
+> +	} :data
+>  	EXCEPTION_TABLE(16)
+>  	. = ALIGN(PAGE_SIZE);
+>  	__end_ro_after_init = .;
 
-Yeah, I'm fine with that. I would prefer to do it as a separate step,
-just to minimize the logical steps each patch takes. Shall I spin a v3
-with the Acks added and a final rename for this?
+Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com>
 
--- 
-Kees Cook
