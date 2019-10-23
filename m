@@ -1,16 +1,16 @@
 From: Mike Rapoport <rppt@kernel.org>
-Subject: [PATCH 02/12] arm: nommu: use pgtable-nopud instead of 4level-fixup
-Date: Wed, 23 Oct 2019 12:28:51 +0300
-Message-ID: <1571822941-29776-3-git-send-email-rppt@kernel.org>
+Subject: [PATCH 03/12] c6x: use pgtable-nopud instead of 4level-fixup
+Date: Wed, 23 Oct 2019 12:28:52 +0300
+Message-ID: <1571822941-29776-4-git-send-email-rppt@kernel.org>
 References: <1571822941-29776-1-git-send-email-rppt@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571822976;
-        bh=KqzjIAZzqNHguQtFElvC1a/bVLZPeyC2TfAhdpe4I2I=;
+        s=default; t=1571822985;
+        bh=p11JZ/878S75pE68Mq2TwTFjvlVsPceSwhIak764zRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KQj0Imey5lR4vEMNYuWzroHs3nO1YNJ0Ub5IUbrTkjnGb2UBCHZdlwYKaIijq5Io1
-         TU2gk3b5eLRVL/7zF6AZjNldBVDJaQA3kWhwPKAZx6tHKEblt2fm0DWfJn+XGPJyKr
-         JGdjoqWKiqcWkbFDDILr76UAmtMKP2ZeLoVo0orY=
+        b=KJ0lWbj7yEZITHCGoNKDiGQOlWVlNOeeSEbv7hOaZVC7gzq9lwNaqlDwb8tff52kn
+         sQa2DlsjgxcxRO+4CFk3D6SFOBlCVxV5qlqhBcDstabmlnIwRphVv9CrwgFyFBqY2v
+         tnepF690eLpdzT3se4GU9mjnaDmpZ579Eh4f8Ye4=
 In-Reply-To: <1571822941-29776-1-git-send-email-rppt@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -22,30 +22,31 @@ Cc: Andrew Morton <akpm@linux-foundation.org>, Anton Ivanov <anton.ivanov@cambri
 
 From: Mike Rapoport <rppt@linux.ibm.com>
 
-The generic nommu implementation of page table manipulation takes care of
-folding of the upper levels and does not require fixups.
+c6x is a nommu architecture and does not require fixup for upper layers of
+the page tables because it is already handled by the generic nommu
+implementation.
 
-Simply replace of include/asm-generic/4level-fixup.h with
-include/asm-generic/pgtable-nopud.h.
+Replace usage of include/asm-generic/4level-fixup.h with
+include/asm-generic/pgtable-nopud.h
 
 Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- arch/arm/include/asm/pgtable.h | 2 +-
+ arch/c6x/include/asm/pgtable.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/include/asm/pgtable.h b/arch/arm/include/asm/pgtable.h
-index 3ae120c..eabcb48 100644
---- a/arch/arm/include/asm/pgtable.h
-+++ b/arch/arm/include/asm/pgtable.h
-@@ -12,7 +12,7 @@
- 
- #ifndef CONFIG_MMU
+diff --git a/arch/c6x/include/asm/pgtable.h b/arch/c6x/include/asm/pgtable.h
+index 0b6919c..197c473 100644
+--- a/arch/c6x/include/asm/pgtable.h
++++ b/arch/c6x/include/asm/pgtable.h
+@@ -8,7 +8,7 @@
+ #ifndef _ASM_C6X_PGTABLE_H
+ #define _ASM_C6X_PGTABLE_H
  
 -#include <asm-generic/4level-fixup.h>
 +#include <asm-generic/pgtable-nopud.h>
- #include <asm/pgtable-nommu.h>
  
- #else
+ #include <asm/setup.h>
+ #include <asm/page.h>
 -- 
 2.7.4
 
