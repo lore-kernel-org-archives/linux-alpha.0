@@ -1,27 +1,38 @@
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
 Subject: Re: [PATCH 2/2] rtc/alpha: remove legacy rtc driver
-Date: Wed, 23 Oct 2019 17:23:32 +0200
-Message-ID: <20191023152332.GR3125@piout.net>
+Date: Wed, 23 Oct 2019 12:41:46 -0400
+Message-ID: <20191023164145.GF1385@windriver.com>
 References: <20191023150311.844123-1-arnd@arndb.de>
  <20191023150311.844123-2-arnd@arndb.de>
 Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <20191023150311.844123-2-arnd@arndb.de>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-rtc@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-rtc@vger.kernel.org, Alessandro Zummo <a.zummo@towertech.it>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 23/10/2019 17:01:59+0200, Arnd Bergmann wrote:
+[[PATCH 2/2] rtc/alpha: remove legacy rtc driver] On 23/10/2019 (Wed 17:01) Arnd Bergmann wrote:
+
 > The old drivers/char/rtc.c driver was originally the implementation
 > for x86 PCs but got subsequently replaced by the rtc class driver
 > on all architectures except alpha.
 > 
 > Move alpha over to the portable driver and remove the old one
 > for good.
+
+Git history will show I'm in favour of showing old code and old drivers
+to the curb - even if it is stuff that I wrote myself 20+ years ago!  So
+if all users are now on the formalized rtc framework, then this relic
+should go away, and you can add my ack'd for the commit.
+
+Thanks,
+Paul.
+--
+
 > 
 > The CONFIG_JS_RTC option was only ever used on SPARC32 but
 > has not been available for many years, this was used to build
@@ -33,8 +44,6 @@ On 23/10/2019 17:01:59+0200, Arnd Bergmann wrote:
 > Cc: linux-alpha@vger.kernel.org
 > Cc: Paul Gortmaker <paul.gortmaker@windriver.com>
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-
 > ---
 > This was last discussed in early 2018 in
 > https://lore.kernel.org/lkml/CAK8P3a0QZNY+K+V1HG056xCerz=_L2jh5UfZ+2LWkDqkw5Zznw@mail.gmail.com/
@@ -1473,8 +1482,3 @@ Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 > -- 
 > 2.20.0
 > 
-
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
