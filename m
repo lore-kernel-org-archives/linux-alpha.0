@@ -1,7 +1,7 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v3 05/29] ia64: Rename PT_LOAD identifier "code" to "text"
-Date: Tue, 29 Oct 2019 14:13:27 -0700
-Message-ID: <20191029211351.13243-6-keescook@chromium.org>
+Subject: [PATCH v3 06/29] s390: Move RO_DATA into "text" PT_LOAD Program Header
+Date: Tue, 29 Oct 2019 14:13:28 -0700
+Message-ID: <20191029211351.13243-7-keescook@chromium.org>
 References: <20191029211351.13243-1-keescook@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,18 +14,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=S7odTwaCFULHUrqPK1FgNb5O5FoT8J0mF/w3Jbc8jnY=; b=ppvq6rQHI9skn1Gshl/HrcuTmD
-	OpqamqQwRx+tterkQZlPicdTPcsbMyO7KbUKu8NJb8F+xRbnjQJmz8S/FKbVWi3PwHjZ2b7HRhwBg
-	95xWx6N+j2NA55ZGRJObUUVaZG9S+2hFR2dxMdcgzG/gTlxIh5Te1OrCYa77YGGAWbZqbUZ30RZP7
-	nW9S8fUhaetCtTSYLP1z2/1HpdDrJeJhfmnsgNKziAqRBijmf8KF5ju4ke76P8j8Q5iptCY7UgnlW
-	t5PW3XzfGup6OGGep9612nk+2Yb8rhy0trl/mmnqUfCpDUq5ofDKk4u0QfUNYmLvaQomMZ00lKga2
-	dMWvu2uA==;
+	bh=HSHrQuBcloKRHy/wP4KvXI9pktP1qAQ6fVGBKUePO/U=; b=hTvrL6QjYZrMxx1cjFORgh5gvu
+	T+123gOwqrGwXJ3HAbuBgmSQ5pe6++pFjwpguATQDiqGSg5PNJT7ksaqVN5qAo3ybtMoCC8VxHSr8
+	VNzo86/+Cl9Vn0ihWr2bRlwgHz9lhittN7Vgqf6KkMHyHNzVSQvRhU7/fzySqUHrOHHQNVafHZReL
+	3Pe1bs5MVI6Cui9AXZeTVtJXJhJtJxFYXB3znleDqlS1RLvHJt9DUw/EZmyB3Dzaz4ZXgQj07cyE4
+	1xv3K/kKqu7nTudgQ6INWCwkXIE/Nz/RVjOuMQhDE04fIkBluIAAfBVY4VAodsOkYGVrFiQSTGvxK
+	j23LANtA==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=9QIZQEEx86BzYrPbnl0U6tW2XkUfCUBHfootbZQ3f/s=;
- b=VJKPZjg5h5gIb74ChOF4ZrXYYhfiSwHea2i8hHsp07EIPVVXHD8rJMUqhwk1sE/z0k
- hBdmEZ2eVq3eJ4nxcE1nQ08scid6AV39pHBxxM+ioMPALnIdJ4Bsh/9B8mj3a1kPr2u3
- 4UcyG5T8BsKDyw0SPatdMBiPtbEEJi6vDNyiQ=
+ bh=j9O9o67lY/P6wlTEjsCX8aHvBVVSD/zx23uzcL5Y/Qk=;
+ b=YmH7JoRcIpuxHSBEzuyBZcI2cXlEocfRSYinjuQggynP+Yn5Bn4zkxrvfy7jAIlUuJ
+ 3z/TlcEeTvA6xOI+hfOAcAJs7nBEtgLlKKNYCzlXJEj1NFiiqMvLbkPYxAWyblfxS+ij
+ cYtL8PEwHkOICPVjXRXFQwTlPFkJBooeg3rsQ=
 In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -40,69 +40,37 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Borislav Petkov <bp@alien8.de>
 Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-In preparation for moving NOTES into RO_DATA, rename the linker script
-internal identifier for the PT_LOAD Program Header from "code" to "text"
-to match other architectures.
+In preparation for moving NOTES into RO_DATA, move RO_DATA back into the
+"text" PT_LOAD Program Header, as done with other architectures. The
+"data" PT_LOAD now starts with the writable data section.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
+Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com>
 ---
- arch/ia64/kernel/vmlinux.lds.S | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ arch/s390/kernel/vmlinux.lds.S | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/ia64/kernel/vmlinux.lds.S b/arch/ia64/kernel/vmlinux.lds.S
-index d9d4e21107cd..2c4f23c390ad 100644
---- a/arch/ia64/kernel/vmlinux.lds.S
-+++ b/arch/ia64/kernel/vmlinux.lds.S
-@@ -13,7 +13,7 @@ ENTRY(phys_start)
- jiffies = jiffies_64;
+diff --git a/arch/s390/kernel/vmlinux.lds.S b/arch/s390/kernel/vmlinux.lds.S
+index 7e0eb4020917..13294fef473e 100644
+--- a/arch/s390/kernel/vmlinux.lds.S
++++ b/arch/s390/kernel/vmlinux.lds.S
+@@ -52,7 +52,7 @@ SECTIONS
  
- PHDRS {
--	code   PT_LOAD;
-+	text   PT_LOAD;
- 	percpu PT_LOAD;
- 	data   PT_LOAD;
- 	note   PT_NOTE;
-@@ -36,7 +36,7 @@ SECTIONS {
- 	phys_start = _start - LOAD_OFFSET;
+ 	NOTES :text :note
  
- 	code : {
--	} :code
-+	} :text
- 	. = KERNEL_START;
+-	.dummy : { *(.dummy) } :data
++	.dummy : { *(.dummy) } :text
  
- 	_text = .;
-@@ -68,9 +68,9 @@ SECTIONS {
- 	/*
- 	 * Read-only data
- 	 */
--	NOTES :code :note       /* put .notes in text and mark in PT_NOTE  */
-+	NOTES :text :note       /* put .notes in text and mark in PT_NOTE  */
- 	code_continues : {
--	} : code               /* switch back to regular program...  */
-+	} :text                /* switch back to regular program...  */
+ 	RO_DATA_SECTION(PAGE_SIZE)
  
+@@ -64,7 +64,7 @@ SECTIONS
+ 	.data..ro_after_init : {
+ 		 *(.data..ro_after_init)
+ 		JUMP_TABLE_DATA
+-	}
++	} :data
  	EXCEPTION_TABLE(16)
- 
-@@ -102,9 +102,9 @@ SECTIONS {
- 		__start_unwind = .;
- 		*(.IA_64.unwind*)
- 		__end_unwind = .;
--	} :code :unwind
-+	} :text :unwind
- 	code_continues2 : {
--	} : code
-+	} :text
- 
- 	RODATA
- 
-@@ -214,7 +214,7 @@ SECTIONS {
- 	_end = .;
- 
- 	code : {
--	} :code
-+	} :text
- 
- 	STABS_DEBUG
- 	DWARF_DEBUG
+ 	. = ALIGN(PAGE_SIZE);
+ 	__end_ro_after_init = .;
 -- 
 2.17.1
