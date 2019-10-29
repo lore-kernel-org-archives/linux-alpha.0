@@ -1,7 +1,8 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v3 17/29] alpha: Move EXCEPTION_TABLE to RO_DATA segment
-Date: Tue, 29 Oct 2019 14:13:39 -0700
-Message-ID: <20191029211351.13243-18-keescook@chromium.org>
+Subject: [PATCH v3 14/29] vmlinux.lds.h: Allow EXCEPTION_TABLE to live in
+ RO_DATA
+Date: Tue, 29 Oct 2019 14:13:36 -0700
+Message-ID: <20191029211351.13243-15-keescook@chromium.org>
 References: <20191029211351.13243-1-keescook@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,18 +15,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=n8DeqocfraIIkVa8+gsevviVEbY/VpH0359DpUjn/v8=; b=Wbgx6dKkWnxLAW6OUylqYj7tsG
-	WYu+owx93R1dYour+8XnMlcbCzhUVxFD63p+IQs0VBFUE0aDqcYG/VSzoxcVga3MCOdW2QCm9IuPN
-	EQp/yAndV4j1YdFQu1VfsGe/hwox6ZfdCY1pa/Xd43KlLAwb/oaa1lFrdhc9/GFY1E4YwjsWoNKPh
-	DIKO75bmmZ74kXbe3YX2oI4yN89ricaYYSy0RroNi4ChNYq3Ck0hdZ0KP1DB4vyQ6jcNmdSMskRao
-	uXn45b2cKi0NvD8xNFe9q74gHyoa8PlDlDliEJPjeJF2XVYJYDXOHFU12gN+hS+pSm5Ln5nUbJRQQ
-	W5DJzFTQ==;
+	bh=bLdp94rbeFQO2wrG/LySkSwywYve+ZdD0+Bq4i8kGuc=; b=mwK9dB1chgOmWyfRXIcJLhU0h7
+	Zbnm4XpTZkLsoePY/Cl6AmqwKYLnVcYJgXnrxwhtroM8KNY3JK9xKbCsLLOfb4aJP70RHGHq4n7E3
+	d88x5x1fFW3sUepVZyIm7ljN9NP+wW3zjtbM/0xdBgGYaBf0UAYetT+ybzDzFgRnkOYub8s37tC7R
+	wxkF18l1IdU9/FLLu0NkA63KB8raunIGA41HsmTrjwq2iR24ZSKhX9mpyAOXG3HhDFmCBSZwQf0so
+	OayPcairTnKsVykNByIHdZavrdP9QBdTheagfbtfhL8Md/TqU5Oof6eIssc53q80Jou5VUSIOU026
+	IlefxwjA==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=C4qrRt1wPf/MBbE+aHUnjpKB3JMiaG6wbnmkvfoIFU0=;
- b=KXyB+1WxXpRP1vWrTaJvj7/3l6dZgZlVJLpBPmFcRTDvj8Ze6KOK96KmDFNZoVzzIn
- FNtvoTTZBOIZiH1ckNR5s2SdRXfn3U8w4gXuf0hv6uGKH33p7qdqUGgLP3Z3IwHF72Rt
- c6i0OYnFF5k/KZH8c9IKWHI/dw4IAGrGwpkm0=
+ bh=O8SEsfE9Vx0Hoh9SzPjKsL9yL1yAPo1QWRZUpqQZ5BE=;
+ b=MVZa5dInIYyT6ti5/NzPmeCXtnqhowzk1esSCyG5Z9GszZCjPRJs6Uq1nYd3sgJ/iy
+ I5nUIKu579OFsUgb17L62TPPY9/qPbLOFHiVmTqqoh0Us96LJOlq47Tr0Nf+DbCIpYU0
+ LT6TLHPIsd3z+g0ec+N7peRpjdVoC7wJzSqzk=
 In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -40,32 +41,46 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Borislav Petkov <bp@alien8.de>
 Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-Since the EXCEPTION_TABLE is read-only, collapse it into RO_DATA.
+Many architectures have an EXCEPTION_TABLE that only needs to
+be readable. As such, it should live in RO_DATA. Create a macro to
+identify this case for the architectures that can move EXCEPTION_TABLE
+into RO_DATA.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
+Acked-by: Will Deacon <will@kernel.org>
 ---
- arch/alpha/kernel/vmlinux.lds.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/asm-generic/vmlinux.lds.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
-index edc45f45523b..bc6f727278fd 100644
---- a/arch/alpha/kernel/vmlinux.lds.S
-+++ b/arch/alpha/kernel/vmlinux.lds.S
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 */
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 356078e50a5c..9867d8e41eed 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -69,6 +69,17 @@
+ #define NOTES_HEADERS_RESTORE
+ #endif
  
- #define EMITS_PT_NOTE
-+#define RO_EXCEPTION_TABLE_ALIGN	16
++/*
++ * Some architectures have non-executable read-only exception tables.
++ * They can be added to the RO_DATA segment by specifying their desired
++ * alignment.
++ */
++#ifdef RO_EXCEPTION_TABLE_ALIGN
++#define RO_EXCEPTION_TABLE	EXCEPTION_TABLE(RO_EXCEPTION_TABLE_ALIGN)
++#else
++#define RO_EXCEPTION_TABLE
++#endif
++
+ /* Align . to a 8 byte boundary equals to maximum function alignment. */
+ #define ALIGN_FUNCTION()  . = ALIGN(8)
  
- #include <asm-generic/vmlinux.lds.h>
- #include <asm/thread_info.h>
-@@ -35,7 +36,6 @@ SECTIONS
- 	_etext = .;	/* End of text section */
- 
- 	RO_DATA(4096)
--	EXCEPTION_TABLE(16)
- 
- 	/* Will be freed after init */
- 	__init_begin = ALIGN(PAGE_SIZE);
+@@ -513,6 +524,7 @@
+ 		__stop___modver = .;					\
+ 	}								\
+ 									\
++	RO_EXCEPTION_TABLE						\
+ 	NOTES								\
+ 									\
+ 	. = ALIGN((align));						\
 -- 
 2.17.1
