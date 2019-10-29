@@ -1,7 +1,7 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v3 29/29] x86: Use INT3 instead of NOP for linker fill bytes
-Date: Tue, 29 Oct 2019 14:13:51 -0700
-Message-ID: <20191029211351.13243-30-keescook@chromium.org>
+Subject: [PATCH v3 26/29] x86/mm: Remove redundant &s on addresses
+Date: Tue, 29 Oct 2019 14:13:48 -0700
+Message-ID: <20191029211351.13243-27-keescook@chromium.org>
 References: <20191029211351.13243-1-keescook@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,18 +14,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=oiRcE1Mi4TeHZi5E8OLwj+ZJCIuFmdRvhtg8K+cMCDw=; b=ZB4B/Xuhgeaid3WTG8UlVvAYAg
-	dAOCIRq/zE+n2M6wJPvh+iDc8+/L5txuj8ZGJpv0zgw/AK52U5njiBXWU3xwv2nO9iKt+ZgHJoRiZ
-	OzdkE5a5ASE7yRCHayUhEyBDJrKlDaT7zEQL/ad7sJQUnV+Lyk1U+AE47HtWLQBXHi9fWuVR7OU4q
-	VO408exlxx0kYTtsFkI6k8HGL5/x5pWy1PcLvcwPWldgZMxxOP6HTeJQE1t6ahKH+18O3xWESuert
-	/F5yG6xAS35iWTtH7CK53SnOZxUx+Nl9SuVpONCFFLmjsrSJ6Z16NE48WLXa476u51cXEX9+zGdUs
-	k6hgsqyw==;
+	bh=S+bPBlZoW++2qT9FA+YUDQkcYAzczudO58PkRpXBgXg=; b=CrItsNoIlYGe9qRnpar6wgthpT
+	fjhKE6Jc4oO69Omajg8ZsmuL0JzM25wJaBxGUQRindaQ5lABmE3nzu1LFnu4nawtGyfweoZX8OE97
+	VvDgOiv9oLnVxjtJAGZODFr84nwF9Z29d/hfLRKNWsNFQ8v5SMWhSFtfKzet8O2EZxnENqIU9sm/D
+	SH8FXD1SsLck5zwoohNH31FZLT3O8AK2ETP7JX/P72C3QItOfALYNREHe1VrzlZKhCjj2TnThcPkg
+	BN7Jh3O6tkvhR59MEy0GJbKbhBHZbXrX529j7jSaEkwVvQRVo68w4jUYZJTTkgTVV9eWAdjHc4Ygf
+	jYlN4Spg==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=Wn91QvvOWXGcdAukdBFPOsAS+V9wjbJFfxE/dszqFsM=;
- b=e23Up0zA+FknG/wy6VhmeVSbZB8QZjiX0vsAsUiCjELXoASbot+u6O/Ejby5OAZXcC
- D20Gb77Tr51mlHzmSwSoKEoW2ET0UoL8WLxGdBgnuf4w6xJFYBJGnW///YPOFqwXtqCa
- uskFEoYIZvG0NYVP/lEJT6kwVN4SzBgoCgvaY=
+ bh=8/x+eaVk+ss1aFRFRC2BuuTBFLP58LLEcIBPNJoL2cs=;
+ b=E6/biqz3RgqOQZPzeBNo/5tlnkftQUoW2mf9CE298XsO5001NCPklzzOKT7E9Bm3jX
+ WYxXOa5pUZ578xzGENT4FOXN1yp+4ICP9ASH5NBrudMTG4WbEhivqJqu8m13wiyzO8yL
+ cP3ipZ2zK8zGQCNcxdhBWtwypbIJDVwNy8VIA=
 In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -40,57 +40,30 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Borislav Petkov <bp@alien8.de>
 Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-Instead of using 0x90 (NOP) to fill bytes between functions, which makes
-it easier to sloppily target functions in function pointer overwrite
-attacks, fill with 0xCC (INT3) to force a trap. Also drop the space
-between "=" and the value to better match the binutils documentation
-https://sourceware.org/binutils/docs/ld/Output-Section-Fill.html#Output-Section-Fill
-
-Example "objdump -d" before:
-
-...
-ffffffff810001e0 <start_cpu0>:
-ffffffff810001e0:       48 8b 25 e1 b1 51 01    mov 0x151b1e1(%rip),%rsp        # ffffffff8251b3c8 <initial_stack>
-ffffffff810001e7:       e9 d5 fe ff ff          jmpq   ffffffff810000c1 <secondary_startup_64+0x91>
-ffffffff810001ec:       90                      nop
-ffffffff810001ed:       90                      nop
-ffffffff810001ee:       90                      nop
-ffffffff810001ef:       90                      nop
-
-ffffffff810001f0 <__startup_64>:
-...
-
-After:
-
-...
-ffffffff810001e0 <start_cpu0>:
-ffffffff810001e0:       48 8b 25 41 79 53 01    mov 0x1537941(%rip),%rsp        # ffffffff82537b28 <initial_stack>
-ffffffff810001e7:       e9 d5 fe ff ff          jmpq   ffffffff810000c1 <secondary_startup_64+0x91>
-ffffffff810001ec:       cc                      int3
-ffffffff810001ed:       cc                      int3
-ffffffff810001ee:       cc                      int3
-ffffffff810001ef:       cc                      int3
-
-ffffffff810001f0 <__startup_64>:
-...
+The &s on addresses are redundant. Remove them to match all the other
+similar functions.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- arch/x86/kernel/vmlinux.lds.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/mm/init_64.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index b06d6e1188de..3a1a819da137 100644
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -144,7 +144,7 @@ SECTIONS
- 		*(.text.__x86.indirect_thunk)
- 		__indirect_thunk_end = .;
- #endif
--	} :text = 0x9090
-+	} :text =0xcccc
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 26299e9ce6da..e67ddca8b7a8 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -1300,9 +1300,9 @@ void mark_rodata_ro(void)
+ {
+ 	unsigned long start = PFN_ALIGN(_text);
+ 	unsigned long rodata_start = PFN_ALIGN(__start_rodata);
+-	unsigned long end = (unsigned long) &__end_rodata_hpage_align;
+-	unsigned long text_end = PFN_ALIGN(&_etext);
+-	unsigned long rodata_end = PFN_ALIGN(&__end_rodata);
++	unsigned long end = (unsigned long)__end_rodata_hpage_align;
++	unsigned long text_end = PFN_ALIGN(_etext);
++	unsigned long rodata_end = PFN_ALIGN(__end_rodata);
+ 	unsigned long all_end;
  
- 	/* End of text section, which should occupy whole number of pages */
- 	_etext = .;
+ 	printk(KERN_INFO "Write protecting the kernel read-only data: %luk\n",
 -- 
 2.17.1
