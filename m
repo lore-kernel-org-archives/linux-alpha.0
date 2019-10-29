@@ -1,7 +1,7 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v3 04/29] alpha: Rename PT_LOAD identifier "kernel" to "text"
-Date: Tue, 29 Oct 2019 14:13:26 -0700
-Message-ID: <20191029211351.13243-5-keescook@chromium.org>
+Subject: [PATCH v3 01/29] powerpc: Rename "notes" PT_NOTE to "note"
+Date: Tue, 29 Oct 2019 14:13:23 -0700
+Message-ID: <20191029211351.13243-2-keescook@chromium.org>
 References: <20191029211351.13243-1-keescook@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,18 +14,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=kF99M32f5ai8H6vNoNsfnkrybMiBNCtES5cP7r9/HMg=; b=cBr9X1l5qvom2cyMoUifZ36S1d
-	EvB+LM682XOhsSBBYr0UBn0MO1NDOizVtfKez+0hbY/nNLvunV93/91KztoKTfKGZzKzlM8D/0o0m
-	yCbj2gRaUc/TlH+xlieGCUv8SblsmGLrxCZ+pD3WMPvDeLP0Ks4ckU1UO2FIvfHkq426aYovcsAYM
-	RcjcuxgXzxHYFRJRQRzi+/nB/pcI/EjdHWODxMckLKQ9AtWi0//Zvx9GpCmGwGdi4ybM1mlNttKrv
-	UQpTTNUPRwy5eEghEIKbs0rLNss830O5LHqPa5i8plMLp3Bsh7w5qqkj9TnAFfrXQFsIfjVqZtqKG
-	HE/OaIAQ==;
+	bh=f3tuYO0v6X+gu5qKrg+NmD+ch7rIbujYlS2MNmUOF7o=; b=Q7AusTHFk5S8HG3gH62Jzj11kS
+	XuRKTl6mlG1xw1SgnAWfCUDnHGaOlWaAwjb193bEfdgzCtUAjkZ1CVvnXyIuMoF94YpDpu6Ypth6E
+	sQO3BuJSoGIW9RKbCGTnab4fUgFJunBz/bvowZtMf1RCgwWUKWvd0mnS67Z2/JAZd4ucViE6Rblb3
+	v+/wRKdtzia+gtvaHvGjKXkh9dWlzNIVM1BiKJb8FlNE+5c3rLIw1ZECjNpjw3QeGwvuRzgURuDaS
+	HJmU/Cfs43xRrUbPkGWHDfljQgk2eiNnulwj3/iTikvvp9D3DrNedU87IEyexOZG2PZnw2eZXD9tj
+	moRN1PYA==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=7MxClQbH59XRrbTRajW1Gh8uACzcU2+htsVcXyM7D1g=;
- b=LQy1OlzqoHregmX7oWg1J+GCiPB+DnhcNeAFzNXO6O9s9wLhpCBsF0jSKzXlK9lP/k
- SDnj0o9+xZ39dyE9cCQWqZxyjuoHNyl3rdCu/xiTRCFpDNUVVX7tFk5VZETqdUPMammV
- NH8kU7Tb11dukK+QDn0fvxLsZMYk5M8Ahi8aU=
+ bh=UBMCQcUOloL4FNQm5udB+snIcmDdRxu45Na8ZXgn6j0=;
+ b=kdVHFkWUWfSKoiPKPgWKbAsFTrcW5JNBQhTGTF4q2deleiY3/8n0BF6eoXBERPq8mq
+ MXvnqxBYuL7FPHWZ/R6H0s/W1xjZNZPEiLHYArhnUWssmjQ9IekX8pDgbayL/8UyYSTb
+ kH2PTazTZLVUdMFc2ETjXJ8rIdmfptOgLDOBM=
 In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -40,45 +40,47 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Borislav Petkov <bp@alien8.de>
 Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-In preparation for moving NOTES into RO_DATA, rename the linker script
-internal identifier for the PT_LOAD Program Header from "kernel" to
-"text" to match other architectures.
+The Program Header identifiers are internal to the linker scripts. In
+preparation for moving the NOTES segment declaration into RO_DATA,
+standardize the identifier for the PT_NOTE entry to "note" as used by
+all other architectures that emit PT_NOTE.
+
+Note that there was discussion about changing all architectures to use
+"notes" instead, but I prefer to avoid that at this time. Changing only
+powerpc is the smallest change to standardize the entire kernel. And
+while this standardization does use singular "note" for a section that
+has more than one note in it, this is just an internal identifier. It
+matches the ELF "PT_NOTE", and is 4 characters (like "text", and "data")
+for pretty alignment. The more exposed macro, "NOTES", use the more
+sensible plural wording.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
+Acked-by: Michael Ellerman <mpe@ellerman.id.au>
 ---
- arch/alpha/kernel/vmlinux.lds.S | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/powerpc/kernel/vmlinux.lds.S | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
-index c4b5ceceab52..781090cacc96 100644
---- a/arch/alpha/kernel/vmlinux.lds.S
-+++ b/arch/alpha/kernel/vmlinux.lds.S
-@@ -8,7 +8,7 @@
- OUTPUT_FORMAT("elf64-alpha")
- OUTPUT_ARCH(alpha)
- ENTRY(__start)
--PHDRS { kernel PT_LOAD; note PT_NOTE; }
-+PHDRS { text PT_LOAD; note PT_NOTE; }
- jiffies = jiffies_64;
- SECTIONS
- {
-@@ -27,14 +27,14 @@ SECTIONS
- 		LOCK_TEXT
- 		*(.fixup)
- 		*(.gnu.warning)
--	} :kernel
-+	} :text
- 	swapper_pg_dir = SWAPPER_PGD;
- 	_etext = .;	/* End of text section */
+diff --git a/arch/powerpc/kernel/vmlinux.lds.S b/arch/powerpc/kernel/vmlinux.lds.S
+index 060a1acd7c6d..81e672654789 100644
+--- a/arch/powerpc/kernel/vmlinux.lds.S
++++ b/arch/powerpc/kernel/vmlinux.lds.S
+@@ -19,7 +19,7 @@ ENTRY(_stext)
  
--	NOTES :kernel :note
-+	NOTES :text :note
- 	.dummy : {
- 		*(.dummy)
--	} :kernel
-+	} :text
+ PHDRS {
+ 	kernel PT_LOAD FLAGS(7); /* RWX */
+-	notes PT_NOTE FLAGS(0);
++	note PT_NOTE FLAGS(0);
+ 	dummy PT_NOTE FLAGS(0);
  
- 	RODATA
- 	EXCEPTION_TABLE(16)
+ 	/* binutils < 2.18 has a bug that makes it misbehave when taking an
+@@ -177,7 +177,7 @@ SECTIONS
+ #endif
+ 	EXCEPTION_TABLE(0)
+ 
+-	NOTES :kernel :notes
++	NOTES :kernel :note
+ 
+ 	/* The dummy segment contents for the bug workaround mentioned above
+ 	   near PHDRS.  */
 -- 
 2.17.1
