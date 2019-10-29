@@ -1,93 +1,84 @@
-From: Michal Hocko <mhocko@kernel.org>
-Subject: Re: [PATCH v6] numa: make node_to_cpumask_map() NUMA_NO_NODE aware
-Date: Tue, 29 Oct 2019 09:53:36 +0100
-Message-ID: <20191029085336.GF31513@dhcp22.suse.cz>
-References: <20190925104108.GE4553@hirez.programming.kicks-ass.net>
- <47fa4cee-8528-7c23-c7de-7be1b65aa2ae@huawei.com>
- <bec80499-86d9-bf1f-df23-9044a8099992@arm.com>
- <a5f0fc80-8e88-b781-77ce-1213e5d62125@huawei.com>
- <20191010073212.GB18412@dhcp22.suse.cz>
- <6cc94f9b-0d79-93a8-5ec2-4f6c21639268@huawei.com>
- <20191011111539.GX2311@hirez.programming.kicks-ass.net>
- <7fad58d6-5126-e8b8-a7d8-a91814da53ba@huawei.com>
- <20191012074014.GA2037204@kroah.com>
- <1ec704df-97a5-04b7-1f20-8e3db19440a3@huawei.com>
+From: Kees Cook <keescook@chromium.org>
+Subject: [PATCH v3 04/29] alpha: Rename PT_LOAD identifier "kernel" to "text"
+Date: Tue, 29 Oct 2019 14:13:26 -0700
+Message-ID: <20191029211351.13243-5-keescook@chromium.org>
+References: <20191029211351.13243-1-keescook@chromium.org>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1ec704df-97a5-04b7-1f20-8e3db19440a3@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Yunsheng Lin <linyunsheng@huawei.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Peter Zijlstra <peterz@infradead.org>, Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hpa@zytor.com, x86@kernel.org, dave.hansen@linux.intel.com
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
+	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Owner;
+	bh=kF99M32f5ai8H6vNoNsfnkrybMiBNCtES5cP7r9/HMg=; b=cBr9X1l5qvom2cyMoUifZ36S1d
+	EvB+LM682XOhsSBBYr0UBn0MO1NDOizVtfKez+0hbY/nNLvunV93/91KztoKTfKGZzKzlM8D/0o0m
+	yCbj2gRaUc/TlH+xlieGCUv8SblsmGLrxCZ+pD3WMPvDeLP0Ks4ckU1UO2FIvfHkq426aYovcsAYM
+	RcjcuxgXzxHYFRJRQRzi+/nB/pcI/EjdHWODxMckLKQ9AtWi0//Zvx9GpCmGwGdi4ybM1mlNttKrv
+	UQpTTNUPRwy5eEghEIKbs0rLNss830O5LHqPa5i8plMLp3Bsh7w5qqkj9TnAFfrXQFsIfjVqZtqKG
+	HE/OaIAQ==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references;
+ bh=7MxClQbH59XRrbTRajW1Gh8uACzcU2+htsVcXyM7D1g=;
+ b=LQy1OlzqoHregmX7oWg1J+GCiPB+DnhcNeAFzNXO6O9s9wLhpCBsF0jSKzXlK9lP/k
+ SDnj0o9+xZ39dyE9cCQWqZxyjuoHNyl3rdCu/xiTRCFpDNUVVX7tFk5VZETqdUPMammV
+ NH8kU7Tb11dukK+QDn0fvxLsZMYk5M8Ahi8aU=
+In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-On Mon 28-10-19 17:20:33, Yunsheng Lin wrote:
-> On 2019/10/12 15:40, Greg KH wrote:
-> > On Sat, Oct 12, 2019 at 02:17:26PM +0800, Yunsheng Lin wrote:
-> >> add pci and acpi maintainer
-> >> cc linux-pci@vger.kernel.org and linux-acpi@vger.kernel.org
-> >>
-> >> On 2019/10/11 19:15, Peter Zijlstra wrote:
-> >>> On Fri, Oct 11, 2019 at 11:27:54AM +0800, Yunsheng Lin wrote:
-> >>>> But I failed to see why the above is related to making node_to_cpumask_map()
-> >>>> NUMA_NO_NODE aware?
-> >>>
-> >>> Your initial bug is for hns3, which is a PCI device, which really _MUST_
-> >>> have a node assigned.
-> >>>
-> >>> It not having one, is a straight up bug. We must not silently accept
-> >>> NO_NODE there, ever.
-> >>>
-> >>
-> >> I suppose you mean reporting a lack of affinity when the node of a pcie
-> >> device is not set by "not silently accept NO_NODE".
-> > 
-> > If the firmware of a pci device does not provide the node information,
-> > then yes, warn about that.
-> > 
-> >> As Greg has asked about in [1]:
-> >> what is a user to do when the user sees the kernel reporting that?
-> >>
-> >> We may tell user to contact their vendor for info or updates about
-> >> that when they do not know about their system well enough, but their
-> >> vendor may get away with this by quoting ACPI spec as the spec
-> >> considering this optional. Should the user believe this is indeed a
-> >> fw bug or a misreport from the kernel?
-> > 
-> > Say it is a firmware bug, if it is a firmware bug, that's simple.
-> > 
-> >> If this kind of reporting is common pratice and will not cause any
-> >> misunderstanding, then maybe we can report that.
-> > 
-> > Yes, please do so, that's the only way those boxes are ever going to get
-> > fixed.  And go add the test to the "firmware testing" tool that is based
-> > on Linux that Intel has somewhere, to give vendors a chance to fix this
-> > before they ship hardware.
-> > 
-> > This shouldn't be a big deal, we warn of other hardware bugs all the
-> > time.
-> 
-> Hi, all.
-> 
-> The warning for the above case has been added in [1].
-> 
-> So maybe it makes sense to make node_to_cpumask_map() NUMA_NO_NODE aware
-> now?
-> 
-> If Yes, this patch still can be applied to the latest linus' tree cleanly,
-> Do I need to resend it?
-> 
+In preparation for moving NOTES into RO_DATA, rename the linker script
+internal identifier for the PT_LOAD Program Header from "kernel" to
+"text" to match other architectures.
 
-By this patch you mean http://lkml.kernel.org/r/1568724534-146242-1-git-send-email-linyunsheng@huawei.com
-right?
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ arch/alpha/kernel/vmlinux.lds.S | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-I would just resend it unless there is still a clear disagreement over
-it.
-
-> [1] https://lore.kernel.org/linux-pci/1571467543-26125-1-git-send-email-linyunsheng@huawei.com/
-
+diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
+index c4b5ceceab52..781090cacc96 100644
+--- a/arch/alpha/kernel/vmlinux.lds.S
++++ b/arch/alpha/kernel/vmlinux.lds.S
+@@ -8,7 +8,7 @@
+ OUTPUT_FORMAT("elf64-alpha")
+ OUTPUT_ARCH(alpha)
+ ENTRY(__start)
+-PHDRS { kernel PT_LOAD; note PT_NOTE; }
++PHDRS { text PT_LOAD; note PT_NOTE; }
+ jiffies = jiffies_64;
+ SECTIONS
+ {
+@@ -27,14 +27,14 @@ SECTIONS
+ 		LOCK_TEXT
+ 		*(.fixup)
+ 		*(.gnu.warning)
+-	} :kernel
++	} :text
+ 	swapper_pg_dir = SWAPPER_PGD;
+ 	_etext = .;	/* End of text section */
+ 
+-	NOTES :kernel :note
++	NOTES :text :note
+ 	.dummy : {
+ 		*(.dummy)
+-	} :kernel
++	} :text
+ 
+ 	RODATA
+ 	EXCEPTION_TABLE(16)
 -- 
-Michal Hocko
-SUSE Labs
+2.17.1
