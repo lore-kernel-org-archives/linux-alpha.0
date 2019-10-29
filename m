@@ -1,7 +1,7 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v3 11/29] vmlinux.lds.h: Replace RODATA with RO_DATA
-Date: Tue, 29 Oct 2019 14:13:33 -0700
-Message-ID: <20191029211351.13243-12-keescook@chromium.org>
+Subject: [PATCH v3 24/29] powerpc: Move EXCEPTION_TABLE to RO_DATA segment
+Date: Tue, 29 Oct 2019 14:13:46 -0700
+Message-ID: <20191029211351.13243-25-keescook@chromium.org>
 References: <20191029211351.13243-1-keescook@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,18 +14,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=Qkhvr2E3ORt3azu8xmZwuTZLEX5FpVxggUxDuN0QWwE=; b=nHC+ub8F7Lpy8H4BYmX2EzQNOq
-	2OTKnFEiBvD1gNUv4WAxQcjWds4aQWFpNhxGskBNidW7cNUAqYAmIbH3AgDu9as3YPvZDy0YU8FbX
-	r/iCz5sBFftfmHuxbQkn/HNWSFy+ZOrds+h+VvJEAVy6joasBNdB+GGd5cKr3Q+4nUqxl6YOooHbR
-	HOLmlPxxfumlgugJy4QsDMElpVtZuYT3mcUEbwRiuoTIOmKrlACJdQ5Vuh4amqWBCU1F83sY89chO
-	joySoWZnpYYWh7lls/RmCOLjmSFa1zuolFIrY+RV+BgfyW6nZyUjH+xFm3MzqqEQYAXdWiHZfoeOO
-	TOEEUkRw==;
+	bh=JxgXuscmNjUx+3W4Kt8O3fBFelUfO6Yk8d6Cjaqy1UI=; b=MCblW1cVSxVm2DvkZVytNDNpo7
+	PRBQ3Xu5fKFtzNc0umr18vUfu4TFE0nDF5NPiKHWstHFuG+XaSwtPTqmt0TGIWkR5cLHuqTgPfZ7x
+	xmJ66eFQB7kYt9mxmg74qmNhw/he0QYLsdZIMjCIjRX8FUy3HSPPrFpeypOHr0Cu5NJJTGXu8RqW2
+	ZOxlZzfEiD2yq3lh2ne6C5EBxLiY1AcOFRS0eHwinep91xZI2OJuPRabwx+UI6ZWrxXq9mjgqdfSq
+	nTCl2JzxtQQRW2JMEEgRARQnQWOPjVDgCv76RYuiGTBsO6+TcCh//8PUAc67reFzHBDHh/vqzAL1/
+	X3Rk8vCw==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=NdxCafKKRqXAoKJS3a+7E7MX2efPsfhraTr7Vwa5zkA=;
- b=hhCoQlU/RqWYXSDAgYDtKFJXYKcb6qrbw7jBqPb2fpXCNS/P4SloLxb2oxafKyWrIF
- GX2Ot3WmEW9lQeaBfn0szm1nDvHZNofcDLvnvXdaDntDWUzpodPTd3ih+raPbjPXxcxM
- WgkYtZ3rXDIzN73cHQs6xO88GMbYTnIRrCvGQ=
+ bh=OvLPSIr20MO1GrkJ0OvwvGngd4/e51+GSaoElj9X+Gc=;
+ b=MubpaUS4tHoReayETOIOWs+UpyMNXi3+g7N+ywDFi9zOzhpG5+ZUItxnBn6YjbZqXh
+ paBOw3W55VS7rZu51ahUmY0fFJgtBFJYJ3pn22Ptz7nrtHG22uqdhr4XUVK2RZm1oi58
+ oDEHrfa53FOnH3TQxpTEFg+lMs4RonQkU3kjE=
 In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -40,112 +40,32 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Borislav Petkov <bp@alien8.de>
 Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-There's no reason to keep the RODATA macro: replace the callers with
-the expected RO_DATA macro.
+Since the EXCEPTION_TABLE is read-only, collapse it into RO_DATA.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- arch/alpha/kernel/vmlinux.lds.S      | 2 +-
- arch/ia64/kernel/vmlinux.lds.S       | 2 +-
- arch/microblaze/kernel/vmlinux.lds.S | 2 +-
- arch/mips/kernel/vmlinux.lds.S       | 2 +-
- arch/um/include/asm/common.lds.S     | 2 +-
- arch/xtensa/kernel/vmlinux.lds.S     | 2 +-
- include/asm-generic/vmlinux.lds.h    | 4 +---
- 7 files changed, 7 insertions(+), 9 deletions(-)
+ arch/powerpc/kernel/vmlinux.lds.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
-index bf28043485f6..af411817dd7d 100644
---- a/arch/alpha/kernel/vmlinux.lds.S
-+++ b/arch/alpha/kernel/vmlinux.lds.S
-@@ -34,7 +34,7 @@ SECTIONS
- 	swapper_pg_dir = SWAPPER_PGD;
- 	_etext = .;	/* End of text section */
+diff --git a/arch/powerpc/kernel/vmlinux.lds.S b/arch/powerpc/kernel/vmlinux.lds.S
+index 4e7cec088c8b..8834220036a5 100644
+--- a/arch/powerpc/kernel/vmlinux.lds.S
++++ b/arch/powerpc/kernel/vmlinux.lds.S
+@@ -7,6 +7,7 @@
  
--	RODATA
-+	RO_DATA(4096)
- 	EXCEPTION_TABLE(16)
+ #define BSS_FIRST_SECTIONS *(.bss.prominit)
+ #define EMITS_PT_NOTE
++#define RO_EXCEPTION_TABLE_ALIGN	0
  
- 	/* Will be freed after init */
-diff --git a/arch/ia64/kernel/vmlinux.lds.S b/arch/ia64/kernel/vmlinux.lds.S
-index fae077595756..11d5115bc44d 100644
---- a/arch/ia64/kernel/vmlinux.lds.S
-+++ b/arch/ia64/kernel/vmlinux.lds.S
-@@ -104,7 +104,7 @@ SECTIONS {
- 	code_continues2 : {
- 	} :text
- 
--	RODATA
-+	RO_DATA(4096)
- 
- 	.opd : AT(ADDR(.opd) - LOAD_OFFSET) {
- 		__start_opd = .;
-diff --git a/arch/microblaze/kernel/vmlinux.lds.S b/arch/microblaze/kernel/vmlinux.lds.S
-index d008e50bb212..2299694748ea 100644
---- a/arch/microblaze/kernel/vmlinux.lds.S
-+++ b/arch/microblaze/kernel/vmlinux.lds.S
-@@ -51,7 +51,7 @@ SECTIONS {
+ #include <asm/page.h>
+ #include <asm-generic/vmlinux.lds.h>
+@@ -162,7 +163,6 @@ SECTIONS
+ 		__stop__btb_flush_fixup = .;
  	}
- 
- 	. = ALIGN(16);
--	RODATA
-+	RO_DATA(4096)
- 	EXCEPTION_TABLE(16)
- 
- 	/*
-diff --git a/arch/mips/kernel/vmlinux.lds.S b/arch/mips/kernel/vmlinux.lds.S
-index 91e566defc16..a5f00ec73ea6 100644
---- a/arch/mips/kernel/vmlinux.lds.S
-+++ b/arch/mips/kernel/vmlinux.lds.S
-@@ -82,7 +82,7 @@ SECTIONS
- 	}
- 
- 	_sdata = .;			/* Start of data section */
--	RODATA
-+	RO_DATA(4096)
- 
- 	/* writeable */
- 	.data : {	/* Data */
-diff --git a/arch/um/include/asm/common.lds.S b/arch/um/include/asm/common.lds.S
-index 91aca356095f..7145ce699982 100644
---- a/arch/um/include/asm/common.lds.S
-+++ b/arch/um/include/asm/common.lds.S
-@@ -9,7 +9,7 @@
-   _sdata = .;
-   PROVIDE (sdata = .);
- 
--  RODATA
-+  RO_DATA(4096)
- 
-   .unprotected : { *(.unprotected) }
-   . = ALIGN(4096);
-diff --git a/arch/xtensa/kernel/vmlinux.lds.S b/arch/xtensa/kernel/vmlinux.lds.S
-index a0a843745695..b97e5798b9cf 100644
---- a/arch/xtensa/kernel/vmlinux.lds.S
-+++ b/arch/xtensa/kernel/vmlinux.lds.S
-@@ -124,7 +124,7 @@ SECTIONS
- 
-   . = ALIGN(16);
- 
--  RODATA
-+  RO_DATA(4096)
- 
-   /*  Relocation table */
- 
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index dc3390ec6b60..a0a989fbe411 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -518,9 +518,7 @@
- 	. = ALIGN((align));						\
- 	__end_rodata = .;
- 
--/* RODATA & RO_DATA provided for backward compatibility.
-- * All archs are supposed to use RO_DATA() */
--#define RODATA          RO_DATA_SECTION(4096)
-+/* All archs are supposed to use RO_DATA() */
- #define RO_DATA(align)  RO_DATA_SECTION(align)
+ #endif
+-	EXCEPTION_TABLE(0)
  
  /*
+  * Init sections discarded at runtime
 -- 
 2.17.1
