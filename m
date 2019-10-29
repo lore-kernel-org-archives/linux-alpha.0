@@ -1,7 +1,8 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v3 06/29] s390: Move RO_DATA into "text" PT_LOAD Program Header
-Date: Tue, 29 Oct 2019 14:13:28 -0700
-Message-ID: <20191029211351.13243-7-keescook@chromium.org>
+Subject: [PATCH v3 08/29] vmlinux.lds.h: Provide EMIT_PT_NOTE to indicate
+ export of .notes
+Date: Tue, 29 Oct 2019 14:13:30 -0700
+Message-ID: <20191029211351.13243-9-keescook@chromium.org>
 References: <20191029211351.13243-1-keescook@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,18 +15,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=HSHrQuBcloKRHy/wP4KvXI9pktP1qAQ6fVGBKUePO/U=; b=hTvrL6QjYZrMxx1cjFORgh5gvu
-	T+123gOwqrGwXJ3HAbuBgmSQ5pe6++pFjwpguATQDiqGSg5PNJT7ksaqVN5qAo3ybtMoCC8VxHSr8
-	VNzo86/+Cl9Vn0ihWr2bRlwgHz9lhittN7Vgqf6KkMHyHNzVSQvRhU7/fzySqUHrOHHQNVafHZReL
-	3Pe1bs5MVI6Cui9AXZeTVtJXJhJtJxFYXB3znleDqlS1RLvHJt9DUw/EZmyB3Dzaz4ZXgQj07cyE4
-	1xv3K/kKqu7nTudgQ6INWCwkXIE/Nz/RVjOuMQhDE04fIkBluIAAfBVY4VAodsOkYGVrFiQSTGvxK
-	j23LANtA==;
+	bh=oJXp0XRP4ybQ2iASGcqZ9/ys/HjggV+bEByHcfRU7Vg=; b=XFu+diGATF4ht1gqB/4v6dLK4k
+	L/H/i6i1GVhum1XS6ovn/ijIuy5chu7aIGOjWcYz0y/I7L0XtW/BLYy42gqXx6KlNy6mYjm4WBS8L
+	Yo2hZX/BCBJDX51nQ6K8YQetdS2KricI0+bRkZZ4Whd0SeIl4RdzpxcXwc4dRScJHW0W/efqHSCIn
+	qhhc5gqkp+1obfawr2+QUuIjkPoOWyXX8fIbsUT5fM1CPD6undzkFJxMtZITeKS33SlkexSHFyf2r
+	v4DsZ2cxauUhvs6JtS56ACnzTZhDGcSozoPuR0vcRXaAHT307aKwUgcA8wMI0QQw/31nO4hFBFcXN
+	Ekv8Kr2g==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=j9O9o67lY/P6wlTEjsCX8aHvBVVSD/zx23uzcL5Y/Qk=;
- b=YmH7JoRcIpuxHSBEzuyBZcI2cXlEocfRSYinjuQggynP+Yn5Bn4zkxrvfy7jAIlUuJ
- 3z/TlcEeTvA6xOI+hfOAcAJs7nBEtgLlKKNYCzlXJEj1NFiiqMvLbkPYxAWyblfxS+ij
- cYtL8PEwHkOICPVjXRXFQwTlPFkJBooeg3rsQ=
+ bh=WDpEXta6gblz8RcQG8Y0aSP7MVebXWwYNQQzkqw1syM=;
+ b=SKSnYHxJHmii8xo5Z4mTmdRCVC7yrS/D7oEkTo/iOkxl6ZHwOveMu6U4vwyneQKKse
+ wkiElGkgFNqM/pnNorMlK0ipsYoYkCUlQluZIT2JQEfehDHl0Rk4eib7HwU4Q5SXpm1R
+ hLusOWfC9hyYA7DP6xjHwrrx4gSVO2QQe2Xfk=
 In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -40,37 +41,132 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Borislav Petkov <bp@alien8.de>
 Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-In preparation for moving NOTES into RO_DATA, move RO_DATA back into the
-"text" PT_LOAD Program Header, as done with other architectures. The
-"data" PT_LOAD now starts with the writable data section.
+In preparation for moving NOTES into RO_DATA, provide a mechanism for
+architectures that want to emit a PT_NOTE Program Header to do so.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
-Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com>
+Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com> # s390
 ---
- arch/s390/kernel/vmlinux.lds.S | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/alpha/kernel/vmlinux.lds.S   |  3 +++
+ arch/ia64/kernel/vmlinux.lds.S    |  2 ++
+ arch/mips/kernel/vmlinux.lds.S    | 12 ++++++------
+ arch/powerpc/kernel/vmlinux.lds.S |  1 +
+ arch/s390/kernel/vmlinux.lds.S    |  2 ++
+ arch/x86/kernel/vmlinux.lds.S     |  2 ++
+ include/asm-generic/vmlinux.lds.h |  8 ++++++++
+ 7 files changed, 24 insertions(+), 6 deletions(-)
 
+diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
+index 781090cacc96..363a60ba7c31 100644
+--- a/arch/alpha/kernel/vmlinux.lds.S
++++ b/arch/alpha/kernel/vmlinux.lds.S
+@@ -1,4 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
++
++#define EMITS_PT_NOTE
++
+ #include <asm-generic/vmlinux.lds.h>
+ #include <asm/thread_info.h>
+ #include <asm/cache.h>
+diff --git a/arch/ia64/kernel/vmlinux.lds.S b/arch/ia64/kernel/vmlinux.lds.S
+index 2c4f23c390ad..7cf4958b732d 100644
+--- a/arch/ia64/kernel/vmlinux.lds.S
++++ b/arch/ia64/kernel/vmlinux.lds.S
+@@ -5,6 +5,8 @@
+ #include <asm/pgtable.h>
+ #include <asm/thread_info.h>
+ 
++#define EMITS_PT_NOTE
++
+ #include <asm-generic/vmlinux.lds.h>
+ 
+ OUTPUT_FORMAT("elf64-ia64-little")
+diff --git a/arch/mips/kernel/vmlinux.lds.S b/arch/mips/kernel/vmlinux.lds.S
+index 33ee0d18fb0a..1c95612eb800 100644
+--- a/arch/mips/kernel/vmlinux.lds.S
++++ b/arch/mips/kernel/vmlinux.lds.S
+@@ -10,6 +10,11 @@
+  */
+ #define BSS_FIRST_SECTIONS *(.bss..swapper_pg_dir)
+ 
++/* Cavium Octeon should not have a separate PT_NOTE Program Header. */
++#ifndef CONFIG_CAVIUM_OCTEON_SOC
++#define EMITS_PT_NOTE
++#endif
++
+ #include <asm-generic/vmlinux.lds.h>
+ 
+ #undef mips
+@@ -76,12 +81,7 @@ SECTIONS
+ 		__stop___dbe_table = .;
+ 	}
+ 
+-#ifdef CONFIG_CAVIUM_OCTEON_SOC
+-#define NOTES_HEADER
+-#else /* CONFIG_CAVIUM_OCTEON_SOC */
+-#define NOTES_HEADER :note
+-#endif /* CONFIG_CAVIUM_OCTEON_SOC */
+-	NOTES :text NOTES_HEADER
++	NOTES NOTES_HEADERS
+ 	.dummy : { *(.dummy) } :text
+ 
+ 	_sdata = .;			/* Start of data section */
+diff --git a/arch/powerpc/kernel/vmlinux.lds.S b/arch/powerpc/kernel/vmlinux.lds.S
+index e184a63aa5b0..7e26e20c8324 100644
+--- a/arch/powerpc/kernel/vmlinux.lds.S
++++ b/arch/powerpc/kernel/vmlinux.lds.S
+@@ -6,6 +6,7 @@
+ #endif
+ 
+ #define BSS_FIRST_SECTIONS *(.bss.prominit)
++#define EMITS_PT_NOTE
+ 
+ #include <asm/page.h>
+ #include <asm-generic/vmlinux.lds.h>
 diff --git a/arch/s390/kernel/vmlinux.lds.S b/arch/s390/kernel/vmlinux.lds.S
-index 7e0eb4020917..13294fef473e 100644
+index 13294fef473e..646d939346df 100644
 --- a/arch/s390/kernel/vmlinux.lds.S
 +++ b/arch/s390/kernel/vmlinux.lds.S
-@@ -52,7 +52,7 @@ SECTIONS
+@@ -15,6 +15,8 @@
+ /* Handle ro_after_init data on our own. */
+ #define RO_AFTER_INIT_DATA
  
- 	NOTES :text :note
++#define EMITS_PT_NOTE
++
+ #include <asm-generic/vmlinux.lds.h>
+ #include <asm/vmlinux.lds.h>
  
--	.dummy : { *(.dummy) } :data
-+	.dummy : { *(.dummy) } :text
+diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+index 788e78978030..2e18bf5c1aed 100644
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -21,6 +21,8 @@
+ #define LOAD_OFFSET __START_KERNEL_map
+ #endif
  
- 	RO_DATA_SECTION(PAGE_SIZE)
++#define EMITS_PT_NOTE
++
+ #include <asm-generic/vmlinux.lds.h>
+ #include <asm/asm-offsets.h>
+ #include <asm/thread_info.h>
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index dae64600ccbf..f5dd45ce73f1 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -54,6 +54,14 @@
+ #define LOAD_OFFSET 0
+ #endif
  
-@@ -64,7 +64,7 @@ SECTIONS
- 	.data..ro_after_init : {
- 		 *(.data..ro_after_init)
- 		JUMP_TABLE_DATA
--	}
-+	} :data
- 	EXCEPTION_TABLE(16)
- 	. = ALIGN(PAGE_SIZE);
- 	__end_ro_after_init = .;
++/*
++ * Only some architectures want to have the .notes segment visible in
++ * a separate PT_NOTE ELF Program Header.
++ */
++#ifdef EMITS_PT_NOTE
++#define NOTES_HEADERS		:text :note
++#endif
++
+ /* Align . to a 8 byte boundary equals to maximum function alignment. */
+ #define ALIGN_FUNCTION()  . = ALIGN(8)
+ 
 -- 
 2.17.1
