@@ -1,7 +1,7 @@
 From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v3 16/29] x86: Move EXCEPTION_TABLE to RO_DATA segment
-Date: Tue, 29 Oct 2019 14:13:38 -0700
-Message-ID: <20191029211351.13243-17-keescook@chromium.org>
+Subject: [PATCH v3 17/29] alpha: Move EXCEPTION_TABLE to RO_DATA segment
+Date: Tue, 29 Oct 2019 14:13:39 -0700
+Message-ID: <20191029211351.13243-18-keescook@chromium.org>
 References: <20191029211351.13243-1-keescook@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,18 +14,18 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
 	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
 	:Resent-Message-ID:List-Owner;
-	bh=wI6DcODXcog0rHPfEA/Eo0qNwMDFBV5X2a58BUYMqcY=; b=FiJ5GAHc3q326LB6jlNDP9c+TU
-	xwtTPYFYLd4DIqc22i/T363mEeS88BoMtYn6hMwF/+k7Al47JICL553wyTTi+Y8awmYvRbe4o557v
-	QIEdfFNrbUfTwt68v/1ec2wa8jX9bctjH0xX/KX7El0FJ8x8+ft/vkrrm5TDDePD8hYFfhcNftYX1
-	iNELly+6jptLSTeeTpUamYT20slQAR6xJlxhsFycvVe5KnzRdUPrlUst9ItOQt5+ftFpGUYIC4bOG
-	kjNyhy9jCluNA3Q0FlLgMnvovRe/67vp6SfCKB1TclMI6i6425w7zCOfJZ7Cj+64hIcRrWVpk7MOy
-	1QJh1sFA==;
+	bh=n8DeqocfraIIkVa8+gsevviVEbY/VpH0359DpUjn/v8=; b=Wbgx6dKkWnxLAW6OUylqYj7tsG
+	WYu+owx93R1dYour+8XnMlcbCzhUVxFD63p+IQs0VBFUE0aDqcYG/VSzoxcVga3MCOdW2QCm9IuPN
+	EQp/yAndV4j1YdFQu1VfsGe/hwox6ZfdCY1pa/Xd43KlLAwb/oaa1lFrdhc9/GFY1E4YwjsWoNKPh
+	DIKO75bmmZ74kXbe3YX2oI4yN89ricaYYSy0RroNi4ChNYq3Ck0hdZ0KP1DB4vyQ6jcNmdSMskRao
+	uXn45b2cKi0NvD8xNFe9q74gHyoa8PlDlDliEJPjeJF2XVYJYDXOHFU12gN+hS+pSm5Ln5nUbJRQQ
+	W5DJzFTQ==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=aFfN5juCtHu18am/Lscu0/nkwdENrYqqL+l/G+SE/2I=;
- b=BLxlII5rDGoHmuigiKEk7antvAdvT/j3giLp5TnKagC9nulTOKvHicMJhgLTJ+AKjt
- LLFa576ZnM7bbaXQ2jb97Idx+ncHmLJpJMLmr4o4toROhc1fZICnCkh73tOmvHe/0Lk5
- zMTVw0I0Iv5ESqJhCqUkt09+m+oXMu/pMXKQI=
+ bh=C4qrRt1wPf/MBbE+aHUnjpKB3JMiaG6wbnmkvfoIFU0=;
+ b=KXyB+1WxXpRP1vWrTaJvj7/3l6dZgZlVJLpBPmFcRTDvj8Ze6KOK96KmDFNZoVzzIn
+ FNtvoTTZBOIZiH1ckNR5s2SdRXfn3U8w4gXuf0hv6uGKH33p7qdqUGgLP3Z3IwHF72Rt
+ c6i0OYnFF5k/KZH8c9IKWHI/dw4IAGrGwpkm0=
 In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -40,36 +40,32 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead
 To: Borislav Petkov <bp@alien8.de>
 Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-The exception table was needlessly marked executable. In preparation
-for execute-only memory, move the table into the RO_DATA segment via
-the new macro that can be used by any architectures that want to make
-a similar consolidation.
+Since the EXCEPTION_TABLE is read-only, collapse it into RO_DATA.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- arch/x86/kernel/vmlinux.lds.S | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/alpha/kernel/vmlinux.lds.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index a1a758e25b2b..b06d6e1188de 100644
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -22,6 +22,7 @@
- #endif
+diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
+index edc45f45523b..bc6f727278fd 100644
+--- a/arch/alpha/kernel/vmlinux.lds.S
++++ b/arch/alpha/kernel/vmlinux.lds.S
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
  
  #define EMITS_PT_NOTE
 +#define RO_EXCEPTION_TABLE_ALIGN	16
  
  #include <asm-generic/vmlinux.lds.h>
- #include <asm/asm-offsets.h>
-@@ -145,8 +146,6 @@ SECTIONS
- #endif
- 	} :text = 0x9090
+ #include <asm/thread_info.h>
+@@ -35,7 +36,6 @@ SECTIONS
+ 	_etext = .;	/* End of text section */
  
+ 	RO_DATA(4096)
 -	EXCEPTION_TABLE(16)
--
- 	/* End of text section, which should occupy whole number of pages */
- 	_etext = .;
- 	. = ALIGN(PAGE_SIZE);
+ 
+ 	/* Will be freed after init */
+ 	__init_begin = ALIGN(PAGE_SIZE);
 -- 
 2.17.1
