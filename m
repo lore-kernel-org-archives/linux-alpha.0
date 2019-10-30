@@ -1,63 +1,101 @@
-From: Segher Boessenkool <segher@kernel.crashing.org>
-Subject: Re: [PATCH v2 01/29] powerpc: Rename "notes" PT_NOTE to "note"
-Date: Tue, 29 Oct 2019 20:01:17 -0500
-Message-ID: <20191030010117.GJ28442@gate.crashing.org>
-References: <20191011000609.29728-1-keescook@chromium.org>
- <20191011000609.29728-2-keescook@chromium.org>
- <20191011082519.GI9749@gate.crashing.org> <201910110910.48270FC97@keescook>
- <20191011162552.GK9749@gate.crashing.org> <20191015165412.GD596@zn.tnic>
- <201910291414.F29F738B7@keescook>
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Subject: Re: [PATCH v6] numa: make node_to_cpumask_map() NUMA_NO_NODE aware
+Date: Wed, 30 Oct 2019 09:58:40 +0800
+Message-ID: <6c822a7d-499a-a031-5f67-848f590d5257@huawei.com>
+References: <20190925104108.GE4553@hirez.programming.kicks-ass.net>
+ <47fa4cee-8528-7c23-c7de-7be1b65aa2ae@huawei.com>
+ <bec80499-86d9-bf1f-df23-9044a8099992@arm.com>
+ <a5f0fc80-8e88-b781-77ce-1213e5d62125@huawei.com>
+ <20191010073212.GB18412@dhcp22.suse.cz>
+ <6cc94f9b-0d79-93a8-5ec2-4f6c21639268@huawei.com>
+ <20191011111539.GX2311@hirez.programming.kicks-ass.net>
+ <7fad58d6-5126-e8b8-a7d8-a91814da53ba@huawei.com>
+ <20191012074014.GA2037204@kroah.com>
+ <1ec704df-97a5-04b7-1f20-8e3db19440a3@huawei.com>
+ <20191029085336.GF31513@dhcp22.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:Mime-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=HPBrsxTKfNBBRtGHuXD50Y95V4dvD/zkwAg/FHxJn10=; b=BH14WW0nB7ucKB
-	uWJBUb3TwNa/8A620L0CE1Z6JGv3xjSwEVVMe0rlUw43FxMtbzYCDcJ/NgRLTRODdUsh9jSHHlCfS
-	/QMY/SRo6TDM6xpqCDtNzEy/EV9lKRIOyZ8p+jy/3PKRqBZYnFXRcXN7hEJA4FDXpUG5E5SqCq+KW
-	sjB+DaZ12bckgMHuGpgs+EyrevbrF1QhEoRWUhB3C8iRccUXX6WBNHrkS2O60dAUPrLL1i0yJs0Dt
-	Y0p8MWtESG9KdSRBWkdEGjAhmnOWCfBIihhywzsxKIQHsUYh18wTwBeW6n0niIUO+yatAl33o68L/
-	ra8UWqRId9AeEcqI9znw==;
-Content-Disposition: inline
-In-Reply-To: <201910291414.F29F738B7@keescook>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Kees Cook <keescook@chromium.org>
-Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, Dave Hansen <dave.hansen@linux.intel.com>, linux-ia64@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Arnd Bergmann <arnd@arndb.de>, linux-xtensa@linux-xtensa.org, Will Deacon <will@kernel.org>, x86@kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>, linux-parisc@vger.kernel.org, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191029085336.GF31513@dhcp22.suse.cz>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Michal Hocko <mhocko@kernel.org>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Peter Zijlstra <peterz@infradead.org>, Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.ke
 
-On Tue, Oct 29, 2019 at 02:15:39PM -0700, Kees Cook wrote:
-> On Tue, Oct 15, 2019 at 06:54:13PM +0200, Borislav Petkov wrote:
-> > On Fri, Oct 11, 2019 at 11:25:52AM -0500, Segher Boessenkool wrote:
-> > > Names *matter*, internal names doubly so.  So why replace a good name with
-> > > a worse name?  Because it is slightly less work for you?
-> > 
-> > So if we agree on the name "notes" and we decide to rename the other
-> > arches, this should all be done in a separate patchset anyway, and ontop
-> > of this one. And I believe Kees wouldn't mind doing it ontop since he's
-> > gotten his hands dirty already. :-P
+On 2019/10/29 16:53, Michal Hocko wrote:
+> On Mon 28-10-19 17:20:33, Yunsheng Lin wrote:
+>> On 2019/10/12 15:40, Greg KH wrote:
+>>> On Sat, Oct 12, 2019 at 02:17:26PM +0800, Yunsheng Lin wrote:
+>>>> add pci and acpi maintainer
+>>>> cc linux-pci@vger.kernel.org and linux-acpi@vger.kernel.org
+>>>>
+>>>> On 2019/10/11 19:15, Peter Zijlstra wrote:
+>>>>> On Fri, Oct 11, 2019 at 11:27:54AM +0800, Yunsheng Lin wrote:
+>>>>>> But I failed to see why the above is related to making node_to_cpumask_map()
+>>>>>> NUMA_NO_NODE aware?
+>>>>>
+>>>>> Your initial bug is for hns3, which is a PCI device, which really _MUST_
+>>>>> have a node assigned.
+>>>>>
+>>>>> It not having one, is a straight up bug. We must not silently accept
+>>>>> NO_NODE there, ever.
+>>>>>
+>>>>
+>>>> I suppose you mean reporting a lack of affinity when the node of a pcie
+>>>> device is not set by "not silently accept NO_NODE".
+>>>
+>>> If the firmware of a pci device does not provide the node information,
+>>> then yes, warn about that.
+>>>
+>>>> As Greg has asked about in [1]:
+>>>> what is a user to do when the user sees the kernel reporting that?
+>>>>
+>>>> We may tell user to contact their vendor for info or updates about
+>>>> that when they do not know about their system well enough, but their
+>>>> vendor may get away with this by quoting ACPI spec as the spec
+>>>> considering this optional. Should the user believe this is indeed a
+>>>> fw bug or a misreport from the kernel?
+>>>
+>>> Say it is a firmware bug, if it is a firmware bug, that's simple.
+>>>
+>>>> If this kind of reporting is common pratice and will not cause any
+>>>> misunderstanding, then maybe we can report that.
+>>>
+>>> Yes, please do so, that's the only way those boxes are ever going to get
+>>> fixed.  And go add the test to the "firmware testing" tool that is based
+>>> on Linux that Intel has somewhere, to give vendors a chance to fix this
+>>> before they ship hardware.
+>>>
+>>> This shouldn't be a big deal, we warn of other hardware bugs all the
+>>> time.
+>>
+>> Hi, all.
+>>
+>> The warning for the above case has been added in [1].
+>>
+>> So maybe it makes sense to make node_to_cpumask_map() NUMA_NO_NODE aware
+>> now?
+>>
+>> If Yes, this patch still can be applied to the latest linus' tree cleanly,
+>> Do I need to resend it?
+>>
 > 
-> I've added more rationale to patch #1 in the just-sent v3 of this
-> series. If I still can't convince you Segher, I'm happy to send "patch
-> 30/29" to do a bulk rename to "notes". Let me know. :)
+> By this patch you mean http://lkml.kernel.org/r/1568724534-146242-1-git-send-email-linyunsheng@huawei.com
+> right?
 
-I am still not convinced the worse name is a better name, no :-)  But if
-you don't want to do the work, and instead prefer the much smaller change,
-that is of course a fine decision.  Thank you!
+Yes.
 
-(I would be happy with such a 30/29 as well, of course.)
+> 
+> I would just resend it unless there is still a clear disagreement over
+> it.
 
+Ok, thanks.
 
-Segher
+Will resend it to see if there is still a disagreement over it.
+
+> 
+>> [1] https://lore.kernel.org/linux-pci/1571467543-26125-1-git-send-email-linyunsheng@huawei.com/
+> 
+
