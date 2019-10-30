@@ -1,32 +1,30 @@
-From: Kees Cook <keescook@chromium.org>
-Subject: [PATCH v3 25/29] xtensa: Move EXCEPTION_TABLE to RO_DATA segment
-Date: Tue, 29 Oct 2019 14:13:47 -0700
-Message-ID: <20191029211351.13243-26-keescook@chromium.org>
-References: <20191029211351.13243-1-keescook@chromium.org>
+From: Segher Boessenkool <segher@kernel.crashing.org>
+Subject: Re: [PATCH v2 01/29] powerpc: Rename "notes" PT_NOTE to "note"
+Date: Tue, 29 Oct 2019 20:01:17 -0500
+Message-ID: <20191030010117.GJ28442@gate.crashing.org>
+References: <20191011000609.29728-1-keescook@chromium.org>
+ <20191011000609.29728-2-keescook@chromium.org>
+ <20191011082519.GI9749@gate.crashing.org> <201910110910.48270FC97@keescook>
+ <20191011162552.GK9749@gate.crashing.org> <20191015165412.GD596@zn.tnic>
+ <201910291414.F29F738B7@keescook>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:References:
-	In-Reply-To:Message-Id:Date:Subject:To:From:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Owner;
-	bh=nZLC3HwluYG760xRkEz4XsZjxuBM0OK6XHxoCJ0YdFk=; b=kyuTJGe9sl0vw/w+fueJo2eMEy
-	V+bj8oILE9DMB+fsqGMrlP9zEZmXpTSWxuoenZgsMl1JT2NlYIha3t8vWaX83WLFUdiVl2CYUj7Go
-	XnWIXFV/bOBFZwkk/+ZHGhMlG6+ikh9CbQLfUApz5fxcB+aXyDI8Ysz+w907oDzcD2/IUuB7xWrtZ
-	3xvs+prBeIDu8olbq5tdILI8pJBoZYlwyKlc29olviIcpPvKCtjv9+xx12qUcjV3xZS5R+9YAcQT7
-	5/1Z4L5nKTyisWGi983S+C8JlFf2QUHw4wE5sKY+buR6Bp08Ag2I2Pg08keZz1WjurYD15CbODrX2
-	y8RsD0kA==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=6NYi1SpcPEk1nAcODb6GN96JVcdeHOxwVojV0owHqow=;
- b=dNy1CZ6LVOC5Xwy361W5/FOiLjIeZ1a3UnC8UVfqNFHlsVQ8qbaqjGnKLGJCwZ4kjW
- R9OofJoUgLk3AYwWdNoTsAeWT8lvKhX3jyPzcDsVrpYn7dDwO7ngiDpQ9N4Jp5AybLbF
- IvOGqmpRh0nWfHe5uyqSfrp6ttnHKPg3vSxs8=
-In-Reply-To: <20191029211351.13243-1-keescook@chromium.org>
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:Mime-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=HPBrsxTKfNBBRtGHuXD50Y95V4dvD/zkwAg/FHxJn10=; b=BH14WW0nB7ucKB
+	uWJBUb3TwNa/8A620L0CE1Z6JGv3xjSwEVVMe0rlUw43FxMtbzYCDcJ/NgRLTRODdUsh9jSHHlCfS
+	/QMY/SRo6TDM6xpqCDtNzEy/EV9lKRIOyZ8p+jy/3PKRqBZYnFXRcXN7hEJA4FDXpUG5E5SqCq+KW
+	sjB+DaZ12bckgMHuGpgs+EyrevbrF1QhEoRWUhB3C8iRccUXX6WBNHrkS2O60dAUPrLL1i0yJs0Dt
+	Y0p8MWtESG9KdSRBWkdEGjAhmnOWCfBIihhywzsxKIQHsUYh18wTwBeW6n0niIUO+yatAl33o68L/
+	ra8UWqRId9AeEcqI9znw==;
+Content-Disposition: inline
+In-Reply-To: <201910291414.F29F738B7@keescook>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
@@ -37,37 +35,29 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-ia64@vger.kernel.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Dave Hansen <dave.hansen@linux.intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
+To: Kees Cook <keescook@chromium.org>
+Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, Dave Hansen <dave.hansen@linux.intel.com>, linux-ia64@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Arnd Bergmann <arnd@arndb.de>, linux-xtensa@linux-xtensa.org, Will Deacon <will@kernel.org>, x86@kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-kernel@vger.kernel.org, Borislav Petkov <bp@alien8.de>, linux-parisc@vger.kernel.org, Andy Lutomirski <luto@kernel.org>, linux-alpha@vger.kernel.org, Rick Edgecombe <rick.p.edgecombe@intel.com>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org
 
-Since the EXCEPTION_TABLE is read-only, collapse it into RO_DATA.
+On Tue, Oct 29, 2019 at 02:15:39PM -0700, Kees Cook wrote:
+> On Tue, Oct 15, 2019 at 06:54:13PM +0200, Borislav Petkov wrote:
+> > On Fri, Oct 11, 2019 at 11:25:52AM -0500, Segher Boessenkool wrote:
+> > > Names *matter*, internal names doubly so.  So why replace a good name with
+> > > a worse name?  Because it is slightly less work for you?
+> > 
+> > So if we agree on the name "notes" and we decide to rename the other
+> > arches, this should all be done in a separate patchset anyway, and ontop
+> > of this one. And I believe Kees wouldn't mind doing it ontop since he's
+> > gotten his hands dirty already. :-P
+> 
+> I've added more rationale to patch #1 in the just-sent v3 of this
+> series. If I still can't convince you Segher, I'm happy to send "patch
+> 30/29" to do a bulk rename to "notes". Let me know. :)
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
----
- arch/xtensa/kernel/vmlinux.lds.S | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I am still not convinced the worse name is a better name, no :-)  But if
+you don't want to do the work, and instead prefer the much smaller change,
+that is of course a fine decision.  Thank you!
 
-diff --git a/arch/xtensa/kernel/vmlinux.lds.S b/arch/xtensa/kernel/vmlinux.lds.S
-index bdbd7c4056c1..0043d5858f14 100644
---- a/arch/xtensa/kernel/vmlinux.lds.S
-+++ b/arch/xtensa/kernel/vmlinux.lds.S
-@@ -14,6 +14,8 @@
-  * Joe Taylor <joe@tensilica.com, joetylr@yahoo.com>
-  */
- 
-+#define RO_EXCEPTION_TABLE_ALIGN	16
-+
- #include <asm-generic/vmlinux.lds.h>
- #include <asm/page.h>
- #include <asm/thread_info.h>
-@@ -130,7 +132,6 @@ SECTIONS
- 
-   .fixup   : { *(.fixup) }
- 
--  EXCEPTION_TABLE(16)
-   /* Data section */
- 
-   _sdata = .;
--- 
-2.17.1
+(I would be happy with such a 30/29 as well, of course.)
+
+
+Segher
