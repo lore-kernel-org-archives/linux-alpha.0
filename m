@@ -1,79 +1,134 @@
-From: Yunsheng Lin <linyunsheng@huawei.com>
-Subject: Re: [PATCH v7] numa: make node_to_cpumask_map() NUMA_NO_NODE aware
-Date: Thu, 31 Oct 2019 11:26:04 +0800
-Message-ID: <f7aa833e-3ed3-aba0-8c6e-8753a68182c2@huawei.com>
-References: <1572428068-180880-1-git-send-email-linyunsheng@huawei.com>
- <20191030101449.GW4097@hirez.programming.kicks-ass.net>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From: Mike Rapoport <rppt@kernel.org>
+Subject: [PATCH v2 00/13] mm: remove __ARCH_HAS_4LEVEL_HACK
+Date: Fri,  1 Nov 2019 10:39:31 +0200
+Message-ID: <1572597584-6390-1-git-send-email-rppt@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191030101449.GW4097@hirez.programming.kicks-ass.net>
-Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1572597597;
+        bh=JiXfDuhBekyoqYuliW1AsEEezqJqORNkhPnfcBWhLNA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XwzQhtRaq77RNZdSKxQRAZIyZXDe3BLfRf0c2n8EKtRNsa7Xc369V+mOYgiT72xOo
+         7I+apK4u5UXS/d8YOCalZuW7seaQgENizuUrEQGp9sAvQLvhPNWfNk03tMvfXBEsi5
+         cvwq1ADnFefDA5C5sYM7vHMiBb6Vo3fUr5oFcR8o=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: catalin.marinas@arm.com, will@kernel.org, mingo@redhat.com, bp@alien8.de, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, heiko.carstens@de.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org, jiaxun.yang@flygoat.com, chenhc@lemote.com, akpm@linux-foundation.org, rppt@linux.ibm.com, anshuman.khandual@arm.com, tglx@linutronix.de, cai@lca.pw, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, hpa@zytor.com, x86@kernel.org, dave.hansen@linux.intel.com, luto@kernel.org, l
+Content-Transfer-Encoding: 7bit
+To: linux-mm@kvack.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Ungerer <gerg@linux-m68k.org>, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Jeff Dike <jdike@addtoit.com>, "Kirill A. Shutemov" <kirill@shutemov.name>, Linus Torvalds <torvalds@linux-foundation.org>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Michal Simek <monstr@monstr.eu>, Peter Rosin <peda@axentia.se>, Richard Weinberger <richard@nod.at>, Rolf Eike Beer <eike-kernel@sf-tec.de>, Russell King <linux@armlinux.org.uk>, Sam
 
-On 2019/10/30 18:14, Peter Zijlstra wrote:
-> On Wed, Oct 30, 2019 at 05:34:28PM +0800, Yunsheng Lin wrote:
->> When passing the return value of dev_to_node() to cpumask_of_node()
->> without checking if the device's node id is NUMA_NO_NODE, there is
->> global-out-of-bounds detected by KASAN.
->>
->> From the discussion [1], NUMA_NO_NODE really means no node affinity,
->> which also means all cpus should be usable. So the cpumask_of_node()
->> should always return all cpus online when user passes the node id as
->> NUMA_NO_NODE, just like similar semantic that page allocator handles
->> NUMA_NO_NODE.
->>
->> But we cannot really copy the page allocator logic. Simply because the
->> page allocator doesn't enforce the near node affinity. It just picks it
->> up as a preferred node but then it is free to fallback to any other numa
->> node. This is not the case here and node_to_cpumask_map will only restrict
->> to the particular node's cpus which would have really non deterministic
->> behavior depending on where the code is executed. So in fact we really
->> want to return cpu_online_mask for NUMA_NO_NODE.
->>
->> Also there is a debugging version of node_to_cpumask_map() for x86 and
->> arm64, which is only used when CONFIG_DEBUG_PER_CPU_MAPS is defined, this
->> patch changes it to handle NUMA_NO_NODE as normal node_to_cpumask_map().
->>
->> [1] https://lkml.org/lkml/2019/9/11/66
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->> Suggested-by: Michal Hocko <mhocko@kernel.org>
->> Acked-by: Michal Hocko <mhocko@suse.com>
->> Acked-by: Paul Burton <paul.burton@mips.com> # MIPS bits
-> 
-> Still:
-> 
-> Nacked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-It seems I still misunderstood your meaning by "We must not silently accept
-NO_NODE there" in [1].
+Hi,
 
-I am not sure if there is still disagreement that the NO_NODE state for
-dev->numa_node should exist at all.
+These patches convert several architectures to use page table folding and
+remove __ARCH_HAS_4LEVEL_HACK along with include/asm-generic/4level-fixup.h.
 
-From the previous disscussion [2], you seem to propose to do "wild guess" or
-"fixup" for all devices(including virtual and physcial) with NO_NODE, which means
-the NO_NODE is needed anymore and should be removed when the "wild guess" or "fixup"
-is done. So maybe the reason for your nack here it is that there should be no other
-NO_NODE handling or fixing related to NO_NODE before the "wild guess" or "fixup"
-process is finished, so making node_to_cpumask_map() NUMA_NO_NODE aware is unnecessary.
+For the nommu configurations the folding is already implemented by the
+generic code so the only change was to use the appropriate header file.
 
-Or your reason for the nack is still specific to the pcie device without a numa node,
-the "wild guess" need to be done for this case before making node_to_cpumask_map()
-NUMA_NO_NODE?
+As for the rest, the changes are mostly about mechanical replacement of
+pgd accessors with pud/pmd ones and the addition of higher levels to page
+table traversals.
 
-Please help to clarify the reason for nack. Or is there still some other reason for the
-nack I missed from the previous disscussion?
+With Vineet's patches from "elide extraneous generated code for folded
+p4d/pud/pmd" series [1] there is a small shrink of the kernel size of about
+-0.01% for the defconfig build. 
 
-Thanks.
+The set is boot-tested on UML, qemu-{alpha,sparc} and aranym.
 
-[1] https://lore.kernel.org/lkml/20191011111539.GX2311@hirez.programming.kicks-ass.net/
-[2] https://lore.kernel.org/lkml/20191014094912.GY2311@hirez.programming.kicks-ass.net/
-> 
-> .
-> 
+v2 changes:
+* m68k: fixed ifdefs around pmd_t defintion to work with nommu
+* parisc: added conversion of hugetlb (thanks, Helge!); lexical fixups in
+  comments and changelog
+* collected acks
+
+[1] https://lore.kernel.org/lkml/20191016162400.14796-1-vgupta@synopsys.com
+
+Helge Deller (1):
+  parisc/hugetlb: use pgtable-nopXd instead of 4level-fixup
+
+Mike Rapoport (12):
+  alpha: use pgtable-nop4d instead of 4level-fixup
+  arm: nommu: use pgtable-nopud instead of 4level-fixup
+  c6x: use pgtable-nopud instead of 4level-fixup
+  m68k: nommu: use pgtable-nopud instead of 4level-fixup
+  m68k: mm: use pgtable-nopXd instead of 4level-fixup
+  microblaze: use pgtable-nopmd instead of 4level-fixup
+  nds32: use pgtable-nopmd instead of 4level-fixup
+  parisc: use pgtable-nopXd instead of 4level-fixup
+  sparc32: use pgtable-nopud instead of 4level-fixup
+  um: remove unused pxx_offset_proc() and addr_pte() functions
+  um: add support for folded p4d page tables
+  mm: remove __ARCH_HAS_4LEVEL_HACK and
+    include/asm-generic/4level-fixup.h
+
+ arch/alpha/include/asm/pgalloc.h         |  4 +-
+ arch/alpha/include/asm/pgtable.h         | 24 ++++-----
+ arch/alpha/mm/init.c                     | 12 +++--
+ arch/arm/include/asm/pgtable.h           |  2 +-
+ arch/c6x/include/asm/pgtable.h           |  2 +-
+ arch/m68k/include/asm/mcf_pgalloc.h      |  7 ---
+ arch/m68k/include/asm/mcf_pgtable.h      | 28 ++++-------
+ arch/m68k/include/asm/mmu_context.h      | 12 ++++-
+ arch/m68k/include/asm/motorola_pgalloc.h |  4 +-
+ arch/m68k/include/asm/motorola_pgtable.h | 32 +++++++-----
+ arch/m68k/include/asm/page.h             |  9 ++--
+ arch/m68k/include/asm/pgtable_mm.h       | 11 +++--
+ arch/m68k/include/asm/pgtable_no.h       |  2 +-
+ arch/m68k/include/asm/sun3_pgalloc.h     |  5 --
+ arch/m68k/include/asm/sun3_pgtable.h     | 18 -------
+ arch/m68k/kernel/sys_m68k.c              | 10 +++-
+ arch/m68k/mm/init.c                      |  6 ++-
+ arch/m68k/mm/kmap.c                      | 36 ++++++++++----
+ arch/m68k/mm/mcfmmu.c                    | 16 +++++-
+ arch/m68k/mm/motorola.c                  | 17 ++++---
+ arch/microblaze/include/asm/page.h       |  3 --
+ arch/microblaze/include/asm/pgalloc.h    | 16 ------
+ arch/microblaze/include/asm/pgtable.h    | 32 +-----------
+ arch/microblaze/kernel/signal.c          | 10 ++--
+ arch/microblaze/mm/init.c                |  7 ++-
+ arch/microblaze/mm/pgtable.c             | 13 ++++-
+ arch/nds32/include/asm/page.h            |  3 --
+ arch/nds32/include/asm/pgalloc.h         |  3 --
+ arch/nds32/include/asm/pgtable.h         | 12 +----
+ arch/nds32/include/asm/tlb.h             |  1 -
+ arch/nds32/kernel/pm.c                   |  4 +-
+ arch/nds32/mm/fault.c                    | 16 ++++--
+ arch/nds32/mm/init.c                     | 11 +++--
+ arch/nds32/mm/mm-nds32.c                 |  6 ++-
+ arch/nds32/mm/proc.c                     | 26 ++++++----
+ arch/parisc/include/asm/page.h           | 30 ++++++-----
+ arch/parisc/include/asm/pgalloc.h        | 41 ++++++---------
+ arch/parisc/include/asm/pgtable.h        | 52 ++++++++++---------
+ arch/parisc/include/asm/tlb.h            |  2 +
+ arch/parisc/kernel/cache.c               | 13 +++--
+ arch/parisc/kernel/pci-dma.c             |  9 +++-
+ arch/parisc/mm/fixmap.c                  | 10 ++--
+ arch/parisc/mm/hugetlbpage.c             | 18 ++++---
+ arch/sparc/include/asm/pgalloc_32.h      |  6 +--
+ arch/sparc/include/asm/pgtable_32.h      | 28 +++++------
+ arch/sparc/mm/fault_32.c                 | 11 ++++-
+ arch/sparc/mm/highmem.c                  |  6 ++-
+ arch/sparc/mm/io-unit.c                  |  6 ++-
+ arch/sparc/mm/iommu.c                    |  6 ++-
+ arch/sparc/mm/srmmu.c                    | 51 ++++++++++++++-----
+ arch/um/include/asm/pgtable-2level.h     |  1 -
+ arch/um/include/asm/pgtable-3level.h     |  1 -
+ arch/um/include/asm/pgtable.h            |  3 ++
+ arch/um/kernel/mem.c                     | 25 +++++++++-
+ arch/um/kernel/skas/mmu.c                | 12 ++++-
+ arch/um/kernel/skas/uaccess.c            |  7 ++-
+ arch/um/kernel/tlb.c                     | 85 +++++++++++++++++++-------------
+ arch/um/kernel/trap.c                    |  4 +-
+ include/asm-generic/4level-fixup.h       | 40 ---------------
+ include/asm-generic/tlb.h                |  2 -
+ include/linux/mm.h                       | 10 ++--
+ mm/memory.c                              |  8 ---
+ 62 files changed, 493 insertions(+), 414 deletions(-)
+ delete mode 100644 include/asm-generic/4level-fixup.h
+
+-- 
+2.7.4
 
