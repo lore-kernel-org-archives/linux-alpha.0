@@ -1,76 +1,126 @@
-From: "tip-bot2 for Kees Cook" <tip-bot2@linutronix.de>
-Subject: [tip: x86/build] h8300: Move EXCEPTION_TABLE to RO_DATA segment
-Date: Tue, 05 Nov 2019 09:27:29 -0000
-Message-ID: <157294604912.29376.17605792463446039356.tip-bot2@tip-bot2>
-References: <20191029211351.13243-21-keescook@chromium.org>
-Reply-To: linux-kernel@vger.kernel.org
+From: Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH 07/21] parisc: remove __ioremap
+Date: Tue, 5 Nov 2019 15:29:05 +0100
+Message-ID: <23dd12c1-8af2-dd97-18f2-da3203d49a48@gmx.de>
+References: <20191029064834.23438-1-hch@lst.de>
+ <20191029064834.23438-8-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191029211351.13243-21-keescook@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-tip-commits@vger.kernel.org
-Cc: Kees Cook <keescook@chromium.org>, Borislav Petkov <bp@suse.de>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Dave Hansen <dave.hansen@linux.intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Segher Boessenkool <segher@kernel.crashing.org>, uclinux-h8-devel@lists.sourceforge.jp, Will Deacon <will@kernel.org>, x86-ml <x86@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.j>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:
+	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
+	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=xU3/SjnYc0vg7m6PuBiA0Ngr6pnFCRlsKlRt8Wybdhc=; b=Pg1/QobcgImx9r
+	BDXRChwaVmlUb6Ixfn6PZChZLZOn1pJIWWtBHDwhi4u4VrEZKsC9vakwQgzbtT9+lkSulTq6lkurN
+	lkplav1wu6UeG2jdoWFAZtaXWmP7LJtggGC+kw1dOj0/UblRW04AmJc0/u1kAETP2yzl/jSQ4QWGC
+	pWKEjVbR3JV7bLFa+8iBqOpPubntjXNwPEuTsnTVj1P0atDzGHIMp5fMPviLqKMY/xVbTquSjSimc
+	UgnpT3EQcrzuW9y3fdq4zBuO6aHceCwRDcgZxlpCW3kL3c+oJ5Wj+y81MJel4YIOWeJc3SIlVeRTl
+	wAhSIfcrI70beeYu7mdA==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+ s=badeba3b8450; t=1572964151;
+ bh=1ccRhMfOjQfCWgxZtJzM4hP1zgDfrNPilzzEdo9nVpk=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=Y0fiQZVlL53W17TOlZbi6XyMv5zjwVPRrWuOHJMTc50mzth8UTL/m2E1lYcbSheEF
+ 8jorhA7eYWbpK5PWaPEPGi/wJtl+L33sVAQqL300Yc0SHDjTKJjeHWLOB6GN35q3YS
+ +a7NPrubb/JJYnsmHtwYU8sEHifg8Yl87BpLmw98=
+In-Reply-To: <20191029064834.23438-8-hch@lst.de>
+Content-Language: en-US
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Vincent Chen <deanbo422@gmail.com>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-hexagon@vger.kernel.org, x86@kernel.org, linux-snps-arc@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, Greentime Hu <green.hu@gmail.com>, nios2-dev@lists.rocketboards.org, Guan Xuetao <gxt@pku.edu.cn>, linux-arm-kernel@lists.infradead.org, Michal Simek <monstr@monstr.eu>, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mtd@lists.infradead.org
 
-The following commit has been merged into the x86/build branch of tip:
+On 29.10.19 07:48, Christoph Hellwig wrote:
+> __ioremap is always called with the _PAGE_NO_CACHE, so fold the whole
+> thing and rename it to ioremap.  This also allows to remove the special
+> EISA quirk to force _PAGE_NO_CACHE.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Commit-ID:     380e57e2d41e9631132beccac30058228dfd376f
-Gitweb:        https://git.kernel.org/tip/380e57e2d41e9631132beccac30058228dfd376f
-Author:        Kees Cook <keescook@chromium.org>
-AuthorDate:    Tue, 29 Oct 2019 14:13:42 -07:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Mon, 04 Nov 2019 18:12:55 +01:00
+Acked-by: Helge Deller <deller@gmx.de>
 
-h8300: Move EXCEPTION_TABLE to RO_DATA segment
+Helge
 
-Since the EXCEPTION_TABLE is read-only, collapse it into RO_DATA.
-
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-arch@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-c6x-dev@linux-c6x.org
-Cc: linux-ia64@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-s390@vger.kernel.org
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Michal Simek <monstr@monstr.eu>
-Cc: Rick Edgecombe <rick.p.edgecombe@intel.com>
-Cc: Segher Boessenkool <segher@kernel.crashing.org>
-Cc: uclinux-h8-devel@lists.sourceforge.jp
-Cc: Will Deacon <will@kernel.org>
-Cc: x86-ml <x86@kernel.org>
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
-Link: https://lkml.kernel.org/r/20191029211351.13243-21-keescook@chromium.org
----
- arch/h8300/kernel/vmlinux.lds.S | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/arch/h8300/kernel/vmlinux.lds.S b/arch/h8300/kernel/vmlinux.lds.S
-index 2ac7bdc..6b1afc2 100644
---- a/arch/h8300/kernel/vmlinux.lds.S
-+++ b/arch/h8300/kernel/vmlinux.lds.S
-@@ -1,4 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 */
-+
-+#define RO_EXCEPTION_TABLE_ALIGN	16
-+
- #include <asm-generic/vmlinux.lds.h>
- #include <asm/page.h>
- #include <asm/thread_info.h>
-@@ -37,7 +40,6 @@ SECTIONS
- #endif
- 	_etext = . ;
- 	}
--	EXCEPTION_TABLE(16)
- 	RO_DATA(4)
- 	ROMEND = .;
- #if defined(CONFIG_ROMKERNEL)
+> ---
+>  arch/parisc/include/asm/io.h | 11 +----------
+>  arch/parisc/mm/ioremap.c     | 10 ++++------
+>  2 files changed, 5 insertions(+), 16 deletions(-)
+>
+> diff --git a/arch/parisc/include/asm/io.h b/arch/parisc/include/asm/io.h
+> index 93d37010b375..46212b52c23e 100644
+> --- a/arch/parisc/include/asm/io.h
+> +++ b/arch/parisc/include/asm/io.h
+> @@ -127,16 +127,7 @@ static inline void gsc_writeq(unsigned long long val, unsigned long addr)
+>  /*
+>   * The standard PCI ioremap interfaces
+>   */
+> -
+> -extern void __iomem * __ioremap(unsigned long offset, unsigned long size, unsigned long flags);
+> -
+> -/* Most machines react poorly to I/O-space being cacheable... Instead let's
+> - * define ioremap() in terms of ioremap_nocache().
+> - */
+> -static inline void __iomem * ioremap(unsigned long offset, unsigned long size)
+> -{
+> -	return __ioremap(offset, size, _PAGE_NO_CACHE);
+> -}
+> +void __iomem *ioremap(unsigned long offset, unsigned long size);
+>  #define ioremap_nocache(off, sz)	ioremap((off), (sz))
+>  #define ioremap_wc			ioremap_nocache
+>  #define ioremap_uc			ioremap_nocache
+> diff --git a/arch/parisc/mm/ioremap.c b/arch/parisc/mm/ioremap.c
+> index f29f682352f0..6e7c005aa09b 100644
+> --- a/arch/parisc/mm/ioremap.c
+> +++ b/arch/parisc/mm/ioremap.c
+> @@ -25,7 +25,7 @@
+>   * have to convert them into an offset in a page-aligned mapping, but the
+>   * caller shouldn't need to know that small detail.
+>   */
+> -void __iomem * __ioremap(unsigned long phys_addr, unsigned long size, unsigned long flags)
+> +void __iomem *ioremap(unsigned long phys_addr, unsigned long size)
+>  {
+>  	void __iomem *addr;
+>  	struct vm_struct *area;
+> @@ -36,10 +36,8 @@ void __iomem * __ioremap(unsigned long phys_addr, unsigned long size, unsigned l
+>  	unsigned long end = phys_addr + size - 1;
+>  	/* Support EISA addresses */
+>  	if ((phys_addr >= 0x00080000 && end < 0x000fffff) ||
+> -	    (phys_addr >= 0x00500000 && end < 0x03bfffff)) {
+> +	    (phys_addr >= 0x00500000 && end < 0x03bfffff))
+>  		phys_addr |= F_EXTEND(0xfc000000);
+> -		flags |= _PAGE_NO_CACHE;
+> -	}
+>  #endif
+>
+>  	/* Don't allow wraparound or zero size */
+> @@ -65,7 +63,7 @@ void __iomem * __ioremap(unsigned long phys_addr, unsigned long size, unsigned l
+>  	}
+>
+>  	pgprot = __pgprot(_PAGE_PRESENT | _PAGE_RW | _PAGE_DIRTY |
+> -			  _PAGE_ACCESSED | flags);
+> +			  _PAGE_ACCESSED | _PAGE_NO_CACHE);
+>
+>  	/*
+>  	 * Mappings have to be page-aligned
+> @@ -90,7 +88,7 @@ void __iomem * __ioremap(unsigned long phys_addr, unsigned long size, unsigned l
+>
+>  	return (void __iomem *) (offset + (char __iomem *)addr);
+>  }
+> -EXPORT_SYMBOL(__ioremap);
+> +EXPORT_SYMBOL(ioremap);
+>
+>  void iounmap(const volatile void __iomem *io_addr)
+>  {
+>
