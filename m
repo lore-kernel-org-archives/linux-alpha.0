@@ -1,61 +1,20 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH v3 13/13] mm: remove __ARCH_HAS_4LEVEL_HACK and
- include/asm-generic/4level-fixup.h
-Date: Mon, 4 Nov 2019 12:02:22 +0200
-Message-ID: <20191104100221.GC23288@rapoport-lnx>
-References: <1572850587-20314-1-git-send-email-rppt@kernel.org>
- <1572850587-20314-14-git-send-email-rppt@kernel.org>
- <CAK8P3a3e7oG5NMPbhgQOoKvB0Z5ui0iAHHFqyAxy87Nd903Vmw@mail.gmail.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 20/21] csky: remove ioremap_cache
+Date: Tue, 5 Nov 2019 02:26:17 +0100
+Message-ID: <20191105012617.GA31847@lst.de>
+References: <20191017174554.29840-1-hch@lst.de> <20191017174554.29840-21-hch@lst.de> <CAJF2gTQ_VeBfi1uaafgtp+uA2skq-w2px12ig=5QD1O9J+PgbA@mail.gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572861754;
-        bh=RwuWoZThXjDNqHvn7aTTzoFOSaLFxJpu4JuE9FFAq2g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZQXJDyCwPvvErBhc/JPFvqf0ahcZeThDhCNKls9A5hiFMXg7/bxxaR+FRMEZqomQo
-         7UkvkxzVQJ8UmcmpblINg/P6vMg4z3dq8+ii2/Ci/olfoMvg0slJoe+lmMsP+7zPv5
-         4p/WigolfFBvLYahqoidIrM5ZrPlGWpuHfVEwAZI=
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a3e7oG5NMPbhgQOoKvB0Z5ui0iAHHFqyAxy87Nd903Vmw@mail.gmail.com>
+In-Reply-To: <CAJF2gTQ_VeBfi1uaafgtp+uA2skq-w2px12ig=5QD1O9J+PgbA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Linux-MM <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, "David S. Miller" <davem@davemloft.net>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Ungerer <gerg@linux-m68k.org>, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jeff Dike <jdike@addtoit.com>, "Kirill A. Shutemov" <kirill@shutemov.name>, Linus Torvalds <torvalds@linux-foundation.org>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Michal Simek <monstr@monstr.eu>, Peter Rosin <peda@axentia.se>, Richard Weinberger <richard@nod.at>, Rolf Eike Beer <eike-kernel@sf-tec.de>, Russell King <linux@armlinux.org.uk>, Sam
+To: Guo Ren <guoren@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>, Michal Simek <monstr@monstr.eu>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, nios2-dev@lists.rocketboards.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mtd@lists.infradead.org, linux-arch <linux-arch@vger.kernel.org>, Linux Kernel Mailing List <>
 
-On Mon, Nov 04, 2019 at 10:11:51AM +0100, Arnd Bergmann wrote:
-> On Mon, Nov 4, 2019 at 7:58 AM Mike Rapoport <rppt@kernel.org> wrote:
-> >
-> > From: Mike Rapoport <rppt@linux.ibm.com>
-> >
-> > There are no architectures that use include/asm-generic/4level-fixup.h
-> > therefore it can be removed along with __ARCH_HAS_4LEVEL_HACK define.
-> >
-> > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> 
-> For asm-generic:
-> 
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> Have you discussed how the series should get merged? I assume an initial
-> set of patches can just go through architecture maintainer trees, but
-> whatever patches don't get picked up that way would go through either
-> Andrew's -mm tree (for memory management) or my asm-generic tree
-> (for cross-architecture cleanups).
+On Mon, Oct 21, 2019 at 03:58:28PM +0800, Guo Ren wrote:
+> Acked-by: Guo Ren <guoren@kernel.org>
 
-I thought that the entire set could go via -mm or asm-generic, but if
-architecture maintainers would prefer to pick relevant patches to the arch
-trees, I'll resend the rest afterwards.
- 
-> Since there is still at least one regression, I expect not to do anything
-> for now. Please let me know when/if you expect me to merge the
-> remaining patches.
-
-Sure, thanks!
-
->       Arnd
-
--- 
-Sincerely yours,
-Mike.
+Can you also take a look at the next patch and give me a review?
