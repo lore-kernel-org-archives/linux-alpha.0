@@ -1,146 +1,57 @@
-From: Dmitry Safonov <dima@arista.com>
-Subject: [PATCH 02/50] alpha: Add show_stack_loglvl()
-Date: Wed,  6 Nov 2019 03:04:53 +0000
-Message-ID: <20191106030542.868541-3-dima@arista.com>
-References: <20191106030542.868541-1-dima@arista.com>
+From: Michael Schmitz <schmitzmic@gmail.com>
+Subject: Re: [PATCH v3 05/13] m68k: mm: use pgtable-nopXd instead of
+ 4level-fixup
+Date: Wed, 6 Nov 2019 20:28:59 +1300
+Message-ID: <15fafca0-e4c4-1f46-4f19-9b2a177f7d6b@gmail.com>
+References: <1572850587-20314-1-git-send-email-rppt@kernel.org>
+ <1572850587-20314-6-git-send-email-rppt@kernel.org>
+ <CAMuHMdUG3V7uxzhbetw75vVeobeP0-bQySb3r=0V5XujUF123g@mail.gmail.com>
+ <20191104094748.GB23288@rapoport-lnx>
+ <CAMuHMdVHsNyLxhaxZcVdLvQ1PUnb=2_+ECPWVD0234V+qu+kOw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4PbPbG3xiwoOJTkylYr8VA6+FLnFH1+TvXbWRkNE+nU=;
-        b=Y78ib1EAmjlsARGcXbwqm9h8m+Cl/nHAT2wuTf58ICIMhaYMJ/xFZCpMMZRmfuYB6P
-         iRoBMOXe4IL9fNry8o+5G+c90uPUP/mDzS4Drkgfd7ZSUA97U317PThYtttJgJQuoRb3
-         WPkVBXS+alxCP3Musb9oxPejy9RpiKLy/3dyLieHKWqhryvV1N2vWCVg99HERCE6+mgz
-         bFmdzeRFg4+3KfU3pRlKpnxsylHPjXU5nkdQzJ2ClfyNADDwDcyneAwz9Hm7md9u48xb
-         Fl0yKQUcss+4I5F9/2xiazlJhRPcn+eAFgR0PLHGQte3/EDoJ/wXmAt2bRPlv5eAVoyE
-         7N4A==
-In-Reply-To: <20191106030542.868541-1-dima@arista.com>
+        d=gmail.com; s=20161025;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=CZXGdk9uFu2d7V8fak5kkfAh72DjR9+d3K1XsYdLz38=;
+        b=oGcJVGIO9nAfwZ9U9gs9P3ysGflXOrasF6qEiEhb6WpEy/r0O4b4WcXcLFHBABCJ7R
+         QUOnBvxM0K+ORQ5GEwdd68Rbvuyj5JajApo+O20Qk7aw+1UO9FWS+6+LzSfRmtqSLrdq
+         xvCHWuUmC+aEABOOmXkQjFb1AvmC1AZ+Bwjcb+sSQtS1GRTuQLMEbpuch+Wd9OB5B9nR
+         MEP3ZWqL3l8J6HAnG5DRusZtOBOPsYcpMAZ4FMs88UBSyQ00BeMuWCLwvOdu7PSHWk++
+         XtgmclZQxAc89Qmj6l/gKcwAVt76pZv/YKMWttV48g2arcZGneYo8SkwGAFkxvqsnIJf
+         JInQ==
+In-Reply-To: <CAMuHMdVHsNyLxhaxZcVdLvQ1PUnb=2_+ECPWVD0234V+qu+kOw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: Dmitry Safonov <0x7f454c46@gmail.com>, Dmitry Safonov <dima@arista.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ingo Molnar <mingo@kernel.org>, Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Geert Uytterhoeven <geert@linux-m68k.org>, Mike Rapoport <rppt@kernel.org>
+Cc: Linux MM <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, Greentime Hu <green.hu@gmail.com>, Greg Ungerer <gerg@linux-m68k.org>, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jeff Dike <jdike@addtoit.com>, "Kirill A. Shutemov" <kirill@shutemov.name>, Linus Torvalds <torvalds@linux-foundation.org>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Michal Simek <monstr@monstr.eu>, Peter Rosin <peda@axentia.se>, Richard Weinberger <richard@nod.at>, Rolf Eike Beer <eike-kernel@sf-tec.de>, Russell King <linux@armlinux.org.uk>, Sam Creasey <sammy@sam>
 
-Currently, the log-level of show_stack() depends on a platform
-realization. It creates situations where the headers are printed with
-lower log level or higher than the stacktrace (depending on
-a platform or user).
+Hi Geert,
 
-Furthermore, it forces the logic decision from user to an architecture
-side. In result, some users as sysrq/kdb/etc are doing tricks with
-temporary rising console_loglevel while printing their messages.
-And in result it not only may print unwanted messages from other CPUs,
-but also omit printing at all in the unlucky case where the printk()
-was deferred.
+Am 04.11.2019 um 22:53 schrieb Geert Uytterhoeven:
+>>> This indeed boots fine on ARAnyM, which emulates on 68040.
+>>> It would be good to have some boot testing on '020/030, too.
+>>
+>> To be honest, I have no idea how to to that :)
+>
+> Sure. This was more a request for the fellow m68k users.
 
-Introducing log-level parameter and KERN_UNSUPPRESSED [1] seems
-an easier approach than introducing more printk buffers.
-Also, it will consolidate printings with headers.
+I heard you :-) Still doing more regression testing on the latest SCSI 
+fix, but I can schedule this next.
 
-Introduce show_stack_loglvl(), that eventually will substitute
-show_stack().
+Cheers,
 
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: linux-alpha@vger.kernel.org
-[1]: https://lore.kernel.org/lkml/20190528002412.1625-1-dima@arista.com/T/#u
-Signed-off-by: Dmitry Safonov <dima@arista.com>
----
- arch/alpha/kernel/traps.c | 28 +++++++++++++++++-----------
- 1 file changed, 17 insertions(+), 11 deletions(-)
+	Michael
 
-diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index f6b9664ac504..2402f1777f54 100644
---- a/arch/alpha/kernel/traps.c
-+++ b/arch/alpha/kernel/traps.c
-@@ -121,10 +121,10 @@ dik_show_code(unsigned int *pc)
- }
- 
- static void
--dik_show_trace(unsigned long *sp)
-+dik_show_trace(unsigned long *sp, const char *loglvl)
- {
- 	long i = 0;
--	printk("Trace:\n");
-+	printk("%sTrace:\n", loglvl);
- 	while (0x1ff8 & (unsigned long) sp) {
- 		extern char _stext[], _etext[];
- 		unsigned long tmp = *sp;
-@@ -133,24 +133,25 @@ dik_show_trace(unsigned long *sp)
- 			continue;
- 		if (tmp >= (unsigned long) &_etext)
- 			continue;
--		printk("[<%lx>] %pSR\n", tmp, (void *)tmp);
-+		printk("%s[<%lx>] %pSR\n", loglvl, tmp, (void *)tmp);
- 		if (i > 40) {
--			printk(" ...");
-+			printk("%s ...", loglvl);
- 			break;
- 		}
- 	}
--	printk("\n");
-+	printk("%s\n", loglvl);
- }
- 
- static int kstack_depth_to_print = 24;
- 
--void show_stack(struct task_struct *task, unsigned long *sp)
-+void show_stack_loglvl(struct task_struct *task, unsigned long *sp,
-+			const char *loglvl)
- {
- 	unsigned long *stack;
- 	int i;
- 
- 	/*
--	 * debugging aid: "show_stack(NULL);" prints the
-+	 * debugging aid: "show_stack(NULL, NULL, KERN_EMERG);" prints the
- 	 * back trace for this cpu.
- 	 */
- 	if(sp==NULL)
-@@ -163,14 +164,19 @@ void show_stack(struct task_struct *task, unsigned long *sp)
- 		if ((i % 4) == 0) {
- 			if (i)
- 				pr_cont("\n");
--			printk("       ");
-+			printk("%s       ", loglvl);
- 		} else {
- 			pr_cont(" ");
- 		}
- 		pr_cont("%016lx", *stack++);
- 	}
- 	pr_cont("\n");
--	dik_show_trace(sp);
-+	dik_show_trace(sp, loglvl);
-+}
-+
-+void show_stack(struct task_struct *task, unsigned long *sp)
-+{
-+	show_stack_loglvl(task, sp, KERN_DEFAULT);
- }
- 
- void
-@@ -184,7 +190,7 @@ die_if_kernel(char * str, struct pt_regs *regs, long err, unsigned long *r9_15)
- 	printk("%s(%d): %s %ld\n", current->comm, task_pid_nr(current), str, err);
- 	dik_show_regs(regs, r9_15);
- 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
--	dik_show_trace((unsigned long *)(regs+1));
-+	dik_show_trace((unsigned long *)(regs+1), KERN_DEFAULT);
- 	dik_show_code((unsigned int *)regs->pc);
- 
- 	if (test_and_set_thread_flag (TIF_DIE_IF_KERNEL)) {
-@@ -625,7 +631,7 @@ do_entUna(void * va, unsigned long opcode, unsigned long reg,
- 	printk("gp = %016lx  sp = %p\n", regs->gp, regs+1);
- 
- 	dik_show_code((unsigned int *)pc);
--	dik_show_trace((unsigned long *)(regs+1));
-+	dik_show_trace((unsigned long *)(regs+1), KERN_DEFAULT);
- 
- 	if (test_and_set_thread_flag (TIF_DIE_IF_KERNEL)) {
- 		printk("die_if_kernel recursion detected.\n");
--- 
-2.23.0
-
+> But don't worry too much about it.  If it breaks '020/'030, we can fix
+> that later.
+>
+> Thanks!
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
