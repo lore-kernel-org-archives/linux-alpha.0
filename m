@@ -1,57 +1,84 @@
-From: Michael Schmitz <schmitzmic@gmail.com>
-Subject: Re: [PATCH v3 05/13] m68k: mm: use pgtable-nopXd instead of
- 4level-fixup
-Date: Wed, 6 Nov 2019 20:28:59 +1300
-Message-ID: <15fafca0-e4c4-1f46-4f19-9b2a177f7d6b@gmail.com>
-References: <1572850587-20314-1-git-send-email-rppt@kernel.org>
- <1572850587-20314-6-git-send-email-rppt@kernel.org>
- <CAMuHMdUG3V7uxzhbetw75vVeobeP0-bQySb3r=0V5XujUF123g@mail.gmail.com>
- <20191104094748.GB23288@rapoport-lnx>
- <CAMuHMdVHsNyLxhaxZcVdLvQ1PUnb=2_+ECPWVD0234V+qu+kOw@mail.gmail.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 00/50] Add log level to show_stack()
+Date: Wed, 6 Nov 2019 09:35:38 +0100
+Message-ID: <20191106083538.z5nlpuf64cigxigh@pathway.suse.cz>
+References: <20191106030542.868541-1-dima@arista.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=CZXGdk9uFu2d7V8fak5kkfAh72DjR9+d3K1XsYdLz38=;
-        b=oGcJVGIO9nAfwZ9U9gs9P3ysGflXOrasF6qEiEhb6WpEy/r0O4b4WcXcLFHBABCJ7R
-         QUOnBvxM0K+ORQ5GEwdd68Rbvuyj5JajApo+O20Qk7aw+1UO9FWS+6+LzSfRmtqSLrdq
-         xvCHWuUmC+aEABOOmXkQjFb1AvmC1AZ+Bwjcb+sSQtS1GRTuQLMEbpuch+Wd9OB5B9nR
-         MEP3ZWqL3l8J6HAnG5DRusZtOBOPsYcpMAZ4FMs88UBSyQ00BeMuWCLwvOdu7PSHWk++
-         XtgmclZQxAc89Qmj6l/gKcwAVt76pZv/YKMWttV48g2arcZGneYo8SkwGAFkxvqsnIJf
-         JInQ==
-In-Reply-To: <CAMuHMdVHsNyLxhaxZcVdLvQ1PUnb=2_+ECPWVD0234V+qu+kOw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Geert Uytterhoeven <geert@linux-m68k.org>, Mike Rapoport <rppt@kernel.org>
-Cc: Linux MM <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, Greentime Hu <green.hu@gmail.com>, Greg Ungerer <gerg@linux-m68k.org>, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jeff Dike <jdike@addtoit.com>, "Kirill A. Shutemov" <kirill@shutemov.name>, Linus Torvalds <torvalds@linux-foundation.org>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Michal Simek <monstr@monstr.eu>, Peter Rosin <peda@axentia.se>, Richard Weinberger <richard@nod.at>, Rolf Eike Beer <eike-kernel@sf-tec.de>, Russell King <linux@armlinux.org.uk>, Sam Creasey <sammy@sam>
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=ZOUbIOndllY52PxyI7VeQqPjnhXSLOqlOyt0VDWf/Bs=; b=IDXvMO3rZIZ96V
+	vEW765ZBN89Cfyp5ho7guY50vx73+sR9SiVctpT8XFOjyd7JNF9lZtAmXOEBrf3DsgJgt8SWpfgQF
+	MqzbnVRgsKAUI6quRxHbUP3S5VG+1nqzfTZzZHQAOYmDvoD1PgFdj3oSTnkuOTYNBSATC8MkoC6SB
+	2jD4g/xU9TUBntT8T3Q0ZlR2/q4eiTN1YwQjzb2+HZlC781SpgqzZ+VA7MTm1n3Tb40BKmja5dxxN
+	cEkjW2sa4zIq/avgP9AKYVIwqTmtrme49sx5wIf4eScse6kPrtf3OIZ0ykh6GuItL2A4nkj/Yu26t
+	xpvownzCwiFismB3Tm3Q==;
+Content-Disposition: inline
+In-Reply-To: <20191106030542.868541-1-dima@arista.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: Dmitry Safonov <dima@arista.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Ralf Baechle <r>
 
-Hi Geert,
+On Wed 2019-11-06 03:04:51, Dmitry Safonov wrote:
+> Add log level argument to show_stack().
+> Done in three stages:
+> 1. Introducing show_stack_loglvl() for every architecture
+> 2. Migrating old users with an explicit log level
+> 3. Renaming show_stack_loglvl() into show_stack()
+> 
+> Justification:
+> o It's a design mistake to move a business-logic decision
+>   into platform realization detail.
+> o I have currently two patches sets that would benefit from this work:
+>   Removing console_loglevel jumps in sysrq driver [1]
 
-Am 04.11.2019 um 22:53 schrieb Geert Uytterhoeven:
->>> This indeed boots fine on ARAnyM, which emulates on 68040.
->>> It would be good to have some boot testing on '020/030, too.
->>
->> To be honest, I have no idea how to to that :)
->
-> Sure. This was more a request for the fellow m68k users.
+Just to clarify. The problem in sysrq driver is a bit different.
+It modifies console_loglevel to show even less important message
+on the console.
 
-I heard you :-) Still doing more regression testing on the latest SCSI 
-fix, but I can schedule this next.
+IMHO, it should be solved by printing the header line with pr_error().
+It is not ideal. A cleaner solution might be to introduce another
+loglevel that will always get pushed to the console. But I am
+not sure if it is worth this single line.
 
-Cheers,
+>   Hung task warning before panic [2] - suggested by Tetsuo (but he
+>   probably didn't realise what it would involve).
+> o While doing (1), (2) the backtraces were adjusted to headers
+>   and other messages for each situation - so there won't be a situation
+>   when the backtrace is printed, but the headers are missing because
+>   they have lesser log level (or the reverse).
+> o As the result in (2) plays with console_loglevel for kdb are removed.
 
-	Michael
+> The least important for upstream, but maybe still worth to note that
+> every company I've worked in so far had an off-list patch to print
+> backtrace with the needed log level (but only for the architecture they
+> cared about).
+> If you have other ideas how you will benefit from show_stack() with
+> a log level - please, reply to this cover letter.
 
-> But don't worry too much about it.  If it breaks '020/'030, we can fix
-> that later.
->
-> Thanks!
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
+I agree with all the other justification.
+
+I would add. The backtrace is really useful for debugging. It should
+be possible to print it even in less critical situations.
+
+I am afraid that many people use WARN() for this purpose. But WARN()
+is not always appropriate. WARN() misuse huts when panic_on_warn
+option is used.
+
+Best Regards,
+Petr
