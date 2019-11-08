@@ -1,80 +1,59 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v4 05/13] m68k: mm: use pgtable-nopXd instead of 4level-fixup
-Date: Fri, 8 Nov 2019 09:35:31 +0100
-Message-ID: <CAMuHMdXqaw_k=XiY0RYvvR+smE-5tbTBzWiAZOFev731vR3q3A@mail.gmail.com>
-References: <1572938135-31886-1-git-send-email-rppt@kernel.org> <1572938135-31886-6-git-send-email-rppt@kernel.org>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH 00/50] Add log level to show_stack()
+Date: Fri, 8 Nov 2019 19:37:19 +0900
+Message-ID: <20191108103719.GB175344@google.com>
+References: <20191106030542.868541-1-dima@arista.com>
+ <20191106083538.z5nlpuf64cigxigh@pathway.suse.cz>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1572938135-31886-6-git-send-email-rppt@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Linux MM <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, Greentime Hu <green.hu@gmail.com>, Greg Ungerer <gerg@linux-m68k.org>, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jeff Dike <jdike@addtoit.com>, "Kirill A. Shutemov" <kirill@shutemov.name>, Linus Torvalds <torvalds@linux-foundation.org>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Michal Simek <monstr@monstr.eu>, Peter Rosin <peda@axentia.se>, Richard Weinberger <richard@nod.at>, Rolf Eike Beer <eike-kernel@sf-tec.de>, Russell King <linux@armlinux.org.uk>, Sam Creasey <sammy@sam>
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=/TbfvbBMMqYJhaiiDLT5hNlGfQ9AYI+qFDv44qtxUn8=; b=ev1AOwJFzwsuKz
+	KReAxG09UHfg38wG4XRZOHXjGaMk/Fey12D2/WiOJEBAMFBnkMFH8M6nFVSRigk2V50gJTBa5ox8P
+	hK7A/SRq/Yh5MjFhzsOZ1kneLnxnZXD/eCPO3b/9OA0Ug0pF7B8B7m8+E+6bh4x7hbcOBiy+5cZFU
+	S4f+1ptRlURf91kNyJbmhqyiyDYc5+8pUPzLb1zjJx65sakMqCxmywH/eNa/MxUZI/vpoYKmLiPC5
+	7pzjWHdw8m8wBtrXrhyjPNntHGhRwXZwJQooYVKMQ3Pzv4JwLofpguhkmRU4bl8o1Ct0elLuHQshs
+	OckqDG8vQ/DBS+IykC+w==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=S+Nia2Oa5QzCO5JT/esBQ1livkv4TlWV+4fZRWkEO+o=;
+ b=f9fUi1K0epILaPpMKUGA+FGIJ+GYnQXz31FR/JIRsr0jNtvXVD8WKS6AKbo2g/yYiS
+ jp2Jgic4IxPn6T+PZphyltIyB4vnkBFwniOcMw51O2csFX1kjAC4QKejH96MUOsdWVPi
+ BoIKRt+J7TT0AysruvIMXwSoJkxw5mAFsb1iShx9yrdJQ4jAMH1x3fQmLCILPy17O63N
+ P5MCDaBbfZ4mb7y00oRdGf9IW4tz0D1nAGsSM5DLvdeQEZfjNAjb8k+88kSyJh4+WTH8
+ CfsXzxfWKj+ARiV2OGLJRKeQ2vRNt5PSY65UAb+0sRHT/5MlGv9E/r9lKer8LjaXODrM
+ kWIA==
+Content-Disposition: inline
+In-Reply-To: <20191106083538.z5nlpuf64cigxigh@pathway.suse.cz>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: Petr Mladek <pmladek@suse.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Dmitry Safonov <dima@arista.com>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kerne
 
-Hi Mike,
+On (19/11/06 09:35), Petr Mladek wrote:
+> I agree with all the other justification.
+> 
+> I would add. The backtrace is really useful for debugging. It should
+> be possible to print it even in less critical situations.
 
-On Tue, Nov 5, 2019 at 8:16 AM Mike Rapoport <rppt@kernel.org> wrote:
-> From: Mike Rapoport <rppt@linux.ibm.com>
->
-> m68k has two or three levels of page tables and can use appropriate
-> pgtable-nopXd and folding of the upper layers.
->
-> Replace usage of include/asm-generic/4level-fixup.h and explicit
-> definitions of __PAGETABLE_PxD_FOLDED in m68k with
-> include/asm-generic/pgtable-nopmd.h for two-level configurations and with
-> include/asm-generic/pgtable-nopud.h for three-lelve configurations and
-> adjust page table manipulation macros and functions accordingly.
->
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> Acked-by: Greg Ungerer <gerg@linux-m68k.org>
+Hmm, I don't know.
+Do we really need debug/info level backtraces? May be all backtraces
+can be converted to something more severe (so we can stop playing games
+with loglvl) and then we can clean up "(ab)users"?
 
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-
-One forgotten error message update below.
-
-> --- a/arch/m68k/mm/kmap.c
-> +++ b/arch/m68k/mm/kmap.c
-> @@ -258,18 +265,23 @@ void __iounmap(void *addr, unsigned long size)
->  {
->         unsigned long virtaddr = (unsigned long)addr;
->         pgd_t *pgd_dir;
-> +       p4d_t *p4d_dir;
-> +       pud_t *pud_dir;
->         pmd_t *pmd_dir;
->         pte_t *pte_dir;
->
->         while ((long)size > 0) {
->                 pgd_dir = pgd_offset_k(virtaddr);
-> -               if (pgd_bad(*pgd_dir)) {
-> -                       printk("iounmap: bad pgd(%08lx)\n", pgd_val(*pgd_dir));
-> -                       pgd_clear(pgd_dir);
-> +               p4d_dir = p4d_offset(pgd_dir, virtaddr);
-> +               pud_dir = pud_offset(p4d_dir, virtaddr);
-> +               if (pud_bad(*pud_dir)) {
-> +                       printk("iounmap: bad pgd(%08lx)\n", pud_val(*pud_dir));
-
-bad pud
-
-> +                       pud_clear(pud_dir);
->                         return;
->                 }
-> -               pmd_dir = pmd_offset(pgd_dir, virtaddr);
-> +               pmd_dir = pmd_offset(pud_dir, virtaddr);
->
-> +#if CONFIG_PGTABLE_LEVELS == 3
->                 if (CPU_IS_020_OR_030) {
->                         int pmd_off = (virtaddr/PTRTREESIZE) & 15;
->                         int pmd_type = pmd_dir->pmd[pmd_off] & _DESCTYPE_MASK;
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+	-ss
