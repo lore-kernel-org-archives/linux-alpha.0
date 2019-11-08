@@ -1,118 +1,116 @@
-From: Dmitry Safonov <dima@arista.com>
-Subject: Re: [PATCH 00/50] Add log level to show_stack()
-Date: Fri, 8 Nov 2019 16:28:30 +0000
-Message-ID: <CAGrbwDRgX1BZoFrVYSXhAeeUKHrB=q3w8jXFPOuRvO7HV4Ciqw@mail.gmail.com>
-References: <20191106030542.868541-1-dima@arista.com>
- <20191106092039.GT4131@hirez.programming.kicks-ass.net>
- <10db6fa1-5b17-ebe6-09e0-6335e09e4db8@arista.com>
- <20191106203440.GH3079@worktop.programming.kicks-ass.net>
+From: Will Deacon <will@kernel.org>
+Subject: [PATCH 00/13] Finish off [smp_]read_barrier_depends()
+Date: Fri,  8 Nov 2019 17:01:07 +0000
+Message-ID: <20191108170120.22331-1-will@kernel.org>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573232488;
+        bh=HTcHAMijQqVgRO6zCy9ZrheDnl8HQLiX8Rjta3usTZ0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZnWS1X2b0PUCeQpWpi2502WQVdkfXFyqK1xdBOQWZhgk7zTcKcKSAZL/qE4C3Q06o
+         rkWqf8YjsJ+izdbJEavvUi+ZRPkK1LjbvsGyHiO1nEhJnG1ewGF22bNKulG62FV4/N
+         vsurK/YtoTCaD5wquc8vQ05h7NCU1xoFxOK2VWag=
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
-	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=7Oi0URCVlCW/xv6mf3y82Ao9G3AOxjSzoaGA9O2Wao8=; b=GOo2zr59AZ6Tob
-	ByEndOWOFE/L4Xu4NBHrHlE0ElV+1Izi43qDMD4WWRT9xhf2hNFSGWwPma1BZa77QWi8p1EbMryWF
-	kyq4PNHL+kVrHMhGpy4nkWKlgB5cOtZXVqVcEW7YVXd06pndH8yZx7qzqrzs5RS+Qf1AWkf9PhNyQ
-	Z3DMMuOIDEF8mX25Vo8Inkb6cucZplq64JQ3J/NYAqmVufIAmD1Y/oCwmC7a9nDS3VMR2mBNcl4Nj
-	dqWloNynH9PLRjzvhukwV06wu+0YFHnr1dTFSBh4d+1wEupoJwZWE0I0hRxyKXd3f3es7Lm2u0Cm3
-	YI/Qk3d14560/WxfCyCg==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=arista.com; s=googlenew;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=g8y3Kv95ejyL7msYqyPIoRMuCM9aKky/CsOCvaHvzKM=;
- b=OFQ83MN4Hmk627ztvJPIKihtIRsS8ZJ3GNTmqGPL14tUmqtruv4K7nmTrdqjRLFkAn
- v66F5LmIzidO2RY0wAc8faHozHlKmYZjXqnWdur1cdgyOYMMPWxMT2qM/13lV7Gll4Nc
- lRCKNQhkBNihdDdl1Z0mCUKrkPWWlSTJj8W9XuLLYhohd1gFs4UlSNvhCs93ZGZd3jBA
- FVTjYbasessxSjfBcyeOLdW+Y8Bd7gD+BB7UCWg2KPTCWA+UwS7+l7bzP+7BahjCAYhI
- nOv6jmxm+6mZbCk5AkWY13lz+e0hU9EGlWVlrK7ojQr4zo4A/XJr3HfWznngkwdMz6Mb
- pEiA==
-In-Reply-To: <20191106203440.GH3079@worktop.programming.kicks-ass.net>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Juri Lelli <juri.lelli@redhat.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, LKML <linux-kernel@vger.kernel.org>, Ralf
+To: linux-kernel@vger.kernel.org
+Cc: Will Deacon <will@kernel.org>, Yunjae Lee <lyj7694@gmail.com>, SeongJae Park <sj38.park@gmail.com>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, Michael Ellerman <mpe@ellerman.id.au>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Joe Perches <joe@perches.com>, Boqun Feng <boqun.feng@gmail.com>, linux-alpha@vger.kernel.org, virtualization@lists.linux-foundation.org
 
-On 11/6/19 8:34 PM, Peter Zijlstra wrote:
-> On Wed, Nov 06, 2019 at 04:27:33PM +0000, Dmitry Safonov wrote:
-[..]
->> Sorry, I should have tried to describe better.
->>
->> I'm trying to remove external users of console_loglevel by following
->> reasons:
->
-> I suppose since all my machines have 'debug ignore_loglevel
-> earlyprintk=serial,ttyS0,115200 console=ttyS0,115200' I don't have this
-> experience.
+Hi all,
 
-Yeah, I remember you avoid all those functionalities of printk(), fair
-enough. On the other side, regular users and I'm betting most of
-the non-tuned distributions use /proc/sys/kernel/printk by default.
-(Checking on my Arch & Fedora - loglevel 4 from the box)
+Although [smp_]read_barrier_depends() became part of READ_ONCE() in
+commit 76ebbe78f739 ("locking/barriers: Add implicit
+smp_read_barrier_depends() to READ_ONCE()"), it still limps on in the
+Linux memory model with the sinister hope of attracting innocent new
+users so that it becomes impossible to remove altogether.
 
->> - changing console_loglevel on SMP means that unwanted messages from
->> other CPUs will appear (that have lower log level)
->> - on UMP unwanted messages may appear if the code is preempted while it
->> hasn't set the console_loglevel back to old
->> - rising console_loglevel to print wanted message(s) may not work at all
->> if printk() has being delayed and the console_loglevel is already set
->> back to old value
->
-> Sure, frobbing the global console_loglevel is bad.
->
->> I also have patches in wip those needs to print backtrace with specific
->> loglevel (higher when it's critical, lower when it's notice and
->> shouldn't go to serial console).
->
-> (everything always should go to serial, serial is awesome :-)
+Let's strike before it's too late: there's only one user outside of
+arch/alpha/ and that lives in the vhost code which I don't think you
+can actually compile for Alpha. Even if you could, it appears to be
+redundant. The rest of these patches remove any mention of the barrier
+from Documentation and comments, as well as removing its use from the
+Alpha backend and finally dropping it from the memory model completely.
 
-Personally I agree. Unfortunately, here @Arista there are switches (I'm
-speaking about the order of thousands at least) those have baud-rate 9600.
-It's a bit expensive being elaborate with such setup.
+After this series, there are still two places where it is mentioned:
 
->> Besides on local tests I see hits those have headers (messages like
->> "Backtrace: ") without an actual backtrace and the reverse - a backtrace
->> without a reason for it. It's quite annoying and worth addressing by
->> syncing headers log levels to backtraces.
->
-> I suppose I'm surprised there are backtraces that are not important.
-> Either badness happened and it needs printing, or the user asked for it
-> and it needs printing.
->
-> Perhaps we should be removing backtraces if they're not important
-> instead of allowing to print them as lower loglevels?
+  1. The Korean translation of memory-barriers.txt. I'd appreciate some
+     help fixing this because it's not entirely a straightforward
+     deletion.
 
-Well, the use-case for lower log-level is that everything goes into logs
-(/var/log/dmesg or /var/log/messages whatever rsyslog has settting).
+  2. The virtio vring tests under tools/. This is userspace code so I'm
+     not too fussed about it.
 
-That has it's value:
-- after a failure (i.e. panic) messages, those were only signs that
-something goes wrong can be seen in logs which can give ideas what has
-happened.
-- before the failure, those messages go to telemetry and can be
-auto-magically processed remotely to take a decision (e.g. balance the
-traffic away).
+There's a chunk of header reshuffling at the start of the series so that
+READ_ONCE() can sensibly be overridden by arch code.
 
-I wish all the information could be gathered in the userspace, but many
-existing kernel/driver messages are valuable. A more detailed example is
-hung task detector: we want to have the backtrace for a task that is
-in uninterruptible state too long, but only in logs as printing on
-serial console may lead to holding console lock and watchdog.
-Besides customer notifications and investigations, I see the value of such
-"bottleneck" warnings during long-running integration tests.
+Feedback welcome.
 
-Thanks,
-          Dmitry
+Cheers,
+
+Will
+
+Cc: Yunjae Lee <lyj7694@gmail.com>
+Cc: SeongJae Park <sj38.park@gmail.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Josh Triplett <josh@joshtriplett.org>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Alan Stern <stern@rowland.harvard.edu>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Joe Perches <joe@perches.com>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: virtualization@lists.linux-foundation.org
+
+--->8
+
+Will Deacon (13):
+  compiler.h: Split {READ,WRITE}_ONCE definitions out into rwonce.h
+  READ_ONCE: Undefine internal __READ_ONCE_SIZE macro after use
+  READ_ONCE: Allow __READ_ONCE_SIZE cases to be overridden by the
+    architecture
+  vhost: Remove redundant use of read_barrier_depends() barrier
+  alpha: Override READ_ONCE() with barriered implementation
+  READ_ONCE: Remove smp_read_barrier_depends() invocation
+  alpha: Replace smp_read_barrier_depends() usage with smp_[r]mb()
+  locking/barriers: Remove definitions for [smp_]read_barrier_depends()
+  Documentation/barriers: Remove references to
+    [smp_]read_barrier_depends()
+  tools/memory-model: Remove smp_read_barrier_depends() from informal
+    doc
+  powerpc: Remove comment about read_barrier_depends()
+  include/linux: Remove smp_read_barrier_depends() from comments
+  checkpatch: Remove checks relating to [smp_]read_barrier_depends()
+
+ .../RCU/Design/Requirements/Requirements.html |  11 +-
+ Documentation/memory-barriers.txt             | 156 +-----------------
+ arch/alpha/include/asm/atomic.h               |  16 +-
+ arch/alpha/include/asm/barrier.h              |  61 +------
+ arch/alpha/include/asm/pgtable.h              |  10 +-
+ arch/alpha/include/asm/rwonce.h               |  22 +++
+ arch/powerpc/include/asm/barrier.h            |   2 -
+ drivers/vhost/vhost.c                         |   5 -
+ include/asm-generic/Kbuild                    |   1 +
+ include/asm-generic/barrier.h                 |  17 --
+ include/asm-generic/rwonce.h                  | 131 +++++++++++++++
+ include/linux/compiler.h                      | 114 +------------
+ include/linux/compiler_attributes.h           |  12 ++
+ include/linux/percpu-refcount.h               |   2 +-
+ include/linux/ptr_ring.h                      |   2 +-
+ mm/memory.c                                   |   2 +-
+ scripts/checkpatch.pl                         |   9 +-
+ .../Documentation/explanation.txt             |  26 ++-
+ 18 files changed, 217 insertions(+), 382 deletions(-)
+ create mode 100644 arch/alpha/include/asm/rwonce.h
+ create mode 100644 include/asm-generic/rwonce.h
+
+-- 
+2.24.0.rc1.363.gb1bccd3e3d-goog
+
