@@ -1,37 +1,30 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v4 05/13] m68k: mm: use pgtable-nopXd instead of
- 4level-fixup
-Date: Fri, 8 Nov 2019 11:39:17 -0800
-Message-ID: <20191108113917.a9c6ebb8373cc95fd684b734@linux-foundation.org>
-References: <1572938135-31886-1-git-send-email-rppt@kernel.org>
-        <1572938135-31886-6-git-send-email-rppt@kernel.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 01/13] compiler.h: Split {READ,WRITE}_ONCE definitions out
+ into rwonce.h
+Date: Fri, 8 Nov 2019 20:57:14 +0100
+Message-ID: <CAK8P3a0f=WvSQSBQ4t0FmEkcFE_mC3oARxaeTviTSkSa-D2qhg@mail.gmail.com>
+References: <20191108170120.22331-1-will@kernel.org> <20191108170120.22331-2-will@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573241958;
-        bh=ZAG84ge+L09XKgou0cB1i9iO9e81rb3QTPdTqxlkr0M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oOxy4Wdb4vPsF8JbCZye3J9lKbP/LMOZJElWEhVMQVaYL7+6B1J0BGc9MF2bWwzIe
-         hJQ4mkhDTLCWz1YMTNy3sdABtaukOID5braecKND/vaunUuII+0rvnF1cM4tNsnIHJ
-         g/+gXCN4sGzLG0kAmdQW86n+ifO0YSktrgbS0Gu8=
-In-Reply-To: <1572938135-31886-6-git-send-email-rppt@kernel.org>
+In-Reply-To: <20191108170120.22331-2-will@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Mike Rapoport <rppt@kernel.org>
-Cc: linux-mm@kvack.org, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Arnd Bergmann <arnd@arndb.de>, "David S. Miller" <davem@davemloft.net>, Geert Uytterhoeven <geert@linux-m68k.org>, Greentime Hu <green.hu@gmail.com>, Greg Ungerer <gerg@linux-m68k.org>, Helge Deller <deller@gmx.de>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Jeff Dike <jdike@addtoit.com>, "Kirill A. Shutemov" <kirill@shutemov.name>, Linus Torvalds <torvalds@linux-foundation.org>, Mark Salter <msalter@redhat.com>, Matt Turner <mattst88@gmail.com>, Michal Simek <monstr@monstr.eu>, Peter Rosin <peda@axentia.se>, Richard Weinberger <richard@nod.at>, Rolf Eike Beer <eike-kernel@sf-tec.de>, Russell King <linux@armlinux.org.uk>, Sam Creasey <sammy@sammy.net>, Vi
+Content-Type: text/plain; charset="macroman"
+To: Will Deacon <will@kernel.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yunjae Lee <lyj7694@gmail.com>, SeongJae Park <sj38.park@gmail.com>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, Michael Ellerman <mpe@ellerman.id.au>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Joe Perches <joe@perches.com>, Boqun Feng <boqun.feng@gmail.com>, alpha <linux-alpha@vger.kernel.org>, virtualization@lists.linux-foundation.org, Christian Borntraeger <borntraeger@de.ibm.com>
 
-On Tue,  5 Nov 2019 09:15:27 +0200 Mike Rapoport <rppt@kernel.org> wrote:
-
-> m68k has two or three levels of page tables and can use appropriate
-> pgtable-nopXd and folding of the upper layers.
-> 
-> Replace usage of include/asm-generic/4level-fixup.h and explicit
-> definitions of __PAGETABLE_PxD_FOLDED in m68k with
-> include/asm-generic/pgtable-nopmd.h for two-level configurations and with
-> include/asm-generic/pgtable-nopud.h for three-lelve configurations and
-> adjust page table manipulation macros and functions accordingly.
-
-This one was messed up by linux-next changes in arch/m68k/mm/kmap.c. 
-Can you please take a look?
+T24gRnJpLCBOb3YgOCwgMjAxOSBhdCA2OjAxIFBNIFdpbGwgRGVhY29uIDx3aWxsQGtlcm5lbC5v
+cmc+IHdyb3RlOgo+Cj4gSW4gcHJlcGFyYXRpb24gZm9yIGFsbG93aW5nIGFyY2hpdGVjdHVyZXMg
+dG8gZGVmaW5lIHRoZWlyIG93bgo+IGltcGxlbWVudGF0aW9uIG9mIHRoZSAnUkVBRF9PTkNFKCkn
+IG1hY3JvLCBtb3ZlIHRoZSBnZW5lcmljCj4gJ3tSRUFELFdSSVRFfV9PTkNFKCknIGRlZmluaXRp
+b25zIG91dCBvZiB0aGUgdW53aWVsZHkgJ2xpbnV4L2NvbXBpbGVyLmgnCj4gYW5kIGludG8gYSBu
+ZXcgJ3J3b25jZS5oJyBoZWFkZXIgdW5kZXIgJ2FzbS1nZW5lcmljJy4KCkFkZGluZyBDaHJpc3Rp
+YW4gQm9ybnRyw6RnZXIgdG8gQ2MsIGhlIG9yaWdpbmFsbHkgYWRkZWQgdGhlClJFQURfT05DRSgp
+L1dSSVRFX09OQ0UoKQpjb2RlLgoKSSB3b25kZXIgaWYgaXQgd291bGQgYmUgYXBwcm9wcmlhdGUg
+bm93IHRvIHJldmVydCBiYWNrIHRvIGEgbXVjaCBzaW1wbGVyIHZlcnNpb24Kb2YgdGhlc2UgaGVs
+cGVycyBmb3IgYW55IG1vZGVybiBjb21waWxlci4gQXMgSSB1bmRlcnN0YW5kLCBvbmx5IGdjYy00
+LjYgYW5kCmdjYzQuNyBhY3R1YWxseSBuZWVkIHRoZSBzb25nLWFuZC1kYW5jZSB2ZXJzaW9uIHdp
+dGggdGhlIHVuaW9uIGFuZCBzd2l0Y2gvY2FzZSwKd2hpbGUgZm9yIG90aGVycywgd2UgY2FuIG1p
+Z2h0IGJlIGFibGUgYmFjayB0byBhIG1hY3JvIGRvaW5nIGEgdm9sYXRpbGUgYWNjZXNzLgoKICAg
+ICBBcm5kCg==
