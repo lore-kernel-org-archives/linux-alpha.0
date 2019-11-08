@@ -1,75 +1,48 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 00/50] Add log level to show_stack()
-Date: Fri, 8 Nov 2019 14:04:47 +0100
-Message-ID: <20191108130447.h3wfgo4efjkto56f@pathway.suse.cz>
-References: <20191106030542.868541-1-dima@arista.com>
- <20191106083538.z5nlpuf64cigxigh@pathway.suse.cz>
- <20191108103719.GB175344@google.com>
-Mime-Version: 1.0
+From: Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH] alpha: __udiv_qrnnd should be exported
+Date: Fri,  8 Nov 2019 15:36:08 +0000
+Message-ID: <1573227368-32686-1-git-send-email-clabbe@baylibre.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=9lMgRNG2cJGG8AVeRQHErI9Gl3XI9KK/U31d8R3ejsQ=;
+        b=EWNepT2WAfQMuRY60vzjXFgqPnRfaJU3DzL/cj1ATfS4TGT6MpPVYa3DtzO31+GY9U
+         vlzIMrIyyXu3srvKdjem8uigYtg+lTS+x/T92CG9/SBuSyIsS7RYo8uBBuyvyjfoLeWW
+         yZqDgtQmGMf9uk3FfTgemAWGIAqlBkVUFBC42XPIuVhMbttBjDtbaKjx6ken+aS2hDMD
+         tz0emFkFCXwHC3dp3nQrWR561uI8jBBybT0ovHdWIZ74nV7TVtQf94Vq7sJf1TXcxcv1
+         OL3LyD1xu/P6yHHnz5cWE6OqYBXaE9mm3K3xUEzwELESrCEGVlic3EbtfcYcZn2x1NwQ
+         ot0w==
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
- Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=La9f0W75O1O7X1+adHiQmzYierWrtdMcZjwxWFaAWaY=; b=Ia/x75D+qPN88hlqG+6OH92iow
- RpimJ2UEoZ4xf2uCLU4w4CUja9pQhlHPWsEh9kwV9CnVzNIM28TZIcGOn7LlWjUDQat9Wpw+I42hD
- JNUa3Lw7x2ip4HyXPd9zMp1G6SDl14GD/7TlR6Ydr1vCRpWrlpK5+AnzmUMqJHU0Zso8=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To
- :From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=La9f0W75O1O7X1+adHiQmzYierWrtdMcZjwxWFaAWaY=; b=YhSqVZ81sU9s0spE/9o1ff3DTM
- Ypyn9P5WlxNjQ0pzpnADo0qB9I4W5iyLA/13EK6f0lfdQ2r+jraEoAvWQNu5jAqPnxP3Y8ZqeoaVk
- 4pa8m8wjIzDH4GhR5JdMiCuagn89E4qp85CChMYYLqYB3yWpSNO7y5vO8YmTQedbO9GI=;
-Content-Disposition: inline
-In-Reply-To: <20191108103719.GB175344@google.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/options/kgdb-bugreport>, 
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
-List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
-List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>, 
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Dmitry Safonov <dima@arista.com>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kerne
+To: ink@jurassic.park.msu.ru, mattst88@gmail.com, rth@twiddle.net
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
 
-On Fri 2019-11-08 19:37:19, Sergey Senozhatsky wrote:
-> On (19/11/06 09:35), Petr Mladek wrote:
-> > I agree with all the other justification.
-> > 
-> > I would add. The backtrace is really useful for debugging. It should
-> > be possible to print it even in less critical situations.
-> 
-> Hmm, I don't know.
-> Do we really need debug/info level backtraces?
+When building an alpha kernel with mpi set as module, I hit this build
+error:
+ERROR: "__udiv_qrnnd" [lib/mpi/mpi.ko] undefined!
+make[2]: *** [scripts/Makefile.modpost:92: __modpost] Error 1
+make[1]: *** [Makefile:1266: modules] Error 2
 
-debug is exactly the loglevel where registry content and backtrace
-might be very useful. It is not always important to reach the console.
+This is due to __udiv_qrnnd not exported.
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+ arch/alpha/math-emu/math.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/arch/alpha/math-emu/math.c b/arch/alpha/math-emu/math.c
+index d568cd9a3e43..5617ac0889b8 100644
+--- a/arch/alpha/math-emu/math.c
++++ b/arch/alpha/math-emu/math.c
+@@ -401,3 +401,5 @@ alpha_fp_emul_imprecise (struct pt_regs *regs, unsigned long write_mask)
+ egress:
+ 	return si_code;
+ }
++
++EXPORT_SYMBOL(__udiv_qrnnd);
+-- 
+2.23.0
 
-> May be all backtraces can be converted to something more severe
-> (so we can stop playing games with loglvl) and then we can
-> clean up "(ab)users"?
-
-IMHO, we should distinguish warning, error, crit, alert, emerg
-situations. Backtraces and any related messages should be
-filtered the same way. Any information might be useless without
-the context.
-
-I agree that it is complicated to pass the loglevel as
-a parameter. It would be better define the default
-log level for a given code section. It might be stored
-in task_struct for the normal context and in per-CPU
-variables for interrupt contexts.
-
-Best Regards,
-Petr
