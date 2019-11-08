@@ -1,195 +1,88 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 00/23] y2038 cleanups
-Date: Fri,  8 Nov 2019 22:02:21 +0100
-Message-ID: <20191108210236.1296047-1-arnd@arndb.de>
+From: Dmitry Safonov <0x7f454c46@gmail.com>
+Subject: Re: [PATCH 00/50] Add log level to show_stack()
+Date: Fri, 8 Nov 2019 21:08:30 +0000
+Message-ID: <5a411348-be84-f592-ef2d-ffaec99332bd@gmail.com>
+References: <20191106030542.868541-1-dima@arista.com>
+ <20191106092039.GT4131@hirez.programming.kicks-ass.net>
+ <10db6fa1-5b17-ebe6-09e0-6335e09e4db8@arista.com>
+ <20191106203440.GH3079@worktop.programming.kicks-ass.net>
+ <CAGrbwDRgX1BZoFrVYSXhAeeUKHrB=q3w8jXFPOuRvO7HV4Ciqw@mail.gmail.com>
+ <20191108173045.GY25745@shell.armlinux.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-aio@kvack.org>
-Sender: owner-linux-aio@kvack.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: y2038@lists.linaro.org
-Cc: linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, rth@twiddle.net, tony.luck@intel.com, paul.burton@mips.com, green.hu@gmail.com, deller@gmx.de, mpe@ellerman.id.au, davem@davemloft.net, tglx@linutronix.de, x86@kernel.org, jdike@addtoit.com, richard@nod.at, viro@zeniv.linux.org.uk, bcrl@kvack.org, john.stultz@linaro.org, sboyd@kernel.org, rostedt@goodmis.org, vincenzo.frascino@arm.com, paul@paul-moore.com, sds@tycho.nsa.gov, eparis@parisplace.org, peterz@infradead.org, will@kernel.org, deepa.kernel@gmail.com, christian@brauner.io, heiko.carstens@de.ibm.com, christophe.leroy@c-s.fr, ebiederm@xmission.com, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, linux-fsdevel@vger.kernel.org, li
-
-This is a series of cleanups for the y2038 work, mostly intended
-for namespace cleaning: the kernel defines the traditional
-time_t, timeval and timespec types that often lead to y2038-unsafe
-code. Even though the unsafe usage is mostly gone from the kernel,
-having the types and associated functions around means that we
-can still grow new users, and that we may be missing conversions
-to safe types that actually matter.
-
-As there is no rush on any of these patches, I would either
-queue them up in linux-next through my y2038 branch, or
-Thomas could add them to the tip tree if he wants.
-
-As mentioned in another series, this is part of a larger
-effort to fix all the remaining bits and pieces that are
-not completed yet from the y2038 conversion, and the full
-set can be found at:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/log/?=
-h=3Dy2038-endgame
-
-Maintainers, please review and provide Acks.
-
-Let me know if you have any opinion on whether we should do
-the include last two patches of this series or not.
-
-     Arnd
-
-Arnd Bergmann (23):
-  y2038: remove CONFIG_64BIT_TIME
-  y2038: add __kernel_old_timespec and __kernel_old_time_t
-  y2038: vdso: change timeval to __kernel_old_timeval
-  y2038: vdso: change timespec to __kernel_old_timespec
-  y2038: vdso: change time_t to __kernel_old_time_t
-  y2038: vdso: nds32: open-code timespec_add_ns()
-  y2038: vdso: powerpc: avoid timespec references
-  y2038: ipc: remove __kernel_time_t reference from headers
-  y2038: stat: avoid 'time_t' in 'struct stat'
-  y2038: uapi: change __kernel_time_t to __kernel_old_time_t
-  y2038: rusage: use __kernel_old_timeval
-  y2038: syscalls: change remaining timeval to __kernel_old_timeval
-  y2038: socket: remove timespec reference in timestamping
-  y2038: make ns_to_compat_timeval use __kernel_old_timeval
-  y2038: elfcore: Use __kernel_old_timeval for process times
-  y2038: timerfd: Use timespec64 internally
-  y2038: time: avoid timespec usage in settimeofday()
-  y2038: itimer: compat handling to itimer.c
-  y2038: use compat_{get,set}_itimer on alpha
-  y2038: move itimer reset into itimer.c
-  y2038: itimer: change implementation to timespec64
-  [RFC] y2038: itimer: use ktime_t internally
-  y2038: allow disabling time32 system calls
-
- arch/Kconfig                              |  11 +-
- arch/alpha/kernel/osf_sys.c               |  67 +-----
- arch/alpha/kernel/syscalls/syscall.tbl    |   4 +-
- arch/ia64/kernel/asm-offsets.c            |   2 +-
- arch/mips/include/uapi/asm/msgbuf.h       |   6 +-
- arch/mips/include/uapi/asm/sembuf.h       |   4 +-
- arch/mips/include/uapi/asm/shmbuf.h       |   6 +-
- arch/mips/include/uapi/asm/stat.h         |  16 +-
- arch/mips/kernel/binfmt_elfn32.c          |   4 +-
- arch/mips/kernel/binfmt_elfo32.c          |   4 +-
- arch/nds32/kernel/vdso/gettimeofday.c     |  61 +++--
- arch/parisc/include/uapi/asm/msgbuf.h     |   6 +-
- arch/parisc/include/uapi/asm/sembuf.h     |   4 +-
- arch/parisc/include/uapi/asm/shmbuf.h     |   6 +-
- arch/powerpc/include/asm/asm-prototypes.h |   3 +-
- arch/powerpc/include/asm/vdso_datapage.h  |   6 +-
- arch/powerpc/include/uapi/asm/msgbuf.h    |   6 +-
- arch/powerpc/include/uapi/asm/sembuf.h    |   4 +-
- arch/powerpc/include/uapi/asm/shmbuf.h    |   6 +-
- arch/powerpc/include/uapi/asm/stat.h      |   2 +-
- arch/powerpc/kernel/asm-offsets.c         |  18 +-
- arch/powerpc/kernel/syscalls.c            |   4 +-
- arch/powerpc/kernel/time.c                |   5 +-
- arch/powerpc/kernel/vdso32/gettimeofday.S |   6 +-
- arch/powerpc/kernel/vdso64/gettimeofday.S |   8 +-
- arch/sparc/include/uapi/asm/msgbuf.h      |   6 +-
- arch/sparc/include/uapi/asm/sembuf.h      |   4 +-
- arch/sparc/include/uapi/asm/shmbuf.h      |   6 +-
- arch/sparc/include/uapi/asm/stat.h        |  24 +-
- arch/sparc/vdso/vclock_gettime.c          |  36 +--
- arch/x86/entry/vdso/vclock_gettime.c      |   6 +-
- arch/x86/entry/vsyscall/vsyscall_64.c     |   4 +-
- arch/x86/include/uapi/asm/msgbuf.h        |   6 +-
- arch/x86/include/uapi/asm/sembuf.h        |   4 +-
- arch/x86/include/uapi/asm/shmbuf.h        |   6 +-
- arch/x86/um/vdso/um_vdso.c                |  12 +-
- fs/aio.c                                  |   2 +-
- fs/binfmt_elf.c                           |  12 +-
- fs/binfmt_elf_fdpic.c                     |  12 +-
- fs/compat_binfmt_elf.c                    |   4 +-
- fs/select.c                               |  10 +-
- fs/timerfd.c                              |  14 +-
- fs/utimes.c                               |   8 +-
- include/linux/compat.h                    |  19 +-
- include/linux/syscalls.h                  |  16 +-
- include/linux/time.h                      |   9 +-
- include/linux/time32.h                    |   2 +-
- include/linux/types.h                     |   2 +-
- include/trace/events/timer.h              |  29 +--
- include/uapi/asm-generic/msgbuf.h         |  12 +-
- include/uapi/asm-generic/posix_types.h    |   1 +
- include/uapi/asm-generic/sembuf.h         |   7 +-
- include/uapi/asm-generic/shmbuf.h         |  12 +-
- include/uapi/linux/cyclades.h             |   6 +-
- include/uapi/linux/elfcore.h              |   8 +-
- include/uapi/linux/errqueue.h             |   7 +
- include/uapi/linux/msg.h                  |   6 +-
- include/uapi/linux/ppp_defs.h             |   4 +-
- include/uapi/linux/resource.h             |   4 +-
- include/uapi/linux/sem.h                  |   4 +-
- include/uapi/linux/shm.h                  |   6 +-
- include/uapi/linux/time.h                 |   6 +-
- include/uapi/linux/time_types.h           |   5 +
- include/uapi/linux/utime.h                |   4 +-
- ipc/syscall.c                             |   2 +-
- kernel/compat.c                           |  24 --
- kernel/power/power.h                      |   2 +-
- kernel/sys.c                              |   4 +-
- kernel/sys_ni.c                           |  23 ++
- kernel/time/hrtimer.c                     |   2 +-
- kernel/time/itimer.c                      | 280 ++++++++++++++--------
- kernel/time/time.c                        |  32 ++-
- lib/vdso/gettimeofday.c                   |   4 +-
- net/core/scm.c                            |   6 +-
- net/socket.c                              |   2 +-
- security/selinux/hooks.c                  |  10 +-
- 76 files changed, 501 insertions(+), 504 deletions(-)
-
---=20
-2.20.0
-
-Cc: rth@twiddle.net
-Cc: tony.luck@intel.com
-Cc: paul.burton@mips.com
-Cc: green.hu@gmail.com
-Cc: deller@gmx.de
-Cc: mpe@ellerman.id.au
-Cc: davem@davemloft.net
-Cc: tglx@linutronix.de
-Cc: x86@kernel.org
-Cc: jdike@addtoit.com
-Cc: richard@nod.at
-Cc: viro@zeniv.linux.org.uk
-Cc: bcrl@kvack.org
-Cc: john.stultz@linaro.org
-Cc: sboyd@kernel.org
-Cc: rostedt@goodmis.org
-Cc: arnd@arndb.de
-Cc: vincenzo.frascino@arm.com
-Cc: paul@paul-moore.com
-Cc: sds@tycho.nsa.gov
-Cc: eparis@parisplace.org
-Cc: peterz@infradead.org
-Cc: will@kernel.org
-Cc: deepa.kernel@gmail.com
-Cc: christian@brauner.io
-Cc: heiko.carstens@de.ibm.com
-Cc: christophe.leroy@c-s.fr
-Cc: ebiederm@xmission.com
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org>
-Cc: linux-ia64@vger.kernel.org>
-Cc: linux-mips@vger.kernel.org>
-Cc: linux-parisc@vger.kernel.org>
-Cc: linuxppc-dev@lists.ozlabs.org>
-Cc: sparclinux@vger.kernel.org>
-Cc: linux-um@lists.infradead.org>
-Cc: linux-fsdevel@vger.kernel.org>
-Cc: linux-aio@kvack.org>
-Cc: linux-api@vger.kernel.org>
-Cc: linux-arch@vger.kernel.org>
-Cc: netdev@vger.kernel.org>
-Cc: selinux@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:
+	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
+	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=vwuFpo0UiDnzPFiimc03yYQ0I92lDoFU8ZPsbJmfvdQ=; b=QbbjxG0heFqxkZ
+	XHsH/AccYNT3ZYzwIWV5Y4Do9840af3v/UCZo4UggQfpoScwFiSg5n8xLCuJaCm0/JoGKuWfqgvO1
+	rne9pxM2hPJyOU2Hbb7tCic1zipJQVIHJC4hnF4b1QHltR97UwRJJ48wIL7aftvtitfESfjccVZkf
+	07zUfLmRS+Hyd9lM698b5xAgTD9IUrJs3AEzH+myRzrF73tX29f15NjrHmc0opBODxiU1X+TUG2h2
+	xT9QiWLhGgRm2ZRKo0wZOD1siUqX1SnzDqfSn0/z67ZNpWQ/5Fc7dZgKT+lyUpazbWVGuqgZ+kqqr
+	9PAoIr7pr5KPW1NCFcCg==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=leuvFNJRBbgvPXZJlD4yDG614p9ePBBBJqh6/bi0nWM=;
+ b=rjflubiq8T92r7IsfuflmmOLhAbyeUiuHnf/rQSYhhlSmttRaTaotAvL5xYp4yOydT
+ GvzpvT1wRN/Se5w5Bamn3iuJIAGtHWJ3FQg7uwfFHiBZYXDG6coXsfRkKjBQWYAriMTe
+ 4kTrO4cphBn73YaGY9oVhRABcMWkQkwRmG/gGE9R1eQjZ3xrtTYtO4ekpHSWHoSNgXQt
+ LOIHB3CeUqi5Hx5sAbRW5lNwEUAqSAnAREOPMl/n34UjrP0bXjp7N2IIvVwOE5dHTyoC
+ y/6fNB8lMSjFK19DQSqAbg52NdT8Yh0NvqWS+ZavZPT5hVJ6jwjvtDCEDMZ1djztH8HA
+ lzbQ==
+In-Reply-To: <20191108173045.GY25745@shell.armlinux.org.uk>
+Content-Language: en-US
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: Russell King - ARM Linux admin <linux@armlinux.org.uk>, Dmitry Safonov <dima@arista.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, LKML <linux-kernel@vger.kernel.org>, Ralf Baechle <ralf@linux-mips.org>, Paul Mackerras <>
 
 
---
-To unsubscribe, send a message with 'unsubscribe linux-aio' in
-the body to majordomo@kvack.org.  For more info on Linux AIO,
-see: http://www.kvack.org/aio/
-Don't email: <a href=mailto:"aart@kvack.org">aart@kvack.org</a>
+On 11/8/19 5:30 PM, Russell King - ARM Linux admin wrote:
+> On Fri, Nov 08, 2019 at 04:28:30PM +0000, Dmitry Safonov wrote:
+[..]
+>>
+>> Well, the use-case for lower log-level is that everything goes into logs
+>> (/var/log/dmesg or /var/log/messages whatever rsyslog has settting).
+>>
+>> That has it's value:
+>> - after a failure (i.e. panic) messages, those were only signs that
+>> something goes wrong can be seen in logs which can give ideas what has
+>> happened.
+> 
+> No they don't.  When the kernel panics, userspace generally stops
+> running, so rsyslog won't be able to write them to /var/log/messages.
+> 
+> How, by "kernel panics" I mean a real kernel panic, which probably
+> isn't what you're talking about there.  You are probably talking
+> about the whole shebang of non-fatal kernel oops, kernel warnings
+> and the like.  If so, I'd ask you to stop confuzzilating terminology.
+> 
+> If you really want to capture such events, then you need to have the
+> kernel write the panic to (e.g.) flash - see the mtdoops driver.
+
+I was talking about things prior the panic: OOMs, MMC write/read
+warnings, hung tasks, we also have local patches to produce a warning if
+the mutex is being held for too long or a task is starving on CPU time
+by hard/soft irqs (I hope I will design something like that for
+upstream). I've found those warnings useful to:
+(a) have an early message when the things are starting going bad.
+(b) analyze contentions or too large scale for a box or faulty hardware
+for non-reproducible issues just from logs.
+
+We use kexec to save the dmesg ringbuffer content after the panic.
+
+Thanks,
+          Dmitry
