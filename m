@@ -1,116 +1,46 @@
 From: Will Deacon <will@kernel.org>
-Subject: [PATCH 00/13] Finish off [smp_]read_barrier_depends()
-Date: Fri,  8 Nov 2019 17:01:07 +0000
-Message-ID: <20191108170120.22331-1-will@kernel.org>
+Subject: [PATCH 02/13] READ_ONCE: Undefine internal __READ_ONCE_SIZE macro after use
+Date: Fri,  8 Nov 2019 17:01:09 +0000
+Message-ID: <20191108170120.22331-3-will@kernel.org>
+References: <20191108170120.22331-1-will@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573232488;
-        bh=HTcHAMijQqVgRO6zCy9ZrheDnl8HQLiX8Rjta3usTZ0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZnWS1X2b0PUCeQpWpi2502WQVdkfXFyqK1xdBOQWZhgk7zTcKcKSAZL/qE4C3Q06o
-         rkWqf8YjsJ+izdbJEavvUi+ZRPkK1LjbvsGyHiO1nEhJnG1ewGF22bNKulG62FV4/N
-         vsurK/YtoTCaD5wquc8vQ05h7NCU1xoFxOK2VWag=
+        s=default; t=1573232495;
+        bh=8576erlpBEecdBZLwaAf1hANQyRlAVg5w9VzhgYn1N4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mQPLKMFTmKtUZrfE3t7fIwnKcTB8Q4GrSwDBG6Plp2pjYB/4SEURJMylIYjxap80C
+         9jQhqVE8V7fknpdFh1PU4i5Wri22OGwEnaDY7uqEqHlzbj3LH2qi1A5wN473to2iaS
+         xhDH1bVxYwWCkKi2t5TgPxVPltHPTMheMiRG/sTQ=
+In-Reply-To: <20191108170120.22331-1-will@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org
 Cc: Will Deacon <will@kernel.org>, Yunjae Lee <lyj7694@gmail.com>, SeongJae Park <sj38.park@gmail.com>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, Michael Ellerman <mpe@ellerman.id.au>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Joe Perches <joe@perches.com>, Boqun Feng <boqun.feng@gmail.com>, linux-alpha@vger.kernel.org, virtualization@lists.linux-foundation.org
 
-Hi all,
+The '__READ_ONCE_SIZE()' macro is only used as part of building
+'READ_ONCE()', so undefine it once we don't need it anymore.
 
-Although [smp_]read_barrier_depends() became part of READ_ONCE() in
-commit 76ebbe78f739 ("locking/barriers: Add implicit
-smp_read_barrier_depends() to READ_ONCE()"), it still limps on in the
-Linux memory model with the sinister hope of attracting innocent new
-users so that it becomes impossible to remove altogether.
+Signed-off-by: Will Deacon <will@kernel.org>
+---
+ include/asm-generic/rwonce.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Let's strike before it's too late: there's only one user outside of
-arch/alpha/ and that lives in the vhost code which I don't think you
-can actually compile for Alpha. Even if you could, it appears to be
-redundant. The rest of these patches remove any mention of the barrier
-from Documentation and comments, as well as removing its use from the
-Alpha backend and finally dropping it from the memory model completely.
-
-After this series, there are still two places where it is mentioned:
-
-  1. The Korean translation of memory-barriers.txt. I'd appreciate some
-     help fixing this because it's not entirely a straightforward
-     deletion.
-
-  2. The virtio vring tests under tools/. This is userspace code so I'm
-     not too fussed about it.
-
-There's a chunk of header reshuffling at the start of the series so that
-READ_ONCE() can sensibly be overridden by arch code.
-
-Feedback welcome.
-
-Cheers,
-
-Will
-
-Cc: Yunjae Lee <lyj7694@gmail.com>
-Cc: SeongJae Park <sj38.park@gmail.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Josh Triplett <josh@joshtriplett.org>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Alan Stern <stern@rowland.harvard.edu>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Joe Perches <joe@perches.com>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: virtualization@lists.linux-foundation.org
-
---->8
-
-Will Deacon (13):
-  compiler.h: Split {READ,WRITE}_ONCE definitions out into rwonce.h
-  READ_ONCE: Undefine internal __READ_ONCE_SIZE macro after use
-  READ_ONCE: Allow __READ_ONCE_SIZE cases to be overridden by the
-    architecture
-  vhost: Remove redundant use of read_barrier_depends() barrier
-  alpha: Override READ_ONCE() with barriered implementation
-  READ_ONCE: Remove smp_read_barrier_depends() invocation
-  alpha: Replace smp_read_barrier_depends() usage with smp_[r]mb()
-  locking/barriers: Remove definitions for [smp_]read_barrier_depends()
-  Documentation/barriers: Remove references to
-    [smp_]read_barrier_depends()
-  tools/memory-model: Remove smp_read_barrier_depends() from informal
-    doc
-  powerpc: Remove comment about read_barrier_depends()
-  include/linux: Remove smp_read_barrier_depends() from comments
-  checkpatch: Remove checks relating to [smp_]read_barrier_depends()
-
- .../RCU/Design/Requirements/Requirements.html |  11 +-
- Documentation/memory-barriers.txt             | 156 +-----------------
- arch/alpha/include/asm/atomic.h               |  16 +-
- arch/alpha/include/asm/barrier.h              |  61 +------
- arch/alpha/include/asm/pgtable.h              |  10 +-
- arch/alpha/include/asm/rwonce.h               |  22 +++
- arch/powerpc/include/asm/barrier.h            |   2 -
- drivers/vhost/vhost.c                         |   5 -
- include/asm-generic/Kbuild                    |   1 +
- include/asm-generic/barrier.h                 |  17 --
- include/asm-generic/rwonce.h                  | 131 +++++++++++++++
- include/linux/compiler.h                      | 114 +------------
- include/linux/compiler_attributes.h           |  12 ++
- include/linux/percpu-refcount.h               |   2 +-
- include/linux/ptr_ring.h                      |   2 +-
- mm/memory.c                                   |   2 +-
- scripts/checkpatch.pl                         |   9 +-
- .../Documentation/explanation.txt             |  26 ++-
- 18 files changed, 217 insertions(+), 382 deletions(-)
- create mode 100644 arch/alpha/include/asm/rwonce.h
- create mode 100644 include/asm-generic/rwonce.h
-
+diff --git a/include/asm-generic/rwonce.h b/include/asm-generic/rwonce.h
+index d189455ae038..abf326634ecd 100644
+--- a/include/asm-generic/rwonce.h
++++ b/include/asm-generic/rwonce.h
+@@ -59,6 +59,8 @@ void __read_once_size_nocheck(const volatile void *p, void *res, int size)
+ 	__READ_ONCE_SIZE;
+ }
+ 
++#undef __READ_ONCE_SIZE
++
+ static __always_inline void __write_once_size(volatile void *p, void *res, int size)
+ {
+ 	switch (size) {
 -- 
 2.24.0.rc1.363.gb1bccd3e3d-goog
 
