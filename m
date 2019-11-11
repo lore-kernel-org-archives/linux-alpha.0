@@ -1,99 +1,60 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH 00/50] Add log level to show_stack()
-Date: Mon, 11 Nov 2019 10:12:07 +0100
-Message-ID: <20191111091207.u3lrd6cmumnx4czr@pathway.suse.cz>
-References: <20191106030542.868541-1-dima@arista.com>
- <20191106083538.z5nlpuf64cigxigh@pathway.suse.cz>
- <20191108103719.GB175344@google.com>
- <20191108130447.h3wfgo4efjkto56f@pathway.suse.cz>
- <20191111012336.GA85185@google.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 01/13] compiler.h: Split {READ, WRITE}_ONCE definitions out
+	into rwonce.h
+Date: Mon, 11 Nov 2019 10:32:46 +0100
+Message-ID: <CAK8P3a21KdGKMDDPs3jc9XEg3=LbzFnGwVm+xDTB+EqGXiZorA@mail.gmail.com>
+References: <20191108170120.22331-1-will@kernel.org>
+	<20191108170120.22331-2-will@kernel.org>
+	<CAK8P3a0f=WvSQSBQ4t0FmEkcFE_mC3oARxaeTviTSkSa-D2qhg@mail.gmail.com>
+	<93f80017-d65e-7c3a-29b0-d9a568d08f58@de.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
- Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=ckDLLBNybB00NN8bJ+zRvU0mCEzS1GZ+ad57vCEWPjg=; b=cQlpD23aP4bfKdyeyN7HiVAGoK
- SflFeTgJLt+AxFRMLefuJ6Xc6DflclklBijDwv5eydJeO8EbgWW/ie/JpJ80vmyObiM9Y5GGTAn//
- wyk1qSt1zx6JcwrVeI1WwxDGIXufOpIqARrNzBgwmx/8Wuk7CvYBBuIoemQm42UwSqtg=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To
- :From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=ckDLLBNybB00NN8bJ+zRvU0mCEzS1GZ+ad57vCEWPjg=; b=Tmc8UAHLOAuFi2NDkHEwALRMzt
- UKbkwF8x9kOmqxZ70/oIK3a5kFFbFiQaEdfQGv5Xhhtzq+6LEyF4Kt8XGX50MOdc+4T1grhMYKI2c
- iODFCXmCsuXTPCRhY3j8yjmNndBWhpvmXY7Ck4stJnaNLIVazdrJkVloKnjVnJzbODto=;
-Content-Disposition: inline
-In-Reply-To: <20191111012336.GA85185@google.com>
+Content-Transfer-Encoding: base64
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <93f80017-d65e-7c3a-29b0-d9a568d08f58@de.ibm.com>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/options/kgdb-bugreport>, 
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
-List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
-List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>, 
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Dmitry Safonov <dima@arista.com>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kerne
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+Content-Type: text/plain; charset="iso-8859-1"
+To: Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Michael Ellerman <mpe@ellerman.id.au>, virtualization@lists.linux-foundation.org, Josh Triplett <josh@joshtriplett.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, SeongJae Park <sj38.park@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, alpha <linux-alpha@vger.kernel.org>, Joe Perches <joe@perches.com>, Alan Stern <stern@rowland.harvard.edu>, Matt Turner <mattst88@gmail.com>, Yunjae Lee <lyj7694@gmail.com>, Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, Richard Henderson <rth@twiddle.net>
 
-On Mon 2019-11-11 10:23:36, Sergey Senozhatsky wrote:
-> On (19/11/08 14:04), Petr Mladek wrote:
-> [..]
-> > I agree that it is complicated to pass the loglevel as
-> > a parameter. It would be better define the default
-> > log level for a given code section. It might be stored
-> > in task_struct for the normal context and in per-CPU
-> > variables for interrupt contexts.
-> 
-> I do recall that we talked about per-CPU printk state bit which would
-> start/end "just print it" section. We probably can extend it to "just
-> log_store" type of functionality. Doesn't look like a very bad idea.
-
-The problem with per-CPU printk is that we would need to disable
-interrupts. It is not always wanted. Also people might not expect
-this from a printk() API.
-
-
-> "This task/context is in trouble, whatever it printk()-s is important".
-
-It might be a minimal loglevel. More important messages would still
-be printed() with the higher loglevel.
-
-But yes, this per-code-section loglevel is problematic. The feedback
-against the patchset shows that people want it also the other way.
-I mean to keep pr_debug() as pr_debug().
-
-A solution might be to use the per-code-section loglevel only instead
-of some special loglevel.
-
-
-> Per-console loglevel also might help sometimes. Slower consoles would
-> ->write() only critical messages, faster consoles everything.
-
-This looks like another problem to me. Anyway, this filtering will
-work better when the loglevel will be consistent across the related
-lines.
-
-> Passing log_level as part of message payload, which printk machinery
-> magically hides is not entirely exciting. What we have in the code
-> now - printk("%s blah\n", lvl) - is not what we see in the logs.
-> Because the leading '%s' becomes special. And printk()/sprintf()
-> documentation should reflect that: '%s' prints a string, but sometimes
-> it doesn't.
-
-I personally do not see this as a big problem.
-
-The explicitly passed loglevel makes me feel more confident that
-all needed printk() calls were updated. But it might be a false
-feeling. I do not really have any strong preference.
-
-Best Regards,
-Petr
+T24gTW9uLCBOb3YgMTEsIDIwMTkgYXQgOToxMCBBTSBDaHJpc3RpYW4gQm9ybnRyYWVnZXIKPGJv
+cm50cmFlZ2VyQGRlLmlibS5jb20+IHdyb3RlOgo+IE9uIDA4LjExLjE5IDIwOjU3LCBBcm5kIEJl
+cmdtYW5uIHdyb3RlOgo+ID4gT24gRnJpLCBOb3YgOCwgMjAxOSBhdCA2OjAxIFBNIFdpbGwgRGVh
+Y29uIDx3aWxsQGtlcm5lbC5vcmc+IHdyb3RlOgo+ID4+Cj4gPj4gSW4gcHJlcGFyYXRpb24gZm9y
+IGFsbG93aW5nIGFyY2hpdGVjdHVyZXMgdG8gZGVmaW5lIHRoZWlyIG93bgo+ID4+IGltcGxlbWVu
+dGF0aW9uIG9mIHRoZSAnUkVBRF9PTkNFKCknIG1hY3JvLCBtb3ZlIHRoZSBnZW5lcmljCj4gPj4g
+J3tSRUFELFdSSVRFfV9PTkNFKCknIGRlZmluaXRpb25zIG91dCBvZiB0aGUgdW53aWVsZHkgJ2xp
+bnV4L2NvbXBpbGVyLmgnCj4gPj4gYW5kIGludG8gYSBuZXcgJ3J3b25jZS5oJyBoZWFkZXIgdW5k
+ZXIgJ2FzbS1nZW5lcmljJy4KPiA+Cj4gPiBBZGRpbmcgQ2hyaXN0aWFuIEJvcm50csOkZ2VyIHRv
+IENjLCBoZSBvcmlnaW5hbGx5IGFkZGVkIHRoZQo+ID4gUkVBRF9PTkNFKCkvV1JJVEVfT05DRSgp
+Cj4gPiBjb2RlLgo+ID4KPiA+IEkgd29uZGVyIGlmIGl0IHdvdWxkIGJlIGFwcHJvcHJpYXRlIG5v
+dyB0byByZXZlcnQgYmFjayB0byBhIG11Y2ggc2ltcGxlciB2ZXJzaW9uCj4gPiBvZiB0aGVzZSBo
+ZWxwZXJzIGZvciBhbnkgbW9kZXJuIGNvbXBpbGVyLiBBcyBJIHVuZGVyc3RhbmQsIG9ubHkgZ2Nj
+LTQuNiBhbmQKPiA+IGdjYzQuNyBhY3R1YWxseSBuZWVkIHRoZSBzb25nLWFuZC1kYW5jZSB2ZXJz
+aW9uIHdpdGggdGhlIHVuaW9uIGFuZCBzd2l0Y2gvY2FzZSwKPiA+IHdoaWxlIGZvciBvdGhlcnMs
+IHdlIGNhbiBtaWdodCBiZSBhYmxlIGJhY2sgdG8gYSBtYWNybyBkb2luZyBhIHZvbGF0aWxlIGFj
+Y2Vzcy4KPgo+IEFzIGZhciBhcyBJIGtub3cgdGhpcyBwYXJ0aWN1bGFyIGlzc3VlIHdpdGggIHZv
+bGF0aWxlIGFjY2VzcyBvbiBhZ2dyZWdhdGUgdHlwZXMKPiB3YXMgZml4ZWQgaW4gZ2NjIDQuOC4g
+T24gdGhlIG90aGVyIGhhbmQgd2Uga25vdyB0aGF0IHRoZSBjdXJyZW50IGNvbnN0cnVjdCB3aWxs
+Cj4gd29yayBvbiBhbGwgY29tcGlsZXJzLiBOb3Qgc28gc3VyZSBhYm91dCB0aGUgb3JpZ25hbCBB
+Q0NFU1NfT05DRSBpbXBsZW1lbnRhdGlvbi4KCkkndmUgc2VlbiBwcm9ibGVtcyB3aXRoIGNsYW5n
+IG9uIHRoZSBjdXJyZW50IHZlcnNpb24sIGxlYWRpbmcgdG8gdW5uZWNlc3NhcnkKdGVtcG9yYXJp
+ZXMgYmVpbmcgc3BpbGxlZCB0byB0aGUgc3RhY2sgaW4gc29tZSBjYXNlcywgc28gSSB0aGluayBp
+dCB3b3VsZCBzdGlsbApoZWxwIHRvIHNpbXBsaWZ5IGl0LgoKV2UgcHJvYmFibHkgZG9uJ3Qgd2Fu
+dCB0aGUgZXhhY3QgQUNDRVNTX09OQ0UoKSBpbXBsZW1lbnRhdGlvbiBiYWNrCnRoYXQgZXhpc3Rl
+ZCBiZWZvcmUsIGJ1dCByYXRoZXIgc29tZXRoaW5nIHRoYXQgaW1wbGVtZW50cyB0aGUgc3RyaWN0
+ZXIKUkVBRF9PTkNFKCkgYW5kIFdSSVRFX09OQ0UoKS4gSSdkIHByb2JhYmx5IGFsc28gd2FudCB0
+byBhdm9pZCB0aGUKX19idWlsdGluX21lbWNweSgpIGV4Y2VwdGlvbiBmb3Igb2RkLXNpemVkIGFj
+Y2Vzc2VzIGFuZCBpbnN0ZWFkIGhhdmUKYSBzZXBhcmF0ZSB3YXkgdG8gZG8gdGhvc2UuCgogICAg
+ICBBcm5kCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fClZp
+cnR1YWxpemF0aW9uIG1haWxpbmcgbGlzdApWaXJ0dWFsaXphdGlvbkBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby92aXJ0dWFsaXphdGlvbg==
