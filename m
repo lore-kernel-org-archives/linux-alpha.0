@@ -1,40 +1,55 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: Build regressions/improvements in v5.4-rc7
-Date: Mon, 11 Nov 2019 16:36:18 +0100
-Message-ID: <CAMuHMdXenPQJQn1qVL494cB89GZAcZqXMVhw4PW+ZgSqdgtAyQ@mail.gmail.com>
-References: <20191111151344.7401-1-geert@linux-m68k.org>
+Subject: Re: [PATCH v2 11/29] vmlinux.lds.h: Replace RODATA with RO_DATA
+Date: Mon, 11 Nov 2019 17:58:06 +0100
+Message-ID: <CAMuHMdXfPyti1wFBb0hhf3CeDSQ=zVv7cV-taeYCmDswMQkXPQ@mail.gmail.com>
+References: <20191011000609.29728-1-keescook@chromium.org> <20191011000609.29728-12-keescook@chromium.org>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191111151344.7401-1-geert@linux-m68k.org>
+In-Reply-To: <20191011000609.29728-12-keescook@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc: linux-s390 <linux-s390@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, MTD Maling List <linux-mtd@lists.infradead.org>, Arnd Bergmann <arnd@arndb.de>
+To: Kees Cook <keescook@chromium.org>
+Cc: Borislav Petkov <bp@alien8.de>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Heiko Carstens <heiko.carstens@de.ibm.com>, Will Deacon <will@kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, alpha <linux-alpha@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Michal Simek <monstr@monstr.eu>, Parisc List <linux-parisc@vger.kernel.org>, linux-xtensa@linux-xtensa.o
 
-On Mon, Nov 11, 2019 at 4:18 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> JFYI, when comparing v5.4-rc7[1] to v5.4-rc6[3], the summaries are:
->   - build errors: +0/-2
->   - build warnings: +48/-70
+Hi Kees,
 
-  + /kisskb/src/fs/ubifs/orphan.c: warning: format '%lu' expects
-argument of type 'long unsigned int', but argument 4 has type 'ino_t'
-[-Wformat]:  => 140:3, 132:3
+On Fri, Oct 11, 2019 at 2:07 AM Kees Cook <keescook@chromium.org> wrote:
+> There's no reason to keep the RODATA macro: replace the callers with
+> the expected RO_DATA macro.
+>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  arch/alpha/kernel/vmlinux.lds.S      | 2 +-
+>  arch/ia64/kernel/vmlinux.lds.S       | 2 +-
+>  arch/microblaze/kernel/vmlinux.lds.S | 2 +-
+>  arch/mips/kernel/vmlinux.lds.S       | 2 +-
+>  arch/um/include/asm/common.lds.S     | 2 +-
+>  arch/xtensa/kernel/vmlinux.lds.S     | 2 +-
+>  include/asm-generic/vmlinux.lds.h    | 4 +---
+>  7 files changed, 7 insertions(+), 9 deletions(-)
 
-s390x/s390-all{mod,yes}config
+Somehow you missed:
 
-Why is ino_t unsigned int on s390x and alpha, while it's unsigned long
-everywhere else?
+    arch/m68k/kernel/vmlinux-std.lds:  RODATA
+    arch/m68k/kernel/vmlinux-sun3.lds:      RODATA
 
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/31f4f5b495a62c9a8b15b1c3581acd5efeb9af8c/ (232 out of 242 configs)
-> [3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/a99d8080aaf358d5d23581244e5da23b35e340b9/ (232 out of 242 configs)
+Leading to build failures in next-20191111:
+
+    /opt/cross/kisskb/gcc-4.6.3-nolibc/m68k-linux/bin/m68k-linux-ld:./arch/m68k/kernel/vmlinux.lds:29:
+syntax error
+    make[1]: *** [/kisskb/src/Makefile:1075: vmlinux] Error 1
+
+Reported-by: noreply@ellerman.id.au
+http://kisskb.ellerman.id.au/kisskb/buildresult/14022846/
 
 Gr{oetje,eeting}s,
 
                         Geert
 
--- 
+
+--
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
