@@ -1,60 +1,54 @@
 From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 01/13] compiler.h: Split {READ, WRITE}_ONCE definitions out
-	into rwonce.h
-Date: Mon, 11 Nov 2019 10:32:46 +0100
-Message-ID: <CAK8P3a21KdGKMDDPs3jc9XEg3=LbzFnGwVm+xDTB+EqGXiZorA@mail.gmail.com>
-References: <20191108170120.22331-1-will@kernel.org>
-	<20191108170120.22331-2-will@kernel.org>
-	<CAK8P3a0f=WvSQSBQ4t0FmEkcFE_mC3oARxaeTviTSkSa-D2qhg@mail.gmail.com>
-	<93f80017-d65e-7c3a-29b0-d9a568d08f58@de.ibm.com>
+Subject: Re: [PATCH 10/21] asm-generic: ioremap_uc should behave the same with
+ and without MMU
+Date: Mon, 11 Nov 2019 11:09:05 +0100
+Message-ID: <CAK8P3a2o4R+E2hTrHrmNy7K1ki3_98aWE5a-fjkQ_NWW=xd_gQ@mail.gmail.com>
+References: <20191029064834.23438-1-hch@lst.de> <20191029064834.23438-11-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-In-Reply-To: <93f80017-d65e-7c3a-29b0-d9a568d08f58@de.ibm.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Sender: virtualization-bounces@lists.linux-foundation.org
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-Content-Type: text/plain; charset="iso-8859-1"
-To: Christian Borntraeger <borntraeger@de.ibm.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Michael Ellerman <mpe@ellerman.id.au>, virtualization@lists.linux-foundation.org, Josh Triplett <josh@joshtriplett.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, SeongJae Park <sj38.park@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, alpha <linux-alpha@vger.kernel.org>, Joe Perches <joe@perches.com>, Alan Stern <stern@rowland.harvard.edu>, Matt Turner <mattst88@gmail.com>, Yunjae Lee <lyj7694@gmail.com>, Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, Richard Henderson <rth@twiddle.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20191029064834.23438-11-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Christoph Hellwig <hch@lst.de>
+Cc: Guo Ren <guoren@kernel.org>, Michal Simek <monstr@monstr.eu>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Guan Xuetao <gxt@pku.edu.cn>, the arch/x86 maintainers <x86@kernel.org>, alpha <linux-alpha@vger.kernel.org>, "open list:SYNOPSYS ARC ARCHITECTURE" <linux-snps-arc@lists.infradead.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>, linux-ia64@vger.kernel.org, linux-m68k <linux-m68k@lists.linux-m68k.org>, linux-mips@vger.kernel.org, "moderated list:NIOS2 ARCHITECTURE" <nios2-dev@lists.rocketboards.org>, openrisc@lists.librecores.org, Parisc List <linux-parisc@vger.kernel.org>, linux-riscv@lists.infradead.org, linux-s390 <linux-s390@vger.kernel.org>
 
-T24gTW9uLCBOb3YgMTEsIDIwMTkgYXQgOToxMCBBTSBDaHJpc3RpYW4gQm9ybnRyYWVnZXIKPGJv
-cm50cmFlZ2VyQGRlLmlibS5jb20+IHdyb3RlOgo+IE9uIDA4LjExLjE5IDIwOjU3LCBBcm5kIEJl
-cmdtYW5uIHdyb3RlOgo+ID4gT24gRnJpLCBOb3YgOCwgMjAxOSBhdCA2OjAxIFBNIFdpbGwgRGVh
-Y29uIDx3aWxsQGtlcm5lbC5vcmc+IHdyb3RlOgo+ID4+Cj4gPj4gSW4gcHJlcGFyYXRpb24gZm9y
-IGFsbG93aW5nIGFyY2hpdGVjdHVyZXMgdG8gZGVmaW5lIHRoZWlyIG93bgo+ID4+IGltcGxlbWVu
-dGF0aW9uIG9mIHRoZSAnUkVBRF9PTkNFKCknIG1hY3JvLCBtb3ZlIHRoZSBnZW5lcmljCj4gPj4g
-J3tSRUFELFdSSVRFfV9PTkNFKCknIGRlZmluaXRpb25zIG91dCBvZiB0aGUgdW53aWVsZHkgJ2xp
-bnV4L2NvbXBpbGVyLmgnCj4gPj4gYW5kIGludG8gYSBuZXcgJ3J3b25jZS5oJyBoZWFkZXIgdW5k
-ZXIgJ2FzbS1nZW5lcmljJy4KPiA+Cj4gPiBBZGRpbmcgQ2hyaXN0aWFuIEJvcm50csOkZ2VyIHRv
-IENjLCBoZSBvcmlnaW5hbGx5IGFkZGVkIHRoZQo+ID4gUkVBRF9PTkNFKCkvV1JJVEVfT05DRSgp
-Cj4gPiBjb2RlLgo+ID4KPiA+IEkgd29uZGVyIGlmIGl0IHdvdWxkIGJlIGFwcHJvcHJpYXRlIG5v
-dyB0byByZXZlcnQgYmFjayB0byBhIG11Y2ggc2ltcGxlciB2ZXJzaW9uCj4gPiBvZiB0aGVzZSBo
-ZWxwZXJzIGZvciBhbnkgbW9kZXJuIGNvbXBpbGVyLiBBcyBJIHVuZGVyc3RhbmQsIG9ubHkgZ2Nj
-LTQuNiBhbmQKPiA+IGdjYzQuNyBhY3R1YWxseSBuZWVkIHRoZSBzb25nLWFuZC1kYW5jZSB2ZXJz
-aW9uIHdpdGggdGhlIHVuaW9uIGFuZCBzd2l0Y2gvY2FzZSwKPiA+IHdoaWxlIGZvciBvdGhlcnMs
-IHdlIGNhbiBtaWdodCBiZSBhYmxlIGJhY2sgdG8gYSBtYWNybyBkb2luZyBhIHZvbGF0aWxlIGFj
-Y2Vzcy4KPgo+IEFzIGZhciBhcyBJIGtub3cgdGhpcyBwYXJ0aWN1bGFyIGlzc3VlIHdpdGggIHZv
-bGF0aWxlIGFjY2VzcyBvbiBhZ2dyZWdhdGUgdHlwZXMKPiB3YXMgZml4ZWQgaW4gZ2NjIDQuOC4g
-T24gdGhlIG90aGVyIGhhbmQgd2Uga25vdyB0aGF0IHRoZSBjdXJyZW50IGNvbnN0cnVjdCB3aWxs
-Cj4gd29yayBvbiBhbGwgY29tcGlsZXJzLiBOb3Qgc28gc3VyZSBhYm91dCB0aGUgb3JpZ25hbCBB
-Q0NFU1NfT05DRSBpbXBsZW1lbnRhdGlvbi4KCkkndmUgc2VlbiBwcm9ibGVtcyB3aXRoIGNsYW5n
-IG9uIHRoZSBjdXJyZW50IHZlcnNpb24sIGxlYWRpbmcgdG8gdW5uZWNlc3NhcnkKdGVtcG9yYXJp
-ZXMgYmVpbmcgc3BpbGxlZCB0byB0aGUgc3RhY2sgaW4gc29tZSBjYXNlcywgc28gSSB0aGluayBp
-dCB3b3VsZCBzdGlsbApoZWxwIHRvIHNpbXBsaWZ5IGl0LgoKV2UgcHJvYmFibHkgZG9uJ3Qgd2Fu
-dCB0aGUgZXhhY3QgQUNDRVNTX09OQ0UoKSBpbXBsZW1lbnRhdGlvbiBiYWNrCnRoYXQgZXhpc3Rl
-ZCBiZWZvcmUsIGJ1dCByYXRoZXIgc29tZXRoaW5nIHRoYXQgaW1wbGVtZW50cyB0aGUgc3RyaWN0
-ZXIKUkVBRF9PTkNFKCkgYW5kIFdSSVRFX09OQ0UoKS4gSSdkIHByb2JhYmx5IGFsc28gd2FudCB0
-byBhdm9pZCB0aGUKX19idWlsdGluX21lbWNweSgpIGV4Y2VwdGlvbiBmb3Igb2RkLXNpemVkIGFj
-Y2Vzc2VzIGFuZCBpbnN0ZWFkIGhhdmUKYSBzZXBhcmF0ZSB3YXkgdG8gZG8gdGhvc2UuCgogICAg
-ICBBcm5kCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fClZp
-cnR1YWxpemF0aW9uIG1haWxpbmcgbGlzdApWaXJ0dWFsaXphdGlvbkBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
-aW5mby92aXJ0dWFsaXphdGlvbg==
+On Tue, Oct 29, 2019 at 7:49 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> Whatever reason there is for the existence of ioremap_uc, and the fact
+> that it returns NULL by default on architectures with an MMU applies
+> equally to nommu architectures, so don't provide different defaults.
+
+Makes sense.
+
+> In practice the difference is meaningless as the only portable driver
+> that uses ioremap_uc is atyfb which probably doesn't show up on nommu
+> devices.
+
+
+
+> +/*
+> + * ioremap_uc is special in that we do require an explicit architecture
+> + * implementation.  In general you do now want to use this function in a
+> + * driver and use plain ioremap, which is uncached by default.  Similarly
+> + * architectures should not implement it unless they have a very good
+> + * reason.
+> + */
+> +#ifndef ioremap_uc
+> +#define ioremap_uc ioremap_uc
+> +static inline void __iomem *ioremap_uc(phys_addr_t offset, size_t size)
+> +{
+> +       return NULL;
+> +}
+> +#endif
+
+Maybe we could move the definition into the atyfb driver itself?
+
+As I understand it, the difference between ioremap()/ioremap_nocache()
+and ioremap_uc() only exists on pre-PAT x86-32 systems (i.e. 486, P5,
+Ppro, PII, K6, VIA C3), while on more modern systems (all non-x86,
+PentiumIII, Athlon, VIA C7)  those three are meant to be synonyms
+anyway.
+
+      Arnd
