@@ -1,77 +1,65 @@
-From: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 01/13] compiler.h: Split {READ,WRITE}_ONCE definitions
- out into rwonce.h
-Date: Tue, 12 Nov 2019 11:36:47 +0000
-Message-ID: <20191112113646.GC17835@willie-the-truck>
-References: <20191108170120.22331-1-will@kernel.org>
- <20191108170120.22331-2-will@kernel.org>
- <CAK8P3a0f=WvSQSBQ4t0FmEkcFE_mC3oARxaeTviTSkSa-D2qhg@mail.gmail.com>
- <93f80017-d65e-7c3a-29b0-d9a568d08f58@de.ibm.com>
- <CAK8P3a21KdGKMDDPs3jc9XEg3=LbzFnGwVm+xDTB+EqGXiZorA@mail.gmail.com>
+From: Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH v2 11/29] vmlinux.lds.h: Replace RODATA with RO_DATA
+Date: Tue, 12 Nov 2019 12:55:09 -0800
+Message-ID: <201911121252.25720DC6@keescook>
+References: <20191011000609.29728-1-keescook@chromium.org>
+ <20191011000609.29728-12-keescook@chromium.org>
+ <CAMuHMdXfPyti1wFBb0hhf3CeDSQ=zVv7cV-taeYCmDswMQkXPQ@mail.gmail.com>
+ <201911110922.17A2112B0@keescook>
+ <CAMuHMdUJ8QPvqf51nVmOg1Zm20SNT7pXR72z=qmco=ecwawZ7A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573558613;
-        bh=IBRZ0V+FizBPRXBE7AIelmGcF/rqx4zxpH+FTVnkzDQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vgR6vb6pygOrhYdh1tLbICYpzNyLiNW/NGEr6J8+nCx71yHQDyEQ3zjASKeUfsJrC
-         tr9H+e8krqDcjj664LKgstygnZJcLRjtIzdyrNXpDLEotbjAeOGuGg3W0fRW/q0rLK
-         wrAAh0Cey56Uy6sOjPmN8QeMewVkm+GLfLdNBr24=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=p3sGAQxZSRJH4UZHNpIdLrEGYPs7j+wXkkL7B23DozY=;
+        b=jzJxHJOhBgrxXGo+3hwTEULMtqhW32uUMjkXF6xooOB4YLF0fDp9kjF2ZcEXOqjPmZ
+         wb3eB6O717UcTt+tyAbO8B80zA3u9jbuMXSpdMqJOUrOIw/6tlJouhIZBM+a5PnCN1vj
+         lat++UKcoOXZLI/EBlS4RFvn1FgV/ybJGuQ4A=
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a21KdGKMDDPs3jc9XEg3=LbzFnGwVm+xDTB+EqGXiZorA@mail.gmail.com>
+In-Reply-To: <CAMuHMdUJ8QPvqf51nVmOg1Zm20SNT7pXR72z=qmco=ecwawZ7A@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Christian Borntraeger <borntraeger@de.ibm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yunjae Lee <lyj7694@gmail.com>, SeongJae Park <sj38.park@gmail.com>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, Michael Ellerman <mpe@ellerman.id.au>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Joe Perches <joe@perches.com>, Boqun Feng <boqun.feng@gmail.com>, alpha <linux-alpha@vger.kernel.org>, virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Borislav Petkov <bp@alien8.de>, Rick Edgecombe <rick.p.edgecombe@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Heiko Carstens <heiko.carstens@de.ibm.com>, Will Deacon <will@kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, alpha <linux-alpha@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Michal Simek <monstr@monstr.eu>, Parisc List <linux-parisc@vger.kernel.org>, linux-xtensa@linux-xtensa.o
 
-On Mon, Nov 11, 2019 at 10:32:46AM +0100, Arnd Bergmann wrote:
-> On Mon, Nov 11, 2019 at 9:10 AM Christian Borntraeger
-> <borntraeger@de.ibm.com> wrote:
-> > On 08.11.19 20:57, Arnd Bergmann wrote:
-> > > On Fri, Nov 8, 2019 at 6:01 PM Will Deacon <will@kernel.org> wrote:
-> > >>
-> > >> In preparation for allowing architectures to define their own
-> > >> implementation of the 'READ_ONCE()' macro, move the generic
-> > >> '{READ,WRITE}_ONCE()' definitions out of the unwieldy 'linux/compile=
-r.h'
-> > >> and into a new 'rwonce.h' header under 'asm-generic'.
+On Mon, Nov 11, 2019 at 07:08:51PM +0100, Geert Uytterhoeven wrote:
+> Hi Kees,
+> 
+> On Mon, Nov 11, 2019 at 6:23 PM Kees Cook <keescook@chromium.org> wrote:
+> > On Mon, Nov 11, 2019 at 05:58:06PM +0100, Geert Uytterhoeven wrote:
+> > > On Fri, Oct 11, 2019 at 2:07 AM Kees Cook <keescook@chromium.org> wrote:
+> > > > There's no reason to keep the RODATA macro: replace the callers with
+> > > > the expected RO_DATA macro.
+> > > >
+> > > > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > > > ---
+> > > >  arch/alpha/kernel/vmlinux.lds.S      | 2 +-
+> > > >  arch/ia64/kernel/vmlinux.lds.S       | 2 +-
+> > > >  arch/microblaze/kernel/vmlinux.lds.S | 2 +-
+> > > >  arch/mips/kernel/vmlinux.lds.S       | 2 +-
+> > > >  arch/um/include/asm/common.lds.S     | 2 +-
+> > > >  arch/xtensa/kernel/vmlinux.lds.S     | 2 +-
+> > > >  include/asm-generic/vmlinux.lds.h    | 4 +---
+> > > >  7 files changed, 7 insertions(+), 9 deletions(-)
 > > >
-> > > Adding Christian Borntr=E4ger to Cc, he originally added the
-> > > READ_ONCE()/WRITE_ONCE()
-> > > code.
+> > > Somehow you missed:
 > > >
-> > > I wonder if it would be appropriate now to revert back to a much simp=
-ler version
-> > > of these helpers for any modern compiler. As I understand, only gcc-4=
-.6 and
-> > > gcc4.7 actually need the song-and-dance version with the union and sw=
-itch/case,
-> > > while for others, we can might be able back to a macro doing a volati=
-le access.
+> > >     arch/m68k/kernel/vmlinux-std.lds:  RODATA
+> > >     arch/m68k/kernel/vmlinux-sun3.lds:      RODATA
 > >
-> > As far as I know this particular issue with  volatile access on aggrega=
-te types
-> > was fixed in gcc 4.8. On the other hand we know that the current constr=
-uct will
-> > work on all compilers. Not so sure about the orignal ACCESS_ONCE implem=
-entation.
->=20
-> I've seen problems with clang on the current version, leading to unnecess=
-ary
-> temporaries being spilled to the stack in some cases, so I think it would=
- still
-> help to simplify it.
->=20
-> We probably don't want the exact ACCESS_ONCE() implementation back
-> that existed before, but rather something that implements the stricter
-> READ_ONCE() and WRITE_ONCE(). I'd probably also want to avoid the
-> __builtin_memcpy() exception for odd-sized accesses and instead have
-> a separate way to do those.
+> > Argh. I've sent a patch; sorry and thanks for catching this. For my own
+> > cross-build testing, which defconfig targets will hit these two linker
+> > scripts?
+> 
+> vmlinux-sun3.lds: sun3_defconfig
+> vmlinux-std.lds: All other classic 680x0 targets with an MMU, e.g. plain
+>                  defconfig aka multi_defconfig.
 
-If you have a patch, I'm happy to carry it at the end of the series to
-avoid conflicts. It's not completely clear to me what you're after, so if
-you need me to adjust anything here then please shout!
+Excellent, thank you; I've updated my multi-arch build list. :)
 
-Will
+-- 
+Kees Cook
