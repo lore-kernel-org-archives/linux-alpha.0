@@ -1,86 +1,77 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [PATCH 00/50] Add log level to show_stack()
-Date: Wed, 13 Nov 2019 15:33:34 +0900
-Message-ID: <20191113063334.GA147997@google.com>
-References: <20191108103719.GB175344@google.com>
- <20191108130447.h3wfgo4efjkto56f@pathway.suse.cz>
- <20191111012336.GA85185@google.com>
- <20191111091207.u3lrd6cmumnx4czr@pathway.suse.cz>
- <20191112044447.GA121272@google.com>
- <20191112045704.GA138013@google.com>
- <20191112083509.gmgjpkjffsfaw5lm@pathway.suse.cz>
- <20191112101229.GA201294@google.com>
- <20191113012337.GA70781@google.com>
- <25ff45f0-6420-f660-55a8-637f11ab5ab4@arista.com>
+From: Aleksa Sarai <cyphar@cyphar.com>
+Subject: Re: [PATCH v15 4/9] namei: LOOKUP_BENEATH: O_BENEATH-like scoped
+ resolution
+Date: Wed, 13 Nov 2019 18:47:57 +1100
+Message-ID: <20191113074757.5b4u5vlyx2u6pbn6@yavin.dot.cyphar.com>
+References: <20191105090553.6350-1-cyphar@cyphar.com>
+ <20191105090553.6350-5-cyphar@cyphar.com>
+ <20191113015534.GA26530@ZenIV.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=Edn5IFU3R6j4VJjv3ztj6aOXKuKU2LSfKbAcMlqy9Cs=; b=qwxMZe7FYCvbEG
-	8naiImeMyj7fVPv2Yayhn+ttya80FCV10L57m+KXfzFlnbiG1bk7y3dfso0xoYsqCaKvsvcI6RTa2
-	sXrzetn5HHMOalVaiJRDKAPxFC+soyMmJDf6xowRcqJmZqdvIaCAIf0/mMnuNCtbJ0tUrQ24okduj
-	v2HjXgkiOvCoQZUfJSfrXnA9Kqzj+wVjZpOR9+0HAY2TRBzfOpr6XK74wOQbilpKAsVz8AJ4PDmoa
-	3dqice+DZaW4n7iJ4iu086YmqLbEhfobEENcOHttM2bcecr9h8TxWaq+Syj3oA8aM0jZ4m7QdEefe
-	hDn7aOMHh8C8hglC3P3A==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=KPZG4VqXDKJQhwt8QhBKSdwu6zZ1yvGSLXAAovETV8E=;
- b=U+7/ZvVfxKk+hxsLJDRIKIa9v9E62t1+RHHdRG8fTOKlKCc4Kg8kLlVghoiEvtLKpI
- pPB/09WWUgNDAvmTd9ZCgUOuDBo7+0/f9WrOXWR2uZQ/aTiznYX6i7YMJNAQqiVBiT9D
- uNMlkpfHxoC092SA3lqUUmN6Py1jaNvbxPVR7bhPPMcnC5VVTdQfrrvn9g+mwUT9wmS5
- IpQo+ozODVnxdup9AaHr+12x4K6wNPJd6H6aHacy3JkNKTrjQ9VPgzg12dvkP1Aua/p8
- JdT9N+L+Gr2JhZIIZgVnzKCc48NZMHSHGJjqaFnpF0Bg0opyuGJWVOEoMHo8Jbl+CwGg
- Qilw==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="odomi6wtik4yoblv"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <25ff45f0-6420-f660-55a8-637f11ab5ab4@arista.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Dmitry Safonov <dima@arista.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Petr Mladek <pmladek@suse.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwyso>
+In-Reply-To: <20191113015534.GA26530@ZenIV.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Christian Brauner <christian.brauner@ubuntu.com>, David Drysdale <drysdale@google.com>, Andy Lutomirski <luto@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Eric Biederman <ebiederm@xmission.com>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Ras
 
-On (19/11/13 02:25), Dmitry Safonov wrote:
-> I guess I've pointed that in my point of view price for one-time testing
-> code is cheaper than adding a new printk feature to swap log levels on
-> the fly.
-[..]
-> I've gone through functions used by sysrq driver and the same changes
-> introducing log level parameter would be needed for: sched_show_task(),
-> debug_show_all_locks(), show_regs(), show_state(), show_mem(). Some of
-> them don't need any platform changes, but at least show_regs() needs.
 
-Good points and nice conclusion.
+--odomi6wtik4yoblv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Well, here we go. There is a number of generally useful functions that
-print nice data and where people might want to have better loglevel control
-(for debugging purposes). show_stack() is just one of them. Patching all
-those functions, which you have mentioned above, is hardly a fun task to do.
-Hence the printk() per-CPU per-context loglevel proposition. The code there
-is not clever or complicated and is meant for debugging purposes only, but
-with just 3 lines of code one can do some stuff:
+On 2019-11-13, Al Viro <viro@zeniv.linux.org.uk> wrote:
+> Minor nit here - I'd split "move the conditional call of set_root()
+> into nd_jump_root()" into a separate patch before that one.  Makes
+> for fewer distractions in this one.  I'd probably fold "and be
+> ready for errors other than -ECHILD" into the same preliminary
+> patch.
 
-	/* @BTW you can't do this with "%s" KERN_FOO ;P */
-+	printk_emergency_enter(LOGLEVEL_SCHED);
-+	debug_show_all_locks();
-+	printk_emergency_exit();
+Will do.
 
-Now...
-I'm not sure if this whole thing is up to "printk maintainers only".
-If no one is going to use "emergency printk contexts" then there is
-no point in having that code in the kernel.
+> > +			/* Not currently safe for scoped-lookups. */
+> > +			if (unlikely(nd->flags & LOOKUP_IS_SCOPED))
+> > +				return ERR_PTR(-EXDEV);
+>=20
+> Also a candidate for doing in nd_jump_link()...
+>=20
+> > @@ -1373,8 +1403,11 @@ static int follow_dotdot_rcu(struct nameidata *n=
+d)
+> >  	struct inode *inode =3D nd->inode;
+> > =20
+> >  	while (1) {
+> > -		if (path_equal(&nd->path, &nd->root))
+> > +		if (path_equal(&nd->path, &nd->root)) {
+> > +			if (unlikely(nd->flags & LOOKUP_BENEATH))
+> > +				return -EXDEV;
+>=20
+> Umm...  Are you sure it's not -ECHILD?
 
-	-ss
+It wouldn't hurt to be -ECHILD -- though it's not clear to me how likely
+a success would be in REF-walk if the parent components didn't already
+trigger an unlazy_walk() in RCU-walk.
+
+I guess that also means LOOKUP_NO_XDEV should trigger -ECHILD in
+follow_dotdot_rcu()?
+
+--=20
+Aleksa Sarai
+Senior Software Engineer (Containers)
+SUSE Linux GmbH
+<https://www.cyphar.com/>
+
+--odomi6wtik4yoblv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXcu1KgAKCRCdlLljIbnQ
+EpYSAQDaNIB4LkhLlbFgkuRPiavU6vZ03HuSIHKseqaD6uMARwD+OcGzTDahyjJ6
+YeuKal+s33ETzSjupl7K2mKfYQpA2Q0=
+=nyQ8
+-----END PGP SIGNATURE-----
+
+--odomi6wtik4yoblv--
