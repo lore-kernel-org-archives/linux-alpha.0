@@ -1,74 +1,68 @@
-From: Aleksa Sarai <cyphar@cyphar.com>
-Subject: Re: [PATCH v15 5/9] namei: LOOKUP_IN_ROOT: chroot-like scoped
- resolution
-Date: Wed, 13 Nov 2019 13:44:14 +1100
-Message-ID: <20191113024414.wlmvtjstpnkxa36n@yavin.dot.cyphar.com>
-References: <20191105090553.6350-1-cyphar@cyphar.com>
- <20191105090553.6350-6-cyphar@cyphar.com>
- <20191113020307.GB26530@ZenIV.linux.org.uk>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH 00/50] Add log level to show_stack()
+Date: Wed, 13 Nov 2019 11:51:50 +0900
+Message-ID: <20191113025150.GA101113@google.com>
+References: <20191106030542.868541-1-dima@arista.com>
+ <20191106083538.z5nlpuf64cigxigh@pathway.suse.cz>
+ <20191108103719.GB175344@google.com>
+ <20191108130447.h3wfgo4efjkto56f@pathway.suse.cz>
+ <20191111012336.GA85185@google.com>
+ <13e72b62-c842-8ed5-5b41-bc1692b28f53@arista.com>
+ <20191112021747.GA68506@google.com>
+ <25cb9647-007a-9c18-4784-49c0aef4f54b@arista.com>
+ <20191112042546.GA119579@google.com>
+ <d828cb62-aeea-4d67-33ba-b3a93ea10a3d@arista.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="zcwix2zvi4el6ukc"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=pDT5yRPn9SlnfHXXTiYssqGmvx2r398LWrYx2wizQQw=; b=HEhEqnl2VfQbAt
+	2haM1qIp1I+4E32ysFfIAM5wh3p2uIBRfjLI8l1wBfHRYxaXQPFMc96cwPFvu7pXQQ4zbX0Z/LaZh
+	6rjiRjlR7qLCZl+JLNFVVD1TWzBU2IGON9rjFdfdI71XG7bvzXjJEQzoNRrxm2y5dPhVWT7n4ReDs
+	rPZdHsaxQECMxa4Y5fCzTR+7wg7aqA3KlQdhBaK6pYb7u0ZdcGnTFAbXzywfl4/sErYxlJapH9Kzl
+	4nFSUB7icZ+FXlsSLaF7bLKWIXU0IMXUKOTWB/8YFrZYszmsbTvmrw2aVuF548dDrTQbn6pKR3hHH
+	nZkh/faKE6p+hivKb+CQ==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=mAEGoUcf015Kc1YtW4ruE+InFHxWlwYn7gbBVyirKYs=;
+ b=XXCh/lzhc9PTzZMC0vGMEKaB6i1csVlUbqsH9rt47YYmIE3wdFLdN1RZ9XLo0Arau9
+ DFSxYtIImotqP13tsBpRhqb8n2/Js3UmCNvM723O76JsU3YeDgNvB62RSmDR472f865P
+ t1QAOVBhx+MjcLVo2R7QGZwppOQAhnDe5pnFM8bcC1mQYP4Xfr9JZq5mLce2CdFOCSHQ
+ 84njoBNSpMDUUGTsuJ77DSMbJh6PdBhKnrYmuC5XmJlJhZH9X7UWxpAWc2QurRhXPwj/
+ RNRLsIyLkoYPXcQN5wrdc5lLemIanQ8txwfErNc3g/3wLnhyIhyW/Sj8BqL1ib+dXaLC
+ deQg==
 Content-Disposition: inline
-In-Reply-To: <20191113020307.GB26530@ZenIV.linux.org.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Christian Brauner <christian.brauner@ubuntu.com>, Eric Biederman <ebiederm@xmission.com>, Andy Lutomirski <luto@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>, David Drysdale <drysdale@google.com>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Alexan
+In-Reply-To: <d828cb62-aeea-4d67-33ba-b3a93ea10a3d@arista.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: Dmitry Safonov <dima@arista.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Petr Mladek <pmladek@suse.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwyso>
 
+On (19/11/13 02:41), Dmitry Safonov wrote:
+[..]
+> 
+> I don't strongly disagree, but if you look at those results:
+> git grep 'printk("%s.*", \(lvl\|level\)'
+> 
+> it seems to be used in quite a few places.
 
---zcwix2zvi4el6ukc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yes, you are right, it is used in some places. That's why I said
+that I'd prefer to keep that number low (minimize it). But it's
+not 0 (that ship has sailed).
 
-On 2019-11-13, Al Viro <viro@zeniv.linux.org.uk> wrote:
-> On Tue, Nov 05, 2019 at 08:05:49PM +1100, Aleksa Sarai wrote:
->=20
-> > @@ -2277,12 +2277,20 @@ static const char *path_init(struct nameidata *=
-nd, unsigned flags)
-> > =20
-> >  	nd->m_seq =3D read_seqbegin(&mount_lock);
-> > =20
-> > -	/* Figure out the starting path and root (if needed). */
-> > -	if (*s =3D=3D '/') {
-> > +	/* Absolute pathname -- fetch the root. */
-> > +	if (flags & LOOKUP_IN_ROOT) {
-> > +		/* With LOOKUP_IN_ROOT, act as a relative path. */
-> > +		while (*s =3D=3D '/')
-> > +			s++;
->=20
-> Er...  Why bother skipping slashes?  I mean, not only link_path_walk()
-> will skip them just fine, you are actually risking breakage in this:
->                 if (*s && unlikely(!d_can_lookup(dentry))) {
->                         fdput(f);
->                         return ERR_PTR(-ENOTDIR);
->                 }
-> which is downstream from there with you patch, AFAICS.
-
-I switched to stripping the slashes at your suggestion a few revisions
-ago[1], and had (wrongly) assumed we needed to handle "/" somehow in
-path_init(). But you're quite right about link_path_walk() -- and I'd be
-more than happy to drop it.
-
-[1]: https://lore.kernel.org/lkml/20190712125552.GL17978@ZenIV.linux.org.uk/
-
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
-
---zcwix2zvi4el6ukc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXctt+gAKCRCdlLljIbnQ
-EtaOAP4wZ6FONr+jCigAii+B0S1x/aNqVoCXGa0s32/c+X1spQEAiLcI0bIEdqjF
-tuAr6TYPTrpe63nhzokAO32LJ1rVrQM=
-=G6qn
------END PGP SIGNATURE-----
-
---zcwix2zvi4el6ukc--
+	-ss
