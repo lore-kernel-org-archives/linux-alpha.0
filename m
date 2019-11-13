@@ -1,114 +1,81 @@
-From: Aleksa Sarai <cyphar@cyphar.com>
-Subject: Re: [PATCH v15 7/9] open: introduce openat2(2) syscall
-Date: Wed, 13 Nov 2019 13:35:37 +1100
-Message-ID: <20191113023537.epcgw5u2fdbinnyj@yavin.dot.cyphar.com>
-References: <20191105090553.6350-1-cyphar@cyphar.com>
- <20191105090553.6350-8-cyphar@cyphar.com>
- <20191113022906.GD26530@ZenIV.linux.org.uk>
+From: Dmitry Safonov <dima@arista.com>
+Subject: Re: [PATCH 00/50] Add log level to show_stack()
+Date: Wed, 13 Nov 2019 02:41:50 +0000
+Message-ID: <d828cb62-aeea-4d67-33ba-b3a93ea10a3d@arista.com>
+References: <20191106030542.868541-1-dima@arista.com>
+ <20191106083538.z5nlpuf64cigxigh@pathway.suse.cz>
+ <20191108103719.GB175344@google.com>
+ <20191108130447.h3wfgo4efjkto56f@pathway.suse.cz>
+ <20191111012336.GA85185@google.com>
+ <13e72b62-c842-8ed5-5b41-bc1692b28f53@arista.com>
+ <20191112021747.GA68506@google.com>
+ <25cb9647-007a-9c18-4784-49c0aef4f54b@arista.com>
+ <20191112042546.GA119579@google.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1806869698648339356=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Content-Type:Cc:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	In-Reply-To:MIME-Version:References:Message-ID:Subject:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=qaqvqhklwEa+kz7HyGfCOLaalp6J+yKLg7WtdaS/HjI=; b=Uc/Wk/IcWtWeFXSvRrFvKIbK9
-	ma/fPaJechrDgloKFj8P3ToFzYwjtK89J/3z477+VSJkwcajPdx6zau/qF8mLLVzHE1E65zOVBArJ
-	YL77Tpzt7cjiiVTOY7xFx5zl84BIP4NBWz331ApmfO73SZk8XXi7niJgidXFLF6FLq+jRVAtBPhAz
-	Oi9Ce28Q2tc8cc0XUmPx+shzbCLh+1C2BY3btldYSrZs2jVXNpKSygbZVbV+WgR3gnjM++tWaSYMi
-	8WhWm5RBmB/NZfzvxFsDK3ifIxtoZ5pGw7Hs4cXBM7aBIKeRSwisP5ocnyEj8hFB89vbX/IiXeJid
-	9fGQhlg1A==;
-In-Reply-To: <20191113022906.GD26530@ZenIV.linux.org.uk>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Alexei Starovoitov <ast@kernel.org>, linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>, linux-kselftest@vger.kernel.org, sparclinux@vger.kernel.org, Jiri Olsa <jolsa@redhat.com>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Tycho Andersen <tycho@tycho.ws>, Aleksa Sarai <asarai@suse.de>, Shuah Khan <shuah@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Ingo Molnar <mingo@redhat.com>, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Jann Horn <jannh@google.com>, linuxppc-dev@lists.ozlabs.org, linux-m68k@lists.linux-m68k.org, Andy Lutomirski <luto@kernel.org>, Shuah Khan <skha>
-
-
---===============1806869698648339356==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ohhoiky5cv3wybqd"
-Content-Disposition: inline
-
-
---ohhoiky5cv3wybqd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 2019-11-13, Al Viro <viro@zeniv.linux.org.uk> wrote:
-> On Tue, Nov 05, 2019 at 08:05:51PM +1100, Aleksa Sarai wrote:
-> > +/*
-> > + * Arguments for how openat2(2) should open the target path. If @resol=
-ve is
-> > + * zero, then openat2(2) operates very similarly to openat(2).
-> > + *
-> > + * However, unlike openat(2), unknown bits in @flags result in -EINVAL=
- rather
-> > + * than being silently ignored. @mode must be zero unless one of {O_CR=
-EAT,
-> > + * O_TMPFILE} are set, and @upgrade_mask must be zero unless O_PATH is=
- set.
-> > + *
-> > + * @flags: O_* flags.
-> > + * @mode: O_CREAT/O_TMPFILE file mode.
-> > + * @upgrade_mask: UPGRADE_* flags (to restrict O_PATH re-opening).
->=20
-> ???
-
-Sorry, that was left over from a previous revision (where the magic-link
-re-opening restrictions were part of this series).
-
-> > + * @resolve: RESOLVE_* flags.
-> > + */
-> > +struct open_how {
-> > +	__aligned_u64 flags;
-> > +	__u16 mode;
-> > +	__u16 __padding[3]; /* must be zeroed */
-> > +	__aligned_u64 resolve;
-> > +};
-
-
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
-
---ohhoiky5cv3wybqd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXctr9QAKCRCdlLljIbnQ
-Ej91AQDSESPrMbumo+B1bVc2FthUOUuONyqVLG0aRmu7PQjnOgD7BOxMC9suhDip
-ayqrtLJhXKxmKpbFt69x0a97Rx8tGQ8=
-=4v0x
------END PGP SIGNATURE-----
-
---ohhoiky5cv3wybqd--
-
-
---===============1806869698648339356==
 Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:
+	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
+	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=rLh7Q3GdiOOnXztTmb+NTAb+Wh+Y3hEa8ZnAFymAzVc=; b=RAeQL7WJnGNv4+
+	GVRE3f6r+ph8NVKKzr7TopfFmQ+hGX116RGQTwPjZx/hgpiFoDX6ur/kYP41Ae4ncHawPS8+qVUq5
+	RFjHfwVt4jkjzp0VG0Pa8dOmbBVwEQtD/H5S4nlWz/07fyYhL92tMprdPt6KOKsb0bpidNGts1Pdm
+	S/6OixtTCSoaUDNZKXSLRW8xvNXNTSRvcwSNeaFqD8Jwfrrhj7FL+2mfnRw6M18HDrjt1PYp3HY1s
+	hAouTcL7YlssVNeciEZlYhpzk8Af0BFgXUUXxbbq8xEgEyp3X1LkzIR4c56LQjmkGwpmDfIseVFLH
+	v2syWlxIQYsk6R0NkP6A==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=arista.com; s=googlenew;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=9ewNkq+k7WzF7N7FeKsJZWJsQUcIf4AaWPjf05A0Fco=;
+ b=httZFalB2VvN+DAYr6xQfb8CS2lpW4CgtAeEsAWgjkvbyyGvCmjTLAPAEMfF/JCr7/
+ c8P9raTPSqNexy65EPzsFOdG6kVk1K592cMDIy0cHhBebJPWF8fQ9egPpzwWXfBWSrCz
+ Jk1zAXvG+gTTHY9iuktiuKZH9vWWl//5vaZrlx7ppzhO4sTAZlX2C/T/kVZYDrElUqcN
+ VIOq5oDXrk5HHYGKLT0+ff2WZ+LnUZTUWEqoGOOJeX0XdIUXtb1PCt6iQWGnVWpEOeHv
+ 9p5PFEhwRvitpIH0ba4n5ClWOCwYigDV+TgMORDfM82fnMfxgxqmD7OSd4a8lnQJEp7K
+ YgYw==
+In-Reply-To: <20191112042546.GA119579@google.com>
+Content-Language: en-US
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Ralf Baechle <r>
 
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+On 11/12/19 4:25 AM, Sergey Senozhatsky wrote:
+> On (19/11/12 02:40), Dmitry Safonov wrote:
+> [..]
+>> In my point of view the cost of one-time [mostly build] testing every
+>> architecture is cheaper than introducing some new smart code that will
+>> live forever.
+> 
+> Well, there may be the need to pass loglevel deeper due to "hey __show_stack()
+> on that arch invokes bar(), which invokes foo() and now foo() does printk(),
+> but we don't see it". The context which decided to backtaraces decided
+> to do so for a reason, probably, so I guess we can look at it as "a special
+> error reporting code block".
+> 
+> The proposed patch set passes loglevel via slightly unusual channel -
+> via sprintf(). We probably can do it, but I would prefer to minimize
+> the number of such printk-s in the kernel. The code snippet which I
+> posted also does pretty unusual thing w.r.t loglevel. Both approaches
+> are "non-standard" from that POV.
 
---===============1806869698648339356==--
+I don't strongly disagree, but if you look at those results:
+git grep 'printk("%s.*", \(lvl\|level\)'
 
+it seems to be used in quite a few places.
+
+Thanks,
+          Dmitry
