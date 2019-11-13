@@ -1,58 +1,83 @@
-From: Cyrill Gorcunov <gorcunov@gmail.com>
-Subject: Re: [PATCH 11/23] y2038: rusage: use __kernel_old_timeval
-Date: Wed, 13 Nov 2019 20:22:03 +0300
-Message-ID: <20191113172203.GE5130@uranus>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 00/23] y2038 cleanups
+Date: Wed, 13 Nov 2019 22:40:50 +0100
+Message-ID: <CAK8P3a1CbDaPqNsOVOuq2UDPSOwzd2U_WEmmXBMwCOhv1=iaSQ@mail.gmail.com>
 References: <20191108210236.1296047-1-arnd@arndb.de>
- <20191108211323.1806194-2-arnd@arndb.de>
- <20191112210915.GD5130@uranus>
- <CAK8P3a03FRfTsXADH+xfLsWxCu54JXvXbb-OdyGXXf88RNP34w@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kV1Wcdoyb3tKkjtZ6TiX+SctpfjtVlKeBG+DTOA7wco=;
-        b=H6qUKjy+MIZ5DBe9pQIP/fOIsyk7X/1ym72XQuXiEOFm3FEysa6i8nj1wu//7qFbuN
-         Rt1waOKtzNR0HNdxhROvzLzeMN2l0gzpdLkzNF3a2end5ARGrKaJ/pJ/8cEw4zCmE1iY
-         74prm7mtFRNkAezXqAix5mcfLBByncIoMniVRKM6pcPGzcKF3HGWN3xWZTVzr+0l6N3C
-         H2RyOI8wIbUTZ5GtNFDfRzVUXBbYccS1wknug0zQw1ZHxbc8LAmXMLTLY9TnwbXYLj5k
-         xKosD5SBYYXJofqwIJhaO7SvfZUSYpQqGLKF20qyempqJ0DGfwmOZIU+w8SMlwyz8H7L
-         DLVg==
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a03FRfTsXADH+xfLsWxCu54JXvXbb-OdyGXXf88RNP34w@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <20191108210236.1296047-1-arnd@arndb.de>
+Sender: netdev-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: y2038 Mailman List <y2038@lists.linaro.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Deepa Dinamani <deepa.kernel@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, alpha <linux-alpha@vger.kernel.org>
+To: y2038 Mailman List <y2038@lists.linaro.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, Paul Burton <paul.burton@mips.com>, Greentime Hu <green.hu@gmail.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, David Miller <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, the arch/x86 maintainers <x86@kernel.org>, Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>, Al Viro <viro@zeniv.linux.org.uk>, Benjamin LaHaise <bcrl@kvack.org>, John Stultz <john.stultz@linaro.org>, Stephen Boyd <sboyd@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Vincenzo Frascino <vincenzo.frascino@arm.com>, Paul Moore <paul@paul-moore.com>, Stephen Smalley <sds@tyc>
 
-On Wed, Nov 13, 2019 at 11:02:12AM +0100, Arnd Bergmann wrote:
-...
-> 
-> There are clearly too many time types at the moment, but I'm in the
-> process of throwing out the ones we no longer need now.
+On Fri, Nov 8, 2019 at 10:04 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> This is a series of cleanups for the y2038 work, mostly intended
+> for namespace cleaning: the kernel defines the traditional
+> time_t, timeval and timespec types that often lead to y2038-unsafe
+> code. Even though the unsafe usage is mostly gone from the kernel,
+> having the types and associated functions around means that we
+> can still grow new users, and that we may be missing conversions
+> to safe types that actually matter.
+>
+> As there is no rush on any of these patches, I would either
+> queue them up in linux-next through my y2038 branch, or
+> Thomas could add them to the tip tree if he wants.
+>
+> As mentioned in another series, this is part of a larger
+> effort to fix all the remaining bits and pieces that are
+> not completed yet from the y2038 conversion, and the full
+> set can be found at:
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/log/?h=y2038-endgame
+>
+> Maintainers, please review and provide Acks.
+>
+> Let me know if you have any opinion on whether we should do
+> the include last two patches of this series or not.
+>
+>      Arnd
+>
+> Arnd Bergmann (23):
+>   y2038: remove CONFIG_64BIT_TIME
+>   y2038: add __kernel_old_timespec and __kernel_old_time_t
+>   y2038: vdso: change timeval to __kernel_old_timeval
+>   y2038: vdso: change timespec to __kernel_old_timespec
+>   y2038: vdso: change time_t to __kernel_old_time_t
+>   y2038: vdso: nds32: open-code timespec_add_ns()
+>   y2038: vdso: powerpc: avoid timespec references
+>   y2038: ipc: remove __kernel_time_t reference from headers
+>   y2038: stat: avoid 'time_t' in 'struct stat'
+>   y2038: uapi: change __kernel_time_t to __kernel_old_time_t
+>   y2038: rusage: use __kernel_old_timeval
+>   y2038: syscalls: change remaining timeval to __kernel_old_timeval
+>   y2038: socket: remove timespec reference in timestamping
+>   y2038: make ns_to_compat_timeval use __kernel_old_timeval
+>   y2038: elfcore: Use __kernel_old_timeval for process times
+>   y2038: timerfd: Use timespec64 internally
+>   y2038: time: avoid timespec usage in settimeofday()
+>   y2038: itimer: compat handling to itimer.c
+>   y2038: use compat_{get,set}_itimer on alpha
+>   y2038: move itimer reset into itimer.c
+>   y2038: itimer: change implementation to timespec64
+>   [RFC] y2038: itimer: use ktime_t internally
+>   y2038: allow disabling time32 system calls
 
-Cool!
+I've dropped the "[RFC] y2038: itimer: use ktime_t internally" patch
+for the moment,
+and added two other patches from other series:
 
-> I do have a number patches implementing other variants for the syscall,
-> and I suppose that if we end up adding __kernel_rusage, that would
-> have to go with a set of syscalls using 64-bit seconds/nanoseconds
-> rather than the old 32/64 microseconds. I don't know what other
-> changes remain that anyone would want from sys_waitid() now that
-> it does support pidfd.
-> 
-> If there is still a need for a new waitid() replacement, that should take
-> that new __kernel_rusage I think, but until then I hope we are fine
-> with today's getrusage+waitid based on the current struct rusage.
+y2038: remove CONFIG_64BIT_TIME
+y2038: socket: use __kernel_old_timespec instead of timespec
 
-Definitely.
+Tentatively pushed out the patches with the Acks I have received so
+far to my y2038 branch on git.kernel.org so it gets included in linux-next.
 
-> 
-> BSD has wait6() to return separate rusage structures for 'self' and
-> 'children', but I could not find any application (using the freebsd
-> sources and debian code search) that actually uses that information,
-> so there might not be any demand for that.
+If I hear no complaints, I'll send a pull request for the merge window,
+along with the compat-ioctl series I have already queued up in the same
+branch.
 
-Thanks for detailed info Arnd!
+    Arnd
