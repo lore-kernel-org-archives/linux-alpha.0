@@ -1,54 +1,60 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 11/23] y2038: rusage: use __kernel_old_timeval
-Date: Wed, 13 Nov 2019 11:02:12 +0100
-Message-ID: <CAK8P3a03FRfTsXADH+xfLsWxCu54JXvXbb-OdyGXXf88RNP34w@mail.gmail.com>
-References: <20191108210236.1296047-1-arnd@arndb.de> <20191108211323.1806194-2-arnd@arndb.de>
- <20191112210915.GD5130@uranus>
+From: Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 00/50] Add log level to show_stack()
+Date: Wed, 13 Nov 2019 10:32:14 -0500
+Message-ID: <20191113103214.1585923c@gandalf.local.home>
+References: <20191106030542.868541-1-dima@arista.com>
+ <20191106083538.z5nlpuf64cigxigh@pathway.suse.cz>
+ <20191108103719.GB175344@google.com>
+ <20191108130447.h3wfgo4efjkto56f@pathway.suse.cz>
+ <20191111012336.GA85185@google.com>
+ <20191111091207.u3lrd6cmumnx4czr@pathway.suse.cz>
+ <20191112044447.GA121272@google.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20191112210915.GD5130@uranus>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Cyrill Gorcunov <gorcunov@gmail.com>
-Cc: y2038 Mailman List <y2038@lists.linaro.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Deepa Dinamani <deepa.kernel@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, alpha <linux-alpha@vger.kernel.org>
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=la1fcWRqkrLphM1uzmzI9A+GcfFlZDG8o9aFNCyzSoM=; b=W7FII/ZKZ/5flE
+	P6jqcSglsiersJ+A3xvMgm4jIS2THCJp1f870aYm5kno9c9mq7BHKKq4JStXD9uVPiiBo+lz95yML
+	A0Jj2j6YPG1wIKtqI2iewPhpuTTv78lm0Gnxh+hQzOXYh4VmF9yJIRV02xZQRQhnixPgvU/ngvc4P
+	8P5zPg2RbgY0cwqkX859tv9VO3vznID+crIqMx7E5OSPxRVUwi7f+zF5aUW2d64Ah4y3CfEeC9HAy
+	s6iFj0qtOQfUDRJohM5PGybn1rMq9Y3gT2xm5qTnWd5NCNzlLh4mE2CyRs1dCcxHAZ5KI2byGRv5c
+	IO49MLZN0ybNnYWJ6V2w==;
+In-Reply-To: <20191112044447.GA121272@google.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane.org@lists.infradead.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Ben Segall <bsegall@google.com>, Guo Ren <guoren@kernel.org>, Pavel Machek <pavel@ucw.cz>, Vincent Guittot <vincent.guittot@linaro.org>, Paul Burton <paulburton@kernel.org>, Dmitry Safonov <dima@arista.com>, Michael Ellerman <mpe@ellerman.id.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Mel Gorman <mgorman@suse.de>, Jiri Slaby <jslaby@suse.com>, Matt Turner <mattst88@gmail.com>, uclinux-h8-devel@lists.sourceforge.jp, Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-um@lists.infradead.org, Thomas Gleixner <tglx@linutronix.de>, Dietmar Eggemann <dietmar.eggemann@arm.com>, Richard Henderson <rth@twiddle.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kerne
 
-On Tue, Nov 12, 2019 at 10:09 PM Cyrill Gorcunov <gorcunov@gmail.com> wrote:
->
-> On Fri, Nov 08, 2019 at 10:12:10PM +0100, Arnd Bergmann wrote:
+On Tue, 12 Nov 2019 13:44:47 +0900
+Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com> wrote:
 
-> > ---
-> > Question: should we also rename 'struct rusage' into 'struct __kernel_rusage'
-> > here, to make them completely unambiguous?
->
-> The patch looks ok to me. I must confess I looked into rusage long ago
-> so __kernel_timespec type used in uapi made me nervious at first,
-> but then i found that we've this type defined in time_types.h uapi
-> so userspace should be safe. I also like the idea of __kernel_rusage
-> but definitely on top of the series.
+> > > I do recall that we talked about per-CPU printk state bit which would
+> > > start/end "just print it" section. We probably can extend it to "just
+> > > log_store" type of functionality. Doesn't look like a very bad idea.  
+> > 
+> > The problem with per-CPU printk is that we would need to disable
+> > interrupts.  
+> 
+> Or disable preemption and have loglevel per-CPU and per-context.
+> preempt_count can navigate us to the right context loglevel on
+> particular CPU. I'm talking here only about backtrace (error)
+> reporting contexts. Those can be atomic perfectly fine.
 
-There are clearly too many time types at the moment, but I'm in the
-process of throwing out the ones we no longer need now.
+With my real-time hat on, I'm totally against disabling of preemption
+for this purpose.
 
-I do have a number patches implementing other variants for the syscall,
-and I suppose that if we end up adding __kernel_rusage, that would
-have to go with a set of syscalls using 64-bit seconds/nanoseconds
-rather than the old 32/64 microseconds. I don't know what other
-changes remain that anyone would want from sys_waitid() now that
-it does support pidfd.
-
-If there is still a need for a new waitid() replacement, that should take
-that new __kernel_rusage I think, but until then I hope we are fine
-with today's getrusage+waitid based on the current struct rusage.
-
-BSD has wait6() to return separate rusage structures for 'self' and
-'children', but I could not find any application (using the freebsd
-sources and debian code search) that actually uses that information,
-so there might not be any demand for that.
-
-> Reviewed-by: Cyrill Gorcunov <gorcunov@gmail.com>
-
-Thanks,
-
-      Arnd
+-- Steve
