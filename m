@@ -1,68 +1,76 @@
-From: Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v15 3/9] namei: LOOKUP_NO_XDEV: block mountpoint crossing
-Date: Thu, 14 Nov 2019 05:43:48 +0000
-Message-ID: <20191114054348.GH26530@ZenIV.linux.org.uk>
-References: <20191105090553.6350-1-cyphar@cyphar.com>
- <20191105090553.6350-4-cyphar@cyphar.com>
- <20191113013630.GZ26530@ZenIV.linux.org.uk>
- <20191114044945.ldedzjrb4s7i7irr@yavin.dot.cyphar.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 11/23] y2038: rusage: use __kernel_old_timeval
+Date: Thu, 14 Nov 2019 11:18:15 +0100
+Message-ID: <CAK8P3a2JtyfFifSWNd2MA-J=6-NdgPd4eNva+u193bzQTX6Qig@mail.gmail.com>
+References: <20191108210236.1296047-1-arnd@arndb.de> <20191108211323.1806194-2-arnd@arndb.de>
+ <20191112210915.GD5130@uranus> <CAK8P3a03FRfTsXADH+xfLsWxCu54JXvXbb-OdyGXXf88RNP34w@mail.gmail.com>
+ <20191114003822.6fjji26vm7yplaw2@wittgenstein>
 Mime-Version: 1.0
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20191114044945.ldedzjrb4s7i7irr@yavin.dot.cyphar.com>
+In-Reply-To: <20191114003822.6fjji26vm7yplaw2@wittgenstein>
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Aleksa Sarai <cyphar@cyphar.com>
-Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Christian Brauner <christian.brauner@ubuntu.com>, David Drysdale <drysdale@google.com>, Andy Lutomirski <luto@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Eric Biederman <ebiederm@xmission.com>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Ras
+To: Christian Brauner <christian.brauner@ubuntu.com>
+Cc: Cyrill Gorcunov <gorcunov@gmail.com>, y2038 Mailman List <y2038@lists.linaro.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Deepa Dinamani <deepa.kernel@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, alpha <linux-alpha@vger.kernel.org>
 
-On Thu, Nov 14, 2019 at 03:49:45PM +1100, Aleksa Sarai wrote:
-> On 2019-11-13, Al Viro <viro@zeniv.linux.org.uk> wrote:
-> > On Tue, Nov 05, 2019 at 08:05:47PM +1100, Aleksa Sarai wrote:
-> > 
-> > > @@ -862,6 +870,8 @@ static int nd_jump_root(struct nameidata *nd)
-> > >  void nd_jump_link(struct path *path)
-> > >  {
-> > >  	struct nameidata *nd = current->nameidata;
-> > > +
-> > > +	nd->last_magiclink.same_mnt = (nd->path.mnt == path->mnt);
-> > >  	path_put(&nd->path);
-> > >  
-> > >  	nd->path = *path;
-> > > @@ -1082,6 +1092,10 @@ const char *get_link(struct nameidata *nd)
-> > >  		if (nd->flags & LOOKUP_MAGICLINK_JUMPED) {
-> > >  			if (unlikely(nd->flags & LOOKUP_NO_MAGICLINKS))
-> > >  				return ERR_PTR(-ELOOP);
-> > > +			if (unlikely(nd->flags & LOOKUP_NO_XDEV)) {
-> > > +				if (!nd->last_magiclink.same_mnt)
-> > > +					return ERR_PTR(-EXDEV);
-> > > +			}
-> > >  		}
-> > 
-> > Ugh...  Wouldn't it be better to take that logics (some equivalent thereof)
-> > into nd_jump_link()?  Or just have nd_jump_link() return an error...
-> 
-> This could be done, but the reason for stashing it away in
-> last_magiclink is because of the future magic-link re-opening patches
-> which can't be implemented like that without putting the open_flags
-> inside nameidata (which was decided to be too ugly a while ago).
-> 
-> My point being that I could implement it this way for this series, but
-> I'd have to implement something like last_magiclink when I end up
-> re-posting the magic-link stuff in a few weeks.
-> 
-> Looking at all the nd_jump_link() users, the other option is to just
-> disallow magic-link crossings entirely for LOOKUP_NO_XDEV. The only
-> thing allowing them permits is to resolve file descriptors that are
-> pointing to the same procfs mount -- and it's unclear to me how useful
-> that really is (apparmorfs and nsfs will always give -EXDEV because
-> aafs_mnt and nsfs_mnt are internal kernel vfsmounts).
+On Thu, Nov 14, 2019 at 1:38 AM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
+> On Wed, Nov 13, 2019 at 11:02:12AM +0100, Arnd Bergmann wrote:
+> > On Tue, Nov 12, 2019 at 10:09 PM Cyrill Gorcunov <gorcunov@gmail.com> wrote:
+> > >
+> > > On Fri, Nov 08, 2019 at 10:12:10PM +0100, Arnd Bergmann wrote:
+> >
+> > > > ---
+> > > > Question: should we also rename 'struct rusage' into 'struct __kernel_rusage'
+> > > > here, to make them completely unambiguous?
+> > >
+> > > The patch looks ok to me. I must confess I looked into rusage long ago
+> > > so __kernel_timespec type used in uapi made me nervious at first,
+> > > but then i found that we've this type defined in time_types.h uapi
+> > > so userspace should be safe. I also like the idea of __kernel_rusage
+> > > but definitely on top of the series.
+> >
+> > There are clearly too many time types at the moment, but I'm in the
+> > process of throwing out the ones we no longer need now.
+> >
+> > I do have a number patches implementing other variants for the syscall,
+> > and I suppose that if we end up adding __kernel_rusage, that would
+> > have to go with a set of syscalls using 64-bit seconds/nanoseconds
+> > rather than the old 32/64 microseconds. I don't know what other
+> > changes remain that anyone would want from sys_waitid() now that
+> > it does support pidfd.
+> >
+> > If there is still a need for a new waitid() replacement, that should take
+> > that new __kernel_rusage I think, but until then I hope we are fine
+> > with today's getrusage+waitid based on the current struct rusage.
+>
+> Note, that glibc does _not_ expose the rusage argument, i.e. most of
+> userspace is unaware that waitid() does allow you to get rusage
+> information. So users first need to know that waitid() has an rusage
+> argument and then need to call the waitid() syscall directly.
 
-I would rather keep the entire if (nd->flags & LOOKUP_MAGICLINK_JUMPED)
-out of the get_link().  If you want to generate some error if
-nd_jump_link() has been called, just do it right there.  The fewer
-pieces of state need to be carried around, the better...
+On architectures that don't have a wait4 syscall (riscv32 for now),
+glibc uses waitid to implement wait4 and wait3.
 
-And as for opening them...  Why would you need full open_flags in there?
-Details, please...
+> > BSD has wait6() to return separate rusage structures for 'self' and
+> > 'children', but I could not find any application (using the freebsd
+> > sources and debian code search) that actually uses that information,
+> > so there might not be any demand for that.
+>
+> Speaking specifically for Linux now, I think that rusage does not
+> actually expose the information most relevant users are interested in.
+> On Linux nowadays it is _way_ more interesting to retrieve stats
+> relative to the cgroup the task lived in etc.
+> Doing a git grep -i rusage in the systemd source code shows that rusage
+> is used _nowhere_. And I consider an init system to be the most likely
+> candidate to be interested in rusage.
+
+I looked at a couple of implementations of time(1), this is one example
+that sometimes uses wait3(), though other implementations just call
+getrusage() in the parent process before the fork/exec. None of them
+actually seem to report better than millisecond resolution, so there is
+not a strict reason to do a timespec replacement for these.
+
+       Arnd
