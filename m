@@ -1,72 +1,84 @@
-From: Christian Brauner <christian.brauner@ubuntu.com>
-Subject: Re: [PATCH 11/23] y2038: rusage: use __kernel_old_timeval
-Date: Thu, 14 Nov 2019 01:38:23 +0100
-Message-ID: <20191114003822.6fjji26vm7yplaw2@wittgenstein>
-References: <20191108210236.1296047-1-arnd@arndb.de>
- <20191108211323.1806194-2-arnd@arndb.de>
- <20191112210915.GD5130@uranus>
- <CAK8P3a03FRfTsXADH+xfLsWxCu54JXvXbb-OdyGXXf88RNP34w@mail.gmail.com>
+From: Aleksa Sarai <cyphar@cyphar.com>
+Subject: Re: [PATCH v15 3/9] namei: LOOKUP_NO_XDEV: block mountpoint crossing
+Date: Thu, 14 Nov 2019 15:49:45 +1100
+Message-ID: <20191114044945.ldedzjrb4s7i7irr@yavin.dot.cyphar.com>
+References: <20191105090553.6350-1-cyphar@cyphar.com>
+ <20191105090553.6350-4-cyphar@cyphar.com>
+ <20191113013630.GZ26530@ZenIV.linux.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <y2038-bounces@lists.linaro.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="rwq4fftbhkszxm4g"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a03FRfTsXADH+xfLsWxCu54JXvXbb-OdyGXXf88RNP34w@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
-List-Archive: <http://lists.linaro.org/pipermail/y2038/>
-List-Post: <mailto:y2038@lists.linaro.org>
-List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
-List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
- <mailto:y2038-request@lists.linaro.org?subject=subscribe>
-Errors-To: y2038-bounces@lists.linaro.org
-Sender: "Y2038" <y2038-bounces@lists.linaro.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: y2038 Mailman List <y2038@lists.linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Cyrill Gorcunov <gorcunov@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Deepa Dinamani <deepa.kernel@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>, Matt Turner <mattst88@gmail.com>, Will Deacon <will@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Richard Henderson <rth@twiddle.net>
+In-Reply-To: <20191113013630.GZ26530@ZenIV.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Christian Brauner <christian.brauner@ubuntu.com>, David Drysdale <drysdale@google.com>, Andy Lutomirski <luto@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Eric Biederman <ebiederm@xmission.com>, Andrew Morton <akpm@linux-foundation.org>, Alexei Starovoitov <ast@kernel.org>, Kees Cook <keescook@chromium.org>, Jann Horn <jannh@google.com>, Tycho Andersen <tycho@tycho.ws>, Chanho Min <chanho.min@lge.com>, Oleg Nesterov <oleg@redhat.com>, Ras
 
-T24gV2VkLCBOb3YgMTMsIDIwMTkgYXQgMTE6MDI6MTJBTSArMDEwMCwgQXJuZCBCZXJnbWFubiB3
-cm90ZToKPiBPbiBUdWUsIE5vdiAxMiwgMjAxOSBhdCAxMDowOSBQTSBDeXJpbGwgR29yY3Vub3Yg
-PGdvcmN1bm92QGdtYWlsLmNvbT4gd3JvdGU6Cj4gPgo+ID4gT24gRnJpLCBOb3YgMDgsIDIwMTkg
-YXQgMTA6MTI6MTBQTSArMDEwMCwgQXJuZCBCZXJnbWFubiB3cm90ZToKPiAKPiA+ID4gLS0tCj4g
-PiA+IFF1ZXN0aW9uOiBzaG91bGQgd2UgYWxzbyByZW5hbWUgJ3N0cnVjdCBydXNhZ2UnIGludG8g
-J3N0cnVjdCBfX2tlcm5lbF9ydXNhZ2UnCj4gPiA+IGhlcmUsIHRvIG1ha2UgdGhlbSBjb21wbGV0
-ZWx5IHVuYW1iaWd1b3VzPwo+ID4KPiA+IFRoZSBwYXRjaCBsb29rcyBvayB0byBtZS4gSSBtdXN0
-IGNvbmZlc3MgSSBsb29rZWQgaW50byBydXNhZ2UgbG9uZyBhZ28KPiA+IHNvIF9fa2VybmVsX3Rp
-bWVzcGVjIHR5cGUgdXNlZCBpbiB1YXBpIG1hZGUgbWUgbmVydmlvdXMgYXQgZmlyc3QsCj4gPiBi
-dXQgdGhlbiBpIGZvdW5kIHRoYXQgd2UndmUgdGhpcyB0eXBlIGRlZmluZWQgaW4gdGltZV90eXBl
-cy5oIHVhcGkKPiA+IHNvIHVzZXJzcGFjZSBzaG91bGQgYmUgc2FmZS4gSSBhbHNvIGxpa2UgdGhl
-IGlkZWEgb2YgX19rZXJuZWxfcnVzYWdlCj4gPiBidXQgZGVmaW5pdGVseSBvbiB0b3Agb2YgdGhl
-IHNlcmllcy4KPiAKPiBUaGVyZSBhcmUgY2xlYXJseSB0b28gbWFueSB0aW1lIHR5cGVzIGF0IHRo
-ZSBtb21lbnQsIGJ1dCBJJ20gaW4gdGhlCj4gcHJvY2VzcyBvZiB0aHJvd2luZyBvdXQgdGhlIG9u
-ZXMgd2Ugbm8gbG9uZ2VyIG5lZWQgbm93Lgo+IAo+IEkgZG8gaGF2ZSBhIG51bWJlciBwYXRjaGVz
-IGltcGxlbWVudGluZyBvdGhlciB2YXJpYW50cyBmb3IgdGhlIHN5c2NhbGwsCj4gYW5kIEkgc3Vw
-cG9zZSB0aGF0IGlmIHdlIGVuZCB1cCBhZGRpbmcgX19rZXJuZWxfcnVzYWdlLCB0aGF0IHdvdWxk
-Cj4gaGF2ZSB0byBnbyB3aXRoIGEgc2V0IG9mIHN5c2NhbGxzIHVzaW5nIDY0LWJpdCBzZWNvbmRz
-L25hbm9zZWNvbmRzCj4gcmF0aGVyIHRoYW4gdGhlIG9sZCAzMi82NCBtaWNyb3NlY29uZHMuIEkg
-ZG9uJ3Qga25vdyB3aGF0IG90aGVyCj4gY2hhbmdlcyByZW1haW4gdGhhdCBhbnlvbmUgd291bGQg
-d2FudCBmcm9tIHN5c193YWl0aWQoKSBub3cgdGhhdAo+IGl0IGRvZXMgc3VwcG9ydCBwaWRmZC4K
-PiAKPiBJZiB0aGVyZSBpcyBzdGlsbCBhIG5lZWQgZm9yIGEgbmV3IHdhaXRpZCgpIHJlcGxhY2Vt
-ZW50LCB0aGF0IHNob3VsZCB0YWtlCj4gdGhhdCBuZXcgX19rZXJuZWxfcnVzYWdlIEkgdGhpbmss
-IGJ1dCB1bnRpbCB0aGVuIEkgaG9wZSB3ZSBhcmUgZmluZQo+IHdpdGggdG9kYXkncyBnZXRydXNh
-Z2Urd2FpdGlkIGJhc2VkIG9uIHRoZSBjdXJyZW50IHN0cnVjdCBydXNhZ2UuCgpOb3RlLCB0aGF0
-IGdsaWJjIGRvZXMgX25vdF8gZXhwb3NlIHRoZSBydXNhZ2UgYXJndW1lbnQsIGkuZS4gbW9zdCBv
-Zgp1c2Vyc3BhY2UgaXMgdW5hd2FyZSB0aGF0IHdhaXRpZCgpIGRvZXMgYWxsb3cgeW91IHRvIGdl
-dCBydXNhZ2UKaW5mb3JtYXRpb24uIFNvIHVzZXJzIGZpcnN0IG5lZWQgdG8ga25vdyB0aGF0IHdh
-aXRpZCgpIGhhcyBhbiBydXNhZ2UKYXJndW1lbnQgYW5kIHRoZW4gbmVlZCB0byBjYWxsIHRoZSB3
-YWl0aWQoKSBzeXNjYWxsIGRpcmVjdGx5LgoKPiAKPiBCU0QgaGFzIHdhaXQ2KCkgdG8gcmV0dXJu
-IHNlcGFyYXRlIHJ1c2FnZSBzdHJ1Y3R1cmVzIGZvciAnc2VsZicgYW5kCj4gJ2NoaWxkcmVuJywg
-YnV0IEkgY291bGQgbm90IGZpbmQgYW55IGFwcGxpY2F0aW9uICh1c2luZyB0aGUgZnJlZWJzZAo+
-IHNvdXJjZXMgYW5kIGRlYmlhbiBjb2RlIHNlYXJjaCkgdGhhdCBhY3R1YWxseSB1c2VzIHRoYXQg
-aW5mb3JtYXRpb24sCj4gc28gdGhlcmUgbWlnaHQgbm90IGJlIGFueSBkZW1hbmQgZm9yIHRoYXQu
-CgpTcGVha2luZyBzcGVjaWZpY2FsbHkgZm9yIExpbnV4IG5vdywgSSB0aGluayB0aGF0IHJ1c2Fn
-ZSBkb2VzIG5vdAphY3R1YWxseSBleHBvc2UgdGhlIGluZm9ybWF0aW9uIG1vc3QgcmVsZXZhbnQg
-dXNlcnMgYXJlIGludGVyZXN0ZWQgaW4uCk9uIExpbnV4IG5vd2FkYXlzIGl0IGlzIF93YXlfIG1v
-cmUgaW50ZXJlc3RpbmcgdG8gcmV0cmlldmUgc3RhdHMKcmVsYXRpdmUgdG8gdGhlIGNncm91cCB0
-aGUgdGFzayBsaXZlZCBpbiBldGMuCkRvaW5nIGEgZ2l0IGdyZXAgLWkgcnVzYWdlIGluIHRoZSBz
-eXN0ZW1kIHNvdXJjZSBjb2RlIHNob3dzIHRoYXQgcnVzYWdlCmlzIHVzZWQgX25vd2hlcmVfLiBB
-bmQgSSBjb25zaWRlciBhbiBpbml0IHN5c3RlbSB0byBiZSB0aGUgbW9zdCBsaWtlbHkKY2FuZGlk
-YXRlIHRvIGJlIGludGVyZXN0ZWQgaW4gcnVzYWdlLgoKCUNocmlzdGlhbgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpZMjAzOCBtYWlsaW5nIGxpc3QKWTIw
-MzhAbGlzdHMubGluYXJvLm9yZwpodHRwczovL2xpc3RzLmxpbmFyby5vcmcvbWFpbG1hbi9saXN0
-aW5mby95MjAzOAo=
+
+--rwq4fftbhkszxm4g
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 2019-11-13, Al Viro <viro@zeniv.linux.org.uk> wrote:
+> On Tue, Nov 05, 2019 at 08:05:47PM +1100, Aleksa Sarai wrote:
+>=20
+> > @@ -862,6 +870,8 @@ static int nd_jump_root(struct nameidata *nd)
+> >  void nd_jump_link(struct path *path)
+> >  {
+> >  	struct nameidata *nd =3D current->nameidata;
+> > +
+> > +	nd->last_magiclink.same_mnt =3D (nd->path.mnt =3D=3D path->mnt);
+> >  	path_put(&nd->path);
+> > =20
+> >  	nd->path =3D *path;
+> > @@ -1082,6 +1092,10 @@ const char *get_link(struct nameidata *nd)
+> >  		if (nd->flags & LOOKUP_MAGICLINK_JUMPED) {
+> >  			if (unlikely(nd->flags & LOOKUP_NO_MAGICLINKS))
+> >  				return ERR_PTR(-ELOOP);
+> > +			if (unlikely(nd->flags & LOOKUP_NO_XDEV)) {
+> > +				if (!nd->last_magiclink.same_mnt)
+> > +					return ERR_PTR(-EXDEV);
+> > +			}
+> >  		}
+>=20
+> Ugh...  Wouldn't it be better to take that logics (some equivalent thereo=
+f)
+> into nd_jump_link()?  Or just have nd_jump_link() return an error...
+
+This could be done, but the reason for stashing it away in
+last_magiclink is because of the future magic-link re-opening patches
+which can't be implemented like that without putting the open_flags
+inside nameidata (which was decided to be too ugly a while ago).
+
+My point being that I could implement it this way for this series, but
+I'd have to implement something like last_magiclink when I end up
+re-posting the magic-link stuff in a few weeks.
+
+Looking at all the nd_jump_link() users, the other option is to just
+disallow magic-link crossings entirely for LOOKUP_NO_XDEV. The only
+thing allowing them permits is to resolve file descriptors that are
+pointing to the same procfs mount -- and it's unclear to me how useful
+that really is (apparmorfs and nsfs will always give -EXDEV because
+aafs_mnt and nsfs_mnt are internal kernel vfsmounts).
+
+--=20
+Aleksa Sarai
+Senior Software Engineer (Containers)
+SUSE Linux GmbH
+<https://www.cyphar.com/>
+
+--rwq4fftbhkszxm4g
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXczc5gAKCRCdlLljIbnQ
+EspyAQDQkDnU2/CfvkXyKRLh2e7ycT5D4iHdCmBXbx8LlO8DlwD/S5O/FNHgyDdy
+RVaJ7aj0OZAzg7DMx3VZRiI+He4MXw0=
+=71Jv
+-----END PGP SIGNATURE-----
+
+--rwq4fftbhkszxm4g--
