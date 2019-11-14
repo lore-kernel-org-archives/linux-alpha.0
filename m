@@ -1,83 +1,72 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 00/23] y2038 cleanups
-Date: Wed, 13 Nov 2019 22:40:50 +0100
-Message-ID: <CAK8P3a1CbDaPqNsOVOuq2UDPSOwzd2U_WEmmXBMwCOhv1=iaSQ@mail.gmail.com>
+From: Christian Brauner <christian.brauner@ubuntu.com>
+Subject: Re: [PATCH 11/23] y2038: rusage: use __kernel_old_timeval
+Date: Thu, 14 Nov 2019 01:38:23 +0100
+Message-ID: <20191114003822.6fjji26vm7yplaw2@wittgenstein>
 References: <20191108210236.1296047-1-arnd@arndb.de>
+ <20191108211323.1806194-2-arnd@arndb.de>
+ <20191112210915.GD5130@uranus>
+ <CAK8P3a03FRfTsXADH+xfLsWxCu54JXvXbb-OdyGXXf88RNP34w@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20191108210236.1296047-1-arnd@arndb.de>
-Sender: netdev-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+Content-Transfer-Encoding: base64
+Return-path: <y2038-bounces@lists.linaro.org>
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a03FRfTsXADH+xfLsWxCu54JXvXbb-OdyGXXf88RNP34w@mail.gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linaro.org/mailman/options/y2038>,
+ <mailto:y2038-request@lists.linaro.org?subject=unsubscribe>
+List-Archive: <http://lists.linaro.org/pipermail/y2038/>
+List-Post: <mailto:y2038@lists.linaro.org>
+List-Help: <mailto:y2038-request@lists.linaro.org?subject=help>
+List-Subscribe: <https://lists.linaro.org/mailman/listinfo/y2038>,
+ <mailto:y2038-request@lists.linaro.org?subject=subscribe>
+Errors-To: y2038-bounces@lists.linaro.org
+Sender: "Y2038" <y2038-bounces@lists.linaro.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: y2038 Mailman List <y2038@lists.linaro.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, Paul Burton <paul.burton@mips.com>, Greentime Hu <green.hu@gmail.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, David Miller <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, the arch/x86 maintainers <x86@kernel.org>, Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>, Al Viro <viro@zeniv.linux.org.uk>, Benjamin LaHaise <bcrl@kvack.org>, John Stultz <john.stultz@linaro.org>, Stephen Boyd <sboyd@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Vincenzo Frascino <vincenzo.frascino@arm.com>, Paul Moore <paul@paul-moore.com>, Stephen Smalley <sds@tyc>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: y2038 Mailman List <y2038@lists.linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Cyrill Gorcunov <gorcunov@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Deepa Dinamani <deepa.kernel@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>, Matt Turner <mattst88@gmail.com>, Will Deacon <will@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Richard Henderson <rth@twiddle.net>
 
-On Fri, Nov 8, 2019 at 10:04 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> This is a series of cleanups for the y2038 work, mostly intended
-> for namespace cleaning: the kernel defines the traditional
-> time_t, timeval and timespec types that often lead to y2038-unsafe
-> code. Even though the unsafe usage is mostly gone from the kernel,
-> having the types and associated functions around means that we
-> can still grow new users, and that we may be missing conversions
-> to safe types that actually matter.
->
-> As there is no rush on any of these patches, I would either
-> queue them up in linux-next through my y2038 branch, or
-> Thomas could add them to the tip tree if he wants.
->
-> As mentioned in another series, this is part of a larger
-> effort to fix all the remaining bits and pieces that are
-> not completed yet from the y2038 conversion, and the full
-> set can be found at:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/log/?h=y2038-endgame
->
-> Maintainers, please review and provide Acks.
->
-> Let me know if you have any opinion on whether we should do
-> the include last two patches of this series or not.
->
->      Arnd
->
-> Arnd Bergmann (23):
->   y2038: remove CONFIG_64BIT_TIME
->   y2038: add __kernel_old_timespec and __kernel_old_time_t
->   y2038: vdso: change timeval to __kernel_old_timeval
->   y2038: vdso: change timespec to __kernel_old_timespec
->   y2038: vdso: change time_t to __kernel_old_time_t
->   y2038: vdso: nds32: open-code timespec_add_ns()
->   y2038: vdso: powerpc: avoid timespec references
->   y2038: ipc: remove __kernel_time_t reference from headers
->   y2038: stat: avoid 'time_t' in 'struct stat'
->   y2038: uapi: change __kernel_time_t to __kernel_old_time_t
->   y2038: rusage: use __kernel_old_timeval
->   y2038: syscalls: change remaining timeval to __kernel_old_timeval
->   y2038: socket: remove timespec reference in timestamping
->   y2038: make ns_to_compat_timeval use __kernel_old_timeval
->   y2038: elfcore: Use __kernel_old_timeval for process times
->   y2038: timerfd: Use timespec64 internally
->   y2038: time: avoid timespec usage in settimeofday()
->   y2038: itimer: compat handling to itimer.c
->   y2038: use compat_{get,set}_itimer on alpha
->   y2038: move itimer reset into itimer.c
->   y2038: itimer: change implementation to timespec64
->   [RFC] y2038: itimer: use ktime_t internally
->   y2038: allow disabling time32 system calls
-
-I've dropped the "[RFC] y2038: itimer: use ktime_t internally" patch
-for the moment,
-and added two other patches from other series:
-
-y2038: remove CONFIG_64BIT_TIME
-y2038: socket: use __kernel_old_timespec instead of timespec
-
-Tentatively pushed out the patches with the Acks I have received so
-far to my y2038 branch on git.kernel.org so it gets included in linux-next.
-
-If I hear no complaints, I'll send a pull request for the merge window,
-along with the compat-ioctl series I have already queued up in the same
-branch.
-
-    Arnd
+T24gV2VkLCBOb3YgMTMsIDIwMTkgYXQgMTE6MDI6MTJBTSArMDEwMCwgQXJuZCBCZXJnbWFubiB3
+cm90ZToKPiBPbiBUdWUsIE5vdiAxMiwgMjAxOSBhdCAxMDowOSBQTSBDeXJpbGwgR29yY3Vub3Yg
+PGdvcmN1bm92QGdtYWlsLmNvbT4gd3JvdGU6Cj4gPgo+ID4gT24gRnJpLCBOb3YgMDgsIDIwMTkg
+YXQgMTA6MTI6MTBQTSArMDEwMCwgQXJuZCBCZXJnbWFubiB3cm90ZToKPiAKPiA+ID4gLS0tCj4g
+PiA+IFF1ZXN0aW9uOiBzaG91bGQgd2UgYWxzbyByZW5hbWUgJ3N0cnVjdCBydXNhZ2UnIGludG8g
+J3N0cnVjdCBfX2tlcm5lbF9ydXNhZ2UnCj4gPiA+IGhlcmUsIHRvIG1ha2UgdGhlbSBjb21wbGV0
+ZWx5IHVuYW1iaWd1b3VzPwo+ID4KPiA+IFRoZSBwYXRjaCBsb29rcyBvayB0byBtZS4gSSBtdXN0
+IGNvbmZlc3MgSSBsb29rZWQgaW50byBydXNhZ2UgbG9uZyBhZ28KPiA+IHNvIF9fa2VybmVsX3Rp
+bWVzcGVjIHR5cGUgdXNlZCBpbiB1YXBpIG1hZGUgbWUgbmVydmlvdXMgYXQgZmlyc3QsCj4gPiBi
+dXQgdGhlbiBpIGZvdW5kIHRoYXQgd2UndmUgdGhpcyB0eXBlIGRlZmluZWQgaW4gdGltZV90eXBl
+cy5oIHVhcGkKPiA+IHNvIHVzZXJzcGFjZSBzaG91bGQgYmUgc2FmZS4gSSBhbHNvIGxpa2UgdGhl
+IGlkZWEgb2YgX19rZXJuZWxfcnVzYWdlCj4gPiBidXQgZGVmaW5pdGVseSBvbiB0b3Agb2YgdGhl
+IHNlcmllcy4KPiAKPiBUaGVyZSBhcmUgY2xlYXJseSB0b28gbWFueSB0aW1lIHR5cGVzIGF0IHRo
+ZSBtb21lbnQsIGJ1dCBJJ20gaW4gdGhlCj4gcHJvY2VzcyBvZiB0aHJvd2luZyBvdXQgdGhlIG9u
+ZXMgd2Ugbm8gbG9uZ2VyIG5lZWQgbm93Lgo+IAo+IEkgZG8gaGF2ZSBhIG51bWJlciBwYXRjaGVz
+IGltcGxlbWVudGluZyBvdGhlciB2YXJpYW50cyBmb3IgdGhlIHN5c2NhbGwsCj4gYW5kIEkgc3Vw
+cG9zZSB0aGF0IGlmIHdlIGVuZCB1cCBhZGRpbmcgX19rZXJuZWxfcnVzYWdlLCB0aGF0IHdvdWxk
+Cj4gaGF2ZSB0byBnbyB3aXRoIGEgc2V0IG9mIHN5c2NhbGxzIHVzaW5nIDY0LWJpdCBzZWNvbmRz
+L25hbm9zZWNvbmRzCj4gcmF0aGVyIHRoYW4gdGhlIG9sZCAzMi82NCBtaWNyb3NlY29uZHMuIEkg
+ZG9uJ3Qga25vdyB3aGF0IG90aGVyCj4gY2hhbmdlcyByZW1haW4gdGhhdCBhbnlvbmUgd291bGQg
+d2FudCBmcm9tIHN5c193YWl0aWQoKSBub3cgdGhhdAo+IGl0IGRvZXMgc3VwcG9ydCBwaWRmZC4K
+PiAKPiBJZiB0aGVyZSBpcyBzdGlsbCBhIG5lZWQgZm9yIGEgbmV3IHdhaXRpZCgpIHJlcGxhY2Vt
+ZW50LCB0aGF0IHNob3VsZCB0YWtlCj4gdGhhdCBuZXcgX19rZXJuZWxfcnVzYWdlIEkgdGhpbmss
+IGJ1dCB1bnRpbCB0aGVuIEkgaG9wZSB3ZSBhcmUgZmluZQo+IHdpdGggdG9kYXkncyBnZXRydXNh
+Z2Urd2FpdGlkIGJhc2VkIG9uIHRoZSBjdXJyZW50IHN0cnVjdCBydXNhZ2UuCgpOb3RlLCB0aGF0
+IGdsaWJjIGRvZXMgX25vdF8gZXhwb3NlIHRoZSBydXNhZ2UgYXJndW1lbnQsIGkuZS4gbW9zdCBv
+Zgp1c2Vyc3BhY2UgaXMgdW5hd2FyZSB0aGF0IHdhaXRpZCgpIGRvZXMgYWxsb3cgeW91IHRvIGdl
+dCBydXNhZ2UKaW5mb3JtYXRpb24uIFNvIHVzZXJzIGZpcnN0IG5lZWQgdG8ga25vdyB0aGF0IHdh
+aXRpZCgpIGhhcyBhbiBydXNhZ2UKYXJndW1lbnQgYW5kIHRoZW4gbmVlZCB0byBjYWxsIHRoZSB3
+YWl0aWQoKSBzeXNjYWxsIGRpcmVjdGx5LgoKPiAKPiBCU0QgaGFzIHdhaXQ2KCkgdG8gcmV0dXJu
+IHNlcGFyYXRlIHJ1c2FnZSBzdHJ1Y3R1cmVzIGZvciAnc2VsZicgYW5kCj4gJ2NoaWxkcmVuJywg
+YnV0IEkgY291bGQgbm90IGZpbmQgYW55IGFwcGxpY2F0aW9uICh1c2luZyB0aGUgZnJlZWJzZAo+
+IHNvdXJjZXMgYW5kIGRlYmlhbiBjb2RlIHNlYXJjaCkgdGhhdCBhY3R1YWxseSB1c2VzIHRoYXQg
+aW5mb3JtYXRpb24sCj4gc28gdGhlcmUgbWlnaHQgbm90IGJlIGFueSBkZW1hbmQgZm9yIHRoYXQu
+CgpTcGVha2luZyBzcGVjaWZpY2FsbHkgZm9yIExpbnV4IG5vdywgSSB0aGluayB0aGF0IHJ1c2Fn
+ZSBkb2VzIG5vdAphY3R1YWxseSBleHBvc2UgdGhlIGluZm9ybWF0aW9uIG1vc3QgcmVsZXZhbnQg
+dXNlcnMgYXJlIGludGVyZXN0ZWQgaW4uCk9uIExpbnV4IG5vd2FkYXlzIGl0IGlzIF93YXlfIG1v
+cmUgaW50ZXJlc3RpbmcgdG8gcmV0cmlldmUgc3RhdHMKcmVsYXRpdmUgdG8gdGhlIGNncm91cCB0
+aGUgdGFzayBsaXZlZCBpbiBldGMuCkRvaW5nIGEgZ2l0IGdyZXAgLWkgcnVzYWdlIGluIHRoZSBz
+eXN0ZW1kIHNvdXJjZSBjb2RlIHNob3dzIHRoYXQgcnVzYWdlCmlzIHVzZWQgX25vd2hlcmVfLiBB
+bmQgSSBjb25zaWRlciBhbiBpbml0IHN5c3RlbSB0byBiZSB0aGUgbW9zdCBsaWtlbHkKY2FuZGlk
+YXRlIHRvIGJlIGludGVyZXN0ZWQgaW4gcnVzYWdlLgoKCUNocmlzdGlhbgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpZMjAzOCBtYWlsaW5nIGxpc3QKWTIw
+MzhAbGlzdHMubGluYXJvLm9yZwpodHRwczovL2xpc3RzLmxpbmFyby5vcmcvbWFpbG1hbi9saXN0
+aW5mby95MjAzOAo=
