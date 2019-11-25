@@ -1,45 +1,50 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH] alpha: Fix Kconfig indentation
-Date: Wed, 20 Nov 2019 21:37:41 +0800
-Message-ID: <20191120133741.12404-1-krzk@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574257065;
-        bh=hazMNUg9PRvxksU8yeX4lRwxGM728y08V0zP20EqwiM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=L8bfaAutRh+HtGrOOlh5aqi6KAWJkmTMhzdQX3PuZpORhh/dPqZIc7JmvFSnBrgi+
-         DY4lCnnOWXQ6FK2XRYoJW9d6O1jMN+CJLUqWwgbPyCVeL0Fr5RnwVljOt24xvph05j
-         ap2fk4WUqa1cPX/k///Q1XAeorY7+6OKT34n08xU=
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
+From: Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v17 08/13] namei: LOOKUP_BENEATH: O_BENEATH-like scoped
+ resolution
+Date: Mon, 25 Nov 2019 00:26:04 +0000
+Message-ID: <20191125002604.GE4203@ZenIV.linux.org.uk>
+References: <20191117011713.13032-1-cyphar@cyphar.com>
+ <20191117011713.13032-9-cyphar@cyphar.com>
+Mime-Version: 1.0
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Content-Disposition: inline
+In-Reply-To: <20191117011713.13032-9-cyphar@cyphar.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Aleksa Sarai <cyphar@cyphar.com>
+Cc: Song Liu <songliubraving@fb.com>, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Alexei Starovoitov <ast@kernel.org>, linux-kernel@vger.kernel.org, David Howells <dhowells@redhat.com>, linux-kselftest@vger.kernel.org, sparclinux@vger.kernel.org, containers@lists.linux-foundation.org, Christian Brauner <christian.brauner@ubuntu.com>, linux-api@vger.kernel.org, Shuah Khan <shuah@kernel.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, Tycho Andersen <tycho@tycho.ws>, Daniel Borkmann <daniel@iogearbox.net>, Jonathan Corbet <corbet@lwn.net>, Jiri Olsa <jolsa@redhat.com>, linux-sh@vger.kernel.org, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Ingo Molnar <mingo@redhat.com>, linux-arm-kernel@lists.infradead.org, Yonghong Song <yhs@fb.com>, linux-mips@vger.kernel.o
 
-Adjust indentation from spaces to tab (+optional two spaces) as in
-coding style with command like:
-	$ sed -e 's/^        /\t/' -i */Kconfig
+On Sun, Nov 17, 2019 at 12:17:08PM +1100, Aleksa Sarai wrote:
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- arch/alpha/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> +	if (unlikely(nd->flags & LOOKUP_IS_SCOPED)) {
+> +		/*
+> +		 * Do a final check to ensure that the path didn't escape. Note
+> +		 * that this should already be guaranteed by all of the other
+> +		 * LOOKUP_IS_SCOPED checks (and delaying this check this late
+> +		 * does open the door to some possible timing-based attacks).
+> +		 */
+> +		if (WARN_ON(!path_is_under(&nd->path, &nd->root)))
+> +			return -EXDEV;
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index ef179033a7c2..30a6291355cb 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -545,7 +545,7 @@ config NR_CPUS
- 	default "4" if !ALPHA_GENERIC && !ALPHA_MARVEL
- 	help
- 	  MARVEL support can handle a maximum of 32 CPUs, all the others
--          with working support have a maximum of 4 CPUs.
-+	  with working support have a maximum of 4 CPUs.
- 
- config ARCH_DISCONTIGMEM_ENABLE
- 	bool "Discontiguous Memory Support"
--- 
-2.17.1
+I don't like that.  What it gives is an ability to race that with
+rename(), with user-triggered WARN_ON.  You *can't* promise that result of
+lookup is in a subtree, simply because it can get moved just as you've
+declared it to be in the clear.
 
+	Anyone who relies upon that is delusional; it really can't be done.
+What warranties LOOKUP_IS_SCOPED is really supposed to provide?  That we do not
+attempt to walk out of the subtree rooted at the start point?  Fine, but this
+is not what this test does.  What are you trying to achieve there?  If it's
+"what we'd got was at one point in our subtree", the test is more or less
+right, but WARN_ON isn't.
