@@ -1,52 +1,143 @@
-From: "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH 11/13] powerpc: Remove comment about
- read_barrier_depends()
-Date: Tue, 26 Nov 2019 14:24:28 -0800
-Message-ID: <20191126222428.GX2889@paulmck-ThinkPad-P72>
-References: <20191108170120.22331-1-will@kernel.org>
- <20191108170120.22331-12-will@kernel.org>
- <87imnebzpb.fsf@mpe.ellerman.id.au>
-Reply-To: paulmck@kernel.org
+From: Aleksa Sarai <cyphar@cyphar.com>
+Subject: Re: [PATCH v17 10/13] namei: LOOKUP_{IN_ROOT,BENEATH}: permit
+ limited ".." resolution
+Date: Thu, 28 Nov 2019 21:10:23 +1100
+Message-ID: <20191128101023.zozsfq4kbhjyethg@yavin.dot.cyphar.com>
+References: <20191117011713.13032-1-cyphar@cyphar.com>
+ <20191117011713.13032-11-cyphar@cyphar.com>
+ <20191125003501.GF4203@ZenIV.linux.org.uk>
+ <20191125132145.btaxuurs2w3ldyxf@yavin.dot.cyphar.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574807069;
-        bh=QAX5ZkLqeX3XIqm05M7wJBsdoBGFDQs4mnX4cJBY7ro=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=rd+Kt9pqSWX0e2SmWjaCIO6Gx/9U6YpAHGSBhthMDJGyAzRfTqHpwgrlUFg4rDMyi
-         XRaPahjt4sjlaFlvy+yog9Jcdq/pd1myAYu5UVPboOix5/wBySHDhvEwCBbXq/Qbgv
-         TPJCMVzYH0edjHzllovHWLkhDf1gJAvacTZy64Ss=
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="cht5i7oy766zupq7"
+Return-path: <libc-alpha-return-107499-glibc-alpha=m.gmane.org@sourceware.org>
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=sourceware.org; h=list-id
+	:list-unsubscribe:list-subscribe:list-archive:list-post
+	:list-help:sender:date:from:to:cc:subject:message-id:references
+	:mime-version:content-type:in-reply-to; s=default; bh=jPx7npC8Pg
+	CoIY82DHeW4mZf+6U=; b=ZWuaz/RhLBcn6XTpeO3CRzhZUjfSS83BynYvSCeRtP
+	Izi4kSfohzb5J3SXeNiHd8y4tSMHXWd3z+F/L/51qzAEyMO7ntnR1YGh+/G/8rqo
+	CEnBaZjEhigDSC7e+EHLbcirB/27dWIHc+VB8klvLuju2cmclSL4AruNXSJQek1n
+	k=
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <mailto:libc-alpha-unsubscribe-glibc-alpha=m.gmane.org@sourceware.org>
+List-Subscribe: <mailto:libc-alpha-subscribe@sourceware.org>
+List-Archive: <http://sourceware.org/ml/libc-alpha/>
+List-Post: <mailto:libc-alpha@sourceware.org>
+List-Help: <mailto:libc-alpha-help@sourceware.org>, <http://sourceware.org/ml/#faqs>
+Sender: libc-alpha-owner@sourceware.org
 Content-Disposition: inline
-In-Reply-To: <87imnebzpb.fsf@mpe.ellerman.id.au>
-Sender: linux-kernel-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, Yunjae Lee <lyj7694@gmail.com>, SeongJae Park <sj38.park@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Joe Perches <joe@perches.com>, Boqun Feng <boqun.feng@gmail.com>, linux-alpha@vger.kernel.org, virtualization@lists.linux-foundation.org
+In-Reply-To: <20191125132145.btaxuurs2w3ldyxf@yavin.dot.cyphar.com>
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>, Jonathan Corbet <corbet@lwn.net>, Christian Brauner <christian.brauner@ubuntu.com>, Jann Horn <jannh@google.com>, Linus Torvalds <torvalds@linux-foundation.org>, Eric Biederman <ebiederm@xmission.com>, Andy Lutomirski <luto@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Kees Cook <keescook@chromium.org>, Tycho Andersen <tycho@tycho.ws>, David Drysdale <drysdale@google.com>
 
-On Wed, Nov 20, 2019 at 09:37:52PM +1100, Michael Ellerman wrote:
-> Will Deacon <will@kernel.org> writes:
-> > 'read_barrier_depends()' doesn't exist anymore so stop talking about it.
-> >
-> > Signed-off-by: Will Deacon <will@kernel.org>
-> > ---
-> >  arch/powerpc/include/asm/barrier.h | 2 --
-> >  1 file changed, 2 deletions(-)
-> >
-> > diff --git a/arch/powerpc/include/asm/barrier.h b/arch/powerpc/include/asm/barrier.h
-> > index fbe8df433019..123adcefd40f 100644
-> > --- a/arch/powerpc/include/asm/barrier.h
-> > +++ b/arch/powerpc/include/asm/barrier.h
-> > @@ -18,8 +18,6 @@
-> >   * mb() prevents loads and stores being reordered across this point.
-> >   * rmb() prevents loads being reordered across this point.
-> >   * wmb() prevents stores being reordered across this point.
-> > - * read_barrier_depends() prevents data-dependent loads being reordered
-> > - *	across this point (nop on PPC).
-> 
-> Acked-by: Michael Ellerman <mpe@ellerman.id.au>
 
-Queued for v5.6, thank you both!
+--cht5i7oy766zupq7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-							Thanx, Paul
+On 2019-11-26, Aleksa Sarai <cyphar@cyphar.com> wrote:
+> On 2019-11-25, Al Viro <viro@zeniv.linux.org.uk> wrote:
+> > On Sun, Nov 17, 2019 at 12:17:10PM +1100, Aleksa Sarai wrote:
+> > > +		if (unlikely(nd->flags & LOOKUP_IS_SCOPED)) {
+> > > +			/*
+> > > +			 * If there was a racing rename or mount along our
+> > > +			 * path, then we can't be sure that ".." hasn't jumped
+> > > +			 * above nd->root (and so userspace should retry or use
+> > > +			 * some fallback).
+> > > +			 */
+> > > +			if (unlikely(read_seqretry(&mount_lock, nd->m_seq)))
+> > > +				return -EAGAIN;
+> > > +			if (unlikely(read_seqretry(&rename_lock, nd->r_seq)))
+> > > +				return -EAGAIN;
+> > > +		}
+> >=20
+> > Looks like excessive barriers to me - it's
+> > 	rmb
+> > 	check mount_lock.sequence
+> > 	rmb
+> > 	check rename_lock.sequence
+>=20
+> If you like, I can switch this to
+>=20
+> 	smp_rmb();
+> 	if (unlikely(__read_seqcount_retry(&mount_lock.seqcount, nd->m_seq)))
+> 		return -EAGAIN;
+> 	if (unlikely(__read_seqcount_retry(&rename_lock.seqcount, nd->r_seq)))
+> 		return -EAGAIN;
+>=20
+> Though I think it makes it more noisy (and this code-path will only be
+> hit for ".." and LOOKUP_IS_SCOPED).
+>=20
+> > > @@ -2266,6 +2274,10 @@ static const char *path_init(struct nameidata =
+*nd, unsigned flags)
+> > >  	nd->last_type =3D LAST_ROOT; /* if there are only slashes... */
+> > >  	nd->flags =3D flags | LOOKUP_JUMPED | LOOKUP_PARENT;
+> > >  	nd->depth =3D 0;
+> > > +
+> > > +	nd->m_seq =3D read_seqbegin(&mount_lock);
+> > > +	nd->r_seq =3D read_seqbegin(&rename_lock);
+> >=20
+> > Same here, pretty much (fetch/rmb/fetch/rmb)
+>=20
+> Unless I'm mistaken, wouldn't we have to do
+> seqcount_lockdep_reader_access() explicitly -- so it would end up
+> looking something like:
+>=20
+> 	seqcount_lockdep_reader_access(&mount_lock.seqcount);
+> 	nd->m_seq =3D __read_seqcount_begin(&mount_lock.seqcount);
+> 	seqcount_lockdep_reader_access(&mount_lock.seqcount);
+> 	nd->r_seq =3D __read_seqcount_begin(&rename_lock.seqcount);
+> 	smp_rmb();
+
+Actually, looking it again (unless I'm mistaken) the following should be
+acceptable and it also avoids the extra fetch+rmb of mount_lock for
+LOOKUP_ROOT. The only downside is that we don't get lockdep information
+but path_init() already ignores lockdep when grabbing d_seq.
+
+I will include the following in v18, but let me know if I'm missing
+something obvious:
+
+ >>	nd->m_seq =3D __read_seqcount_begin(&mount_lock);
+ >>	nd->r_seq =3D __read_seqcount_begin(&rename_lock);
+ >>	smp_rmb();
+
+	if (flags & LOOKUP_ROOT) {
+		struct dentry *root =3D nd->root.dentry;
+		struct inode *inode =3D root->d_inode;
+		if (*s && unlikely(!d_can_lookup(root)))
+			return ERR_PTR(-ENOTDIR);
+		nd->path =3D nd->root;
+		nd->inode =3D inode;
+		if (flags & LOOKUP_RCU) {
+ >>			nd->seq =3D raw_read_seqcount_begin(&nd->path.dentry->d_seq);
+			nd->root_seq =3D nd->seq;
+		} else {
+			path_get(&nd->path);
+		}
+		return s;
+	}
+
+I could also move the smp_rmb() to after LOOKUP_ROOT (and add an
+smp_rmb() at the end of LOOKUP_ROOT) which would avoid a double-rmb for
+LOOKUP_ROOT -- but it makes it harder to read IMHO.
+
+--=20
+Aleksa Sarai
+Senior Software Engineer (Containers)
+SUSE Linux GmbH
+<https://www.cyphar.com/>
+
+--cht5i7oy766zupq7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXd+dDAAKCRCdlLljIbnQ
+EreMAP9MQFDKw7S61GLLYRtaPZcDlVuOaaxmgShfXuqNXAGMGwD9EZ9ag0BaUOMg
+K4PtLhUUkb1jF+Ff2LBWG3EOxsSD2AY=
+=bnEH
+-----END PGP SIGNATURE-----
+
+--cht5i7oy766zupq7--
