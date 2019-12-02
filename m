@@ -1,143 +1,42 @@
-From: Aleksa Sarai <cyphar@cyphar.com>
-Subject: Re: [PATCH v17 10/13] namei: LOOKUP_{IN_ROOT,BENEATH}: permit
- limited ".." resolution
-Date: Thu, 28 Nov 2019 21:10:23 +1100
-Message-ID: <20191128101023.zozsfq4kbhjyethg@yavin.dot.cyphar.com>
-References: <20191117011713.13032-1-cyphar@cyphar.com>
- <20191117011713.13032-11-cyphar@cyphar.com>
- <20191125003501.GF4203@ZenIV.linux.org.uk>
- <20191125132145.btaxuurs2w3ldyxf@yavin.dot.cyphar.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 19/23] y2038: use compat_{get,set}_itimer on alpha
+Date: Mon, 2 Dec 2019 05:13:06 -0800
+Message-ID: <20191202131306.GA6633@roeck-us.net>
+References: <20191108210236.1296047-1-arnd@arndb.de>
+ <20191108211323.1806194-10-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cht5i7oy766zupq7"
-Return-path: <libc-alpha-return-107499-glibc-alpha=m.gmane.org@sourceware.org>
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=sourceware.org; h=list-id
-	:list-unsubscribe:list-subscribe:list-archive:list-post
-	:list-help:sender:date:from:to:cc:subject:message-id:references
-	:mime-version:content-type:in-reply-to; s=default; bh=jPx7npC8Pg
-	CoIY82DHeW4mZf+6U=; b=ZWuaz/RhLBcn6XTpeO3CRzhZUjfSS83BynYvSCeRtP
-	Izi4kSfohzb5J3SXeNiHd8y4tSMHXWd3z+F/L/51qzAEyMO7ntnR1YGh+/G/8rqo
-	CEnBaZjEhigDSC7e+EHLbcirB/27dWIHc+VB8klvLuju2cmclSL4AruNXSJQek1n
-	k=
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <mailto:libc-alpha-unsubscribe-glibc-alpha=m.gmane.org@sourceware.org>
-List-Subscribe: <mailto:libc-alpha-subscribe@sourceware.org>
-List-Archive: <http://sourceware.org/ml/libc-alpha/>
-List-Post: <mailto:libc-alpha@sourceware.org>
-List-Help: <mailto:libc-alpha-help@sourceware.org>, <http://sourceware.org/ml/#faqs>
-Sender: libc-alpha-owner@sourceware.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WpIVdJ8zzeydWnGV0Hm0bnq5TGbHkB7RgM4W8WL7sQM=;
+        b=ayWr/e+ojhqdyu94ajPFzL4M/3r8yrPBFpdu7nuiYbIwFygf5EZ9TGON0Us19wyU+g
+         V68zxsz72/NemBDm2k+BI3fe74hktkIKR7RGb8FhuVdIZtsUYAw7o9e2HbuMfE8yCxLP
+         88ucrHc5Me/bP5KjJwif2SovclkPZ5qqjqzxbAKDaCDcYj4vc/U/a0m9OR+cl8q3Fj56
+         D5Y2983Lbri5rCyCKWUukztlOgyQ6Wt0kUxIREWGMUD5hqaqiOJiaUzdbkyr9k2SzZN+
+         7Cud5lM13oPBVaDrrwFk6+S1C0Vv+gUzOBPptDT+WNZ7Qvzqf9Rl1ulx7/HUzxlCuB8s
+         K94w==
 Content-Disposition: inline
-In-Reply-To: <20191125132145.btaxuurs2w3ldyxf@yavin.dot.cyphar.com>
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, David Howells <dhowells@redhat.com>, Shuah Khan <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>, Jonathan Corbet <corbet@lwn.net>, Christian Brauner <christian.brauner@ubuntu.com>, Jann Horn <jannh@google.com>, Linus Torvalds <torvalds@linux-foundation.org>, Eric Biederman <ebiederm@xmission.com>, Andy Lutomirski <luto@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Kees Cook <keescook@chromium.org>, Tycho Andersen <tycho@tycho.ws>, David Drysdale <drysdale@google.com>
+In-Reply-To: <20191108211323.1806194-10-arnd@arndb.de>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: y2038@lists.linaro.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, Deepa Dinamani <deepa.kernel@gmail.com>, Christian Brauner <christian@brauner.io>, Heiko Carstens <heiko.carstens@de.ibm.com>, Anna-Maria Gleixner <anna-maria@linutronix.de>, linux-alpha@vger.kernel.org
 
+On Fri, Nov 08, 2019 at 10:12:18PM +0100, Arnd Bergmann wrote:
+> The itimer handling for the old alpha osf_setitimer/osf_getitimer
+> system calls is identical to the compat version of getitimer/setitimer,
+> so just use those directly.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
---cht5i7oy766zupq7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+alpha:allnoconfig, alpha:tinyconfig:
 
-On 2019-11-26, Aleksa Sarai <cyphar@cyphar.com> wrote:
-> On 2019-11-25, Al Viro <viro@zeniv.linux.org.uk> wrote:
-> > On Sun, Nov 17, 2019 at 12:17:10PM +1100, Aleksa Sarai wrote:
-> > > +		if (unlikely(nd->flags & LOOKUP_IS_SCOPED)) {
-> > > +			/*
-> > > +			 * If there was a racing rename or mount along our
-> > > +			 * path, then we can't be sure that ".." hasn't jumped
-> > > +			 * above nd->root (and so userspace should retry or use
-> > > +			 * some fallback).
-> > > +			 */
-> > > +			if (unlikely(read_seqretry(&mount_lock, nd->m_seq)))
-> > > +				return -EAGAIN;
-> > > +			if (unlikely(read_seqretry(&rename_lock, nd->r_seq)))
-> > > +				return -EAGAIN;
-> > > +		}
-> >=20
-> > Looks like excessive barriers to me - it's
-> > 	rmb
-> > 	check mount_lock.sequence
-> > 	rmb
-> > 	check rename_lock.sequence
->=20
-> If you like, I can switch this to
->=20
-> 	smp_rmb();
-> 	if (unlikely(__read_seqcount_retry(&mount_lock.seqcount, nd->m_seq)))
-> 		return -EAGAIN;
-> 	if (unlikely(__read_seqcount_retry(&rename_lock.seqcount, nd->r_seq)))
-> 		return -EAGAIN;
->=20
-> Though I think it makes it more noisy (and this code-path will only be
-> hit for ".." and LOOKUP_IS_SCOPED).
->=20
-> > > @@ -2266,6 +2274,10 @@ static const char *path_init(struct nameidata =
-*nd, unsigned flags)
-> > >  	nd->last_type =3D LAST_ROOT; /* if there are only slashes... */
-> > >  	nd->flags =3D flags | LOOKUP_JUMPED | LOOKUP_PARENT;
-> > >  	nd->depth =3D 0;
-> > > +
-> > > +	nd->m_seq =3D read_seqbegin(&mount_lock);
-> > > +	nd->r_seq =3D read_seqbegin(&rename_lock);
-> >=20
-> > Same here, pretty much (fetch/rmb/fetch/rmb)
->=20
-> Unless I'm mistaken, wouldn't we have to do
-> seqcount_lockdep_reader_access() explicitly -- so it would end up
-> looking something like:
->=20
-> 	seqcount_lockdep_reader_access(&mount_lock.seqcount);
-> 	nd->m_seq =3D __read_seqcount_begin(&mount_lock.seqcount);
-> 	seqcount_lockdep_reader_access(&mount_lock.seqcount);
-> 	nd->r_seq =3D __read_seqcount_begin(&rename_lock.seqcount);
-> 	smp_rmb();
+alpha-linux-ld: arch/alpha/kernel/systbls.o: in function `sys_call_table':
+(.data+0x298): undefined reference to `compat_sys_setitimer'
+alpha-linux-ld: (.data+0x2b0): undefined reference to `compat_sys_getitimer'
 
-Actually, looking it again (unless I'm mistaken) the following should be
-acceptable and it also avoids the extra fetch+rmb of mount_lock for
-LOOKUP_ROOT. The only downside is that we don't get lockdep information
-but path_init() already ignores lockdep when grabbing d_seq.
-
-I will include the following in v18, but let me know if I'm missing
-something obvious:
-
- >>	nd->m_seq =3D __read_seqcount_begin(&mount_lock);
- >>	nd->r_seq =3D __read_seqcount_begin(&rename_lock);
- >>	smp_rmb();
-
-	if (flags & LOOKUP_ROOT) {
-		struct dentry *root =3D nd->root.dentry;
-		struct inode *inode =3D root->d_inode;
-		if (*s && unlikely(!d_can_lookup(root)))
-			return ERR_PTR(-ENOTDIR);
-		nd->path =3D nd->root;
-		nd->inode =3D inode;
-		if (flags & LOOKUP_RCU) {
- >>			nd->seq =3D raw_read_seqcount_begin(&nd->path.dentry->d_seq);
-			nd->root_seq =3D nd->seq;
-		} else {
-			path_get(&nd->path);
-		}
-		return s;
-	}
-
-I could also move the smp_rmb() to after LOOKUP_ROOT (and add an
-smp_rmb() at the end of LOOKUP_ROOT) which would avoid a double-rmb for
-LOOKUP_ROOT -- but it makes it harder to read IMHO.
-
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
-
---cht5i7oy766zupq7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCXd+dDAAKCRCdlLljIbnQ
-EreMAP9MQFDKw7S61GLLYRtaPZcDlVuOaaxmgShfXuqNXAGMGwD9EZ9ag0BaUOMg
-K4PtLhUUkb1jF+Ff2LBWG3EOxsSD2AY=
-=bnEH
------END PGP SIGNATURE-----
-
---cht5i7oy766zupq7--
+Guenter
