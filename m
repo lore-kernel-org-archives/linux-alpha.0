@@ -1,40 +1,78 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [RFT 06/13] arc: Constify ioreadX() iomem argument (as in generic
- implementation)
-Date: Tue, 7 Jan 2020 18:10:07 +0100
-Message-ID: <CAK8P3a1RibnRU6SiVjrOy-q+ZDdKacQgD9mrft_aHMgA9hm3PA@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [RFT 00/13] iomap: Constify ioreadX() iomem argument
+Date: Wed, 8 Jan 2020 09:07:54 +0100
+Message-ID: <CAMuHMdW4ek0OYQDrrbcpZjNUTTP04nSbwkmiZvBmKcU=PQM9qA@mail.gmail.com>
 References: <1578415992-24054-1-git-send-email-krzk@kernel.org>
- <1578415992-24054-9-git-send-email-krzk@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1578415992-24054-9-git-send-email-krzk@kernel.org>
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=NmNbrDybQH/TayL/gZi5OhAHVvtf4Grw8wOTKtohyN8=; b=qIqmTleJ63Odpy
+	QR2CZxEHiT8IM4ctllNA4KYSSlGRqnAtPkaAClY98EasYKSw0+1O/zwXzQfk6lxZnkEgOlBuZ75qH
+	13LXcqrj/Em2fkzCq6ksEXRynw9ivHK9fagwknF3Ymg4moOYlDO6/vGQcr4BIR14/0xaVHR2AAOd0
+	OWEWXyL2kIwkPk0wMRjgY+5AlWrLcffACZKgI42HKJRIgfY0aw7o8NJcLKeEqSzDVYyK1tVTUH2jt
+	W+DN91vNqY4oaqRe7Hfwc+VEYvD/c2mwXT+c5LMpciDYDuqCcjiMWijYCM5DtbU8VSaoiIK+zNmA+
+	tORebYox7IOzPe5AqlYg==;
+In-Reply-To: <1578415992-24054-1-git-send-email-krzk@kernel.org>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
 To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Rich Felker <dalias@libc.org>, Jiri Slaby <jirislaby@gmail.com>, "Michael S. Tsirkin" <mst@redhat.com>, David Airlie <airlied@linux.ie>, Jason Wang <jasowang@redhat.com>, dri-devel <dri-devel@lists.freedesktop.org>, virtualization@lists.linux-foundation.org, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Networking <netdev@vger.kernel.org>, Paul Mackerras <paulus@samba.org>, linux-arch <linux-arch@vger.kernel.org>, Dave Jiang <dave.jiang@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, Linux-sh list <linux-sh@vger.kernel.org>, Alexey Brodkin <abrodkin@synopsys.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Ben Skeggs <bskeggs@redhat.com>, ML nouveau <nouveau@lists.freedesktop.org>, Dave Airlie <airlied@redhat.com>, Matt Turner <mattst88@gmail.com>, open list:SYNOPSYS ARC ARC
+Cc: Rich Felker <dalias@libc.org>, Jiri Slaby <jirislaby@gmail.com>, "Michael S. Tsirkin" <mst@redhat.com>, David Airlie <airlied@linux.ie>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Jason Wang <jasowang@redhat.com>, DRI Development <dri-devel@lists.freedesktop.org>, virtualization@lists.linux-foundation.org, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, netdev <netdev@vger.kernel.org>, Paul Mackerras <paulus@samba.org>, Linux-Arch <linux-arch@vger.kernel.org>, Dave Jiang <dave.jiang@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, Linux-sh list <linux-sh@vger.kernel.org>, Alexey Brodkin <abrodkin@synopsys.com>, Ben Skeggs <bskeggs@redhat.com>, nouveau@lists.freedesktop.org, Dave Airlie <airlied@redhat.com>, Matt Turner <mattst88@gmail.com>, arcml <linux-snps-arc@lists.in>
 
-On Tue, Jan 7, 2020 at 5:54 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->
-> The ioreadX() helpers have inconsistent interface.  On some architectures
-> void *__iomem address argument is a pointer to const, on some not.
->
-> Implementations of ioreadX() do not modify the memory under the
-> address so they can be converted to a "const" version for const-safety
-> and consistency among architectures.
->
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Hi Krzysztof,
 
-The patch looks correct, but I would not bother here, as it has no
-effect on the compiler or its output.
+On Tue, Jan 7, 2020 at 5:53 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> The ioread8/16/32() and others have inconsistent interface among the
+> architectures: some taking address as const, some not.
+>
+> It seems there is nothing really stopping all of them to take
+> pointer to const.
 
-      Arnd
+Shouldn't all of them take const volatile __iomem pointers?
+It seems the "volatile" is missing from all but the implementations in
+include/asm-generic/io.h.
+
+> Patchset was really tested on all affected architectures.
+> Build testing is in progress - I hope auto-builders will point any issues.
+>
+>
+> Todo
+> ====
+> Convert also string versions (ioread16_rep() etc) if this aproach looks OK.
+>
+>
+> Merging
+> =======
+> The first 5 patches - iomap, alpha, sh, parisc and powerpc - should probably go
+> via one tree, or even squashed into one.
+
+Yes, they should be squashed, cfr. Arnd's comment.
+I also wouldn't bother doing the updates in patches 6-10.
+
+The rest looks good to me.
+Thanks a lot!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
