@@ -1,55 +1,60 @@
-From: Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH v2 9/9] net: wireless: ath5k: Constify ioreadX() iomem
- argument (as in generic implementation)
-Date: Fri, 10 Jan 2020 15:33:11 +0200
-Message-ID: <87eew7sag8.fsf@codeaurora.org>
-References: <20200108200528.4614-1-krzk@kernel.org>
- <20200108200528.4614-10-krzk@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] ubifs: Fix ino_t format warnings in orphan_delete()
+Date: Mon, 13 Jan 2020 11:51:56 +0100
+Message-ID: <20200113105156.25945-1-geert@linux-m68k.org>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1578663513; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=R0YUROCJJ/dav0PwJDeXKOS0FaitFefZwp9Lb2TmZvI=;
- b=MGHpWg830iuM8GhZiRmr9ec3uWlRhdail0fdJf8BKKYRbH+s/dgJ10xJ6xCQVGrh8Voj601C
- B89eNzzgnMEqokd7S5HvhplL3/SoJoGYHH0HNaW50CE6/gDTtHvR7+ZGBuNERfmaeT35sNen
- rnRwBaxtDId/SIdlIFJHV8rAVoM=
-In-Reply-To: <20200108200528.4614-10-krzk@kernel.org> (Krzysztof Kozlowski's
- message of "Wed, 8 Jan 2020 21:05:28 +0100")
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Rich Felker <dalias@libc.org>, Jiri Slaby <jirislaby@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, "Michael S. Tsirkin" <mst@redhat.com>, David Airlie <airlied@linux.ie>, Jason Wang <jasowang@redhat.com>, dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, netdev@vger.kernel.org, Paul Mackerras <paulus@samba.org>, linux-arch@vger.kernel.org, Dave Jiang <dave.jiang@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>, linux-sh@vger.kernel.org, Alexey Brodkin <abrodkin@synopsys.com>, Ben Skeggs <bskeggs@redhat.com>, nouveau@lists.freedesktop.org, Dave Airlie <airlied@redhat.com>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Nick Kossifidis <mickflemm@gmail.com>, Allen Hubbe <allenbh@gmail.com>, Arnd Bergmann <arnd@arn>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+To: Richard Weinberger <richard@nod.at>
+Cc: linux-mtd@lists.infradead.org, linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 
-Krzysztof Kozlowski <krzk@kernel.org> writes:
+On alpha and s390x:
 
-> The ioreadX() helpers have inconsistent interface.  On some architectures
-> void *__iomem address argument is a pointer to const, on some not.
->
-> Implementations of ioreadX() do not modify the memory under the address
-> so they can be converted to a "const" version for const-safety and
-> consistency among architectures.
->
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  drivers/net/wireless/ath/ath5k/ahb.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+    fs/ubifs/debug.h:158:11: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 4 has type ‘ino_t {aka unsigned int}’ [-Wformat=]
+    ...
+    fs/ubifs/orphan.c:132:3: note: in expansion of macro ‘dbg_gen’
+       dbg_gen("deleted twice ino %lu", orph->inum);
+    ...
+    fs/ubifs/orphan.c:140:3: note: in expansion of macro ‘dbg_gen’
+       dbg_gen("delete later ino %lu", orph->inum);
 
-No need to have "net: wireless: " in the title, otherwise looks good.
+__kernel_ino_t is "unsigned long" on most architectures, but not on
+alpha and s390x, where it is "unsigned int".  Hence when printing an
+ino_t, it should always be cast to "unsigned long" first.
 
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
+Fix this by re-adding the recently removed casts.
 
+Fixes: 8009ce956c3d2802 ("ubifs: Don't leak orphans on memory during commit")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ fs/ubifs/orphan.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ubifs/orphan.c b/fs/ubifs/orphan.c
+index 54d6db61106ffc45..edf43ddd7dce4779 100644
+--- a/fs/ubifs/orphan.c
++++ b/fs/ubifs/orphan.c
+@@ -129,7 +129,7 @@ static void __orphan_drop(struct ubifs_info *c, struct ubifs_orphan *o)
+ static void orphan_delete(struct ubifs_info *c, struct ubifs_orphan *orph)
+ {
+ 	if (orph->del) {
+-		dbg_gen("deleted twice ino %lu", orph->inum);
++		dbg_gen("deleted twice ino %lu", (unsigned long)orph->inum);
+ 		return;
+ 	}
+ 
+@@ -137,7 +137,7 @@ static void orphan_delete(struct ubifs_info *c, struct ubifs_orphan *orph)
+ 		orph->del = 1;
+ 		orph->dnext = c->orph_dnext;
+ 		c->orph_dnext = orph;
+-		dbg_gen("delete later ino %lu", orph->inum);
++		dbg_gen("delete later ino %lu", (unsigned long)orph->inum);
+ 		return;
+ 	}
+ 
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.1
+
