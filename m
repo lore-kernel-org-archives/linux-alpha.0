@@ -1,45 +1,38 @@
-From: Bob Tracy <rct@frus.com>
-Subject: dbus-daemon unaligned accesses
-Date: Sat, 18 Jan 2020 10:06:23 -0600
-Message-ID: <20200118160623.GA2136@gherkin.frus.com>
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Subject: Re: dbus-daemon unaligned accesses
+Date: Sat, 18 Jan 2020 17:36:15 +0100
+Message-ID: <b656550f-76aa-c437-d3d9-36a868b8f093@physik.fu-berlin.de>
+References: <20200118160623.GA2136@gherkin.frus.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <20200118160623.GA2136@gherkin.frus.com>
+Content-Language: en-US
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: debian-alpha@lists.debian.org
+To: Bob Tracy <rct@frus.com>, debian-alpha@lists.debian.org
 Cc: linux-alpha@vger.kernel.org
 
-On my alpha, the system logs are getting spammed with unaligned trap
-errors as follows:
+Hi Bob!
 
-[34656.586748] dbus-daemon(700): unaligned trap at 00000200000a9720: 00000000d68c7222 28 18
-[34656.599443] dbus-daemon(700): unaligned trap at 00000200000a9720: 00000000d68c7222 28 18
-[34656.612138] dbus-daemon(700): unaligned trap at 00000200000a9720: 00000000d68c7222 28 18
-[34656.617021] dbus-daemon(700): unaligned trap at 00000200000a9720: 00000000d68c7222 28 18
-[34656.624833] dbus-daemon(700): unaligned trap at 00000200000a9720: 00000000d68c7222 28 18
+On 1/18/20 5:06 PM, Bob Tracy wrote:
+> If no one else is actively working to fix this annoyance, I'll see what
+> I can do.  For me, it's mostly a matter of finding the time to download
+> the source package and its dependencies, build a debug version with
+> symbols in it that "gdb" can use, and then *maybe* figure out the best
+> way to code around the unaligned access.
 
-The current "dbus" package version is 1.12.16-2.
+I'm busy with a lot of other things but I am well aware of this issue. You
+can silence the noise with "dmesg -n1".
 
-If no one else is actively working to fix this annoyance, I'll see what
-I can do.  For me, it's mostly a matter of finding the time to download
-the source package and its dependencies, build a debug version with
-symbols in it that "gdb" can use, and then *maybe* figure out the best
-way to code around the unaligned access.
+Otherwise, it would be greatly appreciated if you could work on a patch to
+fix this issue.
 
-If anyone else has the time and would like to have a go at it, the
-following two links might be useful:
+Adrian
 
-https://wiki.gentoo.org/wiki/Project:Alpha/Porting_guide#Unaligned_accesses
-
-https://www.redhat.com/archives/axp-list/2000-May/msg00151.html
-
-(Yes, the problem has been around at least as long as the alpha
-architecture :-) ).
-
-Michael Cree et al.: do we have a working "gdb" on alpha these days?
-I seem to recall brokenness there in the not-too-distant past.
-
---Bob
+-- 
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
