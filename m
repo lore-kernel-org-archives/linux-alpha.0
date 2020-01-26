@@ -1,43 +1,42 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH v2] sched/core: fix illegal RCU from offline CPUs
-Date: Thu, 23 Jan 2020 21:02:02 -0800
-Message-ID: <20200124050202.GJ4675@bombadil.infradead.org>
-References: <20200121103506.GH14914@hirez.programming.kicks-ass.net>
- <A72A7F42-A166-4403-B12C-32B2D7A662C4@lca.pw>
+From: Kalle Valo <kvalo@codeaurora.org>
+Subject: Re: [PATCH v2 2/9] net: wireless: rtl818x: Constify ioreadX() iomem
+ argument (as in generic implementation)
+Date: Sun, 26 Jan 2020 15:11:37 +0000 (UTC)
+Message-ID: <20200126151137.C0CA8C43383@smtp.codeaurora.org>
+References: <20200108200528.4614-3-krzk@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Transfer-Encoding
-        :Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ov31A6tYKcczbAgX5V+K/86bJ5Mzf/GVps9NpBV92oA=; b=MwrTy9e7zWFtY+ARjOGY0FjNXH
-        XHKtTGNYClFWFRLZh1KzO2E6mrNLhwzW80c/Pm15BcjbBYcBYBQpvKWdL26Y4F9pvsSsj/mXHLwvD
-        DNuDftcC/mCDNRo4klh7c8mt1ywyIaBLlhraNWuDfJ8DWnpiKXG8o5satL11AZWjbocO0XmeqvWUe
-        xIQKvRapY1sPTLkj549d6W+gciGXO+lYVOo0tFIHGZN9XFiMTwuSKVxI1hfdYSelKPjjgtruuxYLC
-        f6OUy/Mm6Lb6QNOCpl+PiOrlMkjI9O0xTijyh9icTzEAxZ/lK/oeH+kjwI+kvKZVLY++oTDHoCiv4
-Content-Disposition: inline
-In-Reply-To: <A72A7F42-A166-4403-B12C-32B2D7A662C4@lca.pw>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1580051501; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=GgNouC08XBq9czPTNzqE2b2+ochAUWZ+cpydcRWvAGA=;
+ b=fw2e9ngGC56jy1CHyl0lyy2Jlb170AKJ9nNz0Gfo/bzDCW7qHzqYEiwgVt/DtTqpCfQftoeN
+ 24ESUQrbNll5DjiaJsk0h7R0CY3DPRt74cQySEMjGAHz9pbe7baSngPqwApzTnTu+ibE/hIC
+ g758S4Dx002EstJwNvKjvj/+Tnk=
+In-Reply-To: <20200108200528.4614-3-krzk@kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Qian Cai <cai@lca.pw>
-Cc: Peter Zijlstra <peterz@infradead.org>, mingo@redhat.com, juri.lelli@redhat.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de, paulmck@kernel.org, tglx@linutronix.de, linux-mm@kvack.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Matt Turner <mattst88@gmail.com>, linux-parisc@vger.kernel.org, Helge Deller <deller@gmx.de>
+Content-Type: text/plain; charset="us-ascii"
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexey Brodkin <abrodkin@synopsys.com>, Vineet Gupta <vgupta@synopsys.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Dave Airlie <airlied@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Ben Skeggs <bskeggs@redhat.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Jiri Slaby <jirislaby@gmail.com>, Nick Kossifidis <mickflemm@gmail.com>, Luis
 
-On Thu, Jan 23, 2020 at 11:21:35PM -0500, Qian Cai wrote:
-> > On Jan 21, 2020, at 5:35 AM, Peter Zijlstra <peterz@infradead.org> wrote:
-> > 
-> > Something like this; except you'll need to go audit archs to make sure
-> > they all call idle_task_exit() and/or put in comments on why they don't
-> > have to (perhaps their bringup switches them to &init_mm unconditionally
-> > and the switch_mm() is not required).
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
+
+> The ioreadX() helpers have inconsistent interface.  On some architectures
+> void *__iomem address argument is a pointer to const, on some not.
 > 
-> Damn, I am having a hard time to motivate myself to learn all about those two “dead“ arches from scratch. I suppose the first step we could put a dummy finish_cpu() for alpha and parisc if they don’t call idle_task_exit() in the first place anyway, so if it is a bug there it is another issue that could be dealt with in a separate patch later?
+> Implementations of ioreadX() do not modify the memory under the address
+> so they can be converted to a "const" version for const-safety and
+> consistency among architectures.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Or you could consult the maintainers of those architectures?  There are regular pull requests for parisc still, and alpha still gets odd fixes.
+I assume this and patch 9 are going via some other tree so dropping them
+from my patchwork queue.
 
-It would have helped had you not trimmed the context so aggressively.
-For those seeing this thread for the first time, try:
-https://lore.kernel.org/linux-mm/A72A7F42-A166-4403-B12C-32B2D7A662C4@lca.pw/T/#t
+-- 
+https://patchwork.kernel.org/patch/11324461/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
