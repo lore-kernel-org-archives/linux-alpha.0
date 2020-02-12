@@ -1,21 +1,31 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Max Filippov <jcmvbkbc@gmail.com>
 Subject: Re: [PATCH v2] asm-generic: Fix unistd_32.h generation format
-Date: Wed, 12 Feb 2020 10:23:07 +0100
-Message-ID: <CAMuHMdXt1CUqRjOyz9i0uVzQUJJU3UsFGzDaoTBcWVF=qTH48g@mail.gmail.com>
+Date: Wed, 12 Feb 2020 01:23:38 -0800
+Message-ID: <CAMo8BfLYM-_SbqmMUCVjwqL7MpA2W7toTg_F6HTY4Sg5QxGzfw@mail.gmail.com>
 References: <dcdd615f77dacf8a98e18950b66fb5a675277f38.1581498987.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sDe1AgAtZMTBswle0D6FGWKTb7hbTE9PCf3WEVHRGts=;
+        b=NTmZWD45lEPn6L7REaUGWdMZAGXUIsVeAXTcDm09kMdQPRZkDnK1ZnJiAxj8cH8tFz
+         g2xSmoyEdJdU7x1X/DgPqY9ERd8rMB+Aftc4CKnB4nUfUSkB73us/ujbjCiEhZUT2HxJ
+         zBhjq6QYgtWoT+Gip38EWBgPkVbrMcT6Tj3+YZ23iIZzdKSkDo9g5WCj3tnR0ISuGbhJ
+         cUC7DpE3d8+6UxrBQXIe312wuKs5guDtoWhid3vJfpP2Gzh0N0CZyrCojASPbY9pRvq6
+         2Zh5QNldMzhDsdJxitNi88nCyBmmWgX5WF5D5x/NX9Y5G++ggIYBAGfPkiIVguw8H03M
+         2gDw==
 In-Reply-To: <dcdd615f77dacf8a98e18950b66fb5a675277f38.1581498987.git.michal.simek@xilinx.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Michal Simek <michal.simek@xilinx.com>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Michal Simek <monstr@monstr.eu>, git@xilinx.com, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, Stefan Asserhall <stefan.asserhall@xilinx.com>, Chris Zankel <chris@zankel.net>, "David S. Miller" <davem@davemloft.net>, Fenghua Yu <fenghua.yu@intel.com>, Helge Deller <deller@gmx.de>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Rich Felker <dalias@libc.org>, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, alpha <linux-alpha@vger.kernel.org>, linux-ia64@vger.kernel.
+Cc: LKML <linux-kernel@vger.kernel.org>, Michal Simek <monstr@monstr.eu>, git@xilinx.com, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, Stefan Asserhall <stefan.asserhall@xilinx.com>, Chris Zankel <chris@zankel.net>, "David S. Miller" <davem@davemloft.net>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Helge Deller <deller@gmx.de>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Matt Turner <mattst88@gmail.com>, Rich Felker <dalias@libc.org>, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, open list:IA64 (Ita
 
-Hi Michal,
-
-On Wed, Feb 12, 2020 at 10:16 AM Michal Simek <michal.simek@xilinx.com> wrote:
+On Wed, Feb 12, 2020 at 1:16 AM Michal Simek <michal.simek@xilinx.com> wrote:
+>
 > Generated files are also checked by sparse that's why add newline
 > to remove sparse (C=1) warning.
 >
@@ -25,48 +35,43 @@ On Wed, Feb 12, 2020 at 10:16 AM Michal Simek <michal.simek@xilinx.com> wrote:
 >
 > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 > Reviewed-by: Stefan Asserhall <stefan.asserhall@xilinx.com>
-
-Thanks for your patch!
-
+> ---
+>
+> Changes in v2:
+> - Update also others archs not just microblaze - Arnd
+> - Align subject and description to match multiarch chagne
+>
 >  arch/alpha/kernel/syscalls/syscallhdr.sh      | 1 +
 >  arch/ia64/kernel/syscalls/syscallhdr.sh       | 1 +
 >  arch/m68k/kernel/syscalls/syscallhdr.sh       | 1 +
-
-Bummer, I had noticed that before
-https://lore.kernel.org/lkml/CAMuHMdVsBwL9vcqejfc47GN793wMXdQ=SwEsSUP1fbpMt-OoWw@mail.gmail.com/
-and even claimed I fixed it while applying
-https://lore.kernel.org/lkml/CAMuHMdW6JiponxLiGNEXUX4xJk3hK4b8dTOCNvVBr7s2LyfhJw@mail.gmail.com/
-but something must have gone wrong...
-
 >  arch/microblaze/kernel/syscalls/syscallhdr.sh | 1 +
 >  arch/parisc/kernel/syscalls/syscallhdr.sh     | 1 +
 >  arch/sh/kernel/syscalls/syscallhdr.sh         | 1 +
 >  arch/sparc/kernel/syscalls/syscallhdr.sh      | 1 +
 >  arch/xtensa/kernel/syscalls/syscallhdr.sh     | 1 +
 >  8 files changed, 8 insertions(+)
->
-> diff --git a/arch/alpha/kernel/syscalls/syscallhdr.sh b/arch/alpha/kernel/syscalls/syscallhdr.sh
-> index e5b99bd2e5e7..524c69fbcab7 100644
-> --- a/arch/alpha/kernel/syscalls/syscallhdr.sh
-> +++ b/arch/alpha/kernel/syscalls/syscallhdr.sh
+
+For xtensa:
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+
+...
+
+> diff --git a/arch/m68k/kernel/syscalls/syscallhdr.sh b/arch/m68k/kernel/syscalls/syscallhdr.sh
+> index 6f357d68ef44..8ac15be01ac2 100644
+> --- a/arch/m68k/kernel/syscalls/syscallhdr.sh
+> +++ b/arch/m68k/kernel/syscalls/syscallhdr.sh
 > @@ -33,4 +33,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 >         printf "#endif\n"
 >         printf "\n"
->         printf "#endif /* %s */" "${fileguard}"
+>         printf "#endif /* %s */\n" "${fileguard}"
+
+Here there's already \n at the end, so no need for another one?
+
 > +       printf "\n"
+>  ) > "$out"
 
-Why not add the "\n" to the end of the previous line?
-
-Anyway,
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-
-Gr{oetje,eeting}s,
-
-                        Geert
+...
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks.
+-- Max
