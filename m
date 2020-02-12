@@ -1,88 +1,160 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2] asm-generic: Fix unistd_32.h generation format
-Date: Wed, 12 Feb 2020 10:57:39 +0100
-Message-ID: <CAMuHMdXQqEYsL4KfDb4EkS+P+6qW=E4m3wunx_LXZddXVZMd4g@mail.gmail.com>
-References: <dcdd615f77dacf8a98e18950b66fb5a675277f38.1581498987.git.michal.simek@xilinx.com>
- <CAMo8BfLYM-_SbqmMUCVjwqL7MpA2W7toTg_F6HTY4Sg5QxGzfw@mail.gmail.com>
- <CAMuHMdUZ_e9JsF0fuLxBwdoy7YVLarH6E98z5nKUZ2CccSkV-Q@mail.gmail.com>
- <6128aa3a-a99c-2ab0-82d1-d5c419e4f5b9@xilinx.com> <CAMuHMdX3O6aL_yGSfqrbdfPf-HHqqdkMwPHS=Y0WxMRTYOtJ4w@mail.gmail.com>
- <1d006656-bd48-0b8e-b893-cddaa5f8f8bc@xilinx.com> <CAMuHMdXaOD5kL+Cg0L=YeX_DqdVgUJXEA8LF-NiHbmkMuXKTaA@mail.gmail.com>
- <d93646fa-c844-693c-07a7-7075d0fcf2c9@xilinx.com>
+From: Michal Simek <michal.simek@xilinx.com>
+Subject: [PATCH v3] asm-generic: Fix unistd_32.h generation format
+Date: Wed, 12 Feb 2020 11:53:29 +0100
+Message-ID: <4d32ab4e1fb2edb691d2e1687e8fb303c09fd023.1581504803.git.michal.simek@xilinx.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <d93646fa-c844-693c-07a7-7075d0fcf2c9@xilinx.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-ia64-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=monstr-eu.20150623.gappssmtp.com; s=20150623;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iCxaKYylUaTagw0CiACoN5PmGBZhgyb9phU3hhP0tOU=;
+        b=cfEHKyCzPVV+G0Ct3fk+e76eZPGNTeImhNiFGDVimPzL4uYn8zjyFG9WyB0koRR2qN
+         EwMnN8vjUGQ2wbhjgaIjph2vjfhe8yjFmu9ClTKqCx2OtRi5VsZHinaDNjSlIBmgdAxy
+         wxZcB8m80XRXcoyEYhnoHyLx5c4HUKj1j5ketT2WaaEFRPaldEWGCoEuAfq2/3tjkHap
+         8wX1V3Fo/iwSy3etqyDyJk14F8tfP9OcXDnIFVgeOxj2H0AcSvMFus1GiH7Bo5SBr38M
+         +OGCJMD8zbYUhdsAjqZ8LRFVbVVV0cBL4zfH47rlbg/l3/sDFnDyyciz4KUYMzOvm7Ic
+         iHHg==
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michal Simek <michal.simek@xilinx.com>
-Cc: Max Filippov <jcmvbkbc@gmail.com>, LKML <linux-kernel@vger.kernel.org>, Michal Simek <monstr@monstr.eu>, git@xilinx.com, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, Stefan Asserhall <stefan.asserhall@xilinx.com>, Chris Zankel <chris@zankel.net>, "David S. Miller" <davem@davemloft.net>, Fenghua Yu <fenghua.yu@intel.com>, Helge Deller <deller@gmx.de>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Matt Turner <mattst88@gmail.com>, Rich Felker <dalias@libc.org>, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, open list:IA64 (Itanium) PL
+To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, git@xilinx.com, arnd@arndb.de, akpm@linux-foundation.org
+Cc: Stefan Asserhall <stefan.asserhall@xilinx.com>, Max Filippov <jcmvbkbc@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Chris Zankel <chris@zankel.net>, "David S. Miller" <davem@davemloft.net>, Fenghua Yu <fenghua.yu@intel.com>, Helge Deller <deller@gmx.de>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Paul Burton <paulburton@kernel.org>, Paul Mackerras <paulus@samba.org>, Ralf Baechle <ralf@linux-mips.org>, Rich Felker <dalias@libc.org>, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-alpha@vger.kernel.org, linux-ia64@vger
 
-Hi Michal,
+Generated files are also checked by sparse that's why add newline
+to remove sparse (C=1) warning.
 
-On Wed, Feb 12, 2020 at 10:42 AM Michal Simek <michal.simek@xilinx.com> wrote:
-> On 12. 02. 20 10:40, Geert Uytterhoeven wrote:
-> > On Wed, Feb 12, 2020 at 10:38 AM Michal Simek <michal.simek@xilinx.com> wrote:
-> >> On 12. 02. 20 10:32, Geert Uytterhoeven wrote:
-> >>> On Wed, Feb 12, 2020 at 10:27 AM Michal Simek <michal.simek@xilinx.com> wrote:
-> >>>> On 12. 02. 20 10:25, Geert Uytterhoeven wrote:
-> >>>>> On Wed, Feb 12, 2020 at 10:23 AM Max Filippov <jcmvbkbc@gmail.com> wrote:
-> >>>>>> On Wed, Feb 12, 2020 at 1:16 AM Michal Simek <michal.simek@xilinx.com> wrote:
-> >>>>>>>
-> >>>>>>> Generated files are also checked by sparse that's why add newline
-> >>>>>>> to remove sparse (C=1) warning.
-> >>>>>>>
-> >>>>>>> The issue was found on Microblaze and reported like this:
-> >>>>>>> ./arch/microblaze/include/generated/uapi/asm/unistd_32.h:438:45:
-> >>>>>>> warning: no newline at end of file
-> >>>>>>>
-> >>>>>>> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> >>>>>>> Reviewed-by: Stefan Asserhall <stefan.asserhall@xilinx.com>
-> >>>>>
-> >>>>>>> --- a/arch/m68k/kernel/syscalls/syscallhdr.sh
-> >>>>>>> +++ b/arch/m68k/kernel/syscalls/syscallhdr.sh
-> >>>>>>> @@ -33,4 +33,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
-> >>>>>>>         printf "#endif\n"
-> >>>>>>>         printf "\n"
-> >>>>>>>         printf "#endif /* %s */\n" "${fileguard}"
-> >>>>>>
-> >>>>>> Here there's already \n at the end, so no need for another one?
-> >>>>>
-> >>>>> Thanks! I completely missed that.
-> >>>>> So I did fix the original while applying ;-)
-> >>>>
-> >>>> I can drop m68k or align with with others. I would prefer to have the
-> >>>> same solution in all these scripts.
-> >>>
-> >>> Yeah, it makes sense to align as much as possible.
-> >>> IIRC, the original plan was to consolidate more later.
-> >>>
-> >>> Note that all other lines are terminated with a "\n" at the end.
-> >>> The separate 'printf "\n"' is an extra blank line, not the terminator for the
-> >>> previous line.
-> >>
-> >> Should we also get rid of 'printf "\n"' lines or just keep them as they
-> >> are today?
-> >
-> > Usually there is a blank line above the include guard terminator, so IMHO
-> > it makes sense to have that in generated files, too.
->
-> I meant more not to get rid of \n just include them in current prints.
-> It means like this 'printf "\n#endif /* %s */\n" "${fileguard}"'
+The issue was found on Microblaze and reported like this:
+./arch/microblaze/include/generated/uapi/asm/unistd_32.h:438:45:
+warning: no newline at end of file
 
-I think having a "\n" at the start of a string makes the code harder to read.
+Mips and PowerPC have it already but let's align with style used by m68k.
 
-You could move it to the end of the previous string, but that is not always
-possible (e.g. after the loop), so I'd keep the separate prints for blank
-lines.
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Reviewed-by: Stefan Asserhall <stefan.asserhall@xilinx.com>
+Acked-by: Max Filippov <jcmvbkbc@gmail.com> (xtensa)
+---
 
-Gr{oetje,eeting}s,
+Changes in v3:
+- Add notes about mips/ppc and m68 - Max/Geert
 
-                        Geert
+Changes in v2:
+- Update also others archs not just microblaze - Arnd
+- Align subject and description to match multiarch change
 
+ arch/alpha/kernel/syscalls/syscallhdr.sh      | 2 +-
+ arch/ia64/kernel/syscalls/syscallhdr.sh       | 2 +-
+ arch/microblaze/kernel/syscalls/syscallhdr.sh | 2 +-
+ arch/mips/kernel/syscalls/syscallhdr.sh       | 3 +--
+ arch/parisc/kernel/syscalls/syscallhdr.sh     | 2 +-
+ arch/powerpc/kernel/syscalls/syscallhdr.sh    | 3 +--
+ arch/sh/kernel/syscalls/syscallhdr.sh         | 2 +-
+ arch/sparc/kernel/syscalls/syscallhdr.sh      | 2 +-
+ arch/xtensa/kernel/syscalls/syscallhdr.sh     | 2 +-
+ 9 files changed, 9 insertions(+), 11 deletions(-)
+
+diff --git a/arch/alpha/kernel/syscalls/syscallhdr.sh b/arch/alpha/kernel/syscalls/syscallhdr.sh
+index e5b99bd2e5e7..1780e861492a 100644
+--- a/arch/alpha/kernel/syscalls/syscallhdr.sh
++++ b/arch/alpha/kernel/syscalls/syscallhdr.sh
+@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
+diff --git a/arch/ia64/kernel/syscalls/syscallhdr.sh b/arch/ia64/kernel/syscalls/syscallhdr.sh
+index 0c2d2c748565..f407b6e53283 100644
+--- a/arch/ia64/kernel/syscalls/syscallhdr.sh
++++ b/arch/ia64/kernel/syscalls/syscallhdr.sh
+@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
+diff --git a/arch/microblaze/kernel/syscalls/syscallhdr.sh b/arch/microblaze/kernel/syscalls/syscallhdr.sh
+index 2e9062a926a3..a914854f8d9f 100644
+--- a/arch/microblaze/kernel/syscalls/syscallhdr.sh
++++ b/arch/microblaze/kernel/syscalls/syscallhdr.sh
+@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
+diff --git a/arch/mips/kernel/syscalls/syscallhdr.sh b/arch/mips/kernel/syscalls/syscallhdr.sh
+index d2bcfa8f4d1a..2e241e713a7d 100644
+--- a/arch/mips/kernel/syscalls/syscallhdr.sh
++++ b/arch/mips/kernel/syscalls/syscallhdr.sh
+@@ -32,6 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
+-	printf "\n"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
+diff --git a/arch/parisc/kernel/syscalls/syscallhdr.sh b/arch/parisc/kernel/syscalls/syscallhdr.sh
+index 50242b747d7c..730db288fe54 100644
+--- a/arch/parisc/kernel/syscalls/syscallhdr.sh
++++ b/arch/parisc/kernel/syscalls/syscallhdr.sh
+@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
+diff --git a/arch/powerpc/kernel/syscalls/syscallhdr.sh b/arch/powerpc/kernel/syscalls/syscallhdr.sh
+index c0a9a32937f1..02d6751f3be3 100644
+--- a/arch/powerpc/kernel/syscalls/syscallhdr.sh
++++ b/arch/powerpc/kernel/syscalls/syscallhdr.sh
+@@ -32,6 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
+-	printf "\n"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
+diff --git a/arch/sh/kernel/syscalls/syscallhdr.sh b/arch/sh/kernel/syscalls/syscallhdr.sh
+index 1de0334e577f..4c0519861e97 100644
+--- a/arch/sh/kernel/syscalls/syscallhdr.sh
++++ b/arch/sh/kernel/syscalls/syscallhdr.sh
+@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
+diff --git a/arch/sparc/kernel/syscalls/syscallhdr.sh b/arch/sparc/kernel/syscalls/syscallhdr.sh
+index 626b5740a9f1..cf50a75cc0bb 100644
+--- a/arch/sparc/kernel/syscalls/syscallhdr.sh
++++ b/arch/sparc/kernel/syscalls/syscallhdr.sh
+@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
+diff --git a/arch/xtensa/kernel/syscalls/syscallhdr.sh b/arch/xtensa/kernel/syscalls/syscallhdr.sh
+index d37db641ca31..eebfb8a8ace6 100644
+--- a/arch/xtensa/kernel/syscalls/syscallhdr.sh
++++ b/arch/xtensa/kernel/syscalls/syscallhdr.sh
+@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+ 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+ 	printf "#endif\n"
+ 	printf "\n"
+-	printf "#endif /* %s */" "${fileguard}"
++	printf "#endif /* %s */\n" "${fileguard}"
+ ) > "$out"
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.25.0
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
