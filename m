@@ -1,160 +1,121 @@
-From: Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH v3] asm-generic: Fix unistd_32.h generation format
-Date: Wed, 12 Feb 2020 11:53:29 +0100
-Message-ID: <4d32ab4e1fb2edb691d2e1687e8fb303c09fd023.1581504803.git.michal.simek@xilinx.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20150623.gappssmtp.com; s=20150623;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iCxaKYylUaTagw0CiACoN5PmGBZhgyb9phU3hhP0tOU=;
-        b=cfEHKyCzPVV+G0Ct3fk+e76eZPGNTeImhNiFGDVimPzL4uYn8zjyFG9WyB0koRR2qN
-         EwMnN8vjUGQ2wbhjgaIjph2vjfhe8yjFmu9ClTKqCx2OtRi5VsZHinaDNjSlIBmgdAxy
-         wxZcB8m80XRXcoyEYhnoHyLx5c4HUKj1j5ketT2WaaEFRPaldEWGCoEuAfq2/3tjkHap
-         8wX1V3Fo/iwSy3etqyDyJk14F8tfP9OcXDnIFVgeOxj2H0AcSvMFus1GiH7Bo5SBr38M
-         +OGCJMD8zbYUhdsAjqZ8LRFVbVVV0cBL4zfH47rlbg/l3/sDFnDyyciz4KUYMzOvm7Ic
-         iHHg==
-Sender: linux-ia64-owner@vger.kernel.org
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [RESEND PATCH v2 0/9] iomap: Constify ioreadX() iomem argument
+Date: Wed, 19 Feb 2020 18:49:58 +0100
+Message-ID: <20200219175007.13627-1-krzk@kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1582134663;
+        bh=HVHQjGSEocd9AVyWevt6joEF+d2PPbwr8+8k6h+A34M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PxIaHkLn5XTar1EPyISd4vtwzk0Yb8ho6/2/5bpHXPVckPViPmh7xJy5CDKknCISe
+         aVweOki+hxup4Tb6Es9L3KhQ8BxFokAKuut29izMLGuhQbvVvdmhKIAJt21HDJ6Icz
+         WQ/bI2EQHItOjyTVPfGGfciGRDULmeQrq4s9rqPA=
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com, git@xilinx.com, arnd@arndb.de, akpm@linux-foundation.org
-Cc: Stefan Asserhall <stefan.asserhall@xilinx.com>, Max Filippov <jcmvbkbc@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Chris Zankel <chris@zankel.net>, "David S. Miller" <davem@davemloft.net>, Fenghua Yu <fenghua.yu@intel.com>, Helge Deller <deller@gmx.de>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Paul Burton <paulburton@kernel.org>, Paul Mackerras <paulus@samba.org>, Ralf Baechle <ralf@linux-mips.org>, Rich Felker <dalias@libc.org>, Richard Henderson <rth@twiddle.net>, Tony Luck <tony.luck@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-alpha@vger.kernel.org, linux-ia64@vger
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexey Brodkin <abrodkin@synopsys.com>, Vineet Gupta <vgupta@synopsys.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Dave Airlie <airlied@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Ben Skeggs <bskeggs@redhat.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Jiri Slaby <jirislaby@gmail.com>, Nick Kossifidis <mickflemm@gmail.com>, Luis
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
 
-Generated files are also checked by sparse that's why add newline
-to remove sparse (C=1) warning.
+Hi,
 
-The issue was found on Microblaze and reported like this:
-./arch/microblaze/include/generated/uapi/asm/unistd_32.h:438:45:
-warning: no newline at end of file
 
-Mips and PowerPC have it already but let's align with style used by m68k.
+Changes since v1
+================
+https://lore.kernel.org/lkml/1578415992-24054-1-git-send-email-krzk@kernel.org/
+1. Constify also ioreadX_rep() and mmio_insX(),
+2. Squash lib+alpha+powerpc+parisc+sh into one patch for bisectability,
+3. Add acks and reviews,
+4. Re-order patches so all optional driver changes are at the end.
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Reviewed-by: Stefan Asserhall <stefan.asserhall@xilinx.com>
-Acked-by: Max Filippov <jcmvbkbc@gmail.com> (xtensa)
----
 
-Changes in v3:
-- Add notes about mips/ppc and m68 - Max/Geert
+Description
+===========
+The ioread8/16/32() and others have inconsistent interface among the
+architectures: some taking address as const, some not.
 
-Changes in v2:
-- Update also others archs not just microblaze - Arnd
-- Align subject and description to match multiarch change
+It seems there is nothing really stopping all of them to take
+pointer to const.
 
- arch/alpha/kernel/syscalls/syscallhdr.sh      | 2 +-
- arch/ia64/kernel/syscalls/syscallhdr.sh       | 2 +-
- arch/microblaze/kernel/syscalls/syscallhdr.sh | 2 +-
- arch/mips/kernel/syscalls/syscallhdr.sh       | 3 +--
- arch/parisc/kernel/syscalls/syscallhdr.sh     | 2 +-
- arch/powerpc/kernel/syscalls/syscallhdr.sh    | 3 +--
- arch/sh/kernel/syscalls/syscallhdr.sh         | 2 +-
- arch/sparc/kernel/syscalls/syscallhdr.sh      | 2 +-
- arch/xtensa/kernel/syscalls/syscallhdr.sh     | 2 +-
- 9 files changed, 9 insertions(+), 11 deletions(-)
+Patchset was only compile tested on affected architectures.  No real
+testing.
 
-diff --git a/arch/alpha/kernel/syscalls/syscallhdr.sh b/arch/alpha/kernel/syscalls/syscallhdr.sh
-index e5b99bd2e5e7..1780e861492a 100644
---- a/arch/alpha/kernel/syscalls/syscallhdr.sh
-+++ b/arch/alpha/kernel/syscalls/syscallhdr.sh
-@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
-diff --git a/arch/ia64/kernel/syscalls/syscallhdr.sh b/arch/ia64/kernel/syscalls/syscallhdr.sh
-index 0c2d2c748565..f407b6e53283 100644
---- a/arch/ia64/kernel/syscalls/syscallhdr.sh
-+++ b/arch/ia64/kernel/syscalls/syscallhdr.sh
-@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
-diff --git a/arch/microblaze/kernel/syscalls/syscallhdr.sh b/arch/microblaze/kernel/syscalls/syscallhdr.sh
-index 2e9062a926a3..a914854f8d9f 100644
---- a/arch/microblaze/kernel/syscalls/syscallhdr.sh
-+++ b/arch/microblaze/kernel/syscalls/syscallhdr.sh
-@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
-diff --git a/arch/mips/kernel/syscalls/syscallhdr.sh b/arch/mips/kernel/syscalls/syscallhdr.sh
-index d2bcfa8f4d1a..2e241e713a7d 100644
---- a/arch/mips/kernel/syscalls/syscallhdr.sh
-+++ b/arch/mips/kernel/syscalls/syscallhdr.sh
-@@ -32,6 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
--	printf "\n"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
-diff --git a/arch/parisc/kernel/syscalls/syscallhdr.sh b/arch/parisc/kernel/syscalls/syscallhdr.sh
-index 50242b747d7c..730db288fe54 100644
---- a/arch/parisc/kernel/syscalls/syscallhdr.sh
-+++ b/arch/parisc/kernel/syscalls/syscallhdr.sh
-@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
-diff --git a/arch/powerpc/kernel/syscalls/syscallhdr.sh b/arch/powerpc/kernel/syscalls/syscallhdr.sh
-index c0a9a32937f1..02d6751f3be3 100644
---- a/arch/powerpc/kernel/syscalls/syscallhdr.sh
-+++ b/arch/powerpc/kernel/syscalls/syscallhdr.sh
-@@ -32,6 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
--	printf "\n"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
-diff --git a/arch/sh/kernel/syscalls/syscallhdr.sh b/arch/sh/kernel/syscalls/syscallhdr.sh
-index 1de0334e577f..4c0519861e97 100644
---- a/arch/sh/kernel/syscalls/syscallhdr.sh
-+++ b/arch/sh/kernel/syscalls/syscallhdr.sh
-@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
-diff --git a/arch/sparc/kernel/syscalls/syscallhdr.sh b/arch/sparc/kernel/syscalls/syscallhdr.sh
-index 626b5740a9f1..cf50a75cc0bb 100644
---- a/arch/sparc/kernel/syscalls/syscallhdr.sh
-+++ b/arch/sparc/kernel/syscalls/syscallhdr.sh
-@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
-diff --git a/arch/xtensa/kernel/syscalls/syscallhdr.sh b/arch/xtensa/kernel/syscalls/syscallhdr.sh
-index d37db641ca31..eebfb8a8ace6 100644
---- a/arch/xtensa/kernel/syscalls/syscallhdr.sh
-+++ b/arch/xtensa/kernel/syscalls/syscallhdr.sh
-@@ -32,5 +32,5 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
- 	printf "#define __NR_syscalls\t%s\n" "${nxt}"
- 	printf "#endif\n"
- 	printf "\n"
--	printf "#endif /* %s */" "${fileguard}"
-+	printf "#endif /* %s */\n" "${fileguard}"
- ) > "$out"
+
+volatile
+========
+There is still interface inconsistency between architectures around
+"volatile" qualifier:
+ - include/asm-generic/io.h:static inline u32 ioread32(const volatile void __iomem *addr)
+ - include/asm-generic/iomap.h:extern unsigned int ioread32(const void __iomem *);
+
+This is still discussed and out of scope of this patchset.
+
+
+Merging
+=======
+Multiple architectures are affected in first patch so acks are welcomed.
+
+1. All patches depend on first patch,
+2. Patches 2-4 unify the interface also in few drivers,
+3. PAtches 5-9 are optional cleanup, without actual impact.
+
+
+Best regards,
+Krzysztof
+
+
+Krzysztof Kozlowski (9):
+  iomap: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  rtl818x: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  ntb: intel: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  virtio: pci: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  arc: Constify ioreadX() iomem argument (as in generic implementation)
+  drm/mgag200: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  drm/nouveau: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  media: fsl-viu: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  ath5k: Constify ioreadX() iomem argument (as in generic
+    implementation)
+
+ arch/alpha/include/asm/core_apecs.h           |  6 +-
+ arch/alpha/include/asm/core_cia.h             |  6 +-
+ arch/alpha/include/asm/core_lca.h             |  6 +-
+ arch/alpha/include/asm/core_marvel.h          |  4 +-
+ arch/alpha/include/asm/core_mcpcia.h          |  6 +-
+ arch/alpha/include/asm/core_t2.h              |  2 +-
+ arch/alpha/include/asm/io.h                   | 12 ++--
+ arch/alpha/include/asm/io_trivial.h           | 16 ++---
+ arch/alpha/include/asm/jensen.h               |  2 +-
+ arch/alpha/include/asm/machvec.h              |  6 +-
+ arch/alpha/kernel/core_marvel.c               |  2 +-
+ arch/alpha/kernel/io.c                        | 12 ++--
+ arch/arc/plat-axs10x/axs10x.c                 |  4 +-
+ arch/parisc/include/asm/io.h                  |  4 +-
+ arch/parisc/lib/iomap.c                       | 72 +++++++++----------
+ arch/powerpc/kernel/iomap.c                   | 28 ++++----
+ arch/sh/kernel/iomap.c                        | 22 +++---
+ drivers/gpu/drm/mgag200/mgag200_drv.h         |  4 +-
+ drivers/gpu/drm/nouveau/nouveau_bo.c          |  2 +-
+ drivers/media/platform/fsl-viu.c              |  2 +-
+ drivers/net/wireless/ath/ath5k/ahb.c          | 10 +--
+ .../realtek/rtl818x/rtl8180/rtl8180.h         |  6 +-
+ drivers/ntb/hw/intel/ntb_hw_gen1.c            |  2 +-
+ drivers/ntb/hw/intel/ntb_hw_gen3.h            |  2 +-
+ drivers/ntb/hw/intel/ntb_hw_intel.h           |  2 +-
+ drivers/virtio/virtio_pci_modern.c            |  6 +-
+ include/asm-generic/iomap.h                   | 28 ++++----
+ include/linux/io-64-nonatomic-hi-lo.h         |  4 +-
+ include/linux/io-64-nonatomic-lo-hi.h         |  4 +-
+ lib/iomap.c                                   | 30 ++++----
+ 30 files changed, 156 insertions(+), 156 deletions(-)
+
 -- 
-2.25.0
+2.17.1
 
