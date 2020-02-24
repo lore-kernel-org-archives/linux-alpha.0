@@ -1,331 +1,58 @@
-From: afzal mohammed <afzal.mohd.ma@gmail.com>
-Subject: [PATCH v2 01/18] alpha: replace setup_irq() by request_irq()
-Date: Mon, 24 Feb 2020 06:18:44 +0530
-Message-ID: <45ef08d7b0e531b237d7651fb57906c391f725f5.1582471508.git.afzal.mohd.ma@gmail.com>
-References: <cover.1582471508.git.afzal.mohd.ma@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [RESEND PATCH v2 9/9] ath5k: Constify ioreadX() iomem argument
+ (as in generic implementation)
+Date: Mon, 24 Feb 2020 13:47:44 +0100
+Message-ID: <20200224124744.GA1949@pi3>
+References: <20200219175007.13627-1-krzk@kernel.org>
+ <20200219175007.13627-10-krzk@kernel.org>
+ <518a9023-f802-17b3-fca5-582400bc34ae@gmail.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rnRwnrYbUqRCcKjbWwPR9TGdpT0kVMsls9T0v5tRHwI=;
-        b=ABa/DeANMNoDTrmP0c09xtF2RNnLb4ywtDzZstPu18oDDHqnplwqJREeyuZDsLut4Z
-         gUWYNmMoez7j8Vgyv2wvxu1PzYkyoBm6uaaFkXh9DEIl1qb9JEK8e3iGj/TbVC8xCYO0
-         /VJ9x1dgnm1lf6T7g/I+RK6/0A+OVpwwNOW7J/z8+QKb2ZMUgq0bCmQBSPZ6uYBC9ciT
-         x/yE/IvxlEdmxkToPHX+po2cAZWsFpwxTe4BIe9HU/jPWf7JwD07xYew+ePVbo/I296d
-         pH0zbUjvE5OFeDGwcAKMP5rwBlWAQwNUZ8sf5jEMVEtKBddPuyXcNdXPnSWrpQyInz0n
-         /5YQ==
 Content-Disposition: inline
-In-Reply-To: <cover.1582471508.git.afzal.mohd.ma@gmail.com>
+In-Reply-To: <518a9023-f802-17b3-fca5-582400bc34ae@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Thomas Gleixner <tglx@linutronix.de>, Matt Turner <mattst88@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+To: Jiri Slaby <jirislaby@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexey Brodkin <abrodkin@synopsys.com>, Vineet Gupta <vgupta@synopsys.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Dave Airlie <airlied@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Ben Skeggs <bskeggs@redhat.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Nick Kossifidis <mickflemm@gmail.com>, Luis Chamberlain <mcgrof@kernel.org>, Kall
 
-request_irq() is preferred over setup_irq(). The early boot setup_irq()
-invocations happen either via 'init_IRQ()' or 'time_init()', while
-memory allocators are ready by 'mm_init()'.
+On Thu, Feb 20, 2020 at 10:48:33AM +0100, Jiri Slaby wrote:
+> On 19. 02. 20, 18:50, Krzysztof Kozlowski wrote:
+> > The ioreadX() helpers have inconsistent interface.  On some architectures
+> > void *__iomem address argument is a pointer to const, on some not.
+> > 
+> > Implementations of ioreadX() do not modify the memory under the address
+> > so they can be converted to a "const" version for const-safety and
+> > consistency among architectures.
+> > 
+> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > Acked-by: Kalle Valo <kvalo@codeaurora.org>
+> > ---
+> >  drivers/net/wireless/ath/ath5k/ahb.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/net/wireless/ath/ath5k/ahb.c b/drivers/net/wireless/ath/ath5k/ahb.c
+> > index 2c9cec8b53d9..8bd01df369fb 100644
+> > --- a/drivers/net/wireless/ath/ath5k/ahb.c
+> > +++ b/drivers/net/wireless/ath/ath5k/ahb.c
+> > @@ -138,18 +138,18 @@ static int ath_ahb_probe(struct platform_device *pdev)
+> >  
+> >  	if (bcfg->devid >= AR5K_SREV_AR2315_R6) {
+> >  		/* Enable WMAC AHB arbitration */
+> > -		reg = ioread32((void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
+> > +		reg = ioread32((const void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
+> 
+> While I understand why the parameter of ioread32 should be const, I
+> don't see a reason for these casts on the users' side. What does it
+> bring except longer code to read?
 
-Per tglx[1], setup_irq() existed in olden days when allocators were not
-ready by the time early interrupts were initialized.
+Because the argument is an int:
 
-Hence replace setup_irq() by request_irq().
+drivers/net/wireless/ath/ath5k/ahb.c: In function ‘ath_ahb_probe’:
+drivers/net/wireless/ath/ath5k/ahb.c:141:18: warning: passing argument 1 of ‘ioread32’ makes pointer from integer without a cast [-Wint-conversion]
+   reg = ioread32(AR5K_AR2315_AHB_ARB_CTL);
 
-Seldom remove_irq() usage has been observed coupled with setup_irq(),
-wherever that has been found, it too has been replaced by free_irq().
-
-[1] https://lkml.kernel.org/r/alpine.DEB.2.20.1710191609480.1971@nanos
-
-Signed-off-by: afzal mohammed <afzal.mohd.ma@gmail.com>
----
-
-v2:
- * Replace pr_err("request_irq() on %s failed" by
-           pr_err("%s: request_irq() failed"
- * Commit message massage
-
- arch/alpha/kernel/irq_alpha.c     | 29 +++++------------------------
- arch/alpha/kernel/irq_i8259.c     |  8 ++------
- arch/alpha/kernel/irq_impl.h      |  7 +------
- arch/alpha/kernel/irq_pyxis.c     |  3 ++-
- arch/alpha/kernel/sys_alcor.c     |  3 ++-
- arch/alpha/kernel/sys_cabriolet.c |  3 ++-
- arch/alpha/kernel/sys_eb64p.c     |  3 ++-
- arch/alpha/kernel/sys_marvel.c    |  2 +-
- arch/alpha/kernel/sys_miata.c     |  6 ++++--
- arch/alpha/kernel/sys_ruffian.c   |  3 ++-
- arch/alpha/kernel/sys_rx164.c     |  3 ++-
- arch/alpha/kernel/sys_sx164.c     |  3 ++-
- arch/alpha/kernel/sys_wildfire.c  |  7 ++-----
- arch/alpha/kernel/time.c          |  6 ++----
- 14 files changed, 31 insertions(+), 55 deletions(-)
-
-diff --git a/arch/alpha/kernel/irq_alpha.c b/arch/alpha/kernel/irq_alpha.c
-index da3e10d5f7fe..fe46a7bdbf68 100644
---- a/arch/alpha/kernel/irq_alpha.c
-+++ b/arch/alpha/kernel/irq_alpha.c
-@@ -213,32 +213,13 @@ process_mcheck_info(unsigned long vector, unsigned long la_ptr,
-  * The special RTC interrupt type.  The interrupt itself was
-  * processed by PALcode, and comes in via entInt vector 1.
-  */
--
--struct irqaction timer_irqaction = {
--	.handler	= rtc_timer_interrupt,
--	.name		= "timer",
--};
--
- void __init
--init_rtc_irq(void)
-+init_rtc_irq(irqreturn_t handler)
- {
- 	irq_set_chip_and_handler_name(RTC_IRQ, &dummy_irq_chip,
- 				      handle_percpu_irq, "RTC");
--	setup_irq(RTC_IRQ, &timer_irqaction);
-+	if (!handler)
-+		handler = rtc_timer_interrupt;
-+	if (request_irq(RTC_IRQ, handler, 0, "timer", NULL))
-+		pr_err("request_irq() for %s failed\n", "timer");
- }
--
--/* Dummy irqactions.  */
--struct irqaction isa_cascade_irqaction = {
--	.handler	= no_action,
--	.name		= "isa-cascade"
--};
--
--struct irqaction timer_cascade_irqaction = {
--	.handler	= no_action,
--	.name		= "timer-cascade"
--};
--
--struct irqaction halt_switch_irqaction = {
--	.handler	= no_action,
--	.name		= "halt-switch"
--};
-diff --git a/arch/alpha/kernel/irq_i8259.c b/arch/alpha/kernel/irq_i8259.c
-index 5d54c076a8ae..85a854655c67 100644
---- a/arch/alpha/kernel/irq_i8259.c
-+++ b/arch/alpha/kernel/irq_i8259.c
-@@ -82,11 +82,6 @@ struct irq_chip i8259a_irq_type = {
- void __init
- init_i8259a_irqs(void)
- {
--	static struct irqaction cascade = {
--		.handler	= no_action,
--		.name		= "cascade",
--	};
--
- 	long i;
- 
- 	outb(0xff, 0x21);	/* mask all of 8259A-1 */
-@@ -96,7 +91,8 @@ init_i8259a_irqs(void)
- 		irq_set_chip_and_handler(i, &i8259a_irq_type, handle_level_irq);
- 	}
- 
--	setup_irq(2, &cascade);
-+	if (request_irq(2, no_action, 0, "cascade", NULL))
-+		pr_err("%s: request_irq() failed\n", "cascade");
- }
- 
- 
-diff --git a/arch/alpha/kernel/irq_impl.h b/arch/alpha/kernel/irq_impl.h
-index 16f2b0276f3a..7ac58be4ccf4 100644
---- a/arch/alpha/kernel/irq_impl.h
-+++ b/arch/alpha/kernel/irq_impl.h
-@@ -21,14 +21,9 @@ extern void isa_no_iack_sc_device_interrupt(unsigned long);
- extern void srm_device_interrupt(unsigned long);
- extern void pyxis_device_interrupt(unsigned long);
- 
--extern struct irqaction timer_irqaction;
--extern struct irqaction isa_cascade_irqaction;
--extern struct irqaction timer_cascade_irqaction;
--extern struct irqaction halt_switch_irqaction;
--
- extern void init_srm_irqs(long, unsigned long);
- extern void init_pyxis_irqs(unsigned long);
--extern void init_rtc_irq(void);
-+extern void init_rtc_irq(irqreturn_t handler);
- 
- extern void common_init_isa_dma(void);
- 
-diff --git a/arch/alpha/kernel/irq_pyxis.c b/arch/alpha/kernel/irq_pyxis.c
-index a968b10e687d..41b613f44da0 100644
---- a/arch/alpha/kernel/irq_pyxis.c
-+++ b/arch/alpha/kernel/irq_pyxis.c
-@@ -107,5 +107,6 @@ init_pyxis_irqs(unsigned long ignore_mask)
- 		irq_set_status_flags(i, IRQ_LEVEL);
- 	}
- 
--	setup_irq(16+7, &isa_cascade_irqaction);
-+	if (request_irq(16 + 7, no_action, 0, "isa-cascade", NULL))
-+		pr_err("request_irq() for %s failed\n", "isa-cascade");
- }
-diff --git a/arch/alpha/kernel/sys_alcor.c b/arch/alpha/kernel/sys_alcor.c
-index e56efd5b855f..2db834bf7a84 100644
---- a/arch/alpha/kernel/sys_alcor.c
-+++ b/arch/alpha/kernel/sys_alcor.c
-@@ -133,7 +133,8 @@ alcor_init_irq(void)
- 	init_i8259a_irqs();
- 	common_init_isa_dma();
- 
--	setup_irq(16+31, &isa_cascade_irqaction);
-+	if (request_irq(16 + 31, no_action, 0, "isa-cascade", NULL))
-+		pr_err("request_irq() for %s failed\n", "isa-cascade");
- }
- 
- 
-diff --git a/arch/alpha/kernel/sys_cabriolet.c b/arch/alpha/kernel/sys_cabriolet.c
-index 10bc46a4ec40..3d4ee60ca930 100644
---- a/arch/alpha/kernel/sys_cabriolet.c
-+++ b/arch/alpha/kernel/sys_cabriolet.c
-@@ -112,7 +112,8 @@ common_init_irq(void (*srm_dev_int)(unsigned long v))
- 	}
- 
- 	common_init_isa_dma();
--	setup_irq(16+4, &isa_cascade_irqaction);
-+	if (request_irq(16 + 4, no_action, 0, "isa-cascade", NULL))
-+		pr_err("request_irq() for %s failed\n", "isa-cascade");
- }
- 
- #ifndef CONFIG_ALPHA_PC164
-diff --git a/arch/alpha/kernel/sys_eb64p.c b/arch/alpha/kernel/sys_eb64p.c
-index 5251937ec1b4..6c7f15703dad 100644
---- a/arch/alpha/kernel/sys_eb64p.c
-+++ b/arch/alpha/kernel/sys_eb64p.c
-@@ -123,7 +123,8 @@ eb64p_init_irq(void)
- 	}
- 
- 	common_init_isa_dma();
--	setup_irq(16+5, &isa_cascade_irqaction);
-+	if (request_irq(16 + 5, no_action, 0, "isa-cascade", NULL))
-+		pr_err("request_irq() for %s failed\n", "isa-cascade");
- }
- 
- /*
-diff --git a/arch/alpha/kernel/sys_marvel.c b/arch/alpha/kernel/sys_marvel.c
-index 8d34cf6e002a..533899a4a1a1 100644
---- a/arch/alpha/kernel/sys_marvel.c
-+++ b/arch/alpha/kernel/sys_marvel.c
-@@ -397,7 +397,7 @@ marvel_init_pci(void)
- static void __init
- marvel_init_rtc(void)
- {
--	init_rtc_irq();
-+	init_rtc_irq(NULL);
- }
- 
- static void
-diff --git a/arch/alpha/kernel/sys_miata.c b/arch/alpha/kernel/sys_miata.c
-index 6fa07dc5339d..edff228ae451 100644
---- a/arch/alpha/kernel/sys_miata.c
-+++ b/arch/alpha/kernel/sys_miata.c
-@@ -81,8 +81,10 @@ miata_init_irq(void)
- 	init_pyxis_irqs(0x63b0000);
- 
- 	common_init_isa_dma();
--	setup_irq(16+2, &halt_switch_irqaction);	/* SRM only? */
--	setup_irq(16+6, &timer_cascade_irqaction);
-+	if (request_irq(16 + 2, no_action, 0, "halt-switch", NULL))
-+		pr_err("request_irq() for %s failed\n", "halt-switch");
-+	if (request_irq(16 + 6, no_action, 0, "timer-cascade", NULL))
-+		pr_err("request_irq() for %s failed\n", "timer-cascade");
- }
- 
- 
-diff --git a/arch/alpha/kernel/sys_ruffian.c b/arch/alpha/kernel/sys_ruffian.c
-index 07830cccabf9..f2ff64b6553e 100644
---- a/arch/alpha/kernel/sys_ruffian.c
-+++ b/arch/alpha/kernel/sys_ruffian.c
-@@ -82,7 +82,8 @@ ruffian_init_rtc(void)
- 	outb(0x31, 0x42);
- 	outb(0x13, 0x42);
- 
--	setup_irq(0, &timer_irqaction);
-+	if (request_irq(0, rtc_timer_interrupt, 0, "timer", NULL))
-+		pr_err("request_irq() for %s failed\n", "timer");
- }
- 
- static void
-diff --git a/arch/alpha/kernel/sys_rx164.c b/arch/alpha/kernel/sys_rx164.c
-index a3db719d3c38..46c3bd7ed910 100644
---- a/arch/alpha/kernel/sys_rx164.c
-+++ b/arch/alpha/kernel/sys_rx164.c
-@@ -106,7 +106,8 @@ rx164_init_irq(void)
- 	init_i8259a_irqs();
- 	common_init_isa_dma();
- 
--	setup_irq(16+20, &isa_cascade_irqaction);
-+	if (request_irq(16 + 20, no_action, 0, "isa-cascade", NULL))
-+		pr_err("request_irq() for %s failed\n", "isa-cascade");
- }
- 
- 
-diff --git a/arch/alpha/kernel/sys_sx164.c b/arch/alpha/kernel/sys_sx164.c
-index 1ec638a2746a..f6f85b2a9c96 100644
---- a/arch/alpha/kernel/sys_sx164.c
-+++ b/arch/alpha/kernel/sys_sx164.c
-@@ -54,7 +54,8 @@ sx164_init_irq(void)
- 	else
- 		init_pyxis_irqs(0xff00003f0000UL);
- 
--	setup_irq(16+6, &timer_cascade_irqaction);
-+	if (request_irq(16 + 6, no_action, 0, "timer-cascade", NULL))
-+		pr_err("request_irq() for %s failed\n", "timer-cascade");
- }
- 
- /*
-diff --git a/arch/alpha/kernel/sys_wildfire.c b/arch/alpha/kernel/sys_wildfire.c
-index 8e64052811ab..ceddbf95897f 100644
---- a/arch/alpha/kernel/sys_wildfire.c
-+++ b/arch/alpha/kernel/sys_wildfire.c
-@@ -156,10 +156,6 @@ static void __init
- wildfire_init_irq_per_pca(int qbbno, int pcano)
- {
- 	int i, irq_bias;
--	static struct irqaction isa_enable = {
--		.handler	= no_action,
--		.name		= "isa_enable",
--	};
- 
- 	irq_bias = qbbno * (WILDFIRE_PCA_PER_QBB * WILDFIRE_IRQ_PER_PCA)
- 		 + pcano * WILDFIRE_IRQ_PER_PCA;
-@@ -198,7 +194,8 @@ wildfire_init_irq_per_pca(int qbbno, int pcano)
- 		irq_set_status_flags(i + irq_bias, IRQ_LEVEL);
- 	}
- 
--	setup_irq(32+irq_bias, &isa_enable);
-+	if (request_irq(32 + irq_bias, no_action, 0, "isa_enable", NULL))
-+		pr_err("%s: request_irq() failed\n", "isa_enable");
- }
- 
- static void __init
-diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
-index 0069360697ee..4d01c392ab14 100644
---- a/arch/alpha/kernel/time.c
-+++ b/arch/alpha/kernel/time.c
-@@ -242,7 +242,7 @@ common_init_rtc(void)
- 	outb(0x31, 0x42);
- 	outb(0x13, 0x42);
- 
--	init_rtc_irq();
-+	init_rtc_irq(NULL);
- }
- 
- 
-@@ -396,9 +396,7 @@ time_init(void)
- 	if (alpha_using_qemu) {
- 		clocksource_register_hz(&qemu_cs, NSEC_PER_SEC);
- 		init_qemu_clockevent();
--
--		timer_irqaction.handler = qemu_timer_interrupt;
--		init_rtc_irq();
-+		init_rtc_irq(qemu_timer_interrupt);
- 		return;
- 	}
- 
--- 
-2.25.1
+Best regards,
+Krzysztof
 
