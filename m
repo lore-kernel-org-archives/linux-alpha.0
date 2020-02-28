@@ -1,52 +1,65 @@
-From: afzal mohammed <afzal.mohd.ma@gmail.com>
-Subject: Re: [PATCH 00/18] genirq: Remove setup_irq()
-Date: Thu, 27 Feb 2020 16:37:13 +0530
-Message-ID: <20200227110713.GA5708@afzalpc>
-References: <cover.1581478323.git.afzal.mohd.ma@gmail.com>
- <87y2somido.fsf@nanos.tec.linutronix.de>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: Some Alphas broken by f75b99d5a77d (PCI: Enforce bus address
+ limits in resource allocation)
+Date: Fri, 28 Feb 2020 15:51:01 -0800
+Message-ID: <CAEdQ38EzZfUJA-8zg-DgczYTwkxqFL-AThxu0_fC2V-GkXGi2Q@mail.gmail.com>
+References: <CAEdQ38GUhL0R4c7ZjEZv89TmqQ0cwhnvBawxuXonSb9On=+B6A@mail.gmail.com>
+ <20200222165556.GA207281@google.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lmJQ36No1Gca/vcFrG4Eq9htTy7KPRzUbksdwrxz8LI=;
-        b=FY89/SsX+eLNCZfl66UEb1ue7T2rDlxc39BUUNyQcUvYHLhQYmTZm8AV265dDcZriC
-         n+pnoFgE+Sf8zXMbshaCCS6PUdHyFAtJ6zdH/VH1FXYuwfzu7iVLsjLF6SXNOrrDux5S
-         VamD+96xP7YyeTt6xJaJYHlRfPSsbdooqEZo5JblB/xTNMzIpcuEBudbBh1o9hd+8Pp3
-         VCC1Cl49y6FD+xnV0DQbsVUKowy7XWxJSXmwRChAoXpyUp1BbPkGQQ1IWMsgmCulUb0i
-         idnYS7ecLxRWLTUTaFORqK3tstLgLRTwqSSk0D4o9TOL/U8ZbVv3Bk/xfDvuCNpgSmSI
-         BGEQ==
-Content-Disposition: inline
-In-Reply-To: <87y2somido.fsf@nanos.tec.linutronix.de>
-Sender: linux-m68k-owner@vger.kernel.org
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yZOMhZvjkdqC09tY/ScTXZisrX0g/+T4ku/jItf4b0U=;
+        b=Q67Ici//pAGvVef2MHDdSVqTdyryHI21yoH6h2B8WhfOSZs5NwuiBj5ouUgYVW3eq4
+         C+dinnRc+Y4Hprlm1YMEnlOkOOurVriQl2w0pbqh9KHq7Qf4khRbcfGoiwFzjO5T0SMW
+         u6RmyRRMvIlCLaKUw2wsYfvzA1TZTDAGIqNcJ+lYH8bd/AAcFNfRxiij7CTrpE4HpTwV
+         6uNKr7tuciMTAf8QYxMCA65NM2M9eRl3PxqaSFfelJkGcWatjxRIAWlMRoInLg+FbGDn
+         p2Lax15wovw+b+mlcAee4LaYkXw0x3LgBTSM8aH03nk3xqhStVuj6iKEsHAjlGnNqbI7
+         h1iQ==
+In-Reply-To: <20200222165556.GA207281@google.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-omap@vger.kernel.org, linux-alpha@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>, Gilles Muller <Gilles.Muller@lip6.fr>, Nicolas Palix <nicolas.palix@imag.fr>, Michal Marek <michal.lkml@markovi.net>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@gmail.com>
 
-Hi Thomas,
+On Sat, Feb 22, 2020 at 8:55 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Mon, Apr 16, 2018 at 07:33:57AM -0700, Matt Turner wrote:
+> > Commit f75b99d5a77d63f20e07bd276d5a427808ac8ef6 (PCI: Enforce bus
+> > address limits in resource allocation) broke Alpha systems using
+> > CONFIG_ALPHA_NAUTILUS. Alpha is 64-bit, but Nautilus systems use a
+> > 32-bit AMD 751/761 chipset. arch/alpha/kernel/sys_nautilus.c maps PCI
+> > into the upper addresses just below 4GB.
+> >
+> > I can get a working kernel by ifdef'ing out the code in
+> > drivers/pci/bus.c:pci_bus_alloc_resource. We can't tie
+> > PCI_BUS_ADDR_T_64BIT to ALPHA_NAUTILUS without breaking generic
+> > kernels.
+> >
+> > How can we get Nautilus working again?
+>
+> I don't see a resolution in this thread, so I assume this is still
+> broken?  Anybody have any more ideas?
 
-On Thu, Feb 27, 2020 at 11:31:15AM +0100, Thomas Gleixner wrote:
+Indeed, still broken.
 
-> Vs. merging this series, I suggest the following approach:
-> 
->    - Resubmit the individual changes as single patches or small series
->      to the relevant maintainers and subsystem mailing lists. They have
->      no dependency on a core change and can be applied where they belong
->      to.
-> 
->    - After 5.6-rc6, verify which parts have made their way into
->      linux-next and resubmit the ignored ones as a series to me along
->      with the removal of the core parts.
-> 
-> That way we can avoid conflicting changes between subsystems and the tip
-> irq/core branch as much as possible.
+I can add Kconfig logic to unselect ARCH_DMA_ADDR_T_64BIT if
+ALPHA_NAUTILUS, but then generic kernels won't work on Nautilus. It
+doesn't look like we have any way of opting out of
+ARCH_DMA_ADDR_T_64BIT at runtime, and doing enough plumbing to make
+that work is not worth it for such niche hardware. Maybe removing
+Nautilus from the generic kernel build is what I should do until such
+a time that we really fix this?
 
-Okay, i will do accordingly.
+Or maybe I could put a hack in pci.c that more or less undoes
+d56dbf5bab8c on Nautilus. #if defined CONFIG_ARCH_DMA_ADDR_T_64BIT &&
+!defined SYS_NAUTILUS.
 
-[ your mail crossed my v3 (only one patch) posting ]
+Or maybe I just need to take a weekend and try to understand the PCI
+code, instead of applying patches I don't understand and praying :)
 
-Regards
-afzal
+Thoughts? Other suggestions?
