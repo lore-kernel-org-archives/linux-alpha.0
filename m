@@ -1,65 +1,72 @@
-From: Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH] mm/special: Create generic fallbacks for pte_special()
- and pte_mkspecial()
-Date: Mon, 2 Mar 2020 12:19:28 +0100
-Message-ID: <c026934a-02c1-8589-f925-e267fcc367ad@gmx.de>
-References: <1583114190-7678-1-git-send-email-anshuman.khandual@arm.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: Some Alphas broken by f75b99d5a77d (PCI: Enforce bus address
+ limits in resource allocation)
+Date: Mon, 2 Mar 2020 16:47:32 -0600
+Message-ID: <20200302224732.GA175863@google.com>
+References: <CAEdQ38EzZfUJA-8zg-DgczYTwkxqFL-AThxu0_fC2V-GkXGi2Q@mail.gmail.com>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583189254;
+        bh=G5VGNDsOUPLinc1753Al2KL9STYmJ6m3x0fpad9Cwfk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=mU8uZkSw1wxdHfFSi3rAtL6aNWR0eSieMXdoUEKXLOgJifSYOlGI0WUBJwXr1hJph
+         pJgk4FOCZrWB/IFne7rtBSXL6PBpW9f9rmf0XTrsj89DalDX1gCY7snsldLp7ad0OJ
+         C92PYps9Dlb/dxktqefQDcKUyHkIG3iEuJ4+wPZ8=
+Content-Disposition: inline
+In-Reply-To: <CAEdQ38EzZfUJA-8zg-DgczYTwkxqFL-AThxu0_fC2V-GkXGi2Q@mail.gmail.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:
-	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
-	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=EWWuvoQPT834Udf1O0YbmPQqp6hbQSV17ozHK/JzOJw=; b=LyglAdnXoJZKNg
-	cs9wC4sKGS9zzi9pjRw1bxmH65iVqIzGZNdh9GeK49phZBuk4odz/pBnwmsjoeaW0S3q1MvENMBV7
-	qz7DCq0fS/Fd3Y/9HlE+umAyH5W9D/bj9Irvae5QURZHnuUow0/Eo/uaxH3Kh6GAIJODBxGrobQZ/
-	f4DRuXYpBweIBEnIThgf1dcG4N/xF9xju2ANWXF0PnUMQU13UjJbxcW6HeIPu0JT0XUTEGJWnggA7
-	TJVZBHWTD0gZMWZ5Pd/YJ55E5dw7/SxYgY+Kcof48PFtXzneUC8wsMHQqBW3Xz+UXvIF9wxqEJcbs
-	j0GBfAq5TQNrV/7D7LWA==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
- s=badeba3b8450; t=1583147984;
- bh=W0AEuRxwaNTM1wIbdflqt1mDaAQNU2XGAUPwGpFwfWw=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=hTNTiGkPrHFpfzTv92CxoDj+m/u7w8wulahh2YNUZ3ilgCKTOf7jYgAY8yD9Ao4qv
- SytwzZHwpUWQzFzBhJtl2DIhQoCUV/ToAeRl5zIDJgbyNck2JHuucSsXxomLmXYLp/
- +Dei76MRo/TXrQDxaEk4FvqRCIn9xEsmVcXYatHg=
-In-Reply-To: <1583114190-7678-1-git-send-email-anshuman.khandual@arm.com>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org
-Cc: linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, Vincent Chen <deanbo422@gmail.com>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Jonas Bonn <jonas@southpole.se>, Paul Burton <paulburton@kernel.org>, Richard Weinberger <richard@nod.at>, Russell King <linux@armlinux.org.uk>, Ley Foon Tan <ley.foon.tan@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-parisc@vger.kernel.org, linux-arch@vger.kernel.org, Matt Turner <mattst88@gmail.com>, Sam Creasey <sammy@sammy.net>, Fenghua Yu <fenghua.yu@intel.com>, Jeff Dike <jdike@addtoit.com>, linux-um@lists.infradead.org, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, linux-m68k@lists.linux
+To: Matt Turner <mattst88@gmail.com>
+Cc: Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
 
-On 02.03.20 02:56, Anshuman Khandual wrote:
-> Currently there are many platforms that dont enable HAVE_ARCH_PTE_SPECIAL
-> but required to define quite similar fallback stubs for special page table
-> entry helpers such as pte_special() and pte_mkspecial(), as they get build
-> in generic MM without a config check. This creates two generic fallback
-> stub definitions for these helpers, eliminating much code duplication.
->
-> mips platform has a special case where pte_special() and pte_mkspecial()
-> visibility is wider than what HAVE_ARCH_PTE_SPECIAL enablement requires.
-> This restricts those symbol visibility in order to avoid redefinitions
-> which is now exposed through this new generic stubs and subsequent build
-> failure. arm platform set_pte_at() definition needs to be moved into a C
-> file just to prevent a build failure.
->
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+[+cc Nicholas, Ben, beginning of thread:
+https://lore.kernel.org/r/CAEdQ38GUhL0R4c7ZjEZv89TmqQ0cwhnvBawxuXonSb9On=+B6A@mail.gmail.com]
 
-for parisc:
+On Fri, Feb 28, 2020 at 03:51:01PM -0800, Matt Turner wrote:
+> On Sat, Feb 22, 2020 at 8:55 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> >
+> > On Mon, Apr 16, 2018 at 07:33:57AM -0700, Matt Turner wrote:
+> > > Commit f75b99d5a77d63f20e07bd276d5a427808ac8ef6 (PCI: Enforce bus
+> > > address limits in resource allocation) broke Alpha systems using
+> > > CONFIG_ALPHA_NAUTILUS. Alpha is 64-bit, but Nautilus systems use a
+> > > 32-bit AMD 751/761 chipset. arch/alpha/kernel/sys_nautilus.c maps PCI
+> > > into the upper addresses just below 4GB.
+> > >
+> > > I can get a working kernel by ifdef'ing out the code in
+> > > drivers/pci/bus.c:pci_bus_alloc_resource. We can't tie
+> > > PCI_BUS_ADDR_T_64BIT to ALPHA_NAUTILUS without breaking generic
+> > > kernels.
+> > >
+> > > How can we get Nautilus working again?
+> >
+> > I don't see a resolution in this thread, so I assume this is still
+> > broken?  Anybody have any more ideas?
+> 
+> Indeed, still broken.
+> 
+> I can add Kconfig logic to unselect ARCH_DMA_ADDR_T_64BIT if
+> ALPHA_NAUTILUS, but then generic kernels won't work on Nautilus. It
+> doesn't look like we have any way of opting out of
+> ARCH_DMA_ADDR_T_64BIT at runtime, and doing enough plumbing to make
+> that work is not worth it for such niche hardware. Maybe removing
+> Nautilus from the generic kernel build is what I should do until such
+> a time that we really fix this?
+> 
+> Or maybe I could put a hack in pci.c that more or less undoes
+> d56dbf5bab8c on Nautilus. #if defined CONFIG_ARCH_DMA_ADDR_T_64BIT &&
+> !defined SYS_NAUTILUS.
+> 
+> Or maybe I just need to take a weekend and try to understand the PCI
+> code, instead of applying patches I don't understand and praying :)
 
-Acked-by: Helge Deller <deller@gmx.de> # parisc
+I don't have any *useful* ideas, but I think we did screw up the PCI
+resource discovery when we started assuming that we know the host
+bridge apertures up front.
 
-Helge
+That's generally true for many ACPI and DT systems, but in principle,
+we *should* be able to enumerate the devices and learn their resource
+requirements before computing the required host bridge apertures and
+assigning the BARs.
