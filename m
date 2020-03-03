@@ -1,72 +1,111 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: Some Alphas broken by f75b99d5a77d (PCI: Enforce bus address
- limits in resource allocation)
-Date: Mon, 2 Mar 2020 16:47:32 -0600
-Message-ID: <20200302224732.GA175863@google.com>
-References: <CAEdQ38EzZfUJA-8zg-DgczYTwkxqFL-AThxu0_fC2V-GkXGi2Q@mail.gmail.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [RFC 1/3] mm/vma: Define a default value for
+ VM_DATA_DEFAULT_FLAGS
+Date: Tue, 3 Mar 2020 18:25:06 +0100
+Message-ID: <b243be54-7b5e-c6e9-fb68-46369d7d7aa4@suse.cz>
+References: <1583131666-15531-1-git-send-email-anshuman.khandual@arm.com>
+ <1583131666-15531-2-git-send-email-anshuman.khandual@arm.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583189254;
-        bh=G5VGNDsOUPLinc1753Al2KL9STYmJ6m3x0fpad9Cwfk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=mU8uZkSw1wxdHfFSi3rAtL6aNWR0eSieMXdoUEKXLOgJifSYOlGI0WUBJwXr1hJph
-         pJgk4FOCZrWB/IFne7rtBSXL6PBpW9f9rmf0XTrsj89DalDX1gCY7snsldLp7ad0OJ
-         C92PYps9Dlb/dxktqefQDcKUyHkIG3iEuJ4+wPZ8=
-Content-Disposition: inline
-In-Reply-To: <CAEdQ38EzZfUJA-8zg-DgczYTwkxqFL-AThxu0_fC2V-GkXGi2Q@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+In-Reply-To: <1583131666-15531-2-git-send-email-anshuman.khandual@arm.com>
+Content-Language: en-US
+Sender: linux-hexagon-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org
+Cc: Richard Henderson <rth@twiddle.net>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Mark Salter <msalter@redhat.com>, Guo Ren <guoren@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Brian Cain <bcain@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paulburton@kernel.org>, Nick Hu <nickhu@andestech.com>, Ley Foon Tan <ley.foon.tan@intel.com>, Jonas Bonn <jonas@southpole.se>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Michael Ellerman <mpe@ellerman.id.au>, Paul Walmsley <paul.walmsley@sifive.com>, Heiko Carstens <heiko.ca>
 
-[+cc Nicholas, Ben, beginning of thread:
-https://lore.kernel.org/r/CAEdQ38GUhL0R4c7ZjEZv89TmqQ0cwhnvBawxuXonSb9On=+B6A@mail.gmail.com]
+On 3/2/20 7:47 AM, Anshuman Khandual wrote:
+> There are many platforms with exact same value for VM_DATA_DEFAULT_FLAGS
+> This creates a default value for VM_DATA_DEFAULT_FLAGS in line with the
+> existing VM_STACK_DEFAULT_FLAGS. While here, also define some more macros
+> with standard VMA access flag combinations that are used frequently across
+> many platforms. Apart from simplification, this reduces code duplication
+> as well.
+> 
+> Cc: Richard Henderson <rth@twiddle.net>
+> Cc: Vineet Gupta <vgupta@synopsys.com>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Mark Salter <msalter@redhat.com>
+> Cc: Guo Ren <guoren@kernel.org>
+> Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
+> Cc: Brian Cain <bcain@codeaurora.org>
+> Cc: Tony Luck <tony.luck@intel.com>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Michal Simek <monstr@monstr.eu>
+> Cc: Ralf Baechle <ralf@linux-mips.org>
+> Cc: Paul Burton <paulburton@kernel.org>
+> Cc: Nick Hu <nickhu@andestech.com>
+> Cc: Ley Foon Tan <ley.foon.tan@intel.com>
+> Cc: Jonas Bonn <jonas@southpole.se>
+> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Paul Walmsley <paul.walmsley@sifive.com>
+> Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+> Cc: Rich Felker <dalias@libc.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Guan Xuetao <gxt@pku.edu.cn>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Jeff Dike <jdike@addtoit.com>
+> Cc: Chris Zankel <chris@zankel.net>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: linux-alpha@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-snps-arc@lists.infradead.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-c6x-dev@linux-c6x.org
+> Cc: uclinux-h8-devel@lists.sourceforge.jp
+> Cc: linux-hexagon@vger.kernel.org
+> Cc: linux-ia64@vger.kernel.org
+> Cc: linux-m68k@lists.linux-m68k.org
+> Cc: linux-mips@vger.kernel.org
+> Cc: nios2-dev@lists.rocketboards.org
+> Cc: openrisc@lists.librecores.org
+> Cc: linux-parisc@vger.kernel.org
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: linux-riscv@lists.infradead.org
+> Cc: linux-s390@vger.kernel.org
+> Cc: linux-sh@vger.kernel.org
+> Cc: sparclinux@vger.kernel.org
+> Cc: linux-um@lists.infradead.org
+> Cc: linux-xtensa@linux-xtensa.org
+> Cc: linux-mm@kvack.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
-On Fri, Feb 28, 2020 at 03:51:01PM -0800, Matt Turner wrote:
-> On Sat, Feb 22, 2020 at 8:55 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> >
-> > On Mon, Apr 16, 2018 at 07:33:57AM -0700, Matt Turner wrote:
-> > > Commit f75b99d5a77d63f20e07bd276d5a427808ac8ef6 (PCI: Enforce bus
-> > > address limits in resource allocation) broke Alpha systems using
-> > > CONFIG_ALPHA_NAUTILUS. Alpha is 64-bit, but Nautilus systems use a
-> > > 32-bit AMD 751/761 chipset. arch/alpha/kernel/sys_nautilus.c maps PCI
-> > > into the upper addresses just below 4GB.
-> > >
-> > > I can get a working kernel by ifdef'ing out the code in
-> > > drivers/pci/bus.c:pci_bus_alloc_resource. We can't tie
-> > > PCI_BUS_ADDR_T_64BIT to ALPHA_NAUTILUS without breaking generic
-> > > kernels.
-> > >
-> > > How can we get Nautilus working again?
-> >
-> > I don't see a resolution in this thread, so I assume this is still
-> > broken?  Anybody have any more ideas?
-> 
-> Indeed, still broken.
-> 
-> I can add Kconfig logic to unselect ARCH_DMA_ADDR_T_64BIT if
-> ALPHA_NAUTILUS, but then generic kernels won't work on Nautilus. It
-> doesn't look like we have any way of opting out of
-> ARCH_DMA_ADDR_T_64BIT at runtime, and doing enough plumbing to make
-> that work is not worth it for such niche hardware. Maybe removing
-> Nautilus from the generic kernel build is what I should do until such
-> a time that we really fix this?
-> 
-> Or maybe I could put a hack in pci.c that more or less undoes
-> d56dbf5bab8c on Nautilus. #if defined CONFIG_ARCH_DMA_ADDR_T_64BIT &&
-> !defined SYS_NAUTILUS.
-> 
-> Or maybe I just need to take a weekend and try to understand the PCI
-> code, instead of applying patches I don't understand and praying :)
+Nit:
 
-I don't have any *useful* ideas, but I think we did screw up the PCI
-resource discovery when we started assuming that we know the host
-bridge apertures up front.
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index b0e53ef13ff1..7a764ae6ab68 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -342,6 +342,21 @@ extern unsigned int kobjsize(const void *objp);
+>  /* Bits set in the VMA until the stack is in its final location */
+>  #define VM_STACK_INCOMPLETE_SETUP	(VM_RAND_READ | VM_SEQ_READ)
+>  
+> +#define TASK_EXEC ((current->personality & READ_IMPLIES_EXEC) ? VM_EXEC : 0)
+> +
+> +/* Common data flag combinations */
+> +#define VM_DATA_FLAGS_TSK_EXEC	(VM_READ | VM_WRITE | TASK_EXEC | \
+> +				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+> +#define VM_DATA_FLAGS_NON_EXEC	(VM_READ | VM_WRITE | VM_MAYREAD | \
+> +				 VM_MAYWRITE | VM_MAYEXEC)
+> +#define VM_DATA_FLAGS_EXEC	(VM_READ | VM_WRITE | VM_EXEC | \
+> +				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+> +
+> +#ifndef VM_DATA_DEFAULT_FLAGS		/* arch can override this */
+> +#define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | VM_EXEC | \
+> +				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
 
-That's generally true for many ACPI and DT systems, but in principle,
-we *should* be able to enumerate the devices and learn their resource
-requirements before computing the required host bridge apertures and
-assigning the BARs.
+Should you use VM_DATA_FLAGS_EXEC here? Yeah one more macro to expand, but it's
+right above this.
+
+> +#endif
+> +
+>  #ifndef VM_STACK_DEFAULT_FLAGS		/* arch can override this */
+>  #define VM_STACK_DEFAULT_FLAGS VM_DATA_DEFAULT_FLAGS
+>  #endif
+> 
+
