@@ -1,341 +1,120 @@
-From: afzal mohammed <afzal.mohd.ma@gmail.com>
-Subject: [PATCH v3] alpha: Replace setup_irq() by request_irq()
-Date: Wed,  4 Mar 2020 06:22:07 +0530
-Message-ID: <20200304005209.5636-1-afzal.mohd.ma@gmail.com>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: Re: [RFC 1/3] mm/vma: Define a default value for
+ VM_DATA_DEFAULT_FLAGS
+Date: Wed, 4 Mar 2020 10:49:13 +0530
+Message-ID: <8b0f4c1b-f693-e139-4f66-ee4e1e88b95c@arm.com>
+References: <1583131666-15531-1-git-send-email-anshuman.khandual@arm.com>
+ <1583131666-15531-2-git-send-email-anshuman.khandual@arm.com>
+ <b243be54-7b5e-c6e9-fb68-46369d7d7aa4@suse.cz>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=kY07P+53xUJS5K39pYVmTvcfv0bGRcHchXuX5ohczHI=;
-        b=M+ZbxM4Y46IZ6+7NN/72CdsQ0Qw653UTLN9/uC/Xw0tBwAZZWoxuXfljKFQw16TGDA
-         7JYAs+Foz5CgejkUgI2K54dSucBGpXRYepBK1nyaE5bMTDF/hDqE7jCbJr5CmevZU5oX
-         ZC+CaQ6NQ7SeGrHxTX0rlWZwaX8cOlajT130m/Lptyd65NIK9y+H3L3Z75qAnVEUBIjI
-         EvuYzfeR0G2Pls1W4uNw/7rSSDhHt+bzYimO71gsZBeV6a+0iMAdo9xodRBg+Teu6WK2
-         VZhHr/eH3iKC+uIhW1qON31n0JbOGxiKHOlXP3Bqe3bI7UyPkhUa0VC9H/RdB4OVqpOT
-         O8XA==
+In-Reply-To: <b243be54-7b5e-c6e9-fb68-46369d7d7aa4@suse.cz>
+Content-Language: en-US
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: afzal mohammed <afzal.mohd.ma@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+To: Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org
+Cc: Richard Henderson <rth@twiddle.net>, Vineet Gupta <vgupta@synopsys.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Mark Salter <msalter@redhat.com>, Guo Ren <guoren@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Brian Cain <bcain@codeaurora.org>, Tony Luck <tony.luck@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Ralf Baechle <ralf@linux-mips.org>, Paul Burton <paulburton@kernel.org>, Nick Hu <nickhu@andestech.com>, Ley Foon Tan <ley.foon.tan@intel.com>, Jonas Bonn <jonas@southpole.se>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Michael Ellerman <mpe@ellerman.id.au>, Paul Walmsley <paul.walmsley@sifive.com>, Heiko Carstens <heiko.ca>
 
-request_irq() is preferred over setup_irq(). Invocations of setup_irq()
-occur after memory allocators are ready.
 
-Per tglx[1], setup_irq() existed in olden days when allocators were not
-ready by the time early interrupts were initialized.
 
-Hence replace setup_irq() by request_irq().
+On 03/03/2020 10:55 PM, Vlastimil Babka wrote:
+> On 3/2/20 7:47 AM, Anshuman Khandual wrote:
+>> There are many platforms with exact same value for VM_DATA_DEFAULT_FLAGS
+>> This creates a default value for VM_DATA_DEFAULT_FLAGS in line with the
+>> existing VM_STACK_DEFAULT_FLAGS. While here, also define some more macros
+>> with standard VMA access flag combinations that are used frequently across
+>> many platforms. Apart from simplification, this reduces code duplication
+>> as well.
+>>
+>> Cc: Richard Henderson <rth@twiddle.net>
+>> Cc: Vineet Gupta <vgupta@synopsys.com>
+>> Cc: Russell King <linux@armlinux.org.uk>
+>> Cc: Catalin Marinas <catalin.marinas@arm.com>
+>> Cc: Mark Salter <msalter@redhat.com>
+>> Cc: Guo Ren <guoren@kernel.org>
+>> Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
+>> Cc: Brian Cain <bcain@codeaurora.org>
+>> Cc: Tony Luck <tony.luck@intel.com>
+>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+>> Cc: Michal Simek <monstr@monstr.eu>
+>> Cc: Ralf Baechle <ralf@linux-mips.org>
+>> Cc: Paul Burton <paulburton@kernel.org>
+>> Cc: Nick Hu <nickhu@andestech.com>
+>> Cc: Ley Foon Tan <ley.foon.tan@intel.com>
+>> Cc: Jonas Bonn <jonas@southpole.se>
+>> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+>> Cc: Paul Walmsley <paul.walmsley@sifive.com>
+>> Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+>> Cc: Rich Felker <dalias@libc.org>
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Guan Xuetao <gxt@pku.edu.cn>
+>> Cc: Thomas Gleixner <tglx@linutronix.de>
+>> Cc: Jeff Dike <jdike@addtoit.com>
+>> Cc: Chris Zankel <chris@zankel.net>
+>> Cc: Andrew Morton <akpm@linux-foundation.org>
+>> Cc: linux-alpha@vger.kernel.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Cc: linux-snps-arc@lists.infradead.org
+>> Cc: linux-arm-kernel@lists.infradead.org
+>> Cc: linux-c6x-dev@linux-c6x.org
+>> Cc: uclinux-h8-devel@lists.sourceforge.jp
+>> Cc: linux-hexagon@vger.kernel.org
+>> Cc: linux-ia64@vger.kernel.org
+>> Cc: linux-m68k@lists.linux-m68k.org
+>> Cc: linux-mips@vger.kernel.org
+>> Cc: nios2-dev@lists.rocketboards.org
+>> Cc: openrisc@lists.librecores.org
+>> Cc: linux-parisc@vger.kernel.org
+>> Cc: linuxppc-dev@lists.ozlabs.org
+>> Cc: linux-riscv@lists.infradead.org
+>> Cc: linux-s390@vger.kernel.org
+>> Cc: linux-sh@vger.kernel.org
+>> Cc: sparclinux@vger.kernel.org
+>> Cc: linux-um@lists.infradead.org
+>> Cc: linux-xtensa@linux-xtensa.org
+>> Cc: linux-mm@kvack.org
+>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com
+> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+> 
+> Nit:
+> 
+>> diff --git a/include/linux/mm.h b/include/linux/mm.h
+>> index b0e53ef13ff1..7a764ae6ab68 100644
+>> --- a/include/linux/mm.h
+>> +++ b/include/linux/mm.h
+>> @@ -342,6 +342,21 @@ extern unsigned int kobjsize(const void *objp);
+>>  /* Bits set in the VMA until the stack is in its final location */
+>>  #define VM_STACK_INCOMPLETE_SETUP	(VM_RAND_READ | VM_SEQ_READ)
+>>  
+>> +#define TASK_EXEC ((current->personality & READ_IMPLIES_EXEC) ? VM_EXEC : 0)
+>> +
+>> +/* Common data flag combinations */
+>> +#define VM_DATA_FLAGS_TSK_EXEC	(VM_READ | VM_WRITE | TASK_EXEC | \
+>> +				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+>> +#define VM_DATA_FLAGS_NON_EXEC	(VM_READ | VM_WRITE | VM_MAYREAD | \
+>> +				 VM_MAYWRITE | VM_MAYEXEC)
+>> +#define VM_DATA_FLAGS_EXEC	(VM_READ | VM_WRITE | VM_EXEC | \
+>> +				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+>> +
+>> +#ifndef VM_DATA_DEFAULT_FLAGS		/* arch can override this */
+>> +#define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | VM_EXEC | \
+>> +				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+> 
+> Should you use VM_DATA_FLAGS_EXEC here? Yeah one more macro to expand, but it's
+> right above this.
 
-[1] https://lkml.kernel.org/r/alpine.DEB.2.20.1710191609480.1971@nanos
+Sure, can do that.
 
-Signed-off-by: afzal mohammed <afzal.mohd.ma@gmail.com>
----
-Hi alpha maintainers,
-
-if okay w/ this change, please consider taking it thr' your tree, else please
-let me know.
-
-Regards
-afzal
-
-Link to v2 & v1,
-[v2] https://lkml.kernel.org/r/cover.1582471508.git.afzal.mohd.ma@gmail.com
-[v1] https://lkml.kernel.org/r/cover.1581478323.git.afzal.mohd.ma@gmail.com
-
-v3:
- * Split out from tree wide series, as Thomas suggested to get it thr'
-	respective maintainers
- * Modify pr_err displayed in case of error
- * Re-arrange code & choose pr_err args as required to improve readability
- * Remove irrelevant parts from commit message & improve
- 
-v2:
- * Replace pr_err("request_irq() on %s failed" by
-           pr_err("%s: request_irq() failed"
- * Commit message massage
-
- arch/alpha/kernel/irq_alpha.c     | 29 +++++------------------------
- arch/alpha/kernel/irq_i8259.c     |  8 ++------
- arch/alpha/kernel/irq_impl.h      |  7 +------
- arch/alpha/kernel/irq_pyxis.c     |  3 ++-
- arch/alpha/kernel/sys_alcor.c     |  3 ++-
- arch/alpha/kernel/sys_cabriolet.c |  3 ++-
- arch/alpha/kernel/sys_eb64p.c     |  3 ++-
- arch/alpha/kernel/sys_marvel.c    |  2 +-
- arch/alpha/kernel/sys_miata.c     |  6 ++++--
- arch/alpha/kernel/sys_ruffian.c   |  3 ++-
- arch/alpha/kernel/sys_rx164.c     |  3 ++-
- arch/alpha/kernel/sys_sx164.c     |  3 ++-
- arch/alpha/kernel/sys_wildfire.c  |  7 ++-----
- arch/alpha/kernel/time.c          |  6 ++----
- 14 files changed, 31 insertions(+), 55 deletions(-)
-
-diff --git a/arch/alpha/kernel/irq_alpha.c b/arch/alpha/kernel/irq_alpha.c
-index da3e10d5f7fe..d4f136c7fb11 100644
---- a/arch/alpha/kernel/irq_alpha.c
-+++ b/arch/alpha/kernel/irq_alpha.c
-@@ -213,32 +213,13 @@ process_mcheck_info(unsigned long vector, unsigned long la_ptr,
-  * The special RTC interrupt type.  The interrupt itself was
-  * processed by PALcode, and comes in via entInt vector 1.
-  */
--
--struct irqaction timer_irqaction = {
--	.handler	= rtc_timer_interrupt,
--	.name		= "timer",
--};
--
- void __init
--init_rtc_irq(void)
-+init_rtc_irq(irqreturn_t handler)
- {
- 	irq_set_chip_and_handler_name(RTC_IRQ, &dummy_irq_chip,
- 				      handle_percpu_irq, "RTC");
--	setup_irq(RTC_IRQ, &timer_irqaction);
-+	if (!handler)
-+		handler = rtc_timer_interrupt;
-+	if (request_irq(RTC_IRQ, handler, 0, "timer", NULL))
-+		pr_err("Failed to register timer interrupt\n");
- }
--
--/* Dummy irqactions.  */
--struct irqaction isa_cascade_irqaction = {
--	.handler	= no_action,
--	.name		= "isa-cascade"
--};
--
--struct irqaction timer_cascade_irqaction = {
--	.handler	= no_action,
--	.name		= "timer-cascade"
--};
--
--struct irqaction halt_switch_irqaction = {
--	.handler	= no_action,
--	.name		= "halt-switch"
--};
-diff --git a/arch/alpha/kernel/irq_i8259.c b/arch/alpha/kernel/irq_i8259.c
-index 5d54c076a8ae..1dcf0d9038fd 100644
---- a/arch/alpha/kernel/irq_i8259.c
-+++ b/arch/alpha/kernel/irq_i8259.c
-@@ -82,11 +82,6 @@ struct irq_chip i8259a_irq_type = {
- void __init
- init_i8259a_irqs(void)
- {
--	static struct irqaction cascade = {
--		.handler	= no_action,
--		.name		= "cascade",
--	};
--
- 	long i;
- 
- 	outb(0xff, 0x21);	/* mask all of 8259A-1 */
-@@ -96,7 +91,8 @@ init_i8259a_irqs(void)
- 		irq_set_chip_and_handler(i, &i8259a_irq_type, handle_level_irq);
- 	}
- 
--	setup_irq(2, &cascade);
-+	if (request_irq(2, no_action, 0, "cascade", NULL))
-+		pr_err("Failed to request irq 2 (cascade)\n");
- }
- 
- 
-diff --git a/arch/alpha/kernel/irq_impl.h b/arch/alpha/kernel/irq_impl.h
-index 16f2b0276f3a..7ac58be4ccf4 100644
---- a/arch/alpha/kernel/irq_impl.h
-+++ b/arch/alpha/kernel/irq_impl.h
-@@ -21,14 +21,9 @@ extern void isa_no_iack_sc_device_interrupt(unsigned long);
- extern void srm_device_interrupt(unsigned long);
- extern void pyxis_device_interrupt(unsigned long);
- 
--extern struct irqaction timer_irqaction;
--extern struct irqaction isa_cascade_irqaction;
--extern struct irqaction timer_cascade_irqaction;
--extern struct irqaction halt_switch_irqaction;
--
- extern void init_srm_irqs(long, unsigned long);
- extern void init_pyxis_irqs(unsigned long);
--extern void init_rtc_irq(void);
-+extern void init_rtc_irq(irqreturn_t handler);
- 
- extern void common_init_isa_dma(void);
- 
-diff --git a/arch/alpha/kernel/irq_pyxis.c b/arch/alpha/kernel/irq_pyxis.c
-index a968b10e687d..27070b5bd33e 100644
---- a/arch/alpha/kernel/irq_pyxis.c
-+++ b/arch/alpha/kernel/irq_pyxis.c
-@@ -107,5 +107,6 @@ init_pyxis_irqs(unsigned long ignore_mask)
- 		irq_set_status_flags(i, IRQ_LEVEL);
- 	}
- 
--	setup_irq(16+7, &isa_cascade_irqaction);
-+	if (request_irq(16 + 7, no_action, 0, "isa-cascade", NULL))
-+		pr_err("Failed to register isa-cascade interrupt\n");
- }
-diff --git a/arch/alpha/kernel/sys_alcor.c b/arch/alpha/kernel/sys_alcor.c
-index e56efd5b855f..ce5430056f65 100644
---- a/arch/alpha/kernel/sys_alcor.c
-+++ b/arch/alpha/kernel/sys_alcor.c
-@@ -133,7 +133,8 @@ alcor_init_irq(void)
- 	init_i8259a_irqs();
- 	common_init_isa_dma();
- 
--	setup_irq(16+31, &isa_cascade_irqaction);
-+	if (request_irq(16 + 31, no_action, 0, "isa-cascade", NULL))
-+		pr_err("Failed to register isa-cascade interrupt\n");
- }
- 
- 
-diff --git a/arch/alpha/kernel/sys_cabriolet.c b/arch/alpha/kernel/sys_cabriolet.c
-index 10bc46a4ec40..0aa6a27d0e2f 100644
---- a/arch/alpha/kernel/sys_cabriolet.c
-+++ b/arch/alpha/kernel/sys_cabriolet.c
-@@ -112,7 +112,8 @@ common_init_irq(void (*srm_dev_int)(unsigned long v))
- 	}
- 
- 	common_init_isa_dma();
--	setup_irq(16+4, &isa_cascade_irqaction);
-+	if (request_irq(16 + 4, no_action, 0, "isa-cascade", NULL))
-+		pr_err("Failed to register isa-cascade interrupt\n");
- }
- 
- #ifndef CONFIG_ALPHA_PC164
-diff --git a/arch/alpha/kernel/sys_eb64p.c b/arch/alpha/kernel/sys_eb64p.c
-index 5251937ec1b4..1cdfe55fb987 100644
---- a/arch/alpha/kernel/sys_eb64p.c
-+++ b/arch/alpha/kernel/sys_eb64p.c
-@@ -123,7 +123,8 @@ eb64p_init_irq(void)
- 	}
- 
- 	common_init_isa_dma();
--	setup_irq(16+5, &isa_cascade_irqaction);
-+	if (request_irq(16 + 5, no_action, 0, "isa-cascade", NULL))
-+		pr_err("Failed to register isa-cascade interrupt\n");
- }
- 
- /*
-diff --git a/arch/alpha/kernel/sys_marvel.c b/arch/alpha/kernel/sys_marvel.c
-index 8d34cf6e002a..533899a4a1a1 100644
---- a/arch/alpha/kernel/sys_marvel.c
-+++ b/arch/alpha/kernel/sys_marvel.c
-@@ -397,7 +397,7 @@ marvel_init_pci(void)
- static void __init
- marvel_init_rtc(void)
- {
--	init_rtc_irq();
-+	init_rtc_irq(NULL);
- }
- 
- static void
-diff --git a/arch/alpha/kernel/sys_miata.c b/arch/alpha/kernel/sys_miata.c
-index 6fa07dc5339d..702292af2225 100644
---- a/arch/alpha/kernel/sys_miata.c
-+++ b/arch/alpha/kernel/sys_miata.c
-@@ -81,8 +81,10 @@ miata_init_irq(void)
- 	init_pyxis_irqs(0x63b0000);
- 
- 	common_init_isa_dma();
--	setup_irq(16+2, &halt_switch_irqaction);	/* SRM only? */
--	setup_irq(16+6, &timer_cascade_irqaction);
-+	if (request_irq(16 + 2, no_action, 0, "halt-switch", NULL))
-+		pr_err("Failed to register halt-switch interrupt\n");
-+	if (request_irq(16 + 6, no_action, 0, "timer-cascade", NULL))
-+		pr_err("Failed to register timer-cascade interrupt\n");
- }
- 
- 
-diff --git a/arch/alpha/kernel/sys_ruffian.c b/arch/alpha/kernel/sys_ruffian.c
-index 07830cccabf9..d33074011960 100644
---- a/arch/alpha/kernel/sys_ruffian.c
-+++ b/arch/alpha/kernel/sys_ruffian.c
-@@ -82,7 +82,8 @@ ruffian_init_rtc(void)
- 	outb(0x31, 0x42);
- 	outb(0x13, 0x42);
- 
--	setup_irq(0, &timer_irqaction);
-+	if (request_irq(0, rtc_timer_interrupt, 0, "timer", NULL))
-+		pr_err("Failed to request irq 0 (timer)\n");
- }
- 
- static void
-diff --git a/arch/alpha/kernel/sys_rx164.c b/arch/alpha/kernel/sys_rx164.c
-index a3db719d3c38..4d85eaeb44aa 100644
---- a/arch/alpha/kernel/sys_rx164.c
-+++ b/arch/alpha/kernel/sys_rx164.c
-@@ -106,7 +106,8 @@ rx164_init_irq(void)
- 	init_i8259a_irqs();
- 	common_init_isa_dma();
- 
--	setup_irq(16+20, &isa_cascade_irqaction);
-+	if (request_irq(16 + 20, no_action, 0, "isa-cascade", NULL))
-+		pr_err("Failed to register isa-cascade interrupt\n");
- }
- 
- 
-diff --git a/arch/alpha/kernel/sys_sx164.c b/arch/alpha/kernel/sys_sx164.c
-index 1ec638a2746a..17cc203176c8 100644
---- a/arch/alpha/kernel/sys_sx164.c
-+++ b/arch/alpha/kernel/sys_sx164.c
-@@ -54,7 +54,8 @@ sx164_init_irq(void)
- 	else
- 		init_pyxis_irqs(0xff00003f0000UL);
- 
--	setup_irq(16+6, &timer_cascade_irqaction);
-+	if (request_irq(16 + 6, no_action, 0, "timer-cascade", NULL))
-+		pr_err("Failed to register timer-cascade interrupt\n");
- }
- 
- /*
-diff --git a/arch/alpha/kernel/sys_wildfire.c b/arch/alpha/kernel/sys_wildfire.c
-index 8e64052811ab..2191bde161fd 100644
---- a/arch/alpha/kernel/sys_wildfire.c
-+++ b/arch/alpha/kernel/sys_wildfire.c
-@@ -156,10 +156,6 @@ static void __init
- wildfire_init_irq_per_pca(int qbbno, int pcano)
- {
- 	int i, irq_bias;
--	static struct irqaction isa_enable = {
--		.handler	= no_action,
--		.name		= "isa_enable",
--	};
- 
- 	irq_bias = qbbno * (WILDFIRE_PCA_PER_QBB * WILDFIRE_IRQ_PER_PCA)
- 		 + pcano * WILDFIRE_IRQ_PER_PCA;
-@@ -198,7 +194,8 @@ wildfire_init_irq_per_pca(int qbbno, int pcano)
- 		irq_set_status_flags(i + irq_bias, IRQ_LEVEL);
- 	}
- 
--	setup_irq(32+irq_bias, &isa_enable);
-+	if (request_irq(32 + irq_bias, no_action, 0, "isa_enable", NULL))
-+		pr_err("Failed to register isa_enable interrupt\n");
- }
- 
- static void __init
-diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
-index 0069360697ee..4d01c392ab14 100644
---- a/arch/alpha/kernel/time.c
-+++ b/arch/alpha/kernel/time.c
-@@ -242,7 +242,7 @@ common_init_rtc(void)
- 	outb(0x31, 0x42);
- 	outb(0x13, 0x42);
- 
--	init_rtc_irq();
-+	init_rtc_irq(NULL);
- }
- 
- 
-@@ -396,9 +396,7 @@ time_init(void)
- 	if (alpha_using_qemu) {
- 		clocksource_register_hz(&qemu_cs, NSEC_PER_SEC);
- 		init_qemu_clockevent();
--
--		timer_irqaction.handler = qemu_timer_interrupt;
--		init_rtc_irq();
-+		init_rtc_irq(qemu_timer_interrupt);
- 		return;
- 	}
- 
--- 
-2.25.1
-
+> 
+>> +#endif
+>> +
+>>  #ifndef VM_STACK_DEFAULT_FLAGS		/* arch can override this */
+>>  #define VM_STACK_DEFAULT_FLAGS VM_DATA_DEFAULT_FLAGS
+>>  #endif
+>>
+> 
+> 
+> 
