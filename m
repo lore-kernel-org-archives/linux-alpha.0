@@ -1,39 +1,33 @@
 From: Joe Perches <joe@perches.com>
 Subject: [PATCH -next 000/491] treewide: use fallthrough;
 Date: Tue, 10 Mar 2020 21:51:14 -0700
-Message-ID: <cover.1583896344.git.joe__20982.1055804909$1583921422$gmane$org@perches.com>
+Message-ID: <cover.1583896344.git.joe__34513.1345022068$1583953574$gmane$org@perches.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kgdb-bugreport-bounces@lists.sourceforge.net>
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-Id:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=DaLTQL14bUGUnztoo9skiJRe0CFMk1ZtLZw+mj7Mfc0=; b=eaBukBMZMl9Fj5cROYEAzG+E+7
- WWCRxWe1xc3GIwexQLPbvnXyWYrQKJMBas6wDfglsr03dmIwd8QSXcJTOqkHjzvNhBUluHiS6fqco
- IP5yL1D/bRfYpq82I/cbK6pL/6wjsBgsd/KomrfpFCno6Y16CHMK2xJRBZkctQ4IHuIY=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From
- :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=DaLTQL14bUGUnztoo9skiJRe0CFMk1ZtLZw+mj7Mfc0=; b=f
- O1FGbLTLqp4lgOyXrkjbNzclYdfbXQmBh7M4ju3q24DAtLKj7LRkQrMWtOGa1Uhautha7qezhtH00
- H+EZJoOQnjliKXHnLZ4rprsX8fEoNDvelzJxFrcApmoKvoMO9c8vEe942+X9JbJsUpkjk8ZmJzP9Y
- kfi5JSm2cc1QI/lg=;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To
+	:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
+	List-Owner; bh=N1LgYmd3D5AJH4qHT2b88yiXhB0gCNECPQC7jxEJhk0=; b=atYNWLlYXo5cM+
+	NkNnfaCybzkNunwzR1C4SBh8z/IMAjZ/Fr/QXP2RPCn3NKw0Lm2Oiib54V1NHBBvPOBcFfcfXrh05
+	4CR1InHcZcomJBdUA+UhK3WbT1yAyr2OoZkne+H8ZHYpNb9igYXa0tlgSFe3XteeEK+qTRHwkhAfP
+	AnvKuJ3Aw9I+SX2WuAjOcrhJF2/aBgf3PHy888ZMw+7rqqToIgI2yr6yBAi5cySxs5Y0rfEYIgTDr
+	TlT1Bz2oyfQnq75tjBOyQPG5Z5HWH/vFNvm0PJBMTIi+MExnIpaN7fOzLbRduwwp2dBd2NAUjXL4v
+	9ovBUXPaweCjapiKDqCw==;
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/options/kgdb-bugreport>, 
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=kgdb-bugreport>
-List-Post: <mailto:kgdb-bugreport@lists.sourceforge.net>
-List-Help: <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/kgdb-bugreport>, 
- <mailto:kgdb-bugreport-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: kgdb-bugreport-bounces@lists.sourceforge.net
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org
 To: linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org, kvmarm@lists.cs.columbia.edu, linux-csky@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, oprofile-list@lists.sf.net, kvm-ppc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, bpf@vger.kernel.org, linux-edac@vger.kernel.org, linux-block@vger.kernel.org, linux-crypto@vger.kernel.org, linux-acpi@vger.kernel.org, devel@acpica.org, linux-ide@vger.kernel.org, linux-atm-general@lists.sourceforge.net, drbd-dev@lists.linbit.com, ceph-devel@vger.kernel.org, xen-devel@lists.xenproject.org, linux-bluetooth@vger.kernel.org, openipmi-developer@lists.sourceforge.net, linux-samsung-soc@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-kernel@axis.com, dmaen
 Cc: uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org, brcm80211-dev-list.pdl@broadcom.com, devel@driverdev.osuosl.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-sh@vger.kernel.org, oss-drivers@netronome.com, linux-hexagon@vger.kernel.org, bridge@lists.linux-foundation.org, linux-um@lists.infradead.org, qat-linux@intel.com, brcm80211-dev-list@cypress.com, linux-wpan@vger.kernel.org, openrisc@lists.librecores.org, linux-alpha@vger.kernel.org, linux-i3c@lists.infradead.org, linux-snps-arc@lists.infradead.org, freedreno@lists.freedesktop.org, linux-clk@vger.kernel.org, ocfs2-devel@oss.oracle.com
 
