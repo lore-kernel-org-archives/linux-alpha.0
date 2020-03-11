@@ -1,21 +1,30 @@
 From: Joe Perches <joe@perches.com>
 Subject: [PATCH -next 000/491] treewide: use fallthrough;
 Date: Tue, 10 Mar 2020 21:51:14 -0700
-Message-ID: <cover.1583896344.git.joe__22596.9458626182$1583904842$gmane$org@perches.com>
+Message-ID: <cover.1583896344.git.joe__6716.22462557338$1583907585$gmane$org@perches.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Return-path: <alsa-devel-bounces@alsa-project.org>
+DKIM-Filter: OpenDKIM Filter v2.11.0 alsa0.perex.cz 88C8C1670
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=alsa-project.org;
+	s=default; t=1583907572;
+	bh=vXSfXeDlFfM2LeiGxRs2wBbW/tqq3MB8+caiUjn9qVo=;
+	h=From:To:Subject:Date:Cc:List-Id:List-Unsubscribe:List-Archive:
+	 List-Post:List-Help:List-Subscribe:From;
+	b=On58qDZf2yySzJac+TfqTXSnf7AFTjY7PczgZe0okPwQDxGN4sU38olGnUscum65x
+	 K7xmaJB/gBBIpmHEIQdmYw2554cGQj262f5sAixbQl71tG7q8dLqFWHxr/emL/KHJu
+	 BhYxfbwEclsd5yO13U31YO+NZ2GsoykDp9M8GexE=
+DKIM-Filter: OpenDKIM Filter v2.11.0 alsa1.perex.cz 2B439F800BE
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+List-Unsubscribe: <https://mailman.alsa-project.org/mailman/options/alsa-devel>, 
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <https://mailman.alsa-project.org/mailman/listinfo/alsa-devel>, 
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: "Alsa-devel" <alsa-devel-bounces@alsa-project.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org, kvmarm@lists.cs.columbia.edu, linux-csky@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, oprofile-list@lists.sf.net, kvm-ppc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, bpf@vger.kernel.org, linux-edac@vger.kernel.org, linux-block@vger.kernel.org, linux-crypto@vger.kernel.org, linux-acpi@vger.kernel.org, devel@acpica.org, linux-ide@vger.kernel.org, linux-atm-general@lists.sourceforge.net, drbd-dev@lists.linbit.com, ceph-devel@vger.kernel.org, xen-devel@lists.xenproject.org, linux-bluetooth@vger.kernel.org, openipmi-developer@lists.sourceforge.net, linux-samsung-soc@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-kernel@axis.com, dmaen
 Cc: uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org, brcm80211-dev-list.pdl@broadcom.com, devel@driverdev.osuosl.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-sh@vger.kernel.org, oss-drivers@netronome.com, linux-hexagon@vger.kernel.org, bridge@lists.linux-foundation.org, linux-um@lists.infradead.org, qat-linux@intel.com, brcm80211-dev-list@cypress.com, linux-wpan@vger.kernel.org, openrisc@lists.librecores.org, linux-alpha@vger.kernel.org, linux-i3c@lists.infradead.org, linux-snps-arc@lists.infradead.org, freedreno@lists.freedesktop.org, linux-clk@vger.kernel.org, ocfs2-devel@oss.oracle.com
