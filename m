@@ -1,39 +1,22 @@
 From: Joe Perches <joe@perches.com>
 Subject: [PATCH -next 000/491] treewide: use fallthrough;
 Date: Tue, 10 Mar 2020 21:51:14 -0700
-Message-ID: <cover.1583896344.git.joe__15960.0272470684$1583904250$gmane$org@perches.com>
+Message-ID: <cover.1583896344.git.joe__22596.9458626182$1583904842$gmane$org@perches.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-f2fs-devel-bounces@lists.sourceforge.net>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=Content-Transfer-Encoding:MIME-Version:Message-Id:
- Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=DaLTQL14bUGUnztoo9skiJRe0CFMk1ZtLZw+mj7Mfc0=; b=eaBukBMZMl9Fj5cROYEAzG+E+7
- WWCRxWe1xc3GIwexQLPbvnXyWYrQKJMBas6wDfglsr03dmIwd8QSXcJTOqkHjzvNhBUluHiS6fqco
- IP5yL1D/bRfYpq82I/cbK6pL/6wjsBgsd/KomrfpFCno6Y16CHMK2xJRBZkctQ4IHuIY=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From
- :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
- References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
- List-Owner:List-Archive; bh=DaLTQL14bUGUnztoo9skiJRe0CFMk1ZtLZw+mj7Mfc0=; b=f
- O1FGbLTLqp4lgOyXrkjbNzclYdfbXQmBh7M4ju3q24DAtLKj7LRkQrMWtOGa1Uhautha7qezhtH00
- H+EZJoOQnjliKXHnLZ4rprsX8fEoNDvelzJxFrcApmoKvoMO9c8vEe942+X9JbJsUpkjk8ZmJzP9Y
- kfi5JSm2cc1QI/lg=;
+Content-Transfer-Encoding: 8bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/options/linux-f2fs-devel>, 
- <mailto:linux-f2fs-devel-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=linux-f2fs-devel>
-List-Post: <mailto:linux-f2fs-devel@lists.sourceforge.net>
-List-Help: <mailto:linux-f2fs-devel-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel>, 
- <mailto:linux-f2fs-devel-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: linux-f2fs-devel-bounces@lists.sourceforge.net
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Type: text/plain; charset="us-ascii"
 To: linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org, kvmarm@lists.cs.columbia.edu, linux-csky@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, oprofile-list@lists.sf.net, kvm-ppc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, bpf@vger.kernel.org, linux-edac@vger.kernel.org, linux-block@vger.kernel.org, linux-crypto@vger.kernel.org, linux-acpi@vger.kernel.org, devel@acpica.org, linux-ide@vger.kernel.org, linux-atm-general@lists.sourceforge.net, drbd-dev@lists.linbit.com, ceph-devel@vger.kernel.org, xen-devel@lists.xenproject.org, linux-bluetooth@vger.kernel.org, openipmi-developer@lists.sourceforge.net, linux-samsung-soc@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-kernel@axis.com, dmaen
 Cc: uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org, brcm80211-dev-list.pdl@broadcom.com, devel@driverdev.osuosl.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-sh@vger.kernel.org, oss-drivers@netronome.com, linux-hexagon@vger.kernel.org, bridge@lists.linux-foundation.org, linux-um@lists.infradead.org, qat-linux@intel.com, brcm80211-dev-list@cypress.com, linux-wpan@vger.kernel.org, openrisc@lists.librecores.org, linux-alpha@vger.kernel.org, linux-i3c@lists.infradead.org, linux-snps-arc@lists.infradead.org, freedreno@lists.freedesktop.org, linux-clk@vger.kernel.org, ocfs2-devel@oss.oracle.com
 
@@ -2535,3 +2518,4 @@ Joe Perches (491):
 
 -- 
 2.24.0
+
