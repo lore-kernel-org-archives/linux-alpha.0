@@ -1,35 +1,35 @@
-From: Joe Perches <joe@perches.com>
+From: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
 Subject: [PATCH -next 000/491] treewide: use fallthrough;
 Date: Tue, 10 Mar 2020 21:51:14 -0700
-Message-ID: <cover.1583896344.git.joe@perches.com>
+Message-ID: <cover.1583896344.git.joe__36277.0107503579$1583903230$gmane$org@perches.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <ath10k-bounces+gldad-ath10k=m.gmane-mx.org@lists.infradead.org>
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane-mx.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
 	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To
 	:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
 	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
-	List-Owner; bh=nWtDMAnge6yPZ+vgMh1rA6qXp1jzMZ9Jstb/BYSP3Qc=; b=APhSID0aeCNCMn
-	JgG1VFidKaGGznTp6UUcKQK1t91Z+On2iQzR1fzkfQwnWRfsuMEvtStNHrVpA9V0EPuvlxiaYnh4l
-	4FUPYcj4xjn3OsAKp3nPX1VR40IMh52+P3u2LF3wsBhXKvJcSb7XMLhv7k/8+Aotr3qTZR8PHm8hT
-	BdirYNzkN6lId17odYwlouqEPRkbA8uZ5mG31Y0DB/4pcfZpuReWOk/HutP03AhLWmqWJJPUl2t3h
-	9dPWK047gG3M/H3sqcde2ARmXbkywb+BRRe+dI4hVfhwRMNBNzDWW9GmczfqTqCyO82KG2uhNSh27
-	b+XvuaFBq8k8Rlrvx48w==;
+	List-Owner; bh=OiPpyyzeCiWkUr/LuS5IIKRHrk4bMMuDUCEbyThPTXo=; b=cTPfCMG6jrAiNm
+	76F1ISNhtn5xdZ8GCDg2ZssP+KyeBX6JUIbOFYtzBbEeUGeJmKOagVav3LnhLlhL1Of7Uu1ufv0hf
+	aQQTd/xnUrCJE6m06PzrSR0bLSnEEjm0QdX1QTkdU1Pstog2O8bl1OUqoBNTMwq0yrNEIy8Z3tz3H
+	PmoQmzz/Dj8xIKGCWo8QZ9+EBdb2i7QdXtlMbUrK1jDekXSruSfFZl49EB64+rDUl/hUm4lOr6wn9
+	2vTWHRo66SopXA15WO28bAbXQ7RUjHackGHky4Uzxyhvz/D3bi3NGe4Tujkgvk/0Ll6IBWIzDH2TK
+	DuCulIZ5abV8+ok7i3fw==;
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/ath10k>,
- <mailto:ath10k-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/ath10k/>
-List-Post: <mailto:ath10k@lists.infradead.org>
-List-Help: <mailto:ath10k-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/ath10k>,
- <mailto:ath10k-request@lists.infradead.org?subject=subscribe>
-Sender: "ath10k" <ath10k-bounces@lists.infradead.org>
-Errors-To: ath10k-bounces+gldad-ath10k=m.gmane-mx.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-tegra@vger.kernel.org, kvmarm@lists.cs.columbia.edu, linux-csky@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, oprofile-list@lists.sf.net, kvm-ppc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, netdev@vger.kernel.org, bpf@vger.kernel.org, linux-edac@vger.kernel.org, linux-block@vger.kernel.org, linux-crypto@vger.kernel.org, linux-acpi@vger.kernel.org, devel@acpica.org, linux-ide@vger.kernel.org, linux-atm-general@lists.sourceforge.net, drbd-dev@lists.linbit.com, ceph-devel@vger.kernel.org, xen-devel@lists.xenproject.org, linux-bluetooth@vger.kernel.org, openipmi-developer@lists.sourceforge.net, linux-samsung-soc@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-kernel@axis.com, dmaen
-Cc: uclinux-h8-devel@lists.sourceforge.jp, linux-xtensa@linux-xtensa.org, brcm80211-dev-list.pdl@broadcom.com, devel@driverdev.osuosl.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-sh@vger.kernel.org, oss-drivers@netronome.com, linux-hexagon@vger.kernel.org, bridge@lists.linux-foundation.org, linux-um@lists.infradead.org, qat-linux@intel.com, brcm80211-dev-list@cypress.com, linux-wpan@vger.kernel.org, openrisc@lists.librecores.org, linux-alpha@vger.kernel.org, linux-i3c@lists.infradead.org, linux-snps-arc@lists.infradead.org, freedreno@lists.freedesktop.org, linux-clk@vger.kernel.org, ocfs2-devel@oss.oracle.com
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>, 
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>, 
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane-mx.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, linux-csky-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, oprofile-list-TtF/mJH4Jtrk1uMJSBkQmQ@public.gmane.org, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-riscv-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bpf-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, linux-ide-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-atm-general-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, drbd-dev-cunTk1MwBs8qoQakbn7OcQ@public.gmane.org, ceph-devel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-bluetooth-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-VrBV9hrLPhE@public.gmane.org, dmaen
+Cc: uclinux-h8-devel-5NWGOfrQmneRv+LV9MX5uooqe+aC9MnS@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, brcm80211-dev-list.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, oss-drivers-wFxRvT7yatFl57MIdRCFDg@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bridge-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, qat-linux-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, brcm80211-dev-list-+wT8y+m8/X5BDgjK7y7TUQ@public.gmane.org, linux-wpan-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i3c-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ocfs2-devel-N0ozoZBvEnrZJqsBc5GL+g@public.gmane.org
 
 There is a new fallthrough pseudo-keyword macro that can be used
 to replace the various /* fallthrough */ style comments that are
@@ -179,7 +179,7 @@ $section_header: Use fallthrough;
 Convert the various uses of fallthrough comments to fallthrough;
 
 Done via script
-Link: https://lore.kernel.org/lkml/b56602fcf79f849e733e7b521bb0e17895d390fa.1582230379.git.joe@perches.com/
+Link: https://lore.kernel.org/lkml/b56602fcf79f849e733e7b521bb0e17895d390fa.1582230379.git.joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org/
 EOF
 ;
     close $fh;
