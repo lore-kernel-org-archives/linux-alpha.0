@@ -1,47 +1,62 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: Some Alphas broken by f75b99d5a77d (PCI: Enforce bus address
- limits in resource allocation)
-Date: Wed, 11 Mar 2020 21:28:33 -0700
-Message-ID: <CAEdQ38HhKq9L3UF=Hapmx-BJ7eLLRfo26ZxFUFqXx+ZEY0Axxg@mail.gmail.com>
-References: <CAEdQ38EzZfUJA-8zg-DgczYTwkxqFL-AThxu0_fC2V-GkXGi2Q@mail.gmail.com>
- <20200302224732.GA175863@google.com> <20200308153004.GA17675@mail.rc.ru> <CAEdQ38G1YhEoQUEpDT6k_uwodxTOs=BYigm_VQaDDdfaoXM6Wg@mail.gmail.com>
+From: Hans Verkuil <hverkuil@xs4all.nl>
+Subject: Re: [RESEND PATCH v2 8/9] media: fsl-viu: Constify ioreadX() iomem
+ argument (as in generic implementation)
+Date: Thu, 12 Mar 2020 09:01:22 +0100
+Message-ID: <1c4a11b5-5ca6-7555-de3c-ff30f707fac7__17982.2107589402$1584000114$gmane$org@xs4all.nl>
+References: <20200219175007.13627-1-krzk@kernel.org>
+ <20200219175007.13627-9-krzk@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kc0+yDmV56P7833fL1rNbt5FwQv4lowS4XpMZL4q1F4=;
-        b=Qz/oWCDY3paePBJTYkBCuvoDZKmyiUazg+vNtKS1XBhZnFKfyrFGYXNm20mTcKaA5W
-         Ztf911RY6ba21g87k6lg4fdj7NS5jdiLn59gzO7qqafDkchLI6+S6FASYlad3XULJokr
-         lXrvIPqn7WQb8VJ+RI+6SsE90UogzPjYEfD9cni2WiF2eECnEvbW+gzXXsJibmeDo3Ty
-         IcnUfMiTaC/9qvaVdYkEyPUYAhPT5yZBkjGqLCxj5R+yzD10lTkECEp7QZ+6R07dxv90
-         XCo8+z+vkwnZPaKTu7mDBHjPjH2YrsLI3TckiYnJ7WNOSaCTVr5ukIximj+m7tsM6bNi
-         zNkQ==
-In-Reply-To: <CAEdQ38G1YhEoQUEpDT6k_uwodxTOs=BYigm_VQaDDdfaoXM6Wg@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xs4all.nl; s=s1;
+        t=1584000098; bh=rlvXrsquCgOAoL6m3j4naIDiZk45jPg5qzfaHkH6ylc=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type:From:
+         Subject;
+        b=S5pQfgbOLIHhQdw0W7sV5AZx/O5rbzeyPt7bFpTNkwgO8Qy0BKq+Rvjmju5L2B424
+         ts5RJaST/5DSO90woF88XEKoVSWzdXA1+cYgXtZ9lrnSZ/voNQNCc/kNcDWB/9eH8q
+         oukXvG+APHr07xXyoiRVnfNAIu0NoRyJO4gRl7kMox10FOdeAVa4C86hGVXEgWIL1z
+         DHpeiiUb+PUHWBRHnftozp83wtSCPlDu/KR0wA5Tus7873ErMhZjEh0V/cX/LLr9QJ
+         GcvLzWg4JtL3YxsnzXI28YMgDuIhwtNvDRGPXfnFqtov7CBrtU3S5QfdwsKM1K25I6
+         WU1k8NIIoVM6w==
+In-Reply-To: <20200219175007.13627-9-krzk@kernel.org>
+Content-Language: en-US
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Yinghai Lu <yinghai@kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To: Krzysztof Kozlowski <krzk@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexey Brodkin <abrodkin@synopsys.com>, Vineet Gupta <vgupta@synopsys.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Dave Airlie <airlied@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Ben Skeggs <bskeggs@redhat.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Jiri Slaby <jirislaby@gmail.com>, Nick
 
-On Sun, Mar 8, 2020 at 12:41 PM Matt Turner <mattst88@gmail.com> wrote:
->
-> On Sun, Mar 8, 2020 at 8:30 AM Ivan Kokshaysky <ink@jurassic.park.msu.ru> wrote:
-> > Wholeheartedly agree. In fact, changes to generic PCI code required
-> > for proper root bus sizing are quite minimal now since we have
-> > struct pci_host_bridge. It's mostly additional checks for bus->self
-> > being NULL (as it normally is on the root bus) in the
-> > __pci_bus_size_bridges() path, plus new bridge->size_windows flag.
-> > See patch below (tested on UP1500). Note that on irongate we're
-> > only interested in calculation of non-prefetchable PCI memory aperture,
-> > but one can do the same for io and prefetchable memory as well.
->
-> Thanks Ivan! The patch works for me as well.
+On 2/19/20 6:50 PM, Krzysztof Kozlowski wrote:
+> The ioreadX() helpers have inconsistent interface.  On some architectures
+> void *__iomem address argument is a pointer to const, on some not.
+> 
+> Implementations of ioreadX() do not modify the memory under the address
+> so they can be converted to a "const" version for const-safety and
+> consistency among architectures.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-Bjorn, what would you like the next step to be?
+Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-If the PCI bits are fine with you, I assume you'd like them to go
-through your tree, etc? I'm perfectly happy to see the alpha bits go
-through the same tree.
+Regards,
+
+	Hans
+
+> ---
+>  drivers/media/platform/fsl-viu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/platform/fsl-viu.c b/drivers/media/platform/fsl-viu.c
+> index 81a8faedbba6..991d9dc82749 100644
+> --- a/drivers/media/platform/fsl-viu.c
+> +++ b/drivers/media/platform/fsl-viu.c
+> @@ -34,7 +34,7 @@
+>  /* Allow building this driver with COMPILE_TEST */
+>  #if !defined(CONFIG_PPC) && !defined(CONFIG_MICROBLAZE)
+>  #define out_be32(v, a)	iowrite32be(a, (void __iomem *)v)
+> -#define in_be32(a)	ioread32be((void __iomem *)a)
+> +#define in_be32(a)	ioread32be((const void __iomem *)a)
+>  #endif
+>  
+>  #define BUFFER_TIMEOUT		msecs_to_jiffies(500)  /* 0.5 seconds */
+> 
+
