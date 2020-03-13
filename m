@@ -1,31 +1,48 @@
-From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Subject: Re: Some Alphas broken by f75b99d5a77d (PCI: Enforce bus address
- limits in resource allocation)
-Date: Thu, 12 Mar 2020 20:49:58 +0000
-Message-ID: <20200312204958.GA20087@mail.rc.ru>
-References: <CAEdQ38HhKq9L3UF=Hapmx-BJ7eLLRfo26ZxFUFqXx+ZEY0Axxg@mail.gmail.com>
- <20200312201900.GA174932@google.com>
+From: afzal mohammed <afzal.mohd.ma@gmail.com>
+Subject: Re: [PATCH v4] alpha: Replace setup_irq() by request_irq()
+Date: Fri, 13 Mar 2020 18:18:21 +0530
+Message-ID: <20200313124821.GD7225@afzalpc>
+References: <20200304005209.5636-1-afzal.mohd.ma@gmail.com>
+ <20200305130843.17989-1-afzal.mohd.ma@gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=vfLtNZ0VvBNo56dvGGqSEkX8wp84sKqijejN4pOTelU=;
+        b=ah/XXi/BK3w0arbvueMFncz4R99pp3f7rtrPBcxJUI8/No6t86N70GsKqhuHhaLRtW
+         4mKx/0f98i4FCrt/UVZxNTfMoBE7uLouFwXE1i+l67yIV4gE3q4G/dceAj07Bht9ePuM
+         qoBpi3Zmm+KDfdZbxnYZKQr5sOfc/E7tUp5mhGs7Wq/Y3ISAKidHotL7ncr4fibWIydy
+         I85UJhQ04RVQwTI/MWCfe8g4FBjig0cEwc4fJ/aiE9zCW6rO2PLfbaNucHGD2eK99wyZ
+         Q6iO5e+tfAG2GwlkJ1CPp8Uo2l9LAJdLIHG4i0TMaKKtQloP7GiMqOIvQDsPhaeaGIlJ
+         IeFg==
 Content-Disposition: inline
-In-Reply-To: <20200312201900.GA174932@google.com>
+In-Reply-To: <20200305130843.17989-1-afzal.mohd.ma@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Matt Turner <mattst88@gmail.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 03:19:00PM -0500, Bjorn Helgaas wrote:
-> On Wed, Mar 11, 2020 at 09:28:33PM -0700, Matt Turner wrote:
-> > If the PCI bits are fine with you, I assume you'd like them to go
-> > through your tree, etc? I'm perfectly happy to see the alpha bits go
-> > through the same tree.
+Hi Richard Henderson, Ivan Kokshaysky, Matt Turner, 
+
+On Thu, Mar 05, 2020 at 06:38:41PM +0530, afzal mohammed wrote:
+> request_irq() is preferred over setup_irq(). Invocations of setup_irq()
+> occur after memory allocators are ready.
 > 
-> Yes, I think this looks reasonable.  We should get this posted in the
-> usual format (commit log, signed-off-by, etc), and then get it into
-> -next to see how it flies.
+> Per tglx[1], setup_irq() existed in olden days when allocators were not
+> ready by the time early interrupts were initialized.
+> 
+> Hence replace setup_irq() by request_irq().
+> 
+> [1] https://lkml.kernel.org/r/alpine.DEB.2.20.1710191609480.1971@nanos
+> 
+> Signed-off-by: afzal mohammed <afzal.mohd.ma@gmail.com>
 
-Ok, I'll do it this weekend.
+If this patch is okay, please consider acking it so as to take it via
+tglx.
 
-Ivan.
+Regards
+afzal
