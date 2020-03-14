@@ -1,53 +1,41 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH v4] alpha: Replace setup_irq() by request_irq()
-Date: Fri, 13 Mar 2020 10:38:18 -0700
-Message-ID: <CAEdQ38E2VEK=XZySOdm=zPj6dAOf0FuzuS39Y+AYTFVctB6zuw@mail.gmail.com>
-References: <20200304005209.5636-1-afzal.mohd.ma@gmail.com>
- <20200305130843.17989-1-afzal.mohd.ma@gmail.com> <20200313124821.GD7225@afzalpc>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [RESEND PATCH v2 6/9] drm/mgag200: Constify ioreadX() iomem
+ argument (as in generic implementation)
+Date: Sat, 14 Mar 2020 11:59:44 +0100
+Message-ID: <20200314105944.GA16044@kozik-lap>
+References: <20200219175007.13627-1-krzk@kernel.org>
+ <20200219175007.13627-7-krzk@kernel.org>
+ <90baef2d-25fe-fac4-6a7e-b103b4b6721e@suse.de>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R3dyNr4k5uWyS12uYVE6FnBN9I0mOgh5neR4n7Md79s=;
-        b=ee5U9Uz3MBtT6Nz8t621V9cJN5wg3+7ZOmT+cjtjz9yVgKB6xgHYYRybpm0tjQ9QFW
-         UGcjiprG0XDeCfpQbAFG3voJF42p6Tz15VbiqWg1ueGEmyyZ1wRpScmPVSclQ1Wo59Cp
-         ig37pPj54xRLrAg5Ne+sMfrmKMbHCRItjmSra80vHh0cwjoHwx0JF00QJDe5Erhe5Kr1
-         tTLxmCmwU71NpDntU9u6MzMCayInnzI7hiMNZfnfHdJDmESGEqGaMwasHrNoGnvcgC9U
-         EeSrZgB7hscZD4CSfsB8PAdy+S1PbcjEjInySA6+4S0CDDeh7bTQcWiHUb32n41DthI7
-         Px2A==
-In-Reply-To: <20200313124821.GD7225@afzalpc>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: afzal mohammed <afzal.mohd.ma@gmail.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+Content-Disposition: inline
+In-Reply-To: <90baef2d-25fe-fac4-6a7e-b103b4b6721e@suse.de>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
+ <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
+ <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
+To: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Rich Felker <dalias@libc.org>, Jiri Slaby <jirislaby@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, "Michael S. Tsirkin" <mst@redhat.com>, David Airlie <airlied@linux.ie>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, netdev@vger.kernel.org, Paul Mackerras <paulus@samba.org>, linux-arch@vger.kernel.org, Dave Jiang <dave.jiang@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, linux-sh@vger.kernel.org, Alexey Brodkin <abrodkin@synopsys.com>, Ben Skeggs <bskeggs@redhat.com>, nouveau@lists.freedesktop.org, Dave Airlie <airlied@redhat.com>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Nick Kossifidis <mickflemm@gmail.com>
 
-On Fri, Mar 13, 2020 at 5:48 AM afzal mohammed <afzal.mohd.ma@gmail.com> wrote:
->
-> Hi Richard Henderson, Ivan Kokshaysky, Matt Turner,
->
-> On Thu, Mar 05, 2020 at 06:38:41PM +0530, afzal mohammed wrote:
-> > request_irq() is preferred over setup_irq(). Invocations of setup_irq()
-> > occur after memory allocators are ready.
-> >
-> > Per tglx[1], setup_irq() existed in olden days when allocators were not
-> > ready by the time early interrupts were initialized.
-> >
-> > Hence replace setup_irq() by request_irq().
-> >
-> > [1] https://lkml.kernel.org/r/alpine.DEB.2.20.1710191609480.1971@nanos
-> >
-> > Signed-off-by: afzal mohammed <afzal.mohd.ma@gmail.com>
->
-> If this patch is okay, please consider acking it so as to take it via
-> tglx.
->
-> Regards
-> afzal
+On Thu, Mar 12, 2020 at 11:49:05AM +0100, Thomas Zimmermann wrote:
+> Hi Krzysztof,
+> 
+> I just received a resend email from 3 weeks ago :/
+> 
+> Do you want me to merge the mgag200 patch into drm-misc-next?
 
-Thanks afzal,
+Thanks but it depends on the first patch in the series so either it
+could go with your ack through other tree or I will send it later (once
+1st patch gets to mainline).
 
-Acked-by: Matt Turner <mattst88@gmail.com>
+
+Best regards,
+Krzysztof
