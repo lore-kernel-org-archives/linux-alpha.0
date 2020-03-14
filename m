@@ -1,93 +1,143 @@
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [RESEND PATCH v2 1/9] iomap: Constify ioreadX() iomem argument
- (as in generic implementation)
-Date: Sat, 14 Mar 2020 12:02:58 +0100
-Message-ID: <20200314110258.GA16135@kozik-lap>
-References: <20200219175007.13627-1-krzk@kernel.org>
- <20200219175007.13627-2-krzk@kernel.org>
+From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Subject: [PATCH] PCI: add support for root bus sizing
+Date: Sat, 14 Mar 2020 19:43:55 +0000
+Message-ID: <20200314194355.GA12510@mail.rc.ru>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=dwourEPRF+Vf3H92FUhtnKX9zr9/QOxm6yOJ8J0xBgw=; b=h2dmZgzIpaWmuK
-	7hf8VZZog8gWwYylkd90cl8Az3BbqWKWTjiNiYi7mQmf6bqGhHaEEXqO0eEJ3zTfFTY3cLzgYQCAn
-	DSoPzGab01gpkeAoKxN9PZYzZ3NEibYI8c34Zsg6xtejG2Pt7vO7k12YnLxI6gYTd14/ThNTjaICm
-	jTchbfAvwSZpaemZvsPeS/qUw6QaIsK5I3wWewYT9T8iwchUkEFqpVdsBufZhdZxNdOYOJoxpqZ9y
-	4nh694KmW2iJGO2Kg13u+Hyj72tOY5OQ9CdIfbuVAcsWFKlCObQknNV57TpOT6VwRcQ7bqlJlRgBV
-	kgpRuF6DljSccUQ5WHOg==;
-Content-Disposition: inline
-In-Reply-To: <20200219175007.13627-2-krzk@kernel.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Rich Felker <dalias@libc.org>, Jiri Slaby <jirislaby@gmail.com>, Geert Uytterhoeven <geert+renesas@glider.be>, "Michael S. Tsirkin" <mst@redhat.com>, David Airlie <airlied@linux.ie>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Jason Wang <jasowang@redhat.com>, dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, netdev@vger.kernel.org, Paul Mackerras <paulus@samba.org>, linux-arch@vger.kernel.org, Dave Jiang <dave.jiang@intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, linux-sh@vger.kernel.org, Alexey Brodkin <abrodkin@synopsys.com>, Ben Skeggs <bskeggs@redhat.com>, nouveau@lists.freedesktop.org, Dave Airlie <airlied@redhat.com>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, Nick
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Matt Turner <mattst88@gmail.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
 
-On Wed, Feb 19, 2020 at 06:49:59PM +0100, Krzysztof Kozlowski wrote:
-> The ioreadX() and ioreadX_rep() helpers have inconsistent interface.  On
-> some architectures void *__iomem address argument is a pointer to const,
-> on some not.
-> 
-> Implementations of ioreadX() do not modify the memory under the address
-> so they can be converted to a "const" version for const-safety and
-> consistency among architectures.
-> 
-> Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+In certain cases we should be able to enumerate IO and MEM ranges
+of all PCI devices installed in the system, and then set respective
+host bridge apertures basing on calculated size and alignment.
+Particularly when firmware is broken and fails to assign bridge
+windows properly, like on Alpha UP1500 platform.
 
-Hi Arnd,
+Actually, almost everything is already in place, and required
+changes are minimal:
 
-This patch touches multipel file systems so no one is brave enough to
-pick it up. However you are mentioned as maintainer of generic asm
-headers so maybe you could apply it to arm-soc?
+- add "size_windows" flag to struct pci_host_bridge: when set, it
+  instructs __pci_bus_size_bridges() to continue with the root bus;
+- in the __pci_bus_size_bridges() path: add checks for bus->self,
+  as it can legitimately be null for the root bus.
 
-Best regards,
-Krzysztof
+Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+---
+ drivers/pci/setup-bus.c | 34 ++++++++++++++++++++++------------
+ include/linux/pci.h     |  1 +
+ 2 files changed, 23 insertions(+), 12 deletions(-)
 
-
-> 
-> ---
-> 
-> Changes since v1:
-> 1. Constify also ioreadX_rep() and mmio_insX(),
-> 2. Squash lib+alpha+powerpc+parisc+sh into one patch for bisectability,
-> 3. Add Geert's review.
-> 4. Add Arnd's review.
-> ---
->  arch/alpha/include/asm/core_apecs.h   |  6 +--
->  arch/alpha/include/asm/core_cia.h     |  6 +--
->  arch/alpha/include/asm/core_lca.h     |  6 +--
->  arch/alpha/include/asm/core_marvel.h  |  4 +-
->  arch/alpha/include/asm/core_mcpcia.h  |  6 +--
->  arch/alpha/include/asm/core_t2.h      |  2 +-
->  arch/alpha/include/asm/io.h           | 12 ++---
->  arch/alpha/include/asm/io_trivial.h   | 16 +++---
->  arch/alpha/include/asm/jensen.h       |  2 +-
->  arch/alpha/include/asm/machvec.h      |  6 +--
->  arch/alpha/kernel/core_marvel.c       |  2 +-
->  arch/alpha/kernel/io.c                | 12 ++---
->  arch/parisc/include/asm/io.h          |  4 +-
->  arch/parisc/lib/iomap.c               | 72 +++++++++++++--------------
->  arch/powerpc/kernel/iomap.c           | 28 +++++------
->  arch/sh/kernel/iomap.c                | 22 ++++----
->  include/asm-generic/iomap.h           | 28 +++++------
->  include/linux/io-64-nonatomic-hi-lo.h |  4 +-
->  include/linux/io-64-nonatomic-lo-hi.h |  4 +-
->  lib/iomap.c                           | 30 +++++------
->  20 files changed, 136 insertions(+), 136 deletions(-)
-> 
+diff --git a/drivers/pci/setup-bus.c b/drivers/pci/setup-bus.c
+index f2461bf9243d..bbcef1a053ab 100644
+--- a/drivers/pci/setup-bus.c
++++ b/drivers/pci/setup-bus.c
+@@ -846,7 +846,7 @@ static resource_size_t window_alignment(struct pci_bus *bus, unsigned long type)
+ 		 * Per spec, I/O windows are 4K-aligned, but some bridges have
+ 		 * an extension to support 1K alignment.
+ 		 */
+-		if (bus->self->io_window_1k)
++		if (bus->self && bus->self->io_window_1k)
+ 			align = PCI_P2P_DEFAULT_IO_ALIGN_1K;
+ 		else
+ 			align = PCI_P2P_DEFAULT_IO_ALIGN;
+@@ -920,7 +920,7 @@ static void pbus_size_io(struct pci_bus *bus, resource_size_t min_size,
+ 		calculate_iosize(size, min_size, size1, add_size, children_add_size,
+ 			resource_size(b_res), min_align);
+ 	if (!size0 && !size1) {
+-		if (b_res->start || b_res->end)
++		if (bus->self && (b_res->start || b_res->end))
+ 			pci_info(bus->self, "disabling bridge window %pR to %pR (unused)\n",
+ 				 b_res, &bus->busn_res);
+ 		b_res->flags = 0;
+@@ -930,7 +930,7 @@ static void pbus_size_io(struct pci_bus *bus, resource_size_t min_size,
+ 	b_res->start = min_align;
+ 	b_res->end = b_res->start + size0 - 1;
+ 	b_res->flags |= IORESOURCE_STARTALIGN;
+-	if (size1 > size0 && realloc_head) {
++	if (bus->self && size1 > size0 && realloc_head) {
+ 		add_to_list(realloc_head, bus->self, b_res, size1-size0,
+ 			    min_align);
+ 		pci_info(bus->self, "bridge window %pR to %pR add_size %llx\n",
+@@ -1073,7 +1073,7 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
+ 		calculate_memsize(size, min_size, add_size, children_add_size,
+ 				resource_size(b_res), add_align);
+ 	if (!size0 && !size1) {
+-		if (b_res->start || b_res->end)
++		if (bus->self && (b_res->start || b_res->end))
+ 			pci_info(bus->self, "disabling bridge window %pR to %pR (unused)\n",
+ 				 b_res, &bus->busn_res);
+ 		b_res->flags = 0;
+@@ -1082,7 +1082,7 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
+ 	b_res->start = min_align;
+ 	b_res->end = size0 + min_align - 1;
+ 	b_res->flags |= IORESOURCE_STARTALIGN;
+-	if (size1 > size0 && realloc_head) {
++	if (bus->self && size1 > size0 && realloc_head) {
+ 		add_to_list(realloc_head, bus->self, b_res, size1-size0, add_align);
+ 		pci_info(bus->self, "bridge window %pR to %pR add_size %llx add_align %llx\n",
+ 			   b_res, &bus->busn_res,
+@@ -1196,8 +1196,9 @@ void __pci_bus_size_bridges(struct pci_bus *bus, struct list_head *realloc_head)
+ 	unsigned long mask, prefmask, type2 = 0, type3 = 0;
+ 	resource_size_t additional_io_size = 0, additional_mmio_size = 0,
+ 			additional_mmio_pref_size = 0;
+-	struct resource *b_res;
+-	int ret;
++	struct resource *pref;
++	struct pci_host_bridge *host;
++	int hdr_type, i, ret;
+ 
+ 	list_for_each_entry(dev, &bus->devices, bus_list) {
+ 		struct pci_bus *b = dev->subordinate;
+@@ -1217,10 +1218,20 @@ void __pci_bus_size_bridges(struct pci_bus *bus, struct list_head *realloc_head)
+ 	}
+ 
+ 	/* The root bus? */
+-	if (pci_is_root_bus(bus))
+-		return;
++	if (pci_is_root_bus(bus)) {
++		host = to_pci_host_bridge(bus->bridge);
++		if (!host->size_windows)
++			return;
++		pci_bus_for_each_resource(bus, pref, i)
++			if (pref && (pref->flags & IORESOURCE_PREFETCH))
++				break;
++		hdr_type = -1;	/* Intentionally invalid - not a PCI device. */
++	} else {
++		pref = &bus->self->resource[PCI_BRIDGE_RESOURCES + 2];
++		hdr_type = bus->self->hdr_type;
++	}
+ 
+-	switch (bus->self->hdr_type) {
++	switch (hdr_type) {
+ 	case PCI_HEADER_TYPE_CARDBUS:
+ 		/* Don't size CardBuses yet */
+ 		break;
+@@ -1242,10 +1253,9 @@ void __pci_bus_size_bridges(struct pci_bus *bus, struct list_head *realloc_head)
+ 		 * the size required to put all 64-bit prefetchable
+ 		 * resources in it.
+ 		 */
+-		b_res = &bus->self->resource[PCI_BRIDGE_RESOURCES];
+ 		mask = IORESOURCE_MEM;
+ 		prefmask = IORESOURCE_MEM | IORESOURCE_PREFETCH;
+-		if (b_res[2].flags & IORESOURCE_MEM_64) {
++		if (pref && (pref->flags & IORESOURCE_MEM_64)) {
+ 			prefmask |= IORESOURCE_MEM_64;
+ 			ret = pbus_size_mem(bus, prefmask, prefmask,
+ 				prefmask, prefmask,
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 3840a541a9de..681c79b4dc85 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -511,6 +511,7 @@ struct pci_host_bridge {
+ 	unsigned int	native_pme:1;		/* OS may use PCIe PME */
+ 	unsigned int	native_ltr:1;		/* OS may use PCIe LTR */
+ 	unsigned int	preserve_config:1;	/* Preserve FW resource setup */
++	unsigned int	size_windows:1;		/* Enable root bus sizing */
+ 
+ 	/* Resource alignment requirements */
+ 	resource_size_t (*align_resource)(struct pci_dev *dev,
