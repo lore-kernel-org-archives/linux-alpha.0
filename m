@@ -1,134 +1,146 @@
-From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Subject: [PATCH] alpha: fix nautilus PCI setup
-Date: Sat, 14 Mar 2020 19:47:45 +0000
-Message-ID: <20200314194745.GB12510@mail.rc.ru>
+From: Dmitry Safonov <dima@arista.com>
+Subject: [PATCHv2 02/50] alpha: Add show_stack_loglvl()
+Date: Mon, 16 Mar 2020 14:38:28 +0000
+Message-ID: <20200316143916.195608-3-dima@arista.com>
+References: <20200316143916.195608-1-dima@arista.com>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-pci-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=googlenew;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Zku3gYtegdivuyVdz79vHefY5lOBMVX+wXMMYAiZ+NE=;
+        b=WKf5GnvmXhvVA4DxzPPfzsd2Rc2/Z1+VTXY1J3w+oW9gKuJCYU02BAFddRUuh4qEKK
+         6BxpN+0SaP/s32hujCUWhaFAygo0o+dRCw9H53gUijl07I6sc7xuF8k8GEcnkhFwhRdA
+         tpAFN2ANcbdUbvmkxVZQsSArHyJ6qvpYiMQp4gOk1fG3ntONRL0KO2K6tNpixvBVohKw
+         di8QqXauNo2B9I3ryAhYbVR6tYzbpPGUbPmcfT8SGmOEEBjTasvH5wQ4dIlX7KvpotOk
+         BXDsiLZiozCsL9YohSMaLgXKfQB/eAEzxZr1ZwVh8U8fb3Fk+FIgp7e9NINrSGDwCAcP
+         JvBA==
+In-Reply-To: <20200316143916.195608-1-dima@arista.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To: linux-kernel@vger.kernel.org
+Cc: Dmitry Safonov <0x7f454c46@gmail.com>, Dmitry Safonov <dima@arista.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ingo Molnar <mingo@kernel.org>, Jiri Slaby <jslaby@suse.com>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
 
-Example (hopefully reasonable) of the new "size_windows" flag usage.
+Currently, the log-level of show_stack() depends on a platform
+realization. It creates situations where the headers are printed with
+lower log level or higher than the stacktrace (depending on
+a platform or user).
 
-Fixes accidental breakage caused by commit f75b99d5a77d (PCI: Enforce
-bus address limits in resource allocation),
+Furthermore, it forces the logic decision from user to an architecture
+side. In result, some users as sysrq/kdb/etc are doing tricks with
+temporary rising console_loglevel while printing their messages.
+And in result it not only may print unwanted messages from other CPUs,
+but also omit printing at all in the unlucky case where the printk()
+was deferred.
 
-Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Introducing log-level parameter and KERN_UNSUPPRESSED [1] seems
+an easier approach than introducing more printk buffers.
+Also, it will consolidate printings with headers.
+
+Introduce show_stack_loglvl(), that eventually will substitute
+show_stack().
+
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: linux-alpha@vger.kernel.org
+[1]: https://lore.kernel.org/lkml/20190528002412.1625-1-dima@arista.com/T/#u
+Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- arch/alpha/kernel/sys_nautilus.c | 51 ++++++++++++++++------------------------
- 1 file changed, 20 insertions(+), 31 deletions(-)
+ arch/alpha/kernel/traps.c | 28 +++++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
 
-diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
-index cd9a112d67ff..1a1e49f58e66 100644
---- a/arch/alpha/kernel/sys_nautilus.c
-+++ b/arch/alpha/kernel/sys_nautilus.c
-@@ -187,10 +187,6 @@ nautilus_machine_check(unsigned long vector, unsigned long la_ptr)
- 
- extern void pcibios_claim_one_bus(struct pci_bus *);
- 
--static struct resource irongate_io = {
--	.name	= "Irongate PCI IO",
--	.flags	= IORESOURCE_IO,
--};
- static struct resource irongate_mem = {
- 	.name	= "Irongate PCI MEM",
- 	.flags	= IORESOURCE_MEM,
-@@ -211,14 +207,17 @@ nautilus_init_pci(void)
- 	struct pci_dev *irongate;
- 	unsigned long bus_align, bus_size, pci_mem;
- 	unsigned long memtop = max_low_pfn << PAGE_SHIFT;
--	int ret;
- 
- 	bridge = pci_alloc_host_bridge(0);
- 	if (!bridge)
- 		return;
- 
-+	/* Use default IO. */
- 	pci_add_resource(&bridge->windows, &ioport_resource);
--	pci_add_resource(&bridge->windows, &iomem_resource);
-+	/* Irongate PCI memory aperture, calculate requred size before
-+	   setting it up. */
-+	pci_add_resource(&bridge->windows, &irongate_mem);
-+
- 	pci_add_resource(&bridge->windows, &busn_resource);
- 	bridge->dev.parent = NULL;
- 	bridge->sysdata = hose;
-@@ -226,59 +225,49 @@ nautilus_init_pci(void)
- 	bridge->ops = alpha_mv.pci_ops;
- 	bridge->swizzle_irq = alpha_mv.pci_swizzle;
- 	bridge->map_irq = alpha_mv.pci_map_irq;
-+	bridge->size_windows = 1;
- 
- 	/* Scan our single hose.  */
--	ret = pci_scan_root_bus_bridge(bridge);
--	if (ret) {
-+	if (pci_scan_root_bus_bridge(bridge)) {
- 		pci_free_host_bridge(bridge);
- 		return;
- 	}
--
- 	bus = hose->bus = bridge->bus;
- 	pcibios_claim_one_bus(bus);
- 
--	irongate = pci_get_domain_bus_and_slot(pci_domain_nr(bus), 0, 0);
--	bus->self = irongate;
--	bus->resource[0] = &irongate_io;
--	bus->resource[1] = &irongate_mem;
--
- 	pci_bus_size_bridges(bus);
- 
--	/* IO port range. */
--	bus->resource[0]->start = 0;
--	bus->resource[0]->end = 0xffff;
--
--	/* Set up PCI memory range - limit is hardwired to 0xffffffff,
--	   base must be at aligned to 16Mb. */
--	bus_align = bus->resource[1]->start;
--	bus_size = bus->resource[1]->end + 1 - bus_align;
-+	/* Now we've got the size and alignment of PCI memory resources
-+	   stored in irongate_mem. Set up the PCI memory range: limit is
-+	   hardwired to 0xffffffff, base must be aligned to 16Mb. */
-+	bus_align = irongate_mem.start;
-+	bus_size = irongate_mem.end + 1 - bus_align;
- 	if (bus_align < 0x1000000UL)
- 		bus_align = 0x1000000UL;
- 
- 	pci_mem = (0x100000000UL - bus_size) & -bus_align;
-+	irongate_mem.start = pci_mem;
-+	irongate_mem.end = 0xffffffffUL;
- 
--	bus->resource[1]->start = pci_mem;
--	bus->resource[1]->end = 0xffffffffUL;
--	if (request_resource(&iomem_resource, bus->resource[1]) < 0)
-+	/* Register our newly calculated PCI memory window in the resource
-+	   tree. */
-+	if (request_resource(&iomem_resource, &irongate_mem) < 0)
- 		printk(KERN_ERR "Failed to request MEM on hose 0\n");
- 
-+	printk(KERN_INFO "Irongate pci_mem %pR\n", &irongate_mem);
-+
- 	if (pci_mem < memtop)
- 		memtop = pci_mem;
- 	if (memtop > alpha_mv.min_mem_address) {
- 		free_reserved_area(__va(alpha_mv.min_mem_address),
- 				   __va(memtop), -1, NULL);
--		printk("nautilus_init_pci: %ldk freed\n",
-+		printk(KERN_INFO "nautilus_init_pci: %ldk freed\n",
- 			(memtop - alpha_mv.min_mem_address) >> 10);
- 	}
--
- 	if ((IRONGATE0->dev_vendor >> 16) > 0x7006)	/* Albacore? */
- 		IRONGATE0->pci_mem = pci_mem;
- 
- 	pci_bus_assign_resources(bus);
--
--	/* pci_common_swizzle() relies on bus->self being NULL
--	   for the root bus, so just clear it. */
--	bus->self = NULL;
- 	pci_bus_add_devices(bus);
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index f6b9664ac504..2402f1777f54 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -121,10 +121,10 @@ dik_show_code(unsigned int *pc)
  }
  
+ static void
+-dik_show_trace(unsigned long *sp)
++dik_show_trace(unsigned long *sp, const char *loglvl)
+ {
+ 	long i = 0;
+-	printk("Trace:\n");
++	printk("%sTrace:\n", loglvl);
+ 	while (0x1ff8 & (unsigned long) sp) {
+ 		extern char _stext[], _etext[];
+ 		unsigned long tmp = *sp;
+@@ -133,24 +133,25 @@ dik_show_trace(unsigned long *sp)
+ 			continue;
+ 		if (tmp >= (unsigned long) &_etext)
+ 			continue;
+-		printk("[<%lx>] %pSR\n", tmp, (void *)tmp);
++		printk("%s[<%lx>] %pSR\n", loglvl, tmp, (void *)tmp);
+ 		if (i > 40) {
+-			printk(" ...");
++			printk("%s ...", loglvl);
+ 			break;
+ 		}
+ 	}
+-	printk("\n");
++	printk("%s\n", loglvl);
+ }
+ 
+ static int kstack_depth_to_print = 24;
+ 
+-void show_stack(struct task_struct *task, unsigned long *sp)
++void show_stack_loglvl(struct task_struct *task, unsigned long *sp,
++			const char *loglvl)
+ {
+ 	unsigned long *stack;
+ 	int i;
+ 
+ 	/*
+-	 * debugging aid: "show_stack(NULL);" prints the
++	 * debugging aid: "show_stack(NULL, NULL, KERN_EMERG);" prints the
+ 	 * back trace for this cpu.
+ 	 */
+ 	if(sp==NULL)
+@@ -163,14 +164,19 @@ void show_stack(struct task_struct *task, unsigned long *sp)
+ 		if ((i % 4) == 0) {
+ 			if (i)
+ 				pr_cont("\n");
+-			printk("       ");
++			printk("%s       ", loglvl);
+ 		} else {
+ 			pr_cont(" ");
+ 		}
+ 		pr_cont("%016lx", *stack++);
+ 	}
+ 	pr_cont("\n");
+-	dik_show_trace(sp);
++	dik_show_trace(sp, loglvl);
++}
++
++void show_stack(struct task_struct *task, unsigned long *sp)
++{
++	show_stack_loglvl(task, sp, KERN_DEFAULT);
+ }
+ 
+ void
+@@ -184,7 +190,7 @@ die_if_kernel(char * str, struct pt_regs *regs, long err, unsigned long *r9_15)
+ 	printk("%s(%d): %s %ld\n", current->comm, task_pid_nr(current), str, err);
+ 	dik_show_regs(regs, r9_15);
+ 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
+-	dik_show_trace((unsigned long *)(regs+1));
++	dik_show_trace((unsigned long *)(regs+1), KERN_DEFAULT);
+ 	dik_show_code((unsigned int *)regs->pc);
+ 
+ 	if (test_and_set_thread_flag (TIF_DIE_IF_KERNEL)) {
+@@ -625,7 +631,7 @@ do_entUna(void * va, unsigned long opcode, unsigned long reg,
+ 	printk("gp = %016lx  sp = %p\n", regs->gp, regs+1);
+ 
+ 	dik_show_code((unsigned int *)pc);
+-	dik_show_trace((unsigned long *)(regs+1));
++	dik_show_trace((unsigned long *)(regs+1), KERN_DEFAULT);
+ 
+ 	if (test_and_set_thread_flag (TIF_DIE_IF_KERNEL)) {
+ 		printk("die_if_kernel recursion detected.\n");
+-- 
+2.25.1
+
