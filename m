@@ -1,60 +1,42 @@
-From: afzal mohammed <afzal.mohd.ma@gmail.com>
-Subject: Re: [PATCH 00/18] genirq: Remove setup_irq()
-Date: Sat, 21 Mar 2020 23:13:03 +0530
-Message-ID: <20200321174303.GA7930@afzalpc>
-References: <cover.1581478323.git.afzal.mohd.ma@gmail.com>
- <87y2somido.fsf@nanos.tec.linutronix.de>
- <20200227110713.GA5708@afzalpc>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: [PATCH v2] alpha: fix nautilus PCI setup
+Date: Sun, 22 Mar 2020 13:34:54 -0700
+Message-ID: <CAEdQ38GNWO05mu_TD3aydsy1T9gvgFL9L_hyzeD=vWzTGCNMXA@mail.gmail.com>
+References: <20200318005029.GA8326@mail.rc.ru>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3fStVl9rL3YRgIiAf/TzVVtMNrh3VX50fi0qgiiuA8o=;
-        b=UXIHaUBhFEcnW+OMHvNaZ8x6pk7Kw7xSi1XSqUQ/ypXJwX+/0kjbU9/UcI39UYrFww
-         L4SWYiuz/x5ZDo+euy1EVFm6/xEfsJuGVNtbr58w1aJIyLLbxr5Zvw2YV6+Jz2IFJLx1
-         hSKDnD+ugCfCtYPbwa0qtQZzvaVCFI/U0Hh49Bh/9v4+8cPYNZpxmxPxHCL/ucL4FfPB
-         t55wM9/sifQrsJ2x7qaYOUyTwSXOMqFFX7kbT5BvfLIkW8EyaBXHAHAACDZSlA65LB0e
-         +oYG1mMj2pkG+negyyMWiq2E57sl6r93kYgmOlv5Tvke5FfWZ2pC2/wfVUCgtyT6TaL9
-         9P/Q==
-Content-Disposition: inline
-In-Reply-To: <20200227110713.GA5708@afzalpc>
-Sender: linux-m68k-owner@vger.kernel.org
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f+1MxSbfv7IX5t2AzTeEksKn+lUCwLfRaz02Xo40oyE=;
+        b=DE7Tmiu+iaa4ir3fmjEDCWhZvlCNT70QegrwRZVBG0gutmbKfKnp+AT+nwA7ycm6Hf
+         Lp4wXBuek8Mtp9QxMPMduFDHfBH0KY3wvDSryvJ3Ndug+uOPoSyim6liBncb2jnNQbSc
+         R4NCyp89jaW6UJA5IBomrRrN38mRE4I9XnDKk2c744ORgbEHiqDQeg67/ELyfv55H4ow
+         Z3VB1+xp7+K7IWyqoFIuYjnakApXwmcRwwGSsYCtWJXa1CtO7LfUgjhzqG/akrLi77+0
+         CFxWMVV8PjGaZHYC/AW77wm0kyg7QjKDo5dWzVZi/wKvsahzlj5YaIWlRTzZxxjAjehS
+         9MCA==
+In-Reply-To: <20200318005029.GA8326@mail.rc.ru>
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-omap@vger.kernel.org, linux-alpha@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>, Gilles Muller <Gilles.Muller@lip6.fr>, Nicolas Palix <nicolas.palix@imag.fr>, Michal Marek <michal.lkml@markovi.net>
+To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Bjorn Helgaas <helgaas@kernel.org>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
 
-Hi Thomas,
+On Tue, Mar 17, 2020 at 5:50 PM Ivan Kokshaysky
+<ink@jurassic.park.msu.ru> wrote:
+>
+> Example (hopefully reasonable) of the new "size_windows" flag usage.
+>
+> Fixes accidental breakage caused by commit f75b99d5a77d (PCI: Enforce
+> bus address limits in resource allocation),
+>
+> Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> ---
 
-On Thu, Feb 27, 2020 at 04:37:13PM +0530, afzal mohammed wrote:
-> On Thu, Feb 27, 2020 at 11:31:15AM +0100, Thomas Gleixner wrote:
+For completeness:
 
-> > Vs. merging this series, I suggest the following approach:
-> > 
-> >    - Resubmit the individual changes as single patches or small series
-> >      to the relevant maintainers and subsystem mailing lists. They have
-> >      no dependency on a core change and can be applied where they belong
-> >      to.
-> > 
-> >    - After 5.6-rc6, verify which parts have made their way into
-> >      linux-next and resubmit the ignored ones as a series to me along
-> >      with the removal of the core parts.
-> > 
-> > That way we can avoid conflicting changes between subsystems and the tip
-> > irq/core branch as much as possible.
-> 
-> Okay, i will do accordingly.
+Tested-by: Matt Turner <mattst88@gmail.com>
 
-i am on it, is delayed due to the reason as mentioned at,
-
-https://lkml.kernel.org/r/20200321172626.GA6323@afzalpc
-
-[ not repeating contents here since other mail was sent just now,
-  cc'ing you ]
-
-Regards
-afzal
-
+Thanks Ivan!
