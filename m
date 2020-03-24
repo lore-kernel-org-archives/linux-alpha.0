@@ -1,42 +1,124 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH v2] alpha: fix nautilus PCI setup
-Date: Sun, 22 Mar 2020 13:34:54 -0700
-Message-ID: <CAEdQ38GNWO05mu_TD3aydsy1T9gvgFL9L_hyzeD=vWzTGCNMXA@mail.gmail.com>
-References: <20200318005029.GA8326@mail.rc.ru>
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Subject: Re: [RESEND PATCH v2 6/9] drm/mgag200: Constify ioreadX() iomem
+ argument (as in generic implementation)
+Date: Tue, 24 Mar 2020 09:39:18 +0100
+Message-ID: <b19bd919-3af5-855f-65a7-fa6f16b07b31@suse.de>
+References: <20200219175007.13627-1-krzk@kernel.org>
+ <20200219175007.13627-7-krzk@kernel.org>
+ <90baef2d-25fe-fac4-6a7e-b103b4b6721e@suse.de>
+ <20200314105944.GA16044@kozik-lap>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f+1MxSbfv7IX5t2AzTeEksKn+lUCwLfRaz02Xo40oyE=;
-        b=DE7Tmiu+iaa4ir3fmjEDCWhZvlCNT70QegrwRZVBG0gutmbKfKnp+AT+nwA7ycm6Hf
-         Lp4wXBuek8Mtp9QxMPMduFDHfBH0KY3wvDSryvJ3Ndug+uOPoSyim6liBncb2jnNQbSc
-         R4NCyp89jaW6UJA5IBomrRrN38mRE4I9XnDKk2c744ORgbEHiqDQeg67/ELyfv55H4ow
-         Z3VB1+xp7+K7IWyqoFIuYjnakApXwmcRwwGSsYCtWJXa1CtO7LfUgjhzqG/akrLi77+0
-         CFxWMVV8PjGaZHYC/AW77wm0kyg7QjKDo5dWzVZi/wKvsahzlj5YaIWlRTzZxxjAjehS
-         9MCA==
-In-Reply-To: <20200318005029.GA8326@mail.rc.ru>
-Sender: linux-pci-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="5JHKoPMDjFIljnahlEBkrPhFBMFaUgU8x"
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <20200314105944.GA16044@kozik-lap>
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexey Brodkin <abrodkin@synopsys.com>, Vineet Gupta <vgupta@synopsys.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Dave Airlie <airlied@redhat.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>, Ben Skeggs <bskeggs@redhat.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, Jiri Slaby <jirislaby@gmail.com>, Nick Kossifidis <mickflemm@gmail.com>, Luis
 
-On Tue, Mar 17, 2020 at 5:50 PM Ivan Kokshaysky
-<ink@jurassic.park.msu.ru> wrote:
->
-> Example (hopefully reasonable) of the new "size_windows" flag usage.
->
-> Fixes accidental breakage caused by commit f75b99d5a77d (PCI: Enforce
-> bus address limits in resource allocation),
->
-> Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> ---
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--5JHKoPMDjFIljnahlEBkrPhFBMFaUgU8x
+Content-Type: multipart/mixed; boundary="hhPGeJseFbtGrgGh6f1kgq7y0jySVSvgE";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Richard Henderson <rth@twiddle.net>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
+ <mattst88@gmail.com>, Alexey Brodkin <abrodkin@synopsys.com>,
+ Vineet Gupta <vgupta@synopsys.com>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>,
+ Dave Airlie <airlied@redhat.com>, David Airlie <airlied@linux.ie>,
+ Daniel Vetter <daniel@ffwll.ch>, Ben Skeggs <bskeggs@redhat.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Jiri Slaby
+ <jirislaby@gmail.com>, Nick Kossifidis <mickflemm@gmail.com>,
+ Luis Chamberlain <mcgrof@kernel.org>, Kalle Valo <kvalo@codeaurora.org>,
+ "David S. Miller" <davem@davemloft.net>, Dave Jiang <dave.jiang@intel.com>,
+ Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert+renesas@glider.be>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+ linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-sh@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ nouveau@lists.freedesktop.org, linux-media@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ linux-ntb@googlegroups.com, virtualization@lists.linux-foundation.org,
+ linux-arch@vger.kernel.org
+Message-ID: <b19bd919-3af5-855f-65a7-fa6f16b07b31@suse.de>
+Subject: Re: [RESEND PATCH v2 6/9] drm/mgag200: Constify ioreadX() iomem
+ argument (as in generic implementation)
+References: <20200219175007.13627-1-krzk@kernel.org>
+ <20200219175007.13627-7-krzk@kernel.org>
+ <90baef2d-25fe-fac4-6a7e-b103b4b6721e@suse.de>
+ <20200314105944.GA16044@kozik-lap>
+In-Reply-To: <20200314105944.GA16044@kozik-lap>
 
-For completeness:
+--hhPGeJseFbtGrgGh6f1kgq7y0jySVSvgE
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Matt Turner <mattst88@gmail.com>
+Hi
 
-Thanks Ivan!
+Am 14.03.20 um 11:59 schrieb Krzysztof Kozlowski:
+> On Thu, Mar 12, 2020 at 11:49:05AM +0100, Thomas Zimmermann wrote:
+>> Hi Krzysztof,
+>>
+>> I just received a resend email from 3 weeks ago :/
+>>
+>> Do you want me to merge the mgag200 patch into drm-misc-next?
+>=20
+> Thanks but it depends on the first patch in the series so either it
+> could go with your ack through other tree or I will send it later (once=
+
+> 1st patch gets to mainline).
+
+Ok. You're welcome to send it through any tree that works best for you.
+mgag200 sees only little change. I wouldn't expect major merge
+conflicts, if any.
+
+Best regards
+Thomas
+
+>=20
+>=20
+> Best regards,
+> Krzysztof
+>=20
+
+--=20
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
+(HRB 36809, AG N=C3=BCrnberg)
+Gesch=C3=A4ftsf=C3=BChrer: Felix Imend=C3=B6rffer
+
+
+--hhPGeJseFbtGrgGh6f1kgq7y0jySVSvgE--
+
+--5JHKoPMDjFIljnahlEBkrPhFBMFaUgU8x
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEchf7rIzpz2NEoWjlaA3BHVMLeiMFAl55xzYACgkQaA3BHVML
+eiNG1wgAnt3qyju9VoZCaXPbgeTj4gxLN24UZYPowzBMiEUgsJRz8b2iRuEoEKGb
+X+o80inBpVTWe/a+HI6wAQWEwidrIXUquQe1fSSpn2+h69aSApCBWBuxTuKZOLWq
+z9ZpyDKo+VD0/zWGgOZttJXPQJYEfckuCoLN9qcVf+CmgXQNC0m6ZVg6kf59xrca
+KEMDM4x2XhouIaoAtLYLQpt3U9YKgTphMMisTdha7xJt4h7CVx1uztnUyD2triFq
+meU3vxWwePFuQF/1reT0Vr5FU18Z88+wOLZyu3oa+GMA5lp/DKlJJmTGH+VsQA9l
+T/IiW9kxcWlBxT0ylEqlmHr82hqCAQ==
+=iz+q
+-----END PGP SIGNATURE-----
+
+--5JHKoPMDjFIljnahlEBkrPhFBMFaUgU8x--
