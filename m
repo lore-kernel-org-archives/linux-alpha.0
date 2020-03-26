@@ -1,19 +1,17 @@
-From: Baoquan He <bhe@redhat.com>
+From: Mike Rapoport <rppt@kernel.org>
 Subject: Re: [PATCH] mm: Remove dummy struct bootmem_data/bootmem_data_t
-Date: Thu, 26 Mar 2020 12:02:24 +0800
-Message-ID: <20200326040224.GK3039@MiWiFi-R3L-srv>
+Date: Thu, 26 Mar 2020 16:25:49 +0200
+Message-ID: <20200326142549.GA3544@kernel.org>
 References: <20200326022617.26208-1-longman@redhat.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585195357;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nCZVOAI+we4AXCG4GcEDrDdIAY2DXRRQnsZBhAj73FU=;
-        b=F+Hs/R5eJSi1Ks5iF077Ru5kywAvO3iBI9xraQIGkK+HKMZTie1/VLLZqYyt4ms2JnotF6
-        YV12H+cJUjPZ+dymI/sUbI2/FsdEWoFFktLEYqbRTWQ8CkrStrRPpJEgBaKDuRE2eWikoP
-        7ZeLBhZ69malbGqo6vvrT7s8A9guHqo=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585232760;
+        bh=KMkEwoFLR0gA4f1WF6jeYdZ+fFFbpN1NEKW94s38IeE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oeDhPEvk0eFtq+gXdH4d4sq590TuOJzGFmBo5wIFU2+S8saJft+6H3HS2PZfZ+LMy
+         KIDo8zl84Krh+qBUA28KeUM44MpeT3UVlTrZ/GPLbMsYbiLCsX2RAZFljWB/W53zTf
+         FOLroABLtXiEiVaY5pcrEdWDFWrLDZBqOcpQ970w=
 Content-Disposition: inline
 In-Reply-To: <20200326022617.26208-1-longman@redhat.com>
 Sender: linux-alpha-owner@vger.kernel.org
@@ -23,11 +21,14 @@ Content-Transfer-Encoding: 7bit
 To: Waiman Long <longman@redhat.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On 03/25/20 at 10:26pm, Waiman Long wrote:
+On Wed, Mar 25, 2020 at 10:26:17PM -0400, Waiman Long wrote:
 > Both bootmem_data and bootmem_data_t structures are no longer defined.
 > Remove the dummy forward declarations.
 > 
 > Signed-off-by: Waiman Long <longman@redhat.com>
+
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+
 > ---
 >  arch/alpha/include/asm/mmzone.h | 2 --
 >  include/linux/mmzone.h          | 1 -
@@ -58,8 +59,11 @@ On 03/25/20 at 10:26pm, Waiman Long wrote:
 >  typedef struct pglist_data {
 >  	struct zone node_zones[MAX_NR_ZONES];
 >  	struct zonelist node_zonelists[MAX_ZONELISTS];
+> -- 
+> 2.18.1
+> 
+> 
 
-Looks good to me.
-
-Reviewed-by: Baoquan He <bhe@redhat.com>
-
+-- 
+Sincerely yours,
+Mike.
