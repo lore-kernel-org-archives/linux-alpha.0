@@ -1,69 +1,99 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH] mm: Remove dummy struct bootmem_data/bootmem_data_t
-Date: Thu, 26 Mar 2020 16:25:49 +0200
-Message-ID: <20200326142549.GA3544@kernel.org>
-References: <20200326022617.26208-1-longman@redhat.com>
+From: afzal mohammed <afzal.mohd.ma@gmail.com>
+Subject: [PATCH 0/6] Kill setup_irq()
+Date: Fri, 27 Mar 2020 21:38:18 +0530
+Message-ID: <cover.1585320721.git.afzal.mohd.ma@gmail.com>
+References: <20200321174303.GA7930@afzalpc>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585232760;
-        bh=KMkEwoFLR0gA4f1WF6jeYdZ+fFFbpN1NEKW94s38IeE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oeDhPEvk0eFtq+gXdH4d4sq590TuOJzGFmBo5wIFU2+S8saJft+6H3HS2PZfZ+LMy
-         KIDo8zl84Krh+qBUA28KeUM44MpeT3UVlTrZ/GPLbMsYbiLCsX2RAZFljWB/W53zTf
-         FOLroABLtXiEiVaY5pcrEdWDFWrLDZBqOcpQ970w=
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=v3WW2gICCRcfa0oGxmZ+LfSQn5AikLIQ+ZRnRYdwUfA=;
+        b=an6bUaMWa/gge8dt35mNz51d8Pj8Aa/qVvKR0POiYMe4zuNsTFMbWsDqtJpu8Vfgps
+         HodQ817xNYHI9SLLHcYrsshSCnFQVPdRz5miPel3a6dQh30+182sG4GpKzSYGg0Moaql
+         oICMZDkEloRd8GN1T9OAdis5YEzicvSdRi2cwTkeLqxIisdfp6u4WrF2upjoOm0b/Nqv
+         xJs9hkC3swEZG36oeWhAa8kBkb2p598PAhHmrKt9TC86LDUy19H7w13AsSWaFeOMFBw1
+         1kiJmtgBbfIhYEZfNNWHTKYdN5NFa73OW2vgKUh7ekKVHy/s1yLOWQQExWS6RBTI4i5f
+         lubA==
 Content-Disposition: inline
-In-Reply-To: <20200326022617.26208-1-longman@redhat.com>
-Sender: linux-alpha-owner@vger.kernel.org
+In-Reply-To: <20200321174303.GA7930@afzalpc>
+Sender: linux-m68k-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Waiman Long <longman@redhat.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-omap@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 10:26:17PM -0400, Waiman Long wrote:
-> Both bootmem_data and bootmem_data_t structures are no longer defined.
-> Remove the dummy forward declarations.
-> 
-> Signed-off-by: Waiman Long <longman@redhat.com>
+Hi Thomas,
 
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+As compared to the situation mentioned earlier[1], now powerpc patch is
+also in -next, and the pending ARM patches has been picked up by ARM SoC
+maintainers today and is expected to show up in next -next. All other
+subsytem patches has been picked by relevant maintainers & are already
+in -next except alpha, c6x, hexagon, unicore32 & sh.
 
-> ---
->  arch/alpha/include/asm/mmzone.h | 2 --
->  include/linux/mmzone.h          | 1 -
->  2 files changed, 3 deletions(-)
-> 
-> diff --git a/arch/alpha/include/asm/mmzone.h b/arch/alpha/include/asm/mmzone.h
-> index 7ee144f484f1..9b521c857436 100644
-> --- a/arch/alpha/include/asm/mmzone.h
-> +++ b/arch/alpha/include/asm/mmzone.h
-> @@ -8,8 +8,6 @@
->  
->  #include <asm/smp.h>
->  
-> -struct bootmem_data_t; /* stupid forward decl. */
-> -
->  /*
->   * Following are macros that are specific to this numa platform.
->   */
-> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-> index 462f6873905a..5c388eced889 100644
-> --- a/include/linux/mmzone.h
-> +++ b/include/linux/mmzone.h
-> @@ -706,7 +706,6 @@ struct deferred_split {
->   * Memory statistics and page replacement data structures are maintained on a
->   * per-zone basis.
->   */
-> -struct bootmem_data;
->  typedef struct pglist_data {
->  	struct zone node_zones[MAX_NR_ZONES];
->  	struct zonelist node_zonelists[MAX_ZONELISTS];
-> -- 
-> 2.18.1
-> 
-> 
+As it is the case, i am sending you patches for the above 5
+architecture's plus the core removal patch.
+
+Status of 5 arch's:
+-------------------
+alpha:		received ack from Matt Turner, build test success
+c6x:		did receive ack from Mark Salter in v1, the final
+		 version (v3) was with minor changes, hence removed his
+		 ack & cc'ed him, build test success
+hexagon:	build test success
+unicore32:	couldn't get toolchain from kernel.org, 0day test robot
+		 or Segher's buildall
+sh:		To compile the relevant changes sh64 compiler is
+		 required, couldn't get it from above mentioned 3
+		 sources.
+
+Note 1: sh toolchain is available, but that will not make the
+ relevant changes compile as it has dependency of 64bit arch toolchain,
+ did try a Kconfig hack to make it compile w/ 32bit sh toolchain, but it
+ failed due to other reasons (unknown operands), so gave up on that.
+Note 2: hexagon final image creation fails even w/o my patch, but it
+ has been ensured that w/ my changes relevant object files are getting
+ built  w/o warnings.
+
+Regards
+afzal
+
+[1] https://lkml.kernel.org/r/20200321172626.GA6323@afzalpc
+
+afzal mohammed (6):
+  alpha: Replace setup_irq() by request_irq()
+  c6x: replace setup_irq() by request_irq()
+  hexagon: replace setup_irq() by request_irq()
+  sh: replace setup_irq() by request_irq()
+  unicore32: replace setup_irq() by request_irq()
+  genirq: Remove setup_irq() and remove_irq()
+
+ arch/alpha/kernel/irq_alpha.c     | 29 ++++----------------
+ arch/alpha/kernel/irq_i8259.c     |  8 ++----
+ arch/alpha/kernel/irq_impl.h      |  7 +----
+ arch/alpha/kernel/irq_pyxis.c     |  3 ++-
+ arch/alpha/kernel/sys_alcor.c     |  3 ++-
+ arch/alpha/kernel/sys_cabriolet.c |  3 ++-
+ arch/alpha/kernel/sys_eb64p.c     |  3 ++-
+ arch/alpha/kernel/sys_marvel.c    |  2 +-
+ arch/alpha/kernel/sys_miata.c     |  6 +++--
+ arch/alpha/kernel/sys_ruffian.c   |  3 ++-
+ arch/alpha/kernel/sys_rx164.c     |  3 ++-
+ arch/alpha/kernel/sys_sx164.c     |  3 ++-
+ arch/alpha/kernel/sys_wildfire.c  |  7 ++---
+ arch/alpha/kernel/time.c          |  6 ++---
+ arch/c6x/platforms/timer64.c      | 11 +++-----
+ arch/hexagon/kernel/smp.c         | 22 ++++++++--------
+ arch/hexagon/kernel/time.c        | 11 +++-----
+ arch/sh/boards/mach-cayman/irq.c  | 18 +++++--------
+ arch/sh/drivers/dma/dma-pvr2.c    |  9 +++----
+ arch/unicore32/kernel/time.c      | 11 +++-----
+ include/linux/irq.h               |  2 --
+ kernel/irq/manage.c               | 44 -------------------------------
+ 22 files changed, 60 insertions(+), 154 deletions(-)
 
 -- 
-Sincerely yours,
-Mike.
+2.25.1
+
