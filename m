@@ -1,47 +1,153 @@
-From: afzal mohammed <afzal.mohd.ma@gmail.com>
-Subject: Re: [PATCH 0/6] Kill setup_irq()
-Date: Sat, 28 Mar 2020 13:02:53 +0530
-Message-ID: <20200328073253.GA5250@afzalpc>
-References: <20200321174303.GA7930@afzalpc>
- <cover.1585320721.git.afzal.mohd.ma@gmail.com>
- <059b01d604ab$637355b0$2a5a0110$@codeaurora.org>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v2] alpha: fix nautilus PCI setup
+Date: Sat, 28 Mar 2020 15:34:00 -0500
+Message-ID: <20200328203400.GA115873@google.com>
+References: <20200318005029.GA8326@mail.rc.ru>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+lojOXOS3R1T9zdX8YSaUVNPC+Uk4217Q9UeUwGqUmA=;
-        b=jl9qdfm3jYBUJpt5JTOg0fpX+frk2U8CDB7NHla700eqbFzeaU5ddRrnkF9ulMws0I
-         c9g6XZd+U1YMZF9/3LdLKd5v8wOHCvTpOK+41v0dC3rQjbl2zkCOwiKzOqyresW/3Mhq
-         BcOd0bkAnUi+Zs7kVOtOgih+P95QQehDeut+bVNmK8w/pAqzhJa2/sY/cLipp5Rtomn+
-         y0jJ0Kfcg23Own5fnZnDcgXrP0oJy8MDqN1sdD4UE300VgF+beh9dCTKovy8+8QPgJF7
-         tM2KC+Uqrh6IJRCMsJf7pzvSFnZ37F703JjyJuB4ywUQrA0N8cjQpQZ/4AufrBOA8und
-         kRiA==
+Return-path: <linux-pci-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585427642;
+        bh=7Fzzj4dLlbRMpJaZ5OrY+HhltlM51fxT2tTWdnt+NYM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=KWuWXVcDEi/CqaHr8bjOANOEaZXWdKChGBBOhMkZEh0jBlwr5s0MKDGRi5OhMmK8m
+         zJideMVkPuhamvPEd5yEBfFe1ENYVCfIfzXc1u+0sjPVtxl6KTnkewYIgUwJpbhkS9
+         eeyp3JPAe/qJMf1OBCsjlpjAjLQNrZfyMspmc/pM=
 Content-Disposition: inline
-In-Reply-To: <059b01d604ab$637355b0$2a5a0110$@codeaurora.org>
-Sender: linux-m68k-owner@vger.kernel.org
+In-Reply-To: <20200318005029.GA8326@mail.rc.ru>
+Sender: linux-pci-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Brian Cain <bcain@codeaurora.org>
-Cc: 'Thomas Gleixner' <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-omap@vger.kernel.org, linux-alpha@vger.kernel.org
+To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>, Yinghai Lu <yinghai@kernel.org>, linux-pci@vger.kernel.org, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Jay Estabrook <jay.estabrook@gmail.com>, Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
 
-Hi Brian,
+On Wed, Mar 18, 2020 at 12:50:29AM +0000, Ivan Kokshaysky wrote:
+> Example (hopefully reasonable) of the new "size_windows" flag usage.
+> 
+> Fixes accidental breakage caused by commit f75b99d5a77d (PCI: Enforce
+> bus address limits in resource allocation),
+> 
+> Signed-off-by: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
-On Fri, Mar 27, 2020 at 09:48:38PM -0500, Brian Cain wrote:
+Applied both of these to pci/resource for v5.7, thanks!
 
-> > Note 2: hexagon final image creation fails even w/o my patch
+  086946bd47ba ("PCI: Add support for root bus sizing")
+  a2b7f8c8d882 ("alpha: Fix nautilus PCI setup")
 
-> 	What's the nature of the failure in "Note 2"?
-
-drivers/base/firmware_loader/main.o: In function `fw_is_builtin_firmware':
-/devel/src/kernel6/drivers/base/firmware_loader/main.c:132:(.text+0xc8): relocation truncated to fit: R_HEX_16_X against symbol `__start_builtin_fw' defined in .modinfo section in .tmp_vmlinux1
-Makefile:1077: recipe for target 'vmlinux' failed
-make: *** [vmlinux] Error 1
-
-[ i had deleted the toolchain earlier, since you asked, download again &
-checked ]
-
-Regards
-afzal
+> ---
+>  arch/alpha/kernel/sys_nautilus.c | 52 ++++++++++++++++------------------------
+>  1 file changed, 20 insertions(+), 32 deletions(-)
+> 
+> diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
+> index cd9a112d67ff..32850e45834b 100644
+> --- a/arch/alpha/kernel/sys_nautilus.c
+> +++ b/arch/alpha/kernel/sys_nautilus.c
+> @@ -187,10 +187,6 @@ nautilus_machine_check(unsigned long vector, unsigned long la_ptr)
+>  
+>  extern void pcibios_claim_one_bus(struct pci_bus *);
+>  
+> -static struct resource irongate_io = {
+> -	.name	= "Irongate PCI IO",
+> -	.flags	= IORESOURCE_IO,
+> -};
+>  static struct resource irongate_mem = {
+>  	.name	= "Irongate PCI MEM",
+>  	.flags	= IORESOURCE_MEM,
+> @@ -208,17 +204,19 @@ nautilus_init_pci(void)
+>  	struct pci_controller *hose = hose_head;
+>  	struct pci_host_bridge *bridge;
+>  	struct pci_bus *bus;
+> -	struct pci_dev *irongate;
+>  	unsigned long bus_align, bus_size, pci_mem;
+>  	unsigned long memtop = max_low_pfn << PAGE_SHIFT;
+> -	int ret;
+>  
+>  	bridge = pci_alloc_host_bridge(0);
+>  	if (!bridge)
+>  		return;
+>  
+> +	/* Use default IO. */
+>  	pci_add_resource(&bridge->windows, &ioport_resource);
+> -	pci_add_resource(&bridge->windows, &iomem_resource);
+> +	/* Irongate PCI memory aperture, calculate requred size before
+> +	   setting it up. */
+> +	pci_add_resource(&bridge->windows, &irongate_mem);
+> +
+>  	pci_add_resource(&bridge->windows, &busn_resource);
+>  	bridge->dev.parent = NULL;
+>  	bridge->sysdata = hose;
+> @@ -226,59 +224,49 @@ nautilus_init_pci(void)
+>  	bridge->ops = alpha_mv.pci_ops;
+>  	bridge->swizzle_irq = alpha_mv.pci_swizzle;
+>  	bridge->map_irq = alpha_mv.pci_map_irq;
+> +	bridge->size_windows = 1;
+>  
+>  	/* Scan our single hose.  */
+> -	ret = pci_scan_root_bus_bridge(bridge);
+> -	if (ret) {
+> +	if (pci_scan_root_bus_bridge(bridge)) {
+>  		pci_free_host_bridge(bridge);
+>  		return;
+>  	}
+> -
+>  	bus = hose->bus = bridge->bus;
+>  	pcibios_claim_one_bus(bus);
+>  
+> -	irongate = pci_get_domain_bus_and_slot(pci_domain_nr(bus), 0, 0);
+> -	bus->self = irongate;
+> -	bus->resource[0] = &irongate_io;
+> -	bus->resource[1] = &irongate_mem;
+> -
+>  	pci_bus_size_bridges(bus);
+>  
+> -	/* IO port range. */
+> -	bus->resource[0]->start = 0;
+> -	bus->resource[0]->end = 0xffff;
+> -
+> -	/* Set up PCI memory range - limit is hardwired to 0xffffffff,
+> -	   base must be at aligned to 16Mb. */
+> -	bus_align = bus->resource[1]->start;
+> -	bus_size = bus->resource[1]->end + 1 - bus_align;
+> +	/* Now we've got the size and alignment of PCI memory resources
+> +	   stored in irongate_mem. Set up the PCI memory range: limit is
+> +	   hardwired to 0xffffffff, base must be aligned to 16Mb. */
+> +	bus_align = irongate_mem.start;
+> +	bus_size = irongate_mem.end + 1 - bus_align;
+>  	if (bus_align < 0x1000000UL)
+>  		bus_align = 0x1000000UL;
+>  
+>  	pci_mem = (0x100000000UL - bus_size) & -bus_align;
+> +	irongate_mem.start = pci_mem;
+> +	irongate_mem.end = 0xffffffffUL;
+>  
+> -	bus->resource[1]->start = pci_mem;
+> -	bus->resource[1]->end = 0xffffffffUL;
+> -	if (request_resource(&iomem_resource, bus->resource[1]) < 0)
+> +	/* Register our newly calculated PCI memory window in the resource
+> +	   tree. */
+> +	if (request_resource(&iomem_resource, &irongate_mem) < 0)
+>  		printk(KERN_ERR "Failed to request MEM on hose 0\n");
+>  
+> +	printk(KERN_INFO "Irongate pci_mem %pR\n", &irongate_mem);
+> +
+>  	if (pci_mem < memtop)
+>  		memtop = pci_mem;
+>  	if (memtop > alpha_mv.min_mem_address) {
+>  		free_reserved_area(__va(alpha_mv.min_mem_address),
+>  				   __va(memtop), -1, NULL);
+> -		printk("nautilus_init_pci: %ldk freed\n",
+> +		printk(KERN_INFO "nautilus_init_pci: %ldk freed\n",
+>  			(memtop - alpha_mv.min_mem_address) >> 10);
+>  	}
+> -
+>  	if ((IRONGATE0->dev_vendor >> 16) > 0x7006)	/* Albacore? */
+>  		IRONGATE0->pci_mem = pci_mem;
+>  
+>  	pci_bus_assign_resources(bus);
+> -
+> -	/* pci_common_swizzle() relies on bus->self being NULL
+> -	   for the root bus, so just clear it. */
+> -	bus->self = NULL;
+>  	pci_bus_add_devices(bus);
+>  }
+>  
