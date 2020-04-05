@@ -1,45 +1,50 @@
-From: "Brian Cain" <bcain@codeaurora.org>
-Subject: RE: [PATCH 0/6] Kill setup_irq()
-Date: Thu, 2 Apr 2020 10:03:28 -0500
-Message-ID: <0fc601d608ff$df0ea550$9d2beff0$@codeaurora.org>
-References: <20200321174303.GA7930@afzalpc> <cover.1585320721.git.afzal.mohd.ma@gmail.com> <059b01d604ab$637355b0$2a5a0110$@codeaurora.org> <20200328073253.GA5250@afzalpc>
-Reply-To: <bcain@codeaurora.org>
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PATCH 1/5] silo: Build with -fno-PIC to reduce size
+Date: Sun,  5 Apr 2020 11:48:54 -0700
+Message-ID: <20200405184858.3963582-1-mattst88@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1585839814; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
- To: From: Reply-To: Sender;
- bh=MFdcBokfw79s+7lRCHgLw9NzMSmYZr6xzGhOl6ZSO68=; b=liUyNNQsvAGxySif54oTFwi6cbi1wZSPQ/GJBXWYhDwcL7G6AiZ0LVZIGS7uSW8bDOgkjUr7
- A05wn6RwUGwuI/utuIYOc/vdcojE+YBiwTBHoTaRZjDV4LsvKnGcYo6jdk0YXbUz/lnuGNps
- 0Hdxh/vlefwsY+zYH3Y2EEM8pUY=
-In-Reply-To: <20200328073253.GA5250@afzalpc>
-Content-Language: en-us
-Sender: linux-hexagon-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vukA4BCy8hPLxpxj8As00UZ6jZyoV8t8UgBtm7ruucc=;
+        b=klDvP2nakMe1uERBpsXPMZHIwxdoQJbVtLutHMYhtFx7Q3GtCyorDvYb1RQySlN5xn
+         vQP+t5KbtRfKu+ayYat2Kmnowz5S+7ozLQcrRuNf0fe3tafn1ILCYgrHOfxNXacY4Psu
+         j1yeDlEjhh1yJTLOffidg9owsJBN/dN6mZAkYRKVpp4XAsbW3kZ3gArMcJuSAZR+FlL9
+         kT+Mk+3NtIONJz8Eodt4ZKRskkaLgAjv2isRU8cdaKKPlaU7aAtbyS31xRpvrPEhRJs/
+         3nd7vF9So4E2hnABP77/YpJdbS4fgXD7YoPFlIowxxAvZzvicMhsjuGUh2zVIDjM31Au
+         n4lg==
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: 'afzal mohammed' <afzal.mohd.ma@gmail.com>
-Cc: 'Thomas Gleixner' <tglx@linutronix.de>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-omap@vger.kernel.org, linux-alpha@vger.kernel.org
+To: linux-alpha@vger.kernel.org
+Cc: "David S . Miller" <davem@davemloft.net>, Aaro Koskinen <aaro.koskinen@iki.fi>, Matt Turner <mattst88@gmail.com>
 
-> -----Original Message-----
-> From: linux-hexagon-owner@vger.kernel.org <linux-hexagon-
-> owner@vger.kernel.org> On Behalf Of afzal mohammed
-...
-> On Fri, Mar 27, 2020 at 09:48:38PM -0500, Brian Cain wrote:
-> 
-> > > Note 2: hexagon final image creation fails even w/o my patch
-> 
-> > 	What's the nature of the failure in "Note 2"?
-> 
-> drivers/base/firmware_loader/main.o: In function `fw_is_builtin_firmware':
-> /devel/src/kernel6/drivers/base/firmware_loader/main.c:132:(.text+0xc8):
-> relocation truncated to fit: R_HEX_16_X against symbol
-`__start_builtin_fw'
-> defined in .modinfo section in .tmp_vmlinux1
-> Makefile:1077: recipe for target 'vmlinux' failed
-> make: *** [vmlinux] Error 1
+Otherwise the resulting image will be too large:
 
-Thanks for reporting it -- I will make a patch to fix it.
+| ./util second.map second.aout second2.aout second.b second.b2
+| Distance between two changes larger than 63K 3 84553 0
 
--Brian
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+---
+ Rules.make | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Rules.make b/Rules.make
+index 0f176db..3d0efe7 100644
+--- a/Rules.make
++++ b/Rules.make
+@@ -19,7 +19,7 @@ cc-option-yn = $(shell if $(CC) $(CFLAGS) $(1) -S -o /dev/null -xc /dev/null \
+ 		> /dev/null 2>&1; then echo "y"; else echo "n"; fi;)
+ 
+ CFLAGS = -Os -Wall -I. -I../include -fomit-frame-pointer \
+-	-fno-strict-aliasing -DSMALL_RELOC=$(SMALL_RELOC) \
++	-fno-strict-aliasing -fno-PIC -DSMALL_RELOC=$(SMALL_RELOC) \
+ 	-DLARGE_RELOC=$(LARGE_RELOC)
+ HOSTCFLAGS = -O2 -Wall
+ 
+-- 
+2.24.1
+
