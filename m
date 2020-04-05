@@ -1,7 +1,7 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: [PATCH 3/5] silo: Fix misleading indentation
-Date: Sun,  5 Apr 2020 11:48:56 -0700
-Message-ID: <20200405184858.3963582-3-mattst88@gmail.com>
+Subject: [PATCH 4/5] second: Fix typo'd operator
+Date: Sun,  5 Apr 2020 11:48:57 -0700
+Message-ID: <20200405184858.3963582-4-mattst88@gmail.com>
 References: <20200405184858.3963582-1-mattst88@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -10,13 +10,13 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N+5xtB9gijt0AIzDLP8WDiG6Mdj5tsb0toFgxnvnpVc=;
-        b=ayTEyZihrLZFoMmN9PPXdC2MK0saCpGUWJ95mwNcg1eXVDPFH9Eiq5wyQxDve0cmV8
-         9ol0uU1Pl8B221RBUapBp0Jpscut/+0IU472v2y1tIEmSVQGjv2I9vHo9FZYQvGAVKXN
-         kbxPksUYntxVO/uPK97iq6vXW7GOu3QizGgjL9h32PBOyoLvWZAH2hicgO904EWRW8vo
-         cNGoMT/FbCppQmKCq7CwhquGObQdXyv3U/pHw3dQTPmqmh/yUI+yaUoQ6A011fp8bxo8
-         JgBsMrad1Uq33V7BQgoS7VCc5c19fVFiLTQ2w5rQGKfz2IR7hb54994F9ma3qqoBhOxS
-         wlYQ==
+        bh=OMzenX4mqVJrFhYZZkTRMlhfVu2Wc0DhKWgmDJYanJI=;
+        b=HiXlKjbJMNr/EyuA1+oJE0asKCCH/+kT4NzOvdNmBrhXYR1erCa9+1z5L59vWxriYe
+         PUGEHcxqNquXtI35ztMJmecbw2rGabBlVDOSPSnVxPoJ/S74PyHxR3Fmq4vS+llQ+Nw1
+         CrvD3K7BYzvUax/kQf7Nca6tXDDc0tephvTqquHVVF/JMU/QZqb3H7mhksuIKh5l/CGX
+         2U6k4ttcFxl4lsMH1o4e49DIeooABhEAw3x8aWzkR2UztH//7/XCWviVs2zG5wKoP4OB
+         YTR4Xk9Ka0ErlpIoBzCSZKnjAUt+OOI584o6XZtjw8buISKGgnnjmw8ER1N7UKqI32uJ
+         lnJw==
 In-Reply-To: <20200405184858.3963582-1-mattst88@gmail.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
@@ -26,22 +26,22 @@ Cc: "David S . Miller" <davem@davemloft.net>, Aaro Koskinen <aaro.koskinen@iki.f
 
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- common/stringops1.c | 2 +-
+ second/disk.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/common/stringops1.c b/common/stringops1.c
-index 08ed4be..6edac96 100644
---- a/common/stringops1.c
-+++ b/common/stringops1.c
-@@ -74,7 +74,7 @@ int strlen(const char *s)
- {
- 	const char *sc;
- 	for (sc = s; *sc != '\0'; ++sc);
--		return sc - s;
-+	return sc - s;
- }
- 
- int strncmp(const char *cs, const char *ct, size_t count)
+diff --git a/second/disk.c b/second/disk.c
+index 40234b3..b81a465 100644
+--- a/second/disk.c
++++ b/second/disk.c
+@@ -293,7 +293,7 @@ int silo_disk_read(char *buff, int size, unsigned long long offset)
+ 	if (!net) {
+ 	    if (prom_vers != PROM_P1275) {
+ 		    if (((romvec->pv_printrev >> 16) < 2 || 
+-		         ((romvec->pv_printrev >> 16) == 2 && (romvec->pv_printrev && 0xffff) < 6)) 
++		         ((romvec->pv_printrev >> 16) == 2 && (romvec->pv_printrev & 0xffff) < 6))
+ 		        && offset >= 0x40000000) {
+ 		    	printf ("Buggy old PROMs don't allow reading past 1GB from start of the disk. Send complaints to SMCC\n");
+ 	    		return -1;
 -- 
 2.24.1
 
