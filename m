@@ -1,89 +1,58 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: [PATCH v3 01/11] alpha: Add clear_bit_unlock_is_negative_byte implementation
-Date: Thu, 16 Apr 2020 15:01:20 -0700
-Message-ID: <20200416220130.13343-2-willy@infradead.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v3 00/11] Make PageWriteback use the PageLocked optimisation
+Date: Fri, 17 Apr 2020 09:28:14 +0200
+Message-ID: <CAMuHMdWxhVoPCZ5+=Pf1LFpdE9vPv9GGTqTYMQP9oFz7eCxDaQ@mail.gmail.com>
 References: <20200416220130.13343-1-willy@infradead.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-fsdevel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=aO1fN0fbVh2ayP7yJD7ISd8Eo2lcaZKKQzdebmXo4PQ=; b=tNL7iD41PJak5MbgEcMKlUs8sM
-        HkQ4N6Xn7iLsZU9wAUE9FCT3x8Odr3rQIFtinuDh3Xfjy2rGZ3T+6N+ZrT8hthLKgq0+DcPvx8dVf
-        Jlcpqse1/0M9oOMB5M0C85RIy//qrSW2uzNCVdXJ7p9bJGcFzVyyT5WAj9oVzuIpy+OQLD8eLx0yR
-        3YnWsUnT7lfQmYe7+X6nRWQ+ueUygPi8RAJhiFYZE9pssSwBBj++J/N2/1KX4EY2TqbVmT4CCha1b
-        LmG7YrdMNVCyCQIg9c8OYvX0fLdnAzFGz1XuWf3iu3hlqQCPjCMWgEFpqKyV+Vqt5NqHIEfFM0H2T
-        FIK8R5Ig==;
+Return-path: <linux-ia64-owner@vger.kernel.org>
 In-Reply-To: <20200416220130.13343-1-willy@infradead.org>
-Sender: linux-fsdevel-owner@vger.kernel.org
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-mm@kvack.org, linux-fsdevel@vger.kernel.org
-Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Matthew Wilcox <willy@infradead.org>
+Cc: Linux MM <linux-mm@kvack.org>, Linux FS Devel <linux-fsdevel@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, alpha <linux-alpha@vger.kernel.org>, linux-riscv@lists.infradead.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Hi Matthew,
 
-Copy and paste the clear_bit_unlock() implementation, and test the temp
-variable to see if it has bit 7 set.  Saves two instructions: a load
-and a compare:
+On Fri, Apr 17, 2020 at 12:01 AM Matthew Wilcox <willy@infradead.org> wrote:
+> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> PageWaiters is used by PageWriteback and PageLocked (and no other page
+> flags), so it makes sense to use the same codepaths that have already been
+> optimised for PageLocked, even if there's probably no real performance
+> benefit to be had.
+>
+> Unfortunately, clear_bit_unlock_is_negative_byte() isn't present on every
+> architecture, and the default implementation is only available in filemap.c
+> while I want to use it in page-writeback.c.  Rather than move the default
+> implementation to a header file, I've done optimised implementations for
+> alpha and ia64.  I can't figure out optimised implementations for m68k,
+> mips, riscv and s390, so I've just replicated the effect of the generic
+> implementation in them.  I leave it to the experts to fix that (... or
+> convert over to using asm-generic/bitops/lock.h ...)
+>
+> v3:
+>  - Added implementations of clear_bit_unlock_is_negative_byte()
+>    to architectures which need it
 
-      860:      01 31 20 44     andnot  t0,0x1,t0
-      864:      00 00 30 b8     stl_c   t0,0(a0)
-      868:      67 1b 20 e4     beq     t0,7608 <generic_file_write_iter+0x218>
--     86c:      00 00 30 a0     ldl     t0,0(a0)
--     870:      01 10 30 44     and     t0,0x80,t0
--     874:      a1 03 e1 43     cmpult  zero,t0,t0
--     878:      01 00 20 f4     bne     t0,880 <unlock_page+0x40>
--     87c:      01 80 fa 6b     ret
-+     86c:      01 10 30 44     and     t0,0x80,t0
-+     870:      03 00 20 f4     bne     t0,880 <unlock_page+0x40>
-+     874:      01 80 fa 6b     ret
+I have two questions here?
+  1. Why not implement arch_clear_bit_unlock_is_negative_byte()
+     instead, so the kasan check in asm-generic is used everywhere?
+  2. Why not add the default implementation to
+     include/asm-generic/bitops/instrumented-lock.h, in case an arch_*()
+     variant is not provided yet?
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
----
- arch/alpha/include/asm/bitops.h | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+Note that you did 1 for s390.
+Thanks!
 
-diff --git a/arch/alpha/include/asm/bitops.h b/arch/alpha/include/asm/bitops.h
-index 5adca78830b5..f9af2401bd23 100644
---- a/arch/alpha/include/asm/bitops.h
-+++ b/arch/alpha/include/asm/bitops.h
-@@ -79,6 +79,29 @@ clear_bit_unlock(unsigned long nr, volatile void * addr)
- 	clear_bit(nr, addr);
- }
- 
-+static inline bool clear_bit_unlock_is_negative_byte(unsigned int nr,
-+						     volatile unsigned long *p)
-+{
-+	unsigned long temp;
-+	int *m = ((int *)p) + (nr >> 5);
-+
-+	smp_mb();
-+	__asm__ __volatile__(
-+	"1:	ldl_l %0,%3\n"
-+	"	bic %0,%2,%0\n"
-+	"	stl_c %0,%1\n"
-+	"	beq %0,2f\n"
-+	".subsection 2\n"
-+	"2:	br 1b\n"
-+	".previous"
-+	:"=&r" (temp), "=m" (*m)
-+	:"Ir" (1UL << (nr & 31)), "m" (*m));
-+
-+	return temp & 128;
-+}
-+#define clear_bit_unlock_is_negative_byte \
-+	clear_bit_unlock_is_negative_byte
-+
- /*
-  * WARNING: non atomic version.
-  */
--- 
-2.25.1
+Gr{oetje,eeting}s,
 
+                        Geert
+
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
