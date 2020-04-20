@@ -1,106 +1,172 @@
-From: Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
-Date: Mon, 20 Apr 2020 03:25:49 -0700
-Message-ID: <36dce9b4-a0bf-0015-f6bc-1006938545b1@gmail.com>
-References: <20200420071548.62112-1-nate.karstens@garmin.com>
- <20200420071548.62112-2-nate.karstens@garmin.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yypQDahjbXqJhDbVQSiASHihfGpSC0JMzsgU8Cz/AiY=;
-        b=HdCWUfWuE1u+XaXD9Ms85gt4izU8DyOrmmvb1s/Jb/Vh5rKqf9BQq9h5pCmTjXXb8E
-         i1UeedwF++2a3WAWjZe5irqGqtuCmn1sqTn985LVCgLRPFMufdeksavjuiSojGUipIdZ
-         KuEf+TG/qxTGRCRUtJ2GKY3NIj3P93vGRM0HLck6KdcKx4DGwm+0M9vy2nIlfVF7NNsx
-         sye5nxxQEOtR0dyZ/uTdz2bHo6IPo03UlAOiO7CTUc83i4baqLwa3JKWU4scp5Bb9LZB
-         pg1dl1F8j76CX5u1r2aZ9/L9ZVP5bNKuWBRNtyK6n4Bidq3Wq9nle2G3W7KDxUqkhV/I
-         iVOA==
-In-Reply-To: <20200420071548.62112-2-nate.karstens@garmin.com>
-Content-Language: en-US
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
+From: Qian Cai <cai@lca.pw>
+Subject: Re: [PATCH 15/21] mm: memmap_init: iterate over memblock regions
+ rather that check each PFN
+Date: Mon, 20 Apr 2020 10:26:06 -0400
+Message-ID: <CF6E407F-17DC-427C-8203-21979FB882EF@lca.pw>
+References: <20200412194859.12663-1-rppt@kernel.org>
+ <20200412194859.12663-16-rppt@kernel.org>
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:To:References:
+	Message-Id:Content-Transfer-Encoding:Date:In-Reply-To:From:Subject:
+	Mime-Version:Content-Type:Reply-To:Content-ID:Content-Description:Resent-Date
+	:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	 bh=x4haHkUujR1fKPz5RIOI82+KmuZk6e+W1yh47eNmIvQ=; b=Aqz3WiJ7HlXmfJc7cAJ/OZW7Q
+	OyvlqSELA3cCzEwCLcLW0LId5d1CPyiluWJ5crwybR7tjdlP6lBbIi2a/cKayyQBNISsRSv106mUQ
+	CJSgcCuDe3s2GziVGEpmpjrIvl+MRRGbeQE6DweJPHUVrokLKmY/2XBS0FgE0ml2NDDQJB9tgr0Jb
+	eEkf/81cwgHg+e5/LhP+CvsPy+rgmHrxLs4ArsdwklbbMwtJCLa0M85uhvzMQucZC4c2fscs3afXC
+	ZSJ+fpwyrvrqqL8IvNnxCuuNaVFuef/15iXBlmHAEXatmL6LJuoJDX2VmdBPHaIggXh2jk8yoPK/w
+	TTvaYb2xA==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+ h=mime-version:subject:from:in-reply-to:date:cc
+ :content-transfer-encoding:message-id:references:to;
+ bh=x4haHkUujR1fKPz5RIOI82+KmuZk6e+W1yh47eNmIvQ=;
+ b=DnvEUFzSch8BOWv/K7yUwrGGEukS5excCJecSvcapVOhdy/OFYe7Y9x1bGe8SeT916
+ l1+1chsImNg3ZkGKpfN6ahvWi6toqC2h9IrP5AAGTN0GSjdGn3qsRFRJ+RJKyRIC9tu1
+ Dj3ea0wViCiibWw2vLnH2xAQFEOjXLO8KUs1T46qoBzPcqk7/mrvO1+D2/LejHD1ICpo
+ KoyvCsqeLxeoDgKdlRyHMBD+KBeYlPJHqA50tfN8jzW6UL/Xp60Ax2PqCOWTXHM9g3GG
+ cbNMSaz+pl+PNBKPTXdiSGvlo1iEHh3BDrH71SvZZsVGfYckGoh6BGUSunvfhu/heiMK
+ xWhA==
+In-Reply-To: <20200412194859.12663-16-rppt@kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
 Content-Type: text/plain; charset="us-ascii"
-To: Nate Karstens <nate.karstens@garmin.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Changli Gao <xiaosuo@gmail.com>
+To: Mike Rapoport <rppt@kernel.org>, Baoquan He <bhe@redhat.com>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Michal Hocko <mhocko@kernel.org>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Greg Ungerer <gerg@linux-m68k.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-c6x-dev@linux-c6x.org, Brian Cain <bcain@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, linux-sh@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, the arch/x86 maintainers <x86@kernel.org>, Russell King <linux@armlinux.org.u>
 
 
 
-On 4/20/20 12:15 AM, Nate Karstens wrote:
-> The close-on-fork flag causes the file descriptor to be closed
-> atomically in the child process before the child process returns
-> from fork(). Implement this feature and provide a method to
-> get/set the close-on-fork flag using fcntl(2).
-> 
-> This functionality was approved by the Austin Common Standards
-> Revision Group for inclusion in the next revision of the POSIX
-> standard (see issue 1318 in the Austin Group Defect Tracker).
-
-Oh well... yet another feature slowing down a critical path.
-
-> 
-> Co-developed-by: Changli Gao <xiaosuo@gmail.com>
-> Signed-off-by: Changli Gao <xiaosuo@gmail.com>
-> Signed-off-by: Nate Karstens <nate.karstens@garmin.com>
+> On Apr 12, 2020, at 3:48 PM, Mike Rapoport <rppt@kernel.org> wrote:
+>=20
+> From: Baoquan He <bhe@redhat.com>
+>=20
+> When called during boot the memmap_init_zone() function checks if each =
+PFN
+> is valid and actually belongs to the node being initialized using
+> early_pfn_valid() and early_pfn_in_nid().
+>=20
+> Each such check may cost up to O(log(n)) where n is the number of =
+memory
+> banks, so for large amount of memory overall time spent in =
+early_pfn*()
+> becomes substantial.
+>=20
+> Since the information is anyway present in memblock, we can iterate =
+over
+> memblock memory regions in memmap_init() and only call =
+memmap_init_zone()
+> for PFN ranges that are know to be valid and in the appropriate node.
+>=20
+> Signed-off-by: Baoquan He <bhe@redhat.com>
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 > ---
->  fs/fcntl.c                             |  2 ++
->  fs/file.c                              | 50 +++++++++++++++++++++++++-
->  include/linux/fdtable.h                |  7 ++++
->  include/linux/file.h                   |  2 ++
->  include/uapi/asm-generic/fcntl.h       |  5 +--
->  tools/include/uapi/asm-generic/fcntl.h |  5 +--
->  6 files changed, 66 insertions(+), 5 deletions(-)
-> 
-> diff --git a/fs/fcntl.c b/fs/fcntl.c
-> index 2e4c0fa2074b..23964abf4a1a 100644
-> --- a/fs/fcntl.c
-> +++ b/fs/fcntl.c
-> @@ -335,10 +335,12 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
->  		break;
->  	case F_GETFD:
->  		err = get_close_on_exec(fd) ? FD_CLOEXEC : 0;
-> +		err |= get_close_on_fork(fd) ? FD_CLOFORK : 0;
->  		break;
->  	case F_SETFD:
->  		err = 0;
->  		set_close_on_exec(fd, arg & FD_CLOEXEC);
-> +		set_close_on_fork(fd, arg & FD_CLOFORK);
->  		break;
->  	case F_GETFL:
->  		err = filp->f_flags;
-> diff --git a/fs/file.c b/fs/file.c
-> index c8a4e4c86e55..de7260ba718d 100644
-> --- a/fs/file.c
-> +++ b/fs/file.c
-> @@ -57,6 +57,8 @@ static void copy_fd_bitmaps(struct fdtable *nfdt, struct fdtable *ofdt,
->  	memset((char *)nfdt->open_fds + cpy, 0, set);
->  	memcpy(nfdt->close_on_exec, ofdt->close_on_exec, cpy);
->  	memset((char *)nfdt->close_on_exec + cpy, 0, set);
-> +	memcpy(nfdt->close_on_fork, ofdt->close_on_fork, cpy);
-> +	memset((char *)nfdt->close_on_fork + cpy, 0, set);
->  
+> mm/page_alloc.c | 26 ++++++++++++++++----------
+> 1 file changed, 16 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 7f6a3081edb8..c43ce8709457 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5995,14 +5995,6 @@ void __meminit memmap_init_zone(unsigned long =
+size, int nid, unsigned long zone,
+> 		 * function.  They do not exist on hotplugged memory.
+> 		 */
+> 		if (context =3D=3D MEMMAP_EARLY) {
+> -			if (!early_pfn_valid(pfn)) {
+> -				pfn =3D next_pfn(pfn);
+> -				continue;
+> -			}
+> -			if (!early_pfn_in_nid(pfn, nid)) {
+> -				pfn++;
+> -				continue;
+> -			}
 
-I suggest we group the two bits of a file (close_on_exec, close_on_fork) together,
-so that we do not have to dirty two separate cache lines.
+This causes a compilation warning from Clang,
 
-Otherwise we will add yet another cache line miss at every file opening/closing for processes
-with big file tables.
+mm/page_alloc.c:5917:39: warning: unused function 'next_pfn' =
+[-Wunused-function]
+static inline __meminit unsigned long next_pfn(unsigned long pfn)
 
-Ie having a _single_ bitmap array, even bit for close_on_exec, odd bit for close_on_fork
+This should fix it,
 
-static inline void __set_close_on_exec(unsigned int fd, struct fdtable *fdt)
-{
-	__set_bit(fd * 2, fdt->close_on_fork_exec);
-}
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index d469384c9ca7..b48336e20bdc 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5912,23 +5912,6 @@ overlap_memmap_init(unsigned long zone, unsigned =
+long *pfn)
+ 	return false;
+ }
+=20
+-#ifdef CONFIG_SPARSEMEM
+-/* Skip PFNs that belong to non-present sections */
+-static inline __meminit unsigned long next_pfn(unsigned long pfn)
+-{
+-	const unsigned long section_nr =3D pfn_to_section_nr(++pfn);
+-
+-	if (present_section_nr(section_nr))
+-		return pfn;
+-	return section_nr_to_pfn(next_present_section_nr(section_nr));
+-}
+-#else
+-static inline __meminit unsigned long next_pfn(unsigned long pfn)
+-{
+-	return pfn++;
+-}
+-#endif
+-
+ /*
+  * Initially all pages are reserved - free ones are freed
+  * up by memblock_free_all() once the early boot process is
 
-static inline void __set_close_on_fork(unsigned int fd, struct fdtable *fdt)
-{
-	__set_bit(fd * 2 + 1, fdt->close_on_fork_exec);
-}
-
-Also the F_GETFD/F_SETFD implementation must use a single function call,
-to not acquire the spinlock twice.
+> 			if (overlap_memmap_init(zone, &pfn))
+> 				continue;
+> 			if (defer_init(nid, pfn, end_pfn))
+> @@ -6118,9 +6110,23 @@ static void __meminit =
+zone_init_free_lists(struct zone *zone)
+> }
+>=20
+> void __meminit __weak memmap_init(unsigned long size, int nid,
+> -				  unsigned long zone, unsigned long =
+start_pfn)
+> +				  unsigned long zone,
+> +				  unsigned long range_start_pfn)
+> {
+> -	memmap_init_zone(size, nid, zone, start_pfn, MEMMAP_EARLY, =
+NULL);
+> +	unsigned long start_pfn, end_pfn;
+> +	unsigned long range_end_pfn =3D range_start_pfn + size;
+> +	int i;
+> +
+> +	for_each_mem_pfn_range(i, nid, &start_pfn, &end_pfn, NULL) {
+> +		start_pfn =3D clamp(start_pfn, range_start_pfn, =
+range_end_pfn);
+> +		end_pfn =3D clamp(end_pfn, range_start_pfn, =
+range_end_pfn);
+> +
+> +		if (end_pfn > start_pfn) {
+> +			size =3D end_pfn - start_pfn;
+> +			memmap_init_zone(size, nid, zone, start_pfn,
+> +					 MEMMAP_EARLY, NULL);
+> +		}
+> +	}
+> }
+>=20
+> static int zone_batchsize(struct zone *zone)
+> --=20
+> 2.25.1
+>=20
+>=20
 
 
