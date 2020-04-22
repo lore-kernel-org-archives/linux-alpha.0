@@ -1,85 +1,43 @@
-From: "Karstens, Nate" <Nate.Karstens@garmin.com>
-Subject: RE: [PATCH 1/4] fs: Implement close-on-fork
-Date: Wed, 22 Apr 2020 16:02:49 +0000
-Message-ID: <6ed7bd08892b4311b70636658321904f@garmin.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: Implement close-on-fork
+Date: Wed, 22 Apr 2020 17:13:43 +0100
+Message-ID: <20200422161343.GM23230@ZenIV.linux.org.uk>
 References: <20200420071548.62112-1-nate.karstens@garmin.com>
- <20200420071548.62112-2-nate.karstens@garmin.com>
- <fa6c5c9c7c434f878c94a7c984cd43ba@garmin.com>
- <20200422154356.GU5820@bombadil.infradead.org>
+ <20200422150107.GK23230@ZenIV.linux.org.uk>
+ <20200422151815.GT5820@bombadil.infradead.org>
+ <20200422160032.GL23230@ZenIV.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sPQ7p17HjjFh4gqCMU5jLeGYW0dkPPxdhAT/gmHhxAk=;
- b=BITHIsW0zePFjyaFfFOFFrO+u2T0qvsuAclpu1gkYBs38DNGXTup6Slr1Gtu30bOwCzYJHpFMPfph+5O984KZNzJP+skWU/0TviZmY8v7bgwhc+fHAMoylSD2zvhIklpBm0As2q+FNmTBUyFb4XBlTyuZ4MPgy8MFV8funiEQG0Vb+33HDvCe5F/APdPHULkXI1yXiogyenw/Op6OFxnDpGF+UBPtLH0EcDjpNKJsckCMjRHj0U2S/peuNwKNb92F1nnQrM12WMpUd+n4yDcELOM93pZz7HWFMiHhlJVlGLaB9H+IwJQoxe5NR86Hr68XrPJfC9JH9J85vdwOpXZYQ==
-In-Reply-To: <20200422154356.GU5820@bombadil.infradead.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-parisc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200422160032.GL23230@ZenIV.linux.org.uk>
+Sender: linux-parisc-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Matthew Wilcox <willy@infradead.org>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, "netdev@vger.kernel.org" <ne>
+Cc: Nate Karstens <nate.karstens@garmin.com>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>
 
-> It's not safe to call system() from a threaded app.  That's all.  It's ri=
-ght there in the DESCRIPTION:
+On Wed, Apr 22, 2020 at 05:00:32PM +0100, Al Viro wrote:
 
-That is true, but that description is missing from both the Linux man page =
-and the glibc documentation (https://www.gnu.org/software/libc/manual/html_=
-mono/libc.html#Running-a-Command). It seems like a minor point that won't b=
-e noticed until it causes a problem, and problems are rare enough they migh=
-t go unnoticed for a while. We have removed system() from our application, =
-but we're also concerned that libraries we integrate will use system() with=
-out our knowledge.
+> *snort*
+> 
+> Alan Coopersmith in that thread:
+> || https://lwn.net/Articles/785430/ suggests AIX, BSD, & MacOS have also defined
+> || it, and though it's been proposed multiple times for Linux, never adopted there.
+> 
+> Now, look at the article in question.  You'll see that it should've been
+> "someone's posting in the end of comments thread under LWN article says that
+> apparently it exists on AIX, BSD, ..."
+> 
+> The strength of evidence aside, that got me curious; I have checked the
+> source of FreeBSD, NetBSD and OpenBSD.  No such thing exists in either of
+> their kernels, so at least that part can be considered an urban legend.
+> 
+> As for the original problem...  what kind of exclusion is used between
+> the reaction to netlink notifications (including closing every socket,
+> etc.) and actual IO done on those sockets?
 
------Original Message-----
-From: Matthew Wilcox <willy@infradead.org>
-Sent: Wednesday, April 22, 2020 10:44
-To: Karstens, Nate <Nate.Karstens@garmin.com>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>; Jeff Layton <jlayton@kernel.o=
-rg>; J. Bruce Fields <bfields@fieldses.org>; Arnd Bergmann <arnd@arndb.de>;=
- Richard Henderson <rth@twiddle.net>; Ivan Kokshaysky <ink@jurassic.park.ms=
-u.ru>; Matt Turner <mattst88@gmail.com>; James E.J. Bottomley <James.Bottom=
-ley@hansenpartnership.com>; Helge Deller <deller@gmx.de>; David S. Miller <=
-davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; linux-fsdevel@vger.=
-kernel.org; linux-arch@vger.kernel.org; linux-alpha@vger.kernel.org; linux-=
-parisc@vger.kernel.org; sparclinux@vger.kernel.org; netdev@vger.kernel.org;=
- linux-kernel@vger.kernel.org; David Laight <David.Laight@aculab.com>; Chan=
-gli Gao <xiaosuo@gmail.com>
-Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
-
-CAUTION - EXTERNAL EMAIL: Do not click any links or open any attachments un=
-less you trust the sender and know the content is safe.
-
-
-On Wed, Apr 22, 2020 at 03:36:09PM +0000, Karstens, Nate wrote:
-> There was some skepticism about whether our practice of
-> closing/reopening sockets was advisable. Regardless, it does expose
-> what I believe to be something that was overlooked in the forking
-> process model. We posted two solutions to the Austin Group defect tracker=
-:
-
-I don't think it was "overlooked" at all.  It's not safe to call system() f=
-rom a threaded app.  That's all.  It's right there in the DESCRIPTION:
-
-   The system() function need not be thread-safe.
-https://pubs.opengroup.org/onlinepubs/9699919799/functions/system.html
-
-> Ultimately the Austin Group felt that close-on-fork was the preferred
-> approach. I think it's also worth pointing that out Solaris reportedly
-> has this feature
-> (https://www.mail-archive.com/austin-group-l@opengroup.org/msg05359.html)=
-.
-
-I am perplexed that the Austin Group thought this was a good idea.
-
-________________________________
-
-CONFIDENTIALITY NOTICE: This email and any attachments are for the sole use=
- of the intended recipient(s) and contain information that may be Garmin co=
-nfidential and/or Garmin legally privileged. If you have received this emai=
-l in error, please notify the sender by reply email and delete the message.=
- Any disclosure, copying, distribution or use of this communication (includ=
-ing attachments) by someone other than the intended recipient is prohibited=
-. Thank you.
+Not an idle question, BTW - unlike Solaris we do NOT (and will not) have
+close(2) abort IO on the same descriptor from another thread.  So if one
+thread sits in recvmsg(2) while another does close(2), the socket will
+*NOT* actually shut down until recvmsg(2) returns.
