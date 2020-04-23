@@ -1,146 +1,102 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH 18/21] mm: rename free_area_init_node() to
- free_area_init_memoryless_node()
-Date: Thu, 23 Apr 2020 09:18:46 +0300
-Message-ID: <20200423061846.GG14260@kernel.org>
-References: <20200412194859.12663-1-rppt@kernel.org>
- <20200412194859.12663-19-rppt@kernel.org>
- <20200423031454.GB4247@MiWiFi-R3L-srv>
+From: Bernd Petrovitsch <bernd@petrovitsch.priv.at>
+Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
+Date: Thu, 23 Apr 2020 12:34:09 +0000
+Message-ID: <f3640ed9-d846-9cbd-7690-53da5ff1473a@petrovitsch.priv.at>
+References: <20200420071548.62112-1-nate.karstens@garmin.com>
+ <20200420071548.62112-2-nate.karstens@garmin.com>
+ <fa6c5c9c7c434f878c94a7c984cd43ba@garmin.com>
+ <20200422154356.GU5820@bombadil.infradead.org>
+ <6ed7bd08892b4311b70636658321904f@garmin.com>
+ <97f05204-a27c-7cc8-429a-edcf6eebaa11@petrovitsch.priv.at>
+ <337320db094d4426a621858fa0f6d7fd@AcuMS.aculab.com>
 Mime-Version: 1.0
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:In-Reply-To:
-	Content-Type:MIME-Version:References:Message-ID:Subject:To:From:Date:Reply-To
-	:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=dh2krBnBlJyzDsk8qYHEXHK+MJD0IuUmqU6wKjudxHY=; b=acu1nzsz3Q47qEKgj49hCcx0W
-	ILVdXHe4GF/1AmsuSXgKq7SD5yDmUSPLJjbF7QoxpK92++wY/T+KXF/Xi/3MxLzhKeiU/HeOvS/ye
-	aDV74i5pRmcmV+G1MTsapjnJYylKW4vAuaj6dQd9biVoMWtzDHpsYWxTbHsjwrArxjxtIV1EIHS6v
-	Za8HbZJZCC+1ZoVfRhnmwHLGHKpaNitj8GT86+7ABD4RKCoP6Iawus6blzBaXFjEay9H1Mg7RVGoJ
-	GsURtVVwvgFNAzUCiPeexKwjZFFFrZsSXxZ8oHaVgTwSP4BIRNmQC7dp46laiS9yWtImL1MtVifdd
-	gCMO7T1ow==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1587622747;
- bh=XAOpZMZuKtQOaCSltmHvqjx8KIGVvFXiMPcjDZEl0rA=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=HxB6zMO+6CDyEhlfbmXcyjA3hwfo5BsFHXL+8EuxLXRM+KiN3MMLaZNN7rZgUR0qI
- jmPAEC89wzyqlGM5pBmEe3melg31/h3Qf5fK53tQ15so5OPKvaPCC/QB1tnqRS0yzf
- 5yaRrjPukCXQt+ddPhw2nofayHbWi5BZUuPi3C28=
-Content-Disposition: inline
-In-Reply-To: <20200423031454.GB4247@MiWiFi-R3L-srv>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Baoquan He <bhe@redhat.com>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Michal Hocko <mhocko@kernel.org>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Greg Ungerer <gerg@linux-m68k.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-c6x-dev@linux-c6x.org, Brian Cain <bcain@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, linux-sh@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ley Foon Tan <ley.foon.>
+Content-Type: multipart/mixed;
+ boundary="------------985EBFE9F348F8C36FCBAAF1"
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <337320db094d4426a621858fa0f6d7fd@AcuMS.aculab.com>
+Content-Language: en-US
+Sender: netdev-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: David Laight <David.Laight@ACULAB.COM>, "Karstens, Nate" <Nate.Karstens@garmin.com>, Matthew Wilcox <willy@infradead.org>
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, "netdev@vger.kernel.org" <ne>
 
-On Thu, Apr 23, 2020 at 11:14:54AM +0800, Baoquan He wrote:
-> On 04/12/20 at 10:48pm, Mike Rapoport wrote:
-> > From: Mike Rapoport <rppt@linux.ibm.com>
-> > 
-> > The free_area_init_node() is only used by x86 to initialize a memory-less
-> > nodes.
-> > Make its name reflect this and drop all the function parameters except node
-> > ID as they are anyway zero.
-> > 
-> > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> > ---
-> >  arch/x86/mm/numa.c | 5 +----
-> >  include/linux/mm.h | 9 +++------
-> >  mm/page_alloc.c    | 7 ++-----
-> >  3 files changed, 6 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
-> > index fe024b2ac796..8ee952038c80 100644
-> > --- a/arch/x86/mm/numa.c
-> > +++ b/arch/x86/mm/numa.c
-> > @@ -737,12 +737,9 @@ void __init x86_numa_init(void)
-> >  
-> >  static void __init init_memory_less_node(int nid)
-> >  {
-> > -	unsigned long zones_size[MAX_NR_ZONES] = {0};
-> > -	unsigned long zholes_size[MAX_NR_ZONES] = {0};
-> > -
-> >  	/* Allocate and initialize node data. Memory-less node is now online.*/
-> >  	alloc_node_data(nid);
-> > -	free_area_init_node(nid, zones_size, 0, zholes_size);
-> > +	free_area_init_memoryless_node(nid);
-> >  
-> >  	/*
-> >  	 * All zonelists will be built later in start_kernel() after per cpu
-> > diff --git a/include/linux/mm.h b/include/linux/mm.h
-> > index 1c2ecb42e043..27660f6cf26e 100644
-> > --- a/include/linux/mm.h
-> > +++ b/include/linux/mm.h
-> > @@ -2272,8 +2272,7 @@ static inline spinlock_t *pud_lock(struct mm_struct *mm, pud_t *pud)
-> >  }
-> >  
-> >  extern void __init pagecache_init(void);
-> > -extern void __init free_area_init_node(int nid, unsigned long * zones_size,
-> > -		unsigned long zone_start_pfn, unsigned long *zholes_size);
-> > +extern void __init free_area_init_memoryless_node(int nid);
-> >  extern void free_initmem(void);
-> >  
-> >  /*
-> > @@ -2345,10 +2344,8 @@ static inline unsigned long get_num_physpages(void)
-> >  
-> >  /*
-> >   * Using memblock node mappings, an architecture may initialise its
-> > - * zones, allocate the backing mem_map and account for memory holes in a more
-> > - * architecture independent manner. This is a substitute for creating the
-> > - * zone_sizes[] and zholes_size[] arrays and passing them to
-> > - * free_area_init_node()
-> > + * zones, allocate the backing mem_map and account for memory holes in an
-> > + * architecture independent manner.
-> >   *
-> >   * An architecture is expected to register range of page frames backed by
-> >   * physical memory with memblock_add[_node]() before calling
-> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> > index 376434c7a78b..e46232ec4849 100644
-> > --- a/mm/page_alloc.c
-> > +++ b/mm/page_alloc.c
-> > @@ -6979,12 +6979,9 @@ static void __init __free_area_init_node(int nid, unsigned long *zones_size,
-> >  	free_area_init_core(pgdat);
-> >  }
-> >  
-> > -void __init free_area_init_node(int nid, unsigned long *zones_size,
-> > -				unsigned long node_start_pfn,
-> > -				unsigned long *zholes_size)
-> > +void __init free_area_init_memoryless_node(int nid)
-> >  {
-> > -	__free_area_init_node(nid, zones_size, node_start_pfn, zholes_size,
-> > -			      true);
-> > +	__free_area_init_node(nid, NULL, 0, NULL, false);
-> 
-> Can we move free_area_init_memoryless_node() definition into 
-> arch/x86/mm/numa.c since there's only one caller there?
-> 
-> And I am also wondering if adding a wrapper
-> free_area_init_memoryless_node() is necessary if it's only called the
-> function free_area_init_node().
+This is a multi-part message in MIME format.
+--------------985EBFE9F348F8C36FCBAAF1
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Yeah, I think this patch can be entirely dropped and the next one could
-be slightly updated :)
-Thanks!
+Hi all!
 
-> >  }
-> >  
-> >  #if !defined(CONFIG_FLAT_NODE_MEM_MAP) -- 
-> > 2.25.1
-> > 
-> 
+On 22/04/2020 16:55, David Laight wrote:
+> From: Bernd Petrovitsch
+>> Sent: 22 April 2020 17:32
+> ...
+>> Apart from that, system() is a PITA even on
+>> single/non-threaded apps.
+>=20
+> Not only that, it is bloody dangerous because (typically)
+> shell is doing post substitution syntax analysis.
 
--- 
-Sincerely yours,
-Mike.
+I actually meant exactly that with PITA;-)
 
+> If you need to run an external process you need to generate
+> an arv[] array containing the parameters.
+
+FullACK. That is usually similar trivial ...
+
+MfG,
+	Bernd
+--=20
+There is no cloud, just other people computers.
+-- https://static.fsf.org/nosvn/stickers/thereisnocloud.svg
+
+--------------985EBFE9F348F8C36FCBAAF1
+Content-Type: application/pgp-keys;
+ name="pEpkey.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="pEpkey.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQGNBFss+8cBDACpXlq0ZC9Qp8R+iFPx5vDPu12FpnmbbV8CwexVDchdizF2qz+A
+PFh12RrkE6yudI0r7peAIRePiSVYqv8XT82TpJM+tbTYk/MSQaPhcmz8jl1HaKv0
+q8g5nKtr42qRsswU7Q2Sa6mWXaIdOisPYZ9eLZC9BDBhI/YrgdAwszyYJ1HUwNkp
+Dw5i4wW/SsIKrotCboYzbBjZfHbmDJr4dFYSoMg5jQVHD2Yz8fqNSoRyd7i/oicn
+1bH/DjEkrmIu9YuptuHYmblpCRo5dLww7kgszNw12j8Iljp64uJ/uz5+asBUmRZM
+mGey82BB1DnIvy1v+GnbGWFIYy79/HeqdN+KbOgO/sXoqYKS5KJ6aSqWOLTQk6sv
+AnDN2PNF5jOB9ROCNwoQSH/YNEfMd/mQ5pGB0UJ4ykD0UnjW7DdXbVOwvwWzfHF7
+HaZXB1NMpBzHxold3W19DThd4HECvXYZ6Au6p0WE8IfABS11CzbX7KJuD5Ua+xKG
+3W05fMg5i0td2aMAEQEAAbQtQmVybmQgUGV0cm92aXRzY2ggPGJlcm5kQHBldHJv
+dml0c2NoLnByaXYuYXQ+iQHUBBMBCgA+AhsDBQsJCAcDBRUKCQgLBRYDAgEAAh4B
+AheAFiEEgDWyyHEwksebo557hUq7AhBHKGYFAl0HmCMFCQO7nFkACgkQhUq7AhBH
+KGZCIQv+Li5U6ZfZ21JJPPzcV4JOq9nzz5YvJpPBwOtDgiDfsJ1WuSjJD0KpeCLh
+nxeTnGM1PwdjtXBImstZfDOX/IH/iiNgWLNz80KKx03yH40tDTPthZ/x5DVIm8Fb
+n4GmGqfTFQCR8km7sNPC1YUOUrQf1FevYq/F/tHsifiisEay4547aNIrWb8bdhpA
+ASSZeSNrVP6YDZIyHaMUo3f0js2e4YiS8JIkA8ysvJyLYifcL+fEERElDMUZql+i
+9/GZwvqG1hk0VNdXybMQuhJgZ8JqJ1sxZqMbr5aS6cnu8qX4C0H2S3u8GZnh9nKG
+03Ly/7m+LF5zo1nGsiJ+9IOaTYIC6y/bdJKCmJQhrMj+J6nU4R9nN7UbEb+cO0/8
+QzpnfbOdPkUl58ho/C/alB5kb5yMMhbrmteG4TQJo2Jj9oTFDKbvaYe/zsXTCK0E
+ZbSiZ4XuY/HvKPegjlptgm7gWLoCE85p1/ELtLiXQ0xQCmBmqwVO856Afw5jpRxd
+2nQF2OCsuQGNBFss+8kBDADRASin2ms38GGbHv5HcWkVWDtPQo08ceO5ULrtA3G3
+lQrv08pbKfSw91n5cIOCDvcCY29GrVZ/lcSGov855zu6tFZ/T+d68zth3aWZzR5d
+Brz6Nb6DclyEMkfKX2xYT7tGoN9XgBboG4yWgTMKvlu6yKxxJM4AM5AjpHodsXwP
+txvzqnmfgIQ4k0idqB7c7khiFsraUM1+f0/Bn+p+RPhqg+C33Ui38IWdwtNgck+G
+U7+WYQi3LxD2mu8BC0NIYJMiFTUPC0a4FTQtKCXno5Stys5wYG6OXiGOw3sTbs3v
+qy95H5/cVa6mf81OiNZP1liXnm0cBrT+UbFgtZk/OnoekzS7RPCdCuMZyxMqPTLl
++EjNyejmSN3cnGLNDa+Jh/eSIUZzvihuNFxdtQQfuD+nqoPanfSfrWaDABMU7Daf
+6vZI10D3d473WzCplWR4A+Rdm8ysi2haas7KZnL+ajcEo2jCghW83BQPBD57fEtl
+UWLXihAFcEiSx0i2AUAXYOcAEQEAAYkBvAQYAQoAJgIbDBYhBIA1sshxMJLHm6Oe
+e4VKuwIQRyhmBQJdB5gjBQkDu5xXAAoJEIVKuwIQRyhmjFAL/R+o+JL25Dbgyrof
+aJ2dXWbLKsR0WSVwLY8CPVlSylQo8Z7lQ7egMMUU2QKOEJfC2BpXZl/TbHURgkUG
+uRAw+WsFTlqW+OEbsXXnzdonz/K4YtKUHo/cc9os9Iv3xoAqwa7mSMe4vgvyuskI
+VEbyqtOXvKZ2UTQlBh1Etnkkg6uOfSFbWi7IN0fv8gjsImSCuhn9JKWSSMeKWeu0
++cleW5uRuVexv5nCfVzzye673X+knkcchyUZ40cD9OzME9JHCzAmDWmHobFqsemr
++2umZxCGzqLttmILn61NdmQvmauDFjNw383ngbMbk4bhduaWWV5dDlXmbsi4bDk6
+HCaskYsbEHXXoOmb/ts7lP6ifqvT1ZfuogJfn5bXv1Sm4IJubJ4S4ZYrLg2fKlWH
+GWMRJlAOV5swTOmw4Gk/PV6jR/ioZxRiZtSZK1Pkso0gbla+HLY4OCo68eafP66p
+H2CEDcqDEBnjApKnTO1a6DtRkQzEs0aLhvXwhvt/HL6/lXIVQA=3D=3D
+=3DGX6K
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------985EBFE9F348F8C36FCBAAF1--
