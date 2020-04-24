@@ -1,102 +1,87 @@
-From: Bernd Petrovitsch <bernd@petrovitsch.priv.at>
-Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
-Date: Thu, 23 Apr 2020 12:34:09 +0000
-Message-ID: <f3640ed9-d846-9cbd-7690-53da5ff1473a@petrovitsch.priv.at>
-References: <20200420071548.62112-1-nate.karstens@garmin.com>
- <20200420071548.62112-2-nate.karstens@garmin.com>
- <fa6c5c9c7c434f878c94a7c984cd43ba@garmin.com>
- <20200422154356.GU5820@bombadil.infradead.org>
- <6ed7bd08892b4311b70636658321904f@garmin.com>
- <97f05204-a27c-7cc8-429a-edcf6eebaa11@petrovitsch.priv.at>
- <337320db094d4426a621858fa0f6d7fd@AcuMS.aculab.com>
+From: Baoquan He <bhe@redhat.com>
+Subject: Re: [PATCH 17/21] mm: free_area_init: allow defining max_zone_pfn in
+ descending order
+Date: Fri, 24 Apr 2020 08:33:56 +0800
+Message-ID: <20200424003356.GA10119@MiWiFi-R3L-srv>
+References: <20200412194859.12663-1-rppt@kernel.org>
+ <20200412194859.12663-18-rppt@kernel.org>
+ <20200423025311.GZ4247@MiWiFi-R3L-srv>
+ <20200423025720.GA4247@MiWiFi-R3L-srv>
+ <20200423055559.GF14260@kernel.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------985EBFE9F348F8C36FCBAAF1"
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <337320db094d4426a621858fa0f6d7fd@AcuMS.aculab.com>
-Content-Language: en-US
-Sender: netdev-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-To: David Laight <David.Laight@ACULAB.COM>, "Karstens, Nate" <Nate.Karstens@garmin.com>, Matthew Wilcox <willy@infradead.org>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, "netdev@vger.kernel.org" <ne>
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Cc:List-Subscribe:
+	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:In-Reply-To:
+	Content-Type:MIME-Version:References:Message-ID:Subject:To:From:Date:Reply-To
+	:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	 bh=n2dWJbdFmIc0aMZ8wHTt5vQhPaXxDdsL9ipp25mLNTI=; b=gaCYbtIKGhf9r7DMHoUKy6pul
+	nTKbEdzQ39WVB1dKq4BU0uNeRf+/wW+8GzyPnnioozYhI3WnLD/scfP8S60DbspzmGPCGlU7iDfOw
+	FRogX6NhJCuO7vquvlJuZVaOCyd58E38KRH09gxVjQw/JtqJJLawIA6xzjhlxBLmKUHMtAP+dZ5+c
+	YfDr8UF/ta7DIHmUT0wpFIxoPC0j9MLQ7jR6a3mnoSb599ewzfGQDdR0zH1wtmSYKPVvV9zEbWG4a
+	kW9hxzqkXlHzpINmPqBNx9gtJhB3lYVmkgdHhW1OA7EKBYE1yvrszey0IS2Ei3KptWr65Iys68DG2
+	wId1y1weg==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1587688453;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=n2dWJbdFmIc0aMZ8wHTt5vQhPaXxDdsL9ipp25mLNTI=;
+ b=eTmMEfXZAwNiRciPiT/2R4efctZxwysLoOEOVLuaQHYhsgs+1nUUTTIEa+GlWs6BinkhT+
+ GfUhNQ8DNAE0D6d0zVFRyY9zaj8EMII0AeZucu/vOBaRqeQ3D6MuU+W7O44hk21hfwtXzR
+ wI1FCE8+Cgg4ZzF6/fyI+Gl7eBnY4EU=
+Content-Disposition: inline
+In-Reply-To: <20200423055559.GF14260@kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Mike Rapoport <rppt@kernel.org>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Michal Hocko <mhocko@kernel.org>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Greg Ungerer <gerg@linux-m68k.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-c6x-dev@linux-c6x.org, Brian Cain <bcain@codeaurora.org>, Jonathan Corbet <corbet@lwn.net>, linux-sh@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ley Foon Tan <ley.foon.>
 
-This is a multi-part message in MIME format.
---------------985EBFE9F348F8C36FCBAAF1
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+On 04/23/20 at 08:55am, Mike Rapoport wrote:
+> On Thu, Apr 23, 2020 at 10:57:20AM +0800, Baoquan He wrote:
+> > On 04/23/20 at 10:53am, Baoquan He wrote:
+> > > On 04/12/20 at 10:48pm, Mike Rapoport wrote:
+> > > > From: Mike Rapoport <rppt@linux.ibm.com>
+> > > > 
+> > > > Some architectures (e.g. ARC) have the ZONE_HIGHMEM zone below the
+> > > > ZONE_NORMAL. Allowing free_area_init() parse max_zone_pfn array even it is
+> > > > sorted in descending order allows using free_area_init() on such
+> > > > architectures.
+> > > > 
+> > > > Add top -> down traversal of max_zone_pfn array in free_area_init() and use
+> > > > the latter in ARC node/zone initialization.
+> > > 
+> > > Or maybe leave ARC as is. The change in this patchset doesn't impact
+> > > ARC's handling about zone initialization, leaving it as is can reduce
+> > > the complication in implementation of free_area_init(), which is a
+> > > common function. So I personally don't see a strong motivation to have
+> > > this patch.
+> > 
+> > OK, seems this patch is prepared to simplify free_area_init_node(), so
+> > take back what I said at above.
+> > 
+> > Then this looks necessary, even though it introduces special case into
+> > common function free_area_init().
+> 
+> The idea is to have a single free_area_init() for all architectures
+> without keeping two completely different ways of calculating the zone
+> extents.
+> Another thing, is that with this we could eventually switch ARC from
+> DISCONTIGMEM.
 
-Hi all!
+Yeah, I think uniting them into a single free_area_init() is a great
+idea. Even though I had been through this patchset, when looked into
+each of them, still may forget the detail in later patch :)
 
-On 22/04/2020 16:55, David Laight wrote:
-> From: Bernd Petrovitsch
->> Sent: 22 April 2020 17:32
-> ...
->> Apart from that, system() is a PITA even on
->> single/non-threaded apps.
->=20
-> Not only that, it is bloody dangerous because (typically)
-> shell is doing post substitution syntax analysis.
 
-I actually meant exactly that with PITA;-)
-
-> If you need to run an external process you need to generate
-> an arv[] array containing the parameters.
-
-FullACK. That is usually similar trivial ...
-
-MfG,
-	Bernd
---=20
-There is no cloud, just other people computers.
--- https://static.fsf.org/nosvn/stickers/thereisnocloud.svg
-
---------------985EBFE9F348F8C36FCBAAF1
-Content-Type: application/pgp-keys;
- name="pEpkey.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="pEpkey.asc"
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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3D=3D
-=3DGX6K
------END PGP PUBLIC KEY BLOCK-----
-
---------------985EBFE9F348F8C36FCBAAF1--
