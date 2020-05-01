@@ -1,177 +1,116 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: [PATCH v2.5 16/20] mm: remove early_pfn_in_nid() and
- CONFIG_NODES_SPAN_OTHER_NODES
-Date: Wed, 29 Apr 2020 19:29:17 +0300
-Message-ID: <20200429162917.GL14260@kernel.org>
-References: <20200429121126.17989-1-rppt@kernel.org>
- <20200429121126.17989-17-rppt@kernel.org>
+From: "Karstens, Nate" <Nate.Karstens@garmin.com>
+Subject: RE: [PATCH 1/4] fs: Implement close-on-fork
+Date: Fri, 1 May 2020 14:45:16 +0000
+Message-ID: <0e884704c25740df8e652d50431facff@garmin.com>
+References: <20200420071548.62112-1-nate.karstens@garmin.com>
+ <20200420071548.62112-2-nate.karstens@garmin.com>
+ <36dce9b4-a0bf-0015-f6bc-1006938545b1@gmail.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: base64
+Return-path: <linux-fsdevel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iESgZOnK8SZKK6FXkXpC5ktu51akSyOH622vuGDzIXI=;
+ b=P/AlArPQ9y+C6eY3MAmb6yyOy9+aOUCBW6H/KRDTmuquAjCgKxZRF2iZz6G4JxjBkT04nLslShPAZ9QJ2By4EbzALQrGzk/wNpfP4iRf0Y1k6zADQbUWh5UHQWBOwO0I7/+dfBUcW2Y4PlWfIAem1p6YmfpY9IbP+ECTu00aDL8NKvQghMqiVM+qdAb6m0BGZSnYnTGM82Ec547da7kIOV0Ac8wpllXMH0P0PYJOjqw9UOviQVIgUBmmr0OKep5dc1NKw6qCoMnnoVbn/NV2sEVPbFrjMbQa4T9hiF8hOYTK2nZ5ZxKYD+uKKNuWqFM9bi+DJc0gBEi9ysbK8tM8Ow==
+In-Reply-To: <36dce9b4-a0bf-0015-f6bc-1006938545b1@gmail.com>
+Content-Language: en-US
+Sender: linux-fsdevel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=33g0klh+3GdofcME0FTHFeeBIPD1vFulNjGnAbw9ZFM=; b=NVqaABeRnvPPkl
-	N5O1fwPXI6oUZpT8ey9lSJRMN/veviuRu1ZEvNQuQvguQxzObSGnFVRUanyy5xGqImiYDT4Jcn/+E
-	HuMiizLtEJyZ2bBHLqfsmfypvwsbyh7tN+Fy0Vlvf7bcBRVIvSZvtcD5C1NiPFJRm6QWMwNJT0z0L
-	8E8s2s6AIN45rFA11mr9ZkoK/nL32XJ1dCLbYZ2LMTmJ26p9FLoY5F7WtngD5hgsCQOCaUPTfbe1y
-	RfCIUlFHL6m08TSjB1z3NLnaCTgeIgrG+BAkQKTpAkUbnW71XXuvEmRaAx3w20em0pFWgI7EQ5IQM
-	/3hwVNauUcVQkDomtnbw==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1588177793;
- bh=0WLAW3RaOJqIeviw62D+1sbYIwOWpLfyLvSFzBZ/1RI=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=bX4UmI7YY7MbsM77fB95EYPVrNNMyR/EBLX8BbChEAsts+ChnIZnmlY0s5J3v1ES0
- 21Fy8E5o4VRlcz1gU4A9jUkztNYslFtzPSQ8j0i0q67mtFD7Z5RqJBXEJMqoU2jMSR
- FjIyjtx7U4phJ9zZIH0PgtWqCfz1Qfs4hHO4D1HM=
-Content-Disposition: inline
-In-Reply-To: <20200429121126.17989-17-rppt@kernel.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Michal Hocko <mhocko@kernel.org>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Mike Rapoport <rppt@linux.ibm.com>, Greg Ungerer <gerg@linux-m68k.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-c6x-dev@linux-c6x.org, Baoquan He <bhe@redhat.com>, Jonathan Corbet <corbet@lwn.net>, linux-sh@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.or>
+To: Eric Dumazet <eric.dumazet@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.>
+Cc: Changli Gao <xiaosuo@gmail.com>
 
-On Wed, Apr 29, 2020 at 03:11:22PM +0300, Mike Rapoport wrote:
-> From: Mike Rapoport <rppt@linux.ibm.com>
-> 
-> The commit f47ac088c406 ("mm: memmap_init: iterate over memblock regions
-> rather that check each PFN") made early_pfn_in_nid() obsolete and since
-> CONFIG_NODES_SPAN_OTHER_NODES is only used to pick a stub or a real
-> implementation of early_pfn_in_nid() it is also not needed anymore.
-> 
-> Remove both early_pfn_in_nid() and the CONFIG_NODES_SPAN_OTHER_NODES.
-> 
-> Co-developed-by: Hoan Tran <Hoan@os.amperecomputing.com>
-> Signed-off-by: Hoan Tran <Hoan@os.amperecomputing.com>
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> ---
-
-Here's the version with the updated changelog:
-
-From 7415d1a9b7000c6eecd9f63770592e4d4a8d2463 Mon Sep 17 00:00:00 2001
-From: Mike Rapoport <rppt@linux.ibm.com>
-Date: Sat, 11 Apr 2020 11:26:49 +0300
-Subject: [PATCH v2.5] mm: remove early_pfn_in_nid() and CONFIG_NODES_SPAN_OTHER_NODES
-
-The memmap_init() function was made to iterate over memblock regions and as
-the result the early_pfn_in_nid() function became obsolete.
-Since CONFIG_NODES_SPAN_OTHER_NODES is only used to pick a stub or a real
-implementation of early_pfn_in_nid(), it is also not needed anymore.
-
-Remove both early_pfn_in_nid() and the CONFIG_NODES_SPAN_OTHER_NODES.
-
-Co-developed-by: Hoan Tran <Hoan@os.amperecomputing.com>
-Signed-off-by: Hoan Tran <Hoan@os.amperecomputing.com>
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
----
- arch/powerpc/Kconfig |  9 ---------
- arch/sparc/Kconfig   |  9 ---------
- arch/x86/Kconfig     |  9 ---------
- mm/page_alloc.c      | 20 --------------------
- 4 files changed, 47 deletions(-)
-
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 5f86b22b7d2c..74f316deeae1 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -685,15 +685,6 @@ config ARCH_MEMORY_PROBE
- 	def_bool y
- 	depends on MEMORY_HOTPLUG
- 
--# Some NUMA nodes have memory ranges that span
--# other nodes.  Even though a pfn is valid and
--# between a node's start and end pfns, it may not
--# reside on that node.  See memmap_init_zone()
--# for details.
--config NODES_SPAN_OTHER_NODES
--	def_bool y
--	depends on NEED_MULTIPLE_NODES
--
- config STDBINUTILS
- 	bool "Using standard binutils settings"
- 	depends on 44x
-diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
-index 795206b7b552..0e4f3891b904 100644
---- a/arch/sparc/Kconfig
-+++ b/arch/sparc/Kconfig
-@@ -286,15 +286,6 @@ config NODES_SHIFT
- 	  Specify the maximum number of NUMA Nodes available on the target
- 	  system.  Increases memory reserved to accommodate various tables.
- 
--# Some NUMA nodes have memory ranges that span
--# other nodes.  Even though a pfn is valid and
--# between a node's start and end pfns, it may not
--# reside on that node.  See memmap_init_zone()
--# for details.
--config NODES_SPAN_OTHER_NODES
--	def_bool y
--	depends on NEED_MULTIPLE_NODES
--
- config ARCH_SPARSEMEM_ENABLE
- 	def_bool y if SPARC64
- 	select SPARSEMEM_VMEMMAP_ENABLE
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index f8bf218a169c..1ec2a5e2fef6 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1581,15 +1581,6 @@ config X86_64_ACPI_NUMA
- 	---help---
- 	  Enable ACPI SRAT based node topology detection.
- 
--# Some NUMA nodes have memory ranges that span
--# other nodes.  Even though a pfn is valid and
--# between a node's start and end pfns, it may not
--# reside on that node.  See memmap_init_zone()
--# for details.
--config NODES_SPAN_OTHER_NODES
--	def_bool y
--	depends on X86_64_ACPI_NUMA
--
- config NUMA_EMU
- 	bool "NUMA emulation"
- 	depends on NUMA
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 8d112defaead..d35ca0996a09 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1541,26 +1541,6 @@ int __meminit early_pfn_to_nid(unsigned long pfn)
- }
- #endif /* CONFIG_NEED_MULTIPLE_NODES */
- 
--#ifdef CONFIG_NODES_SPAN_OTHER_NODES
--/* Only safe to use early in boot when initialisation is single-threaded */
--static inline bool __meminit early_pfn_in_nid(unsigned long pfn, int node)
--{
--	int nid;
--
--	nid = __early_pfn_to_nid(pfn, &early_pfnnid_cache);
--	if (nid >= 0 && nid != node)
--		return false;
--	return true;
--}
--
--#else
--static inline bool __meminit early_pfn_in_nid(unsigned long pfn, int node)
--{
--	return true;
--}
--#endif
--
--
- void __init memblock_free_pages(struct page *page, unsigned long pfn,
- 							unsigned int order)
- {
--- 
-2.26.1
+RXJpYywNCg0KVGhhbmtzIGZvciB0aGUgc3VnZ2VzdGlvbi4gSSBsb29rZWQgaW50byBpdCBhbmQg
+bm90aWNlZCB0aGF0IGRvX2Nsb3NlX29uX2V4ZWMoKSBhcHBlYXJzIHRvIGhhdmUgc29tZSBvcHRp
+bWl6YXRpb25zIGFzIHdlbGw6DQoNCj4gc2V0ID0gZmR0LT5jbG9zZV9vbl9leGVjW2ldOw0KPiBp
+ZiAoIXNldCkNCj4gCWNvbnRpbnVlOyANCg0KSWYgd2UgaW50ZXJsZWF2ZSB0aGUgY2xvc2Utb24t
+ZXhlYyBhbmQgY2xvc2Utb24tZm9yayBmbGFncyB0aGVuIHRoaXMgb3B0aW1pemF0aW9uIHdpbGwg
+aGF2ZSB0byBiZSByZW1vdmVkLiBEbyB5b3UgaGF2ZSBhIHNlbnNlIG9mIHdoaWNoIG9wdGltaXph
+dGlvbiBwcm92aWRlcyB0aGUgbW9zdCBiZW5lZml0Pw0KDQpJIG5vdGljZWQgYSBjb3VwbGUgb2Yg
+b3RoZXIgaXNzdWVzIHdpdGggdGhlIG9yaWdpbmFsIHBhdGNoIHRoYXQgSSB3aWxsIG5lZWQgdG8g
+aW52ZXN0aWdhdGUgb3IgcmV3b3JrOg0KDQoxKSBJJ20gbm90IHN1cmUgZHVwX2ZkKCkgaXMgdGhl
+IGJlc3QgcGxhY2UgdG8gY2hlY2sgdGhlIGNsb3NlLW9uLWZvcmsgZmxhZy4gRm9yIGV4YW1wbGUs
+IHRoZSBrc3lzX3Vuc2hhcmUoKSA+IHVuc2hhcmVfZmQoKSA+IGR1cF9mZCgpIGV4ZWN1dGlvbiBw
+YXRoIHNlZW1zIHN1c3BlY3QuIEkgd2lsbCBlaXRoZXIgYWRkIGEgcGFyYW1ldGVyIHRvIHRoZSBm
+dW5jdGlvbiBpbmRpY2F0aW5nIGlmIHRoZSBmbGFnIHNob3VsZCBiZSBjaGVja2VkIG9yIGRvIGEg
+c2VwYXJhdGUgZnVuY3Rpb24sIGxpa2UgZG9fY2xvc2Vfb25fZm9yaygpLg0KMikgSWYgdGhlIGNs
+b3NlLW9uLWZvcmsgZmxhZyBpcyBzZXQsIHRoZW4gX19jbGVhcl9vcGVuX2ZkKCkgc2hvdWxkIGJl
+IGNhbGxlZCBpbnN0ZWFkIG9mIGp1c3QgX19jbGVhcl9iaXQoKS4gVGhpcyB3aWxsIGVuc3VyZSB0
+aGF0IGZkdC0+ZnVsbF9mZHNfYml0cygpIGlzIHVwZGF0ZWQuDQozKSBOZWVkIHRvIGludmVzdGln
+YXRlIGlmIHRoZSBjbG9zZS1vbi1mb3JrIChvciBjbG9zZS1vbi1leGVjKSBmbGFncyBuZWVkIHRv
+IGJlIGNsZWFyZWQgd2hlbiB0aGUgZmlsZSBpcyBjbG9zZWQgYXMgcGFydCBvZiB0aGUgY2xvc2Ut
+b24tZm9yayBleGVjdXRpb24gcGF0aC4NCg0KT3RoZXJzIC0tIEkgd2lsbCByZXNwb25kIHRvIGZl
+ZWRiYWNrIG91dHNpZGUgb2YgaW1wbGVtZW50YXRpb24gZGV0YWlscyBpbiBhIHNlcGFyYXRlIG1l
+c3NhZ2UuDQoNClRoYW5rcywNCg0KTmF0ZQ0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0K
+RnJvbTogRXJpYyBEdW1hemV0IDxlcmljLmR1bWF6ZXRAZ21haWwuY29tPiANClNlbnQ6IE1vbmRh
+eSwgQXByaWwgMjAsIDIwMjAgMDU6MjYNClRvOiBLYXJzdGVucywgTmF0ZSA8TmF0ZS5LYXJzdGVu
+c0BnYXJtaW4uY29tPjsgQWxleGFuZGVyIFZpcm8gPHZpcm9AemVuaXYubGludXgub3JnLnVrPjsg
+SmVmZiBMYXl0b24gPGpsYXl0b25Aa2VybmVsLm9yZz47IEouIEJydWNlIEZpZWxkcyA8YmZpZWxk
+c0BmaWVsZHNlcy5vcmc+OyBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPjsgUmljaGFyZCBI
+ZW5kZXJzb24gPHJ0aEB0d2lkZGxlLm5ldD47IEl2YW4gS29rc2hheXNreSA8aW5rQGp1cmFzc2lj
+LnBhcmsubXN1LnJ1PjsgTWF0dCBUdXJuZXIgPG1hdHRzdDg4QGdtYWlsLmNvbT47IEphbWVzIEUu
+Si4gQm90dG9tbGV5IDxKYW1lcy5Cb3R0b21sZXlASGFuc2VuUGFydG5lcnNoaXAuY29tPjsgSGVs
+Z2UgRGVsbGVyIDxkZWxsZXJAZ214LmRlPjsgRGF2aWQgUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxv
+ZnQubmV0PjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IGxpbnV4LWZzZGV2ZWxA
+dmdlci5rZXJuZWwub3JnOyBsaW51eC1hcmNoQHZnZXIua2VybmVsLm9yZzsgbGludXgtYWxwaGFA
+dmdlci5rZXJuZWwub3JnOyBsaW51eC1wYXJpc2NAdmdlci5rZXJuZWwub3JnOyBzcGFyY2xpbnV4
+QHZnZXIua2VybmVsLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZn
+ZXIua2VybmVsLm9yZw0KQ2M6IENoYW5nbGkgR2FvIDx4aWFvc3VvQGdtYWlsLmNvbT4NClN1Ympl
+Y3Q6IFJlOiBbUEFUQ0ggMS80XSBmczogSW1wbGVtZW50IGNsb3NlLW9uLWZvcmsNCg0KQ0FVVElP
+TiAtIEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgYW55IGxpbmtzIG9yIG9wZW4gYW55IGF0
+dGFjaG1lbnRzIHVubGVzcyB5b3UgdHJ1c3QgdGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVu
+dCBpcyBzYWZlLg0KDQoNCk9uIDQvMjAvMjAgMTI6MTUgQU0sIE5hdGUgS2Fyc3RlbnMgd3JvdGU6
+DQo+IFRoZSBjbG9zZS1vbi1mb3JrIGZsYWcgY2F1c2VzIHRoZSBmaWxlIGRlc2NyaXB0b3IgdG8g
+YmUgY2xvc2VkIA0KPiBhdG9taWNhbGx5IGluIHRoZSBjaGlsZCBwcm9jZXNzIGJlZm9yZSB0aGUg
+Y2hpbGQgcHJvY2VzcyByZXR1cm5zIGZyb20gDQo+IGZvcmsoKS4gSW1wbGVtZW50IHRoaXMgZmVh
+dHVyZSBhbmQgcHJvdmlkZSBhIG1ldGhvZCB0byBnZXQvc2V0IHRoZSANCj4gY2xvc2Utb24tZm9y
+ayBmbGFnIHVzaW5nIGZjbnRsKDIpLg0KPg0KPiBUaGlzIGZ1bmN0aW9uYWxpdHkgd2FzIGFwcHJv
+dmVkIGJ5IHRoZSBBdXN0aW4gQ29tbW9uIFN0YW5kYXJkcyANCj4gUmV2aXNpb24gR3JvdXAgZm9y
+IGluY2x1c2lvbiBpbiB0aGUgbmV4dCByZXZpc2lvbiBvZiB0aGUgUE9TSVggDQo+IHN0YW5kYXJk
+IChzZWUgaXNzdWUgMTMxOCBpbiB0aGUgQXVzdGluIEdyb3VwIERlZmVjdCBUcmFja2VyKS4NCg0K
+T2ggd2VsbC4uLiB5ZXQgYW5vdGhlciBmZWF0dXJlIHNsb3dpbmcgZG93biBhIGNyaXRpY2FsIHBh
+dGguDQoNCj4NCj4gQ28tZGV2ZWxvcGVkLWJ5OiBDaGFuZ2xpIEdhbyA8eGlhb3N1b0BnbWFpbC5j
+b20+DQo+IFNpZ25lZC1vZmYtYnk6IENoYW5nbGkgR2FvIDx4aWFvc3VvQGdtYWlsLmNvbT4NCj4g
+U2lnbmVkLW9mZi1ieTogTmF0ZSBLYXJzdGVucyA8bmF0ZS5rYXJzdGVuc0BnYXJtaW4uY29tPg0K
+PiAtLS0NCj4gIGZzL2ZjbnRsLmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDIgKysN
+Cj4gIGZzL2ZpbGUuYyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgNTAgKysrKysrKysr
+KysrKysrKysrKysrKysrKy0NCj4gIGluY2x1ZGUvbGludXgvZmR0YWJsZS5oICAgICAgICAgICAg
+ICAgIHwgIDcgKysrKw0KPiAgaW5jbHVkZS9saW51eC9maWxlLmggICAgICAgICAgICAgICAgICAg
+fCAgMiArKw0KPiAgaW5jbHVkZS91YXBpL2FzbS1nZW5lcmljL2ZjbnRsLmggICAgICAgfCAgNSAr
+LS0NCj4gIHRvb2xzL2luY2x1ZGUvdWFwaS9hc20tZ2VuZXJpYy9mY250bC5oIHwgIDUgKy0tDQo+
+ICA2IGZpbGVzIGNoYW5nZWQsIDY2IGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25zKC0pDQo+DQo+
+IGRpZmYgLS1naXQgYS9mcy9mY250bC5jIGIvZnMvZmNudGwuYw0KPiBpbmRleCAyZTRjMGZhMjA3
+NGIuLjIzOTY0YWJmNGExYSAxMDA2NDQNCj4gLS0tIGEvZnMvZmNudGwuYw0KPiArKysgYi9mcy9m
+Y250bC5jDQo+IEBAIC0zMzUsMTAgKzMzNSwxMiBAQCBzdGF0aWMgbG9uZyBkb19mY250bChpbnQg
+ZmQsIHVuc2lnbmVkIGludCBjbWQsIHVuc2lnbmVkIGxvbmcgYXJnLA0KPiAgICAgICAgICAgICAg
+IGJyZWFrOw0KPiAgICAgICBjYXNlIEZfR0VURkQ6DQo+ICAgICAgICAgICAgICAgZXJyID0gZ2V0
+X2Nsb3NlX29uX2V4ZWMoZmQpID8gRkRfQ0xPRVhFQyA6IDA7DQo+ICsgICAgICAgICAgICAgZXJy
+IHw9IGdldF9jbG9zZV9vbl9mb3JrKGZkKSA/IEZEX0NMT0ZPUksgOiAwOw0KPiAgICAgICAgICAg
+ICAgIGJyZWFrOw0KPiAgICAgICBjYXNlIEZfU0VURkQ6DQo+ICAgICAgICAgICAgICAgZXJyID0g
+MDsNCj4gICAgICAgICAgICAgICBzZXRfY2xvc2Vfb25fZXhlYyhmZCwgYXJnICYgRkRfQ0xPRVhF
+Qyk7DQo+ICsgICAgICAgICAgICAgc2V0X2Nsb3NlX29uX2ZvcmsoZmQsIGFyZyAmIEZEX0NMT0ZP
+UkspOw0KPiAgICAgICAgICAgICAgIGJyZWFrOw0KPiAgICAgICBjYXNlIEZfR0VURkw6DQo+ICAg
+ICAgICAgICAgICAgZXJyID0gZmlscC0+Zl9mbGFnczsNCj4gZGlmZiAtLWdpdCBhL2ZzL2ZpbGUu
+YyBiL2ZzL2ZpbGUuYw0KPiBpbmRleCBjOGE0ZTRjODZlNTUuLmRlNzI2MGJhNzE4ZCAxMDA2NDQN
+Cj4gLS0tIGEvZnMvZmlsZS5jDQo+ICsrKyBiL2ZzL2ZpbGUuYw0KPiBAQCAtNTcsNiArNTcsOCBA
+QCBzdGF0aWMgdm9pZCBjb3B5X2ZkX2JpdG1hcHMoc3RydWN0IGZkdGFibGUgKm5mZHQsIHN0cnVj
+dCBmZHRhYmxlICpvZmR0LA0KPiAgICAgICBtZW1zZXQoKGNoYXIgKiluZmR0LT5vcGVuX2ZkcyAr
+IGNweSwgMCwgc2V0KTsNCj4gICAgICAgbWVtY3B5KG5mZHQtPmNsb3NlX29uX2V4ZWMsIG9mZHQt
+PmNsb3NlX29uX2V4ZWMsIGNweSk7DQo+ICAgICAgIG1lbXNldCgoY2hhciAqKW5mZHQtPmNsb3Nl
+X29uX2V4ZWMgKyBjcHksIDAsIHNldCk7DQo+ICsgICAgIG1lbWNweShuZmR0LT5jbG9zZV9vbl9m
+b3JrLCBvZmR0LT5jbG9zZV9vbl9mb3JrLCBjcHkpOw0KPiArICAgICBtZW1zZXQoKGNoYXIgKilu
+ZmR0LT5jbG9zZV9vbl9mb3JrICsgY3B5LCAwLCBzZXQpOw0KPg0KDQpJIHN1Z2dlc3Qgd2UgZ3Jv
+dXAgdGhlIHR3byBiaXRzIG9mIGEgZmlsZSAoY2xvc2Vfb25fZXhlYywgY2xvc2Vfb25fZm9yaykg
+dG9nZXRoZXIsIHNvIHRoYXQgd2UgZG8gbm90IGhhdmUgdG8gZGlydHkgdHdvIHNlcGFyYXRlIGNh
+Y2hlIGxpbmVzLg0KDQpPdGhlcndpc2Ugd2Ugd2lsbCBhZGQgeWV0IGFub3RoZXIgY2FjaGUgbGlu
+ZSBtaXNzIGF0IGV2ZXJ5IGZpbGUgb3BlbmluZy9jbG9zaW5nIGZvciBwcm9jZXNzZXMgd2l0aCBi
+aWcgZmlsZSB0YWJsZXMuDQoNCkllIGhhdmluZyBhIF9zaW5nbGVfIGJpdG1hcCBhcnJheSwgZXZl
+biBiaXQgZm9yIGNsb3NlX29uX2V4ZWMsIG9kZCBiaXQgZm9yIGNsb3NlX29uX2ZvcmsNCg0Kc3Rh
+dGljIGlubGluZSB2b2lkIF9fc2V0X2Nsb3NlX29uX2V4ZWModW5zaWduZWQgaW50IGZkLCBzdHJ1
+Y3QgZmR0YWJsZSAqZmR0KSB7DQogICAgICAgIF9fc2V0X2JpdChmZCAqIDIsIGZkdC0+Y2xvc2Vf
+b25fZm9ya19leGVjKTsgfQ0KDQpzdGF0aWMgaW5saW5lIHZvaWQgX19zZXRfY2xvc2Vfb25fZm9y
+ayh1bnNpZ25lZCBpbnQgZmQsIHN0cnVjdCBmZHRhYmxlICpmZHQpIHsNCiAgICAgICAgX19zZXRf
+Yml0KGZkICogMiArIDEsIGZkdC0+Y2xvc2Vfb25fZm9ya19leGVjKTsgfQ0KDQpBbHNvIHRoZSBG
+X0dFVEZEL0ZfU0VURkQgaW1wbGVtZW50YXRpb24gbXVzdCB1c2UgYSBzaW5nbGUgZnVuY3Rpb24g
+Y2FsbCwgdG8gbm90IGFjcXVpcmUgdGhlIHNwaW5sb2NrIHR3aWNlLg0KDQoNCg==
