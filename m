@@ -1,34 +1,50 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
-Date: Fri, 1 May 2020 08:23:42 -0700
-Message-ID: <20200501152342.GA29705@bombadil.infradead.org>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: RE: [PATCH 1/4] fs: Implement close-on-fork
+Date: Sun, 3 May 2020 13:52:45 +0000
+Message-ID: <4d00ffe759ec4f87bd7f4e663732838b@AcuMS.aculab.com>
 References: <20200420071548.62112-1-nate.karstens@garmin.com>
  <20200420071548.62112-2-nate.karstens@garmin.com>
  <36dce9b4-a0bf-0015-f6bc-1006938545b1@gmail.com>
  <0e884704c25740df8e652d50431facff@garmin.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=4jZBUar+kwlxf2npvTvVYY+2uyA6OkDur+ekCP/I/n4=; b=PQMcoMIXaHBSFdreh0e0CE+EW1
-        UkgeqGCLPbD6ya0kmRq4nvF5UKcqFJlWSKj1Iybj0oSkquznHqiNMWWTdEWcC4Zd1VqgyaYa1GlJ8
-        0ajMqmspKHSSPaqYW7aPqJvye/Sb234VuoDxCdBlPp+HGu35lV3Fro7YMeLsuXQJ4+uAJokq7bWPy
-        6j4Jg/Ib+gmOUEh6pzhl61DwVwAJm7sdK18+9sV7+EHUngupKzFzenyzy5XgNTEzWUe6StL6poqq0
-        iPoTnYmX/SKM8sEdEWd+hSzi1WlPz4nVImfTimXZUvdlNXzpkwiadDRN6COCYCHcg0g3Fm9KDbg7f
-        A0ellLFg==;
-Content-Disposition: inline
 In-Reply-To: <0e884704c25740df8e652d50431facff@garmin.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Karstens, Nate" <Nate.Karstens@garmin.com>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.ke>
+To: "'Karstens, Nate'" <Nate.Karstens@garmin.com>, Eric Dumazet <eric.dumazet@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.o>
+Cc: Changli Gao <xiaosuo@gmail.com>
 
-On Fri, May 01, 2020 at 02:45:16PM +0000, Karstens, Nate wrote:
-> Others -- I will respond to feedback outside of implementation details in a separate message.
+RnJvbTogS2Fyc3RlbnMsIE5hdGUNCj4gU2VudDogMDEgTWF5IDIwMjAgMTU6NDUNCj4gVGhhbmtz
+IGZvciB0aGUgc3VnZ2VzdGlvbi4gSSBsb29rZWQgaW50byBpdCBhbmQgbm90aWNlZCB0aGF0IGRv
+X2Nsb3NlX29uX2V4ZWMoKSBhcHBlYXJzIHRvIGhhdmUgc29tZQ0KPiBvcHRpbWl6YXRpb25zIGFz
+IHdlbGw6DQo+IA0KPiA+IHNldCA9IGZkdC0+Y2xvc2Vfb25fZXhlY1tpXTsNCj4gPiBpZiAoIXNl
+dCkNCj4gPiAJY29udGludWU7DQo+IA0KPiBJZiB3ZSBpbnRlcmxlYXZlIHRoZSBjbG9zZS1vbi1l
+eGVjIGFuZCBjbG9zZS1vbi1mb3JrIGZsYWdzIHRoZW4gdGhpcyBvcHRpbWl6YXRpb24gd2lsbCBo
+YXZlIHRvIGJlDQo+IHJlbW92ZWQuIERvIHlvdSBoYXZlIGEgc2Vuc2Ugb2Ygd2hpY2ggb3B0aW1p
+emF0aW9uIHByb3ZpZGVzIHRoZSBtb3N0IGJlbmVmaXQ/DQoNClRoaW5rcy4uLi4NCkEgbW9kZXJh
+dGUgcHJvcG9ydGlvbiBvZiBleGVjKCkgd2lsbCBoYXZlIGF0IGxlYXN0IG9uZSBmZCB3aXRoICdj
+bG9zZSBvbiBleGVjJyBzZXQuDQpWZXJ5IGZldyBmb3JrKCkgd2lsbCBoYXZlIGFueSBmZCB3aXRo
+ICdjbG9zZSBvbiBmb3JrJyBzZXQuDQpUaGUgJ2Nsb3NlIG9uIGZvcmsnIHRhYmxlIHNob3VsZG4n
+dCBiZSBjb3BpZWQgdG8gdGhlIGZvcmtlZCBwcm9jZXNzLg0KVGhlICdjbG9zZSBvbiBleGVjJyB0
+YWJsZSBpcyBkZWxldGVkIGJ5IGV4ZWMoKS4NCg0KU28uLi4NCk9uIGZvcmsoKSB0YWtlIGEgY29w
+eSBhbmQgY2xlYXIgdGhlICdjbG9zZV9vbl9mb3JrJyBiaXRtYXAuDQpGb3IgZXZlcnkgYml0IHNl
+dCBsb29rdXAgdGhlIGZkIGFuZCBjbG9zZSBpZiB0aGUgbGl2ZSBiaXQgaXMgc2V0Lg0KU2ltaWxh
+cmx5IGV4ZWMoKSBjbGVhcnMgYW5kIGFjdHMgb24gdGhlICdjbG9zZSBvbiBleGVjJyBtYXAuDQoN
+CllvdSBzaG91bGQgYmUgYWJsZSB0byB1c2UgdGhlIHNhbWUgJ2Nsb3NlIHRoZSBmZHMgaW4gdGhp
+cyBiaXRtYXAnDQpmdW5jdGlvbiBmb3IgYm90aCBjYXNlcy4NCg0KU28gSSB0aGluayB5b3UgbmVl
+ZCB0d28gYml0bWFwcy4NCkJ1dCB0aGUgY29kZSBuZWVkcyB0byBkaWZmZXJlbnRpYXRlIGJldHdl
+ZW4gcmVxdWVzdHMgdG8gc2V0IGJpdHMNCih3aGljaCBuZWVkIHRvIGFsbG9jYXRlL2V4dGVuZCB0
+aGUgYml0bWFwKSBhbmQgb25lcyB0byBjbGVhci9yZWFkDQpiaXRzICh3aGljaCBkbyBub3QpLg0K
+DQpZb3UgbWlnaHQgZXZlbiBjb25zaWRlciBwdXR0aW5nIHRoZSAnbGl2ZScgZmxhZyBpbnRvIHRo
+ZSBmZCBzdHJ1Y3R1cmUNCmFuZCB1c2luZyB0aGUgYml0bWFwIHZhbHVlIGFzIGEgJ2hpbnQnIC0g
+d2hpY2ggbWlnaHQgYmUgaGFzaGVkLg0KDQpBZnRlciBhbGwsIGl0IGlzIGxpa2VseSB0aGF0IHRo
+ZSAnY2xvc2Ugb24gZXhlYycgcHJvY2Vzc2luZw0Kd2lsbCBiZSBmYXN0ZXIgb3ZlcmFsbCBpZiBp
+dCBqdXN0IGxvb3BzIHRocm91Z2ggdGhlIG9wZW4gZmQgYW5kDQpjaGVja3MgZWFjaCBpbiB0dXJu
+IQ0KSSBkb3VidCBtYW55IHByb2Nlc3NlcyBhY3R1YWxseSBleGVjIHdpdGggbW9yZSB0aGFuIGFu
+IGhhbmRmdWwNCm9mIG9wZW4gZmlsZXMuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJl
+c3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsx
+IDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-FWIW, I'm opposed to the entire feature.  Improving the implementation
-will not change that.
