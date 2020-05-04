@@ -1,163 +1,202 @@
-From: "Karstens, Nate" <Nate.Karstens@garmin.com>
-Subject: RE: Implement close-on-fork
-Date: Mon, 4 May 2020 13:46:22 +0000
-Message-ID: <de6adce76b534310975e4d3c4a4facb2@garmin.com>
-References: <20200420071548.62112-1-nate.karstens@garmin.com>
- <20200422150107.GK23230@ZenIV.linux.org.uk>
- <20200422151815.GT5820@bombadil.infradead.org>
- <20200422160032.GL23230@ZenIV.linux.org.uk>
+From: Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH v2 17/20] mm: free_area_init: allow defining max_zone_pfn
+ in descending order
+Date: Mon, 4 May 2020 18:39:01 +0300
+Message-ID: <20200504153901.GM14260@kernel.org>
+References: <20200429121126.17989-1-rppt@kernel.org>
+ <20200429121126.17989-18-rppt@kernel.org>
+ <20200503174138.GA114085@roeck-us.net>
+ <20200503184300.GA154219@roeck-us.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I8S+NwkAFnMlPYchysvHz9W/d/XOnB8UJdtq5O3sPyU=;
- b=t9rP8pyCF7hCYE7oD4GPSr4T6qE6vDgI46Tr8hz2lz7An+Ph51/Iup3OoSeiS04EKzSqWLhr3pe7/RoyadUjLc0HgDoA2uticbdobyH52bimFJgEILDof5cE1OsI/8BLnCAG4+euIf6JeFO1Ph0rK7jx9PCg7ks/VYObRRrlfEWpW23T2f6xwGILS9GExbiECD1c1Vwf+Fsvp8lbBz1IknljqGVo2H1+eru5gDaM0kWHziK19uRQwxtr1qmHoLs74jMERbokTKq0KFqWOk1PvjDcyeslUN0gpWg8/5XpbfTaX/hOArMa6VsqbA8w7R0u5kVtZ3yN1BgFW56rscW1mg==
-In-Reply-To: <20200422160032.GL23230@ZenIV.linux.org.uk>
-Content-Language: en-US
-Sender: linux-parisc-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-To: Al Viro <viro@zeniv.linux.org.uk>, Matthew Wilcox <willy@infradead.org>
-Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, linux-kernel@vger.
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=eOdEw1RpFkW2t7LenYuKsS1FFX/HGHheIA+yHH1j7VM=; b=NZqzNpRg6h1xzg
+	MClILn54wDpW+23jUJV9m6yxr8XZLtlyM90N1wXtAw7IMZKO/wvcDCJiQKmvW5snp2gS7A2JnHwjo
+	V9IhY0LYGWY5aMv+tV2XY10J7p6frD3Bq7iUn6VvyvPRxbQ9bD/B17gy8J2CYqIP6POSBWqav6qv6
+	ItdCLBxRgt2ce1HuNhFG1maWPy3CJ1rolmy4QaZI/W+htneh42n7PpwuK/woi+H0qHOTPjPwcF2PX
+	kYgDosRMorrBRRVgs9UIID+D03EWC8gNAtpxG6cUe+c0ofF3iyqTuN+szMoGjVnHIySyrh60u0BFd
+	ikFCK6jk1o6LH6iTlaRQ==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1588606761;
+ bh=K3AQD4/kSurqTKgiy9tnhsUhrYGtu7oPwWRQzafMBDk=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=r4eFD/8M6rkpVhWGJCM/XtjuL/CEeeN7FuJSwVNx6NS+9s41kdKOpAfrpyLGuvIjw
+ Dsuxy71lGNPG6A1BQVCQEZ5Cg17/+/r+5sTXhGv9TOpm3Ji63adplTBcIG0ncWkgZc
+ n7BzNcKe3WYWVs/gQPxwA3v+UREC5VfAHR93vTCo=
+Content-Disposition: inline
+In-Reply-To: <20200503184300.GA154219@roeck-us.net>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, x86@kernel.org, Michal Hocko <mhocko@kernel.org>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Greg Ungerer <gerg@linux-m68k.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Baoquan He <bhe@redhat.com>, Jonathan Corbet <corbet@lwn.net>, linux-hexagon@vger.kernel.org, Helge Deller <deller@gmx.de>, linux-sh@vger.kernel.org, Russell King <linux@armlinux.org.uk>, linux-csky@vger.kernel.org, Mike Rapoport <rppt@linux.ibm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Hoan Tran <Hoan>
 
-Thanks everyone for their comments, sorry for the delay in my reply.
+On Sun, May 03, 2020 at 11:43:00AM -0700, Guenter Roeck wrote:
+> On Sun, May 03, 2020 at 10:41:38AM -0700, Guenter Roeck wrote:
+> > Hi,
+> > 
+> > On Wed, Apr 29, 2020 at 03:11:23PM +0300, Mike Rapoport wrote:
+> > > From: Mike Rapoport <rppt@linux.ibm.com>
+> > > 
+> > > Some architectures (e.g. ARC) have the ZONE_HIGHMEM zone below the
+> > > ZONE_NORMAL. Allowing free_area_init() parse max_zone_pfn array even it is
+> > > sorted in descending order allows using free_area_init() on such
+> > > architectures.
+> > > 
+> > > Add top -> down traversal of max_zone_pfn array in free_area_init() and use
+> > > the latter in ARC node/zone initialization.
+> > > 
+> > > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> > 
+> > This patch causes my microblazeel qemu boot test in linux-next to fail.
+> > Reverting it fixes the problem.
+> > 
+> The same problem is seen with s390 emulations.
 
-> As for the original problem...  what kind of exclusion is used between th=
-e reaction to netlink notifications (including closing every socket,
-> etc.) and actual IO done on those sockets?
-> Not an idle question, BTW - unlike Solaris we do NOT (and will not) have
-> close(2) abort IO on the same descriptor from another thread.  So if one =
-thread sits in recvmsg(2) while another does close(2), the socket will
-> *NOT* actually shut down until recvmsg(2) returns.
+Yeah, this patch breaks some others as well :(
 
-The netlink notification is received on a separate thread, but handling of =
-that notification (closing and re-opening sockets) and the socket I/O is al=
-l done on the same thread. The call to system() happens sometime between wh=
-en this thread decides to close all of its sockets and when the sockets hav=
-e been closed. The child process is left with a reference to one or more so=
-ckets. The close-on-exec flag is set on the socket, so the period of time i=
-s brief, but because system() is not atomic this still leaves a window of o=
-pportunity for the failure to occur. The parent process tries to open the s=
-ocket again but fails because the child process still has an open socket th=
-at controls the port.
+My assumption that max_zone_pfn defines architectural limit for maximal
+PFN that can belong to a zone was over-optimistic. Several arches
+actually do that, but others do
 
-This phenomenon can really be generalized to any resource that 1) a process=
- needs exclusive access to and 2) the operating system automatically create=
-s a new reference in the child when the process forks.
+	max_zone_pfn[ZONE_DMA] = MAX_DMA_PFN;
+	max_zone_pfn[ZONE_NORMAL] = max_pfn;
 
-> Reimplementing system() is trivial.
-> LD_LIBRARY_PRELOAD should take care of all system(3) calls.
+where MAX_DMA_PFN is build-time constrain and max_pfn is run time limit
+for the current system.
 
-Yes, that would solve the problem for our system. We identified what we bel=
-ieve to be a problem with the POSIX threading model and wanted to work with=
- the community to improve this for others as well. The Austin Group agreed =
-with the premise enough that they were willing to update the POSIX standard=
-.
+So, when max_pfn is lower than MAX_DMA_PFN, the free_init_area() will
+consider max_zone_pfn as descending and will wrongly calculate zone
+extents.
 
-> I wonder it it has some value to add runtime checking for "multi-threaded=
-" to such lib functions and error out if yes.
-> Apart from that, system() is a PITA even on single/non-threaded apps.
+That said, instead of trying to create a generic way to special case
+ARC, I suggest to simply use the below patch instead.
 
-That may be, but system() is convenient and there isn't much in the documen=
-tation that warns the average developer away from its use. The manpage indi=
-cates system() is thread-safe. The manpage is also somewhat contradictory i=
-n that it describes the operation as being equivalent to a fork() and an ex=
-ecl(), though it later points out that pthread_atfork() handlers may not be=
- executed.
+diff --git a/arch/arc/mm/init.c b/arch/arc/mm/init.c
+index 41eb9be1653c..386959bac3d2 100644
+--- a/arch/arc/mm/init.c
++++ b/arch/arc/mm/init.c
+@@ -77,6 +77,11 @@ void __init early_init_dt_add_memory_arch(u64 base, u64 size)
+ 		base, TO_MB(size), !in_use ? "Not used":"");
+ }
+ 
++bool arch_has_descending_max_zone_pfns(void)
++{
++	return true;
++}
++
+ /*
+  * First memory setup routine called from setup_arch()
+  * 1. setup swapper's mm @init_mm
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index b990e9734474..114f0e027144 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -7307,6 +7307,15 @@ static void check_for_memory(pg_data_t *pgdat, int nid)
+ 	}
+ }
+ 
++/*
++ * Some architecturs, e.g. ARC may have ZONE_HIGHMEM below ZONE_NORMAL. For
++ * such cases we allow max_zone_pfn sorted in the descending order
++ */
++bool __weak arch_has_descending_max_zone_pfns(void)
++{
++	return false;
++}
++
+ /**
+  * free_area_init - Initialise all pg_data_t and zone data
+  * @max_zone_pfn: an array of max PFNs for each zone
+@@ -7324,7 +7333,7 @@ void __init free_area_init(unsigned long *max_zone_pfn)
+ {
+ 	unsigned long start_pfn, end_pfn;
+ 	int i, nid, zone;
+-	bool descending = false;
++	bool descending;
+ 
+ 	/* Record where the zone boundaries are */
+ 	memset(arch_zone_lowest_possible_pfn, 0,
+@@ -7333,14 +7342,7 @@ void __init free_area_init(unsigned long *max_zone_pfn)
+ 				sizeof(arch_zone_highest_possible_pfn));
+ 
+ 	start_pfn = find_min_pfn_with_active_regions();
+-
+-	/*
+-	 * Some architecturs, e.g. ARC may have ZONE_HIGHMEM below
+-	 * ZONE_NORMAL. For such cases we allow max_zone_pfn sorted in the
+-	 * descending order
+-	 */
+-	if (MAX_NR_ZONES > 1 && max_zone_pfn[0] > max_zone_pfn[1])
+-		descending = true;
++	descending = arch_has_descending_max_zone_pfns();
+ 
+ 	for (i = 0; i < MAX_NR_ZONES; i++) {
+ 		if (descending)
 
-> FWIW, I'm opposed to the entire feature.  Improving the implementation wi=
-ll not change that.
+> Guenter
+> 
+> > qemu command line:
+> > 
+> > qemu-system-microblazeel -M petalogix-ml605 -m 256 \
+> > 	-kernel arch/microblaze/boot/linux.bin -no-reboot \
+> > 	-initrd rootfs.cpio \
+> > 	-append 'panic=-1 slub_debug=FZPUA rdinit=/sbin/init console=ttyS0,115200' \
+> > 	-monitor none -serial stdio -nographic
+> > 
+> > initrd:
+> > 	https://github.com/groeck/linux-build-test/blob/master/rootfs/microblazeel/rootfs.cpio.gz
+> > configuration:
+> > 	https://github.com/groeck/linux-build-test/blob/master/rootfs/microblazeel/qemu_microblazeel_ml605_defconfig
+> > 
+> > Bisect log is below.
+> > 
+> > Guenter
+> > 
+> > ---
+> > # bad: [fb9d670f57e3f6478602328bbbf71138be06ca4f] Add linux-next specific files for 20200501
+> > # good: [6a8b55ed4056ea5559ebe4f6a4b247f627870d4c] Linux 5.7-rc3
+> > git bisect start 'HEAD' 'v5.7-rc3'
+> > # good: [068b80b68a670f0b17288c8a3d1ee751f35162ab] Merge remote-tracking branch 'drm/drm-next'
+> > git bisect good 068b80b68a670f0b17288c8a3d1ee751f35162ab
+> > # good: [46c70fc6a3ac35cd72ddad248dcbe4eee716d2a5] Merge remote-tracking branch 'drivers-x86/for-next'
+> > git bisect good 46c70fc6a3ac35cd72ddad248dcbe4eee716d2a5
+> > # good: [f39c4ad479a2f005f972a2b941b40efa6b9c9349] Merge remote-tracking branch 'rpmsg/for-next'
+> > git bisect good f39c4ad479a2f005f972a2b941b40efa6b9c9349
+> > # bad: [165d3ee0162fe28efc2c8180176633e33515df15] ipc-convert-ipcs_idr-to-xarray-update
+> > git bisect bad 165d3ee0162fe28efc2c8180176633e33515df15
+> > # good: [001f1d211ed2ed0f005838dc4390993930bbbd69] mm: remove early_pfn_in_nid() and CONFIG_NODES_SPAN_OTHER_NODES
+> > git bisect good 001f1d211ed2ed0f005838dc4390993930bbbd69
+> > # bad: [aaad7401bd32f10c1d591dd886b3a9b9595c6d77] mm/vmsan: fix some typos in comment
+> > git bisect bad aaad7401bd32f10c1d591dd886b3a9b9595c6d77
+> > # bad: [09f9d0ab1fbed85623b283995aa7a7d78daa1611] khugepaged: allow to collapse PTE-mapped compound pages
+> > git bisect bad 09f9d0ab1fbed85623b283995aa7a7d78daa1611
+> > # bad: [c942fc8a3e5088407bc32d94f554bab205175f8a] mm/vmstat.c: do not show lowmem reserve protection information of empty zone
+> > git bisect bad c942fc8a3e5088407bc32d94f554bab205175f8a
+> > # bad: [b29358d269ace3826d8521bea842fc2984cfc11b] mm/page_alloc.c: rename free_pages_check() to check_free_page()
+> > git bisect bad b29358d269ace3826d8521bea842fc2984cfc11b
+> > # bad: [be0fb591a1f1df20a00c8f023f9ca4891f177b0d] mm: simplify find_min_pfn_with_active_regions()
+> > git bisect bad be0fb591a1f1df20a00c8f023f9ca4891f177b0d
+> > # bad: [c17422a008d36dcf3e9f51469758c5762716cb0a] mm: rename free_area_init_node() to free_area_init_memoryless_node()
+> > git bisect bad c17422a008d36dcf3e9f51469758c5762716cb0a
+> > # bad: [51a2f644fd020d5f090044825c388444d11029d5] mm: free_area_init: allow defining max_zone_pfn in descending order
+> > git bisect bad 51a2f644fd020d5f090044825c388444d11029d5
+> > # first bad commit: [51a2f644fd020d5f090044825c388444d11029d5] mm: free_area_init: allow defining max_zone_pfn in descending order
 
-I get it. From our perspective, changing the OS to resolve an issue seems l=
-ike a drastic step. We tried hard to come up with an alternative (see https=
-://www.mail-archive.com/austin-group-l@opengroup.org/msg05324.html and http=
-s://austingroupbugs.net/view.php?id=3D1317), but nothing else addresses the=
- underlying issue: there is no way to prevent a fork() from duplicating the=
- resource. The close-on-exec flag partially-addresses this by allowing the =
-parent process to mark a file descriptor as exclusive to itself, but there =
-is still a period of time the failure can occur because the auto-close only=
- occurs during the exec(). Perhaps this would not be an issue with a differ=
-ent process/threading model, but that is another discussion entirely.
-
-Best Regards,
-
-Nate
-
------Original Message-----
-From: Al Viro <viro@ftp.linux.org.uk> On Behalf Of Al Viro
-Sent: Wednesday, April 22, 2020 11:01
-To: Matthew Wilcox <willy@infradead.org>
-Cc: Karstens, Nate <Nate.Karstens@garmin.com>; Jeff Layton <jlayton@kernel.=
-org>; J. Bruce Fields <bfields@fieldses.org>; Arnd Bergmann <arnd@arndb.de>=
-; Richard Henderson <rth@twiddle.net>; Ivan Kokshaysky <ink@jurassic.park.m=
-su.ru>; Matt Turner <mattst88@gmail.com>; James E.J. Bottomley <James.Botto=
-mley@hansenpartnership.com>; Helge Deller <deller@gmx.de>; David S. Miller =
-<davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; linux-fsdevel@vger=
-.kernel.org; linux-arch@vger.kernel.org; linux-alpha@vger.kernel.org; linux=
--parisc@vger.kernel.org; sparclinux@vger.kernel.org; netdev@vger.kernel.org=
-; linux-kernel@vger.kernel.org; Changli Gao <xiaosuo@gmail.com>
-Subject: Re: Implement close-on-fork
-
-CAUTION - EXTERNAL EMAIL: Do not click any links or open any attachments un=
-less you trust the sender and know the content is safe.
-
-
-On Wed, Apr 22, 2020 at 08:18:15AM -0700, Matthew Wilcox wrote:
-> On Wed, Apr 22, 2020 at 04:01:07PM +0100, Al Viro wrote:
-> > On Mon, Apr 20, 2020 at 02:15:44AM -0500, Nate Karstens wrote:
-> > > Series of 4 patches to implement close-on-fork. Tests have been
-> > > published to https://github.com/nkarstens/ltp/tree/close-on-fork.
-> > >
-> > > close-on-fork addresses race conditions in system(), which
-> > > (depending on the implementation) is non-atomic in that it first
-> > > calls a fork() and then an exec().
-> > >
-> > > This functionality was approved by the Austin Common Standards
-> > > Revision Group for inclusion in the next revision of the POSIX
-> > > standard (see issue 1318 in the Austin Group Defect Tracker).
-> >
-> > What exactly the reasons are and why would we want to implement that?
-> >
-> > Pardon me, but going by the previous history, "The Austin Group Says
-> > It's Good" is more of a source of concern regarding the merits,
-> > general sanity and, most of all, good taste of a proposal.
-> >
-> > I'm not saying that it's automatically bad, but you'll have to go
-> > much deeper into the rationale of that change before your proposal
-> > is taken seriously.
->
-> https://www.mail-archive.com/austin-group-l@opengroup.org/msg05324.htm
-> l
-> might be useful
-
-*snort*
-
-Alan Coopersmith in that thread:
-|| https://lwn.net/Articles/785430/ suggests AIX, BSD, & MacOS have also
-|| defined it, and though it's been proposed multiple times for Linux, neve=
-r adopted there.
-
-Now, look at the article in question.  You'll see that it should've been "s=
-omeone's posting in the end of comments thread under LWN article says that =
-apparently it exists on AIX, BSD, ..."
-
-The strength of evidence aside, that got me curious; I have checked the sou=
-rce of FreeBSD, NetBSD and OpenBSD.  No such thing exists in either of thei=
-r kernels, so at least that part can be considered an urban legend.
-
-As for the original problem...  what kind of exclusion is used between the =
-reaction to netlink notifications (including closing every socket,
-etc.) and actual IO done on those sockets?
-
-
-________________________________
-
-CONFIDENTIALITY NOTICE: This email and any attachments are for the sole use=
- of the intended recipient(s) and contain information that may be Garmin co=
-nfidential and/or Garmin legally privileged. If you have received this emai=
-l in error, please notify the sender by reply email and delete the message.=
- Any disclosure, copying, distribution or use of this communication (includ=
-ing attachments) by someone other than the intended recipient is prohibited=
-. Thank you.
+-- 
+Sincerely yours,
+Mike.
