@@ -1,101 +1,75 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 2/2 v4] alpha: add a delay before serial port read
-Date: Thu, 7 May 2020 10:52:01 +0200
-Message-ID: <20200507085201.GA1097552@kroah.com>
-References: <alpine.LRH.2.02.2005060721450.25338@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506114711.GB3024358@kroah.com>
- <alpine.LRH.2.02.2005061122440.16395@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506154938.GA3537174@kroah.com>
- <alpine.LRH.2.02.2005061152300.16395@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506160823.GA3559699@kroah.com>
- <alpine.LRH.2.02.2005061245500.18599@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506174528.GB3711921@kroah.com>
- <alpine.LRH.2.02.2005070407010.5006@file01.intranet.prod.int.rdu2.redhat.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
+Subject: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
+Date: Thu, 7 May 2020 06:53:48 -0400 (EDT)
+Message-ID: <alpine.LRH.2.02.2005070648480.18423@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <20200507082007.GD1024567@kroah.com>
 Mime-Version: 1.0
 Return-path: <linux-serial-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588841523;
-        bh=5hAkM6lcDiWiYAX0JYFT1ZvhiB6Q7ZILZYrICV3hyO8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nFelzp4BBbqSIoPSjX0FfSvPb0NM2nuSDtG6Jx46W7ihh6ifBJvY1IBbOFoxaAE/r
-         J6vuz201vOW99hGdcvt3oeCZSiskcVJPHD62BkkMpbj4oEyKj/T/VSO0p4TqwBJuuA
-         DbgUJm4Uo+pddDqcOv9X7cnpR3cuuZxAeyoMEiWs=
-Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.02.2005070407010.5006@file01.intranet.prod.int.rdu2.redhat.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588848835;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=34zgbFJkoC2oaoVh2WD7e5/FT5aa6aZRg4OtM6t+uxY=;
+        b=gS9ycqRhIaGLWtFTeMcd55rKL5OwLiaE+fnxrb83nTnByIOdJJy7oYAR1BiV1eslE40DBa
+        A7+XlPj+2rz/n3EuYBhWfnmrLO4FBCBVZZMIl421PGJ8L1VMWqJrvBMtsWqJ938FHJddPQ
+        91Cx4DLYQZR1BLxsx1S8lQBG2IU7+wA=
+In-Reply-To: <20200507082007.GD1024567@kroah.com>
 Sender: linux-serial-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
 
-On Thu, May 07, 2020 at 04:18:49AM -0400, Mikulas Patocka wrote:
-> 
-> 
-> On Wed, 6 May 2020, Greg Kroah-Hartman wrote:
-> 
-> > On Wed, May 06, 2020 at 01:04:38PM -0400, Mikulas Patocka wrote:
-> > > 
-> > > I've created this patch that adds a global macro/variable 
-> > > serial_port_needs_delay. I've also deleted UPQ_DELAY_BEFORE_READ and test 
-> > > serial_port_needs_delay directly in io_serial_in, so that the compiler 
-> > > will optimize it out on non-alpha architectures.
-> > 
-> > That's not good, what about systems with hundreds of serial ports?
-> 
-> I doubt that someone will conect hundreds of serial ports to such an old 
-> alpha machine :)
+alpha: add a delay to inb_p, inb_w and inb_l
 
+The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
+barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
+the Alpha Avanti platform.
 
+The patch changes timing between accesses to the ISA bus, in particular,
+it reduces the time between "write" access and a subsequent "read" access.
 
-> 
-> > > > But, there is no other way to detect this based on hardware
-> > > > signatures/types instead?  That is usually the best way to do it, right?
-> > > 
-> > > It's hard to detect Alpha without using '#ifdef CONFIG_ALPHA' :) The ISA 
-> > > serial port hardware is simple, so I think that you can't distinguish it 
-> > > just based on its behavior.
-> > 
-> > The ISA serial port hardware does not have a unique vendor/product id
-> > somewhere?  Some other sort of definition that we can use to determine
-> > exactly what type of system we are running on?
-> 
-> AFAIK it doesn't. You can only distinguish 8250, 16550 and 16550A - but 
-> not the vendor.
-> 
-> > > Index: linux-stable/drivers/tty/serial/8250/8250_port.c
-> > > ===================================================================
-> > > --- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-06 18:54:24.000000000 +0200
-> > > +++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-06 18:54:24.000000000 +0200
-> > > @@ -30,6 +30,7 @@
-> > >  #include <linux/uaccess.h>
-> > >  #include <linux/pm_runtime.h>
-> > >  #include <linux/ktime.h>
-> > > +#include <linux/pci.h>
-> > >  
-> > >  #include <asm/io.h>
-> > >  #include <asm/irq.h>
-> > > @@ -442,6 +443,9 @@ static unsigned int mem32be_serial_in(st
-> > >  
-> > >  static unsigned int io_serial_in(struct uart_port *p, int offset)
-> > >  {
-> > > +	if (serial_port_needs_delay)
-> > > +		ndelay(300);
-> > 
-> > Again, this should be a per-port thing, not all ports in the system are
-> > this broken, right?
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> Here is the patch that uses per-port flag UPQ_DELAY_BEFORE_READ. The flag 
-> is activated if we have the specific PCI-ISA bridge and if the serial port 
-> is an ISA port.
+This causes lock-up when accessing the real time clock and serial ports.
 
+This patch fixes the real time clock by adding a small delay to the inb_p,
+inw_p and inl_p macros. Note that we don't have to add a delay before
+outb_p, outw_p and outl_p, because there is already a "mb()" instruction
+before them and this instruction slows down access sufficiently.
 
-Better, care to submit this in a format that it can be applied in?
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
+Cc: stable@vger.kernel.org	# v4.17+
 
-thanks,
+---
+ arch/alpha/include/asm/io.h |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-greg k-h
+Index: linux-stable/arch/alpha/include/asm/io.h
+===================================================================
+--- linux-stable.orig/arch/alpha/include/asm/io.h	2020-05-07 09:54:52.000000000 +0200
++++ linux-stable/arch/alpha/include/asm/io.h	2020-05-07 09:54:52.000000000 +0200
+@@ -6,6 +6,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
++#include <linux/delay.h>
+ #include <asm/compiler.h>
+ #include <asm/pgtable.h>
+ #include <asm/machvec.h>
+@@ -481,9 +482,9 @@ extern inline void writeq(u64 b, volatil
+ #define iowrite16be(v,p) iowrite16(cpu_to_be16(v), (p))
+ #define iowrite32be(v,p) iowrite32(cpu_to_be32(v), (p))
+ 
+-#define inb_p		inb
+-#define inw_p		inw
+-#define inl_p		inl
++#define inb_p(x)	(ndelay(1400), inb(x))
++#define inw_p(x)	(ndelay(1400), inw(x))
++#define inl_p(x)	(ndelay(1400), inl(x))
+ #define outb_p		outb
+ #define outw_p		outw
+ #define outl_p		outl
+
