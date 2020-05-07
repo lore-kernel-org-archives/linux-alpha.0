@@ -1,143 +1,97 @@
 From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Re: [PATCH 2/2 v5] alpha: add a delay before serial port read
-Date: Thu, 7 May 2020 10:03:53 -0400 (EDT)
-Message-ID: <alpine.LRH.2.02.2005071003040.1718@file01.intranet.prod.int.rdu2.redhat.com>
-References: <20200506154938.GA3537174@kroah.com> <alpine.LRH.2.02.2005061152300.16395@file01.intranet.prod.int.rdu2.redhat.com> <20200506160823.GA3559699@kroah.com> <alpine.LRH.2.02.2005061245500.18599@file01.intranet.prod.int.rdu2.redhat.com>
- <20200506174528.GB3711921@kroah.com> <alpine.LRH.2.02.2005070407010.5006@file01.intranet.prod.int.rdu2.redhat.com> <20200507085201.GA1097552@kroah.com> <alpine.LRH.2.02.2005070645330.18423@file01.intranet.prod.int.rdu2.redhat.com> <20200507111037.GB1490467@kroah.com>
- <alpine.LRH.2.02.2005070853110.27409@file01.intranet.prod.int.rdu2.redhat.com> <20200507135839.GA1803635@kroah.com>
+Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
+Date: Thu, 7 May 2020 10:09:33 -0400 (EDT)
+Message-ID: <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-serial-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588860241;
+        s=mimecast20190719; t=1588860579;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=bKInnM6YzoqwwNpgvmY4EEnrQSmK0daesOkKkAujNxw=;
-        b=H0uOz2cG469LmUW/HE+wB6y7dPXYpJIAVx1+VGTOQRDCYlIjESG7QILf/gL2XSJNkyzYyW
-        tCrGkqNfBaNYgdP4ofJVJez6FUYoUdWxLzAU9v51MRDJUrheQ+qH92c9UY5lXuQo1gxaTM
-        GN3Gd6qVVKVQbojfx0NvgX1Ym4nsoik=
-In-Reply-To: <20200507135839.GA1803635@kroah.com>
-Sender: linux-alpha-owner@vger.kernel.org
+        bh=fh07MPgVK9wN+Aq5G1NH1K8YQqzBKRp2vvUt+gQpC7Q=;
+        b=EhaBCy5NWtGXQBDD7OccBaxIP3gxsXRx3Isq0mJLng+kN9styp/qts8OkDgZNn/dkPM19i
+        dNt5R3o2khHe/E/ElZoLzYVqL/TnaqfQIrFdjX8gW0wvxK/zSzz7MPF+z+KxvsYxkor47i
+        1sPOXJE9jDRFrtDZUa0la14LTbZuBNY=
+In-Reply-To: <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
+Sender: linux-serial-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alpha <linux-alpha@vger.kernel.org>, linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
 
 
 
-On Thu, 7 May 2020, Greg Kroah-Hartman wrote:
+On Thu, 7 May 2020, Arnd Bergmann wrote:
 
-> On Thu, May 07, 2020 at 08:57:09AM -0400, Mikulas Patocka wrote:
-> > The patch 92d7223a74235054f2aa7227d207d9c57f84dca0 ("alpha: io: reorder
-> > barriers to guarantee writeX() and iowriteX() ordering #2") broke boot on
-> > the Alpha Avanti platform.
-> > 
-> > The patch changes timing between accesses to the ISA bus, in particular,
-> > it reduces the time between "write" access and a subsequent "read" access.
-> > 
-> > This causes lock-up when accessing the real time clock and serial ports.
-> > 
-> > This patch fixes the serial ports by adding a small delay before the "inb"
-> > instruction.
-> > 
-> > We introduce a global variable
-> > alpha_has_broken_serial_ports_and_needs_delay - it is defined on Alpha and
-> > it is set to 1 if we have the specific PCI-ISA bridge where this bug
-> > occurs. We also introduce a new per-port flag UPQ_DELAY_BEFORE_READ, the
-> > flag is set if alpha_has_broken_serial_ports_and_needs_delay is set and if
-> > the serial port is an ISA port.
-> > 
-> > Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-> > Fixes: 92d7223a7423 ("alpha: io: reorder barriers to guarantee writeX() and iowriteX() ordering #2")
-> > Cc: stable@vger.kernel.org	# v4.17+
-> > 
-> > ---
-> >  arch/alpha/include/asm/serial.h     |    5 +++++
-> >  arch/alpha/kernel/pci.c             |    5 +++++
-> >  drivers/tty/serial/8250/8250_core.c |   17 +++++++++++------
-> >  drivers/tty/serial/8250/8250_port.c |    3 +++
-> >  include/linux/serial_core.h         |    1 +
-> >  5 files changed, 25 insertions(+), 6 deletions(-)
-> > 
-> > Index: linux-stable/arch/alpha/kernel/pci.c
-> > ===================================================================
-> > --- linux-stable.orig/arch/alpha/kernel/pci.c	2020-05-07 09:57:02.000000000 +0200
-> > +++ linux-stable/arch/alpha/kernel/pci.c	2020-05-07 14:30:07.000000000 +0200
-> > @@ -24,6 +24,7 @@
-> >  #include <linux/slab.h>
-> >  #include <linux/syscalls.h>
-> >  #include <asm/machvec.h>
-> > +#include <asm/serial.h>
-> >  
-> >  #include "proto.h"
-> >  #include "pci_impl.h"
-> > @@ -61,9 +62,13 @@ struct pci_controller *pci_isa_hose;
-> >   * Quirks.
-> >   */
-> >  
-> > +int alpha_has_broken_serial_ports_and_needs_delay = 0;
-> > +EXPORT_SYMBOL(alpha_has_broken_serial_ports_and_needs_delay);
-> > +
-> >  static void quirk_isa_bridge(struct pci_dev *dev)
-> >  {
-> >  	dev->class = PCI_CLASS_BRIDGE_ISA << 8;
-> > +	alpha_has_broken_serial_ports_and_needs_delay = 1;
-> >  }
-> >  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82378, quirk_isa_bridge);
-> >  
-> > Index: linux-stable/drivers/tty/serial/8250/8250_port.c
-> > ===================================================================
-> > --- linux-stable.orig/drivers/tty/serial/8250/8250_port.c	2020-05-07 09:57:02.000000000 +0200
-> > +++ linux-stable/drivers/tty/serial/8250/8250_port.c	2020-05-07 09:57:02.000000000 +0200
-> > @@ -442,6 +442,9 @@ static unsigned int mem32be_serial_in(st
-> >  
-> >  static unsigned int io_serial_in(struct uart_port *p, int offset)
-> >  {
-> > +	if (unlikely(p->quirks & UPQ_DELAY_BEFORE_READ))
-> > +		ndelay(300);
-> > +
-> >  	offset = offset << p->regshift;
-> >  	return inb(p->iobase + offset);
-> >  }
-> > Index: linux-stable/drivers/tty/serial/8250/8250_core.c
-> > ===================================================================
-> > --- linux-stable.orig/drivers/tty/serial/8250/8250_core.c	2020-05-07 09:57:02.000000000 +0200
-> > +++ linux-stable/drivers/tty/serial/8250/8250_core.c	2020-05-07 14:34:16.000000000 +0200
-> > @@ -487,9 +487,20 @@ static void univ8250_rsa_support(struct
-> >  #define univ8250_rsa_support(x)		do { } while (0)
-> >  #endif /* CONFIG_SERIAL_8250_RSA */
-> >  
-> > +/*
-> > + * This "device" covers _all_ ISA 8250-compatible serial devices listed
-> > + * in the table in include/asm/serial.h
-> > + */
-> > +static struct platform_device *serial8250_isa_devs;
-> > +
-> >  static inline void serial8250_apply_quirks(struct uart_8250_port *up)
-> >  {
-> >  	up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
-> > +#ifdef alpha_has_broken_serial_ports_and_needs_delay
+> On Thu, May 7, 2020 at 10:06 AM Mikulas Patocka <mpatocka@redhat.com> wrote:
+> > On Wed, 6 May 2020, Mikulas Patocka wrote:
+> > > On Wed, 6 May 2020, Arnd Bergmann wrote:
+> > > > On Wed, May 6, 2020 at 1:21 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
+> > > >
+> > > > >  /*
+> > > > >   * The yet supported machines all access the RTC index register via
+> > > > >   * an ISA port access but the way to access the date register differs ...
+> > > > > + *
+> > > > > + * The ISA bus on Alpha Avanti doesn't like back-to-back accesses,
+> > > > > + * we need to add a small delay.
+> > > > >   */
+> > > > >  #define CMOS_READ(addr) ({ \
+> > > > >  outb_p((addr),RTC_PORT(0)); \
+> > > > > +udelay(2); \
+> > > > >  inb_p(RTC_PORT(1)); \
+> > > >
+> > > >
+> > > > The inb_p() / outb_p() functions are meant to already have a delay in them,
+> > > > maybe we should just add it there for alpha?
+> > > >
+> > > >      Arnd
+> > >
+> > > Yes, that is possible too - it fixes the real time clock hang for me.
+> > >
+> > >
+> > > -#define inb_p                inb
+> > > -#define inw_p                inw
+> > > -#define inl_p                inl
+> > > +#define inb_p(x)     (ndelay(300), inb(x))
+> > > +#define inw_p(x)     (ndelay(300), inw(x))
+> > > +#define inl_p(x)     (ndelay(300), inl(x))
+> > >  #define outb_p               outb
+> > >  #define outw_p               outw
+> > >  #define outl_p               outl
+> >
+> > 300ns was too low. We need at least 1400ns to fix the hang reliably.
 > 
-> That is a symbol, not a define, how does that work?
-> 
-> greg k-h
+> Are you sure that it is in fact the timing that is important here and not
+> a barrier? I see that inb() is written in terms of readb(), but the
+> barrier requirements for I/O space are a bit different from those
+> on PCI memory space.
 
-That's both the symbol and a define - see this part of the patch:
+The "in" and "out" instructions are serializing on x86. But alpha doesn't 
+have dedicated instructions for accessing ports.
+
+Do you think that all the "in[bwl]" and "out[bwl]" macros on alpha should 
+be protected by two memory barriers, to emulate the x86 behavior?
+
+> In the example you gave first, there is a an outb_p() followed by inb_p().
+> These are normally serialized by the bus, but I/O space also has the
+> requirement that an outb() completes before we get to the next
+> instruction (non-posted write), while writeb() is generally posted and
+> only needs a barrier before the write rather than both before and after
+> like outb.
+> 
+>     Arnd
+
+I think that the fact that "writeb" is posted is exactly the problem - it 
+gets posted, the processor goes on, sends "readb" and they arrive 
+back-to-back to the ISA bus. The ISA bus device doesn't like back-to-back 
+accesses and locks up.
+
+Anyway - you can change the "ndelay()" function in this patch to "mb()" - 
+"mb()" will provide long enough delay that it fixes this bug.
 
 Mikulas
-
-Index: linux-stable/arch/alpha/include/asm/serial.h
-===================================================================
---- linux-stable.orig/arch/alpha/include/asm/serial.h   2020-02-07 11:52:16.000000000 +0100
-+++ linux-stable/arch/alpha/include/asm/serial.h        2020-05-07 14:48:21.000000000 +0200
-@@ -28,3 +28,8 @@
-        { 0, BASE_BAUD, 0x2F8, 3, STD_COM_FLAGS },      /* ttyS1 */     \
-        { 0, BASE_BAUD, 0x3E8, 4, STD_COM_FLAGS },      /* ttyS2 */     \
-        { 0, BASE_BAUD, 0x2E8, 3, STD_COM4_FLAGS },     /* ttyS3 */
-+
-+#ifdef CONFIG_PCI
-+extern int alpha_has_broken_serial_ports_and_needs_delay;
-+#define alpha_has_broken_serial_ports_and_needs_delay  alpha_has_broken_serial_ports_and_needs_delay
-+#endif
 
