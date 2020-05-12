@@ -1,66 +1,128 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
-Date: Tue, 12 May 2020 15:35:21 -0400 (EDT)
-Message-ID: <alpine.LRH.2.02.2005121525500.31782@file01.intranet.prod.int.rdu2.redhat.com>
-References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
- <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com> <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org> <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1589312127;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H5pxUSbLWxNQVZt3chJU6aQ+MxFijTrdJFOgatW5PJM=;
-        b=FCRJx0YGfOyJFnV8FqbaYpk2jVd6iwrDVN3dyPl3LIPwYfOWZ7b4Ml9Ai/Oc1OThRoEzKC
-        51GeuI7p1PJNI4U3tvz5F2Ylhm89ybQvDxEbGhxgcjgzDcwNveUxGSwqaCQOk/4tRhWtw7
-        mMDKEdiX5wd8g4zEHoVma0cVms5nFnU=
-In-Reply-To: <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
-Sender: linux-alpha-owner@vger.kernel.org
+From: Palmer Dabbelt <palmer@dabbelt.com>
+Subject: Re: [PATCH 19/31] riscv: use asm-generic/cacheflush.h
+Date: Tue, 12 May 2020 16:00:26 -0700 (PDT)
+Message-ID: <mhng-8adbedbc-0f91-4291-9471-2df5eb7b802b@palmerdabbelt-glaptop1>
+References: <20200510075510.987823-20-hch@lst.de>
+Mime-Version: 1.0 (MHng)
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20150623.gappssmtp.com; s=20150623;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TxR+iMR41NNC8Tp0Yh5G0J9anaHo/y+mAo5OJ6FnE3w=;
+        b=YV0IEXO5IABYUMUtMWw6Y0a2xNZhYt4iDNMNdBJAdhkLz+DhDJrEb2/tely+kMRfBe
+         elzT7mfwntttCi0+nBJzpxqW1RzbdA4k2z5m0sbPhXbgm86NhUGJ6ezv1UWvqUAF6AFb
+         GwYEyZnEpPlXtS0AdB1oOMIXhoSzH1oQ3QYdKyFvf7rV9a0F5474HoxquQdEEcVsoVZk
+         mkFDvy/LaDlTuj+uY+/sZnyRH+3w/Rut2ArIzwHPIrhPI856FrWtiOC99MOqCPnAlAt1
+         y5de0EiQgDBn8VhocdW7T7X+feJnXd114pzMo7qEMcn1qfbF3zf4gbB8O6Pkx7p0q4QB
+         ZmJw==
+In-Reply-To: <20200510075510.987823-20-hch@lst.de>
+Sender: linux-hexagon-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alpha <linux-alpha@vger.kernel.org>, linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Christoph Hellwig <hch@lst.de>
+Cc: akpm@linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, zippel@linux-m68k.org, linux-arch@vger.kernel.org, linux-xtensa@linux-xtensa.org, monstr@monstr.eu, jeyu@kernel.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, x86@kernel.org, linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-riscv@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
+On Sun, 10 May 2020 00:54:58 PDT (-0700), Christoph Hellwig wrote:
+> RISC-V needs almost no cache flushing routines of its own.  Rely on
+> asm-generic/cacheflush.h for the defaults.
+>
+> Also remove the pointless __KERNEL__ ifdef while we're at it.
+> ---
+>  arch/riscv/include/asm/cacheflush.h | 62 ++---------------------------
+>  1 file changed, 3 insertions(+), 59 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/cacheflush.h b/arch/riscv/include/asm/cacheflush.h
+> index c8677c75f82cb..a167b4fbdf007 100644
+> --- a/arch/riscv/include/asm/cacheflush.h
+> +++ b/arch/riscv/include/asm/cacheflush.h
+> @@ -8,65 +8,6 @@
+>
+>  #include <linux/mm.h>
+>
+> -#define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 0
+> -
+> -/*
+> - * The cache doesn't need to be flushed when TLB entries change when
+> - * the cache is mapped to physical memory, not virtual memory
+> - */
+> -static inline void flush_cache_all(void)
+> -{
+> -}
+> -
+> -static inline void flush_cache_mm(struct mm_struct *mm)
+> -{
+> -}
+> -
+> -static inline void flush_cache_dup_mm(struct mm_struct *mm)
+> -{
+> -}
+> -
+> -static inline void flush_cache_range(struct vm_area_struct *vma,
+> -				     unsigned long start,
+> -				     unsigned long end)
+> -{
+> -}
+> -
+> -static inline void flush_cache_page(struct vm_area_struct *vma,
+> -				    unsigned long vmaddr,
+> -				    unsigned long pfn)
+> -{
+> -}
+> -
+> -static inline void flush_dcache_mmap_lock(struct address_space *mapping)
+> -{
+> -}
+> -
+> -static inline void flush_dcache_mmap_unlock(struct address_space *mapping)
+> -{
+> -}
+> -
+> -static inline void flush_icache_page(struct vm_area_struct *vma,
+> -				     struct page *page)
+> -{
+> -}
+> -
+> -static inline void flush_cache_vmap(unsigned long start, unsigned long end)
+> -{
+> -}
+> -
+> -static inline void flush_cache_vunmap(unsigned long start, unsigned long end)
+> -{
+> -}
+> -
+> -#define copy_to_user_page(vma, page, vaddr, dst, src, len) \
+> -	do { \
+> -		memcpy(dst, src, len); \
+> -		flush_icache_user_range(vma, page, vaddr, len); \
+> -	} while (0)
+> -#define copy_from_user_page(vma, page, vaddr, dst, src, len) \
+> -	memcpy(dst, src, len)
+> -
+>  static inline void local_flush_icache_all(void)
+>  {
+>  	asm volatile ("fence.i" ::: "memory");
+> @@ -79,6 +20,7 @@ static inline void flush_dcache_page(struct page *page)
+>  	if (test_bit(PG_dcache_clean, &page->flags))
+>  		clear_bit(PG_dcache_clean, &page->flags);
+>  }
+> +#define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
+>
+>  /*
+>   * RISC-V doesn't have an instruction to flush parts of the instruction cache,
+> @@ -105,4 +47,6 @@ void flush_icache_mm(struct mm_struct *mm, bool local);
+>  #define SYS_RISCV_FLUSH_ICACHE_LOCAL 1UL
+>  #define SYS_RISCV_FLUSH_ICACHE_ALL   (SYS_RISCV_FLUSH_ICACHE_LOCAL)
+>
+> +#include <asm-generic/cacheflush.h>
+> +
+>  #endif /* _ASM_RISCV_CACHEFLUSH_H */
 
+Thanks!
 
-On Mon, 11 May 2020, Maciej W. Rozycki wrote:
+Reviewed-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Acked-by: Palmer Dabbelt <palmerdabbelt@google.com>
 
->  And if timing is indeed the culprit, then I think it will be best fixed 
-> in the 82378IB southbridge, i.e.[1]:
-> 
-> "The I/O recovery mechanism in the SIO is used to add additional recovery 
-> delay between PCI originated 8-bit and 16-bit I/O cycles to the ISA Bus.  
-> The SIO automatically forces a minimum delay of four SYSCLKs between 
-> back-to-back 8 and 16 bit I/O cycles to the ISA Bus.  The delay is 
-> measured from the rising edge of the I/O command (IOR# or IOW#) to the 
-> falling edge of the next BALE.  If a delay of greater than four SYSCLKs is 
-> required, the ISA I/O Recovery Time Register can be programmed to increase 
-> the delay in increments of SYSCLKs.  Note that no additional delay is 
-> inserted for back-to-back I/O "sub cycles" generated as a result of byte 
-> assembly or disassembly.  This register defaults to 8 and 16-bit recovery 
-> enabled with two clocks added to the standard I/O recovery."
-> 
-> where it won't be causing unnecessary overhead for native PCI devices or 
-> indeed excessive one for ISA devices.  It might be interesting to note 
-> that later SIO versions like the 82378ZB increased the minimum to five 
-> SYSCLKs, so maybe a missing SYSCLK (that can still be inserted by suitably
-> programming the ICRT) is the source of the problem?
-> 
-> References:
-> 
-> [1] "82378IB System I/O (SIO)", April 1993, Intel Corporation, Order 
->     Number: 290473-002, Section 4.1.17 "ICRT -- ISA Controller Recovery 
->     Timer Register"
-> 
->   Maciej
-
-I tried to modify this register (I wrote 0x44 to it - it should correspond 
-to the maximum delay) and it had no effect on the serial port and rtc 
-lock-ups.
-
-Mikulas
-
+Were you trying to get these all in at once, or do you want me to take it into
+my tree?
