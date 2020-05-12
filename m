@@ -1,52 +1,66 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH 08/12] mm: pgtable: add shortcuts for accessing kernel
- PMD and PTE
-Date: Tue, 12 May 2020 12:24:41 -0700
-Message-ID: <20200512192441.GZ16070@bombadil.infradead.org>
-References: <20200512184422.12418-1-rppt@kernel.org>
- <20200512184422.12418-9-rppt@kernel.org>
+From: Mikulas Patocka <mpatocka@redhat.com>
+Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
+Date: Tue, 12 May 2020 15:35:21 -0400 (EDT)
+Message-ID: <alpine.LRH.2.02.2005121525500.31782@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com> <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com> <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com> <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org> <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1589312127;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=H5pxUSbLWxNQVZt3chJU6aQ+MxFijTrdJFOgatW5PJM=;
+        b=FCRJx0YGfOyJFnV8FqbaYpk2jVd6iwrDVN3dyPl3LIPwYfOWZ7b4Ml9Ai/Oc1OThRoEzKC
+        51GeuI7p1PJNI4U3tvz5F2Ylhm89ybQvDxEbGhxgcjgzDcwNveUxGSwqaCQOk/4tRhWtw7
+        mMDKEdiX5wd8g4zEHoVma0cVms5nFnU=
+In-Reply-To: <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: TEXT/PLAIN; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
-	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=M5L59npbP6DAmqI8JAc2O/DvS/BF5UlxipsHdFyHNPc=; b=C3I/2h02zwe3Lk
-	gdBwwkMV4qfukV9sZCpKQ7uLE64fwOyfkqXlhpRHR9nfKGJAYrlM3wk+G7HsLA2eh4NDK+RecdoPw
-	OIKsrwleDBczt0pmf/JMX3M5Ti/GqkhEUBeP6++18F8ac+MPaK7ofb46yrINsJUNGWUAROYpJ46kg
-	yVZX3hMG2MMD2Fh0WOtY2+IdoW94v+nQsL3rHsBV2riiGl04h+cACfikDIyFCGP/PpDsyyToRHXIl
-	fXP/LG75uNLCn7mt5sPt5mZzDMGucM241406VS3hq70RdOz4wi2D2AQHdp9O5oKzrudY7R5ntgi3i
-	eRK//OTDlX0AWaE35+kw==;
-Content-Disposition: inline
-In-Reply-To: <20200512184422.12418-9-rppt@kernel.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Vincent Chen <deanbo422@gmail.com>, Will Deacon <will@kernel.org>, Greg Ungerer <gerg@linux-m68k.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Brian Cain <bcain@codeaurora.org>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ley Foon Tan <ley.foon.tan@intel.com>, Mike Rapoport <rppt@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, lin
+To: "Maciej W. Rozycki" <macro@linux-mips.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alpha <linux-alpha@vger.kernel.org>, linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
 
-On Tue, May 12, 2020 at 09:44:18PM +0300, Mike Rapoport wrote:
-> +++ b/include/linux/pgtable.h
-> @@ -28,6 +28,24 @@
->  #define USER_PGTABLES_CEILING	0UL
->  #endif
->  
-> +/* FIXME: */
 
-Fix you what?  Add documentation?
 
-> +static inline pmd_t *pmd_off(struct mm_struct *mm, unsigned long va)
-> +{
-> +	return pmd_offset(pud_offset(p4d_offset(pgd_offset(mm, va), va), va), va);
-> +}
+On Mon, 11 May 2020, Maciej W. Rozycki wrote:
+
+>  And if timing is indeed the culprit, then I think it will be best fixed 
+> in the 82378IB southbridge, i.e.[1]:
+> 
+> "The I/O recovery mechanism in the SIO is used to add additional recovery 
+> delay between PCI originated 8-bit and 16-bit I/O cycles to the ISA Bus.  
+> The SIO automatically forces a minimum delay of four SYSCLKs between 
+> back-to-back 8 and 16 bit I/O cycles to the ISA Bus.  The delay is 
+> measured from the rising edge of the I/O command (IOR# or IOW#) to the 
+> falling edge of the next BALE.  If a delay of greater than four SYSCLKs is 
+> required, the ISA I/O Recovery Time Register can be programmed to increase 
+> the delay in increments of SYSCLKs.  Note that no additional delay is 
+> inserted for back-to-back I/O "sub cycles" generated as a result of byte 
+> assembly or disassembly.  This register defaults to 8 and 16-bit recovery 
+> enabled with two clocks added to the standard I/O recovery."
+> 
+> where it won't be causing unnecessary overhead for native PCI devices or 
+> indeed excessive one for ISA devices.  It might be interesting to note 
+> that later SIO versions like the 82378ZB increased the minimum to five 
+> SYSCLKs, so maybe a missing SYSCLK (that can still be inserted by suitably
+> programming the ICRT) is the source of the problem?
+> 
+> References:
+> 
+> [1] "82378IB System I/O (SIO)", April 1993, Intel Corporation, Order 
+>     Number: 290473-002, Section 4.1.17 "ICRT -- ISA Controller Recovery 
+>     Timer Register"
+> 
+>   Maciej
+
+I tried to modify this register (I wrote 0x44 to it - it should correspond 
+to the maximum delay) and it had no effect on the serial port and rtc 
+lock-ups.
+
+Mikulas
+
