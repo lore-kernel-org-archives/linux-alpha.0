@@ -1,32 +1,73 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Alpha hardware for printk tests?
-Date: Tue, 12 May 2020 16:39:06 +0200
-Message-ID: <87tv0lgqut.fsf@vostro.fn.ogness.net>
+From: Greg Ungerer <gerg@linux-m68k.org>
+Subject: Re: [PATCH 16/31] m68knommu: use asm-generic/cacheflush.h
+Date: Wed, 13 May 2020 00:44:59 +1000
+Message-ID: <fb98853b-c02a-a682-443e-2ae62d0502d9@linux-m68k.org>
+References: <20200510075510.987823-1-hch@lst.de>
+ <20200510075510.987823-17-hch@lst.de>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <20200510075510.987823-17-hch@lst.de>
+Content-Language: en-US
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Christoph Hellwig <hch@lst.de>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Roman Zippel <zippel@linux-m68k.org>
+Cc: Jessica Yu <jeyu@kernel.org>, Michal Simek <monstr@monstr.eu>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-mm@kvack.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, linux-fsdevel@vger.kernel.org
 
-Hello,
+Hi Christoph,
 
-I have posted[0] a new lockless printk ringbuffer implementation. The
-ringbuffer has been tested heavily on x86_64 and arm64 SMP
-systems. However, I would also like to test it on an SMP Alpha
-system. Since the main purpose of the test is to verify the memory
-barriers, the tests need to run on real hardware.
+On 10/5/20 5:54 pm, Christoph Hellwig wrote:
+> m68knommu needs almost no cache flushing routines of its own.  Rely on
+> asm-generic/cacheflush.h for the defaults.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-The new ringbuffer (with test routine) can also be built as a kernel
-module and does not require any kernel patching. It should work on any
-Linux kernel 4.20 or higher.
+Acked-by: Greg Ungerer <gerg@linux-m68k.org>
 
-Is there anyone with access to SMP Alpha hardware that would be willing
-to run the tests for me? Or can someone tell me where I might find such
-a candidate? Thanks!
+Regards
+Greg
 
-John Ogness
 
-[0] https://lkml.kernel.org/r/20200501094010.17694-1-john.ogness@linutronix.de
+> ---
+>   arch/m68k/include/asm/cacheflush_no.h | 19 ++-----------------
+>   1 file changed, 2 insertions(+), 17 deletions(-)
+> 
+> diff --git a/arch/m68k/include/asm/cacheflush_no.h b/arch/m68k/include/asm/cacheflush_no.h
+> index 11e9a9dcbfb24..2731f07e7be8c 100644
+> --- a/arch/m68k/include/asm/cacheflush_no.h
+> +++ b/arch/m68k/include/asm/cacheflush_no.h
+> @@ -9,25 +9,8 @@
+>   #include <asm/mcfsim.h>
+>   
+>   #define flush_cache_all()			__flush_cache_all()
+> -#define flush_cache_mm(mm)			do { } while (0)
+> -#define flush_cache_dup_mm(mm)			do { } while (0)
+> -#define flush_cache_range(vma, start, end)	do { } while (0)
+> -#define flush_cache_page(vma, vmaddr)		do { } while (0)
+>   #define flush_dcache_range(start, len)		__flush_dcache_all()
+> -#define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 0
+> -#define flush_dcache_page(page)			do { } while (0)
+> -#define flush_dcache_mmap_lock(mapping)		do { } while (0)
+> -#define flush_dcache_mmap_unlock(mapping)	do { } while (0)
+>   #define flush_icache_range(start, len)		__flush_icache_all()
+> -#define flush_icache_page(vma,pg)		do { } while (0)
+> -#define flush_icache_user_range(vma,pg,adr,len)	do { } while (0)
+> -#define flush_cache_vmap(start, end)		do { } while (0)
+> -#define flush_cache_vunmap(start, end)		do { } while (0)
+> -
+> -#define copy_to_user_page(vma, page, vaddr, dst, src, len) \
+> -	memcpy(dst, src, len)
+> -#define copy_from_user_page(vma, page, vaddr, dst, src, len) \
+> -	memcpy(dst, src, len)
+>   
+>   void mcf_cache_push(void);
+>   
+> @@ -98,4 +81,6 @@ static inline void cache_clear(unsigned long paddr, int len)
+>   	__clear_cache_all();
+>   }
+>   
+> +#include <asm-generic/cacheflush.h>
+> +
+>   #endif /* _M68KNOMMU_CACHEFLUSH_H */
+> 
