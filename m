@@ -1,26 +1,36 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 19/31] riscv: use asm-generic/cacheflush.h
-Date: Wed, 13 May 2020 08:23:18 +0200
-Message-ID: <20200513062318.GA24133@lst.de>
-References: <20200510075510.987823-20-hch@lst.de> <mhng-8adbedbc-0f91-4291-9471-2df5eb7b802b@palmerdabbelt-glaptop1>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: Alpha hardware for printk tests?
+Date: Wed, 13 May 2020 21:25:26 +1200
+Message-ID: <20200513092526.GD2743@tower>
+References: <87tv0lgqut.fsf@vostro.fn.ogness.net>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <mhng-8adbedbc-0f91-4291-9471-2df5eb7b802b@palmerdabbelt-glaptop1>
-Sender: linux-m68k-owner@vger.kernel.org
+In-Reply-To: <87tv0lgqut.fsf@vostro.fn.ogness.net>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Christoph Hellwig <hch@lst.de>, akpm@linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, zippel@linux-m68k.org, linux-arch@vger.kernel.org, linux-xtensa@linux-xtensa.org, monstr@monstr.eu, jeyu@kernel.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, x86@kernel.org, linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-riscv@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Tue, May 12, 2020 at 04:00:26PM -0700, Palmer Dabbelt wrote:
-> Reviewed-by: Palmer Dabbelt <palmerdabbelt@google.com>
-> Acked-by: Palmer Dabbelt <palmerdabbelt@google.com>
->
-> Were you trying to get these all in at once, or do you want me to take it into
-> my tree?
+On Tue, May 12, 2020 at 04:39:06PM +0200, John Ogness wrote:
+> I have posted[0] a new lockless printk ringbuffer implementation. The
+> ringbuffer has been tested heavily on x86_64 and arm64 SMP
+> systems. However, I would also like to test it on an SMP Alpha
+> system. Since the main purpose of the test is to verify the memory
+> barriers, the tests need to run on real hardware.
+> 
+> The new ringbuffer (with test routine) can also be built as a kernel
+> module and does not require any kernel patching. It should work on any
+> Linux kernel 4.20 or higher.
+> 
+> Is there anyone with access to SMP Alpha hardware that would be willing
+> to run the tests for me? Or can someone tell me where I might find such
+> a candidate? Thanks!
 
-Except for the small fixups at the beginning of the series this needs
-to go in together.  I'll have to do at least another resend, and after
-that I hope Andrew is going to pick it up.
+I run the two Alpha ES45's building for Debian-Ports.  I can run
+the tests on one of them if you provide me with instructions.
+
+Cheers,
+Michael.
