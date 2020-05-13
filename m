@@ -1,230 +1,51 @@
-From: Greg Ungerer <gerg@linux-m68k.org>
-Subject: Re: [PATCH 06/12] m68k/mm: move {cache,nocahe}_page() definitions
- close to their user
-Date: Wed, 13 May 2020 21:19:45 +1000
-Message-ID: <b59ef7eb-537e-c092-949f-225322f94e2c@linux-m68k.org>
-References: <20200512184422.12418-1-rppt@kernel.org>
- <20200512184422.12418-7-rppt@kernel.org>
+From: John Ogness <john.ogness@linutronix.de>
+Subject: Re: Alpha hardware for printk tests?
+Date: Wed, 13 May 2020 14:17:51 +0200
+Message-ID: <87r1vokp00.fsf@vostro.fn.ogness.net>
+References: <87tv0lgqut.fsf@vostro.fn.ogness.net>
+        <20200513092526.GD2743@tower>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <20200513092526.GD2743@tower> (Michael Cree's message of "Wed, 13
+        May 2020 21:25:26 +1200")
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20170209; h=Sender:Cc:List-Subscribe:
-	List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:
-	Message-ID:From:References:To:Subject:Reply-To:Content-ID:Content-Description
-	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=eaBZx6rpFsd6gadC20xELSAIBp13qhxZvmd5dR6SuLs=; b=rVsNhV/VQKFd9D
-	Vhi/iuDw/KlLj9OMz9Sr4DFevFrMwW9QmdeOepQVw3TBfHP0G6ipzFohwdy2oN/bcyb7FoNW2PZ0Z
-	aBqf6pN35mfDF1pM40dPUjZ1jqtjDObknFgDAfMWHvUuyDojf3Tk6uvBROE7/PNa3aVf6eUu579L3
-	EDdsDplXPzJabYMf4Q7qdLHa5jdB8CCOASNS+eSSvK+lZgvxOHsqCUxgHnA6vEDxyS2DpaASF6BRI
-	ZjSipQuNoX6T4ZauIsK5W8qQ+pI7dGtsC70jq5CZP7rMA7nevTYCCJiX/1GAT04DJXbEyRRU562hm
-	Arf5Lk0Tvz4D/Hex6kXw==;
-In-Reply-To: <20200512184422.12418-7-rppt@kernel.org>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Heiko Carstens <heiko.carstens@de.ibm.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Vincent Chen <deanbo422@gmail.com>, Will Deacon <will@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Brian Cain <bcain@codeaurora.org>, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ley Foon Tan <ley.foon.tan@intel.com>, Mike Rapoport <rppt@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-parisc@vger.kernel.org
+To: Michael Cree <mcree@orcon.net.nz>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Hi Mike,
+On 2020-05-13, Michael Cree <mcree@orcon.net.nz> wrote:
+>> I have posted[0] a new lockless printk ringbuffer implementation. The
+>> ringbuffer has been tested heavily on x86_64 and arm64 SMP
+>> systems. However, I would also like to test it on an SMP Alpha
+>> system. Since the main purpose of the test is to verify the memory
+>> barriers, the tests need to run on real hardware.
+>> 
+>> The new ringbuffer (with test routine) can also be built as a kernel
+>> module and does not require any kernel patching. It should work on
+>> any Linux kernel 4.20 or higher.
+>> 
+>> Is there anyone with access to SMP Alpha hardware that would be
+>> willing to run the tests for me? Or can someone tell me where I might
+>> find such a candidate? Thanks!
+>
+> I run the two Alpha ES45's building for Debian-Ports.  I can run
+> the tests on one of them if you provide me with instructions.
 
-On 13/5/20 4:44 am, Mike Rapoport wrote:
-> From: Mike Rapoport <rppt@linux.ibm.com>
-> 
-> The cache_page() and nocache_page() functions are only used by the morotola
-                                                                      ^^^^^^^^
-                                                                      motorola
+That would be very helpful! Actually the test should build/run fine on
+the Debian/stable (4.19) kernel as well. The source code is available
+here:
 
-> MMU variant for setting caching attributes for the page table pages.
-> 
-> Move the definitions of these functions from
-> arch/m68k/include/asm/motorola_pgtable.h closer to their usage in
-> arch/m68k/mm/motorola.c and drop unused definition in
-> arch/m68k/include/asm/mcf_pgtable.h.
-> 
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+https://linux:linux@dl.linutronix.de/customers/printk/prb-test.tar.gz
 
-Acked-by: Greg Ungerer <gerg@linux-m68k.org>
+The README in the tarball explains how to build/run the test and what
+information to send back after the test.
 
-Regards
-Greg
+Even if you only had time to run the test for a few minutes, it would be
+very helpful for me!
 
+If you have any problems with the test module, please let me know. This
+test has been confirmed to run successfully on: arm64, amd64, ppc64el
 
-> ---
->   arch/m68k/include/asm/mcf_pgtable.h      | 40 ---------------------
->   arch/m68k/include/asm/motorola_pgtable.h | 44 ------------------------
->   arch/m68k/mm/motorola.c                  | 43 +++++++++++++++++++++++
->   3 files changed, 43 insertions(+), 84 deletions(-)
-> 
-> diff --git a/arch/m68k/include/asm/mcf_pgtable.h b/arch/m68k/include/asm/mcf_pgtable.h
-> index 0031cd387b75..737e826294f3 100644
-> --- a/arch/m68k/include/asm/mcf_pgtable.h
-> +++ b/arch/m68k/include/asm/mcf_pgtable.h
-> @@ -328,46 +328,6 @@ extern pgd_t kernel_pg_dir[PTRS_PER_PGD];
->   #define pte_offset_kernel(dir, address) \
->   	((pte_t *) __pmd_page(*(dir)) + __pte_offset(address))
->   
-> -/*
-> - * Disable caching for page at given kernel virtual address.
-> - */
-> -static inline void nocache_page(void *vaddr)
-> -{
-> -	pgd_t *dir;
-> -	p4d_t *p4dp;
-> -	pud_t *pudp;
-> -	pmd_t *pmdp;
-> -	pte_t *ptep;
-> -	unsigned long addr = (unsigned long) vaddr;
-> -
-> -	dir = pgd_offset_k(addr);
-> -	p4dp = p4d_offset(dir, addr);
-> -	pudp = pud_offset(p4dp, addr);
-> -	pmdp = pmd_offset(pudp, addr);
-> -	ptep = pte_offset_kernel(pmdp, addr);
-> -	*ptep = pte_mknocache(*ptep);
-> -}
-> -
-> -/*
-> - * Enable caching for page at given kernel virtual address.
-> - */
-> -static inline void cache_page(void *vaddr)
-> -{
-> -	pgd_t *dir;
-> -	p4d_t *p4dp;
-> -	pud_t *pudp;
-> -	pmd_t *pmdp;
-> -	pte_t *ptep;
-> -	unsigned long addr = (unsigned long) vaddr;
-> -
-> -	dir = pgd_offset_k(addr);
-> -	p4dp = p4d_offset(dir, addr);
-> -	pudp = pud_offset(p4dp, addr);
-> -	pmdp = pmd_offset(pudp, addr);
-> -	ptep = pte_offset_kernel(pmdp, addr);
-> -	*ptep = pte_mkcache(*ptep);
-> -}
-> -
->   /*
->    * Encode and de-code a swap entry (must be !pte_none(e) && !pte_present(e))
->    */
-> diff --git a/arch/m68k/include/asm/motorola_pgtable.h b/arch/m68k/include/asm/motorola_pgtable.h
-> index 9e5a3de21e15..e1594acf7c7e 100644
-> --- a/arch/m68k/include/asm/motorola_pgtable.h
-> +++ b/arch/m68k/include/asm/motorola_pgtable.h
-> @@ -227,50 +227,6 @@ static inline pte_t *pte_offset_kernel(pmd_t *pmdp, unsigned long address)
->   #define pte_offset_map(pmdp,address) ((pte_t *)__pmd_page(*pmdp) + (((address) >> PAGE_SHIFT) & (PTRS_PER_PTE - 1)))
->   #define pte_unmap(pte)		((void)0)
->   
-> -/* Prior to calling these routines, the page should have been flushed
-> - * from both the cache and ATC, or the CPU might not notice that the
-> - * cache setting for the page has been changed. -jskov
-> - */
-> -static inline void nocache_page(void *vaddr)
-> -{
-> -	unsigned long addr = (unsigned long)vaddr;
-> -
-> -	if (CPU_IS_040_OR_060) {
-> -		pgd_t *dir;
-> -		p4d_t *p4dp;
-> -		pud_t *pudp;
-> -		pmd_t *pmdp;
-> -		pte_t *ptep;
-> -
-> -		dir = pgd_offset_k(addr);
-> -		p4dp = p4d_offset(dir, addr);
-> -		pudp = pud_offset(p4dp, addr);
-> -		pmdp = pmd_offset(pudp, addr);
-> -		ptep = pte_offset_kernel(pmdp, addr);
-> -		*ptep = pte_mknocache(*ptep);
-> -	}
-> -}
-> -
-> -static inline void cache_page(void *vaddr)
-> -{
-> -	unsigned long addr = (unsigned long)vaddr;
-> -
-> -	if (CPU_IS_040_OR_060) {
-> -		pgd_t *dir;
-> -		p4d_t *p4dp;
-> -		pud_t *pudp;
-> -		pmd_t *pmdp;
-> -		pte_t *ptep;
-> -
-> -		dir = pgd_offset_k(addr);
-> -		p4dp = p4d_offset(dir, addr);
-> -		pudp = pud_offset(p4dp, addr);
-> -		pmdp = pmd_offset(pudp, addr);
-> -		ptep = pte_offset_kernel(pmdp, addr);
-> -		*ptep = pte_mkcache(*ptep);
-> -	}
-> -}
-> -
->   /* Encode and de-code a swap entry (must be !pte_none(e) && !pte_present(e)) */
->   #define __swp_type(x)		(((x).val >> 4) & 0xff)
->   #define __swp_offset(x)		((x).val >> 12)
-> diff --git a/arch/m68k/mm/motorola.c b/arch/m68k/mm/motorola.c
-> index 904c2a663977..8e5e74121a78 100644
-> --- a/arch/m68k/mm/motorola.c
-> +++ b/arch/m68k/mm/motorola.c
-> @@ -45,6 +45,49 @@ unsigned long mm_cachebits;
->   EXPORT_SYMBOL(mm_cachebits);
->   #endif
->   
-> +/* Prior to calling these routines, the page should have been flushed
-> + * from both the cache and ATC, or the CPU might not notice that the
-> + * cache setting for the page has been changed. -jskov
-> + */
-> +static inline void nocache_page(void *vaddr)
-> +{
-> +	unsigned long addr = (unsigned long)vaddr;
-> +
-> +	if (CPU_IS_040_OR_060) {
-> +		pgd_t *dir;
-> +		p4d_t *p4dp;
-> +		pud_t *pudp;
-> +		pmd_t *pmdp;
-> +		pte_t *ptep;
-> +
-> +		dir = pgd_offset_k(addr);
-> +		p4dp = p4d_offset(dir, addr);
-> +		pudp = pud_offset(p4dp, addr);
-> +		pmdp = pmd_offset(pudp, addr);
-> +		ptep = pte_offset_kernel(pmdp, addr);
-> +		*ptep = pte_mknocache(*ptep);
-> +	}
-> +}
-> +
-> +static inline void cache_page(void *vaddr)
-> +{
-> +	unsigned long addr = (unsigned long)vaddr;
-> +
-> +	if (CPU_IS_040_OR_060) {
-> +		pgd_t *dir;
-> +		p4d_t *p4dp;
-> +		pud_t *pudp;
-> +		pmd_t *pmdp;
-> +		pte_t *ptep;
-> +
-> +		dir = pgd_offset_k(addr);
-> +		p4dp = p4d_offset(dir, addr);
-> +		pudp = pud_offset(p4dp, addr);
-> +		pmdp = pmd_offset(pudp, addr);
-> +		ptep = pte_offset_kernel(pmdp, addr);
-> +		*ptep = pte_mkcache(*ptep);
-> +	}
-> +}
->   
->   /*
->    * Motorola 680x0 user's manual recommends using uncached memory for address
-> 
-
+John Ogness
