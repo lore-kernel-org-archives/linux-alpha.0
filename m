@@ -1,51 +1,54 @@
-From: John Ogness <john.ogness@linutronix.de>
-Subject: Re: Alpha hardware for printk tests?
-Date: Wed, 13 May 2020 14:17:51 +0200
-Message-ID: <87r1vokp00.fsf@vostro.fn.ogness.net>
-References: <87tv0lgqut.fsf@vostro.fn.ogness.net>
-        <20200513092526.GD2743@tower>
+From: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Subject: Re: [PATCH 1/2 v3] alpha: add a delay to inb_p, inb_w and inb_l
+Date: Wed, 13 May 2020 15:41:28 +0100
+Message-ID: <20200513144128.GA16995@mail.rc.ru>
+References: <alpine.LRH.2.02.2005060713390.25338@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a2W=foRQ1mX8Gds1GCo+qTRqATV59LyDG5_bNyEKjZybA@mail.gmail.com>
+ <alpine.LRH.2.02.2005061308220.18599@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2005070404420.5006@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
+ <alpine.LRH.2.02.2005070931280.1718@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAK8P3a3UdCJL6C07_W7pkipT1Xmr_0G9hOy1S+YXbB4_tKt+gg@mail.gmail.com>
+ <alpine.LFD.2.21.2005100209340.487915@eddie.linux-mips.org>
+ <alpine.LRH.2.02.2005101443290.15420@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20200513092526.GD2743@tower> (Michael Cree's message of "Wed, 13
-        May 2020 21:25:26 +1200")
+Content-Disposition: inline
+In-Reply-To: <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Cree <mcree@orcon.net.nz>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: "Maciej W. Rozycki" <macro@linux-mips.org>
+Cc: Mikulas Patocka <mpatocka@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alpha <linux-alpha@vger.kernel.org>, linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
 
-On 2020-05-13, Michael Cree <mcree@orcon.net.nz> wrote:
->> I have posted[0] a new lockless printk ringbuffer implementation. The
->> ringbuffer has been tested heavily on x86_64 and arm64 SMP
->> systems. However, I would also like to test it on an SMP Alpha
->> system. Since the main purpose of the test is to verify the memory
->> barriers, the tests need to run on real hardware.
->> 
->> The new ringbuffer (with test routine) can also be built as a kernel
->> module and does not require any kernel patching. It should work on
->> any Linux kernel 4.20 or higher.
->> 
->> Is there anyone with access to SMP Alpha hardware that would be
->> willing to run the tests for me? Or can someone tell me where I might
->> find such a candidate? Thanks!
->
-> I run the two Alpha ES45's building for Debian-Ports.  I can run
-> the tests on one of them if you provide me with instructions.
+On Mon, May 11, 2020 at 03:58:24PM +0100, Maciej W. Rozycki wrote:
+>  Individual PCI port locations correspond to different MMIO locations, so 
+> yes, accesses to these can be reordered (merging won't happen due to the 
+> use of the sparse address space).
 
-That would be very helpful! Actually the test should build/run fine on
-the Debian/stable (4.19) kernel as well. The source code is available
-here:
+Correct, it's how Alpha write buffers work. According to 21064 hardware
+reference manual, these buffers are flushed when one of the following
+conditions is met:
 
-https://linux:linux@dl.linutronix.de/customers/printk/prb-test.tar.gz
+1) The write buffer contains at least two valid entries.
+2) The write buffer contains one valid entry and at least 256 CPU cycles
+   have elapsed since the execution of the last write buffer-directed
+   instruction.
+3) The write buffer contains an MB, STQ_C or STL_C instruction.
+4) A load miss is pending to an address currently valid in the write
+   buffer that requires the write buffer to be flushed.
 
-The README in the tarball explains how to build/run the test and what
-information to send back after the test.
+I'm certain that in these rtc/serial cases we've got readX arriving
+to device *before* preceeding writeX because of 2). That's why small
+delay (300-1400 ns, apparently depends on CPU frequency) seemingly
+"fixes" the problem. The 4) is not met because loads and stores are
+to different ports, and 3) has been broken by commit 92d7223a74.
 
-Even if you only had time to run the test for a few minutes, it would be
-very helpful for me!
+So I believe that correct fix would be to revert 92d7223a74 and
+add wmb() before [io]writeX macros to meet memory-barriers.txt
+requirement. The "wmb" instruction is cheap enough and won't hurt
+IO performance too much.
 
-If you have any problems with the test module, please let me know. This
-test has been confirmed to run successfully on: arm64, amd64, ppc64el
-
-John Ogness
+Ivan.
