@@ -1,50 +1,51 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 01/11] tty/sysrq: alpha: export and use
- __sysrq_get_key_op()
-Date: Fri, 15 May 2020 14:54:17 +0200
-Message-ID: <20200515125417.GA1928406@kroah.com>
-References: <20200513214351.2138580-1-emil.l.velikov@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 01/29] arm: fix the flush_icache_range arguments in set_fiq_handler
+Date: Fri, 15 May 2020 16:36:18 +0200
+Message-ID: <20200515143646.3857579-2-hch@lst.de>
+References: <20200515143646.3857579-1-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1589547268;
-        bh=TotoL9YXsj+E4MwRDKyj3GbWs9IEi6m6QDbCpdIsCQM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=M/zXyDtwPlnFMqEQDPslfgMp9FZncwD5Y623ZF6geSYAJDxstXP18RdhxSzkoQv5C
-         +2UlOmeRnhVgPrsdSsTLzBIoBlufLx5x7KT25dXY3Q0bvDa0jwMOPg8fBIZblClI6G
-         YRoRBwIqyER8H2ya1QhRxnTyos5uf8y+IjyLsbZs=
-Content-Disposition: inline
-In-Reply-To: <20200513214351.2138580-1-emil.l.velikov@gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=f8uY0F5J9sPe3diCT135xJ/N/Dw+x4WW5zJnRGaybDU=; b=msMI36+CPB2aX7WIDOvf9a7ihe
+        A7+CS1wrGUYzvnMjk+QNuVEq6hdstYIgZPQorAgs/fWSXI09jbVs89riMnRBVwBQviupyy3DYOayE
+        JmluGvH20OMtC9Xya8H8+tf43obb46YOBQDhJyEunvFokJSClqB+BYiCKrmFLOa42PsHXDhDHPrDg
+        +WL9g+3vPWyosfG4RR5+SAek+0gkDoqEOMBae3KTFjfCYISW1pGgPedRT2GT+SPT55i+D+tHCdocc
+        hwAsGs57t3OgA7geJGJWqHENAgWbH0LMOJor1hUDGuRNCVKlG9U2TeWdIlcGEah5uy0ULp3wurKV4
+        KfwrUS2Q==;
+In-Reply-To: <20200515143646.3857579-1-hch@lst.de>
+Sender: linux-hexagon-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Emil Velikov <emil.l.velikov@gmail.com>
-Cc: dri-devel@lists.freedesktop.org, Jiri Slaby <jslaby@suse.com>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Roman Zippel <zippel@linux-m68k.org>
+Cc: Jessica Yu <jeyu@kernel.org>, Michal Simek <monstr@monstr.eu>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-mm@kvack.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, linux-fsdevel@vger.kernel.org
 
-On Wed, May 13, 2020 at 10:43:41PM +0100, Emil Velikov wrote:
-> Export a pointer to the sysrq_get_key_op(). This way we can cleanly
-> unregister it, instead of the current solutions of modifuing it inplace.
-> 
-> Since __sysrq_get_key_op() is no longer used externally, let's make it
-> a static function.
-> 
-> This patch will allow us to limit access to each and every sysrq op and
-> constify the sysrq handling.
-> 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jslaby@suse.com>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Richard Henderson <rth@twiddle.net>
-> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Cc: linux-alpha@vger.kernel.org
-> Signed-off-by: Emil Velikov <emil.l.velikov@gmail.com>
-> ---
-> Please keep me in the CC list, as I'm not subscribed to the list.
-> 
-> IMHO it would be better if this gets merged this via the tty tree.
+The arguments passed look bogus, try to fix them to something that seems
+to make sense.
 
-All now taken, thanks!
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/arm/kernel/fiq.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-greg k-h
+diff --git a/arch/arm/kernel/fiq.c b/arch/arm/kernel/fiq.c
+index cd1234c103fcd..98ca3e3fa8471 100644
+--- a/arch/arm/kernel/fiq.c
++++ b/arch/arm/kernel/fiq.c
+@@ -98,8 +98,8 @@ void set_fiq_handler(void *start, unsigned int length)
+ 
+ 	memcpy(base + offset, start, length);
+ 	if (!cache_is_vipt_nonaliasing())
+-		flush_icache_range((unsigned long)base + offset, offset +
+-				   length);
++		flush_icache_range((unsigned long)base + offset,
++				   (unsigned long)base + offset + length);
+ 	flush_icache_range(0xffff0000 + offset, 0xffff0000 + offset + length);
+ }
+ 
+-- 
+2.26.2
+
