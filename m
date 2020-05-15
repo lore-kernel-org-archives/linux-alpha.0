@@ -1,49 +1,100 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH v2] Implement close-on-fork
-Date: Fri, 15 May 2020 09:26:18 -0700
-Message-ID: <20200515162618.GG16070@bombadil.infradead.org>
+From: "Karstens, Nate" <Nate.Karstens@garmin.com>
+Subject: RE: [PATCH v2] Implement close-on-fork
+Date: Fri, 15 May 2020 16:26:28 +0000
+Message-ID: <954ef5ce2e47472f8b41300bf59209c5@garmin.com>
 References: <20200515152321.9280-1-nate.karstens@garmin.com>
- <20200515155730.GF16070@bombadil.infradead.org>
- <5b1929aa9f424e689c7f430663891827@garmin.com>
+ <20200515160342.GE23230@ZenIV.linux.org.uk>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5gAtDZQTZJyIz4lJd56+m7fpDX/8eOny8zsjfp/WK3g=; b=E1GnXv9HQmw3mxGy8aTAUkpqtO
-        LX32SHoo6haT7C848Uk/mHhzb1Mi82vSzLqaqXMBeLxEoQreda9IbySpK9JiyNlQPchRwdvkB89TG
-        cJ+ZIchO992dspfvL0oC6jojurfVU/cfECKy6b4WDO00Ad0indEJ6GElFVlP+vOsnr+pa4Me57i7o
-        v0sl4fV4SdGx6yYezqRxl2STkyRwP+/LAThK7MDh1/uODW/aPFO3hJ7EO4jZogC7UkCBb7PIQyyo7
-        VSmbm9T/M6YK8TtNYQtmwZP0KvbGfMxmwFDJlq3T7aof9Iy3/oiBMvZzpJb53+gP62xcqiXEXouOd
-        2uN/J65w==;
-Content-Disposition: inline
-In-Reply-To: <5b1929aa9f424e689c7f430663891827@garmin.com>
-Sender: linux-parisc-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Karstens, Nate" <Nate.Karstens@garmin.com>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>, David Laight <David.Laight@aculab.com>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, sp
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ipFHuOC8jzTJusS9EnOrLBs7xPwpMEA0/oRFdlFittQ=;
+ b=XP3naaRbUcAY0BQdHPyQOVZOxFQu11BfWx8hZtoSZXpO09znIkra6x3IQHCW9O/Q5wpBtEesa+QJebJ/5t3pHgjV1NSYl7PdBXhjGJwkn5XYCi7xfWpjelYGalt1q2YfAtugzT5r9148g4OQ0v6nBzzY6FBDzV/6NmnmHEUeWfWwxXJ6vif6oPTBTgO/lODZjOlhaxhD36HSrOhVyUsY9iMmY6GYGQPgL2gtfZWJsG8sJa0H9BbqcSIapfzT38nACig9YW6+45Rp/9KVVG8DqlLPeJ0mkgQfdB7yVXBLTLi58rYUuRRHa1VNZhusJDv/JNPWWr1Px6LIgKHDJ/19/w==
+In-Reply-To: <20200515160342.GE23230@ZenIV.linux.org.uk>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>, David Laight <David.Laight@aculab.com>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kerne>
 
-On Fri, May 15, 2020 at 04:07:33PM +0000, Karstens, Nate wrote:
-> Matthew,
-> 
-> What alternative would you suggest?
-> 
-> >From an earlier email:
-> 
-> > ...nothing else addresses the underlying issue: there is no way to
-> > prevent a fork() from duplicating the resource. The close-on-exec
-> > flag partially-addresses this by allowing the parent process to
-> > mark a file descriptor as exclusive to itself, but there is still
-> > a period of time the failure can occur because the auto-close only
-> > occurs during the exec(). Perhaps this would not be an issue with
-> > a different process/threading model, but that is another discussion
-> > entirely.
-> 
-> Do you disagree there is an issue?
+Al,
 
-Yes.  system() is defined as being unsafe for a threaded application
-to call.  I pointed this out in the last thread.
+The reference to the POSIX change was included more for a reference to that=
+ discussion, not to say "POSIX did this and so Linux must do it to". In any=
+ case, the documentation presented to the Austin Group was focused more aro=
+und the issue we ran into and some alternative solutions. In reviewing the =
+notes from the meeting I didn't get the impression that they added this to =
+POSIX simply because Solaris and *BSD already had it (reference https://aus=
+tingroupbugs.net/view.php?id=3D1317, the first solution we suggested).
 
+> It penalizes every call of fork() in the system
+
+Is the performance hit really that drastic? fork() does a lot of stuff and =
+this really seems like a drop in the bucket...
+
+> adds an extra dirtied cacheline on each socket()/open()/etc.
+
+It sounds like we can work to improve that, though.
+
+> already has a portable solution
+
+What is the solution?
+
+Thanks,
+
+Nate
+
+-----Original Message-----
+From: Al Viro <viro@ftp.linux.org.uk> On Behalf Of Al Viro
+Sent: Friday, May 15, 2020 11:04
+To: Karstens, Nate <Nate.Karstens@garmin.com>
+Cc: Jeff Layton <jlayton@kernel.org>; J. Bruce Fields <bfields@fieldses.org=
+>; Arnd Bergmann <arnd@arndb.de>; Richard Henderson <rth@twiddle.net>; Ivan=
+ Kokshaysky <ink@jurassic.park.msu.ru>; Matt Turner <mattst88@gmail.com>; J=
+ames E.J. Bottomley <James.Bottomley@hansenpartnership.com>; Helge Deller <=
+deller@gmx.de>; David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba=
+@kernel.org>; Eric Dumazet <edumazet@google.com>; David Laight <David.Laigh=
+t@aculab.com>; linux-fsdevel@vger.kernel.org; linux-arch@vger.kernel.org; l=
+inux-alpha@vger.kernel.org; linux-parisc@vger.kernel.org; sparclinux@vger.k=
+ernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Changli Ga=
+o <xiaosuo@gmail.com>
+Subject: Re: [PATCH v2] Implement close-on-fork
+
+CAUTION - EXTERNAL EMAIL: Do not click any links or open any attachments un=
+less you trust the sender and know the content is safe.
+
+
+On Fri, May 15, 2020 at 10:23:17AM -0500, Nate Karstens wrote:
+
+> This functionality was approved by the Austin Common Standards
+> Revision Group for inclusion in the next revision of the POSIX
+> standard (see issue 1318 in the Austin Group Defect Tracker).
+
+It penalizes every call of fork() in the system (as well as adds an extra d=
+irtied cacheline on each socket()/open()/etc.), adds memory footprint and c=
+omplicates the API.  All of that - to deal with rather uncommon problem tha=
+t already has a portable solution.
+
+As for the Austin Group, the only authority it has ever had derives from co=
+nsensus between existing Unices.  "Solaris does it, Linux and *BSD do not" =
+translates into "Austin Group is welcome to take a hike".
+BTW, contrary to the lovely bit of misrepresentation in that thread of thei=
+rs ("<LWN URL> suggests that" !=3D "someone's comment under LWN article say=
+s it _appears_ that"), none of *BSD do it.
+
+IMO it's a bad idea.
+
+NAKed-by: Al Viro <viro@zeniv.linux.org.uk>
+
+________________________________
+
+CONFIDENTIALITY NOTICE: This email and any attachments are for the sole use=
+ of the intended recipient(s) and contain information that may be Garmin co=
+nfidential and/or Garmin legally privileged. If you have received this emai=
+l in error, please notify the sender by reply email and delete the message.=
+ Any disclosure, copying, distribution or use of this communication (includ=
+ing attachments) by someone other than the intended recipient is prohibited=
+. Thank you.
