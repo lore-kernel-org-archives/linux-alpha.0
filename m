@@ -1,35 +1,42 @@
-From: Christian Brauner <christian.brauner@ubuntu.com>
-Subject: Re: [PATCH v2] Implement close-on-fork
-Date: Sat, 16 May 2020 15:29:18 +0200
-Message-ID: <20200516132918.edq7p2tyh6elorjm@wittgenstein>
-References: <20200515152321.9280-1-nate.karstens@garmin.com>
- <20200515155730.GF16070@bombadil.infradead.org>
+From: Jessica Yu <jeyu@kernel.org>
+Subject: Re: [PATCH 29/29] module: move the set_fs hack for
+ flush_icache_range to m68k
+Date: Mon, 18 May 2020 15:04:44 +0200
+Message-ID: <20200518130444.GA21096@linux-8ccs.fritz.box>
+References: <20200515143646.3857579-1-hch@lst.de>
+ <20200515143646.3857579-30-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589807091;
+        bh=bQOel0Owh5Jsy7D7It/KRrP7k71oDOZIFpOrOzQ9AhA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YqZBNW7MWDqiTSCxmly8oMsUsg4WN7C2JY9aDcakJBGzWq/UP00eyjCdLpfBridZ5
+         yEWjvi7dzrZTtKaXjd/2d6IuYc59csAsUVZSfRs5jq7Rr7rdKAsQZJF1Mc/s+At7dk
+         CA/eN9nd7O70bEOB0H0VqgRfIrUmH9kT0XamFLi8=
 Content-Disposition: inline
-In-Reply-To: <20200515155730.GF16070@bombadil.infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <20200515143646.3857579-30-hch@lst.de>
+Sender: linux-sh-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
 Content-Transfer-Encoding: 7bit
-To: Matthew Wilcox <willy@infradead.org>
-Cc: Nate Karstens <nate.karstens@garmin.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>, David Laight <David.Laight@aculab.com>, linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Changli
+To: Christoph Hellwig <hch@lst.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Roman Zippel <zippel@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-mm@kvack.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, linux-fsdevel@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Fri, May 15, 2020 at 08:57:30AM -0700, Matthew Wilcox wrote:
-> On Fri, May 15, 2020 at 10:23:17AM -0500, Nate Karstens wrote:
-> > Series of 4 patches to implement close-on-fork. Tests have been
-> > published to https://github.com/nkarstens/ltp/tree/close-on-fork
-> > and cover close-on-fork functionality in the following syscalls:
-> 
-> [...]
-> 
-> > This functionality was approved by the Austin Common Standards
-> > Revision Group for inclusion in the next revision of the POSIX
-> > standard (see issue 1318 in the Austin Group Defect Tracker).
-> 
-> NAK to this patch series, and the entire concept.
++++ Christoph Hellwig [15/05/20 16:36 +0200]:
+>flush_icache_range generally operates on kernel addresses, but for some
+>reason m68k needed a set_fs override.  Move that into the m68k code
+>insted of keeping it in the module loader.
+>
+>Signed-off-by: Christoph Hellwig <hch@lst.de>
+>Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>---
+> arch/m68k/mm/cache.c | 4 ++++
+> kernel/module.c      | 8 --------
+> 2 files changed, 4 insertions(+), 8 deletions(-)
 
-Yeah.
-But also, stuff like this should really be on linux-api.
+Thanks for cleaning this up. For module.c:
 
-Christian
+Acked-by: Jessica Yu <jeyu@kernel.org>
+
