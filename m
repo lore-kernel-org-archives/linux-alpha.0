@@ -1,73 +1,71 @@
-From: Mikulas Patocka <mpatocka@redhat.com>
-Subject: Re: [PATCH v5] alpha: fix memory barriers so that they conform to
- the specification
-Date: Tue, 26 May 2020 10:48:49 -0400 (EDT)
-Message-ID: <alpine.LRH.2.02.2005261044440.29117@file01.intranet.prod.int.rdu2.redhat.com>
-References: <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com> <alpine.LFD.2.21.2005111320220.677301@eddie.linux-mips.org> <20200513144128.GA16995@mail.rc.ru> <alpine.LRH.2.02.2005220920020.20970@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005221344530.11126@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LRH.2.02.2005230623410.22664@file01.intranet.prod.int.rdu2.redhat.com> <20200523151027.GA10128@mail.rc.ru> <alpine.LRH.2.02.2005231131480.10727@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005231134590.10727@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LFD.2.21.2005241500230.21168@redsun52.ssa.fujisawa.hgst.com> <alpine.LRH.2.02.2005250944210.26265@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005251500420.21168@redsun52.ssa.fujisawa.hgst.com> <alpine.LRH.2.02.2005251149540.4135@file01.intranet.prod.int.rdu2.redhat.com> <alpine.LFD.2.21.2005251729110.21168@redsun52.ssa.fujisawa.hgst.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH v2 03/20] mm: remove CONFIG_HAVE_MEMBLOCK_NODE_MAP option
+Date: Tue, 26 May 2020 18:11:59 +0100
+Message-ID: <20200526171159.GJ17051@gaia>
+References: <20200429121126.17989-1-rppt@kernel.org>
+ <20200429121126.17989-4-rppt@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1590504536;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xWwJiUsJG20AvcJrLo/c6ON/28FY1NfWMttlezYEwqU=;
-        b=JF9m8e71m/4yDdbIi+iY7SN3sx0qIEklDaXh/9EKkY8bLq06+JydEL//P6tiqB/YEir40e
-        yJzFUzZxNZ+yUP7JGYhRDBxIC97Wnz8ndxkcIOlUWYozjJmXJpX5ytAP6xAv+22dKq+Lg7
-        7jC9MNrfMJBIyIkReFJDzttvJX02iPA=
-In-Reply-To: <alpine.LFD.2.21.2005251729110.21168@redsun52.ssa.fujisawa.hgst.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: TEXT/PLAIN; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Maciej W. Rozycki" <macro@wdc.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "Maciej W. Rozycki" <macro@linux-mips.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alpha <linux-alpha@vger.kernel.org>, linux-serial@vger.kernel.org, linux-rtc@vger.kernel.org
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=y/O+NNKLMOo1EE4birCJb5SMmw4g1mrcSOWwLrfW2wg=; b=r6XQZisLELn0hM
+	6YgULwpEK8TlOQ1uX999rsfiI1MYzYAM2z54SAfKCHYRkzahE6ooDPB6B0vRzbWG25bMZ50OJ3jIl
+	xGdVsurX/6x+Kogxd8o8h6yD/IjE8IXZg2yBgQfaMoOuZKKGMRGG3h7CBhhLW9/70fN31eNUK6aCU
+	DIh/vJZtPLgQiIXHs+XN6EQxiUV0HG91uyYC4GRIUQQPuEDxFYZrDnUi3h1XpRUr2wkHWA+GJcEmc
+	DrUC8UJMYJlNYEITgqBol5Rmpvw2CocITNMp9ZoMk8S2uYzkJnWIobbhMbbqWAsdaYwQfmt/escWs
+	nO5zu3EfAzhE95mVx3ZQ==;
+Content-Disposition: inline
+In-Reply-To: <20200429121126.17989-4-rppt@kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>, 
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane-mx.org@lists.infradead.org
+To: Mike Rapoport <rppt@kernel.org>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-doc@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Michal Hocko <mhocko@kernel.org>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Mike Rapoport <rppt@linux.ibm.com>, Greg Ungerer <gerg@linux-m68k.org>, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-c6x-dev@linux-c6x.org, Baoquan He <bhe@redhat.com>, Jonathan Corbet <corbet@lwn.net>, linux-sh@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ley Foon Tan <ley.foon.tan@intel.co>
 
-
-
-On Mon, 25 May 2020, Maciej W. Rozycki wrote:
-
-> On Mon, 25 May 2020, Mikulas Patocka wrote:
+On Wed, Apr 29, 2020 at 03:11:09PM +0300, Mike Rapoport wrote:
+> From: Mike Rapoport <rppt@linux.ibm.com>
 > 
-> > > > The functions __raw_read* are already extern inline, so the compiler will 
-> > > > inline/noinline them depending on the macros trivial_io_bw and 
-> > > > trivial_io_lq - so we can just call them from read*_relaxed without 
-> > > > repeating the extern inline pattern.
-> > > 
-> > >  The whole point of this peculiar arrangement for cooked accessors is to 
-> > > avoid having barriers inserted inline around out-of-line calls to raw 
-> > > accessors,
-> > 
-> > I see, but why do we want to avoid that? Linux kernel has no binary 
-> > compatibility, so it doesn't matter if the barriers are inlined in the 
-> > drivers or not.
+> The CONFIG_HAVE_MEMBLOCK_NODE_MAP is used to differentiate initialization
+> of nodes and zones structures between the systems that have region to node
+> mapping in memblock and those that don't.
 > 
->  It does matter as it expands code unnecessarily (at all call sites), as I 
-> noted in the original review.  This has nothing to do with compatibility.
+> Currently all the NUMA architectures enable this option and for the
+> non-NUMA systems we can presume that all the memory belongs to node 0 and
+> therefore the compile time configuration option is not required.
 > 
-> > Anyway, I've sent a next version of the patch that makes read*_relaxed 
-> > extern inline.
+> The remaining few architectures that use DISCONTIGMEM without NUMA are
+> easily updated to use memblock_add_node() instead of memblock_add() and
+> thus have proper correspondence of memblock regions to NUMA nodes.
 > 
->  Thanks, I'll have a look.  And now that you have this update, please run 
-> `size' on ALPHA_GENERIC `vmlinux', preferably monolithic, to see what the 
-> difference is between `read*_relaxed' handlers `static inline' and keyed 
-> with `*trivial_rw_*'.
+> Still, free_area_init_node() must have a backward compatible version
+> because its semantics with and without CONFIG_HAVE_MEMBLOCK_NODE_MAP is
+> different. Once all the architectures will use the new semantics, the
+> entire compatibility layer can be dropped.
 > 
->   Maciej
+> To avoid addition of extra run time memory to store node id for
+> architectures that keep memblock but have only a single node, the node id
+> field of the memblock_region is guarded by CONFIG_NEED_MULTIPLE_NODES and
+> the corresponding accessors presume that in those cases it is always 0.
+> 
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> ---
+>  .../vm/numa-memblock/arch-support.txt         |  34 ------
+>  arch/alpha/mm/numa.c                          |   4 +-
+>  arch/arm64/Kconfig                            |   1 -
 
-The patch with static inline:
-   text    data     bss     dec     hex filename
-124207762       75953010        5426432 205587204       c410304 vmlinux
+For arm64:
 
-The patch with extern inline:
-   text    data     bss     dec     hex filename
-124184422       75953474        5426432 205564328       c40a9a8 vmlinux
-
-(I've sent version 7 of the patch because I misnamed the "write_relaxed" 
-function in version 6).
-
-Mikulas
-
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
