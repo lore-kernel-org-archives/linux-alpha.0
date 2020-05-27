@@ -1,79 +1,88 @@
-From: "Maciej W. Rozycki" <macro@wdc.com>
-Subject: Re: [PATCH v5] alpha: fix memory barriers so that they conform to the
- specification
-Date: Wed, 27 May 2020 00:23:32 +0000
-Message-ID: <alpine.DEB.2.20.2005270119170.1027@tpp.orcam.me.uk>
-References: <CAK8P3a1qN-cpzkcdtNhtMfSwWwxqcOYg9x6DEzt7PWazwr8V=Q@mail.gmail.com>
- <alpine.LRH.2.02.2005220920020.20970@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005221344530.11126@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005230623410.22664@file01.intranet.prod.int.rdu2.redhat.com>
- <20200523151027.GA10128@mail.rc.ru>
- <alpine.LRH.2.02.2005231131480.10727@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2005231134590.10727@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005241500230.21168@redsun52.ssa.fujisawa.hgst.com>
- <alpine.LRH.2.02.2005250944210.26265@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005251500420.21168@redsun52.ssa.fujisawa.hgst.com>
- <alpine.LRH.2.02.2005251149540.4135@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LFD.2.21.2005251729110.21168@redsun52.ssa.fujisawa.hgst.com>
- <alpine.LRH.2.02.2005261044440.29117@file01.intranet.prod.int.rdu2.redhat.com>
+From: Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] media: omap3isp: Shuffle cacheflush.h and include mm.h
+Date: Tue, 26 May 2020 21:34:27 -0700
+Message-ID: <20200527043426.3242439-1-natechancellor@gmail.com>
+References: <20200515143646.3857579-7-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1590539015; x=1622075015;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=T+XX72NM0evWLhAQu55bnnX5Y00pEt9zE7eGK0MnvIo=;
-  b=REzZao1lK0VUQcrUFA+xStHM4ksbMZ0pe9tntl0+yxuOmCcBlnNGJRzD
-   eDHF8lskdfHYW50UnzV3tduAZFu2wvzC36YmBQqDcoymZ+l1+iGgrwL79
-   //bMCaqpWIOlGccecQTPTcadsTiS0GUBLPp9Ai5bcfDHGcQaAtG4dTqoj
-   6qq/GLuslYDSbYyZEgxluuUPJ5GJfhEMlx2WyxL2zjiVc61mM0gPQaAci
-   SJpq9UDQQj0TaCZrYr1Gjd213XsM8tTME8Z8qAU9/Ku7KvYNyhMsM1Igy
-   mJEt0af0kgrUyreCceFwyTTx5YmTX1l6JDXlkxi/oNEcMt3tmuMM8Wppo
-   Q==;
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=sharedspace.onmicrosoft.com; s=selector2-sharedspace-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uOcYvFe6IGZ/cmUiIpAKQVV6rD8BhKM1SEA6Udqgn84=;
- b=mov/6WSSHP+niuABnwC0KgynVpvoWpkmq4kPJPSbwn9Gf51Cg33N7b2SEsBTHu5q9Lu6eTPxYTJ4Uc7o672pYB6D/7XxfslncuCVM6MkEk9h2jMUtLGQDI6P9W7d9K1U4fi0bu25mus0eyk6NPCfCd3D73hMfrnomrk1+8h0FcU=
-In-Reply-To: <alpine.LRH.2.02.2005261044440.29117@file01.intranet.prod.int.rdu2.redhat.com>
-Content-Language: en-US
-Content-ID: <D30F3CB55E483D4AB73C5C54DDD22A17@namprd04.prod.outlook.com>
-Sender: linux-alpha-owner@vger.kernel.org
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=lOpmpojWwwDKmdgvBgyDR/91akL7lsEVaaRXHGRRif0=;
+        b=RhgQiHKjSFxt0e4hdk9XFdFmwXlaqqy/oTAekflZtHFdhEKO64qFc1mpKDXZr69CPy
+         jdKKGgMYF3/PwLMQqZRA0p7MJV/Go6tkta/h4swizRoRpVhai4LlQKtDfpzOQXol3xcY
+         3TW/CBGWUO1G35QH1UIuJXs9WTI3G+E29PktRQFzMSdgmMsbx+ViIkPx4XIoQKnwHjtI
+         iuFirKyvXOkp6bKvGs8xYK3w/Dn4sctZ1lOJtxsH8Aa2nP03Bsx7PgwJODEguoGDFtQe
+         EV7yB1UHGazYqjCw0y7SPUOzeb1Rx+s20xn4YP/gkyyGkm4H/LKnhLTIPlstwN50FD9J
+         kU0w==
+In-Reply-To: <20200515143646.3857579-7-hch@lst.de>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Mikulas Patocka <mpatocka@redhat.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "Maciej W. Rozycki" <macro@linux-mips.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alpha <linux-alpha@vger.kernel.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: hch@lst.de
+Cc: akpm@linux-foundation.org, arnd@arndb.de, jeyu@kernel.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-fsdevel@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, linuxppc-dev@lists.ozlabs.org, monstr@monstr.eu, openrisc@lists.librecores.org, sparclinux@vger.kernel.org, x86@kernel.org, zippel@linux-m68k.org, Nathan Chancellor <natechancellor@gmail.com>
 
-On Tue, 26 May 2020, Mikulas Patocka wrote:
+After mm.h was removed from the asm-generic version of cacheflush.h,
+s390 allyesconfig shows several warnings of the following nature:
 
-> >  Thanks, I'll have a look.  And now that you have this update, please r=
-un=20
-> > `size' on ALPHA_GENERIC `vmlinux', preferably monolithic, to see what t=
-he=20
-> > difference is between `read*_relaxed' handlers `static inline' and keye=
-d=20
-> > with `*trivial_rw_*'.
-> >=20
-> >   Maciej
->=20
-> The patch with static inline:
->    text    data     bss     dec     hex filename
-> 124207762       75953010        5426432 205587204       c410304 vmlinux
->=20
-> The patch with extern inline:
->    text    data     bss     dec     hex filename
-> 124184422       75953474        5426432 205564328       c40a9a8 vmlinux
+In file included from ./arch/s390/include/generated/asm/cacheflush.h:1,
+                 from drivers/media/platform/omap3isp/isp.c:42:
+./include/asm-generic/cacheflush.h:16:42: warning: 'struct mm_struct'
+declared inside parameter list will not be visible outside of this
+definition or declaration
 
- I'm not sure why data grew, but still the gain in size is maybe small,=20
-yet it is there.
+cacheflush.h does not include mm.h nor does it include any forward
+declaration of these structures hence the warning. To avoid this,
+include mm.h explicitly in this file and shuffle cacheflush.h below it.
 
-> (I've sent version 7 of the patch because I misnamed the "write_relaxed"=
-=20
-> function in version 6).
+Fixes: 19c0054597a0 ("asm-generic: don't include <linux/mm.h> in cacheflush.h")
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
 
- I have reviewed v7 now, thanks for your effort!
+I am aware the fixes tag is kind of irrelevant because that SHA will
+change in the next linux-next revision and this will probably get folded
+into the original patch anyways but still.
 
-  Maciej=
+The other solution would be to add forward declarations of these structs
+to the top of cacheflush.h, I just chose to do what Christoph did in the
+original patch. I am happy to do that instead if you all feel that is
+better.
+
+ drivers/media/platform/omap3isp/isp.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/platform/omap3isp/isp.c b/drivers/media/platform/omap3isp/isp.c
+index a4ee6b86663e..54106a768e54 100644
+--- a/drivers/media/platform/omap3isp/isp.c
++++ b/drivers/media/platform/omap3isp/isp.c
+@@ -39,8 +39,6 @@
+  *	Troy Laramy <t-laramy@ti.com>
+  */
+ 
+-#include <asm/cacheflush.h>
+-
+ #include <linux/clk.h>
+ #include <linux/clkdev.h>
+ #include <linux/delay.h>
+@@ -49,6 +47,7 @@
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+ #include <linux/mfd/syscon.h>
++#include <linux/mm.h>
+ #include <linux/module.h>
+ #include <linux/omap-iommu.h>
+ #include <linux/platform_device.h>
+@@ -58,6 +57,8 @@
+ #include <linux/sched.h>
+ #include <linux/vmalloc.h>
+ 
++#include <asm/cacheflush.h>
++
+ #ifdef CONFIG_ARM_DMA_USE_IOMMU
+ #include <asm/dma-iommu.h>
+ #endif
+-- 
+2.27.0.rc0
+
