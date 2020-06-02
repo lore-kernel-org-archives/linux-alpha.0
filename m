@@ -1,159 +1,181 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Regression bisected to f2f84b05e02b (bug: consolidate
+From: Kees Cook <keescook@chromium.org>
+Subject: Re: Regression bisected to f2f84b05e02b (bug: consolidate
  warn_slowpath_fmt() usage)
-Date: Mon, 1 Jun 2020 19:48:04 -0700
-Message-ID: <20200602024804.GA3776630@p50-ethernet.mattst88.com>
+Date: Tue, 2 Jun 2020 11:03:43 -0700
+Message-ID: <202006021052.E52618F@keescook>
+References: <20200602024804.GA3776630@p50-ethernet.mattst88.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="NzB8fVQJ5HfG6fxh"
-Return-path: <linux-arch-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=tXLfb8REYstQRtUYyN/YAll9QOXoM7PZgW3xD5sxjrI=;
-        b=rLOrD2RHIa/F7ZMBJweppXnO7dugX2a+2XftHYtJaFnfBNxmTBoNMLUL7ahHdqnfaK
-         NoTM7tWTI8TkNiVRCzurJSSZ985pb+EvY4A9FzVOlRoJ95BgnpoEa1Y7NzVzA4kDa2vB
-         IC6Yb79NV/QQBxLo8aBGZtPiT58M5NCKcsgNpt6Bc3yiKrUjc5jCJF/xsxAxWtVlqqMh
-         I2jmlZ97i+9+bOOc9VgK/qooBYy3iKq/oypTN01NhwXi4b+UZOPjbeq5TMySQLTDRFYp
-         QID97Y2eEN2zUE2HnTXXtu5wyMxlaBDbbTm//F7ETTAwmFd8t1FphYAci4CNTAGdYoHP
-         tM8Q==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Y1Y2fkE2q57cl3sVFwSCV2Rlv9H/o7RdqOXAJOzk5BI=;
+        b=PxjxUeYNGDO7nTddPMYiH16uFfFjhvhXlC7DHTn2Gwug8w9r+bMImzNz39NlxB5UPp
+         LgwcLmqrHUTSMexgkNWCMeryIJyQPTKKd2n7s06lhDTBUQJZ7jvQC+VHeC526lAKgHRI
+         Hwyx+1bfTWqtXOoxgkAPqd07kmOEteBXyu/Zg=
 Content-Disposition: inline
-Sender: linux-arch-owner@vger.kernel.org
+In-Reply-To: <20200602024804.GA3776630@p50-ethernet.mattst88.com>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-To: Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Matt Turner <mattst88@gmail.com>
 Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
+On Mon, Jun 01, 2020 at 07:48:04PM -0700, Matt Turner wrote:
+> I bisected a regression on alpha to f2f84b05e02b (bug: consolidate
+> warn_slowpath_fmt() usage) which looks totally innocuous.
+> 
+> Reverting it on master confirms that it somehow is the trigger. At or a
+> little after starting userspace, I'll see an oops like this:
+> 
+> Unable to handle kernel paging request at virtual address 0000000000000000
+> CPU 0
+> kworker/u2:5(98): Oops -1
+> pc = [<0000000000000000>]  ra = [<0000000000000000>]  ps = 0000    Not tainted
+> pc is at 0x0
 
---NzB8fVQJ5HfG6fxh
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+^^^^ so, the instruction pointer is NULL. The only way I can imagine
+that happening would be from this line:
 
-I bisected a regression on alpha to f2f84b05e02b (bug: consolidate
-warn_slowpath_fmt() usage) which looks totally innocuous.
+        worker->current_func(work);
 
-Reverting it on master confirms that it somehow is the trigger. At or a
-little after starting userspace, I'll see an oops like this:
+> ra is at 0x0
+> v0 = 0000000000000007  t0 = 0000000000000001  t1 = 0000000000000001
+> t2 = 0000000000000000  t3 = fffffc00bfe68780  t4 = 0000000000000001
+> t5 = fffffc00bf8cc780  t6 = 00000000026f8000  t7 = fffffc00bfe70000
+> s0 = fffffc000250d310  s1 = fffffc000250d310  s2 = fffffc000250d310
+> s3 = fffffc000250ca40  s4 = fffffc000250caa0  s5 = 0000000000000000
+> s6 = fffffc000250ca40
+> a0 = fffffc00024f0488  a1 = fffffc00bfe73d98  a2 = fffffc00bfe68800
+> a3 = fffffc00bf881400  a4 = 0001000000000000  a5 = 0000000000000002
+> t8 = 0000000000000000  t9 = 0000000000000000  t10= 0000000001321800
+> t11= 000000000000ba4e  pv = fffffc000189ca00  at = 0000000000000000
+> gp = fffffc000253e430  sp = 0000000043a83c2e
+> Disabling lock debugging due to kernel taint
+> Trace:
+> [<fffffc000105c8ac>] process_one_work+0x25c/0x5a0
 
-Unable to handle kernel paging request at virtual address 0000000000000000
-CPU 0
-kworker/u2:5(98): Oops -1
-pc =3D [<0000000000000000>]  ra =3D [<0000000000000000>]  ps =3D 0000    No=
-t tainted
-pc is at 0x0
-ra is at 0x0
-v0 =3D 0000000000000007  t0 =3D 0000000000000001  t1 =3D 0000000000000001
-t2 =3D 0000000000000000  t3 =3D fffffc00bfe68780  t4 =3D 0000000000000001
-t5 =3D fffffc00bf8cc780  t6 =3D 00000000026f8000  t7 =3D fffffc00bfe70000
-s0 =3D fffffc000250d310  s1 =3D fffffc000250d310  s2 =3D fffffc000250d310
-s3 =3D fffffc000250ca40  s4 =3D fffffc000250caa0  s5 =3D 0000000000000000
-s6 =3D fffffc000250ca40
-a0 =3D fffffc00024f0488  a1 =3D fffffc00bfe73d98  a2 =3D fffffc00bfe68800
-a3 =3D fffffc00bf881400  a4 =3D 0001000000000000  a5 =3D 0000000000000002
-t8 =3D 0000000000000000  t9 =3D 0000000000000000  t10=3D 0000000001321800
-t11=3D 000000000000ba4e  pv =3D fffffc000189ca00  at =3D 0000000000000000
-gp =3D fffffc000253e430  sp =3D 0000000043a83c2e
-Disabling lock debugging due to kernel taint
-Trace:
-[<fffffc000105c8ac>] process_one_work+0x25c/0x5a0
-[<fffffc000105cc4c>] worker_thread+0x5c/0x7d0
-[<fffffc0001066c88>] kthread+0x188/0x1f0
-[<fffffc0001011b48>] ret_from_kernel_thread+0x18/0x20
-[<fffffc0001066b00>] kthread+0x0/0x1f0
-[<fffffc000105cbf0>] worker_thread+0x0/0x7d0
+Can you verify where this     ^^^^^^^^^^^^^^   is?
 
-Code:
-  00000000
-  00000000
-  00063301
-  000012e2
-  00001111
-  0005ffde
+> [<fffffc000105cc4c>] worker_thread+0x5c/0x7d0
+> [<fffffc0001066c88>] kthread+0x188/0x1f0
+> [<fffffc0001011b48>] ret_from_kernel_thread+0x18/0x20
+> [<fffffc0001066b00>] kthread+0x0/0x1f0
+> [<fffffc000105cbf0>] worker_thread+0x0/0x7d0
+> 
+> Code:
+>  00000000
+>  00000000
+>  00063301
+>  000012e2
+>  00001111
+>  0005ffde
+> 
+> It seems to cause a hard lock on an SMP system, but not on a system with
+> a single CPU. Similarly, if I boot the SMP system (2 CPUs) with
+> maxcpus=1 the oops doesn't happen. Until I tested on a non-SMP system
+> today I suspected that it was unaffected, but I saw the oops there too.
+> With the revert applied, I don't see a warning or an oops.
+> 
+> Any clues how this patch could have triggered the oops?
 
-It seems to cause a hard lock on an SMP system, but not on a system with
-a single CPU. Similarly, if I boot the SMP system (2 CPUs) with
-maxcpus=3D1 the oops doesn't happen. Until I tested on a non-SMP system
-today I suspected that it was unaffected, but I saw the oops there too.
-With the revert applied, I don't see a warning or an oops.
+I cannot begin to imagine. :P Compared to other things I've seen like
+this in the past maybe it's some kind of effect from the code size
+changing the location/alignment or timing of something else?
 
-Any clues how this patch could have triggered the oops?
+Various questions ranging in degrees of sanity:
 
-Here's the revert, with a trivial conflict resolved, that I've used in
-testing:
+Does alpha use work queues for WARN?
 
- From fdbdd0f606f0f412ee06c1152e33a22ca17102bc Mon Sep 17 00:00:00 2001
-=46rom: Matt Turner <mattst88@gmail.com>
-Date: Sun, 24 May 2020 20:46:00 -0700
-Subject: [PATCH] Revert "bug: consolidate warn_slowpath_fmt() usage"
+Which work queue is getting a NULL function? (And then things like "if
+WARN was much slower or much faster, is there a race to something
+setting itself to NULL?")
 
-This reverts commit f2f84b05e02b7710a201f0017b3272ad7ef703d1.
----
-  include/asm-generic/bug.h |  3 ++-
-  kernel/panic.c            | 15 +++++++--------
-  2 files changed, 9 insertions(+), 9 deletions(-)
+Was there a WARN before the above Oops?
 
-diff --git a/include/asm-generic/bug.h b/include/asm-generic/bug.h
-index 384b5c835ced..a4a311d4b4b0 100644
---- a/include/asm-generic/bug.h
-+++ b/include/asm-generic/bug.h
-@@ -82,7 +82,8 @@ struct bug_entry {
-  extern __printf(4, 5)
-  void warn_slowpath_fmt(const char *file, const int line, unsigned taint,
-  		       const char *fmt, ...);
--#define __WARN()		__WARN_printf(TAINT_WARN, NULL)
-+extern void warn_slowpath_null(const char *file, const int line);
-+#define __WARN()		warn_slowpath_null(__FILE__, __LINE__)
-  #define __WARN_printf(taint, arg...)					\
-  	warn_slowpath_fmt(__FILE__, __LINE__, taint, arg)
-  #else
-diff --git a/kernel/panic.c b/kernel/panic.c
-index b69ee9e76cb2..c8ed8046b484 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -603,20 +603,19 @@ void warn_slowpath_fmt(const char *file, int line, un=
-signed taint,
-  {
-  	struct warn_args args;
- =20
--	pr_warn(CUT_HERE);
--
--	if (!fmt) {
--		__warn(file, line, __builtin_return_address(0), taint,
--		       NULL, NULL);
--		return;
--	}
--
-  	args.fmt =3D fmt;
-  	va_start(args.args, fmt);
-  	__warn(file, line, __builtin_return_address(0), taint, NULL, &args);
-  	va_end(args.args);
-  }
-  EXPORT_SYMBOL(warn_slowpath_fmt);
-+
-+void warn_slowpath_null(const char *file, int line)
-+{
-+	pr_warn(CUT_HERE);
-+	__warn(file, line, __builtin_return_address(0), TAINT_WARN, NULL, NULL);
-+}
-+EXPORT_SYMBOL(warn_slowpath_null);
-  #else
-  void __warn_printk(const char *fmt, ...)
-  {
---=20
-2.26.2
+Does WARN have side-effects on alpha?
 
---NzB8fVQJ5HfG6fxh
-Content-Type: application/pgp-signature; name="signature.asc"
+Does __WARN_printf() do something bad that warn_slowpath_null() doesn't?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Does making incremental changes narrow anything down? (e.g. instead of
+this revert, remove the __warn() call in warn_slowpath_fmt() that was
+added? (I mean, that'll be quite broken for WARN, but will it not oops?)
 
-iNUEABYKAH0WIQSzlptPDvl9ch5jjr2cglpmBdQLvgUCXtW94l8UgAAAAAAuAChp
-c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjM5
-NjlCNEYwRUY5N0Q3MjFFNjM4RUJEOUM4MjVBNjYwNUQ0MEJCRQAKCRCcglpmBdQL
-vhczAP9lpK9GDG2VnFlPAgh0FMvq3Z750UnH82UUiklN6xZkXwD+Mggvk1WV1XAW
-7S99g69EMvaFojGmQu1H3oXK3IAslg0=
-=8cBu
------END PGP SIGNATURE-----
+Does alpha have hardware breakpoints? When I had to track down a
+corruption in the io scheduler, I ended up setting breakpoints on the
+thing that went crazy (in this case, I assume the work queue function
+pointer) to figure out what touched it.
 
---NzB8fVQJ5HfG6fxh--
+... I can't think of anything else.
+
+-Kees
+
+> 
+> Here's the revert, with a trivial conflict resolved, that I've used in
+> testing:
+> 
+> From fdbdd0f606f0f412ee06c1152e33a22ca17102bc Mon Sep 17 00:00:00 2001
+> From: Matt Turner <mattst88@gmail.com>
+> Date: Sun, 24 May 2020 20:46:00 -0700
+> Subject: [PATCH] Revert "bug: consolidate warn_slowpath_fmt() usage"
+> 
+> This reverts commit f2f84b05e02b7710a201f0017b3272ad7ef703d1.
+> ---
+>  include/asm-generic/bug.h |  3 ++-
+>  kernel/panic.c            | 15 +++++++--------
+>  2 files changed, 9 insertions(+), 9 deletions(-)
+> 
+> diff --git a/include/asm-generic/bug.h b/include/asm-generic/bug.h
+> index 384b5c835ced..a4a311d4b4b0 100644
+> --- a/include/asm-generic/bug.h
+> +++ b/include/asm-generic/bug.h
+> @@ -82,7 +82,8 @@ struct bug_entry {
+>  extern __printf(4, 5)
+>  void warn_slowpath_fmt(const char *file, const int line, unsigned taint,
+>  		       const char *fmt, ...);
+> -#define __WARN()		__WARN_printf(TAINT_WARN, NULL)
+> +extern void warn_slowpath_null(const char *file, const int line);
+> +#define __WARN()		warn_slowpath_null(__FILE__, __LINE__)
+>  #define __WARN_printf(taint, arg...)					\
+>  	warn_slowpath_fmt(__FILE__, __LINE__, taint, arg)
+>  #else
+> diff --git a/kernel/panic.c b/kernel/panic.c
+> index b69ee9e76cb2..c8ed8046b484 100644
+> --- a/kernel/panic.c
+> +++ b/kernel/panic.c
+> @@ -603,20 +603,19 @@ void warn_slowpath_fmt(const char *file, int line, unsigned taint,
+>  {
+>  	struct warn_args args;
+> -	pr_warn(CUT_HERE);
+> -
+> -	if (!fmt) {
+> -		__warn(file, line, __builtin_return_address(0), taint,
+> -		       NULL, NULL);
+> -		return;
+> -	}
+> -
+>  	args.fmt = fmt;
+>  	va_start(args.args, fmt);
+>  	__warn(file, line, __builtin_return_address(0), taint, NULL, &args);
+>  	va_end(args.args);
+>  }
+>  EXPORT_SYMBOL(warn_slowpath_fmt);
+> +
+> +void warn_slowpath_null(const char *file, int line)
+> +{
+> +	pr_warn(CUT_HERE);
+> +	__warn(file, line, __builtin_return_address(0), TAINT_WARN, NULL, NULL);
+> +}
+> +EXPORT_SYMBOL(warn_slowpath_null);
+>  #else
+>  void __warn_printk(const char *fmt, ...)
+>  {
+> -- 
+> 2.26.2
+
+
+
+-- 
+Kees Cook
