@@ -1,127 +1,159 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH] media: omap3isp: Shuffle cacheflush.h and include mm.h
-Date: Wed, 27 May 2020 16:45:27 +0300
-Message-ID: <20200527134527.GD6171@pendragon.ideasonboard.com>
-References: <20200515143646.3857579-7-hch@lst.de>
- <20200527043426.3242439-1-natechancellor@gmail.com>
- <CAMuHMdVSduTOi5bUgF9sLQdGADwyL1+qALWsKgin1TeOLGhAKQ@mail.gmail.com>
- <20200527081337.GA3506499@ubuntu-s3-xlarge-x86>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Regression bisected to f2f84b05e02b (bug: consolidate
+ warn_slowpath_fmt() usage)
+Date: Mon, 1 Jun 2020 19:48:04 -0700
+Message-ID: <20200602024804.GA3776630@p50-ethernet.mattst88.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1590587141;
-        bh=FOT36A7X8Hk3Rh2sgJfgv1jk67oSyBWaXMLvby3ZVn0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=K8tyyqP2+EBqMtHIXAixv68AVoyRavwX2+DntbLh2vrjNKUdhw1kPp5L8v8XcEQke
-         5hoxdGk3u1oikaekAvVN79PzMi7aqfwFJI9F8IdAk1sxTLb8aiHOOnYPs49h177hrO
-         RBBxk1jZGiThAgDTQMwbMwsU3yghDgrHe9UIOuIk=
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="NzB8fVQJ5HfG6fxh"
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=tXLfb8REYstQRtUYyN/YAll9QOXoM7PZgW3xD5sxjrI=;
+        b=rLOrD2RHIa/F7ZMBJweppXnO7dugX2a+2XftHYtJaFnfBNxmTBoNMLUL7ahHdqnfaK
+         NoTM7tWTI8TkNiVRCzurJSSZ985pb+EvY4A9FzVOlRoJ95BgnpoEa1Y7NzVzA4kDa2vB
+         IC6Yb79NV/QQBxLo8aBGZtPiT58M5NCKcsgNpt6Bc3yiKrUjc5jCJF/xsxAxWtVlqqMh
+         I2jmlZ97i+9+bOOc9VgK/qooBYy3iKq/oypTN01NhwXi4b+UZOPjbeq5TMySQLTDRFYp
+         QID97Y2eEN2zUE2HnTXXtu5wyMxlaBDbbTm//F7ETTAwmFd8t1FphYAci4CNTAGdYoHP
+         tM8Q==
 Content-Disposition: inline
-In-Reply-To: <20200527081337.GA3506499@ubuntu-s3-xlarge-x86>
-Sender: linux-m68k-owner@vger.kernel.org
+Sender: linux-arch-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Nathan Chancellor <natechancellor@gmail.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Christoph Hellwig <hch@lst.de>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, Roman Zippel <zippel@linux-m68k.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, Linux MM <linux-mm@kvack.org>, sparclinux <sparclinux@vger.kernel.org>, linux-riscv@lists.infradead.org, Linux-Arch <linux-arch@vger.kernel.org>, linux-c6x-dev@linux-c6x.org, "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, "open list:TENSILICA XTENSA PORT (xtensa)" <linux-xtensa@linux-xtensa.org>, Arnd Bergmann <arnd@arndb.de>, alpha <linux-alpha@vger.kernel.org>, linux-um <linux-um@lists.infradead.org>, linux-m68k <l>
+To: Kees Cook <keescook@chromium.org>
+Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-Hi Nathan,
 
-(CC'ing Sakari Ailus and the linux-media mailing list)
+--NzB8fVQJ5HfG6fxh
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 27, 2020 at 01:13:37AM -0700, Nathan Chancellor wrote:
-> On Wed, May 27, 2020 at 09:02:51AM +0200, Geert Uytterhoeven wrote:
-> > On Wed, May 27, 2020 at 6:37 AM Nathan Chancellor wrote:
-> > > After mm.h was removed from the asm-generic version of cacheflush.h,
-> > > s390 allyesconfig shows several warnings of the following nature:
-> > >
-> > > In file included from ./arch/s390/include/generated/asm/cacheflush.h:1,
-> > >                  from drivers/media/platform/omap3isp/isp.c:42:
-> > > ./include/asm-generic/cacheflush.h:16:42: warning: 'struct mm_struct'
-> > > declared inside parameter list will not be visible outside of this
-> > > definition or declaration
-> > >
-> > > cacheflush.h does not include mm.h nor does it include any forward
-> > > declaration of these structures hence the warning. To avoid this,
-> > > include mm.h explicitly in this file and shuffle cacheflush.h below it.
-> > >
-> > > Fixes: 19c0054597a0 ("asm-generic: don't include <linux/mm.h> in cacheflush.h")
-> > > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> > 
-> > Thanks for your patch!
-> > 
-> > > I am aware the fixes tag is kind of irrelevant because that SHA will
-> > > change in the next linux-next revision and this will probably get folded
-> > > into the original patch anyways but still.
-> > >
-> > > The other solution would be to add forward declarations of these structs
-> > > to the top of cacheflush.h, I just chose to do what Christoph did in the
-> > > original patch. I am happy to do that instead if you all feel that is
-> > > better.
-> > 
-> > That actually looks like a better solution to me, as it would address the
-> > problem for all users.
+I bisected a regression on alpha to f2f84b05e02b (bug: consolidate
+warn_slowpath_fmt() usage) which looks totally innocuous.
 
-Headers should be self-contained, so that would be the best fix in my
-opinion.
+Reverting it on master confirms that it somehow is the trigger. At or a
+little after starting userspace, I'll see an oops like this:
 
-This being said, as cacheflush.h isn't needed in isp.c, I think we
-should also drop it. It seems to have been included there since the
-first driver version, and was likely a left-over from the out-of-tree
-development. Manual cache handling was part of
-drivers/media/platform/omap3isp/ispqueue.c and has been removed in
-commit fbac1400bd1a ("[media] omap3isp: Move to videobuf2").
+Unable to handle kernel paging request at virtual address 0000000000000000
+CPU 0
+kworker/u2:5(98): Oops -1
+pc =3D [<0000000000000000>]  ra =3D [<0000000000000000>]  ps =3D 0000    No=
+t tainted
+pc is at 0x0
+ra is at 0x0
+v0 =3D 0000000000000007  t0 =3D 0000000000000001  t1 =3D 0000000000000001
+t2 =3D 0000000000000000  t3 =3D fffffc00bfe68780  t4 =3D 0000000000000001
+t5 =3D fffffc00bf8cc780  t6 =3D 00000000026f8000  t7 =3D fffffc00bfe70000
+s0 =3D fffffc000250d310  s1 =3D fffffc000250d310  s2 =3D fffffc000250d310
+s3 =3D fffffc000250ca40  s4 =3D fffffc000250caa0  s5 =3D 0000000000000000
+s6 =3D fffffc000250ca40
+a0 =3D fffffc00024f0488  a1 =3D fffffc00bfe73d98  a2 =3D fffffc00bfe68800
+a3 =3D fffffc00bf881400  a4 =3D 0001000000000000  a5 =3D 0000000000000002
+t8 =3D 0000000000000000  t9 =3D 0000000000000000  t10=3D 0000000001321800
+t11=3D 000000000000ba4e  pv =3D fffffc000189ca00  at =3D 0000000000000000
+gp =3D fffffc000253e430  sp =3D 0000000043a83c2e
+Disabling lock debugging due to kernel taint
+Trace:
+[<fffffc000105c8ac>] process_one_work+0x25c/0x5a0
+[<fffffc000105cc4c>] worker_thread+0x5c/0x7d0
+[<fffffc0001066c88>] kthread+0x188/0x1f0
+[<fffffc0001011b48>] ret_from_kernel_thread+0x18/0x20
+[<fffffc0001066b00>] kthread+0x0/0x1f0
+[<fffffc000105cbf0>] worker_thread+0x0/0x7d0
 
-cacheflush.h can also be dropped from ispvideo.c which suffers from the
-same issue.
+Code:
+  00000000
+  00000000
+  00063301
+  000012e2
+  00001111
+  0005ffde
 
-> > >  drivers/media/platform/omap3isp/isp.c | 5 +++--
-> > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/media/platform/omap3isp/isp.c b/drivers/media/platform/omap3isp/isp.c
-> > > index a4ee6b86663e..54106a768e54 100644
-> > > --- a/drivers/media/platform/omap3isp/isp.c
-> > > +++ b/drivers/media/platform/omap3isp/isp.c
-> > > @@ -39,8 +39,6 @@
-> > >   *     Troy Laramy <t-laramy@ti.com>
-> > >   */
-> > >
-> > > -#include <asm/cacheflush.h>
-> > > -
-> > >  #include <linux/clk.h>
-> > >  #include <linux/clkdev.h>
-> > >  #include <linux/delay.h>
-> > > @@ -49,6 +47,7 @@
-> > >  #include <linux/i2c.h>
-> > >  #include <linux/interrupt.h>
-> > >  #include <linux/mfd/syscon.h>
-> > > +#include <linux/mm.h>
-> > >  #include <linux/module.h>
-> > >  #include <linux/omap-iommu.h>
-> > >  #include <linux/platform_device.h>
-> > > @@ -58,6 +57,8 @@
-> > >  #include <linux/sched.h>
-> > >  #include <linux/vmalloc.h>
-> > >
-> > > +#include <asm/cacheflush.h>
-> > > +
-> > >  #ifdef CONFIG_ARM_DMA_USE_IOMMU
-> > >  #include <asm/dma-iommu.h>
-> > >  #endif
-> > 
-> > Why does this file need <asm/cacheflush.h> at all?
-> > It doesn't call any of the flush_*() functions, and seems to compile fine
-> > without (on arm32).
-> > 
-> > Perhaps it was included at the top intentionally, to override the definitions
-> > of copy_{to,from}_user_page()? Fortunately that doesn't seem to be the
-> > case, from a quick look at the assembler output.
-> > 
-> > So let's just remove the #include instead?
-> 
-> Sounds good to me. I can send a patch if needed or I suppose Andrew can
-> just make a small fixup patch for it. Let me know what I should do.
+It seems to cause a hard lock on an SMP system, but not on a system with
+a single CPU. Similarly, if I boot the SMP system (2 CPUs) with
+maxcpus=3D1 the oops doesn't happen. Until I tested on a non-SMP system
+today I suspected that it was unaffected, but I saw the oops there too.
+With the revert applied, I don't see a warning or an oops.
 
--- 
-Regards,
+Any clues how this patch could have triggered the oops?
 
-Laurent Pinchart
+Here's the revert, with a trivial conflict resolved, that I've used in
+testing:
+
+ From fdbdd0f606f0f412ee06c1152e33a22ca17102bc Mon Sep 17 00:00:00 2001
+=46rom: Matt Turner <mattst88@gmail.com>
+Date: Sun, 24 May 2020 20:46:00 -0700
+Subject: [PATCH] Revert "bug: consolidate warn_slowpath_fmt() usage"
+
+This reverts commit f2f84b05e02b7710a201f0017b3272ad7ef703d1.
+---
+  include/asm-generic/bug.h |  3 ++-
+  kernel/panic.c            | 15 +++++++--------
+  2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/include/asm-generic/bug.h b/include/asm-generic/bug.h
+index 384b5c835ced..a4a311d4b4b0 100644
+--- a/include/asm-generic/bug.h
++++ b/include/asm-generic/bug.h
+@@ -82,7 +82,8 @@ struct bug_entry {
+  extern __printf(4, 5)
+  void warn_slowpath_fmt(const char *file, const int line, unsigned taint,
+  		       const char *fmt, ...);
+-#define __WARN()		__WARN_printf(TAINT_WARN, NULL)
++extern void warn_slowpath_null(const char *file, const int line);
++#define __WARN()		warn_slowpath_null(__FILE__, __LINE__)
+  #define __WARN_printf(taint, arg...)					\
+  	warn_slowpath_fmt(__FILE__, __LINE__, taint, arg)
+  #else
+diff --git a/kernel/panic.c b/kernel/panic.c
+index b69ee9e76cb2..c8ed8046b484 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -603,20 +603,19 @@ void warn_slowpath_fmt(const char *file, int line, un=
+signed taint,
+  {
+  	struct warn_args args;
+ =20
+-	pr_warn(CUT_HERE);
+-
+-	if (!fmt) {
+-		__warn(file, line, __builtin_return_address(0), taint,
+-		       NULL, NULL);
+-		return;
+-	}
+-
+  	args.fmt =3D fmt;
+  	va_start(args.args, fmt);
+  	__warn(file, line, __builtin_return_address(0), taint, NULL, &args);
+  	va_end(args.args);
+  }
+  EXPORT_SYMBOL(warn_slowpath_fmt);
++
++void warn_slowpath_null(const char *file, int line)
++{
++	pr_warn(CUT_HERE);
++	__warn(file, line, __builtin_return_address(0), TAINT_WARN, NULL, NULL);
++}
++EXPORT_SYMBOL(warn_slowpath_null);
+  #else
+  void __warn_printk(const char *fmt, ...)
+  {
+--=20
+2.26.2
+
+--NzB8fVQJ5HfG6fxh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iNUEABYKAH0WIQSzlptPDvl9ch5jjr2cglpmBdQLvgUCXtW94l8UgAAAAAAuAChp
+c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjM5
+NjlCNEYwRUY5N0Q3MjFFNjM4RUJEOUM4MjVBNjYwNUQ0MEJCRQAKCRCcglpmBdQL
+vhczAP9lpK9GDG2VnFlPAgh0FMvq3Z750UnH82UUiklN6xZkXwD+Mggvk1WV1XAW
+7S99g69EMvaFojGmQu1H3oXK3IAslg0=
+=8cBu
+-----END PGP SIGNATURE-----
+
+--NzB8fVQJ5HfG6fxh--
