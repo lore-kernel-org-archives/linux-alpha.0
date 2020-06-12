@@ -1,154 +1,167 @@
-From: ebiederm@xmission.com (Eric W. Biederman)
-Subject: Re: [PATCH v2] All arch: remove system call sys_sysctl
-Date: Thu, 11 Jun 2020 13:23:39 -0500
-Message-ID: <87k10dqx5g.fsf@x220.int.ebiederm.org>
-References: <1591847640-124894-1-git-send-email-nixiaoming@huawei.com>
- <87ftb1u8u3.fsf@x220.int.ebiederm.org>
- <20200611163902.GN1079@brightrain.aerifal.cx>
- <87ftb1sfjc.fsf@x220.int.ebiederm.org>
- <20200611172028.GO1079@brightrain.aerifal.cx>
+From: Matt Turner <mattst88@gmail.com>
+Subject: Re: Regression bisected to f2f84b05e02b (bug: consolidate
+ warn_slowpath_fmt() usage)
+Date: Thu, 11 Jun 2020 21:23:52 -0700
+Message-ID: <CAEdQ38F2GP92xB2gMXTrEo-Adbbc9Cy1DWHU9yveGLzJNd2HrA@mail.gmail.com>
+References: <20200602024804.GA3776630@p50-ethernet.mattst88.com> <202006021052.E52618F@keescook>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-In-Reply-To: <20200611172028.GO1079@brightrain.aerifal.cx> (Rich Felker's
- message of "Thu, 11 Jun 2020 13:20:28 -0400")
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eDw2IckdwMgZNx/RcM3g1bGV48bIHbJTu1OTL4Mb9dA=;
+        b=uWo82/a5SvqD5vhe4pBLnNZ5TXPTxmCro4Zb7tBB9dhuhuB5D/1snBgHddyYyoiO3d
+         4XLZjfVDfB/SNN1Pdd+1Wwq0QXK7UVMe20V+NNsogHzDHMtW6Q8qPX6bgVNMDr3YKpQU
+         tHuDNtcBlKoe+XBaec7zKoM7149ESQEEGDGAAHsC+TCmic3pPcg1OCyZVGEJZK58PCtN
+         /D3em6zKYmJJ9lYEhrZg7wZVjOfnGKJ4kUqZX166SHuoWPVZK2T8M38ZZ0bYBrkxbkoE
+         XsEyPvVzvA/1dXtgOFjIPXi6h581nJ3VxaCghZ1Y0ovtT+vs+V5xT5H7KrTKc7hQvef9
+         knnQ==
+In-Reply-To: <202006021052.E52618F@keescook>
+Sender: linux-arch-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Rich Felker <dalias@libc.org>
-Cc: linux-sh@vger.kernel.org, catalin.marinas@arm.com, paulus@samba.org, ak@linux.intel.com, paulburton@kernel.org, geert@linux-m68k.org, mattst88@gmail.com, brgerst@gmail.com, acme@kernel.org, cyphar@cyphar.com, viro@zeniv.linux.org.uk, luto@kernel.org, tglx@linutronix.de, surenb@google.com, rth@twiddle.net, young.liuyang@huawei.com, linux-parisc@vger.kernel.org, rdunlap@infradead.org, linux-kernel@vger.kernel.org, mcgrof@kernel.org, linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org, mark.rutland@arm.com, linux-ia64@vger.kernel.org, linux-xtensa@linux-xtensa.org, jongk@linux-m68k.org, linux@dominikbrodowski.net, James.Bottomley@HansenPartnership.com, jcmvbkbc@gmail.com, linux-s390@vger.kernel.org, ysato@users.sourceforge.jp, deller@gmx.de, yzaikin@google.com, Xiaoming Ni <nixiaoming@huawei.com>, mszeredi@redhat.com, gor@linux.ibm.com, linux-alpha@vger.kernel.org, lin
+To: Kees Cook <keescook@chromium.org>
+Cc: Linux-Arch <linux-arch@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-alpha <linux-alpha@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
-Rich Felker <dalias@libc.org> writes:
-
-> On Thu, Jun 11, 2020 at 12:01:11PM -0500, Eric W. Biederman wrote:
->> Rich Felker <dalias@libc.org> writes:
->> 
->> > On Thu, Jun 11, 2020 at 06:43:00AM -0500, Eric W. Biederman wrote:
->> >> Xiaoming Ni <nixiaoming@huawei.com> writes:
->> >> 
->> >> > Since the commit 61a47c1ad3a4dc ("sysctl: Remove the sysctl system call"),
->> >> > sys_sysctl is actually unavailable: any input can only return an error.
->> >> >
->> >> > We have been warning about people using the sysctl system call for years
->> >> > and believe there are no more users.  Even if there are users of this
->> >> > interface if they have not complained or fixed their code by now they
->> >> > probably are not going to, so there is no point in warning them any
->> >> > longer.
->> >> >
->> >> > So completely remove sys_sysctl on all architectures.
->> >> 
->> >> 
->> >> 
->> >> >
->> >> > Signed-off-by: Xiaoming Ni <nixiaoming@huawei.com>
->> >> >
->> >> > changes in v2:
->> >> >   According to Kees Cook's suggestion, completely remove sys_sysctl on all arch
->> >> >   According to Eric W. Biederman's suggestion, update the commit log
->> >> >
->> >> > V1: https://lore.kernel.org/lkml/1591683605-8585-1-git-send-email-nixiaoming@huawei.com/
->> >> >   Delete the code of sys_sysctl and return -ENOSYS directly at the function entry
->> >> > ---
->> >> >  include/uapi/linux/sysctl.h                        |  15 --
->> >> [snip]
->> >> 
->> >> > diff --git a/include/uapi/linux/sysctl.h b/include/uapi/linux/sysctl.h
->> >> > index 27c1ed2..84b44c3 100644
->> >> > --- a/include/uapi/linux/sysctl.h
->> >> > +++ b/include/uapi/linux/sysctl.h
->> >> > @@ -27,21 +27,6 @@
->> >> >  #include <linux/types.h>
->> >> >  #include <linux/compiler.h>
->> >> >  
->> >> > -#define CTL_MAXNAME 10		/* how many path components do we allow in a
->> >> > -				   call to sysctl?   In other words, what is
->> >> > -				   the largest acceptable value for the nlen
->> >> > -				   member of a struct __sysctl_args to have? */
->> >> > -
->> >> > -struct __sysctl_args {
->> >> > -	int __user *name;
->> >> > -	int nlen;
->> >> > -	void __user *oldval;
->> >> > -	size_t __user *oldlenp;
->> >> > -	void __user *newval;
->> >> > -	size_t newlen;
->> >> > -	unsigned long __unused[4];
->> >> > -};
->> >> > -
->> >> >  /* Define sysctl names first */
->> >> >  
->> >> >  /* Top-level names: */
->> >> [snip]
->> >> 
->> >> The uapi header change does not make sense.  The entire point of the
->> >> header is to allow userspace programs to be able to call sys_sysctl.
->> >> It either needs to all stay or all go.
->> >> 
->> >> As the concern with the uapi header is about userspace programs being
->> >> able to compile please leave the header for now.
->> >> 
->> >> We should leave auditing userspace and seeing if userspace code will
->> >> still compile if we remove this header for a separate patch.  The
->> >> concerns and justifications for the uapi header are completely different
->> >> then for the removing the sys_sysctl implementation.
->> >> 
->> >> Otherwise
->> >> Acked-by: "Eric W. Biederman" <ebiederm@xmission.com>
->> >
->> > The UAPI header should be kept because it's defining an API not just
->> > for the kernel the headers are supplied with, but for all past
->> > kernels. In particular programs needing a failsafe CSPRNG source that
->> > works on old kernels may (do) use this as a fallback only if modern
->> > syscalls are missing. Removing the syscall is no problem since it
->> > won't be used, but if you remove the types/macros from the UAPI
->> > headers, they'll have to copy that into their own sources.
->> 
->> May we assume you know of a least one piece of userspace that will fail
->> to compile if this header file is removed?
+On Tue, Jun 2, 2020 at 11:03 AM Kees Cook <keescook@chromium.org> wrote:
 >
-> I know at least one piece of software is using SYS_sysctl for a
-> fallback CSPRNG source. I'm not 100% sure that they're using the
-> kernel headers; they might have copied it already. I'm also not sure
-> how many there are.
+> On Mon, Jun 01, 2020 at 07:48:04PM -0700, Matt Turner wrote:
+> > I bisected a regression on alpha to f2f84b05e02b (bug: consolidate
+> > warn_slowpath_fmt() usage) which looks totally innocuous.
+> >
+> > Reverting it on master confirms that it somehow is the trigger. At or a
+> > little after starting userspace, I'll see an oops like this:
+> >
+> > Unable to handle kernel paging request at virtual address 0000000000000000
+> > CPU 0
+> > kworker/u2:5(98): Oops -1
+> > pc = [<0000000000000000>]  ra = [<0000000000000000>]  ps = 0000    Not tainted
+> > pc is at 0x0
 >
-> Regardless, I think the principle stands. There's no need to remove
-> definitions that are essentially maintenance-free now that the
-> interface is no longer available in new kernels, and doing so
-> contributes to the myth that you're supposed to use kernel headers
-> matching runtime kernel rather than it always being safe to use latest
-> headers.
+> ^^^^ so, the instruction pointer is NULL. The only way I can imagine
+> that happening would be from this line:
+>
+>         worker->current_func(work);
+>
+> > ra is at 0x0
+> > v0 = 0000000000000007  t0 = 0000000000000001  t1 = 0000000000000001
+> > t2 = 0000000000000000  t3 = fffffc00bfe68780  t4 = 0000000000000001
+> > t5 = fffffc00bf8cc780  t6 = 00000000026f8000  t7 = fffffc00bfe70000
+> > s0 = fffffc000250d310  s1 = fffffc000250d310  s2 = fffffc000250d310
+> > s3 = fffffc000250ca40  s4 = fffffc000250caa0  s5 = 0000000000000000
+> > s6 = fffffc000250ca40
+> > a0 = fffffc00024f0488  a1 = fffffc00bfe73d98  a2 = fffffc00bfe68800
+> > a3 = fffffc00bf881400  a4 = 0001000000000000  a5 = 0000000000000002
+> > t8 = 0000000000000000  t9 = 0000000000000000  t10= 0000000001321800
+> > t11= 000000000000ba4e  pv = fffffc000189ca00  at = 0000000000000000
+> > gp = fffffc000253e430  sp = 0000000043a83c2e
+> > Disabling lock debugging due to kernel taint
+> > Trace:
+> > [<fffffc000105c8ac>] process_one_work+0x25c/0x5a0
+>
+> Can you verify where this     ^^^^^^^^^^^^^^   is?
 
-If there is no one using the definitions removing them saves people
-having to remember what they are there for.
+It is kernel/workqueue.c:2268, which contains
 
-The big rule is don't break userspace.  The goal is to allow people to
-upgrade their kernel without needing to worry about userspace breaking,
-and to be able to downgrade to the extent possible to help in tracking
-bugs.
+        worker->current_func(work);
 
-Not being able to compile userspace seems like a pretty clear cut case.
-Although there are some fuzzy edges given the history of the kernel
-headers.  Things like your libc requiring kernel headers to be processed
-before they can be used.  I think there are still some kernel headers
-that have that restriction when used with glibc as glibc uses different
-sizes for types like dev_t.
+as you predicted.
 
-The bottom line is we can't do it casually so that any work in the
-direction of removing from or deleting uapi headers needs to be it's own
-separate patch.
+> > [<fffffc000105cc4c>] worker_thread+0x5c/0x7d0
+> > [<fffffc0001066c88>] kthread+0x188/0x1f0
+> > [<fffffc0001011b48>] ret_from_kernel_thread+0x18/0x20
+> > [<fffffc0001066b00>] kthread+0x0/0x1f0
+> > [<fffffc000105cbf0>] worker_thread+0x0/0x7d0
+> >
+> > Code:
+> >  00000000
+> >  00000000
+> >  00063301
+> >  000012e2
+> >  00001111
+> >  0005ffde
+> >
+> > It seems to cause a hard lock on an SMP system, but not on a system with
+> > a single CPU. Similarly, if I boot the SMP system (2 CPUs) with
+> > maxcpus=1 the oops doesn't happen. Until I tested on a non-SMP system
+> > today I suspected that it was unaffected, but I saw the oops there too.
+> > With the revert applied, I don't see a warning or an oops.
+> >
+> > Any clues how this patch could have triggered the oops?
+>
+> I cannot begin to imagine. :P Compared to other things I've seen like
+> this in the past maybe it's some kind of effect from the code size
+> changing the location/alignment or timing of something else?
+>
+> Various questions ranging in degrees of sanity:
+>
+> Does alpha use work queues for WARN?
 
-Given how much effort it can be to show that userspace is not using
-something I don't expect us to be mucking with the uapi headers any time
-soon.
+I do not know. I don't see much in a few greps of arch/alpha that
+would indicate that it uses work queues.
 
-Eric
+> Which work queue is getting a NULL function? (And then things like "if
+> WARN was much slower or much faster, is there a race to something
+> setting itself to NULL?")
+>
+> Was there a WARN before the above Oops?
 
+No, which I suspect means that your much scarier suggestion that this
+is somehow due to code size or alignment is increasingly plausible.
+
+> Does WARN have side-effects on alpha?
+
+alpha just uses the asm-generic implementation of WARN as far as I can
+tell, so I think not.
+
+> Does __WARN_printf() do something bad that warn_slowpath_null() doesn't?
+>
+> Does making incremental changes narrow anything down? (e.g. instead of
+> this revert, remove the __warn() call in warn_slowpath_fmt() that was
+> added? (I mean, that'll be quite broken for WARN, but will it not oops?)
+
+Commenting out the added __warn does not work around the problem.
+
+Readding warn_slowpath_null and the EXPORT_SYMBOL (but not calling it
+from WARN) does not work around the problem.
+
+Calling warn_slowpath_fmt() with fmt=" " instead of fmt=NULL does not
+work around the problem.
+
+I also tried GCC-10.1 as a stab in the dark, and that doesn't work
+around the problem.
+
+So I'm thinking it's something about code size or alignment. I would
+be worried it's to do with memory ordering (since this is on Alpha)
+but I'm seeing the problem on a single CPU system, so that should be
+ruled out, I think?
+
+Using CONFIG_CC_OPTIMIZE_FOR_SIZE=y doesn't work around the problem.
+So that hurts the theory of code size being the trigger.
+
+Since I noticed earlier that using maxcpus=1 on a 2-CPU system
+prevented the system from hanging, I tried disabling CONFIG_SMP on my
+1-CPU system as well. In doing so, I discovered that the RCU torture
+module (RCU_TORTURE_TEST) triggers some null pointer dereferences on
+Alpha when CONFIG_SMP is set, but works successfully when CONFIG_SMP
+is unset.
+
+That seems likely to be a symptom of the same underlying problem that
+started this thread, don't you think? If so, I'll focus my attention
+on that.
+
+> Does alpha have hardware breakpoints? When I had to track down a
+> corruption in the io scheduler, I ended up setting breakpoints on the
+> thing that went crazy (in this case, I assume the work queue function
+> pointer) to figure out what touched it.
+
+As far as I know we don't have anything implemented in the kernel, but
+they could be implemented by faulting on read/write.
+
+> ... I can't think of anything else.
+
+Thanks for your time and suggestions!
+
+Matt
