@@ -1,73 +1,84 @@
 From: Peter Xu <peterx@redhat.com>
-Subject: Re: Possible duplicate page fault accounting on some archs after
- commit 4064b9827063
-Date: Mon, 15 Jun 2020 17:34:31 -0400
-Message-ID: <20200615213431.GC111927@xz-x1>
-References: <20200610174811.44b94525@thinkpad>
- <20200610165023.GA67179@xz-x1>
+Subject: [PATCH 03/25] mm/alpha: Use mm_fault_accounting()
+Date: Mon, 15 Jun 2020 18:15:45 -0400
+Message-ID: <20200615221607.7764-4-peterx@redhat.com>
+References: <20200615221607.7764-1-peterx@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-hexagon-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592256876;
+        s=mimecast20190719; t=1592259377;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ItwxuioZVdA5XdCXR1QbAewm4+8qdb0KbH1lb+9ehrA=;
-        b=gVPACN6xO1SeIGsjRKFWvtdrnZBydlA/xLaXlBTA9ukZGl8rrSHTnjN2uogdd2Fc4Dt43t
-        N034oGy0lR/F8iU1msOQSncDNnrtFpLzDG+Yj7bkEUSC/23fQh5XZcOAkeqq2c9/GUp5z8
-        vlzphSUVDu2xnhW42LAOptOJw/OIneY=
-Content-Disposition: inline
-In-Reply-To: <20200610165023.GA67179@xz-x1>
-Sender: linux-hexagon-owner@vger.kernel.org
+        bh=Uy9S6zWlY4QUCbRMwtgEQKAubvhaoWQ6Csg0YCMvJi4=;
+        b=bYB5anbFG0qTHiZSjAoa02nRe7wyCwUWfm0244QRLZ+LMITCMvjMkSvtU/e6KOgURl+pY7
+        ttuuUM8Jdaaqs2WhtbmtJG12VSU8Y39h9ePNWx+aHI4+9mWQqgH1ooWuSbaUYC0gpVP38J
+        2XoIgx2hbTGL0Dw0/x7b7HM2jnw1Qn0=
+In-Reply-To: <20200615221607.7764-1-peterx@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Gerald Schaefer <gerald.schaefer@de.ibm.com>
-Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, linux-mips@vger.kernel.org, Nick Hu <nickhu@andestech.com>, Ley Foon Tan <ley.foon.tan@intel.com>, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, Guan Xuetao <gxt@pku.edu.cn>, linux-xtensa@linux-xtensa.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>
+To: linux-kernel@vger.kernel.org
+Cc: Gerald Schaefer <gerald.schaefer@de.ibm.com>, Andrew Morton <akpm@linux-foundation.org>, peterx@redhat.com, Linus Torvalds <torvalds@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Wed, Jun 10, 2020 at 12:50:23PM -0400, Peter Xu wrote:
-> On Wed, Jun 10, 2020 at 05:48:11PM +0200, Gerald Schaefer wrote:
-> > Hi,
-> 
-> Hi, Gerald,
-> 
-> > 
-> > Some architectures have their page fault accounting code inside the fault
-> > retry loop, and rely on only going through that code once. Before commit
-> > 4064b9827063 ("mm: allow VM_FAULT_RETRY for multiple times"), that was
-> > ensured by testing for and clearing FAULT_FLAG_ALLOW_RETRY.
-> > 
-> > That commit had to remove the clearing of FAULT_FLAG_ALLOW_RETRY for all
-> > architectures, and introduced a subtle change to page fault accounting
-> > logic in the affected archs. It is now possible to go through the retry
-> > loop multiple times, and the affected archs would then account multiple
-> > page faults instead of just one.
-> > 
-> > This was found by coincidence in s390 code, and a quick check showed that
-> > there are quite a lot of other architectures that seem to be affected in a
-> > similar way. I'm preparing a fix for s390, by moving the accounting behind
-> > the retry loop, similar to x86. It is not completely straight-forward, so
-> > I leave the fix for other archs to the respective maintainers.
-> 
-> Sorry for not noticing this before.  The accounting part should definitely be
-> put at least into a check against fault_flag_allow_retry_first() to mimic what
-> was done before.  And I agree it would be even better to put it after the retry
-> logic, so if any of the page faults gets a major fault, it'll be accounted as a
-> major fault which makes more sense to me, just like what x86 is doing now with:
-> 
-> 	major |= fault & VM_FAULT_MAJOR;
-> 
-> I'm not sure what's the preference of the arch maintainers, just let me know if
-> it's preferred to use a single series to address this issue for all affected
-> archs (or the archs besides s390), then I'll do.
+Use the new mm_fault_accounting() helper for page fault accounting.
 
-To make sure this won't fall through the cracks... I'll give it a shot with a
-single series to address this issue for all archs.  Although it might not be
-easy to do accounting directly in handle_mm_fault(), it might be still a chance
-to introduce a helper so the accounting can be done in general code.
+Avoid doing page fault accounting multiple times if the page fault is retried.
+Also, the perf events for page faults will be accounted too when the config has
+CONFIG_PERF_EVENTS defined.
 
-Thanks,
+CC: Richard Henderson <rth@twiddle.net>
+CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+CC: Matt Turner <mattst88@gmail.com>
+CC: linux-alpha@vger.kernel.org
+Signed-off-by: Peter Xu <peterx@redhat.com>
+---
+ arch/alpha/mm/fault.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
+diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
+index c2d7b6d7bac7..4f8632ddef25 100644
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -88,7 +88,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	struct mm_struct *mm = current->mm;
+ 	const struct exception_table_entry *fixup;
+ 	int si_code = SEGV_MAPERR;
+-	vm_fault_t fault;
++	vm_fault_t fault, major = 0;
+ 	unsigned int flags = FAULT_FLAG_DEFAULT;
+ 
+ 	/* As of EV6, a load into $31/$f31 is a prefetch, and never faults
+@@ -149,6 +149,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	   make sure we exit gracefully rather than endlessly redo
+ 	   the fault.  */
+ 	fault = handle_mm_fault(vma, address, flags);
++	major |= fault & VM_FAULT_MAJOR;
+ 
+ 	if (fault_signal_pending(fault, regs))
+ 		return;
+@@ -164,10 +165,6 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	}
+ 
+ 	if (flags & FAULT_FLAG_ALLOW_RETRY) {
+-		if (fault & VM_FAULT_MAJOR)
+-			current->maj_flt++;
+-		else
+-			current->min_flt++;
+ 		if (fault & VM_FAULT_RETRY) {
+ 			flags |= FAULT_FLAG_TRIED;
+ 
+@@ -182,6 +179,8 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 
+ 	up_read(&mm->mmap_sem);
+ 
++	mm_fault_accounting(current, regs, address, major);
++
+ 	return;
+ 
+ 	/* Something tried to access memory that isn't in our memory map.
 -- 
-Peter Xu
+2.26.2
 
