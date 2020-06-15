@@ -1,54 +1,73 @@
-From: Emil Velikov <emil.l.velikov@gmail.com>
-Subject: Re: [PATCH] alpha: Fix build around srm_sysrq_reboot_op
-Date: Mon, 15 Jun 2020 20:47:27 +0100
-Message-ID: <CACvgo526Kn5qSpmV_azf70UCYNaFbyo7LgXGQykzyQV7v=6ahg@mail.gmail.com>
-References: <20200611091139.8525-1-joro@8bytes.org>
+From: Peter Xu <peterx@redhat.com>
+Subject: Re: Possible duplicate page fault accounting on some archs after
+ commit 4064b9827063
+Date: Mon, 15 Jun 2020 17:34:31 -0400
+Message-ID: <20200615213431.GC111927@xz-x1>
+References: <20200610174811.44b94525@thinkpad>
+ <20200610165023.GA67179@xz-x1>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p8frMyV6iWiTG20peVSog6g/PzG1tE3Z1KTFpjyMuOE=;
-        b=aBNl8F1yV0Kt0lNqG18J3Q1wOXi25U9Rf2Ac41hQ9KporKHlmJEJjztkldcrgpYn6n
-         X/MA0yAXN7zo/sBLmNp6WdtkZTl3x/Ri+rxuTPqRMQ4NSMtfoRnwNDuIm9D/f9Ox7cyT
-         KdYxGbl3FNmh7WvCWTd/4XTNT2SQTFLynAOaIQNeuoteTVOiwVo7tmEsv6shA92CdnLK
-         nt/gcC6LJvHmAqj9Vyo3fHeWdSMQ+Y5jlLLV62WBTjdf2dIzdu9aj/EeDFBt3xzVlz+c
-         ULgDtI03KR1fvyw4cB/1VLkoG68wC233nQqDshoS1W1sRlNnPTm7GTA3qpKDPJGaMDmr
-         Y3dg==
-In-Reply-To: <20200611091139.8525-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1592256876;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ItwxuioZVdA5XdCXR1QbAewm4+8qdb0KbH1lb+9ehrA=;
+        b=gVPACN6xO1SeIGsjRKFWvtdrnZBydlA/xLaXlBTA9ukZGl8rrSHTnjN2uogdd2Fc4Dt43t
+        N034oGy0lR/F8iU1msOQSncDNnrtFpLzDG+Yj7bkEUSC/23fQh5XZcOAkeqq2c9/GUp5z8
+        vlzphSUVDu2xnhW42LAOptOJw/OIneY=
+Content-Disposition: inline
+In-Reply-To: <20200610165023.GA67179@xz-x1>
+Sender: linux-hexagon-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linus Torvalds <torvalds@linux-foundation.org>, linux-alpha@vger.kernel.org, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>, Guenter Roeck <linux@roeck-us.net>
+To: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, linux-mips@vger.kernel.org, Nick Hu <nickhu@andestech.com>, Ley Foon Tan <ley.foon.tan@intel.com>, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, Guan Xuetao <gxt@pku.edu.cn>, linux-xtensa@linux-xtensa.org, Heiko Carstens <heiko.carstens@de.ibm.com>, Linus Torvalds <torvalds@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>
 
-Hi all,
+On Wed, Jun 10, 2020 at 12:50:23PM -0400, Peter Xu wrote:
+> On Wed, Jun 10, 2020 at 05:48:11PM +0200, Gerald Schaefer wrote:
+> > Hi,
+> 
+> Hi, Gerald,
+> 
+> > 
+> > Some architectures have their page fault accounting code inside the fault
+> > retry loop, and rely on only going through that code once. Before commit
+> > 4064b9827063 ("mm: allow VM_FAULT_RETRY for multiple times"), that was
+> > ensured by testing for and clearing FAULT_FLAG_ALLOW_RETRY.
+> > 
+> > That commit had to remove the clearing of FAULT_FLAG_ALLOW_RETRY for all
+> > architectures, and introduced a subtle change to page fault accounting
+> > logic in the affected archs. It is now possible to go through the retry
+> > loop multiple times, and the affected archs would then account multiple
+> > page faults instead of just one.
+> > 
+> > This was found by coincidence in s390 code, and a quick check showed that
+> > there are quite a lot of other architectures that seem to be affected in a
+> > similar way. I'm preparing a fix for s390, by moving the accounting behind
+> > the retry loop, similar to x86. It is not completely straight-forward, so
+> > I leave the fix for other archs to the respective maintainers.
+> 
+> Sorry for not noticing this before.  The accounting part should definitely be
+> put at least into a check against fault_flag_allow_retry_first() to mimic what
+> was done before.  And I agree it would be even better to put it after the retry
+> logic, so if any of the page faults gets a major fault, it'll be accounted as a
+> major fault which makes more sense to me, just like what x86 is doing now with:
+> 
+> 	major |= fault & VM_FAULT_MAJOR;
+> 
+> I'm not sure what's the preference of the arch maintainers, just let me know if
+> it's preferred to use a single series to address this issue for all affected
+> archs (or the archs besides s390), then I'll do.
 
-On Thu, 11 Jun 2020 at 10:11, Joerg Roedel <joro@8bytes.org> wrote:
->
-> From: Joerg Roedel <jroedel@suse.de>
->
-> The patch introducing the struct was probably never compile tested,
-> because it sets a handler with a wrong function signature. Wrap the
-> handler into a functions with the correct signature to fix the build.
->
-> Fixes: 0f1c9688a194 ("tty/sysrq: alpha: export and use __sysrq_get_key_op()")
-> Cc: Emil Velikov <emil.l.velikov@gmail.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+To make sure this won't fall through the cracks... I'll give it a shot with a
+single series to address this issue for all archs.  Although it might not be
+easy to do accounting directly in handle_mm_fault(), it might be still a chance
+to introduce a helper so the accounting can be done in general code.
 
-Just coming back from 10 offline days and retracing my testing ...
-Seems that I've copied the wrong .config.
-So a follow-up `make arch/alpha/kernel/setup.o' did not build
-anything... yet the command was _successful_.
+Thanks,
 
-This is something that should be fixed IMHO - doing the same for
-drivers/ (for example drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.o)
-results in an obvious audible error.
+-- 
+Peter Xu
 
-That said, apologies for the issue. I'll be more thorough and
-carefully audit the build logs for future patches.
-
--Emil
