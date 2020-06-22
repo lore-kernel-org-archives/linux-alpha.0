@@ -1,82 +1,68 @@
-From: Peter Xu <peterx@redhat.com>
-Subject: [PATCH 02/26] mm/alpha: Use general page fault accounting
-Date: Fri, 19 Jun 2020 12:05:14 -0400
-Message-ID: <20200619160538.8641-3-peterx@redhat.com>
-References: <20200619160538.8641-1-peterx@redhat.com>
+From: Christian Brauner <christian.brauner@ubuntu.com>
+Subject: [PATCH 09/17] alpha: switch to copy_thread_tls()
+Date: Tue, 23 Jun 2020 01:43:18 +0200
+Message-ID: <20200622234326.906346-10-christian.brauner@ubuntu.com>
+References: <20200622234326.906346-1-christian.brauner@ubuntu.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1592582746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QX5XNFqam9mdd/6wKfca40oUCGNepMLO5UWfniIypyY=;
-        b=U7o1PjzDnM3p1y0awnDYV/kUTfCHPLw9IN6O24H3V5k3oxF9+ioICVlrd/h0yOAd8rjmbI
-        CEn7HQ76Mi9W1EP8SD7l9GDpr1XlHIH3Yx+LXnUbL1JuP9bWdmMXtLsafXr6fx6gAh2aPa
-        klpVixnKhcM6ezZDE/fic0o6VF7r5+g=
-In-Reply-To: <20200619160538.8641-1-peterx@redhat.com>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20200622234326.906346-1-christian.brauner@ubuntu.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc: Gerald Schaefer <gerald.schaefer@de.ibm.com>, peterx@redhat.com, Andrew Morton <akpm@linux-foundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Will Deacon <will@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Linus Torvalds <torvalds@linux-foundation.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Christian Brauner <christian.brauner@ubuntu.com>, linux-alpha@vger.kernel.org
 
-Use the general page fault accounting by passing regs into handle_mm_fault().
+Use the copy_thread_tls() calling convention which passes tls through a
+register. This is required so we can remove the copy_thread{_tls}() split
+and remove the HAVE_COPY_THREAD_TLS macro.
 
-Add the missing PERF_COUNT_SW_PAGE_FAULTS perf events too.  Note, the other two
-perf events (PERF_COUNT_SW_PAGE_FAULTS_[MAJ|MIN]) were done in handle_mm_fault().
-
-CC: Richard Henderson <rth@twiddle.net>
-CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-CC: Matt Turner <mattst88@gmail.com>
-CC: linux-alpha@vger.kernel.org
-Signed-off-by: Peter Xu <peterx@redhat.com>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
 ---
- arch/alpha/mm/fault.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ arch/alpha/Kconfig          | 1 +
+ arch/alpha/kernel/process.c | 9 ++++-----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 82e72f24486e..2e325af081bc 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -25,6 +25,7 @@
- #include <linux/interrupt.h>
- #include <linux/extable.h>
- #include <linux/uaccess.h>
-+#include <linux/perf_event.h>
- 
- extern void die_if_kernel(char *,struct pt_regs *,long, unsigned long *);
- 
-@@ -116,6 +117,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- #endif
- 	if (user_mode(regs))
- 		flags |= FAULT_FLAG_USER;
-+	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
- retry:
- 	down_read(&mm->mmap_sem);
- 	vma = find_vma(mm, address);
-@@ -148,7 +150,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 	/* If for any reason at all we couldn't handle the fault,
- 	   make sure we exit gracefully rather than endlessly redo
- 	   the fault.  */
--	fault = handle_mm_fault(vma, address, flags, NULL);
-+	fault = handle_mm_fault(vma, address, flags, regs);
- 
- 	if (fault_signal_pending(fault, regs))
- 		return;
-@@ -164,10 +166,6 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 	}
- 
- 	if (flags & FAULT_FLAG_ALLOW_RETRY) {
--		if (fault & VM_FAULT_MAJOR)
--			current->maj_flt++;
--		else
--			current->min_flt++;
- 		if (fault & VM_FAULT_RETRY) {
- 			flags |= FAULT_FLAG_TRIED;
- 
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 10862c5a8c76..b01515c6b2ed 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -38,6 +38,7 @@ config ALPHA
+ 	select OLD_SIGSUSPEND
+ 	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
+ 	select MMU_GATHER_NO_RANGE
++	select HAVE_COPY_THREAD_TLS
+ 	help
+ 	  The Alpha is a 64-bit general-purpose processor designed and
+ 	  marketed by the Digital Equipment Corporation of blessed memory,
+diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
+index b45f0b0d6511..dfdb6b6ba61c 100644
+--- a/arch/alpha/kernel/process.c
++++ b/arch/alpha/kernel/process.c
+@@ -233,10 +233,9 @@ release_thread(struct task_struct *dead_task)
+ /*
+  * Copy architecture-specific thread state
+  */
+-int
+-copy_thread(unsigned long clone_flags, unsigned long usp,
+-	    unsigned long kthread_arg,
+-	    struct task_struct *p)
++int copy_thread_tls(unsigned long clone_flags, unsigned long usp,
++		    unsigned long kthread_arg, struct task_struct *p,
++		    unsigned long tls)
+ {
+ 	extern void ret_from_fork(void);
+ 	extern void ret_from_kernel_thread(void);
+@@ -267,7 +266,7 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
+ 	   required for proper operation in the case of a threaded
+ 	   application calling fork.  */
+ 	if (clone_flags & CLONE_SETTLS)
+-		childti->pcb.unique = regs->r20;
++		childti->pcb.unique = tls;
+ 	else
+ 		regs->r20 = 0;	/* OSF/1 has some strange fork() semantics.  */
+ 	childti->pcb.usp = usp ?: rdusp();
 -- 
-2.26.2
+2.27.0
 
