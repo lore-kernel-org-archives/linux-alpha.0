@@ -1,68 +1,82 @@
-From: Stafford Horne <shorne@gmail.com>
-Subject: Re: [PATCH 17/17] arch: rename copy_thread_tls() back to copy_thread()
-Date: Fri, 26 Jun 2020 06:17:49 +0900
-Message-ID: <20200625211749.GH1401039@lianli.shorne-pla.net>
-References: <20200622234326.906346-1-christian.brauner@ubuntu.com>
- <20200622234326.906346-18-christian.brauner@ubuntu.com>
+From: Peter Xu <peterx@redhat.com>
+Subject: [PATCH 02/26] mm/alpha: Use general page fault accounting
+Date: Fri, 26 Jun 2020 18:31:06 -0400
+Message-ID: <20200626223130.199227-3-peterx@redhat.com>
+References: <20200626223130.199227-1-peterx@redhat.com>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=CYdo0/N2hPQ38RsTOzG1HX78I9n3NR49FO824e6zLtQ=;
- b=FDoOD71AUBcdqMd1QpOGzqSOfHIfeqUX9WRT2uVYBig3mcL8Etxvpb8vKA19DXCEHk
- hGGyn1qQff5t9NyGd0lso3F1GiQRnyM9Thb1X3Q9nK5u7AM24Qpc5yMKBaX3ULrGDdmI
- aW3HUYFlAs8muNXQr2XbluBC6XcTXX0ykUXQ1EzqTydZoE90RxOfVwphYK6gTw5MJDP9
- mgw88O7NpAvmCyIxt25IifP2Bt29eyhNzOX/15SZvv0sU/nuxlLY/V8fYEtI3N0b3pKT
- gp2NuMwvUxbTosGypDo6A5687Z6EsY8/j4IN6ojCLjAHh/Y+rVlTIkural2QcqlX4Tvf
- Rmrg==
-Content-Disposition: inline
-In-Reply-To: <20200622234326.906346-18-christian.brauner@ubuntu.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593210697;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QX5XNFqam9mdd/6wKfca40oUCGNepMLO5UWfniIypyY=;
+        b=K2pxyPtKjI2LOKtBjEkzn/0i4u/8Dl0/r4ooqcrCVcv/hRgrRD4rssQEO2rYjaURVuYgWo
+        Ok645+UCgu1GsnbxGWu5uNUs5XoNrh9PpMAFSK2DV780TBnCHNmh6UZLiTbqewEIS5PS1x
+        nc0dAdwop8JqDZ09LIYDFP+uSmmoVtQ=
+In-Reply-To: <20200626223130.199227-1-peterx@redhat.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Christian Brauner <christian.brauner@ubuntu.com>
-Cc: Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mips@vger.kernel.org, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Vincent Chen <deanbo422@gmail.com>, Will Deacon <will@kernel.org>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Brian Cain <bcain@codeaurora.org>, linux-xtensa@linux-xtensa.org, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ley Foon Tan <l>
+To: linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, Linus Torvalds <torvalds@linux-foundation.org>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Andrea Arcangeli <aarcange@redhat.com>, Will Deacon <will@kernel.org>, peterx@redhat.com, Michael Ellerman <mpe@ellerman.id.au>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Tue, Jun 23, 2020 at 01:43:26AM +0200, Christian Brauner wrote:
+Use the general page fault accounting by passing regs into handle_mm_fault().
 
-> diff --git a/arch/openrisc/kernel/process.c b/arch/openrisc/kernel/process.c
-> index d7010e72450c..19045a3efb8a 100644
-> --- a/arch/openrisc/kernel/process.c
-> +++ b/arch/openrisc/kernel/process.c
-> @@ -116,7 +116,7 @@ void release_thread(struct task_struct *dead_task)
->  extern asmlinkage void ret_from_fork(void);
->  
->  /*
-> - * copy_thread_tls
-> + * copy_thread
->   * @clone_flags: flags
->   * @usp: user stack pointer or fn for kernel thread
->   * @arg: arg to fn for kernel thread; always NULL for userspace thread
-> @@ -147,7 +147,7 @@ extern asmlinkage void ret_from_fork(void);
->   */
->  
->  int
-> -copy_thread_tls(unsigned long clone_flags, unsigned long usp,
-> +copy_thread(unsigned long clone_flags, unsigned long usp,
->  		unsigned long arg, struct task_struct *p, unsigned long tls)
->  {
+Add the missing PERF_COUNT_SW_PAGE_FAULTS perf events too.  Note, the other two
+perf events (PERF_COUNT_SW_PAGE_FAULTS_[MAJ|MIN]) were done in handle_mm_fault().
 
-For the OpenRISC bit.
+CC: Richard Henderson <rth@twiddle.net>
+CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+CC: Matt Turner <mattst88@gmail.com>
+CC: linux-alpha@vger.kernel.org
+Signed-off-by: Peter Xu <peterx@redhat.com>
+---
+ arch/alpha/mm/fault.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-Acked-by: Stafford Horne <shorne@gmail.com>
+diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
+index 82e72f24486e..2e325af081bc 100644
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -25,6 +25,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/extable.h>
+ #include <linux/uaccess.h>
++#include <linux/perf_event.h>
+ 
+ extern void die_if_kernel(char *,struct pt_regs *,long, unsigned long *);
+ 
+@@ -116,6 +117,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ #endif
+ 	if (user_mode(regs))
+ 		flags |= FAULT_FLAG_USER;
++	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+ retry:
+ 	down_read(&mm->mmap_sem);
+ 	vma = find_vma(mm, address);
+@@ -148,7 +150,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	/* If for any reason at all we couldn't handle the fault,
+ 	   make sure we exit gracefully rather than endlessly redo
+ 	   the fault.  */
+-	fault = handle_mm_fault(vma, address, flags, NULL);
++	fault = handle_mm_fault(vma, address, flags, regs);
+ 
+ 	if (fault_signal_pending(fault, regs))
+ 		return;
+@@ -164,10 +166,6 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	}
+ 
+ 	if (flags & FAULT_FLAG_ALLOW_RETRY) {
+-		if (fault & VM_FAULT_MAJOR)
+-			current->maj_flt++;
+-		else
+-			current->min_flt++;
+ 		if (fault & VM_FAULT_RETRY) {
+ 			flags |= FAULT_FLAG_TRIED;
+ 
+-- 
+2.26.2
 
-Also, I would agree with what Kees mentioned about aligning the parameters.
-Sure that would be more work but it would be appreciated.
-
--Stafford
