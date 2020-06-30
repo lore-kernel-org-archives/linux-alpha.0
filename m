@@ -1,40 +1,79 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when
- CLANG_LTO=y
-Date: Tue, 30 Jun 2020 22:20:59 +0200
-Message-ID: <20200630202059.GE4817@hirez.programming.kicks-ass.net>
-References: <20200630173734.14057-1-will@kernel.org>
- <20200630173734.14057-19-will@kernel.org>
- <CANpmjNPOO=AVsVJMdL8sq03jwHsDR_1_FfWccwaLKEBRn1RFtA@mail.gmail.com>
+From: Peter Xu <peterx@redhat.com>
+Subject: [PATCH v4 02/26] mm/alpha: Use general page fault accounting
+Date: Tue, 30 Jun 2020 16:45:06 -0400
+Message-ID: <20200630204506.38567-1-peterx@redhat.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=pAld+PmSm3uQ9OLHyA9LsKDVn58a/UVYkn4lwoGnumM=; b=eAS27j4l5VKQ8En/OF9eH/i5RP
-        +zf93Ed62vvzDVNpm3OQPePdECVVSJpOKoPHPo0qto2p1L5df+7KSwptQDd/nIrdnpM5pzrhFjqJW
-        Gay6KM35iiIdnoVMtvL/4zFrkRmS8yLmL8kAueTKNarZQya4QhxBswEHfzITY6U2oKozvVDs84Yl7
-        8YFxk3ukDS3ImbkleuGENzLAnxsGWZJK4RrZ92k+myKvwxG+jTKqc4UERDxZlwKgkAJCQy/4cc2Xk
-        2MFT8Aygu1X6cIf9AXIRkGnOEsa+DHSPoHT2y4I+azRP5RQAjvGtlG/6aByC0gvgXiSJN2XicZtSl
-        46R2yNXA==;
-Content-Disposition: inline
-In-Reply-To: <CANpmjNPOO=AVsVJMdL8sq03jwHsDR_1_FfWccwaLKEBRn1RFtA@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1593549913;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9zINhPgn0dLU827u0kCMWiXWqm1EOoX2bkCYV8BQtz4=;
+        b=AryvP7vHoLSZVgmMUhbFtJJFmn7jmJq319KWAiUcqzYb7pMG1dyJChcO2R2FRBGRcgX23S
+        GblMgows6rjjFEemdKJe/rwgxaOftgH4l4WLDIYictAuRE0PiCiyrXCgKgi4Yf6kxQShAq
+        xYn5xTQCMfZ+GLD4r107T1SOoXwWDaA=
 Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Marco Elver <elver@google.com>
-Cc: Will Deacon <will@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org, virtualization@lists.linux-foundation.org
+To: linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, peterx@redhat.com, John Hubbard <jhubbard@nvidia.com>, Michael Ellerman <mpe@ellerman.id.au>, Gerald Schaefer <gerald.schaefer@de.ibm.com>, Andrea Arcangeli <aarcange@redhat.com>, Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-On Tue, Jun 30, 2020 at 09:47:30PM +0200, Marco Elver wrote:
-> I do wonder, though, if there is some way to make the compiler do
-> something better for us. Clearly, implementing real
-> memory_order_consume hasn't worked out until today. But maybe the
-> compiler could promote dependent loads to acquires if it recognizes it
-> lost dependencies during optimizations. Just thinking out loud, it
-> probably still has some weird corner case that will break. ;-)
+Use the general page fault accounting by passing regs into handle_mm_fault().
 
-I'd be very hesitant to let the compiler upgrade the ordering for us,
-specifically because we're not using C11 crud and are using a lot of
-inline asm.
+Add the missing PERF_COUNT_SW_PAGE_FAULTS perf events too.  Note, the other two
+perf events (PERF_COUNT_SW_PAGE_FAULTS_[MAJ|MIN]) were done in handle_mm_fault().
+
+CC: Richard Henderson <rth@twiddle.net>
+CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+CC: Matt Turner <mattst88@gmail.com>
+CC: linux-alpha@vger.kernel.org
+Signed-off-by: Peter Xu <peterx@redhat.com>
+---
+ arch/alpha/mm/fault.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
+index 1983e43a5e2f..09172f017efc 100644
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -25,6 +25,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/extable.h>
+ #include <linux/uaccess.h>
++#include <linux/perf_event.h>
+ 
+ extern void die_if_kernel(char *,struct pt_regs *,long, unsigned long *);
+ 
+@@ -116,6 +117,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ #endif
+ 	if (user_mode(regs))
+ 		flags |= FAULT_FLAG_USER;
++	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+ retry:
+ 	mmap_read_lock(mm);
+ 	vma = find_vma(mm, address);
+@@ -148,7 +150,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	/* If for any reason at all we couldn't handle the fault,
+ 	   make sure we exit gracefully rather than endlessly redo
+ 	   the fault.  */
+-	fault = handle_mm_fault(vma, address, flags, NULL);
++	fault = handle_mm_fault(vma, address, flags, regs);
+ 
+ 	if (fault_signal_pending(fault, regs))
+ 		return;
+@@ -164,10 +166,6 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	}
+ 
+ 	if (flags & FAULT_FLAG_ALLOW_RETRY) {
+-		if (fault & VM_FAULT_MAJOR)
+-			current->maj_flt++;
+-		else
+-			current->min_flt++;
+ 		if (fault & VM_FAULT_RETRY) {
+ 			flags |= FAULT_FLAG_TRIED;
+ 
+-- 
+2.26.2
+
