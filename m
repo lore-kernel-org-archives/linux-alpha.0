@@ -1,90 +1,221 @@
-From: Joel Fernandes <joelaf@google.com>
-Subject: Re: [PATCH 04/18] alpha: Override READ_ONCE() with barriered implementation
-Date: Thu, 2 Jul 2020 11:07:19 -0400
-Message-ID: <CAJWu+ooEsf70ri4J+M5+Fkz6VrH1kN5541j71LE8=y=rmSLDJQ@mail.gmail.com>
-References: <20200630173734.14057-1-will@kernel.org> <20200630173734.14057-5-will@kernel.org>
- <CAJWu+oqs-d0oDswB2Owyh-4Zo4WXAqKhKU0L=1HEwEfQbc1izw@mail.gmail.com> <20200702145532.GB16999@willie-the-truck>
+From: Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 0/8] mm: cleanup usage of <asm/pgalloc.h>
+Date: Fri, 3 Jul 2020 00:46:54 +0300
+Message-ID: <20200702214654.GB2999148@kernel.org>
+References: <20200627143453.31835-1-rppt@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NwjTcE9AB3lHB1l2CsQFQTvyIOX/+r8AdYJzECU/66k=;
-        b=Qh0queby7v7wR84UVBBPZgmKhsMZ6EUviWjBkzPvzOaYmzkLE/7Cb48nYN1fKM1dEP
-         RIjY37L54/+aNHRDAdX73WDl/w32GJXpjo/fftx4FoNc30PZJxAskQs2chORu7+heSI6
-         RtAleEaaKvIleusQYZ4sVYmv0JvkVY7zPY/7mQ2zN3oO2c/bpfb14G8CYP26ef+2a+K+
-         aTnup/4rU7HDxpTrSoDuqKy2t2qgjyLxn0nGQz639B2WWteBulgI5V0j0g+kuvvp9/0r
-         EjemCobxfgkkVUe/FTgg31STbDLHABItM3gINiPEp9nA39A3I5feDcW60XE/SnQ4tOXv
-         9RJw==
-In-Reply-To: <20200702145532.GB16999@willie-the-truck>
-Sender: linux-kernel-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593726429;
+        bh=gvP2zjzt3W4dfD2t75YDPObWaiQFVtNlgHUhH3gNn3c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WhfWKe7UYTpsr66NZ2WC307AcyCJ1TtI7G2OBKp9HhrsKZKhdx1w7pMdeOwPIp2/g
+         Vas6aAz3CGAbswd8kXCi7FErQYIQ1j+gLUFQSSZoQXfzuWLvKdc63AGpB15cUP2ho4
+         d9OrkMXIELqL/mKuh/FECINnwBEdop8sjE8tgdOw=
+Content-Disposition: inline
+In-Reply-To: <20200627143453.31835-1-rppt@kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Will Deacon <will@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, Marco Elver <elver@google.com>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" <linux-arm>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Abdul Haleem <abdhalee@linux.vnet.ibm.com>, Andy Lutomirski <luto@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Christophe Leroy <christophe.leroy@csgroup.eu>, Joerg Roedel <joro@8bytes.org>, Max Filippov <jcmvbkbc@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Peter Zijlstra <peterz@infradead.org>, Satheesh Rajendran <sathnaga@linux.vnet.ibm.com>, Stafford Horne <shorne@gmail.com>, Stephen Rothwell <sfr@canb.auug.org.au>, Steven Rostedt <rostedt@goodmis.org>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-parisc@vger.kernel.org, lin
 
-On Thu, Jul 2, 2020 at 10:55 AM Will Deacon <will@kernel.org> wrote:
-> On Thu, Jul 02, 2020 at 10:43:55AM -0400, Joel Fernandes wrote:
-> > On Tue, Jun 30, 2020 at 1:38 PM Will Deacon <will@kernel.org> wrote:
-> > > diff --git a/arch/alpha/include/asm/barrier.h b/arch/alpha/include/asm/barrier.h
-> > > index 92ec486a4f9e..2ecd068d91d1 100644
-> > > --- a/arch/alpha/include/asm/barrier.h
-> > > +++ b/arch/alpha/include/asm/barrier.h
-> > > - * For example, the following code would force ordering (the initial
-> > > - * value of "a" is zero, "b" is one, and "p" is "&a"):
-> > > - *
-> > > - * <programlisting>
-> > > - *     CPU 0                           CPU 1
-> > > - *
-> > > - *     b = 2;
-> > > - *     memory_barrier();
-> > > - *     p = &b;                         q = p;
-> > > - *                                     read_barrier_depends();
-> > > - *                                     d = *q;
-> > > - * </programlisting>
-> > > - *
-> > > - * because the read of "*q" depends on the read of "p" and these
-> > > - * two reads are separated by a read_barrier_depends().  However,
-> > > - * the following code, with the same initial values for "a" and "b":
-> > > - *
-> >
-> > Would it be Ok to keep this example in the kernel sources? I think it
-> > serves as good documentation and highlights the issue in the Alpha
-> > architecture well.
->
-> I'd _really_ like to remove it, as I think it only serves to confuse people
-> on a topic that is confusing enough already. Paul's perfbook [1] already has
-> plenty of information about this, so I don't think we need to repeat that
-> here. I could add a citation, perhaps?
+Gentle ping.
 
-True, and also found that LKMM docs and the memory-barriers.txt talks
-about it, so removing it here sounds good to me. Maybe a reference
-here to either documentation should be Ok.
+On Sat, Jun 27, 2020 at 05:34:45PM +0300, Mike Rapoport wrote:
+> From: Mike Rapoport <rppt@linux.ibm.com>
+> 
+> Hi,
+> 
+> Most architectures have very similar versions of pXd_alloc_one() and
+> pXd_free_one() for intermediate levels of page table. 
+> These patches add generic versions of these functions in
+> <asm-generic/pgalloc.h> and enable use of the generic functions where
+> appropriate.
+> 
+> In addition, functions declared and defined in <asm/pgalloc.h> headers
+> are used mostly by core mm and early mm initialization in arch and there is
+> no actual reason to have the <asm/pgalloc.h> included all over the place.
+> The first patch in this series removes unneeded includes of <asm/pgalloc.h>
+> 
+> In the end it didn't work out as neatly as I hoped and moving
+> pXd_alloc_track() definitions to <asm-generic/pgalloc.h> would require
+> unnecessary changes to arches that have custom page table allocations, so
+> I've decided to move lib/ioremap.c to mm/ and make pgalloc-track.h local to
+> mm/.
+> 
+> Joerg Roedel (1):
+>   mm: move p?d_alloc_track to separate header file
+> 
+> Mike Rapoport (7):
+>   mm: remove unneeded includes of <asm/pgalloc.h>
+>   opeinrisc: switch to generic version of pte allocation
+>   xtensa: switch to generic version of pte allocation
+>   asm-generic: pgalloc: provide generic pmd_alloc_one() and pmd_free_one()
+>   asm-generic: pgalloc: provide generic pud_alloc_one() and pud_free_one()
+>   asm-generic: pgalloc: provide generic pgd_free()
+>   mm: move lib/ioremap.c to mm/
+> 
+>  arch/alpha/include/asm/pgalloc.h             | 21 +----
+>  arch/alpha/include/asm/tlbflush.h            |  1 -
+>  arch/alpha/kernel/core_irongate.c            |  1 -
+>  arch/alpha/kernel/core_marvel.c              |  1 -
+>  arch/alpha/kernel/core_titan.c               |  1 -
+>  arch/alpha/kernel/machvec_impl.h             |  2 -
+>  arch/alpha/kernel/smp.c                      |  1 -
+>  arch/alpha/mm/numa.c                         |  1 -
+>  arch/arc/mm/fault.c                          |  1 -
+>  arch/arc/mm/init.c                           |  1 -
+>  arch/arm/include/asm/pgalloc.h               | 12 +--
+>  arch/arm/include/asm/tlb.h                   |  1 -
+>  arch/arm/kernel/machine_kexec.c              |  1 -
+>  arch/arm/kernel/smp.c                        |  1 -
+>  arch/arm/kernel/suspend.c                    |  1 -
+>  arch/arm/mach-omap2/omap-mpuss-lowpower.c    |  1 -
+>  arch/arm/mm/hugetlbpage.c                    |  1 -
+>  arch/arm/mm/mmu.c                            |  1 +
+>  arch/arm64/include/asm/pgalloc.h             | 39 +---------
+>  arch/arm64/kernel/smp.c                      |  1 -
+>  arch/arm64/mm/hugetlbpage.c                  |  1 -
+>  arch/arm64/mm/ioremap.c                      |  1 -
+>  arch/arm64/mm/mmu.c                          |  1 +
+>  arch/csky/include/asm/pgalloc.h              |  7 +-
+>  arch/csky/kernel/smp.c                       |  1 -
+>  arch/hexagon/include/asm/pgalloc.h           |  7 +-
+>  arch/ia64/include/asm/pgalloc.h              | 24 ------
+>  arch/ia64/include/asm/tlb.h                  |  1 -
+>  arch/ia64/kernel/process.c                   |  1 -
+>  arch/ia64/kernel/smp.c                       |  1 -
+>  arch/ia64/kernel/smpboot.c                   |  1 -
+>  arch/ia64/mm/contig.c                        |  1 -
+>  arch/ia64/mm/discontig.c                     |  1 -
+>  arch/ia64/mm/hugetlbpage.c                   |  1 -
+>  arch/ia64/mm/tlb.c                           |  1 -
+>  arch/m68k/include/asm/mmu_context.h          |  2 +-
+>  arch/m68k/include/asm/sun3_pgalloc.h         |  7 +-
+>  arch/m68k/kernel/dma.c                       |  2 +-
+>  arch/m68k/kernel/traps.c                     |  3 +-
+>  arch/m68k/mm/cache.c                         |  2 +-
+>  arch/m68k/mm/fault.c                         |  1 -
+>  arch/m68k/mm/kmap.c                          |  2 +-
+>  arch/m68k/mm/mcfmmu.c                        |  1 +
+>  arch/m68k/mm/memory.c                        |  1 -
+>  arch/m68k/sun3x/dvma.c                       |  2 +-
+>  arch/microblaze/include/asm/pgalloc.h        |  6 --
+>  arch/microblaze/include/asm/tlbflush.h       |  1 -
+>  arch/microblaze/kernel/process.c             |  1 -
+>  arch/microblaze/kernel/signal.c              |  1 -
+>  arch/mips/include/asm/pgalloc.h              | 19 +----
+>  arch/mips/sgi-ip32/ip32-memory.c             |  1 -
+>  arch/nds32/mm/mm-nds32.c                     |  2 +
+>  arch/nios2/include/asm/pgalloc.h             |  7 +-
+>  arch/openrisc/include/asm/pgalloc.h          | 33 +-------
+>  arch/openrisc/include/asm/tlbflush.h         |  1 -
+>  arch/openrisc/kernel/or32_ksyms.c            |  1 -
+>  arch/parisc/include/asm/mmu_context.h        |  1 -
+>  arch/parisc/include/asm/pgalloc.h            | 12 +--
+>  arch/parisc/kernel/cache.c                   |  1 -
+>  arch/parisc/kernel/pci-dma.c                 |  1 -
+>  arch/parisc/kernel/process.c                 |  1 -
+>  arch/parisc/kernel/signal.c                  |  1 -
+>  arch/parisc/kernel/smp.c                     |  1 -
+>  arch/parisc/mm/hugetlbpage.c                 |  1 -
+>  arch/parisc/mm/ioremap.c                     |  2 +-
+>  arch/powerpc/include/asm/tlb.h               |  1 -
+>  arch/powerpc/mm/book3s64/hash_hugetlbpage.c  |  1 -
+>  arch/powerpc/mm/book3s64/hash_pgtable.c      |  1 -
+>  arch/powerpc/mm/book3s64/hash_tlb.c          |  1 -
+>  arch/powerpc/mm/book3s64/radix_hugetlbpage.c |  1 -
+>  arch/powerpc/mm/init_32.c                    |  1 -
+>  arch/powerpc/mm/kasan/8xx.c                  |  1 -
+>  arch/powerpc/mm/kasan/book3s_32.c            |  1 -
+>  arch/powerpc/mm/mem.c                        |  1 -
+>  arch/powerpc/mm/nohash/40x.c                 |  1 -
+>  arch/powerpc/mm/nohash/8xx.c                 |  1 -
+>  arch/powerpc/mm/nohash/fsl_booke.c           |  1 -
+>  arch/powerpc/mm/nohash/kaslr_booke.c         |  1 -
+>  arch/powerpc/mm/pgtable.c                    |  1 -
+>  arch/powerpc/mm/pgtable_64.c                 |  1 -
+>  arch/powerpc/mm/ptdump/hashpagetable.c       |  2 +-
+>  arch/powerpc/mm/ptdump/ptdump.c              |  1 -
+>  arch/powerpc/platforms/pseries/cmm.c         |  1 -
+>  arch/riscv/include/asm/pgalloc.h             | 18 +----
+>  arch/riscv/mm/fault.c                        |  1 -
+>  arch/s390/include/asm/tlb.h                  |  1 -
+>  arch/s390/include/asm/tlbflush.h             |  1 -
+>  arch/s390/kernel/machine_kexec.c             |  1 -
+>  arch/s390/kernel/ptrace.c                    |  1 -
+>  arch/s390/kvm/diag.c                         |  1 -
+>  arch/s390/kvm/priv.c                         |  1 -
+>  arch/s390/kvm/pv.c                           |  1 -
+>  arch/s390/mm/cmm.c                           |  1 -
+>  arch/s390/mm/mmap.c                          |  1 -
+>  arch/s390/mm/pgtable.c                       |  1 -
+>  arch/sh/include/asm/pgalloc.h                |  4 +
+>  arch/sh/kernel/idle.c                        |  1 -
+>  arch/sh/kernel/machine_kexec.c               |  1 -
+>  arch/sh/mm/cache-sh3.c                       |  1 -
+>  arch/sh/mm/cache-sh7705.c                    |  1 -
+>  arch/sh/mm/hugetlbpage.c                     |  1 -
+>  arch/sh/mm/init.c                            |  1 +
+>  arch/sh/mm/ioremap_fixed.c                   |  1 -
+>  arch/sh/mm/tlb-sh3.c                         |  1 -
+>  arch/sparc/include/asm/ide.h                 |  1 -
+>  arch/sparc/include/asm/tlb_64.h              |  1 -
+>  arch/sparc/kernel/leon_smp.c                 |  1 -
+>  arch/sparc/kernel/process_32.c               |  1 -
+>  arch/sparc/kernel/signal_32.c                |  1 -
+>  arch/sparc/kernel/smp_32.c                   |  1 -
+>  arch/sparc/kernel/smp_64.c                   |  1 +
+>  arch/sparc/kernel/sun4m_irq.c                |  1 -
+>  arch/sparc/mm/highmem.c                      |  1 -
+>  arch/sparc/mm/io-unit.c                      |  1 -
+>  arch/sparc/mm/iommu.c                        |  1 -
+>  arch/sparc/mm/tlb.c                          |  1 -
+>  arch/um/include/asm/pgalloc.h                |  9 +--
+>  arch/um/include/asm/pgtable-3level.h         |  3 -
+>  arch/um/kernel/mem.c                         | 17 -----
+>  arch/x86/ia32/ia32_aout.c                    |  1 -
+>  arch/x86/include/asm/mmu_context.h           |  1 -
+>  arch/x86/include/asm/pgalloc.h               | 42 +---------
+>  arch/x86/kernel/alternative.c                |  1 +
+>  arch/x86/kernel/apic/apic.c                  |  1 -
+>  arch/x86/kernel/mpparse.c                    |  1 -
+>  arch/x86/kernel/traps.c                      |  1 -
+>  arch/x86/mm/fault.c                          |  1 -
+>  arch/x86/mm/hugetlbpage.c                    |  1 -
+>  arch/x86/mm/kaslr.c                          |  1 -
+>  arch/x86/mm/pgtable_32.c                     |  1 -
+>  arch/x86/mm/pti.c                            |  1 -
+>  arch/x86/platform/uv/bios_uv.c               |  1 +
+>  arch/xtensa/include/asm/pgalloc.h            | 40 ++++------
+>  arch/xtensa/kernel/xtensa_ksyms.c            |  1 -
+>  arch/xtensa/mm/cache.c                       |  1 -
+>  arch/xtensa/mm/fault.c                       |  1 -
+>  drivers/block/xen-blkback/common.h           |  1 -
+>  drivers/iommu/ipmmu-vmsa.c                   |  1 -
+>  drivers/xen/balloon.c                        |  1 -
+>  drivers/xen/privcmd.c                        |  1 -
+>  fs/binfmt_elf_fdpic.c                        |  1 -
+>  include/asm-generic/pgalloc.h                | 80 ++++++++++++++++++++
+>  include/asm-generic/tlb.h                    |  1 -
+>  include/linux/mm.h                           | 45 -----------
+>  lib/Makefile                                 |  1 -
+>  mm/Makefile                                  |  2 +-
+>  mm/hugetlb.c                                 |  1 +
+>  {lib => mm}/ioremap.c                        |  2 +
+>  mm/pgalloc-track.h                           | 51 +++++++++++++
+>  mm/sparse.c                                  |  1 -
+>  mm/vmalloc.c                                 |  1 +
+>  151 files changed, 194 insertions(+), 451 deletions(-)
+>  rename {lib => mm}/ioremap.c (99%)
+>  create mode 100644 mm/pgalloc-track.h
+> 
+> -- 
+> 2.26.2
+> 
 
-> > BTW,  do you know any architecture where speculative execution of
-> > address-dependent loads can cause similar misorderings? That would be
-> > pretty insane though. In Alpha's case it is not speculation but rather
-> > the split local cache design as the docs mention.   The reason I ask
-> > is it is pretty amusing that control-dependent loads do have such
-> > misordering issues due to speculative branch execution and I wondered
-> > what other games the CPUs are playing. FWIW I ran into [1] which talks
-> > about analogy between memory dependence and control dependence.
->
-> I think you're asking about value prediction, and the implications it would
-> have on address-dependent loads where the address can itself be predicted.
-
-Yes.
-
-> I'm not aware of an CPUs where that is observable architecturally.
-
-I see.
-
-> arm64 has some load instructions that do not honour address dependencies,
-> but I believe that's mainly to enable alternative cache designs for things
-> like non-temporal and large vector loads.
-
-Good to know this, thanks.
-
- - Joel
+-- 
+Sincerely yours,
+Mike.
