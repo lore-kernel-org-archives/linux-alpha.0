@@ -1,59 +1,86 @@
-From: Dave P Martin <dave.martin@arm.com>
+From: Will Deacon <will@kernel.org>
 Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when
  CLANG_LTO=y
-Date: Wed, 1 Jul 2020 18:07:25 +0100
-Message-ID: <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
+Date: Thu, 2 Jul 2020 08:23:02 +0100
+Message-ID: <20200702072301.GA15963@willie-the-truck>
 References: <20200630173734.14057-1-will@kernel.org>
  <20200630173734.14057-19-will@kernel.org>
+ <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1593674588;
+        bh=Re61RwD/CyQqWBiQskwnaPfGr1o4kLsu1CWsfLls+hM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kuS2Mmhm+7c/+nST2Wi4JbOT82ZSobqK5KFCdbVqQXwCGLZBy7/LpmgMb7Pq85t1G
+         a6m6BrCh5id96wu1KUG0opwCahVKpnhDfkXuSg9AMslVdZ1XMgtrIMFp1PT5EHGsL9
+         n0XlU4lEskbMa3Pt2IwRkzphNfPJu+6WmVYkG9DQ=
 Content-Disposition: inline
-In-Reply-To: <20200630173734.14057-19-will@kernel.org>
+In-Reply-To: <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Will Deacon <will@kernel.org>
+To: Dave P Martin <dave.martin@arm.com>
 Cc: linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, Alan Stern <stern@rowland.harvard.edu>, Sami Tolvanen <samitolvanen@google.com>, Matt Turner <mattst88@gmail.com>, kernel-team@android.com, Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Nick
 
-On Tue, Jun 30, 2020 at 06:37:34PM +0100, Will Deacon wrote:
-> When building with LTO, there is an increased risk of the compiler
-> converting an address dependency headed by a READ_ONCE() invocation
-> into a control dependency and consequently allowing for harmful
-> reordering by the CPU.
+On Wed, Jul 01, 2020 at 06:07:25PM +0100, Dave P Martin wrote:
+> On Tue, Jun 30, 2020 at 06:37:34PM +0100, Will Deacon wrote:
+> > When building with LTO, there is an increased risk of the compiler
+> > converting an address dependency headed by a READ_ONCE() invocation
+> > into a control dependency and consequently allowing for harmful
+> > reordering by the CPU.
+> > 
+> > Ensure that such transformations are harmless by overriding the generic
+> > READ_ONCE() definition with one that provides acquire semantics when
+> > building with LTO.
+> > 
+> > Signed-off-by: Will Deacon <will@kernel.org>
+> > ---
+> >  arch/arm64/include/asm/rwonce.h   | 63 +++++++++++++++++++++++++++++++
+> >  arch/arm64/kernel/vdso/Makefile   |  2 +-
+> >  arch/arm64/kernel/vdso32/Makefile |  2 +-
+> >  3 files changed, 65 insertions(+), 2 deletions(-)
+> >  create mode 100644 arch/arm64/include/asm/rwonce.h
+> > 
+> > diff --git a/arch/arm64/include/asm/rwonce.h b/arch/arm64/include/asm/rwonce.h
+> > new file mode 100644
+> > index 000000000000..515e360b01a1
+> > --- /dev/null
+> > +++ b/arch/arm64/include/asm/rwonce.h
+> > @@ -0,0 +1,63 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Copyright (C) 2020 Google LLC.
+> > + */
+> > +#ifndef __ASM_RWONCE_H
+> > +#define __ASM_RWONCE_H
+> > +
+> > +#ifdef CONFIG_CLANG_LTO
 > 
-> Ensure that such transformations are harmless by overriding the generic
-> READ_ONCE() definition with one that provides acquire semantics when
-> building with LTO.
-> 
-> Signed-off-by: Will Deacon <will@kernel.org>
-> ---
->  arch/arm64/include/asm/rwonce.h   | 63 +++++++++++++++++++++++++++++++
->  arch/arm64/kernel/vdso/Makefile   |  2 +-
->  arch/arm64/kernel/vdso32/Makefile |  2 +-
->  3 files changed, 65 insertions(+), 2 deletions(-)
->  create mode 100644 arch/arm64/include/asm/rwonce.h
-> 
-> diff --git a/arch/arm64/include/asm/rwonce.h b/arch/arm64/include/asm/rwonce.h
-> new file mode 100644
-> index 000000000000..515e360b01a1
-> --- /dev/null
-> +++ b/arch/arm64/include/asm/rwonce.h
-> @@ -0,0 +1,63 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Copyright (C) 2020 Google LLC.
-> + */
-> +#ifndef __ASM_RWONCE_H
-> +#define __ASM_RWONCE_H
-> +
-> +#ifdef CONFIG_CLANG_LTO
+> Don't we have a generic option for LTO that's not specific to Clang.
 
-Don't we have a generic option for LTO that's not specific to Clang.
+/me looks at the LTO series some more
 
-Also, can you illustrate code that can only be unsafe with Clang LTO?
+Oh yeah, there's CONFIG_LTO which is selected by CONFIG_LTO_CLANG, which is
+the non-typoed version of the above. I can switch this to CONFIG_LTO.
 
-[...]
+> Also, can you illustrate code that can only be unsafe with Clang LTO?
 
-Cheers
----Dave
+I don't have a concrete example, but it's an ongoing concern over on the LTO
+thread [1], so I cooked this to show one way we could deal with it. The main
+concern is that the whole-program optimisations enabled by LTO may allow the
+compiler to enumerate possible values for a pointer at link time and replace
+an address dependency between two loads with a control dependency instead,
+defeating the dependency ordering within the CPU.
+
+We likely won't realise if/when this goes wrong, other than impossible to
+debug, subtle breakage that crops up seemingly randomly. Ideally, we'd be
+able to detect this sort of thing happening at build time, and perhaps
+even prevent it with compiler options or annotations, but none of that is
+close to being available and I'm keen to progress the LTO patches in the
+meantime because they are a requirement for CFI.
+
+Will
+
+[1] https://lore.kernel.org/r/20200624203200.78870-1-samitolvanen@google.com
