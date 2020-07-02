@@ -1,55 +1,173 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Joel Fernandes <joelaf@google.com>
 Subject: Re: [PATCH 04/18] alpha: Override READ_ONCE() with barriered implementation
-Date: Thu, 2 Jul 2020 13:39:10 +0200
-Message-ID: <CAK8P3a3VrEkDf8t1CCsY+g7rtXkqBsiPOr97b1yRbz8NpjdfFA@mail.gmail.com>
+Date: Thu, 2 Jul 2020 10:43:55 -0400
+Message-ID: <CAJWu+oqs-d0oDswB2Owyh-4Zo4WXAqKhKU0L=1HEwEfQbc1izw@mail.gmail.com>
 References: <20200630173734.14057-1-will@kernel.org> <20200630173734.14057-5-will@kernel.org>
- <20200702093239.GA15391@C02TD0UTHF1T.local> <20200702094833.GA16248@willie-the-truck>
- <CAK8P3a07G1dLC+RUBDkzDbCRCP_gwZAaVK+k1UxvXT+7Kj=o+g@mail.gmail.com> <20200702111832.GC16418@willie-the-truck>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20200702111832.GC16418@willie-the-truck>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I9S+YyJ0fLCRa1Cwm+n/NH94ez6mz+li88d6osWWRvM=;
+        b=OiMQcGxeqkk/4Awal6X4kYe1CxbqnKK7VEheoiH3nPUyKTnh9LF8J5gXTddg4gACKu
+         dh7LZ0+LYuI7eqJHJ/AOZoqkJzff1V810uiOwUOHFE+0aGzlogkuyZKbPBFv84u7O+82
+         iBovoaZQTQBeCuaGsrzbeLV4btzHi1QdWyxSlKo044c9PeU1XUjKQxS3EQeKAng4pmlT
+         4YVlrSTVQcZQxbJ+BF1o13Dqwp33TXJKbcXMD9hbtHnqzGzI4Ka8Si7zs63nzb5C0tAm
+         nldmoql8GIbqwZCsgy/B6gF2hROWsp1mdTX3sJXXQs4X/OGGdw9bHJb71AyFIbVPyFWZ
+         FqTQ==
+In-Reply-To: <20200630173734.14057-5-will@kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, Marco Elver <elver@google.com>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Boqun Feng <boqun.feng@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, alpha <linux-alpha@vger.k>
+Cc: LKML <linux-kernel@vger.kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, Marco Elver <elver@google.com>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" <linux-arm>
 
-On Thu, Jul 2, 2020 at 1:18 PM Will Deacon <will@kernel.org> wrote:
-> On Thu, Jul 02, 2020 at 12:08:41PM +0200, Arnd Bergmann wrote:
-> > On Thu, Jul 2, 2020 at 11:48 AM Will Deacon <will@kernel.org> wrote:
-> > > On Thu, Jul 02, 2020 at 10:32:39AM +0100, Mark Rutland wrote:
-
-> Not sure I follow you here, but I can confirm that what you're worried
-> about doesn't happen for the usual case of a pointer-to-volatile scalar.
+On Tue, Jun 30, 2020 at 1:38 PM Will Deacon <will@kernel.org> wrote:
 >
-> For example, ignoring dependency ordering:
+> Rather then relying on the core code to use smp_read_barrier_depends()
+> as part of the READ_ONCE() definition, instead override __READ_ONCE()
+> in the Alpha code so that it is treated the same way as
+> smp_load_acquire().
 >
-> unsigned long foo(volatile unsigned long *p)
-> {
->         return smp_load_acquire(p) + 1;
-> }
+> Acked-by: Paul E. McKenney <paulmck@kernel.org>
+> Signed-off-by: Will Deacon <will@kernel.org>
+> ---
+>  arch/alpha/include/asm/barrier.h | 61 ++++----------------------------
+>  arch/alpha/include/asm/rwonce.h  | 19 ++++++++++
+>  2 files changed, 26 insertions(+), 54 deletions(-)
+>  create mode 100644 arch/alpha/include/asm/rwonce.h
 >
-> Ends up looking like:
+> diff --git a/arch/alpha/include/asm/barrier.h b/arch/alpha/include/asm/barrier.h
+> index 92ec486a4f9e..2ecd068d91d1 100644
+> --- a/arch/alpha/include/asm/barrier.h
+> +++ b/arch/alpha/include/asm/barrier.h
+> @@ -2,64 +2,17 @@
+>  #ifndef __BARRIER_H
+>  #define __BARRIER_H
 >
->         unsigned long ___p1 = *(const volatile unsigned long *)p;
->         smp_mb();
->         (volatile unsigned long)___p1;
+> -#include <asm/compiler.h>
+> -
+>  #define mb()   __asm__ __volatile__("mb": : :"memory")
+>  #define rmb()  __asm__ __volatile__("mb": : :"memory")
+>  #define wmb()  __asm__ __volatile__("wmb": : :"memory")
 >
-> My understanding is that casting a non-pointer type to volatile doesn't
-> do anything, so we're good.
+> -/**
+> - * read_barrier_depends - Flush all pending reads that subsequents reads
+> - * depend on.
+> - *
+> - * No data-dependent reads from memory-like regions are ever reordered
+> - * over this barrier.  All reads preceding this primitive are guaranteed
+> - * to access memory (but not necessarily other CPUs' caches) before any
+> - * reads following this primitive that depend on the data return by
+> - * any of the preceding reads.  This primitive is much lighter weight than
+> - * rmb() on most CPUs, and is never heavier weight than is
+> - * rmb().
+> - *
+> - * These ordering constraints are respected by both the local CPU
+> - * and the compiler.
+> - *
+> - * Ordering is not guaranteed by anything other than these primitives,
+> - * not even by data dependencies.  See the documentation for
+> - * memory_barrier() for examples and URLs to more information.
+> - *
+> - * For example, the following code would force ordering (the initial
+> - * value of "a" is zero, "b" is one, and "p" is "&a"):
+> - *
+> - * <programlisting>
+> - *     CPU 0                           CPU 1
+> - *
+> - *     b = 2;
+> - *     memory_barrier();
+> - *     p = &b;                         q = p;
+> - *                                     read_barrier_depends();
+> - *                                     d = *q;
+> - * </programlisting>
+> - *
+> - * because the read of "*q" depends on the read of "p" and these
+> - * two reads are separated by a read_barrier_depends().  However,
+> - * the following code, with the same initial values for "a" and "b":
+> - *
 
-Right, I mixed up the correct
+Would it be Ok to keep this example in the kernel sources? I think it
+serves as good documentation and highlights the issue in the Alpha
+architecture well.
 
-        (typeof(*p))___p;
+> - * <programlisting>
+> - *     CPU 0                           CPU 1
+> - *
+> - *     a = 2;
+> - *     memory_barrier();
+> - *     b = 3;                          y = b;
+> - *                                     read_barrier_depends();
+> - *                                     x = a;
+> - * </programlisting>
+> - *
+> - * does not enforce ordering, since there is no data dependency between
+> - * the read of "a" and the read of "b".  Therefore, on some CPUs, such
+> - * as Alpha, "y" could be set to 3 and "x" to 0.  Use rmb()
+> - * in cases like this where there are no data dependencies.
+> - */
+> -#define read_barrier_depends() __asm__ __volatile__("mb": : :"memory")
+> +#define __smp_load_acquire(p)                                          \
+> +({                                                                     \
+> +       __unqual_scalar_typeof(*p) ___p1 =                              \
+> +               (*(volatile typeof(___p1) *)(p));                       \
+> +       compiletime_assert_atomic_type(*p);                             \
+> +       ___p1;                                                          \
+> +})
 
-with the incorrect
+I had the same question as Mark about the need for a memory barrier
+here, otherwise alpha will again break right? Looking forward to the
+future fix you mentioned.
 
-       *typeof(p)&___p;
+BTW,  do you know any architecture where speculative execution of
+address-dependent loads can cause similar misorderings? That would be
+pretty insane though. In Alpha's case it is not speculation but rather
+the split local cache design as the docs mention.   The reason I ask
+is it is pretty amusing that control-dependent loads do have such
+misordering issues due to speculative branch execution and I wondered
+what other games the CPUs are playing. FWIW I ran into [1] which talks
+about analogy between memory dependence and control dependence.
 
-which would dereference a volatile pointer and cause the
-problem.
+[1] https://en.wikipedia.org/wiki/Memory_dependence_prediction
 
-The code is all fine then.
 
-    Arnd
+ - Joel
+
+
+>
+>  #ifdef CONFIG_SMP
+>  #define __ASM_SMP_MB   "\tmb\n"
+> diff --git a/arch/alpha/include/asm/rwonce.h b/arch/alpha/include/asm/rwonce.h
+> new file mode 100644
+> index 000000000000..83a92e49a615
+> --- /dev/null
+> +++ b/arch/alpha/include/asm/rwonce.h
+> @@ -0,0 +1,19 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2019 Google LLC.
+> + */
+> +#ifndef __ASM_RWONCE_H
+> +#define __ASM_RWONCE_H
+> +
+> +#include <asm/barrier.h>
+> +
+> +/*
+> + * Alpha is apparently daft enough to reorder address-dependent loads
+> + * on some CPU implementations. Knock some common sense into it with
+> + * a memory barrier in READ_ONCE().
+> + */
+> +#define __READ_ONCE(x) __smp_load_acquire(&(x))
+> +
+> +#include <asm-generic/rwonce.h>
+> +
+> +#endif /* __ASM_RWONCE_H */
+> --
+> 2.27.0.212.ge8ba1cc988-goog
+>
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
+>
