@@ -1,86 +1,95 @@
-From: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when
- CLANG_LTO=y
-Date: Thu, 2 Jul 2020 08:23:02 +0100
-Message-ID: <20200702072301.GA15963@willie-the-truck>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 04/18] alpha: Override READ_ONCE() with barriered
+ implementation
+Date: Thu, 2 Jul 2020 10:32:39 +0100
+Message-ID: <20200702093239.GA15391@C02TD0UTHF1T.local>
 References: <20200630173734.14057-1-will@kernel.org>
- <20200630173734.14057-19-will@kernel.org>
- <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
+ <20200630173734.14057-5-will@kernel.org>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593674588;
-        bh=Re61RwD/CyQqWBiQskwnaPfGr1o4kLsu1CWsfLls+hM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kuS2Mmhm+7c/+nST2Wi4JbOT82ZSobqK5KFCdbVqQXwCGLZBy7/LpmgMb7Pq85t1G
-         a6m6BrCh5id96wu1KUG0opwCahVKpnhDfkXuSg9AMslVdZ1XMgtrIMFp1PT5EHGsL9
-         n0XlU4lEskbMa3Pt2IwRkzphNfPJu+6WmVYkG9DQ=
 Content-Disposition: inline
-In-Reply-To: <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
+In-Reply-To: <20200630173734.14057-5-will@kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Dave P Martin <dave.martin@arm.com>
-Cc: linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, Alan Stern <stern@rowland.harvard.edu>, Sami Tolvanen <samitolvanen@google.com>, Matt Turner <mattst88@gmail.com>, kernel-team@android.com, Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Nick
+To: Will Deacon <will@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, Marco Elver <elver@google.com>, "Paul E. McKenney" <paulmck@kernel.org>, Josh Triplett <josh@joshtriplett.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org, virtualization@lists.linux-foundation.org, kern
 
-On Wed, Jul 01, 2020 at 06:07:25PM +0100, Dave P Martin wrote:
-> On Tue, Jun 30, 2020 at 06:37:34PM +0100, Will Deacon wrote:
-> > When building with LTO, there is an increased risk of the compiler
-> > converting an address dependency headed by a READ_ONCE() invocation
-> > into a control dependency and consequently allowing for harmful
-> > reordering by the CPU.
-> > 
-> > Ensure that such transformations are harmless by overriding the generic
-> > READ_ONCE() definition with one that provides acquire semantics when
-> > building with LTO.
-> > 
-> > Signed-off-by: Will Deacon <will@kernel.org>
-> > ---
-> >  arch/arm64/include/asm/rwonce.h   | 63 +++++++++++++++++++++++++++++++
-> >  arch/arm64/kernel/vdso/Makefile   |  2 +-
-> >  arch/arm64/kernel/vdso32/Makefile |  2 +-
-> >  3 files changed, 65 insertions(+), 2 deletions(-)
-> >  create mode 100644 arch/arm64/include/asm/rwonce.h
-> > 
-> > diff --git a/arch/arm64/include/asm/rwonce.h b/arch/arm64/include/asm/rwonce.h
-> > new file mode 100644
-> > index 000000000000..515e360b01a1
-> > --- /dev/null
-> > +++ b/arch/arm64/include/asm/rwonce.h
-> > @@ -0,0 +1,63 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*
-> > + * Copyright (C) 2020 Google LLC.
-> > + */
-> > +#ifndef __ASM_RWONCE_H
-> > +#define __ASM_RWONCE_H
-> > +
-> > +#ifdef CONFIG_CLANG_LTO
+On Tue, Jun 30, 2020 at 06:37:20PM +0100, Will Deacon wrote:
+> Rather then relying on the core code to use smp_read_barrier_depends()
+> as part of the READ_ONCE() definition, instead override __READ_ONCE()
+> in the Alpha code so that it is treated the same way as
+> smp_load_acquire().
 > 
-> Don't we have a generic option for LTO that's not specific to Clang.
+> Acked-by: Paul E. McKenney <paulmck@kernel.org>
+> Signed-off-by: Will Deacon <will@kernel.org>
+> ---
+>  arch/alpha/include/asm/barrier.h | 61 ++++----------------------------
+>  arch/alpha/include/asm/rwonce.h  | 19 ++++++++++
+>  2 files changed, 26 insertions(+), 54 deletions(-)
+>  create mode 100644 arch/alpha/include/asm/rwonce.h
+> 
+> diff --git a/arch/alpha/include/asm/barrier.h b/arch/alpha/include/asm/barrier.h
+> index 92ec486a4f9e..2ecd068d91d1 100644
+> --- a/arch/alpha/include/asm/barrier.h
+> +++ b/arch/alpha/include/asm/barrier.h
+> @@ -2,64 +2,17 @@
+>  #ifndef __BARRIER_H
+>  #define __BARRIER_H
+>  
+> -#include <asm/compiler.h>
+> -
+>  #define mb()	__asm__ __volatile__("mb": : :"memory")
+>  #define rmb()	__asm__ __volatile__("mb": : :"memory")
+>  #define wmb()	__asm__ __volatile__("wmb": : :"memory")
 
-/me looks at the LTO series some more
+> -#define read_barrier_depends() __asm__ __volatile__("mb": : :"memory")
+> +#define __smp_load_acquire(p)						\
+> +({									\
+> +	__unqual_scalar_typeof(*p) ___p1 =				\
+> +		(*(volatile typeof(___p1) *)(p));			\
+> +	compiletime_assert_atomic_type(*p);				\
+> +	___p1;								\
+> +})
 
-Oh yeah, there's CONFIG_LTO which is selected by CONFIG_LTO_CLANG, which is
-the non-typoed version of the above. I can switch this to CONFIG_LTO.
+Sorry if I'm being thick, but doesn't this need a barrier after the
+volatile access to provide the acquire semantic?
 
-> Also, can you illustrate code that can only be unsafe with Clang LTO?
+IIUC prior to this commit alpha would have used the asm-generic
+__smp_load_acquire, i.e.
 
-I don't have a concrete example, but it's an ongoing concern over on the LTO
-thread [1], so I cooked this to show one way we could deal with it. The main
-concern is that the whole-program optimisations enabled by LTO may allow the
-compiler to enumerate possible values for a pointer at link time and replace
-an address dependency between two loads with a control dependency instead,
-defeating the dependency ordering within the CPU.
+| #ifndef __smp_load_acquire
+| #define __smp_load_acquire(p)                                           \
+| ({                                                                      \
+|         __unqual_scalar_typeof(*p) ___p1 = READ_ONCE(*p);               \
+|         compiletime_assert_atomic_type(*p);                             \
+|         __smp_mb();                                                     \
+|         (typeof(*p))___p1;                                              \
+| })
+| #endif
 
-We likely won't realise if/when this goes wrong, other than impossible to
-debug, subtle breakage that crops up seemingly randomly. Ideally, we'd be
-able to detect this sort of thing happening at build time, and perhaps
-even prevent it with compiler options or annotations, but none of that is
-close to being available and I'm keen to progress the LTO patches in the
-meantime because they are a requirement for CFI.
+... where the __smp_mb() would be alpha's mb() from earlier in the patch
+context, i.e.
 
-Will
+| #define mb() __asm__ __volatile__("mb": : :"memory")
 
-[1] https://lore.kernel.org/r/20200624203200.78870-1-samitolvanen@google.com
+... so don't we need similar before returning ___p1 above in
+__smp_load_acquire() (and also matching the old read_barrier_depends())?
+
+[...]
+
+> +#include <asm/barrier.h>
+> +
+> +/*
+> + * Alpha is apparently daft enough to reorder address-dependent loads
+> + * on some CPU implementations. Knock some common sense into it with
+> + * a memory barrier in READ_ONCE().
+> + */
+> +#define __READ_ONCE(x)	__smp_load_acquire(&(x))
+
+As above, I don't see a memory barrier implied here, so this doesn't
+look quite right.
+
+Thanks,
+Mark.
