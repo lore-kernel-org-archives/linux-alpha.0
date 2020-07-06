@@ -1,63 +1,85 @@
-From: Christian Brauner <christian.brauner@ubuntu.com>
-Subject: Re: [PATCH 17/17] arch: rename copy_thread_tls() back to copy_thread()
-Date: Sat, 4 Jul 2020 18:10:31 +0200
-Message-ID: <20200704161031.lcln4ez6yehgffgq@wittgenstein>
-References: <20200622234326.906346-1-christian.brauner@ubuntu.com>
- <20200622234326.906346-18-christian.brauner@ubuntu.com>
- <20200625211749.GH1401039@lianli.shorne-pla.net>
+From: Dave Martin <Dave.Martin@arm.com>
+Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when
+ CLANG_LTO=y
+Date: Mon, 6 Jul 2020 17:00:23 +0100
+Message-ID: <20200706160023.GB10992@arm.com>
+References: <20200630173734.14057-1-will@kernel.org>
+ <20200630173734.14057-19-will@kernel.org>
+ <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
+ <20200702072301.GA15963@willie-the-truck>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20200625211749.GH1401039@lianli.shorne-pla.net>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+In-Reply-To: <20200702072301.GA15963@willie-the-truck>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Stafford Horne <shorne@gmail.com>, Kees Cook <keescook@chromium.org>
-Cc: Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mips@vger.kernel.org, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-riscv@lists.infradead.org, Vincent Chen <deanbo422@gmail.com>, Will Deacon <will@kernel.org>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-c6x-dev@linux-c6x.org, Brian Cain <bcain@codeaurora.org>, linux-xtensa@linux-xtensa.org, Helge Deller <deller@gmx.de>, x86@kernel.org, Russell King <linux@armlinux.org.uk>, Ley Foon Tan <l>
+To: Will Deacon <will@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, Alan Stern <stern@rowland.harvard.edu>, Sami Tolvanen <samitolvanen@google.com>, Matt Turner <mattst88@gmail.com>, kernel-team@android.com, Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, Nick Desaulniers <ndesaulniers@google.com>
 
-On Fri, Jun 26, 2020 at 06:17:49AM +0900, Stafford Horne wrote:
-> On Tue, Jun 23, 2020 at 01:43:26AM +0200, Christian Brauner wrote:
+On Thu, Jul 02, 2020 at 08:23:02AM +0100, Will Deacon wrote:
+> On Wed, Jul 01, 2020 at 06:07:25PM +0100, Dave P Martin wrote:
+> > On Tue, Jun 30, 2020 at 06:37:34PM +0100, Will Deacon wrote:
+> > > When building with LTO, there is an increased risk of the compiler
+> > > converting an address dependency headed by a READ_ONCE() invocation
+> > > into a control dependency and consequently allowing for harmful
+> > > reordering by the CPU.
+> > > 
+> > > Ensure that such transformations are harmless by overriding the generic
+> > > READ_ONCE() definition with one that provides acquire semantics when
+> > > building with LTO.
+> > > 
+> > > Signed-off-by: Will Deacon <will@kernel.org>
+> > > ---
+> > >  arch/arm64/include/asm/rwonce.h   | 63 +++++++++++++++++++++++++++++++
+> > >  arch/arm64/kernel/vdso/Makefile   |  2 +-
+> > >  arch/arm64/kernel/vdso32/Makefile |  2 +-
+> > >  3 files changed, 65 insertions(+), 2 deletions(-)
+> > >  create mode 100644 arch/arm64/include/asm/rwonce.h
+> > > 
+> > > diff --git a/arch/arm64/include/asm/rwonce.h b/arch/arm64/include/asm/rwonce.h
+> > > new file mode 100644
+> > > index 000000000000..515e360b01a1
+> > > --- /dev/null
+> > > +++ b/arch/arm64/include/asm/rwonce.h
+> > > @@ -0,0 +1,63 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > +/*
+> > > + * Copyright (C) 2020 Google LLC.
+> > > + */
+> > > +#ifndef __ASM_RWONCE_H
+> > > +#define __ASM_RWONCE_H
+> > > +
+> > > +#ifdef CONFIG_CLANG_LTO
+> > 
+> > Don't we have a generic option for LTO that's not specific to Clang.
 > 
-> > diff --git a/arch/openrisc/kernel/process.c b/arch/openrisc/kernel/process.c
-> > index d7010e72450c..19045a3efb8a 100644
-> > --- a/arch/openrisc/kernel/process.c
-> > +++ b/arch/openrisc/kernel/process.c
-> > @@ -116,7 +116,7 @@ void release_thread(struct task_struct *dead_task)
-> >  extern asmlinkage void ret_from_fork(void);
-> >  
-> >  /*
-> > - * copy_thread_tls
-> > + * copy_thread
-> >   * @clone_flags: flags
-> >   * @usp: user stack pointer or fn for kernel thread
-> >   * @arg: arg to fn for kernel thread; always NULL for userspace thread
-> > @@ -147,7 +147,7 @@ extern asmlinkage void ret_from_fork(void);
-> >   */
-> >  
-> >  int
-> > -copy_thread_tls(unsigned long clone_flags, unsigned long usp,
-> > +copy_thread(unsigned long clone_flags, unsigned long usp,
-> >  		unsigned long arg, struct task_struct *p, unsigned long tls)
-> >  {
+> /me looks at the LTO series some more
 > 
-> For the OpenRISC bit.
+> Oh yeah, there's CONFIG_LTO which is selected by CONFIG_LTO_CLANG, which is
+> the non-typoed version of the above. I can switch this to CONFIG_LTO.
 > 
-> Acked-by: Stafford Horne <shorne@gmail.com>
+> > Also, can you illustrate code that can only be unsafe with Clang LTO?
 > 
-> Also, I would agree with what Kees mentioned about aligning the parameters.
-> Sure that would be more work but it would be appreciated.
+> I don't have a concrete example, but it's an ongoing concern over on the LTO
+> thread [1], so I cooked this to show one way we could deal with it. The main
+> concern is that the whole-program optimisations enabled by LTO may allow the
+> compiler to enumerate possible values for a pointer at link time and replace
+> an address dependency between two loads with a control dependency instead,
+> defeating the dependency ordering within the CPU.
 
-Sure, this is a mechanical change. I'll update the individual patches to account for that.
+Why can't that happen without LTO?
 
-Thanks!
-Christian
+> We likely won't realise if/when this goes wrong, other than impossible to
+> debug, subtle breakage that crops up seemingly randomly. Ideally, we'd be
+> able to detect this sort of thing happening at build time, and perhaps
+> even prevent it with compiler options or annotations, but none of that is
+> close to being available and I'm keen to progress the LTO patches in the
+> meantime because they are a requirement for CFI.
+
+My concern was not so much why LTO makes things dangerous, as why !LTO
+makes things safe...
+
+Cheers
+---Dave
