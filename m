@@ -1,56 +1,64 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when
- CLANG_LTO=y
-Date: Wed, 8 Jul 2020 11:16:20 +0200
-Message-ID: <20200708091620.GF597537@hirez.programming.kicks-ass.net>
-References: <20200630173734.14057-19-will@kernel.org>
- <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
- <20200702072301.GA15963@willie-the-truck>
- <20200706160023.GB10992@arm.com>
- <20200706163455.GV9247@paulmck-ThinkPad-P72>
- <20200706170556.GE10992@arm.com>
- <20200706173628.GZ9247@paulmck-ThinkPad-P72>
- <20200707102915.GI10992@arm.com>
- <20200707225122.GJ9247@paulmck-ThinkPad-P72>
- <CAKwvOdkW__H21m8vqqk1-n6-KK67HBk=YbA+MkUS7igxfjV1iw@mail.gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1] alpha: io: Make sparse happy about bitwise types
+Date: Wed, 8 Jul 2020 19:23:26 +0300
+Message-ID: <20200708162326.GO3703480@smile.fi.intel.com>
+References: <20200618135117.14894-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200618135117.14894-1-andriy.shevchenko@linux.intel.com>
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=2Hfa1uIvYhCo4qIOtwYZRPWhHsNHPggWR4XS5g82A1A=; b=WrCmcevbzE7HgiZ8thbdqUPK1p
- jCodtCebSCwb0fju452gYR+f/K3Wknd4TpdkHytYxv2OyROHjC6Kl/QqjvAbIP0RIxd7AMJLvUG4R
- DnJwQG3JPFtxdZ+/fMFhN+WnSPj6zk1iJ4N5D5eqeNL/gp6nYJUhKN+bOfOIg4RSwQf2fvMuW53xm
- +2+JxS+krK6CdqMwIwuBuewB3T+PVDZxrX3K6OUNxSz19yhFtZc8kNp12Zbc2pWhwJ7181LcnV9il
- 3eVB3TkH4tYXj12GNXYsVln4EtOBNCIoy04XZdIg6OffdMMUsDcOzlIFiPG+cZP5suhLcdjicxrxu
- AeBgN9LQ==;
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdkW__H21m8vqqk1-n6-KK67HBk=YbA+MkUS7igxfjV1iw@mail.gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
-To: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, virtualization@lists.linux-foundation.org, Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Alan Stern <stern@rowland.harvard.edu>, Sami Tolvanen <samitolvanen@google.com>, Matt Turner <mattst88@gmail.com>, kernel-team <kernel-team@android.com>, Dave Martin <Dave.Martin@arm.com>, Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Steven Rostedt <rostedt@goodmis.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Richard Henderson <rth@twiddle.net>, LKML <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: kernel test robot <lkp@intel.com>
 
-On Tue, Jul 07, 2020 at 04:01:28PM -0700, Nick Desaulniers wrote:
-> I'm trying to put together a Micro Conference for Linux Plumbers
-> conference focused on "make LLVM slightly less shitty."  Do you all
-> plan on attending the conference? Would it be worthwhile to hold a
-> session focused on discussing this (LTO and memory models) be
-> worthwhile?
+On Thu, Jun 18, 2020 at 04:51:17PM +0300, Andy Shevchenko wrote:
+> On Alpha the IO accessors are using plain unsigned types, such as uXX.
+> But Alpha can be configured to any endianess and implementation of
+> BE IO accessors, such as iowrite32be(), require endianess conversion.
+> This conversion, when done via cpu_to*() and *_to_cpu() helpers, uses
+> bitwise types of which sparse is not happy.
+> 
+> 8250_dwlib.c:45:17: sparse: sparse: incorrect type in argument 1 (different base types)
+> 8250_dwlib.c:45:17: sparse:     expected unsigned int [usertype]
+> 8250_dwlib.c:45:17: sparse:     got restricted __be32 [usertype]
+> 
+> One way is to use a lot of ifdeffery to properly use swab*() combination with
+> writel() or so, another is much simpler, i.e. forcing types, especially taking
+> into consideration the commit message of the original commit for that API.
 
-I'd love to have a session about compilers and memory ordering with both
-GCC and CLANG in attendance.
+Any comment on this so far?
 
-We need a solution for dependent-loads and control-dependencies for both
-toolchains.
+> Fixes: 25534eb77078 ("alpha: add io{read,write}{16,32}be functions")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  arch/alpha/include/asm/io.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+> index a4d0c19f1e79..9529656c24bb 100644
+> --- a/arch/alpha/include/asm/io.h
+> +++ b/arch/alpha/include/asm/io.h
+> @@ -491,8 +491,8 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
+>  
+>  #define ioread16be(p) be16_to_cpu(ioread16(p))
+>  #define ioread32be(p) be32_to_cpu(ioread32(p))
+> -#define iowrite16be(v,p) iowrite16(cpu_to_be16(v), (p))
+> -#define iowrite32be(v,p) iowrite32(cpu_to_be32(v), (p))
+> +#define iowrite16be(v,p) iowrite16((__force u16)cpu_to_be16(v), (p))
+> +#define iowrite32be(v,p) iowrite32((__force u32)cpu_to_be32(v), (p))
+>  
+>  #define inb_p		inb
+>  #define inw_p		inw
+> -- 
+> 2.27.0.rc2
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
