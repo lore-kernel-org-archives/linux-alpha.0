@@ -1,61 +1,56 @@
-From: Marco Elver <elver@google.com>
-Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when CLANG_LTO=y
-Date: Wed, 8 Jul 2020 09:15:44 +0200
-Message-ID: <CANpmjNP8xwyjiDRgzWO13K3rPbxM0gRwTvMvX3Amm-QOWD0_tQ@mail.gmail.com>
-References: <20200630173734.14057-1-will@kernel.org> <20200630173734.14057-19-will@kernel.org>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when
+ CLANG_LTO=y
+Date: Wed, 8 Jul 2020 11:16:20 +0200
+Message-ID: <20200708091620.GF597537@hirez.programming.kicks-ass.net>
+References: <20200630173734.14057-19-will@kernel.org>
  <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
- <20200702072301.GA15963@willie-the-truck> <20200706160023.GB10992@arm.com>
- <20200706163455.GV9247@paulmck-ThinkPad-P72> <20200706170556.GE10992@arm.com>
- <20200706173628.GZ9247@paulmck-ThinkPad-P72> <20200707102915.GI10992@arm.com>
- <20200707225122.GJ9247@paulmck-ThinkPad-P72> <CAKwvOdkW__H21m8vqqk1-n6-KK67HBk=YbA+MkUS7igxfjV1iw@mail.gmail.com>
+ <20200702072301.GA15963@willie-the-truck>
+ <20200706160023.GB10992@arm.com>
+ <20200706163455.GV9247@paulmck-ThinkPad-P72>
+ <20200706170556.GE10992@arm.com>
+ <20200706173628.GZ9247@paulmck-ThinkPad-P72>
+ <20200707102915.GI10992@arm.com>
+ <20200707225122.GJ9247@paulmck-ThinkPad-P72>
+ <CAKwvOdkW__H21m8vqqk1-n6-KK67HBk=YbA+MkUS7igxfjV1iw@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rUN87HHcT0D+VYtpGAgTAdZG4A7i97yXdShp42YthWM=;
-        b=M/+llDmnnVb41HXbwGOiq6jmJPUaW8FTQkCNy2QnRSJcNvFQz7To2Zi1x1XHAnSlcW
-         rN5mobyMuuy1YzbBp6BTqhI+EhsEyXpb6bsBmx8xuUAxPfRdmb1/kJsYyQSwF2pR5W7L
-         ku19jswToojrU0/+xLzKSohGM0llFTFrYsyezI+Vp3B93TVjmqqvLUSqbUY4T0bfUXMN
-         V8uy+jzabbSJzuAiBle2nPlVZyitMpOPiPSmzzJKZnxrCPFcszkCdZtKxd9mdvot52z5
-         HaKvIw0BWdmUzd+Cr5U5fPoJRINu0Qj4C+VR0J7bv/yKZrkqf03UcNkhw7GLtzfpib7q
-         2d6g==
-In-Reply-To: <CAKwvOdkW__H21m8vqqk1-n6-KK67HBk=YbA+MkUS7igxfjV1iw@mail.gmail.com>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=2Hfa1uIvYhCo4qIOtwYZRPWhHsNHPggWR4XS5g82A1A=; b=WrCmcevbzE7HgiZ8thbdqUPK1p
+ jCodtCebSCwb0fju452gYR+f/K3Wknd4TpdkHytYxv2OyROHjC6Kl/QqjvAbIP0RIxd7AMJLvUG4R
+ DnJwQG3JPFtxdZ+/fMFhN+WnSPj6zk1iJ4N5D5eqeNL/gp6nYJUhKN+bOfOIg4RSwQf2fvMuW53xm
+ +2+JxS+krK6CdqMwIwuBuewB3T+PVDZxrX3K6OUNxSz19yhFtZc8kNp12Zbc2pWhwJ7181LcnV9il
+ 3eVB3TkH4tYXj12GNXYsVln4EtOBNCIoy04XZdIg6OffdMMUsDcOzlIFiPG+cZP5suhLcdjicxrxu
+ AeBgN9LQ==;
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdkW__H21m8vqqk1-n6-KK67HBk=YbA+MkUS7igxfjV1iw@mail.gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
+ <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
+ <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
 To: Nick Desaulniers <ndesaulniers@google.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>, Dave Martin <Dave.Martin@arm.com>, Peter Zijlstra <peterz@infradead.org>, Will Deacon <will@kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, Alan Stern <stern@rowland.harvard.edu>, Matt Turner <mattst88@gmail.com>, kernel-team <kernel-team@android.com>, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Richard
+Cc: Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, virtualization@lists.linux-foundation.org, Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Alan Stern <stern@rowland.harvard.edu>, Sami Tolvanen <samitolvanen@google.com>, Matt Turner <mattst88@gmail.com>, kernel-team <kernel-team@android.com>, Dave Martin <Dave.Martin@arm.com>, Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Steven Rostedt <rostedt@goodmis.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Richard Henderson <rth@twiddle.net>, LKML <linux-kernel@vger.kernel.org>, linux-alpha@vger.kernel.org
 
-On Wed, 8 Jul 2020 at 01:01, Nick Desaulniers <ndesaulniers@google.com> wrote:
->
+On Tue, Jul 07, 2020 at 04:01:28PM -0700, Nick Desaulniers wrote:
 > I'm trying to put together a Micro Conference for Linux Plumbers
 > conference focused on "make LLVM slightly less shitty."  Do you all
 > plan on attending the conference? Would it be worthwhile to hold a
 > session focused on discussing this (LTO and memory models) be
 > worthwhile?
 
-I would welcome sessions on LLVM, and would try to attend. Apart from
-general improvements to the LLVM ecosystem, we should also emphasize
-the benefits LLVM provides and how we can enable them (one reason we
-want LTO is to get CFI).
+I'd love to have a session about compilers and memory ordering with both
+GCC and CLANG in attendance.
 
-Regarding LTO and memory models, I'm not sure. Given the current state
-of things, such a discussion needs to be carefully framed to not go in
-circles, because we're trying to figure out things at the intersection
-of architecture, what the compiler does, the C standard, and the
-kernel wants. And because some of these boxes are difficult to change
-(standard, arch, compiler) or difficult to precisely define behaviour
-(compiler), we might end up going in circles. From what I see there
-are efforts to fix the situation at the root (standard), and we might
-have means to get the compiler to tell us what it's doing. But these
-happen extremely slowly.
-
-So, if we do this, we need to be careful to not end up re-discussing
-what we discussed here, but rather try and make it a continuation that
-hopefully leads to some constructive output.
-
-Thanks,
--- Marco
+We need a solution for dependent-loads and control-dependencies for both
+toolchains.
