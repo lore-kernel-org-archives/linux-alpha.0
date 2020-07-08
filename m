@@ -1,64 +1,51 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1] alpha: io: Make sparse happy about bitwise types
-Date: Wed, 8 Jul 2020 19:23:26 +0300
-Message-ID: <20200708162326.GO3703480@smile.fi.intel.com>
-References: <20200618135117.14894-1-andriy.shevchenko@linux.intel.com>
+From: "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when
+ CLANG_LTO=y
+Date: Wed, 8 Jul 2020 11:20:36 -0700
+Message-ID: <20200708182036.GR9247@paulmck-ThinkPad-P72>
+References: <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
+ <20200702072301.GA15963@willie-the-truck>
+ <20200706160023.GB10992@arm.com>
+ <20200706163455.GV9247@paulmck-ThinkPad-P72>
+ <20200706170556.GE10992@arm.com>
+ <20200706173628.GZ9247@paulmck-ThinkPad-P72>
+ <20200707102915.GI10992@arm.com>
+ <20200707225122.GJ9247@paulmck-ThinkPad-P72>
+ <CAKwvOdkW__H21m8vqqk1-n6-KK67HBk=YbA+MkUS7igxfjV1iw@mail.gmail.com>
+ <20200708091620.GF597537@hirez.programming.kicks-ass.net>
+Reply-To: paulmck@kernel.org
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594232436;
+        bh=TonelHlHtWDNOIWLPcZdK8GZofB+N27b/F2Vm9vTRh8=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=ukj3cLrdjnebjlAukmmTASRyw1pa2gMozxAYVE8k3Aal5uTo6H7tEBiy5eJN+QxXL
+         gRJwrI65r1HmPmI3ecywXxV/5VkFMVuEu4tbgwYCZmqCvbTsSU6mGg/xNvJwWULf34
+         9NfF2Ngood+DO+fV+U5vOrrqOFGolG0eKpdqBV2Q=
 Content-Disposition: inline
-In-Reply-To: <20200618135117.14894-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20200708091620.GF597537@hirez.programming.kicks-ass.net>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
-Cc: kernel test robot <lkp@intel.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>, Dave Martin <Dave.Martin@arm.com>, Will Deacon <will@kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Marco Elver <elver@google.com>, Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, Alan Stern <stern@rowland.harvard.edu>, Matt Turner <mattst88@gmail.com>, kernel-team <kernel-team@android.com>, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Richard
 
-On Thu, Jun 18, 2020 at 04:51:17PM +0300, Andy Shevchenko wrote:
-> On Alpha the IO accessors are using plain unsigned types, such as uXX.
-> But Alpha can be configured to any endianess and implementation of
-> BE IO accessors, such as iowrite32be(), require endianess conversion.
-> This conversion, when done via cpu_to*() and *_to_cpu() helpers, uses
-> bitwise types of which sparse is not happy.
+On Wed, Jul 08, 2020 at 11:16:20AM +0200, Peter Zijlstra wrote:
+> On Tue, Jul 07, 2020 at 04:01:28PM -0700, Nick Desaulniers wrote:
+> > I'm trying to put together a Micro Conference for Linux Plumbers
+> > conference focused on "make LLVM slightly less shitty."  Do you all
+> > plan on attending the conference? Would it be worthwhile to hold a
+> > session focused on discussing this (LTO and memory models) be
+> > worthwhile?
 > 
-> 8250_dwlib.c:45:17: sparse: sparse: incorrect type in argument 1 (different base types)
-> 8250_dwlib.c:45:17: sparse:     expected unsigned int [usertype]
-> 8250_dwlib.c:45:17: sparse:     got restricted __be32 [usertype]
+> I'd love to have a session about compilers and memory ordering with both
+> GCC and CLANG in attendance.
 > 
-> One way is to use a lot of ifdeffery to properly use swab*() combination with
-> writel() or so, another is much simpler, i.e. forcing types, especially taking
-> into consideration the commit message of the original commit for that API.
+> We need a solution for dependent-loads and control-dependencies for both
+> toolchains.
 
-Any comment on this so far?
+What Peter said!  ;-)
 
-> Fixes: 25534eb77078 ("alpha: add io{read,write}{16,32}be functions")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  arch/alpha/include/asm/io.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-> index a4d0c19f1e79..9529656c24bb 100644
-> --- a/arch/alpha/include/asm/io.h
-> +++ b/arch/alpha/include/asm/io.h
-> @@ -491,8 +491,8 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
->  
->  #define ioread16be(p) be16_to_cpu(ioread16(p))
->  #define ioread32be(p) be32_to_cpu(ioread32(p))
-> -#define iowrite16be(v,p) iowrite16(cpu_to_be16(v), (p))
-> -#define iowrite32be(v,p) iowrite32(cpu_to_be32(v), (p))
-> +#define iowrite16be(v,p) iowrite16((__force u16)cpu_to_be16(v), (p))
-> +#define iowrite32be(v,p) iowrite32((__force u32)cpu_to_be32(v), (p))
->  
->  #define inb_p		inb
->  #define inw_p		inw
-> -- 
-> 2.27.0.rc2
-> 
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+							Thanx, Paul
