@@ -1,29 +1,21 @@
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Subject: [PATCH v3 0/4] iomap: Constify ioreadX() iomem argument
 Date: Thu,  9 Jul 2020 09:28:33 +0200
-Message-ID: <20200709072837.5869-1-krzk__21560.8947839186$1594279738$gmane$org@kernel.org>
-Mime-Version: 1.0
+Message-ID: <20200709072837.5869-1-krzk__37163.9998791338$1594279743$gmane$org@kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1594279728;
+        bh=ihrn0AVJZvkOuVrPMlLyS+S/P5UfhHadBXpyvV7CV34=;
+        h=From:To:Cc:Subject:Date:From;
+        b=05Zm0mLcRLT//JVQcYmwazKkHZEz773gn+ecJt0+HI6mS6C7jmlKkroRhVIDWD0a8
+         VPJs/6kEeTX0CWU4RMvaQ8WJH/8qgSyOS7shRx9Bhe8Knx92xZOyEbNHwTE/QQSe/l
+         cpBi/YFMPbiseb3kp430S8rscEO/UbEc3Jy5t97o=
+Sender: linux-alpha-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1594279728;
- bh=ihrn0AVJZvkOuVrPMlLyS+S/P5UfhHadBXpyvV7CV34=;
- h=From:To:Cc:Subject:Date:From;
- b=05Zm0mLcRLT//JVQcYmwazKkHZEz773gn+ecJt0+HI6mS6C7jmlKkroRhVIDWD0a8
- VPJs/6kEeTX0CWU4RMvaQ8WJH/8qgSyOS7shRx9Bhe8Knx92xZOyEbNHwTE/QQSe/l
- cpBi/YFMPbiseb3kp430S8rscEO/UbEc3Jy5t97o=
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Kalle Valo <kvalo@codeaurora.org>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Dave Jiang <dave.jiang@intel.com>, Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert+renesas@glider.be>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-paris
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Kalle Valo <kvalo@codeaurora.org>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Dave Jiang <dave.jiang@intel.com>, Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert+rene>
 Cc: Krzysztof Kozlowski <krzk@kernel.org>
 
 Hi,
@@ -115,3 +107,4 @@ Krzysztof Kozlowski (4):
 
 -- 
 2.17.1
+
