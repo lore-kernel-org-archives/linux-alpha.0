@@ -2,9 +2,9 @@ From: Krzysztof Kozlowski <krzk@kernel.org>
 Subject: [PATCH v3 1/4] iomap: Constify ioreadX() iomem argument (as in
  generic implementation)
 Date: Thu,  9 Jul 2020 09:28:34 +0200
-Message-ID: <20200709072837.5869-2-krzk__17760.4795944475$1594279960$gmane$org@kernel.org>
+Message-ID: <20200709072837.5869-2-krzk__7784.78436857171$1594279976$gmane$org@kernel.org>
 References: <20200709072837.5869-1-krzk@kernel.org>
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
  s=default; t=1594279735;
  bh=OK13iXqg1uCDFJL023hA8If9CF8rTsbyhuzi9tNz3so=;
@@ -21,9 +21,9 @@ List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
 List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
 List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
  <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org
 Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+ <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
