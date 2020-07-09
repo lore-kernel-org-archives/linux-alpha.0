@@ -1,51 +1,117 @@
-From: "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH 18/18] arm64: lto: Strengthen READ_ONCE() to acquire when
- CLANG_LTO=y
-Date: Wed, 8 Jul 2020 11:20:36 -0700
-Message-ID: <20200708182036.GR9247@paulmck-ThinkPad-P72>
-References: <20200701170722.4rte5ssnmrn2uqzg@bakewell.cambridge.arm.com>
- <20200702072301.GA15963@willie-the-truck>
- <20200706160023.GB10992@arm.com>
- <20200706163455.GV9247@paulmck-ThinkPad-P72>
- <20200706170556.GE10992@arm.com>
- <20200706173628.GZ9247@paulmck-ThinkPad-P72>
- <20200707102915.GI10992@arm.com>
- <20200707225122.GJ9247@paulmck-ThinkPad-P72>
- <CAKwvOdkW__H21m8vqqk1-n6-KK67HBk=YbA+MkUS7igxfjV1iw@mail.gmail.com>
- <20200708091620.GF597537@hirez.programming.kicks-ass.net>
-Reply-To: paulmck@kernel.org
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH v3 0/4] iomap: Constify ioreadX() iomem argument
+Date: Thu,  9 Jul 2020 09:28:33 +0200
+Message-ID: <20200709072837.5869-1-krzk__21560.8947839186$1594279738$gmane$org@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594232436;
-        bh=TonelHlHtWDNOIWLPcZdK8GZofB+N27b/F2Vm9vTRh8=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=ukj3cLrdjnebjlAukmmTASRyw1pa2gMozxAYVE8k3Aal5uTo6H7tEBiy5eJN+QxXL
-         gRJwrI65r1HmPmI3ecywXxV/5VkFMVuEu4tbgwYCZmqCvbTsSU6mGg/xNvJwWULf34
-         9NfF2Ngood+DO+fV+U5vOrrqOFGolG0eKpdqBV2Q=
-Content-Disposition: inline
-In-Reply-To: <20200708091620.GF597537@hirez.programming.kicks-ass.net>
-Sender: linux-alpha-owner@vger.kernel.org
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>, Dave Martin <Dave.Martin@arm.com>, Will Deacon <will@kernel.org>, Sami Tolvanen <samitolvanen@google.com>, Marco Elver <elver@google.com>, Mark Rutland <mark.rutland@arm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org, Alan Stern <stern@rowland.harvard.edu>, Matt Turner <mattst88@gmail.com>, kernel-team <kernel-team@android.com>, Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Josh Triplett <josh@joshtriplett.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Richard
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1594279728;
+ bh=ihrn0AVJZvkOuVrPMlLyS+S/P5UfhHadBXpyvV7CV34=;
+ h=From:To:Cc:Subject:Date:From;
+ b=05Zm0mLcRLT//JVQcYmwazKkHZEz773gn+ecJt0+HI6mS6C7jmlKkroRhVIDWD0a8
+ VPJs/6kEeTX0CWU4RMvaQ8WJH/8qgSyOS7shRx9Bhe8Knx92xZOyEbNHwTE/QQSe/l
+ cpBi/YFMPbiseb3kp430S8rscEO/UbEc3Jy5t97o=
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
+ <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
+ <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Kalle Valo <kvalo@codeaurora.org>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Dave Jiang <dave.jiang@intel.com>, Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert+renesas@glider.be>, Andrew Morton <akpm@linux-foundation.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-paris
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
 
-On Wed, Jul 08, 2020 at 11:16:20AM +0200, Peter Zijlstra wrote:
-> On Tue, Jul 07, 2020 at 04:01:28PM -0700, Nick Desaulniers wrote:
-> > I'm trying to put together a Micro Conference for Linux Plumbers
-> > conference focused on "make LLVM slightly less shitty."  Do you all
-> > plan on attending the conference? Would it be worthwhile to hold a
-> > session focused on discussing this (LTO and memory models) be
-> > worthwhile?
-> 
-> I'd love to have a session about compilers and memory ordering with both
-> GCC and CLANG in attendance.
-> 
-> We need a solution for dependent-loads and control-dependencies for both
-> toolchains.
+Hi,
 
-What Peter said!  ;-)
+Multiple architectures are affected in the first patch and all further
+patches depend on the first.
 
-							Thanx, Paul
+Maybe this could go in through Andrew Morton's tree?
+
+
+Changes since v2
+================
+1. Drop all non-essential patches (cleanups),
+2. Update also drivers/sh/clk/cpg.c .
+
+
+Changes since v1
+================
+https://lore.kernel.org/lkml/1578415992-24054-1-git-send-email-krzk@kernel.org/
+1. Constify also ioreadX_rep() and mmio_insX(),
+2. Squash lib+alpha+powerpc+parisc+sh into one patch for bisectability,
+3. Add acks and reviews,
+4. Re-order patches so all optional driver changes are at the end.
+
+
+Description
+===========
+The ioread8/16/32() and others have inconsistent interface among the
+architectures: some taking address as const, some not.
+
+It seems there is nothing really stopping all of them to take
+pointer to const.
+
+Patchset was only compile tested on affected architectures.  No real
+testing.
+
+
+volatile
+========
+There is still interface inconsistency between architectures around
+"volatile" qualifier:
+ - include/asm-generic/io.h:static inline u32 ioread32(const volatile void __iomem *addr)
+ - include/asm-generic/iomap.h:extern unsigned int ioread32(const void __iomem *);
+
+This is still discussed and out of scope of this patchset.
+
+
+Best regards,
+Krzysztof
+
+
+Krzysztof Kozlowski (4):
+  iomap: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  rtl818x: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  ntb: intel: Constify ioreadX() iomem argument (as in generic
+    implementation)
+  virtio: pci: Constify ioreadX() iomem argument (as in generic
+    implementation)
+
+ arch/alpha/include/asm/core_apecs.h           |  6 +-
+ arch/alpha/include/asm/core_cia.h             |  6 +-
+ arch/alpha/include/asm/core_lca.h             |  6 +-
+ arch/alpha/include/asm/core_marvel.h          |  4 +-
+ arch/alpha/include/asm/core_mcpcia.h          |  6 +-
+ arch/alpha/include/asm/core_t2.h              |  2 +-
+ arch/alpha/include/asm/io.h                   | 12 ++--
+ arch/alpha/include/asm/io_trivial.h           | 16 ++---
+ arch/alpha/include/asm/jensen.h               |  2 +-
+ arch/alpha/include/asm/machvec.h              |  6 +-
+ arch/alpha/kernel/core_marvel.c               |  2 +-
+ arch/alpha/kernel/io.c                        | 12 ++--
+ arch/parisc/include/asm/io.h                  |  4 +-
+ arch/parisc/lib/iomap.c                       | 72 +++++++++----------
+ arch/powerpc/kernel/iomap.c                   | 28 ++++----
+ arch/sh/kernel/iomap.c                        | 22 +++---
+ .../realtek/rtl818x/rtl8180/rtl8180.h         |  6 +-
+ drivers/ntb/hw/intel/ntb_hw_gen1.c            |  2 +-
+ drivers/ntb/hw/intel/ntb_hw_gen3.h            |  2 +-
+ drivers/ntb/hw/intel/ntb_hw_intel.h           |  2 +-
+ drivers/sh/clk/cpg.c                          |  2 +-
+ drivers/virtio/virtio_pci_modern.c            |  6 +-
+ include/asm-generic/iomap.h                   | 28 ++++----
+ include/linux/io-64-nonatomic-hi-lo.h         |  4 +-
+ include/linux/io-64-nonatomic-lo-hi.h         |  4 +-
+ lib/iomap.c                                   | 30 ++++----
+ 26 files changed, 146 insertions(+), 146 deletions(-)
+
+-- 
+2.17.1
