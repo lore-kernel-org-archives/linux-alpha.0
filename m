@@ -1,98 +1,135 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v3 07/19] vhost: Remove redundant use of
- read_barrier_depends() barrier
-Date: Mon, 13 Jul 2020 07:27:01 -0400
-Message-ID: <20200713072618-mutt-send-email-mst@kernel.org>
+From: boqun.feng@gmail.com
+Subject: Re: [PATCH v3 02/19] compiler.h: Split {READ,WRITE}_ONCE definitions
+ out into rwonce.h
+Date: Mon, 13 Jul 2020 20:23:22 +0800
+Message-ID: <20200713122322.GD72639@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
 References: <20200710165203.31284-1-will@kernel.org>
- <20200710165203.31284-8-will@kernel.org>
+ <20200710165203.31284-3-will@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1594639629;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NndF9MqDcvO4KNH3w4Ig8XfoceRFDUTb0+wABisiArU=;
-        b=EB4Lvqc6e1NF8IVwya9HpaiiUsY7R84Wbq/hfHZM0+zEPVj4MvEdc2xVOhtvhqwb6pHvkw
-        ZnE7HHi4vKdPoYKGid70k+p7m0rDKY41rUsctZewr1EPlsaOLTvVpUk5dcZGD6FtPoUf+k
-        CrKW0jYCX5Ep1opgsx7ks2K2REssphg=
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HwcEC42H0zTATu6DQ9BO7GlySiE5+PPSThoRe1JfoPk=;
+        b=IOC/nv0a9MCBpDa157+eJk6cC4/4JJ4l0JY3uhKtvsYAKQE7Ija7cwGEMqRImWi/w/
+         tWl85DYAfgNt4Fko32AjPLfKNlC+5y892Ouucq8/6zJJtRRJjtYBidkF9is7pkIq2DUy
+         POh7J2xOBygj1fB9vgCWbhSF3ck65l09BgoCNI6dxGvULA6BNzqzMwkaG+M5z+j5tyxq
+         O1q2wbYVWni+JbsTAa3/ejg4zAHjku/djKkJYFiePb0GTnSihD41gqhca0/3hKZdWy76
+         +Lm93p71u2UhzjGa7cm5FK/7e2KVF3VwbWc8662dpv7xrfjBpBUzV/qYFiTBpoJsrMff
+         goHA==
 Content-Disposition: inline
-In-Reply-To: <20200710165203.31284-8-will@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <20200710165203.31284-3-will@kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Joel Fernandes <joelaf@google.com>, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, Marco Elver <elver@google.com>, "Paul E. McKenney" <paulmck@kernel.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org, virtualization@lists.linux-foundation.org, kernel-team@andro
+Cc: linux-kernel@vger.kernel.org, Joel Fernandes <joelaf@google.com>, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, Marco Elver <elver@google.com>, "Paul E. McKenney" <paulmck@kernel.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org, virtualization@lists.linux-foundation.org, kernel-team@a
 
-On Fri, Jul 10, 2020 at 05:51:51PM +0100, Will Deacon wrote:
-> Since commit 76ebbe78f739 ("locking/barriers: Add implicit
-> smp_read_barrier_depends() to READ_ONCE()"), there is no need to use
-> smp_read_barrier_depends() outside of the Alpha architecture code.
+On Fri, Jul 10, 2020 at 05:51:46PM +0100, Will Deacon wrote:
+> In preparation for allowing architectures to define their own
+> implementation of the READ_ONCE() macro, move the generic
+> {READ,WRITE}_ONCE() definitions out of the unwieldy 'linux/compiler.h'
+> file and into a new 'rwonce.h' header under 'asm-generic'.
 > 
-> Unfortunately, there is precisely _one_ user in the vhost code, and
-> there isn't an obvious READ_ONCE() access making the barrier
-> redundant. However, on closer inspection (thanks, Jason), it appears
-> that vring synchronisation between the producer and consumer occurs via
-> the 'avail_idx' field, which is followed up by an rmb() in
-> vhost_get_vq_desc(), making the read_barrier_depends() redundant on
-> Alpha.
-> 
-> Jason says:
-> 
->   | I'm also confused about the barrier here, basically in driver side
->   | we did:
->   |
->   | 1) allocate pages
->   | 2) store pages in indirect->addr
->   | 3) smp_wmb()
->   | 4) increase the avail idx (somehow a tail pointer of vring)
->   |
->   | in vhost we did:
->   |
->   | 1) read avail idx
->   | 2) smp_rmb()
->   | 3) read indirect->addr
->   | 4) read from indirect->addr
->   |
->   | It looks to me even the data dependency barrier is not necessary
->   | since we have rmb() which is sufficient for us to the correct
->   | indirect->addr and driver are not expected to do any writing to
->   | indirect->addr after avail idx is increased
-> 
-> Remove the redundant barrier invocation.
-> 
-> Suggested-by: Jason Wang <jasowang@redhat.com>
 > Acked-by: Paul E. McKenney <paulmck@kernel.org>
 > Signed-off-by: Will Deacon <will@kernel.org>
-
-
-I agree
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-Pls merge with the rest of the patchset.
-
 > ---
->  drivers/vhost/vhost.c | 5 -----
->  1 file changed, 5 deletions(-)
+>  include/asm-generic/Kbuild    |  1 +
+>  include/asm-generic/barrier.h |  2 +-
+>  include/asm-generic/rwonce.h  | 91 +++++++++++++++++++++++++++++++++++
+>  include/linux/compiler.h      | 83 +-------------------------------
+>  4 files changed, 95 insertions(+), 82 deletions(-)
+>  create mode 100644 include/asm-generic/rwonce.h
 > 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index d7b8df3edffc..74d135ee7e26 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -2092,11 +2092,6 @@ static int get_indirect(struct vhost_virtqueue *vq,
->  		return ret;
->  	}
->  	iov_iter_init(&from, READ, vq->indirect, ret, len);
-> -
-> -	/* We will use the result as an address to read from, so most
-> -	 * architectures only need a compiler barrier here. */
-> -	read_barrier_depends();
-> -
->  	count = len / sizeof desc;
->  	/* Buffers are chained via a 16 bit next field, so
->  	 * we can have at most 2^16 of these. */
-> -- 
-> 2.27.0.383.g050319c2ae-goog
+> diff --git a/include/asm-generic/Kbuild b/include/asm-generic/Kbuild
+> index 44ec80e70518..74b0612601dd 100644
+> --- a/include/asm-generic/Kbuild
+> +++ b/include/asm-generic/Kbuild
+> @@ -45,6 +45,7 @@ mandatory-y += pci.h
+>  mandatory-y += percpu.h
+>  mandatory-y += pgalloc.h
+>  mandatory-y += preempt.h
+> +mandatory-y += rwonce.h
+>  mandatory-y += sections.h
+>  mandatory-y += serial.h
+>  mandatory-y += shmparam.h
+> diff --git a/include/asm-generic/barrier.h b/include/asm-generic/barrier.h
+> index 2eacaf7d62f6..8116744bb82c 100644
+> --- a/include/asm-generic/barrier.h
+> +++ b/include/asm-generic/barrier.h
+> @@ -13,7 +13,7 @@
+>  
+>  #ifndef __ASSEMBLY__
+>  
+> -#include <linux/compiler.h>
+> +#include <asm/rwonce.h>
+>  
+>  #ifndef nop
+>  #define nop()	asm volatile ("nop")
+> diff --git a/include/asm-generic/rwonce.h b/include/asm-generic/rwonce.h
+> new file mode 100644
+> index 000000000000..92cc2f223cb3
+> --- /dev/null
+> +++ b/include/asm-generic/rwonce.h
+> @@ -0,0 +1,91 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Prevent the compiler from merging or refetching reads or writes. The
+> + * compiler is also forbidden from reordering successive instances of
+> + * READ_ONCE and WRITE_ONCE, but only when the compiler is aware of some
+> + * particular ordering. One way to make the compiler aware of ordering is to
+> + * put the two invocations of READ_ONCE or WRITE_ONCE in different C
+> + * statements.
+> + *
+> + * These two macros will also work on aggregate data types like structs or
+> + * unions.
+> + *
+> + * Their two major use cases are: (1) Mediating communication between
+> + * process-level code and irq/NMI handlers, all running on the same CPU,
+> + * and (2) Ensuring that the compiler does not fold, spindle, or otherwise
+> + * mutilate accesses that either do not require ordering or that interact
+> + * with an explicit memory barrier or atomic instruction that provides the
+> + * required ordering.
+> + */
+> +#ifndef __ASM_GENERIC_RWONCE_H
+> +#define __ASM_GENERIC_RWONCE_H
+> +
+> +#ifndef __ASSEMBLY__
+> +
+> +#include <linux/compiler_types.h>
+> +#include <linux/kasan-checks.h>
+> +#include <linux/kcsan-checks.h>
+> +
+> +#include <asm/barrier.h>
+> +
+> +/*
+> + * Use __READ_ONCE() instead of READ_ONCE() if you do not require any
+> + * atomicity or dependency ordering guarantees. Note that this may result
+> + * in tears!
+> + */
+> +#define __READ_ONCE(x)	(*(const volatile __unqual_scalar_typeof(x) *)&(x))
+> +
+> +#define __READ_ONCE_SCALAR(x)						\
+> +({									\
+> +	__unqual_scalar_typeof(x) __x = __READ_ONCE(x);			\
+> +	smp_read_barrier_depends();					\
+> +	(typeof(x))__x;							\
+> +})
+> +
+> +#define READ_ONCE(x)							\
+> +({									\
+> +	compiletime_assert_rwonce_type(x);				\
 
+Does it make sense if we also move the definition of this compile time
+assertion into rwonce.h too?
+
+Regards,
+Boqun
+
+> +	__READ_ONCE_SCALAR(x);						\
+> +})
+> +
+
+[...]
