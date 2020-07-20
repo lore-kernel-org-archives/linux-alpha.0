@@ -1,96 +1,98 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [RFC PATCH 00/35] Move all PCIBIOS* definitions into arch/x86
-Date: Mon, 13 Jul 2020 17:01:56 -0500
-Message-ID: <20200713220156.GA284762@bjorn-Precision-5520>
-References: <20200713122247.10985-1-refactormyself@gmail.com>
+From: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v3 02/19] compiler.h: Split {READ, WRITE}_ONCE definitions
+ out into rwonce.h
+Date: Mon, 20 Jul 2020 16:55:02 +0100
+Message-ID: <20200720155501.GA12064@willie-the-truck>
+References: <20200710165203.31284-1-will@kernel.org>
+ <20200710165203.31284-3-will@kernel.org>
+ <20200713122322.GD72639@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
 Mime-Version: 1.0
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1594677718;
- bh=HSAUHsS9kXD1HIJNE6WsRPhRQVem0B8cFajFbFBR0EI=;
- h=Date:From:To:Cc:Subject:In-Reply-To:From;
- b=MWvKJTjvl/1YEIl1J2bYU68QOMCk3laZW9SifUEehjNOErgOIYQha/bgzSaTFKI2l
- QuIAmIsupUSbzYcZR4NjPAxoi7WbrMXAjLRHTnmV/Yc0VJOJrp/0Y79w5eZfIKt71L
- +1J5CchrY3/xdkH17Ff+7DtiGZ9FgLPSUNKvv7eo=
-Content-Disposition: inline
-In-Reply-To: <20200713122247.10985-1-refactormyself@gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Saheed O. Bolarinwa" <refactormyself@gmail.com>
-Cc: Rich Felker <dalias@libc.org>, "Martin K. Petersen" <martin.petersen@oracle.com>, linux-sh@vger.kernel.org, linux-pci@vger.kernel.org, linux-nvme@lists.infradead.org, Yicong Yang <yangyicong@hisilicon.com>, Keith Busch <kbusch@kernel.org>, Realtek linux nic maintainers <nic_swsd@realtek.com>, Paul Mackerras <paulus@samba.org>, linux-i2c@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, sparclinux@vger.kernel.org, rfi@lists.rocketboards.org, Toan Le <toan@os.amperecomputing.com>, Greg Ungerer <gerg@linux-m68k.org>, Marek Vasut <marek.vasut+renesas@gmail.com>, Rob Herring <robh@kernel.org>, Stefano Stabellini <sstabellini@kernel.org>, Sagi Grimberg <sagi@grimberg.me>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-scsi@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michael Ellerman <mpe@ellerman.id.au>, linux-atm-general@lists.sourceforge.net
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1595260508;
+ bh=CPfkp2QBSP3gKifkBSkUyRSWEi+JHbUnJ+ZB0izj7DY=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=a5D8vvsdPtuyNYv8qE1jt1t3R9hwgKBR8Ede9nALJ4GZh3UC88Nws0YRzwzNNeorI
+ I6F07W869uTS3luWta0bx2aHQA6vGJ8h5e5sxVfXxpGZN+kyk/pEq36G0rCjq/iKmZ
+ /FYTeONkLgSEhZ5hG4MefWUaAVfzMFvXZKz/EBg0=
+Content-Disposition: inline
+In-Reply-To: <20200713122322.GD72639@debian-boqun.qqnc3lrjykvubdpftowmye0fmh.lx.internal.cloudapp.net>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
+ <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
+ <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
+To: boqun.feng@gmail.com
+Cc: Joel Fernandes <joelaf@google.com>, Mark Rutland <mark.rutland@arm.com>, Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Nick Desaulniers <ndesaulniers@google.com>, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-arm-kernel@lists.infradead.org, Sami Tolvanen <samitolvanen@google.com>, linux-alpha@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>, Matt Turner <mattst88@gmail.com>, kernel-team@android.com, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>
 
-On Mon, Jul 13, 2020 at 02:22:12PM +0200, Saheed O. Bolarinwa wrote:
-> This goal of these series is to move the definition of *all* PCIBIOS* from
-> include/linux/pci.h to arch/x86 and limit their use within there.
-> All other tree specific definition will be left for intact. Maybe they can
-> be renamed.
+On Mon, Jul 13, 2020 at 08:23:22PM +0800, boqun.feng@gmail.com wrote:
+> On Fri, Jul 10, 2020 at 05:51:46PM +0100, Will Deacon wrote:
+> > diff --git a/include/asm-generic/rwonce.h b/include/asm-generic/rwonce.h
+> > new file mode 100644
+> > index 000000000000..92cc2f223cb3
+> > --- /dev/null
+> > +++ b/include/asm-generic/rwonce.h
+> > @@ -0,0 +1,91 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Prevent the compiler from merging or refetching reads or writes. The
+> > + * compiler is also forbidden from reordering successive instances of
+> > + * READ_ONCE and WRITE_ONCE, but only when the compiler is aware of some
+> > + * particular ordering. One way to make the compiler aware of ordering is to
+> > + * put the two invocations of READ_ONCE or WRITE_ONCE in different C
+> > + * statements.
+> > + *
+> > + * These two macros will also work on aggregate data types like structs or
+> > + * unions.
+> > + *
+> > + * Their two major use cases are: (1) Mediating communication between
+> > + * process-level code and irq/NMI handlers, all running on the same CPU,
+> > + * and (2) Ensuring that the compiler does not fold, spindle, or otherwise
+> > + * mutilate accesses that either do not require ordering or that interact
+> > + * with an explicit memory barrier or atomic instruction that provides the
+> > + * required ordering.
+> > + */
+> > +#ifndef __ASM_GENERIC_RWONCE_H
+> > +#define __ASM_GENERIC_RWONCE_H
+> > +
+> > +#ifndef __ASSEMBLY__
+> > +
+> > +#include <linux/compiler_types.h>
+> > +#include <linux/kasan-checks.h>
+> > +#include <linux/kcsan-checks.h>
+> > +
+> > +#include <asm/barrier.h>
+> > +
+> > +/*
+> > + * Use __READ_ONCE() instead of READ_ONCE() if you do not require any
+> > + * atomicity or dependency ordering guarantees. Note that this may result
+> > + * in tears!
+> > + */
+> > +#define __READ_ONCE(x)	(*(const volatile __unqual_scalar_typeof(x) *)&(x))
+> > +
+> > +#define __READ_ONCE_SCALAR(x)						\
+> > +({									\
+> > +	__unqual_scalar_typeof(x) __x = __READ_ONCE(x);			\
+> > +	smp_read_barrier_depends();					\
+> > +	(typeof(x))__x;							\
+> > +})
+> > +
+> > +#define READ_ONCE(x)							\
+> > +({									\
+> > +	compiletime_assert_rwonce_type(x);				\
+> 
+> Does it make sense if we also move the definition of this compile time
+> assertion into rwonce.h too?
 
-More comments later, but a few trivial whitespace issues you can clean
-up in the meantime.  Don't repost for at least a few days to avoid
-spamming everybody.  I found these with:
+Yes, that looks straightforward enough. Thanks for the suggestion!
 
-  $ b4 am -om/ 20200713122247.10985-1-refactormyself@gmail.com
-  $ git am m/20200713_refactormyself_move_all_pcibios_definitions_into_arch_x86.mbx
+I'll also try to get this lot into -next this week.
 
-  Applying: atm: Change PCIBIOS_SUCCESSFUL to 0
-  .git/rebase-apply/patch:11: trailing whitespace.
-	  iadev = INPH_IA_DEV(dev);
-  .git/rebase-apply/patch:12: trailing whitespace.
-	  for(i=0; i<64; i++)
-  .git/rebase-apply/patch:13: trailing whitespace.
-	    if ((error = pci_read_config_dword(iadev->pci,
-  .git/rebase-apply/patch:16: trailing whitespace, space before tab in indent.
-		return error;
-  .git/rebase-apply/patch:17: trailing whitespace.
-	  writel(0, iadev->reg+IPHASE5575_EXT_RESET);
-  warning: squelched 5 whitespace errors
-  warning: 10 lines add whitespace errors.
-  Applying: atm: Tidy Success/Failure checks
-  .git/rebase-apply/patch:13: trailing whitespace.
-
-  .git/rebase-apply/patch:14: trailing whitespace.
-	  iadev = INPH_IA_DEV(dev);
-  .git/rebase-apply/patch:15: trailing whitespace.
-	  for(i=0; i<64; i++)
-  .git/rebase-apply/patch:21: trailing whitespace.
-	  writel(0, iadev->reg+IPHASE5575_EXT_RESET);
-  .git/rebase-apply/patch:22: trailing whitespace.
-	  for(i=0; i<64; i++)
-  warning: squelched 3 whitespace errors
-  warning: 8 lines add whitespace errors.
-  Applying: atm: Fix Style ERROR- assignment in if condition
-  .git/rebase-apply/patch:12: trailing whitespace.
-	  unsigned int pci[64];
-  .git/rebase-apply/patch:13: trailing whitespace.
-
-  .git/rebase-apply/patch:14: trailing whitespace.
-	  iadev = INPH_IA_DEV(dev);
-  .git/rebase-apply/patch:23: trailing whitespace.
-	  writel(0, iadev->reg+IPHASE5575_EXT_RESET);
-  .git/rebase-apply/patch:32: trailing whitespace.
-	  udelay(5);
-  warning: squelched 2 whitespace errors
-  warning: 7 lines add whitespace errors.
-  Applying: PCI: Change PCIBIOS_SUCCESSFUL to 0
-  .git/rebase-apply/patch:37: trailing whitespace.
-  struct pci_ops apecs_pci_ops =
-  .git/rebase-apply/patch:50: trailing whitespace.
-  static int
-  .git/rebase-apply/patch:59: trailing whitespace.
-  struct pci_ops cia_pci_ops =
-  .git/rebase-apply/patch:94: trailing whitespace.
-  static int
-  .git/rebase-apply/patch:103: trailing whitespace.
-  struct pci_ops lca_pci_ops =
-  warning: squelched 10 whitespace errors
-  warning: 15 lines add whitespace errors.
-
+Will
