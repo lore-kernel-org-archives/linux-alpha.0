@@ -1,82 +1,123 @@
-From: Nicholas Piggin <npiggin@gmail.com>
-Subject: [PATCH 02/24] alpha: use asm-generic/mmu_context.h for no-op implementations
-Date: Tue, 28 Jul 2020 13:33:43 +1000
-Message-ID: <20200728033405.78469-3-npiggin@gmail.com>
-References: <20200728033405.78469-1-npiggin@gmail.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v3 19/19] arm64: lto: Strengthen READ_ONCE() to acquire
+ when CONFIG_LTO=y
+Date: Tue, 28 Jul 2020 22:40:30 +0200
+Message-ID: <20200728204029.GB1012@bug>
+References: <20200710165203.31284-1-will@kernel.org>
+ <20200710165203.31284-20-will@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=i6IDKVv/shVEq6irgZZFcLvF1FRkf6GgTDbDcMbNEAs=;
-        b=mUj0kRjoi+GkfsEEulsR8I1ODkKxm2yMW1q4DFRYoT2WuM/K1HJF18QaoGvF51V/BY
-         vM83LGIhB6ZjJqLPPHT9uFlSBP3KReVY8HB79V4M8Wu/vF+xgORhq7DMZEQQ++NH0ZAV
-         mFK4Xn6j0PeyM+RyBFjURcrBjsahRZ/ZJI3c3pzHIdF5ztbBCzR8pUV3rViN1Dm9oFQ1
-         RZGL/vy0pzgwTBdTrrp2WpxcIcp2doMnFvbFH+fq2Yofew4xjI0Bk+jVA47kOwv5RZ2q
-         eng4HHv3cWyaJuK54Ux9nmmi9vtCNW+EBWiEzxhDxn7JpTKe7JiIdHXfBIS4yOBwJGA7
-         bmTA==
-In-Reply-To: <20200728033405.78469-1-npiggin@gmail.com>
-Sender: linux-arch-owner@vger.kernel.org
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200710165203.31284-20-will@kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-arch@vger.kernel.org
-Cc: Nicholas Piggin <npiggin@gmail.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Will Deacon <will@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Joel Fernandes <joelaf@google.com>, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, Marco Elver <elver@google.com>, "Paul E. McKenney" <paulmck@kernel.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org, virtualizatio
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
----
- arch/alpha/include/asm/mmu_context.h | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+On Fri 2020-07-10 17:52:03, Will Deacon wrote:
+> When building with LTO, there is an increased risk of the compiler
+> converting an address dependency headed by a READ_ONCE() invocation
+> into a control dependency and consequently allowing for harmful
+> reordering by the CPU.
+> 
+> Ensure that such transformations are harmless by overriding the generic
+> READ_ONCE() definition with one that provides acquire semantics when
+> building with LTO.
 
-diff --git a/arch/alpha/include/asm/mmu_context.h b/arch/alpha/include/asm/mmu_context.h
-index 6d7d9bc1b4b8..4eea7c616992 100644
---- a/arch/alpha/include/asm/mmu_context.h
-+++ b/arch/alpha/include/asm/mmu_context.h
-@@ -214,8 +214,6 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
- 	tbiap();
- }
- 
--#define deactivate_mm(tsk,mm)	do { } while (0)
--
- #ifdef CONFIG_ALPHA_GENERIC
- # define switch_mm(a,b,c)	alpha_mv.mv_switch_mm((a),(b),(c))
- # define activate_mm(x,y)	alpha_mv.mv_activate_mm((x),(y))
-@@ -229,6 +227,7 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
- # endif
- #endif
- 
-+#define init_new_context init_new_context
- static inline int
- init_new_context(struct task_struct *tsk, struct mm_struct *mm)
- {
-@@ -242,12 +241,7 @@ init_new_context(struct task_struct *tsk, struct mm_struct *mm)
- 	return 0;
- }
- 
--extern inline void
--destroy_context(struct mm_struct *mm)
--{
--	/* Nothing to do.  */
--}
--
-+#define enter_lazy_tlb enter_lazy_tlb
- static inline void
- enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
- {
-@@ -255,6 +249,8 @@ enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
- 	  = ((unsigned long)mm->pgd - IDENT_ADDR) >> PAGE_SHIFT;
- }
- 
-+#include <asm-generic/mmu_context.h>
-+
- #ifdef __MMU_EXTERN_INLINE
- #undef __EXTERN_INLINE
- #undef __MMU_EXTERN_INLINE
+Traditionally, READ_ONCE had only effects on compiler optimalizations, not on
+special semantics of the load instruction.
+
+Do you have example how LTO optimalizations break the code?
+
+Should some documentation be added? Because I believe users will need to understand
+what is going on there. 
+
+It is not LTO-only problem and it is not arm64-only problem, right?
+
+Best regards,
+									Pavel
+
+
+> +#ifdef CONFIG_AS_HAS_LDAPR
+> +#define __LOAD_RCPC(sfx, regs...)					\
+> +	ALTERNATIVE(							\
+> +		"ldar"	#sfx "\t" #regs,				\
+> +		".arch_extension rcpc\n"				\
+> +		"ldapr"	#sfx "\t" #regs,				\
+> +	ARM64_HAS_LDAPR)
+> +#else
+> +#define __LOAD_RCPC(sfx, regs...)	"ldar" #sfx "\t" #regs
+> +#endif /* CONFIG_AS_HAS_LDAPR */
+> +
+> +#define __READ_ONCE(x)							\
+> +({									\
+> +	typeof(&(x)) __x = &(x);					\
+> +	int atomic = 1;							\
+> +	union { __unqual_scalar_typeof(*__x) __val; char __c[1]; } __u;	\
+> +	switch (sizeof(x)) {						\
+> +	case 1:								\
+> +		asm volatile(__LOAD_RCPC(b, %w0, %1)			\
+> +			: "=r" (*(__u8 *)__u.__c)			\
+> +			: "Q" (*__x) : "memory");			\
+> +		break;							\
+> +	case 2:								\
+> +		asm volatile(__LOAD_RCPC(h, %w0, %1)			\
+> +			: "=r" (*(__u16 *)__u.__c)			\
+> +			: "Q" (*__x) : "memory");			\
+> +		break;							\
+> +	case 4:								\
+> +		asm volatile(__LOAD_RCPC(, %w0, %1)			\
+> +			: "=r" (*(__u32 *)__u.__c)			\
+> +			: "Q" (*__x) : "memory");			\
+> +		break;							\
+> +	case 8:								\
+> +		asm volatile(__LOAD_RCPC(, %0, %1)			\
+> +			: "=r" (*(__u64 *)__u.__c)			\
+> +			: "Q" (*__x) : "memory");			\
+> +		break;							\
+> +	default:							\
+> +		atomic = 0;						\
+> +	}								\
+> +	atomic ? (typeof(*__x))__u.__val : (*(volatile typeof(__x))__x);\
+> +})
+> +
+> +#endif	/* !BUILD_VDSO */
+> +#endif	/* CONFIG_LTO */
+> +
+> +#include <asm-generic/rwonce.h>
+> +
+> +#endif	/* __ASM_RWONCE_H */
+> diff --git a/arch/arm64/kernel/vdso/Makefile b/arch/arm64/kernel/vdso/Makefile
+> index 45d5cfe46429..60df97f2e7de 100644
+> --- a/arch/arm64/kernel/vdso/Makefile
+> +++ b/arch/arm64/kernel/vdso/Makefile
+> @@ -28,7 +28,7 @@ ldflags-y := -shared -nostdlib -soname=linux-vdso.so.1 --hash-style=sysv	\
+>  	     $(btildflags-y) -T
+>  
+>  ccflags-y := -fno-common -fno-builtin -fno-stack-protector -ffixed-x18
+> -ccflags-y += -DDISABLE_BRANCH_PROFILING
+> +ccflags-y += -DDISABLE_BRANCH_PROFILING -DBUILD_VDSO
+>  
+>  CFLAGS_REMOVE_vgettimeofday.o = $(CC_FLAGS_FTRACE) -Os $(CC_FLAGS_SCS) $(GCC_PLUGINS_CFLAGS)
+>  KBUILD_CFLAGS			+= $(DISABLE_LTO)
+> diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
+> index d88148bef6b0..4fdf3754a058 100644
+> --- a/arch/arm64/kernel/vdso32/Makefile
+> +++ b/arch/arm64/kernel/vdso32/Makefile
+> @@ -43,7 +43,7 @@ cc32-as-instr = $(call try-run,\
+>  # As a result we set our own flags here.
+>  
+>  # KBUILD_CPPFLAGS and NOSTDINC_FLAGS from top-level Makefile
+> -VDSO_CPPFLAGS := -D__KERNEL__ -nostdinc -isystem $(shell $(CC_COMPAT) -print-file-name=include)
+> +VDSO_CPPFLAGS := -DBUILD_VDSO -D__KERNEL__ -nostdinc -isystem $(shell $(CC_COMPAT) -print-file-name=include)
+>  VDSO_CPPFLAGS += $(LINUXINCLUDE)
+>  
+>  # Common C and assembly flags
+> -- 
+> 2.27.0.383.g050319c2ae-goog
+
 -- 
-2.23.0
-
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
