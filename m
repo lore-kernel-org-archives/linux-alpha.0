@@ -1,123 +1,35 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v3 19/19] arm64: lto: Strengthen READ_ONCE() to acquire
- when CONFIG_LTO=y
-Date: Tue, 28 Jul 2020 22:40:30 +0200
-Message-ID: <20200728204029.GB1012@bug>
-References: <20200710165203.31284-1-will@kernel.org>
- <20200710165203.31284-20-will@kernel.org>
+From: syzbot <syzbot+61acc40a49a3e46e25ea@syzkaller.appspotmail.com>
+Subject: Re: INFO: task hung in pipe_release (2)
+Date: Wed, 12 Aug 2020 20:57:04 -0700
+Message-ID: <0000000000001d3cbb05acba4cc2@google.com>
+References: <00000000000084b59f05abe928ee@google.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20200710165203.31284-20-will@kernel.org>
-Sender: linux-alpha-owner@vger.kernel.org
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <00000000000084b59f05abe928ee@google.com>
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Joel Fernandes <joelaf@google.com>, Sami Tolvanen <samitolvanen@google.com>, Nick Desaulniers <ndesaulniers@google.com>, Kees Cook <keescook@chromium.org>, Marco Elver <elver@google.com>, "Paul E. McKenney" <paulmck@kernel.org>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Richard Henderson <rth@twiddle.net>, Peter Zijlstra <peterz@infradead.org>, Alan Stern <stern@rowland.harvard.edu>, "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org, virtualizatio
+To: James.Bottomley@HansenPartnership.com, amanieu@gmail.com, arnd@arndb.de, benh@kernel.crashing.org, bfields@fieldses.org, borntraeger@de.ibm.com, bp@alien8.de, catalin.marinas@arm.com, chris@zankel.net, christian@brauner.io, corbet@lwn.net, cyphar@cyphar.com, dalias@libc.org, davem@davemloft.net, deller@gmx.de, dvyukov@google.com, fenghua.yu@intel.com, geert@linux-m68k.org, gor@linux.ibm.com, heiko.carstens@de.ibm.com, hpa@zytor.com, ink@jurassic.park.msu.ru, jcmvbkbc@gmail.com, jhogan@kernel.org, jlayton@kernel.org, kvalo@codeaurora.org, linux-alpha@vger.kernel.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linu
 
-On Fri 2020-07-10 17:52:03, Will Deacon wrote:
-> When building with LTO, there is an increased risk of the compiler
-> converting an address dependency headed by a READ_ONCE() invocation
-> into a control dependency and consequently allowing for harmful
-> reordering by the CPU.
-> 
-> Ensure that such transformations are harmless by overriding the generic
-> READ_ONCE() definition with one that provides acquire semantics when
-> building with LTO.
+syzbot has bisected this issue to:
 
-Traditionally, READ_ONCE had only effects on compiler optimalizations, not on
-special semantics of the load instruction.
+commit fddb5d430ad9fa91b49b1d34d0202ffe2fa0e179
+Author: Aleksa Sarai <cyphar@cyphar.com>
+Date:   Sat Jan 18 12:07:59 2020 +0000
 
-Do you have example how LTO optimalizations break the code?
+    open: introduce openat2(2) syscall
 
-Should some documentation be added? Because I believe users will need to understand
-what is going on there. 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=164e716a900000
+start commit:   6ba1b005 Merge tag 'asm-generic-fixes-5.8' of git://git.ke..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=154e716a900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=114e716a900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=84f076779e989e69
+dashboard link: https://syzkaller.appspot.com/bug?extid=61acc40a49a3e46e25ea
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=142ae224900000
 
-It is not LTO-only problem and it is not arm64-only problem, right?
+Reported-by: syzbot+61acc40a49a3e46e25ea@syzkaller.appspotmail.com
+Fixes: fddb5d430ad9 ("open: introduce openat2(2) syscall")
 
-Best regards,
-									Pavel
-
-
-> +#ifdef CONFIG_AS_HAS_LDAPR
-> +#define __LOAD_RCPC(sfx, regs...)					\
-> +	ALTERNATIVE(							\
-> +		"ldar"	#sfx "\t" #regs,				\
-> +		".arch_extension rcpc\n"				\
-> +		"ldapr"	#sfx "\t" #regs,				\
-> +	ARM64_HAS_LDAPR)
-> +#else
-> +#define __LOAD_RCPC(sfx, regs...)	"ldar" #sfx "\t" #regs
-> +#endif /* CONFIG_AS_HAS_LDAPR */
-> +
-> +#define __READ_ONCE(x)							\
-> +({									\
-> +	typeof(&(x)) __x = &(x);					\
-> +	int atomic = 1;							\
-> +	union { __unqual_scalar_typeof(*__x) __val; char __c[1]; } __u;	\
-> +	switch (sizeof(x)) {						\
-> +	case 1:								\
-> +		asm volatile(__LOAD_RCPC(b, %w0, %1)			\
-> +			: "=r" (*(__u8 *)__u.__c)			\
-> +			: "Q" (*__x) : "memory");			\
-> +		break;							\
-> +	case 2:								\
-> +		asm volatile(__LOAD_RCPC(h, %w0, %1)			\
-> +			: "=r" (*(__u16 *)__u.__c)			\
-> +			: "Q" (*__x) : "memory");			\
-> +		break;							\
-> +	case 4:								\
-> +		asm volatile(__LOAD_RCPC(, %w0, %1)			\
-> +			: "=r" (*(__u32 *)__u.__c)			\
-> +			: "Q" (*__x) : "memory");			\
-> +		break;							\
-> +	case 8:								\
-> +		asm volatile(__LOAD_RCPC(, %0, %1)			\
-> +			: "=r" (*(__u64 *)__u.__c)			\
-> +			: "Q" (*__x) : "memory");			\
-> +		break;							\
-> +	default:							\
-> +		atomic = 0;						\
-> +	}								\
-> +	atomic ? (typeof(*__x))__u.__val : (*(volatile typeof(__x))__x);\
-> +})
-> +
-> +#endif	/* !BUILD_VDSO */
-> +#endif	/* CONFIG_LTO */
-> +
-> +#include <asm-generic/rwonce.h>
-> +
-> +#endif	/* __ASM_RWONCE_H */
-> diff --git a/arch/arm64/kernel/vdso/Makefile b/arch/arm64/kernel/vdso/Makefile
-> index 45d5cfe46429..60df97f2e7de 100644
-> --- a/arch/arm64/kernel/vdso/Makefile
-> +++ b/arch/arm64/kernel/vdso/Makefile
-> @@ -28,7 +28,7 @@ ldflags-y := -shared -nostdlib -soname=linux-vdso.so.1 --hash-style=sysv	\
->  	     $(btildflags-y) -T
->  
->  ccflags-y := -fno-common -fno-builtin -fno-stack-protector -ffixed-x18
-> -ccflags-y += -DDISABLE_BRANCH_PROFILING
-> +ccflags-y += -DDISABLE_BRANCH_PROFILING -DBUILD_VDSO
->  
->  CFLAGS_REMOVE_vgettimeofday.o = $(CC_FLAGS_FTRACE) -Os $(CC_FLAGS_SCS) $(GCC_PLUGINS_CFLAGS)
->  KBUILD_CFLAGS			+= $(DISABLE_LTO)
-> diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
-> index d88148bef6b0..4fdf3754a058 100644
-> --- a/arch/arm64/kernel/vdso32/Makefile
-> +++ b/arch/arm64/kernel/vdso32/Makefile
-> @@ -43,7 +43,7 @@ cc32-as-instr = $(call try-run,\
->  # As a result we set our own flags here.
->  
->  # KBUILD_CPPFLAGS and NOSTDINC_FLAGS from top-level Makefile
-> -VDSO_CPPFLAGS := -D__KERNEL__ -nostdinc -isystem $(shell $(CC_COMPAT) -print-file-name=include)
-> +VDSO_CPPFLAGS := -DBUILD_VDSO -D__KERNEL__ -nostdinc -isystem $(shell $(CC_COMPAT) -print-file-name=include)
->  VDSO_CPPFLAGS += $(LINUXINCLUDE)
->  
->  # Common C and assembly flags
-> -- 
-> 2.27.0.383.g050319c2ae-goog
-
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
