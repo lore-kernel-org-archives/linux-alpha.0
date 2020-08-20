@@ -1,20 +1,20 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.7 23/24] alpha: fix annotation of io{read,write}{16,32}be()
-Date: Wed, 19 Aug 2020 20:01:54 -0400
-Message-ID: <20200820000155.215089-23-sashal@kernel.org>
-References: <20200820000155.215089-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 11/11] alpha: fix annotation of io{read,write}{16,32}be()
+Date: Wed, 19 Aug 2020 20:03:48 -0400
+Message-ID: <20200820000348.215911-11-sashal@kernel.org>
+References: <20200820000348.215911-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597881747;
-        bh=8wABEDlREpvzT6ukPbd1Mmmvfg+2A2EvnE7zEw6dBsw=;
+        s=default; t=1597881845;
+        bh=4hK1erPQRlP1+oL9gdRiB7F0rzjISyPy6USi40HgIjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0+UFVxWbCBFWikAStdtsevk/1CoNBgRZw1JHehXwIUtf2q7se+svywePqD+qRtR3D
-         s6j1xSTIjjPU70lImod7Bphbnp7O2wf7h+ooLSBWcKTQ51C4UwmFvAC5v9XC8jluRJ
-         K+yAr2IvE02AkReXWuheYBJxaBhXRmrlSaEyo0Hs=
-In-Reply-To: <20200820000155.215089-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+        b=worbw+W+Yq9COCnANiXAn/AO43Bt/qEtZNLuvaKQ3NQ6XyQmeSz3kTsOFn/2H4laS
+         JutPSGNHM5r+nIkIC2k4g+fQV5b5wAw4/UoqyC4TtTxc7tptQ5vbSV3N2Fo292xa2G
+         WVeue6Z622cTT3LXqMNKp8wIWU8cbxv2LqTU6HIE=
+In-Reply-To: <20200820000348.215911-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
@@ -51,10 +51,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-index e6225cf40de57..b09dd6bc98a12 100644
+index ff4049155c840..355aec0867f4d 100644
 --- a/arch/alpha/include/asm/io.h
 +++ b/arch/alpha/include/asm/io.h
-@@ -490,10 +490,10 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
+@@ -491,10 +491,10 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
  }
  #endif
  
