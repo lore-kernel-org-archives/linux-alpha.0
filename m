@@ -1,19 +1,19 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 21/22] alpha: fix annotation of io{read,write}{16,32}be()
-Date: Wed, 19 Aug 2020 20:02:28 -0400
-Message-ID: <20200820000229.215333-21-sashal@kernel.org>
-References: <20200820000229.215333-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.8 25/27] alpha: fix annotation of io{read,write}{16,32}be()
+Date: Wed, 19 Aug 2020 20:01:14 -0400
+Message-ID: <20200820000116.214821-25-sashal@kernel.org>
+References: <20200820000116.214821-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597881779;
-        bh=qfVjAFsYUJbEzJSUeRe9YMyUSPn194uANA9bKchzc2A=;
+        s=default; t=1597881711;
+        bh=9Qb0N9+6E/GV3ZEmAcr2/EdtRX3yuWtlrYKP2CZhivA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mu49c63dNVmszdY6APzuQm8R1MWS+pvRid0gwKnAoa/UND1bW1E4p0Rur9mTYECcz
-         KvS0ZyqFbQmTONUKkC3JpsFEttDlCETAt0lPq+MhcwuPkwv/AxA534uTfjKGiOxcDN
-         FEa++BZAEHNcQc60Csz28RvUXsabpZqDnoh9PWzk=
-In-Reply-To: <20200820000229.215333-1-sashal@kernel.org>
+        b=T6OG6KJQplNumwqoHnNboMT6An4Bwh/iB4lGpe5G68lg4ITTjresXMi12j+5+yhxc
+         Hi74GQa0Ee3aKuArT7NJuO7IR0e0hdj/dFCq27KjW4iI40zKK+zTsI3gE2hFYDtoWy
+         6ay6QyYbkvHMuamTceHHNXmdextPIGHSRYdeyDfw=
+In-Reply-To: <20200820000116.214821-1-sashal@kernel.org>
 Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -51,10 +51,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-index b771bf1b53523..103270d5a9fc6 100644
+index a4d0c19f1e796..640e1a2f57b42 100644
 --- a/arch/alpha/include/asm/io.h
 +++ b/arch/alpha/include/asm/io.h
-@@ -502,10 +502,10 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
+@@ -489,10 +489,10 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
  }
  #endif
  
