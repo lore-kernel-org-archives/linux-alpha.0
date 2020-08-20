@@ -1,20 +1,20 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 11/11] alpha: fix annotation of io{read,write}{16,32}be()
-Date: Wed, 19 Aug 2020 20:03:48 -0400
-Message-ID: <20200820000348.215911-11-sashal@kernel.org>
-References: <20200820000348.215911-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 10/10] alpha: fix annotation of io{read,write}{16,32}be()
+Date: Wed, 19 Aug 2020 20:04:06 -0400
+Message-ID: <20200820000406.216050-10-sashal@kernel.org>
+References: <20200820000406.216050-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597881845;
+        s=default; t=1597881861;
         bh=4hK1erPQRlP1+oL9gdRiB7F0rzjISyPy6USi40HgIjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=worbw+W+Yq9COCnANiXAn/AO43Bt/qEtZNLuvaKQ3NQ6XyQmeSz3kTsOFn/2H4laS
-         JutPSGNHM5r+nIkIC2k4g+fQV5b5wAw4/UoqyC4TtTxc7tptQ5vbSV3N2Fo292xa2G
-         WVeue6Z622cTT3LXqMNKp8wIWU8cbxv2LqTU6HIE=
-In-Reply-To: <20200820000348.215911-1-sashal@kernel.org>
-Sender: stable-owner@vger.kernel.org
+        b=MHl8AiitCyMT5o22zzMs6WH0nBbCEEVqgeTSJwXferqYd16qjN7sZ2CCDZHqaq1JK
+         hipKFNCohFVI8CU0rgbplR7z2tp5Z9anAdUnvzLzJzBvBIsj9by08nJ60bcKafqpkN
+         EMWtrZC5Bfu6OWO5Djrtg0hLBUCtPCwLoE9GLXL8=
+In-Reply-To: <20200820000406.216050-1-sashal@kernel.org>
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
