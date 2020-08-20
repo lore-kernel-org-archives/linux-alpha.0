@@ -1,35 +1,34 @@
 From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [RFT][PATCH 0/7] Avoid overflow at boundary_size
-Date: Thu, 20 Aug 2020 16:19:23 -0700
-Message-ID: <20200820231923.23678-1-nicoleotsuka@gmail.com>
-Return-path: <sparclinux-owner@vger.kernel.org>
+Subject: [RFT][PATCH 2/7] alpha: Avoid overflow at boundary_size
+Date: Thu, 20 Aug 2020 16:20:04 -0700
+Message-ID: <20200820232004.23761-1-nicoleotsuka@gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=1XFUxolbA7h1HeK5YbtlyNm7bbkj2GGYGOp3MuLqhZo=;
-        b=eqzf/OiAqYuMkve9o3Rg2GzzA/6jLGZPEtPfhYoyr9342xlMhSngQCcxYLIDthFc44
-         UUDoF359natqKdeAghtC2LYyTQPzIg2AfXD2MCDW8kgNUE8qyC5F3NyYAgket6AT8NZX
-         C6dnA0DKIhRg+87oFAnmsOztdZ0eB8yymCaVRso8HDay52lsZUudDdwbNgj0QOSKX0+6
-         N6FojIdcqDVo6XGYNKA7m5x7NbW41RWc8A1LXhyZZwLysgZr6fzzJY7dQpft6xUhMYb4
-         F09zIOTv8fdcyWJU2Ln6l6J7/iegUOLhTxJf/aBepWLxKWQXt8bgGDxJfH/ZvRt4O9HF
-         o+xA==
-Sender: sparclinux-owner@vger.kernel.org
+        bh=ZXOK8pT3fKKSH66fLd/ANhE16k3B7ecJU+M0aFuQDuk=;
+        b=qpsfXubPDJihER5wJZOPYs+cWT7z853AUN308jcd1qrMwVVN1ppn2JPnhxap5VBAwC
+         lO23Wq+2ue+gXY2jpb42ihcMtxSb79Z4g0/jPfAcW5+oIzBs4mkidh2bX1kLpvL9Tdw2
+         57ENo9u32rzCcyFF8Bz10C0Ke6Kw9PA7yrelf2wZHQxnELip7hm4lj/MCQbEXMSB9PAd
+         R4+WlqiKm2qcIUtYXKB/UCQZya0eFTj0sZZ/3tehPG5pxAO+2EANmXnfbN58TVYfn8dJ
+         fG3rGYZleODzDFe0O0ZtGqwtA4miP9PfpYSbbx6UNOCMnmy1YL0YkscGsEmVPD1XYR2Q
+         ImtA==
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, tony.luck@intel.com, fenghua.yu@intel.com, schnelle@linux.ibm.com, gerald.schaefer@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com, James.Bottomley@HansenPartnership.com, deller@gmx.de
-Cc: sfr@canb.auug.org.au, hch@lst.de, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, linux-parisc@vger.kernel.org
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Cc: hch@lst.de, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-We are expending the default DMA segmentation boundary to its
-possible maximum value (ULONG_MAX) to indicate that a device
-doesn't specify a boundary limit. So all dma_get_seg_boundary
-callers should take a precaution with the return values since
-it would easily get overflowed.
+The boundary_size might be as large as ULONG_MAX, which means
+that a device has no specific boundary limit. So "+ 1" would
+potentially overflow.
 
-I scanned the entire kernel tree for all the existing callers
-and found that most of callers may get overflowed in two ways:
-either "+ 1" or passing it to ALIGN() that does "+ mask".
+Also, by following other places in the kernel, boundary_size
+should align with the PAGE_SIZE before right shifting by the
+PAGE_SHIFT. However, passing it to ALIGN() would potentially
+overflow too.
 
 According to kernel defines:
     #define ALIGN_MASK(x, mask) (((x) + (mask)) & ~(mask))
@@ -43,35 +42,35 @@ We can simplify the logic here:
 = [b + (1 << s)] >> s
 = (b >> s) + 1
 
-So this series of patches fix the potential overflow with this
-overflow-free shortcut.
+So fixing a potential overflow with the safer shortcut.
 
-As I don't think that I have these platforms, marking RFT.
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+Cc: Christoph Hellwig <hch@lst.de>
+---
+ arch/alpha/kernel/pci_iommu.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-Thanks
-Nic
-
-Nicolin Chen (7):
-  powerpc/iommu: Avoid overflow at boundary_size
-  alpha: Avoid overflow at boundary_size
-  ia64/sba_iommu: Avoid overflow at boundary_size
-  s390/pci_dma: Avoid overflow at boundary_size
-  sparc: Avoid overflow at boundary_size
-  x86/amd_gart: Avoid overflow at boundary_size
-  parisc: Avoid overflow at boundary_size
-
- arch/alpha/kernel/pci_iommu.c    | 10 ++++------
- arch/ia64/hp/common/sba_iommu.c  |  4 ++--
- arch/powerpc/kernel/iommu.c      | 11 +++++------
- arch/s390/pci/pci_dma.c          |  4 ++--
- arch/sparc/kernel/iommu-common.c |  9 +++------
- arch/sparc/kernel/iommu.c        |  4 ++--
- arch/sparc/kernel/pci_sun4v.c    |  4 ++--
- arch/x86/kernel/amd_gart_64.c    |  4 ++--
- drivers/parisc/ccio-dma.c        |  4 ++--
- drivers/parisc/sba_iommu.c       |  4 ++--
- 10 files changed, 26 insertions(+), 32 deletions(-)
-
+diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+index 81037907268d..1ef2c647bd3e 100644
+--- a/arch/alpha/kernel/pci_iommu.c
++++ b/arch/alpha/kernel/pci_iommu.c
+@@ -141,12 +141,10 @@ iommu_arena_find_pages(struct device *dev, struct pci_iommu_arena *arena,
+ 	unsigned long boundary_size;
+ 
+ 	base = arena->dma_base >> PAGE_SHIFT;
+-	if (dev) {
+-		boundary_size = dma_get_seg_boundary(dev) + 1;
+-		boundary_size >>= PAGE_SHIFT;
+-	} else {
+-		boundary_size = 1UL << (32 - PAGE_SHIFT);
+-	}
++
++	boundary_size = dev ? dma_get_seg_boundary(dev) : U32_MAX;
++	/* Overflow-free shortcut for: ALIGN(b + 1, 1 << s) >> s */
++	boundary_size = (boundary_size >> PAGE_SHIFT) + 1;
+ 
+ 	/* Search forward for the first mask-aligned sequence of N free ptes */
+ 	ptes = arena->ptes;
 -- 
 2.17.1
 
