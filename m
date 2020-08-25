@@ -1,76 +1,104 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [RFT][PATCH 2/7] alpha: Avoid overflow at boundary_size
-Date: Thu, 20 Aug 2020 16:20:04 -0700
-Message-ID: <20200820232004.23761-1-nicoleotsuka@gmail.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=ZXOK8pT3fKKSH66fLd/ANhE16k3B7ecJU+M0aFuQDuk=;
-        b=qpsfXubPDJihER5wJZOPYs+cWT7z853AUN308jcd1qrMwVVN1ppn2JPnhxap5VBAwC
-         lO23Wq+2ue+gXY2jpb42ihcMtxSb79Z4g0/jPfAcW5+oIzBs4mkidh2bX1kLpvL9Tdw2
-         57ENo9u32rzCcyFF8Bz10C0Ke6Kw9PA7yrelf2wZHQxnELip7hm4lj/MCQbEXMSB9PAd
-         R4+WlqiKm2qcIUtYXKB/UCQZya0eFTj0sZZ/3tehPG5pxAO+2EANmXnfbN58TVYfn8dJ
-         fG3rGYZleODzDFe0O0ZtGqwtA4miP9PfpYSbbx6UNOCMnmy1YL0YkscGsEmVPD1XYR2Q
-         ImtA==
-Sender: linux-alpha-owner@vger.kernel.org
+From: Joe Perches <joe@perches.com>
+Subject: [PATCH 00/29] treewide: Convert comma separated statements
+Date: Mon, 24 Aug 2020 21:55:57 -0700
+Message-ID: <cover.1598331148.git.joe@perches.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-media-owner@vger.kernel.org>
+Sender: linux-media-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: hch@lst.de, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Jiri Kosina <trivial@kernel.org>, oprofile-list@lists.sf.net, linux-ide@vger.kernel.org, drbd-dev@lists.linbit.com, linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, intel-gfx@lists.freedesktop.org, linux-hwmon@vger.kernel.org, linux-input@vger.kernel.org, linux-bcache@vger.kernel.org, netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-fsdevel@vger.kernel.org, reiserfs-devel@vger.kernel.org, linux-nfs@vger.kernel.org
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, sparclinux@vger.kernel.org, linux-block@vger.kernel.org, linux-mtd@lists.infradead.org, linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, devel@driverdev.osuosl.org, linux-fbdev@vger.kernel.org, linux-pm@vger.kernel.org, linux-kselftest@vger.kernel.org
 
-The boundary_size might be as large as ULONG_MAX, which means
-that a device has no specific boundary limit. So "+ 1" would
-potentially overflow.
+There are many comma separated statements in the kernel.
+See:https://lore.kernel.org/lkml/alpine.DEB.2.22.394.2008201856110.2524@hadrien/
 
-Also, by following other places in the kernel, boundary_size
-should align with the PAGE_SIZE before right shifting by the
-PAGE_SHIFT. However, passing it to ALIGN() would potentially
-overflow too.
+Convert the comma separated statements that are in if/do/while blocks
+to use braces and semicolons.
 
-According to kernel defines:
-    #define ALIGN_MASK(x, mask) (((x) + (mask)) & ~(mask))
-    #define ALIGN(x, a)	ALIGN_MASK(x, (typeof(x))(a) - 1)
+Many comma separated statements still exist but those are changes for
+another day.
 
-We can simplify the logic here:
-  ALIGN(boundary + 1, 1 << shift) >> shift
-= ALIGN_MASK(b + 1, (1 << s) - 1) >> s
-= {[b + 1 + (1 << s) - 1] & ~[(1 << s) - 1]} >> s
-= [b + 1 + (1 << s) - 1] >> s
-= [b + (1 << s)] >> s
-= (b >> s) + 1
+Joe Perches (29):
+  coding-style.rst: Avoid comma statements
+  alpha: Avoid comma separated statements
+  ia64: Avoid comma separated statements
+  sparc: Avoid comma separated statements
+  ata: Avoid comma separated statements
+  drbd: Avoid comma separated statements
+  lp: Avoid comma separated statements
+  dma-buf: Avoid comma separated statements
+  drm/gma500: Avoid comma separated statements
+  drm/i915: Avoid comma separated statements
+  hwmon: (scmi-hwmon): Avoid comma separated statements
+  Input: MT - Avoid comma separated statements
+  bcache: Avoid comma separated statements
+  media: Avoid comma separated statements
+  mtd: Avoid comma separated statements
+  8390: Avoid comma separated statements
+  fs_enet: Avoid comma separated statements
+  wan: sbni: Avoid comma separated statements
+  s390/tty3270: Avoid comma separated statements
+  scai/arm: Avoid comma separated statements
+  media: atomisp: Avoid comma separated statements
+  video: fbdev: Avoid comma separated statements
+  fuse: Avoid comma separated statements
+  reiserfs: Avoid comma separated statements
+  lib/zlib: Avoid comma separated statements
+  lib: zstd: Avoid comma separated statements
+  ipv6: fib6: Avoid comma separated statements
+  sunrpc: Avoid comma separated statements
+  tools: Avoid comma separated statements
 
-So fixing a potential overflow with the safer shortcut.
+ Documentation/process/coding-style.rst        |  17 +
+ arch/alpha/kernel/pci_iommu.c                 |   8 +-
+ arch/alpha/oprofile/op_model_ev4.c            |  22 +-
+ arch/alpha/oprofile/op_model_ev5.c            |   8 +-
+ arch/ia64/kernel/smpboot.c                    |   7 +-
+ arch/sparc/kernel/smp_64.c                    |   7 +-
+ drivers/ata/pata_icside.c                     |  21 +-
+ drivers/block/drbd/drbd_receiver.c            |   6 +-
+ drivers/char/lp.c                             |   6 +-
+ drivers/dma-buf/st-dma-fence.c                |   7 +-
+ drivers/gpu/drm/gma500/mdfld_intel_display.c  |  44 ++-
+ drivers/gpu/drm/i915/gt/gen8_ppgtt.c          |   8 +-
+ drivers/gpu/drm/i915/gt/intel_gt_requests.c   |   6 +-
+ .../gpu/drm/i915/gt/selftest_workarounds.c    |   6 +-
+ drivers/gpu/drm/i915/intel_runtime_pm.c       |   6 +-
+ drivers/hwmon/scmi-hwmon.c                    |   6 +-
+ drivers/input/input-mt.c                      |  11 +-
+ drivers/md/bcache/bset.c                      |  12 +-
+ drivers/md/bcache/sysfs.c                     |   6 +-
+ drivers/media/i2c/msp3400-kthreads.c          |  12 +-
+ drivers/media/pci/bt8xx/bttv-cards.c          |   6 +-
+ drivers/media/pci/saa7134/saa7134-video.c     |   7 +-
+ drivers/mtd/devices/lart.c                    |  10 +-
+ drivers/net/ethernet/8390/axnet_cs.c          |  19 +-
+ drivers/net/ethernet/8390/lib8390.c           |  14 +-
+ drivers/net/ethernet/8390/pcnet_cs.c          |   6 +-
+ .../ethernet/freescale/fs_enet/fs_enet-main.c |  11 +-
+ drivers/net/wan/sbni.c                        | 101 +++---
+ drivers/s390/char/tty3270.c                   |   6 +-
+ drivers/scsi/arm/cumana_2.c                   |  19 +-
+ drivers/scsi/arm/eesox.c                      |   9 +-
+ drivers/scsi/arm/powertec.c                   |   9 +-
+ .../media/atomisp/pci/atomisp_subdev.c        |   6 +-
+ drivers/video/fbdev/tgafb.c                   |  12 +-
+ fs/fuse/dir.c                                 |  24 +-
+ fs/reiserfs/fix_node.c                        |  36 ++-
+ lib/zlib_deflate/deftree.c                    |  49 ++-
+ lib/zstd/compress.c                           | 120 ++++---
+ lib/zstd/fse_compress.c                       |  24 +-
+ lib/zstd/huf_compress.c                       |   6 +-
+ net/ipv6/ip6_fib.c                            |  12 +-
+ net/sunrpc/sysctl.c                           |   6 +-
+ tools/lib/subcmd/help.c                       |  10 +-
+ tools/power/cpupower/utils/cpufreq-set.c      |  14 +-
+ tools/testing/selftests/vm/gup_benchmark.c    |  18 +-
+ tools/testing/selftests/vm/userfaultfd.c      | 296 +++++++++++-------
+ 46 files changed, 694 insertions(+), 382 deletions(-)
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>
----
- arch/alpha/kernel/pci_iommu.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index 81037907268d..1ef2c647bd3e 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -141,12 +141,10 @@ iommu_arena_find_pages(struct device *dev, struct pci_iommu_arena *arena,
- 	unsigned long boundary_size;
- 
- 	base = arena->dma_base >> PAGE_SHIFT;
--	if (dev) {
--		boundary_size = dma_get_seg_boundary(dev) + 1;
--		boundary_size >>= PAGE_SHIFT;
--	} else {
--		boundary_size = 1UL << (32 - PAGE_SHIFT);
--	}
-+
-+	boundary_size = dev ? dma_get_seg_boundary(dev) : U32_MAX;
-+	/* Overflow-free shortcut for: ALIGN(b + 1, 1 << s) >> s */
-+	boundary_size = (boundary_size >> PAGE_SHIFT) + 1;
- 
- 	/* Search forward for the first mask-aligned sequence of N free ptes */
- 	ptes = arena->ptes;
 -- 
-2.17.1
+2.26.0
 
