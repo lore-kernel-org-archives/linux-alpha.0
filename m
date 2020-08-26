@@ -1,84 +1,82 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [RFT][PATCH 0/7] Avoid overflow at boundary_size
-Date: Tue, 25 Aug 2020 16:19:00 -0700
-Message-ID: <20200825231900.GA4726@Asurada-Nvidia>
-References: <20200820231923.23678-1-nicoleotsuka@gmail.com>
- <4321af30-9554-6897-5281-05afd88f2631@linux.ibm.com>
+From: Nicholas Piggin <npiggin@gmail.com>
+Subject: [PATCH v2 02/23] alpha: use asm-generic/mmu_context.h for no-op implementations
+Date: Thu, 27 Aug 2020 00:52:28 +1000
+Message-ID: <20200826145249.745432-3-npiggin@gmail.com>
+References: <20200826145249.745432-1-npiggin@gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nzT4cIv5aZloZUa85ooGLcuJKku+lTzXEIFwdhhhrM4=;
-        b=g17iV+Lc6aSBOLe+PXWahWJW6Y2WovRbdTAFwXkgWGEBHeis8BwaGJ1/CrBTJ6wOxj
-         UKRTRHo+JKIkjHdtn9pMcUYhCibnMervY6vIJWwS4RQlE3LSjVqmLUTaL39UbAGj4g6L
-         0j0826j4CHEZnT2exq6W7xhcrJUuL+xeGwEr2VpfFjtGbo9lANRsknS4EVWyKfxKl7Il
-         /yIG9aDg8s8XYB33HFnAKY/2MhxQ2vY2S/m+geHEPThOE90LQ6W/H7XBdg78bySpsa/G
-         t/9acHQaOTqhr0MpHdKlJO7fxd8cXHOELXVJXXUfDBije2GdrgU/aZZQogR8XNVpmWFo
-         c4uQ==
-Content-Disposition: inline
-In-Reply-To: <4321af30-9554-6897-5281-05afd88f2631@linux.ibm.com>
-Sender: linux-parisc-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=i6IDKVv/shVEq6irgZZFcLvF1FRkf6GgTDbDcMbNEAs=;
+        b=Fn3sDeuriJkzPq8xhjmF8hfliMyPLrzu+HeDi8nNSywnpEb6tEK82GyFjtvfg7Jn2G
+         K3C+AVMEI43lXyXUzi5+1h/MnpOEAu5PD9nGyD55rToVneTmm9nWQwqYEVrpcDp6Cx4o
+         I3M9bZbNehxI42EaM06LKpI4gdGG8tH3GyY/WJx32aiPMX3NuKpH8voX25DtXVmK/ZO3
+         ULmKzAk4sf8kpnuZp+GFAkwbHP4xNDKUFp5kAFZZqBWzHrox1+JB24MC0T0hx61dxF1p
+         /0dD8SEFkVJZMWFtACiTaclunC1o1Uv1uubiqa/fu1a5S2C2QV7Prjdr03x512uSNhqi
+         Jf4A==
+In-Reply-To: <20200826145249.745432-1-npiggin@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, tony.luck@intel.com, fenghua.yu@intel.com, gerald.schaefer@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com, James.Bottomley@HansenPartnership.com, deller@gmx.de, sfr@canb.auug.org.au, hch@lst.de, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, linux-parisc@vger.kernel.org
+To: linux-arch@vger.kernel.org
+Cc: Nicholas Piggin <npiggin@gmail.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Hi Niklas,
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+---
+ arch/alpha/include/asm/mmu_context.h | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-On Tue, Aug 25, 2020 at 12:16:27PM +0200, Niklas Schnelle wrote:
-> On 8/21/20 1:19 AM, Nicolin Chen wrote:
-> > We are expending the default DMA segmentation boundary to its
-> > possible maximum value (ULONG_MAX) to indicate that a device
-> > doesn't specify a boundary limit. So all dma_get_seg_boundary
-> > callers should take a precaution with the return values since
-> > it would easily get overflowed.
-> > 
-> > I scanned the entire kernel tree for all the existing callers
-> > and found that most of callers may get overflowed in two ways:
-> > either "+ 1" or passing it to ALIGN() that does "+ mask".
-> > 
-> > According to kernel defines:
-> >     #define ALIGN_MASK(x, mask) (((x) + (mask)) & ~(mask))
-> >     #define ALIGN(x, a)	ALIGN_MASK(x, (typeof(x))(a) - 1)
-> > 
-> > We can simplify the logic here:
-> >   ALIGN(boundary + 1, 1 << shift) >> shift
-> > = ALIGN_MASK(b + 1, (1 << s) - 1) >> s
-> > = {[b + 1 + (1 << s) - 1] & ~[(1 << s) - 1]} >> s
-> > = [b + 1 + (1 << s) - 1] >> s
-> > = [b + (1 << s)] >> s
-> > = (b >> s) + 1
-> > 
-> > So this series of patches fix the potential overflow with this
-> > overflow-free shortcut.
+diff --git a/arch/alpha/include/asm/mmu_context.h b/arch/alpha/include/asm/mmu_context.h
+index 6d7d9bc1b4b8..4eea7c616992 100644
+--- a/arch/alpha/include/asm/mmu_context.h
++++ b/arch/alpha/include/asm/mmu_context.h
+@@ -214,8 +214,6 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
+ 	tbiap();
+ }
  
-> haven't seen any other feedback from other maintainers,
+-#define deactivate_mm(tsk,mm)	do { } while (0)
+-
+ #ifdef CONFIG_ALPHA_GENERIC
+ # define switch_mm(a,b,c)	alpha_mv.mv_switch_mm((a),(b),(c))
+ # define activate_mm(x,y)	alpha_mv.mv_activate_mm((x),(y))
+@@ -229,6 +227,7 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
+ # endif
+ #endif
+ 
++#define init_new_context init_new_context
+ static inline int
+ init_new_context(struct task_struct *tsk, struct mm_struct *mm)
+ {
+@@ -242,12 +241,7 @@ init_new_context(struct task_struct *tsk, struct mm_struct *mm)
+ 	return 0;
+ }
+ 
+-extern inline void
+-destroy_context(struct mm_struct *mm)
+-{
+-	/* Nothing to do.  */
+-}
+-
++#define enter_lazy_tlb enter_lazy_tlb
+ static inline void
+ enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
+ {
+@@ -255,6 +249,8 @@ enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
+ 	  = ((unsigned long)mm->pgd - IDENT_ADDR) >> PAGE_SHIFT;
+ }
+ 
++#include <asm-generic/mmu_context.h>
++
+ #ifdef __MMU_EXTERN_INLINE
+ #undef __EXTERN_INLINE
+ #undef __MMU_EXTERN_INLINE
+-- 
+2.23.0
 
-I am wondering this too...whether I sent correctly or not.
-
-> so I guess you will resend this?
-
-Do I need to? Though I won't mind doing so if it's necessary..
-
-> On first glance it seems to make sense.
-> I'm a little confused why it is only a "potential overflow"
-> while this part
-> 
-> "We are expending the default DMA segmentation boundary to its
->  possible maximum value (ULONG_MAX) to indicate that a device
->  doesn't specify a boundary limit"
-> 
-> sounds to me like ULONG_MAX is actually used, does that
-> mean there are currently no devices which do not specify a
-> boundary limit?
-
-Sorry for the confusion. We actually applied ULONG_MAX change
-last week but reverted it right after, due to a bug report at
-one of these "potential" overflows. So at this moment the top
-of the tree doesn't set default boundary to ULONG_MAX yet.
-
-Thanks
-Nic
