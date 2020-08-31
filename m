@@ -1,21 +1,21 @@
 From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [RESEND][PATCH 4/7] s390/pci_dma: Avoid overflow at boundary_size
-Date: Mon, 31 Aug 2020 13:38:08 -0700
-Message-ID: <20200831203811.8494-5-nicoleotsuka@gmail.com>
+Subject: [RESEND][PATCH 6/7] x86/amd_gart: Avoid overflow at boundary_size
+Date: Mon, 31 Aug 2020 13:38:10 -0700
+Message-ID: <20200831203811.8494-7-nicoleotsuka@gmail.com>
 References: <20200831203811.8494-1-nicoleotsuka@gmail.com>
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=UkH8Mq/WpiesfkXrapLTRLCROpdsRyoJty+98OOSpss=;
-        b=QBwNrPdfcSAA97dtBnIWUfFN68G3dlx1D0NnviFoEsXwwJ685l3hFpoUYeYtJQzsk/
-         fa7q/UtZxp6YwHBe+lUXHOQ1+GfSZzVh/DlB4nJjGv8Y+GG4bROeovNbk90Dcxd5OiaP
-         gYkpuhwWCgw69+Fd2vWpUnQw4H4CpId8WgPawlAj3OSXL312ysfq8SYTiTBN4xm5ThPO
-         F5+hNzC4yo3iGIb2RECwzNn7zXfvrk0NhPLH5HEpZ91StyGiVU6TKHdKBob3F9RMPnA2
-         XmuYHqTMy4gsXlEfIEJipnHZkQI0n3KRv58zBJxo9DDi8lOQS6j3A/NxhJQ1wSezy3yl
-         U1oQ==
+        bh=9lkO17MTf1PvM2bYbtDswYPNjHPfse5Uqsd7G1Ozxzk=;
+        b=C7f9KtGN6f9jn52H6vQ9qIM5jGWuoLJsZ/RKNr/lbkpPxTWSk5dxFfynXA0FMAYioq
+         OxyAGzkgkPNh5e9cbfdo3dNv5UU8aAZV6AP6s2gvl5+DT9DVURrgFlAen5QW57oDKcmS
+         OeBDz3aRzBm+A0c4rJ2IeiRUaHerUUToq2LfGlKk09Crc5w+8/6iqhYQwmdpaRYBJw/W
+         qCzkNkO9kbzK7YJL/M2gaGN7xY2ZgCRmcAEs0pmIegG3sgCM7y3BK7uAEioOaUDCWQX7
+         o2McdgM03YS24UfiiKYj67GqZYb3vI0E35EC+O14k3kW4wCeVY/ckjYJN1iq9G/PFpfE
+         xlUQ==
 In-Reply-To: <20200831203811.8494-1-nicoleotsuka@gmail.com>
-Sender: linux-parisc-owner@vger.kernel.org
+Sender: linux-ia64-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -44,24 +44,24 @@ So fixing a potential overflow with the safer shortcut.
 Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
 Cc: Christoph Hellwig <hch@lst.de>
 ---
- arch/s390/pci/pci_dma.c | 4 ++--
+ arch/x86/kernel/amd_gart_64.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
-index 64b1399a73f0..ecb067acc6d5 100644
---- a/arch/s390/pci/pci_dma.c
-+++ b/arch/s390/pci/pci_dma.c
-@@ -263,8 +263,8 @@ static unsigned long __dma_alloc_iommu(struct device *dev,
- 	struct zpci_dev *zdev = to_zpci(to_pci_dev(dev));
- 	unsigned long boundary_size;
+diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
+index e89031e9c847..7fa0bb490065 100644
+--- a/arch/x86/kernel/amd_gart_64.c
++++ b/arch/x86/kernel/amd_gart_64.c
+@@ -96,8 +96,8 @@ static unsigned long alloc_iommu(struct device *dev, int size,
  
--	boundary_size = ALIGN(dma_get_seg_boundary(dev) + 1,
+ 	base_index = ALIGN(iommu_bus_base & dma_get_seg_boundary(dev),
+ 			   PAGE_SIZE) >> PAGE_SHIFT;
+-	boundary_size = ALIGN((u64)dma_get_seg_boundary(dev) + 1,
 -			      PAGE_SIZE) >> PAGE_SHIFT;
 +	/* Overflow-free shortcut for: ALIGN(b + 1, 1 << s) >> s */
 +	boundary_size = (dma_get_seg_boundary(dev) >> PAGE_SHIFT) + 1;
- 	return iommu_area_alloc(zdev->iommu_bitmap, zdev->iommu_pages,
- 				start, size, zdev->start_dma >> PAGE_SHIFT,
- 				boundary_size, 0);
+ 
+ 	spin_lock_irqsave(&iommu_bitmap_lock, flags);
+ 	offset = iommu_area_alloc(iommu_gart_bitmap, iommu_pages, next_bit,
 -- 
 2.17.1
 
