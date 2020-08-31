@@ -1,82 +1,82 @@
-From: Nicholas Piggin <npiggin@gmail.com>
-Subject: [PATCH v2 02/23] alpha: use asm-generic/mmu_context.h for no-op implementations
-Date: Thu, 27 Aug 2020 00:52:28 +1000
-Message-ID: <20200826145249.745432-3-npiggin@gmail.com>
-References: <20200826145249.745432-1-npiggin@gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+Subject: [RESEND][PATCH 0/7] Avoid overflow at boundary_size
+Date: Mon, 31 Aug 2020 13:38:04 -0700
+Message-ID: <20200831203811.8494-1-nicoleotsuka@gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=i6IDKVv/shVEq6irgZZFcLvF1FRkf6GgTDbDcMbNEAs=;
-        b=Fn3sDeuriJkzPq8xhjmF8hfliMyPLrzu+HeDi8nNSywnpEb6tEK82GyFjtvfg7Jn2G
-         K3C+AVMEI43lXyXUzi5+1h/MnpOEAu5PD9nGyD55rToVneTmm9nWQwqYEVrpcDp6Cx4o
-         I3M9bZbNehxI42EaM06LKpI4gdGG8tH3GyY/WJx32aiPMX3NuKpH8voX25DtXVmK/ZO3
-         ULmKzAk4sf8kpnuZp+GFAkwbHP4xNDKUFp5kAFZZqBWzHrox1+JB24MC0T0hx61dxF1p
-         /0dD8SEFkVJZMWFtACiTaclunC1o1Uv1uubiqa/fu1a5S2C2QV7Prjdr03x512uSNhqi
-         Jf4A==
-In-Reply-To: <20200826145249.745432-1-npiggin@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id;
+        bh=IwVRkCMCyZnv4TAjRBRmsSZkvVEHDfWBL3BIyYi4zQo=;
+        b=ZkZqEI05NuuUmHp4uq5a9dsrbwy6wdRKCA6iPyNirvHNYsQVEQqt6/lvse4QXcTqv2
+         3mJ1pK85ab2S9FLesU7vnJPgRPLpltd14LU7nZlzQx3sQAZgkcVa+sBCkKawqacB1437
+         b+9+HKTj8Bhj2BcACUf2G8k8rjyMCHPBsFUayVjGCPKiSuU3VdSX/AK3nzAUmLgYekB+
+         0n7keCtBO+JccJGJanwqSwRo70x6sH2B+iEoaUSPCdeeSiSwkKtkyAex8kV0D0W0hY0s
+         LZUJCW89ct/rL13iuPmo0Qg+ugXIe6iwZCeXUVA5RHMFZrGt2KQUK7HO1RotW/sE7agp
+         6EFA==
+Sender: linux-alpha-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: linux-arch@vger.kernel.org
-Cc: Nicholas Piggin <npiggin@gmail.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, tony.luck@intel.com, fenghua.yu@intel.com, schnelle@linux.ibm.com, gerald.schaefer@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com, James.Bottomley@HansenPartnership.com, deller@gmx.de
+Cc: sfr@canb.auug.org.au, hch@lst.de, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, linux-parisc@vger.kernel.org
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
----
- arch/alpha/include/asm/mmu_context.h | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+==== For this resend ====
+The original series have not been acked at any patch. So I am
+resending them, being suggested by Niklas.
 
-diff --git a/arch/alpha/include/asm/mmu_context.h b/arch/alpha/include/asm/mmu_context.h
-index 6d7d9bc1b4b8..4eea7c616992 100644
---- a/arch/alpha/include/asm/mmu_context.h
-+++ b/arch/alpha/include/asm/mmu_context.h
-@@ -214,8 +214,6 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
- 	tbiap();
- }
- 
--#define deactivate_mm(tsk,mm)	do { } while (0)
--
- #ifdef CONFIG_ALPHA_GENERIC
- # define switch_mm(a,b,c)	alpha_mv.mv_switch_mm((a),(b),(c))
- # define activate_mm(x,y)	alpha_mv.mv_activate_mm((x),(y))
-@@ -229,6 +227,7 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
- # endif
- #endif
- 
-+#define init_new_context init_new_context
- static inline int
- init_new_context(struct task_struct *tsk, struct mm_struct *mm)
- {
-@@ -242,12 +241,7 @@ init_new_context(struct task_struct *tsk, struct mm_struct *mm)
- 	return 0;
- }
- 
--extern inline void
--destroy_context(struct mm_struct *mm)
--{
--	/* Nothing to do.  */
--}
--
-+#define enter_lazy_tlb enter_lazy_tlb
- static inline void
- enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
- {
-@@ -255,6 +249,8 @@ enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
- 	  = ((unsigned long)mm->pgd - IDENT_ADDR) >> PAGE_SHIFT;
- }
- 
-+#include <asm-generic/mmu_context.h>
-+
- #ifdef __MMU_EXTERN_INLINE
- #undef __EXTERN_INLINE
- #undef __MMU_EXTERN_INLINE
+==== Coverletter ====
+We are expending the default DMA segmentation boundary to its
+possible maximum value (ULONG_MAX) to indicate that a device
+doesn't specify a boundary limit. So all dma_get_seg_boundary
+callers should take a precaution with the return values since
+it would easily get overflowed.
+
+I scanned the entire kernel tree for all the existing callers
+and found that most of callers may get overflowed in two ways:
+either "+ 1" or passing it to ALIGN() that does "+ mask".
+
+According to kernel defines:
+    #define ALIGN_MASK(x, mask) (((x) + (mask)) & ~(mask))
+    #define ALIGN(x, a)	ALIGN_MASK(x, (typeof(x))(a) - 1)
+
+We can simplify the logic here:
+  ALIGN(boundary + 1, 1 << shift) >> shift
+= ALIGN_MASK(b + 1, (1 << s) - 1) >> s
+= {[b + 1 + (1 << s) - 1] & ~[(1 << s) - 1]} >> s
+= [b + 1 + (1 << s) - 1] >> s
+= [b + (1 << s)] >> s
+= (b >> s) + 1
+
+So this series of patches fix the potential overflow with this
+overflow-free shortcut.
+
+As I don't have these platforms, testings/comments are welcome.
+
+Thanks
+Nic
+
+Nicolin Chen (7):
+  powerpc/iommu: Avoid overflow at boundary_size
+  alpha: Avoid overflow at boundary_size
+  ia64/sba_iommu: Avoid overflow at boundary_size
+  s390/pci_dma: Avoid overflow at boundary_size
+  sparc: Avoid overflow at boundary_size
+  x86/amd_gart: Avoid overflow at boundary_size
+  parisc: Avoid overflow at boundary_size
+
+ arch/alpha/kernel/pci_iommu.c    | 10 ++++------
+ arch/ia64/hp/common/sba_iommu.c  |  4 ++--
+ arch/powerpc/kernel/iommu.c      | 11 +++++------
+ arch/s390/pci/pci_dma.c          |  4 ++--
+ arch/sparc/kernel/iommu-common.c |  9 +++------
+ arch/sparc/kernel/iommu.c        |  4 ++--
+ arch/sparc/kernel/pci_sun4v.c    |  4 ++--
+ arch/x86/kernel/amd_gart_64.c    |  4 ++--
+ drivers/parisc/ccio-dma.c        |  4 ++--
+ drivers/parisc/sba_iommu.c       |  4 ++--
+ 10 files changed, 26 insertions(+), 32 deletions(-)
+
 -- 
-2.23.0
+2.17.1
 
