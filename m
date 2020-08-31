@@ -1,21 +1,21 @@
 From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [RESEND][PATCH 7/7] parisc: Avoid overflow at boundary_size
-Date: Mon, 31 Aug 2020 13:38:11 -0700
-Message-ID: <20200831203811.8494-8-nicoleotsuka@gmail.com>
+Subject: [RESEND][PATCH 5/7] sparc: Avoid overflow at boundary_size
+Date: Mon, 31 Aug 2020 13:38:09 -0700
+Message-ID: <20200831203811.8494-6-nicoleotsuka@gmail.com>
 References: <20200831203811.8494-1-nicoleotsuka@gmail.com>
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/pybmE7a8FIpjQvJ6DGP3d+JulP7r92A2J59iMGiCLM=;
-        b=oHRLDva7bE8NCj84o3Pw6XZLnP1yvvF0hDph2uVI7flXevbbdOYILUTOYyZCQ8otre
-         cCxr652BWFhSBLsdzy27Cb7Mddqacgb0iPwA8elKbwwEAVUBN15xECe0ThRuaHCOMdkR
-         dc3HEMkslEYv9RGiOcoN0hJsz9vazpaaDe3s/dlsGh7DjUCEhA4GdnYvIBBSn8VtTHcx
-         lvbLByvCgW0dL5AoLO91GPQcrbxAg2llOaYkOG9iH1BZqv6X0lnc9Cwlvy6dFLfDqm2M
-         w4tgaSsKeklGE8LZkIFRnECIGasMSWsPpNmoSLShXelmGeMJiFCs2p43c9vhVvKrOpPS
-         4Bvw==
+        bh=BI+WbPuZGThU4BWLVNvoFFhzj5+C2fzEktzsEUkpSP0=;
+        b=gR5PpDjGTc4mcdgzORFbKP4d1AiAwkVi/JzR7l/ib+cyHmQPGLbKfpUrikJPQaUIMo
+         LpTR0X8Jg9eVhAatfNdZaFdJ0zFkFEJUG+8v5BMLR6kkb9oHqRfftQgWkgA6qxf9quse
+         lROpA3J8t9mSvpbsMV9tU4LX7vcAEpkDa4s9wwoD4Qu++Vr5O5gPKrBlWuC/Ay0MdtgT
+         qKg5RmGywHyRO8j6OpZlVQR61HYu15Th9bxrkdryA6DNBYCTDlAWdwWcJsgnwk8T67AL
+         A7lXxZKuWxzGNAIA9+LsqrYFw9a8SZXlFzp3BzKuJNmh7Pec87dsL4CHM+5FO+8XcyTm
+         E31Q==
 In-Reply-To: <20200831203811.8494-1-nicoleotsuka@gmail.com>
-Sender: linux-ia64-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -44,40 +44,62 @@ So fixing a potential overflow with the safer shortcut.
 Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
 Cc: Christoph Hellwig <hch@lst.de>
 ---
- drivers/parisc/ccio-dma.c  | 4 ++--
- drivers/parisc/sba_iommu.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ arch/sparc/kernel/iommu-common.c | 9 +++------
+ arch/sparc/kernel/iommu.c        | 4 ++--
+ arch/sparc/kernel/pci_sun4v.c    | 4 ++--
+ 3 files changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/parisc/ccio-dma.c b/drivers/parisc/ccio-dma.c
-index a5507f75b524..c667d6aba764 100644
---- a/drivers/parisc/ccio-dma.c
-+++ b/drivers/parisc/ccio-dma.c
-@@ -356,8 +356,8 @@ ccio_alloc_range(struct ioc *ioc, struct device *dev, size_t size)
- 	** ggg sacrifices another 710 to the computer gods.
- 	*/
+diff --git a/arch/sparc/kernel/iommu-common.c b/arch/sparc/kernel/iommu-common.c
+index 59cb16691322..843e71894d04 100644
+--- a/arch/sparc/kernel/iommu-common.c
++++ b/arch/sparc/kernel/iommu-common.c
+@@ -166,13 +166,10 @@ unsigned long iommu_tbl_range_alloc(struct device *dev,
+ 		}
+ 	}
  
--	boundary_size = ALIGN((unsigned long long)dma_get_seg_boundary(dev) + 1,
--			      1ULL << IOVP_SHIFT) >> IOVP_SHIFT;
+-	if (dev)
+-		boundary_size = ALIGN(dma_get_seg_boundary(dev) + 1,
+-				      1 << iommu->table_shift);
+-	else
+-		boundary_size = ALIGN(1ULL << 32, 1 << iommu->table_shift);
++	boundary_size = dev ? dma_get_seg_boundary(dev) : U32_MAX;
+ 
+-	boundary_size = boundary_size >> iommu->table_shift;
 +	/* Overflow-free shortcut for: ALIGN(b + 1, 1 << s) >> s */
-+	boundary_size = (dma_get_seg_boundary(dev) >> IOVP_SHIFT) + 1;
++	boundary_size = (boundary_size >> iommu->table_shift) + 1;
+ 	/*
+ 	 * if the skip_span_boundary_check had been set during init, we set
+ 	 * things up so that iommu_is_span_boundary() merely checks if the
+diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
+index 4ae7388b1bff..d981c37305ae 100644
+--- a/arch/sparc/kernel/iommu.c
++++ b/arch/sparc/kernel/iommu.c
+@@ -472,8 +472,8 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
+ 	outs->dma_length = 0;
  
- 	if (pages_needed <= 8) {
- 		/*
-diff --git a/drivers/parisc/sba_iommu.c b/drivers/parisc/sba_iommu.c
-index d4314fba0269..96bc2c617cbd 100644
---- a/drivers/parisc/sba_iommu.c
-+++ b/drivers/parisc/sba_iommu.c
-@@ -342,8 +342,8 @@ sba_search_bitmap(struct ioc *ioc, struct device *dev,
- 	unsigned long shift;
- 	int ret;
- 
--	boundary_size = ALIGN((unsigned long long)dma_get_seg_boundary(dev) + 1,
--			      1ULL << IOVP_SHIFT) >> IOVP_SHIFT;
+ 	max_seg_size = dma_get_max_seg_size(dev);
+-	seg_boundary_size = ALIGN(dma_get_seg_boundary(dev) + 1,
+-				  IO_PAGE_SIZE) >> IO_PAGE_SHIFT;
 +	/* Overflow-free shortcut for: ALIGN(b + 1, 1 << s) >> s */
-+	boundary_size = (dma_get_seg_boundary(dev) >> IOVP_SHIFT) + 1;
++	seg_boundary_size = (dma_get_seg_boundary(dev) >> IO_PAGE_SHIFT) + 1;
+ 	base_shift = iommu->tbl.table_map_base >> IO_PAGE_SHIFT;
+ 	for_each_sg(sglist, s, nelems, i) {
+ 		unsigned long paddr, npages, entry, out_entry = 0, slen;
+diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
+index 14b93c5564e3..233fe8a20cec 100644
+--- a/arch/sparc/kernel/pci_sun4v.c
++++ b/arch/sparc/kernel/pci_sun4v.c
+@@ -508,8 +508,8 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
+ 	iommu_batch_start(dev, prot, ~0UL);
  
- #if defined(ZX1_SUPPORT)
- 	BUG_ON(ioc->ibase & ~IOVP_MASK);
+ 	max_seg_size = dma_get_max_seg_size(dev);
+-	seg_boundary_size = ALIGN(dma_get_seg_boundary(dev) + 1,
+-				  IO_PAGE_SIZE) >> IO_PAGE_SHIFT;
++	/* Overflow-free shortcut for: ALIGN(b + 1, 1 << s) >> s */
++	seg_boundary_size = (dma_get_seg_boundary(dev) >> IO_PAGE_SHIFT) + 1;
+ 
+ 	mask = *dev->dma_mask;
+ 	if (!iommu_use_atu(iommu, mask))
 -- 
 2.17.1
 
