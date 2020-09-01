@@ -1,19 +1,21 @@
 From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [PATCH 0/2] dma-mapping: update default segment_boundary_mask
-Date: Tue,  1 Sep 2020 15:16:44 -0700
-Message-ID: <20200901221646.26491-1-nicoleotsuka@gmail.com>
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Subject: [PATCH 2/2] dma-mapping: set default segment_boundary_mask to ULONG_MAX
+Date: Tue,  1 Sep 2020 15:16:46 -0700
+Message-ID: <20200901221646.26491-3-nicoleotsuka@gmail.com>
+References: <20200901221646.26491-1-nicoleotsuka@gmail.com>
+Return-path: <sparclinux-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=M8j6Ldkq7Y6L6HNtPJpdtArkg82hNoz7EQt2ZZQpQiE=;
-        b=p925V7snElOQZXlWMLip8xP1dwydX4MO40+mVFj0KyAvGYuTSaLzAdLMfBDDV081Yc
-         fEnLq463d09UGAfhsrrBF62cGT/GqQtYjv0nq5ng6OZ5m4jKNTDM86uafLdc6j721eOg
-         6f1p/HTw+taNTu4O7whEf+6bZmHYqxDOIiy5obUbw/5UsCVHJ9vf6MEnKgvy+pQvF+5J
-         IeXr6w2XCQR8Hs6QTtvSXHW9D7hGl2Fnpi3RZZppFwo5+UafHLipz4crtYIUn/PHLBWc
-         C/yluXJaWRsBj31/j7ffRgYozI9+twYp8EsiVCVuCJtaxWo11IwJJw/rhIA2CmV/TP98
-         71mw==
-Sender: linux-ia64-owner@vger.kernel.org
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=8oVSt+XXgts9V9hBX8ORH+AS6m2J43vGA4wo7bjMGSw=;
+        b=qlO5fZKXWIaweztfSZt5lscCfMeb95G8MhWsQ/lSaJ+FDb1SNokcNpp+7z3DLE4rF3
+         2dysm9rS4OSd3k64RrCb2iDLfTihhQIBsWHIM4pO3zun/ZZiHw5M0ZYz7xotRRp0Vl6H
+         gVuKb6zzb+/D4Aziqs+kgokfp0Tdgx+wAi7EGpiAZ/wFNGynAtvTJuP+UbdooYJgbhjP
+         o7AepCWbCypJyziUVIcTQr08TEiIxGgWthqCZQfDFV+gKNvojJajEcK9KwneuTuD6th6
+         msoaUb3F3Quj/oIp2iNYcujpjaBrVxAyuvNikmWWuoEg7qjTdOjx5lIdZ2jVaiaUQPfR
+         XRDQ==
+In-Reply-To: <20200901221646.26491-1-nicoleotsuka@gmail.com>
+Sender: sparclinux-owner@vger.kernel.org
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,30 +23,40 @@ Content-Transfer-Encoding: 7bit
 To: hch@lst.de
 Cc: sfr@canb.auug.org.au, mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, tony.luck@intel.com, fenghua.yu@intel.com, linux-ia64@vger.kernel.org, schnelle@linux.ibm.com, gerald.schaefer@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, linux-s390@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com, James.Bottomley@HansenPartnership.com, deller@gmx.de, linux-parisc@vger.kernel.org
 
-These two patches are to update default segment_boundary_mask.
+The default segment_boundary_mask was set to DMA_BIT_MAKS(32)
+a decade ago by referencing SCSI/block subsystem, as a 32-bit
+mask was good enough for most of the devices.
 
-PATCH-1 fixes overflow issues in callers of dma_get_seg_boundary.
-Previous version was a series: https://lkml.org/lkml/2020/8/31/1026
+Now more and more drivers set dma_masks above DMA_BIT_MAKS(32)
+while only a handful of them call dma_set_seg_boundary(). This
+means that most drivers have a 4GB segmention boundary because
+DMA API returns a 32-bit default value, though they might not
+really have such a limit.
 
-Then PATCH-2 sets default segment_boundary_mask to ULONG_MAX.
+The default segment_boundary_mask should mean "no limit" since
+the device doesn't explicitly set the mask. But a 32-bit mask
+certainly limits those devices capable of 32+ bits addressing.
 
-Nicolin Chen (2):
-  dma-mapping: introduce dma_get_seg_boundary_nr_pages()
-  dma-mapping: set default segment_boundary_mask to ULONG_MAX
+So this patch sets default segment_boundary_mask to ULONG_MAX.
 
- arch/alpha/kernel/pci_iommu.c    |  7 +------
- arch/ia64/hp/common/sba_iommu.c  |  3 +--
- arch/powerpc/kernel/iommu.c      |  9 ++-------
- arch/s390/pci/pci_dma.c          |  6 ++----
- arch/sparc/kernel/iommu-common.c | 10 +++-------
- arch/sparc/kernel/iommu.c        |  3 +--
- arch/sparc/kernel/pci_sun4v.c    |  3 +--
- arch/x86/kernel/amd_gart_64.c    |  3 +--
- drivers/parisc/ccio-dma.c        |  3 +--
- drivers/parisc/sba_iommu.c       |  3 +--
- include/linux/dma-mapping.h      | 21 ++++++++++++++++++++-
- 11 files changed, 34 insertions(+), 37 deletions(-)
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
+ include/linux/dma-mapping.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index faab0a8210b9..df0bff2ea750 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -629,7 +629,7 @@ static inline unsigned long dma_get_seg_boundary(struct device *dev)
+ {
+ 	if (dev->dma_parms && dev->dma_parms->segment_boundary_mask)
+ 		return dev->dma_parms->segment_boundary_mask;
+-	return DMA_BIT_MASK(32);
++	return ULONG_MAX;
+ }
+ 
+ /**
 -- 
 2.17.1
 
