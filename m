@@ -1,104 +1,86 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [RESEND][PATCH 1/7] powerpc/iommu: Avoid overflow at boundary_size
-Date: Tue, 01 Sep 2020 23:27:36 +1000
-Message-ID: <87lfht1vav.fsf@mpe.ellerman.id.au>
-References: <20200831203811.8494-1-nicoleotsuka@gmail.com>
- <20200831203811.8494-2-nicoleotsuka@gmail.com>
+From: Nicholas Piggin <npiggin@gmail.com>
+Subject: [PATCH v3 02/23] alpha: use asm-generic/mmu_context.h for no-op implementations
+Date: Wed,  2 Sep 2020 00:15:18 +1000
+Message-ID: <20200901141539.1757549-3-npiggin@gmail.com>
+References: <20200901141539.1757549-1-npiggin@gmail.com>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
- s=201909; t=1598966866;
- bh=b8fBMPirmgEDaVPbjXdRIYPwIrTUtQaTXRmfGBF/egk=;
- h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
- b=pXwfFcp7DEZhdSaVT5PD8DrmDNJcZnA4u3LePXbs+Xb49cAmRXaxJrmXg/VJlWIzR
- Q9Z+EfZBm7r6mhEVXxyXQhUmW0fa5OWGfrmOVAZI3itGQAU61ebluXbCJK+AIc60vF
- 1lpEQtozskWFVBMd7eJLB6Kr3ed2+dixG5IYLvugFo8ywj0S6XpgkfnAthm3BhrzXv
- 8D0og0Lq9pFYRuwgHyCnfhfBZXrYFBGSojjeGeHhiOdKVVtQpLLH9UWs9qF4OuV5Cr
- KzxdsR4L7qCBMFnd1HxBtLQKZU2Du8AyMTHI6pRxfwvNsOSSUSd9mxXbEuet6K+c7h
- OfGS3/kjMeThw==
-In-Reply-To: <20200831203811.8494-2-nicoleotsuka@gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Ypq4V2n6hl0lHX9y7DtLS7ZcrqEPUBbxsLMtFlrStVc=;
+        b=dbCIVvEzwJuO+omKZYGl30Jm5UXT6FFIqT47ktoREvEjVKZpwSdT69hMlvg9PQwQTB
+         mihJpL+5DkDOOetBf+zFTpyVQwWusTQRnbfIEJFcWW/xufoyBvc96pPwyonS9uDO3hC7
+         UqU7+RTGCP5VYQTurJ4gv5xZx7OFv1ZNE8QVXUbXBIt+4EGknUwjyClJ2vW3fmCJ/5dN
+         cnC3XBy8kpEArVpfpSMgPkUUVLVBMjEv0vf/4VDXr0xzgW6qowREjyPH69ksazjSqQac
+         xMuvOnpQwhE/S5FZkTD3LPeL49fFgNQfzKIJGovNvaAA3UrTdMfv3xsrJ9+ATYugLsLX
+         kRjw==
+In-Reply-To: <20200901141539.1757549-1-npiggin@gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Nicolin Chen <nicoleotsuka@gmail.com>, benh@kernel.crashing.org, paulus@samba.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, tony.luck@intel.com, fenghua.yu@intel.com, schnelle@linux.ibm.com, gerald.schaefer@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com, davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com, James.Bottomley@HansenPartnership.com, deller@gmx.de
-Cc: sfr@canb.auug.org.au, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, hch@lst.de
+To: linux-arch@vger.kernel.org
+Cc: Nicholas Piggin <npiggin@gmail.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Nicolin Chen <nicoleotsuka@gmail.com> writes:
-> The boundary_size might be as large as ULONG_MAX, which means
-> that a device has no specific boundary limit. So either "+ 1"
-> or passing it to ALIGN() would potentially overflow.
->
-> According to kernel defines:
->     #define ALIGN_MASK(x, mask) (((x) + (mask)) & ~(mask))
->     #define ALIGN(x, a)	ALIGN_MASK(x, (typeof(x))(a) - 1)
->
-> We can simplify the logic here:
->   ALIGN(boundary + 1, 1 << shift) >> shift
-> = ALIGN_MASK(b + 1, (1 << s) - 1) >> s
-> = {[b + 1 + (1 << s) - 1] & ~[(1 << s) - 1]} >> s
-> = [b + 1 + (1 << s) - 1] >> s
-> = [b + (1 << s)] >> s
-> = (b >> s) + 1
->
-> So fixing a potential overflow with the safer shortcut.
->
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
-> Cc: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/powerpc/kernel/iommu.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+---
 
-Are you asking for acks, or for maintainers to merge the patches
-individually?
+Please ack or nack if you object to this being mered via
+Arnd's tree.
 
-> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-> index 9704f3f76e63..c01ccbf8afdd 100644
-> --- a/arch/powerpc/kernel/iommu.c
-> +++ b/arch/powerpc/kernel/iommu.c
-> @@ -236,15 +236,14 @@ static unsigned long iommu_range_alloc(struct device *dev,
->  		}
->  	}
->  
-> -	if (dev)
-> -		boundary_size = ALIGN(dma_get_seg_boundary(dev) + 1,
-> -				      1 << tbl->it_page_shift);
-> -	else
-> -		boundary_size = ALIGN(1UL << 32, 1 << tbl->it_page_shift);
->  	/* 4GB boundary for iseries_hv_alloc and iseries_hv_map */
-> +	boundary_size = dev ? dma_get_seg_boundary(dev) : U32_MAX;
+ arch/alpha/include/asm/mmu_context.h | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-Is there any path that passes a NULL dev anymore?
+diff --git a/arch/alpha/include/asm/mmu_context.h b/arch/alpha/include/asm/mmu_context.h
+index 6d7d9bc1b4b8..4eea7c616992 100644
+--- a/arch/alpha/include/asm/mmu_context.h
++++ b/arch/alpha/include/asm/mmu_context.h
+@@ -214,8 +214,6 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
+ 	tbiap();
+ }
+ 
+-#define deactivate_mm(tsk,mm)	do { } while (0)
+-
+ #ifdef CONFIG_ALPHA_GENERIC
+ # define switch_mm(a,b,c)	alpha_mv.mv_switch_mm((a),(b),(c))
+ # define activate_mm(x,y)	alpha_mv.mv_activate_mm((x),(y))
+@@ -229,6 +227,7 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
+ # endif
+ #endif
+ 
++#define init_new_context init_new_context
+ static inline int
+ init_new_context(struct task_struct *tsk, struct mm_struct *mm)
+ {
+@@ -242,12 +241,7 @@ init_new_context(struct task_struct *tsk, struct mm_struct *mm)
+ 	return 0;
+ }
+ 
+-extern inline void
+-destroy_context(struct mm_struct *mm)
+-{
+-	/* Nothing to do.  */
+-}
+-
++#define enter_lazy_tlb enter_lazy_tlb
+ static inline void
+ enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
+ {
+@@ -255,6 +249,8 @@ enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
+ 	  = ((unsigned long)mm->pgd - IDENT_ADDR) >> PAGE_SHIFT;
+ }
+ 
++#include <asm-generic/mmu_context.h>
++
+ #ifdef __MMU_EXTERN_INLINE
+ #undef __EXTERN_INLINE
+ #undef __MMU_EXTERN_INLINE
+-- 
+2.23.0
 
-Both iseries_hv_alloc() and iseries_hv_map() were removed years ago.
-See:
-  8ee3e0d69623 ("powerpc: Remove the main legacy iSerie platform code")
-
-
-So maybe we should do a lead-up patch that drops the NULL dev support,
-which will then make this patch simpler.
-
-cheers
-
-
-> +	/* Overflow-free shortcut for: ALIGN(b + 1, 1 << s) >> s */
-> +	boundary_size = (boundary_size >> tbl->it_page_shift) + 1;
->  
->  	n = iommu_area_alloc(tbl->it_map, limit, start, npages, tbl->it_offset,
-> -			     boundary_size >> tbl->it_page_shift, align_mask);
-> +			     boundary_size, align_mask);
->  	if (n == -1) {
->  		if (likely(pass == 0)) {
->  			/* First try the pool from the start */
-> -- 
-> 2.17.1
