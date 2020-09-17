@@ -1,128 +1,237 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 5/5] fs: remove do_mounts
-Date: Thu, 17 Sep 2020 10:22:36 +0200
-Message-ID: <20200917082236.2518236-6-hch@lst.de>
-References: <20200917082236.2518236-1-hch@lst.de>
+From: "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: [patch 00/13] preempt: Make preempt count unconditional
+Date: Thu, 17 Sep 2020 09:28:36 -0700
+Message-ID: <20200917162836.GJ29330@paulmck-ThinkPad-P72>
+References: <CAHk-=wj0eUuVQ=hRFZv_nY7g5ZLt7Fy3K7SMJL0ZCzniPtsbbg@mail.gmail.com>
+ <87bli75t7v.fsf@nanos.tec.linutronix.de>
+ <CAHk-=wht7kAeyR5xEW2ORj7m0hibVxZ3t+2ie8vNHLQfdbN2_g@mail.gmail.com>
+ <CAKMK7uHAk9-Vy2cof0ws=DrcD52GHiCDiyHbjLd19CgpBU2rKQ@mail.gmail.com>
+ <20200916152956.GV29330@paulmck-ThinkPad-P72>
+ <CAKMK7uGFyfhEyt=jmdk2jDO-hq0_Pf0ck+cKSELHjr2U3rPuYQ@mail.gmail.com>
+ <20200916205840.GD29330@paulmck-ThinkPad-P72>
+ <CAKMK7uHL2dMv80b8uBXr=BqHD2TQeODQQM1MGYhAfCYbX7sLrA@mail.gmail.com>
+ <20200916223951.GG29330@paulmck-ThinkPad-P72>
+ <CAKMK7uFXD7FzGZJZx0QAR2WdbewGmLnsSVaH7+HD0XSr--f0kw@mail.gmail.com>
+Reply-To: paulmck@kernel.org
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-nfs-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=Kl93QICC5aQvQJMxCeiVqLPxdrJCLvLfKIO/mt3R/aE=; b=GYwqhapVq04TTeK40il4+eAjIH
-        eEPWkMcwVUYVvwu/vyIhYQFWJLFOK99rpCjNEPMZ1FYG9P0d1uQmpXDJK+nIeU0oNqlqN1SYFZ/Y5
-        OnO8Mxt8h6UwEnK/j/Q+LymGzkLGnPqPkMeaflWU/DNH8dK2UiPK3vnFcVz1X7LX1JcYWiDaIrstD
-        4LLddZquANPfwvWhP6AhISfAl3Y3CsdFK+/JNjVbeCQsDoqedJpfEs0BpqLQYfdzxvuHTQusrkLJV
-        MprkkLou2kbyqmRXOCgGao41uRx4IcuIeTnX48V51+5VfwJpDTqzV9+9u/1aqlJaaDrgnYCsnz0Bu
-        facfdBjw==;
-In-Reply-To: <20200917082236.2518236-1-hch-jcswGhMUV9g@public.gmane.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600360116;
+        bh=aMFXA6dujAeFH2LkCq1Js2d4JSd24Yo67kBaDY8oEtE=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=0JMcW2qGu3G1e5DVBtzJABiddeYBZnLe86UtPsGxTUL/4ALcJgIf+j3ymeD7EPM2P
+         6kaOd5bIdCt+s6hbZKXuLz52eYjpLqZ8ZyEpCbKf1UrpJVe2pWmLkdF4dkyyeOqgTy
+         aFd4GM66CCyEMI5keOxMq1USdAbb5ATC2PcNgjU0=
+Content-Disposition: inline
+In-Reply-To: <CAKMK7uFXD7FzGZJZx0QAR2WdbewGmLnsSVaH7+HD0XSr--f0kw@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Al Viro <viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org>
-Cc: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Trond Myklebust <trond.myklebust-F/q8l9xzQnoyLce1RVWEUA@public.gmane.org>, Anna Schumaker <anna.schumaker-HgOvQuBEEgTQT0dZR+AlfA@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fsdevel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-nfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 7bit
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Thomas Gleixner <tglx@linutronix.de>, Ard Biesheuvel <ardb@kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>, LKML <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Valentin Schneider <valentin.schneider@arm.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, linux-um <linux-um@lists.infradead.org>, Brian Cain <bcain@codeaurora.org>, linux-hexagon@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.>
 
-There are only two callers left, one of which is is in the alpha-specific
-OSF/1 compat code.  Just open code it in both.
+On Thu, Sep 17, 2020 at 09:52:30AM +0200, Daniel Vetter wrote:
+> On Thu, Sep 17, 2020 at 12:39 AM Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Wed, Sep 16, 2020 at 11:43:02PM +0200, Daniel Vetter wrote:
+> > > On Wed, Sep 16, 2020 at 10:58 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > > >
+> > > > On Wed, Sep 16, 2020 at 10:29:06PM +0200, Daniel Vetter wrote:
+> > > > > On Wed, Sep 16, 2020 at 5:29 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > > > > >
+> > > > > > On Wed, Sep 16, 2020 at 09:37:17AM +0200, Daniel Vetter wrote:
+> > > > > > > On Tue, Sep 15, 2020 at 7:35 PM Linus Torvalds
+> > > > > > > <torvalds@linux-foundation.org> wrote:
+> > > > > > > >
+> > > > > > > > On Tue, Sep 15, 2020 at 1:39 AM Thomas Gleixner <tglx@linutronix.de> wrote:
+> > > > > > > > >
+> > > > > > > > > OTOH, having a working 'preemptible()' or maybe better named
+> > > > > > > > > 'can_schedule()' check makes tons of sense to make decisions about
+> > > > > > > > > allocation modes or other things.
+> > > > > > > >
+> > > > > > > > No. I think that those kinds of decisions about actual behavior are
+> > > > > > > > always simply fundamentally wrong.
+> > > > > > > >
+> > > > > > > > Note that this is very different from having warnings about invalid
+> > > > > > > > use. THAT is correct. It may not warn in all configurations, but that
+> > > > > > > > doesn't matter: what matters is that it warns in common enough
+> > > > > > > > configurations that developers will catch it.
+> > > > > > > >
+> > > > > > > > So having a warning in "might_sleep()" that doesn't always trigger,
+> > > > > > > > because you have a limited configuration that can't even detect the
+> > > > > > > > situation, that's fine and dandy and intentional.
+> > > > > > > >
+> > > > > > > > But having code like
+> > > > > > > >
+> > > > > > > >        if (can_schedule())
+> > > > > > > >            .. do something different ..
+> > > > > > > >
+> > > > > > > > is fundamentally complete and utter garbage.
+> > > > > > > >
+> > > > > > > > It's one thing if you test for "am I in hardware interrupt context".
+> > > > > > > > Those tests aren't great either, but at least they make sense.
+> > > > > > > >
+> > > > > > > > But a driver - or some library routine - making a difference based on
+> > > > > > > > some nebulous "can I schedule" is fundamentally and basically WRONG.
+> > > > > > > >
+> > > > > > > > If some code changes behavior, it needs to be explicit to the *caller*
+> > > > > > > > of that code.
+> > > > > > > >
+> > > > > > > > So this is why GFP_ATOMIC is fine, but "if (!can_schedule())
+> > > > > > > > do_something_atomic()" is pure shite.
+> > > > > > > >
+> > > > > > > > And I am not IN THE LEAST interested in trying to help people doing
+> > > > > > > > pure shite. We need to fix them. Like the crypto code is getting
+> > > > > > > > fixed.
+> > > > > > >
+> > > > > > > Just figured I'll throw my +1 in from reading too many (gpu) drivers.
+> > > > > > > Code that tries to cleverly adjust its behaviour depending upon the
+> > > > > > > context it's running in is harder to understand and blows up in more
+> > > > > > > interesting ways. We still have drm_can_sleep() and it's mostly just
+> > > > > > > used for debug code, and I've largely ended up just deleting
+> > > > > > > everything that used it because when you're driver is blowing up the
+> > > > > > > last thing you want is to realize your debug code and output can't be
+> > > > > > > relied upon. Or worse, that the only Oops you have is the one in the
+> > > > > > > debug code, because the real one scrolled away - the original idea
+> > > > > > > behind drm_can_sleep was to make all the modeset code work
+> > > > > > > automagically both in normal ioctl/kworker context and in the panic
+> > > > > > > handlers or kgdb callbacks. Wishful thinking at best.
+> > > > > > >
+> > > > > > > Also at least for me that extends to everything, e.g. I much prefer
+> > > > > > > explicit spin_lock and spin_lock_irq vs magic spin_lock_irqsave for
+> > > > > > > locks shared with interrupt handlers, since the former two gives me
+> > > > > > > clear information from which contexts such function can be called.
+> > > > > > > Other end is the memalloc_no*_save/restore functions, where I recently
+> > > > > > > made a real big fool of myself because I didn't realize how much that
+> > > > > > > impacts everything that's run within - suddenly "GFP_KERNEL for small
+> > > > > > > stuff never fails" is wrong everywhere.
+> > > > > > >
+> > > > > > > It's all great for debugging and sanity checks (and we run with all
+> > > > > > > that stuff enabled in our CI), but really semantic changes depending
+> > > > > > > upon magic context checks freak my out :-)
+> > > > > >
+> > > > > > All fair, but some of us need to write code that must handle being
+> > > > > > invoked from a wide variety of contexts.  Now perhaps you like the idea of
+> > > > > > call_rcu() for schedulable contexts, call_rcu_nosched() when preemption
+> > > > > > is disabled, call_rcu_irqs_are_disabled() when interrupts are disabled,
+> > > > > > call_rcu_raw_atomic() from contexts where (for example) raw spinlocks
+> > > > > > are held, and so on.  However, from what I can see, most people instead
+> > > > > > consistently prefer that the RCU API instead be consolidated.
+> > > > > >
+> > > > > > Some in-flight cache-efficiency work for kvfree_rcu() and call_rcu()
+> > > > > > needs to be able to allocate memory occasionally.  It can do that when
+> > > > > > invoked from some contexts, but not when invoked from others.  Right now,
+> > > > > > in !PREEMPT kernels, it cannot tell, and must either do things to the
+> > > > > > memory allocators that some of the MM hate or must unnecessarily invoke
+> > > > > > workqueues.  Thomas's patches would allow the code to just allocate in
+> > > > > > the common case when these primitives are invoked from contexts where
+> > > > > > allocation is permitted.
+> > > > > >
+> > > > > > If we want to restrict access to the can_schedule() or whatever primitive,
+> > > > > > fine and good.  We can add a check to checkpatch.pl, for example.  Maybe
+> > > > > > we can go back to the old brlock approach of requiring certain people's
+> > > > > > review for each addition to the kernel.
+> > > > > >
+> > > > > > But there really are use cases that it would greatly help.
+> > > > >
+> > > > > We can deadlock in random fun places if random stuff we're calling
+> > > > > suddenly starts allocating. Sometimes. Maybe once in a blue moon, to
+> > > > > make it extra fun to reproduce. Maybe most driver subsystems are less
+> > > > > brittle, but gpu drivers definitely need to know about the details for
+> > > > > exactly this example. And yes gpu drivers use rcu for freeing
+> > > > > dma_fence structures, and that tends to happen in code that we only
+> > > > > recently figured out should really not allocate memory.
+> > > > >
+> > > > > I think minimally you need to throw in an unconditional
+> > > > > fs_reclaim_acquire();fs_reclaim_release(); so that everyone who runs
+> > > > > with full debugging knows what might happen. It's kinda like
+> > > > > might_sleep, but a lot more specific. might_sleep() alone is not
+> > > > > enough, because in the specific code paths I'm thinking of (and
+> > > > > created special lockdep annotations for just recently) sleeping is
+> > > > > allowed, but any memory allocations with GFP_RECLAIM set are no-go.
+> > > >
+> > > > Completely agreed!  Any allocation on any free path must be handled
+> > > > -extremely- carefully.  To that end...
+> > > >
+> > > > First, there is always a fallback in case the allocation fails.  Which
+> > > > might have performance or corner-case robustness issues, but which will
+> > > > at least allow forward progress.  Second, we consulted with a number of
+> > > > MM experts to arrive at appropriate GFP_* flags (and their patience is
+> > > > greatly appreciated).  Third, the paths that can allocate will do so about
+> > > > one time of 500, so any issues should be spotted sooner rather than later.
+> > > >
+> > > > So you are quite right to be concerned, but I believe we will be doing the
+> > > > right things.  And based on his previous track record, I am also quite
+> > > > certain that Mr. Murphy will be on hand to provide me any additional
+> > > > education that I might require.
+> > > >
+> > > > Finally, I have noted down your point about fs_reclaim_acquire() and
+> > > > fs_reclaim_release().  Whether or not they prove to be needed, I do
+> > > > appreciate your calling them to my attention.
+> > >
+> > > I just realized that since these dma_fence structs are refcounted and
+> > > userspace can hold references (directly, it can pass them around
+> > > behind file descriptors) we might never hit such a path until slightly
+> > > unusual or evil userspace does something interesting. Do you have
+> > > links to those patches? Some googling didn't turn up anything. I can
+> > > then figure out whether it's better to risk not spotting issues with
+> > > call_rcu vs slapping a memalloc_noio_save/restore around all these
+> > > critical section which force-degrades any allocation to GFP_ATOMIC at
+> > > most, but has the risk that we run into code that assumes "GFP_KERNEL
+> > > never fails for small stuff" and has a decidedly less tested fallback
+> > > path than rcu code.
+> >
+> > Here is the previous early draft version, which will change considerably
+> > for the next version:
+> >
+> >         lore.kernel.org/lkml/20200809204354.20137-1-urezki@gmail.com
+> >
+> > This does kvfree_rcu(), but we expect to handle call_rcu() similarly.
+> >
+> > The version in preparation will use workqueues to do the allocation in a
+> > known-safe environment and also use lockless access to certain portions
+> > of the allocator caches (as noted earlier, this last is not much loved
+> > by some of the MM guys).  Given Thomas's patch, we could with high
+> > probability allocate directly, perhaps even not needing memory-allocator
+> > modifications.
+> >
+> > Either way, kvfree_rcu(), and later call_rcu(), will avoid asking the
+> > allocator to do anything that the calling context prohibits.  So what
+> > types of bugs are you looking for?  Where reclaim calls back into the
+> > driver or some such?
+> 
+> Yeah pretty much. It's a problem for gpu, fs, block drivers and really
+> anything else that's remotely involved in memory reclaim somehow.
+> Generally this is all handled explicitly by passing gfp_t flags down
+> any call chain, but in some cases it's instead solved with the
+> memalloc_no* functions. E.g. sunrpc uses that to make sure the network
+> stack (which generally just assumes it can allocate memory) doesn't,
+> to avoid recursions back into nfs/sunrpc. To my knowledge there's no
+> way to check at runtime with which gfp flags you're allowed to
+> allocate memory, a preemptible check is definitely not enough.
+> Disabled preemption implies only GFP_ATOMIC is allowed (ignoring nmi
+> and stuff like that), but the inverse is not true.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/alpha/kernel/osf_sys.c |  7 ++++++-
- fs/namespace.c              | 25 ++++++++-----------------
- include/linux/fs.h          |  2 --
- 3 files changed, 14 insertions(+), 20 deletions(-)
+Thank you for the confirmation!
 
-diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index 5fd155b13503b5..8acd5101097576 100644
---- a/arch/alpha/kernel/osf_sys.c
-+++ b/arch/alpha/kernel/osf_sys.c
-@@ -434,6 +434,7 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
- 	struct osf_mount_args tmp;
- 	struct filename *devname;
- 	const char *fstype;
-+	struct path path;
- 	int retval;
- 
- 	if (copy_from_user(&tmp, args, sizeof(tmp)))
-@@ -467,7 +468,11 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
- 
- 	if (IS_ERR(devname))
- 		return PTR_ERR(devname);
--	retval = do_mount(devname.name, dirname, fstype, flags, NULL);
-+	retval = user_path_at(AT_FDCWD, dirname, LOOKUP_FOLLOW, &path);
-+	if (!retval) {
-+		ret = path_mount(devname.name, &path, fstype, flags, NULL);
-+		path_put(&path);
-+	}
- 	putname(devname);
- 	return retval;
- }
-diff --git a/fs/namespace.c b/fs/namespace.c
-index 12b431b61462b9..2ff373ebeaf27f 100644
---- a/fs/namespace.c
-+++ b/fs/namespace.c
-@@ -3193,20 +3193,6 @@ int path_mount(const char *dev_name, struct path *path,
- 			    data_page);
- }
- 
--long do_mount(const char *dev_name, const char __user *dir_name,
--		const char *type_page, unsigned long flags, void *data_page)
--{
--	struct path path;
--	int ret;
--
--	ret = user_path_at(AT_FDCWD, dir_name, LOOKUP_FOLLOW, &path);
--	if (ret)
--		return ret;
--	ret = path_mount(dev_name, &path, type_page, flags, data_page);
--	path_put(&path);
--	return ret;
--}
--
- static struct ucounts *inc_mnt_namespaces(struct user_namespace *ns)
- {
- 	return inc_ucount(ns, current_euid(), UCOUNT_MNT_NAMESPACES);
-@@ -3390,10 +3376,11 @@ EXPORT_SYMBOL(mount_subtree);
- SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
- 		char __user *, type, unsigned long, flags, void __user *, data)
- {
--	int ret;
-+	struct path path;
- 	char *kernel_type;
- 	char *kernel_dev;
- 	void *options;
-+	int ret;
- 
- 	kernel_type = copy_mount_string(type);
- 	ret = PTR_ERR(kernel_type);
-@@ -3410,8 +3397,12 @@ SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
- 	if (IS_ERR(options))
- 		goto out_data;
- 
--	ret = do_mount(kernel_dev, dir_name, kernel_type, flags, options);
--
-+	ret = user_path_at(AT_FDCWD, dir_name, LOOKUP_FOLLOW, &path);
-+	if (ret)
-+		goto out_options;
-+	ret = path_mount(kernel_dev, &path, kernel_type, flags, options);
-+	path_put(&path);
-+out_options:
- 	kfree(options);
- out_data:
- 	kfree(kernel_dev);
-diff --git a/include/linux/fs.h b/include/linux/fs.h
-index 7519ae003a082c..bd9878bdd4bfe9 100644
---- a/include/linux/fs.h
-+++ b/include/linux/fs.h
-@@ -2292,8 +2292,6 @@ extern struct vfsmount *kern_mount(struct file_system_type *);
- extern void kern_unmount(struct vfsmount *mnt);
- extern int may_umount_tree(struct vfsmount *);
- extern int may_umount(struct vfsmount *);
--extern long do_mount(const char *, const char __user *,
--		     const char *, unsigned long, void *);
- extern struct vfsmount *collect_mounts(const struct path *);
- extern void drop_collected_mounts(struct vfsmount *);
- extern int iterate_mounts(int (*)(struct vfsmount *, void *), void *,
--- 
-2.28.0
+> So if you want the automagic in call_rcu I think either
+> - we need to replace all explicit gfp flags with the context marking
+> memalloc_no* across the entire kernel, or at least anywhere rcu might
+> be used.
+> - audit all callchains and make sure a call_rcu_noalloc is used
+> anywhere there might be a problem. probably better to have a
+> call_rcu_gfp with explicit gfp flags parameter, since generally that
+> needs to be passed down.
+> 
+> But at least to me the lockless magic in mm sounds a lot safer, since
+> it contains the complexity and doesn't leak it out to callers of
+> call_rcu.
 
+Agreed, I greatly prefer Peter Zijlstra's lockless-allocation patch
+myself.
+
+In the meantime, it looks like we will start by causing the allocation to
+happen in a safe environment.  That may have issues with delays, but is
+at least something that can be done entirely within the confines of RCU.
+
+							Thanx, Paul
