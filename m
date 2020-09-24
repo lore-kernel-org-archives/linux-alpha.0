@@ -1,35 +1,55 @@
-From: Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH 2/5] fs,nfs: lift compat nfs4 mount data handling into
- the nfs code
-Date: Wed, 23 Sep 2020 04:45:13 +0100
-Message-ID: <20200923034513.GF3421308@ZenIV.linux.org.uk>
-References: <20200917082236.2518236-1-hch@lst.de>
- <20200917082236.2518236-3-hch@lst.de>
- <20200917171604.GW3421308@ZenIV.linux.org.uk>
- <20200917171826.GA8198@lst.de>
- <20200921064813.GB18559@lst.de>
- <CAFX2Jfks7QTS5crWa43mp4TQ3LoquvRxjuEeCpsZr1aees00eA@mail.gmail.com>
- <20200921181123.GA1776@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH] alpha: switch defconfig from the legacy ide driver to libata
+Date: Thu, 24 Sep 2020 06:20:02 +0200
+Message-ID: <20200924042002.521411-1-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20200921181123.GA1776@lst.de>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=FcKdwf0I1J0dSJnjVNVYUAP29iwsDzFF5w1vapwwcAA=; b=vevxS8n1G81Umvz0FxewqlQIzC
+        oTMh4mMU4Mo22Hmu1WM9gz5zRamGfnh7jaE+yzdhwO29+fkld3vCcxkNRW0JTamq7T/bNI22Aot5X
+        MwzXTdfhH60Gs+5QCse5/YfmJh6rfYiZcxxlLVmN3VMpYLoOZN5/xtGV/0WcIGSGDip0ki/sQaLaM
+        UVS2bLv9ljyJLEpPhw+F2QdPSnz/y5D/O/+NH56Tj4L2Mw67QkFeR3gaTUsvN/uQyfmzuYl6Dw+h0
+        W7QFPFhvrY3yzNeaOu6iIVyBful2CKnQrPOLSNykhm9XcRnlOOERWJjiYQ+WuyObDx70GuIooyB6q
+        3MIrcphA==;
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Christoph Hellwig <hch@lst.de>
-Cc: Anna Schumaker <anna.schumaker@netapp.com>, Trond Myklebust <trond.myklebust@hammerspace.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, Linux NFS Mailing List <linux-nfs@vger.kernel.org>
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, Sep 21, 2020 at 08:11:23PM +0200, Christoph Hellwig wrote:
-> On Mon, Sep 21, 2020 at 12:05:52PM -0400, Anna Schumaker wrote:
-> > This is for the binary mount stuff? That was already legacy code when
-> > I first started, and mount uses text options now. My preference is for
-> > keeping it as close to the original code as possible.
-> 
-> Ok.  Al, are you fine with the series as-is then?
+Switch from the soon to be removed legacy ide driver to libata.
 
-I can live with that.  I'm not fond of in_compat_syscall() proliferation,
-but in this case it's reasonably sane...
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/alpha/configs/defconfig | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-OK, applied.
+diff --git a/arch/alpha/configs/defconfig b/arch/alpha/configs/defconfig
+index 6293675db1644a..387174e2422f6b 100644
+--- a/arch/alpha/configs/defconfig
++++ b/arch/alpha/configs/defconfig
+@@ -26,13 +26,11 @@ CONFIG_PNP=y
+ CONFIG_ISAPNP=y
+ CONFIG_BLK_DEV_FD=y
+ CONFIG_BLK_DEV_LOOP=m
+-CONFIG_IDE=y
+-CONFIG_BLK_DEV_IDECD=y
+-CONFIG_IDE_GENERIC=y
+-CONFIG_BLK_DEV_GENERIC=y
+-CONFIG_BLK_DEV_ALI15X3=y
+-CONFIG_BLK_DEV_CMD64X=y
+-CONFIG_BLK_DEV_CY82C693=y
++CONFIG_ATA=y
++CONFIG_ATA_GENERIC=y
++CONFIG_PATA_ALI=y
++CONFIG_PATA_CMD64X=y
++CONFIG_PATA_CYPRESS=y
+ CONFIG_SCSI=y
+ CONFIG_BLK_DEV_SD=y
+ CONFIG_BLK_DEV_SR=y
+-- 
+2.28.0
+
