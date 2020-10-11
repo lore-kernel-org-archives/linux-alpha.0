@@ -1,140 +1,185 @@
 From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 5/5] fs: remove do_mounts
-Date: Sun, 11 Oct 2020 07:17:49 -0700
-Message-ID: <20201011141749.GA126978@roeck-us.net>
+Subject: Re: [PATCH 4/5] alpha: simplify osf_mount
+Date: Sun, 11 Oct 2020 07:22:55 -0700
+Message-ID: <20201011142255.GA203430@roeck-us.net>
 References: <20200917082236.2518236-1-hch@lst.de>
- <20200917082236.2518236-6-hch@lst.de>
+ <20200917082236.2518236-5-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-fsdevel-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=NdWG6HCrBS/BqpXsmrdRoBMmy2SE7zJ+cxa45t7HGkU=;
-        b=u7fdlAaoi3vd2v0oil89YhSyuhGN03RvfKfu8uPhPrYDJKIbu6RA/RCz6M0kSyunDx
-         Rsx30SR+5snZkMgMB2UnkXJr9FX1exLz8GPiQGEMNoyJditwfzHQdcWyMkzMXRxnjpAt
-         2dCkewn0f1Mk5cbAgllG0C4Q4zfyW5BzFAIxMSo9baOzp8tJgv3MYeWwu8YeltkgGbSW
-         cl7YltHO8oSr0IKjYlnGTn95a7QiynGPNif6MVBSSskZifX9O2QguQHvtcP7oWel3bTy
-         R8NFllUCA8xQcNYSuLWdlP4EkrF9kX9m1ApfxcTb//Et3oIS1UqmnA2gw3/cPTdxf2GS
-         ZAlw==
+        bh=cygGmMKwe8ox8+ba1k/Dv7fr+XqllMIbIsz8Hntkd5E=;
+        b=miZzENfpfIyXwxc6OW51smuOi4U1lomaRMltfa7/X76qVjOXEeimYZOOPQ9PObxdYf
+         WEHQ4+poOU4TN1L/g9+12WGu/UuLDNgpPlzg1T8nFe6BgNlv/BfRniP+kZ9/GqkTk+q+
+         /ER9hkLgEIfvimq03KeLc3Lsl1GRE5F+Ja+3k4UyHQaj0fXBEsz2D2Mf+ZrNndvLPwa6
+         kZgE1LsJLKaWbq2bD0dwUi+o5KfIWEEiQye6NxUTOQMOFW6lZyU3S8a1xhJ8uUU/F6AQ
+         fVtnzz4QDtB80I9Od3Cs1leiyLEyup9U8CllC68x4jvIpaxJ4QKpGDcOs2raLSnz/G3S
+         6Usw==
 Sender: Guenter Roeck <groeck7@gmail.com>
 Content-Disposition: inline
-In-Reply-To: <20200917082236.2518236-6-hch@lst.de>
+In-Reply-To: <20200917082236.2518236-5-hch@lst.de>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Christoph Hellwig <hch@lst.de>
 Cc: Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Trond Myklebust <trond.myklebust@hammerspace.com>, Anna Schumaker <anna.schumaker@netapp.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org
 
-On Thu, Sep 17, 2020 at 10:22:36AM +0200, Christoph Hellwig wrote:
-> There are only two callers left, one of which is is in the alpha-specific
-> OSF/1 compat code.  Just open code it in both.
+On Thu, Sep 17, 2020 at 10:22:35AM +0200, Christoph Hellwig wrote:
+> Merge the mount_args structures and mount helpers to simplify the code a
+> bit.
 > 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->  arch/alpha/kernel/osf_sys.c |  7 ++++++-
->  fs/namespace.c              | 25 ++++++++-----------------
->  include/linux/fs.h          |  2 --
->  3 files changed, 14 insertions(+), 20 deletions(-)
+>  arch/alpha/kernel/osf_sys.c | 111 +++++++++---------------------------
+>  1 file changed, 28 insertions(+), 83 deletions(-)
 > 
 > diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-> index 5fd155b13503b5..8acd5101097576 100644
+> index d5367a1c6300c1..5fd155b13503b5 100644
 > --- a/arch/alpha/kernel/osf_sys.c
 > +++ b/arch/alpha/kernel/osf_sys.c
-> @@ -434,6 +434,7 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
-                                                                                             ^^^^
->  	struct osf_mount_args tmp;
->  	struct filename *devname;
->  	const char *fstype;
-> +	struct path path;
-        ^^^^^^^^^^^^^^^^
-
-Someone didn't bother test building this patch.
-
-arch/alpha/kernel/osf_sys.c: In function '__do_sys_osf_mount':
-arch/alpha/kernel/osf_sys.c:437:14: error: 'path' redeclared as different kind of symbol
-
-Guenter
-
->  	int retval;
+> @@ -421,109 +421,54 @@ SYSCALL_DEFINE3(osf_fstatfs64, unsigned long, fd,
+>   *
+>   * Although to be frank, neither are the native Linux/i386 ones..
+>   */
+> -struct ufs_args {
+> +struct osf_mount_args {
+>  	char __user *devname;
+>  	int flags;
+>  	uid_t exroot;
+> +	/* this has lots more here for cdfs at least, but we don't bother */
+>  };
 >  
->  	if (copy_from_user(&tmp, args, sizeof(tmp)))
-> @@ -467,7 +468,11 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
->  
->  	if (IS_ERR(devname))
->  		return PTR_ERR(devname);
-> -	retval = do_mount(devname.name, dirname, fstype, flags, NULL);
-> +	retval = user_path_at(AT_FDCWD, dirname, LOOKUP_FOLLOW, &path);
-> +	if (!retval) {
-> +		ret = path_mount(devname.name, &path, fstype, flags, NULL);
-> +		path_put(&path);
-> +	}
->  	putname(devname);
->  	return retval;
->  }
-> diff --git a/fs/namespace.c b/fs/namespace.c
-> index 12b431b61462b9..2ff373ebeaf27f 100644
-> --- a/fs/namespace.c
-> +++ b/fs/namespace.c
-> @@ -3193,20 +3193,6 @@ int path_mount(const char *dev_name, struct path *path,
->  			    data_page);
->  }
->  
-> -long do_mount(const char *dev_name, const char __user *dir_name,
-> -		const char *type_page, unsigned long flags, void *data_page)
-> -{
-> -	struct path path;
-> -	int ret;
+> -struct cdfs_args {
+> -	char __user *devname;
+> -	int flags;
+> -	uid_t exroot;
 > -
-> -	ret = user_path_at(AT_FDCWD, dir_name, LOOKUP_FOLLOW, &path);
-> -	if (ret)
-> -		return ret;
-> -	ret = path_mount(dev_name, &path, type_page, flags, data_page);
-> -	path_put(&path);
-> -	return ret;
+> -	/* This has lots more here, which Linux handles with the option block
+> -	   but I'm too lazy to do the translation into ASCII.  */
+> -};
+> -
+> -struct procfs_args {
+> -	char __user *devname;
+> -	int flags;
+> -	uid_t exroot;
+> -};
+> -
+> -/*
+> - * We can't actually handle ufs yet, so we translate UFS mounts to
+> - * ext2fs mounts. I wouldn't mind a UFS filesystem, but the UFS
+> - * layout is so braindead it's a major headache doing it.
+> - *
+> - * Just how long ago was it written? OTOH our UFS driver may be still
+> - * unhappy with OSF UFS. [CHECKME]
+> - */
+> -static int
+> -osf_ufs_mount(const char __user *dirname,
+> -	      struct ufs_args __user *args, int flags)
+> +SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
+> +		int, flag, void __user *, data)
+>  {
+> -	int retval;
+> -	struct cdfs_args tmp;
+> +	struct osf_mount_args tmp;
+>  	struct filename *devname;
+> -
+> -	retval = -EFAULT;
+> -	if (copy_from_user(&tmp, args, sizeof(tmp)))
+> -		goto out;
+> -	devname = getname(tmp.devname);
+> -	retval = PTR_ERR(devname);
+> -	if (IS_ERR(devname))
+> -		goto out;
+> -	retval = do_mount(devname->name, dirname, "ext2", flags, NULL);
+> -	putname(devname);
+> - out:
+> -	return retval;
 > -}
 > -
->  static struct ucounts *inc_mnt_namespaces(struct user_namespace *ns)
->  {
->  	return inc_ucount(ns, current_euid(), UCOUNT_MNT_NAMESPACES);
-> @@ -3390,10 +3376,11 @@ EXPORT_SYMBOL(mount_subtree);
->  SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
->  		char __user *, type, unsigned long, flags, void __user *, data)
->  {
-> -	int ret;
-> +	struct path path;
->  	char *kernel_type;
->  	char *kernel_dev;
->  	void *options;
-> +	int ret;
->  
->  	kernel_type = copy_mount_string(type);
->  	ret = PTR_ERR(kernel_type);
-> @@ -3410,8 +3397,12 @@ SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
->  	if (IS_ERR(options))
->  		goto out_data;
->  
-> -	ret = do_mount(kernel_dev, dir_name, kernel_type, flags, options);
+> -static int
+> -osf_cdfs_mount(const char __user *dirname,
+> -	       struct cdfs_args __user *args, int flags)
+> -{
+> +	const char *fstype;
+>  	int retval;
+> -	struct cdfs_args tmp;
+> -	struct filename *devname;
 > -
-> +	ret = user_path_at(AT_FDCWD, dir_name, LOOKUP_FOLLOW, &path);
-> +	if (ret)
-> +		goto out_options;
-> +	ret = path_mount(kernel_dev, &path, kernel_type, flags, options);
-> +	path_put(&path);
-> +out_options:
->  	kfree(options);
->  out_data:
->  	kfree(kernel_dev);
-> diff --git a/include/linux/fs.h b/include/linux/fs.h
-> index 7519ae003a082c..bd9878bdd4bfe9 100644
-> --- a/include/linux/fs.h
-> +++ b/include/linux/fs.h
-> @@ -2292,8 +2292,6 @@ extern struct vfsmount *kern_mount(struct file_system_type *);
->  extern void kern_unmount(struct vfsmount *mnt);
->  extern int may_umount_tree(struct vfsmount *);
->  extern int may_umount(struct vfsmount *);
-> -extern long do_mount(const char *, const char __user *,
-> -		     const char *, unsigned long, void *);
->  extern struct vfsmount *collect_mounts(const struct path *);
->  extern void drop_collected_mounts(struct vfsmount *);
->  extern int iterate_mounts(int (*)(struct vfsmount *, void *), void *,
+> -	retval = -EFAULT;
+> -	if (copy_from_user(&tmp, args, sizeof(tmp)))
+> -		goto out;
+> -	devname = getname(tmp.devname);
+> -	retval = PTR_ERR(devname);
+> -	if (IS_ERR(devname))
+> -		goto out;
+> -	retval = do_mount(devname->name, dirname, "iso9660", flags, NULL);
+> -	putname(devname);
+> - out:
+> -	return retval;
+> -}
+> -
+> -static int
+> -osf_procfs_mount(const char __user *dirname,
+> -		 struct procfs_args __user *args, int flags)
+> -{
+> -	struct procfs_args tmp;
+>  
+>  	if (copy_from_user(&tmp, args, sizeof(tmp)))
+>  		return -EFAULT;
+>  
+arch/alpha/kernel/osf_sys.c:440:27: error: 'args' undeclared (first use in this function)
+
+> -	return do_mount("", dirname, "proc", flags, NULL);
+> -}
+> -
+> -SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
+> -		int, flag, void __user *, data)
+> -{
+> -	int retval;
+> -
+>  	switch (typenr) {
+> -	case 1:
+> -		retval = osf_ufs_mount(path, data, flag);
+> +	case 1: /* ufs */
+> +		/*
+> +		 * We can't actually handle ufs yet, so we translate UFS mounts
+> +		 * to ext2 mounts. I wouldn't mind a UFS filesystem, but the UFS
+> +		 * layout is so braindead it's a major headache doing it.
+> +		 *
+> +		 * Just how long ago was it written? OTOH our UFS driver may be
+> +		 * still unhappy with OSF UFS. [CHECKME]
+> +		 */
+> +		fstype = "ext2";
+> +		devname = getname(tmp.devname);
+>  		break;
+> -	case 6:
+> -		retval = osf_cdfs_mount(path, data, flag);
+> +	case 6: /* cdfs */
+> +		fstype = "iso9660";
+> +		devname = getname(tmp.devname);
+>  		break;
+> -	case 9:
+> -		retval = osf_procfs_mount(path, data, flag);
+> +	case 9: /* procfs */
+> +		fstype = "proc";
+> +		devname = getname_kernel("");
+>  		break;
+>  	default:
+> -		retval = -EINVAL;
+>  		printk("osf_mount(%ld, %x)\n", typenr, flag);
+> +		return -EINVAL;
+>  	}
+>  
+> +	if (IS_ERR(devname))
+> +		return PTR_ERR(devname);
+> +	retval = do_mount(devname.name, dirname, fstype, flags, NULL);
+
+arch/alpha/kernel/osf_sys.c:471:34: error:
+	'dirname' undeclared (first use in this function); did you mean 'devname'?
+
+> +	putname(devname);
+>  	return retval;
+>  }
+>  
