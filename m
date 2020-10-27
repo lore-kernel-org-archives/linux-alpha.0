@@ -1,54 +1,107 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: alpha: Replace bogus in_interrupt()
-Date: Wed, 14 Oct 2020 17:47:26 +0200
-Message-ID: <87imbcbyi9.fsf@nanos.tec.linutronix.de>
+From: Mike Rapoport <rppt@kernel.org>
+Subject: [PATCH 00/13] arch, mm: deprecate DISCONTIGMEM
+Date: Tue, 27 Oct 2020 13:29:42 +0200
+Message-ID: <20201027112955.14157-1-rppt@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602690447;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=CEHIOjBcSkDJeZj4yitMPftpAVejIzgCqUmY3JfG8EE=;
-        b=Wfsoo3YkRmXYF+oZ6nBEMaXpRvg3++4PG51N5xroNPYywCFEOaSX0UqKLdJVhNqQv5l0Pa
-        LYBCnbEObqc7Kkj+WOlqY2XMiwKr167qdYP+jLDyGkrv9hlk/jsb15GerF1qXrghf1FGaj
-        XGk5mVKz6J1DJycPiK0vE/563vFB0SEiDv23UBBNtxXshTQioOg4QwrZWPhY8Zjj9xmvEr
-        gsgAPQpyRJx8i+gxnOL66YQm0IkUAuwOmBcbl0kMY2D0uXlhdOj85l3nx3oFIm/94pDsgC
-        syUmjPL/8pYbwevcUk+d8hS/S4yrC2UcRRWWAkqhS99LhGJ7hc9Nhmno4Pb90w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602690447;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=CEHIOjBcSkDJeZj4yitMPftpAVejIzgCqUmY3JfG8EE=;
-        b=Q5I7hOvcRs9dODuE9eXA4M2Mjm8hWPk8EbNsgdKutNd1krhgR5Y414xs80pt0T7W9EFJ3D
-        dQggOYR5+bNB3rCw==
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-ia64-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603798206;
+        bh=D+57eBxZmqbGtpUmyagmHDBw1nHF2DKjanAqVX/AUkU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Q9RaU3X/IJD/4dR3n3h9Ry46q2+Cd8ehNOxEB9JeoN0lGPicebs+j0qlAtlVAlW8F
+         F0vBvYTqv4GdHlkIa6G/HY/NJCiv0uBzWYkm4yxUz82hTQedsGnDaIAnFDeQrWUA7f
+         J4FEjdA0fGYuRF4Pc52GN10CIYKMe57/A5m9zfC0=
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org
-Cc: Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Alexey Dobriyan <adobriyan@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Meelis Roos <mroos@linux.ee>, Michael Schmitz <schmitzmic@gmail.com>, Mike Rapoport <rppt@kernel.org>, Mike Rapoport <rppt@linux.ibm.com>, Russell King <linux@armlinux.org.uk>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Will Deacon <will@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linu
 
-in_interrupt() is true for a variety of things including bottomhalf
-disabled regions. Deducing hard interrupt context from it is dubious at
-best.
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-Use in_irq() which is true if called in hard interrupt context. Otherwise
-calling irq_exit() would do more harm than good.
+Hi,
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
----
- arch/alpha/kernel/process.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It's been a while since DISCONTIGMEM is generally considered deprecated,
+but it is still used by four architectures. This set replaces DISCONTIGMEM
+with a different way to handle holes in the memory map and marks
+DISCONTIGMEM configuration as BROKEN in Kconfigs of these architectures with
+the intention to completely remove it in several releases.
 
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index 7462a7911002..1589467e7528 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -134,7 +134,7 @@ common_shutdown_1(void *generic_ptr)
- #ifdef CONFIG_DUMMY_CONSOLE
- 		/* If we've gotten here after SysRq-b, leave interrupt
- 		   context before taking over the console. */
--		if (in_interrupt())
-+		if (in_irq())
- 			irq_exit();
- 		/* This has the effect of resetting the VGA video origin.  */
- 		console_lock();
+While for 64-bit alpha and ia64 the switch to SPARSEMEM is quite obvious
+and was a matter of moving some bits around, for smaller 32-bit arc and
+m68k SPARSEMEM is not necessarily the best thing to do.
+
+On 32-bit machines SPARSEMEM would require large sections to make section
+index fit in the page flags, but larger sections mean that more memory is
+wasted for unused memory map.
+
+Besides, pfn_to_page() and page_to_pfn() become less efficient, at least on
+arc.
+
+So I've decided to generalize arm's approach for freeing of unused parts of
+the memory map with FLATMEM and enable it for both arc and m68k. The
+details are in the description of patches 10 (arc) and 13 (m68k).
+
+Mike Rapoport (13):
+  alpha: switch from DISCONTIGMEM to SPARSEMEM
+  ia64: remove custom __early_pfn_to_nid()
+  ia64: remove 'ifdef CONFIG_ZONE_DMA32' statements
+  ia64: discontig: paging_init(): remove local max_pfn calculation
+  ia64: split virtual map initialization out of paging_init()
+  ia64: forbid using VIRTUAL_MEM_MAP with FLATMEM
+  ia64: make SPARSEMEM default and disable DISCONTIGMEM
+  arm: remove CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
+  arm, arm64: move free_unused_memmap() to generic mm
+  arc: use FLATMEM with freeing of unused memory map instead of DISCONTIGMEM
+  m68k/mm: make node data and node setup depend on CONFIG_DISCONTIGMEM
+  m68k/mm: enable use of generic memory_model.h for !DISCONTIGMEM
+  m68k: deprecate DISCONTIGMEM
+
+ Documentation/vm/memory-model.rst   |  3 +-
+ arch/Kconfig                        |  3 ++
+ arch/alpha/Kconfig                  |  8 +++
+ arch/alpha/include/asm/mmzone.h     | 14 +----
+ arch/alpha/include/asm/page.h       |  7 +--
+ arch/alpha/include/asm/pgtable.h    | 12 ++---
+ arch/alpha/include/asm/sparsemem.h  | 18 +++++++
+ arch/alpha/kernel/setup.c           |  1 +
+ arch/arc/Kconfig                    |  3 +-
+ arch/arc/include/asm/page.h         | 20 ++++++--
+ arch/arc/mm/init.c                  | 29 ++++++++---
+ arch/arm/Kconfig                    | 10 +---
+ arch/arm/mach-bcm/Kconfig           |  1 -
+ arch/arm/mach-davinci/Kconfig       |  1 -
+ arch/arm/mach-exynos/Kconfig        |  1 -
+ arch/arm/mach-highbank/Kconfig      |  1 -
+ arch/arm/mach-omap2/Kconfig         |  1 -
+ arch/arm/mach-s5pv210/Kconfig       |  1 -
+ arch/arm/mach-tango/Kconfig         |  1 -
+ arch/arm/mm/init.c                  | 78 ----------------------------
+ arch/arm64/Kconfig                  |  4 +-
+ arch/arm64/mm/init.c                | 68 ------------------------
+ arch/ia64/Kconfig                   | 11 ++--
+ arch/ia64/include/asm/meminit.h     |  2 -
+ arch/ia64/mm/contig.c               | 58 ++++++++++-----------
+ arch/ia64/mm/discontig.c            | 44 ++++++++--------
+ arch/ia64/mm/init.c                 | 14 -----
+ arch/ia64/mm/numa.c                 | 30 -----------
+ arch/m68k/Kconfig.cpu               | 32 ++++++++++--
+ arch/m68k/include/asm/page.h        |  2 +
+ arch/m68k/include/asm/page_mm.h     |  7 ++-
+ arch/m68k/include/asm/virtconvert.h |  2 +-
+ arch/m68k/mm/init.c                 |  8 +--
+ fs/proc/kcore.c                     |  2 -
+ include/linux/mm.h                  |  3 --
+ include/linux/mmzone.h              | 42 ---------------
+ mm/memblock.c                       | 80 +++++++++++++++++++++++++++++
+ mm/mmzone.c                         | 14 -----
+ mm/page_alloc.c                     | 16 ++++--
+ mm/vmstat.c                         |  4 --
+ 40 files changed, 272 insertions(+), 384 deletions(-)
+ create mode 100644 arch/alpha/include/asm/sparsemem.h
+
+
+base-commit: 3650b228f83adda7e5ee532e2b90429c03f7b9ec
+-- 
+2.28.0
+
