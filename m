@@ -1,18 +1,18 @@
 From: Mike Rapoport <rppt@kernel.org>
-Subject: [PATCH 08/13] arm: remove CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
-Date: Tue, 27 Oct 2020 13:29:50 +0200
-Message-ID: <20201027112955.14157-9-rppt@kernel.org>
+Subject: [PATCH 10/13] arc: use FLATMEM with freeing of unused memory map instead of DISCONTIGMEM
+Date: Tue, 27 Oct 2020 13:29:52 +0200
+Message-ID: <20201027112955.14157-11-rppt@kernel.org>
 References: <20201027112955.14157-1-rppt@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603798260;
-        bh=Le2j2RNv1p6gtOVynTEu5nqxJHam5RooQAhygJjLGG8=;
+        s=default; t=1603798274;
+        bh=OfpKWBGiLOquFTLJJ06mrlODlaGrj9G30w52BIJJUiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZV3G3uzxJPdcdbHNrte5oPiPx0u8ElXC8vpT7iyk8pM8MBQZMHasb7MdSB1FFPYUT
-         aQqfcITiT4JPNDDgFpIni55uSVN3cePXFJvpQgCJ4hJbIi0kM9WE0cQ0vpZZWYjEcJ
-         S8nv7YUdm0DgiYJip+daTTaiOq/gXbWVN2PrElew=
+        b=YkJcfVLZEayKMjLsOxCQb3TfX8Zc25/MSZymGYpjPHvkDTdRO8Iz6MAZG73W3GiLT
+         rXkmMo7L+B/ex3DKfOKEYLXlSs4Yzfg8VeF0W9f9bSIOMZbPEUTAqUI0eHiB5RSEYZ
+         hW9SS8NIr5fvoaUeoNy5XfavJIWQLiZiYFxZ2Hvs=
 In-Reply-To: <20201027112955.14157-1-rppt@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -21,272 +21,177 @@ Cc: Alexey Dobriyan <adobriyan@gmail.com>, Catalin Marinas <catalin.marinas@arm.
 
 From: Mike Rapoport <rppt@linux.ibm.com>
 
-ARM is the only architecture that defines CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
-which in turn enables memmap_valid_within() function that is intended to
-verify existence  of struct page associated with a pfn when there are holes
-in the memory map.
+Currently ARC uses DISCONTIGMEM to cope with sparse physical memory address
+space on systems with 2 memory banks. While DISCONTIGMEM avoids wasting
+memory on unpopulated memory map, it adds both memory and CPU overhead
+relatively to FLATMEM. Moreover, DISCONTINGMEM is generally considered
+deprecated.
 
-However, the ARCH_HAS_HOLES_MEMORYMODEL also enables HAVE_ARCH_PFN_VALID
-and arch-specific pfn_valid() implementation that also deals with the holes
-in the memory map.
+The obvious replacement for DISCONTIGMEM would be SPARSEMEM, but it is also
+less efficient than FLATMEM in pfn_to_page() and page_to_pfn() conversions.
+Besides it requires tuning of SECTION_SIZE which is not trivial for
+possible ARC memory configuration.
 
-The only two users of memmap_valid_within() call this function after
-a call to pfn_valid() so the memmap_valid_within() check becomes redundant.
+Since the memory map for both banks is always allocated from the "lowmem"
+bank, it is possible to use FLATMEM for two-bank configuration and simply
+free the unused hole in the memory map. All is required for that is to
+provide ARC-specific pfn_valid() that will take into account actual
+physical memory configuration and define HAVE_ARCH_PFN_VALID.
 
-Remove CONFIG_ARCH_HAS_HOLES_MEMORYMODEL and memmap_valid_within() and rely
-entirely on ARM's implementation of pfn_valid() that is now enabled
-unconditionally.
+The resulting kernel image configured with defconfig + HIGHMEM=y is
+smaller:
+
+$ size a/vmlinux b/vmlinux
+   text    data     bss     dec     hex filename
+4673503 1245456  279756 6198715  5e95bb a/vmlinux
+4658706 1246864  279756 6185326  5e616e b/vmlinux
+
+$ ./scripts/bloat-o-meter a/vmlinux b/vmlinux
+add/remove: 28/30 grow/shrink: 42/399 up/down: 10986/-29025 (-18039)
+...
+Total: Before=4709315, After=4691276, chg -0.38%
+
+Booting nSIM with haps_ns.dts results in the following memory usage
+reports:
+
+a:
+Memory: 1559104K/1572864K available (3531K kernel code, 595K rwdata, 752K rodata, 136K init, 275K bss, 13760K reserved, 0K cma-reserved, 1048576K highmem)
+
+b:
+Memory: 1559112K/1572864K available (3519K kernel code, 594K rwdata, 752K rodata, 136K init, 280K bss, 13752K reserved, 0K cma-reserved, 1048576K highmem)
 
 Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 ---
- Documentation/vm/memory-model.rst |  3 +--
- arch/arm/Kconfig                  |  8 ++------
- arch/arm/mach-bcm/Kconfig         |  1 -
- arch/arm/mach-davinci/Kconfig     |  1 -
- arch/arm/mach-exynos/Kconfig      |  1 -
- arch/arm/mach-highbank/Kconfig    |  1 -
- arch/arm/mach-omap2/Kconfig       |  1 -
- arch/arm/mach-s5pv210/Kconfig     |  1 -
- arch/arm/mach-tango/Kconfig       |  1 -
- fs/proc/kcore.c                   |  2 --
- include/linux/mmzone.h            | 31 -------------------------------
- mm/mmzone.c                       | 14 --------------
- mm/vmstat.c                       |  4 ----
- 13 files changed, 3 insertions(+), 66 deletions(-)
+ arch/arc/Kconfig            |  3 ++-
+ arch/arc/include/asm/page.h | 20 +++++++++++++++++---
+ arch/arc/mm/init.c          | 29 ++++++++++++++++++++++-------
+ 3 files changed, 41 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/vm/memory-model.rst b/Documentation/vm/memory-model.rst
-index 9daadf9faba1..ce398a7dc6cd 100644
---- a/Documentation/vm/memory-model.rst
-+++ b/Documentation/vm/memory-model.rst
-@@ -51,8 +51,7 @@ call :c:func:`free_area_init` function. Yet, the mappings array is not
- usable until the call to :c:func:`memblock_free_all` that hands all the
- memory to the page allocator.
+diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
+index 0a89cc9def65..c874f8ab0341 100644
+--- a/arch/arc/Kconfig
++++ b/arch/arc/Kconfig
+@@ -67,6 +67,7 @@ config GENERIC_CSUM
  
--If an architecture enables `CONFIG_ARCH_HAS_HOLES_MEMORYMODEL` option,
--it may free parts of the `mem_map` array that do not cover the
-+An architecture may free parts of the `mem_map` array that do not cover the
- actual physical pages. In such case, the architecture specific
- :c:func:`pfn_valid` implementation should take the holes in the
- `mem_map` into account.
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index fe2f17eb2b50..83adc46c1e67 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -25,7 +25,7 @@ config ARM
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_HAVE_CUSTOM_GPIO_H
- 	select ARCH_HAS_GCOV_PROFILE_ALL
--	select ARCH_KEEP_MEMBLOCK if HAVE_ARCH_PFN_VALID || KEXEC
-+	select ARCH_KEEP_MEMBLOCK
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_NO_SG_CHAIN if !ARM_HAS_SG_CHAIN
- 	select ARCH_OPTIONAL_KERNEL_RWX if ARCH_HAS_STRICT_KERNEL_RWX
-@@ -519,7 +519,6 @@ config ARCH_S3C24XX
- config ARCH_OMAP1
- 	bool "TI OMAP1"
- 	depends on MMU
--	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select ARCH_OMAP
- 	select CLKDEV_LOOKUP
- 	select CLKSRC_MMIO
-@@ -1479,9 +1478,6 @@ config OABI_COMPAT
- 	  UNPREDICTABLE (in fact it can be predicted that it won't work
- 	  at all). If in doubt say N.
+ config ARCH_DISCONTIGMEM_ENABLE
+ 	def_bool n
++	depends on BROKEN
  
--config ARCH_HAS_HOLES_MEMORYMODEL
--	bool
--
- config ARCH_SELECT_MEMORY_MODEL
- 	bool
- 
-@@ -1493,7 +1489,7 @@ config ARCH_SPARSEMEM_ENABLE
- 	select SPARSEMEM_STATIC if SPARSEMEM
- 
- config HAVE_ARCH_PFN_VALID
--	def_bool ARCH_HAS_HOLES_MEMORYMODEL || !SPARSEMEM
-+	def_bool y
+ config ARCH_FLATMEM_ENABLE
+ 	def_bool y
+@@ -506,7 +507,7 @@ config LINUX_RAM_BASE
  
  config HIGHMEM
  	bool "High Memory Support"
-diff --git a/arch/arm/mach-bcm/Kconfig b/arch/arm/mach-bcm/Kconfig
-index ae790908fc74..9b594ae98153 100644
---- a/arch/arm/mach-bcm/Kconfig
-+++ b/arch/arm/mach-bcm/Kconfig
-@@ -211,7 +211,6 @@ config ARCH_BRCMSTB
- 	select BCM7038_L1_IRQ
- 	select BRCMSTB_L2_IRQ
- 	select BCM7120_L2_IRQ
--	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select ZONE_DMA if ARM_LPAE
- 	select SOC_BRCMSTB
- 	select SOC_BUS
-diff --git a/arch/arm/mach-davinci/Kconfig b/arch/arm/mach-davinci/Kconfig
-index f56ff8c24043..de11030748d0 100644
---- a/arch/arm/mach-davinci/Kconfig
-+++ b/arch/arm/mach-davinci/Kconfig
-@@ -5,7 +5,6 @@ menuconfig ARCH_DAVINCI
- 	depends on ARCH_MULTI_V5
- 	select DAVINCI_TIMER
- 	select ZONE_DMA
--	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select PM_GENERIC_DOMAINS if PM
- 	select PM_GENERIC_DOMAINS_OF if PM && OF
- 	select REGMAP_MMIO
-diff --git a/arch/arm/mach-exynos/Kconfig b/arch/arm/mach-exynos/Kconfig
-index d2d249706ebb..56d272967fc0 100644
---- a/arch/arm/mach-exynos/Kconfig
-+++ b/arch/arm/mach-exynos/Kconfig
-@@ -8,7 +8,6 @@
- menuconfig ARCH_EXYNOS
- 	bool "Samsung Exynos"
- 	depends on ARCH_MULTI_V7
--	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select ARCH_SUPPORTS_BIG_ENDIAN
- 	select ARM_AMBA
- 	select ARM_GIC
-diff --git a/arch/arm/mach-highbank/Kconfig b/arch/arm/mach-highbank/Kconfig
-index 1bc68913d62c..9de38ce8124f 100644
---- a/arch/arm/mach-highbank/Kconfig
-+++ b/arch/arm/mach-highbank/Kconfig
-@@ -2,7 +2,6 @@
- config ARCH_HIGHBANK
- 	bool "Calxeda ECX-1000/2000 (Highbank/Midway)"
- 	depends on ARCH_MULTI_V7
--	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select ARCH_SUPPORTS_BIG_ENDIAN
- 	select ARM_AMBA
- 	select ARM_ERRATA_764369 if SMP
-diff --git a/arch/arm/mach-omap2/Kconfig b/arch/arm/mach-omap2/Kconfig
-index 3ee7bdff86b2..89fe1572c142 100644
---- a/arch/arm/mach-omap2/Kconfig
-+++ b/arch/arm/mach-omap2/Kconfig
-@@ -94,7 +94,6 @@ config SOC_DRA7XX
- config ARCH_OMAP2PLUS
- 	bool
- 	select ARCH_HAS_BANDGAP
--	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select ARCH_HAS_RESET_CONTROLLER
- 	select ARCH_OMAP
- 	select CLKSRC_MMIO
-diff --git a/arch/arm/mach-s5pv210/Kconfig b/arch/arm/mach-s5pv210/Kconfig
-index 95d4e8284866..d644b45bc29d 100644
---- a/arch/arm/mach-s5pv210/Kconfig
-+++ b/arch/arm/mach-s5pv210/Kconfig
-@@ -8,7 +8,6 @@
- config ARCH_S5PV210
- 	bool "Samsung S5PV210/S5PC110"
- 	depends on ARCH_MULTI_V7
--	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select ARM_VIC
- 	select CLKSRC_SAMSUNG_PWM
- 	select COMMON_CLK_SAMSUNG
-diff --git a/arch/arm/mach-tango/Kconfig b/arch/arm/mach-tango/Kconfig
-index 25b2fd434861..a9eeda36aeb1 100644
---- a/arch/arm/mach-tango/Kconfig
-+++ b/arch/arm/mach-tango/Kconfig
-@@ -3,7 +3,6 @@ config ARCH_TANGO
- 	bool "Sigma Designs Tango4 (SMP87xx)"
- 	depends on ARCH_MULTI_V7
- 	# Cortex-A9 MPCore r3p0, PL310 r3p2
--	select ARCH_HAS_HOLES_MEMORYMODEL
- 	select ARM_ERRATA_754322
- 	select ARM_ERRATA_764369 if SMP
- 	select ARM_ERRATA_775420
-diff --git a/fs/proc/kcore.c b/fs/proc/kcore.c
-index e502414b3556..4d2e64e9016c 100644
---- a/fs/proc/kcore.c
-+++ b/fs/proc/kcore.c
-@@ -193,8 +193,6 @@ kclist_add_private(unsigned long pfn, unsigned long nr_pages, void *arg)
- 		return 1;
+-	select ARCH_DISCONTIGMEM_ENABLE
++	select HAVE_ARCH_PFN_VALID
+ 	help
+ 	  With ARC 2G:2G address split, only upper 2G is directly addressable by
+ 	  kernel. Enable this to potentially allow access to rest of 2G and PAE
+diff --git a/arch/arc/include/asm/page.h b/arch/arc/include/asm/page.h
+index b0dfed0f12be..23e41e890eda 100644
+--- a/arch/arc/include/asm/page.h
++++ b/arch/arc/include/asm/page.h
+@@ -82,11 +82,25 @@ typedef pte_t * pgtable_t;
+  */
+ #define virt_to_pfn(kaddr)	(__pa(kaddr) >> PAGE_SHIFT)
  
- 	p = pfn_to_page(pfn);
--	if (!memmap_valid_within(pfn, p, page_zone(p)))
--		return 1;
+-#define ARCH_PFN_OFFSET		virt_to_pfn(CONFIG_LINUX_RAM_BASE)
++/*
++ * When HIGHMEM is enabled we have holes in the memory map so we need
++ * pfn_valid() that takes into account the actual extents of the physical
++ * memory
++ */
++#ifdef CONFIG_HIGHMEM
++
++extern unsigned long arch_pfn_offset;
++#define ARCH_PFN_OFFSET		arch_pfn_offset
++
++extern int pfn_valid(unsigned long pfn);
++#define pfn_valid		pfn_valid
  
- 	ent = kmalloc(sizeof(*ent), GFP_KERNEL);
- 	if (!ent)
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 876600a6e891..7385871768d4 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1440,37 +1440,6 @@ void sparse_init(void);
- #define pfn_valid_within(pfn) (1)
+-#ifdef CONFIG_FLATMEM
++#else /* CONFIG_HIGHMEM */
++
++#define ARCH_PFN_OFFSET		virt_to_pfn(CONFIG_LINUX_RAM_BASE)
+ #define pfn_valid(pfn)		(((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
+-#endif
++
++#endif /* CONFIG_HIGHMEM */
+ 
+ /*
+  * __pa, __va, virt_to_page (ALERT: deprecated, don't use them)
+diff --git a/arch/arc/mm/init.c b/arch/arc/mm/init.c
+index 3a35b82a718e..ce07e697916c 100644
+--- a/arch/arc/mm/init.c
++++ b/arch/arc/mm/init.c
+@@ -28,6 +28,8 @@ static unsigned long low_mem_sz;
+ static unsigned long min_high_pfn, max_high_pfn;
+ static phys_addr_t high_mem_start;
+ static phys_addr_t high_mem_sz;
++unsigned long arch_pfn_offset;
++EXPORT_SYMBOL(arch_pfn_offset);
  #endif
  
--#ifdef CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
--/*
-- * pfn_valid() is meant to be able to tell if a given PFN has valid memmap
-- * associated with it or not. This means that a struct page exists for this
-- * pfn. The caller cannot assume the page is fully initialized in general.
-- * Hotplugable pages might not have been onlined yet. pfn_to_online_page()
-- * will ensure the struct page is fully online and initialized. Special pages
-- * (e.g. ZONE_DEVICE) are never onlined and should be treated accordingly.
-- *
-- * In FLATMEM, it is expected that holes always have valid memmap as long as
-- * there is valid PFNs either side of the hole. In SPARSEMEM, it is assumed
-- * that a valid section has a memmap for the entire section.
-- *
-- * However, an ARM, and maybe other embedded architectures in the future
-- * free memmap backing holes to save memory on the assumption the memmap is
-- * never used. The page_zone linkages are then broken even though pfn_valid()
-- * returns true. A walker of the full memmap must then do this additional
-- * check to ensure the memmap they are looking at is sane by making sure
-- * the zone and PFN linkages are still valid. This is expensive, but walkers
-- * of the full memmap are extremely rare.
-- */
--bool memmap_valid_within(unsigned long pfn,
--					struct page *page, struct zone *zone);
--#else
--static inline bool memmap_valid_within(unsigned long pfn,
--					struct page *page, struct zone *zone)
--{
--	return true;
--}
--#endif /* CONFIG_ARCH_HAS_HOLES_MEMORYMODEL */
+ #ifdef CONFIG_DISCONTIGMEM
+@@ -98,16 +100,11 @@ void __init setup_arch_memory(void)
+ 	init_mm.brk = (unsigned long)_end;
+ 
+ 	/* first page of system - kernel .vector starts here */
+-	min_low_pfn = ARCH_PFN_OFFSET;
++	min_low_pfn = virt_to_pfn(CONFIG_LINUX_RAM_BASE);
+ 
+ 	/* Last usable page of low mem */
+ 	max_low_pfn = max_pfn = PFN_DOWN(low_mem_start + low_mem_sz);
+ 
+-#ifdef CONFIG_FLATMEM
+-	/* pfn_valid() uses this */
+-	max_mapnr = max_low_pfn - min_low_pfn;
+-#endif
 -
- #endif /* !__GENERATING_BOUNDS.H */
- #endif /* !__ASSEMBLY__ */
- #endif /* _LINUX_MMZONE_H */
-diff --git a/mm/mmzone.c b/mm/mmzone.c
-index 4686fdc23bb9..f337831affc2 100644
---- a/mm/mmzone.c
-+++ b/mm/mmzone.c
-@@ -72,20 +72,6 @@ struct zoneref *__next_zones_zonelist(struct zoneref *z,
- 	return z;
+ 	/*------------- bootmem allocator setup -----------------------*/
+ 
+ 	/*
+@@ -153,7 +150,9 @@ void __init setup_arch_memory(void)
+ 	 * DISCONTIGMEM in turns requires multiple nodes. node 0 above is
+ 	 * populated with normal memory zone while node 1 only has highmem
+ 	 */
++#ifdef CONFIG_DISCONTIGMEM
+ 	node_set_online(1);
++#endif
+ 
+ 	min_high_pfn = PFN_DOWN(high_mem_start);
+ 	max_high_pfn = PFN_DOWN(high_mem_start + high_mem_sz);
+@@ -161,8 +160,15 @@ void __init setup_arch_memory(void)
+ 	max_zone_pfn[ZONE_HIGHMEM] = min_low_pfn;
+ 
+ 	high_memory = (void *)(min_high_pfn << PAGE_SHIFT);
++
++	arch_pfn_offset = min(min_low_pfn, min_high_pfn);
+ 	kmap_init();
+-#endif
++
++#else /* CONFIG_HIGHMEM */
++	/* pfn_valid() uses this when FLATMEM=y and HIGHMEM=n */
++	max_mapnr = max_low_pfn - min_low_pfn;
++
++#endif /* CONFIG_HIGHMEM */
+ 
+ 	free_area_init(max_zone_pfn);
  }
- 
--#ifdef CONFIG_ARCH_HAS_HOLES_MEMORYMODEL
--bool memmap_valid_within(unsigned long pfn,
--					struct page *page, struct zone *zone)
--{
--	if (page_to_pfn(page) != pfn)
--		return false;
--
--	if (page_zone(page) != zone)
--		return false;
--
--	return true;
--}
--#endif /* CONFIG_ARCH_HAS_HOLES_MEMORYMODEL */
--
- void lruvec_init(struct lruvec *lruvec)
- {
- 	enum lru_list lru;
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 698bc0bc18d1..e292e63afebf 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -1503,10 +1503,6 @@ static void pagetypeinfo_showblockcount_print(struct seq_file *m,
- 		if (!page)
- 			continue;
- 
--		/* Watch for unexpected holes punched in the memmap */
--		if (!memmap_valid_within(pfn, page, zone))
--			continue;
--
- 		if (page_zone(page) != zone)
- 			continue;
- 
+@@ -190,3 +196,12 @@ void __init mem_init(void)
+ 	highmem_init();
+ 	mem_init_print_info(NULL);
+ }
++
++#ifdef CONFIG_HIGHMEM
++int pfn_valid(unsigned long pfn)
++{
++	return (pfn >= min_high_pfn && pfn <= max_high_pfn) ||
++		(pfn >= min_low_pfn && pfn <= max_low_pfn);
++}
++EXPORT_SYMBOL(pfn_valid);
++#endif
 -- 
 2.28.0
 
