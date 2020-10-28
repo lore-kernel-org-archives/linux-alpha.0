@@ -1,39 +1,38 @@
-From: Michael Schmitz <schmitzmic@gmail.com>
+From: Mike Rapoport <rppt@kernel.org>
 Subject: Re: [PATCH 11/13] m68k/mm: make node data and node setup depend on
  CONFIG_DISCONTIGMEM
-Date: Thu, 29 Oct 2020 07:14:38 +1300
-Message-ID: <fd55643a-a17b-5a23-4c77-9e832c1e5128@gmail.com>
+Date: Wed, 28 Oct 2020 20:57:41 +0200
+Message-ID: <20201028185741.GI1428094@kernel.org>
 References: <20201027112955.14157-1-rppt@kernel.org>
  <20201027112955.14157-12-rppt@kernel.org>
  <CAMuHMdU4r4CJ1kBu7gx1jkputjDn2S8Lqkj7RPfa3XUnM1QOFg@mail.gmail.com>
  <20201028111631.GF1428094@kernel.org>
+ <fd55643a-a17b-5a23-4c77-9e832c1e5128@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Type:
-	Content-Transfer-Encoding:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:Message-ID:From:
-	References:To:Subject:Reply-To:Content-ID:Content-Description:Resent-Date:
+	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+	Content-Type:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:Message-ID:
+	Subject:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=kYZSC1m5xi2q968hBtqPfRGgUa42CKPv9nF6pH60T6U=; b=QBwIEkuS049dS9V8zVoMnTSiG
-	CUpmIRHPaY1kXuIMvkFIZAf5bvOg042iDNGnLrmnZAJ2dGkvsUQhm30hi+p8QC0iqsOFxJt+mwWHp
-	k0SUiMrIg/yg9LdxIhbmBCHPZUcrApLwazwfi+jlyMp0p7ULlOX87ZiSQrXr2dFeGjXEZDnYxF3Cq
-	QsU2ipDuRb1OPPW0aqBAw4v/1I0NuHiqWC6M0zyB4sx+GeuPNsAsk4fRgPFOLwG0sHaxJ2KjcsPLi
-	CGogjx/hJRvjigY/AzOdsrFypw2ZNA11BxFLJBQAV9LRtazJk5nHpmihg7xUW3/0wuJQDnsz09a5G
-	AqscqVbEQ==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-transfer-encoding:content-language;
- bh=s9cgYbyfQqq5UrYB+51r7q1mjBjejxSSOe4Pf+0dXSc=;
- b=rXNAYzp0HeMoYo9Rs2j7a7wVExN8Iyb5gKJa3ilnzOfGHJwcd+RFugTbbv4YUD3Mnj
- 2VUO9dlRzbWeNmhZQWRmIldeVTDDuir4KELQdTV8pKPdUaKgxaJ0IfJxBnM0G7vRBCYg
- wiT8wBbr85sNx5oNi5w1j5zdrDvcm3y/EvCc8kg4eRMh6e4OhiTUEBlFVB0b+ClJRPsJ
- TUQPC9Lpnd7T4yc2WOtO43nneYC6WKlAT53mGvvaNge6Yx9M/aeXZ+pqCJrHxuwPUVlT
- Z3sxPuGh8uWER8Un/fum42c093n9HO5gFE6T+nYBivL+DRtjuefzSY2LaKQepJTmgDcw
- UYFA==
-In-Reply-To: <20201028111631.GF1428094@kernel.org>
-Content-Language: en-US
+	 bh=nW7k5dFoaVl1Gg4qW9CjoQoQ9yPtdeG5/oR0sb6M5No=; b=XbrdNWGlMpNVIzAqo88imvc0j
+	YGihg+7aKW+vf5TiTmFosPzhHZzHEGfVgk4pR0VCBPyzdFkiFThNHZ1X4nvd8BtUVyr+t+RRNDBJ1
+	5nsFmBGew8TAQ/vo636Nc9OzZqmqkX4epF7pfzLzDkCRYddVrS+ObRimFFztin2ItO3a7syJ4XA6b
+	beoa4pLjxsljzTcY1wiVPhFo06HJrWpUU7wYSmyF38rJHTRX5edenv8T3gmvGsbbpGYLK9Gj1qaTy
+	hgsu6cmMvR/AoZUPYVH+bHatHBKRD8uyvJf6KvUcTZDaHRtU56Ew9/et+NLzuSXy8ocRwS9i12oaD
+	cS4AKovBg==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1603911472;
+ bh=zK9DfVuZHDzMdXj+yhDB8KulDOu8wW0+2VHqzzJ4VCs=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=0wRwxQSg4yE6tWskIfT82ofwXzSEJ/5NZugomFl0MhuujRXgT16OkYNSNiruGCQgb
+ 4FmuFCHOOX4U7+tixFCp9eSridGpAq2f1ngfZ2ujosWNGX6mwHBQzCWsAku7+1/9jF
+ 4Ekc11AXMUb29fsDTzF2sQtG1jcmaJnC2BBUIYCs=
+Content-Disposition: inline
+In-Reply-To: <fd55643a-a17b-5a23-4c77-9e832c1e5128@gmail.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
@@ -44,59 +43,125 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Mike Rapoport <rppt@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Linux MM <linux-mm@kvack.org>, Will Deacon <will@kernel.org>, Greg Ungerer <gerg@linux-m68k.org>, Jonathan Corbet <corbet@lwn.net>, Meelis Roos <mroos@linux.ee>, Russell King <linux@armlinux.org.uk>, Mike Rapoport <rppt@linux.ibm.com>, Matt Turner <mattst88@gmail.com>, arcml <linux-snps-arc@lists.infradead.org>, Alexey Dobriyan <adobriyan@gmail.com>, linux-m68k <linux-m68k@lists.linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, Linux FS Devel <linux-fsdevel@vger.kernel.org>, Andre
+To: Michael Schmitz <schmitzmic@gmail.com>
+Cc: "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Linux MM <linux-mm@kvack.org>, Will Deacon <will@kernel.org>, Greg Ungerer <gerg@linux-m68k.org>, Jonathan Corbet <corbet@lwn.net>, Meelis Roos <mroos@linux.ee>, Russell King <linux@armlinux.org.uk>, Mike Rapoport <rppt@linux.ibm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, arcml <linux-snps-arc@lists.infradead.org>, Alexey Dobriyan <adobriyan@gmail.com>, linux-m68k <linux-m68k@lists.linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, Linux
 
-SGkgTWlrZSwKCk9uIDI5LzEwLzIwIDEyOjE2IEFNLCBNaWtlIFJhcG9wb3J0IHdyb3RlOgo+IEhp
-IEdlZXJ0LAo+Cj4gT24gV2VkLCBPY3QgMjgsIDIwMjAgYXQgMTA6MjU6NDlBTSArMDEwMCwgR2Vl
-cnQgVXl0dGVyaG9ldmVuIHdyb3RlOgo+PiBIaSBNaWtlLAo+Pgo+PiBPbiBUdWUsIE9jdCAyNywg
-MjAyMCBhdCAxMjozMSBQTSBNaWtlIFJhcG9wb3J0IDxycHB0QGtlcm5lbC5vcmc+IHdyb3RlOgo+
-Pj4gRnJvbTogTWlrZSBSYXBvcG9ydCA8cnBwdEBsaW51eC5pYm0uY29tPgo+Pj4KPj4+IFRoZSBw
-Z19kYXRhX3Qgbm9kZSBzdHJ1Y3R1cmVzIGFuZCB0aGVpciBpbml0aWFsaXphdGlvbiBjdXJyZW50
-bHkgZGVwZW5kcyBvbgo+Pj4gIUNPTkZJR19TSU5HTEVfTUVNT1JZX0NIVU5LLiBTaW5jZSB0aGV5
-IGFyZSByZXF1aXJlZCBvbmx5IGZvciBESVNDT05USUdNRU0KPj4+IG1ha2UgdGhpcyBkZXBlbmRl
-bmN5IGV4cGxpY2l0IGFuZCByZXBsYWNlIHVzYWdlIG9mCj4+PiBDT05GSUdfU0lOR0xFX01FTU9S
-WV9DSFVOSyB3aXRoIENPTkZJR19ESVNDT05USUdNRU0gd2hlcmUgYXBwcm9wcmlhdGUuCj4+Pgo+
-Pj4gVGhlIENPTkZJR19TSU5HTEVfTUVNT1JZX0NIVU5LIHdhcyBpbXBsaWNpdGx5IGRpc2FibGVk
-IG9uIHRoZSBDb2xkRmlyZSBNTVUKPj4+IHZhcmlhbnQsIGFsdGhvdWdoIGl0IGFsd2F5cyBwcmVz
-dW1lZCBhIHNpbmdsZSBtZW1vcnkgYmFuay4gQXMgdGhlcmUgaXMgbm8KPj4+IGFjdHVhbCBuZWVk
-IGZvciBESVNDT05USUdNRU0gaW4gdGhpcyBjYXNlLCBtYWtlIHN1cmUgdGhhdCBDb2xkRmlyZSBN
-TVUKPj4+IHN5c3RlbXMgc2V0IENPTkZJR19TSU5HTEVfTUVNT1JZX0NIVU5LIHRvICd5Jy4KPj4+
-Cj4+PiBTaWduZWQtb2ZmLWJ5OiBNaWtlIFJhcG9wb3J0IDxycHB0QGxpbnV4LmlibS5jb20+Cj4+
-IFRoYW5rcyBmb3IgeW91ciBwYXRjaCEKPj4KPj4+IC0tLQo+Pj4gICBhcmNoL202OGsvS2NvbmZp
-Zy5jcHUgICAgICAgICAgIHwgNiArKystLS0KPj4+ICAgYXJjaC9tNjhrL2luY2x1ZGUvYXNtL3Bh
-Z2VfbW0uaCB8IDIgKy0KPj4+ICAgYXJjaC9tNjhrL21tL2luaXQuYyAgICAgICAgICAgICB8IDQg
-KystLQo+Pj4gICAzIGZpbGVzIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlvbnMo
-LSkKPj4gSXMgdGhlcmUgYW55IHNwZWNpZmljIHJlYXNvbiB5b3UgZGlkbid0IGNvbnZlcnQgdGhl
-IGNoZWNrcyBmb3IKPj4gQ09ORklHX1NJTkdMRV9NRU1PUllfQ0hVTksgaW4gYXJjaC9tNjhrL2tl
-cm5lbC9zZXR1cF9tbS5jCj4gSW4gYXJjaC9tNjhrL2tlcm5lbC9zZXR1cF9tbS5jIHRoZSBDT05G
-SUdfU0lOR0xFX01FTU9SWV9DSFVOSyBpcyBuZWVkZWQKPiBmb3IgdGhlIGNhc2Ugd2hlbiBhIHN5
-c3RlbSBoYXMgdHdvIGJhbmtzLCB0aGUga2VybmVsIGlzIGxvYWRlZCBpbnRvIHRoZQo+IHNlY29u
-ZCBiYW5rIGFuZCBzbyB0aGUgZmlyc3QgYmFuayBjYW5ub3QgYmUgdXNlZCBhcyBub3JtYWwgbWVt
-b3J5LiBJdAo+IGRvZXMgbm90IG1hdHRlciB3aGF0IG1lbW9yeSBtb2RlbCB3aWxsIGJlIHVzZWQg
-aW4gdGhpcyBjYXNlLgoKClRoYXQgY2FzZSB1c2VkIHRvIGJlIGRldGVjdGVkIGp1c3QgZmluZSBh
-dCBydW4gdGltZSAoYnkgZGludCBvZiB0aGUgCnNlY29uZCBtZW1vcnkgY2h1bmsgaGF2aW5nIGFu
-IGFkZHJlc3MgYmVsb3cgdGhlIGZpcnN0OyB0aGUgY2h1bmsgdGhlIAprZXJuZWwgcmVzaWRlcyBp
-biBpcyBhbHdheXMgbGlzdGVkIGZpcnN0KSwgZXZlbiB3aXRob3V0IHVzaW5nIApDT05GSUdfU0lO
-R0xFX01FTU9SWV9DSFVOSy4KClVubGVzcyB5b3UgY2hhbmdlZCB0aGF0IGJlaGF2aW91ciAoYW5k
-IEkgc2VlIG5vdGhpbmcgaW4geW91ciBwYXRjaCB0aGF0IAp3b3VsZCBpbmRpY2F0ZSB0aGF0KSwg
-dGhpcyBpcyBzdGlsbCB0cnVlLgoKQ29udmVydGluZyB0aGUgY2hlY2sgYXMgR2VlcnQgc3VnZ2Vz
-dGVkLCB3aXRob3V0IGFsc28gYWRkaW5nIGEgdGVzdCBmb3IgCm91dC1vZi1vcmRlciBtZW1vcnkg
-YmFuayBhZGRyZXNzZXMsIHdvdWxkIGltcGxpY2l0bHkgdHJlYXQgRElTQ09OVElHTUVNIAphc8Kg
-IFNJTkdMRV9NRU1PUllfQ0hVTkssIHJlZ2FyZGxlc3Mgb2YgYmFuayBvcmRlcmluZy4gSSBkb24n
-dCB0aGluayB0aGF0IAppcyB3aGF0IHdlIHJlYWxseSB3YW50PwoKQ2hlZXJzLAoKIMKgwqDCoCBN
-aWNoYWVsCgoKPgo+PiBhbmQgYXJjaC9tNjhrL2luY2x1ZGUvYXNtL3ZpcnRjb252ZXJ0Lmg/Cj4g
-ICAKPiBJIHJlbWVtYmVyIEkgaGFkIGJ1aWxkIGVycm9ycyBhbmQgdHJvdWJsZXMgd2l0aCBpbmNs
-dWRlIGZpbGUKPiBkZXBlbmRlbmNpZXMgaWYgSSBjaGFuZ2VkIGl0IHRoZXJlLCBidXQgSSBtaWdo
-dCBiZSBtaXN0YWtlbi4gSSdsbAo+IHJlY2hlY2sgYWdhaW4uCj4KPj4gR3J7b2V0amUsZWV0aW5n
-fXMsCj4+Cj4+ICAgICAgICAgICAgICAgICAgICAgICAgICBHZWVydAo+Pgo+PiAtLSAKPj4gR2Vl
-cnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3MgbG90cyBvZiBMaW51eCBiZXlvbmQgaWEzMiAtLSBn
-ZWVydEBsaW51eC1tNjhrLm9yZwo+Pgo+PiBJbiBwZXJzb25hbCBjb252ZXJzYXRpb25zIHdpdGgg
-dGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4gQnV0Cj4+IHdoZW4gSSdt
-IHRhbGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIgb3Igc29tZXRo
-aW5nIGxpa2UgdGhhdC4KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLS0gTGlu
-dXMgVG9ydmFsZHMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMu
-aW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2xpbnV4LWFybS1rZXJuZWwK
+On Thu, Oct 29, 2020 at 07:14:38AM +1300, Michael Schmitz wrote:
+> Hi Mike,
+> =
+
+> On 29/10/20 12:16 AM, Mike Rapoport wrote:
+> > Hi Geert,
+> > =
+
+> > On Wed, Oct 28, 2020 at 10:25:49AM +0100, Geert Uytterhoeven wrote:
+> > > Hi Mike,
+> > > =
+
+> > > On Tue, Oct 27, 2020 at 12:31 PM Mike Rapoport <rppt@kernel.org> wrot=
+e:
+> > > > From: Mike Rapoport <rppt@linux.ibm.com>
+> > > > =
+
+> > > > The pg_data_t node structures and their initialization currently de=
+pends on
+> > > > !CONFIG_SINGLE_MEMORY_CHUNK. Since they are required only for DISCO=
+NTIGMEM
+> > > > make this dependency explicit and replace usage of
+> > > > CONFIG_SINGLE_MEMORY_CHUNK with CONFIG_DISCONTIGMEM where appropria=
+te.
+> > > > =
+
+> > > > The CONFIG_SINGLE_MEMORY_CHUNK was implicitly disabled on the ColdF=
+ire MMU
+> > > > variant, although it always presumed a single memory bank. As there=
+ is no
+> > > > actual need for DISCONTIGMEM in this case, make sure that ColdFire =
+MMU
+> > > > systems set CONFIG_SINGLE_MEMORY_CHUNK to 'y'.
+> > > > =
+
+> > > > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> > > Thanks for your patch!
+> > > =
+
+> > > > ---
+> > > >   arch/m68k/Kconfig.cpu           | 6 +++---
+> > > >   arch/m68k/include/asm/page_mm.h | 2 +-
+> > > >   arch/m68k/mm/init.c             | 4 ++--
+> > > >   3 files changed, 6 insertions(+), 6 deletions(-)
+> > > Is there any specific reason you didn't convert the checks for
+> > > CONFIG_SINGLE_MEMORY_CHUNK in arch/m68k/kernel/setup_mm.c
+> > In arch/m68k/kernel/setup_mm.c the CONFIG_SINGLE_MEMORY_CHUNK is needed
+> > for the case when a system has two banks, the kernel is loaded into the
+> > second bank and so the first bank cannot be used as normal memory. It
+> > does not matter what memory model will be used in this case.
+> =
+
+> =
+
+> That case used to be detected just fine at run time (by dint of the second
+> memory chunk having an address below the first; the chunk the kernel resi=
+des
+> in is always listed first), even without using CONFIG_SINGLE_MEMORY_CHUNK.
+ =
+
+Right, CONFIG_SINGLE_MEMORY_CHUNK in arch/m68k/kernel/setup_mm.c is used
+to force using a single bank of memory regardless of run time detection. =
+
+
+> Unless you changed that behaviour (and I see nothing in your patch that
+> would indicate that), this is still true.
+> =
+
+> Converting the check as Geert suggested, without also adding a test for
+> out-of-order memory bank addresses, would implicitly treat DISCONTIGMEM a=
+s=A0
+> SINGLE_MEMORY_CHUNK, regardless of bank ordering. I don't think that is w=
+hat
+> we really want?
+
+It is in a way the case now when !SINGLE_MEMORY_CHUNK =3D=3D DISCONTIGMEM.
+So forcing SIGNLE_MEMORY_CHUNK at compile time would also mean forcing
+FLATMEM.
+
+After these changes I think SINGLE_MEMORY_CHUNK is not needed at all.
+
+> Cheers,
+> =
+
+> =A0=A0=A0 Michael
+> =
+
+> =
+
+> > =
+
+> > > and arch/m68k/include/asm/virtconvert.h?
+> > I remember I had build errors and troubles with include file
+> > dependencies if I changed it there, but I might be mistaken. I'll
+> > recheck again.
+> > =
+
+> > > Gr{oetje,eeting}s,
+> > > =
+
+> > >                          Geert
+> > > =
+
+> > > -- =
+
+> > > Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linu=
+x-m68k.org
+> > > =
+
+> > > In personal conversations with technical people, I call myself a hack=
+er. But
+> > > when I'm talking to journalists I just say "programmer" or something =
+like that.
+> > >                                  -- Linus Torvalds
+
+-- =
+
+Sincerely yours,
+Mike.
