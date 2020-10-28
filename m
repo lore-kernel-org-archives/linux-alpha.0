@@ -1,105 +1,76 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: [PATCH 13/13] m68k: deprecate DISCONTIGMEM
-Date: Tue, 27 Oct 2020 13:29:55 +0200
-Message-ID: <20201027112955.14157-14-rppt@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 11/13] m68k/mm: make node data and node setup depend on
+ CONFIG_DISCONTIGMEM
+Date: Wed, 28 Oct 2020 10:25:49 +0100
+Message-ID: <CAMuHMdU4r4CJ1kBu7gx1jkputjDn2S8Lqkj7RPfa3XUnM1QOFg@mail.gmail.com>
 References: <20201027112955.14157-1-rppt@kernel.org>
+ <20201027112955.14157-12-rppt@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603798294;
-        bh=Chq+OW8jPYeS0x1/w/NuhbNqJg7T410wGKW7Vwcmmh0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AC/jQYaY123wRTdPEyISNQSkrk6fK6qDgIgZMnbaYj/xrL1krmjOm1LUo+gXLR4O/
-         tvpoLxCRFDQgp+0/HxwTDihCaFuJJPQpjNci9DHja12IL0KC4fU5Ba+WHbgEJL1Jgn
-         IrewywqVQYbPHxnQr4exw1rwLPXvUWiSB9GpQpzY=
-In-Reply-To: <20201027112955.14157-1-rppt@kernel.org>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Alexey Dobriyan <adobriyan@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Meelis Roos <mroos@linux.ee>, Michael Schmitz <schmitzmic@gmail.com>, Mike Rapoport <rppt@kernel.org>, Mike Rapoport <rppt@linux.ibm.com>, Russell King <linux@armlinux.org.uk>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Will Deacon <will@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linu
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+	Content-Type:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:To:Subject:Message-ID:Date:From:In-Reply-To:
+	References:MIME-Version:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
+	 bh=U7gMZYLrMU/08wE7w6fQsW3KtA7NGziWCcfCdA8V9fQ=; b=BL/47kH8Oz7N98rdwPGYW6Yj4
+	FbZFscv5z5ia+S0NAL0dQtt86ZDc0+b3pkMynx28Hs1JSlA6Xa1YfYelcJgauG6tL/iqn/Rfl/dY3
+	KHYfMuv8NcVR2lzJ/svWBYIYzul8l0m0Fuix08ylrdcia5Au6X4DLLwwh9Y777be89hM+inMZkX2D
+	dHwS8PZIiB872uNwG9FoQ3yfIH48xwINXRXLi6do9LMj/3/HpOin2B4ZCWDbCUC1gCy3jHpMS4jpu
+	Y/c5J3zPx6vzl0mX7v0gsrZMmk7oPLFnP3otClVfFWhhMiuaK3wultcxsIWItwAN9CDCOSF/87YGx
+	8P17oY5Sw==;
+In-Reply-To: <20201027112955.14157-12-rppt@kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
+To: Mike Rapoport <rppt@kernel.org>
+Cc: "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Linux MM <linux-mm@kvack.org>, Will Deacon <will@kernel.org>, Greg Ungerer <gerg@linux-m68k.org>, Jonathan Corbet <corbet@lwn.net>, Meelis Roos <mroos@linux.ee>, Russell King <linux@armlinux.org.uk>, Mike Rapoport <rppt@linux.ibm.com>, Matt Turner <mattst88@gmail.com>, arcml <linux-snps-arc@lists.infradead.org>, Alexey Dobriyan <adobriyan@gmail.com>, linux-m68k <linux-m68k@lists.linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Michael Schmitz <schmitzmic@gmail.com>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, Linux
 
-From: Mike Rapoport <rppt@linux.ibm.com>
+Hi Mike,
 
-DISCONTIGMEM was intended to provide more efficient support for systems
-with holes in their physical address space that FLATMEM did.
+On Tue, Oct 27, 2020 at 12:31 PM Mike Rapoport <rppt@kernel.org> wrote:
+> From: Mike Rapoport <rppt@linux.ibm.com>
+>
+> The pg_data_t node structures and their initialization currently depends on
+> !CONFIG_SINGLE_MEMORY_CHUNK. Since they are required only for DISCONTIGMEM
+> make this dependency explicit and replace usage of
+> CONFIG_SINGLE_MEMORY_CHUNK with CONFIG_DISCONTIGMEM where appropriate.
+>
+> The CONFIG_SINGLE_MEMORY_CHUNK was implicitly disabled on the ColdFire MMU
+> variant, although it always presumed a single memory bank. As there is no
+> actual need for DISCONTIGMEM in this case, make sure that ColdFire MMU
+> systems set CONFIG_SINGLE_MEMORY_CHUNK to 'y'.
+>
+> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 
-Yet, it's overhead in terms of the memory consumption seems to overweight
-the savings on the unused memory map.
+Thanks for your patch!
 
-For a ARAnyM system with 16 MBytes of FastRAM configured, the memory usage
-reported after page allocator initialization is
+> ---
+>  arch/m68k/Kconfig.cpu           | 6 +++---
+>  arch/m68k/include/asm/page_mm.h | 2 +-
+>  arch/m68k/mm/init.c             | 4 ++--
+>  3 files changed, 6 insertions(+), 6 deletions(-)
 
-Memory: 23828K/30720K available (3206K kernel code, 535K rwdata, 936K rodata, 768K init, 193K bss, 6892K reserved, 0K cma-reserved)
+Is there any specific reason you didn't convert the checks for
+CONFIG_SINGLE_MEMORY_CHUNK in arch/m68k/kernel/setup_mm.c
+and arch/m68k/include/asm/virtconvert.h?
 
-and with DISCONTIGMEM disabled and with relatively large hole in the memory
-map it is:
+Gr{oetje,eeting}s,
 
-Memory: 23864K/30720K available (3197K kernel code, 516K rwdata, 936K rodata, 764K init, 179K bss, 6856K reserved, 0K cma-reserved)
+                        Geert
 
-Moreover, since m68k already has custom pfn_valid() it is possible to
-define HAVE_ARCH_PFN_VALID to enable freeing of unused memory map. The
-minimal size of a hole that can be freed should not be less than
-MAX_ORDER_NR_PAGES so to achieve more substantial memory savings let m68k
-also define custom FORCE_MAX_ZONEORDER.
-
-With FORCE_MAX_ZONEORDER set to 9 memory usage becomes:
-
-Memory: 23880K/30720K available (3197K kernel code, 516K rwdata, 936K rodata, 764K init, 179K bss, 6840K reserved, 0K cma-reserved)
-
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
----
- arch/m68k/Kconfig.cpu | 26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
-
-diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
-index 3af0fca03803..763bc80a27aa 100644
---- a/arch/m68k/Kconfig.cpu
-+++ b/arch/m68k/Kconfig.cpu
-@@ -21,6 +21,7 @@ choice
- config M68KCLASSIC
- 	bool "Classic M68K CPU family support"
- 	select NEED_MULTIPLE_NODES if DISCONTIGMEM
-+	select HAVE_ARCH_PFN_VALID if FLATMEM && !SINGLE_MEMORY_CHUNK
- 
- config COLDFIRE
- 	bool "Coldfire CPU family support"
-@@ -378,11 +379,34 @@ config SINGLE_MEMORY_CHUNK
- 	help
- 	  Ignore all but the first contiguous chunk of physical memory for VM
- 	  purposes.  This will save a few bytes kernel size and may speed up
--	  some operations.  Say N if not sure.
-+	  some operations.
-+	  When this option os set to N, you may want to lower "Maximum zone
-+	  order" to save memory that could be wasted for unused memory map.
-+	  Say N if not sure.
- 
- config ARCH_DISCONTIGMEM_ENABLE
-+	depends on BROKEN
- 	def_bool MMU && !SINGLE_MEMORY_CHUNK
- 
-+config FORCE_MAX_ZONEORDER
-+	int "Maximum zone order" if ADVANCED
-+	depends on !SINGLE_MEMORY_CHUNK
-+	default "11"
-+	help
-+	  The kernel memory allocator divides physically contiguous memory
-+	  blocks into "zones", where each zone is a power of two number of
-+	  pages.  This option selects the largest power of two that the kernel
-+	  keeps in the memory allocator.  If you need to allocate very large
-+	  blocks of physically contiguous memory, then you may need to
-+	  increase this value.
-+
-+	  For systems that have holes in their physical address space this
-+	  value also defines the minimal size of the hole that allows
-+	  freeing unused memory map.
-+
-+	  This config option is actually maximum order plus one. For example,
-+	  a value of 11 means that the largest free memory block is 2^10 pages.
-+
- config 060_WRITETHROUGH
- 	bool "Use write-through caching for 68060 supervisor accesses"
- 	depends on ADVANCED && M68060
 -- 
-2.28.0
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
