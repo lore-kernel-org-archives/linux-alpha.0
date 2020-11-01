@@ -1,96 +1,62 @@
-From: Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH] alpha: add support for TIF_NOTIFY_SIGNAL
-Date: Thu, 29 Oct 2020 10:00:44 -0600
-Message-ID: <e04d1f77-9131-15b4-321a-ba0d9c22ff52@kernel.dk>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] asm-generic: barrier.h: fix ALPHA builds when SMP is not enabled
+Date: Sat, 31 Oct 2020 20:01:59 -0700
+Message-ID: <20201101030159.15858-1-rdunlap@infradead.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=tMp2A0cmGdPXsWoXbDq8YFf8P3UnhjyMeu/E7Fr5588=;
-        b=1cXQbr7SDRQrjOSa7DSUbfWqeKzkdaCWnyGVChqdyoAVUjlYmnKQ0NAgqHyYTlh58n
-         o1hNyeWbUj63beDhxTyb0nz5rTFynU+QaE0jCx0JLNXpJe9GPr0WNToopujZhDnMAx+T
-         JR+8dba/byLD3t+2ZqXypdTCF+tdqKBdaU1GkikZGemwejzW2smhX9Xi2bK7hcFpxeIk
-         VpJuYfLtEcomYoSvzbgc77d6sALuCw2yxJA6YGxUipl6FEPTsnZPZbVtf/vE5vWuhZLd
-         d/eOT9PcwUM3n7n+QUrTMTeRHdWcbURfI7nmGylshJgr4IkewXeXlwrSHE7NhAaJrjzC
-         l50A==
-Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=epwr0xo7+qH8MVywg7EUJv5PcSM06it9MYSIBNMH0zQ=; b=EOYU5hvobvducAvPimZvxhAHwG
+        3vVEggSCO0Lgj8ZcbZ9kvevg3a2xrwii/tXpcP6/RE6m0Z1I2PXzFBazCKuk51T8nTFGEPmE+YNCe
+        lHv1Nvip+Fs7MkZ6P8vTqSJt0NVepf58eyFfJ2x3sFYSMV9BIeioqnjFvxWFi2r7rXYv9m702eUkH
+        w6L8C+f4MRhSoK5ozExBfpp88Y/b1TA4MbCNL+Cfg/dlr9WSYkv3QCz84vFfo83Ch21HRzhtwjd3B
+        cb/UWGiXJOCT9AEnTp0A/Y7tsSCxOvV/4iw+HtUBazCdv1dtcajkMEaWo7UskYjWQ4j8FNw2LMO1S
+        MR1iL24A==;
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>, kernel test robot <lkp@intel.com>, David Howells <dhowells@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 
-Wire up TIF_NOTIFY_SIGNAL handling for alpha.
+<asm-generic/barrier.h> uses barrier() but needs to #include
+<linux/compiler.h> to get a generic definition of it to fix
+build errors in arch/alpha/ builds when CONFIG_SMP is not enabled.
 
+Fixes build errors like this (there are several like this):
+[49 in the kernel config that was supplied by the 0day bot]
+
+In file included from ../arch/alpha/include/asm/barrier.h:21,
+                 from ../arch/alpha/include/asm/atomic.h:6,
+                 from ../include/linux/atomic.h:7,
+                 from ../include/linux/dcache.h:5,
+                 from ../fs/proc/util.c:1:
+../arch/alpha/include/asm/atomic.h: In function 'atomic_add_return_relaxed':
+../include/asm-generic/barrier.h:78:18: error: implicit declaration of function 'barrier' [-Werror=implicit-function-declaration]
+   78 | #define smp_mb() barrier()
+      |                  ^~~~~~~
+
+Fixes: 885df91ca357 ("Create asm-generic/barrier.h")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
 ---
+ include/asm-generic/barrier.h |    1 +
+ 1 file changed, 1 insertion(+)
 
-5.11 has support queued up for TIF_NOTIFY_SIGNAL, see this posting
-for details:
-
-https://lore.kernel.org/io-uring/20201026203230.386348-1-axboe@kernel.dk/
-
-As part of that work, I'm adding TIF_NOTIFY_SIGNAL support to all archs,
-as that will enable a set of cleanups once all of them support it. I'm
-happy carrying this patch if need be, or it can be funelled through the
-arch tree. Let me know.
-
- arch/alpha/include/asm/thread_info.h | 2 ++
- arch/alpha/kernel/entry.S            | 2 +-
- arch/alpha/kernel/signal.c           | 2 +-
- 3 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
-index 807d7b9a1860..2592356e3215 100644
---- a/arch/alpha/include/asm/thread_info.h
-+++ b/arch/alpha/include/asm/thread_info.h
-@@ -62,6 +62,7 @@ register struct thread_info *__current_thread_info __asm__("$8");
- #define TIF_SIGPENDING		2	/* signal pending */
- #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
- #define TIF_SYSCALL_AUDIT	4	/* syscall audit active */
-+#define TIF_NOTIFY_SIGNAL	5	/* signal notifications exist */
- #define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
- #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
- #define TIF_POLLING_NRFLAG	14	/* idle is polling for TIF_NEED_RESCHED */
-@@ -71,6 +72,7 @@ register struct thread_info *__current_thread_info __asm__("$8");
- #define _TIF_NEED_RESCHED	(1<<TIF_NEED_RESCHED)
- #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
- #define _TIF_SYSCALL_AUDIT	(1<<TIF_SYSCALL_AUDIT)
-+#define _TIF_NOTIFY_SIGNAL	(1<<TIF_NOTIFY_SIGNAL)
- #define _TIF_POLLING_NRFLAG	(1<<TIF_POLLING_NRFLAG)
+--- linux-next-20201030.orig/include/asm-generic/barrier.h
++++ linux-next-20201030/include/asm-generic/barrier.h
+@@ -13,6 +13,7 @@
  
- /* Work to do on interrupt/exception return.  */
-diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-index 2e09248f8324..6a90d05cae1f 100644
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -544,7 +544,7 @@ $ret_success:
- 	.align	4
- 	.type	work_pending, @function
- work_pending:
--	and	$17, _TIF_NOTIFY_RESUME | _TIF_SIGPENDING, $2
-+	and	$17, _TIF_NOTIFY_RESUME | _TIF_SIGPENDING, | _TIF_NOTIFY_SIGNAL, $2
- 	bne	$2, $work_notifysig
+ #ifndef __ASSEMBLY__
  
- $work_resched:
-diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
-index 3739efce1ec0..948b89789da8 100644
---- a/arch/alpha/kernel/signal.c
-+++ b/arch/alpha/kernel/signal.c
-@@ -527,7 +527,7 @@ do_work_pending(struct pt_regs *regs, unsigned long thread_flags,
- 			schedule();
- 		} else {
- 			local_irq_enable();
--			if (thread_flags & _TIF_SIGPENDING) {
-+			if (thread_flags & (_TIF_SIGPENDING|_TIF_NOTIFY_SIGNAL)) {
- 				do_signal(regs, r0, r19);
- 				r0 = 0;
- 			} else {
--- 
-2.29.0
-
--- 
-Jens Axboe
-
++#include <linux/compiler.h>
+ #include <asm/rwonce.h>
+ 
+ #ifndef nop
