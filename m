@@ -1,105 +1,66 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: [PATCH v2 13/13] m68k: deprecate DISCONTIGMEM
-Date: Sun,  1 Nov 2020 19:04:54 +0200
-Message-ID: <20201101170454.9567-14-rppt@kernel.org>
-References: <20201101170454.9567-1-rppt@kernel.org>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH v2] asm-generic: barrier.h: fix ALPHA builds when SMP is not enabled
+Date: Sun,  1 Nov 2020 15:18:35 -0800
+Message-ID: <20201101231835.4589-1-rdunlap@infradead.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604250386;
-        bh=fWxkbZL/5LT7MVmydGQvto+yiZVxeeiLovyNTt2+nMQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vz7hlCOfEKvhdYdVx02tccXCR69Tgvys6SCSJ/AwADwwmLCxWzCZRFA3N4DSZ0TNf
-         NMj2sjlY5sUvwwkqZVyNWvWsIKsoWRy4e5mWYOTcjMU9Z7iDHW/BBbA5ZKDtLBao9Y
-         XcPPJPO0UL5x9C2pQixh7DUbitUwk4/sJ48l2D4E=
-In-Reply-To: <20201101170454.9567-1-rppt@kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=sTRhwwuh1Zi6sB1NgYlq0oaV8WSpgNbpK9CTGiqites=; b=bShCDDRMagDMtiIg9n2RukkblC
+        lMZwCm7Mph2tFZz5AON9zyvYnvxJt07OJfqLx9W8yqV/BX5lRi7xmWlxYe+8wRYCr4g86r6ZPnXKP
+        riAqMdmZYZ+ye/OiJ7f2RIyvDPtx962AhjPb54Kn0NGYVBHkHvFhFuzdj0bikzeVoR8GbM1/RufRU
+        tBLryRAaatuMVO11GkVJ1SgK4iaQ3YefrUiv7FGN8v3EfxBwAub8t0iEsl7bRNnh6wCHs6ySqyBnz
+        PVZMsCaSB9ocOByF8DQcYrwzMtT8PRgPq1Z0okNQNyWJt7AH1rHUyBxh7VaG2kMLvyZALk97lC/F5
+        bT6E50HQ==;
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Alexey Dobriyan <adobriyan@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Meelis Roos <mroos@linux.ee>, Michael Schmitz <schmitzmic@gmail.com>, Mike Rapoport <rppt@kernel.org>, Mike Rapoport <rppt@linux.ibm.com>, Russell King <linux@armlinux.org.uk>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Will Deacon <will@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linu
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>, kernel test robot <lkp@intel.com>, David Howells <dhowells@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Stephen Rothwell <sfr@canb.auug.org.au>
 
-From: Mike Rapoport <rppt@linux.ibm.com>
+<asm-generic/barrier.h> uses barrier() but needs to #include
+<linux/compiler.h> to get a generic definition of it to fix
+build errors in arch/alpha/ builds when CONFIG_SMP is not enabled.
 
-DISCONTIGMEM was intended to provide more efficient support for systems
-with holes in their physical address space that FLATMEM did.
+Fixes build errors like this (there are several like this):
+[49 in the kernel config that was supplied by the 0day bot]
 
-Yet, it's overhead in terms of the memory consumption seems to overweight
-the savings on the unused memory map.
+In file included from ../arch/alpha/include/asm/barrier.h:21,
+                 from ../arch/alpha/include/asm/atomic.h:6,
+                 from ../include/linux/atomic.h:7,
+                 from ../include/linux/dcache.h:5,
+                 from ../fs/proc/util.c:1:
+../arch/alpha/include/asm/atomic.h: In function 'atomic_add_return_relaxed':
+../include/asm-generic/barrier.h:78:18: error: implicit declaration of function 'barrier' [-Werror=implicit-function-declaration]
+   78 | #define smp_mb() barrier()
+      |                  ^~~~~~~
 
-For a ARAnyM system with 16 MBytes of FastRAM configured, the memory usage
-reported after page allocator initialization is
-
-Memory: 23828K/30720K available (3206K kernel code, 535K rwdata, 936K rodata, 768K init, 193K bss, 6892K reserved, 0K cma-reserved)
-
-and with DISCONTIGMEM disabled and with relatively large hole in the memory
-map it is:
-
-Memory: 23864K/30720K available (3197K kernel code, 516K rwdata, 936K rodata, 764K init, 179K bss, 6856K reserved, 0K cma-reserved)
-
-Moreover, since m68k already has custom pfn_valid() it is possible to
-define HAVE_ARCH_PFN_VALID to enable freeing of unused memory map. The
-minimal size of a hole that can be freed should not be less than
-MAX_ORDER_NR_PAGES so to achieve more substantial memory savings let m68k
-also define custom FORCE_MAX_ZONEORDER.
-
-With FORCE_MAX_ZONEORDER set to 9 memory usage becomes:
-
-Memory: 23880K/30720K available (3197K kernel code, 516K rwdata, 936K rodata, 764K init, 179K bss, 6840K reserved, 0K cma-reserved)
-
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+Fixes: 885df91ca357 ("Create asm-generic/barrier.h")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
- arch/m68k/Kconfig.cpu | 26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+v2: also send to Andrew and Stephen.
 
-diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
-index b8884af365ae..3e70fb7a8d83 100644
---- a/arch/m68k/Kconfig.cpu
-+++ b/arch/m68k/Kconfig.cpu
-@@ -20,6 +20,7 @@ choice
- 
- config M68KCLASSIC
- 	bool "Classic M68K CPU family support"
-+	select HAVE_ARCH_PFN_VALID
- 
- config COLDFIRE
- 	bool "Coldfire CPU family support"
-@@ -377,11 +378,34 @@ config SINGLE_MEMORY_CHUNK
- 	help
- 	  Ignore all but the first contiguous chunk of physical memory for VM
- 	  purposes.  This will save a few bytes kernel size and may speed up
--	  some operations.  Say N if not sure.
-+	  some operations.
-+	  When this option os set to N, you may want to lower "Maximum zone
-+	  order" to save memory that could be wasted for unused memory map.
-+	  Say N if not sure.
- 
- config ARCH_DISCONTIGMEM_ENABLE
-+	depends on BROKEN
- 	def_bool MMU && !SINGLE_MEMORY_CHUNK
- 
-+config FORCE_MAX_ZONEORDER
-+	int "Maximum zone order" if ADVANCED
-+	depends on !SINGLE_MEMORY_CHUNK
-+	default "11"
-+	help
-+	  The kernel memory allocator divides physically contiguous memory
-+	  blocks into "zones", where each zone is a power of two number of
-+	  pages.  This option selects the largest power of two that the kernel
-+	  keeps in the memory allocator.  If you need to allocate very large
-+	  blocks of physically contiguous memory, then you may need to
-+	  increase this value.
-+
-+	  For systems that have holes in their physical address space this
-+	  value also defines the minimal size of the hole that allows
-+	  freeing unused memory map.
-+
-+	  This config option is actually maximum order plus one. For example,
-+	  a value of 11 means that the largest free memory block is 2^10 pages.
-+
- config 060_WRITETHROUGH
- 	bool "Use write-through caching for 68060 supervisor accesses"
- 	depends on ADVANCED && M68060
--- 
-2.28.0
+ include/asm-generic/barrier.h |    1 +
+ 1 file changed, 1 insertion(+)
 
+--- linux-next-20201030.orig/include/asm-generic/barrier.h
++++ linux-next-20201030/include/asm-generic/barrier.h
+@@ -13,6 +13,7 @@
+ 
+ #ifndef __ASSEMBLY__
+ 
++#include <linux/compiler.h>
+ #include <asm/rwonce.h>
+ 
+ #ifndef nop
