@@ -1,62 +1,95 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] asm-generic: barrier.h: fix ALPHA builds when SMP is not enabled
-Date: Sat, 31 Oct 2020 20:01:59 -0700
-Message-ID: <20201101030159.15858-1-rdunlap@infradead.org>
+From: Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 11/13] m68k/mm: make node data and node setup depend on
+ CONFIG_DISCONTIGMEM
+Date: Sun, 1 Nov 2020 18:55:34 +0200
+Message-ID: <20201101165534.GC14628@kernel.org>
+References: <20201027112955.14157-1-rppt@kernel.org>
+ <20201027112955.14157-12-rppt@kernel.org>
+ <CAMuHMdU4r4CJ1kBu7gx1jkputjDn2S8Lqkj7RPfa3XUnM1QOFg@mail.gmail.com>
+ <20201028111631.GF1428094@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=epwr0xo7+qH8MVywg7EUJv5PcSM06it9MYSIBNMH0zQ=; b=EOYU5hvobvducAvPimZvxhAHwG
-        3vVEggSCO0Lgj8ZcbZ9kvevg3a2xrwii/tXpcP6/RE6m0Z1I2PXzFBazCKuk51T8nTFGEPmE+YNCe
-        lHv1Nvip+Fs7MkZ6P8vTqSJt0NVepf58eyFfJ2x3sFYSMV9BIeioqnjFvxWFi2r7rXYv9m702eUkH
-        w6L8C+f4MRhSoK5ozExBfpp88Y/b1TA4MbCNL+Cfg/dlr9WSYkv3QCz84vFfo83Ch21HRzhtwjd3B
-        cb/UWGiXJOCT9AEnTp0A/Y7tsSCxOvV/4iw+HtUBazCdv1dtcajkMEaWo7UskYjWQ4j8FNw2LMO1S
-        MR1iL24A==;
+Return-path: <linux-doc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604249745;
+        bh=me4MsVHOGb1kHLMx0QFDtSp3fp/hBgcTORNpqfrV948=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A3apdqu37Rlq64w8q2pkI+YeBpa8D4B/wsympS+rsBaw49qC+5sxiByYpHZldiFQb
+         XIKhz4x43dHQ39bkFfr913JJpTMF43YXNFYvw5EnO/1Go+qWIcy+xQO2Q9PVRii51P
+         xaN5ZCMTifLvBqcqx2m9x99vE77vBNkZFEXSON90=
+Content-Disposition: inline
+In-Reply-To: <20201028111631.GF1428094@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>, kernel test robot <lkp@intel.com>, David Howells <dhowells@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Alexey Dobriyan <adobriyan@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Greg Ungerer <gerg@linux-m68k.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Meelis Roos <mroos@linux.ee>, Michael Schmitz <schmitzmic@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Russell King <linux@armlinux.org.uk>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Will Deacon <will@kernel.org>, alpha <linux-alpha@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux FS Devel <linux-fsdevel@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia6>
 
-<asm-generic/barrier.h> uses barrier() but needs to #include
-<linux/compiler.h> to get a generic definition of it to fix
-build errors in arch/alpha/ builds when CONFIG_SMP is not enabled.
+On Wed, Oct 28, 2020 at 01:16:41PM +0200, Mike Rapoport wrote:
+> Hi Geert,
+> 
+> On Wed, Oct 28, 2020 at 10:25:49AM +0100, Geert Uytterhoeven wrote:
+> > Hi Mike,
+> > 
+> > On Tue, Oct 27, 2020 at 12:31 PM Mike Rapoport <rppt@kernel.org> wrote:
+> > > From: Mike Rapoport <rppt@linux.ibm.com>
+> > >
+> > > The pg_data_t node structures and their initialization currently depends on
+> > > !CONFIG_SINGLE_MEMORY_CHUNK. Since they are required only for DISCONTIGMEM
+> > > make this dependency explicit and replace usage of
+> > > CONFIG_SINGLE_MEMORY_CHUNK with CONFIG_DISCONTIGMEM where appropriate.
+> > >
+> > > The CONFIG_SINGLE_MEMORY_CHUNK was implicitly disabled on the ColdFire MMU
+> > > variant, although it always presumed a single memory bank. As there is no
+> > > actual need for DISCONTIGMEM in this case, make sure that ColdFire MMU
+> > > systems set CONFIG_SINGLE_MEMORY_CHUNK to 'y'.
+> > >
+> > > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> > 
+> > Thanks for your patch!
+> > 
+> > > ---
+> > >  arch/m68k/Kconfig.cpu           | 6 +++---
+> > >  arch/m68k/include/asm/page_mm.h | 2 +-
+> > >  arch/m68k/mm/init.c             | 4 ++--
+> > >  3 files changed, 6 insertions(+), 6 deletions(-)
+> > 
+> > Is there any specific reason you didn't convert the checks for
+> > CONFIG_SINGLE_MEMORY_CHUNK in arch/m68k/kernel/setup_mm.c
+> 
+> In arch/m68k/kernel/setup_mm.c the CONFIG_SINGLE_MEMORY_CHUNK is needed
+> for the case when a system has two banks, the kernel is loaded into the
+> second bank and so the first bank cannot be used as normal memory. It
+> does not matter what memory model will be used in this case. 
+> 
+> > and arch/m68k/include/asm/virtconvert.h?
+>  
+> I remember I had build errors and troubles with include file
+> dependencies if I changed it there, but I might be mistaken. I'll
+> recheck again.
 
-Fixes build errors like this (there are several like this):
-[49 in the kernel config that was supplied by the 0day bot]
+There indeed was an issue with SINGLE_MEMORY_CHUNK that selected
+NEED_MULTIPLE_NODES for some reason.
+With that fixed and removed CONFIG_SINGLE_MEMORY_CHUNK in
+arch/m68k/include/asm/virtconvert.h I'm going to send v2 soon.
 
-In file included from ../arch/alpha/include/asm/barrier.h:21,
-                 from ../arch/alpha/include/asm/atomic.h:6,
-                 from ../include/linux/atomic.h:7,
-                 from ../include/linux/dcache.h:5,
-                 from ../fs/proc/util.c:1:
-../arch/alpha/include/asm/atomic.h: In function 'atomic_add_return_relaxed':
-../include/asm-generic/barrier.h:78:18: error: implicit declaration of function 'barrier' [-Werror=implicit-function-declaration]
-   78 | #define smp_mb() barrier()
-      |                  ^~~~~~~
+I've kept CONFIG_SINGLE_MEMORY_CHUNK for now for backwards compatibility
+with the plan to remove it along with DISCONTIGMEM.
 
-Fixes: 885df91ca357 ("Create asm-generic/barrier.h")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: David Howells <dhowells@redhat.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
----
- include/asm-generic/barrier.h |    1 +
- 1 file changed, 1 insertion(+)
+> > Gr{oetje,eeting}s,
+> > 
+> >                         Geert
+> > 
+> > -- 
+> > Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> > 
+> > In personal conversations with technical people, I call myself a hacker. But
+> > when I'm talking to journalists I just say "programmer" or something like that.
+> >                                 -- Linus Torvalds
+> 
+> -- 
+> Sincerely yours,
+> Mike.
 
---- linux-next-20201030.orig/include/asm-generic/barrier.h
-+++ linux-next-20201030/include/asm-generic/barrier.h
-@@ -13,6 +13,7 @@
- 
- #ifndef __ASSEMBLY__
- 
-+#include <linux/compiler.h>
- #include <asm/rwonce.h>
- 
- #ifndef nop
+-- 
+Sincerely yours,
+Mike.
