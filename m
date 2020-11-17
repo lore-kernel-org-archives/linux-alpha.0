@@ -1,51 +1,71 @@
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+From: Mike Rapoport <rppt@kernel.org>
 Subject: Re: [PATCH v2 00/13] arch, mm: deprecate DISCONTIGMEM
-Date: Tue, 17 Nov 2020 06:24:51 +0100
-Message-ID: <43c53597-6267-bdc2-a975-0aab5daa0d37@physik.fu-berlin.de>
+Date: Tue, 17 Nov 2020 08:23:16 +0200
+Message-ID: <20201117062316.GB370813@kernel.org>
 References: <20201101170454.9567-1-rppt@kernel.org>
+ <43c53597-6267-bdc2-a975-0aab5daa0d37@physik.fu-berlin.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20201101170454.9567-1-rppt@kernel.org>
-Content-Language: en-US
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605594206;
+        bh=i6knV0DMO2RXQJYhiZxatZGtoKHulkxOl5sSaGDS0gM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qAUA5RVCTP0npaeRBIO8YpdBuUTgIPD0QBwHOr2UeiElqlVtKRczsIc13jS9qXhSM
+         /m8cTkIY+QMvxEbuFwI36fTIAAvpIJ9fhQtB5SdUWJTnAGZetOklMyr9EQ9DA4BJIQ
+         QteWhvERMCEW1EUrOIOHXVbp4uevZfdG2TI7hGQ8=
+Content-Disposition: inline
+In-Reply-To: <43c53597-6267-bdc2-a975-0aab5daa0d37@physik.fu-berlin.de>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Mike Rapoport <rppt@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Alexey Dobriyan <adobriyan@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@linux-m68k.org>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Meelis Roos <mroos@linux.ee>, Michael Schmitz <schmitzmic@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Russell King <linux@armlinux.org.uk>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Will Deacon <will@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mm@kvack.org, linux-snps-arc@lists.infradead.org
+Content-Transfer-Encoding: 7bit
+To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Alexey Dobriyan <adobriyan@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@linux-m68k.org>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Meelis Roos <mroos@linux.ee>, Michael Schmitz <schmitzmic@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Russell King <linux@armlinux.org.uk>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Will Deacon <will@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mm@kvack.org, linux-snps-arc@l
 
-Hi!
+Hi Adrian,
 
-On 11/1/20 6:04 PM, Mike Rapoport wrote:
-> It's been a while since DISCONTIGMEM is generally considered deprecated,
-> but it is still used by four architectures. This set replaces DISCONTIGMEM
-> with a different way to handle holes in the memory map and marks
-> DISCONTIGMEM configuration as BROKEN in Kconfigs of these architectures with
-> the intention to completely remove it in several releases.
+On Tue, Nov 17, 2020 at 06:24:51AM +0100, John Paul Adrian Glaubitz wrote:
+> Hi!
 > 
-> While for 64-bit alpha and ia64 the switch to SPARSEMEM is quite obvious
-> and was a matter of moving some bits around, for smaller 32-bit arc and
-> m68k SPARSEMEM is not necessarily the best thing to do.
+> On 11/1/20 6:04 PM, Mike Rapoport wrote:
+> > It's been a while since DISCONTIGMEM is generally considered deprecated,
+> > but it is still used by four architectures. This set replaces DISCONTIGMEM
+> > with a different way to handle holes in the memory map and marks
+> > DISCONTIGMEM configuration as BROKEN in Kconfigs of these architectures with
+> > the intention to completely remove it in several releases.
+> > 
+> > While for 64-bit alpha and ia64 the switch to SPARSEMEM is quite obvious
+> > and was a matter of moving some bits around, for smaller 32-bit arc and
+> > m68k SPARSEMEM is not necessarily the best thing to do.
+> > 
+> > On 32-bit machines SPARSEMEM would require large sections to make section
+> > index fit in the page flags, but larger sections mean that more memory is
+> > wasted for unused memory map.
+> > 
+> > Besides, pfn_to_page() and page_to_pfn() become less efficient, at least on
+> > arc.
+> > 
+> > So I've decided to generalize arm's approach for freeing of unused parts of
+> > the memory map with FLATMEM and enable it for both arc and m68k. The
+> > details are in the description of patches 10 (arc) and 13 (m68k).
 > 
-> On 32-bit machines SPARSEMEM would require large sections to make section
-> index fit in the page flags, but larger sections mean that more memory is
-> wasted for unused memory map.
+> Apologies for the late reply. Is this still relevant for testing?
 > 
-> Besides, pfn_to_page() and page_to_pfn() become less efficient, at least on
-> arc.
+> I have already successfully tested v1 of the patch set, shall I test v2?
+
+There were minor differences only for m68k between the versions. I've
+verified them on ARAnyM but if you have a real machine a run there would
+be nice.
+
+> Adrian
 > 
-> So I've decided to generalize arm's approach for freeing of unused parts of
-> the memory map with FLATMEM and enable it for both arc and m68k. The
-> details are in the description of patches 10 (arc) and 13 (m68k).
-
-Apologies for the late reply. Is this still relevant for testing?
-
-I have already successfully tested v1 of the patch set, shall I test v2?
-
-Adrian
+> -- 
+>  .''`.  John Paul Adrian Glaubitz
+> : :' :  Debian Developer - glaubitz@debian.org
+> `. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+>   `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+> 
+> 
 
 -- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer - glaubitz@debian.org
-`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
-
+Sincerely yours,
+Mike.
