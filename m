@@ -1,40 +1,46 @@
-From: Youling Tang <tangyouling@loongson.cn>
-Subject: [PATCH] alpha: ptrace generic requests
-Date: Fri, 27 Nov 2020 11:54:31 +0800
-Message-ID: <1606449271-13922-1-git-send-email-tangyouling@loongson.cn>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Subject: Re: [PATCH v2 00/13] arch, mm: deprecate DISCONTIGMEM
+Date: Tue, 1 Dec 2020 10:10:56 +0100
+Message-ID: <a7d01146-77f9-d363-af99-af3aee3789b4@physik.fu-berlin.de>
+References: <20201101170454.9567-1-rppt@kernel.org>
+ <43c53597-6267-bdc2-a975-0aab5daa0d37@physik.fu-berlin.de>
+ <20201117062316.GB370813@kernel.org>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-To: Oleg Nesterov <oleg@redhat.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20201117062316.GB370813@kernel.org>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Mike Rapoport <rppt@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Alexey Dobriyan <adobriyan@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@linux-m68k.org>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Meelis Roos <mroos@linux.ee>, Michael Schmitz <schmitzmic@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Russell King <linux@armlinux.org.uk>, Tony Luck <tony.luck@intel.com>, Vineet Gupta <vgupta@synopsys.com>, Will Deacon <will@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mm@kvack.org, linux-snps-arc@l
 
-This removes duplicated code by calling the generic ptrace_request
-function for the things they already handle.
+Hi Mike!
 
-Signed-off-by: Youling Tang <tangyouling@loongson.cn>
----
- arch/alpha/kernel/ptrace.c | 6 ------
- 1 file changed, 6 deletions(-)
+On 11/17/20 7:23 AM, Mike Rapoport wrote:
+>> Apologies for the late reply. Is this still relevant for testing?
+>>
+>> I have already successfully tested v1 of the patch set, shall I test v2?
+> 
+> There were minor differences only for m68k between the versions. I've
+> verified them on ARAnyM but if you have a real machine a run there would
+> be nice.
 
-diff --git a/arch/alpha/kernel/ptrace.c b/arch/alpha/kernel/ptrace.c
-index 8c43212..eb4d566 100644
---- a/arch/alpha/kernel/ptrace.c
-+++ b/arch/alpha/kernel/ptrace.c
-@@ -301,12 +301,6 @@ long arch_ptrace(struct task_struct *child, long request,
- 		DBG(DBG_MEM, ("peek $%lu->%#lx\n", addr, ret));
- 		break;
- 
--	/* When I and D space are separate, this will have to be fixed.  */
--	case PTRACE_POKETEXT: /* write the word at location addr. */
--	case PTRACE_POKEDATA:
--		ret = generic_ptrace_pokedata(child, addr, data);
--		break;
--
- 	case PTRACE_POKEUSR: /* write the specified register */
- 		DBG(DBG_MEM, ("poke $%lu<-%#lx\n", addr, data));
- 		ret = put_reg(child, addr, data);
+I have just built a fresh kernel from the tip of Linus' tree and it boots
+fine on my RX-2600:
+
+root@glendronach:~# uname -a
+Linux glendronach 5.10.0-rc6 #6 SMP Tue Dec 1 04:52:49 CET 2020 ia64 GNU/Linux
+root@glendronach:~#
+
+No issues observed so far. Looking at the git log, it seems these changes haven't
+been merged for 5.10 yet. I assume they will be coming with 5.11?
+
+Adrian
+
 -- 
-2.1.0
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
 
