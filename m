@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 19/23] arch: c6x: use generic irq error counter
-Date: Fri, 18 Dec 2020 15:31:18 +0100
-Message-ID: <20201218143122.19459-20-info@metux.net>
+Subject: [PATCH 14/23] kernel: generic counter for interrupt errors
+Date: Fri, 18 Dec 2020 15:31:13 +0100
+Message-ID: <20201218143122.19459-15-info@metux.net>
 References: <20201218143122.19459-1-info@metux.net>
-Return-path: <linux-arch-owner@vger.kernel.org>
+Return-path: <linux-omap-owner@vger.kernel.org>
 In-Reply-To: <20201218143122.19459-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -12,74 +12,115 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org, catalin.marinas@arm.com, will@kernel.org, msalter@redhat.com, jacquiot.aurelien@gmail.com, gerg@linux-m68k.org, geert@linux-m68k.org, tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com, deller@gmx.de, benh@kernel.crashing.org, paulus@samba.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, bp@alien8.de, x86@kernel.org, hpa@zytor.com, linus.walleij@linaro.org, bgolaszewski@baylibre.com, maz@kernel.org, tony@atomide.com, arnd@arndb.de, linux-alpha@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.
 
-Use the newly introduced irq error counter, that's already maintained
-by all callers of ack_bad_irq(), in order to remove duplicate code.
+We currently have counters for spurious interrupt spread over all the
+individual architectures. Mostly done in the arch's ack_bad_irq(),
+sometimes also in arch specific drivers.
+
+It's time to consolidate this code duplication:
+
+  * introduce a global counter and inlined accessors
+  * increase the counter in all call sites of ack_bad_irq()
+  * subsequent patches will transform the individual archs one by one
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/c6x/include/asm/hardirq.h |  3 ---
- arch/c6x/include/asm/irq.h     |  2 --
- arch/c6x/kernel/irq.c          | 11 ++---------
- 3 files changed, 2 insertions(+), 14 deletions(-)
+ include/asm-generic/irq-err.h | 17 +++++++++++++++++
+ kernel/irq/dummychip.c        |  2 ++
+ kernel/irq/handle.c           |  4 ++++
+ kernel/irq/irqdesc.c          |  2 ++
+ 4 files changed, 25 insertions(+)
+ create mode 100644 include/asm-generic/irq-err.h
 
-diff --git a/arch/c6x/include/asm/hardirq.h b/arch/c6x/include/asm/hardirq.h
-index f37d07d31040..f70f6113e53a 100644
---- a/arch/c6x/include/asm/hardirq.h
-+++ b/arch/c6x/include/asm/hardirq.h
-@@ -9,9 +9,6 @@
- #ifndef _ASM_C6X_HARDIRQ_H
- #define _ASM_C6X_HARDIRQ_H
+diff --git a/include/asm-generic/irq-err.h b/include/asm-generic/irq-err.h
+new file mode 100644
+index 000000000000..33c75eb50c10
+--- /dev/null
++++ b/include/asm-generic/irq-err.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __ASM_GENERIC_IRQ_ERR_H
++#define __ASM_GENERIC_IRQ_ERR_H
++
++extern atomic_t irq_err_counter;
++
++static inline void irq_err_inc(void)
++{
++	atomic_inc(&irq_err_counter);
++}
++
++static inline int irq_err_get(void)
++{
++	return atomic_read(&irq_err_counter);
++}
++
++#endif /* __ASM_GENERIC_IRQ_ERR_H */
+diff --git a/kernel/irq/dummychip.c b/kernel/irq/dummychip.c
+index 0b0cdf206dc4..93585dab9bd0 100644
+--- a/kernel/irq/dummychip.c
++++ b/kernel/irq/dummychip.c
+@@ -8,6 +8,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/export.h>
++#include <asm-generic/irq-err.h>
  
--extern void ack_bad_irq(int irq);
--#define ack_bad_irq ack_bad_irq
--
- #include <asm-generic/hardirq.h>
+ #include "internals.h"
  
- #endif /* _ASM_C6X_HARDIRQ_H */
-diff --git a/arch/c6x/include/asm/irq.h b/arch/c6x/include/asm/irq.h
-index 9da4d1afd0d7..f42c5747c3ee 100644
---- a/arch/c6x/include/asm/irq.h
-+++ b/arch/c6x/include/asm/irq.h
-@@ -45,6 +45,4 @@ struct pt_regs;
+@@ -20,6 +21,7 @@ static void ack_bad(struct irq_data *data)
+ 	struct irq_desc *desc = irq_data_to_desc(data);
  
- extern asmlinkage void c6x_do_IRQ(unsigned int prio, struct pt_regs *regs);
+ 	print_irq_desc(data->irq, desc);
++	irq_err_inc();
+ 	ack_bad_irq(data->irq);
+ }
  
--extern unsigned long irq_err_count;
--
- #endif /* _ASM_C6X_IRQ_H */
-diff --git a/arch/c6x/kernel/irq.c b/arch/c6x/kernel/irq.c
-index b9f7cfa2ed21..9f9d798925de 100644
---- a/arch/c6x/kernel/irq.c
-+++ b/arch/c6x/kernel/irq.c
-@@ -21,12 +21,10 @@
- #include <linux/of_irq.h>
+diff --git a/kernel/irq/handle.c b/kernel/irq/handle.c
+index 762a928e18f9..ad90f5a56c3a 100644
+--- a/kernel/irq/handle.c
++++ b/kernel/irq/handle.c
+@@ -13,11 +13,14 @@
+ #include <linux/sched.h>
  #include <linux/interrupt.h>
  #include <linux/kernel_stat.h>
--
 +#include <asm-generic/irq-err.h>
- #include <asm/megamod-pic.h>
- #include <asm/special_insns.h>
  
--unsigned long irq_err_count;
--
- static DEFINE_RAW_SPINLOCK(core_irq_lock);
+ #include <trace/events/irq.h>
  
- static void mask_core_irq(struct irq_data *data)
-@@ -114,13 +112,8 @@ void __init init_IRQ(void)
- 	set_creg(ICR, 0xfff0);
+ #include "internals.h"
+ 
++atomic_t irq_err_counter;
++
+ #ifdef CONFIG_GENERIC_IRQ_MULTI_HANDLER
+ void (*handle_arch_irq)(struct pt_regs *) __ro_after_init;
+ #endif
+@@ -34,6 +37,7 @@ void handle_bad_irq(struct irq_desc *desc)
+ 
+ 	print_irq_desc(irq, desc);
+ 	kstat_incr_irqs_this_cpu(desc);
++	irq_err_inc();
+ 	ack_bad_irq(irq);
  }
+ EXPORT_SYMBOL_GPL(handle_bad_irq);
+diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+index 62a381351775..6192672be4d2 100644
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -16,6 +16,7 @@
+ #include <linux/bitmap.h>
+ #include <linux/irqdomain.h>
+ #include <linux/sysfs.h>
++#include <asm-generic/irq-err.h>
  
--void ack_bad_irq(int irq)
--{
--	irq_err_count++;
--}
--
- int arch_show_interrupts(struct seq_file *p, int prec)
- {
--	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_count);
-+	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_get());
- 	return 0;
- }
+ #include "internals.h"
+ 
+@@ -684,6 +685,7 @@ int __handle_domain_irq(struct irq_domain *domain, unsigned int hwirq,
+ 		if (printk_ratelimit())
+ 			pr_warn("spurious IRQ: irq=%d hwirq=%d nr_irqs=%d\n",
+ 				irq, hwirq, nr_irqs);
++		irq_err_inc();
+ 		ack_bad_irq(irq);
+ 		ret = -EINVAL;
+ 	} else {
 -- 
 2.11.0
 
