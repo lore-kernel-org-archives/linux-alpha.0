@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 12/23] arch: x86: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:57:35 +0100
-Message-ID: <20201218145746.24205-13-info@metux.net>
+Subject: [PATCH 08/23] arch: powerpc: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:57:31 +0100
+Message-ID: <20201218145746.24205-9-info@metux.net>
 References: <20201218145746.24205-1-info@metux.net>
-Return-path: <sparclinux-owner@vger.kernel.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
 In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -24,23 +24,25 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/x86/kernel/irq.c | 3 ---
- 1 file changed, 3 deletions(-)
+ arch/powerpc/include/asm/hardirq.h | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
-index c5dd50369e2f..5c66c44b6b60 100644
---- a/arch/x86/kernel/irq.c
-+++ b/arch/x86/kernel/irq.c
-@@ -36,9 +36,6 @@ atomic_t irq_err_count;
-  */
- void ack_bad_irq(unsigned int irq)
- {
--	if (printk_ratelimit())
--		pr_err("unexpected IRQ trap at vector %02x\n", irq);
--
- 	/*
- 	 * Currently unexpected vectors happen only on SMP and APIC.
- 	 * We _must_ ack these because every local APIC has only N
+diff --git a/arch/powerpc/include/asm/hardirq.h b/arch/powerpc/include/asm/hardirq.h
+index f133b5930ae1..4138193c2367 100644
+--- a/arch/powerpc/include/asm/hardirq.h
++++ b/arch/powerpc/include/asm/hardirq.h
+@@ -27,10 +27,7 @@ DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
+ #define __ARCH_IRQ_STAT
+ #define __ARCH_IRQ_EXIT_IRQS_DISABLED
+ 
+-static inline void ack_bad_irq(unsigned int irq)
+-{
+-	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
+-}
++#define ack_bad_irq(irq)
+ 
+ extern u64 arch_irq_stat_cpu(unsigned int cpu);
+ #define arch_irq_stat_cpu	arch_irq_stat_cpu
 -- 
 2.11.0
 
