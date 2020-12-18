@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 17/23] arch: arm: use generic irq error counter
-Date: Fri, 18 Dec 2020 15:31:16 +0100
-Message-ID: <20201218143122.19459-18-info@metux.net>
+Subject: [PATCH 07/23] arch: parisc: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:31:06 +0100
+Message-ID: <20201218143122.19459-8-info@metux.net>
 References: <20201218143122.19459-1-info@metux.net>
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20201218143122.19459-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -12,83 +12,33 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org, catalin.marinas@arm.com, will@kernel.org, msalter@redhat.com, jacquiot.aurelien@gmail.com, gerg@linux-m68k.org, geert@linux-m68k.org, tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com, deller@gmx.de, benh@kernel.crashing.org, paulus@samba.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, bp@alien8.de, x86@kernel.org, hpa@zytor.com, linus.walleij@linaro.org, bgolaszewski@baylibre.com, maz@kernel.org, tony@atomide.com, arnd@arndb.de, linux-alpha@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.
 
-Use the newly introduced irq error counter, that's already maintained
-by all callers of ack_bad_irq(), in order to remove duplicate code.
+The warning in ack_bad_irq() is misleading in several ways:
+* the term "vector" isn't quite correct
+* the printing format isn't consistent across the archs: some print decimal,
+  some hex, some hex w/o 0x prefix.
+* the printed linux irq isn't meaningful in all cases - we actually would
+  want it to print the hw irq.
+
+Since all call sites already print out more detailed and correct information,
+we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/arm/include/asm/hardirq.h  | 2 +-
- arch/arm/include/asm/hw_irq.h   | 6 ------
- arch/arm/kernel/irq.c           | 6 ++----
- drivers/irqchip/irq-omap-intc.c | 5 ++---
- 4 files changed, 5 insertions(+), 14 deletions(-)
+ arch/parisc/include/asm/hardirq.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/include/asm/hardirq.h b/arch/arm/include/asm/hardirq.h
-index 706efafbf972..d9ae8998240d 100644
---- a/arch/arm/include/asm/hardirq.h
-+++ b/arch/arm/include/asm/hardirq.h
-@@ -5,7 +5,7 @@
- #include <asm/irq.h>
- 
- #define __ARCH_IRQ_EXIT_IRQS_DISABLED	1
--#define ack_bad_irq ack_bad_irq
+diff --git a/arch/parisc/include/asm/hardirq.h b/arch/parisc/include/asm/hardirq.h
+index fad29aa6f45f..78b581f00bb3 100644
+--- a/arch/parisc/include/asm/hardirq.h
++++ b/arch/parisc/include/asm/hardirq.h
+@@ -34,6 +34,6 @@ DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
+ #define __ARCH_IRQ_STAT
+ #define inc_irq_stat(member)	this_cpu_inc(irq_stat.member)
+ #define __inc_irq_stat(member)	__this_cpu_inc(irq_stat.member)
+-#define ack_bad_irq(irq) WARN(1, "unexpected IRQ trap at vector %02x\n", irq)
 +#define ack_bad_irq(irq)
  
- #include <asm-generic/hardirq.h>
- 
-diff --git a/arch/arm/include/asm/hw_irq.h b/arch/arm/include/asm/hw_irq.h
-index 5305c7e33aee..adbbeb11b930 100644
---- a/arch/arm/include/asm/hw_irq.h
-+++ b/arch/arm/include/asm/hw_irq.h
-@@ -5,12 +5,6 @@
- #ifndef _ARCH_ARM_HW_IRQ_H
- #define _ARCH_ARM_HW_IRQ_H
- 
--static inline void ack_bad_irq(int irq)
--{
--	extern unsigned long irq_err_count;
--	irq_err_count++;
--}
--
- #define ARCH_IRQ_INIT_FLAGS	(IRQ_NOREQUEST | IRQ_NOPROBE)
- 
- #endif
-diff --git a/arch/arm/kernel/irq.c b/arch/arm/kernel/irq.c
-index 698b6f636156..72c3b8ce74db 100644
---- a/arch/arm/kernel/irq.c
-+++ b/arch/arm/kernel/irq.c
-@@ -32,7 +32,7 @@
- #include <linux/kallsyms.h>
- #include <linux/proc_fs.h>
- #include <linux/export.h>
--
-+#include <asm-generic/irq-err.h>
- #include <asm/hardware/cache-l2x0.h>
- #include <asm/hardware/cache-uniphier.h>
- #include <asm/outercache.h>
-@@ -41,8 +41,6 @@
- #include <asm/mach/irq.h>
- #include <asm/mach/time.h>
- 
--unsigned long irq_err_count;
--
- int arch_show_interrupts(struct seq_file *p, int prec)
- {
- #ifdef CONFIG_FIQ
-@@ -51,7 +49,7 @@ int arch_show_interrupts(struct seq_file *p, int prec)
- #ifdef CONFIG_SMP
- 	show_ipi_list(p, prec);
- #endif
--	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_count);
-+	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_get());
- 	return 0;
- }
- 
-diff --git a/drivers/irqchip/irq-omap-intc.c b/drivers/irqchip/irq-omap-intc.c
-index d360a6eddd6d..2682c6e814c2 100644
---- a/drivers/irqchip/irq-omap-intc.c
-+++ b/drivers/irqchip/irq-omap-intc.c
-@@ -15,7 +15,7 @@
- #include <linux/init.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
+ #endif /* _PARISC_HARDIRQ_H */
+-- 
+2.11.0
+
