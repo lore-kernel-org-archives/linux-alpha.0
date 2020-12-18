@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 07/23] arch: parisc: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:31:06 +0100
-Message-ID: <20201218143122.19459-8-info@metux.net>
+Subject: [PATCH 09/23] arch: s390: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:31:08 +0100
+Message-ID: <20201218143122.19459-10-info@metux.net>
 References: <20201218143122.19459-1-info@metux.net>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-omap-owner@vger.kernel.org>
 In-Reply-To: <20201218143122.19459-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -24,21 +24,24 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/parisc/include/asm/hardirq.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/include/asm/hardirq.h | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/parisc/include/asm/hardirq.h b/arch/parisc/include/asm/hardirq.h
-index fad29aa6f45f..78b581f00bb3 100644
---- a/arch/parisc/include/asm/hardirq.h
-+++ b/arch/parisc/include/asm/hardirq.h
-@@ -34,6 +34,6 @@ DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
- #define __ARCH_IRQ_STAT
- #define inc_irq_stat(member)	this_cpu_inc(irq_stat.member)
- #define __inc_irq_stat(member)	__this_cpu_inc(irq_stat.member)
--#define ack_bad_irq(irq) WARN(1, "unexpected IRQ trap at vector %02x\n", irq)
+diff --git a/arch/s390/include/asm/hardirq.h b/arch/s390/include/asm/hardirq.h
+index dfbc3c6c0674..56d95fcb310a 100644
+--- a/arch/s390/include/asm/hardirq.h
++++ b/arch/s390/include/asm/hardirq.h
+@@ -21,9 +21,6 @@
+ #define __ARCH_HAS_DO_SOFTIRQ
+ #define __ARCH_IRQ_EXIT_IRQS_DISABLED
+ 
+-static inline void ack_bad_irq(unsigned int irq)
+-{
+-	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
+-}
 +#define ack_bad_irq(irq)
  
- #endif /* _PARISC_HARDIRQ_H */
+ #endif /* __ASM_HARDIRQ_H */
 -- 
 2.11.0
 
