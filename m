@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 04/23] arch: c6x: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:57:27 +0100
-Message-ID: <20201218145746.24205-5-info@metux.net>
+Subject: [PATCH 09/23] arch: s390: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:57:32 +0100
+Message-ID: <20201218145746.24205-10-info@metux.net>
 References: <20201218145746.24205-1-info@metux.net>
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -24,21 +24,24 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/c6x/kernel/irq.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/s390/include/asm/hardirq.h | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/c6x/kernel/irq.c b/arch/c6x/kernel/irq.c
-index e4c53d185b62..b9f7cfa2ed21 100644
---- a/arch/c6x/kernel/irq.c
-+++ b/arch/c6x/kernel/irq.c
-@@ -116,7 +116,6 @@ void __init init_IRQ(void)
+diff --git a/arch/s390/include/asm/hardirq.h b/arch/s390/include/asm/hardirq.h
+index dfbc3c6c0674..56d95fcb310a 100644
+--- a/arch/s390/include/asm/hardirq.h
++++ b/arch/s390/include/asm/hardirq.h
+@@ -21,9 +21,6 @@
+ #define __ARCH_HAS_DO_SOFTIRQ
+ #define __ARCH_IRQ_EXIT_IRQS_DISABLED
  
- void ack_bad_irq(int irq)
- {
--	printk(KERN_ERR "IRQ: spurious interrupt %d\n", irq);
- 	irq_err_count++;
- }
+-static inline void ack_bad_irq(unsigned int irq)
+-{
+-	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
+-}
++#define ack_bad_irq(irq)
  
+ #endif /* __ASM_HARDIRQ_H */
 -- 
 2.11.0
 
