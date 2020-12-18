@@ -1,10 +1,10 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 06/23] arch: mips: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:31:05 +0100
-Message-ID: <20201218143122.19459-7-info@metux.net>
-References: <20201218143122.19459-1-info@metux.net>
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20201218143122.19459-1-info@metux.net>
+Subject: [PATCH 04/23] arch: c6x: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:57:27 +0100
+Message-ID: <20201218145746.24205-5-info@metux.net>
+References: <20201218145746.24205-1-info@metux.net>
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,44 +24,21 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/mips/include/asm/hardirq.h | 3 +--
- arch/mips/kernel/irq.c          | 9 ---------
- 2 files changed, 1 insertion(+), 11 deletions(-)
+ arch/c6x/kernel/irq.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/mips/include/asm/hardirq.h b/arch/mips/include/asm/hardirq.h
-index c977a86c2c65..75444120e6cb 100644
---- a/arch/mips/include/asm/hardirq.h
-+++ b/arch/mips/include/asm/hardirq.h
-@@ -10,8 +10,7 @@
- #ifndef _ASM_HARDIRQ_H
- #define _ASM_HARDIRQ_H
+diff --git a/arch/c6x/kernel/irq.c b/arch/c6x/kernel/irq.c
+index e4c53d185b62..b9f7cfa2ed21 100644
+--- a/arch/c6x/kernel/irq.c
++++ b/arch/c6x/kernel/irq.c
+@@ -116,7 +116,6 @@ void __init init_IRQ(void)
  
--extern void ack_bad_irq(unsigned int irq);
--#define ack_bad_irq ack_bad_irq
-+#define ack_bad_irq(irq)
+ void ack_bad_irq(int irq)
+ {
+-	printk(KERN_ERR "IRQ: spurious interrupt %d\n", irq);
+ 	irq_err_count++;
+ }
  
- #include <asm-generic/hardirq.h>
- 
-diff --git a/arch/mips/kernel/irq.c b/arch/mips/kernel/irq.c
-index 85b6c60f285d..c98be305fab6 100644
---- a/arch/mips/kernel/irq.c
-+++ b/arch/mips/kernel/irq.c
-@@ -27,15 +27,6 @@
- 
- void *irq_stack[NR_CPUS];
- 
--/*
-- * 'what should we do if we get a hw irq event on an illegal vector'.
-- * each architecture has to answer this themselves.
-- */
--void ack_bad_irq(unsigned int irq)
--{
--	printk("unexpected IRQ # %d\n", irq);
--}
--
- atomic_t irq_err_count;
- 
- int arch_show_interrupts(struct seq_file *p, int prec)
 -- 
 2.11.0
 
