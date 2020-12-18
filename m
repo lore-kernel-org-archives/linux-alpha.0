@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 03/23] arch: arm: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:57:26 +0100
-Message-ID: <20201218145746.24205-4-info@metux.net>
+Subject: [PATCH 02/23] arch: alpha: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:57:25 +0100
+Message-ID: <20201218145746.24205-3-info@metux.net>
 References: <20201218145746.24205-1-info@metux.net>
-Return-path: <linux-omap-owner@vger.kernel.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
 In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -24,21 +24,21 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/arm/include/asm/hw_irq.h | 1 -
+ arch/alpha/kernel/irq.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm/include/asm/hw_irq.h b/arch/arm/include/asm/hw_irq.h
-index cecc13214ef1..5305c7e33aee 100644
---- a/arch/arm/include/asm/hw_irq.h
-+++ b/arch/arm/include/asm/hw_irq.h
-@@ -9,7 +9,6 @@ static inline void ack_bad_irq(int irq)
+diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
+index f6d2946edbd2..c1980eea75a6 100644
+--- a/arch/alpha/kernel/irq.c
++++ b/arch/alpha/kernel/irq.c
+@@ -35,7 +35,6 @@ DEFINE_PER_CPU(unsigned long, irq_pmi_count);
+ void ack_bad_irq(unsigned int irq)
  {
- 	extern unsigned long irq_err_count;
  	irq_err_count++;
--	pr_crit("unexpected IRQ trap at vector %02x\n", irq);
+-	printk(KERN_CRIT "Unexpected IRQ trap at vector %u\n", irq);
  }
  
- #define ARCH_IRQ_INIT_FLAGS	(IRQ_NOREQUEST | IRQ_NOPROBE)
+ #ifdef CONFIG_SMP 
 -- 
 2.11.0
 
