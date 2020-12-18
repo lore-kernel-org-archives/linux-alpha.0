@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 10/23] arch: sh: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:57:33 +0100
-Message-ID: <20201218145746.24205-11-info@metux.net>
+Subject: [PATCH 12/23] arch: x86: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:57:35 +0100
+Message-ID: <20201218145746.24205-13-info@metux.net>
 References: <20201218145746.24205-1-info@metux.net>
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
 In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -24,21 +24,23 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/sh/kernel/irq.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/x86/kernel/irq.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/arch/sh/kernel/irq.c b/arch/sh/kernel/irq.c
-index ab5f790b0cd2..c14a142efe60 100644
---- a/arch/sh/kernel/irq.c
-+++ b/arch/sh/kernel/irq.c
-@@ -31,7 +31,6 @@ atomic_t irq_err_count;
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index c5dd50369e2f..5c66c44b6b60 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -36,9 +36,6 @@ atomic_t irq_err_count;
+  */
  void ack_bad_irq(unsigned int irq)
  {
- 	atomic_inc(&irq_err_count);
--	printk("unexpected IRQ trap at vector %02x\n", irq);
- }
- 
- #if defined(CONFIG_PROC_FS)
+-	if (printk_ratelimit())
+-		pr_err("unexpected IRQ trap at vector %02x\n", irq);
+-
+ 	/*
+ 	 * Currently unexpected vectors happen only on SMP and APIC.
+ 	 * We _must_ ack these because every local APIC has only N
 -- 
 2.11.0
 
