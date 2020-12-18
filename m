@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 11/23] arch: sparc: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:31:10 +0100
-Message-ID: <20201218143122.19459-12-info@metux.net>
+Subject: [PATCH 06/23] arch: mips: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:31:05 +0100
+Message-ID: <20201218143122.19459-7-info@metux.net>
 References: <20201218143122.19459-1-info@metux.net>
 Return-path: <linux-ia64-owner@vger.kernel.org>
 In-Reply-To: <20201218143122.19459-1-info@metux.net>
@@ -24,38 +24,44 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/sparc/include/asm/hardirq_64.h | 2 +-
- arch/sparc/kernel/irq_64.c          | 5 -----
- 2 files changed, 1 insertion(+), 6 deletions(-)
+ arch/mips/include/asm/hardirq.h | 3 +--
+ arch/mips/kernel/irq.c          | 9 ---------
+ 2 files changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/arch/sparc/include/asm/hardirq_64.h b/arch/sparc/include/asm/hardirq_64.h
-index 75b92bfe04b5..874151f520de 100644
---- a/arch/sparc/include/asm/hardirq_64.h
-+++ b/arch/sparc/include/asm/hardirq_64.h
-@@ -14,6 +14,6 @@
- #define local_softirq_pending_ref \
- 	__cpu_data.__softirq_pending
+diff --git a/arch/mips/include/asm/hardirq.h b/arch/mips/include/asm/hardirq.h
+index c977a86c2c65..75444120e6cb 100644
+--- a/arch/mips/include/asm/hardirq.h
++++ b/arch/mips/include/asm/hardirq.h
+@@ -10,8 +10,7 @@
+ #ifndef _ASM_HARDIRQ_H
+ #define _ASM_HARDIRQ_H
  
--void ack_bad_irq(unsigned int irq);
+-extern void ack_bad_irq(unsigned int irq);
+-#define ack_bad_irq ack_bad_irq
 +#define ack_bad_irq(irq)
  
- #endif /* !(__SPARC64_HARDIRQ_H) */
-diff --git a/arch/sparc/kernel/irq_64.c b/arch/sparc/kernel/irq_64.c
-index 3ec9f1402aad..ea2a52f7fe53 100644
---- a/arch/sparc/kernel/irq_64.c
-+++ b/arch/sparc/kernel/irq_64.c
-@@ -284,11 +284,6 @@ static unsigned int sysino_exists(u32 devhandle, unsigned int devino)
- 	return irq;
- }
+ #include <asm-generic/hardirq.h>
  
+diff --git a/arch/mips/kernel/irq.c b/arch/mips/kernel/irq.c
+index 85b6c60f285d..c98be305fab6 100644
+--- a/arch/mips/kernel/irq.c
++++ b/arch/mips/kernel/irq.c
+@@ -27,15 +27,6 @@
+ 
+ void *irq_stack[NR_CPUS];
+ 
+-/*
+- * 'what should we do if we get a hw irq event on an illegal vector'.
+- * each architecture has to answer this themselves.
+- */
 -void ack_bad_irq(unsigned int irq)
 -{
--	pr_crit("BAD IRQ ack %d\n", irq);
+-	printk("unexpected IRQ # %d\n", irq);
 -}
 -
- void irq_install_pre_handler(int irq,
- 			     void (*func)(unsigned int, void *, void *),
- 			     void *arg1, void *arg2)
+ atomic_t irq_err_count;
+ 
+ int arch_show_interrupts(struct seq_file *p, int prec)
 -- 
 2.11.0
 
