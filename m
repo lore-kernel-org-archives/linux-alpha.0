@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 13/23] arch: generic: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:57:36 +0100
-Message-ID: <20201218145746.24205-14-info@metux.net>
+Subject: [PATCH 18/23] arch: arm64: use generic irq error counter
+Date: Fri, 18 Dec 2020 15:57:41 +0100
+Message-ID: <20201218145746.24205-19-info@metux.net>
 References: <20201218145746.24205-1-info@metux.net>
-Return-path: <sparclinux-owner@vger.kernel.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
 In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -12,32 +12,70 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org, catalin.marinas@arm.com, will@kernel.org, msalter@redhat.com, jacquiot.aurelien@gmail.com, gerg@linux-m68k.org, geert@linux-m68k.org, tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com, deller@gmx.de, benh@kernel.crashing.org, paulus@samba.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, bp@alien8.de, x86@kernel.org, hpa@zytor.com, linus.walleij@linaro.org, bgolaszewski@baylibre.com, maz@kernel.org, tony@atomide.com, arnd@arndb.de, linux-alpha@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.
 
-The warning in ack_bad_irq() is misleading in several ways:
-* the term "vector" isn't quite correct
-* the printing format isn't consistent across the archs: some print decimal,
-  some hex, some hex w/o 0x prefix.
-* the printed linux irq isn't meaningful in all cases - we actually would
-  want it to print the hw irq.
-
-Since all call sites already print out more detailed and correct information,
-we just don't need to duplicate this in each single arch. So just drop it.
+Use the newly introduced irq error counter, that's already maintained
+by all callers of ack_bad_irq(), in order to remove duplicate code.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- include/asm-generic/hardirq.h | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/include/asm/hardirq.h | 9 ++-------
+ arch/arm64/kernel/smp.c          | 6 ++----
+ 2 files changed, 4 insertions(+), 11 deletions(-)
 
-diff --git a/include/asm-generic/hardirq.h b/include/asm-generic/hardirq.h
-index 7317e8258b48..f5a0240cbf52 100644
---- a/include/asm-generic/hardirq.h
-+++ b/include/asm-generic/hardirq.h
-@@ -19,7 +19,6 @@ DECLARE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);
- #ifndef ack_bad_irq
- static inline void ack_bad_irq(unsigned int irq)
+diff --git a/arch/arm64/include/asm/hardirq.h b/arch/arm64/include/asm/hardirq.h
+index cbfa7b6f2e09..760922571084 100644
+--- a/arch/arm64/include/asm/hardirq.h
++++ b/arch/arm64/include/asm/hardirq.h
+@@ -13,7 +13,8 @@
+ #include <asm/kvm_arm.h>
+ #include <asm/sysreg.h>
+ 
+-#define ack_bad_irq ack_bad_irq
++#define ack_bad_irq(irq)
++
+ #include <asm-generic/hardirq.h>
+ 
+ #define __ARCH_IRQ_EXIT_IRQS_DISABLED	1
+@@ -85,10 +86,4 @@ do {									\
+ 		write_sysreg(___hcr, hcr_el2);				\
+ } while (0)
+ 
+-static inline void ack_bad_irq(unsigned int irq)
+-{
+-	extern unsigned long irq_err_count;
+-	irq_err_count++;
+-}
+-
+ #endif /* __ASM_HARDIRQ_H */
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 2499b895efea..0edc565ea735 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -33,7 +33,7 @@
+ #include <linux/kernel_stat.h>
+ #include <linux/kexec.h>
+ #include <linux/kvm_host.h>
+-
++#include <asm-generic/irq-err.h>
+ #include <asm/alternative.h>
+ #include <asm/atomic.h>
+ #include <asm/cacheflush.h>
+@@ -798,8 +798,6 @@ static const char *ipi_types[NR_IPI] __tracepoint_string = {
+ 
+ static void smp_cross_call(const struct cpumask *target, unsigned int ipinr);
+ 
+-unsigned long irq_err_count;
+-
+ int arch_show_interrupts(struct seq_file *p, int prec)
  {
--	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
+ 	unsigned int cpu, i;
+@@ -813,7 +811,7 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+ 		seq_printf(p, "      %s\n", ipi_types[i]);
+ 	}
+ 
+-	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_count);
++	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_get());
+ 	return 0;
  }
- #endif
  
 -- 
 2.11.0
