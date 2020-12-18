@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 08/23] arch: powerpc: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:31:07 +0100
-Message-ID: <20201218143122.19459-9-info@metux.net>
+Subject: [PATCH 10/23] arch: sh: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:31:09 +0100
+Message-ID: <20201218143122.19459-11-info@metux.net>
 References: <20201218143122.19459-1-info@metux.net>
-Return-path: <sparclinux-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 In-Reply-To: <20201218143122.19459-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -24,25 +24,21 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/powerpc/include/asm/hardirq.h | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ arch/sh/kernel/irq.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/powerpc/include/asm/hardirq.h b/arch/powerpc/include/asm/hardirq.h
-index f133b5930ae1..4138193c2367 100644
---- a/arch/powerpc/include/asm/hardirq.h
-+++ b/arch/powerpc/include/asm/hardirq.h
-@@ -27,10 +27,7 @@ DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
- #define __ARCH_IRQ_STAT
- #define __ARCH_IRQ_EXIT_IRQS_DISABLED
+diff --git a/arch/sh/kernel/irq.c b/arch/sh/kernel/irq.c
+index ab5f790b0cd2..c14a142efe60 100644
+--- a/arch/sh/kernel/irq.c
++++ b/arch/sh/kernel/irq.c
+@@ -31,7 +31,6 @@ atomic_t irq_err_count;
+ void ack_bad_irq(unsigned int irq)
+ {
+ 	atomic_inc(&irq_err_count);
+-	printk("unexpected IRQ trap at vector %02x\n", irq);
+ }
  
--static inline void ack_bad_irq(unsigned int irq)
--{
--	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
--}
-+#define ack_bad_irq(irq)
- 
- extern u64 arch_irq_stat_cpu(unsigned int cpu);
- #define arch_irq_stat_cpu	arch_irq_stat_cpu
+ #if defined(CONFIG_PROC_FS)
 -- 
 2.11.0
 
