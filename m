@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 19/23] arch: c6x: use generic irq error counter
-Date: Fri, 18 Dec 2020 15:57:42 +0100
-Message-ID: <20201218145746.24205-20-info@metux.net>
+Subject: [PATCH 13/23] arch: generic: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:57:36 +0100
+Message-ID: <20201218145746.24205-14-info@metux.net>
 References: <20201218145746.24205-1-info@metux.net>
-Return-path: <linux-omap-owner@vger.kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
 In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -12,74 +12,33 @@ Content-Transfer-Encoding: 7bit
 To: linux-kernel@vger.kernel.org
 Cc: mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org, catalin.marinas@arm.com, will@kernel.org, msalter@redhat.com, jacquiot.aurelien@gmail.com, gerg@linux-m68k.org, geert@linux-m68k.org, tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com, deller@gmx.de, benh@kernel.crashing.org, paulus@samba.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, bp@alien8.de, x86@kernel.org, hpa@zytor.com, linus.walleij@linaro.org, bgolaszewski@baylibre.com, maz@kernel.org, tony@atomide.com, arnd@arndb.de, linux-alpha@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.
 
-Use the newly introduced irq error counter, that's already maintained
-by all callers of ack_bad_irq(), in order to remove duplicate code.
+The warning in ack_bad_irq() is misleading in several ways:
+* the term "vector" isn't quite correct
+* the printing format isn't consistent across the archs: some print decimal,
+  some hex, some hex w/o 0x prefix.
+* the printed linux irq isn't meaningful in all cases - we actually would
+  want it to print the hw irq.
+
+Since all call sites already print out more detailed and correct information,
+we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/c6x/include/asm/hardirq.h |  3 ---
- arch/c6x/include/asm/irq.h     |  2 --
- arch/c6x/kernel/irq.c          | 11 ++---------
- 3 files changed, 2 insertions(+), 14 deletions(-)
+ include/asm-generic/hardirq.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/c6x/include/asm/hardirq.h b/arch/c6x/include/asm/hardirq.h
-index f37d07d31040..f70f6113e53a 100644
---- a/arch/c6x/include/asm/hardirq.h
-+++ b/arch/c6x/include/asm/hardirq.h
-@@ -9,9 +9,6 @@
- #ifndef _ASM_C6X_HARDIRQ_H
- #define _ASM_C6X_HARDIRQ_H
- 
--extern void ack_bad_irq(int irq);
--#define ack_bad_irq ack_bad_irq
--
- #include <asm-generic/hardirq.h>
- 
- #endif /* _ASM_C6X_HARDIRQ_H */
-diff --git a/arch/c6x/include/asm/irq.h b/arch/c6x/include/asm/irq.h
-index 9da4d1afd0d7..f42c5747c3ee 100644
---- a/arch/c6x/include/asm/irq.h
-+++ b/arch/c6x/include/asm/irq.h
-@@ -45,6 +45,4 @@ struct pt_regs;
- 
- extern asmlinkage void c6x_do_IRQ(unsigned int prio, struct pt_regs *regs);
- 
--extern unsigned long irq_err_count;
--
- #endif /* _ASM_C6X_IRQ_H */
-diff --git a/arch/c6x/kernel/irq.c b/arch/c6x/kernel/irq.c
-index b9f7cfa2ed21..9f9d798925de 100644
---- a/arch/c6x/kernel/irq.c
-+++ b/arch/c6x/kernel/irq.c
-@@ -21,12 +21,10 @@
- #include <linux/of_irq.h>
- #include <linux/interrupt.h>
- #include <linux/kernel_stat.h>
--
-+#include <asm-generic/irq-err.h>
- #include <asm/megamod-pic.h>
- #include <asm/special_insns.h>
- 
--unsigned long irq_err_count;
--
- static DEFINE_RAW_SPINLOCK(core_irq_lock);
- 
- static void mask_core_irq(struct irq_data *data)
-@@ -114,13 +112,8 @@ void __init init_IRQ(void)
- 	set_creg(ICR, 0xfff0);
- }
- 
--void ack_bad_irq(int irq)
--{
--	irq_err_count++;
--}
--
- int arch_show_interrupts(struct seq_file *p, int prec)
+diff --git a/include/asm-generic/hardirq.h b/include/asm-generic/hardirq.h
+index 7317e8258b48..f5a0240cbf52 100644
+--- a/include/asm-generic/hardirq.h
++++ b/include/asm-generic/hardirq.h
+@@ -19,7 +19,6 @@ DECLARE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);
+ #ifndef ack_bad_irq
+ static inline void ack_bad_irq(unsigned int irq)
  {
--	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_count);
-+	seq_printf(p, "%*s: %10lu\n", prec, "Err", irq_err_get());
- 	return 0;
+-	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
  }
+ #endif
+ 
 -- 
 2.11.0
 
