@@ -1,7 +1,7 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 09/23] arch: s390: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:31:08 +0100
-Message-ID: <20201218143122.19459-10-info@metux.net>
+Subject: [PATCH 13/23] arch: generic: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:31:12 +0100
+Message-ID: <20201218143122.19459-14-info@metux.net>
 References: <20201218143122.19459-1-info@metux.net>
 Return-path: <linux-omap-owner@vger.kernel.org>
 In-Reply-To: <20201218143122.19459-1-info@metux.net>
@@ -24,24 +24,21 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/s390/include/asm/hardirq.h | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ include/asm-generic/hardirq.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/s390/include/asm/hardirq.h b/arch/s390/include/asm/hardirq.h
-index dfbc3c6c0674..56d95fcb310a 100644
---- a/arch/s390/include/asm/hardirq.h
-+++ b/arch/s390/include/asm/hardirq.h
-@@ -21,9 +21,6 @@
- #define __ARCH_HAS_DO_SOFTIRQ
- #define __ARCH_IRQ_EXIT_IRQS_DISABLED
- 
--static inline void ack_bad_irq(unsigned int irq)
--{
+diff --git a/include/asm-generic/hardirq.h b/include/asm-generic/hardirq.h
+index 7317e8258b48..f5a0240cbf52 100644
+--- a/include/asm-generic/hardirq.h
++++ b/include/asm-generic/hardirq.h
+@@ -19,7 +19,6 @@ DECLARE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);
+ #ifndef ack_bad_irq
+ static inline void ack_bad_irq(unsigned int irq)
+ {
 -	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
--}
-+#define ack_bad_irq(irq)
+ }
+ #endif
  
- #endif /* __ASM_HARDIRQ_H */
 -- 
 2.11.0
 
