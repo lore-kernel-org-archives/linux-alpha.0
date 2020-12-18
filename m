@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 07/23] arch: parisc: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:57:30 +0100
-Message-ID: <20201218145746.24205-8-info@metux.net>
+Subject: [PATCH 03/23] arch: arm: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:57:26 +0100
+Message-ID: <20201218145746.24205-4-info@metux.net>
 References: <20201218145746.24205-1-info@metux.net>
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <linux-omap-owner@vger.kernel.org>
 In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -24,21 +24,21 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/parisc/include/asm/hardirq.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/include/asm/hw_irq.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/parisc/include/asm/hardirq.h b/arch/parisc/include/asm/hardirq.h
-index fad29aa6f45f..78b581f00bb3 100644
---- a/arch/parisc/include/asm/hardirq.h
-+++ b/arch/parisc/include/asm/hardirq.h
-@@ -34,6 +34,6 @@ DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
- #define __ARCH_IRQ_STAT
- #define inc_irq_stat(member)	this_cpu_inc(irq_stat.member)
- #define __inc_irq_stat(member)	__this_cpu_inc(irq_stat.member)
--#define ack_bad_irq(irq) WARN(1, "unexpected IRQ trap at vector %02x\n", irq)
-+#define ack_bad_irq(irq)
+diff --git a/arch/arm/include/asm/hw_irq.h b/arch/arm/include/asm/hw_irq.h
+index cecc13214ef1..5305c7e33aee 100644
+--- a/arch/arm/include/asm/hw_irq.h
++++ b/arch/arm/include/asm/hw_irq.h
+@@ -9,7 +9,6 @@ static inline void ack_bad_irq(int irq)
+ {
+ 	extern unsigned long irq_err_count;
+ 	irq_err_count++;
+-	pr_crit("unexpected IRQ trap at vector %02x\n", irq);
+ }
  
- #endif /* _PARISC_HARDIRQ_H */
+ #define ARCH_IRQ_INIT_FLAGS	(IRQ_NOREQUEST | IRQ_NOPROBE)
 -- 
 2.11.0
 
