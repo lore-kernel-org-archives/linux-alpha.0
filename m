@@ -1,35 +1,65 @@
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH -next] alpha: kernel: convert comma to semicolon
-Date: Wed, 16 Dec 2020 21:12:41 +0800
-Message-ID: <20201216131241.14447-1-zhengyongjun3@huawei.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
+From: "Enrico Weigelt, metux IT consult" <info@metux.net>
+Subject: [PATCH 05/23] arch: ia64: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:31:04 +0100
+Message-ID: <20201218143122.19459-6-info@metux.net>
+References: <20201218143122.19459-1-info@metux.net>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20201218143122.19459-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Zheng Yongjun <zhengyongjun3@huawei.com>
+Content-Transfer-Encoding: 7bit
+To: linux-kernel@vger.kernel.org
+Cc: mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org, catalin.marinas@arm.com, will@kernel.org, msalter@redhat.com, jacquiot.aurelien@gmail.com, gerg@linux-m68k.org, geert@linux-m68k.org, tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com, deller@gmx.de, benh@kernel.crashing.org, paulus@samba.org, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, bp@alien8.de, x86@kernel.org, hpa@zytor.com, linus.walleij@linaro.org, bgolaszewski@baylibre.com, maz@kernel.org, tony@atomide.com, arnd@arndb.de, linux-alpha@vger.kernel.org, linux-c6x-dev@linux-c6x.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.
 
-Replace a comma between expression statements by a semicolon.
+The warning in ack_bad_irq() is misleading in several ways:
+* the term "vector" isn't quite correct
+* the printing format isn't consistent across the archs: some print decimal,
+  some hex, some hex w/o "0x" prefix.
+* the printed linux irq isn't meaningful in all cases - we actually would
+  want it to print the hw irq.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Since all call sites already print out more detailed and correct information,
+we just don't need to duplicate this in each single arch. So just drop it.
+
+Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/alpha/kernel/process.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/ia64/include/asm/hardirq.h | 2 +-
+ arch/ia64/kernel/irq.c          | 9 ---------
+ 2 files changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index 4c7b0414a3ff..71041347d189 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -256,7 +256,7 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
- 		childstack->r26 = (unsigned long) ret_from_kernel_thread;
- 		childstack->r9 = usp;	/* function */
- 		childstack->r10 = kthread_arg;
--		childregs->hae = alpha_mv.hae_cache,
-+		childregs->hae = alpha_mv.hae_cache;
- 		childti->pcb.usp = 0;
- 		return 0;
- 	}
+diff --git a/arch/ia64/include/asm/hardirq.h b/arch/ia64/include/asm/hardirq.h
+index ccde7c2ba00f..dddaafaf84e0 100644
+--- a/arch/ia64/include/asm/hardirq.h
++++ b/arch/ia64/include/asm/hardirq.h
+@@ -22,6 +22,6 @@
+ 
+ extern void __iomem *ipi_base_addr;
+ 
+-void ack_bad_irq(unsigned int irq);
++#define ack_bad_irq(irq)
+ 
+ #endif /* _ASM_IA64_HARDIRQ_H */
+diff --git a/arch/ia64/kernel/irq.c b/arch/ia64/kernel/irq.c
+index ecef17c7c35b..1365c7cf2095 100644
+--- a/arch/ia64/kernel/irq.c
++++ b/arch/ia64/kernel/irq.c
+@@ -28,15 +28,6 @@
+ #include <asm/xtp.h>
+ 
+ /*
+- * 'what should we do if we get a hw irq event on an illegal vector'.
+- * each architecture has to answer this themselves.
+- */
+-void ack_bad_irq(unsigned int irq)
+-{
+-	printk(KERN_ERR "Unexpected irq vector 0x%x on CPU %u!\n", irq, smp_processor_id());
+-}
+-
+-/*
+  * Interrupt statistics:
+  */
+ 
 -- 
-2.22.0
+2.11.0
 
