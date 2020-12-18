@@ -1,9 +1,9 @@
 From: "Enrico Weigelt, metux IT consult" <info@metux.net>
-Subject: [PATCH 05/23] arch: ia64: drop misleading warning on spurious IRQ
-Date: Fri, 18 Dec 2020 15:57:28 +0100
-Message-ID: <20201218145746.24205-6-info@metux.net>
+Subject: [PATCH 11/23] arch: sparc: drop misleading warning on spurious IRQ
+Date: Fri, 18 Dec 2020 15:57:34 +0100
+Message-ID: <20201218145746.24205-12-info@metux.net>
 References: <20201218145746.24205-1-info@metux.net>
-Return-path: <linux-arch-owner@vger.kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
 In-Reply-To: <20201218145746.24205-1-info@metux.net>
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
@@ -15,7 +15,7 @@ Cc: mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, 
 The warning in ack_bad_irq() is misleading in several ways:
 * the term "vector" isn't quite correct
 * the printing format isn't consistent across the archs: some print decimal,
-  some hex, some hex w/o "0x" prefix.
+  some hex, some hex w/o 0x prefix.
 * the printed linux irq isn't meaningful in all cases - we actually would
   want it to print the hw irq.
 
@@ -24,42 +24,38 @@ we just don't need to duplicate this in each single arch. So just drop it.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- arch/ia64/include/asm/hardirq.h | 2 +-
- arch/ia64/kernel/irq.c          | 9 ---------
- 2 files changed, 1 insertion(+), 10 deletions(-)
+ arch/sparc/include/asm/hardirq_64.h | 2 +-
+ arch/sparc/kernel/irq_64.c          | 5 -----
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/arch/ia64/include/asm/hardirq.h b/arch/ia64/include/asm/hardirq.h
-index ccde7c2ba00f..dddaafaf84e0 100644
---- a/arch/ia64/include/asm/hardirq.h
-+++ b/arch/ia64/include/asm/hardirq.h
-@@ -22,6 +22,6 @@
- 
- extern void __iomem *ipi_base_addr;
+diff --git a/arch/sparc/include/asm/hardirq_64.h b/arch/sparc/include/asm/hardirq_64.h
+index 75b92bfe04b5..874151f520de 100644
+--- a/arch/sparc/include/asm/hardirq_64.h
++++ b/arch/sparc/include/asm/hardirq_64.h
+@@ -14,6 +14,6 @@
+ #define local_softirq_pending_ref \
+ 	__cpu_data.__softirq_pending
  
 -void ack_bad_irq(unsigned int irq);
 +#define ack_bad_irq(irq)
  
- #endif /* _ASM_IA64_HARDIRQ_H */
-diff --git a/arch/ia64/kernel/irq.c b/arch/ia64/kernel/irq.c
-index ecef17c7c35b..1365c7cf2095 100644
---- a/arch/ia64/kernel/irq.c
-+++ b/arch/ia64/kernel/irq.c
-@@ -28,15 +28,6 @@
- #include <asm/xtp.h>
+ #endif /* !(__SPARC64_HARDIRQ_H) */
+diff --git a/arch/sparc/kernel/irq_64.c b/arch/sparc/kernel/irq_64.c
+index 3ec9f1402aad..ea2a52f7fe53 100644
+--- a/arch/sparc/kernel/irq_64.c
++++ b/arch/sparc/kernel/irq_64.c
+@@ -284,11 +284,6 @@ static unsigned int sysino_exists(u32 devhandle, unsigned int devino)
+ 	return irq;
+ }
  
- /*
-- * 'what should we do if we get a hw irq event on an illegal vector'.
-- * each architecture has to answer this themselves.
-- */
 -void ack_bad_irq(unsigned int irq)
 -{
--	printk(KERN_ERR "Unexpected irq vector 0x%x on CPU %u!\n", irq, smp_processor_id());
+-	pr_crit("BAD IRQ ack %d\n", irq);
 -}
 -
--/*
-  * Interrupt statistics:
-  */
- 
+ void irq_install_pre_handler(int irq,
+ 			     void (*func)(unsigned int, void *, void *),
+ 			     void *arg1, void *arg2)
 -- 
 2.11.0
 
