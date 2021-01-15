@@ -1,51 +1,81 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH] Adds a new ioctl32 syscall for backwards compatibility
- layers
-Date: Fri, 15 Jan 2021 20:01:15 +0000
-Message-ID: <b15672b1caec4cf980f2753d06b03596@AcuMS.aculab.com>
+From: Arnd Bergmann <arnd@kernel.org>
+Subject: Re: [PATCH] Adds a new ioctl32 syscall for backwards compatibility layers
+Date: Fri, 15 Jan 2021 23:17:09 +0100
+Message-ID: <CAK8P3a1gqt-gBCPTdNeY+8SaG8eUGN4zkCrNKSjA=aEL-TkaUQ@mail.gmail.com>
 References: <20210106064807.253112-1-Sonicadvance1@gmail.com>
- <20210115070326.294332-1-Sonicadvance1@gmail.com>
+ <20210115070326.294332-1-Sonicadvance1@gmail.com> <b15672b1caec4cf980f2753d06b03596@AcuMS.aculab.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20210115070326.294332-1-Sonicadvance1@gmail.com>
-Content-Language: en-US
+Return-path: <sparclinux-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610749047;
+        bh=51AgOraSDUgeKFnzRXPrgQAF8UQsqnNhAJF/wHnUnuA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=W/+YhIqhwKpXMR1YHjsUDC/1vi3AWO14SB7s0CrInE/m/l9jIXs2gKoWQtGg6DRi1
+         mf4Us2McffrGNfxp4IKqE9Krhk9PJ6mRw52FrXdnWRw8t7OGbutqFJFImF//XaAK3B
+         k296fxiI4dCA4u0e733GVj0Fpxayev4L71aTiRKsi0yNHKw3Gn80vLuK3OmBZXWmyw
+         oknAsGz6IZ87kZfT4BR2bsmLOb9d+uOeSqnk8nhAisGl7bkTC8POoU9m8/KrTzm54l
+         klHJ4yfGG8GXfWeMFLvQaAf6u+lkXxtZwfx2ZfsR0uBSzeGhBbnktJm2piA7XJhISW
+         g81QIgbXjkJ+w==
+In-Reply-To: <b15672b1caec4cf980f2753d06b03596@AcuMS.aculab.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: "'sonicadvance1@gmail.com'" <sonicadvance1@gmail.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@de.ibm.co>
+Content-Transfer-Encoding: 7bit
+To: David Laight <David.Laight@aculab.com>
+Cc: "sonicadvance1@gmail.com" <sonicadvance1@gmail.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>
 
-From: sonicadvance1@gmail.com
-> Sent: 15 January 2021 07:03
-> Problem presented:
-> A backwards compatibility layer that allows running x86-64 and x86
-> processes inside of an AArch64 process.
->   - CPU is emulated
->   - Syscall interface is mostly passthrough
->   - Some syscalls require patching or emulation depending on behaviour
->   - Not viable from the emulator design to use an AArch32 host process
-> 
+On Fri, Jan 15, 2021 at 9:01 PM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: sonicadvance1@gmail.com
+> > Sent: 15 January 2021 07:03
+> > Problem presented:
+> > A backwards compatibility layer that allows running x86-64 and x86
+> > processes inside of an AArch64 process.
+> >   - CPU is emulated
+> >   - Syscall interface is mostly passthrough
+> >   - Some syscalls require patching or emulation depending on behaviour
+> >   - Not viable from the emulator design to use an AArch32 host process
+> >
+>
+> You are going to need to add all the x86 compatibility code into
+> your arm64 kernel.
+> This is likely to be different from the 32bit arm compatibility
+> because 64bit items are only aligned on 32bit boundaries.
+> The x86 x32 compatibility will be more like the 32bit arm 'compat'
+> code - I'm pretty sure arm32 64bit aligned 64bit data.
 
-You are going to need to add all the x86 compatibility code into
-your arm64 kernel.
-This is likely to be different from the 32bit arm compatibility
-because 64bit items are only aligned on 32bit boundaries.
-The x86 x32 compatibility will be more like the 32bit arm 'compat'
-code - I'm pretty sure arm32 64bit aligned 64bit data.
+All other architectures that have both 32-bit and 64-bit variants
+use the same alignment for all types, except for x86.
 
-You'll then need to remember how the process entered the kernel
-to work out which compatibility code to invoke.
-This is what x86 does.
-It allows a single process to do all three types of system call.
+There are additional differences though, especially if one
+were to try to generalize the interface to all architectures.
+A subset of the issues includes
 
-Trying to 'patch up' structures outside the kernel, or in the
-syscall interface code will always cause grief somewhere.
-The only sane place is in the code that uses the structures.
-Which, for ioctls, means inside the driver that parses them.
+- x32 has 64-bit types in places of some types that are
+  32 bit everywhere else (time_t, ino_t, off_t, clock_t, ...)
 
-	David
+- m68k aligns struct members to at most 16 bits
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+- uid_t/gid_t/ino_t/dev_t/... are
 
+> You'll then need to remember how the process entered the kernel
+> to work out which compatibility code to invoke.
+> This is what x86 does.
+> It allows a single process to do all three types of system call.
+>
+> Trying to 'patch up' structures outside the kernel, or in the
+> syscall interface code will always cause grief somewhere.
+> The only sane place is in the code that uses the structures.
+> Which, for ioctls, means inside the driver that parses them.
+
+He's already doing the system call emulation for all the system
+calls other than ioctl in user space though. In my experience,
+there are actually fairly few ioctl commands that are different
+between architectures -- most of them have no misaligned
+or architecture-defined struct members at all.
+
+Once you have conversion functions to deal with the 32/64-bit
+interface differences and architecture specifics of sockets,
+sysvipc, signals, stat, and input_event, handling the
+x86-32 specific ioctl commands is comparably easy.
+
+         Arnd
