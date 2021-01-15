@@ -1,8 +1,8 @@
 From: sonicadvance1@gmail.com
-Subject: [PATCH] Adds a new ioctl32 syscall for backwards compatibility layers
-Date: Thu, 14 Jan 2021 23:02:50 -0800
-Message-ID: <20210115070326.294332-1-Sonicadvance1@gmail.com>
-References: <20210106064807.253112-1-Sonicadvance1@gmail.com>
+Subject: [PATCH v2] Adds a new ioctl32 syscall for backwards compatibility layers
+Date: Thu, 14 Jan 2021 23:17:14 -0800
+Message-ID: <20210115071740.295973-1-Sonicadvance1@gmail.com>
+References: <20210115070326.294332-1-Sonicadvance1@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-m68k-owner@vger.kernel.org>
@@ -10,14 +10,14 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GHiYLWes15995yc06JXjproFwSKI9EhRTzfJK8Em9SI=;
-        b=VuQxLNreZ35kgOv9t50bPmMmRYfdkoMyenmcQ/EDiL+khkwLjA9TiaeWqm8RE+0z5J
-         dJMnoqkNtpJ1vG4fRJ04X1k47+3GXa8DrrEpMY9XbvvaQDogHwCuIKtSthDXdn7B+psV
-         LLMjBR/e+Dkqs27AHDNisqoPuW0e47Zp2vCrNUEJRIsM65Y1hyOF60ujN5G+mVYCqmRt
-         lE+aEa9thbHHIIwH/bcuweSMJ/b5Zp+RON0M0MddkMSsHMojeueLCI6AYwxpCXSqVODX
-         3qjJY+iwd58/bhyAB4Ak0o5l/ViRZO3c3fC0mS1r/UaLnBREjoKNbKdVPsSTW8eGAeJr
-         TlQQ==
-In-Reply-To: <20210106064807.253112-1-Sonicadvance1@gmail.com>
+        bh=fDBgTqph7U6sqOSXdt8AcS70Ilsiw0uIpXx8fn1angs=;
+        b=tj4DTccmh3ZQGUeqObnceaG0RemZklXTh5qssoEslhdzP0IvX6IzjS7dNL2lxBOffY
+         HkNStF1IOROuK+FkBE1ipDnikzcP3W2yAFJn1ZFOWrkZpgprx5iXGuk1HuIq/QBpXYpX
+         ZnbYUnkmOaTFPBZdZGwHrMxyPm1CnRftniktjtISvy/bYUG/pY2e4cC6Z/CcR3H73ucr
+         ervLAuU1fFhlXHaeEJEcU8ob7crnGhBqvTu5nFcRFE+cagJQdQIJzcq+VykJi3n9FtKM
+         fKwI4DRLGQtgFnLFMTkA8X00tYzFJ9js1tYR/leJe45ACMHo9kMOAdn3gnEYsucDbWLU
+         MErA==
+In-Reply-To: <20210115070326.294332-1-Sonicadvance1@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: 
@@ -117,6 +117,12 @@ packing across the boundary
   - Prone to failure keeping the kernel ioctl and userspace ioctl
   handling in sync
   - Really want to have it in the kernel space as much as possible
+
+Changes in v2:
+- Added the syscall to all architecture tables
+- Disabled on 32bit and BE platforms. They can call ioctl directly.
+- Disabled on x86-64 as well since you can call this from ia32 or x32
+dispatch tables
 
 Signed-off-by: Ryan Houdek <Sonicadvance1@gmail.com>
 ---
