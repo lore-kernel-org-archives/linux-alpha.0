@@ -1,22 +1,12 @@
-From: Randy Dunlap <rdunlap@infradead.org>
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 Subject: Re: [PATCH] arch/alpha: fix typo in a comment in
  arch/alpha/boot/bootpz.c
-Date: Wed, 20 Jan 2021 08:20:09 -0800
-Message-ID: <5e4ed85d-140c-3d85-e4f4-97b27fa37885@infradead.org>
+Date: Wed, 20 Jan 2021 17:20:06 +0100
+Message-ID: <f1b1703d-19ea-42ba-8b6d-f8992fe987f0@physik.fu-berlin.de>
 References: <20210120133410.2182-1-tangchunyou@163.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=6zbXo40IH5Uu71xo0sssuQB6SsVmGWBgsmHqDUPpMXo=; b=phwPCU05NdSG5sT2A2X7d5RMJb
-        /k0H3vv3f6ylRPdpA+nQZ11ugPnKPLaGsn35s/PxrMsgDA+aM/TrhjYm8A5rzPfaLBbJ3IkSi+RBF
-        /d8wwbUG/RjjH+RMwG25M3KD3SIb0qWp5o0ogqll2xBeg+yDsPaKG/Z2NKydNQycjqKLs1Ob6wYZ9
-        fpO0br0ZJcJIuOPMQCA93nkx3553fDKAtkoTPbGXNegeR92noH9QgSXG0YCs8Sp0EJmD/Ya8FUhjU
-        XSFHF8n1b0E4AsRdG/6JuheZ7/FHCKtr+y0XI4BPqKlvoYR2yWMA3BFbnMTXSbBzlf5iqzSVo0ODK
-        C6m1Eqkw==;
 In-Reply-To: <20210120133410.2182-1-tangchunyou@163.com>
 Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,7 +14,9 @@ Content-Type: text/plain; charset="us-ascii"
 To: ChunyouTang <tangchunyou@163.com>, ink@jurassic.park.msu.ru, mattst88@gmail.com, akpm@linux-foundation.org, rppt@kernel.org
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, zhangwen@yulong.com, tangchunyou@yulong.com
 
-On 1/20/21 5:34 AM, ChunyouTang wrote:
+Hi ChunyouTang!
+
+On 1/20/21 2:34 PM, ChunyouTang wrote:
 > From: tangchunyou <tangchunyou@yulong.com>
 > 
 > "kerne" -> "kernel"
@@ -44,17 +36,16 @@ On 1/20/21 5:34 AM, ChunyouTang wrote:
 >  	ZERO_PGE	KSEG address of page full of zeroes, but 
 > -			upon entry to kerne cvan be expected
 > +			upon entry to kernel cvan be expected
-
-s/cvan/can/ also
-
 >  			to hold the parameter list and possible
 >  			INTRD information.
->  
-> 
 
+That should probably be "upon entry to the kernel cvan can be expected".
+
+Adrian
 
 -- 
-~Randy
-"He closes his eyes and drops the goggles.  You can't get hurt
-by looking at a bitmap.  Or can you?"
-(Neal Stephenson: Snow Crash)
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+
