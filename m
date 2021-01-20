@@ -1,45 +1,50 @@
 From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 Subject: Re: [PATCH] arch/alpha: fix typo in a comment in
  arch/alpha/boot/bootpz.c
-Date: Wed, 20 Jan 2021 17:20:06 +0100
-Message-ID: <f1b1703d-19ea-42ba-8b6d-f8992fe987f0@physik.fu-berlin.de>
+Date: Wed, 20 Jan 2021 17:37:07 +0100
+Message-ID: <0df77d48-8541-32c9-d39d-3e59f89f1f86@physik.fu-berlin.de>
 References: <20210120133410.2182-1-tangchunyou@163.com>
+ <5e4ed85d-140c-3d85-e4f4-97b27fa37885@infradead.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20210120133410.2182-1-tangchunyou@163.com>
+In-Reply-To: <5e4ed85d-140c-3d85-e4f4-97b27fa37885@infradead.org>
 Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: ChunyouTang <tangchunyou@163.com>, ink@jurassic.park.msu.ru, mattst88@gmail.com, akpm@linux-foundation.org, rppt@kernel.org
+To: Randy Dunlap <rdunlap@infradead.org>, ChunyouTang <tangchunyou@163.com>, ink@jurassic.park.msu.ru, mattst88@gmail.com, akpm@linux-foundation.org, rppt@kernel.org
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, zhangwen@yulong.com, tangchunyou@yulong.com
 
-Hi ChunyouTang!
+On 1/20/21 5:20 PM, Randy Dunlap wrote:
+> On 1/20/21 5:34 AM, ChunyouTang wrote:
+>> From: tangchunyou <tangchunyou@yulong.com>
+>>
+>> "kerne" -> "kernel"
+>>
+>> Signed-off-by: tangchunyou <tangchunyou@yulong.com>
+>> ---
+>>  arch/alpha/boot/bootpz.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
+>> index 43af718..61b61be 100644
+>> --- a/arch/alpha/boot/bootpz.c
+>> +++ b/arch/alpha/boot/bootpz.c
+>> @@ -200,7 +200,7 @@ extern int decompress_kernel(void* destination, void *source,
+>>  	START_ADDR	KSEG address of the entry point of kernel code.
+>>  
+>>  	ZERO_PGE	KSEG address of page full of zeroes, but 
+>> -			upon entry to kerne cvan be expected
+>> +			upon entry to kernel cvan be expected
+> 
+> s/cvan/can/ also
 
-On 1/20/21 2:34 PM, ChunyouTang wrote:
-> From: tangchunyou <tangchunyou@yulong.com>
-> 
-> "kerne" -> "kernel"
-> 
-> Signed-off-by: tangchunyou <tangchunyou@yulong.com>
-> ---
->  arch/alpha/boot/bootpz.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
-> index 43af718..61b61be 100644
-> --- a/arch/alpha/boot/bootpz.c
-> +++ b/arch/alpha/boot/bootpz.c
-> @@ -200,7 +200,7 @@ extern int decompress_kernel(void* destination, void *source,
->  	START_ADDR	KSEG address of the entry point of kernel code.
->  
->  	ZERO_PGE	KSEG address of page full of zeroes, but 
-> -			upon entry to kerne cvan be expected
-> +			upon entry to kernel cvan be expected
->  			to hold the parameter list and possible
->  			INTRD information.
+Right. Reading the whole paragraph helps. It probably should be:
 
-That should probably be "upon entry to the kernel cvan can be expected".
+ZERO_PGE	KSEG address of page full of zeroes, but
+		upon entry to kernel, it can be expected
+		to hold the parameter list and possible
+		INTRD information.
 
 Adrian
 
