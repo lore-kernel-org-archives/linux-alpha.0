@@ -1,46 +1,49 @@
-From: ChunyouTang <tangchunyou@163.com>
-Subject: [PATCH v2] arch/alpha:fix typo in a comment
-Date: Thu, 21 Jan 2021 10:48:34 +0800
-Message-ID: <20210121024834.2389-1-tangchunyou@163.com>
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Subject: Re: [PATCH] arch/alpha: fix typo in a comment in
+ arch/alpha/boot/bootpz.c
+Date: Thu, 21 Jan 2021 09:00:14 +0100
+Message-ID: <42a71690-28a9-6bf8-e413-2fd1e03f7f7c@physik.fu-berlin.de>
+References: <20210120133410.2182-1-tangchunyou@163.com>
+ <5e4ed85d-140c-3d85-e4f4-97b27fa37885@infradead.org>
+ <0df77d48-8541-32c9-d39d-3e59f89f1f86@physik.fu-berlin.de>
+ <20210121102042.00005504@163.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=xdab7
-        uurP4KG1QJtVUzCo6bsWMRYXE0ma24Vt/kVsPI=; b=izkAtZ1yss3owuBEmTLaH
-        C4NluMfU/0EfihjbFwDstlgqNvnXA2y8Iyi3gGOCW8m9SNht5ScgnA5dmxEgnexF
-        DOEDYU3GvbuCvgjvV5MZ57j9IlTwgeuTnRvXe4oYwGkvJ6dtTZXjNmMmtD0MTRJY
-        jOPzcUflTLxnHKKz82Qt/k=
+In-Reply-To: <20210121102042.00005504@163.com>
+Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, rppt@kernel.org, akpm@linux-foundation.org
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, zhangwen@yulong.com, tangchunyou@yulong.com
+To: Chunyou Tang <tangchunyou@163.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>, ink@jurassic.park.msu.ru, mattst88@gmail.com, akpm@linux-foundation.org, rppt@kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, zhangwen@yulong.com, tangchunyou@yulong.com
 
-From: tangchunyou <tangchunyou@yulong.com>
+Hi Chunyou!
 
-Fix typo in a comment in arch/alpha/boot/bootpz.c
+On 1/21/21 3:20 AM, Chunyou Tang wrote:
+>> Right. Reading the whole paragraph helps. It probably should be:
+>>
+>> ZERO_PGE	KSEG address of page full of zeroes, but
+>> 		upon entry to kernel, it can be expected
+>> 		to hold the parameter list and possible
+>> 		INTRD information.
+>>
+>> Adrian
+>>
+> 
+> ok, I change it as :
+> ZERO_PGE	KSEG address of page full of zeroes, but
+> 		upon entry to kernel, it can be expected
+> 		to hold the parameter list and possible
+> 		INTRD information.
+> then I commit it.
 
-"cvan" -> ", it can"
+Great, thank you.
 
-Signed-off-by: tangchunyou <tangchunyou@yulong.com>
----
- arch/alpha/boot/bootpz.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Adrian
 
-diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
-index 61b61be..90a2b34 100644
---- a/arch/alpha/boot/bootpz.c
-+++ b/arch/alpha/boot/bootpz.c
-@@ -200,7 +200,7 @@ extern int decompress_kernel(void* destination, void *source,
- 	START_ADDR	KSEG address of the entry point of kernel code.
- 
- 	ZERO_PGE	KSEG address of page full of zeroes, but 
--			upon entry to kernel cvan be expected
-+			upon entry to kernel, it can be expected
- 			to hold the parameter list and possible
- 			INTRD information.
- 
 -- 
-1.9.1
-
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
 
