@@ -1,37 +1,38 @@
 From: Sergei Shtylyov <sergei.shtylyov@gmail.com>
 Subject: Re: [PATCH 02/27] x86/syscalls: fix -Wmissing-prototypes warnings
  from COND_SYSCALL()
-Date: Thu, 28 Jan 2021 10:59:07 +0300
-Message-ID: <dd37a7f2-55e1-2e96-0c93-4a40980b8ef2@gmail.com>
+Date: Thu, 28 Jan 2021 11:00:29 +0300
+Message-ID: <605cea27-bd69-5b21-f285-2d3d0f6abd23@gmail.com>
 References: <20210128005110.2613902-1-masahiroy@kernel.org>
  <20210128005110.2613902-3-masahiroy@kernel.org>
+ <dd37a7f2-55e1-2e96-0c93-4a40980b8ef2@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Type:
 	Content-Transfer-Encoding:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:Message-ID:From:
-	References:To:Subject:Reply-To:Content-ID:Content-Description:Resent-Date:
+	List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:Message-ID:References:
+	To:From:Subject:Reply-To:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=9yhe+VqZf/IGoKapUB13qD+eR9al1k9ZhV5p2KUQ+1U=; b=xM7TW6k+f/5zmbeyop9CGCS3n
-	EvJrTl6mqhykleyi/B05jVa3BzmIPItvDay/tPXOIxrRMrhd6kN0Ac+es891Wp2EpLyp0J0gYkhPM
-	JLykO2rHPQITLNGwmUnH51icJVPy8HluWlxlssMdiJTxXg3W7kd07XxFX9kGD+pEhjxyjqtvR0zxc
-	x9+9Laa6h15Ox+gfAiweGhsNLy02gcbUwEIERJNzrviJrjALDFWgHKpMSoWS2pyyyE3ySGuGvXEfP
-	9AjQkc7EGjJTpIqnozxV2r8zCfMTPf3yg9D8VI3dgL4aUWaRLOg10KAA7m3/vLa51eFrykHxIBvmy
-	Mc9QHzhzg==;
+	 bh=Vb6Zi2IJ8oKBbsdKJ/okyejmZ3hWnq0OaVY9KZqXJ4Q=; b=ObeQsGbggsQ0jZaVLCXpIn2CQ
+	x2zpHSVQsHZ/9gDTW7OdUHLtxq+3PYkfICzzDNsFYRbY2Aut2pB5zZsKLHak3Eh+Y9ovSvxnYpOtX
+	CYA0OiZrqGP7ay0Dnm6stxAXn93zC1QjrG1qZ6gwWi8qNCM0xO1Zd3Jxbf90vCuVliu85KR4mOj9T
+	/ijOubHC7Zs94DdiVWiGLdjTdf8E9xoy07LtUlpha6J/E53VsNeDOJE8KLwnxfv68DVjhBL5o428v
+	LlRT9ySxxdFQa7hHzvMDXPBBPu56j0PJO/Yelbv7EBNLlrXiKB3t5lXaM+Gr/oERw/PSI3/KEzPKH
+	HIH3nFM7g==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:organization:message-id:date
+ h=subject:from:to:cc:references:organization:message-id:date
  :user-agent:mime-version:in-reply-to:content-language
  :content-transfer-encoding;
- bh=ZhLAAud3HvOatZc8bWa160+GGDrtwAXLfmrfPeaVYS8=;
- b=iipPbsfxZVCoeVKuars96HlwaPhNMoxff6kXibVhpITK1M6liR5Y9O7+S15Bs18l09
- qlUtM1wTfg9Ou6I6g23AZm7cVsi8afl9ywua8K9yMdO5bZr9nt5kjWGTXEGzGKuOa9/g
- 1XUmU2pb08XIkn2+EUpygz+rpS2BWuStq+kp1Z0L+RWjtUcubBnlDUTz5WKp9v7710os
- SLNWgHiJ3JIV+8IAHjWh/nhAgSk/YRdA5r5xJzX10KabfIVPeT0lFPft9QR1HE2XX97r
- YL6s2qMMPrVFtgVS0PASinY6oq3v5br43OEKFxy7K4ebWVUxXV6rGDy0rY0fMsVaCwye
- p0Aw==
-In-Reply-To: <20210128005110.2613902-3-masahiroy@kernel.org>
+ bh=gnZ/GDloV555+OnWhNxGUyFa3V1UNr+TUyX9DCKmvmo=;
+ b=BvV+OmW8dWjmNJDvcrvjzcva8OWBy7a8Wldf3TYz+i6X3QYbdYVdx8XtO5leAkHTrU
+ w3YMC/VHtwxm1x/Ic4nsp2y26eWjsO1yakRgVNAsk/+vPQ3tFI4ORflBdiqudTUbNQ15
+ 4udiNHAeivKX5c5MMjdj7/0f+Ywbb21vVg6oz3mMUyOwECoUO5sTQ+F7gyKkdUAVhOze
+ vsQP8Kn/mYUO89v8SJNtfvxDDv5uZaZ+sphCBYtGqh9qpfbAr39PdAciszAdWiMDq33U
+ CM0tCQ9qP6AgV+zPptT62EH2DQH0UbsDLxpsVPp63My+wTEFFdBYjDtMPkofAyv61LZq
+ z8DA==
+In-Reply-To: <dd37a7f2-55e1-2e96-0c93-4a40980b8ef2@gmail.com>
 Content-Language: en-US
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -43,73 +44,60 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 To: Masahiro Yamada <masahiroy@kernel.org>, linux-arch@vger.kernel.org, x86@kernel.org
 Cc: linux-xtensa@linux-xtensa.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kbuild@vger.kernel.org, linux-sh@vger.kernel.org, linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-Hello!
-
-On 28.01.2021 3:50, Masahiro Yamada wrote:
-
-> Building kernel/sys_ni.c with W=1 omits tons of -Wmissing-prototypes
-
-    Emits?
-
-> warnings.
-> 
-> $ make W=1 kernel/sys_ni.o
->    [ snip ]
->    CC      kernel/sys_ni.o
-> In file included from kernel/sys_ni.c:10:
-> ./arch/x86/include/asm/syscall_wrapper.h:83:14: warning: no previous prototype for '__x64_sys_io_setup' [-Wmissing-prototypes]
->     83 |  __weak long __##abi##_##name(const struct pt_regs *__unused) \
->        |              ^~
-> ./arch/x86/include/asm/syscall_wrapper.h:100:2: note: in expansion of macro '__COND_SYSCALL'
->    100 |  __COND_SYSCALL(x64, sys_##name)
->        |  ^~~~~~~~~~~~~~
-> ./arch/x86/include/asm/syscall_wrapper.h:256:2: note: in expansion of macro '__X64_COND_SYSCALL'
->    256 |  __X64_COND_SYSCALL(name)     \
->        |  ^~~~~~~~~~~~~~~~~~
-> kernel/sys_ni.c:39:1: note: in expansion of macro 'COND_SYSCALL'
->     39 | COND_SYSCALL(io_setup);
->        | ^~~~~~~~~~~~
-> ./arch/x86/include/asm/syscall_wrapper.h:83:14: warning: no previous prototype for '__ia32_sys_io_setup' [-Wmissing-prototypes]
->     83 |  __weak long __##abi##_##name(const struct pt_regs *__unused) \
->        |              ^~
-> ./arch/x86/include/asm/syscall_wrapper.h:120:2: note: in expansion of macro '__COND_SYSCALL'
->    120 |  __COND_SYSCALL(ia32, sys_##name)
->        |  ^~~~~~~~~~~~~~
-> ./arch/x86/include/asm/syscall_wrapper.h:257:2: note: in expansion of macro '__IA32_COND_SYSCALL'
->    257 |  __IA32_COND_SYSCALL(name)
->        |  ^~~~~~~~~~~~~~~~~~~
-> kernel/sys_ni.c:39:1: note: in expansion of macro 'COND_SYSCALL'
->     39 | COND_SYSCALL(io_setup);
->        | ^~~~~~~~~~~~
->    ...
-> 
-> __SYS_STUB0() and __SYS_STUBx() defined a few lines above have forward
-> declarations. Let's do likewise for __COND_SYSCALL() to fix the
-> warnings.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
->   arch/x86/include/asm/syscall_wrapper.h | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/x86/include/asm/syscall_wrapper.h b/arch/x86/include/asm/syscall_wrapper.h
-> index a84333adeef2..80c08c7d5e72 100644
-> --- a/arch/x86/include/asm/syscall_wrapper.h
-> +++ b/arch/x86/include/asm/syscall_wrapper.h
-> @@ -80,6 +80,7 @@ extern long __ia32_sys_ni_syscall(const struct pt_regs *regs);
->   	}
->   
->   #define __COND_SYSCALL(abi, name)					\
-> +	__weak long __##abi##_##name(const struct pt_regs *__unused);	\
->   	__weak long __##abi##_##name(const struct pt_regs *__unused)	\
-
-    Aren't these two lines identical?
-
-[...]
-
-MBR, Sergei
+T24gMjguMDEuMjAyMSAxMDo1OSwgU2VyZ2VpIFNodHlseW92IHdyb3RlOgoKWy4uLl0KPj4gQnVp
+bGRpbmcga2VybmVsL3N5c19uaS5jIHdpdGggVz0xIG9taXRzIHRvbnMgb2YgLVdtaXNzaW5nLXBy
+b3RvdHlwZXMKPiAKPiAgwqDCoCBFbWl0cz8KPiAKPj4gd2FybmluZ3MuCj4+Cj4+ICQgbWFrZSBX
+PTEga2VybmVsL3N5c19uaS5vCj4+IMKgwqAgWyBzbmlwIF0KPj4gwqDCoCBDQ8KgwqDCoMKgwqAg
+a2VybmVsL3N5c19uaS5vCj4+IEluIGZpbGUgaW5jbHVkZWQgZnJvbSBrZXJuZWwvc3lzX25pLmM6
+MTA6Cj4+IC4vYXJjaC94ODYvaW5jbHVkZS9hc20vc3lzY2FsbF93cmFwcGVyLmg6ODM6MTQ6IHdh
+cm5pbmc6IG5vIHByZXZpb3VzIAo+PiBwcm90b3R5cGUgZm9yICdfX3g2NF9zeXNfaW9fc2V0dXAn
+IFstV21pc3NpbmctcHJvdG90eXBlc10KPj4gwqDCoMKgIDgzIHzCoCBfX3dlYWsgbG9uZyBfXyMj
+YWJpIyNfIyNuYW1lKGNvbnN0IHN0cnVjdCBwdF9yZWdzICpfX3VudXNlZCkgXAo+PiDCoMKgwqDC
+oMKgwqAgfMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIF5+Cj4+IC4vYXJjaC94ODYvaW5jbHVk
+ZS9hc20vc3lzY2FsbF93cmFwcGVyLmg6MTAwOjI6IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBtYWNy
+byAKPj4gJ19fQ09ORF9TWVNDQUxMJwo+PiDCoMKgIDEwMCB8wqAgX19DT05EX1NZU0NBTEwoeDY0
+LCBzeXNfIyNuYW1lKQo+PiDCoMKgwqDCoMKgwqAgfMKgIF5+fn5+fn5+fn5+fn5+Cj4+IC4vYXJj
+aC94ODYvaW5jbHVkZS9hc20vc3lzY2FsbF93cmFwcGVyLmg6MjU2OjI6IG5vdGU6IGluIGV4cGFu
+c2lvbiBvZiBtYWNybyAKPj4gJ19fWDY0X0NPTkRfU1lTQ0FMTCcKPj4gwqDCoCAyNTYgfMKgIF9f
+WDY0X0NPTkRfU1lTQ0FMTChuYW1lKcKgwqDCoMKgIFwKPj4gwqDCoMKgwqDCoMKgIHzCoCBefn5+
+fn5+fn5+fn5+fn5+fn4KPj4ga2VybmVsL3N5c19uaS5jOjM5OjE6IG5vdGU6IGluIGV4cGFuc2lv
+biBvZiBtYWNybyAnQ09ORF9TWVNDQUxMJwo+PiDCoMKgwqAgMzkgfCBDT05EX1NZU0NBTEwoaW9f
+c2V0dXApOwo+PiDCoMKgwqDCoMKgwqAgfCBefn5+fn5+fn5+fn4KPj4gLi9hcmNoL3g4Ni9pbmNs
+dWRlL2FzbS9zeXNjYWxsX3dyYXBwZXIuaDo4MzoxNDogd2FybmluZzogbm8gcHJldmlvdXMgCj4+
+IHByb3RvdHlwZSBmb3IgJ19faWEzMl9zeXNfaW9fc2V0dXAnIFstV21pc3NpbmctcHJvdG90eXBl
+c10KPj4gwqDCoMKgIDgzIHzCoCBfX3dlYWsgbG9uZyBfXyMjYWJpIyNfIyNuYW1lKGNvbnN0IHN0
+cnVjdCBwdF9yZWdzICpfX3VudXNlZCkgXAo+PiDCoMKgwqDCoMKgwqAgfMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIF5+Cj4+IC4vYXJjaC94ODYvaW5jbHVkZS9hc20vc3lzY2FsbF93cmFwcGVy
+Lmg6MTIwOjI6IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBtYWNybyAKPj4gJ19fQ09ORF9TWVNDQUxM
+Jwo+PiDCoMKgIDEyMCB8wqAgX19DT05EX1NZU0NBTEwoaWEzMiwgc3lzXyMjbmFtZSkKPj4gwqDC
+oMKgwqDCoMKgIHzCoCBefn5+fn5+fn5+fn5+fgo+PiAuL2FyY2gveDg2L2luY2x1ZGUvYXNtL3N5
+c2NhbGxfd3JhcHBlci5oOjI1NzoyOiBub3RlOiBpbiBleHBhbnNpb24gb2YgbWFjcm8gCj4+ICdf
+X0lBMzJfQ09ORF9TWVNDQUxMJwo+PiDCoMKgIDI1NyB8wqAgX19JQTMyX0NPTkRfU1lTQ0FMTChu
+YW1lKQo+PiDCoMKgwqDCoMKgwqAgfMKgIF5+fn5+fn5+fn5+fn5+fn5+fn4KPj4ga2VybmVsL3N5
+c19uaS5jOjM5OjE6IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBtYWNybyAnQ09ORF9TWVNDQUxMJwo+
+PiDCoMKgwqAgMzkgfCBDT05EX1NZU0NBTEwoaW9fc2V0dXApOwo+PiDCoMKgwqDCoMKgwqAgfCBe
+fn5+fn5+fn5+fn4KPj4gwqDCoCAuLi4KPj4KPj4gX19TWVNfU1RVQjAoKSBhbmQgX19TWVNfU1RV
+QngoKSBkZWZpbmVkIGEgZmV3IGxpbmVzIGFib3ZlIGhhdmUgZm9yd2FyZAo+PiBkZWNsYXJhdGlv
+bnMuIExldCdzIGRvIGxpa2V3aXNlIGZvciBfX0NPTkRfU1lTQ0FMTCgpIHRvIGZpeCB0aGUKPj4g
+d2FybmluZ3MuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IE1hc2FoaXJvIFlhbWFkYSA8bWFzYWhpcm95
+QGtlcm5lbC5vcmc+Cj4+IC0tLQo+Pgo+PiDCoCBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9zeXNjYWxs
+X3dyYXBwZXIuaCB8IDEgKwo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykKPj4K
+Pj4gZGlmZiAtLWdpdCBhL2FyY2gveDg2L2luY2x1ZGUvYXNtL3N5c2NhbGxfd3JhcHBlci5oIAo+
+PiBiL2FyY2gveDg2L2luY2x1ZGUvYXNtL3N5c2NhbGxfd3JhcHBlci5oCj4+IGluZGV4IGE4NDMz
+M2FkZWVmMi4uODBjMDhjN2Q1ZTcyIDEwMDY0NAo+PiAtLS0gYS9hcmNoL3g4Ni9pbmNsdWRlL2Fz
+bS9zeXNjYWxsX3dyYXBwZXIuaAo+PiArKysgYi9hcmNoL3g4Ni9pbmNsdWRlL2FzbS9zeXNjYWxs
+X3dyYXBwZXIuaAo+PiBAQCAtODAsNiArODAsNyBAQCBleHRlcm4gbG9uZyBfX2lhMzJfc3lzX25p
+X3N5c2NhbGwoY29uc3Qgc3RydWN0IHB0X3JlZ3MgCj4+ICpyZWdzKTsKPj4gwqDCoMKgwqDCoCB9
+Cj4+IMKgICNkZWZpbmUgX19DT05EX1NZU0NBTEwoYWJpLCBuYW1lKcKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIFwKPj4gK8KgwqDCoCBfX3dlYWsgbG9uZyBfXyMjYWJpIyNf
+IyNuYW1lKGNvbnN0IHN0cnVjdCBwdF9yZWdzICpfX3VudXNlZCk7wqDCoMKgIFwKPj4gwqDCoMKg
+wqDCoCBfX3dlYWsgbG9uZyBfXyMjYWJpIyNfIyNuYW1lKGNvbnN0IHN0cnVjdCBwdF9yZWdzICpf
+X3VudXNlZCnCoMKgwqAgXAo+IAo+ICDCoMKgIEFyZW4ndCB0aGVzZSB0d28gbGluZXMgaWRlbnRp
+Y2FsPwoKICAgICBBaCwgZ290IGl0ISA6LSkKClsuLi5dCgpNQlIsIFNlcmdlaQoKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
+YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
+aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
