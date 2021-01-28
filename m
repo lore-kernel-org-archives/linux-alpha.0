@@ -1,22 +1,22 @@
 From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 13/27] microblaze: add missing FORCE and fix 'targets' to make if_changed work
-Date: Thu, 28 Jan 2021 09:50:55 +0900
-Message-ID: <20210128005110.2613902-14-masahiroy@kernel.org>
+Subject: [PATCH 22/27] sparc: add missing FORCE and fix 'targets' to make if_changed work
+Date: Thu, 28 Jan 2021 09:51:04 +0900
+Message-ID: <20210128005110.2613902-23-masahiroy@kernel.org>
 References: <20210128005110.2613902-1-masahiroy@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kbuild-owner@vger.kernel.org>
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIi024172
+Return-path: <linux-sh-owner@vger.kernel.org>
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIr024172
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1611795123;
-        bh=8LKOeh8wDSb8BIof2AfD5uB6wjyW5KsgSaXh3UzQGfw=;
+        s=dec2015msa; t=1611795134;
+        bh=bXoBv7K4dbFUZig3fpHjW5hreAF2qurprec9l3iF1G0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=htPDLFVT7not9OIuRM8Kjohlj92lfUtnbdhEW6VzKx0VFC8HiM8Rq9o7l3aX0IEw+
-         M7xgK2j911+JdwM6qhXKVoW0nNsXY+JOPUSzkC1MayyWjx84O8FOBbbtliysKYFdAz
-         N0aoPM1TUzftvX0G3FbNm6c9YhkP9Fs4Hoegcz5iRyZP+5skPM9IK9BApMFTLYQ71x
-         jxsA8v77jwtjW7v82lcmEClQ7TTz/gEzUDyrL1FJMzPtLBWN0MqR3TOGr5CSQpbKd9
-         4BT+aD+caamfV6skUJH96yjSo/GFairUwhYTqK91JYxXyZaDahld2KKqEd6owy2+mt
-         P8X/wxmEaopmA==
+        b=mULEQpKxweEofTWmLfcaiUoLWWW3AWf3XitK8yCRLse5dFgrssUnpxl4tiE1VFCRH
+         O97rQpmBnKEXNmQaonH24u/qa1ruy4zjUmoIbP6f0k9LmGrCvegGW9sejBCCkiByHe
+         bDV7Nn7LzvWtSk8rGICIMVdg3qr4a6E/knjGbzt5Wb8+cHI/64tAxpTa0HS6NTEdFg
+         aETzpDXfmWYxvyhyvMkX53eGVQee+dNPNkUozgqEXQYH5YqGSSXGfcCleQ5Zmk6oCd
+         w0xUzpAxjGDPcSX0Ef/BNYdQe3Z5+/lov2ErWMPQ/LO79xzcZLdo+8oBKpXEfU/zfc
+         uhf+d6xD+pLvg==
 In-Reply-To: <20210128005110.2613902-1-masahiroy@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -35,27 +35,46 @@ Fix all of them so the if_changed rules work correctly.
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- arch/microblaze/kernel/syscalls/Makefile | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ arch/sparc/kernel/syscalls/Makefile | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/arch/microblaze/kernel/syscalls/Makefile b/arch/microblaze/kernel/syscalls/Makefile
-index 659faefdcb1d..1c42d2d2926d 100644
---- a/arch/microblaze/kernel/syscalls/Makefile
-+++ b/arch/microblaze/kernel/syscalls/Makefile
-@@ -21,18 +21,19 @@ quiet_cmd_systbl = SYSTBL  $@
- 		   '$(systbl_abi_$(basetarget))'		\
+diff --git a/arch/sparc/kernel/syscalls/Makefile b/arch/sparc/kernel/syscalls/Makefile
+index c22a21c39f30..556fe30a6c8f 100644
+--- a/arch/sparc/kernel/syscalls/Makefile
++++ b/arch/sparc/kernel/syscalls/Makefile
+@@ -22,24 +22,24 @@ quiet_cmd_systbl = SYSTBL  $@
  		   '$(systbl_offset_$(basetarget))'
  
+ syshdr_abis_unistd_32 := common,32
 -$(uapi)/unistd_32.h: $(syscall) $(syshdr)
 +$(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
  	$(call if_changed,syshdr)
  
--$(kapi)/syscall_table.h: $(syscall) $(systbl)
-+$(kapi)/syscall_table.h: $(syscall) $(systbl) FORCE
+ syshdr_abis_unistd_64 := common,64
+-$(uapi)/unistd_64.h: $(syscall) $(syshdr)
++$(uapi)/unistd_64.h: $(syscall) $(syshdr) FORCE
+ 	$(call if_changed,syshdr)
+ 
+ systbl_abis_syscall_table_32 := common,32
+-$(kapi)/syscall_table_32.h: $(syscall) $(systbl)
++$(kapi)/syscall_table_32.h: $(syscall) $(systbl) FORCE
  	$(call if_changed,systbl)
  
- uapisyshdr-y		+= unistd_32.h
- kapisyshdr-y		+= syscall_table.h
+ systbl_abis_syscall_table_64 := common,64
+-$(kapi)/syscall_table_64.h: $(syscall) $(systbl)
++$(kapi)/syscall_table_64.h: $(syscall) $(systbl) FORCE
+ 	$(call if_changed,systbl)
+ 
+ systbl_abis_syscall_table_c32 := common,32
+ systbl_abi_syscall_table_c32 := c32
+-$(kapi)/syscall_table_c32.h: $(syscall) $(systbl)
++$(kapi)/syscall_table_c32.h: $(syscall) $(systbl) FORCE
+ 	$(call if_changed,systbl)
+ 
+ uapisyshdr-y		+= unistd_32.h unistd_64.h
+@@ -47,9 +47,10 @@ kapisyshdr-y		+= syscall_table_32.h		\
+ 			   syscall_table_64.h		\
+ 			   syscall_table_c32.h
  
 -targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
 +uapisyshdr-y	:= $(addprefix $(uapi)/, $(uapisyshdr-y))
