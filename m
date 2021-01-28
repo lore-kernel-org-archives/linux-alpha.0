@@ -1,22 +1,22 @@
 From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 15/27] mips: add missing FORCE and fix 'targets' to make if_changed work
-Date: Thu, 28 Jan 2021 09:50:57 +0900
-Message-ID: <20210128005110.2613902-16-masahiroy@kernel.org>
+Subject: [PATCH 26/27] xtensa: add missing FORCE and fix 'targets' to make if_changed work
+Date: Thu, 28 Jan 2021 09:51:08 +0900
+Message-ID: <20210128005110.2613902-27-masahiroy@kernel.org>
 References: <20210128005110.2613902-1-masahiroy@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIk024172
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIv024172
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1611795125;
-        bh=4ZenFWWjMwiEnwQD+VnDQheVfxi1y/5KimgQE4NLnQc=;
+        s=dec2015msa; t=1611795139;
+        bh=uPhzuxw9OJNtYZM2tsUx4a7eaa9t1FqlJVYIBoMhXhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aKtiHyjHsYe9u5ri0K9prFcwTl4Bu2c/ZztMNtcYtVPAQARxtyi4eBxNF1EAEn4Tj
-         8B5t6MgqLiD3v9YEkZ8C+xCVVG2/9D7KvftmX9XZ696fogvkawfmp/oU43+NJeJuQ2
-         b37yyIHcbTSFxO6RddsBhC5l3I8VmTxbFF/QjSD/MyCE5FR+/rSLec2ixwvptvbtUg
-         tZl/DpRD7MkiwOA77aOsNkqjYGxyyhpGsCPv9myVExs2Tk4NLqLPWgHDgwUWw2UHnN
-         QPxvVsN+Q0M9AK0hO66OjoKnSVvDP+l2GRRWPrfOOcFamvz44AwX0HLrpC1/IOfImK
-         lDZlmx2kV35qA==
+        b=2I/l911DRFMahGMRrLX/icxR6Mi0fEG+1qCwc6h6UE7MNnIIW/D/qGbbSOZ3ILzr7
+         7kA0kSNBcXghXDqtEiAslJfNZyuJu7eddW9UA/Io7yR8mZRx0AuqvlClvC8+vz17a6
+         m5Dl6xZpsLDotala34FOnVXEQDlPsvt4JXDP2l/QMKqCaWQKZTpYxBbScYD4uYqZxg
+         6KUSW1EQigP1cb1FqsmY/zv4ApEHGDmntPVIgwI9QOgay6EuE1fbkZobVR6Fb9sf2Y
+         sU4uGqGJuQbFx+zyPfQidHYlKRtPXuwC0e99a0JbLppMoKLaDMEPdXB86Vah6CePtc
+         TyY51Dc+YW9EA==
 In-Reply-To: <20210128005110.2613902-1-masahiroy@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -35,77 +35,27 @@ Fix all of them so the if_changed rules work correctly.
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- arch/mips/kernel/syscalls/Makefile | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ arch/xtensa/kernel/syscalls/Makefile | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/mips/kernel/syscalls/Makefile b/arch/mips/kernel/syscalls/Makefile
-index 6efb2f6889a7..f15842bda464 100644
---- a/arch/mips/kernel/syscalls/Makefile
-+++ b/arch/mips/kernel/syscalls/Makefile
-@@ -31,50 +31,50 @@ quiet_cmd_systbl = SYSTBL  $@
+diff --git a/arch/xtensa/kernel/syscalls/Makefile b/arch/xtensa/kernel/syscalls/Makefile
+index 659faefdcb1d..1c42d2d2926d 100644
+--- a/arch/xtensa/kernel/syscalls/Makefile
++++ b/arch/xtensa/kernel/syscalls/Makefile
+@@ -21,18 +21,19 @@ quiet_cmd_systbl = SYSTBL  $@
+ 		   '$(systbl_abi_$(basetarget))'		\
  		   '$(systbl_offset_$(basetarget))'
  
- syshdr_offset_unistd_n32 := __NR_Linux
--$(uapi)/unistd_n32.h: $(syscalln32) $(syshdr)
-+$(uapi)/unistd_n32.h: $(syscalln32) $(syshdr) FORCE
+-$(uapi)/unistd_32.h: $(syscall) $(syshdr)
++$(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
  	$(call if_changed,syshdr)
  
- syshdr_offset_unistd_n64 := __NR_Linux
--$(uapi)/unistd_n64.h: $(syscalln64) $(syshdr)
-+$(uapi)/unistd_n64.h: $(syscalln64) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
- 
- syshdr_offset_unistd_o32 := __NR_Linux
--$(uapi)/unistd_o32.h: $(syscallo32) $(syshdr)
-+$(uapi)/unistd_o32.h: $(syscallo32) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
- 
- sysnr_pfx_unistd_nr_n32 := N32
- sysnr_offset_unistd_nr_n32 := 6000
--$(uapi)/unistd_nr_n32.h: $(syscalln32) $(sysnr)
-+$(uapi)/unistd_nr_n32.h: $(syscalln32) $(sysnr) FORCE
- 	$(call if_changed,sysnr)
- 
- sysnr_pfx_unistd_nr_n64 := 64
- sysnr_offset_unistd_nr_n64 := 5000
--$(uapi)/unistd_nr_n64.h: $(syscalln64) $(sysnr)
-+$(uapi)/unistd_nr_n64.h: $(syscalln64) $(sysnr) FORCE
- 	$(call if_changed,sysnr)
- 
- sysnr_pfx_unistd_nr_o32 := O32
- sysnr_offset_unistd_nr_o32 := 4000
--$(uapi)/unistd_nr_o32.h: $(syscallo32) $(sysnr)
-+$(uapi)/unistd_nr_o32.h: $(syscallo32) $(sysnr) FORCE
- 	$(call if_changed,sysnr)
- 
- systbl_abi_syscall_table_32_o32 := 32_o32
- systbl_offset_syscall_table_32_o32 := 4000
--$(kapi)/syscall_table_32_o32.h: $(syscallo32) $(systbl)
-+$(kapi)/syscall_table_32_o32.h: $(syscallo32) $(systbl) FORCE
+-$(kapi)/syscall_table.h: $(syscall) $(systbl)
++$(kapi)/syscall_table.h: $(syscall) $(systbl) FORCE
  	$(call if_changed,systbl)
  
- systbl_abi_syscall_table_64_n32 := 64_n32
- systbl_offset_syscall_table_64_n32 := 6000
--$(kapi)/syscall_table_64_n32.h: $(syscalln32) $(systbl)
-+$(kapi)/syscall_table_64_n32.h: $(syscalln32) $(systbl) FORCE
- 	$(call if_changed,systbl)
- 
- systbl_abi_syscall_table_64_n64 := 64_n64
- systbl_offset_syscall_table_64_n64 := 5000
--$(kapi)/syscall_table_64_n64.h: $(syscalln64) $(systbl)
-+$(kapi)/syscall_table_64_n64.h: $(syscalln64) $(systbl) FORCE
- 	$(call if_changed,systbl)
- 
- systbl_abi_syscall_table_64_o32 := 64_o32
- systbl_offset_syscall_table_64_o32 := 4000
--$(kapi)/syscall_table_64_o32.h: $(syscallo32) $(systbl)
-+$(kapi)/syscall_table_64_o32.h: $(syscallo32) $(systbl) FORCE
- 	$(call if_changed,systbl)
- 
- uapisyshdr-y		+= unistd_n32.h			\
-@@ -88,9 +88,10 @@ kapisyshdr-y		+= syscall_table_32_o32.h	\
- 			   syscall_table_64_n64.h	\
- 			   syscall_table_64_o32.h
+ uapisyshdr-y		+= unistd_32.h
+ kapisyshdr-y		+= syscall_table.h
  
 -targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
 +uapisyshdr-y	:= $(addprefix $(uapi)/, $(uapisyshdr-y))
