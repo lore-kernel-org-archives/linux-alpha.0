@@ -1,103 +1,51 @@
-From: Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Subject: Re: [PATCH 02/27] x86/syscalls: fix -Wmissing-prototypes warnings
- from COND_SYSCALL()
-Date: Thu, 28 Jan 2021 11:00:29 +0300
-Message-ID: <605cea27-bd69-5b21-f285-2d3d0f6abd23@gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 12/27] m68k: syscalls: switch to generic syscalltbl.sh
+Date: Thu, 28 Jan 2021 09:17:09 +0100
+Message-ID: <CAMuHMdV_AHcnGoVToHLXa95JEd4wcL3eTqYfk6=7Ou0W8VJR5w@mail.gmail.com>
 References: <20210128005110.2613902-1-masahiroy@kernel.org>
- <20210128005110.2613902-3-masahiroy@kernel.org>
- <dd37a7f2-55e1-2e96-0c93-4a40980b8ef2@gmail.com>
+ <20210128005110.2613902-13-masahiroy@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Type:
-	Content-Transfer-Encoding:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:Date:Message-ID:References:
-	To:From:Subject:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=Vb6Zi2IJ8oKBbsdKJ/okyejmZ3hWnq0OaVY9KZqXJ4Q=; b=ObeQsGbggsQ0jZaVLCXpIn2CQ
-	x2zpHSVQsHZ/9gDTW7OdUHLtxq+3PYkfICzzDNsFYRbY2Aut2pB5zZsKLHak3Eh+Y9ovSvxnYpOtX
-	CYA0OiZrqGP7ay0Dnm6stxAXn93zC1QjrG1qZ6gwWi8qNCM0xO1Zd3Jxbf90vCuVliu85KR4mOj9T
-	/ijOubHC7Zs94DdiVWiGLdjTdf8E9xoy07LtUlpha6J/E53VsNeDOJE8KLwnxfv68DVjhBL5o428v
-	LlRT9ySxxdFQa7hHzvMDXPBBPu56j0PJO/Yelbv7EBNLlrXiKB3t5lXaM+Gr/oERw/PSI3/KEzPKH
-	HIH3nFM7g==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:from:to:cc:references:organization:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=gnZ/GDloV555+OnWhNxGUyFa3V1UNr+TUyX9DCKmvmo=;
- b=BvV+OmW8dWjmNJDvcrvjzcva8OWBy7a8Wldf3TYz+i6X3QYbdYVdx8XtO5leAkHTrU
- w3YMC/VHtwxm1x/Ic4nsp2y26eWjsO1yakRgVNAsk/+vPQ3tFI4ORflBdiqudTUbNQ15
- 4udiNHAeivKX5c5MMjdj7/0f+Ywbb21vVg6oz3mMUyOwECoUO5sTQ+F7gyKkdUAVhOze
- vsQP8Kn/mYUO89v8SJNtfvxDDv5uZaZ+sphCBYtGqh9qpfbAr39PdAciszAdWiMDq33U
- CM0tCQ9qP6AgV+zPptT62EH2DQH0UbsDLxpsVPp63My+wTEFFdBYjDtMPkofAyv61LZq
- z8DA==
-In-Reply-To: <dd37a7f2-55e1-2e96-0c93-4a40980b8ef2@gmail.com>
-Content-Language: en-US
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+In-Reply-To: <20210128005110.2613902-13-masahiroy@kernel.org>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Masahiro Yamada <masahiroy@kernel.org>, linux-arch@vger.kernel.org, x86@kernel.org
-Cc: linux-xtensa@linux-xtensa.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kbuild@vger.kernel.org, linux-sh@vger.kernel.org, linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Masahiro Yamada <masahiroy@kernel.org>
+Cc: Linux-Arch <linux-arch@vger.kernel.org>, "open list:TENSILICA XTENSA PORT (xtensa)" <linux-xtensa@linux-xtensa.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-kbuild <linux-kbuild@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, the arch/x86 maintainers <x86@kernel.org>, linux-um <linux-um@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, alpha <linux-alpha@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 
-T24gMjguMDEuMjAyMSAxMDo1OSwgU2VyZ2VpIFNodHlseW92IHdyb3RlOgoKWy4uLl0KPj4gQnVp
-bGRpbmcga2VybmVsL3N5c19uaS5jIHdpdGggVz0xIG9taXRzIHRvbnMgb2YgLVdtaXNzaW5nLXBy
-b3RvdHlwZXMKPiAKPiAgwqDCoCBFbWl0cz8KPiAKPj4gd2FybmluZ3MuCj4+Cj4+ICQgbWFrZSBX
-PTEga2VybmVsL3N5c19uaS5vCj4+IMKgwqAgWyBzbmlwIF0KPj4gwqDCoCBDQ8KgwqDCoMKgwqAg
-a2VybmVsL3N5c19uaS5vCj4+IEluIGZpbGUgaW5jbHVkZWQgZnJvbSBrZXJuZWwvc3lzX25pLmM6
-MTA6Cj4+IC4vYXJjaC94ODYvaW5jbHVkZS9hc20vc3lzY2FsbF93cmFwcGVyLmg6ODM6MTQ6IHdh
-cm5pbmc6IG5vIHByZXZpb3VzIAo+PiBwcm90b3R5cGUgZm9yICdfX3g2NF9zeXNfaW9fc2V0dXAn
-IFstV21pc3NpbmctcHJvdG90eXBlc10KPj4gwqDCoMKgIDgzIHzCoCBfX3dlYWsgbG9uZyBfXyMj
-YWJpIyNfIyNuYW1lKGNvbnN0IHN0cnVjdCBwdF9yZWdzICpfX3VudXNlZCkgXAo+PiDCoMKgwqDC
-oMKgwqAgfMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIF5+Cj4+IC4vYXJjaC94ODYvaW5jbHVk
-ZS9hc20vc3lzY2FsbF93cmFwcGVyLmg6MTAwOjI6IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBtYWNy
-byAKPj4gJ19fQ09ORF9TWVNDQUxMJwo+PiDCoMKgIDEwMCB8wqAgX19DT05EX1NZU0NBTEwoeDY0
-LCBzeXNfIyNuYW1lKQo+PiDCoMKgwqDCoMKgwqAgfMKgIF5+fn5+fn5+fn5+fn5+Cj4+IC4vYXJj
-aC94ODYvaW5jbHVkZS9hc20vc3lzY2FsbF93cmFwcGVyLmg6MjU2OjI6IG5vdGU6IGluIGV4cGFu
-c2lvbiBvZiBtYWNybyAKPj4gJ19fWDY0X0NPTkRfU1lTQ0FMTCcKPj4gwqDCoCAyNTYgfMKgIF9f
-WDY0X0NPTkRfU1lTQ0FMTChuYW1lKcKgwqDCoMKgIFwKPj4gwqDCoMKgwqDCoMKgIHzCoCBefn5+
-fn5+fn5+fn5+fn5+fn4KPj4ga2VybmVsL3N5c19uaS5jOjM5OjE6IG5vdGU6IGluIGV4cGFuc2lv
-biBvZiBtYWNybyAnQ09ORF9TWVNDQUxMJwo+PiDCoMKgwqAgMzkgfCBDT05EX1NZU0NBTEwoaW9f
-c2V0dXApOwo+PiDCoMKgwqDCoMKgwqAgfCBefn5+fn5+fn5+fn4KPj4gLi9hcmNoL3g4Ni9pbmNs
-dWRlL2FzbS9zeXNjYWxsX3dyYXBwZXIuaDo4MzoxNDogd2FybmluZzogbm8gcHJldmlvdXMgCj4+
-IHByb3RvdHlwZSBmb3IgJ19faWEzMl9zeXNfaW9fc2V0dXAnIFstV21pc3NpbmctcHJvdG90eXBl
-c10KPj4gwqDCoMKgIDgzIHzCoCBfX3dlYWsgbG9uZyBfXyMjYWJpIyNfIyNuYW1lKGNvbnN0IHN0
-cnVjdCBwdF9yZWdzICpfX3VudXNlZCkgXAo+PiDCoMKgwqDCoMKgwqAgfMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIF5+Cj4+IC4vYXJjaC94ODYvaW5jbHVkZS9hc20vc3lzY2FsbF93cmFwcGVy
-Lmg6MTIwOjI6IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBtYWNybyAKPj4gJ19fQ09ORF9TWVNDQUxM
-Jwo+PiDCoMKgIDEyMCB8wqAgX19DT05EX1NZU0NBTEwoaWEzMiwgc3lzXyMjbmFtZSkKPj4gwqDC
-oMKgwqDCoMKgIHzCoCBefn5+fn5+fn5+fn5+fgo+PiAuL2FyY2gveDg2L2luY2x1ZGUvYXNtL3N5
-c2NhbGxfd3JhcHBlci5oOjI1NzoyOiBub3RlOiBpbiBleHBhbnNpb24gb2YgbWFjcm8gCj4+ICdf
-X0lBMzJfQ09ORF9TWVNDQUxMJwo+PiDCoMKgIDI1NyB8wqAgX19JQTMyX0NPTkRfU1lTQ0FMTChu
-YW1lKQo+PiDCoMKgwqDCoMKgwqAgfMKgIF5+fn5+fn5+fn5+fn5+fn5+fn4KPj4ga2VybmVsL3N5
-c19uaS5jOjM5OjE6IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBtYWNybyAnQ09ORF9TWVNDQUxMJwo+
-PiDCoMKgwqAgMzkgfCBDT05EX1NZU0NBTEwoaW9fc2V0dXApOwo+PiDCoMKgwqDCoMKgwqAgfCBe
-fn5+fn5+fn5+fn4KPj4gwqDCoCAuLi4KPj4KPj4gX19TWVNfU1RVQjAoKSBhbmQgX19TWVNfU1RV
-QngoKSBkZWZpbmVkIGEgZmV3IGxpbmVzIGFib3ZlIGhhdmUgZm9yd2FyZAo+PiBkZWNsYXJhdGlv
-bnMuIExldCdzIGRvIGxpa2V3aXNlIGZvciBfX0NPTkRfU1lTQ0FMTCgpIHRvIGZpeCB0aGUKPj4g
-d2FybmluZ3MuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IE1hc2FoaXJvIFlhbWFkYSA8bWFzYWhpcm95
-QGtlcm5lbC5vcmc+Cj4+IC0tLQo+Pgo+PiDCoCBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9zeXNjYWxs
-X3dyYXBwZXIuaCB8IDEgKwo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykKPj4K
-Pj4gZGlmZiAtLWdpdCBhL2FyY2gveDg2L2luY2x1ZGUvYXNtL3N5c2NhbGxfd3JhcHBlci5oIAo+
-PiBiL2FyY2gveDg2L2luY2x1ZGUvYXNtL3N5c2NhbGxfd3JhcHBlci5oCj4+IGluZGV4IGE4NDMz
-M2FkZWVmMi4uODBjMDhjN2Q1ZTcyIDEwMDY0NAo+PiAtLS0gYS9hcmNoL3g4Ni9pbmNsdWRlL2Fz
-bS9zeXNjYWxsX3dyYXBwZXIuaAo+PiArKysgYi9hcmNoL3g4Ni9pbmNsdWRlL2FzbS9zeXNjYWxs
-X3dyYXBwZXIuaAo+PiBAQCAtODAsNiArODAsNyBAQCBleHRlcm4gbG9uZyBfX2lhMzJfc3lzX25p
-X3N5c2NhbGwoY29uc3Qgc3RydWN0IHB0X3JlZ3MgCj4+ICpyZWdzKTsKPj4gwqDCoMKgwqDCoCB9
-Cj4+IMKgICNkZWZpbmUgX19DT05EX1NZU0NBTEwoYWJpLCBuYW1lKcKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIFwKPj4gK8KgwqDCoCBfX3dlYWsgbG9uZyBfXyMjYWJpIyNf
-IyNuYW1lKGNvbnN0IHN0cnVjdCBwdF9yZWdzICpfX3VudXNlZCk7wqDCoMKgIFwKPj4gwqDCoMKg
-wqDCoCBfX3dlYWsgbG9uZyBfXyMjYWJpIyNfIyNuYW1lKGNvbnN0IHN0cnVjdCBwdF9yZWdzICpf
-X3VudXNlZCnCoMKgwqAgXAo+IAo+ICDCoMKgIEFyZW4ndCB0aGVzZSB0d28gbGluZXMgaWRlbnRp
-Y2FsPwoKICAgICBBaCwgZ290IGl0ISA6LSkKClsuLi5dCgpNQlIsIFNlcmdlaQoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBt
-YWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9s
-aXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+Hi Yamada-san,
+
+On Thu, Jan 28, 2021 at 1:54 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> As of v5.11-rc1, 12 architectures duplicate similar shell scripts in
+> order to generate syscall table headers. My goal is to unify them into
+> the single scripts/syscalltbl.sh.
+>
+> This commit converts m68k to use scripts/syscalltbl.sh.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+
+Thanks a lot!
+
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
