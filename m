@@ -1,7 +1,7 @@
 From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 08/27] alpha: syscalls: switch to generic syscalltbl.sh
-Date: Thu, 28 Jan 2021 09:50:50 +0900
-Message-ID: <20210128005110.2613902-9-masahiroy@kernel.org>
+Subject: [PATCH 12/27] m68k: syscalls: switch to generic syscalltbl.sh
+Date: Thu, 28 Jan 2021 09:50:54 +0900
+Message-ID: <20210128005110.2613902-13-masahiroy@kernel.org>
 References: <20210128005110.2613902-1-masahiroy@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -13,23 +13,23 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:Message-Id:Date:
 	Subject:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=HfS6+vmxf+6S2OXFZBX28VEEasH1LlJ5bcRfh2x6wn4=; b=1vLV/NrOioAbcW6Zyfx9ZPiSv
-	rVfXQe57cj1bTZppMLWLXi3K71aHqf1ZZejGwLlmTw5rlaDwryJkTp2ca64q3yNphzwxYXK2DWqXn
-	cn3S0OInOOlA6kWpXjJmm8C2U/7nGR90Abr0y/JJY0M5p+SQC2jhavaTVTp+gusPZ71+b0Emjb6VD
-	ASz3wo8X0mLJ68L7OecKo3jf9OytZVJKqBgSWjOnRv6iVLGOqADCOSg3ULlTQDTLm+FR6IPVuHFO3
-	xXWX02hOEFqrnWFTA14A1UkZV+dEUtz73WQtnOur+X9cQGrhieq+niQoBYNlHYmv/awnkHYAgDBMb
-	A/qkMkJuA==;
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjId024172
+	 bh=LpUebRjArWpXW/oY/JTvjkf1+4Vbdn5pSq26iWAlSEg=; b=TcJvROL8q3p6Zpivm9nOCygZU
+	NnaVF4NCxqh2cUAFuADK9MrAhZ8wVCb9zOAWi4oXrlfnrLUZiol9ybWg0cgdVJvsyReERTQ/1YrGf
+	ZPvtXrVGaCbYBdr5sFg99l7YreBKrXT6AA7Ad7dEFnLp13VDcbryWVsPz2t3uaG2NEYtOBiTpCSCQ
+	vdLyd/VP3RtpnORzix/rTlqElFs8ceg5pobjSJWnaIAupg8E91G8mpw5RlCHf727IDEx77hG581KG
+	FqjoUcWzpkHuVVX+EQaAP3rxIxMHMzlCAMG+objTV9IFc1gqdN+ZlS0cO/VxVuddLLbcH29XMimYg
+	zBYTq3Ccw==;
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIh024172
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
- s=dec2015msa; t=1611795116;
- bh=0wK9wMP5DA5hWrKVSjv1k6dHQdgZowMRN8OJeDAeIIQ=;
+ s=dec2015msa; t=1611795121;
+ bh=PrMVoBNKnnm+AGS+8M8VBTW3dXXc2TUBPnlfCe8Gz5I=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=gaOy9TgnBSVVLeD67bjyTNjPgVIu1DdQvjDeR4cwaGDkKZ1X54G7IzIxaRbTK/YE9
- aLCuPPmZK/EBSo8ssRKBjAV52LwzTKH5hMwlV9DeU+DRadSfn0l6H19mEWnjktclI9
- 4+fWOfGP94ZNf3J9/g+31swyuDgQN8bK2D/Pz9aFVFhqMlLsMzihALzcILEB5LaP7+
- rZK9YDnJw1rFntMmClijlVDzr2tnnz7U+uV8+ATtuKjLPLNpH244Mec1fQcwQWqD1z
- pSTTaJPQybOBJACP19AnWGE9IOgYDnirsdp03yySLZ1V401fEwHuzYNeaefilOdQco
- RDpqiX1srvwOQ==
+ b=WLBdunEBGknKebKtH+IwrgSup4M7Svnzx2H9PmcLb4zvAT9M2S+/NX5vd+q2DCj8K
+ kbdRsoRrHnyvU+Iy3h73hKOTF2pe4hGA9Zty6JUXn6NPSUiirOqqL3gZHC1aa/YP1T
+ FEaoZo5ZM3p5ojfDODnnyOZQkad/P6QfHc4xvZussNwrQ7V69Zald5QCkgnaZBSRnw
+ 9lGO4sNSEZTZGNnXmdJl6kmu0L+pzgNvs1POxFf1Wd4LM65ND8PtGhWMNlbXd5FRDx
+ emJH5g2nzykOgT1+CgWB1CFQLeTMIn1Xxc9Q/PDXyBp1II/ekvasYfTWKck3lSE1Jc
+ AZoEN4x3lIafA==
 In-Reply-To: <20210128005110.2613902-1-masahiroy@kernel.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -48,21 +48,21 @@ As of v5.11-rc1, 12 architectures duplicate similar shell scripts in
 order to generate syscall table headers. My goal is to unify them into
 the single scripts/syscalltbl.sh.
 
-This commit converts alpha to use scripts/syscalltbl.sh.
+This commit converts m68k to use scripts/syscalltbl.sh.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- arch/alpha/kernel/syscalls/Makefile      |  7 ++----
- arch/alpha/kernel/syscalls/syscalltbl.sh | 32 ------------------------
- arch/alpha/kernel/systbls.S              |  3 +--
+ arch/m68k/kernel/syscalls/Makefile      |  7 ++----
+ arch/m68k/kernel/syscalls/syscalltbl.sh | 32 -------------------------
+ arch/m68k/kernel/syscalltable.S         |  3 +--
  3 files changed, 3 insertions(+), 39 deletions(-)
- delete mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
+ delete mode 100644 arch/m68k/kernel/syscalls/syscalltbl.sh
 
-diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
+diff --git a/arch/m68k/kernel/syscalls/Makefile b/arch/m68k/kernel/syscalls/Makefile
 index 1c42d2d2926d..6610130c67bc 100644
---- a/arch/alpha/kernel/syscalls/Makefile
-+++ b/arch/alpha/kernel/syscalls/Makefile
+--- a/arch/m68k/kernel/syscalls/Makefile
++++ b/arch/m68k/kernel/syscalls/Makefile
 @@ -7,7 +7,7 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
  
  syscall := $(srctree)/$(src)/syscall.tbl
@@ -84,10 +84,10 @@ index 1c42d2d2926d..6610130c67bc 100644
  
  $(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
  	$(call if_changed,syshdr)
-diff --git a/arch/alpha/kernel/syscalls/syscalltbl.sh b/arch/alpha/kernel/syscalls/syscalltbl.sh
+diff --git a/arch/m68k/kernel/syscalls/syscalltbl.sh b/arch/m68k/kernel/syscalls/syscalltbl.sh
 deleted file mode 100644
 index 85d78d9309ad..000000000000
---- a/arch/alpha/kernel/syscalls/syscalltbl.sh
+--- a/arch/m68k/kernel/syscalls/syscalltbl.sh
 +++ /dev/null
 @@ -1,32 +0,0 @@
 -#!/bin/sh
@@ -122,20 +122,19 @@ index 85d78d9309ad..000000000000
 -		nxt=$((nr+1))
 -	done
 -) > "$out"
-diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 9704f22ed5e3..68f3e4f329eb 100644
---- a/arch/alpha/kernel/systbls.S
-+++ b/arch/alpha/kernel/systbls.S
-@@ -7,10 +7,9 @@
+diff --git a/arch/m68k/kernel/syscalltable.S b/arch/m68k/kernel/syscalltable.S
+index d329cc7b481c..e25ef4a9df30 100644
+--- a/arch/m68k/kernel/syscalltable.S
++++ b/arch/m68k/kernel/syscalltable.S
+@@ -18,9 +18,8 @@
+ #define sys_mmap2	sys_mmap_pgoff
+ #endif
  
- #include <asm/unistd.h>
- 
--#define __SYSCALL(nr, entry, nargs) .quad entry
-+#define __SYSCALL(nr, entry) .quad entry
- 	.data
- 	.align 3
- 	.globl sys_call_table
- sys_call_table:
+-#define __SYSCALL(nr, entry, nargs) .long entry
++#define __SYSCALL(nr, entry) .long entry
+ 	.section .rodata
+ ALIGN
+ ENTRY(sys_call_table)
  #include <asm/syscall_table.h>
 -#undef __SYSCALL
 -- 
