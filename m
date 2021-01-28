@@ -1,8 +1,8 @@
 From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 03/27] x86/build: add missing FORCE and fix 'targets' to make
+Subject: [PATCH 07/27] alpha: add missing FORCE and fix 'targets' to make
  if_changed work
-Date: Thu, 28 Jan 2021 09:50:45 +0900
-Message-ID: <20210128005110.2613902-4-masahiroy@kernel.org>
+Date: Thu, 28 Jan 2021 09:50:49 +0900
+Message-ID: <20210128005110.2613902-8-masahiroy@kernel.org>
 References: <20210128005110.2613902-1-masahiroy@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,23 +14,23 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:Message-Id:Date:
 	Subject:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=wgWk0k4Nkv2lZ5fVldf8xYKP72pDx2g3bwWe8k+t+ac=; b=LZ/aqP9JMixbv/fdNaN7U7Qyj
-	XP8xNF2Fmg88pu7GG4/rhTyQNnUGJMNLIASofn9R29I9hYgUJtvZl6lTNDWWreUr0zTOTT5MGCKBr
-	FqW/N+jSjJDXtmQBt8qca9h3ZHLRj26KAhNnHwLQqxxxiRDq7IIlha4EN7D++axzuKEIVhZtEv7PS
-	uezljPkwJD54xMH5eONgaJZK6kXdmy0V7iwh2nBJavrZej/7B/kZoeg7alAYdKWTyRJ4br4ZYjYol
-	zKFS3FMuX0j1bVtUWLDCbBPfDvVQE7CjZbc37YcnTKLRETRd3tqApGdyq8FdPEp/59t6eaflJFJ5f
-	zqemFUNQA==;
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIY024172
+	 bh=9BBLKk5X3++t2tb7/QiqI69TMhHw0tZ29/2gJ+9xLuI=; b=QTfELRkABSU0aixPCeH29Wo8W
+	a0mJPMuK/4SHbnJZbRiKG96vfZjQ2toTPbcykDR7aDBE53TA1Cz0v7ulu0cg/gnOQjgZZsG39djFk
+	WO5W2qO62kwxkb8/4RYsDVqyM3yvkLUoeHCIpnaJPfqJnDFQND4TJTwGkvW/QNmiGqWnJNxnmFDJk
+	TP70OrjW2hftM5nK5ylu8DRR98H5MJr1Bwtar50jZVL9rBXn3Ifzr8VRCGjpxEnWwCkv0n4nJFMzS
+	eAOBp9Z9NtiedItW89IVlTSGhVRWqBTtZdMFLvNtY44HjIbd9+M1O9rSF8eJxjrwfEX2DvkXzyhJ8
+	szlgkbU5g==;
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIc024172
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
- s=dec2015msa; t=1611795110;
- bh=d+/7doZEOPv1GMwh0J3MdPuks+/gdDt09tnPkcOGE80=;
+ s=dec2015msa; t=1611795115;
+ bh=MYQSK0CtOikC4KgPhNU4f44GTCCqKNyWX38Fka62zXY=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=dHgoABCG/DLtFuPlboUdmsid9QOFdwj4Tf4PGzheip0c70k1znW9rHwDaVAm1ON9c
- MqujfDDvycEhQUC7c4A6EAS6XcIAN+RsPgZg5X4iVdsdNl9Ijhku5W1E2IB3RHnIHf
- PVi5uaMIr3ScOj/K206H/yZuaQRofL0r01hroLHoZkOIAH7k8bCVjqex4M7jHFsd7w
- 33gPNSjwYmhXY9xmRZGWkWTY/bJWhubfFR5maBIJRAqhuDUIE8dR/O5ZmuTYZ6lCHz
- KufvyYi7nnMRU/ql91EaeR5YhQwmGuzj1a6eX+DwdGUvtDgwlx3gy7/iWUC78zcslY
- Ti9bulEqhkoFA==
+ b=KSqtowhBzKgGTTUIxwna5kQxHGrgv9yRnRMl3kO0qcQcgMBD5xPE2HL0QQKxdQ68A
+ /sARp4Co0phr0rP7LZh/5yqp7dYbKSC9PSYrOB2Qiilrq/IfXQFVQ58gHxKeYmvqST
+ 8/cg/hIJQpYujMRHX7rhcxnhOl2Sf1KdWTHpGofGTyEpl0nN4kjzx4MvhZbOmxd2s4
+ IRErUTEfYaBU5bWRJsD6uYLC1svldt/Bti1pgy69BeSXe7uPx9c6zasGw8kPmbinyk
+ 04btZdzlbs3Q3qv9PTU9fezCfKPoHsOj73aEU5NvaX/bq8AkDp7ElXnBYYXFv0JSZe
+ 3sNNx1XIw9EUA==
 In-Reply-To: <20210128005110.2613902-1-masahiroy@kernel.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -57,69 +57,37 @@ Fix all of them so the if_changed rules work correctly.
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- arch/x86/entry/syscalls/Makefile | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ arch/alpha/kernel/syscalls/Makefile | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/entry/syscalls/Makefile b/arch/x86/entry/syscalls/Makefile
-index 6fb9b57ed5ba..e1c7ddb7546b 100644
---- a/arch/x86/entry/syscalls/Makefile
-+++ b/arch/x86/entry/syscalls/Makefile
-@@ -24,34 +24,34 @@ quiet_cmd_hypercalls = HYPERCALLS $@
-       cmd_hypercalls = $(CONFIG_SHELL) '$<' $@ $(filter-out $<,$^)
+diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
+index 659faefdcb1d..1c42d2d2926d 100644
+--- a/arch/alpha/kernel/syscalls/Makefile
++++ b/arch/alpha/kernel/syscalls/Makefile
+@@ -21,18 +21,19 @@ quiet_cmd_systbl = SYSTBL  $@
+ 		   '$(systbl_abi_$(basetarget))'		\
+ 		   '$(systbl_offset_$(basetarget))'
  
- syshdr_abi_unistd_32 := i386
--$(uapi)/unistd_32.h: $(syscall32) $(syshdr)
-+$(uapi)/unistd_32.h: $(syscall32) $(syshdr) FORCE
+-$(uapi)/unistd_32.h: $(syscall) $(syshdr)
++$(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
  	$(call if_changed,syshdr)
  
- syshdr_abi_unistd_32_ia32 := i386
- syshdr_pfx_unistd_32_ia32 := ia32_
--$(out)/unistd_32_ia32.h: $(syscall32) $(syshdr)
-+$(out)/unistd_32_ia32.h: $(syscall32) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
- 
- syshdr_abi_unistd_x32 := common,x32
- syshdr_offset_unistd_x32 := __X32_SYSCALL_BIT
--$(uapi)/unistd_x32.h: $(syscall64) $(syshdr)
-+$(uapi)/unistd_x32.h: $(syscall64) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
- 
- syshdr_abi_unistd_64 := common,64
--$(uapi)/unistd_64.h: $(syscall64) $(syshdr)
-+$(uapi)/unistd_64.h: $(syscall64) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
- 
- syshdr_abi_unistd_64_x32 := x32
- syshdr_pfx_unistd_64_x32 := x32_
--$(out)/unistd_64_x32.h: $(syscall64) $(syshdr)
-+$(out)/unistd_64_x32.h: $(syscall64) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
- 
--$(out)/syscalls_32.h: $(syscall32) $(systbl)
-+$(out)/syscalls_32.h: $(syscall32) $(systbl) FORCE
- 	$(call if_changed,systbl)
--$(out)/syscalls_64.h: $(syscall64) $(systbl)
-+$(out)/syscalls_64.h: $(syscall64) $(systbl) FORCE
+-$(kapi)/syscall_table.h: $(syscall) $(systbl)
++$(kapi)/syscall_table.h: $(syscall) $(systbl) FORCE
  	$(call if_changed,systbl)
  
--$(out)/xen-hypercalls.h: $(srctree)/scripts/xen-hypercalls.sh
-+$(out)/xen-hypercalls.h: $(srctree)/scripts/xen-hypercalls.sh FORCE
- 	$(call if_changed,hypercalls)
+ uapisyshdr-y		+= unistd_32.h
+ kapisyshdr-y		+= syscall_table.h
  
- $(out)/xen-hypercalls.h: $(srctree)/include/xen/interface/xen*.h
-@@ -62,9 +62,10 @@ syshdr-$(CONFIG_X86_64)		+= unistd_32_ia32.h unistd_64_x32.h
- syshdr-$(CONFIG_X86_64)		+= syscalls_64.h
- syshdr-$(CONFIG_XEN)		+= xen-hypercalls.h
- 
--targets	+= $(uapisyshdr-y) $(syshdr-y)
+-targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
 +uapisyshdr-y	:= $(addprefix $(uapi)/, $(uapisyshdr-y))
-+syshdr-y	:= $(addprefix $(out)/, $(syshdr-y))
-+targets		+= $(addprefix ../../../../, $(uapisyshdr-y) $(syshdr-y))
++kapisyshdr-y	:= $(addprefix $(kapi)/, $(kapisyshdr-y))
++targets		+= $(addprefix ../../../../, $(uapisyshdr-y) $(kapisyshdr-y))
  
  PHONY += all
 -all: $(addprefix $(uapi)/,$(uapisyshdr-y))
--all: $(addprefix $(out)/,$(syshdr-y))
-+all: $(uapisyshdr-y) $(syshdr-y)
+-all: $(addprefix $(kapi)/,$(kapisyshdr-y))
++all: $(uapisyshdr-y) $(kapisyshdr-y)
  	@:
 -- 
 2.27.0
