@@ -1,22 +1,22 @@
 From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 26/27] xtensa: add missing FORCE and fix 'targets' to make if_changed work
-Date: Thu, 28 Jan 2021 09:51:08 +0900
-Message-ID: <20210128005110.2613902-27-masahiroy@kernel.org>
+Subject: [PATCH 13/27] microblaze: add missing FORCE and fix 'targets' to make if_changed work
+Date: Thu, 28 Jan 2021 09:50:55 +0900
+Message-ID: <20210128005110.2613902-14-masahiroy@kernel.org>
 References: <20210128005110.2613902-1-masahiroy@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIv024172
+Return-path: <linux-kbuild-owner@vger.kernel.org>
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIi024172
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1611795139;
-        bh=uPhzuxw9OJNtYZM2tsUx4a7eaa9t1FqlJVYIBoMhXhU=;
+        s=dec2015msa; t=1611795123;
+        bh=8LKOeh8wDSb8BIof2AfD5uB6wjyW5KsgSaXh3UzQGfw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2I/l911DRFMahGMRrLX/icxR6Mi0fEG+1qCwc6h6UE7MNnIIW/D/qGbbSOZ3ILzr7
-         7kA0kSNBcXghXDqtEiAslJfNZyuJu7eddW9UA/Io7yR8mZRx0AuqvlClvC8+vz17a6
-         m5Dl6xZpsLDotala34FOnVXEQDlPsvt4JXDP2l/QMKqCaWQKZTpYxBbScYD4uYqZxg
-         6KUSW1EQigP1cb1FqsmY/zv4ApEHGDmntPVIgwI9QOgay6EuE1fbkZobVR6Fb9sf2Y
-         sU4uGqGJuQbFx+zyPfQidHYlKRtPXuwC0e99a0JbLppMoKLaDMEPdXB86Vah6CePtc
-         TyY51Dc+YW9EA==
+        b=htPDLFVT7not9OIuRM8Kjohlj92lfUtnbdhEW6VzKx0VFC8HiM8Rq9o7l3aX0IEw+
+         M7xgK2j911+JdwM6qhXKVoW0nNsXY+JOPUSzkC1MayyWjx84O8FOBbbtliysKYFdAz
+         N0aoPM1TUzftvX0G3FbNm6c9YhkP9Fs4Hoegcz5iRyZP+5skPM9IK9BApMFTLYQ71x
+         jxsA8v77jwtjW7v82lcmEClQ7TTz/gEzUDyrL1FJMzPtLBWN0MqR3TOGr5CSQpbKd9
+         4BT+aD+caamfV6skUJH96yjSo/GFairUwhYTqK91JYxXyZaDahld2KKqEd6owy2+mt
+         P8X/wxmEaopmA==
 In-Reply-To: <20210128005110.2613902-1-masahiroy@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -35,13 +35,13 @@ Fix all of them so the if_changed rules work correctly.
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- arch/xtensa/kernel/syscalls/Makefile | 11 ++++++-----
+ arch/microblaze/kernel/syscalls/Makefile | 11 ++++++-----
  1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/xtensa/kernel/syscalls/Makefile b/arch/xtensa/kernel/syscalls/Makefile
+diff --git a/arch/microblaze/kernel/syscalls/Makefile b/arch/microblaze/kernel/syscalls/Makefile
 index 659faefdcb1d..1c42d2d2926d 100644
---- a/arch/xtensa/kernel/syscalls/Makefile
-+++ b/arch/xtensa/kernel/syscalls/Makefile
+--- a/arch/microblaze/kernel/syscalls/Makefile
++++ b/arch/microblaze/kernel/syscalls/Makefile
 @@ -21,18 +21,19 @@ quiet_cmd_systbl = SYSTBL  $@
  		   '$(systbl_abi_$(basetarget))'		\
  		   '$(systbl_offset_$(basetarget))'
