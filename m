@@ -1,8 +1,7 @@
 From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 17/27] parisc: add missing FORCE and fix 'targets' to make
- if_changed work
-Date: Thu, 28 Jan 2021 09:50:59 +0900
-Message-ID: <20210128005110.2613902-18-masahiroy@kernel.org>
+Subject: [PATCH 08/27] alpha: syscalls: switch to generic syscalltbl.sh
+Date: Thu, 28 Jan 2021 09:50:50 +0900
+Message-ID: <20210128005110.2613902-9-masahiroy@kernel.org>
 References: <20210128005110.2613902-1-masahiroy@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,23 +13,23 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:Message-Id:Date:
 	Subject:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=A1EZ9iyVLs9SNT3ui+gM96QoyqMDUQbl58fCa5D/v7g=; b=PWb2JdvffvJfeOm/wCzNLI/XN
-	HkigEi2MbVRWdwGYrUYwG1WhUDGyzYBo2LOQnioA9qc+7BBiNjqSk/gZUzInMeaQ9jmbJbdZd9sS7
-	I+38H4YrTyMnngpdl63gwSQONTycqwLAlugxCKtZAQrHBWGTQTWG4e7WcP/0Gjw7yVnSICQ2pADmB
-	Va6wlkmlGafaQbYE+lidcuwpfbwr7LdVGhXLA4FfFzOKHDhjMBEEHbjFM9XVh/aa0nk5miumfyX5B
-	rhiMSaoyXU/4+hUkKzYGMp4nknoCNj5OWhEHw6NbDRixKZ7vdQh3ukurJz1YdvvpBegvjSyVYmf8Q
-	Ot5y5tYuw==;
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjIm024172
+	 bh=HfS6+vmxf+6S2OXFZBX28VEEasH1LlJ5bcRfh2x6wn4=; b=1vLV/NrOioAbcW6Zyfx9ZPiSv
+	rVfXQe57cj1bTZppMLWLXi3K71aHqf1ZZejGwLlmTw5rlaDwryJkTp2ca64q3yNphzwxYXK2DWqXn
+	cn3S0OInOOlA6kWpXjJmm8C2U/7nGR90Abr0y/JJY0M5p+SQC2jhavaTVTp+gusPZ71+b0Emjb6VD
+	ASz3wo8X0mLJ68L7OecKo3jf9OytZVJKqBgSWjOnRv6iVLGOqADCOSg3ULlTQDTLm+FR6IPVuHFO3
+	xXWX02hOEFqrnWFTA14A1UkZV+dEUtz73WQtnOur+X9cQGrhieq+niQoBYNlHYmv/awnkHYAgDBMb
+	A/qkMkJuA==;
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 10S0pjId024172
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
- s=dec2015msa; t=1611795128;
- bh=wgcDkGkr+fADFw2acutcJVav26gpalK1ucrzuPe9fvU=;
+ s=dec2015msa; t=1611795116;
+ bh=0wK9wMP5DA5hWrKVSjv1k6dHQdgZowMRN8OJeDAeIIQ=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=0AvOpll9V5c4Wf1O6fqeg3J7C9F3lt+q7XKBF2KkSBs6k2Ilf/U2wJeNmLrwDxKUo
- WLJbdWdGaZtbeckWqkDZOFXOwWNqe/4V8KHT39AYVDSQNMIIRWdYZJhxJE3qzyL4ay
- ru/SQXe0kblt9+P2dTAQW5kNEK8b6Jzev+i3eqP1I5M9QKYljmLjYmdT8P04VgWlJD
- ZBuJBy1+tvrRETQ9PuRnRBD+/lTlarj/RgGeaHcoi2z9Mou4Gjihr0pErICkYgVzpk
- orLr65FqhO7iQMz+CUztP0jFaQM2jdaGkA6G9n92NU3FBYzG/a8DpS9CXn3llIKHFP
- 5Jfif5BQVNUtw==
+ b=gaOy9TgnBSVVLeD67bjyTNjPgVIu1DdQvjDeR4cwaGDkKZ1X54G7IzIxaRbTK/YE9
+ aLCuPPmZK/EBSo8ssRKBjAV52LwzTKH5hMwlV9DeU+DRadSfn0l6H19mEWnjktclI9
+ 4+fWOfGP94ZNf3J9/g+31swyuDgQN8bK2D/Pz9aFVFhqMlLsMzihALzcILEB5LaP7+
+ rZK9YDnJw1rFntMmClijlVDzr2tnnz7U+uV8+ATtuKjLPLNpH244Mec1fQcwQWqD1z
+ pSTTaJPQybOBJACP19AnWGE9IOgYDnirsdp03yySLZ1V401fEwHuzYNeaefilOdQco
+ RDpqiX1srvwOQ==
 In-Reply-To: <20210128005110.2613902-1-masahiroy@kernel.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
@@ -45,68 +44,99 @@ Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infrad
 To: linux-arch@vger.kernel.org, x86@kernel.org
 Cc: linux-xtensa@linux-xtensa.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-kbuild@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>, linux-sh@vger.kernel.org, linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-The rules in this Makefile cannot detect the command line change because
-the prerequisite 'FORCE' is missing.
+As of v5.11-rc1, 12 architectures duplicate similar shell scripts in
+order to generate syscall table headers. My goal is to unify them into
+the single scripts/syscalltbl.sh.
 
-Adding 'FORCE' will result in the headers being rebuilt every time
-because the 'targets' addition is also wrong; the file paths in
-'targets' must be relative to the current Makefile.
-
-Fix all of them so the if_changed rules work correctly.
+This commit converts alpha to use scripts/syscalltbl.sh.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- arch/parisc/kernel/syscalls/Makefile | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ arch/alpha/kernel/syscalls/Makefile      |  7 ++----
+ arch/alpha/kernel/syscalls/syscalltbl.sh | 32 ------------------------
+ arch/alpha/kernel/systbls.S              |  3 +--
+ 3 files changed, 3 insertions(+), 39 deletions(-)
+ delete mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
 
-diff --git a/arch/parisc/kernel/syscalls/Makefile b/arch/parisc/kernel/syscalls/Makefile
-index c22a21c39f30..556fe30a6c8f 100644
---- a/arch/parisc/kernel/syscalls/Makefile
-+++ b/arch/parisc/kernel/syscalls/Makefile
-@@ -22,24 +22,24 @@ quiet_cmd_systbl = SYSTBL  $@
- 		   '$(systbl_offset_$(basetarget))'
+diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
+index 1c42d2d2926d..6610130c67bc 100644
+--- a/arch/alpha/kernel/syscalls/Makefile
++++ b/arch/alpha/kernel/syscalls/Makefile
+@@ -7,7 +7,7 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
  
- syshdr_abis_unistd_32 := common,32
--$(uapi)/unistd_32.h: $(syscall) $(syshdr)
-+$(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
+ syscall := $(srctree)/$(src)/syscall.tbl
+ syshdr := $(srctree)/$(src)/syscallhdr.sh
+-systbl := $(srctree)/$(src)/syscalltbl.sh
++systbl := $(srctree)/scripts/syscalltbl.sh
+ 
+ quiet_cmd_syshdr = SYSHDR  $@
+       cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
+@@ -16,10 +16,7 @@ quiet_cmd_syshdr = SYSHDR  $@
+ 		   '$(syshdr_offset_$(basetarget))'
+ 
+ quiet_cmd_systbl = SYSTBL  $@
+-      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
+-		   '$(systbl_abis_$(basetarget))'		\
+-		   '$(systbl_abi_$(basetarget))'		\
+-		   '$(systbl_offset_$(basetarget))'
++      cmd_systbl = $(CONFIG_SHELL) $(systbl) $< $@
+ 
+ $(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
  	$(call if_changed,syshdr)
+diff --git a/arch/alpha/kernel/syscalls/syscalltbl.sh b/arch/alpha/kernel/syscalls/syscalltbl.sh
+deleted file mode 100644
+index 85d78d9309ad..000000000000
+--- a/arch/alpha/kernel/syscalls/syscalltbl.sh
++++ /dev/null
+@@ -1,32 +0,0 @@
+-#!/bin/sh
+-# SPDX-License-Identifier: GPL-2.0
+-
+-in="$1"
+-out="$2"
+-my_abis=`echo "($3)" | tr ',' '|'`
+-my_abi="$4"
+-offset="$5"
+-
+-emit() {
+-	t_nxt="$1"
+-	t_nr="$2"
+-	t_entry="$3"
+-
+-	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
+-		t_nxt=$((t_nxt+1))
+-	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
+-}
+-
+-grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+-	nxt=0
+-	if [ -z "$offset" ]; then
+-		offset=0
+-	fi
+-
+-	while read nr abi name entry ; do
+-		emit $((nxt+offset)) $((nr+offset)) $entry
+-		nxt=$((nr+1))
+-	done
+-) > "$out"
+diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+index 9704f22ed5e3..68f3e4f329eb 100644
+--- a/arch/alpha/kernel/systbls.S
++++ b/arch/alpha/kernel/systbls.S
+@@ -7,10 +7,9 @@
  
- syshdr_abis_unistd_64 := common,64
--$(uapi)/unistd_64.h: $(syscall) $(syshdr)
-+$(uapi)/unistd_64.h: $(syscall) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
+ #include <asm/unistd.h>
  
- systbl_abis_syscall_table_32 := common,32
--$(kapi)/syscall_table_32.h: $(syscall) $(systbl)
-+$(kapi)/syscall_table_32.h: $(syscall) $(systbl) FORCE
- 	$(call if_changed,systbl)
- 
- systbl_abis_syscall_table_64 := common,64
--$(kapi)/syscall_table_64.h: $(syscall) $(systbl)
-+$(kapi)/syscall_table_64.h: $(syscall) $(systbl) FORCE
- 	$(call if_changed,systbl)
- 
- systbl_abis_syscall_table_c32 := common,32
- systbl_abi_syscall_table_c32 := c32
--$(kapi)/syscall_table_c32.h: $(syscall) $(systbl)
-+$(kapi)/syscall_table_c32.h: $(syscall) $(systbl) FORCE
- 	$(call if_changed,systbl)
- 
- uapisyshdr-y		+= unistd_32.h unistd_64.h
-@@ -47,9 +47,10 @@ kapisyshdr-y		+= syscall_table_32.h		\
- 			   syscall_table_64.h		\
- 			   syscall_table_c32.h
- 
--targets	+= $(uapisyshdr-y) $(kapisyshdr-y)
-+uapisyshdr-y	:= $(addprefix $(uapi)/, $(uapisyshdr-y))
-+kapisyshdr-y	:= $(addprefix $(kapi)/, $(kapisyshdr-y))
-+targets		+= $(addprefix ../../../../, $(uapisyshdr-y) $(kapisyshdr-y))
- 
- PHONY += all
--all: $(addprefix $(uapi)/,$(uapisyshdr-y))
--all: $(addprefix $(kapi)/,$(kapisyshdr-y))
-+all: $(uapisyshdr-y) $(kapisyshdr-y)
- 	@:
+-#define __SYSCALL(nr, entry, nargs) .quad entry
++#define __SYSCALL(nr, entry) .quad entry
+ 	.data
+ 	.align 3
+ 	.globl sys_call_table
+ sys_call_table:
+ #include <asm/syscall_table.h>
+-#undef __SYSCALL
 -- 
 2.27.0
