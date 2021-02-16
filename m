@@ -1,215 +1,76 @@
-From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH 00/27] arch: syscalls: unifiy all syscalltbl.sh into
- scripts/syscalltbl.sh
-Date: Mon, 15 Feb 2021 21:03:42 +0900
-Message-ID: <CAK7LNATgZ2xYFV-ow2VrSn_-NWZOjPeZRzrXLdCP8t5OQbC4+w@mail.gmail.com>
-References: <20210128005110.2613902-1-masahiroy@kernel.org>
+From: Robert Richter <rric@kernel.org>
+Subject: Re: [PATCH 02/29] alpha: Avoid comma separated statements
+Date: Tue, 16 Feb 2021 15:39:22 +0100
+Message-ID: <YCvZGuKvtPi6ktNV@rric.localdomain>
+References: <cover.1598331148.git.joe@perches.com>
+ <4facd57f80c70437f085ba3a1bcf13ae0b63c3bc.1598331148.git.joe@perches.com>
+ <52f038d9ff547deee4e5b5628507e61ec8d056b7.camel@perches.com>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 11FC4Jai030765
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
- s=dec2015msa; t=1613390660;
- bh=t+cDCI9ijwWCflMyf3HDaiArNB9qVsEf2A2CaoV+044=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=v9acLhbXPPB+XF0EA8XDIgH7r3wlY83CiYt6x+cqseVMlte0TA3RtTnirrlnNjiTr
- jA68dM/v07+mFKYr5hhJJ86sLpsw1zXAAFWG0nZmD2UgbdqI5dP+4gqjF1Qz7xbVfa
- TYfiSHRgbmbc9lW8zQRzsdMz3jjzYVDKfFB4cxTgYynvM51/dVbyA9i2oOH7gV2ovM
- YtIWQQNzBAV80fb0gzeEX8gtOpBFZ35VCH4Vwyh7yA0R4ZVlykAJvDHNQVEJvjuJ9i
- HE2MhAudNBtepEg/tb2vcKjd/p8qpJ98nhcyuqlk4YI7eTVYjVMGPnzoxSWA17pJYO
- YzUleR5my8veQ==
-In-Reply-To: <20210128005110.2613902-1-masahiroy@kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <oprofile-list-bounces@lists.sourceforge.net>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=sourceforge.net; s=x; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:
+ MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=gLJfImd607eIEKRDjMEKO3db5Qx0sx2AhyN6wd7r070=; b=lIyqnMOWN8gE1zqoKBQrjsJm29
+ GMzyDHh3RPAjo37yQAgQZuYTxacBQ+HG6WI4dHQ1Uu3Xe+1LG3B55yv0TYiBILbkXlJdDe7ZQRNQt
+ ZYsYd/PIaJkw89f+IXyc4uDrZQHGu/VWCRav7vb1gzR37Ci7qbMPkNBBfLo8fsGUTA90=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=gLJfImd607eIEKRDjMEKO3db5Qx0sx2AhyN6wd7r070=; b=exHF4gVUMXVTYcv9RebkAYemoX
+ /N1yH3Hi7+Gz4Uxjk5QIe2e2RsF3WKPKKTFFeqDBnMNkCzspmCFHNKztLo7kAdj568a2K3P4EkFFv
+ YqZoJ5XYZDR15L+EUkVOciSB4S28b3nitBGlNXWNeYAbwghfqaQbmJ+KGNAD886b8NZE=;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1613486367;
+ bh=UNowcMW0SCs9nkZpIMU1XGVDBOUfCP5cIFjY9xFBtkw=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=bnvg5U1s9dgRqFeGSd8Z+1uzt5GISNX+ggmHL43B7wAFuRrdMgDDNUUH06BSwQl+D
+ NvLeq7gtGG4ooNe7FPohcL4QQJwNV3EaQJN5/Opi/kgI2IdiJKw9w/73+Q5dsS+Xdu
+ 6ns259AlSo7mcyDIEyt8a2u4hEZVRfV3/mLd5SYOlMg3HzUnlVgH47S6djl2G33ygX
+ I1h48S1YK+EgTXBS+veJ6JvCqXsN7r/3r2758MEjO3hd/WlcdrBWElGBl3oFGtU6p0
+ RtLxKPS9Bh6SgLauEWeOBgrshGmx2tWNqYnHu/MHe8QdTbQLo3e6Km8t44H6G0GA0X
+ R7BVQIxBZcPkA==
+Content-Disposition: inline
+In-Reply-To: <52f038d9ff547deee4e5b5628507e61ec8d056b7.camel@perches.com>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-arch <linux-arch@vger.kernel.org>, X86 ML <x86@kernel.org>
-Cc: "open list:TENSILICA XTENSA PORT (xtensa)" <linux-xtensa@linux-xtensa.org>, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, linux-um@lists.infradead.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-mips@vger.kernel.org, linux-m68k <linux-m68k@lists.linux-m68k.org>, linux-alpha@vger.kernel.org, sparclinux <sparclinux@vger.kernel.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/options/oprofile-list>, 
+ <mailto:oprofile-list-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=oprofile-list>
+List-Post: <mailto:oprofile-list@lists.sourceforge.net>
+List-Help: <mailto:oprofile-list-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/oprofile-list>, 
+ <mailto:oprofile-list-request@lists.sourceforge.net?subject=subscribe>
+Errors-To: oprofile-list-bounces@lists.sourceforge.net
+To: Joe Perches <joe@perches.com>
+Cc: Jiri Kosina <trivial@kernel.org>, linux-kernel@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, oprofile-list@lists.sf.net, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>
 
-On Thu, Jan 28, 2021 at 9:51 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
->
-> As of v5.11-rc1, 12 architectures duplicate similar shell scripts:
->
->   $ find arch -name syscalltbl.sh | sort
->   arch/alpha/kernel/syscalls/syscalltbl.sh
->   arch/arm/tools/syscalltbl.sh
->   arch/ia64/kernel/syscalls/syscalltbl.sh
->   arch/m68k/kernel/syscalls/syscalltbl.sh
->   arch/microblaze/kernel/syscalls/syscalltbl.sh
->   arch/mips/kernel/syscalls/syscalltbl.sh
->   arch/parisc/kernel/syscalls/syscalltbl.sh
->   arch/powerpc/kernel/syscalls/syscalltbl.sh
->   arch/sh/kernel/syscalls/syscalltbl.sh
->   arch/sparc/kernel/syscalls/syscalltbl.sh
->   arch/x86/entry/syscalls/syscalltbl.sh
->   arch/xtensa/kernel/syscalls/syscalltbl.sh
->
-> This patch set unifies all of them into a single file,
-> scripts/syscalltbl.sh.
->
-> The code-diff is attractive:
->
->  51 files changed, 254 insertions(+), 674 deletions(-)
->  delete mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/arm/tools/syscalltbl.sh
->  delete mode 100644 arch/ia64/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/m68k/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/microblaze/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/mips/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/parisc/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/powerpc/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/sh/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/sparc/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/x86/entry/syscalls/syscalltbl.sh
->  delete mode 100644 arch/xtensa/kernel/syscalls/syscalltbl.sh
->  create mode 100644 scripts/syscalltbl.sh
->
-> Also, this includes Makefile fixes, and some x86 fixes and cleanups.
->
-> My question is, how to merge this series.
->
-> I am touching all architectures, but the first patch is a prerequisite
-> of the rest of this series.
->
-> One possibility is to ask the x86 maintainers to pickup the first 5
-> patches for v5.12-rc1, and then send the rest for v5.13-rc1,
-> splitting per-arch.
->
-> I want the x86 maintainers to check the first 5 patches because
-> I cleaned up the x32 code.
+On 30.01.21 10:54:42, Joe Perches wrote:
+> On Mon, 2020-08-24 at 21:55 -0700, Joe Perches wrote:
+> > Use semicolons and braces.
+> =
 
+> ping?
+> =
 
-Never mind.
+> > =
 
-Sending too big patch set tends to fail.
+> > Signed-off-by: Joe Perches <joe@perches.com>
+> > ---
+> > =A0arch/alpha/kernel/pci_iommu.c      |  8 +++++---
+> > =A0arch/alpha/oprofile/op_model_ev4.c | 22 ++++++++++++++--------
+> > =A0arch/alpha/oprofile/op_model_ev5.c |  8 +++++---
 
-I will apply the generic script parts to my tree,
-then split the rest per arch in the next development cycle
-(aim for v5.13-rc1)
+This patch should be rebased as oprofile is going to be removed in
+5.12. A branch is in linux-next.
 
+-Robert
 
-
-
-
-
-
-
-
-> I know x32 was considered for deprecation, but my motivation is to
-> clean-up scripts across the tree without changing the functionality.
->
->
->
-> Masahiro Yamada (27):
->   scripts: add generic syscalltbl.sh
->   x86/syscalls: fix -Wmissing-prototypes warnings from COND_SYSCALL()
->   x86/build: add missing FORCE and fix 'targets' to make if_changed work
->   x86/entry/x32: rename __x32_compat_sys_* to __x64_compat_sys_*
->   x86/syscalls: switch to generic syscalltbl.sh
->   ARM: syscalls: switch to generic syscalltbl.sh
->   alpha: add missing FORCE and fix 'targets' to make if_changed work
->   alpha: syscalls: switch to generic syscalltbl.sh
->   ia64: add missing FORCE and fix 'targets' to make if_changed work
->   ia64: syscalls: switch to generic syscalltbl.sh
->   m68k: add missing FORCE and fix 'targets' to make if_changed work
->   m68k: syscalls: switch to generic syscalltbl.sh
->   microblaze: add missing FORCE and fix 'targets' to make if_changed
->     work
->   microblaze: syscalls: switch to generic syscalltbl.sh
->   mips: add missing FORCE and fix 'targets' to make if_changed work
->   mips: syscalls: switch to generic syscalltbl.sh
->   parisc: add missing FORCE and fix 'targets' to make if_changed work
->   parisc: syscalls: switch to generic syscalltbl.sh
->   sh: add missing FORCE and fix 'targets' to make if_changed work
->   sh: syscalls: switch to generic syscalltbl.sh
->   sparc: remove wrong comment from arch/sparc/include/asm/Kbuild
->   sparc: add missing FORCE and fix 'targets' to make if_changed work
->   sparc: syscalls: switch to generic syscalltbl.sh
->   powerpc: add missing FORCE and fix 'targets' to make if_changed work
->   powerpc: syscalls: switch to generic syscalltbl.sh
->   xtensa: add missing FORCE and fix 'targets' to make if_changed work
->   xtensa: syscalls: switch to generic syscalltbl.sh
->
->  arch/alpha/kernel/syscalls/Makefile           | 18 +++----
->  arch/alpha/kernel/syscalls/syscalltbl.sh      | 32 -----------
->  arch/alpha/kernel/systbls.S                   |  3 +-
->  arch/arm/kernel/entry-common.S                |  8 +--
->  arch/arm/tools/Makefile                       |  9 ++--
->  arch/arm/tools/syscalltbl.sh                  | 22 --------
->  arch/ia64/kernel/entry.S                      |  3 +-
->  arch/ia64/kernel/syscalls/Makefile            | 19 +++----
->  arch/ia64/kernel/syscalls/syscalltbl.sh       | 32 -----------
->  arch/m68k/kernel/syscalls/Makefile            | 18 +++----
->  arch/m68k/kernel/syscalls/syscalltbl.sh       | 32 -----------
->  arch/m68k/kernel/syscalltable.S               |  3 +-
->  arch/microblaze/kernel/syscall_table.S        |  3 +-
->  arch/microblaze/kernel/syscalls/Makefile      | 18 +++----
->  arch/microblaze/kernel/syscalls/syscalltbl.sh | 32 -----------
->  arch/mips/include/asm/Kbuild                  |  7 ++-
->  arch/mips/kernel/scall32-o32.S                |  4 +-
->  arch/mips/kernel/scall64-n32.S                |  3 +-
->  arch/mips/kernel/scall64-n64.S                |  3 +-
->  arch/mips/kernel/scall64-o32.S                |  4 +-
->  arch/mips/kernel/syscalls/Makefile            | 53 ++++++++-----------
->  arch/mips/kernel/syscalls/syscalltbl.sh       | 36 -------------
->  arch/parisc/include/asm/Kbuild                |  1 -
->  arch/parisc/kernel/syscall.S                  | 16 +++---
->  arch/parisc/kernel/syscalls/Makefile          | 34 +++++-------
->  arch/parisc/kernel/syscalls/syscalltbl.sh     | 36 -------------
->  arch/powerpc/include/asm/Kbuild               |  1 -
->  arch/powerpc/kernel/syscalls/Makefile         | 39 +++++---------
->  arch/powerpc/kernel/syscalls/syscalltbl.sh    | 36 -------------
->  arch/powerpc/kernel/systbl.S                  |  5 +-
->  arch/powerpc/platforms/cell/spu_callbacks.c   |  2 +-
->  arch/sh/kernel/syscalls/Makefile              | 18 +++----
->  arch/sh/kernel/syscalls/syscalltbl.sh         | 32 -----------
->  arch/sparc/include/asm/Kbuild                 |  3 --
->  arch/sparc/kernel/syscalls/Makefile           | 34 +++++-------
->  arch/sparc/kernel/syscalls/syscalltbl.sh      | 36 -------------
->  arch/sparc/kernel/systbls_32.S                |  4 +-
->  arch/sparc/kernel/systbls_64.S                |  8 +--
->  arch/x86/entry/syscall_32.c                   | 12 +++--
->  arch/x86/entry/syscall_64.c                   |  9 ++--
->  arch/x86/entry/syscall_x32.c                  | 27 ++--------
->  arch/x86/entry/syscalls/Makefile              | 33 +++++++-----
->  arch/x86/entry/syscalls/syscalltbl.sh         | 46 ----------------
->  arch/x86/include/asm/Kbuild                   |  1 +
->  arch/x86/include/asm/syscall_wrapper.h        | 11 ++--
->  arch/x86/um/sys_call_table_32.c               |  8 +--
->  arch/x86/um/sys_call_table_64.c               |  9 ++--
->  arch/xtensa/kernel/syscall.c                  |  3 +-
->  arch/xtensa/kernel/syscalls/Makefile          | 18 +++----
->  arch/xtensa/kernel/syscalls/syscalltbl.sh     | 32 -----------
->  scripts/syscalltbl.sh                         | 52 ++++++++++++++++++
->  51 files changed, 254 insertions(+), 674 deletions(-)
->  delete mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/arm/tools/syscalltbl.sh
->  delete mode 100644 arch/ia64/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/m68k/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/microblaze/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/mips/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/parisc/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/powerpc/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/sh/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/sparc/kernel/syscalls/syscalltbl.sh
->  delete mode 100644 arch/x86/entry/syscalls/syscalltbl.sh
->  delete mode 100644 arch/xtensa/kernel/syscalls/syscalltbl.sh
->  create mode 100644 scripts/syscalltbl.sh
->
-> --
-> 2.27.0
->
-
-
--- 
-Best Regards
-Masahiro Yamada
+> > =A03 files changed, 24 insertions(+), 14 deletions(-)
