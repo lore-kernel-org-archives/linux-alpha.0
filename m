@@ -1,23 +1,23 @@
 From: David Hildenbrand <david@redhat.com>
 Subject: Re: [PATCH RFC] mm/madvise: introduce MADV_POPULATE to
  prefault/prealloc memory
-Date: Wed, 24 Feb 2021 15:38:24 +0100
-Message-ID: <0f1c6f39-6a51-f8a6-8542-be1eb9c6fa0a@redhat.com>
+Date: Thu, 25 Feb 2021 09:41:07 +0100
+Message-ID: <e78dfe59-3552-91f1-e234-5f37d2600eb6@redhat.com>
 References: <20210217154844.12392-1-david@redhat.com>
  <4bb9071b-e6c1-a732-0ed6-46aff0eaa70c@redhat.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-arch-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1614179169;
+        s=mimecast20190719; t=1614242487;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hE/JW8Dw5e6ABCMHC+aiwNgbhT17E1ZqRTDBWqvHAHE=;
-        b=cfyexALChXT7zf6RREJ6miqZmVm7cMzstEPTMK/60c0vQpYfudYhR/1wnmhOp1U8bOmvlw
-        iMfhOLHmwQWwHCQmdt8KONIfQeSZDG+NCNYjOnt4rsadI0dpuWps7iNJt4Tsr7vUqoaQZi
-        j3SyFP/HVH0FdusxSM6519z7aILY9HY=
+        bh=fqVSsomUJyTIz0gYNIicWiu4aghYekNv2Fcx+hAQcqI=;
+        b=K/EyGxpKoi/b0hZJq1sY7H7Ow64L9FTGwwv1Mtt1aqbuTQee4dR4SjcoU8oMFhzKNmBql/
+        1NN+EPP7O/AE9TNEId3x637Q3J+pz6bLK0Qw2FYKezMu4nhq3AkGrrG/6nUpJ4JsXm28sV
+        KZhd1IkBrbeeVS03NjpDfvGiZqXrpjA=
 In-Reply-To: <4bb9071b-e6c1-a732-0ed6-46aff0eaa70c@redhat.com>
 Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
@@ -195,10 +195,31 @@ On 24.02.21 15:25, David Hildenbrand wrote:
 > 
 > 2) In all 4k cases, the POPULATE_READ/POPULATE_WRITE variants are faster
 > than manually reading or writing from user space.
+> 
+> 
+> What sticks out a bit is:
+> 
+> 3) For MAP_SHARED on anonymous memory, it is fastest to first read and
+> then write memory. It's slightly faster than POPULATE_WRITE and quite a
+> lot faster than a simple write - what?!. It's even faster than
+> POPULATE_WRITE - what?! I assume with the read access we prepare a fresh
+> zero page and with the write access we only have to change PTE access
+> rights. But why is this faster than writing directly?
 
-Forgot to mention one case: Except on Memfd 4 KiB with MAP_PRIVATE: 
-POPULATE_WRITE is slower than a simple write. And a read fault is 
-exceptionally slower than a write fault (what?).
+Okay, MADV_DONTNEED does not seem to really work on MAP_SHARED of 
+anonymous memory. If I use a fresh mmap for each and every iteration the 
+numbers make more sense:
+
+**************************************************
+4096 MiB MAP_SHARED:
+**************************************************
+Anonymous      : Read           :  1054.154 ms
+Anonymous      : Write          :   924.572 ms
+Anonymous      : Read+Write     :  1075.215 ms
+Anonymous      : POPULATE       :   911.386 ms
+Anonymous      : POPULATE_READ  :   909.392 ms
+Anonymous      : POPULATE_WRITE :   793.143 ms
+
 
 -- 
 Thanks,
