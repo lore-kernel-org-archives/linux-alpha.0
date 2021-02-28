@@ -1,81 +1,60 @@
 From: Arnd Bergmann <arnd@kernel.org>
 Subject: Re: [PATCH] ipc/msg: add msgsnd_timed and msgrcv_timed syscall for
  system V message queue
-Date: Sat, 27 Feb 2021 13:29:28 +0100
-Message-ID: <CAK8P3a3UOpW_m=_VfxzmC_FxRnG4yYKRXnkP8k4HeNtuu7dVcg@mail.gmail.com>
-References: <tencent_30362DDFFEE04E6CDACB6F803734A8DC7B06@qq.com>
+Date: Sun, 28 Feb 2021 16:38:07 +0100
+Message-ID: <CAK8P3a2TEc4CzE5Wg7pNy9Oq2p=HKNO7k2y2SmeD1mamqJ3Z9w@mail.gmail.com>
+References: <tencent_2CB9BD7D4063DE3F6845F79176B2D29A7E09@qq.com>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614428985;
-        bh=MCaTtkyFYXAFPxtrnr47vRHXHJOy/Gg2Vrr9l/na0sg=;
+        s=k20201202; t=1614526705;
+        bh=E7HgKVhlosJg15hIUr/EmO0wWkQU1/oxAJWlN6Q9ekM=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=CKh7xfyclyllhRVu4I19vTdJumgCcMnWUTj3YuPPr6n9s0ZwarhwYKwvaXpA5zsPk
-         kjheqrihhZX9hTum3WvSGTgeoJ+xzL2a3tFIsYwPT2DYFkGsXFLtNbH1AQK/XE65Jy
-         7ODttEw7Aw819AV+g2vrIBapd68nJgXEHkuKup43oUbNS75BcOG8PU3kGIxYTIuFgQ
-         kr35RilkrLGxVzsCHpKSv01urnc5s8IaN23UnTsVMsNuL7dS7f4/3rJ0+OEmb9edTe
-         Rtl9QZ0TJZHHGxSEkkTDznfomkTSjXewIxRsLTOFSbgxtuT0PJqfh5Jv+XXd6TpuEJ
-         1sL6oERHBuDBw==
-In-Reply-To: <tencent_30362DDFFEE04E6CDACB6F803734A8DC7B06@qq.com>
+        b=P/8fQw14UgAojURnnhC1qXm5JxqAzrfnquPYekrFh3NAi4sK8qPbRlZmylRuamaTn
+         KfLWltggn3KgBBpTilaItC7vEIrcZ1dBInjGsp5OYSDZSDZ5KqXMTsRvkhnWuJk1zl
+         KWgAK2/3qAeitl9qzLmyxnBVdvgHgf98EvD6uuSIAjdHhXj/FsuJ8GVPviW8cCwl1y
+         JcmNwBaXDm7ggax1X5Rro8TqH0aBFlyL7qTaMRAipOJg8/VtiA8OGEQKxQhQvLPond
+         p/kATJFWq5nYiF+oDCePPfKNjVlAS/2AcUqFUQk9oJCZ9SGx4GNQfAJ8DxKlQ+6E0q
+         XWjvlMgcu3ZaA==
+In-Reply-To: <tencent_2CB9BD7D4063DE3F6845F79176B2D29A7E09@qq.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Eric Gao <eric.tech@foxmail.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@de.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, David Miller <davem@davemloft.net>, Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gma>
+Cc: "catalin.marinas" <catalin.marinas@arm.com>, will <will@kernel.org>, geert <geert@linux-m68k.org>, monstr <monstr@monstr.eu>, tsbogend <tsbogend@alpha.franken.de>, James Bottomley <James.Bottomley@hansenpartnership.com>, deller <deller@gmx.de>, mpe <mpe@ellerman.id.au>, hca <hca@linux.ibm.com>, gor <gor@linux.ibm.com>, borntraeger <borntraeger@de.ibm.com>, ysato <ysato@users.sourceforge.jp>, dalias <dalias@libc.org>, davem <davem@davemloft.net>, luto <luto@kernel.org>, tglx <tglx@linutronix.de>, mingo <mingo@redhat.com>, bp <bp@alien8.de>, chris <chris@zankel.net>, jcmvbkbc <jcmvbkbc@gmail.com>, arnd <arnd@arndb.de>, benh <benh@kernel.crashing.org>, paulus <paulus@samba.org>, hpa <hpa@zytor.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-kernel <linux-kernel@vger.ker>
 
-On Sat, Feb 27, 2021 at 7:52 AM Eric Gao <eric.tech@foxmail.com> wrote:
+On Sun, Feb 28, 2021 at 4:16 PM Eric Gao <eric.tech@foxmail.com> wrote:
 >
-> sometimes, we need the msgsnd or msgrcv syscall can return after a limited
-> time, so that the business thread do not be blocked here all the time. In
-> this case, I add the msgsnd_timed and msgrcv_timed syscall that with time
-> parameter, which has a unit of ms.
+> Hi Arnd:
 >
-> Signed-off-by: Eric Gao <eric.tech@foxmail.com>
-
-I have no opinion on whether we want or need this, but I'll have a look
-at the implementation, to see if the ABI makes sense.
-
-> index 8fd8c17..42b7db5 100644
-> --- a/arch/mips/kernel/syscalls/syscall_n32.tbl
-> +++ b/arch/mips/kernel/syscalls/syscall_n32.tbl
-> @@ -381,3 +381,5 @@
->  440    n32     process_madvise                 sys_process_madvise
->  441    n32     epoll_pwait2                    compat_sys_epoll_pwait2
->  442    n32     mount_setattr                   sys_mount_setattr
-> +443    n32     msgrcv_timed                    sys_msgrcv_timed
-> +444    n32     msgsnd_timed                    sys_msgsnd_timed
-> diff --git a/arch/mips/kernel/syscalls/syscall_o32.tbl b/arch/mips/kernel/syscalls/syscall_o32.tbl
-> index 090d29c..0f1f6ee 100644
-> --- a/arch/mips/kernel/syscalls/syscall_o32.tbl
-> +++ b/arch/mips/kernel/syscalls/syscall_o32.tbl
-> @@ -430,3 +430,5 @@
->  440    o32     process_madvise                 sys_process_madvise
->  441    o32     epoll_pwait2                    sys_epoll_pwait2                compat_sys_epoll_pwait2
->  442    o32     mount_setattr                   sys_mount_setattr
-> +443    o32     msgrcv_timed                    sys_msgrcv_timed
-> +444    o32     msgsnd_timed                    sys_msgsnd_timed
-
-I think mips n32 and o32 both need to use the compat version when running on
-a 64-bit kernel, while your patch makes them use the native version.
-
-> @@ -905,7 +906,15 @@ static long do_msgsnd(int msqid, long mtype, void __user *mtext,
+>             Thanks for your kindly reply.
 >
->                 ipc_unlock_object(&msq->q_perm);
->                 rcu_read_unlock();
-> -               schedule();
-> +
-> +               /* sometimes, we need msgsnd syscall return after a given time */
-> +               if (timeoutms <= 0) {
-> +                       schedule();
-> +               } else {
-> +                       timeoutms = schedule_timeout(timeoutms);
-> +                       if (timeoutms == 0)
-> +                               timeoutflag = true;
-> +               }
+>             I want to prove you and all of others that these syscalls are very useful and necessary. Actually,  I add these syscalls
+>
+>     when I try to implement the local rpc by system v message queue (some people might think I am crazy to using message
+>
+>     queue, but it's truly a very efficient method than socket except it don't have a time-controlled msgrcv syscall).
 
-I wonder if this should be schedule_timeout_interruptible() or at least
-schedule_timeout_killable() instead of schedule_timeout(). If it should,
-this should probably be done as a separate change.
+(note: please don't reply in html)
+
+>             In addition,  msgrcv_timed is also necessary in usual bidirection communication.  For example:
+> A send a message to B, and try to receive a reply  from B  by msgrcv syscall.  But A need to do
+> something else in case of  that B has terminated. So
+>
+>     we need the msgrcv syscall return after a preset time. The similar syscall can be found in
+> posix message queue(mq_timedreceive)  and in z/OS system of
+>  IBM(https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.2.0/com.ibm.zos.v2r2.bpxbd00/msgrcvt.htm).
+>
+>   And when I search the web, I can find that many people need such like syscall in their
+> applications. so I hope this patch can be merged into the mainline, Thanks a lot.
+
+It might help to add some explanation on why you need to add the timeout
+to the old sysv message queues, when the more modern posix message
+queues already support this.
+
+Is there something that mq_timedsend/mq_timedreceive cannot do that
+you need? Would it be possible to add that feature to the posix message
+queues instead?
 
 > +COMPAT_SYSCALL_DEFINE5(msgsnd_timed, int, msqid, compat_uptr_t, msgp,
 > +                      compat_ssize_t, msgsz, int, msgflg, compat_long_t, timeoutms)
@@ -90,11 +69,19 @@ this should probably be done as a separate change.
 > +
 > +       return do_msgsnd(msqid, mtype, up->mtext, (ssize_t)msgsz, msgflg, (long)timeoutms);
 > +}
+>
+> My preference would be to simplify both the timed and non-timed version by
+> moving the get_user() into do_msgsnd() and using in_compat_task() to pick
+> the right type. Same for the receive side of course. If you do this,
+> watch out for x32 support, which uses the 64-bit version.
+>
+>     Actually, the timed and non-timed version have different number of
+>  parameter(timed version have timeoutms), so I don't
+> think they can be combine together,  and I don't want to impact the
+> applications which  have been using the old style msgrcv syscall.
 
-My preference would be to simplify both the timed and non-timed version by
-moving the get_user() into do_msgsnd() and using in_compat_task() to pick
-the right type. Same for the receive side of course. If you do this,
-watch out for
-x32 support, which uses the 64-bit version.
+What I meant was combining the implementation of the native and
+compat versions, not combining the timed and non-timed versions,
+which you already do to the degree possible.
 
-       Arnd
+           Arnd
