@@ -1,103 +1,118 @@
 From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 2/2] alpha: syscalls: switch to generic syscallhdr.sh
-Date: Mon,  1 Mar 2021 23:18:26 +0900
-Message-ID: <20210301141827.342315-2-masahiroy@kernel.org>
-References: <20210301141827.342315-1-masahiroy@kernel.org>
+Subject: [PATCH 1/2] alpha: syscalls: switch to generic syscalltbl.sh
+Date: Mon,  1 Mar 2021 23:18:25 +0900
+Message-ID: <20210301141827.342315-1-masahiroy@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 121EIV2w001499
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 121EIV2v001499
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1614608312;
-        bh=MRDY3m7FSYvIVH7g+UnaFVtNBGflmbqDWnEbFhc8iEw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MM+uFTHmSj7tF1rJE2+VuzlTVS5y1Gf4k7lhguRjr9L6aSqVgZekWbk+FoHFPtDdo
-         iTJVgeKvRRE3/sh13iNOfHOZ0+/WfX4BxG/j0KwIRvVLZLG0lPYfknJOKDXmRqCQvv
-         vZJ1uPqIiLc10RgdHaJNcAaMbKJ2Anfo+CFr+8n26oNuliYO7xdgmn0xp/IPYAXO7v
-         jcjFZUcDp8OieDSGIdcWDq204P7Qk3+nx+lNqZ4STauLrBLt0vhFB42R6Y9ojIOgE8
-         9CvAOXgRQm3En+Tr+JIcUOY+LXJOlU+HoDiaXH//j0jSixxd12BIkHg6x95Dl9WJo/
-         GgvwkeuYcoqXQ==
-In-Reply-To: <20210301141827.342315-1-masahiroy@kernel.org>
+        s=dec2015msa; t=1614608311;
+        bh=havbgPvxshsn+072GB8NK8K1m7iwCxNAcFrkfBfXWY4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gDMQoaqK0DpoCOlBJz3CeCbbs7qMtYiGR3BH+sIllGTjNPpTNQPU7O0JPkYaOKCKI
+         h097H7ytbWOC9irOc/65jUT97YOFrNudUenwkqOnmESr29YdjrdHXwDzXLBTua7SaP
+         QDBbyx0dykj68ILUgmt12v3EUC+ldjV1Um1gQAyDdmI9fdlEl+OEBiIFY+HqCPRKgZ
+         l2w1ofl79JK1md/mL6PM80bf40L7N4aRjtZTcMKY6HXnqwjcV1vVvUuXwfol9XKvVz
+         a1TJlyuAS9KLdOl/tGkBZPWVfEFfdWp0TDvLQQJA5YQFG2BCJWNYPJAJDGWmmF8+cx
+         ApACa1QbAZzFw==
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Max Filippov <jcmvbkbc@gmail.com>, Michal Simek <michal.simek@xilinx.com>, Stefan Asserhall <stefan.asserhall@xilinx.com>
+Cc: linux-kernel@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>
 
 Many architectures duplicate similar shell scripts.
 
-This commit converts alpha to use scripts/syscallhdr.sh.
+This commit converts alpha to use scripts/syscalltbl.sh.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- arch/alpha/kernel/syscalls/Makefile      |  7 ++---
- arch/alpha/kernel/syscalls/syscallhdr.sh | 36 ------------------------
- 2 files changed, 2 insertions(+), 41 deletions(-)
- delete mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
+ arch/alpha/kernel/syscalls/Makefile      |  7 ++----
+ arch/alpha/kernel/syscalls/syscalltbl.sh | 32 ------------------------
+ arch/alpha/kernel/systbls.S              |  3 +--
+ 3 files changed, 3 insertions(+), 39 deletions(-)
+ delete mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
 
 diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
-index ad2492cb5568..6713c65a25e1 100644
+index 285aaba832d9..ad2492cb5568 100644
 --- a/arch/alpha/kernel/syscalls/Makefile
 +++ b/arch/alpha/kernel/syscalls/Makefile
-@@ -6,14 +6,11 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
- 	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
+@@ -7,7 +7,7 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
  
  syscall := $(src)/syscall.tbl
--syshdr := $(srctree)/$(src)/syscallhdr.sh
-+syshdr := $(srctree)/scripts/syscallhdr.sh
- systbl := $(srctree)/scripts/syscalltbl.sh
+ syshdr := $(srctree)/$(src)/syscallhdr.sh
+-systbl := $(srctree)/$(src)/syscalltbl.sh
++systbl := $(srctree)/scripts/syscalltbl.sh
  
  quiet_cmd_syshdr = SYSHDR  $@
--      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
--		   '$(syshdr_abis_$(basetarget))'		\
--		   '$(syshdr_pfx_$(basetarget))'		\
--		   '$(syshdr_offset_$(basetarget))'
-+      cmd_syshdr = $(CONFIG_SHELL) $(syshdr) --emit-nr $< $@
+       cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
+@@ -16,10 +16,7 @@ quiet_cmd_syshdr = SYSHDR  $@
+ 		   '$(syshdr_offset_$(basetarget))'
  
  quiet_cmd_systbl = SYSTBL  $@
-       cmd_systbl = $(CONFIG_SHELL) $(systbl) $< $@
-diff --git a/arch/alpha/kernel/syscalls/syscallhdr.sh b/arch/alpha/kernel/syscalls/syscallhdr.sh
+-      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'	\
+-		   '$(systbl_abis_$(basetarget))'		\
+-		   '$(systbl_abi_$(basetarget))'		\
+-		   '$(systbl_offset_$(basetarget))'
++      cmd_systbl = $(CONFIG_SHELL) $(systbl) $< $@
+ 
+ $(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
+ 	$(call if_changed,syshdr)
+diff --git a/arch/alpha/kernel/syscalls/syscalltbl.sh b/arch/alpha/kernel/syscalls/syscalltbl.sh
 deleted file mode 100644
-index 1780e861492a..000000000000
---- a/arch/alpha/kernel/syscalls/syscallhdr.sh
+index 85d78d9309ad..000000000000
+--- a/arch/alpha/kernel/syscalls/syscalltbl.sh
 +++ /dev/null
-@@ -1,36 +0,0 @@
+@@ -1,32 +0,0 @@
 -#!/bin/sh
 -# SPDX-License-Identifier: GPL-2.0
 -
 -in="$1"
 -out="$2"
 -my_abis=`echo "($3)" | tr ',' '|'`
--prefix="$4"
+-my_abi="$4"
 -offset="$5"
 -
--fileguard=_UAPI_ASM_ALPHA_`basename "$out" | sed \
--	-e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
--	-e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
--grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
--	printf "#ifndef %s\n" "${fileguard}"
--	printf "#define %s\n" "${fileguard}"
--	printf "\n"
+-emit() {
+-	t_nxt="$1"
+-	t_nr="$2"
+-	t_entry="$3"
 -
+-	while [ $t_nxt -lt $t_nr ]; do
+-		printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
+-		t_nxt=$((t_nxt+1))
+-	done
+-	printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
+-}
+-
+-grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
 -	nxt=0
+-	if [ -z "$offset" ]; then
+-		offset=0
+-	fi
+-
 -	while read nr abi name entry ; do
--		if [ -z "$offset" ]; then
--			printf "#define __NR_%s%s\t%s\n" \
--				"${prefix}" "${name}" "${nr}"
--		else
--			printf "#define __NR_%s%s\t(%s + %s)\n" \
--				"${prefix}" "${name}" "${offset}" "${nr}"
--		fi
+-		emit $((nxt+offset)) $((nr+offset)) $entry
 -		nxt=$((nr+1))
 -	done
--
--	printf "\n"
--	printf "#ifdef __KERNEL__\n"
--	printf "#define __NR_syscalls\t%s\n" "${nxt}"
--	printf "#endif\n"
--	printf "\n"
--	printf "#endif /* %s */\n" "${fileguard}"
 -) > "$out"
+diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+index 9704f22ed5e3..68f3e4f329eb 100644
+--- a/arch/alpha/kernel/systbls.S
++++ b/arch/alpha/kernel/systbls.S
+@@ -7,10 +7,9 @@
+ 
+ #include <asm/unistd.h>
+ 
+-#define __SYSCALL(nr, entry, nargs) .quad entry
++#define __SYSCALL(nr, entry) .quad entry
+ 	.data
+ 	.align 3
+ 	.globl sys_call_table
+ sys_call_table:
+ #include <asm/syscall_table.h>
+-#undef __SYSCALL
 -- 
 2.27.0
 
