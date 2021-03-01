@@ -1,43 +1,103 @@
-From: Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [PATCH] ipc/msg: add msgsnd_timed and msgrcv_timed syscall for
- system V message queue
-Date: Sun, 28 Feb 2021 20:49:34 +0100
-Message-ID: <CAK8P3a2o=GfLCBiQh=fuRor3yKd0h7zKDZoqj8bsReoQNEA1eg@mail.gmail.com>
-References: <tencent_2CB9BD7D4063DE3F6845F79176B2D29A7E09@qq.com>
- <CAK8P3a2TEc4CzE5Wg7pNy9Oq2p=HKNO7k2y2SmeD1mamqJ3Z9w@mail.gmail.com> <tencent_2B7E37BD494059DF7D6845F641769CD28209@qq.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 2/2] alpha: syscalls: switch to generic syscallhdr.sh
+Date: Mon,  1 Mar 2021 23:18:26 +0900
+Message-ID: <20210301141827.342315-2-masahiroy@kernel.org>
+References: <20210301141827.342315-1-masahiroy@kernel.org>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1614541792;
-        bh=dZgO6FxYn+Uq8d8DXJml+c02cu3lM6vLbO249U6mLVI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=T7dOAml4L2aCFNfxPIFfdL2AfmnxuOTXjR6aAOKStuybawYGkl72lGpNNDArawWRE
-         bIzt4cIP80LbjLcdubGhfvSv0Zd08pAsDTQJ/MBH3LpTi9ar922/ro8F+bAj2xQEpw
-         BQd/4ikx+OeYPfVRGPjnpBgWIYPkUlFetLMMSNT49CG5pocXxEvCVP8CoYA5Hy6H+p
-         nMnKfyS2ZjmfwmzAjP12GroQGZo5WTRL42MRtL7mHBH4bs+1U22Au2m2ztAm08/rI5
-         VqrFZrh/MID2xLhGxjrIrrZgiYlmVcekSpHEbTlvn4iDN51e2APDcPtfknV1agK+9E
-         U2HAmMZxv4szw==
-In-Reply-To: <tencent_2B7E37BD494059DF7D6845F641769CD28209@qq.com>
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 121EIV2w001499
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1614608312;
+        bh=MRDY3m7FSYvIVH7g+UnaFVtNBGflmbqDWnEbFhc8iEw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MM+uFTHmSj7tF1rJE2+VuzlTVS5y1Gf4k7lhguRjr9L6aSqVgZekWbk+FoHFPtDdo
+         iTJVgeKvRRE3/sh13iNOfHOZ0+/WfX4BxG/j0KwIRvVLZLG0lPYfknJOKDXmRqCQvv
+         vZJ1uPqIiLc10RgdHaJNcAaMbKJ2Anfo+CFr+8n26oNuliYO7xdgmn0xp/IPYAXO7v
+         jcjFZUcDp8OieDSGIdcWDq204P7Qk3+nx+lNqZ4STauLrBLt0vhFB42R6Y9ojIOgE8
+         9CvAOXgRQm3En+Tr+JIcUOY+LXJOlU+HoDiaXH//j0jSixxd12BIkHg6x95Dl9WJo/
+         GgvwkeuYcoqXQ==
+In-Reply-To: <20210301141827.342315-1-masahiroy@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Eric Gao <eric.tech@foxmail.com>
-Cc: "catalin.marinas" <catalin.marinas@arm.com>, will <will@kernel.org>, geert <geert@linux-m68k.org>, monstr <monstr@monstr.eu>, tsbogend <tsbogend@alpha.franken.de>, James Bottomley <James.Bottomley@hansenpartnership.com>, deller <deller@gmx.de>, mpe <mpe@ellerman.id.au>, hca <hca@linux.ibm.com>, gor <gor@linux.ibm.com>, borntraeger <borntraeger@de.ibm.com>, ysato <ysato@users.sourceforge.jp>, dalias <dalias@libc.org>, davem <davem@davemloft.net>, luto <luto@kernel.org>, tglx <tglx@linutronix.de>, mingo <mingo@redhat.com>, bp <bp@alien8.de>, chris <chris@zankel.net>, jcmvbkbc <jcmvbkbc@gmail.com>, arnd <arnd@arndb.de>, benh <benh@kernel.crashing.org>, paulus <paulus@samba.org>, hpa <hpa@zytor.com>, linux-alpha <linux-alpha@vger.kernel.org>, linux-kernel <linux-kernel@vger.ker>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Max Filippov <jcmvbkbc@gmail.com>, Michal Simek <michal.simek@xilinx.com>, Stefan Asserhall <stefan.asserhall@xilinx.com>
 
-On Sun, Feb 28, 2021 at 5:16 PM Eric Gao <eric.tech@foxmail.com> wrote:
->
-> > Is there something that mq_timedsend/mq_timedreceive cannot do that
-> > you need? Would it be possible to add that feature to the posix message
-> > queues instead?
->
-> the system v message queue have a mtype parameter both in msgsnd and msgrcv which can be
-> used to implement message routing(mtype as the target id. For example, I filling the target thread
-> id that waiting message). It's the most important.
->
-> but mq_timedsend/mq_timedreceive in posix message queue don't have this feature.
+Many architectures duplicate similar shell scripts.
 
-I'm not sure I'm following here. With posix message queues, can't you just open
-one queue per target thread? That would seem simpler and more efficient besides
-also allowing the timeout.
+This commit converts alpha to use scripts/syscallhdr.sh.
 
-         Arnd
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+ arch/alpha/kernel/syscalls/Makefile      |  7 ++---
+ arch/alpha/kernel/syscalls/syscallhdr.sh | 36 ------------------------
+ 2 files changed, 2 insertions(+), 41 deletions(-)
+ delete mode 100644 arch/alpha/kernel/syscalls/syscallhdr.sh
+
+diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
+index ad2492cb5568..6713c65a25e1 100644
+--- a/arch/alpha/kernel/syscalls/Makefile
++++ b/arch/alpha/kernel/syscalls/Makefile
+@@ -6,14 +6,11 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')	\
+ 	  $(shell [ -d '$(kapi)' ] || mkdir -p '$(kapi)')
+ 
+ syscall := $(src)/syscall.tbl
+-syshdr := $(srctree)/$(src)/syscallhdr.sh
++syshdr := $(srctree)/scripts/syscallhdr.sh
+ systbl := $(srctree)/scripts/syscalltbl.sh
+ 
+ quiet_cmd_syshdr = SYSHDR  $@
+-      cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'	\
+-		   '$(syshdr_abis_$(basetarget))'		\
+-		   '$(syshdr_pfx_$(basetarget))'		\
+-		   '$(syshdr_offset_$(basetarget))'
++      cmd_syshdr = $(CONFIG_SHELL) $(syshdr) --emit-nr $< $@
+ 
+ quiet_cmd_systbl = SYSTBL  $@
+       cmd_systbl = $(CONFIG_SHELL) $(systbl) $< $@
+diff --git a/arch/alpha/kernel/syscalls/syscallhdr.sh b/arch/alpha/kernel/syscalls/syscallhdr.sh
+deleted file mode 100644
+index 1780e861492a..000000000000
+--- a/arch/alpha/kernel/syscalls/syscallhdr.sh
++++ /dev/null
+@@ -1,36 +0,0 @@
+-#!/bin/sh
+-# SPDX-License-Identifier: GPL-2.0
+-
+-in="$1"
+-out="$2"
+-my_abis=`echo "($3)" | tr ',' '|'`
+-prefix="$4"
+-offset="$5"
+-
+-fileguard=_UAPI_ASM_ALPHA_`basename "$out" | sed \
+-	-e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
+-	-e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g'`
+-grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+-	printf "#ifndef %s\n" "${fileguard}"
+-	printf "#define %s\n" "${fileguard}"
+-	printf "\n"
+-
+-	nxt=0
+-	while read nr abi name entry ; do
+-		if [ -z "$offset" ]; then
+-			printf "#define __NR_%s%s\t%s\n" \
+-				"${prefix}" "${name}" "${nr}"
+-		else
+-			printf "#define __NR_%s%s\t(%s + %s)\n" \
+-				"${prefix}" "${name}" "${offset}" "${nr}"
+-		fi
+-		nxt=$((nr+1))
+-	done
+-
+-	printf "\n"
+-	printf "#ifdef __KERNEL__\n"
+-	printf "#define __NR_syscalls\t%s\n" "${nxt}"
+-	printf "#endif\n"
+-	printf "\n"
+-	printf "#endif /* %s */\n" "${fileguard}"
+-) > "$out"
+-- 
+2.27.0
+
