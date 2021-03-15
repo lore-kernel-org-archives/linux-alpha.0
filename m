@@ -1,64 +1,63 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: alpha patches for v4.4.y / v4.9.y
-Date: Sun, 14 Mar 2021 11:33:08 -0700
-Message-ID: <44a392c3-418d-3503-7c46-0d283134d980@roeck-us.net>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: alpha patches for v4.4.y / v4.9.y
+Date: Mon, 15 Mar 2021 09:24:55 +0100
+Message-ID: <YE8Z1wFiRo2SOY33@kroah.com>
+References: <44a392c3-418d-3503-7c46-0d283134d980@roeck-us.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <stable-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:to:cc:from:subject:autocrypt:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=1bU6NjC0SnZeV7Fu48oXhEwNex81yMb6vob2Wzk1Rxw=;
-        b=d2wSAzXF5SQ0KZARP6Txa2XTBLCH1AseYtw1cPKF/jz90djMqWHFbqnVnRmzhaPFBT
-         TjRSdiRezat38yVQA5+L2fRAvJT4VUisFSfBOMGAuBujCAHyuJcUcC/gCsp88ort9lSM
-         PhpZfJcNeSEEZe9SvshTWzQFCTrX3cN8gP1v3xVT9WBwbblIAPN0p8zzqD4y8ZZOs3kl
-         4kqaQBGFoNimHq6IwRiP+ARO8azjSQR0tm4YZ+CcQpdvTQrDonZo8ybavUWSOI/RY4mH
-         ynlOvTVOb1FY0Oa3y2tGCfLzoPhu+nU/0TUQAVf2vKUZk0j3AJgKxuc94hWx2QkzNN6f
-         qGPA==
-Sender: Guenter Roeck <groeck7@gmail.com>
-Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1615796697;
+        bh=wCh3f3N+dMK+Vsniwym7H4XOnEnUFXpggsAXHQ2dxzg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vi+XkDIMj54Fv9YyTyT3TLd6Mo7Iab4tskJajDwlcxHsdAD8Q3z9TGkdjX+fjyafq
+         Y5geS72I7zuEzNXigb0wk89TwM2g/KScZ2dvSGEAsA4V9ax7GPIPZa6jKeUQ1K0ttT
+         dA8hTbN4XuflasI2y01UyQi3OVkDTF14g3fLU19I=
+Content-Disposition: inline
+In-Reply-To: <44a392c3-418d-3503-7c46-0d283134d980@roeck-us.net>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: stable <stable@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Content-Transfer-Encoding: 7bit
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: stable <stable@vger.kernel.org>, linux-alpha@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-Hi,
+On Sun, Mar 14, 2021 at 11:33:08AM -0700, Guenter Roeck wrote:
+> Hi,
+> 
+> I recently started to add basic networking tests to my qemu test environment.
+> When adding the necessary build options to Alpha kernels, I noticed that v4.4.y
+> and v4.9.y no longer build due to relocation errors such as
+> 
+> net/built-in.o: In function `__copy_tofrom_user_nocheck':
+> arch/alpha/include/asm/uaccess.h:364:(.text+0xff444):
+> 		relocation truncated to fit: BRSGP against symbol `__copy_user'
+> 
+> The following patches fix the problem.
+> 
+> v4.9.y:
+> 
+> 5ed78e5523fd alpha: add $(src)/ rather than $(obj)/ to make source file path
+> e19a4e3f1bff alpha: merge build rules of division routines
+> 3eec0291830e alpha: make short build log available for division routines
+> 4758ce82e667 alpha: Package string routines together
+> 
+> 8525023121de alpha: switch __copy_user() and __do_clean_user() to normal calling conventions
+> 
+> v4.4.y:
+> 
+> 5ed78e5523fd alpha: add $(src)/ rather than $(obj)/ to make source file path
+> e19a4e3f1bff alpha: merge build rules of division routines
+> 3eec0291830e alpha: make short build log available for division routines
+> 4758ce82e667 alpha: Package string routines together
+> 
+> 00fc0e0dda62 alpha: move exports to actual definitions
+> 085354f90796 alpha: get rid of tail-zeroing in __copy_user()
+> 8525023121de alpha: switch __copy_user() and __do_clean_user() to normal calling conventions
+> 
+> Only the last patch of each group is really needed; I pulled the other
+> patches in to avoid conflicts.
+> 
+> Please consider adding those patches to the respective kernels.
 
-I recently started to add basic networking tests to my qemu test environment.
-When adding the necessary build options to Alpha kernels, I noticed that v4.4.y
-and v4.9.y no longer build due to relocation errors such as
+All now queued up, thanks.
 
-net/built-in.o: In function `__copy_tofrom_user_nocheck':
-arch/alpha/include/asm/uaccess.h:364:(.text+0xff444):
-		relocation truncated to fit: BRSGP against symbol `__copy_user'
-
-The following patches fix the problem.
-
-v4.9.y:
-
-5ed78e5523fd alpha: add $(src)/ rather than $(obj)/ to make source file path
-e19a4e3f1bff alpha: merge build rules of division routines
-3eec0291830e alpha: make short build log available for division routines
-4758ce82e667 alpha: Package string routines together
-
-8525023121de alpha: switch __copy_user() and __do_clean_user() to normal calling conventions
-
-v4.4.y:
-
-5ed78e5523fd alpha: add $(src)/ rather than $(obj)/ to make source file path
-e19a4e3f1bff alpha: merge build rules of division routines
-3eec0291830e alpha: make short build log available for division routines
-4758ce82e667 alpha: Package string routines together
-
-00fc0e0dda62 alpha: move exports to actual definitions
-085354f90796 alpha: get rid of tail-zeroing in __copy_user()
-8525023121de alpha: switch __copy_user() and __do_clean_user() to normal calling conventions
-
-Only the last patch of each group is really needed; I pulled the other
-patches in to avoid conflicts.
-
-Please consider adding those patches to the respective kernels.
-
-Thanks,
-Guenter
+greg k-h
