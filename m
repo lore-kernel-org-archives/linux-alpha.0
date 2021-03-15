@@ -1,36 +1,47 @@
-From: "Kirill A. Shutemov" <kirill-oKw7cIdHH8eLwutG50LtGA@public.gmane.org>
-Subject: Re: [PATCH RFCv2] mm/madvise: introduce MADV_POPULATE_(READ|WRITE)
- to prefault/prealloc memory
-Date: Mon, 15 Mar 2021 15:22:13 +0300
-Message-ID: <20210315122213.k52wtlbbhsw42pks@box>
+From: David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH RFCv2] mm/madvise: introduce MADV_POPULATE_(READ|WRITE) to
+ prefault/prealloc memory
+Date: Mon, 15 Mar 2021 13:25:40 +0100
+Message-ID: <7d607d1c-efd5-3888-39bb-9e5f8bc08185@redhat.com>
 References: <20210308164520.18323-1-david@redhat.com>
+ <20210315122213.k52wtlbbhsw42pks@box>
 Mime-Version: 1.0
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NTc0pSC6ULv7Oqo3W3BMnNj1V6ogGKFoV43UcdG1gw0=;
-        b=pj9oJ7H41ug5yJ5S6H0nmrDTorRFP5qpfgv8i0hsLgLSj6j5PjG4r6CtBYKYzFwGQ7
-         qUwbmG/8/o72CrhYOuy1punTJ8eK8uXtrdScLOXhZqHigyzjZUkihsGUq4xZefGGdJyJ
-         275Qs7hRExo2D1+cRyIGrQJ6i4ctnY1t01+0PJ6CKUa2AlaACxmAEx0k8rYtovkkg4lP
-         l1xe1r6L8Z9HbZcmF3rYR+SPpPKz6i2+3Ny1STnPMThtmy5e0onayZVYWo+QbcgfkMHc
-         xxoSTqoI9G0vymB+Dbv7E8Hbo2tjTUaTbVKY7ml8UnFXGPXy5tYMAX1HVhaerXR5DKSJ
-         d5CQ==
-Content-Disposition: inline
-In-Reply-To: <20210308164520.18323-1-david-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: David Hildenbrand <david-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Oscar Salvador <osalvador-l3A5Bk7waGM@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Minchan Kim <minchan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jann Horn <jannh-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Jason Gunthorpe <jgg-uk2M96/98Pc@public.gmane.org>, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Hugh Dickins <hughd-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, "Michael S . Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Kirill A . Shutemov" <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Bogendoerfer <tsbogend-I1c7kopa9pzNi4+bAlmZwQ@public.gmane.org>
+Return-path: <linux-mips-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1615811166;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BN3J83lgEQDDF6GxaX9y5aWAfYv6V2YaybS0wCx0hT0=;
+        b=ORPnbIw4JBEFygYEjoyZZRXBZulwVihhCTQvaWWknESfMNrt+P1d4Jro9R2uCANuz/5+Oj
+        KapuDSk3BOxcI70CuqkeEPYVILgsxo8ambLYHuf6Sr7ag7RqbZ10VX6vBr16YEXK+VFeM5
+        vAySpjo0rXa/J+eISZxZSoMf0Yn6txE=
+In-Reply-To: <20210315122213.k52wtlbbhsw42pks@box>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Michal Hocko <mhocko@suse.com>, Oscar Salvador <osalvador@suse.de>, Matthew Wilcox <willy@infradead.org>, Andrea Arcangeli <aarcange@redhat.com>, Minchan Kim <minchan@kernel.org>, Jann Horn <jannh@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, Dave Hansen <dave.hansen@intel.com>, Hugh Dickins <hughd@google.com>, Rik van Riel <riel@surriel.com>, "Michael S . Tsirkin" <mst@redhat.com>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.d>
 
-On Mon, Mar 08, 2021 at 05:45:20PM +0100, David Hildenbrand wrote:
-> +			case -EHWPOISON: /* Skip over any poisoned pages. */
-> +				start += PAGE_SIZE;
-> +				continue;
+On 15.03.21 13:22, Kirill A. Shutemov wrote:
+> On Mon, Mar 08, 2021 at 05:45:20PM +0100, David Hildenbrand wrote:
+>> +			case -EHWPOISON: /* Skip over any poisoned pages. */
+>> +				start += PAGE_SIZE;
+>> +				continue;
+> 
+> Why is it good approach? It's not abvious to me.
 
-Why is it good approach? It's not abvious to me.
+My main motivation was to simplify return code handling. I don't want to 
+return -EHWPOISON to user space and I don't want to convert it into 
+something misleading like -ENOMEM or -EINVAL. So I decided to handle 
+such stuff internally.
+
+What would be you take on that?
 
 -- 
- Kirill A. Shutemov
+Thanks,
+
+David / dhildenb
+
