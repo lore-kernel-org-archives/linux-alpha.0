@@ -1,469 +1,485 @@
 From: David Hildenbrand <david@redhat.com>
-Subject: [PATCH v1 5/5] selftests/vm: add test for MADV_POPULATE_(READ|WRITE)
-Date: Wed, 17 Mar 2021 12:06:44 +0100
-Message-ID: <20210317110644.25343-6-david@redhat.com>
-References: <20210317110644.25343-1-david@redhat.com>
+Subject: Re: [PATCH v2] mm: Move mem_init_print_info() into mm_init()
+Date: Wed, 17 Mar 2021 12:31:23 +0100
+Message-ID: <2dd16099-21a8-4d82-b127-96eb7a344652@redhat.com>
+References: <4d488195-7281-9238-b30d-9f89a6100fb9@csgroup.eu>
+ <20210317015210.33641-1-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-owner@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1615979275;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JUrAWjnaXtOl0vBkf8wm9P65zktxxDiHBQk5OwJyeRk=;
-        b=Fs+U0yvT/r+V0NpigPYh4fnTirW9rxxops9/m8rM4HpGx0ewmoxiDGNiJcup19omzTJdCK
-        v0e4EnCF6yqJbexYERA5t6/qyNJC7JOxOU05rDorbFkaQRf4mI9NcIe0V57g7IPSYS2N/L
-        uYYIVzNT7hJZhIv6XKVMDQnq76wQD/g=
-In-Reply-To: <20210317110644.25343-1-david@redhat.com>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org, David Hildenbrand <david@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Michal Hocko <mhocko@suse.com>, Oscar Salvador <osalvador@suse.de>, Matthew Wilcox <willy@infradead.org>, Andrea Arcangeli <aarcange@redhat.com>, Minchan Kim <minchan@kernel.org>, Jann Horn <jannh@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, Dave Hansen <dave.hansen@intel.com>, Hugh Dickins <hughd@google.com>, Rik van Riel <riel@surriel.com>, "Michael S . Tsirkin" <mst@redhat.com>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.f>
+ s=mimecast20190719; t=1615980701;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=f9yH/iZ340W3GIfpRVlxm6jzvOCXy1UFWJ8h29pSue8=;
+ b=N5ud5NCZr2xAdRncEDHNpWR3zGRump76835HRf+cJ4ka8oYxw93U/om1l9z2saP45vuZCd
+ YDnySU4DDMAKOublGWNo5O85PAUcSIhYvHVdTeqbxqXfM2ToMMkb7qUq3dDq1+PuFPNQ29
+ 9ZW/6YeWX+zEq1esnJzE6ZUoWReOXbA=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1615980702;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=f9yH/iZ340W3GIfpRVlxm6jzvOCXy1UFWJ8h29pSue8=;
+ b=BeQuebootGYX1K7Y3QGcBy7AmkAah5jJic5Erc9DtoUs0OQpG7BeD++JoM1b+SVAxJQfkz
+ yIgVgD6APdm6xS5OJTeMyW3impb9P1egJyF9QWqiqGVJUzh+QAyCVlvmvADFRdPtXcenbv
+ 78p8MXz0zz20zUbBGHSQIH7EDdpJnI0=
+In-Reply-To: <20210317015210.33641-1-wangkefeng.wang@huawei.com>
+Content-Language: en-US
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Kefeng Wang <wangkefeng.wang@huawei.com>, linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, linux-mm@kvack.org, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-hexagon@vger.kernel.org, Huacai Chen <chenhuacai@kernel.org>, Russell King <linux@armlinux.org.uk>, linux-csky@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, linux-snps-arc@lists.infradead.org, linux-xtensa@linux-xtensa.org, Heiko Carstens <hca@linux.ibm.com>, linux-um@lists.infradead.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, linux-parisc@vger.kernel.org, linux-mips@vger.ker
 
-Let's add a simple test for MADV_POPULATE_READ and MADV_POPULATE_WRITE,
-verifying some error handling, that population works, and that softdirty
-tracking works as expected. For now, limit the test to private anonymous
-memory.
+On 17.03.21 02:52, Kefeng Wang wrote:
+> mem_init_print_info() is called in mem_init() on each architecture,
+> and pass NULL argument, so using void argument and move it into mm_init().
+> 
+> Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+> v2:
+> - Cleanup 'str' line suggested by Christophe and ACK
+> 
+>   arch/alpha/mm/init.c             |  1 -
+>   arch/arc/mm/init.c               |  1 -
+>   arch/arm/mm/init.c               |  2 --
+>   arch/arm64/mm/init.c             |  2 --
+>   arch/csky/mm/init.c              |  1 -
+>   arch/h8300/mm/init.c             |  2 --
+>   arch/hexagon/mm/init.c           |  1 -
+>   arch/ia64/mm/init.c              |  1 -
+>   arch/m68k/mm/init.c              |  1 -
+>   arch/microblaze/mm/init.c        |  1 -
+>   arch/mips/loongson64/numa.c      |  1 -
+>   arch/mips/mm/init.c              |  1 -
+>   arch/mips/sgi-ip27/ip27-memory.c |  1 -
+>   arch/nds32/mm/init.c             |  1 -
+>   arch/nios2/mm/init.c             |  1 -
+>   arch/openrisc/mm/init.c          |  2 --
+>   arch/parisc/mm/init.c            |  2 --
+>   arch/powerpc/mm/mem.c            |  1 -
+>   arch/riscv/mm/init.c             |  1 -
+>   arch/s390/mm/init.c              |  2 --
+>   arch/sh/mm/init.c                |  1 -
+>   arch/sparc/mm/init_32.c          |  2 --
+>   arch/sparc/mm/init_64.c          |  1 -
+>   arch/um/kernel/mem.c             |  1 -
+>   arch/x86/mm/init_32.c            |  2 --
+>   arch/x86/mm/init_64.c            |  2 --
+>   arch/xtensa/mm/init.c            |  1 -
+>   include/linux/mm.h               |  2 +-
+>   init/main.c                      |  1 +
+>   mm/page_alloc.c                  | 10 +++++-----
+>   30 files changed, 7 insertions(+), 42 deletions(-)
+> 
+> diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+> index 3c42b3147fd6..a97650a618f1 100644
+> --- a/arch/alpha/mm/init.c
+> +++ b/arch/alpha/mm/init.c
+> @@ -282,5 +282,4 @@ mem_init(void)
+>   	set_max_mapnr(max_low_pfn);
+>   	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+>   	memblock_free_all();
+> -	mem_init_print_info(NULL);
+>   }
+> diff --git a/arch/arc/mm/init.c b/arch/arc/mm/init.c
+> index ce07e697916c..33832e36bdb7 100644
+> --- a/arch/arc/mm/init.c
+> +++ b/arch/arc/mm/init.c
+> @@ -194,7 +194,6 @@ void __init mem_init(void)
+>   {
+>   	memblock_free_all();
+>   	highmem_init();
+> -	mem_init_print_info(NULL);
+>   }
+>   
+>   #ifdef CONFIG_HIGHMEM
+> diff --git a/arch/arm/mm/init.c b/arch/arm/mm/init.c
+> index 828a2561b229..7022b7b5c400 100644
+> --- a/arch/arm/mm/init.c
+> +++ b/arch/arm/mm/init.c
+> @@ -316,8 +316,6 @@ void __init mem_init(void)
+>   
+>   	free_highpages();
+>   
+> -	mem_init_print_info(NULL);
+> -
+>   	/*
+>   	 * Check boundaries twice: Some fundamental inconsistencies can
+>   	 * be detected at build time already.
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 3685e12aba9b..e8f29a0bb2f1 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -491,8 +491,6 @@ void __init mem_init(void)
+>   	/* this will put all unused low memory onto the freelists */
+>   	memblock_free_all();
+>   
+> -	mem_init_print_info(NULL);
+> -
+>   	/*
+>   	 * Check boundaries twice: Some fundamental inconsistencies can be
+>   	 * detected at build time already.
+> diff --git a/arch/csky/mm/init.c b/arch/csky/mm/init.c
+> index 894050a8ce09..bf2004aa811a 100644
+> --- a/arch/csky/mm/init.c
+> +++ b/arch/csky/mm/init.c
+> @@ -107,7 +107,6 @@ void __init mem_init(void)
+>   			free_highmem_page(page);
+>   	}
+>   #endif
+> -	mem_init_print_info(NULL);
+>   }
+>   
+>   void free_initmem(void)
+> diff --git a/arch/h8300/mm/init.c b/arch/h8300/mm/init.c
+> index 1f3b345d68b9..f7bf4693e3b2 100644
+> --- a/arch/h8300/mm/init.c
+> +++ b/arch/h8300/mm/init.c
+> @@ -98,6 +98,4 @@ void __init mem_init(void)
+>   
+>   	/* this will put all low memory onto the freelists */
+>   	memblock_free_all();
+> -
+> -	mem_init_print_info(NULL);
+>   }
+> diff --git a/arch/hexagon/mm/init.c b/arch/hexagon/mm/init.c
+> index f2e6c868e477..f01e91e10d95 100644
+> --- a/arch/hexagon/mm/init.c
+> +++ b/arch/hexagon/mm/init.c
+> @@ -55,7 +55,6 @@ void __init mem_init(void)
+>   {
+>   	/*  No idea where this is actually declared.  Seems to evade LXR.  */
+>   	memblock_free_all();
+> -	mem_init_print_info(NULL);
+>   
+>   	/*
+>   	 *  To-Do:  someone somewhere should wipe out the bootmem map
+> diff --git a/arch/ia64/mm/init.c b/arch/ia64/mm/init.c
+> index 16d0d7d22657..83280e2df807 100644
+> --- a/arch/ia64/mm/init.c
+> +++ b/arch/ia64/mm/init.c
+> @@ -659,7 +659,6 @@ mem_init (void)
+>   	set_max_mapnr(max_low_pfn);
+>   	high_memory = __va(max_low_pfn * PAGE_SIZE);
+>   	memblock_free_all();
+> -	mem_init_print_info(NULL);
+>   
+>   	/*
+>   	 * For fsyscall entrpoints with no light-weight handler, use the ordinary
+> diff --git a/arch/m68k/mm/init.c b/arch/m68k/mm/init.c
+> index 14c1e541451c..1759ab875d47 100644
+> --- a/arch/m68k/mm/init.c
+> +++ b/arch/m68k/mm/init.c
+> @@ -153,5 +153,4 @@ void __init mem_init(void)
+>   	/* this will put all memory onto the freelists */
+>   	memblock_free_all();
+>   	init_pointer_tables();
+> -	mem_init_print_info(NULL);
+>   }
+> diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
+> index 05cf1fb3f5ff..ab55c70380a5 100644
+> --- a/arch/microblaze/mm/init.c
+> +++ b/arch/microblaze/mm/init.c
+> @@ -131,7 +131,6 @@ void __init mem_init(void)
+>   	highmem_setup();
+>   #endif
+>   
+> -	mem_init_print_info(NULL);
+>   	mem_init_done = 1;
+>   }
+>   
+> diff --git a/arch/mips/loongson64/numa.c b/arch/mips/loongson64/numa.c
+> index 8315c871c435..fa9b4a487a47 100644
+> --- a/arch/mips/loongson64/numa.c
+> +++ b/arch/mips/loongson64/numa.c
+> @@ -178,7 +178,6 @@ void __init mem_init(void)
+>   	high_memory = (void *) __va(get_num_physpages() << PAGE_SHIFT);
+>   	memblock_free_all();
+>   	setup_zero_pages();	/* This comes from node 0 */
+> -	mem_init_print_info(NULL);
+>   }
+>   
+>   /* All PCI device belongs to logical Node-0 */
+> diff --git a/arch/mips/mm/init.c b/arch/mips/mm/init.c
+> index 5cb73bf74a8b..c36358758969 100644
+> --- a/arch/mips/mm/init.c
+> +++ b/arch/mips/mm/init.c
+> @@ -467,7 +467,6 @@ void __init mem_init(void)
+>   	memblock_free_all();
+>   	setup_zero_pages();	/* Setup zeroed pages.  */
+>   	mem_init_free_highmem();
+> -	mem_init_print_info(NULL);
+>   
+>   #ifdef CONFIG_64BIT
+>   	if ((unsigned long) &_text > (unsigned long) CKSEG0)
+> diff --git a/arch/mips/sgi-ip27/ip27-memory.c b/arch/mips/sgi-ip27/ip27-memory.c
+> index 87bb6945ec25..6173684b5aaa 100644
+> --- a/arch/mips/sgi-ip27/ip27-memory.c
+> +++ b/arch/mips/sgi-ip27/ip27-memory.c
+> @@ -420,5 +420,4 @@ void __init mem_init(void)
+>   	high_memory = (void *) __va(get_num_physpages() << PAGE_SHIFT);
+>   	memblock_free_all();
+>   	setup_zero_pages();	/* This comes from node 0 */
+> -	mem_init_print_info(NULL);
+>   }
+> diff --git a/arch/nds32/mm/init.c b/arch/nds32/mm/init.c
+> index fa86f7b2f416..f63f839738c4 100644
+> --- a/arch/nds32/mm/init.c
+> +++ b/arch/nds32/mm/init.c
+> @@ -191,7 +191,6 @@ void __init mem_init(void)
+>   
+>   	/* this will put all low memory onto the freelists */
+>   	memblock_free_all();
+> -	mem_init_print_info(NULL);
+>   
+>   	pr_info("virtual kernel memory layout:\n"
+>   		"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
+> diff --git a/arch/nios2/mm/init.c b/arch/nios2/mm/init.c
+> index 61862dbb0e32..613fcaa5988a 100644
+> --- a/arch/nios2/mm/init.c
+> +++ b/arch/nios2/mm/init.c
+> @@ -71,7 +71,6 @@ void __init mem_init(void)
+>   
+>   	/* this will put all memory onto the freelists */
+>   	memblock_free_all();
+> -	mem_init_print_info(NULL);
+>   }
+>   
+>   void __init mmu_init(void)
+> diff --git a/arch/openrisc/mm/init.c b/arch/openrisc/mm/init.c
+> index bf9b2310fc93..d5641198b90c 100644
+> --- a/arch/openrisc/mm/init.c
+> +++ b/arch/openrisc/mm/init.c
+> @@ -211,8 +211,6 @@ void __init mem_init(void)
+>   	/* this will put all low memory onto the freelists */
+>   	memblock_free_all();
+>   
+> -	mem_init_print_info(NULL);
+> -
+>   	printk("mem_init_done ...........................................\n");
+>   	mem_init_done = 1;
+>   	return;
+> diff --git a/arch/parisc/mm/init.c b/arch/parisc/mm/init.c
+> index 9ca4e4ff6895..591a4e939415 100644
+> --- a/arch/parisc/mm/init.c
+> +++ b/arch/parisc/mm/init.c
+> @@ -573,8 +573,6 @@ void __init mem_init(void)
+>   #endif
+>   		parisc_vmalloc_start = SET_MAP_OFFSET(MAP_START);
+>   
+> -	mem_init_print_info(NULL);
+> -
+>   #if 0
+>   	/*
+>   	 * Do not expose the virtual kernel memory layout to userspace.
+> diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
+> index 4e8ce6d85232..7e11c4cb08b8 100644
+> --- a/arch/powerpc/mm/mem.c
+> +++ b/arch/powerpc/mm/mem.c
+> @@ -312,7 +312,6 @@ void __init mem_init(void)
+>   		(mfspr(SPRN_TLB1CFG) & TLBnCFG_N_ENTRY) - 1;
+>   #endif
+>   
+> -	mem_init_print_info(NULL);
+>   #ifdef CONFIG_PPC32
+>   	pr_info("Kernel virtual memory layout:\n");
+>   #ifdef CONFIG_KASAN
+> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+> index 7f5036fbee8c..3c5ee3b7d811 100644
+> --- a/arch/riscv/mm/init.c
+> +++ b/arch/riscv/mm/init.c
+> @@ -102,7 +102,6 @@ void __init mem_init(void)
+>   	high_memory = (void *)(__va(PFN_PHYS(max_low_pfn)));
+>   	memblock_free_all();
+>   
+> -	mem_init_print_info(NULL);
+>   	print_vm_layout();
+>   }
+>   
+> diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
+> index 0e76b2127dc6..8ac710de1ab1 100644
+> --- a/arch/s390/mm/init.c
+> +++ b/arch/s390/mm/init.c
+> @@ -209,8 +209,6 @@ void __init mem_init(void)
+>   	setup_zero_pages();	/* Setup zeroed pages. */
+>   
+>   	cmma_init_nodat();
+> -
+> -	mem_init_print_info(NULL);
+>   }
+>   
+>   void free_initmem(void)
+> diff --git a/arch/sh/mm/init.c b/arch/sh/mm/init.c
+> index 0db6919af8d3..168d7d4dd735 100644
+> --- a/arch/sh/mm/init.c
+> +++ b/arch/sh/mm/init.c
+> @@ -359,7 +359,6 @@ void __init mem_init(void)
+>   
+>   	vsyscall_init();
+>   
+> -	mem_init_print_info(NULL);
+>   	pr_info("virtual kernel memory layout:\n"
+>   		"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
+>   		"    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+> diff --git a/arch/sparc/mm/init_32.c b/arch/sparc/mm/init_32.c
+> index 6139c5700ccc..1e9f577f084d 100644
+> --- a/arch/sparc/mm/init_32.c
+> +++ b/arch/sparc/mm/init_32.c
+> @@ -292,8 +292,6 @@ void __init mem_init(void)
+>   
+>   		map_high_region(start_pfn, end_pfn);
+>   	}
+> -
+> -	mem_init_print_info(NULL);
+>   }
+>   
+>   void sparc_flush_page_to_ram(struct page *page)
+> diff --git a/arch/sparc/mm/init_64.c b/arch/sparc/mm/init_64.c
+> index 182bb7bdaa0a..e454f179cf5d 100644
+> --- a/arch/sparc/mm/init_64.c
+> +++ b/arch/sparc/mm/init_64.c
+> @@ -2520,7 +2520,6 @@ void __init mem_init(void)
+>   	}
+>   	mark_page_reserved(mem_map_zero);
+>   
+> -	mem_init_print_info(NULL);
+>   
+>   	if (tlb_type == cheetah || tlb_type == cheetah_plus)
+>   		cheetah_ecache_flush_init();
+> diff --git a/arch/um/kernel/mem.c b/arch/um/kernel/mem.c
+> index 9242dc91d751..9019ff5905b1 100644
+> --- a/arch/um/kernel/mem.c
+> +++ b/arch/um/kernel/mem.c
+> @@ -54,7 +54,6 @@ void __init mem_init(void)
+>   	memblock_free_all();
+>   	max_low_pfn = totalram_pages();
+>   	max_pfn = max_low_pfn;
+> -	mem_init_print_info(NULL);
+>   	kmalloc_ok = 1;
+>   }
+>   
+> diff --git a/arch/x86/mm/init_32.c b/arch/x86/mm/init_32.c
+> index da31c2635ee4..21ffb03f6c72 100644
+> --- a/arch/x86/mm/init_32.c
+> +++ b/arch/x86/mm/init_32.c
+> @@ -755,8 +755,6 @@ void __init mem_init(void)
+>   	after_bootmem = 1;
+>   	x86_init.hyper.init_after_bootmem();
+>   
+> -	mem_init_print_info(NULL);
+> -
+>   	/*
+>   	 * Check boundaries twice: Some fundamental inconsistencies can
+>   	 * be detected at build time already.
+> diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+> index 5430c81eefc9..aa8387aab9c1 100644
+> --- a/arch/x86/mm/init_64.c
+> +++ b/arch/x86/mm/init_64.c
+> @@ -1350,8 +1350,6 @@ void __init mem_init(void)
+>   		kclist_add(&kcore_vsyscall, (void *)VSYSCALL_ADDR, PAGE_SIZE, KCORE_USER);
+>   
+>   	preallocate_vmalloc_pages();
+> -
+> -	mem_init_print_info(NULL);
+>   }
+>   
+>   #ifdef CONFIG_DEFERRED_STRUCT_PAGE_INIT
+> diff --git a/arch/xtensa/mm/init.c b/arch/xtensa/mm/init.c
+> index 2daeba9e454e..6a32b2cf2718 100644
+> --- a/arch/xtensa/mm/init.c
+> +++ b/arch/xtensa/mm/init.c
+> @@ -119,7 +119,6 @@ void __init mem_init(void)
+>   
+>   	memblock_free_all();
+>   
+> -	mem_init_print_info(NULL);
+>   	pr_info("virtual kernel memory layout:\n"
+>   #ifdef CONFIG_KASAN
+>   		"    kasan   : 0x%08lx - 0x%08lx  (%5lu MB)\n"
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 89314651dd62..c2e0b3495c5a 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -2373,7 +2373,7 @@ extern unsigned long free_reserved_area(void *start, void *end,
+>   					int poison, const char *s);
+>   
+>   extern void adjust_managed_page_count(struct page *page, long count);
+> -extern void mem_init_print_info(const char *str);
+> +extern void mem_init_print_info(void);
+>   
+>   extern void reserve_bootmem_region(phys_addr_t start, phys_addr_t end);
+>   
+> diff --git a/init/main.c b/init/main.c
+> index 53b278845b88..5581af5b4cb7 100644
+> --- a/init/main.c
+> +++ b/init/main.c
+> @@ -830,6 +830,7 @@ static void __init mm_init(void)
+>   	report_meminit();
+>   	stack_depot_init();
+>   	mem_init();
+> +	mem_init_print_info();
+>   	/* page_owner must be initialized after buddy is ready */
+>   	page_ext_init_flatmem_late();
+>   	kmem_cache_init();
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 55d938297ce6..b5fe5962837c 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -7728,7 +7728,7 @@ unsigned long free_reserved_area(void *start, void *end, int poison, const char
+>   	return pages;
+>   }
+>   
+> -void __init mem_init_print_info(const char *str)
+> +void __init mem_init_print_info(void)
+>   {
+>   	unsigned long physpages, codesize, datasize, rosize, bss_size;
+>   	unsigned long init_code_size, init_data_size;
+> @@ -7767,17 +7767,17 @@ void __init mem_init_print_info(const char *str)
+>   #ifdef	CONFIG_HIGHMEM
+>   		", %luK highmem"
+>   #endif
+> -		"%s%s)\n",
+> +		")\n",
+>   		nr_free_pages() << (PAGE_SHIFT - 10),
+>   		physpages << (PAGE_SHIFT - 10),
+>   		codesize >> 10, datasize >> 10, rosize >> 10,
+>   		(init_data_size + init_code_size) >> 10, bss_size >> 10,
+>   		(physpages - totalram_pages() - totalcma_pages) << (PAGE_SHIFT - 10),
+> -		totalcma_pages << (PAGE_SHIFT - 10),
+> +		totalcma_pages << (PAGE_SHIFT - 10)
+>   #ifdef	CONFIG_HIGHMEM
+> -		totalhigh_pages() << (PAGE_SHIFT - 10),
+> +		, totalhigh_pages() << (PAGE_SHIFT - 10)
+>   #endif
+> -		str ? ", " : "", str ? str : "");
+> +		);
+>   }
+>   
+>   /**
+> 
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Jann Horn <jannh@google.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Dave Hansen <dave.hansen@intel.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Rik van Riel <riel@surriel.com>
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: Chris Zankel <chris@zankel.net>
-Cc: Max Filippov <jcmvbkbc@gmail.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Rolf Eike Beer <eike-kernel@sf-tec.de>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-mips@vger.kernel.org
-Cc: linux-parisc@vger.kernel.org
-Cc: linux-xtensa@linux-xtensa.org
-Cc: linux-arch@vger.kernel.org
-Cc: linux-kselftest@vger.kernel.org
-Cc: Linux API <linux-api@vger.kernel.org>
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- tools/testing/selftests/vm/.gitignore      |   1 +
- tools/testing/selftests/vm/Makefile        |   1 +
- tools/testing/selftests/vm/madv_populate.c | 342 +++++++++++++++++++++
- tools/testing/selftests/vm/run_vmtests.sh  |  16 +
- 4 files changed, 360 insertions(+)
- create mode 100644 tools/testing/selftests/vm/madv_populate.c
+As I had roughly the same patch laying around here when playing with 
+adjustments of the managed page counters
 
-diff --git a/tools/testing/selftests/vm/.gitignore b/tools/testing/selftests/vm/.gitignore
-index b4fc0148360e..c9a5dd1adf7d 100644
---- a/tools/testing/selftests/vm/.gitignore
-+++ b/tools/testing/selftests/vm/.gitignore
-@@ -24,3 +24,4 @@ hmm-tests
- local_config.*
- protection_keys_32
- protection_keys_64
-+madv_populate
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index d42115e4284d..4851f3f84575 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -42,6 +42,7 @@ TEST_GEN_FILES += on-fault-limit
- TEST_GEN_FILES += thuge-gen
- TEST_GEN_FILES += transhuge-stress
- TEST_GEN_FILES += userfaultfd
-+TEST_GEN_FILES += madv_populate
- 
- ifeq ($(MACHINE),x86_64)
- CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_32bit_program.c -m32)
-diff --git a/tools/testing/selftests/vm/madv_populate.c b/tools/testing/selftests/vm/madv_populate.c
-new file mode 100644
-index 000000000000..b959e4ebdad4
---- /dev/null
-+++ b/tools/testing/selftests/vm/madv_populate.c
-@@ -0,0 +1,342 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * MADV_POPULATE_READ and MADV_POPULATE_WRITE tests
-+ *
-+ * Copyright 2021, Red Hat, Inc.
-+ *
-+ * Author(s): David Hildenbrand <david@redhat.com>
-+ */
-+#define _GNU_SOURCE
-+#include <stdlib.h>
-+#include <string.h>
-+#include <stdbool.h>
-+#include <stdint.h>
-+#include <unistd.h>
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <sys/mman.h>
-+
-+#include "../kselftest.h"
-+
-+#if defined(MADV_POPULATE_READ) && defined(MADV_POPULATE_WRITE)
-+
-+/*
-+ * For now, we're using 2 MiB of private anonymous memory for all tests.
-+ */
-+#define SIZE (2 * 1024 * 1024)
-+
-+static size_t pagesize;
-+
-+static uint64_t pagemap_get_entry(int fd, char *start)
-+{
-+	const unsigned long pfn = (unsigned long)start / pagesize;
-+	uint64_t entry;
-+	int ret;
-+
-+	ret = pread(fd, &entry, sizeof(entry), pfn * sizeof(entry));
-+	if (ret != sizeof(entry))
-+		ksft_exit_fail_msg("reading pagemap failed\n");
-+	return entry;
-+}
-+
-+static bool pagemap_is_populated(int fd, char *start)
-+{
-+	uint64_t entry = pagemap_get_entry(fd, start);
-+
-+	/* Present or swapped. */
-+	return entry & 0xc000000000000000ull;
-+}
-+
-+static bool pagemap_is_softdirty(int fd, char *start)
-+{
-+	uint64_t entry = pagemap_get_entry(fd, start);
-+
-+	return entry & 0x0080000000000000ull;
-+}
-+
-+static void sense_support(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	addr = mmap(0, pagesize, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (!addr)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	ret = madvise(addr, pagesize, MADV_POPULATE_READ);
-+	if (ret)
-+		ksft_exit_skip("MADV_POPULATE_READ is not available\n");
-+
-+	ret = madvise(addr, pagesize, MADV_POPULATE_WRITE);
-+	if (ret)
-+		ksft_exit_skip("MADV_POPULATE_WRITE is not available\n");
-+
-+	munmap(addr, pagesize);
-+}
-+
-+static void test_prot_read(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(!ret, "MADV_POPULATE_READ with PROT_READ\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(ret == -1 && errno == EINVAL,
-+			 "MADV_POPULATE_WRITE with PROT_READ\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static void test_prot_write(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(ret == -1 && errno == EINVAL,
-+			 "MADV_POPULATE_READ with PROT_WRITE\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(!ret, "MADV_POPULATE_WRITE with PROT_WRITE\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static void test_holes(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+	ret = munmap(addr + pagesize, pagesize);
-+	if (ret)
-+		ksft_exit_fail_msg("munmap failed\n");
-+
-+	/* Hole in the middle */
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_READ with holes in the middle\n");
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_WRITE with holes in the middle\n");
-+
-+	/* Hole at end */
-+	ret = madvise(addr, 2 * pagesize, MADV_POPULATE_READ);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_READ with holes at the end\n");
-+	ret = madvise(addr, 2 * pagesize, MADV_POPULATE_WRITE);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_WRITE with holes at the end\n");
-+
-+	/* Hole at beginning */
-+	ret = madvise(addr + pagesize, pagesize, MADV_POPULATE_READ);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_READ with holes at the beginning\n");
-+	ret = madvise(addr + pagesize, pagesize, MADV_POPULATE_WRITE);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_WRITE with holes at the beginning\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static bool range_is_populated(char *start, ssize_t size)
-+{
-+	int fd = open("/proc/self/pagemap", O_RDONLY);
-+	bool ret = true;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening pagemap failed\n");
-+	for (; size > 0 && ret; size -= pagesize, start += pagesize)
-+		if (!pagemap_is_populated(fd, start))
-+			ret = false;
-+	close(fd);
-+	return ret;
-+}
-+
-+static bool range_is_not_populated(char *start, ssize_t size)
-+{
-+	int fd = open("/proc/self/pagemap", O_RDONLY);
-+	bool ret = true;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening pagemap failed\n");
-+	for (; size > 0 && ret; size -= pagesize, start += pagesize)
-+		if (pagemap_is_populated(fd, start))
-+			ret = false;
-+	close(fd);
-+	return ret;
-+}
-+
-+static void test_populate_read(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+	ksft_test_result(range_is_not_populated(addr, SIZE),
-+			 "range initially not populated\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(!ret, "MADV_POPULATE_READ\n");
-+	ksft_test_result(range_is_populated(addr, SIZE),
-+			 "range is populated\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static void test_populate_write(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+	ksft_test_result(range_is_not_populated(addr, SIZE),
-+			 "range initially not populated\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(!ret, "MADV_POPULATE_WRITE\n");
-+	ksft_test_result(range_is_populated(addr, SIZE),
-+			 "range is populated\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static bool range_is_softdirty(char *start, ssize_t size)
-+{
-+	int fd = open("/proc/self/pagemap", O_RDONLY);
-+	bool ret = true;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening pagemap failed\n");
-+	for (; size > 0 && ret; size -= pagesize, start += pagesize)
-+		if (!pagemap_is_softdirty(fd, start))
-+			ret = false;
-+	close(fd);
-+	return ret;
-+}
-+
-+static bool range_is_not_softdirty(char *start, ssize_t size)
-+{
-+	int fd = open("/proc/self/pagemap", O_RDONLY);
-+	bool ret = true;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening pagemap failed\n");
-+	for (; size > 0 && ret; size -= pagesize, start += pagesize)
-+		if (pagemap_is_softdirty(fd, start))
-+			ret = false;
-+	close(fd);
-+	return ret;
-+}
-+
-+static void clear_softdirty(void)
-+{
-+	int fd = open("/proc/self/clear_refs", O_WRONLY);
-+	const char *ctrl = "4";
-+	int ret;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening clear_refs failed\n");
-+	ret = write(fd, ctrl, strlen(ctrl));
-+	if (ret != strlen(ctrl))
-+		ksft_exit_fail_msg("writing clear_refs failed\n");
-+	close(fd);
-+}
-+
-+static void test_softdirty(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	/* Clear any softdirty bits. */
-+	clear_softdirty();
-+	ksft_test_result(range_is_not_softdirty(addr, SIZE),
-+			 "range is not softdirty\n");
-+
-+	/* Populating READ should set softdirty. */
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(!ret, "MADV_POPULATE_READ\n");
-+	ksft_test_result(range_is_not_softdirty(addr, SIZE),
-+			 "range is not softdirty\n");
-+
-+	/* Populating WRITE should set softdirty. */
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(!ret, "MADV_POPULATE_WRITE\n");
-+	ksft_test_result(range_is_softdirty(addr, SIZE),
-+			 "range is softdirty\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int err;
-+
-+	pagesize = getpagesize();
-+
-+	ksft_print_header();
-+	ksft_set_plan(21);
-+
-+	sense_support();
-+	test_prot_read();
-+	test_prot_write();
-+	test_holes();
-+	test_populate_read();
-+	test_populate_write();
-+	test_softdirty();
-+
-+	err = ksft_get_fail_cnt();
-+	if (err)
-+		ksft_exit_fail_msg("%d out of %d tests failed\n",
-+				   err, ksft_test_num());
-+	return ksft_exit_pass();
-+}
-+
-+#else /* defined(MADV_POPULATE_READ) && defined(MADV_POPULATE_WRITE) */
-+
-+#warning "missing MADV_POPULATE_READ or MADV_POPULATE_WRITE definition"
-+
-+int main(int argc, char **argv)
-+{
-+	ksft_print_header();
-+	ksft_exit_skip("MADV_POPULATE_READ or MADV_POPULATE_WRITE not defined\n");
-+}
-+
-+#endif /* defined(MADV_POPULATE_READ) && defined(MADV_POPULATE_WRITE) */
-diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
-index e953f3cd9664..955782d138ab 100755
---- a/tools/testing/selftests/vm/run_vmtests.sh
-+++ b/tools/testing/selftests/vm/run_vmtests.sh
-@@ -346,4 +346,20 @@ else
- 	exitcode=1
- fi
- 
-+echo "--------------------------------------------------------"
-+echo "running MADV_POPULATE_READ and MADV_POPULATE_WRITE tests"
-+echo "--------------------------------------------------------"
-+./madv_populate
-+ret_val=$?
-+
-+if [ $ret_val -eq 0 ]; then
-+	echo "[PASS]"
-+elif [ $ret_val -eq $ksft_skip ]; then
-+	echo "[SKIP]"
-+	exitcode=$ksft_skip
-+else
-+	echo "[FAIL]"
-+	exitcode=1
-+fi
-+
- exit $exitcode
+Acked-by: David Hildenbrand <david@redhat.com>
+
 -- 
-2.29.2
+Thanks,
+
+David / dhildenb
 
