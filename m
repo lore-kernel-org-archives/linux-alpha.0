@@ -1,57 +1,52 @@
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Subject: Re: [PATCH 01/10] alpha: use libata instead of the legacy ide driver
-Date: Thu, 18 Mar 2021 08:54:49 +0100
-Message-ID: <3a752e8c-b518-6d61-75e7-3549e9906f83@physik.fu-berlin.de>
+From: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Subject: Re: [PATCH 07/10] MIPS: disable CONFIG_IDE in bigsur_defconfig
+Date: Thu, 18 Mar 2021 13:08:58 +0300
+Message-ID: <53035511-c140-b51a-dd1d-874b1041039a@gmail.com>
 References: <20210318045706.200458-1-hch@lst.de>
- <20210318045706.200458-2-hch@lst.de> <YFLrLwjZubWUvA2J@zeniv-ca.linux.org.uk>
+ <20210318045706.200458-8-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-owner@vger.kernel.org>
-In-Reply-To: <YFLrLwjZubWUvA2J@zeniv-ca.linux.org.uk>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=jMxhISu+COlRrHc/EVrqMnT5LVw2161ovhdA7IBtSGw=;
+ b=N+Q0LUNoyVaDPJ1eJrZ67FhUa77q/Fz02On4l9bg9QACSIgykCKqUmFdsf53Ojgnbf
+ eyumUdx/TwjbtDOLgwCYAB7RDOtR57TMCBeyNSAY//ay7Tl2lccP2Ssym94kRXjxfYRe
+ lulL4E/vgpp41CghUdWNrhQunOsNpbRkQh1Z5uA9cr4OPAdKTqKspV2wEkOPVcm1LmJR
+ yZKXoXYlgW/Aj82akuKLiTGE5Fox66wxjP6rcBsCJbwoniHR5/N5xRjjkVjAEfQdY1MW
+ wabHvQrtRlGBXU/oemiBE0fxxY0J0doyEwDn/K3ybrpVrl7lPm8K8TOwVCHW7Z8VfYJf
+ AzpA==
+In-Reply-To: <20210318045706.200458-8-hch@lst.de>
 Content-Language: en-US
-List-ID: <linux-alpha.vger.kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Al Viro <viro@zeniv.linux.org.uk>, Christoph Hellwig <hch@lst.de>
-Cc: "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, linux-ide@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Matt Turner <mattst88@gmail.com>, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
 
-Hi Al!
+Hi!
 
-On 3/18/21 6:54 AM, Al Viro wrote:
-> On Thu, Mar 18, 2021 at 05:56:57AM +0100, Christoph Hellwig wrote:
->> Switch the alpha defconfig from the legacy ide driver to libata.
+On 3/18/21 7:57 AM, Christoph Hellwig wrote:
+
+> bigsur_defconfig enables CONFIG_IDE for the tc86c001 ide driver, which
+> is a Toshiba plug in card that does not make much sense to use on bigsur
+    ^ for
+
+   Else that doesn't make much sense. :-)
+
+> platforms.  For all other ATA cards libata support is already enabled.
 > 
-> Umm...  I don't have an IDE alpha box in a usable shape (fans on
-> CPU module shat themselves), and it would take a while to resurrect
-> it, but I remember the joy it used to cause in some versions.
-> 
-> Do you have reports of libata variants of drivers actually tested on
-> those?
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+[...]
 
-At least pata_cypress works fine on my AlphaStation XP1000:
-
-root@tsunami:~> lspci
-0000:00:07.0 ISA bridge: Contaq Microsystems 82c693
-0000:00:07.1 IDE interface: Contaq Microsystems 82c693
-0000:00:07.2 IDE interface: Contaq Microsystems 82c693
-0000:00:07.3 USB controller: Contaq Microsystems 82c693
-0000:00:0d.0 VGA compatible controller: Texas Instruments TVP4020 [Permedia 2] (rev 01)
-0001:01:03.0 Ethernet controller: Digital Equipment Corporation DECchip 21142/43 (rev 41)
-0001:01:06.0 SCSI storage controller: QLogic Corp. ISP1020 Fast-wide SCSI (rev 06)
-0001:01:08.0 PCI bridge: Digital Equipment Corporation DECchip 21152 (rev 03)
-0001:02:09.0 Ethernet controller: Intel Corporation 82541PI Gigabit Ethernet Controller (rev 05)
-root@tsunami:~> lsmod|grep pata
-pata_cypress            3595  3
-libata                235071  2 ata_generic,pata_cypress
-root@tsunami:~>
-
-I also have two AlphaStation 233 currently in storage which I assume use
-different IDE chipset which I could test as well.
-
-Adrian
-
--- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer - glaubitz@debian.org
-`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
-
+MBR, Sergei
