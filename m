@@ -1,56 +1,38 @@
-From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-Subject: Re: [PATCH 01/10] alpha: use libata instead of the legacy ide driver
-Date: Thu, 18 Mar 2021 18:03:42 +0000
-Message-ID: <yw1xwnu4gwzl.fsf@mansr.com>
-References: <20210318045706.200458-1-hch@lst.de>
- <20210318045706.200458-2-hch@lst.de>
- <YFLrLwjZubWUvA2J@zeniv-ca.linux.org.uk>
- <20210318060724.GA29117@lst.de> <yw1x1rccie35.fsf@mansr.com>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Subject: Re: [PATCH 04/10] MIPS: disable CONFIG_IDE in
+ sb1250_swarm_defconfig
+Date: Fri, 19 Mar 2021 01:12:38 +0100 (CET)
+Message-ID: <alpine.DEB.2.21.2103190042210.21463@angie.orcam.me.uk>
+References: <20210318045706.200458-1-hch@lst.de> <20210318045706.200458-5-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-In-Reply-To: <yw1x1rccie35.fsf@mansr.com> (=?iso-8859-1?Q?=22M=E5ns_Rullg?=
- =?iso-8859-1?Q?=E5rd=22's?= message of "Thu,
- 18 Mar 2021 17:09:02 +0000")
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="iso-8859-1"
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20210318045706.200458-5-hch@lst.de>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Christoph Hellwig <hch@lst.de>
-Cc: Jens Axboe <axboe@kernel.dk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>, linux-mips@vger.kernel.org, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
+Cc: "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, linux-ide@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
-M=E5ns Rullg=E5rd <mans@mansr.com> writes:
+On Thu, 18 Mar 2021, Christoph Hellwig wrote:
 
-> Christoph Hellwig <hch@lst.de> writes:
->
->> On Thu, Mar 18, 2021 at 05:54:55AM +0000, Al Viro wrote:
->>> On Thu, Mar 18, 2021 at 05:56:57AM +0100, Christoph Hellwig wrote:
->>> > Switch the alpha defconfig from the legacy ide driver to libata.
->>>=20
->>> Umm...  I don't have an IDE alpha box in a usable shape (fans on
->>> CPU module shat themselves), and it would take a while to resurrect
->>> it, but I remember the joy it used to cause in some versions.
->>>=20
->>> Do you have reports of libata variants of drivers actually tested on
->>> those?
->>
->> No, I haven't.  The whole point is that we're not going to keep 40000
->> lines of code around despite notice for users that don't exist or
->> care.  If there is a regression we'll fix it, but we're not going to
->> make life miserable just because we can.
->
-> The pata_ali driver works fine on my UP1500 machine, unless something
-> broke recently.  I'll build the latest kernel and report back.
+> sb1250_swarm_defconfig enables CONFIG_IDE but no actual host controller
+> driver, so just drop CONFIG_IDE, CONFIG_BLK_DEV_IDECD and
+> CONFIG_BLK_DEV_IDETAPE as they are useless.
 
-5.11.7 seems fine too.
+ Actually BLK_DEV_PLATFORM would handle the SWARM's platform driver as an 
+IDE device, however the driver has supported libata ever since commit 
+2fef357cf391 ("IDE: Fix platform device registration in Swarm IDE driver 
+(v2)") back in 2008, so this is good to go.  We should probably enable 
+PATA_PLATFORM in the defconfig instead.
 
---=20
-M=E5ns Rullg=E5rd
+ The printed name of the driver could be improved I suppose though:
+
+scsi host0: pata_platform
+ata1: PATA max PIO0 mmio cmd 0x100b3e00 ctl 0x100b7ec0 irq 36
+
+(PIO3 is actually hardwired; it's an odd interface and people reported 
+issues with it, but I have never had any myself be it with IDE or libata).
+
+Acked-by: Maciej W. Rozycki <macro@orcam.me.uk>
+
+  Maciej
