@@ -1,12 +1,11 @@
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: Re: [PATCH 04/10] MIPS: disable CONFIG_IDE in
- sb1250_swarm_defconfig
-Date: Fri, 19 Mar 2021 01:12:38 +0100 (CET)
-Message-ID: <alpine.DEB.2.21.2103190042210.21463@angie.orcam.me.uk>
-References: <20210318045706.200458-1-hch@lst.de> <20210318045706.200458-5-hch@lst.de>
+From: Finn Thain <fthain@telegraphics.com.au>
+Subject: Re: remove the legacy ide driver
+Date: Fri, 19 Mar 2021 12:43:48 +1100 (AEDT)
+Message-ID: <c1fa8e6-a05d-9ea1-f47e-9e85ea6ea65e@telegraphics.com.au>
+References: <20210318045706.200458-1-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20210318045706.200458-5-hch@lst.de>
+Return-path: <linux-ide-owner@vger.kernel.org>
+In-Reply-To: <20210318045706.200458-1-hch@lst.de>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,24 +14,26 @@ Cc: "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert
 
 On Thu, 18 Mar 2021, Christoph Hellwig wrote:
 
-> sb1250_swarm_defconfig enables CONFIG_IDE but no actual host controller
-> driver, so just drop CONFIG_IDE, CONFIG_BLK_DEV_IDECD and
-> CONFIG_BLK_DEV_IDETAPE as they are useless.
+> Hi all,
+> 
+> we've been trying to get rid of the legacy ide driver for a while now,
+> and finally scheduled a removal for 2021, which is three month old now.
+> 
+> In general distros and most defconfigs have switched to libata long ago,
+> but there are a few exceptions.  This series first switches over all
+> remaining defconfigs to use libata and then removes the legacy ide
+> driver.
+> 
+> libata mostly covers all hardware supported by the legacy ide driver.
+> There are three mips drivers that are not supported, but the linux-mips
+> list could not identify any users of those.  There also are two m68k
+> drivers that do not have libata equivalents, which might or might not
+> have users, so we'll need some input and possibly help from the m68k
+> community here.
+> 
 
- Actually BLK_DEV_PLATFORM would handle the SWARM's platform driver as an 
-IDE device, however the driver has supported libata ever since commit 
-2fef357cf391 ("IDE: Fix platform device registration in Swarm IDE driver 
-(v2)") back in 2008, so this is good to go.  We should probably enable 
-PATA_PLATFORM in the defconfig instead.
-
- The printed name of the driver could be improved I suppose though:
-
-scsi host0: pata_platform
-ata1: PATA max PIO0 mmio cmd 0x100b3e00 ctl 0x100b7ec0 irq 36
-
-(PIO3 is actually hardwired; it's an odd interface and people reported 
-issues with it, but I have never had any myself be it with IDE or libata).
-
-Acked-by: Maciej W. Rozycki <macro@orcam.me.uk>
-
-  Maciej
+A few months ago I wrote another patch to move some more platforms away 
+from macide but it has not been tested yet. That is not to say you should 
+wait. However, my patch does have some changes that are missing from your 
+patch series, relating to ide platform devices in arch/m68k/mac/config.c. 
+I hope to be able to test this patch before the 5.13 merge window closes.
