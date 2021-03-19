@@ -1,49 +1,77 @@
-From: Serge Belyshev <belyshev@depni.sinp.msu.ru>
-Subject: Re: [PATCH 01/10] alpha: use libata instead of the legacy ide driver
-Date: Fri, 19 Mar 2021 19:23:17 +0300
-Message-ID: <87lfajun7u.fsf@depni.sinp.msu.ru>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Subject: Re: remove the legacy ide driver
+Date: Fri, 19 Mar 2021 17:48:32 +0100 (CET)
+Message-ID: <alpine.DEB.2.21.2103191712550.21463@angie.orcam.me.uk>
 References: <20210318045706.200458-1-hch@lst.de>
- <20210318045706.200458-2-hch@lst.de>
- <YFLrLwjZubWUvA2J@zeniv-ca.linux.org.uk>
 Mime-Version: 1.0
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+In-Reply-To: <20210318045706.200458-1-hch@lst.de>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=desiato.20200630; h=Sender:Content-Transfer-Encoding
-	:Content-Type:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:MIME-Version:Message-ID:Date:References:In-Reply-To:
-	Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	 bh=PgGBJrm2uKTk9pmj4FZ2oabxLojtZtFvEyZ/G5QtkCk=; b=dB+5rudvibVZ25QNEwTrpUP8W
-	7A2pZ8M0Kuf+52sM/jArkp0uoKGqQGgwVcwi2cOFeU5Ila1BzXgcNmwvT1WONPS9P1goGtYytXR+/
-	djA1dYjCotF/92tVhTsv8iI4S2PnwHN2fAnGALR5nbw2tBStC6meTxQniUbMHg01j7YSrB/veKtK9
-	chg19Y/I9xpjNDbLx7Z0vIiz/7skPRh2uGcRffpG9eTncn4jrk9QqCd+sqR2kxpPoblMFVvOpKZUq
-	3VOPt61a7eQqvbJHOS4Ey7IoxxJC34v5Lk7aT2x2BYg1xPwAfQA2L9Ehn2IigWXc3q7o2uYlS6W7V
-	PdmkzdrVA==;
-In-Reply-To: <YFLrLwjZubWUvA2J@zeniv-ca.linux.org.uk> (Al Viro's message of
- "Thu, 18 Mar 2021 05:54:55 +0000")
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane-mx.org@lists.infradead.org
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, linux-ide@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
 
-Al Viro <viro@zeniv.linux.org.uk> writes:
+On Thu, 18 Mar 2021, Christoph Hellwig wrote:
 
-> ...
->
-> Do you have reports of libata variants of drivers actually tested on
-> those?
+> we've been trying to get rid of the legacy ide driver for a while now,
+> and finally scheduled a removal for 2021, which is three month old now.
 
-PATA_CMD64X works fine on my 164LX for many years, last tested with 5.12-rc3.
+ Hmm, there's still a regression in that pata_legacy unconditionally pokes 
+at random I/O port locations corresponding to all the known possible ATA 
+interface mappings with ISA option cards:
 
-(with a caveat: in my setup with CF card DMA is broken, but it is broken
-with BLK_DEV_CMD64X as well).
+scsi host0: pata_legacy
+ata1: PATA max PIO4 cmd 0x1f0 ctl 0x3f6 irq 14
+ata1.00: ATA-4: ST310211A, 3.54, max UDMA/100
+ata1.00: 19541088 sectors, multi 16: LBA
+ata1.00: configured for PIO
+scsi 0:0:0:0: Direct-Access     ATA      ST310211A        3.54 PQ: 0 ANSI: 5
+scsi 0:0:0:0: Attached scsi generic sg0 type 0
+sd 0:0:0:0: [sda] 19541088 512-byte logical blocks: (10.0 GB/9.32 GiB)
+sd 0:0:0:0: [sda] Write Protect is off
+sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't 
+support DPO or FUA
+ sda: sda1 sda2 sda3
+sd 0:0:0:0: [sda] Attached SCSI disk
+scsi host1: pata_legacy
+ata2: PATA max PIO4 cmd 0x170 ctl 0x376 irq 15
+scsi host1: pata_legacy
+ata3: PATA max PIO4 cmd 0x1e8 ctl 0x3ee irq 11
+scsi host1: pata_legacy
+ata4: PATA max PIO4 cmd 0x168 ctl 0x36e irq 10
+scsi host1: pata_legacy
+ata5: PATA max PIO4 cmd 0x1e0 ctl 0x3e6 irq 8
+scsi host1: pata_legacy
+ata6: PATA max PIO4 cmd 0x160 ctl 0x366 irq 12
+
+This seems needlessly dangerous to me.  With the old IDE driver I could 
+(and did) specify "ide_generic.probe_mask=1" to avoid this clutter (the 
+ISA card used with this system has a single ATA port only).
+
+ I guess it's easy to fix by carrying the `probe_mask' parameter over and 
+I think we'd rather wait with the removal of the IDE subsystem until we 
+have a release with this option supported.  I may look into it unless 
+someone beats me to it.
+
+ Overall I find it rather disturbing that nobody has noticed this issue 
+over all these years.
+
+ NB it is only earlier this year that I recovered this system from a PSU 
+failure several years ago, which took the disk the system previously had 
+with it, so myself I had no chance to get at it any earlier, though I did 
+mean to have a look as soon as I saw the notice about the scheduled IDE 
+removal.
+
+  Maciej
