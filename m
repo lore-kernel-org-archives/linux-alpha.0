@@ -1,77 +1,58 @@
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: Re: remove the legacy ide driver
-Date: Fri, 19 Mar 2021 17:48:32 +0100 (CET)
-Message-ID: <alpine.DEB.2.21.2103191712550.21463@angie.orcam.me.uk>
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [PATCH 02/10] ARM: disable CONFIG_IDE in footbridge_defconfig
+Date: Fri, 19 Mar 2021 17:07:53 +0000
+Message-ID: <20210319170753.GV1463@shell.armlinux.org.uk>
 References: <20210318045706.200458-1-hch@lst.de>
+ <20210318045706.200458-3-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-In-Reply-To: <20210318045706.200458-1-hch@lst.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Return-path: <linux-ide-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=jLA7jhfpTD/gf7DnkGIEr5ZaUexlkr8MeBHoScCGjoc=; b=pMboij1OQVxOZWL2QhcrYt1e4
+        ToGGhJKSzZbwG4tYuMdaRP9gPpt3iDu4b/G0NaXY7sfwKJxe/52mpTd2kmN5uIR5OsW75mf8jZUrW
+        WPnmH10ZCaejYOkmlHOdVaKWey6fs9pQ+H0cXPhiBrS3kdeoHaW7IDL1BrUx4ffaGPhE2rhmpqyDi
+        zp2OU8cfqORCkRugVwO8Lpt0dlHOJ40hS8BdqlNhbrVpI/5Z5fhzcM4icQAGc8x1tnyWcva1k1eEV
+        UVCAxGz0YiWDQP6WR61CDg1sx+GUloA3+yrX3gr9Q9J4KiPOdAu4lIeh5WxMpF1hbmHKVLWazLGsN
+Content-Disposition: inline
+In-Reply-To: <20210318045706.200458-3-hch@lst.de>
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Christoph Hellwig <hch@lst.de>
-Cc: Jens Axboe <axboe@kernel.dk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
+Cc: "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, linux-ide@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
-On Thu, 18 Mar 2021, Christoph Hellwig wrote:
+On Thu, Mar 18, 2021 at 05:56:58AM +0100, Christoph Hellwig wrote:
+> footbridge_defconfig enables CONFIG_IDE but no actual host controller
+> driver, so just drop it.
 
-> we've been trying to get rid of the legacy ide driver for a while now,
-> and finally scheduled a removal for 2021, which is three month old now.
+I have been using the Cypress 82C693 IDE driver on Footbridge for a
+CD ROM drive, and I know it doesn't work with the PATA driver - as
+I need to disable BM DMA, otherwise the 82C693/DC21285 combination
+deadlocks the PCI bus. The PATA driver doesn't support disabling
+BM DMA without disabling it for all PATA ports, which is really
+annoying for my IT821x card in the same machine.
 
- Hmm, there's still a regression in that pata_legacy unconditionally pokes 
-at random I/O port locations corresponding to all the known possible ATA 
-interface mappings with ISA option cards:
+So, I'm rather stuck using the PATA driver for the HDDs and the
+IDE driver for the CD ROM.
 
-scsi host0: pata_legacy
-ata1: PATA max PIO4 cmd 0x1f0 ctl 0x3f6 irq 14
-ata1.00: ATA-4: ST310211A, 3.54, max UDMA/100
-ata1.00: 19541088 sectors, multi 16: LBA
-ata1.00: configured for PIO
-scsi 0:0:0:0: Direct-Access     ATA      ST310211A        3.54 PQ: 0 ANSI: 5
-scsi 0:0:0:0: Attached scsi generic sg0 type 0
-sd 0:0:0:0: [sda] 19541088 512-byte logical blocks: (10.0 GB/9.32 GiB)
-sd 0:0:0:0: [sda] Write Protect is off
-sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
-sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, doesn't 
-support DPO or FUA
- sda: sda1 sda2 sda3
-sd 0:0:0:0: [sda] Attached SCSI disk
-scsi host1: pata_legacy
-ata2: PATA max PIO4 cmd 0x170 ctl 0x376 irq 15
-scsi host1: pata_legacy
-ata3: PATA max PIO4 cmd 0x1e8 ctl 0x3ee irq 11
-scsi host1: pata_legacy
-ata4: PATA max PIO4 cmd 0x168 ctl 0x36e irq 10
-scsi host1: pata_legacy
-ata5: PATA max PIO4 cmd 0x1e0 ctl 0x3e6 irq 8
-scsi host1: pata_legacy
-ata6: PATA max PIO4 cmd 0x160 ctl 0x366 irq 12
+That said, a commit a while back "cleaning up" the PCI layer appears
+to have totally shafted the 82C693, as the kernel tries to request
+IO resources at the legacy IDE addresses against the PCI bus resource
+which only covers 0x1000-0xffff. Hence, the 82C693 IDE ports are non-
+functional at the moment.
 
-This seems needlessly dangerous to me.  With the old IDE driver I could 
-(and did) specify "ide_generic.probe_mask=1" to avoid this clutter (the 
-ISA card used with this system has a single ATA port only).
+I'm debating about trying to find a fix to the PCI breakage that was
+introduced by "ARM: move PCI i/o resource setup into common code".
 
- I guess it's easy to fix by carrying the `probe_mask' parameter over and 
-I think we'd rather wait with the removal of the IDE subsystem until we 
-have a release with this option supported.  I may look into it unless 
-someone beats me to it.
+I hadn't noticed it because I don't use the CD ROM drive very often,
+and I don't upgrade the kernel that often either on the machine -
+but it has been running 24x7 for almost two decades.
 
- Overall I find it rather disturbing that nobody has noticed this issue 
-over all these years.
-
- NB it is only earlier this year that I recovered this system from a PSU 
-failure several years ago, which took the disk the system previously had 
-with it, so myself I had no chance to get at it any earlier, though I did 
-mean to have a look as soon as I saw the notice about the scheduled IDE 
-removal.
-
-  Maciej
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
