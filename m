@@ -1,39 +1,37 @@
-From: Finn Thain <fthain@telegraphics.com.au>
+From: Christoph Hellwig <hch@lst.de>
 Subject: Re: remove the legacy ide driver
-Date: Fri, 19 Mar 2021 12:43:48 +1100 (AEDT)
-Message-ID: <c1fa8e6-a05d-9ea1-f47e-9e85ea6ea65e@telegraphics.com.au>
+Date: Fri, 19 Mar 2021 06:43:19 +0100
+Message-ID: <20210319054319.GA9880@lst.de>
 References: <20210318045706.200458-1-hch@lst.de>
+ <c1fa8e6-a05d-9ea1-f47e-9e85ea6ea65e@telegraphics.com.au>
 Mime-Version: 1.0
-Return-path: <linux-ide-owner@vger.kernel.org>
-In-Reply-To: <20210318045706.200458-1-hch@lst.de>
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org>
+Content-Disposition: inline
+In-Reply-To: <c1fa8e6-a05d-9ea1-f47e-9e85ea6ea65e@telegraphics.com.au>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Christoph Hellwig <hch@lst.de>
-Cc: "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, linux-ide@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: Finn Thain <fthain@telegraphics.com.au>
+Cc: Jens Axboe <axboe@kernel.dk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, Russell King <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>
 
-On Thu, 18 Mar 2021, Christoph Hellwig wrote:
+On Fri, Mar 19, 2021 at 12:43:48PM +1100, Finn Thain wrote:
+> A few months ago I wrote another patch to move some more platforms away 
+> from macide but it has not been tested yet. That is not to say you should 
+> wait. However, my patch does have some changes that are missing from your 
+> patch series, relating to ide platform devices in arch/m68k/mac/config.c. 
+> I hope to be able to test this patch before the 5.13 merge window closes.
 
-> Hi all,
-> 
-> we've been trying to get rid of the legacy ide driver for a while now,
-> and finally scheduled a removal for 2021, which is three month old now.
-> 
-> In general distros and most defconfigs have switched to libata long ago,
-> but there are a few exceptions.  This series first switches over all
-> remaining defconfigs to use libata and then removes the legacy ide
-> driver.
-> 
-> libata mostly covers all hardware supported by the legacy ide driver.
-> There are three mips drivers that are not supported, but the linux-mips
-> list could not identify any users of those.  There also are two m68k
-> drivers that do not have libata equivalents, which might or might not
-> have users, so we'll need some input and possibly help from the m68k
-> community here.
-> 
-
-A few months ago I wrote another patch to move some more platforms away 
-from macide but it has not been tested yet. That is not to say you should 
-wait. However, my patch does have some changes that are missing from your 
-patch series, relating to ide platform devices in arch/m68k/mac/config.c. 
-I hope to be able to test this patch before the 5.13 merge window closes.
+Normally we do not remove drivers for hardware that is still used.  So
+at leat for macide my plan was not to take it away unless the users 
+are sufficiently happy.  Or in other words:  I think waiting it the
+right choice, but hopefully we can make that wait as short as possible.
