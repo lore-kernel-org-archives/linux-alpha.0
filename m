@@ -1,105 +1,121 @@
 From: Cye Borg <cyborgyn@gmail.com>
 Subject: Re: [PATCH 02/10] ARM: disable CONFIG_IDE in footbridge_defconfig
-Date: Mon, 22 Mar 2021 18:10:01 +0100
-Message-ID: <CAD4NMuZWoV0m85OyBDHLt+J8NYCV5wYx7fFZaivBNEgDnrN5xw@mail.gmail.com>
-References: <20210318045706.200458-1-hch@lst.de> <20210318045706.200458-3-hch@lst.de>
- <20210319170753.GV1463@shell.armlinux.org.uk> <20210319175311.GW1463@shell.armlinux.org.uk>
+Date: Mon, 22 Mar 2021 16:44:43 +0100
+Message-ID: <CAD4NMuaasexgWUmYD0CwhxuFS760Pj4GVuBpJNp+g0YBXpSPnw@mail.gmail.com>
+References: <20210318045706.200458-1-hch@lst.de>
+ <20210318045706.200458-3-hch@lst.de>
+ <20210319170753.GV1463@shell.armlinux.org.uk>
+ <20210319175311.GW1463@shell.armlinux.org.uk>
  <20210322145403.GA30942@lst.de> <20210322151503.GX1463@shell.armlinux.org.uk>
- <224b110e-7c42-4e19-800e-e0fa23d3bf7f@physik.fu-berlin.de> <20210322170338.GZ1463@shell.armlinux.org.uk>
+ <20210322151823.GA2764@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fiyXOeQWEig0s6UT1FT5pCXalIidRHvGHYc/I0I86U4=;
-        b=QKCSek145JEuRPcVGh+jry7eSFRT7rDliJdVjjDPerK0DFdLuxLHuth+sgT617W5Mm
-         jecfEAMmOTZUwEtOT3NVkAuqnrRYhKJ/CPAWXtEAfpcv5KG+ByG0IJxfzUFn3hGP6OsW
-         oPWtBEalIpy+zv0CWGZlMW8GxXXGV7ADUru4p65y9tx2V70fFVPGVCDw2XknH9W9/seH
-         rGXSeCTpJaVlOEifvnGhW30lT6qTGVC8HeDy6eR1kA3bHZjb4uNfitWtT0tuQ4nhlZPN
-         JOrlTpcixGngqPjLmXcVOVdlhvxtSuD9Os696fAhe93PNbZoIWZPQiMeHjELruNKLkUN
-         u7Rw==
-In-Reply-To: <20210322170338.GZ1463@shell.armlinux.org.uk>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, linux-ide@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Type: multipart/alternative; boundary="0000000000007d960b05be21f2a0"
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=zTBufNw4i/2n7snfGRiAb8kqCxwWobWjwTB6oKESZ0M=;
+ b=JPyw4UZw2XwOct90taF3URGMHz1LhhZ9jbMRPbZnTq2rdbZYvet2VmhekAnLYqS8TZ
+ 9fgKg8mg2eGcwmnbpxEejFZq2ot0eB3RggThBEXrelNA/RjoLxGHrm7pLCwQW35+O+db
+ MoHPHctNpYV3kfKhUBxgPHz3I18LgaC3FqB5Hy8MRZV1vEQ6zpa46Jrimhy0lwiMtN3n
+ F8lg7EmEefEEwQ6cPVEpEMcwWqErOAp7cRjlyik3lmyqSHb66RklRvApTpZrk8DxHLvu
+ 0Q1uQxXH0yyLl2tRp1lzgR62YpcK1CmFSlNgZohKnaO1u1meCjWqaUzNLn+JCdW4yXR6
+ 4ZvQ==
+In-Reply-To: <20210322151823.GA2764@lst.de>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, Russell King - ARM Linux admin <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
 
-PWS 500au:
+--0000000000007d960b05be21f2a0
+Content-Type: text/plain; charset="UTF-8"
 
-snow / # lspci -vvx -s 7.1
-00:07.1 IDE interface: Contaq Microsystems 82c693 (prog-if 80 [ISA
-Compatibility mode-only controller, supports bus mastering])
-        Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop-
-ParErr+ Stepping- SERR- FastB2B- DisINTx-
-        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium
->TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-        Latency: 0
-        Interrupt: pin A routed to IRQ 0
-        Region 0: I/O ports at 01f0 [size=8]
-        Region 1: I/O ports at 03f4
-        Region 4: I/O ports at 9080 [size=16]
-        Kernel driver in use: pata_cypress
-        Kernel modules: pata_cypress
-00: 80 10 93 c6 45 00 80 02 00 80 01 01 00 00 80 00
-10: f1 01 00 00 f5 03 00 00 00 00 00 00 00 00 00 00
-20: 81 90 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-30: 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00
+I use pata_cypress on Alpha, and for the above mentioned problems,
+it always restricted me to use only one IDE channel out of the two
+available. Also, not forcing it to use PIO mode, it always failed to
+operate. I would love to test on Alpha, and give you feedback about
+a fix/finished implementation of the driver. I have both Alpha Server DS20E
+and Alpha Personal Workstation 500 including that freak chipset.
 
-snow / # lspci -vvx -s 7.2
-00:07.2 IDE interface: Contaq Microsystems 82c693 (prog-if 00 [ISA
-Compatibility mode-only controller])
-        Control: I/O+ Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop-
-ParErr+ Stepping- SERR- FastB2B- DisINTx-
-        Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium
->TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-        Latency: 0
-        Interrupt: pin B routed to IRQ 0
-        Region 0: I/O ports at 0170 [size=8]
-        Region 1: I/O ports at 0374
-        Region 4: Memory at 0c240000 (32-bit, non-prefetchable)
-[disabled] [size=64K]
-        Kernel modules: pata_cypress
-00: 80 10 93 c6 45 00 80 02 00 00 01 01 00 00 80 00
-10: 71 01 00 00 75 03 00 00 00 00 00 00 00 00 00 00
-20: 00 00 24 0c 00 00 00 00 00 00 00 00 00 00 00 00
-30: 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 00
+Let me know if/when I can help with my limited capabilities.
 
-On Mon, Mar 22, 2021 at 6:04 PM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> On Mon, Mar 22, 2021 at 05:09:13PM +0100, John Paul Adrian Glaubitz wrote:
-> > On 3/22/21 4:15 PM, Russell King - ARM Linux admin wrote:
-> > > I'm quite surprised that the CY82C693 even works on Alpha - I've
-> > > asked for a lspci for that last week but nothing has yet been
-> > > forthcoming from whoever responded to your patch for Alpha - so I
-> > > can't compare what I'm seeing with what's happening with Alpha.
+Thanks, best regards,
+Barnabas Viragh
+
+On Mon, Mar 22, 2021 at 4:19 PM Christoph Hellwig <hch@lst.de> wrote:
+
+> On Mon, Mar 22, 2021 at 03:15:03PM +0000, Russell King - ARM Linux admin
+> wrote:
+> > It gets worse than that though - due to a change to remove
+> > pcibios_min_io from the generic code, moving it into the ARM
+> > architecture code, this has caused a regression that prevents the
+> > legacy resources being registered against the bus resource. So even
+> > if they are there, they cause probe failures. I haven't found a
+> > reasonable way to solve this yet, but until there is, there is no
+> > way that the PATA driver can be used as the "legacy mode" support
+> > is effectively done via the PCI code assigning virtual IO port
+> > resources.
 > >
-> > Here is lspci on my DEC Alpha XP-1000:
-> >
-> > root@tsunami:~> lspci
-> > 0000:00:07.0 ISA bridge: Contaq Microsystems 82c693
-> > 0000:00:07.1 IDE interface: Contaq Microsystems 82c693
-> > 0000:00:07.2 IDE interface: Contaq Microsystems 82c693
-> > 0000:00:07.3 USB controller: Contaq Microsystems 82c693
-> > 0000:00:0d.0 VGA compatible controller: Texas Instruments TVP4020 [Permedia 2] (rev 01)
-> > 0001:01:03.0 Ethernet controller: Digital Equipment Corporation DECchip 21142/43 (rev 41)
-> > 0001:01:06.0 SCSI storage controller: QLogic Corp. ISP1020 Fast-wide SCSI (rev 06)
-> > 0001:01:08.0 PCI bridge: Digital Equipment Corporation DECchip 21152 (rev 03)
-> > 0001:02:09.0 Ethernet controller: Intel Corporation 82541PI Gigabit Ethernet Controller (rev 05)
-> > root@tsunami:~>
+> > I'm quite surprised that the CY82C693 even works on Alpha - I've
+> > asked for a lspci for that last week but nothing has yet been
+> > forthcoming from whoever responded to your patch for Alpha - so I
+> > can't compare what I'm seeing with what's happening with Alpha.
 >
-> This is no good. What I asked last Thursday was:
+> That sounds like something we could fix with a quirk for function 2
+> in the PCI resource assignment code.  Can you show what vendor and
+> device ID function 2 has so that I could try to come up with one?
 >
-> "Could you send me the output of lspci -vvx -s 7.1 and lspci -vvx -s 7.2
-> please?"
+
+--0000000000007d960b05be21f2a0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>I use pata_cypress on Alpha, and for the above mentio=
+ned problems, <br></div><div>it always restricted me to use only one IDE ch=
+annel out of the two</div><div>available. Also, not forcing it to use PIO m=
+ode, it always failed to</div><div>operate. I would love to test on Alpha, =
+and give you feedback about</div><div>a fix/finished implementation of the =
+driver. I have both Alpha Server DS20E</div><div>and Alpha Personal Worksta=
+tion 500 including that freak chipset.</div><div><br></div><div>Let me know=
+ if/when I can help with my limited capabilities.</div><div><br></div><div>=
+Thanks, best regards,</div><div>Barnabas Viragh<br></div></div><br><div cla=
+ss=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Mon, Mar 22, 20=
+21 at 4:19 PM Christoph Hellwig &lt;<a href=3D"mailto:hch@lst.de">hch@lst.d=
+e</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin=
+:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"=
+>On Mon, Mar 22, 2021 at 03:15:03PM +0000, Russell King - ARM Linux admin w=
+rote:<br>
+&gt; It gets worse than that though - due to a change to remove<br>
+&gt; pcibios_min_io from the generic code, moving it into the ARM<br>
+&gt; architecture code, this has caused a regression that prevents the<br>
+&gt; legacy resources being registered against the bus resource. So even<br=
 >
-> so I can see the resources the kernel is using and a dump of the PCI
-> config space to see what the hardware is using.
+&gt; if they are there, they cause probe failures. I haven&#39;t found a<br=
 >
-> Thanks.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+&gt; reasonable way to solve this yet, but until there is, there is no<br>
+&gt; way that the PATA driver can be used as the &quot;legacy mode&quot; su=
+pport<br>
+&gt; is effectively done via the PCI code assigning virtual IO port<br>
+&gt; resources.<br>
+&gt; <br>
+&gt; I&#39;m quite surprised that the CY82C693 even works on Alpha - I&#39;=
+ve<br>
+&gt; asked for a lspci for that last week but nothing has yet been<br>
+&gt; forthcoming from whoever responded to your patch for Alpha - so I<br>
+&gt; can&#39;t compare what I&#39;m seeing with what&#39;s happening with A=
+lpha.<br>
+<br>
+That sounds like something we could fix with a quirk for function 2<br>
+in the PCI resource assignment code.=C2=A0 Can you show what vendor and<br>
+device ID function 2 has so that I could try to come up with one?<br>
+</blockquote></div>
+
+--0000000000007d960b05be21f2a0--
