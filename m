@@ -1,94 +1,71 @@
-From: Cye Borg <cyborgyn@gmail.com>
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Subject: Re: [PATCH 02/10] ARM: disable CONFIG_IDE in footbridge_defconfig
-Date: Mon, 22 Mar 2021 17:47:38 +0100
-Message-ID: <CAD4NMuYBr7m+6Zw9cmOJWMXHqNOM17RqGY8bR7itx2yq8piKcw@mail.gmail.com>
-References: <20210318045706.200458-1-hch@lst.de> <20210318045706.200458-3-hch@lst.de>
- <20210319170753.GV1463@shell.armlinux.org.uk> <20210319175311.GW1463@shell.armlinux.org.uk>
- <20210322145403.GA30942@lst.de> <20210322151503.GX1463@shell.armlinux.org.uk> <224b110e-7c42-4e19-800e-e0fa23d3bf7f@physik.fu-berlin.de>
+Date: Mon, 22 Mar 2021 16:59:56 +0000
+Message-ID: <20210322165956.GY1463@shell.armlinux.org.uk>
+References: <20210318045706.200458-1-hch@lst.de>
+ <20210318045706.200458-3-hch@lst.de>
+ <20210319170753.GV1463@shell.armlinux.org.uk>
+ <20210319175311.GW1463@shell.armlinux.org.uk>
+ <20210322145403.GA30942@lst.de>
+ <20210322151503.GX1463@shell.armlinux.org.uk>
+ <20210322151823.GA2764@lst.de>
 Mime-Version: 1.0
-Return-path: <linux-ide-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eo71V2xWro59w05Mq4CnF1xMsNUIPGze5LTw4FuXS2A=;
-        b=DLCxZ8Y9zjxqRMlu1J8/r7nzs+yb79uVYpIuUsLrMH2v7J7Of8MvDHK0SAqytIoffm
-         IAcbm21SCskZVG0eMJTr/YPMa8dHdIOU7yid/4LU7z/xIwCf9PNd33usAoL0/NQpXcnc
-         o0YIKhvIluJkw1ZSUEcZMolcs/Y8JiBAbhOynMzl2CrMOnnyCLaMxMzWF2c9Ghg1b841
-         4qb49GnPjICOYIu1Vhp19jfa+9rvWhFbBsLo/E4GW41FleypfdMdpq2n4VxGvHEZH6p5
-         YKgzKKhCPIKkHcTfK09hDujGumj2q6l0S/SugkxawOWShbvmusbIpR3FE/vb2RMokzM/
-         Dgww==
-In-Reply-To: <224b110e-7c42-4e19-800e-e0fa23d3bf7f@physik.fu-berlin.de>
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+ MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=/wzJhKM6WR08BxO9Rx9F+4jrBkWZ2G6YTLOBTI0aOD0=; b=UkTSwJFrJA41g1Jpc9MQFy2W/
+ 3nnqiHqPlY4LT6afefhGXkSe38OlG4Cj6N+5xVV14AJBJMevjOhRDBP5Y3UOkxdynEVHg/OYNa8R9
+ k1/Nszw3tb5VViTAXoO8RddWSZ2JAGCMwtfo7bPOdavpFJB531CmzgpFgVkNHM5D/nlPV8yMZMbPB
+ jx251IdjkhlJbqWh8gNG9EgWx+ciuVMhdCeGv8/y6BoKRw/c8QrVMWOfCmb5xLEBSqjRksgFiN0j7
+ oAzOcBF7RbmQ1Hf2ihsxu7hF9Hfsxg7Dzj4O0i88qDZM0GQrqiY+kBQSCFMb1WkgPYx6Cg9N9lZeE
+ hSdnyA1hg==;
+Content-Disposition: inline
+In-Reply-To: <20210322151823.GA2764@lst.de>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: Russell King - ARM Linux admin <linux@armlinux.org.uk>, Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Geert Uytterhoeven <geert@linux-m68k.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, linux-ide@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
 
-I use pata_cypress on Alpha, and for the above mentioned problems,
-it always restricted me to use only one IDE channel out of the two
-available. Also, not forcing it to use PIO mode, it always failed to
-operate. I would love to test on Alpha, and give you feedback about
-a fix/finished implementation of the driver. I have both Alpha Server DS20E
-and Alpha Personal Workstation 500 including that freak chipset.
-
-Let me know if/when I can help with my limited capabilities.
-
-btw, here is the lspci of the Compaq PWS 500au:
-snow / # lspci
-00:03.0 Ethernet controller: Digital Equipment Corporation DECchip
-21142/43 (rev 30)
-00:07.0 ISA bridge: Contaq Microsystems 82c693
-00:07.1 IDE interface: Contaq Microsystems 82c693
-00:07.2 IDE interface: Contaq Microsystems 82c693
-00:07.3 USB controller: Contaq Microsystems 82c693
-00:0b.0 Multimedia video controller: 3Dfx Interactive, Inc. Voodoo 2 (rev 02)
-00:0c.0 PCI bridge: Digital Equipment Corporation DECchip 21052 (rev 01)
-00:14.0 PCI bridge: Digital Equipment Corporation DECchip 21152 (rev 02)
-01:04.0 VGA compatible controller: Cirrus Logic GD 5430/40 [Alpine] (rev 47)
-01:05.0 Display controller: Intergraph Corporation Device 00eb (rev 40)
-02:04.0 SCSI storage controller: QLogic Corp. ISP1020 Fast-wide SCSI (rev 05)
-02:0a.0 SCSI storage controller: Broadcom / LSI 53c810 (rev 01)
-
-Thanks, best regards,
-Barnabas Viragh
-
-
-On Mon, Mar 22, 2021 at 5:10 PM John Paul Adrian Glaubitz
-<glaubitz@physik.fu-berlin.de> wrote:
->
-> On 3/22/21 4:15 PM, Russell King - ARM Linux admin wrote:
+On Mon, Mar 22, 2021 at 04:18:23PM +0100, Christoph Hellwig wrote:
+> On Mon, Mar 22, 2021 at 03:15:03PM +0000, Russell King - ARM Linux admin wrote:
+> > It gets worse than that though - due to a change to remove
+> > pcibios_min_io from the generic code, moving it into the ARM
+> > architecture code, this has caused a regression that prevents the
+> > legacy resources being registered against the bus resource. So even
+> > if they are there, they cause probe failures. I haven't found a
+> > reasonable way to solve this yet, but until there is, there is no
+> > way that the PATA driver can be used as the "legacy mode" support
+> > is effectively done via the PCI code assigning virtual IO port
+> > resources.
+> > 
 > > I'm quite surprised that the CY82C693 even works on Alpha - I've
 > > asked for a lspci for that last week but nothing has yet been
 > > forthcoming from whoever responded to your patch for Alpha - so I
 > > can't compare what I'm seeing with what's happening with Alpha.
->
-> Here is lspci on my DEC Alpha XP-1000:
->
-> root@tsunami:~> lspci
-> 0000:00:07.0 ISA bridge: Contaq Microsystems 82c693
-> 0000:00:07.1 IDE interface: Contaq Microsystems 82c693
-> 0000:00:07.2 IDE interface: Contaq Microsystems 82c693
-> 0000:00:07.3 USB controller: Contaq Microsystems 82c693
-> 0000:00:0d.0 VGA compatible controller: Texas Instruments TVP4020 [Permedia 2] (rev 01)
-> 0001:01:03.0 Ethernet controller: Digital Equipment Corporation DECchip 21142/43 (rev 41)
-> 0001:01:06.0 SCSI storage controller: QLogic Corp. ISP1020 Fast-wide SCSI (rev 06)
-> 0001:01:08.0 PCI bridge: Digital Equipment Corporation DECchip 21152 (rev 03)
-> 0001:02:09.0 Ethernet controller: Intel Corporation 82541PI Gigabit Ethernet Controller (rev 05)
-> root@tsunami:~>
->
-> It's using pata_cypress:
->
-> root@tsunami:~> lsmod|grep cypress
-> pata_cypress            3595  3
-> libata                235071  2 ata_generic,pata_cypress
-> root@tsunami:~
->
-> Adrian
->
-> --
->  .''`.  John Paul Adrian Glaubitz
-> : :' :  Debian Developer - glaubitz@debian.org
-> `. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
->   `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
->
+> 
+> That sounds like something we could fix with a quirk for function 2
+> in the PCI resource assignment code.  Can you show what vendor and
+> device ID function 2 has so that I could try to come up with one?
+
+I already have a quirk in arch/arm/kernel/bios32.c for this - but it
+is no longer sufficient due to changes in the PCI layer, where much
+of this is documented.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
