@@ -1,26 +1,30 @@
-From: Cye Borg <cyborgyn@gmail.com>
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Subject: Re: [PATCH 02/10] ARM: disable CONFIG_IDE in footbridge_defconfig
-Date: Mon, 22 Mar 2021 17:43:16 +0100
-Message-ID: <CAD4NMuY1s5kORzeYbHXNBnzb82nZobz6BqwufFqPpsLjvttnYw@mail.gmail.com>
+Date: Tue, 23 Mar 2021 14:03:03 +0000
+Message-ID: <20210323140303.GD1463@shell.armlinux.org.uk>
 References: <20210318045706.200458-1-hch@lst.de>
  <20210318045706.200458-3-hch@lst.de>
  <20210319170753.GV1463@shell.armlinux.org.uk>
  <20210319175311.GW1463@shell.armlinux.org.uk>
- <20210322145403.GA30942@lst.de> <20210322151503.GX1463@shell.armlinux.org.uk>
- <224b110e-7c42-4e19-800e-e0fa23d3bf7f@physik.fu-berlin.de>
+ <20210322145403.GA30942@lst.de>
+ <20210322151503.GX1463@shell.armlinux.org.uk>
+ <20210322151823.GA2764@lst.de> <20210322153314.GA3440@lst.de>
 Mime-Version: 1.0
-Content-Type: multipart/alternative; boundary="000000000000df0d4105be22c352"
 Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=gwquwXRPklzMHw+r3uwVbgzAP27IF7susOXw11SNkK4=;
- b=SRMRmjJRi2hGjF6XXTjCX8QaOPIVxg0nv0gAKl1R3UcNny/EdP/jyzwsx0JJ15bFOh
- CfDsiVYzd2EogFtp7Bo5su9o42UhF/ScaHyP1WFF92ooDgvQGei6h+qG2PMlkzLNOgKi
- MiMSmE+YIhLm9azuD6TECxtg/Q+ZkctiML3s/O1eMdqQGpOM6GmljvZEfY37IqhVIsxs
- N0+BTijHkEPY0/y6lQk2C4DwPhYmSpOqNm7vOjvVgwHwgwWbBYdEWb+crdwSLi+SO1tq
- NzQUHA0nd7/2qgiBl3bolNIkUzy5odAZHSKP5Kt0Cz5Pt77/ua+cz6livZhtrPGLXYIy
- GNZw==
-In-Reply-To: <224b110e-7c42-4e19-800e-e0fa23d3bf7f@physik.fu-berlin.de>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+ MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=N2uCmQ8vi2Ep5UQ3oogYPNPYrv32/jec/EyUkk8lTs8=; b=X+JdXLoQWsdpRf+AXi8/3tUI/
+ jXnKmRfCxmqfZ3epNEm5hZd6PTJjrEfchsuMTTlqSuqlwy6qnEC631sY4eZU+osiWuHRhcxdwfmBD
+ EcYvmwvWC1bY3+5djEQq4uPoU/zCK3YUQHS/90ljVFZtIVLjCNXfSahRqSQjUFj/aqr7rUZvqKCg4
+ nAFII9fQW+Yo8eMKfe/x8Vh7CDPqW0zVh4L6fCzsTfFC91VsLLsN1Nuepys1ybTCHaDv7p6juNvev
+ jSWu7nxKgl0Rmv4lCgJG2fgIHHEpOcy5Vg45Bw0aV7bKbBtPXM47Pr9bcIU6ymZXkeYIVCo3YUFhi
+ YIUU7TlWA==;
+Content-Disposition: inline
+In-Reply-To: <20210322153314.GA3440@lst.de>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
  <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
@@ -32,149 +36,98 @@ List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
 Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
 Sender: "Linuxppc-dev"
  <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: Jens Axboe <axboe@kernel.dk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, Russell King - ARM Linux admin <linux@armlinux.org.uk>, Christoph Hellwig <hch@lst.de>, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-ide@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, linuxppc-dev@lists.ozlabs.org, "David S. Miller" <davem@davemloft.net>, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>
 
---000000000000df0d4105be22c352
-Content-Type: text/plain; charset="UTF-8"
+On Mon, Mar 22, 2021 at 04:33:14PM +0100, Christoph Hellwig wrote:
+> On Mon, Mar 22, 2021 at 04:18:23PM +0100, Christoph Hellwig wrote:
+> > On Mon, Mar 22, 2021 at 03:15:03PM +0000, Russell King - ARM Linux admin wrote:
+> > > It gets worse than that though - due to a change to remove
+> > > pcibios_min_io from the generic code, moving it into the ARM
+> > > architecture code, this has caused a regression that prevents the
+> > > legacy resources being registered against the bus resource. So even
+> > > if they are there, they cause probe failures. I haven't found a
+> > > reasonable way to solve this yet, but until there is, there is no
+> > > way that the PATA driver can be used as the "legacy mode" support
+> > > is effectively done via the PCI code assigning virtual IO port
+> > > resources.
+> > > 
+> > > I'm quite surprised that the CY82C693 even works on Alpha - I've
+> > > asked for a lspci for that last week but nothing has yet been
+> > > forthcoming from whoever responded to your patch for Alpha - so I
+> > > can't compare what I'm seeing with what's happening with Alpha.
+> > 
+> > That sounds like something we could fix with a quirk for function 2
+> > in the PCI resource assignment code.  Can you show what vendor and
+> > device ID function 2 has so that I could try to come up with one?
+> 
+> Something like this:
 
-And lspci from Compaq PWS 500au:
-snow / # lspci
-00:03.0 Ethernet controller: Digital Equipment Corporation DECchip 21142/43
-(rev 30)
-00:07.0 ISA bridge: Contaq Microsystems 82c693
-00:07.1 IDE interface: Contaq Microsystems 82c693
-00:07.2 IDE interface: Contaq Microsystems 82c693
-00:07.3 USB controller: Contaq Microsystems 82c693
-00:0b.0 Multimedia video controller: 3Dfx Interactive, Inc. Voodoo 2 (rev
-02)
-00:0c.0 PCI bridge: Digital Equipment Corporation DECchip 21052 (rev 01)
-00:14.0 PCI bridge: Digital Equipment Corporation DECchip 21152 (rev 02)
-01:04.0 VGA compatible controller: Cirrus Logic GD 5430/40 [Alpine] (rev 47)
-01:05.0 Display controller: Intergraph Corporation Device 00eb (rev 40)
-02:04.0 SCSI storage controller: QLogic Corp. ISP1020 Fast-wide SCSI (rev
-05)
-02:0a.0 SCSI storage controller: Broadcom / LSI 53c810 (rev 01)
+That solves the problem for the IDE driver, which knows how to deal
+with legacy mode, but not the PATA driver, which doesn't. The PATA
+driver needs these resources.
 
-It's also using pata_cypress.
+As I say, having these resources presents a problem on ARM. A previous
+commit (3c5d1699887b) changed the way the bus resources are setup which
+results in /proc/ioports containing:
 
-Barnabas Viragh
+00000000-0000000f : dma1
+00000020-0000003f : pic1
+00000060-0000006f : i8042
+00000070-00000073 : rtc_cmos
+  00000070-00000073 : rtc0
+00000080-0000008f : dma low page
+000000a0-000000bf : pic2
+000000c0-000000df : dma2
+00000213-00000213 : ISAPnP
+000002f8-000002ff : serial8250.0
+  000002f8-000002ff : serial
+000003c0-000003df : vga+
+000003f8-000003ff : serial8250.0
+  000003f8-000003ff : serial
+00000480-0000048f : dma high page
+00000a79-00000a79 : isapnp write
+00001000-0000ffff : PCI0 I/O
+  00001000-0000107f : 0000:00:08.0
+    00001000-0000107f : 3c59x
+  00001080-0000108f : 0000:00:06.1
+  00001090-0000109f : 0000:00:07.0
+    00001090-0000109f : pata_it821x
+  000010a0-000010a7 : 0000:00:07.0
+    000010a0-000010a7 : pata_it821x
+  000010a8-000010af : 0000:00:07.0
+    000010a8-000010af : pata_it821x
+  000010b0-000010b3 : 0000:00:07.0
+    000010b0-000010b3 : pata_it821x
+  000010b4-000010b7 : 0000:00:07.0
+    000010b4-000010b7 : pata_it821x
 
-On Mon, Mar 22, 2021 at 5:10 PM John Paul Adrian Glaubitz <
-glaubitz@physik.fu-berlin.de> wrote:
+The "PCI0 I/O" resource is the bus level resource, and the legacy
+resources can not be claimed against that.
 
-> On 3/22/21 4:15 PM, Russell King - ARM Linux admin wrote:
-> > I'm quite surprised that the CY82C693 even works on Alpha - I've
-> > asked for a lspci for that last week but nothing has yet been
-> > forthcoming from whoever responded to your patch for Alpha - so I
-> > can't compare what I'm seeing with what's happening with Alpha.
->
-> Here is lspci on my DEC Alpha XP-1000:
->
-> root@tsunami:~> lspci
-> 0000:00:07.0 ISA bridge: Contaq Microsystems 82c693
-> 0000:00:07.1 IDE interface: Contaq Microsystems 82c693
-> 0000:00:07.2 IDE interface: Contaq Microsystems 82c693
-> 0000:00:07.3 USB controller: Contaq Microsystems 82c693
-> 0000:00:0d.0 VGA compatible controller: Texas Instruments TVP4020
-> [Permedia 2] (rev 01)
-> 0001:01:03.0 Ethernet controller: Digital Equipment Corporation DECchip
-> 21142/43 (rev 41)
-> 0001:01:06.0 SCSI storage controller: QLogic Corp. ISP1020 Fast-wide SCSI
-> (rev 06)
-> 0001:01:08.0 PCI bridge: Digital Equipment Corporation DECchip 21152 (rev
-> 03)
-> 0001:02:09.0 Ethernet controller: Intel Corporation 82541PI Gigabit
-> Ethernet Controller (rev 05)
-> root@tsunami:~>
->
-> It's using pata_cypress:
->
-> root@tsunami:~> lsmod|grep cypress
-> pata_cypress            3595  3
-> libata                235071  2 ata_generic,pata_cypress
-> root@tsunami:~
->
-> Adrian
->
-> --
->  .''`.  John Paul Adrian Glaubitz
-> : :' :  Debian Developer - glaubitz@debian.org
-> `. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
->   `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
->
->
+Without these resources, the PATA cypress driver doesn't work.
 
---000000000000df0d4105be22c352
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+As I said previously, the reason this regression was not picked up
+earlier is because I don't upgrade the kernel on this machine very
+often; the machine has had uptimes into thousands of days.
 
-<div dir=3D"ltr"><div>And lspci from Compaq PWS 500au:</div><div>snow / # l=
-spci<br>00:03.0 Ethernet controller: Digital Equipment Corporation DECchip =
-21142/43 (rev 30)<br>00:07.0 ISA bridge: Contaq Microsystems 82c693<br>00:0=
-7.1 IDE interface: Contaq Microsystems 82c693<br>00:07.2 IDE interface: Con=
-taq Microsystems 82c693<br>00:07.3 USB controller: Contaq Microsystems 82c6=
-93<br>00:0b.0 Multimedia video controller: 3Dfx Interactive, Inc. Voodoo 2 =
-(rev 02)<br>00:0c.0 PCI bridge: Digital Equipment Corporation DECchip 21052=
- (rev 01)<br>00:14.0 PCI bridge: Digital Equipment Corporation DECchip 2115=
-2 (rev 02)<br>01:04.0 VGA compatible controller: Cirrus Logic GD 5430/40 [A=
-lpine] (rev 47)<br>01:05.0 Display controller: Intergraph Corporation Devic=
-e 00eb (rev 40)<br>02:04.0 SCSI storage controller: QLogic Corp. ISP1020 Fa=
-st-wide SCSI (rev 05)<br>02:0a.0 SCSI storage controller: Broadcom / LSI 53=
-c810 (rev 01)</div><div><br></div><div>It&#39;s also using pata_cypress.</d=
-iv><div><br></div><div>Barnabas Viragh<br></div></div><br><div class=3D"gma=
-il_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Mon, Mar 22, 2021 at 5:1=
-0 PM John Paul Adrian Glaubitz &lt;<a href=3D"mailto:glaubitz@physik.fu-ber=
-lin.de">glaubitz@physik.fu-berlin.de</a>&gt; wrote:<br></div><blockquote cl=
-ass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid=
- rgb(204,204,204);padding-left:1ex">On 3/22/21 4:15 PM, Russell King - ARM =
-Linux admin wrote:<br>
-&gt; I&#39;m quite surprised that the CY82C693 even works on Alpha - I&#39;=
-ve<br>
-&gt; asked for a lspci for that last week but nothing has yet been<br>
-&gt; forthcoming from whoever responded to your patch for Alpha - so I<br>
-&gt; can&#39;t compare what I&#39;m seeing with what&#39;s happening with A=
-lpha.<br>
-<br>
-Here is lspci on my DEC Alpha XP-1000:<br>
-<br>
-root@tsunami:~&gt; lspci<br>
-0000:00:07.0 ISA bridge: Contaq Microsystems 82c693<br>
-0000:00:07.1 IDE interface: Contaq Microsystems 82c693<br>
-0000:00:07.2 IDE interface: Contaq Microsystems 82c693<br>
-0000:00:07.3 USB controller: Contaq Microsystems 82c693<br>
-0000:00:0d.0 VGA compatible controller: Texas Instruments TVP4020 [Permedia=
- 2] (rev 01)<br>
-0001:01:03.0 Ethernet controller: Digital Equipment Corporation DECchip 211=
-42/43 (rev 41)<br>
-0001:01:06.0 SCSI storage controller: QLogic Corp. ISP1020 Fast-wide SCSI (=
-rev 06)<br>
-0001:01:08.0 PCI bridge: Digital Equipment Corporation DECchip 21152 (rev 0=
-3)<br>
-0001:02:09.0 Ethernet controller: Intel Corporation 82541PI Gigabit Etherne=
-t Controller (rev 05)<br>
-root@tsunami:~&gt;<br>
-<br>
-It&#39;s using pata_cypress:<br>
-<br>
-root@tsunami:~&gt; lsmod|grep cypress<br>
-pata_cypress=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 3595=C2=A0 3<br>
-libata=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 235071=C2=A0 =
-2 ata_generic,pata_cypress<br>
-root@tsunami:~<br>
-<br>
-Adrian<br>
-<br>
--- <br>
-=C2=A0.&#39;&#39;`.=C2=A0 John Paul Adrian Glaubitz<br>
-: :&#39; :=C2=A0 Debian Developer - <a href=3D"mailto:glaubitz@debian.org" =
-target=3D"_blank">glaubitz@debian.org</a><br>
-`. `&#39;=C2=A0 =C2=A0Freie Universitaet Berlin - <a href=3D"mailto:glaubit=
-z@physik.fu-berlin.de" target=3D"_blank">glaubitz@physik.fu-berlin.de</a><b=
-r>
-=C2=A0 `-=C2=A0 =C2=A0 GPG: 62FF 8A75 84E0 2956 9546=C2=A0 0006 7426 3B37 F=
-5B5 F913<br>
-<br>
-</blockquote></div>
+I need to try reverting Rob's commit to find out if anything breaks
+on this platform - it's completely wrong from a technical point of
+view for any case where we have a PCI southbridge, since the
+southbridge provides ISA based resources. I'm not entirely sure
+what the point of it was, since we still have the PCIBIOS_MIN_IO
+macro which still uses pcibios_min_io.
 
---000000000000df0d4105be22c352--
+I'm looking at some of the other changes Rob made back at that time
+which also look wrong, such as 8ef6e6201b26 which has the effect of
+locating the 21285 IO resources to PCI address 0, over the top of
+the ISA southbridge resources. I've no idea what Rob was thinking
+when he removed the csrio allocation code in that commit, but
+looking at it to day, it's soo obviously wrong even to a casual
+glance.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
