@@ -1,33 +1,49 @@
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: Re: X11 system lockup with 5.11.0 kernel
-Date: Wed, 31 Mar 2021 11:04:42 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.2103311059480.18977@angie.orcam.me.uk>
-References: <YFtRTqxFhXfs7r9a@gherkin.frus.com> <YF1k+3462hOXkI6d@gherkin.frus.com>
+From: Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH v2] mm: Move mem_init_print_info() into mm_init()
+Date: Wed, 31 Mar 2021 12:28:57 +0300
+Message-ID: <YGRA2SU28yciN9xU@kernel.org>
+References: <4d488195-7281-9238-b30d-9f89a6100fb9@csgroup.eu>
+ <20210317015210.33641-1-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <YF1k+3462hOXkI6d@gherkin.frus.com>
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1617182952;
+ bh=aMxacYx0WSuYSq+RvcHg7XLnuWTcQHWfWM2hCy7hYJU=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=ZilpE/CgLvY3Nm3hLeCdPrSzQ0bka0Q/xAMzoDxoKT2sksg/+xdgw70lbIQlKRH9q
+ HQM7q1tR3SOaufoC3EF8clnG+n8fTsUXBRqFIqRReR3kDRE9b5+HETaEN2azemUCyN
+ +dywdbjbEuNLM1pOQ9fKcI8/BlabXbx6EDZQjXTlXZiHlwJBGfmHuNxznBzTG2bJFd
+ nNykz3YpDvfjp1B8PgDSj0QLp5Bc0UJEz3WtQfw8cmvL2FnE443FSPWgxCOoGmWTX7
+ urjc5s1XzZrXM3ARPcSSDIS4mEkSxEnbcwd3SAssAB5TkbJXQ91S3vF7J6sARmo8bJ
+ QvnQEWfFitvHA==
+Content-Disposition: inline
+In-Reply-To: <20210317015210.33641-1-wangkefeng.wang@huawei.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bob Tracy <rct@frus.com>
-Cc: debian-alpha@lists.debian.org, mcree@orcon.net.nz, linux-alpha@vger.kernel.org
+To: Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org, linux-mm@kvack.org, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-hexagon@vger.kernel.org, Huacai Chen <chenhuacai@kernel.org>, Russell King <linux@armlinux.org.uk>, linux-csky@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, linux-snps-arc@lists.infradead.org, linux-xtensa@linux-xtensa.org, Heiko Carstens <hca@linux.ibm.com>, linux-um@lists.infradead.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, linux-parisc@vger.kern
 
-On Thu, 25 Mar 2021, Bob Tracy wrote:
-
-> > Everything worked as well as it's going to for kernel versions up
-> > through v5.10.0.  When I boot on v5.11.0, "lightdm" starts, the screen
-> > goes blank as usual, I get a mouse pointer as usual, and shortly after
-> > that, the system locks up solid (completely nonresponsive except for
-> > being able to ping it -- can't login remotely).  Recovery is via the
-> > reset switch at that point :-(.
-> > (...)
+On Wed, Mar 17, 2021 at 09:52:10AM +0800, Kefeng Wang wrote:
+> mem_init_print_info() is called in mem_init() on each architecture,
+> and pass NULL argument, so using void argument and move it into mm_init().
 > 
-> Same results for 5.12.0-rc4 kernel.
+> Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 
- I think the only feasible way of determining what has happened here is 
-that you track the offending change down by bisecting the upstream kernel 
-repository with `git bisect'.  Once you have it someone may help, either 
-the author of the change, or the relevant maintainer, or someone else at 
-<linux-kernel@vger.kernel.org>.
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
 
-  Maciej
+> ---
+> v2:
+> - Cleanup 'str' line suggested by Christophe and ACK
+> 
