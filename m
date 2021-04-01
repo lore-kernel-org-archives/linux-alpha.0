@@ -1,49 +1,59 @@
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH v2] mm: Move mem_init_print_info() into mm_init()
-Date: Wed, 31 Mar 2021 10:34:22 +0100
-Message-ID: <20210331093422.GU1463@shell.armlinux.org.uk>
-References: <4d488195-7281-9238-b30d-9f89a6100fb9@csgroup.eu>
- <20210317015210.33641-1-wangkefeng.wang@huawei.com>
+From: Liam Howlett <liam.howlett@oracle.com>
+Subject: [PATCH] alpha/kernel/traps: Use find_vma_intersection() in traps for
+ setting si_code
+Date: Thu, 1 Apr 2021 19:51:48 +0000
+Message-ID: <20210401195138.2895285-1-Liam.Howlett@Oracle.com>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
- MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
- List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=g5jil2A5p1wkLzsVeTmgtclSOGELktvkEXEKlZIjYVg=; b=XiJ+OxK9qQFp9pb3iCkwBlOXp
- SMJ3LhDQZ76ImMGs1+23oQ/WioU0hWz9YYebFqQSGNvQ9UoNd6HpZZO1Sjlw6ufxhQGjsXhlyq1yL
- Rg135ndoOTaxrliAkRSdtcBfX2vfDfUyJu5lpt9Qx1ISZiGbjOFZL9lbJbIgPizvs5nTWoRI4FLnx
- IITtjbSu3y+aMQU0qpykWL/nQFeQEL15bN2ggOwffKUuT89Wrfg/HzYa88LdxJKrx3C6YUip0LQa6
- pzMLGWk3w8Fc3V7dXGDMahXGdpM/gmApUuTa+Zg5+b0cW019JI5maq8g7N3s6BN2W+w/Or1ItM82H
- Rqn3lcuqg==;
-Content-Disposition: inline
-In-Reply-To: <20210317015210.33641-1-wangkefeng.wang@huawei.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane-mx.org@lists.ozlabs.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=corp-2020-01-29;
+ bh=u2CBiOhBGly3kAwQNXmCmHyNix/LtTyhVCxqW+hoE5o=;
+ b=iD/72yvMYHt5Cj4Eety16AmJPD3m8qdHZaNr4AX+QtbJ2IGoc9WqVh4/59XFIFPl59SE
+ Dwr83DPOGvBTJuUFbeIuWeediGjDvr7f4tt4NA/a24nmyUnjdfxQxc0/07np4AGMRXWu
+ akeFU2zrPI6H3K5UZQqg+W3XNq1YEZRMOrHjFuDtEZSHPr2EsmtkMWUoouCR+p9gCe7w
+ YRAmQSKPjv0OuVQur93gwLyiFWUWK+mZY667y6tdFy0ZGSPGJtlHRJtJqWB3uMCzYzjb
+ Vrz2JeZ8025nPFipn/Sx2vUPJLGCgCllF5Ds7HY7aszr1uOC1nejIOnDPDovnvfKY6x7 bQ== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u2CBiOhBGly3kAwQNXmCmHyNix/LtTyhVCxqW+hoE5o=;
+ b=z6TiXC9vjLxq6jt7Mk3M1xD8u1LwcDEWR9Y1uo8d8rI9q6DmQ4Cso9c1XETHNaKqtL3kRhJBta2nRbcluWo+zMCtwIu//AxsrczfPyzfCa3h+LedZS6vAspSEfVYxRhIkYmYbrYzGPPip+LRGT+N3NA0nYfcn/JNURbAqsdhn/I=
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org, linux-mm@kvack.org, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-hexagon@vger.kernel.org, Huacai Chen <chenhuacai@kernel.org>, linux-csky@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, linux-snps-arc@lists.infradead.org, linux-xtensa@linux-xtensa.org, Heiko Carstens <hca@linux.ibm.com>, linux-um@lists.infradead.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-arm-kernel@lists.infradead.org, Richard Henderson <rth@twiddle.net>, linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, Liam Howlett <liam.howlett@oracle.com>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Dmitry Safonov <0x7f454c46@gmail.com>, Michel Lespinasse <walken@google.com>, "Gustavo A . R . Silva" <gustavoars@kernel.org>
 
-On Wed, Mar 17, 2021 at 09:52:10AM +0800, Kefeng Wang wrote:
-> mem_init_print_info() is called in mem_init() on each architecture,
-> and pass NULL argument, so using void argument and move it into mm_init().
-> 
-> Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+find_vma() will continue to search upwards until the end of the virtual
+memory space.  This means the si_code would almost never be set to
+SEGV_MAPERR even when the address falls outside of any VMA.
 
-Acked-by: Russell King <rmk+kernel@armlinux.org.uk> # for arm bits
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Using find_vma_intersection() allows for what is intended by only
+returning a VMA if it falls within the range provided, in this case a
+window of 1.
+
+Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+---
+ arch/alpha/kernel/traps.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index 921d4b6e4d95..7f51386c06d0 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -957,8 +957,10 @@ do_entUnaUser(void __user * va, unsigned long opcode,
+ 		si_code =3D SEGV_ACCERR;
+ 	else {
+ 		struct mm_struct *mm =3D current->mm;
++		unsigned long addr =3D (unsigned long)va;
++
+ 		mmap_read_lock(mm);
+-		if (find_vma(mm, (unsigned long)va))
++		if (find_vma_intersection(mm, addr, addr + 1))
+ 			si_code =3D SEGV_ACCERR;
+ 		else
+ 			si_code =3D SEGV_MAPERR;
+--=20
+2.30.0
