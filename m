@@ -1,155 +1,971 @@
-From: David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH v1 2/5] mm/madvise: introduce MADV_POPULATE_(READ|WRITE)
- to prefault/prealloc memory
-Date: Wed, 7 Apr 2021 12:31:11 +0200
-Message-ID: <5f49b60c-957d-8cb4-de7a-7c855dc72942@redhat.com>
-References: <20210317110644.25343-1-david@redhat.com>
- <20210317110644.25343-3-david@redhat.com>
- <CAG48ez0BQ3Vd3nDLEvyiSU0XALgUQ=c-fAwcFVScUkgo_9qVuQ@mail.gmail.com>
- <2bab28c7-08c0-7ff0-c70e-9bf94da05ce1@redhat.com>
- <CAG48ez20rLRNPZj6hLHQ_PLT8H60kTac-uXRiLByD70Q7+qsdQ@mail.gmail.com>
- <26227fc6-3e7b-4e69-f69d-4dc2a67ecfe8@redhat.com>
- <54165ffe-dbf7-377a-a710-d15be4701f20@redhat.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/1] kernel.h: Split out panic and oops helpers
+Date: Fri,  9 Apr 2021 13:02:50 +0300
+Message-ID: <20210409100250.25922-1-andriy.shevchenko__47811.194839754$1617962850$gmane$org@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617791497;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nJSxvPf+2fQxpcou71SA/t4hQw4etrSkU0eumEfbqCc=;
-        b=NI6ODgu1MmOPKY8PDp/Bgak3yGjHnqcRNLZUHeluhPts6r0VEd/2K5JIz4qPs1nqwpuuEE
-        nt+ojN18KMpaVGaRHNJACqUiRuADurvoRfRk/lL0mVbJ2KY/xxTe14UBmwFveS304Pgx3w
-        au3YkvCqPBFixnLmKCEbtwih7Wabf4I=
-In-Reply-To: <54165ffe-dbf7-377a-a710-d15be4701f20@redhat.com>
-Content-Language: en-US
+Return-path: <linux-alpha-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Jann Horn <jannh@google.com>
-Cc: kernel list <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Michal Hocko <mhocko@suse.com>, Oscar Salvador <osalvador@suse.de>, Matthew Wilcox <willy@infradead.org>, Andrea Arcangeli <aarcange@redhat.com>, Minchan Kim <minchan@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Dave Hansen <dave.hansen@intel.com>, Hugh Dickins <hughd@google.com>, Rik van Riel <riel@surriel.com>, "Michael S . Tsirkin" <mst@redhat.com>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franke>
+Content-Type: text/plain; charset="us-ascii"
+To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Alexander Lobakin <alobakin@pm.me>, Wei Liu <wei.liu@kernel.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Arnd Bergmann <arnd@arndb.de>, Bjorn Andersson <bjorn.andersson@linaro.org>, Christian Brauner <christian.brauner@ubuntu.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Kees Cook <keescook@chromium.org>, Mike Rapoport <rppt@kernel.org>, Corey Minyard <cminyard@mvista.com>, Michael Ellerman <mpe@ellerman.id.au>, Vasily Gorbik <gor@linux.ibm.com>, "Jason J. Herne" <jjherne@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>, Michael Kelley <mikelley@microsoft.com>, Joe Perches <joe@perches.com>, Florian Fainelli <f.fainelli@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Christian Borntraeger <borntraeger@de.ibm.com>, "David S. Miller" <davem@davemloft.net>, Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, "K. Y. Srinivasan" <kys@microsoft.>
 
-On 30.03.21 18:31, David Hildenbrand wrote:
-> On 30.03.21 18:30, David Hildenbrand wrote:
->> On 30.03.21 18:21, Jann Horn wrote:
->>> On Tue, Mar 30, 2021 at 5:01 PM David Hildenbrand <david@redhat.com> wrote:
->>>>>> +long faultin_vma_page_range(struct vm_area_struct *vma, unsigned long start,
->>>>>> +                           unsigned long end, bool write, int *locked)
->>>>>> +{
->>>>>> +       struct mm_struct *mm = vma->vm_mm;
->>>>>> +       unsigned long nr_pages = (end - start) / PAGE_SIZE;
->>>>>> +       int gup_flags;
->>>>>> +
->>>>>> +       VM_BUG_ON(!PAGE_ALIGNED(start));
->>>>>> +       VM_BUG_ON(!PAGE_ALIGNED(end));
->>>>>> +       VM_BUG_ON_VMA(start < vma->vm_start, vma);
->>>>>> +       VM_BUG_ON_VMA(end > vma->vm_end, vma);
->>>>>> +       mmap_assert_locked(mm);
->>>>>> +
->>>>>> +       /*
->>>>>> +        * FOLL_HWPOISON: Return -EHWPOISON instead of -EFAULT when we hit
->>>>>> +        *                a poisoned page.
->>>>>> +        * FOLL_POPULATE: Always populate memory with VM_LOCKONFAULT.
->>>>>> +        * !FOLL_FORCE: Require proper access permissions.
->>>>>> +        */
->>>>>> +       gup_flags = FOLL_TOUCH | FOLL_POPULATE | FOLL_MLOCK | FOLL_HWPOISON;
->>>>>> +       if (write)
->>>>>> +               gup_flags |= FOLL_WRITE;
->>>>>> +
->>>>>> +       /*
->>>>>> +        * See check_vma_flags(): Will return -EFAULT on incompatible mappings
->>>>>> +        * or with insufficient permissions.
->>>>>> +        */
->>>>>> +       return __get_user_pages(mm, start, nr_pages, gup_flags,
->>>>>> +                               NULL, NULL, locked);
->>>>>
->>>>> You mentioned in the commit message that you don't want to actually
->>>>> dirty all the file pages and force writeback; but doesn't
->>>>> POPULATE_WRITE still do exactly that? In follow_page_pte(), if
->>>>> FOLL_TOUCH and FOLL_WRITE are set, we mark the page as dirty:
->>>>
->>>> Well, I mention that POPULATE_READ explicitly doesn't do that. I
->>>> primarily set it because populate_vma_page_range() also sets it.
->>>>
->>>> Is it safe to *not* set it? IOW, fault something writable into a page
->>>> table (where the CPU could dirty it without additional page faults)
->>>> without marking it accessed? For me, this made logically sense. Thus I
->>>> also understood why populate_vma_page_range() set it.
->>>
->>> FOLL_TOUCH doesn't have anything to do with installing the PTE - it
->>> essentially means "the caller of get_user_pages wants to read/write
->>> the contents of the returned page, so please do the same things you
->>> would do if userspace was accessing the page". So in particular, if
->>> you look up a page via get_user_pages() with FOLL_WRITE|FOLL_TOUCH,
->>> that tells the MM subsystem "I will be writing into this page directly
->>> from the kernel, bypassing the userspace page tables, so please mark
->>> it as dirty now so that it will be properly written back later". Part
->>> of that is that it marks the page as recently used, which has an
->>> effect on LRU pageout behavior, I think - as far as I understand, that
->>> is why populate_vma_page_range() uses FOLL_TOUCH.
->>>
->>> If you look at __get_user_pages(), you can see that it is split up
->>> into two major parts: faultin_page() for creating PTEs, and
->>> follow_page_mask() for grabbing pages from PTEs. faultin_page()
->>> ignores FOLL_TOUCH completely; only follow_page_mask() uses it.
->>>
->>> In a way I guess maybe you do want the "mark as recently accessed"
->>> part that FOLL_TOUCH would give you without FOLL_WRITE? But I think
->>> you very much don't want the dirtying that FOLL_TOUCH|FOLL_WRITE leads
->>> to. Maybe the ideal approach would be to add a new FOLL flag to say "I
->>> only want to mark as recently used, I don't want to dirty". Or maybe
->>> it's enough to just leave out the FOLL_TOUCH entirely, I don't know.
->>
->> Any thoughts why populate_vma_page_range() does it?
-> 
-> Sorry, I missed the explanation above - thanks!
+kernel.h is being used as a dump for all kinds of stuff for a long time.
+Here is the attempt to start cleaning it up by splitting out panic and
+oops helpers.
 
-Looking into the details, adjusting the FOLL_TOUCH logic won't make too 
-much of a difference for MADV_POPULATE_WRITE I guess. AFAIKs, the 
-biggest impact of FOLL_TOUCH is actually with FOLL_FORCE - which we are 
-not using, but populate_vma_page_range() is.
+There are several purposes of doing this:
+- dropping dependency in bug.h
+- dropping a loop by moving out panic_notifier.h
+- unload kernel.h from something which has its own domain
 
+At the same time convert users tree-wide to use new headers, although
+for the time being include new header back to kernel.h to avoid twisted
+indirected includes for existing users.
 
-If a page was not faulted in yet, 
-faultin_page(FOLL_WRITE)->handle_mm_fault(FAULT_FLAG_WRITE) will already 
-mark the PTE/PMD/... dirty and accessed. One example is 
-handle_pte_fault(). We will mark the page accessed again via FOLL_TOUCH, 
-which doesn't seem to be strictly required.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Acked-by: Mike Rapoport <rppt@linux.ibm.com>
+Acked-by: Corey Minyard <cminyard@mvista.com>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Kees Cook <keescook@chromium.org>
+Acked-by: Wei Liu <wei.liu@kernel.org>
+Acked-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+v2:
+ - fixed all errors with allmodconfig on x86_64 (Andrew)
+ - checked with allyesconfig on x86_64
+ - additionally grepped source code for panic notifier list usage
+   and converted all users
+ - elaborated commit message (Luis)
+ - collected given tags (incl. Andrew's SoB, see below)
 
+I added Andrew's SoB since part of the fixes I took from him. Andrew,
+feel free to amend or tell me how you want me to do.
 
-If the page was already faulted in, we have three cases:
+ arch/alpha/kernel/setup.c                     |  2 +-
+ arch/arm64/kernel/setup.c                     |  1 +
+ arch/mips/kernel/relocate.c                   |  1 +
+ arch/mips/sgi-ip22/ip22-reset.c               |  1 +
+ arch/mips/sgi-ip32/ip32-reset.c               |  1 +
+ arch/parisc/kernel/pdc_chassis.c              |  1 +
+ arch/powerpc/kernel/setup-common.c            |  1 +
+ arch/s390/kernel/ipl.c                        |  1 +
+ arch/sparc/kernel/sstate.c                    |  1 +
+ arch/um/drivers/mconsole_kern.c               |  1 +
+ arch/um/kernel/um_arch.c                      |  1 +
+ arch/x86/include/asm/desc.h                   |  1 +
+ arch/x86/kernel/cpu/mshyperv.c                |  1 +
+ arch/x86/kernel/setup.c                       |  1 +
+ arch/x86/purgatory/purgatory.c                |  2 +
+ arch/x86/xen/enlighten.c                      |  1 +
+ arch/xtensa/platforms/iss/setup.c             |  1 +
+ drivers/bus/brcmstb_gisb.c                    |  1 +
+ drivers/char/ipmi/ipmi_msghandler.c           |  1 +
+ drivers/clk/analogbits/wrpll-cln28hpc.c       |  4 +
+ drivers/edac/altera_edac.c                    |  1 +
+ drivers/firmware/google/gsmi.c                |  1 +
+ drivers/hv/vmbus_drv.c                        |  1 +
+ .../hwtracing/coresight/coresight-cpu-debug.c |  1 +
+ drivers/leds/trigger/ledtrig-activity.c       |  1 +
+ drivers/leds/trigger/ledtrig-heartbeat.c      |  1 +
+ drivers/leds/trigger/ledtrig-panic.c          |  1 +
+ drivers/misc/bcm-vk/bcm_vk_dev.c              |  1 +
+ drivers/misc/ibmasm/heartbeat.c               |  1 +
+ drivers/misc/pvpanic/pvpanic.c                |  1 +
+ drivers/net/ipa/ipa_smp2p.c                   |  1 +
+ drivers/parisc/power.c                        |  1 +
+ drivers/power/reset/ltc2952-poweroff.c        |  1 +
+ drivers/remoteproc/remoteproc_core.c          |  1 +
+ drivers/s390/char/con3215.c                   |  1 +
+ drivers/s390/char/con3270.c                   |  1 +
+ drivers/s390/char/sclp.c                      |  1 +
+ drivers/s390/char/sclp_con.c                  |  1 +
+ drivers/s390/char/sclp_vt220.c                |  1 +
+ drivers/s390/char/zcore.c                     |  1 +
+ drivers/soc/bcm/brcmstb/pm/pm-arm.c           |  1 +
+ drivers/staging/olpc_dcon/olpc_dcon.c         |  1 +
+ drivers/video/fbdev/hyperv_fb.c               |  1 +
+ include/asm-generic/bug.h                     |  3 +-
+ include/linux/kernel.h                        | 84 +---------------
+ include/linux/panic.h                         | 98 +++++++++++++++++++
+ include/linux/panic_notifier.h                | 12 +++
+ kernel/hung_task.c                            |  1 +
+ kernel/kexec_core.c                           |  1 +
+ kernel/panic.c                                |  1 +
+ kernel/rcu/tree.c                             |  2 +
+ kernel/sysctl.c                               |  1 +
+ kernel/trace/trace.c                          |  1 +
+ 53 files changed, 167 insertions(+), 85 deletions(-)
+ create mode 100644 include/linux/panic.h
+ create mode 100644 include/linux/panic_notifier.h
 
-1. Page faulted in writable. The page should already be dirty (otherwise 
-we would be in trouble I guess). We will mark it accessed.
-
-2. Page faulted in readable. handle_mm_fault() will fault it in writable 
-and set the page dirty.
-
-3. Page faulted in readable and we have FOLL_FORCE. We mark the page 
-dirty and accessed.
-
-
-So doing a MADV_POPULATE_WRITE, whereby we prefault page tables 
-writable, doesn't seem to fly without marking the pages dirty. That's 
-one reason why I included MADV_POPULATE_READ.
-
-We could
-
-a) Drop FOLL_TOUCH. We are not marking the page accessed, which would 
-mean it gets evicted rather earlier than later.
-
-b) Introduce FOLL_ACCESSED which won't do the dirtying. But then, the 
-pages are already dirty as explained above, so there isn't a real 
-observable change.
-
-c) Keep it as is: Mark the page accessed and dirty. As it's already 
-dirty, that does not seem to be a real issue.
-
-Am I missing something obvious? Thanks!
-
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index 03dda3beb3bd..5d1296534682 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -28,6 +28,7 @@
+ #include <linux/init.h>
+ #include <linux/string.h>
+ #include <linux/ioport.h>
++#include <linux/panic_notifier.h>
+ #include <linux/platform_device.h>
+ #include <linux/memblock.h>
+ #include <linux/pci.h>
+@@ -46,7 +47,6 @@
+ #include <linux/log2.h>
+ #include <linux/export.h>
+ 
+-extern struct atomic_notifier_head panic_notifier_list;
+ static int alpha_panic_event(struct notifier_block *, unsigned long, void *);
+ static struct notifier_block alpha_panic_block = {
+ 	alpha_panic_event,
+diff --git a/arch/arm64/kernel/setup.c b/arch/arm64/kernel/setup.c
+index 61845c0821d9..787bc0f601b3 100644
+--- a/arch/arm64/kernel/setup.c
++++ b/arch/arm64/kernel/setup.c
+@@ -23,6 +23,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/smp.h>
+ #include <linux/fs.h>
++#include <linux/panic_notifier.h>
+ #include <linux/proc_fs.h>
+ #include <linux/memblock.h>
+ #include <linux/of_fdt.h>
+diff --git a/arch/mips/kernel/relocate.c b/arch/mips/kernel/relocate.c
+index 499a5357c09f..56b51de2dc51 100644
+--- a/arch/mips/kernel/relocate.c
++++ b/arch/mips/kernel/relocate.c
+@@ -18,6 +18,7 @@
+ #include <linux/kernel.h>
+ #include <linux/libfdt.h>
+ #include <linux/of_fdt.h>
++#include <linux/panic_notifier.h>
+ #include <linux/sched/task.h>
+ #include <linux/start_kernel.h>
+ #include <linux/string.h>
+diff --git a/arch/mips/sgi-ip22/ip22-reset.c b/arch/mips/sgi-ip22/ip22-reset.c
+index c374f3ceec38..9028dbbb45dd 100644
+--- a/arch/mips/sgi-ip22/ip22-reset.c
++++ b/arch/mips/sgi-ip22/ip22-reset.c
+@@ -12,6 +12,7 @@
+ #include <linux/kernel.h>
+ #include <linux/sched/signal.h>
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include <linux/pm.h>
+ #include <linux/timer.h>
+ 
+diff --git a/arch/mips/sgi-ip32/ip32-reset.c b/arch/mips/sgi-ip32/ip32-reset.c
+index 20d8637340be..18d1c115cd53 100644
+--- a/arch/mips/sgi-ip32/ip32-reset.c
++++ b/arch/mips/sgi-ip32/ip32-reset.c
+@@ -12,6 +12,7 @@
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/panic_notifier.h>
+ #include <linux/sched.h>
+ #include <linux/sched/signal.h>
+ #include <linux/notifier.h>
+diff --git a/arch/parisc/kernel/pdc_chassis.c b/arch/parisc/kernel/pdc_chassis.c
+index 75ae88d13909..da154406d368 100644
+--- a/arch/parisc/kernel/pdc_chassis.c
++++ b/arch/parisc/kernel/pdc_chassis.c
+@@ -20,6 +20,7 @@
+ #include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/notifier.h>
+ #include <linux/cache.h>
+diff --git a/arch/powerpc/kernel/setup-common.c b/arch/powerpc/kernel/setup-common.c
+index 74a98fff2c2f..046fe21b5c3b 100644
+--- a/arch/powerpc/kernel/setup-common.c
++++ b/arch/powerpc/kernel/setup-common.c
+@@ -9,6 +9,7 @@
+ #undef DEBUG
+ 
+ #include <linux/export.h>
++#include <linux/panic_notifier.h>
+ #include <linux/string.h>
+ #include <linux/sched.h>
+ #include <linux/init.h>
+diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
+index 7a21eca498aa..e0b675dd7080 100644
+--- a/arch/s390/kernel/ipl.c
++++ b/arch/s390/kernel/ipl.c
+@@ -13,6 +13,7 @@
+ #include <linux/init.h>
+ #include <linux/device.h>
+ #include <linux/delay.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/ctype.h>
+ #include <linux/fs.h>
+diff --git a/arch/sparc/kernel/sstate.c b/arch/sparc/kernel/sstate.c
+index ac8677c3841e..3bcc4ddc6911 100644
+--- a/arch/sparc/kernel/sstate.c
++++ b/arch/sparc/kernel/sstate.c
+@@ -6,6 +6,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/init.h>
+ 
+diff --git a/arch/um/drivers/mconsole_kern.c b/arch/um/drivers/mconsole_kern.c
+index 6d00af25ec6b..328b16f99b30 100644
+--- a/arch/um/drivers/mconsole_kern.c
++++ b/arch/um/drivers/mconsole_kern.c
+@@ -12,6 +12,7 @@
+ #include <linux/mm.h>
+ #include <linux/module.h>
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/sched/debug.h>
+ #include <linux/proc_fs.h>
+diff --git a/arch/um/kernel/um_arch.c b/arch/um/kernel/um_arch.c
+index 74e07e748a9b..9512253947d5 100644
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -7,6 +7,7 @@
+ #include <linux/init.h>
+ #include <linux/mm.h>
+ #include <linux/module.h>
++#include <linux/panic_notifier.h>
+ #include <linux/seq_file.h>
+ #include <linux/string.h>
+ #include <linux/utsname.h>
+diff --git a/arch/x86/include/asm/desc.h b/arch/x86/include/asm/desc.h
+index 476082a83d1c..ceb12683b6d1 100644
+--- a/arch/x86/include/asm/desc.h
++++ b/arch/x86/include/asm/desc.h
+@@ -9,6 +9,7 @@
+ #include <asm/irq_vectors.h>
+ #include <asm/cpu_entry_area.h>
+ 
++#include <linux/debug_locks.h>
+ #include <linux/smp.h>
+ #include <linux/percpu.h>
+ 
+diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+index 22f13343b5da..9e5c6f2b044d 100644
+--- a/arch/x86/kernel/cpu/mshyperv.c
++++ b/arch/x86/kernel/cpu/mshyperv.c
+@@ -17,6 +17,7 @@
+ #include <linux/irq.h>
+ #include <linux/kexec.h>
+ #include <linux/i8253.h>
++#include <linux/panic_notifier.h>
+ #include <linux/random.h>
+ #include <asm/processor.h>
+ #include <asm/hypervisor.h>
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 59e5e0903b0c..570699eecf90 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -14,6 +14,7 @@
+ #include <linux/initrd.h>
+ #include <linux/iscsi_ibft.h>
+ #include <linux/memblock.h>
++#include <linux/panic_notifier.h>
+ #include <linux/pci.h>
+ #include <linux/root_dev.h>
+ #include <linux/hugetlb.h>
+diff --git a/arch/x86/purgatory/purgatory.c b/arch/x86/purgatory/purgatory.c
+index f03b64d9cb51..7558139920f8 100644
+--- a/arch/x86/purgatory/purgatory.c
++++ b/arch/x86/purgatory/purgatory.c
+@@ -9,6 +9,8 @@
+  */
+ 
+ #include <linux/bug.h>
++#include <linux/kernel.h>
++#include <linux/types.h>
+ #include <crypto/sha2.h>
+ #include <asm/purgatory.h>
+ 
+diff --git a/arch/x86/xen/enlighten.c b/arch/x86/xen/enlighten.c
+index aa9f50fccc5d..c79bd0af2e8c 100644
+--- a/arch/x86/xen/enlighten.c
++++ b/arch/x86/xen/enlighten.c
+@@ -6,6 +6,7 @@
+ #include <linux/cpu.h>
+ #include <linux/kexec.h>
+ #include <linux/slab.h>
++#include <linux/panic_notifier.h>
+ 
+ #include <xen/xen.h>
+ #include <xen/features.h>
+diff --git a/arch/xtensa/platforms/iss/setup.c b/arch/xtensa/platforms/iss/setup.c
+index ed519aee0ec8..d3433e1bb94e 100644
+--- a/arch/xtensa/platforms/iss/setup.c
++++ b/arch/xtensa/platforms/iss/setup.c
+@@ -14,6 +14,7 @@
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include <linux/printk.h>
+ #include <linux/string.h>
+ 
+diff --git a/drivers/bus/brcmstb_gisb.c b/drivers/bus/brcmstb_gisb.c
+index 7355fa2cb439..6551286a60cc 100644
+--- a/drivers/bus/brcmstb_gisb.c
++++ b/drivers/bus/brcmstb_gisb.c
+@@ -6,6 +6,7 @@
+ #include <linux/init.h>
+ #include <linux/types.h>
+ #include <linux/module.h>
++#include <linux/panic_notifier.h>
+ #include <linux/platform_device.h>
+ #include <linux/interrupt.h>
+ #include <linux/sysfs.h>
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index 8a0e97b33cae..e96cb5c4f97a 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -16,6 +16,7 @@
+ 
+ #include <linux/module.h>
+ #include <linux/errno.h>
++#include <linux/panic_notifier.h>
+ #include <linux/poll.h>
+ #include <linux/sched.h>
+ #include <linux/seq_file.h>
+diff --git a/drivers/clk/analogbits/wrpll-cln28hpc.c b/drivers/clk/analogbits/wrpll-cln28hpc.c
+index 776ead319ae9..7c64ea52a8d5 100644
+--- a/drivers/clk/analogbits/wrpll-cln28hpc.c
++++ b/drivers/clk/analogbits/wrpll-cln28hpc.c
+@@ -23,8 +23,12 @@
+ 
+ #include <linux/bug.h>
+ #include <linux/err.h>
++#include <linux/limits.h>
+ #include <linux/log2.h>
+ #include <linux/math64.h>
++#include <linux/math.h>
++#include <linux/minmax.h>
++
+ #include <linux/clk/analogbits-wrpll-cln28hpc.h>
+ 
+ /* MIN_INPUT_FREQ: minimum input clock frequency, in Hz (Fref_min) */
+diff --git a/drivers/edac/altera_edac.c b/drivers/edac/altera_edac.c
+index 5f7fd79ec82f..61c21bd880a4 100644
+--- a/drivers/edac/altera_edac.c
++++ b/drivers/edac/altera_edac.c
+@@ -20,6 +20,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
++#include <linux/panic_notifier.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/types.h>
+diff --git a/drivers/firmware/google/gsmi.c b/drivers/firmware/google/gsmi.c
+index bb6e77ee3898..adaa492c3d2d 100644
+--- a/drivers/firmware/google/gsmi.c
++++ b/drivers/firmware/google/gsmi.c
+@@ -19,6 +19,7 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/fs.h>
+ #include <linux/slab.h>
++#include <linux/panic_notifier.h>
+ #include <linux/ioctl.h>
+ #include <linux/acpi.h>
+ #include <linux/io.h>
+diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+index 004c3390c15f..7107b9b6eff4 100644
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -25,6 +25,7 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include <linux/ptrace.h>
+ #include <linux/screen_info.h>
+ #include <linux/kdebug.h>
+diff --git a/drivers/hwtracing/coresight/coresight-cpu-debug.c b/drivers/hwtracing/coresight/coresight-cpu-debug.c
+index 2dcf13de751f..9731d3a96073 100644
+--- a/drivers/hwtracing/coresight/coresight-cpu-debug.c
++++ b/drivers/hwtracing/coresight/coresight-cpu-debug.c
+@@ -17,6 +17,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
++#include <linux/panic_notifier.h>
+ #include <linux/pm_qos.h>
+ #include <linux/slab.h>
+ #include <linux/smp.h>
+diff --git a/drivers/leds/trigger/ledtrig-activity.c b/drivers/leds/trigger/ledtrig-activity.c
+index 14ba7faaed9e..30bc9df03636 100644
+--- a/drivers/leds/trigger/ledtrig-activity.c
++++ b/drivers/leds/trigger/ledtrig-activity.c
+@@ -11,6 +11,7 @@
+ #include <linux/kernel_stat.h>
+ #include <linux/leds.h>
+ #include <linux/module.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+diff --git a/drivers/leds/trigger/ledtrig-heartbeat.c b/drivers/leds/trigger/ledtrig-heartbeat.c
+index 36b6709afe9f..7fe0a05574d2 100644
+--- a/drivers/leds/trigger/ledtrig-heartbeat.c
++++ b/drivers/leds/trigger/ledtrig-heartbeat.c
+@@ -11,6 +11,7 @@
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/init.h>
++#include <linux/panic_notifier.h>
+ #include <linux/slab.h>
+ #include <linux/timer.h>
+ #include <linux/sched.h>
+diff --git a/drivers/leds/trigger/ledtrig-panic.c b/drivers/leds/trigger/ledtrig-panic.c
+index 5751cd032f9d..64abf2e91608 100644
+--- a/drivers/leds/trigger/ledtrig-panic.c
++++ b/drivers/leds/trigger/ledtrig-panic.c
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include <linux/leds.h>
+ #include "../leds.h"
+ 
+diff --git a/drivers/misc/bcm-vk/bcm_vk_dev.c b/drivers/misc/bcm-vk/bcm_vk_dev.c
+index 6bfea3210389..ad639ee85b2a 100644
+--- a/drivers/misc/bcm-vk/bcm_vk_dev.c
++++ b/drivers/misc/bcm-vk/bcm_vk_dev.c
+@@ -9,6 +9,7 @@
+ #include <linux/fs.h>
+ #include <linux/idr.h>
+ #include <linux/interrupt.h>
++#include <linux/panic_notifier.h>
+ #include <linux/kref.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+diff --git a/drivers/misc/ibmasm/heartbeat.c b/drivers/misc/ibmasm/heartbeat.c
+index 4f5f3bdc814d..59c9a0d95659 100644
+--- a/drivers/misc/ibmasm/heartbeat.c
++++ b/drivers/misc/ibmasm/heartbeat.c
+@@ -9,6 +9,7 @@
+  */
+ 
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include "ibmasm.h"
+ #include "dot_command.h"
+ #include "lowlevel.h"
+diff --git a/drivers/misc/pvpanic/pvpanic.c b/drivers/misc/pvpanic/pvpanic.c
+index 65f70a4da8c0..793ea0c01193 100644
+--- a/drivers/misc/pvpanic/pvpanic.c
++++ b/drivers/misc/pvpanic/pvpanic.c
+@@ -13,6 +13,7 @@
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
++#include <linux/panic_notifier.h>
+ #include <linux/types.h>
+ #include <linux/cdev.h>
+ #include <linux/list.h>
+diff --git a/drivers/net/ipa/ipa_smp2p.c b/drivers/net/ipa/ipa_smp2p.c
+index a5f7a79a1923..34b68dc43886 100644
+--- a/drivers/net/ipa/ipa_smp2p.c
++++ b/drivers/net/ipa/ipa_smp2p.c
+@@ -8,6 +8,7 @@
+ #include <linux/device.h>
+ #include <linux/interrupt.h>
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include <linux/soc/qcom/smem.h>
+ #include <linux/soc/qcom/smem_state.h>
+ 
+diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
+index ebaf6867b457..456776bd8ee6 100644
+--- a/drivers/parisc/power.c
++++ b/drivers/parisc/power.c
+@@ -38,6 +38,7 @@
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/notifier.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/sched/signal.h>
+ #include <linux/kthread.h>
+diff --git a/drivers/power/reset/ltc2952-poweroff.c b/drivers/power/reset/ltc2952-poweroff.c
+index d1495af30081..8688c8ba8894 100644
+--- a/drivers/power/reset/ltc2952-poweroff.c
++++ b/drivers/power/reset/ltc2952-poweroff.c
+@@ -52,6 +52,7 @@
+ #include <linux/slab.h>
+ #include <linux/kmod.h>
+ #include <linux/module.h>
++#include <linux/panic_notifier.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/reboot.h>
+diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+index 626a6b90fba2..76dd8e2b1e7e 100644
+--- a/drivers/remoteproc/remoteproc_core.c
++++ b/drivers/remoteproc/remoteproc_core.c
+@@ -20,6 +20,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/device.h>
++#include <linux/panic_notifier.h>
+ #include <linux/slab.h>
+ #include <linux/mutex.h>
+ #include <linux/dma-map-ops.h>
+diff --git a/drivers/s390/char/con3215.c b/drivers/s390/char/con3215.c
+index 1fd5bca9fa20..02523f4e29f4 100644
+--- a/drivers/s390/char/con3215.c
++++ b/drivers/s390/char/con3215.c
+@@ -19,6 +19,7 @@
+ #include <linux/console.h>
+ #include <linux/interrupt.h>
+ #include <linux/err.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/serial.h> /* ASYNC_* flags */
+ #include <linux/slab.h>
+diff --git a/drivers/s390/char/con3270.c b/drivers/s390/char/con3270.c
+index e21962c0fd94..87cdbace1453 100644
+--- a/drivers/s390/char/con3270.c
++++ b/drivers/s390/char/con3270.c
+@@ -13,6 +13,7 @@
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+ #include <linux/list.h>
++#include <linux/panic_notifier.h>
+ #include <linux/types.h>
+ #include <linux/slab.h>
+ #include <linux/err.h>
+diff --git a/drivers/s390/char/sclp.c b/drivers/s390/char/sclp.c
+index 986bbbc23d0a..6627820a5eb9 100644
+--- a/drivers/s390/char/sclp.c
++++ b/drivers/s390/char/sclp.c
+@@ -11,6 +11,7 @@
+ #include <linux/kernel_stat.h>
+ #include <linux/module.h>
+ #include <linux/err.h>
++#include <linux/panic_notifier.h>
+ #include <linux/spinlock.h>
+ #include <linux/interrupt.h>
+ #include <linux/timer.h>
+diff --git a/drivers/s390/char/sclp_con.c b/drivers/s390/char/sclp_con.c
+index 9b852a47ccc1..cc01a7b8595d 100644
+--- a/drivers/s390/char/sclp_con.c
++++ b/drivers/s390/char/sclp_con.c
+@@ -10,6 +10,7 @@
+ #include <linux/kmod.h>
+ #include <linux/console.h>
+ #include <linux/init.h>
++#include <linux/panic_notifier.h>
+ #include <linux/timer.h>
+ #include <linux/jiffies.h>
+ #include <linux/termios.h>
+diff --git a/drivers/s390/char/sclp_vt220.c b/drivers/s390/char/sclp_vt220.c
+index 7f4445b0f819..5b8a7b090a97 100644
+--- a/drivers/s390/char/sclp_vt220.c
++++ b/drivers/s390/char/sclp_vt220.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/module.h>
+ #include <linux/spinlock.h>
++#include <linux/panic_notifier.h>
+ #include <linux/list.h>
+ #include <linux/wait.h>
+ #include <linux/timer.h>
+diff --git a/drivers/s390/char/zcore.c b/drivers/s390/char/zcore.c
+index bd3c724bf695..b5b0848da93b 100644
+--- a/drivers/s390/char/zcore.c
++++ b/drivers/s390/char/zcore.c
+@@ -15,6 +15,7 @@
+ #include <linux/init.h>
+ #include <linux/slab.h>
+ #include <linux/debugfs.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ 
+ #include <asm/asm-offsets.h>
+diff --git a/drivers/soc/bcm/brcmstb/pm/pm-arm.c b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
+index a673fdffe216..3cbb165d6e30 100644
+--- a/drivers/soc/bcm/brcmstb/pm/pm-arm.c
++++ b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
+@@ -28,6 +28,7 @@
+ #include <linux/notifier.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
++#include <linux/panic_notifier.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm.h>
+ #include <linux/printk.h>
+diff --git a/drivers/staging/olpc_dcon/olpc_dcon.c b/drivers/staging/olpc_dcon/olpc_dcon.c
+index 6d8e9a481786..7284cb4ac395 100644
+--- a/drivers/staging/olpc_dcon/olpc_dcon.c
++++ b/drivers/staging/olpc_dcon/olpc_dcon.c
+@@ -22,6 +22,7 @@
+ #include <linux/device.h>
+ #include <linux/uaccess.h>
+ #include <linux/ctype.h>
++#include <linux/panic_notifier.h>
+ #include <linux/reboot.h>
+ #include <linux/olpc-ec.h>
+ #include <asm/tsc.h>
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 4dc9077dd2ac..ac06ee7c87d7 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -52,6 +52,7 @@
+ #include <linux/completion.h>
+ #include <linux/fb.h>
+ #include <linux/pci.h>
++#include <linux/panic_notifier.h>
+ #include <linux/efi.h>
+ #include <linux/console.h>
+ 
+diff --git a/include/asm-generic/bug.h b/include/asm-generic/bug.h
+index 76a10e0dca9f..719410b93f99 100644
+--- a/include/asm-generic/bug.h
++++ b/include/asm-generic/bug.h
+@@ -17,7 +17,8 @@
+ #endif
+ 
+ #ifndef __ASSEMBLY__
+-#include <linux/kernel.h>
++#include <linux/panic.h>
++#include <linux/printk.h>
+ 
+ #ifdef CONFIG_BUG
+ 
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 09035ac67d4b..6c5a05ac1ecb 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -14,6 +14,7 @@
+ #include <linux/math.h>
+ #include <linux/minmax.h>
+ #include <linux/typecheck.h>
++#include <linux/panic.h>
+ #include <linux/printk.h>
+ #include <linux/build_bug.h>
+ #include <linux/static_call_types.h>
+@@ -70,7 +71,6 @@
+ #define lower_32_bits(n) ((u32)((n) & 0xffffffff))
+ 
+ struct completion;
+-struct pt_regs;
+ struct user;
+ 
+ #ifdef CONFIG_PREEMPT_VOLUNTARY
+@@ -175,14 +175,6 @@ void __might_fault(const char *file, int line);
+ static inline void might_fault(void) { }
+ #endif
+ 
+-extern struct atomic_notifier_head panic_notifier_list;
+-extern long (*panic_blink)(int state);
+-__printf(1, 2)
+-void panic(const char *fmt, ...) __noreturn __cold;
+-void nmi_panic(struct pt_regs *regs, const char *msg);
+-extern void oops_enter(void);
+-extern void oops_exit(void);
+-extern bool oops_may_print(void);
+ void do_exit(long error_code) __noreturn;
+ void complete_and_exit(struct completion *, long) __noreturn;
+ 
+@@ -368,52 +360,8 @@ extern int __kernel_text_address(unsigned long addr);
+ extern int kernel_text_address(unsigned long addr);
+ extern int func_ptr_is_kernel_text(void *ptr);
+ 
+-#ifdef CONFIG_SMP
+-extern unsigned int sysctl_oops_all_cpu_backtrace;
+-#else
+-#define sysctl_oops_all_cpu_backtrace 0
+-#endif /* CONFIG_SMP */
+-
+ extern void bust_spinlocks(int yes);
+-extern int panic_timeout;
+-extern unsigned long panic_print;
+-extern int panic_on_oops;
+-extern int panic_on_unrecovered_nmi;
+-extern int panic_on_io_nmi;
+-extern int panic_on_warn;
+-extern unsigned long panic_on_taint;
+-extern bool panic_on_taint_nousertaint;
+-extern int sysctl_panic_on_rcu_stall;
+-extern int sysctl_max_rcu_stall_to_panic;
+-extern int sysctl_panic_on_stackoverflow;
+-
+-extern bool crash_kexec_post_notifiers;
+ 
+-/*
+- * panic_cpu is used for synchronizing panic() and crash_kexec() execution. It
+- * holds a CPU number which is executing panic() currently. A value of
+- * PANIC_CPU_INVALID means no CPU has entered panic() or crash_kexec().
+- */
+-extern atomic_t panic_cpu;
+-#define PANIC_CPU_INVALID	-1
+-
+-/*
+- * Only to be used by arch init code. If the user over-wrote the default
+- * CONFIG_PANIC_TIMEOUT, honor it.
+- */
+-static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
+-{
+-	if (panic_timeout == arch_default_timeout)
+-		panic_timeout = timeout;
+-}
+-extern const char *print_tainted(void);
+-enum lockdep_ok {
+-	LOCKDEP_STILL_OK,
+-	LOCKDEP_NOW_UNRELIABLE
+-};
+-extern void add_taint(unsigned flag, enum lockdep_ok);
+-extern int test_taint(unsigned flag);
+-extern unsigned long get_taint(void);
+ extern int root_mountflags;
+ 
+ extern bool early_boot_irqs_disabled;
+@@ -432,36 +380,6 @@ extern enum system_states {
+ 	SYSTEM_SUSPEND,
+ } system_state;
+ 
+-/* This cannot be an enum because some may be used in assembly source. */
+-#define TAINT_PROPRIETARY_MODULE	0
+-#define TAINT_FORCED_MODULE		1
+-#define TAINT_CPU_OUT_OF_SPEC		2
+-#define TAINT_FORCED_RMMOD		3
+-#define TAINT_MACHINE_CHECK		4
+-#define TAINT_BAD_PAGE			5
+-#define TAINT_USER			6
+-#define TAINT_DIE			7
+-#define TAINT_OVERRIDDEN_ACPI_TABLE	8
+-#define TAINT_WARN			9
+-#define TAINT_CRAP			10
+-#define TAINT_FIRMWARE_WORKAROUND	11
+-#define TAINT_OOT_MODULE		12
+-#define TAINT_UNSIGNED_MODULE		13
+-#define TAINT_SOFTLOCKUP		14
+-#define TAINT_LIVEPATCH			15
+-#define TAINT_AUX			16
+-#define TAINT_RANDSTRUCT		17
+-#define TAINT_FLAGS_COUNT		18
+-#define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
+-
+-struct taint_flag {
+-	char c_true;	/* character printed when tainted */
+-	char c_false;	/* character printed when not tainted */
+-	bool module;	/* also show as a per-module taint flag */
+-};
+-
+-extern const struct taint_flag taint_flags[TAINT_FLAGS_COUNT];
+-
+ extern const char hex_asc[];
+ #define hex_asc_lo(x)	hex_asc[((x) & 0x0f)]
+ #define hex_asc_hi(x)	hex_asc[((x) & 0xf0) >> 4]
+diff --git a/include/linux/panic.h b/include/linux/panic.h
+new file mode 100644
+index 000000000000..f5844908a089
+--- /dev/null
++++ b/include/linux/panic.h
+@@ -0,0 +1,98 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_PANIC_H
++#define _LINUX_PANIC_H
++
++#include <linux/compiler_attributes.h>
++#include <linux/types.h>
++
++struct pt_regs;
++
++extern long (*panic_blink)(int state);
++__printf(1, 2)
++void panic(const char *fmt, ...) __noreturn __cold;
++void nmi_panic(struct pt_regs *regs, const char *msg);
++extern void oops_enter(void);
++extern void oops_exit(void);
++extern bool oops_may_print(void);
++
++#ifdef CONFIG_SMP
++extern unsigned int sysctl_oops_all_cpu_backtrace;
++#else
++#define sysctl_oops_all_cpu_backtrace 0
++#endif /* CONFIG_SMP */
++
++extern int panic_timeout;
++extern unsigned long panic_print;
++extern int panic_on_oops;
++extern int panic_on_unrecovered_nmi;
++extern int panic_on_io_nmi;
++extern int panic_on_warn;
++
++extern unsigned long panic_on_taint;
++extern bool panic_on_taint_nousertaint;
++
++extern int sysctl_panic_on_rcu_stall;
++extern int sysctl_max_rcu_stall_to_panic;
++extern int sysctl_panic_on_stackoverflow;
++
++extern bool crash_kexec_post_notifiers;
++
++/*
++ * panic_cpu is used for synchronizing panic() and crash_kexec() execution. It
++ * holds a CPU number which is executing panic() currently. A value of
++ * PANIC_CPU_INVALID means no CPU has entered panic() or crash_kexec().
++ */
++extern atomic_t panic_cpu;
++#define PANIC_CPU_INVALID	-1
++
++/*
++ * Only to be used by arch init code. If the user over-wrote the default
++ * CONFIG_PANIC_TIMEOUT, honor it.
++ */
++static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
++{
++	if (panic_timeout == arch_default_timeout)
++		panic_timeout = timeout;
++}
++
++/* This cannot be an enum because some may be used in assembly source. */
++#define TAINT_PROPRIETARY_MODULE	0
++#define TAINT_FORCED_MODULE		1
++#define TAINT_CPU_OUT_OF_SPEC		2
++#define TAINT_FORCED_RMMOD		3
++#define TAINT_MACHINE_CHECK		4
++#define TAINT_BAD_PAGE			5
++#define TAINT_USER			6
++#define TAINT_DIE			7
++#define TAINT_OVERRIDDEN_ACPI_TABLE	8
++#define TAINT_WARN			9
++#define TAINT_CRAP			10
++#define TAINT_FIRMWARE_WORKAROUND	11
++#define TAINT_OOT_MODULE		12
++#define TAINT_UNSIGNED_MODULE		13
++#define TAINT_SOFTLOCKUP		14
++#define TAINT_LIVEPATCH			15
++#define TAINT_AUX			16
++#define TAINT_RANDSTRUCT		17
++#define TAINT_FLAGS_COUNT		18
++#define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
++
++struct taint_flag {
++	char c_true;	/* character printed when tainted */
++	char c_false;	/* character printed when not tainted */
++	bool module;	/* also show as a per-module taint flag */
++};
++
++extern const struct taint_flag taint_flags[TAINT_FLAGS_COUNT];
++
++enum lockdep_ok {
++	LOCKDEP_STILL_OK,
++	LOCKDEP_NOW_UNRELIABLE,
++};
++
++extern const char *print_tainted(void);
++extern void add_taint(unsigned flag, enum lockdep_ok);
++extern int test_taint(unsigned flag);
++extern unsigned long get_taint(void);
++
++#endif	/* _LINUX_PANIC_H */
+diff --git a/include/linux/panic_notifier.h b/include/linux/panic_notifier.h
+new file mode 100644
+index 000000000000..41e32483d7a7
+--- /dev/null
++++ b/include/linux/panic_notifier.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_PANIC_NOTIFIERS_H
++#define _LINUX_PANIC_NOTIFIERS_H
++
++#include <linux/notifier.h>
++#include <linux/types.h>
++
++extern struct atomic_notifier_head panic_notifier_list;
++
++extern bool crash_kexec_post_notifiers;
++
++#endif	/* _LINUX_PANIC_NOTIFIERS_H */
+diff --git a/kernel/hung_task.c b/kernel/hung_task.c
+index bb2e3e15c84c..2871076e4d29 100644
+--- a/kernel/hung_task.c
++++ b/kernel/hung_task.c
+@@ -15,6 +15,7 @@
+ #include <linux/kthread.h>
+ #include <linux/lockdep.h>
+ #include <linux/export.h>
++#include <linux/panic_notifier.h>
+ #include <linux/sysctl.h>
+ #include <linux/suspend.h>
+ #include <linux/utsname.h>
+diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
+index f099baee3578..4b34a9aa32bc 100644
+--- a/kernel/kexec_core.c
++++ b/kernel/kexec_core.c
+@@ -26,6 +26,7 @@
+ #include <linux/suspend.h>
+ #include <linux/device.h>
+ #include <linux/freezer.h>
++#include <linux/panic_notifier.h>
+ #include <linux/pm.h>
+ #include <linux/cpu.h>
+ #include <linux/uaccess.h>
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 332736a72a58..edad89660a2b 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -23,6 +23,7 @@
+ #include <linux/reboot.h>
+ #include <linux/delay.h>
+ #include <linux/kexec.h>
++#include <linux/panic_notifier.h>
+ #include <linux/sched.h>
+ #include <linux/sysrq.h>
+ #include <linux/init.h>
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 03282196953a..67f8f65a9ada 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -32,6 +32,8 @@
+ #include <linux/export.h>
+ #include <linux/completion.h>
+ #include <linux/moduleparam.h>
++#include <linux/panic.h>
++#include <linux/panic_notifier.h>
+ #include <linux/percpu.h>
+ #include <linux/notifier.h>
+ #include <linux/cpu.h>
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 3601786ddaeb..e5cf9c4ef5e1 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -27,6 +27,7 @@
+ #include <linux/sysctl.h>
+ #include <linux/bitmap.h>
+ #include <linux/signal.h>
++#include <linux/panic.h>
+ #include <linux/printk.h>
+ #include <linux/proc_fs.h>
+ #include <linux/security.h>
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 507a30bf26e4..9612a1d8fa13 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -39,6 +39,7 @@
+ #include <linux/slab.h>
+ #include <linux/ctype.h>
+ #include <linux/init.h>
++#include <linux/panic_notifier.h>
+ #include <linux/poll.h>
+ #include <linux/nmi.h>
+ #include <linux/fs.h>
 -- 
-Thanks,
-
-David / dhildenb
+2.30.2
 
