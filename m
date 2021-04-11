@@ -1,60 +1,131 @@
-From: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: Re: [PATCH v2 1/1] kernel.h: Split out panic and oops helpers
-Date: Sat, 10 Apr 2021 00:39:11 +0200
-Message-ID: <20210409223911.GA21445@alpha.franken.de>
-References: <20210409100250.25922-1-andriy.shevchenko@linux.intel.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Subject: Re: [PATCH 1/2] alpha: syscalls: switch to generic syscalltbl.sh
+Date: Sun, 11 Apr 2021 22:51:12 +0900
+Message-ID: <CAK7LNARA9PZ_hv76FDn_LHE-JpOepdLW1w5=0_J6AckigX76HA@mail.gmail.com>
+References: <20210301141827.342315-1-masahiroy@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20210409100250.25922-1-andriy.shevchenko@linux.intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 13BDppYP012062
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1618149111;
+        bh=Oyb30frvoJSVJ4PA2guHZ4mc1w6P1MMIsqtUqyXN1qI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=AoA4k+SHDjVBGNsMge6saSW+YFw10VzVGw1K4uf1qCh/DX4ahraNV2StPItKZYu9s
+         M+sOnNaLy3XL9llQCChZRX4sOp9doLyVGEyJYAOFgOFMOBwN+u0567NsOV6pGnAqng
+         xgC82BlQVl/EhfW/5EGJAdKGgQSvd7RXTcYF3xFk2Cq2SiWlCS6xYa+J9k+DKoc4BL
+         ysbswwHdyrOCswpsfr3qZdg1mcWOs7omEgcg8VrKl3WjkScl6FSXEa0uzhvREDcyaL
+         D0Z9pEZ+46qJpm6vxBFYBbELEhLq5Vtd702U+9fFxyOfmwTnjlN5kzinPGxmoLqxH2
+         YDjXeD/47zmkg==
+In-Reply-To: <20210301141827.342315-1-masahiroy@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Alexander Lobakin <alobakin@pm.me>, Wei Liu <wei.liu@kernel.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Arnd Bergmann <arnd@arndb.de>, Bjorn Andersson <bjorn.andersson@linaro.org>, Christian Brauner <christian.brauner@ubuntu.com>, Andrew Morton <akpm@linux-foundation.org>, Kees Cook <keescook@chromium.org>, Mike Rapoport <rppt@kernel.org>, Corey Minyard <cminyard@mvista.com>, Michael Ellerman <mpe@ellerman.id.au>, Vasily Gorbik <gor@linux.ibm.com>, "Jason J. Herne" <jjherne@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>, Michael Kelley <mikelley@microsoft.com>, Joe Perches <joe@perches.com>, Florian Fainelli <f.fainelli@gmail.com>, Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>
 
-On Fri, Apr 09, 2021 at 01:02:50PM +0300, Andy Shevchenko wrote:
-> kernel.h is being used as a dump for all kinds of stuff for a long time.
-> Here is the attempt to start cleaning it up by splitting out panic and
-> oops helpers.
-> 
-> There are several purposes of doing this:
-> - dropping dependency in bug.h
-> - dropping a loop by moving out panic_notifier.h
-> - unload kernel.h from something which has its own domain
-> 
-> At the same time convert users tree-wide to use new headers, although
-> for the time being include new header back to kernel.h to avoid twisted
-> indirected includes for existing users.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-> Acked-by: Corey Minyard <cminyard@mvista.com>
-> Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> Acked-by: Kees Cook <keescook@chromium.org>
-> Acked-by: Wei Liu <wei.liu@kernel.org>
-> Acked-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+On Mon, Mar 1, 2021 at 11:18 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> Many architectures duplicate similar shell scripts.
+>
+> This commit converts alpha to use scripts/syscalltbl.sh.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+
+Applied to linux-kbuild.
+
+
 > ---
-> v2:
->  - fixed all errors with allmodconfig on x86_64 (Andrew)
->  - checked with allyesconfig on x86_64
->  - additionally grepped source code for panic notifier list usage
->    and converted all users
->  - elaborated commit message (Luis)
->  - collected given tags (incl. Andrew's SoB, see below)
-> 
-> I added Andrew's SoB since part of the fixes I took from him. Andrew,
-> feel free to amend or tell me how you want me to do.
-> 
->  arch/mips/kernel/relocate.c                   |  1 +
->  arch/mips/sgi-ip22/ip22-reset.c               |  1 +
->  arch/mips/sgi-ip32/ip32-reset.c               |  1 +
+>
+>  arch/alpha/kernel/syscalls/Makefile      |  7 ++----
+>  arch/alpha/kernel/syscalls/syscalltbl.sh | 32 ------------------------
+>  arch/alpha/kernel/systbls.S              |  3 +--
+>  3 files changed, 3 insertions(+), 39 deletions(-)
+>  delete mode 100644 arch/alpha/kernel/syscalls/syscalltbl.sh
+>
+> diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
+> index 285aaba832d9..ad2492cb5568 100644
+> --- a/arch/alpha/kernel/syscalls/Makefile
+> +++ b/arch/alpha/kernel/syscalls/Makefile
+> @@ -7,7 +7,7 @@ _dummy := $(shell [ -d '$(uapi)' ] || mkdir -p '$(uapi)')       \
+>
+>  syscall := $(src)/syscall.tbl
+>  syshdr := $(srctree)/$(src)/syscallhdr.sh
+> -systbl := $(srctree)/$(src)/syscalltbl.sh
+> +systbl := $(srctree)/scripts/syscalltbl.sh
+>
+>  quiet_cmd_syshdr = SYSHDR  $@
+>        cmd_syshdr = $(CONFIG_SHELL) '$(syshdr)' '$<' '$@'       \
+> @@ -16,10 +16,7 @@ quiet_cmd_syshdr = SYSHDR  $@
+>                    '$(syshdr_offset_$(basetarget))'
+>
+>  quiet_cmd_systbl = SYSTBL  $@
+> -      cmd_systbl = $(CONFIG_SHELL) '$(systbl)' '$<' '$@'       \
+> -                  '$(systbl_abis_$(basetarget))'               \
+> -                  '$(systbl_abi_$(basetarget))'                \
+> -                  '$(systbl_offset_$(basetarget))'
+> +      cmd_systbl = $(CONFIG_SHELL) $(systbl) $< $@
+>
+>  $(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
+>         $(call if_changed,syshdr)
+> diff --git a/arch/alpha/kernel/syscalls/syscalltbl.sh b/arch/alpha/kernel/syscalls/syscalltbl.sh
+> deleted file mode 100644
+> index 85d78d9309ad..000000000000
+> --- a/arch/alpha/kernel/syscalls/syscalltbl.sh
+> +++ /dev/null
+> @@ -1,32 +0,0 @@
+> -#!/bin/sh
+> -# SPDX-License-Identifier: GPL-2.0
+> -
+> -in="$1"
+> -out="$2"
+> -my_abis=`echo "($3)" | tr ',' '|'`
+> -my_abi="$4"
+> -offset="$5"
+> -
+> -emit() {
+> -       t_nxt="$1"
+> -       t_nr="$2"
+> -       t_entry="$3"
+> -
+> -       while [ $t_nxt -lt $t_nr ]; do
+> -               printf "__SYSCALL(%s, sys_ni_syscall, )\n" "${t_nxt}"
+> -               t_nxt=$((t_nxt+1))
+> -       done
+> -       printf "__SYSCALL(%s, %s, )\n" "${t_nxt}" "${t_entry}"
+> -}
+> -
+> -grep -E "^[0-9A-Fa-fXx]+[[:space:]]+${my_abis}" "$in" | sort -n | (
+> -       nxt=0
+> -       if [ -z "$offset" ]; then
+> -               offset=0
+> -       fi
+> -
+> -       while read nr abi name entry ; do
+> -               emit $((nxt+offset)) $((nr+offset)) $entry
+> -               nxt=$((nr+1))
+> -       done
+> -) > "$out"
+> diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
+> index 9704f22ed5e3..68f3e4f329eb 100644
+> --- a/arch/alpha/kernel/systbls.S
+> +++ b/arch/alpha/kernel/systbls.S
+> @@ -7,10 +7,9 @@
+>
+>  #include <asm/unistd.h>
+>
+> -#define __SYSCALL(nr, entry, nargs) .quad entry
+> +#define __SYSCALL(nr, entry) .quad entry
+>         .data
+>         .align 3
+>         .globl sys_call_table
+>  sys_call_table:
+>  #include <asm/syscall_table.h>
+> -#undef __SYSCALL
+> --
+> 2.27.0
+>
 
-Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Best Regards
+Masahiro Yamada
