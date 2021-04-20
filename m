@@ -1,469 +1,234 @@
 From: David Hildenbrand <david@redhat.com>
-Subject: [PATCH v2 5/5] selftests/vm: add test for MADV_POPULATE_(READ|WRITE)
-Date: Mon, 19 Apr 2021 15:54:43 +0200
-Message-ID: <20210419135443.12822-6-david@redhat.com>
-References: <20210419135443.12822-1-david@redhat.com>
+Subject: [PATCH v1] binfmt: remove support for em86 (alpha only)
+Date: Tue, 20 Apr 2021 19:56:31 +0200
+Message-ID: <20210420175631.46923-1-david@redhat.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-owner@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618840526;
+        s=mimecast20190719; t=1618941405;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dLd2jFmyAv8PWEgrP1PmR2Fwcs+q67L/hXPeC7/MiWQ=;
-        b=CVDumdgRw8rONOtmRclkHifsq7C/CTVGxUAT1FhH/7V9Q67vpwcNNywl5nuv+WXN1QsVCS
-        Zs0vJA5/y9+3oITu1yjhLZSps71vS6Rr5OmR1UOQ+O/VW1qxoIqTFtfJ1LkdGYeQ+xu+in
-        hHJeIMxln/QH3smsv4ufBqmr2dKMPg0=
-In-Reply-To: <20210419135443.12822-1-david@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=afa6Hv1Y+nEnC6nqP5aByitRJ6Vc/us+E9c6JL1buB0=;
+        b=BTLylp2JL0GZV/PPlIgR3z/472H9iLxT8BY0iEOrYZk2THplFnXoU/G8Ov1X/jzmqv59zP
+        am8pv/wpxMXs4f29ksMVrlk9L3WkD+Uu4/GrW5n1wAqMiQze9THIFreG2jH6Mf76q56G2Q
+        ISb6KkydDX1keyeZVZETRMIFRSV0+rI=
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 To: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org, David Hildenbrand <david@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Michal Hocko <mhocko@suse.com>, Oscar Salvador <osalvador@suse.de>, Matthew Wilcox <willy@infradead.org>, Andrea Arcangeli <aarcange@redhat.com>, Minchan Kim <minchan@kernel.org>, Jann Horn <jannh@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, Dave Hansen <dave.hansen@intel.com>, Hugh Dickins <hughd@google.com>, Rik van Riel <riel@surriel.com>, "Michael S . Tsirkin" <mst@redhat.com>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.f>
+Cc: David Hildenbrand <david@redhat.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org, linux-alpha@vger.kernel.org
 
-Let's add a simple test for MADV_POPULATE_READ and MADV_POPULATE_WRITE,
-verifying some error handling, that population works, and that softdirty
-tracking works as expected. For now, limit the test to private anonymous
-memory.
+We have a fairly specific alpha binary loader in Linux: running x86
+(i386, i486) binaries via the em86 [1] emulator. As noted in the Kconfig
+option, the same behavior can be achieved via binfmt_misc, for example,
+more nowadays used for running qemu-user.
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Jann Horn <jannh@google.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Dave Hansen <dave.hansen@intel.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Rik van Riel <riel@surriel.com>
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
+An example on how to get binfmt_misc running with em86 can be found in
+Documentation/admin-guide/binfmt-misc.rst
+
+The defconfig does not have CONFIG_BINFMT_EM86=3Dy set. And doing a
+	make defconfig && make olddefconfig
+results in
+	# CONFIG_BINFMT_EM86 is not set
+
+... as we don't seem to have any supported Linux distirbution for alpha
+anymore, there isn't really any "default" user of that feature anymore.
+
+Searching for "CONFIG_BINFMT_EM86=3Dy" reveals mostly discussions from
+around 20 years ago, like [2] describing how to get netscape via em86
+running via em86, or [3] discussing that running wine or installing
+Win 3.11 through em86 would be a nice feature.
+
+The latest binaries available for em86 are from 2000, version 2.2.1 [4] --
+which translates to "unsupported"; further, em86 doesn't even work with
+glibc-2.x but only with glibc-2.0 [4, 5]. These are clear signs that
+there might not be too many em86 users out there, especially users
+relying on modern Linux kernels.
+
+Even though the code footprint is relatively small, let's just get rid
+of this blast from the past that's effectively unused.
+
+[1] http://ftp.dreamtime.org/pub/linux/Linux-Alpha/em86/v0.4/docs/em86.html
+[2] https://static.lwn.net/1998/1119/a/alpha-netscape.html
+[3] https://groups.google.com/g/linux.debian.alpha/c/AkGuQHeCe0Y
+[4] http://zeniv.linux.org.uk/pub/linux/alpha/em86/v2.2-1/relnotes.2.2.1.ht=
+ml
+[5] https://forum.teamspeak.com/archive/index.php/t-1477.html
+
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>
 Cc: Richard Henderson <rth@twiddle.net>
 Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: Chris Zankel <chris@zankel.net>
-Cc: Max Filippov <jcmvbkbc@gmail.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Rolf Eike Beer <eike-kernel@sf-tec.de>
-Cc: Shuah Khan <shuah@kernel.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: linux-fsdevel@vger.kernel.org
+Cc: linux-api@vger.kernel.org
 Cc: linux-alpha@vger.kernel.org
-Cc: linux-mips@vger.kernel.org
-Cc: linux-parisc@vger.kernel.org
-Cc: linux-xtensa@linux-xtensa.org
-Cc: linux-arch@vger.kernel.org
-Cc: linux-kselftest@vger.kernel.org
-Cc: Linux API <linux-api@vger.kernel.org>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- tools/testing/selftests/vm/.gitignore      |   1 +
- tools/testing/selftests/vm/Makefile        |   1 +
- tools/testing/selftests/vm/madv_populate.c | 342 +++++++++++++++++++++
- tools/testing/selftests/vm/run_vmtests.sh  |  16 +
- 4 files changed, 360 insertions(+)
- create mode 100644 tools/testing/selftests/vm/madv_populate.c
+ fs/Kconfig.binfmt |  15 -------
+ fs/Makefile       |   1 -
+ fs/binfmt_em86.c  | 110 ----------------------------------------------
+ 3 files changed, 126 deletions(-)
+ delete mode 100644 fs/binfmt_em86.c
 
-diff --git a/tools/testing/selftests/vm/.gitignore b/tools/testing/selftests/vm/.gitignore
-index b4fc0148360e..c9a5dd1adf7d 100644
---- a/tools/testing/selftests/vm/.gitignore
-+++ b/tools/testing/selftests/vm/.gitignore
-@@ -24,3 +24,4 @@ hmm-tests
- local_config.*
- protection_keys_32
- protection_keys_64
-+madv_populate
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index 8b0cd421ebd3..04b6650c1924 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -42,6 +42,7 @@ TEST_GEN_FILES += on-fault-limit
- TEST_GEN_FILES += thuge-gen
- TEST_GEN_FILES += transhuge-stress
- TEST_GEN_FILES += userfaultfd
-+TEST_GEN_FILES += madv_populate
- 
- ifeq ($(MACHINE),x86_64)
- CAN_BUILD_I386 := $(shell ./../x86/check_cc.sh $(CC) ../x86/trivial_32bit_program.c -m32)
-diff --git a/tools/testing/selftests/vm/madv_populate.c b/tools/testing/selftests/vm/madv_populate.c
-new file mode 100644
-index 000000000000..b959e4ebdad4
---- /dev/null
-+++ b/tools/testing/selftests/vm/madv_populate.c
-@@ -0,0 +1,342 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * MADV_POPULATE_READ and MADV_POPULATE_WRITE tests
-+ *
-+ * Copyright 2021, Red Hat, Inc.
-+ *
-+ * Author(s): David Hildenbrand <david@redhat.com>
-+ */
-+#define _GNU_SOURCE
-+#include <stdlib.h>
-+#include <string.h>
-+#include <stdbool.h>
-+#include <stdint.h>
-+#include <unistd.h>
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <sys/mman.h>
-+
-+#include "../kselftest.h"
-+
-+#if defined(MADV_POPULATE_READ) && defined(MADV_POPULATE_WRITE)
-+
-+/*
-+ * For now, we're using 2 MiB of private anonymous memory for all tests.
-+ */
-+#define SIZE (2 * 1024 * 1024)
-+
-+static size_t pagesize;
-+
-+static uint64_t pagemap_get_entry(int fd, char *start)
-+{
-+	const unsigned long pfn = (unsigned long)start / pagesize;
-+	uint64_t entry;
-+	int ret;
-+
-+	ret = pread(fd, &entry, sizeof(entry), pfn * sizeof(entry));
-+	if (ret != sizeof(entry))
-+		ksft_exit_fail_msg("reading pagemap failed\n");
-+	return entry;
-+}
-+
-+static bool pagemap_is_populated(int fd, char *start)
-+{
-+	uint64_t entry = pagemap_get_entry(fd, start);
-+
-+	/* Present or swapped. */
-+	return entry & 0xc000000000000000ull;
-+}
-+
-+static bool pagemap_is_softdirty(int fd, char *start)
-+{
-+	uint64_t entry = pagemap_get_entry(fd, start);
-+
-+	return entry & 0x0080000000000000ull;
-+}
-+
-+static void sense_support(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	addr = mmap(0, pagesize, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (!addr)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	ret = madvise(addr, pagesize, MADV_POPULATE_READ);
-+	if (ret)
-+		ksft_exit_skip("MADV_POPULATE_READ is not available\n");
-+
-+	ret = madvise(addr, pagesize, MADV_POPULATE_WRITE);
-+	if (ret)
-+		ksft_exit_skip("MADV_POPULATE_WRITE is not available\n");
-+
-+	munmap(addr, pagesize);
-+}
-+
-+static void test_prot_read(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(!ret, "MADV_POPULATE_READ with PROT_READ\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(ret == -1 && errno == EINVAL,
-+			 "MADV_POPULATE_WRITE with PROT_READ\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static void test_prot_write(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(ret == -1 && errno == EINVAL,
-+			 "MADV_POPULATE_READ with PROT_WRITE\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(!ret, "MADV_POPULATE_WRITE with PROT_WRITE\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static void test_holes(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+	ret = munmap(addr + pagesize, pagesize);
-+	if (ret)
-+		ksft_exit_fail_msg("munmap failed\n");
-+
-+	/* Hole in the middle */
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_READ with holes in the middle\n");
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_WRITE with holes in the middle\n");
-+
-+	/* Hole at end */
-+	ret = madvise(addr, 2 * pagesize, MADV_POPULATE_READ);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_READ with holes at the end\n");
-+	ret = madvise(addr, 2 * pagesize, MADV_POPULATE_WRITE);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_WRITE with holes at the end\n");
-+
-+	/* Hole at beginning */
-+	ret = madvise(addr + pagesize, pagesize, MADV_POPULATE_READ);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_READ with holes at the beginning\n");
-+	ret = madvise(addr + pagesize, pagesize, MADV_POPULATE_WRITE);
-+	ksft_test_result(ret == -1 && errno == ENOMEM,
-+			 "MADV_POPULATE_WRITE with holes at the beginning\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static bool range_is_populated(char *start, ssize_t size)
-+{
-+	int fd = open("/proc/self/pagemap", O_RDONLY);
-+	bool ret = true;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening pagemap failed\n");
-+	for (; size > 0 && ret; size -= pagesize, start += pagesize)
-+		if (!pagemap_is_populated(fd, start))
-+			ret = false;
-+	close(fd);
-+	return ret;
-+}
-+
-+static bool range_is_not_populated(char *start, ssize_t size)
-+{
-+	int fd = open("/proc/self/pagemap", O_RDONLY);
-+	bool ret = true;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening pagemap failed\n");
-+	for (; size > 0 && ret; size -= pagesize, start += pagesize)
-+		if (pagemap_is_populated(fd, start))
-+			ret = false;
-+	close(fd);
-+	return ret;
-+}
-+
-+static void test_populate_read(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+	ksft_test_result(range_is_not_populated(addr, SIZE),
-+			 "range initially not populated\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(!ret, "MADV_POPULATE_READ\n");
-+	ksft_test_result(range_is_populated(addr, SIZE),
-+			 "range is populated\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static void test_populate_write(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+	ksft_test_result(range_is_not_populated(addr, SIZE),
-+			 "range initially not populated\n");
-+
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(!ret, "MADV_POPULATE_WRITE\n");
-+	ksft_test_result(range_is_populated(addr, SIZE),
-+			 "range is populated\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+static bool range_is_softdirty(char *start, ssize_t size)
-+{
-+	int fd = open("/proc/self/pagemap", O_RDONLY);
-+	bool ret = true;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening pagemap failed\n");
-+	for (; size > 0 && ret; size -= pagesize, start += pagesize)
-+		if (!pagemap_is_softdirty(fd, start))
-+			ret = false;
-+	close(fd);
-+	return ret;
-+}
-+
-+static bool range_is_not_softdirty(char *start, ssize_t size)
-+{
-+	int fd = open("/proc/self/pagemap", O_RDONLY);
-+	bool ret = true;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening pagemap failed\n");
-+	for (; size > 0 && ret; size -= pagesize, start += pagesize)
-+		if (pagemap_is_softdirty(fd, start))
-+			ret = false;
-+	close(fd);
-+	return ret;
-+}
-+
-+static void clear_softdirty(void)
-+{
-+	int fd = open("/proc/self/clear_refs", O_WRONLY);
-+	const char *ctrl = "4";
-+	int ret;
-+
-+	if (fd < 0)
-+		ksft_exit_fail_msg("opening clear_refs failed\n");
-+	ret = write(fd, ctrl, strlen(ctrl));
-+	if (ret != strlen(ctrl))
-+		ksft_exit_fail_msg("writing clear_refs failed\n");
-+	close(fd);
-+}
-+
-+static void test_softdirty(void)
-+{
-+	char *addr;
-+	int ret;
-+
-+	ksft_print_msg("[RUN] %s\n", __func__);
-+
-+	addr = mmap(0, SIZE, PROT_READ | PROT_WRITE,
-+		    MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-+	if (addr == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	/* Clear any softdirty bits. */
-+	clear_softdirty();
-+	ksft_test_result(range_is_not_softdirty(addr, SIZE),
-+			 "range is not softdirty\n");
-+
-+	/* Populating READ should set softdirty. */
-+	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
-+	ksft_test_result(!ret, "MADV_POPULATE_READ\n");
-+	ksft_test_result(range_is_not_softdirty(addr, SIZE),
-+			 "range is not softdirty\n");
-+
-+	/* Populating WRITE should set softdirty. */
-+	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
-+	ksft_test_result(!ret, "MADV_POPULATE_WRITE\n");
-+	ksft_test_result(range_is_softdirty(addr, SIZE),
-+			 "range is softdirty\n");
-+
-+	munmap(addr, SIZE);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int err;
-+
-+	pagesize = getpagesize();
-+
-+	ksft_print_header();
-+	ksft_set_plan(21);
-+
-+	sense_support();
-+	test_prot_read();
-+	test_prot_write();
-+	test_holes();
-+	test_populate_read();
-+	test_populate_write();
-+	test_softdirty();
-+
-+	err = ksft_get_fail_cnt();
-+	if (err)
-+		ksft_exit_fail_msg("%d out of %d tests failed\n",
-+				   err, ksft_test_num());
-+	return ksft_exit_pass();
-+}
-+
-+#else /* defined(MADV_POPULATE_READ) && defined(MADV_POPULATE_WRITE) */
-+
-+#warning "missing MADV_POPULATE_READ or MADV_POPULATE_WRITE definition"
-+
-+int main(int argc, char **argv)
-+{
-+	ksft_print_header();
-+	ksft_exit_skip("MADV_POPULATE_READ or MADV_POPULATE_WRITE not defined\n");
-+}
-+
-+#endif /* defined(MADV_POPULATE_READ) && defined(MADV_POPULATE_WRITE) */
-diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
-index e953f3cd9664..955782d138ab 100755
---- a/tools/testing/selftests/vm/run_vmtests.sh
-+++ b/tools/testing/selftests/vm/run_vmtests.sh
-@@ -346,4 +346,20 @@ else
- 	exitcode=1
- fi
- 
-+echo "--------------------------------------------------------"
-+echo "running MADV_POPULATE_READ and MADV_POPULATE_WRITE tests"
-+echo "--------------------------------------------------------"
-+./madv_populate
-+ret_val=$?
-+
-+if [ $ret_val -eq 0 ]; then
-+	echo "[PASS]"
-+elif [ $ret_val -eq $ksft_skip ]; then
-+	echo "[SKIP]"
-+	exitcode=$ksft_skip
-+else
-+	echo "[FAIL]"
-+	exitcode=1
-+fi
-+
- exit $exitcode
--- 
+diff --git a/fs/Kconfig.binfmt b/fs/Kconfig.binfmt
+index c6f1c8c1934e..8720e0a30005 100644
+--- a/fs/Kconfig.binfmt
++++ b/fs/Kconfig.binfmt
+@@ -165,21 +165,6 @@ config OSF4_COMPAT
+ 	  with v4 shared libraries freely available from Compaq. If you're
+ 	  going to use shared libraries from Tru64 version 5.0 or later, say N.
+=20
+-config BINFMT_EM86
+-	tristate "Kernel support for Linux/Intel ELF binaries"
+-	depends on ALPHA
+-	help
+-	  Say Y here if you want to be able to execute Linux/Intel ELF
+-	  binaries just like native Alpha binaries on your Alpha machine. For
+-	  this to work, you need to have the emulator /usr/bin/em86 in place.
+-
+-	  You can get the same functionality by saying N here and saying Y to
+-	  "Kernel support for MISC binaries".
+-
+-	  You may answer M to compile the emulation support as a module and
+-	  later load the module when you want to use a Linux/Intel binary. The
+-	  module will be called binfmt_em86. If unsure, say Y.
+-
+ config BINFMT_MISC
+ 	tristate "Kernel support for MISC binaries"
+ 	help
+diff --git a/fs/Makefile b/fs/Makefile
+index 3215fe205256..c92e403c53f8 100644
+--- a/fs/Makefile
++++ b/fs/Makefile
+@@ -39,7 +39,6 @@ obj-$(CONFIG_FS_ENCRYPTION)	+=3D crypto/
+ obj-$(CONFIG_FS_VERITY)		+=3D verity/
+ obj-$(CONFIG_FILE_LOCKING)      +=3D locks.o
+ obj-$(CONFIG_BINFMT_AOUT)	+=3D binfmt_aout.o
+-obj-$(CONFIG_BINFMT_EM86)	+=3D binfmt_em86.o
+ obj-$(CONFIG_BINFMT_MISC)	+=3D binfmt_misc.o
+ obj-$(CONFIG_BINFMT_SCRIPT)	+=3D binfmt_script.o
+ obj-$(CONFIG_BINFMT_ELF)	+=3D binfmt_elf.o
+diff --git a/fs/binfmt_em86.c b/fs/binfmt_em86.c
+deleted file mode 100644
+index 06b9b9fddf70..000000000000
+--- a/fs/binfmt_em86.c
++++ /dev/null
+@@ -1,110 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-/*
+- *  linux/fs/binfmt_em86.c
+- *
+- *  Based on linux/fs/binfmt_script.c
+- *  Copyright (C) 1996  Martin von L=C3=B6wis
+- *  original #!-checking implemented by tytso.
+- *
+- *  em86 changes Copyright (C) 1997  Jim Paradis
+- */
+-
+-#include <linux/module.h>
+-#include <linux/string.h>
+-#include <linux/stat.h>
+-#include <linux/binfmts.h>
+-#include <linux/elf.h>
+-#include <linux/init.h>
+-#include <linux/fs.h>
+-#include <linux/file.h>
+-#include <linux/errno.h>
+-
+-
+-#define EM86_INTERP	"/usr/bin/em86"
+-#define EM86_I_NAME	"em86"
+-
+-static int load_em86(struct linux_binprm *bprm)
+-{
+-	const char *i_name, *i_arg;
+-	char *interp;
+-	struct file * file;
+-	int retval;
+-	struct elfhdr	elf_ex;
+-
+-	/* Make sure this is a Linux/Intel ELF executable... */
+-	elf_ex =3D *((struct elfhdr *)bprm->buf);
+-
+-	if (memcmp(elf_ex.e_ident, ELFMAG, SELFMAG) !=3D 0)
+-		return  -ENOEXEC;
+-
+-	/* First of all, some simple consistency checks */
+-	if ((elf_ex.e_type !=3D ET_EXEC && elf_ex.e_type !=3D ET_DYN) ||
+-		(!((elf_ex.e_machine =3D=3D EM_386) || (elf_ex.e_machine =3D=3D EM_486))=
+) ||
+-		!bprm->file->f_op->mmap) {
+-			return -ENOEXEC;
+-	}
+-
+-	/* Need to be able to load the file after exec */
+-	if (bprm->interp_flags & BINPRM_FLAGS_PATH_INACCESSIBLE)
+-		return -ENOENT;
+-
+-	/* Unlike in the script case, we don't have to do any hairy
+-	 * parsing to find our interpreter... it's hardcoded!
+-	 */
+-	interp =3D EM86_INTERP;
+-	i_name =3D EM86_I_NAME;
+-	i_arg =3D NULL;		/* We reserve the right to add an arg later */
+-
+-	/*
+-	 * Splice in (1) the interpreter's name for argv[0]
+-	 *           (2) (optional) argument to interpreter
+-	 *           (3) filename of emulated file (replace argv[0])
+-	 *
+-	 * This is done in reverse order, because of how the
+-	 * user environment and arguments are stored.
+-	 */
+-	remove_arg_zero(bprm);
+-	retval =3D copy_string_kernel(bprm->filename, bprm);
+-	if (retval < 0) return retval;=20
+-	bprm->argc++;
+-	if (i_arg) {
+-		retval =3D copy_string_kernel(i_arg, bprm);
+-		if (retval < 0) return retval;=20
+-		bprm->argc++;
+-	}
+-	retval =3D copy_string_kernel(i_name, bprm);
+-	if (retval < 0)	return retval;
+-	bprm->argc++;
+-
+-	/*
+-	 * OK, now restart the process with the interpreter's inode.
+-	 * Note that we use open_exec() as the name is now in kernel
+-	 * space, and we don't need to copy it.
+-	 */
+-	file =3D open_exec(interp);
+-	if (IS_ERR(file))
+-		return PTR_ERR(file);
+-
+-	bprm->interpreter =3D file;
+-	return 0;
+-}
+-
+-static struct linux_binfmt em86_format =3D {
+-	.module		=3D THIS_MODULE,
+-	.load_binary	=3D load_em86,
+-};
+-
+-static int __init init_em86_binfmt(void)
+-{
+-	register_binfmt(&em86_format);
+-	return 0;
+-}
+-
+-static void __exit exit_em86_binfmt(void)
+-{
+-	unregister_binfmt(&em86_format);
+-}
+-
+-core_initcall(init_em86_binfmt);
+-module_exit(exit_em86_binfmt);
+-MODULE_LICENSE("GPL");
+--=20
 2.30.2
 
