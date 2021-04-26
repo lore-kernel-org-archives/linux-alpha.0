@@ -1,56 +1,46 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH] alpha: csum_partial_copy.c: add function prototypes from <net/checksum.h>
-Date: Sun, 25 Apr 2021 16:57:49 -0700
-Message-ID: <20210425235749.19113-1-rdunlap@infradead.org>
+From: He Zhe <zhe.he@windriver.com>
+Subject: [PATCH] alpha: Add syscall_get_return_value()
+Date: Mon, 26 Apr 2021 17:16:29 +0800
+Message-ID: <20210426091629.45020-1-zhe.he@windriver.com>
+References: <20210423103533.30121-3-zhe.he@windriver.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:MIME-Version
-        :Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=z5G/dHyVh1dT5W5QVYbtCd25tzIkokFqAw96MLvxJV8=; b=AKZRrwvB48cKrrWpby4azeqrip
-        mjTqOVC/L4lkiALke8ZeuKnZ7Nz0CidPxOcjaCbGRJP6Rvbj1DNfGIOUjABhGyz5zt0oA9cYpLsEa
-        J9kjvJCuOwCNeknUWNGXUwSyRKBBehIpNFWb7D/4t57/3sn5+EW1GMAqrnCZYCqZj1xpqR//fB7M/
-        DlTdnTTkgzKxzHpIZyy2IWTfAf86ARZ8kXhA8ULPWJ5VNIwzqyLQfRuQO/y8IgEevUdzxlKF7MKRA
-        suY7/GHFf2Bi9YqdcuZ9/ECCzsX1kqE1K4VjNhdoQSMZYRsn14Bg8aOW1rseyyTvI/Hj9UjozxBQ0
-        sYdpKD4g==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EZBxxZTBEa9S6Rku6VwrS+BLXTlYuLgdVHsHBi7l9Yo=;
+ b=KWEf88MWgMSlX5exc4nz+jktAgzCJTg4hWDRGpIvgo64rfcKKE6MMP8v4YI6LyXu7gqDk1LefevQtMPlXrmb4a7o0UoGMY9V8dzoGGRhkkDN/N6ehBPDWE1wpzlhDumbtXTARwIT47gDG5YlPI6Mrd1VVn3rBq0hA3hOoprcSHw=
+In-Reply-To: <20210423103533.30121-3-zhe.he@windriver.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>, kernel test robot <lkp@intel.com>, Al Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+Content-Transfer-Encoding: 7bit
+To: oleg@redhat.com, catalin.marinas@arm.com, will@kernel.org, paul@paul-moore.com, eparis@redhat.com, linux-audit@redhat.com, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, zhe.he@windriver.com
 
-Fix "no previous prototype" W=1 warnings from the kernel test robot:
+audit now reuquires syscall_get_return_value instead of regs_return_value
+to retrieve syscall return code . Other architectures that support audit
+have already define this function.
 
-../arch/alpha/lib/csum_partial_copy.c:349:1: error: no previous prototype for 'csum_and_copy_from_user' [-Werror=missing-prototypes]
-  349 | csum_and_copy_from_user(const void __user *src, void *dst, int len)
-      | ^~~~~~~~~~~~~~~~~~~~~~~
-../arch/alpha/lib/csum_partial_copy.c:358:1: error: no previous prototype for 'csum_partial_copy_nocheck' [-Werror=missing-prototypes]
-  358 | csum_partial_copy_nocheck(const void *src, void *dst, int len)
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~
-
-Fixes: 808b49da54e6 ("alpha: turn csum_partial_copy_from_user() into csum_and_copy_from_user()")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: He Zhe <zhe.he@windriver.com>
 ---
-Adding the header file suggested by Al.
+ arch/alpha/include/asm/syscall.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- arch/alpha/lib/csum_partial_copy.c |    1 +
- 1 file changed, 1 insertion(+)
+diff --git a/arch/alpha/include/asm/syscall.h b/arch/alpha/include/asm/syscall.h
+index 11c688c1d7ec..f21babaeed85 100644
+--- a/arch/alpha/include/asm/syscall.h
++++ b/arch/alpha/include/asm/syscall.h
+@@ -9,4 +9,10 @@ static inline int syscall_get_arch(struct task_struct *task)
+ 	return AUDIT_ARCH_ALPHA;
+ }
+ 
++static inline long syscall_get_return_value(struct task_struct *task,
++					    struct pt_regs *regs)
++{
++	return regs->r0;
++}
++
+ #endif	/* _ASM_ALPHA_SYSCALL_H */
+-- 
+2.17.1
 
---- linux-next-20210423.orig/arch/alpha/lib/csum_partial_copy.c
-+++ linux-next-20210423/arch/alpha/lib/csum_partial_copy.c
-@@ -13,6 +13,7 @@
- #include <linux/types.h>
- #include <linux/string.h>
- #include <linux/uaccess.h>
-+#include <net/checksum.h>
- 
- 
- #define ldq_u(x,y) \
