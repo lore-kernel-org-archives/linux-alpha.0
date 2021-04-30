@@ -1,85 +1,534 @@
 From: Richard Guy Briggs <rgb@redhat.com>
-Subject: [PATCH v3 0/3] audit: add support for openat2
-Date: Fri, 30 Apr 2021 16:35:20 -0400
-Message-ID: <cover.1619811762.git.rgb@redhat.com>
+Subject: [PATCH v3 1/3] audit: replace magic audit syscall class numbers with macros
+Date: Fri, 30 Apr 2021 16:35:21 -0400
+Message-ID: <bda073f2a8b11000ef40cf8b965305409ee88f44.1619811762.git.rgb@redhat.com>
+References: <cover.1619811762.git.rgb@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-parisc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1619814994;
+        s=mimecast20190719; t=1619814997;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6dBy9l8QU+7ZgqdM7cr2pe0TQ8wrq76o+ZpCXmDmlQY=;
-        b=ErxdZRdaUS0ZSGl4/ww7oH5MOTwN2+9ZUoZ/SX7JXQM8AWIBsMN2Byn5g8ryVslaajH9Ua
-        RuVWcljNPxy0MkdTlb1KoHzCUchkh3Si8gxlhr2X134f0OfxHKmEFV8fsjIm3gVXjmsMHj
-        5NmfJ4KvJ7fZ/2oTP/xUCrmeesEXF2Q=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zb9ana04mwKKQ21aaxTx+buMdWEcZGZSHePPS2fWD58=;
+        b=c4k8P46hA0QTJYtvmAjLXtZyjnrtyBRh5d66y2a4t2upOPMbmKyy7WcXZoaM/2w4z5BEAV
+        8RS/LrKlshkhUo7cfqk9RZG0mF6bIZr1u3Xy0XJRdRbVSXpTvxBc9kTRciPE9EdNKlEpUN
+        6V3LDwFj7raxUqvhaJl1Op5WplziKoY=
+In-Reply-To: <cover.1619811762.git.rgb@redhat.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Linux-Audit Mailing List <linux-audit@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-fsdevel@vger.kernel.org
 Cc: Paul Moore <paul@paul-moore.com>, Eric Paris <eparis@parisplace.org>, Steve Grubb <sgrubb@redhat.com>, Richard Guy Briggs <rgb@redhat.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Eric Paris <eparis@redhat.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>, Arnd Bergmann <arnd@kernel.org>
 
-The openat2(2) syscall was added in v5.6.  Add support for openat2 to the
-audit syscall classifier and for recording openat2 parameters that cannot
-be captured in the syscall parameters of the SYSCALL record.
+Replace audit syscall class magic numbers with macros.
 
-Supporting userspace code can be found in
-https://github.com/rgbriggs/audit-userspace/tree/ghau-openat2
+This required putting the macros into new header file
+include/linux/auditscm.h since the syscall macros were included for both 64
+bit and 32 bit in any compat code, causing redefinition warnings.
 
-Supporting test case can be found in
-https://github.com/linux-audit/audit-testsuite/pull/103
-
-Changelog:
-v3:
-- re-add commit descriptions that somehow got dropped
-- add new file to MAINTAINERS
-
-v2:
-- add include/linux/auditscm.h for audit syscall class macros due to syscall redefinition warnings:
-        arch/x86/ia32/audit.c:3:
-        ./include/linux/audit.h:12,
-        ./include/linux/sched.h:22,
-        ./include/linux/seccomp.h:21,
-        ./arch/x86/include/asm/seccomp.h:5,
-        ./arch/x86/include/asm/unistd.h:20,
-        ./arch/x86/include/generated/uapi/asm/unistd_64.h:4: warning: "__NR_read" redefined #define __NR_read 0
-	...
-        ./arch/x86/include/generated/uapi/asm/unistd_64.h:338: warning: "__NR_rseq" redefined #define __NR_rseq 334
-    previous:
-        arch/x86/ia32/audit.c:2:
-        ./arch/x86/include/generated/uapi/asm/unistd_32.h:7: note: this is the location of the previous definition #define __NR_read 3                                                                                                      
-	...
-        ./arch/x86/include/generated/uapi/asm/unistd_32.h:386: note: this is the location of the previous definition #define __NR_rseq 386
-
-Richard Guy Briggs (3):
-  audit: replace magic audit syscall class numbers with macros
-  audit: add support for the openat2 syscall
-  audit: add OPENAT2 record to list how
-
+Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+---
  MAINTAINERS                        |  1 +
- arch/alpha/kernel/audit.c          | 10 ++++++----
- arch/ia64/kernel/audit.c           | 10 ++++++----
- arch/parisc/kernel/audit.c         | 10 ++++++----
- arch/parisc/kernel/compat_audit.c  | 11 +++++++----
- arch/powerpc/kernel/audit.c        | 12 +++++++-----
- arch/powerpc/kernel/compat_audit.c | 13 ++++++++-----
- arch/s390/kernel/audit.c           | 12 +++++++-----
- arch/s390/kernel/compat_audit.c    | 13 ++++++++-----
- arch/sparc/kernel/audit.c          | 12 +++++++-----
- arch/sparc/kernel/compat_audit.c   | 13 ++++++++-----
- arch/x86/ia32/audit.c              | 13 ++++++++-----
- arch/x86/kernel/audit_64.c         | 10 ++++++----
- fs/open.c                          |  2 ++
- include/linux/audit.h              | 11 +++++++++++
- include/linux/auditscm.h           | 24 +++++++++++++++++++++++
- include/uapi/linux/audit.h         |  1 +
- kernel/audit.h                     |  2 ++
- kernel/auditsc.c                   | 31 ++++++++++++++++++++++++------
- lib/audit.c                        | 14 +++++++++-----
- lib/compat_audit.c                 | 15 ++++++++++-----
- 21 files changed, 169 insertions(+), 71 deletions(-)
+ arch/alpha/kernel/audit.c          |  8 ++++----
+ arch/ia64/kernel/audit.c           |  8 ++++----
+ arch/parisc/kernel/audit.c         |  8 ++++----
+ arch/parisc/kernel/compat_audit.c  |  9 +++++----
+ arch/powerpc/kernel/audit.c        | 10 +++++-----
+ arch/powerpc/kernel/compat_audit.c | 11 ++++++-----
+ arch/s390/kernel/audit.c           | 10 +++++-----
+ arch/s390/kernel/compat_audit.c    | 11 ++++++-----
+ arch/sparc/kernel/audit.c          | 10 +++++-----
+ arch/sparc/kernel/compat_audit.c   | 11 ++++++-----
+ arch/x86/ia32/audit.c              | 11 ++++++-----
+ arch/x86/kernel/audit_64.c         |  8 ++++----
+ include/linux/audit.h              |  1 +
+ include/linux/auditscm.h           | 23 +++++++++++++++++++++++
+ kernel/auditsc.c                   | 12 ++++++------
+ lib/audit.c                        | 10 +++++-----
+ lib/compat_audit.c                 | 11 ++++++-----
+ 18 files changed, 102 insertions(+), 71 deletions(-)
  create mode 100644 include/linux/auditscm.h
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1249655459d3..2db1dc94888f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2981,6 +2981,7 @@ W:	https://github.com/linux-audit
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git
+ F:	include/asm-generic/audit_*.h
+ F:	include/linux/audit.h
++F:	include/linux/auditscm.h
+ F:	include/uapi/linux/audit.h
+ F:	kernel/audit*
+ F:	lib/*audit.c
+diff --git a/arch/alpha/kernel/audit.c b/arch/alpha/kernel/audit.c
+index 96a9d18ff4c4..81cbd804e375 100644
+--- a/arch/alpha/kernel/audit.c
++++ b/arch/alpha/kernel/audit.c
+@@ -37,13 +37,13 @@ int audit_classify_syscall(int abi, unsigned syscall)
+ {
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 0;
++		return AUDITSC_NATIVE;
+ 	}
+ }
+ 
+diff --git a/arch/ia64/kernel/audit.c b/arch/ia64/kernel/audit.c
+index 5192ca899fe6..dba6a74c9ab3 100644
+--- a/arch/ia64/kernel/audit.c
++++ b/arch/ia64/kernel/audit.c
+@@ -38,13 +38,13 @@ int audit_classify_syscall(int abi, unsigned syscall)
+ {
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 0;
++		return AUDITSC_NATIVE;
+ 	}
+ }
+ 
+diff --git a/arch/parisc/kernel/audit.c b/arch/parisc/kernel/audit.c
+index 9eb47b2225d2..14244e83db75 100644
+--- a/arch/parisc/kernel/audit.c
++++ b/arch/parisc/kernel/audit.c
+@@ -47,13 +47,13 @@ int audit_classify_syscall(int abi, unsigned syscall)
+ #endif
+ 	switch (syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 0;
++		return AUDITSC_NATIVE;
+ 	}
+ }
+ 
+diff --git a/arch/parisc/kernel/compat_audit.c b/arch/parisc/kernel/compat_audit.c
+index 20c39c9d86a9..0c181bb39f34 100644
+--- a/arch/parisc/kernel/compat_audit.c
++++ b/arch/parisc/kernel/compat_audit.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <linux/auditscm.h>
+ #include <asm/unistd.h>
+ 
+ unsigned int parisc32_dir_class[] = {
+@@ -30,12 +31,12 @@ int parisc32_classify_syscall(unsigned syscall)
+ {
+ 	switch (syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 1;
++		return AUDITSC_COMPAT;
+ 	}
+ }
+diff --git a/arch/powerpc/kernel/audit.c b/arch/powerpc/kernel/audit.c
+index a2dddd7f3d09..6eb18ef77dff 100644
+--- a/arch/powerpc/kernel/audit.c
++++ b/arch/powerpc/kernel/audit.c
+@@ -47,15 +47,15 @@ int audit_classify_syscall(int abi, unsigned syscall)
+ #endif
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 0;
++		return AUDITSC_NATIVE;
+ 	}
+ }
+ 
+diff --git a/arch/powerpc/kernel/compat_audit.c b/arch/powerpc/kernel/compat_audit.c
+index 55c6ccda0a85..f250777f6365 100644
+--- a/arch/powerpc/kernel/compat_audit.c
++++ b/arch/powerpc/kernel/compat_audit.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #undef __powerpc64__
++#include <linux/auditscm.h>
+ #include <asm/unistd.h>
+ 
+ unsigned ppc32_dir_class[] = {
+@@ -31,14 +32,14 @@ int ppc32_classify_syscall(unsigned syscall)
+ {
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 1;
++		return AUDITSC_COMPAT;
+ 	}
+ }
+diff --git a/arch/s390/kernel/audit.c b/arch/s390/kernel/audit.c
+index d395c6c9944c..7e331e1831d4 100644
+--- a/arch/s390/kernel/audit.c
++++ b/arch/s390/kernel/audit.c
+@@ -47,15 +47,15 @@ int audit_classify_syscall(int abi, unsigned syscall)
+ #endif
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 0;
++		return AUDITSC_NATIVE;
+ 	}
+ }
+ 
+diff --git a/arch/s390/kernel/compat_audit.c b/arch/s390/kernel/compat_audit.c
+index 444fb1f66944..b2a2ed5d605a 100644
+--- a/arch/s390/kernel/compat_audit.c
++++ b/arch/s390/kernel/compat_audit.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #undef __s390x__
++#include <linux/auditscm.h>
+ #include <asm/unistd.h>
+ #include "audit.h"
+ 
+@@ -32,14 +33,14 @@ int s390_classify_syscall(unsigned syscall)
+ {
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 1;
++		return AUDITSC_COMPAT;
+ 	}
+ }
+diff --git a/arch/sparc/kernel/audit.c b/arch/sparc/kernel/audit.c
+index a6e91bf34d48..50fab35bdaba 100644
+--- a/arch/sparc/kernel/audit.c
++++ b/arch/sparc/kernel/audit.c
+@@ -48,15 +48,15 @@ int audit_classify_syscall(int abi, unsigned int syscall)
+ #endif
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 0;
++		return AUDITSC_NATIVE;
+ 	}
+ }
+ 
+diff --git a/arch/sparc/kernel/compat_audit.c b/arch/sparc/kernel/compat_audit.c
+index 10eeb4f15b20..fdf0d70b569b 100644
+--- a/arch/sparc/kernel/compat_audit.c
++++ b/arch/sparc/kernel/compat_audit.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #define __32bit_syscall_numbers__
++#include <linux/auditscm.h>
+ #include <asm/unistd.h>
+ #include "kernel.h"
+ 
+@@ -32,14 +33,14 @@ int sparc32_classify_syscall(unsigned int syscall)
+ {
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 1;
++		return AUDITSC_COMPAT;
+ 	}
+ }
+diff --git a/arch/x86/ia32/audit.c b/arch/x86/ia32/audit.c
+index 6efe6cb3768a..d3dc8b57df81 100644
+--- a/arch/x86/ia32/audit.c
++++ b/arch/x86/ia32/audit.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <linux/auditscm.h>
+ #include <asm/unistd_32.h>
+ #include <asm/audit.h>
+ 
+@@ -31,15 +32,15 @@ int ia32_classify_syscall(unsigned syscall)
+ {
+ 	switch (syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ 	case __NR_execve:
+ 	case __NR_execveat:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 1;
++		return AUDITSC_COMPAT;
+ 	}
+ }
+diff --git a/arch/x86/kernel/audit_64.c b/arch/x86/kernel/audit_64.c
+index 83d9cad4e68b..2a6cc9c9c881 100644
+--- a/arch/x86/kernel/audit_64.c
++++ b/arch/x86/kernel/audit_64.c
+@@ -47,14 +47,14 @@ int audit_classify_syscall(int abi, unsigned syscall)
+ #endif
+ 	switch(syscall) {
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ 	case __NR_execve:
+ 	case __NR_execveat:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 0;
++		return AUDITSC_NATIVE;
+ 	}
+ }
+ 
+diff --git a/include/linux/audit.h b/include/linux/audit.h
+index 82b7c1116a85..1137df4d4171 100644
+--- a/include/linux/audit.h
++++ b/include/linux/audit.h
+@@ -11,6 +11,7 @@
+ 
+ #include <linux/sched.h>
+ #include <linux/ptrace.h>
++#include <linux/auditscm.h> /* syscall class macros */
+ #include <uapi/linux/audit.h>
+ #include <uapi/linux/netfilter/nf_tables.h>
+ 
+diff --git a/include/linux/auditscm.h b/include/linux/auditscm.h
+new file mode 100644
+index 000000000000..1c4f0ead5931
+--- /dev/null
++++ b/include/linux/auditscm.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/* auditscm.h -- Auditing support syscall macros
++ *
++ * Copyright 2021 Red Hat Inc., Durham, North Carolina.
++ * All Rights Reserved.
++ *
++ * Author: Richard Guy Briggs <rgb@redhat.com>
++ */
++#ifndef _LINUX_AUDITSCM_H_
++#define _LINUX_AUDITSCM_H_
++
++enum auditsc_class_t {
++	AUDITSC_NATIVE = 0,
++	AUDITSC_COMPAT,
++	AUDITSC_OPEN,
++	AUDITSC_OPENAT,
++	AUDITSC_SOCKETCALL,
++	AUDITSC_EXECVE,
++
++	AUDITSC_NVALS /* count */
++};
++
++#endif
+diff --git a/kernel/auditsc.c b/kernel/auditsc.c
+index 8bb9ac84d2fb..8807afa6e237 100644
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -165,7 +165,7 @@ static int audit_match_perm(struct audit_context *ctx, int mask)
+ 	n = ctx->major;
+ 
+ 	switch (audit_classify_syscall(ctx->arch, n)) {
+-	case 0:	/* native */
++	case AUDITSC_NATIVE:
+ 		if ((mask & AUDIT_PERM_WRITE) &&
+ 		     audit_match_class(AUDIT_CLASS_WRITE, n))
+ 			return 1;
+@@ -176,7 +176,7 @@ static int audit_match_perm(struct audit_context *ctx, int mask)
+ 		     audit_match_class(AUDIT_CLASS_CHATTR, n))
+ 			return 1;
+ 		return 0;
+-	case 1: /* 32bit on biarch */
++	case AUDITSC_COMPAT: /* 32bit on biarch */
+ 		if ((mask & AUDIT_PERM_WRITE) &&
+ 		     audit_match_class(AUDIT_CLASS_WRITE_32, n))
+ 			return 1;
+@@ -187,13 +187,13 @@ static int audit_match_perm(struct audit_context *ctx, int mask)
+ 		     audit_match_class(AUDIT_CLASS_CHATTR_32, n))
+ 			return 1;
+ 		return 0;
+-	case 2: /* open */
++	case AUDITSC_OPEN:
+ 		return mask & ACC_MODE(ctx->argv[1]);
+-	case 3: /* openat */
++	case AUDITSC_OPENAT:
+ 		return mask & ACC_MODE(ctx->argv[2]);
+-	case 4: /* socketcall */
++	case AUDITSC_SOCKETCALL:
+ 		return ((mask & AUDIT_PERM_WRITE) && ctx->argv[0] == SYS_BIND);
+-	case 5: /* execve */
++	case AUDITSC_EXECVE:
+ 		return mask & AUDIT_PERM_EXEC;
+ 	default:
+ 		return 0;
+diff --git a/lib/audit.c b/lib/audit.c
+index 5004bff928a7..3ec1a94d8d64 100644
+--- a/lib/audit.c
++++ b/lib/audit.c
+@@ -45,23 +45,23 @@ int audit_classify_syscall(int abi, unsigned syscall)
+ 	switch(syscall) {
+ #ifdef __NR_open
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ #endif
+ #ifdef __NR_openat
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ #endif
+ #ifdef __NR_socketcall
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ #endif
+ #ifdef __NR_execveat
+ 	case __NR_execveat:
+ #endif
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 0;
++		return AUDITSC_NATIVE;
+ 	}
+ }
+ 
+diff --git a/lib/compat_audit.c b/lib/compat_audit.c
+index 77eabad69b4a..63125ad2edc0 100644
+--- a/lib/compat_audit.c
++++ b/lib/compat_audit.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <linux/init.h>
+ #include <linux/types.h>
++#include <linux/auditscm.h>
+ #include <asm/unistd32.h>
+ 
+ unsigned compat_dir_class[] = {
+@@ -33,19 +34,19 @@ int audit_classify_compat_syscall(int abi, unsigned syscall)
+ 	switch (syscall) {
+ #ifdef __NR_open
+ 	case __NR_open:
+-		return 2;
++		return AUDITSC_OPEN;
+ #endif
+ #ifdef __NR_openat
+ 	case __NR_openat:
+-		return 3;
++		return AUDITSC_OPENAT;
+ #endif
+ #ifdef __NR_socketcall
+ 	case __NR_socketcall:
+-		return 4;
++		return AUDITSC_SOCKETCALL;
+ #endif
+ 	case __NR_execve:
+-		return 5;
++		return AUDITSC_EXECVE;
+ 	default:
+-		return 1;
++		return AUDITSC_COMPAT;
+ 	}
+ }
 -- 
 2.27.0
 
