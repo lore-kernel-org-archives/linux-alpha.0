@@ -1,56 +1,124 @@
-From: Paul Moore <paul@paul-moore.com>
+From: Richard Guy Briggs <rgb@redhat.com>
 Subject: Re: [PATCH v3 1/3] audit: replace magic audit syscall class numbers
  with macros
-Date: Tue, 11 May 2021 13:51:48 -0400
-Message-ID: <CAHC9VhQ9DgiMKScTt5xfyK25WM-KPUrFksFS7dH51u0+PemPLA@mail.gmail.com>
-References: <cover.1619811762.git.rgb@redhat.com> <bda073f2a8b11000ef40cf8b965305409ee88f44.1619811762.git.rgb@redhat.com>
- <CAHC9VhShi4u26h5OsahveQDNxO_uZ+KgzGOYEp5W7w6foA-uKg@mail.gmail.com> <20210511171356.GN3141668@madcap2.tricolour.ca>
+Date: Tue, 11 May 2021 14:50:11 -0400
+Message-ID: <20210511185011.GP3141668@madcap2.tricolour.ca>
+References: <cover.1619811762.git.rgb@redhat.com>
+ <bda073f2a8b11000ef40cf8b965305409ee88f44.1619811762.git.rgb@redhat.com>
+ <CAHC9VhShi4u26h5OsahveQDNxO_uZ+KgzGOYEp5W7w6foA-uKg@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vvtm8n5cG3jzsceNHvZusZOhtfG69GGyP0C0zXimiGg=;
-        b=H0AsqdZCMhypi9/Qd7/1eUPAVczkGpwzNdPrEzyRmHk3+xGYRUzHdDlO2l4ucRTL8I
-         6IkWY+o747IONKRbHjInbulgo0QHOF+Aog+9sCymBmOTGkGLMG+u9jruv/UZbKRmL6Hs
-         djJGJfy02eav+9cJ/e8taZvmfCdpWKwopL9l1L00vGTndNfe8I1Ba0qFSrrwJA5o7Fa2
-         kypHmxkIMZ4AZTUMiSVLWlzzQG450CuwCzyuG27tqQfsnYHhRA1T87hFThJfEPtkcb4Y
-         ue4D2yBkATCGXbxXcVfdq4bXxs/UCpwDO9F00VAa9ugcnvVl8Xt3EZbMRGFEais4Tdh5
-         EGMw==
-In-Reply-To: <20210511171356.GN3141668@madcap2.tricolour.ca>
+Return-path: <sparclinux-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1620759030;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3sGuDkwY1rpAMVCQJVmhxPq9zjMod4hGpJJ6eXBTmJw=;
+        b=PMWoLHRK/uq3ae2wG3xTAHtRTS/nwPsmx+LcaWrSaKbdUoe9OAp9bvp0cXrwDcEnAQ39Qs
+        eXYfE/nO9U/NkfQiwZI30FDtlPwpBPsaSIW46pEoWsPqJdcPgFGFiT84Y1DQKIkkh1wrdL
+        +H2OHYB/VWpBZq+WoH3JVr1w4YzYW80=
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhShi4u26h5OsahveQDNxO_uZ+KgzGOYEp5W7w6foA-uKg@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Guy Briggs <rgb@redhat.com>
+To: Paul Moore <paul@paul-moore.com>
 Cc: Linux-Audit Mailing List <linux-audit@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>, Steve Grubb <sgrubb@redhat.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Eric Paris <eparis@redhat.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>, Arnd Bergmann <arnd@kernel.org>
 
-On Tue, May 11, 2021 at 1:14 PM Richard Guy Briggs <rgb@redhat.com> wrote:
->
-> On 2021-05-10 21:23, Paul Moore wrote:
-> > On Fri, Apr 30, 2021 at 4:36 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > >
-> > > Replace audit syscall class magic numbers with macros.
-> > >
-> > > This required putting the macros into new header file
-> > > include/linux/auditscm.h since the syscall macros were included for both 64
-> > > bit and 32 bit in any compat code, causing redefinition warnings.
+On 2021-05-10 21:23, Paul Moore wrote:
+> On Fri, Apr 30, 2021 at 4:36 PM Richard Guy Briggs <rgb@redhat.com> wrote:
 > >
-> > The ifndef/define didn't protect against redeclaration?  Huh.  Maybe
-> > I'm not thinking about this correctly, or the arch specific code is
-> > doing something wonky ...
+> > Replace audit syscall class magic numbers with macros.
 > >
-> > Regardless, assuming that it is necessary, I would prefer if we called
-> > it auditsc.h instead of auditscm.h; the latter makes me think of
-> > sockets and not syscalls.
->
-> The "m" was for "macros", since there are auditsc bits in audit.h as
-> well, but I have no significant objection.
+> > This required putting the macros into new header file
+> > include/linux/auditscm.h since the syscall macros were included for both 64
+> > bit and 32 bit in any compat code, causing redefinition warnings.
+> 
+> The ifndef/define didn't protect against redeclaration?  Huh.  Maybe
+> I'm not thinking about this correctly, or the arch specific code is
+> doing something wonky ...
 
-Yes, I figured as much, but my comment about it looking like a socket
-"thing" still stands.  I'm open to other ideas if you don't like
-auditsc.h, I just don't like auditscm.h.
+I had a chat with Arnd about it in IRC upstream and started digging
+deeper and it got quite messy.  As seen from the cover letter, audit.h
+pulled in a chain of things which weren't entirely unreasonable given it
+was compiling compat support in with native support by default.  I
+suppose I could have defined _ASM_X86_UNISTD_64_H to prevent it from
+being added, but that would be ugly on a generated file, have caused a
+failure elsewhere and would need to be done for each compat file.  I
+thought of defining CONFIG_X86_32 in arch/x86/ia32/audit.c but that
+would cause other problems.  This was the cleanest solution.  Otherwise
+I leave them as magic numbers like in V1.
 
--- 
-paul moore
-www.paul-moore.com
+> Regardless, assuming that it is necessary, I would prefer if we called
+> it auditsc.h instead of auditscm.h; the latter makes me think of
+> sockets and not syscalls.
+> 
+> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > ---
+> >  MAINTAINERS                        |  1 +
+> >  arch/alpha/kernel/audit.c          |  8 ++++----
+> >  arch/ia64/kernel/audit.c           |  8 ++++----
+> >  arch/parisc/kernel/audit.c         |  8 ++++----
+> >  arch/parisc/kernel/compat_audit.c  |  9 +++++----
+> >  arch/powerpc/kernel/audit.c        | 10 +++++-----
+> >  arch/powerpc/kernel/compat_audit.c | 11 ++++++-----
+> >  arch/s390/kernel/audit.c           | 10 +++++-----
+> >  arch/s390/kernel/compat_audit.c    | 11 ++++++-----
+> >  arch/sparc/kernel/audit.c          | 10 +++++-----
+> >  arch/sparc/kernel/compat_audit.c   | 11 ++++++-----
+> >  arch/x86/ia32/audit.c              | 11 ++++++-----
+> >  arch/x86/kernel/audit_64.c         |  8 ++++----
+> >  include/linux/audit.h              |  1 +
+> >  include/linux/auditscm.h           | 23 +++++++++++++++++++++++
+> >  kernel/auditsc.c                   | 12 ++++++------
+> >  lib/audit.c                        | 10 +++++-----
+> >  lib/compat_audit.c                 | 11 ++++++-----
+> >  18 files changed, 102 insertions(+), 71 deletions(-)
+> >  create mode 100644 include/linux/auditscm.h
+> 
+> ...
+> 
+> > diff --git a/include/linux/auditscm.h b/include/linux/auditscm.h
+> > new file mode 100644
+> > index 000000000000..1c4f0ead5931
+> > --- /dev/null
+> > +++ b/include/linux/auditscm.h
+> > @@ -0,0 +1,23 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> > +/* auditscm.h -- Auditing support syscall macros
+> > + *
+> > + * Copyright 2021 Red Hat Inc., Durham, North Carolina.
+> > + * All Rights Reserved.
+> > + *
+> > + * Author: Richard Guy Briggs <rgb@redhat.com>
+> > + */
+> > +#ifndef _LINUX_AUDITSCM_H_
+> > +#define _LINUX_AUDITSCM_H_
+> > +
+> > +enum auditsc_class_t {
+> > +       AUDITSC_NATIVE = 0,
+> > +       AUDITSC_COMPAT,
+> > +       AUDITSC_OPEN,
+> > +       AUDITSC_OPENAT,
+> > +       AUDITSC_SOCKETCALL,
+> > +       AUDITSC_EXECVE,
+> > +
+> > +       AUDITSC_NVALS /* count */
+> > +};
+> > +
+> > +#endif
+> 
+> -- 
+> paul moore
+> www.paul-moore.com
+> 
+
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
+
