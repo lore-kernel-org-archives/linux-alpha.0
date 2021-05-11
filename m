@@ -1,62 +1,100 @@
-From: Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [RFC 01/12] asm-generic: use asm-generic/unaligned.h for most architectures
-Date: Mon, 10 May 2021 15:12:09 +0200
-Message-ID: <CAK8P3a15W5vV9ivk6YnR2aGMvDjTrPGrzsszf2kD6kv1TfrpbQ@mail.gmail.com>
-References: <20210507220813.365382-1-arnd@kernel.org> <20210507220813.365382-2-arnd@kernel.org>
- <CAMuHMdV1=mJzbr1cLwo-zUnThh9J8BmdW870dJCvp_Kft8kM2w@mail.gmail.com>
+From: Paul Moore <paul@paul-moore.com>
+Subject: Re: [PATCH v3 1/3] audit: replace magic audit syscall class numbers
+ with macros
+Date: Mon, 10 May 2021 21:23:54 -0400
+Message-ID: <CAHC9VhShi4u26h5OsahveQDNxO_uZ+KgzGOYEp5W7w6foA-uKg@mail.gmail.com>
+References: <cover.1619811762.git.rgb@redhat.com> <bda073f2a8b11000ef40cf8b965305409ee88f44.1619811762.git.rgb@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620652384;
-        bh=PSzgBT970qRtHokrpRLHj29TDKDvchKrZWRzijLqSCs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MUrtxCT/+rGukywuzRkfaC1xwjapGbNy2+3e8bzZ3aQ0cOAmyYUq3azbb6IhtO0Nw
-         p5XyHu4VOgBYEa957EVxU3BgA230WNLISuTb4U+Pxccg2CidCpYSBYUsyP2pl1C4D6
-         Ssp9VBJpOqOM9as1+ff4+s82GbQYrLj4/Ccvp6Fe5+4Wjf0bmQsntVsK1aQkAHLaNN
-         OiwPqMreqj7coc2PgsKzQusD9bUl92VBwDav2aumK3/lvRA4sE3dFXc1aRT3/acR7J
-         3ZcBejsOp9FNMrKrm2GMmyruGRR0lg3Ay1HMkJhYM5TQBY6g2bR+aDaeYkug9UNRRC
-         ZfVFhhHeOiFKw==
-In-Reply-To: <CAMuHMdV1=mJzbr1cLwo-zUnThh9J8BmdW870dJCvp_Kft8kM2w@mail.gmail.com>
+Return-path: <sparclinux-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=syt/rTNKKQ17UGCB3Uu0pF3Y4fSaa3SrmtO2mz6CWnE=;
+        b=wnnDBP50YuTDmWGzNOFnPcs4wQToxwsCwGRBEFgx7dTWtco22s8x+zEZSiwuwWfbpM
+         cWdw31wnr1boOC7AEos2jrrH4bGAuhpsYL+GtY+HbrHfNNFIkCQ2XoXiTKi6ysk/a0LM
+         KwLh5IIRlLP0O+kiTEPwwX6SP6ff2YJqRmgF9axUO6GoHRWhDwBuHrmuAHL/1AQB00za
+         Z5ya4HUeA76Q7yyS/rcQO9PZfeIpKFiUmrvL2D2pFYuw1ACepDvAm2QaZ/4I+ELpE5vp
+         C6rfPiox76AXXt/Rb/GJows7NCWjIsCS6N3qaxUYY1LJERzpfb4IjwoLyxWMlP5agPFI
+         AE1Q==
+In-Reply-To: <bda073f2a8b11000ef40cf8b965305409ee88f44.1619811762.git.rgb@redhat.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Linux-Arch <linux-arch@vger.kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Vineet Gupta <vgupta@synopsys.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Michal Simek <monstr@monstr.eu>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, the arch/x86 maintainers <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-i
+To: Richard Guy Briggs <rgb@redhat.com>
+Cc: Linux-Audit Mailing List <linux-audit@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>, Steve Grubb <sgrubb@redhat.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Eric Paris <eparis@redhat.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>, Arnd Bergmann <arnd@kernel.org>
 
-On Mon, May 10, 2021 at 12:16 PM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
-> On Sat, May 8, 2021 at 12:09 AM Arnd Bergmann <arnd@kernel.org> wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > There are several architectures that just duplicate the contents
-> > of asm-generic/unaligned.h, so change those over to use the
-> > file directly, to make future modifications easier.
-> >
-> > The exceptions are:
-> >
-> > - arm32 sets HAVE_EFFICIENT_UNALIGNED_ACCESS, but wants the
-> >   unaligned-struct version
-> >
-> > - ppc64le disables HAVE_EFFICIENT_UNALIGNED_ACCESS but includes
-> >   the access-ok version
-> >
-> > - m68k (non-dragonball) also uses the access-ok version without
-> >   setting HAVE_EFFICIENT_UNALIGNED_ACCESS.
+On Fri, Apr 30, 2021 at 4:36 PM Richard Guy Briggs <rgb@redhat.com> wrote:
 >
-> This not only applies to dragonball, which has the CPU32 core, but also
-> to plain 68000, and any SoCs including the 68EC000 core.
+> Replace audit syscall class magic numbers with macros.
+>
+> This required putting the macros into new header file
+> include/linux/auditscm.h since the syscall macros were included for both 64
+> bit and 32 bit in any compat code, causing redefinition warnings.
 
-I meant out of the machines that are currently supported in the kernel.
-As far as I can tell, the only 68000 variants that are supported are
-all Dragonball CONFIG_M68328, CONFIG_M68EZ328 and
-CONFIG_M68VZ328.
+The ifndef/define didn't protect against redeclaration?  Huh.  Maybe
+I'm not thinking about this correctly, or the arch specific code is
+doing something wonky ...
 
-CONFIG_MCPU32 has been dead since a3595962d824 ("m68knommu:
-remove obsolete 68360 support")
+Regardless, assuming that it is necessary, I would prefer if we called
+it auditsc.h instead of auditscm.h; the latter makes me think of
+sockets and not syscalls.
 
-> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> ---
+>  MAINTAINERS                        |  1 +
+>  arch/alpha/kernel/audit.c          |  8 ++++----
+>  arch/ia64/kernel/audit.c           |  8 ++++----
+>  arch/parisc/kernel/audit.c         |  8 ++++----
+>  arch/parisc/kernel/compat_audit.c  |  9 +++++----
+>  arch/powerpc/kernel/audit.c        | 10 +++++-----
+>  arch/powerpc/kernel/compat_audit.c | 11 ++++++-----
+>  arch/s390/kernel/audit.c           | 10 +++++-----
+>  arch/s390/kernel/compat_audit.c    | 11 ++++++-----
+>  arch/sparc/kernel/audit.c          | 10 +++++-----
+>  arch/sparc/kernel/compat_audit.c   | 11 ++++++-----
+>  arch/x86/ia32/audit.c              | 11 ++++++-----
+>  arch/x86/kernel/audit_64.c         |  8 ++++----
+>  include/linux/audit.h              |  1 +
+>  include/linux/auditscm.h           | 23 +++++++++++++++++++++++
+>  kernel/auditsc.c                   | 12 ++++++------
+>  lib/audit.c                        | 10 +++++-----
+>  lib/compat_audit.c                 | 11 ++++++-----
+>  18 files changed, 102 insertions(+), 71 deletions(-)
+>  create mode 100644 include/linux/auditscm.h
 
-Thanks!
+...
 
-        Arnd
+> diff --git a/include/linux/auditscm.h b/include/linux/auditscm.h
+> new file mode 100644
+> index 000000000000..1c4f0ead5931
+> --- /dev/null
+> +++ b/include/linux/auditscm.h
+> @@ -0,0 +1,23 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +/* auditscm.h -- Auditing support syscall macros
+> + *
+> + * Copyright 2021 Red Hat Inc., Durham, North Carolina.
+> + * All Rights Reserved.
+> + *
+> + * Author: Richard Guy Briggs <rgb@redhat.com>
+> + */
+> +#ifndef _LINUX_AUDITSCM_H_
+> +#define _LINUX_AUDITSCM_H_
+> +
+> +enum auditsc_class_t {
+> +       AUDITSC_NATIVE = 0,
+> +       AUDITSC_COMPAT,
+> +       AUDITSC_OPEN,
+> +       AUDITSC_OPENAT,
+> +       AUDITSC_SOCKETCALL,
+> +       AUDITSC_EXECVE,
+> +
+> +       AUDITSC_NVALS /* count */
+> +};
+> +
+> +#endif
+
+-- 
+paul moore
+www.paul-moore.com
