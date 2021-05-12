@@ -1,124 +1,58 @@
-From: Richard Guy Briggs <rgb@redhat.com>
-Subject: Re: [PATCH v3 1/3] audit: replace magic audit syscall class numbers
- with macros
-Date: Tue, 11 May 2021 14:50:11 -0400
-Message-ID: <20210511185011.GP3141668@madcap2.tricolour.ca>
-References: <cover.1619811762.git.rgb@redhat.com>
- <bda073f2a8b11000ef40cf8b965305409ee88f44.1619811762.git.rgb@redhat.com>
- <CAHC9VhShi4u26h5OsahveQDNxO_uZ+KgzGOYEp5W7w6foA-uKg@mail.gmail.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 2/5] alpha: move core-y in arch/alpha/Makefile to arch/alpha/Kbuild
+Date: Wed, 12 May 2021 16:57:26 +0900
+Message-ID: <20210512075729.60291-2-masahiroy@kernel.org>
+References: <20210512075729.60291-1-masahiroy@kernel.org>
 Mime-Version: 1.0
-Return-path: <sparclinux-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1620759030;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3sGuDkwY1rpAMVCQJVmhxPq9zjMod4hGpJJ6eXBTmJw=;
-        b=PMWoLHRK/uq3ae2wG3xTAHtRTS/nwPsmx+LcaWrSaKbdUoe9OAp9bvp0cXrwDcEnAQ39Qs
-        eXYfE/nO9U/NkfQiwZI30FDtlPwpBPsaSIW46pEoWsPqJdcPgFGFiT84Y1DQKIkkh1wrdL
-        +H2OHYB/VWpBZq+WoH3JVr1w4YzYW80=
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhShi4u26h5OsahveQDNxO_uZ+KgzGOYEp5W7w6foA-uKg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kbuild-owner@vger.kernel.org>
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com 14C7vbPt028192
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1620806262;
+        bh=GedbzCCJCAPRNECZua9lPIWPhczb61cxZ1yg+Fbq1rw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dvgkQ7C0TnzwLz+GPWXRNHRF07mQ+u+qTT8XF9o1d337I70WCRVp2VXrYwYsZwC0w
+         oRl5Beof2gk4zbRmE8mHo8i7gqmkrUJv2rI9ki2fpQ8wfiPxab4wNGt2wrjyqq0pC2
+         rQhbZsoacpuXJFbEQL+PVUnQHWsZha0O0r2egLWPRoYGi0yJa/8fAyg16xRPM+wtG0
+         FsvB3QOyZLiVC28vOzhYeY0aJMr+mHCunjayVh4lza0I88pajLXAhTuL6U0gUi4EB0
+         WBLUpEhaoLB6nSfkhJ2lnG2Hj9z1SLrU+m4ZN5LdQtgaRM8v2euP9dC6wdGx3EvlsI
+         uBNihKuRiXNUw==
+In-Reply-To: <20210512075729.60291-1-masahiroy@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Paul Moore <paul@paul-moore.com>
-Cc: Linux-Audit Mailing List <linux-audit@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>, Steve Grubb <sgrubb@redhat.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Eric Paris <eparis@redhat.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>, Arnd Bergmann <arnd@kernel.org>
+To: linux-kbuild@vger.kernel.org
+Cc: Masahiro Yamada <masahiroy@kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 2021-05-10 21:23, Paul Moore wrote:
-> On Fri, Apr 30, 2021 at 4:36 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> >
-> > Replace audit syscall class magic numbers with macros.
-> >
-> > This required putting the macros into new header file
-> > include/linux/auditscm.h since the syscall macros were included for both 64
-> > bit and 32 bit in any compat code, causing redefinition warnings.
-> 
-> The ifndef/define didn't protect against redeclaration?  Huh.  Maybe
-> I'm not thinking about this correctly, or the arch specific code is
-> doing something wonky ...
+Use obj-y to clean up Makefile.
 
-I had a chat with Arnd about it in IRC upstream and started digging
-deeper and it got quite messy.  As seen from the cover letter, audit.h
-pulled in a chain of things which weren't entirely unreasonable given it
-was compiling compat support in with native support by default.  I
-suppose I could have defined _ASM_X86_UNISTD_64_H to prevent it from
-being added, but that would be ugly on a generated file, have caused a
-failure elsewhere and would need to be done for each compat file.  I
-thought of defining CONFIG_X86_32 in arch/x86/ia32/audit.c but that
-would cause other problems.  This was the cleanest solution.  Otherwise
-I leave them as magic numbers like in V1.
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-> Regardless, assuming that it is necessary, I would prefer if we called
-> it auditsc.h instead of auditscm.h; the latter makes me think of
-> sockets and not syscalls.
-> 
-> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > ---
-> >  MAINTAINERS                        |  1 +
-> >  arch/alpha/kernel/audit.c          |  8 ++++----
-> >  arch/ia64/kernel/audit.c           |  8 ++++----
-> >  arch/parisc/kernel/audit.c         |  8 ++++----
-> >  arch/parisc/kernel/compat_audit.c  |  9 +++++----
-> >  arch/powerpc/kernel/audit.c        | 10 +++++-----
-> >  arch/powerpc/kernel/compat_audit.c | 11 ++++++-----
-> >  arch/s390/kernel/audit.c           | 10 +++++-----
-> >  arch/s390/kernel/compat_audit.c    | 11 ++++++-----
-> >  arch/sparc/kernel/audit.c          | 10 +++++-----
-> >  arch/sparc/kernel/compat_audit.c   | 11 ++++++-----
-> >  arch/x86/ia32/audit.c              | 11 ++++++-----
-> >  arch/x86/kernel/audit_64.c         |  8 ++++----
-> >  include/linux/audit.h              |  1 +
-> >  include/linux/auditscm.h           | 23 +++++++++++++++++++++++
-> >  kernel/auditsc.c                   | 12 ++++++------
-> >  lib/audit.c                        | 10 +++++-----
-> >  lib/compat_audit.c                 | 11 ++++++-----
-> >  18 files changed, 102 insertions(+), 71 deletions(-)
-> >  create mode 100644 include/linux/auditscm.h
-> 
-> ...
-> 
-> > diff --git a/include/linux/auditscm.h b/include/linux/auditscm.h
-> > new file mode 100644
-> > index 000000000000..1c4f0ead5931
-> > --- /dev/null
-> > +++ b/include/linux/auditscm.h
-> > @@ -0,0 +1,23 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> > +/* auditscm.h -- Auditing support syscall macros
-> > + *
-> > + * Copyright 2021 Red Hat Inc., Durham, North Carolina.
-> > + * All Rights Reserved.
-> > + *
-> > + * Author: Richard Guy Briggs <rgb@redhat.com>
-> > + */
-> > +#ifndef _LINUX_AUDITSCM_H_
-> > +#define _LINUX_AUDITSCM_H_
-> > +
-> > +enum auditsc_class_t {
-> > +       AUDITSC_NATIVE = 0,
-> > +       AUDITSC_COMPAT,
-> > +       AUDITSC_OPEN,
-> > +       AUDITSC_OPENAT,
-> > +       AUDITSC_SOCKETCALL,
-> > +       AUDITSC_EXECVE,
-> > +
-> > +       AUDITSC_NVALS /* count */
-> > +};
-> > +
-> > +#endif
-> 
-> -- 
-> paul moore
-> www.paul-moore.com
-> 
+ arch/alpha/Kbuild   | 2 ++
+ arch/alpha/Makefile | 2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+diff --git a/arch/alpha/Kbuild b/arch/alpha/Kbuild
+index a4e40e534e6a..c2302017403a 100644
+--- a/arch/alpha/Kbuild
++++ b/arch/alpha/Kbuild
+@@ -1 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
++obj-y			+= kernel/ mm/
++obj-$(CONFIG_MATHEMU)	+= math-emu/
+diff --git a/arch/alpha/Makefile b/arch/alpha/Makefile
+index c2946431d88d..52529ee42dac 100644
+--- a/arch/alpha/Makefile
++++ b/arch/alpha/Makefile
+@@ -38,8 +38,6 @@ KBUILD_CFLAGS += $(cflags-y) -Wa,-mev6
+ 
+ head-y := arch/alpha/kernel/head.o
+ 
+-core-y				+= arch/alpha/kernel/ arch/alpha/mm/
+-core-$(CONFIG_MATHEMU)		+= arch/alpha/math-emu/
+ libs-y				+= arch/alpha/lib/
+ 
+ # export what is needed by arch/alpha/boot/Makefile
+-- 
+2.27.0
 
