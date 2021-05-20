@@ -1,244 +1,110 @@
-From: Christian Brauner <christian.brauner@ubuntu.com>
-Subject: Re: [PATCH v4 2/3] audit: add support for the openat2 syscall
-Date: Thu, 20 May 2021 09:58:42 +0200
-Message-ID: <20210520075842.vnbwbw6yffkybk6z@wittgenstein>
-References: <cover.1621363275.git.rgb@redhat.com>
- <f5f1a4d8699613f8c02ce762807228c841c2e26f.1621363275.git.rgb@redhat.com>
+From: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>
+Subject: Re: [PATCH resend v2 2/5] mm/madvise: introduce
+ MADV_POPULATE_(READ|WRITE) to prefault page tables
+Date: Thu, 20 May 2021 15:44:18 +0200
+Message-ID: <YKZnsnqgEMx6Xl6X@dhcp22.suse.cz>
+References: <20210511081534.3507-1-david@redhat.com>
+ <20210511081534.3507-3-david@redhat.com>
+ <YKOR/8LzEaOgCvio@dhcp22.suse.cz>
+ <bb0e2ebb-e66d-176c-b20a-fbadd95cde98@redhat.com>
+ <YKOiV9VkEdYFM9nB@dhcp22.suse.cz>
+ <b2fa988d-9625-7c0e-ce83-158af0058e38@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1621518266; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8FtvtQGziQhcsaA/EvzWrXNbEVs6OaNRrt/mRJMM9cU=;
+        b=CQ8uUnw1rxMpz8avh1mYAkvdbRHR4IgjibUucNFDQIxbmYf5sXdDKB/hypasyxUHH5Zd2I
+        PlCAJhUGC7VlaSrCbqMlySmj05bdOcEzKaPXQ/KuYsubdNFiKqJQy0eG7QG5h6+9OZ/xFK
+        wqindb7jd/LPH8oYEy+S9+XBsVBqP7U=
 Content-Disposition: inline
-In-Reply-To: <f5f1a4d8699613f8c02ce762807228c841c2e26f.1621363275.git.rgb@redhat.com>
+In-Reply-To: <b2fa988d-9625-7c0e-ce83-158af0058e38-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Guy Briggs <rgb@redhat.com>
-Cc: Linux-Audit Mailing List <linux-audit@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-fsdevel@vger.kernel.org, Paul Moore <paul@paul-moore.com>, Eric Paris <eparis@parisplace.org>, Steve Grubb <sgrubb@redhat.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Eric Paris <eparis@redhat.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>, Arnd Bergmann <arnd@kernel.org>
+To: David Hildenbrand <david-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Oscar Salvador <osalvador-l3A5Bk7waGM@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Andrea Arcangeli <aarcange-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Minchan Kim <minchan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jann Horn <jannh-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Jason Gunthorpe <jgg-uk2M96/98Pc@public.gmane.org>, Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Hugh Dickins <hughd-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, "Michael S . Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Kirill A . Shutemov" <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, James E.J. Bottomle
 
-On Wed, May 19, 2021 at 04:00:21PM -0400, Richard Guy Briggs wrote:
-> The openat2(2) syscall was added in kernel v5.6 with commit fddb5d430ad9
-> ("open: introduce openat2(2) syscall")
+On Tue 18-05-21 14:03:52, David Hildenbrand wrote:
+[...]
+> > > I expect that use case might vanish over
+> > > time (eventually with new kernels and updated user space), but it might
+> > > stick for a bit.
+> > 
+> > Could you elaborate some more please?
 > 
-> Add the openat2(2) syscall to the audit syscall classifier.
+> After I raised that the current behavior of userfaultfd-wp is suboptimal,
+> Peter started working on a userfaultfd-wp mode that doesn't require to
+> prefault all pages just to have it working reliably -- getting notified when
+> any page changes, including ones that haven't been populated yet and would
+> have been populated with the shared zeropage on first access. Not sure what
+> the state of that is and when we might see it.
+
+OK, thanks for the clarification. This suggests that inventing a new
+interface to cover this usecase doesn't sound like the strongest
+justification to me. But this doesn't mean this disqualifies it either.
+
+> > > Apart from that, populating the shared zeropage might be relevant in some
+> > > corner cases: I remember there are sparse matrix algorithms that operate
+> > > heavily on the shared zeropage.
+> > 
+> > I am not sure I see why this would be a useful interface for those? Zero
+> > page read fault is really low cost. Or are you worried about cummulative
+> > overhead by entering the kernel many times?
 > 
-> Link: https://github.com/linux-audit/audit-kernel/issues/67
-> Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> Link: https://lore.kernel.org/r/f5f1a4d8699613f8c02ce762807228c841c2e26f.1621363275.git.rgb@redhat.com
-> ---
->  arch/alpha/kernel/audit.c           | 2 ++
->  arch/ia64/kernel/audit.c            | 2 ++
->  arch/parisc/kernel/audit.c          | 2 ++
->  arch/parisc/kernel/compat_audit.c   | 2 ++
->  arch/powerpc/kernel/audit.c         | 2 ++
->  arch/powerpc/kernel/compat_audit.c  | 2 ++
->  arch/s390/kernel/audit.c            | 2 ++
->  arch/s390/kernel/compat_audit.c     | 2 ++
->  arch/sparc/kernel/audit.c           | 2 ++
->  arch/sparc/kernel/compat_audit.c    | 2 ++
->  arch/x86/ia32/audit.c               | 2 ++
->  arch/x86/kernel/audit_64.c          | 2 ++
->  include/linux/auditsc_classmacros.h | 1 +
->  kernel/auditsc.c                    | 3 +++
->  lib/audit.c                         | 4 ++++
->  lib/compat_audit.c                  | 4 ++++
->  16 files changed, 36 insertions(+)
-> 
-> diff --git a/arch/alpha/kernel/audit.c b/arch/alpha/kernel/audit.c
-> index 81cbd804e375..3ab04709784a 100644
-> --- a/arch/alpha/kernel/audit.c
-> +++ b/arch/alpha/kernel/audit.c
-> @@ -42,6 +42,8 @@ int audit_classify_syscall(int abi, unsigned syscall)
->  		return AUDITSC_OPENAT;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_NATIVE;
->  	}
-> diff --git a/arch/ia64/kernel/audit.c b/arch/ia64/kernel/audit.c
-> index dba6a74c9ab3..ec61f20ca61f 100644
-> --- a/arch/ia64/kernel/audit.c
-> +++ b/arch/ia64/kernel/audit.c
-> @@ -43,6 +43,8 @@ int audit_classify_syscall(int abi, unsigned syscall)
->  		return AUDITSC_OPENAT;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_NATIVE;
->  	}
-> diff --git a/arch/parisc/kernel/audit.c b/arch/parisc/kernel/audit.c
-> index 14244e83db75..f420b5552140 100644
-> --- a/arch/parisc/kernel/audit.c
-> +++ b/arch/parisc/kernel/audit.c
-> @@ -52,6 +52,8 @@ int audit_classify_syscall(int abi, unsigned syscall)
->  		return AUDITSC_OPENAT;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_NATIVE;
->  	}
-> diff --git a/arch/parisc/kernel/compat_audit.c b/arch/parisc/kernel/compat_audit.c
-> index 1d6347d37d92..3ec490c28656 100644
-> --- a/arch/parisc/kernel/compat_audit.c
-> +++ b/arch/parisc/kernel/compat_audit.c
-> @@ -36,6 +36,8 @@ int parisc32_classify_syscall(unsigned syscall)
->  		return AUDITSC_OPENAT;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_COMPAT;
->  	}
-> diff --git a/arch/powerpc/kernel/audit.c b/arch/powerpc/kernel/audit.c
-> index 6eb18ef77dff..1bcfca5fdf67 100644
-> --- a/arch/powerpc/kernel/audit.c
-> +++ b/arch/powerpc/kernel/audit.c
-> @@ -54,6 +54,8 @@ int audit_classify_syscall(int abi, unsigned syscall)
->  		return AUDITSC_SOCKETCALL;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_NATIVE;
->  	}
-> diff --git a/arch/powerpc/kernel/compat_audit.c b/arch/powerpc/kernel/compat_audit.c
-> index b1dc2d1c4bad..251abf79d536 100644
-> --- a/arch/powerpc/kernel/compat_audit.c
-> +++ b/arch/powerpc/kernel/compat_audit.c
-> @@ -39,6 +39,8 @@ int ppc32_classify_syscall(unsigned syscall)
->  		return AUDITSC_SOCKETCALL;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_COMPAT;
->  	}
-> diff --git a/arch/s390/kernel/audit.c b/arch/s390/kernel/audit.c
-> index 7e331e1831d4..02051a596b87 100644
-> --- a/arch/s390/kernel/audit.c
-> +++ b/arch/s390/kernel/audit.c
-> @@ -54,6 +54,8 @@ int audit_classify_syscall(int abi, unsigned syscall)
->  		return AUDITSC_SOCKETCALL;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_NATIVE;
->  	}
-> diff --git a/arch/s390/kernel/compat_audit.c b/arch/s390/kernel/compat_audit.c
-> index fc3d1c7ad21c..4b3d463e7d97 100644
-> --- a/arch/s390/kernel/compat_audit.c
-> +++ b/arch/s390/kernel/compat_audit.c
-> @@ -40,6 +40,8 @@ int s390_classify_syscall(unsigned syscall)
->  		return AUDITSC_SOCKETCALL;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_COMPAT;
->  	}
-> diff --git a/arch/sparc/kernel/audit.c b/arch/sparc/kernel/audit.c
-> index 50fab35bdaba..b092274eca79 100644
-> --- a/arch/sparc/kernel/audit.c
-> +++ b/arch/sparc/kernel/audit.c
-> @@ -55,6 +55,8 @@ int audit_classify_syscall(int abi, unsigned int syscall)
->  		return AUDITSC_SOCKETCALL;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_NATIVE;
->  	}
-> diff --git a/arch/sparc/kernel/compat_audit.c b/arch/sparc/kernel/compat_audit.c
-> index 1c1b6d075421..2a3f71206fc5 100644
-> --- a/arch/sparc/kernel/compat_audit.c
-> +++ b/arch/sparc/kernel/compat_audit.c
-> @@ -40,6 +40,8 @@ int sparc32_classify_syscall(unsigned int syscall)
->  		return AUDITSC_SOCKETCALL;
->  	case __NR_execve:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_COMPAT;
->  	}
-> diff --git a/arch/x86/ia32/audit.c b/arch/x86/ia32/audit.c
-> index eedc37a1ee13..efc7d832fefb 100644
-> --- a/arch/x86/ia32/audit.c
-> +++ b/arch/x86/ia32/audit.c
-> @@ -40,6 +40,8 @@ int ia32_classify_syscall(unsigned syscall)
->  	case __NR_execve:
->  	case __NR_execveat:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_COMPAT;
->  	}
-> diff --git a/arch/x86/kernel/audit_64.c b/arch/x86/kernel/audit_64.c
-> index 2a6cc9c9c881..44c3601cfdc4 100644
-> --- a/arch/x86/kernel/audit_64.c
-> +++ b/arch/x86/kernel/audit_64.c
-> @@ -53,6 +53,8 @@ int audit_classify_syscall(int abi, unsigned syscall)
->  	case __NR_execve:
->  	case __NR_execveat:
->  		return AUDITSC_EXECVE;
-> +	case __NR_openat2:
-> +		return AUDITSC_OPENAT2;
->  	default:
->  		return AUDITSC_NATIVE;
->  	}
-> diff --git a/include/linux/auditsc_classmacros.h b/include/linux/auditsc_classmacros.h
-> index 18757d270961..dc8e72536dbd 100644
-> --- a/include/linux/auditsc_classmacros.h
-> +++ b/include/linux/auditsc_classmacros.h
-> @@ -16,6 +16,7 @@ enum auditsc_class_t {
->  	AUDITSC_OPENAT,
->  	AUDITSC_SOCKETCALL,
->  	AUDITSC_EXECVE,
-> +	AUDITSC_OPENAT2,
->  
->  	AUDITSC_NVALS /* count */
->  };
-> diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-> index d775ea16505b..3f59ab209dfd 100644
-> --- a/kernel/auditsc.c
-> +++ b/kernel/auditsc.c
-> @@ -76,6 +76,7 @@
->  #include <linux/fsnotify_backend.h>
->  #include <uapi/linux/limits.h>
->  #include <uapi/linux/netfilter/nf_tables.h>
-> +#include <uapi/linux/openat2.h>
->  
->  #include "audit.h"
->  
-> @@ -196,6 +197,8 @@ static int audit_match_perm(struct audit_context *ctx, int mask)
->  		return ((mask & AUDIT_PERM_WRITE) && ctx->argv[0] == SYS_BIND);
->  	case AUDITSC_EXECVE:
->  		return mask & AUDIT_PERM_EXEC;
-> +	case AUDITSC_OPENAT2:
-> +		return mask & ACC_MODE((u32)((struct open_how *)ctx->argv[2])->flags);
+> Yes, cumulative overhead when dealing with large, sparse matrices. Just an
+> example where I think it could be applied in the future -- but not that I
+> consider populating the shared zeropage a really important use case in
+> general (besides for userfaultfd-wp right now).
 
-That's a lot of dereferncing, casting and masking all at once. Maybe a
-small static inline helper would be good for the sake of legibility? Sm
-like:
+OK.
+ 
+[...]
+> Anyhow, please suggest a way to handle it via a single flag in the kernel --
+> which would be some kind of heuristic as we know from MAP_POPULATE. Having
+> an alternative at hand would make it easier to discuss this topic further. I
+> certainly *don't* want MAP_POPULATE semantics when it comes to
+> MADV_POPULATE, especially when it comes to shared mappings. Not useful in
+> QEMU now and in the future.
 
-static inline u32 audit_openat2_acc(struct open_how *how, int mask)
-{
-	u32 flags = how->flags;
-	return mask & ACC_MODE(flags);
-}
+OK, this point is still not entirely clear to me. Elsewhere you are
+saying that QEMU cannot use MAP_POPULATE because it ignores errors
+and also it doesn't support sparse mappings because they apply to the
+whole mmap. These are all clear but it is less clear to me why the same
+semantic is not applicable for QEMU when used through madvise interface
+which can handle both of those.
+Do I get it right that you really want to emulate the full fledged write
+fault to a) limit another write fault when the content is actually
+modified and b) prevent from potential errors during the write fault
+(e.g. mkwrite failing on the fs data)?
 
-but not sure. Just seems more legible to me.
-Otherwise.
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+> We could make MADV_POPULATE act depending on the readability/writability of
+> a mapping. Use MADV_POPULATE_WRITE on writable mappings, use
+> MADV_POPULATE_READ on readable mappings. Certainly not perfect for use cases
+> where you have writable mappings that are mostly read only (as in the
+> example with fake-NVDIMMs I gave ...), but if it makes people happy, fine
+> with me. I mostly care about MADV_POPULATE_WRITE.
+
+Yes, this is where my thinking was going as well. Essentially define
+MADV_POPULATE as "Populate the mapping with the memory based on the
+mapping access." This looks like a straightforward semantic to me and it
+doesn't really require any deep knowledge of internals.
+
+Now, I was trying to compare which of those would be more tricky to
+understand and use and TBH I am not really convinced any of the two is
+much better. Separate READ/WRITE modes are explicit which can be good
+but it will require quite an advanced knowledge of the #PF behavior.
+On the other hand MADV_POPULATE would require some tricks like mmap,
+madvise and mprotect(to change to writable) when the data is really
+written to. I am not sure how much of a deal this would be for QEMU for
+example.
+
+So, all that being said, I am not really sure. I am not really happy
+about READ/WRITE split but if a simpler interface is going to be a bad
+fit for existing usecases then I believe a proper way to go is the
+document the more complex interface thoroughly.
+-- 
+Michal Hocko
+SUSE Labs
