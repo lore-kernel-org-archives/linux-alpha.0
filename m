@@ -1,98 +1,40 @@
-From: Paul Moore <paul@paul-moore.com>
-Subject: Re: [PATCH v4 2/3] audit: add support for the openat2 syscall
-Date: Mon, 24 May 2021 19:04:07 -0400
-Message-ID: <CAHC9VhTyAFou=_Xu7ZSZSY+19Yii=hQ1NW1LPisk49Ot9wg7rg@mail.gmail.com>
-References: <cover.1621363275.git.rgb@redhat.com> <f5f1a4d8699613f8c02ce762807228c841c2e26f.1621363275.git.rgb@redhat.com>
- <20210520075842.vnbwbw6yffkybk6z@wittgenstein>
+From: He Zhe <zhe.he@windriver.com>
+Subject: Re: Concern about arch/alpha/kernel/smc37c669.c
+Date: Wed, 26 May 2021 11:42:42 +0800
+Message-ID: <705dd441-27f0-6cdd-180c-a911ffaa015e@windriver.com>
+References: <7b314145-cbb9-b491-ccf5-d6021a574339@windriver.com>
 Mime-Version: 1.0
-Return-path: <sparclinux-owner@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uHnwU/8zVxK9/bfw4gLk9ClQH8SbH6WwTZFdoRwbAtE=;
-        b=QQB024vhpmn4hq25e6Gkh0zhdrnh3KHdtxH6hg6RDKH7CnpR3mYJd6drz35kPPn+vq
-         h6264Me+UgyGvlpwu30FVPeTMz+AEc12Q0M+XUT2JohzSMatCOapVMLXEXEiejzFf7ti
-         ktfb2nZNhIlo275VOb2O2BOnbc3ySbclEou9yYwi6+PYR4gUlNFMkKIpexQj+R7biYK9
-         xXDP+mzIofYbIEFKZVe3ZXLMSxK2QP8MWFHo5cfoJS3ZJay5Rqyq5UdBp1+zLKULS08J
-         lwUq6hGqLZp80Ar+2xFbnq6NvtyQI7K0uQTTZPi/naCAAye6mC44N7eH6EQPj41saYzr
-         cNUA==
-In-Reply-To: <20210520075842.vnbwbw6yffkybk6z@wittgenstein>
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BHQOjMj+b/mYq/s6gIwEbETWWUNzThNGPI2GjMvHypw=;
+ b=PpiTt00P2UAtioS6ziWSxp0GOv/uxdtkh2vYP6Tkx3TlCMQc08ro00ToAUXCQ48FRhEc3+4TRQ4mmfWAKCL5v7M7iIfzH7aYiCNxWXHIxeL0BPFvzYBNSffkWawjjrlbkWjrDOu0NJ6dUlp457FiRzmBnOO4Dp+S2I4Akt3zZUk=
+In-Reply-To: <7b314145-cbb9-b491-ccf5-d6021a574339@windriver.com>
+Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Christian Brauner <christian.brauner@ubuntu.com>
-Cc: Richard Guy Briggs <rgb@redhat.com>, Linux-Audit Mailing List <linux-audit@redhat.com>, LKML <linux-kernel@vger.kernel.org>, linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>, Steve Grubb <sgrubb@redhat.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Eric Paris <eparis@redhat.com>, x86@kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, Aleksa Sarai <cyphar@cyphar.com>, Arnd Bergmann <arnd@kernel.org>
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-On Thu, May 20, 2021 at 3:58 AM Christian Brauner
-<christian.brauner@ubuntu.com> wrote:
-> On Wed, May 19, 2021 at 04:00:21PM -0400, Richard Guy Briggs wrote:
-> > The openat2(2) syscall was added in kernel v5.6 with commit fddb5d430ad9
-> > ("open: introduce openat2(2) syscall")
-> >
-> > Add the openat2(2) syscall to the audit syscall classifier.
-> >
-> > Link: https://github.com/linux-audit/audit-kernel/issues/67
-> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > Link: https://lore.kernel.org/r/f5f1a4d8699613f8c02ce762807228c841c2e26f.1621363275.git.rgb@redhat.com
-> > ---
-> >  arch/alpha/kernel/audit.c           | 2 ++
-> >  arch/ia64/kernel/audit.c            | 2 ++
-> >  arch/parisc/kernel/audit.c          | 2 ++
-> >  arch/parisc/kernel/compat_audit.c   | 2 ++
-> >  arch/powerpc/kernel/audit.c         | 2 ++
-> >  arch/powerpc/kernel/compat_audit.c  | 2 ++
-> >  arch/s390/kernel/audit.c            | 2 ++
-> >  arch/s390/kernel/compat_audit.c     | 2 ++
-> >  arch/sparc/kernel/audit.c           | 2 ++
-> >  arch/sparc/kernel/compat_audit.c    | 2 ++
-> >  arch/x86/ia32/audit.c               | 2 ++
-> >  arch/x86/kernel/audit_64.c          | 2 ++
-> >  include/linux/auditsc_classmacros.h | 1 +
-> >  kernel/auditsc.c                    | 3 +++
-> >  lib/audit.c                         | 4 ++++
-> >  lib/compat_audit.c                  | 4 ++++
-> >  16 files changed, 36 insertions(+)
+Kindly ping.
 
-...
+Zhe
 
-> > diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-> > index d775ea16505b..3f59ab209dfd 100644
-> > --- a/kernel/auditsc.c
-> > +++ b/kernel/auditsc.c
-> > @@ -76,6 +76,7 @@
-> >  #include <linux/fsnotify_backend.h>
-> >  #include <uapi/linux/limits.h>
-> >  #include <uapi/linux/netfilter/nf_tables.h>
-> > +#include <uapi/linux/openat2.h>
-> >
-> >  #include "audit.h"
-> >
-> > @@ -196,6 +197,8 @@ static int audit_match_perm(struct audit_context *ctx, int mask)
-> >               return ((mask & AUDIT_PERM_WRITE) && ctx->argv[0] == SYS_BIND);
-> >       case AUDITSC_EXECVE:
-> >               return mask & AUDIT_PERM_EXEC;
-> > +     case AUDITSC_OPENAT2:
-> > +             return mask & ACC_MODE((u32)((struct open_how *)ctx->argv[2])->flags);
+On 5/7/21 4:30 PM, He Zhe wrote:
+> Hello maintainers,
 >
-> That's a lot of dereferncing, casting and masking all at once. Maybe a
-> small static inline helper would be good for the sake of legibility? Sm
-> like:
+> There is no "SPDX-License-Identifier: GPL-2.0" in arch/alpha/kernel/smc37c669.c
+> and the following copyright is found.
+> "
+> Copyright (C) 1997 by
+> Digital Equipment Corporation, Maynard, Massachusetts.
+> All rights reserved.
+> "
 >
-> static inline u32 audit_openat2_acc(struct open_how *how, int mask)
-> {
->         u32 flags = how->flags;
->         return mask & ACC_MODE(flags);
-> }
+> Does this conflict with GPLv2? Anything else we need to know when using this as opensource software?
 >
-> but not sure. Just seems more legible to me.
-> Otherwise.
+> Thanks,
+> Zhe
 
-I'm on the fence about this.  I understand Christian's concern, but I
-have a bit of hatred towards single caller functions like this.  Since
-this function isn't really high-touch, and I don't expect that to
-change in the near future, let's leave the casting mess as-is.
-
--- 
-paul moore
-www.paul-moore.com
