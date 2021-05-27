@@ -1,313 +1,336 @@
-From: Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH 1/5] kbuild: require all architectures to have arch/$(SRCARCH)/Kbuild
-Date: Wed, 26 May 2021 23:32:22 +0900
-Message-ID: <CAK7LNAS7cEj9h=Hi0O-AoFjJPg2mxp0zbi8boXj4O9aYt_yg6Q@mail.gmail.com>
-References: <20210512075729.60291-1-masahiroy@kernel.org>
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH] mm: generalize ZONE_[DMA|DMA32]
+Date: Thu, 27 May 2021 22:30:47 +0800
+Message-ID: <20210527143047.123611-1-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 14QEX0hZ030416
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1622039581;
-        bh=K2JBpUyGmknhlRJpT71wl4Baxz8GsbPi2HBWhe0fUJY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cnmXS+DqWdAPC0p8MNIg0X+ZuRBIktoOUUR+EQB4vPPRCGwGVlLjEGNDw3EmAqZlv
-         xlyoU4qIgALC1L++WZgyjKMXDzp+GxzDeYEL0F6IhJRd7Rpw2XWDIFJ8o7cQRW8BJc
-         58bmB0Jh48QslQPtKIaufL8A/fujJ7UQngW2AlQLs93Fom+msv11CPKYfc9S8R6atG
-         3OOPiA7jJYoMBhNmRyZsxR2MDGv0EVvIwT7A7e7yI9l8/pHrO3j3QQFOzjOgPaV2AN
-         D3pbKwvq9+nlzItRdCDnwVjN2eBR7ykeJ5nQmYRfOW40+I524Aqu+Vsx77vDiJBmu1
-         zIUzibiWGcAvw==
-In-Reply-To: <20210512075729.60291-1-masahiroy@kernel.org>
+Content-Transfer-Encoding: 7BIT
+Return-path: <linux-mips-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc: Albert Ou <aou@eecs.berkeley.edu>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Borislav Petkov <bp@alien8.de>, Brian Cain <bcain@codeaurora.org>, Catalin Marinas <catalin.marinas@arm.com>, Chris Zankel <chris@zankel.net>, Christian Borntraeger <borntraeger@de.ibm.com>, "David S. Miller" <davem@davemloft.net>, Greentime Hu <green.hu@gmail.com>, Guo Ren <guoren@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jeff Dike <jdike@addtoit.com>, Jonas Bonn <jonas@southpole.se>, Ley Foon Tan <ley.foon.tan@intel.c>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, linux-mm@kvack.org, Kefeng Wang <wangkefeng.wang@huawei.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "David S. Miller" <davem@davemloft.net>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Palmer Dabbelt <palmer@dabbelt.com>, Richard Henderson <rth@twiddle.net>, Russell King <linux@armlinux.org.uk>
 
-On Wed, May 12, 2021 at 5:00 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> arch/$(SRCARCH)/Kbuild is useful for Makefile cleanups because you can
-> use the obj-y syntax.
->
-> Add an empty file if it is missing in arch/$(SRCARCH)/.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+ZONE_[DMA|DMA32] configs have duplicate definitions on platforms
+that subscribe them. Instead, just make them generic options which
+can be selected on applicable platforms.
 
+Also only x86/arm64 architectures could enable both ZONE_DMA and
+ZONE_DMA32 if EXPERT, add ARCH_HAS_ZONE_DMA_SET to make dma zone
+configurable and visible on the two architectures.
 
-Applied to linux-kbuild.
+Cc: Andrew Morton <akpm@linux-foundation.org> 
+Cc: Catalin Marinas <catalin.marinas@arm.com> 
+Cc: Will Deacon <will@kernel.org> 
+Cc: Geert Uytterhoeven <geert@linux-m68k.org> 
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de> 
+Cc: "David S. Miller" <davem@davemloft.net> 
+Cc: Ingo Molnar <mingo@redhat.com> 
+Cc: Borislav Petkov <bp@alien8.de> 
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Richard Henderson <rth@twiddle.net> 
+Cc: Russell King <linux@armlinux.org.uk>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ arch/alpha/Kconfig                     |  5 +----
+ arch/arm/Kconfig                       |  3 ---
+ arch/arm64/Kconfig                     |  9 +--------
+ arch/ia64/Kconfig                      |  4 +---
+ arch/m68k/Kconfig                      |  5 +----
+ arch/microblaze/Kconfig                |  4 +---
+ arch/mips/Kconfig                      |  7 -------
+ arch/powerpc/Kconfig                   |  4 ----
+ arch/powerpc/platforms/Kconfig.cputype |  1 +
+ arch/riscv/Kconfig                     |  5 +----
+ arch/s390/Kconfig                      |  4 +---
+ arch/sparc/Kconfig                     |  5 +----
+ arch/x86/Kconfig                       | 15 ++-------------
+ mm/Kconfig                             | 11 +++++++++++
+ 14 files changed, 22 insertions(+), 60 deletions(-)
 
->
->  Makefile               | 2 +-
->  arch/alpha/Kbuild      | 1 +
->  arch/arc/Makefile      | 3 ---
->  arch/arm/Makefile      | 1 -
->  arch/arm64/Makefile    | 1 -
->  arch/csky/Kbuild       | 1 +
->  arch/h8300/Kbuild      | 1 +
->  arch/hexagon/Kbuild    | 1 +
->  arch/ia64/Kbuild       | 1 +
->  arch/microblaze/Kbuild | 1 +
->  arch/mips/Makefile     | 3 ---
->  arch/nds32/Kbuild      | 1 +
->  arch/nios2/Kbuild      | 1 +
->  arch/openrisc/Makefile | 1 -
->  arch/parisc/Kbuild     | 1 +
->  arch/powerpc/Makefile  | 3 ---
->  arch/riscv/Makefile    | 1 -
->  arch/s390/Makefile     | 3 ---
->  arch/sh/Kbuild         | 1 +
->  arch/sparc/Makefile    | 3 ---
->  arch/um/Kbuild         | 1 +
->  arch/x86/Makefile      | 3 ---
->  arch/xtensa/Kbuild     | 1 +
->  23 files changed, 13 insertions(+), 23 deletions(-)
->  create mode 100644 arch/alpha/Kbuild
->  create mode 100644 arch/csky/Kbuild
->  create mode 100644 arch/h8300/Kbuild
->  create mode 100644 arch/hexagon/Kbuild
->  create mode 100644 arch/ia64/Kbuild
->  create mode 100644 arch/microblaze/Kbuild
->  create mode 100644 arch/nds32/Kbuild
->  create mode 100644 arch/nios2/Kbuild
->  create mode 100644 arch/parisc/Kbuild
->  create mode 100644 arch/sh/Kbuild
->  create mode 100644 arch/um/Kbuild
->  create mode 100644 arch/xtensa/Kbuild
->
-> diff --git a/Makefile b/Makefile
-> index 15b6476d0f89..7df040b1b023 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -658,7 +658,7 @@ endif
->
->  ifeq ($(KBUILD_EXTMOD),)
->  # Objects we will link into vmlinux / subdirs we need to visit
-> -core-y         := init/ usr/
-> +core-y         := init/ usr/ arch/$(SRCARCH)/
->  drivers-y      := drivers/ sound/
->  drivers-$(CONFIG_SAMPLES) += samples/
->  drivers-$(CONFIG_NET) += net/
-> diff --git a/arch/alpha/Kbuild b/arch/alpha/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/alpha/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/arc/Makefile b/arch/arc/Makefile
-> index 4392c9c189c4..3e6d4b84797f 100644
-> --- a/arch/arc/Makefile
-> +++ b/arch/arc/Makefile
-> @@ -85,9 +85,6 @@ KBUILD_LDFLAGS        += $(ldflags-y)
->
->  head-y         := arch/arc/kernel/head.o
->
-> -# See arch/arc/Kbuild for content of core part of the kernel
-> -core-y         += arch/arc/
-> -
->  # w/o this dtb won't embed into kernel binary
->  core-y         += arch/arc/boot/dts/
->
-> diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-> index 415c3514573a..173da685a52e 100644
-> --- a/arch/arm/Makefile
-> +++ b/arch/arm/Makefile
-> @@ -252,7 +252,6 @@ endif
->
->  export TEXT_OFFSET GZFLAGS MMUEXT
->
-> -core-y                         += arch/arm/
->  # If we have a machine-specific directory, then include it in the build.
->  core-y                         += $(machdirs) $(platdirs)
->
-> diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-> index 7ef44478560d..b73c151f3a53 100644
-> --- a/arch/arm64/Makefile
-> +++ b/arch/arm64/Makefile
-> @@ -149,7 +149,6 @@ KBUILD_CFLAGS += -DKASAN_SHADOW_SCALE_SHIFT=$(KASAN_SHADOW_SCALE_SHIFT)
->  KBUILD_CPPFLAGS += -DKASAN_SHADOW_SCALE_SHIFT=$(KASAN_SHADOW_SCALE_SHIFT)
->  KBUILD_AFLAGS += -DKASAN_SHADOW_SCALE_SHIFT=$(KASAN_SHADOW_SCALE_SHIFT)
->
-> -core-y         += arch/arm64/
->  libs-y         := arch/arm64/lib/ $(libs-y)
->  libs-$(CONFIG_EFI_STUB) += $(objtree)/drivers/firmware/efi/libstub/lib.a
->
-> diff --git a/arch/csky/Kbuild b/arch/csky/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/csky/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/h8300/Kbuild b/arch/h8300/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/h8300/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/hexagon/Kbuild b/arch/hexagon/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/hexagon/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/ia64/Kbuild b/arch/ia64/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/ia64/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/microblaze/Kbuild b/arch/microblaze/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/microblaze/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/mips/Makefile b/arch/mips/Makefile
-> index 258234c35a09..4e942b7ef022 100644
-> --- a/arch/mips/Makefile
-> +++ b/arch/mips/Makefile
-> @@ -332,9 +332,6 @@ head-y := arch/mips/kernel/head.o
->  libs-y                 += arch/mips/lib/
->  libs-$(CONFIG_MIPS_FP_SUPPORT) += arch/mips/math-emu/
->
-> -# See arch/mips/Kbuild for content of core part of the kernel
-> -core-y += arch/mips/
-> -
->  drivers-y                      += arch/mips/crypto/
->
->  # suspend and hibernation support
-> diff --git a/arch/nds32/Kbuild b/arch/nds32/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/nds32/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/nios2/Kbuild b/arch/nios2/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/nios2/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/openrisc/Makefile b/arch/openrisc/Makefile
-> index 410e7abfac69..c52de526e518 100644
-> --- a/arch/openrisc/Makefile
-> +++ b/arch/openrisc/Makefile
-> @@ -42,7 +42,6 @@ endif
->
->  head-y                 := arch/openrisc/kernel/head.o
->
-> -core-y         += arch/openrisc/
->  libs-y         += $(LIBGCC)
->
->  PHONY += vmlinux.bin
-> diff --git a/arch/parisc/Kbuild b/arch/parisc/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/parisc/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
-> index 3212d076ac6a..af669aa75b73 100644
-> --- a/arch/powerpc/Makefile
-> +++ b/arch/powerpc/Makefile
-> @@ -267,9 +267,6 @@ head-$(CONFIG_PPC_FPU)              += arch/powerpc/kernel/fpu.o
->  head-$(CONFIG_ALTIVEC)         += arch/powerpc/kernel/vector.o
->  head-$(CONFIG_PPC_OF_BOOT_TRAMPOLINE)  += arch/powerpc/kernel/prom_init.o
->
-> -# See arch/powerpc/Kbuild for content of core part of the kernel
-> -core-y += arch/powerpc/
-> -
->  # Default to zImage, override when needed
->  all: zImage
->
-> diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
-> index 3eb9590a0775..c5f359540862 100644
-> --- a/arch/riscv/Makefile
-> +++ b/arch/riscv/Makefile
-> @@ -90,7 +90,6 @@ endif
->
->  head-y := arch/riscv/kernel/head.o
->
-> -core-y += arch/riscv/
->  core-$(CONFIG_RISCV_ERRATA_ALTERNATIVE) += arch/riscv/errata/
->
->  libs-y += arch/riscv/lib/
-> diff --git a/arch/s390/Makefile b/arch/s390/Makefile
-> index e443ed9947bd..37b61645694c 100644
-> --- a/arch/s390/Makefile
-> +++ b/arch/s390/Makefile
-> @@ -128,9 +128,6 @@ OBJCOPYFLAGS        := -O binary
->
->  head-y         := arch/s390/kernel/head64.o
->
-> -# See arch/s390/Kbuild for content of core part of the kernel
-> -core-y         += arch/s390/
-> -
->  libs-y         += arch/s390/lib/
->  drivers-y      += drivers/s390/
->
-> diff --git a/arch/sh/Kbuild b/arch/sh/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/sh/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/sparc/Makefile b/arch/sparc/Makefile
-> index bee99e65fe23..4e65245bc755 100644
-> --- a/arch/sparc/Makefile
-> +++ b/arch/sparc/Makefile
-> @@ -58,9 +58,6 @@ endif
->
->  head-y                 := arch/sparc/kernel/head_$(BITS).o
->
-> -# See arch/sparc/Kbuild for the core part of the kernel
-> -core-y                 += arch/sparc/
-> -
->  libs-y                 += arch/sparc/prom/
->  libs-y                 += arch/sparc/lib/
->
-> diff --git a/arch/um/Kbuild b/arch/um/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/um/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-> index c77c5d8a7b3e..4307bf48ec53 100644
-> --- a/arch/x86/Makefile
-> +++ b/arch/x86/Makefile
-> @@ -239,9 +239,6 @@ head-y += arch/x86/kernel/platform-quirks.o
->
->  libs-y  += arch/x86/lib/
->
-> -# See arch/x86/Kbuild for content of core part of the kernel
-> -core-y += arch/x86/
-> -
->  # drivers-y are linked after core-y
->  drivers-$(CONFIG_MATH_EMULATION) += arch/x86/math-emu/
->  drivers-$(CONFIG_PCI)            += arch/x86/pci/
-> diff --git a/arch/xtensa/Kbuild b/arch/xtensa/Kbuild
-> new file mode 100644
-> index 000000000000..a4e40e534e6a
-> --- /dev/null
-> +++ b/arch/xtensa/Kbuild
-> @@ -0,0 +1 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> --
-> 2.27.0
->
-
-
--- 
-Best Regards
-Masahiro Yamada
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 5998106faa60..6a69a14c4825 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -40,6 +40,7 @@ config ALPHA
+ 	select MMU_GATHER_NO_RANGE
+ 	select SET_FS
+ 	select SPARSEMEM_EXTREME if SPARSEMEM
++	select ZONE_DMA
+ 	help
+ 	  The Alpha is a 64-bit general-purpose processor designed and
+ 	  marketed by the Digital Equipment Corporation of blessed memory,
+@@ -65,10 +66,6 @@ config GENERIC_CALIBRATE_DELAY
+ 	bool
+ 	default y
+ 
+-config ZONE_DMA
+-	bool
+-	default y
+-
+ config GENERIC_ISA_DMA
+ 	bool
+ 	default y
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 24804f11302d..000c3f80b58e 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -218,9 +218,6 @@ config GENERIC_CALIBRATE_DELAY
+ config ARCH_MAY_HAVE_PC_FDC
+ 	bool
+ 
+-config ZONE_DMA
+-	bool
+-
+ config ARCH_SUPPORTS_UPROBES
+ 	def_bool y
+ 
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 9f1d8566bbf9..42794474f37f 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -42,6 +42,7 @@ config ARM64
+ 	select ARCH_HAS_SYSCALL_WRAPPER
+ 	select ARCH_HAS_TEARDOWN_DMA_OPS if IOMMU_SUPPORT
+ 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
++	select ARCH_HAS_ZONE_DMA_SET if EXPERT
+ 	select ARCH_HAVE_ELF_PROT
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+ 	select ARCH_INLINE_READ_LOCK if !PREEMPTION
+@@ -307,14 +308,6 @@ config GENERIC_CSUM
+ config GENERIC_CALIBRATE_DELAY
+ 	def_bool y
+ 
+-config ZONE_DMA
+-	bool "Support DMA zone" if EXPERT
+-	default y
+-
+-config ZONE_DMA32
+-	bool "Support DMA32 zone" if EXPERT
+-	default y
+-
+ config ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE
+ 	def_bool y
+ 
+diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
+index 279252e3e0f7..fd8503a0088a 100644
+--- a/arch/ia64/Kconfig
++++ b/arch/ia64/Kconfig
+@@ -60,6 +60,7 @@ config IA64
+ 	select NUMA if !FLATMEM
+ 	select PCI_MSI_ARCH_FALLBACKS if PCI_MSI
+ 	select SET_FS
++	select ZONE_DMA32
+ 	default y
+ 	help
+ 	  The Itanium Processor Family is Intel's 64-bit successor to
+@@ -72,9 +73,6 @@ config 64BIT
+ 	select ATA_NONSTANDARD if ATA
+ 	default y
+ 
+-config ZONE_DMA32
+-	def_bool y
+-
+ config MMU
+ 	bool
+ 	default y
+diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
+index 372e4e69c43a..05a729c6ad7f 100644
+--- a/arch/m68k/Kconfig
++++ b/arch/m68k/Kconfig
+@@ -34,6 +34,7 @@ config M68K
+ 	select SET_FS
+ 	select UACCESS_MEMCPY if !MMU
+ 	select VIRT_TO_BUS
++	select ZONE_DMA
+ 
+ config CPU_BIG_ENDIAN
+ 	def_bool y
+@@ -62,10 +63,6 @@ config TIME_LOW_RES
+ config NO_IOPORT_MAP
+ 	def_bool y
+ 
+-config ZONE_DMA
+-	bool
+-	default y
+-
+ config HZ
+ 	int
+ 	default 1000 if CLEOPATRA
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 0660f47012bc..14a67a42fcae 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -43,6 +43,7 @@ config MICROBLAZE
+ 	select MMU_GATHER_NO_RANGE
+ 	select SPARSE_IRQ
+ 	select SET_FS
++	select ZONE_DMA
+ 
+ # Endianness selection
+ choice
+@@ -60,9 +61,6 @@ config CPU_LITTLE_ENDIAN
+ 
+ endchoice
+ 
+-config ZONE_DMA
+-	def_bool y
+-
+ config ARCH_HAS_ILOG2_U32
+ 	def_bool n
+ 
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index ed51970c08e7..430d5324f1af 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -3277,13 +3277,6 @@ config I8253
+ 	select CLKSRC_I8253
+ 	select CLKEVT_I8253
+ 	select MIPS_EXTERNAL_TIMER
+-
+-config ZONE_DMA
+-	bool
+-
+-config ZONE_DMA32
+-	bool
+-
+ endmenu
+ 
+ config TRAD_SIGNALS
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 088dd2afcfe4..0f78bb383a12 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -403,10 +403,6 @@ config PPC_ADV_DEBUG_DAC_RANGE
+ config PPC_DAWR
+ 	bool
+ 
+-config ZONE_DMA
+-	bool
+-	default y if PPC_BOOK3E_64
+-
+ config PGTABLE_LEVELS
+ 	int
+ 	default 2 if !PPC64
+diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+index f998e655b570..7d271de8fcbd 100644
+--- a/arch/powerpc/platforms/Kconfig.cputype
++++ b/arch/powerpc/platforms/Kconfig.cputype
+@@ -111,6 +111,7 @@ config PPC_BOOK3E_64
+ 	select PPC_FPU # Make it a choice ?
+ 	select PPC_SMP_MUXED_IPI
+ 	select PPC_DOORBELL
++	select ZONE_DMA
+ 
+ endchoice
+ 
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index a8ad8eb76120..d29643dee126 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -103,6 +103,7 @@ config RISCV
+ 	select SYSCTL_EXCEPTION_TRACE
+ 	select THREAD_INFO_IN_TASK
+ 	select UACCESS_MEMCPY if !MMU
++	select ZONE_DMA32 if 64BIT
+ 
+ config ARCH_MMAP_RND_BITS_MIN
+ 	default 18 if 64BIT
+@@ -132,10 +133,6 @@ config MMU
+ 	  Select if you want MMU-based virtualised addressing space
+ 	  support by paged memory management. If unsure, say 'Y'.
+ 
+-config ZONE_DMA32
+-	bool
+-	default y if 64BIT
+-
+ config VA_BITS
+ 	int
+ 	default 32 if 32BIT
+diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
+index b4c7c34069f8..daab9d56957a 100644
+--- a/arch/s390/Kconfig
++++ b/arch/s390/Kconfig
+@@ -2,9 +2,6 @@
+ config MMU
+ 	def_bool y
+ 
+-config ZONE_DMA
+-	def_bool y
+-
+ config CPU_BIG_ENDIAN
+ 	def_bool y
+ 
+@@ -210,6 +207,7 @@ config S390
+ 	select THREAD_INFO_IN_TASK
+ 	select TTY
+ 	select VIRT_CPU_ACCOUNTING
++	select ZONE_DMA
+ 	# Note: keep the above list sorted alphabetically
+ 
+ config SCHED_OMIT_FRAME_POINTER
+diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
+index 164a5254c91c..39679664cc9a 100644
+--- a/arch/sparc/Kconfig
++++ b/arch/sparc/Kconfig
+@@ -59,6 +59,7 @@ config SPARC32
+ 	select CLZ_TAB
+ 	select HAVE_UID16
+ 	select OLD_SIGACTION
++	select ZONE_DMA
+ 
+ config SPARC64
+ 	def_bool 64BIT
+@@ -141,10 +142,6 @@ config HIGHMEM
+ 	default y if SPARC32
+ 	select KMAP_LOCAL
+ 
+-config ZONE_DMA
+-	bool
+-	default y if SPARC32
+-
+ config GENERIC_ISA_DMA
+ 	bool
+ 	default y if SPARC32
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 0045e1b44190..11cf8a0d6800 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -33,6 +33,7 @@ config X86_64
+ 	select NEED_DMA_MAP_STATE
+ 	select SWIOTLB
+ 	select ARCH_HAS_ELFCORE_COMPAT
++	select ZONE_DMA32
+ 
+ config FORCE_DYNAMIC_FTRACE
+ 	def_bool y
+@@ -93,6 +94,7 @@ config X86
+ 	select ARCH_HAS_SYSCALL_WRAPPER
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL
+ 	select ARCH_HAS_DEBUG_WX
++	select ARCH_HAS_ZONE_DMA_SET if EXPERT
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+ 	select ARCH_MIGHT_HAVE_ACPI_PDC		if ACPI
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+@@ -343,9 +345,6 @@ config ARCH_SUSPEND_POSSIBLE
+ config ARCH_WANT_GENERAL_HUGETLB
+ 	def_bool y
+ 
+-config ZONE_DMA32
+-	def_bool y if X86_64
+-
+ config AUDIT_ARCH
+ 	def_bool y if X86_64
+ 
+@@ -393,16 +392,6 @@ config CC_HAS_SANE_STACKPROTECTOR
+ 
+ menu "Processor type and features"
+ 
+-config ZONE_DMA
+-	bool "DMA memory allocation support" if EXPERT
+-	default y
+-	help
+-	  DMA memory allocation support allows devices with less than 32-bit
+-	  addressing to allocate within the first 16MB of address space.
+-	  Disable if no such devices will be used.
+-
+-	  If unsure, say Y.
