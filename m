@@ -1,137 +1,60 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: [PATCH v2 9/9] mm: replace CONFIG_FLAT_NODE_MEM_MAP with CONFIG_FLATMEM
-Date: Fri,  4 Jun 2021 09:49:16 +0300
-Message-ID: <20210604064916.26580-10-rppt@kernel.org>
+From: Vineet Gupta <Vineet.Gupta1@synopsys.com>
+Subject: Re: [PATCH v2 2/9] arc: update comment about HIGHMEM implementation
+Date: Fri, 4 Jun 2021 14:05:29 +0000
+Message-ID: <f8d4e27b-7b3e-8412-9897-ab3b6aed5725@synopsys.com>
 References: <20210604064916.26580-1-rppt@kernel.org>
+ <20210604064916.26580-3-rppt@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1622789430;
-        bh=lDEh/GlZ6IHzCVgoifZXFj4eSjBGzRR223ZmBbEbu7M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FFzVOjIJiCWzdDVdPOERBe+6WCuPkRQX7QoI7Waosxm/3cjzgDaj7FR4VcbvtndpF
-         I7LnDiGmeXg+T//F9l1eT/bfu4LdtRglAhKPnEwGrSICHYLC4d4iqYRIWVGsjPrQsY
-         SQlmy4lnuYwfWGbNxIBov1kbm+UssQAoftJ4Ihv9dOUOh1TNLPmsA6Wada1KVNha4R
-         YBsOMw5ijOD+d9Ylug1CBP0Znxweh4IQwpiLtVrygr6/BGOPGwyD6kk/2+T/pQHvGJ
-         3yA2ewQe15ITdLRhwcIMW7tJYcTEAOpVVnMo+uilV6cGq6XyCS25HnxLbvk3H/+VDA
-         5UTnsjhL588eg==
-In-Reply-To: <20210604064916.26580-1-rppt@kernel.org>
+Content-Transfer-Encoding: base64
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1622815547; bh=lDc1TXRmxaIu/J3fgNg1AIt0F9QtFw6WMkbSShzi5pU=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=IDcL8cPAYVE/evmH68aRvYq+1NPjdX4nR9aB0zBNwgZ+7QOEGoomDkwH+Q5JZSXt5
+         wwFuBgNPNucib9nL9CfWmmpTfPUUQVPM7v4pDsPshH0fAz/+bFYw0HTw9hNnHbDGo9
+         NOLP0zWXWoCf3st6K0xD3/cSFf8MguCDnRtBvXd7o0aIMom9ElDgTDWlkNFjLuaCE0
+         HGOxpc67rHjoxfDE29v65HEu66wsOFqjFv4JqZUAx+OUd81ACUrLXhOlGjv8QDzr0y
+         jBrlCFJX2fcvp492GXvbGr1/bE/7u82YMStIj+0xAseCfDJV9tof5wC0tw7P4t6Ia2
+         bNat2dQ/Nv6Yg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lDc1TXRmxaIu/J3fgNg1AIt0F9QtFw6WMkbSShzi5pU=;
+ b=EIfqmYGn+tPSE4EBSd5N5Mo/W2wS8KvGTY3jamO5svHMieI11ILFqd1aGhwaarm0xj2y4T/EYustdnf+OI8iVOQowaJoRbvAH2wOMKmEDkAiGTqXFoz1b86vvn4djM31DKkEsCiQyafV76Aj9jCHx8Ob2M3EtomSW3KshrwrdHM=
+In-Reply-To: <20210604064916.26580-3-rppt@kernel.org>
+Content-Language: en-US
+Content-ID: <0E3C551B69CF23418C2D5E10015FF616@namprd12.prod.outlook.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Mike Rapoport <rppt@kernel.org>, Mike Rapoport <rppt@linux.ibm.com>, Richard Henderson <rth@twiddle.net>, Vineet Gupta <vgupta@synopsys.com>, kexec@lists.infradead.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-xtensa@linux-xtensa.org
+To: Mike Rapoport <rppt@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Richard Henderson <rth@twiddle.net>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-m68k@lists.linux-m68k.org" <linux-m68k@lists.linux-m68k.org>, lin
 
-From: Mike Rapoport <rppt@linux.ibm.com>
-
-After removal of the DISCONTIGMEM memory model the FLAT_NODE_MEM_MAP
-configuration option is equivalent to FLATMEM.
-
-Drop CONFIG_FLAT_NODE_MEM_MAP and use CONFIG_FLATMEM instead.
-
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
----
- include/linux/mmzone.h | 4 ++--
- kernel/crash_core.c    | 2 +-
- mm/Kconfig             | 4 ----
- mm/page_alloc.c        | 6 +++---
- mm/page_ext.c          | 2 +-
- 5 files changed, 7 insertions(+), 11 deletions(-)
-
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index acdc51c7b259..1d5cafe5ccc3 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -777,7 +777,7 @@ typedef struct pglist_data {
- 	struct zonelist node_zonelists[MAX_ZONELISTS];
- 
- 	int nr_zones; /* number of populated zones in this node */
--#ifdef CONFIG_FLAT_NODE_MEM_MAP	/* means !SPARSEMEM */
-+#ifdef CONFIG_FLATMEM	/* means !SPARSEMEM */
- 	struct page *node_mem_map;
- #ifdef CONFIG_PAGE_EXTENSION
- 	struct page_ext *node_page_ext;
-@@ -867,7 +867,7 @@ typedef struct pglist_data {
- 
- #define node_present_pages(nid)	(NODE_DATA(nid)->node_present_pages)
- #define node_spanned_pages(nid)	(NODE_DATA(nid)->node_spanned_pages)
--#ifdef CONFIG_FLAT_NODE_MEM_MAP
-+#ifdef CONFIG_FLATMEM
- #define pgdat_page_nr(pgdat, pagenr)	((pgdat)->node_mem_map + (pagenr))
- #else
- #define pgdat_page_nr(pgdat, pagenr)	pfn_to_page((pgdat)->node_start_pfn + (pagenr))
-diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 53eb8bc6026d..2b8446ea7105 100644
---- a/kernel/crash_core.c
-+++ b/kernel/crash_core.c
-@@ -483,7 +483,7 @@ static int __init crash_save_vmcoreinfo_init(void)
- 	VMCOREINFO_OFFSET(page, compound_head);
- 	VMCOREINFO_OFFSET(pglist_data, node_zones);
- 	VMCOREINFO_OFFSET(pglist_data, nr_zones);
--#ifdef CONFIG_FLAT_NODE_MEM_MAP
-+#ifdef CONFIG_FLATMEM
- 	VMCOREINFO_OFFSET(pglist_data, node_mem_map);
- #endif
- 	VMCOREINFO_OFFSET(pglist_data, node_start_pfn);
-diff --git a/mm/Kconfig b/mm/Kconfig
-index bffe4bd859f3..ded98fb859ab 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -55,10 +55,6 @@ config FLATMEM
- 	def_bool y
- 	depends on !SPARSEMEM || FLATMEM_MANUAL
- 
--config FLAT_NODE_MEM_MAP
--	def_bool y
--	depends on !SPARSEMEM
--
- #
- # SPARSEMEM_EXTREME (which is the default) does some bootmem
- # allocations when sparse_init() is called.  If this cannot
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 8f08135d3eb4..f039736541eb 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6444,7 +6444,7 @@ static void __meminit zone_init_free_lists(struct zone *zone)
- 	}
- }
- 
--#if !defined(CONFIG_FLAT_NODE_MEM_MAP)
-+#if !defined(CONFIG_FLATMEM)
- /*
-  * Only struct pages that correspond to ranges defined by memblock.memory
-  * are zeroed and initialized by going through __init_single_page() during
-@@ -7241,7 +7241,7 @@ static void __init free_area_init_core(struct pglist_data *pgdat)
- 	}
- }
- 
--#ifdef CONFIG_FLAT_NODE_MEM_MAP
-+#ifdef CONFIG_FLATMEM
- static void __ref alloc_node_mem_map(struct pglist_data *pgdat)
- {
- 	unsigned long __maybe_unused start = 0;
-@@ -7289,7 +7289,7 @@ static void __ref alloc_node_mem_map(struct pglist_data *pgdat)
- }
- #else
- static void __ref alloc_node_mem_map(struct pglist_data *pgdat) { }
--#endif /* CONFIG_FLAT_NODE_MEM_MAP */
-+#endif /* CONFIG_FLATMEM */
- 
- #ifdef CONFIG_DEFERRED_STRUCT_PAGE_INIT
- static inline void pgdat_set_deferred_range(pg_data_t *pgdat)
-diff --git a/mm/page_ext.c b/mm/page_ext.c
-index df6f74aac8e1..293b2685fc48 100644
---- a/mm/page_ext.c
-+++ b/mm/page_ext.c
-@@ -191,7 +191,7 @@ void __init page_ext_init_flatmem(void)
- 	panic("Out of memory");
- }
- 
--#else /* CONFIG_FLAT_NODE_MEM_MAP */
-+#else /* CONFIG_FLATMEM */
- 
- struct page_ext *lookup_page_ext(const struct page *page)
- {
--- 
-2.28.0
-
+T24gNi8zLzIxIDExOjQ5IFBNLCBNaWtlIFJhcG9wb3J0IHdyb3RlOg0KPiBGcm9tOiBNaWtlIFJh
+cG9wb3J0IDxycHB0QGxpbnV4LmlibS5jb20+DQo+DQo+IEFyYyBkb2VzIG5vdCB1c2UgRElTQ09O
+VElHTUVNIHRvIGltcGxlbWVudCBoaWdoIG1lbW9yeSwgdXBkYXRlIHRoZSBjb21tZW50DQo+IGRl
+c2NyaWJpbmcgaG93IGhpZ2ggbWVtb3J5IHdvcmtzIHRvIHJlZmxlY3QgdGhpcy4NCj4NCj4gU2ln
+bmVkLW9mZi1ieTogTWlrZSBSYXBvcG9ydCA8cnBwdEBsaW51eC5pYm0uY29tPg0KDQpBY2tlZC1i
+eTogVmluZWV0IEd1cHRhIDx2Z3VwdGFAc3lub3BzeXMuY29tPg0KDQpUaHgsDQotVmluZWV0DQoN
+Cj4gLS0tDQo+ICAgYXJjaC9hcmMvbW0vaW5pdC5jIHwgMTMgKysrKystLS0tLS0tLQ0KPiAgIDEg
+ZmlsZSBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pDQo+DQo+IGRpZmYg
+LS1naXQgYS9hcmNoL2FyYy9tbS9pbml0LmMgYi9hcmNoL2FyYy9tbS9pbml0LmMNCj4gaW5kZXgg
+ZTJlZDM1NTQzOGM5Li4zOTdhMjAxYWRmZTMgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvYXJjL21tL2lu
+aXQuYw0KPiArKysgYi9hcmNoL2FyYy9tbS9pbml0LmMNCj4gQEAgLTEzOSwxNiArMTM5LDEzIEBA
+IHZvaWQgX19pbml0IHNldHVwX2FyY2hfbWVtb3J5KHZvaWQpDQo+ICAgDQo+ICAgI2lmZGVmIENP
+TkZJR19ISUdITUVNDQo+ICAgCS8qDQo+IC0JICogUG9wdWxhdGUgYSBuZXcgbm9kZSB3aXRoIGhp
+Z2htZW0NCj4gLQkgKg0KPiAgIAkgKiBPbiBBUkMgKHcvbyBQQUUpIEhJR0hNRU0gYWRkcmVzc2Vz
+IGFyZSBhY3R1YWxseSBzbWFsbGVyICgwIGJhc2VkKQ0KPiAtCSAqIHRoYW4gYWRkcmVzc2VzIGlu
+IG5vcm1hbCBhbGEgbG93IG1lbW9yeSAoMHg4MDAwXzAwMDAgYmFzZWQpLg0KPiArCSAqIHRoYW4g
+YWRkcmVzc2VzIGluIG5vcm1hbCBha2EgbG93IG1lbW9yeSAoMHg4MDAwXzAwMDAgYmFzZWQpLg0K
+PiAgIAkgKiBFdmVuIHdpdGggUEFFLCB0aGUgaHVnZSBwZXJpcGhlcmFsIHNwYWNlIGhvbGUgd291
+bGQgd2FzdGUgYSBsb3Qgb2YNCj4gLQkgKiBtZW0gd2l0aCBzaW5nbGUgbWVtX21hcFtdLiBUaGlz
+IHdhcnJhbnRzIGEgbWVtX21hcCBwZXIgcmVnaW9uIGRlc2lnbi4NCj4gLQkgKiBUaHVzIEhJR0hN
+RU0gb24gQVJDIGlzIGltbGVtZW50ZWQgd2l0aCBESVNDT05USUdNRU0uDQo+IC0JICoNCj4gLQkg
+KiBESVNDT05USUdNRU0gaW4gdHVybnMgcmVxdWlyZXMgbXVsdGlwbGUgbm9kZXMuIG5vZGUgMCBh
+Ym92ZSBpcw0KPiAtCSAqIHBvcHVsYXRlZCB3aXRoIG5vcm1hbCBtZW1vcnkgem9uZSB3aGlsZSBu
+b2RlIDEgb25seSBoYXMgaGlnaG1lbQ0KPiArCSAqIG1lbSB3aXRoIHNpbmdsZSBjb250aWd1b3Vz
+IG1lbV9tYXBbXS4NCj4gKwkgKiBUaHVzIHdoZW4gSElHSE1FTSBvbiBBUkMgaXMgZW5hYmxlZCB0
+aGUgbWVtb3J5IG1hcCBjb3JyZXNwb25kaW5nDQo+ICsJICogdG8gdGhlIGhvbGUgaXMgZnJlZWQg
+YW5kIEFSQyBzcGVjaWZpYyB2ZXJzaW9uIG9mIHBmbl92YWxpZCgpDQo+ICsJICogaGFuZGxlcyB0
+aGUgaG9sZSBpbiB0aGUgbWVtb3J5IG1hcC4NCj4gICAJICovDQo+ICAgI2lmZGVmIENPTkZJR19E
+SVNDT05USUdNRU0NCj4gICAJbm9kZV9zZXRfb25saW5lKDEpOw0KDQo=
