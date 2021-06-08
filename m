@@ -1,137 +1,184 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: [PATCH v3 9/9] mm: replace CONFIG_FLAT_NODE_MEM_MAP with CONFIG_FLATMEM
-Date: Tue,  8 Jun 2021 12:13:16 +0300
-Message-ID: <20210608091316.3622-10-rppt@kernel.org>
-References: <20210608091316.3622-1-rppt@kernel.org>
+From: David Hildenbrand <david@redhat.com>
+Subject: [PATCH] madvise.2: Document MADV_POPULATE_READ and MADV_POPULATE_WRITE
+Date: Tue,  8 Jun 2021 18:00:49 +0200
+Message-ID: <20210608160049.24685-1-david@redhat.com>
+References: <20210511081534.3507-1-david@redhat.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623143668;
-        bh=lDEh/GlZ6IHzCVgoifZXFj4eSjBGzRR223ZmBbEbu7M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CBfKZuYBhfUYXhnu1/Q+GcZTRvIyVwqk4OlKe/GEc17t/9vnTzCn3+6STQ5/LrWyP
-         8QFWfCwt8RuCmCYqGrfuMUYMf8TuGEDAHwre0FfL8FXqeF48qkGpvZpcwYFJzt4XGO
-         JcyHuTpulyjZnXu14di6K2Cf1M5TiHD6xEeC+2cmnNhaNtpIQyCSjOB8JNJfb/PPQ1
-         Wb5J09t+fossaPoReHqWdEdSkJJqD+/z2/L/BHoqjkvy/9MBHHgzSbkeuZ/ex8Dz0T
-         0m07Bad0h9qq0FDqyCIiuAFw81XELQT4ubN6MTX3ywS0SdKnkYIQnokWOfWnAoSsd0
-         DZubZDkPDz+fA==
-In-Reply-To: <20210608091316.3622-1-rppt@kernel.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1623168070;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ny0GQOcOMIJ9f9GtQNBSHCKyJm/TZJpAh/jRCTYyLxE=;
+        b=IvXUmP3ziGgphFSY30Wb2ZoQ4EwuIBF3MSjeOa1xl4rG+2aB0/eAYS1mFzTVjXo/QWUSuu
+        6g3VwIvxmOgfdVS8gSGxBsEfQnQHLa+8E2MfmUYsucOxJaGXDMg7xGsia14UsUI750YnKe
+        FwNaPcBXdLUek8126TnmJPtgjof6daI=
+In-Reply-To: <20210511081534.3507-1-david@redhat.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Mike Rapoport <rppt@kernel.org>, Mike Rapoport <rppt@linux.ibm.com>, Richard Henderson <rth@twiddle.net>, Vineet Gupta <vgupta@synopsys.com>, kexec@lists.infradead.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-xtensa@linux-xtensa.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-mm@kvack.org, David Hildenbrand <david@redhat.com>, Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Michal Hocko <mhocko@suse.com>, Oscar Salvador <osalvador@suse.de>, Matthew Wilcox <willy@infradead.org>, Andrea Arcangeli <aarcange@redhat.com>, Minchan Kim <minchan@kernel.org>, Jann Horn <jannh@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, Dave Hansen <dave.hansen@intel.com>, Hugh Dickins <hughd@google.com>, Rik van Riel <riel@surriel.com>, "Michael S . Tsirkin" <mst@redhat.com>, "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>, Vlastimil Babka <vbabka@suse.cz>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.f>
 
-From: Mike Rapoport <rppt@linux.ibm.com>
+Let's document MADV_POPULATE_READ and MADV_POPULATE_WRITE behavior and
+error conditions.
 
-After removal of the DISCONTIGMEM memory model the FLAT_NODE_MEM_MAP
-configuration option is equivalent to FLATMEM.
-
-Drop CONFIG_FLAT_NODE_MEM_MAP and use CONFIG_FLATMEM instead.
-
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Oscar Salvador <osalvador@suse.de>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Rik van Riel <riel@surriel.com>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: Chris Zankel <chris@zankel.net>
+Cc: Max Filippov <jcmvbkbc@gmail.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Rolf Eike Beer <eike-kernel@sf-tec.de>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+Cc: linux-arch@vger.kernel.org
+Cc: Linux API <linux-api@vger.kernel.org>
+Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- include/linux/mmzone.h | 4 ++--
- kernel/crash_core.c    | 2 +-
- mm/Kconfig             | 4 ----
- mm/page_alloc.c        | 6 +++---
- mm/page_ext.c          | 2 +-
- 5 files changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index acdc51c7b259..1d5cafe5ccc3 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -777,7 +777,7 @@ typedef struct pglist_data {
- 	struct zonelist node_zonelists[MAX_ZONELISTS];
- 
- 	int nr_zones; /* number of populated zones in this node */
--#ifdef CONFIG_FLAT_NODE_MEM_MAP	/* means !SPARSEMEM */
-+#ifdef CONFIG_FLATMEM	/* means !SPARSEMEM */
- 	struct page *node_mem_map;
- #ifdef CONFIG_PAGE_EXTENSION
- 	struct page_ext *node_page_ext;
-@@ -867,7 +867,7 @@ typedef struct pglist_data {
- 
- #define node_present_pages(nid)	(NODE_DATA(nid)->node_present_pages)
- #define node_spanned_pages(nid)	(NODE_DATA(nid)->node_spanned_pages)
--#ifdef CONFIG_FLAT_NODE_MEM_MAP
-+#ifdef CONFIG_FLATMEM
- #define pgdat_page_nr(pgdat, pagenr)	((pgdat)->node_mem_map + (pagenr))
- #else
- #define pgdat_page_nr(pgdat, pagenr)	pfn_to_page((pgdat)->node_start_pfn + (pagenr))
-diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 53eb8bc6026d..2b8446ea7105 100644
---- a/kernel/crash_core.c
-+++ b/kernel/crash_core.c
-@@ -483,7 +483,7 @@ static int __init crash_save_vmcoreinfo_init(void)
- 	VMCOREINFO_OFFSET(page, compound_head);
- 	VMCOREINFO_OFFSET(pglist_data, node_zones);
- 	VMCOREINFO_OFFSET(pglist_data, nr_zones);
--#ifdef CONFIG_FLAT_NODE_MEM_MAP
-+#ifdef CONFIG_FLATMEM
- 	VMCOREINFO_OFFSET(pglist_data, node_mem_map);
- #endif
- 	VMCOREINFO_OFFSET(pglist_data, node_start_pfn);
-diff --git a/mm/Kconfig b/mm/Kconfig
-index bffe4bd859f3..ded98fb859ab 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -55,10 +55,6 @@ config FLATMEM
- 	def_bool y
- 	depends on !SPARSEMEM || FLATMEM_MANUAL
- 
--config FLAT_NODE_MEM_MAP
--	def_bool y
--	depends on !SPARSEMEM
--
- #
- # SPARSEMEM_EXTREME (which is the default) does some bootmem
- # allocations when sparse_init() is called.  If this cannot
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 8f08135d3eb4..f039736541eb 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6444,7 +6444,7 @@ static void __meminit zone_init_free_lists(struct zone *zone)
- 	}
- }
- 
--#if !defined(CONFIG_FLAT_NODE_MEM_MAP)
-+#if !defined(CONFIG_FLATMEM)
- /*
-  * Only struct pages that correspond to ranges defined by memblock.memory
-  * are zeroed and initialized by going through __init_single_page() during
-@@ -7241,7 +7241,7 @@ static void __init free_area_init_core(struct pglist_data *pgdat)
- 	}
- }
- 
--#ifdef CONFIG_FLAT_NODE_MEM_MAP
-+#ifdef CONFIG_FLATMEM
- static void __ref alloc_node_mem_map(struct pglist_data *pgdat)
- {
- 	unsigned long __maybe_unused start = 0;
-@@ -7289,7 +7289,7 @@ static void __ref alloc_node_mem_map(struct pglist_data *pgdat)
- }
- #else
- static void __ref alloc_node_mem_map(struct pglist_data *pgdat) { }
--#endif /* CONFIG_FLAT_NODE_MEM_MAP */
-+#endif /* CONFIG_FLATMEM */
- 
- #ifdef CONFIG_DEFERRED_STRUCT_PAGE_INIT
- static inline void pgdat_set_deferred_range(pg_data_t *pgdat)
-diff --git a/mm/page_ext.c b/mm/page_ext.c
-index df6f74aac8e1..293b2685fc48 100644
---- a/mm/page_ext.c
-+++ b/mm/page_ext.c
-@@ -191,7 +191,7 @@ void __init page_ext_init_flatmem(void)
- 	panic("Out of memory");
- }
- 
--#else /* CONFIG_FLAT_NODE_MEM_MAP */
-+#else /* CONFIG_FLATMEM */
- 
- struct page_ext *lookup_page_ext(const struct page *page)
- {
+Not for upstream man pages yet, only for linux-mm and linux-api review
+purposes. Once/if the linux changes are merged upstream, I'll send it to
+the proper man list/maintainers.
+
+---
+ man2/madvise.2 | 80 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 80 insertions(+)
+
+diff --git a/man2/madvise.2 b/man2/madvise.2
+index f1f384c0c..3ec8c53a7 100644
+--- a/man2/madvise.2
++++ b/man2/madvise.2
+@@ -469,6 +469,59 @@ If a page is file-backed and dirty, it will be written back to the backing
+ storage.
+ The advice might be ignored for some pages in the range when it is not
+ applicable.
++.TP
++.BR MADV_POPULATE_READ " (since Linux 5.14)
++Populate (prefault) page tables readable for the whole range without actually
++reading. Depending on the underlying mapping, map the shared zeropage,
++preallocate memory or read the underlying file; files with holes might or
++might not preallocate blocks.
++Do not generate
++.B SIGBUS
++when populating fails, return an error instead.
++.IP
++If
++.B MADV_POPULATE_READ
++succeeds, all page tables have been populated (prefaulted) readable once.
++If
++.B MADV_POPULATE_READ
++fails, some page tables might have been populated.
++.IP
++.B MADV_POPULATE_READ
++cannot be applied to mappings without read permissions
++and special mappings marked with the kernel-internal
++.B VM_PFNMAP
++and
++.BR VM_IO .
++.IP
++Note that with
++.BR MADV_POPULATE_READ ,
++the process can be killed at any moment when the system runs out of memory.
++.TP
++.BR MADV_POPULATE_WRITE " (since Linux 5.14)
++Populate (prefault) page tables writable for the whole range without actually
++writing. Depending on the underlying mapping, preallocate memory or read the
++underlying file; files with holes will preallocate blocks.
++Do not generate
++.B SIGBUS
++when populating fails, return an error instead.
++.IP
++If
++.B MADV_POPULATE_WRITE
++succeeds, all page tables have been populated (prefaulted) writable once.
++If
++.B MADV_POPULATE_WRITE
++fails, some page tables might have been populated.
++.IP
++.B MADV_POPULATE_WRITE
++cannot be applied to mappings without write permissions
++and special mappings marked with the kernel-internal
++.B VM_PFNMAP
++and
++.BR VM_IO .
++.IP
++Note that
++.BR MADV_POPULATE_WRITE ,
++the process can be killed at any moment when the system runs out of memory.
+ .SH RETURN VALUE
+ On success,
+ .BR madvise ()
+@@ -533,6 +586,17 @@ or
+ .BR VM_PFNMAP
+ ranges.
+ .TP
++.B EINVAL
++.I advice
++is
++.B MADV_POPULATE_READ
++or
++.BR MADV_POPULATE_WRITE ,
++but the specified address range includes ranges with insufficient permissions,
++.B VM_IO
++or
++.BR VM_PFNMAP.
++.TP
+ .B EIO
+ (for
+ .BR MADV_WILLNEED )
+@@ -548,6 +612,14 @@ Not enough memory: paging in failed.
+ Addresses in the specified range are not currently
+ mapped, or are outside the address space of the process.
+ .TP
++.B ENOMEM
++.I advice
++is
++.B MADV_POPULATE_READ
++or
++.BR MADV_POPULATE_WRITE ,
++but populating (prefaulting) page tables failed.
++.TP
+ .B EPERM
+ .I advice
+ is
+@@ -555,6 +627,14 @@ is
+ but the caller does not have the
+ .B CAP_SYS_ADMIN
+ capability.
++.TP
++.B EHWPOISON
++.I advice
++is
++.B MADV_POPULATE_READ
++or
++.BR MADV_POPULATE_WRITE ,
++and a HW poisoned page is encountered.
+ .SH VERSIONS
+ Since Linux 3.18,
+ .\" commit d3ac21cacc24790eb45d735769f35753f5b56ceb
 -- 
-2.28.0
+2.31.1
 
