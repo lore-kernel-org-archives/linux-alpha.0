@@ -1,67 +1,92 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 8/9] mm: replace CONFIG_NEED_MULTIPLE_NODES with CONFIG_NUMA
-Date: Mon, 7 Jun 2021 10:53:08 +0200
-Message-ID: <CAMuHMdVa29gUQAdHjKh-qDNpOJaoGwXtUkBM2qnOTi1DWV70xA@mail.gmail.com>
-References: <20210604064916.26580-1-rppt@kernel.org> <20210604064916.26580-9-rppt@kernel.org>
+From: Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH v2 8/9] mm: replace CONFIG_NEED_MULTIPLE_NODES with
+ CONFIG_NUMA
+Date: Tue, 8 Jun 2021 08:45:07 +0300
+Message-ID: <YL8D47Ty8iXZJsK3@kernel.org>
+References: <20210604064916.26580-1-rppt@kernel.org>
+ <20210604064916.26580-9-rppt@kernel.org>
+ <CAMuHMdVa29gUQAdHjKh-qDNpOJaoGwXtUkBM2qnOTi1DWV70xA@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20210604064916.26580-9-rppt@kernel.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623131119;
+        bh=49fVzdt4MSY+UspP64EgJQ791zimRP1gxTciSlJZXt4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G0Rtshf8pvTrv3vEhpsoWQuj5JjeNYokUzfYJ5STkCXI/OnFwZ+jzE319giZq9upk
+         Ip6wZYmg/mXX1RsKoBHJISuKRrHfu3i7LKK8o6lrdj3F/wsMYKU4KSiTq0yf0Te/9Y
+         EXkEDnDuymhI/7Es9g0unojNazWzSj6FWZpsSVsuRv7SkD+TKqrUPOkH42sn/s2o3k
+         YyeAtmie679nER7vSNNhYu+t0T8vpaLE8THVLmZUT2dI3k363OIVX5xgUfeXV7EiTs
+         ihyAaoDmjCZhWOCiJEmXQBaJ0yMnS1SK6yRX7SpN+JL1ZvqVGV5DXW68K81QTP/SNc
+         ubRqN6fNQU7pg==
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdVa29gUQAdHjKh-qDNpOJaoGwXtUkBM2qnOTi1DWV70xA@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mike Rapoport <rppt@kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Richard Henderson <rth@twiddle.net>, Vineet Gupta <vgupta@synopsys.com>, kexec@lists.infradead.org, alpha <linux-alpha@vger.kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, Linux MM <linux-mm@kvack.org>
 
-Hi Mike,
+Hi,
 
-On Fri, Jun 4, 2021 at 8:50 AM Mike Rapoport <rppt@kernel.org> wrote:
-> From: Mike Rapoport <rppt@linux.ibm.com>
->
-> After removal of DISCINTIGMEM the NEED_MULTIPLE_NODES and NUMA
-> configuration options are equivalent.
->
-> Drop CONFIG_NEED_MULTIPLE_NODES and use CONFIG_NUMA instead.
->
-> Done with
->
->         $ sed -i 's/CONFIG_NEED_MULTIPLE_NODES/CONFIG_NUMA/' \
->                 $(git grep -wl CONFIG_NEED_MULTIPLE_NODES)
->         $ sed -i 's/NEED_MULTIPLE_NODES/NUMA/' \
->                 $(git grep -wl NEED_MULTIPLE_NODES)
->
-> with manual tweaks afterwards.
->
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+On Mon, Jun 07, 2021 at 10:53:08AM +0200, Geert Uytterhoeven wrote:
+> Hi Mike,
+> 
+> On Fri, Jun 4, 2021 at 8:50 AM Mike Rapoport <rppt@kernel.org> wrote:
+> > From: Mike Rapoport <rppt@linux.ibm.com>
+> >
+> > After removal of DISCINTIGMEM the NEED_MULTIPLE_NODES and NUMA
+> > configuration options are equivalent.
+> >
+> > Drop CONFIG_NEED_MULTIPLE_NODES and use CONFIG_NUMA instead.
+> >
+> > Done with
+> >
+> >         $ sed -i 's/CONFIG_NEED_MULTIPLE_NODES/CONFIG_NUMA/' \
+> >                 $(git grep -wl CONFIG_NEED_MULTIPLE_NODES)
+> >         $ sed -i 's/NEED_MULTIPLE_NODES/NUMA/' \
+> >                 $(git grep -wl NEED_MULTIPLE_NODES)
+> >
+> > with manual tweaks afterwards.
+> >
+> > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> 
+> Thanks for your patch!
+> 
+> As you dropped the following hunk from v2 of PATCH 5/9, there's now
+> one reference left of CONFIG_NEED_MULTIPLE_NODES
+> (plus the discontigmem comment):
 
-Thanks for your patch!
+Aargh, indeed. Thanks for catching this.
 
-As you dropped the following hunk from v2 of PATCH 5/9, there's now
-one reference left of CONFIG_NEED_MULTIPLE_NODES
-(plus the discontigmem comment):
-
--diff --git a/mm/memory.c b/mm/memory.c
--index f3ffab9b9e39157b..fd0ebb63be3304f5 100644
----- a/mm/memory.c
--+++ b/mm/memory.c
--@@ -90,8 +90,7 @@
-- #warning Unfortunate NUMA and NUMA Balancing config, growing
-page-frame for last_cpupid.
-- #endif
--
---#ifndef CONFIG_NEED_MULTIPLE_NODES
---/* use the per-pgdat data instead for discontigmem - mbligh */
--+#ifdef CONFIG_FLATMEM
-- unsigned long max_mapnr;
-- EXPORT_SYMBOL(max_mapnr);
--
-
-Gr{oetje,eeting}s,
-
-                        Geert
+And I wondered why you suggested to fix spelling in cover letter for v3 :)
+ 
+> -diff --git a/mm/memory.c b/mm/memory.c
+> -index f3ffab9b9e39157b..fd0ebb63be3304f5 100644
+> ---- a/mm/memory.c
+> -+++ b/mm/memory.c
+> -@@ -90,8 +90,7 @@
+> - #warning Unfortunate NUMA and NUMA Balancing config, growing
+> page-frame for last_cpupid.
+> - #endif
+> -
+> --#ifndef CONFIG_NEED_MULTIPLE_NODES
+> --/* use the per-pgdat data instead for discontigmem - mbligh */
+> -+#ifdef CONFIG_FLATMEM
+> - unsigned long max_mapnr;
+> - EXPORT_SYMBOL(max_mapnr);
+> -
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> -- 
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Sincerely yours,
+Mike.
