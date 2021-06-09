@@ -1,45 +1,68 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Mike Rapoport <rppt@kernel.org>
 Subject: Re: [PATCH v2 0/9] Remove DISCINTIGMEM memory model
-Date: Wed, 9 Jun 2021 13:30:39 +0200
-Message-ID: <CAK8P3a2tZDJDqgr9-1vJrnbDhd_36eKq8LMEznDkU7rvuAnAag@mail.gmail.com>
+Date: Wed, 9 Jun 2021 17:50:50 +0300
+Message-ID: <YMDVSu00xXGmdCtC@kernel.org>
 References: <20210604064916.26580-1-rppt@kernel.org>
+ <CAK8P3a2tZDJDqgr9-1vJrnbDhd_36eKq8LMEznDkU7rvuAnAag@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <20210604064916.26580-1-rppt@kernel.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623250261;
+        bh=svcXYr1x4uog0gl91R41ozY2Q0KNDzZmG4YRGTMMy2A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YkHX/JVfHqUvpWvWXkgg3rdrkk7agHtEIKqaX0vfSpX504lTGaDjO7Qz7iARqzkGp
+         DWsHVY+tAbRsBUSVBkbhVjgZvGY6y/wRIXGMo+CgzooB/zqPomfgnsHX9y3mgTbMXc
+         xGiW+RangNEk+pKIT8UX8w6paGaFQZLDQ+McKqTpjqFKueMHIVGMXJpalfW0Fph76r
+         Lcm2WPwzewVnde/Vu5ujWTdQssxwNbFghUliAxp8Ku3YbSQHaHnLbkGz+awfGrnWGJ
+         yu4qANQoP9p9s4/vzkSPeJiYpDnHVlRdjW4xbBVW2tivL4go8M8laNS3QaNsdGKKc0
+         R1JEjjJpSG45g==
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a2tZDJDqgr9-1vJrnbDhd_36eKq8LMEznDkU7rvuAnAag@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mike Rapoport <rppt@kernel.org>
+To: Arnd Bergmann <arnd@arndb.de>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Richard Henderson <rth@twiddle.net>, Vineet Gupta <vgupta@synopsys.com>, kexec@lists.infradead.org, alpha <linux-alpha@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, linux-ia64@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, linux-riscv <lin>
 
-On Fri, Jun 4, 2021 at 8:49 AM Mike Rapoport <rppt@kernel.org> wrote:
->
-> From: Mike Rapoport <rppt@linux.ibm.com>
->
-> Hi,
->
-> SPARSEMEM memory model was supposed to entirely replace DISCONTIGMEM a
-> (long) while ago. The last architectures that used DISCONTIGMEM were
-> updated to use other memory models in v5.11 and it is about the time to
-> entirely remove DISCONTIGMEM from the kernel.
->
-> This set removes DISCONTIGMEM from alpha, arc and m68k, simplifies memory
-> model selection in mm/Kconfig and replaces usage of redundant
-> CONFIG_NEED_MULTIPLE_NODES and CONFIG_FLAT_NODE_MEM_MAP with CONFIG_NUMA
-> and CONFIG_FLATMEM respectively.
->
-> I've also removed NUMA support on alpha that was BROKEN for more than 15
-> years.
->
-> There were also minor updates all over arch/ to remove mentions of
-> DISCONTIGMEM in comments and #ifdefs.
+Hi Arnd,
 
-Hi Mike and Andrew,
+On Wed, Jun 09, 2021 at 01:30:39PM +0200, Arnd Bergmann wrote:
+> On Fri, Jun 4, 2021 at 8:49 AM Mike Rapoport <rppt@kernel.org> wrote:
+> >
+> > From: Mike Rapoport <rppt@linux.ibm.com>
+> >
+> > Hi,
+> >
+> > SPARSEMEM memory model was supposed to entirely replace DISCONTIGMEM a
+> > (long) while ago. The last architectures that used DISCONTIGMEM were
+> > updated to use other memory models in v5.11 and it is about the time to
+> > entirely remove DISCONTIGMEM from the kernel.
+> >
+> > This set removes DISCONTIGMEM from alpha, arc and m68k, simplifies memory
+> > model selection in mm/Kconfig and replaces usage of redundant
+> > CONFIG_NEED_MULTIPLE_NODES and CONFIG_FLAT_NODE_MEM_MAP with CONFIG_NUMA
+> > and CONFIG_FLATMEM respectively.
+> >
+> > I've also removed NUMA support on alpha that was BROKEN for more than 15
+> > years.
+> >
+> > There were also minor updates all over arch/ to remove mentions of
+> > DISCONTIGMEM in comments and #ifdefs.
+> 
+> Hi Mike and Andrew,
+> 
+> It looks like everyone is happy with this version so far. How should we merge it
+> for linux-next? I'm happy to take it through the asm-generic tree, but linux-mm
+> would fit at least as well. In case we go for linux-mm, feel free to add
 
-It looks like everyone is happy with this version so far. How should we merge it
-for linux-next? I'm happy to take it through the asm-generic tree, but linux-mm
-would fit at least as well. In case we go for linux-mm, feel free to add
+Andrew already took to mmotm.
+ 
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Thanks!
 
-for the whole series.
+> for the whole series.
+
+-- 
+Sincerely yours,
+Mike.
