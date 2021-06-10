@@ -1,68 +1,46 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH v2 0/9] Remove DISCINTIGMEM memory model
-Date: Wed, 9 Jun 2021 17:50:50 +0300
-Message-ID: <YMDVSu00xXGmdCtC@kernel.org>
-References: <20210604064916.26580-1-rppt@kernel.org>
- <CAK8P3a2tZDJDqgr9-1vJrnbDhd_36eKq8LMEznDkU7rvuAnAag@mail.gmail.com>
+From: ebiederm@xmission.com (Eric W. Biederman)
+Subject: Kernel stack read with PTRACE_EVENT_EXIT and io_uring threads
+Date: Thu, 10 Jun 2021 15:57:58 -0500
+Message-ID: <87sg1p30a1.fsf@disp2133>
 Mime-Version: 1.0
-Return-path: <linux-doc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623250261;
-        bh=svcXYr1x4uog0gl91R41ozY2Q0KNDzZmG4YRGTMMy2A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YkHX/JVfHqUvpWvWXkgg3rdrkk7agHtEIKqaX0vfSpX504lTGaDjO7Qz7iARqzkGp
-         DWsHVY+tAbRsBUSVBkbhVjgZvGY6y/wRIXGMo+CgzooB/zqPomfgnsHX9y3mgTbMXc
-         xGiW+RangNEk+pKIT8UX8w6paGaFQZLDQ+McKqTpjqFKueMHIVGMXJpalfW0Fph76r
-         Lcm2WPwzewVnde/Vu5ujWTdQssxwNbFghUliAxp8Ku3YbSQHaHnLbkGz+awfGrnWGJ
-         yu4qANQoP9p9s4/vzkSPeJiYpDnHVlRdjW4xbBVW2tivL4go8M8laNS3QaNsdGKKc0
-         R1JEjjJpSG45g==
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a2tZDJDqgr9-1vJrnbDhd_36eKq8LMEznDkU7rvuAnAag@mail.gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jonathan Corbet <corbet@lwn.net>, Matt Turner <mattst88@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>, Richard Henderson <rth@twiddle.net>, Vineet Gupta <vgupta@synopsys.com>, kexec@lists.infradead.org, alpha <linux-alpha@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, linux-ia64@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, linux-riscv <lin>
+To: linux-arch@vger.kernel.org
+Cc: Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Al Viro <viro@ZenIV.linux.org.uk>, Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@lists.linux-m68k.org, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Daniel Jacobowitz <drow@nevyn.them.org>, Kees Cook <keescook@chromium.org>
 
-Hi Arnd,
 
-On Wed, Jun 09, 2021 at 01:30:39PM +0200, Arnd Bergmann wrote:
-> On Fri, Jun 4, 2021 at 8:49 AM Mike Rapoport <rppt@kernel.org> wrote:
-> >
-> > From: Mike Rapoport <rppt@linux.ibm.com>
-> >
-> > Hi,
-> >
-> > SPARSEMEM memory model was supposed to entirely replace DISCONTIGMEM a
-> > (long) while ago. The last architectures that used DISCONTIGMEM were
-> > updated to use other memory models in v5.11 and it is about the time to
-> > entirely remove DISCONTIGMEM from the kernel.
-> >
-> > This set removes DISCONTIGMEM from alpha, arc and m68k, simplifies memory
-> > model selection in mm/Kconfig and replaces usage of redundant
-> > CONFIG_NEED_MULTIPLE_NODES and CONFIG_FLAT_NODE_MEM_MAP with CONFIG_NUMA
-> > and CONFIG_FLATMEM respectively.
-> >
-> > I've also removed NUMA support on alpha that was BROKEN for more than 15
-> > years.
-> >
-> > There were also minor updates all over arch/ to remove mentions of
-> > DISCONTIGMEM in comments and #ifdefs.
-> 
-> Hi Mike and Andrew,
-> 
-> It looks like everyone is happy with this version so far. How should we merge it
-> for linux-next? I'm happy to take it through the asm-generic tree, but linux-mm
-> would fit at least as well. In case we go for linux-mm, feel free to add
+Folks,
 
-Andrew already took to mmotm.
- 
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
+Digging through the guts of exit I found something I am not quite
+certain what to do with.  On some architectures such as alpha, m68k, and
+nios2 the kernel calls into system calls with a subset of the registers
+saved on the kernel stack, and the kernel calls into signal handling and
+a few other contexts with all of the registers saved on the kernel
+stack.  The problem is sometimes we read all of the registers from
+a context where they are not all saved.
 
-Thanks!
+When this was initially observed it looked just like a coredump problem
+and it could be solved by tweaking the coredump code.  That change was
+77f6ab8b7768 ("don't dump the threads that had been already exiting when
+zapped.")
 
-> for the whole series.
+However I have looked farther and we have the location where get_signal
+is called from io_uring, and we have the ptrace_stop in
+PTRACE_EVENT_EXIT.  In PTRACE_EVENT_EXIT we could be called from exit(2)
+which is a syscall and we definitely won't have everything saved on the
+kernel stack.  I have not doubled checked create_io_thread but I don't
+think create_io_threads saves all of the registers on the kernel stack.
 
--- 
-Sincerely yours,
-Mike.
+I think at this point we need to say that the architectures that have a
+do this need to be fixed to at least call do_exit and the kernel
+function in create_io_thread with the deeper stack.
+
+Is that reasonable of me to ask?  Is there some other way to deal with
+this issue that I am not seeing?  Am I missing some critical detail that
+makes PTRACE_EVENT_EXIT in do_exit not a problem if someone reads the
+register with ptrace?
+
+Eric
+
