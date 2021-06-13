@@ -1,135 +1,81 @@
-From: ebiederm@xmission.com (Eric W. Biederman)
+From: Linus Torvalds <torvalds@linux-foundation.org>
 Subject: Re: Kernel stack read with PTRACE_EVENT_EXIT and io_uring threads
-Date: Sun, 13 Jun 2021 16:54:05 -0500
-Message-ID: <87sg1lwhvm.fsf@disp2133>
-References: <87sg1p30a1.fsf@disp2133>
-        <CAHk-=wjiBXCZBxLiCG5hxpd0vMkMjiocenponWygG5SCG6DXNw@mail.gmail.com>
-        <87pmwsytb3.fsf@disp2133>
-        <CAHk-=wgdO5VwSUFjfF9g=DAQNYmVxzTq73NtdisYErzdZKqDGg@mail.gmail.com>
+Date: Sun, 13 Jun 2021 15:18:50 -0700
+Message-ID: <CAHk-=wgsnMTr0V-0F4FOk30Q1h7CeT8wLvR1MSnjack7EpyWtQ@mail.gmail.com>
+References: <87sg1p30a1.fsf@disp2133> <CAHk-=wjiBXCZBxLiCG5hxpd0vMkMjiocenponWygG5SCG6DXNw@mail.gmail.com>
+ <87pmwsytb3.fsf@disp2133> <CAHk-=wgdO5VwSUFjfF9g=DAQNYmVxzTq73NtdisYErzdZKqDGg@mail.gmail.com>
+ <87sg1lwhvm.fsf@disp2133>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <CAHk-=wgdO5VwSUFjfF9g=DAQNYmVxzTq73NtdisYErzdZKqDGg@mail.gmail.com>
-        (Linus Torvalds's message of "Fri, 11 Jun 2021 16:26:21 -0700")
+Content-Type: multipart/mixed; boundary="0000000000000fabcb05c4ad21da"
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RxQzyytN9Xv/POFiz8Y3R+utq4RPK0XbvLC7geKBN54=;
+        b=eI/+uvMTqWinqnHgENJVOiH6LZbpPCrFa2vhgarfRXuzeG+COM4dVsEynMvTS6y/6Q
+         LOq6njwdgJIYMLCwnwLTwRKUsWbB0E78FSxFRLi7qu5gVFnqwsbqt3rxLFr58x4618EA
+         f3HhTPMdbHBxITRJM9ZQoRDK+/EXfCFm4KkTI=
+In-Reply-To: <87sg1lwhvm.fsf@disp2133>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
+To: "Eric W. Biederman" <ebiederm@xmission.com>
 Cc: linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Daniel Jacobowitz <drow@nevyn.them.org>, Kees Cook <keescook@chromium.org>
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+--0000000000000fabcb05c4ad21da
+Content-Type: text/plain; charset="UTF-8"
 
-> On Fri, Jun 11, 2021 at 2:40 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->>
->> Looking at copy_thread it looks like at least on alpha we are dealing
->> with a structure that defines all of the registers in copy_thread.
+On Sun, Jun 13, 2021 at 2:55 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
 >
-> On the target side, yes.
+> The alpha_switch_to will remove the extra registers from the stack and
+> then call ret which if I understand alpha assembly correctly is
+> equivalent to jumping to where $26 points.  Which is
+> ret_from_kernel_thread (as setup by copy_thread).
 >
-> On the _source_ side, the code does
->
->         struct pt_regs *regs = current_pt_regs();
->
-> and that's the part that means that fork() and related functions need
-> to have done that DO_SWITCH_STACK(), so that they have the full
-> register set to be copied.
->
-> Otherwise it would copy random contents from the source stack.
->
-> But that
->
->         if (unlikely(p->flags & (PF_KTHREAD | PF_IO_WORKER))) {
->
-> ends up protecting us, and the code never uses that set of source
-> registers for the io worker threads.
+> Which leaves ret_from_kernel_thread and everything it calls without
+> the extra context saved on the stack.
 
-The test in copy_thread.  That isn't the case I am worried about.
+Uhhuh. Right you are, I think. It's been ages since I worked on that
+code and my alpha handbook is somewhere else, but yes, when
+alpha_switch_to() has context-switched to the new PCB state, it will
+then pop those registers in the new context and return.
 
-> So io_uring looks fine on alpha. I didn't check m68k and friends, but
-> I think they have the same thing going.
+So we do set up the right stack frame for the worker thread, but as
+you point out, it then gets used up immediately when running. So by
+the time the IO worker thread calls get_signal(), it's no longer
+useful.
 
-As I have read through the code more I don't think so.
+How very annoying.
 
-The code paths I am worried about are:
+The (obviously UNTESTED) patch might be something like the attached.
 
-	ret_from_kernel_thread
-        	io_wqe_worker
-                	get_signal
-                        	do_coredump
-                        	ptrace_stop
+I wouldn't be surprised if m68k has the exact same thing for the exact
+same reason, but I didn't check..
 
-	ret_from_kernel_thread
-        	io_sq_thread
-                	get_signal
-                        	do_coredump
-                        	ptrace_stop
+                  Linus
 
+--0000000000000fabcb05c4ad21da
+Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
+Content-Disposition: attachment; filename="patch.diff"
+Content-Transfer-Encoding: base64
+Content-ID: <f_kpvr1cy80>
+X-Attachment-Id: f_kpvr1cy80
 
-As I understand the code the new thread created by create_thread
-initially has a full complement of registers, and then is started
-by alpha_switch_to:
-
-	.align	4
-	.globl	alpha_switch_to
-	.type	alpha_switch_to, @function
-	.cfi_startproc
-alpha_switch_to:
-	DO_SWITCH_STACK
-	call_pal PAL_swpctx
-	lda	$8, 0x3fff
-	UNDO_SWITCH_STACK
-	bic	$sp, $8, $8
-	mov	$17, $0
-	ret
-	.cfi_endproc
-	.size	alpha_switch_to, .-alpha_switch_to
-
-
-The alpha_switch_to will remove the extra registers from the stack and
-then call ret which if I understand alpha assembly correctly is
-equivalent to jumping to where $26 points.  Which is
-ret_from_kernel_thread (as setup by copy_thread).
-
-Which leaves ret_from_kernel_thread and everything it calls without
-the extra context saved on the stack.
-
-I am still trying to understand how we get registers populated at a
-fixed offset on the stack during schedule.  As it looks like switch_to
-assumes the stack pointer is in the proper location.
-
->> It looks like we just need something like this to cover the userspace
->> side of exit.
->
-> Looks correct to me. Except I think you could just use "fork_like()"
-> instead of creating a new (and identical) "exit_like()" macro.
->
->> > But I really wish we had some way to test and trigger this so that we
->> > wouldn't get caught on this before. Something in task_pt_regs() that
->> > catches "this doesn't actually work" and does a WARN_ON_ONCE() on the
->> > affected architectures?
->>
->> I think that would require pushing an extra magic value in SWITCH_STACK
->> and not just popping it but deliberately changing that value in
->> UNDO_SWITCH_STACK.  Basically stack canaries.
->>
->> I don't see how we could do it in an arch independent way though.
->
-> No, I think you're right. There's no obvious generic solution to it,
-> and once we look at arch-specific ones we're vback to "just alpha,
-> m68k and nios needs this or cares" and tonce you're there you might as
-> well just fix it.
->
-> ia64 has soem "fast system call" model with limited registers too, but
-> I think that's limited to just a few very special system calls (ie it
-> does the reverse of what alpha does: alpha does the fast case by
-> default, and then marks fork/vfork/clone as special).
-
-I wonder if the arch specific solution should be to move the registers
-to a fixed location in task_struct (perhaps thread_struct ) so that the
-same patterns can apply across all architectures and we don't get
-surprises at all.
-
-What appears to be unique about alpha, m68k, and nios is that
-space is not always reserved for all of the registers, so we can't
-always count on them being saved after a task switch.
-
-Eric
+IGFyY2gvYWxwaGEva2VybmVsL3Byb2Nlc3MuYyB8IDExICsrKysrKysrKystCiAxIGZpbGUgY2hh
+bmdlZCwgMTAgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2FyY2gv
+YWxwaGEva2VybmVsL3Byb2Nlc3MuYyBiL2FyY2gvYWxwaGEva2VybmVsL3Byb2Nlc3MuYwppbmRl
+eCA1MTEyYWI5OTYzOTQuLmVkYmZlMDNmNGIyYyAxMDA2NDQKLS0tIGEvYXJjaC9hbHBoYS9rZXJu
+ZWwvcHJvY2Vzcy5jCisrKyBiL2FyY2gvYWxwaGEva2VybmVsL3Byb2Nlc3MuYwpAQCAtMjUxLDgg
+KzI1MSwxNyBAQCBpbnQgY29weV90aHJlYWQodW5zaWduZWQgbG9uZyBjbG9uZV9mbGFncywgdW5z
+aWduZWQgbG9uZyB1c3AsCiAKIAlpZiAodW5saWtlbHkocC0+ZmxhZ3MgJiAoUEZfS1RIUkVBRCB8
+IFBGX0lPX1dPUktFUikpKSB7CiAJCS8qIGtlcm5lbCB0aHJlYWQgKi8KKwkJLyoKKwkJICogR2l2
+ZSBpdCAqdHdvKiBzd2l0Y2ggc3RhY2tzLCBvbmUgZm9yIHRoZSBrZXJuZWwKKwkJICogc3RhdGUg
+cmV0dXJuIHRoYXQgaXMgdXNlZCB1cCBieSBhbHBoYV9zd2l0Y2hfdG8sCisJCSAqIGFuZCBvbmUg
+Zm9yIHRoZSAidXNlciBzdGF0ZSIgd2hpY2ggaXMgYWNjZXNzZWQKKwkJICogYnkgcHRyYWNlLgor
+CQkgKi8KKwkJY2hpbGRzdGFjay0tOworCQljaGlsZHRpLT5wY2Iua3NwID0gKHVuc2lnbmVkIGxv
+bmcpIGNoaWxkc3RhY2s7CisKIAkJbWVtc2V0KGNoaWxkc3RhY2ssIDAsCi0JCQlzaXplb2Yoc3Ry
+dWN0IHN3aXRjaF9zdGFjaykgKyBzaXplb2Yoc3RydWN0IHB0X3JlZ3MpKTsKKwkJCTIqc2l6ZW9m
+KHN0cnVjdCBzd2l0Y2hfc3RhY2spICsgc2l6ZW9mKHN0cnVjdCBwdF9yZWdzKSk7CiAJCWNoaWxk
+c3RhY2stPnIyNiA9ICh1bnNpZ25lZCBsb25nKSByZXRfZnJvbV9rZXJuZWxfdGhyZWFkOwogCQlj
+aGlsZHN0YWNrLT5yOSA9IHVzcDsJLyogZnVuY3Rpb24gKi8KIAkJY2hpbGRzdGFjay0+cjEwID0g
+a3RocmVhZF9hcmc7Cg==
+--0000000000000fabcb05c4ad21da--
