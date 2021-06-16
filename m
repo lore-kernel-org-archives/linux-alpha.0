@@ -1,7 +1,7 @@
 From: ebiederm@xmission.com (Eric W. Biederman)
-Subject: Re: Kernel stack read with PTRACE_EVENT_EXIT and io_uring threads
-Date: Wed, 16 Jun 2021 10:06:56 -0500
-Message-ID: <87mtrplugf.fsf@disp2133>
+Subject: Re: [PATCH] alpha: Add extra switch_stack frames in exit, exec, and kernel threads
+Date: Wed, 16 Jun 2021 11:32:47 -0500
+Message-ID: <87mtrpg47k.fsf@disp2133>
 References: <87sg1p30a1.fsf@disp2133>
         <CAHk-=wjiBXCZBxLiCG5hxpd0vMkMjiocenponWygG5SCG6DXNw@mail.gmail.com>
         <87pmwsytb3.fsf@disp2133>
@@ -12,12 +12,12 @@ References: <87sg1p30a1.fsf@disp2133>
         <924ec53c-2fd9-2e1c-bbb1-3fda49809be4@gmail.com>
         <87eed4v2dc.fsf@disp2133>
         <5929e116-fa61-b211-342a-c706dcb834ca@gmail.com>
-        <87fsxjorgs.fsf@disp2133>
-        <CAHk-=wj5cJjpjAmDptmP9u4__6p3Y93SCQHG8Ef4+h=cnLiCsA@mail.gmail.com>
+        <87fsxjorgs.fsf@disp2133> <87zgvqor7d.fsf_-_@disp2133>
+        <CAHk-=wir2P6h+HKtswPEGDh+GKLMM6_h8aovpMcUHyQv2zJ5Og@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <CAHk-=wj5cJjpjAmDptmP9u4__6p3Y93SCQHG8Ef4+h=cnLiCsA@mail.gmail.com>
-        (Linus Torvalds's message of "Tue, 15 Jun 2021 14:58:12 -0700")
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <CAHk-=wir2P6h+HKtswPEGDh+GKLMM6_h8aovpMcUHyQv2zJ5Og@mail.gmail.com>
+        (Linus Torvalds's message of "Tue, 15 Jun 2021 15:02:57 -0700")
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -26,66 +26,76 @@ Cc: Michael Schmitz <schmitzmic@gmail.com>, linux-arch <linux-arch@vger.kernel.o
 
 Linus Torvalds <torvalds@linux-foundation.org> writes:
 
-> On Tue, Jun 15, 2021 at 12:32 PM Eric W. Biederman
+> On Tue, Jun 15, 2021 at 12:36 PM Eric W. Biederman
 > <ebiederm@xmission.com> wrote:
 >>
->> I had to update ret_from_kernel_thread to pop that state to get Linus's
->> change to boot.  Apparently kernel_threads exiting needs to be handled.
+>> I looked and there nothing I can do that is not arch specific, so
+>> whack the moles with a minimal backportable fix.
+>>
+>> This change survives boot testing on qemu-system-alpha.
 >
-> You are very right.
+> So as mentioned in the other thread, I think this patch is exactly right.
 >
-> That, btw, seems to be a horrible design mistake, but I think it's how
-> "kernel_execve()" works - both for the initial "init", but also for
-> user-mode helper processes.
+> However, the need for this part
 >
-> Both of those cases do "kernel_thread()" to create a new thread, and
-> then that new kernel thread does kernel_execve() to create the user
-> space image for that thread. And that act of "execve()" clears
-> PF_KTHREAD from the thread, and then the final return from the kernel
-> thread function returns to that new user space.
+>> @@ -785,6 +785,7 @@ ret_from_kernel_thread:
+>>         mov     $9, $27
+>>         mov     $10, $16
+>>         jsr     $26, ($9)
+>> +       lda     $sp, SWITCH_STACK_SIZE($sp)
+>>         br      $31, ret_to_user
+>>  .end ret_from_kernel_thread
 >
-> Or something like that. It's been ages since I looked at that code,
-> and your patch initially confused the heck out of me because I went
-> "that can't _possibly_ be needed".
+> obviously eluded me in my "how about something like this", and I had
+> to really try to figure out why we'd ever return.
 >
-> But yes, I think your patch is right.
+> Which is why I came to that "oooh - kernel_execve()" realization.
 >
-> And I think our horrible "kernel threads return to user space when
-> done" is absolutely horrifically nasty. Maybe of the clever sort, but
-> mostly of the historical horror sort.
+> It might be good to comment on that somewhere. And if you can think of
+> some other case, that should be mentioned too.
 >
-> Or am I mis-rememberting how this ends up working? Did you look at
-> exactly what it was that returned from kernel threads?
->
-> This might be worth commenting on somewhere. But your patch for alpha
-> looks correct to me. Did you have some test-case to verify ptrace() on
-> io worker threads?
+> Anyway, thanks for looking into this odd case. And if you have a
+> test-case for this all, it really would be a good thing. Yes, it
+> should only affect a couple of odd-ball architectures, but still... It
+> would also be good to hear that you actually did verify the behavior
+> of this patch wrt that ptrace-of-io-worker-threads case..
 
-At this point I just booted an alpha image and on qemu-system-alpha.
+*Grumble*
 
-I do have gdb in my kernel image so I can test that.  I haven't yet but
-I can and should.
+So just going through and looking to see what it takes to instrument
+and put in warnings when things go wrong I have found another issue.
 
-Sleeping on it I came up with a plan to add TF_SWITCH_STACK_SAVED to
-indicate if the registers have been saved.  The DO_SWITCH_STACK and
-UNDO_SWITCH_STACK helpers (except in alpha_switch_to) can test that.
-The ptrace helpers can test that and turn an access of random kernel
-stack contents into something well behaved that does WARN_ON_ONCE
-because we should not get there.
+Today there exists:
+PTRACE_EVENT_FORK
+PTRACE_EVENT_VFORK
+PTRACE_EVENT_CLONE
 
-I suspect adding TF_SWITCH_STACK_SAVED should come first so it
-is easy to verify the problem behavior, before I fix it.
+Which happens after the actual fork operation in the kernel.
 
-My real goal is to find a pattern that architectures whose register
-saves are structured like alphas can emulate, to minimize problems in
-the future.
+The following code wraps those operations in arch/alpha/kernel/entry.S
 
-Plus I would really like to get the last handful of architectures
-updated so we can remove CONFIG_HAVE_ARCH_TRACEHOOK.  I think we can
-do that on alpha because we save all of the system call arguments
-in pt_regs and that is all the other non-ptrace code paths care about.
+.macro	fork_like name
+	.align	4
+	.globl	alpha_\name
+	.ent	alpha_\name
+alpha_\name:
+	.prologue 0
+	bsr	$1, do_switch_stack
+	jsr	$26, sys_\name
+	ldq	$26, 56($sp)
+	lda	$sp, SWITCH_STACK_SIZE($sp)
+	ret
+.end	alpha_\name
+.endm
 
-AKA I am trying to move the old architectures forward so we can get rid
-of unnecessary complications in the core code.
+The code in the kernel when calls in fork.c calls ptrace_event_pid
+which ultimately calls ptrace_stop.  So userspace can reasonably expect
+to stop the process and change it's registers.
+
+With unconditionally popping the switch stack any of those registers
+that are modified are lost.
+
+So I will update my changes to handle that case as well.
+
 
 Eric
