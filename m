@@ -1,32 +1,152 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 5/6] m68k: use libata instead of the legacy ide driver
-Date: Wed, 16 Jun 2021 16:04:24 +0200
-Message-ID: <20210616140424.GA32014@lst.de>
-References: <20210616134658.1471835-1-hch@lst.de> <20210616134658.1471835-6-hch@lst.de> <CAMuHMdUbEBO28w3XKOvSKUk3XUaesOqxEfL+8i4W0Thu10pNTw@mail.gmail.com>
+From: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Subject: Re: +
+ mm-rename-pud_page_vaddr-to-pud_pgtable-and-make-it-return-pmd_t.patch
+ added to -mm tree
+Date: Wed, 16 Jun 2021 19:41:32 +0530
+Message-ID: <87zgvpnbl7.fsf@linux.ibm.com>
+References: <20210615233808.hzjGO1gF2%akpm@linux-foundation.org>
+ <202106162159.MurvDMy6-lkp@intel.com>
 Mime-Version: 1.0
-Return-path: <linux-ide-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUbEBO28w3XKOvSKUk3XUaesOqxEfL+8i4W0Thu10pNTw@mail.gmail.com>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>, Jens Axboe <axboe@kernel.dk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Michael Ellerman <mpe@ellerman.id.au>, Linus Torvalds <torvalds@linux-foundation.org>, linux-ide@vger.kernel.org, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-ID:Date:References
+	:In-Reply-To:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=Y3zI/SKvkA9/Y8OE9p+Zhz9y4xhBxLbxwdh+H1/YUSg=; b=XhNUud39OQEUNy
+	dTAdrwvssQNPdAt4axP0zrT2sigkB37igUBNflfX+aakU+nFkFVjcjdSRF8i92EdM0VD5COdCyTYV
+	aPZCudUq4zLHQVxfJ/zrBg/jcyWFUwGpqG7iPsIebtzxUXdUIwnPm9lr6ZbowLvCK9XdPlYOQ8NnL
+	3PlxHZOVXMLKU/URjsunoPhdVOUSv4r/bijo/rOIChJWSZr95sEczfQIokibis3s07Z+VHfqhz+yG
+	4dMIIUvfubIc/GArOlYIqCTkQiLqvobF2LM/PjhRIaRps7UB6fIGrYPevB0PfFKX3KPrDuA5VS+sX
+	Y3j6rpp7j1gxaQrMOj2w==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=from : to : cc : subject
+ : in-reply-to : references : date : message-id : content-type :
+ mime-version; s=pp1; bh=UupLhvjLfZlZazopahCfbi8y4ZD+5NPeCGAMnXLT4ms=;
+ b=GrLMvthA5rC1tfSKNoifYju5lbcM6AVRhpciJIhco5ODPwvIuG/i+iL3+pVf7j4UJ1WF
+ PGYaVz7ew3/53QaOnVSASRqkobVcEnKFWTjhq0p/q8mKSyR0ofHH1LwNNXrQeeerOqIb
+ +HOSDDggMYaoURLdXQ5xqUBEnij8WeBYnqX/Oe8izH8QLGGpWJ0kDWBf03VSrsGQnbF/
+ u9CQFRxLZerTDx0fi67aJi2oY99ZpMkFgvW5jSSi0e92rE1AUSv4LWE2n94Ai9AFlQn4
+ AncDpb2tzMhXF2ljfNp0nN1hhTwW6Kl8A10XfjK0otq9SSx9wrvQtt/B80xNkfyJhnoE pw== 
+In-Reply-To: <202106162159.MurvDMy6-lkp@intel.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+To: kernel test robot <lkp@intel.com>, akpm@linux-foundation.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc: kbuild-all@lists.01.org
 
-On Wed, Jun 16, 2021 at 04:03:38PM +0200, Geert Uytterhoeven wrote:
-> Hi Christoph,
-> 
-> On Wed, Jun 16, 2021 at 3:50 PM Christoph Hellwig <hch@lst.de> wrote:
-> > Switch the m68 defconfigs from the deprecated ide subsystem to use libata
-> > instead.  The gayle and buddha and falcon drivers are enabled for libata,
-> > while support for the q40 and macide drivers is lost.
-> 
-> I guess you forgot to update the last sentence, too?
-> These are now handled by the falcon and generic platform libata drivers.
+kernel test robot <lkp@intel.com> writes:
 
-Indeed.
+> Hi,
+>
+> I love your patch! Perhaps something to improve:
+>
+> [auto build test WARNING on powerpc/next]
+> [also build test WARNING on tip/x86/mm asm-generic/master linus/master sparc/master v5.13-rc6 next-20210615]
+> [cannot apply to sparc-next/master]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+>
+> url:    https://github.com/0day-ci/linux/commits/akpm-linux-foundation-org/mm-rename-pud_page_vaddr-to-pud_pgtable-and-make-it-return-pmd_t-patch-added-to-mm-tree/20210616-161816
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
+> config: m68k-allmodconfig (attached as .config)
+> compiler: m68k-linux-gcc (GCC) 9.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/2ccec57c1def84dab91722c14fd5907ed7423426
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review akpm-linux-foundation-org/mm-rename-pud_page_vaddr-to-pud_pgtable-and-make-it-return-pmd_t-patch-added-to-mm-tree/20210616-161816
+>         git checkout 2ccec57c1def84dab91722c14fd5907ed7423426
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=m68k 
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+>    arch/m68k/mm/motorola.c: In function 'kernel_ptr_table':
+>>> arch/m68k/mm/motorola.c:265:8: warning: assignment to 'long unsigned int' from 'pmd_t *' {aka 'struct <anonymous> *'} makes integer from pointer without a cast [-Wint-conversion]
+>      265 |    pmd = pgd_page_vaddr(kernel_pg_dir[i]);
+>          |        ^
+>    arch/m68k/mm/motorola.c: At top level:
+>    arch/m68k/mm/motorola.c:390:13: warning: no previous prototype for 'paging_init' [-Wmissing-prototypes]
+>      390 | void __init paging_init(void)
+>          |             ^~~~~~~~~~~
+>
+>
+> vim +265 arch/m68k/mm/motorola.c
+>
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  248  
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  249  static pmd_t * __init kernel_ptr_table(void)
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  250  {
+> ef9285f69f0efb Peter Zijlstra     2020-01-31  251  	if (!last_pmd_table) {
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  252  		unsigned long pmd, last;
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  253  		int i;
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  254  
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  255  		/* Find the last ptr table that was used in head.S and
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  256  		 * reuse the remaining space in that page for further
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  257  		 * ptr tables.
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  258  		 */
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  259  		last = (unsigned long)kernel_pg_dir;
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  260  		for (i = 0; i < PTRS_PER_PGD; i++) {
+> 60e50f34b13e9e Mike Rapoport      2019-12-04  261  			pud_t *pud = (pud_t *)(&kernel_pg_dir[i]);
+> 60e50f34b13e9e Mike Rapoport      2019-12-04  262  
+> 60e50f34b13e9e Mike Rapoport      2019-12-04  263  			if (!pud_present(*pud))
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  264  				continue;
+> 60e50f34b13e9e Mike Rapoport      2019-12-04 @265  			pmd = pgd_page_vaddr(kernel_pg_dir[i]);
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  266  			if (pmd > last)
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  267  				last = pmd;
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  268  		}
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  269  
+> ef9285f69f0efb Peter Zijlstra     2020-01-31  270  		last_pmd_table = (pmd_t *)last;
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  271  #ifdef DEBUG
+> ef9285f69f0efb Peter Zijlstra     2020-01-31  272  		printk("kernel_ptr_init: %p\n", last_pmd_table);
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  273  #endif
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  274  	}
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  275  
+> ef9285f69f0efb Peter Zijlstra     2020-01-31  276  	last_pmd_table += PTRS_PER_PMD;
+> 41f1bf37a63ecd Geert Uytterhoeven 2020-08-26  277  	if (PAGE_ALIGNED(last_pmd_table)) {
+> 7e158826564fbb Geert Uytterhoeven 2020-08-26  278  		last_pmd_table = memblock_alloc_low(PAGE_SIZE, PAGE_SIZE);
+> ef9285f69f0efb Peter Zijlstra     2020-01-31  279  		if (!last_pmd_table)
+> 8a7f97b902f4fb Mike Rapoport      2019-03-11  280  			panic("%s: Failed to allocate %lu bytes align=%lx\n",
+> 8a7f97b902f4fb Mike Rapoport      2019-03-11  281  			      __func__, PAGE_SIZE, PAGE_SIZE);
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  282  
+> ef9285f69f0efb Peter Zijlstra     2020-01-31  283  		clear_page(last_pmd_table);
+> ef9285f69f0efb Peter Zijlstra     2020-01-31  284  		mmu_page_ctor(last_pmd_table);
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  285  	}
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  286  
+> ef9285f69f0efb Peter Zijlstra     2020-01-31  287  	return last_pmd_table;
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  288  }
+> ^1da177e4c3f41 Linus Torvalds     2005-04-16  289  
+>
 
-> With the above fixed:
-> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+We may want to fixup pgd_page_vaddr correctly later. pgd_page_vaddr() gets
+cast to different pointer types based on architecture. But for now this
+should work? This ensure we keep the pgd_page_vaddr() same as before. 
 
-Thanks!
+diff --git a/include/asm-generic/pgtable-nop4d.h b/include/asm-generic/pgtable-nop4d.h
+index 982de5102fc1..2f1d0aad645c 100644
+--- a/include/asm-generic/pgtable-nop4d.h
++++ b/include/asm-generic/pgtable-nop4d.h
+@@ -42,7 +42,7 @@ static inline p4d_t *p4d_offset(pgd_t *pgd, unsigned long address)
+ #define __p4d(x)				((p4d_t) { __pgd(x) })
+ 
+ #define pgd_page(pgd)				(p4d_page((p4d_t){ pgd }))
+-#define pgd_page_vaddr(pgd)			(p4d_pgtable((p4d_t){ pgd }))
++#define pgd_page_vaddr(pgd)			((unsigned long)(p4d_pgtable((p4d_t){ pgd })))
+ 
+ /*
+  * allocating and freeing a p4d is trivial: the 1-entry p4d is
