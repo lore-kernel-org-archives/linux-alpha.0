@@ -1,7 +1,7 @@
 From: ebiederm@xmission.com (Eric W. Biederman)
-Subject: [PATCH 0/2] alpha/ptrace: Improved switch_stack handling
-Date: Wed, 16 Jun 2021 13:29:38 -0500
-Message-ID: <87pmwlek8d.fsf_-_@disp2133>
+Subject: [PATCH 1/2] alpha/ptrace: Record and handle the absence of switch_stack
+Date: Wed, 16 Jun 2021 13:31:52 -0500
+Message-ID: <87k0mtek4n.fsf_-_@disp2133>
 References: <87sg1p30a1.fsf@disp2133>
         <CAHk-=wjiBXCZBxLiCG5hxpd0vMkMjiocenponWygG5SCG6DXNw@mail.gmail.com>
         <87pmwsytb3.fsf@disp2133>
@@ -14,11 +14,11 @@ References: <87sg1p30a1.fsf@disp2133>
         <5929e116-fa61-b211-342a-c706dcb834ca@gmail.com>
         <87fsxjorgs.fsf@disp2133> <87zgvqor7d.fsf_-_@disp2133>
         <CAHk-=wir2P6h+HKtswPEGDh+GKLMM6_h8aovpMcUHyQv2zJ5Og@mail.gmail.com>
-        <87mtrpg47k.fsf@disp2133>
+        <87mtrpg47k.fsf@disp2133> <87pmwlek8d.fsf_-_@disp2133>
 Mime-Version: 1.0
 Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <87mtrpg47k.fsf@disp2133> (Eric W. Biederman's message of "Wed,
-        16 Jun 2021 11:32:47 -0500")
+In-Reply-To: <87pmwlek8d.fsf_-_@disp2133> (Eric W. Biederman's message of
+        "Wed, 16 Jun 2021 13:29:38 -0500")
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -26,21 +26,200 @@ To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Michael Schmitz <schmitzmic@gmail.com>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
 
 
-This pair of changes has not received anything beyond build and boot
-testing.  I am posting these changes as they do a much better job of
-warning of problems and shutting down the security hole.  Making them
-a much better pattern than the my last patch.
+While thinking about the information leaks fixed in 77f6ab8b7768
+("don't dump the threads that had been already exiting when zapped.")
+I realized the problem is much more general than just coredumps and
+exit_mm.  We have io_uring threads, PTRACE_EVENT_FORK,
+PTRACE_EVENT_VFORK, PTRACE_EVENT_CLONE, PTRACE_EVENT_EXEC and
+PTRACE_EVENT_EXIT where ptrace is allowed to access userspace
+registers, but on some architectures has not saved them so
+they can be modified.
 
-I hope to get the test cases soon.
+The function alpha_switch_to does something reasonable it saves the
+floating point registers and the caller saved registers and switches
+to a different thread.  Any register the caller is not expected to
+save it does not save.
 
- arch/alpha/include/asm/thread_info.h   |  2 ++
- arch/alpha/kernel/entry.S              | 62 ++++++++++++++++++++++++++--------
- arch/alpha/kernel/process.c            |  3 ++
- arch/alpha/kernel/ptrace.c             | 13 +++++--
- arch/alpha/kernel/syscalls/syscall.tbl |  8 ++---
- 5 files changed, 67 insertions(+), 21 deletions(-)
+Meanhile the system call entry point on alpha also does something
+reasonable.  The system call entry point saves all but the caller
+saved integer registers and doesn't touch the floating point registers
+as the kernel code does not touch them.
 
-Eric W. Biederman (2):
-      alpha/ptrace: Record and handle the absence of switch_stack
-      alpha/ptrace: Add missing switch_stack frames
+This is a nice happy fast path until the kernel wants to access the
+user space's registers through ptrace or similar.  As user spaces's
+caller saved registers may be saved at an unpredictable point in the
+kernel code's stack, the routine which may stop and make the userspace
+registers available must be wrapped by code that will first save a
+switch stack frame at the bottom of the call stack, call the code that
+may access those registers and then pop the switch stack frame.
+
+The practical problem with this code structure is that this results in
+a game of whack-a-mole wrapping different kernel system calls.  Loosing
+the game of whack-a-mole results in a security hole where userspace can
+write arbitrary data to the kernel stack.
+
+In general it is not possible to prevent generic code introducing a
+ptrace_stop or register access not knowing alpha's limitations, that
+where alpha does not make all of the registers avaliable.
+
+Prevent security holes by recording when all of the registers are
+available so generic code changes do not result in security holes
+on alpha.
+
+Cc: stable@vger.kernel.org
+Fixes: dbe1bdbb39db ("io_uring: handle signals for IO threads like a normal thread")
+Fixes: 45c1a159b85b ("Add PTRACE_O_TRACEVFORKDONE and PTRACE_O_TRACEEXIT facilities.")
+Fixes: a0691b116f6a ("Add new ptrace event tracing mechanism")
+History-tree: https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+---
+ arch/alpha/include/asm/thread_info.h |  2 ++
+ arch/alpha/kernel/entry.S            | 38 ++++++++++++++++++++++------
+ arch/alpha/kernel/ptrace.c           | 13 ++++++++--
+ 3 files changed, 43 insertions(+), 10 deletions(-)
+
+diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
+index 2592356e3215..41e5986ed9c8 100644
+--- a/arch/alpha/include/asm/thread_info.h
++++ b/arch/alpha/include/asm/thread_info.h
+@@ -63,6 +63,7 @@ register struct thread_info *__current_thread_info __asm__("$8");
+ #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
+ #define TIF_SYSCALL_AUDIT	4	/* syscall audit active */
+ #define TIF_NOTIFY_SIGNAL	5	/* signal notifications exist */
++#define TIF_ALLREGS_SAVED	6	/* both pt_regs and switch_stack saved */
+ #define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
+ #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
+ #define TIF_POLLING_NRFLAG	14	/* idle is polling for TIF_NEED_RESCHED */
+@@ -73,6 +74,7 @@ register struct thread_info *__current_thread_info __asm__("$8");
+ #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
+ #define _TIF_SYSCALL_AUDIT	(1<<TIF_SYSCALL_AUDIT)
+ #define _TIF_NOTIFY_SIGNAL	(1<<TIF_NOTIFY_SIGNAL)
++#define _TIF_ALLREGS_SAVED	(1<<TIF_ALLREGS_SAVED)
+ #define _TIF_POLLING_NRFLAG	(1<<TIF_POLLING_NRFLAG)
+ 
+ /* Work to do on interrupt/exception return.  */
+diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
+index e227f3a29a43..c1edf54dc035 100644
+--- a/arch/alpha/kernel/entry.S
++++ b/arch/alpha/kernel/entry.S
+@@ -174,6 +174,28 @@
+ 	.cfi_adjust_cfa_offset	-SWITCH_STACK_SIZE
+ .endm
+ 
++.macro	SAVE_SWITCH_STACK
++	DO_SWITCH_STACK
++1:	ldl_l	$1, TI_FLAGS($8)
++	bis	$1, _TIF_ALLREGS_SAVED, $1
++	stl_c	$1, TI_FLAGS($8)
++	beq	$1, 2f
++.subsection 2
++2:	br	1b
++.previous
++.endm
++
++.macro	RESTORE_SWITCH_STACK
++1:	ldl_l	$1, TI_FLAGS($8)
++	bic	$1, _TIF_ALLREGS_SAVED, $1
++	stl_c	$1, TI_FLAGS($8)
++	beq	$1, 2f
++.subsection 2
++2:	br	1b
++.previous
++	UNDO_SWITCH_STACK
++.endm
++
+ /*
+  * Non-syscall kernel entry points.
+  */
+@@ -559,9 +581,9 @@ $work_resched:
+ 
+ $work_notifysig:
+ 	mov	$sp, $16
+-	DO_SWITCH_STACK
++	SAVE_SWITCH_STACK
+ 	jsr	$26, do_work_pending
+-	UNDO_SWITCH_STACK
++	RESTORE_SWITCH_STACK
+ 	br	restore_all
+ 
+ /*
+@@ -572,9 +594,9 @@ $work_notifysig:
+ 	.type	strace, @function
+ strace:
+ 	/* set up signal stack, call syscall_trace */
+-	DO_SWITCH_STACK
++	SAVE_SWITCH_STACK
+ 	jsr	$26, syscall_trace_enter /* returns the syscall number */
+-	UNDO_SWITCH_STACK
++	RESTORE_SWITCH_STACK
+ 
+ 	/* get the arguments back.. */
+ 	ldq	$16, SP_OFF+24($sp)
+@@ -602,9 +624,9 @@ ret_from_straced:
+ $strace_success:
+ 	stq	$0, 0($sp)		/* save return value */
+ 
+-	DO_SWITCH_STACK
++	SAVE_SWITCH_STACK
+ 	jsr	$26, syscall_trace_leave
+-	UNDO_SWITCH_STACK
++	RESTORE_SWITCH_STACK
+ 	br	$31, ret_from_sys_call
+ 
+ 	.align	3
+@@ -618,13 +640,13 @@ $strace_error:
+ 	stq	$0, 0($sp)
+ 	stq	$1, 72($sp)	/* a3 for return */
+ 
+-	DO_SWITCH_STACK
++	SAVE_SWITCH_STACK
+ 	mov	$18, $9		/* save old syscall number */
+ 	mov	$19, $10	/* save old a3 */
+ 	jsr	$26, syscall_trace_leave
+ 	mov	$9, $18
+ 	mov	$10, $19
+-	UNDO_SWITCH_STACK
++	RESTORE_SWITCH_STACK
+ 
+ 	mov	$31, $26	/* tell "ret_from_sys_call" we can restart */
+ 	br	ret_from_sys_call
+diff --git a/arch/alpha/kernel/ptrace.c b/arch/alpha/kernel/ptrace.c
+index 8c43212ae38e..41fb994f36dc 100644
+--- a/arch/alpha/kernel/ptrace.c
++++ b/arch/alpha/kernel/ptrace.c
+@@ -117,7 +117,13 @@ get_reg_addr(struct task_struct * task, unsigned long regno)
+ 		zero = 0;
+ 		addr = &zero;
+ 	} else {
+-		addr = task_stack_page(task) + regoff[regno];
++		int off = regoff[regno];
++		if (WARN_ON_ONCE((off < PT_REG(r0)) &&
++				!test_ti_thread_flag(task_thread_info(task),
++						     TIF_ALLREGS_SAVED)))
++			addr = &zero;
++		else
++			addr = task_stack_page(task) + off;
+ 	}
+ 	return addr;
+ }
+@@ -145,13 +151,16 @@ get_reg(struct task_struct * task, unsigned long regno)
+ static int
+ put_reg(struct task_struct *task, unsigned long regno, unsigned long data)
+ {
++	unsigned long *addr;
+ 	if (regno == 63) {
+ 		task_thread_info(task)->ieee_state
+ 		  = ((task_thread_info(task)->ieee_state & ~IEEE_SW_MASK)
+ 		     | (data & IEEE_SW_MASK));
+ 		data = (data & FPCR_DYN_MASK) | ieee_swcr_to_fpcr(data);
+ 	}
+-	*get_reg_addr(task, regno) = data;
++	addr = get_reg_addr(task, regno);
++	if (addr != &zero)
++		*addr = data;
+ 	return 0;
+ }
+ 
+-- 
+2.20.1
 
