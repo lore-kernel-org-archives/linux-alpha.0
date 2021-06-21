@@ -1,76 +1,96 @@
-From: ebiederm@xmission.com (Eric W. Biederman)
+From: Al Viro <viro@zeniv.linux.org.uk>
 Subject: Re: Kernel stack read with PTRACE_EVENT_EXIT and io_uring threads
-Date: Mon, 21 Jun 2021 15:03:57 -0500
-Message-ID: <87a6njf0ia.fsf@disp2133>
-References: <CAHk-=wgdO5VwSUFjfF9g=DAQNYmVxzTq73NtdisYErzdZKqDGg@mail.gmail.com>
-        <87sg1lwhvm.fsf@disp2133>
-        <CAHk-=wgsnMTr0V-0F4FOk30Q1h7CeT8wLvR1MSnjack7EpyWtQ@mail.gmail.com>
-        <6e47eff8-d0a4-8390-1222-e975bfbf3a65@gmail.com>
-        <924ec53c-2fd9-2e1c-bbb1-3fda49809be4@gmail.com>
-        <87eed4v2dc.fsf@disp2133>
-        <5929e116-fa61-b211-342a-c706dcb834ca@gmail.com>
-        <87fsxjorgs.fsf@disp2133>
-        <CAHk-=wj5cJjpjAmDptmP9u4__6p3Y93SCQHG8Ef4+h=cnLiCsA@mail.gmail.com>
-        <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
-        <YNDhdb7XNQE6zQzL@zeniv-ca.linux.org.uk>
-        <CAHk-=whAsWXcJkpMM8ji77DkYkeJAT4Cj98WBX-S6=GnMQwhzg@mail.gmail.com>
+Date: Mon, 21 Jun 2021 23:05:23 +0000
+Message-ID: <YNEbM+B8Su7GDCSo@zeniv-ca.linux.org.uk>
+References: <CAHk-=wgsnMTr0V-0F4FOk30Q1h7CeT8wLvR1MSnjack7EpyWtQ@mail.gmail.com>
+ <6e47eff8-d0a4-8390-1222-e975bfbf3a65@gmail.com>
+ <924ec53c-2fd9-2e1c-bbb1-3fda49809be4@gmail.com>
+ <87eed4v2dc.fsf@disp2133>
+ <5929e116-fa61-b211-342a-c706dcb834ca@gmail.com>
+ <87fsxjorgs.fsf@disp2133>
+ <CAHk-=wj5cJjpjAmDptmP9u4__6p3Y93SCQHG8Ef4+h=cnLiCsA@mail.gmail.com>
+ <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
+ <YNCfNWC1UMvuE5d5@zeniv-ca.linux.org.uk>
+ <87czsfi2kv.fsf@disp2133>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <CAHk-=whAsWXcJkpMM8ji77DkYkeJAT4Cj98WBX-S6=GnMQwhzg@mail.gmail.com>
-        (Linus Torvalds's message of "Mon, 21 Jun 2021 12:22:06 -0700")
+Return-path: <linux-m68k-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <87czsfi2kv.fsf@disp2133>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Al Viro <viro@zeniv.linux.org.uk>, Michael Schmitz <schmitzmic@gmail.com>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
+To: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Michael Schmitz <schmitzmic@gmail.com>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+On Mon, Jun 21, 2021 at 11:50:56AM -0500, Eric W. Biederman wrote:
+> Al Viro <viro@zeniv.linux.org.uk> writes:
+> 
+> > On Mon, Jun 21, 2021 at 01:54:56PM +0000, Al Viro wrote:
+> >> On Tue, Jun 15, 2021 at 02:58:12PM -0700, Linus Torvalds wrote:
+> >> 
+> >> > And I think our horrible "kernel threads return to user space when
+> >> > done" is absolutely horrifically nasty. Maybe of the clever sort, but
+> >> > mostly of the historical horror sort.
+> >> 
+> >> How would you prefer to handle that, then?  Separate magical path from
+> >> kernel_execve() to switch to userland?  We used to have something of
+> >> that sort, and that had been a real horror...
+> >> 
+> >> As it is, it's "kernel thread is spawned at the point similar to
+> >> ret_from_fork(), runs the payload (which almost never returns) and
+> >> then proceeds out to userland, same way fork(2) would've done."
+> >> That way kernel_execve() doesn't have to do anything magical.
+> >> 
+> >> Al, digging through the old notes and current call graph...
+> >
+> > 	FWIW, the major assumption back then had been that get_signal(),
+> > signal_delivered() and all associated machinery (including coredumps)
+> > runs *only* from SIGPENDING/NOTIFY_SIGNAL handling.
+> >
+> > 	And "has complete registers on stack" is only a part of that;
+> > there was other fun stuff in the area ;-/  Do we want coredumps for
+> > those, and if we do, will the de_thread stuff work there?
+> 
+> Do we want coredumps from processes that use io_uring? yes
+> Exactly what we want from io_uring threads is less clear.  We can't
+> really give much that is meaningful beyond the thread ids of the
+> io_uring threads.
+> 
+> What problems do are you seeing beyond the missing registers on the
+> stack for kernel threads?
+> 
+> I don't immediately see the connection between coredumps and de_thread.
+> 
+> The function de_thread arranges for the fatal_signal_pending to be true,
+> and that should work just fine for io_uring threads.  The io_uring
+> threads process the fatal_signal with get_signal and then proceed to
+> exit eventually calling do_exit.
 
-> On Mon, Jun 21, 2021 at 11:59 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
->>
->>         There's a large mess around do_exit() - we have a bunch of
->> callers all over arch/*; if nothing else, I very much doubt that really
->> want to let tracer play with a thread in the middle of die_if_kernel()
->> or similar.
->
-> Right you are.
->
-> I'm really beginning to hate ptrace_{event,notify}() and those
-> PTRACE_EVENT_xyz things.
->
-> I don't even know what uses them, honestly. How very annoying.
+I would like to see the testing in cases when the io-uring thread is
+the one getting hit by initial signal and when it's the normal one
+with associated io-uring ones.  The thread-collecting logics at least
+used to depend upon fairly subtle assumptions, and "kernel threads
+obviously can't show up as candidates" used to narrow the analysis
+down...
 
-Modern strace does.  Modern gdb appears not to.
+In any case, WTF would we allow reads or writes to *any* registers of
+such threads?  It's not as simple as "just return zeroes", BTW - the
+values allowed in special registers might have non-trivial constraints
+on them.  The same goes for coredump - we don't _have_ registers to
+dump for those, period.
 
-However strace at least does not read the exit code,
-or really appear to care about stopping for PTRACE_EVENT_EXIT.
+Looks like the first things to do would be
+	* prohibit ptrace accessing any regsets of worker threads
+	* make coredump skip all register notes for those
 
-I completely agree with you that they are very annoying.
+Note, BTW, that kernel_thread() and kernel_execve() do *NOT* step into
+ptrace_notify() - explicit CLONE_UNTRACED for the former and zero
+current->ptrace in the caller of the latter.  So fork and exec side
+has ptrace_event() crap limited to real syscalls.
 
-> I guess it's easy enough (famous last words) to move the
-> ptrace_event() call out of do_exit() and into the actual
-> exit/exit_group system calls, and the signal handling path. The paths
-> that actually have proper pt_regs.
->
-> Looks like sys_exit() and do_group_exit() would be the two places to
-> do it (do_group_exit() would handle the signal case and
-> sys_group_exit()).
+It's seccomp[1] and exit-related stuff that are messy...
 
-For other ptrace_event calls I am playing with seeing if I can split
-them in two.  Like sending a signal.  So that we can have perform all
-of the work in get_signal.
-
-I think we can even change exit_group(2) and exit(2) so that (at least
-when ptraced) they just send the ``event signal'' and then the signal
-handling path handles all of the ptrace stuff.
-
-
-When I started it was just going to be exit and PTRACE_EVENT_EXIT and
-some old architectures, and that a generic solution was going to be
-hard.
-
-I still think we are going to need to fix the io_uring threads on the
-architectures that use the caller saved register optimization like alpha
-and m68k.  But I think we can handle the rest in generic code.
-
-Eric
+[1] "never trust somebody who introduces himself as Honest Joe and keeps
+carping on that all the time"; c.f. __secure_computing(), CONFIG_INTEGRITY,
+etc.
