@@ -1,117 +1,110 @@
-From: Michael Schmitz <schmitzmic@gmail.com>
+From: ebiederm@xmission.com (Eric W. Biederman)
 Subject: Re: Kernel stack read with PTRACE_EVENT_EXIT and io_uring threads
-Date: Tue, 22 Jun 2021 12:01:06 +1200
-Message-ID: <c7144d54-539d-6aef-ed15-beea91836468@gmail.com>
+Date: Tue, 22 Jun 2021 11:39:40 -0500
+Message-ID: <87pmwddfar.fsf@disp2133>
 References: <CAHk-=wgsnMTr0V-0F4FOk30Q1h7CeT8wLvR1MSnjack7EpyWtQ@mail.gmail.com>
- <6e47eff8-d0a4-8390-1222-e975bfbf3a65@gmail.com>
- <924ec53c-2fd9-2e1c-bbb1-3fda49809be4@gmail.com> <87eed4v2dc.fsf@disp2133>
- <5929e116-fa61-b211-342a-c706dcb834ca@gmail.com> <87fsxjorgs.fsf@disp2133>
- <CAHk-=wj5cJjpjAmDptmP9u4__6p3Y93SCQHG8Ef4+h=cnLiCsA@mail.gmail.com>
- <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
- <YNDhdb7XNQE6zQzL@zeniv-ca.linux.org.uk>
- <CAHk-=whAsWXcJkpMM8ji77DkYkeJAT4Cj98WBX-S6=GnMQwhzg@mail.gmail.com>
- <YNDsYk6kbisbNy3I@zeniv-ca.linux.org.uk>
- <CAHk-=wh82uJ5Poqby3brn-D7xWbCMnGv-JnwfO0tuRfCvsVgXA@mail.gmail.com>
+        <6e47eff8-d0a4-8390-1222-e975bfbf3a65@gmail.com>
+        <924ec53c-2fd9-2e1c-bbb1-3fda49809be4@gmail.com>
+        <87eed4v2dc.fsf@disp2133>
+        <5929e116-fa61-b211-342a-c706dcb834ca@gmail.com>
+        <87fsxjorgs.fsf@disp2133>
+        <CAHk-=wj5cJjpjAmDptmP9u4__6p3Y93SCQHG8Ef4+h=cnLiCsA@mail.gmail.com>
+        <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
+        <YNCfNWC1UMvuE5d5@zeniv-ca.linux.org.uk> <87czsfi2kv.fsf@disp2133>
+        <YNEbM+B8Su7GDCSo@zeniv-ca.linux.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=UB9+acUzK3vzXh9+7U7bnmX5b1NlglHQrLIGUPXU/88=;
-        b=cRhwrbwLthRHZEl5qtGandK0P3Pe5BMBQohYB/3hQrx0hUMho6jLEp/UuaUMGcJaM+
-         hXc6cf+8iFf+gafOybzC2MxTmCEqprQ8MbAf94Uh+hXrOSmblBBKTShlXYqVr6ivlTVP
-         qoodjF6SXnAvnmSJm2loNMg78iFlVIZ9CAiS9BF2nlQuOE11dtNt0+c72MFUUNiwWtW8
-         wLLaslzd8qJjw5k7bioVuUj9yORV1Hc9Rc6j7QW8bRufm21y4UUtCIB11KsjXzFH6oe9
-         DEjh0qANHksXAVFf6NYp414vqSzmNRDS4CwYYDYXtAkf5DXRRpcViaEOkQQ6YFHZWdHE
-         EMwA==
-In-Reply-To: <CAHk-=wh82uJ5Poqby3brn-D7xWbCMnGv-JnwfO0tuRfCvsVgXA@mail.gmail.com>
-Content-Language: en-US
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <YNEbM+B8Su7GDCSo@zeniv-ca.linux.org.uk> (Al Viro's message of
+        "Mon, 21 Jun 2021 23:05:23 +0000")
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Linus Torvalds <torvalds@linux-foundation.org>, Al Viro <viro@zeniv.linux.org.uk>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>, Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Michael Schmitz <schmitzmic@gmail.com>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
 
-Hi Linus,
+Al Viro <viro@zeniv.linux.org.uk> writes:
 
-On 22/06/21 11:14 am, Linus Torvalds wrote:
-> On Mon, Jun 21, 2021 at 12:45 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->>> Looks like sys_exit() and do_group_exit() would be the two places to
->>> do it (do_group_exit() would handle the signal case and
->>> sys_group_exit()).
->> Maybe...  I'm digging through that pile right now, will follow up when
->> I get a reasonably complete picture
-> We might have another possible way to solve this:
+> On Mon, Jun 21, 2021 at 11:50:56AM -0500, Eric W. Biederman wrote:
+>> Al Viro <viro@zeniv.linux.org.uk> writes:
+>> 
+>> > On Mon, Jun 21, 2021 at 01:54:56PM +0000, Al Viro wrote:
+>> >> On Tue, Jun 15, 2021 at 02:58:12PM -0700, Linus Torvalds wrote:
+>> >> 
+>> >> > And I think our horrible "kernel threads return to user space when
+>> >> > done" is absolutely horrifically nasty. Maybe of the clever sort, but
+>> >> > mostly of the historical horror sort.
+>> >> 
+>> >> How would you prefer to handle that, then?  Separate magical path from
+>> >> kernel_execve() to switch to userland?  We used to have something of
+>> >> that sort, and that had been a real horror...
+>> >> 
+>> >> As it is, it's "kernel thread is spawned at the point similar to
+>> >> ret_from_fork(), runs the payload (which almost never returns) and
+>> >> then proceeds out to userland, same way fork(2) would've done."
+>> >> That way kernel_execve() doesn't have to do anything magical.
+>> >> 
+>> >> Al, digging through the old notes and current call graph...
+>> >
+>> > 	FWIW, the major assumption back then had been that get_signal(),
+>> > signal_delivered() and all associated machinery (including coredumps)
+>> > runs *only* from SIGPENDING/NOTIFY_SIGNAL handling.
+>> >
+>> > 	And "has complete registers on stack" is only a part of that;
+>> > there was other fun stuff in the area ;-/  Do we want coredumps for
+>> > those, and if we do, will the de_thread stuff work there?
+>> 
+>> Do we want coredumps from processes that use io_uring? yes
+>> Exactly what we want from io_uring threads is less clear.  We can't
+>> really give much that is meaningful beyond the thread ids of the
+>> io_uring threads.
+>> 
+>> What problems do are you seeing beyond the missing registers on the
+>> stack for kernel threads?
+>> 
+>> I don't immediately see the connection between coredumps and de_thread.
+>> 
+>> The function de_thread arranges for the fatal_signal_pending to be true,
+>> and that should work just fine for io_uring threads.  The io_uring
+>> threads process the fatal_signal with get_signal and then proceed to
+>> exit eventually calling do_exit.
 >
->   (a) make it the rule that everybody always saves the full (integer)
-> register set in pt_regs
+> I would like to see the testing in cases when the io-uring thread is
+> the one getting hit by initial signal and when it's the normal one
+> with associated io-uring ones.  The thread-collecting logics at least
+> used to depend upon fairly subtle assumptions, and "kernel threads
+> obviously can't show up as candidates" used to narrow the analysis
+> down...
 >
->   (b) make m68k just always create that switch-stack for all system
-> calls (it's really not that big, I think it's like six words or
-> something)
+> In any case, WTF would we allow reads or writes to *any* registers of
+> such threads?  It's not as simple as "just return zeroes", BTW - the
+> values allowed in special registers might have non-trivial constraints
+> on them.  The same goes for coredump - we don't _have_ registers to
+> dump for those, period.
+>
+> Looks like the first things to do would be
+> 	* prohibit ptrace accessing any regsets of worker threads
+> 	* make coredump skip all register notes for those
 
-Correct - six words for registers, one for the return address. Probably 
-still a win compared to setting and clearing flag bits all over the 
-place in an attempt to catch any as yet undetected unsafe cases of 
-ptrace_stop.
+Skipping register notes is fine.  Prohibiting ptrace access to any
+regsets of worker threads is interesting.  I think that was tried and
+shown to confuse gdb.  So the conclusion was just to provide a fake set
+of registers.
 
-I'll have to see how much of a performance impact I can see (not that I 
-can even remotely measure that accurately - it's more of a 'does it now 
-feel real sluggish' thing).
+Which has appears to work up to the point of dealing with architectures
+that have their magic caller-saved optimization (like alpha and m68k),
+and no check that all of the registers were saved when accessed.  Adding
+a dummy switch stack frame for the kernel threads on those architectures
+looks like a good/cheap solution at first glance.
 
-Cheers,
+> Note, BTW, that kernel_thread() and kernel_execve() do *NOT* step into
+> ptrace_notify() - explicit CLONE_UNTRACED for the former and zero
+> current->ptrace in the caller of the latter.  So fork and exec side
+> has ptrace_event() crap limited to real syscalls.
 
-     Michael
+That is where I thought we were.  Thanks for confirming that.
 
+> It's seccomp[1] and exit-related stuff that are messy...
 >
->   (c) admit that alpha is broken, but nobody really cares
->
->> In the meanwhile, do kernel/kthread.c uses look even remotely sane?
->> Intentional - sure, but it really looks wrong to use thread exit code
->> as communication channel there...
-> I really doubt that it is even "intentional".
->
-> I think it's "use some errno as a random exit code" and nobody ever
-> really thought about it, or thought about how that doesn't really
-> work. People are used to the error numbers, not thinking about how
-> do_exit() doesn't take an error number, but a signal number (and an
-> 8-bit positive error code in bits 8-15).
->
-> Because no, it's not even remotely sane.
->
-> I think the do_exit(-EINTR) could be do_exit(SIGINT) and it would make
-> more sense. And the -ENOMEM might be SIGBUS, perhaps.
->
-> It does look like the usermode-helper code does save the exit code
-> with things like
->
->                  kernel_wait(pid, &sub_info->retval);
->
-> and I see call_usermodehelper_exec() doing
->
->          retval = sub_info->retval;
->
-> and treating it as an error code. But I think those have never been
-> tested with that (bogus) exit code thing from kernel_wait(), because
-> it wouldn't have worked.  It has only ever been tested with the (real)
-> exit code things like
->
->                  if (pid < 0) {
->                          sub_info->retval = pid;
->
-> which does actually assign a negative error code to it.
->
-> So I think that
->
->                  kernel_wait(pid, &sub_info->retval);
->
-> line is buggy, and should be something like
->
->                  int wstatus;
->                  kernel_wait(pid, &wstatus);
->                  sub_info->retval = WEXITSTATUS(wstatus) ? -EINVAL : 0;
->
-> or something.
->
->              Linus
+> [1] "never trust somebody who introduces himself as Honest Joe and keeps
+> carping on that all the time"; c.f. __secure_computing(), CONFIG_INTEGRITY,
+> etc.
