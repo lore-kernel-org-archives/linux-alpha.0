@@ -1,7 +1,7 @@
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Michael Schmitz <schmitzmic@gmail.com>
 Subject: Re: [PATCH 0/9] Refactoring exit
-Date: Sun, 27 Jun 2021 22:13:32 +0000
-Message-ID: <YNj4DItToR8FphxC@zeniv-ca.linux.org.uk>
+Date: Mon, 28 Jun 2021 10:59:51 +1200
+Message-ID: <6e283d24-7121-ae7c-d5ad-558f85858a09@gmail.com>
 References: <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
  <YNDhdb7XNQE6zQzL@zeniv-ca.linux.org.uk>
  <CAHk-=whAsWXcJkpMM8ji77DkYkeJAT4Cj98WBX-S6=GnMQwhzg@mail.gmail.com>
@@ -9,43 +9,65 @@ References: <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
  <CAHk-=wh4_iMRmWcao6a8kCvR0Hhdrz+M9L+q4Bfcwx9E9D0huw@mail.gmail.com>
  <87tulpbp19.fsf@disp2133>
  <CAHk-=wi_kQAff1yx2ufGRo2zApkvqU8VGn7kgPT-Kv71FTs=AA@mail.gmail.com>
- <87zgvgabw1.fsf@disp2133>
- <875yy3850g.fsf_-_@disp2133>
+ <87zgvgabw1.fsf@disp2133> <875yy3850g.fsf_-_@disp2133>
  <YNULA+Ff+eB66bcP@zeniv-ca.linux.org.uk>
+ <YNj4DItToR8FphxC@zeniv-ca.linux.org.uk>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <YNULA+Ff+eB66bcP@zeniv-ca.linux.org.uk>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=oObwvXsaqAUb8vB6GzYedHdtF/WzC8DIfOegRYh4rG0=;
+        b=JDL39NDUlYiMBJb05P0yCWBqka4BZu9M034XP0rS24lT7mC1/+6Bw7ZJXTU+AG6o8M
+         RNaOpJ1TaN1Cw7Xa+URDriIEFX6eK3YfA4pRlrQKAf7FcAPbE6QVbcrZdf112ya9IfIR
+         9A0jlmgONyxJgsH19758eWPXScyJCCK7nQ5UJXXw6LSFD4SlpY5NZDwjwkbiylTmOUKl
+         95+ELqsdWyUdc+A9eQ61PlfMibeJELEdciMmKIJ2QPBvZ/H+F+s73NQcvdmkoZEjpSbj
+         qJr//yVEMeRnbrzxKzZIxksmMkz4doZDdDWS5Qt/QJMxanzgZVtvjHRpfzH+m+J3T/yx
+         S6pg==
+In-Reply-To: <YNj4DItToR8FphxC@zeniv-ca.linux.org.uk>
+Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Michael Schmitz <schmitzmic@gmail.com>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+To: Al Viro <viro@zeniv.linux.org.uk>, "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
 
-On Thu, Jun 24, 2021 at 10:45:23PM +0000, Al Viro wrote:
+On 28/06/21 10:13 am, Al Viro wrote:
 
-> 13) there's bdflush(1, whatever), which is equivalent to exit(0).
-> IMO it's long past the time to simply remove the sucker.
+> On Thu, Jun 24, 2021 at 10:45:23PM +0000, Al Viro wrote:
+>
+>> 13) there's bdflush(1, whatever), which is equivalent to exit(0).
+>> IMO it's long past the time to simply remove the sucker.
+> Incidentally, calling that from ptraced process on alpha leads to
+> the same headache for tracer.  _If_ we leave it around, this is
+> another candidate for "hit yourself with that special signal" -
+> both alpha and m68k have that syscall, and IMO adding an asm
+> wrapper for that one is over the top.
+>
+> Said that, we really ought to bury that thing:
+>
+> commit 2f268ee88abb33968501a44368db55c63adaad40
+> Author: Andrew Morton <akpm@digeo.com>
+> Date:   Sat Dec 14 03:16:29 2002 -0800
+>
+>      [PATCH] deprecate use of bdflush()
+> 	
+>      Patch from Robert Love <rml@tech9.net>
+> 		
+>      We can never get rid of it if we do not deprecate it - so do so and
+>      print a stern warning to those who still run bdflush daemons.
+>
+> Deprecated for 18.5 years by now - I seriously suspect that we have
+> some contributors younger than that...
 
-Incidentally, calling that from ptraced process on alpha leads to
-the same headache for tracer.  _If_ we leave it around, this is
-another candidate for "hit yourself with that special signal" -
-both alpha and m68k have that syscall, and IMO adding an asm
-wrapper for that one is over the top.
+Haven't found that warning in over 7 years' worth of console logs, and 
+I'm a good candidate for running the oldest userland in existence for m68k.
 
-Said that, we really ought to bury that thing:
+Time to let it go.
 
-commit 2f268ee88abb33968501a44368db55c63adaad40
-Author: Andrew Morton <akpm@digeo.com>
-Date:   Sat Dec 14 03:16:29 2002 -0800
+Cheers,
 
-    [PATCH] deprecate use of bdflush()
-	
-    Patch from Robert Love <rml@tech9.net>
-		
-    We can never get rid of it if we do not deprecate it - so do so and
-    print a stern warning to those who still run bdflush daemons.
+     Michael
 
-Deprecated for 18.5 years by now - I seriously suspect that we have
-some contributors younger than that...
+
