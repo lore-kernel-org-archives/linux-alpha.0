@@ -1,69 +1,72 @@
-From: Michael Schmitz <schmitzmic@gmail.com>
+From: ebiederm@xmission.com (Eric W. Biederman)
 Subject: Re: [PATCH 0/9] Refactoring exit
-Date: Tue, 29 Jun 2021 05:14:16 +1200
-Message-ID: <7ad6c3a9-b983-46a5-fc95-f961b636d3fe@gmail.com>
-References: <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
- <YNDhdb7XNQE6zQzL@zeniv-ca.linux.org.uk>
- <CAHk-=whAsWXcJkpMM8ji77DkYkeJAT4Cj98WBX-S6=GnMQwhzg@mail.gmail.com>
- <87a6njf0ia.fsf@disp2133>
- <CAHk-=wh4_iMRmWcao6a8kCvR0Hhdrz+M9L+q4Bfcwx9E9D0huw@mail.gmail.com>
- <87tulpbp19.fsf@disp2133>
- <CAHk-=wi_kQAff1yx2ufGRo2zApkvqU8VGn7kgPT-Kv71FTs=AA@mail.gmail.com>
- <87zgvgabw1.fsf@disp2133> <875yy3850g.fsf_-_@disp2133>
- <YNULA+Ff+eB66bcP@zeniv-ca.linux.org.uk>
- <YNj4DItToR8FphxC@zeniv-ca.linux.org.uk>
- <6e283d24-7121-ae7c-d5ad-558f85858a09@gmail.com>
- <CAMuHMdXSU6_98NbC1UWTT_kmwxD=6Ha5LJxFAtbSuD=y78nASg@mail.gmail.com>
+Date: Mon, 28 Jun 2021 14:02:50 -0500
+Message-ID: <87v95xx15x.fsf@disp2133>
+References: <CAHk-=wj5cJjpjAmDptmP9u4__6p3Y93SCQHG8Ef4+h=cnLiCsA@mail.gmail.com>
+        <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
+        <YNDhdb7XNQE6zQzL@zeniv-ca.linux.org.uk>
+        <CAHk-=whAsWXcJkpMM8ji77DkYkeJAT4Cj98WBX-S6=GnMQwhzg@mail.gmail.com>
+        <87a6njf0ia.fsf@disp2133>
+        <CAHk-=wh4_iMRmWcao6a8kCvR0Hhdrz+M9L+q4Bfcwx9E9D0huw@mail.gmail.com>
+        <87tulpbp19.fsf@disp2133>
+        <CAHk-=wi_kQAff1yx2ufGRo2zApkvqU8VGn7kgPT-Kv71FTs=AA@mail.gmail.com>
+        <87zgvgabw1.fsf@disp2133> <875yy3850g.fsf_-_@disp2133>
+        <YNULA+Ff+eB66bcP@zeniv-ca.linux.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=8ssRK52MSevAKyQoJxF4jNVc366d3EchjdXo13/rUh0=;
-        b=OTreY5lHoXNQ2THoqnz3iL4Rn8/qrdaoVrPCgJ8vwojjNX7ZbIGTNwLMegvtr3NEOx
-         f4x1ieFMEEfPUc+TUB8eorPq6zNdNyAzIl04LigkNLL3eYJ5nryN8cPp+/c0l7T7gh4d
-         dvS7oNd42R5Qco5BpF18DRN/tO3wBHjIcTLCCqfWMep5h3drVoEgJZgzx8BgTvWTjGv6
-         iWoA3UG/Pe7zVTznLVgkz043hgsRJ5glZMvlCON65HheZ55cf5N6XebXtVxwPWm3mpJV
-         MocqOsJokcMgzOQIIvEyDIafgzBURe9vogeNPnCUUsJDmqPGT9rr8UiKR3HW1MubaqDY
-         cFvA==
-In-Reply-To: <CAMuHMdXSU6_98NbC1UWTT_kmwxD=6Ha5LJxFAtbSuD=y78nASg@mail.gmail.com>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <YNULA+Ff+eB66bcP@zeniv-ca.linux.org.uk> (Al Viro's message of
+        "Thu, 24 Jun 2021 22:45:23 +0000")
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Al Viro <viro@zeniv.linux.org.uk>, "Eric W. Biederman" <ebiederm@xmission.com>, Linus Torvalds <torvalds@linux-foundation.org>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Michael Schmitz <schmitzmic@gmail.com>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
 
-Hi Geert,
+Al Viro <viro@zeniv.linux.org.uk> writes:
 
-Am 28.06.2021 um 19:31 schrieb Geert Uytterhoeven:
->> Haven't found that warning in over 7 years' worth of console logs, and
->> I'm a good candidate for running the oldest userland in existence for m68k.
->>
->> Time to let it go.
+> On Thu, Jun 24, 2021 at 01:57:35PM -0500, Eric W. Biederman wrote:
 >
-> The warning is printed when using filesys-ELF-2.0.x-1400K-2.gz,
-> which is a very old ramdisk from right after the m68k a.out to ELF
-> transition:
+>> So far the code has been lightly tested, and the descriptions of some
+>> of the patches are a bit light, but I think this shows the direction
+>> I am aiming to travel for sorting out exit(2) and exit_group(2).
 >
->     warning: process `update' used the obsolete bdflush system call
->     Fix your initscripts?
+> FWIW, here's the current picture for do_exit(), aside of exit(2) and do_exit_group():
 >
-> I still boot it, once in a while.
+> 1) stuff that is clearly oops-like -
+>         alpha:die_if_kernel() alpha:do_entUna() alpha:do_page_fault() arm:oops_end()
+>         arm:__do_kernel_fault() arm64:die() arm64:die_kernel_fault() csky:alignment()
+>         csky:die() csky:no_context() h8300:die() h8300:do_page_fault() hexagon:die()
+>         ia64:die() i64:ia64_do_page_fault() m68k:die_if_kernel() m68k:send_fault_sig()
+>         microblaze:die() mips:die() nds32:handle_fpu_exception() nds32:die()
+>         nds32:unhandled_interruption() nds32:unhandled_exceptions() nds32:do_revinsn()
+>         nds32:do_page_fault() nios:die() openrisc:die() openrisc:do_page_fault()
+>         parisc:die_if_kernel() ppc:oops_end() riscv:die() riscv:die_kernel_fault()
+>         s390:die() s390:do_no_context() s390:do_low_address() sh:die()
+>         sparc32:die_if_kernel() sparc32:do_sparc_fault() sparc64:die_if_kernel()
+>         x86:rewind_stack_do_exit() xtensa:die() xtensa:bad_page_fault()
+> We really do not want ptrace anywhere near any of those and we do not want
+> any of that to return; this shit would better be handled right there and
+> there - no "post a fatal signal" would do.
 
-OK; you take the cake. That ramdisk came to mind when I thought about 
-where I'd last seen bdflush, but I've not used it in ages (not sure 14 
-MB are enough for that).
+Thanks that makes a good start for digging into these.
 
-The question then is - will bdflush fail gracefully, or spin retrying 
-the syscall?
+I think the distinction I would make is:
+- If the kernel is broken use do_task_dead.
+- Otherwise cleanup the semantics by using start_group_exit,
+  start_task_exit or by just cleaning up the code.
+  
 
-Cheers,
+Looking at the reboot case it looks like we the code
+should have become do_group_exit in 2.5.  I have a suspicion
+we have a bunch of similar cases that want to terminate the
+entire process, but we simply never updated to deal with
+multi-thread processes.
 
-	Michael
+I suspect in the reboot case panic if machine_halt or
+or machine_power_off fails is more likely the correct
+handling.  But we do have funny semantics sometimes.
 
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
+I will see what I can do to expand my patchset to handle all of these
+various callers of do_exit.
+
+Eric
