@@ -1,67 +1,67 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 0/9] Refactoring exit
-Date: Mon, 28 Jun 2021 21:17:33 +0200
-Message-ID: <CAMuHMdUi5Ri=GmWzS8hb7dkfPyAE=HpQHg6OsKSLDse_364E=g@mail.gmail.com>
-References: <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk> <YNDhdb7XNQE6zQzL@zeniv-ca.linux.org.uk>
- <CAHk-=whAsWXcJkpMM8ji77DkYkeJAT4Cj98WBX-S6=GnMQwhzg@mail.gmail.com>
- <87a6njf0ia.fsf@disp2133> <CAHk-=wh4_iMRmWcao6a8kCvR0Hhdrz+M9L+q4Bfcwx9E9D0huw@mail.gmail.com>
- <87tulpbp19.fsf@disp2133> <CAHk-=wi_kQAff1yx2ufGRo2zApkvqU8VGn7kgPT-Kv71FTs=AA@mail.gmail.com>
- <87zgvgabw1.fsf@disp2133> <875yy3850g.fsf_-_@disp2133> <YNULA+Ff+eB66bcP@zeniv-ca.linux.org.uk>
- <YNj4DItToR8FphxC@zeniv-ca.linux.org.uk> <6e283d24-7121-ae7c-d5ad-558f85858a09@gmail.com>
- <CAMuHMdXSU6_98NbC1UWTT_kmwxD=6Ha5LJxFAtbSuD=y78nASg@mail.gmail.com> <7ad6c3a9-b983-46a5-fc95-f961b636d3fe@gmail.com>
+From: ebiederm@xmission.com (Eric W. Biederman)
+Subject: Re: [PATCH 2/9] signal/seccomp: Refactor seccomp signal and coredump generation
+Date: Mon, 28 Jun 2021 14:21:24 -0500
+Message-ID: <87im1xx0az.fsf@disp2133>
+References: <YNCaMDQVYB04bk3j@zeniv-ca.linux.org.uk>
+        <YNDhdb7XNQE6zQzL@zeniv-ca.linux.org.uk>
+        <CAHk-=whAsWXcJkpMM8ji77DkYkeJAT4Cj98WBX-S6=GnMQwhzg@mail.gmail.com>
+        <87a6njf0ia.fsf@disp2133>
+        <CAHk-=wh4_iMRmWcao6a8kCvR0Hhdrz+M9L+q4Bfcwx9E9D0huw@mail.gmail.com>
+        <87tulpbp19.fsf@disp2133>
+        <CAHk-=wi_kQAff1yx2ufGRo2zApkvqU8VGn7kgPT-Kv71FTs=AA@mail.gmail.com>
+        <87zgvgabw1.fsf@disp2133> <875yy3850g.fsf_-_@disp2133>
+        <87r1gr6qc4.fsf_-_@disp2133> <202106252014.5AE600929@keescook>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <7ad6c3a9-b983-46a5-fc95-f961b636d3fe@gmail.com>
+In-Reply-To: <202106252014.5AE600929@keescook> (Kees Cook's message of "Fri,
+        25 Jun 2021 20:17:51 -0700")
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Schmitz <schmitzmic@gmail.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>, "Eric W. Biederman" <ebiederm@xmission.com>, Linus Torvalds <torvalds@linux-foundation.org>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>
+To: Kees Cook <keescook@chromium.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Al Viro <viro@zeniv.linux.org.uk>, Michael Schmitz <schmitzmic@gmail.com>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Ley Foon Tan <ley.foon.tan@intel.com>, Tejun Heo <tj@kernel.org>
 
-Hi Michael,
+Kees Cook <keescook@chromium.org> writes:
 
-On Mon, Jun 28, 2021 at 7:14 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> Am 28.06.2021 um 19:31 schrieb Geert Uytterhoeven:
-> >> Haven't found that warning in over 7 years' worth of console logs, and
-> >> I'm a good candidate for running the oldest userland in existence for m68k.
-> >>
-> >> Time to let it go.
-> >
-> > The warning is printed when using filesys-ELF-2.0.x-1400K-2.gz,
-> > which is a very old ramdisk from right after the m68k a.out to ELF
-> > transition:
-> >
-> >     warning: process `update' used the obsolete bdflush system call
-> >     Fix your initscripts?
-> >
-> > I still boot it, once in a while.
+> On Thu, Jun 24, 2021 at 01:59:55PM -0500, Eric W. Biederman wrote:
+>> 
+>> Factor out force_sig_seccomp from the seccomp signal generation and
+>> place it in kernel/signal.c.  The function force_sig_seccomp takes a
+>> paramter force_coredump to indicate that the sigaction field should be
+>> reset to SIGDFL so that a coredump will be generated when the signal
+>> is delivered.
 >
-> OK; you take the cake. That ramdisk came to mind when I thought about
-> where I'd last seen bdflush, but I've not used it in ages (not sure 14
-> MB are enough for that).
+> Ah! This is the part I missed when I was originally trying to figure
+> out the coredump stuff. It's the need for setting a default handler
+> (i.e. doing a coredump)?
 
-Of course it will work on your 14 MiB machine!  It fits on a floppy, _after_
-decompression.  It was used by people to install Linux on the hard disks
-of their beefy m68k machines, after they had set up the family Christmas
-tree, in December 1996.
+Yes.  If we don't force the handler to SIG_DFL someone might catch
+SIGSYS.
 
-I also have a slightly larger one, built from OpenWRT when I did my first
-experiments on that.  Unlike filesys-ELF-2.0.x-1400K-2.gz, it does open
-a shell on the serial console, so it is more useful to me.
+>> force_sig_seccomp is then used to replace both seccomp_send_sigsys
+>> and seccomp_init_siginfo.
+>> 
+>> force_sig_info_to_task gains an extra parameter to force using
+>> the default signal action.
+>> 
+>> With this change seccomp is no longer a special case and there
+>> becomes exactly one place do_coredump is called from.
+>
+> Looks good to me. This may benefit from force_sig_seccomp() to be wrapped
+> in an #ifdef CONFIG_SECCOMP.
 
-> The question then is - will bdflush fail gracefully, or spin retrying
-> the syscall?
+At which point Linus will probably be grumpy with me for introducing
+#ifdefs.
 
-Will add to my todo list...
-BTW, you can boot this ramdisk on ARAnyM, too.
+I suspect seccomp at this point is sufficiently common that is probably
+more productive to figure out how to remove #ifdef  CONFIG_SECCOMP.
 
-Gr{oetje,eeting}s,
+> (This patch reminds me that the seccomp self tests don't check for core
+> dumps...)
 
-                        Geert
+This patch is slightly wrong in that it kept the call to do_group_exit
+when it can never be reached.
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Eric
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
