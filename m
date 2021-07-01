@@ -1,68 +1,77 @@
-From: Cyril Hrubis <chrubis@suse.cz>
-Subject: Re: [CFT][PATCH] exit/bdflush: Remove the deprecated bdflush system
- call
-Date: Wed, 30 Jun 2021 14:30:45 +0200
-Message-ID: <YNxj9Ydotv39vwPW@yuki>
-References: <YNULA+Ff+eB66bcP@zeniv-ca.linux.org.uk>
- <YNj4DItToR8FphxC@zeniv-ca.linux.org.uk>
- <6e283d24-7121-ae7c-d5ad-558f85858a09@gmail.com>
- <CAMuHMdXSU6_98NbC1UWTT_kmwxD=6Ha5LJxFAtbSuD=y78nASg@mail.gmail.com>
- <7ad6c3a9-b983-46a5-fc95-f961b636d3fe@gmail.com>
- <CAMuHMdUi5Ri=GmWzS8hb7dkfPyAE=HpQHg6OsKSLDse_364E=g@mail.gmail.com>
- <dbb4ca2d-a857-84f0-f167-5ad4e06aa52b@gmail.com>
- <CAMuHMdVKdZNBU-cTUY0zotA5DmtQ=dxH+iFY0_GX=4DzqpycZQ@mail.gmail.com>
- <36123b5d-daa0-6c2b-f2d4-a942f069fd54@gmail.com>
- <87sg10quue.fsf_-_@disp2133>
+From: Bob Tracy <rct@frus.com>
+Subject: Re: X11 system lockup with 5.11.0 kernel
+Date: Thu, 1 Jul 2021 07:41:09 -0500
+Message-ID: <YN235QP+s9wwHFMN@gherkin.frus.com>
+References: <20210405045515.GA6637@tower>
+ <20210405095825.GA17443@tower>
+ <fd607d8e-9118-a38b-62af-2c4d9f6659a0@amd.com>
+ <20210406091431.GA4462@tower>
+ <dda17ea7-2abd-3e81-475f-8f103f7c9217@amd.com>
+ <e6c7209e-de57-a9b8-dc23-70444aac8d1e@physik.fu-berlin.de>
+ <YLhPeYdhLrFqsbCY@gherkin.frus.com>
+ <alpine.DEB.2.21.2106031511500.25828@angie.orcam.me.uk>
+ <YLm3wsDSxgWgrNEk@gherkin.frus.com>
+ <YLm8Cu2VwGQdRdgU@gherkin.frus.com>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1625057779; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xdQwii54mAQjoPtlBzJZA6d/rnKA0OLflwRprIEP0MY=;
-        b=GLULahH7VamboBss/Z2V3SMN2JRwOZ2rY2pDrAciiyGHEmc+ThftQraPIXuXgpPHGu7ubl
-        hjWHvAhGeC5h/zvvdCfH/7jhvgqMSSzVSO1aoK7qtoYmWQy8AMYG4ENYWa0dbzG0er2EUH
-        EcOdUboNbZ6IivkjAWM9O7yrisWIQ1Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1625057779;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xdQwii54mAQjoPtlBzJZA6d/rnKA0OLflwRprIEP0MY=;
-        b=prVTd2KF0wkFSsuN3EFfXFBBttALuxdHLNTzxLOQENelHuRy+4eazXzbqinkjRc7sXCAFg
-        T81d9SHcp5uEUCAA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1625057779; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xdQwii54mAQjoPtlBzJZA6d/rnKA0OLflwRprIEP0MY=;
-        b=GLULahH7VamboBss/Z2V3SMN2JRwOZ2rY2pDrAciiyGHEmc+ThftQraPIXuXgpPHGu7ubl
-        hjWHvAhGeC5h/zvvdCfH/7jhvgqMSSzVSO1aoK7qtoYmWQy8AMYG4ENYWa0dbzG0er2EUH
-        EcOdUboNbZ6IivkjAWM9O7yrisWIQ1Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1625057779;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xdQwii54mAQjoPtlBzJZA6d/rnKA0OLflwRprIEP0MY=;
-        b=prVTd2KF0wkFSsuN3EFfXFBBttALuxdHLNTzxLOQENelHuRy+4eazXzbqinkjRc7sXCAFg
-        T81d9SHcp5uEUCAA==
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-alpha-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <87sg10quue.fsf_-_@disp2133>
+In-Reply-To: <YLm8Cu2VwGQdRdgU@gherkin.frus.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: Michael Schmitz <schmitzmic@gmail.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Al Viro <viro@zeniv.linux.org.uk>, Linus Torvalds <torvalds@linux-foundation.org>, linux-arch <linux-arch@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>, Oleg Nesterov <oleg@redhat.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Arnd Bergmann <arnd@kernel.org>, Tejun Heo <tj@kernel.org>, Kees Cook <keescook@chromium.org>, linux-api@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Michael Cree <mcree@orcon.net.nz>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
 
-Hi!
-I've send a similar patch [1] a while ago when I removed bdflush tests from
-LTP.
+Quick update: if this issue was ever fixed, the patch hasn't made it
+into the mainline kernel as of 5.13.0.  I'm still getting the system
+lock-up when X11 starts, and have to hit the reset switch to recover.
 
-[1] https://lore.kernel.org/lkml/20190528101012.11402-1-chrubis@suse.cz/
+For whatever it might be worth, the mainline 5.10.0 kernel continues
+to work properly alongside all the user space changes in "sid" that
+have happened since late last year.
 
-Acked-by: Cyril Hrubis <chrubis@suse.cz>
+Respectfully,
+--Bob
 
--- 
-Cyril Hrubis
-chrubis@suse.cz
+On Fri, Jun 04, 2021 at 12:37:14AM -0500, Bob Tracy wrote:
+> On Fri, Jun 04, 2021 at 12:18:58AM -0500, Bob Tracy wrote:
+> > On Thu, Jun 03, 2021 at 03:15:05PM +0200, Maciej W. Rozycki wrote:
+> > >  I have lost track about this issue, so please fill me in as to wheth=
+er=20
+> > > the offending commit causing the regression has been bisected or not.
+> >=20
+> > It has.  Michael Cree reported the following back on April 5th:
+> >=20
+> > And the first bad commit is:
+> >=20
+> > 0fe3cf3a53b5c1205ec7d321be1185b075dff205 is the first bad commit
+> > commit 0fe3cf3a53b5c1205ec7d321be1185b075dff205
+> > Author: Christian K=F6nig <christian.koenig@amd.com>
+> > Date:   Sat Oct 24 13:12:23 2020 +0200
+> >=20
+> >     drm/radeon: switch to new allocator v2
+> >    =20
+> >     It should be able to handle all cases here.
+> >    =20
+> >     v2: fix debugfs as well
+> >    =20
+> >     Signed-off-by: Christian K=F6nig <christian.koenig@amd.com>
+> >     Reviewed-by: Dave Airlie <airlied@redhat.com>
+> >     Reviewed-by: Madhav Chauhan <madhav.chauhan@amd.com>
+> >     Tested-by: Huang Rui <ray.huang@amd.com>
+> >     Link: https://patchwork.freedesktop.org/patch/397088/?series=3D8305=
+1&rev=3D1
+> >=20
+> > :040000 040000 4e643ef861b921392bc67be21a42298c91c7ff7a b36453567c3176a=
+3cd50fa0b23886b0fd642560d M	drivers
+>=20
+> There were a few follow-up messages in this thread that left me with the
+> impression there *may* have been a patch submitted, although Christian
+> complained at the time he was having problems locating Alpha hardware to
+> test with.
+>=20
+> The current (5.12.0 kernel) problem symptoms show some "improvement".
+> I at least got to the point that the login screen displayed, but it
+> had a bit of pixelation/distortion in a few areas indicative of "bad
+> things about to happen".  Then I got the expected system lock-up,
+> just as I originally reported: had to hit the reset switch to recover.
