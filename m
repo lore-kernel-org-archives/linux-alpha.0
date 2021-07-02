@@ -1,77 +1,118 @@
-From: Bob Tracy <rct@frus.com>
-Subject: Re: X11 system lockup with 5.11.0 kernel
-Date: Thu, 1 Jul 2021 07:41:09 -0500
-Message-ID: <YN235QP+s9wwHFMN@gherkin.frus.com>
-References: <20210405045515.GA6637@tower>
- <20210405095825.GA17443@tower>
- <fd607d8e-9118-a38b-62af-2c4d9f6659a0@amd.com>
- <20210406091431.GA4462@tower>
- <dda17ea7-2abd-3e81-475f-8f103f7c9217@amd.com>
- <e6c7209e-de57-a9b8-dc23-70444aac8d1e@physik.fu-berlin.de>
- <YLhPeYdhLrFqsbCY@gherkin.frus.com>
- <alpine.DEB.2.21.2106031511500.25828@angie.orcam.me.uk>
- <YLm3wsDSxgWgrNEk@gherkin.frus.com>
- <YLm8Cu2VwGQdRdgU@gherkin.frus.com>
+From: gushengxian <gushengxian507419@gmail.com>
+Subject: [PATCH] arch: alpha: fix spelling mistakes
+Date: Fri,  2 Jul 2021 05:48:12 -0700
+Message-ID: <20210702124812.639641-1-gushengxian507419@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <YLm8Cu2VwGQdRdgU@gherkin.frus.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ua7jcnq1KkRupY4R+8sEqCnGnigSamk+j60c3bJxSG8=;
+        b=E0tqI1l3hyH7P5shwM0sDw4GzP0uS/Koipa36gnxRCE/K1lDizFWS6kMmGddqwM7Pe
+         FKtl3I5daTD0KMoc6xmiFSau9925ZRNn8u4UhW+ChOEhyt0dH4jxIewjbm7A8volT4Cu
+         45Fy99lI9rD8qiJ2OjlHY+LkgNE+ddGUFIXBJBTYJTL4bgLa0u5nz6c5hhPJ1wD0hU+m
+         IAyPf8FYCtHXQ3h3ZKQu8AAclCOEDksIG4jXsJVx/9ZGDmqL2sfj776Uy6uAYhbE+Ctn
+         FOiFPYbO97soiykqR8sVW79gNOD/jOEeRN0vvmxu90q2BL4N8xP4S/88ty5tQ2A/PSaG
+         +azw==
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Michael Cree <mcree@orcon.net.nz>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, peterz@infradead.org, mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, gushengxian <gushengxian@yulong.com>
 
-Quick update: if this issue was ever fixed, the patch hasn't made it
-into the mainline kernel as of 5.13.0.  I'm still getting the system
-lock-up when X11 starts, and have to hit the reset switch to recover.
+From: gushengxian <gushengxian@yulong.com>
 
-For whatever it might be worth, the mainline 5.10.0 kernel continues
-to work properly alongside all the user space changes in "sid" that
-have happened since late last year.
+Fix some spelling mistakes in comments:
+delarations ==> declarations
+softare ==> software
+suffiently ==> sufficiently
+requred ==> required
+unaliged ==> unaligned
 
-Respectfully,
---Bob
+Signed-off-by: gushengxian <gushengxian@yulong.com>
+---
+ arch/alpha/boot/misc.c           | 2 +-
+ arch/alpha/kernel/osf_sys.c      | 4 ++--
+ arch/alpha/kernel/perf_event.c   | 2 +-
+ arch/alpha/kernel/sys_nautilus.c | 2 +-
+ arch/alpha/kernel/traps.c        | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-On Fri, Jun 04, 2021 at 12:37:14AM -0500, Bob Tracy wrote:
-> On Fri, Jun 04, 2021 at 12:18:58AM -0500, Bob Tracy wrote:
-> > On Thu, Jun 03, 2021 at 03:15:05PM +0200, Maciej W. Rozycki wrote:
-> > >  I have lost track about this issue, so please fill me in as to wheth=
-er=20
-> > > the offending commit causing the regression has been bisected or not.
-> >=20
-> > It has.  Michael Cree reported the following back on April 5th:
-> >=20
-> > And the first bad commit is:
-> >=20
-> > 0fe3cf3a53b5c1205ec7d321be1185b075dff205 is the first bad commit
-> > commit 0fe3cf3a53b5c1205ec7d321be1185b075dff205
-> > Author: Christian K=F6nig <christian.koenig@amd.com>
-> > Date:   Sat Oct 24 13:12:23 2020 +0200
-> >=20
-> >     drm/radeon: switch to new allocator v2
-> >    =20
-> >     It should be able to handle all cases here.
-> >    =20
-> >     v2: fix debugfs as well
-> >    =20
-> >     Signed-off-by: Christian K=F6nig <christian.koenig@amd.com>
-> >     Reviewed-by: Dave Airlie <airlied@redhat.com>
-> >     Reviewed-by: Madhav Chauhan <madhav.chauhan@amd.com>
-> >     Tested-by: Huang Rui <ray.huang@amd.com>
-> >     Link: https://patchwork.freedesktop.org/patch/397088/?series=3D8305=
-1&rev=3D1
-> >=20
-> > :040000 040000 4e643ef861b921392bc67be21a42298c91c7ff7a b36453567c3176a=
-3cd50fa0b23886b0fd642560d M	drivers
->=20
-> There were a few follow-up messages in this thread that left me with the
-> impression there *may* have been a patch submitted, although Christian
-> complained at the time he was having problems locating Alpha hardware to
-> test with.
->=20
-> The current (5.12.0 kernel) problem symptoms show some "improvement".
-> I at least got to the point that the login screen displayed, but it
-> had a bit of pixelation/distortion in a few areas indicative of "bad
-> things about to happen".  Then I got the expected system lock-up,
-> just as I originally reported: had to hit the reset switch to recover.
+diff --git a/arch/alpha/boot/misc.c b/arch/alpha/boot/misc.c
+index d65192202703..325d4dd4f904 100644
+--- a/arch/alpha/boot/misc.c
++++ b/arch/alpha/boot/misc.c
+@@ -30,7 +30,7 @@ extern long srm_printk(const char *, ...)
+      __attribute__ ((format (printf, 1, 2)));
+ 
+ /*
+- * gzip delarations
++ * gzip declarations
+  */
+ #define OF(args)  args
+ #define STATIC static
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index d5367a1c6300..d31167e3269c 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -834,7 +834,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
+ 			return -EFAULT;
+ 		state = &current_thread_info()->ieee_state;
+ 
+-		/* Update softare trap enable bits.  */
++		/* Update software trap enable bits.  */
+ 		*state = (*state & ~IEEE_SW_MASK) | (swcr & IEEE_SW_MASK);
+ 
+ 		/* Update the real fpcr.  */
+@@ -854,7 +854,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
+ 		state = &current_thread_info()->ieee_state;
+ 		exc &= IEEE_STATUS_MASK;
+ 
+-		/* Update softare trap enable bits.  */
++		/* Update software trap enable bits.  */
+  		swcr = (*state & IEEE_SW_MASK) | exc;
+ 		*state |= exc;
+ 
+diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
+index e7a59d927d78..efcf7321701b 100644
+--- a/arch/alpha/kernel/perf_event.c
++++ b/arch/alpha/kernel/perf_event.c
+@@ -574,7 +574,7 @@ static void alpha_pmu_start(struct perf_event *event, int flags)
+  * Check that CPU performance counters are supported.
+  * - currently support EV67 and later CPUs.
+  * - actually some later revisions of the EV6 have the same PMC model as the
+- *     EV67 but we don't do suffiently deep CPU detection to detect them.
++ *     EV67 but we don't do sufficiently deep CPU detection to detect them.
+  *     Bad luck to the very few people who might have one, I guess.
+  */
+ static int supported_cpu(void)
+diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
+index 53adf43dcd44..96fd6ff3fe81 100644
+--- a/arch/alpha/kernel/sys_nautilus.c
++++ b/arch/alpha/kernel/sys_nautilus.c
+@@ -212,7 +212,7 @@ nautilus_init_pci(void)
+ 
+ 	/* Use default IO. */
+ 	pci_add_resource(&bridge->windows, &ioport_resource);
+-	/* Irongate PCI memory aperture, calculate requred size before
++	/* Irongate PCI memory aperture, calculate required size before
+ 	   setting it up. */
+ 	pci_add_resource(&bridge->windows, &irongate_mem);
+ 
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index 921d4b6e4d95..5398f982bdd1 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -730,7 +730,7 @@ do_entUnaUser(void __user * va, unsigned long opcode,
+ 	long error;
+ 
+ 	/* Check the UAC bits to decide what the user wants us to do
+-	   with the unaliged access.  */
++	   with the unaligned access.  */
+ 
+ 	if (!(current_thread_info()->status & TS_UAC_NOPRINT)) {
+ 		if (__ratelimit(&ratelimit)) {
+-- 
+2.25.1
+
