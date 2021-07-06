@@ -1,118 +1,156 @@
-From: gushengxian <gushengxian507419@gmail.com>
-Subject: [PATCH] arch: alpha: fix spelling mistakes
-Date: Sun,  4 Jul 2021 18:21:25 -0700
-Message-ID: <20210705012125.657022-1-gushengxian507419@gmail.com>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 167/189] net: retrieve netns cookie via getsocketopt
+Date: Tue,  6 Jul 2021 07:13:47 -0400
+Message-ID: <20210706111409.2058071-167-sashal@kernel.org>
+References: <20210706111409.2058071-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ua7jcnq1KkRupY4R+8sEqCnGnigSamk+j60c3bJxSG8=;
-        b=dyo8sBcS4fozURQM/triuUvbedJSXJ0BxZEZYQxaMw6H54+B78KpDEj6VuEFOddkrc
-         Vo/Oag/n0obE9jUerQkHzSaDYh4SJH9WqrmhzaEzTK2o/Nhw/YGUlFM6ohHinWZC9HjK
-         zki9bYFLcsyRiOKHQpkDAlb3tr8ogcJQFLIs9CK92P2hMp4NTXjdL7j2MCEHD5xXXoZR
-         GlU5V1IMVYMDCg76Hb8xVaz36BGT8lk4w4pnsF8No7RTxweeexKz5VmIhzoB7V3/brje
-         PA9aUOFPwhG2dPiYK0PLzW9d4OKTVajx1cMMUQvpq1KZBmd2xesVn2NPNEVHxGZBopy0
-         m1uw==
+Return-path: <netdev-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625570274;
+        bh=KOu7qrupT3Xq1MPcezUqH3okfRUfVTjKqiEIPZ1rfEU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YN/lNI0u9PIMQ+tLXGiql6tKPJFmBMLIwNUm+lCFvexBYRI+bztqiMjGM96JcIhTd
+         YqO1XJvTYSha1a5EiBKbkMivpDEbnbA/4thf9fm3uAXKnvySUVfIM3gOKL4i11vqY7
+         2fRFL1fBPv2kqro/yQXN/aTcxD9j6x22ZJ4L0CX9SLsDW89gf1e1MsrBKi0HvAPxol
+         xPwgezk1vd+Yfcvl2za9DUJZj+EyhJsdwkk87KB2KwHtw9IAkqzDaikKo07ksojlrj
+         eJmdHHAQXaafuz6ysmKGAsUAyiIL9pVLcPFndwIxklnXwTpbiL5Dt30JPCX29o5Jfg
+         KUwokFVr1tS2A==
+In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, peterz@infradead.org, mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, gushengxian <gushengxian@yulong.com>
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Martynas Pumputis <m@lambda.lt>, Lorenz Bauer <lmb@cloudflare.com>, Eric Dumazet <edumazet@google.com>, "David S . Miller" <davem@davemloft.net>, Sasha Levin <sashal@kernel.org>, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
 
-From: gushengxian <gushengxian@yulong.com>
+From: Martynas Pumputis <m@lambda.lt>
 
-Fix some spelling mistakes in comments:
-delarations ==> declarations
-softare ==> software
-suffiently ==> sufficiently
-requred ==> required
-unaliged ==> unaligned
+[ Upstream commit e8b9eab99232c4e62ada9d7976c80fd5e8118289 ]
 
-Signed-off-by: gushengxian <gushengxian@yulong.com>
+It's getting more common to run nested container environments for
+testing cloud software. One of such examples is Kind [1] which runs a
+Kubernetes cluster in Docker containers on a single host. Each container
+acts as a Kubernetes node, and thus can run any Pod (aka container)
+inside the former. This approach simplifies testing a lot, as it
+eliminates complicated VM setups.
+
+Unfortunately, such a setup breaks some functionality when cgroupv2 BPF
+programs are used for load-balancing. The load-balancer BPF program
+needs to detect whether a request originates from the host netns or a
+container netns in order to allow some access, e.g. to a service via a
+loopback IP address. Typically, the programs detect this by comparing
+netns cookies with the one of the init ns via a call to
+bpf_get_netns_cookie(NULL). However, in nested environments the latter
+cannot be used given the Kubernetes node's netns is outside the init ns.
+To fix this, we need to pass the Kubernetes node netns cookie to the
+program in a different way: by extending getsockopt() with a
+SO_NETNS_COOKIE option, the orchestrator which runs in the Kubernetes
+node netns can retrieve the cookie and pass it to the program instead.
+
+Thus, this is following up on Eric's commit 3d368ab87cf6 ("net:
+initialize net->net_cookie at netns setup") to allow retrieval via
+SO_NETNS_COOKIE.  This is also in line in how we retrieve socket cookie
+via SO_COOKIE.
+
+  [1] https://kind.sigs.k8s.io/
+
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Martynas Pumputis <m@lambda.lt>
+Cc: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/alpha/boot/misc.c           | 2 +-
- arch/alpha/kernel/osf_sys.c      | 4 ++--
- arch/alpha/kernel/perf_event.c   | 2 +-
- arch/alpha/kernel/sys_nautilus.c | 2 +-
- arch/alpha/kernel/traps.c        | 2 +-
- 5 files changed, 6 insertions(+), 6 deletions(-)
+ arch/alpha/include/uapi/asm/socket.h  | 2 ++
+ arch/mips/include/uapi/asm/socket.h   | 2 ++
+ arch/parisc/include/uapi/asm/socket.h | 2 ++
+ arch/sparc/include/uapi/asm/socket.h  | 2 ++
+ include/uapi/asm-generic/socket.h     | 2 ++
+ net/core/sock.c                       | 7 +++++++
+ 6 files changed, 17 insertions(+)
 
-diff --git a/arch/alpha/boot/misc.c b/arch/alpha/boot/misc.c
-index d65192202703..325d4dd4f904 100644
---- a/arch/alpha/boot/misc.c
-+++ b/arch/alpha/boot/misc.c
-@@ -30,7 +30,7 @@ extern long srm_printk(const char *, ...)
-      __attribute__ ((format (printf, 1, 2)));
+diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
+index 57420356ce4c..6b3daba60987 100644
+--- a/arch/alpha/include/uapi/asm/socket.h
++++ b/arch/alpha/include/uapi/asm/socket.h
+@@ -127,6 +127,8 @@
+ #define SO_PREFER_BUSY_POLL	69
+ #define SO_BUSY_POLL_BUDGET	70
  
- /*
-- * gzip delarations
-+ * gzip declarations
-  */
- #define OF(args)  args
- #define STATIC static
-diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index d5367a1c6300..d31167e3269c 100644
---- a/arch/alpha/kernel/osf_sys.c
-+++ b/arch/alpha/kernel/osf_sys.c
-@@ -834,7 +834,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
- 			return -EFAULT;
- 		state = &current_thread_info()->ieee_state;
++#define SO_NETNS_COOKIE		71
++
+ #if !defined(__KERNEL__)
  
--		/* Update softare trap enable bits.  */
-+		/* Update software trap enable bits.  */
- 		*state = (*state & ~IEEE_SW_MASK) | (swcr & IEEE_SW_MASK);
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
+index 2d949969313b..cdf404a831b2 100644
+--- a/arch/mips/include/uapi/asm/socket.h
++++ b/arch/mips/include/uapi/asm/socket.h
+@@ -138,6 +138,8 @@
+ #define SO_PREFER_BUSY_POLL	69
+ #define SO_BUSY_POLL_BUDGET	70
  
- 		/* Update the real fpcr.  */
-@@ -854,7 +854,7 @@ SYSCALL_DEFINE5(osf_setsysinfo, unsigned long, op, void __user *, buffer,
- 		state = &current_thread_info()->ieee_state;
- 		exc &= IEEE_STATUS_MASK;
++#define SO_NETNS_COOKIE		71
++
+ #if !defined(__KERNEL__)
  
--		/* Update softare trap enable bits.  */
-+		/* Update software trap enable bits.  */
-  		swcr = (*state & IEEE_SW_MASK) | exc;
- 		*state |= exc;
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
+index f60904329bbc..5b5351cdcb33 100644
+--- a/arch/parisc/include/uapi/asm/socket.h
++++ b/arch/parisc/include/uapi/asm/socket.h
+@@ -119,6 +119,8 @@
+ #define SO_PREFER_BUSY_POLL	0x4043
+ #define SO_BUSY_POLL_BUDGET	0x4044
  
-diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index e7a59d927d78..efcf7321701b 100644
---- a/arch/alpha/kernel/perf_event.c
-+++ b/arch/alpha/kernel/perf_event.c
-@@ -574,7 +574,7 @@ static void alpha_pmu_start(struct perf_event *event, int flags)
-  * Check that CPU performance counters are supported.
-  * - currently support EV67 and later CPUs.
-  * - actually some later revisions of the EV6 have the same PMC model as the
-- *     EV67 but we don't do suffiently deep CPU detection to detect them.
-+ *     EV67 but we don't do sufficiently deep CPU detection to detect them.
-  *     Bad luck to the very few people who might have one, I guess.
-  */
- static int supported_cpu(void)
-diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
-index 53adf43dcd44..96fd6ff3fe81 100644
---- a/arch/alpha/kernel/sys_nautilus.c
-+++ b/arch/alpha/kernel/sys_nautilus.c
-@@ -212,7 +212,7 @@ nautilus_init_pci(void)
++#define SO_NETNS_COOKIE		0x4045
++
+ #if !defined(__KERNEL__)
  
- 	/* Use default IO. */
- 	pci_add_resource(&bridge->windows, &ioport_resource);
--	/* Irongate PCI memory aperture, calculate requred size before
-+	/* Irongate PCI memory aperture, calculate required size before
- 	   setting it up. */
- 	pci_add_resource(&bridge->windows, &irongate_mem);
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
+index 848a22fbac20..92675dc380fa 100644
+--- a/arch/sparc/include/uapi/asm/socket.h
++++ b/arch/sparc/include/uapi/asm/socket.h
+@@ -120,6 +120,8 @@
+ #define SO_PREFER_BUSY_POLL	 0x0048
+ #define SO_BUSY_POLL_BUDGET	 0x0049
  
-diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index 921d4b6e4d95..5398f982bdd1 100644
---- a/arch/alpha/kernel/traps.c
-+++ b/arch/alpha/kernel/traps.c
-@@ -730,7 +730,7 @@ do_entUnaUser(void __user * va, unsigned long opcode,
- 	long error;
++#define SO_NETNS_COOKIE          0x0050
++
+ #if !defined(__KERNEL__)
  
- 	/* Check the UAC bits to decide what the user wants us to do
--	   with the unaliged access.  */
-+	   with the unaligned access.  */
  
- 	if (!(current_thread_info()->status & TS_UAC_NOPRINT)) {
- 		if (__ratelimit(&ratelimit)) {
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index 4dcd13d097a9..d588c244ec2f 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -122,6 +122,8 @@
+ #define SO_PREFER_BUSY_POLL	69
+ #define SO_BUSY_POLL_BUDGET	70
+ 
++#define SO_NETNS_COOKIE		71
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 946888afef88..2003c5ebb4c2 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1622,6 +1622,13 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+ 		v.val = sk->sk_bound_dev_if;
+ 		break;
+ 
++	case SO_NETNS_COOKIE:
++		lv = sizeof(u64);
++		if (len != lv)
++			return -EINVAL;
++		v.val64 = sock_net(sk)->net_cookie;
++		break;
++
+ 	default:
+ 		/* We implement the SO_SNDLOWAT etc to not be settable
+ 		 * (1003.1g 7).
 -- 
-2.25.1
+2.30.2
 
