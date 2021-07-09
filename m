@@ -1,32 +1,40 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: add linux-alpha archives to lore.kernel.org?
-Date: Tue, 6 Jul 2021 10:35:11 -0700
-Message-ID: <CAEdQ38HxsK+mvXWmxDbRMG_oKw7zPdaYnZ10f307771aBic8Gw@mail.gmail.com>
-References: <20210706161234.GA797557@bjorn-Precision-5520>
+From: David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v1] binfmt: remove support for em86 (alpha only)
+Date: Fri, 9 Jul 2021 13:58:31 +0200
+Message-ID: <8d3e3257-860a-6766-f598-0d94582db523@redhat.com>
+References: <20210420175631.46923-1-david@redhat.com>
+ <CAEdQ38FOJdZxB7OGd569Lkn+RGPyjoukriwDfBEf2QKHvYguXQ@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rzTl/84YKN02YpAuy0KqaRqKVDD2jRop8NkpUhp1Su4=;
-        b=nBTP6+Lg0F+ps4zkUIrLODN5eB+Xg5+exkspQs0pM4g3HipT1hQxgSsmJjMz97+Dxl
-         7zVX/JLkcWAy8Yss9rPZWJEhErmDqQMHrNVbvYK2CVSrslk0qSllF4SD7KY8rnpvG6/Q
-         +fwllJGXE4RFrWaQolw4nW61e3tvokXWfpod3FSzvoC3xdIq60N8IJ25xoG+aly1Z6JD
-         4SkqqngaEc7Ay0M44HTvzc1qr1/Vk6L3fMwp4F9uXup19KxS9Jkii1oaOQEzJUmFAEdJ
-         eCvb35HFAIQQnKSlJk3nN0uTMsRUXex/KIkZiMjEXb41qBXhWtbv5eOwHCgoTH39wU3t
-         plMg==
-In-Reply-To: <20210706161234.GA797557@bjorn-Precision-5520>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>, =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, Eric Biederman <ebiederm@xmission.com>, LKML <linux-kernel@vger.kernel.org>
+Return-path: <linux-fsdevel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625831920;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FuFxCjGxNh1s//8/+rvZWuY1XbBWxr4LXzkXcXPHOes=;
+        b=aRcQvZpdVKV+UY7Dnc/6LW3X1zWkUtBtmIoxMzhySfkju8a5iew36H1bFUdgU2nih+TQA3
+        uvfFiTb01SipvqUZml+ioiUhkdwUzKVasIOKsEIvLzZXePck8PMn1gQxt29ykDZrtH8xix
+        W1Jx/Xptkjf1YbAvwAoOwvnQBLBQ0gE=
+In-Reply-To: <CAEdQ38FOJdZxB7OGd569Lkn+RGPyjoukriwDfBEf2QKHvYguXQ@mail.gmail.com>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Matt Turner <mattst88@gmail.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, linux-fsdevel <linux-fsdevel@vger.kernel.org>, Linux API <linux-api@vger.kernel.org>, linux-alpha <linux-alpha@vger.kernel.org>
 
-On Tue, Jul 6, 2021 at 9:12 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> Is there any interest in adding linux-alpha archives to
-> lore.kernel.org?  See https://korg.docs.kernel.org/lore.html for
-> details.
+On 29.04.21 04:36, Matt Turner wrote:
+> This seems very reasonable, and I'll merge it through my tree unless
+> someone beats me to it.
+> 
 
-Yes, that would be nice!
+Hi Matt,
+
+looks like this patch hasn't found its way upstream yet.
+
+-- 
+Thanks,
+
+David / dhildenb
+
