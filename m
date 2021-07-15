@@ -1,105 +1,66 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH v1 04/16] dma-iommu: Return error code from iommu_dma_map_sg()
-Date: Thu, 15 Jul 2021 10:45:32 -0600
-Message-ID: <20210715164544.6827-5-logang@deltatee.com>
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Subject: Re: [PATCH v1 00/16] .map_sg() error cleanup
+Date: Thu, 15 Jul 2021 17:53:09 +0100
+Message-ID: <20210715165309.GO22278@shell.armlinux.org.uk>
 References: <20210715164544.6827-1-logang@deltatee.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-	Message-Id:Date:Cc:To:From:content-disposition;
-	bh=uu4aeN6jLZDDSmgkCHoBLJNdbMQcxeI5DFxw3zZTSL0=; b=gyTcP6BppoSR64QEvT/6KtgUd4
-	Cqacpd6zTCyD395IziWLZMvonIdoJpuFag5HZmfxDEthN0GdLzlhj32QyIroM8uAQZdE22g12YATi
-	H/jKwIc1CJgKU96vcbzADV+HUKkeUUeUFk+I0FiduEZUx5pgGdOEotFQCunQ0YeFwOqFZM2XWMQhU
-	0S8xCAMxaVx0Uzm+K7FrDJH4ongykXe/b91PI7moGdLy+Crm9NdgjqolQDFXGbGxivk1uQzDkzKdX
-	a8WiPtvsM8g1Ej+a/P2jxuyWh9XeVk+p/okqS8f0rUiHP3ocghhh/0BeqR8n09yHS2+/br3O+Kb2h
-	Jn8Vn66A==;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=SHLau5Ake9xcwQGIQtYxnHJNJDrvOEPwwI40kAVcRog=; b=U8UTMSyF6jF6T0gR2j3D29bvs
+        eItdcAl8yoYyPm0BOaqxfp0KAqwYLm3tCNGL3UOXkwf2YVG3YLDETqIWI2+TSILpWhKSi+ZfIepQo
+        lLen0o6KgjL85hkzakJ1QZk21sjlzGaASbY+nCfE7vBnPME0Mzb+H5RRmAZ+ZNIKuXcRPERLyqXtq
+        VdtZCLk1naymemWuZBuS7BxTMY7tagmEv9JEUS6/HzNAPZKSxBYrlmfrzjhaGexuK2It2kZa4r1/A
+        CGDiaLgNp8Hmc8kCrs/WvG5KWvG0MHFhzYQbO2P7Gy0lVzLUmA2kl6R0xkg6NYiRgFN4tL0/sUnPU
+Content-Disposition: inline
 In-Reply-To: <20210715164544.6827-1-logang@deltatee.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Content-Transfer-Encoding: 7bit
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>
 
-Pass through appropriate error codes from iommu_dma_map_sg() now that
-the error code will be passed through dma_map_sgtable().
+On Thu, Jul 15, 2021 at 10:45:28AM -0600, Logan Gunthorpe wrote:
+> Hi,
+> 
+> This series is spun out and expanded from my work to add P2PDMA support
+> to DMA map operations[1].
+> 
+> The P2PDMA work requires distinguishing different error conditions in
+> a map_sg operation. dma_map_sgtable() already allows for returning an
+> error code (where as dma_map_sg() is only allowed to return zero)
+> however, it currently only returns -EINVAL when a .map_sg() call returns
+> zero.
+> 
+> This series cleans up all .map_sg() implementations to return appropriate
+> error codes. After the cleanup, dma_map_sg() will still return zero,
+> however dma_map_sgtable() will pass the error code from the .map_sg()
+> call. Thanks go to Martn Oliveira for doing a lot of the cleanup of the
+> obscure implementations.
+> 
+> The patch set is based off of v5.14-rc1 and a git repo can be found
+> here:
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
----
- drivers/iommu/dma-iommu.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+Have all the callers for dma_map_sg() been updated to check for error
+codes? If not, isn't that a pre-requisit to this patch set?
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 98ba927aee1a..9d35e9994306 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -972,7 +972,7 @@ static int iommu_dma_map_sg_swiotlb(struct device *dev, struct scatterlist *sg,
- 
- out_unmap:
- 	iommu_dma_unmap_sg_swiotlb(dev, sg, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
--	return 0;
-+	return -EINVAL;
- }
- 
- /*
-@@ -993,11 +993,14 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	dma_addr_t iova;
- 	size_t iova_len = 0;
- 	unsigned long mask = dma_get_seg_boundary(dev);
-+	ssize_t ret;
- 	int i;
- 
--	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
--	    iommu_deferred_attach(dev, domain))
--		return 0;
-+	if (static_branch_unlikely(&iommu_deferred_attach_enabled)) {
-+		ret = iommu_deferred_attach(dev, domain);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
- 		iommu_dma_sync_sg_for_device(dev, sg, nents, dir);
-@@ -1045,14 +1048,17 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	}
- 
- 	iova = iommu_dma_alloc_iova(domain, iova_len, dma_get_mask(dev), dev);
--	if (!iova)
-+	if (!iova) {
-+		ret = -ENOMEM;
- 		goto out_restore_sg;
-+	}
- 
- 	/*
- 	 * We'll leave any physical concatenation to the IOMMU driver's
- 	 * implementation - it knows better than we do.
- 	 */
--	if (iommu_map_sg_atomic(domain, iova, sg, nents, prot) < iova_len)
-+	ret = iommu_map_sg_atomic(domain, iova, sg, nents, prot);
-+	if (ret < iova_len)
- 		goto out_free_iova;
- 
- 	return __finalise_sg(dev, sg, nents, iova);
-@@ -1061,7 +1067,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	iommu_dma_free_iova(cookie, iova, iova_len, NULL);
- out_restore_sg:
- 	__invalidate_sg(sg, nents);
--	return 0;
-+	return ret;
- }
- 
- static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+From what I see in Linus' current tree, we still have cases today
+where the return value of dma_map_sg() is compared with zero to
+detect failure, so I think that needs fixing before we start changing
+the dma_map_sg() implementation to return negative numbers.
+
+I also notice that there are various places that don't check the
+return value - and returning a negative number instead of zero may
+well cause random other bits to be set in fields.
+
+So, I think there's a fair amount of work to do in all the drivers
+before this change can be considered.
+
 -- 
-2.20.1
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
