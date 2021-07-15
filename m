@@ -1,100 +1,124 @@
 From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH v1 00/16] .map_sg() error cleanup
-Date: Thu, 15 Jul 2021 10:45:28 -0600
-Message-ID: <20210715164544.6827-1-logang@deltatee.com>
+Subject: [PATCH v1 03/16] iommu: Return full error code from iommu_map_sg[_atomic]()
+Date: Thu, 15 Jul 2021 10:45:31 -0600
+Message-ID: <20210715164544.6827-4-logang@deltatee.com>
+References: <20210715164544.6827-1-logang@deltatee.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-owner@vger.kernel.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:Message-Id:Date:Cc:To:From
-        :references:content-disposition:in-reply-to;
-        bh=XXtkehQ2ONU8oCrAkxOjAUpUG3U+0n5Rbx+vQpsbqo0=; b=VsZ9pl6IcXQEaJc+OIOPSTH2s2
-        ImpLpkZPiYqR2MqPe8J/TCGrfa8lTDqG4w41mP8plFxEbBU2ba8ajzYIU158IKdhsRSvxpR71yYdi
-        lVVs77Hk2Pwh/yOG9jaNYPjpiBTmg03B32Cgaw3UpyR0EHixI4UWL/Pt0GPEJp5VOWqnyGa2Yz0/s
-        3C1qrOy1FusMqR+BnvbDOrd/Ep7SkhCwGvaL1a1HrPR88k6xVDa+RE9U5jtSx6AVj/RxyiHhm3et7
-        frKUyhYk2p67XlqGrIorntTlVANHFYgzmZDPkv3iqb7xQICE4bdtcuTXqP5XORIq/327zHaHt0vWM
-        S5WTyqtw==;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=/xaVvtLmcUu039UJFO4qpFCPm3zd9EnehJHJPiaD5YM=; b=KzXoc+OtScf0621cHsW4WWgNxm
+        fJdT7eA9gu/baq43jxlDEiH+QFgAMcxJbOu3wtSaqm3t75K5msuzsg0yK0lvmMVWdraR40zRMSB87
+        0X7dc45GYYR5ZFeJXvD+jkJYz+EvbL4HMMu3vF3m0fT7jINcVjylE6EkjkYl7RL7xjjOd/wuP8lzX
+        tuCEZP9WlcW3KD+U3f0nIsWR7LWNV6jVltjf/DNG/ZVMboqq3syyyRqLyfOYUsmrqS4ABA6oxc0oC
+        ArmBf9hip05QY900Fjwm2mqUEg9SEROhiC7VtjusI8PWGqZk2iyi/QtTfSfwoFcxm26TSdPTuQAvh
+        MAVgQUdw==;
+In-Reply-To: <20210715164544.6827-1-logang@deltatee.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
 
-Hi,
+Convert to ssize_t return code so the return code from __iommu_map()
+can be returned all the way down through dma_iommu_map_sg().
 
-This series is spun out and expanded from my work to add P2PDMA support
-to DMA map operations[1].
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+---
+ drivers/iommu/iommu.c | 15 +++++++--------
+ include/linux/iommu.h | 22 +++++++++++-----------
+ 2 files changed, 18 insertions(+), 19 deletions(-)
 
-The P2PDMA work requires distinguishing different error conditions in
-a map_sg operation. dma_map_sgtable() already allows for returning an
-error code (where as dma_map_sg() is only allowed to return zero)
-however, it currently only returns -EINVAL when a .map_sg() call returns
-zero.
-
-This series cleans up all .map_sg() implementations to return appropriate
-error codes. After the cleanup, dma_map_sg() will still return zero,
-however dma_map_sgtable() will pass the error code from the .map_sg()
-call. Thanks go to Martn Oliveira for doing a lot of the cleanup of the
-obscure implementations.
-
-The patch set is based off of v5.14-rc1 and a git repo can be found
-here:
-
-  https://github.com/sbates130272/linux-p2pmem map_sg_err_cleanup_v1
-
-Thanks,
-
-Logan
-
-[1] https://lore.kernel.org/linux-block/20210513223203.5542-1-logang@deltatee.com/
-
---
-
-Logan Gunthorpe (5):
-  dma-mapping: Allow map_sg() ops to return negative error codes
-  dma-direct: Return appropriate error code from dma_direct_map_sg()
-  iommu: Return full error code from iommu_map_sg[_atomic]()
-  dma-iommu: Return error code from iommu_dma_map_sg()
-  dma-mapping: Disallow .map_sg operations from returning zero on error
-
-Martin Oliveira (11):
-  alpha: return error code from alpha_pci_map_sg()
-  ARM/dma-mapping: return error code from .map_sg() ops
-  ia64/sba_iommu: return error code from sba_map_sg_attrs()
-  MIPS/jazzdma: return error code from jazz_dma_map_sg()
-  powerpc/iommu: return error code from .map_sg() ops
-  s390/pci: return error code from s390_dma_map_sg()
-  sparc/iommu: return error codes from .map_sg() ops
-  parisc: return error code from .map_sg() ops
-  xen: swiotlb: return error code from xen_swiotlb_map_sg()
-  x86/amd_gart: return error code from gart_map_sg()
-  dma-mapping: return error code from dma_dummy_map_sg()
-
- arch/alpha/kernel/pci_iommu.c           | 10 +++-
- arch/arm/mm/dma-mapping.c               | 22 +++++---
- arch/ia64/hp/common/sba_iommu.c         |  9 +--
- arch/mips/jazz/jazzdma.c                |  2 +-
- arch/powerpc/kernel/iommu.c             |  4 +-
- arch/powerpc/platforms/ps3/system-bus.c |  2 +-
- arch/powerpc/platforms/pseries/vio.c    |  5 +-
- arch/s390/pci/pci_dma.c                 | 12 ++--
- arch/sparc/kernel/iommu.c               |  4 +-
- arch/sparc/kernel/pci_sun4v.c           |  4 +-
- arch/sparc/mm/iommu.c                   |  2 +-
- arch/x86/kernel/amd_gart_64.c           | 16 +++---
- drivers/iommu/dma-iommu.c               | 20 ++++---
- drivers/iommu/iommu.c                   | 15 +++--
- drivers/parisc/ccio-dma.c               |  2 +-
- drivers/parisc/sba_iommu.c              |  2 +-
- drivers/xen/swiotlb-xen.c               |  2 +-
- include/linux/dma-map-ops.h             |  6 +-
- include/linux/dma-mapping.h             | 35 +++---------
- include/linux/iommu.h                   | 22 ++++----
- kernel/dma/direct.c                     |  2 +-
- kernel/dma/dummy.c                      |  2 +-
- kernel/dma/mapping.c                    | 73 ++++++++++++++++++++++---
- 23 files changed, 165 insertions(+), 108 deletions(-)
-
-
-base-commit: e73f0f0ee7541171d89f2e2491130c7771ba58d3
---
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 5419c4b9f27a..bf971b4e34aa 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2567,9 +2567,9 @@ size_t iommu_unmap_fast(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap_fast);
+ 
+-static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-			     struct scatterlist *sg, unsigned int nents, int prot,
+-			     gfp_t gfp)
++static ssize_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++		struct scatterlist *sg, unsigned int nents, int prot,
++		gfp_t gfp)
+ {
+ 	const struct iommu_ops *ops = domain->ops;
+ 	size_t len = 0, mapped = 0;
+@@ -2610,19 +2610,18 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 	/* undo mappings already done */
+ 	iommu_unmap(domain, iova, mapped);
+ 
+-	return 0;
+-
++	return ret;
+ }
+ 
+-size_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-		    struct scatterlist *sg, unsigned int nents, int prot)
++ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++		     struct scatterlist *sg, unsigned int nents, int prot)
+ {
+ 	might_sleep();
+ 	return __iommu_map_sg(domain, iova, sg, nents, prot, GFP_KERNEL);
+ }
+ EXPORT_SYMBOL_GPL(iommu_map_sg);
+ 
+-size_t iommu_map_sg_atomic(struct iommu_domain *domain, unsigned long iova,
++ssize_t iommu_map_sg_atomic(struct iommu_domain *domain, unsigned long iova,
+ 		    struct scatterlist *sg, unsigned int nents, int prot)
+ {
+ 	return __iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 32d448050bf7..9369458ba1bd 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -414,11 +414,11 @@ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ extern size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 			       unsigned long iova, size_t size,
+ 			       struct iommu_iotlb_gather *iotlb_gather);
+-extern size_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-			   struct scatterlist *sg,unsigned int nents, int prot);
+-extern size_t iommu_map_sg_atomic(struct iommu_domain *domain,
+-				  unsigned long iova, struct scatterlist *sg,
+-				  unsigned int nents, int prot);
++extern ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++		struct scatterlist *sg, unsigned int nents, int prot);
++extern ssize_t iommu_map_sg_atomic(struct iommu_domain *domain,
++				   unsigned long iova, struct scatterlist *sg,
++				   unsigned int nents, int prot);
+ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
+ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+ 			iommu_fault_handler_t handler, void *token);
+@@ -679,18 +679,18 @@ static inline size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 	return 0;
+ }
+ 
+-static inline size_t iommu_map_sg(struct iommu_domain *domain,
+-				  unsigned long iova, struct scatterlist *sg,
+-				  unsigned int nents, int prot)
++static inline ssize_t iommu_map_sg(struct iommu_domain *domain,
++				   unsigned long iova, struct scatterlist *sg,
++				   unsigned int nents, int prot)
+ {
+-	return 0;
++	return -ENODEV;
+ }
+ 
+-static inline size_t iommu_map_sg_atomic(struct iommu_domain *domain,
++static inline ssize_t iommu_map_sg_atomic(struct iommu_domain *domain,
+ 				  unsigned long iova, struct scatterlist *sg,
+ 				  unsigned int nents, int prot)
+ {
+-	return 0;
++	return -ENODEV;
+ }
+ 
+ static inline void iommu_flush_iotlb_all(struct iommu_domain *domain)
+-- 
 2.20.1
+
