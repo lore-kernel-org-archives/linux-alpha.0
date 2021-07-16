@@ -1,35 +1,35 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v1 14/16] x86/amd_gart: return error code from
- gart_map_sg()
-Date: Fri, 16 Jul 2021 13:11:33 +0100
-Message-ID: <98c09e65-35d0-dde5-75fc-e3d99864d078@arm.com>
+Subject: Re: [PATCH v1 16/16] dma-mapping: Disallow .map_sg operations from
+ returning zero on error
+Date: Fri, 16 Jul 2021 13:19:23 +0100
+Message-ID: <21b7f2f1-ccac-4567-6933-a258dcad7099@arm.com>
 References: <20210715164544.6827-1-logang@deltatee.com>
- <20210715164544.6827-15-logang@deltatee.com> <20210716063241.GC13345@lst.de>
+ <20210715164544.6827-17-logang@deltatee.com> <20210716063332.GD13345@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-In-Reply-To: <20210716063241.GC13345@lst.de>
+Return-path: <linux-mips-owner@vger.kernel.org>
+In-Reply-To: <20210716063332.GD13345@lst.de>
 Content-Language: en-GB
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"; format="flowed"
 To: Christoph Hellwig <hch@lst.de>, Logan Gunthorpe <logang@deltatee.com>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Marek Szyprowski <m.szyprowski@samsung.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Niklas Schnelle <schnelle@linux.ibm.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>
+Cc: linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, Martin Oliveira <martin.oliveira@eideticom.com>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, Stephen Bates <sbates@raithlin.com>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-On 2021-07-16 07:32, Christoph Hellwig wrote:
-> On Thu, Jul 15, 2021 at 10:45:42AM -0600, Logan Gunthorpe wrote:
->> @@ -458,7 +460,7 @@ static int gart_map_sg(struct device *dev, struct scatterlist *sg, int nents,
->>   	iommu_full(dev, pages << PAGE_SHIFT, dir);
->>   	for_each_sg(sg, s, nents, i)
->>   		s->dma_address = DMA_MAPPING_ERROR;
->> -	return 0;
->> +	return ret;
+On 2021-07-16 07:33, Christoph Hellwig wrote:
+> On Thu, Jul 15, 2021 at 10:45:44AM -0600, Logan Gunthorpe wrote:
+>> @@ -194,6 +194,8 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+>>   	else
+>>   		ents = ops->map_sg(dev, sg, nents, dir, attrs);
+>>   
+>> +	WARN_ON_ONCE(ents == 0);
 > 
-> While we're at it - setting the ->dma_address to DMA_MAPPING_ERROR is
-> not part of the ->map_sg calling convention.  Might be worth to fix
-> up while we're at it.
+> Turns this into a negative error code while we're at it, just to keep
+> the callers sane?
 
-Especially since it's not even zeroing dma_length, which at least is a 
-documented indicator of validity (even if it's not strictly defined for 
-failure cases either).
+Right, by this point returning the 0 would pass through 
+dma_map_sg_attrs() OK, but AFAICS dma_map_sgtable() would now get 
+confused and return success but with sgt->nents = 0. Coercing it to an 
+error code (which dma_map_sg_attrs() would then just change right back) 
+seems sensible for the sake of easy robustness.
 
 Robin.
