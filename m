@@ -1,29 +1,20 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v1 01/16] dma-mapping: Allow map_sg() ops to return
- negative error codes
-Date: Fri, 16 Jul 2021 08:29:28 +0200
-Message-ID: <20210716062928.GA13345@lst.de>
-References: <20210715164544.6827-1-logang@deltatee.com> <20210715164544.6827-2-logang@deltatee.com>
+Subject: Re: [PATCH v1 04/16] dma-iommu: Return error code from
+ iommu_dma_map_sg()
+Date: Fri, 16 Jul 2021 08:31:27 +0200
+Message-ID: <20210716063127.GB13345@lst.de>
+References: <20210715164544.6827-1-logang@deltatee.com> <20210715164544.6827-5-logang@deltatee.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20210715164544.6827-2-logang@deltatee.com>
+In-Reply-To: <20210715164544.6827-5-logang@deltatee.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Logan Gunthorpe <logang@deltatee.com>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
 
-On Thu, Jul 15, 2021 at 10:45:29AM -0600, Logan Gunthorpe wrote:
-> +	 * dma_map_sgtable() will return the error code returned and convert
-> +	 * a zero return (for legacy implementations) into -EINVAL.
-> +	 *
-> +	 * dma_map_sg() will always return zero on any negative or zero
-> +	 * return to satisfy its own calling convention.
->  	 */
-
-I don't think this belongs here.
-
-> +EXPORT_SYMBOL(dma_map_sgtable);
-
-EXPORT_SYMBOL_GPL, please.
+Careful here. What do all these errors from the low-level code mean
+here?  I think we need to clearly standardize on what we actually
+return from ->map_sg and possibly document what the callers expect and
+can do, and enforce that only those error are reported.
