@@ -1,40 +1,29 @@
-From: Matt Turner <mattst88@gmail.com>
-Subject: Re: Concern about arch/alpha/kernel/smc37c669.c
-Date: Thu, 15 Jul 2021 23:28:33 -0700
-Message-ID: <CAEdQ38Ht+WfROb1nvQBJaMjn49d98NYpEa6idAaWNMVJ8V-PFg@mail.gmail.com>
-References: <7b314145-cbb9-b491-ccf5-d6021a574339@windriver.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v1 01/16] dma-mapping: Allow map_sg() ops to return
+ negative error codes
+Date: Fri, 16 Jul 2021 08:29:28 +0200
+Message-ID: <20210716062928.GA13345@lst.de>
+References: <20210715164544.6827-1-logang@deltatee.com> <20210715164544.6827-2-logang@deltatee.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kQbnoZ4GXI+Z/rBFLWYGRWA+0vR/EX50wcqWIvvUhI8=;
-        b=NP6XNMxQc37xj118IifdcxKmgwuiZ+s0zb8sCoyhFMA0Trez8FyAUk9m/ZfUKppvjq
-         WdaaPeD+IubA/cHuuO/64D3ChjKsuCDzLgjxSsWuVJEL+Moutr3tlF7WyZtpl34YHYx8
-         rUl4ewW1qWPcqfgOff2FXe/9EjK+WAC708CeRz8Mav83FEOGUwHRO/dgF83SofkGeLIF
-         Vizuad5jS6WfH7rMp7vmPGfSelPkskFixkA7LGm3mj3K/CHKJR/YFCuQDwXFKnHyVBU2
-         bnQ45b4tutRZhmjHGNjm6m/oHuMG5aXn0S0Df9DuwqmRTBT1uExA02sU9nfPJwwp9TOi
-         voWg==
-In-Reply-To: <7b314145-cbb9-b491-ccf5-d6021a574339@windriver.com>
+Content-Disposition: inline
+In-Reply-To: <20210715164544.6827-2-logang@deltatee.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: He Zhe <zhe.he@windriver.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>
 
-On Fri, May 7, 2021 at 1:31 AM He Zhe <zhe.he@windriver.com> wrote:
->
-> Hello maintainers,
->
-> There is no "SPDX-License-Identifier: GPL-2.0" in arch/alpha/kernel/smc37c669.c
-> and the following copyright is found.
-> "
-> Copyright (C) 1997 by
-> Digital Equipment Corporation, Maynard, Massachusetts.
-> All rights reserved.
-> "
->
-> Does this conflict with GPLv2? Anything else we need to know when using this as opensource software?
+On Thu, Jul 15, 2021 at 10:45:29AM -0600, Logan Gunthorpe wrote:
+> +	 * dma_map_sgtable() will return the error code returned and convert
+> +	 * a zero return (for legacy implementations) into -EINVAL.
+> +	 *
+> +	 * dma_map_sg() will always return zero on any negative or zero
+> +	 * return to satisfy its own calling convention.
+>  	 */
 
-Unless you're using a DEC Alpha CPU, you're not using this code.
+I don't think this belongs here.
+
+> +EXPORT_SYMBOL(dma_map_sgtable);
+
+EXPORT_SYMBOL_GPL, please.
