@@ -1,96 +1,35 @@
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Subject: Re: [PATCH v1 10/16] s390/pci: return error code from
- s390_dma_map_sg()
-Date: Fri, 16 Jul 2021 10:24:08 +0200
-Message-ID: <352f2a35d62399fce1dca0ce1158974ecda3904c.camel@linux.ibm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v1 14/16] x86/amd_gart: return error code from
+ gart_map_sg()
+Date: Fri, 16 Jul 2021 13:11:33 +0100
+Message-ID: <98c09e65-35d0-dde5-75fc-e3d99864d078@arm.com>
 References: <20210715164544.6827-1-logang@deltatee.com>
-         <20210715164544.6827-11-logang@deltatee.com>
+ <20210715164544.6827-15-logang@deltatee.com> <20210716063241.GC13345@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=8Of+ionZ0K44S7zzH2G1wGenaNNg9cYQDtiQ0dQz6+E=;
- b=BMc79y1KhhQKUFZbOrAhtcEP61wGvhCcKpBh3YItmYniaHy7RinkekOStAMhwPcVbV8g
- tA8KdxQW6CmdQCUDo7HXnXeBDvsxeO1Bxcn4vmR46+BPBqB7+8Ctzlwih1eoet+d/O4e
- U7lnzCYwkCmnuQ2N7TeXEVQB0tNbOBoSC9rb2wWdVRh2ThxQaLFsKo3f4ZcKX5kegGXy
- lsJ/BZHBXKo8Vpdp79tRxovqbQ5nmEvbTtQHpKKZhzPMbI6YKxeWxAqOAKu0r38O+7Ex
- 7l5jIUCj1b6+Lwrw1Hy8lrhsFTfLuxB+ksipWyRyg3640fKq4qgCXYb8/oO8DK9d7iju gA== 
-In-Reply-To: <20210715164544.6827-11-logang@deltatee.com>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20210716063241.GC13345@lst.de>
+Content-Language: en-GB
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Logan Gunthorpe <logang@deltatee.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@de.ibm.com>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Christoph Hellwig <hch@lst.de>, Logan Gunthorpe <logang@deltatee.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Marek Szyprowski <m.szyprowski@samsung.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Niklas Schnelle <schnelle@linux.ibm.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>
 
-On Thu, 2021-07-15 at 10:45 -0600, Logan Gunthorpe wrote:
-> From: Martin Oliveira <martin.oliveira@eideticom.com>
+On 2021-07-16 07:32, Christoph Hellwig wrote:
+> On Thu, Jul 15, 2021 at 10:45:42AM -0600, Logan Gunthorpe wrote:
+>> @@ -458,7 +460,7 @@ static int gart_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>>   	iommu_full(dev, pages << PAGE_SHIFT, dir);
+>>   	for_each_sg(sg, s, nents, i)
+>>   		s->dma_address = DMA_MAPPING_ERROR;
+>> -	return 0;
+>> +	return ret;
 > 
-> The .map_sg() op now expects an error code instead of zero on failure.
-> 
-> So propagate the error from __s390_dma_map_sg() up.
-> 
-> Signed-off-by: Martin Oliveira <martin.oliveira@eideticom.com>
-> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-> Cc: Niklas Schnelle <schnelle@linux.ibm.com>
-> Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: Vasily Gorbik <gor@linux.ibm.com>
-> Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-> ---
->  arch/s390/pci/pci_dma.c | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
-> index ebc9a49523aa..c78b02012764 100644
-> --- a/arch/s390/pci/pci_dma.c
-> +++ b/arch/s390/pci/pci_dma.c
-> @@ -487,7 +487,7 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  	unsigned int max = dma_get_max_seg_size(dev);
->  	unsigned int size = s->offset + s->length;
->  	unsigned int offset = s->offset;
-> -	int count = 0, i;
-> +	int count = 0, i, ret;
->  
->  	for (i = 1; i < nr_elements; i++) {
->  		s = sg_next(s);
-> @@ -497,8 +497,9 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  
->  		if (s->offset || (size & ~PAGE_MASK) ||
->  		    size + s->length > max) {
-> -			if (__s390_dma_map_sg(dev, start, size,
-> -					      &dma->dma_address, dir))
-> +			ret = __s390_dma_map_sg(dev, start, size,
-> +						&dma->dma_address, dir);
-> +			if (ret)
->  				goto unmap;
->  
->  			dma->dma_address += offset;
-> @@ -511,7 +512,8 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  		}
->  		size += s->length;
->  	}
-> -	if (__s390_dma_map_sg(dev, start, size, &dma->dma_address, dir))
-> +	ret = __s390_dma_map_sg(dev, start, size, &dma->dma_address, dir);
-> +	if (ret)
->  		goto unmap;
->  
->  	dma->dma_address += offset;
-> @@ -523,7 +525,7 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  		s390_dma_unmap_pages(dev, sg_dma_address(s), sg_dma_len(s),
->  				     dir, attrs);
->  
-> -	return 0;
-> +	return ret;
->  }
->  
->  static void s390_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+> While we're at it - setting the ->dma_address to DMA_MAPPING_ERROR is
+> not part of the ->map_sg calling convention.  Might be worth to fix
+> up while we're at it.
 
-So the error codes we return are -ENOMEM if allocating a DMA
-translation entry fails and -EINVAL if the DMA translation table hasn't
-been initialized or the caller tries to map 0 sized memory. Are these
-error codes that you would expect? If yes then this change looks good
-to me.
+Especially since it's not even zeroing dma_length, which at least is a 
+documented indicator of validity (even if it's not strictly defined for 
+failure cases either).
 
-Acked-by: Niklas Schnelle <schnelle@linux.ibm.com>
-
+Robin.
