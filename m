@@ -1,117 +1,42 @@
-From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v2 10/21] powerpc/iommu: return error code from .map_sg() ops
-Date: Fri, 23 Jul 2021 11:49:57 -0600
-Message-ID: <20210723175008.22410-11-logang@deltatee.com>
-References: <20210723175008.22410-1-logang@deltatee.com>
+From: Rolf Eike Beer <eike-kernel@sf-tec.de>
+Subject: Re: [PATCH v2 21/21] dma-mapping: Disallow .map_sg operations from returning zero on error
+Date: Sat, 24 Jul 2021 08:22:28 +0200
+Message-ID: <2591613.mvXUDI8C0e@daneel.sf-tec.de>
+References: <20210723175008.22410-1-logang@deltatee.com> <20210723175008.22410-22-logang@deltatee.com>
 Mime-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart11795432.O9o76ZdvQC"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-Reply-To: <20210723175008.22410-22-logang@deltatee.com>
+List-ID: <linux-alpha.vger.kernel.org>
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Logan Gunthorpe <logang@deltatee.com>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>
+
+--nextPart11795432.O9o76ZdvQC
+Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Cc:To:From:content-disposition;
- bh=HMmFCnKiUdZs8XdQrQe+q8n2y8J+pVaubqcncKbrGOc=; b=TxLSaXfyIrqdZibn+BQXuDk4R/
- QkjnyO3+7nKEqm6/dBDGqT9B6ehiUwEjYK3p6z170ejG3qzLM7cTIghm+rBdXZtQylTGtZVq/PclA
- W/tzGcPoosyMbkawZFt6ijD+3xj0KCAMjE/J7NDII9fGZO3zJMzjnCUD5cFRAPB6OMusUcsTmC4+9
- R8vDLwVQz5dveEX3lbp3d+dJBFS7utdZyK6HVFyf/72sMOPvIje20PrC/wLI1/0SrI35auk/pob13
- v/FTtTdGeL7zv+mRT/II5A1r8zGvHtaivtA+dsqs3svnUmz2syz2Fr1FHKlWH7Qi77t3YHbS9HKjx
- an0vDIlA==;
-In-Reply-To: <20210723175008.22410-1-logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Geoff Levand <geoff-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>, Stephen Bates <sbates-pv7U853sEMVWk0Htik3J/w@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 
-From: Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>
+Am Freitag, 23. Juli 2021, 19:50:08 CEST schrieb Logan Gunthorpe:
+> Now that all the .map_sg operations have been converted to returning
+> proper error codes, drop the code to handle a zero return value,
+> add a warning if a zero is returned and update the comment for the
+> map_sg operation.
 
-The .map_sg() op now expects an error code instead of zero on failure.
+I see no comment being touched here.
 
-Propagate the error up if vio_dma_iommu_map_sg() fails.
+Eike
+--nextPart11795432.O9o76ZdvQC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
 
-ppc_iommu_map_sg() may fail either because of iommu_range_alloc() or
-because of tbl->it_ops->set(). The former only supports returning an
-error with DMA_MAPPING_ERROR and an examination of the latter indicates
-that it may return arch-specific errors (for example,
-tce_buildmulti_pSeriesLP()). Hence, coalesce all of those errors into
--EIO, per the documentation on dma_map_sgtable().
+-----BEGIN PGP SIGNATURE-----
 
-Signed-off-by: Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>
-Signed-off-by: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Cc: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Cc: Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>
-Cc: Geoff Levand <geoff-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
----
- arch/powerpc/kernel/iommu.c             | 4 ++--
- arch/powerpc/platforms/ps3/system-bus.c | 2 +-
- arch/powerpc/platforms/pseries/vio.c    | 5 +++--
- 3 files changed, 6 insertions(+), 5 deletions(-)
+iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYPuxpAAKCRBcpIk+abn8
+TmEXAJ4y9fSVV7pgh2KPWXQ4YaTcwXP08ACgkfbFqKsGtxv2IZPJJiPcxo/F4Bg=
+=swGr
+-----END PGP SIGNATURE-----
 
-diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-index 2af89a5e379f..a8ec4fe42817 100644
---- a/arch/powerpc/kernel/iommu.c
-+++ b/arch/powerpc/kernel/iommu.c
-@@ -473,7 +473,7 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
- 	BUG_ON(direction == DMA_NONE);
- 
- 	if ((nelems == 0) || !tbl)
--		return 0;
-+		return -EINVAL;
- 
- 	outs = s = segstart = &sglist[0];
- 	outcount = 1;
-@@ -599,7 +599,7 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
- 		if (s == outs)
- 			break;
- 	}
--	return 0;
-+	return -EIO;
- }
- 
- 
-diff --git a/arch/powerpc/platforms/ps3/system-bus.c b/arch/powerpc/platforms/ps3/system-bus.c
-index 1a5665875165..c54eb46f0cfb 100644
---- a/arch/powerpc/platforms/ps3/system-bus.c
-+++ b/arch/powerpc/platforms/ps3/system-bus.c
-@@ -663,7 +663,7 @@ static int ps3_ioc0_map_sg(struct device *_dev, struct scatterlist *sg,
- 			   unsigned long attrs)
- {
- 	BUG();
--	return 0;
-+	return -EINVAL;
- }
- 
- static void ps3_sb_unmap_sg(struct device *_dev, struct scatterlist *sg,
-diff --git a/arch/powerpc/platforms/pseries/vio.c b/arch/powerpc/platforms/pseries/vio.c
-index e00f3725ec96..e31e59c54f30 100644
---- a/arch/powerpc/platforms/pseries/vio.c
-+++ b/arch/powerpc/platforms/pseries/vio.c
-@@ -560,7 +560,8 @@ static int vio_dma_iommu_map_sg(struct device *dev, struct scatterlist *sglist,
- 	for_each_sg(sglist, sgl, nelems, count)
- 		alloc_size += roundup(sgl->length, IOMMU_PAGE_SIZE(tbl));
- 
--	if (vio_cmo_alloc(viodev, alloc_size))
-+	ret = vio_cmo_alloc(viodev, alloc_size);
-+	if (ret)
- 		goto out_fail;
- 	ret = ppc_iommu_map_sg(dev, tbl, sglist, nelems, dma_get_mask(dev),
- 			direction, attrs);
-@@ -577,7 +578,7 @@ static int vio_dma_iommu_map_sg(struct device *dev, struct scatterlist *sglist,
- 	vio_cmo_dealloc(viodev, alloc_size);
- out_fail:
- 	atomic_inc(&viodev->cmo.allocs_failed);
--	return 0;
-+	return ret;
- }
- 
- static void vio_dma_iommu_unmap_sg(struct device *dev,
--- 
-2.20.1
+--nextPart11795432.O9o76ZdvQC--
+
+
+
