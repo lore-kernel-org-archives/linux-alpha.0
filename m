@@ -1,42 +1,31 @@
-From: Rolf Eike Beer <eike-kernel@sf-tec.de>
-Subject: Re: [PATCH v2 21/21] dma-mapping: Disallow .map_sg operations from returning zero on error
-Date: Sat, 24 Jul 2021 08:22:28 +0200
-Message-ID: <2591613.mvXUDI8C0e@daneel.sf-tec.de>
-References: <20210723175008.22410-1-logang@deltatee.com> <20210723175008.22410-22-logang@deltatee.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 01/21] dma-mapping: Allow map_sg() ops to return
+ negative error codes
+Date: Sun, 25 Jul 2021 08:07:47 +0200
+Message-ID: <20210725060747.GA10852@lst.de>
+References: <20210723175008.22410-1-logang@deltatee.com> <20210723175008.22410-2-logang@deltatee.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart11795432.O9o76ZdvQC"; micalg="pgp-sha1"; protocol="application/pgp-signature"
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <20210723175008.22410-22-logang@deltatee.com>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20210723175008.22410-2-logang@deltatee.com>
 List-ID: <linux-alpha.vger.kernel.org>
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Logan Gunthorpe <logang@deltatee.com>
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>
-
---nextPart11795432.O9o76ZdvQC
-Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>
 
-Am Freitag, 23. Juli 2021, 19:50:08 CEST schrieb Logan Gunthorpe:
-> Now that all the .map_sg operations have been converted to returning
-> proper error codes, drop the code to handle a zero return value,
-> add a warning if a zero is returned and update the comment for the
-> map_sg operation.
+> +int dma_map_sgtable(struct device *dev, struct sg_table *sgt,
+> +		    enum dma_data_direction dir, unsigned long attrs)
+> +{
+> +	int nents;
+> +
+> +	nents = __dma_map_sg_attrs(dev, sgt->sgl, sgt->orig_nents, dir, attrs);
+> +	if (nents == 0)
+> +		return -EIO;
+> +	else if (nents < 0) {
+> +		if (WARN_ON_ONCE(nents != -EINVAL && nents != -ENOMEM &&
+> +				 nents != -EIO))
+> +			return -EIO;
 
-I see no comment being touched here.
-
-Eike
---nextPart11795432.O9o76ZdvQC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYPuxpAAKCRBcpIk+abn8
-TmEXAJ4y9fSVV7pgh2KPWXQ4YaTcwXP08ACgkfbFqKsGtxv2IZPJJiPcxo/F4Bg=
-=swGr
------END PGP SIGNATURE-----
-
---nextPart11795432.O9o76ZdvQC--
-
-
-
+I think this validation of the errnos needs to go into __dma_map_sg_attrs,
+so that we catch it for the classic dma_map_sg callers as well.
