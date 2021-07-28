@@ -1,148 +1,249 @@
-From: Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: Regression bisected to fa3354e4ea39 (mm: free_area_init: use
- maximal zone PFNs rather than zone sizes)
-Date: Tue, 27 Jul 2021 23:41:05 +0300
-Message-ID: <YQBvYUupT/jgDMqI@linux.ibm.com>
-References: <20210726192311.uffqnanxw3ac5wwi@ivybridge>
- <YP8Vxt0xuV1m5EPS@linux.ibm.com>
- <CAEdQ38F2ddbM0WBjut6MH-0TpencKmx9Wu4++gLtfQ5HGRwxFQ@mail.gmail.com>
- <YP+rI9Fh4wl/O6/8@linux.ibm.com>
- <CAEdQ38G+ZfXmc01iZTc+q4dYpRqQJUz0KNFCPwTQ25AYqJVbMA@mail.gmail.com>
-Mime-Version: 1.0
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] arch: Kconfig: clean up obsolete use of HAVE_IDE
+Date: Wed, 28 Jul 2021 20:21:15 +0200
+Message-ID: <20210728182115.4401-1-lukas.bulwahn@gmail.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=GXrqMLJnfay41Qa+AEwE55svFy1XguVHqDhNlpP+SmY=;
- b=hB+/zUXeprcYwbn6nKjhIwwbuz3kv4QY69lNUMnB2OPWbtKODl6V2tW7u12lcV56s0/9
- Bj+qYrmvrNlPc2puSZqY340ul56S8x4iBctf9wylkYs29a/WOIcFWAUpGMOkGbf8/SfN
- 5GXh96CCilH9y5AtjGjtiIzoQhd/eCtnqoInsP2tiTR3ir+yz+1EZA+bvHxgMV07aE3S
- +6PBjnR1jRxZ5Kc0WuzXj03Hcskwi8GQnJr7HMagPA/J71VF9RjtPEf+oUzhSURVsBA4
- 6pJffJVZgggdz4XnhRV3iszXx2F80nXiu1PePvJgG3VVEgWsA5eIAKeWbqkPztMazBCk +Q== 
-Content-Disposition: inline
-In-Reply-To: <CAEdQ38G+ZfXmc01iZTc+q4dYpRqQJUz0KNFCPwTQ25AYqJVbMA@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=aF3/VHib9GfO0nFJBohIRSm4KR3E1di5VfkCUNhyYTc=;
+        b=j+7JSdyL/y+5Tp4kgvBfv3a7O8SxDct7cjXFxt3kfO/nBdrjysT8zMYTtmjcjmICNe
+         xXtbgscX5Z0OO2TGenxgzYhXqChAYsMPuE9fLcrY9TZtp3bbRqYTnkU3W1it9aR9oxTs
+         /v02VoW84XyvkeNvrYtqh6CQGDoQDDz1s6G4NMTxlSbXIMfdT05h/dXKstyEPoePxH2I
+         HeZwsjiPBjbjexDG8zIAI1QxlM/cASCcmgVGwALVa66j6CeDbILQqX+Phg4+t/OT6goC
+         npeNIatPb4N8bnvQAhNzyfwiViindBb/BAgUbh2gX2h54t86yGRFpLKg6AUGjq2lr+K1
+         hfyg==
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-mm@kvack.org, linux-alpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+To: Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>, Randy Dunlap <rdunlap@infradead.org>
+Cc: x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, uclinux-h8-devel@lists.sourceforge.jp, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-On Tue, Jul 27, 2021 at 12:24:26PM -0700, Matt Turner wrote:
-> On Mon, Jul 26, 2021 at 11:43 PM Mike Rapoport <rppt@linux.ibm.com> wrote:
-> >
-> > On Mon, Jul 26, 2021 at 02:23:20PM -0700, Matt Turner wrote:
-> > > On Mon, Jul 26, 2021 at 1:06 PM Mike Rapoport <rppt@linux.ibm.com> wrote:
-> > > >
-> > > > Hi Matt,
-> > > >
-> > > > On Mon, Jul 26, 2021 at 12:27:50PM -0700, Matt Turner wrote:
-> > > > > Reply-To:
-> > > > >
-> > > > > Hi Mike!
-> > > > >
-> > > > > Since commit fa3354e4ea39 (mm: free_area_init: use maximal zone PFNs rather
-> > > > > than zone sizes), I get the following BUG on Alpha (an AlphaServer ES47 Marvel)
-> > > > > and loading userspace leads to a segfault:
-> > > > >
-> > > > > (I didn't notice this for a long time because of other unrelated regressions,
-> > > > > the pandemic, changing jobs, ...)
-> > > >
-> > > > I suspect there will be more surprises down the road :)
-> > > >
-> > > > > BUG: Bad page state in process swapper  pfn:2ffc53
-> > > > > page:fffffc000ecf14c0 refcount:0 mapcount:1 mapping:0000000000000000 index:0x0
-> > > > > flags: 0x0()
-> > > > > raw: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> > > > > raw: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> > > > > page dumped because: nonzero mapcount  Modules linked in:
-> > > > > CPU: 0 PID: 0 Comm: swapper Not tainted 5.7.0-03841-gfa3354e4ea39-dirty #26
-> > > > >        fffffc0001b5bd68 fffffc0001b5be80 fffffc00011cd148 fffffc000ecf14c0
-> > > > >        fffffc00019803df fffffc0001b5be80 fffffc00011ce340 fffffc000ecf14c0
-> > > > >        0000000000000000 fffffc0001b5be80 fffffc0001b482c0 fffffc00027d6618
-> > > > >        fffffc00027da7d0 00000000002ff97a 0000000000000000 fffffc0001b5be80
-> > > > >        fffffc00011d1abc fffffc000ecf14c0 fffffc0002d00000 fffffc0001b5be80
-> > > > >        fffffc0001b2350c 0000000000300000 fffffc0001b48298 fffffc0001b482c0
-> > > > > Trace:
-> > > > > [<fffffc00011cd148>] bad_page+0x168/0x1b0
-> > > > > [<fffffc00011ce340>] free_pcp_prepare+0x1e0/0x290
-> > > > > [<fffffc00011d1abc>] free_unref_page+0x2c/0xa0
-> > > > > [<fffffc00014ee5f0>] cmp_ex_sort+0x0/0x30
-> > > > > [<fffffc00014ee5f0>] cmp_ex_sort+0x0/0x30
-> > > > > [<fffffc000101001c>] _stext+0x1c/0x20
-> > > > >
-> > > > > I haven't tried reproducing this on other machines or QEMU, but I'd be glad to
-> > > > > if that helps.
-> > > >
-> > > > If it's reproducible on QEMU I can debug it locally.
-> > > >
-> > > > > Any ideas?
-> > > >
-> > > > It seems like memory map is not properly initialized. Can you enable
-> > > > CONFIG_DEBUG_MEMORY_INIT and add mminit_debug=4 to the command line. The
-> > > > interesting part of the log would be before "Memory: xK/yK available ..."
-> > > > line.
-> > > >
-> > > > Hopefully it'll give some clues.
-> > >
-> > > Sure thing. Please find attached.
-> >
-> > > aboot: loading uncompressed vmlinuz-5.7.0-03841-gfa3354e4ea39-dirty...
-> > > aboot: loading compressed vmlinuz-5.7.0-03841-gfa3354e4ea39-dirty...
-> > > aboot: PHDR 0 vaddr 0xfffffc0001010000 offset 0xc0 size 0x17c5ae0
-> > > aboot: bss at 0xfffffc00027d5ae0, size 0xe4ea0
-> > > aboot: zero-filling 937632 bytes at 0xfffffc00027d5ae0
-> > > aboot: loading initrd (5965252 bytes/5825 blocks) at 0xfffffc05ff2cc000
-> > > aboot: starting kernel vmlinuz-5.7.0-03841-gfa3354e4ea39-dirty with arguments ro panic=5 domdadm root=/dev/md1 console=srm  mminit_debug=4
-> > > Linux version 5.7.0-03841-gfa3354e4ea39-dirty (mattst88@ivybridge) (gcc version 11.1.0 (Gentoo 11.1.0-r2 p3), GNU ld (Gentoo 2.36.1 p3) 2.36.1) #26 SMP Sun Jul 25 18:20:06 PDT 2021
-> > > printk: bootconsole [srm0] enabled
-> > > Booting on Marvel variation Marvel/EV7 using machine vector MARVEL/EV7 from SRM
-> > > Major Options: SMP EV67 VERBOSE_MCHECK DEBUG_SPINLOCK MAGIC_SYSRQ
-> > > Command line: ro panic=5 domdadm root=/dev/md1 console=srm  mminit_debug=4
-> > > memcluster 0, usage 1, start        0, end     1984
-> > > memcluster 1, usage 0, start     1984, end  1048576
-> > > memcluster 2, usage 1, start  2097152, end  2097224
-> > > memcluster 3, usage 0, start  2097224, end  3145728
-> > > Initial ramdisk at: 0x(____ptrval____) (5965252 bytes)
-> > > Found an IO7 at PID 0
-> > > Initializing IO7 at PID 0
-> > > FIXME: disabling master aborts
-> > > FIXME: disabling master aborts
-> > > FIXME: disabling master aborts
-> > > FIXME: disabling master aborts
-> > > SMP: 2 CPUs probed -- cpu_present_mask = 3
-> > > Zone ranges:
-> > >   DMA      [mem 0x0000000000f80000-0x00000fffffffdfff]
-> > >   Normal   empty
-> > > Movable zone start for each node
-> > > Early memory node ranges
-> > >   node   0: [mem 0x0000000000f80000-0x00000001ffffffff]
-> > >   node   0: [mem 0x0000000400090000-0x00000005ffffffff]
-> >
-> > I think that the issue is that memory marked as used in memcluster is never
-> > added to memblock and it skews node/zone sizing calculations.
-> 
-> Thanks, this patch fixes it. With the patch applied, I see
-> 
-> Zone ranges:
->   DMA      [mem 0x0000000000000000-0x00000fffffffdfff]
->   Normal   empty
-> Movable zone start for each node
-> Early memory node ranges
->   node   0: [mem 0x0000000000000000-0x00000001ffffffff]
->   node   0: [mem 0x0000000400000000-0x00000005ffffffff]
-> Initmem setup node 0 [mem 0x0000000000000000-0x00000005ffffffff]
-> 
-> If you want to send me this patch with your S-o-b I'll take it through
-> my alpha git tree.
+The arch-specific Kconfig files use HAVE_IDE to indicate if IDE is
+supported.
 
-The patch is on its way :)
+As IDE support and the HAVE_IDE config vanishes with commit b7fb14d3ac63
+("ide: remove the legacy ide driver"), there is no need to mention
+HAVE_IDE in all those arch-specific Kconfig files.
 
-Now I'm really curios how commit e7793e53901b ("arc: update comment about
-HIGHMEM implementation") will work out.
+The issue was identified with ./scripts/checkkconfigsymbols.py.
 
+Fixes: b7fb14d3ac63 ("ide: remove the legacy ide driver")
+Suggested-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ arch/alpha/Kconfig            | 1 -
+ arch/arm/Kconfig              | 6 ------
+ arch/arm/mach-davinci/Kconfig | 1 -
+ arch/h8300/Kconfig.cpu        | 1 -
+ arch/ia64/Kconfig             | 1 -
+ arch/m68k/Kconfig             | 1 -
+ arch/mips/Kconfig             | 1 -
+ arch/parisc/Kconfig           | 1 -
+ arch/powerpc/Kconfig          | 1 -
+ arch/sh/Kconfig               | 1 -
+ arch/sparc/Kconfig            | 1 -
+ arch/x86/Kconfig              | 1 -
+ arch/xtensa/Kconfig           | 1 -
+ 13 files changed, 18 deletions(-)
+
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 77d3280dc678..a6d4c2f744e3 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -14,7 +14,6 @@ config ALPHA
+ 	select PCI_SYSCALL if PCI
+ 	select HAVE_AOUT
+ 	select HAVE_ASM_MODVERSIONS
+-	select HAVE_IDE
+ 	select HAVE_PCSPKR_PLATFORM
+ 	select HAVE_PERF_EVENTS
+ 	select NEED_DMA_MAP_STATE
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 82f908fa5676..2fb7012c3246 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -95,7 +95,6 @@ config ARM
+ 	select HAVE_FUNCTION_TRACER if !XIP_KERNEL
+ 	select HAVE_GCC_PLUGINS
+ 	select HAVE_HW_BREAKPOINT if PERF_EVENTS && (CPU_V6 || CPU_V6K || CPU_V7)
+-	select HAVE_IDE if PCI || ISA || PCMCIA
+ 	select HAVE_IRQ_TIME_ACCOUNTING
+ 	select HAVE_KERNEL_GZIP
+ 	select HAVE_KERNEL_LZ4
+@@ -361,7 +360,6 @@ config ARCH_FOOTBRIDGE
+ 	bool "FootBridge"
+ 	select CPU_SA110
+ 	select FOOTBRIDGE
+-	select HAVE_IDE
+ 	select NEED_MACH_IO_H if !MMU
+ 	select NEED_MACH_MEMORY_H
+ 	help
+@@ -430,7 +428,6 @@ config ARCH_PXA
+ 	select GENERIC_IRQ_MULTI_HANDLER
+ 	select GPIO_PXA
+ 	select GPIOLIB
+-	select HAVE_IDE
+ 	select IRQ_DOMAIN
+ 	select PLAT_PXA
+ 	select SPARSE_IRQ
+@@ -446,7 +443,6 @@ config ARCH_RPC
+ 	select ARM_HAS_SG_CHAIN
+ 	select CPU_SA110
+ 	select FIQ
+-	select HAVE_IDE
+ 	select HAVE_PATA_PLATFORM
+ 	select ISA_DMA_API
+ 	select LEGACY_TIMER_TICK
+@@ -469,7 +465,6 @@ config ARCH_SA1100
+ 	select CPU_SA1100
+ 	select GENERIC_IRQ_MULTI_HANDLER
+ 	select GPIOLIB
+-	select HAVE_IDE
+ 	select IRQ_DOMAIN
+ 	select ISA
+ 	select NEED_MACH_MEMORY_H
+@@ -505,7 +500,6 @@ config ARCH_OMAP1
+ 	select GENERIC_IRQ_CHIP
+ 	select GENERIC_IRQ_MULTI_HANDLER
+ 	select GPIOLIB
+-	select HAVE_IDE
+ 	select HAVE_LEGACY_CLK
+ 	select IRQ_DOMAIN
+ 	select NEED_MACH_IO_H if PCCARD
+diff --git a/arch/arm/mach-davinci/Kconfig b/arch/arm/mach-davinci/Kconfig
+index de11030748d0..1d3aef84287d 100644
+--- a/arch/arm/mach-davinci/Kconfig
++++ b/arch/arm/mach-davinci/Kconfig
+@@ -9,7 +9,6 @@ menuconfig ARCH_DAVINCI
+ 	select PM_GENERIC_DOMAINS_OF if PM && OF
+ 	select REGMAP_MMIO
+ 	select RESET_CONTROLLER
+-	select HAVE_IDE
+ 	select PINCTRL_SINGLE
  
-> Thanks Mike!
-> Matt
-
+ if ARCH_DAVINCI
+diff --git a/arch/h8300/Kconfig.cpu b/arch/h8300/Kconfig.cpu
+index 2b9cbaf41cd0..e4467d40107d 100644
+--- a/arch/h8300/Kconfig.cpu
++++ b/arch/h8300/Kconfig.cpu
+@@ -44,7 +44,6 @@ config H8300_H8MAX
+ 	bool "H8MAX"
+ 	select H83069
+ 	select RAMKERNEL
+-	select HAVE_IDE
+ 	help
+ 	  H8MAX Evaluation Board Support
+ 	  More Information. (Japanese Only)
+diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
+index cf425c2c63af..4993c7ac7ff6 100644
+--- a/arch/ia64/Kconfig
++++ b/arch/ia64/Kconfig
+@@ -25,7 +25,6 @@ config IA64
+ 	select HAVE_ASM_MODVERSIONS
+ 	select HAVE_UNSTABLE_SCHED_CLOCK
+ 	select HAVE_EXIT_THREAD
+-	select HAVE_IDE
+ 	select HAVE_KPROBES
+ 	select HAVE_KRETPROBES
+ 	select HAVE_FTRACE_MCOUNT_RECORD
+diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
+index 96989ad46f66..d632a1d576f9 100644
+--- a/arch/m68k/Kconfig
++++ b/arch/m68k/Kconfig
+@@ -23,7 +23,6 @@ config M68K
+ 	select HAVE_DEBUG_BUGVERBOSE
+ 	select HAVE_EFFICIENT_UNALIGNED_ACCESS if !CPU_HAS_NO_UNALIGNED
+ 	select HAVE_FUTEX_CMPXCHG if MMU && FUTEX
+-	select HAVE_IDE
+ 	select HAVE_MOD_ARCH_SPECIFIC
+ 	select HAVE_UID16
+ 	select MMU_GATHER_NO_RANGE if MMU
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index cee6087cd686..6dfb27d531dd 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -71,7 +71,6 @@ config MIPS
+ 	select HAVE_FUNCTION_TRACER
+ 	select HAVE_GCC_PLUGINS
+ 	select HAVE_GENERIC_VDSO
+-	select HAVE_IDE
+ 	select HAVE_IOREMAP_PROT
+ 	select HAVE_IRQ_EXIT_ON_IRQ_STACK
+ 	select HAVE_IRQ_TIME_ACCOUNTING
+diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
+index bde9907bc5b2..4f8c1fbf8f2f 100644
+--- a/arch/parisc/Kconfig
++++ b/arch/parisc/Kconfig
+@@ -3,7 +3,6 @@ config PARISC
+ 	def_bool y
+ 	select ARCH_32BIT_OFF_T if !64BIT
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+-	select HAVE_IDE
+ 	select HAVE_FUNCTION_TRACER
+ 	select HAVE_FUNCTION_GRAPH_TRACER
+ 	select HAVE_SYSCALL_TRACEPOINTS
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 53db06ba4223..2e213ec6ec05 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -220,7 +220,6 @@ config PPC
+ 	select HAVE_HARDLOCKUP_DETECTOR_ARCH	if PPC_BOOK3S_64 && SMP
+ 	select HAVE_HARDLOCKUP_DETECTOR_PERF	if PERF_EVENTS && HAVE_PERF_EVENTS_NMI && !HAVE_HARDLOCKUP_DETECTOR_ARCH
+ 	select HAVE_HW_BREAKPOINT		if PERF_EVENTS && (PPC_BOOK3S || PPC_8xx)
+-	select HAVE_IDE
+ 	select HAVE_IOREMAP_PROT
+ 	select HAVE_IRQ_EXIT_ON_IRQ_STACK
+ 	select HAVE_IRQ_TIME_ACCOUNTING
+diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
+index 45a0549421cd..b683b69a4556 100644
+--- a/arch/sh/Kconfig
++++ b/arch/sh/Kconfig
+@@ -39,7 +39,6 @@ config SUPERH
+ 	select HAVE_FUTEX_CMPXCHG if FUTEX
+ 	select HAVE_FTRACE_MCOUNT_RECORD
+ 	select HAVE_HW_BREAKPOINT
+-	select HAVE_IDE if HAS_IOPORT_MAP
+ 	select HAVE_IOREMAP_PROT if MMU && !X2TLB
+ 	select HAVE_KERNEL_BZIP2
+ 	select HAVE_KERNEL_GZIP
+diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
+index c5fa7932b550..f0c0f955e169 100644
+--- a/arch/sparc/Kconfig
++++ b/arch/sparc/Kconfig
+@@ -19,7 +19,6 @@ config SPARC
+ 	select OF
+ 	select OF_PROMTREE
+ 	select HAVE_ASM_MODVERSIONS
+-	select HAVE_IDE
+ 	select HAVE_ARCH_KGDB if !SMP || SPARC64
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_ARCH_SECCOMP if SPARC64
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 89a286d5e4b9..ff0769cd4b31 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -202,7 +202,6 @@ config X86
+ 	select HAVE_FUNCTION_TRACER
+ 	select HAVE_GCC_PLUGINS
+ 	select HAVE_HW_BREAKPOINT
+-	select HAVE_IDE
+ 	select HAVE_IOREMAP_PROT
+ 	select HAVE_IRQ_EXIT_ON_IRQ_STACK	if X86_64
+ 	select HAVE_IRQ_TIME_ACCOUNTING
+diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
+index 1bdb55c2d0c1..b843902ad9fd 100644
+--- a/arch/xtensa/Kconfig
++++ b/arch/xtensa/Kconfig
+@@ -327,7 +327,6 @@ config XTENSA_PLATFORM_ISS
+ 
+ config XTENSA_PLATFORM_XT2000
+ 	bool "XT2000"
+-	select HAVE_IDE
+ 	help
+ 	  XT2000 is the name of Tensilica's feature-rich emulation platform.
+ 	  This hardware is capable of running a full Linux distribution.
 -- 
-Sincerely yours,
-Mike.
+2.17.1
+
