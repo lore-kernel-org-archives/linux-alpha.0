@@ -1,108 +1,89 @@
 From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH v3 18/21] x86/amd_gart: return error code from gart_map_sg()
-Date: Thu, 29 Jul 2021 14:15:36 -0600
-Message-ID: <20210729201539.5602-19-logang@deltatee.com>
+Subject: [PATCH v3 12/21] s390/pci: return error code from s390_dma_map_sg()
+Date: Thu, 29 Jul 2021 14:15:30 -0600
+Message-ID: <20210729201539.5602-13-logang@deltatee.com>
 References: <20210729201539.5602-1-logang@deltatee.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-owner@vger.kernel.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=bxYuYkexdgjCkkzv9UnzPxUCVLmS0/r9pZcrAxTBVsI=; b=p8I0Sh1Y6RwWuABiHugDXJd+kN
-        cWlqaR/BUTFE0MB1DS2yUsH1INinREg4peJmDrg87ULtFRKas6g9pS7jR1OKGlxWBQYV2ScPP94nY
-        VtXQF5ZpcKaFxV6gmZ/tf31O8qMh81eIQy9s3ltHVlxl5gEjnJiqO+gq2xtFeXFMn0GfBHiQ75VfL
-        Ec1BI2s1lemmPO/OULu7nfwVpq+Eq1RTap84im5BI9SE7ur1zO8c19Z5R5IZ0XWVYfMdg2RXTqe24
-        lXCml95jU2ntgTAzj+IhrMDdiNshAsGJmja7bUonZ6FjBpBLiWRX22zH8mU+9i9a59ML3VrNhExQf
-        SqHQgVXw==;
+        bh=wMwfB+QVxoWPoNbugW7oseZQ2FEaT6sisUumX/+txWI=; b=ID/pq4C2aTQp2oDNVLghKs/nGq
+        /MY9zdoBCMMHh3c6T8MI3nnmvuQUSVCPLIfeepLGK/XGDLYHuElnVIv6Ocren27qwsmRloi4lA+k2
+        jUcV8AabILTLu9D+RA2F7MkSwG5Ubtk18ez7B6ZLKOLIi15PTQt0AW//JuASu5bJBrfxoubREfwb4
+        rkH6cVX/Fb8WXCP7sWran6zWw0+yy0j3rZnkl5dse4GfPUQvjKpOJdAzSOnscdDZg/XYmOpir/Dz+
+        rl+LrmmUPA5AvuG0H48DCHNFEeG+t1CHY5QhUZBIg4JK21d2e2IZnjFfVArCF81YGjKAKWB52iX16
+        QcWfwO7g==;
 In-Reply-To: <20210729201539.5602-1-logang@deltatee.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Niklas Schnelle <schnelle@linux.ibm.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>, Niklas Schnelle <schnelle@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@de.ibm.com>
 
 From: Martin Oliveira <martin.oliveira@eideticom.com>
 
 The .map_sg() op now expects an error code instead of zero on failure.
 
-So make __dma_map_cont() return a valid errno (which is then propagated
-to gart_map_sg() via dma_map_cont()) and return it in case of failure.
-
-Also, return -EINVAL in case of invalid nents.
+So propagate the error from __s390_dma_map_sg() up. __s390_dma_map_sg()
+returns either -ENOMEM on allocation failure or -EINVAL which is
+the same as what's expected by dma_map_sgtable().
 
 Signed-off-by: Martin Oliveira <martin.oliveira@eideticom.com>
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
+Acked-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@de.ibm.com>
 ---
- arch/x86/kernel/amd_gart_64.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ arch/s390/pci/pci_dma.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
-index 9ac696487b13..46aea9a4f26b 100644
---- a/arch/x86/kernel/amd_gart_64.c
-+++ b/arch/x86/kernel/amd_gart_64.c
-@@ -331,7 +331,7 @@ static int __dma_map_cont(struct device *dev, struct scatterlist *start,
- 	int i;
+diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
+index ebc9a49523aa..c78b02012764 100644
+--- a/arch/s390/pci/pci_dma.c
++++ b/arch/s390/pci/pci_dma.c
+@@ -487,7 +487,7 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	unsigned int max = dma_get_max_seg_size(dev);
+ 	unsigned int size = s->offset + s->length;
+ 	unsigned int offset = s->offset;
+-	int count = 0, i;
++	int count = 0, i, ret;
  
- 	if (iommu_start == -1)
--		return -1;
-+		return -ENOMEM;
+ 	for (i = 1; i < nr_elements; i++) {
+ 		s = sg_next(s);
+@@ -497,8 +497,9 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
  
- 	for_each_sg(start, s, nelems, i) {
- 		unsigned long pages, addr;
-@@ -380,13 +380,13 @@ static int gart_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		       enum dma_data_direction dir, unsigned long attrs)
- {
- 	struct scatterlist *s, *ps, *start_sg, *sgmap;
--	int need = 0, nextneed, i, out, start;
-+	int need = 0, nextneed, i, out, start, ret;
- 	unsigned long pages = 0;
- 	unsigned int seg_size;
- 	unsigned int max_seg_size;
+ 		if (s->offset || (size & ~PAGE_MASK) ||
+ 		    size + s->length > max) {
+-			if (__s390_dma_map_sg(dev, start, size,
+-					      &dma->dma_address, dir))
++			ret = __s390_dma_map_sg(dev, start, size,
++						&dma->dma_address, dir);
++			if (ret)
+ 				goto unmap;
  
- 	if (nents == 0)
--		return 0;
-+		return -EINVAL;
- 
- 	out		= 0;
- 	start		= 0;
-@@ -414,8 +414,9 @@ static int gart_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 			if (!iommu_merge || !nextneed || !need || s->offset ||
- 			    (s->length + seg_size > max_seg_size) ||
- 			    (ps->offset + ps->length) % PAGE_SIZE) {
--				if (dma_map_cont(dev, start_sg, i - start,
--						 sgmap, pages, need) < 0)
-+				ret = dma_map_cont(dev, start_sg, i - start,
-+						   sgmap, pages, need);
-+				if (ret < 0)
- 					goto error;
- 				out++;
- 
-@@ -432,7 +433,8 @@ static int gart_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		pages += iommu_num_pages(s->offset, s->length, PAGE_SIZE);
- 		ps = s;
+ 			dma->dma_address += offset;
+@@ -511,7 +512,8 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		}
+ 		size += s->length;
  	}
--	if (dma_map_cont(dev, start_sg, i - start, sgmap, pages, need) < 0)
-+	ret = dma_map_cont(dev, start_sg, i - start, sgmap, pages, need);
-+	if (ret < 0)
- 		goto error;
- 	out++;
- 	flush_gart();
-@@ -458,7 +460,7 @@ static int gart_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 	iommu_full(dev, pages << PAGE_SHIFT, dir);
- 	for_each_sg(sg, s, nents, i)
- 		s->dma_address = DMA_MAPPING_ERROR;
+-	if (__s390_dma_map_sg(dev, start, size, &dma->dma_address, dir))
++	ret = __s390_dma_map_sg(dev, start, size, &dma->dma_address, dir);
++	if (ret)
+ 		goto unmap;
+ 
+ 	dma->dma_address += offset;
+@@ -523,7 +525,7 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		s390_dma_unmap_pages(dev, sg_dma_address(s), sg_dma_len(s),
+ 				     dir, attrs);
+ 
 -	return 0;
 +	return ret;
  }
  
- /* allocate and map a coherent mapping */
+ static void s390_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
 -- 
 2.20.1
 
