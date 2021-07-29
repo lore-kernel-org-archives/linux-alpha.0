@@ -1,59 +1,102 @@
-From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v3 07/21] ARM/dma-mapping: don't set failed sg dma_address to
- DMA_MAPPING_ERROR
-Date: Thu, 29 Jul 2021 14:15:25 -0600
-Message-ID: <20210729201539.5602-8-logang@deltatee.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: [PATCH v3 14/21] sparc/iommu: return error codes from .map_sg() ops
+Date: Thu, 29 Jul 2021 14:15:32 -0600
+Message-ID: <20210729201539.5602-15-logang@deltatee.com>
 References: <20210729201539.5602-1-logang@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Cc:To:From:content-disposition;
- bh=vIIfMW9o269S9AHsb2MNe2Vf6XnVZ9UtVyZ/8uq4vWQ=; b=pvcMAeHtGOhCkwJfMz++0wQ5Uw
- Y3kwQ4dlzAQ+6ZrifXAoDgEfkkesRB/JLsZCpDcuJ/7TB05/eRsnQwojqMd71nqPfSCYoE6zcv6TG
- Ll8zh3Q/kj40gKF6yXcKtURjOqLKFnjFg0Z/xohKx5fQpGyM0p58StsdQP2UwaUZ4CIMmCF/sWkVb
- 33uTQDeU8Mx9R+kpJM6drAJ7pZtr3DEtW0i5jnaOLUO0S8G3mkrqGvX1djm0eCwFQ4EElBCMQ2xoz
- pF234qIFdoZ1yc334c1G/lSjmZ4GYHDyHRq5qoXDZSUPeBQi3c+TOCarI729wL095AwRs2nkKyqqR
- nYu7j3qQ==;
-In-Reply-To: <20210729201539.5602-1-logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org
-Cc: Thomas Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>, Stephen Bates <sbates-pv7U853sEMVWk0Htik3J/w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=6y6u7mqV1FaPPB3FCU6tc5JcXwZSIOmHMoiIHkmUZvc=; b=e4d60/OLYdyc6xXPUN9l5vbTgC
+        5kYPrlDotb8/CzFuWOeAmYTUwjYP2ETS2BEJBZnaRrMkl6QE2YK+Z0X4WLU3XVyZjIQPJd4KPKLVX
+        9z1RalZ7Rj3cm60xKdgm4DrLx9xVrQ5x6SIIDJnoY84I41lD3GvvjW8lGYIEkc8MCPIMSdYmjHOsX
+        G+3Dz3xqoaTHQ5lz6bICLu3UcD8WnMIwPrNA4AdT/XXsUGvw+HnZk86aH6Qn5dG1mndxUertWJyzN
+        1LaZJlW3gZ4l+iarh3qgXxqLmb6x2oqs+HVl63DPEgPGRsfIKlztFQlxYovSPreen45BHo7q/NT+l
+        G12R1I2g==;
+In-Reply-To: <20210729201539.5602-1-logang@deltatee.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>, "David S. Miller" <davem@davemloft.net>, Niklas Schnelle <schnelle@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>
 
-Setting the ->dma_address to DMA_MAPPING_ERROR is not part of the
-->map_sg calling convention, so remove it.
+From: Martin Oliveira <martin.oliveira@eideticom.com>
 
-Link: https://lore.kernel.org/linux-mips/20210716063241.GC13345-jcswGhMUV9g@public.gmane.org/
-Suggested-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Signed-off-by: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Cc: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: Thomas Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>
+The .map_sg() op now expects an error code instead of zero on failure.
+
+Returning an errno from __sbus_iommu_map_sg() results in
+sbus_iommu_map_sg_gflush() and sbus_iommu_map_sg_pflush() returning an
+errno, as those functions are wrappers around __sbus_iommu_map_sg().
+
+Signed-off-by: Martin Oliveira <martin.oliveira@eideticom.com>
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
 ---
- arch/arm/mm/dma-mapping.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/sparc/kernel/iommu.c     | 4 ++--
+ arch/sparc/kernel/pci_sun4v.c | 4 ++--
+ arch/sparc/mm/iommu.c         | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 113b9cb3701b..4b61541853ea 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1632,7 +1632,6 @@ static int __iommu_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 	for (i = 1; i < nents; i++) {
- 		s = sg_next(s);
+diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
+index a034f571d869..0589acd34201 100644
+--- a/arch/sparc/kernel/iommu.c
++++ b/arch/sparc/kernel/iommu.c
+@@ -448,7 +448,7 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
+ 	iommu = dev->archdata.iommu;
+ 	strbuf = dev->archdata.stc;
+ 	if (nelems == 0 || !iommu)
+-		return 0;
++		return -EINVAL;
  
--		s->dma_address = DMA_MAPPING_ERROR;
- 		s->dma_length = 0;
+ 	spin_lock_irqsave(&iommu->lock, flags);
  
- 		if (s->offset || (size & ~PAGE_MASK) || size + s->length > max) {
+@@ -580,7 +580,7 @@ static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
+ 	}
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ 
+-	return 0;
++	return -EINVAL;
+ }
+ 
+ /* If contexts are being used, they are the same in all of the mappings
+diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
+index 9de57e88f7a1..d90e80fa5705 100644
+--- a/arch/sparc/kernel/pci_sun4v.c
++++ b/arch/sparc/kernel/pci_sun4v.c
+@@ -486,7 +486,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ 	iommu = dev->archdata.iommu;
+ 	if (nelems == 0 || !iommu)
+-		return 0;
++		return -EINVAL;
+ 	atu = iommu->atu;
+ 
+ 	prot = HV_PCI_MAP_ATTR_READ;
+@@ -619,7 +619,7 @@ static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
+ 	}
+ 	local_irq_restore(flags);
+ 
+-	return 0;
++	return -EINVAL;
+ }
+ 
+ static void dma_4v_unmap_sg(struct device *dev, struct scatterlist *sglist,
+diff --git a/arch/sparc/mm/iommu.c b/arch/sparc/mm/iommu.c
+index 0c0342e5b10d..9e3f6933ca13 100644
+--- a/arch/sparc/mm/iommu.c
++++ b/arch/sparc/mm/iommu.c
+@@ -256,7 +256,7 @@ static int __sbus_iommu_map_sg(struct device *dev, struct scatterlist *sgl,
+ 		sg->dma_address =__sbus_iommu_map_page(dev, sg_page(sg),
+ 				sg->offset, sg->length, per_page_flush);
+ 		if (sg->dma_address == DMA_MAPPING_ERROR)
+-			return 0;
++			return -EIO;
+ 		sg->dma_length = sg->length;
+ 	}
+ 
 -- 
 2.20.1
+
