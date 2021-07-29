@@ -1,74 +1,70 @@
-From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v3 16/21] parisc: return error code from .map_sg() ops
-Date: Thu, 29 Jul 2021 14:15:34 -0600
-Message-ID: <20210729201539.5602-17-logang@deltatee.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: [PATCH v3 08/21] ia64/sba_iommu: return error code from sba_map_sg_attrs()
+Date: Thu, 29 Jul 2021 14:15:26 -0600
+Message-ID: <20210729201539.5602-9-logang@deltatee.com>
 References: <20210729201539.5602-1-logang@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Cc:To:From:content-disposition;
- bh=fB/z94v+Zqx6MpbGppBoixHLzAQycdh8k5f4rRFmrO0=; b=Q/yOit+wzn0WTLkgHijTX4TkhO
- 8+eoLaiFE1mafvZ/q4c2J8dgiHrEu7XfRLxOMtaCE2yip7zxl1sE/WyHaFGuCUlAsojHu3Yn1olhc
- F6lgtyAVdYp7At6SrmssFkRyMNq/7Y8eEHEoLDTW3SL2JS9ATF53ewVI4ZZgHkeKeWzP92SM7FH34
- eTt7FT+3sGYlOVErWUL9BBZ81w65udV5r7T9L+Bim7OvBQFE+Z+0NIEO7fp0Dm/dAqjBx6Z8qCOHg
- eaGZJCGwxHsUZUd8FtgHTl3bnmB6UbQ2wz20VgRmFykYHYTmvncDFTw4bL71o7DIitalfyY4Hk8F1
- 0BLcIVQA==;
-In-Reply-To: <20210729201539.5602-1-logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>, Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>, Stephen Bates <sbates-pv7U853sEMVWk0Htik3J/w@public.gmane.org>, "James E.J. Bottomley" <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=GqC6MNUep++aB8fDrjh2DnNmBSYDqSi9PqIeeLTquj0=; b=LLuvoQ8LNAwGPJjD/wLm0mrBAc
+        xbD2+YBAeaE8xLVuws8WYIhL865lolO439JWs4hG29ZMaZpyZ+/QfwlE8/VZHUNSnaJ4EV23A8ctj
+        hBOiZWYwKfZzlxtiQoJZQy9oH8VQN3kDLCN/8H9lSdQuAaHzAnK09o+g7cDqTvNHza10473jXozWE
+        DTFPruGncU75bJs/v9ACnBlhkrufLVZBPsmKQaQdFQyjBb8z/CiIdvmeiY2Q/Ug5u8U8xT0uOeG1h
+        uUoO6EnXb+visuhNQGbpE4OFCgf3TAnhFoUwDzwTIHFqZG5EOc/o1Vp6UCWa6z1e5NVKsw9vKKRLu
+        4D8Tq1Sw==;
+In-Reply-To: <20210729201539.5602-1-logang@deltatee.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>, Michael Ellerman <mpe@ellerman.id.au>, Niklas Schnelle <schnelle@linux.ibm.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-From: Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>
+From: Martin Oliveira <martin.oliveira@eideticom.com>
 
 The .map_sg() op now expects an error code instead of zero on failure.
-Return -EINVAL if the ioc cannot be obtained.
 
-Signed-off-by: Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>
-Signed-off-by: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Cc: "James E.J. Bottomley" <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>
-Cc: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
+In the case of a dma_mapping_error() return -EIO as the actual cause
+is opaque here.
+
+sba_coalesce_chunks() may only presently fail if sba_alloc_range()
+fails, which in turn only fails if the iommu is out of mapping
+resources, hence a -ENOMEM is used in that case.
+
+Signed-off-by: Martin Oliveira <martin.oliveira@eideticom.com>
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 ---
- drivers/parisc/ccio-dma.c  | 2 +-
- drivers/parisc/sba_iommu.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/ia64/hp/common/sba_iommu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/parisc/ccio-dma.c b/drivers/parisc/ccio-dma.c
-index b5f9ee81a46c..452e72b7bd01 100644
---- a/drivers/parisc/ccio-dma.c
-+++ b/drivers/parisc/ccio-dma.c
-@@ -918,7 +918,7 @@ ccio_map_sg(struct device *dev, struct scatterlist *sglist, int nents,
- 	BUG_ON(!dev);
- 	ioc = GET_IOC(dev);
- 	if (!ioc)
+diff --git a/arch/ia64/hp/common/sba_iommu.c b/arch/ia64/hp/common/sba_iommu.c
+index 9148ddbf02e5..430c166b68cd 100644
+--- a/arch/ia64/hp/common/sba_iommu.c
++++ b/arch/ia64/hp/common/sba_iommu.c
+@@ -1458,8 +1458,8 @@ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
+ 		sglist->dma_length = sglist->length;
+ 		sglist->dma_address = sba_map_page(dev, sg_page(sglist),
+ 				sglist->offset, sglist->length, dir, attrs);
+-		if (dma_mapping_error(dev, sglist->dma_address))
+-			return 0;
++		if(dma_mapping_error(dev, sglist->dma_address))
++			return -EIO;
+ 		return 1;
+ 	}
+ 
+@@ -1486,7 +1486,7 @@ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
+ 	coalesced = sba_coalesce_chunks(ioc, dev, sglist, nents);
+ 	if (coalesced < 0) {
+ 		sba_unmap_sg_attrs(dev, sglist, nents, dir, attrs);
 -		return 0;
-+		return -EINVAL;
- 	
- 	DBG_RUN_SG("%s() START %d entries\n", __func__, nents);
++		return -ENOMEM;
+ 	}
  
-diff --git a/drivers/parisc/sba_iommu.c b/drivers/parisc/sba_iommu.c
-index dce4cdf786cd..e60690d38d67 100644
---- a/drivers/parisc/sba_iommu.c
-+++ b/drivers/parisc/sba_iommu.c
-@@ -947,7 +947,7 @@ sba_map_sg(struct device *dev, struct scatterlist *sglist, int nents,
- 
- 	ioc = GET_IOC(dev);
- 	if (!ioc)
--		return 0;
-+		return -EINVAL;
- 
- 	/* Fast path single entry scatterlists. */
- 	if (nents == 1) {
+ 	/*
 -- 
 2.20.1
+
