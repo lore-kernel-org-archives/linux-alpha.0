@@ -1,70 +1,133 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH v3 08/21] ia64/sba_iommu: return error code from sba_map_sg_attrs()
-Date: Thu, 29 Jul 2021 14:15:26 -0600
-Message-ID: <20210729201539.5602-9-logang@deltatee.com>
+From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v3 03/21] iommu: Return full error code from
+ iommu_map_sg[_atomic]()
+Date: Thu, 29 Jul 2021 14:15:21 -0600
+Message-ID: <20210729201539.5602-4-logang@deltatee.com>
 References: <20210729201539.5602-1-logang@deltatee.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Cc:To:From:content-disposition;
-        bh=GqC6MNUep++aB8fDrjh2DnNmBSYDqSi9PqIeeLTquj0=; b=LLuvoQ8LNAwGPJjD/wLm0mrBAc
-        xbD2+YBAeaE8xLVuws8WYIhL865lolO439JWs4hG29ZMaZpyZ+/QfwlE8/VZHUNSnaJ4EV23A8ctj
-        hBOiZWYwKfZzlxtiQoJZQy9oH8VQN3kDLCN/8H9lSdQuAaHzAnK09o+g7cDqTvNHza10473jXozWE
-        DTFPruGncU75bJs/v9ACnBlhkrufLVZBPsmKQaQdFQyjBb8z/CiIdvmeiY2Q/Ug5u8U8xT0uOeG1h
-        uUoO6EnXb+visuhNQGbpE4OFCgf3TAnhFoUwDzwTIHFqZG5EOc/o1Vp6UCWa6z1e5NVKsw9vKKRLu
-        4D8Tq1Sw==;
-In-Reply-To: <20210729201539.5602-1-logang@deltatee.com>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org
-Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stephen Bates <sbates@raithlin.com>, Martin Oliveira <martin.oliveira@eideticom.com>, Logan Gunthorpe <logang@deltatee.com>, Michael Ellerman <mpe@ellerman.id.au>, Niklas Schnelle <schnelle@linux.ibm.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+ Message-Id:Date:Cc:To:From:content-disposition;
+ bh=/xaVvtLmcUu039UJFO4qpFCPm3zd9EnehJHJPiaD5YM=; b=FeUD6Lr0B6ovEC33GCpqn+9LEy
+ 0hk8FWsPd/l2LIXUGdAH+LpdZ1H1Uf2aUgGx9XsMHZa9Yn4r89BdnEVdXEa7mILvrPwhQ7b70ydcR
+ 4PXusPTxVwHjfJZ4qwE9S00tg6SPbtx5oz8UolyzAhMvZM/carIYgtIRp0K4hMNRVZl0sZTONoLLM
+ 9iNF0fjknv7t7G8k94xYwrNxZed9o0X+CROHPwOAEUiCIqfMNwaZlzvDPSsvigGp8tuUWqV6pveMT
+ +yf7ok1iTiaPDnBjAgYjZEPHdH/ggUmkQbk4h2HG05J3IdOZhTxJTJyNc5Sqo6OMZcSwK/9vOc7Cd
+ 5mbjp9iw==;
+In-Reply-To: <20210729201539.5602-1-logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+ <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+ <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org
+Cc: Will Deacon <will-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>, Stephen Bates <sbates-pv7U853sEMVWk0Htik3J/w@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 
-From: Martin Oliveira <martin.oliveira@eideticom.com>
+Convert to ssize_t return code so the return code from __iommu_map()
+can be returned all the way down through dma_iommu_map_sg().
 
-The .map_sg() op now expects an error code instead of zero on failure.
-
-In the case of a dma_mapping_error() return -EIO as the actual cause
-is opaque here.
-
-sba_coalesce_chunks() may only presently fail if sba_alloc_range()
-fails, which in turn only fails if the iommu is out of mapping
-resources, hence a -ENOMEM is used in that case.
-
-Signed-off-by: Martin Oliveira <martin.oliveira@eideticom.com>
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Will Deacon <will-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- arch/ia64/hp/common/sba_iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/iommu.c | 15 +++++++--------
+ include/linux/iommu.h | 22 +++++++++++-----------
+ 2 files changed, 18 insertions(+), 19 deletions(-)
 
-diff --git a/arch/ia64/hp/common/sba_iommu.c b/arch/ia64/hp/common/sba_iommu.c
-index 9148ddbf02e5..430c166b68cd 100644
---- a/arch/ia64/hp/common/sba_iommu.c
-+++ b/arch/ia64/hp/common/sba_iommu.c
-@@ -1458,8 +1458,8 @@ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
- 		sglist->dma_length = sglist->length;
- 		sglist->dma_address = sba_map_page(dev, sg_page(sglist),
- 				sglist->offset, sglist->length, dir, attrs);
--		if (dma_mapping_error(dev, sglist->dma_address))
--			return 0;
-+		if(dma_mapping_error(dev, sglist->dma_address))
-+			return -EIO;
- 		return 1;
- 	}
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 5419c4b9f27a..bf971b4e34aa 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2567,9 +2567,9 @@ size_t iommu_unmap_fast(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap_fast);
  
-@@ -1486,7 +1486,7 @@ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
- 	coalesced = sba_coalesce_chunks(ioc, dev, sglist, nents);
- 	if (coalesced < 0) {
- 		sba_unmap_sg_attrs(dev, sglist, nents, dir, attrs);
--		return 0;
-+		return -ENOMEM;
- 	}
+-static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-			     struct scatterlist *sg, unsigned int nents, int prot,
+-			     gfp_t gfp)
++static ssize_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++		struct scatterlist *sg, unsigned int nents, int prot,
++		gfp_t gfp)
+ {
+ 	const struct iommu_ops *ops = domain->ops;
+ 	size_t len = 0, mapped = 0;
+@@ -2610,19 +2610,18 @@ static size_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 	/* undo mappings already done */
+ 	iommu_unmap(domain, iova, mapped);
  
- 	/*
+-	return 0;
+-
++	return ret;
+ }
+ 
+-size_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-		    struct scatterlist *sg, unsigned int nents, int prot)
++ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++		     struct scatterlist *sg, unsigned int nents, int prot)
+ {
+ 	might_sleep();
+ 	return __iommu_map_sg(domain, iova, sg, nents, prot, GFP_KERNEL);
+ }
+ EXPORT_SYMBOL_GPL(iommu_map_sg);
+ 
+-size_t iommu_map_sg_atomic(struct iommu_domain *domain, unsigned long iova,
++ssize_t iommu_map_sg_atomic(struct iommu_domain *domain, unsigned long iova,
+ 		    struct scatterlist *sg, unsigned int nents, int prot)
+ {
+ 	return __iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 32d448050bf7..9369458ba1bd 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -414,11 +414,11 @@ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ extern size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 			       unsigned long iova, size_t size,
+ 			       struct iommu_iotlb_gather *iotlb_gather);
+-extern size_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-			   struct scatterlist *sg,unsigned int nents, int prot);
+-extern size_t iommu_map_sg_atomic(struct iommu_domain *domain,
+-				  unsigned long iova, struct scatterlist *sg,
+-				  unsigned int nents, int prot);
++extern ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++		struct scatterlist *sg, unsigned int nents, int prot);
++extern ssize_t iommu_map_sg_atomic(struct iommu_domain *domain,
++				   unsigned long iova, struct scatterlist *sg,
++				   unsigned int nents, int prot);
+ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
+ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+ 			iommu_fault_handler_t handler, void *token);
+@@ -679,18 +679,18 @@ static inline size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 	return 0;
+ }
+ 
+-static inline size_t iommu_map_sg(struct iommu_domain *domain,
+-				  unsigned long iova, struct scatterlist *sg,
+-				  unsigned int nents, int prot)
++static inline ssize_t iommu_map_sg(struct iommu_domain *domain,
++				   unsigned long iova, struct scatterlist *sg,
++				   unsigned int nents, int prot)
+ {
+-	return 0;
++	return -ENODEV;
+ }
+ 
+-static inline size_t iommu_map_sg_atomic(struct iommu_domain *domain,
++static inline ssize_t iommu_map_sg_atomic(struct iommu_domain *domain,
+ 				  unsigned long iova, struct scatterlist *sg,
+ 				  unsigned int nents, int prot)
+ {
+-	return 0;
++	return -ENODEV;
+ }
+ 
+ static inline void iommu_flush_iotlb_all(struct iommu_domain *domain)
 -- 
 2.20.1
-
