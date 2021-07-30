@@ -1,36 +1,166 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [PULL] alpha.git
-Date: Fri, 30 Jul 2021 05:13:13 +0000
-Message-ID: <162762199387.22958.1297845110340205093.pr-tracker-bot@kernel.org>
-References: <20210730030838.5mp7srx73wuttx5m@ivybridge>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627621993;
-        bh=vg57PoGN0KxsowGMpwLd7uzxeb0Iww3htioyWLt05fI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Cj6wrOIz7N9XKWd1Bficf6qRntDG4PCLhK8S9YH/ae+qnDpRarf81D+Md1SztsTMn
-         gexle972TYuQY/wgOrlorb69Sh3/5zCA63kSd5qSrJXJ3b8TYIljF6+pSN/4oJ71HK
-         pwJoSQpPPxTKGndN1mXzHUrrUi+VMHkVC8dSQ070vfTP5rNn5c1KMx9CdfKxef8uZ1
-         9BEYe+LPacz0kgA8GLKaNFos7jSQm0qo/hVMjggCejKTjuGD2IUpYrljTJkbZ3GlVw
-         mb0qlgCuIFNd7PG9eaikdILW690mNfi3lrB3dEeno6OdKLb6chfz297F0FztQ8/snT
-         4iN4BzVAXP0yw==
-In-Reply-To: <20210730030838.5mp7srx73wuttx5m@ivybridge>
+From: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Subject: [PATCH] sock: allow reading and changing sk_userlocks with setsockopt
+Date: Fri, 30 Jul 2021 13:54:06 +0300
+Message-ID: <20210730105406.318726-1-ptikhomirov@virtuozzo.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZTpOjemCEesseaiWSKgeTXEqbENhG4LCitDCqtpHPtk=;
+ b=u7wBewbkPMTrXfwsDJeJl/sg8moU4E38GKGkDX+6SpdLW5Zi05P1EqRHrlyjfKxI0LBV9T/RsgJjvISo4OfEyNhK3uxq79/kxNCLGkAOplc/oaUBS2Cr2KLmIKNp5fc6JiW4dOyyWIDULCZjbi/gsDlPzjviBk4gpoXzBQCLfCk=
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, "Alexander A. Klimov" <grandmaster@al2klimov.de>, Arnd Bergmann <arnd@arndb.de>, Chen Li <chenli@uniontech.com>, Corentin Labbe <clabbe@baylibre.com>, David Hildenbrand <david@redhat.com>, gushengxian <gushengxian@yulong.com>, He Zhe <zhe.he@windriver.com>, Mike Rapoport <rppt@kernel.org>, Prarit Bhargava <prarit@redhat.com>, tangchunyou <tangchunyou@yulong.com>, Zheng Yongjun <zhengyongjun3@huawei.com>, Al Viro <viro@zeniv.linux.org.uk>
+To: netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, Andrei Vagin <avagin@gmail.com>, Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
 
-The pull request you sent on Thu, 29 Jul 2021 20:08:38 -0700:
+SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags disable automatic socket
+buffers adjustment done by kernel (see tcp_fixup_rcvbuf() and
+tcp_sndbuf_expand()). If we've just created a new socket this adjustment
+is enabled on it, but if one changes the socket buffer size by
+setsockopt(SO_{SND,RCV}BUF*) it becomes disabled.
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git for-linus
+CRIU needs to call setsockopt(SO_{SND,RCV}BUF*) on each socket on
+restore as it first needs to increase buffer sizes for packet queues
+restore and second it needs to restore back original buffer sizes. So
+after CRIU restore all sockets become non-auto-adjustable, which can
+decrease network performance of restored applications significantly.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/cade08a57244497216c46df5e9cbe8f18e143519
+CRIU need to be able to restore sockets with enabled/disabled adjustment
+to the same state it was before dump, so let's add special setsockopt
+for it.
 
-Thank you!
+Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+---
+Here is a corresponding CRIU commits using these new feature to fix slow
+download speed problem after migration:
+https://github.com/checkpoint-restore/criu/pull/1568 
 
+Origin of the problem:
+
+We have a customer in Virtuozzo who mentioned that nginx server becomes
+slower after container migration. Especially it is easy to mention when
+you wget some big file via localhost from the same container which was
+just migrated. 
+ 
+By strace-ing all nginx processes I see that nginx worker process before
+c/r sends data to local wget with big chunks ~1.5Mb, but after c/r it
+only succeeds to send by small chunks ~64Kb.
+
+Before: 
+sendfile(12, 13, [7984974] => [9425600], 11479629) = 1440626 <0.000180> 
+ 
+After: 
+sendfile(8, 13, [1507275] => [1568768], 17957328) = 61493 <0.000675> 
+
+Smaller buffer can explain the decrease in download speed. So as a POC I
+just commented out all buffer setting manipulations and that helped.
+
+---
+ arch/alpha/include/uapi/asm/socket.h  |  2 ++
+ arch/mips/include/uapi/asm/socket.h   |  2 ++
+ arch/parisc/include/uapi/asm/socket.h |  2 ++
+ arch/sparc/include/uapi/asm/socket.h  |  2 ++
+ include/uapi/asm-generic/socket.h     |  2 ++
+ net/core/sock.c                       | 12 ++++++++++++
+ 6 files changed, 22 insertions(+)
+
+diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
+index 6b3daba60987..1dd9baf4a6c2 100644
+--- a/arch/alpha/include/uapi/asm/socket.h
++++ b/arch/alpha/include/uapi/asm/socket.h
+@@ -129,6 +129,8 @@
+ 
+ #define SO_NETNS_COOKIE		71
+ 
++#define SO_BUF_LOCK		72
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
+index cdf404a831b2..1eaf6a1ca561 100644
+--- a/arch/mips/include/uapi/asm/socket.h
++++ b/arch/mips/include/uapi/asm/socket.h
+@@ -140,6 +140,8 @@
+ 
+ #define SO_NETNS_COOKIE		71
+ 
++#define SO_BUF_LOCK		72
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
+index 5b5351cdcb33..8baaad52d799 100644
+--- a/arch/parisc/include/uapi/asm/socket.h
++++ b/arch/parisc/include/uapi/asm/socket.h
+@@ -121,6 +121,8 @@
+ 
+ #define SO_NETNS_COOKIE		0x4045
+ 
++#define SO_BUF_LOCK		0x4046
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
+index 92675dc380fa..e80ee8641ac3 100644
+--- a/arch/sparc/include/uapi/asm/socket.h
++++ b/arch/sparc/include/uapi/asm/socket.h
+@@ -122,6 +122,8 @@
+ 
+ #define SO_NETNS_COOKIE          0x0050
+ 
++#define SO_BUF_LOCK              0x0051
++
+ #if !defined(__KERNEL__)
+ 
+ 
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index d588c244ec2f..1f0a2b4864e4 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -124,6 +124,8 @@
+ 
+ #define SO_NETNS_COOKIE		71
+ 
++#define SO_BUF_LOCK		72
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+diff --git a/net/core/sock.c b/net/core/sock.c
+index a3eea6e0b30a..843094f069f3 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1357,6 +1357,14 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 		ret = sock_bindtoindex_locked(sk, val);
+ 		break;
+ 
++	case SO_BUF_LOCK:
++		{
++		int mask = SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK;
++
++		sk->sk_userlocks = (sk->sk_userlocks & ~mask) | (val & mask);
++		break;
++		}
++
+ 	default:
+ 		ret = -ENOPROTOOPT;
+ 		break;
+@@ -1719,6 +1727,10 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+ 		v.val64 = sock_net(sk)->net_cookie;
+ 		break;
+ 
++	case SO_BUF_LOCK:
++		v.val = sk->sk_userlocks & (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK);
++		break;
++
+ 	default:
+ 		/* We implement the SO_SNDLOWAT etc to not be settable
+ 		 * (1003.1g 7).
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.31.1
+
