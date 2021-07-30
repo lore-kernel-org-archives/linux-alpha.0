@@ -1,187 +1,178 @@
 From: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Subject: Re: [PATCH] sock: allow reading and changing sk_userlocks with
- setsockopt
-Date: Fri, 30 Jul 2021 17:21:32 +0300
-Message-ID: <bedb3a9f-1c2c-050b-aafb-6dc676526152@virtuozzo.com>
-References: <20210730105406.318726-1-ptikhomirov@virtuozzo.com>
- <bc53b476f8a3a1bafb73c2f5072c0bad03bc1709.camel@redhat.com>
+Subject: [PATCH v2] sock: allow reading and changing sk_userlocks with setsockopt
+Date: Fri, 30 Jul 2021 19:07:08 +0300
+Message-ID: <20210730160708.6544-1-ptikhomirov@virtuozzo.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uoX2JubXMSBFsSAEWIrJlyU+D8aoJi7xdMJ6Yfw7Lcg=;
- b=az/jlCjWp9ROKHJGJSzlXXvqYwe/5cAtFzmal/IgMCQ8pI4o9ZE1ls4XzIqT8eXhi1tSv02rSHY0uvIRnZE4DZIke4xPe7IgvH27zr3XdcYzqJSPYuan2CKG99op4y6eHwfGj4CehNuu1piDURvM4LQkmIj2TkA+rFRIuRy99Nw=
-In-Reply-To: <bc53b476f8a3a1bafb73c2f5072c0bad03bc1709.camel@redhat.com>
-Content-Language: en-US
+ bh=2Jh6J86aOfAIBVogN4IlKBvEVrOj1jW+gLb69bLO87g=;
+ b=jlI1IS9/ABnSF+NuSfNgBSSF1/aFVw+e9V4nfg49aLsKtQRC3epk5b5nhh9bTex63158Mr7KZOmeSeur8A6koqX0ibVtKROC7aWFFRF1Cz7btsSWpF8tRa6Y9uNrhSehzo2zXjndsCXTYeG9jzQCUY1yAk3PP4XrPqlKJULAeto=
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Eric Dumazet <edumazet@google.com>, Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, Andrei Vagin <avagin@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+To: netdev@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, Andrei Vagin <avagin@gmail.com>, Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
 
+SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags disable automatic socket
+buffers adjustment done by kernel (see tcp_fixup_rcvbuf() and
+tcp_sndbuf_expand()). If we've just created a new socket this adjustment
+is enabled on it, but if one changes the socket buffer size by
+setsockopt(SO_{SND,RCV}BUF*) it becomes disabled.
 
+CRIU needs to call setsockopt(SO_{SND,RCV}BUF*) on each socket on
+restore as it first needs to increase buffer sizes for packet queues
+restore and second it needs to restore back original buffer sizes. So
+after CRIU restore all sockets become non-auto-adjustable, which can
+decrease network performance of restored applications significantly.
 
-On 30.07.2021 16:13, Paolo Abeni wrote:
-> On Fri, 2021-07-30 at 13:54 +0300, Pavel Tikhomirov wrote:
->> SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags disable automatic socket
->> buffers adjustment done by kernel (see tcp_fixup_rcvbuf() and
->> tcp_sndbuf_expand()). If we've just created a new socket this adjustment
->> is enabled on it, but if one changes the socket buffer size by
->> setsockopt(SO_{SND,RCV}BUF*) it becomes disabled.
->>
->> CRIU needs to call setsockopt(SO_{SND,RCV}BUF*) on each socket on
->> restore as it first needs to increase buffer sizes for packet queues
->> restore and second it needs to restore back original buffer sizes. So
->> after CRIU restore all sockets become non-auto-adjustable, which can
->> decrease network performance of restored applications significantly.
-> 
-> I'm wondering if you could just tune tcp_rmem instead?
+CRIU need to be able to restore sockets with enabled/disabled adjustment
+to the same state it was before dump, so let's add special setsockopt
+for it.
 
-It would not help with the lack of information about if a socket is in 
-auto-adjusted mode or not.
+Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+---
+Here is a corresponding CRIU commits using these new feature to fix slow
+download speed problem after migration:
+https://github.com/checkpoint-restore/criu/pull/1568
 
-Though, yes in some part it helps. We can set tcp_rmem[1] before 
-creating each socket to the buffer size we want for this socket. This 
-way we would leave all sockets in autoadjusted state.
+Origin of the problem:
 
-But a) it would be tcp-only approach and b) with this approach we need 
-to create socket with it's final size and never change it. We would not 
-be able to temporary increase buffer size like we do in socket queue 
-restore code... (I see that initially we had some problem so that we 
-needed to increase the buffer size 
-https://lists.openvz.org/pipermail/criu/2012-November/005477.html but 
-I'm not sure about real reason here, probably Andrey will be able to 
-remember, almost 10 years passed since when.)
+We have a customer in Virtuozzo who mentioned that nginx server becomes
+slower after container migration. Especially it is easy to mention when
+you wget some big file via localhost from the same container which was
+just migrated.
 
-> 
->> CRIU need to be able to restore sockets with enabled/disabled adjustment
->> to the same state it was before dump, so let's add special setsockopt
->> for it.
->>
->> Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
->> ---
->> Here is a corresponding CRIU commits using these new feature to fix slow
->> download speed problem after migration:
->> https://github.com/checkpoint-restore/criu/pull/1568
->>
->> Origin of the problem:
->>
->> We have a customer in Virtuozzo who mentioned that nginx server becomes
->> slower after container migration. Especially it is easy to mention when
->> you wget some big file via localhost from the same container which was
->> just migrated.
->>   
->> By strace-ing all nginx processes I see that nginx worker process before
->> c/r sends data to local wget with big chunks ~1.5Mb, but after c/r it
->> only succeeds to send by small chunks ~64Kb.
->>
->> Before:
->> sendfile(12, 13, [7984974] => [9425600], 11479629) = 1440626 <0.000180>
->>   
->> After:
->> sendfile(8, 13, [1507275] => [1568768], 17957328) = 61493 <0.000675>
->>
->> Smaller buffer can explain the decrease in download speed. So as a POC I
->> just commented out all buffer setting manipulations and that helped.
->>
->> ---
->>   arch/alpha/include/uapi/asm/socket.h  |  2 ++
->>   arch/mips/include/uapi/asm/socket.h   |  2 ++
->>   arch/parisc/include/uapi/asm/socket.h |  2 ++
->>   arch/sparc/include/uapi/asm/socket.h  |  2 ++
->>   include/uapi/asm-generic/socket.h     |  2 ++
->>   net/core/sock.c                       | 12 ++++++++++++
->>   6 files changed, 22 insertions(+)
->>
->> diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
->> index 6b3daba60987..1dd9baf4a6c2 100644
->> --- a/arch/alpha/include/uapi/asm/socket.h
->> +++ b/arch/alpha/include/uapi/asm/socket.h
->> @@ -129,6 +129,8 @@
->>   
->>   #define SO_NETNS_COOKIE		71
->>   
->> +#define SO_BUF_LOCK		72
->> +
->>   #if !defined(__KERNEL__)
->>   
->>   #if __BITS_PER_LONG == 64
->> diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
->> index cdf404a831b2..1eaf6a1ca561 100644
->> --- a/arch/mips/include/uapi/asm/socket.h
->> +++ b/arch/mips/include/uapi/asm/socket.h
->> @@ -140,6 +140,8 @@
->>   
->>   #define SO_NETNS_COOKIE		71
->>   
->> +#define SO_BUF_LOCK		72
->> +
->>   #if !defined(__KERNEL__)
->>   
->>   #if __BITS_PER_LONG == 64
->> diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
->> index 5b5351cdcb33..8baaad52d799 100644
->> --- a/arch/parisc/include/uapi/asm/socket.h
->> +++ b/arch/parisc/include/uapi/asm/socket.h
->> @@ -121,6 +121,8 @@
->>   
->>   #define SO_NETNS_COOKIE		0x4045
->>   
->> +#define SO_BUF_LOCK		0x4046
->> +
->>   #if !defined(__KERNEL__)
->>   
->>   #if __BITS_PER_LONG == 64
->> diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
->> index 92675dc380fa..e80ee8641ac3 100644
->> --- a/arch/sparc/include/uapi/asm/socket.h
->> +++ b/arch/sparc/include/uapi/asm/socket.h
->> @@ -122,6 +122,8 @@
->>   
->>   #define SO_NETNS_COOKIE          0x0050
->>   
->> +#define SO_BUF_LOCK              0x0051
->> +
->>   #if !defined(__KERNEL__)
->>   
->>   
->> diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
->> index d588c244ec2f..1f0a2b4864e4 100644
->> --- a/include/uapi/asm-generic/socket.h
->> +++ b/include/uapi/asm-generic/socket.h
->> @@ -124,6 +124,8 @@
->>   
->>   #define SO_NETNS_COOKIE		71
->>   
->> +#define SO_BUF_LOCK		72
->> +
->>   #if !defined(__KERNEL__)
->>   
->>   #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
->> diff --git a/net/core/sock.c b/net/core/sock.c
->> index a3eea6e0b30a..843094f069f3 100644
->> --- a/net/core/sock.c
->> +++ b/net/core/sock.c
->> @@ -1357,6 +1357,14 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
->>   		ret = sock_bindtoindex_locked(sk, val);
->>   		break;
->>   
->> +	case SO_BUF_LOCK:
->> +		{
->> +		int mask = SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK;
-> 
-> What about define a marco with the above mask, and avoid the local
-> variable declaration and brackets??!
+By strace-ing all nginx processes I see that nginx worker process before
+c/r sends data to local wget with big chunks ~1.5Mb, but after c/r it
+only succeeds to send by small chunks ~64Kb.
 
-Sure, will do.
+Before:
+sendfile(12, 13, [7984974] => [9425600], 11479629) = 1440626 <0.000180>
 
-> 
-> Thanks!
-> 
-> Paolo
-> 
+After:
+sendfile(8, 13, [1507275] => [1568768], 17957328) = 61493 <0.000675>
 
+Smaller buffer can explain the decrease in download speed. So as a POC I
+just commented out all buffer setting manipulations and that helped.
+
+v2: define SOCK_BUF_LOCK_MASK mask
+---
+ arch/alpha/include/uapi/asm/socket.h  | 2 ++
+ arch/mips/include/uapi/asm/socket.h   | 2 ++
+ arch/parisc/include/uapi/asm/socket.h | 2 ++
+ arch/sparc/include/uapi/asm/socket.h  | 2 ++
+ include/net/sock.h                    | 2 ++
+ include/uapi/asm-generic/socket.h     | 2 ++
+ net/core/sock.c                       | 9 +++++++++
+ 7 files changed, 21 insertions(+)
+
+diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
+index 6b3daba60987..1dd9baf4a6c2 100644
+--- a/arch/alpha/include/uapi/asm/socket.h
++++ b/arch/alpha/include/uapi/asm/socket.h
+@@ -129,6 +129,8 @@
+ 
+ #define SO_NETNS_COOKIE		71
+ 
++#define SO_BUF_LOCK		72
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
+index cdf404a831b2..1eaf6a1ca561 100644
+--- a/arch/mips/include/uapi/asm/socket.h
++++ b/arch/mips/include/uapi/asm/socket.h
+@@ -140,6 +140,8 @@
+ 
+ #define SO_NETNS_COOKIE		71
+ 
++#define SO_BUF_LOCK		72
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
+index 5b5351cdcb33..8baaad52d799 100644
+--- a/arch/parisc/include/uapi/asm/socket.h
++++ b/arch/parisc/include/uapi/asm/socket.h
+@@ -121,6 +121,8 @@
+ 
+ #define SO_NETNS_COOKIE		0x4045
+ 
++#define SO_BUF_LOCK		0x4046
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
+index 92675dc380fa..e80ee8641ac3 100644
+--- a/arch/sparc/include/uapi/asm/socket.h
++++ b/arch/sparc/include/uapi/asm/socket.h
+@@ -122,6 +122,8 @@
+ 
+ #define SO_NETNS_COOKIE          0x0050
+ 
++#define SO_BUF_LOCK              0x0051
++
+ #if !defined(__KERNEL__)
+ 
+ 
+diff --git a/include/net/sock.h b/include/net/sock.h
+index f23cb259b0e2..a6fb02f39cc4 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1443,6 +1443,8 @@ static inline int __sk_prot_rehash(struct sock *sk)
+ #define SOCK_BINDADDR_LOCK	4
+ #define SOCK_BINDPORT_LOCK	8
+ 
++#define SOCK_BUF_LOCK_MASK (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK)
++
+ struct socket_alloc {
+ 	struct socket socket;
+ 	struct inode vfs_inode;
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index d588c244ec2f..1f0a2b4864e4 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -124,6 +124,8 @@
+ 
+ #define SO_NETNS_COOKIE		71
+ 
++#define SO_BUF_LOCK		72
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+diff --git a/net/core/sock.c b/net/core/sock.c
+index a3eea6e0b30a..c8c994e48b76 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1357,6 +1357,11 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 		ret = sock_bindtoindex_locked(sk, val);
+ 		break;
+ 
++	case SO_BUF_LOCK:
++		sk->sk_userlocks = (sk->sk_userlocks & ~SOCK_BUF_LOCK_MASK) |
++				   (val & SOCK_BUF_LOCK_MASK);
++		break;
++
+ 	default:
+ 		ret = -ENOPROTOOPT;
+ 		break;
+@@ -1719,6 +1724,10 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+ 		v.val64 = sock_net(sk)->net_cookie;
+ 		break;
+ 
++	case SO_BUF_LOCK:
++		v.val = sk->sk_userlocks & (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK);
++		break;
++
+ 	default:
+ 		/* We implement the SO_SNDLOWAT etc to not be settable
+ 		 * (1003.1g 7).
 -- 
-Best regards, Tikhomirov Pavel
-Software Developer, Virtuozzo.
+2.31.1
+
