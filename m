@@ -1,71 +1,69 @@
-From: Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: Regression bisected to fa3354e4ea39 (mm: free_area_init: use
- maximal zone PFNs rather than zone sizes)
-Date: Sat, 31 Jul 2021 12:19:13 +0300
-Message-ID: <YQUVkbhX0U3te1l6@linux.ibm.com>
-References: <20210726192311.uffqnanxw3ac5wwi@ivybridge>
- <YP8Vxt0xuV1m5EPS@linux.ibm.com>
- <CAEdQ38F2ddbM0WBjut6MH-0TpencKmx9Wu4++gLtfQ5HGRwxFQ@mail.gmail.com>
- <YP+rI9Fh4wl/O6/8@linux.ibm.com>
- <CAEdQ38G+ZfXmc01iZTc+q4dYpRqQJUz0KNFCPwTQ25AYqJVbMA@mail.gmail.com>
- <YQBvYUupT/jgDMqI@linux.ibm.com>
- <CAEdQ38HZ4g_E3vtG=f6p_sfuWnk7haK_eJ0MZziLsOq0ZmfBoQ@mail.gmail.com>
+From: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Subject: Re: [PATCH v2] sock: allow reading and changing sk_userlocks with
+ setsockopt
+Date: Mon, 2 Aug 2021 11:26:09 +0300
+Message-ID: <9ead0d04-f243-b637-355c-af11af45fb5a@virtuozzo.com>
+References: <20210730160708.6544-1-ptikhomirov@virtuozzo.com>
+ <20210730094631.106b8bec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=lJCFZPh6zYoPmvB6VZge0NUSC8dpQezLavM7E24Rq8U=;
- b=ZuvXTLUBwY87LdzWMX4GmsyPBguaYxG2nMHDIxjYYNjdXROTfIWlReymWQiQzQ4+g9Hl
- N1somz2PKCmCa0Ua4ZeWnF+r3LVegEceNKivyQ9Ci+ZyjqmdPEQzUKQFgsFRKyQvsO8y
- cN4cv5FhnPaxKUM5Hs+RpBWztK8LNWORK3GINIxNXmuAm8W1bAos5wH7dN4IcVN24npC
- sQ5Fv5gXcqXp6k/KSNBp7z6XRuquWX4RRGRnxwDdi1am1lv/aj68xhyjuryfMyjbix3i
- TZlgp+dB+mSLnElAWHQ44i/YG7ZnvZEtDJzU6Mk1rraaJd6cnqNl1KDkvN2lu822oSHg IA== 
-Content-Disposition: inline
-In-Reply-To: <CAEdQ38HZ4g_E3vtG=f6p_sfuWnk7haK_eJ0MZziLsOq0ZmfBoQ@mail.gmail.com>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-mm@kvack.org, linux-alpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Return-path: <linux-mips-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9SgChE1/Tk0ANwL+qashItnlcpR56R4qP1RnylNcp6E=;
+ b=nY2JdbwL53t0+7UQO4qE/sQeBNSAk5ncu797u6A0Nl8VmLg3abQKiAlNmV7XtCVROdz9lqIOs71Qv8WQ+VRTfI5QaZavilcHflKqDxj3uhEE5y72VtOVWyADq8wWHqo5L7UjK6dlaNat+AvEHSw93Upd8ZFEQxMXV6pgqyyE1mQ=
+In-Reply-To: <20210730094631.106b8bec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, Andrei Vagin <avagin@gmail.com>
 
-On Fri, Jul 30, 2021 at 12:53:58PM -0700, Matt Turner wrote:
-> On Tue, Jul 27, 2021 at 1:41 PM Mike Rapoport <rppt@linux.ibm.com> wrote:
-> > On Tue, Jul 27, 2021 at 12:24:26PM -0700, Matt Turner wrote:
-> > >
-> > > Thanks, this patch fixes it. With the patch applied, I see
-> > >
-> > > Zone ranges:
-> > >   DMA      [mem 0x0000000000000000-0x00000fffffffdfff]
-> > >   Normal   empty
-> > > Movable zone start for each node
-> > > Early memory node ranges
-> > >   node   0: [mem 0x0000000000000000-0x00000001ffffffff]
-> > >   node   0: [mem 0x0000000400000000-0x00000005ffffffff]
-> > > Initmem setup node 0 [mem 0x0000000000000000-0x00000005ffffffff]
-> > >
-> > > If you want to send me this patch with your S-o-b I'll take it through
-> > > my alpha git tree.
-> >
-> > The patch is on its way :)
-> 
-> Thanks a bunch, Mike, for the patch and for all you do!
-> 
-> > Now I'm really curios how commit e7793e53901b ("arc: update comment about
-> > HIGHMEM implementation") will work out.
 
-Oh, sure, I've copied the wrong line from the log :)
- 
-> You probably mean fdb7d9b7acd0 ("alpha: remove DISCONTIGMEM and
-> NUMA"). Works well so far!
-> 
-> Maybe in some alternative universe where I have infinite free time
-> (and my own power plant!) I'll get a second AlphaServer ES47 with the
-> enormous "hose" [1] to link the two and I'll poke you for guidance on
-> restoring NUMA support :)
 
-Heh, I'm not sure that restoring NUMA on alpha is really good use for free
-time even if it were infinite :)
- 
+On 30.07.2021 19:46, Jakub Kicinski wrote:
+> On Fri, 30 Jul 2021 19:07:08 +0300 Pavel Tikhomirov wrote:
+>> SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags disable automatic socket
+>> buffers adjustment done by kernel (see tcp_fixup_rcvbuf() and
+>> tcp_sndbuf_expand()). If we've just created a new socket this adjustment
+>> is enabled on it, but if one changes the socket buffer size by
+>> setsockopt(SO_{SND,RCV}BUF*) it becomes disabled.
+>>
+>> CRIU needs to call setsockopt(SO_{SND,RCV}BUF*) on each socket on
+>> restore as it first needs to increase buffer sizes for packet queues
+>> restore and second it needs to restore back original buffer sizes. So
+>> after CRIU restore all sockets become non-auto-adjustable, which can
+>> decrease network performance of restored applications significantly.
+>>
+>> CRIU need to be able to restore sockets with enabled/disabled adjustment
+>> to the same state it was before dump, so let's add special setsockopt
+>> for it.
+>>
+>> Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+> 
+> The patchwork bot is struggling to ingest this, please double check it
+> applies cleanly to net-next.
+
+I checked that it applies cleanly to net-next:
+
+[snorch@fedora linux]$ git am 
+~/Downloads/patches/ptikhomirov/setsockopt-sk_userlocks/\[PATCH\ v2\]\ 
+sock\:\ allow\ reading\ and\ changing\ sk_userlocks\ with\ setsockopt.eml
+
+[snorch@fedora linux]$ git log --oneline
+c339520aadd5 (HEAD -> net-next) sock: allow reading and changing 
+sk_userlocks with setsockopt
+
+d39e8b92c341 (net-next/master) Merge 
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
+
+
+Probably it was some temporary problem and now it's OK? 
+https://patchwork.kernel.org/project/netdevbpf/patch/20210730160708.6544-1-ptikhomirov@virtuozzo.com/
+
+> 
+
 -- 
-Sincerely yours,
-Mike.
+Best regards, Tikhomirov Pavel
+Software Developer, Virtuozzo.
