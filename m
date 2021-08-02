@@ -1,67 +1,90 @@
-From: Niklas Schnelle <schnelle-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-Subject: Re: [PATCH v2 13/21] s390/pci: don't set failed sg dma_address to
- DMA_MAPPING_ERROR
-Date: Mon, 02 Aug 2021 12:34:13 +0200
-Message-ID: <a5a46d84866f69df8c9737ecd8b066b61f24960a.camel@linux.ibm.com>
-References: <20210723175008.22410-1-logang@deltatee.com>
- <20210723175008.22410-14-logang@deltatee.com>
+From: Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v2] sock: allow reading and changing sk_userlocks with
+ setsockopt
+Date: Mon, 2 Aug 2021 09:11:02 -0700
+Message-ID: <20210802091102.314fa0f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210730160708.6544-1-ptikhomirov@virtuozzo.com>
+        <20210730094631.106b8bec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <9ead0d04-f243-b637-355c-af11af45fb5a@virtuozzo.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=r00k+UjFn2pP62ZTrfQkfAUimzcY0iIqFp/tRGXpoq0=;
- b=XB+IyIVRuwsaGl5Cf36GJrmEG3pUanAUVbJd0L+oKz2n9pFqA/PMFgwKaU8Fqyy8Lva3
- Kbt8Pm8E3v6Do/WIyQyINblL2EUrwMVz8/MgaVk9CKB/lYzJLp0Z77DY+Z/NLG27Hxbj
- E9qpS5txHaS6nt9qU2jVBdzVhvDQmwEAwKpzUg/IADG8yUZYRc/KRZKQB9m3YaMNAQ/V
- mqocdQdQhDdcY8hBX72GpQ0R0Ltra1dQR25fDeh1xYBUCQnH2894AsakTiIyquwCzLQd
- SFjOXifLtRwVjfMNlR/0nvfzPGZm64KH9KxFjtA2pZJTcvqIwBuMeqWbhKoD7NaDevz8 Aw== 
-In-Reply-To: <20210723175008.22410-14-logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org
-Cc: Vasily Gorbik <gor-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Heiko Carstens <hca-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Martin Oliveira <martin.oliveira-N4T0u6BTIXMybS5Ee8rs3A@public.gmane.org>, Stephen Bates <sbates-pv7U853sEMVWk0Htik3J/w@public.gmane.org>, Christian Borntraeger <borntraeger-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Gerald Schaefer <gerald.schaefer-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627920663;
+        bh=yfVAU2+U7wpt2YMmE79sPe/T4DFxPBTA0ytzHgKV31I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ChHMkaLCqCFmaMpkB4M3EkQVg2+PuSyzXDhNMsUXXGS9o9xFGeI37VI3l1kyMiVpH
+         AMJ/NSWwXeZezwnPngPbRbfmxYs1mXbr7hXLtCWLBKFvvvZur+p2VIc9e7KKwRvwnn
+         aNP5AZIgurwFlGW1qu3JWx7JslJkWZhVL7cWbf+seW3uGYF9woQlynxNrQer9vP7C/
+         5bSRRmhs05hXftoyeD2+jI5lFDy7vzH1K7sm/gzwI8O1cq/qJyO2daGFvPYZ7Od1sr
+         SyzmnJKAyx8X5Db5jcs2W5zsZHHyOKW3im6Xh3QX053ND3GpYW0SXuDuRWjfEGiJB0
+         40EiGnozfhP8Q==
+In-Reply-To: <9ead0d04-f243-b637-355c-af11af45fb5a@virtuozzo.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
+Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, Andrei Vagin <avagin@gmail.com>
 
-On Fri, 2021-07-23 at 11:50 -0600, Logan Gunthorpe wrote:
-> Setting the ->dma_address to DMA_MAPPING_ERROR is not part of
-> the ->map_sg calling convention, so remove it.
+On Mon, 2 Aug 2021 11:26:09 +0300 Pavel Tikhomirov wrote:
+> On 30.07.2021 19:46, Jakub Kicinski wrote:
+> > On Fri, 30 Jul 2021 19:07:08 +0300 Pavel Tikhomirov wrote:  
+> >> SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags disable automatic socket
+> >> buffers adjustment done by kernel (see tcp_fixup_rcvbuf() and
+> >> tcp_sndbuf_expand()). If we've just created a new socket this adjustment
+> >> is enabled on it, but if one changes the socket buffer size by
+> >> setsockopt(SO_{SND,RCV}BUF*) it becomes disabled.
+> >>
+> >> CRIU needs to call setsockopt(SO_{SND,RCV}BUF*) on each socket on
+> >> restore as it first needs to increase buffer sizes for packet queues
+> >> restore and second it needs to restore back original buffer sizes. So
+> >> after CRIU restore all sockets become non-auto-adjustable, which can
+> >> decrease network performance of restored applications significantly.
+> >>
+> >> CRIU need to be able to restore sockets with enabled/disabled adjustment
+> >> to the same state it was before dump, so let's add special setsockopt
+> >> for it.
+> >>
+> >> Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>  
+> > 
+> > The patchwork bot is struggling to ingest this, please double check it
+> > applies cleanly to net-next.  
 > 
-> Link: https://lore.kernel.org/linux-mips/20210716063241.GC13345-jcswGhMUV9g@public.gmane.org/
-> Suggested-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> Signed-off-by: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-> Cc: Niklas Schnelle <schnelle-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-> Cc: Gerald Schaefer <gerald.schaefer-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-> Cc: Heiko Carstens <hca-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-> Cc: Vasily Gorbik <gor-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-> Cc: Christian Borntraeger <borntraeger-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
-> ---
->  arch/s390/pci/pci_dma.c | 1 -
->  1 file changed, 1 deletion(-)
+> I checked that it applies cleanly to net-next:
 > 
-> diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
-> index c78b02012764..be48e5b5bfcf 100644
-> --- a/arch/s390/pci/pci_dma.c
-> +++ b/arch/s390/pci/pci_dma.c
-> @@ -492,7 +492,6 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  	for (i = 1; i < nr_elements; i++) {
->  		s = sg_next(s);
->  
-> -		s->dma_address = DMA_MAPPING_ERROR;
->  		s->dma_length = 0;
->  
->  		if (s->offset || (size & ~PAGE_MASK) ||
+> [snorch@fedora linux]$ git am 
+> ~/Downloads/patches/ptikhomirov/setsockopt-sk_userlocks/\[PATCH\ v2\]\ 
+> sock\:\ allow\ reading\ and\ changing\ sk_userlocks\ with\ setsockopt.eml
+> 
+> [snorch@fedora linux]$ git log --oneline
+> c339520aadd5 (HEAD -> net-next) sock: allow reading and changing 
+> sk_userlocks with setsockopt
+> 
+> d39e8b92c341 (net-next/master) Merge 
+> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
+> 
+> Probably it was some temporary problem and now it's OK? 
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210730160708.6544-1-ptikhomirov@virtuozzo.com/
 
-Acked-by: Niklas Schnelle <schnelle-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
+Indeed, must have been resolved by the merge of net into net-next which
+happened on Saturday? Regardless, would you mind reposting? There is no
+way for me to retry the patchwork checks.
 
-Thanks!
+And one more thing..
+
+> +	case SO_BUF_LOCK:
+> +		sk->sk_userlocks = (sk->sk_userlocks & ~SOCK_BUF_LOCK_MASK) |
+> +				   (val & SOCK_BUF_LOCK_MASK);
+
+What's the thinking on silently ignoring unsupported flags on set
+rather than rejecting? I feel like these days we lean towards explicit
+rejects.
+
+> +	case SO_BUF_LOCK:
+> +		v.val = sk->sk_userlocks & (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK);
+> +		break;
+
+The mask could you be used here.
+
+Just to double check - is the expectation that the value returned is
+completely opaque to the user space? The defines in question are not
+part of uAPI.
