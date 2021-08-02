@@ -1,69 +1,55 @@
-From: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-Subject: Re: [PATCH v2] sock: allow reading and changing sk_userlocks with
- setsockopt
-Date: Mon, 2 Aug 2021 11:26:09 +0300
-Message-ID: <9ead0d04-f243-b637-355c-af11af45fb5a@virtuozzo.com>
-References: <20210730160708.6544-1-ptikhomirov@virtuozzo.com>
- <20210730094631.106b8bec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From: <yang.yang29@zte.com.cn>
+Subject: =?UTF-8?B?W1BBVENIXSBhbHBoYTogcmVtb3ZlIHVubmVlZGVkIHZhcmlhYmxl?=
+Date: Mon, 2 Aug 2021 17:25:30 +0800 (CST)
+Message-ID: <202107221858308514719@zte.com.cn>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9SgChE1/Tk0ANwL+qashItnlcpR56R4qP1RnylNcp6E=;
- b=nY2JdbwL53t0+7UQO4qE/sQeBNSAk5ncu797u6A0Nl8VmLg3abQKiAlNmV7XtCVROdz9lqIOs71Qv8WQ+VRTfI5QaZavilcHflKqDxj3uhEE5y72VtOVWyADq8wWHqo5L7UjK6dlaNat+AvEHSw93Upd8ZFEQxMXV6pgqyyE1mQ=
-In-Reply-To: <20210730094631.106b8bec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Language: en-US
+Return-path: <linux-alpha-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Florian Westphal <fw@strlen.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, Andrei Vagin <avagin@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
+From: Zhang Yunkai <zhang.yunkai@zte.com.cn>
 
+This is a warning in coccicheck. Unneeded variable "status".
 
-On 30.07.2021 19:46, Jakub Kicinski wrote:
-> On Fri, 30 Jul 2021 19:07:08 +0300 Pavel Tikhomirov wrote:
->> SOCK_SNDBUF_LOCK and SOCK_RCVBUF_LOCK flags disable automatic socket
->> buffers adjustment done by kernel (see tcp_fixup_rcvbuf() and
->> tcp_sndbuf_expand()). If we've just created a new socket this adjustment
->> is enabled on it, but if one changes the socket buffer size by
->> setsockopt(SO_{SND,RCV}BUF*) it becomes disabled.
->>
->> CRIU needs to call setsockopt(SO_{SND,RCV}BUF*) on each socket on
->> restore as it first needs to increase buffer sizes for packet queues
->> restore and second it needs to restore back original buffer sizes. So
->> after CRIU restore all sockets become non-auto-adjustable, which can
->> decrease network performance of restored applications significantly.
->>
->> CRIU need to be able to restore sockets with enabled/disabled adjustment
->> to the same state it was before dump, so let's add special setsockopt
->> for it.
->>
->> Signed-off-by: Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-> 
-> The patchwork bot is struggling to ingest this, please double check it
-> applies cleanly to net-next.
+Reported-by: Zeal Robot <zealci@zte.com.cn> 
+Signed-off-by: Zhang Yunkai <zhang.yunkai@zte.com.cn>
+---
+ arch/alpha/kernel/err_titan.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-I checked that it applies cleanly to net-next:
-
-[snorch@fedora linux]$ git am 
-~/Downloads/patches/ptikhomirov/setsockopt-sk_userlocks/\[PATCH\ v2\]\ 
-sock\:\ allow\ reading\ and\ changing\ sk_userlocks\ with\ setsockopt.eml
-
-[snorch@fedora linux]$ git log --oneline
-c339520aadd5 (HEAD -> net-next) sock: allow reading and changing 
-sk_userlocks with setsockopt
-
-d39e8b92c341 (net-next/master) Merge 
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next
-
-
-Probably it was some temporary problem and now it's OK? 
-https://patchwork.kernel.org/project/netdevbpf/patch/20210730160708.6544-1-ptikhomirov@virtuozzo.com/
-
-> 
-
+diff --git a/arch/alpha/kernel/err_titan.c b/arch/alpha/kernel/err_titan.c
+index 0ffb2feea42a..85d91da86ec4 100644
+--- a/arch/alpha/kernel/err_titan.c
++++ b/arch/alpha/kernel/err_titan.c
+@@ -589,7 +589,6 @@ titan_register_error_handlers(void)
+ static int
+ privateer_process_680_frame(struct el_common *mchk_header, int print)
+ {
+-    int status = MCHK_DISPOSITION_UNKNOWN_ERROR;
+ #ifdef CONFIG_VERBOSE_MCHECK
+     struct el_PRIVATEER_envdata_mcheck *emchk =
+         (struct el_PRIVATEER_envdata_mcheck *)
+@@ -598,7 +597,7 @@ privateer_process_680_frame(struct el_common *mchk_header, int print)
+     /* TODO - categorize errors, for now, no error */
+ 
+     if (!print)
+-        return status;
++        return MCHK_DISPOSITION_UNKNOWN_ERROR;
+ 
+     /* TODO - decode instead of just dumping... */
+     printk("%s  Summary Flags:         %016llx\n"
+@@ -624,7 +623,7 @@ privateer_process_680_frame(struct el_common *mchk_header, int print)
+            emchk->code);
+ #endif /* CONFIG_VERBOSE_MCHECK */
+ 
+-    return status;
++    return MCHK_DISPOSITION_UNKNOWN_ERROR;
+ }
+ 
+ int
 -- 
-Best regards, Tikhomirov Pavel
-Software Developer, Virtuozzo.
+2.25.1
+
