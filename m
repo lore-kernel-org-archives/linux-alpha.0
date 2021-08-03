@@ -1,22 +1,22 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.10 6/9] alpha: Send stop IPI to send to online CPUs
-Date: Tue,  3 Aug 2021 07:44:05 -0400
-Message-ID: <20210803114408.2252713-6-sashal@kernel.org>
-References: <20210803114408.2252713-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 4/5] alpha: Send stop IPI to send to online CPUs
+Date: Tue,  3 Aug 2021 07:44:28 -0400
+Message-ID: <20210803114429.2252944-4-sashal@kernel.org>
+References: <20210803114429.2252944-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627991056;
-        bh=6pfrQY5QyDEqVrt2lMWcXkE5SO4dTw+z8f67Irfj2EA=;
+        s=k20201202; t=1627991075;
+        bh=SryW2t5Ze+b9tM3zx8bHTZ7bmm+Zqps8jt+VAt59OcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ExIOw9ueZBbSesxTUQxpRWpj75BmWqluzoSr8MF4TzrM2UjyTxSMdqlkHxudoQhvM
-         HLx5DQ0yVgdx6Ds7TNGz7zlIWHoIocq2DihvE97w+Mq3V+pRpaOJX2NRnWY4iPhEMn
-         rsi2K5zJBqTIFtebMU0SzRIC/3XrO6bqwZQreSd1bGuGIB1gbjff2ykK/Xqdj0xyAq
-         D82pqZQ8IeYJu5WYhc2uMn5IUD6PXeK3EHfWFALjUUT0kYiclzLGMCmtapzrnll4oO
-         CR+4jq3RRqyxHFN7AyS0e04UhJ9R0WhESDeBCF0ZbhG0c7f3tA9OXcrGKizwLel3z/
-         dYghaQsU+HB7Q==
-In-Reply-To: <20210803114408.2252713-1-sashal@kernel.org>
+        b=qXSj2A51ULbHemUfD91xNI5WmFGS2jUHU1wjB6UWUYclpvmk9ckUqBh0z7YlsTwih
+         atEijZlRR9XvHAcYV+/t0teCB4fb3Ol9dWfrTl3vb5WLUMIg/Fp9m8iO7Kl8jf4aWo
+         hyLDRcB/smYPPhboSILSWi5RjSVxYezN6hZ0xxza9CTDYRvxAHAmaziQDDlK+vVoPy
+         3qukJsXI1SDrNtN80Q3LvZpzNEpl6uBlGtNqCKvBgV5SIaLFMePwHPmYg4lUXgKXIV
+         hUH9YtTDoVGvvploG/DYQCX1tlCbXFyi8AfzsnW8mAua5jiTcubryDLmP3DkUEoF3p
+         aeTZNbVNYf7/A==
+In-Reply-To: <20210803114429.2252944-1-sashal@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
@@ -50,10 +50,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index 4b2575f936d4..cb64e4797d2a 100644
+index d0dccae53ba9..8a89b9adb4fe 100644
 --- a/arch/alpha/kernel/smp.c
 +++ b/arch/alpha/kernel/smp.c
-@@ -582,7 +582,7 @@ void
+@@ -585,7 +585,7 @@ void
  smp_send_stop(void)
  {
  	cpumask_t to_whom;
