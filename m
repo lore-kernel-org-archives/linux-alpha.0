@@ -1,22 +1,22 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.13 06/11] alpha: Send stop IPI to send to online CPUs
-Date: Tue,  3 Aug 2021 07:43:47 -0400
-Message-ID: <20210803114352.2252544-6-sashal@kernel.org>
-References: <20210803114352.2252544-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 6/9] alpha: Send stop IPI to send to online CPUs
+Date: Tue,  3 Aug 2021 07:44:05 -0400
+Message-ID: <20210803114408.2252713-6-sashal@kernel.org>
+References: <20210803114408.2252713-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627991041;
+        s=k20201202; t=1627991056;
         bh=6pfrQY5QyDEqVrt2lMWcXkE5SO4dTw+z8f67Irfj2EA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YEr9jvmO+7E2Ebr2V8DvCRecmRUzzC7R2zsMLWwgWMoHkDXhiYD1pLjrm43ICVwH5
-         Bb5TsXT8esYg7r8K4vrMqJxq1wPEw55qO3uHQ4RtsAG66u0kn15eElEXYfLcgVLg8p
-         dUorztjtLzjM2KxBIkDWlOr7ZfzLnHjmdVELLjLuCMNhU5bh4hlmCpw7kEFbqeM2OK
-         V8FNr7wucWZIT/IJo2yVGlgAsuD3I9PCAB93PCBatDkB7mTZ1Y2E5kMTh//U0pKfG0
-         k3WK2yOZqgP64mAIbqvuChKbUTNGxi3jOwDIMfCP/ANKLpsQG/nXlV3jH5ulJdH6EL
-         HdINAhV5NqeOg==
-In-Reply-To: <20210803114352.2252544-1-sashal@kernel.org>
+        b=ExIOw9ueZBbSesxTUQxpRWpj75BmWqluzoSr8MF4TzrM2UjyTxSMdqlkHxudoQhvM
+         HLx5DQ0yVgdx6Ds7TNGz7zlIWHoIocq2DihvE97w+Mq3V+pRpaOJX2NRnWY4iPhEMn
+         rsi2K5zJBqTIFtebMU0SzRIC/3XrO6bqwZQreSd1bGuGIB1gbjff2ykK/Xqdj0xyAq
+         D82pqZQ8IeYJu5WYhc2uMn5IUD6PXeK3EHfWFALjUUT0kYiclzLGMCmtapzrnll4oO
+         CR+4jq3RRqyxHFN7AyS0e04UhJ9R0WhESDeBCF0ZbhG0c7f3tA9OXcrGKizwLel3z/
+         dYghaQsU+HB7Q==
+In-Reply-To: <20210803114408.2252713-1-sashal@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
