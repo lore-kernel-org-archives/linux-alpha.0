@@ -1,269 +1,42 @@
 From: Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: [PATCH v4 05/15] x86/tdx: Make DMA pages shared
-Date: Wed,  4 Aug 2021 17:52:08 -0700
-Message-ID: <20210805005218.2912076-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v4 08/15] x86/tdx: Enable shared memory protected guest flags for TDX guest
+Date: Wed,  4 Aug 2021 17:52:11 -0700
+Message-ID: <20210805005218.2912076-9-sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>
 Cc: Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>, Andi Kleen <ak@linux.intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>, Sean Christopherson <seanjc@google.com>, Kuppuswamy Sathyanarayanan <knsathya@kernel.org>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, virtualization@lists.linux-foundation.org
 
-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+In TDX guest, since the memory is private to guest, it needs some
+extra configuration before sharing any data with VMM. AMD SEV also
+implements similar features and hence code can be shared. Currently
+memory sharing related code in the kernel is protected by
+PATTR_GUEST_MEM_ENCRYPT and PATTR_GUEST_SHARED_MAPPING_INIT flags.
+So enable them for TDX guest as well.
 
-Just like MKTME, TDX reassigns bits of the physical address for
-metadata.  MKTME used several bits for an encryption KeyID. TDX
-uses a single bit in guests to communicate whether a physical page
-should be protected by TDX as private memory (bit set to 0) or
-unprotected and shared with the VMM (bit set to 1).
-
-__set_memory_enc_dec() is now aware about TDX and sets Shared bit
-accordingly following with relevant TDX hypercall.
-
-Also, Do TDACCEPTPAGE on every 4k page after mapping the GPA range
-when converting memory to private. Using 4k page size limit is due
-to current TDX spec restriction. Also, If the GPA (range) was
-already mapped as an active, private page, the host VMM may remove
-the private page from the TD by following the “Removing TD Private
-Pages” sequence in the Intel TDX-module specification [1] to safely
-block the mapping(s), flush the TLB and cache, and remove the
-mapping(s).
-
-BUG() if TDACCEPTPAGE fails (except "previously accepted page" case)
-, as the guest is completely hosed if it can't access memory. 
-
-[1] https://software.intel.com/content/dam/develop/external/us/en/documents/tdx-module-1eas-v0.85.039.pdf
-
-Tested-by: Kai Huang <kai.huang@linux.intel.com>
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
+ arch/x86/kernel/tdx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Changes since v3:
- * Rebased on top of Tom Lendacky's protected guest
-   changes (https://lore.kernel.org/patchwork/cover/1468760/)
- * Fixed TDX_PAGE_ALREADY_ACCEPTED error code as per latest
-   spec update.
-
-Changes since v1:
- * Removed "we" or "I" usages in comment section.
- * Replaced is_tdx_guest() checks with prot_guest_has() checks.
-
- arch/x86/include/asm/pgtable.h   |  1 +
- arch/x86/kernel/tdx.c            | 35 +++++++++++++++++++++----
- arch/x86/mm/mem_encrypt_common.c |  9 ++++++-
- arch/x86/mm/pat/set_memory.c     | 45 +++++++++++++++++++++++++++-----
- 4 files changed, 77 insertions(+), 13 deletions(-)
-
-diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-index 2d4d518651d2..f341bf6b8b93 100644
---- a/arch/x86/include/asm/pgtable.h
-+++ b/arch/x86/include/asm/pgtable.h
-@@ -24,6 +24,7 @@
- /* Make the page accesable by VMM for protected guests */
- #define pgprot_protected_guest(prot) __pgprot(pgprot_val(prot) |	\
- 					      tdg_shared_mask())
-+#define pgprot_pg_shared_mask() __pgprot(tdg_shared_mask())
- 
- #ifndef __ASSEMBLY__
- #include <asm/x86_init.h>
 diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
-index ccbad600a422..b91740a485d6 100644
+index 01b758496e84..1cf2443edb90 100644
 --- a/arch/x86/kernel/tdx.c
 +++ b/arch/x86/kernel/tdx.c
-@@ -17,10 +17,16 @@
- /* TDX Module call Leaf IDs */
- #define TDINFO				1
- #define TDGETVEINFO			3
-+#define TDACCEPTPAGE			6
- 
- /* TDX hypercall Leaf IDs */
- #define TDVMCALL_MAP_GPA		0x10001
- 
-+/* TDX Module call error codes */
-+#define TDX_PAGE_ALREADY_ACCEPTED	0x00000b0a00000000
-+#define TDCALL_RETURN_CODE_MASK		0xFFFFFFFF00000000
-+#define TDCALL_RETURN_CODE(a)		((a) & TDCALL_RETURN_CODE_MASK)
-+
- #define VE_IS_IO_OUT(exit_qual)		(((exit_qual) & 8) ? 0 : 1)
- #define VE_GET_IO_SIZE(exit_qual)	(((exit_qual) & 7) + 1)
- #define VE_GET_PORT_NUM(exit_qual)	((exit_qual) >> 16)
-@@ -100,26 +106,45 @@ static void tdg_get_info(void)
- 	physical_mask &= ~tdg_shared_mask();
- }
- 
-+static void tdg_accept_page(phys_addr_t gpa)
-+{
-+	u64 ret;
-+
-+	ret = __tdx_module_call(TDACCEPTPAGE, gpa, 0, 0, 0, NULL);
-+
-+	BUG_ON(ret && TDCALL_RETURN_CODE(ret) != TDX_PAGE_ALREADY_ACCEPTED);
-+}
-+
- /*
-  * Inform the VMM of the guest's intent for this physical page:
-  * shared with the VMM or private to the guest.  The VMM is
-  * expected to change its mapping of the page in response.
-- *
-- * Note: shared->private conversions require further guest
-- * action to accept the page.
-  */
- int tdx_hcall_gpa_intent(phys_addr_t gpa, int numpages,
- 			 enum tdx_map_type map_type)
- {
--	u64 ret;
-+	u64 ret = 0;
-+	int i;
- 
- 	if (map_type == TDX_MAP_SHARED)
- 		gpa |= tdg_shared_mask();
- 
- 	ret = _tdx_hypercall(TDVMCALL_MAP_GPA, gpa, PAGE_SIZE * numpages, 0, 0,
- 			     NULL);
-+	if (ret)
-+		ret = -EIO;
- 
--	return ret ? -EIO : 0;
-+	if (ret || map_type == TDX_MAP_SHARED)
-+		return ret;
-+
-+	/*
-+	 * For shared->private conversion, accept the page using TDACCEPTPAGE
-+	 * TDX module call.
-+	 */
-+	for (i = 0; i < numpages; i++)
-+		tdg_accept_page(gpa + i * PAGE_SIZE);
-+
-+	return 0;
- }
- 
- static __cpuidle void tdg_halt(void)
-diff --git a/arch/x86/mm/mem_encrypt_common.c b/arch/x86/mm/mem_encrypt_common.c
-index f063c885b0a5..fdaf09b4a658 100644
---- a/arch/x86/mm/mem_encrypt_common.c
-+++ b/arch/x86/mm/mem_encrypt_common.c
-@@ -9,9 +9,16 @@
- 
- #include <asm/mem_encrypt_common.h>
- #include <linux/dma-mapping.h>
-+#include <linux/protected_guest.h>
- 
- /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
- bool force_dma_unencrypted(struct device *dev)
- {
--	return amd_force_dma_unencrypted(dev);
-+	if (prot_guest_has(PATTR_SEV) || prot_guest_has(PATTR_SME))
-+		return amd_force_dma_unencrypted(dev);
-+
-+	if (prot_guest_has(PATTR_GUEST_MEM_ENCRYPT))
-+		return true;
-+
-+	return false;
- }
-diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-index ad8a5c586a35..52c93923b947 100644
---- a/arch/x86/mm/pat/set_memory.c
-+++ b/arch/x86/mm/pat/set_memory.c
-@@ -29,6 +29,7 @@
- #include <asm/proto.h>
- #include <asm/memtype.h>
- #include <asm/set_memory.h>
-+#include <asm/tdx.h>
- 
- #include "../mm_internal.h"
- 
-@@ -1980,9 +1981,11 @@ int set_memory_global(unsigned long addr, int numpages)
- 				    __pgprot(_PAGE_GLOBAL), 0);
- }
- 
--static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
-+static int __set_memory_protect(unsigned long addr, int numpages, bool protect)
- {
-+	pgprot_t mem_protected_bits, mem_plain_bits;
- 	struct cpa_data cpa;
-+	enum tdx_map_type map_type;
- 	int ret;
- 
- 	/* Nothing to do if memory encryption is not active */
-@@ -1996,8 +1999,25 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
- 	memset(&cpa, 0, sizeof(cpa));
- 	cpa.vaddr = &addr;
- 	cpa.numpages = numpages;
--	cpa.mask_set = enc ? __pgprot(_PAGE_ENC) : __pgprot(0);
--	cpa.mask_clr = enc ? __pgprot(0) : __pgprot(_PAGE_ENC);
-+
-+	if (prot_guest_has(PATTR_GUEST_SHARED_MAPPING_INIT)) {
-+		mem_protected_bits = __pgprot(0);
-+		mem_plain_bits = pgprot_pg_shared_mask();
-+	} else {
-+		mem_protected_bits = __pgprot(_PAGE_ENC);
-+		mem_plain_bits = __pgprot(0);
-+	}
-+
-+	if (protect) {
-+		cpa.mask_set = mem_protected_bits;
-+		cpa.mask_clr = mem_plain_bits;
-+		map_type = TDX_MAP_PRIVATE;
-+	} else {
-+		cpa.mask_set = mem_plain_bits;
-+		cpa.mask_clr = mem_protected_bits;
-+		map_type = TDX_MAP_SHARED;
-+	}
-+
- 	cpa.pgd = init_mm.pgd;
- 
- 	/* Must avoid aliasing mappings in the highmem code */
-@@ -2005,9 +2025,17 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
- 	vm_unmap_aliases();
- 
- 	/*
--	 * Before changing the encryption attribute, we need to flush caches.
-+	 * Before changing the encryption attribute, flush caches.
-+	 *
-+	 * For TDX, guest is responsible for flushing caches on private->shared
-+	 * transition. VMM is responsible for flushing on shared->private.
- 	 */
--	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
-+	if (prot_guest_has(PATTR_GUEST_TDX)) {
-+		if (map_type == TDX_MAP_SHARED)
-+			cpa_flush(&cpa, 1);
-+	} else {
-+		cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
-+	}
- 
- 	ret = __change_page_attr_set_clr(&cpa, 1);
- 
-@@ -2020,18 +2048,21 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
- 	 */
- 	cpa_flush(&cpa, 0);
- 
-+	if (!ret && prot_guest_has(PATTR_GUEST_SHARED_MAPPING_INIT))
-+		ret = tdx_hcall_gpa_intent(__pa(addr), numpages, map_type);
-+
- 	return ret;
- }
- 
- int set_memory_encrypted(unsigned long addr, int numpages)
- {
--	return __set_memory_enc_dec(addr, numpages, true);
-+	return __set_memory_protect(addr, numpages, true);
- }
- EXPORT_SYMBOL_GPL(set_memory_encrypted);
- 
- int set_memory_decrypted(unsigned long addr, int numpages)
- {
--	return __set_memory_enc_dec(addr, numpages, false);
-+	return __set_memory_protect(addr, numpages, false);
- }
- EXPORT_SYMBOL_GPL(set_memory_decrypted);
+@@ -78,6 +78,8 @@ bool tdx_prot_guest_has(unsigned long flag)
+ 	switch (flag) {
+ 	case PATTR_GUEST_TDX:
+ 	case PATTR_GUEST_UNROLL_STRING_IO:
++	case PATTR_GUEST_MEM_ENCRYPT:
++	case PATTR_GUEST_SHARED_MAPPING_INIT:
+ 		return cpu_feature_enabled(X86_FEATURE_TDX_GUEST);
+ 	}
  
 -- 
 2.25.1
