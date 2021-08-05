@@ -1,43 +1,130 @@
 From: Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: [PATCH v4 08/15] x86/tdx: Enable shared memory protected guest flags for TDX guest
-Date: Wed,  4 Aug 2021 17:52:11 -0700
-Message-ID: <20210805005218.2912076-9-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v4 04/15] x86/tdx: Add helper to do MapGPA hypercall
+Date: Wed,  4 Aug 2021 17:52:07 -0700
+Message-ID: <20210805005218.2912076-5-sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 In-Reply-To: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>
 Cc: Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>, Andi Kleen <ak@linux.intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>, Sean Christopherson <seanjc@google.com>, Kuppuswamy Sathyanarayanan <knsathya@kernel.org>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, virtualization@lists.linux-foundation.org
 
-In TDX guest, since the memory is private to guest, it needs some
-extra configuration before sharing any data with VMM. AMD SEV also
-implements similar features and hence code can be shared. Currently
-memory sharing related code in the kernel is protected by
-PATTR_GUEST_MEM_ENCRYPT and PATTR_GUEST_SHARED_MAPPING_INIT flags.
-So enable them for TDX guest as well.
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 
+MapGPA hypercall is used by TDX guests to request VMM convert
+the existing mapping of given GPA address range between
+private/shared.
+
+tdx_hcall_gpa_intent() is the wrapper used for making MapGPA
+hypercall.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
- arch/x86/kernel/tdx.c | 2 ++
- 1 file changed, 2 insertions(+)
 
+Changes since v3:
+ * None
+
+Changes since v1:
+ * Modified tdx_hcall_gpa_intent() to use _tdx_hypercall() instead of
+   tdx_hypercall().
+
+ arch/x86/include/asm/tdx.h | 18 ++++++++++++++++++
+ arch/x86/kernel/tdx.c      | 25 +++++++++++++++++++++++++
+ 2 files changed, 43 insertions(+)
+
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 1e2a1c6a1898..665c8cf57d5b 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -56,6 +56,15 @@ struct ve_info {
+ 	u32 instr_info;
+ };
+ 
++/*
++ * Page mapping type enum. This is software construct not
++ * part of any hardware or VMM ABI.
++ */
++enum tdx_map_type {
++	TDX_MAP_PRIVATE,
++	TDX_MAP_SHARED,
++};
++
+ #ifdef CONFIG_INTEL_TDX_GUEST
+ 
+ void __init tdx_early_init(void);
+@@ -79,6 +88,9 @@ bool tdg_early_handle_ve(struct pt_regs *regs);
+ 
+ extern phys_addr_t tdg_shared_mask(void);
+ 
++extern int tdx_hcall_gpa_intent(phys_addr_t gpa, int numpages,
++				enum tdx_map_type map_type);
++
+ /*
+  * To support I/O port access in decompressor or early kernel init
+  * code, since #VE exception handler cannot be used, use paravirt
+@@ -149,6 +161,12 @@ static inline bool tdg_early_handle_ve(struct pt_regs *regs) { return false; }
+ 
+ static inline phys_addr_t tdg_shared_mask(void) { return 0; }
+ 
++static inline int tdx_hcall_gpa_intent(phys_addr_t gpa, int numpages,
++				       enum tdx_map_type map_type)
++{
++	return -ENODEV;
++}
++
+ #endif /* CONFIG_INTEL_TDX_GUEST */
+ 
+ #ifdef CONFIG_INTEL_TDX_GUEST_KVM
 diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
-index 01b758496e84..1cf2443edb90 100644
+index d316fe33f52f..ccbad600a422 100644
 --- a/arch/x86/kernel/tdx.c
 +++ b/arch/x86/kernel/tdx.c
-@@ -78,6 +78,8 @@ bool tdx_prot_guest_has(unsigned long flag)
- 	switch (flag) {
- 	case PATTR_GUEST_TDX:
- 	case PATTR_GUEST_UNROLL_STRING_IO:
-+	case PATTR_GUEST_MEM_ENCRYPT:
-+	case PATTR_GUEST_SHARED_MAPPING_INIT:
- 		return cpu_feature_enabled(X86_FEATURE_TDX_GUEST);
- 	}
+@@ -18,6 +18,9 @@
+ #define TDINFO				1
+ #define TDGETVEINFO			3
  
++/* TDX hypercall Leaf IDs */
++#define TDVMCALL_MAP_GPA		0x10001
++
+ #define VE_IS_IO_OUT(exit_qual)		(((exit_qual) & 8) ? 0 : 1)
+ #define VE_GET_IO_SIZE(exit_qual)	(((exit_qual) & 7) + 1)
+ #define VE_GET_PORT_NUM(exit_qual)	((exit_qual) >> 16)
+@@ -97,6 +100,28 @@ static void tdg_get_info(void)
+ 	physical_mask &= ~tdg_shared_mask();
+ }
+ 
++/*
++ * Inform the VMM of the guest's intent for this physical page:
++ * shared with the VMM or private to the guest.  The VMM is
++ * expected to change its mapping of the page in response.
++ *
++ * Note: shared->private conversions require further guest
++ * action to accept the page.
++ */
++int tdx_hcall_gpa_intent(phys_addr_t gpa, int numpages,
++			 enum tdx_map_type map_type)
++{
++	u64 ret;
++
++	if (map_type == TDX_MAP_SHARED)
++		gpa |= tdg_shared_mask();
++
++	ret = _tdx_hypercall(TDVMCALL_MAP_GPA, gpa, PAGE_SIZE * numpages, 0, 0,
++			     NULL);
++
++	return ret ? -EIO : 0;
++}
++
+ static __cpuidle void tdg_halt(void)
+ {
+ 	u64 ret;
 -- 
 2.25.1
 
