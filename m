@@ -1,12 +1,12 @@
 From: Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: [PATCH v4 03/15] x86/tdx: Make pages shared in ioremap()
-Date: Wed,  4 Aug 2021 17:52:06 -0700
-Message-ID: <20210805005218.2912076-4-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v4 06/15] x86/kvm: Use bounce buffers for TD guest
+Date: Wed,  4 Aug 2021 17:52:09 -0700
+Message-ID: <20210805005218.2912076-7-sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <sparclinux-owner@vger.kernel.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
 In-Reply-To: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -15,100 +15,125 @@ Cc: Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luc
 
 From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 
-All ioremap()ed pages that are not backed by normal memory (NONE or
-RESERVED) have to be mapped as shared.
+Intel TDX doesn't allow VMM to directly access guest private
+memory. Any memory that is required for communication with
+VMM must be shared explicitly. The same rule applies for any
+any DMA to and fromTDX guest. All DMA pages had to marked as
+shared pages. A generic way to achieve this without any changes
+to device drivers is to use the SWIOTLB framework.
 
-Reuse the infrastructure from AMD SEV code.
-
-Note that DMA code doesn't use ioremap() to convert memory to shared as
-DMA buffers backed by normal memory. DMA code make buffer shared with
-set_memory_decrypted().
+This method of handling is similar to AMD SEV. So extend this
+support for TDX guest as well. Also since there are some common
+code between AMD SEV and TDX guest in mem_encrypt_init(), move it
+to mem_encrypt_common.c and call AMD specific init function from
+it
 
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
-
 Changes since v3:
  * Rebased on top of Tom Lendacky's protected guest
    changes (https://lore.kernel.org/patchwork/cover/1468760/)
 
 Changes since v1:
- * Fixed format issues in commit log.
+ * Removed sme_me_mask check for amd_mem_encrypt_init() in mem_encrypt_init().
 
- arch/x86/include/asm/pgtable.h  | 4 ++++
- arch/x86/mm/ioremap.c           | 8 ++++++--
- include/linux/protected_guest.h | 1 +
- 3 files changed, 11 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/mem_encrypt_common.h |  2 ++
+ arch/x86/kernel/tdx.c                     |  3 +++
+ arch/x86/mm/mem_encrypt.c                 |  5 +----
+ arch/x86/mm/mem_encrypt_common.c          | 14 ++++++++++++++
+ 4 files changed, 20 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-index 448cd01eb3ec..2d4d518651d2 100644
---- a/arch/x86/include/asm/pgtable.h
-+++ b/arch/x86/include/asm/pgtable.h
-@@ -21,6 +21,10 @@
- #define pgprot_encrypted(prot)	__pgprot(__sme_set(pgprot_val(prot)))
- #define pgprot_decrypted(prot)	__pgprot(__sme_clr(pgprot_val(prot)))
+diff --git a/arch/x86/include/asm/mem_encrypt_common.h b/arch/x86/include/asm/mem_encrypt_common.h
+index 697bc40a4e3d..48d98a3d64fd 100644
+--- a/arch/x86/include/asm/mem_encrypt_common.h
++++ b/arch/x86/include/asm/mem_encrypt_common.h
+@@ -8,11 +8,13 @@
  
-+/* Make the page accesable by VMM for protected guests */
-+#define pgprot_protected_guest(prot) __pgprot(pgprot_val(prot) |	\
-+					      tdg_shared_mask())
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ bool amd_force_dma_unencrypted(struct device *dev);
++void __init amd_mem_encrypt_init(void);
+ #else /* CONFIG_AMD_MEM_ENCRYPT */
+ static inline bool amd_force_dma_unencrypted(struct device *dev)
+ {
+ 	return false;
+ }
++static inline void amd_mem_encrypt_init(void) {}
+ #endif /* CONFIG_AMD_MEM_ENCRYPT */
+ 
+ #endif
+diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
+index b91740a485d6..01b758496e84 100644
+--- a/arch/x86/kernel/tdx.c
++++ b/arch/x86/kernel/tdx.c
+@@ -13,6 +13,7 @@
+ #include <asm/insn.h>
+ #include <asm/insn-eval.h>
+ #include <linux/sched/signal.h> /* force_sig_fault() */
++#include <linux/swiotlb.h>
+ 
+ /* TDX Module call Leaf IDs */
+ #define TDINFO				1
+@@ -517,6 +518,8 @@ void __init tdx_early_init(void)
+ 
+ 	legacy_pic = &null_legacy_pic;
+ 
++	swiotlb_force = SWIOTLB_FORCE;
 +
- #ifndef __ASSEMBLY__
- #include <asm/x86_init.h>
- #include <asm/pkru.h>
-diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-index 60ade7dd71bd..69a60f240124 100644
---- a/arch/x86/mm/ioremap.c
-+++ b/arch/x86/mm/ioremap.c
-@@ -17,6 +17,7 @@
- #include <linux/mem_encrypt.h>
- #include <linux/efi.h>
- #include <linux/pgtable.h>
-+#include <linux/protected_guest.h>
+ 	cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "tdg:cpu_hotplug",
+ 			  NULL, tdg_cpu_offline_prepare);
  
- #include <asm/set_memory.h>
- #include <asm/e820/api.h>
-@@ -26,6 +27,7 @@
- #include <asm/pgalloc.h>
- #include <asm/memtype.h>
- #include <asm/setup.h>
-+#include <asm/tdx.h>
- 
- #include "physaddr.h"
- 
-@@ -87,8 +89,8 @@ static unsigned int __ioremap_check_ram(struct resource *res)
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 1f7a72ce9d66..cab68d8cc5b0 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -491,14 +491,11 @@ static void print_mem_encrypt_feature_info(void)
  }
  
- /*
-- * In a SEV guest, NONE and RESERVED should not be mapped encrypted because
-- * there the whole memory is already encrypted.
-+ * In a SEV or TDX guest, NONE and RESERVED should not be mapped encrypted (or
-+ * private in TDX case) because there the whole memory is already encrypted.
-  */
- static unsigned int __ioremap_check_encrypted(struct resource *res)
+ /* Architecture __weak replacement functions */
+-void __init mem_encrypt_init(void)
++void __init amd_mem_encrypt_init(void)
  {
-@@ -246,6 +248,8 @@ __ioremap_caller(resource_size_t phys_addr, unsigned long size,
- 	prot = PAGE_KERNEL_IO;
- 	if ((io_desc.flags & IORES_MAP_ENCRYPTED) || encrypted)
- 		prot = pgprot_encrypted(prot);
-+	else if (prot_guest_has(PATTR_GUEST_SHARED_MAPPING_INIT))
-+		prot = pgprot_protected_guest(prot);
+ 	if (!sme_me_mask)
+ 		return;
  
- 	switch (pcm) {
- 	case _PAGE_CACHE_MODE_UC:
-diff --git a/include/linux/protected_guest.h b/include/linux/protected_guest.h
-index 1a350c3fcfe2..14255f801100 100644
---- a/include/linux/protected_guest.h
-+++ b/include/linux/protected_guest.h
-@@ -17,6 +17,7 @@
- #define PATTR_GUEST_MEM_ENCRYPT		2	/* Guest encrypted memory */
- #define PATTR_GUEST_PROT_STATE		3	/* Guest encrypted state */
- #define PATTR_GUEST_UNROLL_STRING_IO	4	/* Unrolled string IO */
-+#define PATTR_GUEST_SHARED_MAPPING_INIT	5	/* Late shared mapping init*/
+-	/* Call into SWIOTLB to update the SWIOTLB DMA buffers */
+-	swiotlb_update_mem_attributes();
+-
+ 	/*
+ 	 * With SEV, we need to unroll the rep string I/O instructions,
+ 	 * but SEV-ES supports them through the #VC handler.
+diff --git a/arch/x86/mm/mem_encrypt_common.c b/arch/x86/mm/mem_encrypt_common.c
+index fdaf09b4a658..2ba19476dc26 100644
+--- a/arch/x86/mm/mem_encrypt_common.c
++++ b/arch/x86/mm/mem_encrypt_common.c
+@@ -10,6 +10,7 @@
+ #include <asm/mem_encrypt_common.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/protected_guest.h>
++#include <linux/swiotlb.h>
  
- /* 0x800 - 0x8ff reserved for AMD */
- #define PATTR_SME			0x800
+ /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+ bool force_dma_unencrypted(struct device *dev)
+@@ -22,3 +23,16 @@ bool force_dma_unencrypted(struct device *dev)
+ 
+ 	return false;
+ }
++
++/* Architecture __weak replacement functions */
++void __init mem_encrypt_init(void)
++{
++	/*
++	 * For TDX guest or SEV/SME, call into SWIOTLB to update
++	 * the SWIOTLB DMA buffers
++	 */
++	if (sme_me_mask || prot_guest_has(PATTR_GUEST_MEM_ENCRYPT))
++		swiotlb_update_mem_attributes();
++
++	amd_mem_encrypt_init();
++}
 -- 
 2.25.1
 
