@@ -1,118 +1,28 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v4 10/15] asm/io.h: Add ioremap_shared fallback
-Date: Thu, 12 Aug 2021 14:46:39 -0500
-Message-ID: <20210812194639.GA2502520@bjorn-Precision-5520>
-References: <20210805005218.2912076-11-sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Andi Kleen <ak@linux.intel.com>
+Subject: Re: [PATCH v4 09/15] pci: Consolidate pci_iomap* and pci_iomap*wc
+Date: Thu, 12 Aug 2021 15:11:39 -0700
+Message-ID: <bc5d4268-2304-5c1d-8311-24d141cb5ced@linux.intel.com>
+References: <20210812194330.GA2500473@bjorn-Precision-5520>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1628797601;
-        bh=FB/3JXubUJqc+EUesD4OCWgL312JeTESVV+Ra/v4hdw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=MJA8LHF5KUCiP0sTl4iurA3fDS7AgIYzwMkVRxQd6P+Zzc8ZakNgX4P3asf1FKDNB
-         UbXBHwUJdCJ6kdN6CbXHKvkkwoSlyh/19gNstxaAXvsIoYR37CipfOmHFcW7w/8zrJ
-         BlU1dv71mF+AmDc7QlexVfXwJMtQgVkPVu9vlnl+FQmMbbVQ8lV7z22x6q0rZbKh2q
-         TnrSVTKXCNgJs2nrqsXem3Iby46GXQTdXgicmdrfSsM1euQN+HrZ/l6Tb6ZFlyQT8E
-         iyRV/bO+EVrfGZgIcLVddiSAVDvWhB3qv7lUAWv4x86HaLDNshBdsr3l63+uODvXS2
-         mVdS96JaUFIDQ==
-Content-Disposition: inline
-In-Reply-To: <20210805005218.2912076-11-sathyanarayanan.kuppuswamy@linux.intel.com>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>, Andi Kleen <ak@linux.intel.com>, Kirill Shutemov <kirill.shutemov@linux.i>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <20210812194330.GA2500473@bjorn-Precision-5520>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Bjorn Helgaas <helgaas@kernel.org>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>, Sean Christopherson <s>
 
-On Wed, Aug 04, 2021 at 05:52:13PM -0700, Kuppuswamy Sathyanarayanan wrote:
-> From: Andi Kleen <ak@linux.intel.com>
-> 
-> This function is for declaring memory that should be shared with
-> a hypervisor in a confidential guest. If the architecture doesn't
-> implement it it's just ioremap.
 
-I would assume ioremap_shared() would "map" something, not "declare"
-it.
+> Why is it safe to make pci_iomap_wc_range() support IO ports when it
+> didn't before?  That might be desirable, but I think it *is* a
+> functional change here.
 
-> Signed-off-by: Andi Kleen <ak@linux.intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> ---
->  arch/alpha/include/asm/io.h    | 1 +
->  arch/mips/include/asm/io.h     | 1 +
->  arch/parisc/include/asm/io.h   | 1 +
->  arch/sparc/include/asm/io_64.h | 1 +
->  include/asm-generic/io.h       | 4 ++++
->  5 files changed, 8 insertions(+)
-> 
-> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-> index 0fab5ac90775..701b44909b94 100644
-> --- a/arch/alpha/include/asm/io.h
-> +++ b/arch/alpha/include/asm/io.h
-> @@ -283,6 +283,7 @@ static inline void __iomem *ioremap(unsigned long port, unsigned long size)
->  }
->  
->  #define ioremap_wc ioremap
-> +#define ioremap_shared ioremap
->  #define ioremap_uc ioremap
->  
->  static inline void iounmap(volatile void __iomem *addr)
-> diff --git a/arch/mips/include/asm/io.h b/arch/mips/include/asm/io.h
-> index 6f5c86d2bab4..3713ff624632 100644
-> --- a/arch/mips/include/asm/io.h
-> +++ b/arch/mips/include/asm/io.h
-> @@ -179,6 +179,7 @@ void iounmap(const volatile void __iomem *addr);
->  #define ioremap(offset, size)						\
->  	ioremap_prot((offset), (size), _CACHE_UNCACHED)
->  #define ioremap_uc		ioremap
-> +#define ioremap_shared		ioremap
->  
->  /*
->   * ioremap_cache -	map bus memory into CPU space
-> diff --git a/arch/parisc/include/asm/io.h b/arch/parisc/include/asm/io.h
-> index 0b5259102319..73064e152df7 100644
-> --- a/arch/parisc/include/asm/io.h
-> +++ b/arch/parisc/include/asm/io.h
-> @@ -129,6 +129,7 @@ static inline void gsc_writeq(unsigned long long val, unsigned long addr)
->   */
->  void __iomem *ioremap(unsigned long offset, unsigned long size);
->  #define ioremap_wc			ioremap
-> +#define ioremap_shared			ioremap
->  #define ioremap_uc			ioremap
->  
->  extern void iounmap(const volatile void __iomem *addr);
-> diff --git a/arch/sparc/include/asm/io_64.h b/arch/sparc/include/asm/io_64.h
-> index 5ffa820dcd4d..18cc656eb712 100644
-> --- a/arch/sparc/include/asm/io_64.h
-> +++ b/arch/sparc/include/asm/io_64.h
-> @@ -409,6 +409,7 @@ static inline void __iomem *ioremap(unsigned long offset, unsigned long size)
->  #define ioremap_uc(X,Y)			ioremap((X),(Y))
->  #define ioremap_wc(X,Y)			ioremap((X),(Y))
->  #define ioremap_wt(X,Y)			ioremap((X),(Y))
-> +#define ioremap_shared(X, Y)		ioremap((X), (Y))
->  static inline void __iomem *ioremap_np(unsigned long offset, unsigned long size)
->  {
->  	return NULL;
-> diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-> index e93375c710b9..bfcaee1691c8 100644
-> --- a/include/asm-generic/io.h
-> +++ b/include/asm-generic/io.h
-> @@ -982,6 +982,10 @@ static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
->  #define ioremap_wt ioremap
->  #endif
->  
-> +#ifndef ioremap_shared
-> +#define ioremap_shared ioremap
-> +#endif
+None of the callers use it to map IO ports, so it will be a no-op for 
+them. But you're right, it's a (minor) functional change.
 
-"ioremap_shared" is a very generic term for a pretty specific thing:
-"memory shared with a hypervisor in a confidential guest".
+-Andi
 
-Maybe deserves a comment with at least a hint here.  "Hypervisors in a
-confidential guest" isn't the first thing that comes to mind when I
-read "shared".
 
->  /*
->   * ioremap_uc is special in that we do require an explicit architecture
->   * implementation.  In general you do not want to use this function in a
-> -- 
-> 2.25.1
-> 
+
+
