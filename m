@@ -1,36 +1,47 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v4 12/15] pci: Mark MSI data shared
-Date: Fri, 13 Aug 2021 09:07:48 +0100
-Message-ID: <YRYoVBIXZ/910eaq@infradead.org>
-References: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20210805005218.2912076-13-sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Changbin Du <changbin.du@gmail.com>
+Subject: [PATCH] alpha: in_irq() cleanup
+Date: Sat, 14 Aug 2021 09:01:03 +0800
+Message-ID: <20210814010103.3929-1-changbin.du@gmail.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=J5iMSjwPMvkOFpq0TMlTZtl3sxje2OPtaEgmn6rI3kw=; b=tLoy64zP56BA6COvXf26VAiBG9
-        oKjbIjnNL8arRxo50od3oQ9WiLXRnnIQhwWpPCi11t8FmIOTy5frodVYORATqo1cnyknkdAttACMh
-        IuMWI23bPAIcxV2I4FQ55yZj75VZCoja9nk9jCbJl2kLpcbtCS6bW+/E3OtXurRenuXwnHahWGhHg
-        VmR8RasuVRLggxW1RHCjYBVYq+of6asU83tj5SwmMaoQZlZNE/hmhjV94fEjEqMYdxvBoRzvKKJgC
-        EoAexDTExue7OUZO7UKAGrfL514yBqR5kWkuh5KUCOhD+Khwegyzwh0IZDHIBx/Bt0akrVQgr2x1g
-        9A5BlXNA==;
-Content-Disposition: inline
-In-Reply-To: <20210805005218.2912076-13-sathyanarayanan.kuppuswamy@linux.intel.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o8WfKmwINea2dak8eWcmeq5nymhBz5xQuf8CqG8OJr4=;
+        b=sme3zgAmzQduFkzUo7E7f5eQZMJa3fnQrOektKNNlG3qHZyjx+gugUTEvhxDweudgc
+         Xrn1f/qVwH1SZ6EHgp5YzIM/GA4q1A/Xh8MTzcyQqO3k/kTHeIHGgLMEZn0rWPP3r1ZS
+         S0X02Og4zzGF62aWtQGVrS9J/VHGBVYyRIyeNHbwrFVO1NhuDge1QU4aYsAlT2xf/Pln
+         qV218p69LURe2muWVW3NuOYDZnA3MB8i8Qp1fMFiRmfh/yXdhDkeRYJg/bdS/vAEkwV9
+         k7wYRHRnOo9gnRAUDlY2GIF8PWhbfLZm7UJ56YFC/QPSwRzmjNAaeerPAIQlWCcivAy1
+         JwRA==
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>, Andi Kleen <ak@linux.intel.com>, Kirill Shutemov <kirill.shutemov@linux.i>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Changbin Du <changbin.du@gmail.com>
 
-On Wed, Aug 04, 2021 at 05:52:15PM -0700, Kuppuswamy Sathyanarayanan wrote:
->  
-> -	return ioremap(phys_addr, nr_entries * PCI_MSIX_ENTRY_SIZE);
-> +	return ioremap_shared(phys_addr, nr_entries * PCI_MSIX_ENTRY_SIZE);
+Replace the obsolete and ambiguos macro in_irq() with new
+macro in_hardirq().
 
-Please add a comment here.  I also find the amount of ioremap_* variants
-rather frustrating.  Maybe it it is time for a ioremap_flags which
-replaces the too-lowlevel pgprot_t of the ioremap_prot provided by some
-architectures with a more highlevel flags arguments that could also
-provide an accessible to the hypervisor flag.
+Signed-off-by: Changbin Du <changbin.du@gmail.com>
+---
+ arch/alpha/kernel/process.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
+index a5123ea426ce..a524de9f1c98 100644
+--- a/arch/alpha/kernel/process.c
++++ b/arch/alpha/kernel/process.c
+@@ -134,7 +134,7 @@ common_shutdown_1(void *generic_ptr)
+ #ifdef CONFIG_DUMMY_CONSOLE
+ 		/* If we've gotten here after SysRq-b, leave interrupt
+ 		   context before taking over the console. */
+-		if (in_irq())
++		if (in_hardirq())
+ 			irq_exit();
+ 		/* This has the effect of resetting the VGA video origin.  */
+ 		console_lock();
+-- 
+2.30.2
+
