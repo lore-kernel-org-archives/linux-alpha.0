@@ -1,54 +1,82 @@
-From: Dan Williams <dan.j.williams@intel.com>
+From: Rajat Jain <rajatja@google.com>
 Subject: Re: [PATCH v4 11/15] pci: Add pci_iomap_shared{,_range}
-Date: Tue, 24 Aug 2021 14:05:25 -0700
-Message-ID: <CAPcyv4jjonArG94PbuMPTZefxqnFr+PEG7Gjem0Taa_iGRmSDA@mail.gmail.com>
-References: <20210824203115.GA3492097@bjorn-Precision-5520> <bb8c6f96-2597-bb80-bd08-7958405e1bf5@linux.intel.com>
+Date: Tue, 24 Aug 2021 14:55:24 -0700
+Message-ID: <CACK8Z6GaKb58OWu-hxabweFKX8MBPngmWQa6vhDgFJy9pWp_vQ@mail.gmail.com>
+References: <d21a2a2d-4670-ba85-ce9a-fc8ea80ef1be@linux.intel.com> <20210824185541.GA3485816@bjorn-Precision-5520>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=50KgIimgoHn2hLRecJ9xsYP+KbZzb8N9bfDIuPfzvjQ=;
-        b=NvAgKb0THlkdDUQ0aRx+9mednYqLHP6M3XIYjenGeve36GswyogqqyEtfltG9odhSS
-         sXNl+nzWb/jgjnohkyON1TK0N4HUhwZj7aRcTxvirbX0hPedZ8o7Xo7c5YpxKjNNzQYr
-         zyJiMtdKa9NltLOObRsERtWbUkAqlgZSPFS2egovwI2a4M3yx8YiJOFhAZDgyiFWM4Tr
-         bAb4DagRmpCRfU/tqemlilYyGEtImDNJKoZmeV/8h3FeicEkU17ZO2s8oFIsfzw7ghCP
-         W7IqcpYk1aL3JziP3HtHww5os2Qnu25hR/eXZFgKZ3PqWWua0S27ru9KI2z3Lojktzjy
-         vK+Q==
-In-Reply-To: <bb8c6f96-2597-bb80-bd08-7958405e1bf5@linux.intel.com>
+        bh=0skVvO4SGPlA/J6kwOdnD9awH4QB9ReOisx8edtYBMQ=;
+        b=td+p5L6oApTGIECN+ygfdkt+RZDjHSiqYQ90d7SsipgbdzrvwzlwsX9gKbnz170ozc
+         VLmcKWqYLFsRiZ7d5lBcMcpU05xsqBHaj5BtzBQd6H4St7YTyOWoz9iIlfb8AvbkLeCW
+         1gNnuQo+3BcAU7zndpjjl8/92FDO8rVrHrULQuLDgjx0eMAf0jAvAForvOSFch4Jx0ak
+         hdhEbuiQ57z3GbDl3KVmKKey9WFa0Mcfc61kOn7X5qhr1Kva3yrI14ChRzCIySRXwT4R
+         DXSVDt4eG6CgSvmr3BHGYl+RUUV3FKAKOldIU9DmcNVJDs4+Jpxct0sg1vOLOvpMICcR
+         J3WA==
+In-Reply-To: <20210824185541.GA3485816@bjorn-Precision-5520>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andi Kleen <ak@linux.intel.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Andi Kleen <ak@linux.intel.com>, "Michael S. Tsirkin" <mst@redhat.com>, Dan Williams <dan.j.williams@intel.com>, "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>
 
-On Tue, Aug 24, 2021 at 1:50 PM Andi Kleen <ak@linux.intel.com> wrote:
->
->
-> On 8/24/2021 1:31 PM, Bjorn Helgaas wrote:
-> > On Tue, Aug 24, 2021 at 01:14:02PM -0700, Andi Kleen wrote:
-> >> On 8/24/2021 11:55 AM, Bjorn Helgaas wrote:
-> >>> [+cc Rajat; I still don't know what "shared memory with a hypervisor
-> >>> in a confidential guest" means,
-> >> A confidential guest is a guest which uses memory encryption to isolate
-> >> itself from the host. It doesn't trust the host. But it still needs to
-> >> communicate with the host for IO, so it has some special memory areas that
-> >> are explicitly marked shared. These are used to do IO with the host. All
-> >> their usage needs to be carefully hardened to avoid any security attacks on
-> >> the guest, that's why we want to limit this interaction only to a small set
-> >> of hardened drivers. For MMIO, the set is currently only virtio and MSI-X.
-> > Good material for the commit log next time around.  Thanks!
->
-> This is all in the patch intro too, which should make it into the merge
-> commits.
->
-> I don't think we can reexplain the basic concepts for every individual
-> patch in a large patch kit.
+Thanks a lot Bjorn for adding me!
 
-Maybe not the whole cover letter, but how about just a line in this
-one that says "Recall that 'shared' in this context refers to memory
-that lacks confidentiality and integrity protection from the VMM so
-that it can communicate with the VM." Although I think
-ioremap_noprotect() might be clearer than shared for the protected
-guest use case?
+
+On Tue, Aug 24, 2021 at 11:55 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> [+cc Rajat; I still don't know what "shared memory with a hypervisor
+> in a confidential guest" means, but now we're talking about hardened
+> drivers and allow lists, which Rajat is interested in]
+>
+> On Tue, Aug 24, 2021 at 10:20:44AM -0700, Andi Kleen wrote:
+> >
+> > > I see. Hmm. It's a bit of a random thing to do it at the map time
+> > > though. E.g. DMA is all handled transparently behind the DMA API.
+> > > Hardening is much more than just replacing map with map_shared
+> > > and I suspect what you will end up with is basically
+> > > vendors replacing map with map shared to make things work
+> > > for their users and washing their hands.
+> >
+> > That concept exists too. There is a separate allow list for the drivers. So
+> > just adding shared to a driver is not enough, until it's also added to the
+> > allowlist
+> >
+> > Users can of course chose to disable the allowlist, but they need to
+> > understand the security implications.
+
+This is great. I'd be interested in looking at this allowlist
+mechanism. Is this something in-kernel or in userspace? Is this
+available upstream or are you maintaining this allowlist elsewhere?
+(Background: https://lore.kernel.org/linux-pci/CACK8Z6E8pjVeC934oFgr=VB3pULx_GyT2NkzAogdRQJ9TKSX9A@mail.gmail.com/)
+
+Short Summary: we also have our security team that audits drivers, and
+we'd like to enable only audited drivers for the untrusted devices.
+Currently, we're carrying this allowlist mechanism on our own since
+the idea was Nack'ed by upstream. So if there is something available,
+we'd like to use it too.
+
+Thanks,
+
+Rajat
+
+
+> >
+> > > I would say an explicit flag in the driver that says "hardened"
+> > > and refusing to init a non hardened one would be better.
+> >
+> > We have that too (that's the device filtering)
+> >
+> > But the problem is that device filtering just stops the probe functions, not
+> > the initcalls, and lot of legacy drivers do MMIO interactions before going
+> > into probe. In some cases it's unavoidable because of the device doesn't
+> > have a separate enumeration mechanism it needs some kind of probing to even
+> > check for its existence And since we don't want to change all of them it's
+> > far safer to make the ioremap opt-in.
+> >
+> >
+> > -Andi
+> >
