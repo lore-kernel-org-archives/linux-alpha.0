@@ -1,92 +1,64 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
+From: Andi Kleen <ak@linux.intel.com>
 Subject: Re: [PATCH v4 11/15] pci: Add pci_iomap_shared{,_range}
-Date: Sun, 29 Aug 2021 11:34:43 -0400
-Message-ID: <20210829113023-mutt-send-email-mst@kernel.org>
+Date: Sun, 29 Aug 2021 09:17:53 -0700
+Message-ID: <09b340dd-c8a8-689c-4dad-4fe0e36d39ae@linux.intel.com>
 References: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20210805005218.2912076-12-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20210823195409-mutt-send-email-mst@kernel.org>
  <26a3cce5-ddf7-cbe6-a41e-58a2aea48f78@linux.intel.com>
- <YSSay4zGjLaNMOh1@infradead.org>
- <2747d96f-5063-7c63-5a47-16ea299fa195@linux.intel.com>
+ <CAPcyv4iJVQKJ3bVwZhD08c8GNEP0jW2gx=H504NXcYK5o2t01A@mail.gmail.com>
+ <d992b5af-8d57-6aa6-bd49-8e2b8d832b19@linux.intel.com>
+ <20210824053830-mutt-send-email-mst@kernel.org>
+ <d21a2a2d-4670-ba85-ce9a-fc8ea80ef1be@linux.intel.com>
+ <20210829112105-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630251292;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=k7bK8mjMEr9/+vI3Cmf28n6PO028nMAxW7f7pwBVdA0=;
-        b=WQELnnID40NCvm8TdmbstgN9brw48EWtswvkZcYkN6DuUcQSoJ8rLc7vbH+P3TKIW3KUbD
-        aPhWl6wmZqM+d5Kq1npMLrMgmVvypdymlsKp2iraOCmx0R+s8pMSB2ZakuBpgYgr+pmeI7
-        LgWUoeVgUBZl9r2A1l1caN3GY3tMErg=
-Content-Disposition: inline
-In-Reply-To: <2747d96f-5063-7c63-5a47-16ea299fa195@linux.intel.com>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andi Kleen <ak@linux.intel.com>
-Cc: Christoph Hellwig <hch@infradead.org>, "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20210829112105-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Dan Williams <dan.j.williams@intel.com>, "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Kirill Shutemov <kirill.shutemov@lin>
 
-On Tue, Aug 24, 2021 at 10:04:26AM -0700, Andi Kleen wrote:
-> 
-> On 8/24/2021 12:07 AM, Christoph Hellwig wrote:
-> > On Mon, Aug 23, 2021 at 05:30:54PM -0700, Kuppuswamy, Sathyanarayanan wrote:
-> > > 
-> > > On 8/23/21 4:56 PM, Michael S. Tsirkin wrote:
-> > > > > Add a new variant of pci_iomap for mapping all PCI resources
-> > > > > of a devices as shared memory with a hypervisor in a confidential
-> > > > > guest.
-> > > > > 
-> > > > > Signed-off-by: Andi Kleen<ak@linux.intel.com>
-> > > > > Signed-off-by: Kuppuswamy Sathyanarayanan<sathyanarayanan.kuppuswamy@linux.intel.com>
-> > > > I'm a bit puzzled by this part. So why should the guest*not*  map
-> > > > pci memory as shared? And if the answer is never (as it seems to be)
-> > > > then why not just make regular pci_iomap DTRT?
-> > > It is in the context of confidential guest (where VMM is un-trusted). So
-> > > we don't want to make all PCI resource as shared. It should be allowed
-> > > only for hardened drivers/devices.
-> > Well, assuming the host can do any damage when mapped shared that also
-> > means not mapping it shared will completely break the drivers.
-> 
-> There are several cases:
-> 
-> - We have driver filtering active to protect you against attacks from the
-> host against unhardened drivers.
-> 
-> In this case the drivers not working is the intended behavior.
-> 
-> - There is an command allow list override for some new driver, but the
-> driver is hardened and shared
-> 
-> The other drivers will still not work, but that's also the intended behavior
-> 
-> - Driver filtering is disabled or the allow list override is used to enable
-> some non hardened/enabled driver
-> 
-> There is a command line option to override the ioremap sharing default, it
-> will allow all drivers to do ioremap. We would really prefer to make it more
-> finegrained, but it's not possible in this case. Other drivers are likely
-> attackable.
-> 
-> - Driver filtering is disabled (allowing attacks on the drivers) and the
-> command line option for forced sharing is set.
-> 
-> All drivers initialize and can talk to the host through MMIO. Lots of
-> unhardened drivers are likely attackable.
-> 
-> -Andi
 
-All this makes sense but ioremap is such a random place to declare
-driver has been audited, and it's baked into the binary with no way for
-userspace to set policy.
+> Let's be frank, even without encryption disabling most drivers -
+> especially weird ones that poke at hardware before probe -
+> is far safer than keeping them, but one loses a bunch of features.
 
-Again all we will end up with is gradual replacement of all ioremap
-calls with ioremap_shared as people discover a given driver does not
-work in a VM. How are you going to know driver has actually been
-audited? what the quality of the audit was? did the people doing the
-auditing understand what they are auditing for?  No way, right?
-So IMHO, let it be for now.
+Usually we don't lose features at all. None of the legacy drivers are 
+needed on a guest (or even a modern native system). It's all just all 
+for old hardware. Maybe in 20+ years it can be all removed, but we can't 
+wait that long.
 
--- 
-MST
+> IOW all this hardening is nice but which security/feature tradeoff
+> to take it a policy decision, not something kernel should do
+> imho.
 
+There's no mechanism to push this kind of policy to user space. Users 
+don't have control what initcalls run. At the time they execute there 
+isn't even any user space yet.
+
+Even if they could somehow control them it's very unlikely they would 
+understand them and make an informed decision.
+
+Doing it at build time is not feasible either since we want to run on 
+standard distribution kernels.
+
+For modules we have a policy mechanism (prevent udev probing by 
+preventing enumeration), and that is implemented, but only handling 
+modules is not enough. The compiled in drivers have to be handled too, 
+otherwise you have gaping holes in the protection. We don't prevent 
+users manually loading modules that might probe, but that is a policy 
+decision that users actually sensibly make in user space.
+
+Also I changing this single call really that bad? It's not that we 
+changing anything drastic here, just give the low level subsystem a 
+better hint about the intention. If you don't like the function name, 
+could make it an argument instead?
+
+-Andi
+
+
+
+>
