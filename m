@@ -1,7 +1,7 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
+From: Andi Kleen <ak@linux.intel.com>
 Subject: Re: [PATCH v4 11/15] pci: Add pci_iomap_shared{,_range}
-Date: Sun, 29 Aug 2021 18:26:20 -0400
-Message-ID: <20210829181635-mutt-send-email-mst@kernel.org>
+Date: Sun, 29 Aug 2021 22:11:46 -0700
+Message-ID: <3a88a255-a528-b00a-912b-e71198d5f58f@linux.intel.com>
 References: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20210805005218.2912076-12-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20210823195409-mutt-send-email-mst@kernel.org>
@@ -12,75 +12,54 @@ References: <20210805005218.2912076-1-sathyanarayanan.kuppuswamy@linux.intel.com
  <d21a2a2d-4670-ba85-ce9a-fc8ea80ef1be@linux.intel.com>
  <20210829112105-mutt-send-email-mst@kernel.org>
  <09b340dd-c8a8-689c-4dad-4fe0e36d39ae@linux.intel.com>
+ <20210829181635-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1630275990;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w+MBpgO+PBJKHqx0Y7eErLZSvPvNS8U9WRpzvSbhkVw=;
-        b=gAmBZHwpZem49MSfu5U/CZ/a5gr5V2xPAiE8x7s7qTrcmyfHUZMhvXgnbBO48QN3T2mExC
-        dO1u1BknmTb7tV0FmR+iQOV+BEZ7G638rsmFUPAERL53ZoCG+bUOEYbJE+c6RSOTkl8b/o
-        ajJCJ6lUbgZfEZWmQfT67AkAmqdybSI=
-Content-Disposition: inline
-In-Reply-To: <09b340dd-c8a8-689c-4dad-4fe0e36d39ae@linux.intel.com>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <20210829181635-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Andi Kleen <ak@linux.intel.com>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: Dan Williams <dan.j.williams@intel.com>, "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Kirill Shutemov <kirill.shutemov@lin>
 
-On Sun, Aug 29, 2021 at 09:17:53AM -0700, Andi Kleen wrote:
-> Also I changing this single call really that bad? It's not that we changing
-> anything drastic here, just give the low level subsystem a better hint about
-> the intention. If you don't like the function name, could make it an
-> argument instead?
 
-My point however is that the API should say that the
-driver has been audited, not that the mapping has been
-done in some special way. For example the mapping can be
-in some kind of wrapper, not directly in the driver.
-However you want the driver validated, not the wrapper.
+On 8/29/2021 3:26 PM, Michael S. Tsirkin wrote:
+> On Sun, Aug 29, 2021 at 09:17:53AM -0700, Andi Kleen wrote:
+>> Also I changing this single call really that bad? It's not that we chang=
+ing
+>> anything drastic here, just give the low level subsystem a better hint a=
+bout
+>> the intention. If you don't like the function name, could make it an
+>> argument instead?
+> My point however is that the API should say that the
+> driver has been audited,
 
-Here's an idea:
+We have that status in the struct device. If you want to tie the ioremap=20
+to that we could define a ioremap_device() with a device argument and=20
+decide based on that.
 
+Or we can add _audited to the name. ioremap_shared_audited?
 
-
-diff --git a/include/linux/audited.h b/include/linux/audited.h
-new file mode 100644
-index 000000000000..e23fd6ad50db
---- /dev/null
-+++ b/include/linux/audited.h
-@@ -0,0 +1,3 @@
-+#ifndef AUDITED_MODULE
-+#define AUDITED_MODULE
-+#endif
-
-Now any audited driver must do
-#include <linux/audited.h>
-first of all.
-Implementation-wise it can do any number of things,
-e.g. if you like then sure you can do:
-
-#ifdef AUDITED_MODULE
-#define pci_ioremap pci_ioremap_shared
-#else
-#define pci_ioremap pci_ioremap
-#endif
-
-but you can also thinkably do something like (won't work,
-but just to give you the idea):
-
-#ifdef AUDITED_MODULE
-#define __init __init
-#else
-#define __init
-#endif
-
-or any number of hacks like this.
+> not that the mapping has been
+> done in some special way. For example the mapping can be
+> in some kind of wrapper, not directly in the driver.
+> However you want the driver validated, not the wrapper.
+>
+> Here's an idea:
 
 
--- 
-MST
+I don't think magic differences of API behavior based on some define are=20
+a good idea.=C2=A0 That's easy to miss.
+
+That's a "COME FROM" in API design.
+
+Also it wouldn't handle the case that a driver has both private and=20
+shared ioremaps, e.g. for BIOS structures.
+
+And we've been avoiding that drivers can self declare auditing, we've=20
+been trying to have a separate centralized list so that it's easier to=20
+enforce and avoids any cut'n'paste mistakes.
+
+-Andi
 
