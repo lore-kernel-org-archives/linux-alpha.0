@@ -1,64 +1,95 @@
-From: Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH v4 11/15] pci: Add pci_iomap_shared{,_range}
-Date: Mon, 30 Aug 2021 17:23:17 -0700
-Message-ID: <69fc30f4-e3e2-add7-ec13-4db3b9cc0cbd@linux.intel.com>
-References: <20210823195409-mutt-send-email-mst@kernel.org>
- <26a3cce5-ddf7-cbe6-a41e-58a2aea48f78@linux.intel.com>
- <CAPcyv4iJVQKJ3bVwZhD08c8GNEP0jW2gx=H504NXcYK5o2t01A@mail.gmail.com>
- <d992b5af-8d57-6aa6-bd49-8e2b8d832b19@linux.intel.com>
- <20210824053830-mutt-send-email-mst@kernel.org>
- <d21a2a2d-4670-ba85-ce9a-fc8ea80ef1be@linux.intel.com>
- <20210829112105-mutt-send-email-mst@kernel.org>
- <09b340dd-c8a8-689c-4dad-4fe0e36d39ae@linux.intel.com>
- <20210829181635-mutt-send-email-mst@kernel.org>
- <3a88a255-a528-b00a-912b-e71198d5f58f@linux.intel.com>
- <20210830163723-mutt-send-email-mst@kernel.org>
+From: Michael Cree <mcree@orcon.net.nz>
+Subject: Re: X11 system lockup with 5.11.0 kernel
+Date: Mon, 6 Sep 2021 11:00:27 +1200
+Message-ID: <20210905230027.GA27992@tower>
+References: <20210405095825.GA17443@tower>
+ <fd607d8e-9118-a38b-62af-2c4d9f6659a0@amd.com>
+ <20210406091431.GA4462@tower>
+ <dda17ea7-2abd-3e81-475f-8f103f7c9217@amd.com>
+ <e6c7209e-de57-a9b8-dc23-70444aac8d1e@physik.fu-berlin.de>
+ <YLhPeYdhLrFqsbCY@gherkin.frus.com>
+ <alpine.DEB.2.21.2106031511500.25828@angie.orcam.me.uk>
+ <YLm3wsDSxgWgrNEk@gherkin.frus.com>
+ <YLm8Cu2VwGQdRdgU@gherkin.frus.com>
+ <YN235QP+s9wwHFMN@gherkin.frus.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <20210830163723-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Dan Williams <dan.j.williams@intel.com>, "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Kirill Shutemov <kirill.shutemov@lin>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <bounce-debian-alpha=debian-alpha=m.gmane-mx.org@lists.debian.org>
+Content-Disposition: inline
+In-Reply-To: <YN235QP+s9wwHFMN@gherkin.frus.com>
+Resent-Message-ID: <OxD_9B65Y6P.A.cAD.wwUNhB@bendel>
+List-Id: <linux-alpha.vger.kernel.org>
+List-URL: <https://lists.debian.org/debian-alpha/>
+List-Post: <mailto:debian-alpha@lists.debian.org>
+List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
+List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
+List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
+List-Archive: https://lists.debian.org/msgid-search/20210905230027.GA27992@tower
+Content-Type: text/plain; charset="iso-8859-1"
+To: Bob Tracy <rct@frus.com>
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
 
+I had intended to assist in testing with real hardware but there
+are other issues due to the 5.10 kernel on Alpha that need fixing
+first and I am working on that.  I am hoping to come back to this
+and can run some tests in the near future.
 
-On 8/30/2021 1:59 PM, Michael S. Tsirkin wrote:
->
->> Or we can add _audited to the name. ioremap_shared_audited?
-> But it's not the mapping that has to be done in handled special way.
-> It's any data we get from device, not all of it coming from IO, e.g.
-> there's DMA and interrupts that all have to be validated.
-> Wouldn't you say that what is really wanted is just not running
-> unaudited drivers in the first place?
+Cheers,
+Michael.
 
-
-Yes.
-
-
->
->> And we've been avoiding that drivers can self declare auditing, we've been
->> trying to have a separate centralized list so that it's easier to enforce
->> and avoids any cut'n'paste mistakes.
->>
->> -Andi
-> Now I'm confused. What is proposed here seems to be basically that,
-> drivers need to declare auditing by replacing ioremap with
-> ioremap_shared.
-
-Auditing is declared on the device model level using a central allow list.
-
-But this cannot do anything to initcalls that run before probe, that's 
-why an extra level of defense of ioremap opt-in is useful. But it's not 
-the primary mechanism to declare a driver audited, that's the allow 
-list. The ioremap is just another mechanism to avoid having to touch a 
-lot of legacy drivers.
-
-If we agree on that then the original proposed semantics of 
-"ioremap_shared" may be acceptable?
-
--Andi
-
-
+On Thu, Jul 01, 2021 at 07:41:09AM -0500, Bob Tracy wrote:
+> Quick update: if this issue was ever fixed, the patch hasn't made it
+> into the mainline kernel as of 5.13.0.  I'm still getting the system
+> lock-up when X11 starts, and have to hit the reset switch to recover.
+>=20
+> For whatever it might be worth, the mainline 5.10.0 kernel continues
+> to work properly alongside all the user space changes in "sid" that
+> have happened since late last year.
+>=20
+> Respectfully,
+> --Bob
+>=20
+> On Fri, Jun 04, 2021 at 12:37:14AM -0500, Bob Tracy wrote:
+> > On Fri, Jun 04, 2021 at 12:18:58AM -0500, Bob Tracy wrote:
+> > > On Thu, Jun 03, 2021 at 03:15:05PM +0200, Maciej W. Rozycki wrote:
+> > > >  I have lost track about this issue, so please fill me in as to whe=
+ther=20
+> > > > the offending commit causing the regression has been bisected or no=
+t.
+> > >=20
+> > > It has.  Michael Cree reported the following back on April 5th:
+> > >=20
+> > > And the first bad commit is:
+> > >=20
+> > > 0fe3cf3a53b5c1205ec7d321be1185b075dff205 is the first bad commit
+> > > commit 0fe3cf3a53b5c1205ec7d321be1185b075dff205
+> > > Author: Christian K=F6nig <christian.koenig@amd.com>
+> > > Date:   Sat Oct 24 13:12:23 2020 +0200
+> > >=20
+> > >     drm/radeon: switch to new allocator v2
+> > >    =20
+> > >     It should be able to handle all cases here.
+> > >    =20
+> > >     v2: fix debugfs as well
+> > >    =20
+> > >     Signed-off-by: Christian K=F6nig <christian.koenig@amd.com>
+> > >     Reviewed-by: Dave Airlie <airlied@redhat.com>
+> > >     Reviewed-by: Madhav Chauhan <madhav.chauhan@amd.com>
+> > >     Tested-by: Huang Rui <ray.huang@amd.com>
+> > >     Link: https://patchwork.freedesktop.org/patch/397088/?series=3D83=
+051&rev=3D1
+> > >=20
+> > > :040000 040000 4e643ef861b921392bc67be21a42298c91c7ff7a b36453567c317=
+6a3cd50fa0b23886b0fd642560d M	drivers
+> >=20
+> > There were a few follow-up messages in this thread that left me with the
+> > impression there *may* have been a patch submitted, although Christian
+> > complained at the time he was having problems locating Alpha hardware to
+> > test with.
+> >=20
+> > The current (5.12.0 kernel) problem symptoms show some "improvement".
+> > I at least got to the point that the login screen displayed, but it
+> > had a bit of pixelation/distortion in a few areas indicative of "bad
+> > things about to happen".  Then I got the expected system lock-up,
+> > just as I originally reported: had to hit the reset switch to recover.
 
