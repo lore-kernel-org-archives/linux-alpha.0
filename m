@@ -1,95 +1,87 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: X11 system lockup with 5.11.0 kernel
-Date: Mon, 6 Sep 2021 11:00:27 +1200
-Message-ID: <20210905230027.GA27992@tower>
-References: <20210405095825.GA17443@tower>
- <fd607d8e-9118-a38b-62af-2c4d9f6659a0@amd.com>
- <20210406091431.GA4462@tower>
- <dda17ea7-2abd-3e81-475f-8f103f7c9217@amd.com>
- <e6c7209e-de57-a9b8-dc23-70444aac8d1e@physik.fu-berlin.de>
- <YLhPeYdhLrFqsbCY@gherkin.frus.com>
- <alpine.DEB.2.21.2106031511500.25828@angie.orcam.me.uk>
- <YLm3wsDSxgWgrNEk@gherkin.frus.com>
- <YLm8Cu2VwGQdRdgU@gherkin.frus.com>
- <YN235QP+s9wwHFMN@gherkin.frus.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] alpha: Declare virt_to_phys and virt_to_bus parameter as pointer to volatile
+Date: Wed,  8 Sep 2021 22:00:33 -0700
+Message-ID: <20210909050033.1564459-1-linux@roeck-us.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane-mx.org@lists.debian.org>
-Content-Disposition: inline
-In-Reply-To: <YN235QP+s9wwHFMN@gherkin.frus.com>
-Resent-Message-ID: <OxD_9B65Y6P.A.cAD.wwUNhB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/20210905230027.GA27992@tower
-Content-Type: text/plain; charset="iso-8859-1"
-To: Bob Tracy <rct@frus.com>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o8FqMxDgd8l7sId2kCNTKyMoE47Aco1YprUDt2DkIx8=;
+        b=hlay4CXUq7sieBd59o93+7cIFWC5zal3YB2NYexwhQAUI6cSAFd0++lgc2qN01kNwR
+         7vVa13kkaGNUXihmRAjmdZfmRvruBTcmFGbI/FUWX5cCN8GEBXUNDiLtdvvsZdQNDc1v
+         DCE3/YhO7XjrZFy7K2ojujqVkY7yc4kYYgplQzNBbqgo4t5A4dEk1ffPEseO+O47uWkR
+         bBIjputuQG2O/OczjEwNO5pnbWAEMa7IVPu+OzPn2QCtuM2iNBMzhXBO8dekF474JXiu
+         5u7BslPoZVLaTowwt1Kmu+Axkdp7lxiq3on+pVZSxj693VPFb5mkQgrJQctoZ2e1MLqW
+         jdgA==
+Sender: Guenter Roeck <groeck7@gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@kernel.org>
 
-I had intended to assist in testing with real hardware but there
-are other issues due to the 5.10 kernel on Alpha that need fixing
-first and I am working on that.  I am hoping to come back to this
-and can run some tests in the near future.
+Some drivers pass a pointer to volatile data to virt_to_bus() and
+virt_to_phys(). One exception is alpha. This results in a number
+of compile errors such as
 
-Cheers,
-Michael.
+drivers/net/wan/lmc/lmc_main.c: In function 'lmc_softreset':
+drivers/net/wan/lmc/lmc_main.c:1782:50: error:
+	passing argument 1 of 'virt_to_bus' discards 'volatile'
+	qualifier from pointer target type
 
-On Thu, Jul 01, 2021 at 07:41:09AM -0500, Bob Tracy wrote:
-> Quick update: if this issue was ever fixed, the patch hasn't made it
-> into the mainline kernel as of 5.13.0.  I'm still getting the system
-> lock-up when X11 starts, and have to hit the reset switch to recover.
->=20
-> For whatever it might be worth, the mainline 5.10.0 kernel continues
-> to work properly alongside all the user space changes in "sid" that
-> have happened since late last year.
->=20
-> Respectfully,
-> --Bob
->=20
-> On Fri, Jun 04, 2021 at 12:37:14AM -0500, Bob Tracy wrote:
-> > On Fri, Jun 04, 2021 at 12:18:58AM -0500, Bob Tracy wrote:
-> > > On Thu, Jun 03, 2021 at 03:15:05PM +0200, Maciej W. Rozycki wrote:
-> > > >  I have lost track about this issue, so please fill me in as to whe=
-ther=20
-> > > > the offending commit causing the regression has been bisected or no=
-t.
-> > >=20
-> > > It has.  Michael Cree reported the following back on April 5th:
-> > >=20
-> > > And the first bad commit is:
-> > >=20
-> > > 0fe3cf3a53b5c1205ec7d321be1185b075dff205 is the first bad commit
-> > > commit 0fe3cf3a53b5c1205ec7d321be1185b075dff205
-> > > Author: Christian K=F6nig <christian.koenig@amd.com>
-> > > Date:   Sat Oct 24 13:12:23 2020 +0200
-> > >=20
-> > >     drm/radeon: switch to new allocator v2
-> > >    =20
-> > >     It should be able to handle all cases here.
-> > >    =20
-> > >     v2: fix debugfs as well
-> > >    =20
-> > >     Signed-off-by: Christian K=F6nig <christian.koenig@amd.com>
-> > >     Reviewed-by: Dave Airlie <airlied@redhat.com>
-> > >     Reviewed-by: Madhav Chauhan <madhav.chauhan@amd.com>
-> > >     Tested-by: Huang Rui <ray.huang@amd.com>
-> > >     Link: https://patchwork.freedesktop.org/patch/397088/?series=3D83=
-051&rev=3D1
-> > >=20
-> > > :040000 040000 4e643ef861b921392bc67be21a42298c91c7ff7a b36453567c317=
-6a3cd50fa0b23886b0fd642560d M	drivers
-> >=20
-> > There were a few follow-up messages in this thread that left me with the
-> > impression there *may* have been a patch submitted, although Christian
-> > complained at the time he was having problems locating Alpha hardware to
-> > test with.
-> >=20
-> > The current (5.12.0 kernel) problem symptoms show some "improvement".
-> > I at least got to the point that the login screen displayed, but it
-> > had a bit of pixelation/distortion in a few areas indicative of "bad
-> > things about to happen".  Then I got the expected system lock-up,
-> > just as I originally reported: had to hit the reset switch to recover.
+drivers/atm/ambassador.c: In function 'do_loader_command':
+drivers/atm/ambassador.c:1747:58: error:
+	passing argument 1 of 'virt_to_bus' discards 'volatile'
+	qualifier from pointer target type
+
+Declare the parameter of virt_to_phys and virt_to_bus as pointer to volatile
+to fix the problem.
+
+Cc: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+We could instead try to modify the affected drivers, but both drivers
+use the buffer to communicate with the chip, so that would require lots
+of typecasts there. Another option would be to disable affected drivers
+for alpha, but that seems undesirable.
+Other ideas welcome.
+
+ arch/alpha/include/asm/io.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+index 0fab5ac90775..c9cb554fbe54 100644
+--- a/arch/alpha/include/asm/io.h
++++ b/arch/alpha/include/asm/io.h
+@@ -60,7 +60,7 @@ extern inline void set_hae(unsigned long new_hae)
+  * Change virtual addresses to physical addresses and vv.
+  */
+ #ifdef USE_48_BIT_KSEG
+-static inline unsigned long virt_to_phys(void *address)
++static inline unsigned long virt_to_phys(volatile void *address)
+ {
+ 	return (unsigned long)address - IDENT_ADDR;
+ }
+@@ -70,7 +70,7 @@ static inline void * phys_to_virt(unsigned long address)
+ 	return (void *) (address + IDENT_ADDR);
+ }
+ #else
+-static inline unsigned long virt_to_phys(void *address)
++static inline unsigned long virt_to_phys(volatile void *address)
+ {
+         unsigned long phys = (unsigned long)address;
+ 
+@@ -106,7 +106,7 @@ static inline void * phys_to_virt(unsigned long address)
+ extern unsigned long __direct_map_base;
+ extern unsigned long __direct_map_size;
+ 
+-static inline unsigned long __deprecated virt_to_bus(void *address)
++static inline unsigned long __deprecated virt_to_bus(volatile void *address)
+ {
+ 	unsigned long phys = virt_to_phys(address);
+ 	unsigned long bus = phys + __direct_map_base;
+-- 
+2.33.0
 
