@@ -1,87 +1,102 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH] alpha: Declare virt_to_phys and virt_to_bus parameter as pointer to volatile
-Date: Wed,  8 Sep 2021 22:00:33 -0700
-Message-ID: <20210909050033.1564459-1-linux@roeck-us.net>
+From: Arnd Bergmann <arnd@kernel.org>
+Subject: Re: [PATCH] alpha: Declare virt_to_phys and virt_to_bus parameter as
+ pointer to volatile
+Date: Thu, 9 Sep 2021 10:13:32 +0200
+Message-ID: <CAK8P3a0U-BxUfdTiwDRNHvGHetenF0zVObNVj0z67SqzzEeFyg@mail.gmail.com>
+References: <20210909050033.1564459-1-linux@roeck-us.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o8FqMxDgd8l7sId2kCNTKyMoE47Aco1YprUDt2DkIx8=;
-        b=hlay4CXUq7sieBd59o93+7cIFWC5zal3YB2NYexwhQAUI6cSAFd0++lgc2qN01kNwR
-         7vVa13kkaGNUXihmRAjmdZfmRvruBTcmFGbI/FUWX5cCN8GEBXUNDiLtdvvsZdQNDc1v
-         DCE3/YhO7XjrZFy7K2ojujqVkY7yc4kYYgplQzNBbqgo4t5A4dEk1ffPEseO+O47uWkR
-         bBIjputuQG2O/OczjEwNO5pnbWAEMa7IVPu+OzPn2QCtuM2iNBMzhXBO8dekF474JXiu
-         5u7BslPoZVLaTowwt1Kmu+Axkdp7lxiq3on+pVZSxj693VPFb5mkQgrJQctoZ2e1MLqW
-         jdgA==
-Sender: Guenter Roeck <groeck7@gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1631175230;
+        bh=MCd05u9z+cr1cwZljpMuCHpDxLmMpn+MkW/t1mn9uUw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=pSneemarx+jHsqihej06zoNGFQUu2/DLRsEFYfL4J7F9nL1bm2jPKq8uouPpgMONf
+         O+0JdkiTZTq8+MecD22iU5FDzkHpzFgyrL/hTl0gSTiw2UWvLRzTZxMrHulZmJDIHN
+         Xuo0Q862T/nDsBb/9bWFiBa6bzi++zpzjS27BNP6tneoonEQMkxK2SUJkFkJ4Vlv6j
+         5YBJZJ2n9i60jMYg7UiXJfFjFshW+qrZGt6baSFvh1w3SgkQtedP1/Kt7S7g10DxiT
+         ahC4jA5gqibmdr3FzeNtb+6/n1IOk+go8niO0bayrk9E2mRLmoeynFUFy9hl7BXBOK
+         59Hm7rLYX26Ag==
+In-Reply-To: <20210909050033.1564459-1-linux@roeck-us.net>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@kernel.org>
+Content-Transfer-Encoding: 7bit
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-Some drivers pass a pointer to volatile data to virt_to_bus() and
-virt_to_phys(). One exception is alpha. This results in a number
-of compile errors such as
+On Thu, Sep 9, 2021 at 7:00 AM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> Some drivers pass a pointer to volatile data to virt_to_bus() and
+> virt_to_phys(). One exception is alpha. This results in a number
+> of compile errors such as
+>
+> drivers/net/wan/lmc/lmc_main.c: In function 'lmc_softreset':
+> drivers/net/wan/lmc/lmc_main.c:1782:50: error:
+>         passing argument 1 of 'virt_to_bus' discards 'volatile'
+>         qualifier from pointer target type
+>
+> drivers/atm/ambassador.c: In function 'do_loader_command':
+> drivers/atm/ambassador.c:1747:58: error:
+>         passing argument 1 of 'virt_to_bus' discards 'volatile'
+>         qualifier from pointer target type
+>
+> Declare the parameter of virt_to_phys and virt_to_bus as pointer to volatile
+> to fix the problem.
+>
+> Cc: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 
-drivers/net/wan/lmc/lmc_main.c: In function 'lmc_softreset':
-drivers/net/wan/lmc/lmc_main.c:1782:50: error:
-	passing argument 1 of 'virt_to_bus' discards 'volatile'
-	qualifier from pointer target type
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-drivers/atm/ambassador.c: In function 'do_loader_command':
-drivers/atm/ambassador.c:1747:58: error:
-	passing argument 1 of 'virt_to_bus' discards 'volatile'
-	qualifier from pointer target type
+> ---
+> We could instead try to modify the affected drivers, but both drivers
+> use the buffer to communicate with the chip, so that would require lots
+> of typecasts there. Another option would be to disable affected drivers
+> for alpha, but that seems undesirable.
+> Other ideas welcome.
 
-Declare the parameter of virt_to_phys and virt_to_bus as pointer to volatile
-to fix the problem.
+Your patch is the obvious workaround, as this makes alpha behave the
+same way as all the other architectures.
 
-Cc: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-We could instead try to modify the affected drivers, but both drivers
-use the buffer to communicate with the chip, so that would require lots
-of typecasts there. Another option would be to disable affected drivers
-for alpha, but that seems undesirable.
-Other ideas welcome.
+Drivers using virt_to_bus() are already nonportable, so we could also
+decide to go through all users to see which ones are ready to be
+retired, and go through the architectures to see which ones actually
+still require drivers that use virt_to_bus(), removing the interface from
+the others. The ones I see are
 
- arch/alpha/include/asm/io.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+arch/alpha/Kconfig:     select VIRT_TO_BUS
+arch/h8300/Kconfig:     select VIRT_TO_BUS
+arch/ia64/Kconfig:      select VIRT_TO_BUS
+arch/m68k/Kconfig:      select VIRT_TO_BUS
+arch/microblaze/Kconfig:        select VIRT_TO_BUS
+arch/mips/Kconfig:      select VIRT_TO_BUS
+arch/parisc/Kconfig:    select VIRT_TO_BUS
+arch/powerpc/Kconfig:   select VIRT_TO_BUS                      if !PPC64
+arch/x86/Kconfig:       select VIRT_TO_BUS
+arch/xtensa/Kconfig:    select VIRT_TO_BUS
 
-diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-index 0fab5ac90775..c9cb554fbe54 100644
---- a/arch/alpha/include/asm/io.h
-+++ b/arch/alpha/include/asm/io.h
-@@ -60,7 +60,7 @@ extern inline void set_hae(unsigned long new_hae)
-  * Change virtual addresses to physical addresses and vv.
-  */
- #ifdef USE_48_BIT_KSEG
--static inline unsigned long virt_to_phys(void *address)
-+static inline unsigned long virt_to_phys(volatile void *address)
- {
- 	return (unsigned long)address - IDENT_ADDR;
- }
-@@ -70,7 +70,7 @@ static inline void * phys_to_virt(unsigned long address)
- 	return (void *) (address + IDENT_ADDR);
- }
- #else
--static inline unsigned long virt_to_phys(void *address)
-+static inline unsigned long virt_to_phys(volatile void *address)
- {
-         unsigned long phys = (unsigned long)address;
- 
-@@ -106,7 +106,7 @@ static inline void * phys_to_virt(unsigned long address)
- extern unsigned long __direct_map_base;
- extern unsigned long __direct_map_size;
- 
--static inline unsigned long __deprecated virt_to_bus(void *address)
-+static inline unsigned long __deprecated virt_to_bus(volatile void *address)
- {
- 	unsigned long phys = virt_to_phys(address);
- 	unsigned long bus = phys + __direct_map_base;
--- 
-2.33.0
+drivers/atm/Kconfig:    depends on PCI && VIRT_TO_BUS
+drivers/atm/Kconfig:    depends on PCI && VIRT_TO_BUS
+drivers/atm/Kconfig:    depends on PCI && VIRT_TO_BUS
+drivers/atm/Kconfig:    depends on PCI && VIRT_TO_BUS
+drivers/media/pci/sta2x11/Kconfig:      depends on PCI && VIDEO_V4L2
+&& VIRT_TO_BUS && I2C
+drivers/net/appletalk/Kconfig:  depends on DEV_APPLETALK && (ISA ||
+EISA) && ISA_DMA_API && VIRT_TO_BUS
+drivers/net/ethernet/dec/tulip/Kconfig: depends on VIRT_TO_BUS ||
+ALPHA || PPC || SPARC
+drivers/net/wan/Kconfig:        depends on ISA && m && ISA_DMA_API &&
+INET && HDLC && VIRT_TO_BUS
+drivers/net/wan/Kconfig:        depends on ISA && m && ISA_DMA_API &&
+HDLC && VIRT_TO_BUS
+drivers/net/wan/Kconfig:        depends on PCI && VIRT_TO_BUS && HDLC
+drivers/net/wan/Kconfig:        depends on ISA && m && ISA_DMA_API &&
+INET && HDLC && VIRT_TO_BUS
+drivers/scsi/Kconfig:   depends on SCSI && PCI && VIRT_TO_BUS
+drivers/scsi/Kconfig:   depends on PCI && SCSI && VIRT_TO_BUS
+drivers/vme/bridges/Kconfig:    depends on VIRT_TO_BUS
 
+I think we can drop VIRT_TO_BUS from everything other
+than x86-32, m68k and ppc32, and fix the tulip and xlr_net
+drivers to not use it.
+
+        Arnd
