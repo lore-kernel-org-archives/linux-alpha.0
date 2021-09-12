@@ -1,22 +1,22 @@
 From: Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 2/4] net: i825xx: Use absolute_pointer for memcpy on fixed memory location
-Date: Sun, 12 Sep 2021 09:01:47 -0700
-Message-ID: <20210912160149.2227137-3-linux@roeck-us.net>
+Subject: [PATCH 3/4] parisc: Use absolute_pointer for memcmp on fixed memory location
+Date: Sun, 12 Sep 2021 09:01:48 -0700
+Message-ID: <20210912160149.2227137-4-linux@roeck-us.net>
 References: <20210912160149.2227137-1-linux@roeck-us.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-sparse-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tyfgbpEWB0om8tzf9mpCL7ZcoNm2ky582Pji67hHRFQ=;
-        b=FipBo31bo4Y9wn2cwKQRxkhXZxLWCn+R45DcIskkVp75c1TgMGyjogwJwyZOXFC4tv
-         stoxC1TbwWGQ+SVkngtXViHocHoaVTtD2BBYiJPvDjNTybowvZ5OzMJ0BvcZBw1tSFVV
-         WvuF8X0N5/D8+gT4APANqLNRhq+59UrNncv3vpGQBPma8SCO7gYwVE6iGXjpUZDSx5LK
-         Mrre1qNJSrKUOp7Bz8xYEI5VjP5yPoQFMHyY65D1co3w7stKAEc0MHHesMO+X31r8VOS
-         nbGd99VOHdmPbZHJyPppMEZ1X8zmprSmHfblrUwwAkfgGe5JEZF/CJPrdQSQaVVyJAYv
-         OeTg==
+        bh=1/KmRngdTFmzo/UZtKn8rZGj6ovhn9EKtKsKEFMmxn8=;
+        b=amNjEwmKkK+EAJ9qU3oqx/lS59tXH0W5/YF8YlPF3GV2qc12vsrXWzh7XtqybrGlAs
+         o6pIua5w6eKY4OoNzk01slxP4ZKoUpwEix20mxfLDymqeV6qI2QXBDtCpG/j/Axk/5Hn
+         SL/Y6srbyHVRRcSQMUrQJX1adW0ddv0klYEXAcmoYLpDRJ0YEwI7heQhBx5g0pmX2EI9
+         a81hkcyl2X4pwumIopWL6c0I0MnYiRhIcqNy+fzEBpMbEWKPQmI90TT9YmHFZavmyr9s
+         dNxNgJxkpemPqlCLDg+7wlA8W6T1DHqssu6DB6v754xvJKFfmGv/rH/iU1X1Jihdtho4
+         kwLw==
 Sender: Guenter Roeck <groeck7@gmail.com>
 In-Reply-To: <20210912160149.2227137-1-linux@roeck-us.net>
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,34 +24,34 @@ Content-Type: text/plain; charset="us-ascii"
 To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, netdev@vger.kernel.org, linux-sparse@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
 
-gcc 11.x reports the following compiler warning/error.
+parisc:allmodconfig fails to build with the following error
+when using gcc 11.x.
 
-drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
-    ./arch/m68k/include/asm/string.h:72:25: error:
-            '__builtin_memcpy' reading 6 bytes from a region of size 0
-                    [-Werror=stringop-overread]
+arch/parisc/kernel/setup.c: In function 'start_parisc':
+arch/parisc/kernel/setup.c:389:28: error:
+	'__builtin_memcmp_eq' specified bound 8 exceeds source size 0
 
-Use absolute_address() to work around the problem.
+Avoid the problem by using absolute_pointer() when providing a memory
+address to memcmp().
 
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
- drivers/net/ethernet/i825xx/82596.c | 2 +-
+ arch/parisc/kernel/setup.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/i825xx/82596.c b/drivers/net/ethernet/i825xx/82596.c
-index b8a40146b895..b482f6f633bd 100644
---- a/drivers/net/ethernet/i825xx/82596.c
-+++ b/drivers/net/ethernet/i825xx/82596.c
-@@ -1144,7 +1144,7 @@ static struct net_device * __init i82596_probe(void)
- 			err = -ENODEV;
- 			goto out;
- 		}
--		memcpy(eth_addr, (void *) 0xfffc1f2c, ETH_ALEN);	/* YUCK! Get addr from NOVRAM */
-+		memcpy(eth_addr, absolute_pointer(0xfffc1f2c), ETH_ALEN); /* YUCK! Get addr from NOVRAM */
- 		dev->base_addr = MVME_I596_BASE;
- 		dev->irq = (unsigned) MVME16x_IRQ_I596;
- 		goto found;
+diff --git a/arch/parisc/kernel/setup.c b/arch/parisc/kernel/setup.c
+index cceb09855e03..4e13345b6581 100644
+--- a/arch/parisc/kernel/setup.c
++++ b/arch/parisc/kernel/setup.c
+@@ -384,7 +384,7 @@ void __init start_parisc(void)
+ 	struct pdc_coproc_cfg coproc_cfg;
+ 
+ 	/* check QEMU/SeaBIOS marker in PAGE0 */
+-	running_on_qemu = (memcmp(&PAGE0->pad0, "SeaBIOS", 8) == 0);
++	running_on_qemu = (memcmp(absolute_pointer(&PAGE0->pad0), "SeaBIOS", 8) == 0);
+ 
+ 	cpunum = smp_processor_id();
+ 
 -- 
 2.33.0
 
