@@ -1,20 +1,20 @@
 From: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH 3/4] parisc: Use absolute_pointer for memcmp on fixed
+Subject: Re: [PATCH 4/4] alpha: Use absolute_pointer for strcmp on fixed
  memory location
-Date: Sun, 12 Sep 2021 12:11:38 -0700
-Message-ID: <CAHk-=wi1TBvyk7SWX+5LLYN8ZnTJMut1keQbOrKCG=nb08hdiQ@mail.gmail.com>
-References: <20210912160149.2227137-1-linux@roeck-us.net> <20210912160149.2227137-4-linux@roeck-us.net>
+Date: Sun, 12 Sep 2021 12:13:11 -0700
+Message-ID: <CAHk-=wi1=8shingNuo1CtfJ7eDByDsmwsz750Nbxq=7q0Gs+zg@mail.gmail.com>
+References: <20210912160149.2227137-1-linux@roeck-us.net> <20210912160149.2227137-5-linux@roeck-us.net>
 Mime-Version: 1.0
 Return-path: <linux-parisc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=E1PHZ6ydkqEkrZPVcY11k8G+o6nXM73c5JaOIi36jdM=;
-        b=Mmh3TCnuXic/hCA6XvkP2osD5zmauEUtEa852ODITJl9q7DRJZnlYFaFYG+mxH6vf6
-         Z+ggUrlsmP9EQRyIHakVw8bJD81GHQopdHiqd4QBP+UGydXePHYv5SH2cpjAaKjOE5af
-         i5L6vjez7vZKGjXnjuCG5wVITdXtC1IYH3rOc=
-In-Reply-To: <20210912160149.2227137-4-linux@roeck-us.net>
+        bh=tzZRty5syTefvslqvSNH1KyI4p4ePIHehKrpq3jNHak=;
+        b=UhV7ZB03lfxtT+Ye8FzC9W6hmCQoAxoCGQimJcLY7prrx8mbKe9DIiT4SGaXesQFeB
+         bwrVZJdZaPGgx4eSKLVt3nOkqcznQcyPpP9BRmCWBP8k038tMJltDQ1VrUpAU3aNMwNA
+         gTOxiP2LUi8KOIoIT19q3qZx861ljKejcehZM=
+In-Reply-To: <20210912160149.2227137-5-linux@roeck-us.net>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -23,38 +23,16 @@ Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.
 
 On Sun, Sep 12, 2021 at 9:02 AM Guenter Roeck <linux@roeck-us.net> wrote:
 >
-> -       running_on_qemu = (memcmp(&PAGE0->pad0, "SeaBIOS", 8) == 0);
-> +       running_on_qemu = (memcmp(absolute_pointer(&PAGE0->pad0), "SeaBIOS", 8) == 0);
+> -       if (strcmp(COMMAND_LINE, "INSTALL") == 0) {
+> +       if (strcmp(absolute_pointer(COMMAND_LINE), "INSTALL") == 0) {
 
-This seems entirely the wrong thing to do, and makes no sense. That
-"&PAGE0->pad0" is a perfectly valid pointer, and that's not where the
-problem is.
+Again, this feels very much like treating the symptoms, not actually
+fixing the real issue.
 
-The problem is "PAGE0" itself:
+It's COMMAND_LINE itself that should have been fixed up, not that one use of it.
 
-    #define PAGE0   ((struct zeropage *)__PAGE_OFFSET)
+Because the only reason you didn't get a warning from later uses is
+that 'strcmp()' is doing compiler-specific magic. You're just delaying
+the inevitable warnings about the other uses of that thing.
 
-which takes that absolute offset and creates a pointer out of it.
-
-IOW, _that_ is what should have the "absolute_pointer()" thing, and in
-that context the name of that macro and its use actually makes sense.
-
-No?
-
-An alternative - and possibly cleaner - approach that doesn't need
-absolute_pointer() at all might be to just do
-
-        extern struct zeropage PAGE0;
-
-and then make that PAGE0 be defined to __PAGE_OFFSET in the parisc
-vmlinux.lds.S file.
-
-Then doing things like
-
-        running_on_qemu = !memcmp(&PAGE0.pad0, "SeaBIOS", 8);
-
-would JustWork(tm).
-
-Hmm?
-
-             Linus
+            Linus
