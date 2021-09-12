@@ -1,22 +1,22 @@
 From: Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 1/4] compiler.h: Introduce absolute_pointer macro
-Date: Sun, 12 Sep 2021 09:01:46 -0700
-Message-ID: <20210912160149.2227137-2-linux@roeck-us.net>
+Subject: [PATCH 2/4] net: i825xx: Use absolute_pointer for memcpy on fixed memory location
+Date: Sun, 12 Sep 2021 09:01:47 -0700
+Message-ID: <20210912160149.2227137-3-linux@roeck-us.net>
 References: <20210912160149.2227137-1-linux@roeck-us.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=r6G6ldfRmdQpkB7KqHuOk4bEneXh0SM7mr0HLHhwSw8=;
-        b=Bu0ce9k4resy7k5SZrD1WQhVmkSYhOoeHGzkZzv5Nc0B8bWGhxx/Aj4TjiehegdBaI
-         LjN9bn+MJyB7uApcAcmFGLSTx5bDUpvklEmd8X2zd9/X7xA87vJr2zOo3Hy18p0Fx+zG
-         ncXGtq1jgqh4lE2zR97Jo/+BtoriyOKylSjH6n726eJSSNyu18uZrhdqxsT5Y9mkfWRb
-         5fKb1KLr5LG134I5wVxPxDxnWX+1+7H9M1Llt2mzRMrlwo3T+xzlbL1swSN0eY7g9FA+
-         vNtAm8yzpANFF9m69/crzCeMa/716WoXl3nZNCzx7m/colUgdcATEKlSjQMIPHd4C/bp
-         qrEQ==
+        bh=tyfgbpEWB0om8tzf9mpCL7ZcoNm2ky582Pji67hHRFQ=;
+        b=FipBo31bo4Y9wn2cwKQRxkhXZxLWCn+R45DcIskkVp75c1TgMGyjogwJwyZOXFC4tv
+         stoxC1TbwWGQ+SVkngtXViHocHoaVTtD2BBYiJPvDjNTybowvZ5OzMJ0BvcZBw1tSFVV
+         WvuF8X0N5/D8+gT4APANqLNRhq+59UrNncv3vpGQBPma8SCO7gYwVE6iGXjpUZDSx5LK
+         Mrre1qNJSrKUOp7Bz8xYEI5VjP5yPoQFMHyY65D1co3w7stKAEc0MHHesMO+X31r8VOS
+         nbGd99VOHdmPbZHJyPppMEZ1X8zmprSmHfblrUwwAkfgGe5JEZF/CJPrdQSQaVVyJAYv
+         OeTg==
 Sender: Guenter Roeck <groeck7@gmail.com>
 In-Reply-To: <20210912160149.2227137-1-linux@roeck-us.net>
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,36 +24,34 @@ Content-Type: text/plain; charset="us-ascii"
 To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, netdev@vger.kernel.org, linux-sparse@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
 
-absolute_pointer() disassociates a pointer from its originating symbol
-type and context. Use it to prevent compiler warnings/errors such as
+gcc 11.x reports the following compiler warning/error.
 
 drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
-./arch/m68k/include/asm/string.h:72:25: error:
-	'__builtin_memcpy' reading 6 bytes from a region of size 0
-		[-Werror=stringop-overread]
+    ./arch/m68k/include/asm/string.h:72:25: error:
+            '__builtin_memcpy' reading 6 bytes from a region of size 0
+                    [-Werror=stringop-overread]
 
-Such warnings may be reported by gcc 11.x for string and memory operations
-on fixed addresses.
+Use absolute_address() to work around the problem.
 
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
- include/linux/compiler.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/i825xx/82596.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index b67261a1e3e9..3d5af56337bd 100644
---- a/include/linux/compiler.h
-+++ b/include/linux/compiler.h
-@@ -188,6 +188,8 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
-     (typeof(ptr)) (__ptr + (off)); })
- #endif
- 
-+#define absolute_pointer(val)	RELOC_HIDE((void *)(val), 0)
-+
- #ifndef OPTIMIZER_HIDE_VAR
- /* Make the optimizer believe the variable can be manipulated arbitrarily. */
- #define OPTIMIZER_HIDE_VAR(var)						\
+diff --git a/drivers/net/ethernet/i825xx/82596.c b/drivers/net/ethernet/i825xx/82596.c
+index b8a40146b895..b482f6f633bd 100644
+--- a/drivers/net/ethernet/i825xx/82596.c
++++ b/drivers/net/ethernet/i825xx/82596.c
+@@ -1144,7 +1144,7 @@ static struct net_device * __init i82596_probe(void)
+ 			err = -ENODEV;
+ 			goto out;
+ 		}
+-		memcpy(eth_addr, (void *) 0xfffc1f2c, ETH_ALEN);	/* YUCK! Get addr from NOVRAM */
++		memcpy(eth_addr, absolute_pointer(0xfffc1f2c), ETH_ALEN); /* YUCK! Get addr from NOVRAM */
+ 		dev->base_addr = MVME_I596_BASE;
+ 		dev->irq = (unsigned) MVME16x_IRQ_I596;
+ 		goto found;
 -- 
 2.33.0
 
