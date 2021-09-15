@@ -1,67 +1,59 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v4 11/15] pci: Add pci_iomap_shared{,_range}
-Date: Mon, 13 Sep 2021 01:53:27 -0400
-Message-ID: <20210913013815-mutt-send-email-mst@kernel.org>
-References: <d21a2a2d-4670-ba85-ce9a-fc8ea80ef1be@linux.intel.com>
- <20210829112105-mutt-send-email-mst@kernel.org>
- <09b340dd-c8a8-689c-4dad-4fe0e36d39ae@linux.intel.com>
- <20210829181635-mutt-send-email-mst@kernel.org>
- <3a88a255-a528-b00a-912b-e71198d5f58f@linux.intel.com>
- <20210830163723-mutt-send-email-mst@kernel.org>
- <69fc30f4-e3e2-add7-ec13-4db3b9cc0cbd@linux.intel.com>
- <20210910054044-mutt-send-email-mst@kernel.org>
- <f672dc1c-5280-7bbc-7a56-7c7aab31725c@linux.intel.com>
- <20210911195006-mutt-send-email-mst@kernel.org>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v2 0/4] Introduce and use absolute_pointer macro
+Date: Tue, 14 Sep 2021 20:52:23 -0700
+Message-ID: <20210915035227.630204-1-linux@roeck-us.net>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1631512417;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lmIEdzAE8KtfMvdI7Vd3u1eV+5W/XqJ3cF9Jvl0CpQM=;
-        b=hba9LN/K8sGgLov/lZRQ6l3oSQ+7L+pv5G+v2J8/Z0HMbT3DYz02f4jX5DU7by81SqSv1U
-        eDyW2pgFe0A3K52vJB8EBdW5sR3IskS8SyW57BuFogt3KmtOeA9Tcb7AMcYJFmk9kG1yZF
-        Z7hLO+6Vc2vi5HLduNMSzDXAvW8+cpw=
-Content-Disposition: inline
-In-Reply-To: <20210911195006-mutt-send-email-mst@kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EWlyAfIJ6LK6KpxwIys48q3PWxQlxyDohB67wcgCd/M=;
+        b=nUrn/Lw/ozglO0/A9wBQBB3xPkoAzmKdrQprI3+VccXyvcgJsFFh6Bxae1HWUezXd4
+         AQmb9ebsH9GIgQE1wl9KXWoc7PiSvaIXe9WbY/IYmDO2508scavL+H0oJX9G/cISxyrs
+         l7dPZq/Rzp/uC/iEYMQydnJlrkX84nLnxe5tih2wDXRTX+TvBe2oCSsAxdYX1HhGNItO
+         ZbYGuPbTSYb0At2GGZVSlG9XTXaXKO2wfMUzpjKvNqfo/sD0H9uxRzfXaUWlNF9avXLB
+         uvmw7xVrRzDHurwjcA9UUGVm8zBBI/SskOAh6S7tIPd1LrwGhQjamQId6BvHpdzk92Fe
+         Aq/w==
+Sender: Guenter Roeck <groeck7@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Andi Kleen <ak@linux.intel.com>
-Cc: Dan Williams <dan.j.williams@intel.com>, "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Kirill Shutemov <kirill.shutemov@lin>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, netdev@vger.kernel.org, linux-sparse@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
 
-On Sat, Sep 11, 2021 at 07:54:43PM -0400, Michael S. Tsirkin wrote:
-> On Fri, Sep 10, 2021 at 09:34:45AM -0700, Andi Kleen wrote:
-> > > > that's why
-> > > > an extra level of defense of ioremap opt-in is useful.
-> > > OK even assuming this, why is pci_iomap opt-in useful?
-> > > That never happens before probe - there's simply no pci_device then.
-> > 
-> > 
-> > Hmm, yes that's true. I guess we can make it default to opt-in for
-> > pci_iomap.
-> > 
-> > It only really matters for device less ioremaps.
-> 
-> OK. And same thing for other things with device, such as
-> devm_platform_ioremap_resource.
-> If we agree on all that, this will basically remove virtio
-> changes from the picture ;)
+Kernel test builds currently fail for several architectures with error
+messages such as the following.
 
+drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
+./arch/m68k/include/asm/string.h:72:25: error:
+	'__builtin_memcpy' reading 6 bytes from a region of size 0
+		[-Werror=stringop-overread]
 
-Something else that was pointed out to me:
+Such warnings may be reported by gcc 11.x for string and memory operations
+on fixed addresses if gcc's builtin functions are used for those
+operations.
 
-         fs->window_kaddr = devm_memremap_pages(&vdev->dev, pgmap);
-         if (IS_ERR(fs->window_kaddr))
-                 return PTR_ERR(fs->window_kaddr);
+This patch series introduces absolute_pointer() to fix the problem.
+absolute_pointer() disassociates a pointer from its originating symbol
+type and context, and thus prevents gcc from making assumptions about
+pointers passed to memory operations.
 
+v2: Drop parisc patch (the problem will be solved differently)
+    alpha: Move setup.h out of uapi
+    Define COMMAND_LINE for alpha as absolute_pointer instead of using
+    absolute_pointer on the define.
 
-looks like if we forget to set the shared flag then it will
-corrupt the DAX data?
+----------------------------------------------------------------
+Guenter Roeck (4):
+      compiler.h: Introduce absolute_pointer macro
+      net: i825xx: Use absolute_pointer for memcpy from fixed memory location
+      alpha: Move setup.h out of uapi
+      alpha: Use absolute_pointer to define COMMAND_LINE
 
-
-> -- 
-> MST
-> 
-
+ arch/alpha/include/asm/setup.h      | 43 +++++++++++++++++++++++++++++++++++++
+ arch/alpha/include/uapi/asm/setup.h | 42 +++---------------------------------
+ drivers/net/ethernet/i825xx/82596.c |  2 +-
+ include/linux/compiler.h            |  2 ++
+ 4 files changed, 49 insertions(+), 40 deletions(-)
+ create mode 100644 arch/alpha/include/asm/setup.h
