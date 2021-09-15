@@ -1,7 +1,7 @@
 From: Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 1/4] compiler.h: Introduce absolute_pointer macro
-Date: Tue, 14 Sep 2021 20:52:24 -0700
-Message-ID: <20210915035227.630204-2-linux@roeck-us.net>
+Subject: [PATCH v2 3/4] alpha: Move setup.h out of uapi
+Date: Tue, 14 Sep 2021 20:52:26 -0700
+Message-ID: <20210915035227.630204-4-linux@roeck-us.net>
 References: <20210915035227.630204-1-linux@roeck-us.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -10,13 +10,13 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aSjFc8iMNGiFbg7CQVDwoW1UzNaNt3hOiMgdB3yaK6Q=;
-        b=avFYgPC7uaqq4BQUqTkrdfHqJOlz0Pvdl1zxUeSN961ECarn+UhUThOo+h8V6dp6Xm
-         QTFpftfBJLDOqb8FviFk9y4kf92iTH45DoWBmeS02OKmmxWKEYROpsgPMmgOYmB53rND
-         JFo70jqrQAIVZe2+M4oqVVUQ36Co96fZdV1yG2iMIJIz7uydiQASPbq7QzORALwhcZ4y
-         yzCPf1IxUFITfqyoQFzxeyvV7tCQk9ZFa5uBTpXlYJEAshRcy1UUZvs1ykHaXNGZG0pV
-         X0IY7Oj9CLSa9Gyq/A7pDZkCLBM6euB8D4FE4LKOyWHvX/N1p52re2oFsGk7PuIc/mqQ
-         dGkQ==
+        bh=3aaPF5vSGERQCaEoUNmmtyNjkH4NB7gnK3IgOPR3RPc=;
+        b=eSchhtH2NEH2+tJRmJu694dKY96qWoqIr+byFRhjZ0JtBGo6K0a51DfHqbpC8U70n8
+         J21fy+wOMHTVOZw3AL5RIXBVjhOP94A8qWIeozYRduDnrTClsTbfIOSpclyShMdAct/2
+         x5yCdIE9hWc0uY7w3OW0zoUQI58Mx8rBue/60ygP6ANECaDrJHeERWSyhAEBH4Yc9QBt
+         6cfzkfr2u1yCGwKa1NaFh4Rscusxu86BFipQIZrw9WutQSHjGQW2ilaYFmE1BCRQDpLT
+         5nriXqiLA08Q7iESCzgOw+38MzMlKylsSnk/mFx4hFg43e/inPhlwPQ2ZuEsc39/hNwp
+         dMwg==
 Sender: Guenter Roeck <groeck7@gmail.com>
 In-Reply-To: <20210915035227.630204-1-linux@roeck-us.net>
 List-ID: <linux-alpha.vger.kernel.org>
@@ -24,38 +24,122 @@ Content-Type: text/plain; charset="us-ascii"
 To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, netdev@vger.kernel.org, linux-sparse@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
 
-absolute_pointer() disassociates a pointer from its originating symbol
-type and context. Use it to prevent compiler warnings/errors such as
+Most of the contents of setup.h have no value for userspace
+applications. The file was probably moved to uapi accidentally.
 
-drivers/net/ethernet/i825xx/82596.c: In function 'i82596_probe':
-./arch/m68k/include/asm/string.h:72:25: error:
-	'__builtin_memcpy' reading 6 bytes from a region of size 0
-		[-Werror=stringop-overread]
-
-Such warnings may be reported by gcc 11.x for string and memory operations
-on fixed addresses.
+Keep the file in uapi to define the alpha-specific COMMAND_LINE_SIZE.
+Move all other defines to arch/alpha/include/asm/setup.h.
 
 Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
-v2: No change
+v2: Added patch
 
- include/linux/compiler.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/alpha/include/asm/setup.h      | 43 +++++++++++++++++++++++++++++
+ arch/alpha/include/uapi/asm/setup.h | 42 ++--------------------------
+ 2 files changed, 46 insertions(+), 39 deletions(-)
+ create mode 100644 arch/alpha/include/asm/setup.h
 
-diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index b67261a1e3e9..3d5af56337bd 100644
---- a/include/linux/compiler.h
-+++ b/include/linux/compiler.h
-@@ -188,6 +188,8 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
-     (typeof(ptr)) (__ptr + (off)); })
- #endif
- 
-+#define absolute_pointer(val)	RELOC_HIDE((void *)(val), 0)
+diff --git a/arch/alpha/include/asm/setup.h b/arch/alpha/include/asm/setup.h
+new file mode 100644
+index 000000000000..58fe3f45a235
+--- /dev/null
++++ b/arch/alpha/include/asm/setup.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef __ALPHA_SETUP_H
++#define __ALPHA_SETUP_H
 +
- #ifndef OPTIMIZER_HIDE_VAR
- /* Make the optimizer believe the variable can be manipulated arbitrarily. */
- #define OPTIMIZER_HIDE_VAR(var)						\
++#include <uapi/asm/setup.h>
++
++/*
++ * We leave one page for the initial stack page, and one page for
++ * the initial process structure. Also, the console eats 3 MB for
++ * the initial bootloader (one of which we can reclaim later).
++ */
++#define BOOT_PCB	0x20000000
++#define BOOT_ADDR	0x20000000
++/* Remove when official MILO sources have ELF support: */
++#define BOOT_SIZE	(16*1024)
++
++#ifdef CONFIG_ALPHA_LEGACY_START_ADDRESS
++#define KERNEL_START_PHYS	0x300000 /* Old bootloaders hardcoded this.  */
++#else
++#define KERNEL_START_PHYS	0x1000000 /* required: Wildfire/Titan/Marvel */
++#endif
++
++#define KERNEL_START	(PAGE_OFFSET+KERNEL_START_PHYS)
++#define SWAPPER_PGD	KERNEL_START
++#define INIT_STACK	(PAGE_OFFSET+KERNEL_START_PHYS+0x02000)
++#define EMPTY_PGT	(PAGE_OFFSET+KERNEL_START_PHYS+0x04000)
++#define EMPTY_PGE	(PAGE_OFFSET+KERNEL_START_PHYS+0x08000)
++#define ZERO_PGE	(PAGE_OFFSET+KERNEL_START_PHYS+0x0A000)
++
++#define START_ADDR	(PAGE_OFFSET+KERNEL_START_PHYS+0x10000)
++
++/*
++ * This is setup by the secondary bootstrap loader.  Because
++ * the zero page is zeroed out as soon as the vm system is
++ * initialized, we need to copy things out into a more permanent
++ * place.
++ */
++#define PARAM			ZERO_PGE
++#define COMMAND_LINE		((char *)(PARAM + 0x0000))
++#define INITRD_START		(*(unsigned long *) (PARAM+0x100))
++#define INITRD_SIZE		(*(unsigned long *) (PARAM+0x108))
++
++#endif
+diff --git a/arch/alpha/include/uapi/asm/setup.h b/arch/alpha/include/uapi/asm/setup.h
+index 13b7ee465b0e..f881ea5947cb 100644
+--- a/arch/alpha/include/uapi/asm/setup.h
++++ b/arch/alpha/include/uapi/asm/setup.h
+@@ -1,43 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+-#ifndef __ALPHA_SETUP_H
+-#define __ALPHA_SETUP_H
++#ifndef _UAPI__ALPHA_SETUP_H
++#define _UAPI__ALPHA_SETUP_H
+ 
+ #define COMMAND_LINE_SIZE	256
+ 
+-/*
+- * We leave one page for the initial stack page, and one page for
+- * the initial process structure. Also, the console eats 3 MB for
+- * the initial bootloader (one of which we can reclaim later).
+- */
+-#define BOOT_PCB	0x20000000
+-#define BOOT_ADDR	0x20000000
+-/* Remove when official MILO sources have ELF support: */
+-#define BOOT_SIZE	(16*1024)
+-
+-#ifdef CONFIG_ALPHA_LEGACY_START_ADDRESS
+-#define KERNEL_START_PHYS	0x300000 /* Old bootloaders hardcoded this.  */
+-#else
+-#define KERNEL_START_PHYS	0x1000000 /* required: Wildfire/Titan/Marvel */
+-#endif
+-
+-#define KERNEL_START	(PAGE_OFFSET+KERNEL_START_PHYS)
+-#define SWAPPER_PGD	KERNEL_START
+-#define INIT_STACK	(PAGE_OFFSET+KERNEL_START_PHYS+0x02000)
+-#define EMPTY_PGT	(PAGE_OFFSET+KERNEL_START_PHYS+0x04000)
+-#define EMPTY_PGE	(PAGE_OFFSET+KERNEL_START_PHYS+0x08000)
+-#define ZERO_PGE	(PAGE_OFFSET+KERNEL_START_PHYS+0x0A000)
+-
+-#define START_ADDR	(PAGE_OFFSET+KERNEL_START_PHYS+0x10000)
+-
+-/*
+- * This is setup by the secondary bootstrap loader.  Because
+- * the zero page is zeroed out as soon as the vm system is
+- * initialized, we need to copy things out into a more permanent
+- * place.
+- */
+-#define PARAM			ZERO_PGE
+-#define COMMAND_LINE		((char*)(PARAM + 0x0000))
+-#define INITRD_START		(*(unsigned long *) (PARAM+0x100))
+-#define INITRD_SIZE		(*(unsigned long *) (PARAM+0x108))
+-
+-#endif
++#endif /* _UAPI__ALPHA_SETUP_H */
 -- 
 2.33.0
 
