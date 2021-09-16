@@ -1,42 +1,41 @@
-From: Michael Cree <mcree@orcon.net.nz>
+From: Anders Larsen <al@alarsen.net>
 Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-Date: Thu, 16 Sep 2021 12:34:34 +1200
-Message-ID: <20210916003434.GB7246@tower>
-References: <20210915035227.630204-1-linux@roeck-us.net>
- <CAHk-=wjXr+NnNPTorhaW81eAbdF90foVo-5pQqRmXZi-ZGaX6Q@mail.gmail.com>
+Date: Thu, 16 Sep 2021 09:02:17 +0200
+Message-ID: <5497691.DvuYhMxLoT@alarsen.net>
+References: <20210915035227.630204-1-linux@roeck-us.net> <CAHk-=whSkMh9mc7+OSBZZvpoEEJmS6qY7kX3qixEXTLKGc=wgw@mail.gmail.com> <CAHk-=wjynK7SSgTOvW7tfpFZZ0pzo67BsOsqtVHYtvju8F_bng@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjXr+NnNPTorhaW81eAbdF90foVo-5pQqRmXZi-ZGaX6Q@mail.gmail.com>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alarsen.net; s=joe;
+        t=1631775737; bh=oaWiy3941asGmQdU0t8Spdb3xrM4VKJq8AFtrBfhgJw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FA8bIvnmYzDGl1DiFArlpFrsxGozZYdTiPu3FAjfQ8BBaJL01aFd1YVLlrzsz8TEn
+         dv+GKlWr7ihbAGrWebwbn410wk8qOwdKRBK7xP0k6mB2I0HXtTuPbJCfnbgNIZytC4
+         jPDPqG0ytTKEtbkfS0IX9JQSPfWvwSGyORQqGtaA=
+In-Reply-To: <CAHk-=wjynK7SSgTOvW7tfpFZZ0pzo67BsOsqtVHYtvju8F_bng@mail.gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
 To: Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Guenter Roeck <linux@roeck-us.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>, Sparse Mailing-list <linux-sparse@vger.kernel.org>
 
-On Wed, Sep 15, 2021 at 12:18:58PM -0700, Linus Torvalds wrote:
-> On Tue, Sep 14, 2021 at 8:52 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> >
-> > This patch series introduces absolute_pointer() to fix the problem.
-> > absolute_pointer() disassociates a pointer from its originating symbol
-> > type and context, and thus prevents gcc from making assumptions about
-> > pointers passed to memory operations.
-> 
-> Ok, I've applied this to my tree.
-> 
-> I note that the physical BOOT_PCB addresses in the alpha setup.h file
-> might be useful for things like MILO in user space, but since I
-> couldn't even find MILO sources any more, I couldn't really check.
-> 
-> I suspect alpha is basically on life support and presumably nobody
-> would ever compile a bootloader anyway, so it's unlikely to matter.
-> 
-> If somebody does find any issues, we'll know better and we can ask
-> where the user space sources are that might use that alpha setup.h
-> file.
+On Wednesday, 2021-09-15 23:19 Linus Torvalds wrote:
+> Ok, I didn't love any of the patches I saw for the qnx4 problem, so I
+> silenced that warning with a new patch of my own. Like the sparc64
+> case, the fix is to describe more extensively to the compiler what the
+> code is actually doing.
 
-I think everyone uses aboot now as the bootloader on Alpha.  So as
-long as we can still compile aboot everyone should be happy.
+thanks, looks good to me, too!
+
+> Looking at the qnx4 code-base history, I don't think it has gotten any
+> actual development outside of cleanups in the git history timeframe,
+> which makes me suspect nobody uses this code.
+> 
+> But hey, maybe it just works so well for the very specialized user base ...
+
+it's actually the latter (although I guess the user base is shrinking)
 
 Cheers
-Michael.
+Anders
+
+
+
