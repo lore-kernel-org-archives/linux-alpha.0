@@ -1,65 +1,56 @@
 From: Linus Torvalds <torvalds@linux-foundation.org>
 Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-Date: Sat, 18 Sep 2021 14:12:15 -0700
-Message-ID: <CAHk-=whswL8vPtdVphebUwdDd2Y-9j2d8XAd35bB+mqrhc0YTA@mail.gmail.com>
+Date: Sat, 18 Sep 2021 15:09:12 -0700
+Message-ID: <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
 References: <CAHk-=whY5mLggPSr2U00mqgUbRJYnYSxtNZm4FnEtQrHftYr8Q@mail.gmail.com>
- <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org> <CAHk-=wjZukwHDpm6PUP=cFTi8wWQs6Z5Np7xv7SRphNqvm0FPw@mail.gmail.com>
+ <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org>
 Mime-Version: 1.0
-Return-path: <linux-sparse-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yVZJu4t/IugUGV+W6kU+ykKkbEaLVPP4RIQU42du5mE=;
-        b=NO0esR917j83JwTOpZQWYClId3457L6NJIf6fJ7Evei4pDJ6w9tdhLXDN3IinOEvW+
-         VMthkeYirKlrzLR7LCf4USQHGLJ9wmo5a/QkxpfY9+CPatz4XjsnDZX+q2dIqcXYIANe
-         4/RbL5IIz9wKXWQ+bU6E9Y8mF2Wc3GAB8iq/w=
-In-Reply-To: <CAHk-=wjZukwHDpm6PUP=cFTi8wWQs6Z5Np7xv7SRphNqvm0FPw@mail.gmail.com>
+        bh=hhzplMeBODusyr1H2stA0puUgPSaTtOBgK77tHO282k=;
+        b=JTYIBPqLj92nNTxPKVgSXgrpmcBI0kIM1GLPs6qJei5SauEXmL4YjUER2rr88W6PSq
+         1DyThW7PUpCkaPaRUzGHd63izjL4GOav/VKQujZg/VmlgUEkUA00v11NnnZZ74r1NHxh
+         4wDTaM/CdGI1g53lKb6vt1ECENxdljnyVleYE=
+In-Reply-To: <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Ulrich Teichert <krypton@ulrich-teichert.org>
 Cc: Michael Cree <mcree@orcon.net.nz>, Guenter Roeck <linux@roeck-us.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>, Sparse Mailing-list <linux-sparse@vger.kernel.org>
 
-On Sat, Sep 18, 2021 at 1:46 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+On Sat, Sep 18, 2021 at 1:26 PM Ulrich Teichert
+<krypton@ulrich-teichert.org> wrote:
 >
-> But your config shows _other_ errors with the IO functions, so I guess
-> I'll need to look at that one too.
+> I was just tinkering with it to get it compiled without warning,
+> I certainly didn't get the big picture :-/
 
-Oh, and all those games with
+Ok, you shamed me into some tinkering too, and I fixed a couple of
+issues with the alpha build.
 
-   #define __EXTERN_INLINE
-   #include <asm/io.h>
-   #include <asm/jensen.h>
-   #undef  __EXTERN_INLINE
+The whole "pci_iounmap()" mess is not something I solved (you were
+cc'd on the email I sent out about that), but I did test a few
+different Jensen configurations and fixed a couple of uglies.
 
-don't actually work, because there's the usual multiple-inclusion
-protection on top of asm/jensen.h:
+So at least _some_ Jensen configurations build cleanly once more, and
+I re-enabled JENSEN as a valid machine target.
 
-   #ifndef __ALPHA_JENSEN_H
-   #define __ALPHA_JENSEN_H
+But if it doesn't boot, it's all fairly moot. And those things are a
+pain to debug, and if the last booting kernel was years and years ago,
+I don't think it realistically will necessarily ever be fixed.
 
-and this include of <asm/jensen.h> is entirely unused, because we
-ended up getting the one *without* that empty __EXTERN_INLINE #define
-from an earlier include of
+Oh well. I have an odd love-hate relationship with alpha.
 
-  #include <linux/interrupt.h>
+I think it's one of the worst architectures ever designed (memory
+ordering is completely broken, and the lack of byte operations in the
+original specs were a big reason for the initial problems and eventual
+failure).
 
-that caused asm/io.h and asm/jensen.h to be included earlier.
+But at the same time, I really did enjoy it back in the day, and it
+_was_ the first port I did, and the first truly integrated kernel
+architecture (the original Linux m68k port that preceded it was a
+"hack up and replace" job rather than "integrate")
 
-The *other* machine files know to do their includes at the top of the file.
-
-But then I end up getting
-
-     ERROR: modpost: "__udiv_qrnnd" [lib/mpi/mpi.ko] undefined!
-
-because CONFIG_MATHEMU wasn't set and the crypto stuff wants the MPI code.
-
-So there seems to be other alpha Kconfig issues in there, and they
-aren't all actually Jensen-specific.
-
-Oh well. I guess can fix things up, since I did get tthe
-cross-compiler environment..
-
-          Linus
+           Linus
