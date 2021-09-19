@@ -1,56 +1,61 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Dave Taht <dave.taht@gmail.com>
 Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-Date: Sat, 18 Sep 2021 15:09:12 -0700
-Message-ID: <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
+Date: Sun, 19 Sep 2021 08:13:32 -0700
+Message-ID: <CAA93jw6gK9_PMa_BtabkqyZLT4Vb+x4gsADT7vU+75bucnvrAQ@mail.gmail.com>
 References: <CAHk-=whY5mLggPSr2U00mqgUbRJYnYSxtNZm4FnEtQrHftYr8Q@mail.gmail.com>
- <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org>
+ <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org> <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-sparse-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hhzplMeBODusyr1H2stA0puUgPSaTtOBgK77tHO282k=;
-        b=JTYIBPqLj92nNTxPKVgSXgrpmcBI0kIM1GLPs6qJei5SauEXmL4YjUER2rr88W6PSq
-         1DyThW7PUpCkaPaRUzGHd63izjL4GOav/VKQujZg/VmlgUEkUA00v11NnnZZ74r1NHxh
-         4wDTaM/CdGI1g53lKb6vt1ECENxdljnyVleYE=
-In-Reply-To: <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org>
+         :cc:content-transfer-encoding;
+        bh=vbpoc8nlnfHxnI+l9mWkkIGQVWPI3MGONh3p7LPE7MI=;
+        b=VM30cLMK8vCJPnDOrNVJVLKgaM108XQCUD2FUTn/7VOT0R6gTL8DYA/S/xiXNWm3y1
+         AayprkuIsnStSNKMVtZw9+Rz5oK+ArUk7DLq906so7hRzOsWC3/sVc+Y/QqCm7iMprv0
+         U8iDp/brT1ry6/RqaBObVVPa+OTrlnZw899bln5L0UtucSwwW92pgbh7X8PHCkukvBsU
+         Quk23h8w4lJ1Qf+KMkotX488eh7zOcdVmMAns5HQucqLfUTR4GVZTRA7nVMXWqRUo/Z+
+         urYeOW/Bh4ymu4grYu4TS/06TjUcAi4d6pUyQGoYzPKqLYLROPr7FwkTthR//Myx8lT1
+         4/IQ==
+In-Reply-To: <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Ulrich Teichert <krypton@ulrich-teichert.org>
-Cc: Michael Cree <mcree@orcon.net.nz>, Guenter Roeck <linux@roeck-us.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>, Sparse Mailing-list <linux-sparse@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Ulrich Teichert <krypton@ulrich-teichert.org>, Michael Cree <mcree@orcon.net.nz>, Guenter Roeck <linux@roeck-us.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>, Sparse Mailing-list <linux-sparse@vger.kernel.org>
 
-On Sat, Sep 18, 2021 at 1:26 PM Ulrich Teichert
-<krypton@ulrich-teichert.org> wrote:
+On Sun, Sep 19, 2021 at 8:01 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> I was just tinkering with it to get it compiled without warning,
-> I certainly didn't get the big picture :-/
+>
+> Oh well. I have an odd love-hate relationship with alpha.
+>
+> I think it's one of the worst architectures ever designed (memory
+> ordering is completely broken, and the lack of byte operations in the
+> original specs were a big reason for the initial problems and eventual
+> failure).
+>
+> But at the same time, I really did enjoy it back in the day, and it
+> _was_ the first port I did, and the first truly integrated kernel
+> architecture (the original Linux m68k port that preceded it was a
+> "hack up and replace" job rather than "integrate")
 
-Ok, you shamed me into some tinkering too, and I fixed a couple of
-issues with the alpha build.
+As a side note, I loved the Alpha, too. Compared to the VMS port
+I was too often working on in the 90s, having Linux run on it was
+a joy, and for years I used my remaining older alpha boxes as
+firewalls, trusting in the oddity of the architecture to resist
+various and sundry attacks.
 
-The whole "pci_iounmap()" mess is not something I solved (you were
-cc'd on the email I sent out about that), but I did test a few
-different Jensen configurations and fixed a couple of uglies.
+I retired the last one well over a decade back.
 
-So at least _some_ Jensen configurations build cleanly once more, and
-I re-enabled JENSEN as a valid machine target.
+RIP.
 
-But if it doesn't boot, it's all fairly moot. And those things are a
-pain to debug, and if the last booting kernel was years and years ago,
-I don't think it realistically will necessarily ever be fixed.
+>
+>            Linus
 
-Oh well. I have an odd love-hate relationship with alpha.
 
-I think it's one of the worst architectures ever designed (memory
-ordering is completely broken, and the lack of byte operations in the
-original specs were a big reason for the initial problems and eventual
-failure).
 
-But at the same time, I really did enjoy it back in the day, and it
-_was_ the first port I did, and the first truly integrated kernel
-architecture (the original Linux m68k port that preceded it was a
-"hack up and replace" job rather than "integrate")
+--=20
+Fixing Starlink's Latencies: https://www.youtube.com/watch?v=3Dc9gLo6Xrwgw
 
-           Linus
+Dave T=C3=A4ht CEO, TekLibre, LLC
