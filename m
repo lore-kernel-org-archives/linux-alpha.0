@@ -1,61 +1,60 @@
-From: Dave Taht <dave.taht@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 Subject: Re: [PATCH v2 0/4] Introduce and use absolute_pointer macro
-Date: Sun, 19 Sep 2021 08:13:32 -0700
-Message-ID: <CAA93jw6gK9_PMa_BtabkqyZLT4Vb+x4gsADT7vU+75bucnvrAQ@mail.gmail.com>
-References: <CAHk-=whY5mLggPSr2U00mqgUbRJYnYSxtNZm4FnEtQrHftYr8Q@mail.gmail.com>
- <202109182026.18IKQLng003683@valdese.nms.ulrich-teichert.org> <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
+Date: Mon, 20 Sep 2021 12:45:52 -0700
+Message-ID: <CAHk-=wj1JWZ3sCrGz16nxEj7=0O+srMg6Ah3iPTDXSPKEws_SA@mail.gmail.com>
+References: <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
+ <202109201825.18KIPsV4026066@valdese.nms.ulrich-teichert.org>
+ <CAHk-=wibRWoy4-ZkSVXUoGsUw5wKovPvRhS7r6VM+_GeBYZw1A@mail.gmail.com> <CAEdQ38HeUPDyiZhhriHqdA+Qeyrb3M=FoKWKgs0dZaEjbcpVUQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sparse-owner@vger.kernel.org>
+Return-path: <netdev-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vbpoc8nlnfHxnI+l9mWkkIGQVWPI3MGONh3p7LPE7MI=;
-        b=VM30cLMK8vCJPnDOrNVJVLKgaM108XQCUD2FUTn/7VOT0R6gTL8DYA/S/xiXNWm3y1
-         AayprkuIsnStSNKMVtZw9+Rz5oK+ArUk7DLq906so7hRzOsWC3/sVc+Y/QqCm7iMprv0
-         U8iDp/brT1ry6/RqaBObVVPa+OTrlnZw899bln5L0UtucSwwW92pgbh7X8PHCkukvBsU
-         Quk23h8w4lJ1Qf+KMkotX488eh7zOcdVmMAns5HQucqLfUTR4GVZTRA7nVMXWqRUo/Z+
-         urYeOW/Bh4ymu4grYu4TS/06TjUcAi4d6pUyQGoYzPKqLYLROPr7FwkTthR//Myx8lT1
-         4/IQ==
-In-Reply-To: <CAHk-=wh-=tMO9iCA4v+WgPSd+Gbowe5kptwo+okahihnO2fAOA@mail.gmail.com>
+         :cc;
+        bh=z/4d6QJeGZCj2JNd8r06qB/o4KuGi6QEUdTRkNveq3w=;
+        b=Q3LhEPOHc010gdfUc6e/0+OwWkLDILQAryxm4+BRnojSGhKUZx3i2JKpwpPFiraRMu
+         E/I72DGNYfViGt4X8Hw5CpE7Nktij+mVRH+dEpKmPPQIoMBi3/lKCUfxw61t1pARyUwe
+         w3uR28CSEpRp+LIB6b1M9E+jNUiv+vNeaFNjM=
+In-Reply-To: <CAEdQ38HeUPDyiZhhriHqdA+Qeyrb3M=FoKWKgs0dZaEjbcpVUQ@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Ulrich Teichert <krypton@ulrich-teichert.org>, Michael Cree <mcree@orcon.net.nz>, Guenter Roeck <linux@roeck-us.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-parisc@vger.kernel.org, Netdev <netdev@vger.kernel.org>, Sparse Mailing-list <linux-sparse@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Matt Turner <mattst88@gmail.com>
+Cc: Ulrich Teichert <krypton@ulrich-teichert.org>, Michael Cree <mcree@orcon.net.nz>, Guenter Roeck <linux@roeck-us.net>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, alpha <linux-alpha@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-parisc <linux-parisc@vger.kernel.org>, Netdev <netdev@vger.kernel.org>, Sparse Mailing-list <linux-sparse@vger.kernel.org>
 
-On Sun, Sep 19, 2021 at 8:01 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+On Mon, Sep 20, 2021 at 11:59 AM Matt Turner <mattst88@gmail.com> wrote:
 >
->
-> Oh well. I have an odd love-hate relationship with alpha.
->
-> I think it's one of the worst architectures ever designed (memory
-> ordering is completely broken, and the lack of byte operations in the
-> original specs were a big reason for the initial problems and eventual
-> failure).
->
-> But at the same time, I really did enjoy it back in the day, and it
-> _was_ the first port I did, and the first truly integrated kernel
-> architecture (the original Linux m68k port that preceded it was a
-> "hack up and replace" job rather than "integrate")
+> In the decade plus I've been around Linux on alpha I've don't actually
+> recall hearing of anyone using Linux on a Jensen system before :)
 
-As a side note, I loved the Alpha, too. Compared to the VMS port
-I was too often working on in the 90s, having Linux run on it was
-a joy, and for years I used my remaining older alpha boxes as
-firewalls, trusting in the oddity of the architecture to resist
-various and sundry attacks.
+Looking around, I'm pretty sure the system I did all my initial work
+on was a Jensen.
 
-I retired the last one well over a decade back.
+This is from the linux-.1.1.83 patch:
 
-RIP.
+- * I don't have any good documentation on the EISA hardware interrupt
+- * stuff: I don't know the mapping between the interrupt vector and the
+- * EISA interrupt number.
+- *
+- * It *seems* to be 0x8X0 for EISA interrupt X, and 0x9X0 for the
+- * local motherboard interrupts..
++ * The vector is 0x8X0 for EISA interrupt X, and 0x9X0 for the local
++ * motherboard interrupts.. This is for the Jensen.
 
->
->            Linus
+So yup, my initial bringup machine was that DECpc AXP 150, aka "Jensen".
 
+The IO subsystem on that thing was absolutely horrendous. Largely
+because of the lack of byte/word accesses, so doing any PCI accesses
+had to be encoded on the address bus. Nasty nasty nasty.
 
+The original design with only 32-bit and 64-bit memory accesses really
+was horribly horribly wrong, and all the arguments for it were
+garbage. Even outside of IO issues, it blew up code size enormously,
+but the IO side became truly horrendous.
 
---=20
-Fixing Starlink's Latencies: https://www.youtube.com/watch?v=3Dc9gLo6Xrwgw
+Oh well. Water under the bridge.
 
-Dave T=C3=A4ht CEO, TekLibre, LLC
+I did have another alpha at some point - going from the original
+150HMz EV4 to a 275MHz EV45. I forget what system that was.
+
+               Linus
