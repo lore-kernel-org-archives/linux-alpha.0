@@ -1,140 +1,50 @@
-From: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
+From: Shahab Vahedi <Shahab.Vahedi@synopsys.com>
 Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
-Date: Thu, 23 Sep 2021 15:01:04 +0300
-Message-ID: <YUxsgN/uolhn1Ok+@linux.ibm.com>
+Date: Thu, 23 Sep 2021 12:44:18 +0000
+Message-ID: <70364d6d-7569-3cd8-acce-559878ce4596@synopsys.com>
 References: <20210923074335.12583-1-rppt@kernel.org>
  <20210923074335.12583-4-rppt@kernel.org>
- <1101e3c7-fcb7-a632-8e22-47f4a01ea02e@csgroup.eu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=pp1;
- bh=pXzEf65A4Oe5+XzfRr8terVnfyIyuO6PQs0+F8aXgGc=;
- b=ZCv5VVg5Axl96NC4/j5oW2leA+TyRu7PTszC85LX7OnyuvdR/QPrxFJvHee6+ph9/1Ah
- rUd/1Dr4tZ5yXYAiKoNA4l0g4riJzCer09eV4KmKCsnovao7Ujg6/MQzQ6IVb2C5LRSL
- 6WitPRreJzNPlii4WW55mXNNAxhzlImWjS7TBI5y3E9CuYqxTL+hR1eRpZFENX5WHVgo
- 3bzeScRRqqA6eAdFzB/5aWdZYhNxC/HkliRolmuo1Xv4pKsUbXkIzU8GEpyYBQunYUKJ
- 0M08Qqduz9x2e5o+taGQrQG0ce7A7g963Zzijz3wHvEhl/y43e2FXQI9OwpYg11CHmgU 9g== 
-Content-Disposition: inline
-In-Reply-To: <1101e3c7-fcb7-a632-8e22-47f4a01ea02e-2tlSp11Fh4xulxpn9UvDqw@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-To: Christophe Leroy <christophe.leroy-2tlSp11Fh4xulxpn9UvDqw@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-riscv-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Mike Rapoport <rppt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Transfer-Encoding: base64
+Return-path: <linux-mips-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1632401072; bh=p8yypIUjB8D1QtzMPOfUh/V1qIMQJPRo2PqJWZ5SYsY=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=Gvq9P4b8YntKHRuxkqZ3tF0YGuSDOH+oVCDf+VSwXXjmaGxF2cK8X33R7WTWMZdxB
+         GEf7t9gTDEWUF/5zMlhaPic0Gw9SioFA146VuyVbXAQDD0BMWeYiU9orEq2KpGk5hQ
+         i5sYd3qIUy1129LF03W2RQe+YxmxznJiJIdmrk3SdS3mqJQGmbc2z3+ie826v+rXmf
+         y2mWag8+iQ0DLDwtixGft2C9TjYEL1Y/KL5EtNn3IHbRSVbKs1VbfEHZw/WNdd8Ppi
+         MF1tAfYhy87PyuwzOIovDHwB4mk2cbJzuZ3GcC+8Od9h1/aYntxCPPc7gvFZv9ewLf
+         2ywh1lMEodcdA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p8yypIUjB8D1QtzMPOfUh/V1qIMQJPRo2PqJWZ5SYsY=;
+ b=XjlMBsSZIIeMIcn3BV4fq6QTuHKmTlq2wcWFtDSMYpHRIbCRUXHI1j/6Nvc788nfl1iWUG0VjTTkqniwaPBMQvx+hnxM47SXxJ8BHG5lMxGTgpN1OoKMXR+iJA+dKngwgvBc0glcR5Dz2K32DkEYfbZDkaHe+kbDS5mZMs/JArQ=
+In-Reply-To: <20210923074335.12583-4-rppt@kernel.org>
+Content-Language: en-US
+Content-ID: <BEE0BCB4DA8E9D4FA42EB8E75B22E457@namprd12.prod.outlook.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Mike Rapoport <rppt@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, linux-sh@vger.k
 
-On Thu, Sep 23, 2021 at 11:47:48AM +0200, Christophe Leroy wrote:
-> =
-
-> =
-
-> Le 23/09/2021 =E0 09:43, Mike Rapoport a =E9crit=A0:
-> > From: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-> > =
-
-> > For ages memblock_free() interface dealt with physical addresses even
-> > despite the existence of memblock_alloc_xx() functions that return a
-> > virtual pointer.
-> > =
-
-> > Introduce memblock_phys_free() for freeing physical ranges and repurpose
-> > memblock_free() to free virtual pointers to make the following pairing
-> > abundantly clear:
-> > =
-
-> > 	int memblock_phys_free(phys_addr_t base, phys_addr_t size);
-> > 	phys_addr_t memblock_phys_alloc(phys_addr_t base, phys_addr_t size);
-> > =
-
-> > 	void *memblock_alloc(phys_addr_t size, phys_addr_t align);
-> > 	void memblock_free(void *ptr, size_t size);
-> > =
-
-> > Replace intermediate memblock_free_ptr() with memblock_free() and drop
-> > unnecessary aliases memblock_free_early() and memblock_free_early_nid().
-> > =
-
-> > Suggested-by: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-> > Signed-off-by: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-> > ---
-> =
-
-> > diff --git a/arch/s390/kernel/smp.c b/arch/s390/kernel/smp.c
-> > index 1a04e5bdf655..37826d8c4f74 100644
-> > --- a/arch/s390/kernel/smp.c
-> > +++ b/arch/s390/kernel/smp.c
-> > @@ -723,7 +723,7 @@ void __init smp_save_dump_cpus(void)
-> >   			/* Get the CPU registers */
-> >   			smp_save_cpu_regs(sa, addr, is_boot_cpu, page);
-> >   	}
-> > -	memblock_free(page, PAGE_SIZE);
-> > +	memblock_phys_free(page, PAGE_SIZE);
-> >   	diag_amode31_ops.diag308_reset();
-> >   	pcpu_set_smt(0);
-> >   }
-> > @@ -880,7 +880,7 @@ void __init smp_detect_cpus(void)
-> >   	/* Add CPUs present at boot */
-> >   	__smp_rescan_cpus(info, true);
-> > -	memblock_free_early((unsigned long)info, sizeof(*info));
-> > +	memblock_free(info, sizeof(*info));
-> >   }
-> >   /*
-> =
-
-> I'm a bit lost. IIUC memblock_free_early() and memblock_free() where
-> identical.
-
-Yes, they were, but all calls to memblock_free_early() were using
-__pa(vaddr) because they had a virtual address at hand.
-
-> In the first hunk memblock_free() gets replaced by memblock_phys_free()
-> In the second hunk memblock_free_early() gets replaced by memblock_free()
-
-In the first hunk the memory is allocated with memblock_phys_alloc() and we
-have a physical range to free. In the second hunk the memory is allocated
-with memblock_alloc() and we are freeing a virtual pointer.
- =
-
-> I think it would be easier to follow if you could split it in several
-> patches:
-
-It was an explicit request from Linus to make it a single commit:
-
-  but the actual commit can and should be just a single commit that just
-  fixes 'memblock_free()' to have sane interfaces.
-
-I don't feel strongly about splitting it (except my laziness really
-objects), but I don't think doing the conversion in several steps worth the
-churn.
-
-> - First patch: Create memblock_phys_free() and change all relevant
-> memblock_free() to memblock_phys_free() - Or change memblock_free() to
-> memblock_phys_free() and make memblock_free() an alias of it.
-> - Second patch: Make memblock_free_ptr() become memblock_free() and change
-> all remaining callers to the new semantics (IIUC memblock_free(__pa(ptr))
-> becomes memblock_free(ptr) and make memblock_free_ptr() an alias of
-> memblock_free()
-> - Fourth patch: Replace and drop memblock_free_ptr()
-> - Fifth patch: Drop memblock_free_early() and memblock_free_early_nid() (=
-All
-> users should have been upgraded to memblock_free_phys() in patch 1 or
-> memblock_free() in patch 2)
-> =
-
-> Christophe
-
--- =
-
-Sincerely yours,
-Mike.
+T24gOS8yMy8yMSA5OjQzIEFNLCBNaWtlIFJhcG9wb3J0IHdyb3RlOg0KPiBGcm9tOiBNaWtlIFJh
+cG9wb3J0IDxycHB0QGxpbnV4LmlibS5jb20+DQo+IA0KPiBGb3IgYWdlcyBtZW1ibG9ja19mcmVl
+KCkgaW50ZXJmYWNlIGRlYWx0IHdpdGggcGh5c2ljYWwgYWRkcmVzc2VzIGV2ZW4NCj4gZGVzcGl0
+ZSB0aGUgZXhpc3RlbmNlIG9mIG1lbWJsb2NrX2FsbG9jX3h4KCkgZnVuY3Rpb25zIHRoYXQgcmV0
+dXJuIGENCj4gdmlydHVhbCBwb2ludGVyLg0KPiANCj4gSW50cm9kdWNlIG1lbWJsb2NrX3BoeXNf
+ZnJlZSgpIGZvciBmcmVlaW5nIHBoeXNpY2FsIHJhbmdlcyBhbmQgcmVwdXJwb3NlDQo+IG1lbWJs
+b2NrX2ZyZWUoKSB0byBmcmVlIHZpcnR1YWwgcG9pbnRlcnMgdG8gbWFrZSB0aGUgZm9sbG93aW5n
+IHBhaXJpbmcNCj4gYWJ1bmRhbnRseSBjbGVhcjoNCj4gDQo+IAlpbnQgbWVtYmxvY2tfcGh5c19m
+cmVlKHBoeXNfYWRkcl90IGJhc2UsIHBoeXNfYWRkcl90IHNpemUpOw0KPiAJcGh5c19hZGRyX3Qg
+bWVtYmxvY2tfcGh5c19hbGxvYyhwaHlzX2FkZHJfdCBiYXNlLCBwaHlzX2FkZHJfdCBzaXplKTsN
+Cj4gDQo+IAl2b2lkICptZW1ibG9ja19hbGxvYyhwaHlzX2FkZHJfdCBzaXplLCBwaHlzX2FkZHJf
+dCBhbGlnbik7DQo+IAl2b2lkIG1lbWJsb2NrX2ZyZWUodm9pZCAqcHRyLCBzaXplX3Qgc2l6ZSk7
+DQo+IA0KPiBSZXBsYWNlIGludGVybWVkaWF0ZSBtZW1ibG9ja19mcmVlX3B0cigpIHdpdGggbWVt
+YmxvY2tfZnJlZSgpIGFuZCBkcm9wDQo+IHVubmVjZXNzYXJ5IGFsaWFzZXMgbWVtYmxvY2tfZnJl
+ZV9lYXJseSgpIGFuZCBtZW1ibG9ja19mcmVlX2Vhcmx5X25pZCgpLg0KPiANCj4gU3VnZ2VzdGVk
+LWJ5OiBMaW51cyBUb3J2YWxkcyA8dG9ydmFsZHNAbGludXgtZm91bmRhdGlvbi5vcmc+DQo+IFNp
+Z25lZC1vZmYtYnk6IE1pa2UgUmFwb3BvcnQgPHJwcHRAbGludXguaWJtLmNvbT4NCg0KYXJjaC9h
+cmMgcGFydDogUmV2aWV3ZWQtYnk6IFNoYWhhYiBWYWhlZGkgPHNoYWhhYkBzeW5vcHN5cy5jb20+
+DQoNCg0KVGhhbmtzLA0KU2hhaGFiDQo=
