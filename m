@@ -1,31 +1,30 @@
 From: Juergen Gross <jgross@suse.com>
-Subject: Re: [PATCH 2/3] xen/x86: free_p2m_page: use memblock_free_ptr() to
- free a virtual pointer
-Date: Thu, 23 Sep 2021 10:10:01 +0200
-Message-ID: <69c60441-d6d0-96e2-a04e-5bdf87241b4b@suse.com>
+Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
+Date: Thu, 23 Sep 2021 10:15:11 +0200
+Message-ID: <60c0d0f9-e4c6-ef66-b85b-0d091f8cba15@suse.com>
 References: <20210923074335.12583-1-rppt@kernel.org>
- <20210923074335.12583-3-rppt@kernel.org>
+ <20210923074335.12583-4-rppt@kernel.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="Ou4UW1xPRLuVMrznu7nRrBvD9qxXwPwpI"
-Return-path: <kvm-owner@vger.kernel.org>
+ boundary="zppOVwffTjZ5Oe49Vq0wbEbRvLUF4dOID"
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1632384603; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1632384912; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=yCmYQKyQ1CegwpuFA1biRZgl2wD61Tp1f0chBfFWd8E=;
-        b=Zo9jK3BESoN14AcEe1BU9TlyBOM5vIu7qEY3xWT70OoJZfYRozRIjKKOglOdiFf+TrLBEk
-        4Qe+Daxrgzlk9cBOtPI08MTMcWVKBHZOyBtMsEY1ZNIOMoFLH5eYd3sSKzrfEDby3x/F+o
-        VQfB1yri9FWEgzsgQNNNznPuWHkZIp4=
-In-Reply-To: <20210923074335.12583-3-rppt@kernel.org>
+        bh=QSLhmvEk1Pq1iiswl5snzLhelQGabqOAvRi47xucKUc=;
+        b=dQkZNFnVmjFTdqDDt9GU9DTIEjBGZRbIA2ofbDcmiIB8bDqVrDggJ8ZwgPcJOAAnibhKSk
+        wohDp1nG/Y0sL0SW/01jfOSBK8tJNu5AzCDV/dTnleWkyjK5RMbnhh0I5Wt/IQmwJHm3zx
+        ZvfeJvE8TpXAAdEAgm6wdTBm9F+eeO8=
+In-Reply-To: <20210923074335.12583-4-rppt@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 To: Mike Rapoport <rppt@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, kasan-dev@googlegroups.com, kvm@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org, linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, Mike Rapoport <rppt@linux.ibm.com>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Ou4UW1xPRLuVMrznu7nRrBvD9qxXwPwpI
-Content-Type: multipart/mixed; boundary="Opwz8FSwCRvDNIt0szi2Ea4VaFO0qhLYD";
+--zppOVwffTjZ5Oe49Vq0wbEbRvLUF4dOID
+Content-Type: multipart/mixed; boundary="AxmgW1XtM0JJFTzWHwG0o4gfWFl7DFvoM";
  protected-headers="v1"
 From: Juergen Gross <jgross@suse.com>
 To: Mike Rapoport <rppt@kernel.org>,
@@ -41,42 +40,53 @@ Cc: Andrew Morton <akpm@linux-foundation.org>, devicetree@vger.kernel.org,
  linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
  sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
  Mike Rapoport <rppt@linux.ibm.com>
-Message-ID: <69c60441-d6d0-96e2-a04e-5bdf87241b4b@suse.com>
-Subject: Re: [PATCH 2/3] xen/x86: free_p2m_page: use memblock_free_ptr() to
- free a virtual pointer
+Message-ID: <60c0d0f9-e4c6-ef66-b85b-0d091f8cba15@suse.com>
+Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
 References: <20210923074335.12583-1-rppt@kernel.org>
- <20210923074335.12583-3-rppt@kernel.org>
-In-Reply-To: <20210923074335.12583-3-rppt@kernel.org>
+ <20210923074335.12583-4-rppt@kernel.org>
+In-Reply-To: <20210923074335.12583-4-rppt@kernel.org>
 
---Opwz8FSwCRvDNIt0szi2Ea4VaFO0qhLYD
+--AxmgW1XtM0JJFTzWHwG0o4gfWFl7DFvoM
 Content-Type: multipart/mixed;
- boundary="------------7FABCF9287BBEACE094F562B"
+ boundary="------------CFB99E0866EE66F8CFC01FC3"
 Content-Language: en-US
 
 This is a multi-part message in MIME format.
---------------7FABCF9287BBEACE094F562B
+--------------CFB99E0866EE66F8CFC01FC3
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
 On 23.09.21 09:43, Mike Rapoport wrote:
 > From: Mike Rapoport <rppt@linux.ibm.com>
 >=20
-> free_p2m_page() wrongly passes a virtual pointer to memblock_free() tha=
-t
-> treats it as a physical address.
+> For ages memblock_free() interface dealt with physical addresses even
+> despite the existence of memblock_alloc_xx() functions that return a
+> virtual pointer.
 >=20
-> Call memblock_free_ptr() instead that gets a virtual address to free th=
+> Introduce memblock_phys_free() for freeing physical ranges and repurpos=
 e
-> memory.
+> memblock_free() to free virtual pointers to make the following pairing
+> abundantly clear:
 >=20
+> 	int memblock_phys_free(phys_addr_t base, phys_addr_t size);
+> 	phys_addr_t memblock_phys_alloc(phys_addr_t base, phys_addr_t size);
+>=20
+> 	void *memblock_alloc(phys_addr_t size, phys_addr_t align);
+> 	void memblock_free(void *ptr, size_t size);
+>=20
+> Replace intermediate memblock_free_ptr() with memblock_free() and drop
+> unnecessary aliases memblock_free_early() and memblock_free_early_nid()=
+=2E
+>=20
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
 > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 
-Reviewed-by: Juergen Gross <jgross@suse.com>
+arch/x86/xen/ parts: Reviewed-by: Juergen Gross <jgross@suse.com>
 
 
 Juergen
 
---------------7FABCF9287BBEACE094F562B
+--------------CFB99E0866EE66F8CFC01FC3
 Content-Type: application/pgp-keys;
  name="OpenPGP_0xB0DE9DD628BF132F.asc"
 Content-Transfer-Encoding: quoted-printable
@@ -168,24 +178,24 @@ ZDn8R38=3D
 =3D2wuH
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------7FABCF9287BBEACE094F562B--
+--------------CFB99E0866EE66F8CFC01FC3--
 
---Opwz8FSwCRvDNIt0szi2Ea4VaFO0qhLYD--
+--AxmgW1XtM0JJFTzWHwG0o4gfWFl7DFvoM--
 
---Ou4UW1xPRLuVMrznu7nRrBvD9qxXwPwpI
+--zppOVwffTjZ5Oe49Vq0wbEbRvLUF4dOID
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmFMNlkFAwAAAAAACgkQsN6d1ii/Ey/u
-jwf/Wc7bKSwtYpm6kgk3TsHmpeJbPgh0Zpv1wT9MtIr5veUKbFZsg/Ji0X/gETRJ/GzFem6QpjrD
-qfZjjrHW84FjHmrikrdzulZV8SZVqYLSdZWQRL4dja5oWLHT7nPkOtdmNelKufQ3CxAmy1JmVzVb
-Mx6gmnvelfR4gvjcbXXvmtdNZvJIKIQ3zLsqDK8z5H0AA3wt7EG/6FFaIZD/lYSqQAmpBXhbvdZe
-EmLrt4FExY741RXXb6HIT7WjiQ+iFHRiGgNjAF7OZlY2xzR14fRVqNF56oq8GYvMSJU1knueE60N
-Y+1NbMVNCzWoYzBjFB95UGbdvzgBy6XOzZ21ar2IPQ==
-=DYUR
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmFMN48FAwAAAAAACgkQsN6d1ii/Ey8D
+fwf/WV3EUVWvjXkc64q0a0it6LMGy2AtQrh8KdDecuLV8iH5bKTnqNAZOUoV6sYTeiLsSSnRTLOt
+yKKjkWsC9/gUsyuO0B8Zw/VX/zoXJqp7T57FfmW+37qcslFuLzImqvDxdU65n/jEbme+VExmw6UF
+yy1ATxxxhQIxeTDXB3SfE0f6rX4Fw1DUqQc25bFNpD1wzdp1xG6qhH31/CWUI/V/frEfuzZrrN5F
+Uimkqk3+xjrqqpYh2fb/Pwpd77LFOdIrV4gH0oyl0NA3x3QMNi+67FrbMtuRHZij1jnpwoY1RiUc
+uVxzINJ+LJh0g8836hHAkPh5tQNBjV7C6V7LXddn6g==
+=Fnkp
 -----END PGP SIGNATURE-----
 
---Ou4UW1xPRLuVMrznu7nRrBvD9qxXwPwpI--
+--zppOVwffTjZ5Oe49Vq0wbEbRvLUF4dOID--
