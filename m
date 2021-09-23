@@ -1,87 +1,110 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 08/10] alpha: Declare virt_to_phys and virt_to_bus parameter as pointer to volatile
-Date: Wed, 22 Sep 2021 23:40:51 -0400
-Message-ID: <20210923034055.1422059-8-sashal@kernel.org>
-References: <20210923034055.1422059-1-sashal@kernel.org>
+From: Mike Rapoport <rppt@kernel.org>
+Subject: [PATCH 0/3] memblock: cleanup memblock_free interface
+Date: Thu, 23 Sep 2021 10:43:32 +0300
+Message-ID: <20210923074335.12583-1-rppt@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632368472;
-        bh=t/erUJWZIbkUm0d3B7DgXzNLqzRKp/ba8B0aIr6qg5M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aqOu841jv3bhmOdksFqsic8ipNhMolxHh6W82Id4SvakKS1YF/tQ7mgApAc0yiYY1
-         yOgA0wv6d/yd12JIAXGvOhGspkWYqLDbQ3iCCtPAhCWUCc0e/oz8LSuJ29YPnUzoPW
-         Ea8qLIMnMMdyHUi70oeXhqOpE83HGpn4x8GWrbjO9L2K4xmF7GfgnGaom9+RIEK8sj
-         kWaiNc+2Yg5ZBaQDdGSUyFxn1oFyzQn4KEO/HO/o2+zcAdIPnSoEgccFc9xSsiwMGH
-         2Us0vJ8M5s4hY4ptW3DuYKZyBMFGIws6nEiTVEi/wOf8plvUzZ8xf1SDv1NrsVlV5p
-         1MlkcKyN8xNHg==
-In-Reply-To: <20210923034055.1422059-1-sashal@kernel.org>
+        s=k20201202; t=1632383025;
+        bh=3uVNPtFfbPBZRQaNfQKwTwtev9YVKUZqny4BWnp3ztY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Vold8Z9hLOut5Y57D9YqGfAPpL4eeU2GGKe6N2/G2K+rSChme5BK2bVJUGQMhNnD5
+         tlc7pIoxBTA8mtBmkSbcvxOA4ol2fbYKLvd84RUIoei3PfOrgW7d8UvcqmHNvAAnqH
+         2rTOLkAFW6DycEheiJuAByIZSW1Mb0ht/+wW3EsUTQK66rudMrHlsuHTSWtaF9pCtZ
+         zz2eXREGQLaTYVqwKNRZd1xLM2W36l4O1x9wg+UbZ8351+5wCVj9XzBQPxb3HkA2G0
+         kjff1rDe9w+gBCM2bpBWj7skIwT6XMoMhVQl3RcYgUgyL/ulxZSnczTeB3j1RHlvfS
+         d5Zxibdoq1rzA==
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@arndb.de>, Linus Torvalds <torvalds@linux-foundation.org>, Sasha Levin <sashal@kernel.org>, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, geert@linux-m68k.org, akpm@linux-foundation.org, mhocko@suse.com, david@redhat.com, linux-alpha@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, kasan-dev@googlegroups.com, kvm@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org, linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, Mike Rapoport <rppt@linux.ibm.com>
 
-From: Guenter Roeck <linux@roeck-us.net>
+From: Mike Rapoport <rppt@linux.ibm.com>
 
-[ Upstream commit 35a3f4ef0ab543daa1725b0c963eb8c05e3376f8 ]
+Hi,
 
-Some drivers pass a pointer to volatile data to virt_to_bus() and
-virt_to_phys(), and that works fine.  One exception is alpha.  This
-results in a number of compile errors such as
+Following the discussion on [1] this is the fix for memblock freeing APIs
+mismatch. 
 
-  drivers/net/wan/lmc/lmc_main.c: In function 'lmc_softreset':
-  drivers/net/wan/lmc/lmc_main.c:1782:50: error:
-	passing argument 1 of 'virt_to_bus' discards 'volatile'
-	qualifier from pointer target type
+The first patch is a cleanup of numa_distance allocation in arch_numa I've
+spotted during the conversion.
+The second patch is a fix for Xen memory freeing on some of the error
+paths.
 
-  drivers/atm/ambassador.c: In function 'do_loader_command':
-  drivers/atm/ambassador.c:1747:58: error:
-	passing argument 1 of 'virt_to_bus' discards 'volatile'
-	qualifier from pointer target type
+The core change is in the third patch that makes memblock_free() a
+counterpart of memblock_alloc() and adds memblock_phys_alloc() to be a
+counterpart of memblock_phys_alloc().
 
-Declare the parameter of virt_to_phys and virt_to_bus as pointer to
-volatile to fix the problem.
+Since scripts/get_maintainer.pl returned more than 100 addresses I've
+trimmed the distribution list only to the relevant lists.
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/alpha/include/asm/io.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+[1] https://lore.kernel.org/all/CAHk-=wj9k4LZTz+svCxLYs5Y1=+yKrbAUArH1+ghyG3OLd8VVg@mail.gmail.com
 
-diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-index 355aec0867f4..e55a5e6ab460 100644
---- a/arch/alpha/include/asm/io.h
-+++ b/arch/alpha/include/asm/io.h
-@@ -60,7 +60,7 @@ extern inline void set_hae(unsigned long new_hae)
-  * Change virtual addresses to physical addresses and vv.
-  */
- #ifdef USE_48_BIT_KSEG
--static inline unsigned long virt_to_phys(void *address)
-+static inline unsigned long virt_to_phys(volatile void *address)
- {
- 	return (unsigned long)address - IDENT_ADDR;
- }
-@@ -70,7 +70,7 @@ static inline void * phys_to_virt(unsigned long address)
- 	return (void *) (address + IDENT_ADDR);
- }
- #else
--static inline unsigned long virt_to_phys(void *address)
-+static inline unsigned long virt_to_phys(volatile void *address)
- {
-         unsigned long phys = (unsigned long)address;
- 
-@@ -111,7 +111,7 @@ static inline dma_addr_t __deprecated isa_page_to_bus(struct page *page)
- extern unsigned long __direct_map_base;
- extern unsigned long __direct_map_size;
- 
--static inline unsigned long __deprecated virt_to_bus(void *address)
-+static inline unsigned long __deprecated virt_to_bus(volatile void *address)
- {
- 	unsigned long phys = virt_to_phys(address);
- 	unsigned long bus = phys + __direct_map_base;
+Mike Rapoport (3):
+  arch_numa: simplify numa_distance allocation
+  xen/x86: free_p2m_page: use memblock_free_ptr() to free a virtual pointer
+  memblock: cleanup memblock_free interface
+
+ arch/alpha/kernel/core_irongate.c         |  2 +-
+ arch/arc/mm/init.c                        |  2 +-
+ arch/arm/mach-hisi/platmcpm.c             |  2 +-
+ arch/arm/mm/init.c                        |  2 +-
+ arch/arm64/mm/mmu.c                       |  4 ++--
+ arch/mips/mm/init.c                       |  2 +-
+ arch/mips/sgi-ip30/ip30-setup.c           |  6 +++---
+ arch/powerpc/kernel/dt_cpu_ftrs.c         |  2 +-
+ arch/powerpc/kernel/paca.c                |  4 ++--
+ arch/powerpc/kernel/setup-common.c        |  2 +-
+ arch/powerpc/kernel/setup_64.c            |  2 +-
+ arch/powerpc/platforms/powernv/pci-ioda.c |  2 +-
+ arch/powerpc/platforms/pseries/svm.c      |  4 +---
+ arch/riscv/kernel/setup.c                 |  4 ++--
+ arch/s390/kernel/setup.c                  |  8 ++++----
+ arch/s390/kernel/smp.c                    |  4 ++--
+ arch/s390/kernel/uv.c                     |  2 +-
+ arch/s390/mm/kasan_init.c                 |  2 +-
+ arch/sh/boards/mach-ap325rxa/setup.c      |  2 +-
+ arch/sh/boards/mach-ecovec24/setup.c      |  4 ++--
+ arch/sh/boards/mach-kfr2r09/setup.c       |  2 +-
+ arch/sh/boards/mach-migor/setup.c         |  2 +-
+ arch/sh/boards/mach-se/7724/setup.c       |  4 ++--
+ arch/sparc/kernel/smp_64.c                |  2 +-
+ arch/um/kernel/mem.c                      |  2 +-
+ arch/x86/kernel/setup.c                   |  4 ++--
+ arch/x86/kernel/setup_percpu.c            |  2 +-
+ arch/x86/mm/init.c                        |  2 +-
+ arch/x86/mm/kasan_init_64.c               |  4 ++--
+ arch/x86/mm/numa.c                        |  2 +-
+ arch/x86/mm/numa_emulation.c              |  2 +-
+ arch/x86/xen/mmu_pv.c                     |  6 +++---
+ arch/x86/xen/p2m.c                        |  2 +-
+ arch/x86/xen/setup.c                      |  6 +++---
+ drivers/base/arch_numa.c                  | 10 ++++------
+ drivers/firmware/efi/memmap.c             |  2 +-
+ drivers/macintosh/smu.c                   |  2 +-
+ drivers/of/kexec.c                        |  2 +-
+ drivers/of/of_reserved_mem.c              |  4 ++--
+ drivers/s390/char/sclp_early.c            |  2 +-
+ drivers/usb/early/xhci-dbc.c              | 10 +++++-----
+ drivers/xen/swiotlb-xen.c                 |  2 +-
+ include/linux/memblock.h                  | 16 ++--------------
+ init/initramfs.c                          |  2 +-
+ init/main.c                               |  2 +-
+ kernel/dma/swiotlb.c                      |  2 +-
+ kernel/printk/printk.c                    |  4 ++--
+ lib/bootconfig.c                          |  2 +-
+ lib/cpumask.c                             |  2 +-
+ mm/cma.c                                  |  2 +-
+ mm/memblock.c                             | 20 ++++++++++----------
+ mm/memory_hotplug.c                       |  2 +-
+ mm/percpu.c                               |  8 ++++----
+ mm/sparse.c                               |  2 +-
+ tools/bootconfig/include/linux/memblock.h |  2 +-
+ 55 files changed, 94 insertions(+), 110 deletions(-)
+
+
+base-commit: e4e737bb5c170df6135a127739a9e6148ee3da82
 -- 
-2.30.2
+2.28.0
 
