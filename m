@@ -1,26 +1,26 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 09/11] alpha: Declare virt_to_phys and virt_to_bus parameter as pointer to volatile
-Date: Wed, 22 Sep 2021 23:40:25 -0400
-Message-ID: <20210923034028.1421876-9-sashal@kernel.org>
-References: <20210923034028.1421876-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 08/10] alpha: Declare virt_to_phys and virt_to_bus parameter as pointer to volatile
+Date: Wed, 22 Sep 2021 23:40:51 -0400
+Message-ID: <20210923034055.1422059-8-sashal@kernel.org>
+References: <20210923034055.1422059-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1632368450;
+        s=k20201202; t=1632368472;
         bh=t/erUJWZIbkUm0d3B7DgXzNLqzRKp/ba8B0aIr6qg5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OHOl1Tu5AlcQ7Y9RA1tfHE8Flogfl6NztGXpaqG6enpHMHNMPR8GR4OsFL/d0gWVo
-         PavbqK1Aj82rqrFidBCAxgiy44FrrDGFy9X07JK+jTCNopYxsXNZlNAEJTWArP85ld
-         yqYuBfzpeCXOUM9Pd4m+klrS+HTiI2vrD+iKcQnuz8F9/VbqtTFpHvhRa6DlNy/7l6
-         R+CnL1EE2hb2qwJqKZrL8BniozfGDBgEdnDnz+7CsAzEWnInWMiJ7QQ0ODWcRdkMfr
-         RMw0522AXWzsK1tsnP+RifydDZyAhSqP8pljpCXK4DFb/FuorZ065f2XSNLcozCHmy
-         NOLg8HnOpwNfA==
-In-Reply-To: <20210923034028.1421876-1-sashal@kernel.org>
+        b=aqOu841jv3bhmOdksFqsic8ipNhMolxHh6W82Id4SvakKS1YF/tQ7mgApAc0yiYY1
+         yOgA0wv6d/yd12JIAXGvOhGspkWYqLDbQ3iCCtPAhCWUCc0e/oz8LSuJ29YPnUzoPW
+         Ea8qLIMnMMdyHUi70oeXhqOpE83HGpn4x8GWrbjO9L2K4xmF7GfgnGaom9+RIEK8sj
+         kWaiNc+2Yg5ZBaQDdGSUyFxn1oFyzQn4KEO/HO/o2+zcAdIPnSoEgccFc9xSsiwMGH
+         2Us0vJ8M5s4hY4ptW3DuYKZyBMFGIws6nEiTVEi/wOf8plvUzZ8xf1SDv1NrsVlV5p
+         1MlkcKyN8xNHg==
+In-Reply-To: <20210923034055.1422059-1-sashal@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@arndb.de>, Linus Torvalds <torvalds@linux-foundation.org>, Sasha Levin <sashal@kernel.org>, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, david@redhat.com, geert@linux-m68k.org, mhocko@suse.com, linux-alpha@vger.kernel.org
+Cc: Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@arndb.de>, Linus Torvalds <torvalds@linux-foundation.org>, Sasha Levin <sashal@kernel.org>, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, geert@linux-m68k.org, akpm@linux-foundation.org, mhocko@suse.com, david@redhat.com, linux-alpha@vger.kernel.org
 
 From: Guenter Roeck <linux@roeck-us.net>
 
