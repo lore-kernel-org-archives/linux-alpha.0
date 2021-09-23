@@ -1,130 +1,39 @@
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
-Date: Thu, 23 Sep 2021 15:54:46 +0200
-Message-ID: <96e3da9f-70ff-e5c0-ef2e-cf0b636e5695@csgroup.eu>
-References: <20210923074335.12583-1-rppt@kernel.org>
- <20210923074335.12583-4-rppt@kernel.org>
- <1101e3c7-fcb7-a632-8e22-47f4a01ea02e@csgroup.eu>
- <YUxsgN/uolhn1Ok+@linux.ibm.com>
+From: Bob Tracy <rct@frus.com>
+Subject: Re: X11 system lockup with 5.11.0 kernel
+Date: Thu, 23 Sep 2021 09:07:33 -0500
+Message-ID: <YUyKJQT/ldEao9U3@gherkin.frus.com>
+References: <fd607d8e-9118-a38b-62af-2c4d9f6659a0@amd.com>
+ <20210406091431.GA4462@tower>
+ <dda17ea7-2abd-3e81-475f-8f103f7c9217@amd.com>
+ <e6c7209e-de57-a9b8-dc23-70444aac8d1e@physik.fu-berlin.de>
+ <YLhPeYdhLrFqsbCY@gherkin.frus.com>
+ <alpine.DEB.2.21.2106031511500.25828@angie.orcam.me.uk>
+ <YLm3wsDSxgWgrNEk@gherkin.frus.com>
+ <YLm8Cu2VwGQdRdgU@gherkin.frus.com>
+ <YN235QP+s9wwHFMN@gherkin.frus.com>
+ <20210905230027.GA27992@tower>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <YUxsgN/uolhn1Ok+@linux.ibm.com>
-Content-Language: fr-FR
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20210905230027.GA27992@tower>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Mike Rapoport <rppt@linux.ibm.com>
-Cc: Mike Rapoport <rppt@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, devicetree@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mips@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, Andrew Morton <akpm@linux-foundation.org>, linux-snps-arc@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Michael Cree <mcree@orcon.net.nz>, "Maciej W. Rozycki" <macro@orcam.me.uk>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
 
+On Mon, Sep 06, 2021 at 11:00:27AM +1200, Michael Cree wrote:
+> I had intended to assist in testing with real hardware but there
+> are other issues due to the 5.10 kernel on Alpha that need fixing
+> first and I am working on that.  I am hoping to come back to this
+> and can run some tests in the near future.
 
+I am delighted to report that this issue has finally been resolved
+as of the 5.14.0 mainline kernel.
 
-Le 23/09/2021 à 14:01, Mike Rapoport a écrit :
-> On Thu, Sep 23, 2021 at 11:47:48AM +0200, Christophe Leroy wrote:
->>
->>
->> Le 23/09/2021 à 09:43, Mike Rapoport a écrit :
->>> From: Mike Rapoport <rppt@linux.ibm.com>
->>>
->>> For ages memblock_free() interface dealt with physical addresses even
->>> despite the existence of memblock_alloc_xx() functions that return a
->>> virtual pointer.
->>>
->>> Introduce memblock_phys_free() for freeing physical ranges and repurpose
->>> memblock_free() to free virtual pointers to make the following pairing
->>> abundantly clear:
->>>
->>> 	int memblock_phys_free(phys_addr_t base, phys_addr_t size);
->>> 	phys_addr_t memblock_phys_alloc(phys_addr_t base, phys_addr_t size);
->>>
->>> 	void *memblock_alloc(phys_addr_t size, phys_addr_t align);
->>> 	void memblock_free(void *ptr, size_t size);
->>>
->>> Replace intermediate memblock_free_ptr() with memblock_free() and drop
->>> unnecessary aliases memblock_free_early() and memblock_free_early_nid().
->>>
->>> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
->>> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
->>> ---
->>
->>> diff --git a/arch/s390/kernel/smp.c b/arch/s390/kernel/smp.c
->>> index 1a04e5bdf655..37826d8c4f74 100644
->>> --- a/arch/s390/kernel/smp.c
->>> +++ b/arch/s390/kernel/smp.c
->>> @@ -723,7 +723,7 @@ void __init smp_save_dump_cpus(void)
->>>    			/* Get the CPU registers */
->>>    			smp_save_cpu_regs(sa, addr, is_boot_cpu, page);
->>>    	}
->>> -	memblock_free(page, PAGE_SIZE);
->>> +	memblock_phys_free(page, PAGE_SIZE);
->>>    	diag_amode31_ops.diag308_reset();
->>>    	pcpu_set_smt(0);
->>>    }
->>> @@ -880,7 +880,7 @@ void __init smp_detect_cpus(void)
->>>    	/* Add CPUs present at boot */
->>>    	__smp_rescan_cpus(info, true);
->>> -	memblock_free_early((unsigned long)info, sizeof(*info));
->>> +	memblock_free(info, sizeof(*info));
->>>    }
->>>    /*
->>
->> I'm a bit lost. IIUC memblock_free_early() and memblock_free() where
->> identical.
-> 
-> Yes, they were, but all calls to memblock_free_early() were using
-> __pa(vaddr) because they had a virtual address at hand.
+There is a completely unrelated annoyance involving APC UPSs and a
+flood of "hid-generic: <device_id> control queue full" messages on
+the console.  This was reported and fixed as of 01 Sep 2021, but
+the fix hasn't made it into mainline yet :-(.
 
-I'm still not following. In the above memblock_free_early() was taking 
-(unsigned long)info . Was it a bug ? It looks odd to hide bug fixes in 
-such a big patch, should that bug fix go in patch 2 ?
-
-> 
->> In the first hunk memblock_free() gets replaced by memblock_phys_free()
->> In the second hunk memblock_free_early() gets replaced by memblock_free()
-> 
-> In the first hunk the memory is allocated with memblock_phys_alloc() and we
-> have a physical range to free. In the second hunk the memory is allocated
-> with memblock_alloc() and we are freeing a virtual pointer.
->   
->> I think it would be easier to follow if you could split it in several
->> patches:
-> 
-> It was an explicit request from Linus to make it a single commit:
-> 
->    but the actual commit can and should be just a single commit that just
->    fixes 'memblock_free()' to have sane interfaces.
-> 
-> I don't feel strongly about splitting it (except my laziness really
-> objects), but I don't think doing the conversion in several steps worth the
-> churn.
-
-The commit is quite big (55 files changed, approx 100 lines modified).
-
-If done in the right order the change should be minimal.
-
-It is rather not-easy to follow and review when a function that was 
-existing (namely memblock_free() ) disappears and re-appears in the same 
-commit but to do something different.
-
-You do:
-- memblock_free() ==> memblock_phys_free()
-- memblock_free_ptr() ==> memblock_free()
-
-At least you could split in two patches, the advantage would be that 
-between first and second patch memblock() doesn't exist anymore so you 
-can check you really don't have anymore user.
-
-> 
->> - First patch: Create memblock_phys_free() and change all relevant
->> memblock_free() to memblock_phys_free() - Or change memblock_free() to
->> memblock_phys_free() and make memblock_free() an alias of it.
->> - Second patch: Make memblock_free_ptr() become memblock_free() and change
->> all remaining callers to the new semantics (IIUC memblock_free(__pa(ptr))
->> becomes memblock_free(ptr) and make memblock_free_ptr() an alias of
->> memblock_free()
->> - Fourth patch: Replace and drop memblock_free_ptr()
->> - Fifth patch: Drop memblock_free_early() and memblock_free_early_nid() (All
->> users should have been upgraded to memblock_free_phys() in patch 1 or
->> memblock_free() in patch 2)
->>
->> Christophe
-> 
+Respectfully,
+--Bob
