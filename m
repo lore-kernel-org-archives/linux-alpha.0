@@ -1,66 +1,64 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
 Subject: Re: [PATCH 0/3] memblock: cleanup memblock_free interface
-Date: Thu, 23 Sep 2021 09:01:46 -0700
-Message-ID: <CAHk-=wiJB8H5pZz-AKaSJ7ViRtdxQGJT7eOByp8DJx2OwZSYwA@mail.gmail.com>
+Date: Thu, 23 Sep 2021 22:45:49 +0300
+Message-ID: <YUzZberbgZE+7HEo@linux.ibm.com>
 References: <20210923074335.12583-1-rppt@kernel.org>
+ <CAHk-=wiJB8H5pZz-AKaSJ7ViRtdxQGJT7eOByp8DJx2OwZSYwA@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DLOxhnwH/JaVIhRbDcxcZPpiYGHLJbtd0CRIGAWnOsw=;
-        b=QMXOiJ6n28J2emY/y7cY9+DD4h8Pn0KRvNWmJxYGi/2iw91Mhhsv5k4E/yi6SvFmH+
-         cwsdxpHCcIaSp+pnaMQx9j8vfDg38b4ujoTb2lzS4jvwjrgaoWuJfcNbrdzMUshkRDfy
-         wyxZpTZP4dsY0GDCSs5bbcT3wFiFu+kSB/Akk=
-In-Reply-To: <20210923074335.12583-1-rppt@kernel.org>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, devicetree <devicetree@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>, kasan-dev <kasan-dev@googlegroups.com>, KVM list <kvm@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-efi <linux-efi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, linux-riscv <linux-riscv@lists.infradead.org>, linux-s390 <linux-s390@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "open list:SYNOPSYS ARC ARCHITECTURE" <linux-snps-arc@lists.infradead.org>, linux-um <linux-um@lists.infradead.org>, linux-usb@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=OlfxwL5SxCQJGsEygNnP+Bd9S5CycoibyIwI1T9qbFQ=;
+ b=o2g9xUdg4iWokOSpifGukNkZK7jrG3PCnBFvuz4C7oP+gzjHDglARWvYTHBDYKWgrmUN
+ nywTanPgUpTOTd5/xMfhi1L+mJwrCvVoKxej3UCLp5sG7C25GVynwAmr4q0nxjw5T5YF
+ XfSS+haqO/MAAWW7EoLHEph+pIjpH8koxcOuzA2lkqyOwZ+Lt0jX5schDBGsmjxT7nCn
+ nj0KpCKZ1MAIxT1dHKe+ArroeI/VY7R10b19vbUGLmbRaxdWWrC+tHtvcRU2gpGyiZee
+ fQz965XLLMlLTgvc9SCxBhiIocufoeoMuCL9s+OrHLUbKOqWsHzC5EoSrMfU3XKh1xK9 Bg== 
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wiJB8H5pZz-AKaSJ7ViRtdxQGJT7eOByp8DJx2OwZSYwA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+ <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+ <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-efi <linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, KVM list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-s390 <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-um <linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kasan-dev <kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, alpha <linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-sparc <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "open list:SYNOPSYS ARC ARCHITECTURE" <linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, linux-riscv <linux-riscv-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Mike
 
-On Thu, Sep 23, 2021 at 12:43 AM Mike Rapoport <rppt@kernel.org> wrote:
->
-> The core change is in the third patch that makes memblock_free() a
-> counterpart of memblock_alloc() and adds memblock_phys_alloc() to be a
+Hi Linus,
 
-^^^^^^^^^^^^^^^^^^^
-> counterpart of memblock_phys_alloc().
+On Thu, Sep 23, 2021 at 09:01:46AM -0700, Linus Torvalds wrote:
+> On Thu, Sep 23, 2021 at 12:43 AM Mike Rapoport <rppt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> >
+> You need to be a LOT more careful.
+> 
+> From a trivial check - exactly because I looked at doing it with a
+> script, and decided it's not so easy - I found cases like this:
+> 
+> -               memblock_free(__pa(paca_ptrs) + new_ptrs_size,
+> +               memblock_free(paca_ptrs + new_ptrs_size,
+> 
+> which is COMPLETELY wrong.
 
-That should be 'memblock_phys_free()'
+I did use a coccinelle script that's slightly more robust that a sed you've
+sent, but then I did a manual review, hence the two small patches with
+fixes. Indeed I missed this one, so to be on the safe side I'll rename only
+the obvious cases where coccinelle can be used reliably and leave all the
+rest as it's now. If somebody cares enough they can update it later.
+ 
+> And no, making the scripting just replace '__pa(x)' with '(void *)(x)'
 
-HOWEVER.
+These were actually manual and they are required for variables that
+used as virtual addresses but have unsigned long type, like e.g.
+initrd_start. So it's either __pa(x) or (void *).
 
-The real reason I'm replying is that this patch is horribly buggy, and
-will cause subtle problems that are nasty to debug.
-
-You need to be a LOT more careful.
-
-From a trivial check - exactly because I looked at doing it with a
-script, and decided it's not so easy - I found cases like this:
-
--               memblock_free(__pa(paca_ptrs) + new_ptrs_size,
-+               memblock_free(paca_ptrs + new_ptrs_size,
-
-which is COMPLETELY wrong.
-
-Why? Because now that addition is done as _pointer_ addition, not as
-an integer addition, and the end result is something completely
-different.
-
-pcac_ptrs is of type 'struct paca_struct **', so when you add
-new_ptrs_size to it, it will add it in terms of that many pointers,
-not that many bytes.
-
-You need to use some smarter scripting, or some way to validate it.
-
-And no, making the scripting just replace '__pa(x)' with '(void *)(x)'
-- which _would_ be mindless and get the same result - is not
-acceptable either, because it avoids one of the big improvements from
-using the right interface, namely having compiler type checking (and
-saner code that people understand).
-
-So NAK. No broken automated scripting patches.
-
-               Linus
+-- 
+Sincerely yours,
+Mike.
