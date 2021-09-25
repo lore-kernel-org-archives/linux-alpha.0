@@ -1,52 +1,40 @@
 From: Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 5/6] alpha: syscall exit cleanup
-Date: Sat, 25 Sep 2021 02:55:46 +0000
-Message-ID: <20210925025548.1694143-5-viro@zeniv.linux.org.uk>
+Subject: [PATCH 1/6] alpha: fix TIF_NOTIFY_SIGNAL handling
+Date: Sat, 25 Sep 2021 02:55:42 +0000
+Message-ID: <20210925025548.1694143-1-viro@zeniv.linux.org.uk>
 References: <YU6PVepETVUJF28v@zeniv-ca.linux.org.uk>
- <20210925025548.1694143-1-viro@zeniv.linux.org.uk>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20210925025548.1694143-1-viro@zeniv.linux.org.uk>
+In-Reply-To: <YU6PVepETVUJF28v@zeniv-ca.linux.org.uk>
 Sender: Al Viro <viro@ftp.linux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-alpha@vger.kernel.org
 Cc: Linus Torvalds <torvalds@linux-foundation.org>
 
-$ret_success consists of two insn + branch to ret_from_syscall.
-The thing is, those insns are identical to the ones immediately
-preceding ret_from_syscall...
+it needs to be added to _TIF_WORK_MASK, or we might not reach
+do_work_pending() in the first place...
 
+Fixes: 5a9a8897c253a "alpha: add support for TIF_NOTIFY_SIGNAL"
 Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 ---
- arch/alpha/kernel/entry.S | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ arch/alpha/include/asm/thread_info.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-index 78fe7ee254250..43380fbf600dd 100644
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -478,6 +478,7 @@ entSys:
- 1:	jsr	$26, ($27), sys_ni_syscall
- 	ldgp	$gp, 0($26)
- 	blt	$0, $syscall_error	/* the call failed */
-+$ret_success:
- 	stq	$0, 0($sp)
- 	stq	$31, 72($sp)		/* a3=0 => no error */
+diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
+index 2592356e32154..0ce1eee0924b1 100644
+--- a/arch/alpha/include/asm/thread_info.h
++++ b/arch/alpha/include/asm/thread_info.h
+@@ -77,7 +77,7 @@ register struct thread_info *__current_thread_info __asm__("$8");
  
-@@ -527,11 +528,6 @@ $syscall_error:
- 	stq	$1, 72($sp)	/* a3 for return */
- 	br	ret_from_sys_call
+ /* Work to do on interrupt/exception return.  */
+ #define _TIF_WORK_MASK		(_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
+-				 _TIF_NOTIFY_RESUME)
++				 _TIF_NOTIFY_RESUME | _TIF_NOTIFY_SIGNAL)
  
--$ret_success:
--	stq	$0, 0($sp)
--	stq	$31, 72($sp)	/* a3=0 => no error */
--	br	ret_from_sys_call
--
- /*
-  * Do all cleanup when returning from all interrupts and system calls.
-  *
+ /* Work to do on any return to userspace.  */
+ #define _TIF_ALLWORK_MASK	(_TIF_WORK_MASK		\
 -- 
 2.11.0
 
