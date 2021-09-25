@@ -1,49 +1,36 @@
-From: Ulrich Teichert <krypton@ulrich-teichert.org>
-Subject: Re: Newer kernels on the Jensen (was: [PATCH v2 0/4] Introduce and use absolute_pointer macro)
-Date: Sat, 25 Sep 2021 20:31:10 +0200 (CEST)
-Message-ID: <202109251831.18PIVAD8004391@valdese.nms.ulrich-teichert.org>
-References: <no.id>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH 7/7] alpha: lazy FPU switching
+Date: Sat, 25 Sep 2021 12:07:17 -0700
+Message-ID: <CAHk-=wjPNM9puKEvteLnY4EDMPE3rKJcODzABHSO-7gKFkOwoA@mail.gmail.com>
+References: <YU6PVepETVUJF28v@zeniv-ca.linux.org.uk> <20210925025548.1694143-1-viro@zeniv.linux.org.uk>
+ <20210925025548.1694143-7-viro@zeniv.linux.org.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <no.id>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XsW8W77uk1stibLZy1i0WuwqlVgYv+eU53F9QoWyYCo=;
+        b=bC5ZIfglTQX/fqeYMrs58FzUn1tSkdAcfdliUN+zIbY5oh0F8hJ8N/i+pH58mVeabF
+         m0qLCzUCuKBE3dwyd4ZEe4Rrq3GLOvS5/PaNhP3szisu/eBsBZWZ7KapWZHEgz8RVRDt
+         cmaOzvngk/O7/hWG6lE7p20exnYGHn/GUJXcw=
+In-Reply-To: <20210925025548.1694143-7-viro@zeniv.linux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Linux Alpha <linux-alpha@vger.kernel.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, mattst88@gmail.com, rth@twiddle.net, ink@jurassic.park.msu.ru
+Content-Transfer-Encoding: 7bit
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: alpha <linux-alpha@vger.kernel.org>
 
-Hi,
+On Fri, Sep 24, 2021 at 7:55 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+>         On each context switch we save the FPU registers on stack
+> of old process and restore FPU registers from the stack of new one.
+> That allows us to avoid doing that each time we enter/leave the
+> kernel mode; however, that can get suboptimal in some cases.
 
-> I'll try booting from CDROM with a serial line attached at the weekend,
-> perhaps that will give us a hint.
+Do you actually have a system or virtual image to test this all out on?
 
-[You can call the Alpha a dead architecture and the Jensen and antiquated
-machine, but there are features which modern PCs *still* don't have,
-like the automatic switch over to the serial line console when no keyboard
-is connected. I'm still impressed how well that works.]
+I'm not saying this doesn't look like an improvement, I'm more
+questioning whether it's worth it...
 
-Well...whatever that means, but you can call it a hint. Booting from
-CD-ROM stopps with:
-
->>> boot dka500 -fl i
-INIT-S-CPU...
-AUDIT_BOOT_STARTS ... 
-AUDIT_CHECKSUM_GOOD
-AUDIT_LOAD_BEGINS
-AUDIT_LOAD_DONE
-
-Linux/AXP bootloader for Linux 5.15.0-rc2-00045-gcf1d2c3e7e2f-dirty
-Switching to OSF PAL-code .. Ok (rev 20123)
-Loading vmlinux ...Failed (200000000067a000)
-
-?05 HLT INSTR
-  PC= 00000000.20000014 PSL= 00000000.00000007
-
-Anyone an idea what 200000000067a000 may mean in this context?
-
-TIA,
-Uli
--- 
-Dipl. Inf. Ulrich Teichert|e-mail: Ulrich.Teichert@gmx.de | Listening to:
-Stormweg 24               |Eat Lipstick: Dirty Little Secret, The Baboon Show:
-24539 Neumuenster, Germany|Work Work Work, The Bellrays: Bad Reaction
+          Linus
