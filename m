@@ -1,7 +1,7 @@
 From: Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 4/6] alpha: fix handling of a3 on straced syscalls
-Date: Sat, 25 Sep 2021 02:55:45 +0000
-Message-ID: <20210925025548.1694143-4-viro@zeniv.linux.org.uk>
+Subject: [PATCH 2/6] alpha: _TIF_ALLWORK_MASK is unused
+Date: Sat, 25 Sep 2021 02:55:43 +0000
+Message-ID: <20210925025548.1694143-2-viro@zeniv.linux.org.uk>
 References: <YU6PVepETVUJF28v@zeniv-ca.linux.org.uk>
  <20210925025548.1694143-1-viro@zeniv.linux.org.uk>
 Mime-Version: 1.0
@@ -14,30 +14,28 @@ Content-Type: text/plain; charset="us-ascii"
 To: linux-alpha@vger.kernel.org
 Cc: Linus Torvalds <torvalds@linux-foundation.org>
 
-For successful syscall that happens to return a negative, we want
-a3 set to 0, no matter whether it's straced or not.  As it is,
-for straced case we leave the value it used to have on syscall
-entry.  Easily fixed, fortunately...
+... and never had been used, actually
 
 Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 ---
- arch/alpha/kernel/entry.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/alpha/include/asm/thread_info.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-index c41a5a9c3b9f2..78fe7ee254250 100644
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -600,8 +600,8 @@ ret_from_straced:
+diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
+index 0ce1eee0924b1..9b99fece40af9 100644
+--- a/arch/alpha/include/asm/thread_info.h
++++ b/arch/alpha/include/asm/thread_info.h
+@@ -79,10 +79,6 @@ register struct thread_info *__current_thread_info __asm__("$8");
+ #define _TIF_WORK_MASK		(_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
+ 				 _TIF_NOTIFY_RESUME | _TIF_NOTIFY_SIGNAL)
  
- 	/* check return.. */
- 	blt	$0, $strace_error	/* the call failed */
--	stq	$31, 72($sp)		/* a3=0 => no error */
- $strace_success:
-+	stq	$31, 72($sp)		/* a3=0 => no error */
- 	stq	$0, 0($sp)		/* save return value */
- 
- 	DO_SWITCH_STACK
+-/* Work to do on any return to userspace.  */
+-#define _TIF_ALLWORK_MASK	(_TIF_WORK_MASK		\
+-				 | _TIF_SYSCALL_TRACE)
+-
+ #define TS_UAC_NOPRINT		0x0001	/* ! Preserve the following three */
+ #define TS_UAC_NOFIX		0x0002	/* ! flags as they match          */
+ #define TS_UAC_SIGBUS		0x0004	/* ! userspace part of 'osf_sysinfo' */
 -- 
 2.11.0
 
