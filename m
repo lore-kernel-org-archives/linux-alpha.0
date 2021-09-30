@@ -1,71 +1,125 @@
-From: Alexander Potapenko <glider@google.com>
-Subject: Re: [PATCH v4 07/11] mm: kasan: Use is_kernel() helper
-Date: Thu, 30 Sep 2021 17:45:35 +0200
-Message-ID: <CAG_fn=XD+nVgVRgj7KFsPWSuia+gZzpA3KAdqucjKodOvxSF6w@mail.gmail.com>
-References: <20210930071143.63410-1-wangkefeng.wang@huawei.com> <20210930071143.63410-8-wangkefeng.wang@huawei.com>
+From: Mike Rapoport <rppt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v2 0/6] memblock: cleanup memblock_free interface
+Date: Thu, 30 Sep 2021 21:50:25 +0300
+Message-ID: <20210930185031.18648-1-rppt@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=8d6xo5L9QevHc/0Sduv9NQkae1fLgboqRLN/cOlHL94=;
-        b=iR/rfVgiWHq5rw4NLK5OT9v5lYhcLGBGwNqvqBTHa8uM0K3LSI6Qds40sZdhqy343D
-         nKF1AalapkTkhy/ypRBVypdug7o8/xaqtmHaWv9UPFEGjb1UhHpm/4rTjAiBbtASwfKx
-         3JH/kVbQPqPEjk5/0bNv7k1/Y2BIonRHJ0vWOSQM3zvPY70Uxrv2rSgTrqGgUv6GDu7E
-         chrKKhinXiSRYk/xsds2GtV3wz6HxpGI4jq2FDoKpBIlG6t+6bi34LoQK0m5uh10NjJQ
-         5mDPrpUbvxQNLMegc4nJJFYKUu1kf5g3ZYgnxHtFO6ahoMuizo6fqj2+osS40oUSZmZK
-         mhMw==
-In-Reply-To: <20210930071143.63410-8-wangkefeng.wang@huawei.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633027842;
+        bh=sHuklxRhVNrOUIGACjRjjFQjjWujtmMEebA4SOO7XVI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uHnQO7KnOuN+F6Kg/VYMCkYNZKP/FQuRQKsHlQ02RSvOU+Lsr6a/Ejf3NJuypnQ0r
+         wgcHaC0oqgL3wh/+Bjpr7enKokEpGkilkhAcBEHhE9uLRLhpb0YgHbs+X+j4bqDpV7
+         0AkfKl3RUdJBxJT+ECt+6aVhpjwQ315nbX0A7Nb4a9ZuqQ7VSnVENanCiGErOWceKw
+         TlOjeEhAK0IhpTcaKezOnHkaHC7hBR/4sk1qUNqqo7JqlIbR9UE+BEQUtaXKIMytSU
+         2kYuIhxuTpWdfCtUUQdGYdGcDoSXL5vM5e4zMX86OIlLp0nscaVxPuacUtXLN3LJw1
+         +kT+1vHV0j00g==
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Linux-Arch <linux-arch@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, linuxppc-dev@lists.ozlabs.org, Steven Rostedt <rostedt@goodmis.org>, Ingo Molnar <mingo@redhat.com>, David Miller <davem@davemloft.net>, Alexei Starovoitov <ast@kernel.org>, Andrey Ryabinin <ryabinin.a.a@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, bpf@vger.kernel.org, linux-alpha@vger.kernel.org, Christophe Leroy <christophe.leroy@csgroup.eu>, Andrey Konovalov <andreyknvl@gmail.com>, Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christophe Leroy <christophe.leroy-2tlSp11Fh4xulxpn9UvDqw@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mike Rapoport <rppt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>, Shahab Vahedi <Shahab.Vahedi-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-riscv-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 
-On Thu, Sep 30, 2021 at 9:09 AM Kefeng Wang <wangkefeng.wang@huawei.com> wr=
-ote:
->
-> Directly use is_kernel() helper in kernel_or_module_addr().
->
-> Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-> Cc: Alexander Potapenko <glider@google.com>
-> Cc: Andrey Konovalov <andreyknvl@gmail.com>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-Reviewed-by: Alexander Potapenko <glider@google.com>
+From: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
 
-> ---
->  mm/kasan/report.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-> index 3239fd8f8747..1c955e1c98d5 100644
-> --- a/mm/kasan/report.c
-> +++ b/mm/kasan/report.c
-> @@ -226,7 +226,7 @@ static void describe_object(struct kmem_cache *cache,=
- void *object,
->
->  static inline bool kernel_or_module_addr(const void *addr)
->  {
-> -       if (addr >=3D (void *)_stext && addr < (void *)_end)
-> +       if (is_kernel((unsigned long)addr))
->                 return true;
->         if (is_module_address((unsigned long)addr))
->                 return true;
-> --
-> 2.26.2
->
+Hi,
+
+Following the discussion on [1] this is the fix for memblock freeing APIs
+mismatch. 
+
+The first patch is a cleanup of numa_distance allocation in arch_numa I've
+spotted during the conversion.
+The second patch is a fix for Xen memory freeing on some of the error
+paths.
+
+I agree with Christophe that doing step by step makes the thing easier to
+review, so the patches 3-6 do the actual cleanup step by step.
+
+This time I used stricter coccinelle scripts so that only straightforward
+uses would get converted.
+
+There still a couple of (void *) castings for the cases when a virtual
+address has unsigned long type rather than a pointer type, like e.g
+initrd_start.
+
+Since scripts/get_maintainer.pl returned more than 100 addresses I've
+trimmed the distribution list only to the relevant lists.
+
+Juergen and Shahab, I didn't keep your Reviewed-by because the patches are
+a bit different this time.
+
+v2:
+* split changes into several patches
+* use stricter coccinelle scripts 
+
+[1] https://lore.kernel.org/all/CAHk-=wj9k4LZTz+svCxLYs5Y1=+yKrbAUArH1+ghyG3OLd8VVg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org
+
+Mike Rapoport (6):
+  arch_numa: simplify numa_distance allocation
+  xen/x86: free_p2m_page: use memblock_free_ptr() to free a virtual pointer
+  memblock: drop memblock_free_early_nid() and memblock_free_early()
+  memblock: stop aliasing __memblock_free_late with memblock_free_late
+  memblock: rename memblock_free to memblock_phys_free
+  memblock: use memblock_free for freeing virtual pointers
+
+ arch/alpha/kernel/core_irongate.c         |  2 +-
+ arch/arc/mm/init.c                        |  2 +-
+ arch/arm/mach-hisi/platmcpm.c             |  2 +-
+ arch/arm/mm/init.c                        |  2 +-
+ arch/arm64/mm/mmu.c                       |  4 ++--
+ arch/mips/mm/init.c                       |  2 +-
+ arch/mips/sgi-ip30/ip30-setup.c           |  6 +++---
+ arch/powerpc/kernel/dt_cpu_ftrs.c         |  4 ++--
+ arch/powerpc/kernel/paca.c                |  8 ++++----
+ arch/powerpc/kernel/setup-common.c        |  2 +-
+ arch/powerpc/kernel/setup_64.c            |  2 +-
+ arch/powerpc/platforms/powernv/pci-ioda.c |  2 +-
+ arch/powerpc/platforms/pseries/svm.c      |  3 +--
+ arch/riscv/kernel/setup.c                 |  4 ++--
+ arch/s390/kernel/setup.c                  |  8 ++++----
+ arch/s390/kernel/smp.c                    |  4 ++--
+ arch/s390/kernel/uv.c                     |  2 +-
+ arch/s390/mm/kasan_init.c                 |  2 +-
+ arch/sh/boards/mach-ap325rxa/setup.c      |  2 +-
+ arch/sh/boards/mach-ecovec24/setup.c      |  4 ++--
+ arch/sh/boards/mach-kfr2r09/setup.c       |  2 +-
+ arch/sh/boards/mach-migor/setup.c         |  2 +-
+ arch/sh/boards/mach-se/7724/setup.c       |  4 ++--
+ arch/sparc/kernel/smp_64.c                |  2 +-
+ arch/um/kernel/mem.c                      |  2 +-
+ arch/x86/kernel/setup.c                   |  4 ++--
+ arch/x86/kernel/setup_percpu.c            |  2 +-
+ arch/x86/mm/init.c                        |  2 +-
+ arch/x86/mm/kasan_init_64.c               |  4 ++--
+ arch/x86/mm/numa.c                        |  2 +-
+ arch/x86/mm/numa_emulation.c              |  2 +-
+ arch/x86/xen/mmu_pv.c                     |  6 +++---
+ arch/x86/xen/p2m.c                        |  2 +-
+ arch/x86/xen/setup.c                      |  6 +++---
+ drivers/base/arch_numa.c                  | 10 ++++------
+ drivers/firmware/efi/memmap.c             |  2 +-
+ drivers/macintosh/smu.c                   |  2 +-
+ drivers/of/kexec.c                        |  3 +--
+ drivers/of/of_reserved_mem.c              |  5 +++--
+ drivers/s390/char/sclp_early.c            |  2 +-
+ drivers/usb/early/xhci-dbc.c              | 10 +++++-----
+ drivers/xen/swiotlb-xen.c                 |  2 +-
+ include/linux/memblock.h                  | 23 +++--------------------
+ init/initramfs.c                          |  2 +-
+ init/main.c                               |  2 +-
+ kernel/dma/swiotlb.c                      |  2 +-
+ kernel/printk/printk.c                    |  4 ++--
+ lib/bootconfig.c                          |  2 +-
+ lib/cpumask.c                             |  2 +-
+ mm/cma.c                                  |  2 +-
+ mm/memblock.c                             | 22 +++++++++++-----------
+ mm/memory_hotplug.c                       |  2 +-
+ mm/percpu.c                               |  8 ++++----
+ mm/sparse.c                               |  2 +-
+ 54 files changed, 99 insertions(+), 119 deletions(-)
 
 
---=20
-Alexander Potapenko
-Software Engineer
+base-commit: 5816b3e6577eaa676ceb00a848f0fd65fe2adc29
+-- 
+2.28.0
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Halimah DeLaine Prado
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
