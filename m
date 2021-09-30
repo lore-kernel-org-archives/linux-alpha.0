@@ -1,128 +1,89 @@
 From: Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH v4 03/11] sections: Move and rename core_kernel_data() to is_kernel_core_data()
-Date: Thu, 30 Sep 2021 15:11:35 +0800
-Message-ID: <20210930071143.63410-4-wangkefeng.wang@huawei.com>
-References: <20210930071143.63410-1-wangkefeng.wang@huawei.com>
+Subject: [PATCH v4 00/11] sections: Unify kernel sections range check and use
+Date: Thu, 30 Sep 2021 15:11:32 +0800
+Message-ID: <20210930071143.63410-1-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7BIT
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <20210930071143.63410-1-wangkefeng.wang@huawei.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: arnd@arndb.de, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net, ast@kernel.org, ryabinin.a.a@gmail.com, akpm@linux-foundation.org
 Cc: mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, bpf@vger.kernel.org, linux-alpha@vger.kernel.org, Christophe Leroy <christophe.leroy@csgroup.eu>, Kefeng Wang <wangkefeng.wang@huawei.com>
 
-Move core_kernel_data() into sections.h and rename it to
-is_kernel_core_data(), also make it return bool value, then
-update all the callers.
+There are three head files(kallsyms.h, kernel.h and sections.h) which
+include the kernel sections range check, let's make some cleanup and
+unify them.
 
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- include/asm-generic/sections.h | 16 ++++++++++++++++
- include/linux/kernel.h         |  1 -
- kernel/extable.c               | 18 ------------------
+1. cleanup arch specific text/data check and fix address boundary check
+   in kallsyms.h
+2. make all the basic/core kernel range check function into sections.h
+3. update all the callers, and use the helper in sections.h to simplify
+   the code
+
+After this series, we have 5 APIs about kernel sections range check in
+sections.h
+
+ * is_kernel_rodata()		--- already in sections.h
+ * is_kernel_core_data()	--- come from core_kernel_data() in kernel.h
+ * is_kernel_inittext()		--- come from kernel.h and kallsyms.h
+ * __is_kernel_text()		--- add new internal helper
+ * __is_kernel()		--- add new internal helper
+
+Note: For the last two helpers, people should not use directly, consider to
+      use corresponding function in kallsyms.h.
+
+v4:
+- Use core_kernel_text() in powerpc sugguested Christophe Leroy, build
+  test only
+- Use is_kernel_text() in alpha and microblaze, build test only on
+  next-20210929
+
+v3:
+https://lore.kernel.org/linux-arch/20210926072048.190336-1-wangkefeng.wang@huawei.com/
+- Add Steven's RB to patch2
+- Introduce two internal helper, then use is_kernel_text() in core_kernel_text()
+  and is_kernel() in kernel_or_module_addr() suggested by Steven
+
+v2:
+https://lore.kernel.org/linux-arch/20210728081320.20394-1-wangkefeng.wang@huawei.com/
+- add ACK/RW to patch2, and drop inappropriate fix tag
+- keep 'core' to check kernel data, suggestted by Steven Rostedt
+  <rostedt@goodmis.org>, rename is_kernel_data() to is_kernel_core_data()
+- drop patch8 which is merged
+- drop patch9 which is resend independently
+
+v1:
+https://lore.kernel.org/linux-arch/20210626073439.150586-1-wangkefeng.wang@huawei.com
+
+
+Kefeng Wang (11):
+  kallsyms: Remove arch specific text and data check
+  kallsyms: Fix address-checks for kernel related range
+  sections: Move and rename core_kernel_data() to is_kernel_core_data()
+  sections: Move is_kernel_inittext() into sections.h
+  x86: mm: Rename __is_kernel_text() to is_x86_32_kernel_text()
+  sections: Provide internal __is_kernel() and __is_kernel_text() helper
+  mm: kasan: Use is_kernel() helper
+  extable: Use is_kernel_text() helper
+  powerpc/mm: Use core_kernel_text() helper
+  microblaze: Use is_kernel_text() helper
+  alpha: Use is_kernel_text() helper
+
+ arch/alpha/kernel/traps.c      |  4 +-
+ arch/microblaze/mm/pgtable.c   |  3 +-
+ arch/powerpc/mm/pgtable_32.c   |  7 +---
+ arch/x86/kernel/unwind_orc.c   |  2 +-
+ arch/x86/mm/init_32.c          | 14 +++----
+ include/asm-generic/sections.h | 75 ++++++++++++++++++++++++++--------
+ include/linux/kallsyms.h       | 13 +-----
+ include/linux/kernel.h         |  2 -
+ kernel/extable.c               | 33 ++-------------
+ kernel/locking/lockdep.c       |  3 --
  kernel/trace/ftrace.c          |  2 +-
+ mm/kasan/report.c              |  2 +-
  net/sysctl_net.c               |  2 +-
- 5 files changed, 18 insertions(+), 21 deletions(-)
+ 13 files changed, 78 insertions(+), 84 deletions(-)
 
-diff --git a/include/asm-generic/sections.h b/include/asm-generic/sections.h
-index 817309e289db..24780c0f40b1 100644
---- a/include/asm-generic/sections.h
-+++ b/include/asm-generic/sections.h
-@@ -142,6 +142,22 @@ static inline bool init_section_intersects(void *virt, size_t size)
- 	return memory_intersects(__init_begin, __init_end, virt, size);
- }
- 
-+/**
-+ * is_kernel_core_data - checks if the pointer address is located in the
-+ *			 .data section
-+ *
-+ * @addr: address to check
-+ *
-+ * Returns: true if the address is located in .data, false otherwise.
-+ * Note: On some archs it may return true for core RODATA, and false
-+ *       for others. But will always be true for core RW data.
-+ */
-+static inline bool is_kernel_core_data(unsigned long addr)
-+{
-+	return addr >= (unsigned long)_sdata &&
-+	       addr < (unsigned long)_edata;
-+}
-+
- /**
-  * is_kernel_rodata - checks if the pointer address is located in the
-  *                    .rodata section
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 2776423a587e..e5a9af8a4e20 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -230,7 +230,6 @@ extern char *next_arg(char *args, char **param, char **val);
- 
- extern int core_kernel_text(unsigned long addr);
- extern int init_kernel_text(unsigned long addr);
--extern int core_kernel_data(unsigned long addr);
- extern int __kernel_text_address(unsigned long addr);
- extern int kernel_text_address(unsigned long addr);
- extern int func_ptr_is_kernel_text(void *ptr);
-diff --git a/kernel/extable.c b/kernel/extable.c
-index b0ea5eb0c3b4..da26203841d4 100644
---- a/kernel/extable.c
-+++ b/kernel/extable.c
-@@ -82,24 +82,6 @@ int notrace core_kernel_text(unsigned long addr)
- 	return 0;
- }
- 
--/**
-- * core_kernel_data - tell if addr points to kernel data
-- * @addr: address to test
-- *
-- * Returns true if @addr passed in is from the core kernel data
-- * section.
-- *
-- * Note: On some archs it may return true for core RODATA, and false
-- *  for others. But will always be true for core RW data.
-- */
--int core_kernel_data(unsigned long addr)
--{
--	if (addr >= (unsigned long)_sdata &&
--	    addr < (unsigned long)_edata)
--		return 1;
--	return 0;
--}
--
- int __kernel_text_address(unsigned long addr)
- {
- 	if (kernel_text_address(addr))
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 7efbc8aaf7f6..f15badf31f52 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -323,7 +323,7 @@ int __register_ftrace_function(struct ftrace_ops *ops)
- 	if (!ftrace_enabled && (ops->flags & FTRACE_OPS_FL_PERMANENT))
- 		return -EBUSY;
- 
--	if (!core_kernel_data((unsigned long)ops))
-+	if (!is_kernel_core_data((unsigned long)ops))
- 		ops->flags |= FTRACE_OPS_FL_DYNAMIC;
- 
- 	add_ftrace_ops(&ftrace_ops_list, ops);
-diff --git a/net/sysctl_net.c b/net/sysctl_net.c
-index f6cb0d4d114c..4b45ed631eb8 100644
---- a/net/sysctl_net.c
-+++ b/net/sysctl_net.c
-@@ -144,7 +144,7 @@ static void ensure_safe_net_sysctl(struct net *net, const char *path,
- 		addr = (unsigned long)ent->data;
- 		if (is_module_address(addr))
- 			where = "module";
--		else if (core_kernel_data(addr))
-+		else if (is_kernel_core_data(addr))
- 			where = "kernel";
- 		else
- 			continue;
 -- 
 2.26.2
 
