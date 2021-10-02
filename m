@@ -1,62 +1,40 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH v2 0/6] memblock: cleanup memblock_free interface
-Date: Thu, 30 Sep 2021 15:10:46 -0700
-Message-ID: <YVY15nd56j8x8udh@kernel.org>
-References: <20210930185031.18648-1-rppt@kernel.org>
- <CAHk-=wjS76My8aJLWJAHd-5GnMEVC1D+kV7DgtV9GjcbtqZdig@mail.gmail.com>
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Subject: Re: Newer kernels on the Jensen (was: [PATCH v2 0/4] Introduce and
+Date: Sat, 2 Oct 2021 17:30:53 +0200
+Message-ID: <2b9935f1-da3a-e858-77e5-c88e8b578e0d@physik.fu-berlin.de>
+References: <202109261712.18QHCj8L023400@valdese.nms.ulrich-teichert.org>
+ <75c41301-8467-0e44-c5b0-fcc47a113e31@physik.fu-berlin.de>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633039847;
-        bh=IwzBemW+hy1M1ewr7atFO0cSMjKx7nF1iOUj3EQWXE8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VMFkm4a+fgdg4zYaCkaWnSOTeOZ8uAbKkitUxM0+m4BBfXT2b5oLMM7rDTLawyLAE
-         NhhBOznSRQz5yRbiTNsvbV6E0IU3T5qz407KpFRCdUtW5hyDqK4d2pDAOMg4JRadt6
-         KWrjYIXEm0KrNBVtP+JPzhB2VrG3+5vrqbM5hiSfUBy+07gwCIoejO0uW/sH7DYI6V
-         pgwC0QydyQR/hM9nqnvQyR6gIiVBVoszYMQd2xY8yoPecdNAhtt2AC8GtVh+C0O4VI
-         bPLArmwwdAbQbiLreQFVTZM6xuVy7lVHSRkS66W+8O7Twsm9hTlzsCUC2ioP79rEse
-         MlAOzYU2R7N3A==
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjS76My8aJLWJAHd-5GnMEVC1D+kV7DgtV9GjcbtqZdig@mail.gmail.com>
+Content-Language: en-US
+In-Reply-To: <75c41301-8467-0e44-c5b0-fcc47a113e31@physik.fu-berlin.de>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Christophe Leroy <christophe.leroy@csgroup.eu>, Juergen Gross <jgross@suse.com>, Mike Rapoport <rppt@linux.ibm.com>, Shahab Vahedi <Shahab.Vahedi@synopsys.com>, devicetree <devicetree@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>, kasan-dev <kasan-dev@googlegroups.com>, KVM list <kvm@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-efi <linux-efi@vger.kernel.org>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, linux-riscv <linux-riscv@lists.infradead.org>, linux-s390 <linux-s390@vger.kernel.org>, Linux-sh list <linux-sh@vger.kerne>
+To: Ulrich Teichert <krypton@ulrich-teichert.org>
+Cc: Linux Alpha <linux-alpha@vger.kernel.org>, mattst88@gmail.com, "debian-alpha@lists.debian.org" <debian-alpha@lists.debian.org>
 
-On Thu, Sep 30, 2021 at 02:20:33PM -0700, Linus Torvalds wrote:
-> On Thu, Sep 30, 2021 at 11:50 AM Mike Rapoport <rppt@kernel.org> wrote:
-> >
-> > The first patch is a cleanup of numa_distance allocation in arch_numa I've
-> > spotted during the conversion.
-> > The second patch is a fix for Xen memory freeing on some of the error
-> > paths.
-> 
-> Well, at least patch 2 looks like something that should go into 5.15
-> and be marked for stable.
-> 
-> Patch 1 looks like a trivial local cleanup, and could go in
-> immediately. Patch 4 might be in that same category.
-> 
-> The rest look like "next merge window" to me, since they are spread
-> out and neither bugfixes nor tiny localized cleanups (iow renaming
-> functions, global resulting search-and-replace things).
-> 
-> So my gut feel is that two (maybe three) of these patches should go in
-> asap, with three (maybe four) be left for 5.16.
-> 
-> IOW, not trat this as a single series.
-> 
-> Hmm?
+Hi Ulrich!
 
-Yes, why not :)
-I'd keep patch 4 for the next merge window, does not look urgent to me.
+On 9/26/21 19:16, John Paul Adrian Glaubitz wrote:
+> That might be possible but I'm not sure whether there are any limitations with
+> a-boot in this regard. Either way, you helped me find another kernel configuration
+> issue in Debian that I am going to fix, so thanks for that.
 
-Andrew, can you please take care of this or you'd prefer me resending
-everything separately?
- 
->              Linus
+I have opened a merge request for the Debian kernel configuration now to enable
+EISA support in the Debian kernel package on alpha [1].
+
+Thus, the installer images should fully work on your machine once this change
+has been merged.
+
+Thanks,
+Adrian
+
+> [1] https://salsa.debian.org/kernel-team/linux/-/merge_requests/401
 
 -- 
-Sincerely yours,
-Mike.
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+
