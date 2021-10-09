@@ -1,12 +1,12 @@
 From: Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: [PATCH v5 13/16] PCI: Mark MSI data shared
-Date: Fri,  8 Oct 2021 17:37:08 -0700
-Message-ID: <20211009003711.1390019-14-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v5 14/16] virtio: Use shared mappings for virtio PCI devices
+Date: Fri,  8 Oct 2021 17:37:09 -0700
+Message-ID: <20211009003711.1390019-15-sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-doc-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 In-Reply-To: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -15,32 +15,32 @@ Cc: Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luc
 
 From: Andi Kleen <ak@linux.intel.com>
 
-In a TDX guest the MSI area must be shared with the host, so use
-a shared mapping.
+In a TDX guest the pci device mappings of virtio must be shared
+with the host, so use explicit shared mappings.
 
 Signed-off-by: Andi Kleen <ak@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
 
 Changes since v4:
- * Replaced ioremap_shared() with ioremap_host_shared()
+ * Replaced pci_iomap_shared_range() with pci_iomap_host_shared_range().
 
- drivers/pci/msi.c | 2 +-
+ drivers/virtio/virtio_pci_modern_dev.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index 0099a00af361..198ef6e6ca4f 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -596,7 +596,7 @@ static void __iomem *msix_map_region(struct pci_dev *dev, unsigned nr_entries)
- 	table_offset &= PCI_MSIX_TABLE_OFFSET;
- 	phys_addr = pci_resource_start(dev, bir) + table_offset;
+diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
+index e11ed748e661..f29bf45a4642 100644
+--- a/drivers/virtio/virtio_pci_modern_dev.c
++++ b/drivers/virtio/virtio_pci_modern_dev.c
+@@ -83,7 +83,7 @@ vp_modern_map_capability(struct virtio_pci_modern_device *mdev, int off,
+ 		return NULL;
+ 	}
  
--	return ioremap(phys_addr, nr_entries * PCI_MSIX_ENTRY_SIZE);
-+	return ioremap_host_shared(phys_addr, nr_entries * PCI_MSIX_ENTRY_SIZE);
- }
- 
- static int msix_setup_entries(struct pci_dev *dev, void __iomem *base,
+-	p = pci_iomap_range(dev, bar, offset, length);
++	p = pci_iomap_host_shared_range(dev, bar, offset, length);
+ 	if (!p)
+ 		dev_err(&dev->dev,
+ 			"virtio_pci: unable to map virtio %u@%u on bar %i\n",
 -- 
 2.25.1
 
