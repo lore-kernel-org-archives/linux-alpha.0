@@ -1,56 +1,149 @@
-From: Andrey Konovalov <andreyknvl@gmail.com>
-Subject: Re: [PATCH v4 07/11] mm: kasan: Use is_kernel() helper
-Date: Sun, 3 Oct 2021 19:19:12 +0200
-Message-ID: <CA+fCnZd6=sXgb-782KkijqJ7zgBj38oXLeLbi4HoUhm3MY4J8g@mail.gmail.com>
-References: <20210930071143.63410-1-wangkefeng.wang@huawei.com> <20210930071143.63410-8-wangkefeng.wang@huawei.com>
+From: Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v5 00/16] Add TDX Guest Support (shared-mm support)
+Date: Fri,  8 Oct 2021 17:36:55 -0700
+Message-ID: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
-Return-path: <bpf-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LtNAm7zzl2qrgZZh/QTIxNxuRAfc7I+2wFFQB9vnTF0=;
-        b=HPajL2gRll5UGOWQudiLfEhv04bZJLEY04ZU7ZSRAIC019LPw99IB3jcVbN4EN+uaa
-         xyKMFFwUWxMYSoP4ZBJywqtND/RYthdauADK8DHtR06cFEMk7vPzapNi8yp+/BQqu9DS
-         XOr3DnKVtkoe0wPl/79bKfHiDibk91+zdv0sLCel9UFYLCb9bmD47OsCKSwE0mGDtw8/
-         6gdgpENhRKndxirmzsgGPXX1upChcdibaOTNC3bq+DmwPpNVd9cFYYXmPAmiOvESIXbo
-         CSbSXebOc4mMaPqb0Px805lEkzhdOgcnojNc1+KreKV66iyssiTwe6WqQz88OHS1mJw/
-         GXiw==
-In-Reply-To: <20210930071143.63410-8-wangkefeng.wang@huawei.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linuxppc-dev@lists.ozlabs.org, Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com, David Miller <davem@davemloft.net>, Alexei Starovoitov <ast@kernel.org>, Andrey Ryabinin <ryabinin.a.a@gmail.com>, Andrew Morton <akpm@linux-foundation.org>, mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, bpf <bpf@vger.kernel.org>, linux-alpha@vger.kernel.org, Christophe Leroy <christophe.leroy@csgroup.eu>, Alexander Potapenko <glider@google.com>, Dmitry Vyukov <dvyukov@google.com>
+To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>, Andi Kleen <ak@linux.intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>, Sean Christopherson <seanjc@google.com>, Kuppuswamy Sathyanarayanan <knsathya@kernel.org>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, virtualization@lists.linux-foundation.org
 
-On Thu, Sep 30, 2021 at 9:09 AM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
->
-> Directly use is_kernel() helper in kernel_or_module_addr().
->
-> Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-> Cc: Alexander Potapenko <glider@google.com>
-> Cc: Andrey Konovalov <andreyknvl@gmail.com>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-> ---
->  mm/kasan/report.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-> index 3239fd8f8747..1c955e1c98d5 100644
-> --- a/mm/kasan/report.c
-> +++ b/mm/kasan/report.c
-> @@ -226,7 +226,7 @@ static void describe_object(struct kmem_cache *cache, void *object,
->
->  static inline bool kernel_or_module_addr(const void *addr)
->  {
-> -       if (addr >= (void *)_stext && addr < (void *)_end)
-> +       if (is_kernel((unsigned long)addr))
->                 return true;
->         if (is_module_address((unsigned long)addr))
->                 return true;
-> --
-> 2.26.2
->
+Hi All,
 
-Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
+Intel's Trust Domain Extensions (TDX) protect guest VMs from malicious
+hosts and some physical attacks. Since VMM is untrusted entity, it does
+not allow VMM to access guest private memory. Any memory that is required
+for communication with VMM must be shared explicitly. This series adds
+support to securely share guest memory with VMM when it is required by
+guest.
+
+Originally TDX did automatic sharing of every ioremap. But it was found that
+this ends up with a lot of memory shared that is supposed to be private, for
+example ACPI tables. Also in general since only a few drivers are expected
+to be used it's safer to mark them explicitly (for virtio it actually only
+needs two places). This gives the advantage of automatically preventing
+other drivers from doing MMIO, which can happen in some cases even with
+the device filter. There is still a command line option to override this option,
+which allows to use all drivers.
+
+This series is the continuation of the patch series titled "Add TDX Guest
+Support (Initial support)", "Add TDX Guest Support (#VE handler support)"
+and "Add TDX Guest Support (boot support)" which added initial support,
+ #VE handler support and boot fixes for TDX guests. You  can find the
+related patchsets in the following links.
+
+[set 1, v9] - https://lore.kernel.org/lkml/20211008234009.1211215-1-sathyanarayanan.kuppuswamy@linux.intel.com/
+[set 2, v7] - https://lore.kernel.org/lkml/20211005204136.1812078-1-sathyanarayanan.kuppuswamy@linux.intel.com/
+[set 3, v7] - https://lore.kernel.org/lkml/20211005230550.1819406-1-sathyanarayanan.kuppuswamy@linux.intel.com/
+
+Also please note that this series alone is not necessarily fully
+functional. You need to apply all the above 3 patch series to get
+a fully functional TDX guest.
+
+You can find TDX related documents in the following link.
+
+https://software.intel.com/content/www/br/pt/develop/articles/intel-trust-domain-extensions.html
+
+Also, ioremap related changes in mips, parisc, alpha, sparch archs' are
+only compile tested, and hence need help from the community users of these
+archs' to make sure that it does not break any functionality.
+
+In this patch series, following patches are in PCI domain and are
+meant for the PCI domain reviewers.
+
+  pci: Consolidate pci_iomap* and pci_iomap*wc
+  pci: Add pci_iomap_shared{,_range}
+  pci: Mark MSI data shared
+
+Patch titled "asm/io.h: Add ioremap_host_shared fallback" adds
+generic and arch specific ioremap_host_shared headers and are
+meant to be reviewed by linux-arch@vger.kernel.org,
+linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
+linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org.
+
+Similarly patch titled "virtio: Use shared mappings for virtio
+PCI devices" adds ioremap_host_shared() support for virtio drivers
+and are meant to be reviewed by virtio driver maintainers.
+
+I have CCed this patch series to all the related domain maintainers
+and open lists. If you prefer to get only patches specific to your
+domain, please let me know. I will fix this in next submission.
+
+Changes since v4:
+ * Since patch titled "x86/tdx: Get TD execution environment
+   information via TDINFO" is required only by this patch set,
+   moved it here.
+ * Rest of the change log is included per patch.
+
+Changes since v3:
+ * Rebased on top of Tom Lendacky's protected guest
+   changes (https://lore.kernel.org/patchwork/cover/1468760/)
+ * Added new API to share io-reamapped memory selectively
+   (using ioremap_shared())
+ * Added new wrapper (pci_iomap_shared_range()) for PCI IO
+   remap shared mappings use case.
+
+Changes since v2:
+ * Rebased on top of v5.14-rc1.
+ * No functional changes.
+
+Andi Kleen (6):
+  PCI: Consolidate pci_iomap_range(), pci_iomap_wc_range()
+  asm/io.h: Add ioremap_host_shared fallback
+  PCI: Add pci_iomap_host_shared(), pci_iomap_host_shared_range()
+  PCI: Mark MSI data shared
+  virtio: Use shared mappings for virtio PCI devices
+  x86/tdx: Implement ioremap_host_shared for x86
+
+Isaku Yamahata (1):
+  x86/tdx: ioapic: Add shared bit for IOAPIC base address
+
+Kirill A. Shutemov (7):
+  x86/mm: Move force_dma_unencrypted() to common code
+  x86/tdx: Get TD execution environment information via TDINFO
+  x86/tdx: Exclude Shared bit from physical_mask
+  x86/tdx: Make pages shared in ioremap()
+  x86/tdx: Add helper to do MapGPA hypercall
+  x86/tdx: Make DMA pages shared
+  x86/kvm: Use bounce buffers for TD guest
+
+Kuppuswamy Sathyanarayanan (2):
+  x86/tdx: Enable shared memory confidential guest flags for TDX guest
+  x86/tdx: Add cmdline option to force use of ioremap_host_shared
+
+ .../admin-guide/kernel-parameters.rst         |   1 +
+ .../admin-guide/kernel-parameters.txt         |  12 ++
+ Documentation/driver-api/device-io.rst        |   7 +
+ arch/alpha/include/asm/io.h                   |   2 +
+ arch/mips/include/asm/io.h                    |   2 +
+ arch/parisc/include/asm/io.h                  |   2 +
+ arch/sparc/include/asm/io_64.h                |   2 +
+ arch/x86/Kconfig                              |   9 +-
+ arch/x86/include/asm/io.h                     |   6 +
+ arch/x86/include/asm/mem_encrypt_common.h     |  21 +++
+ arch/x86/include/asm/pgtable.h                |   5 +
+ arch/x86/include/asm/tdx.h                    |  22 +++
+ arch/x86/kernel/apic/io_apic.c                |  18 ++-
+ arch/x86/kernel/cc_platform.c                 |   3 +
+ arch/x86/kernel/tdx.c                         | 109 +++++++++++++++
+ arch/x86/mm/Makefile                          |   2 +
+ arch/x86/mm/ioremap.c                         |  64 +++++++--
+ arch/x86/mm/mem_encrypt.c                     |   8 +-
+ arch/x86/mm/mem_encrypt_common.c              |  40 ++++++
+ arch/x86/mm/pat/set_memory.c                  |  45 +++++-
+ drivers/pci/msi.c                             |   2 +-
+ drivers/virtio/virtio_pci_modern_dev.c        |   2 +-
+ include/asm-generic/io.h                      |   5 +
+ include/asm-generic/pci_iomap.h               |   6 +
+ include/linux/cc_platform.h                   |  13 ++
+ lib/pci_iomap.c                               | 131 +++++++++++++-----
+ 26 files changed, 475 insertions(+), 64 deletions(-)
+ create mode 100644 arch/x86/include/asm/mem_encrypt_common.h
+ create mode 100644 arch/x86/mm/mem_encrypt_common.c
+
+-- 
+2.25.1
+
