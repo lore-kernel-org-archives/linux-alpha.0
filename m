@@ -1,142 +1,143 @@
 From: Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: [PATCH v5 07/16] x86/kvm: Use bounce buffers for TD guest
-Date: Fri,  8 Oct 2021 17:37:02 -0700
-Message-ID: <20211009003711.1390019-8-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v5 10/16] PCI: Consolidate pci_iomap_range(), pci_iomap_wc_range()
+Date: Fri,  8 Oct 2021 17:37:05 -0700
+Message-ID: <20211009003711.1390019-11-sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-doc-owner@vger.kernel.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
 In-Reply-To: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@redhat.com>
 Cc: Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>, Andi Kleen <ak@linux.intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>, Sean Christopherson <seanjc@google.com>, Kuppuswamy Sathyanarayanan <knsathya@kernel.org>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, virtualization@lists.linux-foundation.org
 
-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+From: Andi Kleen <ak@linux.intel.com>
 
-Intel TDX doesn't allow VMM to directly access guest private memory.
-Any memory that is required for communication with VMM must be shared
-explicitly. The same rule applies for any DMA to and from TDX guest.
-All DMA pages had to marked as shared pages. A generic way to achieve
-this without any changes to device drivers is to use the SWIOTLB
-framework.
+pci_iomap_range() and pci_iomap_wc_range() are currently duplicated
+code, except that the _wc variant does not support IO ports. So,
+implement them using a common helper, pci_iomap_range_map().
 
-This method of handling is similar to AMD SEV. So extend this support
-for TDX guest as well. Also since there are some common code between
-AMD SEV and TDX guest in mem_encrypt_init(), move it to
-mem_encrypt_common.c and call AMD specific init function from it
+Also add wrappers for the maps because some architectures implement
+ioremap and friends with macros.
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
+This will allow to add more variants without excessive code
+duplication. This patch has no functional changes.
+
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
-
 Changes since v4:
- * Replaced prot_guest_has() with cc_guest_has().
+ * Rebased on top of Tom Lendacky's CC guest
+   changes (https://www.spinics.net/lists/linux-tip-commits/msg58716.html)
+ * Fixed commit log as per Bjorns comments.
+ * Added "support_io" argument to pci_iomap_range_map() to support
+    __pci_ioport_map() only in pci_iomap_range().
 
-Changes since v3:
- * Rebased on top of Tom Lendacky's protected guest
-   changes (https://lore.kernel.org/patchwork/cover/1468760/)
+ lib/pci_iomap.c | 86 ++++++++++++++++++++++++++++---------------------
+ 1 file changed, 49 insertions(+), 37 deletions(-)
 
-Changes since v1:
- * Removed sme_me_mask check for amd_mem_encrypt_init() in mem_encrypt_init().
-
- arch/x86/include/asm/mem_encrypt_common.h |  3 +++
- arch/x86/kernel/tdx.c                     |  2 ++
- arch/x86/mm/mem_encrypt.c                 |  5 +----
- arch/x86/mm/mem_encrypt_common.c          | 14 ++++++++++++++
- 4 files changed, 20 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/include/asm/mem_encrypt_common.h b/arch/x86/include/asm/mem_encrypt_common.h
-index 697bc40a4e3d..bc90e565bce4 100644
---- a/arch/x86/include/asm/mem_encrypt_common.h
-+++ b/arch/x86/include/asm/mem_encrypt_common.h
-@@ -8,11 +8,14 @@
+diff --git a/lib/pci_iomap.c b/lib/pci_iomap.c
+index 2d3eb1cb73b8..57bd92f599ee 100644
+--- a/lib/pci_iomap.c
++++ b/lib/pci_iomap.c
+@@ -10,6 +10,51 @@
+ #include <linux/export.h>
  
- #ifdef CONFIG_AMD_MEM_ENCRYPT
- bool amd_force_dma_unencrypted(struct device *dev);
-+void __init amd_mem_encrypt_init(void);
- #else /* CONFIG_AMD_MEM_ENCRYPT */
- static inline bool amd_force_dma_unencrypted(struct device *dev)
- {
- 	return false;
- }
+ #ifdef CONFIG_PCI
 +
-+static inline void amd_mem_encrypt_init(void) {}
- #endif /* CONFIG_AMD_MEM_ENCRYPT */
- 
- #endif
-diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
-index 433f366ca25c..ce8e3019b812 100644
---- a/arch/x86/kernel/tdx.c
-+++ b/arch/x86/kernel/tdx.c
-@@ -12,6 +12,7 @@
- #include <asm/insn.h>
- #include <asm/insn-eval.h>
- #include <linux/sched/signal.h> /* force_sig_fault() */
-+#include <linux/swiotlb.h>
- 
- /* TDX Module call Leaf IDs */
- #define TDX_GET_INFO			1
-@@ -577,6 +578,7 @@ void __init tdx_early_init(void)
- 	pv_ops.irq.halt = tdx_halt;
- 
- 	legacy_pic = &null_legacy_pic;
-+	swiotlb_force = SWIOTLB_FORCE;
- 
- 	cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "tdx:cpu_hotplug",
- 			  NULL, tdx_cpu_offline_prepare);
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index 5d7fbed73949..8385bc4565e9 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -438,14 +438,11 @@ static void print_mem_encrypt_feature_info(void)
- }
- 
- /* Architecture __weak replacement functions */
--void __init mem_encrypt_init(void)
-+void __init amd_mem_encrypt_init(void)
- {
- 	if (!sme_me_mask)
- 		return;
- 
--	/* Call into SWIOTLB to update the SWIOTLB DMA buffers */
--	swiotlb_update_mem_attributes();
--
- 	/*
- 	 * With SEV, we need to unroll the rep string I/O instructions,
- 	 * but SEV-ES supports them through the #VC handler.
-diff --git a/arch/x86/mm/mem_encrypt_common.c b/arch/x86/mm/mem_encrypt_common.c
-index 119a9056efbb..6fe44c6cb753 100644
---- a/arch/x86/mm/mem_encrypt_common.c
-+++ b/arch/x86/mm/mem_encrypt_common.c
-@@ -10,6 +10,7 @@
- #include <asm/mem_encrypt_common.h>
- #include <linux/dma-mapping.h>
- #include <linux/cc_platform.h>
-+#include <linux/swiotlb.h>
- 
- /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
- bool force_dma_unencrypted(struct device *dev)
-@@ -24,3 +25,16 @@ bool force_dma_unencrypted(struct device *dev)
- 
- 	return false;
- }
-+
-+/* Architecture __weak replacement functions */
-+void __init mem_encrypt_init(void)
++/*
++ * Callback wrappers because some architectures define ioremap et.al.
++ * as macros.
++ */
++static void __iomem *map_ioremap(phys_addr_t addr, size_t size)
 +{
-+	/*
-+	 * For TDX guest or SEV/SME, call into SWIOTLB to update
-+	 * the SWIOTLB DMA buffers
-+	 */
-+	if (sme_me_mask || cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
-+		swiotlb_update_mem_attributes();
-+
-+	amd_mem_encrypt_init();
++	return ioremap(addr, size);
 +}
--- 
-2.25.1
-
++
++static void __iomem *map_ioremap_wc(phys_addr_t addr, size_t size)
++{
++	return ioremap_wc(addr, size);
++}
++
++static void __iomem *pci_iomap_range_map(struct pci_dev *dev,
++					 int bar,
++					 unsigned long offset,
++					 unsigned long maxlen,
++					 void __iomem *(*mapm)(phys_addr_t,
++							       size_t),
++					 bool support_io)
++{
++	resource_size_t start = pci_resource_start(dev, bar);
++	resource_size_t len = pci_resource_len(dev, bar);
++	unsigned long flags = pci_resource_flags(dev, bar);
++
++	if (len <= offset || !start)
++		return NULL;
++	len -= offset;
++	start += offset;
++	if (maxlen && len > maxlen)
++		len = maxlen;
++	if (flags & IORESOURCE_IO) {
++		if (support_io)
++			return __pci_ioport_map(dev, start, len);
++
++		return NULL;
++	}
++	if (flags & IORESOURCE_MEM)
++		return mapm(start, len);
++	/* What? */
++	return NULL;
++}
++
+ /**
+  * pci_iomap_range - create a virtual mapping cookie for a PCI BAR
+  * @dev: PCI device that owns the BAR
+@@ -30,22 +75,8 @@ void __iomem *pci_iomap_range(struct pci_dev *dev,
+ 			      unsigned long offset,
+ 			      unsigned long maxlen)
+ {
+-	resource_size_t start = pci_resource_start(dev, bar);
+-	resource_size_t len = pci_resource_len(dev, bar);
+-	unsigned long flags = pci_resource_flags(dev, bar);
+-
+-	if (len <= offset || !start)
+-		return NULL;
+-	len -= offset;
+-	start += offset;
+-	if (maxlen && len > maxlen)
+-		len = maxlen;
+-	if (flags & IORESOURCE_IO)
+-		return __pci_ioport_map(dev, start, len);
+-	if (flags & IORESOURCE_MEM)
+-		return ioremap(start, len);
+-	/* What? */
+-	return NULL;
++	return pci_iomap_range_map(dev, bar, offset, maxlen,
++				   map_ioremap, true);
+ }
+ EXPORT_SYMBOL(pci_iomap_range);
+ 
+@@ -70,27 +101,8 @@ void __iomem *pci_iomap_wc_range(struct pci_dev *dev,
+ 				 unsigned long offset,
+ 				 unsigned long maxlen)
+ {
+-	resource_size_t start = pci_resource_start(dev, bar);
+-	resource_size_t len = pci_resource_len(dev, bar);
+-	unsigned long flags = pci_resource_flags(dev, bar);
+-
+-
+-	if (flags & IORESOURCE_IO)
+-		return NULL;
+-
+-	if (len <= offset || !start)
+-		return NULL;
+-
+-	len -= offset;
+-	start += offset;
+-	if (maxlen && len > maxlen)
+-		len = maxlen;
+-
+-	if (flags & IORESOURCE_MEM)
+-		return ioremap_wc(start, len);
