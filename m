@@ -1,44 +1,55 @@
-From: Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH v5 12/16] PCI: Add pci_iomap_host_shared(),
- pci_iomap_host_shared_range()
-Date: Tue, 12 Oct 2021 12:49:06 -0700
-Message-ID: <f3002304-ae85-1d88-219d-c67574e80427@linux.intel.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v5 16/16] x86/tdx: Add cmdline option to force use of
+ ioremap_host_shared
+Date: Tue, 12 Oct 2021 16:59:51 -0400
+Message-ID: <20211012165705-mutt-send-email-mst@kernel.org>
 References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20211009003711.1390019-13-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20211009053103-mutt-send-email-mst@kernel.org>
- <CAPcyv4hDhjRXYCX_aiOboLF0eaTo6VySbZDa5NQu2ed9Ty2Ekw@mail.gmail.com>
- <0e6664ac-cbb2-96ff-0106-9301735c0836@linux.intel.com>
- <DM8PR11MB57501C8F8F5C8B315726882EE7B69@DM8PR11MB5750.namprd11.prod.outlook.com>
- <f850d2d6-d427-8aeb-bd38-f9b5eb088191@linux.intel.com>
- <DM8PR11MB57505C520763DF706309E177E7B69@DM8PR11MB5750.namprd11.prod.outlook.com>
- <CAPcyv4g8VjbMaVnXXyWVh8tXNakO9FmDXfANJmPmgvDfZX-OBA@mail.gmail.com>
+ <20211009003711.1390019-17-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20211009070132-mutt-send-email-mst@kernel.org>
+ <8c906de6-5efa-b87a-c800-6f07b98339d0@linux.intel.com>
+ <20211011075945-mutt-send-email-mst@kernel.org>
+ <9d0ac556-6a06-0f2e-c4ff-0c3ce742a382@linux.intel.com>
+ <20211011142330-mutt-send-email-mst@kernel.org>
+ <4fe8d60a-2522-f111-995c-dcbefd0d5e31@linux.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-mips-owner@vger.kernel.org>
-Content-Language: en-US
-In-Reply-To: <CAPcyv4g8VjbMaVnXXyWVh8tXNakO9FmDXfANJmPmgvDfZX-OBA@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634072400;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Exp5E6dmY1PTSyKlOFa3gXPk4wQssFca5mHGxtbGag0=;
+        b=igCTC4SM7jQR6qapOSFWL9jNvG9gX07POR3VmciQplPTVSGQ3ElgA0RNw0ZP49hiCd7Si5
+        xebfs9UCwTBAZMyKD6gHkCBYQ8Pz435UgOqpimFhX5oM7cXE+yZI0ZdDIWJk0ZFPvgbk65
+        FFKsvX22zCQrcTmUlfWAgPnpz1omz5Y=
+Content-Disposition: inline
+In-Reply-To: <4fe8d60a-2522-f111-995c-dcbefd0d5e31@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Dan Williams <dan.j.williams@intel.com>, "Reshetova, Elena" <elena.reshetova@intel.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, "Lutomirski, Andy" <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Andi Kleen <ak@linux.intel.com>
+Cc: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@redhat.com>, Peter H Anvin <hpa@zytor.com>
 
+On Tue, Oct 12, 2021 at 10:55:20AM -0700, Andi Kleen wrote:
+> 
+> > I mean ... it's already wide spread.
+> 
+> 
+> I meant wide spread usage with confidential guests.
+> 
+> > If we support it with TDX
+> > it will be used with TDX.
+> 
+> It has some security trade offs. The main reason to use TDX is security.
+> Also when people take the VT-d tradeoffs they might be ok with the BIOS
+> trade offs too.
+> 
+> -Andi
 
-On 10/12/2021 12:13 PM, Dan Williams wrote:
-> On Tue, Oct 12, 2021 at 11:57 AM Reshetova, Elena
-> <elena.reshetova@intel.com> wrote:
->>
->>> I suspect the true number is even higher because that doesn't include IO
->>> inside calls to other modules and indirect pointers, correct?
->> Actually everything should be included. Smatch has cross-function db and
->> I am using it for getting the call chains and it follows function pointers.
->> Also since I am starting from a list of individual read IOs, every single
->> base read IO in drivers/* should be covered as far as I can see. But if it uses
->> some weird IO wrappers then the actual list might be higher.
-> Why analyze individual IO calls? I thought the goal here was to
-> disable entire classes of ioremap() users?
+Interesting. VT-d tradeoffs ... what are they?
+Allowing hypervisor to write into BIOS looks like it will
+trivially lead to code execution, won't it?
 
-This is everything that would need to be moved somewhere else if we 
-didn't disable the entire classes of ioremap users.
-
--Andi
+-- 
+MST
 
