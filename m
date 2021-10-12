@@ -1,91 +1,67 @@
-From: Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH v5 12/16] PCI: Add pci_iomap_host_shared(),
- pci_iomap_host_shared_range()
-Date: Tue, 12 Oct 2021 14:28:29 -0700
-Message-ID: <bca75b04-f084-5bda-c071-249fd91aaa1e@linux.intel.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v5 16/16] x86/tdx: Add cmdline option to force use of
+ ioremap_host_shared
+Date: Tue, 12 Oct 2021 17:30:36 -0400
+Message-ID: <20211012171846-mutt-send-email-mst@kernel.org>
 References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20211009003711.1390019-13-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20211009053103-mutt-send-email-mst@kernel.org>
- <CAPcyv4hDhjRXYCX_aiOboLF0eaTo6VySbZDa5NQu2ed9Ty2Ekw@mail.gmail.com>
- <0e6664ac-cbb2-96ff-0106-9301735c0836@linux.intel.com>
- <CAPcyv4g0v0YHZ-okxf4wwVCYxHotxdKwsJpZGkoT+fhvvAJEFg@mail.gmail.com>
- <9302f1c2-b3f8-2c9e-52c5-d5a4a2987409@linux.intel.com>
- <CAPcyv4hG0HcbUO8Mb=ccDp5Bz3RJNkAJwKwNzRkQ1gCMpp_OMQ@mail.gmail.com>
+ <20211009003711.1390019-17-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20211009070132-mutt-send-email-mst@kernel.org>
+ <8c906de6-5efa-b87a-c800-6f07b98339d0@linux.intel.com>
+ <20211011075945-mutt-send-email-mst@kernel.org>
+ <9d0ac556-6a06-0f2e-c4ff-0c3ce742a382@linux.intel.com>
+ <20211011142330-mutt-send-email-mst@kernel.org>
+ <4fe8d60a-2522-f111-995c-dcbefd0d5e31@linux.intel.com>
+ <20211012165705-mutt-send-email-mst@kernel.org>
+ <c09c961d-f433-4a68-0b38-208ffe8b36c7@linux.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-owner@vger.kernel.org>
-Content-Language: en-US
-In-Reply-To: <CAPcyv4hG0HcbUO8Mb=ccDp5Bz3RJNkAJwKwNzRkQ1gCMpp_OMQ@mail.gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1634074245;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eq+RzJgPHGQ1lh7AV+pnk4SW99n38qW+iDQrUerrfKQ=;
+        b=S1pGqFAtZflV7/4+/KOYFjNtM4GsgLjuwrKSu3HlmI2O0Tdow9hi/sRxk83gb6UMEM7O1P
+        WIFfwfgDJLdrIsgmbPPytJXrJBTbIQsnNZzNAT2xGu8JI28+yP9hkdtsYaN3krU8sVm/15
+        ZqMRay0JPNxMs8Qwi3lnsQjkOd4Dfpo=
+Content-Disposition: inline
+In-Reply-To: <c09c961d-f433-4a68-0b38-208ffe8b36c7@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Dan Williams <dan.j.williams@intel.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@re>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Andi Kleen <ak@linux.intel.com>
+Cc: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@redhat.com>, Peter H Anvin <hpa@zytor.com>
+
+On Tue, Oct 12, 2021 at 02:18:01PM -0700, Andi Kleen wrote:
+> 
+> > Interesting. VT-d tradeoffs ... what are they?
+> 
+> The connection to the device is not encrypted and also not authenticated.
+> 
+> This is different that even talking to the (untrusted) host through shared
+> memory where you at least still have a common key.
+
+Well it's different sure enough but how is talking to host less secure?
+Cold boot attacks and such?
+
+> > Allowing hypervisor to write into BIOS looks like it will
+> > trivially lead to code execution, won't it?
+> 
+> This is not about BIOS code executing. While the guest firmware runs it is
+> protected of course. This is for BIOS structures like ACPI tables that are
+> mapped by Linux. While AML can run byte code it can normally not write to
+> arbitrary memory.
+
+I thought you basically create an OperationRegion of SystemMemory type,
+and off you go. Maybe the OSPM in Linux is clever and protects
+some memory, I wouldn't know.
+
+> The risk is more that all the Linux code dealing with this hasn't been
+> hardened to deal with malicious input.
+> 
+> -Andi
 
 
->> But that was due to performance problems in hot paths. Nothing of this
->> applies here.
-> It applies because a new API that individual driver authors is being
-> proposed and that's an ongoing maintenance burden that might be
-> mitigated by hiding that implementation detail from leaf drivers.
-
-Right now we're only talking about 2 places to change, and none of those 
-are actually in individual drivers, but in the virtio generic code and 
-in the MSI code.
-
-While there might be drivers in the future that do it directly it will 
-be always the exception, normal drivers don't have to deal with this.
-
-
-
->> For me it both seems very straight forward and simple (but then I'm biased)
-> You seem to be having a difficult time iterating this proposal toward
-> consensus. I don't think the base principles are being contested as
-> much as the semantics, scope, and need for the proposed API that is in
-> the purview of all leaf driver developers.
-Right now there is no leaf driver changed at all.
->
->>> I'd rather see more concerted efforts focused/limited core changes
->>> rather than leaf driver changes until there is a clearer definition of
->>> hardened.
->> A hardened driver is a driver that
->>
->> - Had similar security (not API) oriented review of its IO operations
->> (mainly MMIO access, but also PCI config space) as a non privileged user
->> interface (like a ioctl). That review should be focused on memory safety.
->>
->> - Had some fuzzing on these IO interfaces using to be released tools.
-> What is the intersection of ioremap() users that are outside of the
-> proposed probe authorization regime AND want confidential computing
-> support?
-
-
-Right now it's zero I believe.
-
-That is there is other low level code that sets memory shared, but it's 
-not using ioremap, but some other mechanisms.
-
->
-> are needed
->>>> for booting. For example in TDX we can't print something to the console
->>>> with this mechanism, so you would never get any output before the
->>>> initrd. Just seems like a nightmare for debugging anything. There really
->>>> needs to be an authorization mechanism that works reasonably early.
->>>>
->>>> I can see a point of having user space overrides though, but we need to
->>>> have a sane kernel default that works early.
->>> Right, as I suggested [1], just enough early authorization to
->>> bootstrap/debug initramfs and then that can authorize the remainder.
->> But how do you debug the kernel then? Making early undebuggable seems
->> just bad policy to me.
-> I am not proposing making the early undebuggable.
-
-
-That's the implication of moving the policy into initrd.
-
-
-If only initrd can authorize then it won't be possible to authorize 
-before initrd, thus the early console won't work.
-
--Andi
-
+-- 
+MST
 
