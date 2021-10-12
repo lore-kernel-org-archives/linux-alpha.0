@@ -1,8 +1,8 @@
 From: Andi Kleen <ak@linux.intel.com>
 Subject: Re: [PATCH v5 12/16] PCI: Add pci_iomap_host_shared(),
  pci_iomap_host_shared_range()
-Date: Tue, 12 Oct 2021 14:24:07 -0700
-Message-ID: <4aa51c58-63f5-c7de-f8e5-f4184fd1c822@linux.intel.com>
+Date: Tue, 12 Oct 2021 14:28:29 -0700
+Message-ID: <bca75b04-f084-5bda-c071-249fd91aaa1e@linux.intel.com>
 References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20211009003711.1390019-13-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20211009053103-mutt-send-email-mst@kernel.org>
@@ -11,41 +11,81 @@ References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com
  <CAPcyv4g0v0YHZ-okxf4wwVCYxHotxdKwsJpZGkoT+fhvvAJEFg@mail.gmail.com>
  <9302f1c2-b3f8-2c9e-52c5-d5a4a2987409@linux.intel.com>
  <CAPcyv4hG0HcbUO8Mb=ccDp5Bz3RJNkAJwKwNzRkQ1gCMpp_OMQ@mail.gmail.com>
- <20211012171628-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
+Return-path: <linux-mips-owner@vger.kernel.org>
 Content-Language: en-US
-In-Reply-To: <20211012171628-mutt-send-email-mst@kernel.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <CAPcyv4hG0HcbUO8Mb=ccDp5Bz3RJNkAJwKwNzRkQ1gCMpp_OMQ@mail.gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: "Michael S. Tsirkin" <mst@redhat.com>, Dan Williams <dan.j.williams@intel.com>
-Cc: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Kuppuswamy Sathyanarayanan <knsathya@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Linux PCI <linux-pci@vger.kernel.org>, linux-mips@vger.kernel.org, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Dave Hansen <dave.hansen@intel.com>, Peter H Anvin <hpa@zytor.com>, sparclinux@vger.kernel.org, "Reshetova, Elena" <elena.reshetova@intel.com>, Andrea Arcangeli <aarcange@redhat.com>, Jonathan Corbet <corbet@lwn.net>, Helge Deller <deller@gmx.de>, X86 ML <x86@kernel.org>, Ingo Molnar <mingo@redhat.com>, linux-arch <linux-arch@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, vi
+To: Dan Williams <dan.j.williams@intel.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@re>
 
 
-On 10/12/2021 2:18 PM, Michael S. Tsirkin wrote:
-> On Tue, Oct 12, 2021 at 02:14:44PM -0700, Dan Williams wrote:
->> Especially in this case where the virtio use case being
->> opted-in is *already* in a path that has been authorized by the
->> device-filter policy engine.
-> That's a good point. Andi, how about setting a per-device flag
-> if its ID has been allowed and then making pci_iomap create
-> a shared mapping transparently?
+>> But that was due to performance problems in hot paths. Nothing of this
+>> applies here.
+> It applies because a new API that individual driver authors is being
+> proposed and that's an ongoing maintenance burden that might be
+> mitigated by hiding that implementation detail from leaf drivers.
 
-Yes for pci_iomap we could do that.
+Right now we're only talking about 2 places to change, and none of those 
+are actually in individual drivers, but in the virtio generic code and 
+in the MSI code.
 
-If someone uses raw ioremap without a device it won't work, but I don't 
-think that's the case for virtio at least.
+While there might be drivers in the future that do it directly it will 
+be always the exception, normal drivers don't have to deal with this.
 
-I suppose we could solve that problem if it actually happens.
+
+
+>> For me it both seems very straight forward and simple (but then I'm biased)
+> You seem to be having a difficult time iterating this proposal toward
+> consensus. I don't think the base principles are being contested as
+> much as the semantics, scope, and need for the proposed API that is in
+> the purview of all leaf driver developers.
+Right now there is no leaf driver changed at all.
+>
+>>> I'd rather see more concerted efforts focused/limited core changes
+>>> rather than leaf driver changes until there is a clearer definition of
+>>> hardened.
+>> A hardened driver is a driver that
+>>
+>> - Had similar security (not API) oriented review of its IO operations
+>> (mainly MMIO access, but also PCI config space) as a non privileged user
+>> interface (like a ioctl). That review should be focused on memory safety.
+>>
+>> - Had some fuzzing on these IO interfaces using to be released tools.
+> What is the intersection of ioremap() users that are outside of the
+> proposed probe authorization regime AND want confidential computing
+> support?
+
+
+Right now it's zero I believe.
+
+That is there is other low level code that sets memory shared, but it's 
+not using ioremap, but some other mechanisms.
+
+>
+> are needed
+>>>> for booting. For example in TDX we can't print something to the console
+>>>> with this mechanism, so you would never get any output before the
+>>>> initrd. Just seems like a nightmare for debugging anything. There really
+>>>> needs to be an authorization mechanism that works reasonably early.
+>>>>
+>>>> I can see a point of having user space overrides though, but we need to
+>>>> have a sane kernel default that works early.
+>>> Right, as I suggested [1], just enough early authorization to
+>>> bootstrap/debug initramfs and then that can authorize the remainder.
+>> But how do you debug the kernel then? Making early undebuggable seems
+>> just bad policy to me.
+> I am not proposing making the early undebuggable.
+
+
+That's the implication of moving the policy into initrd.
+
+
+If only initrd can authorize then it won't be possible to authorize 
+before initrd, thus the early console won't work.
 
 -Andi
+
+
