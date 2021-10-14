@@ -1,8 +1,8 @@
 From: "Michael S. Tsirkin" <mst@redhat.com>
 Subject: Re: [PATCH v5 12/16] PCI: Add pci_iomap_host_shared(),
  pci_iomap_host_shared_range()
-Date: Thu, 14 Oct 2021 05:26:20 -0400
-Message-ID: <20211014052605-mutt-send-email-mst@kernel.org>
+Date: Thu, 14 Oct 2021 07:49:55 -0400
+Message-ID: <20211014065626-mutt-send-email-mst@kernel.org>
 References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20211009003711.1390019-13-sathyanarayanan.kuppuswamy@linux.intel.com>
  <20211009053103-mutt-send-email-mst@kernel.org>
@@ -14,16 +14,16 @@ References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com
  <20211014025514-mutt-send-email-mst@kernel.org>
  <DM8PR11MB57500B2D821E8AAF93EB66CEE7B89@DM8PR11MB5750.namprd11.prod.outlook.com>
 Mime-Version: 1.0
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634203590;
+        s=mimecast20190719; t=1634212205;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=MFy26Kc6cpLu18LAs5Mx0Nrg8iL3DuTgZC2Ev14vjlo=;
-        b=X2mCdv8b1K88eBKlnWLq69ctpJUgvxcadvamxM/mn99+T+jMO3aioYuoqC+npqMg6NSXb9
-        DjbnOYauRoO0F+uJ1Fd4TTsFKj80Qh9YoDcsBGmIU0Z53054RrYn3NRQVR6ZKRRpPpdlZw
-        t/YBQ7/WS+kpUFDtv2YGdeKj9M2YW4E=
+        bh=BjIpv+udz4Ba/qOEMRyyxOUnaMX1at+9okP/sD2YABQ=;
+        b=RJbGGIXmx737jWGuoaQ8BkDITholNunoKfz2idBH8Ex9dwETzD6evS4D1CIE7V9DHUciz4
+        tIIp3EVImjL3SuQUCsQxqGKnmw7Bo0J8UBrdr5DKdcGaLtonDs3pki71SV7Dk0V/XrKKVS
+        hRNVJHH+BKAKBG8xync17sEcCJQHEn8=
 Content-Disposition: inline
 In-Reply-To: <DM8PR11MB57500B2D821E8AAF93EB66CEE7B89@DM8PR11MB5750.namprd11.prod.outlook.com>
 List-ID: <linux-alpha.vger.kernel.org>
@@ -84,7 +84,7 @@ On Thu, Oct 14, 2021 at 07:27:42AM +0000, Reshetova, Elena wrote:
 > 
 > So, the results can be further filtered if you want a specified arch. 
 
-So what is it just for x86? Could you tell?
+Even better would be a typical distro build.
 
 -- 
 MST
