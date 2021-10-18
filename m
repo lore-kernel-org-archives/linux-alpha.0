@@ -1,60 +1,39 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v5 12/16] PCI: Add pci_iomap_host_shared(),
- pci_iomap_host_shared_range()
-Date: Mon, 18 Oct 2021 09:17:41 -0400
-Message-ID: <20211018091627-mutt-send-email-mst@kernel.org>
-References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20211009003711.1390019-13-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20211009053103-mutt-send-email-mst@kernel.org>
- <cec62ebb-87d7-d725-1096-2c97c5eedbc3@linux.intel.com>
- <20211011073614-mutt-send-email-mst@kernel.org>
- <YW1lc5Y2P1zRc2kp@kroah.com>
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Subject: Re: Newer kernels on the Jensen (was: [PATCH v2 0/4] Introduce and
+Date: Mon, 18 Oct 2021 17:37:21 +0200
+Message-ID: <232a0956-fe78-5169-4637-25679baa887f@physik.fu-berlin.de>
+References: <202109261126.18QBQQWp003766@valdese.nms.ulrich-teichert.org>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1634563073;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MzTAOtwulDEmvfrOMqdp9kU77zBPM/IRO9XOnd+cufc=;
-        b=Zzog55VI2G2Ibuy6CANigG/Q77iyfOtp8pVcRGZiUYhusYfqwNrowcR2msszISgJ6fF757
-        nXG8C9ziKGNU2HQVFOLp5FOevznG+Iy5kB5MKNG61hgVXn2zmAS/YyC3QY1X2N4/pvKu6i
-        BSEtNVghbgPHO0e9Tx40Y+jJGxT0eBQ=
-Content-Disposition: inline
-In-Reply-To: <YW1lc5Y2P1zRc2kp@kroah.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Language: en-US
+In-Reply-To: <202109261126.18QBQQWp003766@valdese.nms.ulrich-teichert.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Andi Kleen <ak@linux.intel.com>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@redhat.c>
+To: Ulrich Teichert <krypton@ulrich-teichert.org>
+Cc: Linux Alpha <linux-alpha@vger.kernel.org>, mattst88@gmail.com, torvalds@linux-foundation.org
 
-On Mon, Oct 18, 2021 at 02:15:47PM +0200, Greg KH wrote:
-> On Mon, Oct 11, 2021 at 07:59:17AM -0400, Michael S. Tsirkin wrote:
-> > On Sun, Oct 10, 2021 at 03:22:39PM -0700, Andi Kleen wrote:
-> > > 
-> > > > To which Andi replied
-> > > > 	One problem with removing the ioremap opt-in is that
-> > > > 	it's still possible for drivers to get at devices without going through probe.
-> > > > 
-> > > > To which Greg replied:
-> > > > https://lore.kernel.org/all/YVXBNJ431YIWwZdQ@kroah.com/
-> > > > 	If there are in-kernel PCI drivers that do not do this, they need to be
-> > > > 	fixed today.
-> > > > 
-> > > > Can you guys resolve the differences here?
-> > > 
-> > > 
-> > > I addressed this in my other mail, but we may need more discussion.
-> > 
-> > Hopefully Greg will reply to that one.
-> 
-> Note, when wanting Greg to reply, someone should at the very least cc:
-> him.
+Hi Ulrich!
 
-"that one" being "Andi's other mail". Which I don't remember what it was,
-by now. Sorry.
+On 9/26/21 13:26, Ulrich Teichert wrote:
+> Awesome! This boots right away, here's the full boot log from the serial
+> console until init starts:
+> (...)
+> After that the installer starts, but does not find the CD-ROM, most
+> probably because the AHA174x SCSI driver wasn't loaded or included in
+> the initrd image, but this is definitely more than I ever expected!
 
-> {sigh}
-> 
-> greg k-h
+Could you try the installation image for Alpha that I built today and see if that
+fixes the CD-ROM detection issue for you?
+
+> https://cdimage.debian.org/cdimage/ports/snapshots/2021-10-18/
+
+Thanks,
+Adrian
+
+-- 
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
 
