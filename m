@@ -1,17 +1,18 @@
 From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v5 04/16] x86/tdx: Make pages shared in ioremap()
-Date: Wed, 20 Oct 2021 11:03:07 -0500
-Message-ID: <8c5074f7-5456-e628-5a09-a3a4b4f381fb@amd.com>
+Subject: Re: [PATCH v5 01/16] x86/mm: Move force_dma_unencrypted() to common
+ code
+Date: Wed, 20 Oct 2021 11:11:13 -0500
+Message-ID: <72b8be39-b4e2-5d77-524c-a2ea0c750ab1@amd.com>
 References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20211009003711.1390019-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20211009003711.1390019-2-sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SUtCmAXJnjPw+60UgGY4uROjWBTe4BgjhJ9QXCIV9rE=;
- b=HcntIX1iZOk3VMd85HXB9B+cA54CQNXaf56eZG8gsPfRIKwx5qav4+flJeKSkCujdhwtwetE0IDHNgyHpw+q7YnP5h4/MX+pDQgMskoH9nov0zviSrml6GrtNxbHybJlV7He79QjR33BTctfJQ0VnS9cpDep9P3Ip872DGd2KH8=
-In-Reply-To: <20211009003711.1390019-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ bh=EcykHuXPZ/rBLbVCxMkbnrZxw5QCIFezPbxj9aGouCM=;
+ b=m+Tr239RPIRJvmCWV5OXc43kZEqRZLOxSN/rJemub9X6DeKoBztEEyyrEecPQssO9+nxK0u7ZVsRuIMzLzZL8rOY4oKh5H5+XFwkT7QDga6rew7y9hD/V56+qr4DZqf5A6gqMRkp4ufYf/d7LJht1liCgNuD0x1OWtDNnsTj6VA=
+In-Reply-To: <20211009003711.1390019-2-sathyanarayanan.kuppuswamy@linux.intel.com>
 Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"; format="flowed"
@@ -21,14 +22,51 @@ Cc: Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luc
 On 10/8/21 7:36 PM, Kuppuswamy Sathyanarayanan wrote:
 > From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 > 
-> All ioremap()ed pages that are not backed by normal memory (NONE or
-> RESERVED) have to be mapped as shared.
+> Intel TDX doesn't allow VMM to access guest private memory. Any memory
+> that is required for communication with VMM must be shared explicitly
+> by setting the bit in page table entry. After setting the shared bit,
+> the conversion must be completed with MapGPA hypercall. Details about
+> MapGPA hypercall can be found in [1], sec 3.2.
 > 
-> Reuse the infrastructure from AMD SEV code.
+> The call informs VMM about the conversion between private/shared
+> mappings. The shared memory is similar to unencrypted memory in AMD
+> SME/SEV terminology but the underlying process of sharing/un-sharing
+> the memory is different for Intel TDX guest platform.
 > 
-> Note that DMA code doesn't use ioremap() to convert memory to shared as
-> DMA buffers backed by normal memory. DMA code make buffer shared with
-> set_memory_decrypted().
+> SEV assumes that I/O devices can only do DMA to "decrypted" physical
+> addresses without the C-bit set. In order for the CPU to interact with
+> this memory, the CPU needs a decrypted mapping. To add this support,
+> AMD SME code forces force_dma_unencrypted() to return true for
+> platforms that support AMD SEV feature. It will be used for DMA memory
+> allocation API to trigger set_memory_decrypted() for platforms that
+> support AMD SEV feature.
+> 
+> TDX is similar. So, to communicate with I/O devices, related pages need
+> to be marked as shared. As mentioned above, shared memory in TDX
+> architecture is similar to decrypted memory in AMD SME/SEV. So similar
+> to AMD SEV, force_dma_unencrypted() has to forced to return true. This
+> support is added in other patches in this series.
+> 
+> So move force_dma_unencrypted() out of AMD specific code and call AMD
+> specific (amd_force_dma_unencrypted()) initialization function from it.
+> force_dma_unencrypted() will be modified by later patches to include
+> Intel TDX guest platform specific initialization.
+> 
+> Also, introduce new config option X86_MEM_ENCRYPT_COMMON that has to be
+> selected by all x86 memory encryption features. This will be selected
+> by both AMD SEV and Intel TDX guest config options.
+> 
+> This is preparation for TDX changes in DMA code and it has no
+> functional change.
+
+Can force_dma_unencrypted() be moved to arch/x86/kernel/cc_platform.c, 
+instead of creating a new file? It might fit better with patch #6.
+
+Thanks,
+Tom
+
+> 
+> [1] - https://software.intel.com/content/dam/develop/external/us/en/documents/intel-tdx-guest-hypervisor-communication-interface.pdf
 > 
 > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 > Reviewed-by: Andi Kleen <ak@linux.intel.com>
@@ -37,120 +75,129 @@ On 10/8/21 7:36 PM, Kuppuswamy Sathyanarayanan wrote:
 > ---
 > 
 > Changes since v4:
->   * Renamed "protected_guest" to "cc_guest".
->   * Replaced use of prot_guest_has() with cc_guest_has()
->   * Modified the patch to adapt to latest version cc_guest_has()
->     changes.
+>   * Removed used we/you from commit log.
 > 
-> Changes since v3:
->   * Rebased on top of Tom Lendacky's protected guest
->     changes (https://lore.kernel.org/patchwork/cover/1468760/)
+> Change since v3:
+>   * None
 > 
 > Changes since v1:
->   * Fixed format issues in commit log.
+>   * Removed sev_active(), sme_active() checks in force_dma_unencrypted().
 > 
->   arch/x86/include/asm/pgtable.h |  4 ++++
->   arch/x86/mm/ioremap.c          |  8 ++++++--
->   include/linux/cc_platform.h    | 13 +++++++++++++
->   3 files changed, 23 insertions(+), 2 deletions(-)
+>   arch/x86/Kconfig                          |  8 ++++++--
+>   arch/x86/include/asm/mem_encrypt_common.h | 18 ++++++++++++++++++
+>   arch/x86/mm/Makefile                      |  2 ++
+>   arch/x86/mm/mem_encrypt.c                 |  3 ++-
+>   arch/x86/mm/mem_encrypt_common.c          | 17 +++++++++++++++++
+>   5 files changed, 45 insertions(+), 3 deletions(-)
+>   create mode 100644 arch/x86/include/asm/mem_encrypt_common.h
+>   create mode 100644 arch/x86/mm/mem_encrypt_common.c
 > 
-> diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-> index 448cd01eb3ec..ecefccbdf2e3 100644
-> --- a/arch/x86/include/asm/pgtable.h
-> +++ b/arch/x86/include/asm/pgtable.h
-> @@ -21,6 +21,10 @@
->   #define pgprot_encrypted(prot)	__pgprot(__sme_set(pgprot_val(prot)))
->   #define pgprot_decrypted(prot)	__pgprot(__sme_clr(pgprot_val(prot)))
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index af49ad084919..37b27412f52e 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -1519,16 +1519,20 @@ config X86_CPA_STATISTICS
+>   	  helps to determine the effectiveness of preserving large and huge
+>   	  page mappings when mapping protections are changed.
 >   
-> +/* Make the page accesable by VMM for confidential guests */
-> +#define pgprot_cc_guest(prot) __pgprot(pgprot_val(prot) |	\
-> +					      tdx_shared_mask())
-
-So this is only for TDX guests, so maybe a name that is less generic.
-
-Alternatively, you could create pgprot_private()/pgprot_shared() functions 
-that check for SME/SEV or TDX and do the proper thing.
-
-Then you can redefine pgprot_encrypted()/pgprot_decrypted() to the new 
-functions?
-
+> +config X86_MEM_ENCRYPT_COMMON
+> +	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
+> +	select DYNAMIC_PHYSICAL_MASK
+> +	def_bool n
 > +
->   #ifndef __ASSEMBLY__
->   #include <asm/x86_init.h>
->   #include <asm/pkru.h>
-> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-> index 026031b3b782..83daa3f8f39c 100644
-> --- a/arch/x86/mm/ioremap.c
-> +++ b/arch/x86/mm/ioremap.c
-> @@ -17,6 +17,7 @@
->   #include <linux/cc_platform.h>
->   #include <linux/efi.h>
->   #include <linux/pgtable.h>
-> +#include <linux/cc_platform.h>
+>   config AMD_MEM_ENCRYPT
+>   	bool "AMD Secure Memory Encryption (SME) support"
+>   	depends on X86_64 && CPU_SUP_AMD
+>   	select DMA_COHERENT_POOL
+> -	select DYNAMIC_PHYSICAL_MASK
+>   	select ARCH_USE_MEMREMAP_PROT
+> -	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
+>   	select INSTRUCTION_DECODER
+>   	select ARCH_HAS_RESTRICTED_VIRTIO_MEMORY_ACCESS
+>   	select ARCH_HAS_CC_PLATFORM
+> +	select X86_MEM_ENCRYPT_COMMON
+>   	help
+>   	  Say yes to enable support for the encryption of system memory.
+>   	  This requires an AMD processor that supports Secure Memory
+> diff --git a/arch/x86/include/asm/mem_encrypt_common.h b/arch/x86/include/asm/mem_encrypt_common.h
+> new file mode 100644
+> index 000000000000..697bc40a4e3d
+> --- /dev/null
+> +++ b/arch/x86/include/asm/mem_encrypt_common.h
+> @@ -0,0 +1,18 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright (C) 2020 Intel Corporation */
+> +#ifndef _ASM_X86_MEM_ENCRYPT_COMMON_H
+> +#define _ASM_X86_MEM_ENCRYPT_COMMON_H
+> +
+> +#include <linux/mem_encrypt.h>
+> +#include <linux/device.h>
+> +
+> +#ifdef CONFIG_AMD_MEM_ENCRYPT
+> +bool amd_force_dma_unencrypted(struct device *dev);
+> +#else /* CONFIG_AMD_MEM_ENCRYPT */
+> +static inline bool amd_force_dma_unencrypted(struct device *dev)
+> +{
+> +	return false;
+> +}
+> +#endif /* CONFIG_AMD_MEM_ENCRYPT */
+> +
+> +#endif
+> diff --git a/arch/x86/mm/Makefile b/arch/x86/mm/Makefile
+> index 5864219221ca..b31cb52bf1bd 100644
+> --- a/arch/x86/mm/Makefile
+> +++ b/arch/x86/mm/Makefile
+> @@ -52,6 +52,8 @@ obj-$(CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS)	+= pkeys.o
+>   obj-$(CONFIG_RANDOMIZE_MEMORY)			+= kaslr.o
+>   obj-$(CONFIG_PAGE_TABLE_ISOLATION)		+= pti.o
 >   
->   #include <asm/set_memory.h>
->   #include <asm/e820/api.h>
-> @@ -26,6 +27,7 @@
->   #include <asm/pgalloc.h>
->   #include <asm/memtype.h>
->   #include <asm/setup.h>
-> +#include <asm/tdx.h>
+> +obj-$(CONFIG_X86_MEM_ENCRYPT_COMMON)	+= mem_encrypt_common.o
+> +
+>   obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt.o
+>   obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_identity.o
+>   obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_boot.o
+> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> index 23d54b810f08..5d7fbed73949 100644
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -31,6 +31,7 @@
+>   #include <asm/processor-flags.h>
+>   #include <asm/msr.h>
+>   #include <asm/cmdline.h>
+> +#include <asm/mem_encrypt_common.h>
 >   
->   #include "physaddr.h"
+>   #include "mm_internal.h"
 >   
-> @@ -87,8 +89,8 @@ static unsigned int __ioremap_check_ram(struct resource *res)
+> @@ -362,7 +363,7 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size)
 >   }
 >   
->   /*
-> - * In a SEV guest, NONE and RESERVED should not be mapped encrypted because
-> - * there the whole memory is already encrypted.
-> + * In a SEV or TDX guest, NONE and RESERVED should not be mapped encrypted (or
-> + * private in TDX case) because there the whole memory is already encrypted.
->    */
->   static unsigned int __ioremap_check_encrypted(struct resource *res)
+>   /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+> -bool force_dma_unencrypted(struct device *dev)
+> +bool amd_force_dma_unencrypted(struct device *dev)
 >   {
-> @@ -246,6 +248,8 @@ __ioremap_caller(resource_size_t phys_addr, unsigned long size,
->   	prot = PAGE_KERNEL_IO;
->   	if ((io_desc.flags & IORES_MAP_ENCRYPTED) || encrypted)
->   		prot = pgprot_encrypted(prot);
-> +	else if (cc_platform_has(CC_ATTR_GUEST_SHARED_MAPPING_INIT))
-> +		prot = pgprot_cc_guest(prot);
-
-And if you do the new functions this could be:
-
-	if ((io_desc.flags & IORES_MAP_ENCRYPTED) || encrypted)
-		prot = pgprot_private(prot);
-	else
-		prot = pgprot_shared(prot);
-
-Thanks,
-Tom
-
->   
->   	switch (pcm) {
->   	case _PAGE_CACHE_MODE_UC:
-> diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-> index 7728574d7783..edb1d7a2f6af 100644
-> --- a/include/linux/cc_platform.h
-> +++ b/include/linux/cc_platform.h
-> @@ -81,6 +81,19 @@ enum cc_attr {
->   	 * Examples include TDX Guest.
->   	 */
->   	CC_ATTR_GUEST_UNROLL_STRING_IO,
+>   	/*
+>   	 * For SEV, all DMA must be to unencrypted addresses.
+> diff --git a/arch/x86/mm/mem_encrypt_common.c b/arch/x86/mm/mem_encrypt_common.c
+> new file mode 100644
+> index 000000000000..f063c885b0a5
+> --- /dev/null
+> +++ b/arch/x86/mm/mem_encrypt_common.c
+> @@ -0,0 +1,17 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Memory Encryption Support Common Code
+> + *
+> + * Copyright (C) 2021 Intel Corporation
+> + *
+> + * Author: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> + */
 > +
-> +	/**
-> +	 * @CC_ATTR_GUEST_SHARED_MAPPING_INIT: IO Remapped memory is marked
-> +	 *				       as shared.
-> +	 *
-> +	 * The platform/OS is running as a guest/virtual machine and
-> +	 * initializes all IO remapped memory as shared.
-> +	 *
-> +	 * Examples include TDX Guest (SEV marks all pages as shared by default
-> +	 * so this feature cannot be enabled for it).
-> +	 */
-> +	CC_ATTR_GUEST_SHARED_MAPPING_INIT,
+> +#include <asm/mem_encrypt_common.h>
+> +#include <linux/dma-mapping.h>
 > +
->   };
->   
->   #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
+> +/* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+> +bool force_dma_unencrypted(struct device *dev)
+> +{
+> +	return amd_force_dma_unencrypted(dev);
+> +}
 > 
