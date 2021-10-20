@@ -1,157 +1,169 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v5 07/16] x86/kvm: Use bounce buffers for TD guest
-Date: Wed, 20 Oct 2021 11:39:01 -0500
-Message-ID: <42f17b60-9bd4-a8bc-5164-d960e54cd30b@amd.com>
+From: Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: Re: [PATCH v5 04/16] x86/tdx: Make pages shared in ioremap()
+Date: Wed, 20 Oct 2021 09:41:29 -0700
+Message-ID: <bebdba3b-796b-d661-a3c6-7aaf7bcbe192@linux.intel.com>
 References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20211009003711.1390019-8-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20211009003711.1390019-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <8c5074f7-5456-e628-5a09-a3a4b4f381fb@amd.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+r3FkA3+7/zIwxnpuEC09EorlnRS8FrHv5y1Pz5np4Q=;
- b=Lyzxh837H53C/AWKoOofcyVhJY6d2JIVssqeAOdO4lZEMRulJw1aNUJExOJ3cpSqhMi6UoazwwN6k1asctAm5oBY+ychm5WfFKjpqKmeKjLMgqSDE/vPk1tTOa+5S/Lv29IQ6G9rx7b8xKV/ZjNBidcziXcQzZdg9L6XMIz7agQ=
-In-Reply-To: <20211009003711.1390019-8-sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <8c5074f7-5456-e628-5a09-a3a4b4f381fb@amd.com>
 Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@r>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+To: Tom Lendacky <thomas.lendacky@amd.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@redhat.com>
 Cc: Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>, Dan Williams <dan.j.williams@intel.com>, Andi Kleen <ak@linux.intel.com>, Kirill Shutemov <kirill.shutemov@linux.intel.com>, Sean Christopherson <seanjc@google.com>, Kuppuswamy Sathyanarayanan <knsathya@kernel.org>, x86@kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch@vger.kernel.org, linux-doc@vger.kernel.org, virtualization@lists.linux-foundation.org
 
-On 10/8/21 7:37 PM, Kuppuswamy Sathyanarayanan wrote:
-> From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-> 
-> Intel TDX doesn't allow VMM to directly access guest private memory.
-> Any memory that is required for communication with VMM must be shared
-> explicitly. The same rule applies for any DMA to and from TDX guest.
-> All DMA pages had to marked as shared pages. A generic way to achieve
-> this without any changes to device drivers is to use the SWIOTLB
-> framework.
-> 
-> This method of handling is similar to AMD SEV. So extend this support
-> for TDX guest as well. Also since there are some common code between
-> AMD SEV and TDX guest in mem_encrypt_init(), move it to
-> mem_encrypt_common.c and call AMD specific init function from it
-> 
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> Reviewed-by: Andi Kleen <ak@linux.intel.com>
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> ---
-> 
-> Changes since v4:
->   * Replaced prot_guest_has() with cc_guest_has().
-> 
-> Changes since v3:
->   * Rebased on top of Tom Lendacky's protected guest
->     changes (https://lore.kernel.org/patchwork/cover/1468760/)
-> 
-> Changes since v1:
->   * Removed sme_me_mask check for amd_mem_encrypt_init() in mem_encrypt_init().
-> 
->   arch/x86/include/asm/mem_encrypt_common.h |  3 +++
->   arch/x86/kernel/tdx.c                     |  2 ++
->   arch/x86/mm/mem_encrypt.c                 |  5 +----
->   arch/x86/mm/mem_encrypt_common.c          | 14 ++++++++++++++
->   4 files changed, 20 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/mem_encrypt_common.h b/arch/x86/include/asm/mem_encrypt_common.h
-> index 697bc40a4e3d..bc90e565bce4 100644
-> --- a/arch/x86/include/asm/mem_encrypt_common.h
-> +++ b/arch/x86/include/asm/mem_encrypt_common.h
-> @@ -8,11 +8,14 @@
->   
->   #ifdef CONFIG_AMD_MEM_ENCRYPT
->   bool amd_force_dma_unencrypted(struct device *dev);
-> +void __init amd_mem_encrypt_init(void);
->   #else /* CONFIG_AMD_MEM_ENCRYPT */
->   static inline bool amd_force_dma_unencrypted(struct device *dev)
->   {
->   	return false;
->   }
-> +
-> +static inline void amd_mem_encrypt_init(void) {}
->   #endif /* CONFIG_AMD_MEM_ENCRYPT */
->   
->   #endif
-> diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
-> index 433f366ca25c..ce8e3019b812 100644
-> --- a/arch/x86/kernel/tdx.c
-> +++ b/arch/x86/kernel/tdx.c
-> @@ -12,6 +12,7 @@
->   #include <asm/insn.h>
->   #include <asm/insn-eval.h>
->   #include <linux/sched/signal.h> /* force_sig_fault() */
-> +#include <linux/swiotlb.h>
->   
->   /* TDX Module call Leaf IDs */
->   #define TDX_GET_INFO			1
-> @@ -577,6 +578,7 @@ void __init tdx_early_init(void)
->   	pv_ops.irq.halt = tdx_halt;
->   
->   	legacy_pic = &null_legacy_pic;
-> +	swiotlb_force = SWIOTLB_FORCE;
->   
->   	cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "tdx:cpu_hotplug",
->   			  NULL, tdx_cpu_offline_prepare);
-> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-> index 5d7fbed73949..8385bc4565e9 100644
-> --- a/arch/x86/mm/mem_encrypt.c
-> +++ b/arch/x86/mm/mem_encrypt.c
-> @@ -438,14 +438,11 @@ static void print_mem_encrypt_feature_info(void)
->   }
->   
->   /* Architecture __weak replacement functions */
-> -void __init mem_encrypt_init(void)
-> +void __init amd_mem_encrypt_init(void)
->   {
->   	if (!sme_me_mask)
->   		return;
->   
-> -	/* Call into SWIOTLB to update the SWIOTLB DMA buffers */
-> -	swiotlb_update_mem_attributes();
-> -
->   	/*
->   	 * With SEV, we need to unroll the rep string I/O instructions,
->   	 * but SEV-ES supports them through the #VC handler.
-> diff --git a/arch/x86/mm/mem_encrypt_common.c b/arch/x86/mm/mem_encrypt_common.c
-> index 119a9056efbb..6fe44c6cb753 100644
-> --- a/arch/x86/mm/mem_encrypt_common.c
-> +++ b/arch/x86/mm/mem_encrypt_common.c
-> @@ -10,6 +10,7 @@
->   #include <asm/mem_encrypt_common.h>
->   #include <linux/dma-mapping.h>
->   #include <linux/cc_platform.h>
-> +#include <linux/swiotlb.h>
->   
->   /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
->   bool force_dma_unencrypted(struct device *dev)
-> @@ -24,3 +25,16 @@ bool force_dma_unencrypted(struct device *dev)
->   
->   	return false;
->   }
-> +
-> +/* Architecture __weak replacement functions */
-> +void __init mem_encrypt_init(void)
-> +{
-> +	/*
-> +	 * For TDX guest or SEV/SME, call into SWIOTLB to update
-> +	 * the SWIOTLB DMA buffers
-> +	 */
-> +	if (sme_me_mask || cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
 
-Can't you just make this:
 
-	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
-
-SEV will return true if sme_me_mask is not zero and TDX should only return 
-true if it is TDX guest, right?
-
-Thanks,
-Tom
-
-> +		swiotlb_update_mem_attributes();
-> +
-> +	amd_mem_encrypt_init();
-> +}
+On 10/20/21 9:03 AM, Tom Lendacky wrote:
+> On 10/8/21 7:36 PM, Kuppuswamy Sathyanarayanan wrote:
+>> From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+>>
+>> All ioremap()ed pages that are not backed by normal memory (NONE or
+>> RESERVED) have to be mapped as shared.
+>>
+>> Reuse the infrastructure from AMD SEV code.
+>>
+>> Note that DMA code doesn't use ioremap() to convert memory to shared as
+>> DMA buffers backed by normal memory. DMA code make buffer shared with
+>> set_memory_decrypted().
+>>
+>> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+>> Reviewed-by: Andi Kleen <ak@linux.intel.com>
+>> Reviewed-by: Tony Luck <tony.luck@intel.com>
+>> Signed-off-by: Kuppuswamy Sathyanarayanan 
+>> <sathyanarayanan.kuppuswamy@linux.intel.com>
+>> ---
+>>
+>> Changes since v4:
+>>   * Renamed "protected_guest" to "cc_guest".
+>>   * Replaced use of prot_guest_has() with cc_guest_has()
+>>   * Modified the patch to adapt to latest version cc_guest_has()
+>>     changes.
+>>
+>> Changes since v3:
+>>   * Rebased on top of Tom Lendacky's protected guest
+>>     changes (https://lore.kernel.org/patchwork/cover/1468760/)
+>>
+>> Changes since v1:
+>>   * Fixed format issues in commit log.
+>>
+>>   arch/x86/include/asm/pgtable.h |  4 ++++
+>>   arch/x86/mm/ioremap.c          |  8 ++++++--
+>>   include/linux/cc_platform.h    | 13 +++++++++++++
+>>   3 files changed, 23 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/x86/include/asm/pgtable.h 
+>> b/arch/x86/include/asm/pgtable.h
+>> index 448cd01eb3ec..ecefccbdf2e3 100644
+>> --- a/arch/x86/include/asm/pgtable.h
+>> +++ b/arch/x86/include/asm/pgtable.h
+>> @@ -21,6 +21,10 @@
+>>   #define pgprot_encrypted(prot)    __pgprot(__sme_set(pgprot_val(prot)))
+>>   #define pgprot_decrypted(prot)    __pgprot(__sme_clr(pgprot_val(prot)))
+>> +/* Make the page accesable by VMM for confidential guests */
+>> +#define pgprot_cc_guest(prot) __pgprot(pgprot_val(prot) |    \
+>> +                          tdx_shared_mask())
 > 
+> So this is only for TDX guests, so maybe a name that is less generic.
+> 
+> Alternatively, you could create pgprot_private()/pgprot_shared() 
+> functions that check for SME/SEV or TDX and do the proper thing.
+> 
+> Then you can redefine pgprot_encrypted()/pgprot_decrypted() to the new 
+> functions?
+
+Make sense. It will be a better abstraction. I will make this change in
+next version.
+
+> 
+>> +
+>>   #ifndef __ASSEMBLY__
+>>   #include <asm/x86_init.h>
+>>   #include <asm/pkru.h>
+>> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+>> index 026031b3b782..83daa3f8f39c 100644
+>> --- a/arch/x86/mm/ioremap.c
+>> +++ b/arch/x86/mm/ioremap.c
+>> @@ -17,6 +17,7 @@
+>>   #include <linux/cc_platform.h>
+>>   #include <linux/efi.h>
+>>   #include <linux/pgtable.h>
+>> +#include <linux/cc_platform.h>
+>>   #include <asm/set_memory.h>
+>>   #include <asm/e820/api.h>
+>> @@ -26,6 +27,7 @@
+>>   #include <asm/pgalloc.h>
+>>   #include <asm/memtype.h>
+>>   #include <asm/setup.h>
+>> +#include <asm/tdx.h>
+>>   #include "physaddr.h"
+>> @@ -87,8 +89,8 @@ static unsigned int __ioremap_check_ram(struct 
+>> resource *res)
+>>   }
+>>   /*
+>> - * In a SEV guest, NONE and RESERVED should not be mapped encrypted 
+>> because
+>> - * there the whole memory is already encrypted.
+>> + * In a SEV or TDX guest, NONE and RESERVED should not be mapped 
+>> encrypted (or
+>> + * private in TDX case) because there the whole memory is already 
+>> encrypted.
+>>    */
+>>   static unsigned int __ioremap_check_encrypted(struct resource *res)
+>>   {
+>> @@ -246,6 +248,8 @@ __ioremap_caller(resource_size_t phys_addr, 
+>> unsigned long size,
+>>       prot = PAGE_KERNEL_IO;
+>>       if ((io_desc.flags & IORES_MAP_ENCRYPTED) || encrypted)
+>>           prot = pgprot_encrypted(prot);
+>> +    else if (cc_platform_has(CC_ATTR_GUEST_SHARED_MAPPING_INIT))
+>> +        prot = pgprot_cc_guest(prot);
+> 
+> And if you do the new functions this could be:
+> 
+>      if ((io_desc.flags & IORES_MAP_ENCRYPTED) || encrypted)
+>          prot = pgprot_private(prot);
+>      else
+>          prot = pgprot_shared(prot);
+
+Yes. I will make this change in next version.
+
+> 
+> Thanks,
+> Tom
+> 
+>>       switch (pcm) {
+>>       case _PAGE_CACHE_MODE_UC:
+>> diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
+>> index 7728574d7783..edb1d7a2f6af 100644
+>> --- a/include/linux/cc_platform.h
+>> +++ b/include/linux/cc_platform.h
+>> @@ -81,6 +81,19 @@ enum cc_attr {
+>>        * Examples include TDX Guest.
+>>        */
+>>       CC_ATTR_GUEST_UNROLL_STRING_IO,
+>> +
+>> +    /**
+>> +     * @CC_ATTR_GUEST_SHARED_MAPPING_INIT: IO Remapped memory is marked
+>> +     *                       as shared.
+>> +     *
+>> +     * The platform/OS is running as a guest/virtual machine and
+>> +     * initializes all IO remapped memory as shared.
+>> +     *
+>> +     * Examples include TDX Guest (SEV marks all pages as shared by 
+>> default
+>> +     * so this feature cannot be enabled for it).
+>> +     */
+>> +    CC_ATTR_GUEST_SHARED_MAPPING_INIT,
+>> +
+>>   };
+>>   #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
+>>
+
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
