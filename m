@@ -1,38 +1,117 @@
-From: Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH 7/7] alpha: lazy FPU switching
-Date: Sat, 30 Oct 2021 22:13:08 +0000
-Message-ID: <YX3DdBbNkTeUoGit@zeniv-ca.linux.org.uk>
-References: <YU6PVepETVUJF28v@zeniv-ca.linux.org.uk>
- <20210925025548.1694143-1-viro@zeniv.linux.org.uk>
- <20210925025548.1694143-7-viro@zeniv.linux.org.uk>
- <CAHk-=wjPNM9puKEvteLnY4EDMPE3rKJcODzABHSO-7gKFkOwoA@mail.gmail.com>
- <YU+J1b2jA8ZZZpv/@zeniv-ca.linux.org.uk>
- <YX2vJiUDHkMqHK4m@zeniv-ca.linux.org.uk>
- <alpine.DEB.2.21.2110302215080.61663@angie.orcam.me.uk>
+From: Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH v5 03/16] x86/tdx: Exclude Shared bit from physical_mask
+Date: Fri, 5 Nov 2021 22:11:48 +0000
+Message-ID: <YYWsJFP31vpCAVFg@google.com>
+References: <20211009003711.1390019-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20211009003711.1390019-4-sathyanarayanan.kuppuswamy@linux.intel.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=aRWHdkO4dgpMyzRiXJIktqcg8FedigSvLDnV+7jJnn4=;
+        b=Nsce8GFJmQXR6UHyWFvn08hSzEM7iGBG5ByWUwahEd+E5Oi5y5F5s5kXfuHSA3O8jH
+         0g5rwgrhkqsbTuBAi4kvic7gFjNdoyFwoUSX8NEPZug00B5rwPZd4+X7iOkq2V2UNQCg
+         4rqo5zho64yPY0krZNwheBUWot15iJ+bFG7h7eXJT9vcCF4cqaJPv0sLz4uV4zywUa65
+         hJJubI8n/+Mp1bb8fun+E7+Q8ZtJ3oj/5S/LLu87HovDhA3dnSnFuml2XJUQYnS/WCAX
+         wdSAo7BO/xFKbTMNu3iGHg1PZXJCss3+1AStP69KCnVFVKOBZDFqHgHpzOsOp/1t0hjM
+         cQkA==
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2110302215080.61663@angie.orcam.me.uk>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+In-Reply-To: <20211009003711.1390019-4-sathyanarayanan.kuppuswamy@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, alpha <linux-alpha@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Richard Henderson <rth@twiddle.net>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, James E J Bottomley <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S . Miller" <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S . Tsirkin" <mst@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, David Hildenbrand <david@redhat.com>, Andrea Arcangeli <aarcange@redhat.com>, Josh Poimboeuf <jpoimboe@redhat.com>, Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.>
 
-On Sat, Oct 30, 2021 at 10:25:34PM +0100, Maciej W. Rozycki wrote:
-> On Sat, 30 Oct 2021, Al Viro wrote:
+On Fri, Oct 08, 2021, Kuppuswamy Sathyanarayanan wrote:
+> From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 > 
-> > 1) lazy FPU part has a braino in it; __save_fpu() in alpha_fork() et.al. should
-> > be called *after* do_switch_stack(), not before it.  Another (minor) problem is
-> > that use of jsr for calls for functions in the same object file is stupid -
-> > should be bsr instead.  Not a bug, per se, but it's clearly suboptimal.  Both
-> > fixes folded.
+> Just like MKTME, TDX reassigns bits of the physical address for
+> metadata.  MKTME used several bits for an encryption KeyID. TDX
+> uses a single bit in guests to communicate whether a physical page
+> should be protected by TDX as private memory (bit set to 0) or
+> unprotected and shared with the VMM (bit set to 1).
 > 
->  The linker is supposed to relax any eligible JSR to BSR (same with JMP vs 
-> BR) so it shouldn't really matter, and writing it down as JSR is surely 
-> more flexible as you don't have to track which caller/callee is where.
+> Add a helper, tdx_shared_mask() to generate the mask.  The processor
+> enumerates its physical address width to include the shared bit, which
+> means it gets included in __PHYSICAL_MASK by default.
 
-All within arch/alpha/kernel/entry.S.  If that ever grows past 1M insns, we
-have much worse problems...  Other callers are from C, so they all end up
-with jsr, obviously.
+This is incorrect.  The shared bit _may_ be a legal PA bit, but AIUI it's not a
+hard requirement.
+
+> Remove the shared mask from 'physical_mask' since any bits in
+> tdx_shared_mask() are not used for physical addresses in page table
+> entries.
+
+...
+
+> @@ -94,6 +100,9 @@ static void tdx_get_info(void)
+>  
+>  	td_info.gpa_width = out.rcx & GENMASK(5, 0);
+>  	td_info.attributes = out.rdx;
+> +
+> +	/* Exclude Shared bit from the __PHYSICAL_MASK */
+> +	physical_mask &= ~tdx_shared_mask();
+
+This is insufficient, though it's not really the fault of this patch, the specs
+themselves botch this whole thing.
+
+The TDX Module spec explicitly states that GPAs above GPAW are considered reserved.
+
+    10.11.1. GPAW-Relate EPT Violations
+    GPA bits higher than the SHARED bit are considered reserved and must be 0.
+    Address translation with any of the reserved bits set to 1 cause a #PF with
+    PFEC (Page Fault Error Code) RSVD bit set.
+
+But this is contradicted by the architectural extensions spec, which states that
+a GPA that satisfies MAXPA >= GPA > GPAW "can" cause an EPT violation, not #PF.
+Note, this section also appears to have a bug, as it states that GPA bit 47 is
+both the SHARED bit and reserved.  I assume that blurb is intended to clarify
+that bit 47 _would_ be reserved if it weren't the SHARED bit, but because it's
+the shared bit it's ok to access.
+
+    1.4.2
+    Guest Physical Address Translation
+    If the CPU's maximum physical-address width (MAXPA) is 52 and the guest physical
+    address width is configured to be 48, accesses with GPA bits 51:48 not all being
+    0 can cause an EPT-violation, where such EPT-violations are not mutated to #VE,
+    even if the “EPT-violations #VE” execution control is 1.
+
+    If the CPU's physical-address width (MAXPA) is less than 48 and the SHARED bit
+    is configured to be in bit position 47, GPA bit 47 would be reserved, and GPA
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                    
+    bits 46:MAXPA would be reserved. On such CPUs, setting bits 51:48 or bits
+    46:MAXPA in any paging structure can cause a reserved bit page fault on access.
+
+The Module spec also calls out that the effective GPA is not to be confused with
+MAXPA, which combined with the above blurb about MAXPA < GPAW, suggests that MAXPA
+is enumerated separately by design so that the guest doesn't incorrectly think
+46:MAXPA are usable.  But that is problematic for the case where MAXPA > GPAW.
+
+    The effective GPA width (in bits) for this TD (do not confuse with MAXPA).
+    SHARED bit is at GPA bit GPAW-1.
+
+I can't find the exact reference, but the TDX module always passes through host's
+MAXPHYADDR.  As it pertains to this patch, just doing
+
+	physical_mask &= ~tdx_shared_mask()
+
+means that a guest running with GPAW=0 and MAXPHYADDR>48 will have a discontiguous
+physical_mask, and could access "reserved" memory.  If the VMM defines legal memory
+with bits [MAXPHYADDR:48]!=0, explosions may ensue.  That's arguably a VMM bug, but
+given that the VMM is untrusted I think the guest should be paranoid when handling
+the SHARED bit.  I also don't know that the kernel will play nice with a discontiguous
+mask.
+
+Specs aside, unless Intel makes a hardware change to treat GPAW as guest.MAXPHYADDR,
+or the TDX Module emulates on EPT violations to inject #PF(RSVD) when appropriate,
+this mess isn't going to be truly fixed from the guest perspective.
+
+So, IMO all bits >= GPAW should be cleared, and the kernel should warn and/or
+refuse to boot if the host has defined legal memory in that range.
+
+FWIW, from a VMM perspective, I'm pretty sure the only sane approach is to force
+GPAW=1, a.k.a. SHARED bit == 51, if host.MAXPHYADDR>=49.  But on the guest side,
+I think we should be paranoid.
