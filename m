@@ -1,55 +1,85 @@
 From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v0 00/42] notifiers: Return an error when
- callback is already registered
-Date: Mon, 8 Nov 2021 15:24:39 +0100
-Message-ID: <YYkzJ3+faVga2Tl3@zn.tnic>
+Subject: Re: [PATCH v0 00/42] notifiers: Return an error when callback is
+ already registered
+Date: Mon, 8 Nov 2021 15:35:50 +0100
+Message-ID: <YYk1xi3eJdMJdjHC@zn.tnic>
 References: <20211108101157.15189-1-bp@alien8.de>
  <20211108101924.15759-1-bp@alien8.de>
  <20211108141703.GB1666297@rowland.harvard.edu>
+ <YYkzJ3+faVga2Tl3@zn.tnic>
 Mime-Version: 1.0
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
- t=1636381481;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
- bh=oQBbYlaqexu4t08cRZdDH3XaT2khXLTGUfDdhXY+o6w=;
- b=BzFVBEJotdv+x1wk5r7BVthkB7IfDjFkcs3Qa23VnQgw6n7GoUvAnfTwnsI1XwsFUQ2pfc
- wTEtmUg2zpiIKZgiV8GtlPXLXcMCnwwX7vbzvuM7Jd46qSvtVDp/eqlUHv6UrUSSdUIxSB
- fTiz2Hj9eXxtQyoPpRyOqBuxOD7Awrk=
+        t=1636382156;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=B6oOQ1q4gjLTOu5usgfET43xDRmf4tLazw1TZ6CRXFw=;
+        b=Upd25HzfEqhrG5TAXmV4X7VLTXjG+2mbIZvAcNaA5XdFGwWxC22cjGdH367SqKuC2YI35V
+        XePkT+plNO8Rcdx9qRLbflORPHDjzc4q/HfinrM2oVoUmKJ3f3FbXqZbeiIVI7zzNRafCc
+        NDGlsVX5pxz7i7hCYlNzvvCrAxbHbAs=
 Content-Disposition: inline
-In-Reply-To: <20211108141703.GB1666297@rowland.harvard.edu>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <YYkzJ3+faVga2Tl3@zn.tnic>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Alan Stern <stern@rowland.harvard.edu>
-Cc: alsa-devel@alsa-project.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-iio@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-mips@vger.kernel.org, netdev@vger.kernel.org, Ayush Sawal <ayush.sawal@chelsio.com>, sparclinux@vger.kernel.org, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, Rohit Maheshwari <rohitm@chelsio.com>, linux-staging@lists.linux.dev, bcm-kernel-feedback-list@broadcom.com, xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>, linux-pm@vger.kernel.org, intel-gfx@lists.freedesktop.org, Vinay Kumar Yadav <vinay.yadav@chelsio.com>, linux-um@lists.infradead.org, Steven Rostedt <rostedt@goodmis.org>, rcu@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-tegra@vger.kernel.org, openipmi-developer@lists.sourceforge.
+To: Alan Stern <stern@rowland.harvard.edu>, Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Ayush Sawal <ayush.sawal@chelsio.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rohit Maheshwari <rohitm@chelsio.com>, Steven Rostedt <rostedt@goodmis.org>, Vinay Kumar Yadav <vinay.yadav@chelsio.com>, alsa-devel@alsa-project.org, bcm-kernel-feedback-list@broadcom.com, intel-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org, linux-edac@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-iio@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linuxppc-dev@lists
 
-On Mon, Nov 08, 2021 at 09:17:03AM -0500, Alan Stern wrote:
-> What reason is there for moving the check into the callers?  It seems 
-> like pointless churn.  Why not add the error return code, change the 
-> WARN to pr_warn, and leave the callers as they are?  Wouldn't that end 
-> up having exactly the same effect?
-> 
-> For that matter, what sort of remedial action can a caller take if the 
-> return code is -EEXIST?  Is there any point in forcing callers to check 
-> the return code if they can't do anything about it?
+On Mon, Nov 08, 2021 at 03:24:39PM +0100, Borislav Petkov wrote:
+> I guess I can add another indirection to notifier_chain_register() and
+> avoid touching all the call sites.
 
-See my reply to Geert from just now:
+IOW, something like this below.
 
-https://lore.kernel.org/r/YYkyUEqcsOwQMb1S@zn.tnic
+This way I won't have to touch all the callsites and the registration
+routines would still return a proper value instead of returning 0
+unconditionally.
 
-I guess I can add another indirection to notifier_chain_register() and
-avoid touching all the call sites.
+---
+diff --git a/kernel/notifier.c b/kernel/notifier.c
+index b8251dc0bc0f..04f08b2ef17f 100644
+--- a/kernel/notifier.c
++++ b/kernel/notifier.c
+@@ -19,14 +19,12 @@ BLOCKING_NOTIFIER_HEAD(reboot_notifier_list);
+  *	are layered on top of these, with appropriate locking added.
+  */
+ 
+-static int notifier_chain_register(struct notifier_block **nl,
+-		struct notifier_block *n)
++static int __notifier_chain_register(struct notifier_block **nl,
++				     struct notifier_block *n)
+ {
+ 	while ((*nl) != NULL) {
+-		if (unlikely((*nl) == n)) {
+-			WARN(1, "double register detected");
+-			return 0;
+-		}
++		if (unlikely((*nl) == n))
++			return -EEXIST;
+ 		if (n->priority > (*nl)->priority)
+ 			break;
+ 		nl = &((*nl)->next);
+@@ -36,6 +34,18 @@ static int notifier_chain_register(struct notifier_block **nl,
+ 	return 0;
+ }
+ 
++static int notifier_chain_register(struct notifier_block **nl,
++				   struct notifier_block *n)
++{
++	int ret = __notifier_chain_register(nl, n);
++
++	if (ret == -EEXIST)
++		WARN(1, "double register of notifier callback %ps detected",
++			n->notifier_call);
++
++	return ret;
++}
++
+ static int notifier_chain_unregister(struct notifier_block **nl,
+ 		struct notifier_block *n)
+ {
+
 
 -- 
 Regards/Gruss,
