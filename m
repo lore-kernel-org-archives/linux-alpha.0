@@ -1,65 +1,80 @@
-From: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
-Subject: Re: [PATCH v0 00/42] notifiers: Return an error when callback is
- already registered
-Date: Mon, 8 Nov 2021 09:17:03 -0500
-Message-ID: <20211108141703.GB1666297@rowland.harvard.edu>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v0 42/42] notifier: Return an error when
+ callback is already registered
+Date: Mon, 8 Nov 2021 15:21:04 +0100
+Message-ID: <YYkyUEqcsOwQMb1S@zn.tnic>
 References: <20211108101157.15189-1-bp@alien8.de>
- <20211108101924.15759-1-bp@alien8.de>
+ <20211108101157.15189-43-bp@alien8.de>
+ <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+ t=1636381269;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+ bh=oWsCJGhsvF17zUFafKKKz1XGvPrCUoTgLb0x72qzY0w=;
+ b=DvalVyPWlBMIVGIell7SDhnTX9Q86iHxoTdmXzPxorrW7sqlHpzQzwtFgZEI1KmHXq30Gs
+ yOE/y0FWs3djKZaj7cQDtIyWYYD5AKtdhjFE5l3EWLo8DNcP+YE1HL9C5d3kHwZrzRPHP8
+ xiS/nYCk2AFbtbv/wLq5RqiIdGlMN38=
 Content-Disposition: inline
-In-Reply-To: <20211108101924.15759-1-bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-List-ID: <linux-alpha.vger.kernel.org>
+In-Reply-To: <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ayush Sawal <ayush.sawal-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rohit Maheshwari <rohitm-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>, Vinay Kumar Yadav <vinay.yadav-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, intel-gvt-dev-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev@lists
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: ALSA Development Mailing List <alsa-devel@alsa-project.org>, the arch/x86 maintainers <x86@kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, linux-iio@vger.kernel.org, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc@vger.kernel.org>, linux-hyperv@vger.kernel.org, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, netdev <netdev@vger.kernel.org>, Ayush Sawal <ayush.sawal@chelsio.com>, sparclinux <sparclinux@vger.kernel.org>, linux-clk <linux-clk@vger.kernel.org>, linux-leds <linux-leds@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, scsi <linux-scsi@vger.kernel.org>, Rohit Maheshwari <rohitm@chelsio.com>, linux-staging@lists.linux.dev, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, openipmi-developer@lists.sourceforge.net, xen-devel@lists.xenproject.org, "open list:TENSILICA XTENSA PORT (xtensa)" <l>
 
-On Mon, Nov 08, 2021 at 11:19:24AM +0100, Borislav Petkov wrote:
-> From: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
-> 
-> Hi all,
-> 
-> this is a huge patchset for something which is really trivial - it
-> changes the notifier registration routines to return an error value
-> if a notifier callback is already present on the respective list of
-> callbacks. For more details scroll to the last patch.
-> 
-> Everything before it is converting the callers to check the return value
-> of the registration routines and issue a warning, instead of the WARN()
-> notifier_chain_register() does now.
+On Mon, Nov 08, 2021 at 03:07:03PM +0100, Geert Uytterhoeven wrote:
+> I think the addition of __must_check is overkill, leading to the
+> addition of useless error checks and message printing.
 
-What reason is there for moving the check into the callers?  It seems 
-like pointless churn.  Why not add the error return code, change the 
-WARN to pr_warn, and leave the callers as they are?  Wouldn't that end 
-up having exactly the same effect?
+See the WARN in notifier_chain_register() - it will already do "message
+printing".
 
-For that matter, what sort of remedial action can a caller take if the 
-return code is -EEXIST?  Is there any point in forcing callers to check 
-the return code if they can't do anything about it?
+> Many callers call this where it cannot fail, and where nothing can
+> be done in the very unlikely event that the call would ever start to
+> fail.
 
-> Before the last patch has been applied, though, that checking is a
-> NOP which would make the application of those patches trivial - every
-> maintainer can pick a patch at her/his discretion - only the last one
-> enables the build warnings and that one will be queued only after the
-> preceding patches have all been merged so that there are no build
-> warnings.
+This is an attempt to remove this WARN() hack in
+notifier_chain_register() and have the function return a proper error
+value instead of this "Currently always returns zero." which is bad
+design.
 
-Why should there be _any_ build warnings?  The real problem occurs when 
-a notifier callback is added twice, not when a caller fails to check the 
-return code.  Double-registration is not the sort of thing that can be 
-detected at build time.
+Some of the registration functions around the tree check that retval and
+some don't. So if "it cannot fail" those registration either should not
+return a value or callers should check that return value - what we have
+now doesn't make a whole lot of sense.
 
-Alan Stern
+Oh, and then fixing this should avoid stuff like:
 
-> Due to the sheer volume of the patches, I have addressed the respective
-> patch and the last one, which enables the warning, with addressees for
-> each maintained area so as not to spam people unnecessarily.
-> 
-> If people prefer I carry some through tip, instead, I'll gladly do so -
-> your call.
-> 
-> And, if you think the warning messages need to be more precise, feel
-> free to adjust them before committing.
-> 
-> Thanks!
++	if (notifier_registered == false) {
++		mce_register_decode_chain(&amdgpu_bad_page_nb);
++		notifier_registered = true;
++	}
+
+from propagating in the code.
+
+The other idea I have is to add another indirection in
+notifier_chain_register() which will check the *proper* return value of
+a lower level __notifier_chain_register() and then issue that warning.
+That would definitely avoid touch so many call sites.
+
+Bottom line is: what we have now needs cleaning up.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
