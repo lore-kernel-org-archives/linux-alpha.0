@@ -1,79 +1,65 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v0 42/42] notifier: Return an error when callback is
+From: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
+Subject: Re: [PATCH v0 00/42] notifiers: Return an error when callback is
  already registered
-Date: Mon, 8 Nov 2021 15:07:03 +0100
-Message-ID: <CAMuHMdWH+txiSP_d7Jc4f_bU8Lf9iWpT4E3o5o7BJr-YdA6-VA@mail.gmail.com>
-References: <20211108101157.15189-1-bp@alien8.de> <20211108101157.15189-43-bp@alien8.de>
+Date: Mon, 8 Nov 2021 09:17:03 -0500
+Message-ID: <20211108141703.GB1666297@rowland.harvard.edu>
+References: <20211108101157.15189-1-bp@alien8.de>
+ <20211108101924.15759-1-bp@alien8.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-clk-owner@vger.kernel.org>
-In-Reply-To: <20211108101157.15189-43-bp@alien8.de>
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20211108101924.15759-1-bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Borislav Petkov <bp@alien8.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Ayush Sawal <ayush.sawal@chelsio.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rohit Maheshwari <rohitm@chelsio.com>, Steven Rostedt <rostedt@goodmis.org>, Vinay Kumar Yadav <vinay.yadav@chelsio.com>, ALSA Development Mailing List <alsa-devel@alsa-project.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Intel Graphics Development <intel-gfx@lists.freedesktop.org>, intel-gvt-dev@lists.freedesktop.org, alpha <linux-alpha@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-clk <linux-clk@vger.kernel.org>, Linux Crypto Mailing List <linux-crypto@vger.kernel.org>, linux-edac@vger.kernel.org, Linux
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Ayush Sawal <ayush.sawal-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rohit Maheshwari <rohitm-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>, Vinay Kumar Yadav <vinay.yadav-ut6Up61K2wZBDgjK7y7TUQ@public.gmane.org>, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, intel-gvt-dev-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev@lists
 
-Hi Borislav,
+On Mon, Nov 08, 2021 at 11:19:24AM +0100, Borislav Petkov wrote:
+> From: Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
+> 
+> Hi all,
+> 
+> this is a huge patchset for something which is really trivial - it
+> changes the notifier registration routines to return an error value
+> if a notifier callback is already present on the respective list of
+> callbacks. For more details scroll to the last patch.
+> 
+> Everything before it is converting the callers to check the return value
+> of the registration routines and issue a warning, instead of the WARN()
+> notifier_chain_register() does now.
 
-On Mon, Nov 8, 2021 at 11:13 AM Borislav Petkov <bp@alien8.de> wrote:
-> From: Borislav Petkov <bp@suse.de>
->
-> The notifier registration routine doesn't return a proper error value
-> when a callback has already been registered, leading people to track
-> whether that registration has happened at the call site:
->
->   https://lore.kernel.org/amd-gfx/20210512013058.6827-1-mukul.joshi@amd.com/
->
-> Which is unnecessary.
->
-> Return -EEXIST to signal that case so that callers can act accordingly.
-> Enforce callers to check the return value, leading to loud screaming
-> during build:
->
->   arch/x86/kernel/cpu/mce/core.c: In function ‘mce_register_decode_chain’:
->   arch/x86/kernel/cpu/mce/core.c:167:2: error: ignoring return value of \
->    ‘blocking_notifier_chain_register’, declared with attribute warn_unused_result [-Werror=unused-result]
->     blocking_notifier_chain_register(&x86_mce_decoder_chain, nb);
->   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> Drop the WARN too, while at it.
->
-> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Borislav Petkov <bp@suse.de>
+What reason is there for moving the check into the callers?  It seems 
+like pointless churn.  Why not add the error return code, change the 
+WARN to pr_warn, and leave the callers as they are?  Wouldn't that end 
+up having exactly the same effect?
 
-Thanks for your patch!
+For that matter, what sort of remedial action can a caller take if the 
+return code is -EEXIST?  Is there any point in forcing callers to check 
+the return code if they can't do anything about it?
 
-> --- a/include/linux/notifier.h
-> +++ b/include/linux/notifier.h
-> @@ -141,13 +141,13 @@ extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
->
->  #ifdef __KERNEL__
->
-> -extern int atomic_notifier_chain_register(struct atomic_notifier_head *nh,
-> +extern int __must_check atomic_notifier_chain_register(struct atomic_notifier_head *nh,
->                 struct notifier_block *nb);
-> -extern int blocking_notifier_chain_register(struct blocking_notifier_head *nh,
-> +extern int __must_check blocking_notifier_chain_register(struct blocking_notifier_head *nh,
->                 struct notifier_block *nb);
-> -extern int raw_notifier_chain_register(struct raw_notifier_head *nh,
-> +extern int __must_check raw_notifier_chain_register(struct raw_notifier_head *nh,
->                 struct notifier_block *nb);
-> -extern int srcu_notifier_chain_register(struct srcu_notifier_head *nh,
-> +extern int __must_check srcu_notifier_chain_register(struct srcu_notifier_head *nh,
->                 struct notifier_block *nb);
+> Before the last patch has been applied, though, that checking is a
+> NOP which would make the application of those patches trivial - every
+> maintainer can pick a patch at her/his discretion - only the last one
+> enables the build warnings and that one will be queued only after the
+> preceding patches have all been merged so that there are no build
+> warnings.
 
-I think the addition of __must_check is overkill, leading to the
-addition of useless error checks and message printing.  Many callers
-call this where it cannot fail, and where nothing can be done in the
-very unlikely event that the call would ever start to fail.
+Why should there be _any_ build warnings?  The real problem occurs when 
+a notifier callback is added twice, not when a caller fails to check the 
+return code.  Double-registration is not the sort of thing that can be 
+detected at build time.
 
-Gr{oetje,eeting}s,
+Alan Stern
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> Due to the sheer volume of the patches, I have addressed the respective
+> patch and the last one, which enables the warning, with addressees for
+> each maintained area so as not to spam people unnecessarily.
+> 
+> If people prefer I carry some through tip, instead, I'll gladly do so -
+> your call.
+> 
+> And, if you think the warning messages need to be more precise, feel
+> free to adjust them before committing.
+> 
+> Thanks!
