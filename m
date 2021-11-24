@@ -1,38 +1,107 @@
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] mm: Fix warning comparing pointer to 0
-Date: Wed, 24 Nov 2021 18:13:38 +0800
-Message-ID: <1637748818-21730-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net
-Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>
+Subject: [PATCH 1/1] futex: Wireup futex_waitv syscall
+Date: Wed, 24 Nov 2021 10:21:12 -0300
+Message-ID: <20211124132112.11641-1-andrealmeid@collabora.com>
+References: <CAK8P3a3pQW59NVF=5P+ZiBjNJmnWh+iTZUHvqHBrXkHA6pMd4g@mail.gmail.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
+ t=1637760086; bh=LoUzXVbB3wCwxf1FW0gK/muFdQnGfNnGszLYYog+/lU=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=AD0LfFCbtCb0lPtiWFikSc0XLR5Z6wW44k1wjposhAtht5drHk8ffJYsQmH2Q5W6A
+ OlROj7cj/qCKWi5Dy1MbzY5H86DsVfJFk7ojLi7Q+lRqMMZTIpXqBvmpSyD8rLL7Wp
+ 9kPDvyGRVZ0BUAwlZP0CdciKecpFD9161Ofc4WS13JQheyb+2y0tmzSTQuDIUs1XZR
+ xhtRWTu111op8oukvWLrydVcD3jHXnt1tVJE86ihwADP8qEbxXmPksbiVuBj1c5F00
+ 8kQpWRI1dzZ24tdIJDn/KLdriVfjMzI/zPYHgirq4+XjZzqYI8aUe6ZhQqcmUlCDAI
+ 7rJSFBekuqRXA==
+In-Reply-To: <CAK8P3a3pQW59NVF=5P+ZiBjNJmnWh+iTZUHvqHBrXkHA6pMd4g@mail.gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Type: text/plain; charset="macroman"
+To: linux-kernel@vger.kernel.org, arnd@arndb.de, geert@linux-m68k.org, monstr@monstr.eu, mpe@ellerman.id.au, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, chris@zankel.net, jcmvbkbc@gmail.com, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org
+Cc: sfr@canb.auug.org.au, senozhatsky@chromium.org, peterz@infradead.org, will@kernel.org, boqun.feng@gmail.com, lkft-triage@lists.linaro.org, minchan@kernel.org, naresh.kamboju@linaro.org, linux-next@vger.kernel.org, umgwanakikbuti@gmail.com, rob@landley.net, andrealmeid@collabora.com, longman@redhat.com, akpm@linux-foundation.org, mingo@redhat.com, bigeasy@linutronix.de
 
-Fix the following coccicheck warning:
-
-./arch/alpha/mm/fault.c:193:52-53: WARNING comparing pointer to 0.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- arch/alpha/mm/fault.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 6c0a277..22c1f24 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -190,7 +190,7 @@
- 
-  no_context:
- 	/* Are we prepared to handle this fault as an exception?  */
--	if ((fixup = search_exception_tables(regs->pc)) != 0) {
-+	if (!(fixup = search_exception_tables(regs->pc)) {
- 		unsigned long newpc;
- 		newpc = fixup_exception(dpf_reg, fixup, regs->pc);
- 		regs->pc = newpc;
--- 
-1.8.3.1
-
+V2lyZXVwIGZ1dGV4X3dhaXR2IHN5c2NhbGwgZm9yIGFsbCByZW1haW5pbmcgYXJjaHMuCgpTaWdu
+ZWQtb2ZmLWJ5OiBBbmRyw6kgQWxtZWlkYSA8YW5kcmVhbG1laWRAY29sbGFib3JhLmNvbT4KLS0t
+CiBhcmNoL2FscGhhL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibCAgICAgIHwgMSArCiBhcmNo
+L2lhNjQva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsICAgICAgIHwgMSArCiBhcmNoL202OGsv
+a2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsICAgICAgIHwgMSArCiBhcmNoL21pY3JvYmxhemUv
+a2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsIHwgMSArCiBhcmNoL3Bvd2VycGMva2VybmVsL3N5
+c2NhbGxzL3N5c2NhbGwudGJsICAgIHwgMSArCiBhcmNoL3NoL2tlcm5lbC9zeXNjYWxscy9zeXNj
+YWxsLnRibCAgICAgICAgIHwgMSArCiBhcmNoL3NwYXJjL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxs
+LnRibCAgICAgIHwgMSArCiBhcmNoL3h0ZW5zYS9rZXJuZWwvc3lzY2FsbHMvc3lzY2FsbC50Ymwg
+ICAgIHwgMSArCiA4IGZpbGVzIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBh
+L2FyY2gvYWxwaGEva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsIGIvYXJjaC9hbHBoYS9rZXJu
+ZWwvc3lzY2FsbHMvc3lzY2FsbC50YmwKaW5kZXggZTRhMDQxY2Q1NzE1Li5jYTVhMzIyMjhjZDYg
+MTAwNjQ0Ci0tLSBhL2FyY2gvYWxwaGEva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsCisrKyBi
+L2FyY2gvYWxwaGEva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsCkBAIC00ODgsMyArNDg4LDQg
+QEAKIDU1Ngljb21tb24JbGFuZGxvY2tfcmVzdHJpY3Rfc2VsZgkJc3lzX2xhbmRsb2NrX3Jlc3Ry
+aWN0X3NlbGYKICMgNTU3IHJlc2VydmVkIGZvciBtZW1mZF9zZWNyZXQKIDU1OAljb21tb24JcHJv
+Y2Vzc19tcmVsZWFzZQkJc3lzX3Byb2Nlc3NfbXJlbGVhc2UKKzU1OQljb21tb24gIGZ1dGV4X3dh
+aXR2ICAgICAgICAgICAgICAgICAgICAgc3lzX2Z1dGV4X3dhaXR2CmRpZmYgLS1naXQgYS9hcmNo
+L2lhNjQva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsIGIvYXJjaC9pYTY0L2tlcm5lbC9zeXNj
+YWxscy9zeXNjYWxsLnRibAppbmRleCA2ZmVhMTg0NGZiOTUuLjcwN2FlMTIxZjZkMyAxMDA2NDQK
+LS0tIGEvYXJjaC9pYTY0L2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAorKysgYi9hcmNoL2lh
+NjQva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsCkBAIC0zNjksMyArMzY5LDQgQEAKIDQ0Nglj
+b21tb24JbGFuZGxvY2tfcmVzdHJpY3Rfc2VsZgkJc3lzX2xhbmRsb2NrX3Jlc3RyaWN0X3NlbGYK
+ICMgNDQ3IHJlc2VydmVkIGZvciBtZW1mZF9zZWNyZXQKIDQ0OAljb21tb24JcHJvY2Vzc19tcmVs
+ZWFzZQkJc3lzX3Byb2Nlc3NfbXJlbGVhc2UKKzQ0OQljb21tb24gIGZ1dGV4X3dhaXR2ICAgICAg
+ICAgICAgICAgICAgICAgc3lzX2Z1dGV4X3dhaXR2CmRpZmYgLS1naXQgYS9hcmNoL202OGsva2Vy
+bmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsIGIvYXJjaC9tNjhrL2tlcm5lbC9zeXNjYWxscy9zeXNj
+YWxsLnRibAppbmRleCA3OTc2ZGZmOGY4NzkuLjQ1YmMzMmE0MWI5MCAxMDA2NDQKLS0tIGEvYXJj
+aC9tNjhrL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAorKysgYi9hcmNoL202OGsva2VybmVs
+L3N5c2NhbGxzL3N5c2NhbGwudGJsCkBAIC00NDgsMyArNDQ4LDQgQEAKIDQ0Ngljb21tb24JbGFu
+ZGxvY2tfcmVzdHJpY3Rfc2VsZgkJc3lzX2xhbmRsb2NrX3Jlc3RyaWN0X3NlbGYKICMgNDQ3IHJl
+c2VydmVkIGZvciBtZW1mZF9zZWNyZXQKIDQ0OAljb21tb24JcHJvY2Vzc19tcmVsZWFzZQkJc3lz
+X3Byb2Nlc3NfbXJlbGVhc2UKKzQ0OQljb21tb24gIGZ1dGV4X3dhaXR2ICAgICAgICAgICAgICAg
+ICAgICAgc3lzX2Z1dGV4X3dhaXR2CmRpZmYgLS1naXQgYS9hcmNoL21pY3JvYmxhemUva2VybmVs
+L3N5c2NhbGxzL3N5c2NhbGwudGJsIGIvYXJjaC9taWNyb2JsYXplL2tlcm5lbC9zeXNjYWxscy9z
+eXNjYWxsLnRibAppbmRleCA2YjBlMTEzNjJiZDIuLjIyMDRiZGUzY2U0YSAxMDA2NDQKLS0tIGEv
+YXJjaC9taWNyb2JsYXplL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAorKysgYi9hcmNoL21p
+Y3JvYmxhemUva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsCkBAIC00NTQsMyArNDU0LDQgQEAK
+IDQ0Ngljb21tb24JbGFuZGxvY2tfcmVzdHJpY3Rfc2VsZgkJc3lzX2xhbmRsb2NrX3Jlc3RyaWN0
+X3NlbGYKICMgNDQ3IHJlc2VydmVkIGZvciBtZW1mZF9zZWNyZXQKIDQ0OAljb21tb24JcHJvY2Vz
+c19tcmVsZWFzZQkJc3lzX3Byb2Nlc3NfbXJlbGVhc2UKKzQ0OQljb21tb24gIGZ1dGV4X3dhaXR2
+ICAgICAgICAgICAgICAgICAgICAgc3lzX2Z1dGV4X3dhaXR2CmRpZmYgLS1naXQgYS9hcmNoL3Bv
+d2VycGMva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsIGIvYXJjaC9wb3dlcnBjL2tlcm5lbC9z
+eXNjYWxscy9zeXNjYWxsLnRibAppbmRleCA3YmVmOTE3Y2M4NGUuLjE1MTA5YWY5ZDA3NSAxMDA2
+NDQKLS0tIGEvYXJjaC9wb3dlcnBjL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAorKysgYi9h
+cmNoL3Bvd2VycGMva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsCkBAIC01MjgsMyArNTI4LDQg
+QEAKIDQ0Ngljb21tb24JbGFuZGxvY2tfcmVzdHJpY3Rfc2VsZgkJc3lzX2xhbmRsb2NrX3Jlc3Ry
+aWN0X3NlbGYKICMgNDQ3IHJlc2VydmVkIGZvciBtZW1mZF9zZWNyZXQKIDQ0OAljb21tb24JcHJv
+Y2Vzc19tcmVsZWFzZQkJc3lzX3Byb2Nlc3NfbXJlbGVhc2UKKzQ0OQljb21tb24gIGZ1dGV4X3dh
+aXR2ICAgICAgICAgICAgICAgICAgICAgc3lzX2Z1dGV4X3dhaXR2CmRpZmYgLS1naXQgYS9hcmNo
+L3NoL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibCBiL2FyY2gvc2gva2VybmVsL3N5c2NhbGxz
+L3N5c2NhbGwudGJsCmluZGV4IDIwOGYxMzE2NTljNS4uZDk1MzlkMjhiZGFhIDEwMDY0NAotLS0g
+YS9hcmNoL3NoL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAorKysgYi9hcmNoL3NoL2tlcm5l
+bC9zeXNjYWxscy9zeXNjYWxsLnRibApAQCAtNDUxLDMgKzQ1MSw0IEBACiA0NDYJY29tbW9uCWxh
+bmRsb2NrX3Jlc3RyaWN0X3NlbGYJCXN5c19sYW5kbG9ja19yZXN0cmljdF9zZWxmCiAjIDQ0NyBy
+ZXNlcnZlZCBmb3IgbWVtZmRfc2VjcmV0CiA0NDgJY29tbW9uCXByb2Nlc3NfbXJlbGVhc2UJCXN5
+c19wcm9jZXNzX21yZWxlYXNlCis0NDkJY29tbW9uICBmdXRleF93YWl0diAgICAgICAgICAgICAg
+ICAgICAgIHN5c19mdXRleF93YWl0dgpkaWZmIC0tZ2l0IGEvYXJjaC9zcGFyYy9rZXJuZWwvc3lz
+Y2FsbHMvc3lzY2FsbC50YmwgYi9hcmNoL3NwYXJjL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRi
+bAppbmRleCBjMzc3NjRkYzc2NGQuLjQ2YWRhYmNiMTcyMCAxMDA2NDQKLS0tIGEvYXJjaC9zcGFy
+Yy9rZXJuZWwvc3lzY2FsbHMvc3lzY2FsbC50YmwKKysrIGIvYXJjaC9zcGFyYy9rZXJuZWwvc3lz
+Y2FsbHMvc3lzY2FsbC50YmwKQEAgLTQ5NCwzICs0OTQsNCBAQAogNDQ2CWNvbW1vbglsYW5kbG9j
+a19yZXN0cmljdF9zZWxmCQlzeXNfbGFuZGxvY2tfcmVzdHJpY3Rfc2VsZgogIyA0NDcgcmVzZXJ2
+ZWQgZm9yIG1lbWZkX3NlY3JldAogNDQ4CWNvbW1vbglwcm9jZXNzX21yZWxlYXNlCQlzeXNfcHJv
+Y2Vzc19tcmVsZWFzZQorNDQ5CWNvbW1vbiAgZnV0ZXhfd2FpdHYgICAgICAgICAgICAgICAgICAg
+ICBzeXNfZnV0ZXhfd2FpdHYKZGlmZiAtLWdpdCBhL2FyY2gveHRlbnNhL2tlcm5lbC9zeXNjYWxs
+cy9zeXNjYWxsLnRibCBiL2FyY2gveHRlbnNhL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibApp
+bmRleCAxMDRiMzI3ZjhhYzkuLjNlM2UxYTUwNmJlZCAxMDA2NDQKLS0tIGEvYXJjaC94dGVuc2Ev
+a2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsCisrKyBiL2FyY2gveHRlbnNhL2tlcm5lbC9zeXNj
+YWxscy9zeXNjYWxsLnRibApAQCAtNDE5LDMgKzQxOSw0IEBACiA0NDYJY29tbW9uCWxhbmRsb2Nr
+X3Jlc3RyaWN0X3NlbGYJCXN5c19sYW5kbG9ja19yZXN0cmljdF9zZWxmCiAjIDQ0NyByZXNlcnZl
+ZCBmb3IgbWVtZmRfc2VjcmV0CiA0NDgJY29tbW9uCXByb2Nlc3NfbXJlbGVhc2UJCXN5c19wcm9j
+ZXNzX21yZWxlYXNlCis0NDkJY29tbW9uICBmdXRleF93YWl0diAgICAgICAgICAgICAgICAgICAg
+IHN5c19mdXRleF93YWl0dgotLSAKMi4zMy4xCgo=
