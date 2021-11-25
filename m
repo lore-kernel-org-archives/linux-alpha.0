@@ -1,47 +1,67 @@
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH v2] mm: Fix warning comparing pointer to 0
-Date: Thu, 25 Nov 2021 18:14:00 +0800
-Message-ID: <1637835240-51114-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+From: Denis Kirjanov <kda@linux-powerpc.org>
+Subject: [PATCH] alpha: signal: drop DEBUG_SIG print statements
+Date: Thu, 25 Nov 2021 16:27:59 +0300
+Message-ID: <20211125132759.16212-1-kda@linux-powerpc.org>
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:subject:date:message-id;
+        bh=aSUF9oXETjDoDDLltfRKWNT8EucdXZILjenFDT8AYDA=;
+        b=gWAmT6cCMkmGGaC4S+d292wYYIftHaMXJMyMoJQ3WVYusc8GfA8iID3axlalSlaGuC
+         7MNbIltYsqGh3k2f+gRXYR20keJkwTcSEtHzziTKKEABcH8ugGUYUIwq0z7A8YeEo6Gw
+         aCxqTCjJWZBOImibTgcX34q6zd/9ow7LNj9pongrpUF1QjvaXSZqginEbPJDCDNA8Enz
+         96A03KVuCT2ZmHyh2vrvgL5N3ix3mQOpo3UR3G1szhoXZ6gAR9SM16GsjSnVRH5McASu
+         2LYbU5mLWYmd3tMbQAGJ1TzPrC7mwNFf9TfzE4GGnJHJIIOUzXAEL2+cA+la/M4Nqgk1
+         Tq6A==
 List-ID: <linux-alpha.vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net
-Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To: linux-alpha@vger.kernel.org
 
-Fix the following coccicheck warning:
+Drop compile-based legacy debug print statements
 
-./arch/alpha/mm/fault.c:193:52-53: WARNING comparing pointer to 0.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
 ---
-Changes in v2:
-  -For the follow advice:
-   https://lore.kernel.org/lkml/5391025983087ae9d1292387bc0b2b37c9c57863.camel@perches.com/
+ arch/alpha/kernel/signal.c | 11 -----------
+ 1 file changed, 11 deletions(-)
 
- arch/alpha/mm/fault.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 6c0a277..89e265e 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -190,10 +190,9 @@
+diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
+index bc077babafab..d5849d6181b6 100644
+--- a/arch/alpha/kernel/signal.c
++++ b/arch/alpha/kernel/signal.c
+@@ -31,8 +31,6 @@
+ #include "proto.h"
  
-  no_context:
- 	/* Are we prepared to handle this fault as an exception?  */
--	if ((fixup = search_exception_tables(regs->pc)) != 0) {
--		unsigned long newpc;
--		newpc = fixup_exception(dpf_reg, fixup, regs->pc);
--		regs->pc = newpc;
-+	fixup = search_exception_tables(regs->pc);
-+	if (fixup) {
-+		regs->pc = fixup_exception(dpf_reg, fixup, regs->pc);
- 		return;
- 	}
+ 
+-#define DEBUG_SIG 0
+-
+ #define _BLOCKABLE (~(sigmask(SIGKILL) | sigmask(SIGSTOP)))
+ 
+ asmlinkage void ret_from_sys_call(void);
+@@ -362,10 +360,6 @@ setup_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
+ 	regs->r18 = (unsigned long) &frame->sc;	/* a2: sigcontext pointer */
+ 	wrusp((unsigned long) frame);
+ 	
+-#if DEBUG_SIG
+-	printk("SIG deliver (%s:%d): sp=%p pc=%p ra=%p\n",
+-		current->comm, current->pid, frame, regs->pc, regs->r26);
+-#endif
+ 	return 0;
+ }
+ 
+@@ -416,11 +410,6 @@ setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
+ 	regs->r18 = (unsigned long) &frame->uc;	  /* a2: ucontext pointer */
+ 	wrusp((unsigned long) frame);
+ 
+-#if DEBUG_SIG
+-	printk("SIG deliver (%s:%d): sp=%p pc=%p ra=%p\n",
+-		current->comm, current->pid, frame, regs->pc, regs->r26);
+-#endif
+-
+ 	return 0;
+ }
  
 -- 
-1.8.3.1
+2.16.4
 
