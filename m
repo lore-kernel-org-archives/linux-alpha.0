@@ -1,63 +1,67 @@
-From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
-Subject: Re: [PATCH 7/9] lib/cpumask: add
- num_{possible,present,active}_cpus_{eq,gt,le}
-Date: Sun, 28 Nov 2021 06:09:53 +0100
-Message-ID: <YaMPIXUYuP1Q5FrQ@qmqm.qmqm.pl>
+From: Yury Norov <yury.norov@gmail.com>
+Subject: Re: [PATCH 2/9] lib/bitmap: implement bitmap_{empty,full} with
+ bitmap_weight_eq()
+Date: Sat, 27 Nov 2021 22:27:27 -0800
+Message-ID: <20211128062727.GA276670@lapt>
 References: <20211128035704.270739-1-yury.norov@gmail.com>
- <20211128035704.270739-8-yury.norov@gmail.com>
- <YaMME60Jfiz5BeJF@qmqm.qmqm.pl>
+ <20211128035704.270739-3-yury.norov@gmail.com>
+ <YaMHfzZ5PBn0714Z@qmqm.qmqm.pl>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
- t=1638076195; bh=oUZYFQUmcrcLe+khMfxoyii9jHAFHFy8/qX4bg6ScHU=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=JnSDJhb2/wFE1+K5BEKj3l92hAUJYMSiQfvzp+ZlCATcD11ALuloHBV8agVwt/D5m
- 6xO5KVkS6ds9BhnvUIzgpE+GOAlwIHTeHWZUDQLRlCqXrEtKOnOW/XLCrUHjRtkpA+
- s0Zgh/IC7vC3LAsHBRaM+HBKV7zFjzE+7UOTFGbokGiHbpHQX7rXsKsJST3S+JBeda
- 2sNRV1hDCglR6IzM+jk8O4GqGLON53RjQjMI9dzQcjIf9OmuQDCgevPa74eYKb6N8i
- DO41zxtTZnaEDqhBVPy9rAwcuQc/n0JQGJK3acFZNX84ZqpVMLYjA4M2TxieYk4Vj5
- b6s4KzCtg6yrQ==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=U52dhKbg0kIioCTFCnfQmDi2IMzV/SchcFpx05wLj24=; b=xLzU2v/JPvci2g
+	RbLH3bEEsG1qM920Tsjl9eUC+YCwto/6L839yRjomIk7mhKWbJuI8LPgZFfLX4H5gD8DHg71BMVD7
+	2HNH+HnjWydSCH/1a3Da3/vM/QBTCc+E025qLCjP0YycjXrkEJAC0q5FnZJ30z5Tbr8agUUAcn2bc
+	mO5/A3S8AFO9qxNn69E/9Q6S/P1VPP38TythYWjTp3qd7BhVJSKbaF+Djx425fnjJOspdfv4QeEBI
+	CRx2lQMTtHYWHqEBT8+z93ZHolzP4iHaB0MzoXP0IgMG4W8dFXvaEuj9Z6uhoxlXMFxjHaaCuBOY2
+	6cLWAxb0Ud0tiictxuvQ==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:content-transfer-encoding:in-reply-to;
+ bh=UUaWw2/vndQwOuhRc6j6PRwXuBODm2Svdcs9xeM4FlQ=;
+ b=RUU7MzRkdirUtowuDWCiM08P7YQBQBC0acoWzbBj+T+XJI6vVMBSu6aGIKh4+icUwh
+ a8q9bMYJuHCqFTUz0wNigsRNRIbsDwqKoKMNa0qnfF66qijICeNv/dPkbz+/087xhZlV
+ f64hTvJmbUAx1It3pzpI4UUvGtwyNbU+zmtX09eMQ0ByGsuhC27g5T60WwoNMBivtuLQ
+ VUm/Sp71jqGs+1C8GEcrf12fOpYmPWgYxCrrC9gGrggZZRnsjHL5/c7LM3QqhQgnqCqj
+ LxxzrdrvicV7rQvSx7+bgEc8nFcDr55sjaFrS6W7kwXrGHkLvw0E6R41fTx7A36r5Slm
+ hdow==
 Content-Disposition: inline
-In-Reply-To: <YaMME60Jfiz5BeJF@qmqm.qmqm.pl>
+In-Reply-To: <YaMHfzZ5PBn0714Z@qmqm.qmqm.pl>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Yury Norov <yury.norov@gmail.com>
-Cc: linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org, linux-mips@vger.kernel.org, linux-perf-users@vger.kernel.org, linux-mm@kvack.org, bcm-kernel-feedback-list@broadcom.com, linux-crypto@vger.kernel.org, linux-alpha@vger.kernel.org, linux-riscv@lists.infradead.org, linux-snps-arc@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+To: =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+Cc: linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, Christoph Lameter <cl@linux.com>, Daniel Vetter <daniel@ffwll.ch>, Dave
 
-On Sun, Nov 28, 2021 at 05:56:51AM +0100, Micha=B3 Miros=B3aw wrote:
-> On Sat, Nov 27, 2021 at 07:57:02PM -0800, Yury Norov wrote:
-> > Add num_{possible,present,active}_cpus_{eq,gt,le} and replace num_*_cpu=
-s()
-> > with one of new functions where appropriate. This allows num_*_cpus_*()
-> > to return earlier depending on the condition.
-> [...]
-> > @@ -3193,7 +3193,7 @@ int __init pcpu_page_first_chunk(size_t reserved_=
-size,
-> > =20
-> >  	/* allocate pages */
-> >  	j =3D 0;
-> > -	for (unit =3D 0; unit < num_possible_cpus(); unit++) {
-> > +	for (unit =3D 0; num_possible_cpus_gt(unit); unit++) {
->=20
-> This looks dubious. The old version I could hope the compiler would call
-> num_possible_cpus() only once if it's marked const or pure, but the
-> alternative is going to count the bits every time making this a guaranteed
-> O(n^2) even though the bitmap doesn't change.
-
-Hmm. This code already unnecessarily calls num_possible_cpus() multiple
-times. Since it doesn't change after early init I would suggest just
-calling it once here.
-
-Best Regards
-Micha=B3=A0Miros=B3aw
+T24gU3VuLCBOb3YgMjgsIDIwMjEgYXQgMDU6Mzc6MTlBTSArMDEwMCwgTWljaGHFgiBNaXJvc8WC
+YXcgd3JvdGU6Cj4gT24gU2F0LCBOb3YgMjcsIDIwMjEgYXQgMDc6NTY6NTdQTSAtMDgwMCwgWXVy
+eSBOb3JvdiB3cm90ZToKPiA+IE5vdyBhcyB3ZSBoYXZlIGJpdG1hcF93ZWlnaHRfZXEoKSwgc3dp
+dGNoIGJpdG1hcF9mdWxsKCkgYW5kCj4gPiBiaXRtYXBfZW1wdHkoKSB0byB1c2luZyBpdC4KPiBb
+Li4uXQo+ID4gLXN0YXRpYyBpbmxpbmUgYm9vbCBiaXRtYXBfZW1wdHkoY29uc3QgdW5zaWduZWQg
+bG9uZyAqc3JjLCB1bnNpZ25lZCBuYml0cykKPiA+IC17Cj4gPiAtCWlmIChzbWFsbF9jb25zdF9u
+Yml0cyhuYml0cykpCj4gPiAtCQlyZXR1cm4gISAoKnNyYyAmIEJJVE1BUF9MQVNUX1dPUkRfTUFT
+SyhuYml0cykpOwo+ID4gLQo+ID4gLQlyZXR1cm4gZmluZF9maXJzdF9iaXQoc3JjLCBuYml0cykg
+PT0gbmJpdHM7Cj4gPiAtfQo+IFsuLi5dCj4gPiArc3RhdGljIF9fYWx3YXlzX2lubGluZSBib29s
+IGJpdG1hcF9lbXB0eShjb25zdCB1bnNpZ25lZCBsb25nICpzcmMsIHVuc2lnbmVkIGludCBuYml0
+cykKPiA+ICt7Cj4gPiArCXJldHVybiBiaXRtYXBfd2VpZ2h0X2VxKHNyYywgbmJpdHMsIDApOwo+
+ID4gK30KPiBbLi5dCj4gCj4gV2hhdCdzIHRoZSBzcGVlZCBkaWZmZXJlbmNlPyBIYXZlIHlvdSBi
+ZW5jaG1hcmtlZCB0aGlzPwoKYml0bWFwX3dlaWdodF9lcSgpIHNob3VsZCBiZSBmYXN0ZXIgdGhh
+biBmaW5kX2ZpcnN0X2JpdCgpLCBidXQgdGhlCmRpZmZlcmVuY2UgaXMgZmV3IGN5Y2xlcywgc28g
+SSBkaWRuJ3QgYm90aGVyIG1lYXN1cmluZyBpdC4KCk5ldyB2ZXJzaW9uIGxvb2tzIGp1c3QgYmV0
+dGVyLgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGlu
+dXgtcmlzY3YgbWFpbGluZyBsaXN0CmxpbnV4LXJpc2N2QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0
+cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1yaXNjdgo=
