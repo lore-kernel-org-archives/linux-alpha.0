@@ -1,12 +1,15 @@
-From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
-Subject: Re: [PATCH 2/9] lib/bitmap: implement bitmap_{empty,full} with
- bitmap_weight_eq()
-Date: Sun, 28 Nov 2021 19:10:20 +0100
-Message-ID: <YaPGDOvBzhiRFcOP@qmqm.qmqm.pl>
+From: Yury Norov <yury.norov@gmail.com>
+Subject: Re: [PATCH 7/9] lib/cpumask: add
+ num_{possible,present,active}_cpus_{eq,gt,le}
+Date: Sun, 28 Nov 2021 10:47:12 -0800
+Message-ID: <20211128184712.GA309073@lapt>
 References: <20211128035704.270739-1-yury.norov@gmail.com>
- <20211128035704.270739-3-yury.norov@gmail.com>
+ <20211128035704.270739-8-yury.norov@gmail.com>
+ <8f389151c39a8a5b6b31d5238cb680305225d9f2.camel@perches.com>
+ <20211128174320.GA304543@lapt> <YaPCOPqpI/oKrTXl@fedora>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
@@ -14,23 +17,24 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
 	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=MY290ELxfRsEzLQRrPF7NorVh69GXFjL3M7WKMoAzVg=; b=J6KCHcn4UNU4wm
-	L40C6+D6YVn0mQq0fZ0VPqJ30BvwRU+vptfYFrrEAfwnVAdjU4lfweneZf3sOEihZOOdx+M8EkdZA
-	QT8YtzF9TQNk4mXtOqSmvkXm0qRGnOrf7ThRVAizmzOvmVPYje5mvNxsQakmxZXF9Vwdl+fFPDBAF
-	YdXSC5VMMqLfDlQtzIwyI/oaEBkr62GrHP+mZ4d1UGkvbj9u9OoiJ6Qc0AIOee/+qFDYrqFL5B2NQ
-	X0J1CK80czWG+6elNqQ9VJCS85OVAi0F6Hf7ph2DxatCxkxWDitM+Skq7rwYQ36+wsbcKvT3TbXj4
-	FfknyW770gbyFfGzBM2w==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
- t=1638123024; bh=JZhqOAoOJwkFLsUnNQo8o++CiFK7HEGKhePgc/FSOF4=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=BSqkw57UlW2pW1NXQ5wZ96M5n0daMnNFg3ZZGk4QpT65f28st6tvSbAjCuaDYp0Y0
- CmyX5dp3fxa/1bsCgFSoiXvYl/Ivrvk/XW5Lhr31jLklN0/6fnKbeszxM4AJMOo6b9
- hs1WVqqJVnnkAxwtLxudxAhzHN+6r0DPz2i1TcI1//mgPfBMhwBro3m3CGjmkmEKO0
- zFXYptfKQJ6Xhp//QSGLBmM8xlFJVmHJ9/rNfVpoRczyIK6/HJ5953QI6d4A5Zxyqw
- UnYVoDxFeKZcNpL0K/UJMA5pXP8gOMjtVWWYJxoXBIppSPMAs/Uq2+pv87S9vD8wOI
- LfWcTnK2w+pRg==
+	List-Owner; bh=/n8Fw4IyU1F5fHoWTvLyqOcZIf3XUL5VB8l7IOe2NBY=; b=C5CV94jQnZ2w+Q
+	hz+ukD2MzX3VwY4R2vsiYKbzq9vELHjWzT6fvbDFdtX/5dX1mE/bKsj5EZfkfr8RH+7xcK5TU2jKl
+	K0lM68ayWSuoZ9b1WQCRfezZRWY+z9AffqkonsA1Dlvknh29rnNPkVmdpPgMnb5yrRUtS0zQAWxXf
+	PU6Hw+BhxkzL4YuLfhQOARtyz+qnWexSOXgq5Zvq1QjmLdUhslBiahlH/2nIYRGTFhfSRHtHqvbj2
+	MX1riie4+Tgr/DNzbqtz++cM0JRpjaVNW5ArGjWjzZUQJN0exxaV4s5VfuywOQXHQ0pZunyogs9Cn
+	9bTMz02Wh+668PTKJeMg==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=+5JBAVd8frUmOsccut4e882tgrn1djQ8KjHhL4/ag+E=;
+ b=oEs9cCLNoYNdz+AbfzXoumcqnU2rFCFJ5TyCH12jj8Ix0vmr0cjhof0ocW5eqSpQbo
+ mrHrVXqzVgn1iu3yISJ4wwf50y2BGwES4qCIZWk6z19v3s6rfhM8ODKHsnHGdu0xSYmn
+ zutWpoWgGKrfvlhNB+FDfgo3OCF/7V6L7yaewLYpZDm48/8KLn7Bhlr/nJjgfB4Oiw7i
+ hyEVArk/04uNSdzcAMwME+LGzw661S1XN1lrF6iOjE5r2wDmrufbwXHGBlcjc0XG2JfP
+ D0I2JqoyhsvbiLTErDYg5FY5mgjhIpdLZ1XuQkVWsomuMWeu+IFVGskruJ1MCFhjIPEq
+ wYYw==
 Content-Disposition: inline
-In-Reply-To: <20211128035704.270739-3-yury.norov@gmail.com>
+In-Reply-To: <YaPCOPqpI/oKrTXl@fedora>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
  <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
@@ -41,54 +45,51 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
  <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
 Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="iso-8859-1"
-To: Yury Norov <yury.norov@gmail.com>
-Cc: linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, Christoph Lameter <cl@linux.com>, Daniel Vetter <daniel@ffwll.ch>, Dave
+To: Dennis Zhou <dennis@kernel.org>
+Cc: Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, Christoph Lameter <cl@linux.com>, Daniel
 
-On Sat, Nov 27, 2021 at 07:56:57PM -0800, Yury Norov wrote:
-> Now as we have bitmap_weight_eq(), switch bitmap_full() and
-> bitmap_empty() to using it.
-> =
+On Sun, Nov 28, 2021 at 12:54:00PM -0500, Dennis Zhou wrote:
+> Hello,
+> 
+> On Sun, Nov 28, 2021 at 09:43:20AM -0800, Yury Norov wrote:
+> > On Sun, Nov 28, 2021 at 09:07:52AM -0800, Joe Perches wrote:
+> > > On Sat, 2021-11-27 at 19:57 -0800, Yury Norov wrote:
+> > > > Add num_{possible,present,active}_cpus_{eq,gt,le} and replace num_*_cpus()
+> > > > with one of new functions where appropriate. This allows num_*_cpus_*()
+> > > > to return earlier depending on the condition.
+> > > []
+> > > > diff --git a/arch/arc/kernel/smp.c b/arch/arc/kernel/smp.c
+> > > []
+> > > > @@ -103,7 +103,7 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
+> > > >  	 * if platform didn't set the present map already, do it now
+> > > >  	 * boot cpu is set to present already by init/main.c
+> > > >  	 */
+> > > > -	if (num_present_cpus() <= 1)
+> > > > +	if (num_present_cpus_le(2))
+> > > >  		init_cpu_present(cpu_possible_mask);
+> > > 
+> > > ?  is this supposed to be 2 or 1
+> > 
+> > X <= 1 is the equivalent of X < 2.
+> > 
+> > > > diff --git a/drivers/cpufreq/pcc-cpufreq.c b/drivers/cpufreq/pcc-cpufreq.c
+> > > []
+> > > > @@ -593,7 +593,7 @@ static int __init pcc_cpufreq_init(void)
+> > > >  		return ret;
+> > > >  	}
+> > > >  
+> > > > -	if (num_present_cpus() > 4) {
+> > > > +	if (num_present_cpus_gt(4)) {
+> > > >  		pcc_cpufreq_driver.flags |= CPUFREQ_NO_AUTO_DYNAMIC_SWITCHING;
+> > > >  		pr_err("%s: Too many CPUs, dynamic performance scaling disabled\n",
+> > > >  		       __func__);
+> > > 
+> > > It looks as if the present variants should be using the same values
+> > > so the _le test above with 1 changed to 2 looks odd.
+> >  
+> 
+> I think the confusion comes from le meaning less than rather than lt.
+> Given the general convention of: lt (<), le (<=), eg (=), ge (>=),
+> gt (>), I'd consider renaming your le to lt.
 
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> ---
->  include/linux/bitmap.h | 26 ++++++++++----------------
->  1 file changed, 10 insertions(+), 16 deletions(-)
-> =
-
-> diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
-> index 996041f771c8..2d951e4dc814 100644
-> --- a/include/linux/bitmap.h
-> +++ b/include/linux/bitmap.h
-> @@ -386,22 +386,6 @@ static inline int bitmap_subset(const unsigned long =
-*src1,
->  		return __bitmap_subset(src1, src2, nbits);
->  }
->  =
-
-> -static inline bool bitmap_empty(const unsigned long *src, unsigned nbits)
-> -{
-> -	if (small_const_nbits(nbits))
-> -		return ! (*src & BITMAP_LAST_WORD_MASK(nbits));
-> -
-> -	return find_first_bit(src, nbits) =3D=3D nbits;
-> -}
-
-Since this is supposed to be an optimization, I would go all the way and
-replace this with the trivial implementation instead:
-
-bool bitmap_empty(long *bits, size_t nbits)
-{
-	for (; nbits >=3D BITS_PER_LONG; ++bits, nbits -=3D BITS_PER_LONG)
-		if (*bits)
-			return false;
-
-	if (nbits && *bits & BITMAP_LAST_WORD_MASK(nbits))
-		return false;
-
-	return true;
-}
- =
-
-Best Regards
-Micha=B3 Miros=B3aw
+Ok, makes sense. I'll rename in v2 and add <= and >= versions.
