@@ -1,8 +1,10 @@
-From: mirq-test@rere.qmqm.pl
-Subject: Re: [PATCH 0/9] lib/bitmap: optimize bitmap_weight() usage
-Date: Sun, 28 Nov 2021 19:03:41 +0100
-Message-ID: <YaPEfZ0t9UFGwpml@qmqm.qmqm.pl>
+From: =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+Subject: Re: [PATCH 2/9] lib/bitmap: implement bitmap_{empty,full} with
+ bitmap_weight_eq()
+Date: Sun, 28 Nov 2021 19:10:20 +0100
+Message-ID: <YaPGDOvBzhiRFcOP@qmqm.qmqm.pl>
 References: <20211128035704.270739-1-yury.norov@gmail.com>
+ <20211128035704.270739-3-yury.norov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
@@ -12,23 +14,23 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
 	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=bsoPaqbNvuKC+9godDS88lzZozdKbWBz0ysMJ4WhZk4=; b=paYfvzue6DkWr7
-	BxSE+NXStmqEonZxG8YCRQiA4mcenaRR6JhCFvz2h3oWc5Glsl+r3QfHzAW8vQ4UFRlssa8BzHVVV
-	F+EPAHJlO0Hyvis4G0NYFBkyfd82uwv1LHI3cBh1IaIrvU+SRY8e1NwVxeMX7Ub2h/C26ylwP32cs
-	A6c+XQGzDqNjNv395w349NuuZ6oMAXSwmcxdqe3qvODqqZ9e3GDonN2oMqOP4NsNiP1nXmOKLwgF5
-	V/eFwslEVI4w17pHp35N+VpNz9Vva3PyqMf1AoRX+ML8KqDisM4R2lpM/VqEMycekS5dBarVvtOnT
-	b57nSo2X1uBXHxlzoDKg==;
+	List-Owner; bh=MY290ELxfRsEzLQRrPF7NorVh69GXFjL3M7WKMoAzVg=; b=J6KCHcn4UNU4wm
+	L40C6+D6YVn0mQq0fZ0VPqJ30BvwRU+vptfYFrrEAfwnVAdjU4lfweneZf3sOEihZOOdx+M8EkdZA
+	QT8YtzF9TQNk4mXtOqSmvkXm0qRGnOrf7ThRVAizmzOvmVPYje5mvNxsQakmxZXF9Vwdl+fFPDBAF
+	YdXSC5VMMqLfDlQtzIwyI/oaEBkr62GrHP+mZ4d1UGkvbj9u9OoiJ6Qc0AIOee/+qFDYrqFL5B2NQ
+	X0J1CK80czWG+6elNqQ9VJCS85OVAi0F6Hf7ph2DxatCxkxWDitM+Skq7rwYQ36+wsbcKvT3TbXj4
+	FfknyW770gbyFfGzBM2w==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
- t=1638122634; bh=sEqOa0ZEPEWEUlBRSLFAiVwd6iLDymwK+DV3juGIkQI=;
+ t=1638123024; bh=JZhqOAoOJwkFLsUnNQo8o++CiFK7HEGKhePgc/FSOF4=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=c8BMIb6Ys1MM9jtnUFS+OzCZESND169gxM1+qoGuDHQxJkjYTnLg1dYXL65SLSeBD
- OptKwwF3f6jjeAWkz8hKGEIpBsOyA7AZLbEyI0Ul8i9xig/dKvGR9NZ6kh+Ny2ulTW
- NSMm5sqIVijexkgrukA2T59koDDkGancK18mcZt702hpU7mgoZQDDZbSDYgNkFc9BO
- VIw8ONHFtRVbVnzFi4YPF5fViRQnoyL8aNWKj0ctBrm3IfLQEgZY5IGVCfNRdmPFM4
- VnIE/zolNmZ9Tr6q4VJbIye3TlVbgURGaBOqFwsRQiEoMGrVw4g28fuRp3xh+IiOQd
- dpDJSAp182XbQ==
+ b=BSqkw57UlW2pW1NXQ5wZ96M5n0daMnNFg3ZZGk4QpT65f28st6tvSbAjCuaDYp0Y0
+ CmyX5dp3fxa/1bsCgFSoiXvYl/Ivrvk/XW5Lhr31jLklN0/6fnKbeszxM4AJMOo6b9
+ hs1WVqqJVnnkAxwtLxudxAhzHN+6r0DPz2i1TcI1//mgPfBMhwBro3m3CGjmkmEKO0
+ zFXYptfKQJ6Xhp//QSGLBmM8xlFJVmHJ9/rNfVpoRczyIK6/HJ5953QI6d4A5Zxyqw
+ UnYVoDxFeKZcNpL0K/UJMA5pXP8gOMjtVWWYJxoXBIppSPMAs/Uq2+pv87S9vD8wOI
+ LfWcTnK2w+pRg==
 Content-Disposition: inline
-In-Reply-To: <20211128035704.270739-1-yury.norov@gmail.com>
+In-Reply-To: <20211128035704.270739-3-yury.norov@gmail.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
  <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
@@ -43,79 +45,50 @@ Content-Type: text/plain; charset="iso-8859-1"
 To: Yury Norov <yury.norov@gmail.com>
 Cc: linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, Christoph Lameter <cl@linux.com>, Daniel Vetter <daniel@ffwll.ch>, Dave
 
-On Sat, Nov 27, 2021 at 07:56:55PM -0800, Yury Norov wrote:
-> In many cases people use bitmap_weight()-based functions like this:
+On Sat, Nov 27, 2021 at 07:56:57PM -0800, Yury Norov wrote:
+> Now as we have bitmap_weight_eq(), switch bitmap_full() and
+> bitmap_empty() to using it.
 > =
 
-> 	if (num_present_cpus() > 1)
-> 		do_something();
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  include/linux/bitmap.h | 26 ++++++++++----------------
+>  1 file changed, 10 insertions(+), 16 deletions(-)
 > =
 
-> This may take considerable amount of time on many-cpus machines because
-> num_present_cpus() will traverse every word of underlying cpumask
-> unconditionally.
-> =
+> diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+> index 996041f771c8..2d951e4dc814 100644
+> --- a/include/linux/bitmap.h
+> +++ b/include/linux/bitmap.h
+> @@ -386,22 +386,6 @@ static inline int bitmap_subset(const unsigned long =
+*src1,
+>  		return __bitmap_subset(src1, src2, nbits);
+>  }
+>  =
 
-> We can significantly improve on it for many real cases if stop traversing
-> the mask as soon as we count present cpus to any number greater than 1:
-> =
+> -static inline bool bitmap_empty(const unsigned long *src, unsigned nbits)
+> -{
+> -	if (small_const_nbits(nbits))
+> -		return ! (*src & BITMAP_LAST_WORD_MASK(nbits));
+> -
+> -	return find_first_bit(src, nbits) =3D=3D nbits;
+> -}
 
-> 	if (num_present_cpus_gt(1))
-> 		do_something();
-> =
+Since this is supposed to be an optimization, I would go all the way and
+replace this with the trivial implementation instead:
 
-> To implement this idea, the series adds bitmap_weight_{eq,gt,le}
-> functions together with corresponding wrappers in cpumask and nodemask.
-
-Having slept on it I have more structured thoughts:
-
-First, I like substituting bitmap_empty/full where possible - I think
-the change stands on its own, so could be split and sent as is.
-
-I don't like the proposed API very much. One problem is that it hides
-the comparison operator and makes call sites less readable:
-
-	bitmap_weight(...) > N
-
-becomes:
-
-	bitmap_weight_gt(..., N)
-
-and:
-	bitmap_weight(...) <=3D N
-
-becomes:
-
-	bitmap_weight_lt(..., N+1)
-or:
-	!bitmap_weight_gt(..., N)
-
-I'd rather see something resembling memcmp() API that's known enough
-to be easier to grasp. For above examples:
-
-	bitmap_weight_cmp(..., N) > 0
-	bitmap_weight_cmp(..., N) <=3D 0
-	...
-
-This would also make the implementation easier in not having to
-copy and paste the code three times. Could also use a simple
-optimization reducing code size:
-
-#include <linux/overflow.h>
-
-int bitmap_weight_cmp(long *bits, size_t nbits, size_t cmp)
+bool bitmap_empty(long *bits, size_t nbits)
 {
-	for (size_t i =3D 0; i < nbits / BITS_PER_LONG; ++i, ++bits)
-		if (check_sub_overflow(cmp, popcount(*bits), &cmp))
-			return 1;
+	for (; nbits >=3D BITS_PER_LONG; ++bits, nbits -=3D BITS_PER_LONG)
+		if (*bits)
+			return false;
 
-	nbits %=3D BITS_PER_LONG;
-	if (nbits && check_sub_overflow(cmp,
-			popcount(*bits & GENMASK(nbits)), &cmp))
-		return 1;
+	if (nbits && *bits & BITMAP_LAST_WORD_MASK(nbits))
+		return false;
 
-	return cmp ? -1 : 0;
+	return true;
 }
+ =
 
 Best Regards
 Micha=B3 Miros=B3aw
