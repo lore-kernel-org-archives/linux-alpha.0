@@ -1,67 +1,36 @@
-From: Denis Kirjanov <kda@linux-powerpc.org>
-Subject: [PATCH] alpha: signal: drop DEBUG_SIG print statements
-Date: Thu, 25 Nov 2021 16:27:59 +0300
-Message-ID: <20211125132759.16212-1-kda@linux-powerpc.org>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:subject:date:message-id;
-        bh=aSUF9oXETjDoDDLltfRKWNT8EucdXZILjenFDT8AYDA=;
-        b=gWAmT6cCMkmGGaC4S+d292wYYIftHaMXJMyMoJQ3WVYusc8GfA8iID3axlalSlaGuC
-         7MNbIltYsqGh3k2f+gRXYR20keJkwTcSEtHzziTKKEABcH8ugGUYUIwq0z7A8YeEo6Gw
-         aCxqTCjJWZBOImibTgcX34q6zd/9ow7LNj9pongrpUF1QjvaXSZqginEbPJDCDNA8Enz
-         96A03KVuCT2ZmHyh2vrvgL5N3ix3mQOpo3UR3G1szhoXZ6gAR9SM16GsjSnVRH5McASu
-         2LYbU5mLWYmd3tMbQAGJ1TzPrC7mwNFf9TfzE4GGnJHJIIOUzXAEL2+cA+la/M4Nqgk1
-         Tq6A==
+From: Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] alpha: fix typo in a comment
+Date: Sun, 28 Nov 2021 11:43:48 +0800
+Message-ID: <20211128034348.5900-1-wangborong@cdjrlc.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org
+To: rth@twiddle.net
+Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
 
-Drop compile-based legacy debug print statements
+The double `and' in a comment is repeated. Consequently, remove one
+`and' from the comment.
 
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- arch/alpha/kernel/signal.c | 11 -----------
- 1 file changed, 11 deletions(-)
+ arch/alpha/kernel/irq_i8259.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
-index bc077babafab..d5849d6181b6 100644
---- a/arch/alpha/kernel/signal.c
-+++ b/arch/alpha/kernel/signal.c
-@@ -31,8 +31,6 @@
- #include "proto.h"
- 
- 
--#define DEBUG_SIG 0
--
- #define _BLOCKABLE (~(sigmask(SIGKILL) | sigmask(SIGSTOP)))
- 
- asmlinkage void ret_from_sys_call(void);
-@@ -362,10 +360,6 @@ setup_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
- 	regs->r18 = (unsigned long) &frame->sc;	/* a2: sigcontext pointer */
- 	wrusp((unsigned long) frame);
- 	
--#if DEBUG_SIG
--	printk("SIG deliver (%s:%d): sp=%p pc=%p ra=%p\n",
--		current->comm, current->pid, frame, regs->pc, regs->r26);
--#endif
- 	return 0;
- }
- 
-@@ -416,11 +410,6 @@ setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
- 	regs->r18 = (unsigned long) &frame->uc;	  /* a2: ucontext pointer */
- 	wrusp((unsigned long) frame);
- 
--#if DEBUG_SIG
--	printk("SIG deliver (%s:%d): sp=%p pc=%p ra=%p\n",
--		current->comm, current->pid, frame, regs->pc, regs->r26);
--#endif
--
- 	return 0;
- }
- 
+diff --git a/arch/alpha/kernel/irq_i8259.c b/arch/alpha/kernel/irq_i8259.c
+index 1dcf0d9038fd..db574dcd6675 100644
+--- a/arch/alpha/kernel/irq_i8259.c
++++ b/arch/alpha/kernel/irq_i8259.c
+@@ -147,7 +147,7 @@ isa_no_iack_sc_device_interrupt(unsigned long vector)
+ 	 */
+ 	/* 
+ 	 *  The first read of gives you *all* interrupting lines.
+-	 *  Therefore, read the mask register and and out those lines
++	 *  Therefore, read the mask register and out those lines
+ 	 *  not enabled.  Note that some documentation has 21 and a1 
+ 	 *  write only.  This is not true.
+ 	 */
 -- 
-2.16.4
+2.33.0
 
