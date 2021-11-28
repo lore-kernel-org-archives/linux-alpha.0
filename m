@@ -1,50 +1,48 @@
-From: Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [PATCH 0/9] lib/bitmap: optimize bitmap_weight() usage
-Date: Sun, 28 Nov 2021 21:08:41 +1000
-Message-ID: <1638096766.3elxdzb8ly.astroid__35243.6327886366$1638097857$gmane$org@bobo.none>
+From: Joe Perches <joe@perches.com>
+Subject: Re: [PATCH 7/9] lib/cpumask: add
+ num_{possible,present,active}_cpus_{eq,gt,le}
+Date: Sun, 28 Nov 2021 09:07:52 -0800
+Message-ID: <8f389151c39a8a5b6b31d5238cb680305225d9f2.camel__24306.5924894594$1638119453$gmane$org@perches.com>
 References: <20211128035704.270739-1-yury.norov@gmail.com>
+         <20211128035704.270739-8-yury.norov@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:subject:to:references:in-reply-to:mime-version:message-id
-         :content-transfer-encoding;
-        bh=RLGVormZNrRFWCDJ7jdRt19siDEPnOtSgoMRMWSMPpw=;
-        b=JS75cm1kNmau6QTu2rqjTEH1lacCTylUddbQig/MfaOv87fU1R4ixeZwUTvWkojCLe
-         FVsH5wJQluo9fnDCJtLxlNsFRugI2zkbabpCQ9VhDSP+vCMkQ9XcDyPUZsKoAN0XUVPp
-         aHUTDQx+GNGjfhDN5ufjzO429xe7p71bZ6QrT/eU2apwdj3VV4bcd4Oz9OEiXGFLWmkO
-         KTg66HtHflRGYT80QQO1K0h4MxrasFS2dEY2Sip94P5OybBl2LvseRqW7ZJqQswnXYN6
-         Cntrs/UrWT/QrCgRauE5NdDXQthF0aHKCC9fzaz2Cb2jdPmYhTY0PX3z2F7VkaSzQTfW
-         T9/w==
-In-Reply-To: <20211128035704.270739-1-yury.norov@gmail.com>
+In-Reply-To: <20211128035704.270739-8-yury.norov@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Arnaldo Carvalho de Melo <acme@kernel.org>, Andy Gross <agross@kernel.org>, David Airlie <airlied@linux.ie>, Alexey Klimov <aklimov@redhat.com>, Andi Kleen <ak@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andrew Lunn <andrew@lunn.ch>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jens Axboe <axboe@fb.com>, bcm-kernel-feedback-list@broadcom.com, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Lameter <cl@linux.com>, Daniel Vetter <daniel@ffwll.ch>, Dave Hansen <dave.hansen@linux.intel.com>, David
+To: Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>
 
-Excerpts from Yury Norov's message of November 28, 2021 1:56 pm:
-> In many cases people use bitmap_weight()-based functions like this:
->=20
-> 	if (num_present_cpus() > 1)
-> 		do_something();
->=20
-> This may take considerable amount of time on many-cpus machines because
-> num_present_cpus() will traverse every word of underlying cpumask
-> unconditionally.
->=20
-> We can significantly improve on it for many real cases if stop traversing
-> the mask as soon as we count present cpus to any number greater than 1:
->=20
-> 	if (num_present_cpus_gt(1))
-> 		do_something();
->=20
-> To implement this idea, the series adds bitmap_weight_{eq,gt,le}
-> functions together with corresponding wrappers in cpumask and nodemask.
+On Sat, 2021-11-27 at 19:57 -0800, Yury Norov wrote:
+> Add num_{possible,present,active}_cpus_{eq,gt,le} and replace num_*_cpus()
+> with one of new functions where appropriate. This allows num_*_cpus_*()
+> to return earlier depending on the condition.
+[]
+> diff --git a/arch/arc/kernel/smp.c b/arch/arc/kernel/smp.c
+[]
+> @@ -103,7 +103,7 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
+>  	 * if platform didn't set the present map already, do it now
+>  	 * boot cpu is set to present already by init/main.c
+>  	 */
+> -	if (num_present_cpus() <= 1)
+> +	if (num_present_cpus_le(2))
+>  		init_cpu_present(cpu_possible_mask);
 
-There would be no change to callers if you maintain counters like what
-is done for num_online_cpus() today. Maybe some fixes to arch code that
-does not use set_cpu_possible() etc APIs required, but AFAIKS it would
-be better to fix such cases anyway.
+?  is this supposed to be 2 or 1
 
-Thanks,
-Nick
+> diff --git a/drivers/cpufreq/pcc-cpufreq.c b/drivers/cpufreq/pcc-cpufreq.c
+[]
+> @@ -593,7 +593,7 @@ static int __init pcc_cpufreq_init(void)
+>  		return ret;
+>  	}
+>  
+> -	if (num_present_cpus() > 4) {
+> +	if (num_present_cpus_gt(4)) {
+>  		pcc_cpufreq_driver.flags |= CPUFREQ_NO_AUTO_DYNAMIC_SWITCHING;
+>  		pr_err("%s: Too many CPUs, dynamic performance scaling disabled\n",
+>  		       __func__);
+
+It looks as if the present variants should be using the same values
+so the _le test above with 1 changed to 2 looks odd.
+
+
