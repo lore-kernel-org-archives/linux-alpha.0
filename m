@@ -1,52 +1,32 @@
 From: Yury Norov <yury.norov@gmail.com>
 Subject: Re: [PATCH 0/9] lib/bitmap: optimize bitmap_weight() usage
-Date: Sun, 28 Nov 2021 15:36:27 -0800
-Message-ID: <20211128233627.GA323159@lapt>
+Date: Sun, 28 Nov 2021 22:38:39 -0800
+Message-ID: <20211129063839.GA338729@lapt>
 References: <20211128035704.270739-1-yury.norov@gmail.com>
- <1638096766.3elxdzb8ly.astroid@bobo.none>
+ <YaPEfZ0t9UFGwpml@qmqm.qmqm.pl>
 Mime-Version: 1.0
+Return-path: <linux-crypto-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GW7wD7qKvROu8z9xZL5o2Gh9JvMEXrXNdc/d8bAaPNs=;
+        b=Ximtyy9D6hF34jeHkx2abhxO2fEDksv5f5qJu4CbvoNWokti3yxmfDL3L7TYPRNI1N
+         nLBExnAtE1kHxfW3UuSIcTZjpfdkrYaWw77PtYlgHprrRWmhg8onSirLlPaay6tbmdGV
+         QOolCDulR6Tk/EKA2Gv8Xlb2VKcWxKtuMIpV9m8bP/Y2OIkRrwh1D8Uy/bj62ViSMN2l
+         ZvGgVYwmHud/XyWXGXVdXp5Qsb6Tf/NpieRKvdWwCGOCaqCRU7xxjxP8pUys/Y0my6pK
+         DI87mJm/+MqXPnLUnP7Gv+O+UoGKFiXftZWbYzOV5qGvrEcopuUsleS20idOc1qycgZd
+         CJ3A==
+Content-Disposition: inline
+In-Reply-To: <YaPEfZ0t9UFGwpml@qmqm.qmqm.pl>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=+QUUYGxNbFfkAMxnCNWlxk1j7pvrKwTbzsEgz5uJ0ds=; b=hsgKqnKWkQXtNw
-	v/4IxgFa+9Pomrp9DknqzRfQbrdWCCZVqMIS0cyoZO5+a3TmiINy83eUI5tNoPm9WjF+KOarW4cq4
-	kFFqp2+yUROt2nmKsBmA/+YLz9x9RtqW8uusa2HvKMcQqaYavAjv2RRtImb7GzYftxkNYfJF+4vn5
-	Ofl573U2UMvzm/ZJbR14KwG7Ws0++aLuIz+U1INoT6Breh6eig/36uBBON7uup3YftKfOODz/LyQs
-	Vo3WTGxtzkWoxOHboQPibsYKw6oTTChv8VBAWzM2XeZbSmKayBkwhw9gi8XPJPqzvlTiUuneLqlUX
-	tQUAO3ctc/8EeAuWoXbA==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=+pvPLMMOaG75eXeO+MYWVtFy7p98nfe1U4iD6DUFgqs=;
- b=FqHxiwrQ7QYivLGpovhQrNQCHUCj7LxMV2WH4G2Ujzkjgck5ZuLpYg6YmyS5/pcjd8
- PioI6TsqEy6uPfhoz8wEavEgHnpCryLeBpBEb8dr5G6s12WteiFVLQFxrBR47EVsTB3X
- ndIWwpq8YabRGonzz7m7f+N7UJXzBMp2vfRHxXo9M1u6ZB6qiEh6DrJAZ2z7gRkAQ5sC
- IqRPeZsbgWqH6z7gZV/iyVzYOISv9QQ48jjOTsL+5HMXkolOWVbHK0gj+h+Ra3+OPnrQ
- HZwGnjmshXRb1nFHqTfVME98Ezv2622Zg9Ol7LGc837jR3cjnZ1W8PCl/MaA7m1eTWjV
- ggTQ==
-Content-Disposition: inline
-In-Reply-To: <1638096766.3elxdzb8ly.astroid@bobo.none>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Nicholas Piggin <npiggin@gmail.com>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>, Andy Gross <agross@kernel.org>, David Airlie <airlied@linux.ie>, Alexey Klimov <aklimov@redhat.com>, Andi Kleen <ak@linux.intel.com>, Andrew Morton <akpm@linux-foundation.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andrew Lunn <andrew@lunn.ch>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jens Axboe <axboe@fb.com>, bcm-kernel-feedback-list@broadcom.com, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Lameter <cl@linux.com>, Daniel Vetter <daniel@ffwll.ch>, Dave Hansen <dave.hansen@linux.intel.com>, David Laight <David.Laight@ACULAB.COM>, Dennis Zhou <dennis@kernel.org>, Dinh Nguyen <dinguyen@kernel.org>, Geetha sowjanya <gakula@marvell.com>
+To: mirq-test@rere.qmqm.pl
+Cc: linux-kernel@vger.kernel.org, Yury Norov <yury.norov@gmail.com>, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>
 
-On Sun, Nov 28, 2021 at 09:08:41PM +1000, Nicholas Piggin wrote:
-> Excerpts from Yury Norov's message of November 28, 2021 1:56 pm:
+On Sun, Nov 28, 2021 at 07:03:41PM +0100, mirq-test@rere.qmqm.pl wrote:
+> On Sat, Nov 27, 2021 at 07:56:55PM -0800, Yury Norov wrote:
 > > In many cases people use bitmap_weight()-based functions like this:
 > > 
 > > 	if (num_present_cpus() > 1)
@@ -65,9 +45,64 @@ On Sun, Nov 28, 2021 at 09:08:41PM +1000, Nicholas Piggin wrote:
 > > To implement this idea, the series adds bitmap_weight_{eq,gt,le}
 > > functions together with corresponding wrappers in cpumask and nodemask.
 > 
-> There would be no change to callers if you maintain counters like what
-> is done for num_online_cpus() today. Maybe some fixes to arch code that
-> does not use set_cpu_possible() etc APIs required, but AFAIKS it would
-> be better to fix such cases anyway.
+> Having slept on it I have more structured thoughts:
+> 
+> First, I like substituting bitmap_empty/full where possible - I think
+> the change stands on its own, so could be split and sent as is.
 
-Thanks, Nick. I'll try to do this.
+Ok, I can do it.
+
+> I don't like the proposed API very much. One problem is that it hides
+> the comparison operator and makes call sites less readable:
+> 
+> 	bitmap_weight(...) > N
+> 
+> becomes:
+> 
+> 	bitmap_weight_gt(..., N)
+> 
+> and:
+> 	bitmap_weight(...) <= N
+> 
+> becomes:
+> 
+> 	bitmap_weight_lt(..., N+1)
+> or:
+> 	!bitmap_weight_gt(..., N)
+> 
+> I'd rather see something resembling memcmp() API that's known enough
+> to be easier to grasp. For above examples:
+> 
+> 	bitmap_weight_cmp(..., N) > 0
+> 	bitmap_weight_cmp(..., N) <= 0
+> 	...
+
+bitmap_weight_cmp() cannot be efficient. Consider this example:
+
+bitmap_weight_lt(1000 0000 0000 0000, 1) == false
+                 ^
+                 stop here
+
+bitmap_weight_cmp(1000 0000 0000 0000, 1) == 0
+                                 ^
+                                 stop here
+
+I agree that '_gt' is less verbose than '>', but the advantage of 
+'_gt' over '>' is proportional to length of bitmap, and it means
+that this API should exist.
+
+> This would also make the implementation easier in not having to
+> copy and paste the code three times. Could also use a simple
+> optimization reducing code size:
+
+In the next version I'll reduce code duplication like this:
+
+bool bitmap_eq(..., N);
+bool bitmap_ge(..., N);
+
+#define bitmap_weight_gt(..., N)  bitmap_weight_ge(..., N + 1)
+#define bitmap_weight_lt(..., N) !bitmap_weight_ge(..., N)
+#define bitmap_weight_le(..., N) !bitmap_weight_gt(..., N)
+
+Thanks,
+Yury
