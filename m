@@ -1,123 +1,108 @@
-From: Yury Norov <yury.norov@gmail.com>
-Subject: Re: [PATCH 0/9] lib/bitmap: optimize bitmap_weight() usage
-Date: Wed, 1 Dec 2021 16:31:40 -0800
-Message-ID: <20211202003140.GA430494@lapt>
-References: <20211128035704.270739-1-yury.norov@gmail.com>
- <YaPEfZ0t9UFGwpml@qmqm.qmqm.pl>
- <20211129063839.GA338729@lapt>
- <3CD9ECD8-901E-497B-9AE1-0DDB02346892@rere.qmqm.pl>
+From: =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
+Subject: [PATCH v4 3/9] Check return value from mc146818_get_time()
+Date: Fri, 10 Dec 2021 21:01:25 +0100
+Message-ID: <20211210200131.153887-4-mat.jonczyk@o2.pl>
+References: <20211210200131.153887-1-mat.jonczyk@o2.pl>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=UYmHlVbMSQbQAn62a50WlYWlw5WYikEw/HKO8MU8o20=;
-        b=d9ufFBZIjBeCnfJhxkhOJHR4U6gA3sYY5/+OartHrmtyqhNuwpEH+tfc93YA7tEDao
-         yOKDodcNFRle3eMMLCg2FH/Tcgr7cW593yntXLl1utZLUJtVShRNQEOc9NvEo4hEL1rm
-         L2l6bxTExKPSRmbnMRKqIcZhoOpd63W1ZKagDrFCRbYIcYvSgN+CxBxrwTxGRSsHeVKf
-         UXZK5TS9EbCKBOwmJzZ51FgzKmkah4fU/bnP1hNtNTskTK6qjluwzPEk7uWUTAkKCdZ1
-         XxzA5TtEBQPg9PU9R4bStLW9Ne4zdJoIM+RpRwYI7AmQcqEYlTEIoOnEsCuvtTzXmNFj
-         00eA==
-Content-Disposition: inline
-In-Reply-To: <3CD9ECD8-901E-497B-9AE1-0DDB02346892@rere.qmqm.pl>
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1639166540; bh=g6F0PuH16odzLZ9wgJYTYAj2t0sK8w2j7QPAd9umlsc=;
+          h=From:To:Cc:Subject;
+          b=pQXnTTcQAivhhfd4DJ1OwLwbQEhA9VBZtrG+8RVMNrH2CJOqG2wmJaib2u8G9h6SD
+           qVyNp/EGigBLXcYO1qk0ivSgBiE9uoJ6zZ4D36Q9PqZ+27XSCHpSEA+G2PZL28/yEx
+           TdBNmHerm8MlyimqKLKVZkcQ5eIZPheS1YhN5eBo=
+In-Reply-To: <20211210200131.153887-1-mat.jonczyk@o2.pl>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc: linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Russell King <linux@armlinux.org.uk>, Amitkumar Karwar <amitkarwar@gmail.com>, Alexey Klimov <aklimov@redhat.com>, linux-alpha@vger.kernel.org, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Andy Gross <agross@kernel.org>, Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>, Petr Mladek <pmladek@suse.com>, Andrew Morton <akpm@linux-foundation.org>, Andrew Lunn <andrew@lunn.ch>, Andi Kleen <ak@linux.intel.com>, Tejun Heo <tj@kernel.org>, Ard Biesheuvel <ardb@kernel.org>, Vlastimil Babka <vbabka@suse.cz>, Anup Patel <anup.patel@wdc.c>
+Content-Type: text/plain; charset="macroman"
+To: linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-alpha@vger.kernel.org, x86@kernel.org
 
-On Mon, Nov 29, 2021 at 04:34:07PM +0000, Michał Mirosław wrote:
-> Dnia 29 listopada 2021 06:38:39 UTC, Yury Norov <yury.norov@gmail.com> napisał/a:
-> >On Sun, Nov 28, 2021 at 07:03:41PM +0100, mirq-test@rere.qmqm.pl wrote:
-> >> On Sat, Nov 27, 2021 at 07:56:55PM -0800, Yury Norov wrote:
-> >> > In many cases people use bitmap_weight()-based functions like this:
-> >> > 
-> >> > 	if (num_present_cpus() > 1)
-> >> > 		do_something();
-> >> > 
-> >> > This may take considerable amount of time on many-cpus machines because
-> >> > num_present_cpus() will traverse every word of underlying cpumask
-> >> > unconditionally.
-> >> > 
-> >> > We can significantly improve on it for many real cases if stop traversing
-> >> > the mask as soon as we count present cpus to any number greater than 1:
-> >> > 
-> >> > 	if (num_present_cpus_gt(1))
-> >> > 		do_something();
-> >> > 
-> >> > To implement this idea, the series adds bitmap_weight_{eq,gt,le}
-> >> > functions together with corresponding wrappers in cpumask and nodemask.
-> >> 
-> >> Having slept on it I have more structured thoughts:
-> >> 
-> >> First, I like substituting bitmap_empty/full where possible - I think
-> >> the change stands on its own, so could be split and sent as is.
-> >
-> >Ok, I can do it.
-> >
-> >> I don't like the proposed API very much. One problem is that it hides
-> >> the comparison operator and makes call sites less readable:
-> >> 
-> >> 	bitmap_weight(...) > N
-> >> 
-> >> becomes:
-> >> 
-> >> 	bitmap_weight_gt(..., N)
-> >> 
-> >> and:
-> >> 	bitmap_weight(...) <= N
-> >> 
-> >> becomes:
-> >> 
-> >> 	bitmap_weight_lt(..., N+1)
-> >> or:
-> >> 	!bitmap_weight_gt(..., N)
-> >> 
-> >> I'd rather see something resembling memcmp() API that's known enough
-> >> to be easier to grasp. For above examples:
-> >> 
-> >> 	bitmap_weight_cmp(..., N) > 0
-> >> 	bitmap_weight_cmp(..., N) <= 0
-> >> 	...
-> >
-> >bitmap_weight_cmp() cannot be efficient. Consider this example:
-> >
-> >bitmap_weight_lt(1000 0000 0000 0000, 1) == false
-> >                 ^
-> >                 stop here
-> >
-> >bitmap_weight_cmp(1000 0000 0000 0000, 1) == 0
-> >                                 ^
-> >                                 stop here
-> >
-> >I agree that '_gt' is less verbose than '>', but the advantage of 
-> >'_gt' over '>' is proportional to length of bitmap, and it means
-> >that this API should exist.
-> 
-> Thank you for the example. Indeed, for less-than to be efficient here you would need to replace
->  bitmap_weight_cmp(..., N) < 0
-> with
->  bitmap_weight_cmp(..., N-1) <= 0
-
-Indeed, thanks for pointing to it.
- 
-> It would still be more readable, I think.
-
-To be honest, I'm not sure that
-        bitmap_weight_cmp(..., N-1) <= 0
-would be an obvious replacement for the original
-        bitmap_weight(...) < N
-comparing to 
-        bitmap_weight_lt(..., N)
-
-I think the best thing I can do is to add bitmap_weight_cmp() as
-you suggested, and turn lt and others to be wrappers on it. This
-will let people choose a better function in each case.
-
-I also think that for v2 it would be better to drop the conversion
-for short bitmaps, except for switching to bitmap_empty(), because
-in that case readability wins over performance; if no objections. 
-
-Thanks,
-Yury
+VGhlcmUgYXJlIDQgdXNlcnMgb2YgbWMxNDY4MThfZ2V0X3RpbWUoKSBhbmQgbm9uZSBvZiB0aGVt
+IHdhcyBjaGVja2luZwp0aGUgcmV0dXJuIHZhbHVlIGZyb20gdGhpcyBmdW5jdGlvbi4gQ2hhbmdl
+IHRoaXMuCgpQcmludCB0aGUgYXBwcm9wcmlhdGUgd2FybmluZ3MgaW4gY2FsbGVycyBvZiBtYzE0
+NjgxOF9nZXRfdGltZSgpIGluc3RlYWQKb2YgaW4gdGhlIGZ1bmN0aW9uIG1jMTQ2ODE4X2dldF90
+aW1lKCkgaXRzZWxmLCBpbiBvcmRlciBub3QgdG8gYWRkCnN0cmluZ3MgdG8gcnRjLW1jMTQ2ODE4
+LWxpYi5jLCB3aGljaCBpcyBraW5kIG9mIGEgbGlicmFyeS4KClRoZSBjYWxsZXJzIG9mIGFscGhh
+X3J0Y19yZWFkX3RpbWUoKSBhbmQgY21vc19yZWFkX3RpbWUoKSBtYXkgdXNlIHRoZQpjb250ZW50
+cyBvZiAoc3RydWN0IHJ0Y190aW1lICopIGV2ZW4gd2hlbiB0aGUgZnVuY3Rpb25zIHJldHVybiBh
+IGZhaWx1cmUKY29kZS4gVGhlcmVmb3JlLCBzZXQgdGhlIGNvbnRlbnRzIG9mIChzdHJ1Y3QgcnRj
+X3RpbWUgKikgdG8gMHgwMCwKd2hpY2ggbG9va3MgbW9yZSBzZW5zaWJsZSB0aGVuIDB4ZmYgYW5k
+IGFsaWducyB3aXRoIHRoZSAocG9zc2libHkKc3RhbGU/KSBjb21tZW50IGluIGNtb3NfcmVhZF90
+aW1lOgoKCS8qCgkgKiBJZiBwbV90cmFjZSBhYnVzZWQgdGhlIFJUQyBmb3Igc3RvcmFnZSwgc2V0
+IHRoZSB0aW1lc3BlYyB0byAwLAoJICogd2hpY2ggdGVsbHMgdGhlIGNhbGxlciB0aGF0IHRoaXMg
+UlRDIHZhbHVlIGlzIHVudXNhYmxlLgoJICovCgpGb3IgY29uc2lzdGVuY3ksIGRvIHRoaXMgaW4g
+bWMxNDY4MThfZ2V0X3RpbWUoKS4KCk5vdGU6IGhwZXRfcnRjX2ludGVycnVwdCgpIG1heSBjYWxs
+IG1jMTQ2ODE4X2dldF90aW1lKCkgbWFueSB0aW1lcyBhCnNlY29uZC4gSXQgaXMgdmVyeSB1bmxp
+a2VseSwgdGhvdWdoLCB0aGF0IHRoZSBSVEMgc3VkZGVubHkgc3RvcHMKd29ya2luZyBhbmQgbWMx
+NDY4MThfZ2V0X3RpbWUoKSB3b3VsZCBjb25zaXN0ZW50bHkgZmFpbC4KCk9ubHkgY29tcGlsZS10
+ZXN0ZWQgb24gYWxwaGEuCgpTaWduZWQtb2ZmLWJ5OiBNYXRldXN6IEpvxYRjenlrIDxtYXQuam9u
+Y3p5a0BvMi5wbD4KQ2M6IFJpY2hhcmQgSGVuZGVyc29uIDxydGhAdHdpZGRsZS5uZXQ+CkNjOiBJ
+dmFuIEtva3NoYXlza3kgPGlua0BqdXJhc3NpYy5wYXJrLm1zdS5ydT4KQ2M6IE1hdHQgVHVybmVy
+IDxtYXR0c3Q4OEBnbWFpbC5jb20+CkNjOiBUaG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25p
+eC5kZT4KQ2M6IEluZ28gTW9sbmFyIDxtaW5nb0ByZWRoYXQuY29tPgpDYzogQm9yaXNsYXYgUGV0
+a292IDxicEBhbGllbjguZGU+CkNjOiBEYXZlIEhhbnNlbiA8ZGF2ZS5oYW5zZW5AbGludXguaW50
+ZWwuY29tPgpDYzogQWxlc3NhbmRybyBadW1tbyA8YS56dW1tb0B0b3dlcnRlY2guaXQ+CkNjOiBB
+bGV4YW5kcmUgQmVsbG9uaSA8YWxleGFuZHJlLmJlbGxvbmlAYm9vdGxpbi5jb20+CkNjOiBsaW51
+eC1hbHBoYUB2Z2VyLmtlcm5lbC5vcmcKQ2M6IHg4NkBrZXJuZWwub3JnCgotLS0KClRPRE86IHdv
+dWxkIGl0IGJlIGFwcHJvcHJpYXRlIHRvIGFkZCBhdHRyaWJ1dGUgX19tdXN0X2NoZWNrIHRvCiAg
+ICAgIG1jMTQ2ODE4X2dldF90aW1lKCk/Cgp2NDogQWRkZWQgdGhpcyBwYXRjaAoKIGFyY2gvYWxw
+aGEva2VybmVsL3J0Yy5jICAgICAgICB8IDcgKysrKysrLQogYXJjaC94ODYva2VybmVsL2hwZXQu
+YyAgICAgICAgIHwgOCArKysrKystLQogZHJpdmVycy9iYXNlL3Bvd2VyL3RyYWNlLmMgICAgIHwg
+NiArKysrKy0KIGRyaXZlcnMvcnRjL3J0Yy1jbW9zLmMgICAgICAgICB8IDkgKysrKysrKystCiBk
+cml2ZXJzL3J0Yy9ydGMtbWMxNDY4MTgtbGliLmMgfCAyICstCiA1IGZpbGVzIGNoYW5nZWQsIDI2
+IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJjaC9hbHBoYS9r
+ZXJuZWwvcnRjLmMgYi9hcmNoL2FscGhhL2tlcm5lbC9ydGMuYwppbmRleCBjZTMwNzc5NDZlMWQu
+LmZiMzAyNTM5NmFjOSAxMDA2NDQKLS0tIGEvYXJjaC9hbHBoYS9rZXJuZWwvcnRjLmMKKysrIGIv
+YXJjaC9hbHBoYS9rZXJuZWwvcnRjLmMKQEAgLTgwLDcgKzgwLDEyIEBAIGluaXRfcnRjX2Vwb2No
+KHZvaWQpCiBzdGF0aWMgaW50CiBhbHBoYV9ydGNfcmVhZF90aW1lKHN0cnVjdCBkZXZpY2UgKmRl
+diwgc3RydWN0IHJ0Y190aW1lICp0bSkKIHsKLQltYzE0NjgxOF9nZXRfdGltZSh0bSk7CisJaW50
+IHJldCA9IG1jMTQ2ODE4X2dldF90aW1lKHRtKTsKKworCWlmIChyZXQgPCAwKSB7CisJCWRldl9l
+cnJfcmF0ZWxpbWl0ZWQoZGV2LCAidW5hYmxlIHRvIHJlYWQgY3VycmVudCB0aW1lXG4iKTsKKwkJ
+cmV0dXJuIHJldDsKKwl9CiAKIAkvKiBBZGp1c3QgZm9yIG5vbi1kZWZhdWx0IGVwb2Nocy4gIEl0
+J3MgZWFzaWVyIHRvIGRlcGVuZCBvbiB0aGUKIAkgICBnZW5lcmljIF9fZ2V0X3J0Y190aW1lIGFu
+ZCBhZGp1c3QgdGhlIGVwb2NoIGhlcmUgdGhhbiBjcmVhdGUKZGlmZiAtLWdpdCBhL2FyY2gveDg2
+L2tlcm5lbC9ocGV0LmMgYi9hcmNoL3g4Ni9rZXJuZWwvaHBldC5jCmluZGV4IDg4MjIxM2RmMzcx
+My4uNzFmMzM2NDI1ZTU4IDEwMDY0NAotLS0gYS9hcmNoL3g4Ni9rZXJuZWwvaHBldC5jCisrKyBi
+L2FyY2gveDg2L2tlcm5lbC9ocGV0LmMKQEAgLTE0MzUsOCArMTQzNSwxMiBAQCBpcnFyZXR1cm5f
+dCBocGV0X3J0Y19pbnRlcnJ1cHQoaW50IGlycSwgdm9pZCAqZGV2X2lkKQogCWhwZXRfcnRjX3Rp
+bWVyX3JlaW5pdCgpOwogCW1lbXNldCgmY3Vycl90aW1lLCAwLCBzaXplb2Yoc3RydWN0IHJ0Y190
+aW1lKSk7CiAKLQlpZiAoaHBldF9ydGNfZmxhZ3MgJiAoUlRDX1VJRSB8IFJUQ19BSUUpKQotCQlt
+YzE0NjgxOF9nZXRfdGltZSgmY3Vycl90aW1lKTsKKwlpZiAoaHBldF9ydGNfZmxhZ3MgJiAoUlRD
+X1VJRSB8IFJUQ19BSUUpKSB7CisJCWlmICh1bmxpa2VseShtYzE0NjgxOF9nZXRfdGltZSgmY3Vy
+cl90aW1lKSA8IDApKSB7CisJCQlwcl9lcnJfcmF0ZWxpbWl0ZWQoInVuYWJsZSB0byByZWFkIGN1
+cnJlbnQgdGltZSBmcm9tIFJUQ1xuIik7CisJCQlyZXR1cm4gSVJRX0hBTkRMRUQ7CisJCX0KKwl9
+CiAKIAlpZiAoaHBldF9ydGNfZmxhZ3MgJiBSVENfVUlFICYmCiAJICAgIGN1cnJfdGltZS50bV9z
+ZWMgIT0gaHBldF9wcmV2X3VwZGF0ZV9zZWMpIHsKZGlmZiAtLWdpdCBhL2RyaXZlcnMvYmFzZS9w
+b3dlci90cmFjZS5jIGIvZHJpdmVycy9iYXNlL3Bvd2VyL3RyYWNlLmMKaW5kZXggOTQ2NjUwMzdm
+NGEzLi43MmI3YTkyMzM3YjEgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvYmFzZS9wb3dlci90cmFjZS5j
+CisrKyBiL2RyaXZlcnMvYmFzZS9wb3dlci90cmFjZS5jCkBAIC0xMjAsNyArMTIwLDExIEBAIHN0
+YXRpYyB1bnNpZ25lZCBpbnQgcmVhZF9tYWdpY190aW1lKHZvaWQpCiAJc3RydWN0IHJ0Y190aW1l
+IHRpbWU7CiAJdW5zaWduZWQgaW50IHZhbDsKIAotCW1jMTQ2ODE4X2dldF90aW1lKCZ0aW1lKTsK
+KwlpZiAobWMxNDY4MThfZ2V0X3RpbWUoJnRpbWUpIDwgMCkgeworCQlwcl9lcnIoIlVuYWJsZSB0
+byByZWFkIGN1cnJlbnQgdGltZSBmcm9tIFJUQ1xuIik7CisJCXJldHVybiAwOworCX0KKwogCXBy
+X2luZm8oIlJUQyB0aW1lOiAlcHRSdCwgZGF0ZTogJXB0UmRcbiIsICZ0aW1lLCAmdGltZSk7CiAJ
+dmFsID0gdGltZS50bV95ZWFyOwkJCQkvKiAxMDAgeWVhcnMgKi8KIAlpZiAodmFsID4gMTAwKQpk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9ydGMvcnRjLWNtb3MuYyBiL2RyaXZlcnMvcnRjL3J0Yy1jbW9z
+LmMKaW5kZXggZGMzZjhiMGRkZTk4Li5kMGY1OGNjYTVjMjAgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
+cnRjL3J0Yy1jbW9zLmMKKysrIGIvZHJpdmVycy9ydGMvcnRjLWNtb3MuYwpAQCAtMjIyLDYgKzIy
+Miw4IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBjbW9zX3dyaXRlX2JhbmsyKHVuc2lnbmVkIGNoYXIg
+dmFsLCB1bnNpZ25lZCBjaGFyIGFkZHIpCiAKIHN0YXRpYyBpbnQgY21vc19yZWFkX3RpbWUoc3Ry
+dWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcnRjX3RpbWUgKnQpCiB7CisJaW50IHJldDsKKwogCS8q
+CiAJICogSWYgcG1fdHJhY2UgYWJ1c2VkIHRoZSBSVEMgZm9yIHN0b3JhZ2UsIHNldCB0aGUgdGlt
+ZXNwZWMgdG8gMCwKIAkgKiB3aGljaCB0ZWxscyB0aGUgY2FsbGVyIHRoYXQgdGhpcyBSVEMgdmFs
+dWUgaXMgdW51c2FibGUuCkBAIC0yMjksNyArMjMxLDEyIEBAIHN0YXRpYyBpbnQgY21vc19yZWFk
+X3RpbWUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcnRjX3RpbWUgKnQpCiAJaWYgKCFwbV90
+cmFjZV9ydGNfdmFsaWQoKSkKIAkJcmV0dXJuIC1FSU87CiAKLQltYzE0NjgxOF9nZXRfdGltZSh0
+KTsKKwlyZXQgPSBtYzE0NjgxOF9nZXRfdGltZSh0KTsKKwlpZiAocmV0IDwgMCkgeworCQlkZXZf
+ZXJyX3JhdGVsaW1pdGVkKGRldiwgInVuYWJsZSB0byByZWFkIGN1cnJlbnQgdGltZVxuIik7CisJ
+CXJldHVybiByZXQ7CisJfQorCiAJcmV0dXJuIDA7CiB9CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+cnRjL3J0Yy1tYzE0NjgxOC1saWIuYyBiL2RyaXZlcnMvcnRjL3J0Yy1tYzE0NjgxOC1saWIuYwpp
+bmRleCBjMTg2YzhjNDk4MmIuLmNjZDk3NGI4YTc1YSAxMDA2NDQKLS0tIGEvZHJpdmVycy9ydGMv
+cnRjLW1jMTQ2ODE4LWxpYi5jCisrKyBiL2RyaXZlcnMvcnRjL3J0Yy1tYzE0NjgxOC1saWIuYwpA
+QCAtMjQsNyArMjQsNyBAQCB1bnNpZ25lZCBpbnQgbWMxNDY4MThfZ2V0X3RpbWUoc3RydWN0IHJ0
+Y190aW1lICp0aW1lKQogCS8qIEVuc3VyZSB0aGF0IHRoZSBSVEMgaXMgYWNjZXNzaWJsZS4gQml0
+IDYgbXVzdCBiZSAwISAqLwogCWlmIChXQVJOX09OX09OQ0UoKENNT1NfUkVBRChSVENfVkFMSUQp
+ICYgMHg0MCkgIT0gMCkpIHsKIAkJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmcnRjX2xvY2ssIGZs
+YWdzKTsKLQkJbWVtc2V0KHRpbWUsIDB4ZmYsIHNpemVvZigqdGltZSkpOworCQltZW1zZXQodGlt
+ZSwgMCwgc2l6ZW9mKCp0aW1lKSk7CiAJCXJldHVybiAtRUlPOwogCX0KIAotLSAKMi4yNS4xCgo=
