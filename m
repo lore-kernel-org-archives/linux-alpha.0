@@ -1,108 +1,49 @@
-From: =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
-Subject: [PATCH v4 3/9] Check return value from mc146818_get_time()
-Date: Fri, 10 Dec 2021 21:01:25 +0100
-Message-ID: <20211210200131.153887-4-mat.jonczyk@o2.pl>
-References: <20211210200131.153887-1-mat.jonczyk@o2.pl>
+From: Colin Ian King <colin.i.king@gmail.com>
+Subject: [PATCH] alpha: osf_sys: reduce kernel log spamming on invalid osf_mount call typenr
+Date: Mon, 13 Dec 2021 18:56:25 +0000
+Message-ID: <20211213185625.546358-1-colin.i.king@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
-          t=1639166540; bh=g6F0PuH16odzLZ9wgJYTYAj2t0sK8w2j7QPAd9umlsc=;
-          h=From:To:Cc:Subject;
-          b=pQXnTTcQAivhhfd4DJ1OwLwbQEhA9VBZtrG+8RVMNrH2CJOqG2wmJaib2u8G9h6SD
-           qVyNp/EGigBLXcYO1qk0ivSgBiE9uoJ6zZ4D36Q9PqZ+27XSCHpSEA+G2PZL28/yEx
-           TdBNmHerm8MlyimqKLKVZkcQ5eIZPheS1YhN5eBo=
-In-Reply-To: <20211210200131.153887-1-mat.jonczyk@o2.pl>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SlRUCNZA27tVMMcwdRpt49s0tEWpr4zRWRRepQCcdFA=;
+        b=TZDTJVpd4mh00xWC2z0z5mHYHH2o9JjzG2pmnMngm1ScOQb4vMwt1hw3bQHfVaD+be
+         vlyvZG0lOATSHAG8/TAKUkYzZUryX2/bKeOm+0MpkG1wAJMsVV+GLsxJDuQ8zdi/GFHX
+         89YHco+p1YsDIWksqhSotC0WUL4R6iBR7p3ofHtc7h7AQYzMUajOz/z8vFyuJKarzCYe
+         D8cxIcpLGSU30Cl624XVZouBkXIoUek2nJgcsRYzuNk8dSvataBej7Nbul9pXXqZTqOi
+         q9xdulk4/wzNQ5Z0zos8gEgVxkdQNScmLo5FxkpV+2NXLcsa0ZKRWy0ZG+WV44WVchtG
+         ymdg==
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="macroman"
-To: linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-alpha@vger.kernel.org, x86@kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 
-VGhlcmUgYXJlIDQgdXNlcnMgb2YgbWMxNDY4MThfZ2V0X3RpbWUoKSBhbmQgbm9uZSBvZiB0aGVt
-IHdhcyBjaGVja2luZwp0aGUgcmV0dXJuIHZhbHVlIGZyb20gdGhpcyBmdW5jdGlvbi4gQ2hhbmdl
-IHRoaXMuCgpQcmludCB0aGUgYXBwcm9wcmlhdGUgd2FybmluZ3MgaW4gY2FsbGVycyBvZiBtYzE0
-NjgxOF9nZXRfdGltZSgpIGluc3RlYWQKb2YgaW4gdGhlIGZ1bmN0aW9uIG1jMTQ2ODE4X2dldF90
-aW1lKCkgaXRzZWxmLCBpbiBvcmRlciBub3QgdG8gYWRkCnN0cmluZ3MgdG8gcnRjLW1jMTQ2ODE4
-LWxpYi5jLCB3aGljaCBpcyBraW5kIG9mIGEgbGlicmFyeS4KClRoZSBjYWxsZXJzIG9mIGFscGhh
-X3J0Y19yZWFkX3RpbWUoKSBhbmQgY21vc19yZWFkX3RpbWUoKSBtYXkgdXNlIHRoZQpjb250ZW50
-cyBvZiAoc3RydWN0IHJ0Y190aW1lICopIGV2ZW4gd2hlbiB0aGUgZnVuY3Rpb25zIHJldHVybiBh
-IGZhaWx1cmUKY29kZS4gVGhlcmVmb3JlLCBzZXQgdGhlIGNvbnRlbnRzIG9mIChzdHJ1Y3QgcnRj
-X3RpbWUgKikgdG8gMHgwMCwKd2hpY2ggbG9va3MgbW9yZSBzZW5zaWJsZSB0aGVuIDB4ZmYgYW5k
-IGFsaWducyB3aXRoIHRoZSAocG9zc2libHkKc3RhbGU/KSBjb21tZW50IGluIGNtb3NfcmVhZF90
-aW1lOgoKCS8qCgkgKiBJZiBwbV90cmFjZSBhYnVzZWQgdGhlIFJUQyBmb3Igc3RvcmFnZSwgc2V0
-IHRoZSB0aW1lc3BlYyB0byAwLAoJICogd2hpY2ggdGVsbHMgdGhlIGNhbGxlciB0aGF0IHRoaXMg
-UlRDIHZhbHVlIGlzIHVudXNhYmxlLgoJICovCgpGb3IgY29uc2lzdGVuY3ksIGRvIHRoaXMgaW4g
-bWMxNDY4MThfZ2V0X3RpbWUoKS4KCk5vdGU6IGhwZXRfcnRjX2ludGVycnVwdCgpIG1heSBjYWxs
-IG1jMTQ2ODE4X2dldF90aW1lKCkgbWFueSB0aW1lcyBhCnNlY29uZC4gSXQgaXMgdmVyeSB1bmxp
-a2VseSwgdGhvdWdoLCB0aGF0IHRoZSBSVEMgc3VkZGVubHkgc3RvcHMKd29ya2luZyBhbmQgbWMx
-NDY4MThfZ2V0X3RpbWUoKSB3b3VsZCBjb25zaXN0ZW50bHkgZmFpbC4KCk9ubHkgY29tcGlsZS10
-ZXN0ZWQgb24gYWxwaGEuCgpTaWduZWQtb2ZmLWJ5OiBNYXRldXN6IEpvxYRjenlrIDxtYXQuam9u
-Y3p5a0BvMi5wbD4KQ2M6IFJpY2hhcmQgSGVuZGVyc29uIDxydGhAdHdpZGRsZS5uZXQ+CkNjOiBJ
-dmFuIEtva3NoYXlza3kgPGlua0BqdXJhc3NpYy5wYXJrLm1zdS5ydT4KQ2M6IE1hdHQgVHVybmVy
-IDxtYXR0c3Q4OEBnbWFpbC5jb20+CkNjOiBUaG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25p
-eC5kZT4KQ2M6IEluZ28gTW9sbmFyIDxtaW5nb0ByZWRoYXQuY29tPgpDYzogQm9yaXNsYXYgUGV0
-a292IDxicEBhbGllbjguZGU+CkNjOiBEYXZlIEhhbnNlbiA8ZGF2ZS5oYW5zZW5AbGludXguaW50
-ZWwuY29tPgpDYzogQWxlc3NhbmRybyBadW1tbyA8YS56dW1tb0B0b3dlcnRlY2guaXQ+CkNjOiBB
-bGV4YW5kcmUgQmVsbG9uaSA8YWxleGFuZHJlLmJlbGxvbmlAYm9vdGxpbi5jb20+CkNjOiBsaW51
-eC1hbHBoYUB2Z2VyLmtlcm5lbC5vcmcKQ2M6IHg4NkBrZXJuZWwub3JnCgotLS0KClRPRE86IHdv
-dWxkIGl0IGJlIGFwcHJvcHJpYXRlIHRvIGFkZCBhdHRyaWJ1dGUgX19tdXN0X2NoZWNrIHRvCiAg
-ICAgIG1jMTQ2ODE4X2dldF90aW1lKCk/Cgp2NDogQWRkZWQgdGhpcyBwYXRjaAoKIGFyY2gvYWxw
-aGEva2VybmVsL3J0Yy5jICAgICAgICB8IDcgKysrKysrLQogYXJjaC94ODYva2VybmVsL2hwZXQu
-YyAgICAgICAgIHwgOCArKysrKystLQogZHJpdmVycy9iYXNlL3Bvd2VyL3RyYWNlLmMgICAgIHwg
-NiArKysrKy0KIGRyaXZlcnMvcnRjL3J0Yy1jbW9zLmMgICAgICAgICB8IDkgKysrKysrKystCiBk
-cml2ZXJzL3J0Yy9ydGMtbWMxNDY4MTgtbGliLmMgfCAyICstCiA1IGZpbGVzIGNoYW5nZWQsIDI2
-IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJjaC9hbHBoYS9r
-ZXJuZWwvcnRjLmMgYi9hcmNoL2FscGhhL2tlcm5lbC9ydGMuYwppbmRleCBjZTMwNzc5NDZlMWQu
-LmZiMzAyNTM5NmFjOSAxMDA2NDQKLS0tIGEvYXJjaC9hbHBoYS9rZXJuZWwvcnRjLmMKKysrIGIv
-YXJjaC9hbHBoYS9rZXJuZWwvcnRjLmMKQEAgLTgwLDcgKzgwLDEyIEBAIGluaXRfcnRjX2Vwb2No
-KHZvaWQpCiBzdGF0aWMgaW50CiBhbHBoYV9ydGNfcmVhZF90aW1lKHN0cnVjdCBkZXZpY2UgKmRl
-diwgc3RydWN0IHJ0Y190aW1lICp0bSkKIHsKLQltYzE0NjgxOF9nZXRfdGltZSh0bSk7CisJaW50
-IHJldCA9IG1jMTQ2ODE4X2dldF90aW1lKHRtKTsKKworCWlmIChyZXQgPCAwKSB7CisJCWRldl9l
-cnJfcmF0ZWxpbWl0ZWQoZGV2LCAidW5hYmxlIHRvIHJlYWQgY3VycmVudCB0aW1lXG4iKTsKKwkJ
-cmV0dXJuIHJldDsKKwl9CiAKIAkvKiBBZGp1c3QgZm9yIG5vbi1kZWZhdWx0IGVwb2Nocy4gIEl0
-J3MgZWFzaWVyIHRvIGRlcGVuZCBvbiB0aGUKIAkgICBnZW5lcmljIF9fZ2V0X3J0Y190aW1lIGFu
-ZCBhZGp1c3QgdGhlIGVwb2NoIGhlcmUgdGhhbiBjcmVhdGUKZGlmZiAtLWdpdCBhL2FyY2gveDg2
-L2tlcm5lbC9ocGV0LmMgYi9hcmNoL3g4Ni9rZXJuZWwvaHBldC5jCmluZGV4IDg4MjIxM2RmMzcx
-My4uNzFmMzM2NDI1ZTU4IDEwMDY0NAotLS0gYS9hcmNoL3g4Ni9rZXJuZWwvaHBldC5jCisrKyBi
-L2FyY2gveDg2L2tlcm5lbC9ocGV0LmMKQEAgLTE0MzUsOCArMTQzNSwxMiBAQCBpcnFyZXR1cm5f
-dCBocGV0X3J0Y19pbnRlcnJ1cHQoaW50IGlycSwgdm9pZCAqZGV2X2lkKQogCWhwZXRfcnRjX3Rp
-bWVyX3JlaW5pdCgpOwogCW1lbXNldCgmY3Vycl90aW1lLCAwLCBzaXplb2Yoc3RydWN0IHJ0Y190
-aW1lKSk7CiAKLQlpZiAoaHBldF9ydGNfZmxhZ3MgJiAoUlRDX1VJRSB8IFJUQ19BSUUpKQotCQlt
-YzE0NjgxOF9nZXRfdGltZSgmY3Vycl90aW1lKTsKKwlpZiAoaHBldF9ydGNfZmxhZ3MgJiAoUlRD
-X1VJRSB8IFJUQ19BSUUpKSB7CisJCWlmICh1bmxpa2VseShtYzE0NjgxOF9nZXRfdGltZSgmY3Vy
-cl90aW1lKSA8IDApKSB7CisJCQlwcl9lcnJfcmF0ZWxpbWl0ZWQoInVuYWJsZSB0byByZWFkIGN1
-cnJlbnQgdGltZSBmcm9tIFJUQ1xuIik7CisJCQlyZXR1cm4gSVJRX0hBTkRMRUQ7CisJCX0KKwl9
-CiAKIAlpZiAoaHBldF9ydGNfZmxhZ3MgJiBSVENfVUlFICYmCiAJICAgIGN1cnJfdGltZS50bV9z
-ZWMgIT0gaHBldF9wcmV2X3VwZGF0ZV9zZWMpIHsKZGlmZiAtLWdpdCBhL2RyaXZlcnMvYmFzZS9w
-b3dlci90cmFjZS5jIGIvZHJpdmVycy9iYXNlL3Bvd2VyL3RyYWNlLmMKaW5kZXggOTQ2NjUwMzdm
-NGEzLi43MmI3YTkyMzM3YjEgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvYmFzZS9wb3dlci90cmFjZS5j
-CisrKyBiL2RyaXZlcnMvYmFzZS9wb3dlci90cmFjZS5jCkBAIC0xMjAsNyArMTIwLDExIEBAIHN0
-YXRpYyB1bnNpZ25lZCBpbnQgcmVhZF9tYWdpY190aW1lKHZvaWQpCiAJc3RydWN0IHJ0Y190aW1l
-IHRpbWU7CiAJdW5zaWduZWQgaW50IHZhbDsKIAotCW1jMTQ2ODE4X2dldF90aW1lKCZ0aW1lKTsK
-KwlpZiAobWMxNDY4MThfZ2V0X3RpbWUoJnRpbWUpIDwgMCkgeworCQlwcl9lcnIoIlVuYWJsZSB0
-byByZWFkIGN1cnJlbnQgdGltZSBmcm9tIFJUQ1xuIik7CisJCXJldHVybiAwOworCX0KKwogCXBy
-X2luZm8oIlJUQyB0aW1lOiAlcHRSdCwgZGF0ZTogJXB0UmRcbiIsICZ0aW1lLCAmdGltZSk7CiAJ
-dmFsID0gdGltZS50bV95ZWFyOwkJCQkvKiAxMDAgeWVhcnMgKi8KIAlpZiAodmFsID4gMTAwKQpk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9ydGMvcnRjLWNtb3MuYyBiL2RyaXZlcnMvcnRjL3J0Yy1jbW9z
-LmMKaW5kZXggZGMzZjhiMGRkZTk4Li5kMGY1OGNjYTVjMjAgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
-cnRjL3J0Yy1jbW9zLmMKKysrIGIvZHJpdmVycy9ydGMvcnRjLWNtb3MuYwpAQCAtMjIyLDYgKzIy
-Miw4IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBjbW9zX3dyaXRlX2JhbmsyKHVuc2lnbmVkIGNoYXIg
-dmFsLCB1bnNpZ25lZCBjaGFyIGFkZHIpCiAKIHN0YXRpYyBpbnQgY21vc19yZWFkX3RpbWUoc3Ry
-dWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcnRjX3RpbWUgKnQpCiB7CisJaW50IHJldDsKKwogCS8q
-CiAJICogSWYgcG1fdHJhY2UgYWJ1c2VkIHRoZSBSVEMgZm9yIHN0b3JhZ2UsIHNldCB0aGUgdGlt
-ZXNwZWMgdG8gMCwKIAkgKiB3aGljaCB0ZWxscyB0aGUgY2FsbGVyIHRoYXQgdGhpcyBSVEMgdmFs
-dWUgaXMgdW51c2FibGUuCkBAIC0yMjksNyArMjMxLDEyIEBAIHN0YXRpYyBpbnQgY21vc19yZWFk
-X3RpbWUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcnRjX3RpbWUgKnQpCiAJaWYgKCFwbV90
-cmFjZV9ydGNfdmFsaWQoKSkKIAkJcmV0dXJuIC1FSU87CiAKLQltYzE0NjgxOF9nZXRfdGltZSh0
-KTsKKwlyZXQgPSBtYzE0NjgxOF9nZXRfdGltZSh0KTsKKwlpZiAocmV0IDwgMCkgeworCQlkZXZf
-ZXJyX3JhdGVsaW1pdGVkKGRldiwgInVuYWJsZSB0byByZWFkIGN1cnJlbnQgdGltZVxuIik7CisJ
-CXJldHVybiByZXQ7CisJfQorCiAJcmV0dXJuIDA7CiB9CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-cnRjL3J0Yy1tYzE0NjgxOC1saWIuYyBiL2RyaXZlcnMvcnRjL3J0Yy1tYzE0NjgxOC1saWIuYwpp
-bmRleCBjMTg2YzhjNDk4MmIuLmNjZDk3NGI4YTc1YSAxMDA2NDQKLS0tIGEvZHJpdmVycy9ydGMv
-cnRjLW1jMTQ2ODE4LWxpYi5jCisrKyBiL2RyaXZlcnMvcnRjL3J0Yy1tYzE0NjgxOC1saWIuYwpA
-QCAtMjQsNyArMjQsNyBAQCB1bnNpZ25lZCBpbnQgbWMxNDY4MThfZ2V0X3RpbWUoc3RydWN0IHJ0
-Y190aW1lICp0aW1lKQogCS8qIEVuc3VyZSB0aGF0IHRoZSBSVEMgaXMgYWNjZXNzaWJsZS4gQml0
-IDYgbXVzdCBiZSAwISAqLwogCWlmIChXQVJOX09OX09OQ0UoKENNT1NfUkVBRChSVENfVkFMSUQp
-ICYgMHg0MCkgIT0gMCkpIHsKIAkJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmcnRjX2xvY2ssIGZs
-YWdzKTsKLQkJbWVtc2V0KHRpbWUsIDB4ZmYsIHNpemVvZigqdGltZSkpOworCQltZW1zZXQodGlt
-ZSwgMCwgc2l6ZW9mKCp0aW1lKSk7CiAJCXJldHVybiAtRUlPOwogCX0KIAotLSAKMi4yNS4xCgo=
+Calling the osf_mount system call with an invalid typenr value will
+spam the kernel log with error messages. Reduce the spamming by making
+it a ratelimited printk.  Issue found when exercising with the stress-ng
+enosys system call stressor.
+
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ arch/alpha/kernel/osf_sys.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 8bbeebb73cf0..2367a385d726 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -521,7 +521,7 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
+ 		break;
+ 	default:
+ 		retval = -EINVAL;
+-		printk("osf_mount(%ld, %x)\n", typenr, flag);
++		printk_ratelimited("osf_mount(%ld, %x)\n", typenr, flag);
+ 	}
+ 
+ 	return retval;
+-- 
+2.33.1
+
