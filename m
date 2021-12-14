@@ -1,172 +1,81 @@
-From: "Colin King (gmail)" <colin.i.king@gmail.com>
-Subject: kernel oops on malformed execve call on Alpha
-Date: Tue, 14 Dec 2021 09:14:32 +0000
-Message-ID: <a08653f5-338f-a233-fb0a-da8826844048@gmail.com>
+From: Yury Norov <yury.norov@gmail.com>
+Subject: Re: [PATCH 2/9] lib/bitmap: implement bitmap_{empty,full} with bitmap_weight_eq()
+Date: Tue, 14 Dec 2021 11:43:09 -0800
+Message-ID: <CAAH8bW9-dbENFUrwPUQ-uJVVX_s=PWb2zpAJ8BqkV3vJE696mA@mail.gmail.com>
+References: <20211128035704.270739-1-yury.norov@gmail.com> <20211128035704.270739-3-yury.norov@gmail.com>
+ <YaPGDOvBzhiRFcOP@qmqm.qmqm.pl>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=qF8lBZ5iMDb3r4Amehwh7xdF2KQST4fK0CFeZuuJG5I=;
-        b=VZuC9xr0XpasGrgwXvZqEraVGdAib+L0Swu7x5sE7PkNFajxirXqrkJ+bQ8u/Eb7bx
-         7FwA78MSojsAOirwRXg45bVm+g3ZheTDtL3b8xFZh3MM9Og7L7x7jH3vgCqkOJn8NtZc
-         SaDxh/ZUAGMatnnl+wYq+mP74Q7HLs9DRTB1QdyIlkVHzRWK8XjZqeVbMRUcb8csHjb/
-         vQGKZbB1X8MdyWF48a+HQNrDZl8iz8oSIywmoyr7E+C+tKHvYTg++TBcxbNore9ItYkr
-         jtRNgXandlY0bYqNdezsP+abuqLqBrUBSKM3qpDUUxxFy3GZvft/YPVJCh7chn1kwmpd
-         DLMQ==
-Content-Language: en-US
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LCilH12wWw0seUa3hiJyDy0VxFX2Q3bA7Y0HXIYHhF8=;
+        b=mgUrMQhC4/CUdwucboxOLaDGWbb/3r/d8db3O9NgfZYUYEd6Zjz2nbba51SL7zLe8Y
+         HoPx+IQ/X0fM2kJmgKk06iLEcvvTYlX2h8Als5lC5pEfulogO+sUqemRF4n6m2Eekf4w
+         CtPoyJGaZ6slsRjff5y3xVucnMlyQBZjuB7TsLW/QfR5HbmU2eCSX+iDyn3uJA04puJa
+         dF//PJEuj31ulpS82MggltzR4G2RUQnzjtNrp/7HOGpfHVW7cNQpoT3ypqVvpPJEUhsf
+         QvGgSrM2kq5yWe5ythTOhC41utztrjpAcYlGjjw1vz9wzYdQhMtOLwSCYyXNwoJoZq7H
+         sX/w==
+In-Reply-To: <YaPGDOvBzhiRFcOP@qmqm.qmqm.pl>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: linux-alpha@vger.kernel.org
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+Cc: linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <>
 
-Hi,
+On Sun, Nov 28, 2021 at 10:10 AM Micha=C5=82 Miros=C5=82aw
+<mirq-linux@rere.qmqm.pl> wrote:
+>
+> On Sat, Nov 27, 2021 at 07:56:57PM -0800, Yury Norov wrote:
+> > Now as we have bitmap_weight_eq(), switch bitmap_full() and
+> > bitmap_empty() to using it.
+> >
+> > Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> > ---
+> >  include/linux/bitmap.h | 26 ++++++++++----------------
+> >  1 file changed, 10 insertions(+), 16 deletions(-)
+> >
+> > diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+> > index 996041f771c8..2d951e4dc814 100644
+> > --- a/include/linux/bitmap.h
+> > +++ b/include/linux/bitmap.h
+> > @@ -386,22 +386,6 @@ static inline int bitmap_subset(const unsigned lon=
+g *src1,
+> >               return __bitmap_subset(src1, src2, nbits);
+> >  }
+> >
+> > -static inline bool bitmap_empty(const unsigned long *src, unsigned nbi=
+ts)
+> > -{
+> > -     if (small_const_nbits(nbits))
+> > -             return ! (*src & BITMAP_LAST_WORD_MASK(nbits));
+> > -
+> > -     return find_first_bit(src, nbits) =3D=3D nbits;
+> > -}
+>
+> Since this is supposed to be an optimization, I would go all the way and
+> replace this with the trivial implementation instead:
+>
+> bool bitmap_empty(long *bits, size_t nbits)
+> {
+>         for (; nbits >=3D BITS_PER_LONG; ++bits, nbits -=3D BITS_PER_LONG=
+)
+>                 if (*bits)
+>                         return false;
+>
+>         if (nbits && *bits & BITMAP_LAST_WORD_MASK(nbits))
+>                 return false;
+>
+>         return true;
+> }
 
-While testing 5.15 on Debian Alpha QEMU (5.15.0-1-alpha-generic) [1] 
-with stress-ng's --sysbadaddr bad address system call stress test [2] I 
-managed to trigger an oops.
+This is what current implementations basically do, based on find_first_bit(=
+).
 
-The reproducer is as follows:
+I think that for long bitmaps the most time consuming operation is moving
+data to L1, and for short bitmaps the difference between approaches is
+barely measurable.
 
-#include <unistd.h>
-#include <string.h>
-
-int main(void)
-{
-         long unsigned int x[32];
-         char *ptr = (char *)x;
-
-         memset(&x, 0x01, sizeof(x));
-         return execve(ptr, (char **)(ptr+2), NULL);
-}
-
-The kernel splat is as follows:
-
-debian-alpha:~$ ./a.out
-[15601.552558] Unable to handle kernel paging request at virtual address 
-0000000000000004
-[15601.553535] a.out(1375934): Oops -1
-[15601.553535] pc = [<0000000000000004>]  ra = [<fffffc0001218aa0>]  ps 
-= 0000    Tainted: G      D     E
-[15601.553535] pc is at 0x4
-[15601.553535] ra is at count.constprop.0+0x80/0xf0
-[15601.554512] v0 = 0101010101010101  t0 = 0000000000000000  t1 = 
-fffffffffffffff2
-[15601.554512] t2 = ffffffffffffffff  t3 = 0000000000000001  t4 = 
-0000000000000000
-[15601.554512] t5 = 0000000000000100  t6 = 0000000000200000  t7 = 
-fffffc00056b4000
-[15601.554512] s0 = 0000000000000000  s1 = 000000011fe2ba0a  s2 = 
-000000007fffffff
-[15601.554512] s3 = fffffffffffff000  s4 = 0000000000000000  s5 = 
-0000000000000000
-[15601.555488] s6 = fffffc0008a75000
-[15601.555488] a0 = 000000011fe2ba0a  a1 = 000000011fe2ba0a  a2 = 
-fffffc00011b9100
-[15601.555488] a3 = fffffc0008ab2388  a4 = 0000000000000000  a5 = 
-00000200000128b0
-[15601.555488] t8 = 0000000000000000  t9 = fffffc00011f28e4  t10= 
-0000000000003020
-[15601.556465] t11= 0000000000001000  pv = fffffc00012179c0  at = 
-0000000000000001
-[15601.556465] gp = fffffc0002509840  sp = 00000000b4f2e8f0
-[15601.556465] Trace:
-[15601.556465] [<fffffc0001219d2c>] do_execveat_common+0xdc/0x250
-[15601.556465] [<fffffc000121b15c>] sys_execve+0x4c/0x70
-[15601.556465] [<fffffc000101149c>] entSys+0xac/0xc0
-[15601.557441]
-[15601.557441] Code:
-[15601.557441]  00000000
-[15601.557441]  00063301
-[15601.557441]  000012c8
-[15601.557441]  00001111
-[15601.557441]  0000454a
-[15601.557441]
-
-While this segfaults the program, one can simply re-run the program in a 
-script or with a SIGSEGV handler to spin on this malformed execve call 
-to spam the kernel log.  On other architectures the system call returns 
-with EFAULT, however, on Alpha it segfaults.
-
-I've not been able to test this on earlier kernels, but I suspect it is 
-a long standing bug.
-
-Linus had some valuable insight into this:
-
-"I suspect this is some alpha-specific bug, and not really all that
-relevant for security and not worth keeping private, but who knows
-what is going on.
-
-And I suspect it's something really stupid.
-
-In fact, I think it's just "unaligned user accesses are broken" on
-alpha. This is all just plain "get_user()" as far as I can tell (with
-some special cases for compat stuff and for "we have argv in kernel
-space").
-
-
-get_user() ends up doing __get_user_64(), which looks like this:
-
-     #define __get_user_64(addr)                             \
-         __asm__("1: ldq %0,%2\n"                        \
-         "2:\n"                                          \
-         EXC(1b,2b,%0,%1)                                \
-                 : "=r"(__gu_val), "=r"(__gu_err)        \
-                 : "m"(__m(addr)), "1"(__gu_err))
-
-and that's going to do an unaligned access.
-
-And my guess is that the unaligned trap handler that is supposed to
-fix this up is broken, and branches to address 0 for some reason I
-can't see.
-
-The thing to do is to figure out what goes wrong in entUna(). I don't
-see what's up, and the actual emulation part of it _looks_ ok to me:
-
-         case 0x29: /* ldq */
-                 __asm__ __volatile__(
-                 "1:     ldq_u %1,0(%3)\n"
-                 "2:     ldq_u %2,7(%3)\n"
-                 "       extql %1,%3,%1\n"
-                 "       extqh %2,%3,%2\n"
-                 "3:\n"
-                 EXC(1b,3b,%1,%0)
-                 EXC(2b,3b,%2,%0)
-                         : "=r"(error), "=&r"(tmp1), "=&r"(tmp2)
-                         : "r"(va), "0"(0));
-                 if (error)
-                         goto got_exception;
-                 una_reg(reg) = tmp1|tmp2;
-                 return;
-
-for that ldq emulation, but who knows.
-
-The whole "taking an unaligned exception and then a possible page
-fault inside the unaligned handler" is certainly a nightmare. We have
-that whole "forward exception to the original instruction logic" in
-got_exception() etc to handle this, so it all *should* work, but ...
-
-Honestly, I'd move it to the alpha lists - I look at the code, I see
-nothing obviously wrong, but I do see things being very complicated.
-
-At a guess it's something incredibly simple and stupid. I'd look at
-the special magic stack frame structure for entUna() first...
-
-            Linus"
-
-
-Hope this is enough info to help start debugging this issue. I'm not an 
-Alpha expert and I don't have native hardware, so I'm not able to get 
-much further on debugging this.
-
-Regards,
-
-Colin
-
-
-References:
-[1] Kernel: debian-alpha 5.15.0-1-alpha-generic #1 Debian 5.15.3-1 
-(2021-11-18) alpha GNU/Linux
-[2] stress-ng: https://github.com/ColinIanKing/stress-ng
+But hweght_long on each iteration can't be more effective than the current
+version. So, I'll drop this patch for v2 and keep things unchanged.
