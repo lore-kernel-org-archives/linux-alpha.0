@@ -1,48 +1,157 @@
-From: Yury Norov <yury.norov@gmail.com>
-Subject: Re: [PATCH 2/9] lib/bitmap: implement bitmap_{empty,full} with bitmap_weight_eq()
-Date: Wed, 15 Dec 2021 09:45:30 -0800
-Message-ID: <CAAH8bW-u5AsFTXUOJPRkF-6dk1LcL7PE0Tm+dUc9Ctb6JMy=tg@mail.gmail.com>
-References: <20211128035704.270739-1-yury.norov@gmail.com> <20211128035704.270739-3-yury.norov@gmail.com>
- <YaPGDOvBzhiRFcOP@qmqm.qmqm.pl> <CAAH8bW9-dbENFUrwPUQ-uJVVX_s=PWb2zpAJ8BqkV3vJE696mA@mail.gmail.com>
- <0ccb827de1164b2989d652bfb6f1bbab@AcuMS.aculab.com>
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RLdWdHoT6O3wLXgWsRx2m2m62hSjV0BcJXlTjn5JUFY=;
-        b=fVGVY8wqrxR8Y9FDXFtr4SE6iyR8BVVbZ5vgJ4y8dkqTnryOyAM1f7oIOnezuj4A6J
-         xZUPr4yWMlNLYsHQ1fallxSJg8aU00+SwAnq0ijeJb6rpCasKd3VYye0HMu7Rz4Fmzli
-         VTY7ooY+g0kHA+TAUoyyLgzX0mSn9ha1KmFllLdg51BzQBC+Mgmo9+XdPBjphX6Y4e34
-         aHA3UHFWRC7Btex9u1tZiEFoYFee/G/WGm4rYd3nNUPqV0MpixQGc6Vx0PruHv6wejmQ
-         Ow0n2j4fyu9ba9vCZKTh9cTJvx1bERx0Yn7rh5DuRA2QxMZuAeUzJXU06wIQ9Mevfcss
-         WI7w==
-In-Reply-To: <0ccb827de1164b2989d652bfb6f1bbab@AcuMS.aculab.com>
+From: Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH] serial: 8250: Move alpha-specific quirk out of the core
+Date: Thu, 16 Dec 2021 18:52:00 +0100
+Message-ID: <af967f273724aff4cff3c49470110a48f790794e.1639676574.git.lukas@wunner.de>
+Return-path: <linux-serial-owner@vger.kernel.org>
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout1.hostsharing.net (Postfix) with ESMTPS id EF87810193E7B;
+        Thu, 16 Dec 2021 18:52:17 +0100 (CET)
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: David Laight <David.Laight@aculab.com>
-Cc: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>, Ulrich Teichert <krypton@ulrich-teichert.org>, Linus Torvalds <torvalds@linux-foundation.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>, Philipp Rosenberger <p.rosenberger@kunbus.com>
 
-On Wed, Dec 15, 2021 at 12:41 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Yury Norov
-> > Sent: 14 December 2021 19:43
-> ...
-> >
-> > I think that for long bitmaps the most time consuming operation is moving
-> > data to L1, and for short bitmaps the difference between approaches is
-> > barely measurable.
-> >
-> > But hweght_long on each iteration can't be more effective than the current
-> > version. So, I'll drop this patch for v2 and keep things unchanged.
->
-> Actually do bitmap_full/empty() calls make any sense at all?
-> The result is stale since bitmaps are designed to do locked operations.
-> If you have a lock covering the bitmap then you should be using
-> something that uses non-locked accesses.
-> Rightly or wrongly that isn't the bitmap api.
+struct uart_8250_port contains mcr_mask and mcr_force members whose
+sole purpose is to work around an alpha-specific quirk.  This code
+doesn't belong in the core where it is executed by everyone else,
+so move it to a proper ->set_mctrl callback which is used on alpha only.
 
-Are you talking about __{set,clear}_bit()?
-include/asm-generic/bitops/non-atomic.h
+The alpha-specific quirk was introduced in January 1995:
+https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/diff/drivers/char/serial.c?h=1.1.83
+
+The members in struct uart_8250_port were added in 2002:
+https://git.kernel.org/history/history/c/4524aad27854
+
+The quirk applies to non-PCI alphas and arch/alpha/Kconfig specifies
+"select FORCE_PCI if !ALPHA_JENSEN".  So apparently the only affected
+machine is the EISA-based Jensen that Linus was working on back then:
+https://lore.kernel.org/all/CAHk-=wj1JWZ3sCrGz16nxEj7=0O+srMg6Ah3iPTDXSPKEws_SA@mail.gmail.com/
+
+Up until now the quirk is not applied unless CONFIG_PCI is disabled.
+If users forget to do that, the serial ports aren't usable on Jensen
+and the machine may not boot in the first place.  Avoid by confining
+the quirk to CONFIG_ALPHA_JENSEN instead.
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+Cc: Ulrich Teichert <krypton@ulrich-teichert.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+---
+Compile-tested only.
+
+ drivers/tty/serial/8250/8250.h       | 11 +----------
+ drivers/tty/serial/8250/8250_alpha.c | 15 +++++++++++++++
+ drivers/tty/serial/8250/8250_core.c  |  8 +++-----
+ drivers/tty/serial/8250/8250_port.c  |  2 +-
+ drivers/tty/serial/8250/Makefile     |  1 +
+ include/linux/serial_8250.h          |  2 --
+ 6 files changed, 21 insertions(+), 18 deletions(-)
+ create mode 100644 drivers/tty/serial/8250/8250_alpha.c
+
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 6473361525d1..ec5f9f4da6d3 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -241,16 +241,7 @@ static inline int serial8250_in_MCR(struct uart_8250_port *up)
+ 	return mctrl;
+ }
+ 
+-#if defined(__alpha__) && !defined(CONFIG_PCI)
+-/*
+- * Digital did something really horribly wrong with the OUT1 and OUT2
+- * lines on at least some ALPHA's.  The failure mode is that if either
+- * is cleared, the machine locks up with endless interrupts.
+- */
+-#define ALPHA_KLUDGE_MCR  (UART_MCR_OUT2 | UART_MCR_OUT1)
+-#else
+-#define ALPHA_KLUDGE_MCR 0
+-#endif
++void alpha_8250_set_mctrl(struct uart_port *port, unsigned int mctrl);
+ 
+ #ifdef CONFIG_SERIAL_8250_PNP
+ int serial8250_pnp_init(void);
+diff --git a/drivers/tty/serial/8250/8250_alpha.c b/drivers/tty/serial/8250/8250_alpha.c
+new file mode 100644
+index 000000000000..c87a5a6e0ee1
+--- /dev/null
++++ b/drivers/tty/serial/8250/8250_alpha.c
+@@ -0,0 +1,15 @@
++// SPDX-License-Identifier: GPL-2.0+
++
++#include <linux/serial_8250.h>
++
++void alpha_8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
++{
++	/*
++	 * Digital did something really horribly wrong with the OUT1 and OUT2
++	 * lines on Alpha Jensen.  The failure mode is that if either is
++	 * cleared, the machine locks up with endless interrupts.
++	 */
++	mctrl |= TIOCM_OUT1 | TIOCM_OUT2;
++
++	serial8250_do_set_mctrl(port, mctrl);
++}
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 1ce193daea7f..92f92ac7c2be 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -509,11 +509,9 @@ static void __init serial8250_isa_init_ports(void)
+ 
+ 		up->ops = &univ8250_driver_ops;
+ 
+-		/*
+-		 * ALPHA_KLUDGE_MCR needs to be killed.
+-		 */
+-		up->mcr_mask = ~ALPHA_KLUDGE_MCR;
+-		up->mcr_force = ALPHA_KLUDGE_MCR;
++		if (IS_ENABLED(CONFIG_ALPHA_JENSEN))
++			port->set_mctrl = alpha_8250_set_mctrl;
++
+ 		serial8250_set_defaults(up);
+ 	}
+ 
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 5d9a0e9f75d4..3b12bfc1ed67 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2026,7 +2026,7 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 
+ 	mcr = serial8250_TIOCM_to_MCR(mctrl);
+ 
+-	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
++	mcr |= up->mcr;
+ 
+ 	serial8250_out_MCR(up, mcr);
+ }
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index b9bcd73c8997..043beae6f71b 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -5,6 +5,7 @@
+ 
+ obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
+ 8250-y					:= 8250_core.o
++8250-$(CONFIG_ALPHA_JENSEN)		+= 8250_alpha.o
+ 8250-$(CONFIG_SERIAL_8250_PNP)		+= 8250_pnp.o
+ 8250_base-y				:= 8250_port.o
+ 8250_base-$(CONFIG_SERIAL_8250_DMA)	+= 8250_dma.o
+diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+index 5db211f43b29..ff84a3ed10ea 100644
+--- a/include/linux/serial_8250.h
++++ b/include/linux/serial_8250.h
+@@ -104,8 +104,6 @@ struct uart_8250_port {
+ 	unsigned char		ier;
+ 	unsigned char		lcr;
+ 	unsigned char		mcr;
+-	unsigned char		mcr_mask;	/* mask of user bits */
+-	unsigned char		mcr_force;	/* mask of forced bits */
+ 	unsigned char		cur_iotype;	/* Running I/O type */
+ 	unsigned int		rpm_tx_active;
+ 	unsigned char		canary;		/* non-zero during system sleep
+-- 
+2.33.0
+
