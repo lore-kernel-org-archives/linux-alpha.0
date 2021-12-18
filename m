@@ -1,7 +1,7 @@
 From: Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 01/17] all: don't use bitmap_weight() where possible
-Date: Sat, 18 Dec 2021 13:19:57 -0800
-Message-ID: <20211218212014.1315894-2-yury.norov@gmail.com>
+Subject: [PATCH 02/17] drivers: rename num_*_cpus variables
+Date: Sat, 18 Dec 2021 13:19:58 -0800
+Message-ID: <20211218212014.1315894-3-yury.norov@gmail.com>
 References: <20211218212014.1315894-1-yury.norov@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -10,85 +10,86 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=Z2tvdbF6REb1vBF1soXoDEIHAExTZD83ljtvXFSjKwo=;
-        b=emXGoF/rqz2kZ1ppkVCvpVwnlzRGfpHvB6fCjdgXgq4mWi4taNltzT/8wcLQq66dbk
-         MD2zDykqS6XJaQ5PU2HVINr4Hy6yCA5bYv6gpPBvg9v3XheXHY+8l+yeCmhX2tga4gVQ
-         sTew+4Ce+CJk3e/yVOV0JvK+IRua38r6JmY0W0m2iG7AvTEFJPzEdJgJthm8SUSs/HSu
-         +2y2hMZR9kLSjfG1dQSz0Un8nNh3r481BC0sqINll4Wfg/BF12V/L2oAmdDVwhPToLvH
-         OP+x58qnTe8/1kAkfYhKXTLFTwToKojcYG+btHtZE0qvbhco3tOTmSCXQ29ee1Ng0z1Y
-         3GQg==
+        bh=ZRDbXQndZB+h1W3grije4oLm88mhsLSCo0DvJeL0oOc=;
+        b=RbLh966dNM6Q9dumAKT/s67Li0XDMiqpqy9QDRjKZ7xykviae8HUZGbBK4++gzts9+
+         4HWimSnZbbp981RdIy4mUiEPi5KNC27XZMzAqhbLAbSCXpzsa6pdkKTooARlGNlTUTY6
+         JoyuKChgIL/vGpnEuqm73H3imSDYRcmkvOW7G88lNj2P4DJILBf/LhHA1ZwruMX1IzE2
+         L/mAlIYrOkdOM5wMkeJ8+xwn6+2dLufPFudFw0L+ol31R0QIHi6gU0asPbGQ0WpcgUYF
+         TKKLWiuHi4Ipvj4eEi1DnTT9o6ibI9n5SLfH6H9ye6clD987ERDreQoQOmClSh/YKHYJ
+         9wZA==
 In-Reply-To: <20211218212014.1315894-1-yury.norov@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, Yury Norov <yury.norov@gmail.com>, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>
 
-Don't call bitmap_weight() if the following code can get by
-without it.
+Some drivers declare num_active_cpus and num_present_cpus,
+despite that kernel has macros with corresponding names in
+linux/cpumask.h, and the drivers include cpumask.h
+
+The following patches switch num_*_cpus() to real functions,
+which causes build failures for the drivers.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/net/dsa/b53/b53_common.c           | 6 +-----
- drivers/net/ethernet/broadcom/bcmsysport.c | 6 +-----
- drivers/thermal/intel/intel_powerclamp.c   | 9 +++------
- 3 files changed, 5 insertions(+), 16 deletions(-)
+ drivers/leds/trigger/ledtrig-cpu.c | 6 +++---
+ drivers/scsi/storvsc_drv.c         | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 3867f3d4545f..9a10d80125d9 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1620,12 +1620,8 @@ static int b53_arl_read(struct b53_device *dev, u64 mac,
- 		return 0;
- 	}
+diff --git a/drivers/leds/trigger/ledtrig-cpu.c b/drivers/leds/trigger/ledtrig-cpu.c
+index 8af4f9bb9cde..767e9749ca41 100644
+--- a/drivers/leds/trigger/ledtrig-cpu.c
++++ b/drivers/leds/trigger/ledtrig-cpu.c
+@@ -39,7 +39,7 @@ struct led_trigger_cpu {
+ static DEFINE_PER_CPU(struct led_trigger_cpu, cpu_trig);
  
--	if (bitmap_weight(free_bins, dev->num_arl_bins) == 0)
--		return -ENOSPC;
--
- 	*idx = find_first_bit(free_bins, dev->num_arl_bins);
--
--	return -ENOENT;
-+	return *idx >= dev->num_arl_bins ? -ENOSPC : -ENOENT;
- }
+ static struct led_trigger *trig_cpu_all;
+-static atomic_t num_active_cpus = ATOMIC_INIT(0);
++static atomic_t _active_cpus = ATOMIC_INIT(0);
  
- static int b53_arl_op(struct b53_device *dev, int op, int port,
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 40933bf5a710..241696fdc6c7 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -2177,13 +2177,9 @@ static int bcm_sysport_rule_set(struct bcm_sysport_priv *priv,
- 	if (nfc->fs.ring_cookie != RX_CLS_FLOW_WAKE)
- 		return -EOPNOTSUPP;
+ /**
+  * ledtrig_cpu - emit a CPU event as a trigger
+@@ -79,8 +79,8 @@ void ledtrig_cpu(enum cpu_led_event ledevt)
  
--	/* All filters are already in use, we cannot match more rules */
--	if (bitmap_weight(priv->filters, RXCHK_BRCM_TAG_MAX) ==
--	    RXCHK_BRCM_TAG_MAX)
--		return -ENOSPC;
--
- 	index = find_first_zero_bit(priv->filters, RXCHK_BRCM_TAG_MAX);
- 	if (index >= RXCHK_BRCM_TAG_MAX)
-+		/* All filters are already in use, we cannot match more rules */
- 		return -ENOSPC;
+ 		/* Update trigger state */
+ 		trig->is_active = is_active;
+-		atomic_add(is_active ? 1 : -1, &num_active_cpus);
+-		active_cpus = atomic_read(&num_active_cpus);
++		atomic_add(is_active ? 1 : -1, &_active_cpus);
++		active_cpus = atomic_read(&_active_cpus);
+ 		total_cpus = num_present_cpus();
  
- 	/* Location is the classification ID, and index is the position
-diff --git a/drivers/thermal/intel/intel_powerclamp.c b/drivers/thermal/intel/intel_powerclamp.c
-index 14256421d98c..c841ab37e7c6 100644
---- a/drivers/thermal/intel/intel_powerclamp.c
-+++ b/drivers/thermal/intel/intel_powerclamp.c
-@@ -556,12 +556,9 @@ static void end_power_clamp(void)
- 	 * stop faster.
+ 		led_trigger_event(trig->_trig,
+diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+index 20595c0ba0ae..705dd4ebde98 100644
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -1950,7 +1950,7 @@ static int storvsc_probe(struct hv_device *device,
+ {
+ 	int ret;
+ 	int num_cpus = num_online_cpus();
+-	int num_present_cpus = num_present_cpus();
++	int present_cpus = num_present_cpus();
+ 	struct Scsi_Host *host;
+ 	struct hv_host_device *host_dev;
+ 	bool dev_is_ide = ((dev_id->driver_data == IDE_GUID) ? true : false);
+@@ -2060,7 +2060,7 @@ static int storvsc_probe(struct hv_device *device,
+ 	 * Set the number of HW queues we are supporting.
  	 */
- 	clamping = false;
--	if (bitmap_weight(cpu_clamping_mask, num_possible_cpus())) {
--		for_each_set_bit(i, cpu_clamping_mask, num_possible_cpus()) {
--			pr_debug("clamping worker for cpu %d alive, destroy\n",
--				 i);
--			stop_power_clamp_worker(i);
--		}
-+	for_each_set_bit(i, cpu_clamping_mask, num_possible_cpus()) {
-+		pr_debug("clamping worker for cpu %d alive, destroy\n", i);
-+		stop_power_clamp_worker(i);
+ 	if (!dev_is_ide) {
+-		if (storvsc_max_hw_queues > num_present_cpus) {
++		if (storvsc_max_hw_queues > present_cpus) {
+ 			storvsc_max_hw_queues = 0;
+ 			storvsc_log(device, STORVSC_LOGGING_WARN,
+ 				"Resetting invalid storvsc_max_hw_queues value to default.\n");
+@@ -2068,7 +2068,7 @@ static int storvsc_probe(struct hv_device *device,
+ 		if (storvsc_max_hw_queues)
+ 			host->nr_hw_queues = storvsc_max_hw_queues;
+ 		else
+-			host->nr_hw_queues = num_present_cpus;
++			host->nr_hw_queues = present_cpus;
  	}
- }
  
+ 	/*
 -- 
 2.30.2
 
