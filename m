@@ -1,69 +1,72 @@
-From: Yury Norov <yury.norov@gmail.com>
-Subject: Re: [PATCH 01/17] all: don't use bitmap_weight() where possible
-Date: Sat, 18 Dec 2021 15:28:29 -0800
-Message-ID: <CAAH8bW9uWW+t5TvkMt_e-sKp71hiLpXhXeuGuSZPK-3kds-GgQ@mail.gmail.com>
-References: <20211218212014.1315894-1-yury.norov@gmail.com>
- <20211218212014.1315894-2-yury.norov@gmail.com> <Yb5dmqlYd3owtH29@qmqm.qmqm.pl>
+From: Ulrich Teichert <krypton@ulrich-teichert.org>
+Subject: Re: [PATCH] serial: 8250: Move alpha-specific quirk out of the core
+Date: Sun, 19 Dec 2021 18:37:56 +0100 (CET)
+Message-ID: <202112191737.1BJHbujc008689@valdese.nms.ulrich-teichert.org>
+References: <20211218090601.GA1016@wunner.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=pIYxkiGisug+VVJYFtmCG20TylNRXB8zO8kw91s3wyc=;
-        b=TIuyQXz6oo8PN+yMbImlC2c2rmmoCdLu5CdlQlReccXapNNMDZyLSkZvnzlgZ9AIdV
-         6+qzntuQo5gBX86FaZFlCIaH4FCNC7RUVw367F08QPEjoiFWXa2CV6SAzISHS5RZPpY/
-         QbkHqa0fdrihFEuRX0X/GeMy6P75DvnBsKWfABXcb5D5/2zTgkKaV4VEiJSuyy+zBwcd
-         zNIVzererH+Fx7ZEOWvTBpmd3THvXh1KHtzsLHvjMiIPuGFGIqMdZbyjf9H7vLYP6+7J
-         cQ/P2vAafsI3DEFtzgX9UWRj1ZmCeXy01hG6ih9PN1N9Tz70SEQsg8aJQpCrrbXl1cqP
-         QppQ==
-In-Reply-To: <Yb5dmqlYd3owtH29@qmqm.qmqm.pl>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-serial-owner@vger.kernel.org>
+In-Reply-To: <20211218090601.GA1016@wunner.de>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc: linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <>
+Content-Type: text/plain; charset="us-ascii"
+To: Lukas Wunner <lukas@wunner.de>
+Cc: Ulrich Teichert <krypton@ulrich-teichert.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>, Linus Torvalds <torvalds@linux-foundation.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>, Philipp Rosenberger <p.rosenberger@kunbus.com>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 
-On Sat, Dec 18, 2021 at 2:16 PM Micha=C5=82 Miros=C5=82aw <mirq-linux@rere.=
-qmqm.pl> wrote:
->
-> On Sat, Dec 18, 2021 at 01:19:57PM -0800, Yury Norov wrote:
-> > Don't call bitmap_weight() if the following code can get by
-> > without it.
-> >
-> > Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> > ---
-> >  drivers/net/dsa/b53/b53_common.c           | 6 +-----
-> >  drivers/net/ethernet/broadcom/bcmsysport.c | 6 +-----
-> >  drivers/thermal/intel/intel_powerclamp.c   | 9 +++------
-> >  3 files changed, 5 insertions(+), 16 deletions(-)
+Hi Lukas,
+
+> On Thu, Dec 16, 2021 at 09:36:20PM +0100, Ulrich Teichert wrote:
+> > > struct uart_8250_port contains mcr_mask and mcr_force members whose
+> > > sole purpose is to work around an alpha-specific quirk.  This code
+> > > doesn't belong in the core where it is executed by everyone else,
+> > > so move it to a proper ->set_mctrl callback which is used on alpha only.
 > [...]
->
-> Looks good,
+> > > The quirk applies to non-PCI alphas and arch/alpha/Kconfig specifies
+> > > "select FORCE_PCI if !ALPHA_JENSEN".  So apparently the only affected
+> > > machine is the EISA-based Jensen that Linus was working on back then:
+> [...]
+> > > Up until now the quirk is not applied unless CONFIG_PCI is disabled.
+> > > If users forget to do that, the serial ports aren't usable on Jensen
+> > > and the machine may not boot in the first place.  Avoid by confining
+> > > the quirk to CONFIG_ALPHA_JENSEN instead.
+> > 
+> > Wouldn't that mean that you can't use a generic Alpha kernel on the Jensen
+> > anymore? CONFIG_ALPHA_JENSEN is only set if you specifically select the
+> > Jensen as target, not when you build a generic kernel. That would be a step
+> > back in my opinion, as the Debian generic kernel from debian-ports did
+> > as least boot up on real hardware and the serial console worked just fine
+> 
+> The generic Alpha kernel has CONFIG_PCI=y, so the quirk is not applied,
+> both with and without the present patch.
 
-Does it mean Acked-by, Reviewed-by, or something else?
+Right.
 
-> but I think this needs to be split per subsystem.
+> You should be able to trigger the lockup that the quirk seeks to avoid
+> by closing the tty of either of the serial ports.  E.g., if you're using
+> the serial console, "cat" something to the other serial port's tty.
+> That will clear TIOCM_OUT2 in serial8250_do_shutdown() and should thus
+> provoke the lockup.  Alternatively, compile and run the little program
+> below on the Jensen.  (Pass a serial port tty as argument.)
+> 
+> Should you not be able to reproduce the lockup, then the quirk wouldn't
+> be necessary anymore and could be removed.
+[del]
 
-What you ask breaks rules:
+Thanks for the explanation and the reproducer program. I tried yesterday
+to install a recent Linux-Alpha distribution on any of my Alphas to
+be able to build natively and check my self-build kernels before burning
+a CD-ROM, but I failed. Neither gentoo nor Debian nor T2 was installable on
+my Miatas (the Personal Workstations) or my Avanti (AlphaStation 400),
+either failing to boot or recognizing the disks or the CD-ROM, or switching
+to a framebuffer which did not work or just dying on the hardware detection.
+That was a bit frustrating, but I have to follow plan B now and do cross-builds
+from amd_x64 to Alpha - that's easy for the kernel (infact, that's what
+I've been doing from the start), but generating something bootable that
+way is a challenge and needs more time than I usually have during the week,
+but I will tackle it over my xmas vacation,
 
-Documentation/process/submitting-patches.rst:
-
-Separate each **logical change** into a separate patch.
-
-For example, if your changes include both bug fixes and performance
-enhancements for a single driver, separate those changes into two
-or more patches.  If your changes include an API update, and a new
-driver which uses that new API, separate those into two patches.
-
-On the other hand, if you make a single change to numerous files,
-group those changes into a single patch.  Thus a single logical change
-is contained within a single patch.
-
-This is not a dead rule, refer for example the 96d4f267e40f9 ("Remove
-'type' argument from access_ok() functioin.")
-
-Or this: https://lkml.org/lkml/2021/6/14/1736
-
-Thanks,
-Yury
+CU,
+Uli
+-- 
+Dipl. Inf. Ulrich Teichert|e-mail: Ulrich.Teichert@gmx.de | Listening to:
+Stormweg 24               |Eat Lipstick: Dirty Little Secret, The Baboon Show:
+24539 Neumuenster, Germany|Work Work Work, The Bellrays: Bad Reaction
