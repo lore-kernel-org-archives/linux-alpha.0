@@ -1,60 +1,77 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 13/17] kernel/cpu: add num_possible_cpus counter
-Date: Tue, 21 Dec 2021 14:15:56 +0100
-Message-ID: <YcHTjJxmUntOHKXB@hirez.programming.kicks-ass.net>
-References: <20211218212014.1315894-1-yury.norov@gmail.com>
- <20211218212014.1315894-14-yury.norov@gmail.com>
+From: "Colin King (gmail)" <colin.i.king@gmail.com>
+Subject: kernel oops when reading /proc/bus/pci/00/01.00 with odd size and odd
+ alignment
+Date: Wed, 22 Dec 2021 14:36:12 +0000
+Message-ID: <f26b1e6f-f3fc-191b-e613-c0b5748e26ef@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=2DQsFFmvRRwQV5SQdrlhU5MgckEkxoEnQyQLLqYVVJQ=; b=tefGUxTms78BzG
-	TPKTkbNTqwmubjwRIEXcJM4lDXGpntZxDLtdqq4mlCTxBa8iCCGWYzGlT/MgeZfaUwiUsxHR0xbJ/
-	KEeQ5lPQt3G2+nUECmOLYOFzxdQsW9SWoSX2a5NXz850wQxpT9fPRy2WzFk0ggEYsRfCRBQiuezO1
-	4VhDR1ek4gvPR6EEYvnBVdiA3SaHs29xbj710OcQpxI+CK8oqa1Olgti87hU35pCHFyeEd3JLU/dc
-	MGk1FBUiAsYRi/F2WoMycRs1alkxuhyI1SqZ5kA16WmGJKxG3HqL+5owJubn2Sgcy0N2+VDx+uTA6
-	jkmEB94PcimkLTuiQ5wQ==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=GBBnAb3uzp4suSaLhtbSHK02SXI8tanA6M9OarZBIic=; b=S58ARfQ+ZDNc9V8XHYU6WB4hFJ
- y+GXTGZ6uxOOM4T0uUpg9W97tcenH36WWd97bsX/V2yeLeFj32EovBKMUbCY7SIPJqp4Fnq9w0oEc
- B7qbhrfsijGjjSKOkgQurQWLW0Nbd6XVj4+Gce2fGyfrwpaq6w3Cy77w/woPDtJjlvhwqWl2L7pr3
- RVKh7cYkp2KGkRFGF/BfNObt5tlY2fcgq1UQblASBMKnLHYGJe9yLPVQQIsWYxD0rb4MILLfUlo/+
- 8w3AgFvC50lfGcJ3tiF5dq9Y1S83zi5i1T+z66g6ctbm178rr+VxCGRFiybAGmP+SPCSYxsGQ/JMW
- D/VUXqdQ==;
-Content-Disposition: inline
-In-Reply-To: <20211218212014.1315894-14-yury.norov@gmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Yury Norov <yury.norov@gmail.com>
-Cc: linux-kernel@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>, "Paul E. McKenney" <paulmck@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Alexey Klimov <aklimov@redhat.com>, Amitkumar Karwar <amitkarwar@gmail.com>, Andi Kleen <ak@linux.intel.com>, Andrew Lunn <andrew@lunn.ch>, Andrew Morton <akpm@linux-foundation.org>, Andy Gross <agross@kernel.org>, Andy Lutomirski <luto@kernel.org>, Andy Shevchenko <andy@infradead.org>, Anup Patel <anup.patel@wdc.com>, Ard Biesheuvel <ardb@kernel.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>, Christoph
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:to:content-language:cc:from
+         :subject:content-transfer-encoding;
+        bh=+3GdlkNFtphXM9+jbZr28VK+BqW1pmexR4dHqpidTUM=;
+        b=m70JsyAC9ag04xzSZntp0nBHg3911N/bjISqCtGKsT444xZcRQ4lbpqPu8ZytwS9YW
+         SXgb0qpl/Lqm5dFHbzAgkXJA7a1EbPmAYcurBp99MDMYnn2m2Z2PcIjQ3ZCas+UUMvKW
+         bNi00Hcx24w1/03P482Y8np9mI8vR/k6YOvdVB7H/vKkpg8ebDN7PTFW95fq6TVGEYQm
+         qb2eRBxdlRl+oxcnhRdYjxJoLIBFQMFtI32sHF4rb9nlikFTJAAZN6iX2uF3IiFbY4p+
+         ftUIY6UiBT3HMkaX0EiWFjGzEUQD/5rjPbw7FVPjZTOK0Bjc5zbLz3oxHGE1vk+hyq72
+         mbLA==
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: linux-alpha@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On Sat, Dec 18, 2021 at 01:20:09PM -0800, Yury Norov wrote:
-> Similarly to the online cpus, the cpu_possible_mask is actively used
-> in the kernel. This patch adds a counter for possible cpus, so that
-> users that call num_possible_cpus() would know the result immediately,
-> instead of calling the bitmap_weight for the mask underlying.
+Hi,
 
-So what user actually cares about performance here enough to warrant
-this?
+While testing the Alpha kernel with stress-ng procfs test I found that 
+misaligned odd reads cause an oops. I was able to figure out a simple 
+reproducer as follows:
+
+dd seek=1 if=/proc/bus/pci/00/01.0 of=/dev/zero bs=5
 
 
-> +EXPORT_SYMBOL(set_cpu_possible);
+[ 2013.722601] Unable to handle kernel paging request at virtual address 
+0000000000000004
+[ 2013.722601] dd(1195): Oops -1
+[ 2013.722601] pc = [<0000000000000004>]  ra = [<fffffc00014fd634>]  ps 
+= 0000    Tainted: G      D     E
+[ 2013.722601] pc is at 0x4
+[ 2013.722601] ra is at proc_bus_pci_read+0x244/0x3d0
+[ 2013.722601] v0 = 0000000000000000  t0 = 0000000009080000  t1 = 
+0000000000000000
+[ 2013.722601] t2 = 0000000009080000  t3 = 0000000000000000  t4 = 
+fffffc0006c43f08
+[ 2013.722601] t5 = 0000000000000011  t6 = 0000000000000012  t7 = 
+fffffc0006c40000
+[ 2013.722601] s0 = fffffc0000967000  s1 = 0000000000000005  s2 = 
+000000012002a005
+[ 2013.722601] s3 = 000000012002a001  s4 = 0000000000000010  s5 = 
+0000000000000000
+[ 2013.722601] s6 = ffffffffdffd600f
+[ 2013.722601] a0 = 0000000000000000  a1 = fffffd01fe000810  a2 = 
+0000000000000010
+[ 2013.722601] a3 = 0000000000000004  a4 = fffffc0006c43dd8  a5 = 
+fffffc0003c05dd8
+[ 2013.722601] t8 = 0000000000000001  t9 = 0000000000000001  t10= 
+000000012002e058
+[ 2013.722601] t11= 000000012002e058  pv = fffffc0001023650  at = 
+0000000010a8b186
+[ 2013.726508] gp = fffffc00025197f8  sp = 00000000d1f90b3a
+[ 2013.726508] Trace:
+[ 2013.726508] [<fffffc00012d39e8>] proc_reg_read+0xc8/0x140
+[ 2013.727484] [<fffffc000120ed58>] vfs_read+0xd8/0x220
+[ 2013.727484] [<fffffc000120ed14>] vfs_read+0x94/0x220
+[ 2013.727484] [<fffffc00010110ec>] entMM+0x9c/0xc0
+[ 2013.727484] [<fffffc000120f274>] ksys_read+0x84/0x130
+[ 2013.728461] [<fffffc000101149c>] entSys+0xac/0xc0
 
-NAK
+[ 2013.728461] Code:
+[ 2013.728461]  00000000
+[ 2013.728461]  00063301
+[ 2013.728461]  000012c8
+[ 2013.729437]  00001111
+[ 2013.729437]  0003fac6
+
+Colin
