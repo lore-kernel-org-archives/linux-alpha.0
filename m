@@ -1,104 +1,131 @@
-From: Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [RFC 02/32] Kconfig: introduce HAS_IOPORT option and select it as necessary
-Date: Fri, 31 Dec 2021 11:04:12 -0500
-Message-ID: <CAK8P3a2GGGuP0miLRy8w2+8vdSsGRNioBHEZ-ervSBrYbuZ+5w@mail.gmail.com>
+From: Michael Schmitz <schmitzmic@gmail.com>
+Subject: Re: [RFC 02/32] Kconfig: introduce HAS_IOPORT option and select it as
+ necessary
+Date: Sat, 1 Jan 2022 10:55:27 +1300
+Message-ID: <a635e885-c365-8bdc-bf3c-e74d7d39a786@gmail.com>
 References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
- <20211227164317.4146918-3-schnelle@linux.ibm.com> <CAMuHMdXk6VcDryekkMJ3aGFnw4LLWOWMi8M2PwjT81PsOsOBMQ@mail.gmail.com>
- <d406b93a-0f76-d056-3380-65d459d05ea9@gmail.com> <CAK8P3a2j-OFUUp+haHoV4PyL-On4EASZ9+59SDqNqmL8Gv_k7Q@mail.gmail.com>
- <1f90f145-219e-1cad-6162-9959d43a27ad@gmail.com> <CAK8P3a3NqU-3nUZ9ve=QyPPB5Uep3eK+_hicjjSiP8VuL4FYfA@mail.gmail.com>
+ <20211227164317.4146918-3-schnelle@linux.ibm.com>
+ <CAMuHMdXk6VcDryekkMJ3aGFnw4LLWOWMi8M2PwjT81PsOsOBMQ@mail.gmail.com>
+ <d406b93a-0f76-d056-3380-65d459d05ea9@gmail.com>
+ <CAK8P3a2j-OFUUp+haHoV4PyL-On4EASZ9+59SDqNqmL8Gv_k7Q@mail.gmail.com>
+ <1f90f145-219e-1cad-6162-9959d43a27ad@gmail.com>
+ <CAK8P3a3NqU-3nUZ9ve=QyPPB5Uep3eK+_hicjjSiP8VuL4FYfA@mail.gmail.com>
  <0211719b-8402-9865-8e5d-5c0a35715816@gmail.com>
+ <CAK8P3a2GGGuP0miLRy8w2+8vdSsGRNioBHEZ-ervSBrYbuZ+5w@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640966681;
-        bh=pu3EOtLhubDoxaVwiYbh4e/NfH+lhjOkYe7VbmME5Z0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=raXMVpPTRAf3vF8B62lkOgsA/cVfsPOPEGtrByVh26tgU6FewLliwwvE5oVSxTfvJ
-         1isY+reYV6wkTVj9kZeXXITYA4ZLSnegTHP2FPOPl+zVGpV7aOvkSmkBLyhNAOgHR1
-         2sxK+Ewu9K8opb6D6pVml2o8615MS9DLn+olxHqwVzvT8Xh5P7+RRwmCSJfOODKM51
-         uCDoa4le3AzkzvHOK55tCCwn96EKQBOHpr853njIbdmLrUqgvOFCO+ErxSuQhW1ZUE
-         /E5E7A34ZTJ7Vtr7fXqJFcLl8V4bz4PcNAUhmkNNyPOu/FhFcut4rQ7dYvKY+75A6Q
-         F+kxB9VuFSY/g==
-In-Reply-To: <0211719b-8402-9865-8e5d-5c0a35715816@gmail.com>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Michael Schmitz <schmitzmic@gmail.com>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=T1hx50UVDERByCQtA2jPhEceIqEPV53U/9yB8e5/FYk=;
+        b=LjsOP7dtkJk8TTLzgH2x733jvWKdpcNmqgEkJGbhcliBN3P4mGcoa4RHGyc7AE+uv0
+         1q6IiTtA1Dj+hFT4fbo5YFfHQJP3D3q9epLhg2FMsybdbsOcLxZAwPm0457fBAaRsDqQ
+         IL99rj8gfeLcMykifXB/Gt0fb/qQevJBIrut1EB236pdFPwlsYQCiXgvL1uR2c1NkIEI
+         s9mlOS/JU5lFDS2xWEDijv28JBOklmN0+7s5aGmoNcQDKeGvOeymMRfNiZGGdhERxmTx
+         AwTYJpI5KYZX0tSyGEY8pkdXLvzdxOJEnG3qvPabZ4r2I9OhjOAaaBl0S4GhUjhjIInk
+         c95g==
+In-Reply-To: <CAK8P3a2GGGuP0miLRy8w2+8vdSsGRNioBHEZ-ervSBrYbuZ+5w@mail.gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Arnd Bergmann <arnd@kernel.org>
 Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <bhelgaas@google.com>, John Garry <john.garry@huawei.com>, Nick Hu <nickhu@andestech.com>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>, Dinh Nguyen <dinguyen@kernel.org>, Chris Zankel <chris@zankel.net>, Karol Gugala <kgugala@antmicro.com>, Jeff Dike <jdike@addtoit.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Brian Cain <bcain@codeaurora.org>, Heiko Carstens <hca@linux.ibm.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt
 
-On Wed, Dec 29, 2021 at 10:44 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> Am 30.12.2021 um 14:48 schrieb Arnd Bergmann:
-> > On Tue, Dec 28, 2021 at 11:15 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> > What some other architectures do is to rely on inb()/outb() to have a
-> > zero-based offset, and use an io_offset in PCI buses to ensure that a
-> > low port number on the bus gets translated into a pointer value for the
-> > virtual mapping in the kernel, which is then represented as an unsigned
-> > int.
->
-> M54xx does just that for Coldfire:
->
-> arch/m68k/include/asm/io_no.h:
-> #define PCI_IO_PA       0xf8000000              /* Host physical address */
->
-> (used to set PCI BAR mappings, so matches your definition above).
+Hi Arnd,
 
-I think coldfire gets it right here, using PCI_IOBASE to find the start of
-the window and a zero io_offset:
+Am 01.01.2022 um 05:04 schrieb Arnd Bergmann:
+> On Wed, Dec 29, 2021 at 10:44 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
+>> Am 30.12.2021 um 14:48 schrieb Arnd Bergmann:
+>>> On Tue, Dec 28, 2021 at 11:15 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
+>>> What some other architectures do is to rely on inb()/outb() to have a
+>>> zero-based offset, and use an io_offset in PCI buses to ensure that a
+>>> low port number on the bus gets translated into a pointer value for the
+>>> virtual mapping in the kernel, which is then represented as an unsigned
+>>> int.
+>>
+>> M54xx does just that for Coldfire:
+>>
+>> arch/m68k/include/asm/io_no.h:
+>> #define PCI_IO_PA       0xf8000000              /* Host physical address */
+>>
+>> (used to set PCI BAR mappings, so matches your definition above).
+>
+> I think coldfire gets it right here, using PCI_IOBASE to find the start of
+> the window and a zero io_offset:
+>
+> #define PCI_IOBASE ((void __iomem *) PCI_IO_PA)
 
-#define PCI_IOBASE ((void __iomem *) PCI_IO_PA)
+Good - I bear that in mind if I ever get around to reactivating my 060 
+accelerator and the PCI board for that.
 
-> All other (MMU) m68k users of inb()/outb() apply an io_offset in the
-> platform specific address translation:
+>> All other (MMU) m68k users of inb()/outb() apply an io_offset in the
+>> platform specific address translation:
+>>
+>> arch/m68k/include/asm/io_mm.h:
+>>
+>> #define q40_isa_io_base  0xff400000
+>> #define enec_isa_read_base  0xfffa0000
+>> #define enec_isa_write_base 0xfffb0000
+>>
+>> arch/m68k/include/asm/amigayle.h:
+>>
+>> #define GAYLE_IO                (0xa20000+zTwoBase)     /* 16bit and
+>> even 8bit registers */
+>> #define GAYLE_IO_8BITODD        (0xa30000+zTwoBase)     /* odd 8bit
+>> registers */
+>>
+>> (all constants used in address translation inlines that are used by the
+>> m68k inb()/outb() macros - you can call that the poor man's version of
+>> PCI BAR mappings ...).
 >
-> arch/m68k/include/asm/io_mm.h:
->
-> #define q40_isa_io_base  0xff400000
-> #define enec_isa_read_base  0xfffa0000
-> #define enec_isa_write_base 0xfffb0000
->
-> arch/m68k/include/asm/amigayle.h:
->
-> #define GAYLE_IO                (0xa20000+zTwoBase)     /* 16bit and
-> even 8bit registers */
-> #define GAYLE_IO_8BITODD        (0xa30000+zTwoBase)     /* odd 8bit
-> registers */
->
-> (all constants used in address translation inlines that are used by the
-> m68k inb()/outb() macros - you can call that the poor man's version of
-> PCI BAR mappings ...).
-
-This still looks like the same thing to me, where you have inb() take a
-zero-based port number, not a pointer. The effect is the same as the
-coldfire version, it just uses a custom inline function instead of the
-version from asm-generic/io.h.
-
-> So as long as support for any of the m68k PCI or ISA bridges is selected
-> in the kernel config, the appropriate IO space mapping is applied. If no
-> support for PCI or ISA bridges is selected, we already fall back to zero
-> offset mapping (but as far as I can tell, it shouldn't be possible to
-> build a kernel without bridge support but drivers that require it).
+> This still looks like the same thing to me, where you have inb() take a
+> zero-based port number, not a pointer. The effect is the same as the
+> coldfire version, it just uses a custom inline function instead of the
+> version from asm-generic/io.h.
 
 Right.
 
-> > As this is indistinguishable from architectures that just don't have
-> > a base address for I/O ports (we unfortunately picked 0 as the default
-> > PCI_IOBASE value), my suggestion was to start marking architectures
-> > that may have this problem as using HAS_IOPORT in order to keep
-> > the existing behavior unchanged. If m68k does not suffer from this,
-> > making HAS_IOPORT conditional on those config options that actually
-> > need it would of course be best.
+>> So as long as support for any of the m68k PCI or ISA bridges is selected
+>> in the kernel config, the appropriate IO space mapping is applied. If no
+>> support for PCI or ISA bridges is selected, we already fall back to zero
+>> offset mapping (but as far as I can tell, it shouldn't be possible to
+>> build a kernel without bridge support but drivers that require it).
 >
-> Following your description, HAS_IOPORT would be required for neither of
-> PCI, ISA or ATARI_ROM_ISA ??
+> Right.
+>
+>>> As this is indistinguishable from architectures that just don't have
+>>> a base address for I/O ports (we unfortunately picked 0 as the default
+>>> PCI_IOBASE value), my suggestion was to start marking architectures
+>>> that may have this problem as using HAS_IOPORT in order to keep
+>>> the existing behavior unchanged. If m68k does not suffer from this,
+>>> making HAS_IOPORT conditional on those config options that actually
+>>> need it would of course be best.
+>>
+>> Following your description, HAS_IOPORT would be required for neither of
+>> PCI, ISA or ATARI_ROM_ISA ??
+>
+> For these three options, we definitely need HAS_IOPORT, which would
+> imply that some version of inb()/outb() is provided. The difference between
 
-For these three options, we definitely need HAS_IOPORT, which would
-imply that some version of inb()/outb() is provided. The difference between
-using a custom PCI_IOBASE (or an open-coded equivalent) and using
-a zero PCI_IOBASE in combination with registering PCI using a custom
-io_offset is whether we can use drivers with hardcoded port numbers.
-These should depend on a different Kconfig symbol to be introduced
-(CONFIG_HARDCODED_IOPORT or similar) once we introduce them,
-and you could decide for m68k whether to allow those or not, I would
-assume you do want them in order to use certain legacy ISA drivers.
+Thanks for clarifying that (and to Niklas as well). Did sound a little 
+counter-intuitive to me...
 
-       Arnd
+> using a custom PCI_IOBASE (or an open-coded equivalent) and using
+> a zero PCI_IOBASE in combination with registering PCI using a custom
+> io_offset is whether we can use drivers with hardcoded port numbers.
+> These should depend on a different Kconfig symbol to be introduced
+> (CONFIG_HARDCODED_IOPORT or similar) once we introduce them,
+> and you could decide for m68k whether to allow those or not, I would
+> assume you do want them in order to use certain legacy ISA drivers.
+
+That's exactly the purpose (though we're overmuch pushing the envelope 
+trying to accomodate legacy ISA drivers on too many platforms).
+
+Cheers,
+
+	Michael
+
+
+>        Arnd
+>
