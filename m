@@ -1,131 +1,151 @@
-From: Michael Schmitz <schmitzmic@gmail.com>
-Subject: Re: [RFC 02/32] Kconfig: introduce HAS_IOPORT option and select it as
- necessary
-Date: Sat, 1 Jan 2022 10:55:27 +1300
-Message-ID: <a635e885-c365-8bdc-bf3c-e74d7d39a786@gmail.com>
-References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
- <20211227164317.4146918-3-schnelle@linux.ibm.com>
- <CAMuHMdXk6VcDryekkMJ3aGFnw4LLWOWMi8M2PwjT81PsOsOBMQ@mail.gmail.com>
- <d406b93a-0f76-d056-3380-65d459d05ea9@gmail.com>
- <CAK8P3a2j-OFUUp+haHoV4PyL-On4EASZ9+59SDqNqmL8Gv_k7Q@mail.gmail.com>
- <1f90f145-219e-1cad-6162-9959d43a27ad@gmail.com>
- <CAK8P3a3NqU-3nUZ9ve=QyPPB5Uep3eK+_hicjjSiP8VuL4FYfA@mail.gmail.com>
- <0211719b-8402-9865-8e5d-5c0a35715816@gmail.com>
- <CAK8P3a2GGGuP0miLRy8w2+8vdSsGRNioBHEZ-ervSBrYbuZ+5w@mail.gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] alpha: Remove usage of the deprecated "pci-dma-compat.h" API
+Date: Sun,  2 Jan 2022 16:32:59 +0100
+Message-ID: <0b8bacb36e111d2621c2c0459b20b1da9f4375c0.1641137463.git.christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=T1hx50UVDERByCQtA2jPhEceIqEPV53U/9yB8e5/FYk=;
-        b=LjsOP7dtkJk8TTLzgH2x733jvWKdpcNmqgEkJGbhcliBN3P4mGcoa4RHGyc7AE+uv0
-         1q6IiTtA1Dj+hFT4fbo5YFfHQJP3D3q9epLhg2FMsybdbsOcLxZAwPm0457fBAaRsDqQ
-         IL99rj8gfeLcMykifXB/Gt0fb/qQevJBIrut1EB236pdFPwlsYQCiXgvL1uR2c1NkIEI
-         s9mlOS/JU5lFDS2xWEDijv28JBOklmN0+7s5aGmoNcQDKeGvOeymMRfNiZGGdhERxmTx
-         AwTYJpI5KYZX0tSyGEY8pkdXLvzdxOJEnG3qvPabZ4r2I9OhjOAaaBl0S4GhUjhjIInk
-         c95g==
-In-Reply-To: <CAK8P3a2GGGuP0miLRy8w2+8vdSsGRNioBHEZ-ervSBrYbuZ+5w@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <bhelgaas@google.com>, John Garry <john.garry@huawei.com>, Nick Hu <nickhu@andestech.com>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>, Dinh Nguyen <dinguyen@kernel.org>, Chris Zankel <chris@zankel.net>, Karol Gugala <kgugala@antmicro.com>, Jeff Dike <jdike@addtoit.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Brian Cain <bcain@codeaurora.org>, Heiko Carstens <hca@linux.ibm.com>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt
+Content-Type: text/plain; charset="us-ascii"
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, logang@deltatee.com, akpm@linux-foundation.org, rppt@kernel.org, david@redhat.com, arnd@arndb.de, martin.oliveira@eideticom.com
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Hi Arnd,
+In [1], Christoph Hellwig has proposed to remove the wrappers in
+include/linux/pci-dma-compat.h.
 
-Am 01.01.2022 um 05:04 schrieb Arnd Bergmann:
-> On Wed, Dec 29, 2021 at 10:44 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
->> Am 30.12.2021 um 14:48 schrieb Arnd Bergmann:
->>> On Tue, Dec 28, 2021 at 11:15 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
->>> What some other architectures do is to rely on inb()/outb() to have a
->>> zero-based offset, and use an io_offset in PCI buses to ensure that a
->>> low port number on the bus gets translated into a pointer value for the
->>> virtual mapping in the kernel, which is then represented as an unsigned
->>> int.
->>
->> M54xx does just that for Coldfire:
->>
->> arch/m68k/include/asm/io_no.h:
->> #define PCI_IO_PA       0xf8000000              /* Host physical address */
->>
->> (used to set PCI BAR mappings, so matches your definition above).
->
-> I think coldfire gets it right here, using PCI_IOBASE to find the start of
-> the window and a zero io_offset:
->
-> #define PCI_IOBASE ((void __iomem *) PCI_IO_PA)
+Some reasons why this API should be removed have been given by Julia
+Lawall in [2].
 
-Good - I bear that in mind if I ever get around to reactivating my 060 
-accelerator and the PCI board for that.
+A coccinelle script has been used to perform the needed transformation.
+Only relevant parts are given below.
 
->> All other (MMU) m68k users of inb()/outb() apply an io_offset in the
->> platform specific address translation:
->>
->> arch/m68k/include/asm/io_mm.h:
->>
->> #define q40_isa_io_base  0xff400000
->> #define enec_isa_read_base  0xfffa0000
->> #define enec_isa_write_base 0xfffb0000
->>
->> arch/m68k/include/asm/amigayle.h:
->>
->> #define GAYLE_IO                (0xa20000+zTwoBase)     /* 16bit and
->> even 8bit registers */
->> #define GAYLE_IO_8BITODD        (0xa30000+zTwoBase)     /* odd 8bit
->> registers */
->>
->> (all constants used in address translation inlines that are used by the
->> m68k inb()/outb() macros - you can call that the poor man's version of
->> PCI BAR mappings ...).
->
-> This still looks like the same thing to me, where you have inb() take a
-> zero-based port number, not a pointer. The effect is the same as the
-> coldfire version, it just uses a custom inline function instead of the
-> version from asm-generic/io.h.
+@@ @@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
 
-Right.
+@@ @@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
 
->> So as long as support for any of the m68k PCI or ISA bridges is selected
->> in the kernel config, the appropriate IO space mapping is applied. If no
->> support for PCI or ISA bridges is selected, we already fall back to zero
->> offset mapping (but as far as I can tell, it shouldn't be possible to
->> build a kernel without bridge support but drivers that require it).
->
-> Right.
->
->>> As this is indistinguishable from architectures that just don't have
->>> a base address for I/O ports (we unfortunately picked 0 as the default
->>> PCI_IOBASE value), my suggestion was to start marking architectures
->>> that may have this problem as using HAS_IOPORT in order to keep
->>> the existing behavior unchanged. If m68k does not suffer from this,
->>> making HAS_IOPORT conditional on those config options that actually
->>> need it would of course be best.
->>
->> Following your description, HAS_IOPORT would be required for neither of
->> PCI, ISA or ATARI_ROM_ISA ??
->
-> For these three options, we definitely need HAS_IOPORT, which would
-> imply that some version of inb()/outb() is provided. The difference between
+@@ @@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
 
-Thanks for clarifying that (and to Niklas as well). Did sound a little 
-counter-intuitive to me...
+@@ @@
+-    PCI_DMA_NONE
++    DMA_NONE
 
-> using a custom PCI_IOBASE (or an open-coded equivalent) and using
-> a zero PCI_IOBASE in combination with registering PCI using a custom
-> io_offset is whether we can use drivers with hardcoded port numbers.
-> These should depend on a different Kconfig symbol to be introduced
-> (CONFIG_HARDCODED_IOPORT or similar) once we introduce them,
-> and you could decide for m68k whether to allow those or not, I would
-> assume you do want them in order to use certain legacy ISA drivers.
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
 
-That's exactly the purpose (though we're overmuch pushing the envelope 
-trying to accomodate legacy ISA drivers on too many platforms).
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
 
-Cheers,
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
 
-	Michael
+[1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
+[2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
 
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ arch/alpha/include/asm/floppy.h |  7 ++++---
+ arch/alpha/kernel/pci_iommu.c   | 12 ++++++------
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
->        Arnd
->
+diff --git a/arch/alpha/include/asm/floppy.h b/arch/alpha/include/asm/floppy.h
+index 8dfdb3aa1d96..588758685439 100644
+--- a/arch/alpha/include/asm/floppy.h
++++ b/arch/alpha/include/asm/floppy.h
+@@ -43,17 +43,18 @@ alpha_fd_dma_setup(char *addr, unsigned long size, int mode, int io)
+ 	static int prev_dir;
+ 	int dir;
+ 
+-	dir = (mode != DMA_MODE_READ) ? PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE;
++	dir = (mode != DMA_MODE_READ) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
+ 
+ 	if (bus_addr 
+ 	    && (addr != prev_addr || size != prev_size || dir != prev_dir)) {
+ 		/* different from last time -- unmap prev */
+-		pci_unmap_single(isa_bridge, bus_addr, prev_size, prev_dir);
++		dma_unmap_single(&isa_bridge->dev, bus_addr, prev_size,
++				 prev_dir);
+ 		bus_addr = 0;
+ 	}
+ 
+ 	if (!bus_addr)	/* need to map it */
+-		bus_addr = pci_map_single(isa_bridge, addr, size, dir);
++		bus_addr = dma_map_single(&isa_bridge->dev, addr, size, dir);
+ 
+ 	/* remember this one as prev */
+ 	prev_addr = addr;
+diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+index 21f9ac101324..e83a02ed5267 100644
+--- a/arch/alpha/kernel/pci_iommu.c
++++ b/arch/alpha/kernel/pci_iommu.c
+@@ -333,7 +333,7 @@ static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
+ 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
+ 	int dac_allowed;
+ 
+-	BUG_ON(dir == PCI_DMA_NONE);
++	BUG_ON(dir == DMA_NONE);
+ 
+ 	dac_allowed = pdev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0; 
+ 	return pci_map_single_1(pdev, (char *)page_address(page) + offset, 
+@@ -356,7 +356,7 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
+ 	struct pci_iommu_arena *arena;
+ 	long dma_ofs, npages;
+ 
+-	BUG_ON(dir == PCI_DMA_NONE);
++	BUG_ON(dir == DMA_NONE);
+ 
+ 	if (dma_addr >= __direct_map_base
+ 	    && dma_addr < __direct_map_base + __direct_map_size) {
+@@ -460,7 +460,7 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
+ 				    unsigned long attrs)
+ {
+ 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
+-	pci_unmap_single(pdev, dma_addr, size, PCI_DMA_BIDIRECTIONAL);
++	dma_unmap_single(&pdev->dev, dma_addr, size, DMA_BIDIRECTIONAL);
+ 	free_pages((unsigned long)cpu_addr, get_order(size));
+ 
+ 	DBGA2("pci_free_consistent: [%llx,%zx] from %ps\n",
+@@ -639,7 +639,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
+ 	dma_addr_t max_dma;
+ 	int dac_allowed;
+ 
+-	BUG_ON(dir == PCI_DMA_NONE);
++	BUG_ON(dir == DMA_NONE);
+ 
+ 	dac_allowed = dev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0;
+ 
+@@ -702,7 +702,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
+ 	/* Some allocation failed while mapping the scatterlist
+ 	   entries.  Unmap them now.  */
+ 	if (out > start)
+-		pci_unmap_sg(pdev, start, out - start, dir);
++		dma_unmap_sg(&pdev->dev, start, out - start, dir);
+ 	return -ENOMEM;
+ }
+ 
+@@ -722,7 +722,7 @@ static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
+ 	dma_addr_t max_dma;
+ 	dma_addr_t fbeg, fend;
+ 
+-	BUG_ON(dir == PCI_DMA_NONE);
++	BUG_ON(dir == DMA_NONE);
+ 
+ 	if (! alpha_mv.mv_pci_tbi)
+ 		return;
+-- 
+2.32.0
+
