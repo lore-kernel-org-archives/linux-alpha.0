@@ -1,42 +1,40 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] alpha: Remove usage of the deprecated "pci-dma-compat.h" API
-Date: Sun, 2 Jan 2022 20:51:58 -0500
-Message-ID: <CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com>
-References: <0b8bacb36e111d2621c2c0459b20b1da9f4375c0.1641137463.git.christophe.jaillet@wanadoo.fr>
+From: Lukas Wunner <lukas@wunner.de>
+Subject: Re: Booting newer kernels on the Jensen...update
+Date: Mon, 3 Jan 2022 04:38:33 +0100
+Message-ID: <20220103033833.GA8637@wunner.de>
+References: <202201021948.202JmC7h015740@valdese.nms.ulrich-teichert.org>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <0b8bacb36e111d2621c2c0459b20b1da9f4375c0.1641137463.git.christophe.jaillet@wanadoo.fr>
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 046B1100AF851;
+        Mon,  3 Jan 2022 04:38:34 +0100 (CET)
+Content-Disposition: inline
+In-Reply-To: <202201021948.202JmC7h015740@valdese.nms.ulrich-teichert.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Logan Gunthorpe <logang@deltatee.com>, Andrew Morton <akpm@linux-foundation.org>, Mike Rapoport <rppt@kernel.org>, David Hildenbrand <david@redhat.com>, Arnd Bergmann <arnd@arndb.de>, martin.oliveira@eideticom.com, alpha <linux-alpha@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, kernel-janitors <kernel-janitors@vger.kernel.org>
+To: Ulrich Teichert <krypton@ulrich-teichert.org>
+Cc: Linux Alpha <linux-alpha@vger.kernel.org>, John Paul Adrian Glaubitz <glaubitz@debian.org>
 
-On Sun, Jan 2, 2022 at 10:32 AM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> In [1], Christoph Hellwig has proposed to remove the wrappers in
-> include/linux/pci-dma-compat.h.
->
-> Some reasons why this API should be removed have been given by Julia
-> Lawall in [2].
->
-> A coccinelle script has been used to perform the needed transformation.
-> Only relevant parts are given below.
->
->
-> [1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
-> [2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+On Sun, Jan 02, 2022 at 08:48:12PM +0100, Ulrich Teichert wrote:
+> but I simply fail to understand why it tries to unzip a gzipped kernel.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+The compressed kernel needs to start with 0x1f8b or 0x1f9e,
+else you'll get the "unknown compression method" error:
 
-It looks like the number of remaining files that use the old
-interfaces has gone down
-a lot more since you last sent these patches. I would suggest you send them as a
-series that includes the patch to remove the header as the last change, and
-ask Andrew to pick up the ones that remain after this resend into the -mm tree,
-possibly after the next -rc1. How many patches do you have left?
+https://github.com/wgwoods/aboot/blob/master/zip/misc.c#L131
 
-         Arnd
+Use "hexdump -C" on the compressed kernel image to double check
+that it starts with the proper magic bytes.
+
+
+> I hope I'm not too annoying,
+
+Not at all.  But I've never owned an Alpha, so am totally
+unfamiliar with its boot process.
+
+Thanks,
+
+Lukas
