@@ -1,93 +1,42 @@
-From: Ulrich Teichert <krypton@ulrich-teichert.org>
-Subject: Booting newer kernels on the Jensen...update
-Date: Sun, 2 Jan 2022 20:48:12 +0100 (CET)
-Message-ID: <202201021948.202JmC7h015740@valdese.nms.ulrich-teichert.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH] alpha: Remove usage of the deprecated "pci-dma-compat.h" API
+Date: Sun, 2 Jan 2022 20:51:58 -0500
+Message-ID: <CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com>
+References: <0b8bacb36e111d2621c2c0459b20b1da9f4375c0.1641137463.git.christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <0b8bacb36e111d2621c2c0459b20b1da9f4375c0.1641137463.git.christophe.jaillet@wanadoo.fr>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Linux Alpha <linux-alpha@vger.kernel.org>
-Cc: Lukas Wunner <lukas@wunner.de>, John Paul Adrian Glaubitz <glaubitz@debian.org>
+Content-Transfer-Encoding: 7bit
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Logan Gunthorpe <logang@deltatee.com>, Andrew Morton <akpm@linux-foundation.org>, Mike Rapoport <rppt@kernel.org>, David Hildenbrand <david@redhat.com>, Arnd Bergmann <arnd@arndb.de>, martin.oliveira@eideticom.com, alpha <linux-alpha@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, kernel-janitors <kernel-janitors@vger.kernel.org>
 
-Hi,
+On Sun, Jan 2, 2022 at 10:32 AM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> In [1], Christoph Hellwig has proposed to remove the wrappers in
+> include/linux/pci-dma-compat.h.
+>
+> Some reasons why this API should be removed have been given by Julia
+> Lawall in [2].
+>
+> A coccinelle script has been used to perform the needed transformation.
+> Only relevant parts are given below.
+>
+>
+> [1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
+> [2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-I've made some progress to get modern kernels booting on the Jensen, but
-not in a positive way. I got aboot compiled with a gcc cross compiler
-after a lot of hackery, installed it on a second disk, attached that to
-my Jensen and booted it:
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 
->>> boot dka300 -fl i
-INIT-S-CPU...
-AUDIT_BOOT_STARTS ... 
-AUDIT_CHECKSUM_GOOD
-AUDIT_LOAD_BEGINS
-AUDIT_LOAD_DONE
+It looks like the number of remaining files that use the old
+interfaces has gone down
+a lot more since you last sent these patches. I would suggest you send them as a
+series that includes the patch to remove the header as the last change, and
+ask Andrew to pick up the ones that remain after this resend into the -mm tree,
+possibly after the next -rc1. How many patches do you have left?
 
-aboot: Linux/Alpha SRM bootloader version 1.0_pre20040408
-aboot: switching to OSF/1 PALcode version 1.35
-aboot: booting from device 'SCSI 1 6 0 0 300 0 JENS-IO'
-aboot: valid disklabel found: 4 partitions.
-aboot: loading uncompressed ...
-aboot: loading compressed ...
-
-unzip: unknown compression method
-Welcome to aboot 1.0_pre20040408
-Commands:
- h, ?                   Display this message
- q                      Halt the system and return to SRM
- p 1-8                  Look in partition <num> for configuration/kernel
- l                      List preconfigured kernels
- d <dir>                List directory <dir> in current filesystem
- b <file> <args>        Boot kernel in <file> (- for raw boot)
- i <file>               Use <file> as initial ramdisk
-                        with arguments <args>
- 0-9                    Boot preconfiguration 0-9 (list with 'l')
-aboot> l
-#
-# aboot default configurations
-#
-0:2/vmlinux.gz ro root=/dev/sdb1 console=ttyS0
-1:2/vmlinux.gz ro root=/dev/sdb1 console=ttyS0
-3:2/vmlinux.gz ro root=/dev/sdb1 console=ttyS1
-#1:2/vmlinux.old.gz ro root=/dev/sda2
-#2:2/vmlinux.new.gz ro root=/dev/sda2
-#3:2/vmlinux ro root=/dev/sda2
-#8:- ro root=/dev/sda2          # fs less boot of raw kernel
-#9:0/- ro root=/dev/sda2                # fs less boot of (compressed) ECOFF kernel
--
-aboot> 0
-aboot: loading compressed vmlinux.gz...
-ext2_bread: read error
-
-unzip: attempted to read past eof
-ext2_bread: read error
-vmlinux.gz: file not found
-aboot>
-
-I suppose something went awfully wrong during the cross compile of aboot,
-but I simply fail to understand why it tries to unzip a gzipped kernel.
-I tried an uncompressed kernel as well, that one failed with:
-
-"ext2_bread: read error"
-
-as well. As ext2_bread of aboot uses the SRM console API in the end,
-I assume this is prone to break when cross compiling...
-
-Has anyone tried to cross compile aboot before and got it working?
-There certainly is no support for cross compiling built in, maybe for
-a reason.
-
-Anyway, I have not given up, but now I have to go for a full native build,
-which means I have to build a newer gcc, as all my existing Alpha installs
-are too old to carry a usable gcc for modern kernel builds and all my attempts
-on a fresh install have failed. My fastest machine is a PWS 600au, so this
-will take a while.
-
-I hope I'm not too annoying,
-CU,
-Uli
--- 
-Dipl. Inf. Ulrich Teichert|e-mail: Ulrich.Teichert@gmx.de | Listening to:
-Stormweg 24               |Eat Lipstick: Dirty Little Secret, The Baboon Show:
-24539 Neumuenster, Germany|Work Work Work, Nightwatchers: On a Mission
+         Arnd
