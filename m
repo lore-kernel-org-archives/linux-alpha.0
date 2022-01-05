@@ -1,77 +1,85 @@
-From: Walt Drummond <walt@drummond.us>
-Subject: Re: [RFC PATCH 0/8] signals: Support more than 64 signals
-Date: Tue, 4 Jan 2022 14:31:44 -0800
-Message-ID: <CADCN6nzT-Dw-AabtwWrfVRDd5HzMS3EOy8WkeomicJF07nQyoA@mail.gmail.com>
-References: <20220103181956.983342-1-walt@drummond.us> <87iluzidod.fsf@email.froward.int.ebiederm.org>
- <YdSzjPbVDVGKT4km@mit.edu> <87pmp79mxl.fsf@email.froward.int.ebiederm.org> <YdTI16ZxFFNco7rH@mit.edu>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH] alpha: Remove usage of the deprecated "pci-dma-compat.h"
+ API
+Date: Wed, 5 Jan 2022 22:23:27 +0100
+Message-ID: <bc95636a-8b67-b0cd-dc18-b21ac4b83962@wanadoo.fr>
+References: <0b8bacb36e111d2621c2c0459b20b1da9f4375c0.1641137463.git.christophe.jaillet@wanadoo.fr>
+ <CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-scsi-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=drummond.us; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WCROm2fnDVp3gJHoFF4FSh0CLwqqTwPGgd5WC3cykAE=;
-        b=SpNAIy18+a+BDF8ohbOhhPTgn+rzzWGPHdpXue1Z95/qQvcACFPfls+EhsBOb9bJ5I
-         J4obAOpt6rzp6Cc6ysV/HzbOKr1fr3e+TeLO6bRMnYdo3Gyh9nb1rzv1ICxH2cvlIvP1
-         O7zLwOaJVfjhHVFevNE78XtRHOJLnOt4OvZNOrtO4+Qth9yQuKO3Y0zMqJxHhe1sPN68
-         AsVbfWMCG2xnfSZ0gRMgCWFuQi9faGM0w08EmIWjCfBZLojXQfuuYl5i08TleIW/7b/n
-         nzMZzBq9PSmCXV2xi+HfGLAjucKoCMHpfD9Bcb6PeCRSN1t/e4GZt0e33JDtOpwXUI3r
-         +ijA==
-In-Reply-To: <YdTI16ZxFFNco7rH@mit.edu>
+Content-Transfer-Encoding: 8bit
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Content-Language: en-GB
+In-Reply-To: <CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Theodore Ts'o <tytso@mit.edu>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>, aacraid@microsemi.com, viro@zeniv.linux.org.uk, anna.schumaker@netapp.com, arnd@arndb.de, bsegall@google.com, bp@alien8.de, chuck.lever@oracle.com, bristot@redhat.com, dave.hansen@linux.intel.com, dwmw2@infradead.org, dietmar.eggemann@arm.com, dinguyen@kernel.org, geert@linux-m68k.org, gregkh@linuxfoundation.org, hpa@zytor.com, idryomov@gmail.com, mingo@redhat.com, yzaikin@google.com, ink@jurassic.park.msu.ru, jejb@linux.ibm.com, jmorris@namei.org, bfields@fieldses.org, jlayton@kernel.org, jirislaby@kernel.org, john.johansen@canonical.com, juri.lelli@redhat.com, keescook@chromium.org, mcgrof@kernel.org, martin.petersen@oracle.com, mattst88@gmail.com, mgorman@suse.de, oleg@redhat.com, pbonzini@redhat.com, peterz@infradead.org, rth@twiddle
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Logan Gunthorpe <logang@deltatee.com>, Andrew Morton <akpm@linux-foundation.org>, Mike Rapoport <rppt@kernel.org>, David Hildenbrand <david@redhat.com>, martin.oliveira@eideticom.com, alpha <linux-alpha@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, kernel-janitors <kernel-janitors@vger.kernel.org>
 
-The only standard tools that support SIGINFO are sleep, dd and ping,
-(and kill, for obvious reasons) so it's not like there's a vast hole
-in the tooling or something, nor is there a large legacy software base
-just waiting for SIGINFO to appear.   So while I very much enjoyed
-figuring out how to make SIGINFO work ...
+Le 03/01/2022 à 02:51, Arnd Bergmann a écrit :
+> On Sun, Jan 2, 2022 at 10:32 AM Christophe JAILLET
+> <christophe.jaillet@wanadoo.fr> wrote:
+>>
+>> In [1], Christoph Hellwig has proposed to remove the wrappers in
+>> include/linux/pci-dma-compat.h.
+>>
+>> Some reasons why this API should be removed have been given by Julia
+>> Lawall in [2].
+>>
+>> A coccinelle script has been used to perform the needed transformation.
+>> Only relevant parts are given below.
+>>
+>>
+>> [1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
+>> [2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
+>>
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> 
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+> 
+> It looks like the number of remaining files that use the old
+> interfaces has gone down
+> a lot more since you last sent these patches. I would suggest you send them as a
+> series that includes the patch to remove the header as the last change, and
+> ask Andrew to pick up the ones that remain after this resend into the -mm tree,
+> possibly after the next -rc1. How many patches do you have left?
+> 
+>           Arnd
+> 
 
-I'll have the VSTATUS patch out in a little bit.
+Hi,
 
-I also think there might be some merit in consolidating the 10
-'sigsetsize != sizeof(sigset_t)' checks in a macro and adding comments
-that wave people off on trying to do what I did.  If that would be
-useful, happy to provide the patch.
+This would be ~ 10 patches.
+I sent recently some missing ones because I was not aware of 
+--include-headers. So .h files were missing in my previous patches.
 
-On Tue, Jan 4, 2022 at 2:23 PM Theodore Ts'o <tytso@mit.edu> wrote:
->
-> On Tue, Jan 04, 2022 at 04:05:26PM -0600, Eric W. Biederman wrote:
-> >
-> > That is all as expected, and does not demonstrate a regression would
-> > happen if SIGPWR were to treat SIG_DFL as SIG_IGN, as SIGWINCH, SIGCONT,
-> > SIGCHLD, SIGURG do.  It does show there is the possibility of problems.
-> >
-> > The practical question is does anything send SIGPWR to anything besides
-> > init, and expect the process to handle SIGPWR or terminate?
->
-> So if I *cared* about SIGINFO, what I'd do is ask the systemd
-> developers and users list if there are any users of the sigpwr.target
-> feature that they know of.  And I'd also download all of the open
-> source UPS monitoring applications (and perhaps documentation of
-> closed-source UPS applications, such as for example APC's program) and
-> see if any of them are trying to send the SIGPWR signal.
->
-> I don't personally think it's worth the effort to do that research,
-> but maybe other people care enough to do the work.
->
-> > > I claim, though, that we could implement VSTATUS without implenting
-> > > the SIGINFO part of the feature.
-> >
-> > I agree that is the place to start.  And if we aren't going to use
-> > SIGINFO perhaps we could have an equally good notification method
-> > if anyone wants one.  Say call an ioctl and get an fd that can
-> > be read when a VSTATUS request comes in.
-> >
-> > SIGINFO vs SIGCONT vs a fd vs something else is something we can sort
-> > out when people get interested in modifying userspace.
->
->
-> Once VSTATUS support lands in the kernel, we can wait and see if there
-> is anyone who shows up wanting the SIGINFO functionality.  Certainly
-> we have no shortage of userspace notification interfaces in Linux.  :-)
->
->                                               - Ted
+
+The main remaining issue is linked to files in message/fusion.
+The patches are big.
+They have to be looked at carefully because it touches some GFP flags 
+when s/pci_alloc_consistent/dma_alloc_coherent/.
+
+My last try did not get any attention.
+Even [1] which is purely mechanical
+
+I'll try another approach without trying to turn some (hidden) 
+GFP_ATOMIC into GFP_KERNEL.
+1st patch: only mechanical changes done with coccinelle, leaving GFP_ATOMIC
+2nd patch: add some FIXME comments explaining why some could be turned 
+into GFP_KERNEL
+3rd patch: remove the comments and update the GFP flags accordingly.
+
+So, a maintainer could either apply 1 (no risk at all, should even 
+generate the same .o file), or 1+2 (only FIXME comments for future 
+analysis) or 1+2+3 for full clean-up (if he trusts me and/or has time to 
+check my explanations).
+
+This way, I hope that some could at least apply the first one.
+
+
+Being able to axe this deprecated API and .h file would be my 
+contribution to Ingo Molnar's "Fast Kernel Headers" tree :)
+
+CJ
+
+[1]: 
+https://lore.kernel.org/kernel-janitors/db5aa78d7d44b809ab83ba6fb4880d698517bfec.1623580326.git.christophe.jaillet@wanadoo.fr/
