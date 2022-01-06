@@ -1,66 +1,104 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] alpha: Remove usage of the deprecated "pci-dma-compat.h" API
-Date: Wed, 5 Jan 2022 17:01:47 -0500
-Message-ID: <CAK8P3a1g1zQtY6o1hnXGxe5moZ5-z9vR4fuN8VPtSvKipALMcw@mail.gmail.com>
-References: <0b8bacb36e111d2621c2c0459b20b1da9f4375c0.1641137463.git.christophe.jaillet@wanadoo.fr>
- <CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com> <bc95636a-8b67-b0cd-dc18-b21ac4b83962@wanadoo.fr>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH 00/16] Remove usage of the deprecated "pci-dma-compat.h" API
+Date: Thu,  6 Jan 2022 22:45:13 +0100
+Message-ID: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <bc95636a-8b67-b0cd-dc18-b21ac4b83962@wanadoo.fr>
+Return-path: <sparclinux-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Logan Gunthorpe <logang@deltatee.com>, Andrew Morton <akpm@linux-foundation.org>, Mike Rapoport <rppt@kernel.org>, David Hildenbrand <david@redhat.com>, martin.oliveira@eideticom.com, alpha <linux-alpha@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, kernel-janitors <kernel-janitors@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, davem@davemloft.net, airlied@linux.ie, vkoul@kernel.org, hao.wu@intel.com, trix@redhat.com, mdf@kernel.org, yilun.xu@intel.com, awalls@md.metrocast.net, mchehab@kernel.org, sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com, suganath-prabu.subramani@broadcom.com, mporter@kernel.crashing.org, alex.bou9@gmail.com, bhelgaas@google.com
+Cc: linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, dmaengine@vger.kernel.org, linux-fpga@vger.kernel.org, linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-On Wed, Jan 5, 2022 at 4:23 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
-> Le 03/01/2022 à 02:51, Arnd Bergmann a écrit :
-> > On Sun, Jan 2, 2022 at 10:32 AM Christophe JAILLET
-> > It looks like the number of remaining files that use the old
-> > interfaces has gone down
-> > a lot more since you last sent these patches. I would suggest you send them as a
-> > series that includes the patch to remove the header as the last change, and
-> > ask Andrew to pick up the ones that remain after this resend into the -mm tree,
-> > possibly after the next -rc1. How many patches do you have left?
-> >
->
-> This would be ~ 10 patches.
-> I sent recently some missing ones because I was not aware of
-> --include-headers. So .h files were missing in my previous patches.
->
->
-> The main remaining issue is linked to files in message/fusion.
-> The patches are big.
-> They have to be looked at carefully because it touches some GFP flags
-> when s/pci_alloc_consistent/dma_alloc_coherent/.
->
-> My last try did not get any attention.
-> Even [1] which is purely mechanical
->
-> I'll try another approach without trying to turn some (hidden)
-> GFP_ATOMIC into GFP_KERNEL.
-> 1st patch: only mechanical changes done with coccinelle, leaving GFP_ATOMIC
-> 2nd patch: add some FIXME comments explaining why some could be turned
-> into GFP_KERNEL
-> 3rd patch: remove the comments and update the GFP flags accordingly.
->
-> So, a maintainer could either apply 1 (no risk at all, should even
-> generate the same .o file), or 1+2 (only FIXME comments for future
-> analysis) or 1+2+3 for full clean-up (if he trusts me and/or has time to
-> check my explanations).
->
-> This way, I hope that some could at least apply the first one.
+This serie axes all the remaining usages of the deprecated "pci-dma-compat.h"
+API.
 
-If it's down to 10 patches, just send them as a series with Andrew Morton,
-Christoph Hellwig and me as recipients, in addition to the respective
-subsystem maintainers. Christoph and I can make sure that every
-patch is reviewed and then it's either the subsystem maintainers that pick
-them up, and one of us that applies all the remaining ones in the mm,
-dma-mapping, or asm-generic trees.
+All these patches have already been posted.
 
-What I've seen from your patches all looks good, and I just want
-them to be done, no need to wait forever for maintainers to reply
-when they have had their chance several times before.
+They have been generated with a coccinelle script.
+The tricky parts are patches that use dma_alloc_coherent() because the correct
+GFP flag has to be used in place of the previous embedded GFP_ATOMIC.
 
-          Arnd
+Patches 1-3 are already Reviewed. References to the corresponding mail is
+given below the ---
+
+Patch 1-2,4-10 are just generated from the coccinelle script. Only too long
+lines have been hand modified. dma_alloc_coherent() modification are NOT part
+of these patches.
+
+Patch 3 also includes some 'dma_set_mask_and_coherent()' instead of
+'pci_set_dma_mask()/pci_set_consistent_dma_mask()'.
+I've left this additional modification because it was reviewed with it.
+
+Patch 10-15 are the tricky parts. Explanation of which GFP flag is the right one
+is given in each patch. It has been divided in several patches to ease review.
+
+Patch 15 is the only one I'm slighly unsure with. The old code was using a
+GFP_USER flag in the function. I'm not familiar with it.
+I *guess*  that GFP_KERNEL is fine, but maybe it should also be GFP_USER or left
+as GFP_ATOMIC so that nothing is changed.
+
+Patch 16 is the last step that remove "pci-dma-compat.h" and its only usage.
+
+
+All patches, exept 1-2,6 that are architecture specific, have been compile tested.
+
+
+After all that, a few rst files, 1 or 2 strings in error messages and some
+error branching labels should still need some attention. 
+This is some minor issues.
+
+
+Only the cover letter is sent to every one. Each patch is sent to the
+corresponding maintainer(s) + Andrew Morton, Christoph Hellwig and Arnd Bergmann.
+
+
+Best regards.
+
+
+Christophe JAILLET (16):
+  alpha: Remove usage of the deprecated "pci-dma-compat.h" API
+  floppy: Remove usage of the deprecated "pci-dma-compat.h" API
+  fpga: dfl: pci: Remove usage of the deprecated "pci-dma-compat.h" API
+  media: Remove usage of the deprecated "pci-dma-compat.h" API
+  agp/intel: Remove usage of the deprecated "pci-dma-compat.h" API
+  sparc: Remove usage of the deprecated "pci-dma-compat.h" API
+  dmaengine: pch_dma: Remove usage of the deprecated "pci-dma-compat.h"
+    API
+  rapidio/tsi721: Remove usage of the deprecated "pci-dma-compat.h" API
+  media: v4l2-pci-skeleton: Remove usage of the deprecated
+    "pci-dma-compat.h" API
+  scsi: message: fusion: Remove usage of the deprecated
+    "pci-dma-compat.h" API
+  scsi: mptbase: Use dma_alloc_coherent() in 'mpt_alloc_fw_memory()'
+  scsi: mptbase: Use dma_alloc_coherent()
+  scsi: mptsas: Use dma_alloc_coherent() in
+    mptsas_exp_repmanufacture_info()
+  scsi: mptsas: Use dma_alloc_coherent()
+  scsi: mptctl: Use dma_alloc_coherent()
+  PCI: Remove usage of the deprecated "pci-dma-compat.h" API
+
+ arch/alpha/include/asm/floppy.h     |   7 +-
+ arch/alpha/kernel/pci_iommu.c       |  12 +--
+ arch/powerpc/include/asm/floppy.h   |   8 +-
+ arch/sparc/kernel/ioport.c          |   2 +-
+ drivers/char/agp/intel-gtt.c        |  26 ++---
+ drivers/dma/pch_dma.c               |   2 +-
+ drivers/fpga/dfl-pci.c              |  14 +--
+ drivers/media/pci/cx18/cx18-queue.h |   6 +-
+ drivers/media/pci/ivtv/ivtv-queue.h |  25 +++--
+ drivers/media/pci/ivtv/ivtv-udma.h  |   8 +-
+ drivers/message/fusion/mptbase.c    | 149 ++++++++++++++++------------
+ drivers/message/fusion/mptctl.c     |  82 +++++++++------
+ drivers/message/fusion/mptlan.c     |  90 +++++++++--------
+ drivers/message/fusion/mptsas.c     |  94 +++++++++---------
+ drivers/rapidio/devices/tsi721.c    |   8 +-
+ include/linux/pci-dma-compat.h      | 129 ------------------------
+ include/linux/pci.h                 |   3 -
+ samples/v4l/v4l2-pci-skeleton.c     |   2 +-
+ 18 files changed, 289 insertions(+), 378 deletions(-)
+ delete mode 100644 include/linux/pci-dma-compat.h
+
+-- 
+2.32.0
+
