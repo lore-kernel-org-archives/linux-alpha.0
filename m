@@ -1,104 +1,123 @@
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH 00/16] Remove usage of the deprecated "pci-dma-compat.h" API
-Date: Thu,  6 Jan 2022 22:45:13 +0100
-Message-ID: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+Subject: [PATCH 01/16] alpha: Remove usage of the deprecated "pci-dma-compat.h" API
+Date: Thu,  6 Jan 2022 22:46:52 +0100
+Message-ID: <30686538ee42aaa4c2dd0788c42edbc6df07f250.1641500561.git.christophe.jaillet@wanadoo.fr>
+References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <sparclinux-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, davem@davemloft.net, airlied@linux.ie, vkoul@kernel.org, hao.wu@intel.com, trix@redhat.com, mdf@kernel.org, yilun.xu@intel.com, awalls@md.metrocast.net, mchehab@kernel.org, sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com, suganath-prabu.subramani@broadcom.com, mporter@kernel.crashing.org, alex.bou9@gmail.com, bhelgaas@google.com
-Cc: linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, dmaengine@vger.kernel.org, linux-fpga@vger.kernel.org, linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-This serie axes all the remaining usages of the deprecated "pci-dma-compat.h"
-API.
+In [1], Christoph Hellwig has proposed to remove the wrappers in
+include/linux/pci-dma-compat.h.
 
-All these patches have already been posted.
+Some reasons why this API should be removed have been given by Julia
+Lawall in [2].
 
-They have been generated with a coccinelle script.
-The tricky parts are patches that use dma_alloc_coherent() because the correct
-GFP flag has to be used in place of the previous embedded GFP_ATOMIC.
+A coccinelle script has been used to perform the needed transformation.
+It can be found in [3].
 
-Patches 1-3 are already Reviewed. References to the corresponding mail is
-given below the ---
+[1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
+[2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
+[3]: https://lore.kernel.org/kernel-janitors/20200716192821.321233-1-christophe.jaillet@wanadoo.fr/
 
-Patch 1-2,4-10 are just generated from the coccinelle script. Only too long
-lines have been hand modified. dma_alloc_coherent() modification are NOT part
-of these patches.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+---
+Reviewed in: https://lore.kernel.org/kernel-janitors/CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com/
+---
+ arch/alpha/include/asm/floppy.h |  7 ++++---
+ arch/alpha/kernel/pci_iommu.c   | 12 ++++++------
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
-Patch 3 also includes some 'dma_set_mask_and_coherent()' instead of
-'pci_set_dma_mask()/pci_set_consistent_dma_mask()'.
-I've left this additional modification because it was reviewed with it.
-
-Patch 10-15 are the tricky parts. Explanation of which GFP flag is the right one
-is given in each patch. It has been divided in several patches to ease review.
-
-Patch 15 is the only one I'm slighly unsure with. The old code was using a
-GFP_USER flag in the function. I'm not familiar with it.
-I *guess*  that GFP_KERNEL is fine, but maybe it should also be GFP_USER or left
-as GFP_ATOMIC so that nothing is changed.
-
-Patch 16 is the last step that remove "pci-dma-compat.h" and its only usage.
-
-
-All patches, exept 1-2,6 that are architecture specific, have been compile tested.
-
-
-After all that, a few rst files, 1 or 2 strings in error messages and some
-error branching labels should still need some attention. 
-This is some minor issues.
-
-
-Only the cover letter is sent to every one. Each patch is sent to the
-corresponding maintainer(s) + Andrew Morton, Christoph Hellwig and Arnd Bergmann.
-
-
-Best regards.
-
-
-Christophe JAILLET (16):
-  alpha: Remove usage of the deprecated "pci-dma-compat.h" API
-  floppy: Remove usage of the deprecated "pci-dma-compat.h" API
-  fpga: dfl: pci: Remove usage of the deprecated "pci-dma-compat.h" API
-  media: Remove usage of the deprecated "pci-dma-compat.h" API
-  agp/intel: Remove usage of the deprecated "pci-dma-compat.h" API
-  sparc: Remove usage of the deprecated "pci-dma-compat.h" API
-  dmaengine: pch_dma: Remove usage of the deprecated "pci-dma-compat.h"
-    API
-  rapidio/tsi721: Remove usage of the deprecated "pci-dma-compat.h" API
-  media: v4l2-pci-skeleton: Remove usage of the deprecated
-    "pci-dma-compat.h" API
-  scsi: message: fusion: Remove usage of the deprecated
-    "pci-dma-compat.h" API
-  scsi: mptbase: Use dma_alloc_coherent() in 'mpt_alloc_fw_memory()'
-  scsi: mptbase: Use dma_alloc_coherent()
-  scsi: mptsas: Use dma_alloc_coherent() in
-    mptsas_exp_repmanufacture_info()
-  scsi: mptsas: Use dma_alloc_coherent()
-  scsi: mptctl: Use dma_alloc_coherent()
-  PCI: Remove usage of the deprecated "pci-dma-compat.h" API
-
- arch/alpha/include/asm/floppy.h     |   7 +-
- arch/alpha/kernel/pci_iommu.c       |  12 +--
- arch/powerpc/include/asm/floppy.h   |   8 +-
- arch/sparc/kernel/ioport.c          |   2 +-
- drivers/char/agp/intel-gtt.c        |  26 ++---
- drivers/dma/pch_dma.c               |   2 +-
- drivers/fpga/dfl-pci.c              |  14 +--
- drivers/media/pci/cx18/cx18-queue.h |   6 +-
- drivers/media/pci/ivtv/ivtv-queue.h |  25 +++--
- drivers/media/pci/ivtv/ivtv-udma.h  |   8 +-
- drivers/message/fusion/mptbase.c    | 149 ++++++++++++++++------------
- drivers/message/fusion/mptctl.c     |  82 +++++++++------
- drivers/message/fusion/mptlan.c     |  90 +++++++++--------
- drivers/message/fusion/mptsas.c     |  94 +++++++++---------
- drivers/rapidio/devices/tsi721.c    |   8 +-
- include/linux/pci-dma-compat.h      | 129 ------------------------
- include/linux/pci.h                 |   3 -
- samples/v4l/v4l2-pci-skeleton.c     |   2 +-
- 18 files changed, 289 insertions(+), 378 deletions(-)
- delete mode 100644 include/linux/pci-dma-compat.h
-
+diff --git a/arch/alpha/include/asm/floppy.h b/arch/alpha/include/asm/floppy.h
+index 8dfdb3aa1d96..588758685439 100644
+--- a/arch/alpha/include/asm/floppy.h
++++ b/arch/alpha/include/asm/floppy.h
+@@ -43,17 +43,18 @@ alpha_fd_dma_setup(char *addr, unsigned long size, int mode, int io)
+ 	static int prev_dir;
+ 	int dir;
+ 
+-	dir = (mode != DMA_MODE_READ) ? PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE;
++	dir = (mode != DMA_MODE_READ) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
+ 
+ 	if (bus_addr 
+ 	    && (addr != prev_addr || size != prev_size || dir != prev_dir)) {
+ 		/* different from last time -- unmap prev */
+-		pci_unmap_single(isa_bridge, bus_addr, prev_size, prev_dir);
++		dma_unmap_single(&isa_bridge->dev, bus_addr, prev_size,
++				 prev_dir);
+ 		bus_addr = 0;
+ 	}
+ 
+ 	if (!bus_addr)	/* need to map it */
+-		bus_addr = pci_map_single(isa_bridge, addr, size, dir);
++		bus_addr = dma_map_single(&isa_bridge->dev, addr, size, dir);
+ 
+ 	/* remember this one as prev */
+ 	prev_addr = addr;
+diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+index 21f9ac101324..e83a02ed5267 100644
+--- a/arch/alpha/kernel/pci_iommu.c
++++ b/arch/alpha/kernel/pci_iommu.c
+@@ -333,7 +333,7 @@ static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
+ 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
+ 	int dac_allowed;
+ 
+-	BUG_ON(dir == PCI_DMA_NONE);
++	BUG_ON(dir == DMA_NONE);
+ 
+ 	dac_allowed = pdev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0; 
+ 	return pci_map_single_1(pdev, (char *)page_address(page) + offset, 
+@@ -356,7 +356,7 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
+ 	struct pci_iommu_arena *arena;
+ 	long dma_ofs, npages;
+ 
+-	BUG_ON(dir == PCI_DMA_NONE);
++	BUG_ON(dir == DMA_NONE);
+ 
+ 	if (dma_addr >= __direct_map_base
+ 	    && dma_addr < __direct_map_base + __direct_map_size) {
+@@ -460,7 +460,7 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
+ 				    unsigned long attrs)
+ {
+ 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
+-	pci_unmap_single(pdev, dma_addr, size, PCI_DMA_BIDIRECTIONAL);
++	dma_unmap_single(&pdev->dev, dma_addr, size, DMA_BIDIRECTIONAL);
+ 	free_pages((unsigned long)cpu_addr, get_order(size));
+ 
+ 	DBGA2("pci_free_consistent: [%llx,%zx] from %ps\n",
+@@ -639,7 +639,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
+ 	dma_addr_t max_dma;
+ 	int dac_allowed;
+ 
+-	BUG_ON(dir == PCI_DMA_NONE);
++	BUG_ON(dir == DMA_NONE);
+ 
+ 	dac_allowed = dev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0;
+ 
+@@ -702,7 +702,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
+ 	/* Some allocation failed while mapping the scatterlist
+ 	   entries.  Unmap them now.  */
+ 	if (out > start)
+-		pci_unmap_sg(pdev, start, out - start, dir);
++		dma_unmap_sg(&pdev->dev, start, out - start, dir);
+ 	return -ENOMEM;
+ }
+ 
+@@ -722,7 +722,7 @@ static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
+ 	dma_addr_t max_dma;
+ 	dma_addr_t fbeg, fend;
+ 
+-	BUG_ON(dir == PCI_DMA_NONE);
++	BUG_ON(dir == DMA_NONE);
+ 
+ 	if (! alpha_mv.mv_pci_tbi)
+ 		return;
 -- 
 2.32.0
 
