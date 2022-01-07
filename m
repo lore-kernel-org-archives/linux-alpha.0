@@ -1,123 +1,108 @@
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH 01/16] alpha: Remove usage of the deprecated "pci-dma-compat.h" API
-Date: Thu,  6 Jan 2022 22:46:52 +0100
-Message-ID: <30686538ee42aaa4c2dd0788c42edbc6df07f250.1641500561.git.christophe.jaillet@wanadoo.fr>
-References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+From: =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
+Subject: [PATCH v5 3/9] Check return value from mc146818_get_time()
+Date: Fri,  7 Jan 2022 13:49:28 +0100
+Message-ID: <20220107124934.159878-4-mat.jonczyk@o2.pl>
+References: <20220107124934.159878-1-mat.jonczyk@o2.pl>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+Content-Transfer-Encoding: base64
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1641559793; bh=Jh3/X+KkvGtkBBLS7mCF+AdF3xYIv/XlK48vT/hJiVc=;
+          h=From:To:Cc:Subject;
+          b=K/9C2lJTJr4DE0GtImf9F8OSTHotWVkp2cA1pB+avtH24/R5VSAZ5+wGr1mIk9NPw
+           c1Wl4uMRAxb5sGnLDKHWQMQuTIossgiXoVOX8a3wvy5+sqZjfguSYCAIp8eu0Prr9+
+           oedo4Z7MJjIgDc7ZNA10hoFi0Syr3rIRh8lvoeqw=
+In-Reply-To: <20220107124934.159878-1-mat.jonczyk@o2.pl>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset="macroman"
+To: linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-alpha@vger.kernel.org, x86@kernel.org
 
-In [1], Christoph Hellwig has proposed to remove the wrappers in
-include/linux/pci-dma-compat.h.
-
-Some reasons why this API should be removed have been given by Julia
-Lawall in [2].
-
-A coccinelle script has been used to perform the needed transformation.
-It can be found in [3].
-
-[1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
-[2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
-[3]: https://lore.kernel.org/kernel-janitors/20200716192821.321233-1-christophe.jaillet@wanadoo.fr/
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
----
-Reviewed in: https://lore.kernel.org/kernel-janitors/CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com/
----
- arch/alpha/include/asm/floppy.h |  7 ++++---
- arch/alpha/kernel/pci_iommu.c   | 12 ++++++------
- 2 files changed, 10 insertions(+), 9 deletions(-)
-
-diff --git a/arch/alpha/include/asm/floppy.h b/arch/alpha/include/asm/floppy.h
-index 8dfdb3aa1d96..588758685439 100644
---- a/arch/alpha/include/asm/floppy.h
-+++ b/arch/alpha/include/asm/floppy.h
-@@ -43,17 +43,18 @@ alpha_fd_dma_setup(char *addr, unsigned long size, int mode, int io)
- 	static int prev_dir;
- 	int dir;
- 
--	dir = (mode != DMA_MODE_READ) ? PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE;
-+	dir = (mode != DMA_MODE_READ) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
- 
- 	if (bus_addr 
- 	    && (addr != prev_addr || size != prev_size || dir != prev_dir)) {
- 		/* different from last time -- unmap prev */
--		pci_unmap_single(isa_bridge, bus_addr, prev_size, prev_dir);
-+		dma_unmap_single(&isa_bridge->dev, bus_addr, prev_size,
-+				 prev_dir);
- 		bus_addr = 0;
- 	}
- 
- 	if (!bus_addr)	/* need to map it */
--		bus_addr = pci_map_single(isa_bridge, addr, size, dir);
-+		bus_addr = dma_map_single(&isa_bridge->dev, addr, size, dir);
- 
- 	/* remember this one as prev */
- 	prev_addr = addr;
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index 21f9ac101324..e83a02ed5267 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -333,7 +333,7 @@ static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
- 	int dac_allowed;
- 
--	BUG_ON(dir == PCI_DMA_NONE);
-+	BUG_ON(dir == DMA_NONE);
- 
- 	dac_allowed = pdev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0; 
- 	return pci_map_single_1(pdev, (char *)page_address(page) + offset, 
-@@ -356,7 +356,7 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
- 	struct pci_iommu_arena *arena;
- 	long dma_ofs, npages;
- 
--	BUG_ON(dir == PCI_DMA_NONE);
-+	BUG_ON(dir == DMA_NONE);
- 
- 	if (dma_addr >= __direct_map_base
- 	    && dma_addr < __direct_map_base + __direct_map_size) {
-@@ -460,7 +460,7 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
- 				    unsigned long attrs)
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
--	pci_unmap_single(pdev, dma_addr, size, PCI_DMA_BIDIRECTIONAL);
-+	dma_unmap_single(&pdev->dev, dma_addr, size, DMA_BIDIRECTIONAL);
- 	free_pages((unsigned long)cpu_addr, get_order(size));
- 
- 	DBGA2("pci_free_consistent: [%llx,%zx] from %ps\n",
-@@ -639,7 +639,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
- 	dma_addr_t max_dma;
- 	int dac_allowed;
- 
--	BUG_ON(dir == PCI_DMA_NONE);
-+	BUG_ON(dir == DMA_NONE);
- 
- 	dac_allowed = dev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0;
- 
-@@ -702,7 +702,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
- 	/* Some allocation failed while mapping the scatterlist
- 	   entries.  Unmap them now.  */
- 	if (out > start)
--		pci_unmap_sg(pdev, start, out - start, dir);
-+		dma_unmap_sg(&pdev->dev, start, out - start, dir);
- 	return -ENOMEM;
- }
- 
-@@ -722,7 +722,7 @@ static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
- 	dma_addr_t max_dma;
- 	dma_addr_t fbeg, fend;
- 
--	BUG_ON(dir == PCI_DMA_NONE);
-+	BUG_ON(dir == DMA_NONE);
- 
- 	if (! alpha_mv.mv_pci_tbi)
- 		return;
--- 
-2.32.0
-
+VGhlcmUgYXJlIDQgdXNlcnMgb2YgbWMxNDY4MThfZ2V0X3RpbWUoKSBhbmQgbm9uZSBvZiB0aGVt
+IHdhcyBjaGVja2luZwp0aGUgcmV0dXJuIHZhbHVlIGZyb20gdGhpcyBmdW5jdGlvbi4gQ2hhbmdl
+IHRoaXMuCgpQcmludCB0aGUgYXBwcm9wcmlhdGUgd2FybmluZ3MgaW4gY2FsbGVycyBvZiBtYzE0
+NjgxOF9nZXRfdGltZSgpIGluc3RlYWQKb2YgaW4gdGhlIGZ1bmN0aW9uIG1jMTQ2ODE4X2dldF90
+aW1lKCkgaXRzZWxmLCBpbiBvcmRlciBub3QgdG8gYWRkCnN0cmluZ3MgdG8gcnRjLW1jMTQ2ODE4
+LWxpYi5jLCB3aGljaCBpcyBraW5kIG9mIGEgbGlicmFyeS4KClRoZSBjYWxsZXJzIG9mIGFscGhh
+X3J0Y19yZWFkX3RpbWUoKSBhbmQgY21vc19yZWFkX3RpbWUoKSBtYXkgdXNlIHRoZQpjb250ZW50
+cyBvZiAoc3RydWN0IHJ0Y190aW1lICopIGV2ZW4gd2hlbiB0aGUgZnVuY3Rpb25zIHJldHVybiBh
+IGZhaWx1cmUKY29kZS4gVGhlcmVmb3JlLCBzZXQgdGhlIGNvbnRlbnRzIG9mIChzdHJ1Y3QgcnRj
+X3RpbWUgKikgdG8gMHgwMCwKd2hpY2ggYWxpZ25zIHdpdGggdGhlIChwb3NzaWJseSBzdGFsZT8p
+IGNvbW1lbnQgaW4gY21vc19yZWFkX3RpbWU6CgoJLyoKCSAqIElmIHBtX3RyYWNlIGFidXNlZCB0
+aGUgUlRDIGZvciBzdG9yYWdlLCBzZXQgdGhlIHRpbWVzcGVjIHRvIDAsCgkgKiB3aGljaCB0ZWxs
+cyB0aGUgY2FsbGVyIHRoYXQgdGhpcyBSVEMgdmFsdWUgaXMgdW51c2FibGUuCgkgKi8KCkZvciBj
+b25zaXN0ZW5jeSwgZG8gdGhpcyBpbiBtYzE0NjgxOF9nZXRfdGltZSgpLgoKTm90ZTogaHBldF9y
+dGNfaW50ZXJydXB0KCkgbWF5IGNhbGwgbWMxNDY4MThfZ2V0X3RpbWUoKSBtYW55IHRpbWVzIGEK
+c2Vjb25kLiBJdCBpcyB2ZXJ5IHVubGlrZWx5LCB0aG91Z2gsIHRoYXQgdGhlIFJUQyBzdWRkZW5s
+eSBzdG9wcwp3b3JraW5nIGFuZCBtYzE0NjgxOF9nZXRfdGltZSgpIHdvdWxkIGNvbnNpc3RlbnRs
+eSBmYWlsLgoKT25seSBjb21waWxlLXRlc3RlZCBvbiBhbHBoYS4KClNpZ25lZC1vZmYtYnk6IE1h
+dGV1c3ogSm/FhGN6eWsgPG1hdC5qb25jenlrQG8yLnBsPgpDYzogUmljaGFyZCBIZW5kZXJzb24g
+PHJ0aEB0d2lkZGxlLm5ldD4KQ2M6IEl2YW4gS29rc2hheXNreSA8aW5rQGp1cmFzc2ljLnBhcmsu
+bXN1LnJ1PgpDYzogTWF0dCBUdXJuZXIgPG1hdHRzdDg4QGdtYWlsLmNvbT4KQ2M6IFRob21hcyBH
+bGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPgpDYzogSW5nbyBNb2xuYXIgPG1pbmdvQHJlZGhh
+dC5jb20+CkNjOiBCb3Jpc2xhdiBQZXRrb3YgPGJwQGFsaWVuOC5kZT4KQ2M6IERhdmUgSGFuc2Vu
+IDxkYXZlLmhhbnNlbkBsaW51eC5pbnRlbC5jb20+CkNjOiBBbGVzc2FuZHJvIFp1bW1vIDxhLnp1
+bW1vQHRvd2VydGVjaC5pdD4KQ2M6IEFsZXhhbmRyZSBCZWxsb25pIDxhbGV4YW5kcmUuYmVsbG9u
+aUBib290bGluLmNvbT4KQ2M6IGxpbnV4LWFscGhhQHZnZXIua2VybmVsLm9yZwpDYzogeDg2QGtl
+cm5lbC5vcmcKCi0tLQoKVE9ETzogd291bGQgaXQgYmUgYXBwcm9wcmlhdGUgdG8gYWRkIGF0dHJp
+YnV0ZSBfX211c3RfY2hlY2sgdG8KICAgICAgbWMxNDY4MThfZ2V0X3RpbWUoKT8KCnY0OiBBZGRl
+ZCB0aGlzIHBhdGNoCgogYXJjaC9hbHBoYS9rZXJuZWwvcnRjLmMgICAgICAgIHwgNyArKysrKyst
+CiBhcmNoL3g4Ni9rZXJuZWwvaHBldC5jICAgICAgICAgfCA4ICsrKysrKy0tCiBkcml2ZXJzL2Jh
+c2UvcG93ZXIvdHJhY2UuYyAgICAgfCA2ICsrKysrLQogZHJpdmVycy9ydGMvcnRjLWNtb3MuYyAg
+ICAgICAgIHwgOSArKysrKysrKy0KIGRyaXZlcnMvcnRjL3J0Yy1tYzE0NjgxOC1saWIuYyB8IDIg
+Ky0KIDUgZmlsZXMgY2hhbmdlZCwgMjYgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlvbnMoLSkKCmRp
+ZmYgLS1naXQgYS9hcmNoL2FscGhhL2tlcm5lbC9ydGMuYyBiL2FyY2gvYWxwaGEva2VybmVsL3J0
+Yy5jCmluZGV4IGNlMzA3Nzk0NmUxZC4uZmIzMDI1Mzk2YWM5IDEwMDY0NAotLS0gYS9hcmNoL2Fs
+cGhhL2tlcm5lbC9ydGMuYworKysgYi9hcmNoL2FscGhhL2tlcm5lbC9ydGMuYwpAQCAtODAsNyAr
+ODAsMTIgQEAgaW5pdF9ydGNfZXBvY2godm9pZCkKIHN0YXRpYyBpbnQKIGFscGhhX3J0Y19yZWFk
+X3RpbWUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcnRjX3RpbWUgKnRtKQogewotCW1jMTQ2
+ODE4X2dldF90aW1lKHRtKTsKKwlpbnQgcmV0ID0gbWMxNDY4MThfZ2V0X3RpbWUodG0pOworCisJ
+aWYgKHJldCA8IDApIHsKKwkJZGV2X2Vycl9yYXRlbGltaXRlZChkZXYsICJ1bmFibGUgdG8gcmVh
+ZCBjdXJyZW50IHRpbWVcbiIpOworCQlyZXR1cm4gcmV0OworCX0KIAogCS8qIEFkanVzdCBmb3Ig
+bm9uLWRlZmF1bHQgZXBvY2hzLiAgSXQncyBlYXNpZXIgdG8gZGVwZW5kIG9uIHRoZQogCSAgIGdl
+bmVyaWMgX19nZXRfcnRjX3RpbWUgYW5kIGFkanVzdCB0aGUgZXBvY2ggaGVyZSB0aGFuIGNyZWF0
+ZQpkaWZmIC0tZ2l0IGEvYXJjaC94ODYva2VybmVsL2hwZXQuYyBiL2FyY2gveDg2L2tlcm5lbC9o
+cGV0LmMKaW5kZXggODgyMjEzZGYzNzEzLi43MWYzMzY0MjVlNTggMTAwNjQ0Ci0tLSBhL2FyY2gv
+eDg2L2tlcm5lbC9ocGV0LmMKKysrIGIvYXJjaC94ODYva2VybmVsL2hwZXQuYwpAQCAtMTQzNSw4
+ICsxNDM1LDEyIEBAIGlycXJldHVybl90IGhwZXRfcnRjX2ludGVycnVwdChpbnQgaXJxLCB2b2lk
+ICpkZXZfaWQpCiAJaHBldF9ydGNfdGltZXJfcmVpbml0KCk7CiAJbWVtc2V0KCZjdXJyX3RpbWUs
+IDAsIHNpemVvZihzdHJ1Y3QgcnRjX3RpbWUpKTsKIAotCWlmIChocGV0X3J0Y19mbGFncyAmIChS
+VENfVUlFIHwgUlRDX0FJRSkpCi0JCW1jMTQ2ODE4X2dldF90aW1lKCZjdXJyX3RpbWUpOworCWlm
+IChocGV0X3J0Y19mbGFncyAmIChSVENfVUlFIHwgUlRDX0FJRSkpIHsKKwkJaWYgKHVubGlrZWx5
+KG1jMTQ2ODE4X2dldF90aW1lKCZjdXJyX3RpbWUpIDwgMCkpIHsKKwkJCXByX2Vycl9yYXRlbGlt
+aXRlZCgidW5hYmxlIHRvIHJlYWQgY3VycmVudCB0aW1lIGZyb20gUlRDXG4iKTsKKwkJCXJldHVy
+biBJUlFfSEFORExFRDsKKwkJfQorCX0KIAogCWlmIChocGV0X3J0Y19mbGFncyAmIFJUQ19VSUUg
+JiYKIAkgICAgY3Vycl90aW1lLnRtX3NlYyAhPSBocGV0X3ByZXZfdXBkYXRlX3NlYykgewpkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9iYXNlL3Bvd2VyL3RyYWNlLmMgYi9kcml2ZXJzL2Jhc2UvcG93ZXIv
+dHJhY2UuYwppbmRleCA5NDY2NTAzN2Y0YTMuLjcyYjdhOTIzMzdiMSAxMDA2NDQKLS0tIGEvZHJp
+dmVycy9iYXNlL3Bvd2VyL3RyYWNlLmMKKysrIGIvZHJpdmVycy9iYXNlL3Bvd2VyL3RyYWNlLmMK
+QEAgLTEyMCw3ICsxMjAsMTEgQEAgc3RhdGljIHVuc2lnbmVkIGludCByZWFkX21hZ2ljX3RpbWUo
+dm9pZCkKIAlzdHJ1Y3QgcnRjX3RpbWUgdGltZTsKIAl1bnNpZ25lZCBpbnQgdmFsOwogCi0JbWMx
+NDY4MThfZ2V0X3RpbWUoJnRpbWUpOworCWlmIChtYzE0NjgxOF9nZXRfdGltZSgmdGltZSkgPCAw
+KSB7CisJCXByX2VycigiVW5hYmxlIHRvIHJlYWQgY3VycmVudCB0aW1lIGZyb20gUlRDXG4iKTsK
+KwkJcmV0dXJuIDA7CisJfQorCiAJcHJfaW5mbygiUlRDIHRpbWU6ICVwdFJ0LCBkYXRlOiAlcHRS
+ZFxuIiwgJnRpbWUsICZ0aW1lKTsKIAl2YWwgPSB0aW1lLnRtX3llYXI7CQkJCS8qIDEwMCB5ZWFy
+cyAqLwogCWlmICh2YWwgPiAxMDApCmRpZmYgLS1naXQgYS9kcml2ZXJzL3J0Yy9ydGMtY21vcy5j
+IGIvZHJpdmVycy9ydGMvcnRjLWNtb3MuYwppbmRleCBkYzNmOGIwZGRlOTguLmQwZjU4Y2NhNWMy
+MCAxMDA2NDQKLS0tIGEvZHJpdmVycy9ydGMvcnRjLWNtb3MuYworKysgYi9kcml2ZXJzL3J0Yy9y
+dGMtY21vcy5jCkBAIC0yMjIsNiArMjIyLDggQEAgc3RhdGljIGlubGluZSB2b2lkIGNtb3Nfd3Jp
+dGVfYmFuazIodW5zaWduZWQgY2hhciB2YWwsIHVuc2lnbmVkIGNoYXIgYWRkcikKIAogc3RhdGlj
+IGludCBjbW9zX3JlYWRfdGltZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBydGNfdGltZSAq
+dCkKIHsKKwlpbnQgcmV0OworCiAJLyoKIAkgKiBJZiBwbV90cmFjZSBhYnVzZWQgdGhlIFJUQyBm
+b3Igc3RvcmFnZSwgc2V0IHRoZSB0aW1lc3BlYyB0byAwLAogCSAqIHdoaWNoIHRlbGxzIHRoZSBj
+YWxsZXIgdGhhdCB0aGlzIFJUQyB2YWx1ZSBpcyB1bnVzYWJsZS4KQEAgLTIyOSw3ICsyMzEsMTIg
+QEAgc3RhdGljIGludCBjbW9zX3JlYWRfdGltZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBy
+dGNfdGltZSAqdCkKIAlpZiAoIXBtX3RyYWNlX3J0Y192YWxpZCgpKQogCQlyZXR1cm4gLUVJTzsK
+IAotCW1jMTQ2ODE4X2dldF90aW1lKHQpOworCXJldCA9IG1jMTQ2ODE4X2dldF90aW1lKHQpOwor
+CWlmIChyZXQgPCAwKSB7CisJCWRldl9lcnJfcmF0ZWxpbWl0ZWQoZGV2LCAidW5hYmxlIHRvIHJl
+YWQgY3VycmVudCB0aW1lXG4iKTsKKwkJcmV0dXJuIHJldDsKKwl9CisKIAlyZXR1cm4gMDsKIH0K
+IApkaWZmIC0tZ2l0IGEvZHJpdmVycy9ydGMvcnRjLW1jMTQ2ODE4LWxpYi5jIGIvZHJpdmVycy9y
+dGMvcnRjLW1jMTQ2ODE4LWxpYi5jCmluZGV4IGMxODZjOGM0OTgyYi4uY2NkOTc0YjhhNzVhIDEw
+MDY0NAotLS0gYS9kcml2ZXJzL3J0Yy9ydGMtbWMxNDY4MTgtbGliLmMKKysrIGIvZHJpdmVycy9y
+dGMvcnRjLW1jMTQ2ODE4LWxpYi5jCkBAIC0yNCw3ICsyNCw3IEBAIHVuc2lnbmVkIGludCBtYzE0
+NjgxOF9nZXRfdGltZShzdHJ1Y3QgcnRjX3RpbWUgKnRpbWUpCiAJLyogRW5zdXJlIHRoYXQgdGhl
+IFJUQyBpcyBhY2Nlc3NpYmxlLiBCaXQgNiBtdXN0IGJlIDAhICovCiAJaWYgKFdBUk5fT05fT05D
+RSgoQ01PU19SRUFEKFJUQ19WQUxJRCkgJiAweDQwKSAhPSAwKSkgewogCQlzcGluX3VubG9ja19p
+cnFyZXN0b3JlKCZydGNfbG9jaywgZmxhZ3MpOwotCQltZW1zZXQodGltZSwgMHhmZiwgc2l6ZW9m
+KCp0aW1lKSk7CisJCW1lbXNldCh0aW1lLCAwLCBzaXplb2YoKnRpbWUpKTsKIAkJcmV0dXJuIC1F
+SU87CiAJfQogCi0tIAoyLjI1LjEKCg==
