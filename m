@@ -1,62 +1,30 @@
-From: cgel.zte@gmail.com
-Subject: [PATCH] arch/alpha/kernel: remove redundant err variable
-Date: Mon, 10 Jan 2022 01:29:54 +0000
-Message-ID: <20220110012954.644059-1-chi.minghao@zte.com.cn>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH 01/16] alpha: Remove usage of the deprecated
+ "pci-dma-compat.h" API
+Date: Mon, 10 Jan 2022 00:43:20 -0800
+Message-ID: <YdvxqFMBTpHlvd12@infradead.org>
+References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+ <30686538ee42aaa4c2dd0788c42edbc6df07f250.1641500561.git.christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8ahpX94c8GUmfMJh8inkb4fyYhi5rbgrtZUmtlm080A=;
-        b=AMdHRjEu3M3oKR3yjUIESyRG3UvvqvBAJ7DvqBXZDISAN0v+P/+JTHBh6oNPYoqDGt
-         HQ+eFIS19fCTk6gQiCa7FrVjv6UwrVyVF5tv1Esab7KoIDf2GE7feL7vHTmIzrnKpzGZ
-         +E786/7Y3PCTejwLnubmdfyeYc6+LhdRFAfDJf4dO7nQMIF1EbDlOjcgVOKpTbNcjz3z
-         JM1W7awIiV3V4SCE16ibbmQHilc+RozkLTUGS2BXe1xIujiCHYsR82q2TA4XjBKzMo8z
-         eEdYhiWSVV9kbtg4BpTwvPB56mifFozQ/LAgXMk/07gAZNn6JgYePMw8Sf4h+UK2eXyT
-         oU2Q==
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=tUjT04nSy9SYd253XcwattFKK6
+        LbHcaTX9/6RgvFW+kkmzWE0fJ2rFf4mbeWooRYrF32UOm2tI8sbO+wXxKVy5p5kNTlzDfysqo19tO
+        dWLRiNESmpJzm15YW/U5w8/EbDIw97cTWEjEpkoxwwtfRJp/grdCgr6X7TvFW+ll3zcNu8eNZ1UvE
+        SJ0yoswdtd28HIZogmU6hjphd7YV/WVNp/klpYluvx6pniI2+LJN5ZleWQOzv3QibeCN550YFFeYz
+        SupGmpdKT/kTotBic3Fw/ptm4xp+lKtHCdDNng+Ygu84r+wW4v+t6uXdbJwCoOErDfRtDahyObNtC
+        JnUeVabQ==;
+Content-Disposition: inline
+In-Reply-To: <30686538ee42aaa4c2dd0788c42edbc6df07f250.1641500561.git.christophe.jaillet@wanadoo.fr>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: peterz@infradead.org
-Cc: mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@redhat.com, namhyung@kernel.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
+Content-Transfer-Encoding: 7bit
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+Looks good,
 
-Return value from __hw_perf_event_init() directly instead
-of taking this in another redundant variable.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
----
- arch/alpha/kernel/perf_event.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index efcf7321701b..ccdb508c1516 100644
---- a/arch/alpha/kernel/perf_event.c
-+++ b/arch/alpha/kernel/perf_event.c
-@@ -689,8 +689,6 @@ static int __hw_perf_event_init(struct perf_event *event)
-  */
- static int alpha_pmu_event_init(struct perf_event *event)
- {
--	int err;
--
- 	/* does not support taken branch sampling */
- 	if (has_branch_stack(event))
- 		return -EOPNOTSUPP;
-@@ -709,9 +707,7 @@ static int alpha_pmu_event_init(struct perf_event *event)
- 		return -ENODEV;
- 
- 	/* Do the real initialisation work. */
--	err = __hw_perf_event_init(event);
--
--	return err;
-+	return __hw_perf_event_init(event);
- }
- 
- /*
--- 
-2.25.1
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
