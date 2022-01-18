@@ -1,40 +1,87 @@
-From: "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: Re: [PATCH 00/16] Remove usage of the deprecated "pci-dma-compat.h"
- API
-Date: Mon, 10 Jan 2022 10:35:26 -0500
-Message-ID: <yq1ee5ftxic.fsf@ca-mkp.ca.oracle.com>
-References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+From: Walt Drummond <walt@drummond.us>
+Subject: [PATCH 0/3] status: TTY status message request
+Date: Mon, 17 Jan 2022 20:42:57 -0800
+Message-ID: <20220118044259.764945-1-walt@drummond.us>
 Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
- from : message-id : references : date : in-reply-to : content-type :
- mime-version; s=corp-2021-07-09;
- bh=g6Er+gI9i/erk3lqnCuNb3gG2mXN1WNzB/Xgz2fumEk=;
- b=gtASKtuH+ZVZBEjz/kSNnfXv+hARVXLucL3c/IT5GVaI0NovHjGWmR6sFWB4cIxchDbV
- c7hkkb1IU87WuxT737TfxoHodtP/Uu/OCadA0zLGmltOYpujhIiP32J5WeStsAFl3sta
- SZGSLJfnyhawByJNtJ4WdIFcgRS+yfWIMla3NUGrfLlHF8rIZUGtQqtNCqPlvqpYEFub
- 8hZF+6df7H/5ZYnMBLsdLiwh9LGzjUQfCdhU3eekl2yppGI3SCG3hfQKd1Cemij4pSi4
- l7JnN33h0s0JN+enUZSH019qjY4Ic5eRryUxwJg8BrVsbwKGY+qvfAMcNeG6SOTuIt3C DA== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g6Er+gI9i/erk3lqnCuNb3gG2mXN1WNzB/Xgz2fumEk=;
- b=JTc5YFbWgZmEkdKtwkTVB5RFh6n2cFyTarFFjx7WTyHWGBw8XcmiuvSKfbulQtmR6M/C2OE/E/i8G7zSfTsqGrt6AQ7BKWJLvNxQcBBceJKT9keb4xTrAfLoTDAMIYQLWahO/YTdwON2caofuOvZgisrkd1Hnr46MbOfNIP9hmU=
-In-Reply-To: <cover.1641500561.git.christophe.jaillet@wanadoo.fr> (Christophe
-        JAILLET's message of "Thu, 6 Jan 2022 22:45:13 +0100")
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=home.drummond.us;
+        s=default; t=1642481000;
+        bh=JFi+HKlyMuoco5DMezAYc0cpMIkALY2NRgqxQb8XaVQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HrfroqxJrad3DzZ6FT4waFIt4MeHoVb4BxDueoszUUfOdgocQu4B3/GEGCbfH7j+4
+         bCnukvS8DMk0QncCM+4cnd67oBI11AUaZSfyA1jy6TaXA3X5Kcb8WqFT1lOO/G4bU0
+         sE937UadIfrwnyajiN2sClndEDW/LSMvKjwv+nnxvNZNZDwNa20sogsmB1xI0fuutp
+         TyP5IwYKNFjesXLYErOM4Z88Ci8VqrvFMwxoLr+OAwdySfNxgdpWQg9mNN1heppfgk
+         /c+IM2lyAghg9dy8t50eqPnrKRsXzAsmMkXQhyUwc1ZmqI7/AHP52rv9ZYELVdXPsV
+         F6MVEFQaeeKrg==
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, davem@davemloft.net, airlied@linux.ie, vkoul@kernel.org, hao.wu@intel.com, trix@redhat.com, mdf@kernel.org, yilun.xu@intel.com, awalls@md.metrocast.net, mchehab@kernel.org, sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com, suganath-prabu.subramani@broadcom.com, mporter@kernel.crashing.org, alex.bou9@gmail.com, bhelgaas@google.com, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, dmaengine@vger.kernel.org, linux-fpga@vger.kernel.org, linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org, linux-pci@vger.kernel.org, l
+To: agordeev@linux.ibm.com, arnd@arndb.de, benh@kernel.crashing.org, borntraeger@linux.ibm.com, chris@zankel.net, davem@davemloft.net, gregkh@linuxfoundation.org, hca@linux.ibm.com, deller@gmx.de, ink@jurassic.park.msu.ru, James.Bottomley@HansenPartnership.com, jirislaby@kernel.org, mattst88@gmail.com, jcmvbkbc@gmail.com, mpe@ellerman.id.au, paulus@samba.org, rth@twiddle.net, dalias@libc.org, tsbogend@alpha.franken.de, gor@linux.ibm.com, ysato@users.osdn.me
+Cc: linux-kernel@vger.kernel.org, ar@cs.msu.ru, walt@drummond.us, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, sparclinux@vger.kernel.org
 
+This patchset adds TTY status message request feature to the n_tty
+line dicipline.  This feature prints a brief message containing basic
+system and process group information to a user's TTY in response to a
+new control character in the line dicipline (default Ctrl-T) or the
+TIOCSTAT ioctl.  The message contains the current system load, the
+name and PID of an interesting process in the forground process group,
+it's run time, percent CPU usage and RSS.  An example of this message
+is:
 
-Christophe,
+  load: 0.31  cmd: sleep 3616843 [sleeping] 0.36r 0.00u 0.00s 0% 696k
 
-> This serie axes all the remaining usages of the deprecated
-> "pci-dma-compat.h" API.
+User API visible changes are limited to:
+ - The addition of VSTATUS in termios.c_cc[]
+ - The addition of NOKERNINFO bit in termios.l_cflags
+ - The addition of the TIOCSTAT ioctl number
 
-Applied patches 10-15 to 5.17/scsi-staging, thanks!
+None of these changes break the existing kernel api as the termios
+structure on all architectures has enough space in the control
+character array (.c_cc) for the new character, and the other changes
+are space agnostic.
+
+This feature is in many other Unix-like systems, both current and
+historical.  In other implementations, this feature would also send
+SIGINFO to the process group; this implementation does not.
+
+Walt Drummond (3):
+  vstatus: Allow the n_tty line dicipline to write to a user tty
+  vstatus: Add user space API definitions for VSTATUS, NOKERNINFO and
+    TIOCSTAT
+  status: Display an informational message when the VSTATUS character is
+    pressed or TIOCSTAT ioctl is called.
+
+ arch/alpha/include/asm/termios.h         |   4 +-
+ arch/alpha/include/uapi/asm/ioctls.h     |   1 +
+ arch/alpha/include/uapi/asm/termbits.h   |  34 ++---
+ arch/ia64/include/asm/termios.h          |   4 +-
+ arch/ia64/include/uapi/asm/termbits.h    |  34 ++---
+ arch/mips/include/asm/termios.h          |   4 +-
+ arch/mips/include/uapi/asm/ioctls.h      |   1 +
+ arch/mips/include/uapi/asm/termbits.h    |  36 ++---
+ arch/parisc/include/asm/termios.h        |   4 +-
+ arch/parisc/include/uapi/asm/ioctls.h    |   1 +
+ arch/parisc/include/uapi/asm/termbits.h  |  34 ++---
+ arch/powerpc/include/asm/termios.h       |   4 +-
+ arch/powerpc/include/uapi/asm/ioctls.h   |   2 +
+ arch/powerpc/include/uapi/asm/termbits.h |  34 ++---
+ arch/s390/include/asm/termios.h          |   4 +-
+ arch/sh/include/uapi/asm/ioctls.h        |   1 +
+ arch/sparc/include/uapi/asm/ioctls.h     |   1 +
+ arch/sparc/include/uapi/asm/termbits.h   |  38 +++---
+ arch/xtensa/include/uapi/asm/ioctls.h    |   1 +
+ drivers/tty/Makefile                     |   2 +-
+ drivers/tty/n_tty.c                      | 113 +++++++++++-----
+ drivers/tty/n_tty_status.c               | 162 +++++++++++++++++++++++
+ drivers/tty/tty_io.c                     |   2 +-
+ include/asm-generic/termios.h            |   4 +-
+ include/linux/tty.h                      | 123 ++++++++---------
+ include/uapi/asm-generic/ioctls.h        |   1 +
+ include/uapi/asm-generic/termbits.h      |  34 ++---
+ 27 files changed, 461 insertions(+), 222 deletions(-)
+ create mode 100644 drivers/tty/n_tty_status.c
 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.30.2
+
