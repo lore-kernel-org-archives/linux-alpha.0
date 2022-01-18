@@ -1,34 +1,35 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: architectures that still need to remove set_fs()
-Date: Tue, 18 Jan 2022 08:48:36 +0100
-Message-ID: <20220118074836.GA20994@lst.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 2/3] vstatus: Add user space API definitions for VSTATUS,
+ NOKERNINFO and TIOCSTAT
+Date: Tue, 18 Jan 2022 09:08:41 +0100
+Message-ID: <CAK8P3a0ohW+w8_A8qMNqxpTmFcvxQr+z9YR96RAu5-wtdG_5+g@mail.gmail.com>
+References: <20220118044323.765038-1-walt@drummond.us> <20220118044323.765038-2-walt@drummond.us>
 Mime-Version: 1.0
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <20220118044323.765038-2-walt@drummond.us>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Guo Ren <guoren@kernel.org>, Brian Cain <bcain@codeaurora.org>, Michal Simek <monstr@monstr.eu>, Nick Hu <nickhu@andestech.com>, Greentime Hu <green.hu@gmail.com>, Vincent Chen <deanbo422@gmail.com>, Dinh Nguyen <dinguyen@kernel.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, openrisc@lists.librecores.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-arch@linux-xtensa.org, linux-kernel@linux-xtensa.org
+To: Walt Drummond <walt@drummond.us>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, Yoshinori Sato <ysato@users.osdn.me>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, Arnd Bergmann <arnd@arndb>
 
-Hi all,
+On Tue, Jan 18, 2022 at 5:43 AM Walt Drummond <walt@drummond.us> wrote:
 
-you are in this list because your architecture still implements and
-uses address space overrides using set_fs(), which are deprecated and
-have been removed from all mainstream architecture ports.  To help
-cleanup the core kernel it would be great to make progress on removing
-set_fs entirely.
+> diff --git a/include/uapi/asm-generic/ioctls.h b/include/uapi/asm-generic/ioctls.h
+> index cdc9f4ca8c27..eafb662d6a0e 100644
+> --- a/include/uapi/asm-generic/ioctls.h
+> +++ b/include/uapi/asm-generic/ioctls.h
+> @@ -97,6 +97,7 @@
+>
+>  #define TIOCMIWAIT     0x545C  /* wait for a change on serial input line(s) */
+>  #define TIOCGICOUNT    0x545D  /* read serial port inline interrupt counts */
+> +#define TIOCSTAT        0x545E /* display process group stats on tty */
+>
+>  /*
+>   * Some arches already define FIOQSIZE due to a historical
 
-The following steps are required:
+I don't see any advantage in using the old-style ioctl command definitions
+here, and looking through the history of this file, all recent additions used
+the now normal _IOWR() style macros, so please use those as well.
 
- (1) implement the __get_kernel_nofault and __put_kernel_nofault
-     helper to access kernel memory without page faults, replacing
-     the get/put_user under set_fs(KERNEL_DS) abuse.  Mips has a good
-     example for a trivial implementation for architectures that use
-     a common address space in commit 04324f44cb69
- (2) remove any architecture specific use of such constructs.  This
-     only affects ia64 and sh.
- (3) stop selecting the SET_FS and remove all the set_fs-related
-     infrastructure.  The above mips commit is a good guide once again.
-
-Thanks!
+       Arnd
