@@ -1,50 +1,120 @@
-From: Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 13/54] arch/alpha: replace cpumask_weight with cpumask_empty where appropriate
-Date: Sun, 23 Jan 2022 10:38:44 -0800
-Message-ID: <20220123183925.1052919-14-yury.norov@gmail.com>
-References: <20220123183925.1052919-1-yury.norov@gmail.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: [RFC V1 16/31] alpha/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date: Mon, 24 Jan 2022 18:26:53 +0530
+Message-ID: <1643029028-12710-17-git-send-email-anshuman.khandual@arm.com>
+References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=EaZo6YWz+PE4Amu8QukF1Cw8oSIakZDIQiKoGR/62wY=;
-        b=V2jPEDWq3IwIGuJgkDE35gcjcxe2X2oRT+W5/8zZD364JRtYsD/NetC+jPipdlP248
-         VCZINxrgU8tohaAr/uOO2w7qtXxaF4tnonr9b/tMDnGy8/JWEsbHewV6ABBhs9UVYadY
-         ZRHqPkouoaRfLkfknvSgvJd3V0Cre7vIvYAmqjqhx7RQhsyXW3ho+RqXj9q9WBKZaFnw
-         0zGgSRnEyOR8m11UhivzNB8lHiu2vzn+ZubLLiEtRJUlCjBZqg4O7WmF/YhdMkw1DmSN
-         owVHE4zq1o6nHuVmcX62AylgLcK1BDygi77X2PO2ga9uCd6LKSXnMX8BIaj6I1/fkfLo
-         NAtQ==
-In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
+In-Reply-To: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-To: Yury Norov <yury.norov@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Andrew Morton <akpm@linux-foundation.org>, =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Zijlstra <peterz@infradead.org>, David Laight <David.Laight@aculab.com>, Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>, Emil Renner Berthing <kernel@esmil.dk>, Nicholas Piggin <npiggin@gmail.com>, Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>, Alexey Klimov <aklimov@redhat.com>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Geert Uytterhoeven <ge>
+Content-Transfer-Encoding: 7bit
+To: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org, hch@infradead.org, akpm@linux-foundation.org, Anshuman Khandual <anshuman.khandual@arm.com>, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
 
-common_shutdown_1() calls cpumask_weight() to check if any bit of a
-given cpumask is set. We can do it more efficiently with cpumask_empty()
-because cpumask_empty() stops traversing the cpumask as soon as it finds
-first set bit, while cpumask_weight() counts all bits unconditionally.
+This defines and exports a platform specific custom vm_get_page_prot() via
+subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+macros can be dropped which are no longer needed.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 ---
- arch/alpha/kernel/process.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/alpha/Kconfig               |  1 +
+ arch/alpha/include/asm/pgtable.h | 17 -------------
+ arch/alpha/mm/init.c             | 41 ++++++++++++++++++++++++++++++++
+ 3 files changed, 42 insertions(+), 17 deletions(-)
 
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index 5f8527081da9..0d4bc60828bf 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -125,7 +125,7 @@ common_shutdown_1(void *generic_ptr)
- 	/* Wait for the secondaries to halt. */
- 	set_cpu_present(boot_cpuid, false);
- 	set_cpu_possible(boot_cpuid, false);
--	while (cpumask_weight(cpu_present_mask))
-+	while (!cpumask_empty(cpu_present_mask))
- 		barrier();
- #endif
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 4e87783c90ad..73e82fe5c770 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -2,6 +2,7 @@
+ config ALPHA
+ 	bool
+ 	default y
++	select ARCH_HAS_VM_GET_PAGE_PROT
+ 	select ARCH_32BIT_USTAT_F_TINODE
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_MIGHT_HAVE_PC_SERIO
+diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
+index 02f0429f1068..9fb5e9d10bb6 100644
+--- a/arch/alpha/include/asm/pgtable.h
++++ b/arch/alpha/include/asm/pgtable.h
+@@ -116,23 +116,6 @@ struct vm_area_struct;
+  * arch/alpha/mm/fault.c)
+  */
+ 	/* xwr */
+-#define __P000	_PAGE_P(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR)
+-#define __P001	_PAGE_P(_PAGE_FOE | _PAGE_FOW)
+-#define __P010	_PAGE_P(_PAGE_FOE)
+-#define __P011	_PAGE_P(_PAGE_FOE)
+-#define __P100	_PAGE_P(_PAGE_FOW | _PAGE_FOR)
+-#define __P101	_PAGE_P(_PAGE_FOW)
+-#define __P110	_PAGE_P(0)
+-#define __P111	_PAGE_P(0)
+-
+-#define __S000	_PAGE_S(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR)
+-#define __S001	_PAGE_S(_PAGE_FOE | _PAGE_FOW)
+-#define __S010	_PAGE_S(_PAGE_FOE)
+-#define __S011	_PAGE_S(_PAGE_FOE)
+-#define __S100	_PAGE_S(_PAGE_FOW | _PAGE_FOR)
+-#define __S101	_PAGE_S(_PAGE_FOW)
+-#define __S110	_PAGE_S(0)
+-#define __S111	_PAGE_S(0)
  
+ /*
+  * pgprot_noncached() is only for infiniband pci support, and a real
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index f6114d03357c..89e5e593194d 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -280,3 +280,44 @@ mem_init(void)
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+ 	memblock_free_all();
+ }
++
++pgprot_t vm_get_page_prot(unsigned long vm_flags)
++{
++	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
++	case VM_NONE:
++		return _PAGE_P(_PAGE_FOE|_PAGE_FOW|_PAGE_FOR);
++	case VM_READ:
++		return _PAGE_P(_PAGE_FOE|_PAGE_FOW);
++	case VM_WRITE:
++		return _PAGE_P(_PAGE_FOE);
++	case VM_READ | VM_WRITE:
++		return _PAGE_P(_PAGE_FOE);
++	case VM_EXEC:
++		return _PAGE_P(_PAGE_FOW|_PAGE_FOR);
++	case VM_EXEC | VM_READ:
++		return _PAGE_P(_PAGE_FOW);
++	case VM_EXEC | VM_WRITE:
++		return _PAGE_P(0);
++	case VM_EXEC | VM_READ | VM_WRITE:
++		return _PAGE_P(0);
++	case VM_SHARED:
++		return _PAGE_S(_PAGE_FOE|_PAGE_FOW|_PAGE_FOR);
++	case VM_SHARED | VM_READ:
++		return _PAGE_S(_PAGE_FOE|_PAGE_FOW);
++	case VM_SHARED | VM_WRITE:
++		return _PAGE_S(_PAGE_FOE);
++	case VM_SHARED | VM_READ | VM_WRITE:
++		return  _PAGE_S(_PAGE_FOE);
++	case VM_SHARED | VM_EXEC:
++		return _PAGE_S(_PAGE_FOW|_PAGE_FOR);
++	case VM_SHARED | VM_EXEC | VM_READ:
++		return _PAGE_S(_PAGE_FOW);
++	case VM_SHARED | VM_EXEC | VM_WRITE:
++		return _PAGE_S(0);
++	case VM_SHARED | VM_EXEC | VM_READ | VM_WRITE:
++		return _PAGE_S(0);
++	default:
++		BUILD_BUG();
++	}
++}
++EXPORT_SYMBOL(vm_get_page_prot);
 -- 
-2.30.2
+2.25.1
 
