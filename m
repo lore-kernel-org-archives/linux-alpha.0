@@ -1,104 +1,86 @@
-From: Walt Drummond <walt@drummond.us>
-Subject: Re: [PATCH 0/3] status: TTY status message request
-Date: Sat, 29 Jan 2022 07:23:26 -0800
-Message-ID: <CADCN6nyyChM=jb9nmc2jDg2UdHUoXp3E05=ifxRpcs=8k8t09Q@mail.gmail.com>
-References: <20220118044259.764945-1-walt@drummond.us> <YfFQeC1cUVFmISMK@kroah.com>
+From: Kees Cook <keescook@chromium.org>
+Subject: [PATCH] alpha: Silence -Warray-bounds warnings
+Date: Wed,  2 Feb 2022 14:18:25 -0800
+Message-ID: <20220202221825.931307-1-keescook@chromium.org>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=drummond.us; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0mCWH6Tux8tcx0O8BuZbvK36ydxh3XeFUHA8Flrblcc=;
-        b=cmvGYiFpo2ar6tVj5q2BCQVYb9k8BBD0XwhyxqAVItAmy2DCdgiftAuj8oc7BBE49Q
-         LjK1fzbe0hOX97nInIogSNxADc9w4GpCfyauU6NFtNktDIG03u61lrQy9hqdUvd6EUft
-         C6I/tHY4kzyBauIRoXYOzo9LGSe929OK0jEzQ59wjAL3By0a+QjA0M9X3G7I1kcoxcb7
-         Q0AdPG8TS8c6yTTOUze5l0qFpdoVitgV/p2s3UNbwqPC0EG+SKAZieLlLnSPMO8rnFD5
-         +FIv54+PLtXCBluE0vkOLnAVfI1OEciJIeE6mtAgIHH1+Z3qSeTB6dFp5Kah63auycAx
-         k05w==
-In-Reply-To: <YfFQeC1cUVFmISMK@kroah.com>
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PvIMpuVZyrx2W3pDxCssZQEQ2K/pbzoOwCNLnMHvOS4=;
+        b=eV4/8+kdNIxCQJirRUIl72MAxMT2PxHUkbH+xyPV/dMpd0CXQI9lPvt5HhwasEAbhK
+         NOu0XUCADylaFw791IcP3Hw1h3LmK/dWCE2lKS5vDjHlWNXoxfPOTkKWeSCQi0O/WEqJ
+         DeWox2hw8VY0TQB+SkRRZ8UJgdmLa0E5bhqo0=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2488; h=from:subject; bh=T4ptorLGoemf/N9SvJlurYPJLNHVXVaxTruje8+ZTVU=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBh+wMwVDvf/S5SQmKa7J4cxYmsmNmgiJhrn+a3t0pd Yygy+p+JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYfsDMAAKCRCJcvTf3G3AJvsSEA CKC4WWfVamcX7i35UpZ2lDxhsQwdSv/5qzBy2LdZhyiOgXuC12Pnx4PPn3+4VUG7xCLWyH37ZzgQ71 F1V/7Xca8i1yu3zv7y+RYB+YdRoPIpnBPnOca0LbhhHc+siw6OfnrmP6BP9Dvr61Nh2m5MIVzVYsWt 8pPJyhf16eUuElmyLeAreuxPTsQo9J3NVA1fQ2di1NKwUV9vjlyZkopP6ecNSA1im2+X0S4mSiQDad bwUiRznB6RKGc/rKyN2gc6sxqoyNDw2zhTgakL6e/FsAmdrzpV8LulwAj698o0nms8jN/NINov16FP P/zwZBkT26aKCIFxXNF+FqvxZDueM6yXSjDuY2UtVxOTWP4KDMYv2fmLYIY/4+5Lx4pwRH1mlPZB3Z e2Uk/1nSjO0m1CaJ+Cr1uWYNGRmExqiILZMiOXvAck3E/aVvjGpiTU5eVlLcsUGMg2aJ/WCBfxYnHP UyBprgl0SfjbCZKKlAZrID3KqLHZu4FRAt15ZpMlB4ABGPaiB
+ rMprDyKMoPqwYUrzCzIaarsXV90Vz 4DwP4CAh1BMsUH03aD0mF64aaV0LGEQhrhFhRbgu+OBMyCqcJOpb65kbedFPUbzopfOm 
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: agordeev@linux.ibm.com, arnd@arndb.de, benh@kernel.crashing.org, borntraeger@linux.ibm.com, chris@zankel.net, davem@davemloft.net, hca@linux.ibm.com, deller@gmx.de, ink@jurassic.park.msu.ru, James.Bottomley@hansenpartnership.com, jirislaby@kernel.org, mattst88@gmail.com, jcmvbkbc@gmail.com, mpe@ellerman.id.au, paulus@samba.org, rth@twiddle.net, dalias@libc.org, tsbogend@alpha.franken.de, gor@linux.ibm.com, ysato@users.osdn.me, linux-kernel@vger.kernel.org, ar@cs.msu.ru, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, sparclinux@vger.kernel.org
+To: Richard Henderson <rth@twiddle.net>
+Cc: Kees Cook <keescook@chromium.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Guenter Roeck <linux@roeck-us.net>, Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-hardening@vger.kernel.org
 
-ACK, will do.
+GCC 11 (incorrectly[1]) assumes that literal values cast to (void *)
+should be treated like a NULL pointer with an offset, and raises
+diagnostics when doing bounds checking:
 
-On Wed, Jan 26, 2022 at 5:45 AM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Jan 17, 2022 at 08:42:57PM -0800, Walt Drummond wrote:
-> > This patchset adds TTY status message request feature to the n_tty
-> > line dicipline.  This feature prints a brief message containing basic
-> > system and process group information to a user's TTY in response to a
-> > new control character in the line dicipline (default Ctrl-T) or the
-> > TIOCSTAT ioctl.  The message contains the current system load, the
-> > name and PID of an interesting process in the forground process group,
-> > it's run time, percent CPU usage and RSS.  An example of this message
-> > is:
-> >
-> >   load: 0.31  cmd: sleep 3616843 [sleeping] 0.36r 0.00u 0.00s 0% 696k
-> >
-> > User API visible changes are limited to:
-> >  - The addition of VSTATUS in termios.c_cc[]
-> >  - The addition of NOKERNINFO bit in termios.l_cflags
-> >  - The addition of the TIOCSTAT ioctl number
-> >
-> > None of these changes break the existing kernel api as the termios
-> > structure on all architectures has enough space in the control
-> > character array (.c_cc) for the new character, and the other changes
-> > are space agnostic.
-> >
-> > This feature is in many other Unix-like systems, both current and
-> > historical.  In other implementations, this feature would also send
-> > SIGINFO to the process group; this implementation does not.
-> >
-> > Walt Drummond (3):
-> >   vstatus: Allow the n_tty line dicipline to write to a user tty
-> >   vstatus: Add user space API definitions for VSTATUS, NOKERNINFO and
-> >     TIOCSTAT
-> >   status: Display an informational message when the VSTATUS character is
-> >     pressed or TIOCSTAT ioctl is called.
-> >
-> >  arch/alpha/include/asm/termios.h         |   4 +-
-> >  arch/alpha/include/uapi/asm/ioctls.h     |   1 +
-> >  arch/alpha/include/uapi/asm/termbits.h   |  34 ++---
-> >  arch/ia64/include/asm/termios.h          |   4 +-
-> >  arch/ia64/include/uapi/asm/termbits.h    |  34 ++---
-> >  arch/mips/include/asm/termios.h          |   4 +-
-> >  arch/mips/include/uapi/asm/ioctls.h      |   1 +
-> >  arch/mips/include/uapi/asm/termbits.h    |  36 ++---
-> >  arch/parisc/include/asm/termios.h        |   4 +-
-> >  arch/parisc/include/uapi/asm/ioctls.h    |   1 +
-> >  arch/parisc/include/uapi/asm/termbits.h  |  34 ++---
-> >  arch/powerpc/include/asm/termios.h       |   4 +-
-> >  arch/powerpc/include/uapi/asm/ioctls.h   |   2 +
-> >  arch/powerpc/include/uapi/asm/termbits.h |  34 ++---
-> >  arch/s390/include/asm/termios.h          |   4 +-
-> >  arch/sh/include/uapi/asm/ioctls.h        |   1 +
-> >  arch/sparc/include/uapi/asm/ioctls.h     |   1 +
-> >  arch/sparc/include/uapi/asm/termbits.h   |  38 +++---
-> >  arch/xtensa/include/uapi/asm/ioctls.h    |   1 +
-> >  drivers/tty/Makefile                     |   2 +-
-> >  drivers/tty/n_tty.c                      | 113 +++++++++++-----
-> >  drivers/tty/n_tty_status.c               | 162 +++++++++++++++++++++++
-> >  drivers/tty/tty_io.c                     |   2 +-
-> >  include/asm-generic/termios.h            |   4 +-
-> >  include/linux/tty.h                      | 123 ++++++++---------
-> >  include/uapi/asm-generic/ioctls.h        |   1 +
-> >  include/uapi/asm-generic/termbits.h      |  34 ++---
-> >  27 files changed, 461 insertions(+), 222 deletions(-)
-> >  create mode 100644 drivers/tty/n_tty_status.c
-> >
-> > --
-> > 2.30.2
-> >
->
-> You forgot to cc: me on patch 2/3, which would be needed if I was to
-> take them all.
->
-> Please fix up patch 2 and resend the whole series.
->
-> thanks,
->
-> greg k-h
+In function '__memset',
+    inlined from '__bad_pagetable' at arch/alpha/mm/init.c:79:2:
+./arch/alpha/include/asm/string.h:37:32: error: '__builtin_memset' offset [0, 8191] is out of the bounds [0, 0] [-Werror=array-bounds]
+   37 |                         return __builtin_memset(s, c, n);
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~
+In function '__memset',
+    inlined from '__bad_page' at arch/alpha/mm/init.c:86:2:
+./arch/alpha/include/asm/string.h:37:32: error: '__builtin_memset' offset [0, 8191] is out of the bounds [0, 0] [-Werror=array-bounds]
+   37 |                         return __builtin_memset(s, c, n);
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~
+In function '__memset',
+    inlined from 'paging_init' at arch/alpha/mm/init.c:256:2:
+./arch/alpha/include/asm/string.h:37:32: error: '__builtin_memset' offset [0, 8191] is out of the bounds [0, 0] [-Werror=array-bounds]
+   37 |                         return __builtin_memset(s, c, n);
+
+This has been solved in other places[2] already by using the recently
+added absolute_pointer() macro. Do the same here.
+
+[1] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578
+[2] https://lore.kernel.org/all/20210912160149.2227137-1-linux@roeck-us.net/
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ arch/alpha/mm/init.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index f6114d03357c..7511723b7669 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -76,14 +76,14 @@ pgd_alloc(struct mm_struct *mm)
+ pmd_t *
+ __bad_pagetable(void)
+ {
+-	memset((void *) EMPTY_PGT, 0, PAGE_SIZE);
++	memset(absolute_pointer(EMPTY_PGT), 0, PAGE_SIZE);
+ 	return (pmd_t *) EMPTY_PGT;
+ }
+ 
+ pte_t
+ __bad_page(void)
+ {
+-	memset((void *) EMPTY_PGE, 0, PAGE_SIZE);
++	memset(absolute_pointer(EMPTY_PGE), 0, PAGE_SIZE);
+ 	return pte_mkdirty(mk_pte(virt_to_page(EMPTY_PGE), PAGE_SHARED));
+ }
+ 
+@@ -253,7 +253,7 @@ void __init paging_init(void)
+ 	free_area_init(max_zone_pfn);
+ 
+ 	/* Initialize the kernel's ZERO_PGE. */
+-	memset((void *)ZERO_PGE, 0, PAGE_SIZE);
++	memset(absolute_pointer(ZERO_PGE), 0, PAGE_SIZE);
+ }
+ 
+ #if defined(CONFIG_ALPHA_GENERIC) || defined(CONFIG_ALPHA_SRM)
+-- 
+2.30.2
+
