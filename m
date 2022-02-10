@@ -1,63 +1,50 @@
-From: Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2 3/3] vstatus: Display an informational message when the
- VSTATUS character is pressed or TIOCSTAT ioctl is called.
-Date: Mon, 7 Feb 2022 06:38:16 +0100
-Message-ID: <35f29dbd-04ec-037e-007c-7a079caf0d5b@kernel.org>
-References: <20220206154856.2355838-1-walt@drummond.us>
- <20220206154856.2355838-4-walt@drummond.us>
+From: Yury Norov <yury.norov@gmail.com>
+Subject: [PATCH 14/49] arch/alpha: replace cpumask_weight with cpumask_empty where appropriate
+Date: Thu, 10 Feb 2022 14:48:58 -0800
+Message-ID: <20220210224933.379149-15-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-Content-Language: en-US
-In-Reply-To: <20220206154856.2355838-4-walt@drummond.us>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Walt Drummond <walt@drummond.us>, agordeev@linux.ibm.com, arnd@arndb.de, benh@kernel.crashing.org, borntraeger@de.ibm.com, chris@zankel.net, davem@davemloft.net, gregkh@linuxfoundation.org, hca@linux.ibm.com, deller@gmx.de, ink@jurassic.park.msu.ru, James.Bottomley@HansenPartnership.com, mattst88@gmail.com, jcmvbkbc@gmail.com, mpe@ellerman.id.au, paulus@samba.org, rth@twiddle.net, dalias@libc.org, tsbogend@alpha.franken.de, gor@linux.ibm.com, ysato@users.osdn.me
-Cc: linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, ar@cs.msu.ru, linuxppc-dev@lists.ozlabs.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=dreoFKrn4wH6smW2GLCfxxjyjJhnljmILHzGoj0K5Es=;
+        b=nLj6aJoGZkZ+ciKqW/DpUozk1sjRaY94bK8YuXc85MMjn3ka8sf0yQDAo55lM3nr9s
+         1UIDIaeoEc4NFplxVMfgEZe4JIrvw8GFfSt1bRxcGbE0R7FyhYrq+5ERL2XmXd+8DMkk
+         msBJbFAY1A+uHQjX7pxCUlcRExj2gbm5HbdzAQorQnEsygPb0hInpXn+NwVt3GhNOenQ
+         J0K9n2OBOnFaqIu1bZ69zDwx9EEDX1LJK5djkopX8BKeW9OK8X83/KG1m+Y67AzZEzoo
+         b5YViod/+8inu3M7Flygc6qvfuFZ1LVXz4M9bMQ7qyAMxhj5BHtXI5n7+YviS6OqDhuk
+         u4FA==
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Yury Norov <yury.norov@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Andrew Morton <akpm@linux-foundation.org>, =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Zijlstra <peterz@infradead.org>, David Laight <David.Laight@aculab.com>, Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>, Emil Renner Berthing <kernel@esmil.dk>, Nicholas Piggin <npiggin@gmail.com>, Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>, Alexey Klimov <aklimov@redhat.com>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Geert Uytterhoeven <ge>
 
-On 06. 02. 22, 16:48, Walt Drummond wrote:
-> When triggered by pressing the VSTATUS key or calling the TIOCSTAT
-> ioctl, the n_tty line discipline will display a message on the user's
-> tty that provides basic information about the system and an
-> 'interesting' process in the current foreground process group, eg:
-> 
->    load: 0.58  cmd: sleep 744474 [sleeping] 0.36r 0.00u 0.00s 0% 772k
-> 
-> The status message provides:
->   - System load average
->   - Command name and process id (from the perspective of the session)
->   - Scheduler state
->   - Total wall-clock run time
->   - User space run time
->   - System space run time
->   - Percentage of on-cpu time
->   - Resident set size
-> 
-> The message is only displayed when the tty has the VSTATUS character
-> set, the local flags ICANON and IEXTEN are enabled and NOKERNINFO is
-> disabled; it is always displayed when TIOCSTAT is called regardless of
-> tty settings.
-> 
-> Signed-off-by: Walt Drummond <walt@drummond.us>
-> ---
+common_shutdown_1() calls cpumask_weight() to check if any bit of a
+given cpumask is set. We can do it more efficiently with cpumask_empty()
+because cpumask_empty() stops traversing the cpumask as soon as it finds
+first set bit, while cpumask_weight() counts all bits unconditionally.
 
-It looks like my comments were addressed. However you did not document 
-the chances since v1 here. IOW, [v2] tag missing here.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ arch/alpha/kernel/process.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-And please add the CCs I added last time, so that relevant people still 
-can comment.
-
-thanks,
+diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
+index 5f8527081da9..0d4bc60828bf 100644
+--- a/arch/alpha/kernel/process.c
++++ b/arch/alpha/kernel/process.c
+@@ -125,7 +125,7 @@ common_shutdown_1(void *generic_ptr)
+ 	/* Wait for the secondaries to halt. */
+ 	set_cpu_present(boot_cpuid, false);
+ 	set_cpu_possible(boot_cpuid, false);
+-	while (cpumask_weight(cpu_present_mask))
++	while (!cpumask_empty(cpu_present_mask))
+ 		barrier();
+ #endif
+ 
 -- 
-js
-suse labs
+2.32.0
+
