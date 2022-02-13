@@ -1,50 +1,72 @@
-From: Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 14/49] arch/alpha: replace cpumask_weight with cpumask_empty where appropriate
-Date: Thu, 10 Feb 2022 14:48:58 -0800
-Message-ID: <20220210224933.379149-15-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Subject: [PATCH] Alpha: Remove redundant local asm header redirections
+Date: Sun, 13 Feb 2022 20:01:21 +0000 (GMT)
+Message-ID: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=dreoFKrn4wH6smW2GLCfxxjyjJhnljmILHzGoj0K5Es=;
-        b=nLj6aJoGZkZ+ciKqW/DpUozk1sjRaY94bK8YuXc85MMjn3ka8sf0yQDAo55lM3nr9s
-         1UIDIaeoEc4NFplxVMfgEZe4JIrvw8GFfSt1bRxcGbE0R7FyhYrq+5ERL2XmXd+8DMkk
-         msBJbFAY1A+uHQjX7pxCUlcRExj2gbm5HbdzAQorQnEsygPb0hInpXn+NwVt3GhNOenQ
-         J0K9n2OBOnFaqIu1bZ69zDwx9EEDX1LJK5djkopX8BKeW9OK8X83/KG1m+Y67AzZEzoo
-         b5YViod/+8inu3M7Flygc6qvfuFZ1LVXz4M9bMQ7qyAMxhj5BHtXI5n7+YviS6OqDhuk
-         u4FA==
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Yury Norov <yury.norov@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Andrew Morton <akpm@linux-foundation.org>, =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Peter Zijlstra <peterz@infradead.org>, David Laight <David.Laight@aculab.com>, Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>, Emil Renner Berthing <kernel@esmil.dk>, Nicholas Piggin <npiggin@gmail.com>, Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>, Alexey Klimov <aklimov@redhat.com>, linux-kernel@vger.kernel.org, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Geert Uytterhoeven <ge>
+Content-Transfer-Encoding: 7bit
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-common_shutdown_1() calls cpumask_weight() to check if any bit of a
-given cpumask is set. We can do it more efficiently with cpumask_empty()
-because cpumask_empty() stops traversing the cpumask as soon as it finds
-first set bit, while cpumask_weight() counts all bits unconditionally.
+Remove a number of asm headers locally redirected to the respective 
+generic or generated versions.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+For asm-offsets.h all that is needed is a Kbuild entry for the generic 
+version, and for div64.h, irq_regs.h and kdebug.h nothing is needed as 
+in their absence they will be redirected automatically according to 
+include/asm-generic/Kbuild.
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
 ---
- arch/alpha/kernel/process.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index 5f8527081da9..0d4bc60828bf 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -125,7 +125,7 @@ common_shutdown_1(void *generic_ptr)
- 	/* Wait for the secondaries to halt. */
- 	set_cpu_present(boot_cpuid, false);
- 	set_cpu_possible(boot_cpuid, false);
--	while (cpumask_weight(cpu_present_mask))
-+	while (!cpumask_empty(cpu_present_mask))
- 		barrier();
- #endif
+ Noticed while fiddling with Kbuild for PARPORT_PC.  Please apply.
+
+  Maciej
+---
+ arch/alpha/include/asm/Kbuild        |    1 +
+ arch/alpha/include/asm/asm-offsets.h |    1 -
+ arch/alpha/include/asm/div64.h       |    1 -
+ arch/alpha/include/asm/irq_regs.h    |    1 -
+ arch/alpha/include/asm/kdebug.h      |    1 -
+ 5 files changed, 1 insertion(+), 4 deletions(-)
+
+linux-alpha-include-gen.diff
+Index: linux-macro/arch/alpha/include/asm/Kbuild
+===================================================================
+--- linux-macro.orig/arch/alpha/include/asm/Kbuild
++++ linux-macro/arch/alpha/include/asm/Kbuild
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
  
--- 
-2.32.0
-
+ generated-y += syscall_table.h
++generic-y += asm-offsets.h
+ generic-y += export.h
+ generic-y += kvm_para.h
+ generic-y += mcs_spinlock.h
+Index: linux-macro/arch/alpha/include/asm/asm-offsets.h
+===================================================================
+--- linux-macro.orig/arch/alpha/include/asm/asm-offsets.h
++++ /dev/null
+@@ -1 +0,0 @@
+-#include <generated/asm-offsets.h>
+Index: linux-macro/arch/alpha/include/asm/div64.h
+===================================================================
+--- linux-macro.orig/arch/alpha/include/asm/div64.h
++++ /dev/null
+@@ -1 +0,0 @@
+-#include <asm-generic/div64.h>
+Index: linux-macro/arch/alpha/include/asm/irq_regs.h
+===================================================================
+--- linux-macro.orig/arch/alpha/include/asm/irq_regs.h
++++ /dev/null
+@@ -1 +0,0 @@
+-#include <asm-generic/irq_regs.h>
+Index: linux-macro/arch/alpha/include/asm/kdebug.h
+===================================================================
+--- linux-macro.orig/arch/alpha/include/asm/kdebug.h
++++ /dev/null
+@@ -1 +0,0 @@
+-#include <asm-generic/kdebug.h>
