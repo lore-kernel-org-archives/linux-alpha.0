@@ -1,116 +1,136 @@
-From: Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: [PATCH 16/30] alpha/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date: Mon, 14 Feb 2022 08:00:39 +0530
-Message-ID: <1644805853-21338-17-git-send-email-anshuman.khandual@arm.com>
-References: <1644805853-21338-1-git-send-email-anshuman.khandual@arm.com>
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <1644805853-21338-1-git-send-email-anshuman.khandual@arm.com>
+From: Arnd Bergmann <arnd@kernel.org>
+Subject: [PATCH 01/14] uaccess: fix integer overflow on access_ok()
+Date: Mon, 14 Feb 2022 17:34:39 +0100
+Message-ID: <20220214163452.1568807-2-arnd@kernel.org>
+References: <20220214163452.1568807-1-arnd@kernel.org>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644856553;
+        bh=rSFbUFHYbR/4za9tBP+uUtPbOSoTyakm57XSAj/Auqo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OZ4O1gNSNtwwNmiHhjY6IhU0E4BJ5We8XbBhorxEj9WTOfzc8GW6A9wXhW3abITrh
+         5VICuXJSDow6iYHC0e3qjJUZrd0nY+ZxgCA70cKABEhGmYygXnXVotyKfOCbgpbVrm
+         pGuK4IQR59nad5NN7zMl26jmakL0tF5IsM3zVKvJuUsbgvtw8ymirj23M7AeUqRAbK
+         Nb4ZCpdR7LXfqeDbObSioCUxRgm3spWcYhdjYFVER3t9sUGge35gaIcf4USGqAeqIv
+         Op0kZQjMjQu+Uf/UqNmdKlInWq80ZiSg5HRmKlo5FLGvtYFTEQ1arJmMBawI+kUcs8
+         VAdmt64TVWmMQ==
+In-Reply-To: <20220214163452.1568807-1-arnd@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org, Anshuman Khandual <anshuman.khandual@arm.com>, Christoph Hellwig <hch@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, linux-arch@vger.kernel.org, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de, linux-kernel@vger.kernel.org
+Cc: linux@armlinux.org.uk, will@kernel.org, guoren@kernel.org, bcain@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu, tsbogend@alpha.franken.de, nickhu@andestech.com, green.hu@gmail.com, dinguyen@kernel.org, shorne@gmail.com, deller@gmx.de, mpe@ellerman.id.au, peterz@infradead.org, mingo@redhat.com, mark.rutland@arm.com, hca@linux.ibm.com, dalias@libc.org, davem@davemloft.net, richard@nod.at, x86@kernel.org, jcmvbkbc@gmail.com, ebiederm@xmission.com, akpm@linux-foundation.org, ardb@kernel.org, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-pa
 
-This defines and exports a platform specific custom vm_get_page_prot() via
-subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
-macros can be dropped which are no longer needed.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Three architectures check the end of a user access against the
+address limit without taking a possible overflow into account.
+Passing a negative length or another overflow in here returns
+success when it should not.
+
+Use the most common correct implementation here, which optimizes
+for a constant 'size' argument, and turns the common case into a
+single comparison.
+
+Cc: stable@vger.kernel.org
+Fixes: da551281947c ("csky: User access")
+Fixes: f663b60f5215 ("microblaze: Fix uaccess_ok macro")
+Fixes: 7567746e1c0d ("Hexagon: Add user access functions")
+Reported-by: David Laight <David.Laight@aculab.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/alpha/Kconfig               |  1 +
- arch/alpha/include/asm/pgtable.h | 17 ---------------
- arch/alpha/mm/init.c             | 37 ++++++++++++++++++++++++++++++++
- 3 files changed, 38 insertions(+), 17 deletions(-)
+ arch/csky/include/asm/uaccess.h       |  7 +++----
+ arch/hexagon/include/asm/uaccess.h    | 18 +++++++++---------
+ arch/microblaze/include/asm/uaccess.h | 19 ++++---------------
+ 3 files changed, 16 insertions(+), 28 deletions(-)
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 4e87783c90ad..73e82fe5c770 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -2,6 +2,7 @@
- config ALPHA
- 	bool
- 	default y
-+	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_32BIT_USTAT_F_TINODE
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_MIGHT_HAVE_PC_SERIO
-diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index 02f0429f1068..9fb5e9d10bb6 100644
---- a/arch/alpha/include/asm/pgtable.h
-+++ b/arch/alpha/include/asm/pgtable.h
-@@ -116,23 +116,6 @@ struct vm_area_struct;
-  * arch/alpha/mm/fault.c)
+diff --git a/arch/csky/include/asm/uaccess.h b/arch/csky/include/asm/uaccess.h
+index c40f06ee8d3e..ac5a54f57d40 100644
+--- a/arch/csky/include/asm/uaccess.h
++++ b/arch/csky/include/asm/uaccess.h
+@@ -3,14 +3,13 @@
+ #ifndef __ASM_CSKY_UACCESS_H
+ #define __ASM_CSKY_UACCESS_H
+ 
+-#define user_addr_max() \
+-	(uaccess_kernel() ? KERNEL_DS.seg : get_fs().seg)
++#define user_addr_max() (current_thread_info()->addr_limit.seg)
+ 
+ static inline int __access_ok(unsigned long addr, unsigned long size)
+ {
+-	unsigned long limit = current_thread_info()->addr_limit.seg;
++	unsigned long limit = user_addr_max();
+ 
+-	return ((addr < limit) && ((addr + size) < limit));
++	return (size <= limit) && (addr <= (limit - size));
+ }
+ #define __access_ok __access_ok
+ 
+diff --git a/arch/hexagon/include/asm/uaccess.h b/arch/hexagon/include/asm/uaccess.h
+index ef5bfef8d490..719ba3f3c45c 100644
+--- a/arch/hexagon/include/asm/uaccess.h
++++ b/arch/hexagon/include/asm/uaccess.h
+@@ -25,17 +25,17 @@
+  * Returns true (nonzero) if the memory block *may* be valid, false (zero)
+  * if it is definitely invalid.
+  *
+- * User address space in Hexagon, like x86, goes to 0xbfffffff, so the
+- * simple MSB-based tests used by MIPS won't work.  Some further
+- * optimization is probably possible here, but for now, keep it
+- * reasonably simple and not *too* slow.  After all, we've got the
+- * MMU for backup.
   */
- 	/* xwr */
--#define __P000	_PAGE_P(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR)
--#define __P001	_PAGE_P(_PAGE_FOE | _PAGE_FOW)
--#define __P010	_PAGE_P(_PAGE_FOE)
--#define __P011	_PAGE_P(_PAGE_FOE)
--#define __P100	_PAGE_P(_PAGE_FOW | _PAGE_FOR)
--#define __P101	_PAGE_P(_PAGE_FOW)
--#define __P110	_PAGE_P(0)
--#define __P111	_PAGE_P(0)
--
--#define __S000	_PAGE_S(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR)
--#define __S001	_PAGE_S(_PAGE_FOE | _PAGE_FOW)
--#define __S010	_PAGE_S(_PAGE_FOE)
--#define __S011	_PAGE_S(_PAGE_FOE)
--#define __S100	_PAGE_S(_PAGE_FOW | _PAGE_FOR)
--#define __S101	_PAGE_S(_PAGE_FOW)
--#define __S110	_PAGE_S(0)
--#define __S111	_PAGE_S(0)
++#define uaccess_kernel() (get_fs().seg == KERNEL_DS.seg)
++#define user_addr_max() (uaccess_kernel() ? ~0UL : TASK_SIZE)
+ 
+-#define __access_ok(addr, size) \
+-	((get_fs().seg == KERNEL_DS.seg) || \
+-	(((unsigned long)addr < get_fs().seg) && \
+-	  (unsigned long)size < (get_fs().seg - (unsigned long)addr)))
++static inline int __access_ok(unsigned long addr, unsigned long size)
++{
++	unsigned long limit = TASK_SIZE;
++
++	return (size <= limit) && (addr <= (limit - size));
++}
++#define __access_ok __access_ok
  
  /*
-  * pgprot_noncached() is only for infiniband pci support, and a real
-diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
-index f6114d03357c..2e78008b2553 100644
---- a/arch/alpha/mm/init.c
-+++ b/arch/alpha/mm/init.c
-@@ -280,3 +280,40 @@ mem_init(void)
- 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
- 	memblock_free_all();
+  * When a kernel-mode page fault is taken, the faulting instruction
+diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
+index d2a8ef9f8978..5b6e0e7788f4 100644
+--- a/arch/microblaze/include/asm/uaccess.h
++++ b/arch/microblaze/include/asm/uaccess.h
+@@ -39,24 +39,13 @@
+ 
+ # define uaccess_kernel()	(get_fs().seg == KERNEL_DS.seg)
+ 
+-static inline int access_ok(const void __user *addr, unsigned long size)
++static inline int __access_ok(unsigned long addr, unsigned long size)
+ {
+-	if (!size)
+-		goto ok;
++	unsigned long limit = user_addr_max();
+ 
+-	if ((get_fs().seg < ((unsigned long)addr)) ||
+-			(get_fs().seg < ((unsigned long)addr + size - 1))) {
+-		pr_devel("ACCESS fail at 0x%08x (size 0x%x), seg 0x%08x\n",
+-			(__force u32)addr, (u32)size,
+-			(u32)get_fs().seg);
+-		return 0;
+-	}
+-ok:
+-	pr_devel("ACCESS OK at 0x%08x (size 0x%x), seg 0x%08x\n",
+-			(__force u32)addr, (u32)size,
+-			(u32)get_fs().seg);
+-	return 1;
++	return (size <= limit) && (addr <= (limit - size));
  }
-+
-+pgprot_t vm_get_page_prot(unsigned long vm_flags)
-+{
-+	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
-+	case VM_NONE:
-+		return _PAGE_P(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR);
-+	case VM_READ:
-+		return _PAGE_P(_PAGE_FOE | _PAGE_FOW);
-+	case VM_WRITE:
-+	case VM_WRITE | VM_READ:
-+		return _PAGE_P(_PAGE_FOE);
-+	case VM_EXEC:
-+		return _PAGE_P(_PAGE_FOW | _PAGE_FOR);
-+	case VM_EXEC | VM_READ:
-+		return _PAGE_P(_PAGE_FOW);
-+	case VM_EXEC | VM_WRITE:
-+	case VM_EXEC | VM_WRITE | VM_READ:
-+		return _PAGE_P(0);
-+	case VM_SHARED:
-+		return _PAGE_S(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR);
-+	case VM_SHARED | VM_READ:
-+		return _PAGE_S(_PAGE_FOE | _PAGE_FOW);
-+	case VM_SHARED | VM_WRITE:
-+	case VM_SHARED | VM_WRITE | VM_READ:
-+		return _PAGE_S(_PAGE_FOE);
-+	case VM_SHARED | VM_EXEC:
-+		return _PAGE_S(_PAGE_FOW | _PAGE_FOR);
-+	case VM_SHARED | VM_EXEC | VM_READ:
-+		return _PAGE_S(_PAGE_FOW);
-+	case VM_SHARED | VM_EXEC | VM_WRITE:
-+	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
-+		return _PAGE_S(0);
-+	default:
-+		BUILD_BUG();
-+	}
-+}
-+EXPORT_SYMBOL(vm_get_page_prot);
++#define access_ok(addr, size) __access_ok((unsigned long)addr, size)
+ 
+ # define __FIXUP_SECTION	".section .fixup,\"ax\"\n"
+ # define __EX_TABLE_SECTION	".section __ex_table,\"a\"\n"
 -- 
-2.25.1
+2.29.2
 
