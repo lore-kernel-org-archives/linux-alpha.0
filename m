@@ -1,63 +1,116 @@
-From: Andy Lutomirski <luto@amacapital.net>
-Subject: Re: [PATCH v2 13/18] uaccess: generalize access_ok()
-Date: Fri, 18 Feb 2022 10:07:07 -0800
-Message-ID: <CALCETrWTB65vJXsQTPd_o7BRoSU=uqD0pFzKS+r4YgDuiCCqaQ@mail.gmail.com>
-References: <20220216131332.1489939-1-arnd@kernel.org> <20220216131332.1489939-14-arnd@kernel.org>
- <CALCETrVOvYPN4_6hS8wpm2v9bGZupZ5x4=vZAseG57OUgvLGfw@mail.gmail.com> <93a1ee797e9d4f789dff85a3c0f0c232@AcuMS.aculab.com>
-Mime-Version: 1.0
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3DIqXxPmp6dtbTijOx2KTFQ/AdtfYUTWecKVh7q3dDI=;
-        b=5c/qRto3YK3Y6/Rhnnpp4RzKmf8QhiKseObhkqXIpnLfhpnv2ua8Z7YCExbmjSYUCG
-         SbBSycxSpm4FRe5zOaxst92xyRDLRie0B4d4p8x0W6snNr+dG6MghxLfcakTWMQA17Pf
-         gOp7JS9gIpdJumtDaMv9IluyX8dB5LI5eLR/YC2U+D7T5N3aQr9NOYHAOP982E02xanw
-         SC1uTLhbyKEp3+LiMa1bFSquyveVGLxTCPf/eSvmTiEZzxEI+wIe4AMdv5VgRD2GYf6G
-         kO3gnVVxKK1wWuKxjcQ5nhLyDgmj/c1nxTJoqfRQTmuVCBNlEZ4IpVOo74LURbiOVsEg
-         CBWA==
-In-Reply-To: <93a1ee797e9d4f789dff85a3c0f0c232@AcuMS.aculab.com>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: [PATCH V2 16/30] alpha/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date: Mon, 21 Feb 2022 12:08:25 +0530
+Message-ID: <1645425519-9034-17-git-send-email-anshuman.khandual@arm.com>
+References: <1645425519-9034-1-git-send-email-anshuman.khandual@arm.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <1645425519-9034-1-git-send-email-anshuman.khandual@arm.com>
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: David Laight <David.Laight@aculab.com>
-Cc: Arnd Bergmann <arnd@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "will@kernel.org" <will@kernel.org>, "guoren@kernel.org" <guoren@kernel.org>, "bcain@codeaurora.org" <bcain@codeaurora.org>, "geert@linux-m68k.org" <geert@linux-m68k.org>, "monstr@monstr.eu" <monstr@monstr.eu>, "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>, "nickhu@andestech.com" <nickhu>
+To: linux-mm@kvack.org, akpm@linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Anshuman Khandual <anshuman.khandual@arm.com>, Christoph Hellwig <hch@infradead.org>, linux-arch@vger.kernel.org, Richard Henderson <rth@twiddle.net>, linux-alpha@vger.kernel.org
 
-On Fri, Feb 18, 2022 at 1:30 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Andy Lutomirski
-> > Sent: 17 February 2022 19:15
-> ...
-> > This isn't actually optimal.  On x86, TASK_SIZE_MAX is a bizarre
-> > constant that has a very specific value to work around a bug^Wdesign
-> > error^Wfeature of Intel CPUs.  TASK_SIZE_MAX is the maximum address at
-> > which userspace is permitted to allocate memory, but there is a huge
-> > gap between user and kernel addresses, and any value in the gap would
-> > be adequate for the comparison.  If we wanted to optimize this, simply
-> > checking the high bit (which x86 can do without any immediate
-> > constants at all) would be sufficient and, for an access known to fit
-> > in 32 bits, one could get even fancier and completely ignore the size
-> > of the access.  (For accesses not known to fit in 32 bits, I suspect
-> > some creativity could still come up with a construction that's
-> > substantially faster than the one in your patch.)
-> >
-> > So there's plenty of room for optimization here.
-> >
-> > (This is not in any respect a NAK -- it's just an observation that
-> > this could be even better.)
->
-> For 64bit arch that use the top bit to separate user/kernel
-> you can test '(addr | size) >> 62)'.
-> The compiler optimises out constant sizes.
->
-> This has all been mentioned a lot of times.
-> You do get different fault types.
->
-> OTOH an explicit check for constant size (less than something big)
-> can use the cheaper test of the sign bit.
-> Big constant sizes could be compile time errors.
+This defines and exports a platform specific custom vm_get_page_prot() via
+subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+macros can be dropped which are no longer needed.
 
-The different fault type issue may well be a real problem.  Right now
-the core x86 fault code reserves the right to grouch if we get #GP
-instead of #PF.  We could change that.
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ arch/alpha/Kconfig               |  1 +
+ arch/alpha/include/asm/pgtable.h | 17 ---------------
+ arch/alpha/mm/init.c             | 37 ++++++++++++++++++++++++++++++++
+ 3 files changed, 38 insertions(+), 17 deletions(-)
+
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 4e87783c90ad..73e82fe5c770 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -2,6 +2,7 @@
+ config ALPHA
+ 	bool
+ 	default y
++	select ARCH_HAS_VM_GET_PAGE_PROT
+ 	select ARCH_32BIT_USTAT_F_TINODE
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_MIGHT_HAVE_PC_SERIO
+diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
+index 02f0429f1068..9fb5e9d10bb6 100644
+--- a/arch/alpha/include/asm/pgtable.h
++++ b/arch/alpha/include/asm/pgtable.h
+@@ -116,23 +116,6 @@ struct vm_area_struct;
+  * arch/alpha/mm/fault.c)
+  */
+ 	/* xwr */
+-#define __P000	_PAGE_P(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR)
+-#define __P001	_PAGE_P(_PAGE_FOE | _PAGE_FOW)
+-#define __P010	_PAGE_P(_PAGE_FOE)
+-#define __P011	_PAGE_P(_PAGE_FOE)
+-#define __P100	_PAGE_P(_PAGE_FOW | _PAGE_FOR)
+-#define __P101	_PAGE_P(_PAGE_FOW)
+-#define __P110	_PAGE_P(0)
+-#define __P111	_PAGE_P(0)
+-
+-#define __S000	_PAGE_S(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR)
+-#define __S001	_PAGE_S(_PAGE_FOE | _PAGE_FOW)
+-#define __S010	_PAGE_S(_PAGE_FOE)
+-#define __S011	_PAGE_S(_PAGE_FOE)
+-#define __S100	_PAGE_S(_PAGE_FOW | _PAGE_FOR)
+-#define __S101	_PAGE_S(_PAGE_FOW)
+-#define __S110	_PAGE_S(0)
+-#define __S111	_PAGE_S(0)
+ 
+ /*
+  * pgprot_noncached() is only for infiniband pci support, and a real
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index f6114d03357c..2e78008b2553 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -280,3 +280,40 @@ mem_init(void)
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+ 	memblock_free_all();
+ }
++
++pgprot_t vm_get_page_prot(unsigned long vm_flags)
++{
++	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
++	case VM_NONE:
++		return _PAGE_P(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR);
++	case VM_READ:
++		return _PAGE_P(_PAGE_FOE | _PAGE_FOW);
++	case VM_WRITE:
++	case VM_WRITE | VM_READ:
++		return _PAGE_P(_PAGE_FOE);
++	case VM_EXEC:
++		return _PAGE_P(_PAGE_FOW | _PAGE_FOR);
++	case VM_EXEC | VM_READ:
++		return _PAGE_P(_PAGE_FOW);
++	case VM_EXEC | VM_WRITE:
++	case VM_EXEC | VM_WRITE | VM_READ:
++		return _PAGE_P(0);
++	case VM_SHARED:
++		return _PAGE_S(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR);
++	case VM_SHARED | VM_READ:
++		return _PAGE_S(_PAGE_FOE | _PAGE_FOW);
++	case VM_SHARED | VM_WRITE:
++	case VM_SHARED | VM_WRITE | VM_READ:
++		return _PAGE_S(_PAGE_FOE);
++	case VM_SHARED | VM_EXEC:
++		return _PAGE_S(_PAGE_FOW | _PAGE_FOR);
++	case VM_SHARED | VM_EXEC | VM_READ:
++		return _PAGE_S(_PAGE_FOW);
++	case VM_SHARED | VM_EXEC | VM_WRITE:
++	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
++		return _PAGE_S(0);
++	default:
++		BUILD_BUG();
++	}
++}
++EXPORT_SYMBOL(vm_get_page_prot);
+-- 
+2.25.1
+
