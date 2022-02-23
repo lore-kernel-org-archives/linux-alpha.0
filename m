@@ -1,59 +1,41 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v2 09/18] mips: use simpler access_ok()
-Date: Wed, 23 Feb 2022 12:05:04 -0800
-Message-ID: <CAHk-=wjdHz6OU3M9T5zE9Fc9SNdDs52iOE+eVn-wuUT6UDpBLg@mail.gmail.com>
-References: <20220216131332.1489939-1-arnd@kernel.org> <20220216131332.1489939-10-arnd@kernel.org>
- <20220221132456.GA7139@alpha.franken.de>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH 00/16] Remove usage of the deprecated "pci-dma-compat.h"
+ API
+Date: Wed, 23 Feb 2022 21:26:56 +0100
+Message-ID: <ddf6010e-417d-8da7-8e11-1b4a55f92fff@wanadoo.fr>
+References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+ <YhXmQwvjMFPQFPUr@infradead.org>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+S6BFzj6o5ckty5iXSThNrfkPsdFE94/fVb8NP4+aFs=;
-        b=F/2f/aEUKxSuzDdCknAbug+t8clrlE0v7gj9NkhphhHftuFg6XGIjvpJXVx+ZHKhn9
-         jOIdz4l7lK+/F1JhXkxR/PARyehOhzu1/S93ijWQKe7fGKOKTiRs9R81aIq3OYNVOgnf
-         G4UcKLBEtMgH8cssPIzV42vV3R64/Z0YRVhdY=
-In-Reply-To: <20220221132456.GA7139@alpha.franken.de>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Language: en-US
+In-Reply-To: <YhXmQwvjMFPQFPUr@infradead.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>, linux-arch <linux-arch@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, Linux API <linux-api@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Russell King - ARM Linux <linux@armlinux.org.uk>, Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>, Brian Cain <bcain@codeaurora.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Nick Hu <nickhu@andestech.com>, Greentime Hu <green.hu@gmail.com>, Dinh Nguyen <dinguyen@kernel.org>, Stafford Horne <shorne@gmail.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Peter Zijlstra <peterz@in>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+To: Christoph Hellwig <hch@infradead.org>
+Cc: arnd@arndb.de, akpm@linux-foundation.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, davem@davemloft.net, airlied@linux.ie, vkoul@kernel.org, hao.wu@intel.com, trix@redhat.com, mdf@kernel.org, yilun.xu@intel.com, awalls@md.metrocast.net, mchehab@kernel.org, sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com, suganath-prabu.subramani@broadcom.com, mporter@kernel.crashing.org, alex.bou9@gmail.com, bhelgaas@google.com, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, dmaengine@vger.kernel.org, linux-fpga@vger.kernel.org, linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org, linux-pci@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 5:25 AM Thomas Bogendoerfer
-<tsbogend@alpha.franken.de> wrote:
->
-> With this patch
-[ .. snip snip ..]
-> I at least get my simple test cases fixed, but I'm not sure this is
-> correct.
+Le 23/02/2022 à 08:46, Christoph Hellwig a écrit :
+> Hi Christophe,
+> 
+> do you know what the state is in current linux-next?
+> 
+> I think we'll just want to queue up anything left at this point in the
+> dma-mapping or PCI tree and get it done.
+> 
 
-I think you really want to do that anyway, just to get things like
-wild kernel pointers right (ie think get_kernel_nofault() and friends
-for ftrace etc).
+Hi,
 
-They shouldn't happen in any normal situation, but those kinds of
-unverified pointers is why we _have_ get_kernel_nofault() in the first
-place.
+Patch 01, 04, 05, 06, 08, 09 have not reached -next yet.
+They all still apply cleanly.
 
-On x86-64, the roughly equivalent situation is that addresses that
-aren't in canonical format do not take a #PF (page fault), they take a
-#GP (general protection) fault.
+04 has been picked it up for inclusion in the media subsystem for 5.18.
+The other ones all have 1 or more Reviewed-by:/Acked-by: tags.
 
-So I think you want to do that fixup_exception() for any possible addresses.
+Patch 16 must be resubmitted to add "#include <linux/dma-mapping.h>" in 
+order not to break builds.
 
-> Is there a reason to not also #define TASK_SIZE_MAX   __UA_LIMIT like
-> for the 32bit case ?
 
-I would suggest against using a non-constant TASK_SIZE_MAX. Being
-constant is literally one reason why it exists, when TASK_SIZE itself
-has often been about other things (ie "32-bit process").
+All the other patches have landed in -next.
 
-Having to load variables for things like get_user() is annoying, if
-you could do it with a simple constant instead (where that "simple"
-part is to avoid having to load big values from a constant pool -
-often constants like "high bit set" can be loaded and compared against
-more efficiently).
-
-               Linus
+CJ
