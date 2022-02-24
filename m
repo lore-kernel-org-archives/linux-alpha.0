@@ -1,43 +1,36 @@
-From: Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [PATCH v2 07/18] nios2: drop access_ok() check from __put_user()
-Date: Thu, 24 Feb 2022 08:05:48 +0100
-Message-ID: <CAK8P3a34OBFhncvg32hO3qb1uH8cvwFb0ro1jEMT4bdOLrtfdw@mail.gmail.com>
-References: <20220216131332.1489939-1-arnd@kernel.org> <20220216131332.1489939-8-arnd@kernel.org>
- <c6f461f1-1dd9-aec1-2c85-a3eda478a1be@kernel.org>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 00/16] Remove usage of the deprecated "pci-dma-compat.h" API
+Date: Thu, 24 Feb 2022 08:07:19 +0100
+Message-ID: <CAK8P3a23Pjm1Btc=mXX=vU4hkNiPqz3+o4=j0FuYKHB7KuMtPg@mail.gmail.com>
+References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+ <YhXmQwvjMFPQFPUr@infradead.org> <ddf6010e-417d-8da7-8e11-1b4a55f92fff@wanadoo.fr>
+ <YhckzJp5/x9zW4uQ@infradead.org>
 Mime-Version: 1.0
-Return-path: <sparclinux-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645686366;
-        bh=d3iTCnmjiWI2WfX8T3i0lRHp9N81t6Yh8Z7V7FwGN/U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=d9kZ0BbVkyCyNqDMbIIl+9W1OVaOiHcqpofy9Tv0x+jjG5DysO9+U6Q2K4lcdfFyH
-         fai03dHJQzajxq5x8dD/JFbdF1zJckhozUk8lR9cVmlk5bBWd0W6ERB7Zbxdjefy3a
-         B8/SUsADYD0SQguWOueuCsugHgBSJ8wqUkSLkiLSqKWedW5ys5Z7/z6mU2vQUHnHJ6
-         T4vRyvf7dvKpTRGhlcWD3SzP2O+MDfjLinnJiEst0s0apfF0uwuaENIe6tuGMnmiQ2
-         f1b6FsJH1WZrXXQHaNQBk/Ix0arInQgA572KGEYojkJ/0uUcVIi+T6URqFtcgb3eKx
-         YzcfTkJH+KZ5w==
-In-Reply-To: <c6f461f1-1dd9-aec1-2c85-a3eda478a1be@kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <YhckzJp5/x9zW4uQ@infradead.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Dinh Nguyen <dinguyen@kernel.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, linux-arch <linux-arch@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>, Linux API <linux-api@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Russell King - ARM Linux <linux@armlinux.org.uk>, Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>, Brian Cain <bcain@codeaurora.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nick Hu <nickhu@andestech.com>, Greentime Hu <green.hu@gmail.com>, Stafford Horne <shorne@gmail.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.a>
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>, Arnd Bergmann <arnd@arndb.de>, Andrew Morton <akpm@linux-foundation.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, David Miller <davem@davemloft.net>, David Airlie <airlied@linux.ie>, Vinod Koul <vkoul@kernel.org>, hao.wu@intel.com, Tom Rix <trix@redhat.com>, Moritz Fischer <mdf@kernel.org>, Xu Yilun <yilun.xu@intel.com>, awalls@md.metrocast.net, Mauro Carvalho Chehab <mchehab@kernel.org>, Sathya Prakash <sathya.prakash@broadcom.com>, sreekanth.reddy@broadcom.com, Suganath Prabu Subramani <suganath-prabu.subramani@broadcom.com>, Ma
 
-On Thu, Feb 24, 2022 at 12:30 AM Dinh Nguyen <dinguyen@kernel.org> wrote:
-> On 2/16/22 07:13, Arnd Bergmann wrote: From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > Unlike other architectures, the nios2 version of __put_user() has an
-> > extra check for access_ok(), preventing it from being used to implement
-> > __put_kernel_nofault().
-> >
-> > Split up put_user() along the same lines as __get_user()/get_user()
-> >
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+On Thu, Feb 24, 2022 at 7:25 AM Christoph Hellwig <hch@infradead.org> wrote:
 >
-> Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+> On Wed, Feb 23, 2022 at 09:26:56PM +0100, Christophe JAILLET wrote:
+> > Patch 01, 04, 05, 06, 08, 09 have not reached -next yet.
+> > They all still apply cleanly.
+> >
+> > 04 has been picked it up for inclusion in the media subsystem for 5.18.
+> > The other ones all have 1 or more Reviewed-by:/Acked-by: tags.
+> >
+> > Patch 16 must be resubmitted to add "#include <linux/dma-mapping.h>" in
+> > order not to break builds.
+>
+> So how about this:  I'll pick up 1, 5,6,8 and 9 for the dma-mapping
+> tree.  After -rc1 when presumably all other patches have reached
+> mainline your resubmit one with the added include and we finish this
+> off?
 
-Thanks! Could you also have a look at patch 2 (uaccess: fix nios2 and
-microblaze get_user_8)? That one is actually more critical, and should
-be backported to stable kernels.
+Sounds good to me as well.
 
        Arnd
