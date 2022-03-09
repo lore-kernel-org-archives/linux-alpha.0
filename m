@@ -1,81 +1,184 @@
-From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [RFC PATCH 6/7] serial: General support for multipoint addresses
-Date: Mon, 7 Mar 2022 11:48:01 +0200 (EET)
-Message-ID: <ab43569c-6488-12a6-823-3ef09f2849d@linux.intel.com>
-References: <20220302095606.14818-1-ilpo.jarvinen@linux.intel.com>
- <20220302095606.14818-7-ilpo.jarvinen@linux.intel.com>
- <20220306194001.GD19394@wunner.de>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: Re: [PATCH V3 05/30] arm64/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date: Wed, 9 Mar 2022 17:01:02 +0530
+Message-ID: <f1b4dbb5-7cd4-7513-4b18-169b97745a0a@arm.com>
+References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+ <1646045273-9343-6-git-send-email-anshuman.khandual@arm.com>
+ <YiDessYDSt060Euc@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-971395012-1646646016=:1677"
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1646646554; x=1678182554;
- h=date:from:to:cc:subject:in-reply-to:message-id:
- references:mime-version:content-id;
- bh=zC3EygN9B67AQNPvzALqT8NwONoTEFy8bHC2L1G4njc=;
- b=W28BMBpXy598i6KxO4bY4gPGt9zVM5TTEksM0CK9+5j0ciB3OnZJve6t
- FMRaz+qPkhat8zNr6gakN/43e+5EOXlv25nbnIhzyIHdEL359ipJobi4K
- WqSqxNcdhtqVu2bi8meJgbr3kN8CDX9ctnuFpvIeOEdEQveWge1Co+DjB
- CgXKtWBuPaYckQi7PLEbRQ9jIGEMa9M0sIRzXccsckmJHKTqR+DOZJ+Wq
- aE0FPCmfK8p53EUfrLqjLzGt1BkEc1JAvc4jGghDAuyYhm7+nCQ2FWqps
- hVlLxCc++MXQo01+pupLlfUh99ByKQqvudFKTgpmmbRNAjVM9TurZizpo A==;
-In-Reply-To: <20220306194001.GD19394@wunner.de>
-Content-ID: <cbee2ae-83f0-872e-34dd-cb9866dd3f6e@linux.intel.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-To: Lukas Wunner <lukas@wunner.de>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-sh@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Max Filippov <jcmvbkbc@gmail.com>, Rich Felker <dalias@libc.org>, Paul Mackerras <paulus@samba.org>, sparclinux@vger.kernel.org, linux-api@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, linux-arch@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>, linux-doc@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>, Matt Turner <mattst88@gmail.com>, linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>, Johan Hovold <johan@kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Richard Henderson <rth@twiddle.net>, Chris Zankel <chris@zankel.net>, Thomas Bogendoerfer <tsbogend@alpha.franken>
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-971395012-1646646016=:1677
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-Content-ID: <07d5f9f-7fe3-3c54-6566-1873a5191970@linux.intel.com>
-
-On Sun, 6 Mar 2022, Lukas Wunner wrote:
-
-> On Wed, Mar 02, 2022 at 11:56:05AM +0200, Ilpo J=E4rvinen wrote:
->=20
-> > This change is necessary for supporting devices with RS485
-> > multipoint addressing [*].
->=20
-> If this is only used with RS485, why can't we just store the
-> addresses in struct serial_rs485 and use the existing TIOCSRS485
-> and TIOCGRS485 ioctls?  There's 20 bytes of padding left in
-> struct serial_rs485 which you could use.  No need to add more
-> user-space ABI.
-
-It could if it is agreed that serial multipoint addressing is just
-a thing in RS-485 and nowhere else? In that case, there is no point
-in adding more generic support for it.
-
-> > [*] Technically, RS485 is just an electronic spec and does not
-> > itself specify the 9th bit addressing mode but 9th bit seems
-> > at least "semi-standard" way to do addressing with RS485.
->=20
-> Is 9th bit addressing actually used by an Intel customer or was
-> it implemented just for feature completeness? I think this mode
-> isn't used often (I've never seen a use case myself), primarily
-> because it requires disabling parity.
-
-On what basis? ...The datasheet I'm looking at has a timing diagram=20
-with both D8 (9th bit) and parity so I think your information must be
-incorrect. I don't have direct contacts with customers but I'm told
-it's important for other org's customers.
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Language: en-US
+In-Reply-To: <YiDessYDSt060Euc@arm.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: linux-mm@kvack.org, akpm@linux-foundation.org, linux-kernel@vger.kernel.org, geert@linux-m68k.org, Christoph Hellwig <hch@infradead.org>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org, linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org, openrisc@lists.librecores.org, linux-um@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-arch@vger.kernel.org, Will Deacon <will@kernel.org>
 
 
---=20
- i.
---8323329-971395012-1646646016=:1677--
+
+On 3/3/22 20:58, Catalin Marinas wrote:
+> Hi Anshuman,
+> 
+> On Mon, Feb 28, 2022 at 04:17:28PM +0530, Anshuman Khandual wrote:
+>> +static inline pgprot_t __vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
+>> +	case VM_NONE:
+>> +		return PAGE_NONE;
+>> +	case VM_READ:
+>> +	case VM_WRITE:
+>> +	case VM_WRITE | VM_READ:
+>> +		return PAGE_READONLY;
+>> +	case VM_EXEC:
+>> +		return PAGE_EXECONLY;
+>> +	case VM_EXEC | VM_READ:
+>> +	case VM_EXEC | VM_WRITE:
+>> +	case VM_EXEC | VM_WRITE | VM_READ:
+>> +		return PAGE_READONLY_EXEC;
+>> +	case VM_SHARED:
+>> +		return PAGE_NONE;
+>> +	case VM_SHARED | VM_READ:
+>> +		return PAGE_READONLY;
+>> +	case VM_SHARED | VM_WRITE:
+>> +	case VM_SHARED | VM_WRITE | VM_READ:
+>> +		return PAGE_SHARED;
+>> +	case VM_SHARED | VM_EXEC:
+>> +		return PAGE_EXECONLY;
+>> +	case VM_SHARED | VM_EXEC | VM_READ:
+>> +		return PAGE_READONLY_EXEC;
+>> +	case VM_SHARED | VM_EXEC | VM_WRITE:
+>> +	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
+>> +		return PAGE_SHARED_EXEC;
+>> +	default:
+>> +		BUILD_BUG();
+>> +	}
+>> +}
+> 
+> I'd say ack for trying to get of the extra arch_vm_get_page_prot() and
+> arch_filter_pgprot() but, TBH, I'm not so keen on the outcome. I haven't
+> built the code to see what's generated but I suspect it's no significant
+> improvement. As for the code readability, the arm64 parts don't look
+> much better either. The only advantage with this patch is that all
+> functions have been moved under arch/arm64.
+
+Got it.
+
+> 
+> I'd keep most architectures that don't have own arch_vm_get_page_prot()
+> or arch_filter_pgprot() unchanged and with a generic protection_map[]
+> array. For architectures that need fancier stuff, add a
+> CONFIG_ARCH_HAS_VM_GET_PAGE_PROT (as you do) and allow them to define
+> vm_get_page_prot() while getting rid of arch_vm_get_page_prot() and
+> arch_filter_pgprot(). I think you could also duplicate protection_map[]
+> for architectures with own vm_get_page_prot() (make it static) and
+> #ifdef it out in mm/mmap.c.
+> 
+> If later you have more complex needs or a switch statement generates
+> better code, go for it, but for this series I'd keep things simple, only
+> focus on getting rid of arch_vm_get_page_prot() and
+> arch_filter_pgprot().
+
+Got it.
+
+> 
+> If I grep'ed correctly, there are only 4 architectures that have own
+> arch_vm_get_page_prot() (arm64, powerpc, sparc, x86) and 2 that have own
+> arch_filter_pgprot() (arm64, x86). Try to only change these for the time
+> being, together with the other generic mm cleanups you have in this
+> series. I think there are a couple more that touch protection_map[]
+> (arm, m68k). You can leave the generic protection_map[] global if the
+> arch does not select ARCH_HAS_VM_GET_PAGE_PROT.
+
+Okay, I will probably split the series into two parts.
+
+-  Drop arch_vm_get_page_prot() and arch_filter_pgprot() on relevant
+   platforms i.e arm64, powerpc, sparc and x86 via this new config
+   ARCH_HAS_VM_GET_PAGE_PROT, keeping the generic protection_map[]
+   since platform __SXXX/__PXX macros would be still around.
+
+-  Drop __SXXX/__PXXX across all platforms via just initializing
+   protection_map[] early during boot in the platform OR moving
+   both vm_get_page_prot() via ARCH_HAS_VM_GET_PAGE_PROT and the
+   generic protection_map[] inside the platform.
+
+   There were some objections with respect to switch case code in
+   comparison to the array based table look up.
+
+> 
+>> +static pgprot_t arm64_arch_filter_pgprot(pgprot_t prot)
+>> +{
+>> +	if (cpus_have_const_cap(ARM64_HAS_EPAN))
+>> +		return prot;
+>> +
+>> +	if (pgprot_val(prot) != pgprot_val(PAGE_EXECONLY))
+>> +		return prot;
+>> +
+>> +	return PAGE_READONLY_EXEC;
+>> +}
+>> +
+>> +static pgprot_t arm64_arch_vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	pteval_t prot = 0;
+>> +
+>> +	if (vm_flags & VM_ARM64_BTI)
+>> +		prot |= PTE_GP;
+>> +
+>> +	/*
+>> +	 * There are two conditions required for returning a Normal Tagged
+>> +	 * memory type: (1) the user requested it via PROT_MTE passed to
+>> +	 * mmap() or mprotect() and (2) the corresponding vma supports MTE. We
+>> +	 * register (1) as VM_MTE in the vma->vm_flags and (2) as
+>> +	 * VM_MTE_ALLOWED. Note that the latter can only be set during the
+>> +	 * mmap() call since mprotect() does not accept MAP_* flags.
+>> +	 * Checking for VM_MTE only is sufficient since arch_validate_flags()
+>> +	 * does not permit (VM_MTE & !VM_MTE_ALLOWED).
+>> +	 */
+>> +	if (vm_flags & VM_MTE)
+>> +		prot |= PTE_ATTRINDX(MT_NORMAL_TAGGED);
+>> +
+>> +	return __pgprot(prot);
+>> +}
+>> +
+>> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	pgprot_t ret = __pgprot(pgprot_val(__vm_get_page_prot(vm_flags)) |
+>> +			pgprot_val(arm64_arch_vm_get_page_prot(vm_flags)));
+>> +
+>> +	return arm64_arch_filter_pgprot(ret);
+>> +}
+> 
+> If we kept the array, we can have everything in a single function
+> (untested and with my own comments for future changes):
+
+Got it.
+
+> 
+> pgprot_t vm_get_page_prot(unsigned long vm_flags)
+> {
+> 	pgprot_t prot = __pgprot(pgprot_val(protection_map[vm_flags &
+> 				(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]));
+> 
+> 	/*
+> 	 * We could get rid of this test if we updated protection_map[]
+> 	 * to turn exec-only into read-exec during boot.
+> 	 */
+> 	if (!cpus_have_const_cap(ARM64_HAS_EPAN) &&
+> 	    pgprot_val(prot) == pgprot_val(PAGE_EXECONLY))
+> 		prot = PAGE_READONLY_EXEC;
+> 
+> 	if (vm_flags & VM_ARM64_BTI)
+> 		prot != PTE_GP;
+> 
+> 	/*
+> 	 * We can get rid of the requirement for PROT_NORMAL to be 0
+> 	 * since here we can mask out PTE_ATTRINDX_MASK.
+> 	 */
+> 	if (vm_flags & VM_MTE) {
+> 		prot &= ~PTE_ATTRINDX_MASK;
+> 		prot |= PTE_ATTRINDX(MT_NORMAL_TAGGED);
+> 	}
+> 
+> 	return prot;
+> }
+> 
