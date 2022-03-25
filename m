@@ -1,35 +1,37 @@
-From: Haowen Bai <baihaowen@meizu.com>
-Subject: [PATCH] alpha: Fix warning comparing pointer to 0
-Date: Thu, 24 Mar 2022 09:59:27 +0800
-Message-ID: <1648087167-27982-1-git-send-email-baihaowen@meizu.com>
+From: Bob Tracy <rct@frus.com>
+Subject: 5.17.0 boot issue on Miata
+Date: Thu, 24 Mar 2022 21:54:15 -0500
+Message-ID: <Yj0u150JJpsb9nj4@gherkin.frus.com>
 Mime-Version: 1.0
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, ebiederm@xmission.com
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>
+To: debian-alpha@lists.debian.org
+Cc: mcree@orcon.net.nz, linux-alpha@vger.kernel.org
 
-Avoid pointer type value compared with 0 to make code clear.
+When I attempt to boot a 5.17.0 kernel built from the kernel.org
+sources, I see disk sector errors on my "sda" device, and the boot
+process hangs at the point where "systemd-udevd.service" starts.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- arch/alpha/mm/fault.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Rebooting on 5.16.0 works with no disk I/O errors of any kind.
 
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index ec20c10..47e5c68 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -190,7 +190,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 
-  no_context:
- 	/* Are we prepared to handle this fault as an exception?  */
--	if ((fixup = search_exception_tables(regs->pc)) != 0) {
-+	if ((fixup = search_exception_tables(regs->pc)) != NULL) {
- 		unsigned long newpc;
- 		newpc = fixup_exception(dpf_reg, fixup, regs->pc);
- 		regs->pc = newpc;
--- 
-2.7.4
+Assuming the 5.17.0 kernel or its associated initrd had bad sectors, I
+rebuilt both and saw no I/O errors during the build nor afterward when
+copying the new kernel into place under "/boot".
 
+Even tried a cross-compile build of a 5.17.0 alpha kernel on my x86_64
+platform to save build time (34 hours for a native build on a PWS 433au
+vs. 2 hours on the x86_64 platform).  That build produced identical
+results when I tried booting on it.
+
+If anyone else is seeing this and can get a head-start on bisecting,
+that would be very much appreciated.  I won't be able to get to it for
+about a week and a half :-(.  5.16.0 works.  5.17.0 doesn't.  Might get
+lucky and find that the offending changes happened in the first 5.17.0
+release candidate.
+
+As always, sincere thanks in advance.
+
+--Bob
