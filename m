@@ -1,49 +1,88 @@
-From: Michael Cree <mcree@orcon.net.nz>
-Subject: Re: 5.17.0 boot issue on Miata
-Date: Sun, 27 Mar 2022 11:21:57 +1300
-Message-ID: <20220326222157.GA13650@tower>
-References: <Yj0u150JJpsb9nj4@gherkin.frus.com>
+From: cgel.zte@gmail.com
+Subject: [PATCH] alpha: replace NR_SYSCALLS by NR_syscalls
+Date: Tue, 29 Mar 2022 02:57:38 +0000
+Message-ID: <20220329025737.2375176-1-yang.yang29@zte.com.cn>
 Mime-Version: 1.0
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane-mx.org@lists.debian.org>
-Content-Disposition: inline
-In-Reply-To: <Yj0u150JJpsb9nj4@gherkin.frus.com>
-Resent-Message-ID: <XGOSlIpawkK.A.VlH.fI5PiB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/20220326222157.GA13650@tower
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2doMNH7ifB03QblJV2sV07sq+r0A6Mdk0Jlzv/ArvaY=;
+        b=AUeM4C6NBE4EMZ2lTC/kkzSz9gJLIrJRpFA4SgUEtFR6sht/NzF1n4U3bovPj4bOQD
+         dIC7H2cgVqJj17X6kuoInrEyZvmkCrKYw7F7H79NWkwh1dfYG3/ZjGexG2viAFTCXaST
+         z3pdNxSnlPBdVtNod0v+QYyAYzJZK4VAJKp0Iweyi1RP2AbkQgOO40/C1kJW+D63lIJE
+         0kTvsA8iW7gKdpP/lj9l12Gy9jQ8wiCbtEsr55TEluNv6xP6mLJ0q+TRm8/JAf1PeSQX
+         Vg0Fg626qCPmg8jE/SgETQiJ/VDwoJkgijLpIyzEVucRBPu0tqlELTDX76M3NZsoMhfl
+         j/bQ==
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Bob Tracy <rct@frus.com>
-Cc: debian-alpha@lists.debian.org, linux-alpha@vger.kernel.org
+To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, firoz.khan@linaro.org, ematsumiya@suse.de
+Cc: rostedt@goodmis.org, mingo@redhat.com, yang.yang29@zte.com.cn, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 09:54:15PM -0500, Bob Tracy wrote:
-> When I attempt to boot a 5.17.0 kernel built from the kernel.org
-> sources, I see disk sector errors on my "sda" device, and the boot
-> process hangs at the point where "systemd-udevd.service" starts.
-> 
-> Rebooting on 5.16.0 works with no disk I/O errors of any kind.
+From: Yang Yang <yang.yang29@zte.com.cn>
 
-Oh, you can run a 5.16.y kernel on Alpha?  I have had problems
-with everything since 5.9.y with rare, random, corruptions in
-memory in user space (exhibiting as glibc detected memory
-corruptions or segfaults).
+Reference to other arch likes x86_64 or arm64 to do this replacement.
+To solve compile error when using NR_syscalls in kernel[1].
 
-This is why I am still running a 5.8.y kernel on the Debian
-Ports buildd.
+[1] https://lore.kernel.org/all/202203270449.WBYQF9X3-lkp@intel.com/
 
-I just compiled up a 5.16.y kernel and the problem is still there.
-It did take a bit to trigger the bug (about 10 hours of testing
-before it happened).
+Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+---
+ arch/alpha/include/asm/unistd.h | 2 +-
+ arch/alpha/kernel/entry.S       | 4 ++--
+ kernel/trace/trace.h            | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-I had done a bisection between 5.8.0 and 5.9.0 last year but I
-think it went astray (as testing is difficult and not fool proof).
-You email has prompted me to go back to it and see if I can nail
-down the offending commit.  We really want to get it fixed.
-
-Cheers,
-Michael.
+diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
+index 986f5da9b7d8..caabd92ea709 100644
+--- a/arch/alpha/include/asm/unistd.h
++++ b/arch/alpha/include/asm/unistd.h
+@@ -4,7 +4,7 @@
+ 
+ #include <uapi/asm/unistd.h>
+ 
+-#define NR_SYSCALLS	__NR_syscalls
++#define NR_syscalls	__NR_syscalls
+ 
+ #define __ARCH_WANT_NEW_STAT
+ #define __ARCH_WANT_OLD_READDIR
+diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
+index e227f3a29a43..966400b925a5 100644
+--- a/arch/alpha/kernel/entry.S
++++ b/arch/alpha/kernel/entry.S
+@@ -454,7 +454,7 @@ entSys:
+ 	SAVE_ALL
+ 	lda	$8, 0x3fff
+ 	bic	$sp, $8, $8
+-	lda	$4, NR_SYSCALLS($31)
++	lda	$4, NR_syscalls($31)
+ 	stq	$16, SP_OFF+24($sp)
+ 	lda	$5, sys_call_table
+ 	lda	$27, sys_ni_syscall
+@@ -585,7 +585,7 @@ strace:
+ 	ldq	$21, 88($sp)
+ 
+ 	/* get the system call pointer.. */
+-	lda	$1, NR_SYSCALLS($31)
++	lda	$1, NR_syscalls($31)
+ 	lda	$2, sys_call_table
+ 	lda	$27, sys_ni_syscall
+ 	cmpult	$0, $1, $1
+diff --git a/kernel/trace/trace.h b/kernel/trace/trace.h
+index 07d990270e2a..7ad8324db192 100644
+--- a/kernel/trace/trace.h
++++ b/kernel/trace/trace.h
+@@ -25,7 +25,7 @@
+ #include "pid_list.h"
+ 
+ #ifdef CONFIG_FTRACE_SYSCALLS
+-#include <asm/unistd.h>		/* For NR_SYSCALLS	     */
++#include <asm/unistd.h>		/* For NR_syscalls	     */
+ #include <asm/syscall.h>	/* some archs define it here */
+ #endif
+ 
+-- 
+2.25.1
 
