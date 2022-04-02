@@ -1,7 +1,7 @@
 From: cgel.zte@gmail.com
-Subject: [PATCH RESEND] alpha: replace NR_SYSCALLS by NR_syscalls
-Date: Sat,  2 Apr 2022 08:21:42 +0000
-Message-ID: <20220402082142.2413088-1-yang.yang29@zte.com.cn>
+Subject: [PATCH] alpha: add null pointer check
+Date: Sat,  2 Apr 2022 08:34:36 +0000
+Message-ID: <20220402083436.2413189-1-lv.ruyi@zte.com.cn>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
@@ -9,80 +9,44 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=2doMNH7ifB03QblJV2sV07sq+r0A6Mdk0Jlzv/ArvaY=;
-        b=VYxrlKcmGbTkEwUnHLtwCXXpdE5IDbdZvAYkotfFzWNxkJhSun2epO3gjmkx6giYv8
-         mNzcTkHe9iLzOBy2WYpd2+KmWpydubR3yi7pwYxBS39yUrR5HZRJhBUhUOaSW2r2+P1D
-         cJPzupk0ygyM8IgmK1mxbjjrT0lD1Q7vTipeJUSEJR9ZTqo3ajTj8Y2h0fTaFNFIws5d
-         NETWJb5ept2dh27vEId5jCg5o3bmg58eHk6NUCVbiF+4eApZ11A2eQo+NsdvvF7xF59G
-         0JywIlxOsBvz3Ymb5QG0cigbXh2x3aJlUyMtwh89sJjVmQbLox2jQxd2p6sCMZwf5W7e
-         y9Sg==
+        bh=Tfha1nXEQp5tnH0OT7lYvNtXkp0/rCs/1BLKkrtZnbc=;
+        b=Okfx0/e4xNIm4mKw8WX9qJApxey2071CaaKEMbniVf5ghLGtCCW+JTr3NaZVhnghOe
+         96iwVtE/kpNO0QyNa62PqceYRwvr4amAsOqmAFMzO92vcC5PI4eTjGV9xi+ILjZxwU6K
+         iQETuQmcDrGV1EQNq+uBZNHHAMqCXTkSLieoJpqzZtq6Eu5ecUzppmdiHl6W/u184Mxp
+         Cgx4Tq83A39LIC9xcfl3uFRthf4hCIxRXnMt/ZWh9R4unIYPzRh2pVkzfbX0jpgkXS49
+         RSUV+808bVOA8RJOlrE9cIDF4WG2eyrMuZURXdoIfuYIS1C8RwL+vsUzn/DkmWG5FtqU
+         x66g==
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: mattst88@gmail.com, masahiroy@kernel.org, hch@lst.de, keescook@chromium.org, tglx@linutronix.de, mark.rutland@arm.com
-Cc: rostedt@goodmis.org, mingo@redhat.com, yang.yang29@zte.com.cn, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: rth@twiddle.net
+Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, lv.ruyi@zte.com.cn, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
 
-From: Yang Yang <yang.yang29@zte.com.cn>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Reference to other arch likes x86_64 or arm64 to do this replacement.
-To solve compile error when using NR_syscalls in kernel[1].
+kmalloc is a memory allocation function which can return NULL when some
+internal memory errors happen. Add null pointer check to avoid
+dereferencing null pointer.
 
-[1] https://lore.kernel.org/all/202203270449.WBYQF9X3-lkp@intel.com/
-
-Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 ---
- arch/alpha/include/asm/unistd.h | 2 +-
- arch/alpha/kernel/entry.S       | 4 ++--
- kernel/trace/trace.h            | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ arch/alpha/kernel/module.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/alpha/include/asm/unistd.h b/arch/alpha/include/asm/unistd.h
-index 986f5da9b7d8..caabd92ea709 100644
---- a/arch/alpha/include/asm/unistd.h
-+++ b/arch/alpha/include/asm/unistd.h
-@@ -4,7 +4,7 @@
+diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
+index 5b60c248de9e..5442b75a98c2 100644
+--- a/arch/alpha/kernel/module.c
++++ b/arch/alpha/kernel/module.c
+@@ -47,6 +47,8 @@ process_reloc_for_got(Elf64_Rela *rela,
+ 		}
  
- #include <uapi/asm/unistd.h>
- 
--#define NR_SYSCALLS	__NR_syscalls
-+#define NR_syscalls	__NR_syscalls
- 
- #define __ARCH_WANT_NEW_STAT
- #define __ARCH_WANT_OLD_READDIR
-diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-index e227f3a29a43..966400b925a5 100644
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -454,7 +454,7 @@ entSys:
- 	SAVE_ALL
- 	lda	$8, 0x3fff
- 	bic	$sp, $8, $8
--	lda	$4, NR_SYSCALLS($31)
-+	lda	$4, NR_syscalls($31)
- 	stq	$16, SP_OFF+24($sp)
- 	lda	$5, sys_call_table
- 	lda	$27, sys_ni_syscall
-@@ -585,7 +585,7 @@ strace:
- 	ldq	$21, 88($sp)
- 
- 	/* get the system call pointer.. */
--	lda	$1, NR_SYSCALLS($31)
-+	lda	$1, NR_syscalls($31)
- 	lda	$2, sys_call_table
- 	lda	$27, sys_ni_syscall
- 	cmpult	$0, $1, $1
-diff --git a/kernel/trace/trace.h b/kernel/trace/trace.h
-index 07d990270e2a..7ad8324db192 100644
---- a/kernel/trace/trace.h
-+++ b/kernel/trace/trace.h
-@@ -25,7 +25,7 @@
- #include "pid_list.h"
- 
- #ifdef CONFIG_FTRACE_SYSCALLS
--#include <asm/unistd.h>		/* For NR_SYSCALLS	     */
-+#include <asm/unistd.h>		/* For NR_syscalls	     */
- #include <asm/syscall.h>	/* some archs define it here */
- #endif
- 
+ 	g = kmalloc (sizeof (*g), GFP_KERNEL);
++	if (!g)
++		return;
+ 	g->next = chains[r_sym].next;
+ 	g->r_addend = r_addend;
+ 	g->got_offset = *poffset;
 -- 
 2.25.1
+
 
