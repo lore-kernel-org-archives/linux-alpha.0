@@ -1,52 +1,36 @@
-From: cgel.zte@gmail.com
-Subject: [PATCH] alpha: add null pointer check
-Date: Sat,  2 Apr 2022 08:34:36 +0000
-Message-ID: <20220402083436.2413189-1-lv.ruyi@zte.com.cn>
+From: Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH] alpha: add null pointer check
+Date: Sat, 2 Apr 2022 15:45:28 +0000
+Message-ID: <YkhvmH/eonkrT1M1@zeniv-ca.linux.org.uk>
+References: <20220402083436.2413189-1-lv.ruyi@zte.com.cn>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Tfha1nXEQp5tnH0OT7lYvNtXkp0/rCs/1BLKkrtZnbc=;
-        b=Okfx0/e4xNIm4mKw8WX9qJApxey2071CaaKEMbniVf5ghLGtCCW+JTr3NaZVhnghOe
-         96iwVtE/kpNO0QyNa62PqceYRwvr4amAsOqmAFMzO92vcC5PI4eTjGV9xi+ILjZxwU6K
-         iQETuQmcDrGV1EQNq+uBZNHHAMqCXTkSLieoJpqzZtq6Eu5ecUzppmdiHl6W/u184Mxp
-         Cgx4Tq83A39LIC9xcfl3uFRthf4hCIxRXnMt/ZWh9R4unIYPzRh2pVkzfbX0jpgkXS49
-         RSUV+808bVOA8RJOlrE9cIDF4WG2eyrMuZURXdoIfuYIS1C8RwL+vsUzn/DkmWG5FtqU
-         x66g==
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=qrD3dLInNfleLqlGuKhkZmbWrdw03gFeC7x6uS63Upw=; b=fgT1s3C0m31iB+jxF8elaB2Ur1
+        KV8NTuktgsQyRbCUN1IhPGKFP4jqRt2oYZReQr5NgEyzb3bxttifzIXyv/jqIUxDbN3eBvRyPc2Qq
+        7360sHDlk9/k+xfzMUGKTUXq5fx//O8pvJmRA4dpwamuln78K+WBCTBaelhk5WFsYL9cICIMt2bVz
+        PH7wr5YRIii8EPyI+/sD+0s0LyDJnlssn1tFVEkS2e0l+/steVQCDS6QzhO3pcNxq1ZZ8qJHGv69I
+        L+xyI73E1TF7toXK+lRVsRKx/GjLccZtEsxr0iiC+qwUCTUmdy7DVF0h2DrHVIn8QXNKnqUHFia7C
+        B2Ce7yig==;
+Content-Disposition: inline
+In-Reply-To: <20220402083436.2413189-1-lv.ruyi@zte.com.cn>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net
-Cc: ink@jurassic.park.msu.ru, mattst88@gmail.com, lv.ruyi@zte.com.cn, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
+Content-Transfer-Encoding: 7bit
+To: cgel.zte@gmail.com
+Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, lv.ruyi@zte.com.cn, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+On Sat, Apr 02, 2022 at 08:34:36AM +0000, cgel.zte@gmail.com wrote:
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+> 
+> kmalloc is a memory allocation function which can return NULL when some
+> internal memory errors happen. Add null pointer check to avoid
+> dereferencing null pointer.
 
-kmalloc is a memory allocation function which can return NULL when some
-internal memory errors happen. Add null pointer check to avoid
-dereferencing null pointer.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
----
- arch/alpha/kernel/module.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
-index 5b60c248de9e..5442b75a98c2 100644
---- a/arch/alpha/kernel/module.c
-+++ b/arch/alpha/kernel/module.c
-@@ -47,6 +47,8 @@ process_reloc_for_got(Elf64_Rela *rela,
- 		}
- 
- 	g = kmalloc (sizeof (*g), GFP_KERNEL);
-+	if (!g)
-+		return;
- 	g->next = chains[r_sym].next;
- 	g->r_addend = r_addend;
- 	g->got_offset = *poffset;
--- 
-2.25.1
-
-
+Why is that fix correct?  The only caller (module_frob_arch_sections())
+has no way to tell we'd failed.  _IF_ ignoring the failure is the right
+thing to do, the analysis needs to be covered in commit message.
