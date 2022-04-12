@@ -1,19 +1,19 @@
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 5.15 145/277] rtc: Check return value from mc146818_get_time()
-Date: Tue, 12 Apr 2022 08:29:08 +0200
-Message-ID: <20220412062946.231414058@linuxfoundation.org>
-References: <20220412062942.022903016@linuxfoundation.org>
+Subject: [PATCH 5.16 150/285] rtc: Check return value from mc146818_get_time()
+Date: Tue, 12 Apr 2022 08:30:07 +0200
+Message-ID: <20220412062948.002467236@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746168;
+        s=korg; t=1649746846;
         bh=RiLSKr4bPia4+WtT/d78uazNGyfqTpLSiw8pG2sy0Cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gYoJMXPVx+dP/bmar1ww2FD0W2wtGGsdQyf3+uppmaYkTJNp5uH9LvZD02HftZz9K
-         qyRwX1b6LoSk0TEiNhbcO5WxKAxxEc1M2EGOQ8WbuTmDmiU2KPIa2MRMoyy2kYJyRH
-         sLf4wOnKlYrJgvcwcC5XTiWqNeTVogsAqn+3oRP0=
-In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
+        b=VbbDofccMy6Wbs0qfVTB53m0tj3zL0yaX1RYF+0akVtBDs7dvUG74zloOTuiX8l/3
+         u8H84q3ND8q+b9Y2Gkwda0lO81/OudxiBvAVpUOkpZlM0lu10VMu1IeSNd1nKa+ekn
+         lCtSTBkqyxaajGSZ8V8uAaEgceIw/O7fsUKKPLyk=
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="utf-8"
 To: linux-kernel@vger.kernel.org
