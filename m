@@ -1,173 +1,24 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 5.16 150/285] rtc: Check return value from mc146818_get_time()
-Date: Tue, 12 Apr 2022 08:30:07 +0200
-Message-ID: <20220412062948.002467236@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Subject: [PING^3][PATCH] Alpha: Remove redundant local asm header
+ redirections
+Date: Wed, 13 Apr 2022 23:53:47 +0100 (BST)
+Message-ID: <alpine.DEB.2.21.2204132104530.9383@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746846;
-        bh=RiLSKr4bPia4+WtT/d78uazNGyfqTpLSiw8pG2sy0Cw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VbbDofccMy6Wbs0qfVTB53m0tj3zL0yaX1RYF+0akVtBDs7dvUG74zloOTuiX8l/3
-         u8H84q3ND8q+b9Y2Gkwda0lO81/OudxiBvAVpUOkpZlM0lu10VMu1IeSNd1nKa+ekn
-         lCtSTBkqyxaajGSZ8V8uAaEgceIw/O7fsUKKPLyk=
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-alpha@vger.kernel.org, x86@kernel.org, Sasha Levin <sashal@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+On Sun, 13 Feb 2022, Maciej W. Rozycki wrote:
 
-[ Upstream commit 0dd8d6cb9eddfe637bcd821bbfd40ebd5a0737b9 ]
+> Remove a number of asm headers locally redirected to the respective 
+> generic or generated versions.
 
-There are 4 users of mc146818_get_time() and none of them was checking
-the return value from this function. Change this.
+ Ping for:
+<https://lore.kernel.org/lkml/alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk/>
 
-Print the appropriate warnings in callers of mc146818_get_time() instead
-of in the function mc146818_get_time() itself, in order not to add
-strings to rtc-mc146818-lib.c, which is kind of a library.
-
-The callers of alpha_rtc_read_time() and cmos_read_time() may use the
-contents of (struct rtc_time *) even when the functions return a failure
-code. Therefore, set the contents of (struct rtc_time *) to 0x00,
-which looks more sensible then 0xff and aligns with the (possibly
-stale?) comment in cmos_read_time:
-
-	/*
-	 * If pm_trace abused the RTC for storage, set the timespec to 0,
-	 * which tells the caller that this RTC value is unusable.
-	 */
-
-For consistency, do this in mc146818_get_time().
-
-Note: hpet_rtc_interrupt() may call mc146818_get_time() many times a
-second. It is very unlikely, though, that the RTC suddenly stops
-working and mc146818_get_time() would consistently fail.
-
-Only compile-tested on alpha.
-
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: x86@kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210200131.153887-4-mat.jonczyk@o2.pl
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/alpha/kernel/rtc.c        | 7 ++++++-
- arch/x86/kernel/hpet.c         | 8 ++++++--
- drivers/base/power/trace.c     | 6 +++++-
- drivers/rtc/rtc-cmos.c         | 9 ++++++++-
- drivers/rtc/rtc-mc146818-lib.c | 2 +-
- 5 files changed, 26 insertions(+), 6 deletions(-)
-
-diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
-index ce3077946e1d..fb3025396ac9 100644
---- a/arch/alpha/kernel/rtc.c
-+++ b/arch/alpha/kernel/rtc.c
-@@ -80,7 +80,12 @@ init_rtc_epoch(void)
- static int
- alpha_rtc_read_time(struct device *dev, struct rtc_time *tm)
- {
--	mc146818_get_time(tm);
-+	int ret = mc146818_get_time(tm);
-+
-+	if (ret < 0) {
-+		dev_err_ratelimited(dev, "unable to read current time\n");
-+		return ret;
-+	}
- 
- 	/* Adjust for non-default epochs.  It's easier to depend on the
- 	   generic __get_rtc_time and adjust the epoch here than create
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 882213df3713..71f336425e58 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -1435,8 +1435,12 @@ irqreturn_t hpet_rtc_interrupt(int irq, void *dev_id)
- 	hpet_rtc_timer_reinit();
- 	memset(&curr_time, 0, sizeof(struct rtc_time));
- 
--	if (hpet_rtc_flags & (RTC_UIE | RTC_AIE))
--		mc146818_get_time(&curr_time);
-+	if (hpet_rtc_flags & (RTC_UIE | RTC_AIE)) {
-+		if (unlikely(mc146818_get_time(&curr_time) < 0)) {
-+			pr_err_ratelimited("unable to read current time from RTC\n");
-+			return IRQ_HANDLED;
-+		}
-+	}
- 
- 	if (hpet_rtc_flags & RTC_UIE &&
- 	    curr_time.tm_sec != hpet_prev_update_sec) {
-diff --git a/drivers/base/power/trace.c b/drivers/base/power/trace.c
-index 94665037f4a3..72b7a92337b1 100644
---- a/drivers/base/power/trace.c
-+++ b/drivers/base/power/trace.c
-@@ -120,7 +120,11 @@ static unsigned int read_magic_time(void)
- 	struct rtc_time time;
- 	unsigned int val;
- 
--	mc146818_get_time(&time);
-+	if (mc146818_get_time(&time) < 0) {
-+		pr_err("Unable to read current time from RTC\n");
-+		return 0;
-+	}
-+
- 	pr_info("RTC time: %ptRt, date: %ptRd\n", &time, &time);
- 	val = time.tm_year;				/* 100 years */
- 	if (val > 100)
-diff --git a/drivers/rtc/rtc-cmos.c b/drivers/rtc/rtc-cmos.c
-index dc3f8b0dde98..d0f58cca5c20 100644
---- a/drivers/rtc/rtc-cmos.c
-+++ b/drivers/rtc/rtc-cmos.c
-@@ -222,6 +222,8 @@ static inline void cmos_write_bank2(unsigned char val, unsigned char addr)
- 
- static int cmos_read_time(struct device *dev, struct rtc_time *t)
- {
-+	int ret;
-+
- 	/*
- 	 * If pm_trace abused the RTC for storage, set the timespec to 0,
- 	 * which tells the caller that this RTC value is unusable.
-@@ -229,7 +231,12 @@ static int cmos_read_time(struct device *dev, struct rtc_time *t)
- 	if (!pm_trace_rtc_valid())
- 		return -EIO;
- 
--	mc146818_get_time(t);
-+	ret = mc146818_get_time(t);
-+	if (ret < 0) {
-+		dev_err_ratelimited(dev, "unable to read current time\n");
-+		return ret;
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
-index bd48cee3027e..97e3cebb4da9 100644
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -24,7 +24,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
- 	/* Ensure that the RTC is accessible. Bit 6 must be 0! */
- 	if (WARN_ON_ONCE((CMOS_READ(RTC_VALID) & 0x40) != 0)) {
- 		spin_unlock_irqrestore(&rtc_lock, flags);
--		memset(time, 0xff, sizeof(*time));
-+		memset(time, 0, sizeof(*time));
- 		return -EIO;
- 	}
- 
--- 
-2.35.1
-
-
-
+  Maciej
