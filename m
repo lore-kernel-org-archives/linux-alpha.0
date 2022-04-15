@@ -1,50 +1,44 @@
-From: Matt Turner <mattst88@gmail.com>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 Subject: Re: [PATCH] Alpha: Remove redundant local asm header redirections
-Date: Thu, 14 Apr 2022 16:06:17 -0700
-Message-ID: <CAEdQ38EpBMnkP-PNZnwaoO4poFJQO5YSFJeZgiQ-obJmjogBFQ@mail.gmail.com>
-References: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk>
+Date: Fri, 15 Apr 2022 13:26:58 +0100 (BST)
+Message-ID: <alpine.DEB.2.21.2204150100380.9383@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk> <CAEdQ38EpBMnkP-PNZnwaoO4poFJQO5YSFJeZgiQ-obJmjogBFQ@mail.gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FWv6HfHgguUI/DkyUK/M7ub8F2Hnwf3DDEuvQm5kh6I=;
-        b=jVw4GOcH3RcqMdY546tIfnHKAzKSFVrfdcuyiuXhRJIGn3nRu3J2PWpR+iHQpxNCTY
-         jQ+0GaJtldFjCISeshgIIbBqo4oIUDlIb2qyJuoM95LzxDapZG3cPvzVonUy6xEh/i/W
-         HT3l3O5uRTjYEK74yI6QMkszUHbK7FxncW1YiS4MXVD82YEfd+o7h7CYbke3vwYkAEXp
-         8iCVEpE2NEUhRNGFRzsTDyxZikHEbFp3EcSb61jiQ+HnVFLDMMMVA5lV5M88Ym/c/Y2Q
-         jTJREQhCH+nOyy+EB2bqJ7wdOuEGmLUZAr809Jwb1ijz5rROe9L/UeH3noCgbUKxb6+f
-         O3Vw==
-In-Reply-To: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk>
+In-Reply-To: <CAEdQ38EpBMnkP-PNZnwaoO4poFJQO5YSFJeZgiQ-obJmjogBFQ@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Matt Turner <mattst88@gmail.com>
 Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
 
-On Sun, Feb 13, 2022 at 12:01 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
->
-> Remove a number of asm headers locally redirected to the respective
-> generic or generated versions.
->
-> For asm-offsets.h all that is needed is a Kbuild entry for the generic
-> version, and for div64.h, irq_regs.h and kdebug.h nothing is needed as
-> in their absence they will be redirected automatically according to
-> include/asm-generic/Kbuild.
->
-> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-> ---
-> Hi,
->
->  Noticed while fiddling with Kbuild for PARPORT_PC.  Please apply.
->
->   Maciej
+On Thu, 14 Apr 2022, Matt Turner wrote:
 
+> Sorry for the delay. I'll apply this. I just haven't had much time for
+> alphas lately.
 
-Sorry for the delay. I'll apply this. I just haven't had much time for
-alphas lately.
+ No worries, and thanks for chiming in.  I plan to get one of my Alphas 
+set up and wired in my remote lab later this year, so I hope to get a bit 
+more active with the port.  At least I've got a reasonably recent build of 
+the toolchain:
 
-Maybe now's a good time to remind you that I'm still waiting on you to
-upstream the m41t80/SWARM/i2c/smbus patches? It's been more than 11
-years now, so it seems long enough for a ping :)
+$ alpha-linux-gnu-gcc --version
+alpha-linux-gnu-gcc (GCC) 12.0.1 20220129 (experimental)
+[...]
+
+> Maybe now's a good time to remind you that I'm still waiting on you to
+> upstream the m41t80/SWARM/i2c/smbus patches? It's been more than 11
+> years now, so it seems long enough for a ping :)
+
+ Umm, right, I came across them recently!  I'll see what I can do, however 
+I don't have my SWARM in my remote lab, so I can only verify things when 
+I'm next to it (which has been occasional only since the start of the 
+bloody pandemic).  As I recall there was an issue with the incompatibility 
+of the SMBUS protocol subset implemented by the SOC and the RTC causing a 
+race.  I've had more stuff outstanding, such as PHY IRQ support for the 
+Ethernet interfaces.
+
+ And I yet have to see why my compiler miscompiled one endianness of CFE 
+too (and find a way to publish my CFE fixes)!
+
+  Maciej
