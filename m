@@ -1,21 +1,21 @@
 From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: [PATCH 6/7] ia64: remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions
-Date: Fri, 15 Apr 2022 14:08:16 -0500
-Message-ID: <20220415190817.842864-7-helgaas@kernel.org>
+Subject: [PATCH 7/7] alpha: remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions
+Date: Fri, 15 Apr 2022 14:08:17 -0500
+Message-ID: <20220415190817.842864-8-helgaas@kernel.org>
 References: <20220415190817.842864-1-helgaas@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-sh-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650049722;
-        bh=II6OEIXWBm46BUBaioGDbgMZ+vUKj+RzIpjwlTwoobY=;
+        s=k20201202; t=1650049724;
+        bh=dvZpqVTi0jdBV+n0QdZhgd89O8shNTR194n0OIslFEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mucLjtHZlTlqn2DfNqXglYqlzQSZRXHg7K3buWgwJ6TRmRLexMpb/3xdYzYZVnJs+
-         gvBVNpEgyW88VKmUYBkUJbakIu5PdplrUxVwEyeu9N/5FtduwCXjlc6s+6XwFWAL7a
-         J3hnMLdtA0dszo+jHajTb12P1IDdZL9y+8tQ9AM1qXC1DXvSJv/qQ6bqPGDCQJxN9s
-         8SuiW1RQrqkyjOH5CKiSXg68i99swwTacX+KoAEKHxEuVCAvdKmn+ZTzSKf8SCV95w
-         qZvkONpo92Q8EjiphevANVfZ7bTf5QgoMcAuHZJkuE3BCcOyhiGmvRmV3bWHD9MpWP
-         RuPfTe7QgwUPw==
+        b=Vo9SN5UB5HN+TQ8PDoWan0KcngRkeZPACjXnATfZw2QPo8YV8IFEsKTgTqaUHb4Wq
+         buYSTHLuV8dWUQ+yssZu4Cu0uOcBv0mjwVsDVHIh1maofvqLvYAAAy1RVEFK9yCXo+
+         dPGdBtMn+DALp8LeFcJxFbSsAfDVa+Yze68PW2g0l28eXMzTI2kK5VoUBifIrHOtwZ
+         1WOf86Z5OYIWDhVv4bhoKtsirQ9OaUxjNMN4e/90dC6L7vUMwinM6ndR4799Tqlo2s
+         Geiv9PhbOsZgFOoijb1U7+dWqsYEaovac2mSFv5v7ZmqCiWLmIaVi+7wvIiA7CI4f6
+         lLjJ23uF8IhFQ==
 In-Reply-To: <20220415190817.842864-1-helgaas@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -28,24 +28,24 @@ Remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions.
 
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- arch/ia64/include/asm/io.h | 4 ----
+ arch/alpha/include/asm/io.h | 4 ----
  1 file changed, 4 deletions(-)
 
-diff --git a/arch/ia64/include/asm/io.h b/arch/ia64/include/asm/io.h
-index 6d93b923b379..1069e1730b2e 100644
---- a/arch/ia64/include/asm/io.h
-+++ b/arch/ia64/include/asm/io.h
-@@ -23,10 +23,6 @@
- #include <asm/unaligned.h>
- #include <asm/early_ioremap.h>
+diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+index c9cb554fbe54..338dd24400bd 100644
+--- a/arch/alpha/include/asm/io.h
++++ b/arch/alpha/include/asm/io.h
+@@ -14,10 +14,6 @@
+    the implementation we have here matches that interface.  */
+ #include <asm-generic/iomap.h>
  
--/* We don't use IO slowdowns on the ia64, but.. */
+-/* We don't use IO slowdowns on the Alpha, but.. */
 -#define __SLOW_DOWN_IO	do { } while (0)
 -#define SLOW_DOWN_IO	do { } while (0)
 -
- #define __IA64_UNCACHED_OFFSET	RGN_BASE(RGN_UNCACHED)
- 
  /*
+  * Virtual -> physical identity mapping starts at this offset
+  */
 -- 
 2.25.1
 
