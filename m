@@ -1,44 +1,56 @@
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: Re: [PATCH] Alpha: Remove redundant local asm header redirections
-Date: Fri, 15 Apr 2022 13:26:58 +0100 (BST)
-Message-ID: <alpine.DEB.2.21.2204150100380.9383@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2202131944000.34636@angie.orcam.me.uk> <CAEdQ38EpBMnkP-PNZnwaoO4poFJQO5YSFJeZgiQ-obJmjogBFQ@mail.gmail.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: [PATCH 0/7] Remove unused SLOW_DOWN_IO
+Date: Fri, 15 Apr 2022 14:08:10 -0500
+Message-ID: <20220415190817.842864-1-helgaas@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <CAEdQ38EpBMnkP-PNZnwaoO4poFJQO5YSFJeZgiQ-obJmjogBFQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-ia64-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650049709;
+        bh=wLptQ9KcXl6+N9MX+ZuwkhOcFMiubmc8uGIxEhPIVsw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kMa8vmzsEoLHqqj8o162lzFyicETqjQXbHfr5ImL1Ae9T92XhA7/J/OYE3IcbnXN4
+         7ePmsefcNu2rBwzhNnaUtZBSIDPSaoyxmLo8pk+i5VdMOtmG3GkUY0lrEa73lTW/2V
+         Ug7UMduqMNaG9m5kk1lDbtepjruMyB//l/sFbAUflo5h2fSiSQOtJtlTGb/ZjBrZDX
+         w/IKNd1N+X/c6BltEErY9wMWJZ965YEp++XzySEwiQDwnEYl3OyhGebrjR9Ll6lBhN
+         Pw1g6o9wyrUeuiUPT7mgq7WrcLLHXyKlny2f9f7eZFXgVeaocS+n1eFAK11luqBP6s
+         uuqYoPhSC5y/g==
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Matt Turner <mattst88@gmail.com>
-Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha <linux-alpha@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+To: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Chas Williams <3chas3@gmail.com>, "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Cc: linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
 
-On Thu, 14 Apr 2022, Matt Turner wrote:
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-> Sorry for the delay. I'll apply this. I just haven't had much time for
-> alphas lately.
+Only alpha, ia64, powerpc, and sh define SLOW_DOWN_IO, and there are no
+actual uses of it.  The few references to it are in situations that are
+themselves unused.  Remove them all.
 
- No worries, and thanks for chiming in.  I plan to get one of my Alphas 
-set up and wired in my remote lab later this year, so I hope to get a bit 
-more active with the port.  At least I've got a reasonably recent build of 
-the toolchain:
+It should be safe to apply these independently and in any order.  The only
+place SLOW_DOWN_IO is used at all is the lmc_var.h definition of DELAY,
+which is itself never used.
 
-$ alpha-linux-gnu-gcc --version
-alpha-linux-gnu-gcc (GCC) 12.0.1 20220129 (experimental)
-[...]
+Bjorn Helgaas (7):
+  net: wan: atp: remove unused eeprom_delay()
+  net: wan: lmc: remove unused DELAY()
+  net: remove comments that mention obsolete __SLOW_DOWN_IO
+  sh: remove unused SLOW_DOWN_IO
+  powerpc: Remove unused SLOW_DOWN_IO definition
+  ia64: remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions
+  alpha: remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions
 
-> Maybe now's a good time to remind you that I'm still waiting on you to
-> upstream the m41t80/SWARM/i2c/smbus patches? It's been more than 11
-> years now, so it seems long enough for a ping :)
+ arch/alpha/include/asm/io.h                  |  4 ----
+ arch/ia64/include/asm/io.h                   |  4 ----
+ arch/powerpc/include/asm/io.h                |  2 --
+ arch/sh/include/asm/io.h                     | 17 ++---------------
+ drivers/atm/nicstarmac.c                     |  5 -----
+ drivers/net/ethernet/dec/tulip/winbond-840.c |  2 --
+ drivers/net/ethernet/natsemi/natsemi.c       |  2 --
+ drivers/net/ethernet/realtek/atp.h           |  4 ----
+ drivers/net/wan/lmc/lmc_main.c               |  8 --------
+ drivers/net/wan/lmc/lmc_var.h                |  8 --------
+ 10 files changed, 2 insertions(+), 54 deletions(-)
 
- Umm, right, I came across them recently!  I'll see what I can do, however 
-I don't have my SWARM in my remote lab, so I can only verify things when 
-I'm next to it (which has been occasional only since the start of the 
-bloody pandemic).  As I recall there was an issue with the incompatibility 
-of the SMBUS protocol subset implemented by the SOC and the RTC causing a 
-race.  I've had more stuff outstanding, such as PHY IRQ support for the 
-Ethernet interfaces.
+-- 
+2.25.1
 
- And I yet have to see why my compiler miscompiled one endianness of CFE 
-too (and find a way to publish my CFE fixes)!
-
-  Maciej
