@@ -1,21 +1,21 @@
 From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: [PATCH 2/7] net: wan: lmc: remove unused DELAY()
-Date: Fri, 15 Apr 2022 14:08:12 -0500
-Message-ID: <20220415190817.842864-3-helgaas@kernel.org>
+Subject: [PATCH 3/7] net: remove comments that mention obsolete __SLOW_DOWN_IO
+Date: Fri, 15 Apr 2022 14:08:13 -0500
+Message-ID: <20220415190817.842864-4-helgaas@kernel.org>
 References: <20220415190817.842864-1-helgaas@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-sh-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650049714;
-        bh=Il4WOHfjx/Jfo7X5I2JM0pjBeqxepMTlwqwf2vBZu9U=;
+        s=k20201202; t=1650049716;
+        bh=o4MX8UK2Ayi2FU0PSYzgH1W7goqrO0bs8RfgMd3gAVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BIaQqTWUSmUIyzdX/NKHSU6Az27xEK3K875mXeTynF5kMb6mqDjraYWkSgFexmcwS
-         ooKPHsD8YdVIH5ScRxt2oSOLc2QynC69e8ygkGurUcLF1vNe0jGZwP7eZSHZfRHq+Z
-         stAGCZb9Dx0jT7dcxefaMgZd4vk/pfJ1OHW5AojnYMNwlA7P2pAA77c+Eicfl2UCjU
-         8I+dFmzAXrdJKKfzi3PrAA5iPpYEBRhPxypV56R6KLW5bLAgZomPKpqVzrdHFVbXJ8
-         jIKGNm/bIGsE8RQPPT41a9ICdf8YjIcdvGZQj6fzluT4dIkIoEcheJCTKWbNOoCST3
-         G4RiggVXkGGAg==
+        b=cweHab1Gdg6zDAzegVfOlAcwLW0ZwyDacOnsclAJlJquxFoXV6FmDWc3aQd5lF7UK
+         BCj2JeCoOaAm0MV5HhGtowfZX5F/tpn4QARtoxmMlDxgFzQr3KWzQOHH9Zv6W34+Ez
+         uNkS2GjiA9M5zDb41OTuhdLm6hl1safKJ+7xyYZyNWUPI8UwsntYxXmlul+LZVXL5/
+         6TLKtRMfgV0r8kxWTabiWAdVZHYscdPBqfySCuuha7mxFzQ9t60jFezg3F9f+tqhsV
+         mFqTtjcCEbIr4trxsLK8ztpzsoa9De11Z2III0lnWhLbz2LgR9UQpK60LlFOKjysH2
+         SxpHeGecr7ioA==
 In-Reply-To: <20220415190817.842864-1-helgaas@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -24,82 +24,55 @@ Cc: linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linuxppc-dev@lists.
 
 From: Bjorn Helgaas <bhelgaas@google.com>
 
-lmc_var.h is included only by files in drivers/net/wan/lmc/, and none of
-them uses DELAY().  Remove the unused definition and related comments.
-
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- drivers/net/wan/lmc/lmc_main.c | 8 --------
- drivers/net/wan/lmc/lmc_var.h  | 8 --------
- 2 files changed, 16 deletions(-)
+ drivers/atm/nicstarmac.c                     | 5 -----
+ drivers/net/ethernet/dec/tulip/winbond-840.c | 2 --
+ drivers/net/ethernet/natsemi/natsemi.c       | 2 --
+ 3 files changed, 9 deletions(-)
 
-diff --git a/drivers/net/wan/lmc/lmc_main.c b/drivers/net/wan/lmc/lmc_main.c
-index 76c6b4f89890..45b2d25782ed 100644
---- a/drivers/net/wan/lmc/lmc_main.c
-+++ b/drivers/net/wan/lmc/lmc_main.c
-@@ -1669,21 +1669,17 @@ unsigned lmc_mii_readreg (lmc_softc_t * const sc, unsigned devaddr, unsigned reg
+diff --git a/drivers/atm/nicstarmac.c b/drivers/atm/nicstarmac.c
+index e0dda9062e6b..791f69a07ddf 100644
+--- a/drivers/atm/nicstarmac.c
++++ b/drivers/atm/nicstarmac.c
+@@ -14,11 +14,6 @@ typedef void __iomem *virt_addr_t;
  
-         LMC_CSR_WRITE (sc, csr_9, dataval);
-         lmc_delay ();
--        /* __SLOW_DOWN_IO; */
-         LMC_CSR_WRITE (sc, csr_9, dataval | 0x10000);
-         lmc_delay ();
--        /* __SLOW_DOWN_IO; */
-     }
+ #define CYCLE_DELAY 5
  
-     for (i = 19; i > 0; i--)
-     {
-         LMC_CSR_WRITE (sc, csr_9, 0x40000);
-         lmc_delay ();
--        /* __SLOW_DOWN_IO; */
-         retval = (retval << 1) | ((LMC_CSR_READ (sc, csr_9) & 0x80000) ? 1 : 0);
-         LMC_CSR_WRITE (sc, csr_9, 0x40000 | 0x10000);
-         lmc_delay ();
--        /* __SLOW_DOWN_IO; */
-     }
+-/*
+-   This was the original definition
+-#define osp_MicroDelay(microsec) \
+-    do { int _i = 4*microsec; while (--_i > 0) { __SLOW_DOWN_IO; }} while (0)
+-*/
+ #define osp_MicroDelay(microsec) {unsigned long useconds = (microsec); \
+                                   udelay((useconds));}
+ /*
+diff --git a/drivers/net/ethernet/dec/tulip/winbond-840.c b/drivers/net/ethernet/dec/tulip/winbond-840.c
+index 86b1d23eba83..1db19463fd46 100644
+--- a/drivers/net/ethernet/dec/tulip/winbond-840.c
++++ b/drivers/net/ethernet/dec/tulip/winbond-840.c
+@@ -474,8 +474,6 @@ static int w840_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
+    No extra delay is needed with 33Mhz PCI, but future 66Mhz access may need
+    a delay.  Note that pre-2.0.34 kernels had a cache-alignment bug that
+    made udelay() unreliable.
+-   The old method of using an ISA access as a delay, __SLOW_DOWN_IO__, is
+-   deprecated.
+ */
+ #define eeprom_delay(ee_addr)	ioread32(ee_addr)
  
-     return (retval >> 1) & 0xffff;
-@@ -1708,10 +1704,8 @@ void lmc_mii_writereg (lmc_softc_t * const sc, unsigned devaddr, unsigned regno,
+diff --git a/drivers/net/ethernet/natsemi/natsemi.c b/drivers/net/ethernet/natsemi/natsemi.c
+index 82a22711ce45..50bca486a244 100644
+--- a/drivers/net/ethernet/natsemi/natsemi.c
++++ b/drivers/net/ethernet/natsemi/natsemi.c
+@@ -989,8 +989,6 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
+    No extra delay is needed with 33Mhz PCI, but future 66Mhz access may need
+    a delay.  Note that pre-2.0.34 kernels had a cache-alignment bug that
+    made udelay() unreliable.
+-   The old method of using an ISA access as a delay, __SLOW_DOWN_IO__, is
+-   deprecated.
+ */
+ #define eeprom_delay(ee_addr)	readl(ee_addr)
  
-         LMC_CSR_WRITE (sc, csr_9, datav);
-         lmc_delay ();
--        /* __SLOW_DOWN_IO; */
-         LMC_CSR_WRITE (sc, csr_9, (datav | 0x10000));
-         lmc_delay ();
--        /* __SLOW_DOWN_IO; */
-         i--;
-     }
- 
-@@ -1720,10 +1714,8 @@ void lmc_mii_writereg (lmc_softc_t * const sc, unsigned devaddr, unsigned regno,
-     {
-         LMC_CSR_WRITE (sc, csr_9, 0x40000);
-         lmc_delay ();
--        /* __SLOW_DOWN_IO; */
-         LMC_CSR_WRITE (sc, csr_9, 0x50000);
-         lmc_delay ();
--        /* __SLOW_DOWN_IO; */
-         i--;
-     }
- }
-diff --git a/drivers/net/wan/lmc/lmc_var.h b/drivers/net/wan/lmc/lmc_var.h
-index 99f0aa787a35..cf824bb1932c 100644
---- a/drivers/net/wan/lmc/lmc_var.h
-+++ b/drivers/net/wan/lmc/lmc_var.h
-@@ -44,14 +44,6 @@ typedef struct lmc___ctl lmc_ctl_t;
- #define LMC_CSR_WRITE(sc, reg, val) \
- 	outl((val), (sc)->lmc_csrs.reg)
- 
--//#ifdef _LINUX_DELAY_H
--//	#define SLOW_DOWN_IO udelay(2);
--//	#undef __SLOW_DOWN_IO
--//	#define __SLOW_DOWN_IO udelay(2);
--//#endif
--
--#define DELAY(n) SLOW_DOWN_IO
--
- #define lmc_delay() inl(sc->lmc_csrs.csr_9)
- 
- /* This macro sync's up with the mii so that reads and writes can take place */
 -- 
 2.25.1
 
