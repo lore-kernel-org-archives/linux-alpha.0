@@ -1,76 +1,99 @@
-From: Bob Tracy <rct@frus.com>
-Subject: Re: 5.17.0 boot issue on Miata
-Date: Mon, 18 Apr 2022 23:53:50 -0500
-Message-ID: <Yl5AXvU+cBH5ex4K@gherkin.frus.com>
-References: <Yj0u150JJpsb9nj4@gherkin.frus.com>
- <20220326222157.GA13650@tower>
- <YkuejknyPDJoQEDC@gherkin.frus.com>
- <20220405050125.GA25969@tower>
- <YkxKRElYUhMgOOCN@gherkin.frus.com>
- <10d61d8f-edfc-fc39-0936-233692464dbd@gmx.de>
- <Yk4XsdHvjrLqN1LR@gherkin.frus.com>
- <YlAyZdZ6afL58Ege@gherkin.frus.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH] net: unexport csum_and_copy_{from,to}_user
+Date: Thu, 21 Apr 2022 09:04:40 +0200
+Message-ID: <20220421070440.1282704-1-hch@lst.de>
 Mime-Version: 1.0
-Return-path: <bounce-debian-alpha=debian-alpha=m.gmane-mx.org@lists.debian.org>
-Content-Disposition: inline
-In-Reply-To: <YlAyZdZ6afL58Ege@gherkin.frus.com>
-Resent-Message-ID: <OUuE9lr12UH.A.4EE.zBkXiB@bendel>
-List-Id: <linux-alpha.vger.kernel.org>
-List-URL: <https://lists.debian.org/debian-alpha/>
-List-Post: <mailto:debian-alpha@lists.debian.org>
-List-Help: <mailto:debian-alpha-request@lists.debian.org?subject=help>
-List-Subscribe: <mailto:debian-alpha-request@lists.debian.org?subject=subscribe>
-List-Unsubscribe: <mailto:debian-alpha-request@lists.debian.org?subject=unsubscribe>
-List-Archive: https://lists.debian.org/msgid-search/Yl5AXvU+cBH5ex4K@gherkin.frus.com
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=zBXWLNnXpk4rildATDLl07tkcfHH7qx/rs6eJc2jVvY=; b=QR0Xe8VEKwSitBZoLjmLhc8fq8
+        Lr97HHHJhJPho3My5cPAj3WFl0XUehAS9E+qEfCT/Lq6WDrFnYeWYcShZdet8No9amJuD3NdnhpXg
+        A2WH2R3rSaIEsCxFrj4AW4IgVwsRmuLSHamhv5gA1JmwuKLVy4Zwc1fRRbXymaAOFUWY/Fo25jO/Y
+        Rv07h3ZFVNmYVZsAr2+KfR9itkDS/IPJLGd4Zit2F7zasrKi43a339FOQVRyOyxnkylnHwxU0xPsw
+        c+T5CEboHhoU2XsgyUtATcYfhWl+O7Eg4aZlYpZqDsNyqmG71+b+KUGXTz4CsIQO92nqN/AR8/lSc
+        vuSIbYrQ==;
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: debian-alpha@lists.debian.org
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+To: akpm@linux-foundation.org
+Cc: x86@kernel.org, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 
-(Adding linux-scsi and linux-kernel, now that bisection is complete.)
+csum_and_copy_from_user and csum_and_copy_to_user are exported by
+a few architectures, but not actually used in modular code.  Drop
+the exports.
 
-On Wed, Apr 06, 2022 at 05:44:01PM -0500, Bob Tracy wrote:
-> v5.17-rc2 ok.  v5.17-rc3 I get the disk sector errors and hang that I
-> reported in the first message in this thread.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/alpha/lib/csum_partial_copy.c   | 1 -
+ arch/m68k/lib/checksum.c             | 2 --
+ arch/powerpc/lib/checksum_wrappers.c | 2 --
+ arch/x86/lib/csum-wrappers_64.c      | 2 --
+ 4 files changed, 7 deletions(-)
 
-This is on an Alpha Miata platform (PWS 433au) with QLogic ISP1020 controller.
-
-Here's the implicated commit:
-
-edb854a3680bacc9ef9b91ec0c5ff6105886f6f3 is the first bad commit
-commit edb854a3680bacc9ef9b91ec0c5ff6105886f6f3
-Author: Ming Lei <ming.lei@redhat.com>
-Date:   Thu Jan 27 23:37:33 2022 +0800
-
-    scsi: core: Reallocate device's budget map on queue depth change
-    
-    We currently use ->cmd_per_lun as initial queue depth for setting up the
-    budget_map. Martin Wilck reported that it is common for the queue_depth to
-    be subsequently updated in slave_configure() based on detected hardware
-    characteristics.
-    
-    As a result, for some drivers, the static host template settings for
-    cmd_per_lun and can_queue won't actually get used in practice. And if the
-    default values are used to allocate the budget_map, memory may be consumed
-    unnecessarily.
-    
-    Fix the issue by reallocating the budget_map after ->slave_configure()
-    returns. At that time the device queue_depth should accurately reflect what
-    the hardware needs.
-    
-    Link: https://lore.kernel.org/r/20220127153733.409132-1-ming.lei@redhat.com
-    Cc: Bart Van Assche <bvanassche@acm.org>
-    Reported-by: Martin Wilck <martin.wilck@suse.com>
-    Suggested-by: Martin Wilck <martin.wilck@suse.com>
-    Tested-by: Martin Wilck <mwilck@suse.com>
-    Reviewed-by: Martin Wilck <mwilck@suse.com>
-    Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-    Signed-off-by: Ming Lei <ming.lei@redhat.com>
-    Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-
- drivers/scsi/scsi_scan.c | 55 +++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 50 insertions(+), 5 deletions(-)
-
- Respectfully,
- --Bob
+diff --git a/arch/alpha/lib/csum_partial_copy.c b/arch/alpha/lib/csum_partial_copy.c
+index 1931a04af85a2..4d180d96f09e4 100644
+--- a/arch/alpha/lib/csum_partial_copy.c
++++ b/arch/alpha/lib/csum_partial_copy.c
+@@ -353,7 +353,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
+ 		return 0;
+ 	return __csum_and_copy(src, dst, len);
+ }
+-EXPORT_SYMBOL(csum_and_copy_from_user);
+ 
+ __wsum
+ csum_partial_copy_nocheck(const void *src, void *dst, int len)
+diff --git a/arch/m68k/lib/checksum.c b/arch/m68k/lib/checksum.c
+index 7e6afeae62177..5acb821849d30 100644
+--- a/arch/m68k/lib/checksum.c
++++ b/arch/m68k/lib/checksum.c
+@@ -265,8 +265,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
+ 	return sum;
+ }
+ 
+-EXPORT_SYMBOL(csum_and_copy_from_user);
+-
+ 
+ /*
+  * copy from kernel space while checksumming, otherwise like csum_partial
+diff --git a/arch/powerpc/lib/checksum_wrappers.c b/arch/powerpc/lib/checksum_wrappers.c
+index f3999cbb2fcc4..1a14c8780278c 100644
+--- a/arch/powerpc/lib/checksum_wrappers.c
++++ b/arch/powerpc/lib/checksum_wrappers.c
+@@ -24,7 +24,6 @@ __wsum csum_and_copy_from_user(const void __user *src, void *dst,
+ 	user_read_access_end();
+ 	return csum;
+ }
+-EXPORT_SYMBOL(csum_and_copy_from_user);
+ 
+ __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
+ {
+@@ -38,4 +37,3 @@ __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
+ 	user_write_access_end();
+ 	return csum;
+ }
+-EXPORT_SYMBOL(csum_and_copy_to_user);
+diff --git a/arch/x86/lib/csum-wrappers_64.c b/arch/x86/lib/csum-wrappers_64.c
+index 189344924a2be..145f9a0bde29a 100644
+--- a/arch/x86/lib/csum-wrappers_64.c
++++ b/arch/x86/lib/csum-wrappers_64.c
+@@ -32,7 +32,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
+ 	user_access_end();
+ 	return sum;
+ }
+-EXPORT_SYMBOL(csum_and_copy_from_user);
+ 
+ /**
+  * csum_and_copy_to_user - Copy and checksum to user space.
+@@ -57,7 +56,6 @@ csum_and_copy_to_user(const void *src, void __user *dst, int len)
+ 	user_access_end();
+ 	return sum;
+ }
+-EXPORT_SYMBOL(csum_and_copy_to_user);
+ 
+ /**
+  * csum_partial_copy_nocheck - Copy and checksum.
+-- 
+2.30.2
 
