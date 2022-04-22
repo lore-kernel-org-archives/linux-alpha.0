@@ -1,22 +1,22 @@
 From: Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH 0/7] Remove unused SLOW_DOWN_IO
-Date: Fri, 22 Apr 2022 10:48:28 -0700
-Message-ID: <20220422104828.75c726d0@kernel.org>
-References: <20220415190817.842864-1-helgaas@kernel.org>
+Subject: Re: [PATCH] net: unexport csum_and_copy_{from,to}_user
+Date: Fri, 22 Apr 2022 15:57:25 -0700
+Message-ID: <20220422155725.5347ca6f@kernel.org>
+References: <20220421070440.1282704-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1650649710;
- bh=5eG88j23VfpqEXG5LElKEOANPUif8PLVVEOgW3NWPM8=;
+ s=k20201202; t=1650668246;
+ bh=eHLSXrt72i6TaH/+If0ihwqLZQ/LBVXgDxHiWMQEzuo=;
  h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=JFxldeSwtEKgk9Lc8kRCQDX6OUJaNJqjczwvWjMV4j3OqtctIRIdLWhgVFbHcrF3q
- 6RV2w/ktTedzqZubriC/58H3Vdm9JiPVMTZntT5U6PsWNK7vp6Lf1pJVILEyJGxmS+
- qbW6cqz9aSs5BypgxKnfiub0ZMs/SwHrot2cRn1CQZuR4f0sF4Z4oMH0Z+a459fUj/
- AqyDYdPlcTk4kUXYFN7XRqxWUhAFDdRXCLT5AegHPef/SkanQTZdABcipo326XcIeu
- cDK0+ZCKSi/1Lz6pPb+mOUQxdS1svIyOTdYSc7OWhpV+sUpJYcDte2V/RzhDmTOY++
- fOwXTN8nCbK0w==
-In-Reply-To: <20220415190817.842864-1-helgaas@kernel.org>
+ b=iXFl9zY2I5UHRGR7OaF1h6qlAK5mPZxdv+O0/pAngV8myikt1Swc/85KxvGyNVcfO
+ c+CJWtfaiXl8iS4eDwm1tYLL7mlGL2OJEbQRIyx9Oxnmwt2nYscDdw9pUFUKju5Rc3
+ 8Smqu72LB7YDpmuwjcwdikHO/+HwAQLvXA/jK7PevxaApA0vXIIT+xAvp6YNrYwW6z
+ q1/aUsGP3jl+P0ELlTWntjHg6xRI0iccI6aJTjuD8V03kr63SrpkSJD23r6yezDvk8
+ TT4cjRbKMoXPFsOx4c8XKhYFXss7sxjKe8fuaZ2qJtOjsu9QfpIkpihlggl0InOGdM
+ 4UfcD6bK0Sc2g==
+In-Reply-To: <20220421070440.1282704-1-hch@lst.de>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
  <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
@@ -29,21 +29,17 @@ Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.o
 Sender: "Linuxppc-dev"
  <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Chas Williams <3chas3@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Paul Mackerras <paulus@samba.org>, Matt Turner <mattst88@gmail.com>, Paolo Abeni <pabeni@redhat.com>, linuxppc-dev@lists.ozlabs.org, "David S . Miller" <davem@davemloft.net>, Richard Henderson <rth@twiddle.net>
+To: Christoph Hellwig <hch@lst.de>
+Cc: netdev@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, linuxppc-dev@lists.ozlabs.org
 
-On Fri, 15 Apr 2022 14:08:10 -0500 Bjorn Helgaas wrote:
-> From: Bjorn Helgaas <bhelgaas@google.com>
+On Thu, 21 Apr 2022 09:04:40 +0200 Christoph Hellwig wrote:
+> csum_and_copy_from_user and csum_and_copy_to_user are exported by
+> a few architectures, but not actually used in modular code.  Drop
+> the exports.
 > 
-> Only alpha, ia64, powerpc, and sh define SLOW_DOWN_IO, and there are no
-> actual uses of it.  The few references to it are in situations that are
-> themselves unused.  Remove them all.
-> 
-> It should be safe to apply these independently and in any order.  The only
-> place SLOW_DOWN_IO is used at all is the lmc_var.h definition of DELAY,
-> which is itself never used.
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Hi Bojrn! Would you mind reposting just patches 1 and 3 for networking?
-LMC got removed in net-next (commit a5b116a0fa90 ("net: wan: remove the
-lanmedia (lmc) driver")) so the entire series fails to apply and therefore 
-defeats all of our patch handling scripts :S
+Judging by the To: I presume the intention is for Andrew to take this
+one, so FWIW:
+
+Acked-by: Jakub Kicinski <kuba@kernel.org>
