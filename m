@@ -1,99 +1,49 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH] net: unexport csum_and_copy_{from,to}_user
-Date: Thu, 21 Apr 2022 09:04:40 +0200
-Message-ID: <20220421070440.1282704-1-hch@lst.de>
+From: Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH 0/7] Remove unused SLOW_DOWN_IO
+Date: Fri, 22 Apr 2022 10:48:28 -0700
+Message-ID: <20220422104828.75c726d0@kernel.org>
+References: <20220415190817.842864-1-helgaas@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=zBXWLNnXpk4rildATDLl07tkcfHH7qx/rs6eJc2jVvY=; b=QR0Xe8VEKwSitBZoLjmLhc8fq8
-        Lr97HHHJhJPho3My5cPAj3WFl0XUehAS9E+qEfCT/Lq6WDrFnYeWYcShZdet8No9amJuD3NdnhpXg
-        A2WH2R3rSaIEsCxFrj4AW4IgVwsRmuLSHamhv5gA1JmwuKLVy4Zwc1fRRbXymaAOFUWY/Fo25jO/Y
-        Rv07h3ZFVNmYVZsAr2+KfR9itkDS/IPJLGd4Zit2F7zasrKi43a339FOQVRyOyxnkylnHwxU0xPsw
-        c+T5CEboHhoU2XsgyUtATcYfhWl+O7Eg4aZlYpZqDsNyqmG71+b+KUGXTz4CsIQO92nqN/AR8/lSc
-        vuSIbYrQ==;
-List-ID: <linux-alpha.vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1650649710;
+ bh=5eG88j23VfpqEXG5LElKEOANPUif8PLVVEOgW3NWPM8=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+ b=JFxldeSwtEKgk9Lc8kRCQDX6OUJaNJqjczwvWjMV4j3OqtctIRIdLWhgVFbHcrF3q
+ 6RV2w/ktTedzqZubriC/58H3Vdm9JiPVMTZntT5U6PsWNK7vp6Lf1pJVILEyJGxmS+
+ qbW6cqz9aSs5BypgxKnfiub0ZMs/SwHrot2cRn1CQZuR4f0sF4Z4oMH0Z+a459fUj/
+ AqyDYdPlcTk4kUXYFN7XRqxWUhAFDdRXCLT5AegHPef/SkanQTZdABcipo326XcIeu
+ cDK0+ZCKSi/1Lz6pPb+mOUQxdS1svIyOTdYSc7OWhpV+sUpJYcDte2V/RzhDmTOY++
+ fOwXTN8nCbK0w==
+In-Reply-To: <20220415190817.842864-1-helgaas@kernel.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
-To: akpm@linux-foundation.org
-Cc: x86@kernel.org, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Chas Williams <3chas3@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, Paul Mackerras <paulus@samba.org>, Matt Turner <mattst88@gmail.com>, Paolo Abeni <pabeni@redhat.com>, linuxppc-dev@lists.ozlabs.org, "David S . Miller" <davem@davemloft.net>, Richard Henderson <rth@twiddle.net>
 
-csum_and_copy_from_user and csum_and_copy_to_user are exported by
-a few architectures, but not actually used in modular code.  Drop
-the exports.
+On Fri, 15 Apr 2022 14:08:10 -0500 Bjorn Helgaas wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> Only alpha, ia64, powerpc, and sh define SLOW_DOWN_IO, and there are no
+> actual uses of it.  The few references to it are in situations that are
+> themselves unused.  Remove them all.
+> 
+> It should be safe to apply these independently and in any order.  The only
+> place SLOW_DOWN_IO is used at all is the lmc_var.h definition of DELAY,
+> which is itself never used.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/alpha/lib/csum_partial_copy.c   | 1 -
- arch/m68k/lib/checksum.c             | 2 --
- arch/powerpc/lib/checksum_wrappers.c | 2 --
- arch/x86/lib/csum-wrappers_64.c      | 2 --
- 4 files changed, 7 deletions(-)
-
-diff --git a/arch/alpha/lib/csum_partial_copy.c b/arch/alpha/lib/csum_partial_copy.c
-index 1931a04af85a2..4d180d96f09e4 100644
---- a/arch/alpha/lib/csum_partial_copy.c
-+++ b/arch/alpha/lib/csum_partial_copy.c
-@@ -353,7 +353,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 		return 0;
- 	return __csum_and_copy(src, dst, len);
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- __wsum
- csum_partial_copy_nocheck(const void *src, void *dst, int len)
-diff --git a/arch/m68k/lib/checksum.c b/arch/m68k/lib/checksum.c
-index 7e6afeae62177..5acb821849d30 100644
---- a/arch/m68k/lib/checksum.c
-+++ b/arch/m68k/lib/checksum.c
-@@ -265,8 +265,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 	return sum;
- }
- 
--EXPORT_SYMBOL(csum_and_copy_from_user);
--
- 
- /*
-  * copy from kernel space while checksumming, otherwise like csum_partial
-diff --git a/arch/powerpc/lib/checksum_wrappers.c b/arch/powerpc/lib/checksum_wrappers.c
-index f3999cbb2fcc4..1a14c8780278c 100644
---- a/arch/powerpc/lib/checksum_wrappers.c
-+++ b/arch/powerpc/lib/checksum_wrappers.c
-@@ -24,7 +24,6 @@ __wsum csum_and_copy_from_user(const void __user *src, void *dst,
- 	user_read_access_end();
- 	return csum;
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
- {
-@@ -38,4 +37,3 @@ __wsum csum_and_copy_to_user(const void *src, void __user *dst, int len)
- 	user_write_access_end();
- 	return csum;
- }
--EXPORT_SYMBOL(csum_and_copy_to_user);
-diff --git a/arch/x86/lib/csum-wrappers_64.c b/arch/x86/lib/csum-wrappers_64.c
-index 189344924a2be..145f9a0bde29a 100644
---- a/arch/x86/lib/csum-wrappers_64.c
-+++ b/arch/x86/lib/csum-wrappers_64.c
-@@ -32,7 +32,6 @@ csum_and_copy_from_user(const void __user *src, void *dst, int len)
- 	user_access_end();
- 	return sum;
- }
--EXPORT_SYMBOL(csum_and_copy_from_user);
- 
- /**
-  * csum_and_copy_to_user - Copy and checksum to user space.
-@@ -57,7 +56,6 @@ csum_and_copy_to_user(const void *src, void __user *dst, int len)
- 	user_access_end();
- 	return sum;
- }
--EXPORT_SYMBOL(csum_and_copy_to_user);
- 
- /**
-  * csum_partial_copy_nocheck - Copy and checksum.
--- 
-2.30.2
-
+Hi Bojrn! Would you mind reposting just patches 1 and 3 for networking?
+LMC got removed in net-next (commit a5b116a0fa90 ("net: wan: remove the
+lanmedia (lmc) driver")) so the entire series fails to apply and therefore 
+defeats all of our patch handling scripts :S
