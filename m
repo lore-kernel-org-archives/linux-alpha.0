@@ -1,67 +1,89 @@
-From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v5 05/10] serial: termbits: ADDRB to indicate 9th bit
- addressing mode
-Date: Tue, 26 Apr 2022 19:29:08 +0300 (EEST)
-Message-ID: <9a9dda88-b239-9c63-82d-2f7678fdbf9@linux.intel.com>
-References: <20220426122448.38997-1-ilpo.jarvinen@linux.intel.com> <20220426122448.38997-6-ilpo.jarvinen@linux.intel.com> <Ymfq+jUXfZcNM/P/@kroah.com> <b667479-fb27-8712-cec8-938eed179240@linux.intel.com> <17547658-4737-7ec1-9ef9-c61c6287b8b@linux.intel.com>
- <Ymf9UhyXj7o8cNhq@kroah.com>
+From: Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH net-next] net: mark tulip obsolete
+Date: Tue, 26 Apr 2022 22:53:00 +0200
+Message-ID: <87650cea-d190-9642-edf7-7dea42802dab@gmx.de>
+References: <20220315184342.1064038-1-kuba@kernel.org>
+ <29f1daf3-e9f2-bbc5-f5e5-6334c040e3fa@gmx.de>
+ <20220315120432.2a72810d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a66551f3-192a-70dc-4eb9-62090dbfe5fb@gmx.de>
+ <20220426055311.53dd8c31@kernel.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1964830911-1650990558=:1644"
-Return-path: <sparclinux-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650991024; x=1682527024;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=YkchwpoFBWYE6wjpBeZGz+2BPwCBUpcUNyTQQIFBqC8=;
-  b=fLbV+umM1okXVQ+opaeKUa4wNxnCdAzm4VnPEF/Hs9JbF7BotaUAB3lF
-   +8/U7u3Q0z9WIhRb4GSFMsLJ4/V1+i8kJ/QFzbju8etjyTdBQgzzCEg+M
-   7fWePO0cEhsoNrbvSI9kO9ya5OtaK5FqwGgSJfNizUGe9P02X6uPCDMUa
-   133RzbODLblYJbbu6rmBDBLeZc7moxEYOB6eaAoFFtFKnNyYUw5uQyWsM
-   6Gt7zJ5+Fmll5TXWf9FkU0QzYKrCfj9UxWoEpprDy6gIKahKLqoSTHBfu
-   KE7QWlVl8q1PdUqJXKm+WtUxY+nBv1lX9BsdJOHLBPRfY69g6ARz9eS2H
-   w==;
-In-Reply-To: <Ymf9UhyXj7o8cNhq@kroah.com>
-List-ID: <linux-alpha.vger.kernel.org>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial <linux-serial@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>, Lukas Wunner <lukas@wunner.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Vicente Bergas <vicencb@gmail.com>, Johan Hovold <johan@kernel.org>, heiko@sntech.de, giulio.benetti@micronovasrl.com, Heikki Krogerus <heikki.krogerus@linux.intel.com>, linux-api@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-mips@vger.kernel.org, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, Michael Ellerman <>
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1964830911-1650990558=:1644
-Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651006381;
+        bh=OJUDzpc6mAIOLTsHkxVTark5mkSrpVi6U11Y6K4ImT0=;
+        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
+        b=hJU5kmyZJFKvYpNRNn/aAYWrckDrAdyS3SksJYChvc/eVdxtwpWzkRoZegCHSqhF7
+         WoWbMLV30F264Kmdj2Cc2CR6fMfsyC2WjL9SpSdYxgsBPMwXZoNkr4XsausxQXkk1d
+         uvNakWyJfgBecGvswfa6gn5b3URlzhsz4EIzs11g=
+Content-Language: en-US
+In-Reply-To: <20220426055311.53dd8c31@kernel.org>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: davem@davemloft.net, netdev@vger.kernel.org, linux-parisc@vger.kernel.org, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>
 
-On Tue, 26 Apr 2022, Greg KH wrote:
+Hi Jakub,
 
-> On Tue, Apr 26, 2022 at 05:01:31PM +0300, Ilpo J=E4rvinen wrote:
-> >=20
-> > ADDRB value is the same for all archs (it's just this octal vs hex=20
-> > notation I've followed as per the nearby defines within the same file
-> > which makes them look different).
-> >=20
-> > Should I perhaps add to my cleanup list conversion of all those octal o=
-nes=20
-> > to hex?
->=20
-> Argh, yes, please, let's do that now, I totally missed that.  Will let
-> us see how to unify them as well.
+On 4/26/22 14:53, Jakub Kicinski wrote:
+> On Tue, 15 Mar 2022 23:18:38 +0100 Helge Deller wrote:
+>> On 3/15/22 20:04, Jakub Kicinski wrote:
+>>> On Tue, 15 Mar 2022 19:44:24 +0100 Helge Deller wrote:
+>>>> On 3/15/22 19:43, Jakub Kicinski wrote:
+>>>>> It's ancient, an likely completely unused at this point.
+>>>>> Let's mark it obsolete to prevent refactoring.
+>>>>
+>>>> NAK.
+>>>>
+>>>> This driver is needed by nearly all PA-RISC machines.
+>>>
+>>> I was just trying to steer newcomers to code that's more relevant toda=
+y.
+>>
+>> That intention is ok, but "obsolete" means it's not used any more,
+>> and that's not true.
+>
+> Hi Helge! Which incarnation of tulip do you need for PA-RISC, exactly?
 
-Unifying them might turn out impractical, here's a rough idea now many
-copies ... | uniq -c finds for the defines (based on more aggressively=20
-cleaned up lines than the patch will have):
-     89 1
-     74 2
-     14 3
-     58 4
-     11 5
-     54 6
-There just tends to be 1 or 2 archs which are different from the others.
+For parisc I have:
 
-...I'll send the actual octal-to-hex patch once the arch builds complete.
+CONFIG_NET_TULIP=3Dy
+# CONFIG_DE2104X is not set
+CONFIG_TULIP=3Dy
+# CONFIG_TULIP_MWI is not set
+# CONFIG_TULIP_MMIO is not set
+# CONFIG_TULIP_NAPI is not set
+# CONFIG_DE4X5 is not set
+# CONFIG_WINBOND_840 is not set
+# CONFIG_DM9102 is not set
+# CONFIG_ULI526X is not set
+# CONFIG_PCMCIA_XIRCOM is not set
+# CONFIG_NET_VENDOR_DLINK is not set
+# CONFIG_NET_VENDOR_EMULEX is not set
 
---=20
- i.
+So not the DE4X5.
 
---8323329-1964830911-1650990558=:1644--
+> I'd like to try to remove DE4X5, if that's not the one you need
+> (getting rid of virt_to_bus()-using drivers).
+
+I've CC'ed the linux-alpha mailing list, as the DE4X5 driver might be
+needed there, so removing it completely might not be the best idea.
+
+But since you want to remove virt_to_bus()....
+It seems this virt_to_bus() call is used for really old x86 machines/cards=
+,
+which probably aren't supported any longer.
+
+See drivers/net/ethernet/dec/tulip/de4x5.c:
+...
+#if !defined(__alpha__) && !defined(__powerpc__) && !defined(CONFIG_SPARC)=
+ && !defined(DE4X5_DO_MEMCPY)
+...
+    tmp =3D virt_to_bus(p->data);
+...
+
+Maybe you could simply remove the part inside #if...#else
+and insert a pr_err() instead (and return NULL)?
+
+Helge
