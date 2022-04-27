@@ -1,22 +1,22 @@
 From: Erin MacNeil <lnx.erin@gmail.com>
-Subject: [PATCH net-next v2] net: Add SO_RCVMARK socket option to provide SO_MARK with recvmsg().
-Date: Tue, 26 Apr 2022 23:21:51 -0400
-Message-ID: <20220427032212.28470-1-lnx.erin@gmail.com>
+Subject: [PATCH net-next v3] net: SO_RCVMARK socket option for SO_MARK with recvmsg()
+Date: Wed, 27 Apr 2022 16:02:37 -0400
+Message-ID: <20220427200259.2564-1-lnx.erin@gmail.com>
 References: <202204270907.nUUrw3dS-lkp@intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
+Return-path: <linux-can-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sv6j3yQkqmqlnv/D43Xt3QFUU0mKBweO3ildOel+yQ0=;
-        b=Ld1vmZkGyG2s7Qy6YmhBjJjVlHN5hziODK/eqnpBIpSoA3YfP9pvA8eNtwJzXapp+O
-         vEHgO+PtIlaiBKajsGk9BXk1JdQw5n3pGPny9gK5ZL0Hr661YyqigweG9fT+Sm95CeUF
-         xcnqVRutKzMWHgeQaTrSJVYpJT/BUl13M8MbbnxXhZgII3MI8l7bJKxRu+8FKqMitFXw
-         PLFVVHMU/YXuMPfsZy8bHZR0pEOG3AuEBB58JHsFXw//IKfAxJjQ2vutGLwZ4xhaspZH
-         t0cp0OIXVUTW3i1q4W9RPy+FN0+qIb5rva3GeycqD9ZSicvz/Er3zFg2fpY3NrFNQHai
-         qKew==
+        bh=ahXl1YsEUSjHn7FELh1coWfAReaSSRgYPZG6O4GJXkk=;
+        b=U3seFTfKCofCy/F05zKSdO1SFjDRCEUHUCNNveCvftEq6iZZxgArhzQHknNpMe23pH
+         ovLQJ8deOpYzxtP19yH0kxO/fI8UsqBKc8WORLe/ifSF8HguUqoDF0TH5Kos8NZzJwvE
+         ZKyaFRW7ujvJiONfGYc8tAcVT/RxNusC6TKU68P4FzZe3qeWrpZiGMgUrEkFGe2HnzvC
+         0kbWO++LC2+2u3eDRS4sFOQ4BG4Ll00TmDn2XVmooF0sEhSaMwqVRLgf92fbuQTqFSKI
+         sxAup/u1xFFMKD474gl5jnmKeD+iitkOR6Bw2xgkSLU2Hyj+w6nunUlP11Zor0R/imfV
+         zl5A==
 In-Reply-To: <202204270907.nUUrw3dS-lkp@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -33,7 +33,7 @@ Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
  arch/alpha/include/uapi/asm/socket.h    |  2 ++
  arch/mips/include/uapi/asm/socket.h     |  2 ++
  arch/parisc/include/uapi/asm/socket.h   |  2 ++
- arch/sparc/include/uapi/asm/socket.h    |  2 ++
+ arch/sparc/include/uapi/asm/socket.h    |  1 +
  include/net/sock.h                      | 18 ++++++++++--------
  include/uapi/asm-generic/socket.h       |  2 ++
  net/atm/common.c                        |  2 +-
@@ -53,7 +53,7 @@ Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
  net/sctp/socket.c                       |  2 +-
  net/socket.c                            | 15 ++++++++++++---
  tools/include/uapi/asm-generic/socket.h |  2 ++
- 23 files changed, 57 insertions(+), 27 deletions(-)
+ 23 files changed, 56 insertions(+), 27 deletions(-)
 
 diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
 index 7d81535893af..739891b94136 100644
@@ -95,15 +95,14 @@ index 654061e0964e..f486d3dfb6bb 100644
  
  #if __BITS_PER_LONG == 64
 diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
-index 666f81e617ea..ff08038fc2b2 100644
+index 666f81e617ea..2fda57a3ea86 100644
 --- a/arch/sparc/include/uapi/asm/socket.h
 +++ b/arch/sparc/include/uapi/asm/socket.h
-@@ -128,6 +128,8 @@
+@@ -128,6 +128,7 @@
  
  #define SO_TXREHASH              0x0053
  
 +#define SO_RCVMARK               0x0054
-+
  
  #if !defined(__KERNEL__)
  
