@@ -1,11 +1,12 @@
 From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH 08/30] powerpc/setup: Refactor/untangle panic notifiers
-Date: Wed, 27 Apr 2022 19:49:02 -0300
-Message-ID: <20220427224924.592546-9-gpiccoli@igalia.com>
+Subject: [PATCH 09/30] coresight: cpu-debug: Replace mutex with mutex_trylock
+ on panic notifier
+Date: Wed, 27 Apr 2022 19:49:03 -0300
+Message-ID: <20220427224924.592546-10-gpiccoli@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
@@ -13,25 +14,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=Y2aPxjd7XxAVBLO+3tJBWy/W9TU30MxwQ7IQ+ZOEsOE=; b=ctIUAgppSxfA76
-	vlxt0Zq+HwAhoHu5yFjr/Qe8IlO+eulF6R5eTeI86L5OeXgUxl2rUij4bwLhIvV9aGV73hr9BPuE4
-	KDP0mALgon9WOS6RJPj3iGLbJXXfg+NOIHfdGPJSnZAEw99S9uXd3HnLKiYsit/sP+/X/0DZgDwvN
-	9lQlri1HBNwLkGlK1rDit6cKu/O3HCkslGTIVzziR2V7fYg3rlT7WUse9t/be1W1TGlTOYPitv43Q
-	UfETvy09ytgW0TIDbUEOCfkGbq3myImY5NhBRJLw1XW1frzI1JW118XyDvYrC5rPyldofRiNBF0pZ
-	rZhSm8gQP/FzGKdUBWXA==;
+	List-Owner; bh=R1Quj6rrnBB8G76Zh2OImd+/2izMbhCspCy0GgEFtQk=; b=icn6b7Gm4PRyMO
+	c3rfv+X/Ompk4huY72XsfJHvKZPioGPjOfHmkpPH06Vx5FKV8AaMZW+/1JqUlDNmcH8w+eB/PRz8R
+	IeW7G8hPd856anH1/Xbt1WOcOvCDSoQf3hxC/0o3PvcZxqt+qXzm1O8G98cIchsjF1ZBjLCYEM6yl
+	RmkXjBJaSOzF/va7iYteRD4DRjrLZ7O4vDNeyNSCKkMuez2JuPuNwA0ffMMXm6ZpluI2AuwA15uwv
+	xn3nDVgmMKF78JSQbLQcwduD6aa7TmmXJNJ0AwGa3GFQUSEMrjDbLV/MIsAOFG6U9NYqgqQvL99fN
+	wyuhirVJPtSCo747+NGg==;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com; 
  s=20170329;
- h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
- In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
+ h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+ Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=/cdg0sKCsuwzrOmixxbC1Q4JQ/fbIS+o0nd/6r3SqdQ=; b=Ms53zbjgbkvE/VbvvERWDhiSlK
- xnfSZ26duHs4sJGmX9AjyiOpVrZ24qlvncFPTQgx0Ak1/K+qg/q6M3lNqtXBQSywskWJGGXxxZsyH
- 0ZCt9ADqjTi/3V+XCpSLOfo1kVbAL88rsa3CWloXQYrPcKcjm0fr5wkBOKZGIirx4MPHlXEq/lSP6
- Wauj7ki9eqiIN/DWOEVCrOIQ5CDDEHA0P4AiVRkbPc3MLQuGkkZQLCDxyedC8rV+CPmlMqMLZGK7O
- pj27Q1YpHqsziDeg78TsiM6RPMIm39rOPoY53108P/vAvRYTx1t1bv7hv+1+u3acH1fsI00wIEzlf
- mvZOITKg==;
+ bh=seVlMlqj/OOgqWCw1tUxCfRyMjTeYr5Z28M++b51Xf4=; b=ZaOL9ZgN+EGmQho6+KGFZHTRbn
+ OaOWIMR4M4pabKtnueiNn0ccKPcDo3HPhyU+dXv5cnfPUStBzfPFVl+jQM59vF4ZhACUpuR43IYXQ
+ ZxDFWoPV6MSwPwBTAmhnCK48+3Rd3s3YxmPfJVkzBknJImEbRwxzoUg95gTvTUorv8vMDdjprmUy3
+ YkS66FLAwKwDNOu8o7q4f4XVv/vUJe4PGzk68gQ9Mx3uMtXXVmK27/P4rcS4LEEam3214m5o7ahcQ
+ 5LKqcAxUSITnoTva0XbxnJK2lHjf45/V+xGb9BJP25J23hUhWNHPX2AXkANv1NANWHSZgkACdPcYF
+ QXixtySQ==;
 In-Reply-To: <20220427224924.592546-1-gpiccoli@igalia.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
@@ -46,116 +47,52 @@ Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infr
 To: akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, gpiccoli@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.
 
-VGhlIHBhbmljIG5vdGlmaWVycyBpbmZyYXN0cnVjdHVyZSBpcyBhIGJpdCBsaW1pdGVkIGluIHRo
-ZSBzY29wZSBvZgp0aGUgY2FsbGJhY2tzIC0gYmFzaWNhbGx5IGV2ZXJ5IGtpbmQgb2YgZnVuY3Rp
-b25hbGl0eSBpcyBkcm9wcGVkCmluIGEgbGlzdCB0aGF0IHJ1bnMgaW4gdGhlIHNhbWUgcG9pbnQg
-ZHVyaW5nIHRoZSBrZXJuZWwgcGFuaWMgcGF0aC4KVGhpcyBpcyBub3QgcmVhbGx5IG9uIHBhciB3
-aXRoIHRoZSBjb21wbGV4aXRpZXMgYW5kIHBhcnRpY3VsYXJpdGllcwpvZiBhcmNoaXRlY3R1cmUg
-LyBoeXBlcnZpc29ycycgbmVlZHMsIGFuZCBhIHJlZmFjdG9yIGlzIG9uZ29pbmcuCgpBcyBwYXJ0
-IG9mIHRoaXMgcmVmYWN0b3IsIGl0IHdhcyBvYnNlcnZlZCB0aGF0IHBvd2VycGMgaGFzIDIgbm90
-aWZpZXJzLAp3aXRoIG1peGVkIGdvYWxzOiBvbmUgaXMganVzdCBhIEtBU0xSIG9mZnNldCBkdW1w
-ZXIsIHdoZXJlYXMgdGhlIG90aGVyCmFpbXMgdG8gaGFyZC1kaXNhYmxlIElSUXMgKG5lY2Vzc2Fy
-eSBvbiBwYW5pYyBwYXRoKSwgd2FybiBmaXJtd2FyZSBvZgp0aGUgcGFuaWMgZXZlbnQgKGZhZHVt
-cCkgYW5kIHJ1biBsb3ctbGV2ZWwgcGxhdGZvcm0tc3BlY2lmaWMgbWFjaGluZXJ5CnRoYXQgbWln
-aHQgc3RvcCBrZXJuZWwgZXhlY3V0aW9uIGFuZCBuZXZlciBjb21lIGJhY2suCgpDbGVhcmx5LCB0
-aGUgMm5kIG5vdGlmaWVyIGhhcyBvcHBvc2VkIGdvYWxzOiBkaXNhYmxlIElSUXMgLyBmYWR1bXAK
-c2hvdWxkIHJ1biBlYXJsaWVyIHdoaWxlIGxvdy1sZXZlbCBwbGF0Zm9ybSBhY3Rpb25zIHNob3Vs
-ZApydW4gbGF0ZSBzaW5jZSBpdCBtaWdodCBub3QgZXZlbiByZXR1cm4uIEhlbmNlLCB0aGlzIHBh
-dGNoIGRlY291cGxlcwp0aGUgbm90aWZpZXJzIHNwbGl0dGluZyB0aGVtIGluIHRocmVlOgoKLSBG
-aXJzdCBvbmUgaXMgcmVzcG9uc2libGUgZm9yIGhhcmQtZGlzYWJsZSBJUlFzIGFuZCBmYWR1bXAs
-CnNob3VsZCBydW4gZWFybHk7CgotIFRoZSBrZXJuZWwgS0FTTFIgb2Zmc2V0IGR1bXBlciBpcyBy
-ZWFsbHkgYW4gaW5mb3JtYXRpdmUgbm90aWZpZXIsCmhhcm1sZXNzIGFuZCBtYXkgcnVuIGF0IGFu
-eSBtb21lbnQgaW4gdGhlIHBhbmljIHBhdGg7CgotIFRoZSBsYXN0IG5vdGlmaWVyIHNob3VsZCBy
-dW4gbGFzdCwgc2luY2UgaXQgYWltcyB0byBwZXJmb3JtCmxvdy1sZXZlbCBhY3Rpb25zIGZvciBz
-cGVjaWZpYyBwbGF0Zm9ybXMsIGFuZCBtaWdodCBuZXZlciByZXR1cm4uCkl0IGlzIGFsc28gb25s
-eSByZWdpc3RlcmVkIGZvciAyIHBsYXRmb3JtcywgcHNlcmllcyBhbmQgcHMzLgoKVGhlIHBhdGNo
-IGJldHRlciBkb2N1bWVudHMgdGhlIG5vdGlmaWVycyBhbmQgY2xlYXJzIHRoZSBjb2RlIHRvbywK
-YWxzbyByZW1vdmluZyBhIHVzZWxlc3MgaGVhZGVyLgoKQ3VycmVudGx5IG5vIGZ1bmN0aW9uYWxp
-dHkgY2hhbmdlIHNob3VsZCBiZSBvYnNlcnZlZCwgYnV0IGFmdGVyCnRoZSBwbGFubmVkIHBhbmlj
-IHJlZmFjdG9yIHdlIHNob3VsZCBleHBlY3QgbW9yZSBwYW5pYyByZWxpYWJpbGl0eQp3aXRoIHRo
-aXMgcGF0Y2guCgpDYzogQmVuamFtaW4gSGVycmVuc2NobWlkdCA8YmVuaEBrZXJuZWwuY3Jhc2hp
-bmcub3JnPgpDYzogSGFyaSBCYXRoaW5pIDxoYmF0aGluaUBsaW51eC5pYm0uY29tPgpDYzogTWlj
-aGFlbCBFbGxlcm1hbiA8bXBlQGVsbGVybWFuLmlkLmF1PgpDYzogTmljaG9sYXMgUGlnZ2luIDxu
-cGlnZ2luQGdtYWlsLmNvbT4KQ2M6IFBhdWwgTWFja2VycmFzIDxwYXVsdXNAc2FtYmEub3JnPgpT
-aWduZWQtb2ZmLWJ5OiBHdWlsaGVybWUgRy4gUGljY29saSA8Z3BpY2NvbGlAaWdhbGlhLmNvbT4K
-LS0tCgpXZSdkIGxpa2UgdG8gdGhhbmtzIHNwZWNpYWxseSB0aGUgTWluaUNsb3VkIGluZnJhc3Ry
-dWN0dXJlIFswXSBtYWludGFpbmVycywKdGhhdCBhbGxvdyB1cyB0byB0ZXN0IFBvd2VyUEMgY29k
-ZSBpbiBhIHZlcnkgY29tcGxldGUsIGZ1bmN0aW9uYWwgYW5kIEZSRUUKZW52aXJvbm1lbnQgKHRo
-ZXJlJ3Mgbm8gbmVlZCBldmVuIGZvciBhZGRpbmcgYSBjcmVkaXQgY2FyZCwgbGlrZSBtYW55ICJm
-cmVlIgpjbG91ZHMgcmVxdWlyZSDCrMKsICkuCgpbMF0gaHR0cHM6Ly9vcGVucG93ZXIuaWMudW5p
-Y2FtcC5ici9taW5pY2xvdWQKCiBhcmNoL3Bvd2VycGMva2VybmVsL3NldHVwLWNvbW1vbi5jIHwg
-NzQgKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgNTQgaW5z
-ZXJ0aW9ucygrKSwgMjAgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBjL2tl
-cm5lbC9zZXR1cC1jb21tb24uYyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvc2V0dXAtY29tbW9uLmMK
-aW5kZXggNTE4YWU1YWE5NDEwLi41MmY5NmIyMDlhOTYgMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJw
-Yy9rZXJuZWwvc2V0dXAtY29tbW9uLmMKKysrIGIvYXJjaC9wb3dlcnBjL2tlcm5lbC9zZXR1cC1j
-b21tb24uYwpAQCAtMjMsNyArMjMsNiBAQAogI2luY2x1ZGUgPGxpbnV4L2NvbnNvbGUuaD4KICNp
-bmNsdWRlIDxsaW51eC9zY3JlZW5faW5mby5oPgogI2luY2x1ZGUgPGxpbnV4L3Jvb3RfZGV2Lmg+
-Ci0jaW5jbHVkZSA8bGludXgvbm90aWZpZXIuaD4KICNpbmNsdWRlIDxsaW51eC9jcHUuaD4KICNp
-bmNsdWRlIDxsaW51eC91bmlzdGQuaD4KICNpbmNsdWRlIDxsaW51eC9zZXJpYWwuaD4KQEAgLTY4
-MCw4ICs2NzksMjUgQEAgaW50IGNoZWNrX2xlZ2FjeV9pb3BvcnQodW5zaWduZWQgbG9uZyBiYXNl
-X3BvcnQpCiB9CiBFWFBPUlRfU1lNQk9MKGNoZWNrX2xlZ2FjeV9pb3BvcnQpOwogCi1zdGF0aWMg
-aW50IHBwY19wYW5pY19ldmVudChzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKnRoaXMsCi0gICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGxvbmcgZXZlbnQsIHZvaWQgKnB0cikKKy8q
-CisgKiBQYW5pYyBub3RpZmllcnMgc2V0dXAKKyAqCisgKiBXZSBoYXZlIDMgbm90aWZpZXJzIGZv
-ciBwb3dlcnBjLCBlYWNoIG9uZSBmcm9tIGEgZGlmZmVyZW50ICJuYXR1cmUiOgorICoKKyAqIC0g
-cHBjX3BhbmljX2ZhZHVtcF9oYW5kbGVyKCkgaXMgYSBoeXBlcnZpc29yIG5vdGlmaWVyLCB3aGlj
-aCBoYXJkLWRpc2FibGVzCisgKiAgIElSUXMgYW5kIGRlYWwgd2l0aCB0aGUgRmlybXdhcmUtQXNz
-aXN0ZWQgZHVtcCwgd2hlbiBpdCBpcyBjb25maWd1cmVkOworICogICBzaG91bGQgcnVuIGVhcmx5
-IGluIHRoZSBwYW5pYyBwYXRoLgorICoKKyAqIC0gZHVtcF9rZXJuZWxfb2Zmc2V0KCkgaXMgYW4g
-aW5mb3JtYXRpdmUgbm90aWZpZXIsIGp1c3Qgc2hvd2luZyB0aGUgS0FTTFIKKyAqICAgb2Zmc2V0
-IGlmIHdlIGhhdmUgUkFORE9NSVpFX0JBU0Ugc2V0LgorICoKKyAqIC0gcHBjX3BhbmljX3BsYXRm
-b3JtX2hhbmRsZXIoKSBpcyBhIGxvdy1sZXZlbCBoYW5kbGVyIHRoYXQncyByZWdpc3RlcmVkCisg
-KiAgIG9ubHkgaWYgdGhlIHBsYXRmb3JtIHdpc2hlcyB0byBwZXJmb3JtIGZpbmFsIGFjdGlvbnMg
-aW4gdGhlIHBhbmljIHBhdGgsCisgKiAgIGhlbmNlIGl0IHNob3VsZCBydW4gbGF0ZSBhbmQgbWln
-aHQgbm90IGV2ZW4gcmV0dXJuLiBDdXJyZW50bHksIG9ubHkKKyAqICAgcHNlcmllcyBhbmQgcHMz
-IHBsYXRmb3JtcyByZWdpc3RlciBjYWxsYmFja3MuCisgKi8KK3N0YXRpYyBpbnQgcHBjX3Bhbmlj
-X2ZhZHVtcF9oYW5kbGVyKHN0cnVjdCBub3RpZmllcl9ibG9jayAqdGhpcywKKwkJCQkgICAgdW5z
-aWduZWQgbG9uZyBldmVudCwgdm9pZCAqcHRyKQogewogCS8qCiAJICogcGFuaWMgZG9lcyBhIGxv
-Y2FsX2lycV9kaXNhYmxlLCBidXQgd2UgcmVhbGx5CkBAIC02OTEsNDUgKzcwNyw2MyBAQCBzdGF0
-aWMgaW50IHBwY19wYW5pY19ldmVudChzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKnRoaXMsCiAKIAkv
-KgogCSAqIElmIGZpcm13YXJlLWFzc2lzdGVkIGR1bXAgaGFzIGJlZW4gcmVnaXN0ZXJlZCB0aGVu
-IHRyaWdnZXIKLQkgKiBmaXJtd2FyZS1hc3Npc3RlZCBkdW1wIGFuZCBsZXQgZmlybXdhcmUgaGFu
-ZGxlIGV2ZXJ5dGhpbmcgZWxzZS4KKwkgKiBpdHMgY2FsbGJhY2sgYW5kIGxldCB0aGUgZmlybXdh
-cmUgaGFuZGxlcyBldmVyeXRoaW5nIGVsc2UuCiAJICovCiAJY3Jhc2hfZmFkdW1wKE5VTEwsIHB0
-cik7Ci0JaWYgKHBwY19tZC5wYW5pYykKLQkJcHBjX21kLnBhbmljKHB0cik7ICAvKiBNYXkgbm90
-IHJldHVybiAqLworCiAJcmV0dXJuIE5PVElGWV9ET05FOwogfQogCi1zdGF0aWMgc3RydWN0IG5v
-dGlmaWVyX2Jsb2NrIHBwY19wYW5pY19ibG9jayA9IHsKLQkubm90aWZpZXJfY2FsbCA9IHBwY19w
-YW5pY19ldmVudCwKLQkucHJpb3JpdHkgPSBJTlRfTUlOIC8qIG1heSBub3QgcmV0dXJuOyBtdXN0
-IGJlIGRvbmUgbGFzdCAqLwotfTsKLQotLyoKLSAqIER1bXAgb3V0IGtlcm5lbCBvZmZzZXQgaW5m
-b3JtYXRpb24gb24gcGFuaWMuCi0gKi8KIHN0YXRpYyBpbnQgZHVtcF9rZXJuZWxfb2Zmc2V0KHN0
-cnVjdCBub3RpZmllcl9ibG9jayAqc2VsZiwgdW5zaWduZWQgbG9uZyB2LAogCQkJICAgICAgdm9p
-ZCAqcCkKIHsKIAlwcl9lbWVyZygiS2VybmVsIE9mZnNldDogMHglbHggZnJvbSAweCVseFxuIiwK
-IAkJIGthc2xyX29mZnNldCgpLCBLRVJORUxCQVNFKTsKIAotCXJldHVybiAwOworCXJldHVybiBO
-T1RJRllfRE9ORTsKIH0KIAorc3RhdGljIGludCBwcGNfcGFuaWNfcGxhdGZvcm1faGFuZGxlcihz
-dHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKnRoaXMsCisJCQkJICAgICAgdW5zaWduZWQgbG9uZyBldmVu
-dCwgdm9pZCAqcHRyKQoreworCS8qCisJICogVGhpcyBoYW5kbGVyIGlzIG9ubHkgcmVnaXN0ZXJl
-ZCBpZiB3ZSBoYXZlIGEgcGFuaWMgY2FsbGJhY2sKKwkgKiBvbiBwcGNfbWQsIGhlbmNlIE5VTEwg
-Y2hlY2sgaXMgbm90IG5lZWRlZC4KKwkgKiBBbHNvLCBpdCBtYXkgbm90IHJldHVybiwgc28gaXQg
-cnVucyByZWFsbHkgbGF0ZSBvbiBwYW5pYyBwYXRoLgorCSAqLworCXBwY19tZC5wYW5pYyhwdHIp
-OworCisJcmV0dXJuIE5PVElGWV9ET05FOworfQorCitzdGF0aWMgc3RydWN0IG5vdGlmaWVyX2Js
-b2NrIHBwY19mYWR1bXBfYmxvY2sgPSB7CisJLm5vdGlmaWVyX2NhbGwgPSBwcGNfcGFuaWNfZmFk
-dW1wX2hhbmRsZXIsCisJLnByaW9yaXR5ID0gSU5UX01BWCwgLyogcnVuIGVhcmx5LCB0byBub3Rp
-ZnkgdGhlIGZpcm13YXJlIEFTQVAgKi8KK307CisKIHN0YXRpYyBzdHJ1Y3Qgbm90aWZpZXJfYmxv
-Y2sga2VybmVsX29mZnNldF9ub3RpZmllciA9IHsKLQkubm90aWZpZXJfY2FsbCA9IGR1bXBfa2Vy
-bmVsX29mZnNldAorCS5ub3RpZmllcl9jYWxsID0gZHVtcF9rZXJuZWxfb2Zmc2V0LAorfTsKKwor
-c3RhdGljIHN0cnVjdCBub3RpZmllcl9ibG9jayBwcGNfcGFuaWNfYmxvY2sgPSB7CisJLm5vdGlm
-aWVyX2NhbGwgPSBwcGNfcGFuaWNfcGxhdGZvcm1faGFuZGxlciwKKwkucHJpb3JpdHkgPSBJTlRf
-TUlOLCAvKiBtYXkgbm90IHJldHVybjsgbXVzdCBiZSBkb25lIGxhc3QgKi8KIH07CiAKIHZvaWQg
-X19pbml0IHNldHVwX3BhbmljKHZvaWQpCiB7CisJLyogSGFyZC1kaXNhYmxlcyBJUlFzICsgZGVh
-bCB3aXRoIEZXLWFzc2lzdGVkIGR1bXAgKGZhZHVtcCkgKi8KKwlhdG9taWNfbm90aWZpZXJfY2hh
-aW5fcmVnaXN0ZXIoJnBhbmljX25vdGlmaWVyX2xpc3QsCisJCQkJICAgICAgICZwcGNfZmFkdW1w
-X2Jsb2NrKTsKKwogCWlmIChJU19FTkFCTEVEKENPTkZJR19SQU5ET01JWkVfQkFTRSkgJiYga2Fz
-bHJfb2Zmc2V0KCkgPiAwKQogCQlhdG9taWNfbm90aWZpZXJfY2hhaW5fcmVnaXN0ZXIoJnBhbmlj
-X25vdGlmaWVyX2xpc3QsCiAJCQkJCSAgICAgICAma2VybmVsX29mZnNldF9ub3RpZmllcik7CiAK
-LQkvKiBQUEM2NCBhbHdheXMgZG9lcyBhIGhhcmQgaXJxIGRpc2FibGUgaW4gaXRzIHBhbmljIGhh
-bmRsZXIgKi8KLQlpZiAoIUlTX0VOQUJMRUQoQ09ORklHX1BQQzY0KSAmJiAhcHBjX21kLnBhbmlj
-KQotCQlyZXR1cm47Ci0JYXRvbWljX25vdGlmaWVyX2NoYWluX3JlZ2lzdGVyKCZwYW5pY19ub3Rp
-Zmllcl9saXN0LCAmcHBjX3BhbmljX2Jsb2NrKTsKKwkvKiBMb3ctbGV2ZWwgcGxhdGZvcm0tc3Bl
-Y2lmaWMgcm91dGluZXMgdGhhdCBzaG91bGQgcnVuIG9uIHBhbmljICovCisJaWYgKHBwY19tZC5w
-YW5pYykKKwkJYXRvbWljX25vdGlmaWVyX2NoYWluX3JlZ2lzdGVyKCZwYW5pY19ub3RpZmllcl9s
-aXN0LAorCQkJCQkgICAgICAgJnBwY19wYW5pY19ibG9jayk7CiB9CiAKICNpZmRlZiBDT05GSUdf
-Q0hFQ0tfQ0FDSEVfQ09IRVJFTkNZCi0tIAoyLjM2LjAKCgpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC11bSBtYWlsaW5nIGxpc3QKbGludXgtdW1A
-bGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2xpbnV4LXVtCg==
+The panic notifier infrastructure executes registered callbacks when
+a panic event happens - such callbacks are executed in atomic context,
+with interrupts and preemption disabled in the running CPU and all other
+CPUs disabled. That said, mutexes in such context are not a good idea.
+
+This patch replaces a regular mutex with a mutex_trylock safer approach;
+given the nature of the mutex used in the driver, it should be pretty
+uncommon being unable to acquire such mutex in the panic path, hence
+no functional change should be observed (and if it is, that would be
+likely a deadlock with the regular mutex).
+
+Fixes: 2227b7c74634 ("coresight: add support for CPU debug module")
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Mike Leach <mike.leach@linaro.org>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+---
+ drivers/hwtracing/coresight/coresight-cpu-debug.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/hwtracing/coresight/coresight-cpu-debug.c b/drivers/hwtracing/coresight/coresight-cpu-debug.c
+index 8845ec4b4402..1874df7c6a73 100644
+--- a/drivers/hwtracing/coresight/coresight-cpu-debug.c
++++ b/drivers/hwtracing/coresight/coresight-cpu-debug.c
+@@ -380,9 +380,10 @@ static int debug_notifier_call(struct notifier_block *self,
+ 	int cpu;
+ 	struct debug_drvdata *drvdata;
+ 
+-	mutex_lock(&debug_lock);
++	/* Bail out if we can't acquire the mutex or the functionality is off */
++	if (!mutex_trylock(&debug_lock))
++		return NOTIFY_DONE;
+ 
+-	/* Bail out if the functionality is disabled */
+ 	if (!debug_enable)
+ 		goto skip_dump;
+ 
+@@ -401,7 +402,7 @@ static int debug_notifier_call(struct notifier_block *self,
+ 
+ skip_dump:
+ 	mutex_unlock(&debug_lock);
+-	return 0;
++	return NOTIFY_DONE;
+ }
+ 
+ static struct notifier_block debug_notifier = {
+-- 
+2.36.0
