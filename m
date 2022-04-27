@@ -1,8 +1,7 @@
 From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH 27/30] powerpc: Do not force all panic notifiers to execute
- before kdump
-Date: Wed, 27 Apr 2022 19:49:21 -0300
-Message-ID: <20220427224924.592546-28-gpiccoli@igalia.com>
+Subject: [PATCH 28/30] panic: Unexport crash_kexec_post_notifiers
+Date: Wed, 27 Apr 2022 19:49:22 -0300
+Message-ID: <20220427224924.592546-29-gpiccoli@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -14,12 +13,12 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=anFDFlu0bsCOXNr2IgAtKg5GaPR/PV6lDnUPtLXtsK8=; b=ZtJFqSfOY1cqQi
-	weIGml9EsEcjU9WbB/kVX5PlkjB3Z0NX2ydCyTMSL0WAjvCs3cB7zi8d1uk5R1/XrYmFjQk08w4PG
-	jjIsBxx79fMWCIUv5wIExNmg9DVjd07AP2nZqh9CAzqJlFXkMm6d/tNzJsCzM0epVlRufAHEoEWCI
-	ASLwle7SHQmSkvrZcplS4/i8uMhJKn1WTImBZL61lyoiicWslSF0OlyAQ+jxivPnJ2fkPvqZSZwpd
-	d4ZpvBLdqNJ0L2GdMIJ6pBuQ1Q0jBGtJT8235X5TNCtS1VJ8RjYxs9P1VSryx5l3stQQ48Ww8lElP
-	x/J5MYKgZPFJclVlCofQ==;
+	List-Owner; bh=JMa5LCnSsLEAVBhfuFDpAGoxifAznYLcyHmVA8FwnYw=; b=U19MfWTnnOn7hp
+	4c8aq0r3FSslos1hJAD2/mtCSWFS9A+QPcG5utAfd020hZBzOR+et+O5xNMozYTEoJ9+pk6RBRqtr
+	AFB1Gm7LzljDFFsuGSvxtiWRHza0a3poj2CCFyeYMqtTb8iZjRJm5ujqf+L56jfd/oZu+IwSkYufr
+	sJjX/J7MyK5ZBTm0QCy1Dw835aBY2eokMQXHu4LtRZq56tAEzJLWVocg5jAFlV1vpvQ110HyaYSL4
+	+58QWG/qU/SQqXIi88qc5aYz6slGGcxkWHk46p6ZIGh2FW278YQ3LqT/PpSz3nvz74eZIlK/Lbzg6
+	UOYJ3lolzyNUDmqO0XOg==;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com; 
  s=20170329;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -27,12 +26,12 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=C9iT/xJ8gF8J/f7SmqQO2c8pu+KvBPlFfkqGdYboS2I=; b=PMFgjQG40D4y0EE10+nqxAPHVI
- yNLZ1EZJdP0IH30iYafdBfM788VaINOAVfe8Gnevld0DclzQJRd8t+br/vJapdawGOEWHQTLdmHei
- 1IQvYGZ//MLpN+QQDVtOXWSfDQyyspNE1J3gOgOC4NUam3dGx8JeBgJ9jpYRHFoaP71Y3fG1ERN+7
- JvwIb059Xf3lNBTrEP8JiyuPOh5ugwSvNao5NfaR+bMPV8BospKPkEU02jshVAtp1UBbOdjrRb2r2
- ze90RIwfaZigyOQntmQCmXs163wt4gsMUWHmf1nSoidLeEjFKj9WA7H531Eyz4iqvzof4LvLiIP9u
- dq8Lxg9g==;
+ bh=jupyQNOg8qT8hQfxmdiNJNMjaTUz/u9LiRmSHTNez6Y=; b=p7drin3mWpI9T0ZfMOO6eJj4J8
+ Szpgonvq7i/v524yc5jBLpbigKUiUN0wy7/WDOnlytx03+FGgGN1Adqusl4cOO6PJlw+seakKl4N4
+ fX95EDE8pbxBc/NNWRr732wIqJtKKX/BphsJRWnwXH/62I6x/BTA0R4L8cWEa/lku3Ma0ky8B2K89
+ MQrzxBf2Hm8tnWC5d0fBkJ7uMzqRE/yfr9AAId6oRoN4APimw2mDpSMEi6ZVrVuwLoacCVsSTBNQz
+ KQprHSNi9G6RdCXwUMjprlLz6QcEgqvhkAE50juvJF1BOQucBso5epBizOEqf+g5ZQam3KuAFn9x9
+ BasVHnnQ==;
 In-Reply-To: <20220427224924.592546-1-gpiccoli@igalia.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
@@ -47,60 +46,40 @@ Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infr
 To: akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, gpiccoli@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.
 
-Commit 06e629c25daa ("powerpc/fadump: Fix inaccurate CPU state info in
-vmcore generated with panic") introduced a hardcoded setting of kernel
-parameter "crash_kexec_post_notifiers", effectively forcing all the
-panic notifiers to execute earlier in the panic path, before kdump.
+There is no users anymore of this variable that requires
+it to be "exported" in the headers; also, it was deprecated
+by the kernel parameter "panic_notifiers_level".
 
-The reason for that was a fadump issue on collecting data accurately,
-due to smp_send_stop() setting all CPUs offline, so the net effect
-desired with this change was to avoid calling the regular CPU
-shutdown function, and instead rely on crash_smp_send_stop(), which
-copes fine with fadump. The collateral effect was to increase the
-risk for kdump if fadump is not used, since it forces all panic
-notifiers to execute early, before kdump.
-
-Happens that, after a panic refactor, crash_smp_send_stop() is
-now used by default in the panic path, so there is no reason to
-mess with the notifiers ordering (which was also improved in the
-refactor) from within arch code.
-
-Fixes: 06e629c25daa ("powerpc/fadump: Fix inaccurate CPU state info in vmcore generated with panic")
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Hari Bathini <hbathini@linux.ibm.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Paul Mackerras <paulus@samba.org>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 ---
+ include/linux/panic.h          | 2 --
+ include/linux/panic_notifier.h | 1 -
+ 2 files changed, 3 deletions(-)
 
-We'd like to thanks specially the MiniCloud infrastructure [0] maintainers,
-that allow us to test PowerPC code in a very complete, functional and FREE
-environment.
-
-[0] https://openpower.ic.unicamp.br/minicloud
-
- arch/powerpc/kernel/fadump.c | 8 --------
- 1 file changed, 8 deletions(-)
-
-diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
-index 65562c4a0a69..35ae8c09af66 100644
---- a/arch/powerpc/kernel/fadump.c
-+++ b/arch/powerpc/kernel/fadump.c
-@@ -1649,14 +1649,6 @@ int __init setup_fadump(void)
- 		register_fadump();
- 	}
+diff --git a/include/linux/panic.h b/include/linux/panic.h
+index 34175d0188d0..d301db07a8af 100644
+--- a/include/linux/panic.h
++++ b/include/linux/panic.h
+@@ -34,8 +34,6 @@ extern int sysctl_panic_on_rcu_stall;
+ extern int sysctl_max_rcu_stall_to_panic;
+ extern int sysctl_panic_on_stackoverflow;
  
--	/*
--	 * In case of panic, fadump is triggered via ppc_panic_event()
--	 * panic notifier. Setting crash_kexec_post_notifiers to 'true'
--	 * lets panic() function take crash friendly path before panic
--	 * notifiers are invoked.
--	 */
--	crash_kexec_post_notifiers = true;
+-extern bool crash_kexec_post_notifiers;
 -
- 	return 1;
- }
  /*
+  * panic_cpu is used for synchronizing panic() and crash_kexec() execution. It
+  * holds a CPU number which is executing panic() currently. A value of
+diff --git a/include/linux/panic_notifier.h b/include/linux/panic_notifier.h
+index b5041132321d..8fda7045e2f7 100644
+--- a/include/linux/panic_notifier.h
++++ b/include/linux/panic_notifier.h
+@@ -11,7 +11,6 @@ extern struct atomic_notifier_head panic_pre_reboot_list;
+ extern struct atomic_notifier_head panic_post_reboot_list;
+ 
+ bool panic_notifiers_before_kdump(void);
+-extern bool crash_kexec_post_notifiers;
+ 
+ enum panic_notifier_val {
+ 	PANIC_UNUSED,
 -- 
 2.36.0
