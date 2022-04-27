@@ -1,7 +1,8 @@
 From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH 28/30] panic: Unexport crash_kexec_post_notifiers
-Date: Wed, 27 Apr 2022 19:49:22 -0300
-Message-ID: <20220427224924.592546-29-gpiccoli@igalia.com>
+Subject: [PATCH 29/30] powerpc: ps3,
+ pseries: Avoid duplicate call to kmsg_dump() on panic
+Date: Wed, 27 Apr 2022 19:49:23 -0300
+Message-ID: <20220427224924.592546-30-gpiccoli@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -13,12 +14,12 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=JMa5LCnSsLEAVBhfuFDpAGoxifAznYLcyHmVA8FwnYw=; b=U19MfWTnnOn7hp
-	4c8aq0r3FSslos1hJAD2/mtCSWFS9A+QPcG5utAfd020hZBzOR+et+O5xNMozYTEoJ9+pk6RBRqtr
-	AFB1Gm7LzljDFFsuGSvxtiWRHza0a3poj2CCFyeYMqtTb8iZjRJm5ujqf+L56jfd/oZu+IwSkYufr
-	sJjX/J7MyK5ZBTm0QCy1Dw835aBY2eokMQXHu4LtRZq56tAEzJLWVocg5jAFlV1vpvQ110HyaYSL4
-	+58QWG/qU/SQqXIi88qc5aYz6slGGcxkWHk46p6ZIGh2FW278YQ3LqT/PpSz3nvz74eZIlK/Lbzg6
-	UOYJ3lolzyNUDmqO0XOg==;
+	List-Owner; bh=CMdiGteu56bqiOn6coXjfdNXLMk2C5/d/28OcMynAhQ=; b=nWPo+ggs54Aqpy
+	rWYs0jbWDPRfUJaPA0onX2cKx2By0zVCidKTPk4LsBzU7klQ1qkfegJ8M+fOfkTmMJVWI4s8KwTu7
+	Ov1RNkx2tyTxa3fXKV8GKMKSTs/8Zd5TzBPocBP51A4kQa0fqfnU1/1B/aMjNDDpbNxvfSSjv7b+i
+	VU+MpcJ/5xdSCvhwbZyPxnEaTWUCJJa6H4eMm6ryg29btb7J03ul9j11sDC2uaFS5vgP+S5PZ77lM
+	ebY+QQ604y5buWTIuEghWs2+VVyQkkZNJA07XIfRX25y+Q+hFLQaB/+VPy5l6y+0I+0NjxKWuVGSj
+	D+raV8vj8CRQ7ttEe82A==;
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com; 
  s=20170329;
  h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -26,12 +27,12 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=jupyQNOg8qT8hQfxmdiNJNMjaTUz/u9LiRmSHTNez6Y=; b=p7drin3mWpI9T0ZfMOO6eJj4J8
- Szpgonvq7i/v524yc5jBLpbigKUiUN0wy7/WDOnlytx03+FGgGN1Adqusl4cOO6PJlw+seakKl4N4
- fX95EDE8pbxBc/NNWRr732wIqJtKKX/BphsJRWnwXH/62I6x/BTA0R4L8cWEa/lku3Ma0ky8B2K89
- MQrzxBf2Hm8tnWC5d0fBkJ7uMzqRE/yfr9AAId6oRoN4APimw2mDpSMEi6ZVrVuwLoacCVsSTBNQz
- KQprHSNi9G6RdCXwUMjprlLz6QcEgqvhkAE50juvJF1BOQucBso5epBizOEqf+g5ZQam3KuAFn9x9
- BasVHnnQ==;
+ bh=1b6nDa/yJFcG5pUH/mG+iUzFXWwemhBkCT22/YaOiO0=; b=IjS2asgso9SNyNWZZrj9YMv/6F
+ 3eZOrVvzgLxKKIoWELAWIZ9Y/f7MmYlHtb0XsZyDOudfDUF9WfHu+qH6xY14Mwj7EyQY5AwmQNe6v
+ QY9uiwZxhZ2WIvN3bSO5hXV0+d77+K43N8ixpf942Orfv5mroywKkDY+GQFZJrgwqxcot4GD1q5St
+ xIFh8Z0iJkBMhioashEH7Fwugdlgq5hENhZTnH6U/1cjnuHRdJ6m3FerTWr+GWqdP086mvnqcs/YS
+ tVMBMJxDz0U3rAU8T7vP+Z25rbMa7jiyVQO7/s07AaONn+Kin25YyTFL/3tub+/wmWut7UZN8xzJW
+ BauGVfjA==;
 In-Reply-To: <20220427224924.592546-1-gpiccoli@igalia.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
@@ -46,40 +47,119 @@ Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infr
 To: akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, gpiccoli@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.
 
-There is no users anymore of this variable that requires
-it to be "exported" in the headers; also, it was deprecated
-by the kernel parameter "panic_notifiers_level".
+Currently both pseries and ps3 are platforms that define special
+panic notifiers that run as callbacks inside powerpc generic panic
+notifier. In both cases kmsg_dump() is called, and the reason seems
+to be that both of these callbacks aims to effectively stop the
+machine, so nothing would execute after that - hence, both force
+a series of console flushing related operations, after calling
+the kmsg dumpers.
 
+Happens that recently the panic path was refactored, and now
+kmsg_dump() is *certainly* called before the pre_reboot panic
+notifiers, category in which both pseries/ps3 callbacks belong.
+In other words: kmsg_dump() will execute twice in both platforms,
+on panic path.
+
+This patch prevents that by disabling the kmsg_dump() for both
+platform's notifiers. But worth to notice that PowerNV still
+has a legit use for executing kmsg_dump() in its unrecoverable
+error path, so we rely in parameter passing to differentiate
+both cases. Also, since the pre_reboot notifiers still run
+earlier than console flushing routines, we kept that for
+both pseries and ps3 platforms, only skipping kmsg_dump().
+
+Fixes: 35adacd6fc48 ("powerpc/pseries, ps3: panic flush kernel messages before halting system")
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Hari Bathini <hbathini@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Paul Mackerras <paulus@samba.org>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 ---
- include/linux/panic.h          | 2 --
- include/linux/panic_notifier.h | 1 -
- 2 files changed, 3 deletions(-)
 
-diff --git a/include/linux/panic.h b/include/linux/panic.h
-index 34175d0188d0..d301db07a8af 100644
---- a/include/linux/panic.h
-+++ b/include/linux/panic.h
-@@ -34,8 +34,6 @@ extern int sysctl_panic_on_rcu_stall;
- extern int sysctl_max_rcu_stall_to_panic;
- extern int sysctl_panic_on_stackoverflow;
+We'd like to thanks specially the MiniCloud infrastructure [0] maintainers,
+that allow us to test PowerPC code in a very complete, functional and FREE
+environment.
+
+[0] https://openpower.ic.unicamp.br/minicloud
+
+ arch/powerpc/include/asm/bug.h         | 2 +-
+ arch/powerpc/kernel/traps.c            | 6 ++++--
+ arch/powerpc/platforms/powernv/opal.c  | 2 +-
+ arch/powerpc/platforms/ps3/setup.c     | 2 +-
+ arch/powerpc/platforms/pseries/setup.c | 2 +-
+ 5 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/bug.h b/arch/powerpc/include/asm/bug.h
+index ecbae1832de3..49e5f6f86869 100644
+--- a/arch/powerpc/include/asm/bug.h
++++ b/arch/powerpc/include/asm/bug.h
+@@ -166,7 +166,7 @@ extern void die(const char *, struct pt_regs *, long);
+ void die_mce(const char *str, struct pt_regs *regs, long err);
+ extern bool die_will_crash(void);
+ extern void panic_flush_kmsg_start(void);
+-extern void panic_flush_kmsg_end(void);
++extern void panic_flush_kmsg_end(bool dump);
+ #endif /* !__ASSEMBLY__ */
  
--extern bool crash_kexec_post_notifiers;
--
- /*
-  * panic_cpu is used for synchronizing panic() and crash_kexec() execution. It
-  * holds a CPU number which is executing panic() currently. A value of
-diff --git a/include/linux/panic_notifier.h b/include/linux/panic_notifier.h
-index b5041132321d..8fda7045e2f7 100644
---- a/include/linux/panic_notifier.h
-+++ b/include/linux/panic_notifier.h
-@@ -11,7 +11,6 @@ extern struct atomic_notifier_head panic_pre_reboot_list;
- extern struct atomic_notifier_head panic_post_reboot_list;
+ #endif /* __KERNEL__ */
+diff --git a/arch/powerpc/kernel/traps.c b/arch/powerpc/kernel/traps.c
+index a08bb7cefdc5..837a5ed98d62 100644
+--- a/arch/powerpc/kernel/traps.c
++++ b/arch/powerpc/kernel/traps.c
+@@ -169,9 +169,11 @@ extern void panic_flush_kmsg_start(void)
+ 	bust_spinlocks(1);
+ }
  
- bool panic_notifiers_before_kdump(void);
--extern bool crash_kexec_post_notifiers;
+-extern void panic_flush_kmsg_end(void)
++extern void panic_flush_kmsg_end(bool dump)
+ {
+-	kmsg_dump(KMSG_DUMP_PANIC);
++	if (dump)
++		kmsg_dump(KMSG_DUMP_PANIC);
++
+ 	bust_spinlocks(0);
+ 	debug_locks_off();
+ 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
+diff --git a/arch/powerpc/platforms/powernv/opal.c b/arch/powerpc/platforms/powernv/opal.c
+index 55a8fbfdb5b2..d172ceedece2 100644
+--- a/arch/powerpc/platforms/powernv/opal.c
++++ b/arch/powerpc/platforms/powernv/opal.c
+@@ -641,7 +641,7 @@ void __noreturn pnv_platform_error_reboot(struct pt_regs *regs, const char *msg)
+ 		show_regs(regs);
+ 	smp_send_stop();
  
- enum panic_notifier_val {
- 	PANIC_UNUSED,
+-	panic_flush_kmsg_end();
++	panic_flush_kmsg_end(true);
+ 
+ 	/*
+ 	 * Don't bother to shut things down because this will
+diff --git a/arch/powerpc/platforms/ps3/setup.c b/arch/powerpc/platforms/ps3/setup.c
+index 3de9145c20bc..7cb78e508fb3 100644
+--- a/arch/powerpc/platforms/ps3/setup.c
++++ b/arch/powerpc/platforms/ps3/setup.c
+@@ -102,7 +102,7 @@ static void ps3_panic(char *str)
+ 	printk("   System does not reboot automatically.\n");
+ 	printk("   Please press POWER button.\n");
+ 	printk("\n");
+-	panic_flush_kmsg_end();
++	panic_flush_kmsg_end(false);
+ 
+ 	while(1)
+ 		lv1_pause(1);
+diff --git a/arch/powerpc/platforms/pseries/setup.c b/arch/powerpc/platforms/pseries/setup.c
+index 955ff8aa1644..d6eea473eafd 100644
+--- a/arch/powerpc/platforms/pseries/setup.c
++++ b/arch/powerpc/platforms/pseries/setup.c
+@@ -856,7 +856,7 @@ static void __init pSeries_setup_arch(void)
+ 
+ static void pseries_panic(char *str)
+ {
+-	panic_flush_kmsg_end();
++	panic_flush_kmsg_end(false);
+ 	rtas_os_term(str);
+ }
+ 
 -- 
 2.36.0
