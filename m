@@ -1,165 +1,39 @@
-From: Xiaoming Ni <nixiaoming@huawei.com>
-Subject: Re: [PATCH 18/30] notifier: Show function names on notifier routines
- if DEBUG_NOTIFIERS is set
-Date: Thu, 28 Apr 2022 09:01:13 +0800
-Message-ID: <9f44aae6-ec00-7ede-ec19-6e67ceb74510@huawei.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-19-gpiccoli@igalia.com>
+From: David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH net-next v3] net: SO_RCVMARK socket option for SO_MARK
+ with recvmsg()
+Date: Wed, 27 Apr 2022 19:27:26 -0600
+Message-ID: <bde14dfc-d1ea-ca1f-5074-01e13eef3cab@kernel.org>
+References: <202204270907.nUUrw3dS-lkp@intel.com>
+ <20220427200259.2564-1-lnx.erin@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-leds-owner@vger.kernel.org>
-In-Reply-To: <20220427224924.592546-19-gpiccoli@igalia.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651109251;
+        bh=5dLrCbyI9dL25gLCPU2lKXEykc++03SFd32wMmRhRMY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=koKAxCKdTDd8Xos0qjF/PfaziMK1H7iXllHu4DOFfT+tReZ2slA19GSEMY1NlrAXx
+         VCl18ElprtpHwUe4m65SdEsv1lGqWR3skTPCIuYj/AcvueZmK3CfpzJW38Oe9aW1zU
+         niSCpJJrh/1kho5qWUQ0hxDz49tTwAxQmRAVgyHOutEFpbyFTQT+0/n0f2LPwPcn1R
+         +Dx77zrHy1TrRK6QnZ774j01Ivr9AWwFEgJu1KMLXjMZHmBX7IyZ29UEvIk2CTFpUy
+         L/bxWFE2CanErRZcRufMiQgOIsSO8CHUEukTRo4tKbwzfo1NiCLAjsYKkuz+oVQVEq
+         ZQkANYmzOu1Zg==
+Content-Language: en-US
+In-Reply-To: <20220427200259.2564-1-lnx.erin@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>, akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@ca
+Content-Type: text/plain; charset="us-ascii"
+To: Erin MacNeil <lnx.erin@gmail.com>
+Cc: Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Marcel Holtmann <marcel@holtmann.org>, Johan Hedberg <johan.hedberg@gmail.com>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Oliver Hartkopp <socketcan@hartkopp.net>, Marc Kleine-Budde <mkl@pengutronix.de>, Robin van der Gracht <robin@protonic.nl>, Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de, Alexander Aring <alex.aring@gmail.com>, Stefan
 
-On 2022/4/28 6:49, Guilherme G. Piccoli wrote:
-> Currently we have a debug infrastructure in the notifiers file, but
-> it's very simple/limited. This patch extends it by:
+On 4/27/22 2:02 PM, Erin MacNeil wrote:
+> Adding a new socket option, SO_RCVMARK, to indicate that SO_MARK
+> should be included in the ancillary data returned by recvmsg().
 > 
-> (a) Showing all registered/unregistered notifiers' callback names;
+> Renamed the sock_recv_ts_and_drops() function to sock_recv_cmsgs().
 > 
-> (b) Adding a dynamic debug tuning to allow showing called notifiers'
-> function names. Notice that this should be guarded as a tunable since
-> it can flood the kernel log buffer.
-> 
-> Cc: Arjan van de Ven <arjan@linux.intel.com>
-> Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Cc: Valentin Schneider <valentin.schneider@arm.com>
-> Cc: Xiaoming Ni <nixiaoming@huawei.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
 > ---
-> 
-> We have some design decisions that worth discussing here:
-> 
-> (a) First of call, using C99 helps a lot to write clear and concise code, but
-> due to commit 4d94f910e79a ("Kbuild: use -Wdeclaration-after-statement") we
-> have a warning if mixing variable declarations with code. For this patch though,
-> doing that makes the code way clear, so decision was to add the debug code
-> inside brackets whenever this warning pops up. We can change that, but that'll
-> cause more ifdefs in the same function.
-> 
-> (b) In the symbol lookup helper function, we modify the parameter passed but
-> even more, we return it as well! This is unusual and seems unnecessary, but was
-> the strategy taken to allow embedding such function in the pr_debug() call.
-> 
-> Not doing that would likely requiring 3 symbol_name variables to avoid
-> concurrency (registering notifier A while calling notifier B) - we rely in
-> local variables as a serialization mechanism.
-> 
-> We're open for suggestions in case this design is not appropriate;
-> thanks in advance!
-> 
->   kernel/notifier.c | 48 +++++++++++++++++++++++++++++++++++++++++++++--
->   1 file changed, 46 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/notifier.c b/kernel/notifier.c
-> index ba005ebf4730..21032ebcde57 100644
-> --- a/kernel/notifier.c
-> +++ b/kernel/notifier.c
-> @@ -7,6 +7,22 @@
->   #include <linux/vmalloc.h>
->   #include <linux/reboot.h>
->   
-> +#ifdef CONFIG_DEBUG_NOTIFIERS
-> +#include <linux/kallsyms.h>
-> +
-> +/*
-> + *	Helper to get symbol names in case DEBUG_NOTIFIERS is set.
-> + *	Return the modified parameter is a strategy used to achieve
-> + *	the pr_debug() functionality - with this, function is only
-> + *	executed if the dynamic debug tuning is effectively set.
-> + */
-> +static inline char *notifier_name(struct notifier_block *nb, char *sym_name)
-> +{
-> +	lookup_symbol_name((unsigned long)(nb->notifier_call), sym_name);
-> +	return sym_name;
-> +}
-> +#endif
-> +
->   /*
->    *	Notifier list for kernel code which wants to be called
->    *	at shutdown. This is used to stop any idling DMA operations
-> @@ -34,20 +50,41 @@ static int notifier_chain_register(struct notifier_block **nl,
->   	}
->   	n->next = *nl;
->   	rcu_assign_pointer(*nl, n);
-> +
-> +#ifdef CONFIG_DEBUG_NOTIFIERS
-> +	{
-> +		char sym_name[KSYM_NAME_LEN];
-> +
-> +		pr_info("notifiers: registered %s()\n",
-> +			notifier_name(n, sym_name));
-> +	}
-
-Duplicate Code.
-
-Is it better to use __func__ and %pS?
-
-pr_info("%s: %pS\n", __func__, n->notifier_call);
 
 
-> +#endif
->   	return 0;
->   }
->   
->   static int notifier_chain_unregister(struct notifier_block **nl,
->   		struct notifier_block *n)
->   {
-> +	int ret = -ENOENT;
-> +
->   	while ((*nl) != NULL) {
->   		if ((*nl) == n) {
->   			rcu_assign_pointer(*nl, n->next);
-> -			return 0;
-> +			ret = 0;
-> +			break;
->   		}
->   		nl = &((*nl)->next);
->   	}
-> -	return -ENOENT;
-> +
-> +#ifdef CONFIG_DEBUG_NOTIFIERS
-> +	if (!ret) {
-> +		char sym_name[KSYM_NAME_LEN];
-> +
-> +		pr_info("notifiers: unregistered %s()\n",
-> +			notifier_name(n, sym_name));
-> +	}
-Duplicate Code.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Is it better to use __func__ and %pS?
-
-pr_info("%s: %pS\n", __func__, n->notifier_call);
-> +#endif
-> +	return ret;
->   }
->   
->   /**
-> @@ -80,6 +117,13 @@ static int notifier_call_chain(struct notifier_block **nl,
->   			nb = next_nb;
->   			continue;
->   		}
-> +
-Is the "#ifdef" missing here?
-> +		{
-> +			char sym_name[KSYM_NAME_LEN];
-> +
-> +			pr_debug("notifiers: calling %s()\n",
-> +				 notifier_name(nb, sym_name));
-Duplicate Code.
-
-Is it better to use __func__ and %pS?
-
-pr_info("%s: %pS\n", __func__, n->notifier_call);
-> +		}
->   #endif
->   		ret = nb->notifier_call(nb, val, v);
->   
-> 
-
-Thanks
-Xiaoming Ni
