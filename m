@@ -1,178 +1,50 @@
-From: Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH 12/30] parisc: Replace regular spinlock with spin_trylock
- on panic path
-Date: Thu, 28 Apr 2022 18:55:52 +0200
-Message-ID: <6a7c924a-54a9-c5ea-8a9d-3ea92987b436@gmx.de>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-13-gpiccoli@igalia.com>
+From: patchwork-bot+netdevbpf@kernel.org
+Subject: Re: [PATCH net-next v3] net: SO_RCVMARK socket option for SO_MARK with
+ recvmsg()
+Date: Thu, 28 Apr 2022 21:20:33 +0000
+Message-ID: <165118083345.15958.2167314191776902298.git-patchwork-notify@kernel.org>
+References: <20220427200259.2564-1-lnx.erin@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-	s=badeba3b8450; t=1651164963;
-	bh=DUb16bHT8ZVVcSBzzE8lnieko2RHZpG2zbwsEWdWo2c=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=TrwFfhoA2P1jqiZSh6qbThQbWQ3kajZ2U+JQrRL/jSZxckwFV1BopRKv6DRaeQSKC
-	 DM8QpY2fv9fsoSq055uYb4MCMz8e9HvG+guo2m9xr29cJoYbxYguo2PwZIKFp/JXdB
-	 qy9XbYXMKcmj9vbKxczpPpGqEow6LzKi+qj1B+ao=
-Content-Language: en-US
-In-Reply-To: <20220427224924.592546-13-gpiccoli@igalia.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651180833;
+        bh=Ef4FdoAUs1E4p1l6Hja12/6MqX5sUBzOSTh36QSsHUs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PvJf5VNsAiwEEl+vN+Ona8Ega6nbsskrRFIaGDmCt8u+3ie0c0acYxbnknCNsR0Bh
+         Z7SdcUl7fYrLFDC1HynZByWdQAVzKBCX2HJBIBrBEYou8uV9xWvwCGFZAIW57FIO0o
+         GRDRcQ2z1wQobFUYriYvXpzgusR5OSLGWS/ngtW6uHGTbQafuosH2/cmP4byzVeG0Y
+         BCGIiZE9QqdfyNsvOn3112nZIS6iiMV4LEhZkmeraZXkJpZiBL8QMkrn43CBEZRNxy
+         Sd7YKkLYgoORVYhpcRiI6byqtMfmpchN5ERubjggc+usqJhFCGC5qST6GIHW2biIvF
+         ck552V83iEtNA==
+In-Reply-To: <20220427200259.2564-1-lnx.erin@gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>, akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de, corbet@lwn.net, d
+To: Erin MacNeil <lnx.erin@gmail.com>
+Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com, deller@gmx.de, davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, arnd@arndb.de, marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com, socketcan@hartkopp.net, mkl@pengutronix.de, robin@protonic.nl, linux@rempel-privat.de, kernel@pengutronix.de, alex.aring@gmail.com, stefan@datenfreihafen.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org, steffen.klassert@secunet.com, herbert@gondor.apana.org.au, jk@codeconstruct.com.au, matt@codeconstruct.com.au, vyasevich@gmail.com, nhorman@tuxdriver.com, marcelo.leitner@gmail.com, edumazet@google.com, lmb@cloudflare.com, ptikhomirov@virtuozzo.com, m@lambda.lt, hmukos@yandex-team.ru, sfr@canb.a
 
-On 4/28/22 00:49, Guilherme G. Piccoli wrote:
-> The panic notifiers' callbacks execute in an atomic context, with
-> interrupts/preemption disabled, and all CPUs not running the panic
-> function are off, so it's very dangerous to wait on a regular
-> spinlock, there's a risk of deadlock.
->
-> This patch refactors the panic notifier of parisc/power driver
-> to make use of spin_trylock - for that, we've added a second
-> version of the soft-power function. Also, some comments were
-> reorganized and trailing white spaces, useless header inclusion
-> and blank lines were removed.
->
-> Cc: Helge Deller <deller@gmx.de>
-> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Hello:
 
-You may add:
-Acked-by: Helge Deller <deller@gmx.de> # parisc
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Helge
+On Wed, 27 Apr 2022 16:02:37 -0400 you wrote:
+> Adding a new socket option, SO_RCVMARK, to indicate that SO_MARK
+> should be included in the ancillary data returned by recvmsg().
+> 
+> Renamed the sock_recv_ts_and_drops() function to sock_recv_cmsgs().
+> 
+> Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
+> 
+> [...]
 
+Here is the summary with links:
+  - [net-next,v3] net: SO_RCVMARK socket option for SO_MARK with recvmsg()
+    https://git.kernel.org/netdev/net-next/c/6fd1d51cfa25
 
-> ---
->  arch/parisc/include/asm/pdc.h |  1 +
->  arch/parisc/kernel/firmware.c | 27 +++++++++++++++++++++++----
->  drivers/parisc/power.c        | 17 ++++++++++-------
->  3 files changed, 34 insertions(+), 11 deletions(-)
->
-> diff --git a/arch/parisc/include/asm/pdc.h b/arch/parisc/include/asm/pdc=
-.h
-> index b643092d4b98..7a106008e258 100644
-> --- a/arch/parisc/include/asm/pdc.h
-> +++ b/arch/parisc/include/asm/pdc.h
-> @@ -83,6 +83,7 @@ int pdc_do_firm_test_reset(unsigned long ftc_bitmap);
->  int pdc_do_reset(void);
->  int pdc_soft_power_info(unsigned long *power_reg);
->  int pdc_soft_power_button(int sw_control);
-> +int pdc_soft_power_button_panic(int sw_control);
->  void pdc_io_reset(void);
->  void pdc_io_reset_devices(void);
->  int pdc_iodc_getc(void);
-> diff --git a/arch/parisc/kernel/firmware.c b/arch/parisc/kernel/firmware=
-.c
-> index 6a7e315bcc2e..0e2f70b592f4 100644
-> --- a/arch/parisc/kernel/firmware.c
-> +++ b/arch/parisc/kernel/firmware.c
-> @@ -1232,15 +1232,18 @@ int __init pdc_soft_power_info(unsigned long *po=
-wer_reg)
->  }
->
->  /*
-> - * pdc_soft_power_button - Control the soft power button behaviour
-> - * @sw_control: 0 for hardware control, 1 for software control
-> + * pdc_soft_power_button{_panic} - Control the soft power button behavi=
-our
-> + * @sw_control: 0 for hardware control, 1 for software control
->   *
->   *
->   * This PDC function places the soft power button under software or
->   * hardware control.
-> - * Under software control the OS may control to when to allow to shut
-> - * down the system. Under hardware control pressing the power button
-> + * Under software control the OS may control to when to allow to shut
-> + * down the system. Under hardware control pressing the power button
->   * powers off the system immediately.
-> + *
-> + * The _panic version relies in spin_trylock to prevent deadlock
-> + * on panic path.
->   */
->  int pdc_soft_power_button(int sw_control)
->  {
-> @@ -1254,6 +1257,22 @@ int pdc_soft_power_button(int sw_control)
->  	return retval;
->  }
->
-> +int pdc_soft_power_button_panic(int sw_control)
-> +{
-> +	int retval;
-> +	unsigned long flags;
-> +
-> +	if (!spin_trylock_irqsave(&pdc_lock, flags)) {
-> +		pr_emerg("Couldn't enable soft power button\n");
-> +		return -EBUSY; /* ignored by the panic notifier */
-> +	}
-> +
-> +	retval =3D mem_pdc_call(PDC_SOFT_POWER, PDC_SOFT_POWER_ENABLE, __pa(pd=
-c_result), sw_control);
-> +	spin_unlock_irqrestore(&pdc_lock, flags);
-> +
-> +	return retval;
-> +}
-> +
->  /*
->   * pdc_io_reset - Hack to avoid overlapping range registers of Bridges =
-devices.
->   * Primarily a problem on T600 (which parisc-linux doesn't support) but
-> diff --git a/drivers/parisc/power.c b/drivers/parisc/power.c
-> index 456776bd8ee6..8512884de2cf 100644
-> --- a/drivers/parisc/power.c
-> +++ b/drivers/parisc/power.c
-> @@ -37,7 +37,6 @@
->  #include <linux/module.h>
->  #include <linux/init.h>
->  #include <linux/kernel.h>
-> -#include <linux/notifier.h>
->  #include <linux/panic_notifier.h>
->  #include <linux/reboot.h>
->  #include <linux/sched/signal.h>
-> @@ -175,16 +174,21 @@ static void powerfail_interrupt(int code, void *x)
->
->
->
-> -/* parisc_panic_event() is called by the panic handler.
-> - * As soon as a panic occurs, our tasklets above will not be
-> - * executed any longer. This function then re-enables the
-> - * soft-power switch and allows the user to switch off the system
-> +/*
-> + * parisc_panic_event() is called by the panic handler.
-> + *
-> + * As soon as a panic occurs, our tasklets above will not
-> + * be executed any longer. This function then re-enables
-> + * the soft-power switch and allows the user to switch off
-> + * the system. We rely in pdc_soft_power_button_panic()
-> + * since this version spin_trylocks (instead of regular
-> + * spinlock), preventing deadlocks on panic path.
->   */
->  static int parisc_panic_event(struct notifier_block *this,
->  		unsigned long event, void *ptr)
->  {
->  	/* re-enable the soft-power switch */
-> -	pdc_soft_power_button(0);
-> +	pdc_soft_power_button_panic(0);
->  	return NOTIFY_DONE;
->  }
->
-> @@ -193,7 +197,6 @@ static struct notifier_block parisc_panic_block =3D =
-{
->  	.priority	=3D INT_MAX,
->  };
->
-> -
->  static int __init power_init(void)
->  {
->  	unsigned long ret;
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
