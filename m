@@ -1,52 +1,55 @@
-From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 24/30] panic: Refactor the panic path
-Date: Fri, 29 Apr 2022 13:04:01 -0300
-Message-ID: <7518924e-5bb4-e6e9-0e3e-3f5cb03bf946@igalia.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-25-gpiccoli@igalia.com>
- <4fe85e9c-4e96-e9d5-9fd8-f062bafcda4f@infradead.org>
+From: Max Filippov <jcmvbkbc@gmail.com>
+Subject: Re: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
+Date: Fri, 29 Apr 2022 09:04:39 -0700
+Message-ID: <CAMo8BfKzA+oy-Qun9-aO3xCr4Jy_rfdjYqMX=W9xONCSX8O51Q@mail.gmail.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com> <20220427224924.592546-22-gpiccoli@igalia.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QQI5zmi1djYWNz2i53I6KuQGatDa49BWqjEk2Pav1i4=; b=dYOwdCYz8mfW6uRaErWUoCqmdx
-        5T0+vzZBt6UK85jUK/bYBffPO6pHVBukVXgw40Mng8+hfEFyxsYupbDv17vw0eY73RVtJNUJhZeIk
-        wjL2oPNMg0UJQkop2tznLUBtpwTgs2tJTFrh96RXyi3iI9oJ7Xg0HjOO5wFLxxatzCt/a1kjKIm+q
-        GG90XSMTUteF9uAfx+0HJjQF0T7y90PJaZRFs3aM6M51tA02d53awi4I7n5GpC6cVQif5RrGFpU1r
-        QhiVEfyVqroi50IPYPzYRbjvCqabrqPiHclqX4UZkfFE4tLq7njetpvB7ea+qAjYTdFscbWw6lpa8
-        5AxSRVR 
-Content-Language: en-US
-In-Reply-To: <4fe85e9c-4e96-e9d5-9fd8-f062bafcda4f-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MQcZ21ZXrJjtfh7JWVyd82OFreqrUf57vyzG9uXB95s=;
+        b=NQuHjq75yTcETqoe5MFxchlZ/6p7R23s4Uh/eK6M8cjCLKjgK4aZLK94enM9k42z9z
+         9olN5ZP+vAQmeXTs3TpSIt0NzvMdqABegG4qz96TEt/HS/xzZxrOdtT3s38HXa8rxQCC
+         //y1nGWR49pl0bI4BXJikvhyEOuRN9x7yyhQG6wmlGrFanhXAWznrpMOX2TZU06+jYUn
+         nIWU94QXvKkXMgCPv2tcj5gD6bKy2psqRCjrFUOKa8Bl/tDHLN4JOX0rshY1mFgS6Dj8
+         yb9QNW2JBzYk707yzx4X/QadG8x7UesXEXLRQ21ibqXwVr/gFDYqh338pCxNErks0fTt
+         i5PQ==
+In-Reply-To: <20220427224924.592546-22-gpiccoli@igalia.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, pmladek-IBi9RG/b67k@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, coresight-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kernel-dev-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org, kernel-WeLdAqEWwDvk1uMJSBkQmQ@public.gmane.org, halves-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org, fabiomirmar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, alejandro.j.jimenez@ora
+Content-Transfer-Encoding: 7bit
+To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com, Petr Mladek <pmladek@suse.com>, kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, "open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390 <linux-s390@vger.kernel.org>, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, "open list:TENSILICA XTENSA PORT (xtensa)" <linux-xtensa@linux-xtensa.org>, netdev <netdev@vger.kern>
 
-On 27/04/2022 21:28, Randy Dunlap wrote:
-> 
-> 
-> On 4/27/22 15:49, Guilherme G. Piccoli wrote:
->> +	crash_kexec_post_notifiers
->> +			This was DEPRECATED - users should always prefer the
-> 
-> 			This is DEPRECATED - users should always prefer the
-> 
->> +			parameter "panic_notifiers_level" - check its entry
->> +			in this documentation for details on how it works.
->> +			Setting this parameter is exactly the same as setting
->> +			"panic_notifiers_level=4".
-> 
+On Wed, Apr 27, 2022 at 3:55 PM Guilherme G. Piccoli
+<gpiccoli@igalia.com> wrote:
+>
+> This patch renames the panic_notifier_list to panic_pre_reboot_list;
+> the idea is that a subsequent patch will refactor the panic path
+> in order to better split the notifiers, running some of them very
+> early, some of them not so early [but still before kmsg_dump()] and
+> finally, the rest should execute late, after kdump. The latter ones
+> are now in the panic pre-reboot list - the name comes from the idea
+> that these notifiers execute before panic() attempts rebooting the
+> machine (if that option is set).
+>
+> We also took the opportunity to clean-up useless header inclusions,
+> improve some notifier block declarations (e.g. in ibmasm/heartbeat.c)
+> and more important, change some priorities - we hereby set 2 notifiers
+> to run late in the list [iss_panic_event() and the IPMI panic_event()]
+> due to the risks they offer (may not return, for example).
+> Proper documentation is going to be provided in a subsequent patch,
+> that effectively refactors the panic path.
 
-Thanks Randy, for your suggestion - but I confess I couldn't understand
-it properly. It's related to spaces/tabs, right? What you suggest me to
-change in this formatting? Just by looking the email I can't parse.
+[...]
 
-Cheers,
+>  arch/xtensa/platforms/iss/setup.c     |  4 ++--For xtensa:
 
+For xtensa:
+Acked-by: Max Filippov <jcmvbkbc@gmail.com>
 
-Guilherme
+-- 
+Thanks.
+-- Max
