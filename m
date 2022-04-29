@@ -1,71 +1,177 @@
 From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Subject: RE: [PATCH 02/30] ARM: kexec: Disable IRQs/FIQs also on crash CPUs
- shutdown path
-Date: Fri, 29 Apr 2022 16:26:02 +0000
-Message-ID: <PH0PR21MB3025F5AADF3CCEF714585912D7FC9@PH0PR21MB3025.namprd21.prod.outlook.com>
+Subject: RE: [PATCH 18/30] notifier: Show function names on notifier routines
+ if DEBUG_NOTIFIERS is set
+Date: Fri, 29 Apr 2022 16:27:42 +0000
+Message-ID: <PH0PR21MB302584B93A9F44AF5BA016EAD7FC9@PH0PR21MB3025.namprd21.prod.outlook.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-3-gpiccoli@igalia.com>
+ <20220427224924.592546-19-gpiccoli@igalia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-mips-owner@vger.kernel.org>
+Return-path: <xen-devel-bounces@lists.xenproject.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
+List-Post: <mailto:xen-devel@lists.xenproject.org>
+List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
+List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
+Errors-To: xen-devel-bounces@lists.xenproject.org
+Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zTfneMsIYF8YteyonKPHoonZYmHV8hcH1Ru2q+6fv+0=;
- b=d+Tijt2euluzrQi71IhaI2QKQVJzCEGzhvDpVQFylauvgmvb+PUHN72mLRXMSu63F1AMA4wWXKpgR7C192SolLu8YaJCvcwzHALT2WPLFSkGE8ihloRhKEhReubWrxbSHp5AZDEZSpJUcCoV3iPIyf5/QVdRfkXrHI+cydNTodI=
-In-Reply-To: <20220427224924.592546-3-gpiccoli@igalia.com>
+ bh=vuwI3s0/uzAI4p0El6C+ADHa0t+3Aw9/kpVyepipcnA=;
+ b=VzDdgrQMZRKbNdrTfG4H0EgQQZm9srzi3KTcMWDcx0QMyQJjlYJUETWoCvFt03HvABO693gAaXqwwB+XZny5SSYqYwbMqlCORP1fIwl6HwwCA6DE776swKqJM8h0Rupd24eO8rdzvEprRQHh+mJyC65QdQbRnylWrYA9BefsKuI=
+In-Reply-To: <20220427224924.592546-19-gpiccoli@igalia.com>
 Content-Language: en-US
-List-ID: <linux-alpha.vger.kernel.org>
 To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "bhe@redhat.com" <bhe@redhat.com>, "pmladek@suse.com" <pmladek@suse.com>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "coresight@lists.linaro.org" <coresight@lists.linaro.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, linux-remotepro
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "coresight@lists.linaro.org" <coresight@lists.linaro.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>, "linux-s390@vger.kernel.org" <linux-s390@vger>
 
 From: Guilherme G. Piccoli <gpiccoli@igalia.com> Sent: Wednesday, April 27,=
  2022 3:49 PM
 >=20
-> Currently the regular CPU shutdown path for ARM disables IRQs/FIQs
-> in the secondary CPUs - smp_send_stop() calls ipi_cpu_stop(), which
-> is responsible for that. This makes sense, since we're turning off
-> such CPUs, putting them in an endless busy-wait loop.
+> Currently we have a debug infrastructure in the notifiers file, but
+> it's very simple/limited. This patch extends it by:
 >=20
-> Problem is that there is an alternative path for disabling CPUs,
-> in the form of function crash_smp_send_stop(), used for kexec/panic
-> paths. This functions relies in a SMP call that also triggers a
-
-s/functions relies in/function relies on/
-
-> busy-wait loop [at machine_crash_nonpanic_core()], but *without*
-> disabling interrupts. This might lead to odd scenarios, like early
-> interrupts in the boot of kexec'd kernel or even interrupts in
-> other CPUs while the main one still works in the panic path and
-> assumes all secondary CPUs are (really!) off.
+> (a) Showing all registered/unregistered notifiers' callback names;
 >=20
-> This patch mimics the ipi_cpu_stop() interrupt disable mechanism
-> in the crash CPU shutdown path, hence disabling IRQs/FIQs in all
-> secondary CPUs in the kexec/panic path as well.
+> (b) Adding a dynamic debug tuning to allow showing called notifiers'
+> function names. Notice that this should be guarded as a tunable since
+> it can flood the kernel log buffer.
 >=20
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Arjan van de Ven <arjan@linux.intel.com>
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: Valentin Schneider <valentin.schneider@arm.com>
+> Cc: Xiaoming Ni <nixiaoming@huawei.com>
 > Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 > ---
->  arch/arm/kernel/machine_kexec.c | 3 +++
->  1 file changed, 3 insertions(+)
 >=20
-> diff --git a/arch/arm/kernel/machine_kexec.c b/arch/arm/kernel/machine_ke=
-xec.c
-> index f567032a09c0..ef788ee00519 100644
-> --- a/arch/arm/kernel/machine_kexec.c
-> +++ b/arch/arm/kernel/machine_kexec.c
-> @@ -86,6 +86,9 @@ void machine_crash_nonpanic_core(void *unused)
->  	set_cpu_online(smp_processor_id(), false);
->  	atomic_dec(&waiting_for_crash_ipi);
+> We have some design decisions that worth discussing here:
 >=20
-> +	local_fiq_disable();
-> +	local_irq_disable();
+> (a) First of call, using C99 helps a lot to write clear and concise code,=
+ but
+
+s/call/all/
+
+> due to commit 4d94f910e79a ("Kbuild: use -Wdeclaration-after-statement") =
+we
+> have a warning if mixing variable declarations with code. For this patch =
+though,
+> doing that makes the code way clear, so decision was to add the debug cod=
+e
+> inside brackets whenever this warning pops up. We can change that, but th=
+at'll
+> cause more ifdefs in the same function.
+>=20
+> (b) In the symbol lookup helper function, we modify the parameter passed =
+but
+> even more, we return it as well! This is unusual and seems unnecessary, b=
+ut was
+> the strategy taken to allow embedding such function in the pr_debug() cal=
+l.
+>=20
+> Not doing that would likely requiring 3 symbol_name variables to avoid
+> concurrency (registering notifier A while calling notifier B) - we rely i=
+n
+> local variables as a serialization mechanism.
+>=20
+> We're open for suggestions in case this design is not appropriate;
+> thanks in advance!
+>=20
+>  kernel/notifier.c | 48 +++++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 46 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/kernel/notifier.c b/kernel/notifier.c
+> index ba005ebf4730..21032ebcde57 100644
+> --- a/kernel/notifier.c
+> +++ b/kernel/notifier.c
+> @@ -7,6 +7,22 @@
+>  #include <linux/vmalloc.h>
+>  #include <linux/reboot.h>
+>=20
+> +#ifdef CONFIG_DEBUG_NOTIFIERS
+> +#include <linux/kallsyms.h>
 > +
->  	while (1) {
->  		cpu_relax();
->  		wfe();
+> +/*
+> + *	Helper to get symbol names in case DEBUG_NOTIFIERS is set.
+> + *	Return the modified parameter is a strategy used to achieve
+> + *	the pr_debug() functionality - with this, function is only
+> + *	executed if the dynamic debug tuning is effectively set.
+> + */
+> +static inline char *notifier_name(struct notifier_block *nb, char *sym_n=
+ame)
+> +{
+> +	lookup_symbol_name((unsigned long)(nb->notifier_call), sym_name);
+> +	return sym_name;
+> +}
+> +#endif
+> +
+>  /*
+>   *	Notifier list for kernel code which wants to be called
+>   *	at shutdown. This is used to stop any idling DMA operations
+> @@ -34,20 +50,41 @@ static int notifier_chain_register(struct notifier_bl=
+ock **nl,
+>  	}
+>  	n->next =3D *nl;
+>  	rcu_assign_pointer(*nl, n);
+> +
+> +#ifdef CONFIG_DEBUG_NOTIFIERS
+> +	{
+> +		char sym_name[KSYM_NAME_LEN];
+> +
+> +		pr_info("notifiers: registered %s()\n",
+> +			notifier_name(n, sym_name));
+> +	}
+> +#endif
+>  	return 0;
+>  }
+>=20
+>  static int notifier_chain_unregister(struct notifier_block **nl,
+>  		struct notifier_block *n)
+>  {
+> +	int ret =3D -ENOENT;
+> +
+>  	while ((*nl) !=3D NULL) {
+>  		if ((*nl) =3D=3D n) {
+>  			rcu_assign_pointer(*nl, n->next);
+> -			return 0;
+> +			ret =3D 0;
+> +			break;
+>  		}
+>  		nl =3D &((*nl)->next);
+>  	}
+> -	return -ENOENT;
+> +
+> +#ifdef CONFIG_DEBUG_NOTIFIERS
+> +	if (!ret) {
+> +		char sym_name[KSYM_NAME_LEN];
+> +
+> +		pr_info("notifiers: unregistered %s()\n",
+> +			notifier_name(n, sym_name));
+> +	}
+> +#endif
+> +	return ret;
+>  }
+>=20
+>  /**
+> @@ -80,6 +117,13 @@ static int notifier_call_chain(struct notifier_block =
+**nl,
+>  			nb =3D next_nb;
+>  			continue;
+>  		}
+> +
+> +		{
+> +			char sym_name[KSYM_NAME_LEN];
+> +
+> +			pr_debug("notifiers: calling %s()\n",
+> +				 notifier_name(nb, sym_name));
+> +		}
+>  #endif
+>  		ret =3D nb->notifier_call(nb, val, v);
+>=20
 > --
 > 2.36.0
+
 
