@@ -1,117 +1,43 @@
-From: Heiko Carstens <hca@linux.ibm.com>
+From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 13/30] s390/consoles: Improve panic notifiers reliability
-Date: Fri, 29 Apr 2022 20:46:36 +0200
-Message-ID: <YmwyjMtT7QTZiHaa@osiris>
+Date: Fri, 29 Apr 2022 16:31:00 -0300
+Message-ID: <039cdf14-efc5-383b-3f3d-294a5ed9243e@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-14-gpiccoli@igalia.com>
+ <20220427224924.592546-14-gpiccoli@igalia.com> <YmwyjMtT7QTZiHaa@osiris>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=aSof4CUaKebjZXcVEkKyqNOgUwJOanCoeB7Sbphr0Q0=; b=Jq3iS7eM/3uTGD
-	vAE5ofhBdW+c6SGeqbyK7h+GUdhrvL94mBXJ4/8vhH5CIDWl6oXKEtdALiukNglA4Fk4krm9LZjKO
-	WTcxHPs2EyFxhoco3cDJ68kBleIQr7gdaszNQy1z8CAWnShrm72v21jw/IIoiP26CrGtwvkU4fceD
-	zwtDhM5UUrdoncx3K2FhZE40CXKo4FF4YwVhGHXFcRETizOQfRlda6T+wJEDLxPRmwLUzE7SkWzjR
-	xRkqPmI3XeIp6x32AgeFzqKk7KIpdAMxjChTIVWzUF6IenSqox6rVV9l9KEqBhr+rryRfBLn93lY/
-	K9aPa3X31sxFI1XmJfjA==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=CmQcpniDwe+mXgnPI+CYX47gDa+lF4VP2K5Tb10PSgo=;
- b=bTNrOnkDXh09pnCHUKCfVTj5O7a2rMkLSO1DAFMikxnzlOk842BnVGNnlxjbavr8wxSm
- aOP4oPacZVwhk2+nACPTWiDhwPxyd0jlejF5h74fWWI1oIVsbhF16gpgLRcULgtREdDE
- ZVJN5BEU2k3dT7ownrQWfbB7t+hMkUYaYJeBX/g91k8XSQa3Vre/7LGhk8wcXzDf1kiv
- oQ2iUNVOdBVbKDS9SyEcnVmbm4ZhnqmtglnqQQ9AIucI/CNGWOo+s+8TbDE7Hi7pEpcO
- DHP4bZPnfDn7+LocgB0sqZLpX0rqcpBhSBx8Sg3u1bbgRievtyCZGncSkoY2WOU7WhmC jw== 
-Content-Disposition: inline
-In-Reply-To: <20220427224924.592546-14-gpiccoli@igalia.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-um/>
-List-Post: <mailto:linux-um@lists.infradead.org>
-List-Help: <mailto:linux-um-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-um" <linux-um-bounces@lists.infradead.org>
-Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org
-To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc: akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracl
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=juYOl8ucSjuSHKXBe+1Ir5OPZr6pZdgx66h4OReE1Ko=; b=pi8CeEHRcdz9D2M05lfyhONNOe
+        Il5P/FNtKNDpfNnQvQkUO53LGYEhZ3HsOKcMT79tXUkEM7BDaPWYeiTRxruHlFJpgYZGLdkNZ+Vsx
+        oyZivn3CQn+HYfOJsn02OXmy5/HYryfVse/FM/IqF31FwAMG26clpYwK7OV3zBWRhtbMoUne9k8x/
+        cgyBslKy2FDshbzCm4dWwDcEIOqWM+BTXUAPCGsxBvDFlTKuVtiafdc18oTYk2LsBlxeiWqHf76sU
+        fr20/x47wOCPaQYIMtyh+VGeHVXZk4bWHmVx7ebZUj8zme4Hs0U5M9F5U1lcdb0DAeivSR+YRjiw8
+        sBGOVwO 
+Content-Language: en-US
+In-Reply-To: <YmwyjMtT7QTZiHaa@osiris>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Heiko Carstens <hca-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
+Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, pmladek-IBi9RG/b67k@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kernel-dev-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org, kernel-WeLdAqEWwDvk1uMJSBkQmQ@public.gmane.org, halves-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org, fabiomirmar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 
-On Wed, Apr 27, 2022 at 07:49:07PM -0300, Guilherme G. Piccoli wrote:
-> Currently many console drivers for s390 rely on panic/reboot notifiers
-> to invoke callbacks on these events. The panic() function disables local
-> IRQs, secondary CPUs and preemption, so callbacks invoked on panic are
-> effectively running in atomic context.
+On 29/04/2022 15:46, Heiko Carstens wrote:
+> [...]
 > 
-> Happens that most of these console callbacks from s390 doesn't take the
-> proper care with regards to atomic context, like taking spinlocks that
-> might be taken in other function/CPU and hence will cause a lockup
-> situation.
+> Code looks good, and everything still seems to work. I applied this
+> internally for the time being, and if it passes testing, I'll schedule
+> it for the next merge window.
 > 
-> The goal for this patch is to improve the notifiers reliability, acting
-> on 4 console drivers, as detailed below:
-> 
-> (1) con3215: changed a regular spinlock to the trylock alternative.
-> 
-> (2) con3270: also changed a regular spinlock to its trylock counterpart,
-> but here we also have another problem: raw3270_activate_view() takes a
-> different spinlock. So, we worked a helper to validate if this other lock
-> is safe to acquire, and if so, raw3270_activate_view() should be safe.
-> 
-> Notice though that there is a functional change here: it's now possible
-> to continue the notifier code [reaching con3270_wait_write() and
-> con3270_rebuild_update()] without executing raw3270_activate_view().
-> 
-> (3) sclp: a global lock is used heavily in the functions called from
-> the notifier, so we added a check here - if the lock is taken already,
-> we just bail-out, preventing the lockup.
-> 
-> (4) sclp_vt220: same as (3), a lock validation was added to prevent the
-> potential lockup problem.
-> 
-> Besides (1)-(4), we also removed useless void functions, adding the
-> code called from the notifier inside its own body, and changed the
-> priority of such notifiers to execute late, since they are "heavyweight"
-> for the panic environment, so we aim to reduce risks here.
-> Changed return values to NOTIFY_DONE as well, the standard one.
-> 
-> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-> Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: Sven Schnelle <svens@linux.ibm.com>
-> Cc: Vasily Gorbik <gor@linux.ibm.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> ---
-> 
-> As a design choice, the option used here to verify a given spinlock is taken
-> was the function "spin_is_locked()" - but we noticed that it is not often used.
-> An alternative would to take the lock with a spin_trylock() and if it succeeds,
-> just release the spinlock and continue the code. But that seemed weird...
-> 
-> Also, we'd like to ask a good validation of case (2) potential functionality
-> change from the s390 console experts - far from expert here, and in our naive
-> code observation, that seems fine, but that analysis might be missing some
-> corner case.
-> 
-> Thanks in advance!
-> 
->  drivers/s390/char/con3215.c    | 36 +++++++++++++++--------------
->  drivers/s390/char/con3270.c    | 34 +++++++++++++++------------
->  drivers/s390/char/raw3270.c    | 18 +++++++++++++++
->  drivers/s390/char/raw3270.h    |  1 +
->  drivers/s390/char/sclp_con.c   | 28 +++++++++++++----------
->  drivers/s390/char/sclp_vt220.c | 42 +++++++++++++++++++---------------
->  6 files changed, 96 insertions(+), 63 deletions(-)
+> Thanks!
 
-Code looks good, and everything still seems to work. I applied this
-internally for the time being, and if it passes testing, I'll schedule
-it for the next merge window.
+Perfect Heiko, thanks a bunch for your review and tests!
+Let me know if anything breaks heh
+Cheers,
 
-Thanks!
+
+Guilherme
