@@ -1,50 +1,43 @@
-From: patchwork-bot+bluetooth@kernel.org
-Subject: Re: [PATCH net-next v3] net: SO_RCVMARK socket option for SO_MARK with
- recvmsg()
-Date: Sat, 30 Apr 2022 08:00:41 +0000
-Message-ID: <165130564137.32506.12098247313333350008.git-patchwork-notify@kernel.org>
-References: <20220427200259.2564-1-lnx.erin@gmail.com>
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
+ it as necessary
+Date: Sun, 1 May 2022 23:40:39 +0100 (BST)
+Message-ID: <alpine.DEB.2.21.2205012335020.9383@angie.orcam.me.uk>
+References: <20220429135108.2781579-1-schnelle@linux.ibm.com> <20220429135108.2781579-2-schnelle@linux.ibm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651305641;
-        bh=pe08Mdjqla3FNT96mNNuQXP8ILn0+/mHR01kJNYaDic=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kpvXG6gAXQ7u8p7VNWhLHi8OioRjTUEMNeyaytnu64Tlm3WDc+9G65aHyH17I6Diz
-         5jBIXhCOYaE9MWPbblLVP34glVbcEXDFadZeC1m/ozWT0DtLOuk2lY2OLQTqEZxjcv
-         UF1SUB7qrKBQNqJGV7DS+LErHbW5e24ev50IE4aqZ37tG1QD6bYzt2wRvMtP19xyET
-         kb+hm3gSIlqoDwVSbGXCbAfFHb5+Fm+WKfhA6RRKW2aw3Bc5cVLkCO390GaRHqO0JS
-         QYcBYGc+38fsaLliNEJEjp8cr1wYSjcYriu5X5/AHsphXMh14EX8ojqfJUpVrlLxY1
-         S/K+3C67aDB6Q==
-In-Reply-To: <20220427200259.2564-1-lnx.erin@gmail.com>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20220429135108.2781579-2-schnelle@linux.ibm.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Erin MacNeil <lnx.erin@gmail.com>
-Cc: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com, tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com, deller@gmx.de, davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com, arnd@arndb.de, marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com, socketcan@hartkopp.net, mkl@pengutronix.de, robin@protonic.nl, linux@rempel-privat.de, kernel@pengutronix.de, alex.aring@gmail.com, stefan@datenfreihafen.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org, steffen.klassert@secunet.com, herbert@gondor.apana.org.au, jk@codeconstruct.com.au, matt@codeconstruct.com.au, vyasevich@gmail.com, nhorman@tuxdriver.com, marcelo.leitner@gmail.com, edumazet@google.com, lmb@cloudflare.com, ptikhomirov@virtuozzo.com, m@lambda.lt, hmukos@yandex-team.ru, sfr@canb.a
+Content-Transfer-Encoding: 7bit
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>
 
-Hello:
+On Fri, 29 Apr 2022, Niklas Schnelle wrote:
 
-This patch was applied to bluetooth/bluetooth-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+> We introduce a new HAS_IOPORT Kconfig option to indicate support for
+> I/O Port access. In a future patch HAS_IOPORT=n will disable compilation
+> of the I/O accessor functions inb()/outb() and friends on architectures
+> which can not meaningfully support legacy I/O spaces such as s390 or
+> where such support is optional. The "depends on" relations on HAS_IOPORT
+> in drivers as well as ifdefs for HAS_IOPORT specific sections will be
+> added in subsequent patches on a per subsystem basis.
+[...]
+> diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+> index de3b32a507d2..4c55df08d6f1 100644
+> --- a/arch/mips/Kconfig
+> +++ b/arch/mips/Kconfig
+> @@ -47,6 +47,7 @@ config MIPS
+>  	select GENERIC_SMP_IDLE_THREAD
+>  	select GENERIC_TIME_VSYSCALL
+>  	select GUP_GET_PTE_LOW_HIGH if CPU_MIPS32 && PHYS_ADDR_T_64BIT
+> +	select HAS_IOPORT
+>  	select HAVE_ARCH_COMPILER_H
+>  	select HAVE_ARCH_JUMP_LABEL
+>  	select HAVE_ARCH_KGDB if MIPS_FP_SUPPORT
 
-On Wed, 27 Apr 2022 16:02:37 -0400 you wrote:
-> Adding a new socket option, SO_RCVMARK, to indicate that SO_MARK
-> should be included in the ancillary data returned by recvmsg().
-> 
-> Renamed the sock_recv_ts_and_drops() function to sock_recv_cmsgs().
-> 
-> Signed-off-by: Erin MacNeil <lnx.erin@gmail.com>
-> 
-> [...]
+ NAK, not all MIPS systems have the port I/O space, and we have it already 
+handled via the NO_IOPORT_MAP option.  We'll need to have HAS_IOPORT set 
+to !NO_IOPORT_MAP (or vice versa) for the MIPS architecture.
 
-Here is the summary with links:
-  - [net-next,v3] net: SO_RCVMARK socket option for SO_MARK with recvmsg()
-    https://git.kernel.org/bluetooth/bluetooth-next/c/6fd1d51cfa25
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+  Maciej
