@@ -1,83 +1,82 @@
-From: "Michael Kelley (LINUX)" <mikelley-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>
-Subject: RE: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Date: Tue, 3 May 2022 17:44:03 +0000
-Message-ID: <PH0PR21MB30257E4E6E16BB8FFDE8F312D7C09@PH0PR21MB3025.namprd21.prod.outlook.com>
+From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+Date: Tue, 3 May 2022 14:56:27 -0300
+Message-ID: <dccb35f9-8fff-8b53-3b31-fbe55b2781c0@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
  <20220427224924.592546-20-gpiccoli@igalia.com>
  <PH0PR21MB30256260CCF4CAB713BBB11ED7FC9@PH0PR21MB3025.namprd21.prod.outlook.com>
  <0147d038-571b-0802-c210-ccd4d52cd5dd@igalia.com>
+ <PH0PR21MB30257E4E6E16BB8FFDE8F312D7C09@PH0PR21MB3025.namprd21.prod.outlook.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4f7/UQ5vrJT1CcOWidK1fYhaFM8aZiWH/zdIuOdIqFI=;
- b=ibLxKWCEZr87+e1ghS/3cQWdAu21T6pLKpXb8f8XpZMMGm6EnkQk6xvpbhjPJde4vXJnb/vlh+izkRcTyaQ3oc0/MfDh6ustPJ68hRUYdoknL67CjcRfYkt2JoVm3CTCbqOVt2GOpFlK+kEynFerKUIBO0QTVxV0uZ6if6XeVIo=
-In-Reply-To: <0147d038-571b-0802-c210-ccd4d52cd5dd-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=V5OlIrQZACaQuAvW/eyS6B/1Zwik+ew1I16AuySJnIg=; b=gjAznZuoR4/m9kKzzhqzuGrpkT
+        xtMc6cJN1cBQNuGvg6XyrPFTI1ixzsXC2Qdeh+HpywC/rv8GnlBjcukr7ohfRrQ9c8Vv3g1C+degf
+        BKLK1MQn4ihq1pQ2tLJ4K6bqakBNB70xc08nkdXZEPCNZh6tlfswNgMdLLmr3btmvO+ASGsTB1McO
+        bjtFx1IEqa+FJgHwAOYextuGE9H3QAozC9Ow4n5OqOMhRYX1e/PE6FhaxFfCh6NihoHwyZzrtpHli
+        GlpKhk1VLnB8Ef855kd7QLHnrR7/smJu3dr6Yo1GdqpDjEKpnWDlt7/NfiaCRZ690xo8EgxQrZVRx
+        GY9vS48 
 Content-Language: en-US
+In-Reply-To: <PH0PR21MB30257E4E6E16BB8FFDE8F312D7C09@PH0PR21MB3025.namprd21.prod.outlook.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-To: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>, "akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "pmladek-IBi9RG/b67k@public.gmane.org" <pmladek-IBi9RG/b67k@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <li>
+Content-Type: text/plain; charset="us-ascii"
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "bhe@redhat.com" <bhe@redhat.com>, "pmladek@suse.com" <pmladek@suse.com>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "linux-tegra@vger.kernel.org" <li>
 
-RnJvbTogR3VpbGhlcm1lIEcuIFBpY2NvbGkgPGdwaWNjb2xpQGlnYWxpYS5jb20+IFNlbnQ6IEZy
-aWRheSwgQXByaWwgMjksIDIwMjIgMTE6MDQgQU0NCj4gDQo+IE9uIDI5LzA0LzIwMjIgMTQ6MzAs
-IE1pY2hhZWwgS2VsbGV5IChMSU5VWCkgd3JvdGU6DQo+ID4gRnJvbTogR3VpbGhlcm1lIEcuIFBp
-Y2NvbGkgPGdwaWNjb2xpQGlnYWxpYS5jb20+IFNlbnQ6IFdlZG5lc2RheSwgQXByaWwgMjcsIDIw
-MjINCj4gMzo0OSBQTQ0KPiA+PiBbLi4uXQ0KPiA+Pg0KPiA+PiBAQCAtMjg0Myw3ICsyODQzLDcg
-QEAgc3RhdGljIHZvaWQgX19leGl0IHZtYnVzX2V4aXQodm9pZCkNCj4gPj4gIAlpZiAobXNfaHlw
-ZXJ2Lm1pc2NfZmVhdHVyZXMgJiBIVl9GRUFUVVJFX0dVRVNUX0NSQVNIX01TUl9BVkFJTEFCTEUp
-IHsNCj4gPj4gIAkJa21zZ19kdW1wX3VucmVnaXN0ZXIoJmh2X2ttc2dfZHVtcGVyKTsNCj4gPj4g
-IAkJdW5yZWdpc3Rlcl9kaWVfbm90aWZpZXIoJmh5cGVydl9kaWVfcmVwb3J0X2Jsb2NrKTsNCj4g
-Pj4gLQkJYXRvbWljX25vdGlmaWVyX2NoYWluX3VucmVnaXN0ZXIoJnBhbmljX25vdGlmaWVyX2xp
-c3QsDQo+ID4+ICsJCWF0b21pY19ub3RpZmllcl9jaGFpbl91bnJlZ2lzdGVyKCZwYW5pY19oeXBl
-cnZpc29yX2xpc3QsDQo+ID4+ICAJCQkJCQkmaHlwZXJ2X3BhbmljX3JlcG9ydF9ibG9jayk7DQo+
-ID4+ICAJfQ0KPiA+Pg0KPiA+DQo+ID4gVXNpbmcgdGhlIGh5cGVydmlzb3JfbGlzdCBoZXJlIHBy
-b2R1Y2VzIGEgYml0IG9mIGEgbWlzbWF0Y2guICBJbiBtYW55IGNhc2VzDQo+ID4gdGhpcyBub3Rp
-ZmllciB3aWxsIGRvIG5vdGhpbmcsIGFuZCB3aWxsIGRlZmVyIHRvIHRoZSBrbXNnX2R1bXAoKSBt
-ZWNoYW5pc20NCj4gPiB0byBub3RpZnkgdGhlIGh5cGVydmlzb3IgYWJvdXQgdGhlIHBhbmljLiAg
-IFJ1bm5pbmcgdGhlIGttc2dfZHVtcCgpDQo+ID4gbWVjaGFuaXNtIGlzIGxpbmtlZCB0byB0aGUg
-aW5mb19saXN0LCBzbyBJJ20gdGhpbmtpbmcgdGhlIEh5cGVyLVYgcGFuaWMgcmVwb3J0DQo+ID4g
-bm90aWZpZXIgc2hvdWxkIGJlIG9uIHRoZSBpbmZvX2xpc3QgYXMgd2VsbC4gIFRoYXQgd2F5IHRo
-ZSByZXBvcnRpbmcgYmVoYXZpb3INCj4gPiBpcyB0cmlnZ2VyZWQgYXQgdGhlIHNhbWUgcG9pbnQg
-aW4gdGhlIHBhbmljIHBhdGggcmVnYXJkbGVzcyBvZiB3aGljaA0KPiA+IHJlcG9ydGluZyBtZWNo
-YW5pc20gaXMgdXNlZC4NCj4gPg0KPiANCj4gSGkgTWljaGFlbCwgdGhhbmtzIGZvciB5b3VyIGZl
-ZWRiYWNrISBJIGFncmVlIHRoYXQgeW91ciBpZGVhIGNvdWxkIHdvcmssDQo+IGJ1dC4uLnRoZXJl
-IGlzIG9uZSBkb3duc2lkZTogaW1hZ2luZSB0aGUga21zZ19kdW1wKCkgYXBwcm9hY2ggaXMgbm90
-IHNldA0KPiBpbiBzb21lIEh5cGVyLVYgZ3Vlc3QsIHRoZW4gd2Ugd291bGQgcmVseSBpbiB0aGUg
-cmVndWxhciBub3RpZmljYXRpb24NCj4gbWVjaGFuaXNtIFtodl9kaWVfcGFuaWNfbm90aWZ5X2Ny
-YXNoKCldLCByaWdodD8NCj4gQnV0Li4ueW91IHdhbnQgdGhlbiB0byBydW4gdGhpcyBub3RpZmll
-ciBpbiB0aGUgaW5mb3JtYXRpb25hbCBsaXN0LA0KPiB3aGljaC4uLndvbid0IGV4ZWN1dGUgKmJ5
-IGRlZmF1bHQqIGJlZm9yZSBrZHVtcCBpZiBubyBrbXNnX2R1bXAoKSBpcw0KPiBzZXQuIFNvLCB0
-aGlzIGxvZ2ljIGlzIGNvbnZvbHV0ZWQgd2hlbiB5b3UgbWl4IGl0IHdpdGggdGhlIGRlZmF1bHQg
-bGV2ZWwNCj4gY29uY2VwdCArIGtkdW1wLg0KDQpZZXMsIHlvdSBhcmUgcmlnaHQuICBCdXQgdG8g
-bWUgdGhhdCBzcGVha3MgYXMgbXVjaCB0byB0aGUgbGlua2FnZQ0KYmV0d2VlbiB0aGUgaW5mb3Jt
-YXRpb25hbCBsaXN0IGFuZCBrbXNnX2R1bXAoKSBiZWluZyB0aGUgY29yZQ0KcHJvYmxlbS4gIEJ1
-dCBhcyBJIGRlc2NyaWJlZCBpbiBteSByZXBseSB0byBQYXRjaCAyNCwgSSBjYW4gbGl2ZSB3aXRo
-DQp0aGUgbGlua2FnZSBhcy1pcy4NCg0KRldJVywgZ3Vlc3RzIG9uIG5ld2VyIHZlcnNpb25zIG9m
-IEh5cGVyLVYgd2lsbCBhbHdheXMgcmVnaXN0ZXIgYQ0Ka21zZyBkdW1wZXIuICBUaGUgZmxhZ3Mg
-dGhhdCBhcmUgdGVzdGVkIHRvIGRlY2lkZSB3aGV0aGVyIHRvDQpyZWdpc3RlciBwcm92aWRlIGNv
-bXBhdGliaWxpdHkgd2l0aCBvbGRlciB2ZXJzaW9ucyBvZiBIeXBlci1WIHRoYXQgDQpkb27igJl0
-IHN1cHBvcnQgdGhlIDRLIGJ5dGVzIG9mIG5vdGlmaWNhdGlvbiBpbmZvLg0KDQo+IA0KPiBNYXkg
-SSBzdWdnZXN0IHNvbWV0aGluZz8gSWYgcG9zc2libGUsIHRha2UgYSBydW4gd2l0aCB0aGlzIHBh
-dGNoIHNldCArDQo+IERFQlVHX05PVElGSUVSPXksIGluICpib3RoKiBjYXNlcyAod2l0aCBhbmQg
-d2l0aG91dCB0aGUga21zZ19kdW1wKCkNCj4gc2V0KS4gSSBkaWQgdGhhdCBhbmQgdGhleSBydW4g
-YWxtb3N0IGF0IHRoZSBzYW1lIHRpbWUuLi5JJ3ZlIGNoZWNrZWQgdGhlDQo+IG5vdGlmaWVycyBj
-YWxsZWQsIGl0J3MgbGlrZSBhbG1vc3Qgbm90aGluZyBydW5zIGluLWJldHdlZW4uDQo+IA0KPiBJ
-IGZlZWwgdGhlIHBhbmljIG5vdGlmaWNhdGlvbiBtZWNoYW5pc20gZG9lcyByZWFsbHkgZml0IHdp
-dGggYQ0KPiBoeXBlcnZpc29yIGxpc3QsIGl0J3MgYSBnb29kIG1hdGNoIHdpdGggdGhlIG5hdHVy
-ZSBvZiB0aGUgbGlzdCwgd2hpY2gNCj4gYWltcyBhdCBpbmZvcm1pbmcgdGhlIHBhbmljIG5vdGlm
-aWNhdGlvbiB0byB0aGUgaHlwZXJ2aXNvci9GVy4NCj4gT2YgY291cnNlIHdlIGNhbiBtb2RpZnkg
-aXQgaWYgeW91IHByZWZlci4uLmJ1dCBwbGVhc2UgdGFrZSBpbnRvIGFjY291bnQNCj4gdGhlIGtk
-dW1wIGNhc2UgYW5kIGhvdyBpdCBjb21wbGljYXRlcyB0aGUgbG9naWMuDQoNCkkgYWdyZWUgdGhh
-dCB0aGUgcnVudGltZSBlZmZlY3Qgb2Ygb25lIGxpc3QgdnMuIHRoZSBvdGhlciBpcyBuaWwuICBU
-aGUNCmNvZGUgd29ya3MgYW5kIGNhbiBzdGF5IGFzIHlvdSB3cml0dGVuIGl0Lg0KDQpJIHdhcyB0
-cnlpbmcgdG8gYWxpZ24gZnJvbSBhIGNvbmNlcHR1YWwgc3RhbmRwb2ludC4gIEl0IHdhcyBhIGJp
-dA0KdW5leHBlY3RlZCB0aGF0IG9uZSBwYXRoIHdvdWxkIGJlIG9uIHRoZSBoeXBlcnZpc29yIGxp
-c3QsIGFuZCB0aGUNCm90aGVyIHBhdGggZWZmZWN0aXZlbHkgb24gdGhlIGluZm9ybWF0aW9uYWwg
-bGlzdC4gIFdoZW4gSSBzZWUNCmNvbmNlcHR1YWwgbWlzbWF0Y2hlcyBsaWtlIHRoYXQsIEkgdGVu
-ZCB0byB3YW50IHRvIHVuZGVyc3RhbmQgd2h5LA0KYW5kIGlmIHRoZXJlIGlzIHNvbWV0aGluZyBt
-b3JlIGZ1bmRhbWVudGFsIHRoYXQgaXMgb3V0LW9mLXdoYWNrLg0KDQoNCj4gDQo+IExldCBtZSBr
-bm93IHlvdXIgY29uc2lkZXJhdGlvbnMsIGluIGNhc2UgeW91IGNhbiBleHBlcmltZW50IHdpdGgg
-dGhlDQo+IHBhdGNoIHNldCBhcy1pcy4NCj4gQ2hlZXJzLA0KPiANCj4gDQo+IEd1aWxoZXJtZQ0K
+On 03/05/2022 14:44, Michael Kelley (LINUX) wrote:
+> [...]
+>>
+>> Hi Michael, thanks for your feedback! I agree that your idea could work,
+>> but...there is one downside: imagine the kmsg_dump() approach is not set
+>> in some Hyper-V guest, then we would rely in the regular notification
+>> mechanism [hv_die_panic_notify_crash()], right?
+>> But...you want then to run this notifier in the informational list,
+>> which...won't execute *by default* before kdump if no kmsg_dump() is
+>> set. So, this logic is convoluted when you mix it with the default level
+>> concept + kdump.
+> 
+> Yes, you are right.  But to me that speaks as much to the linkage
+> between the informational list and kmsg_dump() being the core
+> problem.  But as I described in my reply to Patch 24, I can live with
+> the linkage as-is.
+
+Thanks for the feedback Michael!
+
+> [...] 
+>> I feel the panic notification mechanism does really fit with a
+>> hypervisor list, it's a good match with the nature of the list, which
+>> aims at informing the panic notification to the hypervisor/FW.
+>> Of course we can modify it if you prefer...but please take into account
+>> the kdump case and how it complicates the logic.
+> 
+> I agree that the runtime effect of one list vs. the other is nil.  The
+> code works and can stay as you written it.
+> 
+> I was trying to align from a conceptual standpoint.  It was a bit
+> unexpected that one path would be on the hypervisor list, and the
+> other path effectively on the informational list.  When I see
+> conceptual mismatches like that, I tend to want to understand why,
+> and if there is something more fundamental that is out-of-whack.
+> 
+
+Totally agree with you here, I am like that as well - try to really
+understand the details, this is very important specially in this patch
+set, since it's a refactor and affects every user of the notifiers
+infrastructure.
+
+Again, just to double-say it: feel free to suggest any change for the
+Hyper-V portion (might as well for any patch in the series, indeed) -
+you and the other Hyper-V maintainers own this code and I'd be glad to
+align with your needs, you are honor citizens in the panic notifiers
+area, being one the most heavy users for that =)
+
+Cheers,
+
+
+Guilherme
