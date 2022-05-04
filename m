@@ -1,62 +1,43 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Arnd Bergmann <arnd@arndb.de>
 Subject: Re: [PATCH 1/1] termbits: Convert octal defines to hex
-Date: Wed, 04 May 2022 21:03:09 +1000
-Message-ID: <87bkwdv9ua.fsf@mpe.ellerman.id.au>
+Date: Wed, 4 May 2022 13:59:55 +0200
+Message-ID: <CAK8P3a33b4KvsGayDV7fXte0+1FzCJp_J60d8LuZO3P+i1NUEg@mail.gmail.com>
 References: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
+ <CAK8P3a0hy8Ras7pwF9rJADtCAfeV49K7GWkftJnzqeGiQ6j-zA@mail.gmail.com> <ca39c741-8d15-33c0-7bd6-635778cc436@linux.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-mips-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1651662194;
-        bh=LCpTjFnDEwsYkNeVhJ/7ZfUx41S6pzSAGCwTzE+zXeE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=oSdsWchJ7c6LaWBbTkrN4HY/gAMdpQJZcaKFI7EDhV0JeJSI6Ilrh5JXSrxrO+uBi
-         fz7astncBphLXFWCOHhi/UuBJgXcyFzZqYPiGHlIi6X45BigzITOjmK1rMnK6xaTol
-         wK+Fl001hFDLFxA3kebNvk3NpO9blGLOH5shsbSldk7k/YPS8CY+2HU/0urlMYnQPi
-         3f3A20Ra29iiAIuItwlZHJn/lAKzlgp6ft6XtuAwcXeHVWlSH3tlipFUOHXN4lOi74
-         kINmxaDpdRmWpd8ejwQmQIqRTqnHtMk+0OO2DYANcnQC+pIYh1SpDofrsXa2SehLI+
-         bhi5wSivAPsvA==
-In-Reply-To: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <ca39c741-8d15-33c0-7bd6-635778cc436@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="utf-8"
-To: Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Greg KH <gregkh@linuxfoundation.org>, linux-serial <linux-serial@vger.kernel.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-api@vger.kernel.org, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-mips@vger.kernel.org, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Greg KH <gregkh@linuxfoundation.org>, linux-serial <linux-serial@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>, Linux API <linux-api@vger.kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Parisc List <linux-parisc@vger.kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-arch <linux-arch@vger.kernel.>
 
-Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com> writes:
-> Many archs have termbits.h as octal numbers. It makes hard for humans
-> to parse the magnitude of large numbers correctly and to compare with
-> hex ones of the same define.
+On Wed, May 4, 2022 at 10:33 AM Ilpo Järvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+> On Wed, 4 May 2022, Arnd Bergmann wrote:
+> > On Wed, May 4, 2022 at 9:20 AM Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> wrote:
+> > >
+> > After applying the patch locally, I still see a bunch of whitespace
+> > differences in the
+> > changed lines if I run
+> >
+> > vimdiff arch/*/include/uapi/asm/termbits.h include/uapi/asm-generic/termbits.h
+> >
+> > I think this mostly because you left the sparc version alone (it already
+> > uses hex constants), but it may be nice to edit this a little more to
+> > make the actual differences stick out more.
 >
-> Convert octal values to hex.
->
-> First step is an automated conversion with:
->
-> for i in $(git ls-files | grep 'termbits\.h'); do
-> 	awk --non-decimal-data '/^#define\s+[A-Z][A-Z0-9]*\s+0[0-9]/ {
-> 		l=3Dint(((length($3) - 1) * 3 + 3) / 4);
-> 		repl =3D sprintf("0x%0" l "x", $3);
-> 		print gensub(/[^[:blank:]]+/, repl, 3);
-> 		next} {print}' $i > $i~;
-> 	mv $i~ $i;
-> done
->
-> On top of that, some manual processing on alignment and number of zeros.
-> In addition, small tweaks to formatting of a few comments on the same=20
-> lines.
->
-> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->
-> I prefer this to go in though Greg's tty tree.
->
->  arch/alpha/include/uapi/asm/termbits.h   | 202 ++++++++++-----------
->  arch/mips/include/uapi/asm/termbits.h    | 222 +++++++++++------------
->  arch/parisc/include/uapi/asm/termbits.h  | 220 +++++++++++-----------
->  arch/powerpc/include/uapi/asm/termbits.h | 202 ++++++++++-----------
+> I took a look on further harmonizing, however, it turned out to be not
+> that simple. This is basically the pipeline I use to further cleanup the
+> differences and remove comments if you want to play yourself, just remove
+> stages from the tail to get the intermediate datas (gawk is required for
+> --non-decimal-data):
 
-I ran some horrible awk/sed/python mess over the before and after and
-they seem to be numerically identical, so LGTM.
+I've played around with it some more to adjust the number of leading
+zeroes and the type of whitespace. This is what I ended up with on top
+of your patch: https://pastebin.com/raw/pkDPaKN1
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+Feel free to fold it into yours.
 
-cheers
+        Arnd
