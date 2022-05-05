@@ -1,37 +1,65 @@
-From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH 08/30] powerpc/setup: Refactor/untangle panic notifiers
-Date: Thu, 5 May 2022 16:28:55 -0300
-Message-ID: <95fd6c2b-8a80-7161-953c-0660c9cc046f@igalia.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-9-gpiccoli@igalia.com>
- <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
+ it as necessary
+Date: Thu, 5 May 2022 14:53:42 -0500
+Message-ID: <20220505195342.GA509942@bhelgaas>
+References: <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-leds-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=26sf2Bz2SDgQmdCQw3Y4ZTnImgJ2MyGCiyio6ZL3q3Y=; b=OX97Z/D1CJSI6hriVTxC2kAnOw
-        1KITEk45cAtwCpY9rkRCDUh3KDg2O2YzMgXcmuPrqXaafenIhWWC1+LyxgtF/580Mzq9ZdOBGqQII
-        szuZz7L+gnBGPa0DhyrfUrxKFOKAOdS+/7tX8dF3YT6RRRi5n+Pvq9GzAiarMSPSGIbrEUOikWcQ4
-        luIwkR5QmpMMR3ULcRXOtddO+8na/Jrhq18XXAepQbZ7X+3+2omWFwgyxPBez0WA9LEkMMiNJ8gOK
-        /vnX5br4i70krbeAId+z+Wo/kxx7sPLDtH+XBAxzqCS0vo9z0RVsXdy6BbySPaaEQO2JnHI7/cIaw
-        LlqXpVF 
-Content-Language: en-US
-In-Reply-To: <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651780425;
+        bh=fYxm3dr57owbquhz9mi2JlUgAayGWIYeuWXgYwjDgu0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=f2fc5oHeuzoxyJfE63Gjq/EPrO6txRg9hsHH/1s9bcAA7MB9R89IPW2XirzVZc74o
+         JfbdqHGn2i9se2injqakFs9sJs55qbPwsXCW7U2z6292nsC5wpjZYOXUad+0rDxqWU
+         dBktPS+QUeX5KA0qTdRvD/Jeg8g/VinXCSA1zNxox/sHlz0Qu+HDVGZRGj50as/vwO
+         ee4WTtCWIAPTOcKicttAnfNz1to9P/EIAiFFNcHwyePB8PVEBnOd6hroIfxl+9c3Y0
+         w8Ysllpp8ZwOIQgubSRRm20/01Cu9xOLyCR6eQMh+KyVf58T4+rzmnxImHp1ouw8wP
+         UdmeA6sO/pypA==
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a3fmPExr70+fVb564hZdGAuPtYa-QxgMMe5KLpnY_sTrQ@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Hari Bathini <hbathini@linux.ibm.com>, akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de
+Content-Transfer-Encoding: 7bit
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Paul
 
-On 05/05/2022 15:55, Hari Bathini wrote:
-> [...] 
+On Thu, May 05, 2022 at 07:39:42PM +0200, Arnd Bergmann wrote:
+> On Thu, May 5, 2022 at 6:10 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Wed, May 04, 2022 at 11:31:28PM +0200, Arnd Bergmann wrote:
+> > >
+> > > The main goal is to avoid c), which is what happens on s390, but
+> > > can also happen elsewhere. Catching b) would be nice as well,
+> > > but is much harder to do from generic code as you'd need an
+> > > architecture specific inline asm statement to insert a ex_table
+> > > fixup, or a runtime conditional on each access.
+> >
+> > Or s390 could implement its own inb().
+> >
+> > I'm hearing that generic powerpc kernels have to run both on machines
+> > that have I/O port space and those that don't.  That makes me think
+> > s390 could do something similar.
 > 
-> The change looks good. I have tested it on an LPAR (ppc64).
+> No, this is actually the current situation, and it makes absolutely no
+> sense. s390 has no way of implementing inb()/outb() because there
+> are no instructions for it and it cannot tunnel them through a virtual
+> address mapping like on most of the other architectures. (it has special
+> instructions for accessing memory space, which is not the same as
+> a pointer dereference here).
 > 
-> Reviewed-by: Hari Bathini <hbathini@linux.ibm.com>
+> The existing implementation gets flagged as a NULL pointer dereference
+> by a compiler warning because it effectively is.
 
-Thanks a bunch Hari, much appreciated!
+I think s390 currently uses the inb() in asm-generic/io.h, i.e.,
+"__raw_readb(PCI_IOBASE + addr)".  I understand that's a NULL pointer
+dereference because the default PCI_IOBASE is 0.
+
+I mooted a s390 inb() implementation like "return ~0" because that's
+what happens on most arches when there's no device to respond to the
+inb().
+
+The HAS_IOPORT dependencies are fairly ugly IMHO, and they clutter
+drivers that use I/O ports in some cases but not others.  But maybe
+it's the most practical way.
+
+Bjorn
