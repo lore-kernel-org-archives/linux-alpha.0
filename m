@@ -1,61 +1,73 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 1/1] termbits: Convert octal defines to hex
-Date: Thu, 5 May 2022 12:46:25 +0200
-Message-ID: <CAK8P3a06wdDC-c6V9kO6q3j_TB7HE7f1tdTUvC5yi7ekaHw1YQ@mail.gmail.com>
-References: <2c8c96f-a12f-aadc-18ac-34c1d371929c@linux.intel.com>
- <CAK8P3a0hy8Ras7pwF9rJADtCAfeV49K7GWkftJnzqeGiQ6j-zA@mail.gmail.com>
- <ca39c741-8d15-33c0-7bd6-635778cc436@linux.intel.com> <CAK8P3a33b4KvsGayDV7fXte0+1FzCJp_J60d8LuZO3P+i1NUEg@mail.gmail.com>
- <386eed36-94f7-8acb-926f-99c74d55915f@linux.intel.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [RFC v2 01/39] Kconfig: introduce HAS_IOPORT option and select
+ it as necessary
+Date: Thu, 5 May 2022 11:10:28 -0500
+Message-ID: <20220505161028.GA492600@bhelgaas>
+References: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-In-Reply-To: <386eed36-94f7-8acb-926f-99c74d55915f@linux.intel.com>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651767031;
+        bh=y1bm/ePw6qN7M+uAMLXPbjzr3hDC7iN+2T5U5hZp75c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=V+TiGeXpnpx8QAPISZ/tFZ1vgqt07jnZ/e8UGsZFjYbSOIbxjOaFyb/UjHBhqn5hx
+         Z64n0P5wnIuaGgxiRpF7HUD9ziSD/Vy04koyZ+3OiNayjnxjzS0fZIDvEf4IlnjJDh
+         ZFqZNchd+Rmh0D+frE/gcDMj07LtCQDi4bliOoYzYtwBViRsBNVzjXBMPmC2/Yp3+O
+         avJDoEKTBRLhRLGuv5dd4ZPPntedsmPSHGr9oDetkDU8rgxRb4BichpG/ijCid5diK
+         e/q4W6AYEDDk6fNQ6Z+JXpgOmkNdUU12Kp4sKoGZvuLv591DrEpNAjn9EHl9SCvfts
+         lHbL5gffrnaQA==
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0sJgMSpZB_Butx2gO0hapYZy-Dm_QH-hG5rOaq_ZgsXg@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Greg KH <gregkh@linuxfoundation.org>, linux-serial <linux-serial@vger.kernel.org>, Jiri Slaby <jirislaby@kernel.org>, Linux API <linux-api@vger.kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, alpha <linux-alpha@vger.kernel.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Parisc List <linux-parisc@vger.kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-arch <linux-arch@vger.kernel.>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arch <linux-arch@vger.kernel.org>, linux-pci <linux-pci@vger.kernel.org>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Paul
 
-On Thu, May 5, 2022 at 10:56 AM Ilpo Järvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
-> On Wed, 4 May 2022, Arnd Bergmann wrote:
-> > On Wed, May 4, 2022 at 10:33 AM Ilpo Järvinen
-> > <ilpo.jarvinen@linux.intel.com> wrote:
-> > > On Wed, 4 May 2022, Arnd Bergmann wrote:
-> > > > On Wed, May 4, 2022 at 9:20 AM Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> wrote:
-> > > > >
-> > > > After applying the patch locally, I still see a bunch of whitespace
-> > > > differences in the
-> > > > changed lines if I run
-> > > >
-> > > > vimdiff arch/*/include/uapi/asm/termbits.h include/uapi/asm-generic/termbits.h
-> > > >
-> > > > I think this mostly because you left the sparc version alone (it already
-> > > > uses hex constants), but it may be nice to edit this a little more to
-> > > > make the actual differences stick out more.
-> > >
-> > > I took a look on further harmonizing, however, it turned out to be not
-> > > that simple. This is basically the pipeline I use to further cleanup the
-> > > differences and remove comments if you want to play yourself, just remove
-> > > stages from the tail to get the intermediate datas (gawk is required for
-> > > --non-decimal-data):
+On Wed, May 04, 2022 at 11:31:28PM +0200, Arnd Bergmann wrote:
+> On Wed, May 4, 2022 at 11:08 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Fri, Apr 29, 2022 at 03:49:59PM +0200, Niklas Schnelle wrote:
+> > > We introduce a new HAS_IOPORT Kconfig option to indicate support for
+> > > I/O Port access. In a future patch HAS_IOPORT=n will disable compilation
+> > > of the I/O accessor functions inb()/outb() and friends on architectures
+> > > which can not meaningfully support legacy I/O spaces such as s390 or
+> > > where such support is optional.
 > >
-> > I've played around with it some more to adjust the number of leading
-> > zeroes and the type of whitespace. This is what I ended up with on top
-> > of your patch: https://pastebin.com/raw/pkDPaKN1
+> > So you plan to drop inb()/outb() on architectures where I/O port space
+> > is optional?  So even platforms that have I/O port space may not be
+> > able to use it?
 > >
-> > Feel free to fold it into yours.
->
-> Ok thanks. With that it seems to go a bit beyond octal to hex conversion
-> so I'll make a series out of it. The series will also introduce
-> include/uapi/asm-generic/termbits-common.h for the most obvious
-> intersection.
+> > This feels like a lot of work where the main benefit is to keep
+> > Kconfig from offering drivers that aren't of interest on s390.
+> >
+> > Granted, there may be issues where inb()/outb() does the wrong thing
+> > such as dereferencing null pointers when I/O port space isn't
+> > implemented.  I think that's a defect in inb()/outb() and could be
+> > fixed there.
+> 
+> The current implementation in asm-generic/io.h implements inb()/outb()
+> using readb()/writeb() with a fixed architecture specific offset.
+> 
+> There are three possible things that can happen here:
+> 
+> a) there is a host bridge driver that maps its I/O ports to this window,
+>     and everything works
+> b) the address range is reserved and accessible but no host bridge
+>    driver has mapped its registers there, so an access causes a
+>    page fault
+> c) the architecture does not define an offset, and accessing low I/O
+>     ports ends up as a NULL pointer dereference
+> 
+> The main goal is to avoid c), which is what happens on s390, but
+> can also happen elsewhere. Catching b) would be nice as well,
+> but is much harder to do from generic code as you'd need an
+> architecture specific inline asm statement to insert a ex_table
+> fixup, or a runtime conditional on each access.
 
-Ok, sounds good. Here's a retroactive
+Or s390 could implement its own inb().
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+I'm hearing that generic powerpc kernels have to run both on machines
+that have I/O port space and those that don't.  That makes me think
+s390 could do something similar.
 
-for my changes so you can put them into a separate patch. I assume
-you will change it some more in the process, so maybe retain
-your ownership and just mark the bits a 'Co-developed-by: Arnd...'.
-
-        Arnd
+Bjorn
