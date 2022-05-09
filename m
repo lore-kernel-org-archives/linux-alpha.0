@@ -1,13 +1,10 @@
 From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 09/30] coresight: cpu-debug: Replace mutex with
- mutex_trylock on panic notifier
-Date: Mon, 9 May 2022 13:26:10 -0300
-Message-ID: <e4c71307-d59c-fec8-1fef-f67b86d5fb07@igalia.com>
+Subject: Re: [PATCH 24/30] panic: Refactor the panic path
+Date: Mon, 9 May 2022 13:39:21 -0300
+Message-ID: <92e03ebf-6a64-69dc-bf16-9552b9fedad8@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-10-gpiccoli@igalia.com>
- <3cafe4fd-8a0b-2633-44a3-2995abd6c38c@arm.com>
- <65f24bc5-2211-0139-ee12-b2608e81ceb1@igalia.com>
- <d9ec6f31-6125-0723-b7d7-5898abeb3289@arm.com>
+ <20220427224924.592546-25-gpiccoli@igalia.com>
+ <TYAPR01MB6507D01F5694BC33628BB7DB95C69@TYAPR01MB6507.jpnprd01.prod.outlook.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
@@ -17,25 +14,159 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=9i+OK+B4WtRAOc8WSMPsYke6rlZ4xBWZoesmtMxOiqA=; b=GajbuIp7qtfA1gL+RPS2SXW7q0
-        Vraxp03Er1/ulBPczR4jeK2gXNYw1QHwX+65lsLXsgoQAcIdxZGe/+WWRC335caKoXycxD0Z3x4PP
-        PCChOAEvQHFR3h4UawQfb9N6Z8knUowIzg0/dNyhzWus6YExYHQOg3lgx3zNijxQY/5UEVyTsU5Ee
-        oRSolpioMk06T89IZHAQg91xzRBm4fNuENY64OTsnaWwgm+PjfUORhXl2iNP0+mT/pErDsk4F7R+0
-        xGrr2cJy2Cu50umiX4PUdpi4rNkK5XT6AYQf77hlh8AUJqbCwwyU3G8+vIO6rDA82b9ywoWo/D9EX
-        Ws9UFdf 
+        bh=48dgNwNPuCnyD3VVOBf09xe2NjnTaXdW0ldox8dhrAY=; b=eLWL69Jp3Hs5nKIC07c/DVmIhZ
+        tbuXXOS52wa7kstrEszNfv7tW4JmReP+jwvf/WSB2LnPtAjsR79TSRqPXDYlR/UhgTYs3JxE63TxY
+        WFAF2HLKU7kQDGOjOij/SccvoodNoUy/77Q7Rw1bHNyMkUGePOlK3tPiGlMKv0HFeJaDvBKfB5C4T
+        7/g7A8xShBgXvVATUWH+9aEVvFCEwhRR4Tyt7Zyibz7aNPTHMnncwalkA+46VUbkJ44ERvwAtMmTs
+        hWWtwgYVptx9ug9t6aPZQ1zrU+TA/lel56oNayZ3d7me/ZMI8w2lxg28JbHkciwHu/jkRujv3gimI
+        sEcDvBW 
 Content-Language: en-US
-In-Reply-To: <d9ec6f31-6125-0723-b7d7-5898abeb3289-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <TYAPR01MB6507D01F5694BC33628BB7DB95C69-0qPFe2CvyVTfsDfOwIA1BXcolHNk5qUtvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Suzuki K Poulose <suzuki.poulose-5wv7dgnIgG8@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, pmladek-IBi9RG/b67k@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, coresight-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kernel-dev-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org, kernel-WeLdAqEWwDvk1uMJSBkQmQ@public.gmane.org, halves-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org, fabiomirmar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, alejandro.j.jimenez@ora
+To: "d.hatayama-LMvhtfratI1BDgjK7y7TUQ@public.gmane.org" <d.hatayama-LMvhtfratI1BDgjK7y7TUQ@public.gmane.org>, "akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "pmladek-IBi9RG/b67k@public.gmane.org" <pmladek-IBi9RG/b67k@public.gmane.org>, "kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mikelley-0li6OtcxBFHby3iVrkZq2A@public.gmane.org" <mikelley-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Hari Bathini <hbathini-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, lin
 
-On 09/05/2022 13:14, Suzuki K Poulose wrote:
-> [...]> 
-> I have queued this to coresight/next.
+Hey Hatayma, thanks for your great analysis and no need for apologies!
+
+I'll comment/respond properly inline below, just noticing here that I've
+CCed Mark and Marc (from the ARM64 perspective), Michael (Hyper-V
+perspective) and Hari (PowerPC perspective), besides the usual suspects
+as Petr, Baoquan, etc.
+
+On 09/05/2022 12:16, d.hatayama-LMvhtfratI1BDgjK7y7TUQ@public.gmane.org wrote:
+> Sorry for the delayed response. Unfortunately, I had 10 days holidays
+> until yesterday...
+> [...] 
+>> +                       We currently have 4 lists of panic notifiers; based
+>> +                       on the functionality and risk (for panic success) the
+>> +                       callbacks are added in a given list. The lists are:
+>> +                       - hypervisor/FW notification list (low risk);
+>> +                       - informational list (low/medium risk);
+>> +                       - pre_reboot list (higher risk);
+>> +                       - post_reboot list (only run late in panic and after
+>> +                       kdump, not configurable for now).
+>> +                       This parameter defines the ordering of the first 3
+>> +                       lists with regards to kdump; the levels determine
+>> +                       which set of notifiers execute before kdump. The
+>> +                       accepted levels are:
+>> +                       0: kdump is the first thing to run, NO list is
+>> +                       executed before kdump.
+>> +                       1: only the hypervisor list is executed before kdump.
+>> +                       2 (default level): the hypervisor list and (*if*
 > 
-> Thanks
-> Suzuki
+> Hmmm, why are you trying to change default setting?
+> 
+> Based on the current design of kdump, it's natural to put what the
+> handlers for these level 1 and level 2 handlers do in
+> machine_crash_shutdown(), as these are necessary by default, right?
+> 
+> Or have you already tried that and figured out it's difficult in some
+> reason and reached the current design? If so, why is that difficult?
+> Could you point to if there is already such discussion online?
+> 
+> kdump is designed to perform as little things as possible before
+> transferring the execution to the 2nd kernel in order to increase
+> reliability. Just detour to panic() increases risks of kdump failure
+> in the sense of increasing the executed codes in the abnormal
+> situation, which is very the note in the explanation of
+> crash_kexec_post_notifiers.
+> 
+> Also, the current implementation of crash_kexec_post_notifiers uses
+> the panic notifier, but this is not from the technical
+> reason. Ideally, it should have been implemented in the context of
+> crash_kexec() independently of panic().
+> 
+> That is, it looks to me that, in addition to changing design of panic
+> notifier, you are trying to integrate shutdown code of the crash kexec
+> and the panic paths. If so, this is a big design change for kdump.
+> I'm concerned about increase of reliability. I'd like you to discuss
+> them carefully.
+
+From my understanding (specially based on both these threads [0] and
+[1]), 3 facts are clear and quite complex in nature:
+
+(a) Currently, the panic notifier list is a "no man's land" - it's a
+mess, all sort of callbacks are added there, some of them are extremely
+risk for breaking kdump, others are quite safe (like setting a
+variable). Petr's details in thread [0] are really clear and express in
+great way how confusing and conflicting the panic notifiers goals are.
+
+(b) In order to "address" problems in the antagonistic goals of
+notifiers (see point (a) above and thread [0]), we have this
+quirk/workaround called "crash_kexec_post_notifiers". This is useful,
+but (almost as for attesting how this is working as band-aid over
+complex and fundamental issues) see the following commits:
+
+a11589563e96 ("x86/Hyper-V: Report crash register data or kmsg before
+running crash kernel")
+
+06e629c25daa ("powerpc/fadump: Fix inaccurate CPU state info in vmcore
+generated with panic")
+
+They hardcode such workaround, because they *need* some notifiers'
+callbacks. But notice they *don't need all of them*, only some important
+ones (that usually are good considering the risk, it's a good
+cost/benefit). Since we currently have an all-or-nothing behavior for
+the panic notifiers, both PowerPC and Hyper-V end-up bringing all of
+them to run before kdump due to the lack of flexibility, increasing a
+lot the risk of failure for kdump.
+
+(c) To add on top of all such complexity, we don't have a custom
+machine_crash_shutdown() handler for some architectures like ARM64, and
+the feeling is that's not right to add a bunch of callbacks / complexity
+in such architecture code, specially since we have the notifiers
+infrastructure in the kernel. I've recently started a discussion about
+that with ARM64 community, please take a look in [1].
+
+With that said, we can use (a) + (b) + (c) to justify our argument here:
+the panic notifiers should be refactored! We need to try to encompass
+the antagonistic goals of kdump (wants to be the first thing to run,
+early as possible) VS. the notifiers that are necessary, even before
+kdump (like Hyper-V / PowerPC fadump ones, but there are more of these,
+the FW/hypervisors notifiers).
+
+I guarantee to you we cannot make 100% of people happy - the
+panic-related areas like kdump, etc are full of trade-offs. We improve
+something, other stuff breaks. This series attempts to clearly
+distribute the notifiers in 3 buckets, and introduces a level setting
+that tunes such buckets to run before or after the kdump in a highly
+flexible way, trying to make the most users happy and capable of tuning
+their systems.
+
+I understand that likely setting the notifiers to 0 would make kdump
+maintainers happy, because we'd keep the same behavior as before.
+But..then we make PPC / Hyper-V and some other users unsatisfied. Level
+2 seems to me a good compromise. I'm willing to add a KConfig option to
+allow distros to hard set their defaults - that might make sense to
+legacy distros as older RHEL / CentOS or server-only distros.
+
+Finally, you mention about integrating the crash shutdown and the panic
+paths - I'm not officially doing that, but I see that they are very
+related and all cases I've ever seen in the last 3-4 years I've been
+working with kdump, it was triggered from panic, from settings "panic_on_X".
+
+I understand we have the regular kexec path (!kdump), some notifiers
+might make sense in both paths, and in this case we could duplicate them
+(one callback, 2 notifier lists) and control against double execution. I
+tried doing that in patch 16 of this series (Hyper-V stuff), but due to
+the lack of ARM64 custom crash shutdown handler, I couldn't. We can
+think in some alternatives, and improve these (naturally)
+connected/related paths, but this is not the goal of this specific
+series. I'm hereby trying to improve/clarify the panic (and kdump) path,
+not the pure kexec path.
+
+Let me know if I can clarify more specific points you have or if there
+are flaws in my logic - I appreciate the discussions/reviews.
+Cheers,
 
 
-Thanks a lot Suzuki!
+Guilherme
+
+
+
+[0] "notifier/panic: Introduce panic_notifier_filter" -
+https://lore.kernel.org/lkml/YfPxvzSzDLjO5ldp@alley/
+
+[1] "Should arm64 have a custom crash shutdown handler?" -
+https://lore.kernel.org/lkml/427a8277-49f0-4317-d6c3-4a15d7070e55-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org/
