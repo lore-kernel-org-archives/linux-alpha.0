@@ -1,82 +1,40 @@
-From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH 14/30] panic: Properly identify the panic event to the
- notifiers' callbacks
-Date: Tue, 10 May 2022 13:16:54 -0300
-Message-ID: <244a412c-4589-28d1-bb77-d3648d4f0b12@igalia.com>
+From: Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
+Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
+ trylock on panic path
+Date: Tue, 10 May 2022 13:20:15 -0400
+Message-ID: <20220510132015.38923cb2@gandalf.local.home>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-15-gpiccoli@igalia.com> <YnqBsXBImU64PAOL@alley>
+        <20220427224924.592546-5-gpiccoli@igalia.com>
+        <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
+        <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
+        <YnpOv4hAPV4b+6v4@alley>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-leds-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DG+kC/U+ySej5D6tfV4OCa8YH0d8ESpuNC4bFJt4RU8=; b=C2KkFYKUIxmXZpa9w2+Tc0j2Ea
-        RFFr76ch465vsOUiMZW1uqZNDnhRYy0QqpFeaougTFG9GOX2EvcKO8NnFtvJdvaTDSvmTGm5I6bLE
-        gx/SYLZAEuVfjx7NJeu1tB8cieKdzixVjql/phg2ZRqRsu9xZgqdP1nbzw6Nv7UUXN3Dua0weQYl6
-        +N3ACyNpHY020LPMtgokauBK3/rzBv0qIzP0VJEueNDPsJdk0Noe60ugWXyfyRTapgsSXBPVXAg4/
-        oobDhrEfQYteiYAwrodL1TGkVGLJREzPqDYfYYN3sh0JBT6vnlq6trf1vxZCJI19NPJiA+YiSFKJe
-        qkMs6K7 
-Content-Language: en-US
-In-Reply-To: <YnqBsXBImU64PAOL@alley>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <YnpOv4hAPV4b+6v4@alley>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Petr Mladek <pmladek@suse.com>
-Cc: akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j
+To: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>
+Cc: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x
 
-On 10/05/2022 12:16, Petr Mladek wrote:
-> [...]
-> Hmm, this looks like a hack. PANIC_UNUSED will never be used.
-> All notifiers will be always called with PANIC_NOTIFIER.
+On Tue, 10 May 2022 13:38:39 +0200
+Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org> wrote:
+
+> As already mentioned in the other reply, panic() sometimes stops
+> the other CPUs using NMI, for example, see kdump_nmi_shootdown_cpus().
 > 
-> The @val parameter is normally used when the same notifier_list
-> is used in different situations.
+> Another situation is when the CPU using the lock ends in some
+> infinite loop because something went wrong. The system is in
+> an unpredictable state during panic().
 > 
-> But you are going to use it when the same notifier is used
-> in more lists. This is normally distinguished by the @nh
-> (atomic_notifier_head) parameter.
-> 
-> IMHO, it is a bad idea. First, it would confuse people because
-> it does not follow the original design of the parameters.
-> Second, the related code must be touched anyway when
-> the notifier is moved into another list so it does not
-> help much.
-> 
-> Or do I miss anything, please?
-> 
-> Best Regards,
-> Petr
+> I am not sure if this is possible with the code under gsmi_dev.lock
+> but such things really happen during panic() in other subsystems.
+> Using trylock in the panic() code path is a good practice.
 
-Hi Petr, thanks for the review.
+I believe that Peter Zijlstra had a special spin lock for NMIs or early
+printk, where it would not block if the lock was held on the same CPU. That
+is, if an NMI happened and paniced while this lock was held on the same
+CPU, it would not deadlock. But it would block if the lock was held on
+another CPU.
 
-I'm not strong attached to this patch, so we could drop it and refactor
-the code of next patches to use the @nh as identification - but
-personally, I feel this parameter could be used to identify the list
-that called such function, in other words, what is the event that
-triggered the callback. Some notifiers are even declared with this
-parameter called "ev", like the event that triggers the notifier.
-
-
-You mentioned 2 cases:
-
-(a) Same notifier_list used in different situations;
-
-(b) Same *notifier callback* used in different lists;
-
-Mine is case (b), right? Can you show me an example of case (a)? You can
-see in the following patches (or grep the kernel) that people are using
-this identification parameter to determine which kind of OOPS trigger
-the callback to condition the execution of the function to specific
-cases. IIUIC, this is more or less what I'm doing, but extending the
-idea for panic notifiers.
-
-Again, as a personal preference, it makes sense to me using id's VS
-comparing pointers to differentiate events/callers.
-
-Cheers,
-
-
-Guilherme
+-- Steve
