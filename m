@@ -1,71 +1,99 @@
 From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH 05/30] misc/pvpanic: Convert regular spinlock into trylock
- on panic path
-Date: Tue, 10 May 2022 10:00:58 -0300
-Message-ID: <0a20dd06-f459-638e-cb4d-8255ab1a1f23@igalia.com>
+Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
+ trylock on panic path
+Date: Tue, 10 May 2022 10:04:08 -0300
+Message-ID: <c23f408f-d030-b599-19b4-8561d511ef73@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-6-gpiccoli@igalia.com> <YnpXGOXicwdy1E6n@alley>
+ <20220427224924.592546-5-gpiccoli@igalia.com>
+ <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
+ <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com> <YnpOv4hAPV4b+6v4@alley>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-leds-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
         References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=JWyep5EFfEPXN0/UUFSWkvsTwBT4W/fOxchQHhKa4RM=; b=sx6DF8PoUIO1mHu5cZY1RxwoA9
-        niB1KysO8rrmF0zp8Z8GTN/NtCj2d4QR4yv3E2E5W17RExRi8A0KAmcw+03c1G1ooU/Pm21U+zIEh
-        0zp/hEbV2HUhNtVPnHFdp5DB6IlN6W8R3VOm7oythqBX2GRaLpOj+rJPIjIYg4FRTMuO76QGoLFC6
-        YTJOWt6WzTDBhnK8IJgaIHAnWrK2atb9lCglavMKbFL3MElzKi625NHcWNdIldxGBU96c/pM4S0g8
-        wJXsSSNXtcQC2Akbyu07xQvQmC9j0tVwKiovTIAilxmwfqg23OLqdBOLywiRmkuVFih5uNhaytVXp
-        cz9Ycga 
+        bh=ERCDIneY1Q4o8JFrn6huil0jOKhd5NF1nm9+poeBUGY=; b=C1bwe/Dp28hHJCcth6j9FIvLRX
+        pDXbwTw3GNkAuVoDVZ2t1Ig0Ha8VAgFyN1qfYHmoUYQVyDRHd7IRdBkOHux1OzR9Q7hmNC/ZbkDNy
+        i9N1ZP1KkXJYzqp8Xch5cykWJAl8GjhN23tq785F2kRMcqVY6TftmyHyPJZTtkL8PDJb7GYsR63+v
+        CyHpUemygecHOqy6UnkI5sacYa9DSfBokIBgO1vbgxAO3Lo/ZpYDMcX65a4mJHituF1N7bEMHTqnl
+        wjibh2hSmhpgeMzHripimwe7gT4RuGZfcia5HzNoWvLT/w9CiRN4l1p9e5qQ/+lp5TdT6UNVMzl77
+        9RtLUAv 
 Content-Language: en-US
-In-Reply-To: <YnpXGOXicwdy1E6n@alley>
+In-Reply-To: <YnpOv4hAPV4b+6v4@alley>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Petr Mladek <pmladek@suse.com>
-Cc: akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net
+To: Petr Mladek <pmladek@suse.com>, Evan Green <evgreen@chromium.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com, kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomir
 
-On 10/05/2022 09:14, Petr Mladek wrote:
+On 10/05/2022 08:38, Petr Mladek wrote:
 > [...]
->> With that said, it's dangerous to use regular spinlocks in such path,
->> as introduced by commit b3c0f8774668 ("misc/pvpanic: probe multiple instances").
->> This patch fixes that by replacing regular spinlocks with the trylock
->> safer approach.
+> I see two more alternative solutions:
 > 
-> It seems that the lock is used just to manipulating a list. A super
-> safe solution would be to use the rcu API: rcu_add_rcu() and
-> list_del_rcu() under rcu_read_lock(). The spin lock will not be
-> needed and the list will always be valid.
+> 1st variant is a trick already used in console write() callbacks.
+> They do trylock() when oops_in_progress is set. They remember
+> the result to prevent double unlock when printing Oops messages and
+> the system will try to continue working. For example:
 > 
-> The advantage would be that it will always call members that
-> were successfully added earlier. That said, I am not familiar
-> with pvpanic and am not sure if it is worth it.
+> pl011_console_write(struct console *co, const char *s, unsigned int count)
+> {
+> [...]
+> 	int locked = 1;
+> [...]
+> 	if (uap->port.sysrq)
+> 		locked = 0;
+> 	else if (oops_in_progress)
+> 		locked = spin_trylock(&uap->port.lock);
+> 	else
+> 		spin_lock(&uap->port.lock);
 > 
->> It also fixes an old comment (about a long gone framebuffer code) and
->> the notifier priority - we should execute hypervisor notifiers early,
->> deferring this way the panic action to the hypervisor, as expected by
->> the users that are setting up pvpanic.
+> [...]
 > 
-> This should be done in a separate patch. It changes the behavior.
-> Also there might be a discussion whether it really should be
-> the maximal priority.
+> 	if (locked)
+> 		spin_unlock(&uap->port.lock);
+> }
+> 
+> 
+> 2nd variant is to check panic_cpu variable. It is used in printk.c.
+> We might move the function to panic.h:
+> 
+> static bool panic_in_progress(void)
+> {
+> 	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
+> }
+> 
+> and then do:
+> 
+> 	if (panic_in_progress()) {
+> 		...
+
+Thanks for the review Petr! I feel alternative two is way better, it
+checks for panic - the oops_in_progress isn't really enough, since we
+can call panic() directly, not necessarily through an oops path, correct?
+
+For me, we could stick with the lock check, but I'll defer to Evan - I
+didn't work the V2 patch yet, what do you prefer Evan?
+
+
+> [...]
+> As already mentioned in the other reply, panic() sometimes stops
+> the other CPUs using NMI, for example, see kdump_nmi_shootdown_cpus().
+> 
+> Another situation is when the CPU using the lock ends in some
+> infinite loop because something went wrong. The system is in
+> an unpredictable state during panic().
+> 
+> I am not sure if this is possible with the code under gsmi_dev.lock
+> but such things really happen during panic() in other subsystems.
+> Using trylock in the panic() code path is a good practice.
 > 
 > Best Regards,
 > Petr
 
-Thanks for the review Petr. Patch was already merged - my goal was to be
-concise, i.e., a patch per driver / module, so the patch kinda fixes
-whatever I think is wrong with the driver with regards panic handling.
-
-Do you think it worth to remove this patch from Greg's branch just to
-split it in 2? Personally I think it's not worth, but opinions are welcome.
-
-About the RCU part, this one really could be a new patch, a good
-improvement patch - it makes sense to me, we can think about that after
-the fixes I guess.
-
+Makes total sense, thanks for confirming!
 Cheers,
 
 
