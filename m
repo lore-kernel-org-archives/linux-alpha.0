@@ -1,50 +1,56 @@
-From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH 22/30] panic: Introduce the panic post-reboot notifier
- list
-Date: Wed, 11 May 2022 16:58:43 -0300
-Message-ID: <1c7dfe73-6691-1ca5-7555-27e81dff4dcd@igalia.com>
+From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 23/30] printk: kmsg_dump: Introduce helper to inform
+ number of dumpers
+Date: Wed, 11 May 2022 17:03:51 -0300
+Message-ID: <c8818906-f113-82b6-b58b-d47ae0c16b4f@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-23-gpiccoli@igalia.com>
- <7017c234-7c73-524a-11b6-fefdd5646f59@igalia.com> <YnvoPe2cTS31qbjb@osiris>
+ <20220427224924.592546-24-gpiccoli@igalia.com>
+ <20220510134014.3923ccba@gandalf.local.home>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
         References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=gDHQr/46Ll+YF5RXidB7bzodWcAOTgjTzZrI+em3L64=; b=g39PxeAmrsyeqF7oG7t83UmsmK
-        q+jHGkHAbmWvohxv26/jw0X2fC5ZQGAB+1t+RR3Dc/QcY0t/UuqqV0Rw0e0vNKpR3Ghg3EjPFEyRu
-        xmyuTU8VIa0JckQ1LnJMbsmPzyPVIePtyYzY2GC02et+W2URhxptR9GwDO/JS6MpbzrCHGb/n2EjF
-        MPTZc218MFC/xIv1c3Q0VBsXMBQNsxYCCeLWiYkZzdC6cvR08qY5ppLv8+FOFZTVkTAZbUvYrBQWZ
-        fyGL7frjV8v7tGHHjzO9nQTkj7crGcqaoQ0KxvgjDlDQp5VOe0vE/nPeGF7YvXLizE8zXvpcRYVIg
-        fCPXiI+ 
+        bh=cfPMnwRmX7h9FC5zogrRSwPWC8hDFfBXdcAc10BCDXg=; b=PNZaBGeXFsuAaBpHuaMdvRY4/s
+        9D5MPz4xTVgTuRGWrB/KEfGG5tVa1JqSC/LT3Rso5sabWhCAduFdYhflwDt6bgTFq6qWGSH0+ncvk
+        oTm6f/w8sOzZYRkq+1JkZmdb25beje8r1H2EX6HM4WVyQEo/2Q4CTK9pG4z28p8fSDjazKpN99+TQ
+        EpXC0JAykc5ZUnUcVTqfleYx6Z4fPGlU4RkoA5IfJGN2tN+4XLZXjyd3oEcuP2YNdEgKXaQFpZZnR
+        Vejz8nGO8jKYtblRG3YNO8+SxkagQsqAK3ZztXb4IgRQ6EnIjofQ7r4kch6g3mJv37QTO/U/Hn9jn
+        eVwzVLt 
 Content-Language: en-US
-In-Reply-To: <YnvoPe2cTS31qbjb@osiris>
+In-Reply-To: <20220510134014.3923ccba-f9ZlEuEWxVcJvu8Pb33WZ0EMvNT87kid@public.gmane.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Heiko Carstens <hca@linux.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, "David S. Miller" <davem@davemloft.net>, Sven Schnelle <svens@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, pmladek@suse.com, bhe@redhat.com, akpm@linux-foundation.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, kexec@lists.infradead.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openi
+To: Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
+Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, pmladek-IBi9RG/b67k@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kernel-dev-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org, kernel-WeLdAqEWwDvk1uMJSBkQmQ@public.gmane.org, halves-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org, fabiomirmar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 
-On 11/05/2022 13:45, Heiko Carstens wrote:
-> [...]
->>
->> Hey S390/SPARC folks, sorry for the ping!
->>
->> Any reviews on this V1 would be greatly appreciated, I'm working on V2
->> and seeking feedback in the non-reviewed patches.
+On 10/05/2022 14:40, Steven Rostedt wrote:
+> On Wed, 27 Apr 2022 19:49:17 -0300
+> "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org> wrote:
 > 
-> Sorry, missed that this is quite s390 specific. So, yes, this looks
-> good to me and nice to see that one of the remaining CONFIG_S390 in
-> common code will be removed!
+>> Currently we don't have a way to check if there are dumpers set,
+>> except counting the list members maybe. This patch introduces a very
+>> simple helper to provide this information, by just keeping track of
+>> registered/unregistered kmsg dumpers. It's going to be used on the
+>> panic path in the subsequent patch.
 > 
-> For the s390 bits:
-> Acked-by: Heiko Carstens <hca@linux.ibm.com>
+> FYI, it is considered "bad form" to reference in the change log "this
+> patch". We know this is a patch. The change log should just talk about what
+> is being done. So can you reword your change logs (you do this is almost
+> every patch). Here's what I would reword the above to be:
+> 
+>  Currently we don't have a way to check if there are dumpers set, except
+>  perhaps by counting the list members. Introduce a very simple helper to
+>  provide this information, by just keeping track of registered/unregistered
+>  kmsg dumpers. This will simplify the refactoring of the panic path.
 
-No need for apologies, I really appreciate your review!
-Will add your Ack for V2 =)
+Thanks for the hint, you're right - it's almost in all of my patches.
+I'll reword all of them (except the ones already merged) to remove this
+"bad form".
 
 Cheers,
 
