@@ -1,55 +1,63 @@
-From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 10/30] alpha: Clean-up the panic notifier code
-Date: Wed, 11 May 2022 17:10:06 -0300
-Message-ID: <37190938-8133-aafa-ea4a-e50f574dd73b@igalia.com>
+From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Subject: Re: [PATCH 11/30] um: Improve panic notifiers consistency and
+ ordering
+Date: Wed, 11 May 2022 17:22:22 -0300
+Message-ID: <4b003501-f5c3-cd66-d222-88d98c93e141@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-11-gpiccoli@igalia.com>
- <f6def662-5742-b3a8-544f-bf15c636d83d@igalia.com> <YnpzpkfuwzJYbPYj@alley>
+ <20220427224924.592546-12-gpiccoli@igalia.com> <Ynp2hRodh04K3pzK@alley>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
         References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=CJFn3sQ0AXqP082WliZpvB/FNlzjPtgRZLj1CZSBav8=; b=H0RwJ9q3twuN5LBJHRtfqxptfc
-        +ZBTnXeu+L1QTWv6VeJ074IpruVUqgFdW2irvRDjWrUeZMfUmFqRter3RBPu9sBjZvDxvw8AhX4xB
-        NGR1Fc+pyWr1+lwnwPjEPDyZEUU6BxtInHBrU2MsFuhkvRoiyT0qN7DKB5jSGNAhlNUyQGg7oS78I
-        1IGokeMYkc2KXY4h6njrMqutcn89GTgmPXm9L8Rca7UD8k1O9WKCSzu2tsWk1It1LXW6uhsh6pzXU
-        eq99TNaaB0b0wsrDl7wLGrG68y5q49uL+rS1rPP4MnQKtWlwuuoA5/zs3LiCVa22Xsjm4CNZYglTD
-        lORMiUa 
+        bh=LCKlEcL/+gLbho7zoJo89g9MDYx2GFkg8N7n1nlW+0g=; b=MQpyMZ3nMM+SlSF0Ic+7AggIHS
+        wWCWxLFJNdpcNC/qKw1wNJR3uSo8xMkfiJlq7d2aikSbZG9yuq1pfGOyawWDcFgWnRsla4fbF455Y
+        3RXCIUoMIO9o6uix81B+J++RZraHoxYIg5AFTEzg2KmNpXSrs7BEjvRicrp5TYhs6s3mYN27kkyAz
+        njPDxaRSeQ75fkZPzqisnL9xIuav4szhmycF8VItK7avDyCoEE8U/Zs7xTZO8x+jizmxi0qGskMhG
+        GsWdK7oyZ7kJDFhpPsgWAmAhF7aiE+T5aNpN2RQ5WYTzC7ql7jtRy3esjCfYNiJNCeB+2D6JHceeB
+        Ayva3vz 
 Content-Language: en-US
-In-Reply-To: <YnpzpkfuwzJYbPYj@alley>
+In-Reply-To: <Ynp2hRodh04K3pzK@alley>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>
-Cc: Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, rth-/MQLu3FmUzdAfugRpC6u6w@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kerne
+To: Petr Mladek <pmladek@suse.com>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes Berg <johannes@sipsolutions.net>, Richard Weinberger <richard@nod.at>
+Cc: akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j
 
-On 10/05/2022 11:16, Petr Mladek wrote:
+On 10/05/2022 11:28, Petr Mladek wrote:
 > [...]
-> Yeah, it is pretty strange behavior.
+> It is not clear to me why user mode linux should not care about
+> the other notifiers. It might be because I do not know much
+> about the user mode linux.
 > 
-> I looked into the history. This notifier was added into the alpha code
-> in 2.4.0-test2pre2. In this historic code, the default panic() code
-> either rebooted after a timeout or ended in a infinite loop. There
-> was not crasdump at that times.
+> Is the because they always create core dump or are never running
+> in a hypervisor or ...?
 > 
-> The notifier allowed to change the behavior. There were 3 notifiers:
-> 
->    + mips and mips64 ended with blinking in panic()
->    + alpha did __halt() in this srm case
-> 
-> They both still do this. I guess that it is some historic behavior
-> that people using these architectures are used to.
-> 
-> Anyway, it makes sense to do this as the last notifier after
-> dumping other information.
-> 
-> Reviewed-by: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>
-> 
-> Best Regards,
-> Petr
+> AFAIK, the notifiers do many different things. For example, there
+> is a notifier that disables RCU watchdog, print some extra
+> information. Why none of them make sense here?
+>
 
-Thanks a bunch for the review - added your tag for V2 =)
+Hi Petr, my understanding is that UML is a form of running Linux as a
+regular userspace process for testing purposes. With that said, as soon
+as we exit in the error path, less "pollution" would happen, so users
+can use GDB to debug the core dump for example.
+
+In later patches of this series (when we split the panic notifiers in 3
+lists) these UML notifiers run in the pre-reboot list, so they run after
+the informational notifiers for example (in the default level).
+But without the list split we cannot order properly, so my gut feeling
+is that makes sense to run them rather earlier than later in the panic
+process...
+
+Maybe Anton / Johannes / Richard could give their opinions - appreciate
+that, I'm not attached to the priority here, it's more about users'
+common usage of UML I can think of...
+
+Cheers,
+
+
+Guilherme
