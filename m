@@ -1,80 +1,41 @@
-From: Petr Mladek <pmladek@suse.com>
+From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 20/30] panic: Add the panic informational notifier list
-Date: Mon, 16 May 2022 16:11:06 +0200
-Message-ID: <YoJbeuTNBXOIypSH@alley>
+Date: Mon, 16 May 2022 11:28:10 -0300
+Message-ID: <c6a55df0-11f5-21ae-8a61-b37141d2436b@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-21-gpiccoli@igalia.com>
+ <20220427224924.592546-21-gpiccoli@igalia.com> <YoJbeuTNBXOIypSH@alley>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=8ARg9pmpq4WYUln1h89e8PyizC+ws8syAxTjgJ/s9eQ=; b=38Q4F7vItL/aQt
-	ffazl+MbDJxwROB+HofbsUIZVTd9cY4GRUNdOd3IQ6+34UyvXJ/L6PnjiCGcpWFUIsT2SsQurqe6Z
-	uK5AIm5ha8VdI/YX2gIFlndzwgcrvGrDYc6Ws/BQfj0+D+SOS7qXJoWDaO7GsaUj5+lgMNDhbs5bW
-	eqE7UDXDWDfNdVIDATXcusp+Mk3kShk6j1u1lyPWacKneb1lEbizAo+BTEI/soVtxwaap6UPycMLl
-	RJRXj41G7hjOhBMa6zMqmrlwQ151Czu2WYQ9EItj38d+Y9yrheTMj6EMvdmB52iseVj31CDGB9BXg
-	J+l+a9CPU8Ce+Tth79Fw==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
- t=1652710268; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
- mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=dmHPB9vjv1LBmNrF4zaonBMXasUoClA4XRHwK4fdG3Q=;
- b=uHHoYScC3vOzAq1rF/GezErIJTTCAnG26YueVBaMYGI4KIiBuE4CJEi5I5FkSHuHNJvOhi
- jBbeahpPdNTqQb9qWzy8wQwtiwj/B2njZ1Svs0P1iMsaZXkpVlpc6Bgj/6IAHlnD6RNRY+
- 7obFqakfVm+qw0H2R1BXYJwwfwabCHA=
-Content-Disposition: inline
-In-Reply-To: <20220427224924.592546-21-gpiccoli@igalia.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-um/>
-List-Post: <mailto:linux-um@lists.infradead.org>
-List-Help: <mailto:linux-um-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-um" <linux-um-bounces@lists.infradead.org>
-Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org
-To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc: akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shev
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dr1+fxlRa10p1m+vrzAuj1y5TNI2rJf4d/f63MyjB+M=; b=fYzY4ecO4EXD3ATClVXmZ0bJur
+        Dv8wK0czHKvUOBFU8VuldwMBw90SyqpgmdhMVGQ8nXO736KAANyIsoQXQP33B+3yyoD0JCNk+aqdE
+        wV4BChThAKeGVlTD0SJGL4Vxo4e8WEaw/u07Aef0GJ4zliM2Txb1MiVoO17nGrOaES7KtCdKD9gb0
+        sGHl/FYmvmjU5t6Sh9/lpO3xyoHOnkZh2Wlu5eWU81axQTiGRY/vWICGCkOGZAWHyJcpjaIpuAOez
+        xXU+abi85zQz75A1GTgWOD+LFSEreERO76kWgkEOfnkbC3cJ3TOsglz2ZOZKp2XuFNlT0F2Yx1p5e
+        +2fZkv1 
+Content-Language: en-US
+In-Reply-To: <YoJbeuTNBXOIypSH@alley>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>
+Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kernel-dev-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org, kernel-WeLdAqEWwDvk1uMJSBkQmQ@public.gmane.org, halves-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org, fabiomirmar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, alejandro.j
 
-On Wed 2022-04-27 19:49:14, Guilherme G. Piccoli wrote:
-> The goal of this new panic notifier is to allow its users to
-> register callbacks to run earlier in the panic path than they
-> currently do. This aims at informational mechanisms, like dumping
-> kernel offsets and showing device error data (in case it's simple
-> registers reading, for example) as well as mechanisms to disable
-> log flooding (like hung_task detector / RCU warnings) and the
-> tracing dump_on_oops (when enabled).
+On 16/05/2022 11:11, Petr Mladek wrote:
+> [...]
 > 
-> Any (non-invasive) information that should be provided before
-> kmsg_dump() as well as log flooding preventing code should fit
-> here, as long it offers relatively low risk for kdump.
+> All notifiers moved in this patch seems to fit well the "info"
+> notifier list. The patch looks good from this POV.
 > 
-> For now, the patch is almost a no-op, although it changes a bit
-> the ordering in which some panic notifiers are executed - specially
-> affected by this are the notifiers responsible for disabling the
-> hung_task detector / RCU warnings, which now run first. In a
-> subsequent patch, the panic path will be refactored, then the
-> panic informational notifiers will effectively run earlier,
-> before ksmg_dump() (and usually before kdump as well).
+> I still have to review the rest of the patches to see if it
+> is complete.
 > 
-> We also defer documenting it all properly in the subsequent
-> refactor patch. Finally, while at it, we removed some useless
-> header inclusions too.
-> 
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> Best Regards,
+> Petr
 
-All notifiers moved in this patch seems to fit well the "info"
-notifier list. The patch looks good from this POV.
-
-I still have to review the rest of the patches to see if it
-is complete.
-
-Best Regards,
-Petr
+Thanks a bunch for the review =)
