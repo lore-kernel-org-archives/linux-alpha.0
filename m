@@ -1,47 +1,211 @@
-From: "Luck, Tony" <tony.luck@intel.com>
-Subject: RE: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
-Date: Mon, 16 May 2022 16:18:04 +0000
-Message-ID: <bed66b9467254a5a8bafc1983dad643a@intel.com>
+From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Subject: Re: [PATCH 24/30] panic: Refactor the panic
+ path
+Date: Mon, 16 May 2022 13:32:14 -0300
+Message-ID: <0a9ba385-84b2-4137-ced1-f7044efff562@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-22-gpiccoli@igalia.com> <YoJgcC8c6LaKADZV@alley>
- <63a74b56-89ef-8d1f-d487-cdb986aab798@igalia.com>
+ <20220427224924.592546-25-gpiccoli@igalia.com> <Yn0TnsWVxCcdB2yO@alley>
+ <d313eec2-96b6-04e3-35cd-981f103d010e@igalia.com> <YoIlvFxbqoiDsD1l@alley>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-mips-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652717889; x=1684253889;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=+l+W5AAGJYF9POu96DFeN42Yp1wDBbNs2cT6ebzm1Q4=;
-  b=gE3JndFmb3MVc+y8k0MigjEzVzCqGvTnKuZFhE4DjcCYaU4+iqRdm1YK
-   P0DDqVHBLoq7VKipOO0hdvZYV9pVTZG1CN68yC4Fs1ioVILwIZ3Q2SrMn
-   sSdjpODOS6uWQjCqGoSIJu1pba5omJEmL1FQURGDTGfZUlS1TXhoGF22j
-   h0UKzl3D3f9Sw7CU71YSSLPCDk1YAxt17+ONuVJQaBsvQLE0imNdebkVK
-   Q0O82ERRbpa9leBWTCKvYYiIIzee1lVvNZNkYwosdrYyHDA3KJBcn4HGB
-   Wc7wLsviGum79vhrgzLiyhyPVYTFfrQj6/p9kQjA+0ss/R8t28ygKVZCy
-   A==;
-In-Reply-To: <63a74b56-89ef-8d1f-d487-cdb986aab798@igalia.com>
-Content-Language: en-US
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>, Petr Mladek <pmladek@suse.com>, Dinh Nguyen <dinguyen@kernel.org>
-Cc: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "bhe@redhat.com" <bhe@redhat.com>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, linux
+Content-Transfer-Encoding: 7bit
+Return-path: <openipmi-developer-bounces@lists.sourceforge.net>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=sourceforge.net; s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+ From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=snNEotF/NnF6oRsYP9tQxjPI6hsRS2uTTzGW3F44uFU=; b=I+GolczAMMWO5b0pjHPGXXPa5e
+ MSGA+drx8fLz0VerbLE5mUkO/0g8V4ZTPOk+vwUYeZp1RRTnBrDfZuve6QOx5G0bGFdTqTHrEvv3x
+ V7ZeNfhhpXU5JwugXy8ThgzMejND/hPlf7KgZVj/cy7AG9C6fX82dE/43abaSn63v+aY=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
+ ;
+ h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:Cc:To:
+ Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
+ Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+ :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+ List-Post:List-Owner:List-Archive;
+ bh=snNEotF/NnF6oRsYP9tQxjPI6hsRS2uTTzGW3F44uFU=; b=MG0jXweQs8gLHchCsRRzR14lVI
+ 4ThjS/EFoOyYKnKCn6D5Ac/WdhNcYwzeUtMnx7PR0nYJPp/5q7Vi4zEfk2UeG53um/9AfMvxbxMeH
+ 4u+wKDtsxrT8XLvW/mT7Zzromtdph7WNLA7Oc1q2n0c5NIb4Xe50Df8AD/QM6vqlnyWU=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com; 
+ s=20170329;
+ h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+ References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=snNEotF/NnF6oRsYP9tQxjPI6hsRS2uTTzGW3F44uFU=; b=IrCfuw38CFBNzUUmwO4z/x0ude
+ e9PSigrpJmmkANb9hFO8MYFTYKFJ+f2pDfg9ZWd+jWh0me4IY2UjT4bBJdJuG6aHpan97hS9RvfOH
+ pKOQ4g3CadR7oxkIRI3RkZhas481ugQtknW2dOyn8WDu4fqTLFzYzJFnX5BjK36hBguKTcosLNdPK
+ XLSo/vQGgUIYFydsMQwjF4Cl6fcPC+lWayRTRUcaC/1DW89DyT+5i4PUQlvBei/VhxE3uCiNyFXXu
+ //FxcgwLDGTfxmReP4BgKaOgOZfz1x9KSbEjS92ORoxS5FR3YrIsPaoJlMSUKXKS/BK4yktUJz/OW
+ jzuoL6kQ==;
+Content-Language: en-US
+In-Reply-To: <YoIlvFxbqoiDsD1l@alley>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openipmi-developer>, 
+ <mailto:openipmi-developer-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=openipmi-developer>
+List-Post: <mailto:openipmi-developer@lists.sourceforge.net>
+List-Help: <mailto:openipmi-developer-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openipmi-developer>, 
+ <mailto:openipmi-developer-request@lists.sourceforge.net?subject=subscribe>
+Errors-To: openipmi-developer-bounces@lists.sourceforge.net
+To: Petr Mladek <pmladek@suse.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-hyperv@vger.kernel.org, halves@canonical.com, gregkh@linuxfoundation.org, peterz@infradead.org, alejandro.j.jimenez@oracle.com, linux-remoteproc@vger.kernel.org, feng.tang@intel.com, "michael Kelley (LINUX)" <mikelley@microsoft.com>, hidehiro.kawai.ez@hitachi.com, sparclinux@vger.kernel.org, will@kernel.org, tglx@linutronix.de, linux-leds@vger.kernel.org, linux-s390@vger.kernel.org, Marc Zyngier <maz@kernel.org>, john.ogness@linutronix.de, Baoquan He <bhe@redhat.com>, corbet@lwn.net, paulmck@kernel.org, fabiomirmar@gmail.com, x86@kernel.org, mingo@redhat.com, bcm-kernel-feedback-list@broadcom.com, xen-devel@lists.xenproject.org, linux-mips@vger.kernel.org, Dave Young <dyoung@redhat.com>, vgoyal@redhat.com, linux-xtensa@linux-xtensa.org, dave.hansen@linux.intel.com, keescook@chromium.org, arnd@arndb.de, linux-pm@vger.kernel.org
 
-PiBTbywgbXkgcmVhc29uaW5nIGhlcmUgaXM6IHRoaXMgbm90aWZpZXIgc2hvdWxkIGZpdCB0aGUg
-aW5mbyBsaXN0LA0KPiBkZWZpbml0ZWx5ISBCdXQuLi5pdCdzIHZlcnkgaGlnaCByaXNrIGZvciBr
-ZHVtcC4gSXQgZGVlcCBkaXZlcyBpbnRvIHRoZQ0KPiByZWdtYXAgQVBJICh0aGVyZSBhcmUgbG9j
-a3MgaW4gc3VjaCBjb2RlKSBwbHVzIHRoZXJlIGlzIGFuIChNTSlJTyB3cml0ZQ0KPiB0byB0aGUg
-ZGV2aWNlIGFuZCBhbiBBUk0gZmlybXdhcmUgY2FsbC4gU28sIGRlc3BpdGUgdGhlIG5hdHVyZSBv
-ZiB0aGlzDQo+IG5vdGlmaWVyIF9maXRzIHRoZSBpbmZvcm1hdGlvbmFsIGxpc3RfLCB0aGUgX2Nv
-ZGUgaXMgcmlza3lfIHNvIHdlIHNob3VsZA0KPiBhdm9pZCBydW5uaW5nIGl0IGJlZm9yZSBhIGtk
-dW1wLg0KPg0KPiBOb3csIHdlIGluZGVlZCBoYXZlIGEgY2hpY2tlbi9lZ2cgcHJvYmxlbTogd2Fu
-dCB0byBhdm9pZCBpdCBiZWZvcmUNCj4ga2R1bXAsIEJVVCBpbiBjYXNlIGtkdW1wIGlzIG5vdCBz
-ZXQsIGttc2dfZHVtcCgpIChhbmQgY29uc29sZSBmbHVzaGluZywNCj4gYWZ0ZXIgeW91ciBzdWdn
-ZXN0aW9uIFBldHIpIHdpbGwgcnVuIGJlZm9yZSBpdCBhbmQgbm90IHNhdmUgY29sbGVjdGVkDQo+
-IGluZm9ybWF0aW9uIGZyb20gRURBQyBQb1YuDQoNCldvdWxkIGl0IGJlIHBvc3NpYmxlIHRvIGhh
-dmUgc29tZSBnbG9iYWwgImtkdW1wIGlzIGNvbmZpZ3VyZWQgKyBlbmFibGVkIiBmbGFnPw0KDQpU
-aGVuIG5vdGlmaWVycyBjb3VsZCBtYWtlIGFuIGluZm9ybWVkIGNob2ljZSBvbiB3aGV0aGVyIHRv
-IGRlZXAgZGl2ZSB0bw0KZ2V0IGFsbCB0aGUgcG9zc2libGUgZGV0YWlscyAod2hlbiB0aGVyZSBp
-cyBubyBrZHVtcCkgb3IganVzdCBza2ltIHRoZSBoaWdoDQpsZXZlbCBzdHVmZiAodG8gbWF4aW1p
-emUgY2hhbmNlIG9mIGdldHRpbmcgYSBzdWNjZXNzZnVsIGtkdW1wKS4NCg0KLVRvbnkNCg==
+On 16/05/2022 07:21, Petr Mladek wrote:
+> [...]
+> Ah, it should have been:
+> 
+>      + notifiers vs. kmsg_dump
+>      + notifiers vs. crash_dump
+>      + crash_dump vs. kmsg_dump
+> 
+> I am sorry for the confusion. Even "crash_dump" is slightly
+> misleading because there is no function with this name.
+> But it seems to be easier to understand than __crash_kexec().
+
+Cool, thanks! Now it's totally clear for me =)
+I feel crash dump is the proper term, but I personally prefer kdump to
+avoid mess-up with user space "core dump" concept heheh
+Also, KDUMP is an entry on MAINTAINERS file.
+
+
+> [...]
+>> Heheh OK, I appreciate your opinion, but I guess we'll need to agree in
+>> disagree here - I'm much more fond to this kind of code than a bunch of
+>> if/else blocks that almost give headaches. Encoding such "level" logic
+>> in the if/else scheme is very convoluted, generates a very big code. And
+>> the functions aren't so black magic - they map a level in bits, and the
+>> functions _once() are called...once! Although we switch the position in
+>> the code, so there are 2 calls, one of them is called and the other not.
+> 
+> I see. Well, I would consider this as a warning that the approach is
+> too complex. If the code, using if/then/else, would cause headaches
+> then also understanding of the behavior would cause headaches for
+> both users and programmers.
+> 
+> 
+>> But that's totally fine to change - especially if we're moving away from
+>> the "level" logic. I see below you propose a much simpler approach - if
+>> we follow that, definitely we won't need the "black magic" approach heheh
+> 
+> I do not say that my proposal is fully correct. But we really need
+> this kind of simpler approach.
+
+It's cool, I agree that your idea is much simpler and makes sense - mine
+seems to be an over-engineering effort. Let's see the opinions of the
+interested parties, I'm curious to see if everybody agrees here, that'd
+would be ideal (and kind of "wishful thinking" I guess heheh - panic
+path is polemic).
+
+
+> [...] 
+>> Here we have a very important point. Why do we need 2 variants of SMP
+>> CPU stopping functions? I disagree with that - my understanding of this
+>> after some study in architectures is that the crash_() variant is
+>> "stronger", should work in all cases and if not, we should fix that -
+>> that'd be a bug.
+>>
+>> Such variant either maps to smp_send_stop() (in various architectures,
+>> including XEN/x86) or overrides the basic function with more proper
+>> handling for panic() case...I don't see why we still need such
+>> distinction, if you / others have some insight about that, I'd like to
+>> hear =)
+> 
+> The two variants were introduced by the commit 0ee59413c967c35a6dd
+> ("x86/panic: replace smp_send_stop() with kdump friendly version in
+> panic path")
+> 
+> It points to https://lkml.org/lkml/2015/6/24/44 that talks about
+> still running watchdogs.
+> 
+> It is possible that the problem could be fixed another way. It is
+> even possible that it has already been fixed by the notifiers
+> that disable the watchdogs.
+> 
+> Anyway, any change of the smp_send_stop() behavior should be done
+> in a separate patch. It will help with bisection of possible
+> regression. Also it would require a good explanation in
+> the commit message. I would personally do it in a separate
+> patch(set).
+
+Thanks for the archeology and interesting findings. I agree that is
+better to split in smaller patches. I'm planning a split in 3 patches
+for V2: clean-up (comment, console flushing idea, useless header), the
+refactor itself and finally, this SMP change.
+
+
+> [...] 
+>> You had the order of panic_reboot_list VS. consoles flushing inverted.
+>> It might make sense, although I didn't do that in V1...
+> 
+> IMHO, it makes sense:
+> 
+>   1. panic_reboot_list contains notifiers that do the reboot
+>      immediately, for example, xen_panic_event, alpha_panic_event.
+>      The consoles have to be flushed earlier.
+> 
+>   2. console_flush_on_panic() ignores the result of console_trylock()
+>      and always calls console_unlock(). As a result the lock should
+>      be unlocked at the end. And any further printk() should be able
+>      to printk the messages to the console immediately. It means
+>      that any messages printed by the reboot notifiers should appear
+>      on the console as well.
+> [...] 
+>> OK, I agree with you! It's indeed simpler and if others agree, I can
+>> happily change the logic to what you proposed. Although...currently the
+>> "crash_kexec_post_notifiers" allows to call _all_ panic_reboot_list
+>> callbacks _before kdump_.
+>>
+>> We need to mention this change in the commit messages, but I really
+>> would like to hear the opinions of heavy users of notifiers (as
+>> Michael/Hyper-V) and the kdump interested parties (like Baoquan / Dave
+>> Young / Hayatama). If we all agree on such approach, will change that
+>> for V2 =)
+> 
+> Sure, we need to make sure that we call everything that is needed.
+> And it should be documented.
+> 
+> I believe that this is the right way because:
+> 
+>   + It was actually the motivation for this patchset. We split
+>     the notifiers into separate lists because we want to call
+>     only the really needed ones before kmsg_dump and crash_dump.
+> 
+>   + If anything is needed for crash_dump that it should be called
+>     even when crash_dump is called first. It should be either
+>     hardcoded into crash_dump() or we would need another notifier
+>     list that will be always called before crash_dump.
+
+Ack, makes sense! Will do that in V2 =)
+
+For the "hardcoded" part, we have the custom machine_crash_kexec() in
+some archs (like x86), unfortunately not in all of them - this path is
+ideally for mandatory code that is required for a successful crash_kexec().
+
+The problem is the "same old, same old" - architecture folks push that
+to panic notifiers; notifiers folks push it to the arch custom shutdown
+handler (see [0] heheh).
+(CCed Marc / Mark in case they want to chime-in here...)
+
+
+>[...] 
+> Thanks a lot for working on this.
+> 
+> Best Regards,
+> Petr
+
+
+You're welcome, _thank you_ for the great and detailed reviews!
+Cheers,
+
+
+Guilherme
+
+
+[0]
+https://lore.kernel.org/lkml/427a8277-49f0-4317-d6c3-4a15d7070e55@igalia.com/
