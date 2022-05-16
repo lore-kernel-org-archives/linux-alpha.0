@@ -1,45 +1,40 @@
-From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 23/30] printk: kmsg_dump: Introduce helper to inform
- number of dumpers
-Date: Mon, 16 May 2022 13:09:04 -0300
-Message-ID: <9f20619a-b405-2dc6-9771-b574b6f5058b@igalia.com>
+From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Subject: Re: [PATCH 25/30] panic, printk: Add console flush parameter and
+ convert panic_print to a notifier
+Date: Mon, 16 May 2022 13:11:25 -0300
+Message-ID: <41bede24-2bc4-a85b-9ba0-0f2562f8d0ca@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-24-gpiccoli@igalia.com>
- <20220510134014.3923ccba@gandalf.local.home>
- <c8818906-f113-82b6-b58b-d47ae0c16b4f@igalia.com> <YoJkpAp8XdS7ROgd@alley>
+ <20220427224924.592546-26-gpiccoli@igalia.com> <YoJmKYLzPZqCDDim@alley>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-leds-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
         References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZFn50ampduPG9oGRQUX2BMS6rY0kjBJ3j8a67GHebAM=; b=FcOPep8ePTWgqhN9kkuewdcNEP
-        c+0DcuW1jGVdOvrXyeFbQQqAUYMA09npC4Byr3YGEoB/g2NkzWTt5Pixw+6iQWFOoxmTbFxaaHkCP
-        GYMvVe3H+uOm3cet8cNwDTa56BrpIyiq1AnVWz2iVREpdKhDi1ibK7mTGwEsf+7L1BvRA0jP/ip7K
-        3Wv2lFsKQ8u4mnZSuMW4kfL4laBmHOrAwA4a8EfUlxz4QT/0au4zO1sGM8rm2FSym85ndF4P4dT3N
-        BwBBCS9eObHRceuash+pnFltB0GDgdDLOd7W2xfGhQiSAKVeJrd4klCmODWnoEukEx3MhnUQk8Saq
-        p8THRBQ 
+        bh=OZBRCsaeLLQD9CguIhK5Gsbv+Do9lNI4dRKnX3DnTVs=; b=cTAo65jHTM3B0ITLRt2mTe+qMi
+        Mgnedog4ec+puSbe0nyROSa19Q4JMc3jLrINzY75lEJgN4ZnZLbXRnbU9VgE7MZjNWhyf408I+eF0
+        UZsTZ4wldMCBZxElXn52I0DKJCfHcNJLOcsxnTRMPLlShL9EHMOqzRahK2vVGGFXB6RnGo8XEEJPO
+        gpyhtwCxU0EgZFBR09A8u7wGxD5xH5ep8p3kCFTe8PlGSgTOkVsHijQweIsXqaGaP95QgkavUlo4N
+        GY9l6sOGeJeiAc+wGG54Szh2/VK5I4c73G47OXj82SsENDkfCXLscQrlJiBmPFlo290c84ZDH/amA
+        F9S82K0 
 Content-Language: en-US
-In-Reply-To: <YoJkpAp8XdS7ROgd@alley>
+In-Reply-To: <YoJmKYLzPZqCDDim@alley>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>
-Cc: Steven Rostedt <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kernel-dev-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org, kernel-WeLdAqEWwDvk1uMJSBkQmQ@public.gmane.org, halves@canonical.c
+To: Petr Mladek <pmladek@suse.com>
+Cc: akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j
 
-On 16/05/2022 11:50, Petr Mladek wrote:
+On 16/05/2022 11:56, Petr Mladek wrote:
 > [...]
-> Shame on me that I do not care that much about the style of the commit
-> message :-)
-> 
-> Anyway, the code looks good to me. With the better commit message:
-> 
-> Reviewed-by: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>
+> I really like both changes. Just please split it them into two
+> patchset. I mean one patch for the new "panic_console_replay"
+> parameter and 2nd that moves "printk_info" into the notifier.
 > 
 
-Heheh, cool - I'll add your tag and improve the message in V2.
+OK sure, will do that in V2.
 Thanks,
 
 
