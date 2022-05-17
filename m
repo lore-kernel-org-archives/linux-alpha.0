@@ -1,72 +1,86 @@
-From: "Luck, Tony" <tony.luck@intel.com>
-Subject: Re: [PATCH 21/30] panic: Introduce the panic
- pre-reboot notifier list
-Date: Tue, 17 May 2022 17:02:31 +0000
-Message-ID: <06d85642fef24bc482642d669242654b@intel.com>
+From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Subject: Re: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
+Date: Tue, 17 May 2022 15:12:25 -0300
+Message-ID: <62a63fc2-346f-f375-043a-fa21385279df@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
  <20220427224924.592546-22-gpiccoli@igalia.com> <YoJgcC8c6LaKADZV@alley>
  <63a74b56-89ef-8d1f-d487-cdb986aab798@igalia.com>
  <bed66b9467254a5a8bafc1983dad643a@intel.com>
  <e895ce94-e6b9-caf6-e5d3-06bf0149445c@igalia.com> <YoOs9GJ5Ovq63u5Q@alley>
  <599b72f6-76a4-8e6d-5432-56fb1ffd7e0b@igalia.com>
+ <06d85642fef24bc482642d669242654b@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <openipmi-developer-bounces@lists.sourceforge.net>
+Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=sourceforge.net; s=x; h=MIME-Version:Content-Transfer-Encoding:Content-Type
- :In-Reply-To:References:Message-ID:Date:Subject:CC:To:From:Sender:Reply-To:
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:From:References:Cc:To:
+	Subject:MIME-Version:Date:Message-ID:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=RkcNvrzFzF9FtcobFoiblw/OIAiv7NXlH/of41nBjZg=; b=1nbZmVL9gt1iBS
+	rydNgNWiMBGNdNhtfb6iCNlHKXH/BDshOCdUZKj/xLhEk38xXmGqDJgCWoPN+f9UB6H8x8+a1h0sj
+	M787EgY/X7rd9mxONDoscOMQ9bQQIfaWRD1wuHAsUmwTRvzrb1NYm4IQpgPs5yRGE1Rz32UCcQYb9
+	Km+AtXOEMODIcsPWKTBvzKmopO1fdZAqisUCYNybIxlgM8x1clkf9kLLBFlBoYQu45J3bIjrrWYHV
+	RVxH6xPGybsNHA4DslJFV1g9LWykuYbn10BqkPRUZ9DFDt3bU6dAAwMMs0UtEcJlZOA+3iubyrOzs
+	mLBGuq527unGbTaMmUjw==;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com; 
+ s=20170329;
+ h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+ References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
  Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
  Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
  List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=wPndYlW5xEVdpcc0zA72NXu9ypQzfs4FPZzk6VJMkkY=; b=BEZHywsZpzySQ7rO2fKVkJQcq5
- N0zHMJqqiO1Srf4SIg7E7deZxKVPf/SvFLdsPivHu+ZZSDxaLFPEAG1P+vGkOAHCljWt4ea6naaqG
- 6Yk+LMZwbp1cUBgUBZ5jG7VYGLSQF0z/bg6TdBxZd7hAxRBlBiHJ2Mp5XoL6x61J6wmo=;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sf.net; s=x
- ;
- h=MIME-Version:Content-Transfer-Encoding:Content-Type:In-Reply-To:
- References:Message-ID:Date:Subject:CC:To:From:Sender:Reply-To:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=wPndYlW5xEVdpcc0zA72NXu9ypQzfs4FPZzk6VJMkkY=; b=giNaMtnoqbP7PVY2/Z3G8V9GQf
- loHAYWmCYTmvKjzUYnpfj69SjXiXvjiigr4OZcuaiGNMmcRUmQhOvfg5SV3+M3YY25G6ARiYpQBF1
- X5vBO/8VVuQYx/Y7sKb6yZFnND+x5W+mjdpTOn3h3dTSO/O1QY9K6M0YkzrfAarNgyhQ=;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652806962; x=1684342962;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=wPndYlW5xEVdpcc0zA72NXu9ypQzfs4FPZzk6VJMkkY=;
- b=Sc0Rvh1DHGMmvh1PGMBwKdhVRIdzyZ6e9SqZxe+fgpWVX+3fPvmfNgn/
- JLODxa0C/imRRwNsudQceZSRSK/DrE76LCB7DTqc1dTz5WfJDeHb43SEV
- bSB5G2M2wfVBmIx+oKSq92rhG44WGdZNd2xC5SdaBuo7Ns7vABOtmEcNG
- RJHZyA8C3ARkyIBok/q0+FFM14iwja8inm7NevsgdF6TB+ejWalul3jlK
- /wh5GYfph8qagCN01uTLry8hAVscPcnIHJKlYGPVcMBBUw06C2r/WB7zU
- WICrwQr8c9isfGcn5kOb1GeUeAJxHuhuqu8wNWawV7zgE9xpnA3ZraqHB w==;
-In-Reply-To: <599b72f6-76a4-8e6d-5432-56fb1ffd7e0b@igalia.com>
+ bh=6MSK1Z4Nv/e1GFKFinCP8P3dIYao0CoLyUe3quXpDhY=; b=cRMrVSVTR+3cn6FVG65SC4Au0y
+ UkLE3SVfqGk36g/jG1E9IomGRvED5Awi+eOSCTntuGE0jPXl5+kfHlbKsvhvVjaCNf8y4mBWXGPlT
+ 8r/o/CMKhbUaIdrKhLkt446cgXa07HTSiorku/w0xJvIn3aE4uqi2qj8QGi7eb4Kmsg0/Wh5BR8Vi
+ YCGb8f9djqv6fWXVwjRpFQtg+9b6W6H4TQisr9ZwQKSIB4SsmfEWL196/jrcNQFL2lm66S4LfYE8s
+ uZ+fz2jSIIuBy2Np//l8BP/gbXHu+JyZVeJsb8IAXoZSlvi3RYMR9sSIMXj8sSzR7kYxeP4KKKokk
+ nGGtp5Zg==;
 Content-Language: en-US
+In-Reply-To: <06d85642fef24bc482642d669242654b@intel.com>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openipmi-developer>, 
- <mailto:openipmi-developer-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=openipmi-developer>
-List-Post: <mailto:openipmi-developer@lists.sourceforge.net>
-List-Help: <mailto:openipmi-developer-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openipmi-developer>, 
- <mailto:openipmi-developer-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: openipmi-developer-bounces@lists.sourceforge.net
-To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>, Petr Mladek <pmladek@suse.com>, Dinh Nguyen <dinguyen@kernel.org>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>, Alexander Gordeev <agordeev@linux.ibm.com>, "K. Y. Srinivasan" <kys@microsoft.com>, Wei Liu <wei.liu@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, Matt Turner <mattst88@gmail.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>, "luto@kernel.org" <luto@kernel.org>, "tglx@linutronix.de" <tglx@linutronix.de>, Alex Elder <elder@kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "senozhatsky@chromium.org" <senozhatsky@chromium.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
+ <mailto:linux-um-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-um/>
+List-Post: <mailto:linux-um@lists.infradead.org>
+List-Help: <mailto:linux-um-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-um>,
+ <mailto:linux-um-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-um" <linux-um-bounces@lists.infradead.org>
+Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org
+To: "Luck, Tony" <tony.luck@intel.com>, Petr Mladek <pmladek@suse.com>, Dinh Nguyen <dinguyen@kernel.org>
+Cc: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "bhe@redhat.com" <bhe@redhat.com>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "bcm-kernel-feedback-list@broadcom.com" <bcm-kernel-feedback-list@broadcom.com>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>, "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>, "linux-s390@vger.kernel.org" <lin>
 
-> Tony / Dinh - can I just *skip* this notifier *if kdump* is set or else
-> we run the code as-is? Does that make sense to you?
+On 17/05/2022 14:02, Luck, Tony wrote:
+>> Tony / Dinh - can I just *skip* this notifier *if kdump* is set or else
+>> we run the code as-is? Does that make sense to you?
+> 
+> The "skip" option sounds like it needs some special flag associated with
+> an entry on the notifier chain. But there are other notifier chains ... so that
+> sounds messy to me.
+> 
+> Just all the notifiers in priority order. If any want to take different actions
+> based on kdump status, change the code. That seems more flexible than
+> an "all or nothing" approach by skipping.
+> 
+> -Tony
 
-The "skip" option sounds like it needs some special flag associated with
-an entry on the notifier chain. But there are other notifier chains ... so that
-sounds messy to me.
+I guess I've expressed myself in a poor way - sorry!
 
-Just all the notifiers in priority order. If any want to take different actions
-based on kdump status, change the code. That seems more flexible than
-an "all or nothing" approach by skipping.
+What I'm planning to do in the altera_edac notifier is:
 
--Tony
+if (kdump_is_set)
+ return;
+
+/* regular code */
+
+In other words: if the kdump is set, this notifier will be effectively a
+nop (although it's gonna be called).
+
+Lemme know your thoughts Tony, if that makes sense.
+Thanks,
+
+
+Guilherme
