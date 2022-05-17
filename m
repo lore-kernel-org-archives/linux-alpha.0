@@ -1,105 +1,49 @@
-From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH 14/30] panic: Properly identify the panic event to the
- notifiers' callbacks
-Date: Tue, 17 May 2022 12:19:02 -0300
-Message-ID: <bc485d09-0958-0ddc-7b2d-cbc806cf6a01@igalia.com>
+From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 15/30] bus: brcmstb_gisb: Clean-up panic/die notifiers
+Date: Tue, 17 May 2022 12:32:39 -0300
+Message-ID: <007af382-dcf5-b06d-acad-08f8d6ec7f8b@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-15-gpiccoli@igalia.com> <YnqBsXBImU64PAOL@alley>
- <244a412c-4589-28d1-bb77-d3648d4f0b12@igalia.com> <YoOe7ifxfW8CEHdt@alley>
+ <20220427224924.592546-16-gpiccoli@igalia.com> <YnqEqDnMfUgC4dM6@alley>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:From:References:Cc:To:
-	Subject:MIME-Version:Date:Message-ID:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=ykqV2SeBOGfU3JFiiZJ1t8dtHchiDwYNO33n7Y0/N8I=; b=h1Thvd7WxhT25f
-	MVZQ10x/RDfLhI9lu5Dus3QphXD0oknT1ygVxBzQww+It4SLOcH1dMra2cT9k0GRPKNRHjw8jlPe7
-	5ziZbNpYQpYYotWb4wL/Ncsu7UQGWEXDk98rooOolB3DcwLKRgvsvPNJZGxwo/TeddiwrCSs8emP1
-	57ymrR52SdfbeTRN8wqH51txDWO+UBZfxhuSOUV+Ahouj2jowo19PZZYLHrOFYuHPZXcF++sg/k/f
-	X6aqPrnx5pIzCYTTz+TdxyEWTlY4+2vN27ReCbOdQlSQzds5jHJyPXnfBb+3Dc+mhCgI50JD1G0J4
-	1idzkmdzXBw0q6rgBfKg==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com; 
- s=20170329;
- h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
- References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=wF3LghB7qFMkIN+RAhS0nW2784Fxel03VlqG6SoZfk8=; b=giQ6MXmBG17+JbZaHvCpLgBjCU
- FwsDXgX/b02O0QP8I+vkUwgy5+Lo+D5E+EJOGL5/JJvM2lmeYDRT6QF5s/JgDpbjXa08hzTZAOCcp
- H5UDG57PmVcXgDQ83UJ5J0cHOAPIvQgCaZLx9/QPzE06aTWYPlZURlCiNkAkSPoI1FmBlizReQXpJ
- dIElRXTKibRc33b/9HZXXl+Wf0mzN1goXhA+a9ZGenrB/fdH27xO8ledb2joDR0cLh2vGAmqvotM+
- JR0bWUJ+tmRYLx16LGJtXMspUiQTF3daEYzd/24Q2VypEyjqgtCV1aoMRt2LQ9YZpXkratOMOe37t
- 53QKNYiQ==;
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=sBxOdf5zzlugJkhZHabZzTAtpXD19gBRD4MewoqTr3w=; b=NsQp7JvDHeiG0InrgCzgj6qEMn
+        +0HDDirskWRJUwtuX9QZNgVpRKlGO/3aNrbmen6tXlKUhuV0+BbQy2aMCyUUGcetLiuWPChDYhZG2
+        uActfFtkCGU4c6w7jw5eo3KbRLxEWlPGvaIXcW9KuVcgcDuIdvQJ7CUukGXL9th36+kW270UNj6cp
+        KwfiG//V+ceMXkXz56bGppHfbEL7x2Yf8p2OfzRzA+P3gciDRGzrJlW3tYAmf8L72SPmNmKgXgiQH
+        oN/Ktah8yVYeK7YuYx/7jPfAZeKiiCyehjDs7pB9vGbI0WRx7KI28Glco3R/cH3PEM9mA0rVYqkMG
+        3w57FnR 
 Content-Language: en-US
-In-Reply-To: <YoOe7ifxfW8CEHdt@alley>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-um/>
-List-Post: <mailto:linux-um@lists.infradead.org>
-List-Help: <mailto:linux-um-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-um" <linux-um-bounces@lists.infradead.org>
-Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org
-To: Petr Mladek <pmladek@suse.com>
-Cc: akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de, corbet@lwn.ne
+In-Reply-To: <YnqEqDnMfUgC4dM6@alley>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, openipmi-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, rcu-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kernel-dev-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org, kernel-WeLdAqEWwDvk1uMJSBkQmQ@public.gmane.org, halves-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org
 
-On 17/05/2022 10:11, Petr Mladek wrote:
+On 10/05/2022 12:28, Petr Mladek wrote:
 > [...]
->> You mentioned 2 cases:
->>
->> (a) Same notifier_list used in different situations;
->>
->> (b) Same *notifier callback* used in different lists;
->>
->> Mine is case (b), right? Can you show me an example of case (a)?
+> IMHO, the check of the @self parameter was the proper solution.
 > 
-> There are many examples of case (a):
+> "gisb_die_notifier" list uses @val from enum die_val.
+> "gisb_panic_notifier" list uses @val from enum panic_notifier_val.
 > 
-> [... snip ...] 
-> These all call the same list/chain in different situations.
-> The situation is distinguished by @val.
+> These are unrelated types. It might easily break when
+> someone defines the same constant also in enum die_val.
 > 
-> 
->> You can see in the following patches (or grep the kernel) that people are using
->> this identification parameter to determine which kind of OOPS trigger
->> the callback to condition the execution of the function to specific
->> cases.
-> 
-> Could you please show me some existing code for case (b)?
-> I am not able to find any except in your patches.
-> 
+> Best Regards,
+> Petr
 
-Hi Petr, thanks for the examples - I agree with you. In the end, seems
-I'm kind of abusing the API. This id is used to distinguish different
-situations in which the callback is called, but in the same
-"realm"/notifier list.
+OK Petr, I'll drop this idea for V2 - will just remove the useless
+header / prototype then. (CC Florian)
 
-In my case I have different list calling the same callback and
-(ab-)using the id to make distinction. I can rework the patches using
-pointer comparison, it's fine =)
 
-So, I'll drop this patch in V2.
+Cheers,
 
-> Anyway, the solution in 16th patch is bad, definitely.
-> hv_die_panic_notify_crash() uses "val" to disinguish
-> both:
-> 
->      + "panic_notifier_list" vs "die_chain"
->      + die_val when callen via "die_chain"
-> 
-> The API around "die_chain" API is not aware of enum panic_notifier_val
-> and the API using "panic_notifier_list" is not aware of enum die_val.
-> As I said, it is mixing apples and oranges and it is error prone.
-> 
 
-OK, I'll re-work that patch - there's more there to be changed, that one
-is complex heheh
-
-Cheers!
+Guilherme
