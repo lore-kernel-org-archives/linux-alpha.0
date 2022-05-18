@@ -1,79 +1,46 @@
-From: Petr Mladek <pmladek@suse.com>
+From: "Guilherme G. Piccoli" <gpiccoli-wEGTBA9jqPzQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Date: Wed, 18 May 2022 09:58:18 +0200
-Message-ID: <YoSnGmBJ3kYs5WMf@alley>
+Date: Wed, 18 May 2022 10:09:06 -0300
+Message-ID: <8a1159c6-b4c1-87b9-8a09-6d5696f8f3f4@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com>
- <YoJZVZl/MH0KiE/J@alley>
- <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
- <YoOpyW1+q+Z5as78@alley>
+ <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com> <YoOpyW1+q+Z5as78@alley>
+ <d72b9aab-675c-ac89-b73a-b1de4a0b722d@igalia.com> <YoSijKwuwbY9uHxG@alley>
 Mime-Version: 1.0
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1652860701; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=QH8rZRpDaB1rKzYBSvbHTkuJfXIZgq5PPOEyov0S61g=;
-	b=T0gGp12c0pU5b8b1i3GTuIGm3SeP3EhRpXPECQNn/enftlsKdapz4VZkfCcS2uIPqM17q+
-	/PBA3AVHUNLBKEckN04LlFAw1RfXD18Ad2wMfhhColdg9InPjS0Cl4zZnO5bfZL0Ln9Soj
-	5NqvLRJqL5BZI+4DmlPHTXzoYIVJS4o=
-Content-Disposition: inline
-In-Reply-To: <YoOpyW1+q+Z5as78@alley>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc: David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>, Julius Werner <jwerner@chromium.org>, Scott Branden <scott.branden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclin
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Du0yR9uhHpKwWrKsjoqMfifs7bCXApVmJcTLKS159Q8=; b=KR8Ca3qzn6Prru2b2ovD3a5c88
+        3Yl32PXNgwJAzJv1K+GwtALbIi3R7PHWPogPI//mjA46BacEdcFlczlu7VgbqBbi0iRFln4dhAmL3
+        5vAwoEH2Y5npRXnrsBS0Pt1IPEFHpxBOrNJbK+CGAUFY1mpA/Xk/bDS+XL+ITQtGq3i57YSw2ze27
+        6u/aeZyJiDji8Ld6K9lb+iY/t9E1NA5TGk8rCRjPY8WXYQAQH85dDOYmikTTt80JzPDf76BhHmUH/
+        IE+yGx2cI+Y6f449JTeHotkEOnM9AIr+trG8kHtj2MTTykTHXqJtKMQ7SzJhAjeP0O52jetyt0xPW
+        XVvP+JX 
+Content-Language: en-US
+In-Reply-To: <YoSijKwuwbY9uHxG@alley>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>
+Cc: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Gow <davidgow-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Evan Green <evgreen-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Julius Werner <jwerner-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-edac-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-xtensa@linux-xt
 
-On Tue 2022-05-17 15:57:34, Petr Mladek wrote:
-> On Mon 2022-05-16 12:06:17, Guilherme G. Piccoli wrote:
-> > >> --- a/drivers/soc/bcm/brcmstb/pm/pm-arm.c
-> > >> +++ b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
-> > >> @@ -814,7 +814,7 @@ static int brcmstb_pm_probe(struct platform_device *pdev)
-> > >>  		goto out;
-> > >>  	}
-> > >>  
-> > >> -	atomic_notifier_chain_register(&panic_notifier_list,
-> > >> +	atomic_notifier_chain_register(&panic_hypervisor_list,
-> > >>  				       &brcmstb_pm_panic_nb);
-> > > 
-> > > I am not sure about this one. It instruct some HW to preserve DRAM.
-> > > IMHO, it better fits into pre_reboot category but I do not have
-> > > strong opinion.
-> > 
-> > Disagree here, I'm CCing Florian for information.
-> > 
-> > This notifier preserves RAM so it's *very interesting* if we have
-> > kmsg_dump() for example, but maybe might be also relevant in case kdump
-> > kernel is configured to store something in a persistent RAM (then,
-> > without this notifier, after kdump reboots the system data would be lost).
+On 18/05/2022 04:38, Petr Mladek wrote:
+> [...]
+> I have answered this in more detail in the other reply, see
+> https://lore.kernel.org/r/YoShZVYNAdvvjb7z@alley
 > 
-> I see. It is actually similar problem as with
-> drivers/firmware/google/gsmi.c.
+> I agree that both notifiers in
+> 
+>     drivers/soc/bcm/brcmstb/pm/pm-arm.c
+>     drivers/firmware/google/gsmi.c
+> 
+> better fit into the hypervisor list after all.
+> 
+> Best Regards,
+> Petr
 
-As discussed in the other other reply, it seems that both affected
-notifiers do not store kernel logs and should stay in the "hypervisor".
-
-> I does similar things like kmsg_dump() so it should be called in
-> the same location (after info notifier list and before kdump).
->
-> A solution might be to put it at these notifiers at the very
-> end of the "info" list or make extra "dump" notifier list.
-
-I just want to point out that the above idea has problems.
-Notifiers storing kernel log need to be treated as kmsg_dump().
-In particular, we would  need to know if there are any.
-We do not need to call "info" notifier list before kdump
-when there is no kernel log dumper registered.
-
-Best Regards,
-Petr
-
+Perfect, thanks - will keep both in such list for V2.
