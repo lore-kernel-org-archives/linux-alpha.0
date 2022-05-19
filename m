@@ -1,84 +1,44 @@
-From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Date: Thu, 19 May 2022 09:19:31 -0300
-Message-ID: <edbaa4fa-561c-6f5e-f2ab-43ae68acaede@igalia.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
- <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com> <YoOpyW1+q+Z5as78@alley>
- <d72b9aab-675c-ac89-b73a-b1de4a0b722d@igalia.com>
- <81878a67-21f1-fee8-1add-f381bc8b05df@broadcom.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [RFC PATCH 0/8] signals: Support more than 64 signals
+Date: Thu, 19 May 2022 14:27:46 +0200
+Message-ID: <20220519122746.GA3904@localhost>
+References: <20220103181956.983342-1-walt@drummond.us>
+ <87iluzidod.fsf@email.froward.int.ebiederm.org>
+ <YdSzjPbVDVGKT4km@mit.edu>
+ <87pmp79mxl.fsf@email.froward.int.ebiederm.org>
+ <YdTI16ZxFFNco7rH@mit.edu>
+ <CADCN6nzT-Dw-AabtwWrfVRDd5HzMS3EOy8WkeomicJF07nQyoA@mail.gmail.com>
+ <YdiUiHAhLyfgpvVY@cello>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=e6xrJm1a3ay+4weLnrCkh2SRSEeyZycIIB/twweqf9Y=; b=BhOEtl3IEpq+ZutVgH7P2rHsfA
-        mhGkC2PSuDrVyQ8IQfXtbB2pfD2fLPqKTP1L2vPLew3hLPbkforpZGHUalxvr86M8T2G/zNh0P/pw
-        wi++cJ5XXfisCo4sQPAYOpaVMhBvNWB3svhNAgbQKxYFPy0Oeko+Z9jhUOVMogS4VQkCRHPLo2bnq
-        jjqxb69zYzPORFRcZZlayXhHSqDz7B+6f3XjEVdBQ2ftzK2PDz+TwQa11JztdT1Ouzc0j+U1m1POY
-        rbklHHuyIwI+fwGIyQbgwTEldlCv1PEui/a5Qzds7nWr2ZDdu+bcGybfUaDSvUQ/88wOr+qjGKQ2s
-        3BFZ9Ur 
-Content-Language: en-US
-In-Reply-To: <81878a67-21f1-fee8-1add-f381bc8b05df@broadcom.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <YdiUiHAhLyfgpvVY@cello>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Scott Branden <scott.branden@broadcom.com>, Petr Mladek <pmladek@suse.com>, Sebastian Reichel <sre@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Desmond yan <desmond.yan@broadcom.com>
-Cc: David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>, Julius Werner <jwerner@chromium.org>, bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org, akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org, sparclinux@vger.kernel.org, xen-devel@li
+Content-Transfer-Encoding: 7bit
+To: Arseny Maslennikov <ar@cs.msu.ru>
+Cc: Walt Drummond <walt@drummond.us>, Theodore Ts'o <tytso@mit.edu>, "Eric W. Biederman" <ebiederm@xmission.com>, aacraid@microsemi.com, viro@zeniv.linux.org.uk, anna.schumaker@netapp.com, arnd@arndb.de, bsegall@google.com, bp@alien8.de, chuck.lever@oracle.com, bristot@redhat.com, dave.hansen@linux.intel.com, dwmw2@infradead.org, dietmar.eggemann@arm.com, dinguyen@kernel.org, geert@linux-m68k.org, gregkh@linuxfoundation.org, hpa@zytor.com, idryomov@gmail.com, mingo@redhat.com, yzaikin@google.com, ink@jurassic.park.msu.ru, jejb@linux.ibm.com, jmorris@namei.org, bfields@fieldses.org, jlayton@kernel.org, jirislaby@kernel.org, john.johansen@canonical.com, juri.lelli@redhat.com, keescook@chromium.org, mcgrof@kernel.org, martin.petersen@oracle.com, mattst88@gmail.com, mgorman@suse.de, oleg@r
 
-On 18/05/2022 19:17, Scott Branden wrote:
-> Hi Guilherme,
+Hi!
+
+> > The only standard tools that support SIGINFO are sleep, dd and ping,
+> > (and kill, for obvious reasons) so it's not like there's a vast hole
+> > in the tooling or something, nor is there a large legacy software base
+> > just waiting for SIGINFO to appear.   So while I very much enjoyed
+> > figuring out how to make SIGINFO work ...
 > 
-> +Desmond
-> [...] 
->>>> I'm afraid it breaks kdump if this device is not reset beforehand - it's
->>>> a doorbell write, so not high risk I think...
->>>>
->>>> But in case the not-reset device can be probed normally in kdump kernel,
->>>> then I'm fine in moving this to the reboot list! I don't have the HW to
->>>> test myself.
->>>
->>> Good question. Well, it if has to be called before kdump then
->>> even "hypervisor" list is a wrong place because is not always
->>> called before kdump.
->> [...]
-> We register to the panic notifier so that we can kill the VK card ASAP
-> to stop DMAing things over to the host side.  If it is not notified then
-> memory may not be frozen when kdump is occurring.
-> Notifying the card on panic is also needed to allow for any type of 
-> reset to occur.
+> As far as I recall, GNU make on *BSD does support SIGINFO (Not a
+> standard tool, but obviously an established one).
 > 
-> So, the only thing preventing moving the notifier later is the chance
-> that memory is modified while kdump is occurring.  Or, if DMA is 
-> disabled before kdump already then this wouldn't be an issue and the 
-> notification to the card (to allow for clean resets) can be done later.
+> The developers of strace have expressed interest in SIGINFO support
+> to print tracer status messages (unfortunately, not on a public list).
+> Computational software can use this instead of stderr progress spam, if
+> run in an interactive fashion on a terminal, as it frequently is. There
+> is a user base, it's just not very vocal on kernel lists. :)
 
-Hi Scott / Desmond, thanks for the detailed answer! Is this adapter
-designed to run in x86 only or you have other architectures' use cases?
+And often it would be useful if cp supported this. Yes, this
+is feature I'd like to see.
 
-I'm not expert on that, but I guess whether DMA is "kept" or not depends
-a bit if IOMMU is used. IIRC, there was a copy of the DMAR table in
-kdump (at least for Intel IOMMU). Also, devices are not properly
-quiesced on kdump IIUC, we don't call shutdown/reset handlers, they're
-skip due to the crash nature - so there is a risk of devices doing bad
-things in the new kernel.
+BR,							Pavel
 
-With that said, and given this is a lightweight notifier that ideally
-should run ASAP, I'd keep this one in the hypervisor list. We can
-"adjust" the semantic of this list to include lightweight notifiers that
-reset adapters.
-
-With that said, Petr has a point - not always such list is going to be
-called before kdump. So, that makes me think in another idea: what if we
-have another list, but not on panic path, but instead in the custom
-crash_shutdown()? Drivers could add callbacks there that must execute
-before kexec/kdump, no matter what.
-
-Let me know your thoughts Scott / Desmond / Petr and all interested parties.
-Cheers,
-
-
-Guilherme
+-- 
