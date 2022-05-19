@@ -1,60 +1,42 @@
-From: Petr Mladek <pmladek@suse.com>
+From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Date: Thu, 19 May 2022 09:03:52 +0200
-Message-ID: <YoXr2AD+Jc/ukUhJ@alley>
+Date: Thu, 19 May 2022 09:07:25 -0300
+Message-ID: <73ade79a-5d76-0e68-708c-f14d3665a7d2@igalia.com>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com>
- <YoJZVZl/MH0KiE/J@alley>
- <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
- <YoOpyW1+q+Z5as78@alley>
- <YoSnGmBJ3kYs5WMf@alley>
- <fbbd0a8d-2ef4-4a39-4b75-354918e85778@igalia.com>
+ <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com> <YoOpyW1+q+Z5as78@alley>
+ <YoSnGmBJ3kYs5WMf@alley> <fbbd0a8d-2ef4-4a39-4b75-354918e85778@igalia.com>
+ <YoXr2AD+Jc/ukUhJ@alley>
 Mime-Version: 1.0
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652943838; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=395st/CngVntAAOn5uSBsdHcf6UJsehUQOcbe6ab9wI=;
-        b=qJ/FgyV3p4LuXUdkZjoAbs2+ewn4o7aNZN0S67D2rC96Mde70WoKxt5D1iYy3vIxFGNywX
-        NYQFStO7xXozlUSKqQPZCblT/M2McgEFa5ttVGDSrZzFsBjH4DUBLxqHsrlOhubnXz8Ip9
-        VRfQAfc3f6HDJx77hS/XQSQpNXuMeJQ=
-Content-Disposition: inline
-In-Reply-To: <fbbd0a8d-2ef4-4a39-4b75-354918e85778@igalia.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=8Or+sigV8tAW403lBCNOcYfh+f/QtBZxoM4MtJnkEDo=; b=JqidS10tAFi8w45bv/QRWgkoh/
+        KOgIwZ/tIUUpLlbLrbLO1ldSksH/br07uow35GeONuGXn9H2gl6Zc+ITyazsuepTHCwyY7cXFe/h7
+        MtwjDL5RB9ZO6kq5gTfsayx//B9lueprkuY9Bysrv6zGbl5LRv1UeYThThR2djyvHZK5yH9WAOS3f
+        IAvBZnCmpegeYcMo7srxsmSG31D8d5jvfPawZOHcM5Mv+NhxsgRuyQoZ7I4NYbnvdtmZ38tbx+LTT
+        WmYVOrIBhGzwQtf/+4wAyIFnS+fHagBv45fyKy1zunamCTiZMunglm+e59nItrKVAlZjSL4ou4wbM
+        ShGTIh/ 
+Content-Language: en-US
+In-Reply-To: <YoXr2AD+Jc/ukUhJ@alley>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To: Petr Mladek <pmladek@suse.com>
 Cc: David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>, Julius Werner <jwerner@chromium.org>, Scott Branden <scott.branden@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>, akpm@linux-foundation.org, bhe@redhat.com, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org
 
-On Wed 2022-05-18 10:16:20, Guilherme G. Piccoli wrote:
-> On 18/05/2022 04:58, Petr Mladek wrote:
-> > [...]
-> >> I does similar things like kmsg_dump() so it should be called in
-> >> the same location (after info notifier list and before kdump).
-> >>
-> >> A solution might be to put it at these notifiers at the very
-> >> end of the "info" list or make extra "dump" notifier list.
-> > 
-> > I just want to point out that the above idea has problems.
-> > Notifiers storing kernel log need to be treated as kmsg_dump().
-> > In particular, we would  need to know if there are any.
-> > We do not need to call "info" notifier list before kdump
-> > when there is no kernel log dumper registered.
-> > 
+On 19/05/2022 04:03, Petr Mladek wrote:
+> [...]
+> I would ignore it for now. If anyone would want to safe the log
+> then they would need to read it. They will most likely use
+> the existing kmsg_dump() infastructure. In fact, they should
+> use it to avoid a code duplication.
 > 
-> Notifiers respect the priority concept, which is just a number that
-> orders the list addition (and the list is called in order).
-> 
-> I've used the last position to panic_print() [in patch 25] - one idea
-> here is to "reserve" the last position (represented by INT_MIN) for
-> notifiers that act like kmsg_dump(). I couldn't find any IIRC, but that
-> doesn't prevent us to save this position and comment about that.
+> Best Regards,
+> Petr
 
-I would ignore it for now. If anyone would want to safe the log
-then they would need to read it. They will most likely use
-the existing kmsg_dump() infastructure. In fact, they should
-use it to avoid a code duplication.
-
-Best Regards,
-Petr
+Cool, thanks! I agree, let's expect people use kmsg_dump() as they should =)
