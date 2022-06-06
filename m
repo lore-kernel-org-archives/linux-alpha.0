@@ -1,67 +1,89 @@
-From: Khalid Aziz <khalid@gonehiking.org>
-Subject: Re: [PATCH 5/6] scsi: remove stale BusLogic driver
-Date: Mon, 6 Jun 2022 10:35:28 -0600
-Message-ID: <d39fc9bb-07c1-ad74-1e89-d2aa80578cd4@gonehiking.org>
-References: <20220606084109.4108188-1-arnd@kernel.org>
- <20220606084109.4108188-6-arnd@kernel.org>
-Reply-To: khalid@gonehiking.org
+From: Yury Norov <yury.norov@gmail.com>
+Subject: Re: [PATCH 4/6] bitops: unify non-atomic bitops prototypes across
+ architectures
+Date: Mon, 6 Jun 2022 13:48:50 -0700
+Message-ID: <Yp5oMmzNlq+Ut4So@yury-laptop>
+References: <20220606114908.962562-1-alexandr.lobakin@intel.com>
+ <20220606114908.962562-5-alexandr.lobakin@intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-Content-Language: en-US
-In-Reply-To: <20220606084109.4108188-6-arnd@kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g2dcvEx5ujIfq/vGwsQoEKMbkEYSqcC+pGjcA0dBu1c=;
+        b=f7b0v5dv8hmLnBlzL8WyYq5cOW64Y5WX7Dmpl69JKaPauL++ld78WKF8ntff7E3FD9
+         /EFPnKoGaHbNkPIgpiRh5FlgefHuwLc1yxNkOW+bHut9SVnVZCbu/JkykiPElo5zPWjp
+         nCuHLbsnuv21eFXD2iNnywm2Hbn427FK25GFy6T1JFuumczjXmgtp3nChf3HO/XhNBhM
+         NXjSU4JD0/Av3t8AAMTU1yL794U7NXS8pa6qxIcfy7ouTJCp/SF65MboQcoKMXA5+/fk
+         R0q5tIVK+/ksEV405xlxflOCs1qdnp/FFVTP6I8k8VtwErnFZfCokgUB0civbDGx+Ib2
+         7GIg==
+Content-Disposition: inline
+In-Reply-To: <20220606114908.962562-5-alexandr.lobakin@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-scsi@vger.kernel.org, Manohar Vanga <manohar.vanga@gmail.com>, Martyn Welch <martyn@welchs.me.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org, Denis Efremov <efremov@linux.com>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-arch
 
-On 6/6/22 02:41, Arnd Bergmann wrote:
-> From: Arnd Bergmann<arnd@arndb.de>
+On Mon, Jun 06, 2022 at 01:49:05PM +0200, Alexander Lobakin wrote:
+> Currently, there is a mess with the prototypes of the non-atomic
+> bitops across the different architectures:
 > 
-> The BusLogic driver is the last remaining driver that relies on the
-> deprecated bus_to_virt() function, which in turn only works on a few
-> architectures, and is incompatible with both swiotlb and iommu support.
+> ret	bool, int, unsigned long
+> nr	int, long, unsigned int, unsigned long
+> addr	volatile unsigned long *, volatile void *
 > 
-> Before commit 391e2f25601e ("[SCSI] BusLogic: Port driver to 64-bit."),
-> the driver had a dependency on x86-32, presumably because of this
-> problem. However, the change introduced another bug that made it still
-> impossible to use the driver on any 64-bit machine.
+> Thankfully, it doesn't provoke any bugs, but can sometimes make
+> the compiler angry when it's not handy at all.
+> Adjust all the prototypes to the following standard:
 > 
-> This was in turn fixed in commit 56f396146af2 ("scsi: BusLogic: Fix
-> 64-bit system enumeration error for Buslogic"), 8 years later.
+> ret	bool				retval can be only 0 or 1
+> nr	unsigned long			native; signed makes no sense
+> addr	volatile unsigned long *	bitmaps are arrays of ulongs
 > 
-> The fact that this was found at all is an indication that there are
-> users, and it seems that Maciej, Matt and Khalid all have access to
-> this hardware, but if it took eight years to find the problem,
-> it's likely that nobody actually relies on it.
+> Finally, add some static assertions in order to prevent people from
+> making a mess in this room again.
+> I also used the %__always_inline attribute consistently they always
+> get resolved to the actual operations.
 > 
-> Remove it as part of the global virt_to_bus()/bus_to_virt() removal.
-> If anyone is still interested in keeping this driver, the alternative
-> is to stop it from using bus_to_virt(), possibly along the lines of
-> how dpt_i2o gets around the same issue.
-> 
-> Cc: Maciej W. Rozycki<macro@orcam.me.uk>
-> Cc: Matt Wang<wwentao@vmware.com>
-> Cc: Khalid Aziz<khalid@gonehiking.org>
-> Signed-off-by: Arnd Bergmann<arnd@arndb.de>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 > ---
->   Documentation/scsi/BusLogic.rst   |  581 ---
->   Documentation/scsi/FlashPoint.rst |  176 -
->   MAINTAINERS                       |    7 -
->   drivers/scsi/BusLogic.c           | 3727 --------------
->   drivers/scsi/BusLogic.h           | 1284 -----
->   drivers/scsi/FlashPoint.c         | 7560 -----------------------------
->   drivers/scsi/Kconfig              |   24 -
->   7 files changed, 13359 deletions(-)
->   delete mode 100644 Documentation/scsi/BusLogic.rst
->   delete mode 100644 Documentation/scsi/FlashPoint.rst
->   delete mode 100644 drivers/scsi/BusLogic.c
->   delete mode 100644 drivers/scsi/BusLogic.h
->   delete mode 100644 drivers/scsi/FlashPoint.c
 
-I would say no to removing BusLogic driver. Virtualbox is another 
-consumer of this driver. This driver is very old but I would rather fix 
-the issues than remove it until we do not have any users.
+Reviewed-by: Yury Norov <yury.norov@gmail.com>
+
+[...]
+
+> diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> index 7aaed501f768..5520ac9b1c24 100644
+> --- a/include/linux/bitops.h
+> +++ b/include/linux/bitops.h
+> @@ -26,12 +26,25 @@ extern unsigned int __sw_hweight16(unsigned int w);
+>  extern unsigned int __sw_hweight32(unsigned int w);
+>  extern unsigned long __sw_hweight64(__u64 w);
+>  
+> +#include <asm-generic/bitops/generic-non-atomic.h>
+> +
+>  /*
+>   * Include this here because some architectures need generic_ffs/fls in
+>   * scope
+>   */
+>  #include <asm/bitops.h>
+>  
+> +/* Check that the bitops prototypes are sane */
+> +#define __check_bitop_pr(name)	static_assert(__same_type(name, gen_##name))
+> +__check_bitop_pr(__set_bit);
+> +__check_bitop_pr(__clear_bit);
+> +__check_bitop_pr(__change_bit);
+> +__check_bitop_pr(__test_and_set_bit);
+> +__check_bitop_pr(__test_and_clear_bit);
+> +__check_bitop_pr(__test_and_change_bit);
+> +__check_bitop_pr(test_bit);
+> +#undef __check_bitop_pr
+
+This one is amazing trick! And the series is good overall. Do you want me to
+take it in bitmap tree, when it's ready, or you'll move it somehow else?
 
 Thanks,
-Khalid
+Yury
