@@ -1,37 +1,57 @@
-From: Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [PATCH 0/6] phase out CONFIG_VIRT_TO_BUS
-Date: Mon, 6 Jun 2022 17:01:44 +0200
-Message-ID: <CAK8P3a15RuR3VOPLPV3SfdBAGuoyor6o7JMs3kC5dNB5nfDuKA@mail.gmail.com>
-References: <20220606084109.4108188-1-arnd@kernel.org> <Yp3ID86TBFxl7qyL@kroah.com>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 3/6] bitops: define gen_test_bit() the same way as the
+ rest of functions
+Date: Mon, 6 Jun 2022 17:19:42 +0100
+Message-ID: <Yp4pEULDFq13A9Wp@FVFF77S0Q05N.cambridge.arm.com>
+References: <20220606114908.962562-1-alexandr.lobakin@intel.com>
+ <20220606114908.962562-4-alexandr.lobakin@intel.com>
 Mime-Version: 1.0
-Return-path: <linux-scsi-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654527722;
-        bh=q53e8R7rif+9VorkencnO96O5zseGyAcQ5tiTh4wb5o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Apz8+ZKOfRfLg28N7czbQCp5u1APChOU6nUGQX9FaMmYF1sAaX/E+Ib6PkoNMTzP7
-         8jDO0yt1/l7zDqKQc6tX4/clq/6HkX/3W3KZ8nM3wihQ+jMlDOK9ZA4eyqtiXknfW8
-         nDehGJBGcME9NWhLnKjuKwi1RHsvWVfiUTSGjzwMBXLmNypEOY8dRiUMaB2ZPKhMqN
-         +sCEMynb2DFl+FqYA+WAgVaik3iEnEQyHuNJCcowrCU57ufs9pWJIioY3E4DJJPNzW
-         kpZWUqqFJEO2bKuHGgUG6lR6HDAoCyo7pL/NzPacNwyF3UCEA3Cxsbw6IvBn5Rr2+E
-         lkYasSc/0weOA==
-In-Reply-To: <Yp3ID86TBFxl7qyL@kroah.com>
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20220606114908.962562-4-alexandr.lobakin@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Khalid Aziz <khalid@gonehiking.org>, linux-scsi <linux-scsi@vger.kernel.org>, Manohar Vanga <manohar.vanga@gmail.com>, Martyn Welch <martyn@welchs.me.uk>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-arch <linux-arch@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Parisc List <linux-parisc@vger.kernel.org>, Denis Efremov <efremov@linux.com>
+To: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-sh@vger.kernel.org, 
 
-On Mon, Jun 6, 2022 at 11:25 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> I'll take patches 1 and 2 right now through my staging tree if that's
-> ok.
+On Mon, Jun 06, 2022 at 01:49:04PM +0200, Alexander Lobakin wrote:
+> Currently, the generic test_bit() function is defined as a one-liner
+> and in case with constant bitmaps the compiler is unable to optimize
+> it to a constant. At the same time, gen_test_and_*_bit() are being
+> optimized pretty good.
+> Define gen_test_bit() the same way as they are defined.
+> 
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-Yes, that's perfect, as there are no actual interdependencies with the
-other drivers -- applying the last patch first would just hide the driver
-I'm removing here.
+Regardless of whether compilers prefer this, I think it's nicer to have the
+structure consistent with the rest of the functions, so FWIW:
 
-Thanks,
+Acked-by: Mark Rutland <mark.rutland@arm.com>
 
-      Arnd
+Mark.
+
+> ---
+>  include/asm-generic/bitops/generic-non-atomic.h | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/asm-generic/bitops/generic-non-atomic.h b/include/asm-generic/bitops/generic-non-atomic.h
+> index 7a60adfa6e7d..202d8a3b40e1 100644
+> --- a/include/asm-generic/bitops/generic-non-atomic.h
+> +++ b/include/asm-generic/bitops/generic-non-atomic.h
+> @@ -118,7 +118,11 @@ gen___test_and_change_bit(unsigned int nr, volatile unsigned long *addr)
+>  static __always_inline int
+>  gen_test_bit(unsigned int nr, const volatile unsigned long *addr)
+>  {
+> -	return 1UL & (addr[BIT_WORD(nr)] >> (nr & (BITS_PER_LONG-1)));
+> +	const unsigned long *p = (const unsigned long *)addr + BIT_WORD(nr);
+> +	unsigned long mask = BIT_MASK(nr);
+> +	unsigned long val = *p;
+> +
+> +	return !!(val & mask);
+>  }
+>  
+>  #endif /* __ASM_GENERIC_BITOPS_GENERIC_NON_ATOMIC_H */
+> -- 
+> 2.36.1
+> 
