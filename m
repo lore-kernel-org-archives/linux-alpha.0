@@ -1,65 +1,54 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH 6/6] arch/*/: remove CONFIG_VIRT_TO_BUS
-Date: Tue, 7 Jun 2022 09:29:38 +0200
-Message-ID: <CAMuHMdXi2LkrWSs9=D9tSfhz+YDHB+638F6JdmgQ7V8Gj1ehqQ@mail.gmail.com>
-References: <20220606084109.4108188-1-arnd@kernel.org>
- <20220606084109.4108188-7-arnd@kernel.org>
+From: Martyn Welch <martyn@welchs.me.uk>
+Subject: Re: [PATCH 0/6] phase out CONFIG_VIRT_TO_BUS
+Date: Tue, 7 Jun 2022 10:09:49 +0100
+Message-ID: <CAEccXecB=rkZ1Kejmzcfay6qMMVo7Kb7SovSq+Xs1zWMnJOxnQ@mail.gmail.com>
+References: <20220606084109.4108188-1-arnd@kernel.org> <Yp3ID86TBFxl7qyL@kroah.com>
 Mime-Version: 1.0
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <Yp3ID86TBFxl7qyL@kroah.com>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20220606084109.4108188-7-arnd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
- <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-To: Arnd Bergmann <arnd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Linux-Arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-m68k <linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Martyn Welch <martyn-UcCTFicEjwugMbh0pXVFDA@public.gmane.org>, Manohar Vanga <manohar.vanga-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Denis Efremov <efremov-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Parisc List <linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alpha <linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jakub Kicinski <kuba-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Arnd Bergmann <arnd@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, Khalid Aziz <khalid@gonehiking.org>, linux-scsi@vger.kernel.org, Manohar Vanga <manohar.vanga@gmail.com>, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org, Denis Efremov <efremov@linux.com>
 
-On Mon, Jun 6, 2022 at 11:10 AM Arnd Bergmann <arnd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+On Mon, 6 Jun 2022 at 10:25, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> All architecture-independent users of virt_to_bus() and bus_to_virt()
-> have been fixed to use the dma mapping interfaces or have been
-> removed now.  This means the definitions on most architectures, and the
-> CONFIG_VIRT_TO_BUS symbol are now obsolete and can be removed.
+> On Mon, Jun 06, 2022 at 10:41:03AM +0200, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > The virt_to_bus/bus_to_virt interface has been deprecated for
+> > decades. After Jakub Kicinski put a lot of work into cleaning out the
+> > network drivers using them, there are only a couple of other drivers
+> > left, which can all be removed or otherwise cleaned up, to remove the
+> > old interface for good.
+> >
+> > Any out of tree drivers using virt_to_bus() should be converted to
+> > using the dma-mapping interfaces, typically dma_alloc_coherent()
+> > or dma_map_single()).
+> >
+> > There are a few m68k and ppc32 specific drivers that keep using the
+> > interfaces, but these are all guarded with architecture-specific
+> > Kconfig dependencies, and are not actually broken.
+> >
+> > There are still a number of drivers that are using virt_to_phys()
+> > and phys_to_virt() in place of dma-mapping operations, and these
+> > are often broken, but they are out of scope for this series.
 >
-> The only exceptions to this are a few network and scsi drivers for m68k
-> Amiga and VME machines and ppc32 Macintosh. These drivers work correctly
-> with the old interfaces and are probably not worth changing.
+> I'll take patches 1 and 2 right now through my staging tree if that's
+> ok.
 >
-> On alpha and parisc, virt_to_bus() were still used in asm/floppy.h.
-> alpha can use isa_virt_to_bus() like x86 does, and parisc can just
-> open-code the virt_to_phys() here, as this is architecture specific
-> code.
+
+Hi,
+
+I'd love to say that I could fix this stuff up, however I've lacked access to
+suitable hardware for a long time now and don't foresee that changing any
+time soon...
+
+Martyn
+
+> thanks,
 >
-> I tried updating the bus-virt-phys-mapping.rst documentation, which
-> started as an email from Linus to explain some details of the Linux-2.0
-> driver interfaces. The bits about virt_to_bus() were declared obsolete
-> backin 2000, and the rest is not all that relevant any more, so in the
-> end I just decided to remove the file completely.
+> greg k-h
 >
-> Signed-off-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-
->  arch/m68k/Kconfig                             |   1 -
->  arch/m68k/include/asm/virtconvert.h           |   4 +-
-
-Reviewed-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Acked-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
