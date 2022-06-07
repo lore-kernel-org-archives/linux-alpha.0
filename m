@@ -1,56 +1,103 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH 6/6] arch/*/: remove CONFIG_VIRT_TO_BUS
-Date: Tue, 07 Jun 2022 22:33:49 +1000
-Message-ID: <87y1y8tzyq.fsf@mpe.ellerman.id.au>
-References: <20220606084109.4108188-1-arnd@kernel.org>
- <20220606084109.4108188-7-arnd@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 0/6] bitops: let optimize out non-atomic bitops on
+ compile-time constants
+Date: Tue, 7 Jun 2022 14:45:41 +0200
+Message-ID: <CAMuHMdXR0Nu+RENB8rFnJFiW=T0P7Kq_XAG7t1MF=fdyD6pUGw@mail.gmail.com>
+References: <20220606114908.962562-1-alexandr.lobakin@intel.com>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1654605238;
-        bh=xsqLotJgLRyhHSsJOogHV2acGAb2fC5jAOSFmHOIGA8=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=CyKzGazU3+2K8KiXkFolMw7JQl3fOZLWg6z5Qa5Pu4HecLtJDYCw5wZXMKOpJGtNH
-         ls59IpcNb+xkojsRvHCc4fWQ+jCa6EIATKhLPnYyeuNIQ3bM/kCbodmjHfgOjgkZkS
-         4h1lW8cbZe+o+0DbG3jBJCA91u30ggP5RKfw27leNpg5nQnN6glbcE5esgg3QrVgMC
-         F6vtgSRCeacrQYA+phjt3HatLp44B4mYcMY4ThklAxFfrqM77MDq/rb5P0zDTt02T0
-         PGQo6ASa5inpNApELNIR+n6jSj0aWCgLFiNBXcmQyCK7Xw/Luq/s+wYpHBJDE3Ehpr
-         xujYS3Qf+FLTQ==
-In-Reply-To: <20220606084109.4108188-7-arnd@kernel.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+In-Reply-To: <20220606114908.962562-1-alexandr.lobakin@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, Khalid Aziz <khalid@gonehiking.org>, linux-scsi@vger.kernel.org, Manohar Vanga <manohar.vanga@gmail.com>, Martyn Welch <martyn@welchs.me.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org, Denis Efremov <efremov@linux.com>
+To: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Richard Henderson <rth@twiddle.net>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alpha <linux-alpha@vger.kernel.org>, "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.>
 
-Arnd Bergmann <arnd@kernel.org> writes:
-> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-> index be68c1f02b79..48e1aa0536b6 100644
-> --- a/arch/powerpc/Kconfig
-> +++ b/arch/powerpc/Kconfig
-> @@ -277,7 +277,6 @@ config PPC
->  	select SYSCTL_EXCEPTION_TRACE
->  	select THREAD_INFO_IN_TASK
->  	select TRACE_IRQFLAGS_SUPPORT
-> -	select VIRT_TO_BUS			if !PPC64
->  	#
->  	# Please keep this list sorted alphabetically.
->  	#
+Hi Alexander,
 
-> diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
-> index c5a5f7c9b231..73fcd5cdb662 100644
-> --- a/arch/powerpc/include/asm/io.h
-> +++ b/arch/powerpc/include/asm/io.h
-> @@ -985,8 +985,6 @@ static inline void * bus_to_virt(unsigned long address)
->  }
->  #define bus_to_virt bus_to_virt
->  
-> -#define page_to_bus(page)	(page_to_phys(page) + PCI_DRAM_OFFSET)
-> -
->  #endif /* CONFIG_PPC32 */
-  
-Seems that's not used by any drivers, so fine to remove.
+On Mon, Jun 6, 2022 at 1:50 PM Alexander Lobakin
+<alexandr.lobakin@intel.com> wrote:
+> While I was working on converting some structure fields from a fixed
+> type to a bitmap, I started observing code size increase not only in
+> places where the code works with the converted structure fields, but
+> also where the converted vars were on the stack. That said, the
+> following code:
+>
+>         DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
+>         unsigned long bar = BIT(BAR_BIT);
+>         unsigned long baz = 0;
+>
+>         __set_bit(FOO_BIT, foo);
+>         baz |= BIT(BAZ_BIT);
+>
+>         BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
+>         BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
+>         BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
+>
+> triggers the first assertion on x86_64, which means that the
+> compiler is unable to evaluate it to a compile-time initializer
+> when the architecture-specific bitop is used even if it's obvious.
+> I found that this is due to that many architecture-specific
+> non-atomic bitop implementations use inline asm or other hacks which
+> are faster or more robust when working with "real" variables (i.e.
+> fields from the structures etc.), but the compilers have no clue how
+> to optimize them out when called on compile-time constants.
+>
+> So, in order to let the compiler optimize out such cases, expand the
+> test_bit() and __*_bit() definitions with a compile-time condition
+> check, so that they will pick the generic C non-atomic bitop
+> implementations when all of the arguments passed are compile-time
+> constants, which means that the result will be a compile-time
+> constant as well and the compiler will produce more efficient and
+> simple code in 100% cases (no changes when there's at least one
+> non-compile-time-constant argument).
+> The condition itself:
+>
+> if (
+> __builtin_constant_p(nr) &&     /* <- bit position is constant */
+> __builtin_constant_p(!!addr) && /* <- compiler knows bitmap addr is
+>                                       always either NULL or not */
+> addr &&                         /* <- bitmap addr is not NULL */
+> __builtin_constant_p(*addr)     /* <- compiler knows the value of
+>                                       the target bitmap */
+> )
+>         /* then pick the generic C variant
+> else
+>         /* old code path, arch-specific
+>
+> I also tried __is_constexpr() as suggested by Andy, but it was
+> always returning 0 ('not a constant') for the 2,3 and 4th
+> conditions.
+>
+> The savings on x86_64 with LLVM are insane (.text):
+>
+> $ scripts/bloat-o-meter -c vmlinux.{base,test}
+> add/remove: 72/75 grow/shrink: 182/518 up/down: 53925/-137810 (-83885)
+>
+> $ scripts/bloat-o-meter -c vmlinux.{base,mod}
+> add/remove: 7/1 grow/shrink: 1/19 up/down: 1135/-4082 (-2947)
+>
+> $ scripts/bloat-o-meter -c vmlinux.{base,all}
+> add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+Thank you!
 
-cheers
+I gave it a try on m68k, and am a bit disappointed seeing an increase
+in code size:
+
+    add/remove: 49/13 grow/shrink: 279/138 up/down: 6434/-3342 (3092)
+
+This is atari_defconfig on a tree based on v5.19-rc1, with
+m68k-linux-gnu-gcc (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0, GNU ld (GNU
+Binutils for Ubuntu) 2.34).
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
