@@ -1,47 +1,53 @@
-From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH 24/30] panic: Refactor the panic path
-Date: Wed, 15 Jun 2022 11:36:39 +0200
-Message-ID: <362f6520-8209-1721-823c-11928338f57d@igalia.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-25-gpiccoli@igalia.com>
- <87fskzuh11.fsf@email.froward.int.ebiederm.org>
- <0d084eed-4781-c815-29c7-ac62c498e216@igalia.com> <Yqic0R8/UFqTbbMD@alley>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: RE: [PATCH v2 4/6] bitops: define const_*() versions of the
+ non-atomics
+Date: Wed, 15 Jun 2022 15:52:11 +0000
+Message-ID: <09c5a168af144f0f917f5f2f453e309a@AcuMS.aculab.com>
+References: <20220610113427.908751-1-alexandr.lobakin@intel.com>
+ <20220610113427.908751-5-alexandr.lobakin@intel.com>
+ <YqlKpwjQ4Hu+Lr8u@yury-laptop>
+ <20220615135506.1264880-1-alexandr.lobakin@intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=75kgVCcqOPOLeu4JBiLLFab/dM4uNZ1dcLuvpDx9ZCg=; b=kAIWl67VuUe8cBDkmFOZTh4b+J
-        Uy6PgE2+CwIEzhFEfsXCTAadcMkk5TefuTIBHvgzxNrjmUz+/r/f3fMBR5i8mMC7UweLMh9MkeJoD
-        97gkOJRUGibA77qDy9s4vL7NkQkS1Sv+TX4WpruLFHmbGvImVgE9LeYadgdIraA8AGxMlB+PxaWy/
-        1adKvJuvvpCbTsZosCqi5SMDlMupfKEgEY7JpKMS8HhvbF7gyowCTheRqW0YX0S9D05qpW9G1fKLt
-        DJUWQ6k8Tz/HxaHb6kuJRSWnDBXrsJA/DQco3hh/lFSm8XLWvSeNFNfH2bKr+ugXM0hH/Gw2zl2s+
-        laFslj7 
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <20220615135506.1264880-1-alexandr.lobakin@intel.com>
 Content-Language: en-US
-In-Reply-To: <Yqic0R8/UFqTbbMD@alley>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Petr Mladek <pmladek@suse.com>
-Cc: bhe@redhat.com, d.hatayama@jp.fujitsu.com, "Eric W. Biederman" <ebiederm@xmission.com>, Mark Rutland <mark.rutland@arm.com>, mikelley@microsoft.com, vkuznets@redhat.com, akpm@linux-foundation.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org, linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net, rcu@v
+To: 'Alexander Lobakin' <alexandr.lobakin@intel.com>, Yury Norov <yury.norov@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mark Rutland <mark.rutland@arm.com>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-hexagon@vger.kernel.org" <linux-hexagon@vger.kernel.org>, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>
 
-Perfect Petr, thanks for your feedback!
+From: Alexander Lobakin
+> Sent: 15 June 2022 14:55
+...
+> > > +/**
+> > > + * const_test_bit - Determine whether a bit is set
+> > > + * @nr: bit number to test
+> > > + * @addr: Address to start counting from
+> > > + *
+> > > + * A version of generic_test_bit() which discards the `volatile` qualifier to
+> > > + * allow the compiler to optimize code harder. Non-atomic and to be used only
+> > > + * for testing compile-time constants, e.g. from the corresponding macro, or
+> > > + * when you really know what you are doing.
+> >
+> > Not sure I understand the last sentence... Can you please rephrase?
+> 
+> I basically want to tell that there potentinally might be cases for
+> using those outside of the actual macros from 6/6. But it might be
+> redundant at all to mention this.
 
-I'll be out for some weeks, but after that what I'm doing is to split
-the series in 2 parts:
+I bet that is a function has:
+	long bitmask;
+	...
+	if (test_bit(&bitmask, 12))
+then the 'volatile' forces the compiler to actually write the
+value out to memory (stack) instead of doing a register op.
 
-(a) The general fixes, which should be reviewed by subsystem maintainers
-and even merged individually by them.
+OTOH such code should be using &.
 
-(b) The proper panic refactor, which includes the notifiers list split,
-etc. I'll think about what I consider the best solution for the
-crash_dump required ones, and will try to split in very simple patches
-to make it easier to review.
+	David
 
-Cheers,
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-
-Guilherme
