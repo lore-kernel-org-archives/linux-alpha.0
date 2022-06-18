@@ -1,99 +1,60 @@
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH v3 4/7] bitops: define const_*() versions of the non-atomics
-Date: Fri, 17 Jun 2022 16:40:28 +0200
-Message-ID: <20220617144031.2549432-5-alexandr.lobakin@intel.com>
-References: <20220617144031.2549432-1-alexandr.lobakin@intel.com>
+From: Michael Schmitz <schmitzmic@gmail.com>
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+Date: Sat, 18 Jun 2022 13:06:40 +1200
+Message-ID: <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655484722; x=1687020722;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RrGMYQ9AwVKb0nm3YeK2st1qMloseK6LRdC/eA92LbY=;
-  b=WTjWhq1weTOUjK7ieqCpSvXuVZgWoStR/uL7Oatz2TZN5WEBuVX5Tpq/
-   ZIzOJHWiYy1v/n7vpglTffPNDIcbmIYO37hgEddKzslFtky4S3bxPY+Zx
-   ZVt2G7ajgKbHBbGl14z58waBPqY3Vzus/1T+VLPjD2twuEhZ88HUIRUnM
-   alkMYVUvo0/2OoZI0XKH1sfgudRh81nYkQdmFz0iCPiNu/ZUsxTrB7J6n
-   4rCt2wF/7MsOpGxGrgO5WfMBka+LDwcb/q9wT/S0rkCvSTfV2H3+WTGNa
-   FntjeR0LsoKGgnDSqVPhfEgQyqVVKWL4nLswMcVL7YQMIC4JGRNu0CyAe
-   A==;
-In-Reply-To: <20220617144031.2549432-1-alexandr.lobakin@intel.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=KRIeihzYwpT99jVYyWrBvkWlYlvrvIZJfg260Yku6Lc=;
+        b=mYCiRA6jX3TZBBpH5i1bdKxf86pnFybirRcUnA7+QegXGbzOVw+vVyBSconShTfcN0
+         cCwY9Lg+Wp1DUlN7ZuDKZXZp+Lq9oTrhj5Egt9NASpHMRY0WFnq2TqiOXmxGI5seYlbP
+         q0BPpHgaiqex7reMZd7eeiSPLbAesZfnXOSNpNddBnH0OtREDZ0fHr/GsKwCbGO2CEAh
+         0hN2+Q0eH6pq4ZYITkDSH3pFg/hKtXahXOuIosfi8Y0II3BWuxt8tZ5GTulif6PPtR6w
+         mWvi9cySEswvHdKCNsD70zRyxq32NFDfKs677RtcCSsSo3yIFNheD9lUFe9of5dO2FCw
+         T3OQ==
+In-Reply-To: <20220617125750.728590-4-arnd@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>
-Cc: Alexander Lobakin <alexandr.lobakin@intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mark Rutland <mark.rutland@arm.com>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Jesse Brandeburg <jesse.brandeburg@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Arnd Bergmann <arnd@kernel.org>, linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org, Denis Efremov <efremov@linux.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Michael Ellerman <mpe@ellerman.id.au>
 
-Define const_*() variants of the non-atomic bitops to be used when
-the input arguments are compile-time constants, so that the compiler
-will be always able to resolve those to compile-time constants as
-well. Those are mostly direct aliases for generic_*() with one
-exception for const_test_bit(): the original one is declared
-atomic-safe and thus doesn't discard the `volatile` qualifier, so
-in order to let optimize code, define it separately disregarding
-the qualifier.
-Add them to the compile-time type checks as well just in case.
+Arnd,
 
-Suggested-by: Marco Elver <elver@google.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- .../asm-generic/bitops/generic-non-atomic.h   | 31 +++++++++++++++++++
- include/linux/bitops.h                        |  1 +
- 2 files changed, 32 insertions(+)
+Am 18.06.2022 um 00:57 schrieb Arnd Bergmann:
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> All architecture-independent users of virt_to_bus() and bus_to_virt()
+> have been fixed to use the dma mapping interfaces or have been
+> removed now.  This means the definitions on most architectures, and the
+> CONFIG_VIRT_TO_BUS symbol are now obsolete and can be removed.
+>
+> The only exceptions to this are a few network and scsi drivers for m68k
+> Amiga and VME machines and ppc32 Macintosh. These drivers work correctly
+> with the old interfaces and are probably not worth changing.
 
-diff --git a/include/asm-generic/bitops/generic-non-atomic.h b/include/asm-generic/bitops/generic-non-atomic.h
-index b85b8a2ac239..3d5ebd24652b 100644
---- a/include/asm-generic/bitops/generic-non-atomic.h
-+++ b/include/asm-generic/bitops/generic-non-atomic.h
-@@ -127,4 +127,35 @@ generic_test_bit(unsigned long nr, const volatile unsigned long *addr)
- 	return 1UL & (addr[BIT_WORD(nr)] >> (nr & (BITS_PER_LONG-1)));
- }
- 
-+/*
-+ * const_*() definitions provide good compile-time optimizations when
-+ * the passed arguments can be resolved at compile time.
-+ */
-+#define const___set_bit			generic___set_bit
-+#define const___clear_bit		generic___clear_bit
-+#define const___change_bit		generic___change_bit
-+#define const___test_and_set_bit	generic___test_and_set_bit
-+#define const___test_and_clear_bit	generic___test_and_clear_bit
-+#define const___test_and_change_bit	generic___test_and_change_bit
-+
-+/**
-+ * const_test_bit - Determine whether a bit is set
-+ * @nr: bit number to test
-+ * @addr: Address to start counting from
-+ *
-+ * A version of generic_test_bit() which discards the `volatile` qualifier to
-+ * allow a compiler to optimize code harder. Non-atomic and to be called only
-+ * for testing compile-time constants, e.g. by the corresponding macros, not
-+ * directly from "regular" code.
-+ */
-+static __always_inline bool
-+const_test_bit(unsigned long nr, const volatile unsigned long *addr)
-+{
-+	const unsigned long *p = (const unsigned long *)addr + BIT_WORD(nr);
-+	unsigned long mask = BIT_MASK(nr);
-+	unsigned long val = *p;
-+
-+	return !!(val & mask);
-+}
-+
- #endif /* __ASM_GENERIC_BITOPS_GENERIC_NON_ATOMIC_H */
-diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-index 87087454a288..d393297287d5 100644
---- a/include/linux/bitops.h
-+++ b/include/linux/bitops.h
-@@ -37,6 +37,7 @@ extern unsigned long __sw_hweight64(__u64 w);
- /* Check that the bitops prototypes are sane */
- #define __check_bitop_pr(name)						\
- 	static_assert(__same_type(arch_##name, generic_##name) &&	\
-+		      __same_type(const_##name, generic_##name) &&	\
- 		      __same_type(name, generic_##name))
- 
- __check_bitop_pr(__set_bit);
--- 
-2.36.1
+The Amiga SCSI drivers are all old WD33C93 ones, and replacing 
+virt_to_bus by virt_to_phys in the dma_setup() function there would 
+cause no functional change at all.
 
+drivers/vme/bridges/vme_ca91cx42.c hasn't been used at all on m68k (it 
+is a PCI-to-VME bridge chipset driver that would be needed on 
+architectures that natively use a PCI bus). I haven't found anything 
+that selects that driver, so not sure it is even still in use??
+
+That would allow you to drop the remaining virt_to_bus define from 
+arch/m68k/include/asm/virtconvert.h.
+
+I could submit a patch to convert the Amiga SCSI drivers to use 
+virt_to_phys if Geert and the SCSI maintainers think it's worth the churn.
+
+32bit powerpc is a different matter though.
+
+Cheers,
+
+	Michael
