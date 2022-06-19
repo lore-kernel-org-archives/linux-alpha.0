@@ -1,50 +1,42 @@
-From: Matthew Wilcox <willy@infradead.org>
+From: Ralph Corderoy <ralph@inputplus.co.uk>
 Subject: Re: [PATCH v2] Implement close-on-fork
-Date: Sat, 18 Jun 2022 20:40:19 +0100
-Message-ID: <Yq4qIxh5QnhQZ0SJ@casper.infradead.org>
-References: <20200515152321.9280-1-nate.karstens@garmin.com>
- <20220618114111.61EC71F981@orac.inputplus.co.uk>
+Date: Sun, 19 Jun 2022 11:42:28 +0100
+Message-ID: <20220619104228.A9789201F7@orac.inputplus.co.uk>
+References: <20200515152321.9280-1-nate.karstens@garmin.com> <20220618114111.61EC71F981@orac.inputplus.co.uk> <Yq4qIxh5QnhQZ0SJ@casper.infradead.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-fsdevel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=a0bL49uOiCfKwT3pkrVPnT1ka4/B28/6uyQ2X04Z2uE=; b=v7sWJzFOGdSYdZIqrUgltulDvB
-        4OYLCiBKpTU/gxVWoe7+5BZDCThsZIpeVflFB2hKb9xef5S9oR1IzVv/TIPNZ8352DZ7L4y2H9bjc
-        Jmm3lucQ5r46W+jh0YPPdpufOhL0oc+6u/z1/HnxocLAcrLExQk/tV+r89h7h2rJBW7HkWMzNVF0q
-        +WIbMin/lIE9rFhhyDjKdL9OzkPDDLx9So6dRWroeqd+o2BLMeRQMd+jBz8OKtZA/L9fXvpViA0ij
-        3FOXifV7VGCmCrmPC9jPkGMAJgjGydG1JnS8N8FfoYeqV3urXj5BnPigDS9O7tvXEKOSK4e67Qkxt
-        5/OlBqAw==;
-Content-Disposition: inline
-In-Reply-To: <20220618114111.61EC71F981@orac.inputplus.co.uk>
+Return-path: <linux-parisc-owner@vger.kernel.org>
+In-reply-to: <Yq4qIxh5QnhQZ0SJ@casper.infradead.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="utf-8"
-To: Ralph Corderoy <ralph@inputplus.co.uk>
+To: Matthew Wilcox <willy@infradead.org>
 Cc: Nate Karstens <nate.karstens@garmin.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Jeff Layton <jlayton@kernel.org>, "J. Bruce Fields" <bfields@fieldses.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet <edumazet@google.com>, David Laight <David.Laight@aculab.com>, linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Changli
 
-On Sat, Jun 18, 2022 at 12:41:11PM +0100, Ralph Corderoy wrote:
-> Hi Nate,
-> 
-> > One manifestation of this is a race conditions in system(), which
-> > (depending on the implementation) is non-atomic in that it first calls
-> > a fork() and then an exec().
-> 
-> The need for O_CLOFORK might be made more clear by looking at a
-> long-standing Go issue, i.e. unrelated to system(3), which was started
-> in 2017 by Russ Cox when he summed up the current race-condition
-> behaviour of trying to execve(2) a newly created file:
-> https://github.com/golang/go/issues/22315.  I raised it on linux-kernel
-> in 2017, https://marc.info/?l=linux-kernel&m=150834137201488, and linked
-> to a proposed patch from 2011, ‘[PATCH] fs: add FD_CLOFORK and
-> O_CLOFORK’ by Changli Gao.  As I said, long-standing.
+Hi Matthew, thanks for replying.
 
-The problem is that people advocating for O_CLOFORK understand its
-value, but not its cost.  Other google employees have a system which has
-literally millions of file descriptors in a single process.  Having to
-maintain this extra state per-fd is a cost they don't want to pay
-(and have been quite vocal about earlier in this thread).
+> > The need for O_CLOFORK might be made more clear by looking at a
+> > long-standing Go issue, i.e. unrelated to system(3), which was started
+> > in 2017 by Russ Cox when he summed up the current race-condition
+> > behaviour of trying to execve(2) a newly created file:
+> > https://github.com/golang/go/issues/22315.
+>
+> The problem is that people advocating for O_CLOFORK understand its
+> value, but not its cost.  Other google employees have a system which
+> has literally millions of file descriptors in a single process.
+> Having to maintain this extra state per-fd is a cost they don't want
+> to pay (and have been quite vocal about earlier in this thread).
 
-Fundamentally, fork()+exec() is a terrible model.  Mind you, so is
-spawn().  I haven't seen a good model yet.
+So do you agree the userspace issue is best solved by *_CLOFORK and the
+problem is how to implement *_CLOFORK at an acceptable cost?
+
+OTOH David Laight was making suggestions on moving the load to the
+fork/exec path earlier in the thread, but OTOH Al Viro mentioned a
+‘portable solution’, though that could have been to a specific issue
+rather than the more general case.
+
+How would you recommend approaching an acceptable cost is progressed?
+Iterate on patch versions?  Open a bugzilla.kernel.org for central
+tracking and linking from the other projects?  ..?
+
+-- 
+Cheers, Ralph.
