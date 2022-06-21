@@ -1,147 +1,134 @@
-From: Hannes Reinecke <hare@suse.de>
-Subject: Re: [PATCH v2 2/3] scsi: BusLogic remove bus_to_virt
-Date: Tue, 21 Jun 2022 10:45:52 +0200
-Message-ID: <cc1028ad-bd51-dea7-9f3d-fb954416b9fa@suse.de>
-References: <20220617125750.728590-1-arnd@kernel.org>
- <20220617125750.728590-3-arnd@kernel.org>
+From: Yury Norov <yury.norov@gmail.com>
+Subject: Re: [PATCH v3 0/7] bitops: let optimize out non-atomic bitops on
+ compile-time constants
+Date: Tue, 21 Jun 2022 10:39:44 -0700
+Message-ID: <YrICYCW0fCb0Rh8/@yury-laptop>
+References: <20220617144031.2549432-1-alexandr.lobakin@intel.com>
+ <YrCB/rz3RM6TCjij@FVFF77S0Q05N>
+ <20220620150855.2630784-1-alexandr.lobakin@intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655801153; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7pouBC4i764FgZXOuJ6SFkbk2xa1PZt6dSFI3XEoLes=;
-        b=BxLNshCDBQRc4XmBU9sLjI5ynrIOKZzeUOi0zGyby68AWR+NLDKh1gQWWSjQmyLNWRb+W0
-        dy0bLKDuzMCdi110ykiH+iFiyHYjXJJ9LzLM8QxvKgjLk/ggBpz5iUtfZUkwmUxpm4jxDI
-        CIeoXXpEVaSAUBtAywORVhvrAqEkhoM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655801153;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7pouBC4i764FgZXOuJ6SFkbk2xa1PZt6dSFI3XEoLes=;
-        b=k6ybPuTnlEi+J6ckMb+UuqBX0ObNoZVxlTDbFsuZr7WGvkpdlP8i7LXSwEWQ9sn0i6kP5E
-        tdUC8b/eV67CtfCQ==
-Content-Language: en-US
-In-Reply-To: <20220617125750.728590-3-arnd@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mm0iD6HT9Mx8CXXEjxAdU1TvUV4Ez2s5c81pc2wmXwg=;
+        b=Cpkt5sgP0fqAe+Y1iRtsx8qe+2jJ5InANoetmpK6UNu1KPb9jca4X2hLmzTTN1WqPF
+         AU0N56w++P4mZB3mMlojr8wWM6bXtyDQsj/chEau1PJEWu/RbPlbW8FkMaEMDcuPhG5r
+         NO9U1XfR4Ff0tZM0w5zbEK3DXlzrhHV7B8JwF4bM67grhmMuaBqYmjgCMyeRoaWlti7C
+         oSeeejFFPjPSIRjK9+1Rgrl2zWynXbFQRm7FQYkAlfB/wIgHuMlRiuxIjmRIwu5lXPCE
+         0Z5+P7a9Rw480gqVmvlY0WIZSXBMO/pcQ7u54RbQuXhy+qhX+mUtGNe0SZOZMRjQfaGC
+         hf8Q==
+Content-Disposition: inline
+In-Reply-To: <20220620150855.2630784-1-alexandr.lobakin@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Arnd Bergmann <arnd@kernel.org>, linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org, Denis Efremov <efremov@linux.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Jesse Brandeburg <jesse.brandeburg@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m
 
-On 6/17/22 14:57, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Jun 20, 2022 at 05:08:55PM +0200, Alexander Lobakin wrote:
+> From: Mark Rutland <mark.rutland@arm.com>
+> Date: Mon, 20 Jun 2022 15:19:42 +0100
 > 
-> The BusLogic driver is the last remaining driver that relies on the
-> deprecated bus_to_virt() function, which in turn only works on a few
-> architectures, and is incompatible with both swiotlb and iommu support.
+> > On Fri, Jun 17, 2022 at 04:40:24PM +0200, Alexander Lobakin wrote:
+> > > So, in order to let the compiler optimize out such cases, expand the
+> > > test_bit() and __*_bit() definitions with a compile-time condition
+> > > check, so that they will pick the generic C non-atomic bitop
+> > > implementations when all of the arguments passed are compile-time
+> > > constants, which means that the result will be a compile-time
+> > > constant as well and the compiler will produce more efficient and
+> > > simple code in 100% cases (no changes when there's at least one
+> > > non-compile-time-constant argument).
+> > 
+> > > The savings are architecture, compiler and compiler flags dependent,
+> > > for example, on x86_64 -O2:
+> > > 
+> > > GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
+> > > LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
+> > > LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
+> > > 
+> > > and ARM64 (courtesy of Mark[0]):
+> > > 
+> > > GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
+> > > LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
+> > 
+> > Hmm... with *this version* of the series, I'm not getting results nearly as
+> > good as that when building defconfig atop v5.19-rc3:
+> > 
+> >   GCC 8.5.0:   add/remove: 83/49 grow/shrink: 973/1147 up/down: 32020/-47824 (-15804)
+> >   GCC 9.3.0:   add/remove: 68/51 grow/shrink: 1167/592 up/down: 30720/-31352 (-632)
+> >   GCC 10.3.0:  add/remove: 84/37 grow/shrink: 1711/1003 up/down: 45392/-41844 (3548)
+> >   GCC 11.1.0:  add/remove: 88/31 grow/shrink: 1635/963 up/down: 51540/-46096 (5444)
+> >   GCC 11.3.0:  add/remove: 89/32 grow/shrink: 1629/966 up/down: 51456/-46056 (5400)
+> >   GCC 12.1.0:  add/remove: 84/31 grow/shrink: 1540/829 up/down: 48772/-43164 (5608)
+> > 
+> >   LLVM 12.0.1: add/remove: 118/58 grow/shrink: 437/381 up/down: 45312/-65668 (-20356)
+> >   LLVM 13.0.1: add/remove: 35/19 grow/shrink: 416/243 up/down: 14408/-22200 (-7792)
+> >   LLVM 14.0.0: add/remove: 42/16 grow/shrink: 415/234 up/down: 15296/-21008 (-5712)
+> > 
+> > ... and that now seems to be regressing codegen with recent versions of GCC as
+> > much as it improves it LLVM.
+> > 
+> > I'm not sure if we've improved some other code and removed the benefit between
+> > v5.19-rc1 and v5.19-rc3, or whether something else it at play, but this doesn't
+> > look as compelling as it did.
 > 
-> Before commit 391e2f25601e ("[SCSI] BusLogic: Port driver to 64-bit."),
-> the driver had a dependency on x86-32, presumably because of this
-> problem. However, the change introduced another bug that made it still
-> impossible to use the driver on any 64-bit machine.
+> Mostly likely it's due to that in v1 I mistakingly removed
+> `volatile` from gen[eric]_test_bit(), so there was an impact for
+> non-constant cases as well.
+> +5 Kb sounds bad tho. Do you have CONFIG_TEST_BITMAP enabled, does
+> it work? Probably the same reason as for m68k, more constant
+> optimization -> more aggressive inlining or inlining rebalance ->
+> larger code. OTOH I've no idea why sometimes compiler decides to
+> uninline really tiny functions where due to this patch series some
+> bitops have been converted to constants, like it goes on m68k.
 > 
-> This was in turn fixed in commit 56f396146af2 ("scsi: BusLogic: Fix
-> 64-bit system enumeration error for Buslogic"), 8 years later, which
-> shows that there are not a lot of users.
-> 
-> Maciej is still using the driver on 32-bit hardware, and Khalid mentioned
-> that the driver works with the device emulation used in VirtualBox
-> and VMware. Both of those only emulate it for Windows 2000 and older
-> operating systems that did not ship with the better LSI logic driver.
-> 
-> Do a minimum fix that searches through the list of descriptors to find
-> one that matches the bus address. This is clearly as inefficient as
-> was indicated in the code comment about the lack of a bus_to_virt()
-> replacement. A better fix would likely involve changing out the entire
-> descriptor allocation for a simpler one, but that would be much
-> more invasive.
-> 
-> Cc: Maciej W. Rozycki <macro@orcam.me.uk>
-> Cc: Matt Wang <wwentao@vmware.com>
-> Cc: Khalid Aziz <khalid@gonehiking.org>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->   drivers/scsi/BusLogic.c | 27 ++++++++++++++++-----------
->   drivers/scsi/Kconfig    |  2 +-
->   2 files changed, 17 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/scsi/BusLogic.c b/drivers/scsi/BusLogic.c
-> index a897c8f914cf..d057abfcdd5c 100644
-> --- a/drivers/scsi/BusLogic.c
-> +++ b/drivers/scsi/BusLogic.c
-> @@ -2515,12 +2515,26 @@ static int blogic_resultcode(struct blogic_adapter *adapter,
->   	return (hoststatus << 16) | tgt_status;
->   }
->   
-> +/*
-> + * turn the dma address from an inbox into a ccb pointer
-> + * This is rather inefficient.
-> + */
-> +static struct blogic_ccb *
-> +blogic_inbox_to_ccb(struct blogic_adapter *adapter, struct blogic_inbox *inbox)
-> +{
-> +	struct blogic_ccb *ccb;
-> +
-> +	for (ccb = adapter->all_ccbs; ccb; ccb = ccb->next_all)
-> +		if (inbox->ccb == ccb->dma_handle)
-> +			break;
-> +
-> +	return ccb;
-> +}
->   
->   /*
->     blogic_scan_inbox scans the Incoming Mailboxes saving any
->     Incoming Mailbox entries for completion processing.
->   */
-> -
->   static void blogic_scan_inbox(struct blogic_adapter *adapter)
->   {
->   	/*
-> @@ -2540,16 +2554,7 @@ static void blogic_scan_inbox(struct blogic_adapter *adapter)
->   	enum blogic_cmplt_code comp_code;
->   
->   	while ((comp_code = next_inbox->comp_code) != BLOGIC_INBOX_FREE) {
-> -		/*
-> -		   We are only allowed to do this because we limit our
-> -		   architectures we run on to machines where bus_to_virt(
-> -		   actually works.  There *needs* to be a dma_addr_to_virt()
-> -		   in the new PCI DMA mapping interface to replace
-> -		   bus_to_virt() or else this code is going to become very
-> -		   innefficient.
-> -		 */
-> -		struct blogic_ccb *ccb =
-> -			(struct blogic_ccb *) bus_to_virt(next_inbox->ccb);
-> +		struct blogic_ccb *ccb = blogic_inbox_to_ccb(adapter, adapter->next_inbox);
->   		if (comp_code != BLOGIC_CMD_NOTFOUND) {
->   			if (ccb->status == BLOGIC_CCB_ACTIVE ||
->   					ccb->status == BLOGIC_CCB_RESET) {
-> diff --git a/drivers/scsi/Kconfig b/drivers/scsi/Kconfig
-> index cf75588a2587..56bdc08d0b77 100644
-> --- a/drivers/scsi/Kconfig
-> +++ b/drivers/scsi/Kconfig
-> @@ -513,7 +513,7 @@ config SCSI_HPTIOP
->   
->   config SCSI_BUSLOGIC
->   	tristate "BusLogic SCSI support"
-> -	depends on PCI && SCSI && VIRT_TO_BUS
-> +	depends on PCI && SCSI
->   	help
->   	  This is support for BusLogic MultiMaster and FlashPoint SCSI Host
->   	  Adapters. Consult the SCSI-HOWTO, available from
+> > 
+> > Overall that's mostly hidden in the Image size, due to 64K alignment and
+> > padding requirements:
+> > 
+> >   Toolchain      Before      After       Difference
+> > 
+> >   GCC 8.5.0      36178432    36178432    0
+> >   GCC 9.3.0      36112896    36112896    0
+> >   GCC 10.3.0     36442624    36377088    -65536
+> >   GCC 11.1.0     36311552    36377088    +65536
+> >   GCC 11.3.0     36311552    36311552    0
+> >   GCC 12.1.0     36377088    36377088    0
+> > 
+> >   LLVM 12.0.1    31418880    31418880    0
+> >   LLVM 13.0.1    31418880    31418880    0
+> >   LLVM 14.0.0    31218176    31218176    0
+> > 
+> > ... so aside from the blip around GCC 10.3.0 and 11.1.0, there's not a massive
+> > change overall (due to 64KiB alignment restrictions for portions of the kernel
+> > Image).
 
-CCB handling in the driver is ugly anyway, so that'll be good enough.
+I gave it a try on v5.19-rc3 for arm64 with my default GCC 11.2, and it's:
+add/remove: 89/33 grow/shrink: 1629/966 up/down: 51456/-46064 (5392)
 
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+Which is not great in terms of layout size. But I don't think we should
+focus too much on those numbers. The goal of the series is not to shrink
+the image; the true goal is to provide more information to the compiler
+in a hope that it will make a better decision regarding optimizations.
 
-Cheers,
+Looking at results provided by Mark, both GCC and LLVM have a tendency
+to inline and use other techniques that increase the image more
+aggressively in newer releases, comparing to old ones. From this
+perspective, unless we find some terribly wrong behavior, I'm OK with
++5K for the Image, because I trust my compiler and believe it spent
+those 5K wisely.
 
-Hannes
--- 
-Dr. Hannes Reinecke		           Kernel Storage Architect
-hare@suse.de			                  +49 911 74053 688
-SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
-HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
+For the reasons said above, I think we shouldn't disable const
+bitops for -Os build.
+
+I think this series has total positive impact because it adds a lot
+of information for compiler with just a few lines of code.
+
+If no objections, I think it's good to try it in -next. Alexander,
+would you like me to fix gen/generic typo in comment and take it in
+bitmap-for-next, or you'd prefer to send v4?
+
+Thanks,
+Yury
