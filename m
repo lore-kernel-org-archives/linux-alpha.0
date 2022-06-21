@@ -1,73 +1,116 @@
-From: Zhang Jiaming <jiaming@nfschina.com>
-Subject: [PATCH] alpha: Add some spaces to ensure format specification
-Date: Tue, 21 Jun 2022 16:15:06 +0800
-Message-ID: <20220621081506.50096-1-jiaming@nfschina.com>
+From: Hannes Reinecke <hare@suse.de>
+Subject: Re: [PATCH v2 1/3] scsi: dpt_i2o: drop stale VIRT_TO_BUS dependency
+Date: Tue, 21 Jun 2022 10:43:04 +0200
+Message-ID: <361336a6-f3be-c7d9-7bdb-20c30c9a72df@suse.de>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-2-arnd@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655800985; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RrjsV6j2GxgikRLfvlQrNeSRen6nfTOp6oxrH6LHqfA=;
+        b=K0/rxxRxD+aiJWdzNoDa+0SoXPF1IC6BQYG8KRz+uLlaLWZurLtKhY6UYOEfPLCmqSRC/w
+        Y1D5KwymXhBqhBR9crYjVykXd3bn4B3i3+h43/ukFTQ8zjpwPQ13XzqCAo01A3ELViJzf6
+        uSLq81TeqOgtKl81+nNvuE01bTKb9wU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655800985;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RrjsV6j2GxgikRLfvlQrNeSRen6nfTOp6oxrH6LHqfA=;
+        b=4sGC2ZpcdwRXnQXA0/sC53dBVT8LwJN6GZh0t4vK8khlBh7SaMpQztL5XFMRTpAKtvDoDF
+        +22dtf7sd6JD1TDA==
+Content-Language: en-US
+In-Reply-To: <20220617125750.728590-2-arnd@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, liqiong@nfschina.com, renyu@nfschina.com, Zhang Jiaming <jiaming@nfschina.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+To: Arnd Bergmann <arnd@kernel.org>, linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org, Denis Efremov <efremov@linux.com>
 
-Add a space after ','.
-Add spaces around the '=', '>' and '=='.
+On 6/17/22 14:57, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The dpt_i2o driver was fixed to stop using virt_to_bus() in 2008, but
+> it still has a stale reference in an error handling code path that could
+> never work.
+> 
+> Fix it up to build without VIRT_TO_BUS and remove the Kconfig dependency.
+> 
+> The alternative to this would be to just remove the driver, as it is
+> clearly obsolete. The i2o driver layer was removed in 2015 with commit
+> 4a72a7af462d ("staging: remove i2o subsystem"), but the even older
+> dpt_i2o scsi driver stayed around.
+> 
+> The last non-cleanup patches I could find were from Miquel van Smoorenburg
+> and Mark Salyzyn back in 2008, they might know if there is any chance
+> of the hardware still being used anywhere.
+> 
+> Fixes: 67af2b060e02 ("[SCSI] dpt_i2o: move from virt_to_bus/bus_to_virt to dma_alloc_coherent")
+> Cc: Miquel van Smoorenburg <mikevs@xs4all.net>
+> Cc: Mark Salyzyn <salyzyn@android.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>   drivers/scsi/Kconfig   | 2 +-
+>   drivers/scsi/dpt_i2o.c | 4 ++--
+>   2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/scsi/Kconfig b/drivers/scsi/Kconfig
+> index a9fe5152addd..cf75588a2587 100644
+> --- a/drivers/scsi/Kconfig
+> +++ b/drivers/scsi/Kconfig
+> @@ -460,7 +460,7 @@ config SCSI_MVUMI
+>   
+>   config SCSI_DPT_I2O
+>   	tristate "Adaptec I2O RAID support "
+> -	depends on SCSI && PCI && VIRT_TO_BUS
+> +	depends on SCSI && PCI
+>   	help
+>   	  This driver supports all of Adaptec's I2O based RAID controllers as
+>   	  well as the DPT SmartRaid V cards.  This is an Adaptec maintained
+> diff --git a/drivers/scsi/dpt_i2o.c b/drivers/scsi/dpt_i2o.c
+> index 2e9155ba7408..55dfe7011912 100644
+> --- a/drivers/scsi/dpt_i2o.c
+> +++ b/drivers/scsi/dpt_i2o.c
+> @@ -52,11 +52,11 @@ MODULE_DESCRIPTION("Adaptec I2O RAID Driver");
+>   
+>   #include <linux/timer.h>
+>   #include <linux/string.h>
+> +#include <linux/io.h>
+>   #include <linux/ioport.h>
+>   #include <linux/mutex.h>
+>   
+>   #include <asm/processor.h>	/* for boot_cpu_data */
+> -#include <asm/io.h>		/* for virt_to_bus, etc. */
+>   
+>   #include <scsi/scsi.h>
+>   #include <scsi/scsi_cmnd.h>
+> @@ -2112,7 +2112,7 @@ static irqreturn_t adpt_isr(int irq, void *dev_id)
+>   		} else {
+>   			/* Ick, we should *never* be here */
+>   			printk(KERN_ERR "dpti: reply frame not from pool\n");
+> -			reply = (u8 *)bus_to_virt(m);
+> +			goto out;
+>   		}
+>   
+>   		if (readl(reply) & MSG_FAIL) {
 
-Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
----
- arch/alpha/boot/stdio.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-diff --git a/arch/alpha/boot/stdio.c b/arch/alpha/boot/stdio.c
-index 60f73ccd2e89..e6d1ebff4209 100644
---- a/arch/alpha/boot/stdio.c
-+++ b/arch/alpha/boot/stdio.c
-@@ -42,8 +42,8 @@ static int skip_atoi(const char **s)
- 
- static char * number(char * str, unsigned long long num, int base, int size, int precision, int type)
- {
--	char c,sign,tmp[66];
--	const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
-+	char c, sign, tmp[66];
-+	const char *digits = "0123456789abcdefghijklmnopqrstuvwxyz";
- 	int i;
- 
- 	if (type & LARGE)
-@@ -83,14 +83,14 @@ static char * number(char * str, unsigned long long num, int base, int size, int
- 		precision = i;
- 	size -= precision;
- 	if (!(type&(ZEROPAD+LEFT)))
--		while(size-->0)
-+		while (size-- > 0)
- 			*str++ = ' ';
- 	if (sign)
- 		*str++ = sign;
- 	if (type & SPECIAL) {
- 		if (base==8)
- 			*str++ = '0';
--		else if (base==16) {
-+		else if (base == 16) {
- 			*str++ = '0';
- 			*str++ = digits[33];
- 		}
-@@ -125,7 +125,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
- 				/* 'z' changed to 'Z' --davidm 1/25/99 */
- 
- 
--	for (str=buf ; *fmt ; ++fmt) {
-+	for (str = buf ; *fmt ; ++fmt) {
- 		if (*fmt != '%') {
- 			*str++ = *fmt;
- 			continue;
-@@ -296,7 +296,7 @@ int sprintf(char * buf, const char *fmt, ...)
- 	int i;
- 
- 	va_start(args, fmt);
--	i=vsprintf(buf,fmt,args);
-+	i = vsprintf(buf, fmt, args);
- 	va_end(args);
- 	return i;
- }
+Personally I wouldn't mind to see this driver gone, as it's being built 
+upon the (long-defunct) I2O specification. We already deleted the i2o 
+subsystem years ago, so maybe it's time to consign this driver to 
+history, too.
+
+Cheers,
+
+Hannes
 -- 
-2.25.1
-
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
