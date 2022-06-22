@@ -1,79 +1,70 @@
-From: <Conor.Dooley@microchip.com>
-Subject: =?utf-8?B?UmU6IOWbnuWkje+8mltQQVRDSF0gYWxwaGE6IGlycV9pODI1OTogZHJvcCB1?=
- =?utf-8?Q?nexpected_word_'and'_in_the_comments?=
-Date: Wed, 22 Jun 2022 14:28:27 +0000
-Message-ID: <c5b67cb1-05f9-365f-1ad4-8017a2a6d6e7@microchip.com>
-References: <20220622140201.5458-1-jiangjian@cdjrlc.com>
- <7ae0e6b2-39e8-2453-b154-6c02734028b6@microchip.com>
- <tencent_6EA3802C352872BC44FBD555@qq.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: Re: [PATCH v4 0/8] bitops: let optimize out non-atomic bitops on compile-time constants
+Date: Wed, 22 Jun 2022 16:37:39 +0200
+Message-ID: <20220622143739.291698-1-alexandr.lobakin@intel.com>
+References: <20220621191553.69455-1-alexandr.lobakin@intel.com> <20220622122440.87087-1-alexandr.lobakin@intel.com> <YrMlrjbue7twWLk1@smile.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655908116; x=1687444116;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=nqgWdecj9IwIxFhYCib/Tu/YEhz2as3UtXCRUmowzWY=;
-  b=AFbbdY5jHDztaWgj1ohxsVlfsv/0xr8EwCSCz54Z1wBB8S+bwSsls+BE
-   ABF9XklOLXyvE6z4q7xxax0cr79e2d0YmKRKZUgoYtaO0rz+4ngKkxHSK
-   oOG4trxOESfVgwoMsGEK0NT8Fl6DJvDhJnCHHHogCvOT3voNZnSfcn/XJ
-   KU6KR64/Ok0L+b7KPQfntc2KQ2hRx8IP1FVEmm81LPvL0MJ7qK3CVq2fw
-   nEH0aL5U+LuNeQS7MvS9OCY6PVQ1a1jUDdRWmou0PBEDFbmgiN0p7FYc/
-   jYCS+Du4+MP22xF2cq0NzAGrma/q7CnNYZ6I4M4u7DewIgWejL1PZ0Ls8
-   g==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nqgWdecj9IwIxFhYCib/Tu/YEhz2as3UtXCRUmowzWY=;
- b=JbaSxvjtnwcYTTaNTWJay/QfrTwPTymUEThVHfAItNm/jD27DO8TgH2ew1RXR5UKwyaTrbikxpr0JncdR9wUsSs6mUOdf+yYVFeb23Z4fMKI4pY4k0tAi2OotjG9pPzpRb33iC4k9jjhjWi7oC8JVPUhokGfXmTwDRUXhmstK+Y=
-In-Reply-To: <tencent_6EA3802C352872BC44FBD555@qq.com>
-Content-Language: en-IE
-Content-ID: <618F0DF06312AE4A8D335867E2FFF2E4@namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655908670; x=1687444670;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xA+AX77vbPPnWCLAuym9yD93ebv8XWnin6EN1d9z6Y0=;
+  b=Ebul5HJ6tzZzJqE+O+8CvVfxZ6NSsLcMocEAIJU1YAbom+hzmhuxSD91
+   QqAU2WUMzEM71hIe+h4pUWlN1heGvz6mHuAKPgnkIvhFuaPs9hhL2pxoZ
+   jpyTViF1esxDoFiAR1PBJYG2zK0Ytq0Ulj2e0E1sRgJfTH63lrMjm4BJ7
+   nx2ixlUwDNs/q6zbxAsjLmNQppUXwO7O25UWoAnPR9hQT7sv0lAOKW0z4
+   BXG6BpHIwR9XTbAP+oq4EUooWYjxt9VBZDNRvWa6S9LGVVElpC0gQGJjF
+   pIiKfQL077l3f5nvhLhEuDGnhwwS3s9rTO+ZIlulA1Y0KfPqoiwtW+bQa
+   w==;
+In-Reply-To: <YrMlrjbue7twWLk1@smile.fi.intel.com>
+Content-Disposition: inline
 List-ID: <linux-alpha.vger.kernel.org>
-To: jiangjian@cdjrlc.com, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Alexander Lobakin <alexandr.lobakin@intel.com>, Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Jesse Brandeburg <jesse.brandeburg@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, linux-hexagon@vger.ker
 
-T24gMjIvMDYvMjAyMiAxNToxMywg6JKL5YGlIHdyb3RlOg0KPiBFWFRFUk5BTCBFTUFJTDogRG8g
-bm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdSBrbm93IHRoZSBj
-b250ZW50IGlzIHNhZmUNCj4gSSBtaXN1bmRlcnN0b29kIGl0LCB0aGFuayB5b3UgZm9yIHlvdXIg
-Z3VpZGFuY2UuDQoNClBsZWFzZSBkb24ndCBzZW5kIEhUTUwgbWFpbHMgdG8gdGhlIGxpc3QsIGlm
-IHlvdSBkbyBvbmx5IChzb21lKSBkaXJlY3QNCnJlY2lwaWVudHMgd2lsbCBnZXQgdGhlIG1haWwu
-DQpUaGFua3MsDQpDb25vci4NCg0KPiAtLS0tLS0tLS0tLS0tLS0tLS3CoOWOn+Wni+mCruS7tsKg
-LS0tLS0tLS0tLS0tLS0tLS0tDQo+ICrlj5Hku7bkuro6KiAiQ29ub3IuRG9vbGV5IjsNCj4gKuWP
-kemAgeaXtumXtDoqIDIwMjLlubQ25pyIMjLml6Uo5pif5pyf5LiJKSDmmZrkuIoxMDowOA0KPiAq
-5pS25Lu25Lq6OiogImppYW5namlhbiI7ICJydGgiOyAiaW5rIjsgIm1hdHRzdDg4IjsNCj4gKuaK
-hOmAgToqICJsaW51eC1hbHBoYSI7ICJsaW51eC1rZXJuZWwiOw0KPiAq5Li76aKYOiogUmU6IFtQ
-QVRDSF0gYWxwaGE6IGlycV9pODI1OTogZHJvcCB1bmV4cGVjdGVkIHdvcmQgJ2FuZCcgaW4gdGhl
-IGNvbW1lbnRzDQo+IA0KPiBPbsKgMjIvMDYvMjAyMsKgMTU6MDIswqBKaWFuZ8KgSmlhbsKgd3Jv
-dGU6DQo+ICA+wqB0aGVyZcKgaXPCoGFuwqB1bmV4cGVjdGVkwqB3b3JkwqAnYW5kJ8KgaW7CoHRo
-ZcKgY29tbWVudHPCoHRoYXTCoG5lZWTCoHRvwqBiZcKgZHJvcHBlZA0KPiAgPg0KPiAgPsKgZmls
-ZTrCoGFyY2gvYWxwaGEva2VybmVsL2lycV9pODI1OS5jDQo+ICA+wqBsaW5lOsKgMTUwDQo+ICA+
-DQo+ICA+wqAqwqDCoFRoZXJlZm9yZSzCoHJlYWTCoHRoZcKgbWFza8KgcmVnaXN0ZXLCoGFuZMKg
-YW5kwqBvdXTCoHRob3NlwqBsaW5lcw0KPiAgPg0KPiAgPsKgY2hhbmdlZMKgdG86DQo+ICA+DQo+
-ICA+wqAqwqDCoFRoZXJlZm9yZSzCoHJlYWTCoHRoZcKgbWFza8KgcmVnaXN0ZXLCoGFuZMKgYW5k
-wqBvdXTCoHRob3NlwqBsaW5lcw0KPiAgPg0KPiAgPsKgU2lnbmVkLW9mZi1ieTrCoEppYW5nwqBK
-aWFuwqA8amlhbmdqaWFuQGNkanJsYy5jb20+DQo+ICA+wqAtLS0NCj4gID7CoMKgwqBhcmNoL2Fs
-cGhhL2tlcm5lbC9pcnFfaTgyNTkuY8KgfMKgMsKgKy0NCj4gID7CoMKgwqAxwqBmaWxlwqBjaGFu
-Z2VkLMKgMcKgaW5zZXJ0aW9uKCspLMKgMcKgZGVsZXRpb24oLSkNCj4gID4NCj4gID7CoGRpZmbC
-oC0tZ2l0wqBhL2FyY2gvYWxwaGEva2VybmVsL2lycV9pODI1OS5jwqBiL2FyY2gvYWxwaGEva2Vy
-bmVsL2lycV9pODI1OS5jDQo+ICA+wqBpbmRleMKgMWRjZjBkOTAzOGZkLi5kYjU3NGRjZDY2NzXC
-oDEwMDY0NA0KPiAgPsKgLS0twqBhL2FyY2gvYWxwaGEva2VybmVsL2lycV9pODI1OS5jDQo+ICA+
-wqArKyvCoGIvYXJjaC9hbHBoYS9rZXJuZWwvaXJxX2k4MjU5LmMNCj4gID7CoEBAwqAtMTQ3LDfC
-oCsxNDcsN8KgQEDCoGlzYV9ub19pYWNrX3NjX2RldmljZV9pbnRlcnJ1cHQodW5zaWduZWTCoGxv
-bmfCoHZlY3RvcikNCj4gID7CoMKgwqAgwqAqLw0KPiAgPsKgwqDCoCAvKg0KPiAgPsKgwqDCoCDC
-oCrCoMKgVGhlwqBmaXJzdMKgcmVhZMKgb2bCoGdpdmVzwqB5b3XCoCphbGwqwqBpbnRlcnJ1cHRp
-bmfCoGxpbmVzLg0KPiAgPsKgLSDCoCrCoMKgVGhlcmVmb3JlLMKgcmVhZMKgdGhlwqBtYXNrwqBy
-ZWdpc3RlcsKgYW5kwqBhbmTCoG91dMKgdGhvc2XCoGxpbmVzDQo+ICA+wqArIMKgKsKgwqBUaGVy
-ZWZvcmUswqByZWFkwqB0aGXCoG1hc2vCoHJlZ2lzdGVywqBhbmTCoG91dMKgdGhvc2XCoGxpbmVz
-DQo+IA0KPiBUaGlzwqBkb2VzwqBub3TCoGxvb2vCoGxpa2XCoGHCoHR5cG8/wqBTdXJlbHnCoHRo
-ZcKgc2Vjb25kwqBhbmTCoG1lYW5zwqB0aGUNCj4gb3BlcmF0b3I/wqBNYXliZcKgaXTCoGNvdWxk
-wqBiZcKgcmV3b3JkZWTCoGZvcsKgbW9yZcKgY2xhcml0ecKgdG/CoHNvbWV0aGluZw0KPiBsaWtl
-wqAiYW5kwqBtYXNrwqBvdXQiLMKgYnV0wqB0aGXCoGluaXRpYWzCoG1lYW5pbmfCoGxvb2tzwqBz
-YW5lDQo+IA0KPiBUaGFua3MsDQo+IENvbm9yLg0KPiANCj4gID7CoMKgwqAgwqAqwqDCoG5vdMKg
-ZW5hYmxlZC7CoMKgTm90ZcKgdGhhdMKgc29tZcKgZG9jdW1lbnRhdGlvbsKgaGFzwqAyMcKgYW5k
-wqBhMQ0KPiAgPsKgwqDCoCDCoCrCoMKgd3JpdGXCoG9ubHkuwqDCoFRoaXPCoGlzwqBub3TCoHRy
-dWUuDQo+ICA+wqDCoMKgIMKgKi8NCg0K
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date: Wed, 22 Jun 2022 17:22:38 +0300
+
+> On Wed, Jun 22, 2022 at 02:24:40PM +0200, Alexander Lobakin wrote:
+> > From: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > Date: Tue, 21 Jun 2022 21:15:45 +0200
+> > 
+> > > While I was working on converting some structure fields from a fixed
+> > > type to a bitmap, I started observing code size increase not only in
+> > > places where the code works with the converted structure fields, but
+> > > also where the converted vars were on the stack. That said, the
+> > > following code:
+> > 
+> > [...]
+> > 
+> > Oh gosh, now s390 failed and 7/8 revealed one existing code flaw in
+> > the ice driver.
+> > I'll fix those, then will try to test more platforms (to not spam
+> > series again) and send v5 soon (mentioning this as bots CCs only
+> > myself).
+> 
+> One mail per person? Because I also got a report.
+
+From the headers:
+
+From: kernel test robot <lkp@intel.com>
+To: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: <llvm@lists.linux.dev>,
+ <kbuild-all@lists.01.org>,
+ <linux-kernel@vger.kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+I guess it's due to your Reviewed-by in the commit message, no one
+else from the original CCs list is present.
+
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+
+Thanks,
+Olek
