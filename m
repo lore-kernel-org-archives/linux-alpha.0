@@ -1,60 +1,55 @@
-From: <Conor.Dooley@microchip.com>
-Subject: Re: [PATCH] alpha: irq_i8259: drop unexpected word 'and' in the
- comments
-Date: Wed, 22 Jun 2022 14:08:14 +0000
-Message-ID: <7ae0e6b2-39e8-2453-b154-6c02734028b6@microchip.com>
-References: <20220622140201.5458-1-jiangjian@cdjrlc.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v4 0/8] bitops: let optimize out non-atomic bitops on
+ compile-time constants
+Date: Wed, 22 Jun 2022 17:22:38 +0300
+Message-ID: <YrMlrjbue7twWLk1@smile.fi.intel.com>
+References: <20220621191553.69455-1-alexandr.lobakin@intel.com>
+ <20220622122440.87087-1-alexandr.lobakin@intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655906901; x=1687442901;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=qgEk1/mn6Vz888dnsT1O2CpL2r9zeaEglZu9Ib/7f+4=;
-  b=tz58hISBLyA867pjeD2fjyerYWKeNam0KnScVrOQMga1m7sUSpYIEihO
-   b9y9GZcm1D3U8/2rHZST2idSc9AgFpzuW2p9mGmusSTb5hAx2t0X8hjN3
-   LiU/rCGCsg/H36Vc5ljtGi0c5X5mwJvl1rY9mIbKSQGm0uRI6XDmYxe6q
-   tPOQ3jY4vbKkqKzOA1AVmVTWf0hHyCgOFBZFZmHXVynHC4hmZ5pARIaUp
-   6pyD03TgHamr6mYAcl+15sax+uYttpT/vgz4RViEwAYRMiirz02d5oJz/
-   HL24alo7odlxknRn7N5n7evRjr2YKuBgi1oM9jqEgA+0dAQePCz3RrCIl
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655907769; x=1687443769;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FIomGT1BU8L+wKYhsbRgrEVpUz0TNAc9c/kXUa0n8fY=;
+  b=hA3I3SAh3kYWGHf6tmliGGc4nVZH3XUQrGMS8LOQWSKJAp8e6kkMXaPR
+   aSNgiNdOZ6yiYGvC8cTcEyDKZu1EmhB1EJF0NfjXCuL/PQF0/C2YnwGJ7
+   XfY2GbrIvWq4o6eCxYzdfZtfqt6m7dCPPjNiEfU97hv8SoJ4sM/ZDrqc9
+   x2JCGeNVSqj81dGj+2yEck+rabqiFsdvPy4gGlB/1O3O1mc+AYdrj2yHo
+   gODyIdlCYCWo2C5FROq4Q1+JX5aYVGot3NDV0ZKA6gLhxlySL/yf5uMQY
+   lq3Rhyl3xh/K6Hg9F/ZOTHBmjeGYSSFlqMED7kAhqd3OpeVrlTXNJbWlV
    g==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qgEk1/mn6Vz888dnsT1O2CpL2r9zeaEglZu9Ib/7f+4=;
- b=cKSHnnyqmM6IEQGV307jdbIYvoCVty4yPH758eFdRUfPNRHn53CDDLvOC19jNyCdhm32MnZHyc9kt+p4DJNgU15i72zvgwoNMXFSMUVXMXEuTy/eF/BDNH3FLfpd1UOoiVKxHDOuUIVCkeE5Ej7qQXYAt0DT/HifZ7K3Hy8/Zqw=
-In-Reply-To: <20220622140201.5458-1-jiangjian@cdjrlc.com>
-Content-Language: en-IE
-Content-ID: <DA3D3A717EB2E54688795E6326F1D82E@namprd11.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <20220622122440.87087-1-alexandr.lobakin@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: jiangjian@cdjrlc.com, rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+To: Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Jesse Brandeburg <jesse.brandeburg@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m6
 
-DQpPbiAyMi8wNi8yMDIyIDE1OjAyLCBKaWFuZyBKaWFuIHdyb3RlOg0KPiB0aGVyZSBpcyBhbiB1
-bmV4cGVjdGVkIHdvcmQgJ2FuZCcgaW4gdGhlIGNvbW1lbnRzIHRoYXQgbmVlZCB0byBiZSBkcm9w
-cGVkDQo+IA0KPiBmaWxlOiBhcmNoL2FscGhhL2tlcm5lbC9pcnFfaTgyNTkuYw0KPiBsaW5lOiAx
-NTANCj4gDQo+ICogIFRoZXJlZm9yZSwgcmVhZCB0aGUgbWFzayByZWdpc3RlciBhbmQgYW5kIG91
-dCB0aG9zZSBsaW5lcw0KPiANCj4gY2hhbmdlZCB0bzoNCj4gDQo+ICogIFRoZXJlZm9yZSwgcmVh
-ZCB0aGUgbWFzayByZWdpc3RlciBhbmQgYW5kIG91dCB0aG9zZSBsaW5lcw0KPiANCj4gU2lnbmVk
-LW9mZi1ieTogSmlhbmcgSmlhbiA8amlhbmdqaWFuQGNkanJsYy5jb20+DQo+IC0tLQ0KPiAgIGFy
-Y2gvYWxwaGEva2VybmVsL2lycV9pODI1OS5jIHwgMiArLQ0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAx
-IGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2FyY2gvYWxw
-aGEva2VybmVsL2lycV9pODI1OS5jIGIvYXJjaC9hbHBoYS9rZXJuZWwvaXJxX2k4MjU5LmMNCj4g
-aW5kZXggMWRjZjBkOTAzOGZkLi5kYjU3NGRjZDY2NzUgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvYWxw
-aGEva2VybmVsL2lycV9pODI1OS5jDQo+ICsrKyBiL2FyY2gvYWxwaGEva2VybmVsL2lycV9pODI1
-OS5jDQo+IEBAIC0xNDcsNyArMTQ3LDcgQEAgaXNhX25vX2lhY2tfc2NfZGV2aWNlX2ludGVycnVw
-dCh1bnNpZ25lZCBsb25nIHZlY3RvcikNCj4gICAJICovDQo+ICAgCS8qDQo+ICAgCSAqICBUaGUg
-Zmlyc3QgcmVhZCBvZiBnaXZlcyB5b3UgKmFsbCogaW50ZXJydXB0aW5nIGxpbmVzLg0KPiAtCSAq
-ICBUaGVyZWZvcmUsIHJlYWQgdGhlIG1hc2sgcmVnaXN0ZXIgYW5kIGFuZCBvdXQgdGhvc2UgbGlu
-ZXMNCj4gKwkgKiAgVGhlcmVmb3JlLCByZWFkIHRoZSBtYXNrIHJlZ2lzdGVyIGFuZCBvdXQgdGhv
-c2UgbGluZXMNCg0KVGhpcyBkb2VzIG5vdCBsb29rIGxpa2UgYSB0eXBvPyBTdXJlbHkgdGhlIHNl
-Y29uZCBhbmQgbWVhbnMgdGhlDQpvcGVyYXRvcj8gTWF5YmUgaXQgY291bGQgYmUgcmV3b3JkZWQg
-Zm9yIG1vcmUgY2xhcml0eSB0byBzb21ldGhpbmcNCmxpa2UgImFuZCBtYXNrIG91dCIsIGJ1dCB0
-aGUgaW5pdGlhbCBtZWFuaW5nIGxvb2tzIHNhbmUNCg0KVGhhbmtzLA0KQ29ub3IuDQoNCj4gICAJ
-ICogIG5vdCBlbmFibGVkLiAgTm90ZSB0aGF0IHNvbWUgZG9jdW1lbnRhdGlvbiBoYXMgMjEgYW5k
-IGExDQo+ICAgCSAqICB3cml0ZSBvbmx5LiAgVGhpcyBpcyBub3QgdHJ1ZS4NCj4gICAJICovDQo=
+On Wed, Jun 22, 2022 at 02:24:40PM +0200, Alexander Lobakin wrote:
+> From: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Date: Tue, 21 Jun 2022 21:15:45 +0200
+> 
+> > While I was working on converting some structure fields from a fixed
+> > type to a bitmap, I started observing code size increase not only in
+> > places where the code works with the converted structure fields, but
+> > also where the converted vars were on the stack. That said, the
+> > following code:
+> 
+> [...]
+> 
+> Oh gosh, now s390 failed and 7/8 revealed one existing code flaw in
+> the ice driver.
+> I'll fix those, then will try to test more platforms (to not spam
+> series again) and send v5 soon (mentioning this as bots CCs only
+> myself).
+
+One mail per person? Because I also got a report.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
