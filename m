@@ -1,49 +1,55 @@
-From: Borislav Petkov <bp@suse.de>
-Subject: Re: [PATCH v5 0/9] bitops: let optimize out non-atomic bitops on
- compile-time constants
-Date: Fri, 24 Jun 2022 14:51:15 +0200
-Message-ID: <YrWzQ6GleophO75b@zn.tnic>
-References: <20220624121313.2382500-1-alexandr.lobakin@intel.com>
+From: Khalid Aziz <khalid@gonehiking.org>
+Subject: Re: [PATCH v2 2/3] scsi: BusLogic remove bus_to_virt
+Date: Fri, 24 Jun 2022 09:38:20 -0600
+Message-ID: <c955bf95-838f-cc0a-8496-322b831e5648@gonehiking.org>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-3-arnd@kernel.org>
+ <7a6df2da-95e8-b2fd-7565-e4b7a51c5b63@gonehiking.org>
+ <CAK8P3a0t_0scofn_2N1Q8wgJ4panKCN58AgnsJSVEj28K614oQ@mail.gmail.com>
+Reply-To: khalid@gonehiking.org
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1656075079; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/ufyLq98aM5sPCb/A9DZ82OxnbOu+snINKekaV1aDRU=;
-        b=z/SG5u8nE+UvZJM1KMXfsdsJS4gFo9gKNUD1jqnZCEfQktOpJL+HUho2xWseFYUUxljXxm
-        4Vbo35uQa3H7cCMHdFOtFc7bAQUGtQsQgAEW5RP+6bwSdbrCaZOzz/8N0BYLpyE6Dp73T/
-        bEaYS6aVjoMfSGXUcWCoGG+0KRxQxvM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1656075079;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/ufyLq98aM5sPCb/A9DZ82OxnbOu+snINKekaV1aDRU=;
-        b=cITdCFre6nFiuMrbQP1LlPRDxLJEO+oY2+mpe4FddCjNeDzFUXzaMlRw1mDzLIdh6rfNdW
-        DQtygG0C3l0HHwAw==
-Content-Disposition: inline
-In-Reply-To: <20220624121313.2382500-1-alexandr.lobakin@intel.com>
+Content-Language: en-US
+In-Reply-To: <CAK8P3a0t_0scofn_2N1Q8wgJ4panKCN58AgnsJSVEj28K614oQ@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mark Rutland <mark.rutland@arm.com>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Tony Luck <tony.luck@intel.com>, Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Jesse Brandeburg <jesse.brandeburg@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: linux-scsi <linux-scsi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-arch <linux-arch@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Parisc List <linux-parisc@vger.kernel.org>, Denis Efremov <efremov@linux.com>
 
-On Fri, Jun 24, 2022 at 02:13:04PM +0200, Alexander Lobakin wrote:
-> While I was working on converting some structure fields from a fixed
+On 6/23/22 08:47, Arnd Bergmann wrote:
+> 
+> 
+> Can you test it again with this patch on top?
+> 
+> diff --git a/drivers/scsi/BusLogic.c b/drivers/scsi/BusLogic.c
+> index d057abfcdd5c..9e67f2ee25ee 100644
+> --- a/drivers/scsi/BusLogic.c
+> +++ b/drivers/scsi/BusLogic.c
+> @@ -2554,8 +2554,14 @@ static void blogic_scan_inbox(struct
+> blogic_adapter *adapter)
+>          enum blogic_cmplt_code comp_code;
+> 
+>          while ((comp_code = next_inbox->comp_code) != BLOGIC_INBOX_FREE) {
+> -               struct blogic_ccb *ccb = blogic_inbox_to_ccb(adapter,
+> adapter->next_inbox);
+> -               if (comp_code != BLOGIC_CMD_NOTFOUND) {
+> +               struct blogic_ccb *ccb = blogic_inbox_to_ccb(adapter,
+> next_inbox);
+> +               if (!ccb) {
+> +                       /*
+> +                        * This should never happen, unless the CCB list is
+> +                        * corrupted in memory.
+> +                        */
+> +                       blogic_warn("Could not find CCB for dma
+> address 0x%x\n", adapter, next_inbox->ccb);
+> +               } else if (comp_code != BLOGIC_CMD_NOTFOUND) {
+>                          if (ccb->status == BLOGIC_CCB_ACTIVE ||
+>                                          ccb->status == BLOGIC_CCB_RESET) {
 
-Can you please send your patchset once a week instead of spamming people
-with it every three days?
+Hi Arnd,
 
-Thank you.
+Driver works with this change. next_inbox is the correct pointer to pass.
 
---=20
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
-(HRB 36809, AG N=C3=BCrnberg)
+Thanks,
+Khalid
