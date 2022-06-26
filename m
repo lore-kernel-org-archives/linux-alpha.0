@@ -1,117 +1,141 @@
-From: Stafford Horne <shorne@gmail.com>
-Subject: Re: [PATCH V4 10/26] openrisc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date: Sat, 25 Jun 2022 13:04:55 +0900
-Message-ID: <YraJZ7OahapN5Y6z@antec>
-References: <20220624044339.1533882-1-anshuman.khandual@arm.com>
- <20220624044339.1533882-11-anshuman.khandual@arm.com>
+From: Michael Schmitz <schmitzmic@gmail.com>
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+Date: Sun, 26 Jun 2022 17:21:01 +1200
+Message-ID: <6d1d88ee-1cf6-c735-1e6d-bafd2096e322@gmail.com>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+ <CAK8P3a1XfwkTOV7qOs1fTxf4vthNBRXKNu8A5V7TWnHT081NGA@mail.gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-hexagon-owner@vger.kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WBt/btUb8fidp7Od3hgblEREGwTCWyy1gmQjOCfY3fU=;
-        b=U/9jOhfyin/xPm7/lhb3QQD5hUeqWoso3ZUE4nrDpj+uCxrVZoUa6Nd3Ck/My6d0yi
-         uppYCT29YGR4+ED265rzl5CvHaPa9jAGrevS8NrjQCL2swa/6jIuJFW7ijxN5Kwk3kBm
-         JV3zRaXX17ljjVxLWEmEYneBMjkOzcbgPwAATblJGSLPQW9zrru3NcHlbevjvxhjXf2X
-         4fZUXrqKoxs5SGRwhMih22jCYG6mLHxDBQ9QA+V/Ap/ZmZMWhJBLgf3cIDLH/WvFpZqO
-         6XUFzNOC5pd+9LH1sxuFUCYfWolIKgEMvYZ3auh92ECWjOyrr+qjV1d2Dawwr5UE8zHy
-         fSYQ==
-Content-Disposition: inline
-In-Reply-To: <20220624044339.1533882-11-anshuman.khandual@arm.com>
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=FyhqfSxVNsjhzX9WxR80RFXqe2zcrAY7cm8JcsXFPog=;
+        b=hBenD693M5G/Q6eFcNTFzS4SnqsJJrltg/unkzqdkXjt1KZuJOowmubr8N6pLoDaKD
+         fVFiOpC8iAD7EGIlliBp9rs3u8PN97EiT1+qNvS41+MZgPOCJTjoQyeiIIs3aN/S65Mk
+         ROLoo90QARopRA/G16LXEfV3XzWV2cbm6BSPsXLWjrONfwr4KFBEPylDD+dVHgwCbYpH
+         Nln7DI28nZLcldKdK/hMm8jAMkLlh8JImCgANRilyPgE9ECSv7Kfb/sBQgpFGEXAGxKo
+         nt7BB5Uz/MHiajgMyFwmvhtRiUdUohrDkZhxMV7UvAUfaWc1n/g20OMg10VWWb/yD+Eh
+         bEKw==
+In-Reply-To: <CAK8P3a1XfwkTOV7qOs1fTxf4vthNBRXKNu8A5V7TWnHT081NGA@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: linux-mm@kvack.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Jonas Bonn <jonas@southpole.se>, linux-s390@vger.kernel.org, linux-hexagon@vger.kernel.org, x86@kernel.org, christophe.leroy@csgroup.eu, hch@infradead.org, linux-snps-arc@lists.infradead.org, linux-xtensa@linux-xtensa.org, linux-um@lists.infradead.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: linux-scsi <linux-scsi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-arch <linux-arch@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Parisc List <linux-parisc@vger.kernel.org>
 
-On Fri, Jun 24, 2022 at 10:13:23AM +0530, Anshuman Khandual wrote:
-> This enables ARCH_HAS_VM_GET_PAGE_PROT on the platform and exports standard
-> vm_get_page_prot() implementation via DECLARE_VM_GET_PAGE_PROT, which looks
-> up a private and static protection_map[] array. Subsequently all __SXXX and
-> __PXXX macros can be dropped which are no longer needed.
-> 
-> Cc: Jonas Bonn <jonas@southpole.se>
-> Cc: openrisc@lists.librecores.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> ---
->  arch/openrisc/Kconfig               |  1 +
->  arch/openrisc/include/asm/pgtable.h | 18 ------------------
->  arch/openrisc/mm/init.c             | 20 ++++++++++++++++++++
->  3 files changed, 21 insertions(+), 18 deletions(-)
-> 
-> diff --git a/arch/openrisc/Kconfig b/arch/openrisc/Kconfig
-> index e814df4c483c..fe0dfb50eb86 100644
-> --- a/arch/openrisc/Kconfig
-> +++ b/arch/openrisc/Kconfig
-> @@ -10,6 +10,7 @@ config OPENRISC
->  	select ARCH_HAS_DMA_SET_UNCACHED
->  	select ARCH_HAS_DMA_CLEAR_UNCACHED
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
-> +	select ARCH_HAS_VM_GET_PAGE_PROT
->  	select COMMON_CLK
->  	select OF
->  	select OF_EARLY_FLATTREE
-> diff --git a/arch/openrisc/include/asm/pgtable.h b/arch/openrisc/include/asm/pgtable.h
-> index c3abbf71e09f..dcae8aea132f 100644
-> --- a/arch/openrisc/include/asm/pgtable.h
-> +++ b/arch/openrisc/include/asm/pgtable.h
-> @@ -176,24 +176,6 @@ extern void paging_init(void);
->  	__pgprot(_PAGE_ALL | _PAGE_SRE | _PAGE_SWE \
->  		 | _PAGE_SHARED | _PAGE_DIRTY | _PAGE_EXEC | _PAGE_CI)
->  
-> -#define __P000	PAGE_NONE
-> -#define __P001	PAGE_READONLY_X
-> -#define __P010	PAGE_COPY
-> -#define __P011	PAGE_COPY_X
-> -#define __P100	PAGE_READONLY
-> -#define __P101	PAGE_READONLY_X
-> -#define __P110	PAGE_COPY
-> -#define __P111	PAGE_COPY_X
-> -
-> -#define __S000	PAGE_NONE
-> -#define __S001	PAGE_READONLY_X
-> -#define __S010	PAGE_SHARED
-> -#define __S011	PAGE_SHARED_X
-> -#define __S100	PAGE_READONLY
-> -#define __S101	PAGE_READONLY_X
-> -#define __S110	PAGE_SHARED
-> -#define __S111	PAGE_SHARED_X
-> -
->  /* zero page used for uninitialized stuff */
->  extern unsigned long empty_zero_page[2048];
->  #define ZERO_PAGE(vaddr) (virt_to_page(empty_zero_page))
-> diff --git a/arch/openrisc/mm/init.c b/arch/openrisc/mm/init.c
-> index 3a021ab6f1ae..a654b9dcba91 100644
-> --- a/arch/openrisc/mm/init.c
-> +++ b/arch/openrisc/mm/init.c
-> @@ -208,3 +208,23 @@ void __init mem_init(void)
->  	mem_init_done = 1;
->  	return;
->  }
-> +
-> +static pgprot_t protection_map[16] __ro_after_init = {
-> +	[VM_NONE]					= PAGE_NONE,
-> +	[VM_READ]					= PAGE_READONLY_X,
-> +	[VM_WRITE]					= PAGE_COPY,
-> +	[VM_WRITE | VM_READ]				= PAGE_COPY_X,
-> +	[VM_EXEC]					= PAGE_READONLY,
-> +	[VM_EXEC | VM_READ]				= PAGE_READONLY_X,
-> +	[VM_EXEC | VM_WRITE]				= PAGE_COPY,
-> +	[VM_EXEC | VM_WRITE | VM_READ]			= PAGE_COPY_X,
-> +	[VM_SHARED]					= PAGE_NONE,
-> +	[VM_SHARED | VM_READ]				= PAGE_READONLY_X,
-> +	[VM_SHARED | VM_WRITE]				= PAGE_SHARED,
-> +	[VM_SHARED | VM_WRITE | VM_READ]		= PAGE_SHARED_X,
-> +	[VM_SHARED | VM_EXEC]				= PAGE_READONLY,
-> +	[VM_SHARED | VM_EXEC | VM_READ]			= PAGE_READONLY_X,
-> +	[VM_SHARED | VM_EXEC | VM_WRITE]		= PAGE_SHARED,
-> +	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= PAGE_SHARED_X
-> +};
-> +DECLARE_VM_GET_PAGE_PROT
+Arnd,
 
-Looks good.
+Am 24.06.2022 um 21:10 schrieb Arnd Bergmann:
+> On Sat, Jun 18, 2022 at 3:06 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
+>> Am 18.06.2022 um 00:57 schrieb Arnd Bergmann:
+>>>
+>>> All architecture-independent users of virt_to_bus() and bus_to_virt()
+>>> have been fixed to use the dma mapping interfaces or have been
+>>> removed now.  This means the definitions on most architectures, and the
+>>> CONFIG_VIRT_TO_BUS symbol are now obsolete and can be removed.
+>>>
+>>> The only exceptions to this are a few network and scsi drivers for m68k
+>>> Amiga and VME machines and ppc32 Macintosh. These drivers work correctly
+>>> with the old interfaces and are probably not worth changing.
+>>
+>> The Amiga SCSI drivers are all old WD33C93 ones, and replacing
+>> virt_to_bus by virt_to_phys in the dma_setup() function there would
+>> cause no functional change at all.
+>
+> Ok, thanks for taking a look here.
+>
+>> drivers/vme/bridges/vme_ca91cx42.c hasn't been used at all on m68k (it
+>> is a PCI-to-VME bridge chipset driver that would be needed on
+>> architectures that natively use a PCI bus). I haven't found anything
+>> that selects that driver, so not sure it is even still in use??
+>
+> It's gone now, Greg has already taken my patches for this through
+> the staging tree.
 
-Acked-by: Stafford Horne <shorne@gmail.com>
+One less to worry about, thanks.
 
+>> That would allow you to drop the remaining virt_to_bus define from
+>> arch/m68k/include/asm/virtconvert.h.
+>>
+>> I could submit a patch to convert the Amiga SCSI drivers to use
+>> virt_to_phys if Geert and the SCSI maintainers think it's worth the churn.
+>
+> I don't think using virt_to_phys() is an improvement here, as
+> virt_to_bus() was originally meant as a better abstraction to
+> replace the use of virt_to_phys() to make drivers portable, before
+> it got replaced by the dma-mapping interface in turn.
+>
+> It looks like the Amiga SCSI drivers have an open-coded version of
+> what dma_map_single() does, to do bounce buffering and cache
+> management. The ideal solution would be to convert the drivers
+> actually use the appropriate dma-mapping interfaces and remove
+> this custom code.
+
+I've taken another look at these drivers' dma_setup() functions and they 
+all look much more complex than the Amiga ESP drivers (which do use the 
+dma-mapping interface for parts of the DMA setup). From my limited 
+understanding, the difference between the ESP and WD33C93 drivers is 
+that the former are used on 040/060 accelerator boards only (where the 
+processor does do bus snooping and DMA can access all of RAM). The 
+latter ones would need cache management, could only use non-coherent 
+mappings and would require special case handling for DMA-inaccessible 
+RAM inside a device-specific dma ops' map_page() function.
+
+That's several bridges too far for me ... I have no Amiga hardware 
+whatsoever, and know no one who could test changes to WD33C93 drivers 
+for me.
+
+What I have is a NCR5380 with the proverbial 'pathological DMA' 
+integration example (and its driver was never changed to even use 
+virt_to_bus()!). I might learn enough about using the dma-mapping API on 
+that one eventually (though the requirement for at least 1 MB swiotlb 
+bounce buffers looks hard to meet), and use that to convert the WD33C93 
+drivers, but it would still remain untested.
+
+ > The same could be done for the two vme drivers (scsi/mvme147.c
+> and ethernet/82596.c), which do the cache management but
+> apparently don't need swiotlb bounce buffering.
+>
+> Rewriting the drivers to modern APIs is of course non-trivial,
+> and if you want a shortcut here, I would suggest introducing
+> platform specific helpers similar to isa_virt_to_bus() and call
+> them amiga_virt_to_bus() and vme_virt_to_bus, respectively.
+
+I don't think Amiga and m68k VME differ at all in that respect, so might 
+just call it m68k_virt_to_bus() for now.
+
+> Putting these into a platform specific header file at least helps
+> clarify that both the helper functions and the drivers using them
+> are non-portable.
+
+There are no platform specific header files other than asm/amigahw.h and 
+asm/mvme147hw.h, currently only holding register address definitions. 
+Would it be OK to add m68k_virt_to_bus() in there if it can't remain in 
+asm/virtconvert.h, Geert?
+
+>
+>> 32bit powerpc is a different matter though.
+>
+> It's similar, but unrelated. The two apple ethernet drivers
+> (bmac and mace) can again either get changed to use the
+> dma-mapping interfaces, or get a custom pmac_virt_to_bus()/
+> pmac_bus_to_virt() helper.
+
+Hmmm - I see Finn had done the DMA API conversion on macmace.c which 
+might give some hints on what to do about mace.c ... no idea about 
+bmac.c though. And again, haven't got hardware to test, so custom 
+helpers is it, then.
+
+Cheers,
+
+	Michael
+
+> There is also drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c,
+> which I think just needs a trivial change, but I'm not sure
+> how to do it correctly.
+>
+>       Arnd
+>
