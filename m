@@ -1,46 +1,208 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-Date: Mon, 27 Jun 2022 10:26:37 +0200
-Message-ID: <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
-References: <20220617125750.728590-1-arnd@kernel.org> <20220617125750.728590-4-arnd@kernel.org>
- <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+From: Brian Cain <bcain@quicinc.com>
+Subject: RE: [PATCH V5 12/26] hexagon/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date: Mon, 27 Jun 2022 14:32:29 +0000
+Message-ID: <SN6PR02MB4205D2460F6DB1F3C82999BDB8B99@SN6PR02MB4205.namprd02.prod.outlook.com>
+References: <20220627045833.1590055-1-anshuman.khandual@arm.com>
+ <20220627045833.1590055-13-anshuman.khandual@arm.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Michael Schmitz <schmitzmic@gmail.com>
-Cc: Arnd Bergmann <arnd@kernel.org>, scsi <linux-scsi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux-Arch <linux-arch@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Parisc List <linux-parisc@vger.kernel.o>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qccesdkim1;
+  t=1656340358; x=1656945158;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=eYXH/ctB6v6XAcg42LM5ozEFN2HdhzgzZ+oK7wTjzCM=;
+  b=NMYSOIOW2iZQuaaVghEbWj8oKPFDjo3YgSJmx5DO6b5sMliKn5dOz28n
+   Z3pW9pdQNlRcPLzxlVoqK5XunzBpQAEyZUm+5co+FQGzPqiHZ/WRpDjfr
+   Y9bK0cXiQii1rjgYP2u7VUnzC/o4ngFWJVAoPoAD9dA6x4tLFK0eGpD8g
+   Y=;
+In-Reply-To: <20220627045833.1590055-13-anshuman.khandual@arm.com>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+To: Anshuman Khandual <anshuman.khandual@arm.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>
+Cc: "hch@infradead.org" <hch@infradead.org>, "christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>, Andrew Morton <akpm@linux-foundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "openrisc@lists.librecores.org" <openrisc@lists.librecores.org>, "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>, "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>, "linux-hexagon@vger.kernel.org" <linux-hexagon@vger.kernel.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>, "linux-s390@vger.kernel.org" <>
 
-Hi Michael,
+> -----Original Message-----
+> From: Anshuman Khandual <anshuman.khandual@arm.com>
+...
+> WARNING: This email originated from outside of Qualcomm. Please be wary
+> of any links or attachments, and do not enable macros.
+>=20
+> This enables ARCH_HAS_VM_GET_PAGE_PROT on the platform and exports
+> standard
+> vm_get_page_prot() implementation via DECLARE_VM_GET_PAGE_PROT,
+> which looks
+> up a private and static protection_map[] array. Subsequently all __SXXX a=
+nd
+> __PXXX macros can be dropped which are no longer needed.
+>=20
+> Cc: Brian Cain <bcain@codeaurora.org>
+> Cc: linux-hexagon@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> ---
+>  arch/hexagon/Kconfig               |  1 +
+>  arch/hexagon/include/asm/pgtable.h | 27 -------------------
+>  arch/hexagon/mm/init.c             | 42 ++++++++++++++++++++++++++++++
+>  3 files changed, 43 insertions(+), 27 deletions(-)
+>=20
+> diff --git a/arch/hexagon/Kconfig b/arch/hexagon/Kconfig
+> index 54eadf265178..bc4ceecd0588 100644
+> --- a/arch/hexagon/Kconfig
+> +++ b/arch/hexagon/Kconfig
+> @@ -6,6 +6,7 @@ config HEXAGON
+>         def_bool y
+>         select ARCH_32BIT_OFF_T
+>         select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+> +       select ARCH_HAS_VM_GET_PAGE_PROT
+>         select ARCH_NO_PREEMPT
+>         select DMA_GLOBAL_POOL
+>         # Other pending projects/to-do items.
+> diff --git a/arch/hexagon/include/asm/pgtable.h
+> b/arch/hexagon/include/asm/pgtable.h
+> index 0610724d6a28..f7048c18b6f9 100644
+> --- a/arch/hexagon/include/asm/pgtable.h
+> +++ b/arch/hexagon/include/asm/pgtable.h
+> @@ -126,33 +126,6 @@ extern unsigned long _dflt_cache_att;
+>   */
+>  #define CACHEDEF       (CACHE_DEFAULT << 6)
+>=20
+> -/* Private (copy-on-write) page protections. */
+> -#define __P000 __pgprot(_PAGE_PRESENT | _PAGE_USER | CACHEDEF)
+> -#define __P001 __pgprot(_PAGE_PRESENT | _PAGE_USER | _PAGE_READ |
+> CACHEDEF)
+> -#define __P010 __P000  /* Write-only copy-on-write */
+> -#define __P011 __P001  /* Read/Write copy-on-write */
+> -#define __P100 __pgprot(_PAGE_PRESENT | _PAGE_USER | \
+> -                       _PAGE_EXECUTE | CACHEDEF)
+> -#define __P101 __pgprot(_PAGE_PRESENT | _PAGE_USER |
+> _PAGE_EXECUTE | \
+> -                       _PAGE_READ | CACHEDEF)
+> -#define __P110 __P100  /* Write/execute copy-on-write */
+> -#define __P111 __P101  /* Read/Write/Execute, copy-on-write */
+> -
+> -/* Shared page protections. */
+> -#define __S000 __P000
+> -#define __S001 __P001
+> -#define __S010 __pgprot(_PAGE_PRESENT | _PAGE_USER | \
+> -                       _PAGE_WRITE | CACHEDEF)
+> -#define __S011 __pgprot(_PAGE_PRESENT | _PAGE_USER | _PAGE_READ |
+> \
+> -                       _PAGE_WRITE | CACHEDEF)
+> -#define __S100 __pgprot(_PAGE_PRESENT | _PAGE_USER | \
+> -                       _PAGE_EXECUTE | CACHEDEF)
+> -#define __S101 __P101
+> -#define __S110 __pgprot(_PAGE_PRESENT | _PAGE_USER | \
+> -                       _PAGE_EXECUTE | _PAGE_WRITE | CACHEDEF)
+> -#define __S111 __pgprot(_PAGE_PRESENT | _PAGE_USER | _PAGE_READ |
+> \
+> -                       _PAGE_EXECUTE | _PAGE_WRITE | CACHEDEF)
+> -
+>  extern pgd_t swapper_pg_dir[PTRS_PER_PGD];  /* located in head.S */
+>=20
+>  /*  HUGETLB not working currently  */
+> diff --git a/arch/hexagon/mm/init.c b/arch/hexagon/mm/init.c
+> index 3167a3b5c97b..146115c9de61 100644
+> --- a/arch/hexagon/mm/init.c
+> +++ b/arch/hexagon/mm/init.c
+> @@ -234,3 +234,45 @@ void __init setup_arch_memory(void)
+>          *  which is called by start_kernel() later on in the process
+>          */
+>  }
+> +
+> +static const pgprot_t protection_map[16] =3D {
+> +       [VM_NONE]                                       =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  CACHED=
+EF),
+> +       [VM_READ]                                       =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  _PAGE_=
+READ | CACHEDEF),
+> +       [VM_WRITE]                                      =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  CACHED=
+EF),
+> +       [VM_WRITE | VM_READ]                            =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  _PAGE_=
+READ | CACHEDEF),
+> +       [VM_EXEC]                                       =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  _PAGE_=
+EXECUTE | CACHEDEF),
+> +       [VM_EXEC | VM_READ]                             =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  _PAGE_=
+EXECUTE | _PAGE_READ |
+> +                                                                  CACHED=
+EF),
+> +       [VM_EXEC | VM_WRITE]                            =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  _PAGE_=
+EXECUTE | CACHEDEF),
+> +       [VM_EXEC | VM_WRITE | VM_READ]                  =3D
+> __pgprot(_PAGE_PRESENT | _PAGE_USER |
+> +                                                                  _PAGE_=
+EXECUTE | _PAGE_READ |
+> +                                                                  CACHED=
+EF),
+> +       [VM_SHARED]                                     =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  CACHED=
+EF),
+> +       [VM_SHARED | VM_READ]                           =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  _PAGE_=
+READ | CACHEDEF),
+> +       [VM_SHARED | VM_WRITE]                          =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  _PAGE_=
+WRITE | CACHEDEF),
+> +       [VM_SHARED | VM_WRITE | VM_READ]                =3D
+> __pgprot(_PAGE_PRESENT | _PAGE_USER |
+> +                                                                  _PAGE_=
+READ | _PAGE_WRITE |
+> +                                                                  CACHED=
+EF),
+> +       [VM_SHARED | VM_EXEC]                           =3D __pgprot(_PAG=
+E_PRESENT |
+> _PAGE_USER |
+> +                                                                  _PAGE_=
+EXECUTE | CACHEDEF),
+> +       [VM_SHARED | VM_EXEC | VM_READ]                 =3D
+> __pgprot(_PAGE_PRESENT | _PAGE_USER |
+> +                                                                  _PAGE_=
+EXECUTE | _PAGE_READ |
+> +                                                                  CACHED=
+EF),
+> +       [VM_SHARED | VM_EXEC | VM_WRITE]                =3D
+> __pgprot(_PAGE_PRESENT | _PAGE_USER |
+> +                                                                  _PAGE_=
+EXECUTE | _PAGE_WRITE |
+> +                                                                  CACHED=
+EF),
+> +       [VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]      =3D
+> __pgprot(_PAGE_PRESENT | _PAGE_USER |
+> +                                                                  _PAGE_=
+READ | _PAGE_EXECUTE |
+> +                                                                  _PAGE_=
+WRITE | CACHEDEF)
+> +};
+> +DECLARE_VM_GET_PAGE_PROT
+> --
+> 2.25.1
 
-On Sat, Jun 18, 2022 at 3:06 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> Am 18.06.2022 um 00:57 schrieb Arnd Bergmann:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > All architecture-independent users of virt_to_bus() and bus_to_virt()
-> > have been fixed to use the dma mapping interfaces or have been
-> > removed now.  This means the definitions on most architectures, and the
-> > CONFIG_VIRT_TO_BUS symbol are now obsolete and can be removed.
-> >
-> > The only exceptions to this are a few network and scsi drivers for m68k
-> > Amiga and VME machines and ppc32 Macintosh. These drivers work correctly
-> > with the old interfaces and are probably not worth changing.
->
-> The Amiga SCSI drivers are all old WD33C93 ones, and replacing
-> virt_to_bus by virt_to_phys in the dma_setup() function there would
-> cause no functional change at all.
-
-FTR, the sgiwd93 driver use dma_map_single().
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Acked-by: Brian Cain <bcain@quicinc.com>
