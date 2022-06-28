@@ -1,141 +1,221 @@
-From: Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: Re: [PATCH V5 04/26] sparc/mm: Move protection_map[] inside the
- platform
-Date: Tue, 28 Jun 2022 08:42:24 +0530
-Message-ID: <f26804cf-e342-5826-8f01-4b087a7baa63@arm.com>
-References: <20220627045833.1590055-1-anshuman.khandual@arm.com>
- <20220627045833.1590055-5-anshuman.khandual@arm.com>
- <YrnlkLbyYSbI0EQw@ravnborg.org>
+From: Michael Schmitz <schmitzmic-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+Date: Tue, 28 Jun 2022 15:25:58 +1200
+Message-ID: <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+ <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
+ <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
 Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------EF1F8A9B021AD1B88577153E"
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9EDD340483
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 29C0340017
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 597D1414C8
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B9565414C7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=subject:to:references:cc:from:message-id:date:user-agent
+ :mime-version:in-reply-to;
+ bh=98ncMEofZ3ypmUWB7oKUkuT/bpmjStGksJuUcGKTVGc=;
+ b=fMfCg/HOqcbPVSdVNElbV526+23+XdN3LylNezJqkrHb6fVXmxpkunVG3rLT9XcFXw
+ HpCMyB7KDRKw245t+OJHw3FQL2gH2icNy1tzXFhyTeE+J9RLZswjB9T1T9XiFFpbERR5
+ lCNa01DtHAYHMiVGjinDg8S0v2LUYuJPChTK5IuIdjUFD4GA99cW8qKKeB++ss8Vw+os
+ RLW9bmiojBFFCdkwOuQe/CgRlLJtBdmK9G50X0mwzZYxHK7Dxb7Wga9rrrBIp9c5MIyG
+ 9Sx9MkBVwQuwC4cT7mj+YhgLxFUe+8+CDN6etZdDn0xnYNIAkilvA9GHP+xPdmO3Dj67
+ /XjQ==
+In-Reply-To: <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+ <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+ <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Linux-Arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Miquel van Smoorenburg <mikevs-qWit8jRvyhWsTnJN9+BGXg@public.gmane.org>, linux-m68k <linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, "Maciej W . Rozycki" <macro-fOkVWZO6G+f10XsdtD+oqA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Denis Efremov <efremov-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Mark Salyzyn <salyzyn-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org>, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Matt Wang <wwentao-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, Parisc List <linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alpha <linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jakub Kicinski <kuba-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Khalid Aziz <khalid-21RPF02GE+GXwddmVfQv5g@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+This is a multi-part message in MIME format.
+--------------EF1F8A9B021AD1B88577153E
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-Content-Language: en-US
-In-Reply-To: <YrnlkLbyYSbI0EQw@ravnborg.org>
-List-ID: <linux-alpha.vger.kernel.org>
+
+Hii Geert
+
+Am 28.06.2022 um 09:12 schrieb Michael Schmitz:
+> Hi Geert,
+>
+> On 27/06/22 20:26, Geert Uytterhoeven wrote:
+>> Hi Michael,
+>>
+>> On Sat, Jun 18, 2022 at 3:06 AM Michael Schmitz <schmitzmic-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> wrote:
+>>> Am 18.06.2022 um 00:57 schrieb Arnd Bergmann:
+>>>> From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+>>>>
+>>>> All architecture-independent users of virt_to_bus() and bus_to_virt()
+>>>> have been fixed to use the dma mapping interfaces or have been
+>>>> removed now.  This means the definitions on most architectures, and the
+>>>> CONFIG_VIRT_TO_BUS symbol are now obsolete and can be removed.
+>>>>
+>>>> The only exceptions to this are a few network and scsi drivers for m68k
+>>>> Amiga and VME machines and ppc32 Macintosh. These drivers work
+>>>> correctly
+>>>> with the old interfaces and are probably not worth changing.
+>>> The Amiga SCSI drivers are all old WD33C93 ones, and replacing
+>>> virt_to_bus by virt_to_phys in the dma_setup() function there would
+>>> cause no functional change at all.
+>> FTR, the sgiwd93 driver use dma_map_single().
+>
+> Thanks! From what I see, it doesn't have to deal with bounce buffers
+> though?
+
+Leaving the bounce buffer handling in place, and taking a few other 
+liberties - this is what converting the easiest case (a3000 SCSI) might 
+look like. Any obvious mistakes? The mvme147 driver would be very 
+similar to handle (after conversion to a platform device).
+
+The driver allocates bounce buffers using kmalloc if it hits an 
+unaligned data buffer - can such buffers still even happen these days? 
+If I understand dma_map_single() correctly, the resulting dma handle 
+would be equally misaligned?
+
+To allocate a bounce buffer, would it be OK to use dma_alloc_coherent() 
+even though AFAIU memory used for DMA buffers generally isn't consistent 
+on m68k?
+
+Thinking ahead to the other two Amiga drivers - I wonder whether 
+allocating a static bounce buffer or a DMA pool at driver init is likely 
+to succeed if the kernel runs from the low 16 MB RAM chunk? It certainly 
+won't succeed if the kernel runs from a higher memory address, so the 
+present bounce buffer logic around amiga_chip_alloc() might still need 
+to be used here.
+
+Leaves the question whether converting the gvp11 and a2091 drivers is 
+actually worth it, if bounce buffers still have to be handled explicitly.
+
+Untested (except for compile testing), un-checkpatched, don't try this 
+on any disk with valuable data ...
+
+Cheers,
+
+	Michael
+
+--------------EF1F8A9B021AD1B88577153E
+Content-Type: text/x-diff;
+ name="0001-scsi-convert-m68k-WD33C93-drivers-to-DMA-API.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="0001-scsi-convert-m68k-WD33C93-drivers-to-DMA-API.patch"
+
+From e8c6aa068d27901c49dfb7442d4200cc966350a5 Mon Sep 17 00:00:00 2001
+From: Michael Schmitz <schmitzmic-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Date: Tue, 28 Jun 2022 12:45:08 +1200
+Subject: [PATCH] scsi - convert m68k WD33C93 drivers to DMA API
+
+Use dma_map_single() for gvp11 driver (leave bounce buffer logic unchanged).
+
+Compile-tested only.
+
+Signed-off-by: Michael Schmitz <schmitzmic-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/scsi/a3000.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/a3000.c b/drivers/scsi/a3000.c
+index dd161885eed1..3c62e8bafb8f 100644
+--- a/drivers/scsi/a3000.c
++++ b/drivers/scsi/a3000.c
+@@ -7,6 +7,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/interrupt.h>
+ #include <linux/platform_device.h>
++#include <linux/dma-mapping.h>
+ #include <linux/module.h>
+ 
+ #include <asm/page.h>
+@@ -25,8 +26,11 @@
+ struct a3000_hostdata {
+ 	struct WD33C93_hostdata wh;
+ 	struct a3000_scsiregs *regs;
++	struct device *dev;
+ };
+ 
++#define DMA_DIR(d)   ((d == DATA_OUT_DIR) ? DMA_TO_DEVICE : DMA_FROM_DEVICE)
++
+ static irqreturn_t a3000_intr(int irq, void *data)
+ {
+ 	struct Scsi_Host *instance = data;
+@@ -49,12 +53,16 @@ static irqreturn_t a3000_intr(int irq, void *data)
+ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
+ {
+ 	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
++	unsigned long len = scsi_pointer->this_residual;
+ 	struct Scsi_Host *instance = cmd->device->host;
+ 	struct a3000_hostdata *hdata = shost_priv(instance);
+ 	struct WD33C93_hostdata *wh = &hdata->wh;
+ 	struct a3000_scsiregs *regs = hdata->regs;
+ 	unsigned short cntr = CNTR_PDMD | CNTR_INTEN;
+-	unsigned long addr = virt_to_bus(scsi_pointer->ptr);
++	dma_addr_t addr;
++
++	addr = dma_map_single(hdata->dev, scsi_pointer->ptr, len, DMA_DIR(dir_in));
++	scsi_pointer->dma_handle = addr;
+ 
+ 	/*
+ 	 * if the physical address has the wrong alignment, or if
+@@ -79,7 +87,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
+ 			       scsi_pointer->this_residual);
+ 		}
+ 
+-		addr = virt_to_bus(wh->dma_bounce_buffer);
++		addr = virt_to_phys(wh->dma_bounce_buffer);
+ 	}
+ 
+ 	/* setup dma direction */
+@@ -166,6 +174,10 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
+ 			wh->dma_bounce_len = 0;
+ 		}
+ 	}
++	dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
++			 scsi_pointer->this_residual,
++			 DMA_DIR(wh->dma_dir));
++
+ }
+ 
+ static struct scsi_host_template amiga_a3000_scsi_template = {
+@@ -193,6 +205,11 @@ static int __init amiga_a3000_scsi_probe(struct platform_device *pdev)
+ 	wd33c93_regs wdregs;
+ 	struct a3000_hostdata *hdata;
+ 
++	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
++		dev_warn(&pdev->dev, "cannot use 32 bit DMA\n");
++		return -ENODEV;
++	}
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res)
+ 		return -ENODEV;
+@@ -216,6 +233,7 @@ static int __init amiga_a3000_scsi_probe(struct platform_device *pdev)
+ 	wdregs.SCMD = &regs->SCMD;
+ 
+ 	hdata = shost_priv(instance);
++	hdata->dev = &pdev->dev;
+ 	hdata->wh.no_sync = 0xff;
+ 	hdata->wh.fast = 0;
+ 	hdata->wh.dma_mode = CTRL_DMA;
+-- 
+2.17.1
+
+
+--------------EF1F8A9B021AD1B88577153E
 Content-Type: text/plain; charset="us-ascii"
-To: Sam Ravnborg <sam@ravnborg.org>
-Cc: linux-mm@kvack.org, hch@infradead.org, christophe.leroy@csgroup.eu, Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, x86@kernel.org, openrisc@lists.librecores.org, linux-xtensa@linux-xtensa.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-parisc@vger.kernel.org, linux-alpha@vger.kernel.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-um@lists.infradead.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
-
-On 6/27/22 22:44, Sam Ravnborg wrote:
-> Hi Anshuman,
-> 
-> On Mon, Jun 27, 2022 at 10:28:11AM +0530, Anshuman Khandual wrote:
->> This moves protection_map[] inside the platform and while here, also enable
->> ARCH_HAS_VM_GET_PAGE_PROT on 32 bit platforms via DECLARE_VM_GET_PAGE_PROT.
->>
->> Cc: "David S. Miller" <davem@davemloft.net>
->> Cc: sparclinux@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> ---
->>  arch/sparc/Kconfig                  |  2 +-
->>  arch/sparc/include/asm/pgtable_32.h | 19 -------------------
->>  arch/sparc/include/asm/pgtable_64.h | 19 -------------------
->>  arch/sparc/mm/init_32.c             | 20 ++++++++++++++++++++
->>  arch/sparc/mm/init_64.c             |  3 +++
->>  5 files changed, 24 insertions(+), 39 deletions(-)
->>
->> diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
->> index ba449c47effd..09f868613a4d 100644
->> --- a/arch/sparc/Kconfig
->> +++ b/arch/sparc/Kconfig
->> @@ -13,6 +13,7 @@ config 64BIT
->>  config SPARC
->>  	bool
->>  	default y
->> +	select ARCH_HAS_VM_GET_PAGE_PROT
->>  	select ARCH_MIGHT_HAVE_PC_PARPORT if SPARC64 && PCI
->>  	select ARCH_MIGHT_HAVE_PC_SERIO
->>  	select DMA_OPS
->> @@ -84,7 +85,6 @@ config SPARC64
->>  	select PERF_USE_VMALLOC
->>  	select ARCH_HAVE_NMI_SAFE_CMPXCHG
->>  	select HAVE_C_RECORDMCOUNT
->> -	select ARCH_HAS_VM_GET_PAGE_PROT
->>  	select HAVE_ARCH_AUDITSYSCALL
->>  	select ARCH_SUPPORTS_ATOMIC_RMW
->>  	select ARCH_SUPPORTS_DEBUG_PAGEALLOC
->> diff --git a/arch/sparc/include/asm/pgtable_32.h b/arch/sparc/include/asm/pgtable_32.h
->> index 4866625da314..8ff549004fac 100644
->> --- a/arch/sparc/include/asm/pgtable_32.h
->> +++ b/arch/sparc/include/asm/pgtable_32.h
->> @@ -64,25 +64,6 @@ void paging_init(void);
->>  
->>  extern unsigned long ptr_in_current_pgd;
->>  
->> -/*         xwr */
->> -#define __P000  PAGE_NONE
->> -#define __P001  PAGE_READONLY
->> -#define __P010  PAGE_COPY
->> -#define __P011  PAGE_COPY
->> -#define __P100  PAGE_READONLY
->> -#define __P101  PAGE_READONLY
->> -#define __P110  PAGE_COPY
->> -#define __P111  PAGE_COPY
->> -
->> -#define __S000	PAGE_NONE
->> -#define __S001	PAGE_READONLY
->> -#define __S010	PAGE_SHARED
->> -#define __S011	PAGE_SHARED
->> -#define __S100	PAGE_READONLY
->> -#define __S101	PAGE_READONLY
->> -#define __S110	PAGE_SHARED
->> -#define __S111	PAGE_SHARED
->> -
->>  /* First physical page can be anywhere, the following is needed so that
->>   * va-->pa and vice versa conversions work properly without performance
->>   * hit for all __pa()/__va() operations.
->> diff --git a/arch/sparc/include/asm/pgtable_64.h b/arch/sparc/include/asm/pgtable_64.h
->> index 4679e45c8348..a779418ceba9 100644
->> --- a/arch/sparc/include/asm/pgtable_64.h
->> +++ b/arch/sparc/include/asm/pgtable_64.h
->> @@ -187,25 +187,6 @@ bool kern_addr_valid(unsigned long addr);
->>  #define _PAGE_SZHUGE_4U	_PAGE_SZ4MB_4U
->>  #define _PAGE_SZHUGE_4V	_PAGE_SZ4MB_4V
->>  
->> -/* These are actually filled in at boot time by sun4{u,v}_pgprot_init() */
->> -#define __P000	__pgprot(0)
->> -#define __P001	__pgprot(0)
->> -#define __P010	__pgprot(0)
->> -#define __P011	__pgprot(0)
->> -#define __P100	__pgprot(0)
->> -#define __P101	__pgprot(0)
->> -#define __P110	__pgprot(0)
->> -#define __P111	__pgprot(0)
->> -
->> -#define __S000	__pgprot(0)
->> -#define __S001	__pgprot(0)
->> -#define __S010	__pgprot(0)
->> -#define __S011	__pgprot(0)
->> -#define __S100	__pgprot(0)
->> -#define __S101	__pgprot(0)
->> -#define __S110	__pgprot(0)
->> -#define __S111	__pgprot(0)
->> -
->>  #ifndef __ASSEMBLY__
->>  
->>  pte_t mk_pte_io(unsigned long, pgprot_t, int, unsigned long);
->> diff --git a/arch/sparc/mm/init_32.c b/arch/sparc/mm/init_32.c
->> index 1e9f577f084d..8693e4e28b86 100644
->> --- a/arch/sparc/mm/init_32.c
->> +++ b/arch/sparc/mm/init_32.c
->> @@ -302,3 +302,23 @@ void sparc_flush_page_to_ram(struct page *page)
->>  		__flush_page_to_ram(vaddr);
->>  }
->>  EXPORT_SYMBOL(sparc_flush_page_to_ram);
->> +
->> +static pgprot_t protection_map[16] __ro_after_init = {
-> This can be const - like done for powerpc and others.
-> sparc32 and sparc64 uses each their own - and I do not see sparc32 do
-> any modifications to protection_map.
-
-Indeed protection_map[] arrays are independent both for sparc32 and spacr64.
-sparc32 platform never changes the protection_map[] array during boot. Sure,
-will make it into a const instead. Thanks for pointing this out.
-
-> 
-> With this change:
-> Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
-> 
+--------------EF1F8A9B021AD1B88577153E--
