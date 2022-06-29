@@ -1,7 +1,7 @@
-From: Michael Schmitz <schmitzmic@gmail.com>
+From: Christoph Hellwig <hch@infradead.org>
 Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-Date: Wed, 29 Jun 2022 12:14:42 +1200
-Message-ID: <2402062b-aae6-a247-06a8-3775c2909bdb@gmail.com>
+Date: Tue, 28 Jun 2022 23:21:50 -0700
+Message-ID: <YrvvfpW4MmQiM47H@infradead.org>
 References: <20220617125750.728590-1-arnd@kernel.org>
  <20220617125750.728590-4-arnd@kernel.org>
  <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
@@ -12,49 +12,31 @@ References: <20220617125750.728590-1-arnd@kernel.org>
  <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
  <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
  <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
- <fc47e8da-81d3-e563-0a17-4eb23db015cc@acm.org>
- <859c2adc-d3cb-64e8-faba-06e1ac5eddaf@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=05ASLe35KlS/635AYkr9ttdQBevoBXGVkR7t9AbxzS8=;
-        b=dzzx4WtXS/WkHpvykE0Ug4pI7IQoDYpxYcwT22eGTgXydtRyVau06KToMULz4WZ85p
-         grc9sV1BmBI096bjPV6AYIg+FD5hBe5gj3092gLAqIoDR6Usno3qkCUxW0him8f4Kt+7
-         5Uf02V1S6CU9QXgRzjHroyahVKDiR/lHNsV044fz9JWOwGa1zg1AbzobwrAmZjbW8zFF
-         NJWZj5bNSbN92/C5/1fpmT4IbOePFpLv8AN2psJq3YvTqAwnlZ6jrlyHQy1YHFlzFM4V
-         6GGIoWoQqCmV+YlWQVYdo/a8/uHvejllTjqLg43Sy9OxgGuiI2LvtGtvLWOWEwxpHjVI
-         SvDg==
-Content-Language: en-US
-In-Reply-To: <859c2adc-d3cb-64e8-faba-06e1ac5eddaf@gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=7yGusf/8BpHfB7jofxMw85tVuHPTi4bAH8G5H2jvBjY=; b=h3tAd+nNN81Dil4eXw2Lk4CyNH
+        1475Vuy94bgqSj2tu5/1Xr1gZBM2KPknL6JamvXFdmFANrhSnUNOxMiUStNCzqyfBbttb80rJi566
+        DVlH1oD5tJgtAmhEidd4yafSARpW45WIOCWo6aEhVwxyQXijFQI8BaFSYdwwRjF/FcXRSqfarrS4w
+        yMHV9DjHfI9xh/1Wx6/1z+DAEu5EHm1h+9Cz1lixjewEncE5xNCDuhFMiqMKmak/YED18c9DEiTkF
+        shw99ZN5InGSE/X3yex04M0RucunRXqykifZ7stOcSWbnTFGj/qcYAa7QU52JML8NJVd3Ta4itXpg
+        3vrA5osg==;
+Content-Disposition: inline
+In-Reply-To: <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Bart Van Assche <bvanassche@acm.org>, Arnd Bergmann <arnd@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, scsi <linux-scsi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux-Arch <linux-arch@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Parisc List <linux-pa>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Michael Schmitz <schmitzmic@gmail.com>
+Cc: Arnd Bergmann <arnd@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, scsi <linux-scsi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux-Arch <linux-arch@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux>
 
-Hi Bart,
+On Wed, Jun 29, 2022 at 11:09:00AM +1200, Michael Schmitz wrote:
+> And all SCSI buffers are allocated using kmalloc? No way at all for user
+> space to pass unaligned data?
 
-On 29/06/22 12:01, Michael Schmitz wrote:
->
->> An example of a user space application that passes an SG I/O data 
->> buffer to the kernel that is aligned to a four byte boundary but not 
->> to an eight byte boundary if the -s (scattered) command line option 
->> is used: 
->> https://github.com/osandov/blktests/blob/master/src/discontiguous-io.cpp
->
-> Thanks - four byte alignment actually wouldn't be an issue for me. 
-> It's two byte or smaller that would trip up the SCSI DMA.
->
-> While I'm sure such an even more pathological test case could be 
-> written, I was rather worried about st.c and sr.c input ...
-Nevermind - I just see m68k defines ARCH_DMA_MINALIGN to be four bytes. 
-Should be safe for all that matters, then.
-
-Cheers,
-
-     Michael
-
-
+Most that you will see actually comes from the page allocator.  But
+the block layer has a dma_alignment limit, and when userspace sends
+I/O that is not properly aligned it will be bounce buffered before
+it it sent to the driver.
