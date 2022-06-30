@@ -1,101 +1,50 @@
-From: Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: [PATCH V6 25/26] sh/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date: Thu, 30 Jun 2022 10:46:29 +0530
-Message-ID: <20220630051630.1718927-26-anshuman.khandual@arm.com>
-References: <20220630051630.1718927-1-anshuman.khandual@arm.com>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: RE: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+Date: Thu, 30 Jun 2022 08:04:43 +0000
+Message-ID: <26852797d822462abc1c9f96def7fa42@AcuMS.aculab.com>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+ <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
+ <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
+ <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+ <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
+ <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
+ <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
+ <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-m68k-owner@vger.kernel.org>
-In-Reply-To: <20220630051630.1718927-1-anshuman.khandual@arm.com>
+Content-Transfer-Encoding: base64
+Return-path: <linux-scsi-owner@vger.kernel.org>
+In-Reply-To: <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
+Content-Language: en-US
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-mm@kvack.org, akpm@linux-foundation.org
-Cc: hch@infradead.org, christophe.leroy@csgroup.eu, Anshuman Khandual <anshuman.khandual@arm.com>, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, x86@kernel.org, openrisc@lists.librecores.org, linux-xtensa@linux-xtensa.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-parisc@vger.kernel.org, linux-alpha@vger.kernel.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-um@lists.infradead.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>
+To: 'Michael Schmitz' <schmitzmic@gmail.com>, Arnd Bergmann <arnd@kernel.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, scsi <linux-scsi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux-Arch <linux-arch@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Parisc List <linux-pa>
 
-This enables ARCH_HAS_VM_GET_PAGE_PROT on the platform and exports standard
-vm_get_page_prot() implementation via DECLARE_VM_GET_PAGE_PROT, which looks
-up a private and static protection_map[] array. Subsequently all __SXXX and
-__PXXX macros can be dropped which are no longer needed.
-
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: Rich Felker <dalias@libc.org>
-Cc: linux-sh@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- arch/sh/Kconfig               |  1 +
- arch/sh/include/asm/pgtable.h | 17 -----------------
- arch/sh/mm/mmap.c             | 20 ++++++++++++++++++++
- 3 files changed, 21 insertions(+), 17 deletions(-)
-
-diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-index 5f220e903e5a..91f3ea325388 100644
---- a/arch/sh/Kconfig
-+++ b/arch/sh/Kconfig
-@@ -12,6 +12,7 @@ config SUPERH
- 	select ARCH_HAS_GCOV_PROFILE_ALL
- 	select ARCH_HAS_PTE_SPECIAL
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
-+	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_HIBERNATION_POSSIBLE if MMU
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_WANT_IPC_PARSE_VERSION
-diff --git a/arch/sh/include/asm/pgtable.h b/arch/sh/include/asm/pgtable.h
-index d7ddb1ec86a0..6fb9ec54cf9b 100644
---- a/arch/sh/include/asm/pgtable.h
-+++ b/arch/sh/include/asm/pgtable.h
-@@ -89,23 +89,6 @@ static inline unsigned long phys_addr_mask(void)
-  * completely separate permission bits for user and kernel space.
-  */
- 	 /*xwr*/
--#define __P000	PAGE_NONE
--#define __P001	PAGE_READONLY
--#define __P010	PAGE_COPY
--#define __P011	PAGE_COPY
--#define __P100	PAGE_EXECREAD
--#define __P101	PAGE_EXECREAD
--#define __P110	PAGE_COPY
--#define __P111	PAGE_COPY
--
--#define __S000	PAGE_NONE
--#define __S001	PAGE_READONLY
--#define __S010	PAGE_WRITEONLY
--#define __S011	PAGE_SHARED
--#define __S100	PAGE_EXECREAD
--#define __S101	PAGE_EXECREAD
--#define __S110	PAGE_RWX
--#define __S111	PAGE_RWX
- 
- typedef pte_t *pte_addr_t;
- 
-diff --git a/arch/sh/mm/mmap.c b/arch/sh/mm/mmap.c
-index 6a1a1297baae..46c1183493af 100644
---- a/arch/sh/mm/mmap.c
-+++ b/arch/sh/mm/mmap.c
-@@ -162,3 +162,23 @@ int valid_mmap_phys_addr_range(unsigned long pfn, size_t size)
- {
- 	return 1;
- }
-+
-+static const pgprot_t protection_map[16] = {
-+	[VM_NONE]					= PAGE_NONE,
-+	[VM_READ]					= PAGE_READONLY,
-+	[VM_WRITE]					= PAGE_COPY,
-+	[VM_WRITE | VM_READ]				= PAGE_COPY,
-+	[VM_EXEC]					= PAGE_EXECREAD,
-+	[VM_EXEC | VM_READ]				= PAGE_EXECREAD,
-+	[VM_EXEC | VM_WRITE]				= PAGE_COPY,
-+	[VM_EXEC | VM_WRITE | VM_READ]			= PAGE_COPY,
-+	[VM_SHARED]					= PAGE_NONE,
-+	[VM_SHARED | VM_READ]				= PAGE_READONLY,
-+	[VM_SHARED | VM_WRITE]				= PAGE_WRITEONLY,
-+	[VM_SHARED | VM_WRITE | VM_READ]		= PAGE_SHARED,
-+	[VM_SHARED | VM_EXEC]				= PAGE_EXECREAD,
-+	[VM_SHARED | VM_EXEC | VM_READ]			= PAGE_EXECREAD,
-+	[VM_SHARED | VM_EXEC | VM_WRITE]		= PAGE_RWX,
-+	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= PAGE_RWX
-+};
-+DECLARE_VM_GET_PAGE_PROT
--- 
-2.25.1
+RnJvbTogTWljaGFlbCBTY2htaXR6DQo+IFNlbnQ6IDI5IEp1bmUgMjAyMiAwMDowOQ0KPiANCj4g
+SGkgQXJuZCwNCj4gDQo+IE9uIDI5LzA2LzIyIDA5OjUwLCBBcm5kIEJlcmdtYW5uIHdyb3RlOg0K
+PiA+IE9uIFR1ZSwgSnVuIDI4LCAyMDIyIGF0IDExOjAzIFBNIE1pY2hhZWwgU2NobWl0eiA8c2No
+bWl0em1pY0BnbWFpbC5jb20+IHdyb3RlOg0KPiA+PiBPbiAyOC8wNi8yMiAxOTowMywgR2VlcnQg
+VXl0dGVyaG9ldmVuIHdyb3RlOg0KPiA+Pj4+IFRoZSBkcml2ZXIgYWxsb2NhdGVzIGJvdW5jZSBi
+dWZmZXJzIHVzaW5nIGttYWxsb2MgaWYgaXQgaGl0cyBhbg0KPiA+Pj4+IHVuYWxpZ25lZCBkYXRh
+IGJ1ZmZlciAtIGNhbiBzdWNoIGJ1ZmZlcnMgc3RpbGwgZXZlbiBoYXBwZW4gdGhlc2UgZGF5cz8N
+Cj4gPj4+IE5vIGlkZWEuDQo+ID4+IEhtbW0gLSBJIHRoaW5rIEknbGwgc3RpY2sgYSBXQVJOX09O
+Q0UoKSBpbiB0aGVyZSBzbyB3ZSBrbm93IHdoZXRoZXIgdGhpcw0KPiA+PiBjb2RlIHBhdGggaXMg
+c3RpbGwgYmVpbmcgdXNlZC4NCj4gPiBrbWFsbG9jKCkgZ3VhcmFudGVlcyBhbGlnbm1lbnQgdG8g
+dGhlIG5leHQgcG93ZXItb2YtdHdvIHNpemUgb3INCj4gPiBLTUFMTE9DX01JTl9BTElHTiwgd2hp
+Y2hldmVyIGlzIGJpZ2dlci4gT24gbTY4ayB0aGlzIG1lYW5zIGl0DQo+ID4gaXMgY2FjaGVsaW5l
+IGFsaWduZWQuDQo+IA0KPiBBbmQgYWxsIFNDU0kgYnVmZmVycyBhcmUgYWxsb2NhdGVkIHVzaW5n
+IGttYWxsb2M/IE5vIHdheSBhdCBhbGwgZm9yIHVzZXINCj4gc3BhY2UgdG8gcGFzcyB1bmFsaWdu
+ZWQgZGF0YT8NCg0KSSBkaWRuJ3QgdGhpbmsga21hbGxvYygpIGdhdmUgYW55IHN1Y2ggZ3VhcmFu
+dGVlIGFib3V0IGFsaWdubWVudC4NClRoZXJlIGFyZSBjYWNoZS1saW5lIGFsaWdubWVudCByZXF1
+aXJlbWVudHMgb24gc3lzdGVtcyB3aXRoIG5vbi1jb2hlcmVudA0KZG1hLCBidXQgb3RoZXJ3aXNl
+IHRoZSBhbGlnbm1lbnQgY2FuIGJlIG11Y2ggc21hbGxlci4NCg0KT25lIG9mIHRoZSBhbGxvY2F0
+b3JzIGFkZHMgYSBoZWFkZXIgdG8gZWFjaCBpdGVtLCBJSVJDIHRoYXQgY2FuDQpsZWFkIHRvICd1
+bmV4cGVjdGVkJyBhbGlnbm1lbnRzIC0gZXNwZWNpYWxseSBvbiBtNjhrLg0KDQpkbWFfYWxsb2Nf
+Y29oZXJlbnQoKSBkb2VzIGFsaWduIHRvIG5leHQgJ3Bvd2VyIG9mIDInLg0KQW5kIHNvbWV0aW1l
+cyB5b3UgbmVlZCAoZWcpIDE2ayBhbGxvY2F0ZXMgdGhhdCBhcmUgMTZrIGFsaWduZWQuDQoNCglE
+YXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91
+bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5
+NzM4NiAoV2FsZXMpDQo=
 
