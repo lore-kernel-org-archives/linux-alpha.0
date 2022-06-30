@@ -1,73 +1,54 @@
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH v5 0/9] bitops: let optimize out non-atomic bitops on compile-time constants
-Date: Thu, 30 Jun 2022 18:56:11 +0200
-Message-ID: <20220630165611.1551808-1-alexandr.lobakin@intel.com>
-References: <20220624121313.2382500-1-alexandr.lobakin@intel.com>
+From: Michael Schmitz <schmitzmic@gmail.com>
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+Date: Fri, 1 Jul 2022 07:21:53 +1200
+Message-ID: <c1d245ae-54c3-ec2b-e975-d50f9a863d2b@gmail.com>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+ <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
+ <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
+ <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+ <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
+ <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
+ <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
+ <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
+ <YrvvfpW4MmQiM47H@infradead.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656608229; x=1688144229;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bL9nkQHpWXRcPQiclQNvTJObFea+2bIOo5Icywa3vMA=;
-  b=fmrnj/6XuSpY1hnOWZabHa7oDtPIZ/7Bh+RzopLp14OHknBAX57nHps+
-   hL5jBriVpX/QkW93R0zu0Im+Scz9SCMknY/iOCVSHSS2S8n+mKecZgyHQ
-   Bj7eBMp9wg9++qnorxgkRFae5QI68Ufol1Zw3FVTWM9ltXapLCo//Tj26
-   9Kxt8LZ2qLG3s4QZZ6QJUPHIBI+jiJrwD8thm/mMC7PGeyX+J3CV/8SMn
-   PUlmia2grWt0+sj7f7hIdMOsNypeNBNyPtP/nF2FJrYVf6/8tUDwXrhTm
-   a/SMH+lmmn9h8jAOslm763iFDv28yTpVnQqU9eUHwUpe3DyX9d9HKP6LI
-   Q==;
-In-Reply-To: <20220624121313.2382500-1-alexandr.lobakin@intel.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=l005vzshb3NCX9X2VM+PRHsKSH+cwoE8+hpxYOqA4As=;
+        b=Ryekk371jQ1QiVX/pYGZ1Fxnqlqp0Twrw4fdw7rwXdWNZd8linJuCpYUZVY+Q0iPyf
+         MQtHmLDECOfQliv0UkVXxBpP1oEkjtqBA+m+vXUw7eTKeZQm+pLSA86FeQvRbD+P0G11
+         vgeXEKD6isj/F1Ee/eKIdEVU/vkXQM/wI5kbLINfslHCrrzOI44xnSHDUGCbhqvwVddM
+         j34tTrE1+UG2QZsXwyPCsEBPg2rxRpPI3L1pBalHzCrfK7rgExkmBMwK3cN5a26ttPxc
+         nujxQaN3aRGOZJRNQAC0dUIV+4oE8cjHO5gI3kzVIoJ4RZMsmRwklddwhggK/OvBOGty
+         iS1w==
+Content-Language: en-US
+In-Reply-To: <YrvvfpW4MmQiM47H@infradead.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Yury Norov <yury.norov@gmail.com>
-Cc: Alexander Lobakin <alexandr.lobakin@intel.com>, Arnd Bergmann <arnd@arndb.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mark Rutland <mark.rutland@arm.com>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Jesse Brandeburg <jesse.brandeburg@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nathan Chancellor <nathan@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Arnd Bergmann <arnd@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, scsi <linux-scsi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Jakub Kicinski <kuba@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Khalid Aziz <khalid@gonehiking.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>, Matt Wang <wwentao@vmware.com>, Miquel van Smoorenburg <mikevs@xs4all.net>, Mark Salyzyn <salyzyn@android.com>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Linux-Arch <linux-arch@vger.kernel.org>, alpha <linux-alpha@vger.kernel.org>, linux-m68k <linux-m68k@lists.linux-m68k.org>, Parisc List <linux-parisc@v>
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Date: Fri, 24 Jun 2022 14:13:04 +0200
+Hi Christoph,
 
-> While I was working on converting some structure fields from a fixed
-> type to a bitmap, I started observing code size increase not only in
-> places where the code works with the converted structure fields, but
-> also where the converted vars were on the stack. That said, the
-> following code:
+On 29/06/22 18:21, Christoph Hellwig wrote:
+> On Wed, Jun 29, 2022 at 11:09:00AM +1200, Michael Schmitz wrote:
+>> And all SCSI buffers are allocated using kmalloc? No way at all for user
+>> space to pass unaligned data?
+> Most that you will see actually comes from the page allocator.  But
+> the block layer has a dma_alignment limit, and when userspace sends
+> I/O that is not properly aligned it will be bounce buffered before
+> it it sent to the driver.
 
-Hey,
-
-Seems like everything is fine this time. I got some reports, but
-those aren't caused by any of the changes from the series.
-Maybe we can take it to -next and see how it goes?
-
-[...]
-
->  arch/alpha/include/asm/bitops.h               |  32 ++--
->  arch/hexagon/include/asm/bitops.h             |  24 ++-
->  arch/ia64/include/asm/bitops.h                |  42 ++---
->  arch/ia64/include/asm/processor.h             |   2 +-
->  arch/m68k/include/asm/bitops.h                |  49 ++++--
->  arch/s390/include/asm/bitops.h                |  61 +++----
->  arch/sh/include/asm/bitops-op32.h             |  34 ++--
->  arch/sparc/include/asm/bitops_32.h            |  18 +-
->  arch/sparc/lib/atomic32.c                     |  12 +-
->  arch/x86/include/asm/bitops.h                 |  22 +--
->  drivers/net/ethernet/intel/ice/ice_switch.c   |   2 +-
->  .../asm-generic/bitops/generic-non-atomic.h   | 161 ++++++++++++++++++
->  .../bitops/instrumented-non-atomic.h          |  35 ++--
->  include/asm-generic/bitops/non-atomic.h       | 121 +------------
->  .../bitops/non-instrumented-non-atomic.h      |  16 ++
->  include/linux/bitmap.h                        |  22 ++-
->  include/linux/bitops.h                        |  50 ++++++
->  lib/test_bitmap.c                             |  62 +++++++
->  tools/include/asm-generic/bitops/non-atomic.h |  34 ++--
->  tools/include/linux/bitops.h                  |  16 ++
->  20 files changed, 544 insertions(+), 271 deletions(-)
->  create mode 100644 include/asm-generic/bitops/generic-non-atomic.h
->  create mode 100644 include/asm-generic/bitops/non-instrumented-non-atomic.h
-> 
-> -- 
-> 2.36.1
+That limit is set to L1_CACHE_BYTES on m68k so we're good here.
 
 Thanks,
-Olek
+
+     Michael
+
+
