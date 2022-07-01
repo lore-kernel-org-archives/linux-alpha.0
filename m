@@ -1,47 +1,147 @@
-From: Yury Norov <yury.norov@gmail.com>
-Subject: Re: [PATCH v5 0/9] bitops: let optimize out non-atomic bitops on
- compile-time constants
-Date: Thu, 30 Jun 2022 19:58:11 -0700
-Message-ID: <Yr5iw9Ruj+LdlB+R@yury-laptop>
-References: <20220624121313.2382500-1-alexandr.lobakin@intel.com>
- <20220630165611.1551808-1-alexandr.lobakin@intel.com>
+From: Samuel Holland <samuel@sholland.org>
+Subject: [PATCH v3 3/8] genirq: GENERIC_IRQ_EFFECTIVE_AFF_MASK depends on SMP
+Date: Fri,  1 Jul 2022 15:00:51 -0500
+Message-ID: <20220701200056.46555-4-samuel@sholland.org>
+References: <20220701200056.46555-1-samuel@sholland.org>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lOvmRX5TfFX/UtEGzQDHuFSxkP0i5beuEIqtb7CEA/w=;
-        b=WelpAaI3njYPrQSfHDzi8D3Dc8rtvD01QTHIWuSTBpUCspUSZA5CiPOn1FmsBxK2d1
-         n+NvrQ429oVmXtDqyobXXKenmqQR1H4B2ygsgygEyJJsgDS7yFbtnMTx/Yat7tla7IGb
-         f81YC5UvSkGSiC8iaxaum9eibqhYQJgbGxT2mCiuwPfUJl9ROYkck29M4SFGJ5LzsLJP
-         VMJvj4NIDqtL/H8VtZGuM3kOpVqOTkedC07tTTX3LXleA88NKqFOJjONifGSPFrF1T5M
-         MZBE+oi0zJaomy+MpwcjtkMzDFGUMj1gM3gdD0ksFZaravUlIe1wlA6yFdxpI1+5Wu8A
-         05kw==
-Content-Disposition: inline
-In-Reply-To: <20220630165611.1551808-1-alexandr.lobakin@intel.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-mips-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm3; t=1656705696; x=1656712896; bh=D0
+        9F9v2OsTHtUMBckCisA3fh+Z9dxIk2ZgixoBozn6s=; b=ewPaKoSkHX2BJXiLrX
+        5+oSIjybcWAklW5wxV0V+2224R1S5aSbhX/ZumtO+pevNUEajJ4W+xkdb1xobtmO
+        5XYTY4EQgS3vI31X9KpJqpcSStss2CBfMnsdLsoEi24/QiILGCKcwtKmT3IHTl3M
+        Mv1Py5jjNaGrcKT545FKqrpJreT45hH04ngq4b9+jLCXhOz/SJLgVou/odMMcxHf
+        jE7L5Oa7EAAx5jIAr6O1i4neJfVW0AS/PUT6wWsmA07a/DS+FN2RC5D0zeLTTFHO
+        gxpbBrSPW1wLPGNr1k53E8cUdIxhDr0COGRwcsfZT5hqn7efH9ktohj1e3H0gw2y
+        IDKw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1656705696; x=1656712896; bh=D09F9v2OsTHtU
+        MBckCisA3fh+Z9dxIk2ZgixoBozn6s=; b=TBQ5zmWoRj8elXqnGUzA7FTSfUjgW
+        8okx2QN7XCl3ky8WadN5LKY6hzwdOfA9BJ0eXRmer/tFEiAUvbmU6wyJhpcSQZgj
+        Rmt76VA2NSnO3ovcCIK5WjyW5TFWl9HMcuavVAdkHsJTygI2nPusqodgPFJV4ZxT
+        L/edAsj355kbI6l/RzXXpdx9yUIvX2RXPv6ueqmRU44epIbZ+yjNJpk1CA53x/K2
+        6amlSq383hivdloACmsNrkmMJ+PWpdATylN2kVPVACnX4rT6i/tvFuKDeoqp86hr
+        Enu7oREUdbzL42YZLwjDCYWMY8dHPJjpHxLTP4IgdrwaIjKWoEmRjseFA==
+In-Reply-To: <20220701200056.46555-1-samuel@sholland.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mark Rutland <mark.rutland@arm.com>, Matt Turner <mattst88@gmail.com>, Brian Cain <bcain@quicinc.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, "David S. Miller" <davem@davemloft.net>, Kees Cook <keescook@chromium.org>, "Peter Zijlstra (Intel)" <peterz@infradead.org>, Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Jesse Brandeburg <jesse.brandeburg@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>
+To: Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
+Cc: Samuel Holland <samuel@sholland.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, Bjorn Helgaas <bhelgaas@google.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Borislav Petkov <bp@alien8.de>, Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Chris Zankel <chris@zankel.net>, Colin Ian King <colin.king@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, Dexuan Cui <decui@microsoft.com>, Florian Fainelli <f.fainelli@gmail.com>, Guo Ren <guoren@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Haiyang Zhang <haiyangz@microsoft.com>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <James.Bottomley@HansenP>
 
-On Thu, Jun 30, 2022 at 06:56:11PM +0200, Alexander Lobakin wrote:
-> From: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Date: Fri, 24 Jun 2022 14:13:04 +0200
-> 
-> > While I was working on converting some structure fields from a fixed
-> > type to a bitmap, I started observing code size increase not only in
-> > places where the code works with the converted structure fields, but
-> > also where the converted vars were on the stack. That said, the
-> > following code:
-> 
-> Hey,
-> 
-> Seems like everything is fine this time. I got some reports, but
-> those aren't caused by any of the changes from the series.
-> Maybe we can take it to -next and see how it goes?
+An IRQ's effective affinity can only be different from its configured
+affinity if there are multiple CPUs. Make it clear that this option is
+only meaningful when SMP is enabled. Most of the relevant code in
+irqdesc.c is already hidden behind CONFIG_SMP anyway.
 
-Applied on github.com:/norov/linux.git branch bitmap-for-next
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
-Thanks!
+(no changes since v1)
+
+ arch/arm/mach-hisi/Kconfig |  2 +-
+ drivers/irqchip/Kconfig    | 14 +++++++-------
+ kernel/irq/Kconfig         |  1 +
+ 3 files changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/mach-hisi/Kconfig b/arch/arm/mach-hisi/Kconfig
+index 75cccbd3f05f..7b3440687176 100644
+--- a/arch/arm/mach-hisi/Kconfig
++++ b/arch/arm/mach-hisi/Kconfig
+@@ -40,7 +40,7 @@ config ARCH_HIP04
+ 	select HAVE_ARM_ARCH_TIMER
+ 	select MCPM if SMP
+ 	select MCPM_QUAD_CLUSTER if SMP
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 	help
+ 	  Support for Hisilicon HiP04 SoC family
+ 
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 5dd98a81efc8..462adac905a6 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -8,7 +8,7 @@ config IRQCHIP
+ config ARM_GIC
+ 	bool
+ 	select IRQ_DOMAIN_HIERARCHY
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config ARM_GIC_PM
+ 	bool
+@@ -34,7 +34,7 @@ config ARM_GIC_V3
+ 	bool
+ 	select IRQ_DOMAIN_HIERARCHY
+ 	select PARTITION_PERCPU
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config ARM_GIC_V3_ITS
+ 	bool
+@@ -76,7 +76,7 @@ config ARMADA_370_XP_IRQ
+ 	bool
+ 	select GENERIC_IRQ_CHIP
+ 	select PCI_MSI if PCI
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config ALPINE_MSI
+ 	bool
+@@ -112,7 +112,7 @@ config BCM6345_L1_IRQ
+ 	bool
+ 	select GENERIC_IRQ_CHIP
+ 	select IRQ_DOMAIN
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config BCM7038_L1_IRQ
+ 	tristate "Broadcom STB 7038-style L1/L2 interrupt controller driver"
+@@ -120,7 +120,7 @@ config BCM7038_L1_IRQ
+ 	default ARCH_BRCMSTB || BMIPS_GENERIC
+ 	select GENERIC_IRQ_CHIP
+ 	select IRQ_DOMAIN
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config BCM7120_L2_IRQ
+ 	tristate "Broadcom STB 7120-style L2 interrupt controller driver"
+@@ -179,7 +179,7 @@ config IRQ_MIPS_CPU
+ 	select GENERIC_IRQ_CHIP
+ 	select GENERIC_IRQ_IPI if SMP && SYS_SUPPORTS_MULTITHREADING
+ 	select IRQ_DOMAIN
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config CLPS711X_IRQCHIP
+ 	bool
+@@ -294,7 +294,7 @@ config VERSATILE_FPGA_IRQ_NR
+ config XTENSA_MX
+ 	bool
+ 	select IRQ_DOMAIN
+-	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+ 
+ config XILINX_INTC
+ 	bool "Xilinx Interrupt Controller IP"
+diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+index fc760d064a65..db3d174c53d4 100644
+--- a/kernel/irq/Kconfig
++++ b/kernel/irq/Kconfig
+@@ -24,6 +24,7 @@ config GENERIC_IRQ_SHOW_LEVEL
+ 
+ # Supports effective affinity mask
+ config GENERIC_IRQ_EFFECTIVE_AFF_MASK
++       depends on SMP
+        bool
+ 
+ # Support for delayed migration from interrupt context
+-- 
+2.35.1
+
