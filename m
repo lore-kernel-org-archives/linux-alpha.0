@@ -1,102 +1,101 @@
-From: Samuel Holland <samuel@sholland.org>
-Subject: [PATCH v3 0/8] genirq: Provide real IRQ affinity masks in non-SMP configs
-Date: Fri,  1 Jul 2022 15:00:48 -0500
-Message-ID: <20220701200056.46555-1-samuel@sholland.org>
+From: Samuel Holland <samuel-RkNLwX/CsU9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH v3 5/8] genirq: Refactor accessors to use
+ irq_data_get_affinity_mask
+Date: Fri,  1 Jul 2022 15:00:53 -0500
+Message-ID: <20220701200056.46555-6-samuel@sholland.org>
+References: <20220701200056.46555-1-samuel@sholland.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm3; t=1656705670; x=1656712870; bh=h3WN3AcddFJuwhQ39XPEdgr5t
-        ejPWmRF9a5JWUKLi6w=; b=mK5frjjpRETCdaizhOvpq/mQo5UlOZqfHCt356wLu
-        +SqVP3qKJ9LvP7YyRWEopUxCgCJ/Co0nb1GRIXbVwdtlJ5JrYoRlSvc+27WDag9+
-        3jqJC6Nc5lLjDB1EbFnpv2S6VMiJgoGG3ESQyrzvFx4wbwb1+hfvfkj14nzE1iZ9
-        iHVs2Uh7tOwAj5coKNt98E1KuIr4Dy7ZidSi8Si+tRxxbGIc8g9/Wkp/PXxkdKWp
-        GwXvkDhS2Mkt7Y8U+OzIUgUEfaENyM7PjR+7UVXgmM8J+652ddmFvBKyk157w8wr
-        Skl8C3hKCbHheCLVFZJbuy7hz1/cffoSdxxCfnrh8YV+w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1656705670; x=1656712870; bh=h3WN3AcddFJuwhQ39XPEdgr5tejPWmRF9a5
-        JWUKLi6w=; b=hcCVwh1PvSeKLtV/WWesjzpJEJOw4znKr5Z/2vhxnZuKQA9kLw4
-        /4+bCBG81guTmscsfsRlkY2MRf/An6IfLb4PqUB9cFC2NzaudqFlvP/yY19K+3XC
-        pDHCoLiIcwUV2Xv5FAIqCmEYAOVR+oCL2f261uukUnOGmb9sZJ1Wjru1FpMPNx9q
-        O20C8qlSGZIk/uqxcd6LnT2yDuqwiTmpUUWND72se1ELzfF/mrU6icJu6Gm0jlH3
-        iWOFR5OoOCZxlEPQplc7c7ud1SjE6qek/nk6mnJ70FNjkvapXHjyVwlAV5qpv1MZ
-        45+fzYTFXAvc9YboPqeOQ31my0wQpPDiZ5Q==
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
-Cc: Samuel Holland <samuel@sholland.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, Bjorn Helgaas <bhelgaas@google.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Borislav Petkov <bp@alien8.de>, Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Chris Zankel <chris@zankel.net>, Colin Ian King <colin.king@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, Dexuan Cui <decui@microsoft.com>, Florian Fainelli <f.fainelli@gmail.com>, Guo Ren <guoren@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Haiyang Zhang <haiyangz@microsoft.com>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, "James E.J. Bottomley" <James.Bottomley@HansenP>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org E5F3B423BD
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 63D88423CF
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 8298E84142
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org D085084145
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+ cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+ :in-reply-to:message-id:mime-version:references:reply-to:sender
+ :subject:subject:to:to; s=fm3; t=1656705706; x=1656712906; bh=SS
+ qXvxPvOnT181Alnoj0HfgL9fqTJVzreJxmfCVyBec=; b=hcAoBpvIf8eiMsWnHm
+ b6RJp+0UU2OILuy21U79vOjusxjAcQG94kzCl/SLOhhz8J4ASW+y84iY/hEL50ms
+ +t+80HjBAylZNEJe73yGhHSZF1RSQ8RBU9Nk62QyCXZpUC4CexurEGTlBgY/Xqfo
+ fnfCIqYMFwRBTgEwEckqi0Kl9E6cHZVfUrF5kxIWdFViA5bUJ11OHLJ7T0XapXw2
+ hQWKkSyPabF2oJi63qd5eTn9Zl4sQmG20eYW/wqRNYdW/SrAsFhGxn4LKFrrzqDC
+ C0MqxbtLaYxpKOf9o9kKWlf6yKvCjeXy1x18+k24AKggcDhNdzIH/iJu5OZQ3wo4
+ ssMA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+ :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+ :message-id:mime-version:references:reply-to:sender:subject
+ :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+ :x-sasl-enc; s=fm2; t=1656705706; x=1656712906; bh=SSqXvxPvOnT18
+ 1Alnoj0HfgL9fqTJVzreJxmfCVyBec=; b=HeWsMOcvIEpk7+MFtWHCXsiI6BlFC
+ 2TQ2SkcGU6TjX/RAuIxgMoxDlrLAJRLOQUP5M4Vjn/Sk2LIfFF6zmyCdELkbAfiW
+ sNvfuqkLM1Vey2QklfYRRWjhcegVctGnxhxUwegYbB0z6YgklYBKnTe07fR9Aokx
+ OJk4Rl2PfNKRw931jKDBYNYjhcdhJJxhHzUaHJY1VFb0uXTx2Qq9+O7Z8+sDYq3K
+ dW+YTOeJLeT+EWHVFce25KHIXMDeukkeCTF05NMBW9QbVqWeENDneUsjCVRvIwS4
+ +pREO1Ryo1aq2EmzH+e4VaMl82vWzrZw+kMmsklRZow8dIJvLbZg3JAtQ==
+In-Reply-To: <20220701200056.46555-1-samuel-RkNLwX/CsU9g9hUCZPvPmw@public.gmane.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+ <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+ <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: "iommu" <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Marc Zyngier <maz-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, linux-hyperv-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Dave Hansen <dave.hansen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "James E.J. Bottomley" <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jan Beulich <jbeulich-IBi9RG/b67k@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "K. Y. Srinivasan" <kys-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Sven Schnelle <svens-yWSVVCS59A8YeIxN5WHPnw@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Wei Liu <wei.liu-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stephen Hemminger <sthemmin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Samuel Holland <samuel-RkNLwX/CsU9g9hUCZPvPmw@public.gmane.org>, Will Deacon <will-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartosz Golaszewski <brgl@bgde>
 
-This series solves some inconsistency with how IRQ affinity masks are
-handled between SMP and non-SMP configurations.
+A couple of functions directly reference the affinity mask. Route them
+through irq_data_get_affinity_mask so they will pick up any refactoring
+done there.
 
-In non-SMP configs, an IRQ's true affinity is always cpumask_of(0), so
-irq_{,data_}get_affinity_mask now return that, instead of returning an
-uninitialized per-IRQ cpumask. This change makes iterating over the
-affinity mask do the right thing in both SMP and non-SMP configurations.
+Signed-off-by: Samuel Holland <samuel-RkNLwX/CsU9g9hUCZPvPmw@public.gmane.org>
+---
 
-To accomplish that:
- - patches 1-3 disable some library code that was broken anyway on !SMP
- - patches 4-7 refactor the code so that irq_{,data_}get_affinity_mask
-   can return a const cpumask, since that is what cpumask_of provides
- - patch 8 drops the per-IRQ cpumask and replaces it with cpumask_of(0)
+(no changes since v1)
 
-This series was split from the v2 series here, which uses the new
-behavior in the RISC-V PLIC irqchip driver:
+ include/linux/irq.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-https://lore.kernel.org/lkml/20220616064028.57933-1-samuel@sholland.org/
-
-Changes in v3:
- - New patch to fix build errors in uniprocessor MIPS configs
- - New patch to drop irq_init_effective_affinity
- - New patch to introduce irq_data_update_affinity
- - New patch to make the returned cpumasks const
- - Use cpumask_of(0) instead of cpu_possible_mask
-
-Changes in v2:
- - New patch to prevent GENERIC_IRQ_IPI from being selected on !SMP
-
-Samuel Holland (8):
-  irqchip/mips-gic: Only register IPI domain when SMP is enabled
-  genirq: GENERIC_IRQ_IPI depends on SMP
-  genirq: GENERIC_IRQ_EFFECTIVE_AFF_MASK depends on SMP
-  genirq: Drop redundant irq_init_effective_affinity
-  genirq: Refactor accessors to use irq_data_get_affinity_mask
-  genirq: Add and use an irq_data_update_affinity helper
-  genirq: Return a const cpumask from irq_data_get_affinity_mask
-  genirq: Provide an IRQ affinity mask in non-SMP configs
-
- arch/alpha/kernel/irq.c              |  2 +-
- arch/arm/mach-hisi/Kconfig           |  2 +-
- arch/ia64/kernel/iosapic.c           |  2 +-
- arch/ia64/kernel/irq.c               |  4 +-
- arch/ia64/kernel/msi_ia64.c          |  4 +-
- arch/mips/cavium-octeon/octeon-irq.c |  4 +-
- arch/parisc/kernel/irq.c             |  2 +-
- arch/sh/kernel/irq.c                 |  7 +--
- arch/x86/hyperv/irqdomain.c          |  2 +-
- arch/xtensa/kernel/irq.c             |  7 +--
- drivers/iommu/hyperv-iommu.c         |  2 +-
- drivers/irqchip/Kconfig              | 19 +++----
- drivers/irqchip/irq-bcm6345-l1.c     |  4 +-
- drivers/irqchip/irq-mips-gic.c       | 80 +++++++++++++++++++---------
- drivers/parisc/iosapic.c             |  2 +-
- drivers/pci/controller/pci-hyperv.c  | 10 ++--
- drivers/sh/intc/chip.c               |  2 +-
- drivers/xen/events/events_base.c     |  7 +--
- include/linux/irq.h                  | 34 ++++++++----
- kernel/irq/Kconfig                   |  2 +
- kernel/irq/chip.c                    |  8 +--
- kernel/irq/debugfs.c                 |  2 +-
- kernel/irq/ipi.c                     | 16 +++---
- kernel/irq/manage.c                  | 10 +---
- 24 files changed, 140 insertions(+), 94 deletions(-)
-
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index 505308253d23..69ee4e2f36ce 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -879,16 +879,16 @@ static inline int irq_data_get_node(struct irq_data *d)
+ 	return irq_common_data_get_node(d->common);
+ }
+ 
+-static inline struct cpumask *irq_get_affinity_mask(int irq)
++static inline struct cpumask *irq_data_get_affinity_mask(struct irq_data *d)
+ {
+-	struct irq_data *d = irq_get_irq_data(irq);
+-
+-	return d ? d->common->affinity : NULL;
++	return d->common->affinity;
+ }
+ 
+-static inline struct cpumask *irq_data_get_affinity_mask(struct irq_data *d)
++static inline struct cpumask *irq_get_affinity_mask(int irq)
+ {
+-	return d->common->affinity;
++	struct irq_data *d = irq_get_irq_data(irq);
++
++	return d ? irq_data_get_affinity_mask(d) : NULL;
+ }
+ 
+ #ifdef CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK
+@@ -910,7 +910,7 @@ static inline void irq_data_update_effective_affinity(struct irq_data *d,
+ static inline
+ struct cpumask *irq_data_get_effective_affinity_mask(struct irq_data *d)
+ {
+-	return d->common->affinity;
++	return irq_data_get_affinity_mask(d);
+ }
+ #endif
+ 
 -- 
 2.35.1
-
