@@ -1,174 +1,140 @@
-From: Oleksandr Tyshchenko <Oleksandr_Tyshchenko@epam.com>
-Subject: Re: [PATCH v3 6/8] genirq: Add and use an irq_data_update_affinity
- helper
-Date: Thu, 7 Jul 2022 09:37:37 +0000
-Message-ID: <4adea4b3-8e42-ef94-b29f-f375d167d55e@epam.com>
+From: Serge Semin <fancer.lancer@gmail.com>
+Subject: Re: [PATCH v3 1/8] irqchip/mips-gic: Only register IPI domain when
+ SMP is enabled
+Date: Thu, 7 Jul 2022 13:45:33 +0300
+Message-ID: <20220707104533.7iakliv2f5i2qi33@mobilestation>
 References: <20220701200056.46555-1-samuel@sholland.org>
- <20220701200056.46555-7-samuel@sholland.org>
- <c7171195-796a-e61e-f270-864985adc5c3@gmail.com>
- <87bku1mi3l.wl-maz@kernel.org>
+ <20220701200056.46555-2-samuel@sholland.org>
+ <20220705135243.ydbwfo4kois64elr@mobilestation>
+ <87czehmiwt.wl-maz@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=epam.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ruarQZmNj43SLW9TQWws2/Vu+4+WGtOYXsQcS/yMp6E=;
- b=Wev+E8hZQ4m8qoqDrosX+H5/hR7Bpmpms+Uc80EHMcO5HWQlEmZK8rH6mIMdjCO3afJkzZnoMBdTiU/1LPmn3RZIMQPLaT2jb5gqg5zNR20y+Jk2KVvrDNH09hBsN91m5G53IPznF1oRL4v3fXV0l4SGlvwenes/ZHQfqKSrkNy1k1iwLooxRJAdnHslH2Y0YtrmCnLT1jUZNvZnZ4io1R2RVariPJXqPD+0sCEzEFBWRVbYKCfAsAKWaUQ87FfigIqxp4tSZ718BpEQTBZvW4dUImPGg49Fdki8eShNL1n3i/rS97j+OxRqfTNnUNpRmfgAorNdMH+MmGB8Gy+hTA==
-In-Reply-To: <87bku1mi3l.wl-maz@kernel.org>
-Content-Language: en-US
-Content-ID: <1A2A6F3382BD034AA584D1B6BDD9A136@eurprd03.prod.outlook.com>
+Return-path: <linux-ia64-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WY98p2xpQdOFXmhJtt3xHyGiLiAUhi6XRf4hr9Uc3Wg=;
+        b=b6GFfkBqjaMf2ocm+NmB4Pdq8BftwMkyn64oPaQ4MV4pvFzFkwxMEQeq6P80Hm4/xV
+         qZ+8LuyU5wRQNERGgQNFjcHh58vvfaC0ptqNORWmxffraiT9/DjbcHTSFTsFBlux58Ot
+         XhtqsfAx1Sa2gM/tjlsL0QsZtd9LNBgjw9CnnsV557EhbpHb9gCv8v2p+Oj+GmTrlkqp
+         mUp+nL+5dVYNjaxqq1uCJh+k/gsHSTvygVI9uMaKcsKBGCdHzMWvDPsDHQivCRNcB3z5
+         282ePxgRE2AokBxYCEN4Y+8PqCSOtSZbzmUbIGk4eL7kv/uEwV39B6EvqmW8CS1gOdOi
+         UC1w==
+Content-Disposition: inline
+In-Reply-To: <87czehmiwt.wl-maz@kernel.org>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Marc Zyngier <maz@kernel.org>, Oleksandr <olekstysh@gmail.com>
-Cc: Samuel Holland <samuel@sholland.org>, Thomas Gleixner <tglx@linutronix.de>, Andy Shevchenko <andy.shevchenko@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, Bjorn Helgaas <bhelgaas@google.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Borislav Petkov <bp@alien8.de>, Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Chris Zankel <chris@zankel.net>, Colin Ian King <colin.king@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, Dexuan Cui <decui@microsoft.com>, Florian Fainelli <f.fainelli@gmail.com>, Guo Ren <guoren@kernel.org>, "H.
- Peter Anvin" <hpa@zytor.com>, Haiyang Zhang <haiyangz@microsoft.com>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, James E.J.
+Content-Transfer-Encoding: 7bit
+To: Marc Zyngier <maz@kernel.org>
+Cc: Samuel Holland <samuel@sholland.org>, Thomas Gleixner <tglx@linutronix.de>, Andy Shevchenko <andy.shevchenko@gmail.com>, Bartosz Golaszewski <brgl@bgdev.pl>, Bjorn Helgaas <bhelgaas@google.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Borislav Petkov <bp@alien8.de>, Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Chris Zankel <chris@zankel.net>, Colin Ian King <colin.king@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>, Dexuan Cui <decui@microsoft.com>, Florian Fainelli <f.fainelli@gmail.com>, Guo Ren <guoren@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Haiyang Zhang <haiyangz@microsoft.com>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
 
-DQpPbiAwNy4wNy4yMiAxMTozOSwgTWFyYyBaeW5naWVyIHdyb3RlOg0KDQoNCkhlbGxvIE1hcmMN
-Cg0KPiBPbiBTdW4sIDAzIEp1bCAyMDIyIDE2OjIyOjAzICswMTAwLA0KPiBPbGVrc2FuZHIgPG9s
-ZWtzdHlzaEBnbWFpbC5jb20+IHdyb3RlOg0KPj4NCj4+IE9uIDAxLjA3LjIyIDIzOjAwLCBTYW11
-ZWwgSG9sbGFuZCB3cm90ZToNCj4+DQo+Pg0KPj4gSGVsbG8gU2FtdWVsDQo+Pg0KPj4+IFNvbWUg
-YXJjaGl0ZWN0dXJlcyBhbmQgaXJxY2hpcCBkcml2ZXJzIG1vZGlmeSB0aGUgY3B1bWFzayByZXR1
-cm5lZCBieQ0KPj4+IGlycV9kYXRhX2dldF9hZmZpbml0eV9tYXNrLCB1c3VhbGx5IGJ5IGNvcHlp
-bmcgaW4gdG8gaXQuIFRoaXMgaXMNCj4+PiBwcm9ibGVtYXRpYyBmb3IgdW5pcHJvY2Vzc29yIGNv
-bmZpZ3VyYXRpb25zLCB3aGVyZSB0aGUgYWZmaW5pdHkgbWFzaw0KPj4+IHNob3VsZCBiZSBjb25z
-dGFudCwgYXMgaXQgaXMga25vd24gYXQgY29tcGlsZSB0aW1lLg0KPj4+DQo+Pj4gQWRkIGFuZCB1
-c2UgYSBzZXR0ZXIgZm9yIHRoZSBhZmZpbml0eSBtYXNrLCBmb2xsb3dpbmcgdGhlIHBhdHRlcm4g
-b2YNCj4+PiBpcnFfZGF0YV91cGRhdGVfZWZmZWN0aXZlX2FmZmluaXR5LiBUaGlzIGFsbG93cyB0
-aGUgZ2V0dGVyIGZ1bmN0aW9uIHRvDQo+Pj4gcmV0dXJuIGEgY29uc3QgY3B1bWFzayBwb2ludGVy
-Lg0KPj4+DQo+Pj4gU2lnbmVkLW9mZi1ieTogU2FtdWVsIEhvbGxhbmQgPHNhbXVlbEBzaG9sbGFu
-ZC5vcmc+DQo+Pj4gLS0tDQo+Pj4NCj4+PiBDaGFuZ2VzIGluIHYzOg0KPj4+ICAgIC0gTmV3IHBh
-dGNoIHRvIGludHJvZHVjZSBpcnFfZGF0YV91cGRhdGVfYWZmaW5pdHkNCj4+Pg0KPj4+ICAgIGFy
-Y2gvYWxwaGEva2VybmVsL2lycS5jICAgICAgICAgIHwgMiArLQ0KPj4+ICAgIGFyY2gvaWE2NC9r
-ZXJuZWwvaW9zYXBpYy5jICAgICAgIHwgMiArLQ0KPj4+ICAgIGFyY2gvaWE2NC9rZXJuZWwvaXJx
-LmMgICAgICAgICAgIHwgNCArKy0tDQo+Pj4gICAgYXJjaC9pYTY0L2tlcm5lbC9tc2lfaWE2NC5j
-ICAgICAgfCA0ICsrLS0NCj4+PiAgICBhcmNoL3BhcmlzYy9rZXJuZWwvaXJxLmMgICAgICAgICB8
-IDIgKy0NCj4+PiAgICBkcml2ZXJzL2lycWNoaXAvaXJxLWJjbTYzNDUtbDEuYyB8IDQgKystLQ0K
-Pj4+ICAgIGRyaXZlcnMvcGFyaXNjL2lvc2FwaWMuYyAgICAgICAgIHwgMiArLQ0KPj4+ICAgIGRy
-aXZlcnMvc2gvaW50Yy9jaGlwLmMgICAgICAgICAgIHwgMiArLQ0KPj4+ICAgIGRyaXZlcnMveGVu
-L2V2ZW50cy9ldmVudHNfYmFzZS5jIHwgNyArKysrLS0tDQo+Pj4gICAgaW5jbHVkZS9saW51eC9p
-cnEuaCAgICAgICAgICAgICAgfCA2ICsrKysrKw0KPj4+ICAgIDEwIGZpbGVzIGNoYW5nZWQsIDIx
-IGluc2VydGlvbnMoKyksIDE0IGRlbGV0aW9ucygtKQ0KPj4+DQo+Pj4gZGlmZiAtLWdpdCBhL2Fy
-Y2gvYWxwaGEva2VybmVsL2lycS5jIGIvYXJjaC9hbHBoYS9rZXJuZWwvaXJxLmMNCj4+PiBpbmRl
-eCBmNmQyOTQ2ZWRiZDIuLjE1ZjJlZmZkNmJhZiAxMDA2NDQNCj4+PiAtLS0gYS9hcmNoL2FscGhh
-L2tlcm5lbC9pcnEuYw0KPj4+ICsrKyBiL2FyY2gvYWxwaGEva2VybmVsL2lycS5jDQo+Pj4gQEAg
-LTYwLDcgKzYwLDcgQEAgaW50IGlycV9zZWxlY3RfYWZmaW5pdHkodW5zaWduZWQgaW50IGlycSkN
-Cj4+PiAgICAJCWNwdSA9IChjcHUgPCAoTlJfQ1BVUy0xKSA/IGNwdSArIDEgOiAwKTsNCj4+PiAg
-ICAJbGFzdF9jcHUgPSBjcHU7DQo+Pj4gICAgLQljcHVtYXNrX2NvcHkoaXJxX2RhdGFfZ2V0X2Fm
-ZmluaXR5X21hc2soZGF0YSksDQo+Pj4gY3B1bWFza19vZihjcHUpKTsNCj4+PiArCWlycV9kYXRh
-X3VwZGF0ZV9hZmZpbml0eShkYXRhLCBjcHVtYXNrX29mKGNwdSkpOw0KPj4+ICAgIAljaGlwLT5p
-cnFfc2V0X2FmZmluaXR5KGRhdGEsIGNwdW1hc2tfb2YoY3B1KSwgZmFsc2UpOw0KPj4+ICAgIAly
-ZXR1cm4gMDsNCj4+PiAgICB9DQo+Pj4gZGlmZiAtLWdpdCBhL2FyY2gvaWE2NC9rZXJuZWwvaW9z
-YXBpYy5jIGIvYXJjaC9pYTY0L2tlcm5lbC9pb3NhcGljLmMNCj4+PiBpbmRleCAzNWFkY2Y4OTAz
-NWEuLjk5MzAwODUwYWJjMSAxMDA2NDQNCj4+PiAtLS0gYS9hcmNoL2lhNjQva2VybmVsL2lvc2Fw
-aWMuYw0KPj4+ICsrKyBiL2FyY2gvaWE2NC9rZXJuZWwvaW9zYXBpYy5jDQo+Pj4gQEAgLTgzNCw3
-ICs4MzQsNyBAQCBpb3NhcGljX3VucmVnaXN0ZXJfaW50ciAodW5zaWduZWQgaW50IGdzaSkNCj4+
-PiAgICAJaWYgKGlvc2FwaWNfaW50cl9pbmZvW2lycV0uY291bnQgPT0gMCkgew0KPj4+ICAgICNp
-ZmRlZiBDT05GSUdfU01QDQo+Pj4gICAgCQkvKiBDbGVhciBhZmZpbml0eSAqLw0KPj4+IC0JCWNw
-dW1hc2tfc2V0YWxsKGlycV9nZXRfYWZmaW5pdHlfbWFzayhpcnEpKTsNCj4+PiArCQlpcnFfZGF0
-YV91cGRhdGVfYWZmaW5pdHkoaXJxX2dldF9pcnFfZGF0YShpcnEpLCBjcHVfYWxsX21hc2spOw0K
-Pj4+ICAgICNlbmRpZg0KPj4+ICAgIAkJLyogQ2xlYXIgdGhlIGludGVycnVwdCBpbmZvcm1hdGlv
-biAqLw0KPj4+ICAgIAkJaW9zYXBpY19pbnRyX2luZm9baXJxXS5kZXN0ID0gMDsNCj4+PiBkaWZm
-IC0tZ2l0IGEvYXJjaC9pYTY0L2tlcm5lbC9pcnEuYyBiL2FyY2gvaWE2NC9rZXJuZWwvaXJxLmMN
-Cj4+PiBpbmRleCBlY2VmMTdjN2MzNWIuLjI3NWI5ZWE1OGM2NCAxMDA2NDQNCj4+PiAtLS0gYS9h
-cmNoL2lhNjQva2VybmVsL2lycS5jDQo+Pj4gKysrIGIvYXJjaC9pYTY0L2tlcm5lbC9pcnEuYw0K
-Pj4+IEBAIC01Nyw4ICs1Nyw4IEBAIHN0YXRpYyBjaGFyIGlycV9yZWRpciBbTlJfSVJRU107IC8v
-ID0geyBbMCAuLi4gTlJfSVJRUy0xXSA9IDEgfTsNCj4+PiAgICB2b2lkIHNldF9pcnFfYWZmaW5p
-dHlfaW5mbyAodW5zaWduZWQgaW50IGlycSwgaW50IGh3aWQsIGludCByZWRpcikNCj4+PiAgICB7
-DQo+Pj4gICAgCWlmIChpcnEgPCBOUl9JUlFTKSB7DQo+Pj4gLQkJY3B1bWFza19jb3B5KGlycV9n
-ZXRfYWZmaW5pdHlfbWFzayhpcnEpLA0KPj4+IC0JCQkgICAgIGNwdW1hc2tfb2YoY3B1X2xvZ2lj
-YWxfaWQoaHdpZCkpKTsNCj4+PiArCQlpcnFfZGF0YV91cGRhdGVfYWZmaW5pdHkoaXJxX2dldF9p
-cnFfZGF0YShpcnEpLA0KPj4+ICsJCQkJCSBjcHVtYXNrX29mKGNwdV9sb2dpY2FsX2lkKGh3aWQp
-KSk7DQo+Pj4gICAgCQlpcnFfcmVkaXJbaXJxXSA9IChjaGFyKSAocmVkaXIgJiAweGZmKTsNCj4+
-PiAgICAJfQ0KPj4+ICAgIH0NCj4+PiBkaWZmIC0tZ2l0IGEvYXJjaC9pYTY0L2tlcm5lbC9tc2lf
-aWE2NC5jIGIvYXJjaC9pYTY0L2tlcm5lbC9tc2lfaWE2NC5jDQo+Pj4gaW5kZXggZGY1YzI4ZjI1
-MmUzLi4wMjVlNTEzM2M4NjAgMTAwNjQ0DQo+Pj4gLS0tIGEvYXJjaC9pYTY0L2tlcm5lbC9tc2lf
-aWE2NC5jDQo+Pj4gKysrIGIvYXJjaC9pYTY0L2tlcm5lbC9tc2lfaWE2NC5jDQo+Pj4gQEAgLTM3
-LDcgKzM3LDcgQEAgc3RhdGljIGludCBpYTY0X3NldF9tc2lfaXJxX2FmZmluaXR5KHN0cnVjdCBp
-cnFfZGF0YSAqaWRhdGEsDQo+Pj4gICAgCW1zZy5kYXRhID0gZGF0YTsNCj4+PiAgICAgIAlwY2lf
-d3JpdGVfbXNpX21zZyhpcnEsICZtc2cpOw0KPj4+IC0JY3B1bWFza19jb3B5KGlycV9kYXRhX2dl
-dF9hZmZpbml0eV9tYXNrKGlkYXRhKSwgY3B1bWFza19vZihjcHUpKTsNCj4+PiArCWlycV9kYXRh
-X3VwZGF0ZV9hZmZpbml0eShpZGF0YSwgY3B1bWFza19vZihjcHUpKTsNCj4+PiAgICAgIAlyZXR1
-cm4gMDsNCj4+PiAgICB9DQo+Pj4gQEAgLTEzMiw3ICsxMzIsNyBAQCBzdGF0aWMgaW50IGRtYXJf
-bXNpX3NldF9hZmZpbml0eShzdHJ1Y3QgaXJxX2RhdGEgKmRhdGEsDQo+Pj4gICAgCW1zZy5hZGRy
-ZXNzX2xvIHw9IE1TSV9BRERSX0RFU1RfSURfQ1BVKGNwdV9waHlzaWNhbF9pZChjcHUpKTsNCj4+
-PiAgICAgIAlkbWFyX21zaV93cml0ZShpcnEsICZtc2cpOw0KPj4+IC0JY3B1bWFza19jb3B5KGly
-cV9kYXRhX2dldF9hZmZpbml0eV9tYXNrKGRhdGEpLCBtYXNrKTsNCj4+PiArCWlycV9kYXRhX3Vw
-ZGF0ZV9hZmZpbml0eShkYXRhLCBtYXNrKTsNCj4+PiAgICAgIAlyZXR1cm4gMDsNCj4+PiAgICB9
-DQo+Pj4gZGlmZiAtLWdpdCBhL2FyY2gvcGFyaXNjL2tlcm5lbC9pcnEuYyBiL2FyY2gvcGFyaXNj
-L2tlcm5lbC9pcnEuYw0KPj4+IGluZGV4IDBmZTJkNzlmYjEyMy4uNWViYjE3NzFiNGFiIDEwMDY0
-NA0KPj4+IC0tLSBhL2FyY2gvcGFyaXNjL2tlcm5lbC9pcnEuYw0KPj4+ICsrKyBiL2FyY2gvcGFy
-aXNjL2tlcm5lbC9pcnEuYw0KPj4+IEBAIC0zMTUsNyArMzE1LDcgQEAgdW5zaWduZWQgbG9uZyB0
-eG5fYWZmaW5pdHlfYWRkcih1bnNpZ25lZCBpbnQgaXJxLCBpbnQgY3B1KQ0KPj4+ICAgIHsNCj4+
-PiAgICAjaWZkZWYgQ09ORklHX1NNUA0KPj4+ICAgIAlzdHJ1Y3QgaXJxX2RhdGEgKmQgPSBpcnFf
-Z2V0X2lycV9kYXRhKGlycSk7DQo+Pj4gLQljcHVtYXNrX2NvcHkoaXJxX2RhdGFfZ2V0X2FmZmlu
-aXR5X21hc2soZCksIGNwdW1hc2tfb2YoY3B1KSk7DQo+Pj4gKwlpcnFfZGF0YV91cGRhdGVfYWZm
-aW5pdHkoZCwgY3B1bWFza19vZihjcHUpKTsNCj4+PiAgICAjZW5kaWYNCj4+PiAgICAgIAlyZXR1
-cm4gcGVyX2NwdShjcHVfZGF0YSwgY3B1KS50eG5fYWRkcjsNCj4+PiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9pcnFjaGlwL2lycS1iY202MzQ1LWwxLmMgYi9kcml2ZXJzL2lycWNoaXAvaXJxLWJjbTYz
-NDUtbDEuYw0KPj4+IGluZGV4IDE0MmE3NDMxNzQ1Zi4uNjg5OWUzNzgxMGE4IDEwMDY0NA0KPj4+
-IC0tLSBhL2RyaXZlcnMvaXJxY2hpcC9pcnEtYmNtNjM0NS1sMS5jDQo+Pj4gKysrIGIvZHJpdmVy
-cy9pcnFjaGlwL2lycS1iY202MzQ1LWwxLmMNCj4+PiBAQCAtMjE2LDExICsyMTYsMTEgQEAgc3Rh
-dGljIGludCBiY202MzQ1X2wxX3NldF9hZmZpbml0eShzdHJ1Y3QgaXJxX2RhdGEgKmQsDQo+Pj4g
-ICAgCQllbmFibGVkID0gaW50Yy0+Y3B1c1tvbGRfY3B1XS0+ZW5hYmxlX2NhY2hlW3dvcmRdICYg
-bWFzazsNCj4+PiAgICAJCWlmIChlbmFibGVkKQ0KPj4+ICAgIAkJCV9fYmNtNjM0NV9sMV9tYXNr
-KGQpOw0KPj4+IC0JCWNwdW1hc2tfY29weShpcnFfZGF0YV9nZXRfYWZmaW5pdHlfbWFzayhkKSwg
-ZGVzdCk7DQo+Pj4gKwkJaXJxX2RhdGFfdXBkYXRlX2FmZmluaXR5KGQsIGRlc3QpOw0KPj4+ICAg
-IAkJaWYgKGVuYWJsZWQpDQo+Pj4gICAgCQkJX19iY202MzQ1X2wxX3VubWFzayhkKTsNCj4+PiAg
-ICAJfSBlbHNlIHsNCj4+PiAtCQljcHVtYXNrX2NvcHkoaXJxX2RhdGFfZ2V0X2FmZmluaXR5X21h
-c2soZCksIGRlc3QpOw0KPj4+ICsJCWlycV9kYXRhX3VwZGF0ZV9hZmZpbml0eShkLCBkZXN0KTsN
-Cj4+PiAgICAJfQ0KPj4+ICAgIAlyYXdfc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmaW50Yy0+bG9j
-aywgZmxhZ3MpOw0KPj4+ICAgIGRpZmYgLS1naXQgYS9kcml2ZXJzL3BhcmlzYy9pb3NhcGljLmMg
-Yi9kcml2ZXJzL3BhcmlzYy9pb3NhcGljLmMNCj4+PiBpbmRleCA4YTNiMGMzYTFlOTIuLjNhOGM5
-ODYxNTYzNCAxMDA2NDQNCj4+PiAtLS0gYS9kcml2ZXJzL3BhcmlzYy9pb3NhcGljLmMNCj4+PiAr
-KysgYi9kcml2ZXJzL3BhcmlzYy9pb3NhcGljLmMNCj4+PiBAQCAtNjc3LDcgKzY3Nyw3IEBAIHN0
-YXRpYyBpbnQgaW9zYXBpY19zZXRfYWZmaW5pdHlfaXJxKHN0cnVjdCBpcnFfZGF0YSAqZCwNCj4+
-PiAgICAJaWYgKGRlc3RfY3B1IDwgMCkNCj4+PiAgICAJCXJldHVybiAtMTsNCj4+PiAgICAtCWNw
-dW1hc2tfY29weShpcnFfZGF0YV9nZXRfYWZmaW5pdHlfbWFzayhkKSwNCj4+PiBjcHVtYXNrX29m
-KGRlc3RfY3B1KSk7DQo+Pj4gKwlpcnFfZGF0YV91cGRhdGVfYWZmaW5pdHkoZCwgY3B1bWFza19v
-ZihkZXN0X2NwdSkpOw0KPj4+ICAgIAl2aS0+dHhuX2FkZHIgPSB0eG5fYWZmaW5pdHlfYWRkcihk
-LT5pcnEsIGRlc3RfY3B1KTsNCj4+PiAgICAgIAlzcGluX2xvY2tfaXJxc2F2ZSgmaW9zYXBpY19s
-b2NrLCBmbGFncyk7DQo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc2gvaW50Yy9jaGlwLmMgYi9k
-cml2ZXJzL3NoL2ludGMvY2hpcC5jDQo+Pj4gaW5kZXggMzU4ZGY3NTEwMTg2Li44MjhkODFlMDJi
-MzcgMTAwNjQ0DQo+Pj4gLS0tIGEvZHJpdmVycy9zaC9pbnRjL2NoaXAuYw0KPj4+ICsrKyBiL2Ry
-aXZlcnMvc2gvaW50Yy9jaGlwLmMNCj4+PiBAQCAtNzIsNyArNzIsNyBAQCBzdGF0aWMgaW50IGlu
-dGNfc2V0X2FmZmluaXR5KHN0cnVjdCBpcnFfZGF0YSAqZGF0YSwNCj4+PiAgICAJaWYgKCFjcHVt
-YXNrX2ludGVyc2VjdHMoY3B1bWFzaywgY3B1X29ubGluZV9tYXNrKSkNCj4+PiAgICAJCXJldHVy
-biAtMTsNCj4+PiAgICAtCWNwdW1hc2tfY29weShpcnFfZGF0YV9nZXRfYWZmaW5pdHlfbWFzayhk
-YXRhKSwgY3B1bWFzayk7DQo+Pj4gKwlpcnFfZGF0YV91cGRhdGVfYWZmaW5pdHkoZGF0YSwgY3B1
-bWFzayk7DQo+Pj4gICAgICAJcmV0dXJuIElSUV9TRVRfTUFTS19PS19OT0NPUFk7DQo+Pj4gICAg
-fQ0KPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3hlbi9ldmVudHMvZXZlbnRzX2Jhc2UuYyBiL2Ry
-aXZlcnMveGVuL2V2ZW50cy9ldmVudHNfYmFzZS5jDQo+Pj4gaW5kZXggNDZkOTI5NWQ5YTZlLi41
-ZTgzMjFmNDNjYmQgMTAwNjQ0DQo+Pj4gLS0tIGEvZHJpdmVycy94ZW4vZXZlbnRzL2V2ZW50c19i
-YXNlLmMNCj4+PiArKysgYi9kcml2ZXJzL3hlbi9ldmVudHMvZXZlbnRzX2Jhc2UuYw0KPj4+IEBA
-IC01MjgsOSArNTI4LDEwIEBAIHN0YXRpYyB2b2lkIGJpbmRfZXZ0Y2huX3RvX2NwdShldnRjaG5f
-cG9ydF90IGV2dGNobiwgdW5zaWduZWQgaW50IGNwdSwNCj4+PiAgICAJQlVHX09OKGlycSA9PSAt
-MSk7DQo+Pj4gICAgICAJaWYgKElTX0VOQUJMRUQoQ09ORklHX1NNUCkgJiYgZm9yY2VfYWZmaW5p
-dHkpIHsNCj4+PiAtCQljcHVtYXNrX2NvcHkoaXJxX2dldF9hZmZpbml0eV9tYXNrKGlycSksIGNw
-dW1hc2tfb2YoY3B1KSk7DQo+Pj4gLQkJY3B1bWFza19jb3B5KGlycV9nZXRfZWZmZWN0aXZlX2Fm
-ZmluaXR5X21hc2soaXJxKSwNCj4+PiAtCQkJICAgICBjcHVtYXNrX29mKGNwdSkpOw0KPj4+ICsJ
-CXN0cnVjdCBpcnFfZGF0YSAqZGF0YSA9IGlycV9nZXRfaXJxX2RhdGEoaXJxKTsNCj4+PiArDQo+
-Pj4gKwkJaXJxX2RhdGFfdXBkYXRlX2FmZmluaXR5KGRhdGEsIGNwdW1hc2tfb2YoY3B1KSk7DQo+
-Pj4gKwkJaXJxX2RhdGFfdXBkYXRlX2VmZmVjdGl2ZV9hZmZpbml0eShkYXRhLCBjcHVtYXNrX29m
-KGNwdSkpOw0KPj4+ICAgIAl9DQo+Pg0KPj4NCj4+IE5pdDogY29tbWl0IGRlc2NyaXB0aW9uIHNh
-eXMgYWJvdXQgcmV1c2luZyBpcnFfZGF0YV91cGRhdGVfYWZmaW5pdHkoKQ0KPj4gb25seSwgYnV0
-IGhlcmUgd2UgYWxzbyByZXVzZSBpcnFfZGF0YV91cGRhdGVfZWZmZWN0aXZlX2FmZmluaXR5KCks
-IHNvDQo+PiBJIHdvdWxkIG1lbnRpb24gdGhhdCBpbiB0aGUgZGVzY3JpcHRpb24uDQo+Pg0KPj4g
-UmV2aWV3ZWQtYnk6IE9sZWtzYW5kciBUeXNoY2hlbmtvIDxvbGVrc2FuZHJfdHlzaGNoZW5rb0Bl
-cGFtLmNvbT4gIyBYZW4gYml0cw0KPiBiNCBzaG91dHMgYmVjYXVzZSBvZiB5b3VyIGVtYWlsIGFk
-ZHJlc3M6DQo+DQo+IE5PVEU6IHNvbWUgdHJhaWxlcnMgaWdub3JlZCBkdWUgdG8gZnJvbS9lbWFp
-bCBtaXNtYXRjaGVzOg0KPiAgICAgICEgVHJhaWxlcjogUmV2aWV3ZWQtYnk6IE9sZWtzYW5kciBU
-eXNoY2hlbmtvIDxvbGVrc2FuZHJfdHlzaGNoZW5rb0BlcGFtLmNvbT4gIyBYZW4gYml0cw0KPiAg
-ICAgICBNc2cgRnJvbTogT2xla3NhbmRyIDxvbGVrc3R5c2hAZ21haWwuY29tPg0KDQpzb3JyeSBm
-b3IgdGhlIGluY29udmVuaWVuY2UNCg0KDQo+DQo+IEkndmUgdXNlZCB0aGUgdGFnIGFueXdheSwN
-Cg0KDQp0aGFuayB5b3UNCg0KDQo+ICAgYnV0IHlvdSBtYXkgd2FudCB0byBmaXggeW91ciBzZXR1
-cCBpbiB0aGUNCj4gZnV0dXJlLg0KDQp5ZXMsIHdpbGwgZG8NCg0KDQo+DQo+IFRoYW5rcywNCj4N
-Cj4gCU0uDQo+DQotLSANClJlZ2FyZHMsDQoNCk9sZWtzYW5kciBUeXNoY2hlbmtvDQo=
+On Thu, Jul 07, 2022 at 09:22:26AM +0100, Marc Zyngier wrote:
+> On Tue, 05 Jul 2022 14:52:43 +0100,
+> Serge Semin <fancer.lancer@gmail.com> wrote:
+> > 
+> > Hi Samuel
+> > 
+> > On Fri, Jul 01, 2022 at 03:00:49PM -0500, Samuel Holland wrote:
+> > > The MIPS GIC irqchip driver may be selected in a uniprocessor
+> > > configuration, but it unconditionally registers an IPI domain.
+> > > 
+> > > Limit the part of the driver dealing with IPIs to only be compiled when
+> > > GENERIC_IRQ_IPI is enabled, which corresponds to an SMP configuration.
+> > 
+> > Thanks for the patch. Some comment is below.
+> > 
+> > > 
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Signed-off-by: Samuel Holland <samuel@sholland.org>
+> > > ---
+> > > 
+> > > Changes in v3:
+> > >  - New patch to fix build errors in uniprocessor MIPS configs
+> > > 
+> > >  drivers/irqchip/Kconfig        |  3 +-
+> > >  drivers/irqchip/irq-mips-gic.c | 80 +++++++++++++++++++++++-----------
+> > >  2 files changed, 56 insertions(+), 27 deletions(-)
+> > > 
+> > > diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> > > index 1f23a6be7d88..d26a4ff7c99f 100644
+> > > --- a/drivers/irqchip/Kconfig
+> > > +++ b/drivers/irqchip/Kconfig
+> > > @@ -322,7 +322,8 @@ config KEYSTONE_IRQ
+> > >  
+> > >  config MIPS_GIC
+> > >  	bool
+> > > -	select GENERIC_IRQ_IPI
+> > > +	select GENERIC_IRQ_IPI if SMP
+> > 
+> > > +	select IRQ_DOMAIN_HIERARCHY
+> > 
+> > It seems to me that the IRQ domains hierarchy is supposed to be
+> > created only if IPI is required. At least that's what the MIPS GIC
+> > driver implies. Thus we can go further and CONFIG_IRQ_DOMAIN_HIERARCHY
+> > ifdef-out the gic_irq_domain_alloc() and gic_irq_domain_free()
+> > methods definition together with the initialization:
+> > 
+> >  static const struct irq_domain_ops gic_irq_domain_ops = {
+> >  	.xlate = gic_irq_domain_xlate,
+> > +#ifdef CONFIG_IRQ_DOMAIN_HIERARCHY
+> >  	.alloc = gic_irq_domain_alloc,
+> >  	.free = gic_irq_domain_free,
+> > +#endif
+> >  	.map = gic_irq_domain_map,
+> > };
+> > 
+> > If the GENERIC_IRQ_IPI config is enabled, CONFIG_IRQ_DOMAIN_HIERARCHY
+> > will be automatically selected (see the config definition in
+> > kernel/irq/Kconfig). If the IRQs hierarchy is needed for some another
+> > functionality like GENERIC_MSI_IRQ_DOMAIN or GPIOs then they will
+> > explicitly enable the IRQ_DOMAIN_HIERARCHY config thus activating the
+> > denoted .alloc and .free methods definitions.
+> > 
+> > To sum up you can get rid of the IRQ_DOMAIN_HIERARCHY config
+> > force-select from this patch and make the MIPS GIC driver code a bit
+> > more coherent.
+> > 
+> > @Marc, please correct me if were wrong.
+> 
 
+> Either way probably works correctly, but Samuel's approach is more
+> readable IMO. It is far easier to reason about a high-level feature
+> (GENERIC_IRQ_IPI) than an implementation detail (IRQ_DOMAIN_HIERARCHY).
+> 
+
+The main idea of my comment was to get rid of the forcible
+IRQ_DOMAIN_HIERARCHY config selection, because the basic part of the
+driver doesn't depends on the hierarchical IRQ-domains functionality.
+It's needed only for IPIs and implicitly for the lower level IRQ
+device drivers like GPIO or PCIe-controllers, which explicitly enable
+the IRQ_DOMAIN_HIERARCHY config anyway. That's why instead of forcible
+IRQ_DOMAIN_HIERARCHY config selection (see Samuel patch) I suggested
+to make the corresponding functionality defined under the
+IRQ_DOMAIN_HIERARCHY config ifdefs, thus having the driver capable of
+creating the hierarchical IRQs domains only if it's required.
+
+> If you really want to save a handful of bytes, you can make the
+> callbacks conditional on GENERIC_IRQ_IPI, and be done with it.
+
+AFAIU I can't in this case. It must be either IRQ_DOMAIN_HIERARCHY
+ifdefs or explicit IRQ_DOMAIN_HIERARCHY select. There can be non-SMP
+(UP) systems with no need in IPIs but for instance having a GPIO or
+PCIe controller which require the hierarchical IRQ-domains support of
+the parental IRQ controller. So making the callbacks definition
+depended on the GENERIC_IRQ_IPI config state will break the driver for
+these systems. That's why I suggested to use
+CONFIG_IRQ_DOMAIN_HIERARCHY which activates the hierarchical IRQ
+domains support in the IRQ-chip system (see the irq_domain_ops
+structure conditional fields definition) and shall we have the
+suggested approach implemented in the MIPS GIC driver.
+
+-Sergey
+
+> But this can come as an additional patch.
+> 
+> Thanks,
+> 
+> 	M.
+> 
+> -- 
+> Without deviation from the norm, progress is not possible.
