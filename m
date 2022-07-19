@@ -1,110 +1,120 @@
 From: "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH v2 00/13] The panic notifiers refactor strikes back - fixes/clean-ups
-Date: Tue, 19 Jul 2022 16:53:13 -0300
-Message-ID: <20220719195325.402745-1-gpiccoli@igalia.com>
+Subject: [PATCH v2 05/13] alpha: Clean-up the panic notifier code
+Date: Tue, 19 Jul 2022 16:53:18 -0300
+Message-ID: <20220719195325.402745-6-gpiccoli@igalia.com>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=v6ALRzuY4RIlvqb5/OysD83kMB2n09igJBmCmJkb/mQ=; b=QX2ndssTwYlCGQttlP6yZb1v8t
-        5s2Hg+pF+iNzzwWbJ4MQaGSaf6qkeb05PdTsq+Deth55WrA0pCBg5abgJ5rgV7rYQ1in6Q0iGiphA
-        Ny8wQRwMi4VTn4nbzPtFheSJmfPAAsWP3wO6T6rwqeMZ6FBPSZbVJscxJAF1he9ZTINlqR7pMavHd
-        JUmz54ZCbUg5czNAxrGNtKvvD4CjMf1IUILFMG1Fr7T+NXdQ+h0VrvP3Jd0esGE2WeLQ3wNsRgsoR
-        A2H70K6+3TnyaQxqB5nwJ5zwLOp0Bqh1CdPhvwI1Y5O+c66ciesYb/MZNrPpMNAzxEEfLahEMj+q0
-        vfS69Cn 
+        bh=4E18Rtc/vfpv1/xN8BNEQRLGpmbhhe4OWZP2iVztIqE=; b=ee9HUOfLJ4FYZ2MqCjrMeGR9pq
+        c7rPdRXReBHz4HaRgSUN9oYzgnwEW/TzTe3aDnoaDK2zY9z9TenVdAyPgT+4TinfIwLl2emfG+UMh
+        ETn9mqc1l9lo8CUFtl3BbMmTIIMHAgCxR9GfTBN+wUC5syMA9QSLFrd6uUnR7nJy6IohyxnA9tMDR
+        9zPhvUVYrdkQwv5+REoowAOf+w/Tvne4Nzpl02aZXEdRyYu6MKUgtupp1nBqugj4pEJvGTe8PHSs8
+        TQNWt/IUsVjkEAQXt4PfsUodhZZ2KyQ7oq/YF0TAxtvZXTrXmjm11pPosqIA6g9U3ZmXYwuTCJnbd
+        qD1Yar4 
+In-Reply-To: <20220719195325.402745-1-gpiccoli@igalia.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com, kexec@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com, dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org, mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com, jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org, luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org, senozhatsky@chromium.org, stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com, will@kernel.o
 
-Hi folks, this the second iteration of the panic notifiers refactor work,
-but limited to the fixes/clean-ups in the first moment. The (full) V1 is
-available at:
-https://lore.kernel.org/lkml/20220427224924.592546-1-gpiccoli@igalia.com/
+The alpha panic notifier has some code issues, not following
+the conventions of other notifiers. Also, it might halt the
+machine but still it is set to run as early as possible, which
+doesn't seem to be a good idea.
 
-The idea of splitting the series is that, originally we had a bunch of fixes
-followed by the notifiers refactor, but this second part (the effective
-refactor) is a bit "polemic", with reviews having antagonistic goals and some
-complexities  - it might be hard to achieve consensus.
-For the curious, here is a good summary of the conflicting views and some
-strategies we might take in the refactor V2:
-https://lore.kernel.org/lkml/0d084eed-4781-c815-29c7-ac62c498e216@igalia.com/
+So, let's clean the code and set the notifier to run as the
+latest, following the same approach other architectures are
+doing - also, remove the unnecessary include of a header already
+included indirectly.
 
-So splitting and sending only the simple fixes/clean-ups in a first moment
-makes sense, this way we don't prevent them to be discussed/merged/reworked
-while the more complex part is subject to scrutiny in a different (future)
-email thread.
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <rth@gcc.gnu.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
+---
 
-I've tried to test this series building for all affected architecture/drivers
-and also through some boot/runtime tests; below the test "matrix" used:
+V2:
+- Fixed rth email address;
+- Added Petr's review tag - thanks!
 
-Build tests (using cross-compilers): alpha, arm, arm64, parisc, um, x86_64.
-Boot/Runtime tests: x86_64 (Hyper-V and QEMU guests).
+ arch/alpha/kernel/setup.c | 36 +++++++++++++++---------------------
+ 1 file changed, 15 insertions(+), 21 deletions(-)
 
-Here is the link with the .config files used:
-https://people.igalia.com/gpiccoli/panic_notifiers_configs/5.19-rc7/
-(tried my best to build all the affected code).
-
-
-The series is based on 5.19-rc7; I'd like to ask that, if possible, maintainers
-take the patches here in their trees, since there is no need to merge the series
-as whole, patches are independent from each other.
-
-Regarding the CC strategy, I've tried to reduce a bit the list of CCed emails,
-given that it was huge in the first iteration. Hopefully I didn't forget
-anybody interested in the topic (my apologies if so).
-
-As usual, reviews / comments are always welcome, thanks in advance for them!
-Cheers,
-
-
-Guilherme
-
-
-
-
-Guilherme G. Piccoli (13):
-  ARM: Disable FIQs (but not IRQs) on CPUs shutdown paths
-  notifier: Add panic notifiers info and purge trailing whitespaces
-  firmware: google: Test spinlock on panic path to avoid lockups
-  soc: bcm: brcmstb: Document panic notifier action and remove useless header
-  alpha: Clean-up the panic notifier code
-  um: Improve panic notifiers consistency and ordering
-  parisc: Replace regular spinlock with spin_trylock on panic path
-  tracing: Improve panic/die notifiers
-  notifier: Show function names on notifier routines if DEBUG_NOTIFIERS is set
-  EDAC/altera: Skip the panic notifier if kdump is loaded
-  video/hyperv_fb: Avoid taking busy spinlock on panic path
-  drivers/hv/vmbus, video/hyperv_fb: Untangle and refactor Hyper-V panic notifiers
-  panic: Fixes the panic_print NMI backtrace setting
-
- arch/alpha/kernel/setup.c           |  36 ++++-----
- arch/arm/kernel/machine_kexec.c     |   2 +
- arch/arm/kernel/smp.c               |   5 +-
- arch/parisc/include/asm/pdc.h       |   1 +
- arch/parisc/kernel/firmware.c       |  27 ++++++-
- arch/um/drivers/mconsole_kern.c     |   7 +-
- arch/um/kernel/um_arch.c            |   8 +-
- drivers/edac/altera_edac.c          |  16 +++-
- drivers/firmware/google/gsmi.c      |   8 ++
- drivers/hv/ring_buffer.c            |  16 ++++
- drivers/hv/vmbus_drv.c              | 109 +++++++++++++++++-----------
- drivers/parisc/power.c              |  17 +++--
- drivers/soc/bcm/brcmstb/pm/pm-arm.c |  16 +++-
- drivers/video/fbdev/hyperv_fb.c     |  16 +++-
- include/linux/hyperv.h              |   2 +
- include/linux/notifier.h            |   8 +-
- kernel/notifier.c                   |  22 ++++--
- kernel/panic.c                      |  47 +++++++-----
- kernel/trace/trace.c                |  55 +++++++-------
- 19 files changed, 268 insertions(+), 150 deletions(-)
-
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index b4fbbba30aa2..d88bdf852753 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -41,19 +41,11 @@
+ #include <linux/sysrq.h>
+ #include <linux/reboot.h>
+ #endif
+-#include <linux/notifier.h>
+ #include <asm/setup.h>
+ #include <asm/io.h>
+ #include <linux/log2.h>
+ #include <linux/export.h>
+ 
+-static int alpha_panic_event(struct notifier_block *, unsigned long, void *);
+-static struct notifier_block alpha_panic_block = {
+-	alpha_panic_event,
+-        NULL,
+-        INT_MAX /* try to do it first */
+-};
+-
+ #include <linux/uaccess.h>
+ #include <asm/hwrpb.h>
+ #include <asm/dma.h>
+@@ -435,6 +427,21 @@ static const struct sysrq_key_op srm_sysrq_reboot_op = {
+ };
+ #endif
+ 
++static int alpha_panic_event(struct notifier_block *this,
++			     unsigned long event, void *ptr)
++{
++	/* If we are using SRM and serial console, just hard halt here. */
++	if (alpha_using_srm && srmcons_output)
++		__halt();
++
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block alpha_panic_block = {
++	.notifier_call = alpha_panic_event,
++	.priority = INT_MIN, /* may not return, do it last */
++};
++
+ void __init
+ setup_arch(char **cmdline_p)
+ {
+@@ -1427,19 +1434,6 @@ const struct seq_operations cpuinfo_op = {
+ 	.show	= show_cpuinfo,
+ };
+ 
+-
+-static int
+-alpha_panic_event(struct notifier_block *this, unsigned long event, void *ptr)
+-{
+-#if 1
+-	/* FIXME FIXME FIXME */
+-	/* If we are using SRM and serial console, just hard halt here. */
+-	if (alpha_using_srm && srmcons_output)
+-		__halt();
+-#endif
+-        return NOTIFY_DONE;
+-}
+-
+ static __init int add_pcspkr(void)
+ {
+ 	struct platform_device *pd;
 -- 
 2.37.1
 
