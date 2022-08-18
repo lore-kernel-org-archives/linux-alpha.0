@@ -1,95 +1,75 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH] alpha: Use generic <asm-generic/io.h>
-Date: Thu, 18 Aug 2022 12:28:29 +0200
-Message-ID: <CAK8P3a1x52F8Ya3ShQ+v6x_jANfUsEq0E55u+pOBNaYniRO7cA@mail.gmail.com>
-References: <20220818092059.103884-1-linus.walleij@linaro.org>
+From: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Subject: build failure of next-20220818 due to 81c0386c1376 ("regmap: mmio:
+ Support accelerared noinc operations")
+Date: Thu, 18 Aug 2022 12:24:54 +0100
+Message-ID: <Yv4hhoTTcRuk/2Kl@debian>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <20220818092059.103884-1-linus.walleij@linaro.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc;
+        bh=BfkpuYhWWV3z0UBvbVgMJJbzhNR8JpIXBKTTsE8aT90=;
+        b=BCcruAbNhnvE2FO99nIU8oKrInNU391CRjvwpRjdMG2qMb6mV59maUjV62qGUUrS6J
+         9AifLDn8+lcaxSN81r3KI1uSfEPhNc1k70FxPAXW2+XQhz/47iRXEpte3XuRdMbgSbxm
+         S/2XoFcC73UyKVyjEmZKElU7CFEMryxk8V4xtiyy87hgW7/tUUEL3mvs2IxmzKLBAWDX
+         bPJDMmjRZlAeEZNVp2+3qBp4Pqn7tVn/Ecm9ZqlwrNnCWXRtCgui9aUCkN7KbnOpjHQp
+         U9hElOPmPJSbh4hT6CQ1LDtzMVLQy77Al5y2UQChm1IfzWh0avE3TxmuCDy2/ay6IWiR
+         pJtQ==
+Content-Disposition: inline
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org, kernel test robot <lkp@intel.com>, Mark Brown <broonie@kernel.org>, linux-arch@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Mark Brown <broonie@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-On Thu, Aug 18, 2022 at 11:20 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> This enables the alpha to use <asm-generic/io.h> to fill in the
-> missing (undefined) I/O accessor functions.
->
-> This is needed if Alpha ever wants to uses CONFIG_REGMAP_MMIO
-> which has been patches to use accelerated _noinc accessors
-> such as readsq/writesq that Alpha, while being a 64bit platform,
-> as of now not yet provide. readq/writeq is however provided
-> so the machine can do 64bit I/O.
->
-> This comes with the requirement that everything the architecture
-> already provides needs to be defined, rather than just being,
-> say, static inline functions.
->
-> Bite the bullet and just provide the definitions and make it work.
+Hi All,
 
-I see the only other architectures that don't use asm-generic/io.h
-yet are hexagon, mips, parisc, sh and sparc64. I wonder if it would
-make sense to do this for all of them.
+Not sure if it has been reported, builds of alpha allmodconfig have
+failed to build next-20220818 with the error:
 
-> Alternative approaches:
->
-> - Implement proper readsq/writesq inline accessors for alpha
+drivers/base/regmap/regmap-mmio.c: In function 'regmap_mmio_noinc_write':
+drivers/base/regmap/regmap-mmio.c:221:17: error: implicit declaration of function 'writesb'; did you mean 'writeb'? [-Werror=implicit-function-declaration]
+  221 |                 writesb(ctx->regs + reg, (const u8 *)val, val_count);
+      |                 ^~~~~~~
+      |                 writeb
+drivers/base/regmap/regmap-mmio.c:224:17: error: implicit declaration of function 'writesw'; did you mean 'writew'? [-Werror=implicit-function-declaration]
+  224 |                 writesw(ctx->regs + reg, (const u16 *)val, val_count);
+      |                 ^~~~~~~
+      |                 writew
+drivers/base/regmap/regmap-mmio.c:227:17: error: implicit declaration of function 'writesl'; did you mean 'writel'? [-Werror=implicit-function-declaration]
+  227 |                 writesl(ctx->regs + reg, (const u32 *)val, val_count);
+      |                 ^~~~~~~
+      |                 writel
+drivers/base/regmap/regmap-mmio.c:231:17: error: implicit declaration of function 'writesq'; did you mean 'writeq'? [-Werror=implicit-function-declaration]
+  231 |                 writesq(ctx->regs + reg, (const u64 *)val, val_count);
+      |                 ^~~~~~~
+      |                 writeq
+drivers/base/regmap/regmap-mmio.c: In function 'regmap_mmio_noinc_read':
+drivers/base/regmap/regmap-mmio.c:358:17: error: implicit declaration of function 'readsb'; did you mean 'readb'? [-Werror=implicit-function-declaration]
+  358 |                 readsb(ctx->regs + reg, (u8 *)val, val_count);
+      |                 ^~~~~~
+      |                 readb
+drivers/base/regmap/regmap-mmio.c:361:17: error: implicit declaration of function 'readsw'; did you mean 'readw'? [-Werror=implicit-function-declaration]
+  361 |                 readsw(ctx->regs + reg, (u16 *)val, val_count);
+      |                 ^~~~~~
+      |                 readw
+drivers/base/regmap/regmap-mmio.c:364:17: error: implicit declaration of function 'readsl'; did you mean 'readl'? [-Werror=implicit-function-declaration]
+  364 |                 readsl(ctx->regs + reg, (u32 *)val, val_count);
+      |                 ^~~~~~
+      |                 readl
+drivers/base/regmap/regmap-mmio.c:368:17: error: implicit declaration of function 'readsq'; did you mean 'readq'? [-Werror=implicit-function-declaration]
+  368 |                 readsq(ctx->regs + reg, (u64 *)val, val_count);
+      |                 ^~~~~~
+      |                 readq
 
-that would be ok with me
 
-> - Rewrite the whole world of io.h to use something like __weak
+git bisect pointed to 81c0386c1376 ("regmap: mmio: Support accelerared noinc operations")
+And, reverting that commit has fixed the build failure.
 
->   instead of relying on defines
-Nak to the use of __weak in anything I maintain, I find this to
-be highly confusing whenever I try to find out what code is actually
-getting called.
+I will be happy to test any patch or provide any extra log if needed.
 
-> - Leave regmap MMIO broken on Alpha because none of its drivers
->   use it
 
-no problem for me
-
-> - Make regmap MMIO depend of !ARCH_ALPHA
-
-This doesn't work, because REGMAP_MMIO is selected by 150
-drivers: unless you mark each of these individually as 'depends
-on !ALPHA', you just get an addition warning from Kconfig
-but it still fails to build.
-
-> The latter seems a bit over the top. First option to implement
-> readsq/writesq seems possible but I cannot test it (no hardware)
-> so using the generic fallbacks seems like a better idea, also in
-> general that will provide future defaults for accelerated defines.
->
-> Leaving regmap MMIO broken or disabling it for Alpha feels bad
-> because it breaks compiler coverage.
-
-I'm not worried about compiler coverage on the less common
-architectures, there is little hope of getting random configurations
-to build because there are too many other problems.
-
-> I'd like this applied to the alpha tree if there is such a
-> thing otherwise maybe Arnd can apply it to the arch generic
-> tree?
-
-Sure, I can do that.
-
-> +/*
-> + * These defines are necessary to use the generic io.h for filling in
-> + * the missing parts of the API contract. This is because the platform
-> + * uses (inline) functions rather than defines and the generic helper
-> + * fills in the undefined.
-> + */
-> +#define virt_to_phys virt_to_phys
-> +#define phys_to_virt phys_to_virt
-> +#define memset_io memset_io
-> +#define memcpy_fromio memcpy_fromio
-
-We tend to have these next to the function definition rather than
-in a single place. Again, I'm not too worried here, just if you end
-up reworking the patch in some form, or doing the same for the
-other architectures that would be the way to do it.
-
-      Arnd
+--
+Regards
+Sudip
