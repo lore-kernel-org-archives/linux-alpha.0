@@ -1,75 +1,37 @@
-From: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Subject: build failure of next-20220818 due to 81c0386c1376 ("regmap: mmio:
- Support accelerared noinc operations")
-Date: Thu, 18 Aug 2022 12:24:54 +0100
-Message-ID: <Yv4hhoTTcRuk/2Kl@debian>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: build failure of next-20220818 due to 81c0386c1376 ("regmap:
+ mmio: Support accelerared noinc operations")
+Date: Thu, 18 Aug 2022 22:55:58 +0200
+Message-ID: <CACRpkda1-FBa5Pg1WxaPYGYgaYWz-nEAiN01twouJ4AeKpnMWQ@mail.gmail.com>
+References: <Yv4hhoTTcRuk/2Kl@debian>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc;
-        bh=BfkpuYhWWV3z0UBvbVgMJJbzhNR8JpIXBKTTsE8aT90=;
-        b=BCcruAbNhnvE2FO99nIU8oKrInNU391CRjvwpRjdMG2qMb6mV59maUjV62qGUUrS6J
-         9AifLDn8+lcaxSN81r3KI1uSfEPhNc1k70FxPAXW2+XQhz/47iRXEpte3XuRdMbgSbxm
-         S/2XoFcC73UyKVyjEmZKElU7CFEMryxk8V4xtiyy87hgW7/tUUEL3mvs2IxmzKLBAWDX
-         bPJDMmjRZlAeEZNVp2+3qBp4Pqn7tVn/Ecm9ZqlwrNnCWXRtCgui9aUCkN7KbnOpjHQp
-         U9hElOPmPJSbh4hT6CQ1LDtzMVLQy77Al5y2UQChm1IfzWh0avE3TxmuCDy2/ay6IWiR
-         pJtQ==
-Content-Disposition: inline
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=5AqMTUOafuor9bD+L7lV88ZEJ/jKLotcwTHvR2YIZ54=;
+        b=d6rI5yBNn0HKXzLQQzJICy5/Ucwg1kVprijxc1ueN4xCG6rnpFDv2sJw4c9gn0pFb/
+         oxK8vBM1d9KVBz3PmQobsROfOdNSb8ttqmJAF6coEGldZZ3YWfYgH8ajrUfSFLcf49sq
+         5rXnDKt5muPjVmilXrq2WH8beyBFahPcNQUAi3eotyAiK69lQ3apFPLDgF+YadMzikP2
+         J+8rQOuh3NuH8tqcivIj0DpVByKsZqLZ8G4bMeS1Rg5F/YFgJVLRhRqXCYHUgsLDvjHs
+         dVGgifndGmF8hE7VnXfgNV4jRVZI1iGTkr2KV3iYNzWi1qtHmPzxHJ2awfJHqEKNHGTo
+         yE1w==
+In-Reply-To: <Yv4hhoTTcRuk/2Kl@debian>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linus Walleij <linus.walleij@linaro.org>, Mark Brown <broonie@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
+To: "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, linux-kernel@vger.kernel.org, linux-next@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-Hi All,
+On Thu, Aug 18, 2022 at 1:24 PM Sudip Mukherjee (Codethink)
+<sudipm.mukherjee@gmail.com> wrote:
 
-Not sure if it has been reported, builds of alpha allmodconfig have
-failed to build next-20220818 with the error:
+> Not sure if it has been reported, builds of alpha allmodconfig have
+> failed to build next-20220818 with the error:
 
-drivers/base/regmap/regmap-mmio.c: In function 'regmap_mmio_noinc_write':
-drivers/base/regmap/regmap-mmio.c:221:17: error: implicit declaration of function 'writesb'; did you mean 'writeb'? [-Werror=implicit-function-declaration]
-  221 |                 writesb(ctx->regs + reg, (const u8 *)val, val_count);
-      |                 ^~~~~~~
-      |                 writeb
-drivers/base/regmap/regmap-mmio.c:224:17: error: implicit declaration of function 'writesw'; did you mean 'writew'? [-Werror=implicit-function-declaration]
-  224 |                 writesw(ctx->regs + reg, (const u16 *)val, val_count);
-      |                 ^~~~~~~
-      |                 writew
-drivers/base/regmap/regmap-mmio.c:227:17: error: implicit declaration of function 'writesl'; did you mean 'writel'? [-Werror=implicit-function-declaration]
-  227 |                 writesl(ctx->regs + reg, (const u32 *)val, val_count);
-      |                 ^~~~~~~
-      |                 writel
-drivers/base/regmap/regmap-mmio.c:231:17: error: implicit declaration of function 'writesq'; did you mean 'writeq'? [-Werror=implicit-function-declaration]
-  231 |                 writesq(ctx->regs + reg, (const u64 *)val, val_count);
-      |                 ^~~~~~~
-      |                 writeq
-drivers/base/regmap/regmap-mmio.c: In function 'regmap_mmio_noinc_read':
-drivers/base/regmap/regmap-mmio.c:358:17: error: implicit declaration of function 'readsb'; did you mean 'readb'? [-Werror=implicit-function-declaration]
-  358 |                 readsb(ctx->regs + reg, (u8 *)val, val_count);
-      |                 ^~~~~~
-      |                 readb
-drivers/base/regmap/regmap-mmio.c:361:17: error: implicit declaration of function 'readsw'; did you mean 'readw'? [-Werror=implicit-function-declaration]
-  361 |                 readsw(ctx->regs + reg, (u16 *)val, val_count);
-      |                 ^~~~~~
-      |                 readw
-drivers/base/regmap/regmap-mmio.c:364:17: error: implicit declaration of function 'readsl'; did you mean 'readl'? [-Werror=implicit-function-declaration]
-  364 |                 readsl(ctx->regs + reg, (u32 *)val, val_count);
-      |                 ^~~~~~
-      |                 readl
-drivers/base/regmap/regmap-mmio.c:368:17: error: implicit declaration of function 'readsq'; did you mean 'readq'? [-Werror=implicit-function-declaration]
-  368 |                 readsq(ctx->regs + reg, (u64 *)val, val_count);
-      |                 ^~~~~~
-      |                 readq
+Patch has been sent already:
+https://lore.kernel.org/linux-arch/CAK8P3a1x52F8Ya3ShQ+v6x_jANfUsEq0E55u+pOBNaYniRO7cA@mail.gmail.com/T/#t
 
-
-git bisect pointed to 81c0386c1376 ("regmap: mmio: Support accelerared noinc operations")
-And, reverting that commit has fixed the build failure.
-
-I will be happy to test any patch or provide any extra log if needed.
-
-
---
-Regards
-Sudip
+Yours,
+Linus Walleij
