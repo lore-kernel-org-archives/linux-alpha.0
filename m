@@ -1,94 +1,49 @@
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: Re: [PATCH] alpha: move from strlcpy with unused retval to strscpy
-Date: Fri, 19 Aug 2022 07:37:53 +0200
-Message-ID: <Yv8hsfcAw6e81/9z@shikoro>
-References: <20220818205936.6144-1-wsa+renesas@sang-engineering.com>
- <f2cef25c1e092fc3e9f7312b85762b487d67e3ff.camel@perches.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] kernel: exit: cleanup release_thread()
+Date: Fri, 19 Aug 2022 11:40:14 +0200
+Message-ID: <CAMuHMdUd5Ww-mtpymykuahHWD+S62Z8qiBMVx8y4okouuzTCAg@mail.gmail.com>
+References: <20220819014406.32266-1-wangkefeng.wang@huawei.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="+0EvJTlwXes98vU8"
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=2i8A+LVscnYpQHktS7f8chswupM7
-        ErtT1tFRnUWj9nc=; b=j2rezBiZZFT5cVTlwaxwohfIebxK/Irha9EiFt5iDV3J
-        QZ9MrD8RZcc2ceT0KLr9n8bJS7ANGt9hiFcd6NbelFVRvNaVNslD++wTZaCtXOjN
-        UhNTa2gOHQrBvjoshS4yGFoej3axcERd0MLAcImZNlGI/FYKZ5dVpVafD4PP2z4=
-Content-Disposition: inline
-In-Reply-To: <f2cef25c1e092fc3e9f7312b85762b487d67e3ff.camel@perches.com>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <20220819014406.32266-1-wangkefeng.wang@huawei.com>
 List-ID: <linux-alpha.vger.kernel.org>
-To: Joe Perches <joe@perches.com>
-Cc: linux-kernel@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>, Brian Cain <bcain@quicinc.com>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Dinh Nguyen <dinguyen@kernel.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael
 
+Hi Kefeng,
 
---+0EvJTlwXes98vU8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Fri, Aug 19, 2022 at 3:39 AM Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+> Only x86 has own release_thread(), introduce a new weak
+> release_thread() function to clean empty definitions in
+> other ARCHs.
+>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-Hi Joe,
+>  arch/m68k/include/asm/processor.h       | 5 -----
 
-Glad you like this series.
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-> Last time I posted a coccinelle script for strlcpy->strscpy conversions
-> with unused returns, there were several variants that were not converted.
->=20
-> https://lore.kernel.org/cocci/a3279a5772b2e49b57890cd75e97360b82890798.ca=
-mel@perches.com/T/#m502108bfe0cc6a41d499a4c1b55d5f5db1423465
->=20
-> Did you post the script you used?
+> --- a/kernel/exit.c
+> +++ b/kernel/exit.c
+> @@ -183,6 +183,10 @@ void put_task_struct_rcu_user(struct task_struct *task)
+>                 call_rcu(&task->rcu, delayed_put_task_struct);
+>  }
+>
+> +void __weak release_thread(struct task_struct *dead_task)
+> +{
+> +}
 
-First version here, very similar to yours:
+As the default implementation is empty, it might be better to keep
+this as a static inline function, protected by #ifndef release_thread,
+and let x86 #define release_thread.
 
-https://lore.kernel.org/all/YvhXzarjOLEJ8nsW@shikoro/
+> +
+>  void release_task(struct task_struct *p)
+>  {
+>         struct task_struct *leader;
 
-The final version has another rule to add missing parens to the argument
-of a sizeof operator:
+Gr{oetje,eeting}s,
 
-@ main @
-@@
-- strlcpy
-+ strscpy
-  (...);
-
-// make sure sizeof always has parens. Isomorphs will remove existing ones =
-if present before.
-@ add_parens depends on main @
-expression dst, src, E;
-@@
-  strscpy(dst, src,
-- sizeof(E)
-+ sizeof(E)
-  );
-
-Like your try, some header files are missing. I guess Julia's remarks
-about that from the thread above will fix this as well. However, since
-there are the instances left where the return value of strlcpy is used
-anyhow, I left those for manual fixing.
-
-Thanks,
-
-   Wolfram
-
-
---+0EvJTlwXes98vU8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmL/IagACgkQFA3kzBSg
-KbZ4bBAAtCAayZZEvY/5fFPQh9vSpDnUsyS8afDbdoda/YODOYY5nW3hellYABBq
-a9UwbGhTMrvaCmXtGwfHYhBIO4lfC09soDIsS0U7eXnaRSinIQagcFKrhEz1RtrG
-bsAgvtbdi86J6HcXrvSvNhcyMpdVP+uuqnUFcxZ5dRodj9iLgL+7FdULwLYf/tVL
-QvCuemqbBFZAZahi12ietf7QU/Gwa1sdi0XjGAFenForM8hzmrxvMn1XtbHZCanF
-1fh6UqfiU2FfYbbW6UV7mC5oUi3b5bEYETBuvwDNro4T2qR0YtVIjNXwNL3bhCLL
-qWHvefktDpHeVrT/d3a8LqxG2y2vt+Dh02not4ujpzxE89ho7G9I+IxAnhSkzdWJ
-JgZM+ZmsJLhn+VycTOTXhcHPRLjLpsKeYPeZA/r0gtjlszCfqWHnW6V1gs1S7C4q
-a4SUgtYQE9rMsc2iU139hx0xM+EPJ/+BK2MvX2lOo0lqh3lWhIJJIHShgMN5mAe3
-kOm/TxWQhi3E92PBf1Wej9V2cNhT17hTGdHiLeQDuhvAof1Nq70zKsTr3PvcPEH7
-uNWjVBswaRu63+1dvOKpkotaq5olmN2Z53GLfE3F/3fETOvMwmoXXYiKLO53X1Dm
-5mkmdONae6hMLN1l0OBILsHF7DHyh1k5JZ0ul05TWm8LfYVYvsw=
-=oP1x
------END PGP SIGNATURE-----
-
---+0EvJTlwXes98vU8--
+                        Geert
