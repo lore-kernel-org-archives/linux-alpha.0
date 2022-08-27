@@ -1,111 +1,67 @@
-From: matoro <matoro_mailinglist_kernel@matoro.tk>
-Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
-Date: Fri, 26 Aug 2022 12:16:19 -0400
-Message-ID: <1ef4d01e1fb81656544c296fe11f41b4@matoro.tk>
-References: <e175b885-082a-97c1-a0be-999040a06443@linux.ee>
- <20190218120209.GC20919@quack2.suse.cz>
- <4e015688-8633-d1a0-308b-ba2a78600544@linux.ee>
- <20190219132026.GA28293@quack2.suse.cz>
- <20190219144454.GB12668@bombadil.infradead.org>
- <d444f653-9b99-5e9b-3b47-97f824c29b0e@linux.ee>
- <20190220094813.GA27474@quack2.suse.cz>
- <2381c264-92f5-db43-b6a5-8e00bd881fef@linux.ee>
- <20190221132916.GA22886@quack2.suse.cz>
- <97dbffaefa65a83b36e1ec134fd53a66@matoro.tk>
- <20220826105513.eo5otoujtz75u7dg@quack3>
- <bf093f5c-bd0b-e843-d9e5-a4edf0f70cae@suse.cz>
+From: Edward Humes <aurxenon@lunos.org>
+Subject: [PATCH] alpha: fix R_ALPHA_LITERAL reloc for large modules
+Date: Sat, 27 Aug 2022 02:49:39 -0400
+Message-ID: <20220827064939.461790-1-aurxenon@lunos.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: a=rsa-sha256; bh=rngoAUfTvl93BSKur1UsnUCm+wAmd5fS1fyUrfe3Tjk=;
- c=relaxed/relaxed; d=matoro.tk;
- h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
- i=@matoro.tk; s=20220801; t=1661530580; v=1; x=1661962580;
- b=l+iFCCbnYuqIIc0pzyehnyH4fQBERr+/rAXMhG1iop5tqOPsVsGvIMpTegIekbm8TXssaOti
- jI3R54FA9hiSAc7J3+LxKY9GJ6hqo/82DNv/y+vOag+8l32rl62HhHyE0oyiFro7yyqUDy57SWd
- W/Nzpf62Ic7w9A89l/eAF3Lcit/b7MwJQqbVCxts+NoSFhh18fz8JgB4atmqfz3jq5Psexteu1e
- vY7qlZTfdgpaTPkBTOemcI3LjHHeN1bL7z7F5qSijL7iVGyXCzhc/mN0NBXfCajdSZZn5aEdG1+
- vmrcCgzAqZXFqHyLMkBFrworatzVG8zCNK40SkkKsySVB6NZeOw4JIHg/JZVuunWO7gEtu+k7yx
- wR+oUlD8BWIKjOY2RP4zIfzfeB+NW/7Lw3olP8mwHA6iNGk/CA3xXOmdnfv05H2a2C6qU+a1VCf
- Gj2EYSLW 
-In-Reply-To: <bf093f5c-bd0b-e843-d9e5-a4edf0f70cae@suse.cz>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lunos.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=sgDOOatof3X2oIuMz8I1+gDbeFzYNyzibUS1dRt2DSc=;
+        b=bcsicaY8pXlNaayCCVnZslTWbAp22NSagtOxPIXIQf5rfZm/Qc+lzUaoy4cqQ6CPsz
+         fkNYNlPJjPXW87KHJreIHIvY3dAVtBUWK1m32GJHAWaPvjyzaNgET/k0DGKtQGIUYXFR
+         SlCmxhnOZic3n029LN0RxN1Y+/BlXE+AAHqx+FiaRHV32ov2Ol6mA12aT4Gnfb73ocR7
+         8WUYsIOhHOA9BHctmTL8HXo89yhvY74GfkgZgD7Deozhwcj/KpbnnVsIIH6qUBhg/HNe
+         JWF8CxcpZ01zwOMR0H5gf0ZEndGDc/IHwlOLOv+ba+uaLM1Pv/qHib39CuEVV1Jv4cVl
+         AYUg==
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Jan Kara <jack@suse.cz>, Meelis Roos <mroos@linux.ee>, Matthew Wilcox <willy@infradead.org>, "Theodore Y. Ts'o" <tytso@mit.edu>, linux-alpha@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org, linux-mm@kvack.org, vbabka@suse.com
+Content-Type: text/plain; charset="us-ascii"
+To: linux-alpha@vger.kernel.org
+Cc: mattst88@gmail.com, ink@jurassic.park.msu.ru, richard.henderson@linaro.org, Edward Humes <aurxenon@lunos.org>
 
-At least according to the docs I see, fakenuma is x86-specific.  There 
-are multi-socket machines, but the one I have is single-socket 
-single-core.
+Previously, R_ALPHA_LITERAL relocations would overflow for large kernel
+modules.
 
-I can provide access to this machine to play around with it though!  
-Either simple shell access or serial access if some kernel poking is 
-needed.
+This was because the Alpha's apply_relocate_add was relying on the kernel's
+module loader to have sorted the GOT towards the very end of the module as it
+was mapped into memory in order to correctly assign the global pointer. While
+this behavior would mostly work fine for small kernel modules, this approach
+would overflow on kernel modules with large GOT's since the global pointer
+would be very far away from the GOT, and thus, certain entries would be out of
+range.
 
-Would that be helpful or is a NUMA system going to be required for 
-debugging?
+This patch fixes this by instead using the Tru64 behavior of assigning the
+global pointer to be 32KB away from the start of the GOT. The change made
+in this patch won't work for multi-GOT kernel modules as it makes the
+assumption the module only has one GOT located at the beginning of .got,
+although for the vast majority kernel modules, this should be fine. Of the
+kernel modules that would previously result in a relocation error, none of
+them, even modules like nouveau, have even come close to filling up a single
+GOT, and they've all worked fine under this patch.
 
--------- Original Message --------
-Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
-Date: 2022-08-26 07:04
- From: Vlastimil Babka <vbabka@suse.cz>
-To: Jan Kara <jack@suse.cz>, matoro 
-<matoro_mailinglist_kernel@matoro.tk>
+Signed-off-by: Edward Humes <aurxenon@lunos.org>
+---
+ arch/alpha/kernel/module.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-On 8/26/22 12:55, Jan Kara wrote:
-> On Thu 25-08-22 11:05:48, matoro wrote:
->> Hello all, I know this is quite an old thread.  I recently acquired 
->> some
->> alpha hardware and have run into this exact same problem on the latest
->> stable kernel (5.18 and 5.19).  CONFIG_COMPACTION seems to be totally 
->> broken
->> and causes userspace to be extremely unstable - random segfaults, 
->> corruption
->> of glibc data structures, gcc ICEs etc etc - seems most noticable 
->> during
->> tasks with heavy I/O load.
->> 
->> My hardware is a DS15 (Titan), so only slightly newer than the 
->> Tsunamis
->> mentioned earlier.  The problem is greatly exacerbated when using a
->> machine-optimized kernel (CONFIG_ALPHA_TITAN) over one with
->> CONFIG_ALPHA_GENERIC.  But it still doesn't go away on a generic 
->> kernel,
->> just pops up less often, usually very I/O heavy tasks like checking 
->> out a
->> tag in the kernel repo.
->> 
->> However all of this seems to be dependent on CONFIG_COMPACTION.  With 
->> this
->> toggled off all problems disappear, regardless of other options.  I 
->> tried
->> reverting the commit 88dbcbb3a4847f5e6dfeae952d3105497700c128 
->> mentioned
->> earlier in the thread (the structure has moved to a different file but 
->> was
->> otherwise the same), but it unfortunately did not make a difference.
->> 
->> Since this doesn't seem to have a known cause or an easy fix, would it 
->> be
->> reasonable to just add a Kconfig dep to disable it automatically on 
->> alpha?
-> 
-> Thanks for report. I guess this just confirms that migration of 
-> pagecache
-> pages is somehow broken on Alpha. Maybe we are missing to flush some 
-> cache
-> specific for Alpha? Or maybe the page migration code is not safe wrt 
-> the
-> peculiar memory ordering Alpha has... I think this will need someone 
-> with
-> Alpha HW and willingness to dive into MM internals to debug this. Added
-> Vlasta to CC mostly for awareness and in case it rings some bells :).
+diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
+index 5b60c248de9e..cbefa5a77384 100644
+--- a/arch/alpha/kernel/module.c
++++ b/arch/alpha/kernel/module.c
+@@ -146,10 +146,8 @@ apply_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
+ 	base = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr;
+ 	symtab = (Elf64_Sym *)sechdrs[symindex].sh_addr;
+ 
+-	/* The small sections were sorted to the end of the segment.
+-	   The following should definitely cover them.  */
+-	gp = (u64)me->core_layout.base + me->core_layout.size - 0x8000;
+ 	got = sechdrs[me->arch.gotsecindex].sh_addr;
++	gp = got + 0x8000;
+ 
+ 	for (i = 0; i < n; i++) {
+ 		unsigned long r_sym = ELF64_R_SYM (rela[i].r_info);
+-- 
+2.34.1
 
-Hi, doesn't ring any bells unfortunately. Does corruption also happen 
-when
-mmapping a file and applying mbind() with MPOL_MF_MOVE or 
-migrate_pages()?
-That should allow more controlled migration experimens than through
-compaction. But that would also need a NUMA machine or a fakenuma 
-support,
-dunno if alpha has that?
