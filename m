@@ -1,35 +1,35 @@
 From: Shaomin Deng <dengshaomin@cdjrlc.com>
-Subject: [PATCH] tty: Do not initialise statics to 0
-Date: Sat, 27 Aug 2022 12:30:47 -0400
-Message-ID: <20220827163047.22095-1-dengshaomin@cdjrlc.com>
+Subject: [PATCH] alpha: Fix double word in comments
+Date: Tue, 30 Aug 2022 03:42:02 -0400
+Message-ID: <20220830074202.11274-1-dengshaomin@cdjrlc.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+To: richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org
 Cc: Shaomin Deng <dengshaomin@cdjrlc.com>
 
-Compiler will initialise statics to 0, so there is no need to do that.
+Delete the rebundant word "and" in comments.
 
 Signed-off-by: Shaomin Deng <dengshaomin@cdjrlc.com>
 ---
- arch/alpha/kernel/srmcons.c | 2 +-
+ arch/alpha/kernel/irq_i8259.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-index 6dc952b0df4a..5024318b14a8 100644
---- a/arch/alpha/kernel/srmcons.c
-+++ b/arch/alpha/kernel/srmcons.c
-@@ -23,7 +23,7 @@
- 
- 
- static DEFINE_SPINLOCK(srmcons_callback_lock);
--static int srm_is_registered_console = 0;
-+static int srm_is_registered_console;
- 
- /* 
-  * The TTY driver
+diff --git a/arch/alpha/kernel/irq_i8259.c b/arch/alpha/kernel/irq_i8259.c
+index 1dcf0d9038fd..db574dcd6675 100644
+--- a/arch/alpha/kernel/irq_i8259.c
++++ b/arch/alpha/kernel/irq_i8259.c
+@@ -147,7 +147,7 @@ isa_no_iack_sc_device_interrupt(unsigned long vector)
+ 	 */
+ 	/* 
+ 	 *  The first read of gives you *all* interrupting lines.
+-	 *  Therefore, read the mask register and and out those lines
++	 *  Therefore, read the mask register and out those lines
+ 	 *  not enabled.  Note that some documentation has 21 and a1 
+ 	 *  write only.  This is not true.
+ 	 */
 -- 
 2.35.1
 
