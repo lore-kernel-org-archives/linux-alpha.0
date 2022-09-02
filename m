@@ -1,51 +1,85 @@
-From: Bob Tracy <rct@frus.com>
-Subject: Re: [PATCH] alpha: Fix double word in comments
-Date: Wed, 31 Aug 2022 17:09:09 -0500
-Message-ID: <Yw/cBRA2FIsW7QhN@gherkin.frus.com>
-References: <20220830074202.11274-1-dengshaomin@cdjrlc.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCHES] alpha asm glue cleanups and fixes
+Date: Fri, 2 Sep 2022 02:48:55 +0100
+Message-ID: <YxFhB4/cEXX5aHbn@ZenIV>
+References: <YU6PVepETVUJF28v@zeniv-ca.linux.org.uk>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=XSS9rkgS7B/43ydo8eO01AB8lrWnBsySyIdE/v6RhDY=; b=ftSYauo7Qibu/t03rICXdofBs7
+        vaDvcP2AusJDRY+f3gaX/5nIfS2DJju9S+jAoO/caKXwXg+0QS4Z+Ty6VQBGPvGS/647PnjergUX/
+        QA5rX6KAu7h3tegvj5ICZZjlCRU1x/62R/YWy+SngJ2Vfrlx/TBymNV55xTxE2zL2XEvn2dkNNJLw
+        7I0pOh/AKJoaemouQem0Va3bOfR2gayftOc09kWT+2Sj5za/MvvTfZ8tQsXYN8BKRqHLbRhCn3LKD
+        JKGTcHq8DxjQWH0Pb0SnyaUUJLHdqtum4cMs13L+r80Xd+5ERf214Bz0N+yKyujl4zfsAEGGgYAm4
+        jFM2TqmA==;
 Content-Disposition: inline
-In-Reply-To: <20220830074202.11274-1-dengshaomin@cdjrlc.com>
+In-Reply-To: <YU6PVepETVUJF28v@zeniv-ca.linux.org.uk>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: linux-alpha@vger.kernel.org
-Cc: richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
 
-On Tue, Aug 30, 2022 at 03:42:02AM -0400, Shaomin Deng wrote:
-> Delete the rebundant word "and" in comments.
-> 
-> Signed-off-by: Shaomin Deng <dengshaomin@cdjrlc.com>
-> ---
->  arch/alpha/kernel/irq_i8259.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/alpha/kernel/irq_i8259.c b/arch/alpha/kernel/irq_i8259.c
-> index 1dcf0d9038fd..db574dcd6675 100644
-> --- a/arch/alpha/kernel/irq_i8259.c
-> +++ b/arch/alpha/kernel/irq_i8259.c
-> @@ -147,7 +147,7 @@ isa_no_iack_sc_device_interrupt(unsigned long vector)
->  	 */
->  	/* 
->  	 *  The first read of gives you *all* interrupting lines.
-> -	 *  Therefore, read the mask register and and out those lines
-> +	 *  Therefore, read the mask register and out those lines
->  	 *  not enabled.  Note that some documentation has 21 and a1 
->  	 *  write only.  This is not true.
->  	 */
-> -- 
-> 2.35.1
+Resurrecting old series:
 
-This may have been beaten to death elsewhere, but the comment without
-the second "and" doesn't make any sense, so I conclude the second "and"
-is a logic operation.  As in, "... and AND out those lines...".  If that
-is the case, capitalization will help disambiguate, much as I would expect
-to see "OR" if that was the intended operation.  The code following the
-read of the mask register (not included in the diff fragment above) should
-make the meaning clear.
+ 	Fallout from asm glue review on alpha:
 
-Accordingly, I would reject this proposed patch.
+1) TIF_NOTIFY_SIGNAL support is broken; do_work_pending() handles
+it, but the logics *calling* do_work_pending() ignores that flag
+completely.  If it's called for other reasons - fine, but
+TIF_NOTIFY_SIGNAL alone will not suffice for that.  Bug from the
+last cycle.  5.11 bug.
 
-Respectfully,
---Bob
+2) _TIF_ALLWORK_MASK is junk - never had been used.
+ 
+3) !AUDIT_SYSCALL configs have buggered logics for going into
+straced syscall path.  Any thread flag (including TIF_SIGNAL_PENDING)
+will suffice to send us there.  3.14 bug.
+ 
+4) on straced syscalls we have force_successful_syscall_return() broken -
+it ends up with a3 *not* set to 0.
+
+5) on non-straced syscalls force_successful_syscall_return() handling is
+suboptimal - it duplicates code from the normal syscall return path for
+no good reason; instead of branching to the copy, it might branch to the
+original just fine.
+
+6) ret_from_fork could just as well go to ret_from_user - it's not going
+to be hit when returning to kernel mode.
+
+7) lazy FPU switching.  We save/restore all FPU registers a lot more than
+we have to; the following reduces the amount quite a bit:
+	* move the array we save into from switch_stack to thread_info
+	* have a (thread-synchronous) flag set when we save them
+	* have another flag set when they should be restored on return to
+userland.
+	* do *NOT* save/restore them in do_switch_stack()/undo_switch_stack().
+	* restore on the exit to user mode if the restore flag had been set.
+Clear both flags.
+	* on context switch, entry to fork/clone/vfork, before entry into
+do_signal() and on entry into straced syscall save the registers and set
+the 'saved' flag unless it had been already set.
+	* on context switch set the 'restore' flag as well.
+	* have copy_thread() set both flags for child, so the registers would
+be restored once the child returns to userland.
+	* use the saved data in setup_sigcontext(); have restore_sigcontext()
+set both flags and copy from sigframe to save area.
+	* teach ptrace to look for FPU registers in thread_info instead of
+switch_stack.
+	* teach isolated accesses to FPU registers (rdfpcr, wrfpcr, etc.)
+to check the 'saved' flag (under preempt_disable()) and work with the save area
+if it's been set; if 'saved' flag is found upon write access, set 'restore' flag
+as well.  NOTE: it's tempting to just force register saving in those - it
+would simplify the code quite a bit.  Unfortunately, it would also force the
+full FPU save/restore in situations where we really don't want the overhead
+of that ;-/
+
+Tested on qemu and on real hw (older one - the only EV67 box I have is not
+in good condition).  Seems to work; benefits depend upon the load.
+
+Patchset lives in git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git
+#next.alpha; individual patches in followups.
