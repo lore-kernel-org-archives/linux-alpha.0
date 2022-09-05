@@ -1,48 +1,64 @@
-From: Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v2 7/7] alpha: lazy FPU switching
-Date: Fri, 2 Sep 2022 06:14:33 +0100
-Message-ID: <YxGROdeUQHG4XPH9@ZenIV>
-References: <YxFhB4/cEXX5aHbn@ZenIV>
- <20220902015012.2664521-1-viro@zeniv.linux.org.uk>
- <20220902015012.2664521-7-viro@zeniv.linux.org.uk>
- <CAHk-=wjfCBF_xYtKacU920YFMKNDnesTUy-gYq8qHucLDTWNHQ@mail.gmail.com>
- <YxGPk1dDyCP2AWul@ZenIV>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] alpha: Use generic <asm-generic/io.h>
+Date: Mon, 5 Sep 2022 21:30:47 +0200
+Message-ID: <CACRpkdZemHScp9WW-7LaGtcXuvT2qzs_7nXS60icSWtPkEwMHg@mail.gmail.com>
+References: <20220818092059.103884-1-linus.walleij@linaro.org> <CAK8P3a1x52F8Ya3ShQ+v6x_jANfUsEq0E55u+pOBNaYniRO7cA@mail.gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=w6b2UEHLmuGJTTnShaxMkc2M0eiHRzxueLF+Dp5bmzA=; b=nC8pyaelExlI8Ib37Xfc0OeFD2
-        awdGLZ0dr0fXWbBJaO8BS7eceWxZ70Tg9qXXhDNFknG872Cck35CpOlRPTRVy3/B/wH4q999sYqWf
-        tduo4b2q8MFPBmK5+qpHMTbu+lkJDCOmluxitfDrYuD6XZcD924uCpu1jECFqlo46Un/WcAsTIzsV
-        Lx0pT5Zwmceh0XpLU3ed1A3T8Yhhajlkzj1j9qPm/7ApIxHFq9RBuIrmMZU2wvgmTCMIZGrGxGVkN
-        y8TZri0IAqD4G1D3NwVlidpRbeGWs4dYMgFssbAru+C3cdYR5tUzJhq4jbjo8T/NC2/UYsIvS6Tdv
-        AMClj/xA==;
-Content-Disposition: inline
-In-Reply-To: <YxGPk1dDyCP2AWul@ZenIV>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=fOjvm1AMsZ4nR0oKVwuUuwq6yRIdBGx8cQ5CH0pdOQ8=;
+        b=mEBD5Ir8YMB4+1XemGmtRKWBA4PgrHa65B5dZBHw+q9qZY/fFLZAzWJtnnjt3ZabJ1
+         k030tzzoAkffYwspwGcjthTDzsdHLi1/EfD5ZrIKQ81gBWJ+iFLi0rB47a8BoHQ1u+Mc
+         ONLy2GkBHoKxccBbjIM3ToQDSmBmmUQCVAkJSWv4nkokAx3LqfcZUkbkUWgZc7Unaeoa
+         poaOdJs1SSKb8ToZvDtPGjWuP8kkxkwRsMcwiWGeOPNcTEVrtAFYZn6SemA6NMADQmZJ
+         +g5EZ+4ms2uJrfpHxIDKT7OlQqfQPnrzMLafL9vYFw9mXzLhNWt3cXdzgwgZ5MvcFakY
+         AzVw==
+In-Reply-To: <CAK8P3a1x52F8Ya3ShQ+v6x_jANfUsEq0E55u+pOBNaYniRO7cA@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, kernel test robot <lkp@intel.com>, Mark Brown <broonie@kernel.org>, linux-arch@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 06:07:31AM +0100, Al Viro wrote:
+Hi Arnd,
 
-> > With the asm even having a comment about how it only works because
-> > alpha doesn't do preemption (ARCH_NO_PREEMPT), but then the C code
-> > does do those preempt_disable/enable pairs, and I see an actual bug in
-> > there too:
-> > 
-> > Both alpha_read_fp_reg() and alpha_read_fp_reg_s() do a
-> > preempt_enable() -> preempt_enable() pair (ie the first one should be
-> > a preempt_disable()).
-> 
-> Will fix.
+On Thu, Aug 18, 2022 at 12:28 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> On Thu, Aug 18, 2022 at 11:20 AM Linus Walleij <linus.walleij@linaro.org> wrote:
 
-	Done and pushed.  IIRC, that started as a similar comment re
-"we'd need to disable preemption here if we ever grow one on alpha",
-but I ended up looking at it and deciding that it's easier to just
-go ahead and call preempt_disable()/preempt_enable() instead
-of comments.
+> > I'd like this applied to the alpha tree if there is such a
+> > thing otherwise maybe Arnd can apply it to the arch generic
+> > tree?
+>
+> Sure, I can do that.
+
+Could you apply this to the arch tree? I see no signs of life from
+the alpha maintainers.
+
+> > +/*
+> > + * These defines are necessary to use the generic io.h for filling in
+> > + * the missing parts of the API contract. This is because the platform
+> > + * uses (inline) functions rather than defines and the generic helper
+> > + * fills in the undefined.
+> > + */
+> > +#define virt_to_phys virt_to_phys
+> > +#define phys_to_virt phys_to_virt
+> > +#define memset_io memset_io
+> > +#define memcpy_fromio memcpy_fromio
+>
+> We tend to have these next to the function definition rather than
+> in a single place. Again, I'm not too worried here, just if you end
+> up reworking the patch in some form, or doing the same for the
+> other architectures that would be the way to do it.
+
+I looked into this, for parisc it was pretty straight forward. alpha has
+a bunch of competing static inlines and externs and what not, I don't
+see it helping to inline this, IMO it's actually better like this: "those
+were defined somewhere in the birdnest of ifdefs above".
+
+If it is a big issue I can start to pry into it.
+
+Yours,
+Linus Walleij
