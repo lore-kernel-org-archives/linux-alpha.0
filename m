@@ -1,33 +1,58 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v2 00/44] cpuidle,rcu: Clean up the mess
-Date: Tue, 27 Sep 2022 09:31:11 +0300
-Message-ID: <YzKYrx8Kd9SBYcUg@atomide.com>
-References: <20220919095939.761690562@infradead.org>
-Mime-Version: 1.0
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20220919095939.761690562@infradead.org>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] alpha: update config files
+Date: Thu, 29 Sep 2022 12:13:29 +0200
+Message-ID: <20220929101329.31036-1-lukas.bulwahn@gmail.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=+1jb+nfNrrfT47twFWxXKdVM9Wqmz0pwBbN3bVcD7Sc=;
+        b=RMlq4j0v9c9V68QmGp8qPZAxlNF0r+I8ps9TEAfWeSlPwqYQmFZOHMNm9WKzaZpiqP
+         BUIhBp8izAt+eC5a4STiG0cb+/G7vOoeb0iyb2Kc6HXq+NQ7fsfD3meT+CNgHhFWM89i
+         wPpn6fiZC9ftYmg1ZuNZ2V5Bb260mXiEg6zuV/iSW0KpUXVX8UCOE/fj6PpAGFm3qRyb
+         PjzHirM3LoRUVT1kiX87w9n0TzKpEnR0zqVwtve1amKwIDotfT2hVPcF3Z44+WAteO3u
+         +M3stm9d/ZbwwsJ2ePE0FIy16K8mjCNT8L8Gm2+tR73iP6wUUoZhfVTTXna89fl+DPe8
+         j7Zg==
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@kernel.org, linux@armlinux.org.uk, ulli.kroll@googlemail.com, linus.walleij@linaro.org, shawnguo@kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com, khilman@kernel.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, bcain@quicinc.com, chenhuacai@kernel.org, kernel@xen0n.name, geert@linux-m68k.org, sammy@sammy.net, monstr@monstr.eu, tsbogend@alpha.franken.de, dinguyen@kernel.org, jonas@southpole.se, stefan.kristiansson@saunalahti.fi, shorne@gmail.com, James.Bottomley@hansenpartnership.com, deller@gmx.de, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.be
+To: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-Hi,
+Clean up config files by:
+  - removing configs that were deleted in the past
+  - removing configs not in tree and without recently pending patches
+  - adding new configs that are replacements for old configs in the file
 
-* Peter Zijlstra <peterz@infradead.org> [220919 10:08]:
-> Hi All!
-> 
-> At long last, a respin of the cpuidle vs rcu cleanup patches.
-> 
-> v1: https://lkml.kernel.org/r/20220608142723.103523089@infradead.org
-> 
-> These here patches clean up the mess that is cpuidle vs rcuidle.
+For some detailed information, see Link.
 
-I just gave these a quick test and things still work for me. The old
-omap3 off mode during idle still works. No more need to play the
-whack the mole game with RCU-idle :) I did not test on x86, or on other
-ARMs, but considering the test pretty much covered the all the
-affected RCU-idle related paths, where suitable, feel free to add:
+Link: https://lore.kernel.org/kernel-janitors/20220929090645.1389-1-lukas.bulwahn@gmail.com/
 
-Tested-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+ arch/alpha/configs/defconfig | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/alpha/configs/defconfig b/arch/alpha/configs/defconfig
+index 6a39fe8ce9e5..1816c1dc22b1 100644
+--- a/arch/alpha/configs/defconfig
++++ b/arch/alpha/configs/defconfig
+@@ -39,14 +39,12 @@ CONFIG_PATA_CYPRESS=y
+ CONFIG_ATA_GENERIC=y
+ CONFIG_NETDEVICES=y
+ CONFIG_DUMMY=m
+-CONFIG_NET_ETHERNET=y
+ CONFIG_NET_VENDOR_3COM=y
+ CONFIG_VORTEX=y
+ CONFIG_NET_TULIP=y
+ CONFIG_DE2104X=m
+ CONFIG_TULIP=y
+ CONFIG_TULIP_MMIO=y
+-CONFIG_NET_PCI=y
+ CONFIG_YELLOWFIN=y
+ CONFIG_SERIAL_8250=y
+ CONFIG_SERIAL_8250_CONSOLE=y
+-- 
+2.17.1
+
