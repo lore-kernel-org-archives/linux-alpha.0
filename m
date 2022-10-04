@@ -1,95 +1,92 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v2 33/44] ftrace: WARN on rcuidle
-Date: Tue, 4 Oct 2022 18:19:33 +0100
-Message-ID: <YzxrJYjKxy/vUc5n@FVFF77S0Q05N.cambridge.arm.com>
-References: <20220919095939.761690562@infradead.org>
- <20220919101522.573936213@infradead.org>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] alpha: Use generic <asm-generic/io.h>
+Date: Tue, 4 Oct 2022 12:42:27 -0700
+Message-ID: <57200020-c460-74ec-c786-9a2c16f4870e@roeck-us.net>
+References: <20220818092059.103884-1-linus.walleij@linaro.org>
+ <20221002224521.GA968453@roeck-us.net>
+ <fd905ca5-fe0d-4cfb-a0d0-aea8af539cc7@app.fastmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org A2EB6606B0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 28D6E60674
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 3259840887
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D85B84077D
-Content-Disposition: inline
-In-Reply-To: <20220919101522.573936213@infradead.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>, 
- <mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-Sender: "Virtualization" <virtualization-bounces@lists.linux-foundation.org>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: juri.lelli@redhat.com, rafael@kernel.org, catalin.marinas@arm.com, linus.walleij@linaro.org, bsegall@google.com, guoren@kernel.org, pavel@ucw.cz, agordeev@linux.ibm.com, linux-arch@vger.kernel.org, vincent.guittot@linaro.org, mpe@ellerman.id.au, chenhuacai@kernel.org, christophe.leroy@csgroup.eu, linux-acpi@vger.kernel.org, agross@kernel.org, geert@linux-m68k.org, linux-imx@nxp.com, vgupta@kernel.org, mattst88@gmail.com, mturquette@baylibre.com, sammy@sammy.net, pmladek@suse.com, linux-pm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, linux-um@lists.infradead.org, npiggin@gmail.com, tglx@linutronix.de, linux-omap@vger.kernel.org, dietmar.eggemann@arm.com, andreyknvl@gmail.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, senozhatsky@chromium.org, svens@linux.ibm.com, jolsa@kernel.org, tj@kernel.org, Andrew Morton <a>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc:subject:date;
+        bh=HpG5i02vmxe3dnsSL7vxsuxzal8c9ky/pIndry6A4cs=;
+        b=hJcs4dlEb7BByvrgCfy9uPQh9LlR4GiVDIbolUzf4p6P20IwqIr9yJ7pvGcXrM8bru
+         J9z6f4x8AnlFbo5w3rVHAYIF/qrvUx9rNM/9DM2JrYWA1+Utbbi7rNtqQ8uZE/768etO
+         xEzuPqNICgQyZnbbc5UPLgPH2XSYtweENUJizJU60+KhjLBHwNUpDwYJP95E/hG9kvZr
+         r6s/gqGxv16/0LDu0c9snGxj2BNDq+vEKxU2sziXYykWcZBYQCJ/4fjw657YOyDIt7h2
+         g4sux0RMZY8/Be0j+/IGmLb8jZ2UaeydAI+kN4183nUvNVMPhwku9BKAtBvqoSM0RMZr
+         zCxw==
+Sender: Guenter Roeck <groeck7@gmail.com>
+Content-Language: en-US
+In-Reply-To: <fd905ca5-fe0d-4cfb-a0d0-aea8af539cc7@app.fastmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Arnd Bergmann <arnd@arndb.de>, Linus Walleij <linus.walleij@linaro.org>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, kernel test robot <lkp@intel.com>, Mark Brown <broonie@kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>
 
-On Mon, Sep 19, 2022 at 12:00:12PM +0200, Peter Zijlstra wrote:
-> CONFIG_GENERIC_ENTRY disallows any and all tracing when RCU isn't
-> enabled.
+On 10/3/22 06:03, Arnd Bergmann wrote:
+> On Mon, Oct 3, 2022, at 12:45 AM, Guenter Roeck wrote:
 > 
-> XXX if s390 (the only other GENERIC_ENTRY user as of this writing)
-> isn't comfortable with this, we could switch to
-> HAVE_NOINSTR_VALIDATION which is x86_64 only atm.
+>>>
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Link: https://lore.kernel.org/linux-mm/202208181447.G9FLcMkI-lkp@intel.com/
+>>> Cc: Mark Brown <broonie@kernel.org>
+>>> Cc: Arnd Bergmann <arnd@arndb.de>
+>>> Cc: Richard Henderson <richard.henderson@linaro.org>
+>>> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+>>> Cc: Matt Turner <mattst88@gmail.com>
+>>> Cc: linux-arch@vger.kernel.org
+>>> Cc: linux-alpha@vger.kernel.org
+>>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>>
+>> This patch results in the following build errors when trying to build
+>> alpha:allmodconfig.
+>>
+>> ERROR: modpost: "ioread64" [drivers/pci/switch/switchtec.ko] undefined!
+>> ERROR: modpost: "ioread64"
+>> [drivers/net/ethernet/freescale/enetc/fsl-enetc.ko] undefined!
+>> ERROR: modpost: "ioread64"
+>> [drivers/net/ethernet/freescale/enetc/fsl-enetc-vf.ko] undefined!
+>> ERROR: modpost: "iowrite64"
+>> [drivers/net/ethernet/xilinx/xilinx_emac.ko] undefined!
+>> ERROR: modpost: "iowrite64" [drivers/net/wwan/t7xx/mtk_t7xx.ko]
+>> undefined!
+>> ERROR: modpost: "ioread64" [drivers/net/wwan/t7xx/mtk_t7xx.ko]
+>> undefined!
+>> ERROR: modpost: "iowrite64" [drivers/firmware/arm_scmi/scmi-module.ko]
+>> undefined!
+>> ERROR: modpost: "ioread64" [drivers/firmware/arm_scmi/scmi-module.ko]
+>> undefined!
+>> ERROR: modpost: "iowrite64" [drivers/vfio/pci/vfio-pci-core.ko]
+>> undefined!
+>> ERROR: modpost: "ioread64" [drivers/ntb/hw/mscc/ntb_hw_switchtec.ko]
+>> undefined!
+>>
+>> Reverting it doesn't help because that just reintroduces the problem
+>> that was supposed to be fixed by this patch.
 > 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  include/linux/tracepoint.h |   13 ++++++++++++-
->  kernel/trace/trace.c       |    3 +++
->  2 files changed, 15 insertions(+), 1 deletion(-)
+> Thanks for the report, I've now added this patch on top.
 > 
-> --- a/include/linux/tracepoint.h
-> +++ b/include/linux/tracepoint.h
-> @@ -178,6 +178,16 @@ static inline struct tracepoint *tracepo
->  #endif /* CONFIG_HAVE_STATIC_CALL */
->  
->  /*
-> + * CONFIG_GENERIC_ENTRY archs are expected to have sanitized entry and idle
-> + * code that disallow any/all tracing/instrumentation when RCU isn't watching.
-> + */
-> +#ifdef CONFIG_GENERIC_ENTRY
-> +#define RCUIDLE_COND(rcuidle)	(rcuidle)
-> +#else
-> +#define RCUIDLE_COND(rcuidle)	(rcuidle && in_nmi())
-> +#endif
+> Matt, can you take a look if this look correct?
+> 
 
-Could we make this depend on ARCH_WANTS_NO_INSTR instead?
+Looks like something was missed. When building alpha:allnoconfig
+in next-20221004:
 
-That'll allow arm64 to check this even though we're not using the generic entry
-code (and there's lots of work necessary to make that possible...).
+Building alpha:allnoconfig ... failed
+--------------
+Error log:
+<stdin>:1517:2: warning: #warning syscall clone3 not implemented [-Wcpp]
+arch/alpha/kernel/core_marvel.c:807:1: error: conflicting types for 'marvel_ioread8'; have 'unsigned int(const void *)'
+   807 | marvel_ioread8(const void __iomem *xaddr)
+       | ^~~~~~~~~~~~~~
+In file included from arch/alpha/kernel/core_marvel.c:10:
+arch/alpha/include/asm/core_marvel.h:335:11: note: previous declaration of 'marvel_ioread8' with type 'u8(const void *)' {aka 'unsigned char(const void *)'}
+   335 | extern u8 marvel_ioread8(const void __iomem *);
+       |           ^~~~~~~~~~~~~~
 
-Thanks,
-Mark.
-
-> +
-> +/*
->   * it_func[0] is never NULL because there is at least one element in the array
->   * when the array itself is non NULL.
->   */
-> @@ -189,7 +199,8 @@ static inline struct tracepoint *tracepo
->  			return;						\
->  									\
->  		/* srcu can't be used from NMI */			\
-> -		WARN_ON_ONCE(rcuidle && in_nmi());			\
-> +		if (WARN_ON_ONCE(RCUIDLE_COND(rcuidle)))		\
-> +			return;						\
->  									\
->  		/* keep srcu and sched-rcu usage consistent */		\
->  		preempt_disable_notrace();				\
-> --- a/kernel/trace/trace.c
-> +++ b/kernel/trace/trace.c
-> @@ -3104,6 +3104,9 @@ void __trace_stack(struct trace_array *t
->  		return;
->  	}
->  
-> +	if (WARN_ON_ONCE(IS_ENABLED(CONFIG_GENERIC_ENTRY)))
-> +		return;
-> +
->  	/*
->  	 * When an NMI triggers, RCU is enabled via ct_nmi_enter(),
->  	 * but if the above rcu_is_watching() failed, then the NMI
-> 
-> 
+Guenter
