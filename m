@@ -1,104 +1,49 @@
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 Subject: Re: [PATCH] alpha: remove osf_{readv,writev}
-Date: Tue, 4 Oct 2022 16:02:11 +0200
-Message-ID: <CAKXUXMyvk6WJr2M09+=D43QocX_igoaU0-qMN-MCwQk++O=vwA@mail.gmail.com>
+Date: Tue, 4 Oct 2022 16:03:40 +0200
+Message-ID: <CAHmME9oSAMesW_5rQ0LM7u-yHCtKgn6THZCOEZ9DHKaSAri7dQ@mail.gmail.com>
 References: <CAHk-=wjwvBc3VQMNtUVUrMBVoMPSPu26OuatZ_+1gZ2m-PmmRA@mail.gmail.com>
- <20221004135301.1420873-1-Jason@zx2c4.com>
+ <20221004135301.1420873-1-Jason@zx2c4.com> <CAKXUXMyvk6WJr2M09+=D43QocX_igoaU0-qMN-MCwQk++O=vwA@mail.gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=TR5SAJXFGC1nDy2HAPbOzDqZLUl4bxPSNS4KiodXPBA=;
-        b=ODABosh2WEoafTy1FxycIrl08tnWb4XcbVBosrmRQRYRk18/f0IJCY53gDOQLgaH1d
-         cnzdiQfyy3aOmueHuIBUapQYRBjJqobOaJ2nD9l01GlMpoJRMkUrSN5XaXYplTMGlceW
-         YMuNzIgbFT+Uz2PdcrHreKSWLXjLrSWk3YL32wbKIC8W0e8sLtlSV6LBWKeirpeAPrPj
-         O2vNGaHi+7KJRHWJ8+0s4G1aaSRkvmPaG24suNyLuXNx/9qAItQwdO+ozuqNVBnGIGDW
-         4eyTcupSvwG5l7hA9ct0cH7Dozufzq9fFyOLM7ly6e5GojpXzpnIo+T4iqe2n3foXe70
-         En7A==
-In-Reply-To: <20221004135301.1420873-1-Jason@zx2c4.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1664892239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M8Id8SmAbYgSzlRRtwgUO/TtxBOviRpHBZddWECEq2I=;
+        b=K46wjlS/l4KOKURP2/0mX7GNXXR/Z94jbhpvE0ZlPrwO9ZB4ssnLEUe8ON7WIdBNK9x+08
+        8F/jSDg7zLOIh/HSX0i4nMlfiA1qhdPWHIvnrmB6ING00EaPbqZ8nCsMz5Jo6QxoD6PR43
+        0mvgoAkOZmNqGZK8Rbmr7M6hZu0vZq8=
+In-Reply-To: <CAKXUXMyvk6WJr2M09+=D43QocX_igoaU0-qMN-MCwQk++O=vwA@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: "Jason A. Donenfeld" <Jason@zx2c4.com>
+To: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Kees Cook <keescook@chromium.org>, "Eric W . Biederman" <ebiederm@xmission.com>, Arnd Bergmann <arnd@arndb.de>
 
-On Tue, Oct 4, 2022 at 3:53 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+On Tue, Oct 4, 2022 at 4:02 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
 >
-> As of 987f20a9dcce ("a.out: Remove the a.out implementation"),
-> sys_osf_{readv,writev} is now the same as sys_{readv,writev}. So remove
-> the osf indirection, and point the syscall table directly at the generic
-> functions, as is done on other platforms.
+> On Tue, Oct 4, 2022 at 3:53 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> >
+> > As of 987f20a9dcce ("a.out: Remove the a.out implementation"),
+> > sys_osf_{readv,writev} is now the same as sys_{readv,writev}. So remove
+> > the osf indirection, and point the syscall table directly at the generic
+> > functions, as is done on other platforms.
+> >
+> > Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Cc: Eric W. Biederman <ebiederm@xmission.com>
+> > Cc: Arnd Bergmann <arnd@arndb.de>
+> > Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> > ---
+> > Only compiled and QEMU-booted with no userspace, but seems simple
+> > enough?
+> >
 >
-> Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Eric W. Biederman <ebiederm@xmission.com>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
-> Only compiled and QEMU-booted with no userspace, but seems simple
-> enough?
->
+> This patch looks exactly the same as the patch I sent a few hours ago:
 
-This patch looks exactly the same as the patch I sent a few hours ago:
+Whoops, my bad for not searching first.
 
-https://lore.kernel.org/lkml/20221004071302.11471-1-lukas.bulwahn@gmail.com/
-
-My patch was completely untested; good that this one is at least
-compile tested and went through basic boot tests.
-
-Any of the two patches, the one above or this one, can be picked.
-
-Reviewed-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-
-
-
-Lukas
-
->  arch/alpha/kernel/osf_sys.c            | 12 ------------
->  arch/alpha/kernel/syscalls/syscall.tbl |  4 ++--
->  2 files changed, 2 insertions(+), 14 deletions(-)
->
-> diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-> index b3ad8c44c971..6c6c4337e201 100644
-> --- a/arch/alpha/kernel/osf_sys.c
-> +++ b/arch/alpha/kernel/osf_sys.c
-> @@ -1278,18 +1278,6 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
->         return addr;
->  }
->
-> -SYSCALL_DEFINE3(osf_readv, unsigned long, fd,
-> -               const struct iovec __user *, vector, unsigned long, count)
-> -{
-> -       return sys_readv(fd, vector, count);
-> -}
-> -
-> -SYSCALL_DEFINE3(osf_writev, unsigned long, fd,
-> -               const struct iovec __user *, vector, unsigned long, count)
-> -{
-> -       return sys_writev(fd, vector, count);
-> -}
-> -
->  SYSCALL_DEFINE2(osf_getpriority, int, which, int, who)
->  {
->         int prio = sys_getpriority(which, who);
-> diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/syscalls/syscall.tbl
-> index 3515bc4f16a4..8ebacf37a8cf 100644
-> --- a/arch/alpha/kernel/syscalls/syscall.tbl
-> +++ b/arch/alpha/kernel/syscalls/syscall.tbl
-> @@ -125,8 +125,8 @@
->  116    common  osf_gettimeofday                sys_osf_gettimeofday
->  117    common  osf_getrusage                   sys_osf_getrusage
->  118    common  getsockopt                      sys_getsockopt
-> -120    common  readv                           sys_osf_readv
-> -121    common  writev                          sys_osf_writev
-> +120    common  readv                           sys_readv
-> +121    common  writev                          sys_writev
->  122    common  osf_settimeofday                sys_osf_settimeofday
->  123    common  fchown                          sys_fchown
->  124    common  fchmod                          sys_fchmod
-> --
-> 2.37.3
->
+Jason
