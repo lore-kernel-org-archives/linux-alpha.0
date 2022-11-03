@@ -1,62 +1,69 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
 Subject: Re: [PATCH v2 4/4] pcmcia: Convert to use
  pci_bus_for_each_resource_p()
-Date: Thu, 3 Nov 2022 20:01:32 +0200
-Message-ID: <Y2QB/BxfKCjckaaU@smile.fi.intel.com>
+Date: Fri, 4 Nov 2022 03:29:44 +0900
+Message-ID: <Y2QImB0OLakzz1+F@rocinante>
 References: <20221103164644.70554-1-andriy.shevchenko@linux.intel.com>
  <20221103164644.70554-5-andriy.shevchenko@linux.intel.com>
  <Y2P0XCNJvTVuziO7@owl.dominikbrodowski.net>
  <Y2P2ja26ikNecTsv@smile.fi.intel.com>
- <Y2P5mRt//Pp6XTLT@owl.dominikbrodowski.net>
 Mime-Version: 1.0
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667498505; x=1699034505;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yb2Mq3fbpPtLAnjCVdV2BEIMFU/XQ1cYRIu5k0HafqM=;
-  b=QawNy6MCX1+5ktWAplobfXkYqgAkMLc9J1Ts6EjU3++8Dj486ixCVwJf
-   7yBcGzXWd0exg+s579XGAxjcfcycD4UwUMFs/ACPTVbnxN7EFP56BCG14
-   m8WLn0HPenmWa/SPu9VPnuzQuCZ+nG6qo3aW9jDXx/xMYl/kpZE9uYOKK
-   sFN81QNyO+FEN3cGfhddm2Yk9zGW47ktq5CG8sAbz8Gxn7HEFgkQwBkuW
-   mLwZgVc8GWHBkvPSD1q679ncO1PpI8LEhEU0y3qGmSsPAi1ZHnQo9cgNg
-   sP5o+i3orj4U98Yg4AH+yTNTYS+ZcTX2fHT2GLoEliZ9wZYrL/wBVX798
-   A==;
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Disposition: inline
-In-Reply-To: <Y2P5mRt//Pp6XTLT@owl.dominikbrodowski.net>
+In-Reply-To: <Y2P2ja26ikNecTsv@smile.fi.intel.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Juergen Gross <jgross@suse.com>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org, Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, David S
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-pci@vger.kernel.org, Dominik Brodowski <linux@dominikbrodowski.net>, linux-mips@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Russell King <linux@armlinux.org.uk>, Bjorn Helgaas <helgaas@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, xen-devel@lists.xenproject.org, Matt Turner <mattst88@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, Nicholas Piggin <npiggin@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-arm-kernel@lists.infradead.org, Juergen Gross <jgross@suse.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-kernel@vger.kernel.org, Oleksandr Tyshchenko <oleksandr_tyshche>
 
-On Thu, Nov 03, 2022 at 06:25:45PM +0100, Dominik Brodowski wrote:
-> Am Thu, Nov 03, 2022 at 07:12:45PM +0200 schrieb Andy Shevchenko:
-> > On Thu, Nov 03, 2022 at 06:03:24PM +0100, Dominik Brodowski wrote:
+Hello,
 
-...
-
-> > Considering this is done, can you issue your conditional tag so I will
-> > incorporate it in v3?
+[...]
+> > > -
+> > > -	for (i = 0; i < PCI_BRIDGE_RESOURCE_NUM; i++) {
+> > > -		res = s->cb_dev->bus->resource[i];
+> > > -#else
+> > > -	pci_bus_for_each_resource(s->cb_dev->bus, res, i) {
+> > >  #endif
+> > > +
+> > > +	pci_bus_for_each_resource_p(s->cb_dev->bus, res) {
+> > >  		if (!res)
+> > >  			continue;
+> > 
+> > Doesn't this remove the proper iterator for X86? Even if that is the right
+> > thing to do, it needs an explict explanation.
 > 
-> Certainly, feel free to add
-> 
-> 	Acked-by: Dominik Brodowski <linux@dominikbrodowski.net>
+> I dunno what was in 2010, but reading code now I have found no differences in
+> the logic on how resources are being iterated in these two pieces of code.
 
-Thank you for the review!
+This code is over a decade old (13 years old to be precise) and there was
+something odd between Bjorn's and Jesse's patches, as per:
 
--- 
-With Best Regards,
-Andy Shevchenko
+  89a74ecccd1f ("PCI: add pci_bus_for_each_resource(), remove direct bus->resource[] refs")
+  cf26e8dc4194 ("pcmcia: do not autoadd root PCI bus resources")
 
+> But fine, I will add a line to a commit message about this change.
 
+I wouldn't, personally.  The change you are proposing is self-explanatory
+and somewhat in-line with what is there already - unless I am also reading
+the current implementation wrong.
 
+That said, Dominik is the maintainer of PCMCIA driver, so his is the last
+word, so to speak. :)
+
+> Considering this is done, can you issue your conditional tag so I will
+> incorporate it in v3?
+
+No need, really.  Again, unless Dominik thinks otherwise.
+
+	Krzysztof
