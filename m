@@ -1,8 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 2/4] PCI: Split pci_bus_for_each_resource_p() out of pci_bus_for_each_resource()
-Date: Thu,  3 Nov 2022 18:46:42 +0200
-Message-ID: <20221103164644.70554-3-andriy.shevchenko@linux.intel.com>
-References: <20221103164644.70554-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 0/4] PCI: Add pci_dev_for_each_resource() helper and refactor bus one
+Date: Thu,  3 Nov 2022 18:46:40 +0200
+Message-ID: <20221103164644.70554-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <xen-devel-bounces@lists.xenproject.org>
@@ -17,232 +16,66 @@ Errors-To: xen-devel-bounces@lists.xenproject.org
 Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667494002; x=1699030002;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=S2RJPvl3baq0S1jZ0H3vH8ZxE7YEfK7nHVPBJ+ytMMo=;
-  b=b9zyzqy4nyQafoLSSALcjyBPGKY3fREchT6AelebUyev9oFblQH7KXQV
-   3i55+GvtyqJrrTvY5G+9e0VtyfOatVwmYFx0/hYY7nwL+5TMDWw5gC7Bs
-   8CkCYiSvoctKfWV4ZeryWgL4vhu2Ao3PyudurXF/CZz7j+1oIfWyDJ2LR
-   xgbCu2MOOrgH7oxDnNFSyqy0rVNolfWy1pYs5ffjAOlhvYp20P9VKdIPw
-   q3dkYIUnAPZ7Z1kErE782BUt+iTq53FYlmhGphQ0yBhkoy6O1OIEiidvI
-   AoXqr496QBuXLPsHBBC9BrBoq1C8pvPlp0VWsWIukKBzZKKpY1Mz70Mg5
-   w==;
-In-Reply-To: <20221103164644.70554-1-andriy.shevchenko@linux.intel.com>
+  t=1667493999; x=1699029999;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6sEwb2LvPX9v9prH3mu2nEGi0LVqQc1+Me9tIfh9Gsk=;
+  b=Nd7KO1lUqzSnMtk3j7fYSRN4GBMulzyp8KtXzvtG6CJ3U8l0+Bw02ZYM
+   56Q0/w04hbsprEsCu7TpWXhSVHW587RksAV9JZ3yEL2KDC35A8DgUON9T
+   S9V3ICr0AbOnFFdGzl+JWCeDkn+TJ2uCNhdvnrKcDIYU80ENRVrjjvMF4
+   QUfEk+tVFXZSWMcVeL34qNT0ZZ1z/dnzaFvI2fa3BGd6WgiLFY42JwZV0
+   FZvWu40M4ewv8maytGzDy0gsJ2WHoIajwyNW4eo7g+olJU+E9weHXxkKP
+   gTgBjOqn60ynR9iyRXS6K2OkGl47/em5PD+/9CmQm1sHGCEdA6k878nFy
+   g==;
 Content-Type: text/plain; charset="us-ascii"
 To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org
 Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-Refactor pci_bus_for_each_resource() in the same way as it's done in
-pci_dev_for_each_resource() case. This will allow to hide iterator
-inside the loop, where it's not used otherwise.
+Provide two new helper macros to iterate over PCI device resources and
+convert users.
 
-No functional changes intended.
+Looking at it, refactor existing pci_bus_for_each_resource() and convert
+users accordingly.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- .clang-format                      |  1 +
- drivers/pci/bus.c                  |  7 +++----
- drivers/pci/hotplug/shpchp_sysfs.c |  8 ++++----
+This applies on top of this patch Mika sent out earlier:
+https://lore.kernel.org/linux-pci/20221103103254.30497-1-mika.westerberg@linux.intel.com/
+
+Changelog v2:
+- refactor to have two macros
+- refactor existing pci_bus_for_each_resource() in the same way and
+  convert users
+
+Andy Shevchenko (3):
+  PCI: Split pci_bus_for_each_resource_p() out of
+    pci_bus_for_each_resource()
+  EISA: Convert to use pci_bus_for_each_resource_p()
+  pcmcia: Convert to use pci_bus_for_each_resource_p()
+
+Mika Westerberg (1):
+  PCI: Introduce pci_dev_for_each_resource()
+
+ .clang-format                      |  3 +++
+ arch/alpha/kernel/pci.c            |  5 ++---
+ arch/arm/kernel/bios32.c           | 16 ++++++-------
+ arch/mips/pci/pci-legacy.c         |  3 +--
+ arch/powerpc/kernel/pci-common.c   |  5 ++---
+ arch/sparc/kernel/leon_pci.c       |  5 ++---
+ arch/sparc/kernel/pci.c            | 10 ++++-----
+ arch/sparc/kernel/pcic.c           |  5 ++---
+ drivers/eisa/pci_eisa.c            |  4 ++--
+ drivers/pci/bus.c                  |  7 +++---
+ drivers/pci/hotplug/shpchp_sysfs.c |  8 +++----
  drivers/pci/pci.c                  |  5 ++---
  drivers/pci/probe.c                |  2 +-
- drivers/pci/setup-bus.c            | 10 ++++------
- include/linux/pci.h                | 14 ++++++++++----
- 7 files changed, 25 insertions(+), 22 deletions(-)
+ drivers/pci/remove.c               |  5 ++---
+ drivers/pci/setup-bus.c            | 36 ++++++++++++------------------
+ drivers/pci/setup-res.c            |  4 +---
+ drivers/pci/xen-pcifront.c         |  4 +---
+ drivers/pcmcia/rsrc_nonstatic.c    |  9 +++-----
+ drivers/pcmcia/yenta_socket.c      |  3 +--
+ include/linux/pci.h                | 25 +++++++++++++++++----
+ 20 files changed, 78 insertions(+), 86 deletions(-)
 
-diff --git a/.clang-format b/.clang-format
-index 08d579fea6cf..b61fd8791346 100644
---- a/.clang-format
-+++ b/.clang-format
-@@ -520,6 +520,7 @@ ForEachMacros:
-   - 'of_property_for_each_string'
-   - 'of_property_for_each_u32'
-   - 'pci_bus_for_each_resource'
-+  - 'pci_bus_for_each_resource_p'
-   - 'pci_dev_for_each_resource'
-   - 'pci_dev_for_each_resource_p'
-   - 'pci_doe_for_each_off'
-diff --git a/drivers/pci/bus.c b/drivers/pci/bus.c
-index 3cef835b375f..fc8e9c11c5f2 100644
---- a/drivers/pci/bus.c
-+++ b/drivers/pci/bus.c
-@@ -161,13 +161,13 @@ static int pci_bus_alloc_from_region(struct pci_bus *bus, struct resource *res,
- 		void *alignf_data,
- 		struct pci_bus_region *region)
- {
--	int i, ret;
- 	struct resource *r, avail;
- 	resource_size_t max;
-+	int ret;
- 
- 	type_mask |= IORESOURCE_TYPE_BITS;
- 
--	pci_bus_for_each_resource(bus, r, i) {
-+	pci_bus_for_each_resource_p(bus, r) {
- 		resource_size_t min_used = min;
- 
- 		if (!r)
-@@ -264,9 +264,8 @@ bool pci_bus_clip_resource(struct pci_dev *dev, int idx)
- 	struct resource *res = &dev->resource[idx];
- 	struct resource orig_res = *res;
- 	struct resource *r;
--	int i;
- 
--	pci_bus_for_each_resource(bus, r, i) {
-+	pci_bus_for_each_resource_p(bus, r) {
- 		resource_size_t start, end;
- 
- 		if (!r)
-diff --git a/drivers/pci/hotplug/shpchp_sysfs.c b/drivers/pci/hotplug/shpchp_sysfs.c
-index 64beed7a26be..ff04f0c5e7c3 100644
---- a/drivers/pci/hotplug/shpchp_sysfs.c
-+++ b/drivers/pci/hotplug/shpchp_sysfs.c
-@@ -24,16 +24,16 @@
- static ssize_t show_ctrl(struct device *dev, struct device_attribute *attr, char *buf)
- {
- 	struct pci_dev *pdev;
--	int index, busnr;
- 	struct resource *res;
- 	struct pci_bus *bus;
- 	size_t len = 0;
-+	int busnr;
- 
- 	pdev = to_pci_dev(dev);
- 	bus = pdev->subordinate;
- 
- 	len += sysfs_emit_at(buf, len, "Free resources: memory\n");
--	pci_bus_for_each_resource(bus, res, index) {
-+	pci_bus_for_each_resource_p(bus, res) {
- 		if (res && (res->flags & IORESOURCE_MEM) &&
- 				!(res->flags & IORESOURCE_PREFETCH)) {
- 			len += sysfs_emit_at(buf, len,
-@@ -43,7 +43,7 @@ static ssize_t show_ctrl(struct device *dev, struct device_attribute *attr, char
- 		}
- 	}
- 	len += sysfs_emit_at(buf, len, "Free resources: prefetchable memory\n");
--	pci_bus_for_each_resource(bus, res, index) {
-+	pci_bus_for_each_resource_p(bus, res) {
- 		if (res && (res->flags & IORESOURCE_MEM) &&
- 			       (res->flags & IORESOURCE_PREFETCH)) {
- 			len += sysfs_emit_at(buf, len,
-@@ -53,7 +53,7 @@ static ssize_t show_ctrl(struct device *dev, struct device_attribute *attr, char
- 		}
- 	}
- 	len += sysfs_emit_at(buf, len, "Free resources: IO\n");
--	pci_bus_for_each_resource(bus, res, index) {
-+	pci_bus_for_each_resource_p(bus, res) {
- 		if (res && (res->flags & IORESOURCE_IO)) {
- 			len += sysfs_emit_at(buf, len,
- 					     "start = %8.8llx, length = %8.8llx\n",
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 2127aba3550b..ff5b34337dab 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -782,9 +782,8 @@ struct resource *pci_find_parent_resource(const struct pci_dev *dev,
- {
- 	const struct pci_bus *bus = dev->bus;
- 	struct resource *r;
--	int i;
- 
--	pci_bus_for_each_resource(bus, r, i) {
-+	pci_bus_for_each_resource_p(bus, r) {
- 		if (!r)
- 			continue;
- 		if (resource_contains(r, res)) {
-@@ -802,7 +801,7 @@ struct resource *pci_find_parent_resource(const struct pci_dev *dev,
- 			 * be both a positively-decoded aperture and a
- 			 * subtractively-decoded region that contain the BAR.
- 			 * We want the positively-decoded one, so this depends
--			 * on pci_bus_for_each_resource() giving us those
-+			 * on pci_bus_for_each_resource_p() giving us those
- 			 * first.
- 			 */
- 			return r;
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index b66fa42c4b1f..3662e867a124 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -533,7 +533,7 @@ void pci_read_bridge_bases(struct pci_bus *child)
- 	pci_read_bridge_mmio_pref(child);
- 
- 	if (dev->transparent) {
--		pci_bus_for_each_resource(child->parent, res, i) {
-+		pci_bus_for_each_resource_p(child->parent, res) {
- 			if (res && res->flags) {
- 				pci_bus_add_resource(child, res,
- 						     PCI_SUBTRACTIVE_DECODE);
-diff --git a/drivers/pci/setup-bus.c b/drivers/pci/setup-bus.c
-index 336d6e6ef76a..83b2f308be7e 100644
---- a/drivers/pci/setup-bus.c
-+++ b/drivers/pci/setup-bus.c
-@@ -770,9 +770,8 @@ static struct resource *find_bus_resource_of_type(struct pci_bus *bus,
- 						  unsigned long type)
- {
- 	struct resource *r, *r_assigned = NULL;
--	int i;
- 
--	pci_bus_for_each_resource(bus, r, i) {
-+	pci_bus_for_each_resource_p(bus, r) {
- 		if (r == &ioport_resource || r == &iomem_resource)
- 			continue;
- 		if (r && (r->flags & type_mask) == type && !r->parent)
-@@ -1204,7 +1203,7 @@ void __pci_bus_size_bridges(struct pci_bus *bus, struct list_head *realloc_head)
- 			additional_mmio_pref_size = 0;
- 	struct resource *pref;
- 	struct pci_host_bridge *host;
--	int hdr_type, i, ret;
-+	int hdr_type, ret;
- 
- 	list_for_each_entry(dev, &bus->devices, bus_list) {
- 		struct pci_bus *b = dev->subordinate;
-@@ -1228,7 +1227,7 @@ void __pci_bus_size_bridges(struct pci_bus *bus, struct list_head *realloc_head)
- 		host = to_pci_host_bridge(bus->bridge);
- 		if (!host->size_windows)
- 			return;
--		pci_bus_for_each_resource(bus, pref, i)
-+		pci_bus_for_each_resource_p(bus, pref)
- 			if (pref && (pref->flags & IORESOURCE_PREFETCH))
- 				break;
- 		hdr_type = -1;	/* Intentionally invalid - not a PCI device. */
-@@ -1333,12 +1332,11 @@ EXPORT_SYMBOL(pci_bus_size_bridges);
- 
- static void assign_fixed_resource_on_bus(struct pci_bus *b, struct resource *r)
- {
--	int i;
- 	struct resource *parent_r;
- 	unsigned long mask = IORESOURCE_IO | IORESOURCE_MEM |
- 			     IORESOURCE_PREFETCH;
- 
--	pci_bus_for_each_resource(b, parent_r, i) {
-+	pci_bus_for_each_resource_p(b, parent_r) {
- 		if (!parent_r)
- 			continue;
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 3940435fa90a..165e4713360f 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1433,10 +1433,16 @@ int devm_request_pci_bus_resources(struct device *dev,
- /* Temporary until new and working PCI SBR API in place */
- int pci_bridge_secondary_bus_reset(struct pci_dev *dev);
- 
--#define pci_bus_for_each_resource(bus, res, i)				\
--	for (i = 0;							\
--	    (res = pci_bus_resource_n(bus, i)) || i < PCI_BRIDGE_RESOURCE_NUM; \
--	     i++)
-+#define __pci_bus_for_each_resource(bus, res, __i, vartype)			\
-+	for (vartype __i = 0;							\
-+	     res = pci_bus_resource_n(bus, __i), __i < PCI_BRIDGE_RESOURCE_NUM;	\
-+	     __i++)
-+
-+#define pci_bus_for_each_resource(bus, res, i)					\
-+	__pci_bus_for_each_resource(bus, res, i, )
-+
-+#define pci_bus_for_each_resource_p(bus, res)					\
-+	__pci_bus_for_each_resource(bus, res, i, unsigned int)
- 
- int __must_check pci_bus_alloc_resource(struct pci_bus *bus,
- 			struct resource *res, resource_size_t size,
 -- 
 2.35.1
 
