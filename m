@@ -1,226 +1,249 @@
-From: Valentin Schneider <vschneid@redhat.com>
-Subject: [RFC PATCH v2 8/8] sched, smp: Trace smp callback causing an IPI
-Date: Wed,  2 Nov 2022 18:33:36 +0000
-Message-ID: <20221102183336.3120536-7-vschneid@redhat.com>
-References: <20221102182949.3119584-1-vschneid@redhat.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 2/4] PCI: Split pci_bus_for_each_resource_p() out of pci_bus_for_each_resource()
+Date: Thu,  3 Nov 2022 18:46:42 +0200
+Message-ID: <20221103164644.70554-3-andriy.shevchenko@linux.intel.com>
+References: <20221103164644.70554-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1667414083;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7XyLq04ta6QuCycJK0DkWOlQEFxqI5/2Oi7Ln2qoW2w=;
-        b=KkW86cZ5PWeDuzVuGa5ENDA9dXOZFVuFSuVuo2JGeyhJPyHOVEQL9vKi99vSyqLS24DmDK
-        ZwCbrXuuw2FmWyXJqmvAA+IwppBkR9oakwOpACUTC98lW3a6DKYtX4q+lnKtwMVskNKn7i
-        5RdwUdcvZVd/Rwg91dtL6Po4bzxoc+o=
-In-Reply-To: <20221102182949.3119584-1-vschneid@redhat.com>
-List-ID: <linux-alpha.vger.kernel.org>
+Return-path: <xen-devel-bounces@lists.xenproject.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
+List-Post: <mailto:xen-devel@lists.xenproject.org>
+List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
+List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
+Errors-To: xen-devel-bounces@lists.xenproject.org
+Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667494002; x=1699030002;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=S2RJPvl3baq0S1jZ0H3vH8ZxE7YEfK7nHVPBJ+ytMMo=;
+  b=b9zyzqy4nyQafoLSSALcjyBPGKY3fREchT6AelebUyev9oFblQH7KXQV
+   3i55+GvtyqJrrTvY5G+9e0VtyfOatVwmYFx0/hYY7nwL+5TMDWw5gC7Bs
+   8CkCYiSvoctKfWV4ZeryWgL4vhu2Ao3PyudurXF/CZz7j+1oIfWyDJ2LR
+   xgbCu2MOOrgH7oxDnNFSyqy0rVNolfWy1pYs5ffjAOlhvYp20P9VKdIPw
+   q3dkYIUnAPZ7Z1kErE782BUt+iTq53FYlmhGphQ0yBhkoy6O1OIEiidvI
+   AoXqr496QBuXLPsHBBC9BrBoq1C8pvPlp0VWsWIukKBzZKKpY1Mz70Mg5
+   w==;
+In-Reply-To: <20221103164644.70554-1-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org
-Cc: "Paul E. McKenney" <paulmck@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Peter Zijlstra <peterz@infradead.org>, Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Juri Lelli <juri.lelli@redhat.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, Marcelo Tosatti <mtosatti@redhat.com>, Frederic Weisbecker <frederic@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Russell King <linux@armlinux.org.uk>, Nicholas Piggin <npiggin@gmail.com>, Guo Ren <guoren@kernel.org>, "David S. Miller" <davem@davemloft.net>
+To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org
+Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-The newly-introduced ipi_send_cpumask tracepoint has a "callback" parameter
-which so far has only been fed with NULL.
+Refactor pci_bus_for_each_resource() in the same way as it's done in
+pci_dev_for_each_resource() case. This will allow to hide iterator
+inside the loop, where it's not used otherwise.
 
-While CSD_TYPE_SYNC/ASYNC and CSD_TYPE_IRQ_WORK share a similar backing
-struct layout (meaning their callback func can be accessed without caring
-about the actual CSD type), CSD_TYPE_TTWU doesn't even have a function
-attached to its struct. This means we need to check the type of a CSD
-before eventually dereferencing its associated callback.
+No functional changes intended.
 
-This isn't as trivial as it sounds: the CSD type is stored in
-__call_single_node.u_flags, which get cleared right before the callback is
-executed via csd_unlock(). This implies checking the CSD type before it is
-enqueued on the call_single_queue, as the target CPU's queue can be flushed
-before we get to sending an IPI.
-
-Furthermore, send_call_function_single_ipi() only has a CPU parameter, and
-would need to have an additional argument to trickle down the invoked
-function. This is somewhat silly, as the extra argument will always be
-pushed down to the function even when nothing is being traced, which is
-unnecessary overhead.
-
-Two options present themselves:
-a) Create copies of send_call_function_{single_ipi, ipi_mask}() that take
-   an extra argument used for tracing, so that codepaths remain unchanged
-   when tracing isn't in effect (a sort of manual -fipa-sra).
-
-b) Stash the CSD func in somewhere as a side effect that
-   the portion of send_call_function_{single_ipi, ipi_mask}() under the
-   tracepoint's static key can fetch.
-
-a) creates redundant code, and b) is quite fragile due to requiring extra
-care for "reentrant" functions (async SMP calls).
-
-This implements a).
-
-Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- kernel/irq_work.c   |  2 ++
- kernel/sched/core.c | 35 ++++++++++++++++++++++++-----------
- kernel/sched/smp.h  |  1 +
- kernel/smp.c        | 42 ++++++++++++++++++++++++++++++++++++++----
- 4 files changed, 65 insertions(+), 15 deletions(-)
+ .clang-format                      |  1 +
+ drivers/pci/bus.c                  |  7 +++----
+ drivers/pci/hotplug/shpchp_sysfs.c |  8 ++++----
+ drivers/pci/pci.c                  |  5 ++---
+ drivers/pci/probe.c                |  2 +-
+ drivers/pci/setup-bus.c            | 10 ++++------
+ include/linux/pci.h                | 14 ++++++++++----
+ 7 files changed, 25 insertions(+), 22 deletions(-)
 
-diff --git a/kernel/irq_work.c b/kernel/irq_work.c
-index aec38c294ce68..fcfa75c4a5daf 100644
---- a/kernel/irq_work.c
-+++ b/kernel/irq_work.c
-@@ -24,6 +24,8 @@
- 
- #include <trace/events/ipi.h>
- 
-+#include "sched/smp.h"
-+
- static DEFINE_PER_CPU(struct llist_head, raised_list);
- static DEFINE_PER_CPU(struct llist_head, lazy_list);
- static DEFINE_PER_CPU(struct task_struct *, irq_workd);
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 02181f8072b5f..41196ca67e913 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3743,17 +3743,30 @@ void sched_ttwu_pending(void *arg)
- 	rq_unlock_irqrestore(rq, &rf);
- }
- 
--void send_call_function_single_ipi(int cpu)
--{
--	struct rq *rq = cpu_rq(cpu);
--
--	if (!set_nr_if_polling(rq->idle)) {
--		trace_ipi_send_cpumask(cpumask_of(cpu), _RET_IP_, NULL);
--		arch_send_call_function_single_ipi(cpu);
--	} else {
--		trace_sched_wake_idle_without_ipi(cpu);
--	}
--}
-+/*
-+ * We want a variant that traces the function causing the IPI to be sent, but
-+ * we don't want the extra argument to cause unnecessary overhead when tracing
-+ * isn't happening.
-+ */
-+#define GEN_CFSI(suffix, IPI_EXP, ...)						\
-+void send_call_function_single_ipi##suffix(__VA_ARGS__)				\
-+{										\
-+	struct rq *rq = cpu_rq(cpu);						\
-+										\
-+	if (!set_nr_if_polling(rq->idle)) {					\
-+		IPI_EXP;							\
-+		arch_send_call_function_single_ipi(cpu);			\
-+	} else {								\
-+		trace_sched_wake_idle_without_ipi(cpu);				\
-+	}									\
-+}
-+
-+GEN_CFSI(/* nop */,
-+	 /* nop */,
-+	 int cpu)
-+GEN_CFSI(_trace,
-+	 trace_ipi_send_cpumask(cpumask_of(cpu), _RET_IP_, func),
-+	 int cpu, smp_call_func_t func)
- 
- /*
-  * Queue a task on the target CPUs wake_list and wake the CPU via IPI if
-diff --git a/kernel/sched/smp.h b/kernel/sched/smp.h
-index 2eb23dd0f2856..8075ad5e84181 100644
---- a/kernel/sched/smp.h
-+++ b/kernel/sched/smp.h
-@@ -7,6 +7,7 @@
- extern void sched_ttwu_pending(void *arg);
- 
- extern void send_call_function_single_ipi(int cpu);
-+extern void send_call_function_single_ipi_trace(int cpu, smp_call_func_t func);
- 
- #ifdef CONFIG_SMP
- extern void flush_smp_call_function_queue(void);
-diff --git a/kernel/smp.c b/kernel/smp.c
-index b96579fe08f09..3b8e6456ac7e7 100644
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -161,12 +161,18 @@ void __init call_function_init(void)
- }
- 
- static inline void
--send_call_function_ipi_mask(const struct cpumask *mask)
-+send_call_function_ipi_mask_trace(const struct cpumask *mask, smp_call_func_t func)
+diff --git a/.clang-format b/.clang-format
+index 08d579fea6cf..b61fd8791346 100644
+--- a/.clang-format
++++ b/.clang-format
+@@ -520,6 +520,7 @@ ForEachMacros:
+   - 'of_property_for_each_string'
+   - 'of_property_for_each_u32'
+   - 'pci_bus_for_each_resource'
++  - 'pci_bus_for_each_resource_p'
+   - 'pci_dev_for_each_resource'
+   - 'pci_dev_for_each_resource_p'
+   - 'pci_doe_for_each_off'
+diff --git a/drivers/pci/bus.c b/drivers/pci/bus.c
+index 3cef835b375f..fc8e9c11c5f2 100644
+--- a/drivers/pci/bus.c
++++ b/drivers/pci/bus.c
+@@ -161,13 +161,13 @@ static int pci_bus_alloc_from_region(struct pci_bus *bus, struct resource *res,
+ 		void *alignf_data,
+ 		struct pci_bus_region *region)
  {
- 	trace_ipi_send_cpumask(mask, _RET_IP_, func);
- 	arch_send_call_function_ipi_mask(mask);
- }
+-	int i, ret;
+ 	struct resource *r, avail;
+ 	resource_size_t max;
++	int ret;
  
-+static inline void
-+send_call_function_ipi_mask(const struct cpumask *mask)
-+{
-+	arch_send_call_function_ipi_mask(mask);
-+}
-+
- void smp_send_reschedule(int cpu)
+ 	type_mask |= IORESOURCE_TYPE_BITS;
+ 
+-	pci_bus_for_each_resource(bus, r, i) {
++	pci_bus_for_each_resource_p(bus, r) {
+ 		resource_size_t min_used = min;
+ 
+ 		if (!r)
+@@ -264,9 +264,8 @@ bool pci_bus_clip_resource(struct pci_dev *dev, int idx)
+ 	struct resource *res = &dev->resource[idx];
+ 	struct resource orig_res = *res;
+ 	struct resource *r;
+-	int i;
+ 
+-	pci_bus_for_each_resource(bus, r, i) {
++	pci_bus_for_each_resource_p(bus, r) {
+ 		resource_size_t start, end;
+ 
+ 		if (!r)
+diff --git a/drivers/pci/hotplug/shpchp_sysfs.c b/drivers/pci/hotplug/shpchp_sysfs.c
+index 64beed7a26be..ff04f0c5e7c3 100644
+--- a/drivers/pci/hotplug/shpchp_sysfs.c
++++ b/drivers/pci/hotplug/shpchp_sysfs.c
+@@ -24,16 +24,16 @@
+ static ssize_t show_ctrl(struct device *dev, struct device_attribute *attr, char *buf)
  {
- 	/* XXX scheduler_ipi is inline :/ */
-@@ -438,12 +444,16 @@ static void __smp_call_single_queue_debug(int cpu, struct llist_node *node)
- 	struct cfd_seq_local *seq = this_cpu_ptr(&cfd_seq_local);
- 	struct call_function_data *cfd = this_cpu_ptr(&cfd_data);
- 	struct cfd_percpu *pcpu = per_cpu_ptr(cfd->pcpu, cpu);
-+	struct __call_single_data *csd;
-+
-+	csd = container_of(node, call_single_data_t, node.llist);
-+	WARN_ON_ONCE(!(CSD_TYPE(csd) & (CSD_TYPE_SYNC | CSD_TYPE_ASYNC)));
+ 	struct pci_dev *pdev;
+-	int index, busnr;
+ 	struct resource *res;
+ 	struct pci_bus *bus;
+ 	size_t len = 0;
++	int busnr;
  
- 	cfd_seq_store(pcpu->seq_queue, this_cpu, cpu, CFD_SEQ_QUEUE);
- 	if (llist_add(node, &per_cpu(call_single_queue, cpu))) {
- 		cfd_seq_store(pcpu->seq_ipi, this_cpu, cpu, CFD_SEQ_IPI);
- 		cfd_seq_store(seq->ping, this_cpu, cpu, CFD_SEQ_PING);
--		send_call_function_single_ipi(cpu);
-+		send_call_function_single_ipi_trace(cpu, csd->func);
- 		cfd_seq_store(seq->pinged, this_cpu, cpu, CFD_SEQ_PINGED);
- 	} else {
- 		cfd_seq_store(pcpu->seq_noipi, this_cpu, cpu, CFD_SEQ_NOIPI);
-@@ -501,6 +511,26 @@ void __smp_call_single_queue(int cpu, struct llist_node *node)
+ 	pdev = to_pci_dev(dev);
+ 	bus = pdev->subordinate;
+ 
+ 	len += sysfs_emit_at(buf, len, "Free resources: memory\n");
+-	pci_bus_for_each_resource(bus, res, index) {
++	pci_bus_for_each_resource_p(bus, res) {
+ 		if (res && (res->flags & IORESOURCE_MEM) &&
+ 				!(res->flags & IORESOURCE_PREFETCH)) {
+ 			len += sysfs_emit_at(buf, len,
+@@ -43,7 +43,7 @@ static ssize_t show_ctrl(struct device *dev, struct device_attribute *attr, char
  		}
  	}
- #endif
-+	/*
-+	 * We have to check the type of the CSD before queueing it, because
-+	 * once queued it can have its flags cleared by
-+	 *   flush_smp_call_function_queue()
-+	 * even if we haven't sent the smp_call IPI yet (e.g. the stopper
-+	 * executes migration_cpu_stop() on the remote CPU).
-+	 */
-+	if (trace_ipi_send_cpumask_enabled()) {
-+		call_single_data_t *csd;
-+		smp_call_func_t func;
-+
-+		csd = container_of(node, call_single_data_t, node.llist);
-+		func = CSD_TYPE(csd) == CSD_TYPE_TTWU ?
-+			sched_ttwu_pending : csd->func;
-+
-+		/* See below comment on ordering requirements */
-+		if (llist_add(node, &per_cpu(call_single_queue, cpu)))
-+			send_call_function_single_ipi_trace(cpu, func);
-+		return;
-+	}
- 
- 	/*
- 	 * The list addition should be visible to the target CPU when it pops
-@@ -984,9 +1014,13 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
- 		 * provided mask.
- 		 */
- 		if (nr_cpus == 1)
--			send_call_function_single_ipi(last_cpu);
-+			trace_ipi_send_cpumask_enabled() ?
-+				send_call_function_single_ipi_trace(last_cpu, func) :
-+				send_call_function_single_ipi(last_cpu);
- 		else if (likely(nr_cpus > 1))
--			send_call_function_ipi_mask(cfd->cpumask_ipi);
-+			trace_ipi_send_cpumask_enabled() ?
-+				send_call_function_ipi_mask_trace(mask, func) :
-+				send_call_function_ipi_mask(mask);
- 
- 		cfd_seq_store(this_cpu_ptr(&cfd_seq_local)->pinged, this_cpu, CFD_SEQ_NOCPU, CFD_SEQ_PINGED);
+ 	len += sysfs_emit_at(buf, len, "Free resources: prefetchable memory\n");
+-	pci_bus_for_each_resource(bus, res, index) {
++	pci_bus_for_each_resource_p(bus, res) {
+ 		if (res && (res->flags & IORESOURCE_MEM) &&
+ 			       (res->flags & IORESOURCE_PREFETCH)) {
+ 			len += sysfs_emit_at(buf, len,
+@@ -53,7 +53,7 @@ static ssize_t show_ctrl(struct device *dev, struct device_attribute *attr, char
+ 		}
  	}
+ 	len += sysfs_emit_at(buf, len, "Free resources: IO\n");
+-	pci_bus_for_each_resource(bus, res, index) {
++	pci_bus_for_each_resource_p(bus, res) {
+ 		if (res && (res->flags & IORESOURCE_IO)) {
+ 			len += sysfs_emit_at(buf, len,
+ 					     "start = %8.8llx, length = %8.8llx\n",
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 2127aba3550b..ff5b34337dab 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -782,9 +782,8 @@ struct resource *pci_find_parent_resource(const struct pci_dev *dev,
+ {
+ 	const struct pci_bus *bus = dev->bus;
+ 	struct resource *r;
+-	int i;
+ 
+-	pci_bus_for_each_resource(bus, r, i) {
++	pci_bus_for_each_resource_p(bus, r) {
+ 		if (!r)
+ 			continue;
+ 		if (resource_contains(r, res)) {
+@@ -802,7 +801,7 @@ struct resource *pci_find_parent_resource(const struct pci_dev *dev,
+ 			 * be both a positively-decoded aperture and a
+ 			 * subtractively-decoded region that contain the BAR.
+ 			 * We want the positively-decoded one, so this depends
+-			 * on pci_bus_for_each_resource() giving us those
++			 * on pci_bus_for_each_resource_p() giving us those
+ 			 * first.
+ 			 */
+ 			return r;
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index b66fa42c4b1f..3662e867a124 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -533,7 +533,7 @@ void pci_read_bridge_bases(struct pci_bus *child)
+ 	pci_read_bridge_mmio_pref(child);
+ 
+ 	if (dev->transparent) {
+-		pci_bus_for_each_resource(child->parent, res, i) {
++		pci_bus_for_each_resource_p(child->parent, res) {
+ 			if (res && res->flags) {
+ 				pci_bus_add_resource(child, res,
+ 						     PCI_SUBTRACTIVE_DECODE);
+diff --git a/drivers/pci/setup-bus.c b/drivers/pci/setup-bus.c
+index 336d6e6ef76a..83b2f308be7e 100644
+--- a/drivers/pci/setup-bus.c
++++ b/drivers/pci/setup-bus.c
+@@ -770,9 +770,8 @@ static struct resource *find_bus_resource_of_type(struct pci_bus *bus,
+ 						  unsigned long type)
+ {
+ 	struct resource *r, *r_assigned = NULL;
+-	int i;
+ 
+-	pci_bus_for_each_resource(bus, r, i) {
++	pci_bus_for_each_resource_p(bus, r) {
+ 		if (r == &ioport_resource || r == &iomem_resource)
+ 			continue;
+ 		if (r && (r->flags & type_mask) == type && !r->parent)
+@@ -1204,7 +1203,7 @@ void __pci_bus_size_bridges(struct pci_bus *bus, struct list_head *realloc_head)
+ 			additional_mmio_pref_size = 0;
+ 	struct resource *pref;
+ 	struct pci_host_bridge *host;
+-	int hdr_type, i, ret;
++	int hdr_type, ret;
+ 
+ 	list_for_each_entry(dev, &bus->devices, bus_list) {
+ 		struct pci_bus *b = dev->subordinate;
+@@ -1228,7 +1227,7 @@ void __pci_bus_size_bridges(struct pci_bus *bus, struct list_head *realloc_head)
+ 		host = to_pci_host_bridge(bus->bridge);
+ 		if (!host->size_windows)
+ 			return;
+-		pci_bus_for_each_resource(bus, pref, i)
++		pci_bus_for_each_resource_p(bus, pref)
+ 			if (pref && (pref->flags & IORESOURCE_PREFETCH))
+ 				break;
+ 		hdr_type = -1;	/* Intentionally invalid - not a PCI device. */
+@@ -1333,12 +1332,11 @@ EXPORT_SYMBOL(pci_bus_size_bridges);
+ 
+ static void assign_fixed_resource_on_bus(struct pci_bus *b, struct resource *r)
+ {
+-	int i;
+ 	struct resource *parent_r;
+ 	unsigned long mask = IORESOURCE_IO | IORESOURCE_MEM |
+ 			     IORESOURCE_PREFETCH;
+ 
+-	pci_bus_for_each_resource(b, parent_r, i) {
++	pci_bus_for_each_resource_p(b, parent_r) {
+ 		if (!parent_r)
+ 			continue;
+ 
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 3940435fa90a..165e4713360f 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1433,10 +1433,16 @@ int devm_request_pci_bus_resources(struct device *dev,
+ /* Temporary until new and working PCI SBR API in place */
+ int pci_bridge_secondary_bus_reset(struct pci_dev *dev);
+ 
+-#define pci_bus_for_each_resource(bus, res, i)				\
+-	for (i = 0;							\
+-	    (res = pci_bus_resource_n(bus, i)) || i < PCI_BRIDGE_RESOURCE_NUM; \
+-	     i++)
++#define __pci_bus_for_each_resource(bus, res, __i, vartype)			\
++	for (vartype __i = 0;							\
++	     res = pci_bus_resource_n(bus, __i), __i < PCI_BRIDGE_RESOURCE_NUM;	\
++	     __i++)
++
++#define pci_bus_for_each_resource(bus, res, i)					\
++	__pci_bus_for_each_resource(bus, res, i, )
++
++#define pci_bus_for_each_resource_p(bus, res)					\
++	__pci_bus_for_each_resource(bus, res, i, unsigned int)
+ 
+ int __must_check pci_bus_alloc_resource(struct pci_bus *bus,
+ 			struct resource *res, resource_size_t size,
 -- 
-2.31.1
+2.35.1
+
 
