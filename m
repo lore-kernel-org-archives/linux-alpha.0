@@ -1,7 +1,7 @@
 From: David Hildenbrand <david@redhat.com>
-Subject: [PATCH mm-unstable v1 14/20] drm/etnaviv: remove FOLL_FORCE usage
-Date: Wed, 16 Nov 2022 11:26:53 +0100
-Message-ID: <20221116102659.70287-15-david@redhat.com>
+Subject: [PATCH mm-unstable v1 15/20] media: pci/ivtv: remove FOLL_FORCE usage
+Date: Wed, 16 Nov 2022 11:26:54 +0100
+Message-ID: <20221116102659.70287-16-david@redhat.com>
 References: <20221116102659.70287-1-david@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -13,22 +13,22 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=71iej5smWXe3DfsLaNrb2nJqW/SAX0ZWcP04IBBgscI=; b=JgZT3NA0kNcaBP
-	I5kJiKwdNg31epVeeT8bXsXmCkAXLskezL0G59c+GZlxDvVQVmy/sLhhz5IaNfQw/Hq5gX13QZREu
-	kx7pbEcXxMTj+5rpZnMDGClo0PoOve492NYJTBnwH3mGxD5zBkNP4ttExnoP5fMnBoYGFYOgy4dt9
-	uoMMHDsYlmzN9XA6P2G9LdhLAcdNJBjbbeh0AA94xtLkSKxtB0et2L2vhMR+5vASh4RmBKUffV+jk
-	Yx+O+dL56Fo/SlpxKicp7M03XhjC+8jy0J3p8lOGEJOyz0z58Y8QrO3+3dwKijbUc1ohOSjImlvOX
-	Q6ndF8cipX5gvU1J99vw==;
+	List-Owner; bh=RyFcam1y2V4iFMj8Zobv+nSF24p0gXOlZHCDDMeC2aM=; b=n6VqFuDnK0+rtU
+	vUgKMblojxwaya5FZujWaU87HGICld7f2JMa0+jH4zYgunAj8OG82iT/05GcEiIWysPQdwRsJMivT
+	jS9CKvC5BvsvgguBJENl+JCfzK003J0GePsF6FRwn7sQ9i/fNjBNFABlPCD4b6suwdqYB1FkETzOO
+	sxSN24/wJOByRn4iCXlZP5h8fQpo30x2rNJmu15eAslHVql+8V+FHzgeyaM5DXriZQrsG9ckp4m1f
+	PAuGOMhKGW392h/Uc/z1LLSSOQeyMocKzozMdMYgMTheOQfmW/JN93M1w716OkJEGdvXRKCFVaJrK
+	LqIo33oRK5GtvfRV/N7A==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1668594556;
+	s=mimecast20190719; t=1668594563;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ddMjxbE+d57ySmRYhTvAErVzb9ykjmc/iLClBCHgJ7c=;
-	b=DhHV24hOaKvXDcUFqkwDJXrzBUGBac6gqjYnjARNMKoN5fsv/1OOWNEcwhmi9aDHscZf/D
-	FUWuaUSSeAQF86bCykToDE5EKFQ9cgMA8IRzYET6Yne7cMf9KKqRtsLgXFHICXC3eGRo+o
-	s7XxE0A0wygquc8/drhQPpoWdtNlgj4=
+	bh=1lgRYK0+yPuNJDFPZ9ndbDbQCvjtc3Xp7NDAue46xBY=;
+	b=L1TyFbfCXbqBdbw/Ata8BNnNCKvCKDgcYVKD+f2j98zyN+SYhX6WNRxAlAeTjWx455vjAf
+	o4fElTgPkQyi7MuY/YKbK63jZmD6/TWaVjnczrtrpQ/4I8S/tzSxneDFuv/FNO7AILmXm0
+	2o477lpLT1xLKztjRUftIjDL6JXNwUI=
 In-Reply-To: <20221116102659.70287-1-david@redhat.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
@@ -43,60 +43,52 @@ Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infr
 To: linux-kernel@vger.kernel.org
 Cc: x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-media@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-perf-users@vger.kernel.org, linux-security-module@vger.kernel.org, linux-kselftest@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>, John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Hugh Dickins <hughd@google.com>, Nadav Amit <>
 
-GUP now supports reliable R/O long-term pinning in COW mappings, such
-that we break COW early. MAP_SHARED VMAs only use the shared zeropage so
-far in one corner case (DAXFS file with holes), which can be ignored
-because GUP does not support long-term pinning in fsdax (see
-check_vma_flags()).
+FOLL_FORCE is really only for ptrace access. R/O pinning a page is
+supposed to fail if the VMA misses proper access permissions (no VM_READ).
 
-commit cd5297b0855f ("drm/etnaviv: Use FOLL_FORCE for userptr")
-documents that FOLL_FORCE | FOLL_WRITE was really only used for reliable
-R/O pinning.
+Let's just remove FOLL_FORCE usage here; there would have to be a pretty
+good reason to allow arbitrary drivers to R/O pin pages in a PROT_NONE
+VMA. Most probably, FOLL_FORCE usage is just some legacy leftover.
 
-Consequently, FOLL_FORCE | FOLL_WRITE | FOLL_LONGTERM is no longer required
-for reliable R/O long-term pinning: FOLL_LONGTERM is sufficient. So stop
-using FOLL_FORCE, which is really only for ptrace access.
-
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Russell King <linux+etnaviv@armlinux.org.uk>
-Cc: Christian Gmeiner <christian.gmeiner@gmail.com>
-Cc: David Airlie <airlied@gmail.com>
+Cc: Andy Walls <awalls@md.metrocast.net>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_gem.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/media/pci/ivtv/ivtv-udma.c | 2 +-
+ drivers/media/pci/ivtv/ivtv-yuv.c  | 5 ++---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gem.c b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-index cc386f8a7116..efe2240945d0 100644
---- a/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-@@ -638,6 +638,7 @@ static int etnaviv_gem_userptr_get_pages(struct etnaviv_gem_object *etnaviv_obj)
- 	struct page **pvec = NULL;
- 	struct etnaviv_gem_userptr *userptr = &etnaviv_obj->userptr;
- 	int ret, pinned = 0, npages = etnaviv_obj->base.size >> PAGE_SHIFT;
-+	unsigned int gup_flags = FOLL_LONGTERM;
+diff --git a/drivers/media/pci/ivtv/ivtv-udma.c b/drivers/media/pci/ivtv/ivtv-udma.c
+index 210be8290f24..99b9f55ca829 100644
+--- a/drivers/media/pci/ivtv/ivtv-udma.c
++++ b/drivers/media/pci/ivtv/ivtv-udma.c
+@@ -115,7 +115,7 @@ int ivtv_udma_setup(struct ivtv *itv, unsigned long ivtv_dest_addr,
  
- 	might_lock_read(&current->mm->mmap_lock);
+ 	/* Pin user pages for DMA Xfer */
+ 	err = pin_user_pages_unlocked(user_dma.uaddr, user_dma.page_count,
+-			dma->map, FOLL_FORCE);
++			dma->map, 0);
  
-@@ -648,14 +649,15 @@ static int etnaviv_gem_userptr_get_pages(struct etnaviv_gem_object *etnaviv_obj)
- 	if (!pvec)
- 		return -ENOMEM;
+ 	if (user_dma.page_count != err) {
+ 		IVTV_DEBUG_WARN("failed to map user pages, returned %d instead of %d\n",
+diff --git a/drivers/media/pci/ivtv/ivtv-yuv.c b/drivers/media/pci/ivtv/ivtv-yuv.c
+index 4ba10c34a16a..582146f8d70d 100644
+--- a/drivers/media/pci/ivtv/ivtv-yuv.c
++++ b/drivers/media/pci/ivtv/ivtv-yuv.c
+@@ -63,12 +63,11 @@ static int ivtv_yuv_prep_user_dma(struct ivtv *itv, struct ivtv_user_dma *dma,
  
-+	if (!userptr->ro)
-+		gup_flags |= FOLL_WRITE;
-+
- 	do {
- 		unsigned num_pages = npages - pinned;
- 		uint64_t ptr = userptr->ptr + pinned * PAGE_SIZE;
- 		struct page **pages = pvec + pinned;
+ 	/* Pin user pages for DMA Xfer */
+ 	y_pages = pin_user_pages_unlocked(y_dma.uaddr,
+-			y_dma.page_count, &dma->map[0], FOLL_FORCE);
++			y_dma.page_count, &dma->map[0], 0);
+ 	uv_pages = 0; /* silence gcc. value is set and consumed only if: */
+ 	if (y_pages == y_dma.page_count) {
+ 		uv_pages = pin_user_pages_unlocked(uv_dma.uaddr,
+-				uv_dma.page_count, &dma->map[y_pages],
+-				FOLL_FORCE);
++				uv_dma.page_count, &dma->map[y_pages], 0);
+ 	}
  
--		ret = pin_user_pages_fast(ptr, num_pages,
--					  FOLL_WRITE | FOLL_FORCE | FOLL_LONGTERM,
--					  pages);
-+		ret = pin_user_pages_fast(ptr, num_pages, gup_flags, pages);
- 		if (ret < 0) {
- 			unpin_user_pages(pvec, pinned);
- 			kvfree(pvec);
+ 	if (y_pages != y_dma.page_count || uv_pages != uv_dma.page_count) {
 -- 
 2.38.1
