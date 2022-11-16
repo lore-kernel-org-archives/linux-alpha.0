@@ -1,7 +1,7 @@
 From: David Hildenbrand <david@redhat.com>
-Subject: [PATCH mm-unstable v1 17/20] drm/exynos: remove FOLL_FORCE usage
-Date: Wed, 16 Nov 2022 11:26:56 +0100
-Message-ID: <20221116102659.70287-18-david@redhat.com>
+Subject: [PATCH mm-unstable v1 18/20] RDMA/hw/qib/qib_user_pages: remove FOLL_FORCE usage
+Date: Wed, 16 Nov 2022 11:26:57 +0100
+Message-ID: <20221116102659.70287-19-david@redhat.com>
 References: <20221116102659.70287-1-david@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -13,22 +13,22 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=OpbV/B1TAu0mMo2xEOP4VQhaGF6elY7Cg3x1V+sCFX8=; b=JbTjjS/k2E5LtY
-	iI63OOuLuS8IT9j5A8Nip4YFEKu49gkY07uPuoUSwY0mi3vijLqC+F6IDUMlHgtvxfNAvcEZSiPF+
-	Nmft95+ImMvtenuNEWtPr5VtWMHMj29tvVfK1XFCmMJwVM2DTKhvl/3feIiTgnuelPB6QoUvHNxUU
-	qnSM61OVGDM182jRYHvIixUJ+tUjdYhR7tLbw6dZZjvRPcqRhTjo4EwXxHIgZ0cqJZWBoBAzc9Ez6
-	eKm3SrHhTZ7UDvfOmq5VzY3c1cHBcq3/ratYs1kaPH3xcJ1kGyAMvlIT5NWnWmxrXWHHabapyBZRH
-	pf2KgKKAcT5UvX98sR2w==;
+	List-Owner; bh=/pUzfvrO7KBwYc3cC0AhW2eJCHMu/yihhl7u/v/CQwU=; b=sE9nSx0Gk2VCwp
+	lsV5RI3unRDFGEGVexqJYiDPqjqdUKbrHUiBkkEin2dFWcYMiuvn9u92n650iNgJQtD2Hxo1+4Ytz
+	+EKWVkPqPxOuawr9vn2ir70n2R0AnkIJS4wxuZDvWf/V9pJwsfdh99tNvfmHyDE157hkUnAc9rnXS
+	Y/weeWbyrsM6nkKwIxpj6fl3sEPPRnHZYLBaR83d+FGFqGDERGJCqCGGTxL0mXndHUPndCK3BnTD7
+	BpLFDaFTxHuBb/OXoOylxXL2vQax7x/FQkUqrH1trSjDjUzP3MuJ0twfdksny4x7RlAVRprhDGqg+
+	Kg8OiqM2YdK+tELfMLrA==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1668594579;
+	s=mimecast20190719; t=1668594585;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=rGA6GaR1az8P6UEdLsolXmCEn/P8qFigXL+8tO23Tsc=;
-	b=SdjTlRjizo1duq/98JJ1PO4LBk/QRGwgLfwurWpbr95bDstqaAz8nPrJMxcEsgMAufEVbq
-	fbw5UaqfuRqqprjmbhEW3Dj3QQeqx7V0QUWQyElPuk8noxrTAsfrJYqGRMsZN2Xf7zpWOP
-	3xmRbHVR2gIyyV+MaaBvkIp15AVdUgA=
+	bh=Vwm/knGeRKTOygKvA/Obl+ChXNhkjAzB2LSFVD/DetE=;
+	b=J/DCFqFsU5Jfh6kW6NSaqEATu6tE8bIR0gajh1Af4u7svVaV9Xhx736zbR/7UM54bJul1V
+	3O6N4cGrzvAtWj35cq4M+TYJHQxUaBC4+v9v55wzKPdfctYAc345QronjIDXnBkHLdyQye
+	QfSk7BIQXrB/XKGL1++QocqPHYjFV9k=
 In-Reply-To: <20221116102659.70287-1-david@redhat.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
@@ -50,29 +50,26 @@ pages are writable.
 FOLL_FORCE in this case seems to be a legacy leftover. Let's just remove
 it.
 
-Cc: Inki Dae <inki.dae@samsung.com>
-Cc: Seung-Woo Kim <sw0312.kim@samsung.com>
-Cc: Kyungmin Park <kyungmin.park@samsung.com>
-Cc: David Airlie <airlied@gmail.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/gpu/drm/exynos/exynos_drm_g2d.c | 2 +-
+ drivers/infiniband/hw/qib/qib_user_pages.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_g2d.c b/drivers/gpu/drm/exynos/exynos_drm_g2d.c
-index 471fd6c8135f..e19c2ceb3759 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_g2d.c
-+++ b/drivers/gpu/drm/exynos/exynos_drm_g2d.c
-@@ -477,7 +477,7 @@ static dma_addr_t *g2d_userptr_get_dma_addr(struct g2d_data *g2d,
- 	}
- 
- 	ret = pin_user_pages_fast(start, npages,
--				  FOLL_FORCE | FOLL_WRITE | FOLL_LONGTERM,
-+				  FOLL_WRITE | FOLL_LONGTERM,
- 				  g2d_userptr->pages);
- 	if (ret != npages) {
- 		DRM_DEV_ERROR(g2d->dev,
+diff --git a/drivers/infiniband/hw/qib/qib_user_pages.c b/drivers/infiniband/hw/qib/qib_user_pages.c
+index f4b5f05058e4..f693bc753b6b 100644
+--- a/drivers/infiniband/hw/qib/qib_user_pages.c
++++ b/drivers/infiniband/hw/qib/qib_user_pages.c
+@@ -110,7 +110,7 @@ int qib_get_user_pages(unsigned long start_page, size_t num_pages,
+ 	for (got = 0; got < num_pages; got += ret) {
+ 		ret = pin_user_pages(start_page + got * PAGE_SIZE,
+ 				     num_pages - got,
+-				     FOLL_LONGTERM | FOLL_WRITE | FOLL_FORCE,
++				     FOLL_LONGTERM | FOLL_WRITE,
+ 				     p + got, NULL);
+ 		if (ret < 0) {
+ 			mmap_read_unlock(current->mm);
 -- 
 2.38.1
