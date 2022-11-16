@@ -1,7 +1,7 @@
 From: David Hildenbrand <david@redhat.com>
-Subject: [PATCH mm-unstable v1 16/20] mm/frame-vector: remove FOLL_FORCE usage
-Date: Wed, 16 Nov 2022 11:26:55 +0100
-Message-ID: <20221116102659.70287-17-david@redhat.com>
+Subject: [PATCH mm-unstable v1 17/20] drm/exynos: remove FOLL_FORCE usage
+Date: Wed, 16 Nov 2022 11:26:56 +0100
+Message-ID: <20221116102659.70287-18-david@redhat.com>
 References: <20221116102659.70287-1-david@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -13,22 +13,22 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=My2y4pw7e4t1iXSksFdfQNXD27ucNXHm9Q5OY+N3WGI=; b=iMdLsCGrVeZHv7
-	Dh2jwomb/4t7Ag5bxV/ee1Vr8YhVjaiAKbVZAqa2qjta3QiRgc+KHVDERreq7XfXx/ZnGLR8fyKoZ
-	zyKJHjyZjsf1wiv0NJDdcBJDyW4v+TtxUVWiby40M1Ek7ttGq9pclnud1hXfEhK1rcLMWSHR+8nNA
-	Khdw5jB/YnsN1lzfC6frsxQoXgXDz3oJVwrEtR01qw52adUhfSBERD9LgNQxfrc+o4CgfXSXZbzuV
-	U3PPqUxaii8PZMJz8A1zsESqasBILj/FcBC3xr33csDCYtVROavQ/RgONBR3ndwq3KSebq6Uh8edb
-	W0OnqER05a/MLKJtuNMQ==;
+	List-Owner; bh=OpbV/B1TAu0mMo2xEOP4VQhaGF6elY7Cg3x1V+sCFX8=; b=JbTjjS/k2E5LtY
+	iI63OOuLuS8IT9j5A8Nip4YFEKu49gkY07uPuoUSwY0mi3vijLqC+F6IDUMlHgtvxfNAvcEZSiPF+
+	Nmft95+ImMvtenuNEWtPr5VtWMHMj29tvVfK1XFCmMJwVM2DTKhvl/3feIiTgnuelPB6QoUvHNxUU
+	qnSM61OVGDM182jRYHvIixUJ+tUjdYhR7tLbw6dZZjvRPcqRhTjo4EwXxHIgZ0cqJZWBoBAzc9Ez6
+	eKm3SrHhTZ7UDvfOmq5VzY3c1cHBcq3/ratYs1kaPH3xcJ1kGyAMvlIT5NWnWmxrXWHHabapyBZRH
+	pf2KgKKAcT5UvX98sR2w==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1668594571;
+	s=mimecast20190719; t=1668594579;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=G0FpSSTO1Nfi3hHjZY1vs8kl28xrhbJvR/VmU2bZlrg=;
-	b=QBzDddfY7V11x7Hf2GLg6C9hU2X9wWzeSIv9jWmXhTrk3Npp+wfCGvyF3JNBhdUnoX0aal
-	8iY4vG/2Ym+nF4oWvBR6tEY6OFCT2zacWrb0Ju8Ild05xJePJiVVv+ZJ7IB5ZQG6jj9P6O
-	aoTME2nThx0sHU5BautNfK3YY5kC94Q=
+	bh=rGA6GaR1az8P6UEdLsolXmCEn/P8qFigXL+8tO23Tsc=;
+	b=SdjTlRjizo1duq/98JJ1PO4LBk/QRGwgLfwurWpbr95bDstqaAz8nPrJMxcEsgMAufEVbq
+	fbw5UaqfuRqqprjmbhEW3Dj3QQeqx7V0QUWQyElPuk8noxrTAsfrJYqGRMsZN2Xf7zpWOP
+	3xmRbHVR2gIyyV+MaaBvkIp15AVdUgA=
 In-Reply-To: <20221116102659.70287-1-david@redhat.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
@@ -43,40 +43,36 @@ Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infr
 To: linux-kernel@vger.kernel.org
 Cc: x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-media@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-perf-users@vger.kernel.org, linux-security-module@vger.kernel.org, linux-kselftest@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>, John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Hugh Dickins <hughd@google.com>, Nadav Amit <>
 
-FOLL_FORCE is really only for ptrace access. According to commit
-707947247e95 ("media: videobuf2-vmalloc: get_userptr: buffers are always
-writable"), get_vaddr_frames() currently pins all pages writable as a
-workaround for issues with read-only buffers.
+FOLL_FORCE is really only for ptrace access. As we unpin the pinned pages
+using unpin_user_pages_dirty_lock(true), the assumption is that all these
+pages are writable.
 
-FOLL_FORCE, however, seems to be a legacy leftover as it predates
-commit 707947247e95 ("media: videobuf2-vmalloc: get_userptr: buffers are
-always writable"). Let's just remove it.
+FOLL_FORCE in this case seems to be a legacy leftover. Let's just remove
+it.
 
-Once the read-only buffer issue has been resolved, FOLL_WRITE could
-again be set depending on the DMA direction.
-
-Cc: Hans Verkuil <hverkuil@xs4all.nl>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Tomasz Figa <tfiga@chromium.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Inki Dae <inki.dae@samsung.com>
+Cc: Seung-Woo Kim <sw0312.kim@samsung.com>
+Cc: Kyungmin Park <kyungmin.park@samsung.com>
+Cc: David Airlie <airlied@gmail.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/media/common/videobuf2/frame_vector.c | 2 +-
+ drivers/gpu/drm/exynos/exynos_drm_g2d.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/common/videobuf2/frame_vector.c b/drivers/media/common/videobuf2/frame_vector.c
-index 542dde9d2609..062e98148c53 100644
---- a/drivers/media/common/videobuf2/frame_vector.c
-+++ b/drivers/media/common/videobuf2/frame_vector.c
-@@ -50,7 +50,7 @@ int get_vaddr_frames(unsigned long start, unsigned int nr_frames,
- 	start = untagged_addr(start);
+diff --git a/drivers/gpu/drm/exynos/exynos_drm_g2d.c b/drivers/gpu/drm/exynos/exynos_drm_g2d.c
+index 471fd6c8135f..e19c2ceb3759 100644
+--- a/drivers/gpu/drm/exynos/exynos_drm_g2d.c
++++ b/drivers/gpu/drm/exynos/exynos_drm_g2d.c
+@@ -477,7 +477,7 @@ static dma_addr_t *g2d_userptr_get_dma_addr(struct g2d_data *g2d,
+ 	}
  
- 	ret = pin_user_pages_fast(start, nr_frames,
+ 	ret = pin_user_pages_fast(start, npages,
 -				  FOLL_FORCE | FOLL_WRITE | FOLL_LONGTERM,
 +				  FOLL_WRITE | FOLL_LONGTERM,
- 				  (struct page **)(vec->ptrs));
- 	if (ret > 0) {
- 		vec->got_ref = true;
+ 				  g2d_userptr->pages);
+ 	if (ret != npages) {
+ 		DRM_DEV_ERROR(g2d->dev,
 -- 
 2.38.1
