@@ -1,7 +1,7 @@
 From: David Hildenbrand <david@redhat.com>
-Subject: [PATCH mm-unstable v1 06/20] mm: rework handling in do_wp_page() based on private vs. shared mappings
-Date: Wed, 16 Nov 2022 11:26:45 +0100
-Message-ID: <20221116102659.70287-7-david@redhat.com>
+Subject: [PATCH mm-unstable v1 07/20] mm: don't call vm_ops->huge_fault() in wp_huge_pmd()/wp_huge_pud() for private mappings
+Date: Wed, 16 Nov 2022 11:26:46 +0100
+Message-ID: <20221116102659.70287-8-david@redhat.com>
 References: <20221116102659.70287-1-david@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -13,22 +13,22 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=U6CWBisgJzQJ08pfkVFmQVTEriwL3+368Yunre+E6M0=; b=vXYNDvj8jbshan
-	2x/yDQR3o1uJ8UgHldcJi76y1UFAvyrPVSOsOgiCrrCpeObFbeCIvEUa/kzu4dJ1Os+lu8h4OFNEt
-	4haJA8bTjp1RKHa03KPIcfPtGP3c06DJk5+oAv+oFUgi8PUT4woNURtXBCTd5DGqkrJeEkQV2U9tU
-	230aQKRUASNl3hpO/hwjPH/mYJx4TTcjYqtx7gO+NCaDaqqzLsLsmy7NLoNtJoLHEwx7YCsrqc3mk
-	EPWeGdnxVvoYmuFud1s1w+E1NZ5mfquCINA661eNs/vRtqeawQTwWssjo86BBaWpxqQ2iRsFveTCE
-	iLcC7LKbdzzT0ig9habQ==;
+	List-Owner; bh=9kMU9uTTmnSTu2o7Br7ipFnqvoMBxuiEpQUXAPRL6H8=; b=u9f+ZDFy5nsATy
+	aR8exTVjF0tTx8MNPbySObmcwrLRsTFZv9ybzcyGuSV2MXy5bM1ErVzCbzsZd4rQXs3z6v+XDrkem
+	NmFgpgqr0vwhyqWcgTuXo6TjItqX/VStMMZdubz5IOZ3Qd/jnVeIo7wu3s8ckw3Jd1pfgoAtQzE15
+	RLmlVrpoqWs+hFE7P8rW2J3+PoWnGiJq+cbrPH8Ox108ZZDRo2iruCw3BJbrXYLDXiuqG7c19C9Oj
+	KZhSN+QJki/dy+fEkCQYUjnhEya4DiBXuggI0PZqed0lA8BjxQesLTjb3avmcfXvKmDWOfMiT41rI
+	UA1TescOFXw55oFVqeqw==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1668594496;
+	s=mimecast20190719; t=1668594501;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=/xieaaG4AIgXK7pR548ohi1s1MYoDoPLtryAR7VPuVQ=;
-	b=DGZO4yULJc6DXM1h051M3QLNz9NT5UAPO29OGp/tBhBvppilHfI9c7j62rX2GV7OHACfjn
-	pCyV49rx5dER09GwORZ/il5vBtckrBlI5HB2wsVt/Zav6bH7DwHR0jmPJWZU1jjRp6ft61
-	peV1sbZxQ1KE7KSzMaFA9hq7FBjTRUY=
+	bh=G7hQ0RjvfvFzJ7xHsADTRuI/sN47/U3pNJiDmnh86Zg=;
+	b=DNtyZUGaBEoMHb4dk2woqqxcvh3uRZ5IxEIlqKOrO+29uwYW0/xZaduQ++/eOzZsw5fmzI
+	kdJGAFGuXTBCdzm64Tb2jwx26vV05u/G2XDZxL/ezWrKFRfDchC9DtormYTQZ8VENNBJB2
+	ZgY5p7IHIJY+xPlR0R7fL0N9/2PtxZI=
 In-Reply-To: <20221116102659.70287-1-david@redhat.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
@@ -43,102 +43,73 @@ Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infr
 To: linux-kernel@vger.kernel.org
 Cc: x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-media@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-perf-users@vger.kernel.org, linux-security-module@vger.kernel.org, linux-kselftest@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>, John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Hugh Dickins <hughd@google.com>, Nadav Amit <>
 
-We want to extent FAULT_FLAG_UNSHARE support to anything mapped into a
-COW mapping (pagecache page, zeropage, PFN, ...), not just anonymous pages.
-Let's prepare for that by handling shared mappings first such that we can
-handle private mappings last.
+If we already have a PMD/PUD mapped write-protected in a private mapping
+and we want to break COW either due to FAULT_FLAG_WRITE or
+FAULT_FLAG_UNSHARE, there is no need to inform the file system just like on
+the PTE path.
 
-While at it, use folio-based functions instead of page-based functions
-where we touch the code either way.
+Let's just split (->zap) + fallback in that case.
+
+This is a preparation for more generic FAULT_FLAG_UNSHARE support in
+COW mappings.
 
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- mm/memory.c | 38 +++++++++++++++++---------------------
- 1 file changed, 17 insertions(+), 21 deletions(-)
+ mm/memory.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
 diff --git a/mm/memory.c b/mm/memory.c
-index c4fa378ec2a0..c35e6cd32b6a 100644
+index c35e6cd32b6a..d47ad33c6487 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -3342,7 +3342,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+@@ -4802,6 +4802,7 @@ static inline vm_fault_t create_huge_pmd(struct vm_fault *vmf)
+ static inline vm_fault_t wp_huge_pmd(struct vm_fault *vmf)
  {
  	const bool unshare = vmf->flags & FAULT_FLAG_UNSHARE;
- 	struct vm_area_struct *vma = vmf->vma;
--	struct folio *folio;
-+	struct folio *folio = NULL;
++	vm_fault_t ret;
  
- 	if (likely(!unshare)) {
- 		if (userfaultfd_pte_wp(vma, *vmf->pte)) {
-@@ -3360,13 +3360,12 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+ 	if (vma_is_anonymous(vmf->vma)) {
+ 		if (likely(!unshare) &&
+@@ -4809,11 +4810,13 @@ static inline vm_fault_t wp_huge_pmd(struct vm_fault *vmf)
+ 			return handle_userfault(vmf, VM_UFFD_WP);
+ 		return do_huge_pmd_wp_page(vmf);
+ 	}
+-	if (vmf->vma->vm_ops->huge_fault) {
+-		vm_fault_t ret = vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PMD);
+ 
+-		if (!(ret & VM_FAULT_FALLBACK))
+-			return ret;
++	if (vmf->vma->vm_flags & (VM_SHARED | VM_MAYSHARE)) {
++		if (vmf->vma->vm_ops->huge_fault) {
++			ret = vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PMD);
++			if (!(ret & VM_FAULT_FALLBACK))
++				return ret;
++		}
  	}
  
- 	vmf->page = vm_normal_page(vma, vmf->address, vmf->orig_pte);
--	if (!vmf->page) {
--		if (unlikely(unshare)) {
--			/* No anonymous page -> nothing to do. */
--			pte_unmap_unlock(vmf->pte, vmf->ptl);
--			return 0;
--		}
- 
-+	/*
-+	 * Shared mapping: we are guaranteed to have VM_WRITE and
-+	 * FAULT_FLAG_WRITE set at this point.
-+	 */
-+	if (vma->vm_flags & (VM_SHARED | VM_MAYSHARE)) {
- 		/*
- 		 * VM_MIXEDMAP !pfn_valid() case, or VM_SOFTDIRTY clear on a
- 		 * VM_PFNMAP VMA.
-@@ -3374,20 +3373,19 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 		 * We should not cow pages in a shared writeable mapping.
- 		 * Just mark the pages writable and/or call ops->pfn_mkwrite.
- 		 */
--		if ((vma->vm_flags & (VM_WRITE|VM_SHARED)) ==
--				     (VM_WRITE|VM_SHARED))
-+		if (!vmf->page)
- 			return wp_pfn_shared(vmf);
--
--		pte_unmap_unlock(vmf->pte, vmf->ptl);
--		return wp_page_copy(vmf);
-+		return wp_page_shared(vmf);
- 	}
- 
-+	if (vmf->page)
-+		folio = page_folio(vmf->page);
+ 	/* COW or write-notify handled on pte level: split pmd. */
+@@ -4839,14 +4842,17 @@ static vm_fault_t wp_huge_pud(struct vm_fault *vmf, pud_t orig_pud)
+ {
+ #if defined(CONFIG_TRANSPARENT_HUGEPAGE) &&			\
+ 	defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
++	vm_fault_t ret;
 +
- 	/*
--	 * Take out anonymous pages first, anonymous shared vmas are
--	 * not dirty accountable.
-+	 * Private mapping: create an exclusive anonymous page copy if reuse
-+	 * is impossible. We might miss VM_WRITE for FOLL_FORCE handling.
- 	 */
--	folio = page_folio(vmf->page);
--	if (folio_test_anon(folio)) {
-+	if (folio && folio_test_anon(folio)) {
- 		/*
- 		 * If the page is exclusive to this process we must reuse the
- 		 * page without further checks.
-@@ -3438,19 +3436,17 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 		/* No anonymous page -> nothing to do. */
- 		pte_unmap_unlock(vmf->pte, vmf->ptl);
- 		return 0;
--	} else if (unlikely((vma->vm_flags & (VM_WRITE|VM_SHARED)) ==
--					(VM_WRITE|VM_SHARED))) {
--		return wp_page_shared(vmf);
+ 	/* No support for anonymous transparent PUD pages yet */
+ 	if (vma_is_anonymous(vmf->vma))
+ 		goto split;
+-	if (vmf->vma->vm_ops->huge_fault) {
+-		vm_fault_t ret = vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
+-
+-		if (!(ret & VM_FAULT_FALLBACK))
+-			return ret;
++	if (vmf->vma->vm_flags & (VM_SHARED | VM_MAYSHARE)) {
++		if (vmf->vma->vm_ops->huge_fault) {
++			ret = vmf->vma->vm_ops->huge_fault(vmf, PE_SIZE_PUD);
++			if (!(ret & VM_FAULT_FALLBACK))
++				return ret;
++		}
  	}
- copy:
- 	/*
- 	 * Ok, we need to copy. Oh, well..
- 	 */
--	get_page(vmf->page);
-+	if (folio)
-+		folio_get(folio);
- 
- 	pte_unmap_unlock(vmf->pte, vmf->ptl);
- #ifdef CONFIG_KSM
--	if (PageKsm(vmf->page))
-+	if (folio && folio_test_ksm(folio))
- 		count_vm_event(COW_KSM);
- #endif
- 	return wp_page_copy(vmf);
+ split:
+ 	/* COW or write-notify not handled on PUD level: split pud.*/
 -- 
 2.38.1
