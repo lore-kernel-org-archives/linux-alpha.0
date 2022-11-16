@@ -1,7 +1,7 @@
 From: David Hildenbrand <david@redhat.com>
-Subject: [PATCH mm-unstable v1 10/20] RDMA/umem: remove FOLL_FORCE usage
-Date: Wed, 16 Nov 2022 11:26:49 +0100
-Message-ID: <20221116102659.70287-11-david@redhat.com>
+Subject: [PATCH mm-unstable v1 11/20] RDMA/usnic: remove FOLL_FORCE usage
+Date: Wed, 16 Nov 2022 11:26:50 +0100
+Message-ID: <20221116102659.70287-12-david@redhat.com>
 References: <20221116102659.70287-1-david@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -13,22 +13,22 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=z0IxQKTR30iA3+Evq6O440Uy4KbgALxiaMETu9e4MNo=; b=jH8dR2/2RMk+dV
-	wUFj8J5vfyNHfWJhQW6PjqRQb9BeWF8SEf/cygHU7Pyiqr1rTeQET/Ywz/xLjT4vb9+a9SLAob34T
-	1PCSaKzYUfOVT9l3DGAS0Rfedo/fG/PGqwxkAG3nYugV/1yDZ4o7dmyokBBOarkS7KAeqjZoS+0LH
-	1rxACfogYIIckhB8kSEBnaRZVTgbwZzyjOjRrkWwbYEBMsllKKvK8vXiYrpZpn+Z3OSYFEVamj1X7
-	nWiGXQEhnxf8Dv+C/+3A4TOxK0Q1Aex5TheHYbOX/iR+g/Giqf0MEYG81Z9YM8LD5Q8xSSpUHPBwH
-	c4r4SOeRIryG+7p5xj+w==;
+	List-Owner; bh=dxtBbQsqIXi5Tr9dMa0XGMeYFqA/TQoDvdBffww5nas=; b=VwDnmb1//CtCLe
+	UlO/V2867aIzfv//HmZjSTgb91e8iA7QH2ofWuGdGXPXWnL/8pYjV4KguKDfRXFMF7B2sBawse4TO
+	Mol4WbL44VqHO6a3xqPxWxGBYl8JifmKkRn/6FFOVwXUhXI1fbBBRJVf2Dp2V21ox5p+OIFxW+As6
+	DyMurbUvermZsm2tOgQxGRTQVzADDGBlItBgjvRlhcit0pdVzc2oL8FCD0SwixFXpiST6LqRK8zuL
+	f1+keLu7je2OT6yDwY24wW/k57RL6uoJZXhh2Cefj0F8AtAM5U+G9ZTknoC/e83kvhyUeRDmnv9bI
+	3uxvuRVS5yn3JqhxJyGg==;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1668594524;
+	s=mimecast20190719; t=1668594534;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=xyj8jS+C9wqOk3KceDQTo75wMiWZgljnGSBlM8HQloY=;
-	b=HyVSO6OqC/gyAIUuVMXoeM1X2q2HGXEdNdaxMdk2Vy95oyYuYPYs+2QP7j1mdL7FrioHdX
-	TbTBqLLcuZ5eaT45BNKl7jbv+D65zT6ecgXqA8ct3duF5iZHVlUxfGqv+aN60svjE9SLxy
-	2lfc7aOUpVzBnsMZbN7Cm+/iLDmyMoE=
+	bh=AXY/UyjjpCuDyNIViwtXXXaWlWVq5fOjr9nC+t8u+wk=;
+	b=Z8EfPQsFF94MtlpORwT+i+AclFbS2SVGoEki04OfmZ618WbEWBrX1p1hTRo0dpYyXIZ4We
+	E2wuNnkZG7dTQ6rT5Y0eM97Bme1TCAPrUs0jupRdZ3HTQD/yUPXtmFuNHZzGsX1i/+HvQP
+	PpPMQfUoSL+Or2cSWh6pOaO2MZ43mAk=
 In-Reply-To: <20221116102659.70287-1-david@redhat.com>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
@@ -53,46 +53,55 @@ Consequently, FOLL_FORCE | FOLL_WRITE | FOLL_LONGTERM is no longer required
 for reliable R/O long-term pinning: FOLL_LONGTERM is sufficient. So stop
 using FOLL_FORCE, which is really only for ptrace access.
 
-Tested-by: Leon Romanovsky <leonro@nvidia.com> # Over mlx4 and mlx5.
+Cc: Christian Benvenuti <benve@cisco.com>
+Cc: Nelson Escobar <neescoba@cisco.com>
 Cc: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: Leon Romanovsky <leon@kernel.org>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- drivers/infiniband/core/umem.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/infiniband/hw/usnic/usnic_uiom.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/infiniband/core/umem.c b/drivers/infiniband/core/umem.c
-index 86d479772fbc..755a9c57db6f 100644
---- a/drivers/infiniband/core/umem.c
-+++ b/drivers/infiniband/core/umem.c
-@@ -156,7 +156,7 @@ struct ib_umem *ib_umem_get(struct ib_device *device, unsigned long addr,
- 	struct mm_struct *mm;
- 	unsigned long npages;
- 	int pinned, ret;
--	unsigned int gup_flags = FOLL_WRITE;
+diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/hw/usnic/usnic_uiom.c
+index 67923ced6e2d..c301b3be9f30 100644
+--- a/drivers/infiniband/hw/usnic/usnic_uiom.c
++++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
+@@ -85,6 +85,7 @@ static int usnic_uiom_get_pages(unsigned long addr, size_t size, int writable,
+ 				int dmasync, struct usnic_uiom_reg *uiomr)
+ {
+ 	struct list_head *chunk_list = &uiomr->chunk_list;
 +	unsigned int gup_flags = FOLL_LONGTERM;
+ 	struct page **page_list;
+ 	struct scatterlist *sg;
+ 	struct usnic_uiom_chunk *chunk;
+@@ -96,7 +97,6 @@ static int usnic_uiom_get_pages(unsigned long addr, size_t size, int writable,
+ 	int off;
+ 	int i;
+ 	dma_addr_t pa;
+-	unsigned int gup_flags;
+ 	struct mm_struct *mm;
  
  	/*
- 	 * If the combination of the addr and size requested for this memory
-@@ -210,8 +210,8 @@ struct ib_umem *ib_umem_get(struct ib_device *device, unsigned long addr,
+@@ -131,8 +131,8 @@ static int usnic_uiom_get_pages(unsigned long addr, size_t size, int writable,
+ 		goto out;
+ 	}
  
- 	cur_base = addr & PAGE_MASK;
- 
--	if (!umem->writable)
--		gup_flags |= FOLL_FORCE;
-+	if (umem->writable)
+-	gup_flags = FOLL_WRITE;
+-	gup_flags |= (writable) ? 0 : FOLL_FORCE;
++	if (writable)
 +		gup_flags |= FOLL_WRITE;
+ 	cur_base = addr & PAGE_MASK;
+ 	ret = 0;
  
- 	while (npages) {
- 		cond_resched();
-@@ -219,7 +219,7 @@ struct ib_umem *ib_umem_get(struct ib_device *device, unsigned long addr,
- 					  min_t(unsigned long, npages,
- 						PAGE_SIZE /
- 						sizeof(struct page *)),
--					  gup_flags | FOLL_LONGTERM, page_list);
-+					  gup_flags, page_list);
- 		if (pinned < 0) {
- 			ret = pinned;
- 			goto umem_release;
+@@ -140,8 +140,7 @@ static int usnic_uiom_get_pages(unsigned long addr, size_t size, int writable,
+ 		ret = pin_user_pages(cur_base,
+ 				     min_t(unsigned long, npages,
+ 				     PAGE_SIZE / sizeof(struct page *)),
+-				     gup_flags | FOLL_LONGTERM,
+-				     page_list, NULL);
++				     gup_flags, page_list, NULL);
+ 
+ 		if (ret < 0)
+ 			goto out;
 -- 
 2.38.1
