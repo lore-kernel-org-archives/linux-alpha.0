@@ -1,194 +1,63 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v2 12/44] cpuidle,dt: Push RCU-idle into driver
-Date: Wed, 16 Nov 2022 16:29:05 +0100
-Message-ID: <Y3UBwYNY15ETUKy9@hirez.programming.kicks-ass.net>
-References: <20220919095939.761690562@infradead.org>
- <20220919101521.139727471@infradead.org>
- <CAPDyKFqTWd4W5Ofk76CtC4X43dxBTNHtmY9YzN355-vpviLsPw@mail.gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH mm-unstable v1 20/20] mm: rename FOLL_FORCE to FOLL_PTRACE
+Date: Wed, 16 Nov 2022 10:16:34 -0800
+Message-ID: <CAHk-=wgtEwpR-rE_=cXzecHMZ+zgrx5zf9UfvH0w-mKgckn4=Q@mail.gmail.com>
+References: <20221116102659.70287-1-david@redhat.com> <20221116102659.70287-21-david@redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-acpi-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=4XDB6ZbR3Awa7mOslon9xFqMWj0psrdiARhozQeRyJA=; b=gYnS7fY4SiIk8LhruYi5TSnTVA
-        fStgfkd5Z/zbz8yQZBnmnhyWOOmhlrhRObDB9G2KJoco51LBuhZxVkVxbSBrTCQ/HtHWliung+7ZZ
-        HbZe3Froz8dQdsOphMI16X4jllstvINRTH3i5h+4adnzIV8bwm2odcxdw/4ACLq7NTIENgyfmZxmW
-        flqbgkCx8yOd3LgZHd01MR5R1P5lI3CSROlGEycIvrRPVhabpLUb0rptouTmOLEERLT81z+aE6Z4G
-        +eccUWkk2tCLQB+FJ0eM8fcpEENqemtpoKisOMtzDEaLdPH2PhfiSrDXw+vDx7DBnwdyTpMo06laG
-        hxV51fpA==;
-Content-Disposition: inline
-In-Reply-To: <CAPDyKFqTWd4W5Ofk76CtC4X43dxBTNHtmY9YzN355-vpviLsPw@mail.gmail.com>
+Return-path: <linux-fsdevel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=PBgZn+u117R7gFQNpsnvlIYlwSeo0LUTLoxlFKr3wyI=;
+        b=eH0YS14VezMu1YoYc8i9L/9V4Rda12NtBPhbyEQG9con1K8dLIyV9b4KNCmIq0wzpX
+         WqxRC9GRz2SSVMeoKLZbZ25GRVxvk4TLZwapfzc9KJm3PzFnUZgrmijMI3uqPEOn38/b
+         +5K39+JbiCr6klzOuT84Gyzf87KIYKFM/ltfQ=
+In-Reply-To: <20221116102659.70287-21-david@redhat.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: juri.lelli@redhat.com, rafael@kernel.org, catalin.marinas@arm.com, linus.walleij@linaro.org, bsegall@google.com, guoren@kernel.org, pavel@ucw.cz, agordeev@linux.ibm.com, linux-arch@vger.kernel.org, vincent.guittot@linaro.org, mpe@ellerman.id.au, chenhuacai@kernel.org, christophe.leroy@csgroup.eu, linux-acpi@vger.kernel.org, agross@kernel.org, geert@linux-m68k.org, linux-imx@nxp.com, vgupta@kernel.org, mattst88@gmail.com, mturquette@baylibre.com, sammy@sammy.net, pmladek@suse.com, linux-pm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, linux-um@lists.infradead.org, npiggin@gmail.com, tglx@linutronix.de, linux-omap@vger.kernel.org, dietmar.eggemann@arm.com, andreyknvl@gmail.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.or
+To: David Hildenbrand <david@redhat.com>
+Cc: linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-media@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-perf-users@vger.kernel.org, linux-security-module@vger.kernel.org, linux-kselftest@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>, John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrea
 
+On Wed, Nov 16, 2022 at 2:30 AM David Hildenbrand <david@redhat.com> wrote:
+>
+> Let's make it clearer that functionality provided by FOLL_FORCE is
+> really only for ptrace access.
 
-Sorry; things keep getting in the way of finishing this :/
+I'm not super-happy about this one.
 
-As such, I need a bit of time to get on-track again..
+I do understand the "let's rename the bit so that no new user shows up".
 
-On Tue, Oct 04, 2022 at 01:03:57PM +0200, Ulf Hansson wrote:
+And it's true that the main traditional use is ptrace.
 
-> > --- a/drivers/acpi/processor_idle.c
-> > +++ b/drivers/acpi/processor_idle.c
-> > @@ -1200,6 +1200,8 @@ static int acpi_processor_setup_lpi_stat
-> >                 state->target_residency = lpi->min_residency;
-> >                 if (lpi->arch_flags)
-> >                         state->flags |= CPUIDLE_FLAG_TIMER_STOP;
-> > +               if (lpi->entry_method == ACPI_CSTATE_FFH)
-> > +                       state->flags |= CPUIDLE_FLAG_RCU_IDLE;
-> 
-> I assume the state index here will never be 0?
-> 
-> If not, it may lead to that acpi_processor_ffh_lpi_enter() may trigger
-> CPU_PM_CPU_IDLE_ENTER_PARAM() to call ct_cpuidle_enter|exit() for an
-> idle-state that doesn't have the CPUIDLE_FLAG_RCU_IDLE bit set.
+But from the patch itself it becomes obvious that no, it's not *just*
+ptrace. At least not yet.
 
-I'm not quite sure I see how. AFAICT this condition above implies
-acpi_processor_ffh_lpi_enter() gets called, no?
+It's used for get_arg_page(), which uses it to basically look up (and
+install) pages in the newly created VM.
 
-Which in turn is an unconditional __CPU_PM_CPU_IDLE_ENTER() user, so
-even if idx==0, it ends up in ct_idle_{enter,exit}().
+Now, I'm not entirely sure why it even uses FOLL_FORCE, - I think it
+might be historical, because the target should always be the new stack
+vma.
 
-> 
-> >                 state->enter = acpi_idle_lpi_enter;
-> >                 drv->safe_state_index = i;
-> >         }
-> > --- a/drivers/cpuidle/cpuidle-arm.c
-> > +++ b/drivers/cpuidle/cpuidle-arm.c
-> > @@ -53,6 +53,7 @@ static struct cpuidle_driver arm_idle_dr
-> >          * handler for idle state index 0.
-> >          */
-> >         .states[0] = {
-> > +               .flags                  = CPUIDLE_FLAG_RCU_IDLE,
-> 
-> Comparing arm64 and arm32 idle-states/idle-drivers, the $subject
-> series ends up setting the CPUIDLE_FLAG_RCU_IDLE for the ARM WFI idle
-> state (state zero), but only for the arm64 and psci cases (mostly
-> arm64). For arm32 we would need to update the ARM_CPUIDLE_WFI_STATE
-> too, as that is what most arm32 idle-drivers are using. My point is,
-> the code becomes a bit inconsistent.
+Following the history of it is a big of a mess, because there's a
+number of renamings and re-organizations, but it seems to go back to
+2007 and commit b6a2fea39318 ("mm: variable length argument support").
 
-True.
+Before that commit, we kept our own array of "this is the set of pages
+that I will install in the new VM". That commit basically just inserts
+the pages directly into the VM instead, getting rid of the array size
+limitation.
 
-> Perhaps it's easier to avoid setting the CPUIDLE_FLAG_RCU_IDLE bit for
-> all of the ARM WFI idle states, for both arm64 and arm32?
+So at a minimum, I think that FOLL_FORCE would need to be removed
+before any renaming to FOLL_PTRACE, because that's not some kind of
+small random case.
 
-As per the below?
+It *might* be as simple as just removing it, but maybe there's some
+reason for having it that I don't immediately see.
 
-> 
-> >                 .enter                  = arm_enter_idle_state,
-> >                 .exit_latency           = 1,
-> >                 .target_residency       = 1,
+There _are_ also small random cases too, like get_cmdline(). Maybe
+that counts as ptrace, but the execve() case most definitely does not.
 
-> > --- a/include/linux/cpuidle.h
-> > +++ b/include/linux/cpuidle.h
-> > @@ -282,14 +282,18 @@ extern s64 cpuidle_governor_latency_req(
-> >         int __ret = 0;                                                  \
-> >                                                                         \
-> >         if (!idx) {                                                     \
-> > +               ct_idle_enter();                                        \
-> 
-> According to my comment above, we should then drop these calls to
-> ct_idle_enter and ct_idle_exit() here. Right?
-
-Yes, if we ensure idx==0 never has RCU_IDLE set then these must be
-removed.
-
-> >                 cpu_do_idle();                                          \
-> > +               ct_idle_exit();                                         \
-> >                 return idx;                                             \
-> >         }                                                               \
-> >                                                                         \
-> >         if (!is_retention)                                              \
-> >                 __ret =  cpu_pm_enter();                                \
-> >         if (!__ret) {                                                   \
-> > +               ct_idle_enter();                                        \
-> >                 __ret = low_level_idle_enter(state);                    \
-> > +               ct_idle_exit();                                         \
-> >                 if (!is_retention)                                      \
-> >                         cpu_pm_exit();                                  \
-> >         }                                                               \
-> >
-
-So the basic premise is that everything that needs RCU inside the idle
-callback must set CPUIDLE_FLAG_RCU_IDLE and by doing that promise to
-call ct_idle_{enter,exit}() themselves.
-
-Setting RCU_IDLE is required when there is RCU usage, however even if
-there is no RCU usage, setting RCU_IDLE is fine, as long as
-ct_idle_{enter,exit}() then get called.
-
-
-So does the below (delta) look better to you?
-
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -1218,7 +1218,7 @@ static int acpi_processor_setup_lpi_stat
- 		state->target_residency = lpi->min_residency;
- 		if (lpi->arch_flags)
- 			state->flags |= CPUIDLE_FLAG_TIMER_STOP;
--		if (lpi->entry_method == ACPI_CSTATE_FFH)
-+		if (i != 0 && lpi->entry_method == ACPI_CSTATE_FFH)
- 			state->flags |= CPUIDLE_FLAG_RCU_IDLE;
- 		state->enter = acpi_idle_lpi_enter;
- 		drv->safe_state_index = i;
---- a/drivers/cpuidle/cpuidle-arm.c
-+++ b/drivers/cpuidle/cpuidle-arm.c
-@@ -53,7 +53,7 @@ static struct cpuidle_driver arm_idle_dr
- 	 * handler for idle state index 0.
- 	 */
- 	.states[0] = {
--		.flags			= CPUIDLE_FLAG_RCU_IDLE,
-+		.flags			= 0,
- 		.enter                  = arm_enter_idle_state,
- 		.exit_latency           = 1,
- 		.target_residency       = 1,
---- a/drivers/cpuidle/cpuidle-psci.c
-+++ b/drivers/cpuidle/cpuidle-psci.c
-@@ -357,7 +357,7 @@ static int psci_idle_init_cpu(struct dev
- 	 * PSCI idle states relies on architectural WFI to be represented as
- 	 * state index 0.
- 	 */
--	drv->states[0].flags = CPUIDLE_FLAG_RCU_IDLE;
-+	drv->states[0].flags = 0;
- 	drv->states[0].enter = psci_enter_idle_state;
- 	drv->states[0].exit_latency = 1;
- 	drv->states[0].target_residency = 1;
---- a/drivers/cpuidle/cpuidle-qcom-spm.c
-+++ b/drivers/cpuidle/cpuidle-qcom-spm.c
-@@ -72,7 +72,7 @@ static struct cpuidle_driver qcom_spm_id
- 	.owner = THIS_MODULE,
- 	.states[0] = {
- 		.enter			= spm_enter_idle_state,
--		.flags			= CPUIDLE_FLAG_RCU_IDLE,
-+		.flags			= 0,
- 		.exit_latency		= 1,
- 		.target_residency	= 1,
- 		.power_usage		= UINT_MAX,
---- a/drivers/cpuidle/cpuidle-riscv-sbi.c
-+++ b/drivers/cpuidle/cpuidle-riscv-sbi.c
-@@ -337,7 +337,7 @@ static int sbi_cpuidle_init_cpu(struct d
- 	drv->cpumask = (struct cpumask *)cpumask_of(cpu);
- 
- 	/* RISC-V architectural WFI to be represented as state index 0. */
--	drv->states[0].flags = CPUIDLE_FLAG_RCU_IDLE;
-+	drv->states[0].flags = 0;
- 	drv->states[0].enter = sbi_cpuidle_enter_state;
- 	drv->states[0].exit_latency = 1;
- 	drv->states[0].target_residency = 1;
---- a/include/linux/cpuidle.h
-+++ b/include/linux/cpuidle.h
-@@ -282,9 +282,7 @@ extern s64 cpuidle_governor_latency_req(
- 	int __ret = 0;							\
- 									\
- 	if (!idx) {							\
--		ct_idle_enter();					\
- 		cpu_do_idle();						\
--		ct_idle_exit();						\
- 		return idx;						\
- 	}								\
- 									\
+                Linus
