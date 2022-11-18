@@ -1,79 +1,47 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH mm-unstable v1 05/20] mm: add early FAULT_FLAG_WRITE
- consistency checks
-Date: Fri, 18 Nov 2022 18:03:00 +0100
-Message-ID: <e4dd50b8-7ae9-a6fd-8765-2b2dd90ea1a8@suse.cz>
+From: Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH mm-unstable v1 20/20] mm: rename FOLL_FORCE to FOLL_PTRACE
+Date: Fri, 18 Nov 2022 14:29:02 -0800
+Message-ID: <202211181427.4D1C3132FE@keescook>
 References: <20221116102659.70287-1-david@redhat.com>
- <20221116102659.70287-6-david@redhat.com>
+ <20221116102659.70287-21-david@redhat.com>
+ <CAHk-=wgtEwpR-rE_=cXzecHMZ+zgrx5zf9UfvH0w-mKgckn4=Q@mail.gmail.com>
+ <Y3dnzgwJpjTQXI9y@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1668790981; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fK2sdLfZqlxwdzyzeVC6Yy7wx8vYkqbsaxCq7BgcB58=;
-        b=LS+hNeQ4geGgj4IXWO5+0pS41T+O+kbhrtYk+pP+vVRIoeuKs+oW13F6Ht+tR7USTuEyYF
-        w44h38vtDK2kFPU+O2RCals0tqkM1nJKUf86qC24NucyatqLyr4TTvgkMY8PsBAD2uBX+L
-        cHUUR5s7utA0uOsl3r11W1mUfWblbh8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1668790981;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fK2sdLfZqlxwdzyzeVC6Yy7wx8vYkqbsaxCq7BgcB58=;
-        b=khb2AjlSZXqyWGI6UYbr+/ZmYWHGQEHMU8He9yK4yvl4DWCKZ0jYtp3ha5rFTfTmR/yC2u
-        C7/yrrNfpsGvyLBA==
-Content-Language: en-US
-In-Reply-To: <20221116102659.70287-6-david@redhat.com>
+Return-path: <sparclinux-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=UbBsvDU//DL6nEBTfVogOGw4gtrIt5cEgoWU7wg0yqE=;
+        b=An8R27hBelrmHfCbOWIi0CQbpB+FbdUKZd/K74OWA+t1inv8v4494buerQXpAbVoQ/
+         hawXo5IWqwOaOJXIlgQJ62nY4aZ8mzIQL8T0sN5QawgAa8EGZw3klOrzN/KXycM8ohn1
+         PnwiDQNXHvwQENzmlhMaoO6BFIxzwB92hREPE=
+Content-Disposition: inline
+In-Reply-To: <Y3dnzgwJpjTQXI9y@hirez.programming.kicks-ass.net>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc: x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-media@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-perf-users@vger.kernel.org, linux-security-module@vger.kernel.org, linux-kselftest@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>, John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Transfer-Encoding: 7bit
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-media@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-perf-users@vger.kernel.org, linux-security-module@vger.kernel.org, linux-kselftest@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>, John Hubbard <jhubbard@nvidia.com>
 
-On 11/16/22 11:26, David Hildenbrand wrote:
-> Let's catch abuse of FAULT_FLAG_WRITE early, such that we don't have to
-> care in all other handlers and might get "surprises" if we forget to do
-> so.
+On Fri, Nov 18, 2022 at 12:09:02PM +0100, Peter Zijlstra wrote:
+> On Wed, Nov 16, 2022 at 10:16:34AM -0800, Linus Torvalds wrote:
+> > Following the history of it is a big of a mess, because there's a
+> > number of renamings and re-organizations, but it seems to go back to
+> > 2007 and commit b6a2fea39318 ("mm: variable length argument support").
 > 
-> Write faults without VM_MAYWRITE don't make any sense, and our
-> maybe_mkwrite() logic could have hidden such abuse for now.
+> I went back and read parts of the discussions with Ollie, and the
+> .force=1 thing just magically appeared one day when we were sending
+> work-in-progress patches back and forth without mention of where it came
+> from :-/
 > 
-> Write faults without VM_WRITE on something that is not a COW mapping is
-> similarly broken, and e.g., do_wp_page() could end up placing an
-> anonymous page into a shared mapping, which would be bad.
+> And I certainly can't remember now..
 > 
-> This is a preparation for reliable R/O long-term pinning of pages in
-> private mappings, whereby we want to make sure that we will never break
-> COW in a read-only private mapping.
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+> Looking at it now, I have the same reaction as both you and Kees had, it
+> seems entirely superflous. So I'm all for trying to remove it.
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+Thanks for digging through the history! I've pushed the change to -next:
+https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/commit/?h=for-next/execve&id=cd57e443831d8eeb083c7165bce195d886e216d4
 
-> ---
->  mm/memory.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/mm/memory.c b/mm/memory.c
-> index e014435a87db..c4fa378ec2a0 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -5170,6 +5170,14 @@ static vm_fault_t sanitize_fault_flags(struct vm_area_struct *vma,
->  		 */
->  		if (!is_cow_mapping(vma->vm_flags))
->  			*flags &= ~FAULT_FLAG_UNSHARE;
-> +	} else if (*flags & FAULT_FLAG_WRITE) {
-> +		/* Write faults on read-only mappings are impossible ... */
-> +		if (WARN_ON_ONCE(!(vma->vm_flags & VM_MAYWRITE)))
-> +			return VM_FAULT_SIGSEGV;
-> +		/* ... and FOLL_FORCE only applies to COW mappings. */
-> +		if (WARN_ON_ONCE(!(vma->vm_flags & VM_WRITE) &&
-> +				 !is_cow_mapping(vma->vm_flags)))
-> +			return VM_FAULT_SIGSEGV;
->  	}
->  	return 0;
->  }
-
+-- 
+Kees Cook
