@@ -1,53 +1,93 @@
-From: Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH mm-unstable v1 20/20] mm: rename FOLL_FORCE to FOLL_PTRACE
-Date: Thu, 17 Nov 2022 16:31:24 -0800
-Message-ID: <202211171630.8EABF5EDD@keescook>
-References: <20221116102659.70287-1-david@redhat.com>
- <20221116102659.70287-21-david@redhat.com>
- <CAHk-=wgtEwpR-rE_=cXzecHMZ+zgrx5zf9UfvH0w-mKgckn4=Q@mail.gmail.com>
- <202211171439.CDE720EAD@keescook>
- <CAHk-=wjykbz-4xVTWF7vkvGJnFoTSXNVeMzfsXaLnGm3CRd8rQ@mail.gmail.com>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [RFC PATCH v2 8/8] sched, smp: Trace smp callback causing an IPI
+Date: Fri, 18 Nov 2022 10:12:43 +0100
+Message-ID: <Y3dMiyFn6TG1s5g3@hirez.programming.kicks-ass.net>
+References: <20221102182949.3119584-1-vschneid@redhat.com>
+ <20221102183336.3120536-7-vschneid@redhat.com>
+ <Y3ZBUMteJysc1/lA@hirez.programming.kicks-ass.net>
+ <xhsmhfsehy706.mognet@vschneid.remote.csb>
 Mime-Version: 1.0
-Return-path: <linux-mips-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SdXW0qNT9EJ55g7ZecMibSPRKy2hZHqw3Yh8nMlwERE=;
-        b=aU25zccRjTs3wP43k0MIJn4DgVbsnZCNuzNnI2CpXWYIZxXulCGxIQevzOUHHZBnNX
-         P9dqjL6CLaVk8Gd/8VV9yHkQnYw6wZLIF25d9n4/Hz+qw11dfo4C3uVe8ugX4akyWpVq
-         2j/LOKCC5xRDK3aE2eqqxuB+wZP/Rdy2IY2yY=
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjykbz-4xVTWF7vkvGJnFoTSXNVeMzfsXaLnGm3CRd8rQ@mail.gmail.com>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-media@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-perf-users@vger.kernel.org, linux-security-module@vger.kernel.org, linux-kselftest@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>, John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, Greg Kroah-Hartman <gregkh>
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=Rgz5xDeHk1lWbaMj4w1NCsYJ6NJRNYNVLYybOzL2u6Y=; b=YYs5l7+BC0Desj
+	oWOXvbRyY6FZknxD32soGlU2WEhaM5NOCzHkk8kQzGevWbnmePJlItSGvXDWw0lWixoOhg+3oe0Nb
+	+xSOFPhNnGcLEnqqLFBkVJkrhIw2NGEEoCfJ8Qt+pAtgqb433nImaFBOWW+nKDpaXtBAaTnrO3zTv
+	6GJjKcLpwmG130hn9p6G8LJr3pAQevlL3hjDh1pQ3dg75VOE4fyuUbjOu76isgXZB2/iJ75q75R+U
+	c1zE70n7Uya3IN+WkemT6fhTkc7wlOKAquqOf/i2bh8YuiKtCmgByls3BUNlMYZV+QxFBlyLT5e3u
+	DLhI8r+IGwNovqSSnh8g==;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=mwt73Igv1Cbi6CXwxAPKd0Pr+R9hvpBvRt03pYQ3bys=; b=ab3Y1GXh5hZN4kYCUal3zeuK3Q
+	7SRG1cvzhO7eKodvFDYyuRae96G8g5PWd/XWhtSWcEI5MUsYEab5Ovzc8ze8gBOk9y9y/n4/VG6QA
+	kxoDu7O/fG1a2giqiMnnG8GWp7V1BxUra+Jgp+oiupx2occO6L51vWUZQgeu4+7U3imdC7NUUUJ2N
+	J5VaNoVksNMD06l+gxDbRhfwA3keSj0mXPL1+LX088MVxqFi6HWwWMGwF0jamw9uSp14pYO1PV0sb
+	dSKJCydBYVIQlrwj2um9MWjTnI+ZTo1PEgHrvF9BZHJpiPATdBDwJ3bT9CqtMVsKHp/fep69BWHYQ
+	1FAlMbCA==;
+Content-Disposition: inline
+In-Reply-To: <xhsmhfsehy706.mognet@vschneid.remote.csb>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+To: Valentin Schneider <vschneid@redhat.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, "Paul E. McKenney" <paulmck@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Juri Lelli <juri.lelli@redhat.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, Marcelo Tosatti <mtosatti@redhat.com>, Frederic Weisbecker <frederic@kernel.org>, Ingo Molnar <mi>
 
-On Thu, Nov 17, 2022 at 03:20:01PM -0800, Linus Torvalds wrote:
-> On Thu, Nov 17, 2022 at 2:58 PM Kees Cook <keescook@chromium.org> wrote:
+On Thu, Nov 17, 2022 at 02:45:29PM +0000, Valentin Schneider wrote:
+
+> > +	if (trace_ipi_send_cpumask_enabled()) {
+> > +		call_single_data_t *csd;
+> > +		smp_call_func_t func;
+> > +
+> > +		csd = container_of(node, call_single_data_t, node.llist);
+> > +
+> > +		func = sched_ttwu_pending;
+> > +		if (CSD_TYPE(csd) != CSD_TYPE_TTWU)
+> > +			func = csd->func;
+> > +
+> > +		if (raw_smp_call_single_queue(cpu, node))
+> > +			trace_ipi_send_cpumask(cpumask_of(cpu), _RET_IP_, func);
+> 
+> So I went with the tracepoint being placed *before* the actual IPI gets
+> sent to have a somewhat sane ordering between trace_ipi_send_cpumask() and
+> e.g. trace_call_function_single_entry().
+> 
+> Packaging the call_single_queue logic makes the code less horrible, but it
+> does mix up the event ordering...
+
+Keeps em sharp ;-)
+
+> > +		return;
+> > +	}
+> > +
+> > +	raw_smp_call_single_queue(cpu, node);
+> >  }
 > >
-> > Oh, er, why does get_arg_page() even need FOLL_FORCE? This is writing the
-> > new stack contents to the nascent brpm->vma, which was newly allocated
-> > with VM_STACK_FLAGS, which an arch can override, but they all appear to include
-> > VM_WRITE | VM_MAYWRITE.
+> >  /*
+> > @@ -983,10 +1017,13 @@ static void smp_call_function_many_cond(
+> >                * number of CPUs might be zero due to concurrent changes to the
+> >                * provided mask.
+> >                */
+> > -		if (nr_cpus == 1)
+> > +		if (nr_cpus == 1) {
+> > +			trace_ipi_send_cpumask(cpumask_of(last_cpu), _RET_IP_, func);
+> >                       send_call_function_single_ipi(last_cpu);
 > 
-> Yeah, it does seem entirely superfluous.
-> 
-> It's been there since the very beginning (although in that original
-> commit b6a2fea39318 it was there as a '1' to the 'force' argument to
-> get_user_pages()).
-> 
-> I *think* it can be just removed. But as long as it exists, it should
-> most definitely not be renamed to FOLL_PTRACE.
-> 
-> There's a slight worry that it currently hides some other setup issue
-> that makes it matter, since it's been that way so long, but I can't
-> see what it is.
+> This'll yield an IPI event even if no IPI is sent due to the idle task
+> polling, no?
 
-My test system boots happily with it removed. I'll throw it into -next
-and see if anything melts...
-
--- 
-Kees Cook
+Oh, right..
