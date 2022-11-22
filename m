@@ -1,124 +1,219 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH mm-unstable v1 08/20] mm: extend FAULT_FLAG_UNSHARE
- support to anything in a COW mapping
-Date: Tue, 22 Nov 2022 16:35:52 +0100
-Message-ID: <34835490-57d7-4e26-7474-008b2c4c6b39@suse.cz>
-References: <20221116102659.70287-1-david@redhat.com>
- <20221116102659.70287-9-david@redhat.com>
+From: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 12/44] cpuidle,dt: Push RCU-idle into driver
+Date: Tue, 22 Nov 2022 17:04:33 +0100
+Message-ID: <CAPDyKFqzmJdVVrcuJ6Hmr5nNgtpd9Oke_exmUKuTGZEb=PjvjQ@mail.gmail.com>
+References: <20220919095939.761690562@infradead.org> <20220919101521.139727471@infradead.org>
+ <CAPDyKFqTWd4W5Ofk76CtC4X43dxBTNHtmY9YzN355-vpviLsPw@mail.gmail.com> <Y3UBwYNY15ETUKy9@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=mKqixJN/8zapPMiYOY0ZA2E36N6vIQg16uLiOxlikFI=;
+        b=Sxgb7NdwQ/FjyYXzMQLr2Ufh8inWhewppyg2kEhKfSMa5+4xLhcDZFgBkLe+YVojYR
+         b1j/8R8eepdhz2QNEoN59UWxI0C8HtPNMN2hfsnJ2VXdsyzTbL+tlNksQKPnsWg/NtBp
+         chCgU4N95aPK2lbuS5RzKtW5ffOhO3rTLhquzizFSUU3p/ux1MbE2BMO0btBQyCrWeJK
+         WXzMJ1H0fbnItfONfrC7qjjeZVQUnHu7QZDLXM8ZsS1OkeorqU4Yt3+bnHeBb63EIVUM
+         ARM0B0wTMD/PlD/5zjrBQjmOnBQvgdxEwxF1FwYHEN8lHlbB5RkK/8WK1b4hFP6jFplD
+         FuDA==
+In-Reply-To: <Y3UBwYNY15ETUKy9-Nxj+rRp3nVydTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:From:References:Cc:To:
-	Subject:MIME-Version:Date:Message-ID:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=EWQwJ+oZfFpIbLg+UH4untKZ8igohKElwQMujWTIn3E=; b=r1WwRn3RitsjTh
-	KLBetDo6McUcrTc2rnhoZ7Z955RNUChzV0/nPhEQYCh7bMSZ6zFy6vWz9L6OdzF/AquEIK80ico5Q
-	2n0I3dCKSuXLDnxYsxmSgEfoj4XoccBbZboIR2WB7oDjftuuRX9NaLHKEJD9ASQhlinuQ4Vg+QIiC
-	u4iGPEhB6X1SNq1UU5/lxBC6JwWBkJtKGGzGjain5NZHptj1W0pJoCjdGmnyCUH6MsW+wS4lJ9P32
-	2QVzqXwvUPPBWPuKPz/Uk2b36WYvu51vMRsz4KNUIsGCLU4z3hn8c4YYCbwLrXjugbMPRKZ6HbwOO
-	z08EPQklCXOKgGSj+gRw==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1669131353; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xzeEtRVGkBValjf4cAqJIIBnm0WLgHIJrOj2Qpyeryk=;
-	b=hSz8uo53GqZkaSBqbG3aIh16lgMQB2Sw8gZ6Z+fnEjIR6uPvpuBuVkR8TpcuCDJwN2rjjn
-	iqJmydTFhzXH0tY5jw9oJ6zK0Sx7/l0zZrHLYI1mzVvp/woqabMd2RthMdqBUz+tckoXxt
-	gvUiGWpp9yM7xLCq0tNctpGuD1es/pI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1669131353;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=xzeEtRVGkBValjf4cAqJIIBnm0WLgHIJrOj2Qpyeryk=;
-	b=87yFyDfodelF6paPP+3fZVkcbfCamfu6aYJAmnQjTNh2RXFp/RQ8a0uSheJsgsaRl+tSbc
-	rgSpbkEWiLk/2KDQ==
-Content-Language: en-US
-In-Reply-To: <20221116102659.70287-9-david@redhat.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-um/>
-List-Post: <mailto:linux-um@lists.infradead.org>
-List-Help: <mailto:linux-um-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-um" <linux-um-bounces@lists.infradead.org>
-Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org
-To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc: x86@kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, etnaviv@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, linux-rdma@vger.kernel.org, linux-media@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-perf-users@vger.kernel.org, linux-security-module@vger.kernel.org, linux-kselftest@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>, John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andrea Arcangeli <aarcange@redhat.com>, Hugh Dickins <hughd@google.com>, Nadav Amit <namit@vmware.com>
+To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: juri.lelli-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, bsegall-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, guoren-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pavel-+ZI9xUNit7I@public.gmane.org, agordeev-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vincent.guittot-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, chenhuacai-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, christophe.leroy-2tlSp11Fh4xulxpn9UvDqw@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, agross-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, linux-imx-3arQi8VN3Tc@public.gmane.org, vgupta-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, sammy-4OGMY2YDKIVeoWH0uzbU5w@public.gmane.org, pmladek-IBi9RG/b67k@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-um-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dietmar.eggemann-5wv7dgnIgG8@public.gmane.org, andreyknvl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-perf-users-u79uwXL29TaqPxH82wqD4g@public.gmane.org
 
-On 11/16/22 11:26, David Hildenbrand wrote:
-> Extend FAULT_FLAG_UNSHARE to break COW on anything mapped into a
-> COW (i.e., private writable) mapping and adjust the documentation
-> accordingly.
-> 
-> FAULT_FLAG_UNSHARE will now also break COW when encountering the shared
-> zeropage, a pagecache page, a PFNMAP, ... inside a COW mapping, by
-> properly replacing the mapped page/pfn by a private copy (an exclusive
-> anonymous page).
-> 
-> Note that only do_wp_page() needs care: hugetlb_wp() already handles
-> FAULT_FLAG_UNSHARE correctly. wp_huge_pmd()/wp_huge_pud() also handles it
-> correctly, for example, splitting the huge zeropage on FAULT_FLAG_UNSHARE
-> such that we can handle FAULT_FLAG_UNSHARE on the PTE level.
-> 
-> This change is a requirement for reliable long-term R/O pinning in
-> COW mappings.
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+On Wed, 16 Nov 2022 at 16:29, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
+>
+>
+> Sorry; things keep getting in the way of finishing this :/
+>
+> As such, I need a bit of time to get on-track again..
+>
+> On Tue, Oct 04, 2022 at 01:03:57PM +0200, Ulf Hansson wrote:
+>
+> > > --- a/drivers/acpi/processor_idle.c
+> > > +++ b/drivers/acpi/processor_idle.c
+> > > @@ -1200,6 +1200,8 @@ static int acpi_processor_setup_lpi_stat
+> > >                 state->target_residency = lpi->min_residency;
+> > >                 if (lpi->arch_flags)
+> > >                         state->flags |= CPUIDLE_FLAG_TIMER_STOP;
+> > > +               if (lpi->entry_method == ACPI_CSTATE_FFH)
+> > > +                       state->flags |= CPUIDLE_FLAG_RCU_IDLE;
+> >
+> > I assume the state index here will never be 0?
+> >
+> > If not, it may lead to that acpi_processor_ffh_lpi_enter() may trigger
+> > CPU_PM_CPU_IDLE_ENTER_PARAM() to call ct_cpuidle_enter|exit() for an
+> > idle-state that doesn't have the CPUIDLE_FLAG_RCU_IDLE bit set.
+>
+> I'm not quite sure I see how. AFAICT this condition above implies
+> acpi_processor_ffh_lpi_enter() gets called, no?
+>
+> Which in turn is an unconditional __CPU_PM_CPU_IDLE_ENTER() user, so
+> even if idx==0, it ends up in ct_idle_{enter,exit}().
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+Seems like I was overlooking something here, you are right, this
+shouldn't really be a problem.
 
-> ---
->  include/linux/mm_types.h | 8 ++++----
->  mm/memory.c              | 4 ----
->  2 files changed, 4 insertions(+), 8 deletions(-)
-> 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 5e7f4fac1e78..5e9aaad8c7b2 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -1037,9 +1037,9 @@ typedef struct {
->   * @FAULT_FLAG_REMOTE: The fault is not for current task/mm.
->   * @FAULT_FLAG_INSTRUCTION: The fault was during an instruction fetch.
->   * @FAULT_FLAG_INTERRUPTIBLE: The fault can be interrupted by non-fatal signals.
-> - * @FAULT_FLAG_UNSHARE: The fault is an unsharing request to unshare (and mark
-> - *                      exclusive) a possibly shared anonymous page that is
-> - *                      mapped R/O.
-> + * @FAULT_FLAG_UNSHARE: The fault is an unsharing request to break COW in a
-> + *                      COW mapping, making sure that an exclusive anon page is
-> + *                      mapped after the fault.
->   * @FAULT_FLAG_ORIG_PTE_VALID: whether the fault has vmf->orig_pte cached.
->   *                        We should only access orig_pte if this flag set.
->   *
-> @@ -1064,7 +1064,7 @@ typedef struct {
->   *
->   * The combination FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE is illegal.
->   * FAULT_FLAG_UNSHARE is ignored and treated like an ordinary read fault when
-> - * no existing R/O-mapped anonymous page is encountered.
-> + * applied to mappings that are not COW mappings.
->   */
->  enum fault_flag {
->  	FAULT_FLAG_WRITE =		1 << 0,
-> diff --git a/mm/memory.c b/mm/memory.c
-> index d47ad33c6487..56b21ab1e4d2 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -3432,10 +3432,6 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
->  		}
->  		wp_page_reuse(vmf);
->  		return 0;
-> -	} else if (unshare) {
-> -		/* No anonymous page -> nothing to do. */
-> -		pte_unmap_unlock(vmf->pte, vmf->ptl);
-> -		return 0;
->  	}
->  copy:
->  	/*
+>
+> >
+> > >                 state->enter = acpi_idle_lpi_enter;
+> > >                 drv->safe_state_index = i;
+> > >         }
+> > > --- a/drivers/cpuidle/cpuidle-arm.c
+> > > +++ b/drivers/cpuidle/cpuidle-arm.c
+> > > @@ -53,6 +53,7 @@ static struct cpuidle_driver arm_idle_dr
+> > >          * handler for idle state index 0.
+> > >          */
+> > >         .states[0] = {
+> > > +               .flags                  = CPUIDLE_FLAG_RCU_IDLE,
+> >
+> > Comparing arm64 and arm32 idle-states/idle-drivers, the $subject
+> > series ends up setting the CPUIDLE_FLAG_RCU_IDLE for the ARM WFI idle
+> > state (state zero), but only for the arm64 and psci cases (mostly
+> > arm64). For arm32 we would need to update the ARM_CPUIDLE_WFI_STATE
+> > too, as that is what most arm32 idle-drivers are using. My point is,
+> > the code becomes a bit inconsistent.
+>
+> True.
+>
+> > Perhaps it's easier to avoid setting the CPUIDLE_FLAG_RCU_IDLE bit for
+> > all of the ARM WFI idle states, for both arm64 and arm32?
+>
+> As per the below?
+>
+> >
+> > >                 .enter                  = arm_enter_idle_state,
+> > >                 .exit_latency           = 1,
+> > >                 .target_residency       = 1,
+>
+> > > --- a/include/linux/cpuidle.h
+> > > +++ b/include/linux/cpuidle.h
+> > > @@ -282,14 +282,18 @@ extern s64 cpuidle_governor_latency_req(
+> > >         int __ret = 0;                                                  \
+> > >                                                                         \
+> > >         if (!idx) {                                                     \
+> > > +               ct_idle_enter();                                        \
+> >
+> > According to my comment above, we should then drop these calls to
+> > ct_idle_enter and ct_idle_exit() here. Right?
+>
+> Yes, if we ensure idx==0 never has RCU_IDLE set then these must be
+> removed.
+>
+> > >                 cpu_do_idle();                                          \
+> > > +               ct_idle_exit();                                         \
+> > >                 return idx;                                             \
+> > >         }                                                               \
+> > >                                                                         \
+> > >         if (!is_retention)                                              \
+> > >                 __ret =  cpu_pm_enter();                                \
+> > >         if (!__ret) {                                                   \
+> > > +               ct_idle_enter();                                        \
+> > >                 __ret = low_level_idle_enter(state);                    \
+> > > +               ct_idle_exit();                                         \
+> > >                 if (!is_retention)                                      \
+> > >                         cpu_pm_exit();                                  \
+> > >         }                                                               \
+> > >
+>
+> So the basic premise is that everything that needs RCU inside the idle
+> callback must set CPUIDLE_FLAG_RCU_IDLE and by doing that promise to
+> call ct_idle_{enter,exit}() themselves.
+>
+> Setting RCU_IDLE is required when there is RCU usage, however even if
+> there is no RCU usage, setting RCU_IDLE is fine, as long as
+> ct_idle_{enter,exit}() then get called.
+
+Right, I was thinking that it could make sense to shrink the window
+for users getting this wrong. In other words, we shouldn't set the
+CPUIDLE_FLAG_RCU_IDLE unless we really need to.
+
+And as I said, consistent behaviour is also nice to have.
+
+>
+>
+> So does the below (delta) look better to you?
+
+Yes, it does!
+
+Although, one minor comment below.
+
+>
+> --- a/drivers/acpi/processor_idle.c
+> +++ b/drivers/acpi/processor_idle.c
+> @@ -1218,7 +1218,7 @@ static int acpi_processor_setup_lpi_stat
+>                 state->target_residency = lpi->min_residency;
+>                 if (lpi->arch_flags)
+>                         state->flags |= CPUIDLE_FLAG_TIMER_STOP;
+> -               if (lpi->entry_method == ACPI_CSTATE_FFH)
+> +               if (i != 0 && lpi->entry_method == ACPI_CSTATE_FFH)
+>                         state->flags |= CPUIDLE_FLAG_RCU_IDLE;
+>                 state->enter = acpi_idle_lpi_enter;
+>                 drv->safe_state_index = i;
+> --- a/drivers/cpuidle/cpuidle-arm.c
+> +++ b/drivers/cpuidle/cpuidle-arm.c
+> @@ -53,7 +53,7 @@ static struct cpuidle_driver arm_idle_dr
+>          * handler for idle state index 0.
+>          */
+>         .states[0] = {
+> -               .flags                  = CPUIDLE_FLAG_RCU_IDLE,
+> +               .flags                  = 0,
+
+Nitpick: I don't think we need to explicitly clear the flag, as it
+should already be zeroed by the compiler from its static declaration.
+Right?
+
+>                 .enter                  = arm_enter_idle_state,
+>                 .exit_latency           = 1,
+>                 .target_residency       = 1,
+> --- a/drivers/cpuidle/cpuidle-psci.c
+> +++ b/drivers/cpuidle/cpuidle-psci.c
+> @@ -357,7 +357,7 @@ static int psci_idle_init_cpu(struct dev
+>          * PSCI idle states relies on architectural WFI to be represented as
+>          * state index 0.
+>          */
+> -       drv->states[0].flags = CPUIDLE_FLAG_RCU_IDLE;
+> +       drv->states[0].flags = 0;
+>         drv->states[0].enter = psci_enter_idle_state;
+>         drv->states[0].exit_latency = 1;
+>         drv->states[0].target_residency = 1;
+> --- a/drivers/cpuidle/cpuidle-qcom-spm.c
+> +++ b/drivers/cpuidle/cpuidle-qcom-spm.c
+> @@ -72,7 +72,7 @@ static struct cpuidle_driver qcom_spm_id
+>         .owner = THIS_MODULE,
+>         .states[0] = {
+>                 .enter                  = spm_enter_idle_state,
+> -               .flags                  = CPUIDLE_FLAG_RCU_IDLE,
+> +               .flags                  = 0,
+>                 .exit_latency           = 1,
+>                 .target_residency       = 1,
+>                 .power_usage            = UINT_MAX,
+> --- a/drivers/cpuidle/cpuidle-riscv-sbi.c
+> +++ b/drivers/cpuidle/cpuidle-riscv-sbi.c
+> @@ -337,7 +337,7 @@ static int sbi_cpuidle_init_cpu(struct d
+>         drv->cpumask = (struct cpumask *)cpumask_of(cpu);
+>
+>         /* RISC-V architectural WFI to be represented as state index 0. */
+> -       drv->states[0].flags = CPUIDLE_FLAG_RCU_IDLE;
+> +       drv->states[0].flags = 0;
+>         drv->states[0].enter = sbi_cpuidle_enter_state;
+>         drv->states[0].exit_latency = 1;
+>         drv->states[0].target_residency = 1;
+> --- a/include/linux/cpuidle.h
+> +++ b/include/linux/cpuidle.h
+> @@ -282,9 +282,7 @@ extern s64 cpuidle_governor_latency_req(
+>         int __ret = 0;                                                  \
+>                                                                         \
+>         if (!idx) {                                                     \
+> -               ct_idle_enter();                                        \
+>                 cpu_do_idle();                                          \
+> -               ct_idle_exit();                                         \
+>                 return idx;                                             \
+>         }                                                               \
+>                                                                         \
+
+Kind regards
+Uffe
