@@ -1,174 +1,35 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 5.10 035/106] rtc: Check return value from mc146818_get_time()
-Date: Mon, 12 Dec 2022 14:09:38 +0100
-Message-ID: <20221212130926.393552892@linuxfoundation.org>
-References: <20221212130924.863767275@linuxfoundation.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Li zeming <zeming@nfschina.com>
+Subject: [PATCH] kernel: process: Remove unnecessary (void*) conversions
+Date: Tue, 13 Dec 2022 15:36:33 +0800
+Message-ID: <20221213073633.3586-1-zeming@nfschina.com>
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1670850814;
-        bh=saFXTghnZOvQ4KIwrReXKLVsQdnLwjQX+mr+IAAAeag=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ssvF6Qg8yBUymxZwLgFmHWl7peogxlPJmvUerTaEhICzSaaR6BnZL9L5LyaX5bUhm
-         p4BRI4b40yv09PZRXyb2c+1UybABnQrBsF5lyaNZNhrnsP1NzeXwwPObziphy5t4ms
-         NYazNZ1p8Z2SXKJu2Zy9S+4icf7+Xiu8+ghnKG6k=
-In-Reply-To: <20221212130924.863767275@linuxfoundation.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: stable@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, patches@lists.linux.dev, =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>, Richard Henderson <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, Alessandro Zummo <a.zummo@towertech.it>, Alexandre Belloni <alexandre.belloni@bootlin.com>, linux-alpha@vger.kernel.org, x86@kernel.org, Sasha Levin <sashal@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, ebiederm@xmission.com, akpm@linux-foundation.org
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Li zeming <zeming@nfschina.com>
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+generic_ptr is a void * type and does not require a cast.
 
-[ Upstream commit 0dd8d6cb9eddfe637bcd821bbfd40ebd5a0737b9 ]
-
-There are 4 users of mc146818_get_time() and none of them was checking
-the return value from this function. Change this.
-
-Print the appropriate warnings in callers of mc146818_get_time() instead
-of in the function mc146818_get_time() itself, in order not to add
-strings to rtc-mc146818-lib.c, which is kind of a library.
-
-The callers of alpha_rtc_read_time() and cmos_read_time() may use the
-contents of (struct rtc_time *) even when the functions return a failure
-code. Therefore, set the contents of (struct rtc_time *) to 0x00,
-which looks more sensible then 0xff and aligns with the (possibly
-stale?) comment in cmos_read_time:
-
-	/*
-	 * If pm_trace abused the RTC for storage, set the timespec to 0,
-	 * which tells the caller that this RTC value is unusable.
-	 */
-
-For consistency, do this in mc146818_get_time().
-
-Note: hpet_rtc_interrupt() may call mc146818_get_time() many times a
-second. It is very unlikely, though, that the RTC suddenly stops
-working and mc146818_get_time() would consistently fail.
-
-Only compile-tested on alpha.
-
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: x86@kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210200131.153887-4-mat.jonczyk@o2.pl
-Stable-dep-of: cd17420ebea5 ("rtc: cmos: avoid UIP when writing alarm time")
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Li zeming <zeming@nfschina.com>
 ---
- arch/alpha/kernel/rtc.c        | 7 ++++++-
- arch/x86/kernel/hpet.c         | 8 ++++++--
- drivers/base/power/trace.c     | 6 +++++-
- drivers/rtc/rtc-cmos.c         | 9 ++++++++-
- drivers/rtc/rtc-mc146818-lib.c | 2 +-
- 5 files changed, 26 insertions(+), 6 deletions(-)
+ arch/alpha/kernel/process.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
-index 1b1d5963ac55..48ffbfbd0624 100644
---- a/arch/alpha/kernel/rtc.c
-+++ b/arch/alpha/kernel/rtc.c
-@@ -80,7 +80,12 @@ init_rtc_epoch(void)
- static int
- alpha_rtc_read_time(struct device *dev, struct rtc_time *tm)
+diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
+index 65fdae9e48f3..5bc8be1eba11 100644
+--- a/arch/alpha/kernel/process.c
++++ b/arch/alpha/kernel/process.c
+@@ -74,7 +74,7 @@ struct halt_info {
+ static void
+ common_shutdown_1(void *generic_ptr)
  {
--	mc146818_get_time(tm);
-+	int ret = mc146818_get_time(tm);
-+
-+	if (ret < 0) {
-+		dev_err_ratelimited(dev, "unable to read current time\n");
-+		return ret;
-+	}
- 
- 	/* Adjust for non-default epochs.  It's easier to depend on the
- 	   generic __get_rtc_time and adjust the epoch here than create
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 4ab7a9757e52..574df24a8e5a 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -1325,8 +1325,12 @@ irqreturn_t hpet_rtc_interrupt(int irq, void *dev_id)
- 	hpet_rtc_timer_reinit();
- 	memset(&curr_time, 0, sizeof(struct rtc_time));
- 
--	if (hpet_rtc_flags & (RTC_UIE | RTC_AIE))
--		mc146818_get_time(&curr_time);
-+	if (hpet_rtc_flags & (RTC_UIE | RTC_AIE)) {
-+		if (unlikely(mc146818_get_time(&curr_time) < 0)) {
-+			pr_err_ratelimited("unable to read current time from RTC\n");
-+			return IRQ_HANDLED;
-+		}
-+	}
- 
- 	if (hpet_rtc_flags & RTC_UIE &&
- 	    curr_time.tm_sec != hpet_prev_update_sec) {
-diff --git a/drivers/base/power/trace.c b/drivers/base/power/trace.c
-index 94665037f4a3..72b7a92337b1 100644
---- a/drivers/base/power/trace.c
-+++ b/drivers/base/power/trace.c
-@@ -120,7 +120,11 @@ static unsigned int read_magic_time(void)
- 	struct rtc_time time;
- 	unsigned int val;
- 
--	mc146818_get_time(&time);
-+	if (mc146818_get_time(&time) < 0) {
-+		pr_err("Unable to read current time from RTC\n");
-+		return 0;
-+	}
-+
- 	pr_info("RTC time: %ptRt, date: %ptRd\n", &time, &time);
- 	val = time.tm_year;				/* 100 years */
- 	if (val > 100)
-diff --git a/drivers/rtc/rtc-cmos.c b/drivers/rtc/rtc-cmos.c
-index ed4f512eabf0..f8358bb2ae31 100644
---- a/drivers/rtc/rtc-cmos.c
-+++ b/drivers/rtc/rtc-cmos.c
-@@ -222,6 +222,8 @@ static inline void cmos_write_bank2(unsigned char val, unsigned char addr)
- 
- static int cmos_read_time(struct device *dev, struct rtc_time *t)
- {
-+	int ret;
-+
- 	/*
- 	 * If pm_trace abused the RTC for storage, set the timespec to 0,
- 	 * which tells the caller that this RTC value is unusable.
-@@ -229,7 +231,12 @@ static int cmos_read_time(struct device *dev, struct rtc_time *t)
- 	if (!pm_trace_rtc_valid())
- 		return -EIO;
- 
--	mc146818_get_time(t);
-+	ret = mc146818_get_time(t);
-+	if (ret < 0) {
-+		dev_err_ratelimited(dev, "unable to read current time\n");
-+		return ret;
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
-index 6262f0680f13..3ae5c690f22b 100644
---- a/drivers/rtc/rtc-mc146818-lib.c
-+++ b/drivers/rtc/rtc-mc146818-lib.c
-@@ -24,7 +24,7 @@ unsigned int mc146818_get_time(struct rtc_time *time)
- 	/* Ensure that the RTC is accessible. Bit 6 must be 0! */
- 	if (WARN_ON_ONCE((CMOS_READ(RTC_VALID) & 0x40) != 0)) {
- 		spin_unlock_irqrestore(&rtc_lock, flags);
--		memset(time, 0xff, sizeof(*time));
-+		memset(time, 0, sizeof(*time));
- 		return -EIO;
- 	}
- 
+-	struct halt_info *how = (struct halt_info *)generic_ptr;
++	struct halt_info *how = generic_ptr;
+ 	struct percpu_struct *cpup;
+ 	unsigned long *pflags, flags;
+ 	int cpuid = smp_processor_id();
 -- 
-2.35.1
-
-
+2.18.2
 
