@@ -1,78 +1,61 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 5.10 34/63] alpha: add support for TIF_NOTIFY_SIGNAL
-Date: Tue,  3 Jan 2023 09:14:04 +0100
-Message-ID: <20230103081310.623361636@linuxfoundation.org>
-References: <20230103081308.548338576@linuxfoundation.org>
+From: Heiko Carstens <hca@linux.ibm.com>
+Subject: Re: [PATCH v3] arch: rename all internal names __xchg to __arch_xchg
+Date: Tue, 3 Jan 2023 11:02:09 +0100
+Message-ID: <Y7P9IcR7/jgYWMcq@osiris>
+References: <202212300642.6pdgegGO-lkp@intel.com>
+ <20221230141552.128508-1-andrzej.hajda@intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1672733762;
-        bh=2oxq34liO1ryKmPeUcmFtTAz13Uo4QTI6qbeiEhScWs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bu2sp7nR0HMSpxJTs7OP92PT1HE7SrJLH5opNp2tn39CcaEvyRQAIQpusMrAtfg82
-         hjuwUi4HrMHfMF2IJnVZaVxkuoYW1JhJuX3s9T8UkiPCDAJsGuLDfaYcF/aE4I6nVa
-         0CcM8GVydnEk0e4k8fnlSLoY1j1R8qyJG5AYw+cU=
-In-Reply-To: <20230103081308.548338576@linuxfoundation.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=dMHVtFosqWThDyY5SftMoOPjqDlLusCntZAFShOz2mY=;
+ b=KQ8gHflm592WlbRAgwdQmZyTRlHDWh9M3ZAPFV+EMcsIOXJ461PiMpCp5cUVt9BL1e6j
+ zqllDR5Fb/gxAm41jRkoRbn7AyAsUGSUMf7knMuu/spo09IOUdLrV2GM4nc+OlkQbkE7
+ IJzG4uvffHGaWIteJBPi+B7FHAqQUQN3AtsThHUAZCqJQIQDHXbgZuAeeqSo9WeDmPJj
+ eEQnkInKW+xzSa/aKKaqEDcmxJK5+xsGNpjiHiXPohV0tqVjzNS2xI1QFRZv2I9KIldN
+ wQ9mkHaOJ5pKdofCP9qAqPj5s8umAAK+tXrV9dZ+20maLxpkr4T38HkHLw9ablzK3SFk /w== 
+Content-Disposition: inline
+In-Reply-To: <20221230141552.128508-1-andrzej.hajda@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: stable@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, patches@lists.linux.dev, linux-alpha@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Content-Transfer-Encoding: 7bit
+To: Andrzej Hajda <andrzej.hajda@intel.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, Arnd Bergmann <arnd@arndb.de>, Rodrigo Vivi <rodrigo.vivi@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Peter Zijlstra <peterz@infradead.o>
 
-From: Jens Axboe <axboe@kernel.dk>
+On Fri, Dec 30, 2022 at 03:15:52PM +0100, Andrzej Hajda wrote:
+> __xchg will be used for non-atomic xchg macro.
+> 
+> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> v2: squashed all arch patches into one
+> v3: fixed alpha/xchg_local, thx to lkp@intel.com
+> ---
+...
+>  arch/s390/include/asm/cmpxchg.h      | 4 ++--
+> diff --git a/arch/s390/include/asm/cmpxchg.h b/arch/s390/include/asm/cmpxchg.h
+> index 84c3f0d576c5b1..efc16f4aac8643 100644
+> --- a/arch/s390/include/asm/cmpxchg.h
+> +++ b/arch/s390/include/asm/cmpxchg.h
+> @@ -14,7 +14,7 @@
+>  
+>  void __xchg_called_with_bad_pointer(void);
+>  
+> -static __always_inline unsigned long __xchg(unsigned long x,
+> +static __always_inline unsigned long __arch_xchg(unsigned long x,
+>  					    unsigned long address, int size)
 
-[ Upstream commit 5a9a8897c253a075805401d38d987ec1ac1824b6 ]
+Please adjust the alignment of the second line.
 
-Wire up TIF_NOTIFY_SIGNAL handling for alpha.
+> @@ -77,7 +77,7 @@ static __always_inline unsigned long __xchg(unsigned long x,
+>  	__typeof__(*(ptr)) __ret;					\
+>  									\
+>  	__ret = (__typeof__(*(ptr)))					\
+> -		__xchg((unsigned long)(x), (unsigned long)(ptr),	\
+> +		__arch_xchg((unsigned long)(x), (unsigned long)(ptr),	\
+>  		       sizeof(*(ptr)));					\
 
-Cc: linux-alpha@vger.kernel.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/alpha/include/asm/thread_info.h |    2 ++
- arch/alpha/kernel/entry.S            |    2 +-
- arch/alpha/kernel/signal.c           |    2 +-
- 3 files changed, 4 insertions(+), 2 deletions(-)
+Same here.
 
---- a/arch/alpha/include/asm/thread_info.h
-+++ b/arch/alpha/include/asm/thread_info.h
-@@ -62,6 +62,7 @@ register struct thread_info *__current_t
- #define TIF_SIGPENDING		2	/* signal pending */
- #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
- #define TIF_SYSCALL_AUDIT	4	/* syscall audit active */
-+#define TIF_NOTIFY_SIGNAL	5	/* signal notifications exist */
- #define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
- #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
- #define TIF_POLLING_NRFLAG	14	/* idle is polling for TIF_NEED_RESCHED */
-@@ -71,6 +72,7 @@ register struct thread_info *__current_t
- #define _TIF_NEED_RESCHED	(1<<TIF_NEED_RESCHED)
- #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
- #define _TIF_SYSCALL_AUDIT	(1<<TIF_SYSCALL_AUDIT)
-+#define _TIF_NOTIFY_SIGNAL	(1<<TIF_NOTIFY_SIGNAL)
- #define _TIF_POLLING_NRFLAG	(1<<TIF_POLLING_NRFLAG)
- 
- /* Work to do on interrupt/exception return.  */
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -544,7 +544,7 @@ $ret_success:
- 	.align	4
- 	.type	work_pending, @function
- work_pending:
--	and	$17, _TIF_NOTIFY_RESUME | _TIF_SIGPENDING, $2
-+	and	$17, _TIF_NOTIFY_RESUME | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL, $2
- 	bne	$2, $work_notifysig
- 
- $work_resched:
---- a/arch/alpha/kernel/signal.c
-+++ b/arch/alpha/kernel/signal.c
-@@ -527,7 +527,7 @@ do_work_pending(struct pt_regs *regs, un
- 			schedule();
- 		} else {
- 			local_irq_enable();
--			if (thread_flags & _TIF_SIGPENDING) {
-+			if (thread_flags & (_TIF_SIGPENDING|_TIF_NOTIFY_SIGNAL)) {
- 				do_signal(regs, r0, r19);
- 				r0 = 0;
- 			} else {
-
-
+The same is true for a couple of other architectures - not sure if
+they care however.
