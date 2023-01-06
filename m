@@ -1,130 +1,56 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH 00/19] Introduce __xchg, non-atomic xchg
-Date: Thu, 5 Jan 2023 17:29:51 +0100
-Message-ID: <Y7b6/7coJEVlTVxK@phenom.ffwll.local>
-References: <20221222114635.1251934-1-andrzej.hajda@intel.com>
- <20221222092147.d2bb177c67870884f2e59a9b@linux-foundation.org>
- <6e727952-3ad0-fcc3-82f1-c465dcffd56f@intel.com>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: RE: [PATCH v2] Add new open(2) flag - O_EMPTY_PATH
+Date: Fri, 6 Jan 2023 09:21:46 +0000
+Message-ID: <ea8739b122674695ba9bf991b589817c@AcuMS.aculab.com>
+References: <202212310842.ysbymPHY-lkp@intel.com>
+ <20221231235618.117201-1-ahamza@ixsystems.com>
+ <4b39cf528148470c934fb5823b35e9d5@AcuMS.aculab.com>
+ <20230102143538.GA8886@hamza-HP-ZBook-15-G3>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ffwll.ch; s=google;
- h=in-reply-to:content-transfer-encoding:content-disposition
- :mime-version:references:mail-followup-to:message-id:subject:cc:to
- :from:date:from:to:cc:subject:date:message-id:reply-to;
- bh=hriix7PNjl3Fx5Lwj5vGvmpV6J+F4oqIBHmzWDNV1zY=;
- b=Xkf28zaruVrLmqa0GfGmuAvqQQX+dB8u4vBIZu3Zqzswl7V0McjDKsYjGqvgAnDPVt
- JAfXVw2P8vm4NtD5ER0v9cpo5fq34lBw+gZ7lyOmQSBDrvgtT42XqrYiXIz43PC1aoqp
- dm4offnZy34FIeCS0B3FEa0zUz3dEn5dYFCKk=
-Content-Disposition: inline
-In-Reply-To: <6e727952-3ad0-fcc3-82f1-c465dcffd56f@intel.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Andrzej Hajda <andrzej.hajda@intel.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-m68k@vger.kernel.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-snps-arc@lists.infradead.org, intel-gfx@lists.freedesktop.org, linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>, openrisc@lists.librecores.org, loongarch@lists.linux.dev, Rodrigo Vivi <rodrigo.vivi@intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org, linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <20230102143538.GA8886@hamza-HP-ZBook-15-G3>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: 'Ameer Hamza' <ahamza@ixsystems.com>
+Cc: "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>, "jlayton@kernel.org" <jlayton@kernel.org>, "chuck.lever@oracle.com" <chuck.lever@oracle.com>, "arnd@arndb.de" <arnd@arndb.de>, "guoren@kernel.org" <guoren@kernel.org>, "palmer@rivosinc.com" <palmer@rivosinc.com>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "slark_xiao@163.com" <slark_xiao@163.com>, "richard.henderson@linaro.org" <richard.henderson@linaro.org>, "ink@jurassic.park.msu.ru" <ink@jurassic.park.msu.ru>, "mattst88@gmail.com" <mattst88@gmail.com>, "James.Bottomley@HansenPartnership.com" <James.Bottomley@HansenPartnership.com>, "deller@gmx.de" <deller@gmx.de>, "davem@davemloft.net" <davem@davemloft.net>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, linux-kernel@vger.kernel.
 
-On Thu, Dec 29, 2022 at 10:54:50AM +0100, Andrzej Hajda wrote:
-> Forgive me late response - Holidays,
->=20
-> On 22.12.2022 18:21, Andrew Morton wrote:
-> > On Thu, 22 Dec 2022 12:46:16 +0100 Andrzej Hajda <andrzej.hajda@intel.c=
-om> wrote:
-> >=20
-> > > Hi all,
-> > >=20
-> > > I hope there will be place for such tiny helper in kernel.
-> > > Quick cocci analyze shows there is probably few thousands places
-> > > where it could be useful.
-> > So to clarify, the intent here is a simple readability cleanup for
-> > existing open-coded exchange operations.
->=20
-> And replace private helpers with common one, see the last patch - the
-> ultimate goal
-> would be to replace all occurrences of fetch_and_zero with __xchg.
->=20
-> > The intent is *not* to
-> > identify existing xchg() sites which are unnecessarily atomic and to
-> > optimize them by using the non-atomic version.
-> >=20
-> > Have you considered the latter?
->=20
-> If you mean some way of (semi-)automatic detection of such cases, then no.
-> Anyway this could be quite interesting challenge.
+From: Ameer Hamza
+> Sent: 02 January 2023 14:36
+> 
+> On Mon, Jan 02, 2023 at 02:01:38PM +0000, David Laight wrote:
+> > From: Ameer Hamza
+> > > Sent: 31 December 2022 23:56
+> > >
+> > > This patch adds a new flag O_EMPTY_PATH that allows openat and open
+> > > system calls to open a file referenced by fd if the path is empty,
+> > > and it is very similar to the FreeBSD O_EMPTY_PATH flag. This can be
+> > > beneficial in some cases since it would avoid having to grant /proc
+> > > access to things like samba containers for reopening files to change
+> > > flags in a race-free way.
+> > >
+> >
+> > But what does it do?
+> > (Apart from add code to a common kernel code path.)
+> >
+> > 	David
+>
+> It can convert an O_PATH descriptor to one suitable for r/w work.
+> If we already have a file descriptor: {opath_fd = open(&lt;path&gt;, O_PATH);}, we can call
+> {openat(opath_fd, "", O_EMPTY_PATH | O_RDWR)} instead of going through procfs
+> {open(/proc/self/fd/&lt;opath_fd&gt;, O_RDWR)}.
 
-My take is that unless there is very clear demand for this macro from
-outside of i915, it's not worth it. All that fetch_and_zero zero achieved
-is make i915 code a lot more confusing to read for people who don't know
-this thing. And it replaces 2 entirely standard lines of 0, every often
-clearing pointers in data structures where you really want the verbosity
-to have a reminder and thinking about the locking.
+Aren't both of those security problems?
 
-Plus it smells way too much like the cmpxchg family of atomic functions,
-addig further to the locking confuion.
+Testing the file's inode permission allow write access isn't enough
+to verify that the program could actually open the file for writing.
+The program also needs 'directory search' access on all the directories
+back as far as an open directory fd.
 
-Imo the right approach is to just open code this macro in i915 and then
-drop it. Again, unless enough people outside of i915 really really want
-this, and want to lift this to a kernel idiom.
--Daniel
+	David
 
->=20
-> >=20
-> > > I am not sure who is good person to review/ack such patches,
-> > I can take 'em.
-> >=20
-> > > so I've used my intuition to construct to/cc lists, sorry for mistake=
-s.
-> > > This is the 2nd approach of the same idea, with comments addressed[0].
-> > >=20
-> > > The helper is tiny and there are advices we can leave without it, so
-> > > I want to present few arguments why it would be good to have it:
-> > >=20
-> > > 1. Code readability/simplification/number of lines:
-> > >=20
-> > > Real example from drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c:
-> > > -       previous_min_rate =3D evport->qos.min_rate;
-> > > -       evport->qos.min_rate =3D min_rate;
-> > > +       previous_min_rate =3D __xchg(evport->qos.min_rate, min_rate);
-> > >=20
-> > > For sure the code is more compact, and IMHO more readable.
-> > >=20
-> > > 2. Presence of similar helpers in other somehow related languages/lib=
-s:
-> > >=20
-> > > a) Rust[1]: 'replace' from std::mem module, there is also 'take'
-> > >      helper (__xchg(&x, 0)), which is the same as private helper in
-> > >      i915 - fetch_and_zero, see latest patch.
-> > > b) C++ [2]: 'exchange' from utility header.
-> > >=20
-> > > If the idea is OK there are still 2 qestions to answer:
-> > >=20
-> > > 1. Name of the helper, __xchg follows kernel conventions,
-> > >      but for me Rust names are also OK.
-> > I like replace(), or, shockingly, exchange().
-> >=20
-> > But...   Can we simply make swap() return the previous value?
-> >=20
-> > 	previous_min_rate =3D swap(&evport->qos.min_rate, min_rate);
->=20
-> As Alexander already pointed out, swap requires 'references' to two
-> variables,
-> in contrast to xchg which requires reference to variable and value.
-> So we cannot use swap for cases:
-> =A0=A0=A0 old_value =3D __xchg(&x, new_value);
->=20
-> Regards
-> Andrzej
->=20
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
---=20
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
