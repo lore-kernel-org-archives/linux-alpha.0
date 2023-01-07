@@ -1,56 +1,104 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH v2] Add new open(2) flag - O_EMPTY_PATH
-Date: Fri, 6 Jan 2023 09:21:46 +0000
-Message-ID: <ea8739b122674695ba9bf991b589817c@AcuMS.aculab.com>
-References: <202212310842.ysbymPHY-lkp@intel.com>
- <20221231235618.117201-1-ahamza@ixsystems.com>
- <4b39cf528148470c934fb5823b35e9d5@AcuMS.aculab.com>
- <20230102143538.GA8886@hamza-HP-ZBook-15-G3>
+From: Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH] alpha: fix FEN fault handling
+Date: Sat, 7 Jan 2023 00:59:29 +0000
+Message-ID: <Y7jD8XDZGnQkTvMI@ZenIV>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <20230102143538.GA8886@hamza-HP-ZBook-15-G3>
-Content-Language: en-US
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=AqW0MiKJDzcQWypSmFaeIye4cnxqlSKPzLx3ofGTx1w=; b=C1duj2FbsZAbWXnupQD72vTpZ/
+        wDd3t7wflYdtqDTy7YnbpcCNF8ykFROaXmgvAR2QMZhIP/tLxkS8pu03jyvS4nlTxiWh5KMBuppCl
+        viKycqV7kINE0ca9pmP1GJof52pCrWtkZvGKKI/bGyhluWPHGa//VWWI8jHk/rvpZWNcRD9+AxaRo
+        OPISI+/MX+VMwTkuqzzqvkN83ufR4/lJuj0B5EBy0OZvu1wsL3KBC6+vOFuK3Lv8Fbk1swMxzKm2j
+        QN3oMx/s6R7AWs8pFlrW411PLNmimqt6LOVUQB96a2UyV2uV4v4QLzuzIBKFnI3yS7QIKzqz7i7mv
+        0hOAuNIA==;
+Content-Disposition: inline
+Sender: Al Viro <viro@ftp.linux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: 'Ameer Hamza' <ahamza@ixsystems.com>
-Cc: "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>, "jlayton@kernel.org" <jlayton@kernel.org>, "chuck.lever@oracle.com" <chuck.lever@oracle.com>, "arnd@arndb.de" <arnd@arndb.de>, "guoren@kernel.org" <guoren@kernel.org>, "palmer@rivosinc.com" <palmer@rivosinc.com>, "f.fainelli@gmail.com" <f.fainelli@gmail.com>, "slark_xiao@163.com" <slark_xiao@163.com>, "richard.henderson@linaro.org" <richard.henderson@linaro.org>, "ink@jurassic.park.msu.ru" <ink@jurassic.park.msu.ru>, "mattst88@gmail.com" <mattst88@gmail.com>, "James.Bottomley@HansenPartnership.com" <James.Bottomley@HansenPartnership.com>, "deller@gmx.de" <deller@gmx.de>, "davem@davemloft.net" <davem@davemloft.net>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, linux-kernel@vger.kernel.
+Content-Transfer-Encoding: 7bit
+To: linux-alpha@vger.kernel.org
+Cc: Richard Henderson <rth@twiddle.net>, linux-kernel@vger.kernel.org
 
-From: Ameer Hamza
-> Sent: 02 January 2023 14:36
-> 
-> On Mon, Jan 02, 2023 at 02:01:38PM +0000, David Laight wrote:
-> > From: Ameer Hamza
-> > > Sent: 31 December 2022 23:56
-> > >
-> > > This patch adds a new flag O_EMPTY_PATH that allows openat and open
-> > > system calls to open a file referenced by fd if the path is empty,
-> > > and it is very similar to the FreeBSD O_EMPTY_PATH flag. This can be
-> > > beneficial in some cases since it would avoid having to grant /proc
-> > > access to things like samba containers for reopening files to change
-> > > flags in a race-free way.
-> > >
-> >
-> > But what does it do?
-> > (Apart from add code to a common kernel code path.)
-> >
-> > 	David
->
-> It can convert an O_PATH descriptor to one suitable for r/w work.
-> If we already have a file descriptor: {opath_fd = open(&lt;path&gt;, O_PATH);}, we can call
-> {openat(opath_fd, "", O_EMPTY_PATH | O_RDWR)} instead of going through procfs
-> {open(/proc/self/fd/&lt;opath_fd&gt;, O_RDWR)}.
+Type 3 instruction fault (FPU insn with FPU disabled) is handled
+by quietly enabling FPU and returning.  Which is fine, except that
+we need to do that both for fault in userland and in the kernel;
+the latter *can* legitimately happen - all it takes is this:
 
-Aren't both of those security problems?
+.global _start
+_start:
+	call_pal 0xae
+	lda $0, 0
+	ldq $0, 0($0)
 
-Testing the file's inode permission allow write access isn't enough
-to verify that the program could actually open the file for writing.
-The program also needs 'directory search' access on all the directories
-back as far as an open directory fd.
+- call_pal CLRFEN to clear "FPU enabled" flag and arrange for
+a signal delivery (SIGSEGV in this case).
 
-	David
+Fixed by moving the handling of type 3 into the common part of
+do_entIF(), before we check for kernel vs. user mode.
 
+Incidentally, check for kernel mode is unidiomatic; the normal
+way to do that is !user_mode(regs).  The difference is that
+the open-coded variant treats any of bits 63..3 of regs->ps being
+set as "it's user mode" while the normal approach is to check just
+the bit 3.  PS is a 4-bit register and regs->ps always will have
+bits 63..4 clear, so the open-code variant here is actually equivalent
+to !user_mode(regs).  Harder to follow, though...
+
+Reproducer above will crash any box where CLRFEN is not ignored by
+PAL (== any actual hardware, AFAICS; PAL used in qemu doesn't
+bother implementing that crap).
+
+Cc: stable@vger.kernel.org # all way back...
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+---
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index 8a66fe544c69..d9a67b370e04 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -233,7 +233,21 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+ {
+ 	int signo, code;
+ 
+-	if ((regs->ps & ~IPL_MAX) == 0) {
++	if (type == 3) { /* FEN fault */
++		/* Irritating users can call PAL_clrfen to disable the
++		   FPU for the process.  The kernel will then trap in
++		   do_switch_stack and undo_switch_stack when we try
++		   to save and restore the FP registers.
++
++		   Given that GCC by default generates code that uses the
++		   FP registers, PAL_clrfen is not useful except for DoS
++		   attacks.  So turn the bleeding FPU back on and be done
++		   with it.  */
++		current_thread_info()->pcb.flags |= 1;
++		__reload_thread(&current_thread_info()->pcb);
++		return;
++	}
++	if (!user_mode(regs)) {
+ 		if (type == 1) {
+ 			const unsigned int *data
+ 			  = (const unsigned int *) regs->pc;
+@@ -366,20 +380,6 @@ do_entIF(unsigned long type, struct pt_regs *regs)
+ 		}
+ 		break;
+ 
+-	      case 3: /* FEN fault */
+-		/* Irritating users can call PAL_clrfen to disable the
+-		   FPU for the process.  The kernel will then trap in
+-		   do_switch_stack and undo_switch_stack when we try
+-		   to save and restore the FP registers.
 -
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+-		   Given that GCC by default generates code that uses the
+-		   FP registers, PAL_clrfen is not useful except for DoS
+-		   attacks.  So turn the bleeding FPU back on and be done
+-		   with it.  */
+-		current_thread_info()->pcb.flags |= 1;
+-		__reload_thread(&current_thread_info()->pcb);
+-		return;
+-
+ 	      case 5: /* illoc */
+ 	      default: /* unexpected instruction-fault type */
+ 		      ;
