@@ -1,10 +1,10 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
 Subject: Re: [PATCH v4] arch: rename all internal names __xchg to __arch_xchg
 Date: Mon, 16 Jan 2023 11:00:33 +0100
-Message-ID: <CAMuHMdUhPjya8zWMxEN8U8pjf4M2u_+HOfxQ2NP1XOcX9EpAKg__13301.841174119$1673863282$gmane$org@mail.gmail.com>
+Message-ID: <CAMuHMdUhPjya8zWMxEN8U8pjf4M2u_+HOfxQ2NP1XOcX9EpAKg__34548.1298559875$1673863817$gmane$org@mail.gmail.com>
 References: <Y7P9IcR7/jgYWMcq@osiris> <20230105095426.2163354-1-andrzej.hajda@intel.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-m68k-owner@vger.kernel.org>
 In-Reply-To: <20230105095426.2163354-1-andrzej.hajda@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -29,10 +29,3 @@ Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> [m68k]
 Gr{oetje,eeting}s,
 
                         Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
