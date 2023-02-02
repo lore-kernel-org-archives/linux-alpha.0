@@ -1,93 +1,121 @@
 From: Al Viro <viro@zeniv.linux.org.uk>
 Subject: Re: [RFC][PATCHSET] VM_FAULT_RETRY fixes
-Date: Thu, 2 Feb 2023 00:57:09 +0000
-Message-ID: <Y9sKZTJI7V6qCNRJ@ZenIV>
+Date: Thu, 2 Feb 2023 06:58:03 +0000
+Message-ID: <Y9te+4n4ajSF++Ex@ZenIV>
 References: <Y9lz6yk113LmC9SI@ZenIV>
  <CAHk-=whf73Vm2U3jyTva95ihZzefQbThZZxqZuKAF-Xjwq=G4Q@mail.gmail.com>
  <Y9mD1qp/6zm+jOME@ZenIV>
  <CAHk-=wjiwFzEGd_60H3nbgVB=R_8KTcfUJmXy=hSXCvLrXQRFA@mail.gmail.com>
- <Y9mM5wiEhepjJcN0@ZenIV>
- <CAHk-=wjNwwnBckTo8HLSdsd1ndoAR=5RBoZhdOyzhsnDAYWL9g@mail.gmail.com>
- <Y9rCBqwbLlLf1fHe@x1n>
- <Y9rlI6d5J2Y/YNQ+@ZenIV>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arch-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=JxMhQfqfZFKjqgX5e6WFjusNEH9w7UJyidC9GBl0BFE=; b=j7zrUF5m9QNeSdthOmzY2TpKll
-        qPTRkZ/xmNsbI8HChk9xVt34XGsY89y73qsr5zxE8DZeUfti8whyBfVk+Ab+kjUnuReBRNDafmDAX
-        /H78PrFrIrMaoRB9EbZbRJ4Zs7Jenz2oKhC7KateHZc+FvE4EURfaz4BFJx0r55ZQo1Vi5FrSgDFI
-        yYZWY8336bh2CFJag9KhZHfpHAP/3O0kEIxOVWGnOYTJtYRxmwGwCH3+tArIpGL0USY+brYn81wps
-        j1g4I7ez2NpxUerl3TovY+NE3eudMkGv9kBRvPwB8LQ6bXEAiIhDkDZeu/6wMFaHrstuWijmeUQlM
-        aZbRGRgw==;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
+        bh=xHDCflHvP6Vsb8iQkaJ1+V05YDZQb/GMrDePu4s4/fs=; b=YP4y5oSBqhQxpIk890Tn5B0XiU
+        906vtqTdJtPgbKrfl6tyf7pCNYE6w7elg9JiRc/EzltxKPc3hIaKJgUSTQziC7VO1Lx9+154wpYW0
+        x/KUM4lXK0nNU9yx80bWF8bSJ1cfmZfX1sFYYeOKvNeGD4Qrqu6/KLGm+ZL2FFiyYsDtfE5yv+LFY
+        /a46D6x7m2ZpTwwsBFHxzvwo/Q++Tas9h8ms1dm8pT6E4i9ZS/QOnmwYZ3LMcFysVm1LGJa7Yh2yd
+        FariQY4GNHfM7v2bRqm59uMu7mrNwBfZ0ran3nECU2LxSdE1R9lnKqc6bR1q/1S3ZGCept7QaBTPE
+        IoIlnT6g==;
 Content-Disposition: inline
-In-Reply-To: <Y9rlI6d5J2Y/YNQ+@ZenIV>
+In-Reply-To: <CAHk-=wjiwFzEGd_60H3nbgVB=R_8KTcfUJmXy=hSXCvLrXQRFA@mail.gmail.com>
 Sender: Al Viro <viro@ftp.linux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Peter Xu <peterx@redhat.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Xu <peterx@redhat.com>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>
 
-On Wed, Feb 01, 2023 at 10:18:11PM +0000, Al Viro wrote:
-> 	* logics for stack expansion includes this twist:
->         if (!(vma->vm_flags & VM_GROWSDOWN))
->                 goto map_err;
->         if (user_mode(regs)) {
->                 /* Accessing the stack below usp is always a bug.  The
->                    "+ 256" is there due to some instructions doing
->                    pre-decrement on the stack and that doesn't show up
->                    until later.  */
->                 if (address + 256 < rdusp())
->                         goto map_err;
->         }
->         if (expand_stack(vma, address))
->                 goto map_err;
-> That's m68k; ISTR similar considerations elsewhere, but I could be
-> wrong.
+On Tue, Jan 31, 2023 at 01:19:59PM -0800, Linus Torvalds wrote:
+> On Tue, Jan 31, 2023 at 1:10 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> >
+> > Umm...  What about the semantics of get_user() of unmapped address?
+> > Some architectures do quiet EFAULT; some (including alpha) hit
+> > the sucker with SIGBUS, no matter what.
+>=20
+> I think we should strive to just make this all common.
+>=20
+> The reason alpha is different is almost certainly not intentional, but
+> a combination of "pure accident" and "nobody actually cares".
 
-Hell, yes - 
-        if (!(vma->vm_flags & VM_GROWSDOWN))
-                goto bad_area;
-        if (!(fault_code & FAULT_CODE_WRITE)) {
-                /* Non-faulting loads shouldn't expand stack. */
-                insn = get_fault_insn(regs, insn);
-                if ((insn & 0xc0800000) == 0xc0800000) {
-                        unsigned char asi;
+BTW, speaking of alpha page faults - maybe I'm misreading the manual,
+but it seems to imply that interrupts are *not* disabled when entering
+page fault handler:
 
-                        if (insn & 0x2000)
-                                asi = (regs->tstate >> 24);
-                        else
-                                asi = (insn >> 5);
-                        if ((asi & 0xf2) == 0x82)
-                                goto bad_area;
-                }
-        }
-        if (expand_stack(vma, address))
-                goto bad_area;
+Table 24=E2=80=932 Entry Point Address Registers
+Entry Point Value in a0             Value in a1   Value in a2         PS<IP=
+L>
+entArith    Exception summary       Register mask UNPREDICTABLE       Uncha=
+nged
+entIF       Fault or trap type code UNPREDICTABLE UNPREDICTABLE       Uncha=
+nged
+entInt      Interrupt type          Vector        Interrupt parameter Prior=
+ity of interrupt
+entMM       VA                      MMCSR         Cause               Uncha=
+nged
+entSys      p0                      p1            p2                  Uncha=
+nged
+entUna      VA                      Opcode        Src/Dst             Uncha=
+nged
 
-Note that it's very much not a bug - it's a nonfaulting (== speculative)
-load, and the place where we are heading from bad_area in this case is
-this in do_kernel_fault():
-        if (!(fault_code & (FAULT_CODE_WRITE|FAULT_CODE_ITLB)) &&
-            (insn & 0xc0800000) == 0xc0800000) {
-                if (insn & 0x2000)
-                        asi = (regs->tstate >> 24);
-                else  
-                        asi = (insn >> 5);
-                if ((asi & 0xf2) == 0x82) {
-                        if (insn & 0x1000000) {
-                                handle_ldf_stq(insn, regs);
-                        } else {
-                                /* This was a non-faulting load. Just clear the
-                                 * destination register(s) and continue with the next
-                                 * instruction. -jj
-                                 */
-                                handle_ld_nf(insn, regs);
-                        }
+So there's nothing to prevent an interrupt hitting just as we reach
+entMM, with interrupt handler stepping on a vmalloc'ed area and
+triggering another page fault.
+
+If that is correct, this
+                /* Synchronize this task's top level page-table
+                   with the "reference" page table from init.  */
+                long index =3D pgd_index(address);
+                pgd_t *pgd, *pgd_k;
+
+                pgd =3D current->active_mm->pgd + index;
+                pgd_k =3D swapper_pg_dir + index;
+                if (!pgd_present(*pgd) && pgd_present(*pgd_k)) {
+                        pgd_val(*pgd) =3D pgd_val(*pgd_k);
                         return;
+                }
+                goto no_context;
+is not just missing local_irq_save()/local_irq_restore() around that
+fragment - if it finds pgd already present, it needs to check pte
+before deciding to proceed to no_context.
 
-(the name is misguiding - it covers userland stuff as well; in this
-particular case the triggering instruction is non-priveleged)
+Suppose we access vmalloc area and corresponding pgd is not
+present in current->active_mm.  Just as we get to entMM,
+an interrupt arrives and proceeds to access something
+covered by the same pgd.  OK, current->active_mm is still
+not present, we get another page fault and do_page_fault()
+gets to the quoted code.  pgd is copied from the swapper_pg_dir,
+do_page_fault() returns and we get back to the instruction in
+interrupt handler that had triggered the second #PF.  This
+time around it succeeds.  Once the interrupt handler completes
+we are back to entMM.  Once *that* gets to do_page_fault()
+we hit the quoted code again.  Only this time around pgd
+*is* present and instead of returning we get to no_context.
+And since it's been a normal access to vmalloc'ed memory,
+there's nothing to be found in exception table.  Oops...
+
+	AFAICS, one way to deal with that is to treat
+(unlikely) pgd_present(*pgd) as "get to pte, return if
+it looks legitimate, proceed to no_context if it isn't".
+
+Other bugs in the same area:
+	* we ought to compare address with VMALLOC_START,
+not TASK_SIZE.
+	* we ought to do that *before* checking for
+kernel threads/pagefault_disable() being in effect.
+
+Wait a minute - pgd_present() on alpha has become constant 1
+since a73c948952cc "alpha: use pgtable-nopud instead of 4level-fixup"
+
+So that thing had been completely broken for 3 years and nobody
+had noticed.  And that's really completely broken - it stopped
+copying top-level entries since that commit.
+
+That's also not hard to fix, but...
+	* CONFIG_ALPHA_LARGE_VMALLOC had been racy all along
+	* it had very limited use (need for >8Gb of vmalloc
+space)
+	* it had stopped working in late 2019 and nobody cared.
+
+How about removing that kludge?  Richard?
