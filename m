@@ -1,45 +1,35 @@
-From: Michael Cree <mcree@orcon.net.nz>
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 Subject: Re: [RFC][PATCHSET] VM_FAULT_RETRY fixes
-Date: Thu, 2 Feb 2023 21:54:35 +1300
-Message-ID: <Y9t6Swqt+A9noVIf@creeky>
+Date: Thu, 02 Feb 2023 10:56:50 +0100
+Message-ID: <2f35cecff35cbdaedde712c7bcd00fa4bcaff868.camel@physik.fu-berlin.de>
 References: <Y9lz6yk113LmC9SI@ZenIV>
- <CAHk-=whf73Vm2U3jyTva95ihZzefQbThZZxqZuKAF-Xjwq=G4Q@mail.gmail.com>
- <Y9mD1qp/6zm+jOME@ZenIV>
- <CAHk-=wjiwFzEGd_60H3nbgVB=R_8KTcfUJmXy=hSXCvLrXQRFA@mail.gmail.com>
- <Y9te+4n4ajSF++Ex@ZenIV>
+         <CAHk-=whf73Vm2U3jyTva95ihZzefQbThZZxqZuKAF-Xjwq=G4Q@mail.gmail.com>
+         <Y9mD1qp/6zm+jOME@ZenIV>
+         <CAHk-=wjiwFzEGd_60H3nbgVB=R_8KTcfUJmXy=hSXCvLrXQRFA@mail.gmail.com>
+         <Y9te+4n4ajSF++Ex@ZenIV> <Y9t6Swqt+A9noVIf@creeky>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <Y9te+4n4ajSF++Ex@ZenIV>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <Y9t6Swqt+A9noVIf@creeky>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Al Viro <viro@zeniv.linux.org.uk>
+To: Michael Cree <mcree@orcon.net.nz>, Al Viro <viro@zeniv.linux.org.uk>
 Cc: Linus Torvalds <torvalds@linux-foundation.org>, Peter Xu <peterx@redhat.com>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>
 
-On Thu, Feb 02, 2023 at 06:58:03AM +0000, Al Viro wrote:
-> Other bugs in the same area:
-> 	* we ought to compare address with VMALLOC_START,
-> not TASK_SIZE.
-> 	* we ought to do that *before* checking for
-> kernel threads/pagefault_disable() being in effect.
-> 
-> Wait a minute - pgd_present() on alpha has become constant 1
-> since a73c948952cc "alpha: use pgtable-nopud instead of 4level-fixup"
-> 
-> So that thing had been completely broken for 3 years and nobody
-> had noticed.  
+Hi Michael!
 
-I have never noticed because I haven't been able to run a 5.9 or
-newer kernel on Alpha reliably so have been running a 5.8 kernel
-for quite some time.  Bad commit is about
-25788738eb9ce46fe6a0fd84a3ceef5c795d41f0 but bisection proved very
-difficult because the bug might only show up once per day (memory
-corruption in user space causing gcc in big long builds to ICE
-reporting corrupted structures, or similar) and so could never be
-entirely sure a kernel marked as good was truly good in bisection
-and went wrong a number of times.  There is a good possibility the bad
-commit is one of facdaa917c4d5a376d or 25788738eb9ce46fe6.
+On Thu, 2023-02-02 at 21:54 +1300, Michael Cree wrote:
+> I have never noticed because I haven't been able to run a 5.9 or
+> newer kernel on Alpha reliably so have been running a 5.8 kernel
+> for quite some time.
 
-Cheers,
-Michael.
+Didn't people on the debian-alpha mailing list report that newer 6.x
+kernels work fine on alpha again? Did you try a recent kernel yourself?
+
+Adrian
+
+-- 
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
