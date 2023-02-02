@@ -1,56 +1,227 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Peter Xu <peterx@redhat.com>
 Subject: Re: [RFC][PATCHSET] VM_FAULT_RETRY fixes
-Date: Thu, 2 Feb 2023 12:34:44 -0800
-Message-ID: <CAHk-=wheJHX0YyE1YakywU0vT0pBxiNxQ7e4PY=z6TEYZwFq1Q@mail.gmail.com>
-References: <Y9lz6yk113LmC9SI@ZenIV> <CAHk-=whf73Vm2U3jyTva95ihZzefQbThZZxqZuKAF-Xjwq=G4Q@mail.gmail.com>
- <Y9mD1qp/6zm+jOME@ZenIV> <CAHk-=wjiwFzEGd_60H3nbgVB=R_8KTcfUJmXy=hSXCvLrXQRFA@mail.gmail.com>
- <Y9te+4n4ajSF++Ex@ZenIV>
+Date: Thu, 2 Feb 2023 17:56:22 -0500
+Message-ID: <Y9w/lrL6g4yauXz4@x1n>
+References: <Y9lz6yk113LmC9SI@ZenIV>
+ <CAHk-=whf73Vm2U3jyTva95ihZzefQbThZZxqZuKAF-Xjwq=G4Q@mail.gmail.com>
+ <Y9mD1qp/6zm+jOME@ZenIV>
+ <CAHk-=wjiwFzEGd_60H3nbgVB=R_8KTcfUJmXy=hSXCvLrXQRFA@mail.gmail.com>
+ <Y9mM5wiEhepjJcN0@ZenIV>
+ <CAHk-=wjNwwnBckTo8HLSdsd1ndoAR=5RBoZhdOyzhsnDAYWL9g@mail.gmail.com>
+ <Y9rCBqwbLlLf1fHe@x1n>
+ <Y9rlI6d5J2Y/YNQ+@ZenIV>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=h+Un5B9HU12CMMbobxB6ypBJ4/8ctn7jjqj34fe39Mg=;
-        b=aA69/CVDF6+jXdLxh52nR1XCBIjQNZfHvLRWS5bm9Bv1Bj4Fh66EJ72EHlD2MgIFVp
-         ZTamzSeyAPHJnPaIOS1uKJnM8KjGK82kAHMvQtI54FqlWglR03RTFWDMg7N0Z9APN+Es
-         hIwm19EyF9DgJI53Q10nix2NttOal21TqByxw=
-In-Reply-To: <Y9te+4n4ajSF++Ex@ZenIV>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=Xo0FBVaLNjScZ4ESRGU0zwxj1oMMzGCwSRVYXdBFEDk=; b=lOhca1X+T+F0Wk
+	1uHY6IXVR6Gg6SxUyS2NGbNSZ1Z8xWLQUsN0VxWddR1Xz6s50k6q/pIymTw8kefY05bCoGyS9FQqb
+	DCvZN0jm1oPO5OWNfSp9+2O3Ll9PyP1l4kZTV2vX+0jSRM7hQNtSjLxjMsKIaWSsFosA0JKW8HrTm
+	Ajvs81oVSB811XhCIOd7ehJo5y73yXIeR0+/ZiyiwY8hUo36S1zTWydHTrlN583e2QZQaLQdoPN2B
+	mRQ+3+HSyhShiGODxM6hgYiBOBquU+xmg7vCIqpojHBKu2fc/x0l2DMnI0N9cA35aXfRAp48GiSWM
+	ztIm7jSoSjaHzAkcWhDQ==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1675378587;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XMJSsnUmUwDCBuOmcITqEg5FKDzJKTZTwWrtPHX2Mzk=;
+	b=GmToqAq7xdqxUKlEy3kXF8evXkmP1iurk8S1T+DCQWAbIVEdQSgk57dB6nrzaQntXbisC6
+	DLJGEcvofaScDnMO0xlN+8IQLkwD6UL+eLp13Q3UVKnKRf8VJaw58Irne6FpLXZNSIozgc
+	RZpuZcsRu1+28/ijnZTEh23zpW/DQbA=
+In-Reply-To: <Y9rlI6d5J2Y/YNQ+@ZenIV>
+Content-Disposition: inline
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
 To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Peter Xu <peterx@redhat.com>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org
 
-On Wed, Feb 1, 2023 at 10:58 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> BTW, speaking of alpha page faults - maybe I'm misreading the manual,
-> but it seems to imply that interrupts are *not* disabled when entering
-> page fault handler:
+On Wed, Feb 01, 2023 at 10:18:11PM +0000, Al Viro wrote:
+> On Wed, Feb 01, 2023 at 02:48:22PM -0500, Peter Xu wrote:
+> 
+> > I do also see a common pattern of the possibility to have a generic fault
+> > handler like generic_page_fault().
+> > 
+> > It probably should start with taking the mmap_sem until providing some
+> > retval that is much easier to digest further by the arch-dependent code, so
+> > it can directly do something rather than parsing the bitmask in a
+> > duplicated way (hence the new retval should hopefully not a bitmask anymore
+> > but a "what to do").
+> > 
+> > Maybe it can be something like:
+> > 
+> > /**
+> >  * enum page_fault_retval - Higher level fault retval, generalized from
+> >  * vm_fault_reason above that is only used by hardware page fault handlers.
+> >  * It generalizes the bitmask-versioned retval into something that the arch
+> >  * dependent code should react upon.
+> >  *
+> >  * @PF_RET_COMPLETED:		The page fault is completed successfully
+> >  * @PF_RET_BAD_AREA:		The page fault address falls in a bad area
+> >  *				(e.g., vma not found, expand_stack() fails..)
+> 
+> FWIW, there's a fun discrepancy - VM_FAULT_SIGSEGV may yield SEGV_MAPERR
+> or SEGV_ACCERR; depends upon the architecture.  Not that there'd been
+> many places that return VM_FAULT_SIGSEGV these days...  Good thing, too,
+> since otherwise e.g. csky would oops...
+> 
+> >  * @PF_RET_ACCESS_ERR:		The page fault has access errors
+> >  *				(e.g., write fault on !VM_WRITE vmas)
+> >  * @PF_RET_KERN_FIXUP:		The page fault requires kernel fixups
+> >  *				(e.g., during copy_to_user() but fault failed?)
+> >  * @PF_RET_HWPOISON:		The page fault encountered poisoned pages
+> >  * @PF_RET_SIGNAL:		The page fault encountered poisoned pages
+> 
+> ??
+> 
+> >  * ...
+> >  */
+> > enum page_fault_retval {
+> > 	PF_RET_DONE = 0,
+> > 	PF_RET_BAD_AREA,
+> > 	PF_RET_ACCESS_ERR,
+> > 	PF_RET_KERN_FIXUP,
+> >         PF_RET_HWPOISON,
+> >         PF_RET_SIGNAL,
+> > 	...
+> > };
+> > 
+> > As a start we may still want to return some more information (perhaps still
+> > the vm_fault_t alongside?  Or another union that will provide different
+> > information based on different PF_RET_*).  One major thing is I see how we
+> > handle VM_FAULT_HWPOISON and also the fact that we encode something more
+> > into the bitmask on page sizes (VM_FAULT_HINDEX_MASK).
+> > 
+> > So the generic helper could, hopefully, hide the complexity of:
+> > 
+> >   - Taking and releasing of mmap lock
+> >   - find_vma(), and also relevant checks on access or stack handling
+> 
+> Umm...  arm is a bit special here:
+>                 if (addr < FIRST_USER_ADDRESS)
+> 			return VM_FAULT_BADMAP;
+> with no counterparts elsewhere.
 
-Yeah, I think you are right.
+For this specific case IIUC it's the same as bad_area.  VM_FAULT_BADMAP is
+further handled later in do_page_fault() there for either arm/arm64.
 
-And we *thought* we didn't need to disable interrupts like we do on
-x86, because (unlike x86), we get the fault address in an
-interrupt-safe way as an argument from palcode, rather than having to
-read it from a register.
+This reminded me this, on how arm defines the private retvals, while the
+generic ones grows and probably no one noticed they can collapse already..
 
-But now interrupts can race with that vmalloc case.
+#define VM_FAULT_BADMAP		0x010000
+#define VM_FAULT_BADACCESS	0x020000
 
-> is not just missing local_irq_save()/local_irq_restore() around that
-> fragment - if it finds pgd already present, it needs to check pte
-> before deciding to proceed to no_context.
+enum vm_fault_reason {
+        ...
+	VM_FAULT_HINDEX_MASK    = (__force vm_fault_t)0x0f0000,
+};
 
-Well, the logic there is that if the pgd was already present, then
-something *else* wasn't present, so no_context makes perfect sense.
+VM_FAULT_HINDEX_MASK is only used by VM_FAULT_HWPOISON_LARGE, so I think
+arm[64] could expect some surprise when it hit hugetlb hwpoison pages...
+maybe I should prepare a patch for arm.
 
-But that assumption does not hold for the "we raced with an interrupt"
-case, so yes, it's broken.
+> 
+> >   - handle_mm_fault() itself (of course...)
+> >   - detect signals
+> >   - handle page fault retries (so, in the new layer of retval there should
+> >     have nothing telling it to retry; it should always be the ultimate result)
+> 
+> agreed.
+> 
+>     - unlock mmap; don't leave that to caller.
+> 
+> >   - parse different errors into "what the arch code should do", and
+> >     generalize the common ones, e.g.
+> >     - OOM, do pagefault_out_of_memory() for user-mode
+> >     - VM_FAULT_SIGSEGV, which should be able to merge into PF_RET_BAD_AREA?
+> >     - ...
+> 
+> AFAICS, all errors in kernel mode => no_context.
+> 
+> > It'll simplify things if we can unify some small details like whether the
+> > -EFAULT above should contain a sigbus.
+> > 
+> > A trivial detail I found when I was looking at this is, x86_64 passes in
+> > different signals to kernelmode_fixup_or_oops() - in do_user_addr_fault()
+> > there're three call sites and each of them pass over a differerent signal.
+> > IIUC that will only make a difference if there's a nested page fault during
+> > the vsyscall emulation (but I may be wrong too because I'm new to this
+> > code), and I have no idea when it'll happen and whether that needs to be
+> > strictly followed.
+> 
+> From my (very incomplete so far) dig through that pile:
+> 	Q: do we still have the cases when handle_mm_fault() does
+> not return any of VM_FAULT_COMPLETED | VM_FAULT_RETRY | VM_FAULT_ERROR?
+> That gets treated as unlock + VM_FAULT_COMPLETED, but do we still need
+> that?
+> 	Q: can VM_FAULT_RETRY be mixed with anything in VM_FAULT_ERROR?
+> What locking, if that happens?
 
-And as you point out, it's doubly broken because "pgd_present()"
-doesn't actually do what it historically did, and what that code
-*thinks* it still does.
+For this one, I don't think they can be mixed.  IMHO RETRY only binds with
+a wait, so if we didn't wait and found issue, we return ERROR; if we
+decided to wait, we will try nothing more besides return after wait with
+the RETRY.  We should just never check any error at all if the wait
+happened.  Otherwise there's a bug of potential deadlock.
 
-So yeah, this looks all broken.
+I'll skip some details in this email either above or below; I agree
+there're so many trivial details to take care of to not break a thing.
 
-            Linus
+IMHO it'll be merely impossible to merge things across most (if not to say,
+all) archs.  It will need to be start from one or at least a few that still
+shares a major common base - I would still rely on x86 as a start - then we
+try to use the helper in as much archs as possible.
+
+Even on x86, I do also see challenges so I'm not sure whether a common
+enough routine can be abstracted indeed.  But I believe there's a way to do
+this because obviously we still see tons of duplicated logics falling
+around.  It may definitely need time to think out where's the best spot to
+start, and how to gradually move towards covering more archs starting from
+one.
+
+Thanks,
+
+> 	* details of storing the fault details (for ptrace, mostly)
+> vary a lot; no chance to unify, AFAICS.
+> 	* requirements for vma flags also differ; e.g. read fault on
+> alpha is explicitly OK with absence of VM_READ if VM_WRITE is there.
+> Probably should go by way of arm and pass the mask that must
+> have non-empty intersection with vma->vm_flags?  Because *that*
+> is very likely to be a part of ABI - mmap(2) callers that rely
+> upon the flags being OK for given architecture are quite possible.
+> 	* mmap lock is also quite variable in how it's taken;
+> x86 and arm have fun dance with trylock/search for exception handler/etc.
+> Other architectures do not; OTOH, there's a prefetch stuck in itanic
+> variant, with comment about mmap_sem being performance-critical...
+> 	* logics for stack expansion includes this twist:
+>         if (!(vma->vm_flags & VM_GROWSDOWN))
+>                 goto map_err;
+>         if (user_mode(regs)) {
+>                 /* Accessing the stack below usp is always a bug.  The
+>                    "+ 256" is there due to some instructions doing
+>                    pre-decrement on the stack and that doesn't show up
+>                    until later.  */
+>                 if (address + 256 < rdusp())
+>                         goto map_err;
+>         }
+>         if (expand_stack(vma, address))
+>                 goto map_err;
+> That's m68k; ISTR similar considerations elsewhere, but I could be
+> wrong.
+> 
+
+-- 
+Peter Xu
