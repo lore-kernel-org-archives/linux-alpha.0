@@ -1,71 +1,102 @@
-From: David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH v2 4/4] mm, arch: add generic implementation of
- pfn_valid() for FLATMEM
-Date: Fri, 3 Feb 2023 15:33:45 +0100
-Message-ID: <de9cb029-b36e-efe9-9d0e-46a382e889b5@redhat.com>
-References: <20230129124235.209895-1-rppt@kernel.org>
- <20230129124235.209895-5-rppt@kernel.org>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: [PATCH 00/22] cpu,sched: Mark arch_cpu_idle_dead() __noreturn
+Date: Fri,  3 Feb 2023 14:05:09 -0800
+Message-ID: <cover.1675461757.git.jpoimboe@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1675434830;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=QVQjsvvXC5vAa55XgbnpLQZ7ycccPtxDGUTVFYgFp7U=;
-	b=HFLzrleHVmbB/yMXmxu+7UXbc48chEGIyxGClGiXHVdXXZpxDw4AHy5naVJ/T1pZtlW98p
-	YQ7FZ5XL3lZ2dlqmTi+pGIFXWxOl6Q3vuFnAFgY9Gqz0Sk/DWlkqhaYdqjZpeq27WK6sjn
-	IMBSkvveM5MWX163BNj/Rm1LtkRTbSo=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1675434831;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=QVQjsvvXC5vAa55XgbnpLQZ7ycccPtxDGUTVFYgFp7U=;
-	b=YkMFWPGdOtwCaWTz3sSvnVhVAlrfBii+eUr9heNgK0zcWZ5uFBEjdbf5rSCms0FYPl7Lr/
-	bO0fnCEfCIHkDejKwepgZcmt3RpDroIX3KxaJm84hRwwiwlG15yQ5klR/qCKr4tHLiKOFb
-	huKGEOL7l9phcOkJbxz9I9IKwPCKr+Q=
-In-Reply-To: <20230129124235.209895-5-rppt@kernel.org>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Mike Rapoport <rppt@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, x86@kernel.org, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>, Greg Ungerer <gerg@linux-m68k.org>, linux-arch@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, Russell King <linux@armlinux.org.uk>, linux-csky@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>, Vineet Gupta <vgupta@kernel.org>, Matt Turner <mattst88@gmail.com>, linux-snps-arc@lists.infradead.org, linux-xtensa@linux-xtensa.org, Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org, linux-um@lists.infradead.org, l inux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, loongarch@lists.linux.dev, Stafford
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-mips-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1675461941;
+        bh=Yfz7LDRr9C5stKW6l039uMgeR9w4g6B/htPQVWCmvo0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hT/RSWKOfEB8jVVNR5UZ+ZbSj3FXLQ0xxyrY0heskGWE6khYrrAFQ76LYykM4i9o8
+         irBoG35w/xMGiAEWy8hEkn9Q1tIzJzxmXAljxc/iWYKnUXFrHhRYGep0nxJSoT9spP
+         4dB2u1vvWVrwhpcumbKdCJR0B2wTRgDCB5121JafDUwhKmELKjCdPeOrwXK5eLJDjK
+         tyz30wSd9T+Wd8Rt8ftd27zDruJpmQXIwZCt+CSiXATiejyCyi516LIlzhPyorZH8T
+         WTNmRq1LmErrBsj/ynnHP8Qccsk6gRrw9tAaXNUSu/osCJkwqecmj01XHOVKQ9ef7f
+         Ezggi0dcZPCBQ==
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org
+Cc: jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen
 
-On 29.01.23 13:42, Mike Rapoport wrote:
-> From: "Mike Rapoport (IBM)" <rppt@kernel.org>
-> 
-> Every architecture that supports FLATMEM memory model defines its own
-> version of pfn_valid() that essentially compares a pfn to max_mapnr.
-> 
-> Use mips/powerpc version implemented as static inline as a generic
-> implementation of pfn_valid() and drop its per-architecture definitions.
-> 
-> Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> Acked-by: Guo Ren <guoren@kernel.org>		# csky
-> Acked-by: Huacai Chen <chenhuacai@loongson.cn>	# LoongArch
-> Acked-by: Stafford Horne <shorne@gmail.com>	# OpenRISC
-> ---
+These are some minor changes to enable the __noreturn attribute for
+arch_cpu_idle_dead().  (If there are no objections, I can merge the
+entire set through the tip tree.)
 
-LGTM with the fixup
+Until recently [1], in Xen, when a previously offlined CPU was brought
+back online, it unexpectedly resumed execution where it left off in the
+middle of the idle loop by returning from play_dead() and its caller
+arch_cpu_idle_dead().
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+There were some clever hacks to make that work, but the behavior was
+surprising as do_idle() doesn't expect an offlined CPU to return from
+the dead in the middle of the function.
+
+Now that Xen has been fixed, make sure arch_cpu_idle_dead() never
+returns by marking it __noreturn.  This causes the compiler to complain
+if an arch-specific implementation might return.  It also improves code
+generation for both caller and callee.
+
+Patches 1-20 update the arch-specific implementations of the function so
+they don't actually return (even in error cases), and make that visible
+to the compiler.  That's typically done by ending the function with a
+call to another noreturn function, or with a BUG().
+
+Patch 21 fixes the weak implementation.
+
+Patch 22 actually adds the __noreturn attribute.
+
+[1] 076cbf5d2163 ("x86/xen: don't let xen_pv_play_dead() return")
+
+Josh Poimboeuf (22):
+  alpha/cpu: Expose arch_cpu_idle_dead()'s prototype declaration
+  alpha/cpu: Make sure arch_cpu_idle_dead() doesn't return
+  arm/cpu: Make sure arch_cpu_idle_dead() doesn't return
+  arm64/cpu: Mark cpu_die() __noreturn
+  csky/cpu: Make sure arch_cpu_idle_dead() doesn't return
+  ia64/cpu: Mark play_dead() __noreturn
+  loongarch/cpu: Make sure play_dead() doesn't return
+  loongarch/cpu: Mark play_dead() __noreturn
+  mips/cpu: Expose play_dead()'s prototype definition
+  mips/cpu: Make sure play_dead() doesn't return
+  mips/cpu: Mark play_dead() __noreturn
+  powerpc/cpu: Mark start_secondary_resume() __noreturn
+  sh/cpu: Make sure play_dead() doesn't return
+  sh/cpu: Mark play_dead() __noreturn
+  sh/cpu: Expose arch_cpu_idle_dead()'s prototype definition
+  sparc/cpu: Mark cpu_play_dead() __noreturn
+  x86/cpu: Make sure play_dead() doesn't return
+  x86/cpu: Mark play_dead() __noreturn
+  xtensa/cpu: Make sure cpu_die() doesn't return
+  xtensa/cpu: Mark cpu_die() __noreturn
+  sched/idle: Make sure weak version of arch_cpu_idle_dead() doesn't
+    return
+  sched/idle: Mark arch_cpu_idle_dead() __noreturn
+
+ arch/alpha/kernel/process.c      | 2 ++
+ arch/arm/kernel/smp.c            | 2 ++
+ arch/arm64/include/asm/smp.h     | 2 +-
+ arch/csky/kernel/smp.c           | 2 ++
+ arch/ia64/kernel/process.c       | 4 ++--
+ arch/loongarch/include/asm/smp.h | 2 +-
+ arch/loongarch/kernel/smp.c      | 2 +-
+ arch/mips/include/asm/smp.h      | 2 +-
+ arch/mips/kernel/smp-bmips.c     | 3 +++
+ arch/mips/loongson64/smp.c       | 1 +
+ arch/powerpc/include/asm/smp.h   | 2 +-
+ arch/sh/include/asm/smp-ops.h    | 5 +++--
+ arch/sh/kernel/idle.c            | 1 +
+ arch/sparc/include/asm/smp_64.h  | 2 +-
+ arch/x86/include/asm/smp.h       | 3 ++-
+ arch/x86/kernel/process.c        | 2 +-
+ arch/xtensa/include/asm/smp.h    | 2 +-
+ arch/xtensa/kernel/smp.c         | 2 ++
+ include/linux/cpu.h              | 2 +-
+ kernel/sched/idle.c              | 2 +-
+ tools/objtool/check.c            | 1 +
+ 21 files changed, 31 insertions(+), 15 deletions(-)
 
 -- 
-Thanks,
-
-David / dhildenb
+2.39.0
 
