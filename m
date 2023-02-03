@@ -1,21 +1,21 @@
 From: Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: [PATCH 02/22] alpha/cpu: Make sure arch_cpu_idle_dead() doesn't return
-Date: Fri,  3 Feb 2023 14:05:11 -0800
-Message-ID: <543dffab94755ae8460b22e273213cbb9a72a173.1675461757.git.jpoimboe@kernel.org>
+Subject: [PATCH 05/22] csky/cpu: Make sure arch_cpu_idle_dead() doesn't return
+Date: Fri,  3 Feb 2023 14:05:14 -0800
+Message-ID: <f860f3a1c1a53c437a99abc53e8f1a798aef6881.1675461757.git.jpoimboe@kernel.org>
 References: <cover.1675461757.git.jpoimboe@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675461944;
-        bh=jwTvhfv5jui0rr++LUZmPhaoB7Jg1TFf9qG4O7JtMhQ=;
+        s=k20201202; t=1675461950;
+        bh=bmnsttKFT2vt8nGO3aA3GL09+qkDKrC1WcjQyEBFYe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cnpsd3/vIh8cHXwxClTdwl8BAQrgBFDXI4Y6Wl3Yb8uKzKrXFmQjf4bLTlNruFSiS
-         qCw5Tpiq0hGpIKAA9/3qXe8LcDIqt+HCuF23fCoKLHz2nfcNB+D+KHlrgpbh1U43BD
-         pNBum+Kt2hjbGzQLzCB6YyRpQ9i7GLAoTP+jIcII2BpDc7lxQXJkdYAl8BjjAxWWgH
-         vPRzYJ9cYKNr4qu0wK5oRu28WzJ1AZPjIEQJEuuC7Tw5qVQ5zZYaRMYRLjPSmjNcm2
-         38kusvC4L8FnSTzlZ9mjTaLmjfcLnDzYkadBZuZ4/c+gcGOlxpmeKS17HnHSBp6y7I
-         T1Tc3i1z5DTLw==
+        b=YE3hiGiiwH26Qr/K5PJOS+hNPeo3XuuCzqosW8oIqc0E3EJH0XGyBuNtXvJJ+SDrq
+         JWmWDQWlcs+rYmML0rmuGU0SgDAh8zsWcPGWR/IeV9EOploqiQQdVC6qQ3Mjd98Kkp
+         qRir1VJnOqGiyahlKVWc3Q3eeabaKpe08lyVFr75tS/LESPPL1b4z/fZbqVUOKw35u
+         FmxMJjAAFN4EIAdXWaTf/CNUOG+n3QxS4Ayq9xfsJ63ylTjRXx8FH6ZqSSf9B9zOjo
+         Do4XcGJmVDfvZbC1YhgBETGpx9fbFkRBfVkORFUvu04PjtpY5bUIjcbGas4InxOYCL
+         W7lQoYSaYIxBA==
 In-Reply-To: <cover.1675461757.git.jpoimboe@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -31,21 +31,21 @@ the function into whatever code happens to be next.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/alpha/kernel/process.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/csky/kernel/smp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/alpha/kernel/process.c b/arch/alpha/kernel/process.c
-index 4813172547b5..94938f856545 100644
---- a/arch/alpha/kernel/process.c
-+++ b/arch/alpha/kernel/process.c
-@@ -63,6 +63,7 @@ void arch_cpu_idle(void)
- void arch_cpu_idle_dead(void)
- {
- 	wtint(INT_MAX);
+diff --git a/arch/csky/kernel/smp.c b/arch/csky/kernel/smp.c
+index b45d1073307f..0ec20efaf5fd 100644
+--- a/arch/csky/kernel/smp.c
++++ b/arch/csky/kernel/smp.c
+@@ -317,5 +317,7 @@ void arch_cpu_idle_dead(void)
+ 		"jmpi	csky_start_secondary"
+ 		:
+ 		: "r" (secondary_stack));
++
 +	BUG();
  }
- #endif /* ALPHA_WTINT */
- 
+ #endif
 -- 
 2.39.0
 
