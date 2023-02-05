@@ -1,76 +1,96 @@
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: [PATCH 05/22] csky/cpu: Make sure arch_cpu_idle_dead() doesn't
- return
-Date: Fri, 3 Feb 2023 18:29:32 -0800
-Message-ID: <20230204022932.k24laszjs3v4bc3v@treble>
-References: <cover.1675461757.git.jpoimboe@kernel.org>
- <f860f3a1c1a53c437a99abc53e8f1a798aef6881.1675461757.git.jpoimboe@kernel.org>
- <CAJF2gTSKe3ve4_rsOYpmSBOyUSU5rpLHyijn9i2-i+WfLqxzYw@mail.gmail.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [RFC][PATCHSET] VM_FAULT_RETRY fixes
+Date: Sun, 5 Feb 2023 05:10:21 +0000
+Message-ID: <Y986PWjDy9YbHBEw@ZenIV>
+References: <Y9lz6yk113LmC9SI@ZenIV>
+ <CAHk-=whf73Vm2U3jyTva95ihZzefQbThZZxqZuKAF-Xjwq=G4Q@mail.gmail.com>
+ <Y9mD1qp/6zm+jOME@ZenIV>
+ <CAHk-=wjiwFzEGd_60H3nbgVB=R_8KTcfUJmXy=hSXCvLrXQRFA@mail.gmail.com>
+ <Y9mM5wiEhepjJcN0@ZenIV>
+ <CAHk-=wjNwwnBckTo8HLSdsd1ndoAR=5RBoZhdOyzhsnDAYWL9g@mail.gmail.com>
+ <Y9rCBqwbLlLf1fHe@x1n>
+ <Y9rlI6d5J2Y/YNQ+@ZenIV>
+ <Y9w/lrL6g4yauXz4@x1n>
+ <Y92mP1GT28KfnPEQ@ZenIV>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675477775;
-        bh=A31zSwlgRwgvDbdSE2DEbrUbqrKSeAqq7FjkMqnStZw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sys04XZk8jqh8pRKO4mghhMIaZOJaNysJlIGALRMdUzBCxAI7G298EYXo2zlMRvSr
-         v1L58VM1ZHs7x81UItVoBpt9wcZHmGDg5tNF+6JViYATk8zllrsyuNPci/+h9ThQNC
-         KW//e75t+wHxZCqRUkgsCKq4iGfhZGkJ2TH63kQJ9oR+CjCAQa7/KkH2zX9Gq7ZUzT
-         JuXMK4xLEjNS6GRz1ijKyXH/9LrhEwsou1WQe6fwvelXFDxVFZwSA9iJKcPffsY87l
-         1jDSihH/HYx9/w9lxJwcSwTV40QPZPI04Z41AbBuYIqH66hVf0PVr4wNkI33bF0LF/
-         Ts2VwRwiP4moA==
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Tr6hHp8aMuyix7W8MPsJcy4qd0T+bfV4ku4SlFkeikM=; b=IPFSEa3/kiVAIcszhJNII+WRya
+        neT68DS6Txm3V+3RoFqVcUT8ACqt2krppBrR0nE0MhgP5v5mx5J+FkCtxLK4NuL44MCdybBXJ3tiE
+        BCK8F3NrQgjudmCQN5DOg8ilOhP8rpQA4KGJCr/zYnDwePVNc7hXeYxhSu01Hl/Whg14RPN+t+Qjn
+        FFeEglPsiR3VQu2OUXAVKINJi5E1JXxnZ627BUZs2iReC5LcTJ5xUmA3LYosBCGyMtMSiIolQQlFF
+        qmHMDBAt2OmyN2m/y5BLyEfjGG8PEi8Syc5yKEtFHYC8gaQDfjK0zoT96DVm80gtbJv84vXLTwm54
+        +Fpb4OAg==;
 Content-Disposition: inline
-In-Reply-To: <CAJF2gTSKe3ve4_rsOYpmSBOyUSU5rpLHyijn9i2-i+WfLqxzYw@mail.gmail.com>
+In-Reply-To: <Y92mP1GT28KfnPEQ@ZenIV>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Guo Ren <guoren@kernel.org>
-Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@ali
+To: Peter Xu <peterx@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org
 
-On Sat, Feb 04, 2023 at 09:12:31AM +0800, Guo Ren wrote:
-> On Sat, Feb 4, 2023 at 6:05 AM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> >
-> > arch_cpu_idle_dead() doesn't return.  Make that more explicit with a
-> > BUG().
-> >
-> > BUG() is preferable to unreachable() because BUG() is a more explicit
-> > failure mode and avoids undefined behavior like falling off the edge of
-> > the function into whatever code happens to be next.
-> >
-> > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > ---
-> >  arch/csky/kernel/smp.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/arch/csky/kernel/smp.c b/arch/csky/kernel/smp.c
-> > index b45d1073307f..0ec20efaf5fd 100644
-> > --- a/arch/csky/kernel/smp.c
-> > +++ b/arch/csky/kernel/smp.c
-> > @@ -317,5 +317,7 @@ void arch_cpu_idle_dead(void)
-> >                 "jmpi   csky_start_secondary"
-> >                 :
-> >                 : "r" (secondary_stack));
-> > +
-> > +       BUG();
-> Why not:
-> diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
-> index f26ab2675f7d..1d3bf903add2 100644
-> --- a/kernel/sched/idle.c
-> +++ b/kernel/sched/idle.c
-> @@ -285,6 +285,7 @@ static void do_idle(void)
->                         tick_nohz_idle_stop_tick();
->                         cpuhp_report_idle_dead();
->                         arch_cpu_idle_dead();
-> +                       BUG();
+On Sat, Feb 04, 2023 at 12:26:39AM +0000, Al Viro wrote:
+> On Thu, Feb 02, 2023 at 05:56:22PM -0500, Peter Xu wrote:
+> 
+> > IMHO it'll be merely impossible to merge things across most (if not to say,
+> > all) archs.  It will need to be start from one or at least a few that still
+> > shares a major common base - I would still rely on x86 as a start - then we
+> > try to use the helper in as much archs as possible.
+> > 
+> > Even on x86, I do also see challenges so I'm not sure whether a common
+> > enough routine can be abstracted indeed.  But I believe there's a way to do
+> > this because obviously we still see tons of duplicated logics falling
+> > around.  It may definitely need time to think out where's the best spot to
+> > start, and how to gradually move towards covering more archs starting from
+> > one.
+> 
+> FWIW, after going through everything from alpha to loongarch (in alphabetic
+> order, skipping the itanic) the following seems to be suitable for all of
+> them:
+> 
+> generic_fault(address, flags, vm_flags, regs)
+[snip]
 
-Without the BUG() in csky arch_cpu_idle_dead(), the compiler will warn
-about arch_cpu_idle_dead() returning, because it's marked __noreturn but
-doesn't clearly return (as far as the compiler knows).
+After looking through other architectures: that needs changes.
 
-And we want it marked __noreturn so we'll be more likely to catch such
-bugs at build time.
+AFAICS, the right approach would be to add a pointer to (uninitialized)
+kernel_siginfo.  And let it pass the signal number, etc. through that.
+That way all "we want to raise a signal" return values fold together.
+*IF* the page fault wants to do something extra on SIGSEGV, but not on
+SIGBUS (we have several such), it can key that upon info.si_signo.
 
-And as a bonus we get better code generation and clearer code semantics
-which helps both humans and tooling understand the intent of the code.
+Speaking of SIGSEGV, there's a fun situation with VM_FAULT_SIGSEGV:
 
--- 
-Josh
+1) Only x86 and ppc generate VM_FAULT_SIGSEGV in handle_mm_fault()
+without hitting WARN_ON_ONCE().  And neither actually returns it
+to page fault handler - the conditions that would've led to that
+return value (pkey stuff) are checked in the page fault handler
+and handle_mm_fault() is not called in such cases.
+
+2) on alpha, hexagon, itanic, loongarch, microblaze, mips, nios2,
+openrisc, sparc, um and xtensa #PF handler would end up with SEGV_ACCERR
+if it saw VM_FAULT_SIGNAL.
+
+3) on arm, arm64, arc, m68k, powerpc, s390, sh and x86 - SEGV_MAPERR
+(except that neither x86 nor powerpc #PF ever see it)
+
+4) on csky and riscv it would end up with BUG()
+
+5) on parisc it's complicated^Wbroken - it tries to decide which
+one to use after having unlocked mmap and looking at vma in process.
+
+As it is, VM_FAULT_SIGSEGV had ended up as "we need to report some
+error to get_user_pages() and similar callers in cases when
+page fault handler would've detected pkey problem and refused
+to call handle_mm_fault()", with several places where it's
+"we had been called with bogus arguments; printk and return
+something to indicate the things had gone wrong".  It used to
+have other uses, but this is what it had become now - grep and
+you'll see.
+
+AFAICS, all checks for it in page fault handlers are pretty much
+dead code...
