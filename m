@@ -1,42 +1,49 @@
-From: =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Subject: Re: [PATCH 09/10] riscv: fix livelock in uaccess
-Date: Mon, 06 Feb 2023 21:06:31 +0100
-Message-ID: <87h6vyimns.fsf@all.your.base.are.belong.to.us>
-References: <Y9lz6yk113LmC9SI@ZenIV> <Y9l02DvS6CYThTEG@ZenIV>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: Re: [PATCH 12/22] powerpc/cpu: Mark start_secondary_resume()
+ __noreturn
+Date: Mon, 6 Feb 2023 14:22:02 -0800
+Message-ID: <20230206222202.zreg3pyhynhvyggy@treble>
+References: <cover.1675461757.git.jpoimboe@kernel.org>
+ <b5d065218265e79daa23f82bb84efc6a7ea120fc.1675461757.git.jpoimboe@kernel.org>
+ <87v8kfdp7l.fsf@mpe.ellerman.id.au>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-parisc-owner@vger.kernel.org>
+Return-path: <sparclinux-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675713994;
-        bh=3Yg7D05MkzSc67p0IllIeOFYuHpgtoWHEDyGg89cEn4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=TrFanAIL/NQxsb91JvfkKgGGInV2GbJv83xXwVospLmonVoYF0qugCWhOe08RPwaX
-         KSz2R1yQLjbocys0qpEKTIJcvGgasxF/iufKfZWM+KLnESrINJ3xvu3fY01VN9IBBd
-         A14tJwz1NoSgpuJDM1gKfn9n4bZjtVGyWg1FSCcjcagioOTF4tpLoxfVEQ3ZgZwQ/X
-         1DTz425W+yIiGefj9MW9+XxaZDTOhpCSDxfOWIbHdEj1cNpx4bg45I7e94f2NXzAcH
-         p/5XOjHti0H5HYdlYMgGbFgyQK/fMQnqBl9p3+VIiziorpSavNm5enxgwyrcpj7Rpb
-         iz3O+/RqhOzlA==
-In-Reply-To: <Y9l02DvS6CYThTEG@ZenIV>
+        s=k20201202; t=1675722127;
+        bh=g8nY4KWQRGHZ+UEBU3IfsGHHp9POeugLWf+ks7MhlYI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ku27bb49TXnifj4vDKUwLt//IhS+AuKgNZHjSBzmgIygXsWngoTvqzjsyI4aaPcuH
+         Ne/GMb6QblTp2Jv681blYtCgjkXaPsQUgkrsec8L+xRVWuKD28hd8t9BRChWBzJwZK
+         gFEWXSU7jaZZgPnPMEvOqqaXTfNHVDYUbsIUYWKlmuEb7nAEqsRD53T6hGhLZYqx/u
+         DQUcYnhTaFCk/Smt9vORx+U2SLIPq7vHqyxTh+SxZ9//C/gkazIzBXyvCtcwtDa+nk
+         Ec2/QPURQbIa9r42wgKqNXQHC6PZxrciIKrlgpzWDw6z2c/ntsIbU896+w3wVQ78cR
+         a9GpVI+CKZooA==
+Content-Disposition: inline
+In-Reply-To: <87v8kfdp7l.fsf@mpe.ellerman.id.au>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Al Viro <viro@zeniv.linux.org.uk>, linux-arch@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Mark Rutland <mark.rutland@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Michael Ellerman <mpe@ellerman.id.au>
+Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alie
 
-Al Viro <viro@zeniv.linux.org.uk> writes:
+On Mon, Feb 06, 2023 at 10:10:22PM +1100, Michael Ellerman wrote:
+> Josh Poimboeuf <jpoimboe@kernel.org> writes:
+> > start_secondary_resume() doesn't return.  Annotate it as such.  By
+> > extension this also makes arch_cpu_idle_dead() noreturn.
+> 
+> Can we also mark arch_cpu_idle_dead() (the C function) __noreturn ?
+> 
+> Seems like it would be good documentation, even if it's not required
+> once the generic prototype is __noreturn.
 
-> riscv equivalent of 26178ec11ef3 "x86: mm: consolidate VM_FAULT_RETRY han=
-dling"
-> If e.g. get_user() triggers a page fault and a fatal signal is caught, we=
- might
-> end up with handle_mm_fault() returning VM_FAULT_RETRY and not doing anyt=
-hing
-> to page tables.  In such case we must *not* return to the faulting insn -
-> that would repeat the entire thing without making any progress; what we n=
-eed
-> instead is to treat that as failed (user) memory access.
->
-> Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Yeah, agreed.  Maybe I'll do that (for all the implementations) with
+patch 22.
 
-Reproduced with Mark's userland program -- thanks!
+> But not a show-stopper.
+> 
+> Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
 
-Tested-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
+Thanks!
+
+-- 
+Josh
