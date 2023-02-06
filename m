@@ -1,56 +1,54 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH 12/22] powerpc/cpu: Mark start_secondary_resume()
- __noreturn
-Date: Mon, 06 Feb 2023 22:10:22 +1100
-Message-ID: <87v8kfdp7l.fsf@mpe.ellerman.id.au>
-References: <cover.1675461757.git.jpoimboe@kernel.org>
- <b5d065218265e79daa23f82bb84efc6a7ea120fc.1675461757.git.jpoimboe@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [RFC][PATCHSET] VM_FAULT_RETRY fixes
+Date: Mon, 6 Feb 2023 13:08:09 +0100
+Message-ID: <CAMuHMdWtU=2Uq2QDu+eiBLve=uwJ4byU_1K2dKuUTH8wDUHoaw@mail.gmail.com>
+References: <Y9lz6yk113LmC9SI@ZenIV> <Y9pD+TMP+/SyfeJm@FVFF77S0Q05N>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1675681839;
-        bh=kUcid2K08WtpFrwk3dq6n2jc2ZZxMaSNsif8b2qLpcI=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=JSr9bUqckLWxlQvgXrqHdLKjhZNKCyo4/W+R7iqEdoTwQny8JL4fA9p8KLiKopoBY
-         5u53AQEtGGXSUIVhYTsKoGTQqHAWk/L2OGiEhn+0/8fSth4VXKAS3aT226D33i5p+m
-         FdbPDX2xoyL2dmmxuKSPL38q4OEI/nwe/wpGmzrwBTQTovoqi6LZ4omZBFLcu1QcvH
-         OCmTE96dRBgZqYLhxf1uVZpSZUhhjl9pivy58AnZ8D9ntUKLxW5BuUV2Rkfq3DMiAR
-         1E1dDbWxoKsiTVWbw5buAHInDRJ1Jkci48lbw53vA/21E8Kh226KSjdHUbEkKMeduf
-         u7otQ9CqmaTuA==
-In-Reply-To: <b5d065218265e79daa23f82bb84efc6a7ea120fc.1675461757.git.jpoimboe@kernel.org>
+In-Reply-To: <Y9pD+TMP+/SyfeJm@FVFF77S0Q05N>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Josh Poimboeuf <jpoimboe@kernel.org>, linux-kernel@vger.kernel.org
-Cc: jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x8
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, Michal Simek <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>
 
-Josh Poimboeuf <jpoimboe@kernel.org> writes:
-> start_secondary_resume() doesn't return.  Annotate it as such.  By
-> extension this also makes arch_cpu_idle_dead() noreturn.
+Hi Mark,
 
-Can we also mark arch_cpu_idle_dead() (the C function) __noreturn ?
+On Wed, Feb 1, 2023 at 11:52 AM Mark Rutland <mark.rutland@arm.com> wrote:
+> On Tue, Jan 31, 2023 at 08:02:51PM +0000, Al Viro wrote:
+> > On x86 it had been noticed and fixed back in 2014, in 26178ec11ef3 "x86:
+> > mm: consolidate VM_FAULT_RETRY handling".  Some of the other architectures
+> > had it dealt with later - e.g. arm in 2017, the fix is 746a272e44141
+> > "ARM: 8692/1: mm: abort uaccess retries upon fatal signal"; xtensa -
+> > in 2021, the fix is 7b9acbb6aad4f "xtensa: fix uaccess-related livelock
+> > in do_page_fault", etc.
+> >
+> > However, it never had been done on a bunch of architectures - the
+> > current mainline still has that bug on alpha, hexagon, itanic, m68k,
+> > microblaze, nios2, openrisc, parisc, riscv and sparc (both sparc32 and
+> > sparc64).  Fixes are trivial, but I've no way to test them for most
+> > of those architectures.
+>
+> FWIW, when I fixed arm and arm64 back in 2017, I did report the issue here with
+> a test case (and again in 2021, with maintainers all explciitly Cc'd):
+>
+>   https://lore.kernel.org/lkml/20170822102527.GA14671@leverpostej/
+>   https://lore.kernel.org/linux-arch/20210121123140.GD48431@C02TD0UTHF1T.local/
+>
+> ... so if anyone has access to those architectures, that test might be useful
+> for verifying the fix.
 
-Seems like it would be good documentation, even if it's not required
-once the generic prototype is __noreturn.
+Thanks a lot! This showed the problem on m68k, and confirmed Al's fix.
 
-But not a show-stopper.
+I'll give it a try on a few more systems later...
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+Gr{oetje,eeting}s,
 
-cheers
+                        Geert
 
-> diff --git a/arch/powerpc/include/asm/smp.h b/arch/powerpc/include/asm/smp.h
-> index f63505d74932..cfd42ca8765c 100644
-> --- a/arch/powerpc/include/asm/smp.h
-> +++ b/arch/powerpc/include/asm/smp.h
-> @@ -66,7 +66,7 @@ void start_secondary(void *unused);
->  extern int smp_send_nmi_ipi(int cpu, void (*fn)(struct pt_regs *), u64 delay_us);
->  extern int smp_send_safe_nmi_ipi(int cpu, void (*fn)(struct pt_regs *), u64 delay_us);
->  extern void smp_send_debugger_break(void);
-> -extern void start_secondary_resume(void);
-> +extern void __noreturn start_secondary_resume(void);
->  extern void smp_generic_give_timebase(void);
->  extern void smp_generic_take_timebase(void);
->  
-> -- 
-> 2.39.0
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
