@@ -1,85 +1,56 @@
-From: Guo Ren <guoren@kernel.org>
-Subject: Re: [PATCH 05/22] csky/cpu: Make sure arch_cpu_idle_dead() doesn't return
-Date: Mon, 6 Feb 2023 11:11:53 +0800
-Message-ID: <CAJF2gTSrGNm3xkwzws4uh1bv__1XYFCh322MJtk2ObQmv1_nEA@mail.gmail.com>
-References: <cover.1675461757.git.jpoimboe@kernel.org> <f860f3a1c1a53c437a99abc53e8f1a798aef6881.1675461757.git.jpoimboe@kernel.org>
- <CAJF2gTSKe3ve4_rsOYpmSBOyUSU5rpLHyijn9i2-i+WfLqxzYw@mail.gmail.com> <20230204022932.k24laszjs3v4bc3v@treble>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 12/22] powerpc/cpu: Mark start_secondary_resume()
+ __noreturn
+Date: Mon, 06 Feb 2023 22:10:22 +1100
+Message-ID: <87v8kfdp7l.fsf@mpe.ellerman.id.au>
+References: <cover.1675461757.git.jpoimboe@kernel.org>
+ <b5d065218265e79daa23f82bb84efc6a7ea120fc.1675461757.git.jpoimboe@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1675653127;
-        bh=SEHqDj0pecZaoDvI2TxfvISMCoNXpVJslROmtkQHTl0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aBHWxbUE1qscXgToVSLDbDbOTBJx5ol3QAloFKF6quHuxSLDc6bLN0hEb6oLgxGmy
-         MnLxdeRrgyeBdJ9pGDDQDN8qL5E9eF3ZREg1BlrIswbxzqSGfwNgKGkpU7eR7l/H+i
-         Vbq9BwU/inl0wIHB7aGtD4Z3NEhanBgFaoByYV66gksXGt6rGyMFlx2u7/LVAOMEK5
-         3UQMP1Lhs7EYtOpLuMlrIWY7J57uJMJDeSdRPH5Gq31PiUX/XFKpgBmcKERl5TtGxs
-         zZmDid7aciqyecTQEc01AFRGPklMTl/8Ni72awcEbNNyPoB7lSyFUULT/gnF3yjq+a
-         QYealvajIFRZg==
-In-Reply-To: <20230204022932.k24laszjs3v4bc3v@treble>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1675681839;
+        bh=kUcid2K08WtpFrwk3dq6n2jc2ZZxMaSNsif8b2qLpcI=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=JSr9bUqckLWxlQvgXrqHdLKjhZNKCyo4/W+R7iqEdoTwQny8JL4fA9p8KLiKopoBY
+         5u53AQEtGGXSUIVhYTsKoGTQqHAWk/L2OGiEhn+0/8fSth4VXKAS3aT226D33i5p+m
+         FdbPDX2xoyL2dmmxuKSPL38q4OEI/nwe/wpGmzrwBTQTovoqi6LZ4omZBFLcu1QcvH
+         OCmTE96dRBgZqYLhxf1uVZpSZUhhjl9pivy58AnZ8D9ntUKLxW5BuUV2Rkfq3DMiAR
+         1E1dDbWxoKsiTVWbw5buAHInDRJ1Jkci48lbw53vA/21E8Kh226KSjdHUbEkKMeduf
+         u7otQ9CqmaTuA==
+In-Reply-To: <b5d065218265e79daa23f82bb84efc6a7ea120fc.1675461757.git.jpoimboe@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@ali
+To: Josh Poimboeuf <jpoimboe@kernel.org>, linux-kernel@vger.kernel.org
+Cc: jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x8
 
-On Sat, Feb 4, 2023 at 10:29 AM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
->
-> On Sat, Feb 04, 2023 at 09:12:31AM +0800, Guo Ren wrote:
-> > On Sat, Feb 4, 2023 at 6:05 AM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> > >
-> > > arch_cpu_idle_dead() doesn't return.  Make that more explicit with a
-> > > BUG().
-> > >
-> > > BUG() is preferable to unreachable() because BUG() is a more explicit
-> > > failure mode and avoids undefined behavior like falling off the edge of
-> > > the function into whatever code happens to be next.
-> > >
-> > > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > > ---
-> > >  arch/csky/kernel/smp.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >
-> > > diff --git a/arch/csky/kernel/smp.c b/arch/csky/kernel/smp.c
-> > > index b45d1073307f..0ec20efaf5fd 100644
-> > > --- a/arch/csky/kernel/smp.c
-> > > +++ b/arch/csky/kernel/smp.c
-> > > @@ -317,5 +317,7 @@ void arch_cpu_idle_dead(void)
-> > >                 "jmpi   csky_start_secondary"
-> > >                 :
-> > >                 : "r" (secondary_stack));
-> > > +
-> > > +       BUG();
-> > Why not:
-> > diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
-> > index f26ab2675f7d..1d3bf903add2 100644
-> > --- a/kernel/sched/idle.c
-> > +++ b/kernel/sched/idle.c
-> > @@ -285,6 +285,7 @@ static void do_idle(void)
-> >                         tick_nohz_idle_stop_tick();
-> >                         cpuhp_report_idle_dead();
-> >                         arch_cpu_idle_dead();
-> > +                       BUG();
->
-> Without the BUG() in csky arch_cpu_idle_dead(), the compiler will warn
-> about arch_cpu_idle_dead() returning, because it's marked __noreturn but
-> doesn't clearly return (as far as the compiler knows).
->
-> And we want it marked __noreturn so we'll be more likely to catch such
-> bugs at build time.
->
-> And as a bonus we get better code generation and clearer code semantics
-> which helps both humans and tooling understand the intent of the code.
-Thx for the clarification.
+Josh Poimboeuf <jpoimboe@kernel.org> writes:
+> start_secondary_resume() doesn't return.  Annotate it as such.  By
+> extension this also makes arch_cpu_idle_dead() noreturn.
 
-Acked-by: Guo Ren <guoren@kernel.org>
+Can we also mark arch_cpu_idle_dead() (the C function) __noreturn ?
 
->
-> --
-> Josh
+Seems like it would be good documentation, even if it's not required
+once the generic prototype is __noreturn.
 
+But not a show-stopper.
 
+Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
 
--- 
-Best Regards
- Guo Ren
+cheers
+
+> diff --git a/arch/powerpc/include/asm/smp.h b/arch/powerpc/include/asm/smp.h
+> index f63505d74932..cfd42ca8765c 100644
+> --- a/arch/powerpc/include/asm/smp.h
+> +++ b/arch/powerpc/include/asm/smp.h
+> @@ -66,7 +66,7 @@ void start_secondary(void *unused);
+>  extern int smp_send_nmi_ipi(int cpu, void (*fn)(struct pt_regs *), u64 delay_us);
+>  extern int smp_send_safe_nmi_ipi(int cpu, void (*fn)(struct pt_regs *), u64 delay_us);
+>  extern void smp_send_debugger_break(void);
+> -extern void start_secondary_resume(void);
+> +extern void __noreturn start_secondary_resume(void);
+>  extern void smp_generic_give_timebase(void);
+>  extern void smp_generic_take_timebase(void);
+>  
+> -- 
+> 2.39.0
