@@ -1,39 +1,37 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: Re: API for setting multiple PTEs at once
-Date: Wed, 8 Feb 2023 13:35:13 +0000
-Message-ID: <Y+OlEUqJotSN3tLV@casper.infradead.org>
-References: <Y9wnr8SGfGGbi/bk@casper.infradead.org>
- <Y+K0O35jNNzxiXE6@casper.infradead.org>
- <ba99ed28-61e4-4acd-ce17-338f5a49ef26@ghiti.fr>
- <b44d5dc7-ee7a-80e0-5401-829bf5740de5@intel.com>
+From: David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH mm-unstable v1 04/26] arm/mm: support
+ __HAVE_ARCH_PTE_SWP_EXCLUSIVE
+Date: Wed, 8 Feb 2023 15:12:06 +0100
+Message-ID: <39fd91e3-c93b-23c6-afc6-cbe473bb0ca9@redhat.com>
+References: <20230113171026.582290-1-david@redhat.com>
+ <20230113171026.582290-5-david@redhat.com> <Y+GcDFMNHw2cdDN1@sirena.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:Content-Type:
+	Content-Transfer-Encoding:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:In-Reply-To:Subject:From:References:Cc:To:
+	MIME-Version:Date:Message-ID:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=SQPkAD5nVUK+fDz6Us93pDLVULl5Stj3c60H/rr9/Y4=; b=In3op+YVPc4l0Z
-	Mgw/0jJF0TeCBKpvK8whe6ysCcZyZ8j9LrNZgMpKRg/loBLzW5G+mVXi5Sb9bhpf59Hqh+2sIsjvT
-	7DUnge9ADS1pruPWJykAyjKrN01iuFQVEnbfIX0oSla5Zl5ukKB9M454/YZUb7HZjgrVSWq9Fl6er
-	C744VaDcf5ioD1L04+eCJF0BG3gWm9hn80LxaXXCeel2ufvR46Csv7We1LvUNrs8b8VwCxHYnNc08
-	POHEZiA9NIn+3oln/9Zm+P5asWIN3wZkzG9KeqJvwtSQFxLhFVtMvaxOGXAHhU59P0CKuyWK6Q5wi
-	xQwfuz0aRkIEkn8St4Zg==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-	Sender:Reply-To:Content-ID:Content-Description;
-	bh=PMp0gXsVfVTqwcUhaqwEjQxmo111+Dr+n4G2THRRgz4=; b=nv1U4Cs2toJAUKTbNLnEh3GkOY
-	7TafoARROVHQSw9xJfz56g9qot5qCf4w6m4SWQjlNps1Oe5T2sHs3KDsj7DDyHZsEule4Fc1EDsFi
-	1ot7N3tXnfTdb0UAUOhw7OBfMJkQv96CLrRBbzSzT9W9CzOllOmN6OP7nihODAjH1GrmhpTSrxXbw
-	+FQ3rTbD5HBPPVYU6nfEd7rZEnlmQKhiACj6Chvr3AVC+hWz7Ee5CIY899SSczPizMsfNgyHKXZEr
-	J+yG9hswiuu8WG3XCLcbAsJkbqGmrnhF93OGExxTKKUafWDJ+5Nvu8CB5rz+/ij9RclHTGYLDqeqN
-	r07kkj+g==;
-Content-Disposition: inline
-In-Reply-To: <b44d5dc7-ee7a-80e0-5401-829bf5740de5@intel.com>
+	List-Owner; bh=xpvhuCRz7KXfBQnknLM/Aee73VYLgAoWw8KuyeYAd2c=; b=zM7/zNXorKRacl
+	daUqOFiz2j5UpwMrB9fXyPyhNVXbmEUDNNZFQbXGTM+eejwBtIZTU2ORiwukXCkEDuUMPyr6IfrvY
+	0zVLedl/ZJhnhkg2sY97OuGDEuiGFsVZtoAyFw75l+5pErwfgTc4yiHd0SIrwsaLz69DPKJ/gdfCP
+	G6yZLIJWvHRT4wWISMZ3ODon195Ft4LAfVFKQoGBaokVgGgR8FJ43ovqqwVIsNZTmcPPFNYS+prig
+	H2I+lQQ8imLU0TMp3kdBALNop1RNZDp/6Elmot77np3X4WGu1EQ3TWMWBS2xwNyfMNuDHT24tEEd2
+	HuOGOEPBAQc3hJGXV6vA==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1675865533;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=MVdXAMmBKMdGVdB031db9qoOwXwbq1WnNqDyKF+cm50=;
+	b=O/qlPQ7axEO3G5894PpwLpdPSc9yoY1hkqsVMsSJpfHb/iqj/19uxhzPrG4zJMCp6sCXd9
+	hbbr6arzZHrgvFbqxhAYUH2jeMs5VEARXrdU6u+Am2rsdWL6T2AW+KnuYIo6v3sCaG//lm
+	bJzzpx0NrXxqPewtgncyu+w0dOXmzfE=
+In-Reply-To: <Y+GcDFMNHw2cdDN1@sirena.org.uk>
+Content-Language: en-US
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
  <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
@@ -44,51 +42,75 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
  <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
 Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: "Yin, Fengwei" <fengwei.yin@intel.com>
-Cc: Alexandre Ghiti <alex@ghiti.fr>, linux-arch@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, linux-csky@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev, openrisc@lists.librecores.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Mark Brown <broonie@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Hugh Dickins <hughd@google.com>, John Hubbard <jhubbard@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>, Mike Rapoport <rppt@linux.ibm.com>, Yang Shi <shy828301@gmail.com>, Vlastimil Babka <vbabka@suse.cz>, Nadav Amit <namit@vmware.com>, Andrea Arcangeli <aarcange@redhat.com>, Peter Xu <peterx@redhat.com>, linux-mm@kvack.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
 
-On Wed, Feb 08, 2023 at 08:09:00PM +0800, Yin, Fengwei wrote:
-> =
+On 07.02.23 01:32, Mark Brown wrote:
+> On Fri, Jan 13, 2023 at 06:10:04PM +0100, David Hildenbrand wrote:
+>> Let's support __HAVE_ARCH_PTE_SWP_EXCLUSIVE by stealing one bit from the
+>> offset. This reduces the maximum swap space per file to 64 GiB (was 128
+>> GiB).
+>>
+>> While at it drop the PTE_TYPE_FAULT from __swp_entry_to_pte() which is
+>> defined to be 0 and is rather confusing because we should be dealing
+>> with "Linux PTEs" not "hardware PTEs". Also, properly mask the type in
+>> __swp_entry().
+> 
+> Today's -next (and at least back to Friday, older logs are unclear - I
+> only noticed -next issues today) fails to NFS boot on an AT91SAM9G20-EK
+> (an old ARMv5 platform) with multi_v5_defconfig, a bisect appears to
+> point to this patch (20aae9eff5acd8f5 in today's -next) as the culprit.
 
-> =
+It's been in -next for quite a while, thanks for the report!
 
-> On 2/8/2023 7:23 PM, Alexandre Ghiti wrote:
-> > Hi Matthew,
-> > =
+> 
+> The failure happens at some point after starting userspace, the kernel
+> starts spamming the console with messages in the form:
+> 
+>      get_swap_device: Bad swap file entry 10120d20
+> 
 
-> > On 2/7/23 21:27, Matthew Wilcox wrote:
-> >> On Thu, Feb 02, 2023 at 09:14:23PM +0000, Matthew Wilcox wrote:
-> >>> For those of you not subscribed, linux-mm is currently discussing
-> >>> how best to handle page faults on large folios.=A0 I simply made it w=
-ork
-> >>> when adding large folio support.=A0 Now Yin Fengwei is working on
-> >>> making it fast.
-> >> OK, here's an actual implementation:
-> >>
-> >> https://lore.kernel.org/linux-mm/20230207194937.122543-3-willy@infrade=
-ad.org/
-> >>
-> >> It survives a run of xfstests.=A0 If your architecture doesn't store i=
-ts
-> >> PFNs at PAGE_SHIFT, you're going to want to implement your own set_pte=
-s(),
-> > =
+_swap_info_get() tells us that the swp type seems to be bad.
+I assume we're dealing with a migration entry, if swap is disabled, and fail to
+detect is_migration_entry() correctly because the type is messed up.
 
-> > =
+Could you give the following a test?
 
-> > riscv stores its pfn at PAGE_PFN_SHIFT instead of PAGE_SHIFT, se we nee=
-d to reimplement set_ptes. But I have been playing with your patchset and w=
-e never fall into the case where set_ptes is called with nr > 1, any idea w=
-hy? I booted a large ubuntu defconfig and launched will_it_scale.page_fault=
-4.
-> Need to use xfs filesystem to get large folio for file mapping.
-> Other filesystem may be also OK. But I just tried xfs. Thanks.
 
-XFS is certainly the flagship filesystem to support large folios, but
-others have added support, AFS and EROFS.  You can also get large folios
-in tmpfs (which is slightly different as it focuses on THPs rather than
-generic large folios).
+ From 8c4bdbd9862f85782d5919d044c172b584063e83 Mon Sep 17 00:00:00 2001
+From: David Hildenbrand <david@redhat.com>
+Date: Wed, 8 Feb 2023 15:08:01 +0100
+Subject: [PATCH] arm/mm: Fix swp type masking in __swp_entry()
 
-You also have to have CONFIG_TRANSPARENT_HUGEPAGE selected, which riscv
-can do.  That restriction will be lifted at some point, but for now
-large folios depends on the THP infrastructure.
+We're masking with the number of type bits instead of the type mask, which
+is obviously wrong.
+
+Fixes: 20aae9eff5ac ("arm/mm: support __HAVE_ARCH_PTE_SWP_EXCLUSIVE")
+Reported-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+  arch/arm/include/asm/pgtable.h | 2 +-
+  1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/include/asm/pgtable.h b/arch/arm/include/asm/pgtable.h
+index 2e626e6da9a3..a58ccbb406ad 100644
+--- a/arch/arm/include/asm/pgtable.h
++++ b/arch/arm/include/asm/pgtable.h
+@@ -292,7 +292,7 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
+  
+  #define __swp_type(x)		(((x).val >> __SWP_TYPE_SHIFT) & __SWP_TYPE_MASK)
+  #define __swp_offset(x)		((x).val >> __SWP_OFFSET_SHIFT)
+-#define __swp_entry(type, offset) ((swp_entry_t) { (((type) & __SWP_TYPE_BITS) << __SWP_TYPE_SHIFT) | \
++#define __swp_entry(type, offset) ((swp_entry_t) { (((type) & __SWP_TYPE_MASK) << __SWP_TYPE_SHIFT) | \
+  						   ((offset) << __SWP_OFFSET_SHIFT) })
+  
+  #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
+-- 
+2.39.1
+
+
+-- 
+Thanks,
+
+David / dhildenb
