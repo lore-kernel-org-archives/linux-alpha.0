@@ -1,123 +1,64 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH mm-unstable v1 17/26] powerpc/mm: support
- __HAVE_ARCH_PTE_SWP_EXCLUSIVE on 32bit book3s
-Date: Fri, 10 Feb 2023 16:08:07 +1100
-Message-ID: <87cz6iw1jc.fsf@mpe.ellerman.id.au>
-References: <20230113171026.582290-1-david@redhat.com>
- <20230113171026.582290-18-david@redhat.com>
+From: Mike Rapoport <rppt@kernel.org>
+Subject: [PATCH 0/2] char/agp: consolidate asm/agp.h
+Date: Sun, 12 Feb 2023 10:46:09 +0200
+Message-ID: <20230212084611.1311177-1-rppt@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1676005696;
-        bh=gjOEhpmQ4QzYiJxNRSCplO6mzBIo8CgdHMudas4f4m4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=VzBHDakF5oapgbqSwyCXW4NlOxuhWIXgHT5bnjksmwxnwzB2j77QlwtNy9auFKO5k
-         R5zuzvTLv5v6JR0g4zAQSDALbGO0+HtyCcaxIv+XCmtUOUNdsZXpr/60HJ8m0se9Ac
-         HCqPfRmHl1K9cRm2zGL0JLt1dLbvDoohuA4JmvWcFN0J1XTPyIZXfr0n3q8zPBgbwM
-         2KTETWI8PkOX6ZP5se3LmuOaFIoUbfwmRFq7s/gffXRM+ntl6Tsz8s7uIuoBncovYH
-         169scsrJUZSYlGwI60JQl2lk38JbvV/eRPo8tLjsBgWQeltv5kZiHwGm5Gqurl9z/4
-         hTaeq+aYRbc4A==
-In-Reply-To: <20230113171026.582290-18-david@redhat.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-parisc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1676191586;
+        bh=ah2GfV04TNaeo9p4bKcxyFBZTnmc5HbVuYgTsk1ZZFQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MT3LIRf8bJTXYDiK3G1TVA1CKbwwEe0DllUzU7AH1ati2qxAOPPjau6Q9V+1qD712
+         9phIFR2qApBCOCf907VbVd1Vzgi8Kkvymd8e38sooTWXCnTAtIO84w+/+6hlc/B6lp
+         Vs5cDzwUxMsjjH4ii6tmr6lQu5fAuwTpgoYB+9Li1kyMTuxy7KqTk8M0RXCVTqlXNd
+         8MpWrajJGzrj03wUITE461o00r7HJBYuEU1MCW+665ubHQF9TFoiVdlzQjftA9EIyk
+         MG5uK31epum7kES7DHzqtYo8SozcgREgID6KFZbc+HSs8IRssKkUVoY0KoNb82sniK
+         kpwrKzPXcN5Uw==
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>, Hugh Dickins <hughd@google.com>, John Hubbard <jhubbard@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>, Mike Rapoport <rppt@linux.ibm.com>, Yang Shi <shy828301@gmail.com>, Vlastimil Babka <vbabka@suse.cz>, Nadav Amit <namit@vmware.com>, Andrea Arcangeli <aarcange@redhat.com>, Peter Xu <peterx@redhat.com>, linux-mm@kvack.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: David Airlie <airlied@redhat.com>, "David S. Miller" <davem@davemloft.net>, Helge Deller <deller@gmx.de>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org, dri-devel@lists.freedesktop.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, "Mike Rapoport (IBM)" <rppt@kernel.org>
 
-David Hildenbrand <david@redhat.com> writes:
-> We already implemented support for 64bit book3s in commit bff9beaa2e80
-> ("powerpc/pgtable: support __HAVE_ARCH_PTE_SWP_EXCLUSIVE for book3s")
->
-> Let's support __HAVE_ARCH_PTE_SWP_EXCLUSIVE also in 32bit by reusing yet
-> unused LSB 2 / MSB 29. There seems to be no real reason why that bit cannot
-> be used, and reusing it avoids having to steal one bit from the swap
-> offset.
->
-> While at it, mask the type in __swp_entry().
->
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Nicholas Piggin <npiggin@gmail.com>
-> Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-> Signed-off-by: David Hildenbrand <david@redhat.com>
-> ---
->  arch/powerpc/include/asm/book3s/32/pgtable.h | 38 +++++++++++++++++---
->  1 file changed, 33 insertions(+), 5 deletions(-)
+From: "Mike Rapoport (IBM)" <rppt@kernel.org>
 
-I gave this a quick test on a ppc32 machine, everything seems fine.
+Hi,
 
-Your test_swp_exclusive.c passes, and an LTP run looks normal.
+asm/agp.h is duplicated in several architectures, with x86 being the
+only instance that differs from the rest.
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+Introduce asm-generic/agp.h and use it instead of per-architecture
+headers for the most cases.
 
-cheers
+I believe that asm-generic is the best tree to pick up this patches.
 
-> diff --git a/arch/powerpc/include/asm/book3s/32/pgtable.h b/arch/powerpc/include/asm/book3s/32/pgtable.h
-> index 75823f39e042..0ecb3a58f23f 100644
-> --- a/arch/powerpc/include/asm/book3s/32/pgtable.h
-> +++ b/arch/powerpc/include/asm/book3s/32/pgtable.h
-> @@ -42,6 +42,9 @@
->  #define _PMD_PRESENT_MASK (PAGE_MASK)
->  #define _PMD_BAD	(~PAGE_MASK)
->  
-> +/* We borrow the _PAGE_USER bit to store the exclusive marker in swap PTEs. */
-> +#define _PAGE_SWP_EXCLUSIVE	_PAGE_USER
-> +
->  /* And here we include common definitions */
->  
->  #define _PAGE_KERNEL_RO		0
-> @@ -363,17 +366,42 @@ static inline void __ptep_set_access_flags(struct vm_area_struct *vma,
->  #define pmd_page(pmd)		pfn_to_page(pmd_pfn(pmd))
->  
->  /*
-> - * Encode and decode a swap entry.
-> - * Note that the bits we use in a PTE for representing a swap entry
-> - * must not include the _PAGE_PRESENT bit or the _PAGE_HASHPTE bit (if used).
-> - *   -- paulus
-> + * Encode/decode swap entries and swap PTEs. Swap PTEs are all PTEs that
-> + * are !pte_none() && !pte_present().
-> + *
-> + * Format of swap PTEs (32bit PTEs):
-> + *
-> + *                         1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
-> + *   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-> + *   <----------------- offset --------------------> < type -> E H P
-> + *
-> + *   E is the exclusive marker that is not stored in swap entries.
-> + *   _PAGE_PRESENT (P) and __PAGE_HASHPTE (H) must be 0.
-> + *
-> + * For 64bit PTEs, the offset is extended by 32bit.
->   */
->  #define __swp_type(entry)		((entry).val & 0x1f)
->  #define __swp_offset(entry)		((entry).val >> 5)
-> -#define __swp_entry(type, offset)	((swp_entry_t) { (type) | ((offset) << 5) })
-> +#define __swp_entry(type, offset)	((swp_entry_t) { ((type) & 0x1f) | ((offset) << 5) })
->  #define __pte_to_swp_entry(pte)		((swp_entry_t) { pte_val(pte) >> 3 })
->  #define __swp_entry_to_pte(x)		((pte_t) { (x).val << 3 })
->  
-> +#define __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-> +static inline int pte_swp_exclusive(pte_t pte)
-> +{
-> +	return pte_val(pte) & _PAGE_SWP_EXCLUSIVE;
-> +}
-> +
-> +static inline pte_t pte_swp_mkexclusive(pte_t pte)
-> +{
-> +	return __pte(pte_val(pte) | _PAGE_SWP_EXCLUSIVE);
-> +}
-> +
-> +static inline pte_t pte_swp_clear_exclusive(pte_t pte)
-> +{
-> +	return __pte(pte_val(pte) & ~_PAGE_SWP_EXCLUSIVE);
-> +}
-> +
->  /* Generic accessors to PTE bits */
->  static inline int pte_write(pte_t pte)		{ return !!(pte_val(pte) & _PAGE_RW);}
->  static inline int pte_read(pte_t pte)		{ return 1; }
-> -- 
-> 2.39.0
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+Mike Rapoport (IBM) (2):
+  char/agp: consolidate {alloc,free}_gatt_pages()
+  char/agp: introduce asm-generic/agp.h
+
+ arch/alpha/include/asm/Kbuild   |  1 +
+ arch/alpha/include/asm/agp.h    | 19 -------------------
+ arch/ia64/include/asm/Kbuild    |  1 +
+ arch/ia64/include/asm/agp.h     | 27 ---------------------------
+ arch/parisc/include/asm/Kbuild  |  1 +
+ arch/parisc/include/asm/agp.h   | 21 ---------------------
+ arch/powerpc/include/asm/Kbuild |  1 +
+ arch/powerpc/include/asm/agp.h  | 19 -------------------
+ arch/sparc/include/asm/Kbuild   |  1 +
+ arch/sparc/include/asm/agp.h    | 17 -----------------
+ arch/x86/include/asm/agp.h      |  6 ------
+ drivers/char/agp/agp.h          |  6 ++++++
+ include/asm-generic/agp.h       | 11 +++++++++++
+ 13 files changed, 22 insertions(+), 109 deletions(-)
+ delete mode 100644 arch/alpha/include/asm/agp.h
+ delete mode 100644 arch/ia64/include/asm/agp.h
+ delete mode 100644 arch/parisc/include/asm/agp.h
+ delete mode 100644 arch/powerpc/include/asm/agp.h
+ delete mode 100644 arch/sparc/include/asm/agp.h
+ create mode 100644 include/asm-generic/agp.h
+
+
+base-commit: 2241ab53cbb5cdb08a6b2d4688feb13971058f65
+-- 
+2.35.1
+
