@@ -1,192 +1,76 @@
-From: Mike Rapoport <rppt@kernel.org>
-Subject: [PATCH 2/2] char/agp: introduce asm-generic/agp.h
-Date: Sun, 12 Feb 2023 10:46:11 +0200
-Message-ID: <20230212084611.1311177-3-rppt@kernel.org>
-References: <20230212084611.1311177-1-rppt@kernel.org>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2 4/4] mm, arch: add generic implementation of
+ pfn_valid() for FLATMEM
+Date: Sun, 12 Feb 2023 08:13:20 -0800
+Message-ID: <20230212161320.GA3784076@roeck-us.net>
+References: <20230129124235.209895-1-rppt@kernel.org>
+ <20230129124235.209895-5-rppt@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-parisc-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676191595;
-        bh=fNKiSkZ0o+fOQDkH9eY0UIJa/qeemlNg5a9Sbw7z4oc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JUVV+chRkL08PzBAHoMlpmcJa2IhpSQwAz96rwplIsxNTcOagjdz1FjKgKIZm9Xz7
-         4pv6hHt7b9nmaV+hF833gn5hNvsDucwwTXlMhpuMzThGhvVuFGMqBA2B5yRqwzl9KX
-         2Wc43Xj/4Yfdsa0SIH7Q5qUXhOFTLhOk1YBgVMXYGMKSEd71o/EYsAImLe9oH0tXo8
-         IToPWVX6nfL1eBM61cT0MPNI30pgAm15llCo3a4+ZAa7MfdSDZzLkYkYfIFt92bOZ2
-         SPXfPRn2/UPxDP60AHCYuVhKHfGgEbsnHoBn/wXC8LSi6TGrRpBsT6yHBMhlRtOwBk
-         OSNHjjVZwDwtw==
-In-Reply-To: <20230212084611.1311177-1-rppt@kernel.org>
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m9JNrWha4YKLX9rD9uaO4Le+Z0yMwIJejyvjLhFB0mM=;
+        b=RPfdfqoXr1Cw8prltm7TREoupX5eaNpNd+CDIlDXf9L709PnPoKQLyqZ+zboWylzWR
+         vxu85Zr3W8llfd+943ctWIFMuj/eUOowqYJKaVeMEAuOZh7DSd87i28bvDxNAQ6PoOwC
+         wXW2mjy0Nv7rWdLT7K6lR96N0WQft3GWf2KAFrqyzdPjhTZH7LFIYRkc0u2koR60TrCD
+         1hpxf+WoKXg0JbOE+h0e0CkhGndeecaH5fbwJ/zhVif01anzu3CRcpBwMXBGR6L77UGt
+         T0ZqZhaH9160JyrIQvfc6bBDGV0wnlmjvzDTuOmCpyHfThC29vCqk4lTBNsczBdn8qUd
+         qBXA==
+Sender: Guenter Roeck <groeck7@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20230129124235.209895-5-rppt@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: David Airlie <airlied@redhat.com>, "David S. Miller" <davem@davemloft.net>, Helge Deller <deller@gmx.de>, Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org, dri-devel@lists.freedesktop.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org, "Mike Rapoport (IBM)" <rppt@kernel.org>
+Content-Transfer-Encoding: 7bit
+To: Mike Rapoport <rppt@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Arnd Bergmann <arnd@arndb.de>, Brian Cain <bcain@quicinc.com>, "David S. Miller" <davem@davemloft.net>, Dinh Nguyen <dinguyen@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@linux-m68k.org>, Guo Ren <guoren@kernel.org>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>, Palmer Dabbelt <palmer@dabbelt.com>, Rich Felker <dalias@libc.org>, Richard Weinberger <richard@nod.at>, Russell King <linux@armlinux.org.uk>, Stafford Horne <shorne@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Vineet Gupta <vgupta@kernel>
 
-From: "Mike Rapoport (IBM)" <rppt@kernel.org>
+On Sun, Jan 29, 2023 at 02:42:35PM +0200, Mike Rapoport wrote:
+> From: "Mike Rapoport (IBM)" <rppt@kernel.org>
+> 
+> Every architecture that supports FLATMEM memory model defines its own
+> version of pfn_valid() that essentially compares a pfn to max_mapnr.
+> 
+> Use mips/powerpc version implemented as static inline as a generic
+> implementation of pfn_valid() and drop its per-architecture definitions.
+> 
 
-There are several architectures that duplicate definitions of
-map_page_into_agp(), unmap_page_from_agp() and flush_agp_cache().
+With this patch in the tree, sh4 and sh4eb qemu emulations no longer boot.
+Reverting this patch fixes the problem.
 
-Define those in asm-generic/agp.h and use it instead of duplicated
-per-architecture headers.
+Guenter
 
-Signed-off-by: Mike Rapoport (IBM) <rppt@kernel.org>
 ---
- arch/alpha/include/asm/Kbuild                 |  1 +
- arch/alpha/include/asm/agp.h                  | 13 ------------
- arch/ia64/include/asm/Kbuild                  |  1 +
- arch/ia64/include/asm/agp.h                   | 21 -------------------
- arch/parisc/include/asm/Kbuild                |  1 +
- arch/parisc/include/asm/agp.h                 | 15 -------------
- arch/powerpc/include/asm/Kbuild               |  1 +
- arch/sparc/include/asm/Kbuild                 |  1 +
- arch/sparc/include/asm/agp.h                  | 11 ----------
- .../include/asm => include/asm-generic}/agp.h |  8 +++----
- 10 files changed, 8 insertions(+), 65 deletions(-)
- delete mode 100644 arch/alpha/include/asm/agp.h
- delete mode 100644 arch/ia64/include/asm/agp.h
- delete mode 100644 arch/parisc/include/asm/agp.h
- delete mode 100644 arch/sparc/include/asm/agp.h
- rename {arch/powerpc/include/asm => include/asm-generic}/agp.h (59%)
-
-diff --git a/arch/alpha/include/asm/Kbuild b/arch/alpha/include/asm/Kbuild
-index 42911c8340c7..54f5126628c6 100644
---- a/arch/alpha/include/asm/Kbuild
-+++ b/arch/alpha/include/asm/Kbuild
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- generated-y += syscall_table.h
-+generic-y += agp.h
- generic-y += export.h
- generic-y += kvm_para.h
- generic-y += mcs_spinlock.h
-diff --git a/arch/alpha/include/asm/agp.h b/arch/alpha/include/asm/agp.h
-deleted file mode 100644
-index 4197b3bc78ee..000000000000
---- a/arch/alpha/include/asm/agp.h
-+++ /dev/null
-@@ -1,13 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef AGP_H
--#define AGP_H 1
--
--#include <asm/io.h>
--
--/* dummy for now */
--
--#define map_page_into_agp(page)		do { } while (0)
--#define unmap_page_from_agp(page)	do { } while (0)
--#define flush_agp_cache() mb()
--
--#endif
-diff --git a/arch/ia64/include/asm/Kbuild b/arch/ia64/include/asm/Kbuild
-index f994c1daf9d4..aefae2efde9f 100644
---- a/arch/ia64/include/asm/Kbuild
-+++ b/arch/ia64/include/asm/Kbuild
-@@ -1,5 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- generated-y += syscall_table.h
-+generic-y += agp.h
- generic-y += kvm_para.h
- generic-y += mcs_spinlock.h
- generic-y += vtime.h
-diff --git a/arch/ia64/include/asm/agp.h b/arch/ia64/include/asm/agp.h
-deleted file mode 100644
-index f42c7dcb3d79..000000000000
---- a/arch/ia64/include/asm/agp.h
-+++ /dev/null
-@@ -1,21 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef _ASM_IA64_AGP_H
--#define _ASM_IA64_AGP_H
--
--/*
-- * IA-64 specific AGP definitions.
-- *
-- * Copyright (C) 2002-2003 Hewlett-Packard Co
-- *	David Mosberger-Tang <davidm@hpl.hp.com>
-- */
--
--/*
-- * To avoid memory-attribute aliasing issues, we require that the AGPGART engine operate
-- * in coherent mode, which lets us map the AGP memory as normal (write-back) memory
-- * (unlike x86, where it gets mapped "write-coalescing").
-- */
--#define map_page_into_agp(page)		do { } while (0)
--#define unmap_page_from_agp(page)	do { } while (0)
--#define flush_agp_cache()		mb()
--
--#endif /* _ASM_IA64_AGP_H */
-diff --git a/arch/parisc/include/asm/Kbuild b/arch/parisc/include/asm/Kbuild
-index e6e7f74c8ac9..4fb596d94c89 100644
---- a/arch/parisc/include/asm/Kbuild
-+++ b/arch/parisc/include/asm/Kbuild
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- generated-y += syscall_table_32.h
- generated-y += syscall_table_64.h
-+generic-y += agp.h
- generic-y += kvm_para.h
- generic-y += mcs_spinlock.h
- generic-y += user.h
-diff --git a/arch/parisc/include/asm/agp.h b/arch/parisc/include/asm/agp.h
-deleted file mode 100644
-index d193a48490e2..000000000000
---- a/arch/parisc/include/asm/agp.h
-+++ /dev/null
-@@ -1,15 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef _ASM_PARISC_AGP_H
--#define _ASM_PARISC_AGP_H
--
--/*
-- * PARISC specific AGP definitions.
-- * Copyright (c) 2006 Kyle McMartin <kyle@parisc-linux.org>
-- *
-- */
--
--#define map_page_into_agp(page)		do { } while (0)
--#define unmap_page_from_agp(page)	do { } while (0)
--#define flush_agp_cache()		mb()
--
--#endif /* _ASM_PARISC_AGP_H */
-diff --git a/arch/powerpc/include/asm/Kbuild b/arch/powerpc/include/asm/Kbuild
-index bcf95ce0964f..419319c4963c 100644
---- a/arch/powerpc/include/asm/Kbuild
-+++ b/arch/powerpc/include/asm/Kbuild
-@@ -2,6 +2,7 @@
- generated-y += syscall_table_32.h
- generated-y += syscall_table_64.h
- generated-y += syscall_table_spu.h
-+generic-y += agp.h
- generic-y += export.h
- generic-y += kvm_types.h
- generic-y += mcs_spinlock.h
-diff --git a/arch/sparc/include/asm/Kbuild b/arch/sparc/include/asm/Kbuild
-index 0b9d98ced34a..595ca0be286b 100644
---- a/arch/sparc/include/asm/Kbuild
-+++ b/arch/sparc/include/asm/Kbuild
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- generated-y += syscall_table_32.h
- generated-y += syscall_table_64.h
-+generic-y += agp.h
- generic-y += export.h
- generic-y += kvm_para.h
- generic-y += mcs_spinlock.h
-diff --git a/arch/sparc/include/asm/agp.h b/arch/sparc/include/asm/agp.h
-deleted file mode 100644
-index 5186924fa673..000000000000
---- a/arch/sparc/include/asm/agp.h
-+++ /dev/null
-@@ -1,11 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef AGP_H
--#define AGP_H 1
--
--/* dummy for now */
--
--#define map_page_into_agp(page)		do { } while (0)
--#define unmap_page_from_agp(page)	do { } while (0)
--#define flush_agp_cache()		mb()
+# bad: [6ba8a227fd19d19779005fb66ad7562608e1df83] Add linux-next specific files for 20230210
+# good: [4ec5183ec48656cec489c49f989c508b68b518e3] Linux 6.2-rc7
+git bisect start 'HEAD' 'v6.2-rc7'
+# good: [94613f0efc69ed41f9229ef5c294db3ec37145da] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git
+git bisect good 94613f0efc69ed41f9229ef5c294db3ec37145da
+# good: [19e62c715fe70dae4582c2874ed3e66715d09af6] Merge branch 'rcu/next' of git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
+git bisect good 19e62c715fe70dae4582c2874ed3e66715d09af6
+# good: [5d8b7ecef7f4a681b6e5538db59ff26c389c0ab6] Merge branch 'for-next' of https://gitlab.com/peda-linux/mux.git
+git bisect good 5d8b7ecef7f4a681b6e5538db59ff26c389c0ab6
+# good: [c349bf6ec83903b20fe570c5609b9a864a64e09c] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/krisman/unicode.git
+git bisect good c349bf6ec83903b20fe570c5609b9a864a64e09c
+# good: [5a06a9f17454df38f35672be522ff5eb9b4277d2] selftest: add testing unsharing and counting ksm zero page
+git bisect good 5a06a9f17454df38f35672be522ff5eb9b4277d2
+# bad: [f5d115a7b06e5661ed5218ffa9a2644c4ff1c135] Merge branch 'mm-nonmm-unstable' into mm-everything
+git bisect bad f5d115a7b06e5661ed5218ffa9a2644c4ff1c135
+# bad: [acb018d6ea0c055381fba7dddaef386ee28f8075] mm/vmalloc.c: allow vread() to read out vm_map_ram areas
+git bisect bad acb018d6ea0c055381fba7dddaef386ee28f8075
+# good: [1a5d9782ac969dc6e61c6786500b5160603188ea] mm/mmap: remove __vma_adjust()
+git bisect good 1a5d9782ac969dc6e61c6786500b5160603188ea
+# good: [4b32363697de957dcc890b6245bec3f58903639a] arm: include asm-generic/memory_model.h from page.h rather than memory.h
+git bisect good 4b32363697de957dcc890b6245bec3f58903639a
+# bad: [328cf3fa6682ce6a4de6f8bb8009c833dc33f3c8] mm/migrate: convert isolate_movable_page() to use folios
+git bisect bad 328cf3fa6682ce6a4de6f8bb8009c833dc33f3c8
+# bad: [b704c765b08cabe82adf76a4d1a74f3688eee410] mm/mempolicy: convert queue_pages_pmd() to queue_folios_pmd()
+git bisect bad b704c765b08cabe82adf76a4d1a74f3688eee410
+# bad: [e5734c8b0edfd2a053a5c256189586a3b1e9f63d] mm, arch: add generic implementation of pfn_valid() for FLATMEM
+git bisect bad e5734c8b0edfd2a053a5c256189586a3b1e9f63d
+# good: [ad8aecea034c591b9754bc5908da9719853aa7fa] mips: drop definition of pfn_valid() for DISCONTIGMEM
+git bisect good ad8aecea034c591b9754bc5908da9719853aa7fa
+# first bad commit: [e5734c8b0edfd2a053a5c256189586a3b1e9f63d] mm, arch: add generic implementation of pfn_valid() for FLATMEM
