@@ -1,54 +1,43 @@
-From: Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: [PATCH v2 03/24] arm/cpu: Make sure arch_cpu_idle_dead() doesn't
- return
-Date: Tue, 14 Feb 2023 10:39:26 -0800
-Message-ID: <20230214183926.46trlpdror3v5sk5@treble>
+From: Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH v2 19/24] xtensa/cpu: Make sure cpu_die() doesn't return
+Date: Tue, 14 Feb 2023 14:29:44 -0500
+Message-ID: <20230214142944.100214fe@rorschach.local.home>
 References: <cover.1676358308.git.jpoimboe@kernel.org>
- <ed361403b8ee965f758fe491c47336dddcfb8fd5.1676358308.git.jpoimboe@kernel.org>
- <Y+ttS0japRCzHoFM@shell.armlinux.org.uk>
+        <cca346b5c87693499e630291d78fb0bf12c24290.1676358308.git.jpoimboe@kernel.org>
+        <1b4afd82-83cb-0060-7cab-8e16d2e69ff9@linaro.org>
+        <20230214182322.r5tyeowxzloiuh72@treble>
 Mime-Version: 1.0
-Return-path: <linux-mips-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676399969;
-        bh=VUyVoBOPBRmm9kWmhRlnQ1dgekqLXP/lAdmRs2vUMTw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lpZhSArqYygzNfbZKNGcjvcTwNhca/C7bB1TE9FeTvJzAGZ57uFNUzzPGzNzsq1aM
-         4IwTbCrGHlO+gqUw6Cp2q/T2qzl7oKte7MwDQz3JJi48nhvnLQCL1v829eNQdq9Aor
-         LJVTO1gCw8Wqh+EF1lyZn0MKGT3Ec/hk02S8MnRgX0DmrxuAmOlKntBx/Pr6tIPS3P
-         UaoMve8gjEVjIQnN7Xv3/b6rQXg6ophd0y2EU0ZaIVvjRNs9aPXNsY3eMvCBJTI6nZ
-         dK8MWYE95qwTxoUjEPw8XF0TFH3j6Cs9OS5l4B44f43ifxIJVskUOqIj8+/+LqMtdo
-         WhjmwIG948hmQ==
-Content-Disposition: inline
-In-Reply-To: <Y+ttS0japRCzHoFM@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20230214182322.r5tyeowxzloiuh72@treble>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave
+To: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: Philippe =?UTF-8?B?TWF0aGlldS1EYXVkw6k=?= <philmd@linaro.org>, linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net
 
-On Tue, Feb 14, 2023 at 11:15:23AM +0000, Russell King (Oracle) wrote:
-> On Mon, Feb 13, 2023 at 11:05:37PM -0800, Josh Poimboeuf wrote:
-> > arch_cpu_idle_dead() doesn't return.  Make that more explicit with a
-> > BUG().
-> > 
-> > BUG() is preferable to unreachable() because BUG() is a more explicit
-> > failure mode and avoids undefined behavior like falling off the edge of
-> > the function into whatever code happens to be next.
+On Tue, 14 Feb 2023 10:23:22 -0800
+Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+
+
+> void __ref cpu_die(void)
+> {
+> 	idle_task_exit();
+> 	local_irq_disable();
+> 	__asm__ __volatile__(
+> 			"	movi	a2, cpu_restart\n"
+> 			"	jx	a2\n");
 > 
-> This is silly. Just mark the function __noreturn and be done with it.
-> If the CPU ever executes code past the "b" instruction, it's already
-> really broken that the extra instructions that BUG() gives will be
-> meaningless.
+> 	BUG();
+> }
 > 
-> This patch does nothing except add yet more bloat the kernel.
+> Hm, not only is the comment wrong, but it seems to be branching to
+> cpu_restart?  That doesn't seem right at all.
+
+Agreed, that does not look right at all.
+
+-- Steve
+
 > 
-> Sorry, but NAK.
+> Max/Chris?
+> 
 
-Problem is, the compiler can't read inline asm.  So you'd get a 
-"'noreturn' function does return" warning.
-
-We can do an unreachable() instead of a BUG() here if you prefer
-undefined behavior.
-
--- 
-Josh
