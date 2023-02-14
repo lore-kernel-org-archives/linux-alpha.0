@@ -1,35 +1,61 @@
-From: =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>
-Subject: Re: [PATCH v2 06/24] ia64/cpu: Mark play_dead() __noreturn
-Date: Tue, 14 Feb 2023 09:07:02 +0100
-Message-ID: <6c4fc38a-ba24-fff8-7bdd-b633a79200db@linaro.org>
-References: <cover.1676358308.git.jpoimboe@kernel.org>
- <7575bb38417bd8bcb5be980443f99cab29319342.1676358308.git.jpoimboe@kernel.org>
+From: Alexandre Ghiti <alexghiti@rivosinc.com>
+Subject: [PATCH v3 17/24] microblaze: Remove empty <uapi/asm/setup.h>
+Date: Tue, 14 Feb 2023 08:49:18 +0100
+Message-ID: <20230214074925.228106-18-alexghiti__47762.3794273072$1676362079$gmane$org@rivosinc.com>
+References: <20230214074925.228106-1-alexghiti@rivosinc.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-mips-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ciz48yn0bC9pSOawr6J2EVonTfRljnaqRRwbx5UW/W0=;
-        b=TIQ23jpnzQarzd1RIe9VRIRAG/Spi2nIIoQJ/TneQakxj6QFyv7ubfVNIbXnkNccLI
-         9YHADgP0ZcuahSTpp0itHxB0vnxid9R3STW2gWzzjJJRY3KVMZwyjGmKniKDMGXJnD/6
-         hDCyLOAQegB/dwr9q127CSBA2/hqxOG01KsSqmOE86OrEQspfFq+Z3AKGUE1cclZrXkJ
-         f+EqgIFwlzxpbPLrsLQTru1Q/+CAIVzIK+aLJtFBqFOqcw6/nRciSXI/ohQrTMnNTXcW
-         9hI2Cm3He0kpAaFodIU30P6FToJ/AvzSfa+UmY2I7DpLnZCKW3ePhquo9Mo0AfQ0lt9E
-         DdXg==
-Content-Language: en-US
-In-Reply-To: <7575bb38417bd8bcb5be980443f99cab29319342.1676358308.git.jpoimboe@kernel.org>
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LZHaQjAFpi9TJWHqFM+95KfED/Q/8XVJn3AfBj+QDY8=;
+        b=uZIt+yv3Rg0dRbYtDO4MuhueIjGb9TAYKqCyECWZ/pl6kxcq/ZScMcW17uh1gUaGLt
+         hGAhN58F78Lif0nQk9GYnmDx6JH71+3XdZrEkBug2V0DL2r8JwhMszUTSoUtEy5uL4g1
+         MZhmBB468Ai2JKrumBevQN+BKMFUchLI/sX3SYNDKBGJSigvT6owhO74tn5mcs0e62Hi
+         5CKGwVDlVzcCqv7RBOx+1FJHSFG5dnETFIa/vgkhtiRl918Ndaz2UhLZ50OtWgHYQ5sc
+         Mm8kKOB4GLKYExB5Z36oYFZFv2SKt/EzPmlelXOzJOpWGnGPt3qNyRJWHMdrETdBXG2y
+         7CKQ==
+In-Reply-To: <20230214074925.228106-1-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="macroman"; format="flowed"
-To: Josh Poimboeuf <jpoimboe@kernel.org>, linux-kernel@vger.kernel.org
-Cc: jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen
+Content-Type: text/plain; charset="us-ascii"
+To: Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley>
+Cc: Palmer Dabbelt <palmer@rivosinc.com>
 
-T24gMTQvMi8yMyAwODowNSwgSm9zaCBQb2ltYm9ldWYgd3JvdGU6Cj4gcGxheV9kZWFkKCkgZG9l
-c24ndCByZXR1cm4uICBBbm5vdGF0ZSBpdCBhcyBzdWNoLiAgQnkgZXh0ZW5zaW9uIHRoaXMKPiBh
-bHNvIG1ha2VzIGFyY2hfY3B1X2lkbGVfZGVhZCgpIG5vcmV0dXJuLgo+IAo+IFNpZ25lZC1vZmYt
-Ynk6IEpvc2ggUG9pbWJvZXVmIDxqcG9pbWJvZUBrZXJuZWwub3JnPgo+IC0tLQo+ICAgYXJjaC9p
-YTY0L2tlcm5lbC9wcm9jZXNzLmMgfCA0ICsrLS0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2Vy
-dGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpSZXZpZXdlZC1ieTogUGhpbGlwcGUgTWF0aGlldS1E
-YXVkw6kgPHBoaWxtZEBsaW5hcm8ub3JnPgoK
+From: Palmer Dabbelt <palmer@rivosinc.com>
+
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ arch/microblaze/include/uapi/asm/setup.h | 18 ------------------
+ 1 file changed, 18 deletions(-)
+ delete mode 100644 arch/microblaze/include/uapi/asm/setup.h
+
+diff --git a/arch/microblaze/include/uapi/asm/setup.h b/arch/microblaze/include/uapi/asm/setup.h
+deleted file mode 100644
+index 51aed65880e7..000000000000
+--- a/arch/microblaze/include/uapi/asm/setup.h
++++ /dev/null
+@@ -1,18 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+-/*
+- * Copyright (C) 2007-2009 Michal Simek <monstr@monstr.eu>
+- * Copyright (C) 2007-2009 PetaLogix
+- * Copyright (C) 2006 Atmark Techno, Inc.
+- *
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License. See the file "COPYING" in the main directory of this archive
+- * for more details.
+- */
+-
+-#ifndef _UAPI_ASM_MICROBLAZE_SETUP_H
+-#define _UAPI_ASM_MICROBLAZE_SETUP_H
+-
+-# ifndef __ASSEMBLY__
+-
+-# endif /* __ASSEMBLY__ */
+-#endif /* _UAPI_ASM_MICROBLAZE_SETUP_H */
+-- 
+2.37.2
+
