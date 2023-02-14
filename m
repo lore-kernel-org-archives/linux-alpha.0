@@ -1,35 +1,50 @@
-From: =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>
-Subject: Re: [PATCH v3 19/24] parisc: Remove empty <uapi/asm/setup.h>
-Date: Tue, 14 Feb 2023 10:08:50 +0100
-Message-ID: <6f9c7a6b-4f6b-dead-2d9b-14b405f18397__43990.1561521523$1676365839$gmane$org@linaro.org>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [PATCH v3 10/24] sparc: Remove COMMAND_LINE_SIZE from uapi
+Date: Tue, 14 Feb 2023 12:11:09 +0300
+Message-ID: <66698133-a458-0995-f3d9-fb6cfccbd9d5__28493.7951759034$1676366059$gmane$org@omp.ru>
 References: <20230214074925.228106-1-alexghiti@rivosinc.com>
- <20230214074925.228106-20-alexghiti@rivosinc.com>
+ <20230214074925.228106-11-alexghiti@rivosinc.com>
+ <017f0b40-8021-8b3b-24d2-c70661b6b292@omp.ru>
+ <f3db61bb-5c89-2724-769f-9d606f587f92@xen0n.name>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=BgI+MitPy4LpPY/kxOD/cgobRuJLYDph5veEhGksnEA=;
-        b=lB62HMad+osyFa/YRShwy2xvQQhT9yfoc9RwDPDM2XUSGGo5hotMUJADGxDiQ5/oie
-         0UWu3aWkXWJPzO2vTsakK1Ei6DOuBI3AmUwSmqLUQ8ZTe80+NCQDOZ6/jIcjNALXtEWB
-         myMm5/pYMGpx0868z9pwpjeJrpOhJ3ovmzXzQhl2yeLNk8GtyTunjqqhJ50Jqwbk2KBA
-         nUku1vRER3frC96KkvlnDaokGHBYVCdqUaGsTL3zenSy+/9/+IU0+RrXFmVs8uRAFld4
-         BkpKIHPTos+3uB9tCP+/qrZBOcLM/octf0KKmtrOqlUnOOZdPlOJ+FnLVLjXXtr1QHtR
-         lZkA==
+In-Reply-To: <f3db61bb-5c89-2724-769f-9d606f587f92@xen0n.name>
 Content-Language: en-US
-In-Reply-To: <20230214074925.228106-20-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="macroman"; format="flowed"
-To: Alexandre Ghiti <alexghiti@rivosinc.com>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy>
+To: WANG Xuerui <kernel@xen0n.name>, Alexandre Ghiti <alexghiti@rivosinc.com>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy>
 Cc: Palmer Dabbelt <palmer@rivosinc.com>
 
-T24gMTQvMi8yMyAwODo0OSwgQWxleGFuZHJlIEdoaXRpIHdyb3RlOgo+IEZyb206IFBhbG1lciBE
-YWJiZWx0IDxwYWxtZXJAcml2b3NpbmMuY29tPgo+IAo+IFNpZ25lZC1vZmYtYnk6IFBhbG1lciBE
-YWJiZWx0IDxwYWxtZXJAcml2b3NpbmMuY29tPgo+IC0tLQo+ICAgYXJjaC9wYXJpc2MvaW5jbHVk
-ZS91YXBpL2FzbS9zZXR1cC5oIHwgNSAtLS0tLQo+ICAgMSBmaWxlIGNoYW5nZWQsIDUgZGVsZXRp
-b25zKC0pCj4gICBkZWxldGUgbW9kZSAxMDA2NDQgYXJjaC9wYXJpc2MvaW5jbHVkZS91YXBpL2Fz
-bS9zZXR1cC5oCgpSZXZpZXdlZC1ieTogUGhpbGlwcGUgTWF0aGlldS1EYXVkw6kgPHBoaWxtZEBs
-aW5hcm8ub3JnPgoK
+On 2/14/23 11:59 AM, WANG Xuerui wrote:
+[...]
+
+>>> From: Palmer Dabbelt <palmer@rivosinc.com>
+>>>
+>>> As far as I can tell this is not used by userspace and thus should not
+>>> be part of the user-visible API.
+>>>
+>>> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>>> ---
+>>>   arch/sparc/include/asm/setup.h      | 6 +++++-
+>>>   arch/sparc/include/uapi/asm/setup.h | 7 -------
+>>>   2 files changed, 5 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/arch/sparc/include/asm/setup.h b/arch/sparc/include/asm/setup.h
+>>> index 72205684e51e..d1384ed92547 100644
+>>> --- a/arch/sparc/include/asm/setup.h
+>>> +++ b/arch/sparc/include/asm/setup.h
+>>> @@ -7,7 +7,11 @@
+>>>     #include <linux/interrupt.h>
+>>>   -#include <uapi/asm/setup.h>
+>>> +#if defined(__sparc__) && defined(__arch64__)
+>>
+>>     Mhm, I don't think these two can be #define'd simulaneously...
+> 
+> I believe it's just a SPARC-ism [1] [2] that may look strange and be easily confused for __aarch64__ (notice the extra 'a')...
+
+  Yeah, sorry, I did confuse it with AArgh64. :-)
+
+[...]
+
+MNR, Sergey
