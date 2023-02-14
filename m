@@ -1,65 +1,48 @@
 From: Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: [PATCH v2 10/24] mips/cpu: Make sure play_dead() doesn't return
-Date: Mon, 13 Feb 2023 23:05:44 -0800
-Message-ID: <b195e4da190bb06b7d4af15d66ce6129e2347630.1676358308.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 09/24] mips/cpu: Expose play_dead()'s prototype definition
+Date: Mon, 13 Feb 2023 23:05:43 -0800
+Message-ID: <39835bc75af2e812fce56400533cb2ab41bcf0e2.1676358308.git.jpoimboe@kernel.org>
 References: <cover.1676358308.git.jpoimboe@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676358427;
-        bh=lwJ9/+xlSw8oDD3Qopcd/jhHPHf7QqPAee8FZLk+aZ8=;
+        s=k20201202; t=1676358425;
+        bh=XNCtbUPkWepKcDkoc2QVjt5JoGlLdpvjlgQ3hSVUaHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iFgFrNJeMvgfkPjNiNxvI0Vuc7SIRa9KCqmiXq7ys2I9ixCufk+i43xWalt6uqMh/
-         wn6VPcgZh5ZxzVXg6wSrlSkUOXo5aHAJ0F+jJ5ArPAuFyTuBNZ/GgWZhzhj1lBlrUM
-         gjuYyPw7ON9a9kmw0qYXMw6hPezEeMJ11sDKoc6dnUUUYajwftTSnZjiZmue8T6Luj
-         Z4LWd21OFHTP+54h02CX+CKgSqp71ARbvuWFoaugK8rYR+nDm9VkA1TNubCKkNqN0n
-         saqeztfyJNpam7KTStlra9X3IAUfSavmVVM/GvFyaR+k0KMC7SEzJEhhrMtrnXK3hV
-         dNmd1llcbxmYA==
+        b=CKyTOk6N2s9QMRZ/xz9Dp6WvhVOZ+I7KXLar1fLc4GYGq29T2hULsYNmdGMQCbT3B
+         hpl7cgY9habl0Yu7ytEa8SYmo+/rBQ950VNga4e2rNTM+Yk+V1nJuNUyRvrGjy5CeY
+         Ma8uujywpI13NT25Z0NH3QTWsRczk5hODqoTnfeRxbg6/xR/QBbq8u0x103UtOS1z/
+         +HNk8m78315MkXjpc9AXs8HMe/L73Grn+P3cGI3rWBY4CZBoRG+Z9GYZHLfJ1Cbocf
+         6hHpxUH8tYgn3CTRRCHw/sNY6WMFiLhY52qkXwOb/pmk3Mc5S1BtFhPD6RMt2vjyPg
+         ITj44etdCnlHQ==
 In-Reply-To: <cover.1676358308.git.jpoimboe@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org
 Cc: jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen
 
-play_dead() doesn't return.  Make that more explicit with a BUG().
-
-BUG() is preferable to unreachable() because BUG() is a more explicit
-failure mode and avoids undefined behavior like falling off the edge of
-the function into whatever code happens to be next.
+Include <asm/smp.h> to make sure play_dead() matches its prototype going
+forward.
 
 Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/mips/kernel/smp-bmips.c | 2 ++
- arch/mips/loongson64/smp.c   | 1 +
- 2 files changed, 3 insertions(+)
+ arch/mips/kernel/smp-bmips.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/arch/mips/kernel/smp-bmips.c b/arch/mips/kernel/smp-bmips.c
-index df9158e8329d..be85fa075830 100644
+index f5d7bfa3472a..df9158e8329d 100644
 --- a/arch/mips/kernel/smp-bmips.c
 +++ b/arch/mips/kernel/smp-bmips.c
-@@ -414,6 +414,8 @@ void __ref play_dead(void)
- 	"	wait\n"
- 	"	j	bmips_secondary_reentry\n"
- 	: : : "memory");
-+
-+	BUG();
- }
+@@ -38,6 +38,7 @@
+ #include <asm/traps.h>
+ #include <asm/barrier.h>
+ #include <asm/cpu-features.h>
++#include <asm/smp.h>
  
- #endif /* CONFIG_HOTPLUG_CPU */
-diff --git a/arch/mips/loongson64/smp.c b/arch/mips/loongson64/smp.c
-index 660e1de4412a..c81c2bd07c62 100644
---- a/arch/mips/loongson64/smp.c
-+++ b/arch/mips/loongson64/smp.c
-@@ -822,6 +822,7 @@ void play_dead(void)
- 	state_addr = &per_cpu(cpu_state, cpu);
- 	mb();
- 	play_dead_at_ckseg1(state_addr);
-+	BUG();
- }
+ static int __maybe_unused max_cpus = 1;
  
- static int loongson3_disable_clock(unsigned int cpu)
 -- 
 2.39.1
 
