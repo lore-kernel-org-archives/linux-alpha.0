@@ -1,41 +1,86 @@
-From: Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH v3 19/24] parisc: Remove empty <uapi/asm/setup.h>
-Date: Tue, 14 Feb 2023 10:44:14 +0100
-Message-ID: <32c2584a-8777-26b9-ae29-80df9dfa7833__18468.0381835037$1676367975$gmane$org@gmx.de>
-References: <20230214074925.228106-1-alexghiti@rivosinc.com>
- <20230214074925.228106-20-alexghiti@rivosinc.com>
- <6f9c7a6b-4f6b-dead-2d9b-14b405f18397@linaro.org>
+From: Alexandre Ghiti <alex@ghiti.fr>
+Subject: Re: API for setting multiple PTEs at once
+Date: Tue, 14 Feb 2023 10:55:43 +0100
+Message-ID: <0bf59207-838b-2a0b-a95e-925a6bbf1913@ghiti.fr>
+References: <Y9wnr8SGfGGbi/bk@casper.infradead.org>
+ <Y+K0O35jNNzxiXE6@casper.infradead.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
-        t=1676367870; bh=ERFp+UKx/iNbj6Y6kJUSMmT/xdPleSppwgENqVxf/VM=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=Za6u4dReX/HTRyphBPafGiLsxCJ+KKmFXzBp1N3wK/BdK0FrKi1Znyq7KSHyqIyd/
-         kgfg1K7p6XNdoVzNndtK42V0pk1FbtgyitZSCQWfWujqXuBYwphv2YLUpu/j4syKSL
-         9RAZMIGf3dW2anwxyU5UMo1EVcbifIrk3T62A2sIhCPMYdsaAzhIY5t2nwHlg40Zt7
-         HtazUlk5mlSfLPOR/KKhdC1Dq5qLUvlQDvzaYGy2cDXLDVpukIxIWr8q4OHqWuB3tT
-         6cx52IlEbcB5iPGAwJpjsjaFv5wT4dz6E7YwfLhROeby+gu9v1sPXxrdEBwhQ+jslK
-         7mKSZA/LRAQdg==
+Content-Transfer-Encoding: 8bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Language: en-US
-In-Reply-To: <6f9c7a6b-4f6b-dead-2d9b-14b405f18397@linaro.org>
-List-ID: <linux-alpha.vger.kernel.org>
+In-Reply-To: <Y+K0O35jNNzxiXE6@casper.infradead.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>, Alexandre Ghiti <alexghiti@rivosinc.com>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Chr
-Cc: Palmer Dabbelt <palmer@rivosinc.com>
+To: Matthew Wilcox <willy@infradead.org>, linux-arch@vger.kernel.org
+Cc: linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>, linux-sh@vger.kernel.org, linux-mips@vger.kernel.org, linux-csky@vger.kernel.org, Yin Fengwei <fengwei.yin@intel.com>, linux-mm@kvack.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, loongarch@lists.linux.dev, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
 
-On 2/14/23 10:08, Philippe Mathieu-Daud=C3=A9 wrote:
-> On 14/2/23 08:49, Alexandre Ghiti wrote:
->> From: Palmer Dabbelt <palmer@rivosinc.com>
->>
->> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
->> ---
->> =C2=A0 arch/parisc/include/uapi/asm/setup.h | 5 -----
->> =C2=A0 1 file changed, 5 deletions(-)
->> =C2=A0 delete mode 100644 arch/parisc/include/uapi/asm/setup.h
+Hi Matthew,
+
+On 2/7/23 21:27, Matthew Wilcox wrote:
+> On Thu, Feb 02, 2023 at 09:14:23PM +0000, Matthew Wilcox wrote:
+>> For those of you not subscribed, linux-mm is currently discussing
+>> how best to handle page faults on large folios.  I simply made it work
+>> when adding large folio support.  Now Yin Fengwei is working on
+>> making it fast.
+> OK, here's an actual implementation:
 >
-> Reviewed-by: Philippe Mathieu-Daud=C3=A9 <philmd@linaro.org>
+> https://lore.kernel.org/linux-mm/20230207194937.122543-3-willy@infradead.org/
+>
+> It survives a run of xfstests.  If your architecture doesn't store its
+> PFNs at PAGE_SHIFT, you're going to want to implement your own set_ptes(),
+> or you'll see entirely the wrong pages mapped into userspace.  You may
+> also wish to implement set_ptes() if it can be done more efficiently
+> than __pte(pteval(pte) + PAGE_SIZE).
+>
+> Architectures that implement things like flush_icache_page() and
+> update_mmu_cache() may want to propose batched versions of those.
+> That's alpha, csky, m68k, mips, nios2, parisc, sh,
+> arm, loongarch, openrisc, powerpc, riscv, sparc and xtensa.
+> Maintainers BCC'd, mailing lists CC'd.
+>
+> I'm happy to collect implementations and submit them as part of a v6.
 
-Acked-by: Helge Deller <deller@gmx.de>
 
+Please find below the riscv implementation for set_ptes:
+
+diff --git a/arch/riscv/include/asm/pgtable.h 
+b/arch/riscv/include/asm/pgtable.h
+index ebee56d47003..10bf812776a4 100644
+--- a/arch/riscv/include/asm/pgtable.h
++++ b/arch/riscv/include/asm/pgtable.h
+@@ -463,6 +463,20 @@ static inline void set_pte_at(struct mm_struct *mm,
+         __set_pte_at(mm, addr, ptep, pteval);
+  }
+
++#define set_ptes set_ptes
++static inline void set_ptes(struct mm_struct *mm, unsigned long addr,
++                           pte_t *ptep, pte_t pte, unsigned int nr)
++{
++       for (;;) {
++               set_pte_at(mm, addr, ptep, pte);
++               if (--nr == 0)
++                       break;
++               ptep++;
++               addr += PAGE_SIZE;
++               pte = __pte(pte_val(pte) + (1 << _PAGE_PFN_SHIFT));
++       }
++}
++
+  static inline void pte_clear(struct mm_struct *mm,
+         unsigned long addr, pte_t *ptep)
+  {
+
+
+Thanks,
+
+Alex
 
