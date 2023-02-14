@@ -1,86 +1,63 @@
-From: Alexandre Ghiti <alex@ghiti.fr>
-Subject: Re: API for setting multiple PTEs at once
-Date: Tue, 14 Feb 2023 10:55:43 +0100
-Message-ID: <0bf59207-838b-2a0b-a95e-925a6bbf1913@ghiti.fr>
-References: <Y9wnr8SGfGGbi/bk@casper.infradead.org>
- <Y+K0O35jNNzxiXE6@casper.infradead.org>
+From: WANG Xuerui <kernel@xen0n.name>
+Subject: Re: [PATCH v3 10/24] sparc: Remove COMMAND_LINE_SIZE from uapi
+Date: Tue, 14 Feb 2023 16:59:46 +0800
+Message-ID: <f3db61bb-5c89-2724-769f-9d606f587f92__2604.05142778239$1676369872$gmane$org@xen0n.name>
+References: <20230214074925.228106-1-alexghiti@rivosinc.com>
+ <20230214074925.228106-11-alexghiti@rivosinc.com>
+ <017f0b40-8021-8b3b-24d2-c70661b6b292@omp.ru>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
+        t=1676365191; bh=i0XIzR1Y5NYJLkaxQFngDX1j91Olf/QjeHaXDd3DD/c=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=AhilTiebsZniB4h/3TCzhrMAQ0m1fI8D/hKY2T+4ArseJ+m3Ze12b64a7BZ4L0BhC
+         Cbii2w7OdAf8LC8paKh0dS4uxyxEGslyDxyzPafGMqQIX/0BH2c+SoMYy+3DyDz8fs
+         BbZrEFqt55X8c4cMx2sqOxvYHoYE3tKQfpxZHtYc=
 Content-Language: en-US
-In-Reply-To: <Y+K0O35jNNzxiXE6@casper.infradead.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Matthew Wilcox <willy@infradead.org>, linux-arch@vger.kernel.org
-Cc: linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>, linux-sh@vger.kernel.org, linux-mips@vger.kernel.org, linux-csky@vger.kernel.org, Yin Fengwei <fengwei.yin@intel.com>, linux-mm@kvack.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, loongarch@lists.linux.dev, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <017f0b40-8021-8b3b-24d2-c70661b6b292@omp.ru>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Sergey Shtylyov <s.shtylyov@omp.ru>, Alexandre Ghiti <alexghiti@rivosinc.com>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.l>
+Cc: Palmer Dabbelt <palmer@rivosinc.com>
 
-Hi Matthew,
+On 2023/2/14 16:50, Sergey Shtylyov wrote:
+> On 2/14/23 10:49 AM, Alexandre Ghiti wrote:
+> 
+>> From: Palmer Dabbelt <palmer@rivosinc.com>
+>>
+>> As far as I can tell this is not used by userspace and thus should not
+>> be part of the user-visible API.
+>>
+>> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>> ---
+>>   arch/sparc/include/asm/setup.h      | 6 +++++-
+>>   arch/sparc/include/uapi/asm/setup.h | 7 -------
+>>   2 files changed, 5 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/arch/sparc/include/asm/setup.h b/arch/sparc/include/asm/setup.h
+>> index 72205684e51e..d1384ed92547 100644
+>> --- a/arch/sparc/include/asm/setup.h
+>> +++ b/arch/sparc/include/asm/setup.h
+>> @@ -7,7 +7,11 @@
+>>   
+>>   #include <linux/interrupt.h>
+>>   
+>> -#include <uapi/asm/setup.h>
+>> +#if defined(__sparc__) && defined(__arch64__)
+> 
+>     Mhm, I don't think these two can be #define'd simulaneously...
 
-On 2/7/23 21:27, Matthew Wilcox wrote:
-> On Thu, Feb 02, 2023 at 09:14:23PM +0000, Matthew Wilcox wrote:
->> For those of you not subscribed, linux-mm is currently discussing
->> how best to handle page faults on large folios.  I simply made it work
->> when adding large folio support.  Now Yin Fengwei is working on
->> making it fast.
-> OK, here's an actual implementation:
->
-> https://lore.kernel.org/linux-mm/20230207194937.122543-3-willy@infradead.org/
->
-> It survives a run of xfstests.  If your architecture doesn't store its
-> PFNs at PAGE_SHIFT, you're going to want to implement your own set_ptes(),
-> or you'll see entirely the wrong pages mapped into userspace.  You may
-> also wish to implement set_ptes() if it can be done more efficiently
-> than __pte(pteval(pte) + PAGE_SIZE).
->
-> Architectures that implement things like flush_icache_page() and
-> update_mmu_cache() may want to propose batched versions of those.
-> That's alpha, csky, m68k, mips, nios2, parisc, sh,
-> arm, loongarch, openrisc, powerpc, riscv, sparc and xtensa.
-> Maintainers BCC'd, mailing lists CC'd.
->
-> I'm happy to collect implementations and submit them as part of a v6.
+I believe it's just a SPARC-ism [1] [2] that may look strange and be 
+easily confused for __aarch64__ (notice the extra 'a')...
 
+[1]: 
+https://github.com/gcc-mirror/gcc/blob/basepoints/gcc-12/gcc/config/sparc/sparc.h#L301
+[2]: 
+https://github.com/llvm/llvm-project/blob/llvmorg-17-init/clang/lib/Basic/Targets/Sparc.cpp#L241
 
-Please find below the riscv implementation for set_ptes:
+-- 
+WANG "xen0n" Xuerui
 
-diff --git a/arch/riscv/include/asm/pgtable.h 
-b/arch/riscv/include/asm/pgtable.h
-index ebee56d47003..10bf812776a4 100644
---- a/arch/riscv/include/asm/pgtable.h
-+++ b/arch/riscv/include/asm/pgtable.h
-@@ -463,6 +463,20 @@ static inline void set_pte_at(struct mm_struct *mm,
-         __set_pte_at(mm, addr, ptep, pteval);
-  }
-
-+#define set_ptes set_ptes
-+static inline void set_ptes(struct mm_struct *mm, unsigned long addr,
-+                           pte_t *ptep, pte_t pte, unsigned int nr)
-+{
-+       for (;;) {
-+               set_pte_at(mm, addr, ptep, pte);
-+               if (--nr == 0)
-+                       break;
-+               ptep++;
-+               addr += PAGE_SIZE;
-+               pte = __pte(pte_val(pte) + (1 << _PAGE_PFN_SHIFT));
-+       }
-+}
-+
-  static inline void pte_clear(struct mm_struct *mm,
-         unsigned long addr, pte_t *ptep)
-  {
-
-
-Thanks,
-
-Alex
+Linux/LoongArch mailing list: https://lore.kernel.org/loongarch/
 
