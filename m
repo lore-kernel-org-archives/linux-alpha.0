@@ -1,36 +1,73 @@
-From: =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>
-Subject: Re: [PATCH v2 11/24] mips/cpu: Mark play_dead() __noreturn
-Date: Tue, 14 Feb 2023 08:50:51 +0100
-Message-ID: <56249307-5093-1283-d2db-26c5b20881fa@linaro.org>
-References: <cover.1676358308.git.jpoimboe@kernel.org>
- <2897b51a9b8beb5b594fe66fb1d3a479ddd2a0e2.1676358308.git.jpoimboe@kernel.org>
+From: Alexandre Ghiti <alexghiti@rivosinc.com>
+Subject: [PATCH v3 01/24] alpha: Remove COMMAND_LINE_SIZE from uapi
+Date: Tue, 14 Feb 2023 08:49:02 +0100
+Message-ID: <20230214074925.228106-2-alexghiti__8434.6237171971$1676361097$gmane$org@rivosinc.com>
+References: <20230214074925.228106-1-alexghiti@rivosinc.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-mips-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zFkW6VXT2fJOMq6WUaQRBhQCIVLvw3497deAs8udnhc=;
-        b=b2BkfvRtFc9qhL9RxXaUQvxTUsLUpsHLXh8vIrxL+M+JiOUhz32HAYvSUPPyTdQl77
-         1p3HUUIWnP0wozCAjwY8VxpC5Hjl2+v3GwjG/dFVysmWZhGHWvr/6iIH91gfRtudx5ii
-         egD42T62aSSeAUQAoZ3bftvq6oEk1IvgPTqvhyz2/H8/FloRkK5BRF9A8eWltvJmLwJI
-         Uf0s9r16yQhJARquCcxwXlLrVW3jKQORB/2Pnub6HP1P/jj2kw2BN2QNr8FaScNfp7xd
-         Jpk95lFXnJ80tAWYVStTx2EDtvvDFldUhYT6kDqrJVlji1UtQ+TxVDywjsr26yaPckWo
-         FVEA==
-Content-Language: en-US
-In-Reply-To: <2897b51a9b8beb5b594fe66fb1d3a479ddd2a0e2.1676358308.git.jpoimboe@kernel.org>
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UfhnFvdOBMaLaqHchQiBMEzcSlF2Fa7xiydpzk9bce4=;
+        b=C2iakMWMXSP/c9K7z5Xrdh2FZ8isHrwxMldv7DFWh875IFzrwvaewsb7pv+pVa32tl
+         uGCdv0Gz5Sla77Gz5skt6wbYUcHV0MvrDD91ZQ6pbR0FErzvIa+siHbNV83wcBxe5ArP
+         aJt1rzTFYZAlJ16o/6rxYLUe5PNm3Cl+WBlup3rC4VDyDpLzh+6dKa0ocOU49K1pDDRG
+         2DU7qDQ8it3t/pBnyu9Q2n/Gn2V8da6o1Pd0nCVDpMY7pf+5XFSyefWucX0xtqrzNgZK
+         hOieCgCpkZJ2M+Y8BO8XCPqXTZ1/32v6n2w6GpPqHXYf4CRyUxX7PkOvD2S1cOWpGGyY
+         hVgA==
+In-Reply-To: <20230214074925.228106-1-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="macroman"; format="flowed"
-To: Josh Poimboeuf <jpoimboe@kernel.org>, linux-kernel@vger.kernel.org
-Cc: jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen
+Content-Type: text/plain; charset="us-ascii"
+To: Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley>
+Cc: Palmer Dabbelt <palmer@rivosinc.com>
 
-T24gMTQvMi8yMyAwODowNSwgSm9zaCBQb2ltYm9ldWYgd3JvdGU6Cj4gcGxheV9kZWFkKCkgZG9l
-c24ndCByZXR1cm4uICBBbm5vdGF0ZSBpdCBhcyBzdWNoLiAgQnkgZXh0ZW5zaW9uIHRoaXMKPiBh
-bHNvIG1ha2VzIGFyY2hfY3B1X2lkbGVfZGVhZCgpIG5vcmV0dXJuLgo+IAo+IEFja2VkLWJ5OiBG
-bG9yaWFuIEZhaW5lbGxpIDxmLmZhaW5lbGxpQGdtYWlsLmNvbT4KPiBTaWduZWQtb2ZmLWJ5OiBK
-b3NoIFBvaW1ib2V1ZiA8anBvaW1ib2VAa2VybmVsLm9yZz4KPiAtLS0KPiAgIGFyY2gvbWlwcy9p
-bmNsdWRlL2FzbS9zbXAuaCB8IDIgKy0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigr
-KSwgMSBkZWxldGlvbigtKQoKUmV2aWV3ZWQtYnk6IFBoaWxpcHBlIE1hdGhpZXUtRGF1ZMOpIDxw
-aGlsbWRAbGluYXJvLm9yZz4KCgo=
+From: Palmer Dabbelt <palmer@rivosinc.com>
+
+As far as I can tell this is not used by userspace and thus should not
+be part of the user-visible API.
+
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ arch/alpha/include/asm/setup.h      | 4 ++--
+ arch/alpha/include/uapi/asm/setup.h | 2 --
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/arch/alpha/include/asm/setup.h b/arch/alpha/include/asm/setup.h
+index 262aab99e391..ea08ca45efa8 100644
+--- a/arch/alpha/include/asm/setup.h
++++ b/arch/alpha/include/asm/setup.h
+@@ -2,8 +2,6 @@
+ #ifndef __ALPHA_SETUP_H
+ #define __ALPHA_SETUP_H
+ 
+-#include <uapi/asm/setup.h>
+-
+ /*
+  * We leave one page for the initial stack page, and one page for
+  * the initial process structure. Also, the console eats 3 MB for
+@@ -14,6 +12,8 @@
+ /* Remove when official MILO sources have ELF support: */
+ #define BOOT_SIZE	(16*1024)
+ 
++#define COMMAND_LINE_SIZE	256
++
+ #ifdef CONFIG_ALPHA_LEGACY_START_ADDRESS
+ #define KERNEL_START_PHYS	0x300000 /* Old bootloaders hardcoded this.  */
+ #else
+diff --git a/arch/alpha/include/uapi/asm/setup.h b/arch/alpha/include/uapi/asm/setup.h
+index f881ea5947cb..9b3b5ba39b1d 100644
+--- a/arch/alpha/include/uapi/asm/setup.h
++++ b/arch/alpha/include/uapi/asm/setup.h
+@@ -2,6 +2,4 @@
+ #ifndef _UAPI__ALPHA_SETUP_H
+ #define _UAPI__ALPHA_SETUP_H
+ 
+-#define COMMAND_LINE_SIZE	256
+-
+ #endif /* _UAPI__ALPHA_SETUP_H */
+-- 
+2.37.2
+
