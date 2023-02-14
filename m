@@ -1,52 +1,57 @@
 From: Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: [PATCH v2 17/24] x86/cpu: Make sure play_dead() doesn't return
-Date: Mon, 13 Feb 2023 23:05:51 -0800
-Message-ID: <11e6ac1cf10f92967882926e3ac16287b50642f2.1676358308.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 14/24] sh/cpu: Mark play_dead() __noreturn
+Date: Mon, 13 Feb 2023 23:05:48 -0800
+Message-ID: <03549a74fad9f73576d57e6fc0b5102322f9cff4.1676358308.git.jpoimboe@kernel.org>
 References: <cover.1676358308.git.jpoimboe@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-mips-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676358440;
-        bh=lVxYhY4OwwDPhm8BTwwcRy+JxjuJw8OgWEbHa0amaW4=;
+        s=k20201202; t=1676358434;
+        bh=D1LUoA9CXZXsUzjzdlL9Bm6VbDUOTXL6qHw2u/NeOks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fcUSoKqULJqLPku9lRFSHdbPaNeODYe/R1sZzjrR3VRHqcq59Tm9wERqJ6PlHQrjn
-         5GeWqya8mNwLITuoLWSAvRpjgR3SdVziUkPO9YsYEIi1QSukk7EUS9aKdkfWfOxlAO
-         wYjLK997WLSPPi0UzLKNSA6lD26mGt+cEcDEsvqdQMTTD3geXcDD/U9CExxmKiegju
-         C8HPMNKcuZCM+retZCnUY1hx60pKE2mQSPyq6ne+xt6jgv18ltv46AT4IlPKwLgjF+
-         KccGkJXMroepuqfZj6Fbx4rYWNFKt9XuiLi9CgivFSVeZiuhzrxK+XEv+28NZ52XHL
-         ujubifvv+6/4A==
+        b=tUPSKG32HeoUCaOwBqAbfzbtqzgHjEbcGBaE7+nOvdmvAM7y6sjCfuAxrGE/4DQIt
+         QH91rW2rmrkUZKNGHLdfWY4XgxUP3q4Vbi89ZxDv5Z53hCbFwD/HoI0itn8umcp7zd
+         RO1BgsyKfF+AmWkCuaRz60jhPAQ3thpP86qkBSYIYmcMJLhiCNGhvBk3KB+CqCgBNS
+         IADaxy26ZmuVaW+f5LGai7QJ7wkOBu1+2sVQWEQpeUuans/o+A2obrVfVyHv3nbjp5
+         ovm3K37rOQZ/jfwh28veu79x5ix2ETxdaBjyHzZ/jKVQT/SKpvH9Os+fLy+wdjLWvv
+         iAHgPTcY4MX+g==
 In-Reply-To: <cover.1676358308.git.jpoimboe@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org
 Cc: jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen
 
-After commit 076cbf5d2163 ("x86/xen: don't let xen_pv_play_dead()
-return"), play_dead() never returns.  Make that more explicit with a
-BUG().
-
-BUG() is preferable to unreachable() because BUG() is a more explicit
-failure mode and avoids undefined behavior like falling off the edge of
-the function into whatever code happens to be next.
+play_dead() doesn't return.  Annotate it as such.  By extension this
+also makes arch_cpu_idle_dead() noreturn.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- arch/x86/include/asm/smp.h | 1 +
- 1 file changed, 1 insertion(+)
+ arch/sh/include/asm/smp-ops.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/smp.h b/arch/x86/include/asm/smp.h
-index b4dbb20dab1a..8f628e08b25a 100644
---- a/arch/x86/include/asm/smp.h
-+++ b/arch/x86/include/asm/smp.h
-@@ -96,6 +96,7 @@ static inline void __cpu_die(unsigned int cpu)
- static inline void play_dead(void)
- {
- 	smp_ops.play_dead();
-+	BUG();
+diff --git a/arch/sh/include/asm/smp-ops.h b/arch/sh/include/asm/smp-ops.h
+index 63866b1595a0..97331fcb7b85 100644
+--- a/arch/sh/include/asm/smp-ops.h
++++ b/arch/sh/include/asm/smp-ops.h
+@@ -24,7 +24,7 @@ static inline void plat_smp_setup(void)
+ 	mp_ops->smp_setup();
  }
  
- static inline void smp_send_reschedule(int cpu)
+-static inline void play_dead(void)
++static inline void __noreturn play_dead(void)
+ {
+ 	mp_ops->play_dead();
+ 	BUG();
+@@ -43,7 +43,7 @@ static inline void register_smp_ops(struct plat_smp_ops *ops)
+ {
+ }
+ 
+-static inline void play_dead(void)
++static inline void __noreturn play_dead(void)
+ {
+ 	BUG();
+ }
 -- 
 2.39.1
 
