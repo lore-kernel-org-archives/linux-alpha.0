@@ -1,65 +1,44 @@
 From: Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: [PATCH v2 13/24] sh/cpu: Make sure play_dead() doesn't return
-Date: Tue, 14 Feb 2023 10:28:31 -0800
-Message-ID: <20230214182831.7l73rzoeqjowbyly@treble>
+Subject: Re: [PATCH v2 00/24] cpu,sched: Mark arch_cpu_idle_dead() __noreturn
+Date: Tue, 14 Feb 2023 10:29:46 -0800
+Message-ID: <20230214182946.x64fakiyfrjumuy2@treble>
 References: <cover.1676358308.git.jpoimboe@kernel.org>
- <d0c3ff5349adfe8fd227acc236ae2c278a05eb4c.1676358308.git.jpoimboe@kernel.org>
- <2575e5f7-b11a-020f-06ef-ba42301d7415@linaro.org>
+ <a48ebe98-82b5-8f7b-8327-4e60bdb231c8@linaro.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-mips-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676399315;
-        bh=FbF6sDzVu8IYeXRzBwpTRcd2V9cyuwcFeFjq0Ymm7Do=;
+        s=k20201202; t=1676399389;
+        bh=oQROITW1uKecfEo2cGdUy6SKWCigHCuMd3wvoPcK/Ko=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bHhn4MxW4jaWFJ2rWLLTx3PrN1UgQYhr8rIIi09a5nKp9q1ESDXYN6B61WfPK+RCk
-         kGOo0Ttnppg2I0ImN2NZWVnYn5Hj3XaN0LDcyDf/bwqXXcmVPP3k8vhBjHFmJR2Bwl
-         59QsKYYCyuVJKOZH8QhykBvzswD6lxU5Dm7UQEUn/f61z0n0wk0iCLguGpDT9BQtko
-         BMamtHKjb0Kw6J2wXAyHy1UIJAIQSjMfecn63l73DrJUySuInHCUTNK20Fu4b0MRwy
-         oFsYNMAp0xS4VwbLeGrloRppo8ZqhdA7joLLtCUVdDhIWqqYlEK1n6Wnc+Yaj98vfY
-         KvhcfOKc0ivxg==
+        b=hpBfb/N7GqHlXo7xtxu5LoZyyUht86rqLf73Z3PeLujJU6jGBfG4Crx1t8FD0bkFr
+         cpbiPz0/QDlZfYRI4h2P3lLrmD5Z/xbGq7cs4Ut0xjuJi4YzSzkvOMMKpBtebTlCtL
+         l4e1AgnghjvPjyVVks0KpZOXqFcPu3BTc7mr5i2f6zK8LRTHRiYvESRTTFIvkhp+LF
+         VuUuwaRBMKyTuPkTeqMUDJ4+UTzBxdWeQgQAGNmVm18KuHS/90CWYpvajdj9AOJsed
+         2UAZeIOgM0zNiULRxmya9V9eCoG8CCRRUJHb21auhUA9pbURPxp8PbGI4vjFY9YHnJ
+         dx0ZQ0blYHc8A==
 Content-Disposition: inline
-In-Reply-To: <2575e5f7-b11a-020f-06ef-ba42301d7415@linaro.org>
+In-Reply-To: <a48ebe98-82b5-8f7b-8327-4e60bdb231c8@linaro.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
 To: Philippe =?utf-8?Q?Mathieu-Daud=C3=A9?= <philmd@linaro.org>
 Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.
 
-On Tue, Feb 14, 2023 at 08:57:39AM +0100, Philippe Mathieu-Daud=C3=A9 wrote:
+On Tue, Feb 14, 2023 at 10:25:50AM +0100, Philippe Mathieu-Daud=C3=A9 wrote:
 > On 14/2/23 08:05, Josh Poimboeuf wrote:
-> > play_dead() doesn't return.  Make that more explicit with a BUG().
+> > v2:
+> > - make arch_call_rest_init() and rest_init() __noreturn
+> > - make objtool 'global_returns' work for weak functions
+> > - rebase on tip/objtool/core with dependencies merged in (mingo)
+> > - add acks
 > >=20
-> > BUG() is preferable to unreachable() because BUG() is a more explicit
-> > failure mode and avoids undefined behavior like falling off the edge of
-> > the function into whatever code happens to be next.
-> >=20
-> > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > ---
-> >   arch/sh/include/asm/smp-ops.h | 1 +
-> >   1 file changed, 1 insertion(+)
-> >=20
-> > diff --git a/arch/sh/include/asm/smp-ops.h b/arch/sh/include/asm/smp-op=
-s.h
-> > index e27702130eb6..63866b1595a0 100644
-> > --- a/arch/sh/include/asm/smp-ops.h
-> > +++ b/arch/sh/include/asm/smp-ops.h
-> > @@ -27,6 +27,7 @@ static inline void plat_smp_setup(void)
-> >   static inline void play_dead(void)
-> >   {
-> >   	mp_ops->play_dead();
-> > +	BUG();
-> >   }
+> > v1.1:
+> > - add __noreturn to all arch_cpu_idle_dead() implementations (mpe)
 >=20
-> Shouldn't we decorate plat_smp_ops::play_dead() as noreturn first?
+> Possible similar candidates: panic_smp_self_stop, nmi_panic_self_stop
+> and kexec.
 
-I guess it really depends on how far we want to go down the __noreturn
-rabbit hole.  To keep the patch set constrained yet still useful I
-stopped when I got to a function pointer, as I think it still needs a
-BUG() afterwards either way.
-
-That said, there would still be benefits of adding __noreturn to
-function pointers, I just wanted to keep the patch set down to a
-manageable size ;-)
+Agreed.  Any volunteers?
 
 --=20
 Josh
