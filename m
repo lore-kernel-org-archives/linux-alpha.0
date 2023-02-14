@@ -1,7 +1,7 @@
 From: Alexandre Ghiti <alexghiti@rivosinc.com>
-Subject: [PATCH v3 06/24] microblaze: Remove COMMAND_LINE_SIZE from uapi
-Date: Tue, 14 Feb 2023 08:49:07 +0100
-Message-ID: <20230214074925.228106-7-alexghiti__43700.3691725963$1676361403$gmane$org@rivosinc.com>
+Subject: [PATCH v3 07/24] mips: Remove COMMAND_LINE_SIZE from uapi
+Date: Tue, 14 Feb 2023 08:49:08 +0100
+Message-ID: <20230214074925.228106-8-alexghiti__33323.6253283516$1676361454$gmane$org@rivosinc.com>
 References: <20230214074925.228106-1-alexghiti@rivosinc.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -11,13 +11,13 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZhdZ6IBARLttHQe1cf2NcgGY75q7JNAgsxtr1kT5kgY=;
-        b=WUnQautY0C4VnR179UT3EoCgDMh692PX4JIH++p5EPvA1yrRO/fl+UiJJROeSG56Yd
-         auQNeE8xqAyEf2IHwlM8Mj9jimF0w+QT0uVnsG4fXjaKwWGWrlEj1LzF57NiupT0LR6o
-         bmTpD6Q5aa1n+5RVS1uxfUzvjrBt7j3ahNAKmewc/SJFd0wUI235VxB1hzncC1Zwofn4
-         iTxWoEUEDV/EgpiqiXMLeqy9nMGNFgyZOQKozpWaPfsGJXr8kf9J4mLtVL7bqCZOI0Sa
-         86d5rOYBfoFKhmFjCdMHzcpyZzXumz+WTxxqPTlVAK+W5T/30s7a7qUBT+LxpqB5vQJs
-         GczQ==
+        bh=fWjLqsc+NkWMLFdHmbfFb0dn9xRzmwLOXd3uaLGqwBY=;
+        b=caX8aWQ8DZKo96HIEXErccmSqQeGKRpDuSdr6010va+fd6heZz1VBNqHbYUWTHczq8
+         mezb+8HbIfzaNI36qGubajDNLCzRQzt4Hbgq7MFFxEJGNk3bEGAMc043qE5rdYn342sz
+         zVKvXF9BRRNZYR6lWJOn/JnI+PgnmHZPBcTAowttzA8jjfTIqHHQZ+ERkinvG9qHEEWV
+         rovUNsOO1j9tz1zELCVd7W981MDmvC6qTN+tjlfDMf18pIEV94eGlS2sYxoOgQ3HkWuh
+         MK0V0bkixcCwiYoT3zYKuN+arx2XpkArqn0BbZInm5/TMzCXdMsPWy4n//p8ONoMyppz
+         QTdw==
 In-Reply-To: <20230214074925.228106-1-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -31,36 +31,36 @@ be part of the user-visible API.
 
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 ---
- arch/microblaze/include/asm/setup.h      | 2 +-
- arch/microblaze/include/uapi/asm/setup.h | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ arch/mips/include/asm/setup.h      | 3 ++-
+ arch/mips/include/uapi/asm/setup.h | 3 ---
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/microblaze/include/asm/setup.h b/arch/microblaze/include/asm/setup.h
-index a06cc1f97aa9..2becbf3b8baf 100644
---- a/arch/microblaze/include/asm/setup.h
-+++ b/arch/microblaze/include/asm/setup.h
-@@ -7,7 +7,7 @@
- #ifndef _ASM_MICROBLAZE_SETUP_H
- #define _ASM_MICROBLAZE_SETUP_H
+diff --git a/arch/mips/include/asm/setup.h b/arch/mips/include/asm/setup.h
+index 8c56b862fd9c..a13b9259b476 100644
+--- a/arch/mips/include/asm/setup.h
++++ b/arch/mips/include/asm/setup.h
+@@ -3,7 +3,8 @@
+ #define _MIPS_SETUP_H
  
+ #include <linux/types.h>
 -#include <uapi/asm/setup.h>
-+#define COMMAND_LINE_SIZE	256
++
++#define COMMAND_LINE_SIZE	4096
  
- # ifndef __ASSEMBLY__
- extern char cmd_line[COMMAND_LINE_SIZE];
-diff --git a/arch/microblaze/include/uapi/asm/setup.h b/arch/microblaze/include/uapi/asm/setup.h
-index 6831794e6f2c..51aed65880e7 100644
---- a/arch/microblaze/include/uapi/asm/setup.h
-+++ b/arch/microblaze/include/uapi/asm/setup.h
-@@ -12,8 +12,6 @@
- #ifndef _UAPI_ASM_MICROBLAZE_SETUP_H
- #define _UAPI_ASM_MICROBLAZE_SETUP_H
+ extern void prom_putchar(char);
+ extern void setup_early_printk(void);
+diff --git a/arch/mips/include/uapi/asm/setup.h b/arch/mips/include/uapi/asm/setup.h
+index 7d48c433b0c2..157c3c392fb4 100644
+--- a/arch/mips/include/uapi/asm/setup.h
++++ b/arch/mips/include/uapi/asm/setup.h
+@@ -2,7 +2,4 @@
+ #ifndef _UAPI_MIPS_SETUP_H
+ #define _UAPI_MIPS_SETUP_H
  
--#define COMMAND_LINE_SIZE	256
+-#define COMMAND_LINE_SIZE	4096
 -
- # ifndef __ASSEMBLY__
- 
- # endif /* __ASSEMBLY__ */
+-
+ #endif /* _UAPI_MIPS_SETUP_H */
 -- 
 2.37.2
 
