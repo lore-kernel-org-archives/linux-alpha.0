@@ -1,107 +1,43 @@
-From: =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <philmd@linaro.org>
-Subject: Re: [PATCH v2 09/24] mips/cpu: Expose play_dead()'s prototype
- definition
-Date: Wed, 15 Feb 2023 09:29:20 +0100
-Message-ID: <c56dc4b9-035d-7773-ecb2-0e1ac6af7abc@linaro.org>
-References: <cover.1676358308.git.jpoimboe@kernel.org>
- <39835bc75af2e812fce56400533cb2ab41bcf0e2.1676358308.git.jpoimboe@kernel.org>
- <080a5ccb-7fa0-1a75-538f-a09dc146fc4e@linaro.org>
- <20230214181101.3a2tscbmwdnwbqpu@treble>
+From: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Subject: Re: [PATCH v3 03/24] arm: Remove COMMAND_LINE_SIZE from uapi
+Date: Wed, 15 Feb 2023 12:59:14 +0000
+Message-ID: <Y+zXIgwO5wteLQZ5@shell.armlinux.org.uk>
+References: <20230214074925.228106-1-alexghiti@rivosinc.com>
+ <20230214074925.228106-4-alexghiti@rivosinc.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=D+uRuWA2my0PkLfTRJkVAZ05w6wbQaFzpjSQTlA3Y10=;
-        b=EAjtSefiFMcRJUjTT1vKa++/98Yo1SN60xpEBkPSeru5QVrOombFl7ZHZ9y0eBb+k8
-         1ZpycnMJayGmVT6T6UnuPRjCB3nPxmBujGFtXaNp8cbOZSlWgdaIEhXU+GGjztzV/czy
-         1WDq6VfomA00oo7hLpCf0eBYSqerRkvKuSrVmRTM4XbxzJrQVoIbRj0AGC+iAePl6sTf
-         Z2xptiD/VOo1nfoRA4XWNffLKM3ZE08q46EkUvIRst5VglioETpQYFtr/iY0tCSkcOlD
-         bJtursUf7vQFXV0RL9Rz9XvQSF18NBopDoEorHB9a2ffDlY3yM0iSt8r0hW9VmbKY8B/
-         Tfog==
-Content-Language: en-US
-In-Reply-To: <20230214181101.3a2tscbmwdnwbqpu@treble>
+Return-path: <linux-doc-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=T80Dv/pbeHv4yQbIV1WRGowSCcOuo+FwhGVSDYirNyo=; b=typStl4V61M+0LWV6CYl45n1NF
+        m4W0eM90AoKd85qmixDcPpthnLk+b95bwsgFFcBvnssjyLxRNyWUkf38MBdHnC5hJMHQXzrAXfE4u
+        sjXI9CnPsT2tyWCtaFGJReOhVBJ7C1Ky0fJf6uDeq4qgqxhR8LjP5C0F4+mFpu0QYM/1ri8+MwHzB
+        Qf+rKkAOQgWN+tf3cp48UNgtPLftSBYrStzhBTXcXjZymQMX0JdBeGP5uBPfD69mswliqG6fC1C8X
+        g8JyK0lQvJ+nNDGbGSfSRKRlMGVdmWQAdYU5t1SmOnXYVevrwp2QWkhQ7cr4d8xZJhXA4l/PEejz+
+Content-Disposition: inline
+In-Reply-To: <20230214074925.228106-4-alexghiti@rivosinc.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Alexandre Ghiti <alexghiti@rivosinc.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@d>
 
-On 14/2/23 19:11, Josh Poimboeuf wrote:
-> On Tue, Feb 14, 2023 at 08:46:41AM +0100, Philippe Mathieu-Daudé wrote:
->> Hi Josh,
->>
->> On 14/2/23 08:05, Josh Poimboeuf wrote:
->>> Include <asm/smp.h> to make sure play_dead() matches its prototype going
->>> forward.
->>>
->>> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
->>> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
->>> ---
->>>    arch/mips/kernel/smp-bmips.c | 1 +
->>>    1 file changed, 1 insertion(+)
->>>
->>> diff --git a/arch/mips/kernel/smp-bmips.c b/arch/mips/kernel/smp-bmips.c
->>> index f5d7bfa3472a..df9158e8329d 100644
->>> --- a/arch/mips/kernel/smp-bmips.c
->>> +++ b/arch/mips/kernel/smp-bmips.c
->>> @@ -38,6 +38,7 @@
->>>    #include <asm/traps.h>
->>>    #include <asm/barrier.h>
->>>    #include <asm/cpu-features.h>
->>> +#include <asm/smp.h>
->>
->> What about the other implementations?
->>
->> $ git grep -L asm/smp.h $(git grep -wlF 'play_dead(void)' arch/mips)
->> arch/mips/cavium-octeon/smp.c
->> arch/mips/kernel/smp-bmips.c
->> arch/mips/kernel/smp-cps.c
->> arch/mips/loongson64/smp.c
+On Tue, Feb 14, 2023 at 08:49:04AM +0100, Alexandre Ghiti wrote:
+> From: Palmer Dabbelt <palmer@rivosinc.com>
 > 
-> Indeed.  I really wish we had -Wmissing-prototypes.
+> As far as I can tell this is not used by userspace and thus should not
+> be part of the user-visible API.
 > 
-> I'll squash this in:
-> 
-> diff --git a/arch/mips/cavium-octeon/smp.c b/arch/mips/cavium-octeon/smp.c
-> index 89954f5f87fb..4212584e6efa 100644
-> --- a/arch/mips/cavium-octeon/smp.c
-> +++ b/arch/mips/cavium-octeon/smp.c
-> @@ -20,6 +20,7 @@
->   #include <asm/mmu_context.h>
->   #include <asm/time.h>
->   #include <asm/setup.h>
-> +#include <asm/smp.h>
->   
->   #include <asm/octeon/octeon.h>
->   
-> diff --git a/arch/mips/kernel/smp-cps.c b/arch/mips/kernel/smp-cps.c
-> index bcd6a944b839..6d69a9ba8167 100644
-> --- a/arch/mips/kernel/smp-cps.c
-> +++ b/arch/mips/kernel/smp-cps.c
-> @@ -20,6 +20,7 @@
->   #include <asm/mipsregs.h>
->   #include <asm/pm-cps.h>
->   #include <asm/r4kcache.h>
-> +#include <asm/smp.h>
->   #include <asm/smp-cps.h>
->   #include <asm/time.h>
->   #include <asm/uasm.h>
-> diff --git a/arch/mips/loongson64/smp.c b/arch/mips/loongson64/smp.c
-> index c81c2bd07c62..df8d789ede3c 100644
-> --- a/arch/mips/loongson64/smp.c
-> +++ b/arch/mips/loongson64/smp.c
-> @@ -14,6 +14,7 @@
->   #include <linux/cpufreq.h>
->   #include <linux/kexec.h>
->   #include <asm/processor.h>
-> +#include <asm/smp.h>
->   #include <asm/time.h>
->   #include <asm/tlbflush.h>
->   #include <asm/cacheflush.h>
+> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 
-Reviewed-by: Philippe Mathieu-Daudé <philmd@linaro.org>
+Looks good to me. What's the merge plan for this?
 
 Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
