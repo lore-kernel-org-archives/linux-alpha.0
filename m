@@ -1,61 +1,71 @@
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Subject: Re: [PATCH v2 03/24] arm/cpu: Make sure arch_cpu_idle_dead() doesn't
- return
-Date: Tue, 14 Feb 2023 22:01:29 +0000
-Message-ID: <Y+wEubLjgDQDIbSO@shell.armlinux.org.uk>
-References: <cover.1676358308.git.jpoimboe@kernel.org>
- <ed361403b8ee965f758fe491c47336dddcfb8fd5.1676358308.git.jpoimboe@kernel.org>
- <Y+ttS0japRCzHoFM@shell.armlinux.org.uk>
- <20230214183926.46trlpdror3v5sk5@treble>
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZAoS9GAPCjvcD2e9rjRkdzaMQfoBwDvlSDrbpklXNtw=; b=gOWkVHN6VrFdTRZ3tkfzExyMX5
-        iJG3T+SC9IXbxn90Fbaz8qafSZ2cSWCKJIfE8M6lrpaFk6i6pbMJcmCesDgK+0V1ZlSkpV3lpLQvt
-        6t3as6FVzUgvCdry0d05aVbpoyawUPAWWKEqHsdUd51LfdMnUdvaseupK9S0TyD3aRX25kRmEaruc
-        EDzNZOFM6e6s8/SHUq+zLrY0bXzYJpc9f4y5Cy3NTRq9ku5n9kEMzAqA4jLJe3H8GReXifQoT0YuX
-        GYQEQY1P5tctvQOGyUvJ+7gLiMHs9z3IdsrOcbX7CJOmYcb6RVPKTGGR+IyKtzcy3IDf7PHmpL/Fz
-Content-Disposition: inline
-In-Reply-To: <20230214183926.46trlpdror3v5sk5@treble>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+From: Palmer Dabbelt <palmer@dabbelt.com>
+Subject: Re: [PATCH 13/19] arch/riscv: rename internal name __xchg to __arch_xchg
+Date: Tue, 14 Feb 2023 21:22:24 -0800 (PST)
+Message-ID: <mhng-e75808d7-21de-4ef8-a606-b7c652a1f38e@palmer-ri-x1c9>
+References: <20221222114635.1251934-14-andrzej.hajda@intel.com>
+Mime-Version: 1.0 (MHng)
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tV+nl5/6nbPk/6HA5pQX/rHuTHF5S4E9f4KJMF/h5x0=;
+        b=fhWxOvSg47bnqh1vlUb0tg8U7zRfENd11uhGOf5Jsz/ZocWHFEI68pLXo5d9vBVXvT
+         wSDFNO3/CV6QVriW/uJf7uSjBsTIo2nfhwr90ljf0Mtrv3l+ZNz03APZ/NoeYJxIi8AS
+         eT1BnG6scYkTL0mRsKAhicVLLfSox5xFSJlK+m4CcZ2f/19AZeBmn0TeLDNpHHUJ+j//
+         pNGe52xRL7NHFqYuRqi8NBAMhHiUAqm3krXcV9gB6lQ+ZUL8htkaq+hcUOto2vJWmQ/P
+         1t61ly6hek8z31+cUX+0shb1PAvYlU/KvbO9KdB05jwbmNe1/Zq0XZpFJiImeu8sqMJC
+         uFRA==
+In-Reply-To: <20221222114635.1251934-14-andrzej.hajda@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, andrzej.hajda@intel.com, Arnd Bergmann <arnd@arndb.de>, rodrigo.vivi@intel.com, akpm@linux-foundation.org, andriy.shevchenko@linux.intel.com, peterz@infradead.org, boqun.feng@gmail.com, mark.rutland@arm.com
 
-On Tue, Feb 14, 2023 at 10:39:26AM -0800, Josh Poimboeuf wrote:
-> On Tue, Feb 14, 2023 at 11:15:23AM +0000, Russell King (Oracle) wrote:
-> > On Mon, Feb 13, 2023 at 11:05:37PM -0800, Josh Poimboeuf wrote:
-> > > arch_cpu_idle_dead() doesn't return.  Make that more explicit with a
-> > > BUG().
-> > > 
-> > > BUG() is preferable to unreachable() because BUG() is a more explicit
-> > > failure mode and avoids undefined behavior like falling off the edge of
-> > > the function into whatever code happens to be next.
-> > 
-> > This is silly. Just mark the function __noreturn and be done with it.
-> > If the CPU ever executes code past the "b" instruction, it's already
-> > really broken that the extra instructions that BUG() gives will be
-> > meaningless.
-> > 
-> > This patch does nothing except add yet more bloat the kernel.
-> > 
-> > Sorry, but NAK.
-> 
-> Problem is, the compiler can't read inline asm.  So you'd get a 
-> "'noreturn' function does return" warning.
-> 
-> We can do an unreachable() instead of a BUG() here if you prefer
-> undefined behavior.
+On Thu, 22 Dec 2022 03:46:29 PST (-0800), andrzej.hajda@intel.com wrote:
+> __xchg will be used for non-atomic xchg macro.
+>
+> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
+> ---
+>  arch/riscv/include/asm/atomic.h  | 2 +-
+>  arch/riscv/include/asm/cmpxchg.h | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
+> index 0dfe9d857a762b..bba472928b5393 100644
+> --- a/arch/riscv/include/asm/atomic.h
+> +++ b/arch/riscv/include/asm/atomic.h
+> @@ -261,7 +261,7 @@ c_t arch_atomic##prefix##_xchg_release(atomic##prefix##_t *v, c_t n)	\
+>  static __always_inline							\
+>  c_t arch_atomic##prefix##_xchg(atomic##prefix##_t *v, c_t n)		\
+>  {									\
+> -	return __xchg(&(v->counter), n, size);				\
+> +	return __arch_xchg(&(v->counter), n, size);			\
+>  }									\
+>  static __always_inline							\
+>  c_t arch_atomic##prefix##_cmpxchg_relaxed(atomic##prefix##_t *v,	\
+> diff --git a/arch/riscv/include/asm/cmpxchg.h b/arch/riscv/include/asm/cmpxchg.h
+> index 12debce235e52d..2f4726d3cfcc25 100644
+> --- a/arch/riscv/include/asm/cmpxchg.h
+> +++ b/arch/riscv/include/asm/cmpxchg.h
+> @@ -114,7 +114,7 @@
+>  					    _x_, sizeof(*(ptr)));	\
+>  })
+>
+> -#define __xchg(ptr, new, size)						\
+> +#define __arch_xchg(ptr, new, size)					\
+>  ({									\
+>  	__typeof__(ptr) __ptr = (ptr);					\
+>  	__typeof__(new) __new = (new);					\
+> @@ -143,7 +143,7 @@
+>  #define arch_xchg(ptr, x)						\
+>  ({									\
+>  	__typeof__(*(ptr)) _x_ = (x);					\
+> -	(__typeof__(*(ptr))) __xchg((ptr), _x_, sizeof(*(ptr)));	\
+> +	(__typeof__(*(ptr))) __arch_xchg((ptr), _x_, sizeof(*(ptr)));	\
+>  })
+>
+>  #define xchg32(ptr, x)							\
 
-That's fine.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
