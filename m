@@ -1,71 +1,40 @@
-From: Palmer Dabbelt <palmer@dabbelt.com>
-Subject: Re: [PATCH 13/19] arch/riscv: rename internal name __xchg to __arch_xchg
-Date: Tue, 14 Feb 2023 21:22:24 -0800 (PST)
-Message-ID: <mhng-e75808d7-21de-4ef8-a606-b7c652a1f38e@palmer-ri-x1c9>
-References: <20221222114635.1251934-14-andrzej.hajda@intel.com>
-Mime-Version: 1.0 (MHng)
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tV+nl5/6nbPk/6HA5pQX/rHuTHF5S4E9f4KJMF/h5x0=;
-        b=fhWxOvSg47bnqh1vlUb0tg8U7zRfENd11uhGOf5Jsz/ZocWHFEI68pLXo5d9vBVXvT
-         wSDFNO3/CV6QVriW/uJf7uSjBsTIo2nfhwr90ljf0Mtrv3l+ZNz03APZ/NoeYJxIi8AS
-         eT1BnG6scYkTL0mRsKAhicVLLfSox5xFSJlK+m4CcZ2f/19AZeBmn0TeLDNpHHUJ+j//
-         pNGe52xRL7NHFqYuRqi8NBAMhHiUAqm3krXcV9gB6lQ+ZUL8htkaq+hcUOto2vJWmQ/P
-         1t61ly6hek8z31+cUX+0shb1PAvYlU/KvbO9KdB05jwbmNe1/Zq0XZpFJiImeu8sqMJC
-         uFRA==
-In-Reply-To: <20221222114635.1251934-14-andrzej.hajda@intel.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH v3 09/24] powerpc: Remove COMMAND_LINE_SIZE from uapi
+Date: Wed, 15 Feb 2023 18:04:04 +1100
+Message-ID: <87357776l7.fsf__21792.3158708558$1676444725$gmane$org@mpe.ellerman.id.au>
+References: <20230214074925.228106-1-alexghiti@rivosinc.com>
+ <20230214074925.228106-10-alexghiti@rivosinc.com>
+Mime-Version: 1.0
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1676444666;
+        bh=JUTkPQAgfduuGSuPZGMfN9jX5ig96F9RnCKqmUbpwX8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=c9jhtw7yA0XcW4ZIPKehScWAnBIE+yzQpATJfnqks6S8ZJ2HNm+BGFL2euWeBOt8a
+         OhWOKbt3aSBVpTmFcz15w7a7UuhkDO05uNLtnmT22dKVJC01MB7W9tPpnBm9YQMsGK
+         RYNgu0G4CP5zVuci+an4PNoxZ0HU0g5JR/uSa4eE8zpo9iyyuHKEmh9FPQybvgw+KY
+         d58FT+wdEKfgJkLAPaL0Cw6X5qfGspbdggu7TZ1U8VrT0mS5Jx5jrv8cpfFyy5N9KE
+         2xLTt+2MVtXNE6iyfLrIZtYM6caEuBGdw8QxqlgG0gE7FVIBHx1EiyfBSI2iWVwldk
+         /dc0iTP1Vtrhw==
+In-Reply-To: <20230214074925.228106-10-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, andrzej.hajda@intel.com, Arnd Bergmann <arnd@arndb.de>, rodrigo.vivi@intel.com, akpm@linux-foundation.org, andriy.shevchenko@linux.intel.com, peterz@infradead.org, boqun.feng@gmail.com, mark.rutland@arm.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Alexandre Ghiti <alexghiti@rivosinc.com>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walms>
+Cc: Palmer Dabbelt <palmer@rivosinc.com>
 
-On Thu, 22 Dec 2022 03:46:29 PST (-0800), andrzej.hajda@intel.com wrote:
-> __xchg will be used for non-atomic xchg macro.
+Alexandre Ghiti <alexghiti@rivosinc.com> writes:
+> From: Palmer Dabbelt <palmer@rivosinc.com>
 >
-> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
+> As far as I can tell this is not used by userspace and thus should not
+> be part of the user-visible API.
+>
+> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 > ---
->  arch/riscv/include/asm/atomic.h  | 2 +-
->  arch/riscv/include/asm/cmpxchg.h | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
-> index 0dfe9d857a762b..bba472928b5393 100644
-> --- a/arch/riscv/include/asm/atomic.h
-> +++ b/arch/riscv/include/asm/atomic.h
-> @@ -261,7 +261,7 @@ c_t arch_atomic##prefix##_xchg_release(atomic##prefix##_t *v, c_t n)	\
->  static __always_inline							\
->  c_t arch_atomic##prefix##_xchg(atomic##prefix##_t *v, c_t n)		\
->  {									\
-> -	return __xchg(&(v->counter), n, size);				\
-> +	return __arch_xchg(&(v->counter), n, size);			\
->  }									\
->  static __always_inline							\
->  c_t arch_atomic##prefix##_cmpxchg_relaxed(atomic##prefix##_t *v,	\
-> diff --git a/arch/riscv/include/asm/cmpxchg.h b/arch/riscv/include/asm/cmpxchg.h
-> index 12debce235e52d..2f4726d3cfcc25 100644
-> --- a/arch/riscv/include/asm/cmpxchg.h
-> +++ b/arch/riscv/include/asm/cmpxchg.h
-> @@ -114,7 +114,7 @@
->  					    _x_, sizeof(*(ptr)));	\
->  })
->
-> -#define __xchg(ptr, new, size)						\
-> +#define __arch_xchg(ptr, new, size)					\
->  ({									\
->  	__typeof__(ptr) __ptr = (ptr);					\
->  	__typeof__(new) __new = (new);					\
-> @@ -143,7 +143,7 @@
->  #define arch_xchg(ptr, x)						\
->  ({									\
->  	__typeof__(*(ptr)) _x_ = (x);					\
-> -	(__typeof__(*(ptr))) __xchg((ptr), _x_, sizeof(*(ptr)));	\
-> +	(__typeof__(*(ptr))) __arch_xchg((ptr), _x_, sizeof(*(ptr)));	\
->  })
->
->  #define xchg32(ptr, x)							\
+>  arch/powerpc/include/asm/setup.h      | 2 +-
+>  arch/powerpc/include/uapi/asm/setup.h | 2 --
+>  2 files changed, 1 insertion(+), 3 deletions(-)
 
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+
+cheers
