@@ -1,57 +1,74 @@
-From: "Arnd Bergmann" <arnd@arndb.de>
-Subject: Re: [PATCH v3 03/24] arm: Remove COMMAND_LINE_SIZE from uapi
-Date: Wed, 15 Feb 2023 14:04:59 +0100
-Message-ID: <f3e1585c-0d9d-4709-9b21-74a63d8cc9ac@app.fastmail.com>
-References: <20230214074925.228106-1-alexghiti@rivosinc.com>
- <20230214074925.228106-4-alexghiti@rivosinc.com>
- <Y+zXIgwO5wteLQZ5@shell.armlinux.org.uk>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v2 04/24] arm64/cpu: Mark cpu_die() __noreturn
+Date: Wed, 15 Feb 2023 13:09:21 +0000
+Message-ID: <Y+zZgZIP7RPIgyQf@FVFF77S0Q05N>
+References: <cover.1676358308.git.jpoimboe@kernel.org>
+ <e47fc487980d5330e6059ac6e16416bec88cda0e.1676358308.git.jpoimboe@kernel.org>
+ <14274f04-2991-95bd-c29b-07e86e8755c1@linaro.org>
 Mime-Version: 1.0
-Return-path: <sparclinux-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1676466318; x=1676552718; bh=NzdIn9sEy/
-        TdUrl/ZdBVY4dMEk2Tnlph7NyUne+YOMM=; b=kl/EA19HJlIDNFEV5sMsHqgYTD
-        FmlSiYGtsM1si6Xo7AfnbewsjK2qzM/exTVK7KRlph5xczdJTxspqQBBiSgDyUar
-        0/fSOmeAkWXOKykdvq7ZjBD1IsDSNgHuJMr9jdqrxMZ427iK2YQWYazGyhNarvV+
-        rz/pcQHi1wVqtUZnkL8uCj8I88gq6xd2D9S7lmvnrmDM5SQ0W1z+Qb3C6+wYAIM2
-        AfuYHCBl3neJoKLQlQN5Mzxky+jYkkG9DLm7gfrh3K+BaB31NxErj+DDl06h26FZ
-        Lbk631TihMW1/uvBaERmFnuy7Zo7bE+o4kaGFaECXI9tlwQzxtwDlstkclqA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1676466318; x=1676552718; bh=NzdIn9sEy/TdUrl/ZdBVY4dMEk2T
-        nlph7NyUne+YOMM=; b=Fj3/LiQbjc3zZVeQEFPn1JLksyP6OJKAqEthWeUwUdOy
-        k7x0KqWkvb7b77D7xfan3iRDT3xhukpp4mvtLGJE/kVQChQOH1qp0nR/LnBR87Y1
-        XDD47Zd1e+ArsjIbVJ2HC/gIqlxwXE9Yv3XVaU+KSxDHebKRD7UtGlZtwkd1DH9P
-        2nl2CBlmUDumzN3QpVUsRj24U1jFxVa/Bkw0HG9aN7GFtyhzTAEI6Kui+fW06SlI
-        P27LTtLWzSbpaclrnRpKS2BxaaFWBrD0e9YkEyfIAAX4SmnRcQLa6PTiOGSb1f3q
-        k2vytFCMGUqoYhQef2Aclc0m2mYrSBprvVoJFASZqQ==
-In-Reply-To: <Y+zXIgwO5wteLQZ5@shell.armlinux.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <14274f04-2991-95bd-c29b-07e86e8755c1@linaro.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Russell King <linux@armlinux.org.uk>, Alexandre Ghiti <alexghiti@rivosinc.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley@sifive.com>
+Content-Type: text/plain; charset="iso-8859-1"
+To: Philippe =?utf-8?Q?Mathieu-Daud=C3=A9?= <philmd@linaro.org>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.
 
-On Wed, Feb 15, 2023, at 13:59, Russell King (Oracle) wrote:
-> On Tue, Feb 14, 2023 at 08:49:04AM +0100, Alexandre Ghiti wrote:
->> From: Palmer Dabbelt <palmer@rivosinc.com>
->> 
->> As far as I can tell this is not used by userspace and thus should not
->> be part of the user-visible API.
->> 
->> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
->
-> Looks good to me. What's the merge plan for this?
+On Tue, Feb 14, 2023 at 09:13:08AM +0100, Philippe Mathieu-Daud=C3=A9 wrote:
+> On 14/2/23 08:05, Josh Poimboeuf wrote:
+> > cpu_die() doesn't return.  Annotate it as such.  By extension this also
+> > makes arch_cpu_idle_dead() noreturn.
+> >=20
+> > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> > ---
+> >   arch/arm64/include/asm/smp.h | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/arch/arm64/include/asm/smp.h b/arch/arm64/include/asm/smp.h
+> > index fc55f5a57a06..5733a31bab08 100644
+> > --- a/arch/arm64/include/asm/smp.h
+> > +++ b/arch/arm64/include/asm/smp.h
+> > @@ -100,7 +100,7 @@ static inline void arch_send_wakeup_ipi_mask(const =
+struct cpumask *mask)
+> >   extern int __cpu_disable(void);
+> >   extern void __cpu_die(unsigned int cpu);
+> > -extern void cpu_die(void);
+> > +extern void __noreturn cpu_die(void);
+> >   extern void cpu_die_early(void);
+>=20
+> Shouldn't cpu_operations::cpu_die() be declared noreturn first?
 
-The easiest way is probably if I merge it through the whole
-series through the asm-generic tree. The timing is a bit
-unfortunate as we're just ahead of the merge window, so unless
-we really need this in 6.3, I'd suggest that Alexandre resend
-the series to me in two weeks with the Acks added in and I'll
-pick it up for 6.4.
+The cpu_die() function ends with a BUG(), and so does not return, even if a
+cpu_operations::cpu_die() function that it calls erroneously returned.
 
-     Arnd
+We *could* mark cpu_operations::cpu_die() as noreturn, but I'd prefer that =
+we
+did not so that the compiler doesn't optimize away the BUG() which is there=
+ to
+catch such erroneous returns.
+
+That said, could we please add __noreturn to the implementation of cpu_die(=
+) in
+arch/arm64/kernel/smp.c? i.e. the fixup below.
+
+With that fixup:
+
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+Mark.
+
+---->8----
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index ffc5d76cf695..a98a76f7c1c6 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -361,7 +361,7 @@ void __cpu_die(unsigned int cpu)
+  * Called from the idle thread for the CPU which has been shutdown.
+  *
+  */
+-void cpu_die(void)
++void __noreturn cpu_die(void)
+ {
+        unsigned int cpu =3D smp_processor_id();
+        const struct cpu_operations *ops =3D get_cpu_ops(cpu);
