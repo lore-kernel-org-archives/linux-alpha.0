@@ -1,104 +1,53 @@
-From: "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH v2 00/24] cpu,sched: Mark arch_cpu_idle_dead() __noreturn
-Date: Wed, 15 Feb 2023 14:22:49 -0800
-Message-ID: <20230215222249.GM2948950@paulmck-ThinkPad-P17-Gen-1>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: [PATCH v2.1 03/24] arm/cpu: Add unreachable() to arch_cpu_idle_dead()
+Date: Thu, 16 Feb 2023 10:38:51 -0800
+Message-ID: <20230216183851.s5bnvniomq44rytu@treble>
 References: <cover.1676358308.git.jpoimboe@kernel.org>
-Reply-To: paulmck@kernel.org
+ <ed361403b8ee965f758fe491c47336dddcfb8fd5.1676358308.git.jpoimboe@kernel.org>
+ <Y+ttS0japRCzHoFM@shell.armlinux.org.uk>
+ <20230214183926.46trlpdror3v5sk5@treble>
+ <Y+wEubLjgDQDIbSO@shell.armlinux.org.uk>
 Mime-Version: 1.0
-Return-path: <linux-sh-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1676499772;
-        bh=3/B+NZRwzEkNo04hOsRXt8MwWSjpYxIfsEH4O0Y0Iy0=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=lgMebc9/PyCNI2WQWQFGhJ6pEjvuGS4FIDV8Hndf+NKrHLS1WG/DGBpNgqf8fOyYC
-         y8+V3Q2tj+S2zmKUBdMwoObfAcO+heEDDn/va0AU2ijfCtQ4tDaxjdOoA+qCu96qJu
-         tkWdqqKZlqO1cHNQGCQ3kzUKY7M1SSh9fmDTqH1qGb+lN/kKUpvSTLbTM6FeL2JzDg
-         3qeqvtZTigjAwCmsYZOm8DYFJHs+rNCQMwz1iolZjE/BUncjAH+Fit4Bh2Gox6pFxx
-         1CSx3J/q9TyNq1z7sg7E7kSGGeSWuf8YWJVgL80Qlbz1kmmdtCqghuKDCBxMa4nZ97
-         KwdXvAMHmGl/A==
+        s=k20201202; t=1676572735;
+        bh=hl1r8WrgBVR11XLM9TAiwDCXOTiVcQCDtFTYvOcE4vk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pzcnRjPVAqaK3xKlZe1yzpskS9/WG+OMTloaSFKzBMCxOCkoRpNuoRNYa/3zPKJnz
+         6X0jJD8EJrjs7EW5Q3nhsFDWki1qsGGw5El1PvFSJCXlOCmUN+Sd3mN6zTUEUZzc4/
+         mNsCR3739yEFXFsyMHHJMQQvHiwVXyBZTBiMAN1UkqOhmnVWUd9WCzEFvocuiDiV1c
+         Eo7Y6nPnKYPTibCQ+j4JWOC/6OWWtqMh3gcXtNFiAG9L8vY3DcfS2b9I9DQMeEJSOl
+         hm19TO6FpEAODpm1nGfmYEAKY8rl2vEswAXObCCmDbCHiycLI4GP13uQYuypXaWSs7
+         6xGJABLDdsOig==
 Content-Disposition: inline
-In-Reply-To: <cover.1676358308.git.jpoimboe@kernel.org>
+In-Reply-To: <Y+wEubLjgDQDIbSO@shell.armlinux.org.uk>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: linux-kernel@vger.kernel.org, jgross@suse.com, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, mattst88@gmail.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, linux-csky@vger.kernel.org, linux-ia64@vger.kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, loongarch@lists.linux.dev, f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com, tsbogend@alpha.franken.de, linux-mips@vger.kernel.org, jiaxun.yang@flygoat.com, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, ysato@users.sourceforge.jp, dalias@libc.org, linux-sh@vger.kernel.org, davem@davemloft.net, sparclinux@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave
 
-On Mon, Feb 13, 2023 at 11:05:34PM -0800, Josh Poimboeuf wrote:
-> v2:
-> - make arch_call_rest_init() and rest_init() __noreturn
-> - make objtool 'global_returns' work for weak functions
-> - rebase on tip/objtool/core with dependencies merged in (mingo)
-> - add acks
-> 
-> v1.1:
-> - add __noreturn to all arch_cpu_idle_dead() implementations (mpe)
+arch_cpu_idle_dead() doesn't return.  Make that visible to the compiler
+with an unreachable() code annotation.
 
-With this, rcutorture no longer gets objtool complaints on x86, thank you!
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+---
+ arch/arm/kernel/smp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Tested-by: Paul E. McKenney <paulmck@kernel.org>
+diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
+index 0b8c25763adc..441ea5cff390 100644
+--- a/arch/arm/kernel/smp.c
++++ b/arch/arm/kernel/smp.c
+@@ -382,6 +382,8 @@ void arch_cpu_idle_dead(void)
+ 		: "r" (task_stack_page(current) + THREAD_SIZE - 8),
+ 		  "r" (current)
+ 		: "r0");
++
++	unreachable();
+ }
+ #endif /* CONFIG_HOTPLUG_CPU */
+ 
+-- 
+2.39.1
 
-> Josh Poimboeuf (24):
->   alpha/cpu: Expose arch_cpu_idle_dead()'s prototype declaration
->   alpha/cpu: Make sure arch_cpu_idle_dead() doesn't return
->   arm/cpu: Make sure arch_cpu_idle_dead() doesn't return
->   arm64/cpu: Mark cpu_die() __noreturn
->   csky/cpu: Make sure arch_cpu_idle_dead() doesn't return
->   ia64/cpu: Mark play_dead() __noreturn
->   loongarch/cpu: Make sure play_dead() doesn't return
->   loongarch/cpu: Mark play_dead() __noreturn
->   mips/cpu: Expose play_dead()'s prototype definition
->   mips/cpu: Make sure play_dead() doesn't return
->   mips/cpu: Mark play_dead() __noreturn
->   powerpc/cpu: Mark start_secondary_resume() __noreturn
->   sh/cpu: Make sure play_dead() doesn't return
->   sh/cpu: Mark play_dead() __noreturn
->   sh/cpu: Expose arch_cpu_idle_dead()'s prototype definition
->   sparc/cpu: Mark cpu_play_dead() __noreturn
->   x86/cpu: Make sure play_dead() doesn't return
->   x86/cpu: Mark play_dead() __noreturn
->   xtensa/cpu: Make sure cpu_die() doesn't return
->   xtensa/cpu: Mark cpu_die() __noreturn
->   sched/idle: Make sure weak version of arch_cpu_idle_dead() doesn't
->     return
->   objtool: Include weak functions in 'global_noreturns' check
->   init: Make arch_call_rest_init() and rest_init() __noreturn
->   sched/idle: Mark arch_cpu_idle_dead() __noreturn
-> 
->  arch/alpha/kernel/process.c      |  4 +++-
->  arch/arm/kernel/smp.c            |  4 +++-
->  arch/arm64/include/asm/smp.h     |  2 +-
->  arch/arm64/kernel/process.c      |  2 +-
->  arch/csky/kernel/smp.c           |  4 +++-
->  arch/ia64/kernel/process.c       |  6 +++---
->  arch/loongarch/include/asm/smp.h |  2 +-
->  arch/loongarch/kernel/process.c  |  2 +-
->  arch/loongarch/kernel/smp.c      |  2 +-
->  arch/mips/include/asm/smp.h      |  2 +-
->  arch/mips/kernel/process.c       |  2 +-
->  arch/mips/kernel/smp-bmips.c     |  3 +++
->  arch/mips/loongson64/smp.c       |  1 +
->  arch/parisc/kernel/process.c     |  2 +-
->  arch/powerpc/include/asm/smp.h   |  2 +-
->  arch/powerpc/kernel/smp.c        |  2 +-
->  arch/riscv/kernel/cpu-hotplug.c  |  2 +-
->  arch/s390/kernel/idle.c          |  2 +-
->  arch/s390/kernel/setup.c         |  2 +-
->  arch/sh/include/asm/smp-ops.h    |  5 +++--
->  arch/sh/kernel/idle.c            |  3 ++-
->  arch/sparc/include/asm/smp_64.h  |  2 +-
->  arch/sparc/kernel/process_64.c   |  2 +-
->  arch/x86/include/asm/smp.h       |  3 ++-
->  arch/x86/kernel/process.c        |  4 ++--
->  arch/xtensa/include/asm/smp.h    |  2 +-
->  arch/xtensa/kernel/smp.c         |  4 +++-
->  include/linux/cpu.h              |  2 +-
->  include/linux/start_kernel.h     |  4 ++--
->  init/main.c                      |  4 ++--
->  kernel/sched/idle.c              |  2 +-
->  tools/objtool/check.c            | 11 +++++++----
->  32 files changed, 57 insertions(+), 39 deletions(-)
-> 
-> -- 
-> 2.39.1
-> 
