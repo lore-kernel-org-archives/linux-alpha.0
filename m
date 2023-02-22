@@ -1,56 +1,148 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Alpha MTD_TSUNAMI BROKEN?
-Date: Tue, 21 Feb 2023 21:37:21 -0800
-Message-ID: <4da501dc-65af-ee89-441d-d3ef8867c64d@infradead.org>
+From: Andrzej Hajda <andrzej.hajda@intel.com>
+Subject: Re: [Intel-gfx] [PATCH v5 0/7] Introduce __xchg, non-atomic xchg
+Date: Wed, 22 Feb 2023 11:36:17 +0100
+Message-ID: <50c1806b-f153-da48-ddf4-53923fa90334@intel.com>
+References: <20230118153529.57695-1-andrzej.hajda@intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:Subject:Cc:From:To:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=ZaFQaEhC0Y47Z5XC2rGkKe6thR+pRJg3kA0++NA4kj8=; b=M5MP3jm2Abz0PZrxM7dbWT6KFB
-        5pIFqTaSP9PmHSBwS/DNAs2MCC9T4cYX+SaaJsCJt3UXP+K2cFpWypNYcdk7KgCm0oZ2YpvRZKr/h
-        VQElFyvXIioD2mpimnR7tho3uudnoym/OX4YYNe0pSLLLN05ujXhjVaKFQgcMoGlFL8PqItOpW5+M
-        ipStejeY0bNEo7pbWYz7gXeO3AQIArnjLfDQKA87zCxNok1MKKfaHmOQgvfWDsq4STeo2lKiI8CxI
-        apofzYhGOadkilyfo5t8rZILu7fvuLJtvv/W+7SXEHwSaryDf09HnveRu8RJBiMnp4R8yrHMqHOtH
-        qY6OOOlA==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1677062186; x=1708598186;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ofUmRpvhNVTg3+A6hyPOFASnnH8za9ygTzj8N8YfXSk=;
+  b=Oa1y8iBaEkwy6fMvhe8oHhodd0xu0As0Cvn/STEHYeZTWBGyfJe7EiEm
+   6mSrg3MYKSIj57s2gHXQABHZjXgh0qtnz8ySVm6qQeJyCvOuGb4tmLl/i
+   ODkBGj8NRNmFmO/zJQkENaevWgOePr99Uw2LrDfsA71eM4ha127NIJGZp
+   bCHCoWB8AsMbRlZS/pSYtspvgmv35WrA4X9gEpfyLPG+CgCn4UpRcV5v1
+   qwKQeXDm3DQv4XTKuWY2dKn1nW505DyJPI+fQqri+uwh1CV8IXCxKtwVN
+   fmv6q43VzWYXBl2v2uMj/nIILB4fKAQtBRNyqRlFQDE8BcQ/YGRkTqXLC
+   A==;
 Content-Language: en-US
+In-Reply-To: <20230118153529.57695-1-andrzej.hajda@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Arnd Bergmann <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Cc: Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>, Peter Zijlstra <peterz@infradead.org>, Boqun Feng <boqun.feng@gmail.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, Andrew Morton <akpm@linux-foundation.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
 Hi,
 
-In an alpha kernel config with CONFIG_ALPHA_TSUNAMI=y
-and CONFIG_MTD_TSUNAMI=y, the MTD driver build fails with:
+Ping on the series.
+Arnd, Andrew is there anything more I can do to push the process forward?
 
-../drivers/mtd/maps/tsunami_flash.c: In function 'tsunami_flash_read8':
-../drivers/mtd/maps/tsunami_flash.c:21:20: error: implicit declaration of function 'tsunami_tig_readb'; did you mean 'tsunami_readb'? [-Werror=implicit-function-declaration]
-   21 |         val.x[0] = tsunami_tig_readb(offset);
-      |                    ^~~~~~~~~~~~~~~~~
-      |                    tsunami_readb
-../drivers/mtd/maps/tsunami_flash.c: In function 'tsunami_flash_write8':
-../drivers/mtd/maps/tsunami_flash.c:27:9: error: implicit declaration of function 'tsunami_tig_writeb'; did you mean 'tsunami_writeb'? [-Werror=implicit-function-declaration]
-   27 |         tsunami_tig_writeb(value.x[0], offset);
-      |         ^~~~~~~~~~~~~~~~~~
-      |         tsunami_writeb
+Regards
+Andrzej
 
 
-The tsunami_tig_{readb,writeb{}() functions are completely missing.
-I don't see any macros that would generate such function names.
+On 18.01.2023 16:35, Andrzej Hajda wrote:
+> Hi all,
+> 
+> The helper is tiny and there are advices we can live without it, so
+> I want to present few arguments why it would be good to have it:
+> 
+> 1. Code readability/simplification/number of lines:
+>    - decreases number of lines,
+>    - it often eliminates local variables,
+>    - for real examples see patches 3+.
+> 
+> 2. Presence of similar helpers in other somehow related languages/libs:
+> 
+> a) Rust[1]: 'replace' from std::mem module, there is also 'take'
+>      helper (__xchg(&x, 0)), which is the same as private helper in
+>      i915 - fetch_and_zero, see latest patch.
+> b) C++ [2]: 'exchange' from utility header.
+> 
+> If the idea is OK there are still 2 questions to answer:
+> 
+> 1. Name of the helper, __xchg follows kernel conventions,
+>      but for me Rust names are also OK.
+> 2. Where to put the helper:
+> a) as in this patchset include/linux/non-atomic/xchg.h,
+>      proposed by Andy Shevchenko,
+> b) include/linux/utils.h ? any better name? Some kind
+>      of container for simple helpers.
+> 
+> All __xchg conversions were performed using cocci script,
+> then manually adjusted if necessary.
+> 
+> There is lot of places it can be used in, I have just chosen
+> some of them. I can provide cocci script to detect others (not all),
+> if necessary.
+> 
+> Changes:
+> v2: squashed all __xchg -> __arch_xchg t one patch (Arnd)
+> v3: fixed alpha/xchg_local (lkp@intel.com)
+> v4: adjusted indentation (Heiko)
+> v5: added more __xchg conversions - patches 3-6, added tags
+> 
+> [1]: https://doc.rust-lang.org/std/mem/index.html
+> [2]: https://en.cppreference.com/w/cpp/header/utility
+> 
+> Regards
+> Andrzej
+> 
+> Andrzej Hajda (7):
+>    arch: rename all internal names __xchg to __arch_xchg
+>    linux/include: add non-atomic version of xchg
+>    arch/*/uprobes: simplify arch_uretprobe_hijack_return_addr
+>    llist: simplify __llist_del_all
+>    io_uring: use __xchg if possible
+>    qed: use __xchg if possible
+>    drm/i915/gt: use __xchg instead of internal helper
+> 
+>   arch/alpha/include/asm/cmpxchg.h              | 10 +++++-----
+>   arch/arc/include/asm/cmpxchg.h                |  4 ++--
+>   arch/arm/include/asm/cmpxchg.h                |  7 ++++---
+>   arch/arm/probes/uprobes/core.c                |  8 ++------
+>   arch/arm64/include/asm/cmpxchg.h              |  7 +++----
+>   arch/arm64/kernel/probes/uprobes.c            |  9 ++-------
+>   arch/csky/kernel/probes/uprobes.c             |  9 ++-------
+>   arch/hexagon/include/asm/cmpxchg.h            | 10 +++++-----
+>   arch/ia64/include/asm/cmpxchg.h               |  2 +-
+>   arch/ia64/include/uapi/asm/cmpxchg.h          |  4 ++--
+>   arch/loongarch/include/asm/cmpxchg.h          |  4 ++--
+>   arch/m68k/include/asm/cmpxchg.h               |  6 +++---
+>   arch/mips/include/asm/cmpxchg.h               |  4 ++--
+>   arch/mips/kernel/uprobes.c                    | 10 ++--------
+>   arch/openrisc/include/asm/cmpxchg.h           | 10 +++++-----
+>   arch/parisc/include/asm/cmpxchg.h             |  4 ++--
+>   arch/powerpc/include/asm/cmpxchg.h            |  4 ++--
+>   arch/powerpc/kernel/uprobes.c                 | 10 ++--------
+>   arch/riscv/include/asm/atomic.h               |  2 +-
+>   arch/riscv/include/asm/cmpxchg.h              |  4 ++--
+>   arch/riscv/kernel/probes/uprobes.c            |  9 ++-------
+>   arch/s390/include/asm/cmpxchg.h               |  8 ++++----
+>   arch/s390/kernel/uprobes.c                    |  7 ++-----
+>   arch/sh/include/asm/cmpxchg.h                 |  4 ++--
+>   arch/sparc/include/asm/cmpxchg_32.h           |  4 ++--
+>   arch/sparc/include/asm/cmpxchg_64.h           |  6 +++---
+>   arch/sparc/kernel/uprobes.c                   |  7 ++-----
+>   arch/xtensa/include/asm/cmpxchg.h             |  4 ++--
+>   drivers/gpu/drm/i915/gt/intel_engine_cs.c     |  2 +-
+>   .../gpu/drm/i915/gt/intel_engine_heartbeat.c  |  4 ++--
+>   .../drm/i915/gt/intel_execlists_submission.c  |  4 ++--
+>   drivers/gpu/drm/i915/gt/intel_ggtt.c          |  4 ++--
+>   drivers/gpu/drm/i915/gt/intel_gsc.c           |  2 +-
+>   drivers/gpu/drm/i915/gt/intel_gt.c            |  4 ++--
+>   drivers/gpu/drm/i915/gt/intel_gt_pm.c         |  2 +-
+>   drivers/gpu/drm/i915/gt/intel_lrc.c           |  6 +++---
+>   drivers/gpu/drm/i915/gt/intel_migrate.c       |  2 +-
+>   drivers/gpu/drm/i915/gt/intel_rc6.c           |  2 +-
+>   drivers/gpu/drm/i915/gt/intel_rps.c           |  2 +-
+>   drivers/gpu/drm/i915/gt/selftest_context.c    |  2 +-
+>   .../drm/i915/gt/selftest_ring_submission.c    |  2 +-
+>   drivers/gpu/drm/i915/gt/selftest_timeline.c   |  2 +-
+>   drivers/gpu/drm/i915/gt/uc/intel_gsc_uc.c     |  2 +-
+>   drivers/gpu/drm/i915/gt/uc/intel_uc.c         |  2 +-
+>   drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c      |  2 +-
+>   drivers/gpu/drm/i915/i915_utils.h             |  1 +
+>   include/linux/llist.h                         |  6 ++----
+>   include/linux/non-atomic/xchg.h               | 19 +++++++++++++++++++
+>   include/linux/qed/qed_chain.h                 | 19 +++++++------------
+>   io_uring/io_uring.c                           |  7 ++-----
+>   io_uring/slist.h                              |  6 ++----
+>   51 files changed, 126 insertions(+), 155 deletions(-)
+>   create mode 100644 include/linux/non-atomic/xchg.h
+> 
 
-I have searched both kernel/git/history/history.git and
-kernel/git/mpe/linux-fullhistory.git (both at git.kernel.org)
-and found no such functions. (It's possible that I could have
-missed something here: all I did was 'git grep tsunami_tig'.
-Do I need to do 'git checkout <something really old>' first?)
-
-Should these functions just be tsunami_readb() and tsunami_writeb()
-like the compiler asks?
-Or should we mark this driver as BROKEN?
-
-Thanks.
--- 
-~Randy
