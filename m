@@ -1,84 +1,80 @@
-From: Alexandre Ghiti <alexghiti@rivosinc.com>
+From: "Arnd Bergmann" <arnd@arndb.de>
 Subject: Re: [PATCH v3 03/24] arm: Remove COMMAND_LINE_SIZE from uapi
-Date: Thu, 23 Feb 2023 10:54:26 +0100
-Message-ID: <CAHVXubgsvjxGbgM6AcxfsHDsHT0iL2pAemGMr5t8KVLKiqC3RA@mail.gmail.com>
+Date: Thu, 23 Feb 2023 14:09:17 +0100
+Message-ID: <874b8076-b0d1-4aaa-bcd8-05d523060152@app.fastmail.com>
 References: <20230214074925.228106-1-alexghiti@rivosinc.com>
- <20230214074925.228106-4-alexghiti@rivosinc.com> <Y+zXIgwO5wteLQZ5@shell.armlinux.org.uk>
+ <20230214074925.228106-4-alexghiti@rivosinc.com>
+ <Y+zXIgwO5wteLQZ5@shell.armlinux.org.uk>
  <f3e1585c-0d9d-4709-9b21-74a63d8cc9ac@app.fastmail.com>
+ <CAHVXubgsvjxGbgM6AcxfsHDsHT0iL2pAemGMr5t8KVLKiqC3RA@mail.gmail.com>
 Mime-Version: 1.0
+Return-path: <linux-sh-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1677157777; x=1677244177; bh=7qpJ4fyuUV
+        Fw9F28lxEJyIMUTjdhT7HcNbFM6c+Ezgs=; b=O2BRATUSEJKhYdO9jnSYuwhgN9
+        SlLW/Ra2gZJVf503l5oUwxJjKvNEHY02+z64mvgkz72xHBv4pJI7cWKA/9R6Z0zR
+        v8JsB9De7DwEny2RkbTpFYFLYquiHQeEj1cPBVeZOrtoygNGXcaO1MCSjC7+KwVY
+        qe/g309dNzSDXwknjvZ75pSrFY0E9OFQLEOuf8V4VsZWmWaSsaRKQAkDVXAHp7HG
+        2M3ND7tojEkRj+PibpuagYn3M9G9IftQl6+GIxqj9SOqfzAActDdAUS5PEM9iEQN
+        9IAynvKfUWXJXLgGre9sqq6nA+IrTxQQPrtgdJON9tiEoWhCEcVeiffsjq9Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1677157777; x=1677244177; bh=7qpJ4fyuUVFw9F28lxEJyIMUTjdh
+        T7HcNbFM6c+Ezgs=; b=G5/DpWO7RaCFSOAipvTQT6tl7k7vD74Sl9V9sAoir8Vi
+        421dk3+9Qt/G7JjiyD34Z+c7EbFSnZiUZ3GbW77IMufmfRm+rzXrU7FLLDtFf0M7
+        k0l7PxYedLyKRNSbw97Pni/MDelg0akiOQlvofYkTgic2vLnrSbQ9V9XfgUX8Q8F
+        XEGAti8ogwN5evXPA4eQKbXvmVle4wssalbkSlCPadqNBM0xb2jFis7pNvhxk31r
+        xNYVgZFony7lghKs6KfOWRNWeyPLyc2/n0thE5pkkxVOdfd1DFmmqrxBWBmPmNtT
+        m2m6dtdVlshxInhXAv4ZUbuuVS0VtDYDIN5HtEFrbg==
+In-Reply-To: <CAHVXubgsvjxGbgM6AcxfsHDsHT0iL2pAemGMr5t8KVLKiqC3RA@mail.gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:Cc:To:Subject:Message-ID:Date:From:
-	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=IF2/hNB/wngiiK5bgc73OKj3lQ88LH+GtO8TQr8wKjI=; b=Gvt6AcRUysmYoH
-	e0KlldznOjKwwG+E42/h3pJC8bD3/UfBnJnyMb1dHIf71O3cxj5kew72VVQOkWVbX4ZpG7Fm0DvUb
-	ZUFdyvKRos6AAeanpZCdeZ4+p9vktRwfcFGzwzZ9vS8HLIoocxssJV/Qs/wfgQ2LYOHnqw7SKCaLz
-	AAQZia3UEvn0EHriCICMd3HVlXC16Thv0sQzidoUvzSnIaVqQWkHbSYaGpfxT0k/p/mplWiPlipM3
-	D32RvxJMyukdr/n5hfAzdQSnxGR4NoEohUAo9d+fg/xtGND+abSvpcA5MQUGQi6S7MF1eT2IoxRw2
-	L7MWE1nmwd/St4XM4QOw==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=mAI7GZiBb7iDC4DRNXr8MXcTGzYlBwIWTXO3a37K9fA=;
-        b=6rqEsmJobKimBOx+ObGs4Y9oYCoGGA+7PUJSCUc+XzhAJr7k8trhGNeL9l///zHG9h
-         zKi4GFdApLZMJxwwGKyAK5T4vZVP0aQ3XXyt/OWPp5oueU3BzBJzSR5QoLC+/Xx2iJgz
-         5hm79+32XzmlSgEMuCRgCF6jE20gfyjKVSWE2hFVc6aKlMZQREWTRqXyzaVmSBj/MhzH
-         AXlVDuu21E6Hjr/kwbOkk278Lu43ZitZTQ7OHZU1h8q5OpD5tJY9ufRMnPPJf2Rq79nz
-         v4bZ2eQSQps7BpX5yAyoX5mS+40xRdAoLwhab6GQ6F1yPaND58wp3xipYKvUJEcT++Q8
-         E7ow==
-In-Reply-To: <f3e1585c-0d9d-4709-9b21-74a63d8cc9ac@app.fastmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Russell King <linux@armlinux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, Heiko Carstens <hca@linux.ibm.com>
+To: Alexandre Ghiti <alexghiti@rivosinc.com>
+Cc: Russell King <linux@armlinux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>
 
-Hi Arnd,
-
-On Wed, Feb 15, 2023 at 2:05 PM Arnd Bergmann <arnd@arndb.de> wrote:
+On Thu, Feb 23, 2023, at 10:54, Alexandre Ghiti wrote:
+> On Wed, Feb 15, 2023 at 2:05 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>>
+>> On Wed, Feb 15, 2023, at 13:59, Russell King (Oracle) wrote:
+>> > On Tue, Feb 14, 2023 at 08:49:04AM +0100, Alexandre Ghiti wrote:
+>> >> From: Palmer Dabbelt <palmer@rivosinc.com>
+>> >>
+>> >> As far as I can tell this is not used by userspace and thus should not
+>> >> be part of the user-visible API.
+>> >>
+>> >> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>> >
+>> > Looks good to me. What's the merge plan for this?
+>>
+>> The easiest way is probably if I merge it through the whole
+>> series through the asm-generic tree. The timing is a bit
+>> unfortunate as we're just ahead of the merge window, so unless
+>> we really need this in 6.3, I'd suggest that Alexandre resend
+>> the series to me in two weeks with the Acks added in and I'll
+>> pick it up for 6.4.
 >
-> On Wed, Feb 15, 2023, at 13:59, Russell King (Oracle) wrote:
-> > On Tue, Feb 14, 2023 at 08:49:04AM +0100, Alexandre Ghiti wrote:
-> >> From: Palmer Dabbelt <palmer@rivosinc.com>
-> >>
-> >> As far as I can tell this is not used by userspace and thus should not
-> >> be part of the user-visible API.
-> >>
-> >> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-> >
-> > Looks good to me. What's the merge plan for this?
+> Sorry for the response delay, I was waiting to see if Palmer would
+> merge my KASAN patchset in 6.3 (which he does): I have to admit that
+> fixing the command line size + the KASAN patchset would allow 6.3 to
+> run on syzkaller, which would be nice.
 >
-> The easiest way is probably if I merge it through the whole
-> series through the asm-generic tree. The timing is a bit
-> unfortunate as we're just ahead of the merge window, so unless
-> we really need this in 6.3, I'd suggest that Alexandre resend
-> the series to me in two weeks with the Acks added in and I'll
-> pick it up for 6.4.
+> If I don't see this merged in 6.3, I'll send another round as you
+> suggested in 1 week now :)
 
-Sorry for the response delay, I was waiting to see if Palmer would
-merge my KASAN patchset in 6.3 (which he does): I have to admit that
-fixing the command line size + the KASAN patchset would allow 6.3 to
-run on syzkaller, which would be nice.
+Hi Alexandre,
 
-If I don't see this merged in 6.3, I'll send another round as you
-suggested in 1 week now :)
+I have no plans to still pick up the series for 6.3. The patches
+all look fine to me, but it's clearly too late now. What is the
+actual dependency for KASAN, do you just need a longer command
+line or something else? If it's just the command line size,
+I would suggest that Palmer can still pick up a oneline change
+to increase it and refer to this thread in the changelog as a
+reference for why it is not an actual UAPI break.
 
-Thanks!
-
-Alex
-
->
->      Arnd
+     Arnd
