@@ -1,35 +1,36 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: pr-tracker-bot@kernel.org
 Subject: Re: [git pill] vfs.git alpha fixes
-Date: Fri, 24 Feb 2023 19:17:16 -0800
-Message-ID: <CAHk-=whwFeuahxGxCidcaaZ-Xawh2drJV6WFwhs7ujDZGNGV4Q@mail.gmail.com>
+Date: Sat, 25 Feb 2023 03:40:23 +0000
+Message-ID: <167729642356.19216.15347998468562553343.pr-tracker-bot@kernel.org>
 References: <Y/gvQh5+4k8y+IdF@ZenIV>
-Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=LmNBVo7uMw1aKq2gIrda4qCIdgm1A6fpKV1+5VP6zB8=;
-        b=CNsccW8tA+8ig58sm067TPguHm1dqrGdvdIfAPEzz6ALh36vuJuyTUG5qKT+eU4uM/
-         7fMH3gXsZbB4TC8buks/zia2MSzAQQ6lVZy35U+/aMqF/7piRqQ0lU6oHnGJQfOSwGLu
-         QjsHiGsYCvsFkN/7u71yE9bcCEGRxqLZw1Vwo=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1677296423;
+        bh=PVmZHIicn/RdailN6+/WGuKSmh+NZNSCT27Jb8e0zY4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=r7RQGzVdUZj2IjrMeKOqDJnuODaBG9nGBopU7EyGymw96SGu3zxlHg4+GcF5EUIMD
+         yZ2u5Wz73O4Ti5JNfISEsM6KzQnhbick5wuTi5bt1NEK62MezSaxpz0fduGN03hT8P
+         dcwLoOscJeLM8fLZKIAE8rMsuLsubzJerbfnj2aHSBzm0hxJKT/ITMo4nnWJFvizxC
+         E8a8DVLI0fFtRw04yv4Amking+QaecVoVs9pEhyGAUmzpGtLgQuGrtQ5htv08kfxt+
+         8myn6tkPuSLFFx2N2qhaqx6zyfM7qhbI2R2g2WRzYWy9PGNUfwKt562B5+blAidaW0
+         MJ/JfjmhUD31w==
 In-Reply-To: <Y/gvQh5+4k8y+IdF@ZenIV>
 List-ID: <linux-alpha.vger.kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 
-On Thu, Feb 23, 2023 at 7:30 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
->  FEN fault fix deals with a really old oopsable braino
+The pull request you sent on Fri, 24 Feb 2023 03:30:10 +0000:
 
-My old alpha architecture manual doesn't even list "clrfen" as a
-PAL-code instruction.
+> git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git work.alpha
 
-It does have "wrfen", but that's privileged.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/10cc5d483ebc00e82d9a38d3419b2edc8b79b64d
 
-I have no idea when clrfen became a thing. But it's clearly a later
-addition that somebody didn't think through.
+Thank you!
 
-             Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
