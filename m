@@ -1,76 +1,105 @@
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH] alpha: Implement "current_stack_pointer"
-Date: Sun, 26 Feb 2023 21:46:07 +1100
-Message-ID: <20230226214607.59ac22b2@canb.auug.org.au>
-References: <20220224060558.1856804-1-keescook@chromium.org>
-        <CAEdQ38Fg=Au5=BbyTHiEO+GaivheCe6hPBjcZhjgALxn4503Mg@mail.gmail.com>
-        <29763841-bdaa-4a4b-aa0e-5e1b3935317d@app.fastmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH mm-unstable v1 11/26] microblaze/mm: support __HAVE_ARCH_PTE_SWP_EXCLUSIVE
+Date: Sun, 26 Feb 2023 21:13:33 +0100
+Message-ID: <CAMuHMdX-FDga8w=pgg1myskEx6wp+oyZifhPPPFnWrc1zW7ZpQ@mail.gmail.com>
+References: <20230113171026.582290-1-david@redhat.com> <20230113171026.582290-12-david@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/oSZx5=AKndJNoGljDYvlgrZ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1677408372;
-        bh=Qf69gqalS+erSQr23jCazSB1VxuPBCS5Msd8dRmHN5g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UFP+HN0CMDRK+bUKltreDR7LVG151tcmDKU/KgtmM7N4invGBuiQz0o6X567n0nMl
-         LaS0eHTaTcIxn12ao00/qFC3HADENwtzemxbnFCwPBtXJ7+WcQXqSCYTZAdm+KI9t2
-         HYrQNvHO+BF0HeowFpSAiyCmgRZHm9fkGDGHZf93lt0A9cgCXwJ1e7WFWBuQRQAnGh
-         EzMOr3ROTfMi2APzPUT2WnkokqLnsBMUc81Iw1gWX3thcgMxGBqyfuM1nYcIfAxiSt
-         q07hRHx44S2EShs1+AOA1jGd3bWgvr49UeJEL+xGNzutjXOvIkQhxsOFDZjqhhqVU2
-         VPKkyBSXi8Gtw==
-In-Reply-To: <29763841-bdaa-4a4b-aa0e-5e1b3935317d@app.fastmail.com>
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+In-Reply-To: <20230113171026.582290-12-david@redhat.com>
 List-ID: <linux-alpha.vger.kernel.org>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: David Hildenbrand <david@redhat.com>
+Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Hugh Dickins <hughd@google.com>, John Hubbard <jhubbard@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>, Mike Rapoport <rppt@linux.ibm.com>, Yang Shi <shy828301@gmail.com>, Vlastimil Babka <vbabka@suse.cz>, Nadav Amit <namit@vmware.com>, Andrea Arcangeli <aarcange@redhat.com>, Peter Xu <peterx@redhat.com>, linux-mm@kvack.org, x86@kernel.org, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxp
 
---Sig_/oSZx5=AKndJNoGljDYvlgrZ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi David,
 
-Hi Arnd,
-
-On Sun, 26 Feb 2023 11:24:13 +0100 "Arnd Bergmann" <arnd@arndb.de> wrote:
+On Fri, Jan 13, 2023 at 6:16 PM David Hildenbrand <david@redhat.com> wrote:
+> Let's support __HAVE_ARCH_PTE_SWP_EXCLUSIVE by stealing one bit
+> from the type. Generic MM currently only uses 5 bits for the type
+> (MAX_SWAPFILES_SHIFT), so the stolen bit is effectively unused.
 >
-> On Sun, Feb 26, 2023, at 03:08, Matt Turner wrote:
-> >
-> > Thanks for the patch! This was included in my pull request today and
-> > is now upstream in Linus' tree. =20
->=20
-> [trimming Cc list for hijacked thread]
->=20
-> Hi Matt,
->=20
-> I remember that Stephen Rothwell mentioned he dropped a couple of
-> architecture trees from linux-next due to long inactivity, and I
-> see that none of your branches are included any more. Should
->=20
-> https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git/log/?h=
-=3Dfor-linus
->=20
-> or the (currently empty) alpha-next branch be added back there?
+> The shift by 2 when converting between PTE and arch-specific swap entry
+> makes the swap PTE layout a little bit harder to decipher.
+>
+> While at it, drop the comment from paulus---copy-and-paste leftover
+> from powerpc where we actually have _PAGE_HASHPTE---and mask the type in
+> __swp_entry_to_pte() as well.
+>
+> Cc: Michal Simek <monstr@monstr.eu>
+> Signed-off-by: David Hildenbrand <david@redhat.com>
 
-There has never been an alpha branch in linux-next.
+Thanks for your patch, which is now commit b5c88f21531c3457
+("microblaze/mm: support __HAVE_ARCH_PTE_SWP_EXCLUSIVE") in
 
-I would welcome one, however ;-)
---=20
-Cheers,
-Stephen Rothwell
+>  arch/m68k/include/asm/mcf_pgtable.h   |  4 +--
 
---Sig_/oSZx5=AKndJNoGljDYvlgrZ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+What is this m68k change doing here?
+Sorry for not noticing this earlier.
 
------BEGIN PGP SIGNATURE-----
+Furthermore, several things below look strange to me...
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmP7OG8ACgkQAVBC80lX
-0Gwl9gf6A6wzfVk3CbJvPQR/zksvj1uYtWMzL5VncjHOnvqoo+/PBEytPoCVOAu0
-R9XVVULKy7Q03rTJFIOtwQYPtwip8Wjp3zP3EvyGTGG5VRgscPgEQo3pD/lXojBy
-adw4ndru+1QKm19tLbKWSHGDKM2FkO8WNT6y42movf9NTE2yGkDJIf8LuCoaNmUy
-Q4mIUlrfc42ZOk1qLfMgekyRtHR+rh8Hgt4eIkjAprJ00qoro/X9vYXwJGmkhU+9
-GmEgNuRjWY4a74akiDENqztix9xfkrfxVFAra1vyvrwNYUuLlP2zHSNznBNFWCan
-8zOWvzk3FK97ris0QskLxyNzDmq0nw==
-=AQxy
------END PGP SIGNATURE-----
+>  arch/microblaze/include/asm/pgtable.h | 45 +++++++++++++++++++++------
+>  2 files changed, 37 insertions(+), 12 deletions(-)
+>
+> diff --git a/arch/m68k/include/asm/mcf_pgtable.h b/arch/m68k/include/asm/mcf_pgtable.h
+> index 3f8f4d0e66dd..e573d7b649f7 100644
+> --- a/arch/m68k/include/asm/mcf_pgtable.h
+> +++ b/arch/m68k/include/asm/mcf_pgtable.h
+> @@ -46,8 +46,8 @@
+>  #define _CACHEMASK040          (~0x060)
+>  #define _PAGE_GLOBAL040                0x400   /* 68040 global bit, used for kva descs */
+>
+> -/* We borrow bit 7 to store the exclusive marker in swap PTEs. */
+> -#define _PAGE_SWP_EXCLUSIVE    0x080
+> +/* We borrow bit 24 to store the exclusive marker in swap PTEs. */
+> +#define _PAGE_SWP_EXCLUSIVE    CF_PAGE_NOCACHE
 
---Sig_/oSZx5=AKndJNoGljDYvlgrZ--
+CF_PAGE_NOCACHE is 0x80, so this is still bit 7, thus the new comment
+is wrong?
+
+>
+>  /*
+>   * Externally used page protection values.
+> diff --git a/arch/microblaze/include/asm/pgtable.h b/arch/microblaze/include/asm/pgtable.h
+> index 42f5988e998b..7e3de54bf426 100644
+> --- a/arch/microblaze/include/asm/pgtable.h
+> +++ b/arch/microblaze/include/asm/pgtable.h
+> @@ -131,10 +131,10 @@ extern pte_t *va_to_pte(unsigned long address);
+>   * of the 16 available.  Bit 24-26 of the TLB are cleared in the TLB
+>   * miss handler.  Bit 27 is PAGE_USER, thus selecting the correct
+>   * zone.
+> - * - PRESENT *must* be in the bottom two bits because swap cache
+> - * entries use the top 30 bits.  Because 4xx doesn't support SMP
+> - * anyway, M is irrelevant so we borrow it for PAGE_PRESENT.  Bit 30
+> - * is cleared in the TLB miss handler before the TLB entry is loaded.
+> + * - PRESENT *must* be in the bottom two bits because swap PTEs use the top
+> + * 30 bits.  Because 4xx doesn't support SMP anyway, M is irrelevant so we
+> + * borrow it for PAGE_PRESENT.  Bit 30 is cleared in the TLB miss handler
+> + * before the TLB entry is loaded.
+
+So the PowerPC 4xx comment is still here?
+
+>   * - All other bits of the PTE are loaded into TLBLO without
+>   *  * modification, leaving us only the bits 20, 21, 24, 25, 26, 30 for
+>   * software PTE bits.  We actually use bits 21, 24, 25, and
+> @@ -155,6 +155,9 @@ extern pte_t *va_to_pte(unsigned long address);
+>  #define _PAGE_ACCESSED 0x400   /* software: R: page referenced */
+>  #define _PMD_PRESENT   PAGE_MASK
+>
+> +/* We borrow bit 24 to store the exclusive marker in swap PTEs. */
+> +#define _PAGE_SWP_EXCLUSIVE    _PAGE_DIRTY
+
+_PAGE_DIRTY is 0x80, so this is also bit 7, thus the new comment is
+wrong?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
