@@ -1,71 +1,65 @@
 From: Matt Turner <mattst88@gmail.com>
-Subject: Re: [PATCH] alpha: remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions
-Date: Sat, 25 Feb 2023 21:05:43 -0500
-Message-ID: <CAEdQ38Er01WkGqydMSU3VAfiZCJREhOFDRxnujDp53jLVdN7Gg@mail.gmail.com>
-References: <20221021201838.306176-1-helgaas@kernel.org>
+Subject: Re: [PATCH] alpha: update config files
+Date: Sat, 25 Feb 2023 21:06:14 -0500
+Message-ID: <CAEdQ38Gp0rFZjpRKsrYp94WyBQPB6=7YbHu6JvjYwf2odx+TgQ@mail.gmail.com>
+References: <20220929101329.31036-1-lukas.bulwahn@gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=x/0MEJE8eloddSd5KLY1ASt9rHQoQE4Cfr7iia6AURE=;
-        b=B3g3/YTYCORgwWWLF4iJlTMvpGOrOtxDVMearm05vuwTR7VnMT0YMktYnfCvk57nr6
-         hfqtxaNgU6PgokEN5ivb+fO8JHuAy9tDAHSYdronSPdV40rOwvs67vCY3JbFS6hpalYI
-         IBhVDQKDiCacYQVx/+d5qp4MTicO6/dFPzpIYZgQWcT45FC/1OH3wQodzbJDX3/6+y48
-         2safF1xZbnZH3ShH5FohXsbA0PuBzXkxWn0DscXRRMGHTUAVTaFZyS5Z4tJmN6kivzpW
-         CL+/wea8RiPywO3F2clR10qtGPH1xwoGq9K6gWC23dVR2CFmNIrb340Z1ohKZv6HvsdX
-         xL7A==
-In-Reply-To: <20221021201838.306176-1-helgaas@kernel.org>
+        bh=EFQbRxHSsPKNCItLK55Hjyu7uq3Glv5bk5SL/HPENLw=;
+        b=pWl9WeshiUsJJpSN94ckZrzGj8ltCX4QfX3dzF6nARHNtRoAXdghfuRZf4/vGXUJUW
+         sBbfR7GSZoF0L4vP+oi5w9YxWVGK5Pn2hSymO9bcaYg1mCtKrdACDzuRlCbzHJUPJneR
+         cS2G2kA5UMrR+ly5+pz6W/9B6XhTQjXg/0KUsNeOZ1VLEqTINL8i3AW6u6o7vegrbjfN
+         XQSqyClPFVy1LrEHgCTr5711M4o6uUvyAKzqWRwfhQOUXdW5A6/iIpIMvX3k+AV3gboi
+         2cCgVlNGbFIlazjeF+pRTo/tSfOhu+E9riJK6xid9d+sz7NMmkGcAqCUEwKXOtFlS+ox
+         HU/A==
+In-Reply-To: <20220929101329.31036-1-lukas.bulwahn@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+To: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, linux-alpha@vger.kernel.org
 
-On Fri, Oct 21, 2022 at 4:18 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+On Thu, Sep 29, 2022 at 6:14 AM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
 >
-> From: Bjorn Helgaas <bhelgaas@google.com>
+> Clean up config files by:
+>   - removing configs that were deleted in the past
+>   - removing configs not in tree and without recently pending patches
+>   - adding new configs that are replacements for old configs in the file
 >
-> Remove unused __SLOW_DOWN_IO and SLOW_DOWN_IO definitions.
+> For some detailed information, see Link.
 >
-> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> Link: https://lore.kernel.org/kernel-janitors/20220929090645.1389-1-lukas.bulwahn@gmail.com/
+>
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 > ---
+>  arch/alpha/configs/defconfig | 2 --
+>  1 file changed, 2 deletions(-)
 >
-> [Sorry for the noise; I sent this a few minutes ago, but it bounced from
-> all the individual recipients because of DMARC issues]
->
-> Previously posted v1 4/15/2022 at
->   https://lore.kernel.org/all/20220415190817.842864-1-helgaas@kernel.org/
-> and reposted v1 10/13/2022 at
->   https://lore.kernel.org/all/20221014001911.3342485-1-helgaas@kernel.org/
->
-> Changes from v1 to v2:
->   - Drop the ia64 patch because Andrew applied it
->       https://lore.kernel.org/all/20221021045245.99636C433C1@smtp.kernel.org/
->
->   - Split sh and alpha to separate series
->
->  arch/alpha/include/asm/io.h | 4 ----
->  1 file changed, 4 deletions(-)
->
-> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-> index 1c3605d874e9..7aeaf7c30a6f 100644
-> --- a/arch/alpha/include/asm/io.h
-> +++ b/arch/alpha/include/asm/io.h
-> @@ -14,10 +14,6 @@
->     the implementation we have here matches that interface.  */
->  #include <asm-generic/iomap.h>
->
-> -/* We don't use IO slowdowns on the Alpha, but.. */
-> -#define __SLOW_DOWN_IO do { } while (0)
-> -#define SLOW_DOWN_IO   do { } while (0)
-> -
->  /*
->   * Virtual -> physical identity mapping starts at this offset
->   */
+> diff --git a/arch/alpha/configs/defconfig b/arch/alpha/configs/defconfig
+> index 6a39fe8ce9e5..1816c1dc22b1 100644
+> --- a/arch/alpha/configs/defconfig
+> +++ b/arch/alpha/configs/defconfig
+> @@ -39,14 +39,12 @@ CONFIG_PATA_CYPRESS=y
+>  CONFIG_ATA_GENERIC=y
+>  CONFIG_NETDEVICES=y
+>  CONFIG_DUMMY=m
+> -CONFIG_NET_ETHERNET=y
+>  CONFIG_NET_VENDOR_3COM=y
+>  CONFIG_VORTEX=y
+>  CONFIG_NET_TULIP=y
+>  CONFIG_DE2104X=m
+>  CONFIG_TULIP=y
+>  CONFIG_TULIP_MMIO=y
+> -CONFIG_NET_PCI=y
+>  CONFIG_YELLOWFIN=y
+>  CONFIG_SERIAL_8250=y
+>  CONFIG_SERIAL_8250_CONSOLE=y
 > --
-> 2.25.1
+> 2.17.1
 >
 
 Thanks for the patch! This was included in my pull request today and
