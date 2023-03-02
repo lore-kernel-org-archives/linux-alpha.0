@@ -1,678 +1,94 @@
-From: Christian Kujau <lists@nerdbynature.de>
-Subject: Re: [PATCH] arch/alpha/kernel: Remove form feed characters
-Date: Wed, 1 Mar 2023 22:43:20 +0100 (CET)
-Message-ID: <444702af-2868-bf12-448d-414f4ca22c1f@nerdbynature.de>
-References: <aa78d250-d5ad-eda4-8d5b-118d6d8d222a@nerdbynature.de>
-Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
-In-Reply-To: <aa78d250-d5ad-eda4-8d5b-118d6d8d222a@nerdbynature.de>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+From: Palmer Dabbelt <palmer@rivosinc.com>
+Subject: Re: [PATCH v3 03/24] arm: Remove COMMAND_LINE_SIZE from uapi
+Date: Wed, 01 Mar 2023 19:17:16 -0800 (PST)
+Message-ID: <mhng-78901e66-16df-4563-9e2c-3a9744ef2828@palmer-ri-x1c9a>
+References: <874b8076-b0d1-4aaa-bcd8-05d523060152@app.fastmail.com>
+Mime-Version: 1.0 (MHng)
 Content-Transfer-Encoding: 7bit
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:Content-Type:
+	Content-Transfer-Encoding:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:Mime-Version:Message-ID:To:From:CC:In-Reply-To:
+	Subject:Date:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:List-Owner;
+	bh=LG9LAZPHYB73Yvbu9UfkWIQjZawBHhApyYYlWBCd9QU=; b=yASJA371ffVe1kN147LIA/GhlN
+	EI5vSZlv6Vmy2S3lcgSFUl68XKWFoj1+1cAlWrBORxZkPkw2zam19qsutKXSmge9zfEbWvC4IaPdr
+	7Wk8lc2XbTQafXbXgGO4a/oFv7ZzkDLKkXCUktnJ3nwfItukqpuUsUoL2U2kBMxInnLTzMr9bp0vQ
+	DaWweS/lPxLEmHQub/Pi8OxwOLLUQ81vJqOpTdcElOlVfxVujA5F7lqxe0kL74SRnJ4bU+MKlJQGK
+	sHYhYAdiC/lcDXGkP0VbxPF3LkxYnWuphF2yD0MZStO6CNO1jpMY5ZDPWI1XECQz0pvcE48jHbb/k
+	ogs6gffw==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1677727038;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hgpf8cgLJj50M86L5F9BUoIAMwjT++SeEfR1/zwwwE0=;
+        b=05BK9h2oN73d+vLQZ8AXICX+yqZH9PJw8eGQwQu3aLpPw/PQkKLBM+zl4FHFPDCMbr
+         oT2a7ycW9j4IvNJVs7ZNd3qeiw85Qtha4m0oAo5Q0QiPipyRwzSV4J3XcelEef5d8yqB
+         I4KXQDK7qQ+mAPYeZvAqQG78vIyZoGQH/5i1rIXtVNLbcQNF9Kn0gW9O7HWaBv1Z1Hfx
+         4q2OGZuaoqmuPypq3KgIWVltCxcy5gmQYJ+016KcQmuC/U0yrGY0o6z+m+PHYIZUzGYI
+         1grLiGwuTn7D4jkc5r6I/7tUA73EppBwvM41vkni8yrDAA+aUFBNlGO/ZUE432ubFqlh
+         lUug==
+In-Reply-To: <874b8076-b0d1-4aaa-bcd8-05d523060152@app.fastmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: alexghiti@rivosinc.com, linux@armlinux.org.uk, corbet@lwn.net, Richard Henderson <richard.henderson@linaro.org>, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, chenhuacai@kernel.org, kernel@xen0n.name, geert@linux-m68k.org, monstr@monstr.eu, tsbogend@alpha.franken.de, James.Bottomley@hansenpartnership.com, deller@gmx.de, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, chris@zankel.net, jcmvbkbc@gmail.com, linu
 
-CC lkml, as nobody from linux-alpha responded. Yes, I know, it's entirely 
-cosmetic I assume, but these control characters in a source file are 
-weirding me out...
+On Thu, 23 Feb 2023 05:09:17 PST (-0800), Arnd Bergmann wrote:
+> On Thu, Feb 23, 2023, at 10:54, Alexandre Ghiti wrote:
+>> On Wed, Feb 15, 2023 at 2:05 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>>>
+>>> On Wed, Feb 15, 2023, at 13:59, Russell King (Oracle) wrote:
+>>> > On Tue, Feb 14, 2023 at 08:49:04AM +0100, Alexandre Ghiti wrote:
+>>> >> From: Palmer Dabbelt <palmer@rivosinc.com>
+>>> >>
+>>> >> As far as I can tell this is not used by userspace and thus should not
+>>> >> be part of the user-visible API.
+>>> >>
+>>> >> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>>> >
+>>> > Looks good to me. What's the merge plan for this?
+>>>
+>>> The easiest way is probably if I merge it through the whole
+>>> series through the asm-generic tree. The timing is a bit
+>>> unfortunate as we're just ahead of the merge window, so unless
+>>> we really need this in 6.3, I'd suggest that Alexandre resend
+>>> the series to me in two weeks with the Acks added in and I'll
+>>> pick it up for 6.4.
+>>
+>> Sorry for the response delay, I was waiting to see if Palmer would
+>> merge my KASAN patchset in 6.3 (which he does): I have to admit that
+>> fixing the command line size + the KASAN patchset would allow 6.3 to
+>> run on syzkaller, which would be nice.
+>>
+>> If I don't see this merged in 6.3, I'll send another round as you
+>> suggested in 1 week now :)
+>
+> Hi Alexandre,
+>
+> I have no plans to still pick up the series for 6.3. The patches
+> all look fine to me, but it's clearly too late now. What is the
+> actual dependency for KASAN, do you just need a longer command
+> line or something else? If it's just the command line size,
+> I would suggest that Palmer can still pick up a oneline change
+> to increase it and refer to this thread in the changelog as a
+> reference for why it is not an actual UAPI break.
 
-Thanks,
-C.
+Sorry for being slow here, I just queued up the original patch in the 
+RISC-V tree and intend on sending it for 6.3 -- the main worry was that 
+it's a uABi change and we're confident it's not.  It's late, but I'd 
+prefer to have this as it should let us start running syzkaller now and 
+that'll probably find more bugs than this is likely to trigger.
 
-On Mon, 27 Feb 2023, Christian Kujau wrote:
-> In a recent commit ("alpha: lazy FPU switching") I noticed some ^L ("form 
-> feed") characters in the assembly file. There were 18 more occurences in 
-> arch/alpha/kernel, and then a handful more across the whole tree. Unless 
-> there's a good reason to have these control characters in the tree, let's 
-> remove those. Compile-tested only.
-> 
-> Signed-off-by: Christian Kujau <lists@nerdbynature.de>
-> ---
-> diff --git a/arch/alpha/kernel/core_apecs.c b/arch/alpha/kernel/core_apecs.c
-> index 6df765ff2b10..8a84347826aa 100644
-> --- a/arch/alpha/kernel/core_apecs.c
-> +++ b/arch/alpha/kernel/core_apecs.c
-> @@ -312,7 +312,7 @@ struct pci_ops apecs_pci_ops =
->  	.read =		apecs_read_config,
->  	.write =	apecs_write_config,
->  };
-> -
-> +
->  void
->  apecs_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  {
-> @@ -320,7 +320,7 @@ apecs_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  	*(vip)APECS_IOC_TBIA = 0;
->  	mb();
->  }
-> -
-> +
->  void __init
->  apecs_init_arch(void)
->  {
-> diff --git a/arch/alpha/kernel/core_cia.c b/arch/alpha/kernel/core_cia.c
-> index 12926e9538b8..d889f81a760b 100644
-> --- a/arch/alpha/kernel/core_cia.c
-> +++ b/arch/alpha/kernel/core_cia.c
-> @@ -246,7 +246,7 @@ struct pci_ops cia_pci_ops =
->  	.read = 	cia_read_config,
->  	.write =	cia_write_config,
->  };
-> -
-> +
->  /*
->   * CIA Pass 1 and PYXIS Pass 1 and 2 have a broken scatter-gather tlb.
->   * It cannot be invalidated.  Rather than hard code the pass numbers,
-> @@ -558,7 +558,7 @@ verify_tb_operation(void)
->  	alpha_mv.mv_pci_tbi = NULL;
->  	goto exit;
->  }
-> -
-> +
->  #if defined(ALPHA_RESTORE_SRM_SETUP)
->  /* Save CIA configuration data as the console had it set up.  */
->  struct 
-> @@ -629,7 +629,6 @@ cia_restore_srm_settings(void)
->  #define cia_restore_srm_settings()	do {} while (0)
->  #endif /* ALPHA_RESTORE_SRM_SETUP */
->  
-> -
->  static void __init
->  do_init_arch(int is_pyxis)
->  {
-> diff --git a/arch/alpha/kernel/core_irongate.c b/arch/alpha/kernel/core_irongate.c
-> index 6b8ed12936b6..eeeaab1e1191 100644
-> --- a/arch/alpha/kernel/core_irongate.c
-> +++ b/arch/alpha/kernel/core_irongate.c
-> @@ -160,7 +160,7 @@ struct pci_ops irongate_pci_ops =
->  	.read =		irongate_read_config,
->  	.write =	irongate_write_config,
->  };
-> -
-> +
->  int
->  irongate_pci_clr_err(void)
->  {
-> diff --git a/arch/alpha/kernel/core_lca.c b/arch/alpha/kernel/core_lca.c
-> index 57e0750419f2..6a7c1cd3e33b 100644
-> --- a/arch/alpha/kernel/core_lca.c
-> +++ b/arch/alpha/kernel/core_lca.c
-> @@ -237,7 +237,7 @@ struct pci_ops lca_pci_ops =
->  	.read =		lca_read_config,
->  	.write =	lca_write_config,
->  };
-> -
-> +
->  void
->  lca_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  {
-> @@ -245,7 +245,7 @@ lca_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  	*(vulp)LCA_IOC_TBIA = 0;
->  	mb();
->  }
-> -
-> +
->  void __init
->  lca_init_arch(void)
->  {
-> diff --git a/arch/alpha/kernel/core_marvel.c b/arch/alpha/kernel/core_marvel.c
-> index e9348aec4649..cd1ced6cfcc1 100644
-> --- a/arch/alpha/kernel/core_marvel.c
-> +++ b/arch/alpha/kernel/core_marvel.c
-> @@ -29,7 +29,6 @@
->  #include "proto.h"
->  #include "pci_impl.h"
->  
-> -
->  /*
->   * Debug helpers
->   */
-> @@ -41,13 +40,11 @@
->  # define DBG_CFG(args)
->  #endif
->  
-> -
->  /*
->   * Private data
->   */
->  static struct io7 *io7_head = NULL;
->  
-> -
->  /*
->   * Helper functions
->   */
-> @@ -197,7 +194,6 @@ io7_clear_errors(struct io7 *io7)
->  	p7csrs->PO7_CRRCT_SYM.csr = -1UL;
->  }
->  
-> -
->  /*
->   * IO7 PCI, PCI/X, AGP configuration.
->   */
-> @@ -471,7 +467,6 @@ marvel_kill_arch(int mode)
->  {
->  }
->  
-> -
->  /*
->   * PCI Configuration Space access functions
->   *
-> @@ -599,7 +594,6 @@ struct pci_ops marvel_pci_ops =
->  	.write = 	marvel_write_config,
->  };
->  
-> -
->  /*
->   * Other PCI helper functions.
->   */
-> @@ -614,8 +608,6 @@ marvel_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  	csrs->POx_SG_TBIA.csr;
->  }
->  
-> -
-> -
->  /*
->   * RTC Support
->   */
-> @@ -676,7 +668,6 @@ __marvel_rtc_io(u8 b, unsigned long addr, int write)
->  	return ret;
->  }
->  
-> -
->  /*
->   * IO map support.
->   */
-> diff --git a/arch/alpha/kernel/core_mcpcia.c b/arch/alpha/kernel/core_mcpcia.c
-> index 74b1d018124c..e7f5ecb31991 100644
-> --- a/arch/alpha/kernel/core_mcpcia.c
-> +++ b/arch/alpha/kernel/core_mcpcia.c
-> @@ -241,7 +241,7 @@ struct pci_ops mcpcia_pci_ops =
->  	.read =		mcpcia_read_config,
->  	.write =	mcpcia_write_config,
->  };
-> -
-> +
->  void
->  mcpcia_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  {
-> @@ -249,7 +249,7 @@ mcpcia_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  	*(vuip)MCPCIA_SG_TBIA(MCPCIA_HOSE2MID(hose->index)) = 0;
->  	mb();
->  }
-> -
-> +
->  static int __init
->  mcpcia_probe_hose(int h)
->  {
-> diff --git a/arch/alpha/kernel/core_polaris.c b/arch/alpha/kernel/core_polaris.c
-> index 75d622d96ff2..797b1bda0ec8 100644
-> --- a/arch/alpha/kernel/core_polaris.c
-> +++ b/arch/alpha/kernel/core_polaris.c
-> @@ -142,7 +142,7 @@ struct pci_ops polaris_pci_ops =
->  	.read =		polaris_read_config,
->  	.write =	polaris_write_config,
->  };
-> -
-> +
->  void __init
->  polaris_init_arch(void)
->  {
-> diff --git a/arch/alpha/kernel/core_t2.c b/arch/alpha/kernel/core_t2.c
-> index 98d5b6ff8a76..471d08eb0a13 100644
-> --- a/arch/alpha/kernel/core_t2.c
-> +++ b/arch/alpha/kernel/core_t2.c
-> @@ -321,7 +321,7 @@ struct pci_ops t2_pci_ops =
->  	.read =		t2_read_config,
->  	.write =	t2_write_config,
->  };
-> -
-> +
->  static void __init
->  t2_direct_map_window1(unsigned long base, unsigned long length)
->  {
-> diff --git a/arch/alpha/kernel/core_titan.c b/arch/alpha/kernel/core_titan.c
-> index 77f5d68ed04b..2d8933a53274 100644
-> --- a/arch/alpha/kernel/core_titan.c
-> +++ b/arch/alpha/kernel/core_titan.c
-> @@ -52,7 +52,6 @@ static int titan_pchip1_present;
->  # define DBG_CFG(args)
->  #endif
->  
-> -
->  /*
->   * Routines to access TIG registers.
->   */
-> @@ -76,7 +75,6 @@ titan_write_tig(int offset, u8 value)
->  	*tig_addr = (unsigned long)value;
->  }
->  
-> -
->  /*
->   * Given a bus, device, and function number, compute resulting
->   * configuration space address
-> @@ -197,7 +195,6 @@ struct pci_ops titan_pci_ops =
->  	.write =	titan_write_config,
->  };
->  
-> -
->  void
->  titan_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  {
-> @@ -438,7 +435,6 @@ titan_kill_arch(int mode)
->  	titan_kill_pachips(TITAN_pachip0, TITAN_pachip1);
->  }
->  
-> -
->  /*
->   * IO map support.
->   */
-> @@ -571,7 +567,7 @@ EXPORT_SYMBOL(titan_ioremap);
->  EXPORT_SYMBOL(titan_iounmap);
->  EXPORT_SYMBOL(titan_is_mmio);
->  #endif
-> -
-> +
->  /*
->   * AGP GART Support.
->   */
-> diff --git a/arch/alpha/kernel/core_tsunami.c b/arch/alpha/kernel/core_tsunami.c
-> index fc1ab73f23de..e3452b38e12a 100644
-> --- a/arch/alpha/kernel/core_tsunami.c
-> +++ b/arch/alpha/kernel/core_tsunami.c
-> @@ -173,7 +173,7 @@ struct pci_ops tsunami_pci_ops =
->  	.read =		tsunami_read_config,
->  	.write = 	tsunami_write_config,
->  };
-> -
-> +
->  void
->  tsunami_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  {
-> @@ -195,7 +195,7 @@ tsunami_pci_tbi(struct pci_controller *hose, dma_addr_t start, dma_addr_t end)
->  	mb();
->  	*csr;
->  }
-> -
-> +
->  #ifdef NXM_MACHINE_CHECKS_ON_TSUNAMI
->  static long __init
->  tsunami_probe_read(volatile unsigned long *vaddr)
-> diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-> index eb51f93a70c8..28efb455ff84 100644
-> --- a/arch/alpha/kernel/entry.S
-> +++ b/arch/alpha/kernel/entry.S
-> @@ -429,7 +429,7 @@ CFI_START_OSF_FRAME entDbg
->  	mov	$sp, $16
->  	jsr	$31, do_entDbg
->  CFI_END_OSF_FRAME entDbg
-> -
-> +
->  /*
->   * The system call entry point is special.  Most importantly, it looks
->   * like a function call to userspace as far as clobbered registers.  We
-> @@ -638,7 +638,7 @@ $strace_error:
->  	mov	$31, $26	/* tell "ret_from_sys_call" we can restart */
->  	br	ret_from_sys_call
->  CFI_END_OSF_FRAME entSys
-> -
-> +
->  /*
->   * Save and restore the switch stack -- aka the balance of the user context.
->   */
-> @@ -724,7 +724,6 @@ restore_fpu:
->  	br restore_other
->  #undef V
->  
-> -
->  /*
->   * The meat of the context switch code.
->   */
-> @@ -780,7 +779,6 @@ ret_from_kernel_thread:
->  	br	$31, ret_to_user
->  .end ret_from_kernel_thread
->  
-> -
->  /*
->   * Special system calls.  Most of these are special in that they either
->   * have to play switch_stack games.
-> diff --git a/arch/alpha/kernel/err_common.c b/arch/alpha/kernel/err_common.c
-> index 94e1b3dcf6d4..0b7f70154f34 100644
-> --- a/arch/alpha/kernel/err_common.c
-> +++ b/arch/alpha/kernel/err_common.c
-> @@ -24,7 +24,6 @@
->   */
->  char *err_print_prefix = KERN_NOTICE;
->  
-> -
->  /*
->   * Generic
->   */
-> @@ -77,7 +76,6 @@ mchk_dump_logout_frame(struct el_common *mchk_header)
->  	printk("%s  -- End of Frame --\n", err_print_prefix);
->  }
->  
-> -
->  /*
->   * Console Data Log
->   */
-> diff --git a/arch/alpha/kernel/err_titan.c b/arch/alpha/kernel/err_titan.c
-> index 0ffb2feea42a..aa0a97da527c 100644
-> --- a/arch/alpha/kernel/err_titan.c
-> +++ b/arch/alpha/kernel/err_titan.c
-> @@ -581,7 +581,6 @@ titan_register_error_handlers(void)
->  	ev6_register_error_handlers();
->  }
->  
-> -
->  /*
->   * Privateer
->   */
-> diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-> index c81183935e97..259eaf563303 100644
-> --- a/arch/alpha/kernel/pci_iommu.c
-> +++ b/arch/alpha/kernel/pci_iommu.c
-> @@ -54,7 +54,7 @@ size_for_memory(unsigned long max)
->  		max = roundup_pow_of_two(mem);
->  	return max;
->  }
-> -
-> +
->  struct pci_iommu_arena * __init
->  iommu_arena_new_node(int nid, struct pci_controller *hose, dma_addr_t base,
->  		     unsigned long window_size, unsigned long align)
-> @@ -821,7 +821,6 @@ static int alpha_pci_supported(struct device *dev, u64 mask)
->  	return 0;
->  }
->  
-> -
->  /*
->   * AGP GART extensions to the IOMMU
->   */
-> diff --git a/arch/alpha/kernel/smc37c669.c b/arch/alpha/kernel/smc37c669.c
-> index bbbd34586de0..f15fbc52fdfd 100644
-> --- a/arch/alpha/kernel/smc37c669.c
-> +++ b/arch/alpha/kernel/smc37c669.c
-> @@ -1091,7 +1091,7 @@ static int SMC37c669_xlate_drq(
->  );
->  
->  static  __cacheline_aligned DEFINE_SPINLOCK(smc_lock);
-> -
-> +
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -1187,7 +1187,6 @@ SMC37c669_CONFIG_REGS * __init SMC37c669_detect( int index )
->      return SMC37c669;
->  }
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -1419,7 +1418,6 @@ unsigned int __init SMC37c669_enable_device ( unsigned int func )
->      return ret_val;
->  }
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -1623,7 +1621,6 @@ unsigned int __init SMC37c669_disable_device ( unsigned int func )
->      return ret_val;
->  }
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -1700,7 +1697,6 @@ unsigned int __init SMC37c669_configure_device (
->      return FALSE;
->  }
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -1787,7 +1783,6 @@ static unsigned int __init SMC37c669_is_device_enabled ( unsigned int func )
->      return ret_val;
->  }
->  
-> -
->  #if 0
->  /*
->  **++
-> @@ -1859,7 +1854,6 @@ static unsigned int __init SMC37c669_get_device_config (
->  }
->  #endif
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -1936,7 +1930,6 @@ void __init SMC37c669_display_device_info ( void )
->      }
->  }
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -1979,7 +1972,7 @@ static void __init SMC37c669_config_mode(
->      	wb( &SMC37c669->index_port, SMC37c669_CONFIG_OFF_KEY );
->      }
->  }
-> -
-> +
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -2009,7 +2002,7 @@ static unsigned char __init SMC37c669_read_config(
->  	wb(&SMC37c669->index_port, index);
->  	return rb(&SMC37c669->data_port);
->  }
-> -
-> +
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -2044,7 +2037,6 @@ static void __init SMC37c669_write_config(
->      wb( &SMC37c669->data_port, data );
->  }
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -2173,7 +2165,6 @@ static void __init SMC37c669_init_local_config ( void )
->      local_config[IDE_0].irq = 14;
->  }
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -2220,7 +2211,7 @@ static struct DEVICE_CONFIG * __init SMC37c669_get_config( unsigned int func )
->      }
->      return cp;
->  }
-> -
-> +
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -2272,7 +2263,6 @@ static int __init SMC37c669_xlate_irq ( int irq )
->      return translated_irq;
->  }
->  
-> -
->  /*
->  **++
->  **  FUNCTIONAL DESCRIPTION:
-> @@ -2323,7 +2313,7 @@ static int __init SMC37c669_xlate_drq ( int drq )
->      }
->      return translated_drq;
->  }
-> -
-> +
->  #if 0
->  int __init smcc669_init ( void )
->  {
-> @@ -2338,7 +2328,7 @@ int __init smcc669_init ( void )
->  
->      return msg_success;
->  }
-> -
-> +
->  int __init smcc669_open( struct FILE *fp, char *info, char *next, char *mode )
->  {
->      struct INODE *ip;
-> @@ -2363,7 +2353,7 @@ int __init smcc669_open( struct FILE *fp, char *info, char *next, char *mode )
->  
->      return msg_success;
->  }
-> -
-> +
->  int __init smcc669_close( struct FILE *fp )
->  {
->      struct INODE *ip;
-> @@ -2376,7 +2366,7 @@ int __init smcc669_close( struct FILE *fp )
->      }
->      return msg_success;
->  }
-> -
-> +
->  int __init smcc669_read( struct FILE *fp, int size, int number, unsigned char *buf )
->  {
->      int i;
-> @@ -2402,7 +2392,7 @@ int __init smcc669_read( struct FILE *fp, int size, int number, unsigned char *b
->      SMC37c669_config_mode( FALSE );
->      return nbytes;
->  }
-> -
-> +
->  int __init smcc669_write( struct FILE *fp, int size, int number, unsigned char *buf )
->  {
->      int i;
-> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-> index 6dc952b0df4a..72f3b7811b17 100644
-> --- a/arch/alpha/kernel/srmcons.c
-> +++ b/arch/alpha/kernel/srmcons.c
-> @@ -232,7 +232,6 @@ srmcons_init(void)
->  }
->  device_initcall(srmcons_init);
->  
-> -
->  /*
->   * The console driver
->   */
-> diff --git a/arch/alpha/kernel/sys_marvel.c b/arch/alpha/kernel/sys_marvel.c
-> index 1f99b03effc2..2cdf3dd8f43e 100644
-> --- a/arch/alpha/kernel/sys_marvel.c
-> +++ b/arch/alpha/kernel/sys_marvel.c
-> @@ -33,7 +33,6 @@
->  # error NR_IRQS < MARVEL_NR_IRQS !!!
->  #endif
->  
-> -
->  /*
->   * Interrupt handling.
->   */
-> @@ -432,7 +431,7 @@ marvel_smp_callin(void)
->  	for (i = 0; i < 16; ++i)
->  		io7_redirect_one_msi(io7, i, cpuid);
->  }
-> -
-> +
->  /*
->   * System Vectors
->   */
-> diff --git a/arch/alpha/kernel/sys_titan.c b/arch/alpha/kernel/sys_titan.c
-> index b1f3b4fcf99b..ed7fb4660811 100644
-> --- a/arch/alpha/kernel/sys_titan.c
-> +++ b/arch/alpha/kernel/sys_titan.c
-> @@ -36,7 +36,6 @@
->  #include "machvec_impl.h"
->  #include "err_impl.h"
->  
-> -
->  /*
->   * Titan generic
->   */
-> @@ -255,7 +254,6 @@ titan_dispatch_irqs(u64 mask)
->  	}
->  }
->    
-> -
->  /*
->   * Titan Family
->   */
-> @@ -337,7 +335,6 @@ titan_init_pci(void)
->  	locate_and_init_vga(NULL);
->  }
->  
-> -
->  /*
->   * Privateer
->   */
-> @@ -359,7 +356,6 @@ privateer_init_pci(void)
->  	return titan_init_pci();
->  }
->  
-> -
->  /*
->   * The System Vectors.
->   */
-> diff --git a/arch/alpha/kernel/time.c b/arch/alpha/kernel/time.c
-> index 4d01c392ab14..cb2ed1388bf1 100644
-> --- a/arch/alpha/kernel/time.c
-> +++ b/arch/alpha/kernel/time.c
-> @@ -80,7 +80,6 @@ static inline __u32 rpcc(void)
->  }
->  
->  
-> -
->  /*
->   * The RTC as a clock_event_device primitive.
->   */
-> @@ -129,7 +128,6 @@ init_rtc_clockevent(void)
->  	clockevents_config_and_register(ce, CONFIG_HZ, 0, 0);
->  }
->  
-> -
->  /*
->   * The QEMU clock as a clocksource primitive.
->   */
-> @@ -199,7 +197,6 @@ init_qemu_clockevent(void)
->  	clockevents_config_and_register(ce, NSEC_PER_SEC, 1000, LONG_MAX);
->  }
->  
-> -
->  void __init
->  common_init_rtc(void)
->  {
-> @@ -245,7 +242,6 @@ common_init_rtc(void)
->  	init_rtc_irq(NULL);
->  }
->  
-> -
->  #ifndef CONFIG_ALPHA_WTINT
->  /*
->   * The RPCC as a clocksource primitive.
-> @@ -275,7 +271,6 @@ static struct clocksource clocksource_rpcc = {
->  };
->  #endif /* ALPHA_WTINT */
->  
-> -
->  /* Validate a computed cycle counter result against the known bounds for
->     the given processor core.  There's too much brokenness in the way of
->     timing hardware for any one method to work everywhere.  :-(
-> 
-> -- 
-> BOFH excuse #28:
-> 
-> CPU radiator broken
-> 
-
--- 
-BOFH excuse #444:
-
-overflow error in /dev/null
+https://lore.kernel.org/r/mhng-b5f934ff-a9bb-4c2b-9ba6-3ab68312077a@palmer-ri-x1c9a/
