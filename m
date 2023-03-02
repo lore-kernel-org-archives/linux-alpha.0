@@ -1,76 +1,79 @@
-From: Alexandre Ghiti <alexghiti@rivosinc.com>
-Subject: [PATCH v4 11/24] xtensa: Remove COMMAND_LINE_SIZE from uapi
-Date: Thu,  2 Mar 2023 10:35:26 +0100
-Message-ID: <20230302093539.372962-12-alexghiti@rivosinc.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v4 00/24] Remove COMMAND_LINE_SIZE from uapi
+Date: Thu, 2 Mar 2023 10:47:31 +0100
+Message-ID: <CAMuHMdVC99kFpS9vL+HEqbXdDRMKVSW_t21X1p37d0oQufxKLw@mail.gmail.com>
 References: <20230302093539.372962-1-alexghiti@rivosinc.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1677750421;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8G1o29Ga/UNTNJtY/6LksyBwTKom5lFj7gKfXcB8h4g=;
-        b=f5l6eWLUG26Tt1766JjI6+GInzRq5lOwonJqSgSnLvYw936TWJoY/k8LCTgJ0bfkJF
-         /sik1QE/lKik4wYpmelpWwyeaSPucJJe3LtOwmdgxeOqZMifyze3wQXcaEwnVHnCP8iI
-         uhTP6oBehvNs+Cq9TAu5oyX9Vr61Hg6hkYQJhCoxh8B3x+E2tjjKNdPaBlxqsIBA6ezp
-         DZWBusm4N21C0GYVueAYiVK6ByGTSyb/OuQDlMShYL/GtXpALshSesRtnYJRb8OPxeZX
-         E33mvg7vxn/lJGdB/iNyGNTrfDviw75Ua5B9SYEXBJXNoIAFOQ2EvY0Y2b9fZZBUzwZp
-         R52Q==
+Content-Transfer-Encoding: base64
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:Cc:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=iEXT5h53ZnrxeYisQhe/k1EmoruemEODUHNhBpRnu+g=; b=4Pz2HpiVlRbWjs
+	ruJJRYfBD7BaBoGasPWkyi9i8hqs83P2euVzpksl8GcVnhcJDrEx7Y6B1COc827KsMoQ0AzKQCOrY
+	oyMj7al8MMHTZ3bzkQzTsnpZ+y1YP89TYAJhfGStT8EcWN9z7CEv1idWZXFuw2Xswj54ljwnyz4x8
+	6o4GcIiJTVQ30dOIyBGeZLgnPfBR9iohCRYJpZu04+aF/xfp/KMoLkKPP9yt+2EWss8n7fsXqwCTL
+	eo4c3pYIZP/46Fmsdk9z3VROQTEud0U0eBw2/9sqq6xljD27KeK10zWm5Jg7Gn34DWoEQlCNkzGsW
+	AV1Yu0inUDh1WLBA7byw==;
 In-Reply-To: <20230302093539.372962-1-alexghiti@rivosinc.com>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley>
-Cc: Palmer Dabbelt <palmer@rivosinc.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+Content-Type: text/plain; charset="windows-1252"
+To: Alexandre Ghiti <alexghiti@rivosinc.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Alexande
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
-
-As far as I can tell this is not used by userspace and thus should not
-be part of the user-visible API.
-
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
----
- arch/xtensa/include/asm/setup.h      | 17 +++++++++++++++++
- arch/xtensa/include/uapi/asm/setup.h |  2 --
- 2 files changed, 17 insertions(+), 2 deletions(-)
- create mode 100644 arch/xtensa/include/asm/setup.h
-
-diff --git a/arch/xtensa/include/asm/setup.h b/arch/xtensa/include/asm/setup.h
-new file mode 100644
-index 000000000000..5356a5fd4d17
---- /dev/null
-+++ b/arch/xtensa/include/asm/setup.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/*
-+ * include/asm-xtensa/setup.h
-+ *
-+ * This file is subject to the terms and conditions of the GNU General Public
-+ * License.  See the file "COPYING" in the main directory of this archive
-+ * for more details.
-+ *
-+ * Copyright (C) 2001 - 2005 Tensilica Inc.
-+ */
-+
-+#ifndef _XTENSA_SETUP_H
-+#define _XTENSA_SETUP_H
-+
-+#define COMMAND_LINE_SIZE	256
-+
-+#endif
-diff --git a/arch/xtensa/include/uapi/asm/setup.h b/arch/xtensa/include/uapi/asm/setup.h
-index 5356a5fd4d17..6f982394684a 100644
---- a/arch/xtensa/include/uapi/asm/setup.h
-+++ b/arch/xtensa/include/uapi/asm/setup.h
-@@ -12,6 +12,4 @@
- #ifndef _XTENSA_SETUP_H
- #define _XTENSA_SETUP_H
- 
--#define COMMAND_LINE_SIZE	256
--
- #endif
--- 
-2.37.2
-
+SGkgQWxleCwKCk9uIFRodSwgTWFyIDIsIDIwMjMgYXQgMTA6MzXigK9BTSBBbGV4YW5kcmUgR2hp
+dGkgPGFsZXhnaGl0aUByaXZvc2luYy5jb20+IHdyb3RlOgo+IFRoaXMgYWxsIGNhbWUgdXAgaW4g
+dGhlIGNvbnRleHQgb2YgaW5jcmVhc2luZyBDT01NQU5EX0xJTkVfU0laRSBpbiB0aGUKPiBSSVND
+LVYgcG9ydC4gIEluIHRoZW9yeSB0aGF0J3MgYSBVQUJJIGJyZWFrLCBhcyBDT01NQU5EX0xJTkVf
+U0laRSBpcyB0aGUKPiBtYXhpbXVtIGxlbmd0aCBvZiAvcHJvYy9jbWRsaW5lIGFuZCB1c2Vyc3Bh
+Y2UgY291bGQgc3RhdGljbHkgcmVseSBvbgo+IHRoYXQgdG8gYmUgY29ycmVjdC4KPgo+IFVzdWFs
+bHkgSSB3b3VsZG4ndCBtZXNzIGFyb3VuZCB3aXRoIGNoYW5naW5nIHRoaXMgc29ydCBvZiB0aGlu
+ZywgYnV0Cj4gUG93ZXJQQyBpbmNyZWFzZWQgaXQgd2l0aCBhNTk4MGQwNjRmZTIgKCJwb3dlcnBj
+OiBCdW1wIENPTU1BTkRfTElORV9TSVpFCj4gdG8gMjA0OCIpLiAgVGhlcmUgYXJlIGFsc28gYSBo
+YW5kZnVsIG9mIGV4YW1wbGVzIG9mIENPTU1BTkRfTElORV9TSVpFCj4gaW5jcmVhc2luZywgYnV0
+IHRoZXkncmUgZnJvbSBiZWZvcmUgdGhlIFVBUEkgc3BsaXQgc28gSSdtIG5vdCBxdWl0ZSBzdXJl
+Cj4gd2hhdCB0aGF0IG1lYW5zOiBlNWE2YTFjOTA5NDggKCJwb3dlcnBjOiBkZXJpdmUgQ09NTUFO
+RF9MSU5FX1NJWkUgZnJvbQo+IGFzbS1nZW5lcmljIiksIDY4NGQyZmQ0OGU3MSAoIltTMzkwXSBr
+ZXJuZWw6IEFwcGVuZCBzY3BkYXRhIHRvIGtlcm5lbAo+IGJvb3QgY29tbWFuZCBsaW5lIiksIDIy
+MjQyNjgxY2ZmNSAoIk1JUFM6IEV4dGVuZCBDT01NQU5EX0xJTkVfU0laRSIpLAo+IGFuZCAyYjc0
+Yjg1NjkzYzcgKCJzaDogRGVyaXZlIENPTU1BTkRfTElORV9TSVpFIGZyb20KPiBhc20tZ2VuZXJp
+Yy9zZXR1cC5oLiIpLgo+Cj4gSXQgc2VlbXMgdG8gbWUgbGlrZSBDT01NQU5EX0xJTkVfU0laRSBy
+ZWFsbHkganVzdCBzaG91bGRuJ3QgaGF2ZSBiZWVuCj4gcGFydCBvZiB0aGUgdWFwaSB0byBiZWdp
+biB3aXRoLCBhbmQgdXNlcnNwYWNlIHNob3VsZCBiZSBhYmxlIHRvIGhhbmRsZQo+IC9wcm9jL2Nt
+ZGxpbmUgb2Ygd2hhdGV2ZXIgbGVuZ3RoIGl0IHR1cm5zIG91dCB0byBiZS4gIEkgZG9uJ3Qgc2Vl
+IGFueQo+IHJlZmVyZW5jZXMgdG8gQ09NTUFORF9MSU5FX1NJWkUgYW55d2hlcmUgYnV0IExpbnV4
+IHZpYSBhIHF1aWNrIEdvb2dsZQo+IHNlYXJjaCwgYnV0IHRoYXQncyBub3QgcmVhbGx5IGVub3Vn
+aCB0byBjb25zaWRlciBpdCB1bnVzZWQgb24gbXkgZW5kLgo+Cj4gVGhpcyBpc3N1ZSB3YXMgYWxy
+ZWFkeSBjb25zaWRlcmVkIGluIHMzOTAgYW5kIHRoZXkgcmVhY2hlZCB0aGUgc2FtZQo+IGNvbmNs
+dXNpb24gaW4gY29tbWl0IDYyMjAyMWNkNmM1NiAoInMzOTA6IG1ha2UgY29tbWFuZCBsaW5lCj4g
+Y29uZmlndXJhYmxlIikuCj4KPiBUaGUgZmVlZGJhY2sgb24gdGhlIHYxIHNlZW1lZCB0byBpbmRp
+Y2F0ZSB0aGF0IENPTU1BTkRfTElORV9TSVpFIHJlYWxseQo+IHNob3VsZG4ndCBiZSBwYXJ0IG9m
+IHVhcGksIHNvIHRoaXMgbm93IHRvdWNoZXMgYWxsIHRoZSBwb3J0cy4gIEkndmUKPiB0cmllZCB0
+byBzcGxpdCB0aGlzIGFsbCBvdXQgYW5kIGxlYXZlIGl0IGJpc2VjdGFibGUsIGJ1dCBJIGhhdmVu
+J3QKPiB0ZXN0ZWQgaXQgYWxsIHRoYXQgYWdncmVzc2l2ZWx5Lgo+Cj4gQ2hhbmdlcyBzaW5jZSB2
+MyA8aHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvYWxsLzIwMjMwMjE0MDc0OTI1LjIyODEwNi0xLWFs
+ZXhnaGl0aUByaXZvc2luYy5jb20vPjoKPiAqIEFkZGVkIFJCL0FCCj4gKiBBZGRlZCBhIG1lbnRp
+b24gdG8gY29tbWl0IDYyMjAyMWNkNmM1NiAoInMzOTA6IG1ha2UgY29tbWFuZCBsaW5lCj4gICBj
+b25maWd1cmFibGUiKSBpbiB0aGUgY292ZXIgbGV0dGVyCgpUaGFua3MgZm9yIHRoZSB1cGRhdGUh
+CgogQXBwYXJlbnRseSB5b3UgZm9yZ290IHRvIGFkZCB5b3VyIG93biBTb0I/CgpHcntvZXRqZSxl
+ZXRpbmd9cywKCiAgICAgICAgICAgICAgICAgICAgICAgIEdlZXJ0CgotLQpHZWVydCBVeXR0ZXJo
+b2V2ZW4gLS0gVGhlcmUncyBsb3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4
+LW02OGsub3JnCgpJbiBwZXJzb25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVjaG5pY2FsIHBlb3Bs
+ZSwgSSBjYWxsIG15c2VsZiBhIGhhY2tlci4gQnV0CndoZW4gSSdtIHRhbGtpbmcgdG8gam91cm5h
+bGlzdHMgSSBqdXN0IHNheSAicHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxpa2UgdGhhdC4KICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxkcwoKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtcmlzY3YgbWFpbGlu
+ZyBsaXN0CmxpbnV4LXJpc2N2QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJh
+ZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1yaXNjdgo=
