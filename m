@@ -1,94 +1,80 @@
-From: Palmer Dabbelt <palmer@rivosinc.com>
-Subject: Re: [PATCH v3 03/24] arm: Remove COMMAND_LINE_SIZE from uapi
-Date: Wed, 01 Mar 2023 19:17:16 -0800 (PST)
-Message-ID: <mhng-78901e66-16df-4563-9e2c-3a9744ef2828@palmer-ri-x1c9a>
-References: <874b8076-b0d1-4aaa-bcd8-05d523060152@app.fastmail.com>
+From: Palmer Dabbelt <palmer@dabbelt.com>
+Subject: Re: [PATCH v3 00/24] Remove COMMAND_LINE_SIZE from uapi
+Date: Wed, 01 Mar 2023 19:17:18 -0800 (PST)
+Message-ID: <mhng-e8b09772-24e5-4729-a0bf-01a9e4c76636@palmer-ri-x1c9a>
+References: <Y+tSBlSsQBQF/Ro2@osiris>
 Mime-Version: 1.0 (MHng)
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:Content-Type:
-	Content-Transfer-Encoding:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:Mime-Version:Message-ID:To:From:CC:In-Reply-To:
-	Subject:Date:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:List-Owner;
-	bh=LG9LAZPHYB73Yvbu9UfkWIQjZawBHhApyYYlWBCd9QU=; b=yASJA371ffVe1kN147LIA/GhlN
-	EI5vSZlv6Vmy2S3lcgSFUl68XKWFoj1+1cAlWrBORxZkPkw2zam19qsutKXSmge9zfEbWvC4IaPdr
-	7Wk8lc2XbTQafXbXgGO4a/oFv7ZzkDLKkXCUktnJ3nwfItukqpuUsUoL2U2kBMxInnLTzMr9bp0vQ
-	DaWweS/lPxLEmHQub/Pi8OxwOLLUQ81vJqOpTdcElOlVfxVujA5F7lqxe0kL74SRnJ4bU+MKlJQGK
-	sHYhYAdiC/lcDXGkP0VbxPF3LkxYnWuphF2yD0MZStO6CNO1jpMY5ZDPWI1XECQz0pvcE48jHbb/k
-	ogs6gffw==;
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-doc-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1677727038;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112; t=1677727040;
         h=content-transfer-encoding:mime-version:message-id:to:from:cc
          :in-reply-to:subject:date:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=hgpf8cgLJj50M86L5F9BUoIAMwjT++SeEfR1/zwwwE0=;
-        b=05BK9h2oN73d+vLQZ8AXICX+yqZH9PJw8eGQwQu3aLpPw/PQkKLBM+zl4FHFPDCMbr
-         oT2a7ycW9j4IvNJVs7ZNd3qeiw85Qtha4m0oAo5Q0QiPipyRwzSV4J3XcelEef5d8yqB
-         I4KXQDK7qQ+mAPYeZvAqQG78vIyZoGQH/5i1rIXtVNLbcQNF9Kn0gW9O7HWaBv1Z1Hfx
-         4q2OGZuaoqmuPypq3KgIWVltCxcy5gmQYJ+016KcQmuC/U0yrGY0o6z+m+PHYIZUzGYI
-         1grLiGwuTn7D4jkc5r6I/7tUA73EppBwvM41vkni8yrDAA+aUFBNlGO/ZUE432ubFqlh
-         lUug==
-In-Reply-To: <874b8076-b0d1-4aaa-bcd8-05d523060152@app.fastmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+        bh=On9It+4zdvXePGpqvCCrKF4Zz8YWrxnIbxTBVMgkuCs=;
+        b=It4hmxTEAyg7hPQnG8xuSpgz+jJKrlOhrcoQbLU4P/YxhalWRyom0ZRJ9msu/DO/86
+         AiIsktubYrvwpRFNifmG+BrBU8v6Yala4vW9pwjX/bv47kqdaFRBl58uJ5bIBRTWVMBT
+         NEWSeyJD4fgG+iWneC8bOvtxcO0rBYIjkLBer1PgLGvr/r+TBMTp8+ncLKFkUa5GBOHq
+         LyRA8ug4TwsdvYR3u1GIAGW60jHpBModJwHYh1E3SbElOIomsRGv1pXdHkKrQoLtx60j
+         B+LSax1q+0/Z9R4mu/KI8ChOEX0yXbPBPiNHSvaszPAfYNONdpL5L3WAXmTh1suUklGm
+         5kcw==
+In-Reply-To: <Y+tSBlSsQBQF/Ro2@osiris>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: alexghiti@rivosinc.com, linux@armlinux.org.uk, corbet@lwn.net, Richard Henderson <richard.henderson@linaro.org>, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, chenhuacai@kernel.org, kernel@xen0n.name, geert@linux-m68k.org, monstr@monstr.eu, tsbogend@alpha.franken.de, James.Bottomley@hansenpartnership.com, deller@gmx.de, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, chris@zankel.net, jcmvbkbc@gmail.com, linu
+To: hca@linux.ibm.com
+Cc: geert@linux-m68k.org, alexghiti@rivosinc.com, corbet@lwn.net, Richard Henderson <richard.henderson@linaro.org>, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@kernel.org, linux@armlinux.org.uk, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, chenhuacai@kernel.org, kernel@xen0n.name, monstr@monstr.eu, tsbogend@alpha.franken.de, James.Bottomley@hansenpartnership.com, deller@gmx.de, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu, gor@linux.ibm.com, agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@ke
 
-On Thu, 23 Feb 2023 05:09:17 PST (-0800), Arnd Bergmann wrote:
-> On Thu, Feb 23, 2023, at 10:54, Alexandre Ghiti wrote:
->> On Wed, Feb 15, 2023 at 2:05 PM Arnd Bergmann <arnd@arndb.de> wrote:
->>>
->>> On Wed, Feb 15, 2023, at 13:59, Russell King (Oracle) wrote:
->>> > On Tue, Feb 14, 2023 at 08:49:04AM +0100, Alexandre Ghiti wrote:
->>> >> From: Palmer Dabbelt <palmer@rivosinc.com>
->>> >>
->>> >> As far as I can tell this is not used by userspace and thus should not
->>> >> be part of the user-visible API.
->>> >>
->>> >> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
->>> >
->>> > Looks good to me. What's the merge plan for this?
->>>
->>> The easiest way is probably if I merge it through the whole
->>> series through the asm-generic tree. The timing is a bit
->>> unfortunate as we're just ahead of the merge window, so unless
->>> we really need this in 6.3, I'd suggest that Alexandre resend
->>> the series to me in two weeks with the Acks added in and I'll
->>> pick it up for 6.4.
+On Tue, 14 Feb 2023 01:19:02 PST (-0800), hca@linux.ibm.com wrote:
+> On Tue, Feb 14, 2023 at 09:58:17AM +0100, Geert Uytterhoeven wrote:
+>> Hi Heiko,
 >>
->> Sorry for the response delay, I was waiting to see if Palmer would
->> merge my KASAN patchset in 6.3 (which he does): I have to admit that
->> fixing the command line size + the KASAN patchset would allow 6.3 to
->> run on syzkaller, which would be nice.
->>
->> If I don't see this merged in 6.3, I'll send another round as you
->> suggested in 1 week now :)
->
-> Hi Alexandre,
->
-> I have no plans to still pick up the series for 6.3. The patches
-> all look fine to me, but it's clearly too late now. What is the
-> actual dependency for KASAN, do you just need a longer command
-> line or something else? If it's just the command line size,
-> I would suggest that Palmer can still pick up a oneline change
-> to increase it and refer to this thread in the changelog as a
-> reference for why it is not an actual UAPI break.
+>> On Tue, Feb 14, 2023 at 9:39 AM Heiko Carstens <hca@linux.ibm.com> wrote:
+>> > On Tue, Feb 14, 2023 at 08:49:01AM +0100, Alexandre Ghiti wrote:
+>> > > This all came up in the context of increasing COMMAND_LINE_SIZE in the
+>> > > RISC-V port.  In theory that's a UABI break, as COMMAND_LINE_SIZE is the
+>> > > maximum length of /proc/cmdline and userspace could staticly rely on
+>> > > that to be correct.
+>> > >
+>> > > Usually I wouldn't mess around with changing this sort of thing, but
+>> > > PowerPC increased it with a5980d064fe2 ("powerpc: Bump COMMAND_LINE_SIZE
+>> > > to 2048").  There are also a handful of examples of COMMAND_LINE_SIZE
+>> > > increasing, but they're from before the UAPI split so I'm not quite sure
+>> > > what that means: e5a6a1c90948 ("powerpc: derive COMMAND_LINE_SIZE from
+>> > > asm-generic"), 684d2fd48e71 ("[S390] kernel: Append scpdata to kernel
+>> > > boot command line"), 22242681cff5 ("MIPS: Extend COMMAND_LINE_SIZE"),
+>> > > and 2b74b85693c7 ("sh: Derive COMMAND_LINE_SIZE from
+>> > > asm-generic/setup.h.").
+>> > >
+>> > > It seems to me like COMMAND_LINE_SIZE really just shouldn't have been
+>> > > part of the uapi to begin with, and userspace should be able to handle
+>> > > /proc/cmdline of whatever length it turns out to be.  I don't see any
+>> > > references to COMMAND_LINE_SIZE anywhere but Linux via a quick Google
+>> > > search, but that's not really enough to consider it unused on my end.
+>> > >
+>> > > The feedback on the v1 seemed to indicate that COMMAND_LINE_SIZE really
+>> > > shouldn't be part of uapi, so this now touches all the ports.  I've
+>> > > tried to split this all out and leave it bisectable, but I haven't
+>> > > tested it all that aggressively.
+>> >
+>> > Just to confirm this assumption a bit more: that's actually the same
+>> > conclusion that we ended up with when commit 3da0243f906a ("s390: make
+>> > command line configurable") went upstream.
 
-Sorry for being slow here, I just queued up the original patch in the 
-RISC-V tree and intend on sending it for 6.3 -- the main worry was that 
-it's a uABi change and we're confident it's not.  It's late, but I'd 
-prefer to have this as it should let us start running syzkaller now and 
-that'll probably find more bugs than this is likely to trigger.
+Thanks, I guess I'd missed that one.  At some point I think there was 
+some discussion of making this a Kconfig for everyone, which seems 
+reasonable to me -- our use case for this being extended is syzkaller, 
+but we're sort of just picking a value that's big enough for now and 
+running with it.
 
-https://lore.kernel.org/r/mhng-b5f934ff-a9bb-4c2b-9ba6-3ab68312077a@palmer-ri-x1c9a/
+Probably best to get it out of uapi first, though, as that way at least 
+it's clear that it's not uABI.
+
+>> Commit 622021cd6c560ce7 ("s390: make command line configurable"),
+>> I assume?
+>
+> Yes, sorry for that. I got distracted while writing and used the wrong
+> branch to look this up.
+
+Alex: Probably worth adding that to the list in the cover letter as it 
+looks like you were planning on a v4 anyway (which I guess you now have 
+to do, given that I just added the issue to RISC-V).
