@@ -1,23 +1,23 @@
 From: Alexandre Ghiti <alexghiti@rivosinc.com>
-Subject: [PATCH v4 15/24] m68k: Remove empty <uapi/asm/setup.h>
-Date: Thu,  2 Mar 2023 10:35:30 +0100
-Message-ID: <20230302093539.372962-16-alexghiti__41403.5888899647$1677750714$gmane$org@rivosinc.com>
+Subject: [PATCH v4 16/24] arm64: Remove empty <uapi/asm/setup.h>
+Date: Thu,  2 Mar 2023 10:35:31 +0100
+Message-ID: <20230302093539.372962-17-alexghiti__16880.0607252464$1677750757$gmane$org@rivosinc.com>
 References: <20230302093539.372962-1-alexghiti@rivosinc.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1677750668;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1677750730;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FDXrUpH4uzk/doR0fj90OitraRNQjXfcQ6Va36x03uU=;
-        b=rQvGiyACcWPbt022BQ4KPoifzo8RgfR9WF7Irjyc15Ofpoe2VdY9cU4LWt3/XPjXVp
-         zUO52y383SVibU/tjEMRqerhVz4Xk1FY6u1X+LhjxS1bQEtbInYRzVt1zVJkwy+qQUY4
-         ZYzfd/Ttv46jZdM+eSJCCX8BJ9TomlaekFXaX6lLss4Xjp0f6E2an2tqydpu1FXIvVPs
-         TwshGg1w/E3+Y8dWqBWiBCmS1j06paEig+zfY/J2E+ASdmgmRUTmGM9IRmoaIsqzO4YX
-         Kg7kLnPp9cQBIiAp9yNXPyoJk586xxu3D++D1O9aM0M/oTelZGBy7iVF6vpF3zTtg+PO
-         PnnQ==
+        bh=L/w7ieSXW+WzBEEqtsZC24vvchjHjLnvFIFUR1Ngux8=;
+        b=SUtNZ4kc8a6JEPa4tbaMVB2zZPSOdSvymYroHh3/0a3pj3EYdR6kjKNBN8Il1Cb6w9
+         +i/EDcKqHaogNz6VVZCeM+mjKoIq1r8REAn0j0lbyT0rp3rAuRLWQE+owOZtLO2hTQYd
+         jmWcJNxUJ9d2I+XRKC832YEAlQjXaSYfDtFnH02p1A2DjQzvV7khMNmFvk5x/Axj5ngu
+         6qYtDjzevh+iTXHQPLpkDpnvwoFSL6ahLT/Ypau/FuH1ZsgsLY/QkX7mTU+CVqqqDyRS
+         AsEYJ9Q5y0W/IGo8Np3s8Jf92dI0KhniVqZJXWYnKHxdTiuhj88yCUGK8iphvFXzkquP
+         73Pg==
 In-Reply-To: <20230302093539.372962-1-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -27,33 +27,42 @@ Cc: Palmer Dabbelt <palmer@rivosinc.com>
 From: Palmer Dabbelt <palmer@rivosinc.com>
 
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- arch/m68k/include/uapi/asm/setup.h | 15 ---------------
- 1 file changed, 15 deletions(-)
- delete mode 100644 arch/m68k/include/uapi/asm/setup.h
+ arch/arm64/include/uapi/asm/setup.h | 25 -------------------------
+ 1 file changed, 25 deletions(-)
+ delete mode 100644 arch/arm64/include/uapi/asm/setup.h
 
-diff --git a/arch/m68k/include/uapi/asm/setup.h b/arch/m68k/include/uapi/asm/setup.h
+diff --git a/arch/arm64/include/uapi/asm/setup.h b/arch/arm64/include/uapi/asm/setup.h
 deleted file mode 100644
-index 005593acc7d8..000000000000
---- a/arch/m68k/include/uapi/asm/setup.h
+index f9f51e5925aa..000000000000
+--- a/arch/arm64/include/uapi/asm/setup.h
 +++ /dev/null
-@@ -1,15 +0,0 @@
+@@ -1,25 +0,0 @@
 -/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 -/*
--** asm/setup.h -- Definition of the Linux/m68k setup information
--**
--** Copyright 1992 by Greg Harp
--**
--** This file is subject to the terms and conditions of the GNU General Public
--** License.  See the file COPYING in the main directory of this archive
--** for more details.
--*/
+- * Based on arch/arm/include/asm/setup.h
+- *
+- * Copyright (C) 1997-1999 Russell King
+- * Copyright (C) 2012 ARM Ltd.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+- */
+-#ifndef __ASM_SETUP_H
+-#define __ASM_SETUP_H
 -
--#ifndef _UAPI_M68K_SETUP_H
--#define _UAPI_M68K_SETUP_H
+-#include <linux/types.h>
 -
--#endif /* _UAPI_M68K_SETUP_H */
+-#endif
 -- 
 2.37.2
 
