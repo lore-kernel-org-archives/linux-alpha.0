@@ -1,209 +1,74 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v3 2/2] arch/*/io.h: remove ioremap_uc in some architectures
-Date: Fri,  3 Mar 2023 18:28:17 +0800
-Message-ID: <20230303102817.212148-3-bhe@redhat.com>
-References: <20230303102817.212148-1-bhe@redhat.com>
+From: Alexandre Ghiti <alex@ghiti.fr>
+Subject: Re: [PATCH v3 00/24] Remove COMMAND_LINE_SIZE from uapi
+Date: Fri, 3 Mar 2023 12:59:01 +0100
+Message-ID: <674bc31e-e4ed-988f-820d-54213d83f9c7@ghiti.fr>
+References: <mhng-e8b09772-24e5-4729-a0bf-01a9e4c76636@palmer-ri-x1c9a>
+ <21F95EC4-71EA-4154-A7DC-8A5BA54F174B@zytor.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1677839331;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=yopmX6MDTRKlcNmu9WG5Rv8YrLrJS47N2LsvKHp9hMg=;
-	b=d1ZSam3NCMUDZlRxUttTeHptzYWFxBRTBmOyWflYp0vlSlgR8w8ha0NDrQCYKVepZUskg/
-	r4FBepWXeQ1uCpYygIve4tn7KuNxB4+70qSFzQEkWOQ4Ys0izXry27b4vjdf9Fc8ZrO9Qc
-	qmzMVQxkvJsN3V9rwZK4EVtQGkDPRJU=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1677839331;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=yopmX6MDTRKlcNmu9WG5Rv8YrLrJS47N2LsvKHp9hMg=;
-	b=d1ZSam3NCMUDZlRxUttTeHptzYWFxBRTBmOyWflYp0vlSlgR8w8ha0NDrQCYKVepZUskg/
-	r4FBepWXeQ1uCpYygIve4tn7KuNxB4+70qSFzQEkWOQ4Ys0izXry27b4vjdf9Fc8ZrO9Qc
-	qmzMVQxkvJsN3V9rwZK4EVtQGkDPRJU=
-In-Reply-To: <20230303102817.212148-1-bhe@redhat.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org
-Cc: linux-arch@vger.kernel.org, Baoquan He <bhe@redhat.com>, arnd@arndb.de, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, hch@infradead.org, linux-mm@kvack.org, mcgrof@kernel.org, geert@linux-m68k.org, linux-parisc@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Language: en-US
+In-Reply-To: <21F95EC4-71EA-4154-A7DC-8A5BA54F174B@zytor.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; format="flowed"
+To: "H. Peter Anvin" <hpa@zytor.com>, Palmer Dabbelt <palmer@dabbelt.com>, hca@linux.ibm.com
+Cc: geert@linux-m68k.org, alexghiti@rivosinc.com, corbet@lwn.net, Richard Henderson <richard.henderson@linaro.org>, ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@kernel.org, linux@armlinux.org.uk, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, chenhuacai@kernel.org, kernel@xen0n.name, monstr@monstr.eu, tsbogend@alpha.franken.de, James.Bottomley@hansenpartnership.com, deller@gmx.de, mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu, Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu, gor@linux.ibm.com, agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com, ysato@users.osdn.me, dalias@libc.org, davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.or
 
-ioremap_uc() is only meaningful on old x86-32 systems with the PAT
-extension, and on ia64 with its slightly unconventional ioremap()
-behavior, everywhere else this is the same as ioremap() anyway.
+Hi Peter,
 
-Here, remove the ioremap_uc() definition in architecutures other
-than x86 and ia64. These architectures all have asm-generic/io.h
-included and will have the default ioremap_uc() definition which
-returns NULL.
 
-Note: This changes the existing behaviour and could break code
-calling ioremap_uc(). If any ARCH meets this breakage and really
-needs a specific ioremap_uc() for its own usage, one ioremap_uc()
-can be added in the ARCH.
+On 3/2/23 20:50, H. Peter Anvin wrote:
+> On March 1, 2023 7:17:18 PM PST, Palmer Dabbelt <palmer@dabbelt.com> wrote:
+>> On Tue, 14 Feb 2023 01:19:02 PST (-0800), hca@linux.ibm.com wrote:
+>>> On Tue, Feb 14, 2023 at 09:58:17AM +0100, Geert Uytterhoeven wrote:
+>>>> Hi Heiko,
+>>>>
+>>>> On Tue, Feb 14, 2023 at 9:39 AM Heiko Carstens <hca@linux.ibm.com> wrote:
+>>>>> On Tue, Feb 14, 2023 at 08:49:01AM +0100, Alexandre Ghiti wrote:
+>>>>>> This all came up in the context of increasing COMMAND_LINE_SIZE in the
+>>>>>> RISC-V port.  In theory that's a UABI break, as COMMAND_LINE_SIZE is the
+>>>>>> maximum length of /proc/cmdline and userspace could staticly rely on
+>>>>>> that to be correct.
+>>>>>>
+>>>>>> Usually I wouldn't mess around with changing this sort of thing, but
+>>>>>> PowerPC increased it with a5980d064fe2 ("powerpc: Bump COMMAND_LINE_SIZE
+>>>>>> to 2048").  There are also a handful of examples of COMMAND_LINE_SIZE
+>>>>>> increasing, but they're from before the UAPI split so I'm not quite sure
+>>>>>> what that means: e5a6a1c90948 ("powerpc: derive COMMAND_LINE_SIZE from
+>>>>>> asm-generic"), 684d2fd48e71 ("[S390] kernel: Append scpdata to kernel
+>>>>>> boot command line"), 22242681cff5 ("MIPS: Extend COMMAND_LINE_SIZE"),
+>>>>>> and 2b74b85693c7 ("sh: Derive COMMAND_LINE_SIZE from
+>>>>>> asm-generic/setup.h.").
+>>>>>>
+>>>>>> It seems to me like COMMAND_LINE_SIZE really just shouldn't have been
+>>>>>> part of the uapi to begin with, and userspace should be able to handle
+>>>>>> /proc/cmdline of whatever length it turns out to be.  I don't see any
+>>>>>> references to COMMAND_LINE_SIZE anywhere but Linux via a quick Google
+>>>>>> search, but that's not really enough to consider it unused on my end.
+>>>>>>
+>>>>>> The feedback on the v1 seemed to indicate that COMMAND_LINE_SIZE really
+>>>>>> shouldn't be part of uapi, so this now touches all the ports.  I've
+>>>>>> tried to split this all out and leave it bisectable, but I haven't
+>>>>>> tested it all that aggressively.
+>>>>> Just to confirm this assumption a bit more: that's actually the same
+>>>>> conclusion that we ended up with when commit 3da0243f906a ("s390: make
+>>>>> command line configurable") went upstream.
+>> Thanks, I guess I'd missed that one.  At some point I think there was some discussion of making this a Kconfig for everyone, which seems reasonable to me -- our use case for this being extended is syzkaller, but we're sort of just picking a value that's big enough for now and running with it.
+>>
+>> Probably best to get it out of uapi first, though, as that way at least it's clear that it's not uABI.
+>>
+>>>> Commit 622021cd6c560ce7 ("s390: make command line configurable"),
+>>>> I assume?
+>>> Yes, sorry for that. I got distracted while writing and used the wrong
+>>> branch to look this up.
+>> Alex: Probably worth adding that to the list in the cover letter as it looks like you were planning on a v4 anyway (which I guess you now have to do, given that I just added the issue to RISC-V).
+> The only use that is uapi is the *default* length of the command line if the kernel header doesn't include it (in the case of x86, it is in the bzImage header, but that is atchitecture- or even boot format-specific.)
 
-Link: https://lore.kernel.org/all/20191112105507.GA7122@lst.de/#t
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-hexagon@vger.kernel.org
-Cc: linux-m68k@lists.linux-m68k.org
-Cc: linux-mips@vger.kernel.org
-Cc: linux-parisc@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-sh@vger.kernel.org
-Cc: sparclinux@vger.kernel.org
+Is COMMAND_LINE_SIZE what you call the default length? Does that mean 
+that to you the patchset is wrong?
 
----
- Documentation/driver-api/device-io.rst | 14 +++++++++-----
- arch/alpha/include/asm/io.h            |  1 -
- arch/hexagon/include/asm/io.h          |  3 ---
- arch/m68k/include/asm/kmap.h           |  1 -
- arch/mips/include/asm/io.h             |  1 -
- arch/parisc/include/asm/io.h           |  2 --
- arch/powerpc/include/asm/io.h          |  1 -
- arch/sh/include/asm/io.h               |  2 --
- arch/sparc/include/asm/io_64.h         |  1 -
- 9 files changed, 9 insertions(+), 17 deletions(-)
+Thanks,
 
-diff --git a/Documentation/driver-api/device-io.rst b/Documentation/driver-api/device-io.rst
-index 4d2baac0311c..12c2ebbaa41e 100644
---- a/Documentation/driver-api/device-io.rst
-+++ b/Documentation/driver-api/device-io.rst
-@@ -408,11 +408,15 @@ functions for details on the CPU side of things.
- ioremap_uc()
- ------------
- 
--ioremap_uc() behaves like ioremap() except that on the x86 architecture without
--'PAT' mode, it marks memory as uncached even when the MTRR has designated
--it as cacheable, see Documentation/x86/pat.rst.
--
--Portable drivers should avoid the use of ioremap_uc().
-+ioremap_uc() will be obsoleted since it's only expected on x86 and ia64.
-+X86 non-PAT system marks memory as uncached even when the MTRR has designated
-+it as cacheable in ioremap_uc()(see Documentation/x86/pat.rst). Ia64 system
-+need check if attributes match, otherwise fails. Other than these two
-+architectures, ioremap_uc() will default to NULL. Any architectures which
-+meets breakage by ioremap_uc() returning NULL should provide a specific
-+implementation to override the default version.
-+
-+Portable drivers should avoid the use of ioremap_uc(), use ioremap() instead.
- 
- ioremap_cache()
- ---------------
-diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-index 7aeaf7c30a6f..076f0e4e7f1e 100644
---- a/arch/alpha/include/asm/io.h
-+++ b/arch/alpha/include/asm/io.h
-@@ -308,7 +308,6 @@ static inline void __iomem *ioremap(unsigned long port, unsigned long size)
- }
- 
- #define ioremap_wc ioremap
--#define ioremap_uc ioremap
- 
- static inline void iounmap(volatile void __iomem *addr)
- {
-diff --git a/arch/hexagon/include/asm/io.h b/arch/hexagon/include/asm/io.h
-index dcd9cbbf5934..b9847472f25c 100644
---- a/arch/hexagon/include/asm/io.h
-+++ b/arch/hexagon/include/asm/io.h
-@@ -176,9 +176,6 @@ static inline void writel(u32 data, volatile void __iomem *addr)
- #define _PAGE_IOREMAP (_PAGE_PRESENT | _PAGE_READ | _PAGE_WRITE | \
- 		       (__HEXAGON_C_DEV << 6))
- 
--#define ioremap_uc(addr, size) ioremap((addr), (size))
--
--
- #define __raw_writel writel
- 
- static inline void memcpy_fromio(void *dst, const volatile void __iomem *src,
-diff --git a/arch/m68k/include/asm/kmap.h b/arch/m68k/include/asm/kmap.h
-index 4efb3efa593a..b778f015c917 100644
---- a/arch/m68k/include/asm/kmap.h
-+++ b/arch/m68k/include/asm/kmap.h
-@@ -25,7 +25,6 @@ static inline void __iomem *ioremap(unsigned long physaddr, unsigned long size)
- 	return __ioremap(physaddr, size, IOMAP_NOCACHE_SER);
- }
- 
--#define ioremap_uc ioremap
- #define ioremap_wt ioremap_wt
- static inline void __iomem *ioremap_wt(unsigned long physaddr,
- 				       unsigned long size)
-diff --git a/arch/mips/include/asm/io.h b/arch/mips/include/asm/io.h
-index 6756baadba6c..da0a625c3c6d 100644
---- a/arch/mips/include/asm/io.h
-+++ b/arch/mips/include/asm/io.h
-@@ -167,7 +167,6 @@ void iounmap(const volatile void __iomem *addr);
-  */
- #define ioremap(offset, size)						\
- 	ioremap_prot((offset), (size), _CACHE_UNCACHED)
--#define ioremap_uc		ioremap
- 
- /*
-  * ioremap_cache -	map bus memory into CPU space
-diff --git a/arch/parisc/include/asm/io.h b/arch/parisc/include/asm/io.h
-index 366537042465..48630c78714a 100644
---- a/arch/parisc/include/asm/io.h
-+++ b/arch/parisc/include/asm/io.h
-@@ -132,8 +132,6 @@ static inline void gsc_writeq(unsigned long long val, unsigned long addr)
- 
- #define ioremap_wc(addr, size)  \
- 	ioremap_prot((addr), (size), _PAGE_IOREMAP)
--#define ioremap_uc(addr, size)  \
--	ioremap_prot((addr), (size), _PAGE_IOREMAP)
- 
- #define pci_iounmap			pci_iounmap
- 
-diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
-index 978d687edf32..7873fc83c82c 100644
---- a/arch/powerpc/include/asm/io.h
-+++ b/arch/powerpc/include/asm/io.h
-@@ -863,7 +863,6 @@ void __iomem *ioremap_wt(phys_addr_t address, unsigned long size);
- #endif
- 
- void __iomem *ioremap_coherent(phys_addr_t address, unsigned long size);
--#define ioremap_uc(addr, size)		ioremap((addr), (size))
- #define ioremap_cache(addr, size) \
- 	ioremap_prot((addr), (size), pgprot_val(PAGE_KERNEL))
- 
-diff --git a/arch/sh/include/asm/io.h b/arch/sh/include/asm/io.h
-index b3a26b405c8d..12a892804082 100644
---- a/arch/sh/include/asm/io.h
-+++ b/arch/sh/include/asm/io.h
-@@ -278,8 +278,6 @@ unsigned long long poke_real_address_q(unsigned long long addr,
- 	ioremap_prot((addr), (size), pgprot_val(PAGE_KERNEL))
- #endif /* CONFIG_MMU */
- 
--#define ioremap_uc	ioremap
--
- /*
-  * Convert a physical pointer to a virtual kernel pointer for /dev/mem
-  * access
-diff --git a/arch/sparc/include/asm/io_64.h b/arch/sparc/include/asm/io_64.h
-index 9303270b22f3..d8ee1442f303 100644
---- a/arch/sparc/include/asm/io_64.h
-+++ b/arch/sparc/include/asm/io_64.h
-@@ -423,7 +423,6 @@ static inline void __iomem *ioremap(unsigned long offset, unsigned long size)
- 	return (void __iomem *)offset;
- }
- 
--#define ioremap_uc(X,Y)			ioremap((X),(Y))
- #define ioremap_wc(X,Y)			ioremap((X),(Y))
- #define ioremap_wt(X,Y)			ioremap((X),(Y))
- static inline void __iomem *ioremap_np(unsigned long offset, unsigned long size)
--- 
-2.34.1
+Alex
+
 
