@@ -1,74 +1,58 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 3/6] alpha: fix R_ALPHA_LITERAL reloc for large modules
-Date: Sun,  5 Mar 2023 08:55:06 -0500
-Message-ID: <20230305135509.1794186-3-sashal@kernel.org>
-References: <20230305135509.1794186-1-sashal@kernel.org>
+From: "Arnd Bergmann" <arnd@arndb.de>
+Subject: Re: [PATCH v3 2/2] arch/*/io.h: remove ioremap_uc in some architectures
+Date: Sun, 05 Mar 2023 21:10:31 +0100
+Message-ID: <5dec69d0-0bc9-4f6c-8d0d-ee5422783100@app.fastmail.com>
+References: <20230303102817.212148-1-bhe@redhat.com>
+ <20230303102817.212148-3-bhe@redhat.com> <87sfej1rie.fsf@mpe.ellerman.id.au>
+ <CAMuHMdXoM24uAZGcjBtscNMOSY_+4u08PEOR7gOfCH7jvCceDg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678024517;
-        bh=mnn5RPSXMS1FgIfdFe4OFtnjWbWjKO6WKfdlV5IqC2U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KzaSGtJfoQHA34ovXPQwBjC3COfdOv/1EY/iik0hljV6DJ4b0+V85KYTjDkWuUG9L
-         wjZI0MM2/mzGhACdxtMVUm05z9K8SkZToa6b7R+Qi+BL3DzPVpJrtxCqj8C20nWsKQ
-         AmqnebRqVmIc97tEFul/i73AwzmOml+whDLkQc+mmhZ8cuMvuTqN+T6/iSoIm99A+p
-         ANO5oyMeo3IyGUJjcdCmh7IHGkWcPBWly+YA7UqCZ3+j/1v/hZETIPWTCGMR8zxFSO
-         6Jhewitk/o1ObNOu0b8+Vl9kaxTUCx1GlKOrt3fsGKjhL4CILHxFdkEw0WxDDZ2Ui+
-         fFiuk4ybyYbQA==
-In-Reply-To: <20230305135509.1794186-1-sashal@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-transfer-encoding:content-type:content-type:date
+        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to; s=fm1; t=
+        1678047053; x=1678133453; bh=cjW13UmZQsjwyJDeHx5kIcthGLujwjX/c4O
+        TYrUnVEo=; b=M+iX57D3tki6mdnYuiW2+/TVDcTnCB2Ga/GIjvvg25JyIDtZhzU
+        mLkYC+yAY4SFZTnNttwjLlO8DD8yCYVw2kqWR6oHe88HECHGwU2I7Axt7fx139oN
+        etVdN33n4Awn9hGCJAMtMjqHAQtx2VRikVcaIkNPJ7OSOLVm6//NltGUsHzgIj37
+        6Q3ejPZj5Yi2cHI9b414CB+2Y/WNWnifgSj0Gzxyz7KQ4KCQRarWS5CulHYbi5eC
+        ag9J4dSS2qmKbTaLa9/5xYv+fAFL3Yxj7jbc/4GSpKvlOtsPrPUdGxBgQX6SJ5Z/
+        5TNCZ2yUU9mfrFdl1+bt1hfGmpR+ALzk/+w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:content-type:date:date:feedback-id:feedback-id
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1678047053; x=1678133453; bh=cjW13UmZQsjwyJDeHx5kIcthGLujwjX/c4O
+        TYrUnVEo=; b=CYjynxi2XdbvcwdySeuJXuc1PmUeES5qN5N0+ACWBaHPfzz2mdY
+        KOtHjXR5RghXHpnlzSUA3NKQ8HzaPRpU50fjVFpJJj2Vy6sGAfy9/jRTA0VzqhBk
+        8GsAumW0PCYRukJgw9SVPtwhkxwpu7ePss7hnK46F7qIf9wvuoF9/IIYqYHLSQ6S
+        WYeQ8pkNDtW0oDCAUXUKxKH9ooj8BOTq4NG7N1mHccROcNqGiApuSD4gGmN67hlg
+        /JkwqqShEOb8mieY78lGMfW+Gz28CVp4X2Co4shGbu4N41Qb30SR08YRmY/mYRXg
+        wfIYMYkcUjgcGZeIAy669di3WjfqzK4B1xQ==
+In-Reply-To: <CAMuHMdXoM24uAZGcjBtscNMOSY_+4u08PEOR7gOfCH7jvCceDg@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Edward Humes <aurxenon@lunos.org>, Matt Turner <mattst88@gmail.com>, Sasha Levin <sashal@kernel.org>, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"
+To: Geert Uytterhoeven <geert@linux-m68k.org>, Michael Ellerman <mpe@ellerman.id.au>
+Cc: Linux-Arch <linux-arch@vger.kernel.org>, Baoquan He <bhe@redhat.com>, linux-sh@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, Christoph Hellwig <hch@infradead.org>, linux-mm@kvack.org, Luis Chamberlain <mcgrof@kernel.org>, linux-parisc@vger.kernel.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
-From: Edward Humes <aurxenon@lunos.org>
+On Sun, Mar 5, 2023, at 10:29, Geert Uytterhoeven wrote:
+>
+> On Sun, Mar 5, 2023 at 10:23=E2=80=AFAM Michael Ellerman <mpe@ellerman=
+.id.au> wrote:
+>> Maybe that exact code path is only reachable on x86/ia64? But if so
+>> please explain why.
+>>
+>> Otherwise it looks like this series could break that driver on powerpc
+>> at least.
+>
+> Indeed.
 
-[ Upstream commit b6b17a8b3ecd878d98d5472a9023ede9e669ca72 ]
+When I last looked into this, I sent a patch to use ioremap()
+on non-x86:
 
-Previously, R_ALPHA_LITERAL relocations would overflow for large kernel
-modules.
+https://lore.kernel.org/all/20191111192258.2234502-1-arnd@arndb.de/
 
-This was because the Alpha's apply_relocate_add was relying on the kernel's
-module loader to have sorted the GOT towards the very end of the module as it
-was mapped into memory in order to correctly assign the global pointer. While
-this behavior would mostly work fine for small kernel modules, this approach
-would overflow on kernel modules with large GOT's since the global pointer
-would be very far away from the GOT, and thus, certain entries would be out of
-range.
-
-This patch fixes this by instead using the Tru64 behavior of assigning the
-global pointer to be 32KB away from the start of the GOT. The change made
-in this patch won't work for multi-GOT kernel modules as it makes the
-assumption the module only has one GOT located at the beginning of .got,
-although for the vast majority kernel modules, this should be fine. Of the
-kernel modules that would previously result in a relocation error, none of
-them, even modules like nouveau, have even come close to filling up a single
-GOT, and they've all worked fine under this patch.
-
-Signed-off-by: Edward Humes <aurxenon@lunos.org>
-Signed-off-by: Matt Turner <mattst88@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/alpha/kernel/module.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
-index 47632fa8c24e0..b169dc9a9ac17 100644
---- a/arch/alpha/kernel/module.c
-+++ b/arch/alpha/kernel/module.c
-@@ -158,10 +158,8 @@ apply_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
- 	base = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr;
- 	symtab = (Elf64_Sym *)sechdrs[symindex].sh_addr;
- 
--	/* The small sections were sorted to the end of the segment.
--	   The following should definitely cover them.  */
--	gp = (u64)me->core_layout.base + me->core_layout.size - 0x8000;
- 	got = sechdrs[me->arch.gotsecindex].sh_addr;
-+	gp = got + 0x8000;
- 
- 	for (i = 0; i < n; i++) {
- 		unsigned long r_sym = ELF64_R_SYM (rela[i].r_info);
--- 
-2.39.2
-
+    Arnd
