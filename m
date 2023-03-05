@@ -1,112 +1,57 @@
-From: "Arnd Bergmann" <arnd@arndb.de>
-Subject: Re: [PATCH v3 00/24] Remove COMMAND_LINE_SIZE from uapi
-Date: Fri, 03 Mar 2023 17:40:46 +0100
-Message-ID: <c500840b-b57d-47f2-a3d9-41465b10ffae@app.fastmail.com>
-References: <mhng-e8b09772-24e5-4729-a0bf-01a9e4c76636@palmer-ri-x1c9a>
- <21F95EC4-71EA-4154-A7DC-8A5BA54F174B@zytor.com>
- <674bc31e-e4ed-988f-820d-54213d83f9c7@ghiti.fr>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH v3 2/2] arch/*/io.h: remove ioremap_uc in some
+ architectures
+Date: Sun, 05 Mar 2023 20:23:05 +1100
+Message-ID: <87sfej1rie.fsf@mpe.ellerman.id.au>
+References: <20230303102817.212148-1-bhe@redhat.com>
+ <20230303102817.212148-3-bhe@redhat.com>
 Mime-Version: 1.0
+Return-path: <linux-mips-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1678008188;
+        bh=S5kZ8U1DxT09+WsN0usbweAzpxoqM+gTUtw71NO2hZY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=PMrnpTMqfTNGy77Ve6cpOJPLTpaG1BSaXb77FTMa2BJ7XfCX3GSTu7WOIep1pbFWu
+         DzFuO74vj7b8pC8U/g772fxSec0GaN4NmEJANjSqxvvz74mD0I6Oq68qv6GQvTT0mn
+         NlRVdwUxd7vXNEUHzehDiM5/6Oi2HsiQz3s28QNQLyi0Rk/aZ2X7VIciMCyDUOFCmR
+         naembNI4QBOdZoRFPwCEuYfe8G1CFWpXyAIC7yMlhwqQ2SAN7MysEvFN8k56wuhQFc
+         LK6vvmPRnikQ/9vpIL+CL3NaW3y7w/tmqBbdzHqcfS6UqC1CqbZD+P83AOqT1MhLSn
+         0h03Q/guV/yjA==
+In-Reply-To: <20230303102817.212148-3-bhe@redhat.com>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:Subject:Cc:To:From:Date:References:
-	In-Reply-To:Message-Id:Mime-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=N/RrVSSNkFTBVVMlaoQROTu7XYIiy/nA9qZYYKKoYNM=; b=iAlVoGZI0Z1FTa
-	Nv3hHKW5PYN3mQFhA87XrXTnNkK+M3hmJXTGlBGhcjMW9iaOHpZHQ/a2ZVy/khos1vfVzzNd/P9kk
-	A9ARghpWYO7D5FdEaZ4oDolWvUOZFzGV/uIKElIgw3bbZTKqIMLXKtsbo7x3QUPhr2pucIcjWjmwW
-	XDdKYvxxcyHpmwXdrDEtkJjUJoNOt+ZURod42KlNjWCO8Cxs8vbQTWbmLQTMvVdS5NV8PlMtGp2KE
-	AnLbX53kRt4BQg91SY7g1lUYgnTrgt3Bt5JYY4f44GCxOrIH4zt48ZJp+DQ0+SHyVSAsMImu+ON3N
-	YoKdHunRWmqdrAjNQnew==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm1; t=1677861683; x=1677868883; bh=cq
-	QZ3RgaXf1BBbVEeoodJ6F1ZwSPMj6A5MLY/vjXzGA=; b=Qg18LNgvOVfFg7uMPf
-	8fRKoa7WlhijGwszu3Ic5SITTKwawR9B4I6XiClcZ6ujIEL9zVzHiioA2EjIov5s
-	tRcxg3C97rd5Qh3iqM/nd48Hb9b7a50w/6DZE1MzWvKwa+aOXKgEBbAuFqwTw8IO
-	2/zrTU4zUJhWjGOFVyk4cMUxKlr0jFTzBpR0rcRkXCqmlSQg+1mKD1l/rCUxrq7V
-	AihMHWGAQq5UOL4IcNCaCr0vFPf0edeb4YgCH1r82QvI+8miMlqwJ9RIy277z2fo
-	EYkDNEf8mCiriMB8VOffc0buYRAQEBhVnDohf6yDdBARed4fr/O8O2naCxLKuEJ1
-	FmIA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1677861683; x=1677868883; bh=cqQZ3RgaXf1BB
-	bVEeoodJ6F1ZwSPMj6A5MLY/vjXzGA=; b=B7rPNJeusJPtOmHPup8e0wxsJaB14
-	FGL6vkrY8GHqsXIc2V5zsu3B4xZEBJOHklvsYTn6cMwmxpEeSnRvlTctzLXXyrXP
-	9TrBh5erAm5rnNg9EUeTsf+lY9yT/91mQrCarXvtL1boNYFm9EBkDhTchuKj9wo/
-	Vcljkzp6um1LTXdLqg+kNYUapTvAI76XHCPOKqRJAjH8uzC14hkGGbIhqvg9smqE
-	9gk7xnhPT94YAL+KeKmqqFj3ep1BV/HHgDskGZEGHTV139D4jm59Krp4ve/+OW5/
-	HbWdFOCVWJeLjyz/P08DuMz9uoT2Z1BPftr9Y2L2ohywcFpCIMJxhhtIw==
-In-Reply-To: <674bc31e-e4ed-988f-820d-54213d83f9c7@ghiti.fr>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Alexandre Ghiti <alex@ghiti.fr>, "H. Peter Anvin" <hpa@zytor.com>, Palmer Dabbelt <palmer@dabbelt.com>, Heiko Carstens <hca@linux.ibm.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Alexandre Ghiti <alexghiti@rivosinc.com>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>
+To: Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org
+Cc: linux-arch@vger.kernel.org, linux-mm@kvack.org, arnd@arndb.de, geert@linux-m68k.org, mcgrof@kernel.org, hch@infradead.org, Baoquan He <bhe@redhat.com>, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org
 
-On Fri, Mar 3, 2023, at 12:59, Alexandre Ghiti wrote:
-> On 3/2/23 20:50, H. Peter Anvin wrote:
->> On March 1, 2023 7:17:18 PM PST, Palmer Dabbelt <palmer@dabbelt.com> wrote:
-
->>>>> Commit 622021cd6c560ce7 ("s390: make command line configurable"),
->>>>> I assume?
->>>> Yes, sorry for that. I got distracted while writing and used the wrong
->>>> branch to look this up.
->>> Alex: Probably worth adding that to the list in the cover letter as it looks like you were planning on a v4 anyway (which I guess you now have to do, given that I just added the issue to RISC-V).
->> The only use that is uapi is the *default* length of the command line if the kernel header doesn't include it (in the case of x86, it is in the bzImage header, but that is atchitecture- or even boot format-specific.)
+Baoquan He <bhe@redhat.com> writes:
+> ioremap_uc() is only meaningful on old x86-32 systems with the PAT
+> extension, and on ia64 with its slightly unconventional ioremap()
+> behavior, everywhere else this is the same as ioremap() anyway.
 >
-> Is COMMAND_LINE_SIZE what you call the default length? Does that mean 
-> that to you the patchset is wrong?
+> Here, remove the ioremap_uc() definition in architecutures other
+> than x86 and ia64. These architectures all have asm-generic/io.h
+> included and will have the default ioremap_uc() definition which
+> returns NULL.
+>
+> Note: This changes the existing behaviour and could break code
+> calling ioremap_uc(). If any ARCH meets this breakage and really
+> needs a specific ioremap_uc() for its own usage, one ioremap_uc()
+> can be added in the ARCH.
 
-On x86, the COMMAND_LINE_SIZE value is already not part of a uapi header,
-but instead (since bzImage format version 2.06) is communicated from
-the kernel to the boot loader, which then knows how much data the
-kernel will read (at most) from the command line.
+I see one use in:
 
-Most x86 kernels these days are booted using UEFI, which I think has
-no such interface, the firmware just passes the command line and a
-length, but has no way of knowing if the kernel will truncate this.
-I think that is the same as with any other architecture that passes
-the command line through UEFI, DT or ATAGS, all of which use
-length/value pairs.
+drivers/video/fbdev/aty/atyfb_base.c:        par->ati_regbase = ioremap_uc(info->fix.mmio_start, 0x1000);
 
-Russell argued on IRC that this can be considered an ABI since a
-boot loader may use its knowledge of the kernel's command line size
-limit to reject long command lines. On the other hand, I don't
-think that any boot loader actually does, they just trust that it
-fits and don't have a good way of rejecting invalid configuration
-other than truncating and/or warning.
 
-One notable exception I found while looking through is the old
-(pre-ATAGS) parameter structure on Arm, which uses COMMAND_LINE_SIZE
-as part of the structure definition. Apparently this was deprecated
-22 years ago, so hopefully the remaining riscpc and footbridge
-users have all upgraded their bootloaders.
+Which isn't obviously x86/ia64 specific.
 
-The only other case I could find that might go wrong is
-m68knommu with a few files copying a COMMAND_LINE_SIZE sized
-buffer from flash into a kernel buffer:
+I'm pretty sure some powermacs (powerpc) use that driver.
 
-arch/m68k/coldfire/m5206.c:void __init config_BSP(char *commandp, int size)
-arch/m68k/coldfire/m5206.c-{
-arch/m68k/coldfire/m5206.c-#if defined(CONFIG_NETtel)
-arch/m68k/coldfire/m5206.c-     /* Copy command line from FLASH to local buffer... */
-arch/m68k/coldfire/m5206.c-     memcpy(commandp, (char *) 0xf0004000, size);
-arch/m68k/coldfire/m5206.c-     commandp[size-1] = 0;
-arch/m68k/coldfire/m5206.c-#endif /* CONFIG_NETtel */
+Maybe that exact code path is only reachable on x86/ia64? But if so
+please explain why.
 
-     Arnd
+Otherwise it looks like this series could break that driver on powerpc
+at least.
+
+cheers
