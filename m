@@ -1,120 +1,145 @@
 From: Uros Bizjak <ubizjak@gmail.com>
-Subject: [PATCH 00/10] locking: Introduce local{,64}_try_cmpxchg
-Date: Sun,  5 Mar 2023 21:56:18 +0100
-Message-ID: <20230305205628.27385-1-ubizjak@gmail.com>
+Subject: [PATCH 02/10] locking/atomic: Add generic try_cmpxchg{,64}_local support
+Date: Sun,  5 Mar 2023 21:56:20 +0100
+Message-ID: <20230305205628.27385-3-ubizjak@gmail.com>
+References: <20230305205628.27385-1-ubizjak@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-owner@vger.kernel.org>
+Return-path: <linux-arch-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678049808;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=hNEkm4zOMdJBSU8KKqreG62DLRxeXn3Xkh8biCMSrGQ=;
-        b=fYF9dMtkj1YXiWLjWXVi108GaUsP78YWiLOBcqczOwcGB1KS3hFQGdzMmnPB40ydKb
-         CJBU4IAcJ0MjxZbPRv/XnGoAjuT4JRbTP5/rspAGr1pVqCKhRoeHY3MISmOrijMZ/1Zu
-         bzRGM/41AcDVAq0R82jvDwaNabVWUjpb24UlLxEmo/ypXHTY5dkWwNInk9ZHOiAeRtfv
-         /SV5xswkUyIS+kqp65TKME9k1EuFNhsY+K7YcAsF17i/iTmekg08B/ESrHCvrUtCJFsT
-         l473Q2p3EZjGHpQi0fM7RSy1MdpNqnqxaUQ0X1U1Z9yt4tvfwyH//k4NXO64wBvCP+Pa
-         DoGA==
+        d=gmail.com; s=20210112; t=1678049816;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=e5L64cn4N5im8yY0TwbYjmzSAK85YWgvoCSgwS0+kQI=;
+        b=M1J4iSE1LTjZo0wL7dnvoozjIop/c7/Wm7Sy2R0rykpZTL4R2U9Ovaq4UV0VD+Tl68
+         2ieo/80t6fERaJmG61Y5km2+XyKTvshWzgdJXmXwqwSRgH1W/FaXNntYvL3YSLWf+tpd
+         atfGLULItxgKaqw70SMnK2h46wzZJluQn8vT76C4f4P87qTRy9nkl1B7vedO8JnvZETI
+         cl5Cbf7bwDNhMJBw+GJJSNug7QKSr6E6B7kI4AN0/pXjMGm532YlH/B/uqLreXkIojnp
+         83UKSDgMra9C402YD/KVagHEs3zUIOemvFifTZvCLlIbHEJp+ZnyQhyUxOC+fQIH5mKr
+         bWuw==
+In-Reply-To: <20230305205628.27385-1-ubizjak@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc: Uros Bizjak <ubizjak@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>, Peter Zijlstra <peterz@infradead.org>, Arnaldo Carvalho de Melo <acme@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Alexander
+Cc: Uros Bizjak <ubizjak@gmail.com>, Will Deacon <will@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Boqun Feng <boqun.feng@gmail.com>, Mark Rutland <mark.rutland@arm.com>
 
-Add generic and target specific support for local{,64}_try_cmpxchg
-and wire up support for all targets that use local_t infrastructure.
+Add generic support for try_cmpxchg{,64}_local and their falbacks.
 
-The patch enables x86 targets to emit special instruction for
-local_try_cmpxchg and also local64_try_cmpxchg for x86_64.
-
-The last patch changes __perf_output_begin in events/ring_buffer
-to use new locking primitive and improves code from
-
-     4b3:	48 8b 82 e8 00 00 00 	mov    0xe8(%rdx),%rax
-     4ba:	48 8b b8 08 04 00 00 	mov    0x408(%rax),%rdi
-     4c1:	8b 42 1c             	mov    0x1c(%rdx),%eax
-     4c4:	48 8b 4a 28          	mov    0x28(%rdx),%rcx
-     4c8:	85 c0                	test   %eax,%eax
-     ...
-     4ef:	48 89 c8             	mov    %rcx,%rax
-     4f2:	48 0f b1 7a 28       	cmpxchg %rdi,0x28(%rdx)
-     4f7:	48 39 c1             	cmp    %rax,%rcx
-     4fa:	75 b7                	jne    4b3 <...>
-
-to
-
-     4b2:	48 8b 4a 28          	mov    0x28(%rdx),%rcx
-     4b6:	48 8b 82 e8 00 00 00 	mov    0xe8(%rdx),%rax
-     4bd:	48 8b b0 08 04 00 00 	mov    0x408(%rax),%rsi
-     4c4:	8b 42 1c             	mov    0x1c(%rdx),%eax
-     4c7:	85 c0                	test   %eax,%eax
-     ...
-     4d4:	48 89 c8             	mov    %rcx,%rax
-     4d7:	48 0f b1 72 28       	cmpxchg %rsi,0x28(%rdx)
-     4dc:	0f 85 d0 00 00 00    	jne    5b2 <...>
-     ...
-     5b2:	48 89 c1             	mov    %rax,%rcx
-     5b5:	e9 fc fe ff ff       	jmp    4b6 <...>
-
-Please note that in addition to removed compare, the load from
-0x28(%rdx) gets moved out of the loop and the code is rearranged
-according to likely/unlikely tags in the source.
-
-Cc: Richard Henderson <richard.henderson@linaro.org>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Huacai Chen <chenhuacai@kernel.org>
-Cc: WANG Xuerui <kernel@xen0n.name>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: x86@kernel.org
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Ian Rogers <irogers@google.com>
 Cc: Will Deacon <will@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
 Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Jiaxun Yang <jiaxun.yang@flygoat.com>
-Cc: Jun Yi <yijun@loongson.cn>
-
-Uros Bizjak (10):
-  locking/atomic: Add missing cast to try_cmpxchg() fallbacks
-  locking/atomic: Add generic try_cmpxchg{,64}_local support
-  locking/alpha: Wire up local_try_cmpxchg
-  locking/loongarch: Wire up local_try_cmpxchg
-  locking/mips: Wire up local_try_cmpxchg
-  locking/powerpc: Wire up local_try_cmpxchg
-  locking/x86: Wire up local_try_cmpxchg
-  locking/generic: Wire up local{,64}_try_cmpxchg
-  locking/x86: Enable local{,64}_try_cmpxchg
-  perf/ring_buffer: use local_try_cmpxchg in __perf_output_begin
-
- arch/alpha/include/asm/local.h              |  2 ++
- arch/loongarch/include/asm/local.h          |  2 ++
- arch/mips/include/asm/local.h               |  2 ++
- arch/powerpc/include/asm/local.h            | 11 ++++++
- arch/x86/include/asm/cmpxchg.h              |  6 ++++
- arch/x86/include/asm/local.h                |  2 ++
- include/asm-generic/local.h                 |  1 +
- include/asm-generic/local64.h               |  2 ++
- include/linux/atomic/atomic-arch-fallback.h | 40 ++++++++++++++++-----
- include/linux/atomic/atomic-instrumented.h  | 20 ++++++++++-
- kernel/events/ring_buffer.c                 |  5 +--
- scripts/atomic/gen-atomic-fallback.sh       |  6 +++-
+Cc: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+---
+ include/linux/atomic/atomic-arch-fallback.h | 24 ++++++++++++++++++++-
+ include/linux/atomic/atomic-instrumented.h  | 20 ++++++++++++++++-
+ scripts/atomic/gen-atomic-fallback.sh       |  4 ++++
  scripts/atomic/gen-atomic-instrumented.sh   |  2 +-
- 13 files changed, 87 insertions(+), 14 deletions(-)
+ 4 files changed, 47 insertions(+), 3 deletions(-)
 
+diff --git a/include/linux/atomic/atomic-arch-fallback.h b/include/linux/atomic/atomic-arch-fallback.h
+index 19debd501ee7..a7d2e5f4e548 100644
+--- a/include/linux/atomic/atomic-arch-fallback.h
++++ b/include/linux/atomic/atomic-arch-fallback.h
+@@ -217,6 +217,28 @@
+ 
+ #endif /* arch_try_cmpxchg64_relaxed */
+ 
++#ifndef arch_try_cmpxchg_local
++#define arch_try_cmpxchg_local(_ptr, _oldp, _new) \
++({ \
++	typeof(*(_ptr)) *___op = (typeof(_ptr))(_oldp), ___o = *___op, ___r; \
++	___r = arch_cmpxchg_local((_ptr), ___o, (_new)); \
++	if (unlikely(___r != ___o)) \
++		*___op = ___r; \
++	likely(___r == ___o); \
++})
++#endif /* arch_try_cmpxchg_local */
++
++#ifndef arch_try_cmpxchg64_local
++#define arch_try_cmpxchg64_local(_ptr, _oldp, _new) \
++({ \
++	typeof(*(_ptr)) *___op = (typeof(_ptr))(_oldp), ___o = *___op, ___r; \
++	___r = arch_cmpxchg64_local((_ptr), ___o, (_new)); \
++	if (unlikely(___r != ___o)) \
++		*___op = ___r; \
++	likely(___r == ___o); \
++})
++#endif /* arch_try_cmpxchg64_local */
++
+ #ifndef arch_atomic_read_acquire
+ static __always_inline int
+ arch_atomic_read_acquire(const atomic_t *v)
+@@ -2456,4 +2478,4 @@ arch_atomic64_dec_if_positive(atomic64_t *v)
+ #endif
+ 
+ #endif /* _LINUX_ATOMIC_FALLBACK_H */
+-// 1b4d4c82ae653389cd1538d5b07170267d9b3837
++// 9bb8cca3d4cbc000e7068eb7cb4481cb3e48c45a
+diff --git a/include/linux/atomic/atomic-instrumented.h b/include/linux/atomic/atomic-instrumented.h
+index 7a139ec030b0..14a9212cc987 100644
+--- a/include/linux/atomic/atomic-instrumented.h
++++ b/include/linux/atomic/atomic-instrumented.h
+@@ -2066,6 +2066,24 @@ atomic_long_dec_if_positive(atomic_long_t *v)
+ 	arch_sync_cmpxchg(__ai_ptr, __VA_ARGS__); \
+ })
+ 
++#define try_cmpxchg_local(ptr, oldp, ...) \
++({ \
++	typeof(ptr) __ai_ptr = (ptr); \
++	typeof(oldp) __ai_oldp = (oldp); \
++	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
++	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
++	arch_try_cmpxchg_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
++})
++
++#define try_cmpxchg64_local(ptr, oldp, ...) \
++({ \
++	typeof(ptr) __ai_ptr = (ptr); \
++	typeof(oldp) __ai_oldp = (oldp); \
++	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
++	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
++	arch_try_cmpxchg64_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
++})
++
+ #define cmpxchg_double(ptr, ...) \
+ ({ \
+ 	typeof(ptr) __ai_ptr = (ptr); \
+@@ -2083,4 +2101,4 @@ atomic_long_dec_if_positive(atomic_long_t *v)
+ })
+ 
+ #endif /* _LINUX_ATOMIC_INSTRUMENTED_H */
+-// 764f741eb77a7ad565dc8d99ce2837d5542e8aee
++// 456e206c7e4e681126c482e4edcc6f46921ac731
+diff --git a/scripts/atomic/gen-atomic-fallback.sh b/scripts/atomic/gen-atomic-fallback.sh
+index 39f447161108..26829a75b644 100755
+--- a/scripts/atomic/gen-atomic-fallback.sh
++++ b/scripts/atomic/gen-atomic-fallback.sh
+@@ -225,6 +225,10 @@ for cmpxchg in "cmpxchg" "cmpxchg64"; do
+ 	gen_try_cmpxchg_fallbacks "${cmpxchg}"
+ done
+ 
++for cmpxchg in "cmpxchg_local" "cmpxchg64_local"; do
++	gen_try_cmpxchg_fallback "${cmpxchg}" ""
++done
++
+ grep '^[a-z]' "$1" | while read name meta args; do
+ 	gen_proto "${meta}" "${name}" "atomic" "int" ${args}
+ done
+diff --git a/scripts/atomic/gen-atomic-instrumented.sh b/scripts/atomic/gen-atomic-instrumented.sh
+index 77c06526a574..c8165e9431bf 100755
+--- a/scripts/atomic/gen-atomic-instrumented.sh
++++ b/scripts/atomic/gen-atomic-instrumented.sh
+@@ -173,7 +173,7 @@ for xchg in "xchg" "cmpxchg" "cmpxchg64" "try_cmpxchg" "try_cmpxchg64"; do
+ 	done
+ done
+ 
+-for xchg in "cmpxchg_local" "cmpxchg64_local" "sync_cmpxchg"; do
++for xchg in "cmpxchg_local" "cmpxchg64_local" "sync_cmpxchg" "try_cmpxchg_local" "try_cmpxchg64_local" ; do
+ 	gen_xchg "${xchg}" "" ""
+ 	printf "\n"
+ done
 -- 
 2.39.2
 
