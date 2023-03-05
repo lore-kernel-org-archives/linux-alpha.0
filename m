@@ -1,22 +1,22 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.4 4/7] alpha: fix R_ALPHA_LITERAL reloc for large modules
-Date: Sun,  5 Mar 2023 08:54:45 -0500
-Message-ID: <20230305135449.1794083-4-sashal@kernel.org>
-References: <20230305135449.1794083-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 3/6] alpha: fix R_ALPHA_LITERAL reloc for large modules
+Date: Sun,  5 Mar 2023 08:55:22 -0500
+Message-ID: <20230305135525.1794277-3-sashal@kernel.org>
+References: <20230305135525.1794277-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678024501;
-        bh=uK+ef2YNaL/8nHoWhWxVzFQp5/xsZI26cmKsOwW7KEc=;
+        s=k20201202; t=1678024533;
+        bh=mnn5RPSXMS1FgIfdFe4OFtnjWbWjKO6WKfdlV5IqC2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yj7JEtF38ZCtqTgx3S2moTlfrP4/zPZN4QLocGMec4npr5JPp8+SX7LHEzyhhsODl
-         QRvhOKBq6G+8EIuEamM+eTzo6yD6Ogmq2AWyXzp3LMvzfje4k+mawvxYAvAasAfgmt
-         dwKE0FAMPMUBbTDA/keCv7WrugI5NNvAK6QcVGmUTVm9mh8GPutCiCA8c51S6czkqH
-         q9xGwNHN7oaE9nxjt6xCxhXUJcm8vJBOr4KkKjjpErfDxi7GiSLu+UvF1up8+zzMWW
-         KUZ0dysYbBIGVp8u25CMWryoi26801goyNTSqofVJklWG4Pp6QH+l9V0QH7gYrhdKm
-         +R6DdC56F0Yzw==
-In-Reply-To: <20230305135449.1794083-1-sashal@kernel.org>
+        b=Yl+yyh8QkYeEKwv1vyc3/JjVD/9cnW/t+zvjKXca8gW+FoMa6rOAjmQVhh/4oWa/Q
+         YncqkLBs6mvpPrA5P/0pzUSb+3nykrGEhmddfEuv64pp28guOcYWKO0DEFCngXIZZX
+         +tllSd6zT42L82GY74pLaLuYmi0XLdlPr4tQnVqZhswhVcA8UkK9CYOQmXzY5CRTyx
+         349wfoovUF3fFvZjTBEzdX5fTcnhDCUbV8pS7kd/VkiM6gjaiENiNaFFKGCmez8zSg
+         1QCgVbQ43KkIXUa0rDFjWJri7m1xWWFqLidEb2/2W+s2vwiow7lniHkpf7ymUSm2Pa
+         6jH7U2u57Sezw==
+In-Reply-To: <20230305135525.1794277-1-sashal@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
@@ -54,10 +54,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
-index ac110ae8f9780..b19a8aae74e1f 100644
+index 47632fa8c24e0..b169dc9a9ac17 100644
 --- a/arch/alpha/kernel/module.c
 +++ b/arch/alpha/kernel/module.c
-@@ -146,10 +146,8 @@ apply_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
+@@ -158,10 +158,8 @@ apply_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
  	base = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr;
  	symtab = (Elf64_Sym *)sechdrs[symindex].sh_addr;
  
