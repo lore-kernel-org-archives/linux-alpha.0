@@ -1,66 +1,74 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v3 2/2] arch/*/io.h: remove ioremap_uc in some architectures
-Date: Sun, 5 Mar 2023 10:29:52 +0100
-Message-ID: <CAMuHMdXoM24uAZGcjBtscNMOSY_+4u08PEOR7gOfCH7jvCceDg@mail.gmail.com>
-References: <20230303102817.212148-1-bhe@redhat.com> <20230303102817.212148-3-bhe@redhat.com>
- <87sfej1rie.fsf@mpe.ellerman.id.au>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.2 13/16] alpha: fix R_ALPHA_LITERAL reloc for large modules
+Date: Sun,  5 Mar 2023 08:52:04 -0500
+Message-ID: <20230305135207.1793266-13-sashal@kernel.org>
+References: <20230305135207.1793266-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-hexagon-owner@vger.kernel.org>
-In-Reply-To: <87sfej1rie.fsf@mpe.ellerman.id.au>
+Content-Transfer-Encoding: 8bit
+Return-path: <stable-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1678024378;
+        bh=bxTptbUVa63UoQCRWI3jLiKQBHLWc7zNuIcPhaE4q9U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=J2nBVDKs14PHAgpGa0Zv4un0suiq6IClw07I+dw0qHdHjHcwI1LNKysJQ330VO/Xq
+         WeMnRU35/dD4M9+tuX5zmr8PbntclClgnjJZRl0ys9BbCydIGjGwjtF2OkmTvCqBGk
+         q+1EeppAghjx4MIAVaADgwmITyo5bCKUqk6GvGP8Hso2VEKK6vd8dJlgNdDvjeNd2B
+         /3veWvnHoRVf9MIVC/cvxSZxSzy2GR7G8dzgxxg2vSC08GemlAxZ6XledV3pc0BA98
+         GZ7L1L3rWxzIXl7P8egc/jcVb9zkU17Wi3BhzkDMj04EYksgoqX6CGzHHrrE+S3jks
+         q/wS0KKM+KO/g==
+In-Reply-To: <20230305135207.1793266-1-sashal@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-mm@kvack.org, arnd@arndb.de, mcgrof@kernel.org, hch@infradead.org, linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Edward Humes <aurxenon@lunos.org>, Matt Turner <mattst88@gmail.com>, Sasha Levin <sashal@kernel.org>, richard.henderson@linaro.org, ink@jurassic.park.msu.ru, linux-alpha@vger.kernel.org
 
-Hi Michael,
+From: Edward Humes <aurxenon@lunos.org>
 
-On Sun, Mar 5, 2023 at 10:23=E2=80=AFAM Michael Ellerman <mpe@ellerman.id.a=
-u> wrote:
-> Baoquan He <bhe@redhat.com> writes:
-> > ioremap_uc() is only meaningful on old x86-32 systems with the PAT
-> > extension, and on ia64 with its slightly unconventional ioremap()
-> > behavior, everywhere else this is the same as ioremap() anyway.
-> >
-> > Here, remove the ioremap_uc() definition in architecutures other
-> > than x86 and ia64. These architectures all have asm-generic/io.h
-> > included and will have the default ioremap_uc() definition which
-> > returns NULL.
-> >
-> > Note: This changes the existing behaviour and could break code
-> > calling ioremap_uc(). If any ARCH meets this breakage and really
-> > needs a specific ioremap_uc() for its own usage, one ioremap_uc()
-> > can be added in the ARCH.
->
-> I see one use in:
->
-> drivers/video/fbdev/aty/atyfb_base.c:        par->ati_regbase =3D ioremap=
-_uc(info->fix.mmio_start, 0x1000);
->
->
-> Which isn't obviously x86/ia64 specific.
->
-> I'm pretty sure some powermacs (powerpc) use that driver.
+[ Upstream commit b6b17a8b3ecd878d98d5472a9023ede9e669ca72 ]
 
-I originally wrote that driver for CHRP, so yes.
+Previously, R_ALPHA_LITERAL relocations would overflow for large kernel
+modules.
 
-> Maybe that exact code path is only reachable on x86/ia64? But if so
-> please explain why.
->
-> Otherwise it looks like this series could break that driver on powerpc
-> at least.
+This was because the Alpha's apply_relocate_add was relying on the kernel's
+module loader to have sorted the GOT towards the very end of the module as it
+was mapped into memory in order to correctly assign the global pointer. While
+this behavior would mostly work fine for small kernel modules, this approach
+would overflow on kernel modules with large GOT's since the global pointer
+would be very far away from the GOT, and thus, certain entries would be out of
+range.
 
-Indeed.
+This patch fixes this by instead using the Tru64 behavior of assigning the
+global pointer to be 32KB away from the start of the GOT. The change made
+in this patch won't work for multi-GOT kernel modules as it makes the
+assumption the module only has one GOT located at the beginning of .got,
+although for the vast majority kernel modules, this should be fine. Of the
+kernel modules that would previously result in a relocation error, none of
+them, even modules like nouveau, have even come close to filling up a single
+GOT, and they've all worked fine under this patch.
 
-Gr{oetje,eeting}s,
+Signed-off-by: Edward Humes <aurxenon@lunos.org>
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/alpha/kernel/module.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-                        Geert
+diff --git a/arch/alpha/kernel/module.c b/arch/alpha/kernel/module.c
+index 5b60c248de9ea..cbefa5a773846 100644
+--- a/arch/alpha/kernel/module.c
++++ b/arch/alpha/kernel/module.c
+@@ -146,10 +146,8 @@ apply_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
+ 	base = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr;
+ 	symtab = (Elf64_Sym *)sechdrs[symindex].sh_addr;
+ 
+-	/* The small sections were sorted to the end of the segment.
+-	   The following should definitely cover them.  */
+-	gp = (u64)me->core_layout.base + me->core_layout.size - 0x8000;
+ 	got = sechdrs[me->arch.gotsecindex].sh_addr;
++	gp = got + 0x8000;
+ 
+ 	for (i = 0; i < n; i++) {
+ 		unsigned long r_sym = ELF64_R_SYM (rela[i].r_info);
+-- 
+2.39.2
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
