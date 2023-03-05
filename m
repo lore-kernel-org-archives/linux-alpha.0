@@ -1,22 +1,22 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 6.2 13/16] alpha: fix R_ALPHA_LITERAL reloc for large modules
-Date: Sun,  5 Mar 2023 08:52:04 -0500
-Message-ID: <20230305135207.1793266-13-sashal@kernel.org>
-References: <20230305135207.1793266-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 6/9] alpha: fix R_ALPHA_LITERAL reloc for large modules
+Date: Sun,  5 Mar 2023 08:53:56 -0500
+Message-ID: <20230305135359.1793830-6-sashal@kernel.org>
+References: <20230305135359.1793830-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678024378;
+        s=k20201202; t=1678024457;
         bh=bxTptbUVa63UoQCRWI3jLiKQBHLWc7zNuIcPhaE4q9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J2nBVDKs14PHAgpGa0Zv4un0suiq6IClw07I+dw0qHdHjHcwI1LNKysJQ330VO/Xq
-         WeMnRU35/dD4M9+tuX5zmr8PbntclClgnjJZRl0ys9BbCydIGjGwjtF2OkmTvCqBGk
-         q+1EeppAghjx4MIAVaADgwmITyo5bCKUqk6GvGP8Hso2VEKK6vd8dJlgNdDvjeNd2B
-         /3veWvnHoRVf9MIVC/cvxSZxSzy2GR7G8dzgxxg2vSC08GemlAxZ6XledV3pc0BA98
-         GZ7L1L3rWxzIXl7P8egc/jcVb9zkU17Wi3BhzkDMj04EYksgoqX6CGzHHrrE+S3jks
-         q/wS0KKM+KO/g==
-In-Reply-To: <20230305135207.1793266-1-sashal@kernel.org>
+        b=T3BGMtDqszRL30Uy3jBueJVQ93HLFWypHYOBfemVOzW9OTYBDoFm6cFF5Z/hMTfQu
+         rEcaVZSRmOxZ406guKBL5pzExld1aaeRgpTpZflMam6VYbzaPcSu1+1GlFM9I0JlyG
+         ffVmnlRxOIFaX8eHTZrj5pX/dDo5q+drWhl70euzXkILptFrphzcv7gRpzkG+Hi2/j
+         XhMlCnucjIOXtC1nNHK545s3NaD2WvfZI7WXjlu/lP6xq7HxUJ5aJoRLmGmn82vByM
+         t3KNFgDifpCs70FAROxM49l0xvuuDX/lwvn1G8eIvCpVyNcLvLNseW0lnUdVwOp80f
+         OOK159EoBOPww==
+In-Reply-To: <20230305135359.1793830-1-sashal@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
