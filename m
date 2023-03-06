@@ -1,23 +1,23 @@
 From: Alexandre Ghiti <alexghiti@rivosinc.com>
-Subject: [PATCH v5 05/26] m68k: Remove COMMAND_LINE_SIZE from uapi
-Date: Mon,  6 Mar 2023 11:04:47 +0100
-Message-ID: <20230306100508.1171812-6-alexghiti__2852.90936460427$1678097534$gmane$org@rivosinc.com>
+Subject: [PATCH v5 06/26] microblaze: Remove COMMAND_LINE_SIZE from uapi
+Date: Mon,  6 Mar 2023 11:04:48 +0100
+Message-ID: <20230306100508.1171812-7-alexghiti__26490.4421333753$1678097587$gmane$org@rivosinc.com>
 References: <20230306100508.1171812-1-alexghiti@rivosinc.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1678097453;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1678097514;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=weWfeZkDaALdlCN7T+PClJcshI29q8M+O1TZXldUmNQ=;
-        b=f8AO3Plti5z+WQY9/XMgHo9coDoPSePct2arJdhJ/EIFxMcdcjn3AlsVdepMgBZPW+
-         mWl7NyE3URpqAd0tkZFAqVFMzUTtpnBAV3zqYfSk6Ry3/DfyXz+43T7rgOoofTpVN2RX
-         U3G2GrWw5XJgacQNy2x41kSTkqjB29r+yj6dOz5aPgQqIxYJRL5yf/Bs/saxp7U+A3wA
-         IsC+RVcCMh74kmQv0hVGBHlWoFAdJbJOJxckQLPLFbirjBuzoRk0MD6WD9eOq5Dxxqrj
-         npIxA5uRpz5H+mYlOS1F15SvnwiLC5qQiEQuK3YGV7s0Z8IPnDZPErJBGWxDfcMBdery
-         lzOw==
+        bh=M1h0okW1SUYRg49oazoVjcO5bMYOaJZLCLBwHV2dZW4=;
+        b=EMZAl0BqiCWold3b3C38rsHmbpnckzvazuotfqyAygprjpgHtlCdk95ea79kWKRLrV
+         U6XMhHFvclkOgi3L/v+ylZBOQvn6tUzvuim0HQwUKGxupR8pr/cdpnka84ciGvoHp5MK
+         5nDpzoZyRplE1XFnz9Ax5iwVaQ2FV1wHFg/NU0X8O4tXbIlWYCy6CTVNW1KIYOAzQHpN
+         tWE9Kcl6bAIP16bXSlt4/0Ihie/5/kcSj0xSK8mLx71UONBN30F0Qd3KHBHvhCbVm11k
+         7+Ft57b+ldj7lu02+cEIDJ7Q+pG2qxi/smqFvzGRYUionCSrC0vXRgpWchZKphYQ9tnh
+         0KCQ==
 In-Reply-To: <20230306100508.1171812-1-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -31,38 +31,37 @@ be part of the user-visible API.
 
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Alexandre Ghiti <alexghiti@rivosinc.com>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- arch/m68k/include/asm/setup.h      | 3 +--
- arch/m68k/include/uapi/asm/setup.h | 2 --
- 2 files changed, 1 insertion(+), 4 deletions(-)
+ arch/microblaze/include/asm/setup.h      | 2 +-
+ arch/microblaze/include/uapi/asm/setup.h | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/m68k/include/asm/setup.h b/arch/m68k/include/asm/setup.h
-index 2c99477aaf89..9a256cc3931d 100644
---- a/arch/m68k/include/asm/setup.h
-+++ b/arch/m68k/include/asm/setup.h
-@@ -23,9 +23,8 @@
- #define _M68K_SETUP_H
+diff --git a/arch/microblaze/include/asm/setup.h b/arch/microblaze/include/asm/setup.h
+index a06cc1f97aa9..2becbf3b8baf 100644
+--- a/arch/microblaze/include/asm/setup.h
++++ b/arch/microblaze/include/asm/setup.h
+@@ -7,7 +7,7 @@
+ #ifndef _ASM_MICROBLAZE_SETUP_H
+ #define _ASM_MICROBLAZE_SETUP_H
  
- #include <uapi/asm/bootinfo.h>
 -#include <uapi/asm/setup.h>
++#define COMMAND_LINE_SIZE	256
+ 
+ # ifndef __ASSEMBLY__
+ extern char cmd_line[COMMAND_LINE_SIZE];
+diff --git a/arch/microblaze/include/uapi/asm/setup.h b/arch/microblaze/include/uapi/asm/setup.h
+index 6831794e6f2c..51aed65880e7 100644
+--- a/arch/microblaze/include/uapi/asm/setup.h
++++ b/arch/microblaze/include/uapi/asm/setup.h
+@@ -12,8 +12,6 @@
+ #ifndef _UAPI_ASM_MICROBLAZE_SETUP_H
+ #define _UAPI_ASM_MICROBLAZE_SETUP_H
+ 
+-#define COMMAND_LINE_SIZE	256
 -
+ # ifndef __ASSEMBLY__
  
-+#define COMMAND_LINE_SIZE 256
- #define CL_SIZE COMMAND_LINE_SIZE
- 
- #ifndef __ASSEMBLY__
-diff --git a/arch/m68k/include/uapi/asm/setup.h b/arch/m68k/include/uapi/asm/setup.h
-index 25fe26d5597c..005593acc7d8 100644
---- a/arch/m68k/include/uapi/asm/setup.h
-+++ b/arch/m68k/include/uapi/asm/setup.h
-@@ -12,6 +12,4 @@
- #ifndef _UAPI_M68K_SETUP_H
- #define _UAPI_M68K_SETUP_H
- 
--#define COMMAND_LINE_SIZE 256
--
- #endif /* _UAPI_M68K_SETUP_H */
+ # endif /* __ASSEMBLY__ */
 -- 
 2.37.2
 
