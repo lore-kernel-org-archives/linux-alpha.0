@@ -1,76 +1,88 @@
-From: Uros Bizjak <ubizjak@gmail.com>
-Subject: [PATCH 10/10] perf/ring_buffer: use local_try_cmpxchg in __perf_output_begin
-Date: Sun,  5 Mar 2023 21:56:28 +0100
-Message-ID: <20230305205628.27385-11-ubizjak@gmail.com>
-References: <20230305205628.27385-1-ubizjak@gmail.com>
+From: Alexandre Ghiti <alex@ghiti.fr>
+Subject: Re: [PATCH v3 00/24] Remove COMMAND_LINE_SIZE from uapi
+Date: Mon, 6 Mar 2023 10:35:17 +0100
+Message-ID: <caaed678-4a5a-70e5-2ee7-cb2c8042afc0@ghiti.fr>
+References: <mhng-e8b09772-24e5-4729-a0bf-01a9e4c76636@palmer-ri-x1c9a>
+ <21F95EC4-71EA-4154-A7DC-8A5BA54F174B@zytor.com>
+ <674bc31e-e4ed-988f-820d-54213d83f9c7@ghiti.fr>
+ <c500840b-b57d-47f2-a3d9-41465b10ffae@app.fastmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1678049829;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xOf0dR/RPpY4HJc+yEr00P2lL8nnE6ZdPZ2RnMEV2qQ=;
-        b=AzC0MtpS6jzuzYUPFsrIfgSP8aZbYwDqq5a+izUb9a0flhuTk9IJhffPMtswIUk4wO
-         sg+KQDUeI1WfTBjEPCVkavJWGZOiRXkonvodFjQekv1AtQJNs5CNYgKk72i8myvpgGVe
-         K9+Gcl430QJD9AbzGRenEZ61TH0KIeWK+0iYs+J05wVbAMYgv5sIn3w1+Cwy1JerQSRC
-         KH89b71gdC8EcpGw2scdHdGW+tPap0uAwmnq+3aLE3kGWG2fm1xZDaMDvjLA9woC5Ulu
-         0/MPaQHFdc8LJgoZ7thFoEH3DKdiynUC63aS/FSnJG4o6I/92Na/lIc5Pd1rCjK+C5wU
-         iyIg==
-In-Reply-To: <20230305205628.27385-1-ubizjak@gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Language: en-US
+In-Reply-To: <c500840b-b57d-47f2-a3d9-41465b10ffae@app.fastmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org
-Cc: Uros Bizjak <ubizjak@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>, Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+To: Arnd Bergmann <arnd@arndb.de>, "H. Peter Anvin" <hpa@zytor.com>, Palmer Dabbelt <palmer@dabbelt.com>, Heiko Carstens <hca@linux.ibm.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Alexandre Ghiti <alexghiti@rivosinc.com>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy>
 
-Use local_try_cmpxchg instead of local_cmpxchg (*ptr, old, new) == old in
-__perf_output_begin.  x86 CMPXCHG instruction returns success in ZF flag,
-so this change saves a compare after cmpxchg.
 
-Also, local_try_cmpxchg implicitly assigns old *ptr value to "old" when
-cmpxchg fails. There is no need to re-read the value in the loop.
+On 3/3/23 17:40, Arnd Bergmann wrote:
+> On Fri, Mar 3, 2023, at 12:59, Alexandre Ghiti wrote:
+>> On 3/2/23 20:50, H. Peter Anvin wrote:
+>>> On March 1, 2023 7:17:18 PM PST, Palmer Dabbelt <palmer@dabbelt.com> wr=
+ote:
+>>>>>> Commit 622021cd6c560ce7 ("s390: make command line configurable"),
+>>>>>> I assume?
+>>>>> Yes, sorry for that. I got distracted while writing and used the wrong
+>>>>> branch to look this up.
+>>>> Alex: Probably worth adding that to the list in the cover letter as it=
+ looks like you were planning on a v4 anyway (which I guess you now have to=
+ do, given that I just added the issue to RISC-V).
+>>> The only use that is uapi is the *default* length of the command line i=
+f the kernel header doesn't include it (in the case of x86, it is in the bz=
+Image header, but that is atchitecture- or even boot format-specific.)
+>> Is COMMAND_LINE_SIZE what you call the default length? Does that mean
+>> that to you the patchset is wrong?
+> On x86, the COMMAND_LINE_SIZE value is already not part of a uapi header,
+> but instead (since bzImage format version 2.06) is communicated from
+> the kernel to the boot loader, which then knows how much data the
+> kernel will read (at most) from the command line.
+>
+> Most x86 kernels these days are booted using UEFI, which I think has
+> no such interface, the firmware just passes the command line and a
+> length, but has no way of knowing if the kernel will truncate this.
+> I think that is the same as with any other architecture that passes
+> the command line through UEFI, DT or ATAGS, all of which use
+> length/value pairs.
+>
+> Russell argued on IRC that this can be considered an ABI since a
+> boot loader may use its knowledge of the kernel's command line size
+> limit to reject long command lines. On the other hand, I don't
+> think that any boot loader actually does, they just trust that it
+> fits and don't have a good way of rejecting invalid configuration
+> other than truncating and/or warning.
+>
+> One notable exception I found while looking through is the old
+> (pre-ATAGS) parameter structure on Arm, which uses COMMAND_LINE_SIZE
+> as part of the structure definition. Apparently this was deprecated
+> 22 years ago, so hopefully the remaining riscpc and footbridge
+> users have all upgraded their bootloaders.
+>
+> The only other case I could find that might go wrong is
+> m68knommu with a few files copying a COMMAND_LINE_SIZE sized
+> buffer from flash into a kernel buffer:
+>
+> arch/m68k/coldfire/m5206.c:void __init config_BSP(char *commandp, int siz=
+e)
+> arch/m68k/coldfire/m5206.c-{
+> arch/m68k/coldfire/m5206.c-#if defined(CONFIG_NETtel)
+> arch/m68k/coldfire/m5206.c-     /* Copy command line from FLASH to local =
+buffer... */
+> arch/m68k/coldfire/m5206.c-     memcpy(commandp, (char *) 0xf0004000, siz=
+e);
+> arch/m68k/coldfire/m5206.c-     commandp[size-1] =3D 0;
+> arch/m68k/coldfire/m5206.c-#endif /* CONFIG_NETtel */
 
-No functional change intended.
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Ian Rogers <irogers@google.com>
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
----
- kernel/events/ring_buffer.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+I see, thanks your thorough explanation: I don't see this m64k issue as=20
+a blocker (unless Geert disagrees but he already reviewed the m64k=20
+patches),=C2=A0 so I'll send the v5 now.
 
-diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
-index 273a0fe7910a..e07c10f4d141 100644
---- a/kernel/events/ring_buffer.c
-+++ b/kernel/events/ring_buffer.c
-@@ -191,9 +191,10 @@ __perf_output_begin(struct perf_output_handle *handle,
- 
- 	perf_output_get_handle(handle);
- 
-+	offset = local_read(&rb->head);
- 	do {
-+		head = offset;
- 		tail = READ_ONCE(rb->user_page->data_tail);
--		offset = head = local_read(&rb->head);
- 		if (!rb->overwrite) {
- 			if (unlikely(!ring_buffer_has_space(head, tail,
- 							    perf_data_size(rb),
-@@ -217,7 +218,7 @@ __perf_output_begin(struct perf_output_handle *handle,
- 			head += size;
- 		else
- 			head -= size;
--	} while (local_cmpxchg(&rb->head, offset, head) != offset);
-+	} while (!local_try_cmpxchg(&rb->head, &offset, head));
- 
- 	if (backward) {
- 		offset = head;
--- 
-2.39.2
+Thanks again,
 
+Alex
+
+
+>
+>       Arnd
