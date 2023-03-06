@@ -1,88 +1,140 @@
-From: Alexandre Ghiti <alex@ghiti.fr>
-Subject: Re: [PATCH v3 00/24] Remove COMMAND_LINE_SIZE from uapi
-Date: Mon, 6 Mar 2023 10:35:17 +0100
-Message-ID: <caaed678-4a5a-70e5-2ee7-cb2c8042afc0@ghiti.fr>
-References: <mhng-e8b09772-24e5-4729-a0bf-01a9e4c76636@palmer-ri-x1c9a>
- <21F95EC4-71EA-4154-A7DC-8A5BA54F174B@zytor.com>
- <674bc31e-e4ed-988f-820d-54213d83f9c7@ghiti.fr>
- <c500840b-b57d-47f2-a3d9-41465b10ffae@app.fastmail.com>
+From: Alexandre Ghiti <alexghiti@rivosinc.com>
+Subject: [PATCH v5 00/26] Remove COMMAND_LINE_SIZE from uapi
+Date: Mon,  6 Mar 2023 11:04:42 +0100
+Message-ID: <20230306100508.1171812-1-alexghiti__10571.9218541466$1678097174$gmane$org@rivosinc.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Language: en-US
-In-Reply-To: <c500840b-b57d-47f2-a3d9-41465b10ffae@app.fastmail.com>
+Content-Transfer-Encoding: base64
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1678097144;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OJlcjxfKw8jXMW5N6Ul3wEtOotHt+pEdQ/DGM7xaX10=;
+        b=JEqgx1ClmnhOe6ebVyq1YqTIUhSXqSCUzyVnszcOp7awHNdT/xsM+7rlI1qdGO+YiE
+         slQ76DmA72N+jgwPU2NK3rXaHYk02KROwM+j5UoVlE6/S84CO+vB/F3BWaDO7xRB2RIG
+         of8yuUcFzP4Tre4cToIWTCOQJWBuRErMO44gEIuUiHYSd2Cn7gaTQDsMMDbVeLzUpjB4
+         mzd55rdVRoXyW887zexXWxI8zSMxD3E76H/lTdsw61lekuH6TU9lFSZs1SwhjoOVi1uJ
+         k2ny/foI2AfuKjMCphWC6FEhY+VrVHZTIxhlexwMTUthb5QjBCQqbA/uzSZiUyHHThiI
+         YNPQ==
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-To: Arnd Bergmann <arnd@arndb.de>, "H. Peter Anvin" <hpa@zytor.com>, Palmer Dabbelt <palmer@dabbelt.com>, Heiko Carstens <hca@linux.ibm.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Alexandre Ghiti <alexghiti@rivosinc.com>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy>
+Content-Type: text/plain; charset="macroman"
+To: Greg KH <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csg>
+Cc: Alexandre Ghiti <alexghiti@rivosinc.com>
 
-
-On 3/3/23 17:40, Arnd Bergmann wrote:
-> On Fri, Mar 3, 2023, at 12:59, Alexandre Ghiti wrote:
->> On 3/2/23 20:50, H. Peter Anvin wrote:
->>> On March 1, 2023 7:17:18 PM PST, Palmer Dabbelt <palmer@dabbelt.com> wr=
-ote:
->>>>>> Commit 622021cd6c560ce7 ("s390: make command line configurable"),
->>>>>> I assume?
->>>>> Yes, sorry for that. I got distracted while writing and used the wrong
->>>>> branch to look this up.
->>>> Alex: Probably worth adding that to the list in the cover letter as it=
- looks like you were planning on a v4 anyway (which I guess you now have to=
- do, given that I just added the issue to RISC-V).
->>> The only use that is uapi is the *default* length of the command line i=
-f the kernel header doesn't include it (in the case of x86, it is in the bz=
-Image header, but that is atchitecture- or even boot format-specific.)
->> Is COMMAND_LINE_SIZE what you call the default length? Does that mean
->> that to you the patchset is wrong?
-> On x86, the COMMAND_LINE_SIZE value is already not part of a uapi header,
-> but instead (since bzImage format version 2.06) is communicated from
-> the kernel to the boot loader, which then knows how much data the
-> kernel will read (at most) from the command line.
->
-> Most x86 kernels these days are booted using UEFI, which I think has
-> no such interface, the firmware just passes the command line and a
-> length, but has no way of knowing if the kernel will truncate this.
-> I think that is the same as with any other architecture that passes
-> the command line through UEFI, DT or ATAGS, all of which use
-> length/value pairs.
->
-> Russell argued on IRC that this can be considered an ABI since a
-> boot loader may use its knowledge of the kernel's command line size
-> limit to reject long command lines. On the other hand, I don't
-> think that any boot loader actually does, they just trust that it
-> fits and don't have a good way of rejecting invalid configuration
-> other than truncating and/or warning.
->
-> One notable exception I found while looking through is the old
-> (pre-ATAGS) parameter structure on Arm, which uses COMMAND_LINE_SIZE
-> as part of the structure definition. Apparently this was deprecated
-> 22 years ago, so hopefully the remaining riscpc and footbridge
-> users have all upgraded their bootloaders.
->
-> The only other case I could find that might go wrong is
-> m68knommu with a few files copying a COMMAND_LINE_SIZE sized
-> buffer from flash into a kernel buffer:
->
-> arch/m68k/coldfire/m5206.c:void __init config_BSP(char *commandp, int siz=
-e)
-> arch/m68k/coldfire/m5206.c-{
-> arch/m68k/coldfire/m5206.c-#if defined(CONFIG_NETtel)
-> arch/m68k/coldfire/m5206.c-     /* Copy command line from FLASH to local =
-buffer... */
-> arch/m68k/coldfire/m5206.c-     memcpy(commandp, (char *) 0xf0004000, siz=
-e);
-> arch/m68k/coldfire/m5206.c-     commandp[size-1] =3D 0;
-> arch/m68k/coldfire/m5206.c-#endif /* CONFIG_NETtel */
-
-
-I see, thanks your thorough explanation: I don't see this m64k issue as=20
-a blocker (unless Geert disagrees but he already reviewed the m64k=20
-patches),=C2=A0 so I'll send the v5 now.
-
-Thanks again,
-
-Alex
-
-
->
->       Arnd
+VGhpcyBhbGwgY2FtZSB1cCBpbiB0aGUgY29udGV4dCBvZiBpbmNyZWFzaW5nIENPTU1BTkRfTElO
+RV9TSVpFIGluIHRoZQpSSVNDLVYgcG9ydC4gIEluIHRoZW9yeSB0aGF0J3MgYSBVQUJJIGJyZWFr
+LCBhcyBDT01NQU5EX0xJTkVfU0laRSBpcyB0aGUKbWF4aW11bSBsZW5ndGggb2YgL3Byb2MvY21k
+bGluZSBhbmQgdXNlcnNwYWNlIGNvdWxkIHN0YXRpY2x5IHJlbHkgb24KdGhhdCB0byBiZSBjb3Jy
+ZWN0LgoKVXN1YWxseSBJIHdvdWxkbid0IG1lc3MgYXJvdW5kIHdpdGggY2hhbmdpbmcgdGhpcyBz
+b3J0IG9mIHRoaW5nLCBidXQKUG93ZXJQQyBpbmNyZWFzZWQgaXQgd2l0aCBhNTk4MGQwNjRmZTIg
+KCJwb3dlcnBjOiBCdW1wIENPTU1BTkRfTElORV9TSVpFCnRvIDIwNDgiKS4gIFRoZXJlIGFyZSBh
+bHNvIGEgaGFuZGZ1bCBvZiBleGFtcGxlcyBvZiBDT01NQU5EX0xJTkVfU0laRQppbmNyZWFzaW5n
+LCBidXQgdGhleSdyZSBmcm9tIGJlZm9yZSB0aGUgVUFQSSBzcGxpdCBzbyBJJ20gbm90IHF1aXRl
+IHN1cmUKd2hhdCB0aGF0IG1lYW5zOiBlNWE2YTFjOTA5NDggKCJwb3dlcnBjOiBkZXJpdmUgQ09N
+TUFORF9MSU5FX1NJWkUgZnJvbQphc20tZ2VuZXJpYyIpLCA2ODRkMmZkNDhlNzEgKCJbUzM5MF0g
+a2VybmVsOiBBcHBlbmQgc2NwZGF0YSB0byBrZXJuZWwKYm9vdCBjb21tYW5kIGxpbmUiKSwgMjIy
+NDI2ODFjZmY1ICgiTUlQUzogRXh0ZW5kIENPTU1BTkRfTElORV9TSVpFIiksCmFuZCAyYjc0Yjg1
+NjkzYzcgKCJzaDogRGVyaXZlIENPTU1BTkRfTElORV9TSVpFIGZyb20KYXNtLWdlbmVyaWMvc2V0
+dXAuaC4iKS4KCkl0IHNlZW1zIHRvIG1lIGxpa2UgQ09NTUFORF9MSU5FX1NJWkUgcmVhbGx5IGp1
+c3Qgc2hvdWxkbid0IGhhdmUgYmVlbgpwYXJ0IG9mIHRoZSB1YXBpIHRvIGJlZ2luIHdpdGgsIGFu
+ZCB1c2Vyc3BhY2Ugc2hvdWxkIGJlIGFibGUgdG8gaGFuZGxlCi9wcm9jL2NtZGxpbmUgb2Ygd2hh
+dGV2ZXIgbGVuZ3RoIGl0IHR1cm5zIG91dCB0byBiZS4gIEkgZG9uJ3Qgc2VlIGFueQpyZWZlcmVu
+Y2VzIHRvIENPTU1BTkRfTElORV9TSVpFIGFueXdoZXJlIGJ1dCBMaW51eCB2aWEgYSBxdWljayBH
+b29nbGUKc2VhcmNoLCBidXQgdGhhdCdzIG5vdCByZWFsbHkgZW5vdWdoIHRvIGNvbnNpZGVyIGl0
+IHVudXNlZCBvbiBteSBlbmQuCgpUaGlzIGlzc3VlIHdhcyBhbHJlYWR5IGNvbnNpZGVyZWQgaW4g
+czM5MCBhbmQgdGhleSByZWFjaGVkIHRoZSBzYW1lCmNvbmNsdXNpb24gaW4gY29tbWl0IDYyMjAy
+MWNkNmM1NiAoInMzOTA6IG1ha2UgY29tbWFuZCBsaW5lCmNvbmZpZ3VyYWJsZSIpLgoKVGhlIGZl
+ZWRiYWNrIG9uIHRoZSB2MSBzZWVtZWQgdG8gaW5kaWNhdGUgdGhhdCBDT01NQU5EX0xJTkVfU0la
+RSByZWFsbHkKc2hvdWxkbid0IGJlIHBhcnQgb2YgdWFwaSwgc28gdGhpcyBub3cgdG91Y2hlcyBh
+bGwgdGhlIHBvcnRzLiAgSSd2ZQp0cmllZCB0byBzcGxpdCB0aGlzIGFsbCBvdXQgYW5kIGxlYXZl
+IGl0IGJpc2VjdGFibGUsIGJ1dCBJIGhhdmVuJ3QKdGVzdGVkIGl0IGFsbCB0aGF0IGFnZ3Jlc3Np
+dmVseS4KCkNoYW5nZXMgc2luY2UgdjQgPGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8yMDIz
+MDMwMjA5MzUzOS4zNzI5NjItMS1hbGV4Z2hpdGlAcml2b3NpbmMuY29tLz46CiogQWRkIG15IG93
+biBTb0IgYXMgc3VnZ2VzdGVkIGJ5IEdlZXJ0CiogQWRkIHJpc2N2IHBhdGNoZXMgYXMgc3VnZ2Vz
+dGVkIGJ5IEJqw7ZybgoqIFJlbW92ZSAiV0lUSCBMaW51eC1zeXNjYWxsLW5vdGUiIGZyb20gbmV3
+IHNldHVwLmggbm90IGluIHVhcGkvLCBhcwogIHN1Z2dlc3RlZCBieSBHcmVnIEtILCBoaXMgcXVv
+dGVkIGFuc3dlciBiZWxvdzoKCiJUaGUgInN5c2NhbGwgbm90ZSIgbWFrZXMgbm8gc2Vuc2UgYXQg
+YWxsIGZvciBhbnkgZmlsZXMgbm90IGluIHRoZSB1YXBpLwpkaXJlY3RvcnksIHNvIHlvdSBjYW4g
+cmVtb3ZlIGl0IGp1c3QgZmluZSBhcyB0aGF0IFdJVEggZG9lc24ndCBtZWFuCmFueXRoaW5nIF9V
+TkxFU1NfIHRoZSBmaWxlIGlzIGluIHRoZSB1YXBpIGRpcmVjdG9yeS4iCgpDaGFuZ2VzIHNpbmNl
+IHYzIDxodHRwczovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAyMzAyMTQwNzQ5MjUuMjI4MTA2LTEt
+YWxleGdoaXRpQHJpdm9zaW5jLmNvbS8+OgoqIEFkZGVkIFJCL0FCCiogQWRkZWQgYSBtZW50aW9u
+IHRvIGNvbW1pdCA2MjIwMjFjZDZjNTYgKCJzMzkwOiBtYWtlIGNvbW1hbmQgbGluZQogIGNvbmZp
+Z3VyYWJsZSIpIGluIHRoZSBjb3ZlciBsZXR0ZXIKCkNoYW5nZXMgc2luY2UgdjIgPGh0dHBzOi8v
+bG9yZS5rZXJuZWwub3JnL2FsbC8yMDIyMTIxMTA2MTM1OC4yODAzNS0xLXBhbG1lckByaXZvc2lu
+Yy5jb20vPjoKKiBGaXggc2gsIGNza3kgYW5kIGlhNjQgYnVpbGRzLCBhcyByZXBvcnRlZCBieSBr
+ZXJuZWwgdGVzdCByb2JvdAoKQ2hhbmdlcyBzaW5jZSB2MSA8aHR0cHM6Ly9sb3JlLmtlcm5lbC5v
+cmcvYWxsLzIwMjEwNDIzMDI1NTQ1LjMxMzk2NS0xLXBhbG1lckBkYWJiZWx0LmNvbS8+OgoqIFRv
+dWNoZXMgZXZlcnkgYXJjaC4KCmJhc2UtY29tbWl0LXRhZzogbmV4dC0yMDIzMDIwNwoKQWxleGFu
+ZHJlIEdoaXRpICgyKToKICByaXNjdjogUmVtb3ZlIENPTU1BTkRfTElORV9TSVpFIGZyb20gdWFw
+aQogIHJpc2N2OiBSZW1vdmUgZW1wdHkgPHVhcGkvYXNtL3NldHVwLmg+CgpQYWxtZXIgRGFiYmVs
+dCAoMjQpOgogIGFscGhhOiBSZW1vdmUgQ09NTUFORF9MSU5FX1NJWkUgZnJvbSB1YXBpCiAgYXJt
+NjQ6IFJlbW92ZSBDT01NQU5EX0xJTkVfU0laRSBmcm9tIHVhcGkKICBhcm06IFJlbW92ZSBDT01N
+QU5EX0xJTkVfU0laRSBmcm9tIHVhcGkKICBpYTY0OiBSZW1vdmUgQ09NTUFORF9MSU5FX1NJWkUg
+ZnJvbSB1YXBpCiAgbTY4azogUmVtb3ZlIENPTU1BTkRfTElORV9TSVpFIGZyb20gdWFwaQogIG1p
+Y3JvYmxhemU6IFJlbW92ZSBDT01NQU5EX0xJTkVfU0laRSBmcm9tIHVhcGkKICBtaXBzOiBSZW1v
+dmUgQ09NTUFORF9MSU5FX1NJWkUgZnJvbSB1YXBpCiAgcGFyaXNjOiBSZW1vdmUgQ09NTUFORF9M
+SU5FX1NJWkUgZnJvbSB1YXBpCiAgcG93ZXJwYzogUmVtb3ZlIENPTU1BTkRfTElORV9TSVpFIGZy
+b20gdWFwaQogIHNwYXJjOiBSZW1vdmUgQ09NTUFORF9MSU5FX1NJWkUgZnJvbSB1YXBpCiAgeHRl
+bnNhOiBSZW1vdmUgQ09NTUFORF9MSU5FX1NJWkUgZnJvbSB1YXBpCiAgYXNtLWdlbmVyaWM6IFJl
+bW92ZSBDT01NQU5EX0xJTkVfU0laRSBmcm9tIHVhcGkKICBhbHBoYTogUmVtb3ZlIGVtcHR5IDx1
+YXBpL2FzbS9zZXR1cC5oPgogIGFyYzogUmVtb3ZlIGVtcHR5IDx1YXBpL2FzbS9zZXR1cC5oPgog
+IG02OGs6IFJlbW92ZSBlbXB0eSA8dWFwaS9hc20vc2V0dXAuaD4KICBhcm02NDogUmVtb3ZlIGVt
+cHR5IDx1YXBpL2FzbS9zZXR1cC5oPgogIG1pY3JvYmxhemU6IFJlbW92ZSBlbXB0eSA8dWFwaS9h
+c20vc2V0dXAuaD4KICBzcGFyYzogUmVtb3ZlIGVtcHR5IDx1YXBpL2FzbS9zZXR1cC5oPgogIHBh
+cmlzYzogUmVtb3ZlIGVtcHR5IDx1YXBpL2FzbS9zZXR1cC5oPgogIHg4NjogUmVtb3ZlIGVtcHR5
+IDx1YXBpL2FzbS9zZXR1cC5oPgogIHh0ZW5zYTogUmVtb3ZlIGVtcHR5IDx1YXBpL2FzbS9zZXR1
+cC5oPgogIHBvd2VycGM6IFJlbW92ZSBlbXB0eSA8dWFwaS9hc20vc2V0dXAuaD4KICBtaXBzOiBS
+ZW1vdmUgZW1wdHkgPHVhcGkvYXNtL3NldHVwLmg+CiAgczM5MDogUmVtb3ZlIGVtcHR5IDx1YXBp
+L2FzbS9zZXR1cC5oPgoKIC4uLi9hZG1pbi1ndWlkZS9rZXJuZWwtcGFyYW1ldGVycy5yc3QgICAg
+ICAgICB8ICAyICstCiBhcmNoL2FscGhhL2luY2x1ZGUvYXNtL3NldHVwLmggICAgICAgICAgICAg
+ICAgfCAgNCArLS0KIGFyY2gvYWxwaGEvaW5jbHVkZS91YXBpL2FzbS9zZXR1cC5oICAgICAgICAg
+ICB8ICA3IC0tLS0tCiBhcmNoL2FyYy9pbmNsdWRlL2FzbS9zZXR1cC5oICAgICAgICAgICAgICAg
+ICAgfCAgMSAtCiBhcmNoL2FyYy9pbmNsdWRlL3VhcGkvYXNtL3NldHVwLmggICAgICAgICAgICAg
+fCAgNiAtLS0tLQogYXJjaC9hcm0vaW5jbHVkZS9hc20vc2V0dXAuaCAgICAgICAgICAgICAgICAg
+IHwgIDEgKwogYXJjaC9hcm0vaW5jbHVkZS91YXBpL2FzbS9zZXR1cC5oICAgICAgICAgICAgIHwg
+IDIgLS0KIGFyY2gvYXJtNjQvaW5jbHVkZS9hc20vc2V0dXAuaCAgICAgICAgICAgICAgICB8ICAz
+ICsrLQogYXJjaC9hcm02NC9pbmNsdWRlL3VhcGkvYXNtL3NldHVwLmggICAgICAgICAgIHwgMjcg
+LS0tLS0tLS0tLS0tLS0tLS0tLQogYXJjaC9pYTY0L2luY2x1ZGUvYXNtL3NldHVwLmggICAgICAg
+ICAgICAgICAgIHwgMTAgKysrKysrKwogYXJjaC9pYTY0L2luY2x1ZGUvdWFwaS9hc20vc2V0dXAu
+aCAgICAgICAgICAgIHwgIDYgKystLS0KIGFyY2gvbG9vbmdhcmNoL2luY2x1ZGUvYXNtL3NldHVw
+LmggICAgICAgICAgICB8ICAyICstCiBhcmNoL202OGsvaW5jbHVkZS9hc20vc2V0dXAuaCAgICAg
+ICAgICAgICAgICAgfCAgMyArLS0KIGFyY2gvbTY4ay9pbmNsdWRlL3VhcGkvYXNtL3NldHVwLmgg
+ICAgICAgICAgICB8IDE3IC0tLS0tLS0tLS0tLQogYXJjaC9taWNyb2JsYXplL2luY2x1ZGUvYXNt
+L3NldHVwLmggICAgICAgICAgIHwgIDIgKy0KIGFyY2gvbWljcm9ibGF6ZS9pbmNsdWRlL3VhcGkv
+YXNtL3NldHVwLmggICAgICB8IDIwIC0tLS0tLS0tLS0tLS0tCiBhcmNoL21pcHMvaW5jbHVkZS9h
+c20vc2V0dXAuaCAgICAgICAgICAgICAgICAgfCAgMyArKy0KIGFyY2gvbWlwcy9pbmNsdWRlL3Vh
+cGkvYXNtL3NldHVwLmggICAgICAgICAgICB8ICA4IC0tLS0tLQogYXJjaC9wYXJpc2MvaW5jbHVk
+ZS97dWFwaSA9PiB9L2FzbS9zZXR1cC5oICAgIHwgIDIgKy0KIGFyY2gvcG93ZXJwYy9pbmNsdWRl
+L2FzbS9zZXR1cC5oICAgICAgICAgICAgICB8ICAyICstCiBhcmNoL3Bvd2VycGMvaW5jbHVkZS91
+YXBpL2FzbS9zZXR1cC5oICAgICAgICAgfCAgNyAtLS0tLQogYXJjaC9yaXNjdi9pbmNsdWRlL2Fz
+bS9zZXR1cC5oICAgICAgICAgICAgICAgIHwgIDcgKysrKysKIGFyY2gvcmlzY3YvaW5jbHVkZS91
+YXBpL2FzbS9zZXR1cC5oICAgICAgICAgICB8ICA4IC0tLS0tLQogYXJjaC9zMzkwL2luY2x1ZGUv
+YXNtL3NldHVwLmggICAgICAgICAgICAgICAgIHwgIDEgLQogYXJjaC9zMzkwL2luY2x1ZGUvdWFw
+aS9hc20vc2V0dXAuaCAgICAgICAgICAgIHwgIDEgLQogYXJjaC9zaC9pbmNsdWRlL2FzbS9zZXR1
+cC5oICAgICAgICAgICAgICAgICAgIHwgIDIgKy0KIGFyY2gvc3BhcmMvaW5jbHVkZS9hc20vc2V0
+dXAuaCAgICAgICAgICAgICAgICB8ICA2ICsrKystCiBhcmNoL3NwYXJjL2luY2x1ZGUvdWFwaS9h
+c20vc2V0dXAuaCAgICAgICAgICAgfCAxNiAtLS0tLS0tLS0tLQogYXJjaC94ODYvaW5jbHVkZS9h
+c20vc2V0dXAuaCAgICAgICAgICAgICAgICAgIHwgIDIgLS0KIGFyY2gveDg2L2luY2x1ZGUvdWFw
+aS9hc20vc2V0dXAuaCAgICAgICAgICAgICB8ICAxIC0KIGFyY2gveHRlbnNhL2luY2x1ZGUve3Vh
+cGkgPT4gfS9hc20vc2V0dXAuaCAgICB8ICAyICstCiBpbmNsdWRlL2FzbS1nZW5lcmljL0tidWls
+ZCAgICAgICAgICAgICAgICAgICAgfCAgMSArCiBpbmNsdWRlL3t1YXBpID0+IH0vYXNtLWdlbmVy
+aWMvc2V0dXAuaCAgICAgICAgfCAgMAogaW5jbHVkZS91YXBpL2FzbS1nZW5lcmljL0tidWlsZCAg
+ICAgICAgICAgICAgIHwgIDEgLQogMzQgZmlsZXMgY2hhbmdlZCwgNDAgaW5zZXJ0aW9ucygrKSwg
+MTQzIGRlbGV0aW9ucygtKQogZGVsZXRlIG1vZGUgMTAwNjQ0IGFyY2gvYWxwaGEvaW5jbHVkZS91
+YXBpL2FzbS9zZXR1cC5oCiBkZWxldGUgbW9kZSAxMDA2NDQgYXJjaC9hcmMvaW5jbHVkZS91YXBp
+L2FzbS9zZXR1cC5oCiBkZWxldGUgbW9kZSAxMDA2NDQgYXJjaC9hcm02NC9pbmNsdWRlL3VhcGkv
+YXNtL3NldHVwLmgKIGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL2lhNjQvaW5jbHVkZS9hc20vc2V0
+dXAuaAogZGVsZXRlIG1vZGUgMTAwNjQ0IGFyY2gvbTY4ay9pbmNsdWRlL3VhcGkvYXNtL3NldHVw
+LmgKIGRlbGV0ZSBtb2RlIDEwMDY0NCBhcmNoL21pY3JvYmxhemUvaW5jbHVkZS91YXBpL2FzbS9z
+ZXR1cC5oCiBkZWxldGUgbW9kZSAxMDA2NDQgYXJjaC9taXBzL2luY2x1ZGUvdWFwaS9hc20vc2V0
+dXAuaAogcmVuYW1lIGFyY2gvcGFyaXNjL2luY2x1ZGUve3VhcGkgPT4gfS9hc20vc2V0dXAuaCAo
+NjMlKQogZGVsZXRlIG1vZGUgMTAwNjQ0IGFyY2gvcG93ZXJwYy9pbmNsdWRlL3VhcGkvYXNtL3Nl
+dHVwLmgKIGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL3Jpc2N2L2luY2x1ZGUvYXNtL3NldHVwLmgK
+IGRlbGV0ZSBtb2RlIDEwMDY0NCBhcmNoL3Jpc2N2L2luY2x1ZGUvdWFwaS9hc20vc2V0dXAuaAog
+ZGVsZXRlIG1vZGUgMTAwNjQ0IGFyY2gvczM5MC9pbmNsdWRlL3VhcGkvYXNtL3NldHVwLmgKIGRl
+bGV0ZSBtb2RlIDEwMDY0NCBhcmNoL3NwYXJjL2luY2x1ZGUvdWFwaS9hc20vc2V0dXAuaAogZGVs
+ZXRlIG1vZGUgMTAwNjQ0IGFyY2gveDg2L2luY2x1ZGUvdWFwaS9hc20vc2V0dXAuaAogcmVuYW1l
+IGFyY2gveHRlbnNhL2luY2x1ZGUve3VhcGkgPT4gfS9hc20vc2V0dXAuaCAoODQlKQogcmVuYW1l
+IGluY2x1ZGUve3VhcGkgPT4gfS9hc20tZ2VuZXJpYy9zZXR1cC5oICgxMDAlKQoKLS0gCjIuMzcu
+MgoK
