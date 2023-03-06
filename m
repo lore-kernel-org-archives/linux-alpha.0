@@ -1,63 +1,117 @@
 From: Alexandre Ghiti <alexghiti@rivosinc.com>
-Subject: [PATCH v5 12/26] riscv: Remove COMMAND_LINE_SIZE from uapi
-Date: Mon,  6 Mar 2023 11:04:54 +0100
-Message-ID: <20230306100508.1171812-13-alexghiti__46718.4343304083$1678097941$gmane$org@rivosinc.com>
+Subject: [PATCH v5 13/26] asm-generic: Remove COMMAND_LINE_SIZE from uapi
+Date: Mon,  6 Mar 2023 11:04:55 +0100
+Message-ID: <20230306100508.1171812-14-alexghiti__48424.4275650539$1678098021$gmane$org@rivosinc.com>
 References: <20230306100508.1171812-1-alexghiti@rivosinc.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1678097884;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1678097946;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Z8jUAHwbVMbK8RWIko2xHqtBuL1KyylMgTUrOJjOCCU=;
-        b=ObAuaO9co25nDQl/gLe8rOAnmY1SJ/MNRhZIQLKvd0dmJCtejEEAp9VjO5ueZmwq77
-         2sunlhagXc3ZRybQbORIgvtgjh2qkEyP6dv7mjew9nO81QWyUrOD18KnIi89JuAWKlVQ
-         wBph9u5vcEXAFYKLw2R1CaYoc/es0FtEj3ptmhTiLJcfltfN7VENgL7XAlyBeI8VmhHZ
-         HyeE5iyj056diT+pPhE/AqYPqTCqF7h1UEuIvxZm0jb1cWuzCuAJzCmptfafE+KvmsgO
-         fqTB6T4p5bWSknr0H9aeAMEfr7ytra6qOWt2uq2+LIupXu7k3sa8nDlKt7kxGOLDaV+v
-         Dpfw==
+        bh=pLdQZ5oKz9wvQ1p1cXiC+Rc2izcglTCWsjsdF15FoKI=;
+        b=Kj4O690HpZR8Sg0W3lAeVf6DOHtzKBoDNyQ8OGTKBw14Wjfpn0Wju0B+FpDiYA8PzR
+         1SK3dHst7KOj0N+0ZdU9LRXXJPgWjIQvUl7lwdexklGZmiH/9eWFkN2m+07l8+qdYgYn
+         kukzgyj29WsCG+Dizw+E3+ylQA49rLGBzJupDUBzgH1AUGejJ99hzptXZhzadNPHrw8a
+         kqPUpCzf76ZylFoEBRZeW/QziXd1ld+gq3yUiUzq/xkqWL3W2bsgNB+rwLCMUy+8gq4a
+         5mvibSwPlQSxb0CjuIlt4ROssZfIxfhTWOJXET9izb1mXM+v4cTSm1Gk5tTSjSBDqHvO
+         VDDQ==
 In-Reply-To: <20230306100508.1171812-1-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 To: Greg KH <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csg>
-Cc: Alexandre Ghiti <alexghiti@rivosinc.com>
+Cc: Palmer Dabbelt <palmerdabbelt@google.com>, Palmer Dabbelt <palmer@rivosinc.com>, Alexandre Ghiti <alexghiti@rivosinc.com>
+
+From: Palmer Dabbelt <palmerdabbelt@google.com>
 
 As far as I can tell this is not used by userspace and thus should not
-be part of the user-visible API.
+be part of the user-visible API.  Since <uapi/asm-generic/setup.h> only
+contains COMMAND_LINE_SIZE we can just move it out of uapi to hide the
+definition and fix up the only direct use in Loongarch.
 
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Link: https://lore.kernel.org/r/20210423025545.313965-1-palmer@dabbelt.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Alexandre Ghiti <alexghiti@rivosinc.com>
 ---
- arch/riscv/include/asm/setup.h      | 7 +++++++
- arch/riscv/include/uapi/asm/setup.h | 2 --
- 2 files changed, 7 insertions(+), 2 deletions(-)
- create mode 100644 arch/riscv/include/asm/setup.h
+ Documentation/admin-guide/kernel-parameters.rst | 2 +-
+ arch/loongarch/include/asm/setup.h              | 2 +-
+ arch/sh/include/asm/setup.h                     | 2 +-
+ include/asm-generic/Kbuild                      | 1 +
+ include/{uapi => }/asm-generic/setup.h          | 0
+ include/uapi/asm-generic/Kbuild                 | 1 -
+ 6 files changed, 4 insertions(+), 4 deletions(-)
+ rename include/{uapi => }/asm-generic/setup.h (100%)
 
-diff --git a/arch/riscv/include/asm/setup.h b/arch/riscv/include/asm/setup.h
-new file mode 100644
-index 000000000000..f165a14344e2
---- /dev/null
-+++ b/arch/riscv/include/asm/setup.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef _ASM_RISCV_SETUP_H
-+#define _ASM_RISCV_SETUP_H
-+
-+#define COMMAND_LINE_SIZE       1024
-+
-+#endif /* _ASM_RISCV_SETUP_H */
-diff --git a/arch/riscv/include/uapi/asm/setup.h b/arch/riscv/include/uapi/asm/setup.h
-index 66b13a522880..17fcecd4a2f8 100644
---- a/arch/riscv/include/uapi/asm/setup.h
-+++ b/arch/riscv/include/uapi/asm/setup.h
-@@ -3,6 +3,4 @@
- #ifndef _UAPI_ASM_RISCV_SETUP_H
- #define _UAPI_ASM_RISCV_SETUP_H
+diff --git a/Documentation/admin-guide/kernel-parameters.rst b/Documentation/admin-guide/kernel-parameters.rst
+index 19600c50277b..2b94d5a42bd6 100644
+--- a/Documentation/admin-guide/kernel-parameters.rst
++++ b/Documentation/admin-guide/kernel-parameters.rst
+@@ -207,7 +207,7 @@ The number of kernel parameters is not limited, but the length of the
+ complete command line (parameters including spaces etc.) is limited to
+ a fixed number of characters. This limit depends on the architecture
+ and is between 256 and 4096 characters. It is defined in the file
+-./include/uapi/asm-generic/setup.h as COMMAND_LINE_SIZE.
++./include/asm-generic/setup.h as COMMAND_LINE_SIZE.
  
--#define COMMAND_LINE_SIZE	1024
--
- #endif /* _UAPI_ASM_RISCV_SETUP_H */
+ Finally, the [KMG] suffix is commonly described after a number of kernel
+ parameter values. These 'K', 'M', and 'G' letters represent the _binary_
+diff --git a/arch/loongarch/include/asm/setup.h b/arch/loongarch/include/asm/setup.h
+index 72ead58039f3..86c99b183ea0 100644
+--- a/arch/loongarch/include/asm/setup.h
++++ b/arch/loongarch/include/asm/setup.h
+@@ -7,7 +7,7 @@
+ #define _LOONGARCH_SETUP_H
+ 
+ #include <linux/types.h>
+-#include <uapi/asm/setup.h>
++#include <asm-generic/setup.h>
+ 
+ #define VECSIZE 0x200
+ 
+diff --git a/arch/sh/include/asm/setup.h b/arch/sh/include/asm/setup.h
+index fc807011187f..ae09b1c29fd1 100644
+--- a/arch/sh/include/asm/setup.h
++++ b/arch/sh/include/asm/setup.h
+@@ -2,7 +2,7 @@
+ #ifndef _SH_SETUP_H
+ #define _SH_SETUP_H
+ 
+-#include <uapi/asm/setup.h>
++#include <asm-generic/setup.h>
+ 
+ /*
+  * This is set up by the setup-routine at boot-time
+diff --git a/include/asm-generic/Kbuild b/include/asm-generic/Kbuild
+index 941be574bbe0..0fb55a119f54 100644
+--- a/include/asm-generic/Kbuild
++++ b/include/asm-generic/Kbuild
+@@ -49,6 +49,7 @@ mandatory-y += preempt.h
+ mandatory-y += rwonce.h
+ mandatory-y += sections.h
+ mandatory-y += serial.h
++mandatory-y += setup.h
+ mandatory-y += shmparam.h
+ mandatory-y += simd.h
+ mandatory-y += softirq_stack.h
+diff --git a/include/uapi/asm-generic/setup.h b/include/asm-generic/setup.h
+similarity index 100%
+rename from include/uapi/asm-generic/setup.h
+rename to include/asm-generic/setup.h
+diff --git a/include/uapi/asm-generic/Kbuild b/include/uapi/asm-generic/Kbuild
+index ebb180aac74e..0e7122339ee9 100644
+--- a/include/uapi/asm-generic/Kbuild
++++ b/include/uapi/asm-generic/Kbuild
+@@ -20,7 +20,6 @@ mandatory-y += posix_types.h
+ mandatory-y += ptrace.h
+ mandatory-y += resource.h
+ mandatory-y += sembuf.h
+-mandatory-y += setup.h
+ mandatory-y += shmbuf.h
+ mandatory-y += sigcontext.h
+ mandatory-y += siginfo.h
 -- 
 2.37.2
 
