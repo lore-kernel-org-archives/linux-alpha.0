@@ -1,23 +1,23 @@
 From: Alexandre Ghiti <alexghiti@rivosinc.com>
-Subject: [PATCH v5 18/26] microblaze: Remove empty <uapi/asm/setup.h>
-Date: Mon,  6 Mar 2023 11:05:00 +0100
-Message-ID: <20230306100508.1171812-19-alexghiti__34380.1171214849$1678098270$gmane$org@rivosinc.com>
+Subject: [PATCH v5 19/26] sparc: Remove empty <uapi/asm/setup.h>
+Date: Mon,  6 Mar 2023 11:05:01 +0100
+Message-ID: <20230306100508.1171812-20-alexghiti__20377.1405549318$1678098344$gmane$org@rivosinc.com>
 References: <20230306100508.1171812-1-alexghiti@rivosinc.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1678098255;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112; t=1678098316;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wvWdgHEM8PQ7SoWDcA2H7KmuhKKYQWfHxKMKCzpTfQ8=;
-        b=g4y/rF7hG1lF9BSA8L5LfjIbBco6VPJVz6EJhOPhrgHf4B9kPm+gJBCsVaYOI1tBD7
-         +0iRMhCGkvi6hF45v38v0y56clJ+ium+qEvdIExKLocNweosbYeup/scUzC6xKYmx+3/
-         V3t6vt/EALjj00N1eDowiY8Fdi+Eh574KeXIN2zi3+3PQBGaWih1iMXgBjuX3aabSBe1
-         GNmUmSQ844moawgyOc8ZmxWZbcI7NT6mu/1yLUIUON8iAftH2QlEoj6oDcFxrTH6Vw1c
-         qsSQeMqwzsYpYY6ASwJvnkybb7u8WOgsDyZAWlw56DhIQurBDaj7hpuvM3vgWhHKkgmH
-         woZQ==
+        bh=7+ybm5kRJ/yopWCa5U60FTtFVB//Mx8KShs1YeyPeDk=;
+        b=VlycwB8hzOW9PVDwiHzu8l5k/quntXrG5VLkAdaIUu+/LZCsC62+PMUXQUNH66i4Un
+         YUr9PSMjdim9JJVp0F/a2lCvx6Dfm4lHivR6dyGvTchP3bcl02II04OrcXPhLuJXC68I
+         hFAZ56aFTu0sT4cOr9/aG7bDGWiPIOGa3i+I9TDtD57f0bhZLgiK9s6H6nPMJNIirSh5
+         3L9OPB/FnM19Y8dZkKeKnuXREhgl6zSf/NqYvjRKKbFiXLNRab21fQ3koK19T+QK7UeG
+         tKqz6Lyq6ZoOeVSc9TkrOeWO2POmCSVfI6pjP0fJ1mCCRpUfByX5yb5R9ss+54U+8PpK
+         AG4g==
 In-Reply-To: <20230306100508.1171812-1-alexghiti@rivosinc.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
@@ -29,34 +29,25 @@ From: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Alexandre Ghiti <alexghiti@rivosinc.com>
 ---
- arch/microblaze/include/uapi/asm/setup.h | 18 ------------------
- 1 file changed, 18 deletions(-)
- delete mode 100644 arch/microblaze/include/uapi/asm/setup.h
+ arch/sparc/include/uapi/asm/setup.h | 9 ---------
+ 1 file changed, 9 deletions(-)
+ delete mode 100644 arch/sparc/include/uapi/asm/setup.h
 
-diff --git a/arch/microblaze/include/uapi/asm/setup.h b/arch/microblaze/include/uapi/asm/setup.h
+diff --git a/arch/sparc/include/uapi/asm/setup.h b/arch/sparc/include/uapi/asm/setup.h
 deleted file mode 100644
-index 51aed65880e7..000000000000
---- a/arch/microblaze/include/uapi/asm/setup.h
+index c3cf1b0d30b3..000000000000
+--- a/arch/sparc/include/uapi/asm/setup.h
 +++ /dev/null
-@@ -1,18 +0,0 @@
+@@ -1,9 +0,0 @@
 -/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 -/*
-- * Copyright (C) 2007-2009 Michal Simek <monstr@monstr.eu>
-- * Copyright (C) 2007-2009 PetaLogix
-- * Copyright (C) 2006 Atmark Techno, Inc.
-- *
-- * This file is subject to the terms and conditions of the GNU General Public
-- * License. See the file "COPYING" in the main directory of this archive
-- * for more details.
+- *	Just a place holder. 
 - */
 -
--#ifndef _UAPI_ASM_MICROBLAZE_SETUP_H
--#define _UAPI_ASM_MICROBLAZE_SETUP_H
+-#ifndef _UAPI_SPARC_SETUP_H
+-#define _UAPI_SPARC_SETUP_H
 -
--# ifndef __ASSEMBLY__
--
--# endif /* __ASSEMBLY__ */
--#endif /* _UAPI_ASM_MICROBLAZE_SETUP_H */
+-#endif /* _UAPI_SPARC_SETUP_H */
 -- 
 2.37.2
 
