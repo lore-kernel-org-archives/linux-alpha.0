@@ -1,96 +1,88 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH v4 3/4] arch/*/io.h: remove ioremap_uc in some
- architectures
-Date: Fri, 10 Mar 2023 09:45:28 +0800
-Message-ID: <ZAqLuNrPng9i0rZV@MiWiFi-R3L-srv>
-References: <20230308130710.368085-1-bhe@redhat.com>
- <20230308130710.368085-4-bhe@redhat.com>
- <20230309143621.GA12350@alpha.franken.de>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 0/4] PCI: Add pci_dev_for_each_resource() helper and update users
+Date: Fri, 10 Mar 2023 19:14:12 +0200
+Message-ID: <20230310171416.23356-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1678412740;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RtJkfRI7AXY3SogCgOFRi4FhIfSeTbcT8pIq6VJrULQ=;
-	b=B/Af4ewnqokc6nwChI1Xe5A1cuFraLw70Kh4hkHWdDUzhSXkvy2x7qG8jbc9MjVGrL9FDG
-	5QYZ/o8XgVm97anqDOgPU+5XBLZmZMuPR7GDjobicTAAGt+rnqFGOY8SQVKlH4/6SPVvPq
-	DOXShZxth2zlGq3GaPRB+qKCxBBSoG0=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1678412740;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RtJkfRI7AXY3SogCgOFRi4FhIfSeTbcT8pIq6VJrULQ=;
-	b=B/Af4ewnqokc6nwChI1Xe5A1cuFraLw70Kh4hkHWdDUzhSXkvy2x7qG8jbc9MjVGrL9FDG
-	5QYZ/o8XgVm97anqDOgPU+5XBLZmZMuPR7GDjobicTAAGt+rnqFGOY8SQVKlH4/6SPVvPq
-	DOXShZxth2zlGq3GaPRB+qKCxBBSoG0=
-Content-Disposition: inline
-In-Reply-To: <20230309143621.GA12350@alpha.franken.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1678468446; x=1710004446;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RzCBUYiGCwAhlk2Ryilx5v//I3nq0USDpq2BpORLpGQ=;
+  b=l5rXd6QPbfRf3iPymKqeDwuy6hMjvyx84wg3hJ5/wn/EKQiy9i2RV37h
+   BGCa973O5ITPGokOY9nRuG/LVMCJlfryscXEQVPzLOzoMZaUbVcqjFepr
+   0DKrTpSacQoOyeXgU9f2HCurbJeU4r47GQ/ogU0BwwtgpmBt6xUVOqkEe
+   cndW6iiLE7O7zmFjWm3u0Dz0JuQCYLLVgfQavWEhIQsXts8lakOxVluiV
+   0Qm16yhcOSZQjPzk3lpwnqg06XytVop0ST/aaAgjNMWN5pnk1vHMfc1ej
+   s7knNxCt8dGVVKd58OdjHiron+Gvqr19PSROEeG2GiVbUAVTraXdcaG9o
+   g==;
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-arch@vger.kernel.org, linux-parisc@vger.kernel.org, arnd@arndb.de, linux-sh@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, hch@infradead.org, linux-mm@kvack.org, mcgrof@kernel.org, geert@linux-m68k.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-hexagon@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Niklas Schnelle <schnelle@linux.ibm.com>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists
+Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>
 
-On 03/09/23 at 03:36pm, Thomas Bogendoerfer wrote:
-> On Wed, Mar 08, 2023 at 09:07:09PM +0800, Baoquan He wrote:
-> > ioremap_uc() is only meaningful on old x86-32 systems with the PAT
-> > extension, and on ia64 with its slightly unconventional ioremap()
-> > behavior. So remove the ioremap_uc() definition in architecutures
-> > other than x86 and ia64. These architectures all have asm-generic/io.h
-> > included and will have the default ioremap_uc() definition which
-> > returns NULL.
-> > 
-> > This changes the existing behaviour, while no need to worry about
-> > any breakage because in the only callsite of ioremap_uc(), code
-> > has been adjusted to eliminate the impact. Please see
-> > atyfb_setup_generic() of drivers/video/fbdev/aty/atyfb_base.c.
-> > 
-> > If any new invocation of ioremap_uc() need be added, please consider
-> > using ioremap() intead or adding a ARCH specific version if necessary.
-> > 
-> > Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Signed-off-by: Baoquan He <bhe@redhat.com>
-> > Cc: linux-alpha@vger.kernel.org
-> > Cc: linux-hexagon@vger.kernel.org
-> > Cc: linux-m68k@lists.linux-m68k.org
-> > Cc: linux-mips@vger.kernel.org
-> > Cc: linux-parisc@vger.kernel.org
-> > Cc: linuxppc-dev@lists.ozlabs.org
-> > Cc: linux-sh@vger.kernel.org
-> > Cc: sparclinux@vger.kernel.org
-> > ---
-> >  Documentation/driver-api/device-io.rst | 9 +++++----
-> >  arch/alpha/include/asm/io.h            | 1 -
-> >  arch/hexagon/include/asm/io.h          | 3 ---
-> >  arch/m68k/include/asm/kmap.h           | 1 -
-> >  arch/mips/include/asm/io.h             | 1 -
-> >  arch/parisc/include/asm/io.h           | 2 --
-> >  arch/powerpc/include/asm/io.h          | 1 -
-> >  arch/sh/include/asm/io.h               | 2 --
-> >  arch/sparc/include/asm/io_64.h         | 1 -
-> >  9 files changed, 5 insertions(+), 16 deletions(-)
-> 
-> this doesn't apply to v6.3-rc1... what tree is this based on ?
+Provide two new helper macros to iterate over PCI device resources and
+convert users.
 
-Sorry, I forgot mentioning this in cover letter. This series is
-followup of below patchset, so it's on top of below patchset and based
-on v6.3-rc1.
+Looking at it, refactor existing pci_bus_for_each_resource() and convert
+users accordingly.
 
-https://lore.kernel.org/all/20230301034247.136007-1-bhe@redhat.com/T/#u
-[PATCH v5 00/17] mm: ioremap:  Convert architectures to take GENERIC_IOREMAP way
+Changelog v4:
+- rebased on top of v6.3-rc1
+- added tag (Krzysztof)
 
-Thanks
-Baoquan
+Changelog v3:
+- rebased on top of v2 by Mika, see above
+- added tag to pcmcia patch (Dominik)
+
+Changelog v2:
+- refactor to have two macros
+- refactor existing pci_bus_for_each_resource() in the same way and
+  convert users
+
+Andy Shevchenko (3):
+  PCI: Split pci_bus_for_each_resource_p() out of
+    pci_bus_for_each_resource()
+  EISA: Convert to use pci_bus_for_each_resource_p()
+  pcmcia: Convert to use pci_bus_for_each_resource_p()
+
+Mika Westerberg (1):
+  PCI: Introduce pci_dev_for_each_resource()
+
+ .clang-format                             |  3 ++
+ arch/alpha/kernel/pci.c                   |  5 ++-
+ arch/arm/kernel/bios32.c                  | 16 +++++-----
+ arch/arm/mach-dove/pcie.c                 | 10 +++---
+ arch/arm/mach-mv78xx0/pcie.c              | 10 +++---
+ arch/arm/mach-orion5x/pci.c               | 10 +++---
+ arch/mips/pci/ops-bcm63xx.c               |  8 ++---
+ arch/mips/pci/pci-legacy.c                |  3 +-
+ arch/powerpc/kernel/pci-common.c          | 21 +++++++------
+ arch/powerpc/platforms/4xx/pci.c          |  8 ++---
+ arch/powerpc/platforms/52xx/mpc52xx_pci.c |  4 +--
+ arch/powerpc/platforms/pseries/pci.c      | 16 +++++-----
+ arch/sh/drivers/pci/pcie-sh7786.c         | 10 +++---
+ arch/sparc/kernel/leon_pci.c              |  5 ++-
+ arch/sparc/kernel/pci.c                   | 10 +++---
+ arch/sparc/kernel/pcic.c                  |  5 ++-
+ drivers/eisa/pci_eisa.c                   |  4 +--
+ drivers/pci/bus.c                         |  7 ++---
+ drivers/pci/hotplug/shpchp_sysfs.c        |  8 ++---
+ drivers/pci/pci.c                         |  5 ++-
+ drivers/pci/probe.c                       |  2 +-
+ drivers/pci/remove.c                      |  5 ++-
+ drivers/pci/setup-bus.c                   | 37 +++++++++--------------
+ drivers/pci/setup-res.c                   |  4 +--
+ drivers/pci/vgaarb.c                      | 17 +++--------
+ drivers/pci/xen-pcifront.c                |  4 +--
+ drivers/pcmcia/rsrc_nonstatic.c           |  9 ++----
+ drivers/pcmcia/yenta_socket.c             |  3 +-
+ drivers/pnp/quirks.c                      | 29 ++++++------------
+ include/linux/pci.h                       | 26 +++++++++++++---
+ 30 files changed, 141 insertions(+), 163 deletions(-)
+
+-- 
+2.39.1
 
