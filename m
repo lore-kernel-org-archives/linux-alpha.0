@@ -1,88 +1,161 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v4 0/4] PCI: Add pci_dev_for_each_resource() helper and update users
-Date: Fri, 10 Mar 2023 19:14:12 +0200
-Message-ID: <20230310171416.23356-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v4 2/4] PCI: Split pci_bus_for_each_resource_p() out of pci_bus_for_each_resource()
+Date: Fri, 10 Mar 2023 19:14:14 +0200
+Message-ID: <20230310171416.23356-3-andriy.shevchenko@linux.intel.com>
+References: <20230310171416.23356-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 Return-path: <linux-acpi-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678468446; x=1710004446;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=RzCBUYiGCwAhlk2Ryilx5v//I3nq0USDpq2BpORLpGQ=;
-  b=l5rXd6QPbfRf3iPymKqeDwuy6hMjvyx84wg3hJ5/wn/EKQiy9i2RV37h
-   BGCa973O5ITPGokOY9nRuG/LVMCJlfryscXEQVPzLOzoMZaUbVcqjFepr
-   0DKrTpSacQoOyeXgU9f2HCurbJeU4r47GQ/ogU0BwwtgpmBt6xUVOqkEe
-   cndW6iiLE7O7zmFjWm3u0Dz0JuQCYLLVgfQavWEhIQsXts8lakOxVluiV
-   0Qm16yhcOSZQjPzk3lpwnqg06XytVop0ST/aaAgjNMWN5pnk1vHMfc1ej
-   s7knNxCt8dGVVKd58OdjHiron+Gvqr19PSROEeG2GiVbUAVTraXdcaG9o
-   g==;
+  t=1678468445; x=1710004445;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ImovGyFssY2h57L8ILEiNfPIEtHnJufocebXbe8t0O4=;
+  b=GsNXLO0uTT051pbP3zjHib22x8IqLgNZ5QhQiUyc5SneYEVaceux3WNi
+   3QKRYFPyBSDQ4pZwLRqknq7YGSqP7IYZIjjkp5K2IyBSxwDlDxPYUt13j
+   MSDxqkknMdKXsR4aS8ctO+D9/rPPUZFN5Ig9WIgMalGD/icyftbrFs7KX
+   uVsmBfYcFcW3MtvkGW6gpf8PrL2qKvqGVIo3b6TGRHnokRADFqrUNspgc
+   ObiuVPiLMlPaeszslQ/V0ztelC6U6rvADrmciW3fsCqvD1B3n/MbGJAOY
+   IZ7zFGMveKXCyyi7u9N1ZDtX7SE40hee/6lYPVKOwkEZCoain+TUBbpFS
+   w==;
+In-Reply-To: <20230310171416.23356-1-andriy.shevchenko@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="macroman"
 To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Niklas Schnelle <schnelle@linux.ibm.com>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists
 Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>
 
-Provide two new helper macros to iterate over PCI device resources and
-convert users.
-
-Looking at it, refactor existing pci_bus_for_each_resource() and convert
-users accordingly.
-
-Changelog v4:
-- rebased on top of v6.3-rc1
-- added tag (Krzysztof)
-
-Changelog v3:
-- rebased on top of v2 by Mika, see above
-- added tag to pcmcia patch (Dominik)
-
-Changelog v2:
-- refactor to have two macros
-- refactor existing pci_bus_for_each_resource() in the same way and
-  convert users
-
-Andy Shevchenko (3):
-  PCI: Split pci_bus_for_each_resource_p() out of
-    pci_bus_for_each_resource()
-  EISA: Convert to use pci_bus_for_each_resource_p()
-  pcmcia: Convert to use pci_bus_for_each_resource_p()
-
-Mika Westerberg (1):
-  PCI: Introduce pci_dev_for_each_resource()
-
- .clang-format                             |  3 ++
- arch/alpha/kernel/pci.c                   |  5 ++-
- arch/arm/kernel/bios32.c                  | 16 +++++-----
- arch/arm/mach-dove/pcie.c                 | 10 +++---
- arch/arm/mach-mv78xx0/pcie.c              | 10 +++---
- arch/arm/mach-orion5x/pci.c               | 10 +++---
- arch/mips/pci/ops-bcm63xx.c               |  8 ++---
- arch/mips/pci/pci-legacy.c                |  3 +-
- arch/powerpc/kernel/pci-common.c          | 21 +++++++------
- arch/powerpc/platforms/4xx/pci.c          |  8 ++---
- arch/powerpc/platforms/52xx/mpc52xx_pci.c |  4 +--
- arch/powerpc/platforms/pseries/pci.c      | 16 +++++-----
- arch/sh/drivers/pci/pcie-sh7786.c         | 10 +++---
- arch/sparc/kernel/leon_pci.c              |  5 ++-
- arch/sparc/kernel/pci.c                   | 10 +++---
- arch/sparc/kernel/pcic.c                  |  5 ++-
- drivers/eisa/pci_eisa.c                   |  4 +--
- drivers/pci/bus.c                         |  7 ++---
- drivers/pci/hotplug/shpchp_sysfs.c        |  8 ++---
- drivers/pci/pci.c                         |  5 ++-
- drivers/pci/probe.c                       |  2 +-
- drivers/pci/remove.c                      |  5 ++-
- drivers/pci/setup-bus.c                   | 37 +++++++++--------------
- drivers/pci/setup-res.c                   |  4 +--
- drivers/pci/vgaarb.c                      | 17 +++--------
- drivers/pci/xen-pcifront.c                |  4 +--
- drivers/pcmcia/rsrc_nonstatic.c           |  9 ++----
- drivers/pcmcia/yenta_socket.c             |  3 +-
- drivers/pnp/quirks.c                      | 29 ++++++------------
- include/linux/pci.h                       | 26 +++++++++++++---
- 30 files changed, 141 insertions(+), 163 deletions(-)
-
--- 
-2.39.1
-
+UmVmYWN0b3IgcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZSgpIGluIHRoZSBzYW1lIHdheSBhcyBp
+dCdzIGRvbmUgaW4KcGNpX2Rldl9mb3JfZWFjaF9yZXNvdXJjZSgpIGNhc2UuIFRoaXMgd2lsbCBh
+bGxvdyB0byBoaWRlIGl0ZXJhdG9yCmluc2lkZSB0aGUgbG9vcCwgd2hlcmUgaXQncyBub3QgdXNl
+ZCBvdGhlcndpc2UuCgpObyBmdW5jdGlvbmFsIGNoYW5nZXMgaW50ZW5kZWQuCgpTaWduZWQtb2Zm
+LWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4K
+UmV2aWV3ZWQtYnk6IEtyenlzenRvZiBXaWxjennFhHNraSA8a3dAbGludXguY29tPgotLS0KIC5j
+bGFuZy1mb3JtYXQgICAgICAgICAgICAgICAgICAgICAgfCAgMSArCiBkcml2ZXJzL3BjaS9idXMu
+YyAgICAgICAgICAgICAgICAgIHwgIDcgKysrLS0tLQogZHJpdmVycy9wY2kvaG90cGx1Zy9zaHBj
+aHBfc3lzZnMuYyB8ICA4ICsrKystLS0tCiBkcml2ZXJzL3BjaS9wY2kuYyAgICAgICAgICAgICAg
+ICAgIHwgIDUgKystLS0KIGRyaXZlcnMvcGNpL3Byb2JlLmMgICAgICAgICAgICAgICAgfCAgMiAr
+LQogZHJpdmVycy9wY2kvc2V0dXAtYnVzLmMgICAgICAgICAgICB8IDEwICsrKystLS0tLS0KIGlu
+Y2x1ZGUvbGludXgvcGNpLmggICAgICAgICAgICAgICAgfCAxNCArKysrKysrKysrLS0tLQogNyBm
+aWxlcyBjaGFuZ2VkLCAyNSBpbnNlcnRpb25zKCspLCAyMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1n
+aXQgYS8uY2xhbmctZm9ybWF0IGIvLmNsYW5nLWZvcm1hdAppbmRleCAyNjZhYmI4NDM2NTQuLjgx
+YzlmMDU1MDg2ZiAxMDA2NDQKLS0tIGEvLmNsYW5nLWZvcm1hdAorKysgYi8uY2xhbmctZm9ybWF0
+CkBAIC01MjAsNiArNTIwLDcgQEAgRm9yRWFjaE1hY3JvczoKICAgLSAnb2ZfcHJvcGVydHlfZm9y
+X2VhY2hfc3RyaW5nJwogICAtICdvZl9wcm9wZXJ0eV9mb3JfZWFjaF91MzInCiAgIC0gJ3BjaV9i
+dXNfZm9yX2VhY2hfcmVzb3VyY2UnCisgIC0gJ3BjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcCcK
+ICAgLSAncGNpX2Rldl9mb3JfZWFjaF9yZXNvdXJjZScKICAgLSAncGNpX2Rldl9mb3JfZWFjaF9y
+ZXNvdXJjZV9wJwogICAtICdwY2lfZG9lX2Zvcl9lYWNoX29mZicKZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvcGNpL2J1cy5jIGIvZHJpdmVycy9wY2kvYnVzLmMKaW5kZXggODNhZTgzOGNlYjVmLi5iNDhi
+Y2M5NjVhNDIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcGNpL2J1cy5jCisrKyBiL2RyaXZlcnMvcGNp
+L2J1cy5jCkBAIC0xNjEsMTMgKzE2MSwxMyBAQCBzdGF0aWMgaW50IHBjaV9idXNfYWxsb2NfZnJv
+bV9yZWdpb24oc3RydWN0IHBjaV9idXMgKmJ1cywgc3RydWN0IHJlc291cmNlICpyZXMsCiAJCXZv
+aWQgKmFsaWduZl9kYXRhLAogCQlzdHJ1Y3QgcGNpX2J1c19yZWdpb24gKnJlZ2lvbikKIHsKLQlp
+bnQgaSwgcmV0OwogCXN0cnVjdCByZXNvdXJjZSAqciwgYXZhaWw7CiAJcmVzb3VyY2Vfc2l6ZV90
+IG1heDsKKwlpbnQgcmV0OwogCiAJdHlwZV9tYXNrIHw9IElPUkVTT1VSQ0VfVFlQRV9CSVRTOwog
+Ci0JcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShidXMsIHIsIGkpIHsKKwlwY2lfYnVzX2Zvcl9l
+YWNoX3Jlc291cmNlX3AoYnVzLCByKSB7CiAJCXJlc291cmNlX3NpemVfdCBtaW5fdXNlZCA9IG1p
+bjsKIAogCQlpZiAoIXIpCkBAIC0yNjgsOSArMjY4LDggQEAgYm9vbCBwY2lfYnVzX2NsaXBfcmVz
+b3VyY2Uoc3RydWN0IHBjaV9kZXYgKmRldiwgaW50IGlkeCkKIAlzdHJ1Y3QgcmVzb3VyY2UgKnJl
+cyA9ICZkZXYtPnJlc291cmNlW2lkeF07CiAJc3RydWN0IHJlc291cmNlIG9yaWdfcmVzID0gKnJl
+czsKIAlzdHJ1Y3QgcmVzb3VyY2UgKnI7Ci0JaW50IGk7CiAKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jl
+c291cmNlKGJ1cywgciwgaSkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChidXMsIHIp
+IHsKIAkJcmVzb3VyY2Vfc2l6ZV90IHN0YXJ0LCBlbmQ7CiAKIAkJaWYgKCFyKQpkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9wY2kvaG90cGx1Zy9zaHBjaHBfc3lzZnMuYyBiL2RyaXZlcnMvcGNpL2hvdHBs
+dWcvc2hwY2hwX3N5c2ZzLmMKaW5kZXggNjRiZWVkN2EyNmJlLi5mZjA0ZjBjNWU3YzMgMTAwNjQ0
+Ci0tLSBhL2RyaXZlcnMvcGNpL2hvdHBsdWcvc2hwY2hwX3N5c2ZzLmMKKysrIGIvZHJpdmVycy9w
+Y2kvaG90cGx1Zy9zaHBjaHBfc3lzZnMuYwpAQCAtMjQsMTYgKzI0LDE2IEBACiBzdGF0aWMgc3Np
+emVfdCBzaG93X2N0cmwoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0
+ZSAqYXR0ciwgY2hhciAqYnVmKQogewogCXN0cnVjdCBwY2lfZGV2ICpwZGV2OwotCWludCBpbmRl
+eCwgYnVzbnI7CiAJc3RydWN0IHJlc291cmNlICpyZXM7CiAJc3RydWN0IHBjaV9idXMgKmJ1czsK
+IAlzaXplX3QgbGVuID0gMDsKKwlpbnQgYnVzbnI7CiAKIAlwZGV2ID0gdG9fcGNpX2RldihkZXYp
+OwogCWJ1cyA9IHBkZXYtPnN1Ym9yZGluYXRlOwogCiAJbGVuICs9IHN5c2ZzX2VtaXRfYXQoYnVm
+LCBsZW4sICJGcmVlIHJlc291cmNlczogbWVtb3J5XG4iKTsKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jl
+c291cmNlKGJ1cywgcmVzLCBpbmRleCkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChi
+dXMsIHJlcykgewogCQlpZiAocmVzICYmIChyZXMtPmZsYWdzICYgSU9SRVNPVVJDRV9NRU0pICYm
+CiAJCQkJIShyZXMtPmZsYWdzICYgSU9SRVNPVVJDRV9QUkVGRVRDSCkpIHsKIAkJCWxlbiArPSBz
+eXNmc19lbWl0X2F0KGJ1ZiwgbGVuLApAQCAtNDMsNyArNDMsNyBAQCBzdGF0aWMgc3NpemVfdCBz
+aG93X2N0cmwoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0
+ciwgY2hhcgogCQl9CiAJfQogCWxlbiArPSBzeXNmc19lbWl0X2F0KGJ1ZiwgbGVuLCAiRnJlZSBy
+ZXNvdXJjZXM6IHByZWZldGNoYWJsZSBtZW1vcnlcbiIpOwotCXBjaV9idXNfZm9yX2VhY2hfcmVz
+b3VyY2UoYnVzLCByZXMsIGluZGV4KSB7CisJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZV9wKGJ1
+cywgcmVzKSB7CiAJCWlmIChyZXMgJiYgKHJlcy0+ZmxhZ3MgJiBJT1JFU09VUkNFX01FTSkgJiYK
+IAkJCSAgICAgICAocmVzLT5mbGFncyAmIElPUkVTT1VSQ0VfUFJFRkVUQ0gpKSB7CiAJCQlsZW4g
+Kz0gc3lzZnNfZW1pdF9hdChidWYsIGxlbiwKQEAgLTUzLDcgKzUzLDcgQEAgc3RhdGljIHNzaXpl
+X3Qgc2hvd19jdHJsKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUg
+KmF0dHIsIGNoYXIKIAkJfQogCX0KIAlsZW4gKz0gc3lzZnNfZW1pdF9hdChidWYsIGxlbiwgIkZy
+ZWUgcmVzb3VyY2VzOiBJT1xuIik7Ci0JcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShidXMsIHJl
+cywgaW5kZXgpIHsKKwlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlX3AoYnVzLCByZXMpIHsKIAkJ
+aWYgKHJlcyAmJiAocmVzLT5mbGFncyAmIElPUkVTT1VSQ0VfSU8pKSB7CiAJCQlsZW4gKz0gc3lz
+ZnNfZW1pdF9hdChidWYsIGxlbiwKIAkJCQkJICAgICAic3RhcnQgPSAlOC44bGx4LCBsZW5ndGgg
+PSAlOC44bGx4XG4iLApkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvcGNpLmMgYi9kcml2ZXJzL3Bj
+aS9wY2kuYwppbmRleCA3YTY3NjExZGM1ZjQuLjJmODkxNWFiNDFlZiAxMDA2NDQKLS0tIGEvZHJp
+dmVycy9wY2kvcGNpLmMKKysrIGIvZHJpdmVycy9wY2kvcGNpLmMKQEAgLTc3OSw5ICs3NzksOCBA
+QCBzdHJ1Y3QgcmVzb3VyY2UgKnBjaV9maW5kX3BhcmVudF9yZXNvdXJjZShjb25zdCBzdHJ1Y3Qg
+cGNpX2RldiAqZGV2LAogewogCWNvbnN0IHN0cnVjdCBwY2lfYnVzICpidXMgPSBkZXYtPmJ1czsK
+IAlzdHJ1Y3QgcmVzb3VyY2UgKnI7Ci0JaW50IGk7CiAKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291
+cmNlKGJ1cywgciwgaSkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChidXMsIHIpIHsK
+IAkJaWYgKCFyKQogCQkJY29udGludWU7CiAJCWlmIChyZXNvdXJjZV9jb250YWlucyhyLCByZXMp
+KSB7CkBAIC03OTksNyArNzk4LDcgQEAgc3RydWN0IHJlc291cmNlICpwY2lfZmluZF9wYXJlbnRf
+cmVzb3VyY2UoY29uc3Qgc3RydWN0IHBjaV9kZXYgKmRldiwKIAkJCSAqIGJlIGJvdGggYSBwb3Np
+dGl2ZWx5LWRlY29kZWQgYXBlcnR1cmUgYW5kIGEKIAkJCSAqIHN1YnRyYWN0aXZlbHktZGVjb2Rl
+ZCByZWdpb24gdGhhdCBjb250YWluIHRoZSBCQVIuCiAJCQkgKiBXZSB3YW50IHRoZSBwb3NpdGl2
+ZWx5LWRlY29kZWQgb25lLCBzbyB0aGlzIGRlcGVuZHMKLQkJCSAqIG9uIHBjaV9idXNfZm9yX2Vh
+Y2hfcmVzb3VyY2UoKSBnaXZpbmcgdXMgdGhvc2UKKwkJCSAqIG9uIHBjaV9idXNfZm9yX2VhY2hf
+cmVzb3VyY2VfcCgpIGdpdmluZyB1cyB0aG9zZQogCQkJICogZmlyc3QuCiAJCQkgKi8KIAkJCXJl
+dHVybiByOwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvcHJvYmUuYyBiL2RyaXZlcnMvcGNpL3By
+b2JlLmMKaW5kZXggYTNmNjhiNmJhNmFjLi41YWRhNGMxNTVkM2MgMTAwNjQ0Ci0tLSBhL2RyaXZl
+cnMvcGNpL3Byb2JlLmMKKysrIGIvZHJpdmVycy9wY2kvcHJvYmUuYwpAQCAtNTMzLDcgKzUzMyw3
+IEBAIHZvaWQgcGNpX3JlYWRfYnJpZGdlX2Jhc2VzKHN0cnVjdCBwY2lfYnVzICpjaGlsZCkKIAlw
+Y2lfcmVhZF9icmlkZ2VfbW1pb19wcmVmKGNoaWxkKTsKIAogCWlmIChkZXYtPnRyYW5zcGFyZW50
+KSB7Ci0JCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UoY2hpbGQtPnBhcmVudCwgcmVzLCBpKSB7
+CisJCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChjaGlsZC0+cGFyZW50LCByZXMpIHsKIAkJ
+CWlmIChyZXMgJiYgcmVzLT5mbGFncykgewogCQkJCXBjaV9idXNfYWRkX3Jlc291cmNlKGNoaWxk
+LCByZXMsCiAJCQkJCQkgICAgIFBDSV9TVUJUUkFDVElWRV9ERUNPREUpOwpkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9wY2kvc2V0dXAtYnVzLmMgYi9kcml2ZXJzL3BjaS9zZXR1cC1idXMuYwppbmRleCBk
+NGZjNzY2NWY3MGEuLmQ2ZWFkMDI3MjU1ZiAxMDA2NDQKLS0tIGEvZHJpdmVycy9wY2kvc2V0dXAt
+YnVzLmMKKysrIGIvZHJpdmVycy9wY2kvc2V0dXAtYnVzLmMKQEAgLTc3MCw5ICs3NzAsOCBAQCBz
+dGF0aWMgc3RydWN0IHJlc291cmNlICpmaW5kX2J1c19yZXNvdXJjZV9vZl90eXBlKHN0cnVjdCBw
+Y2lfYnVzICpidXMsCiAJCQkJCQkgIHVuc2lnbmVkIGxvbmcgdHlwZSkKIHsKIAlzdHJ1Y3QgcmVz
+b3VyY2UgKnIsICpyX2Fzc2lnbmVkID0gTlVMTDsKLQlpbnQgaTsKIAotCXBjaV9idXNfZm9yX2Vh
+Y2hfcmVzb3VyY2UoYnVzLCByLCBpKSB7CisJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZV9wKGJ1
+cywgcikgewogCQlpZiAociA9PSAmaW9wb3J0X3Jlc291cmNlIHx8IHIgPT0gJmlvbWVtX3Jlc291
+cmNlKQogCQkJY29udGludWU7CiAJCWlmIChyICYmIChyLT5mbGFncyAmIHR5cGVfbWFzaykgPT0g
+dHlwZSAmJiAhci0+cGFyZW50KQpAQCAtMTIwNCw3ICsxMjAzLDcgQEAgdm9pZCBfX3BjaV9idXNf
+c2l6ZV9icmlkZ2VzKHN0cnVjdCBwY2lfYnVzICpidXMsIHN0cnVjdCBsaXN0X2hlYWQgKnJlYWxs
+b2NfaGVhZCkKIAkJCWFkZGl0aW9uYWxfbW1pb19wcmVmX3NpemUgPSAwOwogCXN0cnVjdCByZXNv
+dXJjZSAqcHJlZjsKIAlzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpob3N0OwotCWludCBoZHJfdHlw
+ZSwgaSwgcmV0OworCWludCBoZHJfdHlwZSwgcmV0OwogCiAJbGlzdF9mb3JfZWFjaF9lbnRyeShk
+ZXYsICZidXMtPmRldmljZXMsIGJ1c19saXN0KSB7CiAJCXN0cnVjdCBwY2lfYnVzICpiID0gZGV2
+LT5zdWJvcmRpbmF0ZTsKQEAgLTEyMjgsNyArMTIyNyw3IEBAIHZvaWQgX19wY2lfYnVzX3NpemVf
+YnJpZGdlcyhzdHJ1Y3QgcGNpX2J1cyAqYnVzLCBzdHJ1Y3QgbGlzdF9oZWFkICpyZWFsbG9jX2hl
+YWQpCiAJCWhvc3QgPSB0b19wY2lfaG9zdF9icmlkZ2UoYnVzLT5icmlkZ2UpOwogCQlpZiAoIWhv
+c3QtPnNpemVfd2luZG93cykKIAkJCXJldHVybjsKLQkJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJj
+ZShidXMsIHByZWYsIGkpCisJCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChidXMsIHByZWYp
+CiAJCQlpZiAocHJlZiAmJiAocHJlZi0+ZmxhZ3MgJiBJT1JFU09VUkNFX1BSRUZFVENIKSkKIAkJ
+CQlicmVhazsKIAkJaGRyX3R5cGUgPSAtMTsJLyogSW50ZW50aW9uYWxseSBpbnZhbGlkIC0gbm90
+IGEgUENJIGRldmljZS4gKi8KQEAgLTEzMzMsMTIgKzEzMzIsMTEgQEAgRVhQT1JUX1NZTUJPTChw
+Y2lfYnVzX3NpemVfYnJpZGdlcyk7CiAKIHN0YXRpYyB2b2lkIGFzc2lnbl9maXhlZF9yZXNvdXJj
+ZV9vbl9idXMoc3RydWN0IHBjaV9idXMgKmIsIHN0cnVjdCByZXNvdXJjZSAqcikKIHsKLQlpbnQg
+aTsKIAlzdHJ1Y3QgcmVzb3VyY2UgKnBhcmVudF9yOwogCXVuc2lnbmVkIGxvbmcgbWFzayA9IElP
+UkVTT1VSQ0VfSU8gfCBJT1JFU09VUkNFX01FTSB8CiAJCQkgICAgIElPUkVTT1VSQ0VfUFJFRkVU
+Q0g7CiAKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGIsIHBhcmVudF9yLCBpKSB7CisJcGNp
+X2J1c19mb3JfZWFjaF9yZXNvdXJjZV9wKGIsIHBhcmVudF9yKSB7CiAJCWlmICghcGFyZW50X3Ip
+CiAJCQljb250aW51ZTsKIApkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9wY2kuaCBiL2luY2x1
+ZGUvbGludXgvcGNpLmgKaW5kZXggNjcwZjAxYzU1MzhjLi5hYWM3MmMyNDdiZWQgMTAwNjQ0Ci0t
+LSBhL2luY2x1ZGUvbGludXgvcGNpLmgKKysrIGIvaW5jbHVkZS9saW51eC9wY2kuaApAQCAtMTQ1
+NiwxMCArMTQ1NiwxNiBAQCBpbnQgZGV2bV9yZXF1ZXN0X3BjaV9idXNfcmVzb3VyY2VzKHN0cnVj
+dCBkZXZpY2UgKmRldiwKIC8qIFRlbXBvcmFyeSB1bnRpbCBuZXcgYW5kIHdvcmtpbmcgUENJIFNC
+UiBBUEkgaW4gcGxhY2UgKi8KIGludCBwY2lfYnJpZGdlX3NlY29uZGFyeV9idXNfcmVzZXQoc3Ry
+dWN0IHBjaV9kZXYgKmRldik7CiAKLSNkZWZpbmUgcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShi
+dXMsIHJlcywgaSkJCQkJXAotCWZvciAoaSA9IDA7CQkJCQkJCVwKLQkgICAgKHJlcyA9IHBjaV9i
+dXNfcmVzb3VyY2VfbihidXMsIGkpKSB8fCBpIDwgUENJX0JSSURHRV9SRVNPVVJDRV9OVU07IFwK
+LQkgICAgIGkrKykKKyNkZWZpbmUgX19wY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgcmVz
+LCBfX2ksIHZhcnR5cGUpCQkJXAorCWZvciAodmFydHlwZSBfX2kgPSAwOwkJCQkJCQlcCisJICAg
+ICByZXMgPSBwY2lfYnVzX3Jlc291cmNlX24oYnVzLCBfX2kpLCBfX2kgPCBQQ0lfQlJJREdFX1JF
+U09VUkNFX05VTTsJXAorCSAgICAgX19pKyspCisKKyNkZWZpbmUgcGNpX2J1c19mb3JfZWFjaF9y
+ZXNvdXJjZShidXMsIHJlcywgaSkJCQkJCVwKKwlfX3BjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2Uo
+YnVzLCByZXMsIGksICkKKworI2RlZmluZSBwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlX3AoYnVz
+LCByZXMpCQkJCQlcCisJX19wY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgcmVzLCBpLCB1
+bnNpZ25lZCBpbnQpCiAKIGludCBfX211c3RfY2hlY2sgcGNpX2J1c19hbGxvY19yZXNvdXJjZShz
+dHJ1Y3QgcGNpX2J1cyAqYnVzLAogCQkJc3RydWN0IHJlc291cmNlICpyZXMsIHJlc291cmNlX3Np
+emVfdCBzaXplLAotLSAKMi4zOS4xCgo=
