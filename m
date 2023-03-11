@@ -1,39 +1,117 @@
-From: Keith Busch <kbusch@kernel.org>
+From: Dan Carpenter <error27@gmail.com>
 Subject: Re: [PATCH v4 1/4] PCI: Introduce pci_dev_for_each_resource()
-Date: Fri, 10 Mar 2023 15:15:38 -0700
-Message-ID: <ZAusCnLSXeEcpQs+@kbusch-mbp.dhcp.thefacebook.com>
-References: <20230310171416.23356-1-andriy.shevchenko@linux.intel.com>
- <20230310171416.23356-2-andriy.shevchenko@linux.intel.com>
+Date: Sat, 11 Mar 2023 16:54:32 +0300
+Message-ID: <d057ac5c-5947-41e1-abc7-9428fbd2fbe2@kili.mountain>
+References: <20230310171416.23356-2-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Return-path: <linux-mips-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1678486543;
-        bh=DBl3XYhVnPnvHREV6khsX0zced8HUvT1CffAKeLd3Ro=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OfS4jME/FTj7znUmYf295mHvCJSGHW15meDAWvWzrPF00ribhkkR54Qzq1xN8JWLo
-         4ifTzybHNa9ZODC6VxC42vmMGTVR8rpuWOM6tKK420xu8RHuuxnRruXC7YKzvCsgbR
-         u/3W/J52kt+Sw35gEY+GHE+yc90z2JKYQ8ziYt9KjcC+XD8bNVo3dAsYq1L9Dq9Z0P
-         F78mqifIRtEWY9l2xPq1eww1JPlj0DytsnzKq9XlcZ3XWB4shMaJ1Gp356DNbpjhAm
-         fT6kd6cAHwWNZ9v/mPpirze0bthx/rOXMwvra8reVtn+1Ve3YO1CPCN4cOH1gbnOxg
-         +A+CV4nR0FY6w==
+Return-path: <linux-acpi-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1678542877;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=w6VNgsWjX3Wuvimz8g5dmkPK1Cy/m4ikAbDoLw6beJQ=;
+        b=EgpADp9mPyWPriOHQHt/ftRejPRpNulP0dfOXzeleBhIPgj1NGQIJbytBzJ2k1iF4R
+         CyITUZOvJLHKAPxgRdheh7BTJmNg+LH8xo7nE4cpnK/TrtstTxkyuMZEe6QB0uKZbsho
+         bha6cNC4l0ab+HfNrdxjVgcV4nNCXjrWHLvd5AgmtK0unzXSSZWpk338fqWEaWfbfDXc
+         gS8s4MTSvK5KviuS4DzupSZgdAs7GDKSC97xY/DJNQkr+LExD4sU3rKuRX3/o8kJ1rWj
+         n5Cc6BbMqxbQX9xXF/Ai+zkDgJk3y+PUHE9rOyhjFvIaxai7o22SnhvFxKXJxhQbJB/I
+         C2Xg==
 Content-Disposition: inline
 In-Reply-To: <20230310171416.23356-2-andriy.shevchenko@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Niklas Schnelle <schnelle@linux.ibm.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.ker
+To: oe-kbuild@lists.linux.dev, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Niklas Schnelle <schnelle@linux.ibm.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.o
+Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev, Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>
 
-On Fri, Mar 10, 2023 at 07:14:13PM +0200, Andy Shevchenko wrote:
-> +#define __pci_dev_for_each_resource(dev, res, __i, vartype)		\
-> +	for (vartype __i = 0;						\
-> +		res = &(dev)->resource[__i], __i < PCI_NUM_RESOURCES;	\
-> +		__i++)
+Hi Andy,
 
-...
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> +#define pci_dev_for_each_resource_p(dev, res)				\
-> +	__pci_dev_for_each_resource(dev, res, i, unsigned int)
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/PCI-Introduce-pci_dev_for_each_resource/20230311-011642
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git next
+patch link:    https://lore.kernel.org/r/20230310171416.23356-2-andriy.shevchenko%40linux.intel.com
+patch subject: [PATCH v4 1/4] PCI: Introduce pci_dev_for_each_resource()
+config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20230311/202303112149.xD47qKOY-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
 
-It looks dangerous to have a macro declare a variable when starting a new
-scope. How do you know the name 'i' won't clash with something defined above?
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Reported-by: Dan Carpenter <error27@gmail.com>
+| Link: https://lore.kernel.org/r/202303112149.xD47qKOY-lkp@intel.com/
+
+smatch warnings:
+drivers/pnp/quirks.c:248 quirk_system_pci_resources() warn: was && intended here instead of ||?
+
+vim +248 drivers/pnp/quirks.c
+
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  229  static void quirk_system_pci_resources(struct pnp_dev *dev)
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  230  {
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  231  	struct pci_dev *pdev = NULL;
+059b4a086017fb Mika Westerberg 2023-03-10  232  	struct resource *res, *r;
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  233  	int i, j;
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  234  
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  235  	/*
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  236  	 * Some BIOSes have PNP motherboard devices with resources that
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  237  	 * partially overlap PCI BARs.  The PNP system driver claims these
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  238  	 * motherboard resources, which prevents the normal PCI driver from
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  239  	 * requesting them later.
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  240  	 *
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  241  	 * This patch disables the PNP resources that conflict with PCI BARs
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  242  	 * so they won't be claimed by the PNP system driver.
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  243  	 */
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  244  	for_each_pci_dev(pdev) {
+059b4a086017fb Mika Westerberg 2023-03-10  245  		pci_dev_for_each_resource(pdev, r, i) {
+059b4a086017fb Mika Westerberg 2023-03-10  246  			unsigned long type = resource_type(r);
+999ed65ad12e37 Rene Herman     2008-07-25  247  
+059b4a086017fb Mika Westerberg 2023-03-10 @248  			if (type != IORESOURCE_IO || type != IORESOURCE_MEM ||
+                                                                                                  ^^
+This || needs to be &&.  This loop will always hit the continue path
+without doing anything.
+
+059b4a086017fb Mika Westerberg 2023-03-10  249  			    resource_size(r) == 0)
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  250  				continue;
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  251  
+059b4a086017fb Mika Westerberg 2023-03-10  252  			if (r->flags & IORESOURCE_UNSET)
+f7834c092c4299 Bjorn Helgaas   2015-03-03  253  				continue;
+f7834c092c4299 Bjorn Helgaas   2015-03-03  254  
+95ab3669f78306 Bjorn Helgaas   2008-04-28  255  			for (j = 0;
+999ed65ad12e37 Rene Herman     2008-07-25  256  			     (res = pnp_get_resource(dev, type, j)); j++) {
+aee3ad815dd291 Bjorn Helgaas   2008-06-27  257  				if (res->start == 0 && res->end == 0)
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  258  					continue;
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  259  
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  260  				/*
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  261  				 * If the PNP region doesn't overlap the PCI
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  262  				 * region at all, there's no problem.
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  263  				 */
+059b4a086017fb Mika Westerberg 2023-03-10  264  				if (!resource_overlaps(res, r))
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  265  					continue;
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  266  
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  267  				/*
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  268  				 * If the PNP region completely encloses (or is
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  269  				 * at least as large as) the PCI region, that's
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  270  				 * also OK.  For example, this happens when the
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  271  				 * PNP device describes a bridge with PCI
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  272  				 * behind it.
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  273  				 */
+059b4a086017fb Mika Westerberg 2023-03-10  274  				if (res->start <= r->start && res->end >= r->end)
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  275  					continue;
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  276  
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  277  				/*
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  278  				 * Otherwise, the PNP region overlaps *part* of
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  279  				 * the PCI region, and that might prevent a PCI
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  280  				 * driver from requesting its resources.
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  281  				 */
+c7dabef8a2c59e Bjorn Helgaas   2009-10-27  282  				dev_warn(&dev->dev,
+059b4a086017fb Mika Westerberg 2023-03-10  283  					 "disabling %pR because it overlaps %s BAR %d %pR\n",
+059b4a086017fb Mika Westerberg 2023-03-10  284  					 res, pci_name(pdev), i, r);
+4b34fe156455d2 Bjorn Helgaas   2008-06-02  285  				res->flags |= IORESOURCE_DISABLED;
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  286  			}
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  287  		}
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  288  	}
+0509ad5e1a7d92 Bjorn Helgaas   2008-03-11  289  }
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
+
