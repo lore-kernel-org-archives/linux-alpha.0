@@ -1,106 +1,161 @@
-From: kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v5 1/4] PCI: Introduce pci_dev_for_each_resource()
-Date: Fri, 17 Mar 2023 03:03:04 +0800
-Message-ID: <202303170223.V0xQhs1V-lkp@intel.com>
-References: <20230314192634.63531-2-andriy.shevchenko@linux.intel.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v6 2/4] PCI: Split pci_bus_for_each_resource_p() out of pci_bus_for_each_resource()
+Date: Mon, 20 Mar 2023 15:16:31 +0200
+Message-ID: <20230320131633.61680-3-andriy.shevchenko@linux.intel.com>
+References: <20230320131633.61680-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
+Content-Transfer-Encoding: base64
 Return-path: <linux-mips-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1678993428; x=1710529428;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zUzkGxrqKDPR6SroJseKwSx7MVAGnpL/Grdhlw6b7UE=;
-  b=GGGcwcWFhVNUPqlV5cS7jhSo++oAJJeSo+qf8YGM9dLprFCOO90c7NMm
-   e8AhBjSiTxfCcsA0O81ZpHm5F4j+gpsUAI9H1C81Sv7zAKj5/fHr1lai4
-   hEbgqNKOh6T2ENt2DM/sliOpWhZNXF1cX+UNrAZYnmO59Wa+ehb4oCZJd
-   bQ6irRFzgXO/MfQ1FFy326yiwnl/C2t1daZQ4tx/KhKcHBV7DzcLjin0g
-   3ddESbDNI/pjbsLY+8U2qN/0vrXedmDzmX7lS/nykk7GfmB6WVFfSiZmh
-   zoOpHKx6VD5zBdoQp5tLxiS4ZMFiN3xNtXzlWPkv8RD4F3aXnH27TcJ5N
-   g==;
-Content-Disposition: inline
-In-Reply-To: <20230314192634.63531-2-andriy.shevchenko@linux.intel.com>
+  t=1679318169; x=1710854169;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=pKBg2DWRtjN/3o0GQ+Gz1Jmqpx4HtRyfpegHo4oOuDE=;
+  b=IevzGpzGRGvW6GHvpuGTsY/dEcTF4i+gKzGLKMxz9JkrMv4+oNpy0zO4
+   0WHVKpWOELHGsdINiwE7WeZkwW0EjFz+KVEiUNmME1rCsw3T0eSEf8hiX
+   GeL0Se5Zj4g90Kqsi1TQbql+lA0XbQ8eUCuPGAc3qhkwcEzXy4uByNex5
+   qYRF93wmVEcKPRsI0AUd4fJWbCWmdtUdAkkefFAN4SZ/El/2Xxtl6di/y
+   500+a/Ci/ySo7dQawdXEZVO0IOmHRD3ki5ziCw1AOnbEOvpW0EcbliCNn
+   mgV9jD1sqor+3xpU75mvuKGmSumoZofFYjxnOc3fDI+yGszd5WSy4N9QA
+   A==;
+In-Reply-To: <20230320131633.61680-1-andriy.shevchenko@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozla
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>
+Content-Type: text/plain; charset="macroman"
+To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists
+Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>
 
-Hi Andy,
-
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on pci/next]
-[also build test ERROR on pci/for-linus powerpc/next powerpc/fixes linus/master v6.3-rc2 next-20230316]
-[cannot apply to soc/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/PCI-Introduce-pci_dev_for_each_resource/20230315-032821
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git next
-patch link:    https://lore.kernel.org/r/20230314192634.63531-2-andriy.shevchenko%40linux.intel.com
-patch subject: [PATCH v5 1/4] PCI: Introduce pci_dev_for_each_resource()
-config: powerpc-randconfig-r032-20230312 (https://download.01.org/0day-ci/archive/20230317/202303170223.V0xQhs1V-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install powerpc cross compiling tool for clang build
-        # apt-get install binutils-powerpc-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/85cdf4746b716f7b6c14d7dc5cd907c3c2a1fb0c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/PCI-Introduce-pci_dev_for_each_resource/20230315-032821
-        git checkout 85cdf4746b716f7b6c14d7dc5cd907c3c2a1fb0c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303170223.V0xQhs1V-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> arch/powerpc/platforms/52xx/mpc52xx_pci.c:331:6: error: unused variable 'i' [-Werror,-Wunused-variable]
-           int i;
-               ^
-   1 error generated.
-
-
-vim +/i +331 arch/powerpc/platforms/52xx/mpc52xx_pci.c
-
-f42963f8646540 Grant Likely    2006-12-12  326  
-f42963f8646540 Grant Likely    2006-12-12  327  static void
-f42963f8646540 Grant Likely    2006-12-12  328  mpc52xx_pci_fixup_resources(struct pci_dev *dev)
-f42963f8646540 Grant Likely    2006-12-12  329  {
-85cdf4746b716f Mika Westerberg 2023-03-14  330  	struct resource *res;
-f42963f8646540 Grant Likely    2006-12-12 @331  	int i;
-f42963f8646540 Grant Likely    2006-12-12  332  
-59510820fff76f Randy Dunlap    2021-04-28  333  	pr_debug("%s() %.4x:%.4x\n", __func__, dev->vendor, dev->device);
-f42963f8646540 Grant Likely    2006-12-12  334  
-f42963f8646540 Grant Likely    2006-12-12  335  	/* We don't rely on boot loader for PCI and resets all
-f42963f8646540 Grant Likely    2006-12-12  336  	   devices */
-85cdf4746b716f Mika Westerberg 2023-03-14  337  	pci_dev_for_each_resource_p(dev, res) {
-f42963f8646540 Grant Likely    2006-12-12  338  		if (res->end > res->start) {	/* Only valid resources */
-f42963f8646540 Grant Likely    2006-12-12  339  			res->end -= res->start;
-f42963f8646540 Grant Likely    2006-12-12  340  			res->start = 0;
-f42963f8646540 Grant Likely    2006-12-12  341  			res->flags |= IORESOURCE_UNSET;
-f42963f8646540 Grant Likely    2006-12-12  342  		}
-f42963f8646540 Grant Likely    2006-12-12  343  	}
-f42963f8646540 Grant Likely    2006-12-12  344  
-f42963f8646540 Grant Likely    2006-12-12  345  	/* The PCI Host bridge of MPC52xx has a prefetch memory resource
-f42963f8646540 Grant Likely    2006-12-12  346  	   fixed to 1Gb. Doesn't fit in the resource system so we remove it */
-f42963f8646540 Grant Likely    2006-12-12  347  	if ( (dev->vendor == PCI_VENDOR_ID_MOTOROLA) &&
-f42963f8646540 Grant Likely    2006-12-12  348  	     (   dev->device == PCI_DEVICE_ID_MOTOROLA_MPC5200
-f42963f8646540 Grant Likely    2006-12-12  349  	      || dev->device == PCI_DEVICE_ID_MOTOROLA_MPC5200B) ) {
-f42963f8646540 Grant Likely    2006-12-12  350  		struct resource *res = &dev->resource[1];
-f42963f8646540 Grant Likely    2006-12-12  351  		res->start = res->end = res->flags = 0;
-f42963f8646540 Grant Likely    2006-12-12  352  	}
-f42963f8646540 Grant Likely    2006-12-12  353  }
-f42963f8646540 Grant Likely    2006-12-12  354  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+UmVmYWN0b3IgcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZSgpIGluIHRoZSBzYW1lIHdheSBhcyBp
+dCdzIGRvbmUgaW4KcGNpX2Rldl9mb3JfZWFjaF9yZXNvdXJjZSgpIGNhc2UuIFRoaXMgd2lsbCBh
+bGxvdyB0byBoaWRlIGl0ZXJhdG9yCmluc2lkZSB0aGUgbG9vcCwgd2hlcmUgaXQncyBub3QgdXNl
+ZCBvdGhlcndpc2UuCgpObyBmdW5jdGlvbmFsIGNoYW5nZXMgaW50ZW5kZWQuCgpTaWduZWQtb2Zm
+LWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4K
+UmV2aWV3ZWQtYnk6IEtyenlzenRvZiBXaWxjennFhHNraSA8a3dAbGludXguY29tPgotLS0KIC5j
+bGFuZy1mb3JtYXQgICAgICAgICAgICAgICAgICAgICAgfCAgMSArCiBkcml2ZXJzL3BjaS9idXMu
+YyAgICAgICAgICAgICAgICAgIHwgIDcgKysrLS0tLQogZHJpdmVycy9wY2kvaG90cGx1Zy9zaHBj
+aHBfc3lzZnMuYyB8ICA4ICsrKystLS0tCiBkcml2ZXJzL3BjaS9wY2kuYyAgICAgICAgICAgICAg
+ICAgIHwgIDUgKystLS0KIGRyaXZlcnMvcGNpL3Byb2JlLmMgICAgICAgICAgICAgICAgfCAgMiAr
+LQogZHJpdmVycy9wY2kvc2V0dXAtYnVzLmMgICAgICAgICAgICB8IDEwICsrKystLS0tLS0KIGlu
+Y2x1ZGUvbGludXgvcGNpLmggICAgICAgICAgICAgICAgfCAxNCArKysrKysrKysrLS0tLQogNyBm
+aWxlcyBjaGFuZ2VkLCAyNSBpbnNlcnRpb25zKCspLCAyMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1n
+aXQgYS8uY2xhbmctZm9ybWF0IGIvLmNsYW5nLWZvcm1hdAppbmRleCAyNjZhYmI4NDM2NTQuLjgx
+YzlmMDU1MDg2ZiAxMDA2NDQKLS0tIGEvLmNsYW5nLWZvcm1hdAorKysgYi8uY2xhbmctZm9ybWF0
+CkBAIC01MjAsNiArNTIwLDcgQEAgRm9yRWFjaE1hY3JvczoKICAgLSAnb2ZfcHJvcGVydHlfZm9y
+X2VhY2hfc3RyaW5nJwogICAtICdvZl9wcm9wZXJ0eV9mb3JfZWFjaF91MzInCiAgIC0gJ3BjaV9i
+dXNfZm9yX2VhY2hfcmVzb3VyY2UnCisgIC0gJ3BjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcCcK
+ICAgLSAncGNpX2Rldl9mb3JfZWFjaF9yZXNvdXJjZScKICAgLSAncGNpX2Rldl9mb3JfZWFjaF9y
+ZXNvdXJjZV9wJwogICAtICdwY2lfZG9lX2Zvcl9lYWNoX29mZicKZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvcGNpL2J1cy5jIGIvZHJpdmVycy9wY2kvYnVzLmMKaW5kZXggNTQ5YzRiZDVjYWVjLi5iMDc4
+OWQzMzJkMzYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcGNpL2J1cy5jCisrKyBiL2RyaXZlcnMvcGNp
+L2J1cy5jCkBAIC0xODIsMTMgKzE4MiwxMyBAQCBzdGF0aWMgaW50IHBjaV9idXNfYWxsb2NfZnJv
+bV9yZWdpb24oc3RydWN0IHBjaV9idXMgKmJ1cywgc3RydWN0IHJlc291cmNlICpyZXMsCiAJCXZv
+aWQgKmFsaWduZl9kYXRhLAogCQlzdHJ1Y3QgcGNpX2J1c19yZWdpb24gKnJlZ2lvbikKIHsKLQlp
+bnQgaSwgcmV0OwogCXN0cnVjdCByZXNvdXJjZSAqciwgYXZhaWw7CiAJcmVzb3VyY2Vfc2l6ZV90
+IG1heDsKKwlpbnQgcmV0OwogCiAJdHlwZV9tYXNrIHw9IElPUkVTT1VSQ0VfVFlQRV9CSVRTOwog
+Ci0JcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShidXMsIHIsIGkpIHsKKwlwY2lfYnVzX2Zvcl9l
+YWNoX3Jlc291cmNlX3AoYnVzLCByKSB7CiAJCXJlc291cmNlX3NpemVfdCBtaW5fdXNlZCA9IG1p
+bjsKIAogCQlpZiAoIXIpCkBAIC0yODksOSArMjg5LDggQEAgYm9vbCBwY2lfYnVzX2NsaXBfcmVz
+b3VyY2Uoc3RydWN0IHBjaV9kZXYgKmRldiwgaW50IGlkeCkKIAlzdHJ1Y3QgcmVzb3VyY2UgKnJl
+cyA9ICZkZXYtPnJlc291cmNlW2lkeF07CiAJc3RydWN0IHJlc291cmNlIG9yaWdfcmVzID0gKnJl
+czsKIAlzdHJ1Y3QgcmVzb3VyY2UgKnI7Ci0JaW50IGk7CiAKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jl
+c291cmNlKGJ1cywgciwgaSkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChidXMsIHIp
+IHsKIAkJcmVzb3VyY2Vfc2l6ZV90IHN0YXJ0LCBlbmQ7CiAKIAkJaWYgKCFyKQpkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9wY2kvaG90cGx1Zy9zaHBjaHBfc3lzZnMuYyBiL2RyaXZlcnMvcGNpL2hvdHBs
+dWcvc2hwY2hwX3N5c2ZzLmMKaW5kZXggNjRiZWVkN2EyNmJlLi5mZjA0ZjBjNWU3YzMgMTAwNjQ0
+Ci0tLSBhL2RyaXZlcnMvcGNpL2hvdHBsdWcvc2hwY2hwX3N5c2ZzLmMKKysrIGIvZHJpdmVycy9w
+Y2kvaG90cGx1Zy9zaHBjaHBfc3lzZnMuYwpAQCAtMjQsMTYgKzI0LDE2IEBACiBzdGF0aWMgc3Np
+emVfdCBzaG93X2N0cmwoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0
+ZSAqYXR0ciwgY2hhciAqYnVmKQogewogCXN0cnVjdCBwY2lfZGV2ICpwZGV2OwotCWludCBpbmRl
+eCwgYnVzbnI7CiAJc3RydWN0IHJlc291cmNlICpyZXM7CiAJc3RydWN0IHBjaV9idXMgKmJ1czsK
+IAlzaXplX3QgbGVuID0gMDsKKwlpbnQgYnVzbnI7CiAKIAlwZGV2ID0gdG9fcGNpX2RldihkZXYp
+OwogCWJ1cyA9IHBkZXYtPnN1Ym9yZGluYXRlOwogCiAJbGVuICs9IHN5c2ZzX2VtaXRfYXQoYnVm
+LCBsZW4sICJGcmVlIHJlc291cmNlczogbWVtb3J5XG4iKTsKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jl
+c291cmNlKGJ1cywgcmVzLCBpbmRleCkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChi
+dXMsIHJlcykgewogCQlpZiAocmVzICYmIChyZXMtPmZsYWdzICYgSU9SRVNPVVJDRV9NRU0pICYm
+CiAJCQkJIShyZXMtPmZsYWdzICYgSU9SRVNPVVJDRV9QUkVGRVRDSCkpIHsKIAkJCWxlbiArPSBz
+eXNmc19lbWl0X2F0KGJ1ZiwgbGVuLApAQCAtNDMsNyArNDMsNyBAQCBzdGF0aWMgc3NpemVfdCBz
+aG93X2N0cmwoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0
+ciwgY2hhcgogCQl9CiAJfQogCWxlbiArPSBzeXNmc19lbWl0X2F0KGJ1ZiwgbGVuLCAiRnJlZSBy
+ZXNvdXJjZXM6IHByZWZldGNoYWJsZSBtZW1vcnlcbiIpOwotCXBjaV9idXNfZm9yX2VhY2hfcmVz
+b3VyY2UoYnVzLCByZXMsIGluZGV4KSB7CisJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZV9wKGJ1
+cywgcmVzKSB7CiAJCWlmIChyZXMgJiYgKHJlcy0+ZmxhZ3MgJiBJT1JFU09VUkNFX01FTSkgJiYK
+IAkJCSAgICAgICAocmVzLT5mbGFncyAmIElPUkVTT1VSQ0VfUFJFRkVUQ0gpKSB7CiAJCQlsZW4g
+Kz0gc3lzZnNfZW1pdF9hdChidWYsIGxlbiwKQEAgLTUzLDcgKzUzLDcgQEAgc3RhdGljIHNzaXpl
+X3Qgc2hvd19jdHJsKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUg
+KmF0dHIsIGNoYXIKIAkJfQogCX0KIAlsZW4gKz0gc3lzZnNfZW1pdF9hdChidWYsIGxlbiwgIkZy
+ZWUgcmVzb3VyY2VzOiBJT1xuIik7Ci0JcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShidXMsIHJl
+cywgaW5kZXgpIHsKKwlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlX3AoYnVzLCByZXMpIHsKIAkJ
+aWYgKHJlcyAmJiAocmVzLT5mbGFncyAmIElPUkVTT1VSQ0VfSU8pKSB7CiAJCQlsZW4gKz0gc3lz
+ZnNfZW1pdF9hdChidWYsIGxlbiwKIAkJCQkJICAgICAic3RhcnQgPSAlOC44bGx4LCBsZW5ndGgg
+PSAlOC44bGx4XG4iLApkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvcGNpLmMgYi9kcml2ZXJzL3Bj
+aS9wY2kuYwppbmRleCA3YTY3NjExZGM1ZjQuLjJmODkxNWFiNDFlZiAxMDA2NDQKLS0tIGEvZHJp
+dmVycy9wY2kvcGNpLmMKKysrIGIvZHJpdmVycy9wY2kvcGNpLmMKQEAgLTc3OSw5ICs3NzksOCBA
+QCBzdHJ1Y3QgcmVzb3VyY2UgKnBjaV9maW5kX3BhcmVudF9yZXNvdXJjZShjb25zdCBzdHJ1Y3Qg
+cGNpX2RldiAqZGV2LAogewogCWNvbnN0IHN0cnVjdCBwY2lfYnVzICpidXMgPSBkZXYtPmJ1czsK
+IAlzdHJ1Y3QgcmVzb3VyY2UgKnI7Ci0JaW50IGk7CiAKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291
+cmNlKGJ1cywgciwgaSkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChidXMsIHIpIHsK
+IAkJaWYgKCFyKQogCQkJY29udGludWU7CiAJCWlmIChyZXNvdXJjZV9jb250YWlucyhyLCByZXMp
+KSB7CkBAIC03OTksNyArNzk4LDcgQEAgc3RydWN0IHJlc291cmNlICpwY2lfZmluZF9wYXJlbnRf
+cmVzb3VyY2UoY29uc3Qgc3RydWN0IHBjaV9kZXYgKmRldiwKIAkJCSAqIGJlIGJvdGggYSBwb3Np
+dGl2ZWx5LWRlY29kZWQgYXBlcnR1cmUgYW5kIGEKIAkJCSAqIHN1YnRyYWN0aXZlbHktZGVjb2Rl
+ZCByZWdpb24gdGhhdCBjb250YWluIHRoZSBCQVIuCiAJCQkgKiBXZSB3YW50IHRoZSBwb3NpdGl2
+ZWx5LWRlY29kZWQgb25lLCBzbyB0aGlzIGRlcGVuZHMKLQkJCSAqIG9uIHBjaV9idXNfZm9yX2Vh
+Y2hfcmVzb3VyY2UoKSBnaXZpbmcgdXMgdGhvc2UKKwkJCSAqIG9uIHBjaV9idXNfZm9yX2VhY2hf
+cmVzb3VyY2VfcCgpIGdpdmluZyB1cyB0aG9zZQogCQkJICogZmlyc3QuCiAJCQkgKi8KIAkJCXJl
+dHVybiByOwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvcHJvYmUuYyBiL2RyaXZlcnMvcGNpL3By
+b2JlLmMKaW5kZXggYTNmNjhiNmJhNmFjLi41YWRhNGMxNTVkM2MgMTAwNjQ0Ci0tLSBhL2RyaXZl
+cnMvcGNpL3Byb2JlLmMKKysrIGIvZHJpdmVycy9wY2kvcHJvYmUuYwpAQCAtNTMzLDcgKzUzMyw3
+IEBAIHZvaWQgcGNpX3JlYWRfYnJpZGdlX2Jhc2VzKHN0cnVjdCBwY2lfYnVzICpjaGlsZCkKIAlw
+Y2lfcmVhZF9icmlkZ2VfbW1pb19wcmVmKGNoaWxkKTsKIAogCWlmIChkZXYtPnRyYW5zcGFyZW50
+KSB7Ci0JCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UoY2hpbGQtPnBhcmVudCwgcmVzLCBpKSB7
+CisJCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChjaGlsZC0+cGFyZW50LCByZXMpIHsKIAkJ
+CWlmIChyZXMgJiYgcmVzLT5mbGFncykgewogCQkJCXBjaV9idXNfYWRkX3Jlc291cmNlKGNoaWxk
+LCByZXMsCiAJCQkJCQkgICAgIFBDSV9TVUJUUkFDVElWRV9ERUNPREUpOwpkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9wY2kvc2V0dXAtYnVzLmMgYi9kcml2ZXJzL3BjaS9zZXR1cC1idXMuYwppbmRleCBk
+NGZjNzY2NWY3MGEuLmQ2ZWFkMDI3MjU1ZiAxMDA2NDQKLS0tIGEvZHJpdmVycy9wY2kvc2V0dXAt
+YnVzLmMKKysrIGIvZHJpdmVycy9wY2kvc2V0dXAtYnVzLmMKQEAgLTc3MCw5ICs3NzAsOCBAQCBz
+dGF0aWMgc3RydWN0IHJlc291cmNlICpmaW5kX2J1c19yZXNvdXJjZV9vZl90eXBlKHN0cnVjdCBw
+Y2lfYnVzICpidXMsCiAJCQkJCQkgIHVuc2lnbmVkIGxvbmcgdHlwZSkKIHsKIAlzdHJ1Y3QgcmVz
+b3VyY2UgKnIsICpyX2Fzc2lnbmVkID0gTlVMTDsKLQlpbnQgaTsKIAotCXBjaV9idXNfZm9yX2Vh
+Y2hfcmVzb3VyY2UoYnVzLCByLCBpKSB7CisJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZV9wKGJ1
+cywgcikgewogCQlpZiAociA9PSAmaW9wb3J0X3Jlc291cmNlIHx8IHIgPT0gJmlvbWVtX3Jlc291
+cmNlKQogCQkJY29udGludWU7CiAJCWlmIChyICYmIChyLT5mbGFncyAmIHR5cGVfbWFzaykgPT0g
+dHlwZSAmJiAhci0+cGFyZW50KQpAQCAtMTIwNCw3ICsxMjAzLDcgQEAgdm9pZCBfX3BjaV9idXNf
+c2l6ZV9icmlkZ2VzKHN0cnVjdCBwY2lfYnVzICpidXMsIHN0cnVjdCBsaXN0X2hlYWQgKnJlYWxs
+b2NfaGVhZCkKIAkJCWFkZGl0aW9uYWxfbW1pb19wcmVmX3NpemUgPSAwOwogCXN0cnVjdCByZXNv
+dXJjZSAqcHJlZjsKIAlzdHJ1Y3QgcGNpX2hvc3RfYnJpZGdlICpob3N0OwotCWludCBoZHJfdHlw
+ZSwgaSwgcmV0OworCWludCBoZHJfdHlwZSwgcmV0OwogCiAJbGlzdF9mb3JfZWFjaF9lbnRyeShk
+ZXYsICZidXMtPmRldmljZXMsIGJ1c19saXN0KSB7CiAJCXN0cnVjdCBwY2lfYnVzICpiID0gZGV2
+LT5zdWJvcmRpbmF0ZTsKQEAgLTEyMjgsNyArMTIyNyw3IEBAIHZvaWQgX19wY2lfYnVzX3NpemVf
+YnJpZGdlcyhzdHJ1Y3QgcGNpX2J1cyAqYnVzLCBzdHJ1Y3QgbGlzdF9oZWFkICpyZWFsbG9jX2hl
+YWQpCiAJCWhvc3QgPSB0b19wY2lfaG9zdF9icmlkZ2UoYnVzLT5icmlkZ2UpOwogCQlpZiAoIWhv
+c3QtPnNpemVfd2luZG93cykKIAkJCXJldHVybjsKLQkJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJj
+ZShidXMsIHByZWYsIGkpCisJCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcChidXMsIHByZWYp
+CiAJCQlpZiAocHJlZiAmJiAocHJlZi0+ZmxhZ3MgJiBJT1JFU09VUkNFX1BSRUZFVENIKSkKIAkJ
+CQlicmVhazsKIAkJaGRyX3R5cGUgPSAtMTsJLyogSW50ZW50aW9uYWxseSBpbnZhbGlkIC0gbm90
+IGEgUENJIGRldmljZS4gKi8KQEAgLTEzMzMsMTIgKzEzMzIsMTEgQEAgRVhQT1JUX1NZTUJPTChw
+Y2lfYnVzX3NpemVfYnJpZGdlcyk7CiAKIHN0YXRpYyB2b2lkIGFzc2lnbl9maXhlZF9yZXNvdXJj
+ZV9vbl9idXMoc3RydWN0IHBjaV9idXMgKmIsIHN0cnVjdCByZXNvdXJjZSAqcikKIHsKLQlpbnQg
+aTsKIAlzdHJ1Y3QgcmVzb3VyY2UgKnBhcmVudF9yOwogCXVuc2lnbmVkIGxvbmcgbWFzayA9IElP
+UkVTT1VSQ0VfSU8gfCBJT1JFU09VUkNFX01FTSB8CiAJCQkgICAgIElPUkVTT1VSQ0VfUFJFRkVU
+Q0g7CiAKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGIsIHBhcmVudF9yLCBpKSB7CisJcGNp
+X2J1c19mb3JfZWFjaF9yZXNvdXJjZV9wKGIsIHBhcmVudF9yKSB7CiAJCWlmICghcGFyZW50X3Ip
+CiAJCQljb250aW51ZTsKIApkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9wY2kuaCBiL2luY2x1
+ZGUvbGludXgvcGNpLmgKaW5kZXggYTk3ZjAyNmFmYWVkLi5mMGJlOTYxZmNkN2UgMTAwNjQ0Ci0t
+LSBhL2luY2x1ZGUvbGludXgvcGNpLmgKKysrIGIvaW5jbHVkZS9saW51eC9wY2kuaApAQCAtMTQ0
+NSwxMCArMTQ0NSwxNiBAQCBpbnQgZGV2bV9yZXF1ZXN0X3BjaV9idXNfcmVzb3VyY2VzKHN0cnVj
+dCBkZXZpY2UgKmRldiwKIC8qIFRlbXBvcmFyeSB1bnRpbCBuZXcgYW5kIHdvcmtpbmcgUENJIFNC
+UiBBUEkgaW4gcGxhY2UgKi8KIGludCBwY2lfYnJpZGdlX3NlY29uZGFyeV9idXNfcmVzZXQoc3Ry
+dWN0IHBjaV9kZXYgKmRldik7CiAKLSNkZWZpbmUgcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShi
+dXMsIHJlcywgaSkJCQkJXAotCWZvciAoaSA9IDA7CQkJCQkJCVwKLQkgICAgKHJlcyA9IHBjaV9i
+dXNfcmVzb3VyY2VfbihidXMsIGkpKSB8fCBpIDwgUENJX0JSSURHRV9SRVNPVVJDRV9OVU07IFwK
+LQkgICAgIGkrKykKKyNkZWZpbmUgX19wY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgcmVz
+LCBfX2ksIHZhcnR5cGUpCQkJXAorCWZvciAodmFydHlwZSBfX2kgPSAwOwkJCQkJCQlcCisJICAg
+ICByZXMgPSBwY2lfYnVzX3Jlc291cmNlX24oYnVzLCBfX2kpLCBfX2kgPCBQQ0lfQlJJREdFX1JF
+U09VUkNFX05VTTsJXAorCSAgICAgX19pKyspCisKKyNkZWZpbmUgcGNpX2J1c19mb3JfZWFjaF9y
+ZXNvdXJjZShidXMsIHJlcywgaSkJCQkJCVwKKwlfX3BjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2Uo
+YnVzLCByZXMsIGksICkKKworI2RlZmluZSBwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlX3AoYnVz
+LCByZXMpCQkJCQlcCisJX19wY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgcmVzLCBfX2ks
+IHVuc2lnbmVkIGludCkKIAogaW50IF9fbXVzdF9jaGVjayBwY2lfYnVzX2FsbG9jX3Jlc291cmNl
+KHN0cnVjdCBwY2lfYnVzICpidXMsCiAJCQlzdHJ1Y3QgcmVzb3VyY2UgKnJlcywgcmVzb3VyY2Vf
+c2l6ZV90IHNpemUsCi0tIAoyLjM5LjIKCg==
