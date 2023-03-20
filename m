@@ -1,9 +1,10 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v6 0/4] Add pci_dev_for_each_resource() helper and update users
-Date: Mon, 20 Mar 2023 15:16:29 +0200
-Message-ID: <20230320131633.61680-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v6 3/4] EISA: Convert to use pci_bus_for_each_resource_p()
+Date: Mon, 20 Mar 2023 15:16:32 +0200
+Message-ID: <20230320131633.61680-4-andriy.shevchenko@linux.intel.com>
+References: <20230320131633.61680-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 Return-path: <xen-devel-bounces@lists.xenproject.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
@@ -16,90 +17,40 @@ Errors-To: xen-devel-bounces@lists.xenproject.org
 Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679318222; x=1710854222;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=KxlXRVH7N+45zvim8tIjdmWaRb89rG1+XDN/qvGgUbg=;
-  b=bZkUpuYj/B3KIGy/Dfw8TygtMhZ24TJ+9OYByu5a4HyyqGsnU/YCG+Vx
-   iArX7bAfj6r63j0JR7qk8xRR7Ar/9O6g3KyaMxXrZJEw06CYwh9XOiFwO
-   vb3+ZMwNC1Gp2mQgNe61E2uOufdRIPw6d6JysmVRfI5ImDQMuvHn9qpbE
-   kKbi6Z+65gWi/v1Ity+2XUUROLic14C385BaSt4fyJevpTjzHRGe/tv9u
-   3D5fRVK/4r27FTNSEPIWIVtChq1ACYAU25faSRjjG9NVKlOTgsqgQ/xdd
-   RAfMs9YnT9Yzg5O3Z5jkRSRSjODjcDe3SwkXFPjmTM9BgnD/l66JDGVZj
+  t=1679318224; x=1710854224;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=w+YdvYGhoz+V3BkfBUt2y8DW6u+jmfOhlK0R9Fvr/bI=;
+  b=IlfaEk+tmbGFgPHlZpx15qQ9QJCVxcH4r8ylhmpETHsi7pDwG+CdUe8O
+   7xSWT2bWXsYAeDAnHiLVCEmSohMagqKrm3NiqqjpKv9yWpFalK7eDzQFI
+   1J+1K0HeTlUQByZb6BzBRfg9ZO9o2mMbgwrlISSfuBkje3R6V5zbnOQW4
+   oeOZ8TO/G/RkxXAipp89IJg5/cuDJtIJn85gVdYsW/X8XZGZ8vGbUCKwv
+   c9BXc/2dokoXOsDGcKJZFCtruIJiU6h+kXM+9g812T5vMqX2/2Lgxgf6B
+   YnKTXTyHHZ9oNZ/AOGwcJglCrUO11uQvM2LMcx7/MTSwAd6UhM3MjhtL4
    g==;
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <20230320131633.61680-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="macroman"
 To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@li
 Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-Provide two new helper macros to iterate over PCI device resources and
-convert users.
-
-Looking at it, refactor existing pci_bus_for_each_resource() and convert
-users accordingly.
-
-Changelog v6:
-- dropped unused variable in PPC code (LKP)
-
-Changelog v5:
-- renamed loop variable to minimize the clash (Keith)
-- addressed smatch warning (Dan)
-- addressed 0-day bot findings (LKP)
-
-Changelog v4:
-- rebased on top of v6.3-rc1
-- added tag (Krzysztof)
-
-Changelog v3:
-- rebased on top of v2 by Mika, see above
-- added tag to pcmcia patch (Dominik)
-
-Changelog v2:
-- refactor to have two macros
-- refactor existing pci_bus_for_each_resource() in the same way and
-  convert users
-
-Andy Shevchenko (3):
-  PCI: Split pci_bus_for_each_resource_p() out of
-    pci_bus_for_each_resource()
-  EISA: Convert to use pci_bus_for_each_resource_p()
-  pcmcia: Convert to use pci_bus_for_each_resource_p()
-
-Mika Westerberg (1):
-  PCI: Introduce pci_dev_for_each_resource()
-
- .clang-format                             |  3 ++
- arch/alpha/kernel/pci.c                   |  5 ++-
- arch/arm/kernel/bios32.c                  | 16 +++++-----
- arch/arm/mach-dove/pcie.c                 | 10 +++---
- arch/arm/mach-mv78xx0/pcie.c              | 10 +++---
- arch/arm/mach-orion5x/pci.c               | 10 +++---
- arch/mips/pci/ops-bcm63xx.c               |  8 ++---
- arch/mips/pci/pci-legacy.c                |  3 +-
- arch/powerpc/kernel/pci-common.c          | 21 +++++++------
- arch/powerpc/platforms/4xx/pci.c          |  8 ++---
- arch/powerpc/platforms/52xx/mpc52xx_pci.c |  5 ++-
- arch/powerpc/platforms/pseries/pci.c      | 16 +++++-----
- arch/sh/drivers/pci/pcie-sh7786.c         | 10 +++---
- arch/sparc/kernel/leon_pci.c              |  5 ++-
- arch/sparc/kernel/pci.c                   | 10 +++---
- arch/sparc/kernel/pcic.c                  |  5 ++-
- drivers/eisa/pci_eisa.c                   |  4 +--
- drivers/pci/bus.c                         |  7 ++---
- drivers/pci/hotplug/shpchp_sysfs.c        |  8 ++---
- drivers/pci/pci.c                         |  5 ++-
- drivers/pci/probe.c                       |  2 +-
- drivers/pci/remove.c                      |  5 ++-
- drivers/pci/setup-bus.c                   | 37 +++++++++--------------
- drivers/pci/setup-res.c                   |  4 +--
- drivers/pci/vgaarb.c                      | 17 +++--------
- drivers/pci/xen-pcifront.c                |  4 +--
- drivers/pcmcia/rsrc_nonstatic.c           |  9 ++----
- drivers/pcmcia/yenta_socket.c             |  3 +-
- drivers/pnp/quirks.c                      | 29 ++++++------------
- include/linux/pci.h                       | 29 ++++++++++++++----
- 30 files changed, 142 insertions(+), 166 deletions(-)
-
--- 
-2.39.2
-
-
+VGhlIHBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcCgpIGhpZGVzIHRoZSBpdGVyYXRvciBsb29w
+IHNpbmNlCml0IG1heSBiZSBub3QgdXNlZCBvdGhlcndpc2UuIFdpdGggdGhpcywgd2UgbWF5IGRy
+b3AgdGhhdCBpdGVyYXRvcgp2YXJpYWJsZSBkZWZpbml0aW9uLgoKU2lnbmVkLW9mZi1ieTogQW5k
+eSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5jb20+ClJldmlld2Vk
+LWJ5OiBLcnp5c3p0b2YgV2lsY3p5xYRza2kgPGt3QGxpbnV4LmNvbT4KLS0tCiBkcml2ZXJzL2Vp
+c2EvcGNpX2Vpc2EuYyB8IDQgKystLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwg
+MiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2Vpc2EvcGNpX2Vpc2EuYyBiL2Ry
+aXZlcnMvZWlzYS9wY2lfZWlzYS5jCmluZGV4IDkzMGMyMzMyYzNjNC4uOTA3Yjg2Mzg0Mzk2IDEw
+MDY0NAotLS0gYS9kcml2ZXJzL2Vpc2EvcGNpX2Vpc2EuYworKysgYi9kcml2ZXJzL2Vpc2EvcGNp
+X2Vpc2EuYwpAQCAtMjAsOCArMjAsOCBAQCBzdGF0aWMgc3RydWN0IGVpc2Ffcm9vdF9kZXZpY2Ug
+cGNpX2Vpc2Ffcm9vdDsKIAogc3RhdGljIGludCBfX2luaXQgcGNpX2Vpc2FfaW5pdChzdHJ1Y3Qg
+cGNpX2RldiAqcGRldikKIHsKLQlpbnQgcmMsIGk7CiAJc3RydWN0IHJlc291cmNlICpyZXMsICpi
+dXNfcmVzID0gTlVMTDsKKwlpbnQgcmM7CiAKIAlpZiAoKHJjID0gcGNpX2VuYWJsZV9kZXZpY2Ug
+KHBkZXYpKSkgewogCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJDb3VsZCBub3QgZW5hYmxlIGRldmlj
+ZVxuIik7CkBAIC0zOCw3ICszOCw3IEBAIHN0YXRpYyBpbnQgX19pbml0IHBjaV9laXNhX2luaXQo
+c3RydWN0IHBjaV9kZXYgKnBkZXYpCiAJICogZWlzYV9yb290X3JlZ2lzdGVyKCkgY2FuIG9ubHkg
+ZGVhbCB3aXRoIGEgc2luZ2xlIGlvIHBvcnQgcmVzb3VyY2UsCiAJKiAgc28gd2UgdXNlIHRoZSBm
+aXJzdCB2YWxpZCBpbyBwb3J0IHJlc291cmNlLgogCSAqLwotCXBjaV9idXNfZm9yX2VhY2hfcmVz
+b3VyY2UocGRldi0+YnVzLCByZXMsIGkpCisJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZV9wKHBk
+ZXYtPmJ1cywgcmVzKQogCQlpZiAocmVzICYmIChyZXMtPmZsYWdzICYgSU9SRVNPVVJDRV9JTykp
+IHsKIAkJCWJ1c19yZXMgPSByZXM7CiAJCQlicmVhazsKLS0gCjIuMzkuMgoKCg==
