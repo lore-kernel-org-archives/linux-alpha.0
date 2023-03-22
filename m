@@ -1,56 +1,96 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v6 3/4] EISA: Convert to use pci_bus_for_each_resource_p()
-Date: Mon, 20 Mar 2023 15:16:32 +0200
-Message-ID: <20230320131633.61680-4-andriy.shevchenko@linux.intel.com>
-References: <20230320131633.61680-1-andriy.shevchenko@linux.intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v5 1/7] trace: Add trace_ipi_send_cpumask()
+Date: Wed, 22 Mar 2023 10:39:55 +0100
+Message-ID: <20230322093955.GR2017917@hirez.programming.kicks-ass.net>
+References: <20230307143558.294354-1-vschneid@redhat.com>
+ <20230307143558.294354-2-vschneid@redhat.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <xen-devel-bounces@lists.xenproject.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=2VpewIFpm7v9QVnhtW+13uFGN5b6XLasQX9AOe5LpsM=; b=2Df6i1Kuk4ISSW
+	4plzR6RQXDKCUDyImtmkFzwfNFIrQJHB/oJc7hVT5CUdoTL1rqvBT4MK4jLz7wDEDJErXy2+z8C3U
+	fJmKIsRpAgciu6vV8YbxP0szkOa9N5evVpMGdpVfAOsIE4XMBXFSEgTpJPr2XoT2aR/kWgrD1Pl+C
+	xiGJIXaXiqvGS8+ww3cFfawIdmHrjCcjBG5RarnwxJNlZKD4o3UY/9P4HG37earUAX/fIqeXG36oQ
+	ivzJBUHgBNtvcNzxdgh0DKiI8iVxXN2JQwt3xQFae4XxirkHzF58Ck823oZpXVXfgrPVwE48qLhLs
+	11foFBkVB0+27qEeVULA==;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=NIAHg4If27BetC+4UZobAV0PxBnmTt3z+fWts2bKQWA=; b=rgS/CEWAlsTurPe5ucKBiXaDhr
+	ew26BoXauCH9lin/sWfYKxjLJe0WysSt1P4iOSDXV1qfu4JSoUQNAlogwxNIDbcZw5jKIurC6wBP0
+	+/+Z8kdUTp/ZyyNP9QPql3dhW8rHV0QqkfTXWuMoE0vryMGgt+T+aOFFPTKbmbiRK5T84YLaG6C4t
+	iRHD6M2ZFvI2kES3RCcIFI7D2yWW07o0ZjcKw1qqr5MTJddfTUE9AHHetindb2rqkUVxpV/GEVyQu
+	B4Z/fkelloNxIIEvBXXKz9pvL88Uc5JVf1N0nCKJVM3jEC4cK78BNevAeHHN3c0k/dy9sGC9ChrU5
+	42+coITw==;
+Content-Disposition: inline
+In-Reply-To: <20230307143558.294354-2-vschneid@redhat.com>
 List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679318224; x=1710854224;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=w+YdvYGhoz+V3BkfBUt2y8DW6u+jmfOhlK0R9Fvr/bI=;
-  b=IlfaEk+tmbGFgPHlZpx15qQ9QJCVxcH4r8ylhmpETHsi7pDwG+CdUe8O
-   7xSWT2bWXsYAeDAnHiLVCEmSohMagqKrm3NiqqjpKv9yWpFalK7eDzQFI
-   1J+1K0HeTlUQByZb6BzBRfg9ZO9o2mMbgwrlISSfuBkje3R6V5zbnOQW4
-   oeOZ8TO/G/RkxXAipp89IJg5/cuDJtIJn85gVdYsW/X8XZGZ8vGbUCKwv
-   c9BXc/2dokoXOsDGcKJZFCtruIJiU6h+kXM+9g812T5vMqX2/2Lgxgf6B
-   YnKTXTyHHZ9oNZ/AOGwcJglCrUO11uQvM2LMcx7/MTSwAd6UhM3MjhtL4
-   g==;
-In-Reply-To: <20230320131633.61680-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="macroman"
-To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@li
-Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+To: Valentin Schneider <vschneid@redhat.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, Steven Rostedt <rostedt@goodmis.org>, "Paul E. McKenney" <paulmck@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Juri Lelli <juri.lelli@redhat.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, Marcelo Tosatti <mtosatti@redhat.com>, Frederic Weisbecker <frederic@kernel.org>, Ingo Molnar <mi>
 
-VGhlIHBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfcCgpIGhpZGVzIHRoZSBpdGVyYXRvciBsb29w
-IHNpbmNlCml0IG1heSBiZSBub3QgdXNlZCBvdGhlcndpc2UuIFdpdGggdGhpcywgd2UgbWF5IGRy
-b3AgdGhhdCBpdGVyYXRvcgp2YXJpYWJsZSBkZWZpbml0aW9uLgoKU2lnbmVkLW9mZi1ieTogQW5k
-eSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5jb20+ClJldmlld2Vk
-LWJ5OiBLcnp5c3p0b2YgV2lsY3p5xYRza2kgPGt3QGxpbnV4LmNvbT4KLS0tCiBkcml2ZXJzL2Vp
-c2EvcGNpX2Vpc2EuYyB8IDQgKystLQogMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwg
-MiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2Vpc2EvcGNpX2Vpc2EuYyBiL2Ry
-aXZlcnMvZWlzYS9wY2lfZWlzYS5jCmluZGV4IDkzMGMyMzMyYzNjNC4uOTA3Yjg2Mzg0Mzk2IDEw
-MDY0NAotLS0gYS9kcml2ZXJzL2Vpc2EvcGNpX2Vpc2EuYworKysgYi9kcml2ZXJzL2Vpc2EvcGNp
-X2Vpc2EuYwpAQCAtMjAsOCArMjAsOCBAQCBzdGF0aWMgc3RydWN0IGVpc2Ffcm9vdF9kZXZpY2Ug
-cGNpX2Vpc2Ffcm9vdDsKIAogc3RhdGljIGludCBfX2luaXQgcGNpX2Vpc2FfaW5pdChzdHJ1Y3Qg
-cGNpX2RldiAqcGRldikKIHsKLQlpbnQgcmMsIGk7CiAJc3RydWN0IHJlc291cmNlICpyZXMsICpi
-dXNfcmVzID0gTlVMTDsKKwlpbnQgcmM7CiAKIAlpZiAoKHJjID0gcGNpX2VuYWJsZV9kZXZpY2Ug
-KHBkZXYpKSkgewogCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJDb3VsZCBub3QgZW5hYmxlIGRldmlj
-ZVxuIik7CkBAIC0zOCw3ICszOCw3IEBAIHN0YXRpYyBpbnQgX19pbml0IHBjaV9laXNhX2luaXQo
-c3RydWN0IHBjaV9kZXYgKnBkZXYpCiAJICogZWlzYV9yb290X3JlZ2lzdGVyKCkgY2FuIG9ubHkg
-ZGVhbCB3aXRoIGEgc2luZ2xlIGlvIHBvcnQgcmVzb3VyY2UsCiAJKiAgc28gd2UgdXNlIHRoZSBm
-aXJzdCB2YWxpZCBpbyBwb3J0IHJlc291cmNlLgogCSAqLwotCXBjaV9idXNfZm9yX2VhY2hfcmVz
-b3VyY2UocGRldi0+YnVzLCByZXMsIGkpCisJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZV9wKHBk
-ZXYtPmJ1cywgcmVzKQogCQlpZiAocmVzICYmIChyZXMtPmZsYWdzICYgSU9SRVNPVVJDRV9JTykp
-IHsKIAkJCWJ1c19yZXMgPSByZXM7CiAJCQlicmVhazsKLS0gCjIuMzkuMgoKCg==
+On Tue, Mar 07, 2023 at 02:35:52PM +0000, Valentin Schneider wrote:
+> trace_ipi_raise() is unsuitable for generically tracing IPI sources due to
+> its "reason" argument being an uninformative string (on arm64 all you get
+> is "Function call interrupts" for SMP calls).
+> 
+> Add a variant of it that exports a target cpumask, a callsite and a callback.
+> 
+> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> ---
+>  include/trace/events/ipi.h | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+> 
+> diff --git a/include/trace/events/ipi.h b/include/trace/events/ipi.h
+> index 0be71dad6ec03..b1125dc27682c 100644
+> --- a/include/trace/events/ipi.h
+> +++ b/include/trace/events/ipi.h
+> @@ -35,6 +35,28 @@ TRACE_EVENT(ipi_raise,
+>  	TP_printk("target_mask=%s (%s)", __get_bitmask(target_cpus), __entry->reason)
+>  );
+>  
+> +TRACE_EVENT(ipi_send_cpumask,
+> +
+> +	TP_PROTO(const struct cpumask *cpumask, unsigned long callsite, void *callback),
+> +
+> +	TP_ARGS(cpumask, callsite, callback),
+> +
+> +	TP_STRUCT__entry(
+> +		__cpumask(cpumask)
+> +		__field(void *, callsite)
+> +		__field(void *, callback)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		__assign_cpumask(cpumask, cpumask_bits(cpumask));
+> +		__entry->callsite = (void *)callsite;
+> +		__entry->callback = callback;
+> +	),
+> +
+> +	TP_printk("cpumask=%s callsite=%pS callback=%pS",
+> +		  __get_cpumask(cpumask), __entry->callsite, __entry->callback)
+> +);
+
+Would it make sense to add a variant like: ipi_send_cpu() that records a
+single cpu instead of a cpumask. A lot of sites seems to do:
+cpumask_of(cpu) for that first argument, and it seems to me it is quite
+daft to have to memcpy a full multi-word cpumask in those cases.
+
+Remember, nr_possible_cpus > 64 is quite common these days.
