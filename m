@@ -1,10 +1,10 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v7 3/6] PCI: Allow pci_bus_for_each_resource() to take less arguments
-Date: Thu, 23 Mar 2023 19:36:07 +0200
-Message-ID: <20230323173610.60442-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v7 6/6] PCI: Make use of pci_resource_n()
+Date: Thu, 23 Mar 2023 19:36:10 +0200
+Message-ID: <20230323173610.60442-7-andriy.shevchenko@linux.intel.com>
 References: <20230323173610.60442-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Return-path: <xen-devel-bounces@lists.xenproject.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
@@ -17,141 +17,55 @@ Errors-To: xen-devel-bounces@lists.xenproject.org
 Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679592958; x=1711128958;
+  t=1679592959; x=1711128959;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nYcCzANNoRmgbtK/lt7NmDYl/Mib02Nl2jjjm9pP05E=;
-  b=UdJpIMu8DAQBGt2fDYco6jT6bWnFwn5CDjZ+V9FuzTW67Z70TyUTJQmI
-   u+8BjRUVK3+k+FEuOGrm9msTIPqYXqZtzWuMWK7N7vGhxHXskBjpmcB8/
-   oRiR7A9d++NQu2+/Jh2KC4I3v1UYmb68qShxNCU+P9IdIS8DhTZwMp2zQ
-   GHl07yUruthx+uVWhB4bho7YckO3TtUfGkciMl6TrB/0PWQlGpr7WYaP+
-   +0GQnXqpGGpXN8eSskllSJXb6KPQXvPALyi58u/6nCaSZQ50RCO3Ou0M1
-   HgKsxTNUuVvKRq5CyCDz8zSJ1CseU2ADljtMXCHLRUqA/IBfTIspleaBp
+  bh=yfeoYNUxbO0e2gvMFM4I3e9/lrxCDzuwgcUE0vRubSk=;
+  b=SnsPC8EmMiZi1EyU3GPkdcv2rNN7HJ4yLh8AdCyIFA4SZ48euhSX1lW+
+   rrHIa9gzDxTZusb6BbxusNULuLAzqlz0pnMDIROuxvM+wSql53f/3S9Jj
+   ul77FVTI8THfhOPW0oCVMHE7pM/1jvlaGomKra8N0u9ChzvFCgTK/ynLl
+   2ya3Av+3Lw+Ed9z8EQs2V1tKnG+gh/JTMMI5Zctem8snBc/1Hn/885kRd
+   eMYsxOqWY44WhaeDyTseU9vdnZbgj910ZUzaB3INL+bR04Eo3ngRTlYTF
+   /LwWUNAW7jym4R4KkNjpFphUELz7l58OOkv6XmqAk5Qnm9xC/CHYvRysR
    w==;
 In-Reply-To: <20230323173610.60442-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="macroman"
+Content-Type: text/plain; charset="us-ascii"
 To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@li
 Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-UmVmYWN0b3IgcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZSgpIGluIHRoZSBzYW1lIHdheSBhcyBp
-dCdzIGRvbmUgaW4KcGNpX2Rldl9mb3JfZWFjaF9yZXNvdXJjZSgpIGNhc2UuIFRoaXMgd2lsbCBh
-bGxvdyB0byBoaWRlIGl0ZXJhdG9yCmluc2lkZSB0aGUgbG9vcCwgd2hlcmUgaXQncyBub3QgdXNl
-ZCBvdGhlcndpc2UuCgpObyBmdW5jdGlvbmFsIGNoYW5nZXMgaW50ZW5kZWQuCgpTaWduZWQtb2Zm
-LWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4K
-UmV2aWV3ZWQtYnk6IEtyenlzenRvZiBXaWxjennFhHNraSA8a3dAbGludXguY29tPgotLS0KIGRy
-aXZlcnMvcGNpL2J1cy5jICAgICAgICAgICAgICAgICAgfCAgNyArKystLS0tCiBkcml2ZXJzL3Bj
-aS9ob3RwbHVnL3NocGNocF9zeXNmcy5jIHwgIDggKysrKy0tLS0KIGRyaXZlcnMvcGNpL3BjaS5j
-ICAgICAgICAgICAgICAgICAgfCAgMyArLS0KIGRyaXZlcnMvcGNpL3Byb2JlLmMgICAgICAgICAg
-ICAgICAgfCAgMiArLQogZHJpdmVycy9wY2kvc2V0dXAtYnVzLmMgICAgICAgICAgICB8IDEwICsr
-KystLS0tLS0KIGluY2x1ZGUvbGludXgvcGNpLmggICAgICAgICAgICAgICAgfCAxNyArKysrKysr
-KysrKysrLS0tLQogNiBmaWxlcyBjaGFuZ2VkLCAyNiBpbnNlcnRpb25zKCspLCAyMSBkZWxldGlv
-bnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3BjaS9idXMuYyBiL2RyaXZlcnMvcGNpL2J1cy5j
-CmluZGV4IDU0OWM0YmQ1Y2FlYy4uNWJjODFjYzBhMmRlIDEwMDY0NAotLS0gYS9kcml2ZXJzL3Bj
-aS9idXMuYworKysgYi9kcml2ZXJzL3BjaS9idXMuYwpAQCAtMTgyLDEzICsxODIsMTMgQEAgc3Rh
-dGljIGludCBwY2lfYnVzX2FsbG9jX2Zyb21fcmVnaW9uKHN0cnVjdCBwY2lfYnVzICpidXMsIHN0
-cnVjdCByZXNvdXJjZSAqcmVzLAogCQl2b2lkICphbGlnbmZfZGF0YSwKIAkJc3RydWN0IHBjaV9i
-dXNfcmVnaW9uICpyZWdpb24pCiB7Ci0JaW50IGksIHJldDsKIAlzdHJ1Y3QgcmVzb3VyY2UgKnIs
-IGF2YWlsOwogCXJlc291cmNlX3NpemVfdCBtYXg7CisJaW50IHJldDsKIAogCXR5cGVfbWFzayB8
-PSBJT1JFU09VUkNFX1RZUEVfQklUUzsKIAotCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UoYnVz
-LCByLCBpKSB7CisJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShidXMsIHIpIHsKIAkJcmVzb3Vy
-Y2Vfc2l6ZV90IG1pbl91c2VkID0gbWluOwogCiAJCWlmICghcikKQEAgLTI4OSw5ICsyODksOCBA
-QCBib29sIHBjaV9idXNfY2xpcF9yZXNvdXJjZShzdHJ1Y3QgcGNpX2RldiAqZGV2LCBpbnQgaWR4
-KQogCXN0cnVjdCByZXNvdXJjZSAqcmVzID0gJmRldi0+cmVzb3VyY2VbaWR4XTsKIAlzdHJ1Y3Qg
-cmVzb3VyY2Ugb3JpZ19yZXMgPSAqcmVzOwogCXN0cnVjdCByZXNvdXJjZSAqcjsKLQlpbnQgaTsK
-IAotCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UoYnVzLCByLCBpKSB7CisJcGNpX2J1c19mb3Jf
-ZWFjaF9yZXNvdXJjZShidXMsIHIpIHsKIAkJcmVzb3VyY2Vfc2l6ZV90IHN0YXJ0LCBlbmQ7CiAK
-IAkJaWYgKCFyKQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvaG90cGx1Zy9zaHBjaHBfc3lzZnMu
-YyBiL2RyaXZlcnMvcGNpL2hvdHBsdWcvc2hwY2hwX3N5c2ZzLmMKaW5kZXggNjRiZWVkN2EyNmJl
-Li4wMWQ0N2E0MmRhMDQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcGNpL2hvdHBsdWcvc2hwY2hwX3N5
-c2ZzLmMKKysrIGIvZHJpdmVycy9wY2kvaG90cGx1Zy9zaHBjaHBfc3lzZnMuYwpAQCAtMjQsMTYg
-KzI0LDE2IEBACiBzdGF0aWMgc3NpemVfdCBzaG93X2N0cmwoc3RydWN0IGRldmljZSAqZGV2LCBz
-dHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY2hhciAqYnVmKQogewogCXN0cnVjdCBwY2lf
-ZGV2ICpwZGV2OwotCWludCBpbmRleCwgYnVzbnI7CiAJc3RydWN0IHJlc291cmNlICpyZXM7CiAJ
-c3RydWN0IHBjaV9idXMgKmJ1czsKIAlzaXplX3QgbGVuID0gMDsKKwlpbnQgYnVzbnI7CiAKIAlw
-ZGV2ID0gdG9fcGNpX2RldihkZXYpOwogCWJ1cyA9IHBkZXYtPnN1Ym9yZGluYXRlOwogCiAJbGVu
-ICs9IHN5c2ZzX2VtaXRfYXQoYnVmLCBsZW4sICJGcmVlIHJlc291cmNlczogbWVtb3J5XG4iKTsK
-LQlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgcmVzLCBpbmRleCkgeworCXBjaV9idXNf
-Zm9yX2VhY2hfcmVzb3VyY2UoYnVzLCByZXMpIHsKIAkJaWYgKHJlcyAmJiAocmVzLT5mbGFncyAm
-IElPUkVTT1VSQ0VfTUVNKSAmJgogCQkJCSEocmVzLT5mbGFncyAmIElPUkVTT1VSQ0VfUFJFRkVU
-Q0gpKSB7CiAJCQlsZW4gKz0gc3lzZnNfZW1pdF9hdChidWYsIGxlbiwKQEAgLTQzLDcgKzQzLDcg
-QEAgc3RhdGljIHNzaXplX3Qgc2hvd19jdHJsKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRl
-dmljZV9hdHRyaWJ1dGUgKmF0dHIsIGNoYXIKIAkJfQogCX0KIAlsZW4gKz0gc3lzZnNfZW1pdF9h
-dChidWYsIGxlbiwgIkZyZWUgcmVzb3VyY2VzOiBwcmVmZXRjaGFibGUgbWVtb3J5XG4iKTsKLQlw
-Y2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgcmVzLCBpbmRleCkgeworCXBjaV9idXNfZm9y
-X2VhY2hfcmVzb3VyY2UoYnVzLCByZXMpIHsKIAkJaWYgKHJlcyAmJiAocmVzLT5mbGFncyAmIElP
-UkVTT1VSQ0VfTUVNKSAmJgogCQkJICAgICAgIChyZXMtPmZsYWdzICYgSU9SRVNPVVJDRV9QUkVG
-RVRDSCkpIHsKIAkJCWxlbiArPSBzeXNmc19lbWl0X2F0KGJ1ZiwgbGVuLApAQCAtNTMsNyArNTMs
-NyBAQCBzdGF0aWMgc3NpemVfdCBzaG93X2N0cmwoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qg
-ZGV2aWNlX2F0dHJpYnV0ZSAqYXR0ciwgY2hhcgogCQl9CiAJfQogCWxlbiArPSBzeXNmc19lbWl0
-X2F0KGJ1ZiwgbGVuLCAiRnJlZSByZXNvdXJjZXM6IElPXG4iKTsKLQlwY2lfYnVzX2Zvcl9lYWNo
-X3Jlc291cmNlKGJ1cywgcmVzLCBpbmRleCkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2Uo
-YnVzLCByZXMpIHsKIAkJaWYgKHJlcyAmJiAocmVzLT5mbGFncyAmIElPUkVTT1VSQ0VfSU8pKSB7
-CiAJCQlsZW4gKz0gc3lzZnNfZW1pdF9hdChidWYsIGxlbiwKIAkJCQkJICAgICAic3RhcnQgPSAl
-OC44bGx4LCBsZW5ndGggPSAlOC44bGx4XG4iLApkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvcGNp
-LmMgYi9kcml2ZXJzL3BjaS9wY2kuYwppbmRleCA3YTY3NjExZGM1ZjQuLjk5Mjk5ZjEyOTljNCAx
-MDA2NDQKLS0tIGEvZHJpdmVycy9wY2kvcGNpLmMKKysrIGIvZHJpdmVycy9wY2kvcGNpLmMKQEAg
-LTc3OSw5ICs3NzksOCBAQCBzdHJ1Y3QgcmVzb3VyY2UgKnBjaV9maW5kX3BhcmVudF9yZXNvdXJj
-ZShjb25zdCBzdHJ1Y3QgcGNpX2RldiAqZGV2LAogewogCWNvbnN0IHN0cnVjdCBwY2lfYnVzICpi
-dXMgPSBkZXYtPmJ1czsKIAlzdHJ1Y3QgcmVzb3VyY2UgKnI7Ci0JaW50IGk7CiAKLQlwY2lfYnVz
-X2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgciwgaSkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3Vy
-Y2UoYnVzLCByKSB7CiAJCWlmICghcikKIAkJCWNvbnRpbnVlOwogCQlpZiAocmVzb3VyY2VfY29u
-dGFpbnMociwgcmVzKSkgewpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvcHJvYmUuYyBiL2RyaXZl
-cnMvcGNpL3Byb2JlLmMKaW5kZXggYTNmNjhiNmJhNmFjLi5mODE5MTc1MGY2YjcgMTAwNjQ0Ci0t
-LSBhL2RyaXZlcnMvcGNpL3Byb2JlLmMKKysrIGIvZHJpdmVycy9wY2kvcHJvYmUuYwpAQCAtNTMz
-LDcgKzUzMyw3IEBAIHZvaWQgcGNpX3JlYWRfYnJpZGdlX2Jhc2VzKHN0cnVjdCBwY2lfYnVzICpj
-aGlsZCkKIAlwY2lfcmVhZF9icmlkZ2VfbW1pb19wcmVmKGNoaWxkKTsKIAogCWlmIChkZXYtPnRy
-YW5zcGFyZW50KSB7Ci0JCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UoY2hpbGQtPnBhcmVudCwg
-cmVzLCBpKSB7CisJCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UoY2hpbGQtPnBhcmVudCwgcmVz
-KSB7CiAJCQlpZiAocmVzICYmIHJlcy0+ZmxhZ3MpIHsKIAkJCQlwY2lfYnVzX2FkZF9yZXNvdXJj
-ZShjaGlsZCwgcmVzLAogCQkJCQkJICAgICBQQ0lfU1VCVFJBQ1RJVkVfREVDT0RFKTsKZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvcGNpL3NldHVwLWJ1cy5jIGIvZHJpdmVycy9wY2kvc2V0dXAtYnVzLmMK
-aW5kZXggMDI3Yjk4NWRkMWVlLi5mZGViMTIxZTkxNzUgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcGNp
-L3NldHVwLWJ1cy5jCisrKyBiL2RyaXZlcnMvcGNpL3NldHVwLWJ1cy5jCkBAIC03NzAsOSArNzcw
-LDggQEAgc3RhdGljIHN0cnVjdCByZXNvdXJjZSAqZmluZF9idXNfcmVzb3VyY2Vfb2ZfdHlwZShz
-dHJ1Y3QgcGNpX2J1cyAqYnVzLAogCQkJCQkJICB1bnNpZ25lZCBsb25nIHR5cGUpCiB7CiAJc3Ry
-dWN0IHJlc291cmNlICpyLCAqcl9hc3NpZ25lZCA9IE5VTEw7Ci0JaW50IGk7CiAKLQlwY2lfYnVz
-X2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgciwgaSkgeworCXBjaV9idXNfZm9yX2VhY2hfcmVzb3Vy
-Y2UoYnVzLCByKSB7CiAJCWlmIChyID09ICZpb3BvcnRfcmVzb3VyY2UgfHwgciA9PSAmaW9tZW1f
-cmVzb3VyY2UpCiAJCQljb250aW51ZTsKIAkJaWYgKHIgJiYgKHItPmZsYWdzICYgdHlwZV9tYXNr
-KSA9PSB0eXBlICYmICFyLT5wYXJlbnQpCkBAIC0xMjA0LDcgKzEyMDMsNyBAQCB2b2lkIF9fcGNp
-X2J1c19zaXplX2JyaWRnZXMoc3RydWN0IHBjaV9idXMgKmJ1cywgc3RydWN0IGxpc3RfaGVhZCAq
-cmVhbGxvY19oZWFkKQogCQkJYWRkaXRpb25hbF9tbWlvX3ByZWZfc2l6ZSA9IDA7CiAJc3RydWN0
-IHJlc291cmNlICpwcmVmOwogCXN0cnVjdCBwY2lfaG9zdF9icmlkZ2UgKmhvc3Q7Ci0JaW50IGhk
-cl90eXBlLCBpLCByZXQ7CisJaW50IGhkcl90eXBlLCByZXQ7CiAKIAlsaXN0X2Zvcl9lYWNoX2Vu
-dHJ5KGRldiwgJmJ1cy0+ZGV2aWNlcywgYnVzX2xpc3QpIHsKIAkJc3RydWN0IHBjaV9idXMgKmIg
-PSBkZXYtPnN1Ym9yZGluYXRlOwpAQCAtMTIyOCw3ICsxMjI3LDcgQEAgdm9pZCBfX3BjaV9idXNf
-c2l6ZV9icmlkZ2VzKHN0cnVjdCBwY2lfYnVzICpidXMsIHN0cnVjdCBsaXN0X2hlYWQgKnJlYWxs
-b2NfaGVhZCkKIAkJaG9zdCA9IHRvX3BjaV9ob3N0X2JyaWRnZShidXMtPmJyaWRnZSk7CiAJCWlm
-ICghaG9zdC0+c2l6ZV93aW5kb3dzKQogCQkJcmV0dXJuOwotCQlwY2lfYnVzX2Zvcl9lYWNoX3Jl
-c291cmNlKGJ1cywgcHJlZiwgaSkKKwkJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShidXMsIHBy
-ZWYpCiAJCQlpZiAocHJlZiAmJiAocHJlZi0+ZmxhZ3MgJiBJT1JFU09VUkNFX1BSRUZFVENIKSkK
-IAkJCQlicmVhazsKIAkJaGRyX3R5cGUgPSAtMTsJLyogSW50ZW50aW9uYWxseSBpbnZhbGlkIC0g
-bm90IGEgUENJIGRldmljZS4gKi8KQEAgLTEzMzMsMTIgKzEzMzIsMTEgQEAgRVhQT1JUX1NZTUJP
-TChwY2lfYnVzX3NpemVfYnJpZGdlcyk7CiAKIHN0YXRpYyB2b2lkIGFzc2lnbl9maXhlZF9yZXNv
-dXJjZV9vbl9idXMoc3RydWN0IHBjaV9idXMgKmIsIHN0cnVjdCByZXNvdXJjZSAqcikKIHsKLQlp
-bnQgaTsKIAlzdHJ1Y3QgcmVzb3VyY2UgKnBhcmVudF9yOwogCXVuc2lnbmVkIGxvbmcgbWFzayA9
-IElPUkVTT1VSQ0VfSU8gfCBJT1JFU09VUkNFX01FTSB8CiAJCQkgICAgIElPUkVTT1VSQ0VfUFJF
-RkVUQ0g7CiAKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGIsIHBhcmVudF9yLCBpKSB7CisJ
-cGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShiLCBwYXJlbnRfcikgewogCQlpZiAoIXBhcmVudF9y
-KQogCQkJY29udGludWU7CiAKZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvcGNpLmggYi9pbmNs
-dWRlL2xpbnV4L3BjaS5oCmluZGV4IGUxMjc3YTJiYjY0NS4uNzBhNDY4NGQ1ZjI2IDEwMDY0NAot
-LS0gYS9pbmNsdWRlL2xpbnV4L3BjaS5oCisrKyBiL2luY2x1ZGUvbGludXgvcGNpLmgKQEAgLTE0
-NDYsMTAgKzE0NDYsMTkgQEAgaW50IGRldm1fcmVxdWVzdF9wY2lfYnVzX3Jlc291cmNlcyhzdHJ1
-Y3QgZGV2aWNlICpkZXYsCiAvKiBUZW1wb3JhcnkgdW50aWwgbmV3IGFuZCB3b3JraW5nIFBDSSBT
-QlIgQVBJIGluIHBsYWNlICovCiBpbnQgcGNpX2JyaWRnZV9zZWNvbmRhcnlfYnVzX3Jlc2V0KHN0
-cnVjdCBwY2lfZGV2ICpkZXYpOwogCi0jZGVmaW5lIHBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2Uo
-YnVzLCByZXMsIGkpCQkJCVwKLQlmb3IgKGkgPSAwOwkJCQkJCQlcCi0JICAgIChyZXMgPSBwY2lf
-YnVzX3Jlc291cmNlX24oYnVzLCBpKSkgfHwgaSA8IFBDSV9CUklER0VfUkVTT1VSQ0VfTlVNOyBc
-Ci0JICAgICBpKyspCisjZGVmaW5lIF9fcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZV8wKGJ1cywg
-cmVzLCAuLi4pCQkJICAgICAgIFwKKwlmb3IgKHVuc2lnbmVkIGludCBfX2IgPSAwOwkJCQkJICAg
-ICAgIFwKKwkgICAgIHJlcyA9IHBjaV9idXNfcmVzb3VyY2VfbihidXMsIF9fYiksIF9fYiA8IFBD
-SV9CUklER0VfUkVTT1VSQ0VfTlVNO1wKKwkgICAgIF9fYisrKQorCisjZGVmaW5lIF9fcGNpX2J1
-c19mb3JfZWFjaF9yZXNvdXJjZV8xKGJ1cywgcmVzLCBfX2IpCQkJICAgICAgIFwKKwlmb3IgKF9f
-YiA9IDA7CQkJCQkJCSAgICAgICBcCisJICAgICByZXMgPSBwY2lfYnVzX3Jlc291cmNlX24oYnVz
-LCBfX2IpLCBfX2IgPCBQQ0lfQlJJREdFX1JFU09VUkNFX05VTTtcCisJICAgICBfX2IrKykKKwor
-I2RlZmluZSBwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKGJ1cywgcmVzLCAuLi4pCQkJICAgICAg
-IFwKKwlDT05DQVRFTkFURShfX3BjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2VfLCBDT1VOVF9BUkdT
-KF9fVkFfQVJHU19fKSkgICAgIFwKKwkJICAgIChidXMsIHJlcywgX19WQV9BUkdTX18pCiAKIGlu
-dCBfX211c3RfY2hlY2sgcGNpX2J1c19hbGxvY19yZXNvdXJjZShzdHJ1Y3QgcGNpX2J1cyAqYnVz
-LAogCQkJc3RydWN0IHJlc291cmNlICpyZXMsIHJlc291cmNlX3NpemVfdCBzaXplLAotLSAKMi40
-MC4wLjEuZ2FhODk0NjIxN2EwYgoKCg==
+Replace open-coded implementations of pci_resource_n() in pci.h.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ include/linux/pci.h | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
+
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 70a4684d5f26..9539cf63fe5e 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -2006,14 +2006,12 @@ int pci_iobar_pfn(struct pci_dev *pdev, int bar, struct vm_area_struct *vma);
+  * for accessing popular PCI BAR info
+  */
+ #define pci_resource_n(dev, bar)	(&(dev)->resource[(bar)])
+-#define pci_resource_start(dev, bar)	((dev)->resource[(bar)].start)
+-#define pci_resource_end(dev, bar)	((dev)->resource[(bar)].end)
+-#define pci_resource_flags(dev, bar)	((dev)->resource[(bar)].flags)
+-#define pci_resource_len(dev,bar) \
+-	((pci_resource_end((dev), (bar)) == 0) ? 0 :	\
+-							\
+-	 (pci_resource_end((dev), (bar)) -		\
+-	  pci_resource_start((dev), (bar)) + 1))
++#define pci_resource_start(dev, bar)	(pci_resource_n(dev, bar)->start)
++#define pci_resource_end(dev, bar)	(pci_resource_n(dev, bar)->end)
++#define pci_resource_flags(dev, bar)	(pci_resource_n(dev, bar)->flags)
++#define pci_resource_len(dev,bar)					\
++	(pci_resource_end((dev), (bar)) ? 				\
++	 resource_size(pci_resource_n((dev), (bar))) : 0)
+ 
+ #define __pci_dev_for_each_resource_0(dev, res, ...)			\
+ 	for (unsigned int __b = 0;					\
+-- 
+2.40.0.1.gaa8946217a0b
+
+
