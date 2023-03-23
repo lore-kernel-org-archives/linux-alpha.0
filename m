@@ -1,117 +1,64 @@
-From: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v5 7/7] sched, smp: Trace smp callback causing an IPI
-Date: Thu, 23 Mar 2023 00:14:28 +0100
-Message-ID: <20230322231428.GV2017917@hirez.programming.kicks-ass.net>
-References: <20230307143558.294354-1-vschneid@redhat.com>
- <20230307143558.294354-8-vschneid@redhat.com>
- <20230322095329.GS2017917@hirez.programming.kicks-ass.net>
- <xhsmhmt45c703.mognet@vschneid.remote.csb>
- <20230322140434.GC2357380@hirez.programming.kicks-ass.net>
- <xhsmhjzz8d8km.mognet@vschneid.remote.csb>
- <20230322172242.GH2357380@hirez.programming.kicks-ass.net>
- <xhsmhh6ucd4t7.mognet@vschneid.remote.csb>
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Subject: Re: [PATCH v3 01/38] Kconfig: introduce HAS_IOPORT option and
+ select it as necessary
+Date: Thu, 23 Mar 2023 14:23:57 +0100
+Message-ID: <95d5d0c434ef6c4cadc3fca34c4c0d3104becea8.camel@linux.ibm.com>
+References: <20230314121216.413434-1-schnelle@linux.ibm.com>
+         <20230314121216.413434-2-schnelle@linux.ibm.com>
+         <21a828bae06b97b8ca806a6b76d867902b1e0e1f.camel@sipsolutions.net>
 Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-m68k-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=VwL2eHgiXbSpbcyOMi1Fm6CGpKEbs60ss+WPZnJK5Ik=;
+ b=XUOZb+O02s7yDbfd9owIe2KU+IxtepAYblP5hOfMaou9r1s62w4XYcd21Ay890Ch0UtZ
+ b3P6V74UYISN/vgI9gfJX4goA81aaSJ6+BrnqTltbxt9dViPahHFqwYh2ph/oHgOCuUs
+ cBuk/dBdRXe6yir7UjhPfJohLY53yu99IuZ0u/VvorW219jlSZERTnQz24NuopyuaJRv
+ f/R4+LqrQSLYvZjgJitqK439IVBWg+2l8kKrls150yN5+2GDZLbAW/9AVV53S7LOSmnA
+ XiauVMwmdc0qgxFAu2fBNR8kde+goodonXLhqI7dsBaHwnZoURHUBVQ40SKG6ndeV6av Ww== 
+In-Reply-To: <21a828bae06b97b8ca806a6b76d867902b1e0e1f.camel@sipsolutions.net>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=3WjCfikvCNC3vNzLssWs7dDZv8RgDoNiwg1eSzZQdws=; b=L26xBmYK7eSH9s
-	9mZJ+cBIfQo15eqFzKy36lLQTF6W6eaO9jBiF5SMgtRaruGruSdnAHcHLJN9VvaJIfZ0aF4yXOCT0
-	aVhMZxcjErIIw4L9FpsgSTsUJqlmhAsbyVmvKY2beAgmr04sNXnADcCqKF0kModJXSVcYMVkdvv2r
-	dSgJrmttRJGsT2RlnqObATJOEwemnLA/1eyxFNt/S9c0pHiWLtl3STHUw9elHkkbM9a9XuNAncRCJ
-	BENI56XGZOy+T5RTXHBYaU7hYVE6jmmbY4wAphnTYrYjzNrqMf6aaQvaKXsf3U8t9Msmprwbcx3Bu
-	Sn0eYUxsBVJx1iLShkkw==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=hKMA4pE4ZC1WEjwlMS0oahB5WbuLzi761bi+OVXv/X8=; b=k4/hIANBdxC2Z8c++HmkBPk16F
-	hq1n4vi1aFY7d/izKMGpm0/zkTd++0c77IZs+Q5bV257Gjkiy34yMSDd8L7TKq46+CV0zDSHb27H+
-	4KSIRSylcgYZ2OMei78Bb1gC7STjWled8MJkcwhhG29tpOAa6HtPIFWPyA9seeGrRiJr3vWUYPsTp
-	3Vu3FPyPpiLcCMVxhaxuIGSboSf1mmZy7nxDek09nDmg/P6bBJA5M4EMw//9ErW/pvBC1TxeGCDAY
-	4DGmD2DpR96GbtKoxaTV3TYyxFMIuFbNKoIU/LaGvb2xuytoT+Rk3V4s2DX53haN44indyDWk1fXo
-	N1G/mBcw==;
-Content-Disposition: inline
-In-Reply-To: <xhsmhh6ucd4t7.mognet@vschneid.remote.csb>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Valentin Schneider <vschneid@redhat.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, "Paul E. McKenney" <paulmck@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Juri Lelli <juri.lelli@redhat.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, Marcelo Tosatti <mtosatti@redhat.com>, Frederic Weisbecker <frederic@kernel.org>, Ingo Molnar <mi>
+To: Johannes Berg <johannes@sipsolutions.net>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@e>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bjorn Helgaas <bhelgaas@google.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Mauro Carvalho Chehab <mchehab@kernel.org>, Alan Stern <stern@rowland.harvard.edu>, "Rafael J. Wysocki" <rafael@kernel.org>, linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, linux-pci@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org
 
-On Wed, Mar 22, 2023 at 06:22:28PM +0000, Valentin Schneider wrote:
-> On 22/03/23 18:22, Peter Zijlstra wrote:
+On Tue, 2023-03-14 at 13:37 +0100, Johannes Berg wrote:
+> On Tue, 2023-03-14 at 13:11 +0100, Niklas Schnelle wrote:
+> > --- a/arch/um/Kconfig
+> > +++ b/arch/um/Kconfig
+> > @@ -56,6 +56,7 @@ config NO_IOPORT_MAP
+> > =20
+> >  config ISA
+> >  	bool
+> > +	depends on HAS_IOPORT
+> >=20
+>=20
+> config ISA here is already unselectable, and nothing ever does "select
+> ISA" (only in some other architectures), so is there much point in this?
+>=20
+> I'm not even sure why this exists at all.
 
-> >>        hackbench-157   [001]    10.894320: ipi_send_cpu:         cpu=3 callsite=check_preempt_curr+0x37 callback=0x0
-> >
-> > Arguably we should be setting callback to scheduler_ipi(), except
-> > ofcourse, that's not an actual function...
-> >
-> > Maybe we can do "extern inline" for the actual users and provide a dummy
-> > function for the symbol when tracing.
-> >
-> 
-> Huh, I wasn't aware that was an option, I'll look into that. I did scribble
-> down a comment next to smp_send_reschedule(), but having a decodable
-> function name would be better!
+You're right there's not much point and I dropped this for v4. I agree
+that probably the whole "config ISA" could be removed if it's always
+false anyway but that seems out of scope for this patch.
 
-So clang-15 builds the below (and generates the expected code), but
-gcc-12 vomits nonsense about a non-static inline calling a static inline
-or somesuch bollocks :-/
+>=20
+> But anyway, adding a dependency to a always-false symbol doesn't make it
+> less always-false :-)
+>=20
+> Acked-by: Johannes Berg <johannes@sipsolutions.net> # for ARCH=3Dum
 
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1991,7 +1991,7 @@ extern char *__get_task_comm(char *to, s
- })
- 
- #ifdef CONFIG_SMP
--static __always_inline void scheduler_ipi(void)
-+extern __always_inline void scheduler_ipi(void)
- {
- 	/*
- 	 * Fold TIF_NEED_RESCHED into the preempt_count; anybody setting
---- a/include/linux/smp.h
-+++ b/include/linux/smp.h
-@@ -130,9 +130,9 @@ extern void arch_smp_send_reschedule(int
-  * scheduler_ipi() is inline so can't be passed as callback reason, but the
-  * callsite IP should be sufficient for root-causing IPIs sent from here.
-  */
--#define smp_send_reschedule(cpu) ({		  \
--	trace_ipi_send_cpu(cpu, _RET_IP_, NULL);  \
--	arch_smp_send_reschedule(cpu);		  \
-+#define smp_send_reschedule(cpu) ({				\
-+	trace_ipi_send_cpu(cpu, _RET_IP_, &scheduler_ipi);	\
-+	arch_smp_send_reschedule(cpu);				\
- })
- 
- /*
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3790,6 +3790,15 @@ static int ttwu_runnable(struct task_str
- }
- 
- #ifdef CONFIG_SMP
-+void scheduler_ipi(void)
-+{
-+	/*
-+	 * Actual users should end up using the extern inline, this is only
-+	 * here for the symbol.
-+	 */
-+	BUG();
-+}
-+
- void sched_ttwu_pending(void *arg)
- {
- 	struct llist_node *llist = arg;
+Thanks
+
+>=20
+>=20
+> Certainly will be nice to get rid of this cruft for architectures that
+> don't have it.
+>=20
+> johannes
+
+Yes, also, for s390 the broken NULL + port number access in the generic
+inb()/outb() currently causes the only remaining clang warning on
+defconfig builds.
