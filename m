@@ -1,130 +1,89 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
 Subject: Re: [PATCH v6 1/4] PCI: Introduce pci_dev_for_each_resource()
-Date: Thu, 23 Mar 2023 16:30:01 +0200
-Message-ID: <ZBxiaflGTeK8Jlgx@smile.fi.intel.com>
-References: <20230320131633.61680-2-andriy.shevchenko@linux.intel.com>
- <20230322192804.GA2485349@bhelgaas>
+Date: Thu, 23 Mar 2023 10:02:38 -0500
+Message-ID: <20230323150238.GA2550157@bhelgaas>
+References: <ZBxiaflGTeK8Jlgx@smile.fi.intel.com>
 Mime-Version: 1.0
-Return-path: <linux-acpi-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679581820; x=1711117820;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yycxH1AeGogQsiHx6KGAN/nQ6jWFX888/jtMkSYZfjo=;
-  b=dEv1rEs9jwcv0QKQ5fGqOQOtSuoN4whzoRgOjeCKSDY3D6oZNBkeEt13
-   1025Deb/A24ZhYf5mk2euVhtstLL0HLDIezQMK5oWWJafOwYZrNLZm30b
-   3Jhd7a0QYfxsqDctZuDh+V0J0mNNx7nGWAcFmxZRljitCCCFz3QtTEOuD
-   zsBaRQNfNBkr0CptfGUDRVFDrI63KYSCNF8HiNMLOkEbeOWuN1fD9WJDr
-   b9UXIP0ZIPBgcY1pnh9/V7ygiHwGQuhthDdha8AmQGVMoLt4MQLxCDuJk
-   TSSQNEaWjr3AfUs9Myhm9Lg2F7kpDXJVZGQaXdTh5ummbFiCiHNYJaxa1
-   w==;
+Return-path: <xen-devel-bounces@lists.xenproject.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
+List-Post: <mailto:xen-devel@lists.xenproject.org>
+List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
+List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
+Errors-To: xen-devel-bounces@lists.xenproject.org
+Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1679583760;
+	bh=A4cz5sAtdGojClghNnzslTTn+0telsrqWPrc7ZEY92A=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=QZ2KDQiDLNeolamz/rBZXmXKaml10w90GcGwB6l5yO87qYFqQPDIQgKZ80zht8Qsc
+	 Xeoi/zLrt2EtH3nbngx/R5sYZx0Xwf4JkO9knqHSrKtOYd2+7MSeapV8B/zw9rxmZf
+	 9UhNHPKZpA1ucTpj/VgulfE/ACFQnVZP8YBw36pan4Gf8wwyvTOnEEDjDM2KPQPTQp
+	 ZGCnVZCISmiqwx5zKNrKd8Mk7Zh6u/0oYwI8LPRfc1PEUXu67DDtdxfqNx9ryyF1pw
+	 4cNq1h1H67JIwrFngX1Sl9ypuAP/OCB5kx8wJtxg7nOzQYMGU2gbmFC/O67YEr6JCJ
+	 aHqE0tG0UVQoQ==
 Content-Disposition: inline
-In-Reply-To: <20230322192804.GA2485349@bhelgaas>
-List-ID: <linux-alpha.vger.kernel.org>
+In-Reply-To: <ZBxiaflGTeK8Jlgx@smile.fi.intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org, linux-acpi@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, Richard
 
-On Wed, Mar 22, 2023 at 02:28:04PM -0500, Bjorn Helgaas wrote:
-> On Mon, Mar 20, 2023 at 03:16:30PM +0200, Andy Shevchenko wrote:
-
-...
-
-> > +	pci_dev_for_each_resource_p(dev, r) {
-> >  		/* zap the 2nd function of the winbond chip */
-> > -		if (dev->resource[i].flags & IORESOURCE_IO
-> > -		    && dev->bus->number == 0 && dev->devfn == 0x81)
-> > -			dev->resource[i].flags &= ~IORESOURCE_IO;
-> > -		if (dev->resource[i].start == 0 && dev->resource[i].end) {
-> > -			dev->resource[i].flags = 0;
-> > -			dev->resource[i].end = 0;
-> > +		if (dev->bus->number == 0 && dev->devfn == 0x81 &&
-> > +		    r->flags & IORESOURCE_IO)
+On Thu, Mar 23, 2023 at 04:30:01PM +0200, Andy Shevchenko wrote:
+> On Wed, Mar 22, 2023 at 02:28:04PM -0500, Bjorn Helgaas wrote:
+> > On Mon, Mar 20, 2023 at 03:16:30PM +0200, Andy Shevchenko wrote:
+> ...
 > 
-> This is a nice literal conversion, but it's kind of lame to test
-> bus->number and devfn *inside* the loop here, since they can't change
-> inside the loop.
-
-Hmm... why are you asking me, even if I may agree on that? It's
-in the original code and out of scope of this series.
-
-> > +			r->flags &= ~IORESOURCE_IO;
-> > +		if (r->start == 0 && r->end) {
-> > +			r->flags = 0;
-> > +			r->end = 0;
-> >  		}
-> >  	}
-
-...
-
-> >  #define pci_resource_len(dev,bar) \
-> >  	((pci_resource_end((dev), (bar)) == 0) ? 0 :	\
-> >  							\
-> > -	 (pci_resource_end((dev), (bar)) -		\
-> > -	  pci_resource_start((dev), (bar)) + 1))
-> > +	 resource_size(pci_resource_n((dev), (bar))))
+> > > +	pci_dev_for_each_resource_p(dev, r) {
+> > >  		/* zap the 2nd function of the winbond chip */
+> > > -		if (dev->resource[i].flags & IORESOURCE_IO
+> > > -		    && dev->bus->number == 0 && dev->devfn == 0x81)
+> > > -			dev->resource[i].flags &= ~IORESOURCE_IO;
+> > > -		if (dev->resource[i].start == 0 && dev->resource[i].end) {
+> > > -			dev->resource[i].flags = 0;
+> > > -			dev->resource[i].end = 0;
+> > > +		if (dev->bus->number == 0 && dev->devfn == 0x81 &&
+> > > +		    r->flags & IORESOURCE_IO)
+> > 
+> > This is a nice literal conversion, but it's kind of lame to test
+> > bus->number and devfn *inside* the loop here, since they can't change
+> > inside the loop.
 > 
-> I like this change, but it's unrelated to pci_dev_for_each_resource()
-> and unmentioned in the commit log.
+> Hmm... why are you asking me, even if I may agree on that? It's
+> in the original code and out of scope of this series.
 
-And as you rightfully noticed this either. I can split it to a separate one.
+Yeah, I don't think it would be *unreasonable* to clean this up at the
+same time so the maintainers can look at both at the same time (this
+is arch/powerpc/platforms/pseries/pci.c, so Michael, et al), but no
+need for you to do anything, certainly.  I can post a follow-up patch.
 
-...
-
-> > +#define __pci_dev_for_each_resource(dev, res, __i, vartype)		\
-> > +	for (vartype __i = 0;						\
-> > +	     res = pci_resource_n(dev, __i), __i < PCI_NUM_RESOURCES;	\
-> > +	     __i++)
-> > +
-> > +#define pci_dev_for_each_resource(dev, res, i)				\
-> > +       __pci_dev_for_each_resource(dev, res, i, )
-> > +
-> > +#define pci_dev_for_each_resource_p(dev, res)				\
-> > +	__pci_dev_for_each_resource(dev, res, __i, unsigned int)
+> > but
+> > since we're converging on the "(dev, res)" style, I think we should
+> > reverse the names so we have something like:
+> > 
+> >   pci_dev_for_each_resource(dev, res)
+> >   pci_dev_for_each_resource_idx(dev, res, i)
 > 
-> This series converts many cases to drop the iterator variable ("i"),
-> which is fantastic.
-> 
-> Several of the remaining places need the iterator variable only to
-> call pci_claim_resource(), which could be converted to take a "struct
-> resource *" directly without much trouble.
-> 
-> We don't have to do that pci_claim_resource() conversion now,
+> Wouldn't it be more churn, including pci_bus_for_each_resource() correction?
 
-Exactly, it's definitely should be separate change.
+Yes, it definitely is a little more churn because we already have
+pci_bus_for_each_resource() that would have to be changed.
 
-> but
-> since we're converging on the "(dev, res)" style, I think we should
-> reverse the names so we have something like:
-> 
->   pci_dev_for_each_resource(dev, res)
->   pci_dev_for_each_resource_idx(dev, res, i)
+I poked around looking for similar patterns elsewhere with:
 
-Wouldn't it be more churn, including pci_bus_for_each_resource() correction?
+  git grep "#define.*for_each_.*_p("
+  git grep "#define.*for_each_.*_idx("
 
-...
+I didn't find any other "_p" iterators and just a few "_idx" ones, so
+my hope is to follow what little precedent there is, as well as
+converge on the basic "*_for_each_resource()" iterators and remove the
+"_idx()" versions over time by doing things like the
+pci_claim_resource() change.
 
-> Not sure __pci_dev_for_each_resource() is worthwhile since it only
-> avoids repeating that single "for" statement, and passing in "vartype"
-> (sometimes empty to implicitly avoid the declaration) is a little
-> complicated to read.  I think it'd be easier to read like this:
+What do you think?  If it seems like excessive churn, we can do it
+as-is and still try to reduce the use of the index variable over time.
 
-No objections here.
-
->   #define pci_dev_for_each_resource(dev, res)                      \
->     for (unsigned int __i = 0;                                     \
->          res = pci_resource_n(dev, __i), __i < PCI_NUM_RESOURCES;  \
->          __i++)
-> 
->   #define pci_dev_for_each_resource_idx(dev, res, idx)             \
->     for (idx = 0;                                                  \
->          res = pci_resource_n(dev, idx), idx < PCI_NUM_RESOURCES;  \
->          idx++)
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Bjorn
 
