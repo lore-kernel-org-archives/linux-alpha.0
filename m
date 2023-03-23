@@ -1,10 +1,9 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v7 4/6] EISA: Convert to use less arguments in pci_bus_for_each_resource()
-Date: Thu, 23 Mar 2023 19:36:08 +0200
-Message-ID: <20230323173610.60442-5-andriy.shevchenko@linux.intel.com>
-References: <20230323173610.60442-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v7 0/6] Add pci_dev_for_each_resource() helper and update users
+Date: Thu, 23 Mar 2023 19:36:04 +0200
+Message-ID: <20230323173610.60442-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Return-path: <xen-devel-bounces@lists.xenproject.org>
 List-Id: <linux-alpha.vger.kernel.org>
 List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
@@ -17,41 +16,98 @@ Errors-To: xen-devel-bounces@lists.xenproject.org
 Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679592944; x=1711128944;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+tkQnp5raP0E2HuwxHdpBNe2fRW/pW0M4CrsRaTr0mM=;
-  b=RaR3c+Ko1Set9wT9fzmlryq8URPSnPkdDXMihD02D1y7y14x1E4Ltm1W
-   eDuK8/EKQOKpxFbeZFhe8Q8JUS4yhltBuv7bUNGNe2c3PrddhvKOv+Vl/
-   RIFx8NM8JvydwvUNPxkwhtyUeyqfC464qnWk62Xeu3wVQRAlpGVHpDq4Q
-   HLDQC7v+SohVNP/vqoeWK5kCJxtGOpRU/Mf05iuKtVlgxPuNKPg5rHYkQ
-   hYl05MuXKfk1uEzjAsGpsJktCqcsLBDgHeWm21LU5plmNUaDugDWSqVxE
-   rYKtnL7+TBJR1XFeeG+eKpNZVydrNiLCfukz9NRVLfxoMrK2gyPZactWf
-   w==;
-In-Reply-To: <20230323173610.60442-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="macroman"
+  t=1679592956; x=1711128956;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=40PiIYrpY37wYxSvYhyAFvVxdYaZvy3f8Dv2ifvyB0g=;
+  b=TzZGocHurYcgfVCxo+ekgnql7MhPnW0QZzbYf9GbrVoXO+VMzZdWCu3t
+   saw4vHxijyjZbt4uagLkFND1994Dmx4kRex4xpeHDk5yOHfHusgWPiJZ0
+   Z2C1gYXhJypk71G13CYZPwrepYiXBtLa08IHbSxlM+lA48gCYT/4u5iS3
+   NihbFUfGBtj5eFokJNxCiV3G4InH0tLu7hNMx595kmquQiucTmhyxt5Dv
+   4XQuhRosfRYypiDdsdP55STQwQkfltCRWyeMq8JN+LF3NlBehcgGbGXno
+   UObeLXNonwR9LLs7UkApL3n5kCEoU2ZHxvseSR7XIuknSekC4RX63MqSJ
+   A==;
+Content-Type: text/plain; charset="us-ascii"
 To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@li
 Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
-VGhlIHBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UoKSBjYW4gaGlkZSB0aGUgaXRlcmF0b3IgbG9v
-cCBzaW5jZQppdCBtYXkgYmUgbm90IHVzZWQgb3RoZXJ3aXNlLiBXaXRoIHRoaXMsIHdlIG1heSBk
-cm9wIHRoYXQgaXRlcmF0b3IKdmFyaWFibGUgZGVmaW5pdGlvbi4KClNpZ25lZC1vZmYtYnk6IEFu
-ZHkgU2hldmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPgpSZXZpZXdl
-ZC1ieTogS3J6eXN6dG9mIFdpbGN6ecWEc2tpIDxrd0BsaW51eC5jb20+Ci0tLQogZHJpdmVycy9l
-aXNhL3BjaV9laXNhLmMgfCA0ICsrLS0KIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyks
-IDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9laXNhL3BjaV9laXNhLmMgYi9k
-cml2ZXJzL2Vpc2EvcGNpX2Vpc2EuYwppbmRleCA5MzBjMjMzMmMzYzQuLjgxNzNlNjBiYjgwOCAx
-MDA2NDQKLS0tIGEvZHJpdmVycy9laXNhL3BjaV9laXNhLmMKKysrIGIvZHJpdmVycy9laXNhL3Bj
-aV9laXNhLmMKQEAgLTIwLDggKzIwLDggQEAgc3RhdGljIHN0cnVjdCBlaXNhX3Jvb3RfZGV2aWNl
-IHBjaV9laXNhX3Jvb3Q7CiAKIHN0YXRpYyBpbnQgX19pbml0IHBjaV9laXNhX2luaXQoc3RydWN0
-IHBjaV9kZXYgKnBkZXYpCiB7Ci0JaW50IHJjLCBpOwogCXN0cnVjdCByZXNvdXJjZSAqcmVzLCAq
-YnVzX3JlcyA9IE5VTEw7CisJaW50IHJjOwogCiAJaWYgKChyYyA9IHBjaV9lbmFibGVfZGV2aWNl
-IChwZGV2KSkpIHsKIAkJZGV2X2VycigmcGRldi0+ZGV2LCAiQ291bGQgbm90IGVuYWJsZSBkZXZp
-Y2VcbiIpOwpAQCAtMzgsNyArMzgsNyBAQCBzdGF0aWMgaW50IF9faW5pdCBwY2lfZWlzYV9pbml0
-KHN0cnVjdCBwY2lfZGV2ICpwZGV2KQogCSAqIGVpc2Ffcm9vdF9yZWdpc3RlcigpIGNhbiBvbmx5
-IGRlYWwgd2l0aCBhIHNpbmdsZSBpbyBwb3J0IHJlc291cmNlLAogCSogIHNvIHdlIHVzZSB0aGUg
-Zmlyc3QgdmFsaWQgaW8gcG9ydCByZXNvdXJjZS4KIAkgKi8KLQlwY2lfYnVzX2Zvcl9lYWNoX3Jl
-c291cmNlKHBkZXYtPmJ1cywgcmVzLCBpKQorCXBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UocGRl
-di0+YnVzLCByZXMpCiAJCWlmIChyZXMgJiYgKHJlcy0+ZmxhZ3MgJiBJT1JFU09VUkNFX0lPKSkg
-ewogCQkJYnVzX3JlcyA9IHJlczsKIAkJCWJyZWFrOwotLSAKMi40MC4wLjEuZ2FhODk0NjIxN2Ew
-YgoKCg==
+Provide two new helper macros to iterate over PCI device resources and
+convert users.
+
+Looking at it, refactor existing pci_bus_for_each_resource() and convert
+users accordingly.
+
+Changelog v7:
+- made both macros to share same name (Bjorn)
+- split out the pci_resource_n() conversion (Bjorn)
+
+Changelog v6:
+- dropped unused variable in PPC code (LKP)
+
+Changelog v5:
+- renamed loop variable to minimize the clash (Keith)
+- addressed smatch warning (Dan)
+- addressed 0-day bot findings (LKP)
+
+Changelog v4:
+- rebased on top of v6.3-rc1
+- added tag (Krzysztof)
+
+Changelog v3:
+- rebased on top of v2 by Mika, see above
+- added tag to pcmcia patch (Dominik)
+
+Changelog v2:
+- refactor to have two macros
+- refactor existing pci_bus_for_each_resource() in the same way and
+  convert users
+
+Andy Shevchenko (5):
+  kernel.h: Split out COUNT_ARGS() and CONCATENATE()
+  PCI: Allow pci_bus_for_each_resource() to take less arguments
+  EISA: Convert to use less arguments in pci_bus_for_each_resource()
+  pcmcia: Convert to use less arguments in pci_bus_for_each_resource()
+  PCI: Make use of pci_resource_n()
+
+Mika Westerberg (1):
+  PCI: Introduce pci_dev_for_each_resource()
+
+ .clang-format                             |  1 +
+ arch/alpha/kernel/pci.c                   |  5 +--
+ arch/arm/kernel/bios32.c                  | 16 ++++----
+ arch/arm/mach-dove/pcie.c                 | 10 ++---
+ arch/arm/mach-mv78xx0/pcie.c              | 10 ++---
+ arch/arm/mach-orion5x/pci.c               | 10 ++---
+ arch/mips/pci/ops-bcm63xx.c               |  8 ++--
+ arch/mips/pci/pci-legacy.c                |  3 +-
+ arch/powerpc/kernel/pci-common.c          | 21 +++++-----
+ arch/powerpc/platforms/4xx/pci.c          |  8 ++--
+ arch/powerpc/platforms/52xx/mpc52xx_pci.c |  5 +--
+ arch/powerpc/platforms/pseries/pci.c      | 16 ++++----
+ arch/sh/drivers/pci/pcie-sh7786.c         | 10 ++---
+ arch/sparc/kernel/leon_pci.c              |  5 +--
+ arch/sparc/kernel/pci.c                   | 10 ++---
+ arch/sparc/kernel/pcic.c                  |  5 +--
+ drivers/eisa/pci_eisa.c                   |  4 +-
+ drivers/pci/bus.c                         |  7 ++--
+ drivers/pci/hotplug/shpchp_sysfs.c        |  8 ++--
+ drivers/pci/pci.c                         |  3 +-
+ drivers/pci/probe.c                       |  2 +-
+ drivers/pci/remove.c                      |  5 +--
+ drivers/pci/setup-bus.c                   | 37 +++++++-----------
+ drivers/pci/setup-res.c                   |  4 +-
+ drivers/pci/vgaarb.c                      | 17 +++-----
+ drivers/pci/xen-pcifront.c                |  4 +-
+ drivers/pcmcia/rsrc_nonstatic.c           |  9 ++---
+ drivers/pcmcia/yenta_socket.c             |  3 +-
+ drivers/pnp/quirks.c                      | 29 +++++---------
+ include/linux/args.h                      | 13 +++++++
+ include/linux/kernel.h                    |  8 +---
+ include/linux/pci.h                       | 47 +++++++++++++++++------
+ 32 files changed, 165 insertions(+), 178 deletions(-)
+ create mode 100644 include/linux/args.h
+
+-- 
+2.40.0.1.gaa8946217a0b
+
+
