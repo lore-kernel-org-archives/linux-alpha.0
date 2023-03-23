@@ -1,67 +1,92 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v6 1/4] PCI: Introduce pci_dev_for_each_resource()
-Date: Thu, 23 Mar 2023 17:08:47 +0200
-Message-ID: <ZBxrfy83MRjnReAs@smile.fi.intel.com>
-References: <ZBxiaflGTeK8Jlgx@smile.fi.intel.com>
- <20230323150238.GA2550157@bhelgaas>
+From: Valentin Schneider <vschneid@redhat.com>
+Subject: Re: [PATCH v5 7/7] sched, smp: Trace smp callback causing an IPI
+Date: Thu, 23 Mar 2023 16:25:25 +0000
+Message-ID: <xhsmhbkkjcu4q.mognet@vschneid.remote.csb>
+References: <20230307143558.294354-1-vschneid@redhat.com>
+ <20230307143558.294354-8-vschneid@redhat.com>
+ <20230322095329.GS2017917@hirez.programming.kicks-ass.net>
+ <xhsmhmt45c703.mognet@vschneid.remote.csb>
+ <20230322140434.GC2357380@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679584249; x=1711120249;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pTI3sfGhxuNt+eJ92X/zV2v4CxfKcZ1sf1RhNp36ij0=;
-  b=RMo/4HUqB8BgdlqabO9/Iy32ztEUrI3LEakPvnl+avuKVEiOS1fyLgT4
-   zO+zRC9keHfN6H8LqyLqxCLg9cc82PMJaMf6EZOQuSo49gebWF2vK0jW5
-   us5eRm+wRqDJFmFJZl2unFR63DKx6uyE1lmnQaG6Bvz6UpwyPnzjsJWdv
-   XQ9LGLhc4tXHERtyNJmuNDkqamAUCe/4RL/iIRfTgyC2mJXnFB+qzLa5F
-   fejLT1oyp3OWVLl5SapLOJmnzTBS9OaBk19A9mfQF3xjSJmpgGIuer+yt
-   DSGtFNs7cM99PpAnH2FCeflKroCeKu1mJPke1U0jBlAPLbDObEwKNUj+N
-   w==;
-Content-Disposition: inline
-In-Reply-To: <20230323150238.GA2550157@bhelgaas>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org, linux-acpi@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, Richard
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:Message-ID:Date:References
+	:In-Reply-To:Subject:Cc:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=z46siptdGC7QbK7IprZFYfkRi2sqPpVOiEOuSwALRak=; b=kMXdxHEDj5NrH4
+	KL1Sndm7BGArhVEMZk+6jO8xFDMOWFadnvgTtopt6fxctj2qEmHnr1UEG3ivlqLEFwK8yawOZOlOl
+	xelMyh7aC7C3IG+/E4KpCqZZ4JQm0CnOq1kc7T1lxRDPzRByUfyoBHF/ZZIIOcsWdi20T7sM/GcV6
+	YUEZ7C4YlSTuM0k/UQW2JObB8hYeC2ZdRhIqVkQh4n4n6jYUQ1XMJVTK5FPIfBqWuI78Tp/Hy/HJ4
+	9Tbn+IwOyHxIVEdHQOEon9lkSDRUJ/9lmbDI+tXSEDZ6pWMnn9v90J9xvDfOepHzRyVgXVu9oaTAD
+	RM/8zPllzcMpBBhU+P9g==;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1679588730;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Rf1EargHhjBzXfO07IgMLtInuWGSM9rCL6OoPVE8vbA=;
+	b=CLCmM0WSxtyElg+rV2NaoX9cNsA1z5rA7ILWJxtQfnoauVI4sVS+i/1dx6dmEGhD7QGjwW
+	ieVUHLQI89+/WnFSqHdOMyN7cvuSa5i7jQ4ENY1zX4hy7aRG8nE4HRcgbVapDzLLSyxMYb
+	WXQ45gfTZgsQx4Xjb6Am1fF1x4+m1OM=
+In-Reply-To: <20230322140434.GC2357380@hirez.programming.kicks-ass.net>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, "Paul E. McKenney" <paulmck@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Juri Lelli <juri.lelli@redhat.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, Marcelo Tosatti <mtosatti@redhat.com>, Frederic Weisbecker <frederic@kernel.org>, Ingo Molnar <mingo>
 
-On Thu, Mar 23, 2023 at 10:02:38AM -0500, Bjorn Helgaas wrote:
-> On Thu, Mar 23, 2023 at 04:30:01PM +0200, Andy Shevchenko wrote:
+On 22/03/23 15:04, Peter Zijlstra wrote:
+> @@ -798,14 +794,20 @@ static void smp_call_function_many_cond(
+>  		}
+>  
+>  		/*
+> +		 * Trace each smp_function_call_*() as an IPI, actual IPIs
+> +		 * will be traced with func==generic_smp_call_function_single_ipi().
+> +		 */
+> +		trace_ipi_send_cpumask(cfd->cpumask_ipi, _RET_IP_, func);
 
-...
+I just got a trace pointing out this can emit an event even though no IPI
+is sent if e.g. the cond_func predicate filters all CPUs in the argument
+mask:
 
-> I poked around looking for similar patterns elsewhere with:
-> 
->   git grep "#define.*for_each_.*_p("
->   git grep "#define.*for_each_.*_idx("
-> 
-> I didn't find any other "_p" iterators and just a few "_idx" ones, so
-> my hope is to follow what little precedent there is, as well as
-> converge on the basic "*_for_each_resource()" iterators and remove the
-> "_idx()" versions over time by doing things like the
-> pci_claim_resource() change.
+  ipi_send_cpumask:     cpumask= callsite=on_each_cpu_cond_mask+0x3c callback=flush_tlb_func+0x0
 
-The p is heavily used in the byte order conversion helpers.
+Maybe something like so on top?
 
-> What do you think?  If it seems like excessive churn, we can do it
-> as-is and still try to reduce the use of the index variable over time.
-
-I think _p has a precedent as well. But I can think about it a bit, maybe
-we can come up with something smarter.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
-
+---
+diff --git a/kernel/smp.c b/kernel/smp.c
+index ba5478814e677..1dc452017d000 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -791,6 +791,8 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
+ 			}
+ 		}
+ 
++		if (!nr_cpus)
++			goto local;
+ 		/*
+ 		 * Trace each smp_function_call_*() as an IPI, actual IPIs
+ 		 * will be traced with func==generic_smp_call_function_single_ipi().
+@@ -804,10 +806,10 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
+ 		 */
+ 		if (nr_cpus == 1)
+ 			send_call_function_single_ipi(last_cpu);
+-		else if (likely(nr_cpus > 1))
++		else
+ 			send_call_function_ipi_mask(cfd->cpumask_ipi);
+ 	}
+-
++local:
+ 	if (run_local && (!cond_func || cond_func(this_cpu, info))) {
+ 		unsigned long flags;
