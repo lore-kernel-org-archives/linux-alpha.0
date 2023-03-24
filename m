@@ -1,60 +1,77 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v7 4/6] EISA: Convert to use less arguments in
- pci_bus_for_each_resource()
-Date: Fri, 24 Mar 2023 11:19:52 +0200
-Message-ID: <ZB1rOHt8pG+9Ti2V@smile.fi.intel.com>
+Subject: Re: [PATCH v7 6/6] PCI: Make use of pci_resource_n()
+Date: Fri, 24 Mar 2023 11:20:54 +0200
+Message-ID: <ZB1rdkOgwwSC2Pxf@smile.fi.intel.com>
 References: <20230323173610.60442-1-andriy.shevchenko@linux.intel.com>
- <20230323173610.60442-5-andriy.shevchenko@linux.intel.com>
- <43e7ef6d-6248-4ee5-7144-70809e5c93e0@linaro.org>
+ <20230323173610.60442-7-andriy.shevchenko@linux.intel.com>
+ <1722e75c-bc06-4a34-5e12-fa3622ed86a3@linaro.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <xen-devel-bounces@lists.xenproject.org>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
+List-Post: <mailto:xen-devel@lists.xenproject.org>
+List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
+List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
+Errors-To: xen-devel-bounces@lists.xenproject.org
+Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679649609; x=1711185609;
+  t=1679649672; x=1711185672;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=vsNBrnwY/qFfdSufiaxoySiGuysdLC+OL9fxRmgKucY=;
-  b=OQ3Oq38sLlGjmFk8Oapo3a5jEsDEbXy9CKNfB6iZ5oYmRlkN90WujeJi
-   SA25MA2HRt9S82gsrtjbKuSWNuF1NL0ZtbrsZyR/1ept037Q09GUyrxAz
-   3i4nHdB7vsrP9h+BBlMwDmWvrwYkUsKVKHzJatZsY+f1Sivt8jB9p+l56
-   Hw/+dlmAqO8G4QdkQp4gQlkjczOZKzcxtYktY7WvUEa0Dwt33yzY5RsSj
-   snobdRaXZnEWy1NEP02cFSBvCM/FXZfo0IGez3hU0cdSqo40fe9dgY1ay
-   /3rUuAHyTOTma08Er4AqsygxOt0JU9UpmuXdyoV3TUyR/j9+Ow4a9Awq/
-   A==;
+  bh=Zv6p5PxBUIwRGR/FQTKCtRGfcJDPVTzeoNo7mhbkHhY=;
+  b=kkS1m9xKVU2GnODj1/9mLnyNnexAw3CaqebsescHGUZuE5cWt/136+L9
+   jXG2lTOaIpuEJUzsFUqXr90uI8pR/c0PPXK1H9l+5h5dNBzi1LgYgST9h
+   +XYMYLBHkqIhZLKaOxdzgmz/Y8uCd1DOWoT2I7SvlncTK/iRZV33wEOaP
+   Oaj1Sxma9eVc4/JK1MK40f8PBN/5CgaWnv0Om6ijkiCURSOnOY1H5lt3h
+   yhbdqGD/uvaiLiCa5kzrI6souWLueOiH2PsAM/YmwxTLaemXjo5SMAq+3
+   7hPLWV7hohsZroJpO/ylDkxt9cDqtKE8ncqgSdIJ65zvYqt5Whnzlppbe
+   Q==;
 Content-Disposition: inline
-In-Reply-To: <43e7ef6d-6248-4ee5-7144-70809e5c93e0@linaro.org>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <1722e75c-bc06-4a34-5e12-fa3622ed86a3@linaro.org>
+Content-Type: text/plain; charset="iso-8859-1"
 To: Philippe =?iso-8859-1?Q?Mathieu-Daud=E9?= <philmd@linaro.org>
-Cc: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.ker
+Cc: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org, linux-acpi@vger.kernel.org, Miguel Ojeda <o>
 
-On Fri, Mar 24, 2023 at 10:02:15AM +0100, Philippe Mathieu-Daudé wrote:
+On Fri, Mar 24, 2023 at 10:08:39AM +0100, Philippe Mathieu-Daud=E9 wrote:
 > On 23/3/23 18:36, Andy Shevchenko wrote:
-> > The pci_bus_for_each_resource() can hide the iterator loop since
-> > it may be not used otherwise. With this, we may drop that iterator
-> > variable definition.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
-> > ---
-> >   drivers/eisa/pci_eisa.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/eisa/pci_eisa.c b/drivers/eisa/pci_eisa.c
-> 
-> Since this is *PCI* EISA, could be squashed into previous patch.
+> > Replace open-coded implementations of pci_resource_n() in pci.h.
 
-I believe it would be better to have them separated.
-But if maintainers want to squash, I can do that.
+...
 
-> Reviewed-by: Philippe Mathieu-Daudé <philmd@linaro.org>
+> >   #define pci_resource_n(dev, bar)	(&(dev)->resource[(bar)])
+> > -#define pci_resource_start(dev, bar)	((dev)->resource[(bar)].start)
+> > -#define pci_resource_end(dev, bar)	((dev)->resource[(bar)].end)
+> > -#define pci_resource_flags(dev, bar)	((dev)->resource[(bar)].flags)
+> > -#define pci_resource_len(dev,bar) \
+> > -	((pci_resource_end((dev), (bar)) =3D=3D 0) ? 0 :	\
+> > -							\
+> > -	 (pci_resource_end((dev), (bar)) -		\
+> > -	  pci_resource_start((dev), (bar)) + 1))
+> > +#define pci_resource_start(dev, bar)	(pci_resource_n(dev, bar)->start)
+> > +#define pci_resource_end(dev, bar)	(pci_resource_n(dev, bar)->end)
+> > +#define pci_resource_flags(dev, bar)	(pci_resource_n(dev, bar)->flags)
+> > +#define pci_resource_len(dev,bar)					\
+> > +	(pci_resource_end((dev), (bar)) ? 				\
+> > +	 resource_size(pci_resource_n((dev), (bar))) : 0)
+>=20
+> Seems (to me) more logical to have this patch as "PCI: Introduce
+> pci_resource_n()" ordered before your patch #2 "PCI: Introduce
+> pci_dev_for_each_resource()".
+
+Either way works for me. Bjorn, what do you like?
+
+> Here as #6 or as #2:
+> Reviewed-by: Philippe Mathieu-Daud=E9 <philmd@linaro.org>
 
 Thank you!
 
-
--- 
+--=20
 With Best Regards,
 Andy Shevchenko
+
 
 
