@@ -1,68 +1,194 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v8 7/7] pcmcia: Convert to use less arguments in pci_bus_for_each_resource()
-Date: Thu, 30 Mar 2023 19:24:34 +0300
-Message-ID: <20230330162434.35055-8-andriy.shevchenko@linux.intel.com>
-References: <20230330162434.35055-1-andriy.shevchenko@linux.intel.com>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH 01/10] locking/atomic: Add missing cast to try_cmpxchg()
+ fallbacks
+Date: Mon, 3 Apr 2023 11:19:48 +0100
+Message-ID: <ZCqoRNU8EJhKJVEu@FVFF77S0Q05N>
+References: <20230305205628.27385-1-ubizjak@gmail.com>
+ <20230305205628.27385-2-ubizjak@gmail.com>
+ <ZB2v+avNt52ac/+w@FVFF77S0Q05N>
+ <CAFULd4ZCgxDYnyy--qdgKoAo_y7MbNSaQdbdBFefnFuMoM2OYw@mail.gmail.com>
+ <ZB3MR8lGbnea9ui6@FVFF77S0Q05N>
+ <ZB3QtDYuWdpiD5qk@FVFF77S0Q05N>
+ <CAFULd4aFUF5k=QJD8tDp4qzm2iBF7=rNvp1SJWrg44X5hTFxtQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680193726; x=1711729726;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CylzEgRAmJXOphwnxg3IbL2UXwW6z4Wch9KnUOezzDg=;
-  b=KWdy3V8PuSK/O9+XoiZNNnunwlnaY0F5BUg2OmimFGnUp1wZTl/5exrd
-   n+Y4U9UnzKB6Z9GKmhDGSNR2o2dH3Q7NpSAAyCguS5g2e352hfvqPvTZY
-   Oe3T/kdo859DwvyFStL/tlET33PdcZReDeYUjwW+THHn9NJt/EgzB5iFu
-   m3n6ZV9BdGCKM1zXnx9IMgiG5fzIDnLiy3qHNH0XARN5GBQ6zmGnaRVQy
-   51sAhUOcMNf8gqAciCcgBZ0cZkJUHaoWMgaAAUN+YaZO5Qn66i+J4sk5y
-   LFNYcI8Y6c7fa8VQu7ZjaTOxplNoa/sh2M5to+Y3BJGGMBC9szhGUuc98
-   w==;
-In-Reply-To: <20230330162434.35055-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="macroman"
-To: =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <philmd@linaro.org>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, sparc
-Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAFULd4aFUF5k=QJD8tDp4qzm2iBF7=rNvp1SJWrg44X5hTFxtQ@mail.gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+To: Uros Bizjak <ubizjak@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Boqun Feng <boqun.feng@gmail.com>
 
-VGhlIHBjaV9idXNfZm9yX2VhY2hfcmVzb3VyY2UoKSBjYW4gaGlkZSB0aGUgaXRlcmF0b3IgbG9v
-cCBzaW5jZQppdCBtYXkgYmUgbm90IHVzZWQgb3RoZXJ3aXNlLiBXaXRoIHRoaXMsIHdlIG1heSBk
-cm9wIHRoYXQgaXRlcmF0b3IKdmFyaWFibGUgZGVmaW5pdGlvbi4KClNpZ25lZC1vZmYtYnk6IEFu
-ZHkgU2hldmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPgpSZXZpZXdl
-ZC1ieTogS3J6eXN6dG9mIFdpbGN6ecWEc2tpIDxrd0BsaW51eC5jb20+CkFja2VkLWJ5OiBEb21p
-bmlrIEJyb2Rvd3NraSA8bGludXhAZG9taW5pa2Jyb2Rvd3NraS5uZXQ+Ci0tLQogZHJpdmVycy9w
-Y21jaWEvcnNyY19ub25zdGF0aWMuYyB8IDkgKysrLS0tLS0tCiBkcml2ZXJzL3BjbWNpYS95ZW50
-YV9zb2NrZXQuYyAgIHwgMyArLS0KIDIgZmlsZXMgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA4
-IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcGNtY2lhL3JzcmNfbm9uc3RhdGlj
-LmMgYi9kcml2ZXJzL3BjbWNpYS9yc3JjX25vbnN0YXRpYy5jCmluZGV4IGFkMTE0MWZkZGI0Yy4u
-OTYyNjRlYmVlNDZhIDEwMDY0NAotLS0gYS9kcml2ZXJzL3BjbWNpYS9yc3JjX25vbnN0YXRpYy5j
-CisrKyBiL2RyaXZlcnMvcGNtY2lhL3JzcmNfbm9uc3RhdGljLmMKQEAgLTkzNCw3ICs5MzQsNyBA
-QCBzdGF0aWMgaW50IGFkanVzdF9pbyhzdHJ1Y3QgcGNtY2lhX3NvY2tldCAqcywgdW5zaWduZWQg
-aW50IGFjdGlvbiwgdW5zaWduZWQgbG9uZwogc3RhdGljIGludCBub25zdGF0aWNfYXV0b2FkZF9y
-ZXNvdXJjZXMoc3RydWN0IHBjbWNpYV9zb2NrZXQgKnMpCiB7CiAJc3RydWN0IHJlc291cmNlICpy
-ZXM7Ci0JaW50IGksIGRvbmUgPSAwOworCWludCBkb25lID0gMDsKIAogCWlmICghcy0+Y2JfZGV2
-IHx8ICFzLT5jYl9kZXYtPmJ1cykKIAkJcmV0dXJuIC1FTk9ERVY7CkBAIC05NjAsMTIgKzk2MCw5
-IEBAIHN0YXRpYyBpbnQgbm9uc3RhdGljX2F1dG9hZGRfcmVzb3VyY2VzKHN0cnVjdCBwY21jaWFf
-c29ja2V0ICpzKQogCSAqLwogCWlmIChzLT5jYl9kZXYtPmJ1cy0+bnVtYmVyID09IDApCiAJCXJl
-dHVybiAtRUlOVkFMOwotCi0JZm9yIChpID0gMDsgaSA8IFBDSV9CUklER0VfUkVTT1VSQ0VfTlVN
-OyBpKyspIHsKLQkJcmVzID0gcy0+Y2JfZGV2LT5idXMtPnJlc291cmNlW2ldOwotI2Vsc2UKLQlw
-Y2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKHMtPmNiX2Rldi0+YnVzLCByZXMsIGkpIHsKICNlbmRp
-ZgorCisJcGNpX2J1c19mb3JfZWFjaF9yZXNvdXJjZShzLT5jYl9kZXYtPmJ1cywgcmVzKSB7CiAJ
-CWlmICghcmVzKQogCQkJY29udGludWU7CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcGNtY2lhL3ll
-bnRhX3NvY2tldC5jIGIvZHJpdmVycy9wY21jaWEveWVudGFfc29ja2V0LmMKaW5kZXggMTM2NWVh
-YTIwZmY0Li5mZDE4YWI1NzFjZTggMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcGNtY2lhL3llbnRhX3Nv
-Y2tldC5jCisrKyBiL2RyaXZlcnMvcGNtY2lhL3llbnRhX3NvY2tldC5jCkBAIC02NzMsOSArNjcz
-LDggQEAgc3RhdGljIGludCB5ZW50YV9zZWFyY2hfcmVzKHN0cnVjdCB5ZW50YV9zb2NrZXQgKnNv
-Y2tldCwgc3RydWN0IHJlc291cmNlICpyZXMsCiAJCQkgICAgdTMyIG1pbikKIHsKIAlzdHJ1Y3Qg
-cmVzb3VyY2UgKnJvb3Q7Ci0JaW50IGk7CiAKLQlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKHNv
-Y2tldC0+ZGV2LT5idXMsIHJvb3QsIGkpIHsKKwlwY2lfYnVzX2Zvcl9lYWNoX3Jlc291cmNlKHNv
-Y2tldC0+ZGV2LT5idXMsIHJvb3QpIHsKIAkJaWYgKCFyb290KQogCQkJY29udGludWU7CiAKLS0g
-CjIuNDAuMC4xLmdhYTg5NDYyMTdhMGIKCgo=
+On Sun, Mar 26, 2023 at 09:28:38PM +0200, Uros Bizjak wrote:
+> On Fri, Mar 24, 2023 at 5:33 PM Mark Rutland <mark.rutland@arm.com> wrote:
+> >
+> > On Fri, Mar 24, 2023 at 04:14:22PM +0000, Mark Rutland wrote:
+> > > On Fri, Mar 24, 2023 at 04:43:32PM +0100, Uros Bizjak wrote:
+> > > > On Fri, Mar 24, 2023 at 3:13 PM Mark Rutland <mark.rutland@arm.com> wrote:
+> > > > >
+> > > > > On Sun, Mar 05, 2023 at 09:56:19PM +0100, Uros Bizjak wrote:
+> > > > > > Cast _oldp to the type of _ptr to avoid incompatible-pointer-types warning.
+> > > > >
+> > > > > Can you give an example of where we are passing an incompatible pointer?
+> > > >
+> > > > An example is patch 10/10 from the series, which will fail without
+> > > > this fix when fallback code is used. We have:
+> > > >
+> > > > -       } while (local_cmpxchg(&rb->head, offset, head) != offset);
+> > > > +       } while (!local_try_cmpxchg(&rb->head, &offset, head));
+> > > >
+> > > > where rb->head is defined as:
+> > > >
+> > > > typedef struct {
+> > > >    atomic_long_t a;
+> > > > } local_t;
+> > > >
+> > > > while offset is defined as 'unsigned long'.
+> > >
+> > > Ok, but that's because we're doing the wrong thing to start with.
+> > >
+> > > Since local_t is defined in terms of atomic_long_t, we should define the
+> > > generic local_try_cmpxchg() in terms of atomic_long_try_cmpxchg(). We'll still
+> > > have a mismatch between 'long *' and 'unsigned long *', but then we can fix
+> > > that in the callsite:
+> > >
+> > >       while (!local_try_cmpxchg(&rb->head, &(long *)offset, head))
+> >
+> > Sorry, that should be:
+> >
+> >         while (!local_try_cmpxchg(&rb->head, (long *)&offset, head))
+> 
+> The fallbacks are a bit more complicated than above, and are different
+> from atomic_try_cmpxchg.
+> 
+> Please note in patch 2/10, the falbacks when arch_try_cmpxchg_local
+> are not defined call arch_cmpxchg_local. Also in patch 2/10,
+> try_cmpxchg_local is introduced, where it calls
+> arch_try_cmpxchg_local. Targets (and generic code) simply define (e.g.
+> :
+> 
+> #define local_cmpxchg(l, o, n) \
+>        (cmpxchg_local(&((l)->a.counter), (o), (n)))
+> +#define local_try_cmpxchg(l, po, n) \
+> +       (try_cmpxchg_local(&((l)->a.counter), (po), (n)))
+> 
+> which is part of the local_t API. Targets should either define all
+> these #defines, or none. There are no partial fallbacks as is the case
+> with atomic_t.
+
+Whether or not there are fallbacks is immaterial.
+
+In those cases, architectures can just as easily write C wrappers, e.g.
+
+long local_cmpxchg(local_t *l, long old, long new)
+{
+	return cmpxchg_local(&l->a.counter, old, new);
+}
+
+long local_try_cmpxchg(local_t *l, long *old, long new)
+{
+	return try_cmpxchg_local(&l->a.counter, old, new);
+}
+
+> The core of the local_h API is in the local.h header. If the target
+> doesn't define its own local.h header, then asm-generic/local.h is
+> used that does exactly what you propose above regarding the usage of
+> atomic functions.
+> 
+> OTOH, when the target defines its own local.h, then the above
+> target-dependent #define path applies. The target should define its
+> own arch_try_cmpxchg_local, otherwise a "generic" target-dependent
+> fallback that calls target arch_cmpxchg_local applies. In the case of
+> x86, patch 9/10 enables new instruction by defining
+> arch_try_cmpxchg_local.
+> 
+> FYI, the patch sequence is carefully chosen so that x86 also exercises
+> fallback code between different patches in the series.
+> 
+> Targets are free to define local_t to whatever they like, but for some
+> reason they all define it to:
+> 
+> typedef struct {
+>     atomic_long_t a;
+> } local_t;
+
+Yes, which is why I used atomic_long() above.
+
+> so they have to dig the variable out of the struct like:
+> 
+> #define local_cmpxchg(l, o, n) \
+>      (cmpxchg_local(&((l)->a.counter), (o), (n)))
+> 
+> Regarding the mismatch of 'long *' vs 'unsigned long *': x86
+> target-specific code does for try_cmpxchg:
+> 
+> #define __raw_try_cmpxchg(_ptr, _pold, _new, size, lock) \
+> ({ \
+> bool success; \
+> __typeof__(_ptr) _old = (__typeof__(_ptr))(_pold); \
+> __typeof__(*(_ptr)) __old = *_old; \
+> __typeof__(*(_ptr)) __new = (_new); \
+> 
+> so, it *does* cast the "old" pointer to the type of "ptr". The generic
+> code does *not*. This difference is dangerous, since the compilation
+> of some code involving try_cmpxchg will compile OK for x86 but will
+> break for other targets that use try_cmpxchg fallback templates (I was
+> the unlucky one that tripped on this in the past). Please note that
+> this problem is not specific to the proposed local_try_cmpxchg series,
+> but affects the existing try_cmpxchg API.
+
+I understand the problem of arch code differing from generic code, and that we
+want to have *a* consistent behaviour for hte API.
+
+What I'm saying is that the behaviour we should aim for is where the 'old'
+pointer has a specific type (long), and we always require that, as we do for
+the various atomic_*() APIs of which local_*() is a cousin.
+
+> Also, I don't think that "fixing" callsites is the right thing to do.
+
+Why? What's wrong with doing that?
+
+The documentation in Documentation/core-api/local_ops.rst says:
+
+    The ``local_t`` type is defined as an opaque ``signed long``
+
+So the obvious and least surprising thing is for the local_*() functions to use
+'long' for values and 'long *' for pointers to values.
+
+Requiring a cast in a few places is not the end of the world.
+
+> The generic code should follow x86 and cast the "old" pointer to the
+> type of "ptr" inside the fallback.
+
+Why?
+
+I disagree, and think it's far better to be strict by default. That way,
+accidental usage of the wrong type will be caught by the compiler, and if
+someone *really* wants to use a differently type then can use a cast in the
+callsite, which makes it really obvious when that is happening.
+
+I appreciate that may require some preparatory cleanup, but I think that's a
+small price to pay for having this in a clearer and more maintainable state.
+
+> > The fundamenalthing I'm trying to say is that the
+> > atomic/atomic64/atomic_long/local/local64 APIs should be type-safe, and for
+> > their try_cmpxchg() implementations, the type signature should be:
+> >
+> >         ${atomictype}_try_cmpxchg(${atomictype} *ptr, ${inttype} *old, ${inttype} new)
+> 
+> This conversion should be performed also for the cmpxchg family of
+> functions, if desired at all. try_cmpxchg fallback is just cmpxchg
+> with some extra code around.
+
+FWIW, I agree that we *should* make try_cmpxchg() check that ptr and old
+pointer are the same type.
+
+However, I don't think that's a prerequisite for doing so for
+local_try_cmpxchg().
+
+Plese make local_try_cmpxchg() have a proper type-safe C prototype, as we do
+with the atomic*_try_cmpxchg() APIs.
+
+Thanks,
+Mark,
