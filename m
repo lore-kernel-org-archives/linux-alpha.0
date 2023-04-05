@@ -1,48 +1,157 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v8 5/7] PCI: Allow pci_bus_for_each_resource() to take
- less arguments
-Date: Wed, 5 Apr 2023 14:50:47 +0300
-Message-ID: <ZC1glzw4F9F8zCK+@smile.fi.intel.com>
-References: <20230330162434.35055-1-andriy.shevchenko@linux.intel.com>
- <20230330162434.35055-6-andriy.shevchenko@linux.intel.com>
+From: Uros Bizjak <ubizjak@gmail.com>
+Subject: [PATCH v2 1/5] locking/atomic: Add generic try_cmpxchg{,64}_local support
+Date: Wed,  5 Apr 2023 16:17:06 +0200
+Message-ID: <20230405141710.3551-2-ubizjak@gmail.com>
+References: <20230405141710.3551-1-ubizjak@gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-acpi-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680695464; x=1712231464;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CNsMJe3NJRh194M0JTRSE7YPi2b+rJpnYVMeT8Rmlsg=;
-  b=Lu3tYDLRXv9qwqJIg+37k1wYWQG7yvee8VxkjgZeKlxj/+CA9vN1eNhh
-   4LAmNkIWIDNrb9vstLnoW6u3bSbou3j4Y7ZA4ZfkBREEtiBzmc05ikxVQ
-   aN0KDmrvCy55qbgK4yQjoNCmpLkZqvbT5WMZTbJQGnppVCFfsWEGs4kQP
-   hASFK/q4xHXz0yAPx3fgzPhGC0ojPUMy2HYQlLros+KWfTc6jqVacYLv5
-   ATWKoQvfF0xlB7TbwH1eEQZKX/WoG5DTEt0sINIe0ta7cYmzv3hF8hlAb
-   rgGA8B9BR6g0nU30KfnHGe7zaPAuISO0qOwGC1HzZEqtH66xNaE5H4X3Q
-   w==;
-Content-Disposition: inline
-In-Reply-To: <20230330162434.35055-6-andriy.shevchenko@linux.intel.com>
-List-ID: <linux-alpha.vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680704268;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IR5uya/6k59Z6vjpJ5eLjtKZNYMu0vN6LL4bpPspKvA=;
+        b=hzv4HYQ5T2nwEJbzGw8dJN/I+F4Ay7RqJgdT+/nU+XX7ZoGg8P8l9L8teClCdkpmvP
+         3VP7uCz0Z+YqdgWXL+MH2tFmXHoR+WPJu2bf+Fr9qb/QvhkGpEoSrJ0NhG0eAx/0QiTJ
+         UQgtBAkuIqKtB9v5p/5vYSrI08EmluGXK/WD03V/0fdbsdMfx/eWMRDY+C4T7hDoaYaj
+         NOE2x6GoeZ01oYXffPbqWgJlIPw1nNp4nyMKkgNQHZrTuLm7YYwS07BBvNmSqjpH876L
+         /ISIl/kFQdHhrGtYe0xrraw5d1lTLHXAuQ1Znq44pBtvm8+Xiwqr3RT/FspKMHRWIraX
+         TSSA==
+In-Reply-To: <20230405141710.3551-1-ubizjak@gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>, Randy Dunlap <rdunlap@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Philippe =?iso-8859-1?Q?Mathieu-Daud=E9?= <philmd@linaro.org>, Niklas Schnelle <schnelle@linux.ibm.com>, Bjorn Helgaas <helgaas@kernel.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, Juergen Gross <jgross@suse.com>, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
-Cc: Miguel Ojeda <ojeda@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Gregory Clement <gregory.clement@bootlin.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Anatolij Gustschin <agust@denx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, Bjorn Helgaas <bhelgaas@google.com>, Stefano Stabellini <sstabellini@kernel.org>
+To: linux-alpha@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Peter Zijlstra <peterz@infradead.org>, Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Uros Bizjak <ubizjak@gmail.com>
 
-On Thu, Mar 30, 2023 at 07:24:32PM +0300, Andy Shevchenko wrote:
-> Refactor pci_bus_for_each_resource() in the same way as it's done in
-> pci_dev_for_each_resource() case. This will allow to hide iterator
-> inside the loop, where it's not used otherwise.
-> 
-> No functional changes intended.
+Add generic support for try_cmpxchg{,64}_local and their falbacks.
 
-Bjorn, this has wrong author in your tree:
+These provides the generic try_cmpxchg_local family of functions
+from the arch_ prefixed version, also adding explicit instrumentation.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git/commit/?h=resource&id=46dbad19a59e0dd8f1e7065e5281345797fbb365
+Cc: Will Deacon <will@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+---
+ include/linux/atomic/atomic-arch-fallback.h | 24 ++++++++++++++++++++-
+ include/linux/atomic/atomic-instrumented.h  | 20 ++++++++++++++++-
+ scripts/atomic/gen-atomic-fallback.sh       |  4 ++++
+ scripts/atomic/gen-atomic-instrumented.sh   |  2 +-
+ 4 files changed, 47 insertions(+), 3 deletions(-)
 
-Or did I misinterpret something?
-
+diff --git a/include/linux/atomic/atomic-arch-fallback.h b/include/linux/atomic/atomic-arch-fallback.h
+index 77bc5522e61c..36c92851cdee 100644
+--- a/include/linux/atomic/atomic-arch-fallback.h
++++ b/include/linux/atomic/atomic-arch-fallback.h
+@@ -217,6 +217,28 @@
+ 
+ #endif /* arch_try_cmpxchg64_relaxed */
+ 
++#ifndef arch_try_cmpxchg_local
++#define arch_try_cmpxchg_local(_ptr, _oldp, _new) \
++({ \
++	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
++	___r = arch_cmpxchg_local((_ptr), ___o, (_new)); \
++	if (unlikely(___r != ___o)) \
++		*___op = ___r; \
++	likely(___r == ___o); \
++})
++#endif /* arch_try_cmpxchg_local */
++
++#ifndef arch_try_cmpxchg64_local
++#define arch_try_cmpxchg64_local(_ptr, _oldp, _new) \
++({ \
++	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
++	___r = arch_cmpxchg64_local((_ptr), ___o, (_new)); \
++	if (unlikely(___r != ___o)) \
++		*___op = ___r; \
++	likely(___r == ___o); \
++})
++#endif /* arch_try_cmpxchg64_local */
++
+ #ifndef arch_atomic_read_acquire
+ static __always_inline int
+ arch_atomic_read_acquire(const atomic_t *v)
+@@ -2456,4 +2478,4 @@ arch_atomic64_dec_if_positive(atomic64_t *v)
+ #endif
+ 
+ #endif /* _LINUX_ATOMIC_FALLBACK_H */
+-// b5e87bdd5ede61470c29f7a7e4de781af3770f09
++// 1f49bd4895a4b7a5383906649027205c52ec80ab
+diff --git a/include/linux/atomic/atomic-instrumented.h b/include/linux/atomic/atomic-instrumented.h
+index 7a139ec030b0..14a9212cc987 100644
+--- a/include/linux/atomic/atomic-instrumented.h
++++ b/include/linux/atomic/atomic-instrumented.h
+@@ -2066,6 +2066,24 @@ atomic_long_dec_if_positive(atomic_long_t *v)
+ 	arch_sync_cmpxchg(__ai_ptr, __VA_ARGS__); \
+ })
+ 
++#define try_cmpxchg_local(ptr, oldp, ...) \
++({ \
++	typeof(ptr) __ai_ptr = (ptr); \
++	typeof(oldp) __ai_oldp = (oldp); \
++	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
++	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
++	arch_try_cmpxchg_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
++})
++
++#define try_cmpxchg64_local(ptr, oldp, ...) \
++({ \
++	typeof(ptr) __ai_ptr = (ptr); \
++	typeof(oldp) __ai_oldp = (oldp); \
++	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
++	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
++	arch_try_cmpxchg64_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
++})
++
+ #define cmpxchg_double(ptr, ...) \
+ ({ \
+ 	typeof(ptr) __ai_ptr = (ptr); \
+@@ -2083,4 +2101,4 @@ atomic_long_dec_if_positive(atomic_long_t *v)
+ })
+ 
+ #endif /* _LINUX_ATOMIC_INSTRUMENTED_H */
+-// 764f741eb77a7ad565dc8d99ce2837d5542e8aee
++// 456e206c7e4e681126c482e4edcc6f46921ac731
+diff --git a/scripts/atomic/gen-atomic-fallback.sh b/scripts/atomic/gen-atomic-fallback.sh
+index 3a07695e3c89..6e853f0dad8d 100755
+--- a/scripts/atomic/gen-atomic-fallback.sh
++++ b/scripts/atomic/gen-atomic-fallback.sh
+@@ -225,6 +225,10 @@ for cmpxchg in "cmpxchg" "cmpxchg64"; do
+ 	gen_try_cmpxchg_fallbacks "${cmpxchg}"
+ done
+ 
++for cmpxchg in "cmpxchg_local" "cmpxchg64_local"; do
++	gen_try_cmpxchg_fallback "${cmpxchg}" ""
++done
++
+ grep '^[a-z]' "$1" | while read name meta args; do
+ 	gen_proto "${meta}" "${name}" "atomic" "int" ${args}
+ done
+diff --git a/scripts/atomic/gen-atomic-instrumented.sh b/scripts/atomic/gen-atomic-instrumented.sh
+index 77c06526a574..c8165e9431bf 100755
+--- a/scripts/atomic/gen-atomic-instrumented.sh
++++ b/scripts/atomic/gen-atomic-instrumented.sh
+@@ -173,7 +173,7 @@ for xchg in "xchg" "cmpxchg" "cmpxchg64" "try_cmpxchg" "try_cmpxchg64"; do
+ 	done
+ done
+ 
+-for xchg in "cmpxchg_local" "cmpxchg64_local" "sync_cmpxchg"; do
++for xchg in "cmpxchg_local" "cmpxchg64_local" "sync_cmpxchg" "try_cmpxchg_local" "try_cmpxchg64_local" ; do
+ 	gen_xchg "${xchg}" "" ""
+ 	printf "\n"
+ done
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.2
 
