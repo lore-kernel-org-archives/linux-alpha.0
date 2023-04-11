@@ -1,30 +1,40 @@
 From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v2 1/5] locking/atomic: Add generic
- try_cmpxchg{,64}_local support
-Date: Tue, 11 Apr 2023 12:10:22 +0100
-Message-ID: <ZDVAHkkbxJOlKFzi@FVFF77S0Q05N>
+Subject: Re: [PATCH v2 2/5] locking/generic: Wire up local{,64}_try_cmpxchg
+Date: Tue, 11 Apr 2023 12:13:21 +0100
+Message-ID: <ZDVA0a6QHaONg8AL@FVFF77S0Q05N>
 References: <20230405141710.3551-1-ubizjak@gmail.com>
- <20230405141710.3551-2-ubizjak@gmail.com>
+ <20230405141710.3551-3-ubizjak@gmail.com>
 Mime-Version: 1.0
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Disposition: inline
-In-Reply-To: <20230405141710.3551-2-ubizjak@gmail.com>
-List-ID: <linux-alpha.vger.kernel.org>
+In-Reply-To: <20230405141710.3551-3-ubizjak@gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 To: Uros Bizjak <ubizjak@gmail.com>
-Cc: linux-alpha@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Boqun Feng <boqun.feng@gmail.com>
+Cc: linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, x86@kernel.org, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, loongarch@lists.linux.dev, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
-On Wed, Apr 05, 2023 at 04:17:06PM +0200, Uros Bizjak wrote:
-> Add generic support for try_cmpxchg{,64}_local and their falbacks.
+On Wed, Apr 05, 2023 at 04:17:07PM +0200, Uros Bizjak wrote:
+> Implement generic support for local{,64}_try_cmpxchg.
 > 
-> These provides the generic try_cmpxchg_local family of functions
-> from the arch_ prefixed version, also adding explicit instrumentation.
+> Redirect to the atomic_ family of functions when the target
+> does not provide its own local.h definitions.
 > 
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Boqun Feng <boqun.feng@gmail.com>
-> Cc: Mark Rutland <mark.rutland@arm.com>
+> For 64-bit targets, implement local64_try_cmpxchg and
+> local64_cmpxchg using typed C wrappers that call local_
+> family of functions and provide additional checking
+> of their input arguments.
+> 
+> Cc: Arnd Bergmann <arnd@arndb.de>
 > Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
 
 Acked-by: Mark Rutland <mark.rutland@arm.com>
@@ -32,114 +42,52 @@ Acked-by: Mark Rutland <mark.rutland@arm.com>
 Mark.
 
 > ---
->  include/linux/atomic/atomic-arch-fallback.h | 24 ++++++++++++++++++++-
->  include/linux/atomic/atomic-instrumented.h  | 20 ++++++++++++++++-
->  scripts/atomic/gen-atomic-fallback.sh       |  4 ++++
->  scripts/atomic/gen-atomic-instrumented.sh   |  2 +-
->  4 files changed, 47 insertions(+), 3 deletions(-)
+>  include/asm-generic/local.h   |  1 +
+>  include/asm-generic/local64.h | 12 +++++++++++-
+>  2 files changed, 12 insertions(+), 1 deletion(-)
 > 
-> diff --git a/include/linux/atomic/atomic-arch-fallback.h b/include/linux/atomic/atomic-arch-fallback.h
-> index 77bc5522e61c..36c92851cdee 100644
-> --- a/include/linux/atomic/atomic-arch-fallback.h
-> +++ b/include/linux/atomic/atomic-arch-fallback.h
-> @@ -217,6 +217,28 @@
+> diff --git a/include/asm-generic/local.h b/include/asm-generic/local.h
+> index fca7f1d84818..7f97018df66f 100644
+> --- a/include/asm-generic/local.h
+> +++ b/include/asm-generic/local.h
+> @@ -42,6 +42,7 @@ typedef struct
+>  #define local_inc_return(l) atomic_long_inc_return(&(l)->a)
 >  
->  #endif /* arch_try_cmpxchg64_relaxed */
+>  #define local_cmpxchg(l, o, n) atomic_long_cmpxchg((&(l)->a), (o), (n))
+> +#define local_try_cmpxchg(l, po, n) atomic_long_try_cmpxchg((&(l)->a), (po), (n))
+>  #define local_xchg(l, n) atomic_long_xchg((&(l)->a), (n))
+>  #define local_add_unless(l, _a, u) atomic_long_add_unless((&(l)->a), (_a), (u))
+>  #define local_inc_not_zero(l) atomic_long_inc_not_zero(&(l)->a)
+> diff --git a/include/asm-generic/local64.h b/include/asm-generic/local64.h
+> index 765be0b7d883..14963a7a6253 100644
+> --- a/include/asm-generic/local64.h
+> +++ b/include/asm-generic/local64.h
+> @@ -42,7 +42,16 @@ typedef struct {
+>  #define local64_sub_return(i, l) local_sub_return((i), (&(l)->a))
+>  #define local64_inc_return(l)	local_inc_return(&(l)->a)
 >  
-> +#ifndef arch_try_cmpxchg_local
-> +#define arch_try_cmpxchg_local(_ptr, _oldp, _new) \
-> +({ \
-> +	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
-> +	___r = arch_cmpxchg_local((_ptr), ___o, (_new)); \
-> +	if (unlikely(___r != ___o)) \
-> +		*___op = ___r; \
-> +	likely(___r == ___o); \
-> +})
-> +#endif /* arch_try_cmpxchg_local */
+> -#define local64_cmpxchg(l, o, n) local_cmpxchg((&(l)->a), (o), (n))
+> +static inline s64 local64_cmpxchg(local64_t *l, s64 old, s64 new)
+> +{
+> +	return local_cmpxchg(&l->a, old, new);
+> +}
 > +
-> +#ifndef arch_try_cmpxchg64_local
-> +#define arch_try_cmpxchg64_local(_ptr, _oldp, _new) \
-> +({ \
-> +	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
-> +	___r = arch_cmpxchg64_local((_ptr), ___o, (_new)); \
-> +	if (unlikely(___r != ___o)) \
-> +		*___op = ___r; \
-> +	likely(___r == ___o); \
-> +})
-> +#endif /* arch_try_cmpxchg64_local */
+> +static inline bool local64_try_cmpxchg(local64_t *l, s64 *old, s64 new)
+> +{
+> +	return local_try_cmpxchg(&l->a, (long *)old, new);
+> +}
 > +
->  #ifndef arch_atomic_read_acquire
->  static __always_inline int
->  arch_atomic_read_acquire(const atomic_t *v)
-> @@ -2456,4 +2478,4 @@ arch_atomic64_dec_if_positive(atomic64_t *v)
->  #endif
+>  #define local64_xchg(l, n)	local_xchg((&(l)->a), (n))
+>  #define local64_add_unless(l, _a, u) local_add_unless((&(l)->a), (_a), (u))
+>  #define local64_inc_not_zero(l)	local_inc_not_zero(&(l)->a)
+> @@ -81,6 +90,7 @@ typedef struct {
+>  #define local64_inc_return(l)	atomic64_inc_return(&(l)->a)
 >  
->  #endif /* _LINUX_ATOMIC_FALLBACK_H */
-> -// b5e87bdd5ede61470c29f7a7e4de781af3770f09
-> +// 1f49bd4895a4b7a5383906649027205c52ec80ab
-> diff --git a/include/linux/atomic/atomic-instrumented.h b/include/linux/atomic/atomic-instrumented.h
-> index 7a139ec030b0..14a9212cc987 100644
-> --- a/include/linux/atomic/atomic-instrumented.h
-> +++ b/include/linux/atomic/atomic-instrumented.h
-> @@ -2066,6 +2066,24 @@ atomic_long_dec_if_positive(atomic_long_t *v)
->  	arch_sync_cmpxchg(__ai_ptr, __VA_ARGS__); \
->  })
->  
-> +#define try_cmpxchg_local(ptr, oldp, ...) \
-> +({ \
-> +	typeof(ptr) __ai_ptr = (ptr); \
-> +	typeof(oldp) __ai_oldp = (oldp); \
-> +	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
-> +	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
-> +	arch_try_cmpxchg_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-> +})
-> +
-> +#define try_cmpxchg64_local(ptr, oldp, ...) \
-> +({ \
-> +	typeof(ptr) __ai_ptr = (ptr); \
-> +	typeof(oldp) __ai_oldp = (oldp); \
-> +	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
-> +	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
-> +	arch_try_cmpxchg64_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
-> +})
-> +
->  #define cmpxchg_double(ptr, ...) \
->  ({ \
->  	typeof(ptr) __ai_ptr = (ptr); \
-> @@ -2083,4 +2101,4 @@ atomic_long_dec_if_positive(atomic_long_t *v)
->  })
->  
->  #endif /* _LINUX_ATOMIC_INSTRUMENTED_H */
-> -// 764f741eb77a7ad565dc8d99ce2837d5542e8aee
-> +// 456e206c7e4e681126c482e4edcc6f46921ac731
-> diff --git a/scripts/atomic/gen-atomic-fallback.sh b/scripts/atomic/gen-atomic-fallback.sh
-> index 3a07695e3c89..6e853f0dad8d 100755
-> --- a/scripts/atomic/gen-atomic-fallback.sh
-> +++ b/scripts/atomic/gen-atomic-fallback.sh
-> @@ -225,6 +225,10 @@ for cmpxchg in "cmpxchg" "cmpxchg64"; do
->  	gen_try_cmpxchg_fallbacks "${cmpxchg}"
->  done
->  
-> +for cmpxchg in "cmpxchg_local" "cmpxchg64_local"; do
-> +	gen_try_cmpxchg_fallback "${cmpxchg}" ""
-> +done
-> +
->  grep '^[a-z]' "$1" | while read name meta args; do
->  	gen_proto "${meta}" "${name}" "atomic" "int" ${args}
->  done
-> diff --git a/scripts/atomic/gen-atomic-instrumented.sh b/scripts/atomic/gen-atomic-instrumented.sh
-> index 77c06526a574..c8165e9431bf 100755
-> --- a/scripts/atomic/gen-atomic-instrumented.sh
-> +++ b/scripts/atomic/gen-atomic-instrumented.sh
-> @@ -173,7 +173,7 @@ for xchg in "xchg" "cmpxchg" "cmpxchg64" "try_cmpxchg" "try_cmpxchg64"; do
->  	done
->  done
->  
-> -for xchg in "cmpxchg_local" "cmpxchg64_local" "sync_cmpxchg"; do
-> +for xchg in "cmpxchg_local" "cmpxchg64_local" "sync_cmpxchg" "try_cmpxchg_local" "try_cmpxchg64_local" ; do
->  	gen_xchg "${xchg}" "" ""
->  	printf "\n"
->  done
+>  #define local64_cmpxchg(l, o, n) atomic64_cmpxchg((&(l)->a), (o), (n))
+> +#define local64_try_cmpxchg(l, po, n) atomic64_try_cmpxchg((&(l)->a), (po), (n))
+>  #define local64_xchg(l, n)	atomic64_xchg((&(l)->a), (n))
+>  #define local64_add_unless(l, _a, u) atomic64_add_unless((&(l)->a), (_a), (u))
+>  #define local64_inc_not_zero(l)	atomic64_inc_not_zero(&(l)->a)
 > -- 
 > 2.39.2
 > 
