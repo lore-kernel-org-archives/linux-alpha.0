@@ -1,100 +1,145 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH v4] Kconfig: introduce HAS_IOPORT option and select it as
- necessary
-Date: Tue, 11 Apr 2023 09:49:53 +0000
-Message-ID: <49ccbda9fc44496ba5688616d25ce901@AcuMS.aculab.com>
-References: <20230323163354.1454196-1-schnelle@linux.ibm.com>
- <248a41a536d5a3c9e81e8e865b34c5bf74cd36d4.camel@linux.ibm.com>
- <B1EC1AC7-6BB5-4B66-B171-24687C3CBFB3@zytor.com>
- <d8686aaf-f12e-446b-9a80-335bb4266a4d@app.fastmail.com>
- <ccff565cde1440b8bff92d96f94a32b5@AcuMS.aculab.com>
- <CAMuHMdWe+U3yOOfy+z19apZaT0q7WhrR2beR=t0Jkbd3ODYbyw@mail.gmail.com>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v2 1/5] locking/atomic: Add generic
+ try_cmpxchg{,64}_local support
+Date: Tue, 11 Apr 2023 12:10:22 +0100
+Message-ID: <ZDVAHkkbxJOlKFzi@FVFF77S0Q05N>
+References: <20230405141710.3551-1-ubizjak@gmail.com>
+ <20230405141710.3551-2-ubizjak@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:MIME-Version:In-Reply-To:References:
-	Message-ID:Date:Subject:CC:To:From:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=ivPC0Dl+pz/qjX02OIZlmXjrwjFGWasvlLFITBQOk1c=; b=YnI5+gPqUxyFp/
-	XywKV8RRx6xpK2SUmvTKMqrdi4qoVdNE6svETHvgdnSio7L3JokRuVud/tdqNT6gix0RQRZOTcyTL
-	yn6Xl80ga1lDuxWZvcKVdVNFt7TbtUPGzSOZiCDgfwvZE4QTzjcJX/mtGmkfyhc6i1c8VjEYhUw+2
-	5C2eVVDvVXgVjzN1MVfKSGaS1JJl050545DMCPCn59pqhJmChht3PwKRh/cf8LT+d0ZFgJwiiXbi9
-	ahoHyTa1YTWSmmKRR4lcxIrgkFqpL76CF0vZpIjkap6sCUAreN3346wjmyj4Qy8NR1lnW0MB5eRZw
-	ogIAubh+6H/AXGVK8vig==;
-In-Reply-To: <CAMuHMdWe+U3yOOfy+z19apZaT0q7WhrR2beR=t0Jkbd3ODYbyw@mail.gmail.com>
-Content-Language: en-US
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="windows-1252"
-To: 'Geert Uytterhoeven' <geert@linux-m68k.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, "H. Peter Anvin" <hpa@zytor.com>, Niklas
- Schnelle <schnelle@linux.ibm.com>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Michal
- Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge
- Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas
- Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, Yoshinori Sato <ysato@users.osdn.me>, Rich
+Return-path: <linux-alpha-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20230405141710.3551-2-ubizjak@gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Uros Bizjak <ubizjak@gmail.com>
+Cc: linux-alpha@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Boqun Feng <boqun.feng@gmail.com>
 
-RnJvbTogR2VlcnQgVXl0dGVyaG9ldmVuDQo+IFNlbnQ6IDExIEFwcmlsIDIwMjMgMDk6NTANCj4g
-DQo+IEhpIERhdmlkLA0KPiANCj4gT24gV2VkLCBBcHIgNSwgMjAyMyBhdCAxMTozN+KAr1BNIERh
-dmlkIExhaWdodCA8RGF2aWQuTGFpZ2h0QGFjdWxhYi5jb20+IHdyb3RlOg0KPiA+IEZyb206IExp
-bnV4cHBjLWRldiBBcm5kIEJlcmdtYW5uDQo+ID4gPiBTZW50OiAwNSBBcHJpbCAyMDIzIDIxOjMy
-DQo+ID4gPg0KPiA+ID4gT24gV2VkLCBBcHIgNSwgMjAyMywgYXQgMjI6MDAsIEguIFBldGVyIEFu
-dmluIHdyb3RlOg0KPiA+ID4gPiBPbiBBcHJpbCA1LCAyMDIzIDg6MTI6MzggQU0gUERULCBOaWts
-YXMgU2NobmVsbGUgPHNjaG5lbGxlQGxpbnV4LmlibS5jb20+IHdyb3RlOg0KPiA+ID4gPj5PbiBU
-aHUsIDIwMjMtMDMtMjMgYXQgMTc6MzMgKzAxMDAsIE5pa2xhcyBTY2huZWxsZSB3cm90ZToNCj4g
-PiA+ID4+PiBXZSBpbnRyb2R1Y2UgYSBuZXcgSEFTX0lPUE9SVCBLY29uZmlnIG9wdGlvbiB0byBp
-bmRpY2F0ZSBzdXBwb3J0IGZvciBJL08NCj4gPiA+ID4+PiBQb3J0IGFjY2Vzcy4gSW4gYSBmdXR1
-cmUgcGF0Y2ggSEFTX0lPUE9SVD1uIHdpbGwgZGlzYWJsZSBjb21waWxhdGlvbiBvZg0KPiA+ID4g
-Pj4+IHRoZSBJL08gYWNjZXNzb3IgZnVuY3Rpb25zIGluYigpL291dGIoKSBhbmQgZnJpZW5kcyBv
-biBhcmNoaXRlY3R1cmVzDQo+ID4gPiA+Pj4gd2hpY2ggY2FuIG5vdCBtZWFuaW5nZnVsbHkgc3Vw
-cG9ydCBsZWdhY3kgSS9PIHNwYWNlcyBzdWNoIGFzIHMzOTAuDQo+ID4gPiA+Pj4gPj4NCj4gPiA+
-ID4+R2VudGxlIHBpbmcuIEFzIGZhciBhcyBJIGNhbiB0ZWxsIHRoaXMgaGFzbid0IGJlZW4gcGlj
-a2VkIHRvIGFueSB0cmVlDQo+ID4gPiA+PnNwIGZhciBidXQgYWxzbyBoYXNuJ3Qgc2VlbiBjb21w
-bGFpbnMgc28gSSdtIHdvbmRlcmluZyBpZiBJIHNob3VsZCBzZW5kDQo+ID4gPiA+PmEgbmV3IHZl
-cnNpb24gb2YgdGhlIGNvbWJpbmVkIHNlcmllcyBvZiB0aGlzIHBhdGNoIHBsdXMgdGhlIGFkZGVk
-DQo+ID4gPiA+PkhBU19JT1BPUlQgZGVwZW5kZW5jaWVzIHBlciBzdWJzeXN0ZW0gb3Igd2FpdCB1
-bnRpbCB0aGlzIGlzIHBpY2tlZCB1cC4NCj4gPiA+ID4NCj4gPiA+ID4gWW91IG5lZWQgdGhpcyBv
-biBhIHN5c3RlbSBzdXBwb3J0aW5nIG5vdCBqdXN0IElTQSBidXQgYWxzbyBQQ0kuDQo+ID4gPiA+
-DQo+ID4gPiA+IFR5cGljYWxseSBvbiBub24teDg2IGFyY2hpdGVjdHVyZXMgdGhpcyBpcyBzaW1w
-bHkgbWFwcGVkIGludG8gYSBtZW1vcnkgd2luZG93Lg0KPiA+ID4NCj4gPiA+IEknbSBwcmV0dHkg
-Y29uZmlkZW50IHRoYXQgdGhlIGxpc3QgaXMgY29ycmVjdCBoZXJlLCBhcyB0aGUgSEFTX0lPUE9S
-VA0KPiA+ID4gc3ltYm9sIGlzIGVuYWJsZWQgZXhhY3RseSBmb3IgdGhlIGFyY2hpdGVjdHVyZXMg
-dGhhdCBoYXZlIGEgd2F5IHRvDQo+ID4gPiBtYXAgdGhlIEkvTyBzcGFjZS4gUENJZSBnZW5lcmFs
-bHkgd29ya3MgZmluZSB3aXRob3V0IEkvTyBzcGFjZSwgdGhlDQo+ID4gPiBvbmx5IGV4Y2VwdGlv
-biBhcmUgZHJpdmVycyBmb3IgZGV2aWNlcyB0aGF0IHdlcmUgYXJvdW5kIGFzIGVhcmx5IFBDSS4N
-Cj4gPg0KPiA+IElzbid0IHRoZXJlIGEgZGlmZmVyZW5jZSBiZXR3ZWVuIGNwdSB0aGF0IGhhdmUg
-aW5iKCkvb3V0YigpIChwcm9iYWJseQ0KPiA+IG9ubHkgeDg2PykgYW5kIGFyY2hpdGVjdHVyZXMg
-KHdlbGwgY29tcHV0ZXIgZGVzaWducykgdGhhdCBjYW4gZ2VuZXJhdGUNCj4gPiBQQ0kgJ0kvTycg
-Y3ljbGVzIGJ5IHNvbWUgbWVhbnMuDQo+ID4gSXQgaXNuJ3QgZXZlbiBqdXN0IFBDSSBJL08gY3lj
-bGVzLCBJJ3ZlIHVzZWQgYW4gQVJNIGNwdSAoU0ExMTAwKQ0KPiA+IHRoYXQgbWFwcGVkIGEgY2h1
-Y2sgb2YgcGh5c2ljYWwgYWRkcmVzcyBzcGFjZSBvbnRvIFBDTUNJQSBJL08gY3ljbGVzLg0KPiA+
-DQo+ID4gSWYgdGhlIGhhcmR3YXJlIGNhbiBtYXAgYSBQQ0kgJ0lPJyBiYXIgaW50byBub3JtYWwg
-a2VybmVsIGFkZHJlc3MNCj4gPiBzcGFjZSB0aGVuIHRoZSBiYXIgYW5kIGFjY2Vzc2VzIGNhbiBi
-ZSB0cmVhdGVkIGV4YWN0bHkgbGlrZSBhIG1lbW9yeSBiYXIuDQo+ID4gVGhpcyBwcm9iYWJseSBs
-ZWF2ZXMgeDg2IGFzIHRoZSBvdXRsaWVyIHdoZXJlIHlvdSBuZWVkIChJSVJDKSBpb19yZWFkbCgp
-DQo+ID4gYW5kIGZyaWVuZHMgdGhhdCBjYW4gZ2VuZXJhdGUgaW4vb3V0IGluc3RydWN0aW9ucyBm
-b3IgdGhvc2UgYWNjZXNzZXMuDQo+ID4NCj4gPiBUaGVyZSBhcmUgYWxzbyBhbGwgdGhlIHg4NiBJ
-U0EgZGV2aWNlcyB3aGljaCBuZWVkIGluL291dCBpbnN0cnVjdGlvbnMuDQo+ID4gQnV0ICh3aXRo
-IHRoZSBsaWtlbHkgZXhjZXB0aW9uIG9mIHRoZSBVQVJUKSB0aGV5IGFyZSBwcmV0dHkgbXVjaA0K
-PiA+IHBsYXRmb3JtIHNwZWNpZmljLg0KPiA+DQo+ID4gU28sIHRvIG15IG1pbmQgYXQgbGVhc3Qs
-IEhBU19JT1BPUlQgaXMganVzdCB0aGUgd3JvbmcgcXVlc3Rpb24uDQo+IA0KPiBOb3QgYWxsIFBD
-SSBjb250cm9sbGVycyBzdXBwb3J0IG1hcHBpbmcgdGhlIEkvTyBiYXIgaW4gTU1JTyBzcGFjZSwg
-c28NCj4gaW4gZ2VuZXJhbCB5b3UgY2Fubm90IHNheSB0aGF0IENPTkZJR19QQ0k9eSBtZWFucyBD
-T05GSUdfSEFTX0lPUE9SVD15Lg0KDQpCdXQgYSBDT05GSUdfSEFTX1BDSV9JTz15IHdvdWxkIGlt
-cGx5IENPTkZJR19IQVNfSU9QT1JUPXkuDQpJdCBpcyB0aGUgZm9ybWVyIHRoYXQgaXMgbW9yZSBp
-bnRlcmVzdGluZyBmb3IgZHJpdmVyIHN1cHBvcnQuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVk
-IEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5l
-cywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1yaXNjdiBtYWls
-aW5nIGxpc3QKbGludXgtcmlzY3ZAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5m
-cmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJpc2N2Cg==
+On Wed, Apr 05, 2023 at 04:17:06PM +0200, Uros Bizjak wrote:
+> Add generic support for try_cmpxchg{,64}_local and their falbacks.
+> 
+> These provides the generic try_cmpxchg_local family of functions
+> from the arch_ prefixed version, also adding explicit instrumentation.
+> 
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Boqun Feng <boqun.feng@gmail.com>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+Mark.
+
+> ---
+>  include/linux/atomic/atomic-arch-fallback.h | 24 ++++++++++++++++++++-
+>  include/linux/atomic/atomic-instrumented.h  | 20 ++++++++++++++++-
+>  scripts/atomic/gen-atomic-fallback.sh       |  4 ++++
+>  scripts/atomic/gen-atomic-instrumented.sh   |  2 +-
+>  4 files changed, 47 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/atomic/atomic-arch-fallback.h b/include/linux/atomic/atomic-arch-fallback.h
+> index 77bc5522e61c..36c92851cdee 100644
+> --- a/include/linux/atomic/atomic-arch-fallback.h
+> +++ b/include/linux/atomic/atomic-arch-fallback.h
+> @@ -217,6 +217,28 @@
+>  
+>  #endif /* arch_try_cmpxchg64_relaxed */
+>  
+> +#ifndef arch_try_cmpxchg_local
+> +#define arch_try_cmpxchg_local(_ptr, _oldp, _new) \
+> +({ \
+> +	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
+> +	___r = arch_cmpxchg_local((_ptr), ___o, (_new)); \
+> +	if (unlikely(___r != ___o)) \
+> +		*___op = ___r; \
+> +	likely(___r == ___o); \
+> +})
+> +#endif /* arch_try_cmpxchg_local */
+> +
+> +#ifndef arch_try_cmpxchg64_local
+> +#define arch_try_cmpxchg64_local(_ptr, _oldp, _new) \
+> +({ \
+> +	typeof(*(_ptr)) *___op = (_oldp), ___o = *___op, ___r; \
+> +	___r = arch_cmpxchg64_local((_ptr), ___o, (_new)); \
+> +	if (unlikely(___r != ___o)) \
+> +		*___op = ___r; \
+> +	likely(___r == ___o); \
+> +})
+> +#endif /* arch_try_cmpxchg64_local */
+> +
+>  #ifndef arch_atomic_read_acquire
+>  static __always_inline int
+>  arch_atomic_read_acquire(const atomic_t *v)
+> @@ -2456,4 +2478,4 @@ arch_atomic64_dec_if_positive(atomic64_t *v)
+>  #endif
+>  
+>  #endif /* _LINUX_ATOMIC_FALLBACK_H */
+> -// b5e87bdd5ede61470c29f7a7e4de781af3770f09
+> +// 1f49bd4895a4b7a5383906649027205c52ec80ab
+> diff --git a/include/linux/atomic/atomic-instrumented.h b/include/linux/atomic/atomic-instrumented.h
+> index 7a139ec030b0..14a9212cc987 100644
+> --- a/include/linux/atomic/atomic-instrumented.h
+> +++ b/include/linux/atomic/atomic-instrumented.h
+> @@ -2066,6 +2066,24 @@ atomic_long_dec_if_positive(atomic_long_t *v)
+>  	arch_sync_cmpxchg(__ai_ptr, __VA_ARGS__); \
+>  })
+>  
+> +#define try_cmpxchg_local(ptr, oldp, ...) \
+> +({ \
+> +	typeof(ptr) __ai_ptr = (ptr); \
+> +	typeof(oldp) __ai_oldp = (oldp); \
+> +	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
+> +	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
+> +	arch_try_cmpxchg_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+> +})
+> +
+> +#define try_cmpxchg64_local(ptr, oldp, ...) \
+> +({ \
+> +	typeof(ptr) __ai_ptr = (ptr); \
+> +	typeof(oldp) __ai_oldp = (oldp); \
+> +	instrument_atomic_write(__ai_ptr, sizeof(*__ai_ptr)); \
+> +	instrument_atomic_write(__ai_oldp, sizeof(*__ai_oldp)); \
+> +	arch_try_cmpxchg64_local(__ai_ptr, __ai_oldp, __VA_ARGS__); \
+> +})
+> +
+>  #define cmpxchg_double(ptr, ...) \
+>  ({ \
+>  	typeof(ptr) __ai_ptr = (ptr); \
+> @@ -2083,4 +2101,4 @@ atomic_long_dec_if_positive(atomic_long_t *v)
+>  })
+>  
+>  #endif /* _LINUX_ATOMIC_INSTRUMENTED_H */
+> -// 764f741eb77a7ad565dc8d99ce2837d5542e8aee
+> +// 456e206c7e4e681126c482e4edcc6f46921ac731
+> diff --git a/scripts/atomic/gen-atomic-fallback.sh b/scripts/atomic/gen-atomic-fallback.sh
+> index 3a07695e3c89..6e853f0dad8d 100755
+> --- a/scripts/atomic/gen-atomic-fallback.sh
+> +++ b/scripts/atomic/gen-atomic-fallback.sh
+> @@ -225,6 +225,10 @@ for cmpxchg in "cmpxchg" "cmpxchg64"; do
+>  	gen_try_cmpxchg_fallbacks "${cmpxchg}"
+>  done
+>  
+> +for cmpxchg in "cmpxchg_local" "cmpxchg64_local"; do
+> +	gen_try_cmpxchg_fallback "${cmpxchg}" ""
+> +done
+> +
+>  grep '^[a-z]' "$1" | while read name meta args; do
+>  	gen_proto "${meta}" "${name}" "atomic" "int" ${args}
+>  done
+> diff --git a/scripts/atomic/gen-atomic-instrumented.sh b/scripts/atomic/gen-atomic-instrumented.sh
+> index 77c06526a574..c8165e9431bf 100755
+> --- a/scripts/atomic/gen-atomic-instrumented.sh
+> +++ b/scripts/atomic/gen-atomic-instrumented.sh
+> @@ -173,7 +173,7 @@ for xchg in "xchg" "cmpxchg" "cmpxchg64" "try_cmpxchg" "try_cmpxchg64"; do
+>  	done
+>  done
+>  
+> -for xchg in "cmpxchg_local" "cmpxchg64_local" "sync_cmpxchg"; do
+> +for xchg in "cmpxchg_local" "cmpxchg64_local" "sync_cmpxchg" "try_cmpxchg_local" "try_cmpxchg64_local" ; do
+>  	gen_xchg "${xchg}" "" ""
+>  	printf "\n"
+>  done
+> -- 
+> 2.39.2
+> 
