@@ -1,82 +1,70 @@
-From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
-Subject: [PATCH 2/7] alpha: asm/io.h: Expect immutable pointer in
- virt_to_phys/isa_virt_to_bus prototypes
-Date: Sat, 15 Apr 2023 04:17:31 -0700
-Message-ID: <168155745118.13678.3878958755096151716.stgit@skinsburskii.localdomain>
+From: "Arnd Bergmann" <arnd@arndb.de>
+Subject: Re: [PATCH 0/7] Expect immutable pointer in virt_to_phys/isa_virt_to_bus
+ prototypes
+Date: Fri, 28 Apr 2023 08:40:51 +0100
+Message-ID: <52dd950a-e714-4ebe-a663-4e0ec6463d03@app.fastmail.com>
 References: <168155718437.13678.714141668943813263.stgit@skinsburskii.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1256821C33E2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1682617324;
-        bh=y5FKETkcR5bJeA05EuMUf08/uW3fzemI0xL6hftJZ0w=;
-        h=Subject:From:Cc:Date:In-Reply-To:References:From;
-        b=I81ONq4flDFybAHDmcdEBwB18AgoI8OINU6R4Az6WvVIVzocvmY/pieHzLajTdhKo
-         HA0Dp+jT2ScUGmry+Oi6xup26Stlv/BVUUj8EZqzcf+c26o+ieBPHo+PXorzzsW/Y4
-         ltVQ+ERLydTb/l5zHlX3TcVCAlUq35bKUAjZ5cSk=
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to; s=fm2; t=
+	1682667698; x=1682754098; bh=IpndvKPF8+ZBYjcJVQBy1hma252/YYop7a9
+	JdT/8deI=; b=DclSOfxipXonjr10Zfze2g04tEcMacCmPEMQj9KSUXPgBjVvL3b
+	MQo6fuWFJzT27nHJRs74jQBGwTtn2n2KHu5aTUjHmlrE0229hVE5oHF9yZDkS3ew
+	p1PmAZmZsXTagjeqlDcNnPsWoMKrE3WDRUgwOnllR2Mxd40mEjio8JDSoZrBhcLY
+	EpF/qnQ//QXfqOClL6sTo+6QcKph0TMZrseOTG+p/07lIk+CJDRuw9l1QbbyGXjO
+	Eb35nUJHmU87iS3+aXTcjIEw3yWT1ZcEtVJ4ScA81na/2JXShjG0jXm+bNsByN9H
+	0auAMaDbwZPPaqpkQeZO7SI/+wjiURWUsIw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1682667698; x=1682754098; bh=IpndvKPF8+ZBYjcJVQBy1hma252/YYop7a9
+	JdT/8deI=; b=ZK/ac6fyNoZWTXPXbTwDD4R131otN5WDVVkeFrFt0hh+B+HJxI8
+	X1G/CekMUpexmmrmmtZG9J6nlcBpYM2so1ttFbssFuvmAd/ypJumITr52uxj1kqy
+	Zy5c2xC/bhpYC6ggOg+MvqevGn68/zmzyOJ/3I3FVAlKSomAD5e4Rd6yFIqBKGoS
+	hfpNiJGqsm98wDNSPOSseTUhCzwwWb6vjvWT3xqdwN747++XNPbtRAEMqvBh4uIw
+	8a5wbLZI4Yp1uAxenqy8Yq0fZoWyfdJOOTsgpDQXZZOenD4BGJ/pbNjPRx5NNA7H
+	eRdIwS64tODrt1vngpa6XkfH9l9gVEeJE5g==
 In-Reply-To: <168155718437.13678.714141668943813263.stgit@skinsburskii.localdomain>
-List-ID: <linux-alpha.vger.kernel.org>
-To: 
-Cc: Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Linus Walleij <linus.walleij@linaro.org>, Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Bjorn Helgaas <bhelgaas@google.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Type: text/plain; charset="utf-8"
+To: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
+Cc: linux-ia64@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Dave Hansen <dave.hansen@linux.intel.com>, Jiaxun Yang <jiaxun.yang@flygoat.com>, linux-mips@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, linux-hexagon@vger.kernel.org, Omar Sandoval <osandov@fb.com>, Linux-Arch <linux-arch@vger.kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Helge Deller <deller@gmx.de>, x86@kernel.org, Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, Nicholas Piggin <npiggin@gmail.com>, Mark Brown <broonie@kernel.org>, Borislav Petkov <bp@alien8.de>, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Brian Cain <bcain@quicinc.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Chris Down <chr>
 
-From: Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>
+On Sat, Apr 15, 2023, at 12:17, Stanislav Kinsburskii wrote:
+> This series is aimed to address compilation warnings when a constant p=
+ointer
+> is passed to virt_to_phys and isa_virt_to_bus functions:
+>
+>   warning: passing argument 1 of =E2=80=98virt_to_phys=E2=80=99 discar=
+ds =E2=80=98const=E2=80=99=20
+> qualifier from pointer target type
+>   warning: passing argument 1 of =E2=80=98isa_virt_to_bus=E2=80=99 dis=
+cards =E2=80=98const=E2=80=99=20
+> qualifier from pointer target type
+>
+> The change(s) is the same for all architectures, but it's split into a=
+ series on
+> per-arch basis to simplify applying and testing on the maintainers sid=
+e.
+>
 
-These two helper functions - virt_to_phys and isa_virt_to_bus - don't need the
-address pointer to be mutable.
+Looks all good to me. If everyone is happy with it, I'll queue it up
+after in the asm-generic tree for 6.5, once rc1 is out.
 
-In the same time expecting it to be mutable leads to the following build
-warning for constant pointers:
-
-  warning: passing argument 1 of ‘virt_to_phys’ discards ‘const’ qualifier from pointer target type
-
-Signed-off-by: Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>
-CC: Richard Henderson <richard.henderson@linaro.org>
-CC: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-CC: Matt Turner <mattst88@gmail.com>
-CC: Arnd Bergmann <arnd@arndb.de>
-CC: Geert Uytterhoeven <geert@linux-m68k.org>
-CC: Linus Walleij <linus.walleij@linaro.org>
-CC: Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>
-CC: Michael Ellerman <mpe@ellerman.id.au>
-CC: Bjorn Helgaas <bhelgaas@google.com>
-CC: linux-alpha@vger.kernel.org
-CC: linux-kernel@vger.kernel.org
----
- arch/alpha/include/asm/io.h |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-index 7aeaf7c30a6f..0e2016537bd3 100644
---- a/arch/alpha/include/asm/io.h
-+++ b/arch/alpha/include/asm/io.h
-@@ -56,7 +56,7 @@ extern inline void set_hae(unsigned long new_hae)
-  * Change virtual addresses to physical addresses and vv.
-  */
- #ifdef USE_48_BIT_KSEG
--static inline unsigned long virt_to_phys(volatile void *address)
-+static inline unsigned long virt_to_phys(const volatile void *address)
- {
- 	return (unsigned long)address - IDENT_ADDR;
- }
-@@ -66,7 +66,7 @@ static inline void * phys_to_virt(unsigned long address)
- 	return (void *) (address + IDENT_ADDR);
- }
- #else
--static inline unsigned long virt_to_phys(volatile void *address)
-+static inline unsigned long virt_to_phys(const volatile void *address)
- {
-         unsigned long phys = (unsigned long)address;
- 
-@@ -104,7 +104,7 @@ static inline void * phys_to_virt(unsigned long address)
- extern unsigned long __direct_map_base;
- extern unsigned long __direct_map_size;
- 
--static inline unsigned long __deprecated isa_virt_to_bus(volatile void *address)
-+static inline unsigned long __deprecated isa_virt_to_bus(const volatile void *address)
- {
- 	unsigned long phys = virt_to_phys(address);
- 	unsigned long bus = phys + __direct_map_base;
-
-
+ Arnd
