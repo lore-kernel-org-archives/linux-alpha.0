@@ -1,94 +1,66 @@
-From: "Arnd Bergmann" <arnd@arndb.de>
-Subject: Re: [RFC PATCH] asm-generic: Unify uapi bitsperlong.h
-Date: Tue, 09 May 2023 11:37:46 +0200
-Message-ID: <b9624545-2c80-49a1-ac3c-39264a591f7b@app.fastmail.com>
-References: <1683615903-10862-1-git-send-email-yangtiezhu@loongson.cn>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v8 0/7] Add pci_dev_for_each_resource() helper and update
+ users
+Date: Tue, 9 May 2023 13:21:22 -0500
+Message-ID: <20230509182122.GA1259567@bhelgaas>
+References: <20230404161101.GA3554747@bhelgaas>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1683625088; x=1683711488; bh=JI
-        GYjICWF1iIfi0CDhSvRnlPKKVSNYNlDX65zfQiumM=; b=I4f00STfLlF/8uXCTH
-        3QpblrayO3QWqay0XoJFyDhSGixH93u1NpebSFNfjNuzTOvoj8liVXfe1F94W5Rf
-        OkSrKPsHW5CuU0O1n0k6mggu+GTBSI/aou3nmMYv4bopXJdWnRpImUuuJczssOQ+
-        nlk+zQ5fWguXF4QyfgIy+yXeh/fUk1+OamDH2mE02AK2FeEVzFdjp/ZkYF3f7WIC
-        LIwJOvrGNIHyMm3GfL+mc2A3QpjuHP/knTB/o3RrDaqIa6igFFLXbN2J2tS7W0OZ
-        O9Wt51WwuNP4vEqULDQIoB4aLzCG2tEy390anoUON9826Lqxxh2mvRVv16wDWwRA
-        CvaA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1683625088; x=1683711488; bh=JIGYjICWF1iIf
-        i0CDhSvRnlPKKVSNYNlDX65zfQiumM=; b=irqHQQNUKUqvUAWpf1VIoKg/G9Bt6
-        oINt/vqLIbTfVMwG9Hc5BS3wM0rbLNDlp9dyFIk+K8+Yg+w4CyaCBkMNIzxaClt2
-        5hKEmXIfTpuX0D57VxY0NRbGmHgrdfX9LgmsqsHxxYojoy6cFD/h297xpqpZ2dCm
-        lgjUpyY5EApgsYS6fgKw+ibdPJPY3SWVhfBScpbBw297KiqjtIpYFOEKWx6uVBZE
-        b0R51rMZ6QfJDFCbYlMztsHMKOUmxxlKnwnj3kyD0ejAc+LApjOXTCP8sFBPBWbp
-        FSJfhVLzSwOexCHMh/u/lmkpf2d0AvcvV0c/5voSuhOmrHueXeXY33A2Q==
-In-Reply-To: <1683615903-10862-1-git-send-email-yangtiezhu@loongson.cn>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1683656484;
+        bh=wTrGWZ/prXac+ksuuHC0df7jUrXSG9zBg0tuZm4eZAk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=eWEhqVADxc/GqJSwXnOQ3JLmV9EVm67GRKXU/8kCH+e7bYAn4tbjZ8OZRHVaX3ZcO
+         S0xv0AhCQd5NINM++YJU/lVWNxRqARJ2JdTZgkf8DKQ/aBVDAb43Y4DpvrsggmiDhc
+         VLuK4RypC1++gIMHtYJwDcVU3u+My56Q4IZYK0at1LgOku1qb8yZmqculMrILZXTXZ
+         neG8vnzAeERR8/VCvqWmCzd1JtSknWdohvz8yYije8I6fBKpAtZuUigoK/yqxiyRiQ
+         4E280Lp7b1rI5aQ6wbmUv7nAdHleWjJ8JY7/fVD00VEW304Ke/w4PCv+lqMsKKDnXi
+         XzOdVIUpJ2dRg==
+Content-Disposition: inline
+In-Reply-To: <20230404161101.GA3554747@bhelgaas>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc: linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, x86@kernel.org, bpf@vger.kernel.org, linux-perf-users@vger.kernel.org, linux-kselftest@vger.kernel.org, Linux-Arch <linux-arch@vger.kernel.org>, llvm@lists.linux.dev, linux-kernel@vger.kernel.org, loongson-kernel@lists.loongnix.cn
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org, linux-pci@vger.kernel.org, Dominik Brodowski <linux@dominikbrodowski.net>, linux-mips@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Andrew Lunn <andrew@lunn.ch>, sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Gregory Clement <gregory.clement@bootlin.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Russell King <linux@armlinux.org.uk>, linux-acpi@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, xen-devel@lists.xenproject.org, Matt Turner <mattst88@gmail.com>, Anatolij Gustschin <agust@denx.de>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Arnd Bergmann <arnd@ar>
 
-On Tue, May 9, 2023, at 09:05, Tiezhu Yang wrote:
-> Now we specify the minimal version of GCC as 5.1 and Clang/LLVM as 11.0.0
-> in Documentation/process/changes.rst, __CHAR_BIT__ and __SIZEOF_LONG__ are
-> usable, just define __BITS_PER_LONG as (__CHAR_BIT__ * __SIZEOF_LONG__) in
-> asm-generic uapi bitsperlong.h, simpler, works everywhere.
->
-> Remove all the arch specific uapi bitsperlong.h which will be generated as
-> arch/*/include/generated/uapi/asm/bitsperlong.h.
->
-> Suggested-by: Xi Ruoyao <xry111@xry111.site>
-> Link: 
-> https://lore.kernel.org/all/d3e255e4746de44c9903c4433616d44ffcf18d1b.camel@xry111.site/
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+On Tue, Apr 04, 2023 at 11:11:01AM -0500, Bjorn Helgaas wrote:
+> On Thu, Mar 30, 2023 at 07:24:27PM +0300, Andy Shevchenko wrote:
+> > Provide two new helper macros to iterate over PCI device resources and
+> > convert users.
 
-I originally introduced the bitsperlong.h header, and I'd love to
-see it removed if it's no longer needed. Your patch certainly
-seems like it does this well.
+> Applied 2-7 to pci/resource for v6.4, thanks, I really like this!
 
-There is one minor obstacle to this, which is that the compiler
-requirements for uapi headers are not the same as for kernel
-internal code. In particular, the uapi headers may be included
-by user space code that is built with an older compiler version,
-or with a compiler that is not gcc or clang.
+This is 09cc90063240 ("PCI: Introduce pci_dev_for_each_resource()")
+upstream now.
 
-I think we are completely safe on the architectures that were
-added since the linux-3.x days (arm64, riscv, csky, openrisc,
-loongarch, nios2, and hexagon), but for the older ones there
-is a regression risk. Especially on targets that are not that
-actively maintained (sparc, alpha, ia64, sh, ...) there is
-a good chance that users are stuck on ancient toolchains.
+Coverity complains about each use, sample below from
+drivers/pci/vgaarb.c.  I didn't investigate at all, so it might be a
+false positive; just FYI.
 
-It's probably also a safe assumption that anyone with an older
-libc version won't be using the latest kernel headers, so
-I think we can still do this across architectures if both
-glibc and musl already require a compiler that is new enough,
-or alternatively if we know that the kernel headers require
-a new compiler for other reasons and nobody has complained.
+	  1. Condition screen_info.capabilities & (2U /* 1 << 1 */), taking true branch.
+  556        if (screen_info.capabilities & VIDEO_CAPABILITY_64BIT_BASE)
+  557                base |= (u64)screen_info.ext_lfb_base << 32;
+  558
+  559        limit = base + size;
+  560
+  561        /* Does firmware framebuffer belong to us? */
+	  2. Condition __b < PCI_NUM_RESOURCES, taking true branch.
+	  3. Condition (r = &pdev->resource[__b]) , (__b < PCI_NUM_RESOURCES), taking true branch.
+	  6. Condition __b < PCI_NUM_RESOURCES, taking true branch.
+	  7. cond_at_most: Checking __b < PCI_NUM_RESOURCES implies that __b may be up to 16 on the true branch.
+	  8. Condition (r = &pdev->resource[__b]) , (__b < PCI_NUM_RESOURCES), taking true branch.
+	  11. incr: Incrementing __b. The value of __b may now be up to 17.
+	  12. alias: Assigning: r = &pdev->resource[__b]. r may now point to as high as element 17 of pdev->resource (which consists of 17 64-byte elements).
+	  13. Condition __b < PCI_NUM_RESOURCES, taking true branch.
+	  14. Condition (r = &pdev->resource[__b]) , (__b < PCI_NUM_RESOURCES), taking true branch.
+  562        pci_dev_for_each_resource(pdev, r) {
+	  4. Condition resource_type(r) != 512, taking true branch.
+	  9. Condition resource_type(r) != 512, taking true branch.
 
-For glibc, it looks the minimum compiler version was raised
-from gcc-5 to gcc-8 four years ago, so we should be fine.
-
-In musl, the documentation states that at least gcc-3.4 or
-clang-3.2 are required, which probably predate the
-__SIZEOF_LONG__ macro. On the other hand, musl was only
-released in 2011, and building musl itself explicitly
-does not require kernel uapi headers, so this may not
-be too critical.
-
-There is also uClibc, but I could not find any minimum
-supported compiler version for that. Most commonly, this
-one is used for cross-build environments, so it's also
-less likely to have libc/gcc/headers being wildly out of
-sync. Not sure.
-
-      Arnd
-
-[1] https://sourceware.org/pipermail/libc-alpha/2019-January/101010.html
+  CID 1529911 (#1 of 1): Out-of-bounds read (OVERRUN)
+  15. overrun-local: Overrunning array of 1088 bytes at byte offset 1088 by dereferencing pointer r. [show details]
+  563                if (resource_type(r) != IORESOURCE_MEM)
+	  5. Continuing loop.
+	  10. Continuing loop.
+  564                        continue;
