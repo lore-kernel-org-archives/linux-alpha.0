@@ -1,65 +1,63 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+From: "Arnd Bergmann" <arnd@arndb.de>
 Subject: Re: [PATCH] cachestat: wire up cachestat for other architectures
-Date: Thu, 11 May 2023 09:01:17 +0200
-Message-ID: <CAMuHMdV=PNCb1VYfUkEb9rPwGVB=1tkwvm-XBqECyhHR4SNGKg@mail.gmail.com>
+Date: Thu, 11 May 2023 09:04:36 +0200
+Message-ID: <0d8e2503-5d4f-4b60-84ff-01a23bcf557f@app.fastmail.com>
 References: <20230510195806.2902878-1-nphamcs@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20230510195806.2902878-1-nphamcs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-To: Nhat Pham <nphamcs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-team-M8Ki61LpUEw@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hannes-druUgvl0LCNAfugRpC6u6w@public.gmane.org, richard.henderson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org, mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org, tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org, James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org, deller-Mmb7MZpHnFY@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christophe.leroy-2tlSp11Fh4xulxpn9UvDqw@public.gmane.org, hca-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, gor-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, agordeev-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, borntraeger-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, svens-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org, dalias-8zAoT0mYgF4@public.gmane.org, glaubitz-1Olz3AKvcsuAKZTfuerNgRvVK+yQ3ZXh@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org, chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org, jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k@li
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm3; t=1683788699; x=1683795899; bh=jq
+	n9+i6S4uqktD4A+W4DhCnytpnr+GsOBOt4qhEN0dg=; b=VWXFys/0BV6m5RpZl2
+	THPKXeF4YwHBhmXGHtHdIdnvjgDSIkVaQiJODFgiAPc6l5ALQz6E1fsfw32O/PsQ
+	Bjk+gtazbYhFvNTmKslA+aFPzOW+HvaQwWgGV7Na81W2yU1L9NnA2fg3WeMXz5GE
+	seZASc3hhKXbYSxv6BT00t4r5/jFufhxtUqnoyoM5fYQyu+iVj8XHbFVJX64byjq
+	X8M78d5TZi4FoEjvjWM2+Yjxc5p1KvKkvnFT5I+nby5e/OvMn0j3dy5hHF6jwP1B
+	WL9/ZS/4j9Evjonx35W4rZQP3CZS0VRTQE9LK5pSVKPmpajZqYawAxnBGYZJcaow
+	rlyQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm3; t=1683788699; x=1683795899; bh=jqn9+i6S4uqkt
+	D4A+W4DhCnytpnr+GsOBOt4qhEN0dg=; b=WQV9C5RAcekZyjyo8xQuUDMSKPBcY
+	lnbfOsB99ZwjDrX/avO6/64hJ07wRRy8asTMoAKht5Urd8CwUSv01sBXRoYk1YkO
+	hJ9L5X9LWOshcTwUqt1dAKQGXHQ/VIUZaBvXt4uYksyjKQhGEL1UnmoQYxwNZTXE
+	AcpPd+6kgB+AsxEpB3TMneh9RB90w1AwzVNkf4uNd+/sn/PKZus8T8lb55Cba6iX
+	v0pISulFuCDCHfbzIbQAd7FrOIOh2QwFWiSbA6qGO84EVcbXRHj5m3P5yvClkjOw
+	jsNeUuXoCisohtsWIuNct7oH+Ek6wgaiB9J4sCYoLQH1FK2GhWVigTe6g==
+In-Reply-To: <20230510195806.2902878-1-nphamcs@gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Nhat Pham <nphamcs@gmail.com>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, linux-mips@vger.kernel.org, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, linux-mm@kvack.org, sparclinux@vger.kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>, Linux-Arch <linux-arch@vger.kernel.org>, linux-s390@vger.kernel.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Helge Deller <deller@gmx.de>, Russell King <linux@armlinux.org.uk>, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, borntraeger@linux.ibm.com, linux-alpha@vger.kernel.org, gor@linux.ibm.com, Heiko Carstens <hca@linux.ibm.com>, kernel-team@meta.com, Richard Henderson <richard.henderson@linaro.org>, Nicholas Piggin <npiggin@gmail.com>, linux-m68k@lists.linux-m68k.org, Ivan Kokshay sky <ink@jurassic.park.msu.ru>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, linux-ar
 
-Hi Nat,
-
-On Wed, May 10, 2023 at 9:58=E2=80=AFPM Nhat Pham <nphamcs-Re5JQEeQqe8Avxti=
-uMwx3w@public.gmane.org> wrote:
+On Wed, May 10, 2023, at 21:58, Nhat Pham wrote:
 > cachestat is previously only wired in for x86 (and architectures using
 > the generic unistd.h table):
 >
-> https://lore.kernel.org/lkml/20230503013608.2431726-1-nphamcs-Re5JQEeQqe8=
-AvxtiuMwx3w@public.gmane.org/
+> https://lore.kernel.org/lkml/20230503013608.2431726-1-nphamcs@gmail.com/
 >
 > This patch wires cachestat in for all the other architectures.
 >
-> Signed-off-by: Nhat Pham <nphamcs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  arch/alpha/kernel/syscalls/syscall.tbl      | 1 +
->  arch/arm/tools/syscall.tbl                  | 1 +
+> Signed-off-by: Nhat Pham <nphamcs@gmail.com>
 
-Looking at the last addition of a syscall (commit 21b084fdf2a49ca1
-("mm/mempolicy: wire up syscall set_mempolicy_home_node"), it looks
-like you forgot to update arm64 in compat mode? Or is that not needed?
+The changes you did here look good, but you missed one
+file that has never been converted to the syscall.tbl format:
+arch/arm64/include/asm/unistd32.h along with the __NR_compat_syscalls
+definition in arch/arm64/include/asm/unistd.h, please add those
+as well, and then
 
->  arch/ia64/kernel/syscalls/syscall.tbl       | 1 +
->  arch/m68k/kernel/syscalls/syscall.tbl       | 1 +
-
-For m68k:
-Acked-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-
->  arch/microblaze/kernel/syscalls/syscall.tbl | 1 +
->  arch/mips/kernel/syscalls/syscall_n32.tbl   | 1 +
->  arch/mips/kernel/syscalls/syscall_n64.tbl   | 1 +
->  arch/mips/kernel/syscalls/syscall_o32.tbl   | 1 +
->  arch/parisc/kernel/syscalls/syscall.tbl     | 1 +
->  arch/powerpc/kernel/syscalls/syscall.tbl    | 1 +
->  arch/s390/kernel/syscalls/syscall.tbl       | 1 +
->  arch/sh/kernel/syscalls/syscall.tbl         | 1 +
->  arch/sparc/kernel/syscalls/syscall.tbl      | 1 +
->  arch/xtensa/kernel/syscalls/syscall.tbl     | 1 +
->  14 files changed, 14 insertions(+)
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCq=
-xL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
