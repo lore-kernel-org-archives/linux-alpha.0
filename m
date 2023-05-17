@@ -1,37 +1,40 @@
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: Re: [PATCH v5 14/26] alpha: Remove empty <uapi/asm/setup.h>
-Date: Tue, 16 May 2023 01:53:45 +0100 (BST)
-Message-ID: <alpine.DEB.2.21.2305160147100.11892@angie.orcam.me.uk>
-References: <20230306100508.1171812-1-alexghiti@rivosinc.com> <20230306100508.1171812-15-alexghiti@rivosinc.com>
+From: Charlemagne Lasse <charlemagnelasse@gmail.com>
+Subject: Re: [PATCH v2 3/5] locking/arch: Wire up local_try_cmpxchg
+Date: Wed, 17 May 2023 09:41:41 +0200
+Message-ID: <CAFGhKbyxtuk=LoW-E3yLXgcmR93m+Dfo5-u9oQA_YC5Fcy_t9g@mail.gmail.com>
+References: <20230405141710.3551-1-ubizjak@gmail.com> <20230405141710.3551-4-ubizjak@gmail.com>
 Mime-Version: 1.0
 Return-path: <linux-mips-owner@vger.kernel.org>
-In-Reply-To: <20230306100508.1171812-15-alexghiti@rivosinc.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1684309312; x=1686901312;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Gt8vcqfcBcSzFv5CqI8kXtZUiisqmIiLAVfG/Z4B1wo=;
+        b=gNAni+aefYGCbzXJZ1KCoFg8ZVjbrHwK7u+sKWIsmjjGqQJ2bWNPSg+WakHJQVS3ab
+         Bp5bqMntw1uQkVw+IN1lOsU4BFRNTNuMiq9ef5c1RW9TLIi66HUQpNRoz99rtQztmRGD
+         KYnmVtSd+sNgymFummMsYYEpskLLZBxJnmkacqEQxSIDH8jjQDIifWpfH9ktAgm+tMoA
+         l5xZHrVJnxwv1lhnl/gXppJABX//LI0ugS4VIj2bunZX7U1ejXCSJwy/Tf02yZh0TYX/
+         2qa/8Rhqzrv1gtxn/rhiuEfjmYRrH3Jk4TsxNllrNjP6UscF1wHGQheDYKzJXyF9J7W6
+         2Wiw==
+In-Reply-To: <20230405141710.3551-4-ubizjak@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-To: Alexandre Ghiti <alexghiti@rivosinc.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csg>
+To: Uros Bizjak <ubizjak@gmail.com>
+Cc: linux-alpha@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-arch@vger.kernel.org, linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Jiaxun Yang <jiaxun.yang@flygoat.com>, Jun Yi <yijun@loongson.cn>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>
 
-On Mon, 6 Mar 2023, Alexandre Ghiti wrote:
+> +static __inline__ bool local_try_cmpxchg(local_t *l, long *old, long new)
+> +{
+> +       typeof(l->a.counter) *__old = (typeof(l->a.counter) *) old;
+> +       return try_cmpxchg_local(&l->a.counter, __old, new);
+> +}
+> +
 
-> diff --git a/arch/alpha/include/uapi/asm/setup.h b/arch/alpha/include/uapi/asm/setup.h
-> deleted file mode 100644
-> index 9b3b5ba39b1d..000000000000
-> --- a/arch/alpha/include/uapi/asm/setup.h
-> +++ /dev/null
-> @@ -1,5 +0,0 @@
-> -/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> -#ifndef _UAPI__ALPHA_SETUP_H
-> -#define _UAPI__ALPHA_SETUP_H
-> -
-> -#endif /* _UAPI__ALPHA_SETUP_H */
+This patch then causes following sparse errors:
 
- You can't just remove a UAPI header like this, something will break; cf. 
-arch/arc/include/uapi/asm/setup.h, or arch/x86/include/uapi/asm/setup.h if 
-you want it brief.
+    ./arch/x86/include/asm/local.h:131:16: warning: symbol '__old'
+shadows an earlier one
+    ./arch/x86/include/asm/local.h:130:30: originally declared here
 
- I suggest that you fold it into 01/26 (it makes no sense to have empty 
-multiple inclusion protection), and likewise for the relevant remaining 
-headers.
-
-  Maciej
+This is then visible in all kinds of builds - which makes it hard to
+find out actual problems with sparse.
