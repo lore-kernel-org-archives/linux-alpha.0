@@ -1,67 +1,42 @@
-From: Nicholas Piggin <npiggin@gmail.com>
-Subject: [RFC PATCH 6/6] alpha: shoot the lazy tlb mm when flushing TLBs
-Date: Thu, 25 May 2023 03:18:22 +1000
-Message-ID: <20230524171822.177133-7-npiggin@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [RFC PATCH 0/6] Implement MMU_LAZY_TLB_SHOOTDOWN for alpha
+Date: Wed, 24 May 2023 10:27:56 -0700
+Message-ID: <CAHk-=wjdRm=0kHEAByy5FdV0TsnWt270Yi55RmoOdsPB6qSwzw@mail.gmail.com>
 References: <20230524171822.177133-1-npiggin@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684948738; x=1687540738;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=linux-foundation.org; s=google; t=1684949295; x=1687541295;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=W4zFZrNoBN7VmAO1selbkqGP4to7smKZ8JOAFepzbeA=;
-        b=ZDueHHRfLWIs9BABd7MhLFNcW2S0IRxmKCRr8dfgqxSaTEGbJw2zJ9rpzyIqlJpzTc
-         IVcCJyZXUjl/cuLXido/nVL8BBc+qEnrN+pKlYuEvKcWQFGQCFiJ4tMOBclDISXfIoO8
-         l8aXBFZ4YSrFBR+bSsqR42b/I54L7XZ15ftS6laMcX/SkrWTmb82IISpplDBxbh1bVyZ
-         kj2/UxwvmzC3oddV6k68tGZ2h/FApgd9D6ggI0FjZ//yojq1X4WLKKTeVaYNTe+3ZqhS
-         Esy/9HOj3OI1UepnxZNRfglJbcS9kiu5wlzawBna1DIZLhe0jv3murYgw+qyffGwECGS
-         1x5g==
+        bh=ObDKBRhJ0vxirZ4DEKIOQzI3AAzidba1IRigzBqLyYk=;
+        b=WGWMX8QcBo5lDwOdLsqpGgY4sJ9lJ0BHzkJ05ccXe8dgvRKPeKLcMobRLAQRuIq0uB
+         GxDuHsc5e2q16d3ryv7g8oD929F1nuAJH44m6Ad3bJh8I9yNiB8qFg5XmmAJC3MTw9FG
+         mnIw3qWDfDC/WkKWrcFfumXoOU95rmuTmYKL8=
 In-Reply-To: <20230524171822.177133-1-npiggin@gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org
-Cc: Nicholas Piggin <npiggin@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="windows-1252"
+To: Nicholas Piggin <npiggin@gmail.com>
+Cc: linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>
 
-Since we're flushing the TLB, take the opportunity to switch away from
-a lazy tlb mm if it's active, allowing the CPU to be taken out of
-mm_cpumask and avoiding any further IPIs from TLB flushing or the final
-lazy tlb mm shootdown.
+On Wed, May 24, 2023 at 10:18=E2=80=AFAM Nicholas Piggin <npiggin@gmail.com=
+> wrote:
+>
+> Any thoughts about the series would be interesting to hear.
 
-This naturally combines lazy tlb mm shootdowns with the final exit TLB
-flush IPIs, reducing the need for additional IPIs for the lazy tlb mm
-shootdown.
+Well, alpha is in a deathmatch with ia64 on "least relevant
+architecture ever, and next to be removed".
 
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
----
- arch/alpha/kernel/smp.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+There are no winners in that match.
 
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index 73bbb81f336e..cccd5ef721b7 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -624,9 +624,18 @@ try_clear_mm_cpumask(struct mm_struct *mm)
- {
- 	int cpu;
- 
--	if (current->active_mm == mm || asn_locked())
-+	if (current->mm == mm || asn_locked())
- 		return;
- 
-+	/*
-+	 * Shoot the lazy tlb mm while we're here. This allows us to also
-+	 * trim it out of the mm_cpumask if it was the active_mm, and has the
-+	 * effect of avoiding final lazy shootdown IPIs in cleanup_lazy_tlbs(),
-+	 * because the final TLB cleanup happens before that.
-+	 */
-+	if (current->active_mm == mm)
-+		kthread_end_lazy_tlb_mm();
-+
- 	cpu = smp_processor_id();
- 	if (cpumask_test_cpu(cpu, mm_cpumask(mm)))
- 		cpumask_clear_cpu(cpu, mm_cpumask(mm));
--- 
-2.40.1
+I still have the alpha architecture manual somewhere here, but I
+haven't touched any actual hardware in decades.
 
+But I certainly don't see anything _wrong_ with your series from a
+quick read-through.  It would be nice to hear that it works on real
+hardware, of course, but from previous attempts, there's only a couple
+of people that still occasionally run it.
+
+               Linus
