@@ -1,48 +1,65 @@
-From: Matt Turner <mattst88@gmail.com>
+From: "Nicholas Piggin" <npiggin@gmail.com>
 Subject: Re: [RFC PATCH 0/6] Implement MMU_LAZY_TLB_SHOOTDOWN for alpha
-Date: Wed, 24 May 2023 13:52:21 -0400
-Message-ID: <CAEdQ38Gj8WC0X6vSEogLXhkBMtQD0a-pON2rbK2ZjKoEc69LVA@mail.gmail.com>
-References: <20230524171822.177133-1-npiggin@gmail.com> <CAHk-=wjdRm=0kHEAByy5FdV0TsnWt270Yi55RmoOdsPB6qSwzw@mail.gmail.com>
+Date: Mon, 29 May 2023 11:45:50 +1000
+Message-ID: <CSYDRI4DZR8L.3JREZ0ONNHOLN@wheely>
+References: <20230524171822.177133-1-npiggin@gmail.com>
+ <CAHk-=wjdRm=0kHEAByy5FdV0TsnWt270Yi55RmoOdsPB6qSwzw@mail.gmail.com>
+ <CAEdQ38Gj8WC0X6vSEogLXhkBMtQD0a-pON2rbK2ZjKoEc69LVA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1684950752; x=1687542752;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1685324757; x=1687916757;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SeLtVr4UO4JMNxK/AXKvfZvGOwBAANDQcSgKdemNgvA=;
-        b=Ld1qt5/ZES5bjJsnDJ6647Z/VvYRUKZsx7NnddzH1W2J0Ew8UBRcLTl0q+AE9/4FMl
-         MtGzjlpbKQfY/FMIj7xOTz+bt4YXR3Q39q4lojH0BC4WEleSHCZ1rbaB0EYBzQHJ67uR
-         J0Wg6p5zX9QNfFebLMPD4Z8m1f5h8H3jvNlEmvv+Wl4KpWlGtkEroe3Wp0o7xEYct741
-         vdh3OvRdyZ2on4hjS7qqDzI2sB2kaT+hoRVv7BGhAkTurOn9YUk+bZ+oPt0plDIQxJKK
-         2UPXpWAHXYo7bzP3klaJcUMtHkQF5wwFsR4VCpbgVbnCBGwvZOh4AlLo9f1nqFVMRL/X
-         XEVg==
-In-Reply-To: <CAHk-=wjdRm=0kHEAByy5FdV0TsnWt270Yi55RmoOdsPB6qSwzw@mail.gmail.com>
+        bh=FQkbWL+3Ev4nMwJJ7UFzRpYF9hOTVDMnYEMUVrkmMnA=;
+        b=MKKjYM3tC123uLigsG3vu+S+cjQhXdJbyj4SpSUD5oihrc9ak7SDpxWYAtxPDjJoMo
+         SW868iZGKqAaFcJRtqdw5L/sjvJ8NX7P4FNh8o1iCRzrhJnLquhuXUZY00Mh2gq2T8ht
+         J7Aj/GeBFoK/HOFOcap947xleDFz6P2yOJ9q/NHYkDt3FRomuQCoDnbmuvqjMfU053Ge
+         fT9GmacYaS+4q/JZ8ajbkZ8YNZg0yQpl52CvdTM79vLDdtWjHoW0jCKjLb7dfbm37pAg
+         5qaexZt2kQapDkItpl2olrZymiPJ3hXzps98r2/jeB7Fcdpk/uhErlzNLjtcpxLsMNIe
+         1CHw==
+In-Reply-To: <CAEdQ38Gj8WC0X6vSEogLXhkBMtQD0a-pON2rbK2ZjKoEc69LVA@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="utf-8"
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Nicholas Piggin <npiggin@gmail.com>, linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+To: Matt Turner <mattst88@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
 
-On Wed, May 24, 2023 at 1:28=E2=80=AFPM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Wed, May 24, 2023 at 10:18=E2=80=AFAM Nicholas Piggin <npiggin@gmail.c=
-om> wrote:
+On Thu May 25, 2023 at 3:52 AM AEST, Matt Turner wrote:
+> On Wed, May 24, 2023 at 1:28=E2=80=AFPM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
 > >
-> > Any thoughts about the series would be interesting to hear.
->
-> Well, alpha is in a deathmatch with ia64 on "least relevant
-> architecture ever, and next to be removed".
->
-> There are no winners in that match.
->
-> I still have the alpha architecture manual somewhere here, but I
-> haven't touched any actual hardware in decades.
->
-> But I certainly don't see anything _wrong_ with your series from a
-> quick read-through.  It would be nice to hear that it works on real
-> hardware, of course, but from previous attempts, there's only a couple
-> of people that still occasionally run it.
+> > On Wed, May 24, 2023 at 10:18=E2=80=AFAM Nicholas Piggin <npiggin@gmail=
+.com> wrote:
+> > >
+> > > Any thoughts about the series would be interesting to hear.
+> >
+> > Well, alpha is in a deathmatch with ia64 on "least relevant
+> > architecture ever, and next to be removed".
+> >
+> > There are no winners in that match.
 
-I'll be happy to test.
+Except that I don't get yelled at by so many people when things break.
+Why do you think I work on powerpc? (/s, kind of).
+
+At least it's a reference, hopefully we can get a bit more interest. If
+we get a few converted then we could find some common patterns and pull
+them into generic code or at least a simpler recipe as we try to convert
+everything and just make this the only way it's implemented. Of course
+we need the big archs on board at some point.
+
+> > I still have the alpha architecture manual somewhere here, but I
+> > haven't touched any actual hardware in decades.
+> >
+> > But I certainly don't see anything _wrong_ with your series from a
+> > quick read-through.  It would be nice to hear that it works on real
+> > hardware, of course, but from previous attempts, there's only a couple
+> > of people that still occasionally run it.
+>
+> I'll be happy to test.
+
+Thanks Matt, I'll put a git tree up and ping you.
+
+Thanks,
+Nick
