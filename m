@@ -1,65 +1,69 @@
-From: "Nicholas Piggin" <npiggin@gmail.com>
-Subject: Re: [RFC PATCH 0/6] Implement MMU_LAZY_TLB_SHOOTDOWN for alpha
-Date: Mon, 29 May 2023 11:45:50 +1000
-Message-ID: <CSYDRI4DZR8L.3JREZ0ONNHOLN@wheely>
-References: <20230524171822.177133-1-npiggin@gmail.com>
- <CAHk-=wjdRm=0kHEAByy5FdV0TsnWt270Yi55RmoOdsPB6qSwzw@mail.gmail.com>
- <CAEdQ38Gj8WC0X6vSEogLXhkBMtQD0a-pON2rbK2ZjKoEc69LVA@mail.gmail.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v8 0/7] Add pci_dev_for_each_resource() helper and update
+ users
+Date: Tue, 30 May 2023 16:24:02 -0500
+Message-ID: <ZHZpcli2UmdzHgme@bhelgaas>
+References: <ZF6YIezraETr9iNM@bhelgaas>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1685324757; x=1687916757;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FQkbWL+3Ev4nMwJJ7UFzRpYF9hOTVDMnYEMUVrkmMnA=;
-        b=MKKjYM3tC123uLigsG3vu+S+cjQhXdJbyj4SpSUD5oihrc9ak7SDpxWYAtxPDjJoMo
-         SW868iZGKqAaFcJRtqdw5L/sjvJ8NX7P4FNh8o1iCRzrhJnLquhuXUZY00Mh2gq2T8ht
-         J7Aj/GeBFoK/HOFOcap947xleDFz6P2yOJ9q/NHYkDt3FRomuQCoDnbmuvqjMfU053Ge
-         fT9GmacYaS+4q/JZ8ajbkZ8YNZg0yQpl52CvdTM79vLDdtWjHoW0jCKjLb7dfbm37pAg
-         5qaexZt2kQapDkItpl2olrZymiPJ3hXzps98r2/jeB7Fcdpk/uhErlzNLjtcpxLsMNIe
-         1CHw==
-In-Reply-To: <CAEdQ38Gj8WC0X6vSEogLXhkBMtQD0a-pON2rbK2ZjKoEc69LVA@mail.gmail.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1685481844;
+        bh=nSQjRvB5sqKGMsdtyBRHXZYqX4emyOnsRXhxnpxj5CY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=TV1bjAHwa6NLdVZVD7DllGDZUObfyAObgZ8dpZarPA3MFb+4JwjHeGjrah/sKeuB6
+         Xq8Z6uhzHX0F3PKJSdkRh1pFxjO+XorK0VZvx6no556rDJNfISNz+wSJYYSdEmvn7Z
+         hUMZYEgCtddE7YUdKaua4hQLvfWtpf57g3PAd+6ZmWrfu2xY5A7mha+RytVeJ/84Sv
+         mxnDEJPKCDkp/bA6BADO+x5ZZtDdknfJeDc4bcwl2S3en2mWL+rmMtiDyQsmiX2t01
+         UKGSafGTnUjV0OrS31D6yutY2Y59cmVv6Xh9lXe15RO90svr9jvNnhSKkE8vII7TeO
+         VMw5j/h0xzgKQ==
+Content-Disposition: inline
+In-Reply-To: <ZF6YIezraETr9iNM@bhelgaas>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Matt Turner <mattst88@gmail.com>, Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org, linux-pci@vger.kernel.org, Dominik Brodowski <linux@dominikbrodowski.net>, linux-kernel@vger.kernel.org, =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>, Andrew Lunn <andrew@lunn.ch>, sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Gregory Clement <gregory.clement@bootlin.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Russell King <linux@armlinux.org.uk>, linux-acpi@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, xen-devel@lists.xenproject.org, Matt Turner <mattst88@gmail.com>, Anatolij Gustschin <agust@denx.de>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 
-On Thu May 25, 2023 at 3:52 AM AEST, Matt Turner wrote:
-> On Wed, May 24, 2023 at 1:28=E2=80=AFPM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > On Wed, May 24, 2023 at 10:18=E2=80=AFAM Nicholas Piggin <npiggin@gmail=
-.com> wrote:
-> > >
-> > > Any thoughts about the series would be interesting to hear.
-> >
-> > Well, alpha is in a deathmatch with ia64 on "least relevant
-> > architecture ever, and next to be removed".
-> >
-> > There are no winners in that match.
+On Fri, May 12, 2023 at 02:48:51PM -0500, Bjorn Helgaas wrote:
+> On Fri, May 12, 2023 at 01:56:29PM +0300, Andy Shevchenko wrote:
+> > On Tue, May 09, 2023 at 01:21:22PM -0500, Bjorn Helgaas wrote:
+> > > On Tue, Apr 04, 2023 at 11:11:01AM -0500, Bjorn Helgaas wrote:
+> > > > On Thu, Mar 30, 2023 at 07:24:27PM +0300, Andy Shevchenko wrote:
+> > > > > Provide two new helper macros to iterate over PCI device resources and
+> > > > > convert users.
+> > > 
+> > > > Applied 2-7 to pci/resource for v6.4, thanks, I really like this!
+> > > 
+> > > This is 09cc90063240 ("PCI: Introduce pci_dev_for_each_resource()")
+> > > upstream now.
+> > > 
+> > > Coverity complains about each use,
+> > 
+> > It needs more clarification here. Use of reduced variant of the
+> > macro or all of them? If the former one, then I can speculate that
+> > Coverity (famous for false positives) simply doesn't understand `for
+> > (type var; var ...)` code.
+> 
+> True, Coverity finds false positives.  It flagged every use in
+> drivers/pci and drivers/pnp.  It didn't mention the arch/alpha, arm,
+> mips, powerpc, sh, or sparc uses, but I think it just didn't look at
+> those.
+> 
+> It flagged both:
+> 
+>   pbus_size_io    pci_dev_for_each_resource(dev, r)
+>   pbus_size_mem   pci_dev_for_each_resource(dev, r, i)
+> 
+> Here's a spreadsheet with a few more details (unfortunately I don't
+> know how to make it dump the actual line numbers or analysis like I
+> pasted below, so "pci_dev_for_each_resource" doesn't appear).  These
+> are mostly in the "Drivers-PCI" component.
+> 
+> https://docs.google.com/spreadsheets/d/1ohOJwxqXXoDUA0gwopgk-z-6ArLvhN7AZn4mIlDkHhQ/edit?usp=sharing
+> 
+> These particular reports are in the "High Impact Outstanding" tab.
 
-Except that I don't get yelled at by so many people when things break.
-Why do you think I work on powerpc? (/s, kind of).
+Where are we at?  Are we going to ignore this because some Coverity
+reports are false positives?
 
-At least it's a reference, hopefully we can get a bit more interest. If
-we get a few converted then we could find some common patterns and pull
-them into generic code or at least a simpler recipe as we try to convert
-everything and just make this the only way it's implemented. Of course
-we need the big archs on board at some point.
-
-> > I still have the alpha architecture manual somewhere here, but I
-> > haven't touched any actual hardware in decades.
-> >
-> > But I certainly don't see anything _wrong_ with your series from a
-> > quick read-through.  It would be nice to hear that it works on real
-> > hardware, of course, but from previous attempts, there's only a couple
-> > of people that still occasionally run it.
->
-> I'll be happy to test.
-
-Thanks Matt, I'll put a git tree up and ping you.
-
-Thanks,
-Nick
+Bjorn
