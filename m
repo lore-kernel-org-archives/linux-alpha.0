@@ -1,144 +1,76 @@
-From: Song Liu <song@kernel.org>
-Subject: Re: [PATCH] module: fix module load for ia64
-Date: Sun, 4 Jun 2023 14:34:08 -0700
-Message-ID: <CAPhsuW5Udq085+kAmYC+g3BXKgqJVnb1b3ZQabjmme4hqnshgw@mail.gmail.com>
-References: <20230528230041.2592309-1-song@kernel.org> <5f4a62ad-fc8f-8738-40aa-f97b01898ac5@web.de>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v8 0/7] Add pci_dev_for_each_resource() helper and update
+ users
+Date: Mon, 5 Jun 2023 17:04:05 +0300
+Message-ID: <ZH3rVcSr+m8DHmo9@smile.fi.intel.com>
+References: <CAOiHx==5YWhDiZP2PyHZiJrmtqRzvqCqoSO59RwuYuR85BezBg@mail.gmail.com>
+ <ZHe8dKb3f392MfBO@bhelgaas>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1685914462;
-        bh=fzDr5c6x/wpGz5MaedKnthfNfy7oxM2Pe1S5Md3YUN0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=SM2ymvrGVbvFukgI1II4Cl786xUgEXxaZwhyMkNx9XC9HOwlmcemHajWd5dJIw27g
-         K5Q2qVehlAk82g2FMv4oSyqL8JQI0TfHu2kcMDVBQNDbERbPU7namEfIBziRkK/W8R
-         JbStxMfXk2A/FunYVnxJ4utNw1XSfdf4KF75p5p0y1/aZhnE8L2PurFw/r4ZQx+TuE
-         ZGcszb3beRvnnlyPmnxiEV6kA2I5oM6Xbmls711KnBDUMQyRb5P0PmTjK79NSpaAZT
-         ITmN5TIweQFDLI64B+lz7iWFb4O41014HeAfSHZEihfTNJR5hL7kLLjf5gJ2n5obAO
-         JlrczmFnk/O+w==
-In-Reply-To: <5f4a62ad-fc8f-8738-40aa-f97b01898ac5@web.de>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-To: Frank Scheiner <frank.scheiner@web.de>
-Cc: linux-modules@vger.kernel.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, debian-ia64@lists.debian.org, mcgrof@kernel.org, glaubitz@physik.fu-berlin.de, Linus Torvalds <torvalds@linux-foundation.org>, "debian-alpha@lists.debian.org" <debian-alpha@lists.debian.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1685974074; x=1717510074;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=zjA9XYetqLmj2er7YOpXmYqZcR8z8Fh+g5Flt9xdytk=;
+  b=V1qpbe5GCXcEd+WXHjE2Ec4+yeFaghq8tJf9dtaC3jkyU3cCzaltWhl/
+   0yBrMSrDL6PrLWPfMkwu8ZQIJlzqliPZE5xKanBO+8dzTb8l7sM4c4FdX
+   2P1sbRmKVO54MnkxedJW4W/mSeBPHkKvg3RSv1pCF+reZqNb8BhkjOvMT
+   FOsFncTrSHbTEmQrs79O7ZFmG4OMncKlgBIRFpp3CrFSOC6wEYtYSlDYP
+   nwG871Y1qA7zQorEVJvOE7xdEhFlaKqY0DXjK/GInYwtgPxHoNjZDFw0V
+   s2CHloMK1bWA8cvcvXBOh/F0Wb4hg46X5NHVJRNj0VQlnmDjZPhpB77Gv
+   A==;
+Content-Disposition: inline
+In-Reply-To: <ZHe8dKb3f392MfBO@bhelgaas>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org, linux-pci@vger.kernel.org, Dominik Brodowski <linux@dominikbrodowski.net>, linux-mips@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Andrew Lunn <andrew@lunn.ch>, Jonas Gorski <jonas.gorski@gmail.com>, sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, Gregory Clement <gregory.clement@bootlin.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Russell King <linux@armlinux.org.uk>, linux-acpi@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, xen-devel@lists.xenproject.org, Matt Turner <mattst88@gmail.com>, Anatolij Gustschin <agust@denx.de>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Arn d Bergmann <arnd@arndb.de>, Niklas Schnelle <schnelle@linux.ibm.com>, Richard Henderson <richard.h>
 
-On Sat, Jun 3, 2023 at 6:30=E2=80=AFAM Frank Scheiner <frank.scheiner@web.d=
-e> wrote:
->
-> On 29.05.23 01:00, Song Liu wrote:
-> > Frank reported boot regression in ia64 as:
-> >
-> > ELILO v3.16 for EFI/IA-64
-> > ..
-> > Uncompressing Linux... done
-> > Loading file AC100221.initrd.img...done
-> > [    0.000000] Linux version 6.4.0-rc3 (root@x4270) (ia64-linux-gcc
-> > (GCC) 12.2.0, GNU ld (GNU Binutils) 2.39) #1 SMP Thu May 25 15:52:20
-> > CEST 2023
-> > [    0.000000] efi: EFI v1.1 by HP
-> > [    0.000000] efi: SALsystab=3D0x3ee7a000 ACPI 2.0=3D0x3fe2a000
-> > ESI=3D0x3ee7b000 SMBIOS=3D0x3ee7c000 HCDP=3D0x3fe28000
-> > [    0.000000] PCDP: v3 at 0x3fe28000
-> > [    0.000000] earlycon: uart8250 at MMIO 0x00000000f4050000 (options
-> > '9600n8')
-> > [    0.000000] printk: bootconsole [uart8250] enabled
-> > [    0.000000] ACPI: Early table checksum verification disabled
-> > [    0.000000] ACPI: RSDP 0x000000003FE2A000 000028 (v02 HP    )
-> > [    0.000000] ACPI: XSDT 0x000000003FE2A02C 0000CC (v01 HP     rx2620
-> > 00000000 HP   00000000)
-> > [...]
-> > [    3.793350] Run /init as init process
-> > Loading, please wait...
-> > Starting systemd-udevd version 252.6-1
-> > [    3.951100] ------------[ cut here ]------------
-> > [    3.951100] WARNING: CPU: 6 PID: 140 at kernel/module/main.c:1547
-> > __layout_sections+0x370/0x3c0
-> > [    3.949512] Unable to handle kernel paging request at virtual addres=
-s
-> > 1000000000000000
-> > [    3.951100] Modules linked in:
-> > [    3.951100] CPU: 6 PID: 140 Comm: (udev-worker) Not tainted 6.4.0-rc=
-3 #1
-> > [    3.956161] (udev-worker)[142]: Oops 11003706212352 [1]
-> > [    3.951774] Hardware name: hp server rx2620                   , BIOS
-> > 04.29
-> > 11/30/2007
-> > [    3.951774]
-> > [    3.951774] Call Trace:
-> > [    3.958339] Unable to handle kernel paging request at virtual addres=
-s
-> > 1000000000000000
-> > [    3.956161] Modules linked in:
-> > [    3.951774]  [<a0000001000156d0>] show_stack.part.0+0x30/0x60
-> > [    3.951774]                                 sp=3De000000183a67b20
-> > bsp=3De000000183a61628
-> > [    3.956161]
-> > [    3.956161]
-> >
-> > which bisect to module_memory change [1].
-> >
-> > Debug showed that ia64 uses some special sections:
-> >
-> > __layout_sections: section .got (sh_flags 10000002) matched to MOD_INVA=
-LID
-> > __layout_sections: section .sdata (sh_flags 10000003) matched to MOD_IN=
-VALID
-> > __layout_sections: section .sbss (sh_flags 10000003) matched to MOD_INV=
-ALID
-> >
-> > All these sections are loaded to module core memory before [1].
-> >
-> > Fix ia64 boot by loading these sections to MOD_DATA (core rw data).
-> >
-> > [1] commit ac3b43283923 ("module: replace module_layout with module_mem=
-ory")
-> >
-> > Fixes: ac3b43283923 ("module: replace module_layout with module_memory"=
-)
-> > Reported-by: Frank Scheiner <frank.scheiner@web.de>
-> > Closes: https://lists.debian.org/debian-ia64/2023/05/msg00010.html
-> > Closes: https://marc.info/?l=3Dlinux-ia64&m=3D168509859125505
-> > Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> > Signed-off-by: Song Liu <song@kernel.org>
-> > ---
-> >   kernel/module/main.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/kernel/module/main.c b/kernel/module/main.c
-> > index b4c7e925fdb0..9da4b551321e 100644
-> > --- a/kernel/module/main.c
-> > +++ b/kernel/module/main.c
-> > @@ -1521,14 +1521,14 @@ static void __layout_sections(struct module *mo=
-d, struct load_info *info, bool i
-> >               MOD_RODATA,
-> >               MOD_RO_AFTER_INIT,
-> >               MOD_DATA,
-> > -             MOD_INVALID,    /* This is needed to match the masks arra=
-y */
-> > +             MOD_DATA,
-> >       };
-> >       static const int init_m_to_mem_type[] =3D {
-> >               MOD_INIT_TEXT,
-> >               MOD_INIT_RODATA,
-> >               MOD_INVALID,
-> >               MOD_INIT_DATA,
-> > -             MOD_INVALID,    /* This is needed to match the masks arra=
-y */
-> > +             MOD_INIT_DATA,
-> >       };
-> >
-> >       for (m =3D 0; m < ARRAY_SIZE(masks); ++m) {
->
-> Just want to add another observation (though not strictly ia64 but I
-> wanted to keep the context):
->
-> Testing showed that this patch also fixes module loading for alpha
-> (tested on an AlphaServer DS25 w/v6.4-rc4 w/ and w/o the patch applied).
+On Wed, May 31, 2023 at 04:30:28PM -0500, Bjorn Helgaas wrote:
+> On Wed, May 31, 2023 at 08:48:35PM +0200, Jonas Gorski wrote:
 
-Thanks for this information!
+...
 
-I noticed alpha and ia64 are the only two archs to define ARCH_SHF_SMALL.
-Other archs shouldn't see change with this.
+> > Looking at the code I understand where coverity is coming from:
+> > 
+> > #define __pci_dev_for_each_res0(dev, res, ...)                         \
+> >        for (unsigned int __b = 0;                                      \
+> >             res = pci_resource_n(dev, __b), __b < PCI_NUM_RESOURCES;   \
+> >             __b++)
+> > 
+> >  res will be assigned before __b is checked for being less than
+> > PCI_NUM_RESOURCES, making it point to behind the array at the end of
+> > the last loop iteration.
+> > 
+> > Rewriting the test expression as
+> > 
+> > __b < PCI_NUM_RESOURCES && (res = pci_resource_n(dev, __b));
+> > 
+> > should avoid the (coverity) warning by making use of lazy evaluation.
+> > 
+> > It probably makes the code slightly less performant as res will now be
+> > checked for being not NULL (which will always be true), but I doubt it
+> > will be significant (or in any hot paths).
+> 
+> Thanks a lot for looking into this!  I think you're right, and I think
+> the rewritten expression is more logical as well.  Do you want to post
+> a patch for it?
 
-Best,
-Song
+Gimme some time, I was on a long leave and now it's a pile to handle.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
