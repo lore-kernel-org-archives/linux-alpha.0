@@ -1,148 +1,152 @@
-From: Frank Scheiner <frank.scheiner@web.de>
-Subject: Re: Linux 6.1.27, cgroup: Instruction fault 4 with systemd
-Date: Mon, 19 Jun 2023 14:01:36 +0200
-Message-ID: <d5316df3-bc5e-cc0d-e673-7859e01047c2@web.de>
-References: <57622252-b409-869e-7aae-81cf61e94fda@web.de>
- <b9e52b7a6f68782707ca809a746823c0c752de5c.camel@physik.fu-berlin.de>
+From: Ryan Roberts <ryan.roberts@arm.com>
+Subject: [PATCH v1 00/10] variable-order, large folios for anonymous memory
+Date: Mon, 26 Jun 2023 18:14:20 +0100
+Message-ID: <20230626171430.3167004-1-ryan.roberts@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=s29768273; t=1687176099; x=1687780899; i=frank.scheiner@web.de;
- bh=OX3j8RfUr3GzVFHYjbMtQfXmLaaft2okW3ldrHgZSSM=;
- h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
- b=dv9mfNF24pzDUCTbYDlWowGhUAGkoSrlej+lirD+za3cce4zc72faS8yQB+2ziniGXZpwKp
- k7B1+nzDX5ZqrfDfWCqLBr+vCTggLThmsqze//cgPQyi/OtGtIUS8PJ/pQkixG8PYXCLElEu6
- Dbbq0NEa52+i+G988w6ysmQpL7g6GSzaKcJTL49o+K3cXjA/ml9jOM/Pwd0tCa0UkaBF9SL/m
- gWtdyN8bv1kIzQRIlPlDQVoRxmdsIcS2ku/H9kLvsj//wjIwA5uOZ6ImXOxc+FEBvo10ZDE0W
- LhUhXMATFBnfzJi9F0vql7rdgtqEjfs2m8nf8zVF6fnHvrCWS/UA==
-Content-Language: en-US
-In-Reply-To: <b9e52b7a6f68782707ca809a746823c0c752de5c.camel@physik.fu-berlin.de>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-ia64-owner@vger.kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, linux-alpha@vger.kernel.org
-Cc: "debian-alpha@lists.debian.org" <debian-alpha@lists.debian.org>, Michael Cree <mcree@orcon.net.nz>
+Content-Type: text/plain; charset="us-ascii"
+To: Andrew Morton <akpm@linux-foundation.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Yin Fengwei <fengwei.yin@intel.com>, David Hildenbrand <david@redhat.com>, Yu Zhao <yuzhao@google.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ryan Roberts <ryan.roberts@arm.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
 
-Hi,
+Hi All,
 
-let me add some additional data point(s):
+Following on from the previous RFCv2 [1], this series implements variable order,
+large folios for anonymous memory. The objective of this is to improve
+performance by allocating larger chunks of memory during anonymous page faults:
 
-After some testing on different machines and with different kernel types
-it looks like this problem is exclusive to MP kernels. This also when
-running a MP kernel on a single processor machine actually (tested on an
-AlphaServer 800 5/400 w/EV56).
+ - Since SW (the kernel) is dealing with larger chunks of memory than base
+   pages, there are efficiency savings to be had; fewer page faults, batched PTE
+   and RMAP manipulation, fewer items on lists, etc. In short, we reduce kernel
+   overhead. This should benefit all architectures.
+ - Since we are now mapping physically contiguous chunks of memory, we can take
+   advantage of HW TLB compression techniques. A reduction in TLB pressure
+   speeds up kernel and user space. arm64 systems have 2 mechanisms to coalesce
+   TLB entries; "the contiguous bit" (architectural) and HPA (uarch).
 
-Running an SP kernel does not trigger that problem.
+This patch set deals with the SW side of things only and based on feedback from
+the RFC, aims to be the most minimal initial change, upon which future
+incremental changes can be added. For this reason, the new behaviour is hidden
+behind a new Kconfig switch, CONFIG_LARGE_ANON_FOLIO, which is disabled by
+default. Although the code has been refactored to parameterize the desired order
+of the allocation, when the feature is disabled (by forcing the order to be
+always 0) my performance tests measure no regression. So I'm hoping this will be
+a suitable mechanism to allow incremental submissions to the kernel without
+affecting the rest of the world.
 
-I posted a diff between the -alpha-generic and -alpha-smp kernel
-configurations on [1].
+The patches are based on top of v6.4 plus Matthew Wilcox's set_ptes() series
+[2], which is a hard dependency. I'm not sure of Matthew's exact plans for
+getting that series into the kernel, but I'm hoping we can start the review
+process on this patch set independently. I have a branch at [3].
 
-[1]: https://pastebin.com/AwZQjHD9
+I've posted a separate series concerning the HW part (contpte mapping) for arm64
+at [4].
 
-On 22.05.23 11:37, John Paul Adrian Glaubitz wrote:
-> Hello Frank!
->
-> On Mon, 2023-05-22 at 11:34 +0200, Frank Scheiner wrote:
->> Maybe someone on linux-alpha has an idea what could be the reason?
->
-> Try reproducing it with libcgroup to see if it's a systemd or a kernel b=
-ug:
->
->> https://wiki.archlinux.org/title/cgroups#Examples
 
-Took me a while to get back to this and actually get it working...
+Performance
+-----------
 
-Following misc. examples and manpages (e.g. [2] and [3]) I did the
-following to test cgroup functionality with System V init installed and
-running instead of systemd:
+Below results show 2 benchmarks; kernel compilation and speedometer 2.0 (a
+javascript benchmark running in Chromium). Both cases are running on Ampere
+Altra with 1 NUMA node enabled, Ubuntu 22.04 and XFS filesystem. Each benchmark
+is repeated 15 times over 5 reboots and averaged.
 
-```
-root@ds25:~# uname -a
-Linux ds25 6.3.0-1-alpha-smp #1 SMP Debian 6.3.7-1 (2023-06-12) alpha
-GNU/Linux
+All improvements are relative to baseline-4k. 'anonfolio-basic' is this series.
+'anonfolio' is the full patch set similar to the RFC with the additional changes
+to the extra 3 fault paths. The rest of the configs are described at [4].
 
-root@ds25:~# mount
-[...]
-cgroup on /sys/fs/cgroup type tmpfs (rw,relatime,mode=3D755,inode64)
-cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,relatime,cpuset)
-cgroup on /sys/fs/cgroup/cpu type cgroup (rw,relatime,cpu)
-[...]
-cgroup on /sys/fs/cgroup/rdma type cgroup (rw,relatime,rdma)
-cgroup on /sys/fs/cgroup/misc type cgroup (rw,relatime,misc)
+Kernel Compilation (smaller is better):
 
-root@ds25:~# CGROUP=3D/sys/fs/cgroup
+| kernel          |   real-time |   kern-time |   user-time |
+|:----------------|------------:|------------:|------------:|
+| baseline-4k     |        0.0% |        0.0% |        0.0% |
+| anonfolio-basic |       -5.3% |      -42.9% |       -0.6% |
+| anonfolio       |       -5.4% |      -46.0% |       -0.3% |
+| contpte         |       -6.8% |      -45.7% |       -2.1% |
+| exefolio        |       -8.4% |      -46.4% |       -3.7% |
+| baseline-16k    |       -8.7% |      -49.2% |       -3.7% |
+| baseline-64k    |      -10.5% |      -66.0% |       -3.5% |
 
-root@ds25:~# mkdir $CGROUP/red
-root@ds25:~# mount -t cgroup -o cpuset red $CGROUP/red
-root@ds25:~# mkdir -p $CGROUP/red/shells/bash
-root@ds25:~# chown root:root $CGROUP/red/shells/bash/*
-root@ds25:~# id johndoe
-uid=3D1001(johndoe) gid=3D1001(johndoe) groups=3D1001(johndoe),100(users)
-root@ds25:~# chown root:johndoe $CGROUP/red/shells/bash/tasks
-root@ds25:~# echo $(cgget -n -v -r cpuset.mems /) >
-$CGROUP/red/shells/cpuset.mems
-root@ds25:~# echo $(cgget -n -v -r cpuset.cpus /) >
-$CGROUP/red/shells/cpuset.cpus
-root@ds25:~# echo 0 > $CGROUP/red/shells/bash/cpuset.mems
-root@ds25:~# echo 0 > $CGROUP/red/shells/bash/cpuset.cpus
+Speedometer 2.0 (bigger is better):
 
-root@ds25:~# cat /proc/self/cgroup
-13:misc:/
-12:rdma:/
-11:pids:/
-10:net_prio:/
-9:perf_event:/
-8:net_cls:/
-7:freezer:/
-6:devices:/
-5:memory:/
-4:blkio:/
-3:cpuacct:/
-2:cpu:/
-1:cpuset:/
+| kernel          |   runs_per_min |
+|:----------------|---------------:|
+| baseline-4k     |           0.0% |
+| anonfolio-basic |           0.7% |
+| anonfolio       |           1.2% |
+| contpte         |           3.1% |
+| exefolio        |           4.2% |
+| baseline-16k    |           5.3% |
 
-root@ds25:~# echo $$
-1496
 
-root@ds25:~# cgexec -g cpuset:shells/bash bash
+Changes since RFCv2
+-------------------
 
-root@ds25:~# echo $$
-1695
+  - Simplified series to bare minimum (on David Hildenbrand's advice)
+      - Removed changes to 3 fault paths:
+          - write fault on zero page: wp_page_copy()
+          - write fault on non-exclusive CoW page: wp_page_copy()
+          - write fault on exclusive CoW page: do_wp_page()/wp_page_reuse()
+      - Only 1 fault path change remains:
+          - write fault on unallocated address: do_anonymous_page()
+      - Removed support patches that are no longer needed
+  - Added Kconfig CONFIG_LARGE_ANON_FOLIO and friends
+      - Whole feature defaults to off
+      - Arch opts-in to allowing feature and provides max allocation order
 
-root@ds25:~# cat /proc/self/cgroup
-13:misc:/
-[...]
-2:cpu:/
-1:cpuset:/shells/bash
-```
 
-[2]:
-https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/h=
-tml/resource_management_guide/ch-using_control_groups
+Future Work
+-----------
 
-[3]: https://wiki.archlinux.org/title/cgroups#Examples
+Once this series is in, there are some more incremental changes I plan to follow
+up with:
 
-I then ran `7za b` in that shell and though `7za` executes two threads
-assuming it has access to both CPUs, `htop` showed both of them running
-on the first processor only. So it looks like at least this part of the
-cgroup functionality is working with Linux 6.3.0-1 from Debian when
-using System V init.
+  - Add the other 3 fault path changes back in
+  - Properly support pte-mapped folios for:
+      - numa balancing (do_numa_page())
+      - fix assumptions about exclusivity for large folios in madvise()
+      - compaction (although I think this is already a problem for large folios
+        in the file cache so perhaps someone is working on it?)
 
-So it could be that this problem is only triggered with one or multiple
-specific controller(s). But I don't exactly know how to determine the
-used controller(s) for target "graphical.target" - where this seems to
-happen according to (see more details on [4]):
 
-```
-[...]
-[   11.864251] systemd[1]: Queued start job for default target
-graphical.target.
-[   11.958978] CPU 1
-[   11.958978] systemd(1): Instruction fault 4
-[...]
-```
+[1] https://lore.kernel.org/linux-mm/20230414130303.2345383-1-ryan.roberts@arm.com/
+[2] https://lore.kernel.org/linux-mm/20230315051444.3229621-1-willy@infradead.org/
+[3] https://gitlab.arm.com/linux-arm/linux-rr/-/tree/features/granule_perf/anonfolio-lkml_v1
+[4] https://lore.kernel.org/linux-arm-kernel/20230622144210.2623299-1-ryan.roberts@arm.com/
 
-[4]: https://lists.debian.org/debian-alpha/2023/05/msg00012.html
+Thanks,
+Ryan
 
-Cheers,
-Frank
+
+Ryan Roberts (10):
+  mm: Expose clear_huge_page() unconditionally
+  mm: pass gfp flags and order to vma_alloc_zeroed_movable_folio()
+  mm: Introduce try_vma_alloc_movable_folio()
+  mm: Implement folio_add_new_anon_rmap_range()
+  mm: Implement folio_remove_rmap_range()
+  mm: Allow deferred splitting of arbitrary large anon folios
+  mm: Batch-zap large anonymous folio PTE mappings
+  mm: Kconfig hooks to determine max anon folio allocation order
+  arm64: mm: Declare support for large anonymous folios
+  mm: Allocate large folios for anonymous memory
+
+ arch/alpha/include/asm/page.h   |   5 +-
+ arch/arm64/Kconfig              |  13 ++
+ arch/arm64/include/asm/page.h   |   3 +-
+ arch/arm64/mm/fault.c           |   7 +-
+ arch/ia64/include/asm/page.h    |   5 +-
+ arch/m68k/include/asm/page_no.h |   7 +-
+ arch/s390/include/asm/page.h    |   5 +-
+ arch/x86/include/asm/page.h     |   5 +-
+ include/linux/highmem.h         |  23 ++-
+ include/linux/mm.h              |   3 +-
+ include/linux/rmap.h            |   4 +
+ mm/Kconfig                      |  39 ++++
+ mm/memory.c                     | 324 ++++++++++++++++++++++++++++++--
+ mm/rmap.c                       | 107 ++++++++++-
+ 14 files changed, 506 insertions(+), 44 deletions(-)
+
+--
+2.25.1
+
