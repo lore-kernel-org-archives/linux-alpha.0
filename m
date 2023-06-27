@@ -1,133 +1,118 @@
 From: Yu Zhao <yuzhao@google.com>
-Subject: Re: [PATCH v1 00/10] variable-order, large folios for anonymous memory
-Date: Mon, 26 Jun 2023 21:30:19 -0600
-Message-ID: <CAOUHufaUTbUw9MTzw8D=sVrEB+RP6LSBQVGn93TWk=ozV8XobA@mail.gmail.com>
+Subject: Re: [PATCH v1 03/10] mm: Introduce try_vma_alloc_movable_folio()
+Date: Mon, 26 Jun 2023 23:29:49 -0600
+Message-ID: <CAOUHufZeFTjzO6nSFz7Y=5rBGPzY+_eeN3f8W+g0u6AqosdmuQ@mail.gmail.com>
 References: <20230626171430.3167004-1-ryan.roberts@arm.com>
+ <20230626171430.3167004-4-ryan.roberts@arm.com> <CAOUHufZKM+aS_hYQ5nDUHh74UQwWipJ27Na5Sw4n+RDqnwyWHA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-m68k-owner@vger.kernel.org>
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1687836655; x=1690428655;
+        d=google.com; s=20221208; t=1687843826; x=1690435826;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Dps86R1lndJwF4gJQy/c3O9t7fuW8Q1JEcrGXaT4yyM=;
-        b=DPpXKg59gxCfYZfd9BY428kZ8iu0DYsney6Rdb3rBdwDtXCqI6by6+cpd+iFCxaq79
-         l5qUs+UtG6qNw6vClJxqZ156uilkFr4nqOfpOjwb4sCDK3cewEwBmVMA0EIXWOjk8R9i
-         TVfgsTBk1kHsR06KuWByKOPsHwpa4kfikZiOJBSb1rUERnaQZ2h4T5rsCZtkeArohaZX
-         Mkw8ML+8yLd2TpK+iFeG6sjz2DCcKu+mgd+76Du4ZXe9n58Em657zW5MzIJDxXMzqKBe
-         fEm9np6GD+3Cx5VBNcJHXVbW+BthLgsTGUPU+3D1UFEeHCXje/m+ogWz3nybucVagpcD
-         4StQ==
-In-Reply-To: <20230626171430.3167004-1-ryan.roberts@arm.com>
+        bh=Tr6z7HXoBtRJiy9wIGxM4+Vh8ji4UZ7Pb/0A3wtEW+4=;
+        b=RVa8Qm3kb8eoPf1kUKXDt9afcKa8JJGNOR1UFa/0AXvcyyeUBXp0NPK1D2+mSv1Sh5
+         rpQwalJ7ERXwii22vOhV4jdreZ71bDgoFL91oi5ZvAytI2TnTqKdZwsJJQksiPAb9F5A
+         eMtWcHbSMLPm/8/NAY764PCtLSzNEpaHonyQA9ibN2YB1nec+NhxYXg3DPSBci/Mieiy
+         hfXmyBnF32aUNEdMMETSpTgoQF29B/RzDOVAEaK0wjkiw/1dwDOIrB71dOGzSLXH2WRw
+         abdGK1RCBPpBQm75z0N+Eb1oHSROhMs00hs7GqWlUPqWns8MaEPXjUrfpNiqrC14TiiP
+         ftdg==
+In-Reply-To: <CAOUHufZKM+aS_hYQ5nDUHh74UQwWipJ27Na5Sw4n+RDqnwyWHA@mail.gmail.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 To: Ryan Roberts <ryan.roberts@arm.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Yin Fengwei <fengwei.yin@intel.com>, David Hildenbrand <david@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists
 
-On Mon, Jun 26, 2023 at 11:14=E2=80=AFAM Ryan Roberts <ryan.roberts@arm.com=
-> wrote:
+On Mon, Jun 26, 2023 at 8:34=E2=80=AFPM Yu Zhao <yuzhao@google.com> wrote:
 >
-> Hi All,
->
-> Following on from the previous RFCv2 [1], this series implements variable=
- order,
-> large folios for anonymous memory. The objective of this is to improve
-> performance by allocating larger chunks of memory during anonymous page f=
-aults:
->
->  - Since SW (the kernel) is dealing with larger chunks of memory than bas=
+> On Mon, Jun 26, 2023 at 11:14=E2=80=AFAM Ryan Roberts <ryan.roberts@arm.c=
+om> wrote:
+> >
+> > Opportunistically attempt to allocate high-order folios in highmem,
+> > optionally zeroed. Retry with lower orders all the way to order-0, unti=
+l
+> > success. Although, of note, order-1 allocations are skipped since a
+> > large folio must be at least order-2 to work with the THP machinery. Th=
 e
->    pages, there are efficiency savings to be had; fewer page faults, batc=
-hed PTE
->    and RMAP manipulation, fewer items on lists, etc. In short, we reduce =
-kernel
->    overhead. This should benefit all architectures.
->  - Since we are now mapping physically contiguous chunks of memory, we ca=
-n take
->    advantage of HW TLB compression techniques. A reduction in TLB pressur=
-e
->    speeds up kernel and user space. arm64 systems have 2 mechanisms to co=
-alesce
->    TLB entries; "the contiguous bit" (architectural) and HPA (uarch).
+> > user must check what they got with folio_order().
+> >
+> > This will be used to oportunistically allocate large folios for
+> > anonymous memory with a sensible fallback under memory pressure.
+> >
+> > For attempts to allocate non-0 orders, we set __GFP_NORETRY to prevent
+> > high latency due to reclaim, instead preferring to just try for a lower
+> > order. The same approach is used by the readahead code when allocating
+> > large folios.
+> >
+> > Signed-off-by: Ryan Roberts <ryan.roberts@arm.com>
+> > ---
+> >  mm/memory.c | 33 +++++++++++++++++++++++++++++++++
+> >  1 file changed, 33 insertions(+)
+> >
+> > diff --git a/mm/memory.c b/mm/memory.c
+> > index 367bbbb29d91..53896d46e686 100644
+> > --- a/mm/memory.c
+> > +++ b/mm/memory.c
+> > @@ -3001,6 +3001,39 @@ static vm_fault_t fault_dirty_shared_page(struct=
+ vm_fault *vmf)
+> >         return 0;
+> >  }
+> >
+> > +static inline struct folio *vma_alloc_movable_folio(struct vm_area_str=
+uct *vma,
+> > +                               unsigned long vaddr, int order, bool ze=
+roed)
+> > +{
+> > +       gfp_t gfp =3D order > 0 ? __GFP_NORETRY | __GFP_NOWARN : 0;
+> > +
+> > +       if (zeroed)
+> > +               return vma_alloc_zeroed_movable_folio(vma, vaddr, gfp, =
+order);
+> > +       else
+> > +               return vma_alloc_folio(GFP_HIGHUSER_MOVABLE | gfp, orde=
+r, vma,
+> > +                                                               vaddr, =
+false);
+> > +}
+> > +
+> > +/*
+> > + * Opportunistically attempt to allocate high-order folios, retrying w=
+ith lower
+> > + * orders all the way to order-0, until success. order-1 allocations a=
+re skipped
+> > + * since a folio must be at least order-2 to work with the THP machine=
+ry. The
+> > + * user must check what they got with folio_order(). vaddr can be any =
+virtual
+> > + * address that will be mapped by the allocated folio.
+> > + */
+> > +static struct folio *try_vma_alloc_movable_folio(struct vm_area_struct=
+ *vma,
+> > +                               unsigned long vaddr, int order, bool ze=
+roed)
+> > +{
+> > +       struct folio *folio;
+> > +
+> > +       for (; order > 1; order--) {
+> > +               folio =3D vma_alloc_movable_folio(vma, vaddr, order, ze=
+roed);
+> > +               if (folio)
+> > +                       return folio;
+> > +       }
+> > +
+> > +       return vma_alloc_movable_folio(vma, vaddr, 0, zeroed);
+> > +}
 >
-> This patch set deals with the SW side of things only and based on feedbac=
-k from
-> the RFC, aims to be the most minimal initial change, upon which future
-> incremental changes can be added. For this reason, the new behaviour is h=
-idden
-> behind a new Kconfig switch, CONFIG_LARGE_ANON_FOLIO, which is disabled b=
-y
-> default. Although the code has been refactored to parameterize the desire=
-d order
-> of the allocation, when the feature is disabled (by forcing the order to =
-be
-> always 0) my performance tests measure no regression. So I'm hoping this =
-will be
-> a suitable mechanism to allow incremental submissions to the kernel witho=
-ut
-> affecting the rest of the world.
+> I'd drop this patch. Instead, in do_anonymous_page():
 >
-> The patches are based on top of v6.4 plus Matthew Wilcox's set_ptes() ser=
-ies
-> [2], which is a hard dependency. I'm not sure of Matthew's exact plans fo=
-r
-> getting that series into the kernel, but I'm hoping we can start the revi=
-ew
-> process on this patch set independently. I have a branch at [3].
+>   if (IS_ENABLED(CONFIG_ARCH_WANTS_PTE_ORDER))
+>     folio =3D vma_alloc_zeroed_movable_folio(vma, addr,
+> CONFIG_ARCH_WANTS_PTE_ORDER))
 >
-> I've posted a separate series concerning the HW part (contpte mapping) fo=
-r arm64
-> at [4].
->
->
-> Performance
-> -----------
->
-> Below results show 2 benchmarks; kernel compilation and speedometer 2.0 (=
-a
-> javascript benchmark running in Chromium). Both cases are running on Ampe=
-re
-> Altra with 1 NUMA node enabled, Ubuntu 22.04 and XFS filesystem. Each ben=
-chmark
-> is repeated 15 times over 5 reboots and averaged.
->
-> All improvements are relative to baseline-4k. 'anonfolio-basic' is this s=
-eries.
-> 'anonfolio' is the full patch set similar to the RFC with the additional =
-changes
-> to the extra 3 fault paths. The rest of the configs are described at [4].
->
-> Kernel Compilation (smaller is better):
->
-> | kernel          |   real-time |   kern-time |   user-time |
-> |:----------------|------------:|------------:|------------:|
-> | baseline-4k     |        0.0% |        0.0% |        0.0% |
-> | anonfolio-basic |       -5.3% |      -42.9% |       -0.6% |
-> | anonfolio       |       -5.4% |      -46.0% |       -0.3% |
-> | contpte         |       -6.8% |      -45.7% |       -2.1% |
-> | exefolio        |       -8.4% |      -46.4% |       -3.7% |
-> | baseline-16k    |       -8.7% |      -49.2% |       -3.7% |
-> | baseline-64k    |      -10.5% |      -66.0% |       -3.5% |
->
-> Speedometer 2.0 (bigger is better):
->
-> | kernel          |   runs_per_min |
-> |:----------------|---------------:|
-> | baseline-4k     |           0.0% |
-> | anonfolio-basic |           0.7% |
-> | anonfolio       |           1.2% |
-> | contpte         |           3.1% |
-> | exefolio        |           4.2% |
-> | baseline-16k    |           5.3% |
+>   if (!folio)
+>     folio =3D vma_alloc_zeroed_movable_folio(vma, addr, 0);
 
-Thanks for pushing this forward!
-
-> Changes since RFCv2
-> -------------------
->
->   - Simplified series to bare minimum (on David Hildenbrand's advice)
-
-My impression is that this series still includes many pieces that can
-be split out and discussed separately with followup series.
-
-(I skipped 04/10 and will look at it tomorrow.)
+I meant a runtime function arch_wants_pte_order() (Its default
+implementation would return 0.)
