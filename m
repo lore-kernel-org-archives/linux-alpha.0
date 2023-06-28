@@ -1,152 +1,63 @@
 From: Yin Fengwei <fengwei.yin@intel.com>
-Subject: Re: [PATCH v1 03/10] mm: Introduce try_vma_alloc_movable_folio()
-Date: Wed, 28 Jun 2023 10:32:28 +0800
-Message-ID: <8ab18141-8091-6691-ddbd-cff834a8d4d0@intel.com>
+Subject: Re: [PATCH v1 06/10] mm: Allow deferred splitting of arbitrary large
+ anon folios
+Date: Wed, 28 Jun 2023 10:43:05 +0800
+Message-ID: <ddcc31b5-0518-e2e3-2887-62a4ccc9e582@intel.com>
 References: <20230626171430.3167004-1-ryan.roberts@arm.com>
- <20230626171430.3167004-4-ryan.roberts@arm.com>
- <CAOUHufZKM+aS_hYQ5nDUHh74UQwWipJ27Na5Sw4n+RDqnwyWHA@mail.gmail.com>
- <CAOUHufZeFTjzO6nSFz7Y=5rBGPzY+_eeN3f8W+g0u6AqosdmuQ@mail.gmail.com>
- <ba282a84-1a0d-4ffd-0b22-ac9510a820ef@arm.com>
+ <20230626171430.3167004-7-ryan.roberts@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-m68k-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1687919572; x=1719455572;
+  t=1687920211; x=1719456211;
   h=message-id:date:subject:to:cc:references:from:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=HsTsqz8xKyc17yw2F5EShmUDRS4lEKx3+dH1J4V2Jxo=;
-  b=AsFuhxUbenzfiuN0Qq5KfXetgJVwa1efXkZp2W9SQMCuzSteMe1dVUpL
-   8DFy6KGNph8sgVc4/N0DcteZ2wyGt/mK9mTje1v1xg77QWC1a1FrTp2HE
-   I61V7wIgmqtcobkAfoVQBMDnggnnWJs+4SDLreI49YAJk8F0PKCrv+l8Y
-   QoF7aPUfeckS3/qluycRm7g1LmqVJCEbekCP3yLsAd0kwffuHSPi302aS
-   uekyHhyJ/E97yTa9xc/PtErhyX1vlddfLXmhMsk3jduUztaMhqZ4H8Ox1
-   Kvzo257d8PFuawJ64jEO47DWGcrJgOYNwPaS/WfUq6Di0sn4nQmQofsZI
-   Q==;
+  bh=PV4swNzFCtA2mZ08xknEXIY2+fX13/DpmAzwFLdGrFI=;
+  b=bTjFsc0qeiJ4cU5PeRoEvOoNsPdfx+ljIHPQfOIKYvPK8fr36F2Flj94
+   ygLXNcjxNtJWmwEKzYj2qNDsg56Av5gN4Yn05gfjZeGdqYJNM43FIzndN
+   KWWXueIK0t/mb6wc2ZRA7MxTzKeVcH1QpIK9Ve9LO6Jv45btA9HE9Phrv
+   prVnWJsRWId71vOmXPTDxyPKqJ/ZZYIhQIpBm6ZvtlnKQ6QIn1WzGEWZd
+   Du+iB5rtsid90B/4DjC9gHn+n/fvZsYaGvL68CGKgtFxghfJNWrwtmuPU
+   dotEy5jzB2WfVPAog2NLIpCNk9NaqGgasJ2w9CplET9s+9tolqOf3ChJ3
+   A==;
 Content-Language: en-US
-In-Reply-To: <ba282a84-1a0d-4ffd-0b22-ac9510a820ef@arm.com>
+In-Reply-To: <20230626171430.3167004-7-ryan.roberts@arm.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Ryan Roberts <ryan.roberts@arm.com>, Yu Zhao <yuzhao@google.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, David Hildenbrand <david@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org
+Content-Type: text/plain; charset="us-ascii"
+To: Ryan Roberts <ryan.roberts@arm.com>, Andrew Morton <akpm@linux-foundation.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, David Hildenbrand <david@redhat.com>, Yu Zhao <yuzhao@google.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
 
 
 
-On 6/27/23 15:56, Ryan Roberts wrote:
-> On 27/06/2023 06:29, Yu Zhao wrote:
->> On Mon, Jun 26, 2023 at 8:34 PM Yu Zhao <yuzhao@google.com> wrote:
->>>
->>> On Mon, Jun 26, 2023 at 11:14 AM Ryan Roberts <ryan.roberts@arm.com> wrote:
->>>>
->>>> Opportunistically attempt to allocate high-order folios in highmem,
->>>> optionally zeroed. Retry with lower orders all the way to order-0, until
->>>> success. Although, of note, order-1 allocations are skipped since a
->>>> large folio must be at least order-2 to work with the THP machinery. The
->>>> user must check what they got with folio_order().
->>>>
->>>> This will be used to oportunistically allocate large folios for
->>>> anonymous memory with a sensible fallback under memory pressure.
->>>>
->>>> For attempts to allocate non-0 orders, we set __GFP_NORETRY to prevent
->>>> high latency due to reclaim, instead preferring to just try for a lower
->>>> order. The same approach is used by the readahead code when allocating
->>>> large folios.
->>>>
->>>> Signed-off-by: Ryan Roberts <ryan.roberts@arm.com>
->>>> ---
->>>>  mm/memory.c | 33 +++++++++++++++++++++++++++++++++
->>>>  1 file changed, 33 insertions(+)
->>>>
->>>> diff --git a/mm/memory.c b/mm/memory.c
->>>> index 367bbbb29d91..53896d46e686 100644
->>>> --- a/mm/memory.c
->>>> +++ b/mm/memory.c
->>>> @@ -3001,6 +3001,39 @@ static vm_fault_t fault_dirty_shared_page(struct vm_fault *vmf)
->>>>         return 0;
->>>>  }
->>>>
->>>> +static inline struct folio *vma_alloc_movable_folio(struct vm_area_struct *vma,
->>>> +                               unsigned long vaddr, int order, bool zeroed)
->>>> +{
->>>> +       gfp_t gfp = order > 0 ? __GFP_NORETRY | __GFP_NOWARN : 0;
->>>> +
->>>> +       if (zeroed)
->>>> +               return vma_alloc_zeroed_movable_folio(vma, vaddr, gfp, order);
->>>> +       else
->>>> +               return vma_alloc_folio(GFP_HIGHUSER_MOVABLE | gfp, order, vma,
->>>> +                                                               vaddr, false);
->>>> +}
->>>> +
->>>> +/*
->>>> + * Opportunistically attempt to allocate high-order folios, retrying with lower
->>>> + * orders all the way to order-0, until success. order-1 allocations are skipped
->>>> + * since a folio must be at least order-2 to work with the THP machinery. The
->>>> + * user must check what they got with folio_order(). vaddr can be any virtual
->>>> + * address that will be mapped by the allocated folio.
->>>> + */
->>>> +static struct folio *try_vma_alloc_movable_folio(struct vm_area_struct *vma,
->>>> +                               unsigned long vaddr, int order, bool zeroed)
->>>> +{
->>>> +       struct folio *folio;
->>>> +
->>>> +       for (; order > 1; order--) {
->>>> +               folio = vma_alloc_movable_folio(vma, vaddr, order, zeroed);
->>>> +               if (folio)
->>>> +                       return folio;
->>>> +       }
->>>> +
->>>> +       return vma_alloc_movable_folio(vma, vaddr, 0, zeroed);
->>>> +}
->>>
->>> I'd drop this patch. Instead, in do_anonymous_page():
->>>
->>>   if (IS_ENABLED(CONFIG_ARCH_WANTS_PTE_ORDER))
->>>     folio = vma_alloc_zeroed_movable_folio(vma, addr,
->>> CONFIG_ARCH_WANTS_PTE_ORDER))
->>>
->>>   if (!folio)
->>>     folio = vma_alloc_zeroed_movable_folio(vma, addr, 0);
->>
->> I meant a runtime function arch_wants_pte_order() (Its default
->> implementation would return 0.)
+On 6/27/23 01:14, Ryan Roberts wrote:
+> With the introduction of large folios for anonymous memory, we would
+> like to be able to split them when they have unmapped subpages, in order
+> to free those unused pages under memory pressure. So remove the
+> artificial requirement that the large folio needed to be at least
+> PMD-sized.
 > 
-> There are a bunch of things which you are implying here which I'll try to make
-> explicit:
-> 
-> I think you are implying that we shouldn't retry allocation with intermediate
-> orders; but only try the order requested by the arch (arch_wants_pte_order())
-> and 0. Correct? For arm64 at least, I would like the VMA's THP hint to be a
-> factor in determining the preferred order (see patches 8 and 9). So I would add
-> a vma parameter to arch_wants_pte_order() to allow for this.
-> 
-> For the case where the THP hint is present, then the arch will request 2M (if
-> the page size is 16K or 64K). If that fails to allocate, there is still value in
-> allocating a 64K folio (which is order 2 in the 16K case). Without the retry
-> with intermediate orders logic, we would not get this.
-> 
-> We can't just blindly allocate a folio of arch_wants_pte_order() size because it
-> might overlap with existing populated PTEs, or cross the bounds of the VMA (or a
-> number of other things - see calc_anon_folio_order_alloc() in patch 10). Are you
-> implying that if there is any kind of issue like this, then we should go
-> directly to order 0? I can kind of see the argument from a minimizing
-> fragmentation perspective, but for best possible performance I think we are
-> better off "packing the bin" with intermediate orders.
-
-One drawback of the retry is that it could introduce large tail latency (by
-memory zeroing, memory reclaiming or existing populated PTEs). That may not
-be appreciated by some applications. Thanks.
+> Signed-off-by: Ryan Roberts <ryan.roberts@arm.com>
+Reviewed-by: Yin Fengwei <fengwei.yin@intel.com>
 
 
 Regards
 Yin, Fengwei
 
+> ---
+>  mm/rmap.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> You're also implying that a runtime arch_wants_pte_order() function is better
-> than the Kconfig stuff I did in patch 8. On reflection, I agree with you here. I
-> think you mentioned that AMD supports coalescing 8 pages on some CPUs - so you
-> would probably want runtime logic to determine if you are on an appropriate AMD
-> CPU as part of the decision in that function?
-> 
-> The real reason for the existance of try_vma_alloc_movable_folio() is that I'm
-> reusing it on the other fault paths (which are no longer part of this series).
-> But I guess that's not a good reason to keep this until we get to those patches.
+> diff --git a/mm/rmap.c b/mm/rmap.c
+> index ac1d93d43f2b..3d11c5fb6090 100644
+> --- a/mm/rmap.c
+> +++ b/mm/rmap.c
+> @@ -1567,7 +1567,7 @@ void page_remove_rmap(struct page *page, struct vm_area_struct *vma,
+>  		 * page of the folio is unmapped and at least one page
+>  		 * is still mapped.
+>  		 */
+> -		if (folio_test_pmd_mappable(folio) && folio_test_anon(folio))
+> +		if (folio_test_large(folio) && folio_test_anon(folio))
+>  			if (!compound || nr < nr_pmdmapped)
+>  				deferred_split_folio(folio);
+>  	}
