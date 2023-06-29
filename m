@@ -1,101 +1,187 @@
-From: "Arnd Bergmann" <arnd@arndb.de>
-Subject: Re: [PATCH 00/12] arch,fbdev: Move screen_info into arch/
-Date: Thu, 29 Jun 2023 16:42:42 +0200
-Message-ID: <ce4ddce0-ceea-426c-b348-d22468d7c402@app.fastmail.com>
-References: <20230629121952.10559-1-tzimmermann@suse.de>
- <4d711508-c299-49f2-8691-e75d68f2485e@app.fastmail.com>
- <f9185435-74bb-a325-8fe6-3beb51a66e0a@suse.de>
+From: Ryan Roberts <ryan.roberts@arm.com>
+Subject: Re: [PATCH v1 00/10] variable-order, large folios for anonymous
+ memory
+Date: Thu, 29 Jun 2023 16:28:16 +0100
+Message-ID: <7ed253e7-7245-32bc-e5ac-6d037b711b49@arm.com>
+References: <20230626171430.3167004-1-ryan.roberts@arm.com>
+ <CAOUHufaUTbUw9MTzw8D=sVrEB+RP6LSBQVGn93TWk=ozV8XobA@mail.gmail.com>
+ <CAOUHufa0S_ayrys0XzDbH8KJi5HxvbGCh_bSAhDpAgcmSJjFUQ@mail.gmail.com>
+ <1fb0c4cb-a709-de20-d643-32ed43550059@arm.com>
+ <CAOUHufbtNPkdktjt_5qM45GegVO-rCFOMkSh0HQminQ12zsV8Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:Subject:Cc:To:From:Date:References:
-	In-Reply-To:Message-Id:Mime-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=GEM6r21sC2BoiZj7euPmUn+HDBNnR5OKeyfcBfy3wjg=; b=1W1FSC5wvtKhCo
-	JyYCu5rlpVPcQRd5+cLHe3gzqp4o1VQh94DqmktxVYAwTpXqBBFvTIkhbZWxt6FRU0T2i8Hdz5M03
-	1v+bhZaZvulxQcUcmQu1MXqK7W6rloKGrFBfduF52wPeeRrm4TMK/MrqXXscISOImss8E3gaSb3ab
-	3CiqHvo8Dti5Bn/iCcGYbgqmzYawBHhCaWfbxJSqUHeUUrTSO/v+0sqHj1fEO0xxVTT8RpZz5SmH6
-	AG2Fx2+8LpbVV0a0rzyqdNjiM+dTEk4VkiIJkiHQZhmJzaSsKnuvmMqdWhQWg2TiEfEbxdYOK6afC
-	88N8x+w2O4mDZSaJBeUw==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm1; t=1688049783; x=1688056983; bh=tH
-	SCuJbmuJlT+unyX4wdwm35F06LE8SCy+Og6X/m9DI=; b=FV9nO/j/Xdm5cnG6UB
-	sO9u8qjWkG4zOqKUhXnhJ2RYfN1MZ3Kurqn85lEsJl7vkP5a/wdBWaFdfq4uSulg
-	eD/TXf6t4GqPVAoNus5HnjtbA1vX8VrBrjgri2vE0OiP2BSb5Sz/Pa2C0OcILLNa
-	uvFS7KDmA3Z+PSTaIcpOvOnZyAi2yVT1FzCqp7iRvA0LJt1+wRraHFLOR3jih5Cs
-	jATcgblkM7OGPteVBvXmW3paY0tjSC/B5Xw7fxmwX1f73RjswI9pT+zjkQRu+TqM
-	Zsrmd0IqOKzH2xm5FLjlXxLg/SYtjqX8WBuItuEotXdBlqMlSIKnBw9uSc0kSFc4
-	WB+Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm2; t=1688049783; x=1688056983; bh=tHSCuJbmuJlT+
-	unyX4wdwm35F06LE8SCy+Og6X/m9DI=; b=IEg6bOdqZ2fgoUmwXVc8pb/uyJ2CC
-	MOuLn/CZcijB/QkegFpO4zpbp2YYMXm7i7Fu54Datj1E0vkDR3DKgAUxo6z+GWk3
-	vXwluBuok2nikCjYscmpRjVF9aIs6Z3Xj7fdUsirXf+m9AdUwVoMNKOO0MYZ2R8w
-	hgGHbzL0Ar9zadbigZQorDDjOWkOiah/gEi8RJBLof77Nwpm9iJ+r3Tp7gQ7XU3u
-	cozoUBEjOyE8ENgbEKdyPutCHcAWlVtfgQdZBYVqqbmbh2K14vwZE6PMJ4Kx6p2+
-	/+OkyxEaQgOqymqPNrwdxRUuj9S7LqeMaozoifwtEIa8O5rZRMCvumLJw==
-In-Reply-To: <f9185435-74bb-a325-8fe6-3beb51a66e0a@suse.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Thomas Zimmermann <tzimmermann@suse.de>, Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>, Dave Airlie <airlied@gmail.com>
-Cc: Linux-Arch <linux-arch@vger.kernel.org>, linux-hyperv@vger.kernel.org, linux-efi@vger.kernel.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org, "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>, linux-mips@vger.kernel.org, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, loongarch@lists.linux.dev, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <CAOUHufbtNPkdktjt_5qM45GegVO-rCFOMkSh0HQminQ12zsV8Q@mail.gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+To: Yu Zhao <yuzhao@google.com>, Yin Fengwei <fengwei.yin@intel.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, David Hildenbrand <david@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
 
-On Thu, Jun 29, 2023, at 16:15, Thomas Zimmermann wrote:
-> Am 29.06.23 um 15:31 schrieb Arnd Bergmann:
->> On Thu, Jun 29, 2023, at 13:45, Thomas Zimmermann wrote:
->>> Future directions: with the patchset in place, it will become possible
->>> to provide screen_info and edid_info only if there are users. Some
->>> architectures do this by testing for CONFIG_VT, CONFIG_DUMMY_CONSOLE,
->>> etc. A more uniform approach would be nice. We should also attempt
->>> to minimize access to the global screen_info as much as possible. To
->>> do so, some drivers, such as efifb and vesafb, would require an update.
->>> The firmware's EDID data could possibly made available outside of fbdev.
->>> For example, the simpledrm and ofdrm drivers could provide such data
->>> to userspace compositors.
->> 
->> I suspect that most architectures that provide a screen_info only
->> have this in order to compile the framebuffer drivers, and provide
->> hardcoded data that does not even reflect any real hardware.
->
-> That's quite possible. Only x86's bootparam and EFI code sets 
-> screen_info from external data. The rest is hardcoded. A number of 
-> architectures protect screen_info with CONFIG_VT, CONFIG_DUMMY_CONSOLE, 
-> etc. In a later patchset, I wanted to change this such that these users 
-> of screen_info would enable the feature via select in their Kconfig.
->
-> Do you know the reason for this branch in dummycon:
->
-> https://elixir.bootlin.com/linux/v6.4/source/drivers/video/console/dummycon.c#L21
->
-> What is special about arm that dummycon uses the screeninfo?
+On 28/06/2023 19:22, Yu Zhao wrote:
+> On Tue, Jun 27, 2023 at 3:59 AM Ryan Roberts <ryan.roberts@arm.com> wrote:
+>>
+>> On 27/06/2023 08:49, Yu Zhao wrote:
+>>> On Mon, Jun 26, 2023 at 9:30 PM Yu Zhao <yuzhao@google.com> wrote:
+>>>>
+>>>> On Mon, Jun 26, 2023 at 11:14 AM Ryan Roberts <ryan.roberts@arm.com> wrote:
+>>>>>
+>>>>> Hi All,
+>>>>>
+>>>>> Following on from the previous RFCv2 [1], this series implements variable order,
+>>>>> large folios for anonymous memory. The objective of this is to improve
+>>>>> performance by allocating larger chunks of memory during anonymous page faults:
+>>>>>
+>>>>>  - Since SW (the kernel) is dealing with larger chunks of memory than base
+>>>>>    pages, there are efficiency savings to be had; fewer page faults, batched PTE
+>>>>>    and RMAP manipulation, fewer items on lists, etc. In short, we reduce kernel
+>>>>>    overhead. This should benefit all architectures.
+>>>>>  - Since we are now mapping physically contiguous chunks of memory, we can take
+>>>>>    advantage of HW TLB compression techniques. A reduction in TLB pressure
+>>>>>    speeds up kernel and user space. arm64 systems have 2 mechanisms to coalesce
+>>>>>    TLB entries; "the contiguous bit" (architectural) and HPA (uarch).
+>>>>>
+>>>>> This patch set deals with the SW side of things only and based on feedback from
+>>>>> the RFC, aims to be the most minimal initial change, upon which future
+>>>>> incremental changes can be added. For this reason, the new behaviour is hidden
+>>>>> behind a new Kconfig switch, CONFIG_LARGE_ANON_FOLIO, which is disabled by
+>>>>> default. Although the code has been refactored to parameterize the desired order
+>>>>> of the allocation, when the feature is disabled (by forcing the order to be
+>>>>> always 0) my performance tests measure no regression. So I'm hoping this will be
+>>>>> a suitable mechanism to allow incremental submissions to the kernel without
+>>>>> affecting the rest of the world.
+>>>>>
+>>>>> The patches are based on top of v6.4 plus Matthew Wilcox's set_ptes() series
+>>>>> [2], which is a hard dependency. I'm not sure of Matthew's exact plans for
+>>>>> getting that series into the kernel, but I'm hoping we can start the review
+>>>>> process on this patch set independently. I have a branch at [3].
+>>>>>
+>>>>> I've posted a separate series concerning the HW part (contpte mapping) for arm64
+>>>>> at [4].
+>>>>>
+>>>>>
+>>>>> Performance
+>>>>> -----------
+>>>>>
+>>>>> Below results show 2 benchmarks; kernel compilation and speedometer 2.0 (a
+>>>>> javascript benchmark running in Chromium). Both cases are running on Ampere
+>>>>> Altra with 1 NUMA node enabled, Ubuntu 22.04 and XFS filesystem. Each benchmark
+>>>>> is repeated 15 times over 5 reboots and averaged.
+>>>>>
+>>>>> All improvements are relative to baseline-4k. 'anonfolio-basic' is this series.
+>>>>> 'anonfolio' is the full patch set similar to the RFC with the additional changes
+>>>>> to the extra 3 fault paths. The rest of the configs are described at [4].
+>>>>>
+>>>>> Kernel Compilation (smaller is better):
+>>>>>
+>>>>> | kernel          |   real-time |   kern-time |   user-time |
+>>>>> |:----------------|------------:|------------:|------------:|
+>>>>> | baseline-4k     |        0.0% |        0.0% |        0.0% |
+>>>>> | anonfolio-basic |       -5.3% |      -42.9% |       -0.6% |
+>>>>> | anonfolio       |       -5.4% |      -46.0% |       -0.3% |
+>>>>> | contpte         |       -6.8% |      -45.7% |       -2.1% |
+>>>>> | exefolio        |       -8.4% |      -46.4% |       -3.7% |
+>>>>> | baseline-16k    |       -8.7% |      -49.2% |       -3.7% |
+>>>>> | baseline-64k    |      -10.5% |      -66.0% |       -3.5% |
+>>>>>
+>>>>> Speedometer 2.0 (bigger is better):
+>>>>>
+>>>>> | kernel          |   runs_per_min |
+>>>>> |:----------------|---------------:|
+>>>>> | baseline-4k     |           0.0% |
+>>>>> | anonfolio-basic |           0.7% |
+>>>>> | anonfolio       |           1.2% |
+>>>>> | contpte         |           3.1% |
+>>>>> | exefolio        |           4.2% |
+>>>>> | baseline-16k    |           5.3% |
+>>>>
+>>>> Thanks for pushing this forward!
+>>>>
+>>>>> Changes since RFCv2
+>>>>> -------------------
+>>>>>
+>>>>>   - Simplified series to bare minimum (on David Hildenbrand's advice)
+>>>>
+>>>> My impression is that this series still includes many pieces that can
+>>>> be split out and discussed separately with followup series.
+>>>>
+>>>> (I skipped 04/10 and will look at it tomorrow.)
+>>>
+>>> I went through the series twice. Here what I think a bare minimum
+>>> series (easier to review/debug/land) would look like:
+> 
+> ===
+> 
+>>> 1. a new arch specific function providing a prefered order within (0,
+>>> PMD_ORDER).
+>>> 2. an extended anon folio alloc API taking that order (02/10, partially).
+>>> 3. an updated folio_add_new_anon_rmap() covering the large() &&
+>>> !pmd_mappable() case (similar to 04/10).
+>>> 4. s/folio_test_pmd_mappable/folio_test_large/ in page_remove_rmap()
+>>> (06/10, reviewed-by provided).
+>>> 5. finally, use the extended anon folio alloc API with the arch
+>>> preferred order in do_anonymous_page() (10/10, partially).
+> 
+> ===
+> 
+>>> The rest can be split out into separate series and move forward in
+>>> parallel with probably a long list of things we need/want to do.
+>>
+>> Thanks for the fadt review - I really appreciate it!
+>>
+>> I've responded to many of your comments. I'd appreciate if we can close those
+>> points then I will work up a v2.
+> 
+> Thanks!
+> 
+> Based on the latest discussion here [1], my original list above can be
+> optionally reduced to 4 patches: item 2 can be quashed into item 5.
+> 
+> Also please make sure we have only one global (apply to all archs)
+> Kconfig option, and it should be added in item 5:
+> 
+>   if TRANSPARENT_HUGEPAGE
+>     config FLEXIBLE/VARIABLE_THP # or whatever name you see fit
+>   end if
 
-I can only guess myself, but I see that the values are only ever
-set from the old ATAGS data, and not from DT on any of the
-modern ones, and my interpretation is that this is meant to
-match whatever the vga console was set to on the three
-platforms that support vgacon.
- 
-I see this was added in linux-2.1.111, just before the
-corresponding sparc specific hack was removed, but I don't have
-patch descriptions from that era. Russell might remember, or know
-if that is actually still needed.
+Naming is always the hardest part. I've been calling it LARGE_ANON_FOLIO up
+until now. But I think you are right that we should show that it is related to
+THP, so I'll go with FLEXIBLE_THP for v2, and let people shout if they hate it.
 
-   Arnd
+If we are not letting the arch declare that it supports FLEXIBLE_THP, then I
+think we need the default version of arch_wants_pte_order() to return a value
+higher than 0 (which is what I have it returning at the moment). Because
+otherwise, for an arch that hasn't defined its own version of
+arch_wants_pte_order(), FLEXIBLE_THP on vs off will give the same result. So I
+propose to set the default to ilog2(SZ_64K >> PAGE_SHIFT). Shout if you have any
+concerns.
+
+> 
+> (How many new Kconfig options added within arch/arm64/ is not a concern of MM.)
+> 
+> And please make sure it's disabled by default,
+
+Done
+
+ because we are still
+> missing many important functions, e.g., I don't think we can mlock()
+> when large() && !pmd_mappable(), see mlock_pte_range() and
+> mlock_vma_folio(). We can fix it along with many things later, but we
+> need to present a plan and a schedule now. Otherwise, there would be
+> pushback if we try to land the series without supporting mlock().
+
+There are other areas that I'm aware off. I'll put together a table and send it
+out once I have v2 out the door (hopefully tomorrow or Monday). Hopefully we can
+work together to fill it in and figure out who can do what? I'm certainly
+planning to continue to push this work forwards beyond this initial patch set.
+
+Thanks,
+Ryan
+
+> 
+> Do you or Fengwei plan to take on it? (I personally don't.) If not,
+> I'll try to find someone from our team to look at it. (It'd be more
+> scalable if we have a coordinated group of people individually solving
+> different problems.)
+> 
+> [1] https://lore.kernel.org/r/b2c81404-67df-f841-ef02-919e841f49f2@arm.com/
+
