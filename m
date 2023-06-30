@@ -1,359 +1,40 @@
-From: Yang Shi <shy828301@gmail.com>
-Subject: Re: [PATCH v1 10/10] mm: Allocate large folios for anonymous memory
-Date: Thu, 29 Jun 2023 10:05:26 -0700
-Message-ID: <CAHbLzkqKSoncVUqj7vY-Yt6H5=x-uLfDNJhRSRssGK5sKu5Ckg@mail.gmail.com>
-References: <20230626171430.3167004-1-ryan.roberts@arm.com>
- <20230626171430.3167004-11-ryan.roberts@arm.com> <CAHbLzkoZf=5PLrC0HNT4Owy=xM4HfA9HDjdCHC+h5RYXUwp0gw@mail.gmail.com>
- <bfd1de51-d445-5861-f69f-13d740651f8e@arm.com>
+From: Namhyung Kim <namhyung@kernel.org>
+Subject: Re: [PATCH] syscalls: Cleanup references to sys_lookup_dcookie()
+Date: Thu, 29 Jun 2023 22:33:51 -0700
+Message-ID: <CAM9d7ch0GtTUjhtbph5rmCDvRBAKjLCN+25mukn_QPv4bDsjGQ@mail.gmail.com>
+References: <20230628230935.1196180-1-sohil.mehta@intel.com> <08e273fc-49c5-dd09-1c9e-d85a080767f9@infradead.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1688058339; x=1690650339;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZS1h+GLsux7NMVsZtF2S2RchX2UslLK1KYof85n+JhM=;
-        b=bG0qwUOqWDPE+kRS2qLCQY6nlFST2gYe0VXrsvsG+6YmDFnsDxlbpYErzclQdtyfpx
-         AcYxR1lGeJu17F6rGiZeJ03nN3yxh/NsKmMd9D3LNsiQLyn+5o8a4y188zAE7KtNbEqu
-         xYxodMxtyPBMUQemobiJdnEnpDR3a7aEx639VY4SkntkNJG4Vx6JKsf3BuR4lIo0VkRU
-         i5aJ7zIuzoct9EIb+tLnJXdE2Ys4/UfTfPvjimgM1Jt4QeHNX6OCjfa9Qh2Jbl3joIT5
-         WAw1bVfqpzf2WHwIO7tQFsgG3Euir3haadRHKKaEQGf/xpPYVRsRyuMx3Wg9rAr+rW4v
-         Fz/A==
-In-Reply-To: <bfd1de51-d445-5861-f69f-13d740651f8e@arm.com>
+In-Reply-To: <08e273fc-49c5-dd09-1c9e-d85a080767f9@infradead.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
-To: Ryan Roberts <ryan.roberts@arm.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Yin Fengwei <fengwei.yin@intel.com>, David Hildenbrand <david@redhat.com>, Yu Zhao <yuzhao@google.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger
+Content-Type: text/plain; charset="windows-1252"
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Sohil Mehta <sohil.mehta@intel.com>, Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <>
 
-On Thu, Jun 29, 2023 at 4:30=E2=80=AFAM Ryan Roberts <ryan.roberts@arm.com>=
- wrote:
+Hello,
+
+On Wed, Jun 28, 2023 at 4:44=E2=80=AFPM Randy Dunlap <rdunlap@infradead.org=
+> wrote:
 >
-> On 29/06/2023 03:13, Yang Shi wrote:
-> > On Mon, Jun 26, 2023 at 10:15=E2=80=AFAM Ryan Roberts <ryan.roberts@arm=
-.com> wrote:
-> >>
-> >> With all of the enabler patches in place, modify the anonymous memory
-> >> write allocation path so that it opportunistically attempts to allocat=
-e
-> >> a large folio up to `max_anon_folio_order()` size (This value is
-> >> ultimately configured by the architecture). This reduces the number of
-> >> page faults, reduces the size of (e.g. LRU) lists, and generally
-> >> improves performance by batching what were per-page operations into
-> >> per-(large)-folio operations.
-> >>
-> >> If CONFIG_LARGE_ANON_FOLIO is not enabled (the default) then
-> >> `max_anon_folio_order()` always returns 0, meaning we get the existing
-> >> allocation behaviour.
-> >>
-> >> Signed-off-by: Ryan Roberts <ryan.roberts@arm.com>
-> >> ---
-> >>  mm/memory.c | 159 +++++++++++++++++++++++++++++++++++++++++++++++----=
--
-> >>  1 file changed, 144 insertions(+), 15 deletions(-)
-> >>
-> >> diff --git a/mm/memory.c b/mm/memory.c
-> >> index a8f7e2b28d7a..d23c44cc5092 100644
-> >> --- a/mm/memory.c
-> >> +++ b/mm/memory.c
-> >> @@ -3161,6 +3161,90 @@ static inline int max_anon_folio_order(struct v=
-m_area_struct *vma)
-> >>                 return CONFIG_LARGE_ANON_FOLIO_NOTHP_ORDER_MAX;
-> >>  }
-> >>
-> >> +/*
-> >> + * Returns index of first pte that is not none, or nr if all are none=
-.
-> >> + */
-> >> +static inline int check_ptes_none(pte_t *pte, int nr)
-> >> +{
-> >> +       int i;
-> >> +
-> >> +       for (i =3D 0; i < nr; i++) {
-> >> +               if (!pte_none(ptep_get(pte++)))
-> >> +                       return i;
-> >> +       }
-> >> +
-> >> +       return nr;
-> >> +}
-> >> +
-> >> +static int calc_anon_folio_order_alloc(struct vm_fault *vmf, int orde=
-r)
-> >> +{
-> >> +       /*
-> >> +        * The aim here is to determine what size of folio we should a=
-llocate
-> >> +        * for this fault. Factors include:
-> >> +        * - Order must not be higher than `order` upon entry
-> >> +        * - Folio must be naturally aligned within VA space
-> >> +        * - Folio must not breach boundaries of vma
-> >> +        * - Folio must be fully contained inside one pmd entry
-> >> +        * - Folio must not overlap any non-none ptes
-> >> +        *
-> >> +        * Additionally, we do not allow order-1 since this breaks ass=
-umptions
-> >> +        * elsewhere in the mm; THP pages must be at least order-2 (si=
-nce they
-> >> +        * store state up to the 3rd struct page subpage), and these p=
-ages must
-> >> +        * be THP in order to correctly use pre-existing THP infrastru=
-cture such
-> >> +        * as folio_split().
-> >> +        *
-> >> +        * As a consequence of relying on the THP infrastructure, if t=
-he system
-> >> +        * does not support THP, we always fallback to order-0.
-> >> +        *
-> >> +        * Note that the caller may or may not choose to lock the pte.=
- If
-> >> +        * unlocked, the calculation should be considered an estimate =
-that will
-> >> +        * need to be validated under the lock.
-> >> +        */
-> >> +
-> >> +       struct vm_area_struct *vma =3D vmf->vma;
-> >> +       int nr;
-> >> +       unsigned long addr;
-> >> +       pte_t *pte;
-> >> +       pte_t *first_set =3D NULL;
-> >> +       int ret;
-> >> +
-> >> +       if (has_transparent_hugepage()) {
-> >> +               order =3D min(order, PMD_SHIFT - PAGE_SHIFT);
-> >> +
-> >> +               for (; order > 1; order--) {
-> >> +                       nr =3D 1 << order;
-> >> +                       addr =3D ALIGN_DOWN(vmf->address, nr << PAGE_S=
-HIFT);
-> >> +                       pte =3D vmf->pte - ((vmf->address - addr) >> P=
-AGE_SHIFT);
-> >> +
-> >> +                       /* Check vma bounds. */
-> >> +                       if (addr < vma->vm_start ||
-> >> +                           addr + (nr << PAGE_SHIFT) > vma->vm_end)
-> >> +                               continue;
-> >> +
-> >> +                       /* Ptes covered by order already known to be n=
-one. */
-> >> +                       if (pte + nr <=3D first_set)
-> >> +                               break;
-> >> +
-> >> +                       /* Already found set pte in range covered by o=
-rder. */
-> >> +                       if (pte <=3D first_set)
-> >> +                               continue;
-> >> +
-> >> +                       /* Need to check if all the ptes are none. */
-> >> +                       ret =3D check_ptes_none(pte, nr);
-> >> +                       if (ret =3D=3D nr)
-> >> +                               break;
-> >> +
-> >> +                       first_set =3D pte + ret;
-> >> +               }
-> >> +
-> >> +               if (order =3D=3D 1)
-> >> +                       order =3D 0;
-> >> +       } else
-> >> +               order =3D 0;
-> >> +
-> >> +       return order;
-> >> +}
-> >> +
-> >>  /*
-> >>   * Handle write page faults for pages that can be reused in the curre=
-nt vma
-> >>   *
-> >> @@ -4201,6 +4285,9 @@ static vm_fault_t do_anonymous_page(struct vm_fa=
-ult *vmf)
-> >>         struct folio *folio;
-> >>         vm_fault_t ret =3D 0;
-> >>         pte_t entry;
-> >> +       unsigned long addr;
-> >> +       int order =3D uffd_wp ? 0 : max_anon_folio_order(vma);
-> >> +       int pgcount =3D BIT(order);
-> >>
-> >>         /* File mapping without ->vm_ops ? */
-> >>         if (vma->vm_flags & VM_SHARED)
-> >> @@ -4242,24 +4329,44 @@ static vm_fault_t do_anonymous_page(struct vm_=
-fault *vmf)
-> >>                         pte_unmap_unlock(vmf->pte, vmf->ptl);
-> >>                         return handle_userfault(vmf, VM_UFFD_MISSING);
-> >>                 }
-> >> -               goto setpte;
-> >> +               if (uffd_wp)
-> >> +                       entry =3D pte_mkuffd_wp(entry);
-> >> +               set_pte_at(vma->vm_mm, vmf->address, vmf->pte, entry);
-> >> +
-> >> +               /* No need to invalidate - it was non-present before *=
-/
-> >> +               update_mmu_cache(vma, vmf->address, vmf->pte);
-> >> +               goto unlock;
-> >>         }
-> >>
-> >> -       /* Allocate our own private page. */
-> >> +retry:
-> >> +       /*
-> >> +        * Estimate the folio order to allocate. We are not under the =
-ptl here
-> >> +        * so this estiamte needs to be re-checked later once we have =
-the lock.
-> >> +        */
-> >> +       vmf->pte =3D pte_offset_map(vmf->pmd, vmf->address);
-> >> +       order =3D calc_anon_folio_order_alloc(vmf, order);
-> >> +       pte_unmap(vmf->pte);
-> >> +
-> >> +       /* Allocate our own private folio. */
-> >>         if (unlikely(anon_vma_prepare(vma)))
-> >>                 goto oom;
-> >> -       folio =3D vma_alloc_zeroed_movable_folio(vma, vmf->address, 0,=
- 0);
-> >> +       folio =3D try_vma_alloc_movable_folio(vma, vmf->address, order=
-, true);
-> >>         if (!folio)
-> >>                 goto oom;
-> >>
-> >> +       /* We may have been granted less than we asked for. */
-> >> +       order =3D folio_order(folio);
-> >> +       pgcount =3D BIT(order);
-> >> +       addr =3D ALIGN_DOWN(vmf->address, pgcount << PAGE_SHIFT);
-> >> +
-> >>         if (mem_cgroup_charge(folio, vma->vm_mm, GFP_KERNEL))
-> >>                 goto oom_free_page;
-> >>         folio_throttle_swaprate(folio, GFP_KERNEL);
-> >>
-> >>         /*
-> >>          * The memory barrier inside __folio_mark_uptodate makes sure =
-that
-> >> -        * preceding stores to the page contents become visible before
-> >> -        * the set_pte_at() write.
-> >> +        * preceding stores to the folio contents become visible befor=
-e
-> >> +        * the set_ptes() write.
-> >>          */
-> >>         __folio_mark_uptodate(folio);
-> >>
-> >> @@ -4268,11 +4375,31 @@ static vm_fault_t do_anonymous_page(struct vm_=
-fault *vmf)
-> >>         if (vma->vm_flags & VM_WRITE)
-> >>                 entry =3D pte_mkwrite(pte_mkdirty(entry));
-> >>
-> >> -       vmf->pte =3D pte_offset_map_lock(vma->vm_mm, vmf->pmd, vmf->ad=
-dress,
-> >> -                       &vmf->ptl);
-> >> -       if (vmf_pte_changed(vmf)) {
-> >> -               update_mmu_tlb(vma, vmf->address, vmf->pte);
-> >> -               goto release;
-> >> +       vmf->pte =3D pte_offset_map_lock(vma->vm_mm, vmf->pmd, addr, &=
-vmf->ptl);
-> >> +
-> >> +       /*
-> >> +        * Ensure our estimate above is still correct; we could have r=
-aced with
-> >> +        * another thread to service a fault in the region.
-> >> +        */
-> >> +       if (order =3D=3D 0) {
-> >> +               if (vmf_pte_changed(vmf)) {
-> >> +                       update_mmu_tlb(vma, vmf->address, vmf->pte);
-> >> +                       goto release;
-> >> +               }
-> >> +       } else if (check_ptes_none(vmf->pte, pgcount) !=3D pgcount) {
-> >> +               pte_t *pte =3D vmf->pte + ((vmf->address - addr) >> PA=
-GE_SHIFT);
-> >> +
-> >> +               /* If faulting pte was allocated by another, exit earl=
-y. */
-> >> +               if (!pte_none(ptep_get(pte))) {
-> >> +                       update_mmu_tlb(vma, vmf->address, pte);
-> >> +                       goto release;
-> >> +               }
-> >> +
-> >> +               /* Else try again, with a lower order. */
-> >> +               pte_unmap_unlock(vmf->pte, vmf->ptl);
-> >> +               folio_put(folio);
-> >> +               order--;
-> >> +               goto retry;
+>
+>
+> On 6/28/23 16:09, Sohil Mehta wrote:
+> > commit 'be65de6b03aa ("fs: Remove dcookies support")' removed the
+> > syscall definition for lookup_dcookie.  However, syscall tables still
+> > point to the old sys_lookup_dcookie() definition. Update syscall tables
+> > of all architectures to directly point to sys_ni_syscall() instead.
 > >
-> > I'm not sure whether this extra fallback logic is worth it or not. Do
-> > you have any benchmark data or is it just an arbitrary design choice?
-> > If it is just an arbitrary design choice, I'd like to go with the
-> > simplest way by just exiting page fault handler, just like the
-> > order-0, IMHO.
+> > Signed-off-by: Sohil Mehta <sohil.mehta@intel.com>
 >
-> Yes, its an arbitrary design choice. Based on Yu Zhao's feedback, I'm alr=
-eady
-> reworking this so that we only try the preferred order and order-0, so no=
- longer
-> iterating through intermediate orders.
->
-> I think what you are suggesting is that if attempting to allocate the pre=
-ferred
-> order and we find there was a race meaning that the folio now is overlapp=
-ing
-> populated ptes (but the faulting pte is still empty), just exit and rely =
-on the
-> page fault being re-triggered, rather than immediately falling back to or=
-der-0?
+> Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
 
-The faulting PTE might be filled too. Yes, just exit and rely on the
-CPU re-trigger page fault.
+I was about to say that it'd be nice if you split the tools/perf part
+since it can support old kernels.  But if the syscall is only used for
+oprofile then probably perf doesn't need to care about it. :)
 
->
-> The reason I didn't do that was I wasn't sure if the return path might ha=
-ve
-> assumptions that the faulting pte is now valid if no error was returned? =
-I guess
-> another option is to return VM_FAULT_RETRY but then it seemed cleaner to =
-do the
-> retry directly here. What do you suggest?
+For the perf part,
+Acked-by: Namhyung Kim <namhyung@kernel.org>
 
-IIRC as long as the page fault handler doesn't return any error, it is
-safe to rely on CPU re-trigger page fault if PTE is not installed.
-
-VM_FAULT_RETRY means the page fault handler released mmap_lock (or
-per-VMA lock with per-VMA lock enabled) due to waiting for page lock.
-TBH I really don't want to make that semantic more complicated and
-overloaded. And I don't see any fundamental difference between
-vmf_pte_changed() for order-0 folio and overlapping PTEs installed for
-large folio. So I'd like to follow the same behavior.
-
->
-> Thanks,
-> Ryan
->
->
->
-> >
-> >>         }
-> >>
-> >>         ret =3D check_stable_address_space(vma->vm_mm);
-> >> @@ -4286,16 +4413,18 @@ static vm_fault_t do_anonymous_page(struct vm_=
-fault *vmf)
-> >>                 return handle_userfault(vmf, VM_UFFD_MISSING);
-> >>         }
-> >>
-> >> -       inc_mm_counter(vma->vm_mm, MM_ANONPAGES);
-> >> -       folio_add_new_anon_rmap(folio, vma, vmf->address);
-> >> +       folio_ref_add(folio, pgcount - 1);
-> >> +
-> >> +       add_mm_counter(vma->vm_mm, MM_ANONPAGES, pgcount);
-> >> +       folio_add_new_anon_rmap_range(folio, &folio->page, pgcount, vm=
-a, addr);
-> >>         folio_add_lru_vma(folio, vma);
-> >> -setpte:
-> >> +
-> >>         if (uffd_wp)
-> >>                 entry =3D pte_mkuffd_wp(entry);
-> >> -       set_pte_at(vma->vm_mm, vmf->address, vmf->pte, entry);
-> >> +       set_ptes(vma->vm_mm, addr, vmf->pte, entry, pgcount);
-> >>
-> >>         /* No need to invalidate - it was non-present before */
-> >> -       update_mmu_cache(vma, vmf->address, vmf->pte);
-> >> +       update_mmu_cache_range(vma, addr, vmf->pte, pgcount);
-> >>  unlock:
-> >>         pte_unmap_unlock(vmf->pte, vmf->ptl);
-> >>         return ret;
-> >> --
-> >> 2.25.1
-> >>
-> >>
->
+Thanks,
+Namhyung
