@@ -1,224 +1,233 @@
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Subject: Re: [PATCH 07/12] arch/x86: Declare edid_info in <asm/screen_info.h>
-Date: Wed, 5 Jul 2023 10:18:18 +0200
-Message-ID: <150c0fa2-bff2-0644-d6e5-c4dab7f79048@suse.de>
-References: <20230629121952.10559-1-tzimmermann@suse.de>
- <20230629121952.10559-8-tzimmermann@suse.de>
- <80e3a583-805e-4e8f-a67b-ebe2e4b9a7e5@app.fastmail.com>
- <d3de124c-6aa8-e930-e238-7bd6dd7929a6@suse.de>
- <0dbbdfc4-0e91-4be4-9ca0-d8ba6f18453d@app.fastmail.com>
- <ef7b3899-7d18-8018-47fa-aac0efaa61f4@suse.de>
- <dd5aa01e-afad-48d2-bf4c-4a58b74f1644@app.fastmail.com>
+From: Arnd Bergmann <arnd@kernel.org>
+Subject: [PATCH 1/3] vgacon: rework screen_info #ifdef checks
+Date: Fri,  7 Jul 2023 11:50:38 +0200
+Message-ID: <20230707095144.1378789-1-arnd@kernel.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4293263117161621374=="
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:Content-Type:
-	List-Subscribe:List-Help:List-Post:List-Archive:List-Unsubscribe:List-Id:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-	Reply-To:Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date
-	:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Owner;
-	bh=Gg6Nu+w+e0mD9sUe+YV/T7XH2ikc+PC6duHA/FHG+ds=; b=kJUFhpM9RU6mJEoSY6LnAaAesO
-	oVX61OlONc10xtdZxngxNgdO+gE35b/5qx9ZNrW+ITt68BmsibKcE7JFNCaIejzKsqAYUCVAmb/JY
-	0YaDp7uIP3ByKKQSwojORUDbF4EH8oNsa/a5a2nTK8rh7yvItXaXonNwa43InF++mIoKZtd9Rkv+Q
-	q5LLamKLVPZCca45sXLDr9c9c7YTFeHJzpdPmNzxowkEzZcovO6yIcYNurTU66la1vvjliTZHonj9
-	1voJ0aXp0YenkF72FAh6f5vLISOsvtBuN1d5rdOPwbv1xCpa/C78oZ21gNLBy4R7gBwurrV/JmJnC
-	wycEsZ7Q==;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1688545100; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=W4UNbanusOFxqm7hkNbMAuWfI8njzbZ+1xH+95ErApk=;
-	b=f1m05wOooggnusYApEllJA4DHXKKKu62i1rkKSNolG6RSiDRMKyS6d2VnsKHmZ8xzEctgP
-	2uFR9SUawf/L7AX58ys1K0ADYPqUxnoHpg1XHgDcVjhPphPABiv3BNAKFSe9wj6pbNGgEY
-	29iqc7Q/KqHfbr7HBz8cCkvPeICaCO8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1688545100;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=W4UNbanusOFxqm7hkNbMAuWfI8njzbZ+1xH+95ErApk=;
-	b=gtb/O4Zal0aHIFkUGIjHzs3Xs2V7RNCILA5sbQaaw7ZE4XgZbEe5tDa00OtkRXs35FPUwp
-	QCeM4ulI7ec97LAw==
-Content-Language: en-US
-In-Reply-To: <dd5aa01e-afad-48d2-bf4c-4a58b74f1644@app.fastmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-To: Arnd Bergmann <arnd@arndb.de>, Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>, Dave Airlie <airlied@gmail.com>
-Cc: linux-hyperv@vger.kernel.org, linux-efi@vger.kernel.org, linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Dave Hansen <dave.hansen@linux.intel.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Ard Biesheuvel <ardb@kernel.org>, Linux-Arch <linux-arch@vger.kernel.org>, linux-hexagon@vger.kernel.org, linux-staging@lists.linux.dev, "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>, Ingo Molnar <mingo@redhat.com>, Sami Tolvanen <samitolvanen@google.com>, Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>, Frederic Weisbecker <frederic@kernel.org>, Nicholas Piggin <npiggin@gmail.com>, Borislav Petkov <bp@alien8.de>, loongarch@lists.linux.dev, Thomas Gleixner <tgl>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---===============4293263117161621374==
-Content-Language: en-US
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------2k3MbKSxf2z9hgV165j2f9MP"
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------2k3MbKSxf2z9hgV165j2f9MP
-Content-Type: multipart/mixed; boundary="------------9nOsvmrIChEQyu9JM4jWfbbm";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Arnd Bergmann <arnd@arndb.de>, Helge Deller <deller@gmx.de>,
- Daniel Vetter <daniel@ffwll.ch>, Dave Airlie <airlied@gmail.com>
-Cc: linux-hyperv@vger.kernel.org, linux-efi@vger.kernel.org,
- linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org,
- Peter Zijlstra <peterz@infradead.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, linux-fbdev@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org,
- linux-riscv@lists.infradead.org, Ard Biesheuvel <ardb@kernel.org>,
- Linux-Arch <linux-arch@vger.kernel.org>, linux-hexagon@vger.kernel.org,
- linux-staging@lists.linux.dev,
- "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>,
- Ingo Molnar <mingo@redhat.com>, Sami Tolvanen <samitolvanen@google.com>,
- Kees Cook <keescook@chromium.org>, "Paul E. McKenney" <paulmck@kernel.org>,
- Frederic Weisbecker <frederic@kernel.org>,
- Nicholas Piggin <npiggin@gmail.com>, Borislav Petkov <bp@alien8.de>,
- loongarch@lists.linux.dev, Thomas Gleixner <tglx@linutronix.de>,
- linux-arm-kernel@lists.infradead.org, x86@kernel.org,
- linux-kernel@vger.kernel.org, Juerg Haefliger
- <juerg.haefliger@canonical.com>, linux-alpha@vger.kernel.org,
- Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org
-Message-ID: <150c0fa2-bff2-0644-d6e5-c4dab7f79048@suse.de>
-Subject: Re: [PATCH 07/12] arch/x86: Declare edid_info in <asm/screen_info.h>
-References: <20230629121952.10559-1-tzimmermann@suse.de>
- <20230629121952.10559-8-tzimmermann@suse.de>
- <80e3a583-805e-4e8f-a67b-ebe2e4b9a7e5@app.fastmail.com>
- <d3de124c-6aa8-e930-e238-7bd6dd7929a6@suse.de>
- <0dbbdfc4-0e91-4be4-9ca0-d8ba6f18453d@app.fastmail.com>
- <ef7b3899-7d18-8018-47fa-aac0efaa61f4@suse.de>
- <dd5aa01e-afad-48d2-bf4c-4a58b74f1644@app.fastmail.com>
-In-Reply-To: <dd5aa01e-afad-48d2-bf4c-4a58b74f1644@app.fastmail.com>
-
---------------9nOsvmrIChEQyu9JM4jWfbbm
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
-
-SGkgQXJuZA0KDQpBbSAzMC4wNi4yMyB1bSAxMzo1MyBzY2hyaWViIEFybmQgQmVyZ21hbm46
-DQo+IE9uIEZyaSwgSnVuIDMwLCAyMDIzLCBhdCAwOTo0NiwgVGhvbWFzIFppbW1lcm1hbm4g
-d3JvdGU6DQo+PiBBbSAyOS4wNi4yMyB1bSAxNToyMSBzY2hyaWViIEFybmQgQmVyZ21hbm46
-DQo+Pj4gT24gVGh1LCBKdW4gMjksIDIwMjMsIGF0IDE1OjAxLCBUaG9tYXMgWmltbWVybWFu
-biB3cm90ZToNCj4+Pj4gQW0gMjkuMDYuMjMgdW0gMTQ6MzUgc2NocmllYiBBcm5kIEJlcmdt
-YW5uOg0KPj4+Pj4gT24gVGh1LCBKdW4gMjksIDIwMjMsIGF0IDEzOjQ1LCBUaG9tYXMgWmlt
-bWVybWFubiB3cm90ZToNCj4+DQo+Pj4+DQo+Pj4+IEZJUk1XQVJFX0VESUQgaXMgYSB1c2Vy
-LXNlbGVjdGFibGUgZmVhdHVyZSwgd2hpbGUgQVJDSF9IQVNfRURJRF9JTkZPDQo+Pj4+IGFu
-bm91bmNlcyBhbiBhcmNoaXRlY3R1cmUgZmVhdHVyZS4gVGhleSBkbyBkaWZmZXJlbnQgdGhp
-bmdzLg0KPj4+DQo+Pj4gSSBzdGlsbCBoYXZlIHRyb3VibGUgc2VlaW5nIHRoZSBkaWZmZXJl
-bmNlLg0KPj4NCj4+IFRoZSBpZGVhIGhlcmUgaXMgdGhhdCBBUkNIX0hBU18gc2lnbmFscyB0
-aGUgYXJjaGl0ZWN0dXJlJ3Mgc3VwcG9ydCBmb3INCj4+IHRoZSBmZWF0dXJlLiAgRHJpdmVy
-cyBzZXQgJ2RlcGVuZHMgb24nIGluIHRoZWlyIEtjb25maWcuDQo+Pg0KPj4gQW5vdGhlciBL
-Y29uZmlnIHRva2VuLCBWSURFT19TQ1JFRU5fSU5GTyBvciBGSVJNV0FSRV9FRElELCB3b3Vs
-ZCB0aGVuDQo+PiBhY3R1YWxseSBlbmFibGUgdGhlIGZlYXR1cmUuICBEcml2ZXJzIHNlbGVj
-dCBWSURFT19TQ1JFRU5fSU5GTyBvcg0KPj4gRklSTVdBUkVfRURJRCBhbmQgdGhlIGFyY2hp
-dGVjdHVyZXMgY29udGFpbnMgY29kZSBsaWtlDQo+IA0KPiBGYWlyIGVub3VnaC4gSW4gdGhh
-dCBjYXNlLCBJIGd1ZXNzIEZJUk1XQVJFX0VESUQgd2lsbCBqdXN0IGRlcGVuZCBvbg0KPiBB
-UkNIX0hBU19FRElEX0lORk8sIG9yIHBvc3NpYmx5ICJkZXBlbmRzIG9uIEZJUk1XQVJFX0VE
-SUQgfHwgRUZJIg0KPiBhZnRlciBpdCBzdGFydHMgY2FsbGluZyBpbnRvIGFuIEVGSSBzcGVj
-aWZpYyBmdW5jdGlvbiwgcmlnaHQ/DQo+IA0KPj4gI2lmZGVmIFZJREVPX1NDUkVFTl9JTkZP
-DQo+PiBzdHJ1Y3Qgc2NyZWVuX2luZm8gc2NyZWVuX2luZm8gPSB7DQo+PiAJLyogc2V0IHZh
-bHVlcyBoZXJlICovDQo+PiB9DQo+PiAjZW5kaWYNCj4+DQo+PiBUaGlzIGFsbG93cyB1cyB0
-byBkaXNhYmxlIGNvZGUgdGhhdCByZXF1aXJlcyBzY3JlZW5faW5mby9lZGlkX2luZm8sIGJ1
-dA0KPj4gYWxzbyBkaXNhYmxlIHNjcmVlbl9pbmZvL2VkaWRfaW5mbyB1bmxlc3Mgc3VjaCBj
-b2RlIGhhcyBiZWVuIGVuYWJsZWQgaW4NCj4+IHRoZSBrZXJuZWwgY29uZmlnLg0KPj4NCj4+
-IFNvbWUgYXJjaGl0ZWN0dXJlcyBjdXJyZW50bHkgbWltaWMgdGhpcyBieSBndWFyZGluZyBz
-Y3JlZW5faW5mbyB3aXRoDQo+PiBpZmRlZiBDT05GSUdfVlQgb3Igc2ltaWxhci4gSSdkIGxp
-a2UgdG8gbWFrZSB0aGlzIG1vcmUgZmxleGlibGUuIFRoZQ0KPj4gY29zdCBvZiBhIGZldyBt
-b3JlIGludGVybmFsIEtjb25maWcgdG9rZW5zIHNlZW1zIG5lZ2xpZ2libGUuDQo+IA0KPiBJ
-IGRlZmluaXRlbHkgZ2V0IGl0IGZvciB0aGUgc2NyZWVuX2luZm8sIHdoaWNoIG5lZWRzIHRo
-ZSBjb21wbGV4aXR5Lg0KPiBGb3IgQVJDSEFSQ0hfSEFTX0VESURfSU5GTyBJIHdvdWxkIGhv
-cGUgdGhhdCBpdCdzIG5ldmVyIHNlbGVjdGVkIGJ5DQo+IGFueXRoaW5nIG90aGVyIHRoYW4g
-eDg2LCBzbyBJIHdvdWxkIHN0aWxsIGdvIHdpdGgganVzdCBhIGRlcGVuZGVuY3kNCj4gb24g
-eDg2IGZvciBzaW1wbGljaXR5LCBidXQgSSBkb24ndCBtaW5kIGhhdmluZyB0aGUgZXh0cmEg
-c3ltYm9sIGlmIHRoYXQNCj4ga2VlcHMgaXQgbW9yZSBjb25zaXN0ZW50IHdpdGggaG93IHRo
-ZSBzY3JlZW5faW5mbyBpcyBoYW5kbGVkLg0KDQpXZWxsLCBJJ2QgbGlrZSB0byBhZGQgZWRp
-ZF9pbmZvIHRvIHBsYXRmb3JtcyB3aXRoIEVGSS4gV2hhdCB3b3VsZCBiZSANCmFybS9hcm02
-NCBhbmQgbG9vbmdhcmNoLCBJIGd1ZXNzLiBTZWUgYmVsb3cgZm9yIHRoZSBmdXR1cmUgcGxh
-bnMuDQoNCj4gDQo+Pj4gSSBzdXBwb3NlIHlvdSBjb3VsZCB1c2UgRklSTVdBUkVfRURJRCBv
-biBFRkkgb3IgT0Ygc3lzdGVtcyB3aXRob3V0DQo+Pj4gdGhlIG5lZWQgZm9yIGEgZ2xvYmFs
-IGVkaWRfaW5mbyBzdHJ1Y3R1cmUsIGJ1dCB0aGF0IHdvdWxkIG5vdA0KPj4+IHNoYXJlIGFu
-eSBjb2RlIHdpdGggdGhlIGN1cnJlbnQgZmJfZmlybXdhcmVfZWRpZCgpIGZ1bmN0aW9uLg0K
-Pj4NCj4+IFRoZSBjdXJyZW50IGNvZGUgaXMgYnVpbGQgb24gdG9wIG9mIHNjcmVlbl9pbmZv
-IGFuZCBlZGlkX2luZm8uIEknZA0KPj4gcHJlZmVyYWJseSBub3QgcmVwbGFjZSB0aGF0LCBp
-ZiBwb3NzaWJsZS4NCj4gDQo+IE9uZSB3YXkgSSBjb3VsZCBpbWFnaW5lIHRoaXMgbG9va2lu
-ZyBpbiB0aGUgZW5kIHdvdWxkIGJlDQo+IHNvbWV0aGluZyBsaWtlDQo+IA0KPiBzdHJ1Y3Qg
-c2NyZWVuX2luZm8gKmZiX3NjcmVlbl9pbmZvKHN0cnVjdCBkZXZpY2UgKmRldikNCj4gew0K
-PiAgICAgICAgc3RydWN0IHNjcmVlbl9pbmZvICpzaSA9IE5VTEw7DQo+IA0KPiAgICAgICAg
-aWYgKElTX0VOQUJMRUQoQ09ORklHX0VGSSkpDQo+ICAgICAgICAgICAgICBzaSA9IGVmaV9n
-ZXRfc2NyZWVuX2luZm8oZGV2KTsNCj4gDQo+ICAgICAgICBpZiAoSVNfRU5BQkxFRChDT05G
-SUdfQVJDSF9IQVNfU0NSRUVOX0lORk8pICYmICFzaSkNCj4gICAgICAgICAgICAgIHNpID0g
-c2NyZWVuX2luZm87DQo+IA0KPiAgICAgICAgcmV0dXJuIHNpOw0KPiB9DQo+IA0KPiBjb3Jy
-ZXNwb25kaW5nIHRvIGZiX2Zpcm13YXJlX2VkaWQoKS4gV2l0aCB0aGlzLCBhbnkgZHJpdmVy
-DQo+IHRoYXQgd2FudHMgdG8gYWNjZXNzIHNjcmVlbl9pbmZvIHdvdWxkIGNhbGwgdGhpcyBm
-dW5jdGlvbg0KPiBpbnN0ZWFkIG9mIHVzaW5nIHRoZSBnbG9iYWwgcG9pbnRlciwgcGx1cyBl
-aXRoZXIgTlVMTCBwb2ludGVyDQo+IGNoZWNrIG9yIGEgQ09ORklHX0FSQ0hfSEFTX1NDUkVF
-Tl9JTkZPIGRlcGVuZGVuY3kuDQo+IA0KPiBUaGlzIHdheSB3ZSBjb3VsZCBjb21wbGV0ZWx5
-IGVsaW1pbmF0ZSB0aGUgZ2xvYmFsIHNjcmVlbl9pbmZvDQo+IG9uIGFybTY0LCByaXNjdiwg
-YW5kIGxvb25nYXJjaCBidXQgc3RpbGwgdXNlIHRoZSBlZmkgYW5kDQo+IGh5cGVydiBmcmFt
-ZWJ1ZmZlci9kcm0gZHJpdmVycy4NCg0KSWYgcG9zc2libGUsIEknZCBsaWtlIHRvIHJlbW92
-ZSBnbG9iYWwgc2NyZWVuX2luZm8gYW5kIGVkaWRfaW5mbyANCmVudGlyZWx5IGZyb20gZmJk
-ZXYgYW5kIHRoZSB2YXJpb3VzIGNvbnNvbGVzLg0KDQpXZSBjdXJyZW50bHkgdXNlIHNjcmVl
-bl9pbmZvIHRvIHNldCB1cCB0aGUgZ2VuZXJpYyBmcmFtZWJ1ZmZlciBkZXZpY2UgaW4gDQpk
-cml2ZXJzL2Zpcm13YXJlL3N5c2ZiLmMuIEknZCBsaWtlIHRvIHVzZSBlZGlkX2luZm8gaGVy
-ZSBhcyB3ZWxsLCBzbyANCnRoYXQgdGhlIGdlbmVyaWMgZ3JhcGhpY3MgZHJpdmVycyBjYW4g
-Z2V0IEVESUQgaW5mb3JtYXRpb24uDQoNCkZvciB0aGUgZmV3IGZiZGV2IGRyaXZlcnMgYW5k
-IGNvbnNvbGVzIHRoYXQgcmVxdWlyZSB0aGUgZ2xvYmFsIA0Kc2NyZWVuX2luZm8vZWRpZF9p
-bmZvLCBJJ2QgcmF0aGVyIHByb3ZpZGUgbG9va3VwIGZ1bmN0aW9ucyBpbiBzeXNmYiANCihl
-LmcuLCBzeXNmYl9nZXRfc2NyZWVuX2luZm8oKSwgc3lzZmJfZ2V0X2VkaWRfaW5mbygpKS4g
-VGhlIGdsb2JhbCANCnNjcmVlbl9pbmZvL2VkaWRfaW5mbyBzdGF0ZSB3b3VsZCB0aGVuIGJl
-Y29tZSBhbiBpbnRlcm5hbCBhcnRpZmFjdCBvZiANCnRoZSBzeXNmYiBjb2RlLg0KDQpIb3Bl
-ZnVsbHkgdGhhdCBleHBsYWlucyBzb21lIG9mIHRoZSBkZWNpc2lvbnMgbWFkZSBpbiB0aGlz
-IHBhdGNoc2V0Lg0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQo+IA0KPiAgICAgIEFybmQN
-Cg0KLS0gDQpUaG9tYXMgWmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0K
-U1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2VybWFueSBHbWJIDQpGcmFua2Vuc3RyYXNzZSAx
-NDYsIDkwNDYxIE51ZXJuYmVyZywgR2VybWFueQ0KR0Y6IEl2byBUb3RldiwgQW5kcmV3IE15
-ZXJzLCBBbmRyZXcgTWNEb25hbGQsIEJvdWRpZW4gTW9lcm1hbg0KSFJCIDM2ODA5IChBRyBO
-dWVybmJlcmcpDQo=
-
---------------9nOsvmrIChEQyu9JM4jWfbbm--
-
---------------2k3MbKSxf2z9hgV165j2f9MP
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmSlJ0oFAwAAAAAACgkQlh/E3EQov+Ar
-GBAAo4esabhlv1pv1eUJEjgRW+ns5YBTZSxnTNM1zBWU8t6X1q991ybNmrQv/epD+zuQeRoa97MN
-l1HgNdpESzfLQk9/SjPewRDC6ITHHLR2uBCxbrmdLnsMYYJ43lUFSFsusi1FLyQJV9RvIl7BlRYj
-S679/kx2vxzLto8BoxEU+AB1/zdCvICRrITF/2cflnGB0LPhKVU1QmpMEsvOCO2nnlkGZxWl1pIr
-NP0h5xgG+8DFgyWonyPJ93PMYja7LMpoPjTd9K2ErHriOEmFk++HFJTjIswsQz73XpaJBUqaJjjj
-i1WduG2dQFEWI0fOtDA/O0fV4AcZgGOpv6bk2G7/E1rRZtqPdq5DpNU/ep2+GesFjOy3f0voheUI
-I42NvvEBLh4PcIn2ScZTH8+O0KnIgRTgDgHH8J2rMcYqCIWJ1vi/gIK/DWc91nOyurlQ82ChZtcg
-Ps4ryHUs4XcXxARdFg+dbGtAEJX9w4WK+EpdwxXqCttR5AXouPgCC4ndmaJP9xOpOTBEz/llBrrd
-dR43H4TayV0zDNaWhCANKXA5yl14eFj0D7eursCdXweahKOEuAAfYKMxDLjXIV9aOy435JsF/3OG
-FeYNx3StYvNqRpP9PV0q3WENW7amHTXQ9yElDbo6j22jThA7DlmTln/RUQnSkN4zcrwG/w4mP1Yl
-ZK4=
-=mbrs
------END PGP SIGNATURE-----
-
---------------2k3MbKSxf2z9hgV165j2f9MP--
-
-
---===============4293263117161621374==
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-ia64-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1688723521;
+        bh=yMWBZi7OWijpDNbPPVU11zT7Ofk6CC1w0krvsGmTO/Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Z07rgcHB9zc3yULQo5sHhLIv44yzQod9z2mXK8VAD2ky6t/sKWYV2RwpBSfsckmOs
+         agjSwU4wXzrOoatycsFhpr/tbEEL/fP69Db446Ge2rJz9mePLl3mySa8jKvq+GyiTu
+         4KWv6txOUukHX9wFw6zAalyyt0ZA7Ebj/AVQMqWWhUVheF2F5R/fyMF7TpsVLgmD7X
+         shT+2s00P6kEvLIw1WqbApGnI1TejLDoiQ7J2yAN5K/Ulrz2OokpUU5d5LLVQA/dtl
+         ZJiLtsDua4qi8vlm2W12s8HzAd4X6pykjOz3jsL1fYX2KFgKUbi6PXqdCCzGX7LPBk
+         1qapI2AldOYXw==
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+To: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: javierm@redhat.com, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, Ard Biesheuvel <ardb@kernel.org>, Helge Deller <deller@gmx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, WANG Xuerui <kernel@xen0n.name>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, linux-alpha@vger.kernel.or
 
-_______________________________________________
-linux-riscv mailing list
-linux-riscv@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-riscv
+From: Arnd Bergmann <arnd@arndb.de>
 
---===============4293263117161621374==--
+On non-x86 architectures, the screen_info variable is generally only
+used for the VGA console where supported, and in some cases the EFI
+framebuffer or vga16fb.
+
+Now that we have a definite list of which architectures actually use it
+for what, use consistent #ifdef checks so the global variable is only
+defined when it is actually used on those architectures.
+
+On powerpc, there is no support for vgacon, but there is support for
+vga16fb. Loongarch and riscv have no support for vgacon or vga16fb, but
+they support EFI firmware, so only that needs to be checked, and the
+initialization can be removed because that is handled by EFI.
+IA64 has both vgacon and EFI.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/alpha/kernel/setup.c          |  2 ++
+ arch/alpha/kernel/sys_sio.c        |  2 ++
+ arch/ia64/kernel/setup.c           |  4 ++++
+ arch/loongarch/kernel/setup.c      |  2 ++
+ arch/mips/jazz/setup.c             |  2 +-
+ arch/mips/kernel/setup.c           |  2 +-
+ arch/mips/sibyte/swarm/setup.c     |  2 +-
+ arch/mips/sni/setup.c              |  2 +-
+ arch/powerpc/kernel/setup-common.c |  2 +-
+ arch/riscv/kernel/setup.c          | 11 ++---------
+ 10 files changed, 17 insertions(+), 14 deletions(-)
+
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index b650ff1cb022e..b4d2297765c02 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -131,6 +131,7 @@ static void determine_cpu_caches (unsigned int);
+ 
+ static char __initdata command_line[COMMAND_LINE_SIZE];
+ 
++#ifdef CONFIG_VGA_CONSOLE
+ /*
+  * The format of "screen_info" is strange, and due to early
+  * i386-setup code. This is just enough to make the console
+@@ -147,6 +148,7 @@ struct screen_info screen_info = {
+ };
+ 
+ EXPORT_SYMBOL(screen_info);
++#endif
+ 
+ /*
+  * The direct map I/O window, if any.  This should be the same
+diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
+index 7c420d8dac53d..7de8a5d2d2066 100644
+--- a/arch/alpha/kernel/sys_sio.c
++++ b/arch/alpha/kernel/sys_sio.c
+@@ -57,11 +57,13 @@ sio_init_irq(void)
+ static inline void __init
+ alphabook1_init_arch(void)
+ {
++#ifdef CONFIG_VGA_CONSOLE
+ 	/* The AlphaBook1 has LCD video fixed at 800x600,
+ 	   37 rows and 100 cols. */
+ 	screen_info.orig_y = 37;
+ 	screen_info.orig_video_cols = 100;
+ 	screen_info.orig_video_lines = 37;
++#endif
+ 
+ 	lca_init_arch();
+ }
+diff --git a/arch/ia64/kernel/setup.c b/arch/ia64/kernel/setup.c
+index 5a55ac82c13a4..0c09ff7fde46b 100644
+--- a/arch/ia64/kernel/setup.c
++++ b/arch/ia64/kernel/setup.c
+@@ -86,9 +86,11 @@ EXPORT_SYMBOL(local_per_cpu_offset);
+ #endif
+ unsigned long ia64_cycles_per_usec;
+ struct ia64_boot_param *ia64_boot_param;
++#if defined(CONFIG_VGA_CONSOLE) || defined(CONFIG_EFI)
+ struct screen_info screen_info;
+ unsigned long vga_console_iobase;
+ unsigned long vga_console_membase;
++#endif
+ 
+ static struct resource data_resource = {
+ 	.name	= "Kernel data",
+@@ -497,6 +499,7 @@ early_console_setup (char *cmdline)
+ static void __init
+ screen_info_setup(void)
+ {
++#ifdef CONFIG_VGA_CONSOLE
+ 	unsigned int orig_x, orig_y, num_cols, num_rows, font_height;
+ 
+ 	memset(&screen_info, 0, sizeof(screen_info));
+@@ -525,6 +528,7 @@ screen_info_setup(void)
+ 	screen_info.orig_video_mode = 3;	/* XXX fake */
+ 	screen_info.orig_video_isVGA = 1;	/* XXX fake */
+ 	screen_info.orig_video_ega_bx = 3;	/* XXX fake */
++#endif
+ }
+ 
+ static inline void
+diff --git a/arch/loongarch/kernel/setup.c b/arch/loongarch/kernel/setup.c
+index 78a00359bde3c..6b3932677f5de 100644
+--- a/arch/loongarch/kernel/setup.c
++++ b/arch/loongarch/kernel/setup.c
+@@ -57,7 +57,9 @@
+ #define SMBIOS_CORE_PACKAGE_OFFSET	0x23
+ #define LOONGSON_EFI_ENABLE		(1 << 3)
+ 
++#ifdef CONFIG_EFI
+ struct screen_info screen_info __section(".data");
++#endif
+ 
+ unsigned long fw_arg0, fw_arg1, fw_arg2;
+ DEFINE_PER_CPU(unsigned long, kernelsp);
+diff --git a/arch/mips/jazz/setup.c b/arch/mips/jazz/setup.c
+index ee044261eb223..3c14548353e47 100644
+--- a/arch/mips/jazz/setup.c
++++ b/arch/mips/jazz/setup.c
+@@ -76,7 +76,7 @@ void __init plat_mem_setup(void)
+ 
+ 	_machine_restart = jazz_machine_restart;
+ 
+-#ifdef CONFIG_VT
++#ifdef CONFIG_VGA_CONSOLE
+ 	screen_info = (struct screen_info) {
+ 		.orig_video_cols	= 160,
+ 		.orig_video_lines	= 64,
+diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
+index cb871eb784a7c..1aba7dc95132c 100644
+--- a/arch/mips/kernel/setup.c
++++ b/arch/mips/kernel/setup.c
+@@ -54,7 +54,7 @@ struct cpuinfo_mips cpu_data[NR_CPUS] __read_mostly;
+ 
+ EXPORT_SYMBOL(cpu_data);
+ 
+-#ifdef CONFIG_VT
++#ifdef CONFIG_VGA_CONSOLE
+ struct screen_info screen_info;
+ #endif
+ 
+diff --git a/arch/mips/sibyte/swarm/setup.c b/arch/mips/sibyte/swarm/setup.c
+index 76683993cdd3a..37df504d3ecbb 100644
+--- a/arch/mips/sibyte/swarm/setup.c
++++ b/arch/mips/sibyte/swarm/setup.c
+@@ -129,7 +129,7 @@ void __init plat_mem_setup(void)
+ 	if (m41t81_probe())
+ 		swarm_rtc_type = RTC_M41T81;
+ 
+-#ifdef CONFIG_VT
++#ifdef CONFIG_VGA_CONSOLE
+ 	screen_info = (struct screen_info) {
+ 		.orig_video_page	= 52,
+ 		.orig_video_mode	= 3,
+diff --git a/arch/mips/sni/setup.c b/arch/mips/sni/setup.c
+index efad85c8c823b..9984cf91be7d0 100644
+--- a/arch/mips/sni/setup.c
++++ b/arch/mips/sni/setup.c
+@@ -38,7 +38,7 @@ extern void sni_machine_power_off(void);
+ 
+ static void __init sni_display_setup(void)
+ {
+-#if defined(CONFIG_VT) && defined(CONFIG_VGA_CONSOLE) && defined(CONFIG_FW_ARC)
++#if defined(CONFIG_VGA_CONSOLE) && defined(CONFIG_FW_ARC)
+ 	struct screen_info *si = &screen_info;
+ 	DISPLAY_STATUS *di;
+ 
+diff --git a/arch/powerpc/kernel/setup-common.c b/arch/powerpc/kernel/setup-common.c
+index d2a446216444f..b717875a12a9a 100644
+--- a/arch/powerpc/kernel/setup-common.c
++++ b/arch/powerpc/kernel/setup-common.c
+@@ -98,6 +98,7 @@ int boot_cpu_hwid = -1;
+ int dcache_bsize;
+ int icache_bsize;
+ 
++#if IS_ENABLED(CONFIG_FB_VGA16)
+ /*
+  * This still seems to be needed... -- paulus
+  */ 
+@@ -109,7 +110,6 @@ struct screen_info screen_info = {
+ 	.orig_video_isVGA = 1,
+ 	.orig_video_points = 16
+ };
+-#if defined(CONFIG_FB_VGA16_MODULE)
+ EXPORT_SYMBOL(screen_info);
+ #endif
+ 
+diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
+index 971fe776e2f8b..a3dbe13f45fb3 100644
+--- a/arch/riscv/kernel/setup.c
++++ b/arch/riscv/kernel/setup.c
+@@ -39,15 +39,8 @@
+ 
+ #include "head.h"
+ 
+-#if defined(CONFIG_DUMMY_CONSOLE) || defined(CONFIG_EFI)
+-struct screen_info screen_info __section(".data") = {
+-	.orig_video_lines	= 30,
+-	.orig_video_cols	= 80,
+-	.orig_video_mode	= 0,
+-	.orig_video_ega_bx	= 0,
+-	.orig_video_isVGA	= 1,
+-	.orig_video_points	= 8
+-};
++#if defined(CONFIG_EFI)
++struct screen_info screen_info __section(".data");
+ #endif
+ 
+ /*
+-- 
+2.39.2
 
