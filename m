@@ -1,96 +1,223 @@
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH v5 07/38] alpha: Implement the new page table range API
-Date: Mon, 10 Jul 2023 21:43:08 +0100
-Message-ID: <20230710204339.3554919-8-willy@infradead.org>
-References: <20230710204339.3554919-1-willy@infradead.org>
+From: Alexey Gladkov <legion@kernel.org>
+Subject: [PATCH v3 3/5] arch: Register fchmodat4, usually as syscall 451
+Date: Tue, 11 Jul 2023 13:25:44 +0200
+Message-ID: <e48c4d4046de97205fd52a73f77e9b203c3b871e.1689074739.git.legion@kernel.org>
+References: <87o8pscpny.fsf@oldenburg2.str.redhat.com> <cover.1689074739.git.legion@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=NROTlL6IHKcHVr5IJzwMhJiAK5XHIL/ixXU1imRUdQ4=; b=E8a7/eIMgmOjsWrBHysNQXo1Ni
-        ggvEuhfIneD9rq41HR/VUHUxXTJXr/lSG839FvzdGonh++4SxvKlk43T6taeXoogmOYrwjQbJwbnH
-        E+5D6BjuHj4ufh0T8ojX9/RPH2n4+tDnWdrTf2UwwdZGxe/V04uHxgGLik7rPhCZstHGKAt7jbdQX
-        w49Chx2oydHYYjGyyXLvrCsLKhhb8ZMySs9Dnt44+D1TB7jlCCGiLYpHM78Ol1RFiA1yIwML3s9JR
-        6bhbxgAAtiAyQST7teIYKdsEOFVgso9+5RoiI7smGYFo9KanW2IL36S7lXKxlSJFLpuzp1Kfjr1ip
-        7p9jiTQw==;
-In-Reply-To: <20230710204339.3554919-1-willy@infradead.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <cover.1689074739.git.legion@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>, linux-arch@vger.kernel.org, linux-mm@kvack.org, linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; x-default="true"
+To: LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk
+Cc: Palmer Dabbelt <palmer@sifive.com>, James.Bottomley@HansenPartnership.com, acme@kernel.org, alexander.shishkin@linux.intel.com, axboe@kernel.dk, benh@kernel.crashing.org, borntraeger@de.ibm.com, bp@alien8.de, catalin.marinas@arm.com, christian@brauner.io, dalias@libc.org, davem@davemloft.net, deepa.kernel@gmail.com, deller@gmx.de, dhowells@redhat.com, fenghua.yu@intel.com, firoz.khan@linaro.org, fweimer@redhat.com, geert@linux-m68k.org, glebfm@altlinux.org, gor@linux.ibm.com, hare@suse.com, heiko.carstens@de.ibm.com, hpa@zytor.com, ink@jurassic.park.msu.ru, jhogan@kernel.org, kim.phillips@arm.com, ldv@altlinux.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-mips@vg
 
-Add PFN_PTE_SHIFT, update_mmu_cache_range() and flush_icache_pages().
+From: Palmer Dabbelt <palmer@sifive.com>
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Acked-by: Mike Rapoport (IBM) <rppt@kernel.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
+This registers the new fchmodat4 syscall in most places as nuber 451,
+with alpha being the exception where it's 561.  I found all these sites
+by grepping for fspick, which I assume has found me everything.
+
+Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
+Signed-off-by: Alexey Gladkov <legion@kernel.org>
 ---
- arch/alpha/include/asm/cacheflush.h | 10 ++++++++++
- arch/alpha/include/asm/pgtable.h    | 10 ++++++++--
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ arch/alpha/kernel/syscalls/syscall.tbl      | 1 +
+ arch/arm/tools/syscall.tbl                  | 1 +
+ arch/arm64/include/asm/unistd32.h           | 2 ++
+ arch/ia64/kernel/syscalls/syscall.tbl       | 1 +
+ arch/m68k/kernel/syscalls/syscall.tbl       | 1 +
+ arch/microblaze/kernel/syscalls/syscall.tbl | 1 +
+ arch/mips/kernel/syscalls/syscall_n32.tbl   | 1 +
+ arch/mips/kernel/syscalls/syscall_n64.tbl   | 1 +
+ arch/mips/kernel/syscalls/syscall_o32.tbl   | 1 +
+ arch/parisc/kernel/syscalls/syscall.tbl     | 1 +
+ arch/powerpc/kernel/syscalls/syscall.tbl    | 1 +
+ arch/s390/kernel/syscalls/syscall.tbl       | 1 +
+ arch/sh/kernel/syscalls/syscall.tbl         | 1 +
+ arch/sparc/kernel/syscalls/syscall.tbl      | 1 +
+ arch/x86/entry/syscalls/syscall_32.tbl      | 1 +
+ arch/x86/entry/syscalls/syscall_64.tbl      | 1 +
+ arch/xtensa/kernel/syscalls/syscall.tbl     | 1 +
+ include/uapi/asm-generic/unistd.h           | 5 ++++-
+ 18 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/arch/alpha/include/asm/cacheflush.h b/arch/alpha/include/asm/cacheflush.h
-index 9945ff483eaf..3956460e69e2 100644
---- a/arch/alpha/include/asm/cacheflush.h
-+++ b/arch/alpha/include/asm/cacheflush.h
-@@ -57,6 +57,16 @@ extern void flush_icache_user_page(struct vm_area_struct *vma,
- #define flush_icache_page(vma, page) \
- 	flush_icache_user_page((vma), (page), 0, 0)
+diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/syscalls/syscall.tbl
+index 8ebacf37a8cf..00ceeffec7ff 100644
+--- a/arch/alpha/kernel/syscalls/syscall.tbl
++++ b/arch/alpha/kernel/syscalls/syscall.tbl
+@@ -490,3 +490,4 @@
+ 558	common	process_mrelease		sys_process_mrelease
+ 559	common  futex_waitv                     sys_futex_waitv
+ 560	common	set_mempolicy_home_node		sys_ni_syscall
++561	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/arm/tools/syscall.tbl b/arch/arm/tools/syscall.tbl
+index ac964612d8b0..0b9702d5c425 100644
+--- a/arch/arm/tools/syscall.tbl
++++ b/arch/arm/tools/syscall.tbl
+@@ -464,3 +464,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common	futex_waitv			sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/arm64/include/asm/unistd32.h b/arch/arm64/include/asm/unistd32.h
+index 604a2053d006..49c65d935049 100644
+--- a/arch/arm64/include/asm/unistd32.h
++++ b/arch/arm64/include/asm/unistd32.h
+@@ -907,6 +907,8 @@ __SYSCALL(__NR_process_mrelease, sys_process_mrelease)
+ __SYSCALL(__NR_futex_waitv, sys_futex_waitv)
+ #define __NR_set_mempolicy_home_node 450
+ __SYSCALL(__NR_set_mempolicy_home_node, sys_set_mempolicy_home_node)
++#define __NR_fchmodat4 451
++__SYSCALL(__NR_fchmodat4, sys_fchmodat4)
  
-+/*
-+ * Both implementations of flush_icache_user_page flush the entire
-+ * address space, so one call, no matter how many pages.
-+ */
-+static inline void flush_icache_pages(struct vm_area_struct *vma,
-+		struct page *page, unsigned int nr)
-+{
-+	flush_icache_user_page(vma, page, 0, 0);
-+}
-+
- #include <asm-generic/cacheflush.h>
- 
- #endif /* _ALPHA_CACHEFLUSH_H */
-diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index ba43cb841d19..747b5f706c47 100644
---- a/arch/alpha/include/asm/pgtable.h
-+++ b/arch/alpha/include/asm/pgtable.h
-@@ -26,7 +26,6 @@ struct vm_area_struct;
-  * hook is made available.
-  */
- #define set_pte(pteptr, pteval) ((*(pteptr)) = (pteval))
--#define set_pte_at(mm,addr,ptep,pteval) set_pte(ptep,pteval)
- 
- /* PMD_SHIFT determines the size of the area a second-level page table can map */
- #define PMD_SHIFT	(PAGE_SHIFT + (PAGE_SHIFT-3))
-@@ -189,7 +188,8 @@ extern unsigned long __zero_page(void);
-  * and a page entry and page directory to the page they refer to.
-  */
- #define page_to_pa(page)	(page_to_pfn(page) << PAGE_SHIFT)
--#define pte_pfn(pte)	(pte_val(pte) >> 32)
-+#define PFN_PTE_SHIFT		32
-+#define pte_pfn(pte)		(pte_val(pte) >> PFN_PTE_SHIFT)
- 
- #define pte_page(pte)	pfn_to_page(pte_pfn(pte))
- #define mk_pte(page, pgprot)						\
-@@ -303,6 +303,12 @@ extern inline void update_mmu_cache(struct vm_area_struct * vma,
- {
- }
- 
-+static inline void update_mmu_cache_range(struct vm_fault *vmf,
-+		struct vm_area_struct *vma, unsigned long address,
-+		pte_t *ptep, unsigned int nr)
-+{
-+}
-+
  /*
-  * Encode/decode swap entries and swap PTEs. Swap PTEs are all PTEs that
-  * are !pte_none() && !pte_present().
+  * Please add new compat syscalls above this comment and update
+diff --git a/arch/ia64/kernel/syscalls/syscall.tbl b/arch/ia64/kernel/syscalls/syscall.tbl
+index 72c929d9902b..b35225c64781 100644
+--- a/arch/ia64/kernel/syscalls/syscall.tbl
++++ b/arch/ia64/kernel/syscalls/syscall.tbl
+@@ -371,3 +371,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common  futex_waitv                     sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/m68k/kernel/syscalls/syscall.tbl b/arch/m68k/kernel/syscalls/syscall.tbl
+index b1f3940bc298..4d80cd87e089 100644
+--- a/arch/m68k/kernel/syscalls/syscall.tbl
++++ b/arch/m68k/kernel/syscalls/syscall.tbl
+@@ -450,3 +450,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common  futex_waitv                     sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/microblaze/kernel/syscalls/syscall.tbl b/arch/microblaze/kernel/syscalls/syscall.tbl
+index 820145e47350..306bd18e5b52 100644
+--- a/arch/microblaze/kernel/syscalls/syscall.tbl
++++ b/arch/microblaze/kernel/syscalls/syscall.tbl
+@@ -456,3 +456,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common  futex_waitv                     sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/mips/kernel/syscalls/syscall_n32.tbl b/arch/mips/kernel/syscalls/syscall_n32.tbl
+index 253ff994ed2e..2ef47a546fd3 100644
+--- a/arch/mips/kernel/syscalls/syscall_n32.tbl
++++ b/arch/mips/kernel/syscalls/syscall_n32.tbl
+@@ -389,3 +389,4 @@
+ 448	n32	process_mrelease		sys_process_mrelease
+ 449	n32	futex_waitv			sys_futex_waitv
+ 450	n32	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	n32	fchmodat4			sys_fchmodat4
+diff --git a/arch/mips/kernel/syscalls/syscall_n64.tbl b/arch/mips/kernel/syscalls/syscall_n64.tbl
+index 3f1886ad9d80..6356c0a6cda0 100644
+--- a/arch/mips/kernel/syscalls/syscall_n64.tbl
++++ b/arch/mips/kernel/syscalls/syscall_n64.tbl
+@@ -365,3 +365,4 @@
+ 448	n64	process_mrelease		sys_process_mrelease
+ 449	n64	futex_waitv			sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	n64	fchmodat4			sys_fchmodat4
+diff --git a/arch/mips/kernel/syscalls/syscall_o32.tbl b/arch/mips/kernel/syscalls/syscall_o32.tbl
+index 8f243e35a7b2..d1111edba47e 100644
+--- a/arch/mips/kernel/syscalls/syscall_o32.tbl
++++ b/arch/mips/kernel/syscalls/syscall_o32.tbl
+@@ -438,3 +438,4 @@
+ 448	o32	process_mrelease		sys_process_mrelease
+ 449	o32	futex_waitv			sys_futex_waitv
+ 450	o32	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	o32	fchmodat4			sys_fchmodat4
+diff --git a/arch/parisc/kernel/syscalls/syscall.tbl b/arch/parisc/kernel/syscalls/syscall.tbl
+index 0e42fceb2d5e..0a1c13744c32 100644
+--- a/arch/parisc/kernel/syscalls/syscall.tbl
++++ b/arch/parisc/kernel/syscalls/syscall.tbl
+@@ -448,3 +448,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common	futex_waitv			sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/powerpc/kernel/syscalls/syscall.tbl b/arch/powerpc/kernel/syscalls/syscall.tbl
+index a0be127475b1..ee23866fa1c8 100644
+--- a/arch/powerpc/kernel/syscalls/syscall.tbl
++++ b/arch/powerpc/kernel/syscalls/syscall.tbl
+@@ -537,3 +537,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common  futex_waitv                     sys_futex_waitv
+ 450 	nospu	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/s390/kernel/syscalls/syscall.tbl b/arch/s390/kernel/syscalls/syscall.tbl
+index b68f47541169..d5ce80065ece 100644
+--- a/arch/s390/kernel/syscalls/syscall.tbl
++++ b/arch/s390/kernel/syscalls/syscall.tbl
+@@ -453,3 +453,4 @@
+ 448  common	process_mrelease	sys_process_mrelease		sys_process_mrelease
+ 449  common	futex_waitv		sys_futex_waitv			sys_futex_waitv
+ 450  common	set_mempolicy_home_node	sys_set_mempolicy_home_node	sys_set_mempolicy_home_node
++451  common	fchmodat4		sys_fchmodat4			sys_fchmodat4
+diff --git a/arch/sh/kernel/syscalls/syscall.tbl b/arch/sh/kernel/syscalls/syscall.tbl
+index 2de85c977f54..697b914f5c33 100644
+--- a/arch/sh/kernel/syscalls/syscall.tbl
++++ b/arch/sh/kernel/syscalls/syscall.tbl
+@@ -453,3 +453,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common  futex_waitv                     sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/sparc/kernel/syscalls/syscall.tbl b/arch/sparc/kernel/syscalls/syscall.tbl
+index 4398cc6fb68d..79be56831f39 100644
+--- a/arch/sparc/kernel/syscalls/syscall.tbl
++++ b/arch/sparc/kernel/syscalls/syscall.tbl
+@@ -496,3 +496,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common  futex_waitv                     sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
+index 320480a8db4f..3ab07bd87ea9 100644
+--- a/arch/x86/entry/syscalls/syscall_32.tbl
++++ b/arch/x86/entry/syscalls/syscall_32.tbl
+@@ -455,3 +455,4 @@
+ 448	i386	process_mrelease	sys_process_mrelease
+ 449	i386	futex_waitv		sys_futex_waitv
+ 450	i386	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	i386	fchmodat4		sys_fchmodat4
+diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
+index c84d12608cd2..17047878293c 100644
+--- a/arch/x86/entry/syscalls/syscall_64.tbl
++++ b/arch/x86/entry/syscalls/syscall_64.tbl
+@@ -372,6 +372,7 @@
+ 448	common	process_mrelease	sys_process_mrelease
+ 449	common	futex_waitv		sys_futex_waitv
+ 450	common	set_mempolicy_home_node	sys_set_mempolicy_home_node
++451	common	fchmodat4		sys_fchmodat4
+ 
+ #
+ # Due to a historical design error, certain syscalls are numbered differently
+diff --git a/arch/xtensa/kernel/syscalls/syscall.tbl b/arch/xtensa/kernel/syscalls/syscall.tbl
+index 52c94ab5c205..ed47fd3b2293 100644
+--- a/arch/xtensa/kernel/syscalls/syscall.tbl
++++ b/arch/xtensa/kernel/syscalls/syscall.tbl
+@@ -421,3 +421,4 @@
+ 448	common	process_mrelease		sys_process_mrelease
+ 449	common  futex_waitv                     sys_futex_waitv
+ 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
++451	common	fchmodat4			sys_fchmodat4
+diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
+index 45fa180cc56a..b7978b3ce3f1 100644
+--- a/include/uapi/asm-generic/unistd.h
++++ b/include/uapi/asm-generic/unistd.h
+@@ -886,8 +886,11 @@ __SYSCALL(__NR_futex_waitv, sys_futex_waitv)
+ #define __NR_set_mempolicy_home_node 450
+ __SYSCALL(__NR_set_mempolicy_home_node, sys_set_mempolicy_home_node)
+ 
++#define __NR_fchmodat4 451
++__SYSCALL(__NR_fchmodat4, sys_fchmodat4)
++
+ #undef __NR_syscalls
+-#define __NR_syscalls 451
++#define __NR_syscalls 452
+ 
+ /*
+  * 32 bit systems traditionally used different
 -- 
-2.39.2
+2.33.8
 
