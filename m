@@ -1,68 +1,112 @@
 From: Florian Weimer <fweimer@redhat.com>
-Subject: Re: [PATCH v3 5/5] selftests: add fchmodat4(2) selftest
-Date: Tue, 11 Jul 2023 14:10:58 +0200
-Message-ID: <87pm4ybqct.fsf@oldenburg.str.redhat.com>
+Subject: Re: [PATCH v3 0/5] Add a new fchmodat4() syscall
+Date: Tue, 11 Jul 2023 14:24:51 +0200
+Message-ID: <87lefmbppo.fsf@oldenburg.str.redhat.com>
 References: <87o8pscpny.fsf@oldenburg2.str.redhat.com>
         <cover.1689074739.git.legion@kernel.org>
-        <c3606ec38227d921fa8a3e11613ffdb2f3ea7636.1689074739.git.legion@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-ia64-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1689077475;
+        s=mimecast20190719; t=1689078310;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jciyvh7bPAJKrnb358k+MOZYCgue2kVbXpRfHdO7VwM=;
-        b=U53MkUpGZxUFoV3g190vIj1bNiDfyviBkGMPotSNZdNjj15OSTKHV+w90Hcbwz0fKxdRdT
-        H+Dd4E0rpXN4+ypMUZAlhjbaaGiBmm9oJUSUjA4/BSaZtNhi2uBiCmqaTCCnepWMCv0JXf
-        pjXLxDORs5VqZUg0fZF9TfHrpL7Ad4M=
-In-Reply-To: <c3606ec38227d921fa8a3e11613ffdb2f3ea7636.1689074739.git.legion@kernel.org>
-        (Alexey Gladkov's message of "Tue, 11 Jul 2023 13:25:46 +0200")
+        bh=xjRw+jQ/3UZ/6JfODln6k9FlUepnlRP0EJXqY57Twrc=;
+        b=Oz7OEKID9EKDZu0wLi4EaVcmE7aHJ6BnjqH4MdJXbqZ9OzfaD6L+w6h998TZRjkf6g4ykR
+        z1GpyRkiR3MpffqR8zPyd2MqRmliBBhkeUfIg82cAX29ICHg0OoY3dz3d2r3If98rGeZ3X
+        rtnZpQE/Zx9AHH0rpCbvnWAguSt5A9w=
+In-Reply-To: <cover.1689074739.git.legion@kernel.org> (Alexey Gladkov's
+        message of "Tue, 11 Jul 2023 13:25:41 +0200")
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 To: Alexey Gladkov <legion@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk, James.Bottomley@HansenPartnership.com, acme@kernel.org, alexander.shishkin@linux.intel.com, axboe@kernel.dk, benh@kernel.crashing.org, borntraeger@de.ibm.com, bp@alien8.de, catalin.marinas@arm.com, christian@brauner.io, dalias@libc.org, davem@davemloft.net, deepa.kernel@gmail.com, deller@gmx.de, dhowells@redhat.com, fenghua.yu@intel.com, firoz.khan@linaro.org, geert@linux-m68k.org, glebfm@altlinux.org, gor@linux.ibm.com, hare@suse.com, heiko.carstens@de.ibm.com, hpa@zytor.com, ink@jurassic.park.msu.ru, jhogan@kernel.org, kim.phillips@arm.com, ldv@altlinux.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, 
+Cc: LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk, James.Bottomley@HansenPartnership.com, acme@kernel.org, alexander.shishkin@linux.intel.com, axboe@kernel.dk, benh@kernel.crashing.org, borntraeger@de.ibm.com, bp@alien8.de, catalin.marinas@arm.com, christian@brauner.io, dalias@libc.org, davem@davemloft.net, deepa.kernel@gmail.com, deller@gmx.de, dhowells@redhat.com, fenghua.yu@intel.com, geert@linux-m68k.org, glebfm@altlinux.org, gor@linux.ibm.com, hare@suse.com, hpa@zytor.com, ink@jurassic.park.msu.ru, jhogan@kernel.org, kim.phillips@arm.com, ldv@altlinux.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org, l
 
 * Alexey Gladkov:
 
-> The test marks as skipped if a syscall with the AT_SYMLINK_NOFOLLOW flag
-> fails. This is because not all filesystems support changing the mode
-> bits of symlinks properly. These filesystems return an error but change
-> the mode bits:
+> This patch set adds fchmodat4(), a new syscall. The actual
+> implementation is super simple: essentially it's just the same as
+> fchmodat(), but LOOKUP_FOLLOW is conditionally set based on the flags.
+> I've attempted to make this match "man 2 fchmodat" as closely as
+> possible, which says EINVAL is returned for invalid flags (as opposed to
+> ENOTSUPP, which is currently returned by glibc for AT_SYMLINK_NOFOLLOW).
+> I have a sketch of a glibc patch that I haven't even compiled yet, but
+> seems fairly straight-forward:
 >
-> newfstatat(4, "regfile", {st_mode=3DS_IFREG|0640, st_size=3D0, ...}, AT_S=
-YMLINK_NOFOLLOW) =3D 0
-> newfstatat(4, "symlink", {st_mode=3DS_IFLNK|0777, st_size=3D7, ...}, AT_S=
-YMLINK_NOFOLLOW) =3D 0
-> syscall_0x1c3(0x4, 0x55fa1f244396, 0x180, 0x100, 0x55fa1f24438e, 0x34) =
-=3D -1 EOPNOTSUPP (Operation not supported)
-> newfstatat(4, "regfile", {st_mode=3DS_IFREG|0640, st_size=3D0, ...}, AT_S=
-YMLINK_NOFOLLOW) =3D 0
->
-> This happens with btrfs and xfs:
->
->  $ /kernel/tools/testing/selftests/fchmodat4/fchmodat4_test
->  TAP version 13
->  1..1
->  ok 1 # SKIP fchmodat4(symlink)
->  # Totals: pass:0 fail:0 xfail:0 xpass:0 skip:1 error:0
->
->  $ stat /tmp/ksft-fchmodat4.*/symlink
->    File: /tmp/ksft-fchmodat4.3NCqlE/symlink -> regfile
->    Size: 7               Blocks: 0          IO Block: 4096   symbolic link
->  Device: 7,0     Inode: 133         Links: 1
->  Access: (0600/lrw-------)  Uid: (    0/    root)   Gid: (    0/    root)
->
-> Signed-off-by: Alexey Gladkov <legion@kernel.org>
+>     diff --git a/sysdeps/unix/sysv/linux/fchmodat.c b/sysdeps/unix/sysv/linux/fchmodat.c
+>     index 6d9cbc1ce9e0..b1beab76d56c 100644
+>     --- a/sysdeps/unix/sysv/linux/fchmodat.c
+>     +++ b/sysdeps/unix/sysv/linux/fchmodat.c
+>     @@ -29,12 +29,36 @@
+>      int
+>      fchmodat (int fd, const char *file, mode_t mode, int flag)
+>      {
+>     -  if (flag & ~AT_SYMLINK_NOFOLLOW)
+>     -    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+>     -#ifndef __NR_lchmod		/* Linux so far has no lchmod syscall.  */
+>     +  /* There are four paths through this code:
+>     +      - The flags are zero.  In this case it's fine to call fchmodat.
+>     +      - The flags are non-zero and glibc doesn't have access to
+>     +	__NR_fchmodat4.  In this case all we can do is emulate the error codes
+>     +	defined by the glibc interface from userspace.
+>     +      - The flags are non-zero, glibc has __NR_fchmodat4, and the kernel has
+>     +	fchmodat4.  This is the simplest case, as the fchmodat4 syscall exactly
+>     +	matches glibc's library interface so it can be called directly.
+>     +      - The flags are non-zero, glibc has __NR_fchmodat4, but the kernel does
 
-This looks like a bug in those file systems?
+If you define __NR_fchmodat4 on all architectures, we can use these
+constants directly in glibc.  We no longer depend on the UAPI
+definitions of those constants, to cut down the number of code variants,
+and to make glibc's system call profile independent of the kernel header
+version at build time.
 
-As an extra test, =E2=80=9Cecho 3 > /proc/sys/vm/drop_caches=E2=80=9D somet=
-imes has
-strange effects in such cases because the bits are not actually stored
-on disk, only in the dentry cache.
+Your version is based on 2.31, more recent versions have some reasonable
+emulation for fchmodat based on /proc/self/fd.  I even wrote a comment
+describing the same buggy behavior that you witnessed:
+
++      /* Some Linux versions with some file systems can actually
++        change symbolic link permissions via /proc, but this is not
++        intentional, and it gives inconsistent results (e.g., error
++        return despite mode change).  The expected behavior is that
++        symbolic link modes cannot be changed at all, and this check
++        enforces that.  */
++      if (S_ISLNK (st.st_mode))
++       {
++         __close_nocancel (pathfd);
++         __set_errno (EOPNOTSUPP);
++         return -1;
++       }
+
+I think there was some kernel discussion about that behavior before, but
+apparently, it hasn't led to fixes.
+
+I wonder if it makes sense to add a similar error return to the system
+call implementation?
+
+>     +	not.  In this case we must respect the error codes defined by the glibc
+>     +	interface instead of returning ENOSYS.
+>     +    The intent here is to ensure that the kernel is called at most once per
+>     +    library call, and that the error types defined by glibc are always
+>     +    respected.  */
+>     +
+>     +#ifdef __NR_fchmodat4
+>     +  long result;
+>     +#endif
+>     +
+>     +  if (flag == 0)
+>     +    return INLINE_SYSCALL (fchmodat, 3, fd, file, mode);
+>     +
+>     +#ifdef __NR_fchmodat4
+>     +  result = INLINE_SYSCALL (fchmodat4, 4, fd, file, mode, flag);
+>     +  if (result == 0 || errno != ENOSYS)
+>     +    return result;
+>     +#endif
+
+The last if condition is the recommended approach, but in the past, it
+broke container host compatibility pretty badly due to seccomp filters
+that return EPERM instead of ENOSYS.  I guess we'll learn soon enough if
+that's been fixed by now. 8-P
 
 Thanks,
 Florian
