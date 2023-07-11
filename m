@@ -1,82 +1,103 @@
 From: Alexey Gladkov <legion@kernel.org>
-Subject: Re: [PATCH v3 2/5] fs: Add fchmodat4()
-Date: Tue, 11 Jul 2023 14:51:01 +0200
-Message-ID: <ZK1QNRidZuGcfOSd@example.org>
+Subject: Re: [PATCH v3 5/5] selftests: add fchmodat4(2) selftest
+Date: Tue, 11 Jul 2023 15:38:03 +0200
+Message-ID: <ZK1bOxynxdVHR1Fu@example.org>
 References: <87o8pscpny.fsf@oldenburg2.str.redhat.com>
  <cover.1689074739.git.legion@kernel.org>
- <d11b93ad8e3b669afaff942e25c3fca65c6a983c.1689074739.git.legion@kernel.org>
- <83363cbb-2431-4520-81a9-0d71f420cb36@app.fastmail.com>
- <20230711-demolieren-nilpferd-80ffe47563ad@brauner>
+ <c3606ec38227d921fa8a3e11613ffdb2f3ea7636.1689074739.git.legion@kernel.org>
+ <87pm4ybqct.fsf@oldenburg.str.redhat.com>
 Mime-Version: 1.0
-Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-alpha-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1689079879;
-        bh=v+qEn9CoklXqxP1Sa+MFkzpKjgr7E+g5iZSiirA+nSs=;
+        s=k20201202; t=1689082700;
+        bh=MjkY+PryFAt8G+OdjO9LolQHYDzlX27UqcYtpMYnVwU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fUjSfsi7J0u/QQbtQMCDtiEKTIE7W5W0WBpPNSQMzTFUcRkYSb04jbHJs21fv800g
-         EThrQaUqs7NsBFe05IcCLgYzLYXYWoW8KeI98C2YcabyFUIYGnWFvDeTxCtiBR76jr
-         w/Zr0d0700gwvjaTe1JlnCUhU8AS5VndNnODqvgRp53hJh/zIs47unszqpTHBzrQaK
-         1xiXUMMc6WfSsUWm4s9ZEif1kEg2vCGCmP2azN/sbKPrUei4Ggr2CXmDG8Mzu44IK0
-         429B8vdVSRgfpn5E02EAVJjTXmzixyzoj9+S/Iq6iOYedIetr84v91WQhSf1jA/jj4
-         7ALpPYBl5adoQ==
+        b=P4rG0DrQuYuh1KI2SaGRXPxMUodnyuoYxdgPkn1OMlHHieR1kS9r/CQh42NQdCEvi
+         jezSVyuSCMeYDxZrU2qgssSXxMITcDN0wrI2LdTTXRxdvNf91UYOmZ/oeiA0SkLMOm
+         ToPJ01f8m0qnXoBuvUPupXyZM8q39wgUuDsJ0IPd2i86nWZO8OaQ0Z1yj2zbd4H3fH
+         d4apNZ3SHU+N4XnwC2YHNvSjMrA6Ly/31Wexx13nYBwFVH2whpKLnzaVfdu9jfzTjD
+         b8h/GZBzFq03hxHoLJ1T4mgHcoT1KaxayCxO/eDkShAdahq/1VQ+nx1L6a75mBKsMI
+         HsKJyRD7qNvow==
 Content-Disposition: inline
-In-Reply-To: <20230711-demolieren-nilpferd-80ffe47563ad@brauner>
+In-Reply-To: <87pm4ybqct.fsf@oldenburg.str.redhat.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: Christian Brauner <brauner@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, LKML <linux-kernel@vger.kernel.org>, linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>, Palmer Dabbelt <palmer@sifive.com>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jens Axboe <axboe@kernel.dk>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christian Borntraeger <borntraeger@de.ibm.com>, Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, christian@brauner.io, Rich Felker <dalias@libc.org>, "David S . Miller" <davem@davemloft.net>, Deepa Dinamani <deepa.kernel@gmail.com>, Helge Deller <deller@gmx.de>, David Howells <dhowells@re>
+Content-Type: text/plain; charset="utf-8"
+To: Florian Weimer <fweimer@redhat.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk, James.Bottomley@hansenpartnership.com, acme@kernel.org, alexander.shishkin@linux.intel.com, axboe@kernel.dk, benh@kernel.crashing.org, borntraeger@de.ibm.com, bp@alien8.de, catalin.marinas@arm.com, christian@brauner.io, dalias@libc.org, davem@davemloft.net, deepa.kernel@gmail.com, deller@gmx.de, dhowells@redhat.com, fenghua.yu@intel.com, firoz.khan@linaro.org, geert@linux-m68k.org, glebfm@altlinux.org, gor@linux.ibm.com, hare@suse.com, heiko.carstens@de.ibm.com, hpa@zytor.com, ink@jurassic.park.msu.ru, jhogan@kernel.org, kim.phillips@arm.com, ldv@altlinux.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, 
 
-On Tue, Jul 11, 2023 at 01:52:01PM +0200, Christian Brauner wrote:
-> On Tue, Jul 11, 2023 at 01:42:19PM +0200, Arnd Bergmann wrote:
-> > On Tue, Jul 11, 2023, at 13:25, Alexey Gladkov wrote:
-> > > From: Palmer Dabbelt <palmer@sifive.com>
-> > >
-> > > On the userspace side fchmodat(3) is implemented as a wrapper
-> > > function which implements the POSIX-specified interface. This
-> > > interface differs from the underlying kernel system call, which does not
-> > > have a flags argument. Most implementations require procfs [1][2].
-> > >
-> > > There doesn't appear to be a good userspace workaround for this issue
-> > > but the implementation in the kernel is pretty straight-forward.
-> > >
-> > > The new fchmodat4() syscall allows to pass the AT_SYMLINK_NOFOLLOW flag,
-> > > unlike existing fchmodat.
-> > >
-> > > [1] 
-> > > https://sourceware.org/git/?p=glibc.git;a=blob;f=sysdeps/unix/sysv/linux/fchmodat.c;h=17eca54051ee28ba1ec3f9aed170a62630959143;hb=a492b1e5ef7ab50c6fdd4e4e9879ea5569ab0a6c#l35
-> > > [2] 
-> > > https://git.musl-libc.org/cgit/musl/tree/src/stat/fchmodat.c?id=718f363bc2067b6487900eddc9180c84e7739f80#n28
-> > >
-> > > Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
-> > > Signed-off-by: Alexey Gladkov <legion@kernel.org>
-> > 
-> > I don't know the history of why we ended up with the different
-> > interface, or whether this was done intentionally in the kernel
-> > or if we want this syscall.
-> > 
-> > Assuming this is in fact needed, I double-checked that the
-> > implementation looks correct to me and is portable to all the
-> > architectures, without the need for a compat wrapper.
-> > 
-> > Acked-by: Arnd Bergmann <arnd@arndb.de>
+On Tue, Jul 11, 2023 at 02:10:58PM +0200, Florian Weimer wrote:
+> * Alexey Gladkov:
 > 
-> The system call itself is useful afaict. But please,
+> > The test marks as skipped if a syscall with the AT_SYMLINK_NOFOLLOW flag
+> > fails. This is because not all filesystems support changing the mode
+> > bits of symlinks properly. These filesystems return an error but change
+> > the mode bits:
+> >
+> > newfstatat(4, "regfile", {st_mode=S_IFREG|0640, st_size=0, ...}, AT_SYMLINK_NOFOLLOW) = 0
+> > newfstatat(4, "symlink", {st_mode=S_IFLNK|0777, st_size=7, ...}, AT_SYMLINK_NOFOLLOW) = 0
+> > syscall_0x1c3(0x4, 0x55fa1f244396, 0x180, 0x100, 0x55fa1f24438e, 0x34) = -1 EOPNOTSUPP (Operation not supported)
+> > newfstatat(4, "regfile", {st_mode=S_IFREG|0640, st_size=0, ...}, AT_SYMLINK_NOFOLLOW) = 0
+> >
+> > This happens with btrfs and xfs:
+> >
+> >  $ /kernel/tools/testing/selftests/fchmodat4/fchmodat4_test
+> >  TAP version 13
+> >  1..1
+> >  ok 1 # SKIP fchmodat4(symlink)
+> >  # Totals: pass:0 fail:0 xfail:0 xpass:0 skip:1 error:0
+> >
+> >  $ stat /tmp/ksft-fchmodat4.*/symlink
+> >    File: /tmp/ksft-fchmodat4.3NCqlE/symlink -> regfile
+> >    Size: 7               Blocks: 0          IO Block: 4096   symbolic link
+> >  Device: 7,0     Inode: 133         Links: 1
+> >  Access: (0600/lrw-------)  Uid: (    0/    root)   Gid: (    0/    root)
+> >
+> > Signed-off-by: Alexey Gladkov <legion@kernel.org>
 > 
-> s/fchmodat4/fchmodat2/
+> This looks like a bug in those file systems?
 
-Sure. I will.
+To me this looks like a bug. I'm fine if the operation ends with
+EOPNOTSUPP, but in that case the mode bits shouldn't change.
 
-> With very few exceptions we don't version by argument number but by
-> revision and we should stick to one scheme:
-> 
-> openat()->openat2()
-> eventfd()->eventfd2()
-> clone()/clone2()->clone3()
-> dup()->dup2()->dup3() // coincides with nr of arguments
-> pipe()->pipe2() // coincides with nr of arguments
-> renameat()->renameat2()
-> 
+> As an extra test, “echo 3 > /proc/sys/vm/drop_caches” sometimes has
+> strange effects in such cases because the bits are not actually stored
+> on disk, only in the dentry cache.
+
+tmpfs
+syscall_0x1c3(0xffffff9c, 0x7ffd58758574, 0, 0x100, 0x7f6cf18adc70, 0x7ffd58756ad8) = 0
++++ exited with 0 +++
+l--------- 1 root root 1 Jul 11 16:36 /tmp/dir/link -> f
+=== dropping caches ===
+l--------- 1 root root 1 Jul 11 16:36 /tmp/dir/link -> f
+
+ext4
+syscall_0x1c3(0xffffff9c, 0x7ffedfdb4574, 0, 0x100, 0x7f7f40b45c70, 0x7ffedfdb3ae8) = -1 EOPNOTSUPP (Operation not supported)
++++ exited with 1 +++
+l--------- 1 root root 1 Jul 11 16:36 /tmp/dir/link -> f
+=== dropping caches ===
+l--------- 1 root root 1 Jul 11 16:36 /tmp/dir/link -> f
+
+xfs
+syscall_0x1c3(0xffffff9c, 0x7ffcd03ce574, 0, 0x100, 0x7ff2f2980c70, 0x7ffcd03cdd38) = -1 EOPNOTSUPP (Operation not supported)
++++ exited with 1 +++
+l--------- 1 root root 1 Jul 11 16:36 /tmp/dir/link -> f
+=== dropping caches ===
+l--------- 1 root root 1 Jul 11 16:36 /tmp/dir/link -> f
+
+btrfs
+syscall_0x1c3(0xffffff9c, 0x7fff13d2e574, 0, 0x100, 0x7f9b67f59c70, 0x7fff13d2ca88) = -1 EOPNOTSUPP (Operation not supported)
++++ exited with 1 +++
+l--------- 1 root root 1 Jul 11 16:36 /tmp/dir/link -> f
+=== dropping caches ===
+l--------- 1 root root 1 Jul 11 16:36 /tmp/dir/link -> f
+
+reiserfs
+syscall_0x1c3(0xffffff9c, 0x7ffdf75af574, 0, 0x100, 0x7f7ad0634c70, 0x7ffdf75ae478) = 0
++++ exited with 0 +++
+l--------- 1 root root 1 Jul 11 16:43 /tmp/dir/link -> f
+=== dropping caches ===
+l--------- 1 root root 1 Jul 11 16:43 /tmp/dir/link -> f
 
 -- 
 Rgrds, legion
