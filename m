@@ -1,47 +1,50 @@
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Subject: Re: [PATCH v2] syscalls: Cleanup references to sys_lookup_dcookie()
-Date: Tue, 25 Jul 2023 14:53:30 +0100
-Message-ID: <ZL/T2nKuQMpmYmdT@shell.armlinux.org.uk>
-References: <20230628230935.1196180-1-sohil.mehta@intel.com>
- <20230710185124.3848462-1-sohil.mehta@intel.com>
+From: David Howells <dhowells@redhat.com>
+Subject: Add fchmodat2() - or add a more general syscall?
+Date: Tue, 25 Jul 2023 16:58:34 +0100
+Message-ID: <104971.1690300714@warthog.procyon.org.uk>
+References: <cover.1689092120.git.legion@kernel.org> <cover.1689074739.git.legion@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-ia64-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=kUarT7SqOQZrBPiZOzWe23N1GMcQyN5+VXjtUtV2R/o=; b=j7Op8Vnl+TeUjCVjxxLMl9FHBt
-        WKJxykg7g16NKswDExs4jzNi8JWW6mpiTguyj1SPnEcQjfWgdy2MUZ2bQ+j4bGZtswkN3xtxSKae/
-        6lMSlisjrFOxcc3OsbI+6afW+irogze5rV2uX9xHH+7y6n+SGl1OFu9FrKMecFfuJff8q3F59fLTL
-        CjQ6PI2It3ik66VJaFO6n5D9+ajE1/a9OiGpIHPg3yCNrepTv6STJpnBSD2MINup6sFgTP3Uh4wux
-        sbDi8Okf9PZRr42KbxLiRbikZNMDd+6DMq2bYuGaqKOSDN1vr6G6bnreE5cg+299OLCxWxIvo2Eqi
-Content-Disposition: inline
-In-Reply-To: <20230710185124.3848462-1-sohil.mehta@intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1690300733;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=DCrVdTZAI+0vQC3PoQE4vcBJ0YMLagHeZdYmArSL1lk=;
+	b=griUMn1q4eeP1zmcvhaRXefAef156UStd0wpGMerGjloMA7xTAqBRTVLqWG2n5Q3Iz1vPd
+	n8lQ4HZqrT9ySAl47rq1+AlnpzBwcFFDujv8Yh05RM4LXljUHJsHmGcCRyRYOKSOd7UXbZ
+	U68Ohtncgb0upf2l7gQlT84Y2nSRisg=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1690300734;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=DCrVdTZAI+0vQC3PoQE4vcBJ0YMLagHeZdYmArSL1lk=;
+	b=AKC+T8h9RwiWpakAD+oF4qSMen3scsdNgjSE9JHf4vh4WlLXhifO/9fZCk5/+ft1Ly/HZt
+	lC2W+qruSMGIfnYhBy9vpSbZED9syovHQtyXzFTP2D501gtfst39NFWKnRraAoa/tiMKlS
+	XzziHCahZk0KSRGRYkQjCM7SpcM1MQg=
+In-Reply-To: <cover.1689092120.git.legion@kernel.org>
+Content-ID: <104970.1690300714.1@warthog.procyon.org.uk>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
 Content-Transfer-Encoding: 7bit
-To: Sohil Mehta <sohil.mehta@intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, Chr
+To: Alexey Gladkov <legion@kernel.org>
+Cc: dalias@libc.org, linux-ia64@vger.kernel.org, fenghua.yu@intel.com, alexander.shishkin@linux.intel.com, x86@kernel.org, stefan@agner.ch, ldv@altlinux.org, James.Bottomley@HansenPartnership.com, kim.phillips@arm.com, paulus@samba.org, deepa.kernel@gmail.com, hpa@zytor.com, sparclinux@vger.kernel.org, will@kernel.org, linux-arch@vger.kernel.org, linux-s390@vger.kernel.org, hare@suse.com, Arnd Bergmann <arnd@arndb.de>, ysato@users.sourceforge.jp, deller@gmx.de, linux-sh@vger.kernel.org, linux@armlinux.org.uk, borntraeger@de.ibm.com, mingo@redhat.com, geert@linux-m68k.org, catalin.marinas@arm.com, jhogan@kernel.org, mattst88@gmail.com, fweimer@redhat.com, gor@linux.ibm.com, glebfm@altlinux.org, tycho@tycho.ws, acme@kernel.org, linux-m68k@lists.linux-m68k.org, ink@jurassic.park.msu.ru, viro@zeniv.linux.org.uk, luto@kernel.org, namhyung@kernel.org, tglx@linutronix.de, christian@brauner.io
 
-On Mon, Jul 10, 2023 at 06:51:24PM +0000, Sohil Mehta wrote:
-> diff --git a/arch/arm/tools/syscall.tbl b/arch/arm/tools/syscall.tbl
-> index 8ebed8a13874..cb7ea3bf18cf 100644
-> --- a/arch/arm/tools/syscall.tbl
-> +++ b/arch/arm/tools/syscall.tbl
-> @@ -263,7 +263,7 @@
->  246	common	io_submit		sys_io_submit
->  247	common	io_cancel		sys_io_cancel
->  248	common	exit_group		sys_exit_group
-> -249	common	lookup_dcookie		sys_lookup_dcookie
-> +249	common	lookup_dcookie		sys_ni_syscall
+Rather than adding a fchmodat2() syscall, should we add a "set_file_attrs()"
+syscall that takes a mask and allows you to set a bunch of stuff all in one
+go?  Basically, an interface to notify_change() in the kernel that would allow
+several stats to be set atomically.  This might be of particular interest to
+network filesystems.
 
-Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+David
 
-Thanks!
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
