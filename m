@@ -1,75 +1,44 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 1/9] vgacon: rework Kconfig dependencies
-Date: Mon, 24 Jul 2023 14:07:25 +0200
-Message-ID: <CAMuHMdVszR+oZi8x8L0iXx=ydTiaNUZxToBSdf=2ZH5t85+D_Q@mail.gmail.com>
-References: <20230719123944.3438363-1-arnd@kernel.org> <20230719123944.3438363-2-arnd@kernel.org>
- <87pm4lj1w3.fsf@mail.lhotse> <19631e74-415e-4dcb-b79d-33dcf03d2dfc@app.fastmail.com>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH v4 3/5] arch: Register fchmodat2, usually as syscall 452
+Date: Tue, 25 Jul 2023 09:16:17 +0200
+Message-ID: <CAMuHMdXzYxo83AXfWWVyp2fL3fcEUNgbG5aSZuA62FwO2i3jDg@mail.gmail.com>
+References: <cover.1689074739.git.legion@kernel.org> <cover.1689092120.git.legion@kernel.org>
+ <a677d521f048e4ca439e7080a5328f21eb8e960e.1689092120.git.legion@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:Cc:To:Subject:Message-ID:Date:From:
-	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=Vpf0hcvpF8EIoBvBBQIbtiw51fxTwJl7I9KAoo813ZY=; b=VzjOuSIJXS6Xae
-	FthbfCTXI08S7kwEN39Kba1idddQ+58bxEm/CJ1DBBaij0ZswpOPG0qCtenHLnrR/Khq32LUcAtZk
-	26qFieNJILyBwxqEcnlHZJMnc8If4wmIAMkVgFZr9N4DY7RoaSk2r2vcsh767hTOVj+JeS2X4AhWV
-	IzAGpZivt14Iw3cCuSsBOpvrnDvcr8bvAgJPZ99EoiQtBs2MzCDKt62wsEsgE/v2hERaVaMi15s0L
-	xnIRumzKiNYIcXyEjrH4z4tFl/13pEvJgnf9fPj3dvUs/4IUg5Y12/i7ZBSL/LunXw62BzAknVG/5
-	V2FXA6AilimRXzQm+KBA==;
-In-Reply-To: <19631e74-415e-4dcb-b79d-33dcf03d2dfc@app.fastmail.com>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-api-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <a677d521f048e4ca439e7080a5328f21eb8e960e.1689092120.git.legion-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="windows-1252"
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Michael Ellerman <mpe@ellerman.id.au>, Arnd Bergmann <arnd@kernel.org>, linux-fbdev@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>, Helge Deller <deller@gmx.de>, Javier Martinez Canillas <javierm@redhat.com>, "David S . Miller" <davem@davemloft.net>, "K. Y. Srinivasan" <kys@microsoft.com>, Ard Biesheuvel <ardb@kernel.org>, Borislav Petkov <bp@alien8.de>, Brian Cain <bcain@quicinc.com>, Catalin Marinas <catalin.marinas@arm.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Daniel Vetter <daniel@ffwll.ch>, Dave Hansen <dave.hansen@linux.intel.com>, Dave Airlie <airlied@gmail.com>, Deepak Rawat <drawat.floss@gmail.com>, Dexuan Cui <decui@microsoft.com>, Dinh Nguyen <dinguyen@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, guoren <guoren@kernel.org>, Haiyang Zhang <haiyangz@microsoft.com>, Huacai Chen <chenhuacai@kernel.org>, Ingo Molnar <mi>
+To: Alexey Gladkov <legion-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-api-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fsdevel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, viro-RmSDqhL/yNMiFSDQTTA3OLVCufUGDwFn@public.gmane.org, Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>, James.Bottomley-JuX6DAaQMKPCXq6kfMZ53/egYHeGw8Jk@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, alexander.shishkin-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, borntraeger-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, christian-STijNZzMWpgWenYVfaLwtA@public.gmane.org, dalias-8zAoT0mYgF4@public.gmane.org, davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org, deepa.kernel-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, deller-Mmb7MZpHnFY@public.gmane.org, dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, fweimer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, glebfm-u2l5PoMzF/Vg9hUCZPvPmw@public.gmane.org, gor-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, hare-IBi9RG/b67k@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org, jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kim.phillips-5wv7dgnIgG8@public.gmane.org, ldv-u2l5PoMzF/Vg9hUCZPvPmw@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux
 
-SGkgQXJuZCwKCk9uIEZyaSwgSnVsIDIxLCAyMDIzIGF0IDEwOjI54oCvQU0gQXJuZCBCZXJnbWFu
-biA8YXJuZEBhcm5kYi5kZT4gd3JvdGU6Cj4gT24gRnJpLCBKdWwgMjEsIDIwMjMsIGF0IDA2OjU5
-LCBNaWNoYWVsIEVsbGVybWFuIHdyb3RlOgo+ID4gQXJuZCBCZXJnbWFubiA8YXJuZEBrZXJuZWwu
-b3JnPiB3cml0ZXM6Cj4gPj4gRnJvbTogQXJuZCBCZXJnbWFubiA8YXJuZEBhcm5kYi5kZT4KPiA+
-Pgo+ID4+IFRoZSBsaXN0IG9mIGRlcGVuZGVuY2llcyBoZXJlIGlzIHBocmFzZWQgYXMgYW4gb3B0
-LW91dCwgYnV0IHRoaXMgaXMgbWlzc2luZwo+ID4+IGEgbG90IG9mIGFyY2hpdGVjdHVyZXMgdGhh
-dCBkb24ndCBhY3R1YWxseSBzdXBwb3J0IFZHQSBjb25zb2xlcywgYW5kIHNvbWUKPiA+PiBvZiB0
-aGUgZW50cmllcyBhcmUgc3RhbGU6Cj4gPj4KPiA+PiAgLSBwb3dlcnBjIHVzZWQgdG8gc3VwcG9y
-dCBWR0EgY29uc29sZXMgaW4gdGhlIG9sZCBhcmNoL3BwYyBjb2RlYmFzZSwgYnV0Cj4gPj4gICAg
-dGhlIG1lcmdlZCBhcmNoL3Bvd2VycGMgbmV2ZXIgZGlkCj4gPgo+ID4gTm90IGRpc3B1dGluZyB0
-aGlzLCBidXQgaG93IGRpZCB5b3UgY29tZSB0byB0aGF0IGNvbmNsdXNpb24/IEkgZ3JlcHBlZAo+
-ID4gYXJvdW5kIGFuZCBjb3VsZG4ndCBjb252aW5jZSBteXNlbGYgd2hldGhlciBpdCBjYW4gd29y
-ayBvbiBwb3dlcnBjIG9yCj4gPiBub3QuIGllLiBjdXJyZW50bHkgaXQncyBwb3NzaWJsZSB0byBl
-bmFibGUgQ09ORklHX1ZHQV9DT05TT0xFIGFuZAo+ID4gcG93ZXJwYyBkb2VzIGhhdmUgYSBzdHJ1
-Y3Qgc2NyZWVuX2luZm8gZGVmaW5lZCB3aGljaCBzZWVtcyBsaWtlIGl0IHdvdWxkCj4gPiBhbGxv
-dyB2Z2Fjb25fc3RhcnR1cCgpIHRvIGNvbXBsZXRlLgo+Cj4gVGhlIFZHQSBjb25zb2xlIG5lZWRz
-IGJvdGggc2NyZWVuX2luZm8gYW5kIHZnYV9jb24gdG8gd29yay4gSW4gYXJjaC9wcGMKPiB3ZSBo
-YWQgYm90aCwgYnV0IGluIGFyY2gvcG93ZXJwYyB3ZSBvbmx5IHJldGFpbmVkIHRoZSBzY3JlZW5f
-aW5mbzoKPgo+ICQgZ2l0IGdyZXAgdmdhX2NvbiB2Mi42LjI2IC0tIGFyY2gvcHBjIGFyY2gvcHBj
-NjQgYXJjaC9wb3dlcnBjCj4gdjIuNi4yNjphcmNoL3BwYy9wbGF0Zm9ybXMvcHBsdXMuYzogICAg
-IGNvbnN3aXRjaHAgPSAmdmdhX2NvbjsKPiB2Mi42LjI2OmFyY2gvcHBjL3BsYXRmb3Jtcy9wcmVw
-X3NldHVwLmM6ICAgICAgICBjb25zd2l0Y2hwID0gJnZnYV9jb247Cj4KPiBzbyBhZnRlciBhcmNo
-L3BwYyB3YXMgcmVtb3ZlZCwgdGhpcyBiZWNhbWUgaW1wb3NzaWJsZSB0byB1c2Ugb24gYm90aAo+
-IHBwbHVzIGFuZCBwcmVwLiBUaGVzZSB0d28gcGxhdGZvcm1zIHdlcmUgYWxzbyAoYXMgZmFyIGFz
-IEkgY2FuIHRlbGwpCj4gdGhlIG9ubHkgb25lcyB0byBzdXBwb3J0IHZnYTE2ZmIgYXMgYW4gYWx0
-ZXJuYXRpdmUgdG8gdmdhY29uLCBidXQKPiBib3RoIHBsYXRmb3JtcyB3ZXJlIHJlbW92ZWQgbGF0
-ZXIgb24uCgpJIGRpZCB1c2UgdmdhY29uIGFuZCB2Z2ExNmZiIG9uIENIUlAgb24gYSBzZWNvbmQg
-dmlkZW8gY2FyZAooaW5pdGlhbGl6ZWQgdXNpbmcgR2FicmllbCBQYXViZXJ0J3MgeDg2IEJJT1Mg
-ZW11bGF0b3IpLCBidXQgdGhhdCB3YXMKZGVmaW5pdGVseSBiZWZvcmUgdGhlIGFkdmVudCBvZiBh
-cmNoL3Bvd2VycGMvLgoKR3J7b2V0amUsZWV0aW5nfXMsCgogICAgICAgICAgICAgICAgICAgICAg
-ICBHZWVydAoKLS0gCkdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXgg
-YmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5vcmcKCkluIHBlcnNvbmFsIGNvbnZlcnNh
-dGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2VyLiBCdXQK
-d2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBv
-ciBzb21ldGhpbmcgbGlrZSB0aGF0LgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0t
-IExpbnVzIFRvcnZhbGRzCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwpsaW51eC1yaXNjdiBtYWlsaW5nIGxpc3QKbGludXgtcmlzY3ZAbGlzdHMuaW5mcmFk
-ZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
-LXJpc2N2Cg==
+On Tue, Jul 11, 2023 at 6:25=E2=80=AFPM Alexey Gladkov <legion-DgEjT+Ai2ygd=
+nm+yROfE0A@public.gmane.org> wrote:
+> From: Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>
+>
+> This registers the new fchmodat2 syscall in most places as nuber 452,
+> with alpha being the exception where it's 562.  I found all these sites
+> by grepping for fspick, which I assume has found me everything.
+>
+> Signed-off-by: Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane=
+.org>
+> Signed-off-by: Alexey Gladkov <legion-DgEjT+Ai2ygdnm+yROfE0A@public.gmane=
+.org>
+
+>  arch/m68k/kernel/syscalls/syscall.tbl       | 1 +
+
+Acked-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCq=
+xL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
