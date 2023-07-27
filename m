@@ -1,76 +1,62 @@
-From: Aleksa Sarai <cyphar@cyphar.com>
-Subject: Re: [PATCH v4 3/5] arch: Register fchmodat2, usually as syscall 452
-Date: Fri, 28 Jul 2023 03:42:22 +1000
-Message-ID: <20230727.174206-real.town.kosher.menu-lN1F8uSeAtB@cyphar.com>
-References: <cover.1689074739.git.legion@kernel.org>
- <cover.1689092120.git.legion@kernel.org>
- <a677d521f048e4ca439e7080a5328f21eb8e960e.1689092120.git.legion@kernel.org>
- <nbtxxotfsotuiepm7r4tegc4hy5qxe4dfjuqq7rm6qkkevooxh@4hacgjwit4or>
- <20230727-fangen-olympiade-85fcbdaf03d7@brauner>
+From: cp <carlojpisani@gmail.com>
+Subject: Algorithmic P-4000i, looking for the board manual
+Date: Thu, 27 Jul 2023 20:20:06 +0200
+Message-ID: <CA+QBN9C8ZfQa1dtGSh-pmywnKaGETZA+N-3T78R2b8mpYN0fgQ@mail.gmail.com>
+References: <20230707095415.1449376-1-arnd@kernel.org> <20230707095415.1449376-2-arnd@kernel.org>
+ <ZKluqG2ZqKtAmnEG@alpha.franken.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="y33k3lm4leglkjmq"
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyphar.com; s=MBO0001;
-        t=1690479769;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=irvaKwjIRBfIMs3OM027g5G4TY2gjSeGrvplRFueXaU=;
-        b=UZDWQCSlVrWdtqreCk6pJhl6N2mvEBs8l+J0GZXLAJ/i0AyNILAKr29Y2HzpDc9MHho6C5
-        xVlOhswIJJkR5SSR4ws+giR/x20PVxaPyIM6O/iNQxvH7uAImdu2F/Zw48FGbEcZ6risS0
-        REEAuKwEzxnqm3M6cQCiZqnNt+7AoEXIgN0iyVEXl/IgRzie92zZ+gVSh1Z8MCS6kWkRql
-        HlKWkqhpMYcbmdMzT3dNoNMTNXKs91TI0m/a0jVKcoSIVgCZEWz4fVmF9rn+0qt15Qn/26
-        OISfzUoTd6FBgoUSvJSBOFNpfsyBzgTQSL6tDQROyhhl2eKXxJMNtKy6plit+w==
-Content-Disposition: inline
-In-Reply-To: <20230727-fangen-olympiade-85fcbdaf03d7@brauner>
-List-ID: <linux-alpha.vger.kernel.org>
-To: Christian Brauner <brauner@kernel.org>
-Cc: Alexey Gladkov <legion@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk, Palmer Dabbelt <palmer@sifive.com>, James.Bottomley@hansenpartnership.com, acme@kernel.org, alexander.shishkin@linux.intel.com, axboe@kernel.dk, benh@kernel.crashing.org, borntraeger@de.ibm.com, bp@alien8.de, catalin.marinas@arm.com, christian@brauner.io, dalias@libc.org, davem@davemloft.net, deepa.kernel@gmail.com, deller@gmx.de, dhowells@redhat.com, fenghua.yu@intel.com, fweimer@redhat.com, geert@linux-m68k.org, glebfm@altlinux.org, gor@linux.ibm.com, hare@suse.com, hpa@zytor.com, ink@jurassic.park.msu.ru, jhogan@kernel.org, kim.phillips@arm.com, ldv@altlinux.org, linux-alpha@vger.kernel.
+Content-Type: multipart/alternative; boundary="000000000000328b0f06017c047a"
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1690482018; x=1691086818;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=PcBP1XxjNmbI4nocR7IgV+AOIx8tJfQjnUff81XdeXk=;
+        b=nN3rX9PeM3z5Li8BQr/G01V4nj85hbrj2n73xSjKhK5s5480GNJT7vaCzJ/++MgOYW
+         a6gnqSMvtpnsOM/gZXsPQ6WpJ50rKhsKhVKqmsNi4h2arPgBTU4IrmB0tLx+vF0ZI/6+
+         boPnAHh10uUZSFNy+QlGdndtIZyqu/rZNwzle7J/T5QYtw663pxZmEG3usep9uVYhEwa
+         UweNkVIkzsBSp12dHlcG/8qUYuBh3oSjoKhJ/HzeRGcnfc3eoG6BnJ4WTfLHV+V690Ds
+         021sTngeo673+xOmG78xmQ164OJFTKVR1vwVuatGhWz8L+/qAFAkqtQDdlcCl39aqhbn
+         xfzg==
+In-Reply-To: <ZKluqG2ZqKtAmnEG@alpha.franken.de>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-fbdev@vger.kernel.org, linux-ia64@vger.kernel.org, dri-devel@lists.freedesktop.org, Russell King <linux@armlinux.org.uk>, linux-riscv@lists.infradead.org, WANG Xuerui <kernel@xen0n.name>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, javierm@redhat.com, Ard Biesheuvel <ardb@kernel.org>, Matt Turner <mattst88@gmail.com>, Albert Ou <aou@eecs.berkeley.edu>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, Nicholas Piggin <npiggin@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, loongarch@lists.linux.dev, Paul Walmsley <paul.walmsley@sifive.com>, Arnd Bergmann <arnd@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>, Thom as Zimmermann <tzimmermann@suse.de>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 
+--000000000000328b0f06017c047a
+Content-Type: text/plain; charset="UTF-8"
 
---y33k3lm4leglkjmq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+hi guys
+I am looking for board manual of the old Algorithmic P-4000i.
+the purpose is to restore an old board for educational.
+
+Does anyone happen to have the manual or info on the board?
+let me know
+
+C.
+
+--000000000000328b0f06017c047a
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 2023-07-27, Christian Brauner <brauner@kernel.org> wrote:
-> On Wed, Jul 26, 2023 at 02:43:41AM +1000, Aleksa Sarai wrote:
-> > On 2023-07-11, Alexey Gladkov <legion@kernel.org> wrote:
-> > > From: Palmer Dabbelt <palmer@sifive.com>
-> > >=20
-> > > This registers the new fchmodat2 syscall in most places as nuber 452,
-> > > with alpha being the exception where it's 562.  I found all these sit=
-es
-> > > by grepping for fspick, which I assume has found me everything.
-> >=20
-> > Shouldn't this patch be squashed with the patch that adds the syscall?
-> > At least, that's how I've usually seen it done...
->=20
-> Depends. Iirc, someone said they'd prefer for doing it in one patch
-> in some circumstances on some system call we added years ago. But otoh,
-> having the syscall wiring done separately makes it easy for arch
-> maintainers to ack only the wiring up part. Both ways are valid imho.
-> (cachestat() did it for x86 and then all the others separately. So
-> really it seems a bit all over the place depending on the scenario.)
+<div dir=3D"ltr">hi guys<div>I am looking for board manual of the old=C2=A0=
+<span style=3D"color:rgb(52,73,94);font-family:sans-serif;font-size:16px">A=
+lgorithmic P-4000i.</span></div><div><span style=3D"color:rgb(52,73,94);fon=
+t-family:sans-serif;font-size:16px">the purpose is to restore an old board =
+for=C2=A0</span><span style=3D"color:rgb(52,73,94);font-family:sans-serif;f=
+ont-size:16px">educational.</span></div><div><span style=3D"color:rgb(52,73=
+,94);font-family:sans-serif;font-size:16px"><br></span></div><div>Does anyo=
+ne happen to have the manual or info on the board?<span style=3D"color:rgb(=
+52,73,94);font-family:sans-serif;font-size:16px"><br></span></div><div>let =
+me know</div><div><br></div><div>C.</div></div>
 
-Fair enough!
-
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
-
---y33k3lm4leglkjmq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQS2TklVsp+j1GPyqQYol/rSt+lEbwUCZMKsfgAKCRAol/rSt+lE
-b/FwAQChKTWhN1YMxOU/bLQz1S3i+RhA8DQHZpoCbh1FlOSYwAEAmOKfPG+e4zNA
-VW75+QkpKlGw0rY3TfjxW8YkGfonXgo=
-=/4Tp
------END PGP SIGNATURE-----
-
---y33k3lm4leglkjmq--
+--000000000000328b0f06017c047a--
