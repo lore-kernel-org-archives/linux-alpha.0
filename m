@@ -1,62 +1,47 @@
-From: cp <carlojpisani@gmail.com>
-Subject: Algorithmic P-4000i, looking for the board manual
-Date: Thu, 27 Jul 2023 20:20:06 +0200
-Message-ID: <CA+QBN9C8ZfQa1dtGSh-pmywnKaGETZA+N-3T78R2b8mpYN0fgQ@mail.gmail.com>
-References: <20230707095415.1449376-1-arnd@kernel.org> <20230707095415.1449376-2-arnd@kernel.org>
- <ZKluqG2ZqKtAmnEG@alpha.franken.de>
+From: David Laight <David.Laight@ACULAB.COM>
+Subject: RE: [PATCH v4 2/5] fs: Add fchmodat2()
+Date: Fri, 28 Jul 2023 08:43:58 +0000
+Message-ID: <dc48b40748e24d3799e7ee66fa7e8cb4@AcuMS.aculab.com>
+References: <cover.1689074739.git.legion@kernel.org>
+ <cover.1689092120.git.legion@kernel.org>
+ <f2a846ef495943c5d101011eebcf01179d0c7b61.1689092120.git.legion@kernel.org>
+ <njnhwhgmsk64e6vf3ur7fifmxlipmzez3r5g7ejozsrkbwvq7w@tu7w3ieystcq>
+ <ZMEjlDNJkFpYERr1@example.org>
+ <20230727.041348-imposing.uptake.velvet.nylon-712tDwzCAbCCoSGx@cyphar.com>
+ <20230727.173441-loving.habit.lame.acrobat-V6VTPe8G4FRI@cyphar.com>
 Mime-Version: 1.0
-Content-Type: multipart/alternative; boundary="000000000000328b0f06017c047a"
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1690482018; x=1691086818;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=PcBP1XxjNmbI4nocR7IgV+AOIx8tJfQjnUff81XdeXk=;
-        b=nN3rX9PeM3z5Li8BQr/G01V4nj85hbrj2n73xSjKhK5s5480GNJT7vaCzJ/++MgOYW
-         a6gnqSMvtpnsOM/gZXsPQ6WpJ50rKhsKhVKqmsNi4h2arPgBTU4IrmB0tLx+vF0ZI/6+
-         boPnAHh10uUZSFNy+QlGdndtIZyqu/rZNwzle7J/T5QYtw663pxZmEG3usep9uVYhEwa
-         UweNkVIkzsBSp12dHlcG/8qUYuBh3oSjoKhJ/HzeRGcnfc3eoG6BnJ4WTfLHV+V690Ds
-         021sTngeo673+xOmG78xmQ164OJFTKVR1vwVuatGhWz8L+/qAFAkqtQDdlcCl39aqhbn
-         xfzg==
-In-Reply-To: <ZKluqG2ZqKtAmnEG@alpha.franken.de>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
-Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-fbdev@vger.kernel.org, linux-ia64@vger.kernel.org, dri-devel@lists.freedesktop.org, Russell King <linux@armlinux.org.uk>, linux-riscv@lists.infradead.org, WANG Xuerui <kernel@xen0n.name>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, javierm@redhat.com, Ard Biesheuvel <ardb@kernel.org>, Matt Turner <mattst88@gmail.com>, Albert Ou <aou@eecs.berkeley.edu>, Arnd Bergmann <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, Nicholas Piggin <npiggin@gmail.com>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, loongarch@lists.linux.dev, Paul Walmsley <paul.walmsley@sifive.com>, Arnd Bergmann <arnd@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>, Thom as Zimmermann <tzimmermann@suse.de>, linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-m68k-owner@vger.kernel.org>
+In-Reply-To: <20230727.173441-loving.habit.lame.acrobat-V6VTPe8G4FRI@cyphar.com>
+Content-Language: en-US
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: 'Aleksa Sarai' <cyphar@cyphar.com>, Alexey Gladkov <legion@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>, "James.Bottomley@hansenpartnership.com" <James.Bottomley@hansenpartnership.com>, "acme@kernel.org" <acme@kernel.org>, "alexander.shishkin@linux.intel.com" <alexander.shishkin@linux.intel.com>, "axboe@kernel.dk" <axboe@kernel.dk>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "borntraeger@de.ibm.com" <borntraeger@de.ibm.com>, "bp@alien8.de" <bp@alien8.de>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "christian@brauner.io" <christian@brauner.io>, "dalias@libc.org" <dalias@libc.org>, davem@davemloft.ne
 
---000000000000328b0f06017c047a
-Content-Type: text/plain; charset="UTF-8"
+...
+> FWIW, I agree with Christian that these behaviours are not ideal (and
+> I'm working on a series that might allow for these things to be properly
+> blocked in the future) but there's also the consistency argument -- I
+> don't think fchownat() is much safer to allow in this way than
+> fchmodat() and (again) this behaviour is already possible through
+> procfs.
 
-hi guys
-I am looking for board manual of the old Algorithmic P-4000i.
-the purpose is to restore an old board for educational.
+If the 'through procfs' involves readlink("/proc/self/fd/n") and
+accessing through the returned path then the permission checks
+are different.
+Using the returned path requires search permissions on all the
+directories.
 
-Does anyone happen to have the manual or info on the board?
-let me know
+This is all fine for xxxat() functions where a real open
+directory fd is supplied.
+But other cases definitely need a lot of thought to ensure
+they don't let programs acquire permissions they aren't
+supposed to have.
 
-C.
+	David
 
---000000000000328b0f06017c047a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-<div dir=3D"ltr">hi guys<div>I am looking for board manual of the old=C2=A0=
-<span style=3D"color:rgb(52,73,94);font-family:sans-serif;font-size:16px">A=
-lgorithmic P-4000i.</span></div><div><span style=3D"color:rgb(52,73,94);fon=
-t-family:sans-serif;font-size:16px">the purpose is to restore an old board =
-for=C2=A0</span><span style=3D"color:rgb(52,73,94);font-family:sans-serif;f=
-ont-size:16px">educational.</span></div><div><span style=3D"color:rgb(52,73=
-,94);font-family:sans-serif;font-size:16px"><br></span></div><div>Does anyo=
-ne happen to have the manual or info on the board?<span style=3D"color:rgb(=
-52,73,94);font-family:sans-serif;font-size:16px"><br></span></div><div>let =
-me know</div><div><br></div><div>C.</div></div>
-
---000000000000328b0f06017c047a--
