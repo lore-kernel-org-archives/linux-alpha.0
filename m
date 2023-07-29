@@ -1,44 +1,57 @@
-From: "dalias@libc.org" <dalias@libc.org>
-Subject: Re: [PATCH v4 2/5] fs: Add fchmodat2()
-Date: Fri, 28 Jul 2023 14:42:12 -0400
-Message-ID: <20230728184212.GD20050@brightrain.aerifal.cx>
-References: <cover.1689074739.git.legion@kernel.org>
- <cover.1689092120.git.legion@kernel.org>
- <f2a846ef495943c5d101011eebcf01179d0c7b61.1689092120.git.legion@kernel.org>
- <njnhwhgmsk64e6vf3ur7fifmxlipmzez3r5g7ejozsrkbwvq7w@tu7w3ieystcq>
- <ZMEjlDNJkFpYERr1@example.org>
- <20230727.041348-imposing.uptake.velvet.nylon-712tDwzCAbCCoSGx@cyphar.com>
- <20230727.173441-loving.habit.lame.acrobat-V6VTPe8G4FRI@cyphar.com>
- <dc48b40748e24d3799e7ee66fa7e8cb4@AcuMS.aculab.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH] alpha: remove __init annotation from exported page_is_ram()
+Date: Sat, 29 Jul 2023 16:42:23 +0900
+Message-ID: <20230729074223.1457109-1-masahiroy@kernel.org>
 Mime-Version: 1.0
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <dc48b40748e24d3799e7ee66fa7e8cb4@AcuMS.aculab.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1690616556;
+        bh=ZKOq4dSq8LU22/XO77L6SVfNnBWbdQNZk2Y0aYMmtrk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=oY8WlMg693/n1jO+IK3qR+BcpBifWVgXBOEoX2C0glibs2FGB4W6Bol3hKkW3axTX
+         4uSBPz6vxZSPODP6NpXJX2NHZ7opwX3XEIMe07AOkJj74D1aNaKZEoA48pdX/kcNIf
+         cG/vh0rd3JYWxz8X87Hkj9bshjXm/M3Jz978FESyJ8nSuWdTPL1KKfkNwu3eteP/tM
+         /cz1IERe/2fIP+cVP9TOeLeY2nECxDPyuH+uLcaMyo12Vdvvit+8IQGrd/0cnXgy4H
+         8mLISuJe7lo12xbGYwssti7nBvN9R/AtLWw+iXMCyi0iEzazmCw3RqHEnHR8Uz9guU
+         1tl4Ox9dG55mg==
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-To: David Laight <David.Laight@ACULAB.COM>
-Cc: 'Aleksa Sarai' <cyphar@cyphar.com>, Alexey Gladkov <legion@kernel.org>, LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>, "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>, "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>, "James.Bottomley@hansenpartnership.com" <James.Bottomley@hansenpartnership.com>, "acme@kernel.org" <acme@kernel.org>, "alexander.shishkin@linux.intel.com" <alexander.shishkin@linux.intel.com>, "axboe@kernel.dk" <axboe@kernel.dk>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "borntraeger@de.ibm.com" <borntraeger@de.ibm.com>, "bp@alien8.de" <bp@alien8.de>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, christian@brauner.io
+To: linux-kbuild@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>, Chen Gong <gong.chen@linux.intel.com>, Tony Luck <tony.luck@intel.com>
 
-On Fri, Jul 28, 2023 at 08:43:58AM +0000, David Laight wrote:
-> ....
-> > FWIW, I agree with Christian that these behaviours are not ideal (and
-> > I'm working on a series that might allow for these things to be properly
-> > blocked in the future) but there's also the consistency argument -- I
-> > don't think fchownat() is much safer to allow in this way than
-> > fchmodat() and (again) this behaviour is already possible through
-> > procfs.
-> 
-> If the 'through procfs' involves readlink("/proc/self/fd/n") and
-> accessing through the returned path then the permission checks
-> are different.
-> Using the returned path requires search permissions on all the
-> directories.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization.
 
-That's *not* how "through procfs" works. The "magic symlinks" in
-/proc/*/fd are not actual symlinks that get dereferenced to the
-contents they readlink() to, but special-type objects that dereference
-directly to the underlying file associated with the open file
-description.
+Commit c5a130325f13 ("ACPI/APEI: Add parameter check before error
+injection") exported page_is_ram(), hence the __init annotation should
+be removed.
 
-Rich
+This fixes the modpost warning in ARCH=alpha builds:
+
+  WARNING: modpost: vmlinux: page_is_ram: EXPORT_SYMBOL used for init symbol. Remove __init or EXPORT_SYMBOL.
+
+Fixes: c5a130325f13 ("ACPI/APEI: Add parameter check before error injection")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+ arch/alpha/kernel/setup.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index b650ff1cb022..3d7473531ab1 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -385,8 +385,7 @@ setup_memory(void *kernel_end)
+ #endif /* CONFIG_BLK_DEV_INITRD */
+ }
+ 
+-int __init
+-page_is_ram(unsigned long pfn)
++int page_is_ram(unsigned long pfn)
+ {
+ 	struct memclust_struct * cluster;
+ 	struct memdesc_struct * memdesc;
+-- 
+2.39.2
+
