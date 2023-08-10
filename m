@@ -1,75 +1,214 @@
 From: Arnd Bergmann <arnd@kernel.org>
-Subject: [PATCH 04/17] pci: sysfs: move declarations to linux/pci.h
-Date: Thu, 10 Aug 2023 16:19:22 +0200
-Message-ID: <20230810141947.1236730-5-arnd@kernel.org>
+Subject: [PATCH 15/17] arch: fix asm-offsets.c building with -Wmissing-prototypes
+Date: Thu, 10 Aug 2023 16:19:33 +0200
+Message-ID: <20230810141947.1236730-16-arnd@kernel.org>
 References: <20230810141947.1236730-1-arnd@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-alpha-owner@vger.kernel.org>
+Return-path: <linux-ia64-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1691677300;
-        bh=ez3JL8BNfjOCxYcnwWUPckDUgraG8trVYo74A4xvgWg=;
+        s=k20201202; t=1691677420;
+        bh=v595bHoeyNn6tQTZFJfqAWz27K2FECm/q0MGvugZTZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ETdwqpKA+uHPxi/FhqBPMZ7sUPiTFHbZoWeRFm8cZL3k4ZWOEZxIKbHGeoqEM9+uJ
-         ozwxxlFBZQfwTr/IUynyKDWO9lKvgYGwcq6ZOBTx8FSdQ2CbmznY+XZB43HvOkijdN
-         0MszufkNCEmW+WmNsm3/64H+3zVxByHkWjDz1zVhLDr3v8a3Yzz9OH1d9xx7BP5y12
-         dHyV7s7CR3eOHMA6/WvzNPPzdWNJeH1U7wx8KVXZulPtrykpBgUMFptJC+gNdifX/J
-         yPxzjDm1Chvknde67QPWz68pYE5xvmp0fceBHZS9Q4mdmhW9qm7cPF3s+E5mJCIoOQ
-         u7CNF5bdLbMHg==
+        b=DxT8ZQR60KYnGL1DSAXEZb3e1nnFuS8GiPW51vMID+/XwWUWUbg5irPFhH22d+v5I
+         5P6keUTpqVVa6BuazI5kKmsRIVW+YoGuU3R9tfmzBlVq7RuFqDjkHpl7L0HQENHSjZ
+         dqogsDVC0AgR5QsqljD6o0S64dhRp9SzJO1TgwJz/WNdMfM02VHc3Wk8sCW2QGYrei
+         u9bZmviAMmcQHlvPrvCws57z2H9HKs18wiTjUFMI9BUI22xd24e9YF8GmzbclD2/hS
+         YPszKWmjRf+wEWSq8Xr00+3rsFkOfBHam8jOtbyM9s2NLNhUkREwhzS78LuHQUgb3R
+         40Lce0N0wPBkA==
 In-Reply-To: <20230810141947.1236730-1-arnd@kernel.org>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Thomas Gleixner <tglx@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Dan Williams <dan.j.williams@intel.com>, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Christophe JAILLET <christophe.jaillet@wanadoo.fr>, Reinette Chatre <reinette.chatre@intel.com>, Ira Weiny <ira.weiny@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, "Ahmed S. Darwish" <darwi@linutronix.de>, Sami Tolvanen <samitolvanen@google.com>, linux-alpha@vger.kernel.org, linux-pci@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, "David S. Miller" <davem@davemloft.net>, Al Viro <viro@zeniv.linux.org.uk>, "Steven Rostedt (Google)" <rostedt@goodmis.org>, Qing Zhang <zhangqing@loongson.cn>, Donglin Peng <pengdonglin@sangfor.com.cn>, Qi Hu <huqi@loongson.cn>, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, loongarch@lists.linux.dev, sparclinux@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-A couple of architectures build the __weak versions of
-pci_create_resource_files() and pci_remove_resource_files() but don't
-have prototypes for these, which causes warnings:
+When -Wmissing-prototypes is enabled, the some asm-offsets.c files fail
+to build, even when this warning is disabled in the Makefile for normal
+files:
 
-drivers/pci/pci-sysfs.c:1253:12: error: no previous prototype for 'pci_create_resource_files' [-Werror=missing-prototypes]
- 1253 | int __weak pci_create_resource_files(struct pci_dev *dev) { return 0; }
-drivers/pci/pci-sysfs.c:1254:13: error: no previous prototype for 'pci_remove_resource_files' [-Werror=missing-prototypes]
- 1254 | void __weak pci_remove_resource_files(struct pci_dev *dev) { return; }
+arch/sparc/kernel/asm-offsets.c:22:5: error: no previous prototype for 'sparc32_foo' [-Werror=missing-prototypes]
+arch/sparc/kernel/asm-offsets.c:48:5: error: no previous prototype for 'foo' [-Werror=missing-prototypes]
 
-Move the prototypes from alpha architecture into the global header to
-avoid these warnings for all of them.
+Address this by making use of the same trick we have on other architectures,
+renaming the unused global function to main(), which has an implicit
+prototype.
+
+On loongarch, there are many functions in this file, so the trick does
+not work, adding explicit declarations works around it in a slightly
+more ugly way but is the best I could come up with here.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/alpha/include/asm/pci.h | 3 ---
- include/linux/pci.h          | 5 +++++
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ arch/alpha/kernel/asm-offsets.c     |  2 +-
+ arch/ia64/kernel/asm-offsets.c      |  2 +-
+ arch/loongarch/kernel/asm-offsets.c | 12 ++++++++++++
+ arch/sparc/kernel/asm-offsets.c     | 13 ++-----------
+ 4 files changed, 16 insertions(+), 13 deletions(-)
 
-diff --git a/arch/alpha/include/asm/pci.h b/arch/alpha/include/asm/pci.h
-index 6312656279d79..6c04fcbdc8ed2 100644
---- a/arch/alpha/include/asm/pci.h
-+++ b/arch/alpha/include/asm/pci.h
-@@ -88,7 +88,4 @@ extern void pci_adjust_legacy_attr(struct pci_bus *bus,
- 				   enum pci_mmap_state mmap_type);
- #define HAVE_PCI_LEGACY	1
+diff --git a/arch/alpha/kernel/asm-offsets.c b/arch/alpha/kernel/asm-offsets.c
+index b121294bee266..b87487e70488d 100644
+--- a/arch/alpha/kernel/asm-offsets.c
++++ b/arch/alpha/kernel/asm-offsets.c
+@@ -12,7 +12,7 @@
+ #include <linux/kbuild.h>
+ #include <asm/io.h>
  
--extern int pci_create_resource_files(struct pci_dev *dev);
--extern void pci_remove_resource_files(struct pci_dev *dev);
+-void foo(void)
++int main(void)
+ {
+ 	DEFINE(TI_TASK, offsetof(struct thread_info, task));
+ 	DEFINE(TI_FLAGS, offsetof(struct thread_info, flags));
+diff --git a/arch/ia64/kernel/asm-offsets.c b/arch/ia64/kernel/asm-offsets.c
+index be3b90fef2e92..62b9aaf10b3c0 100644
+--- a/arch/ia64/kernel/asm-offsets.c
++++ b/arch/ia64/kernel/asm-offsets.c
+@@ -20,7 +20,7 @@
+ #include "../kernel/sigframe.h"
+ #include "../kernel/fsyscall_gtod_data.h"
+ 
+-void foo(void)
++int main(void)
+ {
+ 	DEFINE(IA64_TASK_SIZE, sizeof (struct task_struct));
+ 	DEFINE(IA64_THREAD_INFO_SIZE, sizeof (struct thread_info));
+diff --git a/arch/loongarch/kernel/asm-offsets.c b/arch/loongarch/kernel/asm-offsets.c
+index 8da0726777edb..735115f8341c9 100644
+--- a/arch/loongarch/kernel/asm-offsets.c
++++ b/arch/loongarch/kernel/asm-offsets.c
+@@ -14,6 +14,7 @@
+ #include <asm/processor.h>
+ #include <asm/ftrace.h>
+ 
++void output_ptreg_defines(void);
+ void output_ptreg_defines(void)
+ {
+ 	COMMENT("LoongArch pt_regs offsets.");
+@@ -61,6 +62,7 @@ void output_ptreg_defines(void)
+ 	BLANK();
+ }
+ 
++void output_task_defines(void);
+ void output_task_defines(void)
+ {
+ 	COMMENT("LoongArch task_struct offsets.");
+@@ -76,6 +78,7 @@ void output_task_defines(void)
+ 	BLANK();
+ }
+ 
++void output_thread_info_defines(void);
+ void output_thread_info_defines(void)
+ {
+ 	COMMENT("LoongArch thread_info offsets.");
+@@ -92,6 +95,7 @@ void output_thread_info_defines(void)
+ 	BLANK();
+ }
+ 
++void output_thread_defines(void);
+ void output_thread_defines(void)
+ {
+ 	COMMENT("LoongArch specific thread_struct offsets.");
+@@ -128,6 +132,7 @@ void output_thread_defines(void)
+ 	BLANK();
+ }
+ 
++void output_thread_fpu_defines(void);
+ void output_thread_fpu_defines(void)
+ {
+ 	OFFSET(THREAD_FPR0, loongarch_fpu, fpr[0]);
+@@ -169,6 +174,7 @@ void output_thread_fpu_defines(void)
+ 	BLANK();
+ }
+ 
++void output_thread_lbt_defines(void);
+ void output_thread_lbt_defines(void)
+ {
+ 	OFFSET(THREAD_SCR0,  loongarch_lbt, scr0);
+@@ -179,6 +185,7 @@ void output_thread_lbt_defines(void)
+ 	BLANK();
+ }
+ 
++void output_mm_defines(void);
+ void output_mm_defines(void)
+ {
+ 	COMMENT("Size of struct page");
+@@ -211,6 +218,7 @@ void output_mm_defines(void)
+ 	BLANK();
+ }
+ 
++void output_sc_defines(void);
+ void output_sc_defines(void)
+ {
+ 	COMMENT("Linux sigcontext offsets.");
+@@ -219,6 +227,7 @@ void output_sc_defines(void)
+ 	BLANK();
+ }
+ 
++void output_signal_defines(void);
+ void output_signal_defines(void)
+ {
+ 	COMMENT("Linux signal numbers.");
+@@ -257,6 +266,7 @@ void output_signal_defines(void)
+ }
+ 
+ #ifdef CONFIG_SMP
++void output_smpboot_defines(void);
+ void output_smpboot_defines(void)
+ {
+ 	COMMENT("Linux smp cpu boot offsets.");
+@@ -267,6 +277,7 @@ void output_smpboot_defines(void)
+ #endif
+ 
+ #ifdef CONFIG_HIBERNATION
++void output_pbe_defines(void);
+ void output_pbe_defines(void)
+ {
+ 	COMMENT("Linux struct pbe offsets.");
+@@ -279,6 +290,7 @@ void output_pbe_defines(void)
+ #endif
+ 
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
++void output_fgraph_ret_regs_defines(void);
+ void output_fgraph_ret_regs_defines(void)
+ {
+ 	COMMENT("LoongArch fgraph_ret_regs offsets.");
+diff --git a/arch/sparc/kernel/asm-offsets.c b/arch/sparc/kernel/asm-offsets.c
+index 5784f2df489a4..4c8c9a6df2aa5 100644
+--- a/arch/sparc/kernel/asm-offsets.c
++++ b/arch/sparc/kernel/asm-offsets.c
+@@ -18,16 +18,12 @@
+ 
+ #include <asm/hibernate.h>
+ 
+-#ifdef CONFIG_SPARC32
+-int sparc32_foo(void)
++int main(void)
+ {
++#ifdef CONFIG_SPARC32
+ 	DEFINE(AOFF_thread_fork_kpsr,
+ 			offsetof(struct thread_struct, fork_kpsr));
+-	return 0;
+-}
+ #else
+-int sparc64_foo(void)
+-{
+ #ifdef CONFIG_HIBERNATION
+ 	BLANK();
+ 	OFFSET(SC_REG_FP, saved_context, fp);
+@@ -41,12 +37,7 @@ int sparc64_foo(void)
+ 	OFFSET(SC_REG_G5, saved_context, g5);
+ 	OFFSET(SC_REG_G6, saved_context, g6);
+ #endif
+-	return 0;
+-}
+ #endif
 -
- #endif /* __ALPHA_PCI_H */
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index eeb2e6f6130f4..198a399c4b792 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -2260,6 +2260,11 @@ int pcibios_alloc_irq(struct pci_dev *dev);
- void pcibios_free_irq(struct pci_dev *dev);
- resource_size_t pcibios_default_alignment(void);
- 
-+#if !defined(HAVE_PCI_MMAP) && !defined(ARCH_GENERIC_PCI_MMAP_RESOURCE)
-+extern int pci_create_resource_files(struct pci_dev *dev);
-+extern void pci_remove_resource_files(struct pci_dev *dev);
-+#endif
-+
- #if defined(CONFIG_PCI_MMCONFIG) || defined(CONFIG_ACPI_MCFG)
- void __init pci_mmcfg_early_init(void);
- void __init pci_mmcfg_late_init(void);
+-int foo(void)
+-{
+ 	BLANK();
+ 	DEFINE(AOFF_task_thread, offsetof(struct task_struct, thread));
+ 	BLANK();
 -- 
 2.39.2
 
