@@ -1,321 +1,489 @@
-From: suijingfeng <suijingfeng@loongson.cn>
-Subject: Re: [06/12] arch: Declare screen_info in <asm/screen_info.h>
-Date: Fri, 18 Aug 2023 22:18:55 +0800
-Message-ID: <1af49baf-05e8-8cc8-c5b7-766db5a4acad@loongson.cn>
-References: <20230629121952.10559-7-tzimmermann@suse.de>
- <924934b8-d2ca-c1ea-b357-202c2f995adc@loongson.cn>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 5/6] alpha: replace #include <asm/export.h> with #include <linux/export.h>
+Date: Sun, 20 Aug 2023 08:33:52 +0900
+Message-ID: <20230819233353.3683813-5-masahiroy@kernel.org>
+References: <20230819233353.3683813-1-masahiroy@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
-Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:Content-Type:
-	Content-Transfer-Encoding:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:In-Reply-To:References:Cc:To:From:Subject:
-	MIME-Version:Date:Message-ID:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=Byihvuk7PYpZQlVBSaSKWrjxSOH/IBzbrn7jGMsTags=; b=Bviua8kjqymNbc
-	WlP7I9hyiJp/JG6Pp7ZnyYQHJQK/Ls0Mxe9kzly1KS740flSgnP4qV+UwF4VE+UhxHwyXN+1Q3gDv
-	j1C/qUzpX+iJIacryDP7tjn1LrIrwQSxYqsSzLMT9bU/FRCJg29EF6DtiZrCjAV3wcU+g5hxgATW5
-	JrcICHZbZr+ILfhW2AY2yVzqohMhHNjezNPvIf5Fu42QlktbSiyZ2tFf0+xT9row5w//7o7Zcbk6F
-	L55/2tcndx9r95Bjcqbv30KGfPWMjp0Vq3HICBaex7+pUqz5YP/axx+UzGClwvsltVavHwfnJ8tt+
-	EOpb47qsTHsD5RvaDdFg==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description;
-	bh=BnDzFXgN/70pYIT9ZpfKT9DFrS5k3lkhqcEyov/gj5I=; b=SlXGAYBPuMlXg+/QLZvmhPYzEU
-	+aN46o3X8e2DK6zwiwLs3xPe0637Z8o4vZAY8h2OMpcgRRcFFzmvfsiLX1lyU6/gH5r8kv9ZIJBgD
-	+plZJXkyz1um+8rt5UPPDO8A6MuOuQ35bM6QDqk3AbJzpfXSVHrmyP66R58+c4GOvPfIfg2f7Ydvc
-	b/XcnxV9guTw5zAr375HVVrwrycwLZmfLtZeTJPsV9Xz5Z2Q2JtlmbB6n6uSPR+d/BnG7muaSVbin
-	7/1NT2JEvQK2f29uAH0bMFH3+soJgvkNcE/by4aI5W7t4hL9LCTMb6FZ+N0TytoOBGPueJtkw3b8p
-	lkjAtkYw==;
-Content-Language: en-US
-In-Reply-To: <924934b8-d2ca-c1ea-b357-202c2f995adc@loongson.cn>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
-List-Post: <mailto:linux-riscv@lists.infradead.org>
-List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
- <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
-Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-To: Thomas Zimmermann <tzimmermann@suse.de>, arnd@arndb.de, deller@gmx.de, daniel@ffwll.ch, airlied@gmail.com
-Cc: linux-hyperv@vger.kernel.org, linux-efi@vger.kernel.org, linux-ia64@vger.kernel.org, Anshuman Khandual <anshuman.khandual@arm.com>, linux-sh@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, Catalin Marinas <catalin.marinas@arm.com>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>, Rich Felker <dalias@libc.org>, Guo Ren <guoren@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, "H. Peter Anvin" <hpa@zytor.com>, sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org, Will Deacon <will@kernel.org>, WANG Xuerui <kernel@xen0n.name>, linux-arch@vger.kernel.org, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, linux-hexagon@vger.kernel.org, linux-staging@lists.linux.dev, Russell
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-arch-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1692488045;
+        bh=lt/GC4mCVAMEOFC6vz52R8BufOYglMdi+DS9TWA5anE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GHhf4G+MLlj1i1sG/4zzwM4o990LTC4QdjcP52gvXw82tnRQs2FOApLWMH61HofB4
+         GTUdMCz/kIB8p79EfvYQdZaKptzC3nss0d0ixSU4t5I0sP1Hh4H24hoGQE5cqvcSdC
+         uP6xvrd2SV+G9VfDTm/UJ1GtjIs0wwnxQ8RTz4HPM3p8zcUPh9ues5jm0hLp0axuPZ
+         L+eqDPpBWMbmuy9XJlGjhUmPpAVE8MQ7BJNhInKPgTqrmqmMhU2fxKotlGAc0FvdQN
+         S1nSv73ECmoSAzlQRi2irEWt8/n/JNNE8tKspSw8sJ83hfj1JaAu5I6SMO0HxW2iWT
+         1t47VyzN+yQUg==
+In-Reply-To: <20230819233353.3683813-1-masahiroy@kernel.org>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kbuild@vger.kernel.org
+Cc: linux-arch@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Ck9uIDIwMjMvOC8xOCAyMjowNCwgc3VpamluZ2Zlbmcgd3JvdGU6Cj4gSGksCj4KPgo+IFdoeSB0
-aGlzIHBhdGNoIGdldCBkcm9wcGVkIGluIHRoZSBlbmQ/Cj4KPiBTaW5jZSB0aGUgZ2xvYmFsIHNj
-cmVlbl9pbmZvIGlzIGFuIGFyY2gtc3BlY2lmaWMgdGhpbmcsCj4gV2hlbmV2ZXIgYW4gYXJjaC1u
-ZXV0cmFsIG1vZHVsZSBvciBzdWJzeXN0ZW0gcmVmZXJlbmNlcyB0aGUgZ2xvYmFsIAo+IHNjcmVl
-bl9pbmZvLAo+IFRoZXJlIGFyZSBzb21lIGNvbXBsYWludHMgZnJvbSBlaXRoZXIgY29tcGlsZSB0
-ZXN0aW5nIHJvYm90LgoKClRoZXJlIGFyZSBzb21lIGNvbXBsYWludHMgZnJvbSBlaXRoZXIgY29t
-cGlsZSB0ZXN0aW5nIHJvYm90IG9yIGRvbWFpbiAKc3BlY2lmaWMgcmV2aWV3ZXJzIHdobyBkb3Vi
-dCB3aHkgeW91IHNlbGVjdCB0aGUgQ09ORklHX1NZU0ZCIG5vdCAKQ09ORklHX1ZUIG9yIENPTkZJ
-R19FRkkuCgoKPiBXZWxsLCBhIHByb2dyYW1tZXIgbWF5IGhhbmRsZSBpdCBieSB1c2luZyB0aGUg
-Q09ORklHX1NZU0ZCIGd1YXJkLAo+IGJ1dCBpdCBpcyBub3QgYXMgcHJlY2lzZSBhcyB3aGF0IHRo
-aXMgcGF0Y2ggcHJvdmlkZWQuCj4KPiBQZXJzb25hbGx5LCBJIHRoaW5rIHRoaXMgcGF0Y2ggaXMg
-c3RpbGwgdmFsdWFibGUuCj4gSSBzdWdnZXN0IGVpdGhlciBmb3JjaW5nIGFsbCBvdGhlciBhcmNo
-aXRlY3R1cmVzIHRvIGV4cG9ydCBzY3JlZW5faW5mbywKPiBsaWtlIHRoZSBYODYgYW5kIElBNjQg
-YXJjaCBkb2VzLCBhZnRlciBhbGwgdGhlIHNjcmVlbl9pbmZvIGlzIGEgZ29vZCAKPiB0aGluZy4K
-PiBvciBwcm92aWRlIHRoZSBmaW5lLWNvbnRyb2wgdmVyc2lvbiBsaWtlIHRoaXMgcGF0Y2ggZG9l
-cy4KPgoKQmVjYXVzZSBhbGwgb2YgdGhlIHRocmVlIHRva2VucyhDT05GSUdfU1lTRkIgbm90IENP
-TkZJR19WVCBvciBDT05GSUdfRUZJLikKCmhhdmUgbm8gZGlyZWN0IHJlbGF0aW9uc2hpcCB3aXRo
-IHRoZSBnbG9iYWwgc2NyZWVuX2luZm8gaWYgYW4gYXJjaCBpcyAKbm90IG1lbnRpb25lZCBmaXJz
-dC4KCgoKPiBPbiAyMDIzLzYvMjkgMTk6NDUsIFRob21hcyBaaW1tZXJtYW5uIHdyb3RlOgo+PiBU
-aGUgdmFyaWFibGUgc2NyZWVuX2luZm8gZG9lcyBub3QgZXhpc3Qgb24gYWxsIGFyY2hpdGVjdHVy
-ZXMuIERlY2xhcmUKPj4gaXQgaW4gPGFzbS1nZW5lcmljL3NjcmVlbl9pbmZvLmg+LiBBbGwgYXJj
-aGl0ZWN0dXJlcyB0aGF0IGRvIGRlY2xhcmUgaXQKPj4gd2lsbCBwcm92aWRlIGl0IHZpYSA8YXNt
-L3NjcmVlbl9pbmZvLmg+Lgo+Pgo+PiBBZGQgdGhlIEtjb25maWcgdG9rZW4gQVJDSF9IQVNfU0NS
-RUVOX0lORk8gdG8gZ3VhcmQgYWdhaW5zdCBhY2Nlc3Mgb24KPj4gYXJjaGl0ZWN0dXJlcyB0aGF0
-IGRvbid0IHByb3ZpZGUgc2NyZWVuX2luZm8uCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IFRob21hcyBa
-aW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPgo+PiBDYzogUmljaGFyZCBIZW5kZXJzb24g
-PHJpY2hhcmQuaGVuZGVyc29uQGxpbmFyby5vcmc+Cj4+IENjOiBJdmFuIEtva3NoYXlza3kgPGlu
-a0BqdXJhc3NpYy5wYXJrLm1zdS5ydT4KPj4gQ2M6IE1hdHQgVHVybmVyIDxtYXR0c3Q4OEBnbWFp
-bC5jb20+Cj4+IENjOiBSdXNzZWxsIEtpbmcgPGxpbnV4QGFybWxpbnV4Lm9yZy51az4KPj4gQ2M6
-IENhdGFsaW4gTWFyaW5hcyA8Y2F0YWxpbi5tYXJpbmFzQGFybS5jb20+Cj4+IENjOiBXaWxsIERl
-YWNvbiA8d2lsbEBrZXJuZWwub3JnPgo+PiBDYzogR3VvIFJlbiA8Z3VvcmVuQGtlcm5lbC5vcmc+
-Cj4+IENjOiBCcmlhbiBDYWluIDxiY2FpbkBxdWljaW5jLmNvbT4KPj4gQ2M6IEh1YWNhaSBDaGVu
-IDxjaGVuaHVhY2FpQGtlcm5lbC5vcmc+Cj4+IENjOiBXQU5HIFh1ZXJ1aSA8a2VybmVsQHhlbjBu
-Lm5hbWU+Cj4+IENjOiBUaG9tYXMgQm9nZW5kb2VyZmVyIDx0c2JvZ2VuZEBhbHBoYS5mcmFua2Vu
-LmRlPgo+PiBDYzogRGluaCBOZ3V5ZW4gPGRpbmd1eWVuQGtlcm5lbC5vcmc+Cj4+IENjOiBNaWNo
-YWVsIEVsbGVybWFuIDxtcGVAZWxsZXJtYW4uaWQuYXU+Cj4+IENjOiBOaWNob2xhcyBQaWdnaW4g
-PG5waWdnaW5AZ21haWwuY29tPgo+PiBDYzogQ2hyaXN0b3BoZSBMZXJveSA8Y2hyaXN0b3BoZS5s
-ZXJveUBjc2dyb3VwLmV1Pgo+PiBDYzogUGF1bCBXYWxtc2xleSA8cGF1bC53YWxtc2xleUBzaWZp
-dmUuY29tPgo+PiBDYzogUGFsbWVyIERhYmJlbHQgPHBhbG1lckBkYWJiZWx0LmNvbT4KPj4gQ2M6
-IEFsYmVydCBPdSA8YW91QGVlY3MuYmVya2VsZXkuZWR1Pgo+PiBDYzogWW9zaGlub3JpIFNhdG8g
-PHlzYXRvQHVzZXJzLnNvdXJjZWZvcmdlLmpwPgo+PiBDYzogUmljaCBGZWxrZXIgPGRhbGlhc0Bs
-aWJjLm9yZz4KPj4gQ2M6IEpvaG4gUGF1bCBBZHJpYW4gR2xhdWJpdHogPGdsYXViaXR6QHBoeXNp
-ay5mdS1iZXJsaW4uZGU+Cj4+IENjOiAiRGF2aWQgUy4gTWlsbGVyIiA8ZGF2ZW1AZGF2ZW1sb2Z0
-Lm5ldD4KPj4gQ2M6IFRob21hcyBHbGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPgo+PiBDYzog
-SW5nbyBNb2xuYXIgPG1pbmdvQHJlZGhhdC5jb20+Cj4+IENjOiBCb3Jpc2xhdiBQZXRrb3YgPGJw
-QGFsaWVuOC5kZT4KPj4gQ2M6IERhdmUgSGFuc2VuIDxkYXZlLmhhbnNlbkBsaW51eC5pbnRlbC5j
-b20+Cj4+IENjOiB4ODZAa2VybmVsLm9yZwo+PiBDYzogIkguIFBldGVyIEFudmluIiA8aHBhQHp5
-dG9yLmNvbT4KPj4gQ2M6IENocmlzIFphbmtlbCA8Y2hyaXNAemFua2VsLm5ldD4KPj4gQ2M6IE1h
-eCBGaWxpcHBvdiA8amNtdmJrYmNAZ21haWwuY29tPgo+PiBDYzogSGVsZ2UgRGVsbGVyIDxkZWxs
-ZXJAZ214LmRlPgo+PiBDYzogQXJuZCBCZXJnbWFubiA8YXJuZEBhcm5kYi5kZT4KPj4gQ2M6IEtl
-ZXMgQ29vayA8a2Vlc2Nvb2tAY2hyb21pdW0ub3JnPgo+PiBDYzogIlBhdWwgRS4gTWNLZW5uZXki
-IDxwYXVsbWNrQGtlcm5lbC5vcmc+Cj4+IENjOiBQZXRlciBaaWpsc3RyYSA8cGV0ZXJ6QGluZnJh
-ZGVhZC5vcmc+Cj4+IENjOiBGcmVkZXJpYyBXZWlzYmVja2VyIDxmcmVkZXJpY0BrZXJuZWwub3Jn
-Pgo+PiBDYzogQW5kcmV3IE1vcnRvbiA8YWtwbUBsaW51eC1mb3VuZGF0aW9uLm9yZz4KPj4gQ2M6
-IEFyZCBCaWVzaGV1dmVsIDxhcmRiQGtlcm5lbC5vcmc+Cj4+IENjOiBTYW1pIFRvbHZhbmVuIDxz
-YW1pdG9sdmFuZW5AZ29vZ2xlLmNvbT4KPj4gQ2M6IEp1ZXJnIEhhZWZsaWdlciA8anVlcmcuaGFl
-ZmxpZ2VyQGNhbm9uaWNhbC5jb20+Cj4+IENjOiBHZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0QGxp
-bnV4LW02OGsub3JnPgo+PiBDYzogQW5zaHVtYW4gS2hhbmR1YWwgPGFuc2h1bWFuLmtoYW5kdWFs
-QGFybS5jb20+Cj4+IENjOiBOaWtsYXMgU2NobmVsbGUgPHNjaG5lbGxlQGxpbnV4LmlibS5jb20+
-Cj4+IENjOiAiUnVzc2VsbCBLaW5nIChPcmFjbGUpIiA8cm1rK2tlcm5lbEBhcm1saW51eC5vcmcu
-dWs+Cj4+IENjOiBMaW51cyBXYWxsZWlqIDxsaW51cy53YWxsZWlqQGxpbmFyby5vcmc+Cj4+IENj
-OiBTZWJhc3RpYW4gUmVpY2hlbCA8c2ViYXN0aWFuLnJlaWNoZWxAY29sbGFib3JhLmNvbT4KPj4g
-Q2M6ICJNaWtlIFJhcG9wb3J0IChJQk0pIiA8cnBwdEBrZXJuZWwub3JnPgo+PiBDYzogIktpcmls
-bCBBLiBTaHV0ZW1vdiIgPGtpcmlsbC5zaHV0ZW1vdkBsaW51eC5pbnRlbC5jb20+Cj4+IENjOiBa
-aSBZYW4gPHppeUBudmlkaWEuY29tPgo+PiBBY2tlZC1ieTogV0FORyBYdWVydWkgPGdpdEB4ZW4w
-bi5uYW1lPiAjIGxvb25nYXJjaAo+PiAtLS0KPj4gwqAgYXJjaC9LY29uZmlnwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHzCoCA2ICsrKysrKwo+PiDCoCBhcmNoL2Fs
-cGhhL0tjb25maWfCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgIDEgKwo+PiDCoCBh
-cmNoL2FybS9LY29uZmlnwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMSAr
-Cj4+IMKgIGFyY2gvYXJtNjQvS2NvbmZpZ8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8
-wqAgMSArCj4+IMKgIGFyY2gvY3NreS9LY29uZmlnwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgfMKgIDEgKwo+PiDCoCBhcmNoL2hleGFnb24vS2NvbmZpZ8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIHzCoCAxICsKPj4gwqAgYXJjaC9pYTY0L0tjb25maWfCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCB8wqAgMSArCj4+IMKgIGFyY2gvbG9vbmdhcmNoL0tjb25maWfCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIHzCoCAxICsKPj4gwqAgYXJjaC9taXBzL0tjb25maWfCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMSArCj4+IMKgIGFyY2gvbmlvczIvS2NvbmZp
-Z8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMSArCj4+IMKgIGFyY2gvcG93ZXJw
-Yy9LY29uZmlnwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgIDEgKwo+PiDCoCBhcmNoL3Jp
-c2N2L0tjb25maWfCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgIDEgKwo+PiDCoCBh
-cmNoL3NoL0tjb25maWfCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgIDEg
-Kwo+PiDCoCBhcmNoL3NwYXJjL0tjb25maWfCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-fMKgIDEgKwo+PiDCoCBhcmNoL3g4Ni9LY29uZmlnwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCB8wqAgMSArCj4+IMKgIGFyY2gveHRlbnNhL0tjb25maWfCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIHzCoCAxICsKPj4gwqAgZHJpdmVycy92aWRlby9LY29uZmlnwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIHzCoCAzICsrKwo+PiDCoCBpbmNsdWRlL2FzbS1nZW5lcmljL0tidWls
-ZMKgwqDCoMKgwqDCoMKgIHzCoCAxICsKPj4gwqAgaW5jbHVkZS9hc20tZ2VuZXJpYy9zY3JlZW5f
-aW5mby5oIHwgMTIgKysrKysrKysrKysrCj4+IMKgIGluY2x1ZGUvbGludXgvc2NyZWVuX2luZm8u
-aMKgwqDCoMKgwqDCoCB8wqAgMiArLQo+PiDCoCAyMCBmaWxlcyBjaGFuZ2VkLCAzOCBpbnNlcnRp
-b25zKCspLCAxIGRlbGV0aW9uKC0pCj4+IMKgIGNyZWF0ZSBtb2RlIDEwMDY0NCBpbmNsdWRlL2Fz
-bS1nZW5lcmljL3NjcmVlbl9pbmZvLmgKPj4KPj4gZGlmZiAtLWdpdCBhL2FyY2gvS2NvbmZpZyBi
-L2FyY2gvS2NvbmZpZwo+PiBpbmRleCAyMDVmZDIzZTBjYWRhLi4yZjU4MjkzZmQ3YmNiIDEwMDY0
-NAo+PiAtLS0gYS9hcmNoL0tjb25maWcKPj4gKysrIGIvYXJjaC9LY29uZmlnCj4+IEBAIC0xNDY2
-LDYgKzE0NjYsMTIgQEAgY29uZmlnIEFSQ0hfSEFTX05PTkxFQUZfUE1EX1lPVU5HCj4+IMKgwqDC
-oMKgwqDCoMKgIGFkZHJlc3MgdHJhbnNsYXRpb25zLiBQYWdlIHRhYmxlIHdhbGtlcnMgdGhhdCBj
-bGVhciB0aGUgCj4+IGFjY2Vzc2VkIGJpdAo+PiDCoMKgwqDCoMKgwqDCoCBtYXkgdXNlIHRoaXMg
-Y2FwYWJpbGl0eSB0byByZWR1Y2UgdGhlaXIgc2VhcmNoIHNwYWNlLgo+PiDCoCArY29uZmlnIEFS
-Q0hfSEFTX1NDUkVFTl9JTkZPCj4+ICvCoMKgwqAgYm9vbAo+PiArwqDCoMKgIGhlbHAKPj4gK8Kg
-wqDCoMKgwqAgU2VsZWN0ZWQgYnkgYXJjaGl0ZWN0dXJlcyB0aGF0IHByb3ZpZGUgYSBnbG9iYWwg
-aW5zdGFuY2Ugb2YKPj4gK8KgwqDCoMKgwqAgc2NyZWVuX2luZm8uCj4+ICsKPj4gwqAgc291cmNl
-ICJrZXJuZWwvZ2Nvdi9LY29uZmlnIgo+PiDCoCDCoCBzb3VyY2UgInNjcmlwdHMvZ2NjLXBsdWdp
-bnMvS2NvbmZpZyIKPj4gZGlmZiAtLWdpdCBhL2FyY2gvYWxwaGEvS2NvbmZpZyBiL2FyY2gvYWxw
-aGEvS2NvbmZpZwo+PiBpbmRleCBhNWMyYjFhYTQ2YjAyLi5kNzQ5MDExZDg4YjE0IDEwMDY0NAo+
-PiAtLS0gYS9hcmNoL2FscGhhL0tjb25maWcKPj4gKysrIGIvYXJjaC9hbHBoYS9LY29uZmlnCj4+
-IEBAIC00LDYgKzQsNyBAQCBjb25maWcgQUxQSEEKPj4gwqDCoMKgwqDCoCBkZWZhdWx0IHkKPj4g
-wqDCoMKgwqDCoCBzZWxlY3QgQVJDSF8zMkJJVF9VU1RBVF9GX1RJTk9ERQo+PiDCoMKgwqDCoMKg
-IHNlbGVjdCBBUkNIX0hBU19DVVJSRU5UX1NUQUNLX1BPSU5URVIKPj4gK8KgwqDCoCBzZWxlY3Qg
-QVJDSF9IQVNfU0NSRUVOX0lORk8KPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9NSUdIVF9IQVZF
-X1BDX1BBUlBPUlQKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9NSUdIVF9IQVZFX1BDX1NFUklP
-Cj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfTk9fUFJFRU1QVAo+PiBkaWZmIC0tZ2l0IGEvYXJj
-aC9hcm0vS2NvbmZpZyBiL2FyY2gvYXJtL0tjb25maWcKPj4gaW5kZXggMGZiNGIyMThmNjY1OC4u
-YTlkMDFlZTY3YTkwZSAxMDA2NDQKPj4gLS0tIGEvYXJjaC9hcm0vS2NvbmZpZwo+PiArKysgYi9h
-cmNoL2FybS9LY29uZmlnCj4+IEBAIC0xNSw2ICsxNSw3IEBAIGNvbmZpZyBBUk0KPj4gwqDCoMKg
-wqDCoCBzZWxlY3QgQVJDSF9IQVNfTUVNQkFSUklFUl9TWU5DX0NPUkUKPj4gwqDCoMKgwqDCoCBz
-ZWxlY3QgQVJDSF9IQVNfTk9OX09WRVJMQVBQSU5HX0FERFJFU1NfU1BBQ0UKPj4gwqDCoMKgwqDC
-oCBzZWxlY3QgQVJDSF9IQVNfUFRFX1NQRUNJQUwgaWYgQVJNX0xQQUUKPj4gK8KgwqDCoCBzZWxl
-Y3QgQVJDSF9IQVNfU0NSRUVOX0lORk8KPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU0VU
-VVBfRE1BX09QUwo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19TRVRfTUVNT1JZCj4+IMKg
-wqDCoMKgwqAgc2VsZWN0IEFSQ0hfU1RBQ0tXQUxLCj4+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0
-L0tjb25maWcgYi9hcmNoL2FybTY0L0tjb25maWcKPj4gaW5kZXggMzQzZTFlMWNhZTEwYS4uMjFh
-ZGRjNDcxNWJiMyAxMDA2NDQKPj4gLS0tIGEvYXJjaC9hcm02NC9LY29uZmlnCj4+ICsrKyBiL2Fy
-Y2gvYXJtNjQvS2NvbmZpZwo+PiBAQCAtMzYsNiArMzYsNyBAQCBjb25maWcgQVJNNjQKPj4gwqDC
-oMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfTk9OX09WRVJMQVBQSU5HX0FERFJFU1NfU1BBQ0UKPj4g
-wqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfUFRFX0RFVk1BUAo+PiDCoMKgwqDCoMKgIHNlbGVj
-dCBBUkNIX0hBU19QVEVfU1BFQ0lBTAo+PiArwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19TQ1JFRU5f
-SU5GTwo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19TRVRVUF9ETUFfT1BTCj4+IMKgwqDC
-oMKgwqAgc2VsZWN0IEFSQ0hfSEFTX1NFVF9ESVJFQ1RfTUFQCj4+IMKgwqDCoMKgwqAgc2VsZWN0
-IEFSQ0hfSEFTX1NFVF9NRU1PUlkKPj4gZGlmZiAtLWdpdCBhL2FyY2gvY3NreS9LY29uZmlnIGIv
-YXJjaC9jc2t5L0tjb25maWcKPj4gaW5kZXggNGRmMWY4YzlkMTcwYi4uMjg0NDRlNTgxZmMxZiAx
-MDA2NDQKPj4gLS0tIGEvYXJjaC9jc2t5L0tjb25maWcKPj4gKysrIGIvYXJjaC9jc2t5L0tjb25m
-aWcKPj4gQEAgLTEwLDYgKzEwLDcgQEAgY29uZmlnIENTS1kKPj4gwqDCoMKgwqDCoCBzZWxlY3Qg
-QVJDSF9VU0VfUVVFVUVEX1JXTE9DS1MKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9VU0VfUVVF
-VUVEX1NQSU5MT0NLUwo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19DVVJSRU5UX1NUQUNL
-X1BPSU5URVIKPj4gK8KgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU0NSRUVOX0lORk8KPj4gwqDCoMKg
-wqDCoCBzZWxlY3QgQVJDSF9JTkxJTkVfUkVBRF9MT0NLIGlmICFQUkVFTVBUSU9OCj4+IMKgwqDC
-oMKgwqAgc2VsZWN0IEFSQ0hfSU5MSU5FX1JFQURfTE9DS19CSCBpZiAhUFJFRU1QVElPTgo+PiDC
-oMKgwqDCoMKgIHNlbGVjdCBBUkNIX0lOTElORV9SRUFEX0xPQ0tfSVJRIGlmICFQUkVFTVBUSU9O
-Cj4+IGRpZmYgLS1naXQgYS9hcmNoL2hleGFnb24vS2NvbmZpZyBiL2FyY2gvaGV4YWdvbi9LY29u
-ZmlnCj4+IGluZGV4IDU0ZWFkZjI2NTE3ODYuLmNjNjgzYzBhNDNkMzQgMTAwNjQ0Cj4+IC0tLSBh
-L2FyY2gvaGV4YWdvbi9LY29uZmlnCj4+ICsrKyBiL2FyY2gvaGV4YWdvbi9LY29uZmlnCj4+IEBA
-IC01LDYgKzUsNyBAQCBjb21tZW50ICJMaW51eCBLZXJuZWwgQ29uZmlndXJhdGlvbiBmb3IgSGV4
-YWdvbiIKPj4gwqAgY29uZmlnIEhFWEFHT04KPj4gwqDCoMKgwqDCoCBkZWZfYm9vbCB5Cj4+IMKg
-wqDCoMKgwqAgc2VsZWN0IEFSQ0hfMzJCSVRfT0ZGX1QKPj4gK8KgwqDCoCBzZWxlY3QgQVJDSF9I
-QVNfU0NSRUVOX0lORk8KPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU1lOQ19ETUFfRk9S
-X0RFVklDRQo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX05PX1BSRUVNUFQKPj4gwqDCoMKgwqDC
-oCBzZWxlY3QgRE1BX0dMT0JBTF9QT09MCj4+IGRpZmYgLS1naXQgYS9hcmNoL2lhNjQvS2NvbmZp
-ZyBiL2FyY2gvaWE2NC9LY29uZmlnCj4+IGluZGV4IGU3OWYxNWUzMmE0NTEuLjhiMWU3ODVlNmQ1
-M2QgMTAwNjQ0Cj4+IC0tLSBhL2FyY2gvaWE2NC9LY29uZmlnCj4+ICsrKyBiL2FyY2gvaWE2NC9L
-Y29uZmlnCj4+IEBAIC0xMCw2ICsxMCw3IEBAIGNvbmZpZyBJQTY0Cj4+IMKgwqDCoMKgwqAgYm9v
-bAo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0JJTkZNVF9FTEZfRVhUUkFfUEhEUlMKPj4gwqDC
-oMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfRE1BX01BUktfQ0xFQU4KPj4gK8KgwqDCoCBzZWxlY3Qg
-QVJDSF9IQVNfU0NSRUVOX0lORk8KPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU1RSTkNQ
-WV9GUk9NX1VTRVIKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU1RSTkxFTl9VU0VSCj4+
-IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfTUlHSFRfSEFWRV9QQ19QQVJQT1JUCj4+IGRpZmYgLS1n
-aXQgYS9hcmNoL2xvb25nYXJjaC9LY29uZmlnIGIvYXJjaC9sb29uZ2FyY2gvS2NvbmZpZwo+PiBp
-bmRleCBkMzhiMDY2ZmM5MzFiLi42YWFiMmZiNzc1M2RhIDEwMDY0NAo+PiAtLS0gYS9hcmNoL2xv
-b25nYXJjaC9LY29uZmlnCj4+ICsrKyBiL2FyY2gvbG9vbmdhcmNoL0tjb25maWcKPj4gQEAgLTEz
-LDYgKzEzLDcgQEAgY29uZmlnIExPT05HQVJDSAo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hB
-U19GT1JUSUZZX1NPVVJDRQo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19OTUlfU0FGRV9U
-SElTX0NQVV9PUFMKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfUFRFX1NQRUNJQUwKPj4g
-K8KgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU0NSRUVOX0lORk8KPj4gwqDCoMKgwqDCoCBzZWxlY3Qg
-QVJDSF9IQVNfVElDS19CUk9BRENBU1QgaWYgR0VORVJJQ19DTE9DS0VWRU5UU19CUk9BRENBU1QK
-Pj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9JTkxJTkVfUkVBRF9MT0NLIGlmICFQUkVFTVBUSU9O
-Cj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSU5MSU5FX1JFQURfTE9DS19CSCBpZiAhUFJFRU1Q
-VElPTgo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9taXBzL0tjb25maWcgYi9hcmNoL21pcHMvS2NvbmZp
-Zwo+PiBpbmRleCA2NzVhODY2MGNiODVhLi5jMGFlMDk3ODljYjZkIDEwMDY0NAo+PiAtLS0gYS9h
-cmNoL21pcHMvS2NvbmZpZwo+PiArKysgYi9hcmNoL21pcHMvS2NvbmZpZwo+PiBAQCAtMTAsNiAr
-MTAsNyBAQCBjb25maWcgTUlQUwo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19LQ09WCj4+
-IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX05PTl9PVkVSTEFQUElOR19BRERSRVNTX1NQQUNF
-IGlmICFFVkEKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfUFRFX1NQRUNJQUwgaWYgISgz
-MkJJVCAmJiBDUFVfSEFTX1JJWEkpCj4+ICvCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX1NDUkVFTl9J
-TkZPCj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX1NUUk5DUFlfRlJPTV9VU0VSCj4+IMKg
-wqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX1NUUk5MRU5fVVNFUgo+PiDCoMKgwqDCoMKgIHNlbGVj
-dCBBUkNIX0hBU19USUNLX0JST0FEQ0FTVCBpZiBHRU5FUklDX0NMT0NLRVZFTlRTX0JST0FEQ0FT
-VAo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9uaW9zMi9LY29uZmlnIGIvYXJjaC9uaW9zMi9LY29uZmln
-Cj4+IGluZGV4IGU1OTM2NDE3ZDNjZDMuLjcxODNlZWEyODIyMTIgMTAwNjQ0Cj4+IC0tLSBhL2Fy
-Y2gvbmlvczIvS2NvbmZpZwo+PiArKysgYi9hcmNoL25pb3MyL0tjb25maWcKPj4gQEAgLTMsNiAr
-Myw3IEBAIGNvbmZpZyBOSU9TMgo+PiDCoMKgwqDCoMKgIGRlZl9ib29sIHkKPj4gwqDCoMKgwqDC
-oCBzZWxlY3QgQVJDSF8zMkJJVF9PRkZfVAo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19E
-TUFfUFJFUF9DT0hFUkVOVAo+PiArwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19TQ1JFRU5fSU5GTwo+
-PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19TWU5DX0RNQV9GT1JfQ1BVCj4+IMKgwqDCoMKg
-wqAgc2VsZWN0IEFSQ0hfSEFTX1NZTkNfRE1BX0ZPUl9ERVZJQ0UKPj4gwqDCoMKgwqDCoCBzZWxl
-Y3QgQVJDSF9IQVNfRE1BX1NFVF9VTkNBQ0hFRAo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBj
-L0tjb25maWcgYi9hcmNoL3Bvd2VycGMvS2NvbmZpZwo+PiBpbmRleCBiZmY1ODIwYjdjZGExLi5i
-MWFjYWQzMDc2MTgwIDEwMDY0NAo+PiAtLS0gYS9hcmNoL3Bvd2VycGMvS2NvbmZpZwo+PiArKysg
-Yi9hcmNoL3Bvd2VycGMvS2NvbmZpZwo+PiBAQCAtMTQ4LDYgKzE0OCw3IEBAIGNvbmZpZyBQUEMK
-Pj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfUFRFX0RFVk1BUMKgwqDCoMKgwqDCoMKgIGlm
-IFBQQ19CT09LM1NfNjQKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfUFRFX1NQRUNJQUwK
-Pj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU0NBTEVEX0NQVVRJTUXCoMKgwqDCoMKgwqDC
-oCBpZiAKPj4gVklSVF9DUFVfQUNDT1VOVElOR19OQVRJVkUgJiYgUFBDX0JPT0szU182NAo+PiAr
-wqDCoMKgIHNlbGVjdCBBUkNIX0hBU19TQ1JFRU5fSU5GTwo+PiDCoMKgwqDCoMKgIHNlbGVjdCBB
-UkNIX0hBU19TRVRfTUVNT1JZCj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX1NUUklDVF9L
-RVJORUxfUldYwqDCoMKgIGlmIChQUENfQk9PSzNTIHx8IFBQQ184eHggCj4+IHx8IDQweCkgJiYg
-IUhJQkVSTkFUSU9OCj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX1NUUklDVF9LRVJORUxf
-UldYwqDCoMKgIGlmIFBQQ184NXh4ICYmIAo+PiAhSElCRVJOQVRJT04gJiYgIVJBTkRPTUlaRV9C
-QVNFCj4+IGRpZmYgLS1naXQgYS9hcmNoL3Jpc2N2L0tjb25maWcgYi9hcmNoL3Jpc2N2L0tjb25m
-aWcKPj4gaW5kZXggNTk2NmFkOTdjMzBjMy4uYjVhNDhmODQyNGFmOSAxMDA2NDQKPj4gLS0tIGEv
-YXJjaC9yaXNjdi9LY29uZmlnCj4+ICsrKyBiL2FyY2gvcmlzY3YvS2NvbmZpZwo+PiBAQCAtMjks
-NiArMjksNyBAQCBjb25maWcgUklTQ1YKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfTk9O
-X09WRVJMQVBQSU5HX0FERFJFU1NfU1BBQ0UKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNf
-UE1FTV9BUEkKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfUFRFX1NQRUNJQUwKPj4gK8Kg
-wqDCoCBzZWxlY3QgQVJDSF9IQVNfU0NSRUVOX0lORk8KPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJD
-SF9IQVNfU0VUX0RJUkVDVF9NQVAgaWYgTU1VCj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFT
-X1NFVF9NRU1PUlkgaWYgTU1VCj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX1NUUklDVF9L
-RVJORUxfUldYIGlmIE1NVSAmJiAhWElQX0tFUk5FTAo+PiBkaWZmIC0tZ2l0IGEvYXJjaC9zaC9L
-Y29uZmlnIGIvYXJjaC9zaC9LY29uZmlnCj4+IGluZGV4IDA0Yjk1NTBjZjAwNzAuLjAwMWY1MTQ5
-OTUyYjQgMTAwNjQ0Cj4+IC0tLSBhL2FyY2gvc2gvS2NvbmZpZwo+PiArKysgYi9hcmNoL3NoL0tj
-b25maWcKPj4gQEAgLTEwLDYgKzEwLDcgQEAgY29uZmlnIFNVUEVSSAo+PiDCoMKgwqDCoMKgIHNl
-bGVjdCBBUkNIX0hBU19HSUdBTlRJQ19QQUdFCj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfSEFT
-X0dDT1ZfUFJPRklMRV9BTEwKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfUFRFX1NQRUNJ
-QUwKPj4gK8KgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU0NSRUVOX0lORk8KPj4gwqDCoMKgwqDCoCBz
-ZWxlY3QgQVJDSF9IQVNfVElDS19CUk9BRENBU1QgaWYgR0VORVJJQ19DTE9DS0VWRU5UU19CUk9B
-RENBU1QKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9ISUJFUk5BVElPTl9QT1NTSUJMRSBpZiBN
-TVUKPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9NSUdIVF9IQVZFX1BDX1BBUlBPUlQKPj4gZGlm
-ZiAtLWdpdCBhL2FyY2gvc3BhcmMvS2NvbmZpZyBiL2FyY2gvc3BhcmMvS2NvbmZpZwo+PiBpbmRl
-eCA4NTM1ZTE5MDYyZjY1Li5lNGJmYjgwYjQ4Y2ZlIDEwMDY0NAo+PiAtLS0gYS9hcmNoL3NwYXJj
-L0tjb25maWcKPj4gKysrIGIvYXJjaC9zcGFyYy9LY29uZmlnCj4+IEBAIC0xMyw2ICsxMyw3IEBA
-IGNvbmZpZyA2NEJJVAo+PiDCoCBjb25maWcgU1BBUkMKPj4gwqDCoMKgwqDCoCBib29sCj4+IMKg
-wqDCoMKgwqAgZGVmYXVsdCB5Cj4+ICvCoMKgwqAgc2VsZWN0IEFSQ0hfSEFTX1NDUkVFTl9JTkZP
-Cj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfTUlHSFRfSEFWRV9QQ19QQVJQT1JUIGlmIFNQQVJD
-NjQgJiYgUENJCj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFSQ0hfTUlHSFRfSEFWRV9QQ19TRVJJTwo+
-PiDCoMKgwqDCoMKgIHNlbGVjdCBETUFfT1BTCj4+IGRpZmYgLS1naXQgYS9hcmNoL3g4Ni9LY29u
-ZmlnIGIvYXJjaC94ODYvS2NvbmZpZwo+PiBpbmRleCA1M2JhYjEyM2E4ZWU0Li5kN2MyYmY0ZWU0
-MDNkIDEwMDY0NAo+PiAtLS0gYS9hcmNoL3g4Ni9LY29uZmlnCj4+ICsrKyBiL2FyY2gveDg2L0tj
-b25maWcKPj4gQEAgLTkxLDYgKzkxLDcgQEAgY29uZmlnIFg4Ngo+PiDCoMKgwqDCoMKgIHNlbGVj
-dCBBUkNIX0hBU19OT05MRUFGX1BNRF9ZT1VOR8KgwqDCoCBpZiBQR1RBQkxFX0xFVkVMUyA+IDIK
-Pj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfVUFDQ0VTU19GTFVTSENBQ0hFwqDCoMKgIGlm
-IFg4Nl82NAo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNIX0hBU19DT1BZX01DwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBpZiBYODZfNjQKPj4gK8KgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU0NSRUVOX0lO
-Rk8KPj4gwqDCoMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU0VUX01FTU9SWQo+PiDCoMKgwqDCoMKg
-IHNlbGVjdCBBUkNIX0hBU19TRVRfRElSRUNUX01BUAo+PiDCoMKgwqDCoMKgIHNlbGVjdCBBUkNI
-X0hBU19TVFJJQ1RfS0VSTkVMX1JXWAo+PiBkaWZmIC0tZ2l0IGEvYXJjaC94dGVuc2EvS2NvbmZp
-ZyBiL2FyY2gveHRlbnNhL0tjb25maWcKPj4gaW5kZXggM2M2ZTU0NzFmMDI1Yi4uYzZjYmQ3NDU5
-OTM5YyAxMDA2NDQKPj4gLS0tIGEvYXJjaC94dGVuc2EvS2NvbmZpZwo+PiArKysgYi9hcmNoL3h0
-ZW5zYS9LY29uZmlnCj4+IEBAIC04LDYgKzgsNyBAQCBjb25maWcgWFRFTlNBCj4+IMKgwqDCoMKg
-wqAgc2VsZWN0IEFSQ0hfSEFTX0RNQV9QUkVQX0NPSEVSRU5UIGlmIE1NVQo+PiDCoMKgwqDCoMKg
-IHNlbGVjdCBBUkNIX0hBU19HQ09WX1BST0ZJTEVfQUxMCj4+IMKgwqDCoMKgwqAgc2VsZWN0IEFS
-Q0hfSEFTX0tDT1YKPj4gK8KgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU0NSRUVOX0lORk8KPj4gwqDC
-oMKgwqDCoCBzZWxlY3QgQVJDSF9IQVNfU1lOQ19ETUFfRk9SX0NQVSBpZiBNTVUKPj4gwqDCoMKg
-wqDCoCBzZWxlY3QgQVJDSF9IQVNfU1lOQ19ETUFfRk9SX0RFVklDRSBpZiBNTVUKPj4gwqDCoMKg
-wqDCoCBzZWxlY3QgQVJDSF9IQVNfRE1BX1NFVF9VTkNBQ0hFRCBpZiBNTVUKPj4gZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvdmlkZW8vS2NvbmZpZyBiL2RyaXZlcnMvdmlkZW8vS2NvbmZpZwo+PiBpbmRl
-eCA4YjJiOWFjMzdjM2RmLi5kNGE3MmJlYTU2YmUwIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3Zp
-ZGVvL0tjb25maWcKPj4gKysrIGIvZHJpdmVycy92aWRlby9LY29uZmlnCj4+IEBAIC0yMSw2ICsy
-MSw5IEBAIGNvbmZpZyBTVElfQ09SRQo+PiDCoCBjb25maWcgVklERU9fQ01ETElORQo+PiDCoMKg
-wqDCoMKgIGJvb2wKPj4gwqAgK2NvbmZpZyBBUkNIX0hBU19TQ1JFRU5fSU5GTwo+PiArwqDCoMKg
-IGJvb2wKPj4gKwo+PiDCoCBjb25maWcgVklERU9fTk9NT0RFU0VUCj4+IMKgwqDCoMKgwqAgYm9v
-bAo+PiDCoMKgwqDCoMKgIGRlZmF1bHQgbgo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9hc20tZ2Vu
-ZXJpYy9LYnVpbGQgYi9pbmNsdWRlL2FzbS1nZW5lcmljL0tidWlsZAo+PiBpbmRleCA5NDFiZTU3
-NGJiZTAwLi41ZTVkNDE1OGE0YjRiIDEwMDY0NAo+PiAtLS0gYS9pbmNsdWRlL2FzbS1nZW5lcmlj
-L0tidWlsZAo+PiArKysgYi9pbmNsdWRlL2FzbS1nZW5lcmljL0tidWlsZAo+PiBAQCAtNDcsNiAr
-NDcsNyBAQCBtYW5kYXRvcnkteSArPSBwZXJjcHUuaAo+PiDCoCBtYW5kYXRvcnkteSArPSBwZ2Fs
-bG9jLmgKPj4gwqAgbWFuZGF0b3J5LXkgKz0gcHJlZW1wdC5oCj4+IMKgIG1hbmRhdG9yeS15ICs9
-IHJ3b25jZS5oCj4+ICttYW5kYXRvcnkteSArPSBzY3JlZW5faW5mby5oCj4+IMKgIG1hbmRhdG9y
-eS15ICs9IHNlY3Rpb25zLmgKPj4gwqAgbWFuZGF0b3J5LXkgKz0gc2VyaWFsLmgKPj4gwqAgbWFu
-ZGF0b3J5LXkgKz0gc2htcGFyYW0uaAo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9hc20tZ2VuZXJp
-Yy9zY3JlZW5faW5mby5oIAo+PiBiL2luY2x1ZGUvYXNtLWdlbmVyaWMvc2NyZWVuX2luZm8uaAo+
-PiBuZXcgZmlsZSBtb2RlIDEwMDY0NAo+PiBpbmRleCAwMDAwMDAwMDAwMDAwLi42ZmQwZTUwZmFi
-ZmNkCj4+IC0tLSAvZGV2L251bGwKPj4gKysrIGIvaW5jbHVkZS9hc20tZ2VuZXJpYy9zY3JlZW5f
-aW5mby5oCj4+IEBAIC0wLDAgKzEsMTIgQEAKPj4gKy8qIFNQRFgtTGljZW5zZS1JZGVudGlmaWVy
-OiBHUEwtMi4wICovCj4+ICsKPj4gKyNpZm5kZWYgX0FTTV9HRU5FUklDX1NDUkVFTl9JTkZPX0gK
-Pj4gKyNkZWZpbmUgX0FTTV9HRU5FUklDX1NDUkVFTl9JTkZPX0gKPj4gKwo+PiArI2luY2x1ZGUg
-PHVhcGkvbGludXgvc2NyZWVuX2luZm8uaD4KPj4gKwo+PiArI2lmIGRlZmluZWQoQ09ORklHX0FS
-Q0hfSEFTX1NDUkVFTl9JTkZPKQo+PiArZXh0ZXJuIHN0cnVjdCBzY3JlZW5faW5mbyBzY3JlZW5f
-aW5mbzsKPj4gKyNlbmRpZgo+PiArCj4+ICsjZW5kaWYgLyogX0FTTV9HRU5FUklDX1NDUkVFTl9J
-TkZPX0ggKi8KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvc2NyZWVuX2luZm8uaCBiL2lu
-Y2x1ZGUvbGludXgvc2NyZWVuX2luZm8uaAo+PiBpbmRleCBlYWI3MDgxMzkyZDUwLi5jNzY0Yjlh
-NTFjMjRiIDEwMDY0NAo+PiAtLS0gYS9pbmNsdWRlL2xpbnV4L3NjcmVlbl9pbmZvLmgKPj4gKysr
-IGIvaW5jbHVkZS9saW51eC9zY3JlZW5faW5mby5oCj4+IEBAIC00LDYgKzQsNiBAQAo+PiDCoCDC
-oCAjaW5jbHVkZSA8dWFwaS9saW51eC9zY3JlZW5faW5mby5oPgo+PiDCoCAtZXh0ZXJuIHN0cnVj
-dCBzY3JlZW5faW5mbyBzY3JlZW5faW5mbzsKPj4gKyNpbmNsdWRlIDxhc20vc2NyZWVuX2luZm8u
-aD4KPj4gwqAgwqAgI2VuZGlmIC8qIF9TQ1JFRU5fSU5GT19IICovCgoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtcmlzY3YgbWFpbGluZyBsaXN0
-CmxpbnV4LXJpc2N2QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1yaXNjdgo=
+Commit ddb5cdbafaaa ("kbuild: generate KSYMTAB entries by modpost")
+deprecated <asm/export.h>, which is now a wrapper of <linux/export.h>.
+
+Replace #include <asm/export.h> with #include <linux/export.h>.
+
+After all the <asm/export.h> lines are converted, <asm/export.h> and
+<asm-generic/export.h> will be removed.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+ arch/alpha/lib/callback_srm.S        | 2 +-
+ arch/alpha/lib/clear_page.S          | 2 +-
+ arch/alpha/lib/clear_user.S          | 2 +-
+ arch/alpha/lib/copy_page.S           | 2 +-
+ arch/alpha/lib/copy_user.S           | 2 +-
+ arch/alpha/lib/csum_ipv6_magic.S     | 2 +-
+ arch/alpha/lib/divide.S              | 2 +-
+ arch/alpha/lib/ev6-clear_page.S      | 2 +-
+ arch/alpha/lib/ev6-clear_user.S      | 2 +-
+ arch/alpha/lib/ev6-copy_page.S       | 2 +-
+ arch/alpha/lib/ev6-copy_user.S       | 2 +-
+ arch/alpha/lib/ev6-csum_ipv6_magic.S | 2 +-
+ arch/alpha/lib/ev6-divide.S          | 2 +-
+ arch/alpha/lib/ev6-memchr.S          | 2 +-
+ arch/alpha/lib/ev6-memcpy.S          | 2 +-
+ arch/alpha/lib/ev6-memset.S          | 2 +-
+ arch/alpha/lib/ev67-strcat.S         | 2 +-
+ arch/alpha/lib/ev67-strchr.S         | 2 +-
+ arch/alpha/lib/ev67-strlen.S         | 2 +-
+ arch/alpha/lib/ev67-strncat.S        | 2 +-
+ arch/alpha/lib/ev67-strrchr.S        | 2 +-
+ arch/alpha/lib/memchr.S              | 2 +-
+ arch/alpha/lib/memmove.S             | 2 +-
+ arch/alpha/lib/memset.S              | 2 +-
+ arch/alpha/lib/strcat.S              | 2 +-
+ arch/alpha/lib/strchr.S              | 2 +-
+ arch/alpha/lib/strcpy.S              | 2 +-
+ arch/alpha/lib/strlen.S              | 2 +-
+ arch/alpha/lib/strncat.S             | 2 +-
+ arch/alpha/lib/strncpy.S             | 2 +-
+ arch/alpha/lib/strrchr.S             | 2 +-
+ arch/alpha/lib/udiv-qrnnd.S          | 2 +-
+ 32 files changed, 32 insertions(+), 32 deletions(-)
+
+diff --git a/arch/alpha/lib/callback_srm.S b/arch/alpha/lib/callback_srm.S
+index b13c4a231f1b..36b63f295170 100644
+--- a/arch/alpha/lib/callback_srm.S
++++ b/arch/alpha/lib/callback_srm.S
+@@ -3,8 +3,8 @@
+  *	arch/alpha/lib/callback_srm.S
+  */
+ 
++#include <linux/export.h>
+ #include <asm/console.h>
+-#include <asm/export.h>
+ 
+ .text
+ #define HWRPB_CRB_OFFSET 0xc0
+diff --git a/arch/alpha/lib/clear_page.S b/arch/alpha/lib/clear_page.S
+index ce02de7b0493..af70ee309a33 100644
+--- a/arch/alpha/lib/clear_page.S
++++ b/arch/alpha/lib/clear_page.S
+@@ -4,7 +4,7 @@
+  *
+  * Zero an entire page.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.text
+ 	.align 4
+ 	.global clear_page
+diff --git a/arch/alpha/lib/clear_user.S b/arch/alpha/lib/clear_user.S
+index db6c6ca45896..848eb60a0010 100644
+--- a/arch/alpha/lib/clear_user.S
++++ b/arch/alpha/lib/clear_user.S
+@@ -10,7 +10,7 @@
+  * a successful copy).  There is also some rather minor exception setup
+  * stuff.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 
+ /* Allow an exception for an insn; exit if we get one.  */
+ #define EX(x,y...)			\
+diff --git a/arch/alpha/lib/copy_page.S b/arch/alpha/lib/copy_page.S
+index 5439a30c77d0..1c444fdad9a5 100644
+--- a/arch/alpha/lib/copy_page.S
++++ b/arch/alpha/lib/copy_page.S
+@@ -4,7 +4,7 @@
+  *
+  * Copy an entire page.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.text
+ 	.align 4
+ 	.global copy_page
+diff --git a/arch/alpha/lib/copy_user.S b/arch/alpha/lib/copy_user.S
+index 32ab0344b185..ef18faafcad6 100644
+--- a/arch/alpha/lib/copy_user.S
++++ b/arch/alpha/lib/copy_user.S
+@@ -12,7 +12,7 @@
+  * exception setup stuff..
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ 
+ /* Allow an exception for an insn; exit if we get one.  */
+ #define EXI(x,y...)			\
+diff --git a/arch/alpha/lib/csum_ipv6_magic.S b/arch/alpha/lib/csum_ipv6_magic.S
+index c7b213ab01ab..273c426c3859 100644
+--- a/arch/alpha/lib/csum_ipv6_magic.S
++++ b/arch/alpha/lib/csum_ipv6_magic.S
+@@ -13,7 +13,7 @@
+  * added by Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.globl csum_ipv6_magic
+ 	.align 4
+ 	.ent csum_ipv6_magic
+diff --git a/arch/alpha/lib/divide.S b/arch/alpha/lib/divide.S
+index 2b60eb45e50b..db01840d76ec 100644
+--- a/arch/alpha/lib/divide.S
++++ b/arch/alpha/lib/divide.S
+@@ -46,7 +46,7 @@
+  *	$28 - compare status
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ #define halt .long 0
+ 
+ /*
+diff --git a/arch/alpha/lib/ev6-clear_page.S b/arch/alpha/lib/ev6-clear_page.S
+index 325864c81586..a534d9ff7161 100644
+--- a/arch/alpha/lib/ev6-clear_page.S
++++ b/arch/alpha/lib/ev6-clear_page.S
+@@ -4,7 +4,7 @@
+  *
+  * Zero an entire page.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+         .text
+         .align 4
+         .global clear_page
+diff --git a/arch/alpha/lib/ev6-clear_user.S b/arch/alpha/lib/ev6-clear_user.S
+index 7e644f83cdf2..af776cc45f91 100644
+--- a/arch/alpha/lib/ev6-clear_user.S
++++ b/arch/alpha/lib/ev6-clear_user.S
+@@ -29,7 +29,7 @@
+  *	want to leave a hole (and we also want to avoid repeating lots of work)
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ /* Allow an exception for an insn; exit if we get one.  */
+ #define EX(x,y...)			\
+ 	99: x,##y;			\
+diff --git a/arch/alpha/lib/ev6-copy_page.S b/arch/alpha/lib/ev6-copy_page.S
+index fd7212c8dcf1..36be5113b7b7 100644
+--- a/arch/alpha/lib/ev6-copy_page.S
++++ b/arch/alpha/lib/ev6-copy_page.S
+@@ -57,7 +57,7 @@
+    destination pages are in the dcache, but it is my guess that this is
+    less important than the dcache miss case.  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.text
+ 	.align 4
+ 	.global copy_page
+diff --git a/arch/alpha/lib/ev6-copy_user.S b/arch/alpha/lib/ev6-copy_user.S
+index f3e433754397..b9b19710c364 100644
+--- a/arch/alpha/lib/ev6-copy_user.S
++++ b/arch/alpha/lib/ev6-copy_user.S
+@@ -23,7 +23,7 @@
+  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ /* Allow an exception for an insn; exit if we get one.  */
+ #define EXI(x,y...)			\
+ 	99: x,##y;			\
+diff --git a/arch/alpha/lib/ev6-csum_ipv6_magic.S b/arch/alpha/lib/ev6-csum_ipv6_magic.S
+index 9a73f90700a1..2ee548be98e3 100644
+--- a/arch/alpha/lib/ev6-csum_ipv6_magic.S
++++ b/arch/alpha/lib/ev6-csum_ipv6_magic.S
+@@ -53,7 +53,7 @@
+  * may cause additional delay in rare cases (load-load replay traps).
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.globl csum_ipv6_magic
+ 	.align 4
+ 	.ent csum_ipv6_magic
+diff --git a/arch/alpha/lib/ev6-divide.S b/arch/alpha/lib/ev6-divide.S
+index 137ff1a07356..b73a6d26362e 100644
+--- a/arch/alpha/lib/ev6-divide.S
++++ b/arch/alpha/lib/ev6-divide.S
+@@ -56,7 +56,7 @@
+  * Try not to change the actual algorithm if possible for consistency.
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ #define halt .long 0
+ 
+ /*
+diff --git a/arch/alpha/lib/ev6-memchr.S b/arch/alpha/lib/ev6-memchr.S
+index 56bf9e14eeee..f75ba43e61e3 100644
+--- a/arch/alpha/lib/ev6-memchr.S
++++ b/arch/alpha/lib/ev6-memchr.S
+@@ -28,7 +28,7 @@
+  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
+  * Try not to change the actual algorithm if possible for consistency.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+         .set noreorder
+         .set noat
+ 
+diff --git a/arch/alpha/lib/ev6-memcpy.S b/arch/alpha/lib/ev6-memcpy.S
+index ffbd056b6eb2..3ef43c26c8af 100644
+--- a/arch/alpha/lib/ev6-memcpy.S
++++ b/arch/alpha/lib/ev6-memcpy.S
+@@ -20,7 +20,7 @@
+  * Temp usage notes:
+  *	$1,$2,		- scratch
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.set noreorder
+ 	.set noat
+ 
+diff --git a/arch/alpha/lib/ev6-memset.S b/arch/alpha/lib/ev6-memset.S
+index 1cfcfbbea6f0..89d7809da4cc 100644
+--- a/arch/alpha/lib/ev6-memset.S
++++ b/arch/alpha/lib/ev6-memset.S
+@@ -27,7 +27,7 @@
+  * as fixes will need to be made in multiple places.  The performance gain
+  * is worth it.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.set noat
+ 	.set noreorder
+ .text
+diff --git a/arch/alpha/lib/ev67-strcat.S b/arch/alpha/lib/ev67-strcat.S
+index ec3096a9e8d4..f8c7305b11d6 100644
+--- a/arch/alpha/lib/ev67-strcat.S
++++ b/arch/alpha/lib/ev67-strcat.S
+@@ -20,7 +20,7 @@
+  * string once.
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.text
+ 
+ 	.align 4
+diff --git a/arch/alpha/lib/ev67-strchr.S b/arch/alpha/lib/ev67-strchr.S
+index fbf89e0b6dc3..97a7cb475309 100644
+--- a/arch/alpha/lib/ev67-strchr.S
++++ b/arch/alpha/lib/ev67-strchr.S
+@@ -16,7 +16,7 @@
+  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
+  * Try not to change the actual algorithm if possible for consistency.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ #include <asm/regdef.h>
+ 
+ 	.set noreorder
+diff --git a/arch/alpha/lib/ev67-strlen.S b/arch/alpha/lib/ev67-strlen.S
+index b73106ffbbc7..3d9078807ab4 100644
+--- a/arch/alpha/lib/ev67-strlen.S
++++ b/arch/alpha/lib/ev67-strlen.S
+@@ -18,7 +18,7 @@
+  *	U	- upper subcluster; U0 - subcluster U0; U1 - subcluster U1
+  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.set noreorder
+ 	.set noat
+ 
+diff --git a/arch/alpha/lib/ev67-strncat.S b/arch/alpha/lib/ev67-strncat.S
+index ceb0ca528789..8f313233e3a7 100644
+--- a/arch/alpha/lib/ev67-strncat.S
++++ b/arch/alpha/lib/ev67-strncat.S
+@@ -21,7 +21,7 @@
+  * Try not to change the actual algorithm if possible for consistency.
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.text
+ 
+ 	.align 4
+diff --git a/arch/alpha/lib/ev67-strrchr.S b/arch/alpha/lib/ev67-strrchr.S
+index 7f80e398530f..ae7355f9ec56 100644
+--- a/arch/alpha/lib/ev67-strrchr.S
++++ b/arch/alpha/lib/ev67-strrchr.S
+@@ -19,7 +19,7 @@
+  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
+  */
+ 
+-#include <asm/export.h>
++#include <linux/export.h>
+ #include <asm/regdef.h>
+ 
+ 	.set noreorder
+diff --git a/arch/alpha/lib/memchr.S b/arch/alpha/lib/memchr.S
+index c13d3eca2e05..45366e32feee 100644
+--- a/arch/alpha/lib/memchr.S
++++ b/arch/alpha/lib/memchr.S
+@@ -31,7 +31,7 @@ For correctness consider that:
+       - only minimum number of quadwords may be accessed
+       - the third argument is an unsigned long
+ */
+-#include <asm/export.h>
++#include <linux/export.h>
+         .set noreorder
+         .set noat
+ 
+diff --git a/arch/alpha/lib/memmove.S b/arch/alpha/lib/memmove.S
+index 42d1922d0edf..3a27689e3390 100644
+--- a/arch/alpha/lib/memmove.S
++++ b/arch/alpha/lib/memmove.S
+@@ -7,7 +7,7 @@
+  * This is hand-massaged output from the original memcpy.c.  We defer to
+  * memcpy whenever possible; the backwards copy loops are not unrolled.
+  */
+-#include <asm/export.h>        
++#include <linux/export.h>
+ 	.set noat
+ 	.set noreorder
+ 	.text
+diff --git a/arch/alpha/lib/memset.S b/arch/alpha/lib/memset.S
+index 00393e30df25..9075d6918346 100644
+--- a/arch/alpha/lib/memset.S
++++ b/arch/alpha/lib/memset.S
+@@ -14,7 +14,7 @@
+  * The scheduling comments are according to the EV5 documentation (and done by 
+  * hand, so they might well be incorrect, please do tell me about it..)
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.set noat
+ 	.set noreorder
+ .text
+diff --git a/arch/alpha/lib/strcat.S b/arch/alpha/lib/strcat.S
+index 055877dccd27..62b90ebbcf44 100644
+--- a/arch/alpha/lib/strcat.S
++++ b/arch/alpha/lib/strcat.S
+@@ -5,7 +5,7 @@
+  *
+  * Append a null-terminated string from SRC to DST.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 
+ 	.text
+ 
+diff --git a/arch/alpha/lib/strchr.S b/arch/alpha/lib/strchr.S
+index 17871dd00280..68c54ff50dfe 100644
+--- a/arch/alpha/lib/strchr.S
++++ b/arch/alpha/lib/strchr.S
+@@ -6,7 +6,7 @@
+  * Return the address of a given character within a null-terminated
+  * string, or null if it is not found.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ #include <asm/regdef.h>
+ 
+ 	.set noreorder
+diff --git a/arch/alpha/lib/strcpy.S b/arch/alpha/lib/strcpy.S
+index cb74ad23a90d..d8773ba77525 100644
+--- a/arch/alpha/lib/strcpy.S
++++ b/arch/alpha/lib/strcpy.S
+@@ -6,7 +6,7 @@
+  * Copy a null-terminated string from SRC to DST.  Return a pointer
+  * to the null-terminator in the source.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.text
+ 
+ 	.align 3
+diff --git a/arch/alpha/lib/strlen.S b/arch/alpha/lib/strlen.S
+index dd882fe4d7e3..4fc6a6ff24cd 100644
+--- a/arch/alpha/lib/strlen.S
++++ b/arch/alpha/lib/strlen.S
+@@ -12,7 +12,7 @@
+  *	  do this instead of the 9 instructions that
+  *	  binary search needs).
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.set noreorder
+ 	.set noat
+ 
+diff --git a/arch/alpha/lib/strncat.S b/arch/alpha/lib/strncat.S
+index 522fee3e26ac..a913a7c84a39 100644
+--- a/arch/alpha/lib/strncat.S
++++ b/arch/alpha/lib/strncat.S
+@@ -10,7 +10,7 @@
+  * past count, whereas libc may write to count+1.  This follows the generic
+  * implementation in lib/string.c and is, IMHO, more sensible.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.text
+ 
+ 	.align 3
+diff --git a/arch/alpha/lib/strncpy.S b/arch/alpha/lib/strncpy.S
+index cc57fad8b7ca..cb90cf022df3 100644
+--- a/arch/alpha/lib/strncpy.S
++++ b/arch/alpha/lib/strncpy.S
+@@ -11,7 +11,7 @@
+  * version has cropped that bit o' nastiness as well as assuming that
+  * __stxncpy is in range of a branch.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ 	.set noat
+ 	.set noreorder
+ 
+diff --git a/arch/alpha/lib/strrchr.S b/arch/alpha/lib/strrchr.S
+index 7650ba99b7e2..dd8e073b6cf2 100644
+--- a/arch/alpha/lib/strrchr.S
++++ b/arch/alpha/lib/strrchr.S
+@@ -6,7 +6,7 @@
+  * Return the address of the last occurrence of a given character
+  * within a null-terminated string, or null if it is not found.
+  */
+-#include <asm/export.h>
++#include <linux/export.h>
+ #include <asm/regdef.h>
+ 
+ 	.set noreorder
+diff --git a/arch/alpha/lib/udiv-qrnnd.S b/arch/alpha/lib/udiv-qrnnd.S
+index b887aa5428e5..96f05918bffe 100644
+--- a/arch/alpha/lib/udiv-qrnnd.S
++++ b/arch/alpha/lib/udiv-qrnnd.S
+@@ -25,7 +25,7 @@
+  # along with GCC; see the file COPYING.  If not, write to the 
+  # Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+  # MA 02111-1307, USA.
+-#include <asm/export.h>
++#include <linux/export.h>
+ 
+         .set noreorder
+         .set noat
+-- 
+2.39.2
+
