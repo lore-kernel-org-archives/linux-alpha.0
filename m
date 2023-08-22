@@ -1,74 +1,58 @@
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 01/14] alpha: Streamline convoluted PCI error handling
-Date: Thu, 24 Aug 2023 16:28:19 +0300
-Message-ID: <20230824132832.78705-2-ilpo.jarvinen@linux.intel.com>
-References: <20230824132832.78705-1-ilpo.jarvinen@linux.intel.com>
+From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
+Subject: Re: [PATCH 0/7] Expect immutable pointer in
+ virt_to_phys/isa_virt_to_bus prototypes
+Date: Tue, 22 Aug 2023 14:26:43 -0700
+Message-ID: <41327.6201159292$1692922231@news.gmane.org>
+References: <168155718437.13678.714141668943813263.stgit@skinsburskii.localdomain>
+ <52dd950a-e714-4ebe-a663-4e0ec6463d03@app.fastmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1692884440; x=1724420440;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=EIzH6I89fHcXXY3uRmCZDeB2Y9jdsZHRRgZCynpqYTM=;
-  b=a6RWK/PlOhomwS7OIp0vMta4NZMmDMlwl5pcdsN916A89KY7MUcRgH7m
-   PelkSdMx460WFwUMdi75lF/wA487BLsytvIyL4lVi0PBOXKKHSi7CRVwS
-   kRLpafAu2SX70RMyQi2kewe595Iyl6nxnp2d6cFwOBlCeIl2A0IGGBVsJ
-   wc/+gu4P1kDn8n7MBcziBY+jqJKwcpuMX+TudqjfC178KYzf7FBdBY3OE
-   cl0TnBHSlhm8iigeU3K3YXbjeOqMbVpFtK5syo4e3PaIdf1/mRNSXPryA
-   9W9HXBdeo1EJ3IxbS3dZ3jUwW1arpEWYINReQ0SvP0mt2xHBK+7anpSxl
-   A==;
-In-Reply-To: <20230824132832.78705-1-ilpo.jarvinen@linux.intel.com>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: linux-pci@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AF9CE2127C80
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1692922170;
+	bh=sv6DcWBBSEGmhA8F4G7aY7hVhke3+bslRKfTB+4Ii7U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=MrRC1d6L9JAZEHExoNj55zYorTOtyuAuuF6yHy3YMYISl2FaIWwzWl5k6NBjgheNg
+	 64cVkfXKIBCseKIaDIMZk19ekt6kO0bW5f0ghjV0qtDJtfqIwswpGdLb1+LndPE0Gp
+	 DTR7Mji6Q+4m0A5Ugqtc2thBSoCF3P/pD2ymgCGc=
+Content-Disposition: inline
+In-Reply-To: <52dd950a-e714-4ebe-a663-4e0ec6463d03@app.fastmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org
+Sender: "Linuxppc-dev" <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane-mx.org@lists.ozlabs.org>
+Content-Type: text/plain; charset="utf-8"
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-ia64@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Dave Hansen <dave.hansen@linux.intel.com>, Jiaxun Yang <jiaxun.yang@flygoat.com>, linux-mips@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>, linux-hexagon@vger.kernel.org, Omar Sandoval <osandov@fb.com>, Linux-Arch <linux-arch@vger.kernel.org>, Florian Fainelli <f.fainelli@gmail.com>, Helge Deller <deller@gmx.de>, x86@kernel.org, Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>, Ingo Molnar <mingo@redhat.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Matt Turner <mattst88@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, Nicholas Piggin <npiggin@gmail.com>, Mark Brown <broonie@kernel.org>, Borislav Petkov <bp@alien8.de>, Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>, Brian Cain <bcain@quicinc.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Chris Down <chr>
 
-miata_map_irq() handles PCI device and read config related errors in a
-conditional block that is more complex than necessary.
+On Fri, Apr 28, 2023 at 08:40:51AM +0100, Arnd Bergmann wrote:
+> On Sat, Apr 15, 2023, at 12:17, Stanislav Kinsburskii wrote:
+> > This series is aimed to address compilation warnings when a constant pointer
+> > is passed to virt_to_phys and isa_virt_to_bus functions:
+> >
+> >   warning: passing argument 1 of ‘virt_to_phys’ discards ‘const’ 
+> > qualifier from pointer target type
+> >   warning: passing argument 1 of ‘isa_virt_to_bus’ discards ‘const’ 
+> > qualifier from pointer target type
+> >
+> > The change(s) is the same for all architectures, but it's split into a series on
+> > per-arch basis to simplify applying and testing on the maintainers side.
+> >
+> 
+> Looks all good to me. If everyone is happy with it, I'll queue it up
+> after in the asm-generic tree for 6.5, once rc1 is out.
+> 
 
-Streamline the code flow and error handling.
+Hello Arnd,
+Is the plan to merge this series into 6.5 still on?
 
-No functional changes intended.
+Stanislav
 
-Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
----
- arch/alpha/kernel/sys_miata.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
-
-diff --git a/arch/alpha/kernel/sys_miata.c b/arch/alpha/kernel/sys_miata.c
-index e1bee8f84c58..33b2798de8fc 100644
---- a/arch/alpha/kernel/sys_miata.c
-+++ b/arch/alpha/kernel/sys_miata.c
-@@ -183,16 +183,17 @@ miata_map_irq(const struct pci_dev *dev, u8 slot, u8 =
-pin)
-            the 2nd 8259 controller. So we have to check for it first. */
-=20
- 	if((slot =3D=3D 7) && (PCI_FUNC(dev->devfn) =3D=3D 3)) {
--		u8 irq=3D0;
- 		struct pci_dev *pdev =3D pci_get_slot(dev->bus, dev->devfn & ~7);
--		if(pdev =3D=3D NULL || pci_read_config_byte(pdev, 0x40,&irq) !=3D PCIBIO=
-S_SUCCESSFUL) {
--			pci_dev_put(pdev);
-+		u8 irq =3D 0;
-+		int ret;
-+
-+		if (!pdev)
- 			return -1;
--		}
--		else	{
--			pci_dev_put(pdev);
--			return irq;
--		}
-+
-+		ret =3D pci_read_config_byte(pdev, 0x40, &irq);
-+		pci_dev_put(pdev);
-+
-+		return ret =3D=3D PCIBIOS_SUCCESSFUL ? irq : -1;
- 	}
-=20
- 	return COMMON_TABLE_LOOKUP;
---=20
-2.30.2
-
+>  Arnd
