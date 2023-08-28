@@ -1,74 +1,52 @@
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 1/8] alpha: Streamline convoluted PCI error handling
-Date: Sun, 27 Aug 2023 16:36:58 +0300
-Message-ID: <20230827133705.12991-2-ilpo.jarvinen@linux.intel.com>
-References: <20230827133705.12991-1-ilpo.jarvinen@linux.intel.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: (subset) [PATCH 00/17] -Wmissing-prototype warning fixes
+Date: Mon, 28 Aug 2023 08:42:39 +0200
+Message-ID: <CAMuHMdUkZmkBSksvaGcDCKz2tsgkwyWgDa+WwCJm2UxFMCj1jw@mail.gmail.com>
+References: <20230810141947.1236730-1-arnd@kernel.org> <169292577153.789945.11297239773543112051.b4-ty@oracle.com>
+ <3956e2a4-c545-1212-e95f-3cf61a60d6a4@gmail.com> <CAMuHMdWC2S330_Vb_NTHTDC=BakBsw4ouP-eFJv0erV1-jmvTQ@mail.gmail.com>
+ <130b3b57-edb0-184d-5b5f-69b013715773@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-alpha-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1693143443; x=1724679443;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=EIzH6I89fHcXXY3uRmCZDeB2Y9jdsZHRRgZCynpqYTM=;
-  b=GUNmTWfUnQ3USJ2i76sdpcu2Z5viK76MZf3bg4btBT6emCFd7cy4cXvb
-   3iaOh5um5DJ4cuRPMVyOKx5ptiom3dofpLdUPFhe64XWI6bT278HS/8D8
-   nbwZ7/tyboK4lJrhL0LNq/2Fl7HDoY8puPx/jAnH51uRkf6CSu4lCH5/j
-   ZGDxSgrUkjgt50rHe7AP50GmSVnk06AIk416P+QgTLgHKem0fi+P3VmkF
-   e1yOQiSyidL/MKLMbiJdsGaE63yweeDxH8q7rWGsBBpLRvt8b3b+Fvtvt
-   FhSuBhS+SNQPfZBtQnbUTdjWMyjZKjfKy9Ec4oXMcZLTIIeKbsMfMvToR
-   w==;
-In-Reply-To: <20230827133705.12991-1-ilpo.jarvinen@linux.intel.com>
-List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: linux-pci@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <philmd@linaro.org>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Content-Transfer-Encoding: base64
+Return-path: <linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:Cc:To:Subject:Message-ID:Date:From:
+	In-Reply-To:References:MIME-Version:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=bkLPsPpo4LPx/sd1gmsEiHyPyVa+//Cny0gH37rJSug=; b=1mpcNBKK406+RG
+	rymC1dlNEANF4OAl3NPoC4/xNfKxd+CxrRwZfNhUJH/8+Sljz0NITU1HsogfrKEOitsJlMfvQ2n+n
+	QiF7GwlLXyUEfcn8AvmvqjoN6FyZu+GMJrwOs+T0+sAk5V3oJ4ZMLxGM3EonaSQheDyNzmdxmXDf2
+	9fYgHUKY3uCN+DLhXQqowzHL+/8bNy+JECco/b5lKXqp6g0uL+GPit5cE8bxKcQDxqPQFk/s/Um5r
+	uenhaUD/6Thd/jheSrDF2CmPV47AiCAJvBRYSgVUs38nkD29OXgCIsbGW1cbai3JqwUVUwg1RkBM8
+	+OEFH+luI3YsYTRG8Bzw==;
+In-Reply-To: <130b3b57-edb0-184d-5b5f-69b013715773@gmail.com>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-riscv/>
+List-Post: <mailto:linux-riscv@lists.infradead.org>
+List-Help: <mailto:linux-riscv-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-riscv>,
+ <mailto:linux-riscv-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-riscv" <linux-riscv-bounces@lists.infradead.org>
+Errors-To: linux-riscv-bounces+glpr-linux-riscv=m.gmane-mx.org@lists.infradead.org
+Content-Type: text/plain; charset="windows-1252"
+To: Michael Schmitz <schmitzmic@gmail.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>, Brian Cain <bcain@quicinc.com>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Dinh Nguyen <dinguyen@kernel.org>, Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Ch
 
-miata_map_irq() handles PCI device and read config related errors in a
-conditional block that is more complex than necessary.
-
-Streamline the code flow and error handling.
-
-No functional changes intended.
-
-Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
----
- arch/alpha/kernel/sys_miata.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
-
-diff --git a/arch/alpha/kernel/sys_miata.c b/arch/alpha/kernel/sys_miata.c
-index e1bee8f84c58..33b2798de8fc 100644
---- a/arch/alpha/kernel/sys_miata.c
-+++ b/arch/alpha/kernel/sys_miata.c
-@@ -183,16 +183,17 @@ miata_map_irq(const struct pci_dev *dev, u8 slot, u8 =
-pin)
-            the 2nd 8259 controller. So we have to check for it first. */
-=20
- 	if((slot =3D=3D 7) && (PCI_FUNC(dev->devfn) =3D=3D 3)) {
--		u8 irq=3D0;
- 		struct pci_dev *pdev =3D pci_get_slot(dev->bus, dev->devfn & ~7);
--		if(pdev =3D=3D NULL || pci_read_config_byte(pdev, 0x40,&irq) !=3D PCIBIO=
-S_SUCCESSFUL) {
--			pci_dev_put(pdev);
-+		u8 irq =3D 0;
-+		int ret;
-+
-+		if (!pdev)
- 			return -1;
--		}
--		else	{
--			pci_dev_put(pdev);
--			return irq;
--		}
-+
-+		ret =3D pci_read_config_byte(pdev, 0x40, &irq);
-+		pci_dev_put(pdev);
-+
-+		return ret =3D=3D PCIBIOS_SUCCESSFUL ? irq : -1;
- 	}
-=20
- 	return COMMON_TABLE_LOOKUP;
---=20
-2.30.2
-
+T24gU2F0LCBBdWcgMjYsIDIwMjMgYXQgMTI6NDTigK9BTSBNaWNoYWVsIFNjaG1pdHogPHNjaG1p
+dHptaWNAZ21haWwuY29tPiB3cm90ZToKPiAoSW5jaWRlbnRhbGx5IC0gZGlkIHlvdSBldmVyIHB1
+Ymxpc2ggdGhlIG02OGsgZnVsbCBoaXN0b3J5IHRyZWUgYW55d2hlcmUKPiBpbiBnaXQ/KQoKWW91
+IG1lYW4gdGhlIGdpdGlmaWVkIHZlcnNpb24gb2YgdGhlIExpbnV4L202OGsgQ1ZTIHRyZWUgUmFs
+ZiBjcmVhdGVkCmZvciBtZSBiZWNhdXNlIG15IG1hY2hpbmUgd2Fzbid0IHBvd2VyZnVsIGVub3Vn
+aD8KTm8sIGFuZCBJIHNob3VsZCBsb29rIGludG8gZG9pbmcgdGhhdC4uLgoKR3J7b2V0amUsZWV0
+aW5nfXMsCgogICAgICAgICAgICAgICAgICAgICAgICBHZWVydAoKLS0gCkdlZXJ0IFV5dHRlcmhv
+ZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgt
+bTY4ay5vcmcKCkluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxl
+LCBJIGNhbGwgbXlzZWxmIGEgaGFja2VyLiBCdXQKd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFs
+aXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0LgogICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzCgpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1yaXNjdiBtYWlsaW5n
+IGxpc3QKbGludXgtcmlzY3ZAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFk
+ZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJpc2N2Cg==
