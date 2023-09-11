@@ -1,99 +1,50 @@
-From: Sohil Mehta <sohil.mehta@intel.com>
-Subject: [PATCH 1/2] tools headers UAPI: Sync fchmodat2() syscall table entries
-Date: Mon, 11 Sep 2023 18:02:09 +0000
-Message-ID: <20230911180210.1060504-2-sohil.mehta@intel.com>
+From: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Subject: Re: [PATCH 2/2] arch: Reserve map_shadow_stack() syscall number for
+ all architectures
+Date: Mon, 11 Sep 2023 21:10:26 +0000
+Message-ID: <8b7106881fa227a64b4e951c6b9240a7126ac4a2.camel@intel.com>
 References: <20230911180210.1060504-1-sohil.mehta@intel.com>
+         <20230911180210.1060504-3-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-m68k-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694455410; x=1725991410;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zl8mXYrGXcNEkRuXh0xk4b0ia0PVFV5ULgLWpewd6CU=;
-  b=U4v3XrnuRR+s2r4mfijiqKQ/5ps/7t3+g4ruev7VR4roxr2cgplvIVzA
-   awMMmzDnux/ak7RsNPNKzxFpAg2DHp8Wes9t+tJ9inOaPthayftlQ6ges
-   WQ9q2gKcaPhjvRwYfUT6PM/zzAw1qVpRevZsZ/v8NZkS/9DDs7jNRnkRf
-   qbEtlPF1T2KsU0o2laDsSnDDIZ/HsRwfy73ql3GgL6EMtyvCvbrveOPqL
-   T9ZqQSFh481gPOzDV3ej0/G+lgpib2XYtK5BQhsUxQylmcjg5QuwwZzqx
-   gLLUSEiqZ4QKy4niDKVqeeGx+7AQyjjlJJ+BBgtjKIWm7MtCHPUL6/GJV
+  t=1694466747; x=1726002747;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=cz+v3li1JoGPwRcSsa49A9A/hlg8ps60ng4auSdFE3o=;
+  b=M1JOU/CJ0wzz88ZtrNsSlKwqJguB0PhrBTGFbyeSR90nlrwHECtxjTxv
+   EMky+wnen/HNP1HJN1/P0LzRiGCnqnL5N/d75G3jNsYutoXnVLH/0RKhk
+   /clLL6NgkeDli2BdRmGsi+FF1vrR7fgvWAR3PWT0urr5jS3XnvZrPH0rE
+   O3ROnn6a6rfw0NFsb5LySxhRK8/sId4I97x51hHOm01G/VQlVPzPGZfw+
+   cMmLqiS6GzCWdEA0ucEEG0hc9HVv5zqId1N7/fsEDVkmWj0NSRi3mSxzc
+   rZkLxqEOLxSX6NlcsCZvgpmk6ZRikvvFUpXpLuvrtQfETQoooY6uXo/g9
    Q==;
-In-Reply-To: <20230911180210.1060504-1-sohil.mehta@intel.com>
+In-Reply-To: <20230911180210.1060504-3-sohil.mehta@intel.com>
+Content-Language: en-US
+Content-ID: <1955378CE723A64F8B91F3A248378666@namprd11.prod.outlook.com>
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-To: linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org
-Cc: Sohil Mehta <sohil.mehta@intel.com>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, Christian
+To: "Mehta, Sohil" <sohil.mehta@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
+Cc: "svens@linux.ibm.com" <svens@linux.ibm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "schwab@linux-m68k.org" <schwab@linux-m68k.org>, "brgerst@gmail.com" <brgerst@gmail.com>, "alexander.shishkin@linux.intel.com" <alexander.shishkin@linux.intel.com>, "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "monstr@monstr.eu" <monstr@monstr.eu>, "borntraeger@linux.ibm.com" <borntraeger@linux.ibm.com>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "glaubitz@physik.fu-berlin.de" <glaubitz@physik.fu-berlin.de>, "dalias@libc.org" <dalias@libc.org>, "lukas.bulwahn@gmail.com" <>
 
-The syscall table entries in the core kernel and perf are expected to be
-in sync. This would fix perf build warnings and also add support for
-fchmodat2 in 'perf trace'.
-
-Signed-off-by: Sohil Mehta <sohil.mehta@intel.com>
----
- tools/include/uapi/asm-generic/unistd.h             | 5 ++++-
- tools/perf/arch/mips/entry/syscalls/syscall_n64.tbl | 1 +
- tools/perf/arch/powerpc/entry/syscalls/syscall.tbl  | 1 +
- tools/perf/arch/s390/entry/syscalls/syscall.tbl     | 1 +
- tools/perf/arch/x86/entry/syscalls/syscall_64.tbl   | 1 +
- 5 files changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/tools/include/uapi/asm-generic/unistd.h b/tools/include/uapi/asm-generic/unistd.h
-index fd6c1cb585db..abe087c53b4b 100644
---- a/tools/include/uapi/asm-generic/unistd.h
-+++ b/tools/include/uapi/asm-generic/unistd.h
-@@ -820,8 +820,11 @@ __SYSCALL(__NR_set_mempolicy_home_node, sys_set_mempolicy_home_node)
- #define __NR_cachestat 451
- __SYSCALL(__NR_cachestat, sys_cachestat)
- 
-+#define __NR_fchmodat2 452
-+__SYSCALL(__NR_fchmodat2, sys_fchmodat2)
-+
- #undef __NR_syscalls
--#define __NR_syscalls 452
-+#define __NR_syscalls 453
- 
- /*
-  * 32 bit systems traditionally used different
-diff --git a/tools/perf/arch/mips/entry/syscalls/syscall_n64.tbl b/tools/perf/arch/mips/entry/syscalls/syscall_n64.tbl
-index cfda2511badf..cb5e757f6621 100644
---- a/tools/perf/arch/mips/entry/syscalls/syscall_n64.tbl
-+++ b/tools/perf/arch/mips/entry/syscalls/syscall_n64.tbl
-@@ -366,3 +366,4 @@
- 449	n64	futex_waitv			sys_futex_waitv
- 450	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
- 451	n64	cachestat			sys_cachestat
-+452	n64	fchmodat2			sys_fchmodat2
-diff --git a/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl b/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
-index 8c0b08b7a80e..20e50586e8a2 100644
---- a/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
-+++ b/tools/perf/arch/powerpc/entry/syscalls/syscall.tbl
-@@ -538,3 +538,4 @@
- 449	common  futex_waitv                     sys_futex_waitv
- 450 	nospu	set_mempolicy_home_node		sys_set_mempolicy_home_node
- 451	common	cachestat			sys_cachestat
-+452	common	fchmodat2			sys_fchmodat2
-diff --git a/tools/perf/arch/s390/entry/syscalls/syscall.tbl b/tools/perf/arch/s390/entry/syscalls/syscall.tbl
-index a6935af2235c..0122cc156952 100644
---- a/tools/perf/arch/s390/entry/syscalls/syscall.tbl
-+++ b/tools/perf/arch/s390/entry/syscalls/syscall.tbl
-@@ -454,3 +454,4 @@
- 449  common	futex_waitv		sys_futex_waitv			sys_futex_waitv
- 450  common	set_mempolicy_home_node	sys_set_mempolicy_home_node	sys_set_mempolicy_home_node
- 451  common	cachestat		sys_cachestat			sys_cachestat
-+452  common	fchmodat2		sys_fchmodat2			sys_fchmodat2
-diff --git a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-index 227538b0ce80..a5db10ddf540 100644
---- a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-+++ b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -373,6 +373,7 @@
- 449	common	futex_waitv		sys_futex_waitv
- 450	common	set_mempolicy_home_node	sys_set_mempolicy_home_node
- 451	common	cachestat		sys_cachestat
-+452	common  fchmodat2		sys_fchmodat2
- 
- #
- # Due to a historical design error, certain syscalls are numbered differently
--- 
-2.34.1
-
+T24gTW9uLCAyMDIzLTA5LTExIGF0IDE4OjAyICswMDAwLCBTb2hpbCBNZWh0YSB3cm90ZToKPiBk
+aWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBjL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAo+IGIv
+YXJjaC9wb3dlcnBjL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAo+IGluZGV4IDIwZTUwNTg2
+ZThhMi4uMjc2N2I4YTQyNjM2IDEwMDY0NAo+IC0tLSBhL2FyY2gvcG93ZXJwYy9rZXJuZWwvc3lz
+Y2FsbHMvc3lzY2FsbC50YmwKPiArKysgYi9hcmNoL3Bvd2VycGMva2VybmVsL3N5c2NhbGxzL3N5
+c2NhbGwudGJsCj4gQEAgLTUzOSwzICs1MzksNCBAQAo+IMKgNDUwwqDCoMKgwqBub3NwdcKgwqDC
+oHNldF9tZW1wb2xpY3lfaG9tZV9ub2RlwqDCoMKgwqDCoMKgwqDCoMKgc3lzX3NldF9tZW1wb2xp
+Y3lfaG9tCj4gZV9ub2RlCj4gwqA0NTHCoMKgwqDCoGNvbW1vbsKgwqBjYWNoZXN0YXTCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgc3lzX2NhY2hlc3RhdAo+IMKg
+NDUywqDCoMKgwqBjb21tb27CoMKgZmNobW9kYXQywqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoHN5c19mY2htb2RhdDIKPiArNDUzwqDCoMKgwqBjb21tb27CoMKg
+bWFwX3NoYWRvd19zdGFja8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgc3lzX21hcF9z
+aGFkb3dfc3RhY2sKCkkgbm90aWNlZCBpbiBwb3dlcnBjLCB0aGUgbm90IGltcGxlbWVudGVkIHN5
+c2NhbGxzIGFyZSBtYW51YWxseSBtYXBwZWQKdG8gc3lzX25pX3N5c2NhbGwuIEl0IGFsc28gaGFz
+IHNvbWUgc3BlY2lhbCBleHRyYSBzeXNfbmlfc3lzY2FsbCgpCmltcGxlbWVudGF0aW9uIGJpdHMg
+dG8gaGFuZGxlIGJvdGggQVJDSF9IQVNfU1lTQ0FMTF9XUkFQUEVSIGFuZAohQVJDSF9IQVNfU1lT
+Q0FMTF9XUkFQUEVSLiBTbyB3b25kZXJpbmcgaWYgaXQgbWlnaHQgbmVlZCBzcGVjaWFsCnRyZWF0
+bWVudC4gRGlkIHlvdSBzZWUgdGhvc2UgcGFydHM/Cgo=
