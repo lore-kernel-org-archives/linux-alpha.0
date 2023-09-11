@@ -1,123 +1,79 @@
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v3 4/6] PCI: Do error check on own line to split long if conditions
-Date: Mon, 11 Sep 2023 15:53:52 +0300
-Message-ID: <20230911125354.25501-5-ilpo.jarvinen@linux.intel.com>
-References: <20230911125354.25501-1-ilpo.jarvinen@linux.intel.com>
+From: Sohil Mehta <sohil.mehta@intel.com>
+Subject: [PATCH 0/2] arch: Sync all syscall tables with 2 newly added system calls
+Date: Mon, 11 Sep 2023 18:02:08 +0000
+Message-ID: <20230911180210.1060504-1-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-scsi-owner@vger.kernel.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-arch-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694436880; x=1725972880;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QCUHLcOIhxBRk27P/kLo+OYYTB7a6Wv3t3NHhSYLmJ0=;
-  b=gyuhulO1f4sSNWvKqFVmH51yb9CiwI0WX0vTlhOdWgZEkzRDh8i7oSUI
-   1HiI4MH5LzbH08Jlv96YouT0MWOVBEuA03qRfGoDE4Wfe03shkkf4vmmj
-   bjE1jNGb/c9u/ZxxxJvYxrzyjdbpr35vg2+vp97tehXw9JCNkd7LoAI2T
-   EZWKq1K2w365gAXnXvI0D5y8/hCRbY+7ub+CXWVpDJ02LEWoNz6VNxo1K
-   eZbrHc77ibTY91otw+Lcjg8Li0Xt7msRsQbLZCcsySLO0oz9d9KynZqSS
-   qWnov/S6qEfw5f5WQgfbOd9bJugrKROiUQrdrT32/2sJn7t0A1zLW7Sqv
-   Q==;
-In-Reply-To: <20230911125354.25501-1-ilpo.jarvinen@linux.intel.com>
+  t=1694455408; x=1725991408;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kxCm8IPxO4Adx3HaWS72d7S3asKhB+RqeSR07UfgL5Q=;
+  b=TgH4ZcvVeLgcJBMx88q+zt+rnhR/XRfuO/nxy/Ozi0X2cpYXH4HE64yE
+   j4PeTqTgQ1pE7xsMbvKBDjvUV3dHOaKnXYaQzFOxFkmFjMxlfXscIU4uV
+   t5M/C2DEPcLN6vUKsoLbTn6FVeytlnO9OZI40vOQiVzZxYKyjaYjTxK+P
+   jqWA5m5kF9XHSqvBJzfHvJUi4BzKSRf7MkHRuEGlFh/Rl86gIRZubwHqz
+   0ej0Fpyy9u/zLIvZEZr3LmRfZnfkJcx/O0nvzAihVAg5kky/2xMsbjQvX
+   OOj6q3VwwaBI2omjAlgvm0Vfs8s0PHkMGhLQpeP0Sdh4RXpaOPcA8ZTEy
+   g==;
 List-ID: <linux-alpha.vger.kernel.org>
-Content-Type: text/plain; charset="iso-8859-1"
-To: Rob Herring <robh@kernel.org>, Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org
-Cc: 3chas3@gmail.com, brking@us.ibm.com, dalias@libc.org, glaubitz@physik.fu-berlin.de, ink@jurassic.park.msu.ru, jejb@linux.ibm.com, kw@linux.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-atm-general@lists.sourceforge.net, linux-scsi@vger.kernel.org, linux-sh@vger.kernel.org, lpieralisi@kernel.org, martin.petersen@oracle.com, mattst88@gmail.com, netdev@vger.kernel.org, richard.henderson@linaro.org, toan@os.amperecomputing.com, ysato@users.sourceforge.jp, =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset="us-ascii"
+To: linux-kernel@vger.kernel.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org
+Cc: Sohil Mehta <sohil.mehta@intel.com>, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, Christian
 
-Placing PCI error code check inside if condition usually results in
-need to split lines. Combined with additional conditions the if
-condition becomes messy.
+6.6-rc1 has added support for 2 new system calls:
+[1] fchmodat2()
+[2] x86-specific map_shadow_stack()
 
-Convert to the usual error handling pattern with an additional variable
-to improve code readability. In addition, reverse the logic in
-pci_find_vsec_capability() to get rid of &&.
+This series mainly synchronizes the syscall tables arcoss the core kernel and
+tools to reflect the recent updates.
 
-No functional changes intended.
+For fchmodat2(), it fixes the missing entries in the tools directory.
 
-Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/pci/pci.c    | 9 ++++++---
- drivers/pci/probe.c  | 6 +++---
- drivers/pci/quirks.c | 6 +++---
- 3 files changed, 12 insertions(+), 9 deletions(-)
+For map_shadow_stack(), it reserves the syscall across the board. Since
+map_shadow_stack() is x86 specific for now, it is marked as a conditional
+syscall in sys_ni.c. Adding it to the syscall tables of other architectures is
+harmless and would return ENOSYS when exercised.
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 59c01d68c6d5..5e51e8bd5c13 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -732,15 +732,18 @@ u16 pci_find_vsec_capability(struct pci_dev *dev, u16=
- vendor, int cap)
- {
- 	u16 vsec =3D 0;
- 	u32 header;
-+	int ret;
-=20
- 	if (vendor !=3D dev->vendor)
- 		return 0;
-=20
- 	while ((vsec =3D pci_find_next_ext_capability(dev, vsec,
- 						     PCI_EXT_CAP_ID_VNDR))) {
--		if (pci_read_config_dword(dev, vsec + PCI_VNDR_HEADER,
--					  &header) =3D=3D PCIBIOS_SUCCESSFUL &&
--		    PCI_VNDR_HEADER_ID(header) =3D=3D cap)
-+		ret =3D pci_read_config_dword(dev, vsec + PCI_VNDR_HEADER, &header);
-+		if (ret !=3D PCIBIOS_SUCCESSFUL)
-+			continue;
-+
-+		if (PCI_VNDR_HEADER_ID(header) =3D=3D cap)
- 			return vsec;
- 	}
-=20
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index ab2a4a3a4c06..0ad440190a32 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1651,15 +1651,15 @@ static void pci_set_removable(struct pci_dev *dev)
- static bool pci_ext_cfg_is_aliased(struct pci_dev *dev)
- {
- #ifdef CONFIG_PCI_QUIRKS
--	int pos;
-+	int pos, ret;
- 	u32 header, tmp;
-=20
- 	pci_read_config_dword(dev, PCI_VENDOR_ID, &header);
-=20
- 	for (pos =3D PCI_CFG_SPACE_SIZE;
- 	     pos < PCI_CFG_SPACE_EXP_SIZE; pos +=3D PCI_CFG_SPACE_SIZE) {
--		if (pci_read_config_dword(dev, pos, &tmp) !=3D PCIBIOS_SUCCESSFUL
--		    || header !=3D tmp)
-+		ret =3D pci_read_config_dword(dev, pos, &tmp);
-+		if ((ret !=3D PCIBIOS_SUCCESSFUL) || (header !=3D tmp))
- 			return false;
- 	}
-=20
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 5de09d2eb014..0d2e6b0f56cc 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -5383,7 +5383,7 @@ int pci_dev_specific_disable_acs_redir(struct pci_dev=
- *dev)
-  */
- static void quirk_intel_qat_vf_cap(struct pci_dev *pdev)
- {
--	int pos, i =3D 0;
-+	int pos, i =3D 0, ret;
- 	u8 next_cap;
- 	u16 reg16, *cap;
- 	struct pci_cap_saved_state *state;
-@@ -5429,8 +5429,8 @@ static void quirk_intel_qat_vf_cap(struct pci_dev *pd=
-ev)
- 		pdev->pcie_mpss =3D reg16 & PCI_EXP_DEVCAP_PAYLOAD;
-=20
- 		pdev->cfg_size =3D PCI_CFG_SPACE_EXP_SIZE;
--		if (pci_read_config_dword(pdev, PCI_CFG_SPACE_SIZE, &status) !=3D
--		    PCIBIOS_SUCCESSFUL || (status =3D=3D 0xffffffff))
-+		ret =3D pci_read_config_dword(pdev, PCI_CFG_SPACE_SIZE, &status);
-+		if ((ret !=3D PCIBIOS_SUCCESSFUL) || (status =3D=3D 0xffffffff))
- 			pdev->cfg_size =3D PCI_CFG_SPACE_SIZE;
-=20
- 		if (pci_find_saved_cap(pdev, PCI_CAP_ID_EXP))
---=20
-2.30.2
+Reserving arch-specific syscall numbers in the tables of all architectures is
+good practice and would help avoid future conflicts.
+
+[1]: https://lore.kernel.org/lkml/20230824-frohlocken-vorabend-725f6fdaad50@brauner/
+[2]: https://lore.kernel.org/lkml/20230830234752.19858-1-dave.hansen@linux.intel.com/
+
+Sohil Mehta (2):
+  tools headers UAPI: Sync fchmodat2() syscall table entries
+  arch: Reserve map_shadow_stack() syscall number for all architectures
+
+ arch/alpha/kernel/syscalls/syscall.tbl              | 1 +
+ arch/arm/tools/syscall.tbl                          | 1 +
+ arch/arm64/include/asm/unistd.h                     | 2 +-
+ arch/arm64/include/asm/unistd32.h                   | 2 ++
+ arch/ia64/kernel/syscalls/syscall.tbl               | 1 +
+ arch/m68k/kernel/syscalls/syscall.tbl               | 1 +
+ arch/microblaze/kernel/syscalls/syscall.tbl         | 1 +
+ arch/mips/kernel/syscalls/syscall_n32.tbl           | 1 +
+ arch/mips/kernel/syscalls/syscall_n64.tbl           | 1 +
+ arch/mips/kernel/syscalls/syscall_o32.tbl           | 1 +
+ arch/parisc/kernel/syscalls/syscall.tbl             | 1 +
+ arch/powerpc/kernel/syscalls/syscall.tbl            | 1 +
+ arch/s390/kernel/syscalls/syscall.tbl               | 1 +
+ arch/sh/kernel/syscalls/syscall.tbl                 | 1 +
+ arch/sparc/kernel/syscalls/syscall.tbl              | 1 +
+ arch/x86/entry/syscalls/syscall_32.tbl              | 1 +
+ arch/xtensa/kernel/syscalls/syscall.tbl             | 1 +
+ include/uapi/asm-generic/unistd.h                   | 5 ++++-
+ tools/include/uapi/asm-generic/unistd.h             | 8 +++++++-
+ tools/perf/arch/mips/entry/syscalls/syscall_n64.tbl | 2 ++
+ tools/perf/arch/powerpc/entry/syscalls/syscall.tbl  | 2 ++
+ tools/perf/arch/s390/entry/syscalls/syscall.tbl     | 2 ++
+ tools/perf/arch/x86/entry/syscalls/syscall_64.tbl   | 2 ++
+ 23 files changed, 37 insertions(+), 3 deletions(-)
+
+
+base-commit: 0bb80ecc33a8fb5a682236443c1e740d5c917d1d
+-- 
+2.34.1
 
