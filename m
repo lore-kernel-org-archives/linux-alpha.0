@@ -1,74 +1,80 @@
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v3 1/6] alpha: Streamline convoluted PCI error handling
-Date: Mon, 11 Sep 2023 15:53:49 +0300
-Message-ID: <20230911125354.25501-2-ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH v3 3/6] atm: iphase: Do PCI error checks on own line
+Date: Mon, 11 Sep 2023 15:53:51 +0300
+Message-ID: <20230911125354.25501-4-ilpo.jarvinen@linux.intel.com>
 References: <20230911125354.25501-1-ilpo.jarvinen@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-scsi-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694436859; x=1725972859;
+  t=1694436869; x=1725972869;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EIzH6I89fHcXXY3uRmCZDeB2Y9jdsZHRRgZCynpqYTM=;
-  b=JuPSEvYIB+mM2lBRXxT7OwqrRO6ynrEoIGnior6iD3Zg9K0yqd3ivFuX
-   d5mWodOT3ThLbjXpxwfvMKUjwpOVHBcyKLOzbMdN//AO0Bg6HH50h6BXe
-   sNGZwt2hOW/zWca6n5BcKR57CRMM+GEp8O++Wdakx68G0qQLXYnG24l3Z
-   iexVdpZtzVkOMq+pUMcppi7f6qefJ/XBP6IHqAdlzPXNj4cKwGyGxhoGP
-   riCEEGvTjMmYNLaSIelvjYdVCUbkV+egVcHg5UiCiZkrBiT7+TYNTwSev
-   7vZA2RswbgW1pjtYpJ7IrHJldXlhqiBi2bM2xrinlvk10qktjikfrgF9X
-   Q==;
+  bh=RKVN1bWO+6tJ6WlmxsOXbk1vq7oGMYXcJ+RHQjqKcpI=;
+  b=bUWitqMHJGU633zc/Q/sIHhMdeFHAvfs/B8VP5XJ6il1JBZefbVulsxG
+   fA00ac7Cnc/s2hzzvrtjBvHQ3abVM59iirsEfL44JgMnVu6E8DVTJ4YTY
+   aBqVxCFXyX9ZGPjAd/NlthlVSiv6WkggN8i4buRyBOEP7NGwdxvPoGxAQ
+   OwUqoudOJJ4x44nqUCJPy+vDr3jbUo9uSehQSSHUlmmBcws646fMBOMX/
+   98LC0B5OOerAZ/G6LP/Mp2YRY4UVMiox4xMS7d9fPR3z7eJfSOCRM0UDg
+   VxgSX5Qc2qeDjwjgj1kx6ibvN5N1OLjQg0I3nksP9OQY8E2fQVwvOFDkb
+   A==;
 In-Reply-To: <20230911125354.25501-1-ilpo.jarvinen@linux.intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="iso-8859-1"
-To: Rob Herring <robh@kernel.org>, Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: 3chas3@gmail.com, brking@us.ibm.com, dalias@libc.org, glaubitz@physik.fu-berlin.de, jejb@linux.ibm.com, kw@linux.com, linux-arm-kernel@lists.infradead.org, linux-atm-general@lists.sourceforge.net, linux-scsi@vger.kernel.org, linux-sh@vger.kernel.org, lpieralisi@kernel.org, martin.petersen@oracle.com, netdev@vger.kernel.org, toan@os.amperecomputing.com, ysato@users.sourceforge.jp, =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: Rob Herring <robh@kernel.org>, Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Chas Williams <3chas3@gmail.com>, linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: brking@us.ibm.com, dalias@libc.org, glaubitz@physik.fu-berlin.de, ink@jurassic.park.msu.ru, jejb@linux.ibm.com, kw@linux.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-scsi@vger.kernel.org, linux-sh@vger.kernel.org, lpieralisi@kernel.org, martin.petersen@oracle.com, mattst88@gmail.com, richard.henderson@linaro.org, toan@os.amperecomputing.com, ysato@users.sourceforge.jp, =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 
-miata_map_irq() handles PCI device and read config related errors in a
-conditional block that is more complex than necessary.
+In get_esi() PCI errors are checked inside line-split if conditions (in
+addition to the file not following the coding style). To make the code
+in get_esi() more readable, fix the coding style and use the usual
+error handling pattern with a separate variable.
 
-Streamline the code flow and error handling.
+In addition, initialization of 'error' variable at declaration is not
+needed.
 
-No functional changes intended.
+No function changes intended.
 
 Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 ---
- arch/alpha/kernel/sys_miata.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/atm/iphase.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/arch/alpha/kernel/sys_miata.c b/arch/alpha/kernel/sys_miata.c
-index e1bee8f84c58..33b2798de8fc 100644
---- a/arch/alpha/kernel/sys_miata.c
-+++ b/arch/alpha/kernel/sys_miata.c
-@@ -183,16 +183,17 @@ miata_map_irq(const struct pci_dev *dev, u8 slot, u8 =
-pin)
-            the 2nd 8259 controller. So we have to check for it first. */
-=20
- 	if((slot =3D=3D 7) && (PCI_FUNC(dev->devfn) =3D=3D 3)) {
--		u8 irq=3D0;
- 		struct pci_dev *pdev =3D pci_get_slot(dev->bus, dev->devfn & ~7);
--		if(pdev =3D=3D NULL || pci_read_config_byte(pdev, 0x40,&irq) !=3D PCIBIO=
-S_SUCCESSFUL) {
--			pci_dev_put(pdev);
-+		u8 irq =3D 0;
-+		int ret;
-+
-+		if (!pdev)
- 			return -1;
--		}
--		else	{
--			pci_dev_put(pdev);
--			return irq;
--		}
-+
-+		ret =3D pci_read_config_byte(pdev, 0x40, &irq);
-+		pci_dev_put(pdev);
-+
-+		return ret =3D=3D PCIBIOS_SUCCESSFUL ? irq : -1;
- 	}
-=20
- 	return COMMON_TABLE_LOOKUP;
+diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+index 324148686953..9bba8f280a4d 100644
+--- a/drivers/atm/iphase.c
++++ b/drivers/atm/iphase.c
+@@ -2291,19 +2291,21 @@ static int get_esi(struct atm_dev *dev)
+ static int reset_sar(struct atm_dev *dev) =20
+ { =20
+ 	IADEV *iadev; =20
+-	int i, error =3D 1; =20
++	int i, error;
+ 	unsigned int pci[64]; =20
+ 	 =20
+ 	iadev =3D INPH_IA_DEV(dev); =20
+-	for(i=3D0; i<64; i++) =20
+-	  if ((error =3D pci_read_config_dword(iadev->pci, =20
+-				i*4, &pci[i])) !=3D PCIBIOS_SUCCESSFUL) =20
+-  	      return error; =20
++	for (i =3D 0; i < 64; i++) {
++		error =3D pci_read_config_dword(iadev->pci, i * 4, &pci[i]);
++		if (error !=3D PCIBIOS_SUCCESSFUL)
++			return error;
++	}
+ 	writel(0, iadev->reg+IPHASE5575_EXT_RESET); =20
+-	for(i=3D0; i<64; i++) =20
+-	  if ((error =3D pci_write_config_dword(iadev->pci, =20
+-					i*4, pci[i])) !=3D PCIBIOS_SUCCESSFUL) =20
+-	    return error; =20
++	for (i =3D 0; i < 64; i++) {
++		error =3D pci_write_config_dword(iadev->pci, i * 4, pci[i]);
++		if (error !=3D PCIBIOS_SUCCESSFUL)
++			return error;
++	}
+ 	udelay(5); =20
+ 	return 0; =20
+ } =20
 --=20
 2.30.2
 
