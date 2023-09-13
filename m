@@ -1,50 +1,81 @@
-From: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+From: Sohil Mehta <sohil.mehta@intel.com>
 Subject: Re: [PATCH 2/2] arch: Reserve map_shadow_stack() syscall number for
  all architectures
-Date: Mon, 11 Sep 2023 21:10:26 +0000
-Message-ID: <8b7106881fa227a64b4e951c6b9240a7126ac4a2.camel@intel.com>
+Date: Wed, 13 Sep 2023 12:18:28 -0700
+Message-ID: <29da2af0-5c88-f937-a9b6-db2d5f481321@intel.com>
 References: <20230911180210.1060504-1-sohil.mehta@intel.com>
-         <20230911180210.1060504-3-sohil.mehta@intel.com>
+ <20230911180210.1060504-3-sohil.mehta@intel.com>
+ <8b7106881fa227a64b4e951c6b9240a7126ac4a2.camel@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-m68k-owner@vger.kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694466747; x=1726002747;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=cz+v3li1JoGPwRcSsa49A9A/hlg8ps60ng4auSdFE3o=;
-  b=M1JOU/CJ0wzz88ZtrNsSlKwqJguB0PhrBTGFbyeSR90nlrwHECtxjTxv
-   EMky+wnen/HNP1HJN1/P0LzRiGCnqnL5N/d75G3jNsYutoXnVLH/0RKhk
-   /clLL6NgkeDli2BdRmGsi+FF1vrR7fgvWAR3PWT0urr5jS3XnvZrPH0rE
-   O3ROnn6a6rfw0NFsb5LySxhRK8/sId4I97x51hHOm01G/VQlVPzPGZfw+
-   cMmLqiS6GzCWdEA0ucEEG0hc9HVv5zqId1N7/fsEDVkmWj0NSRi3mSxzc
-   rZkLxqEOLxSX6NlcsCZvgpmk6ZRikvvFUpXpLuvrtQfETQoooY6uXo/g9
-   Q==;
-In-Reply-To: <20230911180210.1060504-3-sohil.mehta@intel.com>
+  t=1694632732; x=1726168732;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=63yUsneY/RmYlInZ/dnG/mTcTTecI9ZNgQJsTP1BacY=;
+  b=EzXrpENLKFT+1KNmOdSPiRCRxBp3lXW8P2Gf5BQZPhIoDAduY+hD2seJ
+   LlrqWseDxj4TK4WJKoonThmGCtVoTe/5jBjhto4fDlES2IaKgjoWOuVAd
+   DLqq95omA5OYPMlPi7weDKS9R1ANu7XdCmQCf8geaZbjHtH9+V1yNxvTP
+   bvYizDvqHFFvA5MxqzMa/RNIs4djfxqEIOP8hOWn7Oucu43I+3ME8OC4H
+   OXzPZVE7+SPYxl/gofi1cnzyjISrFdE82bYg5oinYWxFUOId1dzGrGxGP
+   WWNzVyq2/YR5HrKiKCnvVtriq+aoxxDl2dSAzVIisu41RclLV7b9WQx3q
+   A==;
 Content-Language: en-US
-Content-ID: <1955378CE723A64F8B91F3A248378666@namprd11.prod.outlook.com>
+In-Reply-To: <8b7106881fa227a64b4e951c6b9240a7126ac4a2.camel@intel.com>
 List-ID: <linux-alpha.vger.kernel.org>
-To: "Mehta, Sohil" <sohil.mehta@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+To: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
 Cc: "svens@linux.ibm.com" <svens@linux.ibm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "schwab@linux-m68k.org" <schwab@linux-m68k.org>, "brgerst@gmail.com" <brgerst@gmail.com>, "alexander.shishkin@linux.intel.com" <alexander.shishkin@linux.intel.com>, "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "monstr@monstr.eu" <monstr@monstr.eu>, "borntraeger@linux.ibm.com" <borntraeger@linux.ibm.com>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "glaubitz@physik.fu-berlin.de" <glaubitz@physik.fu-berlin.de>, "dalias@libc.org" <dalias@libc.org>, "lukas.bulwahn@gmail.com" <>
 
-T24gTW9uLCAyMDIzLTA5LTExIGF0IDE4OjAyICswMDAwLCBTb2hpbCBNZWh0YSB3cm90ZToKPiBk
-aWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBjL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAo+IGIv
-YXJjaC9wb3dlcnBjL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibAo+IGluZGV4IDIwZTUwNTg2
-ZThhMi4uMjc2N2I4YTQyNjM2IDEwMDY0NAo+IC0tLSBhL2FyY2gvcG93ZXJwYy9rZXJuZWwvc3lz
-Y2FsbHMvc3lzY2FsbC50YmwKPiArKysgYi9hcmNoL3Bvd2VycGMva2VybmVsL3N5c2NhbGxzL3N5
-c2NhbGwudGJsCj4gQEAgLTUzOSwzICs1MzksNCBAQAo+IMKgNDUwwqDCoMKgwqBub3NwdcKgwqDC
-oHNldF9tZW1wb2xpY3lfaG9tZV9ub2RlwqDCoMKgwqDCoMKgwqDCoMKgc3lzX3NldF9tZW1wb2xp
-Y3lfaG9tCj4gZV9ub2RlCj4gwqA0NTHCoMKgwqDCoGNvbW1vbsKgwqBjYWNoZXN0YXTCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgc3lzX2NhY2hlc3RhdAo+IMKg
-NDUywqDCoMKgwqBjb21tb27CoMKgZmNobW9kYXQywqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoHN5c19mY2htb2RhdDIKPiArNDUzwqDCoMKgwqBjb21tb27CoMKg
-bWFwX3NoYWRvd19zdGFja8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgc3lzX21hcF9z
-aGFkb3dfc3RhY2sKCkkgbm90aWNlZCBpbiBwb3dlcnBjLCB0aGUgbm90IGltcGxlbWVudGVkIHN5
-c2NhbGxzIGFyZSBtYW51YWxseSBtYXBwZWQKdG8gc3lzX25pX3N5c2NhbGwuIEl0IGFsc28gaGFz
-IHNvbWUgc3BlY2lhbCBleHRyYSBzeXNfbmlfc3lzY2FsbCgpCmltcGxlbWVudGF0aW9uIGJpdHMg
-dG8gaGFuZGxlIGJvdGggQVJDSF9IQVNfU1lTQ0FMTF9XUkFQUEVSIGFuZAohQVJDSF9IQVNfU1lT
-Q0FMTF9XUkFQUEVSLiBTbyB3b25kZXJpbmcgaWYgaXQgbWlnaHQgbmVlZCBzcGVjaWFsCnRyZWF0
-bWVudC4gRGlkIHlvdSBzZWUgdGhvc2UgcGFydHM/Cgo=
+On 9/11/2023 2:10 PM, Edgecombe, Rick P wrote:
+> On Mon, 2023-09-11 at 18:02 +0000, Sohil Mehta wrote:
+>> diff --git a/arch/powerpc/kernel/syscalls/syscall.tbl
+>> b/arch/powerpc/kernel/syscalls/syscall.tbl
+>> index 20e50586e8a2..2767b8a42636 100644
+>> --- a/arch/powerpc/kernel/syscalls/syscall.tbl
+>> +++ b/arch/powerpc/kernel/syscalls/syscall.tbl
+>> @@ -539,3 +539,4 @@
+>>  450    nospu   set_mempolicy_home_node         sys_set_mempolicy_hom
+>> e_node
+>>  451    common  cachestat                       sys_cachestat
+>>  452    common  fchmodat2                       sys_fchmodat2
+>> +453    common  map_shadow_stack                sys_map_shadow_stack
+> 
+> I noticed in powerpc, the not implemented syscalls are manually mapped
+> to sys_ni_syscall. It also has some special extra sys_ni_syscall()
+> implementation bits to handle both ARCH_HAS_SYSCALL_WRAPPER and
+> !ARCH_HAS_SYSCALL_WRAPPER. So wondering if it might need special
+> treatment. Did you see those parts?
+> 
+
+Thanks for pointing this out. Powerpc seems to be unique in their
+handling of not implemented syscalls. Maybe it's because of their
+special casing of the ARCH_HAS_SYSCALL_WRAPPER.
+
+The code below in arch/powerpc/include/asm/syscalls.h suggests to me
+that it should be safe to map map_shadow_stack() to sys_ni_syscall() and
+the special handling will be taken care of.
+
+#ifndef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
+long sys_ni_syscall(void);
+#else
+long sys_ni_syscall(const struct pt_regs *regs);
+#endif
+
+I don't quite understand the underlying reasoning for it though. Do you
+have any additional insight into how we should handle this?
+
+I am thinking of doing the following in the next iteration unless
+someone chimes in and says otherwise.
+
+--- a/arch/powerpc/kernel/syscalls/syscall.tbl
++++ b/arch/powerpc/kernel/syscalls/syscall.tbl
+@@ -539,4 +539,4 @@
+ 450    nospu   set_mempolicy_home_node         sys_set_mempolicy_home_node
+ 451    common  cachestat                       sys_cachestat
+ 452    common  fchmodat2                       sys_fchmodat2
+-453    common  map_shadow_stack                sys_map_shadow_stack
++453    common  map_shadow_stack                sys_ni_syscall
+
