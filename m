@@ -1,87 +1,43 @@
-From: "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Subject: Re: [PATCH 2/2] arch: Reserve map_shadow_stack() syscall number for
- all architectures
-Date: Wed, 13 Sep 2023 22:05:27 +0000
-Message-ID: <a7238521c6f2caee4d76b58fafa60f133cf08041.camel@intel.com>
-References: <20230911180210.1060504-1-sohil.mehta@intel.com>
-         <20230911180210.1060504-3-sohil.mehta@intel.com>
-         <8b7106881fa227a64b4e951c6b9240a7126ac4a2.camel@intel.com>
-         <29da2af0-5c88-f937-a9b6-db2d5f481321@intel.com>
+From: "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: Re: [PATCH v3 6/6] scsi: ipr: Do PCI error checks on own line
+Date: Wed, 13 Sep 2023 21:00:11 -0400
+Message-ID: <yq1jzstfu2z.fsf@ca-mkp.ca.oracle.com>
+References: <20230911125354.25501-1-ilpo.jarvinen@linux.intel.com>
+        <20230911125354.25501-7-ilpo.jarvinen@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-m68k-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1694642733; x=1726178733;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=s+6sAo4gG60eAhwsX/qXmJFoWFy3s62o4HqZz41EHO0=;
-  b=N4zP8jin9RGML6EIvfrI2vlHZ8sHRlmcLC0ijv+Y2stRRlIFHyiBW9u4
-   8rc2QguC6TIFZQDUXYeEHo2BVRXMlyIhEAVC1e65RzgR/8fjhzaHH03Bm
-   J3lMUask8S2yegP4yCSuBXF2JLaN3Ex/XNI0YVTjMRuxjYf4fjx23nGsR
-   jrzOtfHOJsAP/VJljk7p6aoVydQp6GqFh4Ie+hV0bJ10dqGjdzYKunUvX
-   UAhQ8PVaD5c8p4rX1TeqAC7egAZ2tW2As3sMisF6syrbI5Iw96cqn9J1P
-   WFymG1tv8krPLrCa0QdOEZYQQXpcq+OpEn8OfV97f8vRWr09rsoU++BIg
-   g==;
-In-Reply-To: <29da2af0-5c88-f937-a9b6-db2d5f481321@intel.com>
-Content-Language: en-US
-Content-ID: <C23AF5E60AE52E4F89DAA82F6EB21D96@namprd11.prod.outlook.com>
+Return-path: <linux-alpha-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
+ from : message-id : references : date : in-reply-to : content-type :
+ mime-version; s=corp-2023-03-30;
+ bh=PhrOtT9oKbjaBUBwJlb3F3CQEiH4a2EsCBteVFN55Rs=;
+ b=vD9BqpK83PgndiFOQyBjqmK9UK/XlzkvXgi66ugc8ZGKP3pjvEVOXBpQMN3ysexV27mz
+ MeSJ6rm4HecVbRHmJZ1GOnU7mZkDd39ZJ+Y3zoC9VY4aA1qtD/2AFrdOOsr7+Ojn9L/m
+ jC1QN5RgPO9hH3hvRlF4VpDKOwz3/yZvy+rDEH6WlnNNxr3MjBt033wcwZTyc9jZG4ot
+ m294/WWmlUU5qomOzl66IfVwltENmj4vC+9Q9IQtxCDFPiIaAWmlTs5xho21Gxby68U1
+ w/ECNaYvLXr4A5xWHSuryd8n6lhXoQSOeEZS7WB4Juujcr1ClsOZLjIdb7Txt+Y8YzqG EA== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PhrOtT9oKbjaBUBwJlb3F3CQEiH4a2EsCBteVFN55Rs=;
+ b=YkrG0aLjxsUcaROcSub2NguKbr465w+6UNvsAAITQwdnMC3uOOuQ6lw9oSEZwVih6UF/r+T0Pl15f7QNPIqy59962OnRtZShAcMl/xx9XYEAiMCY6ss/fO+SnDqKjD9ejRA2KMskpxdzzSEqx9EDBZ/TCEB03lb/0Tap3wFDSd0=
+In-Reply-To: <20230911125354.25501-7-ilpo.jarvinen@linux.intel.com> ("Ilpo
+        =?utf-8?Q?J=C3=A4rvinen=22's?= message of "Mon, 11 Sep 2023 15:53:54
+ +0300")
 List-ID: <linux-alpha.vger.kernel.org>
-To: "Mehta, Sohil" <sohil.mehta@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-Cc: "svens@linux.ibm.com" <svens@linux.ibm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "schwab@linux-m68k.org" <schwab@linux-m68k.org>, "brgerst@gmail.com" <brgerst@gmail.com>, "alexander.shishkin@linux.intel.com" <alexander.shishkin@linux.intel.com>, "linux-perf-users@vger.kernel.org" <linux-perf-users@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "dalias@libc.org" <dalias@libc.org>, "monstr@monstr.eu" <monstr@monstr.eu>, "borntraeger@linux.ibm.com" <borntraeger@linux.ibm.com>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "christophe.leroy@csgroup.eu" <christophe.leroy@csgroup.eu>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "glaubitz@physik.fu-berlin.de" <glaubitz@physik.fu-berlin.de>, "lukas.bulwahn@gmail.com" <>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: Ilpo =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Rob Herring <robh@kernel.org>, Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Brian King <brking@us.ibm.com>, "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org, 3chas3@gmail.com, dalias@libc.org, glaubitz@physik.fu-berlin.de, ink@jurassic.park.msu.ru, kw@linux.com, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-atm-general@lists.sourceforge.net, linux-sh@vger.kernel.org, lpieralisi@kernel.org, mattst88@gmail.com, netdev@vger.kernel.org, richard.henderson@linaro.org, toan@os.amperecomputing.com, ysato@users.sourceforge.jp
 
-T24gV2VkLCAyMDIzLTA5LTEzIGF0IDEyOjE4IC0wNzAwLCBTb2hpbCBNZWh0YSB3cm90ZToNCj4g
-T24gOS8xMS8yMDIzIDI6MTAgUE0sIEVkZ2Vjb21iZSwgUmljayBQIHdyb3RlOg0KPiA+IE9uIE1v
-biwgMjAyMy0wOS0xMSBhdCAxODowMiArMDAwMCwgU29oaWwgTWVodGEgd3JvdGU6DQo+ID4gPiBk
-aWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBjL2tlcm5lbC9zeXNjYWxscy9zeXNjYWxsLnRibA0KPiA+
-ID4gYi9hcmNoL3Bvd2VycGMva2VybmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsDQo+ID4gPiBpbmRl
-eCAyMGU1MDU4NmU4YTIuLjI3NjdiOGE0MjYzNiAxMDA2NDQNCj4gPiA+IC0tLSBhL2FyY2gvcG93
-ZXJwYy9rZXJuZWwvc3lzY2FsbHMvc3lzY2FsbC50YmwNCj4gPiA+ICsrKyBiL2FyY2gvcG93ZXJw
-Yy9rZXJuZWwvc3lzY2FsbHMvc3lzY2FsbC50YmwNCj4gPiA+IEBAIC01MzksMyArNTM5LDQgQEAN
-Cj4gPiA+IMKgNDUwwqDCoMKgwqBub3NwdcKgwqDCoHNldF9tZW1wb2xpY3lfaG9tZV9ub2RlwqDC
-oMKgwqDCoMKgwqDCoMKgc3lzX3NldF9tZW1wb2xpY3kNCj4gPiA+IF9ob20NCj4gPiA+IGVfbm9k
-ZQ0KPiA+ID4gwqA0NTHCoMKgwqDCoGNvbW1vbsKgwqBjYWNoZXN0YXTCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgc3lzX2NhY2hlc3RhdA0KPiA+ID4gwqA0NTLC
-oMKgwqDCoGNvbW1vbsKgwqBmY2htb2RhdDLCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgc3lzX2ZjaG1vZGF0Mg0KPiA+ID4gKzQ1M8KgwqDCoMKgY29tbW9uwqDC
-oG1hcF9zaGFkb3dfc3RhY2vCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHN5c19tYXBf
-c2hhZG93X3N0DQo+ID4gPiBhY2sNCj4gPiANCj4gPiBJIG5vdGljZWQgaW4gcG93ZXJwYywgdGhl
-IG5vdCBpbXBsZW1lbnRlZCBzeXNjYWxscyBhcmUgbWFudWFsbHkNCj4gPiBtYXBwZWQNCj4gPiB0
-byBzeXNfbmlfc3lzY2FsbC4gSXQgYWxzbyBoYXMgc29tZSBzcGVjaWFsIGV4dHJhIHN5c19uaV9z
-eXNjYWxsKCkNCj4gPiBpbXBsZW1lbnRhdGlvbiBiaXRzIHRvIGhhbmRsZSBib3RoIEFSQ0hfSEFT
-X1NZU0NBTExfV1JBUFBFUiBhbmQNCj4gPiAhQVJDSF9IQVNfU1lTQ0FMTF9XUkFQUEVSLiBTbyB3
-b25kZXJpbmcgaWYgaXQgbWlnaHQgbmVlZCBzcGVjaWFsDQo+ID4gdHJlYXRtZW50LiBEaWQgeW91
-IHNlZSB0aG9zZSBwYXJ0cz8NCj4gPiANCj4gDQo+IFRoYW5rcyBmb3IgcG9pbnRpbmcgdGhpcyBv
-dXQuIFBvd2VycGMgc2VlbXMgdG8gYmUgdW5pcXVlIGluIHRoZWlyDQo+IGhhbmRsaW5nIG9mIG5v
-dCBpbXBsZW1lbnRlZCBzeXNjYWxscy4gTWF5YmUgaXQncyBiZWNhdXNlIG9mIHRoZWlyDQo+IHNw
-ZWNpYWwgY2FzaW5nIG9mIHRoZSBBUkNIX0hBU19TWVNDQUxMX1dSQVBQRVIuDQo+IA0KPiBUaGUg
-Y29kZSBiZWxvdyBpbiBhcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vc3lzY2FsbHMuaCBzdWdnZXN0
-cyB0byBtZQ0KPiB0aGF0IGl0IHNob3VsZCBiZSBzYWZlIHRvIG1hcCBtYXBfc2hhZG93X3N0YWNr
-KCkgdG8gc3lzX25pX3N5c2NhbGwoKQ0KPiBhbmQNCj4gdGhlIHNwZWNpYWwgaGFuZGxpbmcgd2ls
-bCBiZSB0YWtlbiBjYXJlIG9mLg0KPiANCj4gI2lmbmRlZiBDT05GSUdfQVJDSF9IQVNfU1lTQ0FM
-TF9XUkFQUEVSDQo+IGxvbmcgc3lzX25pX3N5c2NhbGwodm9pZCk7DQo+ICNlbHNlDQo+IGxvbmcg
-c3lzX25pX3N5c2NhbGwoY29uc3Qgc3RydWN0IHB0X3JlZ3MgKnJlZ3MpOw0KPiAjZW5kaWYNCj4g
-DQo+IEkgZG9uJ3QgcXVpdGUgdW5kZXJzdGFuZCB0aGUgdW5kZXJseWluZyByZWFzb25pbmcgZm9y
-IGl0IHRob3VnaC4gRG8NCj4geW91DQo+IGhhdmUgYW55IGFkZGl0aW9uYWwgaW5zaWdodCBpbnRv
-IGhvdyB3ZSBzaG91bGQgaGFuZGxlIHRoaXM/DQo+IA0KPiBJIGFtIHRoaW5raW5nIG9mIGRvaW5n
-IHRoZSBmb2xsb3dpbmcgaW4gdGhlIG5leHQgaXRlcmF0aW9uIHVubGVzcw0KPiBzb21lb25lIGNo
-aW1lcyBpbiBhbmQgc2F5cyBvdGhlcndpc2UuDQo+IA0KPiAtLS0gYS9hcmNoL3Bvd2VycGMva2Vy
-bmVsL3N5c2NhbGxzL3N5c2NhbGwudGJsDQo+ICsrKyBiL2FyY2gvcG93ZXJwYy9rZXJuZWwvc3lz
-Y2FsbHMvc3lzY2FsbC50YmwNCj4gQEAgLTUzOSw0ICs1MzksNCBAQA0KPiDCoDQ1MMKgwqDCoCBu
-b3NwdcKgwqAgc2V0X21lbXBvbGljeV9ob21lX25vZGXCoMKgwqDCoMKgwqDCoMKgDQo+IHN5c19z
-ZXRfbWVtcG9saWN5X2hvbWVfbm9kZQ0KPiDCoDQ1McKgwqDCoCBjb21tb27CoCBjYWNoZXN0YXTC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzeXNfY2FjaGVzdGF0
-DQo+IMKgNDUywqDCoMKgIGNvbW1vbsKgIGZjaG1vZGF0MsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN5c19mY2htb2RhdDINCj4gLTQ1M8KgwqDCoCBjb21tb27C
-oCBtYXBfc2hhZG93X3N0YWNrwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN5c19tYXBf
-c2hhZG93X3N0YWNrDQo+ICs0NTPCoMKgwqAgY29tbW9uwqAgbWFwX3NoYWRvd19zdGFja8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzeXNfbmlfc3lzY2FsbA0KDQpJdCBtaWdodCBoYXZl
-IHNvbWV0aGluZyB0byBkbyB3aXRoIHRoYXQgcG93ZXJwYydzIENPTkRfU1lTQ0FMTCgpDQppbXBs
-ZW1lbnRhdGlvbiBvbmx5IGRlZmluZXMgdGhlIHN0cnVjdCBwdF9yZWdzIHZhcmlldHksIGJ1dCBU
-QkggSSBnZXQgYQ0KYml0IGxvc3Qgd2hlbiBJIGdldCB0byB0aGUgaW5saW5lIGFzc2VtYmx5IHN5
-bWJvbCBkZWZpbml0aW9ucyBwYXJ0cyBhbmQNCmhvdyBpdCBhbGwgdGllcyB0b2dldGhlci4NCg0K
-RG9pbmcgcG93ZXJwYydzIHZlcnNpb24gYXMgc3lzX25pX3N5c2NhbGwgc2VlbXMgdG8gYmUgY29u
-c2lzdGVudCBhdA0KbGVhc3QsIGFuZCBtYWtlcyBzZW5zZSB3aXRoIHJlc3BlY3QgdG8gdGhlIGNv
-ZGUgeW91IHF1b3RlZC4NCg==
+
+Ilpo,
+
+> Instead of if conditions with line splits, use the usual error handling
+> pattern with a separate variable to improve readability.
+>
+> No functional changes intended.
+
+Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
+
+-- 
+Martin K. Petersen	Oracle Linux Engineering
