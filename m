@@ -1,54 +1,49 @@
-From: Peter Lafreniere <peter@n8pjl.ca>
-Subject: [PATCH 7/7] arch: alpha: remove ReiserFS from defconfig
-Date: Mon, 18 Sep 2023 17:57:52 +0000
-Message-ID: <20230918175529.19011-8-peter@n8pjl.ca>
+From: Segher Boessenkool <segher@kernel.crashing.org>
+Subject: Re: [PATCH 0/7] arch/*: config: Remove ReiserFS from defconfig
+Date: Mon, 18 Sep 2023 18:41:08 -0500
+Message-ID: <20230918234108.GN19790@gate.crashing.org>
 References: <20230918175529.19011-1-peter@n8pjl.ca>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Return-path: <reiserfs-devel-owner@vger.kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=n8pjl.ca;
-        s=protonmail2; t=1695059888; x=1695319088;
-        bh=ptC3c+rBLEFTuyfQUK2LpgarFJRpP17fWUb7YzH2OCU=;
-        h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-         Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID:BIMI-Selector;
-        b=EMcZEsPnJUce0c0lWk2Wy1trojsA85RROlQbVl35DU9YbGX3R4YpzXIAhCCgxxO+L
-         v5QTEw0CMQRbStH8pu42NrTxx/0VVeHa+8aZqfvpW/HKkR/2gNMKRiNxSitogLKbEU
-         5dNqVdnqzpb5qeKGWHbiZnIYyLEssofn3aXLaccS1Z1kgebT4t7QPKyC2GbwSlvFYV
-         9crlhMvz4L/wrhl6rOewJ2vCb3sUK8EvRnyv5lkl83ouZiK9m4nAEfNIAkJAL6Ab0o
-         tR2yGRBtRlvRPpYglYNl/5UMACjY299t/YPaRczHHkjyKFww93fJjZ/beaWXlJ1QuP
-         Iv1cqLrACOJaw==
-In-Reply-To: <20230918175529.19011-1-peter@n8pjl.ca>
-List-ID: <linux-alpha.vger.kernel.org>
 Content-Type: text/plain; charset="us-ascii"
-To: linux-alpha@vger.kernel.org
-Cc: Peter Lafreniere <peter@n8pjl.ca>, jack@suse.cz, reiserfs-devel@vger.kernel.org, linux-kernel@vger.kernel.org, richard.henderson@linaro.org, ink@jurassic.park.msu.ru
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
+	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:Mime-Version:References:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=JcXkFkHDm7w8HsQlEPZofgf9MPAWSAk8lC/S+zCJM/g=; b=dguzzKthARSCoD
+	dEgSRAkewc3aMe79nAspOsXzQs3TjbXeJdxEBdkJl8rkhzpFYjX1Qr3pgd4CEEdd0BFqeX4pVI5V6
+	wX4XvIh1yS4QlpphD6TiADWQn47ytHYbm8Abg+EUi/DyMrhHT4AU6FOYqM6xo5gJjU4wStSBt6APR
+	6SmpHKdYCxuryXkaTGPOzM3h7uQiAEFPG6Kj47v4yYLoleIkJcRiqHkY2a+puKAc0Gn+Cd6jCZTFY
+	4UTxViQtDqNlu4C/GCD7oGGD2Gs6TBBT9jf/LxC5Yw3/xrTZNaUE6iH8+sZvgNtHgIignrPxiFX47
+	Ppsru61WkhWf9vqwJ3Cw==;
+Content-Disposition: inline
+In-Reply-To: <20230918175529.19011-1-peter@n8pjl.ca>
+List-Id: <linux-alpha.vger.kernel.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
+ <mailto:linux-um-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-um/>
+List-Post: <mailto:linux-um@lists.infradead.org>
+List-Help: <mailto:linux-um-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-um>,
+ <mailto:linux-um-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-um" <linux-um-bounces@lists.infradead.org>
+Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org
+To: Peter Lafreniere <peter@n8pjl.ca>
+Cc: reiserfs-devel@vger.kernel.org, tsbogend@alpha.franken.de, jack@suse.cz, linux-sh@vger.kernel.org, ink@jurassic.park.msu.ru, richard@nod.at, linux-um@lists.infradead.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-m68k@vger.kernel.org, geert@linux-m68k.org, linux-alpha@vger.kernel.org, linux@armlinux.org.uk, johannes@sipsolutions.net, richard.henderson@linaro.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, anton.ivanov@cambridgegreys.com
 
-ReiserFS has been deprecated for a year and a half, yet is still built
-as part of a defconfig kernel.
+On Mon, Sep 18, 2023 at 05:56:09PM +0000, Peter Lafreniere wrote:
+> ReiserFS has been considered deprecated for 19 months since commit
+> eb103a51640e ("reiserfs: Deprecate reiserfs"). However, there are
+> several architectures that still build it into their defconfig kernels.
+> 
+> As ReiserFS will be removed in 2025, delete all ReiserFS-related options
+> from defconfig files before the filesystem's removal.
 
-According to commit eb103a51640e ("reiserfs: Deprecate reiserfs"), the
-filesystem is slated to be removed in 2025. Remove it from the defconfig
-profile now, as part of its deprecation process.
-
-Signed-off-by: Peter Lafreniere <peter@n8pjl.ca>
----
- arch/alpha/configs/defconfig | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/arch/alpha/configs/defconfig b/arch/alpha/configs/defconfig
-index 1816c1dc22b1..3280bd9e6578 100644
---- a/arch/alpha/configs/defconfig
-+++ b/arch/alpha/configs/defconfig
-@@ -51,7 +51,6 @@ CONFIG_SERIAL_8250_CONSOLE=3Dy
- CONFIG_RTC_CLASS=3Dy
- CONFIG_RTC_DRV_CMOS=3Dy
- CONFIG_EXT2_FS=3Dy
--CONFIG_REISERFS_FS=3Dm
- CONFIG_ISO9660_FS=3Dy
- CONFIG_MSDOS_FS=3Dy
- CONFIG_VFAT_FS=3Dy
---=20
-2.42.0
+This is essentially equivalent to deleting the filesystem now.  Why do
+this?  Is there such a hurry?
 
 
+Segher
