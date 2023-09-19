@@ -1,61 +1,47 @@
-From: Segher Boessenkool <segher@kernel.crashing.org>
-Subject: Re: [PATCH 0/7] arch/*: config: Remove ReiserFS from defconfig
-Date: Tue, 19 Sep 2023 10:16:30 -0500
-Message-ID: <20230919151630.GO19790@gate.crashing.org>
-References: <20230918175529.19011-1-peter@n8pjl.ca> <20230918234108.GN19790@gate.crashing.org> <20230919000026.7409-1-peter@n8pjl.ca>
+From: Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: Arches that don't support PREEMPT
+Date: Tue, 19 Sep 2023 11:31:08 -0400
+Message-ID: <20230919113108.1c988906@gandalf.local.home>
+References: <20230912082606.GB35261@noisy.programming.kicks-ass.net>
+        <87cyyfxd4k.ffs@tglx>
+        <CAHk-=whnwC01m_1f-gaM1xbvvwzwTiKitrWniA-ChZv+bM03dg@mail.gmail.com>
+        <87led2wdj0.ffs@tglx>
+        <ZQmbhoQIINs8rLHp@casper.infradead.org>
+        <0e69f7df80dc5878071deb0d80938138d19de1d1.camel@physik.fu-berlin.de>
+        <20230919134218.GA39281@noisy.programming.kicks-ass.net>
+        <a6c84803274116ec827cd4bdd4e72a8d0c304c27.camel@physik.fu-berlin.de>
+        <20230919141627.GB39281@noisy.programming.kicks-ass.net>
+        <a428516ebeae71e33635edc83052c972ce40c85d.camel@physik.fu-berlin.de>
+        <ZQmw5dUzcFOWjHdB@casper.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:
-	Content-Transfer-Encoding:Content-Type:List-Subscribe:List-Help:List-Post:
-	List-Archive:List-Unsubscribe:List-Id:In-Reply-To:Mime-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=XSTBneXKidC4BTIGvqoLJxkx5VUwA6PrFjh5pcnAIzE=; b=MJ1kFECY6IxAJN
-	9O/biUTRzSFXH2eyibcApHUzFBo/aDMhvqGtVdYjEeUuCRyCK3GR9LP9fiPH+uxKbLC8E/t3Pzn7K
-	RJerYb/YUwLUeGM1FXHCEvJX72mk43TFB7SIM5PSumrKv+9epK4Rr6XSuoOcxTSRRifqhJzqgiNJp
-	X1IYl4KEgq5jJuxlRGhFpPSvQKBZH3Pid+S1k5dsywByTe12FLBWkC4EPN9J/45wfcQmWiFvyR8wV
-	yFTqGXM2OAlSpuKflkjU1PDPbHO2cp5jNw+EGkzcxWiCruLxCuCPdDo2yvdp6woLNN2y00d2JPd7H
-	7i832EkfTKFCjJnITvtg==;
-Content-Disposition: inline
-In-Reply-To: <20230919000026.7409-1-peter@n8pjl.ca>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-um/>
-List-Post: <mailto:linux-um@lists.infradead.org>
-List-Help: <mailto:linux-um-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-um" <linux-um-bounces@lists.infradead.org>
-Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org
-To: Peter Lafreniere <peter@n8pjl.ca>
-Cc: anton.ivanov@cambridgegreys.com, geert@linux-m68k.org, ink@jurassic.park.msu.ru, jack@suse.cz, johannes@sipsolutions.net, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-m68k@vger.kernel.org, linux-mips@vger.kernel.org, linux-sh@vger.kernel.org, linux-um@lists.infradead.org, linux@armlinux.org.uk, linuxppc-dev@lists.ozlabs.org, reiserfs-devel@vger.kernel.org, richard.henderson@linaro.org, richard@nod.at, tsbogend@alpha.franken.de
+Return-path: <linux-hexagon-owner@vger.kernel.org>
+In-Reply-To: <ZQmw5dUzcFOWjHdB@casper.infradead.org>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+To: Matthew Wilcox <willy@infradead.org>
+Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Peter Zijlstra <peterz@infradead.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Torvalds <torvalds@linux-foundation.org>, Ankur Arora <ankur.a.arora@oracle.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org, akpm@linux-foundation.org, luto@kernel.org, bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com, mingo@redhat.com, juri.lelli@redhat.com, vincent.guittot@linaro.org, mgorman@suse.de, jon.grimm@amd.com, bharata@amd.com, raghavendra.kt@amd.com, boris.ostrovsky@oracle.com, konrad.wilk@oracle.com, jgross@suse.com, andrew.cooper3@citrix.com, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@lists.linux-m68k.org, Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cam>
 
-On Tue, Sep 19, 2023 at 12:00:34AM +0000, Peter Lafreniere wrote:
-> On Monday, September 18th, 2023 at 19:41, Segher Boessenkool <segher@kernel.crashing.org> wrote:
-> > On Mon, Sep 18, 2023 at 05:56:09PM +0000, Peter Lafreniere wrote:
-> > 
-> > > ReiserFS has been considered deprecated for 19 months since commit
-> > > eb103a51640e ("reiserfs: Deprecate reiserfs"). However, there are
-> > > several architectures that still build it into their defconfig kernels.
-> > > 
-> > > As ReiserFS will be removed in 2025, delete all ReiserFS-related options
-> > > from defconfig files before the filesystem's removal.
-> > 
-> > 
-> > This is essentially equivalent to deleting the filesystem now. Why do
-> > this? Is there such a hurry?
+On Tue, 19 Sep 2023 15:32:05 +0100
+Matthew Wilcox <willy@infradead.org> wrote:
+
+> On Tue, Sep 19, 2023 at 04:24:48PM +0200, John Paul Adrian Glaubitz wrote:
+> > If the conversion isn't hard, why is the first reflex the urge to remove an architecture
+> > instead of offering advise how to get the conversion done?  
 > 
-> This is not equivalent to deleting the filesystem. The filesystem can still
-> be configured into kernels, and few distros use a defconfig kernel anyway.
+> Because PREEMPT has been around since before 2005 (cc19ca86a023 created
+> Kconfig.preempt and I don't need to go back further than that to make my
+> point), and you haven't done the work yet.  Clearly it takes the threat
+> of removal to get some kind of motion.
 
-Most people who compile kernels use defconfigs though.  Distros are a
-tiny minority if you look at builds.
+Or the use case of a preempt kernel on said arch has never been a request.
+Just because it was available doesn't necessarily mean it's required.
 
-Again: why do you want this?
+Please, let's not jump to threats of removal just to get a feature in.
+Simply ask first. I didn't see anyone reaching out to the maintainers
+asking for this as it will be needed for a new feature that will likely
+make maintaining said arch easier.
 
+Everything is still in brainstorming mode.
 
-Segher
+-- Steve
