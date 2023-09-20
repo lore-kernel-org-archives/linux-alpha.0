@@ -1,92 +1,70 @@
-From: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Subject: Re: Arches that don't support PREEMPT
-Date: Wed, 20 Sep 2023 15:38:33 +0100
-Message-ID: <159b79fc-16d8-2d12-ed17-fb508879d791@cambridgegreys.com>
-References: <20230911150410.GC9098@noisy.programming.kicks-ass.net>
- <87h6o01w1a.fsf@oracle.com>
- <20230912082606.GB35261@noisy.programming.kicks-ass.net>
- <87cyyfxd4k.ffs@tglx>
- <CAHk-=whnwC01m_1f-gaM1xbvvwzwTiKitrWniA-ChZv+bM03dg@mail.gmail.com>
- <87led2wdj0.ffs@tglx> <ZQmbhoQIINs8rLHp@casper.infradead.org>
- <0e69f7df80dc5878071deb0d80938138d19de1d1.camel@physik.fu-berlin.de>
- <20230919134218.GA39281@noisy.programming.kicks-ass.net>
- <a6c84803274116ec827cd4bdd4e72a8d0c304c27.camel@physik.fu-berlin.de>
- <20230919141627.GB39281@noisy.programming.kicks-ass.net>
+From: Jan Kara <jack@suse.cz>
+Subject: Re: [PATCH 0/7] arch/*: config: Remove ReiserFS from defconfig
+Date: Wed, 20 Sep 2023 18:56:59 +0200
+Message-ID: <20230920165659.coe7d2lydiaatoby@quack3>
+References: <20230918175529.19011-1-peter@n8pjl.ca>
+ <20230918234108.GN19790@gate.crashing.org>
+ <20230919000026.7409-1-peter@n8pjl.ca>
+ <20230919151630.GO19790@gate.crashing.org>
+ <20230919155832.4179-1-peter@n8pjl.ca>
+ <CAMuHMdXQ=xpeY3tmLXe1kgJbRtmVAn62rEhvzO+VB7GCgy4F8w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=lists.infradead.org; s=bombadil.20210309; h=Sender:Content-Type:
-	Content-Transfer-Encoding:List-Subscribe:List-Help:List-Post:List-Archive:
-	List-Unsubscribe:List-Id:In-Reply-To:From:References:Cc:To:Subject:
-	MIME-Version:Date:Message-ID:Reply-To:Content-ID:Content-Description:
-	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=rdN3ddq+RwnBD/OXMjMnMQsueNZZp52q1X1u3N45Ee0=; b=0BEA3AdoSZWvDp
-	VJVBWbom0ncelL/rgkskDS2dD1SuelnS6P57u3bOEBbjTaOkM+skv8WsgArW9LsWYeZspggjYmHOC
-	t3lHu0ozgLkBWaAP7af5n5yl6EXh29694dibIxZTw+A2dKD1J15sUyxDNZMM13eeq13WDJUCCmpWT
-	amiPSQ0EMlGzi5IquZ6eyu9F4j7RLaq+UgDuOzKu2qJLAeBoIhDBq4Grm++BKWVKA7rydx0ICg7HH
-	Bvw0lrjh89E2i90SawElds3WvO6Q5S8Gp99sIiK3E2z5dbdNTyRHMv8+xr/inUNZ7lGBuHbFMB7I4
-	xfXncCFDQvu0g2nYq9UQ==;
-Content-Language: en-US
-In-Reply-To: <20230919141627.GB39281@noisy.programming.kicks-ass.net>
-List-Id: <linux-alpha.vger.kernel.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-um/>
-List-Post: <mailto:linux-um@lists.infradead.org>
-List-Help: <mailto:linux-um-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-um>,
- <mailto:linux-um-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-um" <linux-um-bounces@lists.infradead.org>
-Errors-To: linux-um-bounces+glud-user-mode-linux-devel=m.gmane-mx.org@lists.infradead.org
-Content-Type: text/plain; charset="us-ascii"; format="flowed"
-To: Peter Zijlstra <peterz@infradead.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: Matthew Wilcox <willy@infradead.org>, Thomas Gleixner <tglx@linutronix.de>, Linus Torvalds <torvalds@linux-foundation.org>, Ankur Arora <ankur.a.arora@oracle.com>, linux-kernel@vger.kernel.org, linux-mm@kvack.org, x86@kernel.org, akpm@linux-foundation.org, luto@kernel.org, bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com, mingo@redhat.com, juri.lelli@redhat.com, vincent.guittot@linaro.org, mgorman@suse.de, rostedt@goodmis.org, jon.grimm@amd.com, bharata@amd.com, raghavendra.kt@amd.com, boris.ostrovsky@oracle.com, konrad.wilk@oracle.com, jgross@suse.com, andrew.cooper3@citrix.com, Geert Uytterhoeven <geert@linux-m68k.org>, linux-m68k@lists.linux-m68k.org, Richard Weinberger <richard@nod.at>, Johannes Berg <johannes@sipsolutions.net>, linux-um@lists.infradead.org, Brian Cain <bcain@quicinc.com>, linux-hexagon@vger.kernel.org, Richard Henderson <richard.henderson@li>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <reiserfs-devel-owner@vger.kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1695229020; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=arrJUNtqjU/izONia38ns6kqz5a2Ljs8vzyYYK7Z784=;
+        b=B5zucAFR4XyR8/5tRFN24icRoW3Li46w9AYROy5fgeQHJjHHmWe1VBSTJAgJzltxBUTQfj
+        A2xO9YmlmCUAHIhnO6bcsmBlTch94Tqw9Zrs2J99gUVXgRrg7N5SnwIhK/ADmsG7DqDXb5
+        NyDsDzox8Vmqa0S6njAX9jt6GCL7qPo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1695229020;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=arrJUNtqjU/izONia38ns6kqz5a2Ljs8vzyYYK7Z784=;
+        b=TEI3317KDo5yb9aq6yYTvDHKSUd5zcn5XGrWvmgB48JFj1/RVX24vTZ5l0fScD+mlAMJpN
+        CaN28xdVs9HUPMBA==
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXQ=xpeY3tmLXe1kgJbRtmVAn62rEhvzO+VB7GCgy4F8w@mail.gmail.com>
+List-ID: <linux-alpha.vger.kernel.org>
+Content-Type: text/plain; charset="windows-1252"
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Peter Lafreniere <peter@n8pjl.ca>, segher@kernel.crashing.org, anton.ivanov@cambridgegreys.com, ink@jurassic.park.msu.ru, jack@suse.cz, johannes@sipsolutions.net, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-m68k@vger.kernel.org, linux-mips@vger.kernel.org, linux-sh@vger.kernel.org, linux-um@lists.infradead.org, linux@armlinux.org.uk, linuxppc-dev@lists.ozlabs.org, reiserfs-devel@vger.kernel.org, richard.henderson@linaro.org, richard@nod.at, tsbogend@alpha.franken.de
 
+On Tue 19-09-23 18:02:39, Geert Uytterhoeven wrote:
+> Hi Peter,
+>=20
+> On Tue, Sep 19, 2023 at 5:58=E2=80=AFPM Peter Lafreniere <peter@n8pjl.ca>=
+ wrote:
+> >  2) Stops building an obsolete and largely-unused filesystem unnecessar=
+ily.
+> >     Some hobbyist targets like m68k and alpha may prefer to keep all fi=
+lesystems
+> >     available until total removal, but others like arm and UML have no =
+need for
+> >     ReiserFS to be built unless specifically configured.
+>=20
+> As UML is used a lot for testing, isn't it actually counter-productive
+> to remove ReiserFS from the UML defconfig?  The less testing it
+> receives, the higher the chance of introducing regressions.
 
+The only testing I know about for reiserfs (besides build testing) is
+syzbot. And regarding the people / bots doing filesystem testing I know
+none of them uses UML. Rather it is x86 VMs these days where reiserfs is
+disabled in the defconfig for a *long* time (many years). Also when you do
+filesystem testing, you usually just test the few filesystems you care
+about and for which you have all the tools installed. So frankly I don't
+see a good reason to leave reiserfs enabled in defconfigs. But sure if
+m68k or other arch wants to keep reiserfs in it's defconfig for some
+consistency reasons, I'm fine with it. I just suspect that for most archs
+this is just a historical reason.
 
-On 19/09/2023 15:16, Peter Zijlstra wrote:
-> On Tue, Sep 19, 2023 at 03:48:09PM +0200, John Paul Adrian Glaubitz wrote:
->> On Tue, 2023-09-19 at 15:42 +0200, Peter Zijlstra wrote:
->>>> The agreement to kill off ia64 wasn't an invitation to kill off other stuff
->>>> that people are still working on! Can we please not do this?
->>>
->>> If you're working on one of them, then surely it's a simple matter of
->>> working on adding CONFIG_PREEMPT support :-)
->>
->> As Geert poined out, I'm not seeing anything particular problematic with the
->> architectures lacking CONFIG_PREEMPT at the moment. This seems to be more
->> something about organizing KConfig files.
-> 
-> The plan in the parent thread is to remove PREEMPT_NONE and
-> PREEMPT_VOLUNTARY and only keep PREEMPT_FULL.
-> 
->> I find it a bit unfair that maintainers of architectures that have huge companies
->> behind them use their manpower to urge less popular architectures for removal just
->> because they don't have 150 people working on the port so they can keep up with
->> design changes quickly.
-> 
-> PREEMPT isn't something new. Also, I don't think the arch part for
-> actually supporting it is particularly hard, mostly it is sticking the
-> preempt_schedule_irq() call in return from interrupt code path.
-
-That calls local_irq_enable() which does various signal related/irq pending work on UML. That in turn does no like being invoked again (as you may have already been invoked out of that) in the IRQ return path.
-
-So it is likely to end up being slightly more difficult than that for UML - it will need to be wrapped so it can be invoked from the "host" side signal code as well as invoked with some additional checks to avoid making a hash out of the IRQ handling.
-
-It may be necessary to modify some of the existing reentrancy prevention logic in the signal handlers as well and change it to make use of the preempt count instead of its own flags/counters.
-
-> 
-> If you convert the arch to generic-entry (a much larger undertaking)
-> then you get this for free.
-> 
-> _______________________________________________
-> linux-um mailing list
-> linux-um@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-um
-> 
-
--- 
-Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
+								Honza
+--=20
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
