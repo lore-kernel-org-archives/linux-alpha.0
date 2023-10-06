@@ -2,57 +2,84 @@ Return-Path: <linux-alpha-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA5CE8FDD1
-	for <linux-alpha@archiver.kernel.org>; Wed,  4 Oct 2023 07:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14365E92FFE
+	for <linux-alpha@archiver.kernel.org>; Fri,  6 Oct 2023 08:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241585AbjJDHx6 (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
-        Wed, 4 Oct 2023 03:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
+        id S231263AbjJFIZL (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
+        Fri, 6 Oct 2023 04:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241572AbjJDHx5 (ORCPT
-        <rfc822;linux-alpha@vger.kernel.org>); Wed, 4 Oct 2023 03:53:57 -0400
-X-Greylist: delayed 478 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 Oct 2023 00:53:54 PDT
-Received: from mail.citycodes.pl (mail.citycodes.pl [158.255.215.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422A8B7
-        for <linux-alpha@vger.kernel.org>; Wed,  4 Oct 2023 00:53:54 -0700 (PDT)
-Received: by mail.citycodes.pl (Postfix, from userid 1001)
-        id C3AB21F50E; Wed,  4 Oct 2023 09:45:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=citycodes.pl; s=mail;
-        t=1696405555; bh=mMhfBvhM53FtUQl1P3lyeSY5aDBQYiR8qQBy6YFQHi0=;
-        h=Date:From:To:Subject:From;
-        b=etT29hMfNLToyI9hcjfe4IRKYSehYLLipcfDTKRXO64uBeLX4/NV847XJMv0x5Xdx
-         flveROcw9JBMLWhzJHdKSyTJpgB3NeRtT/7snsf7zBUKf633KTVq9Vl8ESVWkQ7Wzh
-         T8/DFJ0Zg88OTEpJVX7xfyroe0MzgtVyfMUlC07AJ2AlQDmKH750HaF8RHCN86ytgS
-         sAuHQ77Bcs0IOs4WtY0l0JSIWTFqMYGFp3K0EE9OboAXv1TAbM/xjRe4y04VYHvNK/
-         BOzIyNaP4ZcrSjDHn4wzMTWMpqzziokMox5CPlNK6lKAz3FWMgNx900THR6Ue5zzY4
-         6f545eqOdoXNg==
-Received: by mail.citycodes.pl for <linux-alpha@vger.kernel.org>; Wed,  4 Oct 2023 07:45:38 GMT
-Message-ID: <20231004084500-0.1.7v.j140.0.n67nac5w3a@citycodes.pl>
-Date:   Wed,  4 Oct 2023 07:45:38 GMT
-From:   "Kamil Lasek" <kamil.lasek@citycodes.pl>
-To:     <linux-alpha@vger.kernel.org>
-Subject: =?UTF-8?Q?Rozszerzenie_Programu_M=C3=B3j_Pr=C4=85d_5.0?=
-X-Mailer: mail.citycodes.pl
+        with ESMTP id S231131AbjJFIZE (ORCPT
+        <rfc822;linux-alpha@vger.kernel.org>); Fri, 6 Oct 2023 04:25:04 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C47FF4;
+        Fri,  6 Oct 2023 01:24:57 -0700 (PDT)
+Received: from uucp by elvis.franken.de with local-rmail (Exim 3.36 #1)
+        id 1qog8g-0002lT-00; Fri, 06 Oct 2023 10:24:50 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id C02E3C0198; Fri,  6 Oct 2023 10:05:46 +0200 (CEST)
+Date:   Fri, 6 Oct 2023 10:05:46 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, akpm@linux-foundation.org, arnd@arndb.de,
+        jiaxun.yang@flygoat.com, mpe@ellerman.id.au, geert@linux-m68k.org,
+        mcgrof@kernel.org, hch@infradead.org, f.fainelli@gmail.com,
+        deller@gmx.de, linux-alpha@vger.kernel.org,
+        linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
+        sparclinux@vger.kernel.org
+Subject: Re: [PATCH v5 3/4] arch/*/io.h: remove ioremap_uc in some
+ architectures
+Message-ID: <ZR+/2jUUpJu74k1X@alpha.franken.de>
+References: <20230921110424.215592-1-bhe@redhat.com>
+ <20230921110424.215592-4-bhe@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230921110424.215592-4-bhe@redhat.com>
 Precedence: bulk
 List-ID: <linux-alpha.vger.kernel.org>
 X-Mailing-List: linux-alpha@vger.kernel.org
 
-Szanowni Pa=C5=84stwo!
+On Thu, Sep 21, 2023 at 07:04:23PM +0800, Baoquan He wrote:
+> ioremap_uc() is only meaningful on old x86-32 systems with the PAT
+> extension, and on ia64 with its slightly unconventional ioremap()
+> behavior. So remove the ioremap_uc() definition in architecutures
+> other than x86 and ia64. These architectures all have asm-generic/io.h
+> included and will have the default ioremap_uc() definition which
+> returns NULL.
+> 
+> This changes the existing behaviour, while no need to worry about
+> any breakage because in the only callsite of ioremap_uc(), code
+> has been adjusted to eliminate the impact. Please see
+> atyfb_setup_generic() of drivers/video/fbdev/aty/atyfb_base.c.
+> 
+> If any new invocation of ioremap_uc() need be added, please consider
+> using ioremap() intead or adding a ARCH specific version if necessary.
+> 
+> Signed-off-by: Baoquan He <bhe@redhat.com>
+> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+> Acked-by: Helge Deller <deller@gmx.de>  # parisc
+> Cc: linux-alpha@vger.kernel.org
+> Cc: linux-hexagon@vger.kernel.org
+> Cc: linux-m68k@lists.linux-m68k.org
+> Cc: linux-mips@vger.kernel.org
+> Cc: linux-parisc@vger.kernel.org
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: linux-sh@vger.kernel.org
+> Cc: sparclinux@vger.kernel.org
+> ---
+>  Documentation/driver-api/device-io.rst | 9 +++++----
+>  arch/alpha/include/asm/io.h            | 1 -
+>  arch/hexagon/include/asm/io.h          | 3 ---
+>  arch/m68k/include/asm/kmap.h           | 1 -
+>  arch/mips/include/asm/io.h             | 1 -
 
-W ramach nowej edycji programu M=C3=B3j Pr=C4=85d mog=C4=85 otrzyma=C4=87=
- Pa=C5=84stwo dofinansowanie na zakup i monta=C5=BC fotowoltaiki i/lub ma=
-gazynu energii. Maksymalna kwota dofinansowania wynosi 58 tys. z=C5=82.=20
+Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 
-Jako firma wyspecjalizowana w tym zakresie zajmiemy si=C4=99 Pa=C5=84stwa=
- wnioskiem o dofinansowanie oraz instalacj=C4=85 i serwisem dopasowanych =
-do Pa=C5=84stwa budynku paneli s=C5=82onecznych.
-
-B=C4=99d=C4=99 wdzi=C4=99czny za informacj=C4=99 czy s=C4=85 Pa=C5=84stwo=
- zainteresowani.
-
-
-Pozdrawiam,
-Kamil Lasek
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
