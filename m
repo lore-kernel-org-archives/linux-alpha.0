@@ -2,71 +2,80 @@ Return-Path: <linux-alpha-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E14B6CD6E67
-	for <linux-alpha@archiver.kernel.org>; Wed, 11 Oct 2023 13:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EEDCD6E64
+	for <linux-alpha@archiver.kernel.org>; Wed, 11 Oct 2023 13:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232375AbjJKNJD (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
-        Wed, 11 Oct 2023 09:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36662 "EHLO
+        id S231524AbjJKNSp (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
+        Wed, 11 Oct 2023 09:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234943AbjJKNIw (ORCPT
+        with ESMTP id S231334AbjJKNSp (ORCPT
         <rfc822;linux-alpha@vger.kernel.org>);
-        Wed, 11 Oct 2023 09:08:52 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6836692
-        for <linux-alpha@vger.kernel.org>; Wed, 11 Oct 2023 06:08:47 -0700 (PDT)
+        Wed, 11 Oct 2023 09:18:45 -0400
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EB69E
+        for <linux-alpha@vger.kernel.org>; Wed, 11 Oct 2023 06:18:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697029727; x=1728565727;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=S98puWFt/vOKsW2CbftpDaSryKoUyq9ZmJVDQolfOdI=;
-  b=YrqepqN0rjS4EfKGVHmdQ2qNpR8/l0aKth2NGnkmpsnzWLeu2jSsvk6N
-   3H0N7SBxaHJW4f0VQj76WqYiFkZH5BLBWIGOoXgkwbTvnNqzcQSQ779SB
-   5kKqH3usgGRKAUa3hyeZ3gZPXbEtFWNoJXh1DiLoEOuGaCjIMfLwfXr7P
-   HQWxUSI3e+vfUQqpGIh/dixCBD9QWZkDOSlnIjioRqcsWEXTFMRdneqzu
-   oBQ9fx0aDTGUArwc+ln0xBb1qxXTZhxkcOAb5jD0yOI8BRrKKUTQOJwEO
-   xGO5frq7V+e74qTKW2Tj/IStiOmg/YZbrkhUFMv06cwMuJxNzT423HXbn
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="383521728"
+  t=1697030322; x=1728566322;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fpzv316zTXCZ4nkDKYwzC2tv938RLrOd63Z56waS/Ng=;
+  b=dLN6WPmMsNMKmpFRob1GM8FBFrF80fP535dnppTs0dag4rkmCgA3sBoH
+   6Awbi4uQn02Dk2IP6RJPuSGCxSFl/6fksPnyY77hyokBwEfcgQD0Cj6kQ
+   mGlqoTU6al5ri+PEc83FR7cGT9yGcgQRbYNrGAo18QmWRvu+h3Zn6dcCh
+   n4Y0YQKYmvFow8jdDuKGmo5CipBEGlAfgjngKUiJvKaIUoubNLxIKc4uq
+   1T5lqgRDfjn2epA6Oha2HPVdrCLTfacSitsQ+7+rvyyR52CY3jisZJ1fy
+   wHufLCUP5LalvtfcTU9QuQoctG9y62AP8jLQi0m4BIRtN2LsEwoGl7bF4
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="375002422"
 X-IronPort-AV: E=Sophos;i="6.03,216,1694761200"; 
-   d="scan'208";a="383521728"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2023 06:08:46 -0700
+   d="scan'208";a="375002422"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2023 06:18:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="747442505"
+X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="1085222810"
 X-IronPort-AV: E=Sophos;i="6.03,216,1694761200"; 
-   d="scan'208";a="747442505"
-Received: from opipikin-mobl2.ger.corp.intel.com ([10.252.57.154])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2023 06:08:45 -0700
-Date:   Wed, 11 Oct 2023 16:08:43 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+   d="scan'208";a="1085222810"
+Received: from zkis-mobl5.ger.corp.intel.com (HELO localhost) ([10.249.36.165])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2023 06:18:19 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 To:     linux-alpha@vger.kernel.org
-cc:     =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Test to see if there's UTF-8 charset mangling
-Message-ID: <a8aa6886-984f-8da0-a7c2-aa2087fdf79@linux.intel.com>
+Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: mangling test with a patch, DO NOT APPLY
+Date:   Wed, 11 Oct 2023 16:18:08 +0300
+Message-Id: <20231011131808.8486-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1892530243-1697029726=:1977"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-alpha.vger.kernel.org>
 X-Mailing-List: linux-alpha@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Testing if the non-ascii letters get mangled by something related to
+linux-alpha list.
 
---8323329-1892530243-1697029726=:1977
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
+My apologies about the extra noise on the list.
 
-Hi,
+Mangled-by-something: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Please ignore the email. This is a test mail to see if the mangling of 
-non-ascii characters repeats, an example of mangling can be seen e.g. in
-(other lists such as linux-pci has the correct copy of the email which 
-differs from what lore stored for linux-alpha):
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7608b714653f..6636dfafa66f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -20808,7 +20808,7 @@ F:	Documentation/devicetree/bindings/gpio/snps,creg-gpio.txt
+ F:	drivers/gpio/gpio-creg-snps.c
+ 
+ SYNOPSYS DESIGNWARE 8250 UART DRIVER
+-M:	Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
++M:	Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> BOGUS CHANGE, DO NOT APPLY
+ R:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ S:	Supported
+ F:	drivers/tty/serial/8250/8250_dw.c
+-- 
+2.30.2
 
-https://lore.kernel.org/linux-alpha/20230911125354.25501-7-ilpo.jarvinen@linux.intel.com/
-
-Mangled-by-something: Ilpo J�rvinen <ilpo.jarvinen@linux.intel.com>
-
-My apologies for the extra noise.
---8323329-1892530243-1697029726=:1977--
