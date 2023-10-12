@@ -2,80 +2,68 @@ Return-Path: <linux-alpha-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EEDCD6E64
-	for <linux-alpha@archiver.kernel.org>; Wed, 11 Oct 2023 13:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E5DCCDB46E
+	for <linux-alpha@archiver.kernel.org>; Thu, 12 Oct 2023 07:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231524AbjJKNSp (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
-        Wed, 11 Oct 2023 09:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
+        id S1377847AbjJLHbG (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
+        Thu, 12 Oct 2023 03:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231334AbjJKNSp (ORCPT
+        with ESMTP id S1377791AbjJLHbG (ORCPT
         <rfc822;linux-alpha@vger.kernel.org>);
-        Wed, 11 Oct 2023 09:18:45 -0400
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EB69E
-        for <linux-alpha@vger.kernel.org>; Wed, 11 Oct 2023 06:18:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1697030322; x=1728566322;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fpzv316zTXCZ4nkDKYwzC2tv938RLrOd63Z56waS/Ng=;
-  b=dLN6WPmMsNMKmpFRob1GM8FBFrF80fP535dnppTs0dag4rkmCgA3sBoH
-   6Awbi4uQn02Dk2IP6RJPuSGCxSFl/6fksPnyY77hyokBwEfcgQD0Cj6kQ
-   mGlqoTU6al5ri+PEc83FR7cGT9yGcgQRbYNrGAo18QmWRvu+h3Zn6dcCh
-   n4Y0YQKYmvFow8jdDuKGmo5CipBEGlAfgjngKUiJvKaIUoubNLxIKc4uq
-   1T5lqgRDfjn2epA6Oha2HPVdrCLTfacSitsQ+7+rvyyR52CY3jisZJ1fy
-   wHufLCUP5LalvtfcTU9QuQoctG9y62AP8jLQi0m4BIRtN2LsEwoGl7bF4
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="375002422"
-X-IronPort-AV: E=Sophos;i="6.03,216,1694761200"; 
-   d="scan'208";a="375002422"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2023 06:18:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10860"; a="1085222810"
-X-IronPort-AV: E=Sophos;i="6.03,216,1694761200"; 
-   d="scan'208";a="1085222810"
-Received: from zkis-mobl5.ger.corp.intel.com (HELO localhost) ([10.249.36.165])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2023 06:18:19 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-alpha@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: mangling test with a patch, DO NOT APPLY
-Date:   Wed, 11 Oct 2023 16:18:08 +0300
-Message-Id: <20231011131808.8486-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 12 Oct 2023 03:31:06 -0400
+Received: from mail.venturelinkbiz.com (mail.venturelinkbiz.com [51.195.119.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F8E90
+        for <linux-alpha@vger.kernel.org>; Thu, 12 Oct 2023 00:31:02 -0700 (PDT)
+Received: by mail.venturelinkbiz.com (Postfix, from userid 1002)
+        id 78573465DC; Thu, 12 Oct 2023 07:30:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=venturelinkbiz.com;
+        s=mail; t=1697095860;
+        bh=JBV4b8UUo1MSngn/QBoedt1Dv52bT8rWeq4R22MtJMs=;
+        h=Date:From:To:Subject:From;
+        b=UTMnSJMHS/JyxVP1TIFHDuOOjUuGzzY6kHPhYdUExsSrZbFnXNSOgj9jF5XBjm9vn
+         QfZjZoOVlsZSH1o4ZHtMg1kpbzzgDSznr1Z0QrqPbwBuL87y4PDe1ScVOYguG5YUlY
+         FnHFoqtg2Im9vQovD8AGXtZEo/PZavG3qdU6GH2JrkzN3aHCBoAjmSlyGTXKVA6HO7
+         GhJXJS0H+xMmz1Lq6V1hq3nZFQ+V1Q377LwrtL0j5F9HlF26MUhGTWBBlJ5O+qfOzw
+         kGznS91sYivD3Rdj8KlXRiIyMErQ3AeSeqYMVKvyxG6wWA/TOBvWEHQ0aysrXRlsDb
+         K4yGA9WM0x0VA==
+Received: by mail.venturelinkbiz.com for <linux-alpha@vger.kernel.org>; Thu, 12 Oct 2023 07:30:43 GMT
+Message-ID: <20231012064500-0.1.2y.87r7.0.j7d3awncgd@venturelinkbiz.com>
+Date:   Thu, 12 Oct 2023 07:30:43 GMT
+From:   "Michal Rmoutil" <michal.rmoutil@venturelinkbiz.com>
+To:     <linux-alpha@vger.kernel.org>
+Subject: =?UTF-8?Q?Efektivn=C3=AD_sledov=C3=A1n=C3=AD_a_optimalizace_v=C3=BDroby_pro_va=C5=A1i_spole=C4=8Dnost?=
+X-Mailer: mail.venturelinkbiz.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-alpha.vger.kernel.org>
 X-Mailing-List: linux-alpha@vger.kernel.org
 
-Testing if the non-ascii letters get mangled by something related to
-linux-alpha list.
+Dobr=C3=A9 r=C3=A1no,
 
-My apologies about the extra noise on the list.
+m=C3=A1te mo=C5=BEnost sledovat stav ka=C5=BEd=C3=A9ho stroje a v=C3=BDro=
+bn=C3=ADho procesu z kancel=C3=A1=C5=99e, konferen=C4=8Dn=C3=AD m=C3=ADst=
+nosti nebo dokonce z domova =C4=8Di na cest=C3=A1ch =E2=80=93 na va=C5=A1=
+em telefonu?
 
-Mangled-by-something: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Poskytujeme rychle implementovateln=C3=BD a snadno pou=C5=BEiteln=C3=BD n=
+=C3=A1stroj, kter=C3=BD zachyt=C3=AD i n=C4=9Bkolikasekundov=C3=BD mikrop=
+rostoj a okam=C5=BEit=C4=9B p=C5=99epo=C4=8D=C3=ADt=C3=A1 vyu=C5=BEit=C3=AD=
+ stroje v kontextu dan=C3=A9 v=C3=BDrobn=C3=AD zak=C3=A1zky.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7608b714653f..6636dfafa66f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -20808,7 +20808,7 @@ F:	Documentation/devicetree/bindings/gpio/snps,creg-gpio.txt
- F:	drivers/gpio/gpio-creg-snps.c
- 
- SYNOPSYS DESIGNWARE 8250 UART DRIVER
--M:	Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-+M:	Ilpo Järvinen <ilpo.jarvinen@linux.intel.com> BOGUS CHANGE, DO NOT APPLY
- R:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- S:	Supported
- F:	drivers/tty/serial/8250/8250_dw.c
--- 
-2.30.2
+Kdykoli vid=C3=ADte stav objedn=C3=A1vky a jste informov=C3=A1ni o p=C5=99=
+=C3=ADpadn=C3=A9m sn=C3=AD=C5=BEen=C3=AD efektivity. Syst=C3=A9m s=C3=A1m=
+ analyzuje data a p=C5=99ipravuje cenn=C3=A9 reporty, co=C5=BE oper=C3=A1=
+tor=C5=AFm umo=C5=BE=C5=88uje soust=C5=99edit se na v=C3=BDrobn=C3=AD c=C3=
+=ADl.
 
+C=C3=ADl je jednoduch=C3=BD: jeden pohled =E2=80=93 cel=C3=A1 tov=C3=A1rn=
+a. =C4=8Cek=C3=A1m na odpov=C4=9B=C4=8F, jestli vid=C3=ADte mo=C5=BEnost =
+vyu=C5=BEit=C3=AD takov=C3=A9ho n=C3=A1stroje ve va=C5=A1=C3=AD firm=C4=9B=
+=2E
+
+
+Pozdravy
+Michal Rmoutil
