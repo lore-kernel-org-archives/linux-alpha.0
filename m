@@ -2,65 +2,70 @@ Return-Path: <linux-alpha-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 984D9CDB46E
-	for <linux-alpha@archiver.kernel.org>; Thu, 12 Oct 2023 08:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FC2C41513
+	for <linux-alpha@archiver.kernel.org>; Sun, 15 Oct 2023 10:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235318AbjJLILa (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
-        Thu, 12 Oct 2023 04:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
+        id S230295AbjJOKGf (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
+        Sun, 15 Oct 2023 06:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235303AbjJLIL3 (ORCPT
+        with ESMTP id S230156AbjJOKG3 (ORCPT
         <rfc822;linux-alpha@vger.kernel.org>);
-        Thu, 12 Oct 2023 04:11:29 -0400
-X-Greylist: delayed 319 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 Oct 2023 01:11:28 PDT
-Received: from mail.okerlenbiz.com (mail.okerlenbiz.com [54.36.101.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCE8CA
-        for <linux-alpha@vger.kernel.org>; Thu, 12 Oct 2023 01:11:27 -0700 (PDT)
-Received: by mail.okerlenbiz.com (Postfix, from userid 1002)
-        id 3B5F6A2642; Thu, 12 Oct 2023 08:06:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=okerlenbiz.com;
-        s=mail; t=1697097967;
-        bh=sxkamsLepnJSy5ikFDKOiyq8RChcIfs44Djo0bti1MM=;
-        h=Date:From:To:Subject:From;
-        b=bxnyzn8WOHpa+k/X6yjiDIpCxsGadj8hBEpS0WertzXAPsXevFlC0AMzuPROW/VxS
-         u5hIBU2cg6CUlYT61tWW1EAcXRvyNSUpH6/5mnjc6c9HTM+x8aYfvRaH11A4Smh9kj
-         3dd22jwHOfaD2oPotY96SMIzPj98fapHIj2Dr8VUSc47bgqtnoCIfHFHC85q45jgVd
-         qcRwfRbAO/xA3eWiS9h23BBBHh/AtlPP8Slq2mAvyRPEgneXSgcAz6vvuKmKw4TIw6
-         oKSXzqVdTVsYpq9WLfF/qOWRBXkYwvq/7b87VUB1KlKND2aUkEbBjlD+DBGNZiwGjh
-         t+W2mCCsvS+DQ==
-Received: by mail.okerlenbiz.com for <linux-alpha@vger.kernel.org>; Thu, 12 Oct 2023 08:05:59 GMT
-Message-ID: <20231012064500-0.1.68.8ar7.0.ehqoi62z39@okerlenbiz.com>
-Date:   Thu, 12 Oct 2023 08:05:59 GMT
-From:   "Philipp Raber" <philipp.raber@okerlenbiz.com>
-To:     <linux-alpha@vger.kernel.org>
-Subject: Metalworking and welding
-X-Mailer: mail.okerlenbiz.com
+        Sun, 15 Oct 2023 06:06:29 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D34D102;
+        Sun, 15 Oct 2023 03:06:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1697364383;
+        bh=lQ471ge3JT3D/IyXiBK6OqZg4gy00/Wz1cpF1NMX1CI=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=Jgv8/cUxgQM27y6U//UT8VctmRJrqlUlqIr1QQTvvhugWnDzvcBYSj+SLZifK2jTQ
+         owmdqqRmmp8iY6chJq2Mlnpjbq6RAj8jt0kTavOSSUm2KQgIWHKXgDY5hnkI1rXRb9
+         NIdVXDDuIe1rtwQ5evX8B8s9Peo+r//MyCvLnEJu3WQv7amCnhXoAL+d5jvpc0YjYY
+         35406tFs9oyMdUOOMphj3mCWt3yUm5zVp0ckK6CxgcejWbG+0vkHDPW3MGFNsWQ5DX
+         tEUDQT8EKLC+kMhx0X8thKh1EhRV8sMxpXYvKiRh1qX2qbrIMTQ4XvICpOiJdoeKvz
+         ZQx5NpTCbYS3w==
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4S7bVc4t2xz4wnw;
+        Sun, 15 Oct 2023 21:06:16 +1100 (AEDT)
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     reiserfs-devel@vger.kernel.org, Peter Lafreniere <peter@n8pjl.ca>
+Cc:     jack@suse.cz, linux-kernel@vger.kernel.org, richard@nod.at,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        linuxppc-dev@lists.ozlabs.org, linux-um@lists.infradead.org,
+        linux-sh@vger.kernel.org, tsbogend@alpha.franken.de,
+        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        geert@linux-m68k.org, linux-arm-kernel@lists.infradead.org,
+        linux@armlinux.org.uk, linux-alpha@vger.kernel.org,
+        richard.henderson@linaro.org, ink@jurassic.park.msu.ru
+In-Reply-To: <20230918175529.19011-1-peter@n8pjl.ca>
+References: <20230918175529.19011-1-peter@n8pjl.ca>
+Subject: Re: (subset) [PATCH 0/7] arch/*: config: Remove ReiserFS from defconfig
+Message-Id: <169736429854.960528.1442206910501555108.b4-ty@ellerman.id.au>
+Date:   Sun, 15 Oct 2023 21:04:58 +1100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-alpha.vger.kernel.org>
 X-Mailing-List: linux-alpha@vger.kernel.org
 
-Good morning,
+On Mon, 18 Sep 2023 17:56:09 +0000, Peter Lafreniere wrote:
+> ReiserFS has been considered deprecated for 19 months since commit
+> eb103a51640e ("reiserfs: Deprecate reiserfs"). However, there are
+> several architectures that still build it into their defconfig kernels.
+> 
+> As ReiserFS will be removed in 2025, delete all ReiserFS-related options
+> from defconfig files before the filesystem's removal.
+> 
+> [...]
 
-We specialize in serial production of metal elements.
+Applied to powerpc/next.
 
-You do not have to resort to the services of subcontractors - we offer yo=
-u comprehensive services
-Support from design to production to transportation, which guarantees sho=
-rt delivery times orders and lower costs.
+[2/7] arch: powerpc: remove ReiserFS from defconfig
+      https://git.kernel.org/powerpc/c/c945e6f453a361b0e9daddd2be9c099d1b80d6f8
 
-We have an extensive machine park and a large team of specialists, thanks=
- to which we can offer services such as laser sheet metal cutting, pipe a=
-nd profile bending, welding and powder coating.
-
-The main area of our production is currently storage and transport trolle=
-ys. We produce transport pallets, scissor lifts, furniture elements, buil=
-ding formwork and much more.
-
-If you have any need regarding this, please send me a message.
-
-
-Greetings
-Philipp Raber
+cheers
