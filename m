@@ -2,70 +2,95 @@ Return-Path: <linux-alpha-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FC2C41513
-	for <linux-alpha@archiver.kernel.org>; Sun, 15 Oct 2023 10:06:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A0BBCDB47E
+	for <linux-alpha@archiver.kernel.org>; Sun, 15 Oct 2023 13:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230295AbjJOKGf (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
-        Sun, 15 Oct 2023 06:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54792 "EHLO
+        id S229561AbjJONzB (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
+        Sun, 15 Oct 2023 09:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbjJOKG3 (ORCPT
+        with ESMTP id S229555AbjJONzA (ORCPT
         <rfc822;linux-alpha@vger.kernel.org>);
-        Sun, 15 Oct 2023 06:06:29 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D34D102;
-        Sun, 15 Oct 2023 03:06:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1697364383;
-        bh=lQ471ge3JT3D/IyXiBK6OqZg4gy00/Wz1cpF1NMX1CI=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Jgv8/cUxgQM27y6U//UT8VctmRJrqlUlqIr1QQTvvhugWnDzvcBYSj+SLZifK2jTQ
-         owmdqqRmmp8iY6chJq2Mlnpjbq6RAj8jt0kTavOSSUm2KQgIWHKXgDY5hnkI1rXRb9
-         NIdVXDDuIe1rtwQ5evX8B8s9Peo+r//MyCvLnEJu3WQv7amCnhXoAL+d5jvpc0YjYY
-         35406tFs9oyMdUOOMphj3mCWt3yUm5zVp0ckK6CxgcejWbG+0vkHDPW3MGFNsWQ5DX
-         tEUDQT8EKLC+kMhx0X8thKh1EhRV8sMxpXYvKiRh1qX2qbrIMTQ4XvICpOiJdoeKvz
-         ZQx5NpTCbYS3w==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4S7bVc4t2xz4wnw;
-        Sun, 15 Oct 2023 21:06:16 +1100 (AEDT)
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     reiserfs-devel@vger.kernel.org, Peter Lafreniere <peter@n8pjl.ca>
-Cc:     jack@suse.cz, linux-kernel@vger.kernel.org, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        linuxppc-dev@lists.ozlabs.org, linux-um@lists.infradead.org,
-        linux-sh@vger.kernel.org, tsbogend@alpha.franken.de,
-        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        geert@linux-m68k.org, linux-arm-kernel@lists.infradead.org,
-        linux@armlinux.org.uk, linux-alpha@vger.kernel.org,
-        richard.henderson@linaro.org, ink@jurassic.park.msu.ru
-In-Reply-To: <20230918175529.19011-1-peter@n8pjl.ca>
-References: <20230918175529.19011-1-peter@n8pjl.ca>
-Subject: Re: (subset) [PATCH 0/7] arch/*: config: Remove ReiserFS from defconfig
-Message-Id: <169736429854.960528.1442206910501555108.b4-ty@ellerman.id.au>
-Date:   Sun, 15 Oct 2023 21:04:58 +1100
+        Sun, 15 Oct 2023 09:55:00 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992C7B7;
+        Sun, 15 Oct 2023 06:54:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=HeLSDR+Sozk/FfhSf8rg92vqdhkO661vM3ya5zaMH5U=; b=dBH80M+EB+uzCY+jsCfyJJajSu
+        avIQe39UNTT4H89h2zGlhJ+CeY0HtZ0Cfk6Vmp4oMv8pDmdglNxfoEoh6gGprKk2+S5GfR/NWhccI
+        cFPY33XJNcE+im1+9tWTLgOY1GzVpCz+vSbB3EC4NpovOSy7vg7Rq6p3pisBoa3DS6VHL7h9LVgyy
+        RKt1Aw8WgN0uO65iRGr6lVdHhG4SgD0Y+FZNfVimyE9NMRhHYdEYeih0aFJ3pN1+RzaWTsfODg0Jv
+        qDl+d51du/A49xMnP/9UbDTTVFHC7L5lz5IvUXCoRLYqHP8F9Ozm4DsLyKBB/9JKJ5B5IOvlU8Bf0
+        IkZlxY2w==;
+Received: from [192.168.12.176]
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1qs1Zx-000lCB-PP; Sun, 15 Oct 2023 15:54:49 +0200
+Message-ID: <f5837e2d-2fbd-34f2-37eb-11701db4464e@igalia.com>
+Date:   Sun, 15 Oct 2023 15:54:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH v5] alpha: Clean-up the panic notifier code
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     linux-alpha@vger.kernel.org, mattst88@gmail.com,
+        linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Richard Henderson <richard.henderson@linaro.org>,
+        Petr Mladek <pmladek@suse.com>
+References: <20230902165725.3504046-1-gpiccoli@igalia.com>
+ <alpine.DEB.2.21.2310100109100.48714@angie.orcam.me.uk>
+Content-Language: en-US
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <alpine.DEB.2.21.2310100109100.48714@angie.orcam.me.uk>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-alpha.vger.kernel.org>
 X-Mailing-List: linux-alpha@vger.kernel.org
 
-On Mon, 18 Sep 2023 17:56:09 +0000, Peter Lafreniere wrote:
-> ReiserFS has been considered deprecated for 19 months since commit
-> eb103a51640e ("reiserfs: Deprecate reiserfs"). However, there are
-> several architectures that still build it into their defconfig kernels.
+On 10/10/2023 02:16, Maciej W. Rozycki wrote:
+> On Sat, 2 Sep 2023, Guilherme G. Piccoli wrote:
 > 
-> As ReiserFS will be removed in 2025, delete all ReiserFS-related options
-> from defconfig files before the filesystem's removal.
+>> So, let's clean the code and set the notifier to run as the
+>> latest, following the same approach other architectures are
+>> doing - also, remove the unnecessary include of a header already
+>> included indirectly.
 > 
-> [...]
+>  FWIW my understanding is our current policy is not to rely on indirect 
+> inclusions and if a given source relies on declarations or definitions 
+> provided by a header, then it is supposed to pull it explicitly.
+> 
+>  And in any case such an unrelated self-contained change is expected to be 
+> sent as a separate patch, in a series if there's a mechanical dependency.
+> 
+>   Maciej
+> 
 
-Applied to powerpc/next.
+Hi Maciej, thanks for your review!
 
-[2/7] arch: powerpc: remove ReiserFS from defconfig
-      https://git.kernel.org/powerpc/c/c945e6f453a361b0e9daddd2be9c099d1b80d6f8
+I'm not sure how the indirect inclusion is happening here. The only
+notifier present in this file is a panic notifier, and for this one, we
+have the "panic_notifier.h" header. It's like this for many others (if
+not all) panic notifiers in the kernel.
 
-cheers
+Usually the indirect inclusion would happen if some other notifier block
+was used for any other reason, and we dropped the "notifier.h" include,
+which then would indirectly rely on "panic_notifier.h". In case I'm
+talking silly things, let me know! I might not have understood properly
+your point (and if so, apologies).
+
+Regarding split in another patch, it can easily be done, but I think
+it's quite self-contained now, a simple patch that cleans-up the alpha
+notifier. I've done that for other notifiers so far, but I'm OK either
+way, as long maintainers are happy and community agrees =)
+
+Cheers,
+
+
+Guilherme
