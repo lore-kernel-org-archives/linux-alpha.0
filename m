@@ -2,126 +2,62 @@ Return-Path: <linux-alpha-owner@vger.kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9613ACDB47E
-	for <linux-alpha@archiver.kernel.org>; Fri, 20 Oct 2023 07:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34218C001DF
+	for <linux-alpha@archiver.kernel.org>; Fri, 20 Oct 2023 14:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376449AbjJTHxN (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
-        Fri, 20 Oct 2023 03:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
+        id S1377517AbjJTOHg (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
+        Fri, 20 Oct 2023 10:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376406AbjJTHxM (ORCPT
+        with ESMTP id S1377512AbjJTOHf (ORCPT
         <rfc822;linux-alpha@vger.kernel.org>);
-        Fri, 20 Oct 2023 03:53:12 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D6FA3;
-        Fri, 20 Oct 2023 00:53:09 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 7120B1F45B;
-        Fri, 20 Oct 2023 07:53:08 +0000 (UTC)
-Received: from suse.cz (pmladek.tcp.ovpn2.prg.suse.de [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EDB7A2C7B4;
-        Fri, 20 Oct 2023 07:53:07 +0000 (UTC)
-Date:   Fri, 20 Oct 2023 09:53:07 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        linux-alpha@vger.kernel.org, mattst88@gmail.com,
+        Fri, 20 Oct 2023 10:07:35 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CFA418F;
+        Fri, 20 Oct 2023 07:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=2v/Dgi6Kg+1wMr9J+wUGpxFDvsHZRnzu3RySV36izb4=; b=SVsqfLjFcGu7Zato1G4ATefA1s
+        TPHeCOrYzCyej17j26NNK8n8dChqAifeTrrYgHkhzRIEcnZnlsKw7+zP1ffFPSftvVdpFpNMLPczN
+        cUEXmrs8PBUpOMA3TVAuUtCbUsotWSt7KbhQIWuQpc3ED1E+kJEY4hArc6OVbwA7FCPEQIdv0ynfh
+        1ykEUpWNLoMY38yy169dd7YofHyQ3KcBYJOoz4/S+O5qXuX7QrSsGXE/GGGcjA2knkZbPSH8CSfZX
+        5dmBvnAO5+wB+qZmnXrtsOkfDmmiHKAAPCy1uCi8ykXQL8wxUjh3VxyujChHOEuxezIDYtic4qX+Q
+        ud0eNLlg==;
+Received: from [192.168.13.184]
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1qtq9t-0038YA-8Z; Fri, 20 Oct 2023 16:07:25 +0200
+Message-ID: <cb9ecb15-1d86-2544-5cb0-cd2dc8ad4c5f@igalia.com>
+Date:   Fri, 20 Oct 2023 16:07:24 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.0
+Subject: Re: [PATCH v5] alpha: Clean-up the panic notifier code
+To:     Petr Mladek <pmladek@suse.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     linux-alpha@vger.kernel.org, mattst88@gmail.com,
         linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
         kernel@gpiccoli.net, Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
         Richard Henderson <richard.henderson@linaro.org>
-Subject: Re: [PATCH v5] alpha: Clean-up the panic notifier code
-Message-ID: <ZTIx4-Sn3mzYFzke@alley>
 References: <20230902165725.3504046-1-gpiccoli@igalia.com>
  <alpine.DEB.2.21.2310100109100.48714@angie.orcam.me.uk>
- <f5837e2d-2fbd-34f2-37eb-11701db4464e@igalia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f5837e2d-2fbd-34f2-37eb-11701db4464e@igalia.com>
-X-Spamd-Bar: +++++++++++++++
-Authentication-Results: smtp-out2.suse.de;
-        dkim=none;
-        dmarc=fail reason="No valid SPF, No valid DKIM" header.from=suse.com (policy=quarantine);
-        spf=fail (smtp-out2.suse.de: domain of pmladek@suse.com does not designate 149.44.160.134 as permitted sender) smtp.mailfrom=pmladek@suse.com
-X-Rspamd-Server: rspamd2
-X-Spamd-Result: default: False [15.00 / 50.00];
-         ARC_NA(0.00)[];
-         R_SPF_FAIL(1.00)[-all];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         MIME_GOOD(-0.10)[text/plain];
-         NEURAL_HAM_LONG(-3.00)[-1.000];
-         RWL_MAILSPIKE_GOOD(0.00)[149.44.160.134:from];
-         DMARC_POLICY_QUARANTINE(1.50)[suse.com : No valid SPF, No valid DKIM,quarantine];
-         VIOLATED_DIRECT_SPF(3.50)[];
-         MX_GOOD(-0.01)[];
-         NEURAL_HAM_SHORT(-1.00)[-1.000];
-         RCPT_COUNT_SEVEN(0.00)[9];
-         RCVD_NO_TLS_LAST(0.10)[];
-         FROM_EQ_ENVFROM(0.00)[];
-         R_DKIM_NA(0.20)[];
-         MIME_TRACE(0.00)[0:+];
-         RCVD_COUNT_TWO(0.00)[2];
-         MID_RHS_NOT_FQDN(0.50)[];
-         BAYES_HAM(-3.00)[100.00%];
-         FREEMAIL_CC(0.00)[orcam.me.uk,vger.kernel.org,gmail.com,igalia.com,gpiccoli.net,jurassic.park.msu.ru,linaro.org]
-X-Rspamd-Queue-Id: 7120B1F45B
-X-Spam: Yes
+ <f5837e2d-2fbd-34f2-37eb-11701db4464e@igalia.com> <ZTIx4-Sn3mzYFzke@alley>
+Content-Language: en-US
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <ZTIx4-Sn3mzYFzke@alley>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-alpha.vger.kernel.org>
 X-Mailing-List: linux-alpha@vger.kernel.org
 
-On Sun 2023-10-15 15:54:49, Guilherme G. Piccoli wrote:
-> On 10/10/2023 02:16, Maciej W. Rozycki wrote:
-> > On Sat, 2 Sep 2023, Guilherme G. Piccoli wrote:
-> > 
-> >> So, let's clean the code and set the notifier to run as the
-> >> latest, following the same approach other architectures are
-> >> doing - also, remove the unnecessary include of a header already
-> >> included indirectly.
-> > 
-> >  FWIW my understanding is our current policy is not to rely on indirect 
-> > inclusions and if a given source relies on declarations or definitions 
-> > provided by a header, then it is supposed to pull it explicitly.
-> > 
-> >  And in any case such an unrelated self-contained change is expected to be 
-> > sent as a separate patch, in a series if there's a mechanical dependency.
-> > 
-> >   Maciej
-> > 
-> 
-> Hi Maciej, thanks for your review!
-> 
-> I'm not sure how the indirect inclusion is happening here. The only
-> notifier present in this file is a panic notifier, and for this one, we
-> have the "panic_notifier.h" header. It's like this for many others (if
-> not all) panic notifiers in the kernel.
+On 20/10/2023 09:53, Petr Mladek wrote:
+> [...]
 
-IMHO, including linux/panic_notifier.h should be enough. It is includes
-linux/notifier.h by definition.
+OK, thanks folks! I'll resubmit without the includes change =)
 
-Well, it is not a big deal to keep the include. Let's not block the
-change because of this.
-
-> Regarding split in another patch, it can easily be done, but I think
-> it's quite self-contained now, a simple patch that cleans-up the alpha
-> notifier. I've done that for other notifiers so far, but I'm OK either
-> way, as long maintainers are happy and community agrees =)
-
-If I was the maintainer, I would prefer the split as well ;-)
-I mean to move the code in one patch and do the changes in
-a followup patch.
-
-It is much easier for review. It is more clear what are the real
-changes and that there are only wanted changes.
-
-Even removal of the include might be in a separate patch. It helps
-to find regressions by bisecting. The eventual revert is easier.
-Also it does not block the other changes ;-)
-
-Best Regards,
-Petr
+Cheers!
