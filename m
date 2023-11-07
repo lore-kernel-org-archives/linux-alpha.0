@@ -1,65 +1,46 @@
-Return-Path: <linux-alpha-owner@vger.kernel.org>
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B833C0032E
-	for <linux-alpha@archiver.kernel.org>; Wed, 25 Oct 2023 07:51:09 +0000 (UTC)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232076AbjJYHvJ (ORCPT <rfc822;linux-alpha@archiver.kernel.org>);
-        Wed, 25 Oct 2023 03:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233409AbjJYHvH (ORCPT
-        <rfc822;linux-alpha@vger.kernel.org>);
-        Wed, 25 Oct 2023 03:51:07 -0400
-Received: from mail.okerlenbiz.com (mail.okerlenbiz.com [54.36.101.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA38618A
-        for <linux-alpha@vger.kernel.org>; Wed, 25 Oct 2023 00:51:01 -0700 (PDT)
-Received: by mail.okerlenbiz.com (Postfix, from userid 1002)
-        id A7CB6A281D; Wed, 25 Oct 2023 07:50:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=okerlenbiz.com;
-        s=mail; t=1698220259;
-        bh=sxkamsLepnJSy5ikFDKOiyq8RChcIfs44Djo0bti1MM=;
-        h=Date:From:To:Subject:From;
-        b=hrp8FUzU4Hx/sQ6/gRWawMe/YxjOdvtPQT5tczPlMVKzz/Rz8wAoQj4suzyOZB73r
-         ArZNEM6PUf0Dd38qfQgd0CFVZnezcraxJPsdlccwF6eAtfouOgq1exKFPhlNH4bWTG
-         YjNoco19MC3V+PS3yOp7RFCPEJm1NtjFP6JUr3Ih3A5oh3IjVCDw9xxVrzHcHzoJia
-         6S+DB65APNR0kHlf1nfw4RqNVfnTvGxETcTV/cPVug7C7xLSWe3So9JBqoikDSJL4p
-         q7y6AAKHF7dUIZ1GhQKMjuGeCKSxPsQouMHf9c9+flL3CRB95as7liafRNZyCjEoaa
-         5qai+V5Co4TqQ==
-Received: by mail.okerlenbiz.com for <linux-alpha@vger.kernel.org>; Wed, 25 Oct 2023 07:50:55 GMT
-Message-ID: <20231025064500-0.1.6h.8ar7.0.x0ch11mh2o@okerlenbiz.com>
-Date:   Wed, 25 Oct 2023 07:50:55 GMT
-From:   "Philipp Raber" <philipp.raber@okerlenbiz.com>
-To:     <linux-alpha@vger.kernel.org>
-Subject: Metalworking and welding
-X-Mailer: mail.okerlenbiz.com
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E3AB18F;
+	Tue,  7 Nov 2023 00:00:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2FYYS8MO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E2A7C433C7;
+	Tue,  7 Nov 2023 00:00:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1699315253;
+	bh=gWSQwVS/DuFY8epvQLsUoxyqrJ0L53S7NX9Y3cpdBb4=;
+	h=Date:From:To:Subject:From;
+	b=2FYYS8MOF+g1KB68wRaTBLt4qdi1oVNOVrcDhGPFKyzvQpkvWgDuhvgDRlPv0wRJ9
+	 JnCnzHfzpUgAfDJzf3Ko047wJ9qpjDPxUaQ+vacrgU1ekeVhxA1SkM+w7u2PxssFC5
+	 3MfQ3cbwb3IY+DCqoN+XoJe/TnyNPHlODGXbQPMA=
+Date: Mon, 6 Nov 2023 19:00:52 -0500
+From: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To: lartc@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-api@vger.kernel.org, linux-arch@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	linux-assembly@vger.kernel.org, linux-bcache@vger.kernel.org, linux-bcachefs@vger.kernel.org, 
+	linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org, linux-btrace@vger.kernel.org, 
+	linux-btrfs@vger.kernel.org, linux-can@vger.kernel.org, linux-cifs@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org, linux-csky@vger.kernel.org, 
+	linux-debuggers@vger.kernel.org, linux-edac@vger.kernel.org, linux-efi@vger.kernel.org
+Subject: PSA: this list has been migrated (no action required)
+Message-ID: <20231106-courageous-soft-caiman-7b3e6a@meerkat>
 Precedence: bulk
-List-ID: <linux-alpha.vger.kernel.org>
 X-Mailing-List: linux-alpha@vger.kernel.org
+List-Id: <linux-alpha.vger.kernel.org>
+List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
+List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-Good morning,
+Hello:
 
-We specialize in serial production of metal elements.
+This list has been migrated to the new vger infrastructure. You should't need
+to change anything about how you participate with the list or how you receive
+mail.
 
-You do not have to resort to the services of subcontractors - we offer yo=
-u comprehensive services
-Support from design to production to transportation, which guarantees sho=
-rt delivery times orders and lower costs.
+If something isn't working right, please reach out to helpdesk@kernel.org.
 
-We have an extensive machine park and a large team of specialists, thanks=
- to which we can offer services such as laser sheet metal cutting, pipe a=
-nd profile bending, welding and powder coating.
-
-The main area of our production is currently storage and transport trolle=
-ys. We produce transport pallets, scissor lifts, furniture elements, buil=
-ding formwork and much more.
-
-If you have any need regarding this, please send me a message.
-
-
-Greetings
-Philipp Raber
+Best regards,
+Konstantin
