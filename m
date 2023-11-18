@@ -1,134 +1,228 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32B8D1FB7;
-	Sun, 12 Nov 2023 04:22:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FacYEZCQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF58C433AB;
-	Sun, 12 Nov 2023 04:22:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1699762926;
-	bh=FJL4JNEf9Nr1DoflQgnKi0tfP9lyYuVjCmmad2iv8TA=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=FacYEZCQKy7zh6VsDp47yhkL+9he5Y+BzcuRtc1i6KHlTBkqaeroQJJDPLMRFLWD9
-	 QNhskha1onUHVMj2O/qk8mK8c0vJZhiTXumXWS0CGWZks5ZJFrR6dvkAIDGJkCeV/t
-	 6amg22+gEIHVdyPSQgk0L9lJZr+X87dXFazyXH2ThFIzgEMWpLCJskz/nC6CtTqsA+
-	 Z9NTC9QINWCby1hgnVCHVFMOnhZXaqZYk/4H/uttsH8za+SgromnkZZytr79DMdLq5
-	 z6fSwHr0XX/U0fb4cdcZFZDuYKieV7M2bNXh4VB6zTAsNqvA0mOlgafeRuwkTVq4La
-	 Yez2M8oVwyWiQ==
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-52bd9ddb741so5252690a12.0;
-        Sat, 11 Nov 2023 20:22:06 -0800 (PST)
-X-Gm-Message-State: AOJu0Yw1fRuDc9XcvafNK/1x/b/M4Fh4EyZo0KDm9eGurcS/rIWfQqv0
-	VjXPKVOG7l2f08dG09H3CibhTWMVH9X87+xsUQs=
-X-Google-Smtp-Source: AGHT+IGKtBb4zpepnAgJWTPQf4OFL8Yxg0IypTLD7L38xtqORdph/fQnU2/w9oi/MfemCZAy/+rZ76w/2ug+y+JaBNQ=
-X-Received: by 2002:a05:6402:3d9:b0:53f:731a:e513 with SMTP id
- t25-20020a05640203d900b0053f731ae513mr2174574edw.25.1699762924720; Sat, 11
- Nov 2023 20:22:04 -0800 (PST)
+Authentication-Results: smtp.subspace.kernel.org; dkim=none
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B597D5B;
+	Sat, 18 Nov 2023 02:08:56 -0800 (PST)
+Received: from dggpemm100001.china.huawei.com (unknown [172.30.72.55])
+	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4SXTrY6JprzMmjJ;
+	Sat, 18 Nov 2023 18:04:13 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm100001.china.huawei.com (7.185.36.93) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.31; Sat, 18 Nov 2023 18:08:52 +0800
+From: Kefeng Wang <wangkefeng.wang@huawei.com>
+To: Arnd Bergmann <arnd@arndb.de>
+CC: <linux-arch@vger.kernel.org>, <linux-alpha@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-hexagon@vger.kernel.org>,
+	<linux-m68k@lists.linux-m68k.org>, <linux-mips@vger.kernel.org>,
+	<linux-parisc@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+	<linux-sh@vger.kernel.org>, <sparclinux@vger.kernel.org>, Kefeng Wang
+	<wangkefeng.wang@huawei.com>, Richard Henderson
+	<richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+	Russell King <linux@armlinux.org.uk>, Brian Cain <bcain@quicinc.com>, "James
+ E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Nicholas Piggin
+	<npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>,
+	"David S. Miller" <davem@davemloft.net>, Stanislav Kinsburskii
+	<stanislav.kinsburskii@gmail.com>
+Subject: [PATCH] asm/io: remove unnecessary xlate_dev_mem_ptr() and unxlate_dev_mem_ptr()
+Date: Sat, 18 Nov 2023 18:08:27 +0800
+Message-ID: <20231118100827.1599422-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.27.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20231108125843.3806765-1-arnd@kernel.org> <20231108125843.3806765-13-arnd@kernel.org>
-In-Reply-To: <20231108125843.3806765-13-arnd@kernel.org>
-From: Guo Ren <guoren@kernel.org>
-Date: Sat, 11 Nov 2023 23:21:53 -0500
-X-Gmail-Original-Message-ID: <CAJF2gTSEziwKn+f6DfZXRuzW1SXaWraKL2HdXMRkEOGyuHq3MQ@mail.gmail.com>
-Message-ID: <CAJF2gTSEziwKn+f6DfZXRuzW1SXaWraKL2HdXMRkEOGyuHq3MQ@mail.gmail.com>
-Subject: Re: [PATCH 12/22] csky: fix arch_jump_label_transform_static override
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, 
-	Masahiro Yamada <masahiroy@kernel.org>, linux-kbuild@vger.kernel.org, 
-	Arnd Bergmann <arnd@arndb.de>, Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>, 
-	Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Ard Biesheuvel <ardb@kernel.org>, 
-	Huacai Chen <chenhuacai@kernel.org>, Greg Ungerer <gerg@linux-m68k.org>, 
-	Michal Simek <monstr@monstr.eu>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Dinh Nguyen <dinguyen@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>, 
-	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	Geoff Levand <geoff@infradead.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Heiko Carstens <hca@linux.ibm.com>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "David S. Miller" <davem@davemloft.net>, 
-	Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
-	x86@kernel.org, Helge Deller <deller@gmx.de>, 
-	Sudip Mukherjee <sudipm.mukherjee@gmail.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Timur Tabi <timur@kernel.org>, 
-	Kent Overstreet <kent.overstreet@linux.dev>, David Woodhouse <dwmw2@infradead.org>, 
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-	Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>, Kees Cook <keescook@chromium.org>, 
-	Vincenzo Frascino <vincenzo.frascino@arm.com>, Juri Lelli <juri.lelli@redhat.com>, 
-	Vincent Guittot <vincent.guittot@linaro.org>, Nathan Chancellor <nathan@kernel.org>, 
-	Nick Desaulniers <ndesaulniers@google.com>, Nicolas Schier <nicolas@fjasle.eu>, 
-	Al Viro <viro@zeniv.linux.org.uk>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, 
-	linux-arm-kernel@lists.infradead.org, linux-trace-kernel@vger.kernel.org, 
-	linux-csky@vger.kernel.org, loongarch@lists.linux.dev, 
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
-	sparclinux@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-usb@vger.kernel.org, 
-	linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linux-bcachefs@vger.kernel.org, linux-mtd@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm100001.china.huawei.com (7.185.36.93)
+X-CFilter-Loop: Reflected
 
-On Wed, Nov 8, 2023 at 8:02=E2=80=AFAM Arnd Bergmann <arnd@kernel.org> wrot=
-e:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> The arch_jump_label_transform_static() function in csky was originally me=
-ant to
-> override the generic __weak function, but that got changed to an #ifndef =
-check.
->
-> This showed up as a missing-prototype warning:
-> arch/csky/kernel/jump_label.c:43:6: error: no previous prototype for 'arc=
-h_jump_label_transform_static' [-Werror=3Dmissing-prototypes]
->
-> Change the method to use the new method of having a #define and a prototy=
-pe
-> for the global function.
->
-> Fixes: 7e6b9db27de9 ("jump_label: make initial NOP patching the special c=
-ase")
-> Fixes: 4e8bb4ba5a55 ("csky: Add jump-label implementation")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  arch/csky/include/asm/jump_label.h | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/arch/csky/include/asm/jump_label.h b/arch/csky/include/asm/j=
-ump_label.h
-> index d488ba6084bc..98a3f4b168bd 100644
-> --- a/arch/csky/include/asm/jump_label.h
-> +++ b/arch/csky/include/asm/jump_label.h
-> @@ -43,5 +43,10 @@ static __always_inline bool arch_static_branch_jump(st=
-ruct static_key *key,
->         return true;
->  }
->
-> +enum jump_label_type;
-> +void arch_jump_label_transform_static(struct jump_entry *entry,
-> +                                     enum jump_label_type type);
-> +#define arch_jump_label_transform_static arch_jump_label_transform_stati=
-c
-> +
->  #endif  /* __ASSEMBLY__ */
->  #endif /* __ASM_CSKY_JUMP_LABEL_H */
-> --
-> 2.39.2
->
->
-Thank you!
-Reviewed-by: Guo Ren <guoren@kernel.org>
+The asm-generic/io.h already has default definition, remove unnecessary
+arch's defination.
 
---=20
-Best Regards
- Guo Ren
+Cc: Richard Henderson <richard.henderson@linaro.org>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Brian Cain <bcain@quicinc.com>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: Rich Felker <dalias@libc.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Stanislav Kinsburskii <stanislav.kinsburskii@gmail.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ arch/alpha/include/asm/io.h    | 6 ------
+ arch/arm/include/asm/io.h      | 6 ------
+ arch/hexagon/include/asm/io.h  | 6 ------
+ arch/m68k/include/asm/io_mm.h  | 6 ------
+ arch/mips/include/asm/io.h     | 7 -------
+ arch/parisc/include/asm/io.h   | 6 ------
+ arch/powerpc/include/asm/io.h  | 6 ------
+ arch/sh/include/asm/io.h       | 7 -------
+ arch/sparc/include/asm/io_64.h | 6 ------
+ 9 files changed, 56 deletions(-)
+
+diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+index 7aeaf7c30a6f..5e5d21ebc584 100644
+--- a/arch/alpha/include/asm/io.h
++++ b/arch/alpha/include/asm/io.h
+@@ -651,12 +651,6 @@ extern void outsl (unsigned long port, const void *src, unsigned long count);
+ #endif
+ #define RTC_ALWAYS_BCD	0
+ 
+-/*
+- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
+- * access
+- */
+-#define xlate_dev_mem_ptr(p)	__va(p)
+-
+ /*
+  * These get provided from <asm-generic/iomap.h> since alpha does not
+  * select GENERIC_IOMAP.
+diff --git a/arch/arm/include/asm/io.h b/arch/arm/include/asm/io.h
+index 56b08ed6cc3b..1815748f5d2a 100644
+--- a/arch/arm/include/asm/io.h
++++ b/arch/arm/include/asm/io.h
+@@ -407,12 +407,6 @@ struct pci_dev;
+ #define pci_iounmap pci_iounmap
+ extern void pci_iounmap(struct pci_dev *dev, void __iomem *addr);
+ 
+-/*
+- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
+- * access
+- */
+-#define xlate_dev_mem_ptr(p)	__va(p)
+-
+ #include <asm-generic/io.h>
+ 
+ #ifdef CONFIG_MMU
+diff --git a/arch/hexagon/include/asm/io.h b/arch/hexagon/include/asm/io.h
+index e2b308e32a37..97d57751ce3b 100644
+--- a/arch/hexagon/include/asm/io.h
++++ b/arch/hexagon/include/asm/io.h
+@@ -58,12 +58,6 @@ static inline void *phys_to_virt(unsigned long address)
+ 	return __va(address);
+ }
+ 
+-/*
+- * convert a physical pointer to a virtual kernel pointer for
+- * /dev/mem access.
+- */
+-#define xlate_dev_mem_ptr(p)    __va(p)
+-
+ /*
+  * IO port access primitives.  Hexagon doesn't have special IO access
+  * instructions; all I/O is memory mapped.
+diff --git a/arch/m68k/include/asm/io_mm.h b/arch/m68k/include/asm/io_mm.h
+index 47525f2a57e1..090aec54b8fa 100644
+--- a/arch/m68k/include/asm/io_mm.h
++++ b/arch/m68k/include/asm/io_mm.h
+@@ -389,12 +389,6 @@ static inline void isa_delay(void)
+ 
+ #define __ARCH_HAS_NO_PAGE_ZERO_MAPPED		1
+ 
+-/*
+- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
+- * access
+- */
+-#define xlate_dev_mem_ptr(p)	__va(p)
+-
+ #define readb_relaxed(addr)	readb(addr)
+ #define readw_relaxed(addr)	readw(addr)
+ #define readl_relaxed(addr)	readl(addr)
+diff --git a/arch/mips/include/asm/io.h b/arch/mips/include/asm/io.h
+index 062dd4e6b954..2158ff302430 100644
+--- a/arch/mips/include/asm/io.h
++++ b/arch/mips/include/asm/io.h
+@@ -548,13 +548,6 @@ extern void (*_dma_cache_inv)(unsigned long start, unsigned long size);
+ #define csr_out32(v, a) (*(volatile u32 *)((unsigned long)(a) + __CSR_32_ADJUST) = (v))
+ #define csr_in32(a)    (*(volatile u32 *)((unsigned long)(a) + __CSR_32_ADJUST))
+ 
+-/*
+- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
+- * access
+- */
+-#define xlate_dev_mem_ptr(p)	__va(p)
+-#define unxlate_dev_mem_ptr(p, v) do { } while (0)
+-
+ void __ioread64_copy(void *to, const void __iomem *from, size_t count);
+ 
+ #endif /* _ASM_IO_H */
+diff --git a/arch/parisc/include/asm/io.h b/arch/parisc/include/asm/io.h
+index 366537042465..9c06cafb0e70 100644
+--- a/arch/parisc/include/asm/io.h
++++ b/arch/parisc/include/asm/io.h
+@@ -267,12 +267,6 @@ extern void iowrite64be(u64 val, void __iomem *addr);
+ #define iowrite16_rep iowrite16_rep
+ #define iowrite32_rep iowrite32_rep
+ 
+-/*
+- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
+- * access
+- */
+-#define xlate_dev_mem_ptr(p)	__va(p)
+-
+ extern int devmem_is_allowed(unsigned long pfn);
+ 
+ #include <asm-generic/io.h>
+diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
+index 5220274a6277..79421c285066 100644
+--- a/arch/powerpc/include/asm/io.h
++++ b/arch/powerpc/include/asm/io.h
+@@ -709,12 +709,6 @@ static inline void name at					\
+ #define memcpy_fromio memcpy_fromio
+ #define memcpy_toio memcpy_toio
+ 
+-/*
+- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
+- * access
+- */
+-#define xlate_dev_mem_ptr(p)	__va(p)
+-
+ /*
+  * We don't do relaxed operations yet, at least not with this semantic
+  */
+diff --git a/arch/sh/include/asm/io.h b/arch/sh/include/asm/io.h
+index ac521f287fa5..be7ac06423a9 100644
+--- a/arch/sh/include/asm/io.h
++++ b/arch/sh/include/asm/io.h
+@@ -304,13 +304,6 @@ unsigned long long poke_real_address_q(unsigned long long addr,
+ 
+ #define ioremap_uc	ioremap
+ 
+-/*
+- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
+- * access
+- */
+-#define xlate_dev_mem_ptr(p)	__va(p)
+-#define unxlate_dev_mem_ptr(p, v) do { } while (0)
+-
+ #include <asm-generic/io.h>
+ 
+ #define ARCH_HAS_VALID_PHYS_ADDR_RANGE
+diff --git a/arch/sparc/include/asm/io_64.h b/arch/sparc/include/asm/io_64.h
+index 9303270b22f3..75ae9bf3bb7b 100644
+--- a/arch/sparc/include/asm/io_64.h
++++ b/arch/sparc/include/asm/io_64.h
+@@ -470,12 +470,6 @@ static inline int sbus_can_burst64(void)
+ struct device;
+ void sbus_set_sbus64(struct device *, int);
+ 
+-/*
+- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
+- * access
+- */
+-#define xlate_dev_mem_ptr(p)	__va(p)
+-
+ #endif
+ 
+ #endif /* !(__SPARC64_IO_H) */
+-- 
+2.27.0
+
