@@ -1,80 +1,98 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8947D38FB1;
-	Tue, 21 Nov 2023 09:23:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D197136C;
+	Tue, 21 Nov 2023 14:52:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GUk3Q4Mv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84493C43391;
-	Tue, 21 Nov 2023 09:23:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1700558616;
-	bh=1JqdGOcikIPraOhThJZ+ThwFEn9EMyadPHMefXFawKA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=GUk3Q4MvpshxkULe4lihbL6fp+6TMQE2/jtMr44SuJZ4LsOSpjitlpSNDxWxryXBy
-	 S4leJUUt9h8blyDWxlpADZz2Wa0wuUJ9jQgyrSGrVywVDWmEVOnkpshjg6JGNkjJHm
-	 mpS9NIvi0zMTNdFEKoE3pwQDZB0ALDHfKHvkCn+GfJMRcZL5KJCchRW4i/yQxfNU06
-	 Y2E2OixT655d+J+FJ2V6EPCdHDqgbA0kE+Uz375JLkTXB1C8nlvuvqpsWdYfrV+NWM
-	 fGnS0Mar/blbmEdtbwmgaSi5clQ4DxA6E4GEV/V4WvTOKnfbYsgw4N+U9nY89rJ6Wc
-	 euopvwHEcIOJg==
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	linux-alpha@vger.kernel.org
-Subject: [PATCH 17/17] tty: srmcons: make 'str_cr' const and non-array
-Date: Tue, 21 Nov 2023 10:22:58 +0100
-Message-ID: <20231121092258.9334-18-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.42.1
-In-Reply-To: <20231121092258.9334-1-jirislaby@kernel.org>
-References: <20231121092258.9334-1-jirislaby@kernel.org>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="poue5VPW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 580D7C433C7;
+	Tue, 21 Nov 2023 14:52:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1700578360;
+	bh=dGYz6IxNOUY4NpvhlMLeIB3Xxc/hARJYIHJyki7wDHE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=poue5VPWyYd+HrTAPC2kL1JwV02FvsHlUJ1z3W9FXk/U2czUqklkcawHdmmtSEsoY
+	 IlPddu/gpJsZ1UpOPQIgrM7BkkvyXf2F3hIfHrb2U18/fsMMvTR4wCzYJDyNBuBtzP
+	 SpQfWPT1cgV1qEShQyzt0KdJxLEsOUDx610rqzSQ=
+Date: Tue, 21 Nov 2023 15:12:23 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org,
+	Masahiro Yamada <masahiroy@kernel.org>,
+	linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+	Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>, Guo Ren <guoren@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Greg Ungerer <gerg@linux-m68k.org>, Michal Simek <monstr@monstr.eu>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Geoff Levand <geoff@infradead.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	"David S. Miller" <davem@davemloft.net>,
+	Andy Lutomirski <luto@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
+	Helge Deller <deller@gmx.de>,
+	Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+	Timur Tabi <timur@kernel.org>,
+	Kent Overstreet <kent.overstreet@linux.dev>,
+	David Woodhouse <dwmw2@infradead.org>,
+	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+	Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+	Kees Cook <keescook@chromium.org>,
+	Vincenzo Frascino <vincenzo.frascino@arm.com>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Vincent Guittot <vincent.guittot@linaro.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Nicolas Schier <nicolas@fjasle.eu>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-trace-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
+	loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+	netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-bcachefs@vger.kernel.org,
+	linux-mtd@lists.infradead.org
+Subject: Re: [PATCH 20/22] usb: fsl-mph-dr-of: mark fsl_usb2_mpc5121_init()
+ static
+Message-ID: <2023112114-cried-ramble-b3f9@gregkh>
+References: <20231108125843.3806765-1-arnd@kernel.org>
+ <20231108125843.3806765-21-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231108125843.3806765-21-arnd@kernel.org>
 
-'str_cr' contains a single character: \n. There is no need to declare it
-as array. Declare it as a variable, make it const and pass a pointer to
-it to callback_puts().
+On Wed, Nov 08, 2023 at 01:58:41PM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> This function is only called locally and should always have been static:
+> 
+> drivers/usb/host/fsl-mph-dr-of.c:291:5: error: no previous prototype for 'fsl_usb2_mpc5121_init' [-Werror=missing-prototypes]
+> 
+> Fixes: 230f7ede6c2f ("USB: add USB EHCI support for MPC5121 SoC")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
----
- arch/alpha/kernel/srmcons.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-index c6b821afbfd3..a6cff61706b5 100644
---- a/arch/alpha/kernel/srmcons.c
-+++ b/arch/alpha/kernel/srmcons.c
-@@ -91,7 +91,7 @@ srmcons_receive_chars(struct timer_list *t)
- static void
- srmcons_do_write(struct tty_port *port, const char *buf, int count)
- {
--	static char str_cr[1] = "\r";
-+	static const char str_cr = '\r';
- 	size_t c;
- 	srmcons_result result;
- 
-@@ -119,7 +119,7 @@ srmcons_do_write(struct tty_port *port, const char *buf, int count)
- 		}
- 
- 		while (need_cr) {
--			result.as_long = callback_puts(0, str_cr, 1);
-+			result.as_long = callback_puts(0, &str_cr, 1);
- 			if (result.bits.c > 0)
- 				need_cr = false;
- 		}
--- 
-2.42.1
-
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
