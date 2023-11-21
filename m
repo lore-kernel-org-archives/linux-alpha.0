@@ -1,98 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D197136C;
-	Tue, 21 Nov 2023 14:52:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="poue5VPW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 580D7C433C7;
-	Tue, 21 Nov 2023 14:52:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1700578360;
-	bh=dGYz6IxNOUY4NpvhlMLeIB3Xxc/hARJYIHJyki7wDHE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=poue5VPWyYd+HrTAPC2kL1JwV02FvsHlUJ1z3W9FXk/U2czUqklkcawHdmmtSEsoY
-	 IlPddu/gpJsZ1UpOPQIgrM7BkkvyXf2F3hIfHrb2U18/fsMMvTR4wCzYJDyNBuBtzP
-	 SpQfWPT1cgV1qEShQyzt0KdJxLEsOUDx610rqzSQ=
-Date: Tue, 21 Nov 2023 15:12:23 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-	Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, Guo Ren <guoren@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Greg Ungerer <gerg@linux-m68k.org>, Michal Simek <monstr@monstr.eu>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Geoff Levand <geoff@infradead.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	"David S. Miller" <davem@davemloft.net>,
-	Andy Lutomirski <luto@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-	Helge Deller <deller@gmx.de>,
-	Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-	Timur Tabi <timur@kernel.org>,
-	Kent Overstreet <kent.overstreet@linux.dev>,
-	David Woodhouse <dwmw2@infradead.org>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-	Kees Cook <keescook@chromium.org>,
-	Vincenzo Frascino <vincenzo.frascino@arm.com>,
-	Juri Lelli <juri.lelli@redhat.com>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Nicolas Schier <nicolas@fjasle.eu>,
-	Al Viro <viro@zeniv.linux.org.uk>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-trace-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
-	loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
-	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-	netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-bcachefs@vger.kernel.org,
-	linux-mtd@lists.infradead.org
-Subject: Re: [PATCH 20/22] usb: fsl-mph-dr-of: mark fsl_usb2_mpc5121_init()
- static
-Message-ID: <2023112114-cried-ramble-b3f9@gregkh>
-References: <20231108125843.3806765-1-arnd@kernel.org>
- <20231108125843.3806765-21-arnd@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WtyyA6kN"
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAD0DD;
+	Tue, 21 Nov 2023 07:21:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1700580099; x=1732116099;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=WijYm8vuHC5ZmFA7w1CK+dl8BooW+FtnuyTe351N948=;
+  b=WtyyA6kNJIK487iSa7UupuvmGmO8r9D/q99CuTjJ9QEzhdPyiuZhWtkU
+   udmB5THW4tBjcSDTDujfQYsmVY19tUX5EE9+zJpWkh+lA720Q84blYhU2
+   GFef7izJl4bquPdWb8UadCdKgj48Sj73mtd6Le8SHi1xF6FqKfOIDskN6
+   54PmnZ9Bude7ciL2zHKyC0Er3y7o9LIaP8JuyVBqT7avQlLJMHH8qifEX
+   h7wYl/0SHFvh/t7VoHyorQrzLhYLO12GBP9tHkr9PAKoSoVEFyPuse364
+   ztG3+rHwbrcz/FzGxHwgrCJINBtDwq4KHeDX0OIKQVksv8yvyT/LLN2If
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="13404500"
+X-IronPort-AV: E=Sophos;i="6.04,215,1695711600"; 
+   d="scan'208";a="13404500"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 07:21:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10901"; a="795824207"
+X-IronPort-AV: E=Sophos;i="6.04,215,1695711600"; 
+   d="scan'208";a="795824207"
+Received: from azanetti-mobl.ger.corp.intel.com ([10.249.46.144])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2023 07:21:35 -0800
+Date: Tue, 21 Nov 2023 17:21:32 +0200 (EET)
+From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+    Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Subject: Re: [PATCH 14/17] tty: srmcons: use 'count' directly in
+ srmcons_do_write()
+In-Reply-To: <20231121092258.9334-15-jirislaby@kernel.org>
+Message-ID: <4f0db52-6430-9122-1ecc-86e337644944@linux.intel.com>
+References: <20231121092258.9334-1-jirislaby@kernel.org> <20231121092258.9334-15-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231108125843.3806765-21-arnd@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
 
-On Wed, Nov 08, 2023 at 01:58:41PM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> This function is only called locally and should always have been static:
-> 
-> drivers/usb/host/fsl-mph-dr-of.c:291:5: error: no previous prototype for 'fsl_usb2_mpc5121_init' [-Werror=missing-prototypes]
-> 
-> Fixes: 230f7ede6c2f ("USB: add USB EHCI support for MPC5121 SoC")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+On Tue, 21 Nov 2023, Jiri Slaby (SUSE) wrote:
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Similarly to 'buf' in the previous patch, there is no need to have a
+> separate counter ('remaining') in srmcons_do_write(). 'count' can be
+> used directly which simplifies the code a bit.
+> 
+> Note that the type of the current count ('c') is changed from 'long' to
+> 'size_t' so that:
+> 1) it is prepared for the upcoming change of 'count's type, and
+> 2) is unsigned.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: linux-alpha@vger.kernel.org
+> ---
+>  arch/alpha/kernel/srmcons.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+> index b68c5af083cd..8025e2a882ed 100644
+> --- a/arch/alpha/kernel/srmcons.c
+> +++ b/arch/alpha/kernel/srmcons.c
+> @@ -92,24 +92,24 @@ static int
+>  srmcons_do_write(struct tty_port *port, const char *buf, int count)
+>  {
+>  	static char str_cr[1] = "\r";
+> -	long c, remaining = count;
+> +	size_t c;
+>  	srmcons_result result;
+>  	int need_cr;
+>  
+> -	while (remaining > 0) {
+> +	while (count > 0) {
+>  		need_cr = 0;
+>  		/* 
+>  		 * Break it up into reasonable size chunks to allow a chance
+>  		 * for input to get in
+>  		 */
+> -		for (c = 0; c < min_t(long, 128L, remaining) && !need_cr; c++)
+> +		for (c = 0; c < min_t(size_t, 128U, count) && !need_cr; c++)
+>  			if (buf[c] == '\n')
+>  				need_cr = 1;
+>  		
+>  		while (c > 0) {
+>  			result.as_long = callback_puts(0, buf, c);
+>  			c -= result.bits.c;
+> -			remaining -= result.bits.c;
+> +			count -= result.bits.c;
+>  			buf += result.bits.c;
+>  
+>  			/*
+> 
+
+The patches in the series are in pretty odd order and it was not told 
+anywhere here that the return value is unused by the callers. I'd just 
+reorder the patches.
+
+-- 
+ i.
+
