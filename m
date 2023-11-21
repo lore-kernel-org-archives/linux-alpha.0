@@ -1,102 +1,91 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF7631FA7;
-	Tue, 21 Nov 2023 09:23:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B35D3B2A3;
+	Tue, 21 Nov 2023 09:23:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iwSgrfyt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 508DAC433C9;
-	Tue, 21 Nov 2023 09:23:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PCcVQCue"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 841C4C433AB;
+	Tue, 21 Nov 2023 09:23:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1700558583;
-	bh=2JJEl9qZRNXTp7V/aOBIfQzLTFERSRdjiQ6fUrNoPtw=;
-	h=From:To:Cc:Subject:Date:From;
-	b=iwSgrfytuw8hnUaoDVzv7qtXXWU4WyVhfAxblRHJchTAK2tSuyagK2rZEAi4gBIQJ
-	 JdocksuBYkgUph7bj/c+wEoFOHcc3mx5yv0ulIMutaTqvd69qDJ3ls8ETbky0PqU0E
-	 27lnClMCcoXqMRGdTmqr4DFb3ohg3WPkH6aRY6j8dwwx2B9S6AnrQROeGShCw+RJLR
-	 w55DkZMcZvy3rNVUXblSJBJX8OSJQ2yYlqaOtr9ZzqAQ5LmSVsO/3Vpw2l8IpAxzOc
-	 2qy0KjAcwBxe+38uvGAZom6klSDhE7z+KWs85WHzIboLzUobKTeQsMSkOkMehbqfmj
-	 0+91yF/EkPigg==
+	s=k20201202; t=1700558607;
+	bh=A+gwjfR1YZFEn//O7QquhnOOdPgWP51q1cNT1xEbGz8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=PCcVQCueYuWyDY4P/DEB7ksJqQttXRDIPuOZ7d1S9t+TY1NrMTLU+chfM1S6vlv+p
+	 WBd57pcx7EOKaym2OQcNLU7UHsd+qb/aAAsDtIkFG6hIChg838AvK6hstPgL1gFiLN
+	 FiXQmY6zoCqEKQPuyPESrYNhXJ6NsQb1ojKzz50bJUjUKJxAXZW0fYqvLaFHkEjCBp
+	 LSTeR5/RUtifDRKwQmwM+896CIvlaUn8mg8TS0FPcDdLxOxd+K9Lo7jqqeytBxSkHY
+	 qaJn/aoW6NRZPIMKquDInl67DpFnQFfRKdSx15MeAGPSiwYZxY8lvB2AnsUOJ8XAyb
+	 +0Nmw/Pstmt6Q==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
 	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Jan Kara <jack@suse.com>,
-	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-	linux-alpha@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-usb@vger.kernel.org,
 	Matt Turner <mattst88@gmail.com>,
-	netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	Richard Henderson <richard.henderson@linaro.org>
-Subject: [PATCH 00/17] tty: small cleanups and fixes
-Date: Tue, 21 Nov 2023 10:22:41 +0100
-Message-ID: <20231121092258.9334-1-jirislaby@kernel.org>
+	linux-alpha@vger.kernel.org
+Subject: [PATCH 13/17] tty: srmcons: use 'buf' directly in srmcons_do_write()
+Date: Tue, 21 Nov 2023 10:22:54 +0100
+Message-ID: <20231121092258.9334-14-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.42.1
+In-Reply-To: <20231121092258.9334-1-jirislaby@kernel.org>
+References: <20231121092258.9334-1-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-This is a series to fix/clean up some obvious issues I revealed during
-u8+size_t conversions (to be posted later).
+There is no need to have a separate iterator ('cur') through 'buf' in
+srmcons_do_write(). 'buf' can be used directly which simplifies the code
+a bit.
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jan Kara <jack@suse.com>
-Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc: linux-alpha@vger.kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: linux-usb@vger.kernel.org
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 Cc: Richard Henderson <richard.henderson@linaro.org>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+---
+ arch/alpha/kernel/srmcons.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Jiri Slaby (SUSE) (17):
-  tty: deprecate tty_write_message()
-  tty: remove unneeded mbz from tiocsti()
-  tty: fix tty_operations types in documentation
-  tty: move locking docs out of Returns for functions in tty.h
-  tty: amiserial: return from receive_chars() without goto
-  tty: amiserial: use bool and rename overrun flag in receive_chars()
-  tty: ehv_bytecha: use memcpy_and_pad() in local_ev_byte_channel_send()
-  tty: goldfish: drop unneeded temporary variables
-  tty: hso: don't emit load/unload info to the log
-  tty: hso: don't initialize global serial_table
-  tty: hvc_console: use flexible array for outbuf
-  tty: nozomi: remove unused debugging DUMP()
-  tty: srmcons: use 'buf' directly in srmcons_do_write()
-  tty: srmcons: use 'count' directly in srmcons_do_write()
-  tty: srmcons: make srmcons_do_write() return void
-  tty: srmcons: switch need_cr to bool
-  tty: srmcons: make 'str_cr' const and non-array
-
- arch/alpha/kernel/srmcons.c   | 29 +++++++++++++----------------
- drivers/net/usb/hso.c         | 11 -----------
- drivers/tty/amiserial.c       | 10 ++++------
- drivers/tty/ehv_bytechan.c    |  7 +++++--
- drivers/tty/goldfish.c        |  7 ++-----
- drivers/tty/hvc/hvc_console.c |  4 +---
- drivers/tty/hvc/hvc_console.h |  2 +-
- drivers/tty/nozomi.c          | 18 ------------------
- drivers/tty/tty_io.c          |  8 ++++++--
- include/linux/tty.h           | 12 +++++++-----
- include/linux/tty_driver.h    |  5 ++---
- 11 files changed, 41 insertions(+), 72 deletions(-)
-
+diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+index d6139dbae4ac..b68c5af083cd 100644
+--- a/arch/alpha/kernel/srmcons.c
++++ b/arch/alpha/kernel/srmcons.c
+@@ -94,24 +94,23 @@ srmcons_do_write(struct tty_port *port, const char *buf, int count)
+ 	static char str_cr[1] = "\r";
+ 	long c, remaining = count;
+ 	srmcons_result result;
+-	char *cur;
+ 	int need_cr;
+ 
+-	for (cur = (char *)buf; remaining > 0; ) {
++	while (remaining > 0) {
+ 		need_cr = 0;
+ 		/* 
+ 		 * Break it up into reasonable size chunks to allow a chance
+ 		 * for input to get in
+ 		 */
+ 		for (c = 0; c < min_t(long, 128L, remaining) && !need_cr; c++)
+-			if (cur[c] == '\n')
++			if (buf[c] == '\n')
+ 				need_cr = 1;
+ 		
+ 		while (c > 0) {
+-			result.as_long = callback_puts(0, cur, c);
++			result.as_long = callback_puts(0, buf, c);
+ 			c -= result.bits.c;
+ 			remaining -= result.bits.c;
+-			cur += result.bits.c;
++			buf += result.bits.c;
+ 
+ 			/*
+ 			 * Check for pending input iff a tty port was provided
 -- 
 2.42.1
 
