@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RSU8gWck"
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7331018C
-	for <linux-alpha@vger.kernel.org>; Tue, 21 Nov 2023 09:52:13 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id d9443c01a7336-1cf74ad87e0so3877185ad.3
-        for <linux-alpha@vger.kernel.org>; Tue, 21 Nov 2023 09:52:13 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="C/ZEMiJF"
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69BD918E
+	for <linux-alpha@vger.kernel.org>; Tue, 21 Nov 2023 09:58:31 -0800 (PST)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-1f5d2e4326fso1978945fac.0
+        for <linux-alpha@vger.kernel.org>; Tue, 21 Nov 2023 09:58:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700589133; x=1701193933; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1700589510; x=1701194310; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=QB47EGfsEp2zY8aVpZ1yVDhEkhsejg57h9CxYIF9pMY=;
-        b=RSU8gWck77NXCZny7Jlx/NGb4kecJIYRWEcnVjBCM/uqXAEoJdHhUR9mc+3fd+3N1+
-         4RwXD+FketwnKRl+XE8iQbO7mIRu6fWQYVpKYyHla02fUrAk1gKVCW6D+nBilzQEjlme
-         7cx9q0Zx7lRwYlfoPSnUxxlLPnCXR+aUde+b5glcJGWvxgYSbRtLrQLhIglyiJr6EZX6
-         T49TaOQSYYzN7PcQ53SeoUfR0rfPInnLNbUOWT8MsZKb98HadmV6Cf0mcUA5YrYiusgZ
-         r5ha3+rgR3CXJPtxty45laJGgi7HA7Wh3+MiCfUL9ZIc055H1QL8pjN3BtQcySHANkU4
-         7GHQ==
+        bh=77qERLs0OaQrBVtVqKqY8REeDJgJr05nxeZrsBFakuY=;
+        b=C/ZEMiJFlpYDHxuW1leUupyS6vNzdkfSumXePhGeFDhDCLK1cdurDgDjkbAhPXNUdR
+         qkMPqpti0sv8HqkMMkuHCSYzgNvFI0Ov90tBF4Nv6cg5+5OqPKZXvlTRuq9K+WbzYN5k
+         WMvrVAd5hyRH07yloQ5Oy095mdEMhN2JY5mXdGF9lG4G9LABX5tSNMEsaz38TfU7Sh9J
+         5cbpvt0c92/hkvgReLQ9ijmal1MfBpcJEVdZP89dgqYwOHpNzxNhrva/oCM8Zk9zYnoO
+         zBoqtlosoI7ovoSMcVOjXLZNV6ag4AhMV/oE/HzcRuLUAhMhWr7Th3SZ2Dqq+Mst6+wy
+         +q7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700589133; x=1701193933;
+        d=1e100.net; s=20230601; t=1700589510; x=1701194310;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QB47EGfsEp2zY8aVpZ1yVDhEkhsejg57h9CxYIF9pMY=;
-        b=uw2koMqXP9gJzTN3+6hILvHqmKv/5tQK1fVCxmNfm14jBEnLz3hD3XiPqbOT4gm8rA
-         jNlY9Lxdp7ztz/c6oZz5kNHUuKz9MgBcd/B5vXmgYZJNshvUM7MZXhNbAhxuOEFoPFVC
-         WHaD9LzG6pQBRG/zrCTJKlzoD2Fcr6ctESfN21w8j1l+VVyZZUk1TY0J7qZ5RG3kHP9F
-         V3l6WRTFBJeDOHgPBkQ4c0KdYgtnHppEFQsP6RHxbMCPsWhHRE4wpDU6qum95vc9tgtU
-         /9pacN7RC5GMEMqA/sDUUNkFtk9USpdx9Z9c8xWIwd2ccBdPotS832bbkoHxPjh7ny7H
-         O1/A==
-X-Gm-Message-State: AOJu0Yx+ymcrrhsrPikHFP5CDGsKIWM4avO1PEC/JV8ArAGmpvgVpnu3
-	AL/1fjALd8OgsOdc32asi3AHFg==
-X-Google-Smtp-Source: AGHT+IFWYeTkevTsKJFuxiA1n9NmJm/3ZFZkrXCfs5QmtKQPONxovvZR+2Zqk+21Ud++2IVfWkz2tg==
-X-Received: by 2002:a17:903:1205:b0:1bb:598a:14e5 with SMTP id l5-20020a170903120500b001bb598a14e5mr14104285plh.43.1700589132895;
-        Tue, 21 Nov 2023 09:52:12 -0800 (PST)
+        bh=77qERLs0OaQrBVtVqKqY8REeDJgJr05nxeZrsBFakuY=;
+        b=uGOfF41f7vwxbfIa8g3vy5oqnQ4X/OO2pTXnoYyfTMr+aTiqeQj5Xdrzs+sTbiG0JZ
+         u7MYwCQdzh28JdfZng+E60SLy5nGaGlZ/JIoB6My+Qis9/dFdJOPVW+JlEvIpoxzciWz
+         BAA4r1txQN1IHbsJDYJeT6GRo+XtD/0aYosJFfzWpks1i/+sWbcR3h8XAZV7+hKzBk7P
+         Nz+iAPNbkr7vAj3cbON6It+J4tgg0bYIRjEVCF2oyEt4Dr5DRDKtEoIlkMmwfjTEYCp/
+         EivYf7Sq7zqNurk6mvHRQwA4cHw7m/GLByanJbPJp9dzwKULXvp7Sy4fFTYpog3evL7T
+         hBSw==
+X-Gm-Message-State: AOJu0Yyxpr+H26t5iv+CVi4Fa8v5udlMcgtnN6OZqjL4NadcyXusSSjH
+	zBS/iJfoGK/4i3CppSECYKMGug==
+X-Google-Smtp-Source: AGHT+IH2kHEJhg1L+w3IKpHNOng3FayS3H19pAQ9FtKcBKGQIPjhcoraxZrC/R/qsT/fQHVTmFyF/Q==
+X-Received: by 2002:a05:6870:46a9:b0:1e9:b0fa:de48 with SMTP id a41-20020a05687046a900b001e9b0fade48mr7101338oap.47.1700589510707;
+        Tue, 21 Nov 2023 09:58:30 -0800 (PST)
 Received: from [172.20.7.39] ([187.217.227.247])
-        by smtp.gmail.com with ESMTPSA id ju4-20020a170903428400b001cc3875e658sm8267124plb.303.2023.11.21.09.52.11
+        by smtp.gmail.com with ESMTPSA id j25-20020a9d7699000000b006b74bea76c0sm1648610otl.47.2023.11.21.09.58.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Nov 2023 09:52:12 -0800 (PST)
-Message-ID: <6c37708e-c345-4cad-b002-7cc18c9cb7ed@linaro.org>
-Date: Tue, 21 Nov 2023 11:52:09 -0600
+        Tue, 21 Nov 2023 09:58:30 -0800 (PST)
+Message-ID: <885063ee-b0da-42cc-b836-da2117d4d3aa@linaro.org>
+Date: Tue, 21 Nov 2023 11:58:27 -0600
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -63,9 +63,6 @@ X-Spam-Level: *
 
 On 11/21/23 03:22, Jiri Slaby (SUSE) wrote:
 > 'str_cr' contains a single character: \n. There is no need to declare it
-
-\r
-
 > as array. Declare it as a variable, make it const and pass a pointer to
 > it to callback_puts().
 > 
@@ -89,8 +86,23 @@ On 11/21/23 03:22, Jiri Slaby (SUSE) wrote:
 > -	static char str_cr[1] = "\r";
 > +	static const char str_cr = '\r';
 
-An array of one element is fine -- what's wrong with that?
-Adding const is an improvement though.
+Best to remove this entirely...
+
+>   	size_t c;
+>   	srmcons_result result;
+>   
+> @@ -119,7 +119,7 @@ srmcons_do_write(struct tty_port *port, const char *buf, int count)
+>   		}
+>   
+>   		while (need_cr) {
+> -			result.as_long = callback_puts(0, str_cr, 1);
+> +			result.as_long = callback_puts(0, &str_cr, 1);
+
+... and simply use "\r" here.
+
+Logically it adds one '\0' of const data, but it is virtually certain that even more bytes 
+of padding are present anyway.  As a string literal it will be placed into .rodata.str1.1 
+and packed with other strings.
 
 
 r~
