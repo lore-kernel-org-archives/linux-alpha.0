@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jtj8h/Gj"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Kymjc8eQ"
 Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB041197
-	for <linux-alpha@vger.kernel.org>; Tue, 21 Nov 2023 09:48:47 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id d2e1a72fcca58-6bd32d1a040so5932286b3a.3
-        for <linux-alpha@vger.kernel.org>; Tue, 21 Nov 2023 09:48:47 -0800 (PST)
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DAF1A3
+	for <linux-alpha@vger.kernel.org>; Tue, 21 Nov 2023 09:49:04 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id d2e1a72fcca58-6cb7951d713so1981023b3a.1
+        for <linux-alpha@vger.kernel.org>; Tue, 21 Nov 2023 09:49:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1700588927; x=1701193727; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1700588944; x=1701193744; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=U7Rbioe+AA0m1Xzil+Qj4X93APjsim1oxKrG1rmg9wU=;
-        b=jtj8h/Gj/UcUVARWjUu8hsv2XBagNerBCPsxfyimIMsk02UtbmkkJ6NfwvqK0YA1RF
-         YV6rNmVivqMstbTM+l7MFHUVEMV5+SgYMtYHT6QIY0fgiOt/J+q7iKyBZjFqGQH9gTgI
-         ed3fj7YM5RC5g6Gn2ZvlAm5aoFHP6T0jfUNw1Ixshob9ozIyWxJubUtbQh2fRYDxrpaQ
-         o/UBNLmaW2gxvMfvKFLOUtLlVNJ1Q5oytxNPOfG/i6jzlIqd0E2+ICiyGwYWnsfncMhs
-         I4uAwbMlGBP5bmtKqzMaP8QPn6fthkT5W/GR/rjmo7g3JMOl/Ye6eh+I4k4Srx2Xj6eQ
-         /dKA==
+        bh=MXJqaP9n8CjgzoiH5n3pTHCDJy51tKrsEtKUZtGKn0o=;
+        b=Kymjc8eQJqFB+1WawZGFmm5rwkRudVpD7yLbFpTDpcEFDfQBpBPuNUWbTY78Q9Oxyf
+         09W0ev46NEZ91N458AfCzgP4cEjBRfi//qjT0KuivPzsXZ3WVLKnek8NhuAyIoPQXAvV
+         xfNhesRazd2w8oT6Z8euPB8+VF8xnhO0ecus0eNziAG1r6neS5u5pYJuECc9qRyhstIZ
+         8gBFRQf7pRNINu+Yf7sSRSCiAufAAu9OqDl6qvINZwOv6QV0oEYK6cARGM0xZTlMAkmr
+         YlBUueG5VY9madjq9lwN0Jw7kYxmLV7SluyBiCe2FAbojIGJgri79N0zeE7svWyfOGJN
+         tFAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1700588927; x=1701193727;
+        d=1e100.net; s=20230601; t=1700588944; x=1701193744;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=U7Rbioe+AA0m1Xzil+Qj4X93APjsim1oxKrG1rmg9wU=;
-        b=BQMs/ZWa2XtjI3eNAqlw1dMWePJ+f7x81wHi4W+txTOfPKB/GHIQGdh4gFXA0FrCke
-         0Etg/4Qm2KewtpdHXfXaVfktC0hbJeFu45WWKhKPNN2s3LhPSVYAAFQgGUYJ+xugtser
-         +18bdczCc7vZCSU96o23dgfBWPa3s8+0k5gc7RXsDHC7nlsHvpOf/iYWKayWbsN5C5dt
-         Hh0sPUwX/DHVv/yZRL9N12IJHJiM4zM24dsom1RtReIy7nn3Maq5Ok58BQ0a2ZW4DQlD
-         zGsX7oraD/mbA1eYfTG65EG1AppccCVP8AIdaXsRKv8wvVNsNQIgrnhcxB653/kLslpW
-         ZVSA==
-X-Gm-Message-State: AOJu0YwoMsjz+wqlbwTHy8IS1/rxb2UcFy3jTNbSewIjIriiZSadaDQX
-	aP3xw71/PP5ZiZ+vn90a9INLfw==
-X-Google-Smtp-Source: AGHT+IH2VR6y5Gp7PFy+FKIjD6rAI0xCdmN7BDgDaHvXjsz7rNoF2oUSGeO6SUsyI6QYtEVokRmWlA==
-X-Received: by 2002:a05:6a00:15d2:b0:6cb:903a:b064 with SMTP id o18-20020a056a0015d200b006cb903ab064mr9034307pfu.22.1700588927322;
-        Tue, 21 Nov 2023 09:48:47 -0800 (PST)
+        bh=MXJqaP9n8CjgzoiH5n3pTHCDJy51tKrsEtKUZtGKn0o=;
+        b=ilgjXOlSeBQfx85rLgTuxIfK0DCNuDc/H475l/38TE8YMu1UIaqWV2lerT/lCsHMte
+         Fjy2rFTD8iT0D5ZqjODqjD1vAZgRp2pgzt79ArxImJrEMFuLAO9mUryKqPkS1OQJheqw
+         rxQ09VY7VmD5ouhAWdOTFtfN0q9n2W0JWsX16gunswZ5dBP+VJVysp8E5JAl1zR8+vXX
+         ZQCansOhfefGbIbEnkXEw0CXNfz7U7dbhtAyoWAGoRahIVSgcowAHGAl/G02At6t7Rpd
+         8FaRGxxEE/b+GAAC+8ujHO4pJYfeX35kRCacUyO4+qAtI7f+K687v/AQxnzXKUcQHiU1
+         z8Mw==
+X-Gm-Message-State: AOJu0YxG1PeFDb9hZeaQg5BcX/y2E7P4XGrl+mZctkBJ1K7TBn5BS6CE
+	krImYaY4BVFEU5PeYgBjGPB6bojdtpXrVHhBeDX2KTKY
+X-Google-Smtp-Source: AGHT+IHZYKUmQPsAZKyzIXXSlFSXyQH3BXp0aXl+SLqo3aQCcXZjl7XFH6/OhEzsyY7tAE9b5eduug==
+X-Received: by 2002:a05:6a20:1593:b0:185:d125:ea70 with SMTP id h19-20020a056a20159300b00185d125ea70mr69343pzj.19.1700588943997;
+        Tue, 21 Nov 2023 09:49:03 -0800 (PST)
 Received: from [172.20.7.39] ([187.217.227.247])
-        by smtp.gmail.com with ESMTPSA id b11-20020a056a000ccb00b006cb69ff0444sm5547127pfv.151.2023.11.21.09.48.45
+        by smtp.gmail.com with ESMTPSA id b11-20020a056a000ccb00b006cb69ff0444sm5547127pfv.151.2023.11.21.09.49.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Nov 2023 09:48:46 -0800 (PST)
-Message-ID: <f4babac1-8366-45a2-94c2-838cacb4a006@linaro.org>
-Date: Tue, 21 Nov 2023 11:48:44 -0600
+        Tue, 21 Nov 2023 09:49:03 -0800 (PST)
+Message-ID: <b8dc336f-06c6-43eb-974b-7af251532d10@linaro.org>
+Date: Tue, 21 Nov 2023 11:49:01 -0600
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -47,89 +47,34 @@ List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 14/17] tty: srmcons: use 'count' directly in
- srmcons_do_write()
+Subject: Re: [PATCH 16/17] tty: srmcons: switch need_cr to bool
 Content-Language: en-US
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-serial <linux-serial@vger.kernel.org>,
- LKML <linux-kernel@vger.kernel.org>,
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
  <mattst88@gmail.com>, linux-alpha@vger.kernel.org
 References: <20231121092258.9334-1-jirislaby@kernel.org>
- <20231121092258.9334-15-jirislaby@kernel.org>
- <4f0db52-6430-9122-1ecc-86e337644944@linux.intel.com>
+ <20231121092258.9334-17-jirislaby@kernel.org>
 From: Richard Henderson <richard.henderson@linaro.org>
-In-Reply-To: <4f0db52-6430-9122-1ecc-86e337644944@linux.intel.com>
+In-Reply-To: <20231121092258.9334-17-jirislaby@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Spam-Level: *
 
-On 11/21/23 09:21, Ilpo Järvinen wrote:
-> On Tue, 21 Nov 2023, Jiri Slaby (SUSE) wrote:
+On 11/21/23 03:22, Jiri Slaby (SUSE) wrote:
+> 'need_cr' is a flag, so type it properly to be a 'bool'. Move the
+> declaration into the loop too. That ensures the variable is initialized
+> properly even if the code was moved somehow.
 > 
->> Similarly to 'buf' in the previous patch, there is no need to have a
->> separate counter ('remaining') in srmcons_do_write(). 'count' can be
->> used directly which simplifies the code a bit.
->>
->> Note that the type of the current count ('c') is changed from 'long' to
->> 'size_t' so that:
->> 1) it is prepared for the upcoming change of 'count's type, and
->> 2) is unsigned.
->>
->> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
->> Cc: Richard Henderson <richard.henderson@linaro.org>
->> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
->> Cc: Matt Turner <mattst88@gmail.com>
->> Cc: linux-alpha@vger.kernel.org
->> ---
->>   arch/alpha/kernel/srmcons.c | 8 ++++----
->>   1 file changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
->> index b68c5af083cd..8025e2a882ed 100644
->> --- a/arch/alpha/kernel/srmcons.c
->> +++ b/arch/alpha/kernel/srmcons.c
->> @@ -92,24 +92,24 @@ static int
->>   srmcons_do_write(struct tty_port *port, const char *buf, int count)
->>   {
->>   	static char str_cr[1] = "\r";
->> -	long c, remaining = count;
->> +	size_t c;
->>   	srmcons_result result;
->>   	int need_cr;
->>   
->> -	while (remaining > 0) {
->> +	while (count > 0) {
->>   		need_cr = 0;
->>   		/*
->>   		 * Break it up into reasonable size chunks to allow a chance
->>   		 * for input to get in
->>   		 */
->> -		for (c = 0; c < min_t(long, 128L, remaining) && !need_cr; c++)
->> +		for (c = 0; c < min_t(size_t, 128U, count) && !need_cr; c++)
->>   			if (buf[c] == '\n')
->>   				need_cr = 1;
->>   		
->>   		while (c > 0) {
->>   			result.as_long = callback_puts(0, buf, c);
->>   			c -= result.bits.c;
->> -			remaining -= result.bits.c;
->> +			count -= result.bits.c;
->>   			buf += result.bits.c;
->>   
->>   			/*
->>
-> 
-> The patches in the series are in pretty odd order and it was not told
-> anywhere here that the return value is unused by the callers. I'd just
-> reorder the patches.
-> 
-
-Agreed, patch 15 needs to be before patch 14.  With that,
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: linux-alpha@vger.kernel.org
+> ---
+>   arch/alpha/kernel/srmcons.c | 7 +++----
+>   1 file changed, 3 insertions(+), 4 deletions(-)
 
 Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
-
 
 r~
