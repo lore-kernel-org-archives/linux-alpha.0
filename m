@@ -1,62 +1,68 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 834E122EE7;
-	Thu, 23 Nov 2023 11:06:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e0VyQ7PV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E43DDC43395;
-	Thu, 23 Nov 2023 11:05:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1700737561;
-	bh=9L6ia8ZbTYYVbHNB3z9LNyIFtb/pxWEiG5AGGJleqic=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=e0VyQ7PVXrgpHxXuRmTV8Wg6u7K/HjAAIEfu11YSMUUXsJVeV978M2gskJD8Avjb9
-	 ZB5kV6SE67ZAx7fc43cvAKQQcnfZ1BWg4eFGZWUJqIa5on//kgER/9tce+AIoFXgWk
-	 zowoZ5/rblNmUh7+n5DSkzof8B68ftWfi/4Bm3uFFM0OiYY9QfU9s/13gVPYGrLWfP
-	 dYIN19g0XPcGf5Nmb7Sg/RV1aH2dS4Rz+E9fs2rc8A8QVIcjSUPFmn5jrJzTXH3nKB
-	 fJcaV7yYwcK455NpW2ijR7YUCQVt+9Wq2658RaYTVnp6PTXXmkAhjphLHV/fQylLef
-	 elAqGL5fRFABA==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	"David S. Miller" <davem@davemloft.net>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="f5Ldjv9p"
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F6993
+	for <linux-alpha@vger.kernel.org>; Thu, 23 Nov 2023 10:03:01 -0800 (PST)
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 6B07A40DB2
+	for <linux-alpha@vger.kernel.org>; Thu, 23 Nov 2023 18:02:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1700762579;
+	bh=WP2gJh9IkDa2VdWPrUfJ2njFac/+S8Z+9AfzFJLFWoY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+	b=f5Ldjv9pUGqSgaGbA0bva+KuxN5R/wfZYGWZigFaI5BSBiBxH5oMVv05vSdDwbbGs
+	 mNaUtc1uuRJCKiYgpDsyQd/OoRMZ1QaIQ8omijKEgphE2HYNWknfB/lb7KqU9YKWUx
+	 LTRgA9iDA1Jbs37JEMpXifXhsrJhZiEYRBNrwjGuJd/QdiJtNUPtykA9Brsfp4beyE
+	 ewqFqJeEg6KZgHTj+O1O2lIEHv+Tqql/n/5+jrJ4INwwng/+PKAIh7XT7QzENIyD2h
+	 bxRq/hdl+oPi26s8TSnyTSRqTG/LdE5RrPo2RFDBrHSHjGOT5n2zlMh8A555wk2zPH
+	 5WyGIAsIyw4tw==
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-40b346a11cdso5968645e9.3
+        for <linux-alpha@vger.kernel.org>; Thu, 23 Nov 2023 10:02:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1700762579; x=1701367379;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WP2gJh9IkDa2VdWPrUfJ2njFac/+S8Z+9AfzFJLFWoY=;
+        b=OIaLnt9pgKS8SL5cAzIox6cqESLW0uzZ72l262ipDA5/PTLDgJ0QtXv0gdmWZqhF+W
+         oe8ClS8iQyOMaMQ34j3qbNs0aOWVBg5uoZb++xCdkb6Ll8NoxxGBei54Img0Yjrf6dZk
+         OuFqtFHHrvJL75kN2IHOigt8tY+1CvkqC5ZWwWIIm7Vz/dSAI3FmyVQRcd+mm4hn5Mcu
+         WptzqhDFXDlmvdmFtz/fJ0LtjkHTRbkh2boHfE+OZAuoY+FGTPTMlmufuSGUa0S/Qtl/
+         a1vMY4eu8Ai1YzRaqlR7/JtjNG4xlWN3Lm4yux1kd3fzwBOURXrjEVKi91AYLre2zRCj
+         mGoA==
+X-Gm-Message-State: AOJu0Yze9EQgxFuDgSUE6weNDbDQ1ojUd5NwQN2lz9E20gNY1dLn5pIr
+	9/4GyFiaBuxrw2e8iNtK3PYyev5bSykKdVft4t8sDre+8JGxLyJMVLIy8klMoygOKJTYjIChgtJ
+	txkEVI9Ecwgw4NBBpCdJlnBMztrzraFuFlDO7KflM
+X-Received: by 2002:a5d:69cd:0:b0:332:c548:3ea4 with SMTP id s13-20020a5d69cd000000b00332c5483ea4mr141115wrw.49.1700762578975;
+        Thu, 23 Nov 2023 10:02:58 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFOXAShpF/8xaYBusYO0OA7vURr5brTXNPfzFyM6rdfglnmH7BI/RAPLtjwFbymjOjB7sGNUg==
+X-Received: by 2002:a5d:69cd:0:b0:332:c548:3ea4 with SMTP id s13-20020a5d69cd000000b00332c5483ea4mr141097wrw.49.1700762578644;
+        Thu, 23 Nov 2023 10:02:58 -0800 (PST)
+Received: from localhost ([2001:67c:1560:8007::aac:c15c])
+        by smtp.gmail.com with ESMTPSA id j14-20020adff54e000000b0032db8cccd3asm2302599wrp.114.2023.11.23.10.02.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Nov 2023 10:02:58 -0800 (PST)
+From: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+To: Richard Henderson <richard.henderson@linaro.org>,
 	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Masahiro Yamada <masahiroy@kernel.org>,
 	Matt Turner <mattst88@gmail.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nicolas@fjasle.eu>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Rich Felker <dalias@libc.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Richard Weinberger <richard@nod.at>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Tudor Ambarus <tudor.ambarus@linaro.org>,
-	Yoshinori Sato <ysato@users.sourceforge.jp>,
-	linux-arch@vger.kernel.org,
-	linux-alpha@vger.kernel.org,
-	linux-kbuild@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-mips@vger.kernel.org,
-	linux-mtd@lists.infradead.org,
-	linux-sh@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	sparclinux@vger.kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H . Peter Anvin" <hpa@zytor.com>
+Cc: linux-alpha@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
 	x86@kernel.org,
-	Kees Cook <keescook@chromium.org>,
-	Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH v3 6/6] Makefile.extrawarn: turn on missing-prototypes globally
-Date: Thu, 23 Nov 2023 12:05:06 +0100
-Message-Id: <20231123110506.707903-7-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20231123110506.707903-1-arnd@kernel.org>
-References: <20231123110506.707903-1-arnd@kernel.org>
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] remove the last bits of a.out support
+Date: Thu, 23 Nov 2023 18:02:40 +0000
+Message-Id: <20231123180246.750674-1-dimitri.ledkov@canonical.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -65,73 +71,29 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Arnd Bergmann <arnd@arndb.de>
+I was working on how linux-libc-dev headers are shipped in Ubuntu and
+stumbled upon seemingly unused and useless linux/a.out.h header. It
+seems like it is an accidental leftover at this point.
 
-Over the years we went from > 1000 of warnings to under 100 earlier
-this year, and I sent patches to address all the ones that I saw with
-compile testing randcom configs on arm64, arm and x86 kernels. This is a
-really useful warning, as it catches real bugs when there are mismatched
-prototypes. In particular with kernel control flow integrity enabled,
-those are no longer allowed.
+Dimitri John Ledkov (5):
+  alpha: remove a.out support from tools/objstrip
+  alpha: stop shipping a.out.h uapi headers
+  m68k: stop shipping a.out.h uapi headers
+  x86: stop shipping a.out.h uapi headers
+  uapi: remove a.out.h uapi header
 
-I have done extensive testing to ensure that there are no new build
-errors or warnings on any configuration of x86, arm and arm64 builds.
-I also made sure that at least the both the normal defconfig and an
-allmodconfig build is clean for arc, csky, loongarch, m68k, microblaze,
-openrisc, parisc, powerpc, riscv, s390, and xtensa, with the respective
-maintainers doing most of the patches.
+ arch/alpha/boot/tools/objstrip.c    |  52 +-----
+ arch/alpha/include/uapi/asm/a.out.h |  92 ----------
+ arch/m68k/include/uapi/asm/a.out.h  |  21 ---
+ arch/x86/include/uapi/asm/a.out.h   |  21 ---
+ include/uapi/Kbuild                 |   4 -
+ include/uapi/linux/a.out.h          | 251 ----------------------------
+ 6 files changed, 6 insertions(+), 435 deletions(-)
+ delete mode 100644 arch/alpha/include/uapi/asm/a.out.h
+ delete mode 100644 arch/m68k/include/uapi/asm/a.out.h
+ delete mode 100644 arch/x86/include/uapi/asm/a.out.h
+ delete mode 100644 include/uapi/linux/a.out.h
 
-At this point, there are five architectures with a number of known
-regressions: alpha, nios2, mips, sh and sparc. In the previous version
-of this patch, I had turned off the missing prototype warnings for the 15
-architectures that still had issues, but since there are only five left,
-I think we can leave the rest to the maintainers (Cc'd here) as well.
-
-Cc: Richard Henderson <richard.henderson@linaro.org>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Dinh Nguyen <dinguyen@kernel.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: Rich Felker <dalias@libc.org>
-Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-mips@vger.kernel.org
-Cc: sparclinux@vger.kernel.org
-Cc: linux-sh@vger.kernel.org
-Link: https://lore.kernel.org/lkml/20230810141947.1236730-1-arnd@kernel.org/
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Acked-by: Palmer Dabbelt <palmer@rivosinc.com> # RISC-V
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- scripts/Makefile.extrawarn | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-index 1527199161d7..8e9170f932ea 100644
---- a/scripts/Makefile.extrawarn
-+++ b/scripts/Makefile.extrawarn
-@@ -17,6 +17,8 @@ KBUILD_CFLAGS += -Wno-format-security
- KBUILD_CFLAGS += -Wno-trigraphs
- KBUILD_CFLAGS += $(call cc-disable-warning,frame-address,)
- KBUILD_CFLAGS += $(call cc-disable-warning, address-of-packed-member)
-+KBUILD_CFLAGS += -Wmissing-declarations
-+KBUILD_CFLAGS += -Wmissing-prototypes
- 
- ifneq ($(CONFIG_FRAME_WARN),0)
- KBUILD_CFLAGS += -Wframe-larger-than=$(CONFIG_FRAME_WARN)
-@@ -95,10 +97,8 @@ export KBUILD_EXTRA_WARN
- ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
- 
- KBUILD_CFLAGS += -Wextra -Wunused -Wno-unused-parameter
--KBUILD_CFLAGS += -Wmissing-declarations
- KBUILD_CFLAGS += $(call cc-option, -Wrestrict)
- KBUILD_CFLAGS += -Wmissing-format-attribute
--KBUILD_CFLAGS += -Wmissing-prototypes
- KBUILD_CFLAGS += -Wold-style-definition
- KBUILD_CFLAGS += -Wmissing-include-dirs
- KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-variable)
 -- 
-2.39.2
+2.34.1
 
