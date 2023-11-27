@@ -1,106 +1,112 @@
 Authentication-Results: smtp.subspace.kernel.org; dkim=none
-X-Greylist: delayed 3789 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Nov 2023 21:35:58 PST
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142DF10E7;
-	Fri, 24 Nov 2023 21:35:58 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:56176)
-	by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.93)
-	(envelope-from <ebiederm@xmission.com>)
-	id 1r6kLR-00HAXs-59; Fri, 24 Nov 2023 21:32:41 -0700
-Received: from ip68-227-168-167.om.om.cox.net ([68.227.168.167]:43464 helo=email.froward.int.ebiederm.org.xmission.com)
-	by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.93)
-	(envelope-from <ebiederm@xmission.com>)
-	id 1r6kLP-00Eszi-T0; Fri, 24 Nov 2023 21:32:40 -0700
-From: "Eric W. Biederman" <ebiederm@xmission.com>
-To: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>,  Ivan Kokshaysky
- <ink@jurassic.park.msu.ru>,  Matt Turner <mattst88@gmail.com>,  Geert
- Uytterhoeven <geert@linux-m68k.org>,  Thomas Gleixner
- <tglx@linutronix.de>,  Ingo Molnar <mingo@redhat.com>,  Borislav Petkov
- <bp@alien8.de>,  Dave Hansen <dave.hansen@linux.intel.com>,  "H . Peter
- Anvin" <hpa@zytor.com>,  linux-alpha@vger.kernel.org,
-  linux-m68k@lists.linux-m68k.org,  x86@kernel.org,
-  linux-kernel@vger.kernel.org
-References: <20231123180246.750674-1-dimitri.ledkov@canonical.com>
-	<87plzzu1w0.fsf@email.froward.int.ebiederm.org>
-	<CADWks+aY0jOq6erApu7i0wNVX3uXPbs=Zj7o3XHPMudOkYyeVA@mail.gmail.com>
-	<CADWks+YUm+kCfZZkrCHE+x1ygdqLawyk+h4_ahac9+7b_AvbUw@mail.gmail.com>
-Date: Fri, 24 Nov 2023 22:31:53 -0600
-In-Reply-To: <CADWks+YUm+kCfZZkrCHE+x1ygdqLawyk+h4_ahac9+7b_AvbUw@mail.gmail.com>
-	(Dimitri John Ledkov's message of "Fri, 24 Nov 2023 18:06:01 +0000")
-Message-ID: <877cm6tpvq.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.2 (gnu/linux)
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8D4BE;
+	Mon, 27 Nov 2023 01:30:51 -0800 (PST)
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a0bdf4eeb46so198310566b.3;
+        Mon, 27 Nov 2023 01:30:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1701077450; x=1701682250;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=O8q/voH+i9Ldx+ztHik99cegjVPYsrH8RZvyBTq86Z4=;
+        b=jzYtMN9MX+AEFKpq1tLxKlTMoGWj/iO1XRIkavuL7vHlRrbBagMw1EDIUlRLN1SL08
+         0gRVfBhIw6aD8sX8ihaTFhWB+AjWSEaGWAlLIDPEdJVO8BPEiXaAYsrvXlCrSNNHSNXP
+         MzOLaGig+N7247/aNWvfncG9npV5T57v8nWNK75YWPDFUevIQ3wbY0IJ+3NYRxaXkIq9
+         lhi7rHwwxgQtaRE7tdwBPWJRO+TIfsq5BO1M8oA6EU2K7gG1pwaa08ogLIvWOn8v90oR
+         8hAfmW67Mvki77tb/zvYtC2aPYA8ZhVDpmpODQrZ1IWkHCgXQvExsbC+JwQfR6V7h7Bo
+         GzEw==
+X-Gm-Message-State: AOJu0Yzy25jkyszCxmjxQeF6Pwb7GuCoHMxQRn4x/DVHDzr8q4Ksp/ds
+	KJgKlu3uvPPEzR0fHOLgvMA=
+X-Google-Smtp-Source: AGHT+IGOL4p6pRTLJQNQfn9XZhg6d0N84E2x7yPVKT5klJi7npiXgzGA0O2/3qGpveigBqDOWQXy6g==
+X-Received: by 2002:a17:906:f904:b0:a04:838e:861 with SMTP id lc4-20020a170906f90400b00a04838e0861mr7962640ejb.34.1701077450194;
+        Mon, 27 Nov 2023 01:30:50 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id r17-20020a170906a21100b009ae57888718sm5462676ejy.207.2023.11.27.01.30.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Nov 2023 01:30:49 -0800 (PST)
+Message-ID: <d0b4f6e7-cf01-4751-8d46-03028341acb4@kernel.org>
+Date: Mon, 27 Nov 2023 10:30:48 +0100
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1r6kLP-00Eszi-T0;;;mid=<877cm6tpvq.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.168.167;;;frm=ebiederm@xmission.com;;;spf=pass
-X-XM-AID: U2FsdGVkX1/Ig8I5jQfPGB2EF67P9+pe8TLh/rPUNG8=
-X-SA-Exim-Connect-IP: 68.227.168.167
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-X-Spam-DCC: XMission; sa05 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: *;Dimitri John Ledkov <dimitri.ledkov@canonical.com>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 520 ms - load_scoreonly_sql: 0.03 (0.0%),
-	signal_user_changed: 13 (2.5%), b_tie_ro: 11 (2.2%), parse: 2.0 (0.4%),
-	 extract_message_metadata: 43 (8.2%), get_uri_detail_list: 4.6 (0.9%),
-	tests_pri_-2000: 38 (7.3%), tests_pri_-1000: 4.4 (0.8%),
-	tests_pri_-950: 1.75 (0.3%), tests_pri_-900: 1.42 (0.3%),
-	tests_pri_-90: 82 (15.8%), check_bayes: 77 (14.7%), b_tokenize: 19
-	(3.6%), b_tok_get_all: 10 (1.9%), b_comp_prob: 6 (1.1%),
-	b_tok_touch_all: 38 (7.3%), b_finish: 1.16 (0.2%), tests_pri_0: 269
-	(51.7%), check_dkim_signature: 0.73 (0.1%), check_dkim_adsp: 14 (2.6%),
-	 poll_dns_idle: 39 (7.5%), tests_pri_10: 2.0 (0.4%), tests_pri_500: 56
-	(10.8%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH 0/5] remove the last bits of a.out support
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/17] tty: small cleanups and fixes
+Content-Language: en-US
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jakub Kicinski
+ <kuba@kernel.org>, Jan Kara <jack@suse.com>,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, linux-alpha@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-usb@vger.kernel.org,
+ Matt Turner <mattst88@gmail.com>, netdev@vger.kernel.org,
+ Paolo Abeni <pabeni@redhat.com>,
+ Richard Henderson <richard.henderson@linaro.org>
+References: <20231121092258.9334-1-jirislaby@kernel.org>
+ <2023112321-veto-trapping-ca47@gregkh>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <2023112321-veto-trapping-ca47@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Dimitri John Ledkov <dimitri.ledkov@canonical.com> writes:
+On 23. 11. 23, 21:19, Greg KH wrote:
+> On Tue, Nov 21, 2023 at 10:22:41AM +0100, Jiri Slaby (SUSE) wrote:
+>> This is a series to fix/clean up some obvious issues I revealed during
+>> u8+size_t conversions (to be posted later).
+> 
+> I applied most of these except the last few, as I think you were going
+> to reorder them, right?
 
-> On Fri, 24 Nov 2023 at 14:36, Dimitri John Ledkov
-> <dimitri.ledkov@canonical.com> wrote:
->>
->> On Fri, 24 Nov 2023 at 06:01, Eric W. Biederman <ebiederm@xmission.com> wrote:
->> >
->> > Dimitri John Ledkov <dimitri.ledkov@canonical.com> writes:
->> >
->> > > I was working on how linux-libc-dev headers are shipped in Ubuntu and
->> > > stumbled upon seemingly unused and useless linux/a.out.h header. It
->> > > seems like it is an accidental leftover at this point.
->> >
->> > How do you see that they are unused?
->
-> When I did my code search the only and last remaining userspace code
-> that imports linux/a.out.h it is the objtool that is patched in these
-> patch series.
-> It is also vendored as copy in aboot tool, which has been patched in
-> many downstreams to use a.out.h instead of linux/a.out.h.
+Yes, great. I will rebase and see/resend what is missing.
 
-It sounds like you have done your homework.
+thanks,
+-- 
+js
+suse labs
 
-Please just document (as you in your reply to me) in your cover letter
-or elsewhere in the changes so that it is clear that due diligence has
-been performed and userspace should not break with this change.
-
-[snip]
-
-> Was your search
-> https://codesearch.debian.net/search?q=linux%2Fa.out.h&literal=1&perpkg=1
-> ?
-
-Pretty much.  I didn't have the perpkg=1.
-
-Debian code search is the most comprehensive code search I am aware
-of so I took a quick look.
-
-Since it appears the only users are vendored versions of linux/a.out.h
-then it should be possible to make this change without breaking
-userspace.  If it turns that is wrong the changes can be reverted.
-
-Eric
