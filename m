@@ -1,86 +1,63 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 588AA1EA90;
-	Mon, 27 Nov 2023 12:37:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DfiiKcF7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66801C433CA;
-	Mon, 27 Nov 2023 12:37:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1701088645;
-	bh=YEcN7xVfBtrK+FblMlBykMvweHvzn9kzb4wK1dvK3OA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=DfiiKcF7wg6jSD089smxUC6qcRrqWjYR9e97Uxy/bWCbylV6UdyFen/ls5Q0t33OB
-	 VEXTl9ShFBx2CFvV8VoRjmlN3TNC/O/5r1fufng6Bx07DQbqeuGR5u0K+CFWfsgeZD
-	 o6jQwXWxWB9bUcpxKGVQyAQ/TdkOJ7PKEQniLAlBZQC1EGDPAQwiALmdcNelwwhM9g
-	 c2oRKnN6jFwX7ctFqnqnT45gLXnyoTifbPJaV0gxafnlJnLXXmxMREZFhLQi9H/zAa
-	 r03By8tvaykNobPbwXuGiDzHN7rYY4EtVSUtx8tMIlKcv4plPWLbg/FuGLQzOsFLUp
-	 5nFj0HnYGqqSg==
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org,
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Z87GTetn"
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.215])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6AD2CD4E;
+	Mon, 27 Nov 2023 06:51:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:Subject:Date:Message-Id; bh=kcr3CAPjvM7RAzYgAV
+	J54nu7H1Z0vqjPoUncJfKtUjM=; b=Z87GTetnWsEoVgdzWVhIOC2S0xI0mIKwcC
+	LYgbo9nV4S38m82QLn2hy7IZxji1h1HvL3o0jio0U/OGl4VBo9u090Ubmu6yLuM6
+	xqjQY7Jxda1IpIGL0v/ckl/Y87eikaDAKENAyhddNS8vq4JLi4yypOluxza2K+nc
+	uI1GLDP1k=
+Received: from localhost.localdomain (unknown [39.144.190.126])
+	by zwqz-smtp-mta-g3-2 (Coremail) with SMTP id _____wCHrzLarGRlak9rEA--.27728S2;
+	Mon, 27 Nov 2023 22:51:07 +0800 (CST)
+From: Haoran Liu <liuhaoran14@163.com>
+To: richard.henderson@linaro.org
+Cc: ink@jurassic.park.msu.ru,
+	mattst88@gmail.com,
+	linux-alpha@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	linux-alpha@vger.kernel.org
-Subject: [PATCH 5/5] tty: srmcons: remove 'str_cr' and use string directly
-Date: Mon, 27 Nov 2023 13:37:13 +0100
-Message-ID: <20231127123713.14504-5-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.42.1
-In-Reply-To: <20231127123713.14504-1-jirislaby@kernel.org>
-References: <20231127123713.14504-1-jirislaby@kernel.org>
+	Haoran Liu <liuhaoran14@163.com>
+Subject: [PATCH] alpha: Improve error handling in alpha_rtc_init
+Date: Mon, 27 Nov 2023 06:51:03 -0800
+Message-Id: <20231127145103.29912-1-liuhaoran14@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID:_____wCHrzLarGRlak9rEA--.27728S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Gr4DAry5Zw4kWr1UGFyxGrg_yoW3Gwc_Kr
+	1Sv34kWFyxCF4qvF45Aw43Zr4Sya95Krs5tw12qFWjy34fXF1rZ398JF13Xr15GF48CFZ2
+	grn8Gryvyr1xKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRZuciUUUUUU==
+X-CM-SenderInfo: xolxxtxrud0iqu6rljoofrz/xtbBcgE1gletj1OaTgABs3
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-'str_cr' contains a single character: \r. There is no need to declare it
-as array. Instead, pass the character (as a string) to callback_puts()
-directly. This ensures the string is in proper .rodata (const) section
-and makes the code more obvious.
+This patch enhances the alpha_rtc_init function in
+arch/alpha/kernel/rtc.c by adding error handling for the
+platform_device_register_simple call.
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Haoran Liu <liuhaoran14@163.com>
 ---
+ arch/alpha/kernel/rtc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Notes:
-    [v2]
-      pass "\r" directly to callback_puts() as Richard suggests
-      spell correct \r in the commit log as Ilpo noticed
-
- arch/alpha/kernel/srmcons.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-index c6b821afbfd3..42deea53beab 100644
---- a/arch/alpha/kernel/srmcons.c
-+++ b/arch/alpha/kernel/srmcons.c
-@@ -91,7 +91,6 @@ srmcons_receive_chars(struct timer_list *t)
- static void
- srmcons_do_write(struct tty_port *port, const char *buf, int count)
- {
--	static char str_cr[1] = "\r";
- 	size_t c;
- 	srmcons_result result;
+diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
+index fb3025396ac9..576397b1fac2 100644
+--- a/arch/alpha/kernel/rtc.c
++++ b/arch/alpha/kernel/rtc.c
+@@ -209,6 +209,9 @@ alpha_rtc_init(void)
+ 	init_rtc_epoch();
  
-@@ -119,7 +118,7 @@ srmcons_do_write(struct tty_port *port, const char *buf, int count)
- 		}
- 
- 		while (need_cr) {
--			result.as_long = callback_puts(0, str_cr, 1);
-+			result.as_long = callback_puts(0, "\r", 1);
- 			if (result.bits.c > 0)
- 				need_cr = false;
- 		}
+ 	pdev = platform_device_register_simple("rtc-alpha", -1, NULL, 0);
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
+ 	rtc = devm_rtc_allocate_device(&pdev->dev);
+ 	if (IS_ERR(rtc))
+ 		return PTR_ERR(rtc);
 -- 
-2.42.1
+2.17.1
 
