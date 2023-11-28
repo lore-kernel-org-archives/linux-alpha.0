@@ -1,63 +1,104 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Z87GTetn"
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.215])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6AD2CD4E;
-	Mon, 27 Nov 2023 06:51:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-Id; bh=kcr3CAPjvM7RAzYgAV
-	J54nu7H1Z0vqjPoUncJfKtUjM=; b=Z87GTetnWsEoVgdzWVhIOC2S0xI0mIKwcC
-	LYgbo9nV4S38m82QLn2hy7IZxji1h1HvL3o0jio0U/OGl4VBo9u090Ubmu6yLuM6
-	xqjQY7Jxda1IpIGL0v/ckl/Y87eikaDAKENAyhddNS8vq4JLi4yypOluxza2K+nc
-	uI1GLDP1k=
-Received: from localhost.localdomain (unknown [39.144.190.126])
-	by zwqz-smtp-mta-g3-2 (Coremail) with SMTP id _____wCHrzLarGRlak9rEA--.27728S2;
-	Mon, 27 Nov 2023 22:51:07 +0800 (CST)
-From: Haoran Liu <liuhaoran14@163.com>
-To: richard.henderson@linaro.org
-Cc: ink@jurassic.park.msu.ru,
-	mattst88@gmail.com,
-	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Haoran Liu <liuhaoran14@163.com>
-Subject: [PATCH] alpha: Improve error handling in alpha_rtc_init
-Date: Mon, 27 Nov 2023 06:51:03 -0800
-Message-Id: <20231127145103.29912-1-liuhaoran14@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID:_____wCHrzLarGRlak9rEA--.27728S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Gr4DAry5Zw4kWr1UGFyxGrg_yoW3Gwc_Kr
-	1Sv34kWFyxCF4qvF45Aw43Zr4Sya95Krs5tw12qFWjy34fXF1rZ398JF13Xr15GF48CFZ2
-	grn8Gryvyr1xKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRZuciUUUUUU==
-X-CM-SenderInfo: xolxxtxrud0iqu6rljoofrz/xtbBcgE1gletj1OaTgABs3
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T/O4yKjG"
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.100])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF6D182;
+	Tue, 28 Nov 2023 05:25:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1701177935; x=1732713935;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=v5kZeBtVjhn/s8XidixV9girh/5AonY7gkwyCtvwHsE=;
+  b=T/O4yKjGp2LKmEUs4pqIndGMBqEKVTGSq+xLQK8XIErFkYHloPxn/oX1
+   2ALh2hyqqrZf+ZVrrH67hzB2BvCLum1VM0cquDxqt+QnKwzwmcjp+oTlM
+   MCgD0HEFrvB/vGJdWhAtjhsEygQYI7pvlEYPqJgM1ZIQpUK6D2m8WzvRe
+   cL6GS7qyf+qdrr6133b+H04F/rofhswHQ67Fv5KlV9TyJ6l0w3YpbMbFs
+   ThJnIF8nwxoBRIXQ1plhTrRaS5qVEIhkXD0dpZ31h8U4hyASZ1XKEA0wl
+   LZ8+OdsZ6HgOzSyjydbve2I0veFPY5Upp5GLQhwNFOKDd0sLio+MueH4l
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10907"; a="459428739"
+X-IronPort-AV: E=Sophos;i="6.04,233,1695711600"; 
+   d="scan'208";a="459428739"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2023 05:25:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10907"; a="718383128"
+X-IronPort-AV: E=Sophos;i="6.04,233,1695711600"; 
+   d="scan'208";a="718383128"
+Received: from haslam-mobl1.ger.corp.intel.com ([10.252.43.79])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2023 05:25:32 -0800
+Date: Tue, 28 Nov 2023 15:25:30 +0200 (EET)
+From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+    Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+Subject: Re: [PATCH 2/5] tty: srmcons: make srmcons_do_write() return void
+In-Reply-To: <20231127123713.14504-2-jirislaby@kernel.org>
+Message-ID: <203edefa-a819-23cc-1697-7e60a6732f83@linux.intel.com>
+References: <20231127123713.14504-1-jirislaby@kernel.org> <20231127123713.14504-2-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323329-5569259-1701177935=:1797"
 
-This patch enhances the alpha_rtc_init function in
-arch/alpha/kernel/rtc.c by adding error handling for the
-platform_device_register_simple call.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Signed-off-by: Haoran Liu <liuhaoran14@163.com>
----
- arch/alpha/kernel/rtc.c | 3 +++
- 1 file changed, 3 insertions(+)
+--8323329-5569259-1701177935=:1797
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
-index fb3025396ac9..576397b1fac2 100644
---- a/arch/alpha/kernel/rtc.c
-+++ b/arch/alpha/kernel/rtc.c
-@@ -209,6 +209,9 @@ alpha_rtc_init(void)
- 	init_rtc_epoch();
- 
- 	pdev = platform_device_register_simple("rtc-alpha", -1, NULL, 0);
-+	if (IS_ERR(pdev))
-+		return PTR_ERR(pdev);
-+
- 	rtc = devm_rtc_allocate_device(&pdev->dev);
- 	if (IS_ERR(rtc))
- 		return PTR_ERR(rtc);
+On Mon, 27 Nov 2023, Jiri Slaby (SUSE) wrote:
+
+> The return value of srmcons_do_write() is ignored as all characters are
+> pushed. So make srmcons_do_write() to return void.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: linux-alpha@vger.kernel.org
+> ---
+> 
+> Notes:
+>     [v2] reordered so that it makes sense
+> 
+>  arch/alpha/kernel/srmcons.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+> index b68c5af083cd..de896fa9829e 100644
+> --- a/arch/alpha/kernel/srmcons.c
+> +++ b/arch/alpha/kernel/srmcons.c
+> @@ -88,7 +88,7 @@ srmcons_receive_chars(struct timer_list *t)
+>  }
+>  
+>  /* called with callback_lock held */
+> -static int
+> +static void
+>  srmcons_do_write(struct tty_port *port, const char *buf, int count)
+>  {
+>  	static char str_cr[1] = "\r";
+> @@ -125,7 +125,6 @@ srmcons_do_write(struct tty_port *port, const char *buf, int count)
+>  				need_cr = 0;
+>  		}
+>  	}
+> -	return count;
+>  }
+>  
+>  static ssize_t
+> 
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
 -- 
-2.17.1
+ i.
 
+--8323329-5569259-1701177935=:1797--
