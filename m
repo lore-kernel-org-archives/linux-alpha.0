@@ -1,112 +1,91 @@
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WW+AHOq6"
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D38BD48;
-	Thu, 30 Nov 2023 11:25:50 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id ffacd0b85a97d-33318b866a0so1148419f8f.3;
-        Thu, 30 Nov 2023 11:25:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1701372348; x=1701977148; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=10qZWkdRxInBxqMWCHUd/fv2xFmke4NCj5l1NxkbtEs=;
-        b=WW+AHOq6o2PegiMI/kmyoE1H2fgfnFeIkVv5lnDqVHw3NYo5rGpK+uvS014J0FTdsp
-         BHIvDV43Pag+V2L3FkPD7oVEajp7LjJgk3D3LDgXh1LV09xCdRTOUWC17nK+a+cKit8n
-         I9RGeXPHUmzRIQhYyJyS9J+u5jPgM8FJaig5j5Sp1scIpSfRhyoUp0zvmLwV8B37KaSN
-         gKczwLcN/BeWs/RktuyHR6quYc8ltXJ3bQdSBQdDtW3Trmh1vUDWiYx31jo1ol9ElIxE
-         OK8o2XE8t7i2t6NlrLkjk4L4cmzLGbAzhsFDGi/Aa0QEPnOwxFnDZgGwej4kjHddaG72
-         V5Rw==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hTF7kSho"
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0847B10FC
+	for <linux-alpha@vger.kernel.org>; Thu, 30 Nov 2023 21:20:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1701408028;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=X88JSiziG/o7myWzNFddeB9QrNNoNgpJlb1gQar3PoQ=;
+	b=hTF7kSho2PW7k/yLjqQzIZgVJ5SG6AlneOXtkZAwTWsY9Yybl6GwJ6X/r1ICGLKGEi4GFB
+	1sFizwwy/MIAV0m7Ss0QzZ6svkRyvrakmJFBsnKf/XI2iifs0/T4wm90tzwYfkA1wJXipS
+	i9S+EHwLi6LMEfr1nAng8jQiRGTw+FI=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-578-ZeI57XL6OpKtwbEI1_8MzA-1; Fri, 01 Dec 2023 00:20:26 -0500
+X-MC-Unique: ZeI57XL6OpKtwbEI1_8MzA-1
+Received: by mail-lj1-f197.google.com with SMTP id 38308e7fff4ca-2c9c99a4fdbso17255901fa.0
+        for <linux-alpha@vger.kernel.org>; Thu, 30 Nov 2023 21:20:26 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1701372348; x=1701977148;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1701408025; x=1702012825;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=10qZWkdRxInBxqMWCHUd/fv2xFmke4NCj5l1NxkbtEs=;
-        b=qqQ4sMWTxrVwGinsbX14pyZ4BpaCwFMfAbgpBrZZV6A6fa2OyUGqI/paffqda6pnRS
-         5NWHKTbjmc/rLVQjEvwbqY8+ma9QUZwWzztB8BVWWybH2UVQp/3KU44hwQjYluEVFuBM
-         XQTA1ooUeoi/Jjs2GqT38gPRU8eagzIiBVLf26z4CEDe3yznkbL67/jrklkhKzJymWCs
-         U4CRciqe3u2PB+2l5M8/SjmaefJhD/NrCom2RDvI2docfHixtVotNsFzpRzkufDsvQMJ
-         95wwLVhcOnudO7qeeR2yrMTOIW3l72cSMPIjG0DWy1SsSnU9kgWUfYccoKM0nJOdmIj0
-         kNBA==
-X-Gm-Message-State: AOJu0YyF2dSQ8ZuADkqccqg96IPYCzwcc+7xyVCymWU4sLGrh3fdQBnm
-	C9YgVtQvu2lRX2LOzs4Vamc=
-X-Google-Smtp-Source: AGHT+IEH/ASMOK9ojYkCxLJwyFhlciYNcpI0mOvc0B8iSEhUCqo8N/OtyviEdQtKY/v5ofK5Et/XGg==
-X-Received: by 2002:a05:6000:b82:b0:333:2fd2:4afd with SMTP id dl2-20020a0560000b8200b003332fd24afdmr13204wrb.121.1701372347885;
-        Thu, 30 Nov 2023 11:25:47 -0800 (PST)
-Received: from gmail.com (1F2EF126.nat.pool.telekom.hu. [31.46.241.38])
-        by smtp.gmail.com with ESMTPSA id i15-20020a5d584f000000b003331c7b409asm2301846wrf.78.2023.11.30.11.25.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Nov 2023 11:25:47 -0800 (PST)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date: Thu, 30 Nov 2023 20:25:45 +0100
-From: Ingo Molnar <mingo@kernel.org>
-To: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-	linux-alpha@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] x86: stop shipping a.out.h uapi headers
-Message-ID: <ZWjhuePji8CpFDbv@gmail.com>
-References: <20231123180246.750674-1-dimitri.ledkov@canonical.com>
- <20231123180246.750674-5-dimitri.ledkov@canonical.com>
+        bh=X88JSiziG/o7myWzNFddeB9QrNNoNgpJlb1gQar3PoQ=;
+        b=ZahMpH7VJpXQmCrLdODwhJXXFg0Mv91RA4p5nlammupJCkDJbsDbgHUrnp4wfzQlIB
+         mCdHqYWt/XFi53BkQDIkEepTB5U6CQCNjDw2yS1xUin8JrqpbSPzXxuNfQMA6HRpa+ZU
+         SkJr4a6Ds7qyt4tLob87Yq02iu0xzTr0VEoL8/hxOuRSgVbqiiJh/0PiWKGwe9aSjumq
+         5XFIQGVvNzrnTGddi67Htvw5QyIsu/k34iLra4UnBvRcTD9TRh1X2la5axhy5lyKLI/k
+         0FZeuLOxaHmgKiKjYVOWu1dCG079HHZMWTu/E4GP7UP4K3W9UdyRPDEJo0M5A7NWF9lp
+         y6Mg==
+X-Gm-Message-State: AOJu0Yw/dRG0qfZGKde77zLy2RevcuCKotFdkMsqdJAKQHEIRVYQLZ4z
+	7E8uYhOLaH45w3oOGGN7+yBuWthUzpq8C8EbjyjD0X/BxqhJRyrWOiEXhHr5lKulIaTtXZApFbY
+	bzIlt7F+5ZqVFHz72R5/P8Ib9orwbBMHi/IoNciE=
+X-Received: by 2002:a19:a408:0:b0:50b:c9b6:3216 with SMTP id q8-20020a19a408000000b0050bc9b63216mr343640lfc.8.1701408025516;
+        Thu, 30 Nov 2023 21:20:25 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IESdjRg/qOdpcOoc9ha3XIN7XwU3jvK2LnYcltjH/CQeP85eYFX50MTqViiFNs+mh7TXHCkLsXficufvdwpKuo=
+X-Received: by 2002:a19:a408:0:b0:50b:c9b6:3216 with SMTP id
+ q8-20020a19a408000000b0050bc9b63216mr343629lfc.8.1701408025249; Thu, 30 Nov
+ 2023 21:20:25 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231123180246.750674-5-dimitri.ledkov@canonical.com>
+References: <20231130113001.29154-1-jirislaby@kernel.org>
+In-Reply-To: <20231130113001.29154-1-jirislaby@kernel.org>
+From: Jason Wang <jasowang@redhat.com>
+Date: Fri, 1 Dec 2023 13:20:14 +0800
+Message-ID: <CACGkMEtc962wXcFP7kQFcyxRqqyXAF55kpZwv-tQbcCWuOHGTw@mail.gmail.com>
+Subject: Re: [PATCH] tty: virtio: drop virtio_cons_early_init()
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, 
+	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+	Matt Turner <mattst88@gmail.com>, Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
+	"Michael S. Tsirkin" <mst@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, linux-alpha@vger.kernel.org, 
+	virtualization@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
-* Dimitri John Ledkov <dimitri.ledkov@canonical.com> wrote:
-
-> Stop shipping a.out.h uapi headers, unused.
-> 
-> Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+On Thu, Nov 30, 2023 at 7:31=E2=80=AFPM Jiri Slaby (SUSE) <jirislaby@kernel=
+.org> wrote:
+>
+> The last user of virtio_cons_early_init() was dropped in commit
+> 7fb2b2d51244 ("s390/virtio: remove the old KVM virtio transport").
+>
+> So now, drop virtio_cons_early_init() and the logic and headers behind
+> too.
+>
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: Amit Shah <amit@kernel.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: "Michael S. Tsirkin" <mst@redhat.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Cc: linux-alpha@vger.kernel.org
+> Cc: virtualization@lists.linux.dev
 > ---
->  arch/x86/include/uapi/asm/a.out.h | 21 ---------------------
->  1 file changed, 21 deletions(-)
->  delete mode 100644 arch/x86/include/uapi/asm/a.out.h
-> 
-> diff --git a/arch/x86/include/uapi/asm/a.out.h b/arch/x86/include/uapi/asm/a.out.h
-> deleted file mode 100644
-> index 094c49d8ea..0000000000
-> --- a/arch/x86/include/uapi/asm/a.out.h
-> +++ /dev/null
-> @@ -1,21 +0,0 @@
-> -/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> -#ifndef _ASM_X86_A_OUT_H
-> -#define _ASM_X86_A_OUT_H
-> -
-> -struct exec
-> -{
-> -	unsigned int a_info;	/* Use macros N_MAGIC, etc for access */
-> -	unsigned a_text;	/* length of text, in bytes */
-> -	unsigned a_data;	/* length of data, in bytes */
-> -	unsigned a_bss;		/* length of uninitialized data area for file, in bytes */
-> -	unsigned a_syms;	/* length of symbol table data in file, in bytes */
-> -	unsigned a_entry;	/* start address */
-> -	unsigned a_trsize;	/* length of relocation info for text, in bytes */
-> -	unsigned a_drsize;	/* length of relocation info for data, in bytes */
-> -};
-> -
-> -#define N_TRSIZE(a)	((a).a_trsize)
-> -#define N_DRSIZE(a)	((a).a_drsize)
-> -#define N_SYMSIZE(a)	((a).a_syms)
-> -
-> -#endif /* _ASM_X86_A_OUT_H */
 
-Acked-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-Thanks,
+Thanks
 
-	Ingo
