@@ -1,86 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04E4D131E4A;
-	Thu, 15 Feb 2024 14:11:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2727E145B00;
+	Thu, 15 Feb 2024 23:28:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708006318; cv=none; b=J4z5qmNnGH7h5cGbJCETOB5DAhUk7WKvTfP0oeiQDdVjW+1TrDnE+EOJQMlm5q/6FB4zg06u+6Zzzwj/WPW2MwPWyZ3ghMn6H1Ba63hW7o/QYVVyRs8d8CXrlrWO9OqfO6TBUZJk5GjHoFCGe7spxN74mm6jb0DR3G17wri+3Sk=
+	t=1708039688; cv=none; b=kloVPUVNzYDrOPTmcBXPlyvAxN0bNnURURSPZiw4mkQYIRDRB64XvwG4sSnhpxr8hw2QC8C/7CnCH3qMOJdW7PJXagJREnfVr06Mi2BvmpWHcTA5Y8iNVcfHr9EgB9t4KJ8Q+SR84Z6/jC0JIxvZvtc5pP2RUtbuHk2sJgDWf5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708006318; c=relaxed/simple;
-	bh=HkxdXeZdYQMmfTagJZLrQcvFjkDeeE9HLvngWwo7L1s=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=kIun50rJOyln0Jnr4EkkPP5Af+Sx2RNBm99trpXQ5YU4ye6wEd6M46dtx5mE6BlhD015szihf7YcaaKdKiDTPtEhIZ/6W/PP4AdaSdEo4bPRSdxL+Vcb1dtUJD3Z4bVTiMq6dN5rBsycL2IGHDxKZFjm8G9wrDljGftHKquX8nk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bSLLSvE5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708039688; c=relaxed/simple;
+	bh=n4G9uH3FuaxtaDs7VOwu4MfOMqdQcRQMlzTGYWvdfQI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ef2y4MEmJqVRzfihv3VyPzlngNOHSU7JEPbYqaHasMvT0zllXaHgvm4e/znc9qca5oH/BY4scEsU5bnRcUq7DOiBH1/4k1Z8mb3as9WJS0rk26HnEIymbHPaHPV0YiPfKfdn7N77DdKaSJCXtEoD7sRrcfBS3sbq68Ddwfhuimg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=M+OESzYP; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bSLLSvE5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E650C43390;
-	Thu, 15 Feb 2024 14:11:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708006317;
-	bh=HkxdXeZdYQMmfTagJZLrQcvFjkDeeE9HLvngWwo7L1s=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=bSLLSvE5LtJPzOQfN3ak2K2GoCYKASkK5hNELtW6Bd8m+hTWFEif36XLkBFvJ6HV1
-	 Eqea4LFg9iD3Hxhiz+SuaHeIXcbpdImAzq+A/JEfzylA3LuEmV62Thj3PvBM88yjKW
-	 oj1Ih95HkCHuS0oUdSkY+6t0lOBY58N0HONa9tnRLRbz4TatZXyQYAzOpjAZ2ALf9b
-	 alyHiykfpqvNrq5Qt67Qw3/+OWeZIackOk0J3F5MllY6RbA8I0cO2NksSKcZ0tUnO0
-	 lzgm8/fRJe8Ni7PzqtWynLrPJRchCBfKhs/2wO05KyNF+4n9gmXOt+DnvBFUT2yf27
-	 9G47V0rByCIww==
-From: Masahiro Yamada <masahiroy@kernel.org>
-To: linux-kbuild@vger.kernel.org
-Cc: Masahiro Yamada <masahiroy@kernel.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] alpha: merge two entries for CONFIG_ALPHA_GAMMA
-Date: Thu, 15 Feb 2024 23:11:20 +0900
-Message-Id: <20240215141120.1911369-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20240215141120.1911369-1-masahiroy@kernel.org>
-References: <20240215141120.1911369-1-masahiroy@kernel.org>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="M+OESzYP"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=iZftUgWZ8SaYplQOiYsHmVonfTNje6FlH1kX5tBg4q0=; b=M+OESzYPxVIuS6O1CdH67Duf+9
+	kyjCRsoAhQJRvHmRrKo76p3rthULUdPAw1J38+cKiv7k4uBzgVmBp83wuLQB+qFDV+YY17Gnvh6ow
+	n26onabl/V+XNMrl+i/25k0/NBlI9QYceFv3UMfg1i6lj6PCPbekfKuueeZCVagrwgSs17X4tTYDf
+	wb8A50LLrRcmj9TKiq7xmQNXAh+kgRg3pfprDyycjhS7ETCxVqemt52Sl5OtFnMllfT1Y1bM/x+Wn
+	WHCuB7oM4Ei4nSWgxbN4BQw7f3/ASRm2L1hCy+zzX8CSTB1o+3ml5fzUpgt65p/JE7phabjSFLyyC
+	1hwKeeMw==;
+Received: from [50.53.50.0] (helo=[192.168.254.15])
+	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1ral95-00000000TEr-1QJz;
+	Thu, 15 Feb 2024 23:27:59 +0000
+Message-ID: <b3f86324-afa2-49b7-9565-28f41aaf3334@infradead.org>
+Date: Thu, 15 Feb 2024 15:27:57 -0800
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] alpha: merge two entries for CONFIG_ALPHA_GAMMA
+Content-Language: en-US
+To: Masahiro Yamada <masahiroy@kernel.org>, linux-kbuild@vger.kernel.org
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+ Matt Turner <mattst88@gmail.com>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20240215141120.1911369-1-masahiroy@kernel.org>
+ <20240215141120.1911369-2-masahiroy@kernel.org>
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20240215141120.1911369-2-masahiroy@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-There are two entries for CONFIG_ALPHA_GAMMA, with the second one
-7 lines below. Merge them together.
+Hi,
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+On 2/15/24 06:11, Masahiro Yamada wrote:
+> There are two entries for CONFIG_ALPHA_GAMMA, with the second one
+> 7 lines below. Merge them together.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>  arch/alpha/Kconfig | 10 +++-------
+>  1 file changed, 3 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+> index 70e8343d00ba..581ca8c73d67 100644
+> --- a/arch/alpha/Kconfig
+> +++ b/arch/alpha/Kconfig
+> @@ -390,16 +390,12 @@ config ALPHA_PRIMO
+>  	  Say Y if you have an AS 1000 5/xxx or an AS 1000A 5/xxx.
+>  
+>  config ALPHA_GAMMA
+> -	bool "EV5 CPU(s) (model 5/xxx)?"
+> -	depends on ALPHA_SABLE
+> +	bool "EV5 CPU(s) (model 5/xxx)?" if ALPHA_SABLE
+> +	depends on ALPHA_SABLE || ALPHA_GAMMA
 
- arch/alpha/Kconfig | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+	depends on ALPHA_SABLE || ALPHA_LYNX
+??
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 70e8343d00ba..581ca8c73d67 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -390,16 +390,12 @@ config ALPHA_PRIMO
- 	  Say Y if you have an AS 1000 5/xxx or an AS 1000A 5/xxx.
- 
- config ALPHA_GAMMA
--	bool "EV5 CPU(s) (model 5/xxx)?"
--	depends on ALPHA_SABLE
-+	bool "EV5 CPU(s) (model 5/xxx)?" if ALPHA_SABLE
-+	depends on ALPHA_SABLE || ALPHA_GAMMA
-+	default ALPHA_LYNX
- 	help
- 	  Say Y if you have an AS 2000 5/xxx or an AS 2100 5/xxx.
- 
--config ALPHA_GAMMA
--	bool
--	depends on ALPHA_LYNX
--	default y
--
- config ALPHA_T2
- 	bool
- 	depends on ALPHA_SABLE || ALPHA_LYNX
+> +	default ALPHA_LYNX
+>  	help
+>  	  Say Y if you have an AS 2000 5/xxx or an AS 2100 5/xxx.
+>  
+> -config ALPHA_GAMMA
+> -	bool
+> -	depends on ALPHA_LYNX
+> -	default y
+> -
+>  config ALPHA_T2
+>  	bool
+>  	depends on ALPHA_SABLE || ALPHA_LYNX
+
 -- 
-2.40.1
-
+#Randy
