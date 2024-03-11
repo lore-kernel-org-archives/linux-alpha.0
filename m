@@ -1,58 +1,57 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F32A640BE4
-	for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 13:23:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8607B4120C
+	for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 13:23:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710163407; cv=none; b=vDwHapjCG9wFYtDPBsNG/N/ath1+St8yWirJ84dYKJR1tz7xvsvOIUhotN290sFBZYawJQzUafn3TEn9CbGZ1ZvZmhICgFA29RSKyE0zMJyfyE+p3xGlAv8XkrGu4ixnJcw7XGPWP2wbHLFaSujiApYbg2awn/3WgNLIL7lzk4k=
+	t=1710163408; cv=none; b=gwJPLIE56A3k8S2AnSyQ4g7YCyekmInA/74Tz+V/QV4odRdnnmBA3XRNPvtTNu87oeOLRvEiYNcoJk/cmzZt+6ortMYhVdAeb6Qiu5Ko+/3+sW0dUhDT2GA7n7omw8yhi78vA666VIxTWmmhhw+OVVmmZvlL6fEieyYAOGmQxi8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710163407; c=relaxed/simple;
-	bh=veo+1KYcd84Vkkyq1AUfsbLRFWwaOKVUBG3RxoLqPoA=;
+	s=arc-20240116; t=1710163408; c=relaxed/simple;
+	bh=mM1lJpUfEeOdqAGIdoQeUdDslMwrM56HU1w2dUupTZ0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=iwmZtXCBl6mqrAa+1Hgp2lEVK1pu4hOlRAqI0my+KueDJkbfeUO80VxsQC15pANbMtS3xIxE4XnL0IFNOU1gILUYJVft1OOeoDY71j83pRwQ7qb15R5LwF11aLtuE3VNGW3wu8hLI0uA6o5GBU3qGKdthJp/687h26FtFXhSv2Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com; spf=pass smtp.mailfrom=ionos.com; dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b=h1H8y1/g; arc=none smtp.client-ip=209.85.218.51
+	 MIME-Version; b=OltP4n21+xyFtYxoijPvWy4bChcZpZeKc/tWLZ55XwEc7/Zf48UDC0Utus0mim3M90gaouipWTjyN86jyfR6osJbwk2wwAUccmrc8dHptDYdqxlOSVd8oN5tEvybX0cgoC74uTpSqAKwfPeeqbFIS0bODUTooiBPUv9OSEcTHQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com; spf=pass smtp.mailfrom=ionos.com; dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b=VXmHK5yF; arc=none smtp.client-ip=209.85.208.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ionos.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b="h1H8y1/g"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a45c006ab82so503982266b.3
-        for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 06:23:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b="VXmHK5yF"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5683093ffbbso4363980a12.1
+        for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 06:23:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google; t=1710163404; x=1710768204; darn=vger.kernel.org;
+        d=ionos.com; s=google; t=1710163405; x=1710768205; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1mEOen0PdEKYkfvmGwbZYSoDNtgExorL8k9mwAI4fX4=;
-        b=h1H8y1/gvyJLH4F2wjwY/LOGKnlHq2UguVCRjz4InJWpWTxbP2/ggREy64hvwWe6ta
-         yZ6HLkSilZh5emG6jNhQk0E9ez+sP5r4dQndZ68Suj4MZ6IwVLyzmSJcTSzGNj461k/1
-         fjGKcIq62lz/f8sYJ1SzeWw6U5B+pRsjISgRa0DpSw6couPBzpu58EZqYSK/GbQHMIdu
-         oS4KkjxneV5a740LezkS3lzkNUEH+WIpUYmKqFGSyKRTDHI+CLP6gHENZpolOXqNs+LG
-         +au3rVbsfWTA6ol8Xjy30Cq6faEGApsRRReRjwR0rb6KXq1OhluFKgoCWM+hMy/i2glh
-         009w==
+        bh=SEARZa5Wy43/uJEWuUJJQI9Y4wLhs8OmNqyFr5H4dkQ=;
+        b=VXmHK5yFYrs1Ms8T+4ZCDdOnYx6tsnMX0O9x+oRpjevCoa7FnhG6LGNHVObD9fE5B9
+         FFYV+NpsYEl4OrweQ/ZxU886zHVQRsoz1avLndsJ53ng/AHTMOMstohWuN0Stx7UyYLN
+         y1y1+3XfRls9xcMk/4+3ZwUWlGx88yNgddT6310Ev/JUE5YoHtmmYMSdoQi5R0zS5IXo
+         0NRJixtSSGBz0I0MqQKYu37KJO7CGRC4+iXhOVKFaviN4anqzss48/SP3+aAZytoNvMN
+         CVWBcgv0Gauu9WneUjw6wEYq1fO8YZT3dzLY/NCznoDwUS2MzFFET1OfXZb3Fr5r/+HO
+         V1gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710163404; x=1710768204;
+        d=1e100.net; s=20230601; t=1710163405; x=1710768205;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1mEOen0PdEKYkfvmGwbZYSoDNtgExorL8k9mwAI4fX4=;
-        b=nSk5J18B5Jca/V8ZuZfsbE6ZXPdwBlmqP91Mj2eaGsC/jsiAz+1HuOtoOp6wXIia4I
-         WpuKWyqAwoPNzBpQuhNqAuzJRDV/xdVicseRR/2Hyq/5rhRT/AAh4wJQOAXu7LzEzyZV
-         dSAmNJYFJH8Bu048WbY0MaEramHw6n2ajg4sRTZTOHxwiHUHUMHilCFtSIIoy365qbWm
-         8q9VtItsvL25I+sIq2UEkdV05oKLQ4L3VVmYG+OfMoCxYn6S/z5k9+WnTPTu6fLZHtbq
-         gKJfIneVDvwoZt2VTGaL7R4Xu35+PCHsuwsru3t3z3ySSdTOSR3zUIw+m3e/u4Qaj1dr
-         RNkQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWOB7mD8zuZFxi/IrssnJ1IYmtIQDjAJxBrNGg/B6qBelmXGF+LS33cvjBxr6X1SjA9v7RLqGUvUSe3pwKIdnhXdtgtA82E4syhGQc=
-X-Gm-Message-State: AOJu0Yw3+RIqGnzdMKtaRfcTHKkIxWKXcpOtycgyoSRKdqsdYRLd8zId
-	OVUWX1bpGEkxZI1lNNyst+9hPQSVv5Xgg6pa3LKYNtkTQteW/2mCM1Xsa9ZtuSp2ILeiT6pbMB7
-	1
-X-Google-Smtp-Source: AGHT+IHy1pfzsVAAO8uOlh4i/oemtUAuHPNn6q344i9I8thnD3AGZ55KvJvrZ9C5m4VtldgJ3qaT4w==
-X-Received: by 2002:a17:906:e219:b0:a45:f74d:343a with SMTP id gf25-20020a170906e21900b00a45f74d343amr301393ejb.22.1710163404544;
-        Mon, 11 Mar 2024 06:23:24 -0700 (PDT)
+        bh=SEARZa5Wy43/uJEWuUJJQI9Y4wLhs8OmNqyFr5H4dkQ=;
+        b=E6ufv6GdT3U/LqAm2ylbTEuy1wnyuAKAdy6lAFPAszCpIhezC7PVVlM2B06Rd62f80
+         bJlJbtr+O/vqAIlMNeFVSTW42zxo5FRqsFJ7jA/MjFLFCp5nAGBXAh94lrdJkZMKJO0e
+         OFx4IcERqbxLblfFe1FJiEyZwEd70HqCInA4s1TsiOizDxxwbeNI+Ttv/Ck2hkIuk2Eu
+         Nwqisjm105RYGic+D1HAS5lDt7sqVGSnc0lzC7cVSgkuMtf4V1QUiyNAA4mhABUZfN/A
+         vIcGDvJLtFUTSFTVsu4EzEGBa09cwozA8h03nwGXmIg8wfH28ZC+1noqbpVu8TB8wTrV
+         ZLuA==
+X-Forwarded-Encrypted: i=1; AJvYcCUp7HDRBtFF4qu8OZrlVVmU+1nc17HxHr4RkLO6wfTIGmJVftpd1Z9xMSjzT6QKeQrH7B42uBnM9MGr8dBsGRAlW7q7cNqQzp5Bz7E=
+X-Gm-Message-State: AOJu0YzPBs4M4MNPgIyc2o55gWr0lqzsWev2ZgkGj8EZnqNJPmnPaEhW
+	afA9vnEIedqifh+2mZGRwNvwyQ//EoY/iFggYEu6rRy78k8EU5agwO0aBfJUwZQ=
+X-Google-Smtp-Source: AGHT+IFL5EqhKwS6+2fO3vS7G0SSPiXV3Vvv51HVPrGWf8pMTBxVVxVrAQAUuE3HHK6wRH9qYUpBqA==
+X-Received: by 2002:a17:907:d410:b0:a46:2b92:8124 with SMTP id vi16-20020a170907d41000b00a462b928124mr1444316ejc.60.1710163405151;
+        Mon, 11 Mar 2024 06:23:25 -0700 (PDT)
 Received: from raven.blarg.de (p200300dc6f010900023064fffe740809.dip0.t-ipconnect.de. [2003:dc:6f01:900:230:64ff:fe74:809])
-        by smtp.gmail.com with ESMTPSA id i26-20020a170906251a00b00a44cb0bf11bsm2861075ejb.79.2024.03.11.06.23.23
+        by smtp.gmail.com with ESMTPSA id i26-20020a170906251a00b00a44cb0bf11bsm2861075ejb.79.2024.03.11.06.23.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Mar 2024 06:23:23 -0700 (PDT)
+        Mon, 11 Mar 2024 06:23:24 -0700 (PDT)
 From: Max Kellermann <max.kellermann@ionos.com>
 To: richard.henderson@linaro.org,
 	ink@jurassic.park.msu.ru,
@@ -60,9 +59,9 @@ To: richard.henderson@linaro.org,
 	linux-alpha@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: Max Kellermann <max.kellermann@ionos.com>
-Subject: [PATCH 09/11] arch/alpha/fpreg: add missing includes to fix -Wmissing-prototypes
-Date: Mon, 11 Mar 2024 14:23:04 +0100
-Message-Id: <20240311132306.3420135-9-max.kellermann@ionos.com>
+Subject: [PATCH 10/11] arch/alpha/smc37c669.: make SMC37c669_dump_registers() static
+Date: Mon, 11 Mar 2024 14:23:05 +0100
+Message-Id: <20240311132306.3420135-10-max.kellermann@ionos.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20240311132306.3420135-1-max.kellermann@ionos.com>
 References: <20240311132306.3420135-1-max.kellermann@ionos.com>
@@ -74,35 +73,43 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Fixes:
+This function is only used within this source file.  Fixes
+`-Wmissing-prototypes`:
 
- arch/alpha/lib/fpreg.c:20:1: error: no previous prototype for 'alpha_read_fp_reg' [-Werror=missing-prototypes]
-    20 | alpha_read_fp_reg (unsigned long reg)
-       | ^~~~~~~~~~~~~~~~~
- [...]
+ arch/alpha/kernel/smc37c669.c:2434:1: error: no previous prototype for 'SMC37c669_dump_registers' [-Werror=missing-prototypes]
+  2434 | SMC37c669_dump_registers(void)
+       | ^~~~~~~~~~~~~~~~~~~~~~~~
+
+Also add `#if SMC_DEBUG` because it's only ever used under this
+condition.
 
 Signed-off-by: Max Kellermann <max.kellermann@ionos.com>
 ---
- arch/alpha/lib/fpreg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/alpha/kernel/smc37c669.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/alpha/lib/fpreg.c b/arch/alpha/lib/fpreg.c
-index 7c08b225261c..88e912689140 100644
---- a/arch/alpha/lib/fpreg.c
-+++ b/arch/alpha/lib/fpreg.c
-@@ -5,9 +5,12 @@
-  * (C) Copyright 1998 Linus Torvalds
-  */
+diff --git a/arch/alpha/kernel/smc37c669.c b/arch/alpha/kernel/smc37c669.c
+index bbbd34586de0..ab22ade3dea3 100644
+--- a/arch/alpha/kernel/smc37c669.c
++++ b/arch/alpha/kernel/smc37c669.c
+@@ -2430,13 +2430,16 @@ int __init smcc669_write( struct FILE *fp, int size, int number, unsigned char *
+ }
+ #endif
  
-+#include "../kernel/proto.h"
+-void __init
++#if SMC_DEBUG
++static void __init
+ SMC37c669_dump_registers(void)
+ {
+   int i;
+   for (i = 0; i <= 0x29; i++)
+     printk("-- CR%02x : %02x\n", i, SMC37c669_read_config(i));
+ }
++#endif // SMC_DEBUG
 +
- #include <linux/compiler.h>
- #include <linux/export.h>
- #include <linux/preempt.h>
-+#include <asm/fpu.h>
- #include <asm/thread_info.h>
- 
- #if defined(CONFIG_ALPHA_EV6) || defined(CONFIG_ALPHA_EV67)
+ /*+
+  * ============================================================================
+  * = SMC_init - SMC37c669 Super I/O controller initialization                 =
 -- 
 2.39.2
 
