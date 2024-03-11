@@ -1,55 +1,56 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9A7240846
-	for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 13:23:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F32A640BE4
+	for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 13:23:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710163406; cv=none; b=tFumT0fUaWeJvoMXR2pH5/4xmj2DoGfdClkmPZPb48EFYssSq+LLVUsGoWSwzJe6egg95F4Ryy9AddOazi3842z3TuILV6Vx7v14m09Ps9gfe6AXzYJRO3A8EEeHkKQvAobsQ0icNySJQeulJ3UyUR8iPaerY3u2kLuig/y2MQM=
+	t=1710163407; cv=none; b=vDwHapjCG9wFYtDPBsNG/N/ath1+St8yWirJ84dYKJR1tz7xvsvOIUhotN290sFBZYawJQzUafn3TEn9CbGZ1ZvZmhICgFA29RSKyE0zMJyfyE+p3xGlAv8XkrGu4ixnJcw7XGPWP2wbHLFaSujiApYbg2awn/3WgNLIL7lzk4k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710163406; c=relaxed/simple;
-	bh=3tyYmXiWAM/q5HVicUkqXvu+N4NisQr6T3xjXABkdy4=;
+	s=arc-20240116; t=1710163407; c=relaxed/simple;
+	bh=veo+1KYcd84Vkkyq1AUfsbLRFWwaOKVUBG3RxoLqPoA=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=fgxaUEd3cJiZs4JEvzmnP31i55LFGTrEIoi+U/RX+2M9Kga3UJdKcJ/FsEqjrr7LCr5dXHKRhFwEv+MfgG+cSoJAhjCAjGHEfl19kvbKFoaV8ahejewzSS48WlS0aD5a4WIoS24pi+eXdD0KDrfpizxuyP6oKmVam9cIGPdKT8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com; spf=pass smtp.mailfrom=ionos.com; dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b=JL1wkBGY; arc=none smtp.client-ip=209.85.218.46
+	 MIME-Version; b=iwmZtXCBl6mqrAa+1Hgp2lEVK1pu4hOlRAqI0my+KueDJkbfeUO80VxsQC15pANbMtS3xIxE4XnL0IFNOU1gILUYJVft1OOeoDY71j83pRwQ7qb15R5LwF11aLtuE3VNGW3wu8hLI0uA6o5GBU3qGKdthJp/687h26FtFXhSv2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com; spf=pass smtp.mailfrom=ionos.com; dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b=h1H8y1/g; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ionos.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b="JL1wkBGY"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a460185d1a7so242127466b.0
-        for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 06:23:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b="h1H8y1/g"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a45c006ab82so503982266b.3
+        for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 06:23:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google; t=1710163403; x=1710768203; darn=vger.kernel.org;
+        d=ionos.com; s=google; t=1710163404; x=1710768204; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+t0NAN8QitndA7AWWVE6RWeZPaPNMsbNUKpFN+f7Kdg=;
-        b=JL1wkBGY6cADk5Vl6LLarqvBbQ2fZtv5D1sj87Ta9LggH4x8vliY5y8DfLmZFkOh82
-         cCYbcw7PrVO0UFlM0ik3Pw7sSJh0DnvZy+AZOypN18KO0AUKGipGnDVVc3l2pxF/LKXh
-         8q811jYeh3v2bP4Usx4BaBI7033qA9iSPqBjEi/jYtSEB4u20LfX/ASHmSiPAYPgvIhW
-         8t/4fNWhYKkEG2rDXuuainrdRFS0xsJr/bNUQ/Vqvy/tOrO3bP/XwbDszf8a+k4KwG52
-         q1fTxutuSbsKIyqHtnlFbcPl33jY5pgWe/L6sgHdhj6lre5wYB5qFS7tqJN68mAdjYmb
-         DBkQ==
+        bh=1mEOen0PdEKYkfvmGwbZYSoDNtgExorL8k9mwAI4fX4=;
+        b=h1H8y1/gvyJLH4F2wjwY/LOGKnlHq2UguVCRjz4InJWpWTxbP2/ggREy64hvwWe6ta
+         yZ6HLkSilZh5emG6jNhQk0E9ez+sP5r4dQndZ68Suj4MZ6IwVLyzmSJcTSzGNj461k/1
+         fjGKcIq62lz/f8sYJ1SzeWw6U5B+pRsjISgRa0DpSw6couPBzpu58EZqYSK/GbQHMIdu
+         oS4KkjxneV5a740LezkS3lzkNUEH+WIpUYmKqFGSyKRTDHI+CLP6gHENZpolOXqNs+LG
+         +au3rVbsfWTA6ol8Xjy30Cq6faEGApsRRReRjwR0rb6KXq1OhluFKgoCWM+hMy/i2glh
+         009w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710163403; x=1710768203;
+        d=1e100.net; s=20230601; t=1710163404; x=1710768204;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+t0NAN8QitndA7AWWVE6RWeZPaPNMsbNUKpFN+f7Kdg=;
-        b=rSS5H4NhoyaWSEQVdhnNsLDVB7QhmLpbBK2geVZ7OaNvgWZNmgkFFAE9MAfMPhMssd
-         12GgPDmWrPrDkgUPrhBWNthirUVBD9ByF2YWuOUKS6DjTSVmfi6Tmg47+nVvGsHUj2x3
-         eaaoJXMVVU3nn0vZ4MTb6p1QQk9ZcUBLXksqIADcoFJabIomDnPru/pbZFOYEUqSoOOr
-         AsZc50l+cWyprlDVAfTM0hVbZWS8oybyvRozFpI3qa9RnbQiDKAXUDoogNoRBYI+gtsx
-         LkYt2Dno75yRWPwZfYXLgR/+TGxvYxsPcUZOt/hB+Xz3UyGrdbo6LFmvmN9JgncsMfMh
-         Zp+A==
-X-Forwarded-Encrypted: i=1; AJvYcCWBkJMMC8cScFK1oQv0ZKLjwVPYOf3SW+N/zlTkFTzlu15FuG6v+xUWf9Oa54ANTAdWzhDw9IR9P2pS1Dn12RcQSk/MtJTGLZS0/d0=
-X-Gm-Message-State: AOJu0YwPi1F2xx9LIg4eT5OrCAtGYXmFW9SNvN29bEnJyyXAvP1JjBWE
-	g1ON3DUC0SmuOHYxPr5E+nQ/GWDHzZOEsHRmGbZ4jSg4i+iqc1VGZIvBQaz+jro=
-X-Google-Smtp-Source: AGHT+IHoU7VjL6i6NUg22SF3l8kTO+bIkiVcclef3Kx1yn0C1QBWfKLE1hOzGRqyswmSb69Q5pVi3g==
-X-Received: by 2002:a17:907:7898:b0:a45:119e:3dec with SMTP id ku24-20020a170907789800b00a45119e3decmr3972814ejc.73.1710163403282;
-        Mon, 11 Mar 2024 06:23:23 -0700 (PDT)
+        bh=1mEOen0PdEKYkfvmGwbZYSoDNtgExorL8k9mwAI4fX4=;
+        b=nSk5J18B5Jca/V8ZuZfsbE6ZXPdwBlmqP91Mj2eaGsC/jsiAz+1HuOtoOp6wXIia4I
+         WpuKWyqAwoPNzBpQuhNqAuzJRDV/xdVicseRR/2Hyq/5rhRT/AAh4wJQOAXu7LzEzyZV
+         dSAmNJYFJH8Bu048WbY0MaEramHw6n2ajg4sRTZTOHxwiHUHUMHilCFtSIIoy365qbWm
+         8q9VtItsvL25I+sIq2UEkdV05oKLQ4L3VVmYG+OfMoCxYn6S/z5k9+WnTPTu6fLZHtbq
+         gKJfIneVDvwoZt2VTGaL7R4Xu35+PCHsuwsru3t3z3ySSdTOSR3zUIw+m3e/u4Qaj1dr
+         RNkQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWOB7mD8zuZFxi/IrssnJ1IYmtIQDjAJxBrNGg/B6qBelmXGF+LS33cvjBxr6X1SjA9v7RLqGUvUSe3pwKIdnhXdtgtA82E4syhGQc=
+X-Gm-Message-State: AOJu0Yw3+RIqGnzdMKtaRfcTHKkIxWKXcpOtycgyoSRKdqsdYRLd8zId
+	OVUWX1bpGEkxZI1lNNyst+9hPQSVv5Xgg6pa3LKYNtkTQteW/2mCM1Xsa9ZtuSp2ILeiT6pbMB7
+	1
+X-Google-Smtp-Source: AGHT+IHy1pfzsVAAO8uOlh4i/oemtUAuHPNn6q344i9I8thnD3AGZ55KvJvrZ9C5m4VtldgJ3qaT4w==
+X-Received: by 2002:a17:906:e219:b0:a45:f74d:343a with SMTP id gf25-20020a170906e21900b00a45f74d343amr301393ejb.22.1710163404544;
+        Mon, 11 Mar 2024 06:23:24 -0700 (PDT)
 Received: from raven.blarg.de (p200300dc6f010900023064fffe740809.dip0.t-ipconnect.de. [2003:dc:6f01:900:230:64ff:fe74:809])
-        by smtp.gmail.com with ESMTPSA id i26-20020a170906251a00b00a44cb0bf11bsm2861075ejb.79.2024.03.11.06.23.22
+        by smtp.gmail.com with ESMTPSA id i26-20020a170906251a00b00a44cb0bf11bsm2861075ejb.79.2024.03.11.06.23.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 11 Mar 2024 06:23:23 -0700 (PDT)
 From: Max Kellermann <max.kellermann@ionos.com>
@@ -59,9 +60,9 @@ To: richard.henderson@linaro.org,
 	linux-alpha@vger.kernel.org,
 	linux-kernel@vger.kernel.org
 Cc: Max Kellermann <max.kellermann@ionos.com>
-Subject: [PATCH 08/11] arch/alpha/checksum: add missing includes to fix -Wmissing-prototypes
-Date: Mon, 11 Mar 2024 14:23:03 +0100
-Message-Id: <20240311132306.3420135-8-max.kellermann@ionos.com>
+Subject: [PATCH 09/11] arch/alpha/fpreg: add missing includes to fix -Wmissing-prototypes
+Date: Mon, 11 Mar 2024 14:23:04 +0100
+Message-Id: <20240311132306.3420135-9-max.kellermann@ionos.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20240311132306.3420135-1-max.kellermann@ionos.com>
 References: <20240311132306.3420135-1-max.kellermann@ionos.com>
@@ -75,28 +76,33 @@ Content-Transfer-Encoding: 8bit
 
 Fixes:
 
- arch/alpha/lib/checksum.c:45:9: error: no previous prototype for 'csum_tcpudp_magic' [-Werror=missing-prototypes]
-    45 | __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
-       |         ^~~~~~~~~~~~~~~~~
+ arch/alpha/lib/fpreg.c:20:1: error: no previous prototype for 'alpha_read_fp_reg' [-Werror=missing-prototypes]
+    20 | alpha_read_fp_reg (unsigned long reg)
+       | ^~~~~~~~~~~~~~~~~
+ [...]
 
 Signed-off-by: Max Kellermann <max.kellermann@ionos.com>
 ---
- arch/alpha/lib/checksum.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/alpha/lib/fpreg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/alpha/lib/checksum.c b/arch/alpha/lib/checksum.c
-index 3f35c3ed6948..66cad8354a44 100644
---- a/arch/alpha/lib/checksum.c
-+++ b/arch/alpha/lib/checksum.c
-@@ -10,6 +10,8 @@
-  *	Rick Gorton	<rick.gorton@alpha-processor.com>
+diff --git a/arch/alpha/lib/fpreg.c b/arch/alpha/lib/fpreg.c
+index 7c08b225261c..88e912689140 100644
+--- a/arch/alpha/lib/fpreg.c
++++ b/arch/alpha/lib/fpreg.c
+@@ -5,9 +5,12 @@
+  * (C) Copyright 1998 Linus Torvalds
   */
-  
-+#include <asm/checksum.h>
-+
- #include <linux/module.h>
- #include <linux/string.h>
  
++#include "../kernel/proto.h"
++
+ #include <linux/compiler.h>
+ #include <linux/export.h>
+ #include <linux/preempt.h>
++#include <asm/fpu.h>
+ #include <asm/thread_info.h>
+ 
+ #if defined(CONFIG_ALPHA_EV6) || defined(CONFIG_ALPHA_EV67)
 -- 
 2.39.2
 
