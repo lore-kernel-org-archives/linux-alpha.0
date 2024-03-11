@@ -1,92 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4AFA10E3;
-	Mon, 11 Mar 2024 01:12:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D92D43C493
+	for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 13:23:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710119559; cv=none; b=PBgRMeTH3eE3HtmcUB//hIJjJubSogc2ZVWGYicHaFdRfr4JpCr8oSIma+yrrc4k3iTqcWvCbOZfKiQAz4XTLWsRLULu/8IF89KufRfoRMuQnAJVeVZ/HigZ7dMO30F4pkO7+HAyZkVXb6srHVEdthmIlHfdTW19hkuwWcCjR/s=
+	t=1710163399; cv=none; b=NXMCfnEpG6Uj+h4c5PL1Vck+m5Tok9oRExplZYnjcbhays705lF1c2f4BAYcmDbTo2VGx+yjfVqxVhbFKTdhJJCrUb61u5q0AI0/Zm661eqLdLQJp73FwWh81vSplrzPQnUlBrNaVZ+P0nMzJ1FnksBQeLRKJi/WMyaR0cTLqkI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710119559; c=relaxed/simple;
-	bh=2z5jInwHvNUuGQ13fZ+9l+YxupANHQadDhz4Wpt4Yg4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TMaDHusuOG6qDO06CyVMw2Hohhh/ZhKvidGRBjK3tWhgbcrhVRNu+h6J1lyQKyY1Gtv3xjpCon9/qlyF3xj/BUe//bCqFTY3JBwEiB9/EsWSH/JPx0dyKhThdqGski8izbGoDMYdmvHCjJzeBpohVhWQkDWUxzeQhemEAii7L64=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cPm6Sx4E; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1710163399; c=relaxed/simple;
+	bh=PTD1CopqlnZviBAic0/7ZJqfoPfNtwgJroeYOHsXEMY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=O2bfaPneiKB4Yca6UMjhS0n4+Yh0wCWCZuR8XQDlW8JUgqxRwggFnQhbtWTQsnWWnPqq6uZxUDgSTI87RgM9+tuzehjQjINnVTITSXYnGAC2+hYfB78R7DqPbsrs1PdSuutp3LKRGjD1h7ZuWHUgWk6vjJ0iKxsPbdWW8F6HBF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com; spf=pass smtp.mailfrom=ionos.com; dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b=ZFS4775M; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ionos.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ionos.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cPm6Sx4E"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76CBFC433C7;
-	Mon, 11 Mar 2024 01:12:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1710119558;
-	bh=2z5jInwHvNUuGQ13fZ+9l+YxupANHQadDhz4Wpt4Yg4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=cPm6Sx4E1EG59Iov80OXl2MFAXOcYsH6sW5GBiEeM0WcaeXdKWeKnjLgnzkJAJNUQ
-	 ZGzu+uinfXZiBrCQs/BnKum3xWBjuxiG2Jnz71jbsD0IMC436SUkVVtHUBc/15b5J5
-	 FlPk3Ywx0H9l5f6XBzTHnrtsVcxrCsUls2TXOjJDboqFM5zle++N9DatBuzt45gQv9
-	 A18j7hc9e2S5CULTkLup888zf+AZXZNNkNXEhSYF1+RpxOAoMtWrJsod25hXkO9GSU
-	 RHXZrgsBmlzTI8CgfJbqud+ntqAvcBQ37IkpFwFwxWMNfwcwgLu6iaf5Hgq8eaTHuq
-	 I4nNxU2JaTS7Q==
-Message-ID: <9bd5ff0c-2f56-4fa5-9a78-f3b8981c970f@kernel.org>
-Date: Sun, 10 Mar 2024 19:12:34 -0600
+	dkim=pass (2048-bit key) header.d=ionos.com header.i=@ionos.com header.b="ZFS4775M"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a3fb8b0b7acso328079866b.2
+        for <linux-alpha@vger.kernel.org>; Mon, 11 Mar 2024 06:23:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ionos.com; s=google; t=1710163395; x=1710768195; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KEEU8d4kT+XLrMMmHnzIiNApm7etXr5Wz+2RZaqCNjk=;
+        b=ZFS4775MbNRxHXxIFe3qrqtmyiTeybM/4CelZ0Dpv4OjJbPda+YyURCgjJpOEixPMF
+         8YST3qrk1s9F0bWgRCl4PfQxql5RFvmbry8+CqklUUXcYVA7tSgxom/6KZ+aslDQVyKR
+         kMIUPCPPUvnVaY8x20AJQ5v7FMCymkeNbcMHfJrfFiWPoS4E4oikYm+jV+QDXxKex375
+         6x0M+UK9DV587rPxXfx6BqMe3bVRMPbdG+gl0yD7zrxT1hERp2lkwTRu4P/vseE+TpMa
+         Oe5y4roZYgS3ol6NszJP23Td4vNjNz+0oGpkHvEX8iQCcQiw4dKPQs0ZSaknv5JbmUti
+         jMWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710163395; x=1710768195;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KEEU8d4kT+XLrMMmHnzIiNApm7etXr5Wz+2RZaqCNjk=;
+        b=XNYCHaFTZNHKovMxLi1CAWZA2qF/vgjtGA8WRo1mE1qAbxkc300sUFtdMguezjZ9bZ
+         rU/BYu2WksFuS5M/EyJf5piFEJ0T+52m9Hi/jHu67bws0sgR6pT7hJHhWQj7tk8rj1TC
+         zu3ki0eQWJ73BK8tNSEw/UqVNuVpnxtdTXho9E5spRMynB7nQ0AEz7aToE3NhGa9Fc1s
+         jKvGkjFJDFEFqyCKu0HlU1ENsARHI7iYc36s/UzytUqRaxgOCwVbldf0XA9DNXRAqFNT
+         aOZY+orUpt43u53ksrNRH7vL7jVpIfrjXcFUvafxrY9iAAEMmi0TqK3gtlboNQ0iXcx3
+         sshw==
+X-Forwarded-Encrypted: i=1; AJvYcCXlrSeIbT6kY5YVgmRhkXsy6fukNmdLwwrXhBdqyccIkInKBNOdyqgegxA2sAJ/HSIrrtZJG4WIR5tXLe2RcCS0AHWeh/Qiq9+SDtk=
+X-Gm-Message-State: AOJu0YyQg7172crP1aPzrBFVEqGY2NgoxHUeKcnsYSCziOD3Tb1e0Etj
+	eeXWMNO/D8nlB6xcDlGXpyh56BuesMe/EINK+epjcR7gxnxmom4SXcHAees+Iv0=
+X-Google-Smtp-Source: AGHT+IGNIPpebUwjJmdF3p6f9v0ildrTBwGcMIRwjX45s9shZCIz3PvWXBPrLBh2zT6Eea0sDh6atg==
+X-Received: by 2002:a17:906:5794:b0:a46:39cd:5e9e with SMTP id k20-20020a170906579400b00a4639cd5e9emr57011ejq.18.1710163395275;
+        Mon, 11 Mar 2024 06:23:15 -0700 (PDT)
+Received: from raven.blarg.de (p200300dc6f010900023064fffe740809.dip0.t-ipconnect.de. [2003:dc:6f01:900:230:64ff:fe74:809])
+        by smtp.gmail.com with ESMTPSA id i26-20020a170906251a00b00a44cb0bf11bsm2861075ejb.79.2024.03.11.06.23.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Mar 2024 06:23:15 -0700 (PDT)
+From: Max Kellermann <max.kellermann@ionos.com>
+To: richard.henderson@linaro.org,
+	ink@jurassic.park.msu.ru,
+	mattst88@gmail.com,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Max Kellermann <max.kellermann@ionos.com>
+Subject: [PATCH 01/11] arch/alpha/kernel: disable -Wmissing-prototypes for asmlinkage functions
+Date: Mon, 11 Mar 2024 14:22:56 +0100
+Message-Id: <20240311132306.3420135-1-max.kellermann@ionos.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH net-next v6 01/15] queue_api: define queue api
-Content-Language: en-US
-To: David Wei <dw@davidwei.uk>, Mina Almasry <almasrymina@google.com>,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- linux-arch@vger.kernel.org, bpf@vger.kernel.org,
- linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org
-Cc: "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
- Richard Henderson <richard.henderson@linaro.org>,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
- <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
- <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
- Martin KaFai Lau <martin.lau@linux.dev>, Eduard Zingerman
- <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
- Yonghong Song <yonghong.song@linux.dev>,
- John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
- Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>,
- Jiri Olsa <jolsa@kernel.org>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- Shuah Khan <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Pavel Begunkov <asml.silence@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>,
- Harshitha Ramamurthy <hramamurthy@google.com>,
- Jeroen de Borst <jeroendb@google.com>,
- Praveen Kaligineedi <pkaligineedi@google.com>
-References: <20240305020153.2787423-1-almasrymina@google.com>
- <20240305020153.2787423-2-almasrymina@google.com>
- <54891f27-555a-4ed1-b92f-668813c18c37@davidwei.uk>
-From: David Ahern <dsahern@kernel.org>
-In-Reply-To: <54891f27-555a-4ed1-b92f-668813c18c37@davidwei.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 3/8/24 4:47 PM, David Wei wrote:
-> 
-> I'm working to port bnxt over to using this API. What are your thoughts
-> on maybe pulling this out and use bnxt to drive it?
-> 
+There are no prototypes for functions which are only called by
+assembly code.  Tell the compiler to disable those warnings in the
+relevant sources, just like arch/parisc/kernel/Makefile does.
 
-I would love to see a second nic implementation; this patch set and
-overall design is driven by GVE limitations.
+Signed-off-by: Max Kellermann <max.kellermann@ionos.com>
+---
+ arch/alpha/kernel/Makefile | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
+index fb4efec7cbc7..5ba1400f3e4c 100644
+--- a/arch/alpha/kernel/Makefile
++++ b/arch/alpha/kernel/Makefile
+@@ -7,6 +7,14 @@ extra-y		:= vmlinux.lds
+ asflags-y	:= $(KBUILD_CFLAGS)
+ ccflags-y	:= -Wno-sign-compare
+ 
++# no prototype warnings for functions which are only called by
++# assembly code
++CFLAGS_REMOVE_irq_alpha.o = -Wmissing-prototypes -Wmissing-declarations
++CFLAGS_REMOVE_ptrace.o = -Wmissing-prototypes -Wmissing-declarations
++CFLAGS_REMOVE_signal.o = -Wmissing-prototypes -Wmissing-declarations
++CFLAGS_REMOVE_smp.o = -Wmissing-prototypes -Wmissing-declarations
++CFLAGS_REMOVE_traps.o = -Wmissing-prototypes -Wmissing-declarations
++
+ obj-y    := head.o entry.o traps.o process.o osf_sys.o irq.o \
+ 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
+ 	    systbls.o err_common.o io.o bugs.o termios.o
+-- 
+2.39.2
 
