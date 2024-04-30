@@ -1,260 +1,176 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EAF41292D2;
-	Tue, 30 Apr 2024 10:09:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09A12175570;
+	Tue, 30 Apr 2024 13:31:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714471746; cv=none; b=KaNj+aypUkEfNo2NrHq261CP3NJiWi5N2mYkHWXQ6PHJujb6Od8sLmT3NJ3HtBWZssBTi3tHWJ9w1uGLWCNHK0vBFzBBPERR7+cQdgXF2o6nsDXkfiCS1uqr371ZyA74st6r6Wq1tO0leNn0x0cdxyepAYRyRvlAoTuwlEMkm+Y=
+	t=1714483882; cv=none; b=LNbMPl+/NNTstr8Aqe2Wg5GmEn6xOe9b668l3tX2xADQmNbf72XPyB6ndkhT5j070lIW3o92pRV/l6mdtcxQ5xhm42gXvxYx7muZmQTFATacUw4W8KGWIxUQSAqlizqNk+0MucC3c5kEiTa6rv1kP5SXx/VdJH/DU1HIPxyPvGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714471746; c=relaxed/simple;
-	bh=Y2+hS4qRZuLrKbWWMcpktJxJo5s+UAVeM+RZTE4OeK0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LNNUvR1Uqle1LdnqILH4BFZJ4W5Hnak1XB6YDa8YHh3xyoQdLAq2Y5jlERygrE6yEGDBEFBxseqoMAaBL7+YFuR/Pte8jzpvJd7tnFBOwdg59FYq36DWeWBkTeuhYy8Dk+w9r0vA+ANSp4kAJ5ExchF0vZj37jOC1EZJqzpbH90=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=vqeIBGjX; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Y4Kk2Nxd; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=vqeIBGjX; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Y4Kk2Nxd; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1714483882; c=relaxed/simple;
+	bh=SuC9FZBFdHxF1mZgxsS3cEgWTqlhBFUTnYsCDjyTNtU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NC00rlowCeXRadA/6XkeLdmWhGYisXKP7liXe1wRROjAXuFUoRG0vSSaslhyTlMZXKkjEd1kG3e8EuhFTr/3NDQ1c2q0YAedM8Y3B3YnVMfAv/to9n111W+88DEaJ6OCpW6Po32B+B0uzAipNrKpDiu0P5FAQ4k0Ld4P/1R0gcQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZGDkLB6Z; arc=none smtp.client-ip=209.85.218.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="vqeIBGjX";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Y4Kk2Nxd";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="vqeIBGjX";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Y4Kk2Nxd"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 94A5233F55;
-	Tue, 30 Apr 2024 10:09:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1714471742; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=PTUPyaWcpZDKUukiVIneGRzBea/lmcCk8kXRR619DJk=;
-	b=vqeIBGjXPKb0XycMvacAW428uolNoqtaN+EBo2mJHjf74TxTIQVlt1MpATsa4IuUZcKLzy
-	UJEys7GFBXXE5vubiBV2DPs1hUa/STmWvTjbv7yEWIAwLpxqDSUen9/F+c160SQUX7J9ZM
-	gWZoQjDIPJgvZSToK75KO55SPRn2Kws=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1714471742;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=PTUPyaWcpZDKUukiVIneGRzBea/lmcCk8kXRR619DJk=;
-	b=Y4Kk2NxdcsJrpGpYXQLpbXlde7mZBRQhy/lhK6wfFaRvxYGJW/MWwnAVpk3q6wgGY68wCh
-	8DrbHfPc84XlzxAg==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1714471742; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=PTUPyaWcpZDKUukiVIneGRzBea/lmcCk8kXRR619DJk=;
-	b=vqeIBGjXPKb0XycMvacAW428uolNoqtaN+EBo2mJHjf74TxTIQVlt1MpATsa4IuUZcKLzy
-	UJEys7GFBXXE5vubiBV2DPs1hUa/STmWvTjbv7yEWIAwLpxqDSUen9/F+c160SQUX7J9ZM
-	gWZoQjDIPJgvZSToK75KO55SPRn2Kws=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1714471742;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=PTUPyaWcpZDKUukiVIneGRzBea/lmcCk8kXRR619DJk=;
-	b=Y4Kk2NxdcsJrpGpYXQLpbXlde7mZBRQhy/lhK6wfFaRvxYGJW/MWwnAVpk3q6wgGY68wCh
-	8DrbHfPc84XlzxAg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 86112137BA;
-	Tue, 30 Apr 2024 10:09:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id CkR2ID7DMGa6bAAAD6G6ig
-	(envelope-from <jack@suse.cz>); Tue, 30 Apr 2024 10:09:02 +0000
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-	id 32814A06D4; Tue, 30 Apr 2024 12:09:02 +0200 (CEST)
-Date: Tue, 30 Apr 2024 12:09:02 +0200
-From: Jan Kara <jack@suse.cz>
-To: cgzones@googlemail.com
-Cc: x86@kernel.org, linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, audit@vger.kernel.org,
-	linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
-	linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Michal Simek <monstr@monstr.eu>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-	Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Yoshinori Sato <ysato@users.sourceforge.jp>,
-	Rich Felker <dalias@libc.org>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	"David S. Miller" <davem@davemloft.net>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Andy Lutomirski <luto@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-	Paul Moore <paul@paul-moore.com>, Eric Paris <eparis@redhat.com>,
-	Arnd Bergmann <arnd@arndb.de>, Jens Axboe <axboe@kernel.dk>,
-	Pavel Begunkov <asml.silence@gmail.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Sohil Mehta <sohil.mehta@intel.com>,
-	Palmer Dabbelt <palmer@sifive.com>,
-	Miklos Szeredi <mszeredi@redhat.com>, Nhat Pham <nphamcs@gmail.com>,
-	Casey Schaufler <casey@schaufler-ca.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Kees Cook <keescook@chromium.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	Mark Rutland <mark.rutland@arm.com>, io-uring@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] fs/xattr: add *at family syscalls
-Message-ID: <20240430100902.iwmeszr2jzv4wyo7@quack3>
-References: <20240426162042.191916-1-cgoettsche@seltendoof.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZGDkLB6Z"
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a556d22fa93so620037066b.3;
+        Tue, 30 Apr 2024 06:31:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714483879; x=1715088679; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sQkyBn4Lnt15qpQKjjn6/FTdXdojZaggT0oJDgNx33c=;
+        b=ZGDkLB6ZeQHM7S3Is+kCTnTiARqKq4qV587fbHYAro6WfXbhqOJl4xElhj+paZsYmf
+         zsAUaz2PKpwWr/nReu83KrPWzL6GJ3NUIxxkikoY8QndVlFBB2kiW68I82oyP7jC6rRy
+         Kue90XOs9J1KUp/gg2ntdEqvPa2dNn7gTu+YQBJukKO9o97AEgFgOwO/3/oDzmTNYn7Z
+         y11S4Gq7YyhptxbmCSG4fqN/oKfSdHaJfTjR+/gghddtiAmMsnce6A9NKgDCIc8BdxRr
+         259AoX88DoDPU3UBi4BHE09WQIb1BCfB+Y6qiyc+rt/Pb6Hau/+OsPS5FrxyhRdjsoO+
+         KPYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714483879; x=1715088679;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sQkyBn4Lnt15qpQKjjn6/FTdXdojZaggT0oJDgNx33c=;
+        b=JAcftVU9819Df72KVKUuHnMPN5upC2nEnDHOXmwiHa/Mqd+nmSAv3AMwHfJtBagS+e
+         cT4dtJMHpeiKwD8GOBBfy7z9s+FlYWcf8y8O5DNvEbZ3jmEGdrqyeDORwHPNtJheMH8u
+         wbr8sgNO5kk1/HagI63jfYfPZwnByelcETO0aRYQuUgULnKKWyrBVDRskUDNMqTI48+k
+         Scnd785HFs5P9LWN4GE3HWvYb1Vr7EbjCdPGIYTLiprCO5P9LexLTNzWT1FY3dzcvFGe
+         8m82EnqztsJ+xRGTCSXLCXolzX7vhAll+CV5KiHaYTWPwu8g1HR9KqJcWBL0x3QmA995
+         /xXA==
+X-Forwarded-Encrypted: i=1; AJvYcCWO3Mh4iihGe+Ze3I9w69Mb8md/2Vgbcuk/pLV58IhsuuR2WJFdzyOfltYCYnTAzhyC3Q96pMnb/hapYki6ldbplKvipp/UGR14OMd7t+nyiHg9UAEhuQyqT390Cak0Dp389zqiVBmq8K56IZOWCR8LL7yrlDLr2eY7tghHxSHpoHbqi6gG11LFCEFiamASp3Vrj8sSNxwdF3/F5xLeXnqUhkRjJqFPXVMh4gGkdCMqR1e8LsIHJbmvUqAQjD+Plg/Xl64uBE2w1oL0lHwfzLclfEkOhylIGPpOYN0HOcP6L6hr4f568biULGqbqyAzHy+JxxkK/4RF2UQCccyO5l2TEBEKp0GpRMmu0l8RZU2Y/sDSbbOEDEI7+zWPY+EmYTeaBzOlsJQtRv9FwrepTHNgSLpUZDI/61aJJ5X7bi3PfaaLuxs5TehX6+ZnU5donnEdr74tYqEGIpcQNFOXqKitiOaOjKw1UyKmuRb9EQ==
+X-Gm-Message-State: AOJu0Yw6lPjiuEN734nsx/qsNMGgMZPKsd83Z7mLWp1YTakIoYgSLDHK
+	97DEipXt50d6B6REktqCeL5bFxAzsqNHolJf7BHCzaFFBuLw0vNj
+X-Google-Smtp-Source: AGHT+IG4D9H/56/A4rQ0pU5al3G+zQuIMq1mBSgq9KUwXS9Rk/+kL4o0ZAf4JvbTFbHU0G4DNFxL/g==
+X-Received: by 2002:a17:906:fb17:b0:a58:e74b:7e16 with SMTP id lz23-20020a170906fb1700b00a58e74b7e16mr2032608ejb.46.1714483879081;
+        Tue, 30 Apr 2024 06:31:19 -0700 (PDT)
+Received: from [192.168.42.188] ([163.114.131.193])
+        by smtp.gmail.com with ESMTPSA id l9-20020a17090615c900b00a555be38aaasm15011385ejd.164.2024.04.30.06.31.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Apr 2024 06:31:18 -0700 (PDT)
+Message-ID: <35a79edf-e4ca-4501-99ad-231a3ab2b216@gmail.com>
+Date: Tue, 30 Apr 2024 14:31:33 +0100
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH net-next v8 07/14] page_pool: devmem support
+To: Mina Almasry <almasrymina@google.com>, David Wei <dw@davidwei.uk>
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+ linux-arch@vger.kernel.org, bpf@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
+ <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+ Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
+ Jesper Dangaard Brouer <hawk@kernel.org>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
+ Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
+ Martin KaFai Lau <martin.lau@linux.dev>, Eduard Zingerman
+ <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
+ Yonghong Song <yonghong.song@linux.dev>,
+ John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
+ Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>,
+ Jiri Olsa <jolsa@kernel.org>, Steffen Klassert
+ <steffen.klassert@secunet.com>, Herbert Xu <herbert@gondor.apana.org.au>,
+ David Ahern <dsahern@kernel.org>,
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+ Shuah Khan <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Amritha Nambiar <amritha.nambiar@intel.com>,
+ Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+ Alexander Mikhalitsyn <alexander@mihalicyn.com>,
+ Kaiyuan Zhang <kaiyuanz@google.com>, Christian Brauner <brauner@kernel.org>,
+ Simon Horman <horms@kernel.org>, David Howells <dhowells@redhat.com>,
+ Florian Westphal <fw@strlen.de>, Yunsheng Lin <linyunsheng@huawei.com>,
+ Kuniyuki Iwashima <kuniyu@amazon.com>, Jens Axboe <axboe@kernel.dk>,
+ Arseniy Krasnov <avkrasnov@salutedevices.com>,
+ Aleksander Lobakin <aleksander.lobakin@intel.com>,
+ Michael Lass <bevan@bi-co.net>, Jiri Pirko <jiri@resnulli.us>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ Lorenzo Bianconi <lorenzo@kernel.org>,
+ Richard Gobert <richardbgobert@gmail.com>,
+ Sridhar Samudrala <sridhar.samudrala@intel.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ Johannes Berg <johannes.berg@intel.com>, Abel Wu <wuyun.abel@bytedance.com>,
+ Breno Leitao <leitao@debian.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Shailend Chand <shailend@google.com>,
+ Harshitha Ramamurthy <hramamurthy@google.com>,
+ Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst
+ <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>,
+ linux-mm@kvack.org, Matthew Wilcox <willy@infradead.org>
+References: <20240403002053.2376017-1-almasrymina@google.com>
+ <20240403002053.2376017-8-almasrymina@google.com>
+ <8357256a-f0e9-4640-8fec-23341fc607db@davidwei.uk>
+ <CAHS8izPeYryoLdCAQdGQU-wn7YVdtuofVKNvRFjFjhqTDsT7zA@mail.gmail.com>
+Content-Language: en-US
+From: Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <CAHS8izPeYryoLdCAQdGQU-wn7YVdtuofVKNvRFjFjhqTDsT7zA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240426162042.191916-1-cgoettsche@seltendoof.de>
-X-Spam-Level: 
-X-Spamd-Result: default: False [-2.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	MID_RHS_NOT_FQDN(0.50)[];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	FREEMAIL_CC(0.00)[kernel.org,vger.kernel.org,lists.infradead.org,lists.linux-m68k.org,lists.ozlabs.org,linaro.org,jurassic.park.msu.ru,gmail.com,armlinux.org.uk,arm.com,linux-m68k.org,monstr.eu,alpha.franken.de,HansenPartnership.com,gmx.de,ellerman.id.au,csgroup.eu,linux.ibm.com,users.sourceforge.jp,libc.org,physik.fu-berlin.de,davemloft.net,gaisler.com,linutronix.de,redhat.com,alien8.de,linux.intel.com,zytor.com,zankel.net,zeniv.linux.org.uk,suse.cz,paul-moore.com,arndb.de,kernel.dk,infradead.org,intel.com,sifive.com,schaufler-ca.com,broadcom.com,chromium.org];
-	TAGGED_RCPT(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	MISSING_XM_UA(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	TO_DN_SOME(0.00)[];
-	FREEMAIL_TO(0.00)[googlemail.com];
-	RCVD_COUNT_THREE(0.00)[3];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	TO_MATCH_ENVRCPT_SOME(0.00)[];
-	RCPT_COUNT_GT_50(0.00)[72];
-	RCVD_TLS_LAST(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns]
-X-Spam-Score: -2.30
-X-Spam-Flag: NO
 
-On Fri 26-04-24 18:20:14, Christian Göttsche wrote:
-> From: Christian Göttsche <cgzones@googlemail.com>
+On 4/27/24 03:11, Mina Almasry wrote:
+> On Fri, Apr 26, 2024 at 5:18â€¯PM David Wei <dw@davidwei.uk> wrote:
+>>
+>> On 2024-04-02 5:20 pm, Mina Almasry wrote:
+>>> @@ -69,20 +106,26 @@ net_iov_binding(const struct net_iov *niov)
+>>>    */
+>>>   typedef unsigned long __bitwise netmem_ref;
+>>>
+>>> +static inline bool netmem_is_net_iov(const netmem_ref netmem)
+>>> +{
+>>> +#if defined(CONFIG_PAGE_POOL) && defined(CONFIG_DMA_SHARED_BUFFER)
+>>
+>> I am guessing you added this to try and speed up the fast path? It's
+>> overly restrictive for us since we do not need dmabuf necessarily. I
+>> spent a bit too much time wondering why things aren't working only to
+>> find this :(
 > 
-> Add the four syscalls setxattrat(), getxattrat(), listxattrat() and
-> removexattrat().  Those can be used to operate on extended attributes,
-> especially security related ones, either relative to a pinned directory
-> or on a file descriptor without read access, avoiding a
-> /proc/<pid>/fd/<fd> detour, requiring a mounted procfs.
+> My apologies, I'll try to put the changelog somewhere prominent, or
+> notify you when I do something that I think breaks you.
 > 
-> One use case will be setfiles(8) setting SELinux file contexts
-> ("security.selinux") without race conditions and without a file
-> descriptor opened with read access requiring SELinux read permission.
+> Yes, this is a by-product of a discussion with regards to the
+> page_pool benchmark regressions due to adding devmem. There is some
+> background on why this was added and the impact on the
+> bench_page_pool_simple tests in the cover letter.
 > 
-> Use the do_{name}at() pattern from fs/open.c.
+> For you, I imagine you want to change this to something like:
 > 
-> Pass the value of the extended attribute, its length, and for
-> setxattrat(2) the command (XATTR_CREATE or XATTR_REPLACE) via an added
-> struct xattr_args to not exceed six syscall arguments and not
-> merging the AT_* and XATTR_* flags.
+> #if defined(CONFIG_PAGE_POOL)
+> #if defined(CONFIG_DMA_SHARED_BUFFER) || defined(CONFIG_IOURING)
 > 
-> Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+> or something like that, right? Not sure if this is something I should
 
-The patch looks good to me. Just a few nits below:
+Feels a bit flimsy, if the argument is that you want to be able
+to disable netmem overhead, then adding a netmem config option
+sounds like a better way forward.
 
-> -static int path_setxattr(const char __user *pathname,
-> +static int do_setxattrat(int dfd, const char __user *pathname, unsigned int at_flags,
+I have doubts this conditional handling is desirable in the first
+place, but perhaps I missed the discussion.
 
-Can we please stay within 80 columns (happens in multiple places in the
-patch)? I don't insist but it makes things easier to read in some setups so
-I prefer it.
+> do here or if something more appropriate to be in the patches you
+> apply on top.
+> 
+> I additionally think you may also need to run the
+> page_pool_benchmark_simple tests like I do in the cover letter to see
+> if you're affecting those.
 
-> @@ -852,13 +908,21 @@ listxattr(struct dentry *d, char __user *list, size_t size)
->  	return error;
->  }
->  
-> -static ssize_t path_listxattr(const char __user *pathname, char __user *list,
-> -			      size_t size, unsigned int lookup_flags)
-> +static ssize_t do_listxattrat(int dfd, const char __user *pathname, char __user *list,
-> +			      size_t size, int flags)
-
-So I like how in previous syscalls you have 'at_flags', 'lookup_flags', and
-'xattr_flags'. That makes things much easier to digest. Can you please stay
-with that convention here as well and call this argument 'at_flags'? Also I
-think the argument ordering like "dfd, pathname, at_flags, list, size" is
-more consistent with other syscalls you define.
-
-> @@ -870,16 +934,22 @@ static ssize_t path_listxattr(const char __user *pathname, char __user *list,
->  	return error;
->  }
->  
-> +SYSCALL_DEFINE5(listxattrat, int, dfd, const char __user *, pathname, char __user *, list,
-> +		size_t, size, int, flags)
-> +{
-> +	return do_listxattrat(dfd, pathname, list, size, flags);
-> +}
-> +
-
-Same comment as above - "flags" -> "at_flags" and reorder args please.
-
-> @@ -917,13 +987,21 @@ removexattr(struct mnt_idmap *idmap, struct dentry *d,
->  	return vfs_removexattr(idmap, d, kname);
->  }
->  
-> -static int path_removexattr(const char __user *pathname,
-> -			    const char __user *name, unsigned int lookup_flags)
-> +static int do_removexattrat(int dfd, const char __user *pathname,
-> +			    const char __user *name, int flags)
->  {
-
-Same comment as above - "flags" -> "at_flags" and reorder args please.
-
-> @@ -939,16 +1017,22 @@ static int path_removexattr(const char __user *pathname,
->  	return error;
->  }
->  
-> +SYSCALL_DEFINE4(removexattrat, int, dfd, const char __user *, pathname,
-> +		const char __user *, name, int, flags)
-> +{
-
-Same comment as above - "flags" -> "at_flags" and reorder args please.
-
-								Honza
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Pavel Begunkov
