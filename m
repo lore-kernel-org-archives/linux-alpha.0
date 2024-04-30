@@ -1,150 +1,260 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 433FB38DD9
-	for <linux-alpha@vger.kernel.org>; Sat, 27 Apr 2024 02:11:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EAF41292D2;
+	Tue, 30 Apr 2024 10:09:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714183883; cv=none; b=pUpJUU3k/NzqPOBUcwHAC3XaXLfn+ylQAZhLaC6iHKCCnyFSXyI+3mkunJffhMxch5S9zWJQZpn+8Joerw/Z/43bDXhZWEGxbGD1dC5ZvNtxR6z8iwSERXh/nrs2R8sJ5w1AbnCgDeeF96ytoeKooHUKKSYjK0UHi8XBU8yVOdU=
+	t=1714471746; cv=none; b=KaNj+aypUkEfNo2NrHq261CP3NJiWi5N2mYkHWXQ6PHJujb6Od8sLmT3NJ3HtBWZssBTi3tHWJ9w1uGLWCNHK0vBFzBBPERR7+cQdgXF2o6nsDXkfiCS1uqr371ZyA74st6r6Wq1tO0leNn0x0cdxyepAYRyRvlAoTuwlEMkm+Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714183883; c=relaxed/simple;
-	bh=3TH1qKN/8kDOE9KfhYRZV82BLgZZskB3YkO2+4vu+tY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pJowkgRsYXk7m39vfqG+Df6d4pl4c8QrVYOtkxs53tYN49/79NEkQxE8E0NlXQN6wvikLIRXQzlev7cnNgS0RTZN13JaPdvQCn4XGlGT4n67dLdjghRNkjFy58D1/oj1MD43d6hUHg4eF9XnvT+M0QCyKo2rQqzxTk7ScWuTJ08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mRu4S3Xu; arc=none smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1714471746; c=relaxed/simple;
+	bh=Y2+hS4qRZuLrKbWWMcpktJxJo5s+UAVeM+RZTE4OeK0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LNNUvR1Uqle1LdnqILH4BFZJ4W5Hnak1XB6YDa8YHh3xyoQdLAq2Y5jlERygrE6yEGDBEFBxseqoMAaBL7+YFuR/Pte8jzpvJd7tnFBOwdg59FYq36DWeWBkTeuhYy8Dk+w9r0vA+ANSp4kAJ5ExchF0vZj37jOC1EZJqzpbH90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=vqeIBGjX; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Y4Kk2Nxd; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=vqeIBGjX; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Y4Kk2Nxd; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mRu4S3Xu"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a58872c07d8so685141466b.0
-        for <linux-alpha@vger.kernel.org>; Fri, 26 Apr 2024 19:11:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1714183880; x=1714788680; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VCqXmA+0tJPmuPol3Ypy0jPmfZ3hkXnnk0DE4uLAUwU=;
-        b=mRu4S3XuUIqgZ4Zuu0XgismEQ5/XUBilPfFw+Xm1y6jIuBkNYDGqtJpVPfr3+pUbZf
-         sAyOLb5LdfBvQbmhLVih+PhEODGod32DbRItT4xo6P4xZydC8tce2YXd8+WGUheKnvMl
-         0gsDcMKy6EBMpWyVbsMo1ZYgFLSjchUULUluFbRjoQMZtHnCgGtdyMdP/eTFH75BbT8K
-         FVX5+bOMpdzkiS5xZzDrCWaSldC5RZPNVAUarByQRaAUL3UsGpPK9BwIUf856PWynKMz
-         yJGJKrx4/S1+RH9spj8VX4cHz3UyMAPh/HkI2nBx0BpnQc3OmMiXbW/kS0kmdQqOktCD
-         Fhzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714183880; x=1714788680;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VCqXmA+0tJPmuPol3Ypy0jPmfZ3hkXnnk0DE4uLAUwU=;
-        b=UVAj2m/P7ECGjPlMZYgiRHEr8a4EbHcgyUgzkVtnlfk0oFristegnl/lbonyNvZMIw
-         7Og3viGX5HTfbntA4b4AfR/pZSntMaeC2FWidsoHR2rr2aPOOROK04sVwzuqWu49A2tX
-         R+MnDxzqUdcKYe1Pt2bTrxNLbu69Q7LBwU2uebf/NCejw0dcIcMMv5z9gQlsxPAsA2kf
-         zJp4jDQar2ayDxEs7gou6vHEt6CJ696POt30AuhfXqLDFBF8GRCQRGP1NO/CezwLO4ye
-         KVzlaDhUQTJZ1B6xlMJ8SSLPzAB0XoAXnzXakeh64Rr7IEwbyZjw80XMl46Nx8kDJ63Z
-         a6Ug==
-X-Forwarded-Encrypted: i=1; AJvYcCUaEwlvfYmU8usYsLOg8HfrNFmkfdnoQhXxbhlI9xm4CfvIULaTlbdTUyD/KAqvqRFj3PftJFyKXEJ5b4gCUT5pyNGAzHxdd5q/fj0=
-X-Gm-Message-State: AOJu0YyyOphU1JjeYARv4dj7zB23XMspSIOhRIV1rJf+0pgtD7a9AW3L
-	YRbA2e5oSUd7opLVXYbo8VZAPavtERX53QmwFHEq/XXE2RK6HdU7DLrhhFLT3gALE1Z1tfK/Poj
-	IvB1vqZ4PiipoVa/rz4CrMBUXvBH0ZkgYsZWU
-X-Google-Smtp-Source: AGHT+IGYpMq0S7NMYmgbheltdqICqswpFYbRt1nWr9f34ViEhM+DD9iOxk080j42Jd8vuPQgs8NIkJRSPoJ58AydrBw=
-X-Received: by 2002:a17:907:a49:b0:a58:c550:a102 with SMTP id
- be9-20020a1709070a4900b00a58c550a102mr4510853ejc.29.1714183880204; Fri, 26
- Apr 2024 19:11:20 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="vqeIBGjX";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Y4Kk2Nxd";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="vqeIBGjX";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Y4Kk2Nxd"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 94A5233F55;
+	Tue, 30 Apr 2024 10:09:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1714471742; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PTUPyaWcpZDKUukiVIneGRzBea/lmcCk8kXRR619DJk=;
+	b=vqeIBGjXPKb0XycMvacAW428uolNoqtaN+EBo2mJHjf74TxTIQVlt1MpATsa4IuUZcKLzy
+	UJEys7GFBXXE5vubiBV2DPs1hUa/STmWvTjbv7yEWIAwLpxqDSUen9/F+c160SQUX7J9ZM
+	gWZoQjDIPJgvZSToK75KO55SPRn2Kws=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1714471742;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PTUPyaWcpZDKUukiVIneGRzBea/lmcCk8kXRR619DJk=;
+	b=Y4Kk2NxdcsJrpGpYXQLpbXlde7mZBRQhy/lhK6wfFaRvxYGJW/MWwnAVpk3q6wgGY68wCh
+	8DrbHfPc84XlzxAg==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1714471742; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PTUPyaWcpZDKUukiVIneGRzBea/lmcCk8kXRR619DJk=;
+	b=vqeIBGjXPKb0XycMvacAW428uolNoqtaN+EBo2mJHjf74TxTIQVlt1MpATsa4IuUZcKLzy
+	UJEys7GFBXXE5vubiBV2DPs1hUa/STmWvTjbv7yEWIAwLpxqDSUen9/F+c160SQUX7J9ZM
+	gWZoQjDIPJgvZSToK75KO55SPRn2Kws=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1714471742;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PTUPyaWcpZDKUukiVIneGRzBea/lmcCk8kXRR619DJk=;
+	b=Y4Kk2NxdcsJrpGpYXQLpbXlde7mZBRQhy/lhK6wfFaRvxYGJW/MWwnAVpk3q6wgGY68wCh
+	8DrbHfPc84XlzxAg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 86112137BA;
+	Tue, 30 Apr 2024 10:09:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id CkR2ID7DMGa6bAAAD6G6ig
+	(envelope-from <jack@suse.cz>); Tue, 30 Apr 2024 10:09:02 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+	id 32814A06D4; Tue, 30 Apr 2024 12:09:02 +0200 (CEST)
+Date: Tue, 30 Apr 2024 12:09:02 +0200
+From: Jan Kara <jack@suse.cz>
+To: cgzones@googlemail.com
+Cc: x86@kernel.org, linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, audit@vger.kernel.org,
+	linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+	linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+	Matt Turner <mattst88@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Michal Simek <monstr@monstr.eu>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+	Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	Rich Felker <dalias@libc.org>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	"David S. Miller" <davem@davemloft.net>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+	Max Filippov <jcmvbkbc@gmail.com>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+	Paul Moore <paul@paul-moore.com>, Eric Paris <eparis@redhat.com>,
+	Arnd Bergmann <arnd@arndb.de>, Jens Axboe <axboe@kernel.dk>,
+	Pavel Begunkov <asml.silence@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Sohil Mehta <sohil.mehta@intel.com>,
+	Palmer Dabbelt <palmer@sifive.com>,
+	Miklos Szeredi <mszeredi@redhat.com>, Nhat Pham <nphamcs@gmail.com>,
+	Casey Schaufler <casey@schaufler-ca.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Kees Cook <keescook@chromium.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Mark Rutland <mark.rutland@arm.com>, io-uring@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] fs/xattr: add *at family syscalls
+Message-ID: <20240430100902.iwmeszr2jzv4wyo7@quack3>
+References: <20240426162042.191916-1-cgoettsche@seltendoof.de>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240403002053.2376017-1-almasrymina@google.com>
- <20240403002053.2376017-8-almasrymina@google.com> <8357256a-f0e9-4640-8fec-23341fc607db@davidwei.uk>
-In-Reply-To: <8357256a-f0e9-4640-8fec-23341fc607db@davidwei.uk>
-From: Mina Almasry <almasrymina@google.com>
-Date: Fri, 26 Apr 2024 19:11:07 -0700
-Message-ID: <CAHS8izPeYryoLdCAQdGQU-wn7YVdtuofVKNvRFjFjhqTDsT7zA@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next v8 07/14] page_pool: devmem support
-To: David Wei <dw@davidwei.uk>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linux-arch@vger.kernel.org, bpf@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, 
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
-	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, 
-	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>, 
-	Yonghong Song <yonghong.song@linux.dev>, John Fastabend <john.fastabend@gmail.com>, 
-	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>, 
-	Jiri Olsa <jolsa@kernel.org>, Steffen Klassert <steffen.klassert@secunet.com>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Amritha Nambiar <amritha.nambiar@intel.com>, 
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>, 
-	Alexander Mikhalitsyn <alexander@mihalicyn.com>, Kaiyuan Zhang <kaiyuanz@google.com>, 
-	Christian Brauner <brauner@kernel.org>, Simon Horman <horms@kernel.org>, 
-	David Howells <dhowells@redhat.com>, Florian Westphal <fw@strlen.de>, 
-	Yunsheng Lin <linyunsheng@huawei.com>, Kuniyuki Iwashima <kuniyu@amazon.com>, Jens Axboe <axboe@kernel.dk>, 
-	Arseniy Krasnov <avkrasnov@salutedevices.com>, 
-	Aleksander Lobakin <aleksander.lobakin@intel.com>, Michael Lass <bevan@bi-co.net>, 
-	Jiri Pirko <jiri@resnulli.us>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
-	Lorenzo Bianconi <lorenzo@kernel.org>, Richard Gobert <richardbgobert@gmail.com>, 
-	Sridhar Samudrala <sridhar.samudrala@intel.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, 
-	Johannes Berg <johannes.berg@intel.com>, Abel Wu <wuyun.abel@bytedance.com>, 
-	Breno Leitao <leitao@debian.org>, Pavel Begunkov <asml.silence@gmail.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Shailend Chand <shailend@google.com>, 
-	Harshitha Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
-	Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>, linux-mm@kvack.org, 
-	Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240426162042.191916-1-cgoettsche@seltendoof.de>
+X-Spam-Level: 
+X-Spamd-Result: default: False [-2.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	FREEMAIL_CC(0.00)[kernel.org,vger.kernel.org,lists.infradead.org,lists.linux-m68k.org,lists.ozlabs.org,linaro.org,jurassic.park.msu.ru,gmail.com,armlinux.org.uk,arm.com,linux-m68k.org,monstr.eu,alpha.franken.de,HansenPartnership.com,gmx.de,ellerman.id.au,csgroup.eu,linux.ibm.com,users.sourceforge.jp,libc.org,physik.fu-berlin.de,davemloft.net,gaisler.com,linutronix.de,redhat.com,alien8.de,linux.intel.com,zytor.com,zankel.net,zeniv.linux.org.uk,suse.cz,paul-moore.com,arndb.de,kernel.dk,infradead.org,intel.com,sifive.com,schaufler-ca.com,broadcom.com,chromium.org];
+	TAGGED_RCPT(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FREEMAIL_TO(0.00)[googlemail.com];
+	RCVD_COUNT_THREE(0.00)[3];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	RCPT_COUNT_GT_50(0.00)[72];
+	RCVD_TLS_LAST(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns]
+X-Spam-Score: -2.30
+X-Spam-Flag: NO
 
-On Fri, Apr 26, 2024 at 5:18=E2=80=AFPM David Wei <dw@davidwei.uk> wrote:
->
-> On 2024-04-02 5:20 pm, Mina Almasry wrote:
-> > @@ -69,20 +106,26 @@ net_iov_binding(const struct net_iov *niov)
-> >   */
-> >  typedef unsigned long __bitwise netmem_ref;
-> >
-> > +static inline bool netmem_is_net_iov(const netmem_ref netmem)
-> > +{
-> > +#if defined(CONFIG_PAGE_POOL) && defined(CONFIG_DMA_SHARED_BUFFER)
->
-> I am guessing you added this to try and speed up the fast path? It's
-> overly restrictive for us since we do not need dmabuf necessarily. I
-> spent a bit too much time wondering why things aren't working only to
-> find this :(
+On Fri 26-04-24 18:20:14, Christian Göttsche wrote:
+> From: Christian Göttsche <cgzones@googlemail.com>
+> 
+> Add the four syscalls setxattrat(), getxattrat(), listxattrat() and
+> removexattrat().  Those can be used to operate on extended attributes,
+> especially security related ones, either relative to a pinned directory
+> or on a file descriptor without read access, avoiding a
+> /proc/<pid>/fd/<fd> detour, requiring a mounted procfs.
+> 
+> One use case will be setfiles(8) setting SELinux file contexts
+> ("security.selinux") without race conditions and without a file
+> descriptor opened with read access requiring SELinux read permission.
+> 
+> Use the do_{name}at() pattern from fs/open.c.
+> 
+> Pass the value of the extended attribute, its length, and for
+> setxattrat(2) the command (XATTR_CREATE or XATTR_REPLACE) via an added
+> struct xattr_args to not exceed six syscall arguments and not
+> merging the AT_* and XATTR_* flags.
+> 
+> Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
 
-My apologies, I'll try to put the changelog somewhere prominent, or
-notify you when I do something that I think breaks you.
+The patch looks good to me. Just a few nits below:
 
-Yes, this is a by-product of a discussion with regards to the
-page_pool benchmark regressions due to adding devmem. There is some
-background on why this was added and the impact on the
-bench_page_pool_simple tests in the cover letter.
+> -static int path_setxattr(const char __user *pathname,
+> +static int do_setxattrat(int dfd, const char __user *pathname, unsigned int at_flags,
 
-For you, I imagine you want to change this to something like:
+Can we please stay within 80 columns (happens in multiple places in the
+patch)? I don't insist but it makes things easier to read in some setups so
+I prefer it.
 
-#if defined(CONFIG_PAGE_POOL)
-#if defined(CONFIG_DMA_SHARED_BUFFER) || defined(CONFIG_IOURING)
+> @@ -852,13 +908,21 @@ listxattr(struct dentry *d, char __user *list, size_t size)
+>  	return error;
+>  }
+>  
+> -static ssize_t path_listxattr(const char __user *pathname, char __user *list,
+> -			      size_t size, unsigned int lookup_flags)
+> +static ssize_t do_listxattrat(int dfd, const char __user *pathname, char __user *list,
+> +			      size_t size, int flags)
 
-or something like that, right? Not sure if this is something I should
-do here or if something more appropriate to be in the patches you
-apply on top.
+So I like how in previous syscalls you have 'at_flags', 'lookup_flags', and
+'xattr_flags'. That makes things much easier to digest. Can you please stay
+with that convention here as well and call this argument 'at_flags'? Also I
+think the argument ordering like "dfd, pathname, at_flags, list, size" is
+more consistent with other syscalls you define.
 
-I additionally think you may also need to run the
-page_pool_benchmark_simple tests like I do in the cover letter to see
-if you're affecting those.
+> @@ -870,16 +934,22 @@ static ssize_t path_listxattr(const char __user *pathname, char __user *list,
+>  	return error;
+>  }
+>  
+> +SYSCALL_DEFINE5(listxattrat, int, dfd, const char __user *, pathname, char __user *, list,
+> +		size_t, size, int, flags)
+> +{
+> +	return do_listxattrat(dfd, pathname, list, size, flags);
+> +}
+> +
 
---
-Thanks,
-Mina
+Same comment as above - "flags" -> "at_flags" and reorder args please.
+
+> @@ -917,13 +987,21 @@ removexattr(struct mnt_idmap *idmap, struct dentry *d,
+>  	return vfs_removexattr(idmap, d, kname);
+>  }
+>  
+> -static int path_removexattr(const char __user *pathname,
+> -			    const char __user *name, unsigned int lookup_flags)
+> +static int do_removexattrat(int dfd, const char __user *pathname,
+> +			    const char __user *name, int flags)
+>  {
+
+Same comment as above - "flags" -> "at_flags" and reorder args please.
+
+> @@ -939,16 +1017,22 @@ static int path_removexattr(const char __user *pathname,
+>  	return error;
+>  }
+>  
+> +SYSCALL_DEFINE4(removexattrat, int, dfd, const char __user *, pathname,
+> +		const char __user *, name, int, flags)
+> +{
+
+Same comment as above - "flags" -> "at_flags" and reorder args please.
+
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
