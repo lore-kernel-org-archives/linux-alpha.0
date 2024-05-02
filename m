@@ -1,139 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC09212C490;
-	Wed,  1 May 2024 13:59:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F7B013C683;
+	Thu,  2 May 2024 13:38:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714571957; cv=none; b=J3nv4JNhCH3zr/s7JdeCsI2Z5LuWf1arbxDg7Qyw7WRs8NW/s+Ms+ZHv1rgylDWWOPIEg7X1kQ0Ich2HQzQ+nboY35WZXfcQc7sKgsxTfa8x/5sXx2f+pVpQnKr9XRTaacybTZNig9nm+QFiRTEg5LGAeJjQFINFafgtD1bON2E=
+	t=1714657141; cv=none; b=TVWk3Qmhi2Bo2o1YjJpXTeTNQZILYt94f/xrMschJI7wWSysatHJBdhx6H2elcwnDAyrySz8+TUDJ+ZH3QDxX7W8cJXFbDE6Q4J7jzJHPcV+JsUo+MPtC6f8iT3R28oxwZ9PJAIVBDsARFmwSRyuU7YjXZzC/o2VpoABS3xwMng=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714571957; c=relaxed/simple;
-	bh=Fi4PvMRZrF9DXNpSOwwia/BblzTiRO6iyf1z/eVq1XU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NbchjvG3iRoD7tZsVbSHBC2VDA1pFY2cj3SWAp5gw7+QlIJJAkkhCxOyXperwsUU5+WmLLsJDxONdC8ykFbY6y9qB9qCS+FG6ugqs8QH6pC8ieafJ/cFNzvbEp2j2Hhzi3kO26lzjrgh3dVTN/naxrWwGNw4DCa+GCEq30m/AXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sCbrUaES; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1714657141; c=relaxed/simple;
+	bh=GlzUyv7TeS5tQNfn+8AH834Lccwh+Av25GmzBQzZ0q0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=B2VAXB7b1bpw/OKzD4Jyls8It5/K+Re8qKruRfmwhJC556/gn2AaN5u/ODrX1rQ8qiHaQQA3+Kd9Rq6bCTvo+7Ave1+QA/SLG4BJyKEgyPMlUw+sECFqoTwzPy2mztUdbrczIq6ZICHheo0eG/E7Ra1qUk4wtOOKAi7MJ8el+6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=j.neuschaefer@gmx.net header.b=jwSxetVz; arc=none smtp.client-ip=212.227.15.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sCbrUaES"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B3C7C072AA;
-	Wed,  1 May 2024 13:59:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1714571956;
-	bh=Fi4PvMRZrF9DXNpSOwwia/BblzTiRO6iyf1z/eVq1XU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=sCbrUaESax+zNwmTNdY7otL0UFOQLPT1tCLvxhS1E2UCWFKHW4CFOG8eHXGAPEzYV
-	 K59HSeGnESqWuVyypeDsfjxCGIwlrkTiIB8RtlSIeODJISpG+bjrjqgUZTNnVYoXFo
-	 0nAjOD3kay/wsGxmwOPaAc5VD0eUhuiBlauj3Z2WQisvO7reiDxOn7qiXguQyswbXz
-	 eGzZQLUgdh76hRrtTEFJVQdEHnMA2UjgtwHVl2z9L4Tsb3ZTSE/wBE57PdTiTs8Ocp
-	 FhNUI+PSuIOyAwwjpVUsbAi1uNR+QWMI+7HqtFjSwPStPFYwbkZKYGKHcbZk0YZOQW
-	 CZlqUKG4oenXA==
-Message-ID: <779b9542-4170-483a-af54-ca0dd471f774@kernel.org>
-Date: Wed, 1 May 2024 15:58:59 +0200
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=j.neuschaefer@gmx.net header.b="jwSxetVz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1714657135; x=1715261935; i=j.neuschaefer@gmx.net;
+	bh=W+m24AKIXaW9TRJJVqYE7PZW+JDIoHU7gSnGnDXrLBU=;
+	h=X-UI-Sender-Class:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:To:Cc:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=jwSxetVzbP3m3ZivRB7NLRITl6q2TgXvfklok3pIunP/9yaTutES918i1YvlGwuj
+	 CR0Pwtne5Wp627b1DtI2Q+JoQwSoSuYE7LgbrXSWqlqiKlIJhBdrkZZa+NX4orued
+	 WrizizHCWjwjcYxvLwXcGYCIUG+norae1D2PBa9OIRuDOdHlNUcN0hPdxK7P6X+y1
+	 aRmPCysnnMZDFkJfvtFXjE3PiLVWk1AL5kkZ1FiWCT52e7MgFuo/n04Xbe5kxiKs3
+	 RSdNHhMl0TeBk5S55Is56RhLPGmyLSah3cKmcSNEIV9xhjcGZN2dgc4p+WRKoxma3
+	 CoBaad8AcbQj5VozNA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from probook ([5.145.128.125]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MxUnz-1sqlks0XUH-00xsXx; Thu, 02
+ May 2024 15:38:55 +0200
+From: =?utf-8?q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Date: Thu, 02 May 2024 15:38:49 +0200
+Subject: [PATCH] alpha/sys_sio: Add const to irq_tab
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH net-next v8 07/14] page_pool: devmem support
-To: Jens Axboe <axboe@kernel.dk>, Mina Almasry <almasrymina@google.com>
-Cc: David Wei <dw@davidwei.uk>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
- bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Richard Henderson <richard.henderson@linaro.org>,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
- <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
- Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
- <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
- Martin KaFai Lau <martin.lau@linux.dev>, Eduard Zingerman
- <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
- Yonghong Song <yonghong.song@linux.dev>,
- John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
- Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>,
- Jiri Olsa <jolsa@kernel.org>, Steffen Klassert
- <steffen.klassert@secunet.com>, Herbert Xu <herbert@gondor.apana.org.au>,
- David Ahern <dsahern@kernel.org>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- Shuah Khan <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Amritha Nambiar <amritha.nambiar@intel.com>,
- Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
- Alexander Mikhalitsyn <alexander@mihalicyn.com>,
- Kaiyuan Zhang <kaiyuanz@google.com>, Christian Brauner <brauner@kernel.org>,
- Simon Horman <horms@kernel.org>, David Howells <dhowells@redhat.com>,
- Florian Westphal <fw@strlen.de>, Yunsheng Lin <linyunsheng@huawei.com>,
- Kuniyuki Iwashima <kuniyu@amazon.com>,
- Arseniy Krasnov <avkrasnov@salutedevices.com>,
- Aleksander Lobakin <aleksander.lobakin@intel.com>,
- Michael Lass <bevan@bi-co.net>, Jiri Pirko <jiri@resnulli.us>,
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- Lorenzo Bianconi <lorenzo@kernel.org>,
- Richard Gobert <richardbgobert@gmail.com>,
- Sridhar Samudrala <sridhar.samudrala@intel.com>,
- Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
- Johannes Berg <johannes.berg@intel.com>, Abel Wu <wuyun.abel@bytedance.com>,
- Breno Leitao <leitao@debian.org>, Pavel Begunkov <asml.silence@gmail.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Shailend Chand <shailend@google.com>,
- Harshitha Ramamurthy <hramamurthy@google.com>,
- Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst
- <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>,
- linux-mm@kvack.org, Matthew Wilcox <willy@infradead.org>
-References: <20240403002053.2376017-1-almasrymina@google.com>
- <20240403002053.2376017-8-almasrymina@google.com>
- <8357256a-f0e9-4640-8fec-23341fc607db@davidwei.uk>
- <CAHS8izPeYryoLdCAQdGQU-wn7YVdtuofVKNvRFjFjhqTDsT7zA@mail.gmail.com>
- <aafbbf09-a33d-4e73-99c8-9ddab5910657@kernel.dk>
- <CAHS8izMKLYATo6g3xkj_thFo3whCfq6LSoex5s0m5XZd-U7SVQ@mail.gmail.com>
- <11f52113-7b67-4b45-ba1d-29b070050cec@kernel.dk>
-Content-Language: en-US
-From: Jesper Dangaard Brouer <hawk@kernel.org>
-In-Reply-To: <11f52113-7b67-4b45-ba1d-29b070050cec@kernel.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <20240502-const-alpha-v1-1-b1516c267c20@gmx.net>
+X-B4-Tracking: v=1; b=H4sIAGmXM2YC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIxMDUwMj3eT8vOIS3cScgoxEXQtLCxPjRKNkM6NEQyWgjoKi1LTMCrBp0bG
+ 1tQCqViRuXQAAAA==
+To: Richard Henderson <richard.henderson@linaro.org>, 
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+ Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ =?utf-8?q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1714657134; l=1365;
+ i=j.neuschaefer@gmx.net; s=20240329; h=from:subject:message-id;
+ bh=ZtsDt+F77FgKd01Vi9O/7bLqLlT8yhHHC+4b2uIyCpI=;
+ b=Gco6+LeS6NTbL4WLuZBXYffFA4JK1hUGxnXteiSwHHiCUec9tSzEeGoxJMl2dzHXtQYQbcmw1
+ 16mSkjjU4X1BNdpsBpbwZ7eX/n0puWvuIYK5J785PBGoo5Rgg+AX6Rt
+X-Developer-Key: i=j.neuschaefer@gmx.net; a=ed25519;
+ pk=NIe0bK42wNaX/C4bi6ezm7NJK0IQE+8MKBm7igFMIS4=
+X-Provags-ID: V03:K1:y886ktDm7CjDrx2v5yux/pdGaj+qQ2TDm+x11SlYZ0FxjDmQlGH
+ n+uQmqDeyyjIrS25np1fk2BMYDRx1c8jhxHX74JEUT3UX5nL3z+FmrhFEdENWuZNK0QVRkP
+ pY8b5SWJCjSjbm5SBLYW+b9ZOSQF9ERIcLYUsDPQzZcWmoCEnkpwQN5FZuCyt9C/24sFOzZ
+ VmruamBskql/WsPB0la8g==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:CYD+LLiBvzo=;K0HI5TzlwPDB6ouhDcSCc6GRkG8
+ zMeYh2J2X7/JmJQgWw9L3TlbKHo4R5OQubp3cXpEiMlA7GNgqQyytd0jBfXyvpH9V/ZpP9EIe
+ LfvQzRS3QzqARE54YKXPSZKjRfliI1IpHHkYMqiFz2swrb2EobyLdr+9RoZvOQpFBIB73OEQC
+ HjWbHZZmlDCaatMuReUnpFq/7WTkuP3ekQs2pWFm/uBucx8FHEZ8eaQULH06o3rs/UQECEJnE
+ YZmsKjTP/WyQSUSBgvA8TCmQ5iK00N/ojQLR1hVV6pLZ+5krj9f+Kqhj0SO0B+Atk/R0S5NAr
+ 5r3BmKEwJq1bJTBT8bIafli7facvFloTRRAimfKQGhXQxFZ5u/ijr24QfIcjYv7sosxgaZDSy
+ ZvULdN5Hhi0n824duohH8Yz2SXbtSQj5nXOFs1zy+sFxHNpZ/q0iNnK9qsNkC0TMR1pc5jx+g
+ mWvqQmi2ojTj8/S4cteARJjSgmWa6ikWOdo5XEA9AS1jHD8sImr931fBL9cuEj3InXLDKRu9D
+ jPzAeVHD3Ao9n1XiqtB1mDl3kRE335UrpLX8Mq1kQhE/JwTB55mIcLhx7sNsx6YxrsSjG/K50
+ dR+tKWShlNnEEeKC6xAanr7no3LQGT+YM6k5V3GK42+uL/GAHw+C4RqynyarekUu0FBuGk1xQ
+ W6KYR4MucLHhV5JSjVj+ev7TNWGcVfZBUJk8KyTWjcr09NKq5RXDugvv9N7E8sz7DhtTciFpV
+ u4gthwl8PzAlJ8MJ1CQTJRDXNTNvp2NnfB9u1ajQ3x20gsEntGEvZY5DluswPu9PxaIv1xE0m
+ u1xs8CwPBogcEZtK2ndYqw6NHT9kbWAsZX1ioKC40W9NQ=
 
+The IRQ tables in noname_map_irq and p2k_map_irq are not modified.
+Make them const.
 
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+=2D--
+ arch/alpha/kernel/sys_sio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On 30/04/2024 20.55, Jens Axboe wrote:
-> On 4/30/24 12:29 PM, Mina Almasry wrote:
->> On Tue, Apr 30, 2024 at 6:46?AM Jens Axboe<axboe@kernel.dk>  wrote:
-[...]
->>> In general, attempting to hide overhead behind config options is always
->>> a losing proposition. It merely serves to say "look, if these things
->>> aren't enabled, the overhead isn't there", while distros blindly enable
->>> pretty much everything and then you're back where you started.
->>>
->> The history there is that this check adds 1 cycle regression to the
->> page_pool fast path benchmark. The regression last I measured is 8->9
->> cycles, so in % wise it's a quite significant 12.5% (more details in
->> the cover letter[1]). I doubt I can do much better than that to be
->> honest.
->
-> I'm all for cycle counting, and do it myself too, but is that even
-> measurable in anything that isn't a super targeted microbenchmark? Or
-> even in that?
+diff --git a/arch/alpha/kernel/sys_sio.c b/arch/alpha/kernel/sys_sio.c
+index 086488ed83a7f4..7fbfde32dc27f2 100644
+=2D-- a/arch/alpha/kernel/sys_sio.c
++++ b/arch/alpha/kernel/sys_sio.c
+@@ -183,7 +183,7 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 =
+pin)
+ 	 * that they use the default INTA line, if they are interrupt
+ 	 * driven at all).
+ 	 */
+-	static char irq_tab[][5] =3D {
++	static const char irq_tab[][5] =3D {
+ 		/*INT A   B   C   D */
+ 		{ 3,  3,  3,  3,  3}, /* idsel  6 (53c810) */
+ 		{-1, -1, -1, -1, -1}, /* idsel  7 (SIO: PCI/ISA bridge) */
+@@ -211,7 +211,7 @@ noname_map_irq(const struct pci_dev *dev, u8 slot, u8 =
+pin)
+ static inline int
+ p2k_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+ {
+-	static char irq_tab[][5] =3D {
++	static const char irq_tab[][5] =3D {
+ 		/*INT A   B   C   D */
+ 		{ 0,  0, -1, -1, -1}, /* idsel  6 (53c810) */
+ 		{-1, -1, -1, -1, -1}, /* idsel  7 (SIO: PCI/ISA bridge) */
 
-The reason for page_pool fast path being critical is that it is used for 
-the XDP_DROP use-case.
-E.g on Mellanox mlx5 driver we see 24 Mpps XDP_DROP, which is approx 42 
-nanosec per packet. Adding 9 nanosec will reduce this to 19.6 Mpps.
+=2D--
+base-commit: 4cece764965020c22cff7665b18a012006359095
+change-id: 20240502-const-alpha-89843a2c62a1
 
-   1/(42+9)*10^9 = 19607843
+Best regards,
+=2D-
+Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 
---Jesper
-
-p.s. Upstreaming my PP microbenchmark[1] is still at the bottom of my 
-todo-list.
-  [1] 
-https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/bench_page_pool_simple.c
