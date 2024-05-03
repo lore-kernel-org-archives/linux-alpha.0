@@ -1,107 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wfout5-smtp.messagingengine.com (wfout5-smtp.messagingengine.com [64.147.123.148])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 018EC159919;
-	Fri,  3 May 2024 17:19:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC1D72E646;
+	Fri,  3 May 2024 20:07:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.123.148
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714756793; cv=none; b=jNqyHVooNUZbmrFOpTC8DiCrTul+Bn9nvDmmPo9AH27bNJN5yWPQNgZF6gS5ykstL4/lJ+VN6QcKbbMsgL8TZtbPiZHxFr1fjL4eGKAEufFY4KoeGdU/j8F4KK1V3CQvGyDcpsHsZWE+6HMJceAirK4p1iEdv/y1BiYLqZcdSTE=
+	t=1714766877; cv=none; b=fa3/rqiSl685v9SBfIQ9G+k3KbDiHrqgSmQ32L45PvzMgkVVWwUMEFO3/3RH9Kth1z0aboSP6Zw67zx/GjjGlji9AWB37HZSzvtEQzYSmzbmeiQTnfHNhR/3lGRs2etreBrnN8buqlWxvJ5W+wu7CEogjG+7HLNxgxKKUk/SfZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714756793; c=relaxed/simple;
-	bh=rYg2z0tMxWh1QUMfPTv8Rlu1//ZpmA9qzDQyAWqJF80=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eTEc+lkPw00lOz+T1CfxIIHb12RPRk7jbGSsfPD+TR8cU/2K7HeJLZxCkOeIoDoWMz6G0jLZ/sKkX/IDj+UTxZB2u1EnAOmM0S6fVn+vWlT8EhsMaRhCXXU1xORunjyiLE3fouVgagMIXbqx9LnriZLUO7QeWCG/ykSdftWW5e4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jxG6giNO; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1714766877; c=relaxed/simple;
+	bh=assvwasAzVr51WOmP4somhcgdbTrkk9+A/EE66lEZN8=;
+	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
+	 Subject:Content-Type; b=K9RYcbUrEdL+zViLI1nDYgbzhNdUfMbZx+3OxHuL4RAWOTMfw3672Mf5azNtC1iyHLFhdNFVMpd53XPWVu4rntHre9N8fxSeYZUAjayDkO5XPxE9As2uCtxP3MBzfYutdFCnxWGCT/JqgY568APlfovvLrJ2Oh8WC1fcjTjvrs0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=a0r3l47B; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=S1JkIxgy; arc=none smtp.client-ip=64.147.123.148
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jxG6giNO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B6B2C116B1;
-	Fri,  3 May 2024 17:19:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1714756792;
-	bh=rYg2z0tMxWh1QUMfPTv8Rlu1//ZpmA9qzDQyAWqJF80=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=jxG6giNOu7+tpTaOA2fawzw8AOIMOZR1t16nC64QwE2TW6alCVLcAU6ft/GAmsv6I
-	 KXypYAKpaelL1bfc+v1gz/EIEnQkTyk4BNYddywqhGJupdpHzk5rEO4gnRP4z3jSra
-	 J7Q31ZBIa36ABzPqxqASIqOOpbfEMDElAkEsqViox/eSCrsKIDSJKkKCrrJJiNQuoG
-	 zLnba6wICm00Fei+RyGHh2VKVvJkfY3XpiB7Lj/nWFelxosyxy6CG9ixlMwtDK+/Xr
-	 A01vHxNJcRc0IHdlPix2Ub0FmrABS9U84UJKndL8UPpocWtc2j6Otq0ao+0D3w7aMU
-	 op48azWmczaYw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 22E90CE10CB; Fri,  3 May 2024 10:19:52 -0700 (PDT)
-Date: Fri, 3 May 2024 10:19:52 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Marc Zyngier <maz@kernel.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>,
-	Frank Scheiner <frank.scheiner@web.de>
-Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
-Message-ID: <a8de0474-bc19-489b-8df4-e4a352b7ddf2@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20240503081125.67990-1-arnd@kernel.org>
- <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="a0r3l47B";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="S1JkIxgy"
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailfout.west.internal (Postfix) with ESMTP id 5B5D21C0014A;
+	Fri,  3 May 2024 16:07:54 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Fri, 03 May 2024 16:07:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm2; t=1714766873; x=1714853273; bh=cnR0f4AXm2
+	s46FHt57bseaKoTPb0SuUXLKfxHBTK4GI=; b=a0r3l47BD8FQ6ni5rkBzN7A1zT
+	kG+XuJBKkm7qhyJASOHANU+nOQHQucn1x3KUtGfXnTFSUw42J+dSV9f0xF1uo+bF
+	lI08/K6Odnam/kpTUzHV2FY3dohATzF/4sFtjgOLI1TlZnmWR5wC2nFBoub0M13Y
+	zigvvsRuzrSQEbcn3ZgQMBLVFQqR2al9gzhd392aZK2F4ohkXg5/5iwrSaWstWRy
+	zTyI3HhZ089CXC+bTEHg5wgVf+/jaGp7AmFw5dMnzqP5rVGzUu+QKgaex4Dtb0dx
+	5WPxxT38G7axvxM6MCbgJcIEI2ss8O5sf1ryZtPh/6TL8yvynaAkfwJyqU1Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm3; t=1714766873; x=1714853273; bh=cnR0f4AXm2s46FHt57bseaKoTPb0
+	SuUXLKfxHBTK4GI=; b=S1JkIxgyb/fvbtB0m4/sVeZcMrMuBoafu9Lxo16AcjSg
+	QWgecYMZIbC6Bk27Ou3wcPmCHtLwyugXztq7y9L3da902m15qaLvnI3val+gFBbs
+	1BCfrfk7sMZxNnVIhHou/UaoqcyusTAYmOL70+LwxtK+YdKPnsuPtm9OcCJjh2Gs
+	dKz2D+zKHHI3Ou/yrZCb/8YxMJj5nVUoQWWtEr/vbZv4wzcn5mUjmvLR16c92tQr
+	bnZJmRe2QlXFrxuyYXVIurUHHYaqxmz2XQ67ZEK7hTyYln8xpjBigOaUcSH5XrK/
+	aUQIXeH8+lshTT4n1IWGeSxsGAtS+wO7uWQcYrSQ7A==
+X-ME-Sender: <xms:GUQ1Zr6REG-t4yjqi3zc8vL2hqYNyRKT61x-lwUf5Y-J_7sSAfQwLw>
+    <xme:GUQ1Zg7eHJSVz41cjHS86c8dWRAnap3oUeotPp7Hw0EwPRM4Xe-Q9W6LrVsweTSHM
+    PadBOkfWuHTGiL_-iM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrvddvtddgudeghecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
+    htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
+    keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    grrhhnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:GUQ1Zid4E9DAXCDPXYQillsCjxTS3NadaFlc412kFeWk_SSkEDEgbA>
+    <xmx:GUQ1ZsKeFPGK_ZzuoEC7akwIWQYkII-bihtoRiB1N22Zwtr29sESHQ>
+    <xmx:GUQ1ZvKohf9jpa6BhM2wMzdZt9lQmgr54EZN7t70BZO4BSZvF7rz-Q>
+    <xmx:GUQ1Zlz3sP0F7jAwNT3LwiqO8RB-957fdpzFQn4sR5eSZkmLWQ7znQ>
+    <xmx:GUQ1ZgX0diznhvyLBZPNbFTZLKEtvjg_dvNtgRbfVh8Vn7DD7Q8pk4ef>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 218C8B6008D; Fri,  3 May 2024 16:07:53 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.11.0-alpha0-417-gddc99d37d-fm-hotfix-20240424.001-g2c179674
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
+Message-Id: <7bbdbed0-aa16-4b2d-adfc-236fa119a07b@app.fastmail.com>
+In-Reply-To: <20240503170028.GW2118490@ZenIV>
+References: <20240503081125.67990-1-arnd@kernel.org>
+ <20240503081125.67990-11-arnd@kernel.org> <20240503170028.GW2118490@ZenIV>
+Date: Fri, 03 May 2024 22:07:31 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Alexander Viro" <viro@zeniv.linux.org.uk>,
+ "Arnd Bergmann" <arnd@kernel.org>
+Cc: linux-alpha@vger.kernel.org,
+ "Richard Henderson" <richard.henderson@linaro.org>,
+ "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
+ "Matt Turner" <mattst88@gmail.com>, "Marc Zyngier" <maz@kernel.org>,
+ "Linus Torvalds" <torvalds@linux-foundation.org>,
+ "Paul E. McKenney" <paulmck@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 10/14] alpha: remove DECpc AXP150 (Jensen) support
+Content-Type: text/plain
 
-On Fri, May 03, 2024 at 06:53:45PM +0200, John Paul Adrian Glaubitz wrote:
-> Hello Arnd,
-> 
-> On Fri, 2024-05-03 at 10:11 +0200, Arnd Bergmann wrote:
-> > I had investigated dropping support for alpha EV5 and earlier a while
-> > ago after noticing that this is the only supported CPU family
-> > in the kernel without native byte access and that Debian has already
-> > dropped support for this generation last year [1] after it turned
-> > out to be broken.
-> 
-> That's not quite correct. Support for older Alphas is not broken and
-> always worked when I tested it. It's just that some people wanted to
-> raise the baseline in order to improve code performance on newer machines
-> with the hope to fix some minor issues we saw on Alpha here and there.
-> 
-> > This topic came up again when Paul E. McKenney noticed that
-> > parts of the RCU code already rely on byte access and do not
-> > work on alpha EV5 reliably, so I refreshed my series now for
-> > inclusion into the next merge window.
-> 
-> Hrrrm? That sounds like like Paul ran tests on EV5, did he?
+On Fri, May 3, 2024, at 19:00, Al Viro wrote:
+>
+> That should be moved into commit that removes the caller...
 
-Arnd does say "noticed", not "tested".  No Alpha CPUs here, and I don't
-run Alpha emulators.  There is only so much time in each day and only
-so much budget for electricity.  ;-)
+Fixed now, thanks!
 
-For the series: Acked-by: Paul E. McKenney <paulmck@kernel.org>
-
-> > Al Viro did another series for alpha to address all the known build
-> > issues. I rebased his patches without any further changes and included
-> > it as a baseline for my work here to avoid conflicts.
-> 
-> It's somewhat strange that Al improves code on the older machines only
-> to be axed by your series. I would prefer such removals to aimed at an
-> LTS release, if possible.
-
-Once they are in mainline, you are within your rights to send Al's
-code-improvement patches to -stable, which should get them to the LTS
-releases.  It might well be that Arnd was planning to do just that.
-
-							Thanx, Paul
-
-> Adrian
-> 
-> -- 
->  .''`.  John Paul Adrian Glaubitz
-> : :' :  Debian Developer
-> `. `'   Physicist
->   `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+    Arnd
