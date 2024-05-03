@@ -1,130 +1,188 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF08957CA1
-	for <linux-alpha@vger.kernel.org>; Thu,  2 May 2024 22:24:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA31D219EB;
+	Fri,  3 May 2024 08:12:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714688679; cv=none; b=L+6jxutUtV2wZFD/vqxWywB2Vl7WCS2b26Knb7CcqBhsSHFWgQIIg3THDWbGOsxHdlgV01QE2SmplXJS+bHsrvxTKBmrYcLXRsTxhMPewN+MtfyeYZbW4hHe2qAe6qx6miAyUaldhunnfFK86pNlCWD2TAHNWilAQeKoGbJbko0=
+	t=1714723926; cv=none; b=AlD0lEjoxcvH/klRdfT0Eo24tBnnPa5N5CdBHGgROBJkAM8135Wm1VJ5F5n4BZbBg7patGTh1fnX0N/pT08jgn1sgCIFrKUfUe/L7o4Qcb6jrgZjTkQltjuXGndeXsTW4waH8rHY3y4ZkOLfcbOJldOdwMgwYScL94YNpo6Mqlw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714688679; c=relaxed/simple;
-	bh=qnKN9L3Z0Au55/oPWH4SsCKSSflxsoIcUt2AGUKIs6U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MBvNqi6QEYM+fDEFvIdmv1WkZYGLF23CzOlkl2/aBLWbmjcT4PGh/9oCLPe9fTEhX9Gvu82T8RKpP6Q5gm76P8Z7zKlOK/VmQiHbBp21l+RxhqMUzWR7x2LxxMHH10Vhca35AepbuVwLyV/arEyKFAo8ODx0BSmx1DhBsSoe8pw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=PfzecQRZ; arc=none smtp.client-ip=209.85.167.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	s=arc-20240116; t=1714723926; c=relaxed/simple;
+	bh=kfgjwj2N0kfhguWzN5AvIcmR11gWBtySO+0DLdeui+0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kV0LzQjzkRpMUHaehsOKrb6+IDUu+9Y+vPT8Hfp62jXZrg/3AaBIOJ16dCqDnkJGnXlVnRIdtyTnd5wsO91OkRSKeFaRWVtMvFV0Z/WizI3XreDIcM0ExxYtIK1UQiD/vxfHq9jFk286YPkkA0RAH5XuuYC5e5kj6mrSPuoNe6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnwD0kkL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="PfzecQRZ"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-51f40b5e059so1297518e87.0
-        for <linux-alpha@vger.kernel.org>; Thu, 02 May 2024 15:24:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1714688676; x=1715293476; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=r8L1plbBpC5b8hbxFDn23VRySV0QK2bnDqJWgg6u+KQ=;
-        b=PfzecQRZHfTv2cGL/yR/MnUDR5RdWV5CPS+AZgBIveIm0P/jVHMk9pdpzZ7405fMq6
-         rNVF7WgQlyu9Kh5FKJDz/DHDNHiWa7fXBmDpzWsTiJXF5oxD1ZTk0fHUaGIrHyBs9RUo
-         3fXPzMaic+fEj+jyU+a1OP5a633EjkiiTO9gI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714688676; x=1715293476;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=r8L1plbBpC5b8hbxFDn23VRySV0QK2bnDqJWgg6u+KQ=;
-        b=AkxlMTlJd/N6dNGrEW1NMLXV8SmU3ZK/bh2ZB93igExEndreMW6qYzSgTyCFlnjCLH
-         p/qW905AONF13ogQkVl/b3GfLAo6Yn8NMDnNcrxG9xB3mT1yq3Usc4dcalA5r2CUH3F6
-         eUnQPf4tXLX+ac0hhbqMW0LIvER54zNCvWP/sgoDvPz9dMWTp+bd6AJHXluKtAi73w1t
-         fbpEupEaWEf7jDYM2SeRBXkAxpy0eYgz+tYm/IHoreshVzsuTb8jKd75y0L5nhSbr7wJ
-         BUPByfwaOw1lpuHR/fn/QrbYce2HV458avxTBLUv5wUUfmRN9qxYQrszJXVdxsoFlTG6
-         dZ7g==
-X-Forwarded-Encrypted: i=1; AJvYcCXDWYwPviNYJT6nGGs7HP9/Mg7gc4gc6N2JroqC1fde0TEtQGcgveSsc9g9SaVkWBVgFAy7qLMJalrsnM6VQoQBz2J8bXRkfj2ca/Q=
-X-Gm-Message-State: AOJu0YzuGtirPjwJBjjEHo2dxJ1bfRI/Z4gmNGnIjQp/hoOg00aGJF5t
-	MP6TC/c3u22ZRamGx4eFZYtjD7kFEYheNQ6m38lHCz0D8a/F7zXejH8OE2QkJRwHJaH9Ypa733K
-	1ng8Mkg==
-X-Google-Smtp-Source: AGHT+IEdOo9bmXMy2dXycVvJy+5RvdFSKaDksmhQ8T7n2TWJ7PsWMoTnC73cyNzSq61MuFqfS2RTyQ==
-X-Received: by 2002:a05:6512:789:b0:51f:3f3c:cdff with SMTP id x9-20020a056512078900b0051f3f3ccdffmr593670lfr.65.1714688675674;
-        Thu, 02 May 2024 15:24:35 -0700 (PDT)
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
-        by smtp.gmail.com with ESMTPSA id lb2-20020a170906adc200b00a58f4b3661asm998680ejb.0.2024.05.02.15.24.35
-        for <linux-alpha@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 May 2024 15:24:35 -0700 (PDT)
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4196c62bb4eso62789575e9.2
-        for <linux-alpha@vger.kernel.org>; Thu, 02 May 2024 15:24:35 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCV8/rj8IQ/v6DBip762tKm13Ea+hfvWJJGNo6ROru+Q77IkTyjOx2BsLtyXn1AQ8dfvmihTpLP4sgp1d6yjClFI+poVF+jcxExFg1s=
-X-Received: by 2002:a17:906:2b94:b0:a59:4101:433e with SMTP id
- m20-20020a1709062b9400b00a594101433emr448463ejg.35.1714688229488; Thu, 02 May
- 2024 15:17:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnwD0kkL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 256ACC32789;
+	Fri,  3 May 2024 08:12:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714723926;
+	bh=kfgjwj2N0kfhguWzN5AvIcmR11gWBtySO+0DLdeui+0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=dnwD0kkLrvjpyFVRcXSEa4Yv+8HD4+Gpu/hw8iCXppDdjnBWtkycN/RNJfWHHCS0j
+	 bOHgk/TB28TTz6XfZu7sgFXYZ6Uc5sooL3KlR6g1xDdqEhaLDOlTKz3eHLRgLgnYWt
+	 p94Vn5XB8CgjVeYAsacv8M8Xk291gy7iLah0LqYVPtcVCNCVS44izQ4Og9famptmAF
+	 G0vsObcz5mtGH7aoOuDiOUnDsz62lqtIgBwS1zllSEV3pWlyJE2hMcWlDzVyuEAIiZ
+	 PtezHf86GHrzx+hlsjCz/XbYkSSdw0rBs+0PigGxms8cB3tSXjbXfOyI+nBX0H7AkR
+	 QtnOHScj7g37Q==
+From: Arnd Bergmann <arnd@kernel.org>
+To: linux-alpha@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+	Matt Turner <mattst88@gmail.com>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Marc Zyngier <maz@kernel.org>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 00/14] alpha: cleanups for 6.10
+Date: Fri,  3 May 2024 10:11:11 +0200
+Message-Id: <20240503081125.67990-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <b67e79d4-06cb-4a45-a906-b9e0fbae22c5@paulmck-laptop>
- <20240501230130.1111603-12-paulmck@kernel.org> <1376850f47279e3a3f4f40e3de2784ae3ac30414.camel@physik.fu-berlin.de>
- <b7ae0feb-d401-43ee-8d5f-ce62ca224638@paulmck-laptop> <6f7743601fe7bd50c2855a8fd1ed8f766ef03cac.camel@physik.fu-berlin.de>
- <9a4e1928-961d-43af-9951-71786b97062a@paulmck-laptop> <20240502205345.GK2118490@ZenIV>
- <20240502210122.GA2322432@ZenIV>
-In-Reply-To: <20240502210122.GA2322432@ZenIV>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Thu, 2 May 2024 15:16:52 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj-Jt7MgFC4-yr6DdvCVDoy1nu0W9W2zmaGZm6u=b2qTg@mail.gmail.com>
-Message-ID: <CAHk-=wj-Jt7MgFC4-yr6DdvCVDoy1nu0W9W2zmaGZm6u=b2qTg@mail.gmail.com>
-Subject: Re: alpha cmpxchg.h (was Re: [PATCH v2 cmpxchg 12/13] sh: Emulate
- one-byte cmpxchg)
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, linux-arch@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, elver@google.com, akpm@linux-foundation.org, 
-	tglx@linutronix.de, peterz@infradead.org, dianders@chromium.org, 
-	pmladek@suse.com, arnd@arndb.de, kernel-team@meta.com, 
-	Andi Shyti <andi.shyti@linux.intel.com>, Palmer Dabbelt <palmer@rivosinc.com>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Thu, 2 May 2024 at 14:01, Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> +static inline unsigned long
-> +____xchg_u8(volatile char *m, unsigned long val)
-> +{
-> +       unsigned long ret, tmp, addr64;
-> +
-> +       __asm__ __volatile__(
-> +       "       andnot  %4,7,%3\n"
-> +       "       insbl   %1,%4,%1\n"
-> +       "1:     ldq_l   %2,0(%3)\n"
-> +       "       extbl   %2,%4,%0\n"
-> +       "       mskbl   %2,%4,%2\n"
-> +       "       or      %1,%2,%2\n"
-> +       "       stq_c   %2,0(%3)\n"
-> +       "       beq     %2,2f\n"
-> +       ".subsection 2\n"
-> +       "2:     br      1b\n"
-> +       ".previous"
-> +       : "=&r" (ret), "=&r" (val), "=&r" (tmp), "=&r" (addr64)
-> +       : "r" ((long)m), "1" (val) : "memory");
-> +
-> +       return ret;
-> +}
+From: Arnd Bergmann <arnd@arndb.de>
 
-Side note: if you move this around, I think you should just uninline
-it too and turn it into a function call.
+I had investigated dropping support for alpha EV5 and earlier a while
+ago after noticing that this is the only supported CPU family
+in the kernel without native byte access and that Debian has already
+dropped support for this generation last year [1] after it turned
+out to be broken.
 
-This inline asm doesn't actually take any advantage of the inlining.
-The main reason to inline something like this is that you could then
-deal with different compile-time alignments better than using the
-generic software sequence. But that's not what the inline asm actually
-does, and it uses the worst-case code sequence for inserting the byte.
+This topic came up again when Paul E. McKenney noticed that
+parts of the RCU code already rely on byte access and do not
+work on alpha EV5 reliably, so I refreshed my series now for
+inclusion into the next merge window.
 
-Put that together with "byte and word xchg are rare", and it really
-smells to me like we shouldn't be inlining this.
+Al Viro did another series for alpha to address all the known build
+issues. I rebased his patches without any further changes and included
+it as a baseline for my work here to avoid conflicts.
 
-Now, the 32-bit and 64-bit cases are different - more common, but also
-much simpler code sequences. They seem worth inlining.
+      Arnd
 
-That said, maybe for alpha, the "just move code around" is better than
-"fix up old bad decisions" just because the effort is lower.
+[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1036158
+[2] https://lore.kernel.org/lkml/b67e79d4-06cb-4a45-a906-b9e0fbae22c5@paulmck-laptop/
 
-              Linus
+Al Viro (9):
+  alpha: sort scr_mem{cpy,move}w() out
+  alpha: fix modversions for strcpy() et.al.
+  alpha: add clone3() support
+  alpha: don't make functions public without a reason
+  alpha: sys_sio: fix misspelled ifdefs
+  alpha: missing includes
+  alpha: core_lca: take the unused functions out
+  alpha: jensen, t2 - make __EXTERN_INLINE same as for the rest
+  alpha: trim the unused stuff from asm-offsets.c
+
+Arnd Bergmann (5):
+  alpha: remove DECpc AXP150 (Jensen) support
+  alpha: sable: remove early machine support
+  alpha: remove LCA and APECS based machines
+  alpha: cabriolet: remove EV5 CPU support
+  alpha: drop pre-EV56 support
+
+ Documentation/driver-api/eisa.rst      |   4 +-
+ arch/alpha/Kconfig                     | 175 +-------
+ arch/alpha/Makefile                    |   8 +-
+ arch/alpha/include/asm/core_apecs.h    | 534 -------------------------
+ arch/alpha/include/asm/core_lca.h      | 378 -----------------
+ arch/alpha/include/asm/core_t2.h       |   8 -
+ arch/alpha/include/asm/dma-mapping.h   |   4 -
+ arch/alpha/include/asm/dma.h           |   9 +-
+ arch/alpha/include/asm/elf.h           |   4 +-
+ arch/alpha/include/asm/io.h            |  26 +-
+ arch/alpha/include/asm/irq.h           |  10 +-
+ arch/alpha/include/asm/jensen.h        | 363 -----------------
+ arch/alpha/include/asm/machvec.h       |   9 -
+ arch/alpha/include/asm/mmu_context.h   |  45 +--
+ arch/alpha/include/asm/special_insns.h |   5 +-
+ arch/alpha/include/asm/tlbflush.h      |  41 +-
+ arch/alpha/include/asm/uaccess.h       |  80 ----
+ arch/alpha/include/asm/vga.h           |   2 +
+ arch/alpha/include/uapi/asm/compiler.h |  18 -
+ arch/alpha/kernel/Makefile             |  25 +-
+ arch/alpha/kernel/asm-offsets.c        |  21 +-
+ arch/alpha/kernel/bugs.c               |   1 +
+ arch/alpha/kernel/console.c            |   1 +
+ arch/alpha/kernel/core_apecs.c         | 420 -------------------
+ arch/alpha/kernel/core_cia.c           |   6 +-
+ arch/alpha/kernel/core_irongate.c      |   1 -
+ arch/alpha/kernel/core_lca.c           | 517 ------------------------
+ arch/alpha/kernel/core_marvel.c        |   2 +-
+ arch/alpha/kernel/core_t2.c            |   2 +-
+ arch/alpha/kernel/core_wildfire.c      |   8 +-
+ arch/alpha/kernel/entry.S              |   1 +
+ arch/alpha/kernel/io.c                 |  19 +
+ arch/alpha/kernel/irq.c                |   1 +
+ arch/alpha/kernel/irq_i8259.c          |   4 -
+ arch/alpha/kernel/machvec_impl.h       |  25 +-
+ arch/alpha/kernel/pci-noop.c           | 113 ------
+ arch/alpha/kernel/pci_impl.h           |   4 +-
+ arch/alpha/kernel/perf_event.c         |   2 +-
+ arch/alpha/kernel/proto.h              |  44 +-
+ arch/alpha/kernel/setup.c              | 109 +----
+ arch/alpha/kernel/smc37c669.c          |   6 +-
+ arch/alpha/kernel/smc37c93x.c          |   2 +
+ arch/alpha/kernel/smp.c                |   1 +
+ arch/alpha/kernel/srmcons.c            |   2 +
+ arch/alpha/kernel/sys_cabriolet.c      |  87 +---
+ arch/alpha/kernel/sys_eb64p.c          | 238 -----------
+ arch/alpha/kernel/sys_jensen.c         | 237 -----------
+ arch/alpha/kernel/sys_mikasa.c         |  57 ---
+ arch/alpha/kernel/sys_nautilus.c       |   8 +-
+ arch/alpha/kernel/sys_noritake.c       |  60 ---
+ arch/alpha/kernel/sys_sable.c          | 294 +-------------
+ arch/alpha/kernel/sys_sio.c            | 486 ----------------------
+ arch/alpha/kernel/syscalls/syscall.tbl |   2 +-
+ arch/alpha/kernel/traps.c              |  64 ---
+ arch/alpha/lib/Makefile                |  14 -
+ arch/alpha/lib/checksum.c              |   1 +
+ arch/alpha/lib/fpreg.c                 |   1 +
+ arch/alpha/lib/memcpy.c                |   3 +
+ arch/alpha/lib/stycpy.S                |  11 +
+ arch/alpha/lib/styncpy.S               |  11 +
+ arch/alpha/math-emu/math.c             |   7 +-
+ arch/alpha/mm/init.c                   |   2 +-
+ drivers/char/agp/alpha-agp.c           |   2 +-
+ drivers/eisa/Kconfig                   |   9 +-
+ drivers/eisa/virtual_root.c            |   2 +-
+ drivers/input/serio/i8042-io.h         |   5 +-
+ drivers/tty/serial/8250/8250.h         |   3 -
+ drivers/tty/serial/8250/8250_alpha.c   |  21 -
+ drivers/tty/serial/8250/8250_core.c    |   4 -
+ drivers/tty/serial/8250/Makefile       |   2 -
+ include/linux/blk_types.h              |   6 -
+ include/linux/tty.h                    |  14 +-
+ 72 files changed, 166 insertions(+), 4545 deletions(-)
+ delete mode 100644 arch/alpha/include/asm/core_apecs.h
+ delete mode 100644 arch/alpha/include/asm/core_lca.h
+ delete mode 100644 arch/alpha/include/asm/jensen.h
+ delete mode 100644 arch/alpha/kernel/core_apecs.c
+ delete mode 100644 arch/alpha/kernel/core_lca.c
+ delete mode 100644 arch/alpha/kernel/pci-noop.c
+ delete mode 100644 arch/alpha/kernel/sys_eb64p.c
+ delete mode 100644 arch/alpha/kernel/sys_jensen.c
+ delete mode 100644 arch/alpha/kernel/sys_sio.c
+ create mode 100644 arch/alpha/lib/stycpy.S
+ create mode 100644 arch/alpha/lib/styncpy.S
+ delete mode 100644 drivers/tty/serial/8250/8250_alpha.c
+
+-- 
+2.39.2
+
+Cc: Richard Henderson <richard.henderson@linaro.org>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
