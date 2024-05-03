@@ -1,99 +1,96 @@
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47DED1CD35;
-	Fri,  3 May 2024 16:06:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AFDA23749
+	for <linux-alpha@vger.kernel.org>; Fri,  3 May 2024 16:08:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714752413; cv=none; b=IhDy2g1Y/wz1xOivRFqQz+MhBoIcOv6/riY4A7A7YAQ9+obt9PmAoNEPECyz7wulRi9J0txOKO9nZ3i7cVl6+ZBoHrzIqcl6yFF3JM0OY3DtgkU1/L6I399zE9zA0rRG/YUr6Ca4ACBpVj2uDFi7eepA6C+IqTUBuPvI+hxwRzs=
+	t=1714752490; cv=none; b=Nvgy2AWMb7xz7On0qTqkWxawX1k160l85WZuaPAeadEHhkohu+3r/GcXsuCU/wgEuocGRucfa+sA8qzTmgbtwCVjSjugHIGXnoBnX7FGwXu8wnfty8hqhGVybumKMul2piJMNUrgoch8+XXoZgIkgSRkntDcmPJWSKMnf/strWs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714752413; c=relaxed/simple;
-	bh=qxBCTMEj+TrC4OaMYlCE+ezrkZkmRTfkazny2w8eteo=;
+	s=arc-20240116; t=1714752490; c=relaxed/simple;
+	bh=sZM2aaIMRxH4vyVLuwDYCONIXnYdMCnrbPqlQ3tLIBY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MX7KuW5vQ0sLB7k2pxWg3YYw4RsffTx7tc5SZPqNODA11McdjrvHjUOzoe573IWKic1qJaKdNOY4o7t3XZOYv4MdPtEW07WV3bgJuqciLqPvoaammgrC5Amegqh+d3NRFxuIMTe3WEuwHTqCeuHv0+gt6fbAbK35FBADhAHgnFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hq3ZI0xm; arc=none smtp.client-ip=209.85.208.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=mIOBQm1o172dN9S/7vJmCJusKYOP6lOQHGkUsX8srzl6B97S45pXflsDPIrauPeFbHwh4oRnypDHomQcfk0bLS+b+0fCKdH011+pNA8dXcvsKGoxOdCcLZRd4/9vwLoZIO7pv4LUhVm/PHA5x3detxQFOWmn2bAbS8ZbzhKmuek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=LhziKS8K; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hq3ZI0xm"
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2e27277d2c1so7880341fa.2;
-        Fri, 03 May 2024 09:06:52 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="LhziKS8K"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a599fcba36eso55017566b.0
+        for <linux-alpha@vger.kernel.org>; Fri, 03 May 2024 09:08:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714752410; x=1715357210; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qxBCTMEj+TrC4OaMYlCE+ezrkZkmRTfkazny2w8eteo=;
-        b=Hq3ZI0xmXm1oKhcGgA688l481oje+sTPytgqb8mKWWBf/7qAMhJ/butatNuOf2sweH
-         HfpblSmqagsBX2FV6bqeXGnzDMIX7jkgkt1qIemjuRjc93sxLTwde/dLjhxtOWklkdhc
-         9kdSvmQKIIJo8wXjv9kB8i+O5AWuk9v5E7pzu1FwsUn4LuvmNWD+rTJJeF8M8DxazoVq
-         FQDEN+aZ6RWoSqrzDqfMGtZ9dC050c7gtxYNqAA6ltNONURQAbYq/8cGmo/v4bl87GKI
-         1OA6+hhXk0gYbQWA2z4+Gql7r3PrAkHKdnwRCOmYheGz4bOFBxBgYZKzykxqPeX2manp
-         y0aQ==
+        d=linux-foundation.org; s=google; t=1714752486; x=1715357286; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=WMaOhHAAnwImn/Mcwtmc1IDB+Tf65rtUNoBaGwd1lr8=;
+        b=LhziKS8Kz16RAOeoI5lArIcv9spTuGApYFwUoELppotzMVrrT6ftXwnyZA1l0/YJir
+         JT0dQiXHNfkGPBWRRZui/pk18Rh0pXJFVmSHkcFlEWxGKDiXzgXxtkTcFQR7CBo1qwwL
+         mdKLXKlmWWsxL8WbDHcx2YPGF7G03MkVF3j+A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714752410; x=1715357210;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qxBCTMEj+TrC4OaMYlCE+ezrkZkmRTfkazny2w8eteo=;
-        b=uni4D1keQlfUMkFdRNPxryMKM99sQPgOMn5QAdV6BZ80gc7ImYQSkcxZPkVNGRHUMb
-         YtmWyGBICZsJ0hykJr1k3JA4lG3SRgsLRaOtNGUJdjjzzQ5ic3sJUzE/2qtIH1/bmbWw
-         mopPfKSho7AaSxwi339jGUvG+KM+N9QJEt4hW5k4VS5jjIY8x7DhsRGLonv6HI4CNsuI
-         9xZTqy+WA/TKY5veG8ky6els6PTkXdk4ZZFKPFvb/BZALkyKhm9BvQSgwYaB/jyCA4ah
-         leIYlGGuV4NYPaZlE90xfwyPBPN1ttWdN3g1qBtIa5m38oToKxJanbDVABbPrVp1Xg3M
-         LHYg==
-X-Forwarded-Encrypted: i=1; AJvYcCXZKCVukGiYL5AMy634wGvCX0YDyrZXqIN+hP6ofVfOyFKzUzOQL+lHHQxJSX2YAcBpjXg7QNhy7XBCuCR1uLBfaQuge77AEPzBpaAY
-X-Gm-Message-State: AOJu0YyKL/4OoJr5YrEDhZjjiVN98nxmONWud/kVvhnh8iNvZ1ZYdvAF
-	yVWsdmkbC5IDwyI5C3+OyfxPtzPvi4KV7cp7I39yp+mos4Y0/JBu3TaPUtRtvKLrLTLXDxqxtvD
-	X2fDNHej7vD615+s13cHWLCZ1vOuQsA==
-X-Google-Smtp-Source: AGHT+IFK4sAnD+PcN9wxvNTQr+V8aQYvj+lN3HAjOcEf7e5Cjno9CXWiGsb1WRBuz457rEjlEFOt+zRk0P/xS0Yr638=
-X-Received: by 2002:a2e:9c87:0:b0:2e0:aaaa:e551 with SMTP id
- x7-20020a2e9c87000000b002e0aaaae551mr2104652lji.37.1714752410273; Fri, 03 May
- 2024 09:06:50 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1714752486; x=1715357286;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WMaOhHAAnwImn/Mcwtmc1IDB+Tf65rtUNoBaGwd1lr8=;
+        b=whwKa5mWlIKSpQIHHjH7wIp6pz1KkAQBTLDLzpFNHOxUPlyCxi29kwPM66H4dVEX40
+         NBR6kOjGtU1DOvimB8lCBr/BPB8zOkRR/T/nbXVayXXvHGHdxPZskb77U7S2AMs92rPK
+         CyehuIWcDGEK9ltkkS0/3K8Pyn/AX/qqE1X1x2XzTVvO2P6lEar2S3IU0R8r57t4ARby
+         uuPygzPTyesweXnRwjDiwYAItOkLiecciOxWDUeJj+cuth/xe7vqyPVphaKbL6Z+KorO
+         7TpyUP0e4pGM8ucCNTXSwEPWqL0XcdRmgFEKrbwIF25m0rOy3Lfvzr9O5lWSy1JSqH3l
+         edAQ==
+X-Gm-Message-State: AOJu0YxlEBc7935h6L9WnuSQGxoyLg6sEQHHVMowQURoBxYEWf+7KpLe
+	XOaf216a+iXnP1DpESAMmhpRe5cYkmpfQ0hWadvs9UkHZu/miMU7AdWcbP2DkbZixBKPGWKCr+g
+	k66f+vg==
+X-Google-Smtp-Source: AGHT+IH3l7aND5xs2+JZDdGhs/4U8xkWu6c6a7LueG2SDfMdk9isrwMK/9uDvX0PtAb55pwYbgiMBA==
+X-Received: by 2002:a17:906:a145:b0:a58:832d:c3e8 with SMTP id bu5-20020a170906a14500b00a58832dc3e8mr2078901ejb.58.1714752486553;
+        Fri, 03 May 2024 09:08:06 -0700 (PDT)
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com. [209.85.218.42])
+        by smtp.gmail.com with ESMTPSA id b19-20020a1709062b5300b00a59a05a8030sm92235ejg.25.2024.05.03.09.08.05
+        for <linux-alpha@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 May 2024 09:08:06 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a598e483ad1so208411966b.1
+        for <linux-alpha@vger.kernel.org>; Fri, 03 May 2024 09:08:05 -0700 (PDT)
+X-Received: by 2002:a17:906:60d4:b0:a55:5ba7:2889 with SMTP id
+ f20-20020a17090660d400b00a555ba72889mr1639743ejk.42.1714752485577; Fri, 03
+ May 2024 09:08:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240503081125.67990-1-arnd@kernel.org>
-In-Reply-To: <20240503081125.67990-1-arnd@kernel.org>
-From: Matt Turner <mattst88@gmail.com>
-Date: Fri, 3 May 2024 12:06:38 -0400
-Message-ID: <CAEdQ38GNU_vCFgi-uuFCW_QVBObTdD8VwoyQ71Cm5dNfZ4+=JQ@mail.gmail.com>
-Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
+References: <20240503081125.67990-1-arnd@kernel.org> <20240503081125.67990-11-arnd@kernel.org>
+In-Reply-To: <20240503081125.67990-11-arnd@kernel.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 3 May 2024 09:07:48 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whUDyvBNVna_vbYGfN0SUjt1jN6hUgRjoLFq_XTV_0gMQ@mail.gmail.com>
+Message-ID: <CAHk-=whUDyvBNVna_vbYGfN0SUjt1jN6hUgRjoLFq_XTV_0gMQ@mail.gmail.com>
+Subject: Re: [PATCH 10/14] alpha: remove DECpc AXP150 (Jensen) support
 To: Arnd Bergmann <arnd@kernel.org>
 Cc: linux-alpha@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, 
 	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Marc Zyngier <maz@kernel.org>, 
-	Linus Torvalds <torvalds@linux-foundation.org>, "Paul E. McKenney" <paulmck@kernel.org>, 
-	linux-kernel@vger.kernel.org
+	Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Marc Zyngier <maz@kernel.org>, "Paul E. McKenney" <paulmck@kernel.org>, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 3, 2024 at 4:12=E2=80=AFAM Arnd Bergmann <arnd@kernel.org> wrot=
-e:
+On Fri, 3 May 2024 at 01:12, Arnd Bergmann <arnd@kernel.org> wrote:
 >
 > From: Arnd Bergmann <arnd@arndb.de>
 >
-> I had investigated dropping support for alpha EV5 and earlier a while
-> ago after noticing that this is the only supported CPU family
-> in the kernel without native byte access and that Debian has already
-> dropped support for this generation last year [1] after it turned
-> out to be broken.
->
-> This topic came up again when Paul E. McKenney noticed that
-> parts of the RCU code already rely on byte access and do not
-> work on alpha EV5 reliably, so I refreshed my series now for
-> inclusion into the next merge window.
->
-> Al Viro did another series for alpha to address all the known build
-> issues. I rebased his patches without any further changes and included
-> it as a baseline for my work here to avoid conflicts.
+> This is one of the hackiest Alpha machines, and the only one without
+> PCI support. Removing this allows cleaning up code in eise and tty
+> drivers in addition to the architecture code.
 
-Thanks for all this. Removing support for non-BWX alphas makes a lot
-of sense to me.
+Oh well, The axp150 was the machine I used originally, so it's a bit
+sad to see it go.
 
-The whole series is
+But yeah, good riddance. The lack of byte and word operations were a
+fundamental mistake and made those early alphas very painful.
 
-Acked-by: Matt Turner <mattst88@gmail.com>
+The design team obviously made other technical mistakes (sw fill tlb
+etc, with memory ordering being the one that never got fixed), but the
+byte were the killer for any sanity both on the IO side and the code
+generation side.
+
+                  Linus
