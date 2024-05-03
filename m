@@ -1,96 +1,104 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AFDA23749
-	for <linux-alpha@vger.kernel.org>; Fri,  3 May 2024 16:08:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52DC778276;
+	Fri,  3 May 2024 16:57:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714752490; cv=none; b=Nvgy2AWMb7xz7On0qTqkWxawX1k160l85WZuaPAeadEHhkohu+3r/GcXsuCU/wgEuocGRucfa+sA8qzTmgbtwCVjSjugHIGXnoBnX7FGwXu8wnfty8hqhGVybumKMul2piJMNUrgoch8+XXoZgIkgSRkntDcmPJWSKMnf/strWs=
+	t=1714755450; cv=none; b=WND4QpR/hwcjkofmviKrm4jd+FkoVb0j3AxNurv6c6/ldDaLIowbsr+EEbNlzsldWgv60c5tHJatsvWkpCI03ngL0tEIL+gi2VeS7OOKwuzlnlcTm4ceCkyWT1d50wVdZyIHzxzxCKeeKyB7Qd/zZxMiCLQD5vgGtYz/OILzJeE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714752490; c=relaxed/simple;
-	bh=sZM2aaIMRxH4vyVLuwDYCONIXnYdMCnrbPqlQ3tLIBY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mIOBQm1o172dN9S/7vJmCJusKYOP6lOQHGkUsX8srzl6B97S45pXflsDPIrauPeFbHwh4oRnypDHomQcfk0bLS+b+0fCKdH011+pNA8dXcvsKGoxOdCcLZRd4/9vwLoZIO7pv4LUhVm/PHA5x3detxQFOWmn2bAbS8ZbzhKmuek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=LhziKS8K; arc=none smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	s=arc-20240116; t=1714755450; c=relaxed/simple;
+	bh=ucrXEs+zZhHZbIACJA0Q8StcD9DvMmwHYZhjFRxy19w=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Op2fctDJ/Z94NdV5KZSqrJR+unpGwBje5mN3vjC0bWwunxqmZxeCBZtkUSZDWUQfJT0K56iVIVTQjWW8yS9gWcb8/SpnRrLlc6nkIl1bdszJqi3dxyD4O6nxwX0Tec1BvD5v1ZFJjdhzf7dJlO/bNk/pJ7aHqNTHnpzyELHZFOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=Yjl3UbpW; arc=none smtp.client-ip=130.133.4.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="LhziKS8K"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a599fcba36eso55017566b.0
-        for <linux-alpha@vger.kernel.org>; Fri, 03 May 2024 09:08:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1714752486; x=1715357286; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=WMaOhHAAnwImn/Mcwtmc1IDB+Tf65rtUNoBaGwd1lr8=;
-        b=LhziKS8Kz16RAOeoI5lArIcv9spTuGApYFwUoELppotzMVrrT6ftXwnyZA1l0/YJir
-         JT0dQiXHNfkGPBWRRZui/pk18Rh0pXJFVmSHkcFlEWxGKDiXzgXxtkTcFQR7CBo1qwwL
-         mdKLXKlmWWsxL8WbDHcx2YPGF7G03MkVF3j+A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714752486; x=1715357286;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WMaOhHAAnwImn/Mcwtmc1IDB+Tf65rtUNoBaGwd1lr8=;
-        b=whwKa5mWlIKSpQIHHjH7wIp6pz1KkAQBTLDLzpFNHOxUPlyCxi29kwPM66H4dVEX40
-         NBR6kOjGtU1DOvimB8lCBr/BPB8zOkRR/T/nbXVayXXvHGHdxPZskb77U7S2AMs92rPK
-         CyehuIWcDGEK9ltkkS0/3K8Pyn/AX/qqE1X1x2XzTVvO2P6lEar2S3IU0R8r57t4ARby
-         uuPygzPTyesweXnRwjDiwYAItOkLiecciOxWDUeJj+cuth/xe7vqyPVphaKbL6Z+KorO
-         7TpyUP0e4pGM8ucCNTXSwEPWqL0XcdRmgFEKrbwIF25m0rOy3Lfvzr9O5lWSy1JSqH3l
-         edAQ==
-X-Gm-Message-State: AOJu0YxlEBc7935h6L9WnuSQGxoyLg6sEQHHVMowQURoBxYEWf+7KpLe
-	XOaf216a+iXnP1DpESAMmhpRe5cYkmpfQ0hWadvs9UkHZu/miMU7AdWcbP2DkbZixBKPGWKCr+g
-	k66f+vg==
-X-Google-Smtp-Source: AGHT+IH3l7aND5xs2+JZDdGhs/4U8xkWu6c6a7LueG2SDfMdk9isrwMK/9uDvX0PtAb55pwYbgiMBA==
-X-Received: by 2002:a17:906:a145:b0:a58:832d:c3e8 with SMTP id bu5-20020a170906a14500b00a58832dc3e8mr2078901ejb.58.1714752486553;
-        Fri, 03 May 2024 09:08:06 -0700 (PDT)
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com. [209.85.218.42])
-        by smtp.gmail.com with ESMTPSA id b19-20020a1709062b5300b00a59a05a8030sm92235ejg.25.2024.05.03.09.08.05
-        for <linux-alpha@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 May 2024 09:08:06 -0700 (PDT)
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a598e483ad1so208411966b.1
-        for <linux-alpha@vger.kernel.org>; Fri, 03 May 2024 09:08:05 -0700 (PDT)
-X-Received: by 2002:a17:906:60d4:b0:a55:5ba7:2889 with SMTP id
- f20-20020a17090660d400b00a555ba72889mr1639743ejk.42.1714752485577; Fri, 03
- May 2024 09:08:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="Yjl3UbpW"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=HiwZmHGYcEvG/kquEv/XsuMyZc6hfd+7Q7WBI0uslTA=; t=1714755447; x=1715360247; 
+	b=Yjl3UbpWYT1Z2arPU06czYgVZSb7vAFZjTSm/lQqLLa308pSgNtQsiRFSd2XMBG6dO8zEQu+QJ6
+	KxGOoxpeXo7PcV9f32l/jQZEkF5mxCt5XpULqR+wsPsB3CYtdCYiodwk4LropDQJGe8miQK7elyH9
+	LbanJUHaGRPgsS9gv8X8RHxFCDmdeF6uSWkVMV1cWJPMFUJVGUtlNQLc23GR+wk0N/s5XDiaLsiTn
+	+oaC/b1waGQ7dJuiacYjSA3XuSbfzYU+zErqowgjewWkFwUkTPlOG3R35KyGzXObB4ce08XAFWxqv
+	tKTd9w1r/ZobxVFpt5iCAimNoOh4sNPmpD+w==;
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.97)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1s2wAM-00000002YKO-0Q9C; Fri, 03 May 2024 18:53:46 +0200
+Received: from p57bd90e8.dip0.t-ipconnect.de ([87.189.144.232] helo=suse-laptop.fritz.box)
+          by inpost2.zedat.fu-berlin.de (Exim 4.97)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1s2wAL-00000001J2a-3eDt; Fri, 03 May 2024 18:53:46 +0200
+Message-ID: <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
+Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To: Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Richard Henderson
+ <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+  Matt Turner <mattst88@gmail.com>, Alexander Viro
+ <viro@zeniv.linux.org.uk>, Marc Zyngier <maz@kernel.org>,  Linus Torvalds
+ <torvalds@linux-foundation.org>, "Paul E. McKenney" <paulmck@kernel.org>, 
+ linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Frank
+ Scheiner <frank.scheiner@web.de>
+Date: Fri, 03 May 2024 18:53:45 +0200
+In-Reply-To: <20240503081125.67990-1-arnd@kernel.org>
+References: <20240503081125.67990-1-arnd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.0 
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240503081125.67990-1-arnd@kernel.org> <20240503081125.67990-11-arnd@kernel.org>
-In-Reply-To: <20240503081125.67990-11-arnd@kernel.org>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 3 May 2024 09:07:48 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whUDyvBNVna_vbYGfN0SUjt1jN6hUgRjoLFq_XTV_0gMQ@mail.gmail.com>
-Message-ID: <CAHk-=whUDyvBNVna_vbYGfN0SUjt1jN6hUgRjoLFq_XTV_0gMQ@mail.gmail.com>
-Subject: Re: [PATCH 10/14] alpha: remove DECpc AXP150 (Jensen) support
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: linux-alpha@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, 
-	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
-	Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Marc Zyngier <maz@kernel.org>, "Paul E. McKenney" <paulmck@kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-ZEDAT-Hint: PO
 
-On Fri, 3 May 2024 at 01:12, Arnd Bergmann <arnd@kernel.org> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> This is one of the hackiest Alpha machines, and the only one without
-> PCI support. Removing this allows cleaning up code in eise and tty
-> drivers in addition to the architecture code.
+Hello Arnd,
 
-Oh well, The axp150 was the machine I used originally, so it's a bit
-sad to see it go.
+On Fri, 2024-05-03 at 10:11 +0200, Arnd Bergmann wrote:
+> I had investigated dropping support for alpha EV5 and earlier a while
+> ago after noticing that this is the only supported CPU family
+> in the kernel without native byte access and that Debian has already
+> dropped support for this generation last year [1] after it turned
+> out to be broken.
 
-But yeah, good riddance. The lack of byte and word operations were a
-fundamental mistake and made those early alphas very painful.
+That's not quite correct. Support for older Alphas is not broken and
+always worked when I tested it. It's just that some people wanted to
+raise the baseline in order to improve code performance on newer machines
+with the hope to fix some minor issues we saw on Alpha here and there.
 
-The design team obviously made other technical mistakes (sw fill tlb
-etc, with memory ordering being the one that never got fixed), but the
-byte were the killer for any sanity both on the IO side and the code
-generation side.
+> This topic came up again when Paul E. McKenney noticed that
+> parts of the RCU code already rely on byte access and do not
+> work on alpha EV5 reliably, so I refreshed my series now for
+> inclusion into the next merge window.
 
-                  Linus
+Hrrrm? That sounds like like Paul ran tests on EV5, did he?
+
+> Al Viro did another series for alpha to address all the known build
+> issues. I rebased his patches without any further changes and included
+> it as a baseline for my work here to avoid conflicts.
+
+It's somewhat strange that Al improves code on the older machines only
+to be axed by your series. I would prefer such removals to aimed at an
+LTS release, if possible.
+
+Adrian
+
+--=20
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
