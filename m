@@ -1,119 +1,106 @@
-Received: from wfout5-smtp.messagingengine.com (wfout5-smtp.messagingengine.com [64.147.123.148])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED0EB155321;
-	Fri,  3 May 2024 20:15:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.123.148
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAF0A381AF
+	for <linux-alpha@vger.kernel.org>; Sat,  4 May 2024 15:00:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714767336; cv=none; b=eLLitb/HGHUGyJFjHnPAmBv53bkavcJCqDyKFoNnI+aDL6z7RTWNzDoe0tc0Vb4OGSOONaSNHzfwj00dW6XEuHddCZkaqdcffIIYUs0DbpgN0zY0PQWQdXo3IwSf/t3ZmdGVEjwlkXkN0/cm2tjTDKzTlU42XrWUcilGnhOFGC0=
+	t=1714834852; cv=none; b=pgHrTxuTscZK2WY8zeJGj9d0qp/DU9gesT54adlYBRteN1Eg8Ut74pa6YDLhlMCV+1j8kK18UssWW5U8ePb9CWS+d4OO8hcMigy70k76+DTRgYhfx1ZDmpej3R1/LlHjg3yHPICbwDmelbu5LW+SjgAYM8eye/jT0JDIYbyedPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714767336; c=relaxed/simple;
-	bh=HM8F0PQ394LhpqPEV/Z5taEtrw+ZqtqtpfiTTlIB8dY=;
-	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
-	 Subject:Content-Type; b=BbQI1uJ/x9e2bd2wSwzxWZxOYUAZcv+32buMGEJt+sPaLnvOgTuv1MygynNCqtw3eHaytWIGbyJ6MeZEWtF5SurrCMtN1MEXs5OHh6eauJYDY1O2+vzUOXEUs/VEicfDlUGt/KZgv6G+ycBvc0Bo2FkWWHspyWxMrea8e8wIGKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=nsqq1Z58; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=NX2buQXr; arc=none smtp.client-ip=64.147.123.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1714834852; c=relaxed/simple;
+	bh=dm6dvBjLZNt3OOIjZlO2mihXFCuWVIr/2xvHjRiHyVE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qwLcQPeBdCi0GxG9fMdnzBAbEc7fL5v4MHz6hqAd1ROuHcH37B04EcPv6h8UEDTtmiDkZx5Mz9RHIlODFPjp9XvQ1zjlSIxkPYZYVSDU9/LZt9kkh3tLyMjpBngGWd824M4xAvbyGqYa8KMEw/qvkZDjf9+dbfuzdu340iQ7t98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OTCBfmJO; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="nsqq1Z58";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="NX2buQXr"
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailfout.west.internal (Postfix) with ESMTP id 988BE1C00169;
-	Fri,  3 May 2024 16:15:33 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute5.internal (MEProxy); Fri, 03 May 2024 16:15:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1714767333;
-	 x=1714853733; bh=aSeWM/wh3VnIuBoCTK5JiSYe4LKfwPuZ27pgSzHIMM4=; b=
-	nsqq1Z58j1Fr9cyPmNKKSGfatcAzimPxtB/ydNkiQDUvdVYoonVSimn54sl1GRlh
-	95jIZSndZFuXsjq6a2sGIUdgJJP2GlJyauhEUppaCPz8B1wM1bA9U+z0i/znHOhv
-	Dd4iE5++zSvI67eLmVqBVmJZm0aM2NibFGny3dK+Z82AnSEF8t5RrP+ai6yEUSmn
-	VrpqOZ7CD/UYtG/FPs7sQXxovFe3KFPeV2YMSU1xYL5MrUgmE3FfOmQrhU82y/tA
-	Mky0AnrSgvNGBi6NBi/ylRBKzu0SdMR+AlIoVTDsS+4Rip2i8hoGfn6F41mB4ZEJ
-	Alk0nuQQEG7DmEwR3s7YnA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1714767333; x=
-	1714853733; bh=aSeWM/wh3VnIuBoCTK5JiSYe4LKfwPuZ27pgSzHIMM4=; b=N
-	X2buQXrmxhfX3eottTwuRLyry39HEwU2ZUfDMmLkOf0JJ9Ko20MsKOPNy0XvTFhy
-	glbxIHST+WVF9ANCgP5fTDQkTH5UO4Xd58v6hXgKynorJ67LUkuO2jb8RO5r4wOF
-	qCBGbXy2T0TXcW3xV0RSGKXXgYq2odFbumj02ugEzrcPJQu2K0saxc84XxjEfJUY
-	0mSeSo1iX6s4cXQTfvgbVcr7Y90YVhlkmzAmRDGqrNzMCIwMXo3EFmYGqyfVNqJE
-	hRMLh2MZKUIdhnECDzWdr6Rrw1lqTsJNM3PbcyxL9OmAnKU0MA9xRvqB75ZU90dn
-	1JjR9EStYYBL5cAHxhZBg==
-X-ME-Sender: <xms:5EU1ZlHFjMHUhTqWYFZ6LXyGaTdmnggvQU_Ee6_bE2iT-q4mm8s84Q>
-    <xme:5EU1ZqXl2E7EIZgvGJnlQBBpTC41EpzMvYN9vuw9tMqs8b30fsce5jIX1c4GiBbmY
-    yjeDhLYIx0Uq8CJMkw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrvddvtddgudegjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgfgsehtqhertderreejnecuhfhrohhmpedf
-    tehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrf
-    grthhtvghrnhepgfekueelgeeigefhudduledtkeefffejueelheelfedutedttdfgveeu
-    feefieegnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggv
-X-ME-Proxy: <xmx:5EU1ZnJdKDIRLLPVhQKGYNKKNLV3sUz47dSOZ_Tn1Y8w9dvNVc6znw>
-    <xmx:5EU1ZrGhH-UiMigYt6kkyxvljkERqFme1_nZ0CJgzCEC4jIX5JwOMA>
-    <xmx:5EU1ZrWiLMMVfyWnkQn8I3Wl5zVvJ6Q71n7KfUbNj8rHxm0BVUAzyg>
-    <xmx:5EU1ZmOB8qlzkQppQsdHmoeFTd-NLcaqc_jmk33ktRQUI-porzv0zg>
-    <xmx:5UU1ZrSQlC1gd649oEsyQHL1v1qvuXr2zSWTQkgzD1u9BQOsRNYZb5o1>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id C89D0B6008D; Fri,  3 May 2024 16:15:32 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.11.0-alpha0-417-gddc99d37d-fm-hotfix-20240424.001-g2c179674
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OTCBfmJO"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1ecddf96313so4865275ad.2
+        for <linux-alpha@vger.kernel.org>; Sat, 04 May 2024 08:00:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1714834850; x=1715439650; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UnwRSsy/rruc4QDUohYmGqOdPTqTE8KujCBy49Cfq/M=;
+        b=OTCBfmJOJm+r42OYIPrsCtkC/CXU/Q5XgVR3Qr4+9bvS2atfm5H9mnJuSAjMqgldDX
+         Md+Lf3VorKW4u/ZWwQ9jiLgU/lCB4m+/mbJp6MxD0C2sYWwfbiTZ31PCcJm3eOwBsUfq
+         XuhZv604FNDta6Z8deAgctp2VySB7uwLZSzLoagtEe9s4zSkXu9R5iBk9MPwCDx3D3IA
+         ZDNVCmnMVQAmSGJDOkRjLiFQqdB4ErCNTJBeJEteRafuc887LRTvRHoNxzLyvwMPm2K0
+         XuPj3nda6gKsLG9ngx7thuIk5g8azeDl2jao0PP/E2lVnwGzhz/OPQg8NUO1Fb2shwLV
+         iJtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714834850; x=1715439650;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UnwRSsy/rruc4QDUohYmGqOdPTqTE8KujCBy49Cfq/M=;
+        b=tZmSaa1nJ3gymqGCaoI3WbX0ybiXCQyTwXEy9N+/Slm60pPfyW4ptNA2KjuJrtmZwC
+         g1IOgC5BPg/r6TyLwtyl3PsHbR4xZAr9CKfghTOb8SqH3I3dkfmTbWWpycU46LmQ7Elc
+         MTtlyCuv5gH7pLHS/GPrzyywJeEidX4oBD3wg/VuDyf5G5EaJ9Cmvtvs4/Jg/QPZcRg6
+         W6drh3uPGSxUYqo562290sFqvSVY5UgEufvw567Y45ZyNgjoAjpMBKVjPhZCqauhV3SV
+         3ZhN8u6Or5MktUPu4KWfhiPHNCrCOwZjayZnBKoNQKDTI/4FghNg7pWD977jKzs1pVp5
+         kEsA==
+X-Forwarded-Encrypted: i=1; AJvYcCVOVUkntfodxu1eU1y/0WSnH5HI+FU9/DH7yFHXSy6sWlJYCrRlAhjOn6vluVhVvU5d6y1qtZt21McwEtcPoUef6iS6/dY+v4mulao=
+X-Gm-Message-State: AOJu0YwbDv5snOBW6OwOh8gT9VFZ0QfS/jQnSVyl1AsHjz5Kc/piB2yt
+	jj5wM3nW8S1XiExYgEgmTgbli3azkTgeFN1b93CqpxwsQWiXBg1WN+nZsM67HSI=
+X-Google-Smtp-Source: AGHT+IGxZE/j9rER98oVKJvhmBHRhIQPsuWXnMI6RBpOj+dySFp0WCcjTLcrOwoH034d+P/lA7yzhA==
+X-Received: by 2002:a17:902:b186:b0:1e2:9066:4a8b with SMTP id s6-20020a170902b18600b001e290664a8bmr6570336plr.26.1714834850014;
+        Sat, 04 May 2024 08:00:50 -0700 (PDT)
+Received: from [192.168.0.4] (174-21-72-5.tukw.qwest.net. [174.21.72.5])
+        by smtp.gmail.com with ESMTPSA id w17-20020a170902e89100b001ed1dab9dcbsm3997398plg.110.2024.05.04.08.00.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 May 2024 08:00:49 -0700 (PDT)
+Message-ID: <31f1bbfb-733c-4027-834c-98f155562941@linaro.org>
+Date: Sat, 4 May 2024 08:00:46 -0700
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-Id: <b72c2b7a-a929-4c7c-9bef-b230630df882@app.fastmail.com>
-In-Reply-To: 
- <CAEdQ38GNU_vCFgi-uuFCW_QVBObTdD8VwoyQ71Cm5dNfZ4+=JQ@mail.gmail.com>
-References: <20240503081125.67990-1-arnd@kernel.org>
- <CAEdQ38GNU_vCFgi-uuFCW_QVBObTdD8VwoyQ71Cm5dNfZ4+=JQ@mail.gmail.com>
-Date: Fri, 03 May 2024 22:15:10 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Matt Turner" <mattst88@gmail.com>, "Arnd Bergmann" <arnd@kernel.org>
-Cc: linux-alpha@vger.kernel.org,
- "Richard Henderson" <richard.henderson@linaro.org>,
- "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
- "Alexander Viro" <viro@zeniv.linux.org.uk>, "Marc Zyngier" <maz@kernel.org>,
- "Linus Torvalds" <torvalds@linux-foundation.org>,
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 14/14] alpha: drop pre-EV56 support
+To: Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Ivan Kokshaysky
+ <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>,
+ Alexander Viro <viro@zeniv.linux.org.uk>, Marc Zyngier <maz@kernel.org>,
+ Linus Torvalds <torvalds@linux-foundation.org>,
  "Paul E. McKenney" <paulmck@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20240503081125.67990-1-arnd@kernel.org>
+ <20240503081125.67990-15-arnd@kernel.org>
+Content-Language: en-US
+From: Richard Henderson <richard.henderson@linaro.org>
+In-Reply-To: <20240503081125.67990-15-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, May 3, 2024, at 18:06, Matt Turner wrote:
-> On Fri, May 3, 2024 at 4:12=E2=80=AFAM Arnd Bergmann <arnd@kernel.org>=
- wrote:
->>
->> Al Viro did another series for alpha to address all the known build
->> issues. I rebased his patches without any further changes and included
->> it as a baseline for my work here to avoid conflicts.
->
-> Thanks for all this. Removing support for non-BWX alphas makes a lot
-> of sense to me.
->
-> The whole series is
->
-> Acked-by: Matt Turner <mattst88@gmail.com>
+On 5/3/24 01:11, Arnd Bergmann wrote:
+>   
+> -/* Flush just one page in the current TLB set.  We need to be very
+> -   careful about the icache here, there is no way to invalidate a
+> -   specific icache page.  */
+> -
+> -__EXTERN_INLINE void
+> -ev4_flush_tlb_current_page(struct mm_struct * mm,
+> -			   struct vm_area_struct *vma,
+> -			   unsigned long addr)
+> -{
+> -	int tbi_flag = 2;
+> -	if (vma->vm_flags & VM_EXEC) {
+> -		__load_new_mm_context(mm);
+> -		tbi_flag = 3;
+> -	}
+> -	tbi(tbi_flag, addr);
+> -}
+> -
+>   __EXTERN_INLINE void
+>   ev5_flush_tlb_current_page(struct mm_struct * mm,
+>   			   struct vm_area_struct *vma,
 
-Thanks!
+The comment being removed applied to both functions and still applies to 
+ev5_flush_tlb_current_page.  (Thus __load_new_mm_context instead of a tbi.)
 
-I've pushed out the series with the additional Acks to
-https://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git/log=
-/?h=3Dalpha-cleanup-6.9
-and merged it into the main asm-generic branch for 6.10.
 
-Can you give this a quick test on one of your machines to make
-sure I didn't introduce a stupid regression somewhere?
-
-     Arnd
+r~
