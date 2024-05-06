@@ -1,59 +1,59 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAF0A381AF
-	for <linux-alpha@vger.kernel.org>; Sat,  4 May 2024 15:00:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DA9C2F2F
+	for <linux-alpha@vger.kernel.org>; Mon,  6 May 2024 00:29:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714834852; cv=none; b=pgHrTxuTscZK2WY8zeJGj9d0qp/DU9gesT54adlYBRteN1Eg8Ut74pa6YDLhlMCV+1j8kK18UssWW5U8ePb9CWS+d4OO8hcMigy70k76+DTRgYhfx1ZDmpej3R1/LlHjg3yHPICbwDmelbu5LW+SjgAYM8eye/jT0JDIYbyedPY=
+	t=1714955364; cv=none; b=oPf84wR9kVTAEs8RymGwqii+3+KBj3PuBw5DGFI9OWX9dKvHayIGMzvAn4WkWv/FPNt0sgnviPdbf50kgL32TX/Tkt4XSGAszLZBS6cqQdP4QiZ7j7oqni3//uPlqKIyixoGmAU5c3wXwrUkKzSbOCOp7qPUabR1MdpR3p/xtc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714834852; c=relaxed/simple;
-	bh=dm6dvBjLZNt3OOIjZlO2mihXFCuWVIr/2xvHjRiHyVE=;
+	s=arc-20240116; t=1714955364; c=relaxed/simple;
+	bh=7p83fI6SjhbSz9whdN8AjeYm5Iaq6UXmW/wjThWyv6k=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qwLcQPeBdCi0GxG9fMdnzBAbEc7fL5v4MHz6hqAd1ROuHcH37B04EcPv6h8UEDTtmiDkZx5Mz9RHIlODFPjp9XvQ1zjlSIxkPYZYVSDU9/LZt9kkh3tLyMjpBngGWd824M4xAvbyGqYa8KMEw/qvkZDjf9+dbfuzdu340iQ7t98=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OTCBfmJO; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 In-Reply-To:Content-Type; b=FbmiakXWv3b3pTYqdgIVw8rsdxxStFDIDFb++tEk21pwhOYspHg89VFFU+fAU998f1dRNj88X1aQ+YSKA5BXjP8gr3B5eb08Iw9TlsMn5/vOrmnefwYHjZ7q7Mq5A07kqBCT+YI4kXZVBRYNhrx+1s24sK+qDkKd5I8wkIOIoRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=davidwei.uk; spf=none smtp.mailfrom=davidwei.uk; dkim=pass (2048-bit key) header.d=davidwei-uk.20230601.gappssmtp.com header.i=@davidwei-uk.20230601.gappssmtp.com header.b=YJtQ3EPk; arc=none smtp.client-ip=209.85.215.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=davidwei.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=davidwei.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OTCBfmJO"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1ecddf96313so4865275ad.2
-        for <linux-alpha@vger.kernel.org>; Sat, 04 May 2024 08:00:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=davidwei-uk.20230601.gappssmtp.com header.i=@davidwei-uk.20230601.gappssmtp.com header.b="YJtQ3EPk"
+Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-5cdbc4334edso516174a12.3
+        for <linux-alpha@vger.kernel.org>; Sun, 05 May 2024 17:29:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1714834850; x=1715439650; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=davidwei-uk.20230601.gappssmtp.com; s=20230601; t=1714955361; x=1715560161; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=UnwRSsy/rruc4QDUohYmGqOdPTqTE8KujCBy49Cfq/M=;
-        b=OTCBfmJOJm+r42OYIPrsCtkC/CXU/Q5XgVR3Qr4+9bvS2atfm5H9mnJuSAjMqgldDX
-         Md+Lf3VorKW4u/ZWwQ9jiLgU/lCB4m+/mbJp6MxD0C2sYWwfbiTZ31PCcJm3eOwBsUfq
-         XuhZv604FNDta6Z8deAgctp2VySB7uwLZSzLoagtEe9s4zSkXu9R5iBk9MPwCDx3D3IA
-         ZDNVCmnMVQAmSGJDOkRjLiFQqdB4ErCNTJBeJEteRafuc887LRTvRHoNxzLyvwMPm2K0
-         XuPj3nda6gKsLG9ngx7thuIk5g8azeDl2jao0PP/E2lVnwGzhz/OPQg8NUO1Fb2shwLV
-         iJtw==
+        bh=sTixdwfAlIVssw/yTwe1uZ1trqj6K9Ho7zGTIsCsG3k=;
+        b=YJtQ3EPk7IxrNvgo8weclRLgIUIWkSOI2Uep1o1M/rk9e0dB+mVfcDL2Ra/RKgbRaV
+         4yD0nNAz17zHnC1JbqzasjATt3Y4kUqFfBfl4uDx/zyyAwmCgdWBqfnXG64JOZ3VVasD
+         TpWrwpoJPMZ1aCGn4xBszZrjTzvv5gHLPW4FLW7M2xKyeRN3dmeqwv7P7Qzj6PulULEp
+         iKKq9LW6PdJR11ebmc1NoRMdfQ6vYQYYHA7xQiZMqlhAGok5r3mf8gMd5KZKadxtoFqx
+         EMNG1nXwcBwffehAbXoAJ9b4BN0JZNUl2iEcpz1iMRyOz+EEFNblqZD7QukB/0M0HXcx
+         nJhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714834850; x=1715439650;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1714955361; x=1715560161;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UnwRSsy/rruc4QDUohYmGqOdPTqTE8KujCBy49Cfq/M=;
-        b=tZmSaa1nJ3gymqGCaoI3WbX0ybiXCQyTwXEy9N+/Slm60pPfyW4ptNA2KjuJrtmZwC
-         g1IOgC5BPg/r6TyLwtyl3PsHbR4xZAr9CKfghTOb8SqH3I3dkfmTbWWpycU46LmQ7Elc
-         MTtlyCuv5gH7pLHS/GPrzyywJeEidX4oBD3wg/VuDyf5G5EaJ9Cmvtvs4/Jg/QPZcRg6
-         W6drh3uPGSxUYqo562290sFqvSVY5UgEufvw567Y45ZyNgjoAjpMBKVjPhZCqauhV3SV
-         3ZhN8u6Or5MktUPu4KWfhiPHNCrCOwZjayZnBKoNQKDTI/4FghNg7pWD977jKzs1pVp5
-         kEsA==
-X-Forwarded-Encrypted: i=1; AJvYcCVOVUkntfodxu1eU1y/0WSnH5HI+FU9/DH7yFHXSy6sWlJYCrRlAhjOn6vluVhVvU5d6y1qtZt21McwEtcPoUef6iS6/dY+v4mulao=
-X-Gm-Message-State: AOJu0YwbDv5snOBW6OwOh8gT9VFZ0QfS/jQnSVyl1AsHjz5Kc/piB2yt
-	jj5wM3nW8S1XiExYgEgmTgbli3azkTgeFN1b93CqpxwsQWiXBg1WN+nZsM67HSI=
-X-Google-Smtp-Source: AGHT+IGxZE/j9rER98oVKJvhmBHRhIQPsuWXnMI6RBpOj+dySFp0WCcjTLcrOwoH034d+P/lA7yzhA==
-X-Received: by 2002:a17:902:b186:b0:1e2:9066:4a8b with SMTP id s6-20020a170902b18600b001e290664a8bmr6570336plr.26.1714834850014;
-        Sat, 04 May 2024 08:00:50 -0700 (PDT)
-Received: from [192.168.0.4] (174-21-72-5.tukw.qwest.net. [174.21.72.5])
-        by smtp.gmail.com with ESMTPSA id w17-20020a170902e89100b001ed1dab9dcbsm3997398plg.110.2024.05.04.08.00.49
+        bh=sTixdwfAlIVssw/yTwe1uZ1trqj6K9Ho7zGTIsCsG3k=;
+        b=wmsFj5EyonfWMkUhAgkYHTmpTGFQ3pkwjYQjPh/Z8QJ6krXkvvG1YTd1N0jJas3Ijg
+         Um1TZew70XQV0IlrYorYaGCp+N00QLsnX2vluF92aJcO18FZxAKcX4T1kKXMxMIXerdm
+         bscxQi1vQ4HAtcxSkd4hSEJOp3rYSh/bTEnDBXB/qJHCJiqN9yYQ1+A+MsLxr+lrUOLU
+         kEx3RRJPYhj0ZyySNXyswBwamosWYDW1JQbsGMPorQnzw9w8yAI2NH8FZ5JBi3d5AAN9
+         ZMmlyqtBZ1SKomsp8IopyvZoSWACwOYER6arZTO1YgtT3srYAQDUEWOcN/b3ZQTc4Ykx
+         R4Kw==
+X-Forwarded-Encrypted: i=1; AJvYcCXcRuMada0Ssn5864BVZXwnKHdhskIK2QrzXd3WkvoTwvTy2Nu6Cgk3bw7OVjhK3aC1M+OJnvrdZ1/CcbByB4JiqBA4BtSQd7mgiY4=
+X-Gm-Message-State: AOJu0YyPLVLkGzX8PlQkJwBrEToeTmq4AWiNMR5OFCdepUKe2VaBKl9F
+	QAx+lq0mYWGhJMoCi/E6PWH+i0I89FcmuEcQ+XWmtnNLNWXsgWeFg/CjsKWs4l0=
+X-Google-Smtp-Source: AGHT+IFapiyynwMzWBFC3qoHSlJe6Vp0gcSIQLTrnjL4T2m4HyoHAt77UaMOEYoyby7VMZX56YX6rQ==
+X-Received: by 2002:a17:90a:d30a:b0:2aa:c2ba:3758 with SMTP id p10-20020a17090ad30a00b002aac2ba3758mr8212757pju.42.1714955361360;
+        Sun, 05 May 2024 17:29:21 -0700 (PDT)
+Received: from [192.168.1.15] (174-21-160-85.tukw.qwest.net. [174.21.160.85])
+        by smtp.gmail.com with ESMTPSA id h4-20020a17090a710400b002b1314ba8c0sm8708252pjk.57.2024.05.05.17.29.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 May 2024 08:00:49 -0700 (PDT)
-Message-ID: <31f1bbfb-733c-4027-834c-98f155562941@linaro.org>
-Date: Sat, 4 May 2024 08:00:46 -0700
+        Sun, 05 May 2024 17:29:20 -0700 (PDT)
+Message-ID: <306cf793-6f96-4a22-aca0-53c0ccefc0a1@davidwei.uk>
+Date: Sun, 5 May 2024 17:29:18 -0700
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -61,46 +61,95 @@ List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 14/14] alpha: drop pre-EV56 support
-To: Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Ivan Kokshaysky
- <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>,
- Alexander Viro <viro@zeniv.linux.org.uk>, Marc Zyngier <maz@kernel.org>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- "Paul E. McKenney" <paulmck@kernel.org>, linux-kernel@vger.kernel.org
-References: <20240503081125.67990-1-arnd@kernel.org>
- <20240503081125.67990-15-arnd@kernel.org>
-Content-Language: en-US
-From: Richard Henderson <richard.henderson@linaro.org>
-In-Reply-To: <20240503081125.67990-15-arnd@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [RFC PATCH net-next v8 07/14] page_pool: devmem support
+Content-Language: en-GB
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
+ linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+ bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
+ <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+ Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
+ Jesper Dangaard Brouer <hawk@kernel.org>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
+ Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
+ Martin KaFai Lau <martin.lau@linux.dev>, Eduard Zingerman
+ <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
+ Yonghong Song <yonghong.song@linux.dev>,
+ John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
+ Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>,
+ Jiri Olsa <jolsa@kernel.org>, Steffen Klassert
+ <steffen.klassert@secunet.com>, Herbert Xu <herbert@gondor.apana.org.au>,
+ David Ahern <dsahern@kernel.org>,
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+ Shuah Khan <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Amritha Nambiar <amritha.nambiar@intel.com>,
+ Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+ Alexander Mikhalitsyn <alexander@mihalicyn.com>,
+ Kaiyuan Zhang <kaiyuanz@google.com>, Christian Brauner <brauner@kernel.org>,
+ Simon Horman <horms@kernel.org>, David Howells <dhowells@redhat.com>,
+ Florian Westphal <fw@strlen.de>, Yunsheng Lin <linyunsheng@huawei.com>,
+ Kuniyuki Iwashima <kuniyu@amazon.com>, Jens Axboe <axboe@kernel.dk>,
+ Arseniy Krasnov <avkrasnov@salutedevices.com>,
+ Aleksander Lobakin <aleksander.lobakin@intel.com>,
+ Michael Lass <bevan@bi-co.net>, Jiri Pirko <jiri@resnulli.us>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ Lorenzo Bianconi <lorenzo@kernel.org>,
+ Richard Gobert <richardbgobert@gmail.com>,
+ Sridhar Samudrala <sridhar.samudrala@intel.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+ Johannes Berg <johannes.berg@intel.com>, Abel Wu <wuyun.abel@bytedance.com>,
+ Breno Leitao <leitao@debian.org>, Pavel Begunkov <asml.silence@gmail.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Shailend Chand <shailend@google.com>,
+ Harshitha Ramamurthy <hramamurthy@google.com>,
+ Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst
+ <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>,
+ linux-mm@kvack.org, Matthew Wilcox <willy@infradead.org>
+References: <20240403002053.2376017-1-almasrymina@google.com>
+ <20240403002053.2376017-8-almasrymina@google.com>
+ <8357256a-f0e9-4640-8fec-23341fc607db@davidwei.uk>
+ <ZjH1hO8qJgOqNKub@infradead.org>
+From: David Wei <dw@davidwei.uk>
+In-Reply-To: <ZjH1hO8qJgOqNKub@infradead.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 5/3/24 01:11, Arnd Bergmann wrote:
->   
-> -/* Flush just one page in the current TLB set.  We need to be very
-> -   careful about the icache here, there is no way to invalidate a
-> -   specific icache page.  */
-> -
-> -__EXTERN_INLINE void
-> -ev4_flush_tlb_current_page(struct mm_struct * mm,
-> -			   struct vm_area_struct *vma,
-> -			   unsigned long addr)
-> -{
-> -	int tbi_flag = 2;
-> -	if (vma->vm_flags & VM_EXEC) {
-> -		__load_new_mm_context(mm);
-> -		tbi_flag = 3;
-> -	}
-> -	tbi(tbi_flag, addr);
-> -}
-> -
->   __EXTERN_INLINE void
->   ev5_flush_tlb_current_page(struct mm_struct * mm,
->   			   struct vm_area_struct *vma,
+On 2024-05-01 00:55, Christoph Hellwig wrote:
+> On Fri, Apr 26, 2024 at 05:17:52PM -0700, David Wei wrote:
+>> On 2024-04-02 5:20 pm, Mina Almasry wrote:
+>>> @@ -69,20 +106,26 @@ net_iov_binding(const struct net_iov *niov)
+>>>   */
+>>>  typedef unsigned long __bitwise netmem_ref;
+>>>  
+>>> +static inline bool netmem_is_net_iov(const netmem_ref netmem)
+>>> +{
+>>> +#if defined(CONFIG_PAGE_POOL) && defined(CONFIG_DMA_SHARED_BUFFER)
+>>
+>> I am guessing you added this to try and speed up the fast path? It's
+>> overly restrictive for us since we do not need dmabuf necessarily. I
+>> spent a bit too much time wondering why things aren't working only to
+>> find this :(
+> 
+> So what else do you need?  I was assured last round that nothing but
+> dmabuf and potentially the huge page case (that really just is the page
+> provider) would get added.
 
-The comment being removed applied to both functions and still applies to 
-ev5_flush_tlb_current_page.  (Thus __load_new_mm_context instead of a tbi.)
+I'm using userspace memory so having this gated behind
+CONFIG_DMA_SHARED_BUFFER doesn't make sense for us.
 
-
-r~
+> 
+>>
+> ---end quoted text---
