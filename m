@@ -1,150 +1,225 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from fhigh1-smtp.messagingengine.com (fhigh1-smtp.messagingengine.com [103.168.172.152])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4E902747D;
-	Thu,  9 May 2024 04:49:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3332313B59A;
+	Fri, 10 May 2024 21:20:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715230195; cv=none; b=BCjXOxe0Oa9542fw/UqQXY4T5vcOs8zMxCx7ihNJu1oKiYO/d3Eh929W80bhDyr3DpbfLfuzr0zmYwwE9pI+E/g2eRC55q6a9SOAlpFVblFM+MuKjehqJPB6G8NtbUIxpEgVfiDcXzsZAMgNyQ4n9UKB5Z3UEquJx/YJMp49ERc=
+	t=1715376023; cv=none; b=V21aovs9e1XgMUXEEkFpI5RluLfH9v+50YVML6dZGSXnVYJBXbj1fLXP6hr8HsgqAkUZbwjA98dx2Cp/Eg/lgGQzGxy+DX7kddH00/yEZYp4Fqb8RcnmABGzNZILe5JY9rVVeAcZiZeQW16iR+0WvvlgZO2aXTmtLgoigyJ1Tjc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715230195; c=relaxed/simple;
-	bh=+AiojDAJmMoCc0Wxxh5jISkjo5+IH8X8Y3hjru7idxw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Gd3tEsR/YQv0byIK1xjrl8o5hHsNLMKfXXH2YrBPy+qRa3XHUzeq41uD/hGk9158kxvmhCMG8KcXCYFXTNlXVTOP2Wtw56iRtrxB49RwlFBFP+KGePBvwY9IrDGeqT/tLf/oSBQJ/pYPuAj3ZSgeLMiGhvl2GtDB0nWb5/WBe8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=d9k3Xohb; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	s=arc-20240116; t=1715376023; c=relaxed/simple;
+	bh=tSJuiRDV+CYJB5wJGdMlExG6bfQqglAbRPbjngLBA28=;
+	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
+	 Subject:Content-Type; b=L/ZhN4RINfSGRUffCcZKyKB0i6UcJp6ModrUeJre7p2EJbOQbWcX8RZRwjLRCZQgjdjINgjUsF6S0kup1JzykKDjq+V+yqSlhuLbbX+Zy9MvwEabnsGsZGEObpcSVnEfOITY1+PxUvUXUgXrfZzMBG/3yy2KJhWReT2fd5kjq+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=QOpwtB3j; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=InT8nqHg; arc=none smtp.client-ip=103.168.172.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="d9k3Xohb"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=x3Xxg6i0FLAN0umHIWCwG93UHt8NFMOuUk41qzLUqYk=; b=d9k3XohbzRhXOoELgdBEeA6f1S
-	3oOjwUmoqaRaQC0CvfU6k+88iGiYqGevi4D0Mjv1XT/tJ31yElVIPjyooqUNsndaV6nr1hGD5KD6Y
-	hpVyEo5ud1SsOU0IbJ/27faXATUncL94DVq2aq/GP8tX02rBz5V+LazPctxgZmjT4XiNg5CteZelR
-	F250+x02riIYTRrco+NPB3RdRCFIh0LOb6pIdqAbmqXgrCWDOGcloO9JUAvrLzhBGKhu3BAgULPxQ
-	P+NUz6+r5CHQPlzEem7mdtAOYVy13sfKqnZcHBQZehzZ76EOcgOw/zp4uB68EXKz4VKifIE4VqybV
-	dq8ZPucQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1s4vit-00000000LYS-0m4f;
-	Thu, 09 May 2024 04:49:39 +0000
-Date: Wed, 8 May 2024 21:49:39 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Pavel Begunkov <asml.silence@gmail.com>
-Cc: Christoph Hellwig <hch@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
-	linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-	bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Andrii Nakryiko <andrii@kernel.org>,
-	Martin KaFai Lau <martin.lau@linux.dev>,
-	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
-	Yonghong Song <yonghong.song@linux.dev>,
-	John Fastabend <john.fastabend@gmail.com>,
-	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
-	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-	Steffen Klassert <steffen.klassert@secunet.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	David Ahern <dsahern@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Shuah Khan <shuah@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Amritha Nambiar <amritha.nambiar@intel.com>,
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	Alexander Mikhalitsyn <alexander@mihalicyn.com>,
-	Kaiyuan Zhang <kaiyuanz@google.com>,
-	Christian Brauner <brauner@kernel.org>,
-	Simon Horman <horms@kernel.org>,
-	David Howells <dhowells@redhat.com>,
-	Florian Westphal <fw@strlen.de>,
-	Yunsheng Lin <linyunsheng@huawei.com>,
-	Kuniyuki Iwashima <kuniyu@amazon.com>, Jens Axboe <axboe@kernel.dk>,
-	Arseniy Krasnov <avkrasnov@salutedevices.com>,
-	Aleksander Lobakin <aleksander.lobakin@intel.com>,
-	Michael Lass <bevan@bi-co.net>, Jiri Pirko <jiri@resnulli.us>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
-	Richard Gobert <richardbgobert@gmail.com>,
-	Sridhar Samudrala <sridhar.samudrala@intel.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Johannes Berg <johannes.berg@intel.com>,
-	Abel Wu <wuyun.abel@bytedance.com>,
-	Breno Leitao <leitao@debian.org>, David Wei <dw@davidwei.uk>,
-	Shailend Chand <shailend@google.com>,
-	Harshitha Ramamurthy <hramamurthy@google.com>,
-	Shakeel Butt <shakeel.butt@linux.dev>,
-	Jeroen de Borst <jeroendb@google.com>,
-	Praveen Kaligineedi <pkaligineedi@google.com>
-Subject: Re: [RFC PATCH net-next v8 02/14] net: page_pool: create hooks for
- custom page providers
-Message-ID: <ZjxV4yEYXRGElrsA@infradead.org>
-References: <CAHS8izPH+sRLSiZ7vbrNtRdHrFEf8XQ61XAyHuxRSL9Jjy8YbQ@mail.gmail.com>
- <20240507164838.GG4718@ziepe.ca>
- <0d5da361-cc7b-46e9-a635-9a7a4c208444@gmail.com>
- <20240507175644.GJ4718@ziepe.ca>
- <6a50d01a-b5b9-4699-9d58-94e5f8f81c13@gmail.com>
- <20240507233247.GK4718@ziepe.ca>
- <Zjsm3vO6rIY_sw5A@phenom.ffwll.local>
- <1e2823db-504b-4829-856f-3f45a45ccada@gmail.com>
- <ZjufddNVJs5Csaix@infradead.org>
- <8ced4c49-d153-40fb-9e62-0a5784cfa864@gmail.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="QOpwtB3j";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="InT8nqHg"
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailfhigh.nyi.internal (Postfix) with ESMTP id 357961140150;
+	Fri, 10 May 2024 17:20:17 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Fri, 10 May 2024 17:20:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm3; t=1715376017; x=1715462417; bh=EkgGfm04sZ
+	P1741DkIoCLols09u8gma8LG+8ffwSpT0=; b=QOpwtB3jdubpJMtx2RzaGifonH
+	XjSJQYhlEHb8Fbr4hYxbnroL2NgXd1yoL4sacCBesirdOZV2Xm1lDHa4l6fdJC9f
+	O0C3TfpPa3yuianGmrDUVhWF7ZKfbXH6zk4w1wib/dJ0COdpdAJNuadwv9Qjr4aW
+	PKEQFzM4Uw3eysoIKOgqZG8ceHv8kDZlfAolM1Y1ByqFXM+a1CpSW6LJ4h25de1Y
+	+c1Ogniw8XyYRerPNsgivEiGWc7UKNmGh6UT1Xp2Fu3WfNgM7R5sghjEdYR29Byj
+	clK5s8HrQAETcRI+xz4M1XiZVQSVKEfoMwNjM3t/kWxzUx111+R+koo9yRsA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm3; t=1715376017; x=1715462417; bh=EkgGfm04sZP1741DkIoCLols09u8
+	gma8LG+8ffwSpT0=; b=InT8nqHgEihs7Emcqt9D4Lr9tiprsbozFTfOT7qkHk39
+	VH9R76ThjN1NuvOdMcQKwp45WJQZ5kSoCqpJcgxLiezWinkpK+oa5ua+/VVoQ/3p
+	4lRVpFRv+ZyG/eJakMdTwmB/NP785PcpeHrjXhUPGCQEtNGxyERsbS2Gr6kq8YVq
+	3Y++2eDfy4Fgv9lVqvnGA+zthoIFhuXnxyfTfvQ2z1+x6yV/xhLMdHh+aDRU184V
+	zuLi4pBUz3z532qnHps1havE5y7KymARsnIKoOVjJuQb1MZWa/2IOagdA2fUP+UR
+	Gs0p7xPksSnNq5PqgeGp5rcJnS7VaOkhcj3OnUxAsQ==
+X-ME-Sender: <xms:kI8-ZhPwibcwi-LvSD0JiZIIVCbfuo-AblFtgKEvDxLSxdnUYfVx9g>
+    <xme:kI8-Zj9m5iaDwdIYWNNvpQnixQ5cLId7NmQKTXLwzAz3FYTo3BXw8vg_CDm7i8WAa
+    OCmoVZBURUJm2Myxgo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrvdefkedgudehlecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
+    htthgvrhhnpeevhfffledtgeehfeffhfdtgedvheejtdfgkeeuvefgudffteettdekkeeu
+    feehudenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:kI8-ZgR7amt0jP0ZO8gmvjA4bwQJ0qdevFt-9SZ_-gOHrW-KW14OJA>
+    <xmx:kI8-Zttkb4tB-AV13IRtRTCovr1wb1rtbHWKQwhVzwtyFL580FWC2g>
+    <xmx:kI8-Zpd3MpO2GFGad5LxJ0d3aE4TLTrac3F0SGMNuJf2NJQrRcfWRg>
+    <xmx:kI8-Zp0xCbYH71j01W0xOYtMqzSC3IXxZXI8BCOwxDO_DP-5XEG6Fw>
+    <xmx:kY8-ZowsfpBRFRkmOyxqR0H2m5HgNil51hRrZaCZpuV85f_xe9h0EQqA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 6A8DDB6008D; Fri, 10 May 2024 17:20:16 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.11.0-alpha0-443-g0dc955c2a-fm-20240507.001-g0dc955c2
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8ced4c49-d153-40fb-9e62-0a5784cfa864@gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Message-Id: <e383dfe5-814a-4a87-befc-4831a7788f42@app.fastmail.com>
+In-Reply-To: <71feb004-82ef-4c7b-9e21-0264607e4b20@app.fastmail.com>
+References: <71feb004-82ef-4c7b-9e21-0264607e4b20@app.fastmail.com>
+Date: Fri, 10 May 2024 23:19:56 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Linus Torvalds" <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, Linux-Arch <linux-arch@vger.kernel.org>,
+ linux-alpha@vger.kernel.org,
+ "Richard Henderson" <richard.henderson@linaro.org>,
+ "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
+ "Matt Turner" <mattst88@gmail.com>,
+ "Alexander Viro" <viro@zeniv.linux.org.uk>,
+ "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [GIT PULL] alpha: cleanups and build fixes for 6.10
+Content-Type: text/plain
 
-On Wed, May 08, 2024 at 06:02:14PM +0100, Pavel Begunkov wrote:
-> Well, the example fell flat, but you don't use dmabuf when there are
-> no upsides from using it. For instance, when you already have pinned
-> pages, you're going to use pages, and there are no other refcounting
-> concerns.
+The following changes since commit fec50db7033ea478773b159e0e2efb135270e3b7:
 
-Sure.
+  Linux 6.9-rc3 (2024-04-07 13:22:46 -0700)
 
-> Unless there is an advantage of dmabufs over FOLL_LONGTERM
-> that I don't know about when used with normal user pages.
+are available in the Git repository at:
 
-The advantages of using a dma-buf over FOLL_LONGTERM are:
+  https://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git tags/asm-generic-alpha
 
- a) you pre-dma map, which is a significant performance advantage for
-    IOMMU-based setups
- b) you support any dma-buf exported and not just user memory.  This
-    is primarily important for PCIe P2P, but there might be other
-    useful exporters as well
+for you to fetch changes up to a4184174be36369c3af8d937e165f28a43ef1e02:
 
-> > wish io_uring would have just implemented them from the start instead of
-> > the current fixed buffers that are not quite as useful by not
-> > pre-mapping DMA and not supporting P2P.
-> 
-> fdget(dmabuf) would be horrible, I assume that's not the suggestion.
+  alpha: drop pre-EV56 support (2024-05-06 12:05:00 +0200)
 
-I'm not even sure what you mean with that.
+----------------------------------------------------------------
+alpha: cleanups and build fixes
 
+I had investigated dropping support for alpha EV5 and earlier a while
+ago after noticing that this is the only supported CPU family
+in the kernel without native byte access and that Debian has already
+dropped support for this generation last year [1] in order to
+improve performance for the newer machines.
+
+This topic came up again when Paul E. McKenney noticed that
+parts of the RCU code already rely on byte access and do not
+work on alpha EV5 reliably, so we decided on using my series to
+avoid the problem entirely.
+
+Al Viro did another series for alpha to address all the known build
+issues. I rebased his patches without any further changes and included
+it as a baseline for my work here to avoid conflicts and allow
+backporting the fixes to stable kernels for the now removed hardware
+support as well.
+
+----------------------------------------------------------------
+Al Viro (9):
+      alpha: sort scr_mem{cpy,move}w() out
+      alpha: fix modversions for strcpy() et.al.
+      alpha: add clone3() support
+      alpha: don't make functions public without a reason
+      alpha: sys_sio: fix misspelled ifdefs
+      alpha: missing includes
+      alpha: core_lca: take the unused functions out
+      alpha: jensen, t2 - make __EXTERN_INLINE same as for the rest
+      alpha: trim the unused stuff from asm-offsets.c
+
+Arnd Bergmann (5):
+      alpha: remove DECpc AXP150 (Jensen) support
+      alpha: sable: remove early machine support
+      alpha: remove LCA and APECS based machines
+      alpha: cabriolet: remove EV5 CPU support
+      alpha: drop pre-EV56 support
+
+ Documentation/driver-api/eisa.rst      |   4 +-
+ arch/alpha/Kconfig                     | 175 +----------
+ arch/alpha/Makefile                    |   8 +-
+ arch/alpha/include/asm/core_apecs.h    | 534 ---------------------------------
+ arch/alpha/include/asm/core_lca.h      | 378 -----------------------
+ arch/alpha/include/asm/core_t2.h       |   8 -
+ arch/alpha/include/asm/dma-mapping.h   |   4 -
+ arch/alpha/include/asm/dma.h           |   9 +-
+ arch/alpha/include/asm/elf.h           |   4 +-
+ arch/alpha/include/asm/io.h            |  26 +-
+ arch/alpha/include/asm/irq.h           |  10 +-
+ arch/alpha/include/asm/jensen.h        | 363 ----------------------
+ arch/alpha/include/asm/machvec.h       |   9 -
+ arch/alpha/include/asm/mmu_context.h   |  45 +--
+ arch/alpha/include/asm/special_insns.h |   5 +-
+ arch/alpha/include/asm/tlbflush.h      |  37 +--
+ arch/alpha/include/asm/uaccess.h       |  80 -----
+ arch/alpha/include/asm/vga.h           |   2 +
+ arch/alpha/include/uapi/asm/compiler.h |  18 --
+ arch/alpha/kernel/Makefile             |  25 +-
+ arch/alpha/kernel/asm-offsets.c        |  21 +-
+ arch/alpha/kernel/bugs.c               |   1 +
+ arch/alpha/kernel/console.c            |   1 +
+ arch/alpha/kernel/core_apecs.c         | 420 --------------------------
+ arch/alpha/kernel/core_cia.c           |   6 +-
+ arch/alpha/kernel/core_irongate.c      |   1 -
+ arch/alpha/kernel/core_lca.c           | 517 -------------------------------
+ arch/alpha/kernel/core_marvel.c        |   2 +-
+ arch/alpha/kernel/core_t2.c            |   2 +-
+ arch/alpha/kernel/core_wildfire.c      |   8 +-
+ arch/alpha/kernel/entry.S              |   1 +
+ arch/alpha/kernel/io.c                 |  19 ++
+ arch/alpha/kernel/irq.c                |   1 +
+ arch/alpha/kernel/irq_i8259.c          |   4 -
+ arch/alpha/kernel/machvec_impl.h       |  25 +-
+ arch/alpha/kernel/pci-noop.c           | 113 -------
+ arch/alpha/kernel/pci_impl.h           |   4 +-
+ arch/alpha/kernel/perf_event.c         |   2 +-
+ arch/alpha/kernel/proto.h              |  44 +--
+ arch/alpha/kernel/setup.c              | 109 +------
+ arch/alpha/kernel/smc37c669.c          |   6 +-
+ arch/alpha/kernel/smc37c93x.c          |   2 +
+ arch/alpha/kernel/smp.c                |   1 +
+ arch/alpha/kernel/srmcons.c            |   2 +
+ arch/alpha/kernel/sys_cabriolet.c      |  87 +-----
+ arch/alpha/kernel/sys_eb64p.c          | 238 ---------------
+ arch/alpha/kernel/sys_jensen.c         | 237 ---------------
+ arch/alpha/kernel/sys_mikasa.c         |  57 ----
+ arch/alpha/kernel/sys_nautilus.c       |   8 +-
+ arch/alpha/kernel/sys_noritake.c       |  60 ----
+ arch/alpha/kernel/sys_sable.c          | 294 +-----------------
+ arch/alpha/kernel/sys_sio.c            | 486 ------------------------------
+ arch/alpha/kernel/syscalls/syscall.tbl |   2 +-
+ arch/alpha/kernel/traps.c              |  64 ----
+ arch/alpha/lib/Makefile                |  14 -
+ arch/alpha/lib/checksum.c              |   1 +
+ arch/alpha/lib/fpreg.c                 |   1 +
+ arch/alpha/lib/memcpy.c                |   3 +
+ arch/alpha/lib/stycpy.S                |  11 +
+ arch/alpha/lib/styncpy.S               |  11 +
+ arch/alpha/math-emu/math.c             |   7 +-
+ arch/alpha/mm/init.c                   |   2 +-
+ drivers/char/agp/alpha-agp.c           |   2 +-
+ drivers/eisa/Kconfig                   |   9 +-
+ drivers/eisa/virtual_root.c            |   2 +-
+ drivers/input/serio/i8042-io.h         |   5 +-
+ drivers/tty/serial/8250/8250.h         |   3 -
+ drivers/tty/serial/8250/8250_alpha.c   |  21 --
+ drivers/tty/serial/8250/8250_core.c    |   4 -
+ drivers/tty/serial/8250/Makefile       |   2 -
+ include/linux/blk_types.h              |   6 -
+ include/linux/tty.h                    |  14 +-
+ 72 files changed, 166 insertions(+), 4541 deletions(-)
+ delete mode 100644 arch/alpha/include/asm/core_apecs.h
+ delete mode 100644 arch/alpha/include/asm/core_lca.h
+ delete mode 100644 arch/alpha/include/asm/jensen.h
+ delete mode 100644 arch/alpha/kernel/core_apecs.c
+ delete mode 100644 arch/alpha/kernel/core_lca.c
+ delete mode 100644 arch/alpha/kernel/pci-noop.c
+ delete mode 100644 arch/alpha/kernel/sys_eb64p.c
+ delete mode 100644 arch/alpha/kernel/sys_jensen.c
+ delete mode 100644 arch/alpha/kernel/sys_sio.c
+ create mode 100644 arch/alpha/lib/stycpy.S
+ create mode 100644 arch/alpha/lib/styncpy.S
+ delete mode 100644 drivers/tty/serial/8250/8250_alpha.c
