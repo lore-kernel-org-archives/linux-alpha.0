@@ -1,214 +1,101 @@
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D0E63D96A
-	for <linux-alpha@vger.kernel.org>; Sat, 18 May 2024 18:57:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 848591FBB;
+	Tue, 21 May 2024 18:46:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716058651; cv=none; b=tdcQGfi8qpfI5fo01h4nqu6JFOlvM1MgBNpCxD2GYnUXV6ARiWbQUsIIUVdLdc0MKbuqdEXOQBlTV+YY9plJ5JOY5+B0gjuBu9Oz3BwjxwVps3e/U6jxmNBXMTcy2oBl/qzl85x9HNs/UgiCfOXxqbeqDkvu4xVBNE9JPyCD9G4=
+	t=1716317220; cv=none; b=G6r1r8wEXXSjcDSnaqPJwL3Ztvau8ELi/q4lJgPVmwLRC6jOjlq5tmEP9/Uq1DjcIBClX7kQ5NcSTK1HX3bMIYTaBb4d4um1Sf304gv9BufUgtfzvCmLZI/y843Ub45OP7+0nYC4tHrquCY8jlNQYS7woPp6NXw3Odg05nPl0Uw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716058651; c=relaxed/simple;
-	bh=wAqIRcCabbfn5FNmvGNIGPL+iroeEmFcrvMhrlMZdAE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nE1H8iaZKuEQYnN8gH+4QMLlTZtuV50RoxDGKIwkBUTur5ADembYEU4dd3Ef0gpb+v8t0FyTYm0kTigF7W7ssyq+2DpiY3GehH2D+9DcXz66XoNe5VwFRorlntod1G45T+alj8ZbhNPa4I/yBvPevnQU8JvNjgZO17Vu6+1VlMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=davidwei.uk; spf=none smtp.mailfrom=davidwei.uk; dkim=pass (2048-bit key) header.d=davidwei-uk.20230601.gappssmtp.com header.i=@davidwei-uk.20230601.gappssmtp.com header.b=v/AmV8kq; arc=none smtp.client-ip=209.85.161.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=davidwei.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=davidwei.uk
+	s=arc-20240116; t=1716317220; c=relaxed/simple;
+	bh=XqxKOHttdZ46eK91LTby3jcYvDTPEtz6AIEvPA04bec=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=RCZL2fD6tStyg5mWU1MrKARDuNO+jj09RPtEJifUY3X98IP0QGaNjOe7iOKYMosHook+ixhy0sKLMzRRe0asbis8/H98ubVV4oO4Yi0pEiXP1ukQ8sCiSFMjLLNmfZEo/Plc2h4HIJaMqiNr26q27PMOmVwRlf4W/bJLY/Bua94=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=QViIUyaS; arc=none smtp.client-ip=130.133.4.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=davidwei-uk.20230601.gappssmtp.com header.i=@davidwei-uk.20230601.gappssmtp.com header.b="v/AmV8kq"
-Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-5b3241373adso775242eaf.2
-        for <linux-alpha@vger.kernel.org>; Sat, 18 May 2024 11:57:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=davidwei-uk.20230601.gappssmtp.com; s=20230601; t=1716058649; x=1716663449; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YguLbfIUe9SPEVY4PVRNzJgWNLjHIbYrZNjYPjw1wDY=;
-        b=v/AmV8kq3UZnHRDaqHKqhNVypfUF8x6d6yBi1N5G0tcfRYE7ce3MRpUzwl4YK2pDOY
-         0gSkGZswCXm5bMtnmSlhuxkbS/tIUF9okGsjBZ5fby4NKwqYTPIwTzC4ZoclOyTZFLem
-         RT2+G780T4Rvt6sAdooeJFD4Qw3kSZNGJ+JoLSw1NmiZZpBQstNxMDIY5BleC4qlptFg
-         +S8gDOPygxpPebphBpPjxk+hnz5mYSWeMnl3BWZFaLUWoQw272KOFLgpA509meCbeaTc
-         1zy687rDIDcZ+p0a/pi8z2PkHBDskEdl/PpU+UT704u1+W7ImWvpp5WEZODo1Gd2YGEU
-         ZAqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716058649; x=1716663449;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YguLbfIUe9SPEVY4PVRNzJgWNLjHIbYrZNjYPjw1wDY=;
-        b=kCZMYa3RtcDgRNF+E9a7wXCwpJikI6JsgBb6iUdpfiyk67Os+dS321bpy4zE/1xWgm
-         40eVKq7EdIzJcipRG9v3Xo+WvuZemhhwTMRa5sZLNfs763wFjdmsmnzjfIw2kRTKe4Ev
-         NIal1TCOCFfJk9Grx4kd2Fds5JvmEe6n2TowiHRW7cqU3U//Kv6dx7xCHiVouWgwYeOq
-         07SbfkfBcOVgw1ciyNd77oD/Ufiw04P5k0AOgHJljootJev8Nmwj4I/1nLBYlg1Iolna
-         SZsHCaIbzj6cg20DVUJ+Su6cMioRSsq9iwaEGmSengFpyEGT2Xq92k92P4GYeAFkebZX
-         Xlzg==
-X-Forwarded-Encrypted: i=1; AJvYcCXmkJfoo8moVcwhTuiMWp4Mdknaihm+NoVGYkRGNt6Y9gaQIeF1hFJjy+vXy5k8zP5vsxGSNBwUT7SMNNCFK+fOrCjWzwFWsRE0y2Q=
-X-Gm-Message-State: AOJu0Yzxv86aGLhBsX31Dyi//OzJoao4X5EuFicuLie+FfSKmStyuLrD
-	jX0F56Tq+zZ4R66TFSEq+d3Zi1yvjiakYfUsk69PI1y3PUfollzuQx4DwEV2BZ4=
-X-Google-Smtp-Source: AGHT+IHilXoeJ/w5ohYR0i7AU3401ochXIU5LArEI0v5RdvvJ31YBmDQam4A7KpiPZymCfWrte5bew==
-X-Received: by 2002:a05:6358:3a11:b0:17b:5661:5e2b with SMTP id e5c5f4694b2df-193bb64065bmr2817534555d.18.1716058648846;
-        Sat, 18 May 2024 11:57:28 -0700 (PDT)
-Received: from [192.168.1.16] (174-21-188-197.tukw.qwest.net. [174.21.188.197])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-658764fda40sm5342410a12.5.2024.05.18.11.57.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 May 2024 11:57:28 -0700 (PDT)
-Message-ID: <eeb59c4f-9208-4700-b73b-9652398371d7@davidwei.uk>
-Date: Sat, 18 May 2024 11:57:26 -0700
+	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="QViIUyaS"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=fu-berlin.de; s=fub01; h=Content-Transfer-Encoding:MIME-Version:References:
+	In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=Y/5UVdvZ1lmITZcH56jVLeBbXXMJ/x+KMGtg8QR5gjY=; t=1716317216; x=1716922016; 
+	b=QViIUyaS5g6cq8jZ5a/2fvkWiF9aPY3NhmBPcJT79gYbWliHfzldPeb5SaE77ubNshtmy/0sjQq
+	b64/RFVed8TLdLUFDgcdnUhmFeja3+w/oKty+K61hsn5WVvjWjyjua9dxuZAkqTbJ8kB9CxZujkyF
+	5kfDWG/tT/O0xqWqWSkSeX6CWyasiT9s9bKENiuCju2yjrsBNUojQ+8QnJa85v4bV6nhU1OT4+3Ph
+	2E7qIYrRDEVYg4Mo0H+X+kib7qHNvcLCb5ohmbRPLo2ol7W7S0aXsvi5DHEvWtFtXAPQwnUwtCmO8
+	nEwcmqWzWeWZMcb4Lk1hDJiwDWv/BBoH9Pjg==;
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.97)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1s9UVh-00000000hEi-0uCa; Tue, 21 May 2024 20:46:53 +0200
+Received: from p57bd9a40.dip0.t-ipconnect.de ([87.189.154.64] helo=z6.fritz.box)
+          by inpost2.zedat.fu-berlin.de (Exim 4.97)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1s9UVh-00000001cSH-020X; Tue, 21 May 2024 20:46:53 +0200
+Received: from glaubitz by z6.fritz.box with local (Exim 4.96)
+	(envelope-from <glaubitz@physik.fu-berlin.de>)
+	id 1s9UVg-007rnG-2B;
+	Tue, 21 May 2024 20:46:52 +0200
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To: mattst88@gmail.com
+Cc: keescook@chromium.org,
+	linux-alpha@vger.kernel.org,
+	linux-arch@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: Regression bisected to f2f84b05e02b (bug: consolidate warn_slowpath_fmt() usage)
+Date: Tue, 21 May 2024 20:46:52 +0200
+Message-Id: <20240521184652.1875074-1-glaubitz@physik.fu-berlin.de>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20200602024804.GA3776630@p50-ethernet.mattst88.com>
+References: <20200602024804.GA3776630@p50-ethernet.mattst88.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v9 04/14] netdev: support binding dma-buf to
- netdevice
-Content-Language: en-GB
-To: Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
- bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc: Donald Hunter <donald.hunter@gmail.com>, Jakub Kicinski
- <kuba@kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Richard Henderson <richard.henderson@linaro.org>,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
- <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
- <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
- Martin KaFai Lau <martin.lau@linux.dev>, Eduard Zingerman
- <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
- Yonghong Song <yonghong.song@linux.dev>,
- John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
- Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>,
- Jiri Olsa <jolsa@kernel.org>, Steffen Klassert
- <steffen.klassert@secunet.com>, Herbert Xu <herbert@gondor.apana.org.au>,
- David Ahern <dsahern@kernel.org>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- Shuah Khan <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Pavel Begunkov <asml.silence@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>,
- Harshitha Ramamurthy <hramamurthy@google.com>,
- Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst
- <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>,
- Willem de Bruijn <willemb@google.com>, Kaiyuan Zhang <kaiyuanz@google.com>
-References: <20240510232128.1105145-1-almasrymina@google.com>
- <20240510232128.1105145-5-almasrymina@google.com>
-From: David Wei <dw@davidwei.uk>
-In-Reply-To: <20240510232128.1105145-5-almasrymina@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-ZEDAT-Hint: PO
 
-On 2024-05-10 16:21, Mina Almasry wrote:
-> -/* Stub */
->  int netdev_nl_bind_rx_doit(struct sk_buff *skb, struct genl_info *info)
->  {
-> -	return 0;
-> +	struct nlattr *tb[ARRAY_SIZE(netdev_queue_dmabuf_nl_policy)];
-> +	struct net_devmem_dmabuf_binding *out_binding;
-> +	struct list_head *sock_binding_list;
-> +	u32 ifindex, dmabuf_fd, rxq_idx;
-> +	struct net_device *netdev;
-> +	struct sk_buff *rsp;
-> +	struct nlattr *attr;
-> +	int rem, err = 0;
-> +	void *hdr;
-> +
-> +	if (GENL_REQ_ATTR_CHECK(info, NETDEV_A_DEV_IFINDEX) ||
-> +	    GENL_REQ_ATTR_CHECK(info, NETDEV_A_BIND_DMABUF_DMABUF_FD) ||
-> +	    GENL_REQ_ATTR_CHECK(info, NETDEV_A_BIND_DMABUF_QUEUES))
-> +		return -EINVAL;
-> +
-> +	ifindex = nla_get_u32(info->attrs[NETDEV_A_DEV_IFINDEX]);
-> +	dmabuf_fd = nla_get_u32(info->attrs[NETDEV_A_BIND_DMABUF_DMABUF_FD]);
-> +
-> +	rtnl_lock();
-> +
-> +	netdev = __dev_get_by_index(genl_info_net(info), ifindex);
-> +	if (!netdev) {
-> +		err = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	err = net_devmem_bind_dmabuf(netdev, dmabuf_fd, &out_binding);
-> +	if (err)
-> +		goto err_unlock;
-> +
-> +	nla_for_each_attr(attr, genlmsg_data(info->genlhdr),
-> +			  genlmsg_len(info->genlhdr), rem) {
-> +		if (nla_type(attr) != NETDEV_A_BIND_DMABUF_QUEUES)
-> +			continue;
-> +
-> +		err = nla_parse_nested(
-> +			tb, ARRAY_SIZE(netdev_queue_dmabuf_nl_policy) - 1, attr,
-> +			netdev_queue_dmabuf_nl_policy, info->extack);
-> +		if (err < 0)
-> +			goto err_unbind;
-> +
-> +		rxq_idx = nla_get_u32(tb[NETDEV_A_QUEUE_DMABUF_IDX]);
-> +		if (rxq_idx >= netdev->num_rx_queues) {
-> +			err = -ERANGE;
-> +			goto err_unbind;
-> +		}
+Hi,
 
-net_devmem_bind_dmabuf_to_queue() checks for rxq_idx >=
-netdev->num_rx_queues as well. I'd say remove the one in
-netdev_nl_bind_rx_doit().
+Replacing the calls to raw_smp_processor_id() in __warn() with just "0" fixes the problem for me:
 
-Also we may want a generic netdev function e.g. netdev_rx_queue_set_mp()
-since I need the same functionality.
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 8bff183d6180..12f6cea6b8b0 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -671,11 +671,11 @@ void __warn(const char *file, int line, void *caller, unsigned taint,
+ 
+        if (file)
+                pr_warn("WARNING: CPU: %d PID: %d at %s:%d %pS\n",
+-                       raw_smp_processor_id(), current->pid, file, line,
++                       0, current->pid, file, line,
+                        caller);
+        else
+                pr_warn("WARNING: CPU: %d PID: %d at %pS\n",
+-                       raw_smp_processor_id(), current->pid, caller);
++                       0, current->pid, caller);
+ 
+ #pragma GCC diagnostic push
+ #ifndef __clang__
 
-> +
-> +		err = net_devmem_bind_dmabuf_to_queue(netdev, rxq_idx,
-> +						      out_binding);
-> +		if (err)
-> +			goto err_unbind;
-> +	}
-> +
-> +	sock_binding_list = genl_sk_priv_get(&netdev_nl_family,
-> +					     NETLINK_CB(skb).sk);
-> +	if (IS_ERR(sock_binding_list)) {
-> +		err = PTR_ERR(sock_binding_list);
-> +		goto err_unbind;
-> +	}
-> +
-> +	list_add(&out_binding->list, sock_binding_list);
-> +
-> +	rsp = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-> +	if (!rsp) {
-> +		err = -ENOMEM;
-> +		goto err_unbind;
-> +	}
-> +
-> +	hdr = genlmsg_iput(rsp, info);
-> +	if (!hdr) {
-> +		err = -EMSGSIZE;
-> +		goto err_genlmsg_free;
-> +	}
-> +
-> +	nla_put_u32(rsp, NETDEV_A_BIND_DMABUF_DMABUF_ID, out_binding->id);
-> +	genlmsg_end(rsp, hdr);
-> +
-> +	rtnl_unlock();
-> +
-> +	return genlmsg_reply(rsp, info);
-> +
-> +err_genlmsg_free:
-> +	nlmsg_free(rsp);
-> +err_unbind:
-> +	net_devmem_unbind_dmabuf(out_binding);
-> +err_unlock:
-> +	rtnl_unlock();
-> +	return err;
->  }
+So, I assume the problem is that SMP support is not fully initialized at this
+point yet such that raw_smp_processor_id() causes the zero pointer dereference.
+
+Adrian
+
+-- 
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
