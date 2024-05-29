@@ -1,118 +1,167 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA4CE1386A7;
-	Wed, 29 May 2024 18:50:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F9F71C6888
+	for <linux-alpha@vger.kernel.org>; Wed, 29 May 2024 19:49:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717008638; cv=none; b=lx1Id/sQvwwvR/NbQcF1Yo8IEs8vN8moGb+xUpJmPlxf7ryWFWA2qg9n3GGzY4FYgWN7y4cc4AnM2NDr0H0eZPLwVrSh40489RHcygQM0UtFUN255ozYJAocpU5TeG0L0jmEiA0WZR9feuXmxdjY9ybIlxhzKKyHhjhoBdCUrIE=
+	t=1717012167; cv=none; b=c8GrJ1HFjcj8acj5gVsyWJaCMMjcb+Za3gIoANhpOv06sN+DvdLXqaAXA1P3U0duLb8ReEHHwRg+3TSz7Ly+B28HXfcqnSl8QbujDWFwm6ueLYws1LXDBrmRbtTPHWAODgNEhKYXiBullS8Od8zNEZQr9AmaZXEzfRy1tnBNsaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717008638; c=relaxed/simple;
-	bh=4zhxO8s80sghmwZ6xTs9Tn3DwRhHd0HONhAed0apv1A=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=eOe44F64YrF5JbvU6FQxi5IYyu1RfY4EK8kKeayOgO9wyRX5vMAivWLOpEzxhJ5lcbCYaYcS17JME1D4okR3PpkrdY559rR/6rY9N0SK1KNEIEGRr4Fy9zXInuL6Xie8VIQkm+Xy7Md861j4yCFYKcPk8pr1TbAMafVyN4fL9MM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 2B10892009C; Wed, 29 May 2024 20:50:28 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 23E9192009B;
-	Wed, 29 May 2024 19:50:28 +0100 (BST)
-Date: Wed, 29 May 2024 19:50:28 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: "Paul E. McKenney" <paulmck@kernel.org>
-cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
-    Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org, 
-    Arnd Bergmann <arnd@arndb.de>, 
-    Richard Henderson <richard.henderson@linaro.org>, 
-    Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
-    Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-    Marc Zyngier <maz@kernel.org>, 
-    Linus Torvalds <torvalds@linux-foundation.org>, 
-    linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, 
-    Frank Scheiner <frank.scheiner@web.de>
-Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
-In-Reply-To: <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
-Message-ID: <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
-References: <20240503081125.67990-1-arnd@kernel.org> <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de> <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk> <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1717012167; c=relaxed/simple;
+	bh=6SM4nGMq6YXwjPx3hzOgTtkr8rnEX3Vki2GtQ9/v/Tg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MVLWBzmsfmqrqTarowKB9W60YcJVv68BdL7cWPZoXC1vlWbrGbqfVkb+mO891v1C+KWtJZydbfDwy7l3tZtJPfoygE6/V0E5cd41qlLCVnu9P5GimmB4Ke7FshJFqUkQpBzzyxtdBEff4GZJXvlcqC52XKXJbB5J3yEDGahFZ5A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WaKJxj2r; arc=none smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WaKJxj2r"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-57883b25b50so106675a12.2
+        for <linux-alpha@vger.kernel.org>; Wed, 29 May 2024 12:49:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1717012162; x=1717616962; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Mc6m1mM9m4Ud5DdSGHmt9Zcx4NpBQQ1agEgintMCgFk=;
+        b=WaKJxj2rSmiptfxPuIpvUd4DO37VpSMk36dQcSjU2nfbhLrs/6sj+L957ozHRkSxyE
+         TahFIlyXavs4CwVkXbGgibHaZ78nBGAoNz1E+2HWXC9+7wpBE9x3fU/+vVUNcUW6rJqc
+         n0wSQUBi2d3dc4nr8ulLpmSegCq86rCBEhG/icMRdmocKpO4NWAppHoIuWkJ8uNPH+jX
+         o2ArPykUTi8L9m/w0vlaDn5Dc8OxRXwlaoO9jd/ezYSXQJ3I6lBNJtlfF/AcwBvjH0to
+         Qv6SqMuA/Yte/M52TzTy7XMHZ3YE8iF0RhhZ/93YZjD2Ch6+/yU4fVLtCjI9qC9Bx0KN
+         3KUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717012162; x=1717616962;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Mc6m1mM9m4Ud5DdSGHmt9Zcx4NpBQQ1agEgintMCgFk=;
+        b=nwXcw6Blfc5/9/aFph45N8DU2dxfa8hRlavVrM3FDPb4D1bVu2B1n6hOJc9tc8D8dB
+         zn1+jC90bOW2IS++ux56yIY/8e/mUphc0HHJWWeM0mh0AdLSNC66tQ1PfMo30K03yCGK
+         AT3NX7A4yCgh8FZ/Doxo51krgJluI9y2PPE5wPvB6vD4CWCIspOwukqKu4tEOvjvo+cn
+         Fv+md3D0Xx8WLOYY2uHZ/Pn7rL8Rv3riFwZ/OeaB66AAMJfZDYIQwuv618ziIqrcM7LL
+         6dapAZOoU62j8JKtms3+isQQhlxAm6W87trMi/+8J2gVCtbJQfMo61umj1Kk80u+vr+G
+         MQcg==
+X-Forwarded-Encrypted: i=1; AJvYcCWbMBBdmPMeQMtCGv2N2p00LUt5TVXya18uwiFU0o8zM3Wax2vfdUt+DIYlyur5C8UTwpXtC0NrnCEcDhA7g5aKYyiembjuhGTB2c0=
+X-Gm-Message-State: AOJu0Yx5ahZXEHHbvkmRtcdv6fpFmNPk1pjPZDxCQGOvBUOim30toQVT
+	n50oWP3FoKtcUaAva6ukdh7HwC1hvZ0OTXTk3yxcKzhcuRwErWc3RSjNlnFMggXzUUZ15gvRUzB
+	Uv23on73ghvuOWAS57Qrf+9/RDOOEdXQMbm+eu2KUBKXF8olE50oIgetSgQ==
+X-Google-Smtp-Source: AGHT+IF9PV9JeYxxToH3qJtJfXsnwGUXtNUCB5FusC4DI8sGVRwbRTrnhLkmsIc9tQHh+KHAMPViyk6pTFPRs1HCH10=
+X-Received: by 2002:a17:906:c18f:b0:a63:49a5:9390 with SMTP id
+ a640c23a62f3a-a65e8f74d3dmr11845366b.41.1717012162364; Wed, 29 May 2024
+ 12:49:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20240510232128.1105145-1-almasrymina@google.com>
+ <20240510232128.1105145-5-almasrymina@google.com> <d85f4ba4-774f-4577-985f-45a5a1866da7@davidwei.uk>
+In-Reply-To: <d85f4ba4-774f-4577-985f-45a5a1866da7@davidwei.uk>
+From: Mina Almasry <almasrymina@google.com>
+Date: Wed, 29 May 2024 12:49:08 -0700
+Message-ID: <CAHS8izPVhDaokO9C+S4RR9b6+77OV2CsNb8jnGGKxNqGTa6DXg@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 04/14] netdev: support binding dma-buf to netdevice
+To: David Wei <dw@davidwei.uk>
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+	linux-arch@vger.kernel.org, bpf@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, Donald Hunter <donald.hunter@gmail.com>, 
+	Jakub Kicinski <kuba@kernel.org>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, 
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, 
+	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>, 
+	Yonghong Song <yonghong.song@linux.dev>, John Fastabend <john.fastabend@gmail.com>, 
+	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>, 
+	Jiri Olsa <jolsa@kernel.org>, Steffen Klassert <steffen.klassert@secunet.com>, 
+	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Pavel Begunkov <asml.silence@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, 
+	Harshitha Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
+	Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>, 
+	Willem de Bruijn <willemb@google.com>, Kaiyuan Zhang <kaiyuanz@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 28 May 2024, Paul E. McKenney wrote:
+On Sat, May 18, 2024 at 11:46=E2=80=AFAM David Wei <dw@davidwei.uk> wrote:
+>
+> On 2024-05-10 16:21, Mina Almasry wrote:
+> > +void net_devmem_unbind_dmabuf(struct net_devmem_dmabuf_binding *bindin=
+g)
+> > +{
+> > +     struct netdev_rx_queue *rxq;
+> > +     unsigned long xa_idx;
+> > +     unsigned int rxq_idx;
+> > +
+> > +     if (!binding)
+> > +             return;
+> > +
+> > +     if (binding->list.next)
+> > +             list_del(&binding->list);
+> > +
+> > +     xa_for_each(&binding->bound_rxq_list, xa_idx, rxq) {
+> > +             if (rxq->mp_params.mp_priv =3D=3D binding) {
+> > +                     /* We hold the rtnl_lock while binding/unbinding
+> > +                      * dma-buf, so we can't race with another thread =
+that
+> > +                      * is also modifying this value. However, the pag=
+e_pool
+> > +                      * may read this config while it's creating its
+> > +                      * rx-queues. WRITE_ONCE() here to match the
+> > +                      * READ_ONCE() in the page_pool.
+> > +                      */
+> > +                     WRITE_ONCE(rxq->mp_params.mp_ops, NULL);
+> > +                     WRITE_ONCE(rxq->mp_params.mp_priv, NULL);
+> > +
+> > +                     rxq_idx =3D get_netdev_rx_queue_index(rxq);
+> > +
+> > +                     netdev_rx_queue_restart(binding->dev, rxq_idx);
+>
+> What if netdev_rx_queue_restart() fails? Depending on where it failed, a
+> queue might still be filled from struct net_devmem_dmabuf_binding. This
+> is one downside of the current situation with netdev_rx_queue_restart()
+> needing to do allocations each time.
+>
+> Perhaps a full reset if individual queue restart fails?
+>
 
-> > > > This topic came up again when Paul E. McKenney noticed that
-> > > > parts of the RCU code already rely on byte access and do not
-> > > > work on alpha EV5 reliably, so I refreshed my series now for
-> > > > inclusion into the next merge window.
-> > > 
-> > > Hrrrm? That sounds like like Paul ran tests on EV5, did he?
-> > 
-> >  What exactly is required to make it work?
-> 
-> Whatever changes are needed to prevent the data corruption that can
-> currently result in code generated by single-byte stores.  For but one
-> example, consider a pair of tasks (or one task and an interrupt handler
-> in the CONFIG_SMP=n case) do a single-byte store to a pair of bytes
-> in the same machine word.  As I understand it, in code generated for
-> older Alphas, both "stores" will load the word containing that byte,
-> update their own byte, and store the updated word.
-> 
-> If two such single-byte stores run concurrently, one or the other of those
-> two stores will be lost, as in overwritten by the other.  This is a bug,
-> even in kernels built for single-CPU systems.  And a rare bug at that, one
-> that tends to disappear as you add debug code in an attempt to find it.
+Sorry for the late reply, I've been out on vacation for a few days and
+caught up to some other work.
 
- Thank you for the detailed description of the problematic scenario.
+Yes, netdev_rx_queue_restart() can fail, but I'm not sure how to
+recover. Full reset would be an option, but it may be way too big of a
+hammer to do a full reset on this failure. Also, last I discussed with
+Jakub, AFAIU, there is no way for core to reset the driver? I had
+suggested to Jakub to use ndo_stop/ndo_open to reset the driver on
+queue binding/unbinding, but he rejected that as it could cause the
+driver to fail to come back up, which would leave the machine stranded
+from the network. This is why we implemented the queue API, as a way
+to do the binding/unbinding without risking the machine stranding via
+a full reset. This is the previous convo from months back[1].
 
- I hope someone will find it useful, however for the record I have been 
-familiar with the intricacies of the Alpha architecture as well as their 
-implications for software for decades now.  The Alpha port of Linux was 
-the first non-x86 Linux platform I have used and actually (and I've chased 
-that as a matter of interest) my first ever contribution to Linux was for 
-Alpha platform code:
+So, all in all, I don't see anything amazing we can do here to
+recover. How about just log? I will add a warning in the next
+iteration.
 
-On Mon, 30 Mar 1998, Jay.Estabrook@digital.com wrote:
+(I applied most of the rest of your suggestions btw).
 
-> Hi, sorry about the delay in answering, but you'll be happy to know, I took
-> your patches and merged them into my latest SMP patches, and submitted them
-> to Linus just last night. He promises them to (mostly) be in 2.1.92, so we
-> can look forward to that... :-)
+[1] https://patchwork.kernel.org/project/netdevbpf/patch/20231106024413.280=
+1438-13-almasrymina@google.com/#25590262
 
-so I find the scenario you have described more than obvious.
-
- Mind that the read-modify-write sequence that software does for sub-word 
-write accesses with original Alpha hardware is precisely what hardware 
-would have to do anyway and support for that was deliberately omitted by 
-the architecture designers from the ISA to give it performance advantages 
-quoted in the architecture manual.  The only difference here is that with 
-hardware read-modify-write operations atomicity for sub-word accesses is 
-guaranteed by the ISA, however for software read-modify-write it has to be 
-explictly coded using the usual load-locked/store-conditional sequence in 
-a loop.  I don't think it's a big deal really, it should be trivial to do 
-in the relevant accessors, along with the memory barriers that are needed 
-anyway for EV56+ and possibly other ports such as the MIPS one.
-
- What I have been after actually is: can you point me at a piece of code 
-in our tree that will cause an issue with a non-BWX Alpha as described in 
-your scenario, so that I have a starting point?  Mind that I'm completely 
-new to RCU as I didn't have a need to research it before (though from a 
-skim over Documentation/RCU/rcu.rst I understand what its objective is).
-
- FWIW even if it was only me I think that depriving the already thin Alpha 
-port developer base of any quantity of the remaining manpower, by dropping 
-support for a subset of the hardware available, and then a subset that is 
-not just as exotic as the original i386 became to the x86 platform at the 
-time support for it was dropped, is only going to lead to further demise 
-and eventual drop of the entire port.
-
- And I think it would be good if we kept the port, just as we keep other 
-ports of historical significance only, for educational reasons if nothing 
-else, such as to let people understand based on an actual example, once 
-mainstream, the implications of weakly ordered memory systems.
-
-  Maciej
+--=20
+Thanks,
+Mina
