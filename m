@@ -1,203 +1,118 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF6FC1A38C6
-	for <linux-alpha@vger.kernel.org>; Wed, 29 May 2024 17:20:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA4CE1386A7;
+	Wed, 29 May 2024 18:50:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717003229; cv=none; b=FqkZGmnsrcLzTBR6FCvS8PsLXN+pERhqrcRb9apl8nS52hAtvdBHJKkJtjSh1aLZssZEpf/paxnAzDfozdD79FAicCLV+cdadplXgB19HKsVIDpiYQmltjyqeCYLtQ9WgscwDHtN3RI1fq1UthHNpL8G8FbKPnpjmLk/1MXswNk=
+	t=1717008638; cv=none; b=lx1Id/sQvwwvR/NbQcF1Yo8IEs8vN8moGb+xUpJmPlxf7ryWFWA2qg9n3GGzY4FYgWN7y4cc4AnM2NDr0H0eZPLwVrSh40489RHcygQM0UtFUN255ozYJAocpU5TeG0L0jmEiA0WZR9feuXmxdjY9ybIlxhzKKyHhjhoBdCUrIE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717003229; c=relaxed/simple;
-	bh=7Dvlwp3cj9kBhnrZACSLGYw+fDrt3VMF9KkgcqNKF7g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LIOyN3spirJngU0Hoj+d05fImjG20bXs9aKIpm2o3ysgrfcewoTk5o0L94qx5lUH7OThg/xtyCCGqjLAFNU9ZrmbSA+oIYTluBsVb+y1xAEM/JQ95MyLTXjKSwEz0C9PJ84RINEH6oNfbUnQz80IL74r5kG3HvOTCQkeY6viANY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OahVjF+u; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OahVjF+u"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-5789733769dso356777a12.1
-        for <linux-alpha@vger.kernel.org>; Wed, 29 May 2024 10:20:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1717003220; x=1717608020; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T6S92XYKao8zmEwYTt3a/Nczc/mks5grdh4+BnfyPTc=;
-        b=OahVjF+uze/S9Yn0R/e+72J80Eo14Ndb0JX3BX7MdTwFUtnWHqryLwOZV9e/HwNRn/
-         KCzJSttyBaVlcSU8Aii7iGYJnLXOnG/vYNoV9ub7xA++Wb/uaDy335X6NZe/d0MZ4KmA
-         Yemfy5Zcudp9/S6EY/5hs9Z0auOiK+7PZnIHC97KPZtxaRwTe04/w8S7LccXPI7E7tWD
-         PEuSnKcy5PguqBJ+VJOY+H20C1JqxCF7VOzCbyV9PZf5dOwX7ILRV2T4KIDbhzzMEIgf
-         F2HFp+dgVFKGX0yDYiaEGS6Kw/9n2i+uyrYYhyw+0lo+xD51tEUpd0vb5ywrXcox0zmZ
-         d3nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717003220; x=1717608020;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T6S92XYKao8zmEwYTt3a/Nczc/mks5grdh4+BnfyPTc=;
-        b=tthIPC8RibZRdf8t9M9m+TmIzib/ggCPDNeUqppLq9bW33qAybl44ENfbf8oaqoX/g
-         y7Eu70RabQ//Eia+hFXel0PUzMQygnOjdp3TG1DnMEcw5G5o4zu/vpC7APC6OdR5Gd50
-         m6ZHt2TS/DsgKNRE5QDqE0BY3QpxbEIjj/UJcX3Nn6owSeW9qwVkvVxQUQiquQ918E+6
-         52MJq81QlAh47nmIQkPo1rFKvQQwcCJq0kJ1iLg7uyyCMqAAn/sDAHP6FjU7lxFE89yO
-         jqSGUKOJ7kRpwyzA+ODR31GgZbML+bvTj2U43bxFlIcaaOZWUnnZohsYxlb8sZ5BOxQT
-         dIBg==
-X-Forwarded-Encrypted: i=1; AJvYcCU+dCWMgL8m5z4S7WMPXvtVbxiS6xmKR+RfjPLlwvc4q9ToQ8CieQJlFDfb0nVQO4aEXtuiRME1i80ZLb2/K3ndHtHT2Nixk+HVmEw=
-X-Gm-Message-State: AOJu0YxqJOazxEXtPOV6lvG03Pse4JUf+3YZo74gCcyu29B/ZAmm5w0v
-	wctKvvUtnnWPvPD/ihj4rXWUCCjCSQ2WF+hZg/rxga0YR+FhRmXGHwK3A4GJAaQ7eOcJlj6nWfv
-	KfESz7Sm00bIA2gE+Gbyq56EouNoZjgC8v1NcRQ9BOu4JujoXXDo+GInxTg==
-X-Google-Smtp-Source: AGHT+IFAhIhHvER4srrkWNvWRV5ZrC6gug/SN6NLXzcRRgpzDjuVBSfERRb5LBk6wrj7S1gKnfcF1nodGURXGds/8UM=
-X-Received: by 2002:a17:906:2dc2:b0:a62:c41d:c25f with SMTP id
- a640c23a62f3a-a642d6b1573mr258384666b.21.1717003219656; Wed, 29 May 2024
- 10:20:19 -0700 (PDT)
+	s=arc-20240116; t=1717008638; c=relaxed/simple;
+	bh=4zhxO8s80sghmwZ6xTs9Tn3DwRhHd0HONhAed0apv1A=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=eOe44F64YrF5JbvU6FQxi5IYyu1RfY4EK8kKeayOgO9wyRX5vMAivWLOpEzxhJ5lcbCYaYcS17JME1D4okR3PpkrdY559rR/6rY9N0SK1KNEIEGRr4Fy9zXInuL6Xie8VIQkm+Xy7Md861j4yCFYKcPk8pr1TbAMafVyN4fL9MM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 2B10892009C; Wed, 29 May 2024 20:50:28 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 23E9192009B;
+	Wed, 29 May 2024 19:50:28 +0100 (BST)
+Date: Wed, 29 May 2024 19:50:28 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: "Paul E. McKenney" <paulmck@kernel.org>
+cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+    Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org, 
+    Arnd Bergmann <arnd@arndb.de>, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+    Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+    Marc Zyngier <maz@kernel.org>, 
+    Linus Torvalds <torvalds@linux-foundation.org>, 
+    linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, 
+    Frank Scheiner <frank.scheiner@web.de>
+Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
+In-Reply-To: <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
+Message-ID: <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
+References: <20240503081125.67990-1-arnd@kernel.org> <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de> <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk> <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240510232128.1105145-1-almasrymina@google.com>
- <20240510232128.1105145-12-almasrymina@google.com> <9097e78d-0e7d-43bd-bafd-e53a4872a4d1@davidwei.uk>
- <CAHS8izOe-uYjm0ttQgHOFpvp_Tj4_oRHV6d1Y1sWJAZJdCdCBA@mail.gmail.com> <29464e46-e196-47aa-9ff5-23173099c95e@gmail.com>
-In-Reply-To: <29464e46-e196-47aa-9ff5-23173099c95e@gmail.com>
-From: Mina Almasry <almasrymina@google.com>
-Date: Wed, 29 May 2024 10:20:03 -0700
-Message-ID: <CAHS8izOnD3J3i+z1nxg=AZQW9dm0w2JBtbg2=oouiER8xqeRPA@mail.gmail.com>
-Subject: Re: [PATCH net-next v9 11/14] tcp: RX path for devmem TCP
-To: Pavel Begunkov <asml.silence@gmail.com>
-Cc: David Wei <dw@davidwei.uk>, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linux-arch@vger.kernel.org, bpf@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, Donald Hunter <donald.hunter@gmail.com>, 
-	Jakub Kicinski <kuba@kernel.org>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, 
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
-	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, 
-	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>, 
-	Yonghong Song <yonghong.song@linux.dev>, John Fastabend <john.fastabend@gmail.com>, 
-	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>, 
-	Jiri Olsa <jolsa@kernel.org>, Steffen Klassert <steffen.klassert@secunet.com>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin <linyunsheng@huawei.com>, 
-	Shailend Chand <shailend@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
-	Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst <jeroendb@google.com>, 
-	Praveen Kaligineedi <pkaligineedi@google.com>, Willem de Bruijn <willemb@google.com>, 
-	Kaiyuan Zhang <kaiyuanz@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 
-On Tue, May 28, 2024 at 7:42=E2=80=AFPM Pavel Begunkov <asml.silence@gmail.=
-com> wrote:
->
-> On 5/28/24 18:36, Mina Almasry wrote:
-> > On Wed, May 22, 2024 at 11:02=E2=80=AFPM David Wei <dw@davidwei.uk> wro=
-te:
-> ...
-> >>> +                      */
-> >>> +                     if (!skb_frag_net_iov(frag)) {
-> >>> +                             net_err_ratelimited("Found non-dmabuf s=
-kb with net_iov");
-> >>> +                             err =3D -ENODEV;
-> >>> +                             goto out;
-> >>> +                     }
-> >>> +
-> >>> +                     niov =3D skb_frag_net_iov(frag);
-> >>
-> >> Sorry if we've already discussed this.
-> >>
-> >> We have this additional hunk:
-> >>
-> >> + if (niov->pp->mp_ops !=3D &dmabuf_devmem_ops) {
-> >> +       err =3D -ENODEV;
-> >> +       goto out;
-> >> + }
-> >>
-> >> In case one of our skbs end up here, skb_frag_is_net_iov() and
-> >> !skb_frags_readable(). Does this even matter? And if so then is there =
-a
-> >> better way to distinguish between our two types of net_iovs?
-> >
-> > Thanks for bringing this up, yes, maybe we do need a way to
-> > distinguish, but it's not 100% critical, no? It's mostly for debug
-> > checking?
->
-> Not really. io_uring definitely wouldn't want the devmem completion path
-> taking an iov and basically stashing it into a socket (via refcount),
-> that's a lifetime problem. Nor we'd have all the binding/chunk_owner
-> parts you have and probably use there.
->
-> Same the other way around, you don't want io_uring grabbing your iov
-> and locking it up, it won't even be possible to return it back. We
-> also may want to have access to backing pages for different fallback
-> purposes, for which we need to know the iov came from this particular
-> ring.
->
-> It shouldn't happen for a behaving user, but most of it would likely
-> be exploitable one way or another.
->
-> > I would say add a helper, like net_iov_is_dmabuf() or net_iov_is_io_uri=
-ng().
->
-> We're verifying that the context the iov bound to is the current
-> context (e.g. io_uring instance) we're executing from. If we can
-> agree that mp_priv should be a valid pointer, the check would look
-> like:
->
-> if (pp->mp_priv =3D=3D io_uring_ifq)
->
-> > Checking for niov->pp->mp_ops seems a bit hacky to me, and may be
-> > outright broken. IIRC niov's can be disconnected from the page_pool
-> > via page_pool_clear_pp_info(), and niov->pp may be null. Abstractly
->
-> It's called in the release path like page_pool_return_page(),
-> I can't imagine someone can sanely clear it while inflight ...
->
+On Tue, 28 May 2024, Paul E. McKenney wrote:
 
-Ah, yes, I wasn't sure what happens to the inflight pages when the pp
-gets destroyed. I thought maybe the pp would return the inflight
-pages, but it looks to me like the pp just returns the free pages in
-the alloc cache and the ptr_ring, and the pp stays alive until all the
-inflight pages are freed. So indeed niov->pp should always be valid
-while it's in flight. I still prefer to have the memory type to be
-part of the niov itself, but I don't feel strongly at this point; up
-to you.
+> > > > This topic came up again when Paul E. McKenney noticed that
+> > > > parts of the RCU code already rely on byte access and do not
+> > > > work on alpha EV5 reliably, so I refreshed my series now for
+> > > > inclusion into the next merge window.
+> > > 
+> > > Hrrrm? That sounds like like Paul ran tests on EV5, did he?
+> > 
+> >  What exactly is required to make it work?
+> 
+> Whatever changes are needed to prevent the data corruption that can
+> currently result in code generated by single-byte stores.  For but one
+> example, consider a pair of tasks (or one task and an interrupt handler
+> in the CONFIG_SMP=n case) do a single-byte store to a pair of bytes
+> in the same machine word.  As I understand it, in code generated for
+> older Alphas, both "stores" will load the word containing that byte,
+> update their own byte, and store the updated word.
+> 
+> If two such single-byte stores run concurrently, one or the other of those
+> two stores will be lost, as in overwritten by the other.  This is a bug,
+> even in kernels built for single-CPU systems.  And a rare bug at that, one
+> that tends to disappear as you add debug code in an attempt to find it.
 
-> > speaking the niov type maybe should be a property of the niov itself,
-> > and not the pp the niov is attached to.
->
-> ... but I can just stash all that in niov->owner,
-> struct dmabuf_genpool_chunk_owner you have. That might be even
-> cleaner. And regardless of it I'll be making some minor changes
-> to the structure to make it generic.
->
-> > It is not immediately obvious to me what the best thing to do here is,
-> > maybe it's best to add a flag to niov or to use niov->pp_magic for
-> > this.
-> >
-> > I would humbly ask that your follow up patchset takes care of this
-> > bit, if possible. I think mine is doing quite a bit of heavy lifting
-> > as is (and I think may be close to ready?), when it comes to concerns
-> > of devmem + io_uring coexisting if you're able to take care, awesome,
-> > if not, I can look into squashing some fix.
->
-> Let it be this way then. It's not a problem while there is
-> only one such a provider.
->
+ Thank you for the detailed description of the problematic scenario.
 
-Thank you!
+ I hope someone will find it useful, however for the record I have been 
+familiar with the intricacies of the Alpha architecture as well as their 
+implications for software for decades now.  The Alpha port of Linux was 
+the first non-x86 Linux platform I have used and actually (and I've chased 
+that as a matter of interest) my first ever contribution to Linux was for 
+Alpha platform code:
 
---=20
-Thanks,
-Mina
+On Mon, 30 Mar 1998, Jay.Estabrook@digital.com wrote:
+
+> Hi, sorry about the delay in answering, but you'll be happy to know, I took
+> your patches and merged them into my latest SMP patches, and submitted them
+> to Linus just last night. He promises them to (mostly) be in 2.1.92, so we
+> can look forward to that... :-)
+
+so I find the scenario you have described more than obvious.
+
+ Mind that the read-modify-write sequence that software does for sub-word 
+write accesses with original Alpha hardware is precisely what hardware 
+would have to do anyway and support for that was deliberately omitted by 
+the architecture designers from the ISA to give it performance advantages 
+quoted in the architecture manual.  The only difference here is that with 
+hardware read-modify-write operations atomicity for sub-word accesses is 
+guaranteed by the ISA, however for software read-modify-write it has to be 
+explictly coded using the usual load-locked/store-conditional sequence in 
+a loop.  I don't think it's a big deal really, it should be trivial to do 
+in the relevant accessors, along with the memory barriers that are needed 
+anyway for EV56+ and possibly other ports such as the MIPS one.
+
+ What I have been after actually is: can you point me at a piece of code 
+in our tree that will cause an issue with a non-BWX Alpha as described in 
+your scenario, so that I have a starting point?  Mind that I'm completely 
+new to RCU as I didn't have a need to research it before (though from a 
+skim over Documentation/RCU/rcu.rst I understand what its objective is).
+
+ FWIW even if it was only me I think that depriving the already thin Alpha 
+port developer base of any quantity of the remaining manpower, by dropping 
+support for a subset of the hardware available, and then a subset that is 
+not just as exotic as the original i386 became to the x86 platform at the 
+time support for it was dropped, is only going to lead to further demise 
+and eventual drop of the entire port.
+
+ And I think it would be good if we kept the port, just as we keep other 
+ports of historical significance only, for educational reasons if nothing 
+else, such as to let people understand based on an actual example, once 
+mainstream, the implications of weakly ordered memory systems.
+
+  Maciej
