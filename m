@@ -1,161 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3B111CB302;
-	Wed, 29 May 2024 22:09:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A96F1DDD7
+	for <linux-alpha@vger.kernel.org>; Thu, 30 May 2024 01:09:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717020542; cv=none; b=BkENQ/pdHIEwlchMpL7c3jkShFXBKA8kA3RgFGAu7Ry+8sG83ukT4OUWbPR+lYIQZroplJmC7lU+f3EyzbjbXlZlGBxcAZEws/wg1BOHjOMsjnZp0DYJyp+v3v5J93dQZXsSPi6zGjRYRdamRsrgTug2rkMdLd2Ff1yHo3yiBX4=
+	t=1717031351; cv=none; b=AunIIJiD55C6Qy3sEAcZmzj3q15kVPv6Ckjyr71VLXedEcza9Vx+bI8HFywDnoMfF1S95S+aBJR2FVI317yDteVNBayWQ5VZSyap5s8CScA4NO7/kRfiedERZTckzbVFoPShwz2WqYDcaQQoRUV2neyMsc7uWmBLcQ2LgrHo7uM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717020542; c=relaxed/simple;
-	bh=5hJscbHLPraseeS6H0nSdgSUUmKcqeXC1lMt7BU2w4Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j2QDP3RL0CjdVA15p4s/5rp6grhtidq4KQjlSkq70MFjt4pRzX5w89zdtNaPxSoiQ2djuJTDiPyKH04fTplb2JNrHlJVGC1C0hW+RySLovv6WzspiQ6Ddl0dObCFHDmpRP8NHmkB+y7uDtP0hlzj+ofztTIvPy6scQ4IcH9YqTw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BiqBUDn1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717031351; c=relaxed/simple;
+	bh=r1WLIYqwEcFl1zxpSruq17uincpEIe2QAM/Tkg8t+yY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IlStD9oFrcKhzM+ewqMu7eL4pSQ/VyUgZbNq6npxx7J3rDla9KuAxATCgGi9qT47zt2dxshD64ZdG9vBPuKd2GGWJVMvoQk4KO/MwlF6s0kg31vlssFaUVZgTQwU1HZg6SdlMwzbFfQKN3whMUP2CibybfedlJwv0gyUuswbuhE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=DIUV9itN; arc=none smtp.client-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BiqBUDn1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70119C32782;
-	Wed, 29 May 2024 22:09:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717020541;
-	bh=5hJscbHLPraseeS6H0nSdgSUUmKcqeXC1lMt7BU2w4Y=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=BiqBUDn1idmpEYrYCPGkumQs2VOdUF8LjxdpfFUOymSP9Q/k3Rluw1idu6cc67gSi
-	 EGdGQBmOUF8GLMe/TPK5Uo0aX0LAdLhR3WSt3qu9dGC7NIi7ht5yFIphAl0hdypbeX
-	 7eB4K3Jor2Lk6aZZ9UImVaIHquTMB9ohiXAqv1x6rUt8l8lzW142ZRMnd/9VMZU9Po
-	 gmCK93Gq0N89asm7F/4fY177cn7M4dUW41bQG1LjJBMVVmiHiM5pNswcXAh2z+HXrP
-	 PlP4qPyi3s+A01I5+OO5rWP0eLjpCIRpJac/Rn0z1kHaLH8LY7Y7uBqcJTv++wdJei
-	 ghZHX8VNqGXcQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 05204CE0EE0; Wed, 29 May 2024 15:09:00 -0700 (PDT)
-Date: Wed, 29 May 2024 15:09:00 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Marc Zyngier <maz@kernel.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>,
-	Frank Scheiner <frank.scheiner@web.de>
-Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
-Message-ID: <5567ab2e-80af-4c5f-bebb-d979e8a34f49@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20240503081125.67990-1-arnd@kernel.org>
- <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
- <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk>
- <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
- <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="DIUV9itN"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-572c65cea55so555729a12.0
+        for <linux-alpha@vger.kernel.org>; Wed, 29 May 2024 18:09:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1717031348; x=1717636148; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Pc8AzCw2itqlchY2iNLylrW0HG92I3q/DnK9Zsb7BQY=;
+        b=DIUV9itNhbg8EfKLtpnHuKH1pEUDR/trubtVF2Pcu4Z2lDAl5gF9rVTS+Ts6Kk8+Eq
+         0PnNYawFbqcd7oo1KeIFL9Mq7uc98o7+69ELep2M+FKQDxUE7PHC0gPRNrOdoflb4CyU
+         dJkWdqUo/ovPZPD+gjAyrYMac6zoBKYhanCvY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717031348; x=1717636148;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Pc8AzCw2itqlchY2iNLylrW0HG92I3q/DnK9Zsb7BQY=;
+        b=BNNp59QdpnV0oWGAuD/g2eF08IaW4+EC7m9xdqKKexgaZ4u8mECZPeoZsLNcrD0Z7c
+         Qh+9PilbSgv4/PYkcjgOoYeAIUzFuFgtQN0Dt+dQohvEycRPpzBwaYEeiT2/m+RsiR2K
+         JA619EGmXUB9HHIR05NN/AUqBt3E2/Sk9Ap6vEOTbiM276bJfmZyoCZMB41Lb6PiaD9b
+         zk6DM91IvbpmYcwJv/zd7QTbjz7/6EJYp6wQPdty2wPNX7u7CJzn2pSdyrcr9m7RLNdx
+         gitVWtoVIBZFEQHwQR0egUfcsjWRq6j/yt25wg22y2lWK9LnbPt8PyzgUBjyFks7ilFO
+         t8iw==
+X-Forwarded-Encrypted: i=1; AJvYcCWKpbNT2tQvQUH5DagCbb+B+TuI78HWMuIot9yIBsdY2jhV1Ee3W7dQd8qfDKAY9K7x55QOsKmAijU9/9yFaydW15oMWReN0CNpeS8=
+X-Gm-Message-State: AOJu0YxnkFPzcDTvf27EkWDIVd6FglWFELwDHIfZsCkuCaWiMVojzyue
+	Kz98HXou3Vcuz09JLxl5jlmpssdZsE4poKG+KKflrnQIK5u73hGXFlBobhZ0kmYDKK+1b/PRF1u
+	Ct13Prg==
+X-Google-Smtp-Source: AGHT+IF+j0ELNW7YizMfiHOdDIyPnWB++IvR5pzdDTFtlhvH9yrsoLkRHhg3trDgzsKG6XnsIVngxQ==
+X-Received: by 2002:a50:ab5b:0:b0:579:db1a:558f with SMTP id 4fb4d7f45d1cf-57a19f5d6dfmr333976a12.7.1717031347752;
+        Wed, 29 May 2024 18:09:07 -0700 (PDT)
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com. [209.85.218.51])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-578524bb86bsm8715318a12.97.2024.05.29.18.09.07
+        for <linux-alpha@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 May 2024 18:09:07 -0700 (PDT)
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a6269885572so97169166b.1
+        for <linux-alpha@vger.kernel.org>; Wed, 29 May 2024 18:09:07 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXccSb8udmXBLvIlcSuGZVnja/0EOqMpJuxXRoO2VU/PhVHDqoC7pJrxD2a6GxK7Zytt7DjSf94YKG6hLFrwv5k76J5UKSYQLDH9a0=
+X-Received: by 2002:a17:906:cb90:b0:a5c:dce0:9f4e with SMTP id
+ a640c23a62f3a-a65f0bd7b2bmr31381166b.28.1717031346663; Wed, 29 May 2024
+ 18:09:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20240503081125.67990-1-arnd@kernel.org> <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
+ <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk> <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
+ <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
 In-Reply-To: <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 29 May 2024 18:08:50 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wi7WfDSfunEXmCqDnH+55gumjhDar-KO_=66ziuP33piw@mail.gmail.com>
+Message-ID: <CAHk-=wi7WfDSfunEXmCqDnH+55gumjhDar-KO_=66ziuP33piw@mail.gmail.com>
+Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Arnd Bergmann <arnd@kernel.org>, 
+	linux-alpha@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, 
+	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+	Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org, 
+	Michael Cree <mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, May 29, 2024 at 07:50:28PM +0100, Maciej W. Rozycki wrote:
-> On Tue, 28 May 2024, Paul E. McKenney wrote:
-> 
-> > > > > This topic came up again when Paul E. McKenney noticed that
-> > > > > parts of the RCU code already rely on byte access and do not
-> > > > > work on alpha EV5 reliably, so I refreshed my series now for
-> > > > > inclusion into the next merge window.
-> > > > 
-> > > > Hrrrm? That sounds like like Paul ran tests on EV5, did he?
-> > > 
-> > >  What exactly is required to make it work?
-> > 
-> > Whatever changes are needed to prevent the data corruption that can
-> > currently result in code generated by single-byte stores.  For but one
-> > example, consider a pair of tasks (or one task and an interrupt handler
-> > in the CONFIG_SMP=n case) do a single-byte store to a pair of bytes
-> > in the same machine word.  As I understand it, in code generated for
-> > older Alphas, both "stores" will load the word containing that byte,
-> > update their own byte, and store the updated word.
-> > 
-> > If two such single-byte stores run concurrently, one or the other of those
-> > two stores will be lost, as in overwritten by the other.  This is a bug,
-> > even in kernels built for single-CPU systems.  And a rare bug at that, one
-> > that tends to disappear as you add debug code in an attempt to find it.
-> 
->  Thank you for the detailed description of the problematic scenario.
-> 
->  I hope someone will find it useful, however for the record I have been 
-> familiar with the intricacies of the Alpha architecture as well as their 
-> implications for software for decades now.  The Alpha port of Linux was 
-> the first non-x86 Linux platform I have used and actually (and I've chased 
-> that as a matter of interest) my first ever contribution to Linux was for 
-> Alpha platform code:
-> 
-> On Mon, 30 Mar 1998, Jay.Estabrook@digital.com wrote:
-> 
-> > Hi, sorry about the delay in answering, but you'll be happy to know, I took
-> > your patches and merged them into my latest SMP patches, and submitted them
-> > to Linus just last night. He promises them to (mostly) be in 2.1.92, so we
-> > can look forward to that... :-)
-> 
-> so I find the scenario you have described more than obvious.
+On Wed, 29 May 2024 at 11:50, Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+>
+>              The only difference here is that with
+> hardware read-modify-write operations atomicity for sub-word accesses is
+> guaranteed by the ISA, however for software read-modify-write it has to be
+> explictly coded using the usual load-locked/store-conditional sequence in
+> a loop.
 
-Glad that it helped.
+I have some bad news for you: the old alpha CPU's not only screwed up
+the byte/word design, they _also_ screwed up the
+load-locked/store-conditional.
 
->  Mind that the read-modify-write sequence that software does for sub-word 
-> write accesses with original Alpha hardware is precisely what hardware 
-> would have to do anyway and support for that was deliberately omitted by 
-> the architecture designers from the ISA to give it performance advantages 
-> quoted in the architecture manual.  The only difference here is that with 
-> hardware read-modify-write operations atomicity for sub-word accesses is 
-> guaranteed by the ISA, however for software read-modify-write it has to be 
-> explictly coded using the usual load-locked/store-conditional sequence in 
-> a loop.  I don't think it's a big deal really, it should be trivial to do 
-> in the relevant accessors, along with the memory barriers that are needed 
-> anyway for EV56+ and possibly other ports such as the MIPS one.
+You'd think that LL/SC would be done at a cacheline level, like any
+sane person would do.
 
-There shouldn't be any memory barriers required, and don't EV56+ have
-single-byte loads and stores?
+But no.
 
->  What I have been after actually is: can you point me at a piece of code 
-> in our tree that will cause an issue with a non-BWX Alpha as described in 
-> your scenario, so that I have a starting point?  Mind that I'm completely 
-> new to RCU as I didn't have a need to research it before (though from a 
-> skim over Documentation/RCU/rcu.rst I understand what its objective is).
+The 21064 actually did atomicity with an external pin on the bus, the
+same way people used to do before caches even existed.
 
-See the uses of the fields of the current->rcu_read_unlock_special.b
-anonymous structure for the example that led us here.  And who knows how
-many other pieces of the Linux kernel that assume that it is possible
-to atomically store a single byte.
+Yes, it has an internal L1 D$, but it is a write-through cache, and
+clearly things like cache coherency weren't designed for. In fact,
+LL/SC is even documented to not work in the external L2 cache
+("Bcache" - don't ask me why the odd naming).
 
-Many of which use a normal C-language store, in which case there are
-no accessors.  This can be a problem even in the case where there are no
-data races to either byte, because the need for the read-modify-write
-sequence on older Alpha systems results in implicit data races at the
-machine-word level.
+So LL/SC on the 21064 literally works on external memory.
 
->  FWIW even if it was only me I think that depriving the already thin Alpha 
-> port developer base of any quantity of the remaining manpower, by dropping 
-> support for a subset of the hardware available, and then a subset that is 
-> not just as exotic as the original i386 became to the x86 platform at the 
-> time support for it was dropped, is only going to lead to further demise 
-> and eventual drop of the entire port.
+Quoting the reference manual:
 
-Yes, support has been dropped for some of the older x86 CPUs as well,
-for example, Linux-kernel support for multiprocessor 80386 systems was
-dropped a great many years ago, in part because those CPUs do not have
-a cmpxchg instruction.  So it is not like we are picking on Alpha.
+  "A.6 Load Locked and Store Conditional
+  The 21064 provides the ability to perform locked memory accesses through
+  the LDxL (Load_Locked) and STxC (Store_Conditional) cycle command pair.
+  The LDxL command forces the 21064 to bypass the Bcache and request data
+  directly from the external memory interface. The memory interface logic must
+  set a special interlock flag as it returns the data, and may
+optionally keep the
+  locked address"
 
->  And I think it would be good if we kept the port, just as we keep other 
-> ports of historical significance only, for educational reasons if nothing 
-> else, such as to let people understand based on an actual example, once 
-> mainstream, the implications of weakly ordered memory systems.
+End result: a LL/SC pair is very very slow. It was incredibly slow
+even for the time. I had benchmarks, I can't recall them, but I'd like
+to say "hundreds of cycles". Maybe thousands.
 
-I don't know of any remaining issues with the newer Alpha systems that do
-support single-byte and double-byte load and store instructions, and so
-I am not aware of any reason for dropping Linux-kernel support for them.
+So actual reliable byte operations are not realistically possible on
+the early alpha CPU's. You can do them with LL/SC, sure, but
+performance would be so horrendously bad that it would be just sad.
 
-							Thanx, Paul
+The 21064A had some "fast lock" mode which allows the data from the
+LDQ_L to come from the Bcache. So it still isn't exactly fast, and it
+still didn't work at CPU core speeds, but at least it worked with the
+external cache.
+
+Compilers will generate the sequence that DEC specified, which isn't
+thread-safe.
+
+In fact, it's worse than "not thread safe". It's not even safe on UP
+with interrupts, or even signals in user space.
+
+It's one of those "technically valid POSIX", since there's
+"sig_atomic_t" and if you do any concurrent signal stuff you're
+supposed to only use that type. But it's another of those "Yeah, you'd
+better make sure your structure members are either 'int' or bigger, or
+never accessed from signals or interrupts, or they might clobber
+nearby values".
+
+           Linus
