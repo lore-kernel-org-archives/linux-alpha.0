@@ -1,148 +1,225 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A96F1DDD7
-	for <linux-alpha@vger.kernel.org>; Thu, 30 May 2024 01:09:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A65A158871
+	for <linux-alpha@vger.kernel.org>; Thu, 30 May 2024 20:16:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717031351; cv=none; b=AunIIJiD55C6Qy3sEAcZmzj3q15kVPv6Ckjyr71VLXedEcza9Vx+bI8HFywDnoMfF1S95S+aBJR2FVI317yDteVNBayWQ5VZSyap5s8CScA4NO7/kRfiedERZTckzbVFoPShwz2WqYDcaQQoRUV2neyMsc7uWmBLcQ2LgrHo7uM=
+	t=1717100185; cv=none; b=VptngSxMb5BxU5jTJRP2cu3go21vpLKrql8wvwHK08n3/4D8Y0LX7NA7jHSbRgQdMyhcLpt880AU7Ye/a5XNR5O6q1ofErc8rDXhT6CP369CWFN8u+ltVmwBnArrE9rSU6lp75IMgmLv3ZkcZeMi6g/2aTVPF4rOBF9Ds38REso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717031351; c=relaxed/simple;
-	bh=r1WLIYqwEcFl1zxpSruq17uincpEIe2QAM/Tkg8t+yY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IlStD9oFrcKhzM+ewqMu7eL4pSQ/VyUgZbNq6npxx7J3rDla9KuAxATCgGi9qT47zt2dxshD64ZdG9vBPuKd2GGWJVMvoQk4KO/MwlF6s0kg31vlssFaUVZgTQwU1HZg6SdlMwzbFfQKN3whMUP2CibybfedlJwv0gyUuswbuhE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=DIUV9itN; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	s=arc-20240116; t=1717100185; c=relaxed/simple;
+	bh=c10vRAymnFEiD+J93cVDAwHMQipnrIDVb/DDxIZNtws=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=W5K4ZsfQ0eCXQaUEPeCtlXejYguhnuHCqp8vEP3Ti5KqQY0MbWiyhWLltMZdr7mWHFOpaLXiCAqHIfllFJYInEypT2ladMSmrhPc+PSsBcOG36s1PtsWjt0DITDhTx9rWaDCJPBjGH+19Xld8nsgDYswYzXbYMFxrxe2/Mj1fh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--almasrymina.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DQx4PI6A; arc=none smtp.client-ip=209.85.219.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--almasrymina.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="DIUV9itN"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-572c65cea55so555729a12.0
-        for <linux-alpha@vger.kernel.org>; Wed, 29 May 2024 18:09:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DQx4PI6A"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-df771bdee6bso615323276.3
+        for <linux-alpha@vger.kernel.org>; Thu, 30 May 2024 13:16:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1717031348; x=1717636148; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Pc8AzCw2itqlchY2iNLylrW0HG92I3q/DnK9Zsb7BQY=;
-        b=DIUV9itNhbg8EfKLtpnHuKH1pEUDR/trubtVF2Pcu4Z2lDAl5gF9rVTS+Ts6Kk8+Eq
-         0PnNYawFbqcd7oo1KeIFL9Mq7uc98o7+69ELep2M+FKQDxUE7PHC0gPRNrOdoflb4CyU
-         dJkWdqUo/ovPZPD+gjAyrYMac6zoBKYhanCvY=
+        d=google.com; s=20230601; t=1717100181; x=1717704981; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yaEF0DqCm5CQkZB35PjEH+gJQ00Kx0ca44YJl8gv7Yk=;
+        b=DQx4PI6AEZlcqseS7nlUwWauzeA7vJjByZP7oeq8vxzm+uKFmIgbyyTxwbxnV44oUZ
+         cazPHOzBC0J+Q13MZNU/3nJCv58aYB4kQton3B2ti/jRfoXWj/foeQ/32ueZWclPNvNL
+         KXje91b/2uOMi0QH/InptkH/4kjVkyEYz8aLRUy2tdW29fJ/J8BJNhb7QmYPelTL3/Nx
+         UKnSqnwFatxq31OENazAzJOZO3Dgx2Js6DUGFQw+vzTQ47PlICH30DgiNunY5p1J9o+9
+         MpdjQs7uIFyEoVH+6NWX9EUn80vJKWOieKaedtxr4F0JzHGffN6xR3ORT8g1UL+JymBu
+         k8wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717031348; x=1717636148;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Pc8AzCw2itqlchY2iNLylrW0HG92I3q/DnK9Zsb7BQY=;
-        b=BNNp59QdpnV0oWGAuD/g2eF08IaW4+EC7m9xdqKKexgaZ4u8mECZPeoZsLNcrD0Z7c
-         Qh+9PilbSgv4/PYkcjgOoYeAIUzFuFgtQN0Dt+dQohvEycRPpzBwaYEeiT2/m+RsiR2K
-         JA619EGmXUB9HHIR05NN/AUqBt3E2/Sk9Ap6vEOTbiM276bJfmZyoCZMB41Lb6PiaD9b
-         zk6DM91IvbpmYcwJv/zd7QTbjz7/6EJYp6wQPdty2wPNX7u7CJzn2pSdyrcr9m7RLNdx
-         gitVWtoVIBZFEQHwQR0egUfcsjWRq6j/yt25wg22y2lWK9LnbPt8PyzgUBjyFks7ilFO
-         t8iw==
-X-Forwarded-Encrypted: i=1; AJvYcCWKpbNT2tQvQUH5DagCbb+B+TuI78HWMuIot9yIBsdY2jhV1Ee3W7dQd8qfDKAY9K7x55QOsKmAijU9/9yFaydW15oMWReN0CNpeS8=
-X-Gm-Message-State: AOJu0YxnkFPzcDTvf27EkWDIVd6FglWFELwDHIfZsCkuCaWiMVojzyue
-	Kz98HXou3Vcuz09JLxl5jlmpssdZsE4poKG+KKflrnQIK5u73hGXFlBobhZ0kmYDKK+1b/PRF1u
-	Ct13Prg==
-X-Google-Smtp-Source: AGHT+IF+j0ELNW7YizMfiHOdDIyPnWB++IvR5pzdDTFtlhvH9yrsoLkRHhg3trDgzsKG6XnsIVngxQ==
-X-Received: by 2002:a50:ab5b:0:b0:579:db1a:558f with SMTP id 4fb4d7f45d1cf-57a19f5d6dfmr333976a12.7.1717031347752;
-        Wed, 29 May 2024 18:09:07 -0700 (PDT)
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com. [209.85.218.51])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-578524bb86bsm8715318a12.97.2024.05.29.18.09.07
-        for <linux-alpha@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 May 2024 18:09:07 -0700 (PDT)
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a6269885572so97169166b.1
-        for <linux-alpha@vger.kernel.org>; Wed, 29 May 2024 18:09:07 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXccSb8udmXBLvIlcSuGZVnja/0EOqMpJuxXRoO2VU/PhVHDqoC7pJrxD2a6GxK7Zytt7DjSf94YKG6hLFrwv5k76J5UKSYQLDH9a0=
-X-Received: by 2002:a17:906:cb90:b0:a5c:dce0:9f4e with SMTP id
- a640c23a62f3a-a65f0bd7b2bmr31381166b.28.1717031346663; Wed, 29 May 2024
- 18:09:06 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1717100181; x=1717704981;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yaEF0DqCm5CQkZB35PjEH+gJQ00Kx0ca44YJl8gv7Yk=;
+        b=vcIpNboe39nDQ1FjPv3SSg+3OM9KIKzAykTgr795I9WiM3e0hwMbCSSIZ03w4BceTA
+         TtOz7fV6Ioba2UvQ6ZsLSVDe5RoigtuXZxAh8ThEa+Kv73Cuu2GIyOl4R3llSBa6KsfB
+         eiE2uELoMFm4eelhlpuVn3CBbRmOTC18/tNHeYoTOIYeCD0ux8mbwRWCZ6GDNpBw0++V
+         gyYYLINrzNZQMur4cTCup//sJagv4cWR2uzN6DcV9VbR4gRtApmNvkEtSZVsTn3liW+I
+         wu8c/7hwrdsEjw0oSysoObs++6KDS7ucJg7Q0eeftcIORQbrJoGiiwW8IHGJt8XTuK5b
+         LNvA==
+X-Forwarded-Encrypted: i=1; AJvYcCXmE5E3vK006mA4LVSbwpRim3Vka+lEkQogU66wMeGnAb3eapS/W5kK3pWtfYEMLqXoOip96PyaDNdDmXV1QjHGLef6XydrRpQqvLk=
+X-Gm-Message-State: AOJu0YxnsQI0jyzIL2CFNpk7N3g3ybdwu+LyEo1GkeA+JbbnXCVg75bC
+	oxRjc9HEDg2OZ/1JH7Kto8h4yUBGVQr5myFzGAYCPqCfsBKXfAP8e/g/F8bWd9uuYYsI+9xScsj
+	XPHH1baDg+Tmi52v88qi37w==
+X-Google-Smtp-Source: AGHT+IHQSp6ih1zR7n3tsFdazsyJvnckERFqUtnhikqH/B2yNteq1+Esq+3zctzZclvpF1Z7GTwU7qeCMRAP5FzJOw==
+X-Received: from almasrymina.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:4bc5])
+ (user=almasrymina job=sendgmr) by 2002:a05:6902:154a:b0:df7:6b9d:21fd with
+ SMTP id 3f1490d57ef6-dfa5a68894emr293702276.8.1717100181353; Thu, 30 May 2024
+ 13:16:21 -0700 (PDT)
+Date: Thu, 30 May 2024 20:16:00 +0000
+In-Reply-To: <20240530201616.1316526-1-almasrymina@google.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20240503081125.67990-1-arnd@kernel.org> <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
- <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk> <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
- <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Wed, 29 May 2024 18:08:50 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi7WfDSfunEXmCqDnH+55gumjhDar-KO_=66ziuP33piw@mail.gmail.com>
-Message-ID: <CAHk-=wi7WfDSfunEXmCqDnH+55gumjhDar-KO_=66ziuP33piw@mail.gmail.com>
-Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Arnd Bergmann <arnd@kernel.org>, 
-	linux-alpha@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, 
+Mime-Version: 1.0
+References: <20240530201616.1316526-1-almasrymina@google.com>
+X-Mailer: git-send-email 2.45.1.288.g0e0cd299f1-goog
+Message-ID: <20240530201616.1316526-2-almasrymina@google.com>
+Subject: [PATCH net-next v10 01/14] netdev: add netdev_rx_queue_restart()
+From: Mina Almasry <almasrymina@google.com>
+To: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+	linux-arch@vger.kernel.org, bpf@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org
+Cc: Mina Almasry <almasrymina@google.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Donald Hunter <donald.hunter@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
 	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
-	Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org, 
-	Michael Cree <mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>
+	Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, 
+	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, 
+	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>, 
+	Yonghong Song <yonghong.song@linux.dev>, John Fastabend <john.fastabend@gmail.com>, 
+	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>, 
+	Jiri Olsa <jolsa@kernel.org>, Steffen Klassert <steffen.klassert@secunet.com>, 
+	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, 
+	"=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>, Pavel Begunkov <asml.silence@gmail.com>, 
+	David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin <linyunsheng@huawei.com>, 
+	Shailend Chand <shailend@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
+	Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst <jeroendb@google.com>, 
+	Praveen Kaligineedi <pkaligineedi@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 29 May 2024 at 11:50, Maciej W. Rozycki <macro@orcam.me.uk> wrote:
->
->              The only difference here is that with
-> hardware read-modify-write operations atomicity for sub-word accesses is
-> guaranteed by the ISA, however for software read-modify-write it has to be
-> explictly coded using the usual load-locked/store-conditional sequence in
-> a loop.
+Add netdev_rx_queue_restart() function to netdev_rx_queue.h
 
-I have some bad news for you: the old alpha CPU's not only screwed up
-the byte/word design, they _also_ screwed up the
-load-locked/store-conditional.
+Signed-off-by: David Wei <dw@davidwei.uk>
+Signed-off-by: Mina Almasry <almasrymina@google.com>
 
-You'd think that LL/SC would be done at a cacheline level, like any
-sane person would do.
+---
 
-But no.
+v9: https://lore.kernel.org/all/20240502045410.3524155-4-dw@davidwei.uk/
+(submitted by David).
+- fixed SPDX license identifier (Simon).
+- Rebased on top of merged queue API definition, and changed
+  implementation to match that.
+- Replace rtnl_lock() with rtnl_is_locked() to make it useable from my
+  netlink code where rtnl is already locked.
 
-The 21064 actually did atomicity with an external pin on the bus, the
-same way people used to do before caches even existed.
+---
+ include/net/netdev_rx_queue.h |  3 ++
+ net/core/Makefile             |  1 +
+ net/core/netdev_rx_queue.c    | 74 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 78 insertions(+)
+ create mode 100644 net/core/netdev_rx_queue.c
 
-Yes, it has an internal L1 D$, but it is a write-through cache, and
-clearly things like cache coherency weren't designed for. In fact,
-LL/SC is even documented to not work in the external L2 cache
-("Bcache" - don't ask me why the odd naming).
+diff --git a/include/net/netdev_rx_queue.h b/include/net/netdev_rx_queue.h
+index aa1716fb0e53c..e78ca52d67fbf 100644
+--- a/include/net/netdev_rx_queue.h
++++ b/include/net/netdev_rx_queue.h
+@@ -54,4 +54,7 @@ get_netdev_rx_queue_index(struct netdev_rx_queue *queue)
+ 	return index;
+ }
+ #endif
++
++int netdev_rx_queue_restart(struct net_device *dev, unsigned int rxq);
++
+ #endif
+diff --git a/net/core/Makefile b/net/core/Makefile
+index 62be9aef25285..f82232b358a2c 100644
+--- a/net/core/Makefile
++++ b/net/core/Makefile
+@@ -19,6 +19,7 @@ obj-$(CONFIG_NETDEV_ADDR_LIST_TEST) += dev_addr_lists_test.o
+ 
+ obj-y += net-sysfs.o
+ obj-y += hotdata.o
++obj-y += netdev_rx_queue.o
+ obj-$(CONFIG_PAGE_POOL) += page_pool.o page_pool_user.o
+ obj-$(CONFIG_PROC_FS) += net-procfs.o
+ obj-$(CONFIG_NET_PKTGEN) += pktgen.o
+diff --git a/net/core/netdev_rx_queue.c b/net/core/netdev_rx_queue.c
+new file mode 100644
+index 0000000000000..b3899358e5a9c
+--- /dev/null
++++ b/net/core/netdev_rx_queue.c
+@@ -0,0 +1,74 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include <linux/netdevice.h>
++#include <net/netdev_queues.h>
++#include <net/netdev_rx_queue.h>
++
++int netdev_rx_queue_restart(struct net_device *dev, unsigned int rxq_idx)
++{
++	void *new_mem, *old_mem;
++	int err;
++
++	if (!dev->queue_mgmt_ops->ndo_queue_stop ||
++	    !dev->queue_mgmt_ops->ndo_queue_mem_free ||
++	    !dev->queue_mgmt_ops->ndo_queue_mem_alloc ||
++	    !dev->queue_mgmt_ops->ndo_queue_start)
++		return -EOPNOTSUPP;
++
++	DEBUG_NET_WARN_ON_ONCE(!rtnl_is_locked());
++
++	new_mem = kvzalloc(dev->queue_mgmt_ops->ndo_queue_mem_size, GFP_KERNEL);
++	if (!new_mem)
++		return -ENOMEM;
++
++	old_mem = kvzalloc(dev->queue_mgmt_ops->ndo_queue_mem_size, GFP_KERNEL);
++	if (!old_mem) {
++		err = -ENOMEM;
++		goto err_free_new_mem;
++	}
++
++	err = dev->queue_mgmt_ops->ndo_queue_mem_alloc(dev, new_mem, rxq_idx);
++	if (err)
++		goto err_free_old_mem;
++
++	err = dev->queue_mgmt_ops->ndo_queue_stop(dev, old_mem, rxq_idx);
++	if (err)
++		goto err_free_new_queue_mem;
++
++	err = dev->queue_mgmt_ops->ndo_queue_start(dev, new_mem, rxq_idx);
++	if (err)
++		goto err_start_queue;
++
++	dev->queue_mgmt_ops->ndo_queue_mem_free(dev, old_mem);
++
++	kvfree(old_mem);
++	kvfree(new_mem);
++
++	return 0;
++
++err_start_queue:
++	/* Restarting the queue with old_mem should be successful as we haven't
++	 * changed any of the queue configuration, and there is not much we can
++	 * do to recover from a failure here.
++	 *
++	 * WARN if the we fail to recover the old rx queue, and at least free
++	 * old_mem so we don't also leak that.
++	 */
++	if (dev->queue_mgmt_ops->ndo_queue_start(dev, old_mem, rxq_idx)) {
++		WARN(1,
++		     "Failed to restart old queue in error path. RX queue %d may be unhealthy.",
++		     rxq_idx);
++		dev->queue_mgmt_ops->ndo_queue_mem_free(dev, &old_mem);
++	}
++
++err_free_new_queue_mem:
++	dev->queue_mgmt_ops->ndo_queue_mem_free(dev, new_mem);
++
++err_free_old_mem:
++	kvfree(old_mem);
++
++err_free_new_mem:
++	kvfree(new_mem);
++
++	return err;
++}
+-- 
+2.45.1.288.g0e0cd299f1-goog
 
-So LL/SC on the 21064 literally works on external memory.
-
-Quoting the reference manual:
-
-  "A.6 Load Locked and Store Conditional
-  The 21064 provides the ability to perform locked memory accesses through
-  the LDxL (Load_Locked) and STxC (Store_Conditional) cycle command pair.
-  The LDxL command forces the 21064 to bypass the Bcache and request data
-  directly from the external memory interface. The memory interface logic must
-  set a special interlock flag as it returns the data, and may
-optionally keep the
-  locked address"
-
-End result: a LL/SC pair is very very slow. It was incredibly slow
-even for the time. I had benchmarks, I can't recall them, but I'd like
-to say "hundreds of cycles". Maybe thousands.
-
-So actual reliable byte operations are not realistically possible on
-the early alpha CPU's. You can do them with LL/SC, sure, but
-performance would be so horrendously bad that it would be just sad.
-
-The 21064A had some "fast lock" mode which allows the data from the
-LDQ_L to come from the Bcache. So it still isn't exactly fast, and it
-still didn't work at CPU core speeds, but at least it worked with the
-external cache.
-
-Compilers will generate the sequence that DEC specified, which isn't
-thread-safe.
-
-In fact, it's worse than "not thread safe". It's not even safe on UP
-with interrupts, or even signals in user space.
-
-It's one of those "technically valid POSIX", since there's
-"sig_atomic_t" and if you do any concurrent signal stuff you're
-supposed to only use that type. But it's another of those "Yeah, you'd
-better make sure your structure members are either 'int' or bigger, or
-never accessed from signals or interrupts, or they might clobber
-nearby values".
-
-           Linus
