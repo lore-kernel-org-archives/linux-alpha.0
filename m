@@ -1,127 +1,138 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 556F11862BE
-	for <linux-alpha@vger.kernel.org>; Thu, 30 May 2024 23:51:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A09EB15B3
+	for <linux-alpha@vger.kernel.org>; Fri, 31 May 2024 00:11:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717113110; cv=none; b=oHfJiTEyhlSRTCrCf/iCYnNjfDvKsWd8dkAAI3Gz9Nku6JrHP6cmrhrxqvJbxOj2iHLnddlbWYr/ITaTacRTsAeSsTgyXYfsWFHYzKD40vw4W1qspjrIvaMg6eKL6C1ZfGvyy6Gss5S4ZNSojMKNk54R/ak1MplyJJybkByAzSk=
+	t=1717114280; cv=none; b=fDIr+C1EpTuTWUleeKEj2j5DSHwFnSToKBU9zB4p8LRikR8NeazyzNC16mKE2zteNhGYlCy8uVPMiqgKbwaTTNwB8cWfcfgVBT3wpyOjBVxanB0tvYOJTZNSLEF+GhvDVSh/aeY1d7O7Za8VxCUarArQio79aWhr73Ks26hzAGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717113110; c=relaxed/simple;
-	bh=W93FmhGSt5rN/d9ZkTtKHNbj8y2kiVp3BB6JpqBPjtM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=P6E3YhJb0JWmZmyW6WJAMa+hiWjfy+6ntLOft19OHhGbMEU54Awukp4HQAPdN9k7U70f42ViRNwXHc3HbPX78MRvX11stZtq+TT0eA2knCpI8Mb1hCdt0EpZjVUWyWvL7hDJG7y1fLZo771L9IldNNDwz2F2ZSxM2l35lcho4Ws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=davidwei.uk; spf=none smtp.mailfrom=davidwei.uk; dkim=pass (2048-bit key) header.d=davidwei-uk.20230601.gappssmtp.com header.i=@davidwei-uk.20230601.gappssmtp.com header.b=QL4+RqL0; arc=none smtp.client-ip=209.85.210.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=davidwei.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=davidwei.uk
+	s=arc-20240116; t=1717114280; c=relaxed/simple;
+	bh=U0XJns+YNNmeMEASPduEJ9jHIdS9fQwGg1OuH4qRsww=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=gWbeQga9hTWwtbo4TTH9FzM1AZgGXEhqe3T+QcgKjKZiz1kWdhqJkX60TUHgQRxCO01BKA5ucJAQzzaVEop73VTy+cz4FR/EXH7mhdG7WXGfzZgSHjTnMD0EdA+NUHoaJWyS2KYrngiFCPC2sJExcEQ6VpInrCAnRRFf1NwDB5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=GKchJLAj; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=davidwei-uk.20230601.gappssmtp.com header.i=@davidwei-uk.20230601.gappssmtp.com header.b="QL4+RqL0"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-6f693306b7cso1343025b3a.1
-        for <linux-alpha@vger.kernel.org>; Thu, 30 May 2024 16:51:47 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="GKchJLAj"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5785eab8d5dso1609560a12.3
+        for <linux-alpha@vger.kernel.org>; Thu, 30 May 2024 17:11:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=davidwei-uk.20230601.gappssmtp.com; s=20230601; t=1717113107; x=1717717907; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zLw2WCX7NzhXHaHBtGiNDa+0R1r9ENCFVNNCzI5O8YY=;
-        b=QL4+RqL090NmzqnmmaV35StPPgSYrm0/E5FYyEyBNDFbnjFYn4+7lynHidmbHWfEVL
-         1iBcOwtdX/+OmGH9OHA6Ly9dCXC0kAmMRNt7jsngsMzCorwTnvSYwsuvbd/30RasDM2J
-         CgWFzSw7fo3h/P0Vna2SEUkG3BW1pwRp2ZYJmicLk3iur+HVCLaN4mTrgCpO4EGR65xr
-         zvIJIWco9NeeSE1nTauAdHI2pE5kFmj0GGL6zKrRbn7msIZJ7JKuUeM9tM4Yd+OHVqGp
-         tw2mwrdzVMXg0wyfG0apx+qaFVSep6SjKcJrNGom1L34fJ84bOjAqASDJTHdFqEXjqA6
-         2XTQ==
+        d=linux-foundation.org; s=google; t=1717114277; x=1717719077; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=YHMYrW+TpQb5zcHr1paZFxtLcsiCfSjdSb93AnO8N4I=;
+        b=GKchJLAj9vw4sKbRtxyZEpHnh1q49FIPluJHKYkljzG458HRJ+PkGJDeOuR6mqV3EQ
+         BJDmyT0KkZVSpWHNhLVrH/gcJv64pMrezDpnvBm7wpdIyLMsslzJFSy3X71oDFko//Jk
+         FbrTakHlClf8E+P5Zf9wUSXVsLaMfNw8Wg86I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717113107; x=1717717907;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zLw2WCX7NzhXHaHBtGiNDa+0R1r9ENCFVNNCzI5O8YY=;
-        b=d0jcptcUWGZVmk+VdenX1ii0KKKTH6mMKq5+cRV4d1tXtfPjH6L5nrqvZZjAG4FFZN
-         iqBim4BCJNB4oBWmBaYMLtKhltCvI+elTKFaIgVZgaT+d14MAKMDRGbJnfY351R/Lc9n
-         vLN4XUEkbvhAdJupA05FUZ/YSk7Y1c0FopQCzZwMVvSgmsf0eECqGy5fEW/ZvGS82xCw
-         80Ns2TVQrzLYbhNdV/ceqVwhHa+yEM96OYdaDzvvz0DefC5+Fyu97sDlzGFGfmCoTwud
-         hNLM5P8/bdV0pRrb+nJ5PHMilRAK2bRn01BsK3IcSm9CAyVKNxncmT0P3Ok9bvMXBFJF
-         c+ww==
-X-Forwarded-Encrypted: i=1; AJvYcCX01OFuguSTPze5/mKIqfFJ7f2XWfHq78Gb4kkuIeZF4uln0yca5xiItWOZkOHUj2bf5yyIByXyJWFLGy3/nBak9415GHi7l5MlrGA=
-X-Gm-Message-State: AOJu0YyxdFZdgM8KCgTvJFhKjYjiTX0yd3Es+Cr6883K5whD949IwE1t
-	hjWOcJ9sYZdWuljo0T2YFWr6hKx5YdJd/7PvXSZY3AQrdMzqpMZEVhHH40mNg2g=
-X-Google-Smtp-Source: AGHT+IGLIircvxxELNZp6hQL4M8a4oqQMuIfbGbj5ESP+8hykh0tgC9NyJcGdtZhysmk5TffXmp10A==
-X-Received: by 2002:a05:6a21:7807:b0:1af:f23c:804a with SMTP id adf61e73a8af0-1b26f245bedmr579669637.38.1717113107315;
-        Thu, 30 May 2024 16:51:47 -0700 (PDT)
-Received: from ?IPV6:2a03:83e0:1156:1:1cbd:da2b:a9f2:881? ([2620:10d:c090:500::4:5439])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-702423c7b7esm298915b3a.13.2024.05.30.16.51.42
+        d=1e100.net; s=20230601; t=1717114277; x=1717719077;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YHMYrW+TpQb5zcHr1paZFxtLcsiCfSjdSb93AnO8N4I=;
+        b=QukU0Ij19KibexQgldSMfo81fIQcLw7XJIhZFMz05cGkbvtduBaIlrkfB0lfeRZOTz
+         NOB7WdqUdYBcWhGL/pjHEx81zYJCy+CStUsdOAm02lDCi6JBF4AZXHX3erRiOMOLsBb4
+         F49F2Nn8qjE9Xtbf0smVyWiG1P7Z13AX/9lqtJU7VDPP/3Mf3Ct42bUpwIt6EdBx9I5V
+         ar8sSMBK4J1xduq8rhgMFIrYlVEw5ARfIU9ksIeagvQsbSpNW9yHqqhF6ao9K9qu/2Jg
+         J0tYIFH8fCIA7AF2O4RtqQm1QF1HhZ1YKv4l/8pVeIv0/av3rjIqfGlBXOt452yQoxF4
+         HzHw==
+X-Forwarded-Encrypted: i=1; AJvYcCUQJ+Zt+jSm1ZkqrA0pqbLd16hC7Y4nvsfafOQ9VeNoBdMu+0D5YdxJgrYlLpKP1CYOT7AK+26HLl5k/0xdViwqVpcB3gKSqxO0wBA=
+X-Gm-Message-State: AOJu0YwE67B41Us+R86xOXauTSHzz+N74T0359gPgRMNiM1N7xp+I1M8
+	Si0o2x9wQ1mmExWh/OwGzOyUECuuuKOvhCtjwfI8vGCV07XO6Snh6sr0RPBix/PQn469rN1qHb5
+	eCFaqGg==
+X-Google-Smtp-Source: AGHT+IGCsCeJnrfk0OeoPTE1isJuaFA/IQO4VjBvOGXseNCVaKbq6N47p7jneSBwGzetBAWEkDL+5w==
+X-Received: by 2002:a50:ba85:0:b0:579:be37:fa5a with SMTP id 4fb4d7f45d1cf-57a363b589dmr199701a12.8.1717114276742;
+        Thu, 30 May 2024 17:11:16 -0700 (PDT)
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com. [209.85.218.42])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-57a31bb8282sm351561a12.25.2024.05.30.17.11.15
+        for <linux-alpha@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 May 2024 16:51:46 -0700 (PDT)
-Message-ID: <49e4d52c-59f1-4321-9012-aabb1e8cc005@davidwei.uk>
-Date: Thu, 30 May 2024 16:51:41 -0700
+        Thu, 30 May 2024 17:11:15 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a6341cf2c99so147722966b.0
+        for <linux-alpha@vger.kernel.org>; Thu, 30 May 2024 17:11:15 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVd29sjHZb8oUEg4isWi/cBVBTJtbLZvmy1Lvqbc/kY4r2F26QlgyrRRN3nCArLMaka+CvfAGZZdv5k61tj/dAOyujTNwS7NLxAAE8=
+X-Received: by 2002:a17:906:258d:b0:a5c:dcd4:351b with SMTP id
+ a640c23a62f3a-a6821982787mr20520766b.58.1717114275493; Thu, 30 May 2024
+ 17:11:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v10 01/14] netdev: add netdev_rx_queue_restart()
-Content-Language: en-GB
-To: Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
- bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc: "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Donald Hunter <donald.hunter@gmail.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Richard Henderson <richard.henderson@linaro.org>,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
- <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
- Jesper Dangaard Brouer <hawk@kernel.org>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
- <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
- Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
- Martin KaFai Lau <martin.lau@linux.dev>, Eduard Zingerman
- <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
- Yonghong Song <yonghong.song@linux.dev>,
- John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
- Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>,
- Jiri Olsa <jolsa@kernel.org>, Steffen Klassert
- <steffen.klassert@secunet.com>, Herbert Xu <herbert@gondor.apana.org.au>,
- David Ahern <dsahern@kernel.org>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- Shuah Khan <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Pavel Begunkov <asml.silence@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>,
- Harshitha Ramamurthy <hramamurthy@google.com>,
- Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst
- <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>
-References: <20240530201616.1316526-1-almasrymina@google.com>
- <20240530201616.1316526-2-almasrymina@google.com>
-From: David Wei <dw@davidwei.uk>
-In-Reply-To: <20240530201616.1316526-2-almasrymina@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20240503081125.67990-1-arnd@kernel.org> <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
+ <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk> <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
+ <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk> <CAHk-=wi7WfDSfunEXmCqDnH+55gumjhDar-KO_=66ziuP33piw@mail.gmail.com>
+ <alpine.DEB.2.21.2405302115130.23854@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2405302115130.23854@angie.orcam.me.uk>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Thu, 30 May 2024 17:10:58 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whiH6g+T7+YWSYgAhJ9HsJ2bUUDJfLLo_Yhbi8CVgkHDg@mail.gmail.com>
+Message-ID: <CAHk-=whiH6g+T7+YWSYgAhJ9HsJ2bUUDJfLLo_Yhbi8CVgkHDg@mail.gmail.com>
+Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Arnd Bergmann <arnd@kernel.org>, 
+	linux-alpha@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, 
+	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+	Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org, 
+	Michael Cree <mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2024-05-30 13:16, Mina Almasry wrote:
-[...]
-> +err_start_queue:
-> +	/* Restarting the queue with old_mem should be successful as we haven't
-> +	 * changed any of the queue configuration, and there is not much we can
-> +	 * do to recover from a failure here.
-> +	 *
-> +	 * WARN if the we fail to recover the old rx queue, and at least free
-> +	 * old_mem so we don't also leak that.
-> +	 */
-> +	if (dev->queue_mgmt_ops->ndo_queue_start(dev, old_mem, rxq_idx)) {
-> +		WARN(1,
-> +		     "Failed to restart old queue in error path. RX queue %d may be unhealthy.",
-> +		     rxq_idx);
-> +		dev->queue_mgmt_ops->ndo_queue_mem_free(dev, &old_mem);
+On Thu, 30 May 2024 at 15:57, Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+>
+> On Wed, 29 May 2024, Linus Torvalds wrote:
+> >
+> > The 21064 actually did atomicity with an external pin on the bus, the
+> > same way people used to do before caches even existed.
+>
+>  Umm, 8086's LOCK#, anyone?
 
-This should be ->ndo_queue_mem_free(dev, old_mem).
+Well, yes and no.
+
+So yes, exactly like 8086 did before having caches.
+
+But no, not like the alpha contemporary PPro that did have caches. The
+PPro already did locked cycles in the caches.
+
+Yes, the PPro still did have an external lock pin (and in fact current
+much more modern x86 CPUs do too), but it's only used for locked IO
+accesses or possibly cacheline crossing accesses.
+
+So x86 has supported atomic accesses on IO - and it is very very slow,
+to this day. So slow, and problematic, in fact, that Intel is only now
+trying to remove it (look  up "split lock"
+
+But the 21064 explicitly did not support locking on IO - and unaligned
+LL/SC accesses obviously also did not work.
+
+So I really feel the 21064 was broken.
+
+It's probably related to the whole cache coherency being designed to
+be external to the built-in caches - or even the Bcache. The caches
+basically are write-through, and the weak memory ordering was designed
+for allowing this horrible model.
+
+> > In fact, it's worse than "not thread safe". It's not even safe on UP
+> > with interrupts, or even signals in user space.
+>
+>  Ouch, I find it a surprising oversight.
+
+The sad part is that it doesn't seem to have been an oversight. It
+really was broken-as-designed.
+
+Basically, the CPU was designed for single-threaded Spec benchmarks
+and absolutely nothing else. Classic RISC where you recompile to fix
+problems like the atomicity thing - "just use a 32-bit sig_atomic_t
+and you're fine")
+
+The original alpha architecture handbook makes a big deal of how
+clever the lack of byte and word operations is. I also remember
+reading an article by Dick Sites - one of the main designers - talking
+a lot about how the lack of byte operations is great, and encourages
+vectorizing byte accesses and doing string operations in whole words.
+
+          Linus
