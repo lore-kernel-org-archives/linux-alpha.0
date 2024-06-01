@@ -1,57 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D871312E68;
-	Fri, 31 May 2024 19:33:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32ABAB645;
+	Sat,  1 Jun 2024 05:35:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717184032; cv=none; b=U7G7XyHuVzdIKxIQ+QGA7sgZisNt+NCQfqMJgZZrdvdsbqTbRUt8wKJDosIBQQyCo/iZtWvG2Z49TScrlHJXd2Xglkpajqww2U771FiPkLvx2NSfvfjcuVKtIIDLK9bN466r13CozOstlWN+T80a9ZBMvV+KjXMBv2PsttVcw3M=
+	t=1717220130; cv=none; b=ncUJ+67RK5bkMTNskJsB9JSWGTRsMWecrDIsPIXoJccVjN8DSk/TIuGo5Iv6m44UpNvRbhBp1FwBqJvuUyaoid715e75RdcTgcRCMLFLkyNbLcnAO3qKyid5w1r3aNkaakidM/Z3OwJWcRcWRIMZHkhWKCcp0XYXptbC7v9WIOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717184032; c=relaxed/simple;
-	bh=ynP7rBKdIUVM0oV4Zv6jh4YhAzJrbo8yccG/vKPQ09I=;
+	s=arc-20240116; t=1717220130; c=relaxed/simple;
+	bh=Qcg2EsWp+MetVfVlJ1MsRloFldhkkthqt6s0XSJGGUQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WJkiNSMlFNSvUnoSXsn8pfOVWb/6UfHZ3ew6ftb9sMzlFiDieoA5ZUrXAop+b/bG8AyCkhAxmsjiGUNk/Mm9pNgOxm6E3IEArgrEPnE7T9bbQeVltn5O/Spf8G2b/9BSgRn6AlEp/TivretHdf0UumsQK0cyTLUDxfSNmhZ+o00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U7EWM7n0; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=CNBROIVzzRad9bD4fki+dKwX/enbEizuT9BVZjQByrJXz1Mi/vGyRxNbpTbc5d5r2bhithO+moS1qz2G3RcCHxWU59Xxt6JDQiwvEwDYkY2E2Km5/btk7e5ZdQ/870GV/tV1XuU11sY6dP1+D8L/Skgh6BO24PBeGtWf9gxSsuc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=HKdrUCcb; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U7EWM7n0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71FDFC116B1;
-	Fri, 31 May 2024 19:33:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717184032;
-	bh=ynP7rBKdIUVM0oV4Zv6jh4YhAzJrbo8yccG/vKPQ09I=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=U7EWM7n0mEPhcNRAnvoq1IMAs5HKWT3InRTFcLbBPOKaRsPXXCOKZYmKUVD2Ma9kz
-	 vD+43dVT5gjxhOSCBdvzZ85cviIP6IXlRhw5rYIjwDnEYKSa83m7T8lphvHRSRvnbJ
-	 gsaCHhyKec/0+qHliKH2i2fNpiw63v9sm4vQJ76hO23YRBIewVfZMNTNCYKVLRbCwu
-	 GccmvxHiOawRxox3+B54HcXPQYCfgo+4WC50+bb/xOJ2EpCrLQZZxi8+ioY9xfjJve
-	 N9UNT3+YMWJe+cIZ8jbPYHa0PS7YB2wnTmn+xhFar4ZKLJdRvXSfD8fJ7qVFnOjmMR
-	 v+COhJ5BG+pDQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 1DE27CE3ED6; Fri, 31 May 2024 12:33:52 -0700 (PDT)
-Date: Fri, 31 May 2024 12:33:52 -0700
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>,
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="HKdrUCcb"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=456lYLJFZKzRl4SbmbA36m1MZ6kwxd5EdW3HB35jgrg=; b=HKdrUCcbh7nuL8yjXhHjQH/2c7
+	U49VdUoahQ9mXcAW41e+bwbDxOi+Vq+eFNiyQVP2sy8gBiQ6/Hs6+GeSqxfWD/fEs3RKX4yjsxvrB
+	QBk3NOphsBeQ5nznYjVhhCXtbxYIF7rSg/FLAq5/WvFZcw7b0toA8m5usAMU+ni1+Y1TWlial5hme
+	KvsVSNOSB79AJSWThDvRC+li8uz2EJJdKOhF707Lf0dpLWLJF6cjRoFrWm8dEvxyi/ImC8yGynqHB
+	uNmkck8LcVheHGVvgWeTovxzhvSb0cCLQIyOyRoHvtbV3ADVSDQFcZmf/3qL/6AwY4q8Fs+FMEG7K
+	BxU0btmg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1sDHOb-0000000C0oj-3fR7;
+	Sat, 01 Jun 2024 05:35:13 +0000
+Date: Fri, 31 May 2024 22:35:13 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Mina Almasry <almasrymina@google.com>
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org,
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+	linux-arch@vger.kernel.org, bpf@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Donald Hunter <donald.hunter@gmail.com>,
+	Jonathan Corbet <corbet@lwn.net>,
 	Richard Henderson <richard.henderson@linaro.org>,
 	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
 	Matt Turner <mattst88@gmail.com>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Marc Zyngier <maz@kernel.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>,
-	Frank Scheiner <frank.scheiner@web.de>
-Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
-Message-ID: <7b0a434c-2165-45a0-8507-e7f992094705@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20240503081125.67990-1-arnd@kernel.org>
- <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
- <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk>
- <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
- <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
- <5567ab2e-80af-4c5f-bebb-d979e8a34f49@paulmck-laptop>
- <alpine.DEB.2.21.2405310432190.23854@angie.orcam.me.uk>
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
+	Daniel Borkmann <daniel@iogearbox.net>,
+	Andrii Nakryiko <andrii@kernel.org>,
+	Martin KaFai Lau <martin.lau@linux.dev>,
+	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
+	Yonghong Song <yonghong.song@linux.dev>,
+	John Fastabend <john.fastabend@gmail.com>,
+	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
+	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+	Steffen Klassert <steffen.klassert@secunet.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	David Ahern <dsahern@kernel.org>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+	Shuah Khan <shuah@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Yunsheng Lin <linyunsheng@huawei.com>,
+	Shailend Chand <shailend@google.com>,
+	Harshitha Ramamurthy <hramamurthy@google.com>,
+	Shakeel Butt <shakeel.butt@linux.dev>,
+	Jeroen de Borst <jeroendb@google.com>,
+	Praveen Kaligineedi <pkaligineedi@google.com>,
+	Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH net-next v10 02/14] net: page_pool: create hooks for
+ custom page providers
+Message-ID: <ZlqzER_ufrhlB28v@infradead.org>
+References: <20240530201616.1316526-1-almasrymina@google.com>
+ <20240530201616.1316526-3-almasrymina@google.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -60,51 +93,14 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2405310432190.23854@angie.orcam.me.uk>
+In-Reply-To: <20240530201616.1316526-3-almasrymina@google.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Fri, May 31, 2024 at 04:56:28AM +0100, Maciej W. Rozycki wrote:
-> On Wed, 29 May 2024, Paul E. McKenney wrote:
-> 
-> > >  Mind that the read-modify-write sequence that software does for sub-word 
-> > > write accesses with original Alpha hardware is precisely what hardware 
-> > > would have to do anyway and support for that was deliberately omitted by 
-> > > the architecture designers from the ISA to give it performance advantages 
-> > > quoted in the architecture manual.  The only difference here is that with 
-> > > hardware read-modify-write operations atomicity for sub-word accesses is 
-> > > guaranteed by the ISA, however for software read-modify-write it has to be 
-> > > explictly coded using the usual load-locked/store-conditional sequence in 
-> > > a loop.  I don't think it's a big deal really, it should be trivial to do 
-> > > in the relevant accessors, along with the memory barriers that are needed 
-> > > anyway for EV56+ and possibly other ports such as the MIPS one.
-> > 
-> > There shouldn't be any memory barriers required, and don't EV56+ have
-> > single-byte loads and stores?
-> 
->  I should have commented on this in my original reply.
-> 
->  You're the RCU expert so you know the answer.  I don't.  If it's OK for
-> successive writes to get reordered, or readers to see a stale value, then 
-> you don't need memory barriers.  Otherwise you do.  Whether byte accesses 
-> are available or not does not matter, the CPU *will* do reordering if it's 
-> allowed to (or more specifically, it won't do anything to prevent it from 
-> happening, especially in SMP configurations; I can't remember offhand if 
-> there are cases with UP).  Also adjacent byte writes may be merged, but I 
-> suppose it does not matter, or does it?
+On Thu, May 30, 2024 at 08:16:01PM +0000, Mina Almasry wrote:
+> I'm unsure if the discussion has been resolved yet. Sending the series
+> anyway to get reviews/feedback on the (unrelated) rest of the series.
 
-RCU uses whichever wrapper is required.  For example, if ordering is
-required, it might use smp_store_release() and smp_load_acquire().
-If ordering does not matter, it might use WRITE_ONCE() and READ_ONCE().
-If tearing/fusing/merging does not matter, as in there are not concurrent
-accesses, it uses plain C-language loads and stores.
+As far as I'm concerned it is not.  I've not seen any convincing
+argument for more than page/folio allocator including larger order /
+huge page and dmabuf.
 
->  NB MIPS has similar architectural arrangements (and a bunch of barriers 
-> defined in the ISA), it's just most implementations are actually strongly 
-> ordered, so most people can't see the effects of this.  With MIPS I know 
-> for sure there are cases of UP reordering, but they only really matter for 
-> MMIO use cases and not regular memory.
-
-Any given architecture is required to provide architecture-specific
-implementations of the various functions that meet the requirements of
-Linux-kernel memory model.  See tools/memory-model for more information.
-
-							Thanx, Paul
