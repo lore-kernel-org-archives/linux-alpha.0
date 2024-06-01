@@ -1,155 +1,91 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA99412FB34;
-	Sat,  1 Jun 2024 13:09:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7B6B8248C
+	for <linux-alpha@vger.kernel.org>; Sat,  1 Jun 2024 13:51:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.58.85.151
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717247351; cv=none; b=R3Q51BL6JEI6Omgp8nwceETtxU83cO/5UMRjnXP5ad0GqG93Zwluz/NgOZKPGJ6Vn1+O8Hhdu/ei8n2nNvJIa5OlGiN6YTFFd+6mWFJWcASHiHTy/56xA9O4o8xaG2z4pYMQrk6bcN2PpIL6Rm+TvgkvqHHBShHpeWAcv+jRGKk=
+	t=1717249921; cv=none; b=Ebs1yjxZdkHzzzN+oK5esq8OyYRGrPeMnHtgZLJdj5j9+tx4tpAivVfRBI0gwmM5iZ1YcIkqyikq/JPGYbvLBC+3OUBiRv9mUINO+h2nwtbaSZ9E3G36y7TmXS3pigEvaqsbtaGnQ+6Obb6UgaoSBIBO5eviLHqpDQqAzSCqdoI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717247351; c=relaxed/simple;
-	bh=JeCV8WyWwZWgsRBoBsXvODv76tCrqrpoTPjcXqyhaow=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=M4JE/cPlbdfXEZc7eWNN3ckQSVLOig2VDk4AFk8gaz9q/hj8vLloWO3bTMxvoPR9xx+Q9wW3ffdjgSClrcG6MTScG6PXztxsrJU5ARNj3yqCRq4Dtxl4iaYFAuTJTLtA44gkvYDbYWsmfeyDVljzvmDVDH4qeLdOzDd0OVwNbVQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XK+toAIN; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XK+toAIN"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1f480624d10so23883935ad.1;
-        Sat, 01 Jun 2024 06:09:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1717247349; x=1717852149; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JeCV8WyWwZWgsRBoBsXvODv76tCrqrpoTPjcXqyhaow=;
-        b=XK+toAINfJVGtTmUD3Soy0vZsJyLB8cubuJe/oohosJE2IaO7hXTeDKjcG9hNos62f
-         GJyptL3LNYxldQS3PWjxKnVoONl/DcgWoivTLhiCf8MJwquaGfIx1+g28tsf5TnrcAXt
-         fcNA1NdeyxXUHba0NrCYx5W3sUMwNejEysDA/iTRVdVLisVjYmp30WtRwT4k8NipW/ME
-         0drREBCxR0emIhka6DiTUPv5kg6pe/qxH+AqefRsu7GY79OKUwy40EaqFaVsapp5AiaI
-         V70SSn/KVtxFC8XCcqvioQacmZMftg3asl7k1QEBNqT4rv/DN3rNTxPvYLvAD+tM5+/z
-         SXlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717247349; x=1717852149;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JeCV8WyWwZWgsRBoBsXvODv76tCrqrpoTPjcXqyhaow=;
-        b=mupf7dbpkqcr2BPc2+heTZBijVidN6ng2Quj0GtUTQZrHwszyit75IbOlH+VFWgmki
-         mnqqMvSL5gqqLrl5rOxjNZyPprSryhxaAiCRAiTDSVU3nuGP6gmrmZNr0LOpaoyaQ9nk
-         y/Fg+Xoo2R6rVom+Oe5V4zt3lODm23VoPJWDObB1INKnWj+dVJIK85Y7N5mpeIZjs7ph
-         ra3jmOcFMeErpagEdOUycLhsgITfVKS9jyCee/GyuEzT89xVQLl7B0Xi/ZhTr+FgB/8u
-         ESXlyLnlhKptDbvHfyukGCFdEs+QHAJqUBgMRpvc0P9BqoNdSg4rHH4xFAXUGqZJtt4s
-         G3XA==
-X-Forwarded-Encrypted: i=1; AJvYcCXsDpo+RVKG33/tJ8B2nSqKJjAo1fE5UyixihAQfJyfstahQQdZ98IgGaSXh/WOPmQfBsG+wUsAE60iAffF1iuw+YNNab4chkoaQwj6KVjshlUVCboxjDqvA/sZAbSNCo42nBsgotRNb1KIqq/Nkwh4e/G32hi6ZSExVMFNJ73SmwzOXyid+ed47S2T0SPJvN8ocQpopjAk7ujPGD44PHD4jF6G9z0Y0GPtZNkglZ8nnBaVtX6UTlDMeo6pgMqBcc26xgeqv9OuVdNxuNNSK3dkvV331S5HTQHByrX4NKwXiRExtdw2O6y6U8nCTXzWVQBnCdhN9xsr8/s66bg+QgpKeEioCh8caFlyCG7XTj2quynZe/1LQ1l5TrwvR9VBK4EJViRtZ68adA1HbkoR9VfCPo8+cr+CQ5WT4I3ycUzaa/RKtakCVdFDV4CSnzWC4RRRsmZSHwLgMKqRB0PwnYK+uYQNFCHPcsK4mcyt6BFgG/GDhNmJngp/kSehLtlKSk2GGmK/Fg==
-X-Gm-Message-State: AOJu0YxlpxYMMmDiIQZDSJutOxeVxlxT7Tzqckmx691LsIRcQIFd0xGf
-	au+Un04HmZjznlSwpaTdoUJ0bMe/vuOnUpOvOF6lpLCoNjtzTEgl
-X-Google-Smtp-Source: AGHT+IFMrqly2po5FAbpY8Ll75+7jqZGxykv2GKZgaeba5l+UFazICmi5KDmbbiaIzRe6tWODUDHbA==
-X-Received: by 2002:a17:902:c412:b0:1f6:310b:a3cd with SMTP id d9443c01a7336-1f637018d0dmr55346295ad.20.1717247349084;
-        Sat, 01 Jun 2024 06:09:09 -0700 (PDT)
-Received: from archie.me ([103.124.138.155])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f632338afbsm33014155ad.47.2024.06.01.06.09.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 01 Jun 2024 06:09:08 -0700 (PDT)
-Received: by archie.me (Postfix, from userid 1000)
-	id B7AAC186E1EBA; Sat, 01 Jun 2024 20:09:03 +0700 (WIB)
-Date: Sat, 1 Jun 2024 20:09:03 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
-	linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
-	linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-	bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Donald Hunter <donald.hunter@gmail.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
-	Daniel Borkmann <daniel@iogearbox.net>,
-	Andrii Nakryiko <andrii@kernel.org>,
-	Martin KaFai Lau <martin.lau@linux.dev>,
-	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
-	Yonghong Song <yonghong.song@linux.dev>,
-	John Fastabend <john.fastabend@gmail.com>,
-	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
-	Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-	Steffen Klassert <steffen.klassert@secunet.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	David Ahern <dsahern@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Shuah Khan <shuah@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Yunsheng Lin <linyunsheng@huawei.com>,
-	Shailend Chand <shailend@google.com>,
-	Harshitha Ramamurthy <hramamurthy@google.com>,
-	Shakeel Butt <shakeel.butt@linux.dev>,
-	Jeroen de Borst <jeroendb@google.com>,
-	Praveen Kaligineedi <pkaligineedi@google.com>,
-	Mao Zhu <zhumao001@208suo.com>, Ran Sun <sunran001@208suo.com>,
-	Xiang wangx <wangxiang@cdjrlc.com>,
-	Shaomin Deng <dengshaomin@cdjrlc.com>,
-	Charles Han <hanchunchao@inspur.com>,
-	Attreyee M <tintinm2017@gmail.com>, LihaSika <lihasika@gmail.com>
-Subject: Re: [PATCH net-next v10 13/14] net: add devmem TCP documentation
-Message-ID: <Zlsdb05xe4EnIXmq@archie.me>
-References: <20240530201616.1316526-1-almasrymina@google.com>
- <20240530201616.1316526-14-almasrymina@google.com>
+	s=arc-20240116; t=1717249921; c=relaxed/simple;
+	bh=1swqdd3h6pFCFF9FkaDga64RadxTF94ynOEkAnJ0yeo=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 MIME-Version:Content-Type; b=paTJMZ6rpdOThcvmPn46hnapAdu4HXJ8wPO9oo+6kKSazRyHmSdRIwi3LgXX1wNPMnWYuXLEGWhZnRM42qKt8SFqpx7ZKDwItWu5nwl6CziYTL7wDtTPnNEitAPAdSO5nJQ7+8gEhqXb+oj7h3Jbe5NhpBLa5vkaQPu7NXiLgGo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM; spf=pass smtp.mailfrom=aculab.com; arc=none smtp.client-ip=185.58.85.151
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aculab.com
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-66-UpaXNTL1Oe6ZI-Mr5uhv1Q-1; Sat, 01 Jun 2024 14:51:48 +0100
+X-MC-Unique: UpaXNTL1Oe6ZI-Mr5uhv1Q-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Sat, 1 Jun
+ 2024 14:51:15 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.048; Sat, 1 Jun 2024 14:51:15 +0100
+From: David Laight <David.Laight@ACULAB.COM>
+To: 'Linus Torvalds' <torvalds@linux-foundation.org>, Arnd Bergmann
+	<arnd@arndb.de>
+CC: "Maciej W. Rozycki" <macro@orcam.me.uk>, "Paul E. McKenney"
+	<paulmck@kernel.org>, John Paul Adrian Glaubitz
+	<glaubitz@physik.fu-berlin.de>, Arnd Bergmann <arnd@kernel.org>,
+	"linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "Richard
+ Henderson" <richard.henderson@linaro.org>, Ivan Kokshaysky
+	<ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Alexander Viro
+	<viro@zeniv.linux.org.uk>, Marc Zyngier <maz@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Michael Cree
+	<mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>
+Subject: RE: [PATCH 00/14] alpha: cleanups for 6.10
+Thread-Topic: [PATCH 00/14] alpha: cleanups for 6.10
+Thread-Index: AQHas3geHvAQAz06HUaUVIZjte+qOLGy6zYA
+Date: Sat, 1 Jun 2024 13:51:15 +0000
+Message-ID: <7b84fcf6b64a4553a377c98fdcd48837@AcuMS.aculab.com>
+References: <20240503081125.67990-1-arnd@kernel.org>
+ <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
+ <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk>
+ <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
+ <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
+ <4bb50dc0-244a-4781-85ad-9ebc5e59c99a@app.fastmail.com>
+ <CAHk-=wimJ2hQhKSq7+4O1EHtkg7eFBwY+fygxD+6sjWqgyDMTQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wimJ2hQhKSq7+4O1EHtkg7eFBwY+fygxD+6sjWqgyDMTQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="aC8Ai/5tbLCsiak5"
-Content-Disposition: inline
-In-Reply-To: <20240530201616.1316526-14-almasrymina@google.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 
+Li4uDQo+IFRoZSBmYWN0IGlzLCB0aGUgb3JpZ2luYWwgYWxwaGEgaXMgdGhlIHdvcnN0IGFyY2hp
+dGVjdHVyZSBldmVyIG1hZGUuDQo+IFRoZSBsYWNrIG9mIGJ5dGUgaW5zdHJ1Y3Rpb25zIGFuZCB0
+aGUgYWJzb2x1dGVseSBob3JyZW5kb3VzIG1lbW9yeQ0KPiBvcmRlcmluZyBhcmUgZmF0YWwgZmxh
+d3MuIEFuZCB3aGlsZSB0aGUgbWVtb3J5IG9yZGVyaW5nIGFyZ3VhYmx5IGhhZA0KPiBleGN1c2Vz
+IGZvciBpdCAoInRoZXkgZGlkbid0IGtub3cgYmV0dGVyIiksIHRoZSBsYWNrIG9mIGJ5dGUgb3Bz
+IHdhcw0KPiB3aWxmdWwgbWlzZGVzaWduIHRoYXQgdGhlIGRlc2lnbmVycyB3ZXJlIHByb3VkIG9m
+LCBhbmQgbWFkZSBhIGNlbnRyYWwNCj4gdGVuZXQgb2YgdGhlaXIgbWVzcy4NCg0KSWYgaXQgd2Fz
+bid0IGZyb20gREVDICh3aGVyZSB0aGUgcGRwLTExIGFuZCB2YXggd2VyZSBmaW5lKSBJJ2QgdGhp
+bmsNCml0IHdhcyBzb21lb25lIGhhcmtpbmcgYmFjayB0byB0aGUgb2xkIG1haW5mcmFtZSBkYXlz
+IHdoZXJlIGlzIHdhcw0KcGVyZmVjdGx5IG5vcm1hbCB0byBvbmx5IGhhdmUgJ3dvcmQgYWRkcmVz
+c2luZycgYW5kLCBmb3IgZXhhbXBsZSwNCnRvIHB1dCB0aHJlZSA2LWJpdCBjaGFyYWN0ZXJzIGlu
+dG8gYW4gMTgtYml0IHdvcmQgKGhpIFVuaXZhYyEpLg0KKERvbid0IGV2ZW4gdGhpbmsgaG93IDE4
+LWJpdCB3b3JkcyBnb3Qgd3JpdHRlbiB0byBtYWcgdGFwZSEpDQoNCkl0IGlzIGFsbW9zdCBhcyBp
+cyBzb21lb25lIGFzc3VtZWQgdGhhdCB0aGUgb25seSB1c2UgZm9yIGJ5dGUgYWNjZXNzZXMNCndh
+cyB3aXRoaW4gY2hhcmFjdGVyIGFycmF5cyAtIGFuZCB0aGV5IGNhbiBqb2xseSB3ZWxsIGFsaWdu
+IHRoZSBhcnJheXMuDQoNCk1pbmQgeW91LCBhbGwgdGhlIGJ5dGUgc2hpZnRpbmcgbmVlZGVkIHRv
+IGdldCB0aGUgZGF0YSBvbnRvIHRoZQ0KcmlnaHQgZGF0YSBidXMgbGluZXMgaXMgYSBQSVRBIGFu
+ZCB3aWxsIGFmZmVjdCB0aGUgbWF4IGNwdSBmcmVxdWVuY3kgWzFdLg0KU28gcGVyaGFwcyB0aGV5
+IGRlY2lkZWQgaXQgd2FzIGEgJ3NvZnR3YXJlIHByb2JsZW0nIHNvIHNvbWUgYmVuY2htYXJrcw0K
+Y291bGQgcnVuIGZhc3Rlci4NCg0KCURhdmlkDQoNClsxXSBJJ3ZlIGJlZW4gYnVzeSByZS1pbXBs
+ZW1lbnRpbmcgdGhlIE5pb3MtSUkgY3B1Lg0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNp
+ZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsN
+ClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
---aC8Ai/5tbLCsiak5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, May 30, 2024 at 08:16:12PM +0000, Mina Almasry wrote:
-> Add documentation outlining the usage and details of devmem TCP.
->=20
-> Signed-off-by: Mina Almasry <almasrymina@google.com>
->=20
-
-The doc LGTM, thanks!
-
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---aC8Ai/5tbLCsiak5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZlsdaQAKCRD2uYlJVVFO
-o0YSAP9oUIejut2Xeqpj9kDBtkMcGA4Nf4zKVIgKdapDIWoSMAEA/6GrjlpUnXa2
-aFvYS6BFsRnMWpsP7c/bQ/LplabX6wM=
-=YUa0
------END PGP SIGNATURE-----
-
---aC8Ai/5tbLCsiak5--
