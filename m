@@ -1,130 +1,151 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA5BD84A58;
-	Mon,  3 Jun 2024 11:41:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83A56286A6;
+	Mon,  3 Jun 2024 12:52:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717414868; cv=none; b=iCyEpm+y2nVhMTbR3he8HRktTr99x3ui9x9BxXZOthXo8AahFiJ2iArOS4pE3p1mjtEe/97ta/McHlyK7a6GkmXBQby/jqBi2IKu9UJ0wJk3WUPLokwxwLVSx+DXhad+zLxO4dP6Y3jnD4peL0EindN30vG6GpDAjk47BGKBr7I=
+	t=1717419162; cv=none; b=hBrB8hbcAPmq+hF/yGCDQfxmNLa9t6Ynw6rz+kFGpJD8Rtf9Qk6ftm2HNE34uoU41r5m4vjeuIrlSDGN5PWL8SLZOb6tJOaemJaw/F0WW4mGi2nffMZY9BDo6kKi44z/u/kqn3fZWKKnHMwIepuFgi5+/qxsqzd7oGai4ZJCJoQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717414868; c=relaxed/simple;
-	bh=NvJwpxgM+A3vRQjH6kJCJstSMvsWw3Ln7YVQYKZAyHk=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=MlCCsBLHuL8F1/KvsUK0gWBYYnvJVJu8WwWYaf9m26o8KYn0Go1igEI4VZ8c3uMAl4PrDWUpo1ou8/oN4CaaplbYh8whA4zGDKCHrhe7U1aHI5O1+0/Q0VR8z9pcwsC2OjmciUCFjty4gath36OdxD1hId6xAGcDPPNiTdaEkRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=QjS7K5y1; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	s=arc-20240116; t=1717419162; c=relaxed/simple;
+	bh=RQVuKO8KsmnX+HwIJQMFQ5nya3BRk3afvXUxYEj9As8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JzCP0Y8JsADxqLjwPxQgrU/i+cKAnGqcPnDN2IsPm8nyjFCoq/3nzWNdJbTofF8MaPfESkHko30A+bkF27tIYu+5qN5ZPynRR24ITNlzM2VKWD2MFoOW1okzQ+klUIxZr70fmyq9ckz0Cxsa9Rvwx6amXryvMtU8wRTgJabQ9IE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TDNXqg0d; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="QjS7K5y1"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=BkjlszsnJOcjOnwmTLpVxgc/BqFI39QeF4SVAWs2h/E=; t=1717414862; x=1718019662; 
-	b=QjS7K5y1Z9rxLui4TGxW2ZQNliDMeoRQu8wflb+OEK2oa9Gq/bW6g6+kR13PS9d9LgDnQ6iwnz3
-	fODN+68wy6U0GFagH3OKT3snbaJc1reTYDgtlZ2uPZUq5IqmM9wRB4qmRhLRXaC9G20ae4koJBqaH
-	mLekYjKFs9ZnMIErQRWpioaInPtAP7VB5IW6q/7s6gfk+APz7vWMp6zKgskgGwO2U+xaSd6XJAVFX
-	jkGfEy7Dc5qMlwAAb8Fyp01a9FMAVwq3Qg+yesp017EoOXmveM9/FzyRTDKK1C7UN8PsqwO2v1jwL
-	KP8B4qP4pQqqPdb9DtVIRqrpoFM6J/vD7iAA==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.97)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1sE5zV-00000002rYI-1aCb; Mon, 03 Jun 2024 13:36:41 +0200
-Received: from dynamic-089-012-009-156.89.12.pool.telefonica.de ([89.12.9.156] helo=suse-laptop.fritz.box)
-          by inpost2.zedat.fu-berlin.de (Exim 4.97)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1sE5zV-00000002oi4-0eeX; Mon, 03 Jun 2024 13:36:41 +0200
-Message-ID: <34c519412fbaca9d5f08990ff96c4c928869bf84.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>, Linus Torvalds
-	 <torvalds@linux-foundation.org>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>, Arnd Bergmann
- <arnd@kernel.org>,  linux-alpha@vger.kernel.org, Arnd Bergmann
- <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, Ivan
- Kokshaysky <ink@jurassic.park.msu.ru>,  Matt Turner <mattst88@gmail.com>,
- Alexander Viro <viro@zeniv.linux.org.uk>, Marc Zyngier <maz@kernel.org>, 
- linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Frank
- Scheiner <frank.scheiner@web.de>
-Date: Mon, 03 Jun 2024 13:36:40 +0200
-In-Reply-To: <alpine.DEB.2.21.2405310457060.23854@angie.orcam.me.uk>
-References: <20240503081125.67990-1-arnd@kernel.org>
-	 <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
-	 <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk>
-	 <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
-	 <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk>
-	 <CAHk-=wi7WfDSfunEXmCqDnH+55gumjhDar-KO_=66ziuP33piw@mail.gmail.com>
-	 <alpine.DEB.2.21.2405302115130.23854@angie.orcam.me.uk>
-	 <CAHk-=whiH6g+T7+YWSYgAhJ9HsJ2bUUDJfLLo_Yhbi8CVgkHDg@mail.gmail.com>
-	 <alpine.DEB.2.21.2405310457060.23854@angie.orcam.me.uk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.1 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TDNXqg0d"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-57a1fe63947so3594221a12.1;
+        Mon, 03 Jun 2024 05:52:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1717419159; x=1718023959; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yfniF8fjsy176YDZGpwH9nU2UAljfW8YFG1uj+a6gnk=;
+        b=TDNXqg0dX/3loM6vbYTEyr1NEGurqH87sB+5Oad9YsQO8kzzevhnRIRepwpE7gcsTD
+         e35nWwMYzenHkE5RIg/I3W++ZCaUWmCHDc1PYl8lKDIvH83bHoZYpGMASE03KWWrSjji
+         CjyrVXtKVNa7ohmdSp8PJQPjpdJzHNBGK4rUgrNIwizcuiq7I0JxYEIdqWHlzdo0/+sD
+         m/0PtAF1kQlVSAjGBJK8iuo/OnY04hxEm+FLtW3zpw3TIH9jYpFgBSJ2faayxzSEB1xe
+         uMfTNgUHmWmwXabtHngny8PAph91C3UmTyfTr7thPkahB2ma8jCLC4QZGgwTjvsohHff
+         xwqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717419159; x=1718023959;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yfniF8fjsy176YDZGpwH9nU2UAljfW8YFG1uj+a6gnk=;
+        b=u25CydszaufKfcB2/I18ZPBtqNFaIDHz1T5R9Q2Kl0Ki7T4ZKAwNzj/M5BmKD3XmCb
+         LmtTcQJKVBOXA49Q/G6C6y4FUKUlASPF79RaoLFt8v17VdN20SmptVaGVsJF3TOAL0oX
+         fZSJkRm/+oVbp2nD6Isk75sUcCqFhB5aMfWyECMu6Z9I80+ZCxvNhv9km4Qg1BF3gkQF
+         9PGsEi6DZPKeLST8SsdTU7sj0/nE7aLPsze1TmdxCT4Oi3QwUPoEN5L++3HMkEmd5mQ7
+         dQf+ZacAe324iygpFgq+2XCbCq21I+/uAhhpIzYAFfqjUCuhh0WogjstPHndOY4G7lRv
+         770g==
+X-Forwarded-Encrypted: i=1; AJvYcCWxw9rRkDB0Ogq5peLF4uM8jksb5/RtXSVu8ITqP2Etf3tLyGu+DWlW1dC+Zz2kGkoshPRsqdqePi/0fqen2YacgddH3J5glwTMXdAhjdX/agIuDjMAWLo+VY81ypL4Jt4VtnFmH/q2obWvnxz4gs0ZjwkfUrzb7Zc7fEf0eFs5YY+ab+is2zHMVlvRUNFllAoN493jnbwkorxZVc2+fG4+biCgDD3mS/Ln+w3YHUzN2q2TGVo+sgWVfkmAgYLL+njjpwQKCuIQgMMc4q+bq4l2I8yGuEQ2uTvZQG5pOX2kTlXr3OD266ValHOnniLgQlQP2pVwxa2g7Ae5Ci4WFavLWY5RbC6xgkyt/ThfdA54olLUvmuAUVgwUgGfYPZixx/GdoWPfsVf4rqEBizzCenvpeQFgLcrYpFzOkCfwEH6pd92OUltjgem5zpPQJIw0NxAKaAic4Ejs8SDNzSuHJH8jFoPJbApd6sOfZboxmIZJDYYoIQHBiEyWNSRRbwhxZx+zYD9OQ==
+X-Gm-Message-State: AOJu0YyMk7f/HGvHRoBNrtTmSTQhhL7dLdBoe3vGrkHSQvcZCq+G46QV
+	Ptgn7ehM2OwFl+HGMzvZWG329x/hS0LtTkpQ6wvQ7HDPTBfowNCy0NeWUGFe
+X-Google-Smtp-Source: AGHT+IHWekmH9nbBwxtAyBA3aP0bAtq3ZvyaOoiHlV8Yt/cXh+LsKG2d/23Eymxd3zWFCpXjqiJUYw==
+X-Received: by 2002:a50:9b19:0:b0:56e:238e:372c with SMTP id 4fb4d7f45d1cf-57a3653a3d7mr5229810a12.26.1717419158381;
+        Mon, 03 Jun 2024 05:52:38 -0700 (PDT)
+Received: from [192.168.42.59] ([163.114.131.193])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-57a31b990easm5173294a12.6.2024.06.03.05.52.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Jun 2024 05:52:38 -0700 (PDT)
+Message-ID: <fb8fd578-96b8-45b9-b6a9-fe407157122f@gmail.com>
+Date: Mon, 3 Jun 2024 13:52:41 +0100
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v10 01/14] netdev: add netdev_rx_queue_restart()
+To: Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
+ linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+ bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc: "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Donald Hunter <donald.hunter@gmail.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
+ <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
+ Jesper Dangaard Brouer <hawk@kernel.org>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>,
+ Daniel Borkmann <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>,
+ Martin KaFai Lau <martin.lau@linux.dev>, Eduard Zingerman
+ <eddyz87@gmail.com>, Song Liu <song@kernel.org>,
+ Yonghong Song <yonghong.song@linux.dev>,
+ John Fastabend <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>,
+ Stanislav Fomichev <sdf@google.com>, Hao Luo <haoluo@google.com>,
+ Jiri Olsa <jolsa@kernel.org>, Steffen Klassert
+ <steffen.klassert@secunet.com>, Herbert Xu <herbert@gondor.apana.org.au>,
+ David Ahern <dsahern@kernel.org>,
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+ Shuah Khan <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>,
+ Harshitha Ramamurthy <hramamurthy@google.com>,
+ Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst
+ <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>
+References: <20240530201616.1316526-1-almasrymina@google.com>
+ <20240530201616.1316526-2-almasrymina@google.com>
+Content-Language: en-US
+From: Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <20240530201616.1316526-2-almasrymina@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Maciej,
+On 5/30/24 21:16, Mina Almasry wrote:
+> Add netdev_rx_queue_restart() function to netdev_rx_queue.h
+> 
+> Signed-off-by: David Wei <dw@davidwei.uk>
+> Signed-off-by: Mina Almasry <almasrymina@google.com>
+> 
+> ---
+...
+> diff --git a/net/core/netdev_rx_queue.c b/net/core/netdev_rx_queue.c
+> new file mode 100644
+> index 0000000000000..b3899358e5a9c
+> --- /dev/null
+> +++ b/net/core/netdev_rx_queue.c
+> @@ -0,0 +1,74 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +
+> +#include <linux/netdevice.h>
+> +#include <net/netdev_queues.h>
+> +#include <net/netdev_rx_queue.h>
+> +
+> +int netdev_rx_queue_restart(struct net_device *dev, unsigned int rxq_idx)
+> +{
+> +	void *new_mem, *old_mem;
+> +	int err;
 
-On Mon, 2024-06-03 at 12:09 +0100, Maciej W. Rozycki wrote:
->  Anyway, back to my point.  A feasible solution non-intrusive for Linux=
-=20
-> and low-overhead for GCC has been found.  I can expedite implementation=
-=20
-> and I'll see if I can regression-test it too, but I may have to rely on=
-=20
-> other people to complete it after all, as I haven't been prepared for thi=
-s=20
-> effort in the light of certain issues I have recently suffered from in my=
-=20
-> lab.
+I believe it should also do:
 
-That's really great to hear! Please let me know if you have something to te=
-st,
-I would love to help with this effort.
+if (!dev->queue_mgmt_ops)
+	return -EOPNOTSUPP;
 
->  Is that going to be enough to bring the platform bits back?
+> +
+> +	if (!dev->queue_mgmt_ops->ndo_queue_stop ||
+> +	    !dev->queue_mgmt_ops->ndo_queue_mem_free ||
+> +	    !dev->queue_mgmt_ops->ndo_queue_mem_alloc ||
+> +	    !dev->queue_mgmt_ops->ndo_queue_start)
+> +		return -EOPNOTSUPP;
+> +
+> +	DEBUG_NET_WARN_ON_ONCE(!rtnl_is_locked());
 
-That would be awesome. Would love to be able to keep running a current kern=
-el
-on my AlphaStation 233 which is pre-EV56.
-
->  FAOD, with all the hacks so eagerly being removed now happily left in th=
-e=20
-> dust bin where they belong, and which I wholeheartedly agree with: we=20
-> shouldn't be suffering from design mistakes of systems that are no longer=
-=20
-> relevant, but I fail to see the reason why we should disallow their use=
-=20
-> where the burden is confined or plain elsewhere.
-
-Agreed.
-
->  For example we continue supporting old UP MIPS platforms that predate=
-=20
-> LL/SC, by just trapping and emulating these instructions.  Surely it suck=
-s=20
-> performance-wise and it's possibly hundreds of cycles too, but it works=
-=20
-> and the burden is confined to the exception handler, so not a big deal.
-
-Fully agreed.
-
-Adrian
-
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+-- 
+Pavel Begunkov
