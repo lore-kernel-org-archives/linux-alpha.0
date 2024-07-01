@@ -1,137 +1,81 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D754316F26E
-	for <linux-alpha@vger.kernel.org>; Mon,  1 Jul 2024 19:05:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B0827502A9;
+	Mon,  1 Jul 2024 23:48:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719860704; cv=none; b=fze0Yi+Mide0PhF7u6XX3t1F/Vxc1d0GUsYsTIovtjZuynV6FI72J5Q3DHJAayTrom/KzCyaBMUYjGy5O6thAN0ONqRbX+eCJfC42A8+4K6EJTabaTpWSgviU5PLlk+YI15451S4+1FydLaagRYLpJyCKppSdwR+lKwlLvO1PWE=
+	t=1719877691; cv=none; b=XyMwfbnjs8yuqEGxbIbZueZwz4LMcag0APxi89Pabb9uC0cqPOpPW3aD4SyG3p3nIDcN/OI1mhoAkDjcPXXadJ/i1f450Szrh9jEtho7cutE43x8elVtIYWXkbG3OohmRoKGXZ7nyRDqMECNQVKp2t+Wwj2fmD/ICtqnJcoOOHY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719860704; c=relaxed/simple;
-	bh=8k0AtF9KiolyJWuK8HLhDCv/hmVhr/rBk1ct5cuT9AA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GhD/cofJJWc7rPhk7Gr9OHWiUaQ82XqneFpP+7zMFmj2Y+yjXI5dndT3wqRJOJggzfCiezXfxu0D8K50ANS+9/OiE7/XrC+zP0BHSX/9vYCcgD+JMuqUjxv9BcRLduZwxNkA0KGNVRWtt16QZLiKuV9kBDDqHICT7t/ImPtgHxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=2MyhNwXk; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="2MyhNwXk"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-79c0abd3ea5so159447185a.2
-        for <linux-alpha@vger.kernel.org>; Mon, 01 Jul 2024 12:05:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1719860702; x=1720465502; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1iyaJckUfwKLOavZsL0Dti/NvsfMxOg4fM60nbeLb3c=;
-        b=2MyhNwXkCa2AA3Z+FkWBFUSIczECBuY034xv2sUMnsVK1JAGLplHV/guNmfssGc5I1
-         D8a0j2y08JPde7IkGpN8LX30r6ezveA3/hMjlXq8zLe04mWt0qnAaEPrTDd2BA5v2l+6
-         Iv6dLD0aQ4owbIcrPfZLc6za9Tr+2iQ9eqqZvMOtORPI139I+ePbnZT4DFLnSJ0yCTX/
-         I/orwGmbJSNtOjqGr9Dob5WykAAa2DWlpbQrXkaBJxQatFPLN+TjE2bJtG1b6pQdCRRg
-         3423j6YO0fWBhsDvK3mvzQk7JxL7pIv0ng1zlCqmSW/aZyWSkjeH3DBPrQtlyq6xCOFw
-         myxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719860702; x=1720465502;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1iyaJckUfwKLOavZsL0Dti/NvsfMxOg4fM60nbeLb3c=;
-        b=bm7Qh14fXct0bxsLUbWMXmKBuxLGwkFSbdWLNDgdvkbnmvU3Cc6pxxfV+n3dRf6nN4
-         r9+vlkrZM5teeisP4Gs3pVhJH7Biuq5+mutDTgJ/xrBUL9QpVJsKmYwlGNgpSbnH1EAP
-         rH/81evrnsFinjPExhVOAb1Zwu/IZBzFXT5i63a55rBfRzSwgT48iqtXs52e3xCG3DmM
-         powThqMzCcvbnQzyfMnhmQcyMN0iN6CQVyd3ntRLZ3zzc1T6w1Dn28T60rpycNWBhcHa
-         YWx6xePZov6yIR3UYrIm7zJGpE6s4PBgUBSHurysXmpMmNt9pmhGQE0bKrlwDrWBZBAU
-         yRHw==
-X-Forwarded-Encrypted: i=1; AJvYcCWygA18AmkYBNf6m72zIPo4ngIADVPqyfsIm4uI+Gpt8qwYckU39fpvWrH5Q35Ez0R58Z4iHDAzenAseSOTwtQyycfkW642FptSJSo=
-X-Gm-Message-State: AOJu0Yw1f1u2ut9aOB/D2KXyVOFL/iLxoz2hFtpxFrgCTqLMJ0lhhHwW
-	q6kJ3bE+wQc/VQy/Y089lAfer6JRpJl/aWR1pWOlRC2LiQOyINZ/1ZeWfT2ZzfZvNb+g8jEOvzX
-	niNYB3RzpsiWJjbuGaeraVDlPICibTXYxDKHz
-X-Google-Smtp-Source: AGHT+IFMk/Fy8HmApu9Nagm7rkVtZNRgXI7ZtAkmxpMtHuX4P9lSyGrItN72Z9tf2GD9wH/LCrC3alUkG3t3FzAjxFY=
-X-Received: by 2002:ad4:5762:0:b0:6b5:413a:3f96 with SMTP id
- 6a1803df08f44-6b5b704f0e0mr82787156d6.10.1719860701461; Mon, 01 Jul 2024
- 12:05:01 -0700 (PDT)
+	s=arc-20240116; t=1719877691; c=relaxed/simple;
+	bh=mgMNZ9LW5qxu8pJDRIr7A6e906IxawaTZZPws8m/fxM=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=AN5SyT1FzAXBhuFNmUwYWjR6GzV7kEHQA/0QkrZWDKlBn1k617451M2yqnKKtm7l3ij0Kd696GLwNVF+Hx/kFTlSDDJF5JetOJPP9hjqUzVAoNhviRaolVapVu62AS+tpNVxDc1MK14FePkrC1ZRx/DXhhWPI3Qr4N+2u/CmJgE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id D05B392009C; Tue,  2 Jul 2024 01:48:00 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id C917892009B;
+	Tue,  2 Jul 2024 00:48:00 +0100 (BST)
+Date: Tue, 2 Jul 2024 00:48:00 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+cc: Arnd Bergmann <arnd@arndb.de>, "Paul E. McKenney" <paulmck@kernel.org>, 
+    John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+    Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+    Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+    Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org, 
+    Michael Cree <mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>
+Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
+In-Reply-To: <CAHk-=wimJ2hQhKSq7+4O1EHtkg7eFBwY+fygxD+6sjWqgyDMTQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2406302009480.43454@angie.orcam.me.uk>
+References: <20240503081125.67990-1-arnd@kernel.org> <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de> <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk> <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
+ <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk> <4bb50dc0-244a-4781-85ad-9ebc5e59c99a@app.fastmail.com> <CAHk-=wimJ2hQhKSq7+4O1EHtkg7eFBwY+fygxD+6sjWqgyDMTQ@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240628003253.1694510-1-almasrymina@google.com>
- <20240628003253.1694510-3-almasrymina@google.com> <m27ce9cris.fsf@gmail.com>
-In-Reply-To: <m27ce9cris.fsf@gmail.com>
-From: Mina Almasry <almasrymina@google.com>
-Date: Mon, 1 Jul 2024 12:04:49 -0700
-Message-ID: <CAHS8izNM8TjJ1DU+7gzq-0kH=tVeM6j-QsaKk=2FHNDF6RLwnA@mail.gmail.com>
-Subject: Re: [PATCH net-next v15 02/14] net: netdev netlink api to bind
- dma-buf to a net device
-To: Donald Hunter <donald.hunter@gmail.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linux-arch@vger.kernel.org, bpf@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, 
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
-	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, 
-	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>, 
-	Yonghong Song <yonghong.song@linux.dev>, John Fastabend <john.fastabend@gmail.com>, 
-	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@fomichev.me>, Hao Luo <haoluo@google.com>, 
-	Jiri Olsa <jolsa@kernel.org>, Steffen Klassert <steffen.klassert@secunet.com>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Bagas Sanjaya <bagasdotme@gmail.com>, Christoph Hellwig <hch@infradead.org>, 
-	Nikolay Aleksandrov <razor@blackwall.org>, Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin <linyunsheng@huawei.com>, 
-	Shailend Chand <shailend@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
-	Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst <jeroendb@google.com>, 
-	Praveen Kaligineedi <pkaligineedi@google.com>, Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 
-On Fri, Jun 28, 2024 at 3:10=E2=80=AFAM Donald Hunter <donald.hunter@gmail.=
-com> wrote:
->
-> Mina Almasry <almasrymina@google.com> writes:
-> > +  -
-> > +    name: bind-dmabuf
-> > +    attributes:
-> > +      -
-> > +        name: ifindex
-> > +        doc: netdev ifindex to bind the dma-buf to.
->
-> Minor nit:
->
-> The series uses a mix of dmabuf and dma-buf but the doc additions
-> (devmem.rst) consistently uses dmabuf. I think it would be helpful to be
-> consistent here and say 'devmem dmabuf' in the docstring to highlight
-> whos dmabuf it is and keep the generated netdev docs in alignment.
->
+On Fri, 31 May 2024, Linus Torvalds wrote:
 
-To be honest, even the dmabuf docs mixes 'dma-buf' and 'dmabuf', to my eye:
+> The fact is, the original alpha is the worst architecture ever made.
+> The lack of byte instructions and the absolutely horrendous memory
+> ordering are fatal flaws. And while the memory ordering arguably had
+> excuses for it ("they didn't know better"), the lack of byte ops was
+> wilful misdesign that the designers were proud of, and made a central
+> tenet of their mess.
+> 
+> And I say that as somebody who *loved* it originally. Yes, the lack of
+> byte operations always was a pain, because it really caused the IO
+> subsystem to be a nightmare, but I was young, I was stupid, it was
+> interesting, and I had bought into the kool aid.
 
-https://docs.kernel.org/driver-api/dma-buf.html
+ Looking from today's perspective it was clearly a bad choice.  However it 
+was 30+ years ago, it wasn't so certain as it is now that x86 was there to 
+stay -- indeed as I recall it DEC had the ambition to phase x86 out with 
+their Alpha (whether they approached it the right way business-wise is 
+another matter) -- so the notion of having a fully byte-addressed machine 
+perhaps wasn't yet so obvious to DEC engineers as it is now, when most if 
+not all the current CPU architectures have these fundamentals the same.  
 
-I can edit these docs I'm adding so these are consistent.
+ As I say it may have been the final attempt to do something differently 
+before x86 domination forced everyone to be at least remotely compatible.
 
-But on 'devmem dmabuf', not sure to be honest. Technically all dmabufs
-are supported, even non-devmem ones. I'm not sure non-devmem dmabufs
-are common at all, the only example I can think of is udmabuf whose
-primary user is qemu and testing, so it's somewhat implied that the
-dmabuf is devmem, and even if it isn't, it would be supported. I
-prefer to keep the docs saying just 'dmabuf' as technically all are
-supported. Maybe I should add a note about this somewhere in the
-dedicated docs.
+ And there used to be weirder architectures before people moved away from 
+them and settled on the current paradigm, just as nobody wants to build a 
+general-purpose atmospheric railway anymore and yet a while ago not only 
+it didn't appear ridiculous, but such stuff was actually built and run, 
+such as the South Devon Railway.
 
---=20
-Thanks,
-Mina
+ And then it wasn't the only failed attempt: remember the i860 or the 
+iAPX432?  At least the Alphas weren't a total disaster, they made their 
+impact, the worst mistakes have been fixed as the architecture evolved, 
+and the engineering legacy remains, often in unexpected places.
+
+  Maciej
