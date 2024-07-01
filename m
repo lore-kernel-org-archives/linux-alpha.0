@@ -1,140 +1,143 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14E93156C70;
-	Fri, 28 Jun 2024 10:10:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 287C0C8C7
+	for <linux-alpha@vger.kernel.org>; Mon,  1 Jul 2024 19:00:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719569438; cv=none; b=s2DrgN/6oTpgStVmVTVYg7J9zi0U+iHqUt97bSwvm0e/Ri0J0WZlCylIWNwFe7/hoF09jdCl0EFm/sGJWjTczX7nq0itmgfJdD+I2Nl1BhOr8suRTL0tHumTUXO/RYItGCDUop1E1D9DljGxdO0wMHM/F0TzRLm4cM7AB7FTlmc=
+	t=1719860461; cv=none; b=g0zw4bQuhpO5IWMN3DLhRs+65IQ7kDTA04H7J9jaHO1cfPoh4rExNtSTX6u/4yf0/h/b2bQpuvQhAxJbj4sx//qIhUgTyloSncn8c4M/noLZHLX80xKmulzA5+r8ot1bK7Z2p6oO7NE+B1aMPgnSkSbim+CmWy1iU1wkPJ5Uf/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719569438; c=relaxed/simple;
-	bh=WoG3XUFYpnnYPBYkCiNe37kKCSGW3AfAOh5Ro/F+QME=;
-	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:References:
-	 MIME-Version:Content-Type; b=YJU8tlqBOZug9at7dRhBiAlrupXRZkh+PWFQWPJ+oNZc5ZWk4KDYFEEBvhrQNr2YqjGG9+Z7k9uCSv4Ukr/xXtQOCtlOTgvdUzwgp+4MLk1casqLvXak7jQIhXvUCxyuPHHALycOrUbpTJO/3nvP3QCHjxRvnhUM7Ud10drLr7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K3GYY47T; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1719860461; c=relaxed/simple;
+	bh=nBEjUU1jP0cTXpDAibWGkU5XKOL/L/nsa6YcOdFrVXQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Lk1nn8b3haEH8EcnnMr6SxRJT7fjBGR9wBTfmgMDKjzHnrHFAmEKEhie5/eJbMaA6cqzMMMnFGpTu93pKros5sxTczXl4Ut6Vbin6/9u1SXk3hRT8gbY3min5AuB4SXWAhwBk787zqxILvQW/r10ngE2Gbdrc8X8bFTMx2k27iY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VUj8CS78; arc=none smtp.client-ip=209.85.219.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K3GYY47T"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-42564a0d3ceso3271535e9.0;
-        Fri, 28 Jun 2024 03:10:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VUj8CS78"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-6b5052defa6so19715876d6.3
+        for <linux-alpha@vger.kernel.org>; Mon, 01 Jul 2024 12:00:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1719569435; x=1720174235; darn=vger.kernel.org;
-        h=mime-version:user-agent:references:message-id:date:in-reply-to
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=djRjxO/ZJBQCrIZgaI6fk/U62O19bgzxywyn0TmHo/A=;
-        b=K3GYY47T8BBONpqixXEDRkPDVltUJbuybfgfmgV690AYWrrup3tKYqGQifv2cwzEFE
-         LXTHhdiN8lLIxEozAT5w8v8LYi/PlHLVkxUrNFg2QyDTlIAf1Qfm8VZPDbGdIBDZ+yew
-         cDtGV7y0GKhn0pZNQOSAdZHxDrLkyFPvFs3fgytHAdby1+QBTFMx6Bj9Sx4mcrn/XeUU
-         HlC6fgF5U6DDFTKQEoC4iSQenk608pwKclS961nUK84gsYmMU/oT13Z/zITFgwFFKGO9
-         mmvAmseCXjGgkhcU7+baQ3d9LLQoDx9srw1XDhIXZk8Zss21ebYyCH9fjAnZJzu+sx8o
-         V7MA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719569435; x=1720174235;
-        h=mime-version:user-agent:references:message-id:date:in-reply-to
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20230601; t=1719860459; x=1720465259; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=djRjxO/ZJBQCrIZgaI6fk/U62O19bgzxywyn0TmHo/A=;
-        b=TpSn1BqE5IexeTOq6OuXUtHdMqUPS+A8XiqLuJoW2zFU3qf39iAJ0ZO+nD5jj0+hY5
-         6YD64beVUcPQvSPdApx1KUg5youyb8nbmWGpyJt/cw/JGPb5TQS0ww6FZ40llexwFN9b
-         PpWRoD6C4wHB6ucnPchx4SkW4PMPn4Rg0EJ+jjuc7OhSS3EpFnjS6KoApGf1CTZTVAdF
-         dE0EcClC0VZvJu/bQHByktU4Q4spFQ50nb+ROWNP40HDqVVWa12kXWN4oIgVE1TaHmhT
-         1Z4oYse5uXl7OUZW3GVdD1UyMV7PgQbss9BSWjNTTEE+cUYtJD0JeERkRrUnVAZ2N5Xy
-         CW6Q==
-X-Forwarded-Encrypted: i=1; AJvYcCW6mp+Qq3gShRha3lOXeB1uwQ8hY9OPWchwqSXBTKrRTMZBoytS+XorvcE7G4IuR0d69mRYt9oPUCmbEEbNvety24bn7kpoBlu1XmduS8Bw3wVTT7S0QdnJSVTMMer4k1O0JA2Vv4RaX1IZjREsqwjUgPsJFcFOP+n3Ywu9R1YByy5NjEC9MgcdIAdToucVyrYY/5S2O6dO+B0T+T2Ogc42D6ThjtBYZjLG/zScoRRy0al+NkFqmyk6V5OvAz8XL3AIZb6jaSs8/6bVb2ghoEtNdPwny0LhTchoHFHrYExPnjp5oG6/5LRaDIc4MoGy3gY9Jr4xZQggicipPcK513xufK9eA/XYLye3QTzOynkSfOqHojCOPAp8qQ5mpjldKiQcNPI4jYrVIVE8ah/eMopFRqm4IRiJcjSokD6qzo9/DDZih/bWiCsG3wM9uasK7kYxvdEqPEl02vzMI1ITKEhC2ofFoyKiIBYOEStcFw==
-X-Gm-Message-State: AOJu0YxyvBZz+dDWvjJi+IDafaU+ntkoxZ/Mkzhdtdlt5FQqFjFlv+1G
-	xxy5zRbsbcGu4MdBqXZKxI9QMhV17L80B48SQ0zXK5ozO/SSvYqf
-X-Google-Smtp-Source: AGHT+IGTbLKuH6+lACoVW6gBGISTlFA2luNgNp0at8l17FynGxoGb7mI7uIhlXYSjVIEoYumxGZPkg==
-X-Received: by 2002:a7b:cc16:0:b0:424:8e3a:d020 with SMTP id 5b1f17b1804b1-42498ced472mr80452775e9.29.1719569435211;
-        Fri, 28 Jun 2024 03:10:35 -0700 (PDT)
-Received: from imac ([2a02:8010:60a0:0:49ff:2a2d:712c:9944])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4256b0c15f8sm26999325e9.47.2024.06.28.03.10.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Jun 2024 03:10:34 -0700 (PDT)
-From: Donald Hunter <donald.hunter@gmail.com>
-To: Mina Almasry <almasrymina@google.com>
-Cc: netdev@vger.kernel.org,  linux-kernel@vger.kernel.org,
-  linux-doc@vger.kernel.org,  linux-alpha@vger.kernel.org,
-  linux-mips@vger.kernel.org,  linux-parisc@vger.kernel.org,
-  sparclinux@vger.kernel.org,  linux-trace-kernel@vger.kernel.org,
-  linux-arch@vger.kernel.org,  bpf@vger.kernel.org,
-  linux-kselftest@vger.kernel.org,  linux-media@vger.kernel.org,
-  dri-devel@lists.freedesktop.org,  "David S. Miller"
- <davem@davemloft.net>,  Eric Dumazet <edumazet@google.com>,  Jakub
- Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>,  Jonathan
- Corbet <corbet@lwn.net>,  Richard Henderson
- <richard.henderson@linaro.org>,  Ivan Kokshaysky
- <ink@jurassic.park.msu.ru>,  Matt Turner <mattst88@gmail.com>,  Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>,  "James E.J. Bottomley"
- <James.Bottomley@HansenPartnership.com>,  Helge Deller <deller@gmx.de>,
-  Andreas Larsson <andreas@gaisler.com>,  Jesper Dangaard Brouer
- <hawk@kernel.org>,  Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-  Steven Rostedt <rostedt@goodmis.org>,  Masami Hiramatsu
- <mhiramat@kernel.org>,  Mathieu Desnoyers
- <mathieu.desnoyers@efficios.com>,  Arnd Bergmann <arnd@arndb.de>,  Alexei
- Starovoitov <ast@kernel.org>,  Daniel Borkmann <daniel@iogearbox.net>,
-  Andrii Nakryiko <andrii@kernel.org>,  Martin KaFai Lau
- <martin.lau@linux.dev>,  Eduard Zingerman <eddyz87@gmail.com>,  Song Liu
- <song@kernel.org>,  Yonghong Song <yonghong.song@linux.dev>,  John
- Fastabend <john.fastabend@gmail.com>,  KP Singh <kpsingh@kernel.org>,
-  Stanislav Fomichev <sdf@fomichev.me>,  Hao Luo <haoluo@google.com>,  Jiri
- Olsa <jolsa@kernel.org>,  Steffen Klassert <steffen.klassert@secunet.com>,
-  Herbert Xu <herbert@gondor.apana.org.au>,  David Ahern
- <dsahern@kernel.org>,  Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-  Shuah Khan <shuah@kernel.org>,  Sumit Semwal <sumit.semwal@linaro.org>,
-  =?utf-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,  Bagas
- Sanjaya
- <bagasdotme@gmail.com>,  Christoph Hellwig <hch@infradead.org>,  Nikolay
- Aleksandrov <razor@blackwall.org>,  Pavel Begunkov
- <asml.silence@gmail.com>,  David Wei <dw@davidwei.uk>,  Jason Gunthorpe
- <jgg@ziepe.ca>,  Yunsheng Lin <linyunsheng@huawei.com>,  Shailend Chand
- <shailend@google.com>,  Harshitha Ramamurthy <hramamurthy@google.com>,
-  Shakeel Butt <shakeel.butt@linux.dev>,  Jeroen de Borst
- <jeroendb@google.com>,  Praveen Kaligineedi <pkaligineedi@google.com>
-Subject: Re: [PATCH net-next v15 12/14] net: add devmem TCP documentation
-In-Reply-To: <20240628003253.1694510-13-almasrymina@google.com> (Mina
-	Almasry's message of "Fri, 28 Jun 2024 00:32:49 +0000")
-Date: Fri, 28 Jun 2024 11:09:28 +0100
-Message-ID: <m234oxcraf.fsf@gmail.com>
-References: <20240628003253.1694510-1-almasrymina@google.com>
-	<20240628003253.1694510-13-almasrymina@google.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+        bh=R4LpFR6VRPZBJqkm7iRXIp87VCy5+OyuBQMHBVpgrKc=;
+        b=VUj8CS785cnwFWXu49a2yynTw9v5uBv7xV7sGzsKtbIvoTNL6XebeeShoCz1c7N9c6
+         QOGHor2VqLzp0K1m3SZv/SBZFaz2CHuoZ8oXsw9KXCDQBvxqwRikiIBLCAwCxlrGz2/X
+         hc5nYlLBRPdmRh7yHptNjyDMOkgHY7SjCvJS28YqP94iKO8zw4Mki7+1k4fCVqn2nprb
+         AiEC6vWgc/hFEkSr2d8vF6MUm+f6Rooj1daMQNmskdu5fEMYG+P6YjIjLh3es+Yqqrz7
+         2lha05Ab6XzuOpNcXnRqBElcdyOWL4r79CX5gf3ok4YE8CL5mfO8kfLJtqzYR8j0qAh1
+         t3Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719860459; x=1720465259;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=R4LpFR6VRPZBJqkm7iRXIp87VCy5+OyuBQMHBVpgrKc=;
+        b=oKO6qJaJqaksxVy2EUaa7RdpaoiMNk8SNdWe/HELep5SlM6nWQmjkES6KZu3soTkoY
+         FMQHVVSDW5MkVyu4qxDlKiMvMvDrI817FdnkdqOIKffZ+N3vSUurzEz+ht72GQrFpatm
+         SHpgmNcPNryZIW8XzSjJAaGzyJFSdo4iZbHh3MH5Rs6GN3W5wHdAsoRDR/tOuOYIORvy
+         dZlxXDa56ykOAz0pJLwDBWAxTee3lCg9b1rLMwybNl34h5qFlBlL0fGT1QPKglVMhJ4n
+         iHtTG0xG1O7b6BChRXGNi9VJFUQu05qPNkm3EDlHZNKJQGzRhUfEMuSedtzY0EootdK4
+         T3gA==
+X-Forwarded-Encrypted: i=1; AJvYcCWTRofgHSI2CPwoA5uIki1C7K66hXjojSTYENRPM5CN5sz2fP3QSgsnMxwKClzvzedfdsaFau6aRti5nkzYWTFlr22nHgXRnLdBIsE=
+X-Gm-Message-State: AOJu0YxzEiAGGo80qYKHHdy83Ge4vkLEsn6JQ8Xq9fFlm9GUavf96ltA
+	QOXxupJqU/6WY+rdilNK92NIsDd3gjez3AmJ///DlBS4p6ZdcNzMxeSSfEOsb96LK+XGD7pjemz
+	emuYR0I8dg4aI+fSkaNfpNk+5pRkSND22+4es
+X-Google-Smtp-Source: AGHT+IHqGzU9tZFX9QqaBsD++nA7soWtr02PwwhDHubls3yJUOnaqW81EaDVu4zWNv2Iw9IsPTEVGjOAs2RkVILAwGg=
+X-Received: by 2002:ad4:5c68:0:b0:6b5:4249:7c4 with SMTP id
+ 6a1803df08f44-6b5b7057b8emr78735846d6.2.1719860458778; Mon, 01 Jul 2024
+ 12:00:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20240628003253.1694510-1-almasrymina@google.com>
+ <20240628003253.1694510-13-almasrymina@google.com> <m234oxcraf.fsf@gmail.com>
+In-Reply-To: <m234oxcraf.fsf@gmail.com>
+From: Mina Almasry <almasrymina@google.com>
+Date: Mon, 1 Jul 2024 12:00:44 -0700
+Message-ID: <CAHS8izOUJMnCxK0ZfOOOZH0auNF_Kk+WVA=oTEzJe8mYHdonfA@mail.gmail.com>
+Subject: Re: [PATCH net-next v15 12/14] net: add devmem TCP documentation
+To: Donald Hunter <donald.hunter@gmail.com>
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+	linux-arch@vger.kernel.org, bpf@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, 
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	Arnd Bergmann <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+	Andrii Nakryiko <andrii@kernel.org>, Martin KaFai Lau <martin.lau@linux.dev>, 
+	Eduard Zingerman <eddyz87@gmail.com>, Song Liu <song@kernel.org>, 
+	Yonghong Song <yonghong.song@linux.dev>, John Fastabend <john.fastabend@gmail.com>, 
+	KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@fomichev.me>, Hao Luo <haoluo@google.com>, 
+	Jiri Olsa <jolsa@kernel.org>, Steffen Klassert <steffen.klassert@secunet.com>, 
+	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Bagas Sanjaya <bagasdotme@gmail.com>, Christoph Hellwig <hch@infradead.org>, 
+	Nikolay Aleksandrov <razor@blackwall.org>, Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin <linyunsheng@huawei.com>, 
+	Shailend Chand <shailend@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
+	Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst <jeroendb@google.com>, 
+	Praveen Kaligineedi <pkaligineedi@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Mina Almasry <almasrymina@google.com> writes:
-> +
-> +The user must bind a dmabuf to any number of RX queues on a given NIC using
-> +the netlink API::
-> +
-> +	/* Bind dmabuf to NIC RX queue 15 */
-> +	struct netdev_queue *queues;
-> +	queues = malloc(sizeof(*queues) * 1);
-> +
-> +	queues[0]._present.type = 1;
-> +	queues[0]._present.idx = 1;
-> +	queues[0].type = NETDEV_RX_QUEUE_TYPE_RX;
-> +	queues[0].idx = 15;
-> +
-> +	*ys = ynl_sock_create(&ynl_netdev_family, &yerr);
-> +
-> +	req = netdev_bind_rx_req_alloc();
-> +	netdev_bind_rx_req_set_ifindex(req, 1 /* ifindex */);
-> +	netdev_bind_rx_req_set_dmabuf_fd(req, dmabuf_fd);
-> +	__netdev_bind_rx_req_set_queues(req, queues, n_queue_index);
-> +
-> +	rsp = netdev_bind_rx(*ys, req);
-> +
-> +	dmabuf_id = rsp->dmabuf_id;
-> +
-> +
-> +The netlink API returns a dmabuf_id: a unique ID that refers to this dmabuf
-> +that has been bound.
+On Fri, Jun 28, 2024 at 3:10=E2=80=AFAM Donald Hunter <donald.hunter@gmail.=
+com> wrote:
+>
+> Mina Almasry <almasrymina@google.com> writes:
+> > +
+> > +The user must bind a dmabuf to any number of RX queues on a given NIC =
+using
+> > +the netlink API::
+> > +
+> > +     /* Bind dmabuf to NIC RX queue 15 */
+> > +     struct netdev_queue *queues;
+> > +     queues =3D malloc(sizeof(*queues) * 1);
+> > +
+> > +     queues[0]._present.type =3D 1;
+> > +     queues[0]._present.idx =3D 1;
+> > +     queues[0].type =3D NETDEV_RX_QUEUE_TYPE_RX;
+> > +     queues[0].idx =3D 15;
+> > +
+> > +     *ys =3D ynl_sock_create(&ynl_netdev_family, &yerr);
+> > +
+> > +     req =3D netdev_bind_rx_req_alloc();
+> > +     netdev_bind_rx_req_set_ifindex(req, 1 /* ifindex */);
+> > +     netdev_bind_rx_req_set_dmabuf_fd(req, dmabuf_fd);
+> > +     __netdev_bind_rx_req_set_queues(req, queues, n_queue_index);
+> > +
+> > +     rsp =3D netdev_bind_rx(*ys, req);
+> > +
+> > +     dmabuf_id =3D rsp->dmabuf_id;
+> > +
+> > +
+> > +The netlink API returns a dmabuf_id: a unique ID that refers to this d=
+mabuf
+> > +that has been bound.
+>
+> The docs don't mention the unbinding behaviour. Can you add the text
+> from the commit message for patch 3 ?
 
-The docs don't mention the unbinding behaviour. Can you add the text
-from the commit message for patch 3 ?
+Thanks, will do, if I end up sending another version of this with more
+feedback. If this gets merged I'll follow up with a patch updating the
+docs (there seems to be no other feedback at the moment).
+
+--=20
+Thanks,
+Mina
