@@ -1,211 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BCCE621;
-	Wed,  3 Jul 2024 00:19:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9F36138E
+	for <linux-alpha@vger.kernel.org>; Wed,  3 Jul 2024 00:51:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719965997; cv=none; b=T1Mg0CLs9mGg0J9w36PxuZybc+UluVCri907+kPzVrGkvF8q0ypi6iPWFaTL4TeQNttu7XBCKeWMLPEwL41HK1nehJqBa7hRYfPeiNiFeY0RwAuWgf7dMiUK49Zb9HBmko+0g8luDG5uBRspT5T0EWjBikTXu572cSv4C7vwN3c=
+	t=1719967873; cv=none; b=SXsNdl5ry72EKpX1ro8YgXK+JrDG3E+gppypFGIyx2MH7ZBJXoRQxos7fCrAA6MJmv9YWurWe+Mg+WcTQ6Fzz4IuETTgsnXW+JIjhFIsK4zedSqpQsLsvifX52BcnSX2+zCNtCJTe2EyHGHSjt/eWSLbyiLTLepXeqkSO6Zo7Ao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719965997; c=relaxed/simple;
-	bh=SFsqNX+6slZmjSB86CGH3XB+ZErTnNT0rtJ8aW8Urz0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kvRQi1sdOXSnOeavf5zFPOca8daW6pzIi4KI41V6MNeCOLNnuwo4E5pDVCrx6XZ5opWPleNNw1RFMstb2+yb40wkT2URfyzyGcUbe2GgUt2rG43/2EBGSrJawctDYiVeXYt1n8hkYj+N8ejlApSqHW7P5ZXuHY1IqjEjdAiGpTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CiWEWXh/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1719967873; c=relaxed/simple;
+	bh=Pay9Jch50YYBUEq5gYVHpCB8quq1U7sQk0+t7t8j9kc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=S10tPyO7k1lAhKs/zTbseIX70nCVu/TH+l36qT0E4iQT+//QCWaDsVMOD4F0A4ps2U0iXn1zlyZIU6FQDQNfgNDIqo3STeigSDjg8T77rovXY2PKWlt1ZM2XV+MIbSIot9T7sfvMOVWCSc/gk5wRhPrtv16CqvIYllwcDog1chA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=WE9dapOq; arc=none smtp.client-ip=209.85.167.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CiWEWXh/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65E2EC116B1;
-	Wed,  3 Jul 2024 00:19:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719965997;
-	bh=SFsqNX+6slZmjSB86CGH3XB+ZErTnNT0rtJ8aW8Urz0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CiWEWXh/UkVNmeAUfZXdtG67Y1o49S9dbYoJ0d6QyE8RKvUU9FNdAKA2NUpPNV9PI
-	 bN41jqlN514pW/0dqfjftsE6C1Wl/gey08FMJGlkX+FEtsrqOG6Jrd7wYaZw5oGVTx
-	 BPvwt9pjrvgo8hMtjSWSZHjpQQHjRa5AT89glk/nTXEwMu2EjQMrv0D2h/Bq3/aR0s
-	 duFLcXIui+tre++3IefsnC8WBEUTIIqVuvE2wFaj0m/deieFGTvZAwznVeS92uKcJf
-	 +Hk8u3LzmuanxtVkpELuHg4qBKIfgdn5+Jkie18lSYvYRX44x/THC6zycH2Ald7Tli
-	 4Ls+aEZ227geg==
-Date: Tue, 2 Jul 2024 17:19:53 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Mina Almasry <almasrymina@google.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- linux-arch@vger.kernel.org, bpf@vger.kernel.org,
- linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Donald
- Hunter <donald.hunter@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Richard
- Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky
- <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley"
- <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>,
- Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer
- <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven
- Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Arnd Bergmann
- <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
- <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, Martin KaFai
- Lau <martin.lau@linux.dev>, Eduard Zingerman <eddyz87@gmail.com>, Song Liu
- <song@kernel.org>, Yonghong Song <yonghong.song@linux.dev>, John Fastabend
- <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, Stanislav
- Fomichev <sdf@fomichev.me>, Hao Luo <haoluo@google.com>, Jiri Olsa
- <jolsa@kernel.org>, Steffen Klassert <steffen.klassert@secunet.com>,
- Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan
- <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>, "Christian
- =?UTF-8?B?S8O2bmln?=" <christian.koenig@amd.com>, Bagas Sanjaya
- <bagasdotme@gmail.com>, Christoph Hellwig <hch@infradead.org>, Nikolay
- Aleksandrov <razor@blackwall.org>, Pavel Begunkov <asml.silence@gmail.com>,
- David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin
- <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, Harshitha
- Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>,
- Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi
- <pkaligineedi@google.com>, Stanislav Fomichev <sdf@google.com>
-Subject: Re: [PATCH net-next v15 02/14] net: netdev netlink api to bind
- dma-buf to a net device
-Message-ID: <20240702171953.00886d5a@kernel.org>
-In-Reply-To: <20240628003253.1694510-3-almasrymina@google.com>
-References: <20240628003253.1694510-1-almasrymina@google.com>
-	<20240628003253.1694510-3-almasrymina@google.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="WE9dapOq"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-52cdf2c7454so10429290e87.1
+        for <linux-alpha@vger.kernel.org>; Tue, 02 Jul 2024 17:51:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1719967869; x=1720572669; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=J71lS0vEj7xidELl6507Qotv5/zDiOIZkTdz6g4J3Pk=;
+        b=WE9dapOqxOqtWrY4fSBCvmZVKLSTB8FkjyNzvSmi8IJTjFkE2QlzRTp0EbHDdM0QmU
+         TXDhJJIj3c/Ydz3zKkGB/GXLTHnigpZIKYRWaRzRciryA8dg5GWhNTG/6tZIgrhGeoCA
+         QLr+znW51czxL19Ki+w5jWHIzzLqZJUsPVdp4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719967869; x=1720572669;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=J71lS0vEj7xidELl6507Qotv5/zDiOIZkTdz6g4J3Pk=;
+        b=doY0zwYUlJpfH+ID98vEyKX2dp4AVck0vjQXsyAalrzIGgG/QkFTDhjKrNMj53Psfd
+         qFnAIPK2H5pvLA0QXffDkWcmjS4ZI8ckxnI10P5NLbTzg9rOmfF6Fisz1K5fr7unJmp7
+         VI3NB9z5QDRRPaNmikdba5LjH2dSwJWMHRhrlZHTwC0BrH3UpjTXIsGAeDZbg01DgmGf
+         N9arIkhVHX/5jPyvtb5dVxuyOrcH0GvoHXWtkwfNfN2vc2sIQJWSU3Xgx4WiQEG2ypch
+         3BaV9rIcOtiZNjile4670i2qL1EjPKQT/D1RN4RA9bAkJVMbLDL16U17MROWYUdKFYh9
+         LgGw==
+X-Forwarded-Encrypted: i=1; AJvYcCUwZ7XjUQePrxDg1w287tsEvT6wGi2tKcrdp74c0E8ElNfA3/yH/TQVN855M+WG0CJ1sNCGggFD0ZnPqnThpuHnbYBjUWtaEYZdz9E=
+X-Gm-Message-State: AOJu0YwYMxpKY3ldSMjmATpo0azc6GLEVoLbOcOlkuOtNh+ITncesXYC
+	HUaXhtZY8fkkyyC4Lg66QySnHeDh29v6HQMNa7o0hcu+fb9XUAKcC7EJlbLDaqtTaF21gud2NR8
+	1HrwIzA==
+X-Google-Smtp-Source: AGHT+IHxwnK6BFPNK1RPRxbv0moKzgCYujYLsG33rRwwGOLREUarsVMdhmHZK9T0Y+Cget9PZCfOoQ==
+X-Received: by 2002:a05:6512:3d1e:b0:52c:9ae0:beed with SMTP id 2adb3069b0e04-52e82705d17mr9596061e87.52.1719967869509;
+        Tue, 02 Jul 2024 17:51:09 -0700 (PDT)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52e7ab2e9f0sm1960831e87.220.2024.07.02.17.51.08
+        for <linux-alpha@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Jul 2024 17:51:09 -0700 (PDT)
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-52e9380add2so1431821e87.3
+        for <linux-alpha@vger.kernel.org>; Tue, 02 Jul 2024 17:51:08 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWBpHCSljWmrVdPU1HYtPiwzGzMxMFzfa+gVZri53DDo9kFp2GPNPA7zJP2iI9uauuU72JN8706VWg88lT3FE5jPo+kGbiDGcOAehM=
+X-Received: by 2002:a05:6512:114b:b0:52c:8075:4f3 with SMTP id
+ 2adb3069b0e04-52e82687e84mr9050700e87.36.1719967868527; Tue, 02 Jul 2024
+ 17:51:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20240503081125.67990-1-arnd@kernel.org> <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de>
+ <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk> <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
+ <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk> <4bb50dc0-244a-4781-85ad-9ebc5e59c99a@app.fastmail.com>
+ <CAHk-=wimJ2hQhKSq7+4O1EHtkg7eFBwY+fygxD+6sjWqgyDMTQ@mail.gmail.com>
+ <alpine.DEB.2.21.2406302009480.43454@angie.orcam.me.uk> <CAHk-=wihNu+_bGwD8F107ds7Lv1Z6ODTwvYYvXeW3im1=4R65w@mail.gmail.com>
+ <alpine.DEB.2.21.2407020219040.38148@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2407020219040.38148@angie.orcam.me.uk>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Tue, 2 Jul 2024 17:50:51 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgncrjmWSETfPt+j6DY-MLH0=Lrd8kJHR6Tz1iJ6i39VA@mail.gmail.com>
+Message-ID: <CAHk-=wgncrjmWSETfPt+j6DY-MLH0=Lrd8kJHR6Tz1iJ6i39VA@mail.gmail.com>
+Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Arnd Bergmann <arnd@arndb.de>, "Paul E. McKenney" <paulmck@kernel.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Arnd Bergmann <arnd@kernel.org>, 
+	linux-alpha@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, 
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org, 
+	Michael Cree <mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 28 Jun 2024 00:32:39 +0000 Mina Almasry wrote:
-> API takes the dma-buf fd as input, and binds it to the netdevice. The
-> user can specify the rx queues to bind the dma-buf to.
-> 
-> Suggested-by: Stanislav Fomichev <sdf@google.com>
-> Signed-off-by: Mina Almasry <almasrymina@google.com>
+On Tue, 2 Jul 2024 at 17:12, Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+>
+> On Mon, 1 Jul 2024, Linus Torvalds wrote:
+> >
+> > But honestly, that's basically saying "in a different universe, alpha
+> > is not a mis-design".
+>
+>  Precisely my point!  We got so used to think in multiples of 8 bits that
+> other approaches seem ridiculous.
 
-> diff --git a/Documentation/netlink/specs/netdev.yaml b/Documentation/netlink/specs/netdev.yaml
-> index 959755be4d7f9..899ac0882a098 100644
-> --- a/Documentation/netlink/specs/netdev.yaml
-> +++ b/Documentation/netlink/specs/netdev.yaml
-> @@ -268,6 +268,45 @@ attribute-sets:
->          name: napi-id
->          doc: ID of the NAPI instance which services this queue.
->          type: u32
-> +  -
-> +    name: queue-dmabuf
-> +    attributes:
-> +      -
-> +        name: type
-> +        doc: rx or tx queue
-> +        type: u8
-> +        enum: queue-type
-> +      -
-> +        name: idx
-> +        doc: queue index
-> +        type: u32
+But Maciej - alpha *was* designed for bytes. It wasn't a Cray 1. It
+wasn't a PDP-10. It was designed by the time people knew that bytes
+were the dominant thing, and that bytes were important and the main
+use case.
 
-u8 is a waste of space, since attrs are rounded up to 4B
-and we don't use "idx"
+But it was designed BADLY. The architecture sucked.
 
-How about we use a subset of queue attrs?
+Give it up. If alpha had been designed in the 60s or 70s when the
+whole issue of bytes were was debatable, it would have been
+incredible.
 
-	name: queue-id
-	subset-of: queue
-	attributes:
-	  -
-	    name: id
-	  -
-	    name: type
+But no. It was designed for byte accesses, and it FAILED AT THEM.
 
-> +  -
-> +    name: bind-dmabuf
-
-The naming is a bit too command specific, how about pp-buf ?
-Or just dmabuf ?
-
-> +    attributes:
-> +      -
-> +        name: ifindex
-> +        doc: netdev ifindex to bind the dma-buf to.
-> +        type: u32
-> +        checks:
-> +          min: 1
-> +      -
-> +        name: queues
-> +        doc: receive queues to bind the dma-buf to.
-> +        type: nest
-> +        nested-attributes: queue-dmabuf
-> +        multi-attr: true
-> +      -
-> +        name: dmabuf-fd
-> +        doc: dmabuf file descriptor to bind.
-> +        type: u32
-> +      -
-> +        name: dmabuf-id
-> +        doc: id of the dmabuf binding
-> +        type: u32
-> +        checks:
-> +          min: 1
-> +
-
-We need some form of introspection. Can we add both in the queue dump
-and page pool dump some info (dmabuf-id?) to indicate there is a DMABUF
-bound to the queue / page pool?
-
->    -
->      name: qstats
-> @@ -579,6 +618,20 @@ operations:
->            attributes:
->              - ifindex
->          reply: *queue-get-op
-> +    -
-> +      name: bind-rx
-> +      doc: Bind dmabuf to netdev
-> +      attribute-set: bind-dmabuf
-> +      flags: [ admin-perm ]
-> +      do:
-> +        request:
-> +          attributes:
-> +            - ifindex
-> +            - dmabuf-fd
-> +            - queues
-> +        reply:
-> +          attributes:
-> +            - dmabuf-id
-
-The ops end up getting rendered as an enum, so the ordering matters.
-You can't insert in the middle without breaking uAPI.
-For attribute sets (which you also added before qstat) it technically
-doesn't matter but would be good to have them in order to match ops.
-
-> diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-> index 43742ac5b00da..190a504a62358 100644
-> --- a/include/uapi/linux/netdev.h
-> +++ b/include/uapi/linux/netdev.h
-> @@ -136,6 +136,24 @@ enum {
->  	NETDEV_A_QUEUE_MAX = (__NETDEV_A_QUEUE_MAX - 1)
->  };
->  
-> +enum {
-> +	NETDEV_A_QUEUE_DMABUF_TYPE = 1,
-> +	NETDEV_A_QUEUE_DMABUF_IDX,
-> +
-> +	__NETDEV_A_QUEUE_DMABUF_MAX,
-> +	NETDEV_A_QUEUE_DMABUF_MAX = (__NETDEV_A_QUEUE_DMABUF_MAX - 1)
-> +};
-> +
-> +enum {
-> +	NETDEV_A_BIND_DMABUF_IFINDEX = 1,
-> +	NETDEV_A_BIND_DMABUF_QUEUES,
-> +	NETDEV_A_BIND_DMABUF_DMABUF_FD,
-> +	NETDEV_A_BIND_DMABUF_DMABUF_ID,
-
-This does look kinda repetitive, maybe let's drop the dmabuf from attr
-names?
-
-> +	__NETDEV_A_BIND_DMABUF_MAX,
-> +	NETDEV_A_BIND_DMABUF_MAX = (__NETDEV_A_BIND_DMABUF_MAX - 1)
-> +};
+              Linus
