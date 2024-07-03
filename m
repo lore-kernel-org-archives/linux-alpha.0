@@ -1,75 +1,40 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D216F624;
-	Wed,  3 Jul 2024 00:01:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C0A9110E3;
+	Wed,  3 Jul 2024 00:13:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719964865; cv=none; b=UiAAOGem1PssVbbmSjN9GIIh+e3d2d+Vl8rVWJUSK+NwiNBV4QWiFjaKpx1EnbuauRtogJT83DJdwCMKkLkQZH3cnm9Z1qpOriQMVvetNK3QCjA411sU8OjlVkyQHA6JInYkhtMELGbEeCF+S549vcZyaSdSms3SI16Rs9Bop2k=
+	t=1719965583; cv=none; b=XWvJGsIBfeoaEWHD8PomMbk2gkcZ5UJq6tLHXtfhJ1Rb4mlk31Fctv9nlogp3SYrUYOWW6h0CFDdfO17hZJY8sBU25YlCmahY06iSagAwtmW0CBj5Bin6nkhfGUeEtgCnloDD9djyDd7MaA6wL3Qjafyqo5bVtYpIuXNJcFiFSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719964865; c=relaxed/simple;
-	bh=XKl/c87Kbh0kGQurl6iORGiYsqlKqoMj55PIg6Hhs+w=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZSLloRbCyi0trTZ46HE/Apxiz7yo8CnoL7mUQ36GrAQ5wvdLtfHmiiIfR+afiTOjZDx5GAogRvcC3h9HveA+gYZ+h41RnrvqJKYEm7WjCw557tyveAy7d1dZu30BF2bVI7zS3xRgcJH6XSPXWzQ0OD81GhCrMfcCxaboWh+JPdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YEan8Rfk; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YEan8Rfk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D9DAC116B1;
-	Wed,  3 Jul 2024 00:01:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719964864;
-	bh=XKl/c87Kbh0kGQurl6iORGiYsqlKqoMj55PIg6Hhs+w=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=YEan8RfkgilOWFyp2YBV84OjOIwJGzT/QUvC9cDYBcMEDk3TkFMsLKBF9uaI3k5xL
-	 VuRhqA8zfpuwTfTremn1Lfy49x1I4pn78dNiE5Uq7TWWa07iyaYQ8YvBR1dEKp7iq9
-	 R8yV6YrR+Bx6zfN/DLN1ph361m7q21kuqTq2IWDYRcEx+PK8fzGBhlBa+m2Iuhwjpm
-	 mwfsiW4c8qZKDNcJ5vH8oJbtiPsmoDQqn1zNuPfURkcMB754p/Mq6D5tJ259L8hyQt
-	 sCs/eeFQOdzPHAvWPBmULTvr0ubVHTK0ab9EbJ4JPA4n4p+tQfgDYM78M/M/ETPmmp
-	 88qK4oQsV+OkQ==
-Date: Tue, 2 Jul 2024 17:01:00 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Mina Almasry <almasrymina@google.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- linux-arch@vger.kernel.org, bpf@vger.kernel.org,
- linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Donald
- Hunter <donald.hunter@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Richard
- Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky
- <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley"
- <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>,
- Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer
- <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven
- Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Arnd Bergmann
- <arnd@arndb.de>, Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
- <daniel@iogearbox.net>, Andrii Nakryiko <andrii@kernel.org>, Martin KaFai
- Lau <martin.lau@linux.dev>, Eduard Zingerman <eddyz87@gmail.com>, Song Liu
- <song@kernel.org>, Yonghong Song <yonghong.song@linux.dev>, John Fastabend
- <john.fastabend@gmail.com>, KP Singh <kpsingh@kernel.org>, Stanislav
- Fomichev <sdf@fomichev.me>, Hao Luo <haoluo@google.com>, Jiri Olsa
- <jolsa@kernel.org>, Steffen Klassert <steffen.klassert@secunet.com>,
- Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan
- <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>, "Christian
- =?UTF-8?B?S8O2bmln?=" <christian.koenig@amd.com>, Bagas Sanjaya
- <bagasdotme@gmail.com>, Christoph Hellwig <hch@infradead.org>, Nikolay
- Aleksandrov <razor@blackwall.org>, Pavel Begunkov <asml.silence@gmail.com>,
- David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin
- <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, Harshitha
- Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>,
- Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi
- <pkaligineedi@google.com>
-Subject: Re: [PATCH net-next v15 01/14] netdev: add
- netdev_rx_queue_restart()
-Message-ID: <20240702170100.66783656@kernel.org>
-In-Reply-To: <20240628003253.1694510-2-almasrymina@google.com>
-References: <20240628003253.1694510-1-almasrymina@google.com>
-	<20240628003253.1694510-2-almasrymina@google.com>
+	s=arc-20240116; t=1719965583; c=relaxed/simple;
+	bh=XTzWuLlWI1vnmXFpCrALo1hSI5hOjBF96hPZLbjaPrk=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=Cq44SGXcQKZswmuaOdpa9P/xogc2Kk+oP+vpfQUIMbW098JTBceZD7lLbAUJfHlkLzkr2wpf6eigsSGM9aUVeOMB8FonFsqiyNhN+B1xrIDELu4JtMUQ32X8Ypdr3f/muXLRJPNVK/HUPXPGKT/bqiembXDqF8Qtxne16SPuPAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id CA9B392009D; Wed,  3 Jul 2024 02:12:52 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id C5D4A92009B;
+	Wed,  3 Jul 2024 01:12:52 +0100 (BST)
+Date: Wed, 3 Jul 2024 01:12:52 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+cc: Arnd Bergmann <arnd@arndb.de>, "Paul E. McKenney" <paulmck@kernel.org>, 
+    John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+    Arnd Bergmann <arnd@kernel.org>, linux-alpha@vger.kernel.org, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+    Matt Turner <mattst88@gmail.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+    Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org, 
+    Michael Cree <mcree@orcon.net.nz>, Frank Scheiner <frank.scheiner@web.de>
+Subject: Re: [PATCH 00/14] alpha: cleanups for 6.10
+In-Reply-To: <CAHk-=wihNu+_bGwD8F107ds7Lv1Z6ODTwvYYvXeW3im1=4R65w@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2407020219040.38148@angie.orcam.me.uk>
+References: <20240503081125.67990-1-arnd@kernel.org> <272a909522f2790a30b9a8be73ab7145bf06d486.camel@physik.fu-berlin.de> <alpine.DEB.2.21.2405280041550.23854@angie.orcam.me.uk> <aa397ad5-a08a-48a1-a9c0-75cfd5f6a3a5@paulmck-laptop>
+ <alpine.DEB.2.21.2405291432450.23854@angie.orcam.me.uk> <4bb50dc0-244a-4781-85ad-9ebc5e59c99a@app.fastmail.com> <CAHk-=wimJ2hQhKSq7+4O1EHtkg7eFBwY+fygxD+6sjWqgyDMTQ@mail.gmail.com> <alpine.DEB.2.21.2406302009480.43454@angie.orcam.me.uk>
+ <CAHk-=wihNu+_bGwD8F107ds7Lv1Z6ODTwvYYvXeW3im1=4R65w@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -77,13 +42,47 @@ List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-On Fri, 28 Jun 2024 00:32:38 +0000 Mina Almasry wrote:
-> Add netdev_rx_queue_restart() function to netdev_rx_queue.h
+On Mon, 1 Jul 2024, Linus Torvalds wrote:
+
+> The architecture was wrong 30 years ago. It's not that it "became"
+> wrong in hindsight. It was wrong originally, and it's just that people
+> hadn't thought things through enough to realize how wrong it was.
 > 
-> Signed-off-by: David Wei <dw@davidwei.uk>
-> Signed-off-by: Mina Almasry <almasrymina@google.com>
-> Reviewed-by: Pavel Begunkov <asml.silence@gmail.com>
+> The only way it's not wrong is if you say "byte accesses do not
+> matter". That's a very Cray way of looking at things - Cray 1 had a
+> 64-bit "char" in C, because there were no byte accesses.
+> 
+> That's fine if your only goal in life is to do HPC.
+> 
+> So if you simply don't care about bytes, and you *only* work with
+> words and quad-words, then alpha looks ok.
+> 
+> But honestly, that's basically saying "in a different universe, alpha
+> is not a mis-design".
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+ Precisely my point!  We got so used to think in multiples of 8 bits that 
+other approaches seem ridiculous.
+
+ The PDP-10 operated on 36-bit quantities and strings were essentially 
+clusters of 6-bit characters packed into 6-packs (which is also allegedly 
+where the C language's original limitation of using at most six characters 
+for identifiers came from -- so that the PDP-10 could compare a pair with 
+a single machine instruction).
+
+ So there was already legacy of doing things this way at DEC back in ~1990 
+and I can envisage engineers there actually thought that to have a machine 
+that in C terms has 32-bit shorts and ints, 64-bit longs and pointers, and 
+strings as clusters of 8-bit characters packed into 4-packs or 8-packs was 
+not at all unreasonable.  Or maybe just plain 32-bit characters.  After 
+all you don't absolutely *have* to use data types of 8 or 16 bits exactly 
+in width for anything, do you?  NB for strings nowadays we have Unicode 
+and we could just use UTF-32 if not to waste memory.
+
+ And even now ISO C is very flexible on data type widths and only requires 
+the character data type to be at least 8 bits wide, and 16-bit and 24-bit 
+examples are actually given in the standard itself.  Yes, POSIX requires 
+the character data type to be 8 bits wide exactly now, but POSIX.1-1988 
+deferred to ANSI C AFAICT.
+
+  Maciej
