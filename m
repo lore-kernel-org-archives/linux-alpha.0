@@ -1,567 +1,249 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62BC818F2CA;
-	Tue, 30 Jul 2024 07:23:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D868D18FDC0;
+	Tue, 30 Jul 2024 08:17:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722324209; cv=none; b=cRbGG13HyjBlmlDs0Z7mAUSq+KbYnxgw5eGalRKQo4KG0CazdZTwa1AK5r0D4jQBP5mRckuBW5GG1zlAc7sA71SQBKioT/G2gF/hlx/9kpM+yhtw//kHnu4ypxcgqGSc5RHBb8pT47LJ9M8wOtEJXpvNyBnLJLR6UVG2gsRo4B8=
+	t=1722327468; cv=none; b=hOg1EnHun6w2sxRk/sNH5oKq+3V8bWRg+3hbY3ve4Io0pAAIWMY0KhG+gMl22lNb9a+akU34KXUXi3lfZfG02akaWrJ3CaX8BenoJr8ICN6WDUUARZcoxKsUTRDva0C6i9zWdRHJz9K6co1VNn77HXRajstnSnFUQsiL1uvX+0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722324209; c=relaxed/simple;
-	bh=pmAot7c13dNSFHJIzK3xlU5SqKtGMVMiLmncclf/DQ4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MlST5XY621m/sCqTRK4TlRzN9D5mz7LSJk8gXe8LUjfDVOLf46ltzFP9uX+WvZzL0mLoXshCA0UzI8a9j958o4ca50qSOkAWXhF2aD6Tc2BwsGp216Wdn9npjwqsCzO5CUqog7yq+ftAmU7P4wTUWNdjbiClfc4oNqEnWtKgo0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AWXv2pEp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722327468; c=relaxed/simple;
+	bh=SoTuAhXH8DAcGS2Zg9eo9Y+q6LWEAmfzEF5TC+h8Cco=;
+	h=Message-ID:Subject:Date:From:To:Cc:References:In-Reply-To; b=KrgrT3Qo+/mHbCDS077VXDGPGIE/LZkJC5b9b4hZfNWWI7J6ZhGwBn6NwFd9kihaSydUWRA1Uu5ZeTTUPu7XwotuNo6xcTcmwDURYQI2y4w7HZ54tliBtgVszYrJv66Rglbu3iPoC3TMopfw8ZSDBSIwJfbEKZRI1PfJDR21G+U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=K0SNL6uI; arc=none smtp.client-ip=115.124.30.110
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AWXv2pEp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B845C4AF0C;
-	Tue, 30 Jul 2024 07:23:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722324209;
-	bh=pmAot7c13dNSFHJIzK3xlU5SqKtGMVMiLmncclf/DQ4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=AWXv2pEp/nNupQjdbP6hn5kUITNeBpHRDBazsYl2CUpADVig7M2J+omHoRHo3TFZb
-	 +Hk/4ktC45EKRUaZWbMYrHYfA/pgKh8zhcILxOPrp0butWLZomt6kbTElUUEqnCvg+
-	 SVxMSWauhY/FHuAmUmxcA33G+FwZWZcQuJbRclpvkV5vc68Za2RA5bPELHmpu6rlPH
-	 N+kHuGSwuqg5k9oZXP5d+CBTW8Rt24mZVqRqc57EoCY2n8zfWwOCWH8dVd9qkRpU3K
-	 tg4w7ehvyfwE6q5ygSgvHB/7psYaWDXrfQSximxaEI4rwD91P92gbo/uuZ9G3P/b2a
-	 AxzNLLDhX3CvQ==
-From: alexs@kernel.org
-To: Will Deacon <will@kernel.org>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
-	Nick Piggin <npiggin@gmail.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Brian Cain <bcain@quicinc.com>,
-	WANG Xuerui <kernel@xen0n.name>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Jonas Bonn <jonas@southpole.se>,
-	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-	Stafford Horne <shorne@gmail.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Naveen N Rao <naveen@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Andy Lutomirski <luto@kernel.org>,
-	Bibo Mao <maobibo@loongson.cn>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	linux-arch@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-csky@vger.kernel.org,
-	linux-hexagon@vger.kernel.org,
-	loongarch@lists.linux.dev,
-	linux-m68k@lists.linux-m68k.org,
-	linux-openrisc@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-riscv@lists.infradead.org,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Qi Zheng <zhengqi.arch@bytedance.com>,
-	Vishal Moola <vishal.moola@gmail.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
-	Kemeng Shi <shikemeng@huaweicloud.com>,
-	Lance Yang <ioworker0@gmail.com>,
-	Peter Xu <peterx@redhat.com>,
-	Barry Song <baohua@kernel.org>,
-	linux-s390@vger.kernel.org
-Cc: Guo Ren <guoren@kernel.org>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Mike Rapoport <rppt@kernel.org>,
-	Oscar Salvador <osalvador@suse.de>,
-	Alexandre Ghiti <alexghiti@rivosinc.com>,
-	Jisheng Zhang <jszhang@kernel.org>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Breno Leitao <leitao@debian.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Hugh Dickins <hughd@google.com>,
-	David Hildenbrand <david@redhat.com>,
-	Ryan Roberts <ryan.roberts@arm.com>,
-	Matthew Wilcox <willy@infradead.org>,
-	Alex Shi <alexs@kernel.org>,
-	"Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-	linux-parisc@vger.kernel.org,
-	linux-snps-arc@lists.infradead.org,
-	linux-alpha@vger.kernel.org,
-	Helge Deller <deller@gmx.de>,
-	"James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
-	Sam Creasey <sammy@sammy.net>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Vineet Gupta <vgupta@kernel.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Ard Biesheuvel <ardb@kernel.org>
-Subject: [RFC PATCH 15/18] mm/pgtable: pass ptdesc to pmd_populate
-Date: Tue, 30 Jul 2024 15:27:16 +0800
-Message-ID: <20240730072719.3715016-5-alexs@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240730072719.3715016-1-alexs@kernel.org>
-References: <20240730064712.3714387-1-alexs@kernel.org>
- <20240730072719.3715016-1-alexs@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="K0SNL6uI"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1722327455; h=Message-ID:Subject:Date:From:To;
+	bh=BL5MMNWBxRZiD5bwdc51aQGuezbk7sZ94pe6i1nz4Vo=;
+	b=K0SNL6uIC0eITT6Ch2r7BogGPhKmMDjZy9Nxz+6Qhajjb1Vgq/5wlNA9xcpE72fmkEEE7MYawZrvsms1DS5GczCXuJHg1wM70Cz7KiIdGiCXxcAwrzA7UdmVW+UJmSxEwAkF5AoIWCTtZnkCxdajJydcKxgpmyWuYlcQLFHpbj4=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037067113;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=53;SR=0;TI=SMTPD_---0WBexhuz_1722327451;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0WBexhuz_1722327451)
+          by smtp.aliyun-inc.com;
+          Tue, 30 Jul 2024 16:17:32 +0800
+Message-ID: <1722327259.5659568-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next v17 01/14] netdev: add netdev_rx_queue_restart()
+Date: Tue, 30 Jul 2024 16:14:19 +0800
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To: Mina Almasry <almasrymina@google.com>
+Cc: Mina Almasry <almasrymina@google.com>,
+ "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ Donald Hunter <donald.hunter@gmail.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+ Matt Turner <mattst88@gmail.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>,
+ Andreas Larsson <andreas@gaisler.com>,
+ Jesper Dangaard Brouer <hawk@kernel.org>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ Masami Hiramatsu <mhiramat@kernel.org>,
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Steffen Klassert <steffen.klassert@secunet.com>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ David Ahern <dsahern@kernel.org>,
+ Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+ Shuah Khan <shuah@kernel.org>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Bagas Sanjaya <bagasdotme@gmail.com>,
+ Christoph Hellwig <hch@infradead.org>,
+ Nikolay Aleksandrov <razor@blackwall.org>,
+ Taehee Yoo <ap420073@gmail.com>,
+ Pavel Begunkov <asml.silence@gmail.com>,
+ David Wei <dw@davidwei.uk>,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Yunsheng Lin <linyunsheng@huawei.com>,
+ Shailend Chand <shailend@google.com>,
+ Harshitha Ramamurthy <hramamurthy@google.com>,
+ Shakeel Butt <shakeel.butt@linux.dev>,
+ Jeroen de Borst <jeroendb@google.com>,
+ Praveen Kaligineedi <pkaligineedi@google.com>,
+ netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org,
+ linux-alpha@vger.kernel.org,
+ linux-mips@vger.kernel.org,
+ linux-parisc@vger.kernel.org,
+ sparclinux@vger.kernel.org,
+ linux-trace-kernel@vger.kernel.org,
+ linux-arch@vger.kernel.org,
+ linux-kselftest@vger.kernel.org,
+ bpf@vger.kernel.org,
+ linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org
+References: <20240730022623.98909-1-almasrymina@google.com>
+ <20240730022623.98909-2-almasrymina@google.com>
+In-Reply-To: <20240730022623.98909-2-almasrymina@google.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-From: Alex Shi <alexs@kernel.org>
+On Tue, 30 Jul 2024 02:26:05 +0000, Mina Almasry <almasrymina@google.com> wrote:
+> Add netdev_rx_queue_restart() function to netdev_rx_queue.h
 
-Pass struct ptdesc to pmd_populate to further replace pgtable_t.
-We use type casting instead of page_ptdesc() helper since different arch
-has different type of pgtable_t.
 
-Helper ptdesc_pfn used for arch openrisc and hexagon.
+Can you say more? As far as I understand, we just release the buffer
+submitted to the rx ring and get a new page pool.
 
-Signed-off-by: Alex Shi <alexs@kernel.org>
-Cc: linux-mm@kvack.org
-Cc: linux-parisc@vger.kernel.org
-Cc: linux-openrisc@vger.kernel.org
-Cc: linux-m68k@lists.linux-m68k.org
-Cc: loongarch@lists.linux.dev
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-snps-arc@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-alpha@vger.kernel.org
-Cc: H. Peter Anvin <hpa@zytor.com>
-Cc: x86@kernel.org
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Helge Deller <deller@gmx.de>
-Cc: James E.J. Bottomley <James.Bottomley@HansenPartnership.com>
-Cc: Stafford Horne <shorne@gmail.com>
-Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-Cc: Jonas Bonn <jonas@southpole.se>
-Cc: Sam Creasey <sammy@sammy.net>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: WANG Xuerui <kernel@xen0n.name>
-Cc: Huacai Chen <chenhuacai@kernel.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: Vineet Gupta <vgupta@kernel.org>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Richard Henderson <richard.henderson@linaro.org>
-Cc: Breno Leitao <leitao@debian.org>
-Cc: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: Bibo Mao <maobibo@loongson.cn>
-Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc: Mike Rapoport  <rppt@kernel.org>
-Cc: Vishal Moola  <vishal.moola@gmail.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
----
- arch/alpha/include/asm/pgalloc.h             | 4 ++--
- arch/arc/include/asm/pgalloc.h               | 4 ++--
- arch/arm/include/asm/pgalloc.h               | 4 ++--
- arch/arm64/include/asm/pgalloc.h             | 4 ++--
- arch/hexagon/include/asm/pgalloc.h           | 4 ++--
- arch/loongarch/include/asm/pgalloc.h         | 4 ++--
- arch/m68k/include/asm/motorola_pgalloc.h     | 4 ++--
- arch/m68k/include/asm/sun3_pgalloc.h         | 4 ++--
- arch/microblaze/include/asm/pgalloc.h        | 2 +-
- arch/mips/include/asm/pgalloc.h              | 4 ++--
- arch/nios2/include/asm/pgalloc.h             | 4 ++--
- arch/openrisc/include/asm/pgalloc.h          | 4 ++--
- arch/parisc/include/asm/pgalloc.h            | 2 +-
- arch/powerpc/include/asm/book3s/32/pgalloc.h | 2 +-
- arch/sh/include/asm/pgalloc.h                | 4 ++--
- arch/sparc/include/asm/pgalloc_32.h          | 2 +-
- arch/x86/include/asm/pgalloc.h               | 4 ++--
- mm/debug_vm_pgtable.c                        | 2 +-
- mm/huge_memory.c                             | 8 ++++----
- mm/khugepaged.c                              | 4 ++--
- mm/memory.c                                  | 2 +-
- mm/mremap.c                                  | 2 +-
- 22 files changed, 39 insertions(+), 39 deletions(-)
+But I personally feel that the interface here is a bit too complicated. In
+particular, we also need to copy the rx struct memory, which means it is a
+dangerous operation for many pointers.
 
-diff --git a/arch/alpha/include/asm/pgalloc.h b/arch/alpha/include/asm/pgalloc.h
-index 68be7adbfe58..ad62056059ac 100644
---- a/arch/alpha/include/asm/pgalloc.h
-+++ b/arch/alpha/include/asm/pgalloc.h
-@@ -14,9 +14,9 @@
-  */
- 
- static inline void
--pmd_populate(struct mm_struct *mm, pmd_t *pmd, pgtable_t pte)
-+pmd_populate(struct mm_struct *mm, pmd_t *pmd, struct ptdesc *pte)
- {
--	pmd_set(pmd, (pte_t *)(page_to_pa(pte) + PAGE_OFFSET));
-+	pmd_set(pmd, (pte_t *)(page_to_pa(ptdesc_page(pte)) + PAGE_OFFSET));
- }
- 
- static inline void
-diff --git a/arch/arc/include/asm/pgalloc.h b/arch/arc/include/asm/pgalloc.h
-index 096b8ef58edb..51233cfb1bad 100644
---- a/arch/arc/include/asm/pgalloc.h
-+++ b/arch/arc/include/asm/pgalloc.h
-@@ -46,9 +46,9 @@ pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd, pte_t *pte)
- 	set_pmd(pmd, __pmd((unsigned long)pte));
- }
- 
--static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd, pgtable_t pte_page)
-+static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd, struct ptdesc *pte)
- {
--	set_pmd(pmd, __pmd((unsigned long)page_address(pte_page)));
-+	set_pmd(pmd, __pmd((unsigned long)ptdesc_address(pte)));
- }
- 
- static inline pgd_t *pgd_alloc(struct mm_struct *mm)
-diff --git a/arch/arm/include/asm/pgalloc.h b/arch/arm/include/asm/pgalloc.h
-index e8501a6c3336..37a15220fce7 100644
---- a/arch/arm/include/asm/pgalloc.h
-+++ b/arch/arm/include/asm/pgalloc.h
-@@ -130,7 +130,7 @@ pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmdp, pte_t *ptep)
- }
- 
- static inline void
--pmd_populate(struct mm_struct *mm, pmd_t *pmdp, pgtable_t ptep)
-+pmd_populate(struct mm_struct *mm, pmd_t *pmdp, struct ptdesc *ptep)
- {
- 	extern pmdval_t user_pmd_table;
- 	pmdval_t prot;
-@@ -140,7 +140,7 @@ pmd_populate(struct mm_struct *mm, pmd_t *pmdp, pgtable_t ptep)
- 	else
- 		prot = _PAGE_USER_TABLE;
- 
--	__pmd_populate(pmdp, page_to_phys(ptep), prot);
-+	__pmd_populate(pmdp, page_to_phys(ptdesc_page(ptep)), prot);
- }
- 
- #endif /* CONFIG_MMU */
-diff --git a/arch/arm64/include/asm/pgalloc.h b/arch/arm64/include/asm/pgalloc.h
-index 8ff5f2a2579e..d9074b5f9dfe 100644
---- a/arch/arm64/include/asm/pgalloc.h
-+++ b/arch/arm64/include/asm/pgalloc.h
-@@ -131,10 +131,10 @@ pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmdp, pte_t *ptep)
- }
- 
- static inline void
--pmd_populate(struct mm_struct *mm, pmd_t *pmdp, pgtable_t ptep)
-+pmd_populate(struct mm_struct *mm, pmd_t *pmdp, struct ptdesc *ptep)
- {
- 	VM_BUG_ON(mm == &init_mm);
--	__pmd_populate(pmdp, page_to_phys(ptep), PMD_TYPE_TABLE | PMD_TABLE_PXN);
-+	__pmd_populate(pmdp, page_to_phys(ptdesc_page(ptep)), PMD_TYPE_TABLE | PMD_TABLE_PXN);
- }
- 
- #endif
-diff --git a/arch/hexagon/include/asm/pgalloc.h b/arch/hexagon/include/asm/pgalloc.h
-index a3e082e54b74..f34e9fcad066 100644
---- a/arch/hexagon/include/asm/pgalloc.h
-+++ b/arch/hexagon/include/asm/pgalloc.h
-@@ -42,13 +42,13 @@ static inline pgd_t *pgd_alloc(struct mm_struct *mm)
- }
- 
- static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
--				pgtable_t pte)
-+				struct ptdesc *pte)
- {
- 	/*
- 	 * Conveniently, zero in 3 LSB means indirect 4K page table.
- 	 * Not so convenient when you're trying to vary the page size.
- 	 */
--	set_pmd(pmd, __pmd(((unsigned long)page_to_pfn(pte) << PAGE_SHIFT) |
-+	set_pmd(pmd, __pmd(((unsigned long)ptdesc_pfn(pte) << PAGE_SHIFT) |
- 		HEXAGON_L1_PTE_SIZE));
- }
- 
-diff --git a/arch/loongarch/include/asm/pgalloc.h b/arch/loongarch/include/asm/pgalloc.h
-index c96d7160babc..3461da516ab9 100644
---- a/arch/loongarch/include/asm/pgalloc.h
-+++ b/arch/loongarch/include/asm/pgalloc.h
-@@ -18,9 +18,9 @@ static inline void pmd_populate_kernel(struct mm_struct *mm,
- 	set_pmd(pmd, __pmd((unsigned long)pte));
- }
- 
--static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd, pgtable_t pte)
-+static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd, struct ptdesc *pte)
- {
--	set_pmd(pmd, __pmd((unsigned long)page_address(pte)));
-+	set_pmd(pmd, __pmd((unsigned long)ptdesc_address(pte)));
- }
- 
- #ifndef __PAGETABLE_PMD_FOLDED
-diff --git a/arch/m68k/include/asm/motorola_pgalloc.h b/arch/m68k/include/asm/motorola_pgalloc.h
-index f9ee5ec4574d..a80c45b9d2a3 100644
---- a/arch/m68k/include/asm/motorola_pgalloc.h
-+++ b/arch/m68k/include/asm/motorola_pgalloc.h
-@@ -84,9 +84,9 @@ static inline void pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd, pte_t *
- 	pmd_set(pmd, pte);
- }
- 
--static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd, pgtable_t page)
-+static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd, struct ptdesc *page)
- {
--	pmd_set(pmd, page);
-+	pmd_set(pmd, ptdesc_page(page));
- }
- 
- static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
-diff --git a/arch/m68k/include/asm/sun3_pgalloc.h b/arch/m68k/include/asm/sun3_pgalloc.h
-index 4a137eecb6fe..965f663a4797 100644
---- a/arch/m68k/include/asm/sun3_pgalloc.h
-+++ b/arch/m68k/include/asm/sun3_pgalloc.h
-@@ -28,9 +28,9 @@ static inline void pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd, pte_t *
- 	pmd_val(*pmd) = __pa((unsigned long)pte);
- }
- 
--static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd, pgtable_t page)
-+static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd, struct ptdesc *ptdesc)
- {
--	pmd_val(*pmd) = __pa((unsigned long)page_address(page));
-+	pmd_val(*pmd) = __pa((unsigned long)ptdesc_address(ptdesc));
- }
- 
- /*
-diff --git a/arch/microblaze/include/asm/pgalloc.h b/arch/microblaze/include/asm/pgalloc.h
-index 6c33b05f730f..0f4a479e015e 100644
---- a/arch/microblaze/include/asm/pgalloc.h
-+++ b/arch/microblaze/include/asm/pgalloc.h
-@@ -33,7 +33,7 @@ extern pte_t *pte_alloc_one_kernel(struct mm_struct *mm);
- #define __pte_free_tlb(tlb, pte, addr)	pte_free((tlb)->mm, (pte))
- 
- #define pmd_populate(mm, pmd, pte) \
--			(pmd_val(*(pmd)) = (unsigned long)page_address(pte))
-+			(pmd_val(*(pmd)) = (unsigned long)page_address(ptdesc_page(pte)))
- 
- #define pmd_populate_kernel(mm, pmd, pte) \
- 		(pmd_val(*(pmd)) = (unsigned long) (pte))
-diff --git a/arch/mips/include/asm/pgalloc.h b/arch/mips/include/asm/pgalloc.h
-index f4440edcd8fe..2ef868d93b6b 100644
---- a/arch/mips/include/asm/pgalloc.h
-+++ b/arch/mips/include/asm/pgalloc.h
-@@ -25,9 +25,9 @@ static inline void pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd,
- }
- 
- static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
--	pgtable_t pte)
-+				struct ptdesc *pte)
- {
--	set_pmd(pmd, __pmd((unsigned long)page_address(pte)));
-+	set_pmd(pmd, __pmd((unsigned long)ptdesc_address(pte)));
- }
- 
- /*
-diff --git a/arch/nios2/include/asm/pgalloc.h b/arch/nios2/include/asm/pgalloc.h
-index ce6bb8e74271..420958d91a47 100644
---- a/arch/nios2/include/asm/pgalloc.h
-+++ b/arch/nios2/include/asm/pgalloc.h
-@@ -21,9 +21,9 @@ static inline void pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd,
- }
- 
- static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
--	pgtable_t pte)
-+				struct ptdesc *pte)
- {
--	set_pmd(pmd, __pmd((unsigned long)page_address(pte)));
-+	set_pmd(pmd, __pmd((unsigned long)ptdesc_address(pte)));
- }
- 
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
-diff --git a/arch/openrisc/include/asm/pgalloc.h b/arch/openrisc/include/asm/pgalloc.h
-index 2251d940c3d8..a9479d873dca 100644
---- a/arch/openrisc/include/asm/pgalloc.h
-+++ b/arch/openrisc/include/asm/pgalloc.h
-@@ -29,10 +29,10 @@ extern int mem_init_done;
- 	set_pmd(pmd, __pmd(_KERNPG_TABLE + __pa(pte)))
- 
- static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
--				struct page *pte)
-+				struct ptdesc *pte)
- {
- 	set_pmd(pmd, __pmd(_KERNPG_TABLE +
--		     ((unsigned long)page_to_pfn(pte) <<
-+		     ((unsigned long)ptdesc_pfn(pte) <<
- 		     (unsigned long) PAGE_SHIFT)));
- }
- 
-diff --git a/arch/parisc/include/asm/pgalloc.h b/arch/parisc/include/asm/pgalloc.h
-index e3e142b1c5c5..9fd06e2fef89 100644
---- a/arch/parisc/include/asm/pgalloc.h
-+++ b/arch/parisc/include/asm/pgalloc.h
-@@ -68,6 +68,6 @@ pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd, pte_t *pte)
- }
- 
- #define pmd_populate(mm, pmd, pte_page) \
--	pmd_populate_kernel(mm, pmd, page_address(pte_page))
-+	pmd_populate_kernel(mm, pmd, page_address(ptdesc_page(pte_page)))
- 
- #endif
-diff --git a/arch/powerpc/include/asm/book3s/32/pgalloc.h b/arch/powerpc/include/asm/book3s/32/pgalloc.h
-index a435c84d1f9a..9971703d0566 100644
---- a/arch/powerpc/include/asm/book3s/32/pgalloc.h
-+++ b/arch/powerpc/include/asm/book3s/32/pgalloc.h
-@@ -32,7 +32,7 @@ static inline void pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmdp,
- }
- 
- static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmdp,
--				pgtable_t pte_page)
-+				struct ptdesc *pte_page)
- {
- 	*pmdp = __pmd(__pa(pte_page) | _PMD_PRESENT);
- }
-diff --git a/arch/sh/include/asm/pgalloc.h b/arch/sh/include/asm/pgalloc.h
-index 5d8577ab1591..095521089c20 100644
---- a/arch/sh/include/asm/pgalloc.h
-+++ b/arch/sh/include/asm/pgalloc.h
-@@ -27,9 +27,9 @@ static inline void pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd,
- }
- 
- static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
--				pgtable_t pte)
-+				struct ptdesc *pte)
- {
--	set_pmd(pmd, __pmd((unsigned long)page_address(pte)));
-+	set_pmd(pmd, __pmd((unsigned long)ptdesc_address(pte)));
- }
- 
- #define __pte_free_tlb(tlb, pte, addr)				\
-diff --git a/arch/sparc/include/asm/pgalloc_32.h b/arch/sparc/include/asm/pgalloc_32.h
-index addaade56f21..6f0f661a380f 100644
---- a/arch/sparc/include/asm/pgalloc_32.h
-+++ b/arch/sparc/include/asm/pgalloc_32.h
-@@ -50,7 +50,7 @@ static inline void free_pmd_fast(pmd_t * pmd)
- #define pmd_free(mm, pmd)		free_pmd_fast(pmd)
- #define __pmd_free_tlb(tlb, pmd, addr)	pmd_free((tlb)->mm, pmd)
- 
--#define pmd_populate(mm, pmd, pte)	pmd_set(pmd, pte)
-+#define pmd_populate(mm, pmd, pte)	pmd_set(pmd, (pte_t *)pte)
- 
- void pmd_set(pmd_t *pmdp, pte_t *ptep);
- #define pmd_populate_kernel		pmd_populate
-diff --git a/arch/x86/include/asm/pgalloc.h b/arch/x86/include/asm/pgalloc.h
-index 06a9a5867a86..5ca8ac568768 100644
---- a/arch/x86/include/asm/pgalloc.h
-+++ b/arch/x86/include/asm/pgalloc.h
-@@ -76,9 +76,9 @@ static inline void pmd_populate_kernel_safe(struct mm_struct *mm,
- }
- 
- static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
--				struct page *pte)
-+				struct ptdesc *pte)
- {
--	unsigned long pfn = page_to_pfn(pte);
-+	unsigned long pfn = page_to_pfn(ptdesc_page(pte));
- 
- 	paravirt_alloc_pte(mm, pfn);
- 	set_pmd(pmd, __pmd(((pteval_t)pfn << PAGE_SHIFT) | _PAGE_TABLE));
-diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
-index 8550eec32aba..bf9dc9c0a9bf 100644
---- a/mm/debug_vm_pgtable.c
-+++ b/mm/debug_vm_pgtable.c
-@@ -645,7 +645,7 @@ static void __init pmd_populate_tests(struct pgtable_debug_args *args)
- 	 * This entry points to next level page table page.
- 	 * Hence this must not qualify as pmd_bad().
- 	 */
--	pmd_populate(args->mm, args->pmdp, args->start_ptep);
-+	pmd_populate(args->mm, args->pmdp, page_ptdesc(args->start_ptep));
- 	pmd = READ_ONCE(*args->pmdp);
- 	WARN_ON(pmd_bad(pmd));
- }
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index aac67e8a8cc8..665445706491 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2365,7 +2365,7 @@ static void __split_huge_zero_page_pmd(struct vm_area_struct *vma,
- 	old_pmd = pmdp_huge_clear_flush(vma, haddr, pmd);
- 
- 	ptdesc = pgtable_trans_huge_withdraw(mm, pmd);
--	pmd_populate(mm, &_pmd, ptdesc_page(ptdesc));
-+	pmd_populate(mm, &_pmd, ptdesc);
- 
- 	pte = pte_offset_map(&_pmd, haddr);
- 	VM_BUG_ON(!pte);
-@@ -2382,7 +2382,7 @@ static void __split_huge_zero_page_pmd(struct vm_area_struct *vma,
- 	}
- 	pte_unmap(pte - 1);
- 	smp_wmb(); /* make pte visible before pmd */
--	pmd_populate(mm, pmd, ptdesc_page(ptdesc));
-+	pmd_populate(mm, pmd, ptdesc);
- }
- 
- static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
-@@ -2537,7 +2537,7 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 	 * This's critical for some architectures (Power).
- 	 */
- 	ptdesc = pgtable_trans_huge_withdraw(mm, pmd);
--	pmd_populate(mm, &_pmd, ptdesc_page(ptdesc));
-+	pmd_populate(mm, &_pmd, ptdesc);
- 
- 	pte = pte_offset_map(&_pmd, haddr);
- 	VM_BUG_ON(!pte);
-@@ -2602,7 +2602,7 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 		put_page(page);
- 
- 	smp_wmb(); /* make pte visible before pmd */
--	pmd_populate(mm, pmd, ptdesc_page(ptdesc));
-+	pmd_populate(mm, pmd, ptdesc);
- }
- 
- void split_huge_pmd_locked(struct vm_area_struct *vma, unsigned long address,
-diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-index 48a54269472e..5b466a1c2136 100644
---- a/mm/khugepaged.c
-+++ b/mm/khugepaged.c
-@@ -769,7 +769,7 @@ static void __collapse_huge_page_copy_failed(pte_t *pte,
- 	 * acquiring anon_vma_lock_write is unnecessary.
- 	 */
- 	pmd_ptl = pmd_lock(vma->vm_mm, pmd);
--	pmd_populate(vma->vm_mm, pmd, pmd_pgtable(orig_pmd));
-+	pmd_populate(vma->vm_mm, pmd, (struct ptdesc *)pmd_pgtable(orig_pmd));
- 	spin_unlock(pmd_ptl);
- 	/*
- 	 * Release both raw and compound pages isolated
-@@ -1198,7 +1198,7 @@ static int collapse_huge_page(struct mm_struct *mm, unsigned long address,
- 		 * hugepmds and never for establishing regular pmds that
- 		 * points to regular pagetables. Use pmd_populate for that
- 		 */
--		pmd_populate(mm, pmd, pmd_pgtable(_pmd));
-+		pmd_populate(mm, pmd, (struct ptdesc *)pmd_pgtable(_pmd));
- 		spin_unlock(pmd_ptl);
- 		anon_vma_unlock_write(vma->anon_vma);
- 		goto out_up_write;
-diff --git a/mm/memory.c b/mm/memory.c
-index 956cfe5f644d..cbed8824059f 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -438,7 +438,7 @@ void pmd_install(struct mm_struct *mm, pmd_t *pmd, pgtable_t *pte)
- 		 * smp_rmb() barriers in page table walking code.
- 		 */
- 		smp_wmb(); /* Could be smp_wmb__xxx(before|after)_spin_lock */
--		pmd_populate(mm, pmd, *pte);
-+		pmd_populate(mm, pmd, (struct ptdesc *)(*pte));
- 		*pte = NULL;
- 	}
- 	spin_unlock(ptl);
-diff --git a/mm/mremap.c b/mm/mremap.c
-index e7ae140fc640..f32d35accd97 100644
---- a/mm/mremap.c
-+++ b/mm/mremap.c
-@@ -283,7 +283,7 @@ static bool move_normal_pmd(struct vm_area_struct *vma, unsigned long old_addr,
- 
- 	VM_BUG_ON(!pmd_none(*new_pmd));
- 
--	pmd_populate(mm, new_pmd, pmd_pgtable(pmd));
-+	pmd_populate(mm, new_pmd, (struct ptdesc *)pmd_pgtable(pmd));
- 	flush_tlb_range(vma, old_addr, old_addr + PMD_SIZE);
- 	if (new_ptl != old_ptl)
- 		spin_unlock(new_ptl);
--- 
-2.43.0
+Thanks.
 
+
+>
+> Signed-off-by: David Wei <dw@davidwei.uk>
+> Signed-off-by: Mina Almasry <almasrymina@google.com>
+> Reviewed-by: Pavel Begunkov <asml.silence@gmail.com>
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+>
+> ---
+>
+> v17:
+> - Use ASSERT_RTNL() (Jakub).
+>
+> v13:
+> - Add reviewed-by from Pavel (thanks!)
+> - Fixed comment (Pavel)
+>
+> v11:
+> - Fix not checking dev->queue_mgmt_ops (Pavel).
+> - Fix ndo_queue_mem_free call that passed the wrong pointer (David).
+>
+> v9: https://lore.kernel.org/all/20240502045410.3524155-4-dw@davidwei.uk/
+> (submitted by David).
+> - fixed SPDX license identifier (Simon).
+> - Rebased on top of merged queue API definition, and changed
+>   implementation to match that.
+> - Replace rtnl_lock() with rtnl_is_locked() to make it useable from my
+>   netlink code where rtnl is already locked.
+>
+> ---
+>  include/net/netdev_rx_queue.h |  3 ++
+>  net/core/Makefile             |  1 +
+>  net/core/netdev_rx_queue.c    | 74 +++++++++++++++++++++++++++++++++++
+>  3 files changed, 78 insertions(+)
+>  create mode 100644 net/core/netdev_rx_queue.c
+>
+> diff --git a/include/net/netdev_rx_queue.h b/include/net/netdev_rx_queue.h
+> index aa1716fb0e53c..e78ca52d67fbf 100644
+> --- a/include/net/netdev_rx_queue.h
+> +++ b/include/net/netdev_rx_queue.h
+> @@ -54,4 +54,7 @@ get_netdev_rx_queue_index(struct netdev_rx_queue *queue)
+>  	return index;
+>  }
+>  #endif
+> +
+> +int netdev_rx_queue_restart(struct net_device *dev, unsigned int rxq);
+> +
+>  #endif
+> diff --git a/net/core/Makefile b/net/core/Makefile
+> index 62be9aef25285..f82232b358a2c 100644
+> --- a/net/core/Makefile
+> +++ b/net/core/Makefile
+> @@ -19,6 +19,7 @@ obj-$(CONFIG_NETDEV_ADDR_LIST_TEST) += dev_addr_lists_test.o
+>
+>  obj-y += net-sysfs.o
+>  obj-y += hotdata.o
+> +obj-y += netdev_rx_queue.o
+>  obj-$(CONFIG_PAGE_POOL) += page_pool.o page_pool_user.o
+>  obj-$(CONFIG_PROC_FS) += net-procfs.o
+>  obj-$(CONFIG_NET_PKTGEN) += pktgen.o
+> diff --git a/net/core/netdev_rx_queue.c b/net/core/netdev_rx_queue.c
+> new file mode 100644
+> index 0000000000000..da11720a59830
+> --- /dev/null
+> +++ b/net/core/netdev_rx_queue.c
+> @@ -0,0 +1,74 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +
+> +#include <linux/netdevice.h>
+> +#include <net/netdev_queues.h>
+> +#include <net/netdev_rx_queue.h>
+> +
+> +int netdev_rx_queue_restart(struct net_device *dev, unsigned int rxq_idx)
+> +{
+> +	void *new_mem, *old_mem;
+> +	int err;
+> +
+> +	if (!dev->queue_mgmt_ops || !dev->queue_mgmt_ops->ndo_queue_stop ||
+> +	    !dev->queue_mgmt_ops->ndo_queue_mem_free ||
+> +	    !dev->queue_mgmt_ops->ndo_queue_mem_alloc ||
+> +	    !dev->queue_mgmt_ops->ndo_queue_start)
+> +		return -EOPNOTSUPP;
+> +
+> +	ASSERT_RTNL();
+> +
+> +	new_mem = kvzalloc(dev->queue_mgmt_ops->ndo_queue_mem_size, GFP_KERNEL);
+> +	if (!new_mem)
+> +		return -ENOMEM;
+> +
+> +	old_mem = kvzalloc(dev->queue_mgmt_ops->ndo_queue_mem_size, GFP_KERNEL);
+> +	if (!old_mem) {
+> +		err = -ENOMEM;
+> +		goto err_free_new_mem;
+> +	}
+> +
+> +	err = dev->queue_mgmt_ops->ndo_queue_mem_alloc(dev, new_mem, rxq_idx);
+> +	if (err)
+> +		goto err_free_old_mem;
+> +
+> +	err = dev->queue_mgmt_ops->ndo_queue_stop(dev, old_mem, rxq_idx);
+> +	if (err)
+> +		goto err_free_new_queue_mem;
+> +
+> +	err = dev->queue_mgmt_ops->ndo_queue_start(dev, new_mem, rxq_idx);
+> +	if (err)
+> +		goto err_start_queue;
+> +
+> +	dev->queue_mgmt_ops->ndo_queue_mem_free(dev, old_mem);
+> +
+> +	kvfree(old_mem);
+> +	kvfree(new_mem);
+> +
+> +	return 0;
+> +
+> +err_start_queue:
+> +	/* Restarting the queue with old_mem should be successful as we haven't
+> +	 * changed any of the queue configuration, and there is not much we can
+> +	 * do to recover from a failure here.
+> +	 *
+> +	 * WARN if we fail to recover the old rx queue, and at least free
+> +	 * old_mem so we don't also leak that.
+> +	 */
+> +	if (dev->queue_mgmt_ops->ndo_queue_start(dev, old_mem, rxq_idx)) {
+> +		WARN(1,
+> +		     "Failed to restart old queue in error path. RX queue %d may be unhealthy.",
+> +		     rxq_idx);
+> +		dev->queue_mgmt_ops->ndo_queue_mem_free(dev, old_mem);
+> +	}
+> +
+> +err_free_new_queue_mem:
+> +	dev->queue_mgmt_ops->ndo_queue_mem_free(dev, new_mem);
+> +
+> +err_free_old_mem:
+> +	kvfree(old_mem);
+> +
+> +err_free_new_mem:
+> +	kvfree(new_mem);
+> +
+> +	return err;
+> +}
+> --
+> 2.46.0.rc1.232.g9752f9e123-goog
+>
+>
