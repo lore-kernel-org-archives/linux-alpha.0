@@ -1,124 +1,107 @@
-Received: from mout.web.de (mout.web.de [217.72.192.78])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A3A8156C4B;
-	Tue, 30 Jul 2024 08:39:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.72.192.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2948319FA91;
+	Tue, 30 Jul 2024 15:27:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722328770; cv=none; b=RzAZJaqEENxI4qkLNIxlWPllEwuxudL8Kkmu9bTgzDr0awsWB6ndx3eSsV5LAor78AxQVGfVPkvjkVpxZvaC8aYFfl1yyIuuTztLX65ip3/1xv+GW8NdlAF8pXAH2IXNI/zUCKk/c3eDPOU4XSVYQFbnHffRgqJV5MFkypN47ew=
+	t=1722353274; cv=none; b=cftU2cb/4whOUCLE08OWFNLjsAZeNBOaFsf/ohZ4rWun/vH/2nUm4UStp9U5UHBQ5p81+90El/miO/lO4bO68gZ2bfuGTLuAine2SfIOQeop9E7mOzsenEP2bUTUoRjBLSF2Fm5XanCNO592VEZuQyR5QIDcGCLuJId6ezKPcQU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722328770; c=relaxed/simple;
-	bh=07fx0OcCY32v0SirWQHDNSZfPG7HMF4hAqbJnMhyg3s=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
-	 In-Reply-To:Content-Type; b=doaUhOprRAe6U8YQwCTdBJQwJbWw9dLJU7RBmP68ZdyLXzzOzPNT9M1raD3mNIuv+cF7+d/BcMrV+1wq5T8hKILBNJ6KknE68eHe3LlFgU2Sxsf3blqqOB59WLoUA6hlwdVhuzZeHa1kXBePQxAvtH6MCw3VAMexAe3hKYpzT9k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=iBhmIlEu; arc=none smtp.client-ip=217.72.192.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1722353274; c=relaxed/simple;
+	bh=hLn0LnSAJQwjQksBgCWRjncLHVbUTiyPKYWC9UAmUeY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=RUgARPKSYmr5x+bZmis3tSAyxfUuVFdGY/nGRgRwqJ+RMkYHDaHSwK+uyu7X0vfAv/bOah2QDXbbCHH2nOsWnyBJWWDSPY8c3c+L5lWRyT9ykGEVY7xYbTTeQEWDDt0E7Ktv/j4+mltdupZhUKKmnTK1Ye2fVa0xP1EIZjF5ec4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iAv1TMU9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="iBhmIlEu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1722328685; x=1722933485; i=markus.elfring@web.de;
-	bh=07fx0OcCY32v0SirWQHDNSZfPG7HMF4hAqbJnMhyg3s=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
-	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 cc:content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=iBhmIlEu1DTEhbIId4CW/iiPJylb+jiOQ9na/RS5h69bGT/imWvKAbYeaJ6pivjz
-	 JMnQXpy3cOlHf6p3bxFw2uqBaGPOuz17LrdoEApiGvMmHL9F2kIIYCb9ueGy62+tI
-	 Z412cOhJGP5xxEr98kCfPNdYFjVPufN30A6OcLhTRbHeOoqDpZ30cxm7YBR3nSSWl
-	 8w95ukxErNzkX2hWTvH3N3Q/O+9nRoQJ+CINjbJQKXo8kr7CjpakPcjmpI9mTGMkm
-	 t7htz1r1rdr1c1sSbkVKfGHWXeJSssKDwuuEu3A8VxxvqEIW9YncbE1WpCLHOz/i4
-	 zpVozzeWA1xcB3gjBw==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.90.95]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1MKMA1-1sq6tO21QF-00MgS1; Tue, 30
- Jul 2024 10:38:05 +0200
-Message-ID: <5d3c74da-7d44-4b88-8961-60f21f84f0ac@web.de>
-Date: Tue, 30 Jul 2024 10:37:56 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iAv1TMU9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D9B6C32782;
+	Tue, 30 Jul 2024 15:27:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722353273;
+	bh=hLn0LnSAJQwjQksBgCWRjncLHVbUTiyPKYWC9UAmUeY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=iAv1TMU9TwrHPcxD7MebC2v47nKVo1PUeQw3QcVx7m70mFqC+wusIh3LgZJhs3GEH
+	 3VaEsTtRL39STYIoOoMYlYoGRt9itvn3Sa1C37CzyGNvTY1d/i2I+tui3wnbNIuuIg
+	 +YbE26SC4syjNH7InP00/ULk/qS+XDTOAt/MK4sVRI3HnYmvSM3hwYawcGDn7ocS3T
+	 ApVrrquYECTITnQCw5UW9T4mRpiGGKJ5aZPkQBJlpmoQKPS5eKkTEwV7xyeta31RoG
+	 2Kb1KDy8AbyaqGloQ3uZ0/3buS8vGv+F8/XxiJ+nHRr/08otXTIY8wnt17KP4aPg9K
+	 50OSliQf1v2tg==
+From: Arnd Bergmann <arnd@kernel.org>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+	Matt Turner <mattst88@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Baoquan He <bhe@redhat.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Breno Leitao <leitao@debian.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] alpha: fix ioread64be()/iowrite64be() helpers
+Date: Tue, 30 Jul 2024 17:27:25 +0200
+Message-Id: <20240730152744.2813600-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Daniel Vetter <daniel.vetter@ffwll.ch>,
- Kaiyuan Zhang <kaiyuanz@google.com>, Mina Almasry <almasrymina@google.com>,
- Pavel Begunkov <asml.silence@gmail.com>,
- Willem de Bruijn <willemb@google.com>, netdev@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- linux-arch@vger.kernel.org, linux-kselftest@vger.kernel.org,
- bpf@vger.kernel.org, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org
-Cc: LKML <linux-kernel@vger.kernel.org>, Andreas Larsson
- <andreas@gaisler.com>, Arnd Bergmann <arnd@arndb.de>,
- Bagas Sanjaya <bagasdotme@gmail.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Christoph Hellwig <hch@infradead.org>, David Ahern <dsahern@kernel.org>,
- "David S. Miller" <davem@davemloft.net>, David Wei <dw@davidwei.uk>,
- Donald Hunter <donald.hunter@gmail.com>, Eric Dumazet <edumazet@google.com>,
- Harshitha Ramamurthy <hramamurthy@google.com>, Helge Deller <deller@gmx.de>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- Ilias Apalodimas <ilias.apalodimas@linaro.org>,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jakub Kicinski
- <kuba@kernel.org>,
- "James E. J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Jeroen de Borst <jeroendb@google.com>,
- Jesper Dangaard Brouer <hawk@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Masami Hiramatsu <mhiramat@kernel.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Matt Turner <mattst88@gmail.com>, Nikolay Aleksandrov <razor@blackwall.org>,
- Paolo Abeni <pabeni@redhat.com>,
- Praveen Kaligineedi <pkaligineedi@google.com>,
- Richard Henderson <richard.henderson@linaro.org>,
- Shailend Chand <shailend@google.com>, Shakeel Butt <shakeel.butt@linux.dev>,
- Shuah Khan <shuah@kernel.org>,
- Steffen Klassert <steffen.klassert@secunet.com>,
- Steven Rostedt <rostedt@goodmis.org>, Sumit Semwal
- <sumit.semwal@linaro.org>, Taehee Yoo <ap420073@gmail.com>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
- Yunsheng Lin <linyunsheng@huawei.com>
-References: <20240730022623.98909-4-almasrymina@google.com>
-Subject: Re: [PATCH net-next v17 03/14] netdev: support binding dma-buf to
- netdevice
-Content-Language: en-GB
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <20240730022623.98909-4-almasrymina@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:3zASUQdt0WnRJJo2JsH8HgMCSLLJrSOm6wxlRg1HbHDrGJYPFAR
- 4UrI46t5fFnsIQP5D20a4Q4/ar+Qe149EAafa7XhskHQN56xyU9dWXWOdOe9cqX+BeVMF3I
- 8WFhpDkIxnYHJeZdnRHZDAN3teiQz55j6x07IL1LXqdRPVKwtTq1AIEwtRutuGvYx2Pn/lI
- 6wer7tct5AinmIXcBPXRw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:pHmLyOskFkY=;I7pCl1VILl5yztEF5uEKXmycDP5
- HNg30ml4ujtQp8hDTQ3k68nNJHnulVh43c1GvXrokXoDUhvvfoxNn12GmkZ+HgPxu8P5cN86n
- HjOpfP8/MmUIpzxPlAqq3wxO4BHOXC7nCoou7XGF6loLekm4A+xubNt9riTQyV1qFBcyB94i1
- 9nkx3l/0I3vtPPF6IXAuFeSgWGNbnMAc5yBzRdvhRx4NgMckDkjJvObOV+sApUE4abxW5IdYc
- buKUkVmNMowUtx9d8ohNyHP5l0MvM+BrMJ+U6i6NSpHCcHyN+Db4gk/km/Nfpyxzicq+cw9kM
- dbUuFQy20IeEzlt0JBmJTvh3npkouDOC8d+ppHNvGFDc2VX95QZiP8oAV1KqYVeet622rengR
- 3AtZYxLW2HL9cJRJdGCFiSSoh2Ma1PdedqtRTNQE8x65ul4oZ5zC5oC7GI0KrfC2lDBmt7U9H
- d3quaXmP5M08fs3HGNmDo2dJT4Mof8Rvu8b/1zeyNdFkx2ISKEqxruq9cgOvPVDOzWnM6q1hQ
- j/Oo//f3eoHLmD9gSZJlyPqNPXnEofdZIoAkzr1NHrrLlxHQQCxQg4K2Ctyi0eEOGrXaAGGMW
- U86dnhPzR1dN3MoSlZwMFv+d+ur6MNAU2LFwQiVgsiYO2r4PdA6g2/epD6XWGMZzsV3xD1bW9
- ezFK4C0vxtvaDH0C0PO+CEdfJXWpA6ElBZbDAsD0DefszWZDdZo0DdR8nfhg96M442XbukoWM
- HqCWkB1S51RK5OLQqCoLFxLM1/As4Y1LHCojxd9Oj8S237g0l+yUpVWT2ul1az/vHGJE2iOpx
- VrU7WYLZwjqQf3tDPMnChwHw==
+Content-Transfer-Encoding: 8bit
 
-=E2=80=A6
-> +++ b/include/net/devmem.h
-> @@ -0,0 +1,115 @@
-=E2=80=A6
-> +#ifndef _NET_DEVMEM_H
-> +#define _NET_DEVMEM_H
-=E2=80=A6
+From: Arnd Bergmann <arnd@arndb.de>
 
-I suggest to omit leading underscores from such identifiers.
-https://wiki.sei.cmu.edu/confluence/display/c/DCL37-C.+Do+not+declare+or+d=
-efine+a+reserved+identifier
+Compile-testing the crypto/caam driver on alpha showed a pre-existing
+problem on alpha with iowrite64be() missing:
 
-Regards,
-Markus
+ERROR: modpost: "iowrite64be" [drivers/crypto/caam/caam_jr.ko] undefined!
+
+The prototypes were added a while ago when we started using asm-generic/io.h,
+but the implementation was still missing. At some point the ioread64/iowrite64
+helpers were added, but the big-endian versions are still missing, and
+the generic version (using readq/writeq) is would not work here.
+
+Change it to wrap ioread64()/iowrite64() instead.
+
+Fixes: beba3771d9e0 ("crypto: caam: Make CRYPTO_DEV_FSL_CAAM dependent of COMPILE_TEST")
+Fixes: e19d4ebc536d ("alpha: add full ioread64/iowrite64 implementation")
+Fixes: 7e772dad9913 ("alpha: Use generic <asm-generic/io.h>")
+Closes: https://lore.kernel.org/all/CAHk-=wgEyzSxTs467NDOVfBSzWvUS6ztcwhiy=M3xog==KBmTw@mail.gmail.com/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+I've queued this in the asm-generic tree now, will send a pull request
+in the next few days to fix alpha allmodconfig.
+
+ arch/alpha/include/asm/io.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+index 2bb8cbeedf91..52212e47e917 100644
+--- a/arch/alpha/include/asm/io.h
++++ b/arch/alpha/include/asm/io.h
+@@ -534,8 +534,11 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
+ 
+ #define ioread16be(p) swab16(ioread16(p))
+ #define ioread32be(p) swab32(ioread32(p))
++#define ioread64be(p) swab64(ioread64(p))
+ #define iowrite16be(v,p) iowrite16(swab16(v), (p))
+ #define iowrite32be(v,p) iowrite32(swab32(v), (p))
++#define iowrite64be(v,p) iowrite64(swab64(v), (p))
++
+ 
+ #define inb_p		inb
+ #define inw_p		inw
+@@ -634,8 +637,6 @@ extern void outsl (unsigned long port, const void *src, unsigned long count);
+  */
+ #define ioread64 ioread64
+ #define iowrite64 iowrite64
+-#define ioread64be ioread64be
+-#define iowrite64be iowrite64be
+ #define ioread8_rep ioread8_rep
+ #define ioread16_rep ioread16_rep
+ #define ioread32_rep ioread32_rep
+-- 
+2.39.2
+
