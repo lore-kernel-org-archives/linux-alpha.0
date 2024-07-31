@@ -1,130 +1,106 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0B2C1CF83;
-	Wed, 31 Jul 2024 15:47:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED76F18044
+	for <linux-alpha@vger.kernel.org>; Wed, 31 Jul 2024 19:51:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722440866; cv=none; b=LbVVlNPUuAqL+sJJkYz1d2FylMWu2L9ldS288unRNiY2dOD5BF7NZNUVBQs8H8BVfPn2CpY1EdY+SJvz/ZakVSzS3bL7zbewArZp5gGxhlg6IPhks3JCuF2ljmoQjNGAglAWllHIEvf5ckelFFmao9Dl4HcxP5YX6wtATJXKSpw=
+	t=1722455495; cv=none; b=mlR1EO1gvxt5IGHItdmxhmFEN/PnOVsWww9TZRxdoX00rXKe4Zi7fwvgKN4RpAfjAI7YL20F4iv25BDBbOD2EGJO0omYhwzrr/DcePIgc0fM12DAYG7vXgz4Z++ESfmohW9jCmxUjOODOvFVuuGUFVFDSgKMH9njIWNLrEUSXF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722440866; c=relaxed/simple;
-	bh=4u97t/RaLcuFx19cl6/FF+3nhsfsuomYYTTtLurA7Zk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JHpg+2OiULnIFDYoWPXiJMM3R0fUTmFxYHxlahZ1kWHqw9LPvpblKi9Jl1GZWiK2Zvd89V1FxH7imEqMInInC/USIYkCnQlTjHZDYwjp4w+06d1iidDK5RBadfrOaroz2Vw0OaeeHFPbpozGDw9h5UB5FaHdI/+fplsTNXIqXIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g7a6ngC2; arc=none smtp.client-ip=209.85.214.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1722455495; c=relaxed/simple;
+	bh=VMZGRIt9Bu914/UR0/IET/FSQPvWBZGwluvLZFH+orM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZiqhRBlQL0slHziVQiMKkXYeTgabSdggEDLKVkSCgJh9/ybt4DvUVJkxrxPsygbOeCySvj2n9bKj01bc005V3k1UyaUaeXhFaxxKIbl4K91rNRVaWjQOu8mxdmFi8pqGiJ45r3jfsDyd8BrpTEX+e+mnzgi7JeogHvBPzH8P21o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=f4M3CFfC; arc=none smtp.client-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g7a6ngC2"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1fee6435a34so39628325ad.0;
-        Wed, 31 Jul 2024 08:47:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="f4M3CFfC"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-52efd530a4eso9638195e87.0
+        for <linux-alpha@vger.kernel.org>; Wed, 31 Jul 2024 12:51:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1722440864; x=1723045664; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7oFTJ+3+Ld1Sad4Yjzou2SbBkqLkLd+A5kfPRLxBvso=;
-        b=g7a6ngC2+O2lyfc6YgrtjGPw2UGIqCoGh/xGpbEfXzYl4aBdnVMcTTGQXJnDuIhIRC
-         qYonMC7E0r/kgF+qjxKZ1Pcyf2uBXfuy86GpfzT1DfyWK1XdFVG+rNtqVAKKWHnlzW30
-         D2NvkeAJh/ouYk5tIHPGX1xlVXdQNcDwQCvRnV+s8p83M8NlRgcboyuZOlj6hfrwIe5Z
-         u/7es38j8wS2rgEHyauow3HpXNyMii87q1FvSwsGjcjRVfh8FrcNsMb6GpWDQ6iOI6CT
-         LHl1iNFDxO9NNS5tn+1kHg52pSKPQOpNys53buy2ZLV0Mhvtwd9pSzBP4gEz0bdWgRhV
-         wreg==
+        d=linaro.org; s=google; t=1722455492; x=1723060292; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VMZGRIt9Bu914/UR0/IET/FSQPvWBZGwluvLZFH+orM=;
+        b=f4M3CFfCqExnc5fFAHSyALV7zureYWB5qfPFjRQKv7kcTCkgMgV1XwgFWwdh0ZxVoK
+         KIEZS2NeKA+/fy/TNEr2iSvbScHho6zUx42H0/vUTKXM7jmFvtIh3AfZD+RjrBaadIFQ
+         4Mm2NGjS2rl3Hkda+P0Z7xM/CuOMKe07ICEwA/4bWZkvHtROHKr2f51WNj9b3fqaGzKZ
+         xnXBs+fwSDHjE2XcDYCTZ9HKkJkW6Qci/OESrCb7U1FngZj1VxyNuAJcqw9aXjlY65OI
+         x6lCquuyN5hBX489ZGQF6qlO4QecDOklnGqBNvQxLdzETFYWrEdzgqUwxWs4sPKZzUfC
+         ct4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722440864; x=1723045664;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1722455492; x=1723060292;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7oFTJ+3+Ld1Sad4Yjzou2SbBkqLkLd+A5kfPRLxBvso=;
-        b=HAkk+JWHa++kKkwZUARPx1DrI04BMSpuKqyp+8aeZALTU4v6BtqPXsdXVQxVidoF92
-         un2CHfDj8jyR0fKgPWo3FzJsJYYQZiU/3m2tSH8yoTUMjL3llbLggk6mLfJ21tXN++/D
-         hb19JMx3QJ+E/XO6LFiV0rMV/hMzduxnoS49Ca5QI2j+bI7rxncrI2lPe1Kj99TSQ86d
-         GXjxLOv7cQfd4wOcnslyI8dJSGh5MK5boSgdJTaykQqsxK20HN9Yvc9kDSg1rrKBjT6k
-         0MG1AUe8t8srRm7qZPcDyepSnBsqS/4U/YfZK7vzpIc+hAWcfdpHqoiFrOALM/GaIV5B
-         kjtg==
-X-Forwarded-Encrypted: i=1; AJvYcCX25rOt7DKPlP4VelhmuNRNJq1P5enoMflJS4xN4KqCkLNRmLJqI/4wWbMV/QtuZHGfG+JS2iUjvuvDpBaa+PMOAx8M1U5UMEiadaNLqIXJoLaMyz0ePWCsayk9VzSV5hXbPTBc9jiRtHM=
-X-Gm-Message-State: AOJu0YzFBdpaAIWzSUN5Cw1HIBSd9Cx/R8dtrsVj3c6A7f0tT5teZfyM
-	vW0uRqgFMDEAz7ZdEOvt+qjP9I6S2WCI3mJyh4rGFOdwdyo9df2t
-X-Google-Smtp-Source: AGHT+IF/u4j2lKXiTEY0Vxrj+c3pKIEnk6/2LcyHMMUQH2XF79eFPMqC4ykikjay8jVijHF5XpvvTw==
-X-Received: by 2002:a17:902:d4c9:b0:1fb:29e8:5400 with SMTP id d9443c01a7336-1ff0493127fmr137562745ad.56.1722440863799;
-        Wed, 31 Jul 2024 08:47:43 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fed7c7fb04sm122097525ad.43.2024.07.31.08.47.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Jul 2024 08:47:43 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Wed, 31 Jul 2024 08:47:42 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Baoquan He <bhe@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-	Breno Leitao <leitao@debian.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] alpha: fix ioread64be()/iowrite64be() helpers
-Message-ID: <6bd73068-4474-4129-857b-39150a31f224@roeck-us.net>
-References: <20240730152744.2813600-1-arnd@kernel.org>
+        bh=VMZGRIt9Bu914/UR0/IET/FSQPvWBZGwluvLZFH+orM=;
+        b=saILW20HVdovURd5aMglitltdgjJVXuEcHinVLILmQPuWqU+BQetZEV1ihHW3OM07a
+         D+wkA/f4RHmLo0CrAWEi7HoXAcGzvUxb2DRrxcTjQyZj6jpFHISch300ld0+vOuLV6U2
+         zqg5B7ENPtjB0l4ZY73nWrMcnPXm+pJi3QOH4ZNr8ku7ca77/X3Y2/8M2Msu2HMJcwuN
+         rcGfMeixUgQ5TOD9GyPScQMMTb0p7FumWmitzIVdAhfZf+FnkkYQLvzMvcGwG8US8Tza
+         jDyRNBOanmhm/fE9DMduWZkDsmEEN6it3ptzyX4YitzqWYTrnOWXA/E36DhSaCxMznRg
+         mTdg==
+X-Forwarded-Encrypted: i=1; AJvYcCU/PpdKuP20VuDDAl8c9nwbuxrH6uXWprX3noCcXelvCh7kCrZDHelrx1OG2SB3vGpyJ6KyEE9IXflK8DxHk5tzb8dL9PnUYus5hoA=
+X-Gm-Message-State: AOJu0Yz38Te4MNSxOBO2gfjWFUG8oyKJA8WGskyBeSgU5ny3hgY31Zxm
+	LaEPYaGduGCIJZW7egFhy2yRr6WSlavdtfrXc5lpnoan9njsQs3TqwRlBN2el8wKahRMwH1btYA
+	i+ZHNnU6GxZ/eCEpPPddxlfs2pnMefau6s5mWkg==
+X-Google-Smtp-Source: AGHT+IFo7dWMrZVk0qmzwRRLNQJvLLW7Oz1e417fjF9Kw312OQHEVuGlf44xqebNrqhX6w6HMPuGfO2OVeaJq0nSOW0=
+X-Received: by 2002:a05:6512:1c9:b0:52c:d905:9645 with SMTP id
+ 2adb3069b0e04-530b61b1939mr53045e87.13.1722455491760; Wed, 31 Jul 2024
+ 12:51:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20240730152744.2813600-1-arnd@kernel.org>
 In-Reply-To: <20240730152744.2813600-1-arnd@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Wed, 31 Jul 2024 21:51:19 +0200
+Message-ID: <CACRpkdYaK6_2AY0D07wTc+BFKazaTxhB6qmuJeKir89FM1HL=w@mail.gmail.com>
+Subject: Re: [PATCH] alpha: fix ioread64be()/iowrite64be() helpers
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Richard Henderson <richard.henderson@linaro.org>, 
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
+	Arnd Bergmann <arnd@arndb.de>, "Paul E. McKenney" <paulmck@kernel.org>, 
+	Kefeng Wang <wangkefeng.wang@huawei.com>, Geert Uytterhoeven <geert@linux-m68k.org>, 
+	Baoquan He <bhe@redhat.com>, Jakub Kicinski <kuba@kernel.org>, Breno Leitao <leitao@debian.org>, 
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 30, 2024 at 05:27:25PM +0200, Arnd Bergmann wrote:
+On Tue, Jul 30, 2024 at 5:27=E2=80=AFPM Arnd Bergmann <arnd@kernel.org> wro=
+te:
+
 > From: Arnd Bergmann <arnd@arndb.de>
-> 
+>
 > Compile-testing the crypto/caam driver on alpha showed a pre-existing
 > problem on alpha with iowrite64be() missing:
-> 
+>
 > ERROR: modpost: "iowrite64be" [drivers/crypto/caam/caam_jr.ko] undefined!
-> 
-> The prototypes were added a while ago when we started using asm-generic/io.h,
-> but the implementation was still missing. At some point the ioread64/iowrite64
+>
+> The prototypes were added a while ago when we started using asm-generic/i=
+o.h,
+> but the implementation was still missing. At some point the ioread64/iowr=
+ite64
 > helpers were added, but the big-endian versions are still missing, and
 > the generic version (using readq/writeq) is would not work here.
-> 
+>
 > Change it to wrap ioread64()/iowrite64() instead.
-> 
-> Fixes: beba3771d9e0 ("crypto: caam: Make CRYPTO_DEV_FSL_CAAM dependent of COMPILE_TEST")
+>
+> Fixes: beba3771d9e0 ("crypto: caam: Make CRYPTO_DEV_FSL_CAAM dependent of=
+ COMPILE_TEST")
 > Fixes: e19d4ebc536d ("alpha: add full ioread64/iowrite64 implementation")
 > Fixes: 7e772dad9913 ("alpha: Use generic <asm-generic/io.h>")
-> Closes: https://lore.kernel.org/all/CAHk-=wgEyzSxTs467NDOVfBSzWvUS6ztcwhiy=M3xog==KBmTw@mail.gmail.com/
+> Closes: https://lore.kernel.org/all/CAHk-=3DwgEyzSxTs467NDOVfBSzWvUS6ztcw=
+hiy=3DM3xog=3D=3DKBmTw@mail.gmail.com/
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+So *that* was the problem, I was scratching my head over this one.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-> ---
-> I've queued this in the asm-generic tree now, will send a pull request
-> in the next few days to fix alpha allmodconfig.
-> 
->  arch/alpha/include/asm/io.h | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-> index 2bb8cbeedf91..52212e47e917 100644
-> --- a/arch/alpha/include/asm/io.h
-> +++ b/arch/alpha/include/asm/io.h
-> @@ -534,8 +534,11 @@ extern inline void writeq(u64 b, volatile void __iomem *addr)
->  
->  #define ioread16be(p) swab16(ioread16(p))
->  #define ioread32be(p) swab32(ioread32(p))
-> +#define ioread64be(p) swab64(ioread64(p))
->  #define iowrite16be(v,p) iowrite16(swab16(v), (p))
->  #define iowrite32be(v,p) iowrite32(swab32(v), (p))
-> +#define iowrite64be(v,p) iowrite64(swab64(v), (p))
-> +
->  
-
-FWIW: Unnecessary extra blank line
-
-Thanks,
-Guenter
+Yours,
+Linus Walleij
