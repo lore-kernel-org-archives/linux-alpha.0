@@ -1,159 +1,130 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from fout7-smtp.messagingengine.com (fout7-smtp.messagingengine.com [103.168.172.150])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DECE1A4888
-	for <linux-alpha@vger.kernel.org>; Thu,  1 Aug 2024 13:06:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B147F1A256A;
+	Thu,  1 Aug 2024 13:49:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.150
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722517563; cv=none; b=s040vQnqdTowlSrqiqb5vgiAHrw6xgU607+WTGd+vYPNbM4o4Pfpl1VlOttwLugMr7ztZe6N0HN6zdLuj4zduDfgi9h4e+Z8UsUbFOcAjfYHXfbZYDm7hVmvQp6lxhxeOz75OGe3Pa3nhbNm9NTUCd5D/jlH02QV1rl56p0g6BY=
+	t=1722520144; cv=none; b=YdCh+Ba8/vgSjQA5c/u3+flJCs1B3tvtozKIqDhHx9FFAbY0MsPsijDDlm2zmFAKTV0bMlZe5MX6nECAO1Q36LUWzxInNSkablB1ZAxNO1NqRwjjhCS83nu9BPXkLo60GjZLJ4mz4HsTeF0EP9UkZHugkIMqXLhma8rbaM/GNVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722517563; c=relaxed/simple;
-	bh=dMF81oEXFQQ/iabpVQPMzLroYQXe2b3ZlwqJv82n/wY=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=CgJPULOclocZfEht2N2IU1IQ1C4tCwsFRrflHwBxXu17tE64w1NfW/hXMHVtwg7DX1wm6BFY/i9gy91R4ehwhHm7ryzl/RYXsVCv0Rys/z0MqjNyxCWUgmAxBxNr5QYxp9BApDzQZXGsRP/k6P7//gxRF5/nJBruBwZqLPWUxPQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=YTm+ct6v; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1722520144; c=relaxed/simple;
+	bh=+C52LdFvAjE+mXsGHriIbj6tuuT/lQhCY+ifrbZmo0E=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=G+Nm7mClD207ya6HnlmuAb+IS9rRaYocAfn51aLqumb7ZiwMvaRs1dffswnZc3fEtxYmg1m/U4z6BNumDS5dk1RdTrRxSKtD0ZdSQL4dC4w35hX2yE94+47fkARjSHC/E7AzGYj03mg1puyWiC4AhrQ6CYdQY7FxaC4zuUa3a24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=qBz1BiFA; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=m3Pm6uON; arc=none smtp.client-ip=103.168.172.150
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="YTm+ct6v"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1722517560;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=iX/3tIvoxeSLnt+NdQSfgM25JA1znfQTVzpC9no38a8=;
-	b=YTm+ct6vqU5es54UFONv8OhIRaMpaWEyaUNOtAK4Ubft+OJbkWzPVTDrGPhj6aQNmMK1pI
-	SUuFz+ZAMwHjdlvLXJN39zFBJADK+xSJLgbMpsb1YVNhisvcJLudp0BASXh9OPKMWqQen7
-	noH5rh041LRIc64dNv3IUBUhlUoKiRQ=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-581-HiN5SZNPPnyAD1fX8K11zA-1; Thu, 01 Aug 2024 09:05:58 -0400
-X-MC-Unique: HiN5SZNPPnyAD1fX8K11zA-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-428e187aedfso4209435e9.1
-        for <linux-alpha@vger.kernel.org>; Thu, 01 Aug 2024 06:05:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722517557; x=1723122357;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:references:cc:to:from:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=iX/3tIvoxeSLnt+NdQSfgM25JA1znfQTVzpC9no38a8=;
-        b=r3rtv9xH1ysPTFEXFAUO1RFslvPfzgPajafnYSWoj0g80FpyPIxdIHEaxshN5BEff6
-         N6PGNPbNJYfxDAlS5aSQ+hQuUSo7zykyyvlOm5aM8Se/lBwigdqQkHi18CYdU+exDqhC
-         uahSWjxJ3Q4vW6N6pMCz0GWl/oTDJBqfB9KLjNLoY4NRtRUm3LolYgW4mCMBimcYbnpX
-         Th+aueaDmvn3zGKWjrWCxzK3DlXQpCmdh0ghqDV0G+8+8dWSdRtN9JiXsPazfnStdSWB
-         PNDDqhk7LbTC0J/gOJZZSBzE2QN7Sy2fD8LBob/UuqVNzlyobkKdTSj2Ddv1l8kdrNcP
-         ZGWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUFv/uGswca6tD9AIkdsHi8IV8NYRsL6K5NcCCi2U6+JnvconEcPaTx1s8UYA623bE4Dd0o5ChigD2uY81IYKwdZNe0vLuHz1LECKA=
-X-Gm-Message-State: AOJu0Yw6P6KZGspLvcgWBLu4GXHzT20xEuFxlgUGRo0nPqSYU+KyqIN/
-	Tj8CqWIzkq7O29qRRQZhBsAAocefwg9Cy4vouGpho0wcwjWIjlBFhigAiA0HZu+l6rL4sHe4yzX
-	ZvZp7/xTC2P7TT2W+klVQATXcTzL9eXciUV5PMaEJ0diTF/eCH39IjBTLkYSk
-X-Received: by 2002:a05:600c:46cd:b0:424:8743:86b4 with SMTP id 5b1f17b1804b1-428e4713f62mr14522525e9.6.1722517557371;
-        Thu, 01 Aug 2024 06:05:57 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFECvW28n36dZHShXm0cKkJbtFTgF6/BuzcdnrjZeQVIa1Jdj69JYR8jefmTxcdnchFqcS3Xw==
-X-Received: by 2002:a05:600c:46cd:b0:424:8743:86b4 with SMTP id 5b1f17b1804b1-428e4713f62mr14522025e9.6.1722517556809;
-        Thu, 01 Aug 2024 06:05:56 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c707:5c00:e650:bcd7:e2a0:54fe? (p200300cbc7075c00e650bcd7e2a054fe.dip0.t-ipconnect.de. [2003:cb:c707:5c00:e650:bcd7:e2a0:54fe])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4282baa9071sm57779005e9.13.2024.08.01.06.05.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Aug 2024 06:05:56 -0700 (PDT)
-Message-ID: <2a74db22-f2a4-4a14-8091-1e56962a6fa8@redhat.com>
-Date: Thu, 1 Aug 2024 15:05:53 +0200
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="qBz1BiFA";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="m3Pm6uON"
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+	by mailfout.nyi.internal (Postfix) with ESMTP id A5BC81384F3C;
+	Thu,  1 Aug 2024 09:49:00 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute4.internal (MEProxy); Thu, 01 Aug 2024 09:49:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1722520140;
+	 x=1722606540; bh=GJEzgwsKZt4bp3uy6m1hT5few7XxNP8mFrHkdVLGOhs=; b=
+	qBz1BiFAH24xnCBN8qJLdTaJO9PQAO2y79hNSNm4S5dABMsXi7Fit3PE+K7VJWZh
+	H0Brpz3VF0mjbPyhyvsTE9HZn1RIkObzuuLfbIOtVvFpWzCyPND6atXbO2/PJRAa
+	zigyzakOFYj4OZKrTV9kFqJT7BZBT3E3kyjlVxE5TCrrdxoGm/W7KXX1le4xHsaz
+	rbnzl/BiLRi9aKMLStD3ojV8Z4tc5ZiJpFkgbtvS9ElkIJ0kOLtFtaJ+lscQsPzZ
+	3kHbrYK4Iii+u9ArfCEDDqnyNuW9uuQJC+ux8LnPlJEPk53loZX9djJHPKEv6E04
+	Ji45cZeIjexBHHKkhcV3Eg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1722520140; x=
+	1722606540; bh=GJEzgwsKZt4bp3uy6m1hT5few7XxNP8mFrHkdVLGOhs=; b=m
+	3Pm6uONRn1padlZDoSowpf+1nXUPSNDmtVqikfaQjZONq5j8VAGiH4wIOOJkvtdU
+	JI85Y+aOI+UgwWGhTxY4TUD+mE5LCL003q5KWKd8StnAhf3bnCG016XBksEBSi2/
+	EVSulFupz3nd6f2Mwj8aVQwTmihwsMn033SpOhBzbvfu/cT79/yXpifAJhTgsyV7
+	DlyiZVer+yltUROZz2UI3YFEDGC1bPL/QnALh8wN0TE3kGk1MdgB7PupfP2Ey+Nr
+	uf3S04Kb5EY7EonoE2OEQUSBhLHze+S8MRcWubbP7NlSzG2UxCHY/+WhW8/Z9izO
+	RGueHut2Ha6E011WK/hKw==
+X-ME-Sender: <xms:S5KrZsufSRNGkRzfdo699hRN_2u-4UtL9Cno4jYrWZ5DEH07WECn_A>
+    <xme:S5KrZpeHA_3HUSQ_MFVkHTyK-rUX7p8Kd676woXY5VPsXlaHtQStXOCMTynaYHtgQ
+    LWxNcC-SH-1Ta3ShHY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrjeekgdeilecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefoggffhffvvefkjghfufgtgfesthejredtredttdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpeefhfehteffuddvgfeigefhjeetvdekteekjeefkeekleffjeetvedvgefhhfei
+    hfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghr
+    tghpthhtoheptd
+X-ME-Proxy: <xmx:S5KrZny95s54ZULH78Zp1ZsenH3tfyJomA1xSN_mvGemBLSLn9SmnA>
+    <xmx:S5KrZvOBr-G5xshLk9lDbBMPN9s_iC7YVLauz-mD40X4scd4UaFBNg>
+    <xmx:S5KrZs9qwoijaUI1wmqYZh2dPC7L5SuTrOIIVUwZ4h_nfc8AJJxiww>
+    <xmx:S5KrZnUQeGCwFDDYVDvr1PGL10zQJnQmS2MZMwwJ3hvMMYPl3jczvQ>
+    <xmx:TJKrZmfcOU6EJzYnkPYNqKJZPrqSIHUfORlmiuvDbUZaUP7K59AMEm0V>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 0EB7FB6008D; Thu,  1 Aug 2024 09:48:59 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/1] mm: introduce MADV_DEMOTE/MADV_PROMOTE
-From: David Hildenbrand <david@redhat.com>
-To: Zhangrenze <zhang.renze@h3c.com>, "linux-mm@kvack.org"
- <linux-mm@kvack.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "akpm@linux-foundation.org" <akpm@linux-foundation.org>
-Cc: "arnd@arndb.de" <arnd@arndb.de>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "chris@zankel.net" <chris@zankel.net>,
- "jcmvbkbc@gmail.com" <jcmvbkbc@gmail.com>,
- "James.Bottomley@HansenPartnership.com"
- <James.Bottomley@HansenPartnership.com>, "deller@gmx.de" <deller@gmx.de>,
- "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
- "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
- "rdunlap@infradead.org" <rdunlap@infradead.org>,
- "bhelgaas@google.com" <bhelgaas@google.com>,
- "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
- "richard.henderson@linaro.org" <richard.henderson@linaro.org>,
- "ink@jurassic.park.msu.ru" <ink@jurassic.park.msu.ru>,
- "mattst88@gmail.com" <mattst88@gmail.com>,
- "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
- Jiaoxupo <jiaoxupo@h3c.com>, Zhouhaofan <zhou.haofan@h3c.com>
-References: <3a5785661e1b4f3381046aa5e808854c@h3c.com>
- <bffe178c-bd97-4945-898e-97ba203f503e@redhat.com>
-Content-Language: en-US
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <bffe178c-bd97-4945-898e-97ba203f503e@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Date: Thu, 01 Aug 2024 15:48:37 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Guenter Roeck" <linux@roeck-us.net>, "Arnd Bergmann" <arnd@kernel.org>
+Cc: "Richard Henderson" <richard.henderson@linaro.org>,
+ "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
+ "Matt Turner" <mattst88@gmail.com>, "Paul E. McKenney" <paulmck@kernel.org>,
+ "Kefeng Wang" <wangkefeng.wang@huawei.com>,
+ "Geert Uytterhoeven" <geert@linux-m68k.org>, "Baoquan He" <bhe@redhat.com>,
+ "Jakub Kicinski" <kuba@kernel.org>, "Breno Leitao" <leitao@debian.org>,
+ "Linus Walleij" <linus.walleij@linaro.org>, linux-alpha@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-Id: <78f2483d-b05b-4738-8d3b-ea96a5b322bc@app.fastmail.com>
+In-Reply-To: <6bd73068-4474-4129-857b-39150a31f224@roeck-us.net>
+References: <20240730152744.2813600-1-arnd@kernel.org>
+ <6bd73068-4474-4129-857b-39150a31f224@roeck-us.net>
+Subject: Re: [PATCH] alpha: fix ioread64be()/iowrite64be() helpers
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
->> 4. MADV_DEMOTE and MADV_PROMOTE provide a better balance between capacity
->>      and latency. They allow hot pages that need promoting to be promoted
->>      smoothly and pages that need demoting to be demoted immediately. This
->>      helps tiered memory systems to operate more rationally.
-> 
-> Can you summarize why something similar could not be provided by a
-> library that builds up on existing functionality, such as migrate_pages?
+On Wed, Jul 31, 2024, at 17:47, Guenter Roeck wrote:
+> On Tue, Jul 30, 2024 at 05:27:25PM +0200, Arnd Bergmann wrote:
+>> From: Arnd Bergmann <arnd@arndb.de>
+>> 
+>> Compile-testing the crypto/caam driver on alpha showed a pre-existing
+>> problem on alpha with iowrite64be() missing:
+>> 
+>> ERROR: modpost: "iowrite64be" [drivers/crypto/caam/caam_jr.ko] undefined!
+>> 
+>> The prototypes were added a while ago when we started using asm-generic/io.h,
+>> but the implementation was still missing. At some point the ioread64/iowrite64
+>> helpers were added, but the big-endian versions are still missing, and
+>> the generic version (using readq/writeq) is would not work here.
+>> 
+>> Change it to wrap ioread64()/iowrite64() instead.
+>> 
+>> Fixes: beba3771d9e0 ("crypto: caam: Make CRYPTO_DEV_FSL_CAAM dependent of COMPILE_TEST")
+>> Fixes: e19d4ebc536d ("alpha: add full ioread64/iowrite64 implementation")
+>> Fixes: 7e772dad9913 ("alpha: Use generic <asm-generic/io.h>")
+>> Closes: https://lore.kernel.org/all/CAHk-=wgEyzSxTs467NDOVfBSzWvUS6ztcwhiy=M3xog==KBmTw@mail.gmail.com/
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>
+> Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-Sorry, I actually wanted to refer to "move_pages", not "migrate_pages".
+Thanks!
 
--- 
-Cheers,
+>> +#define ioread64be(p) swab64(ioread64(p))
+>>  #define iowrite16be(v,p) iowrite16(swab16(v), (p))
+>>  #define iowrite32be(v,p) iowrite32(swab32(v), (p))
+>> +#define iowrite64be(v,p) iowrite64(swab64(v), (p))
+>> +
+>>  
 
-David / dhildenb
+Fixed
 
+      Arnd
